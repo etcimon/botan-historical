@@ -5,21 +5,17 @@
 * Distributed under the terms of the Botan license
 */
 
-#ifndef BOTAN_PK_OPERATIONS_H__
 #define BOTAN_PK_OPERATIONS_H__
 
 #include <botan/secmem.h>
 #include <botan/rng.h>
-
-namespace Botan {
-
 namespace PK_Ops {
 
 /**
 * Public key encryption interface
 */
 class Encryption
-	{
+{
 	public:
 		abstract size_t max_input_bits() const = 0;
 
@@ -27,13 +23,13 @@ class Encryption
 													  RandomNumberGenerator& rng) = 0;
 
 		abstract ~Encryption() {}
-	};
+};
 
 /**
 * Public key decryption interface
 */
 class Decryption
-	{
+{
 	public:
 		abstract size_t max_input_bits() const = 0;
 
@@ -41,13 +37,13 @@ class Decryption
 													  size_t msg_len) = 0;
 
 		abstract ~Decryption() {}
-	};
+};
 
 /**
 * Public key signature creation interface
 */
 class Signature
-	{
+{
 	public:
 		/**
 		* Find out the number of message parts supported by this scheme.
@@ -77,13 +73,13 @@ class Signature
 												  RandomNumberGenerator& rng) = 0;
 
 		abstract ~Signature() {}
-	};
+};
 
 /**
 * Public key signature verification interface
 */
 class Verification
-	{
+{
 	public:
 		/**
 		* Get the maximum message size in bits supported by this public key.
@@ -119,9 +115,9 @@ class Verification
 		*/
 		abstract bool verify(const byte[], size_t,
 								  const byte[], size_t)
-			{
+		{
 			throw Invalid_State("Message recovery required");
-			}
+		}
 
 		/*
 		* Perform a signature operation (with message recovery)
@@ -132,18 +128,18 @@ class Verification
 		*/
 		abstract SafeArray!byte verify_mr(const byte[],
 														 size_t)
-			{
+		{
 			throw Invalid_State("Message recovery not supported");
-			}
+		}
 
 		abstract ~Verification() {}
-	};
+};
 
 /**
 * A generic key agreement Operation (eg DH or ECDH)
 */
 class Key_Agreement
-	{
+{
 	public:
 		/*
 		* Perform a key agreement operation
@@ -154,10 +150,6 @@ class Key_Agreement
 		abstract SafeArray!byte agree(const byte w[], size_t w_len) = 0;
 
 		abstract ~Key_Agreement() {}
-	};
+};
 
 }
-
-}
-
-#endif

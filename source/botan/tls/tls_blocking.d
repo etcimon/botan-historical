@@ -6,9 +6,6 @@
 */
 
 #include <botan/tls_blocking.h>
-
-namespace Botan {
-
 namespace TLS {
 
 using namespace std::placeholders;
@@ -34,44 +31,44 @@ Blocking_Client::Blocking_Client(std::function<size_t (byte[], size_t)> read_fn,
 				 server_info,
 				 offer_version,
 				 next_protocol)
-	{
-	}
+{
+}
 
 bool Blocking_Client::handshake_cb(const Session& session)
-	{
+{
 	return this->handshake_complete(session);
-	}
+}
 
 void Blocking_Client::alert_cb(const Alert alert, const byte[], size_t)
-	{
+{
 	this->alert_notification(alert);
-	}
+}
 
 void Blocking_Client::data_cb(const byte data[], size_t data_len)
-	{
+{
 	m_plaintext.insert(m_plaintext.end(), data, data + data_len);
-	}
+}
 
 void Blocking_Client::do_handshake()
-	{
+{
 	std::vector<byte> readbuf(4096);
 
 	while(!m_channel.is_closed() && !m_channel.is_active())
-		{
+	{
 		const size_t from_socket = m_read_fn(&readbuf[0], readbuf.size());
 		m_channel.received_data(&readbuf[0], from_socket);
-		}
 	}
+}
 
 size_t Blocking_Client::read(byte buf[], size_t buf_len)
-	{
+{
 	std::vector<byte> readbuf(4096);
 
 	while(m_plaintext.empty() && !m_channel.is_closed())
-		{
+	{
 		const size_t from_socket = m_read_fn(&readbuf[0], readbuf.size());
 		m_channel.received_data(&readbuf[0], from_socket);
-		}
+	}
 
 	const size_t returned = std::min(buf_len, m_plaintext.size());
 
@@ -83,7 +80,7 @@ size_t Blocking_Client::read(byte buf[], size_t buf_len)
 									 "Only return zero if channel is closed");
 
 	return returned;
-	}
+}
 
 }
 

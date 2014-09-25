@@ -5,21 +5,17 @@
 * Distributed under the terms of the Botan license
 */
 
-#ifndef BOTAN_TRANSFORMATION_FILTER_H__
 #define BOTAN_TRANSFORMATION_FILTER_H__
 
 #include <botan/transform.h>
 #include <botan/key_filt.h>
 #include <botan/buf_filt.h>
-
-namespace Botan {
-
 /**
 * Filter interface for Transformations
 */
 class Transformation_Filter : public Keyed_Filter,
 													 private Buffered_Filter
-	{
+{
 	public:
 		Transformation_Filter(Transformation* t);
 
@@ -47,7 +43,7 @@ class Transformation_Filter : public Keyed_Filter,
 		void buffered_final(const byte input[], size_t input_length) override;
 
 		class Nonce_State
-			{
+		{
 			public:
 				Nonce_State(bool allow_null_nonce) : m_fresh_nonce(allow_null_nonce) {}
 
@@ -56,13 +52,9 @@ class Transformation_Filter : public Keyed_Filter,
 			private:
 				bool m_fresh_nonce;
 				std::vector<byte> m_nonce;
-			};
+		};
 
 		Nonce_State m_nonce;
 		std::unique_ptr<Transformation> m_transform;
 		SafeArray!byte m_buffer;
-	};
-
-}
-
-#endif
+};

@@ -6,20 +6,16 @@
 * Distributed under the terms of the Botan license
 */
 
-#ifndef BOTAN_OUTPUT_BUFFER_H__
 #define BOTAN_OUTPUT_BUFFER_H__
 
 #include <botan/types.h>
 #include <botan/pipe.h>
 #include <deque>
-
-namespace Botan {
-
 /**
 * Container of output buffers for Pipe
 */
 class Output_Buffers
-	{
+{
 	public:
 		size_t read(byte[], size_t, Pipe::message_id);
 		size_t peek(byte[], size_t, size_t, Pipe::message_id) const;
@@ -38,8 +34,4 @@ class Output_Buffers
 
 		std::deque<SecureQueue*> buffers;
 		Pipe::message_id offset;
-	};
-
-}
-
-#endif
+};

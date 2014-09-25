@@ -5,18 +5,14 @@
 * Distributed under the terms of the Botan license
 */
 
-#ifndef BOTAN_BLOWFISH_H__
 #define BOTAN_BLOWFISH_H__
 
 #include <botan/block_cipher.h>
-
-namespace Botan {
-
 /**
 * Blowfish
 */
 class Blowfish : public Block_Cipher_Fixed_Params<8, 1, 56>
-	{
+{
 	public:
 		void encrypt_n(const byte in[], byte out[], size_t blocks) const;
 		void decrypt_n(const byte in[], byte out[], size_t blocks) const;
@@ -46,8 +42,4 @@ class Blowfish : public Block_Cipher_Fixed_Params<8, 1, 56>
 		static const u32bit S_INIT[1024];
 
 		secure_vector<u32bit> S, P;
-	};
-
-}
-
-#endif
+};

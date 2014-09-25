@@ -36,13 +36,10 @@
 #if defined(BOTAN_HAS_SHA1_SSE2)
   #include <botan/sha1_sse2.h>
 #endif
-
-namespace Botan {
-
 BlockCipher*
 SIMD_Engine::find_block_cipher(const SCAN_Name& request,
 										 Algorithm_Factory&) const
-	{
+{
 #if defined(BOTAN_HAS_AES_SSSE3)
 	if(request.algo_name() == "AES-128" && CPUID::has_ssse3())
 		return new AES_128_SSSE3;
@@ -78,12 +75,12 @@ SIMD_Engine::find_block_cipher(const SCAN_Name& request,
 #endif
 
 	return nullptr;
-	}
+}
 
 HashFunction*
 SIMD_Engine::find_hash(const SCAN_Name& request,
 							  Algorithm_Factory&) const
-	{
+{
 #if defined(BOTAN_HAS_SHA1_SSE2)
 	if(request.algo_name() == "SHA-160" && CPUID::has_sse2())
 		return new SHA_160_SSE2;
@@ -92,6 +89,6 @@ SIMD_Engine::find_hash(const SCAN_Name& request,
 	BOTAN_UNUSED(request);
 
 	return nullptr;
-	}
+}
 
 }

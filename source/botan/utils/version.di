@@ -5,14 +5,10 @@
 * Distributed under the terms of the Botan license
 */
 
-#ifndef BOTAN_VERSION_H__
 #define BOTAN_VERSION_H__
 
 #include <botan/types.h>
 #include <string>
-
-namespace Botan {
-
 /*
 * Get information describing the version
 */
@@ -22,7 +18,7 @@ namespace Botan {
 * No particular format should be assumed.
 * @return version string
 */
-BOTAN_DLL string version_string();
+string version_string();
 
 /**
 * Return the date this version of botan was released, in an integer of
@@ -32,25 +28,25 @@ BOTAN_DLL string version_string();
 *
 * @return release date, or zero if unreleased
 */
-BOTAN_DLL u32bit version_datestamp();
+u32bit version_datestamp();
 
 /**
 * Get the major version number.
 * @return major version number
 */
-BOTAN_DLL u32bit version_major();
+u32bit version_major();
 
 /**
 * Get the minor version number.
 * @return minor version number
 */
-BOTAN_DLL u32bit version_minor();
+u32bit version_minor();
 
 /**
 * Get the patch number.
 * @return patch number
 */
-BOTAN_DLL u32bit version_patch();
+u32bit version_patch();
 
 /*
 * Macros for compile-time version checks
@@ -66,7 +62,3 @@ BOTAN_DLL u32bit version_patch();
 #define BOTAN_VERSION_CODE BOTAN_VERSION_CODE_FOR(BOTAN_VERSION_MAJOR, \
 																  BOTAN_VERSION_MINOR, \
 																  BOTAN_VERSION_PATCH)
-
-}
-
-#endif

@@ -8,14 +8,11 @@
 #include <botan/rfc6979.h>
 #include <botan/hmac_drbg.h>
 #include <botan/libstate.h>
-
-namespace Botan {
-
 BigInt generate_rfc6979_nonce(const BigInt& x,
 										const BigInt& q,
 										const BigInt& h,
 										in string hash)
-	{
+{
 	Algorithm_Factory& af = global_state().algorithm_factory();
 
 	HMAC_DRBG rng(af.make_mac("HMAC(" + hash + ")"), nullptr);
@@ -34,12 +31,12 @@ BigInt generate_rfc6979_nonce(const BigInt& x,
 	SafeArray!byte kbits(rlen);
 
 	while(k == 0 || k >= q)
-		{
+	{
 		rng.randomize(&kbits[0], kbits.size());
 		k = BigInt::decode(kbits) >> (8*rlen - qlen);
-		}
+	}
 
 	return k;
-	}
+}
 
 }

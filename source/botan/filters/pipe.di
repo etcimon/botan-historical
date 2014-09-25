@@ -6,7 +6,6 @@
 * Distributed under the terms of the Botan license
 */
 
-#ifndef BOTAN_PIPE_H__
 #define BOTAN_PIPE_H__
 
 #include <botan/data_src.h>
@@ -14,9 +13,6 @@
 #include <botan/exceptn.h>
 #include <initializer_list>
 #include <iosfwd>
-
-namespace Botan {
-
 /**
 * This class represents pipe objects.
 * A set of filters can be placed into a pipe, and information flows
@@ -25,7 +21,7 @@ namespace Botan {
 * environment, this design will sound quite familiar.
 */
 class Pipe : public DataSource
-	{
+{
 	public:
 		/**
 		* An opaque type that identifies a message in this Pipe
@@ -36,8 +32,8 @@ class Pipe : public DataSource
 		* Exception if you use an invalid message as an argument to
 		* read, remaining, etc
 		*/
-		struct BOTAN_DLL Invalid_Message_Number : public Invalid_Argument
-			{
+		struct Invalid_Message_Number : public Invalid_Argument
+		{
 			/**
 			* @param where the error occured
 			* @param msg the invalid message id that was used
@@ -45,8 +41,8 @@ class Pipe : public DataSource
 			Invalid_Message_Number(in string where, message_id msg) :
 				Invalid_Argument("Pipe::" + where + ": Invalid message number " +
 									  std::to_string(msg))
-				{}
-			};
+			{}
+		};
 
 		/**
 		* A meta-id for whatever the last message is
@@ -70,14 +66,14 @@ class Pipe : public DataSource
 		* @param in the secure_vector containing the data to write
 		*/
 		void write(in SafeArray!byte in)
-			{ write(&in[0], in.size()); }
+		{ write(&in[0], in.size()); }
 
 		/**
 		* Write input to the pipe, i.e. to its first filter.
 		* @param in the std::vector containing the data to write
 		*/
 		void write(in Array!byte in)
-			{ write(&in[0], in.size()); }
+		{ write(&in[0], in.size()); }
 
 		/**
 		* Write input to the pipe, i.e. to its first filter.
@@ -312,7 +308,7 @@ class Pipe : public DataSource
 		class Output_Buffers* outputs;
 		message_id default_read;
 		bool inside_msg;
-	};
+};
 
 /**
 * Stream output operator; dumps the results from pipe's default
@@ -320,7 +316,7 @@ class Pipe : public DataSource
 * @param out an output stream
 * @param pipe the pipe
 */
-BOTAN_DLL std::ostream& operator<<(std::ostream& out, Pipe& pipe);
+std::ostream& operator<<(std::ostream& out, Pipe& pipe);
 
 /**
 * Stream input operator; dumps the remaining bytes of input
@@ -328,7 +324,7 @@ BOTAN_DLL std::ostream& operator<<(std::ostream& out, Pipe& pipe);
 * @param in the input stream
 * @param pipe the pipe
 */
-BOTAN_DLL std::istream& operator>>(std::istream& in, Pipe& pipe);
+std::istream& operator>>(std::istream& in, Pipe& pipe);
 
 }
 

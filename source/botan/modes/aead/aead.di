@@ -5,13 +5,9 @@
 * Distributed under the terms of the Botan license
 */
 
-#ifndef BOTAN_AEAD_MODE_H__
 #define BOTAN_AEAD_MODE_H__
 
 #include <botan/cipher_mode.h>
-
-namespace Botan {
-
 /**
 * Interface for AEAD (Authenticated Encryption with Associated Data)
 * modes. These modes provide both encryption and message
@@ -20,7 +16,7 @@ namespace Botan {
 * number).
 */
 class AEAD_Mode : public Cipher_Mode
-	{
+{
 	public:
 		bool authenticated() const override { return true; }
 
@@ -40,9 +36,9 @@ class AEAD_Mode : public Cipher_Mode
 
 		template<typename Alloc>
 		void set_associated_data_vec(const std::vector<byte, Alloc>& ad)
-			{
+		{
 			set_associated_data(&ad[0], ad.size());
-			}
+		}
 
 		/**
 		* Default AEAD nonce size (a commonly supported value among AEAD
@@ -54,13 +50,9 @@ class AEAD_Mode : public Cipher_Mode
 		* Return the size of the authentication tag used (in bytes)
 		*/
 		abstract size_t tag_size() const = 0;
-	};
+};
 
 /**
 * Get an AEAD mode by name (eg "AES-128/GCM" or "Serpent/EAX")
 */
-BOTAN_DLL AEAD_Mode* get_aead(in string name, Cipher_Dir direction);
-
-}
-
-#endif
+AEAD_Mode* get_aead(in string name, Cipher_Dir direction);

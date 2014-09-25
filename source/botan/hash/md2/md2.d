@@ -7,14 +7,11 @@
 
 #include <botan/md2.h>
 #include <botan/internal/xor_buf.h>
-
-namespace Botan {
-
 /**
 * MD2 Compression Function
 */
 void MD2::hash(const byte input[])
-	{
+{
 	static const byte SBOX[256] = {
 		0x29, 0x2E, 0x43, 0xC9, 0xA2, 0xD8, 0x7C, 0x01, 0x3D, 0x36, 0x54, 0xA1,
 		0xEC, 0xF0, 0x06, 0x13, 0x62, 0xA7, 0x05, 0xF3, 0xC0, 0xC7, 0x73, 0x8C,
@@ -44,52 +41,52 @@ void MD2::hash(const byte input[])
 	byte T = 0;
 
 	for(size_t i = 0; i != 18; ++i)
-		{
+	{
 		for(size_t k = 0; k != 48; k += 8)
-			{
+		{
 			T = X[k  ] ^= SBOX[T]; T = X[k+1] ^= SBOX[T];
 			T = X[k+2] ^= SBOX[T]; T = X[k+3] ^= SBOX[T];
 			T = X[k+4] ^= SBOX[T]; T = X[k+5] ^= SBOX[T];
 			T = X[k+6] ^= SBOX[T]; T = X[k+7] ^= SBOX[T];
-			}
+		}
 
 		T += static_cast<byte>(i);
-		}
+	}
 
 	T = checksum[15];
 	for(size_t i = 0; i != hash_block_size(); ++i)
 		T = checksum[i] ^= SBOX[input[i] ^ T];
-	}
+}
 
 /**
 * Update the hash
 */
 void MD2::add_data(const byte input[], size_t length)
-	{
+{
 	buffer_insert(buffer, position, input, length);
 
 	if(position + length >= hash_block_size())
-		{
+	{
 		hash(&buffer[0]);
 		input += (hash_block_size() - position);
 		length -= (hash_block_size() - position);
 		while(length >= hash_block_size())
-			{
+		{
 			hash(input);
 			input += hash_block_size();
 			length -= hash_block_size();
-			}
+		}
 		copy_mem(&buffer[0], input, length);
 		position = 0;
-		}
-	position += length;
 	}
+	position += length;
+}
 
 /**
 * Finalize a MD2 Hash
 */
 void MD2::final_result(byte output[])
-	{
+{
 	for(size_t i = position; i != hash_block_size(); ++i)
 		buffer[i] = static_cast<byte>(hash_block_size() - position);
 
@@ -97,17 +94,17 @@ void MD2::final_result(byte output[])
 	hash(&checksum[0]);
 	copy_mem(output, &X[0], output_length());
 	clear();
-	}
+}
 
 /**
 * Clear memory of sensitive data
 */
 void MD2::clear()
-	{
+{
 	zeroise(X);
 	zeroise(checksum);
 	zeroise(buffer);
 	position = 0;
-	}
+}
 
 }

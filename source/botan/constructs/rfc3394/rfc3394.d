@@ -11,14 +11,11 @@
 #include <botan/loadstor.h>
 #include <botan/exceptn.h>
 #include <botan/internal/xor_buf.h>
-
-namespace Botan {
-
 namespace {
 
 BlockCipher* make_aes(size_t keylength,
 							 Algorithm_Factory& af)
-	{
+{
 	if(keylength == 16)
 		return af.make_block_cipher("AES-128");
 	else if(keylength == 24)
@@ -27,14 +24,14 @@ BlockCipher* make_aes(size_t keylength,
 		return af.make_block_cipher("AES-256");
 	else
 		throw std::invalid_argument("Bad KEK length for NIST keywrap");
-	}
+}
 
 }
 
 SafeArray!byte rfc3394_keywrap(in SafeArray!byte key,
 												const SymmetricKey& kek,
 												Algorithm_Factory& af)
-	{
+{
 	if(key.size() % 8 != 0)
 		throw std::invalid_argument("Bad input key size for NIST key wrap");
 
@@ -52,9 +49,9 @@ SafeArray!byte rfc3394_keywrap(in SafeArray!byte key,
 	copy_mem(&R[8], &key[0], key.size());
 
 	for(size_t j = 0; j <= 5; ++j)
-		{
+	{
 		for(size_t i = 1; i <= n; ++i)
-			{
+		{
 			const u32bit t = (n * j) + i;
 
 			copy_mem(&A[8], &R[8*i], 8);
@@ -65,18 +62,18 @@ SafeArray!byte rfc3394_keywrap(in SafeArray!byte key,
 			byte t_buf[4] = { 0 };
 			store_be(t, t_buf);
 			xor_buf(&A[4], &t_buf[0], 4);
-			}
 		}
+	}
 
 	copy_mem(&R[0], &A[0], 8);
 
 	return R;
-	}
+}
 
 SafeArray!byte rfc3394_keyunwrap(in SafeArray!byte key,
 												 const SymmetricKey& kek,
 												 Algorithm_Factory& af)
-	{
+{
 	if(key.size() < 16 || key.size() % 8 != 0)
 		throw std::invalid_argument("Bad input key size for NIST key unwrap");
 
@@ -94,9 +91,9 @@ SafeArray!byte rfc3394_keyunwrap(in SafeArray!byte key,
 	copy_mem(&R[0], &key[8], key.size() - 8);
 
 	for(size_t j = 0; j <= 5; ++j)
-		{
+	{
 		for(size_t i = n; i != 0; --i)
-			{
+		{
 			const u32bit t = (5 - j) * n + i;
 
 			byte t_buf[4] = { 0 };
@@ -109,13 +106,13 @@ SafeArray!byte rfc3394_keyunwrap(in SafeArray!byte key,
 			aes->decrypt(&A[0]);
 
 			copy_mem(&R[8*(i-1)], &A[8], 8);
-			}
 		}
+	}
 
 	if(load_be<u64bit>(&A[0], 0) != 0xA6A6A6A6A6A6A6A6)
 		throw Integrity_Failure("NIST key unwrap failed");
 
 	return R;
-	}
+}
 
 }

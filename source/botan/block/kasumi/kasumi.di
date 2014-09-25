@@ -5,18 +5,14 @@
 * Distributed under the terms of the Botan license
 */
 
-#ifndef BOTAN_KASUMI_H__
 #define BOTAN_KASUMI_H__
 
 #include <botan/block_cipher.h>
-
-namespace Botan {
-
 /**
 * KASUMI, the block cipher used in 3G telephony
 */
 class KASUMI : public Block_Cipher_Fixed_Params<8, 16>
-	{
+{
 	public:
 		void encrypt_n(const byte in[], byte out[], size_t blocks) const;
 		void decrypt_n(const byte in[], byte out[], size_t blocks) const;
@@ -28,8 +24,4 @@ class KASUMI : public Block_Cipher_Fixed_Params<8, 16>
 		void key_schedule(const byte[], size_t);
 
 		secure_vector<u16bit> EK;
-	};
-
-}
-
-#endif
+};

@@ -5,26 +5,22 @@
 * Distributed under the terms of the Botan license
 */
 
-#ifndef BOTAN_OCSP_H__
 #define BOTAN_OCSP_H__
 
 #include <botan/cert_status.h>
 #include <botan/ocsp_types.h>
-
-namespace Botan {
-
 class Certificate_Store;
 
 namespace OCSP {
 
 class Request
-	{
+{
 	public:
 		Request(const X509_Certificate& issuer_cert,
 				  const X509_Certificate& subject_cert) :
 			m_issuer(issuer_cert),
 			m_subject(subject_cert)
-			{}
+		{}
 
 		std::vector<byte> BER_encode() const;
 
@@ -35,10 +31,10 @@ class Request
 		const X509_Certificate& subject() const { return m_subject; }
 	private:
 		X509_Certificate m_issuer, m_subject;
-	};
+};
 
 class Response
-	{
+{
 	public:
 		Response() {}
 
@@ -50,14 +46,10 @@ class Response
 
 	private:
 		std::vector<SingleResponse> m_responses;
-	};
+};
 
-BOTAN_DLL Response online_check(const X509_Certificate& issuer,
+Response online_check(const X509_Certificate& issuer,
 										  const X509_Certificate& subject,
 										  const Certificate_Store* trusted_roots);
 
 }
-
-}
-
-#endif

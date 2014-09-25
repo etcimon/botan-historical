@@ -11,9 +11,6 @@
 #include <botan/hex.h>
 #include <botan/loadstor.h>
 #include <chrono>
-
-namespace Botan {
-
 namespace TLS {
 
 namespace {
@@ -23,7 +20,7 @@ SymmetricKey derive_key(in string passphrase,
 								size_t salt_len,
 								size_t iterations,
 								size_t& check_val)
-	{
+{
 	std::unique_ptr<PBKDF> pbkdf(get_pbkdf("PBKDF2(SHA-512)"));
 
 	SafeArray!byte x = pbkdf->derive_key(32 + 2,
@@ -33,7 +30,7 @@ SymmetricKey derive_key(in string passphrase,
 
 	check_val = make_u16bit(x[0], x[1]);
 	return SymmetricKey(&x[2], x.size() - 2);
-	}
+}
 
 }
 
@@ -45,7 +42,7 @@ Session_Manager_SQLite::Session_Manager_SQLite(in string passphrase,
 	m_rng(rng),
 	m_max_sessions(max_sessions),
 	m_session_lifetime(session_lifetime)
-	{
+{
 	m_db = new sqlite3_database(db_filename);
 
 	m_db->create_table(
@@ -69,12 +66,12 @@ Session_Manager_SQLite::Session_Manager_SQLite(in string passphrase,
 	const size_t salts = m_db->row_count("tls_sessions_metadata");
 
 	if(salts == 1)
-		{
+	{
 		// existing db
 		sqlite3_statement stmt(m_db, "select * from tls_sessions_metadata");
 
 		if(stmt.step())
-			{
+		{
 			std::pair<const byte*, size_t> salt = stmt.get_blob(0);
 			const size_t iterations = stmt.get_size_t(1);
 			const size_t check_val_db = stmt.get_size_t(2);
@@ -88,10 +85,10 @@ Session_Manager_SQLite::Session_Manager_SQLite(in string passphrase,
 
 			if(check_val_created != check_val_db)
 				throw std::runtime_error("Session database password not valid");
-			}
 		}
+	}
 	else
-		{
+	{
 		// maybe just zap the salts + sessions tables in this case?
 		if(salts != 0)
 			throw std::runtime_error("Seemingly corrupted database, multiple salts found");
@@ -113,41 +110,41 @@ Session_Manager_SQLite::Session_Manager_SQLite(in string passphrase,
 		stmt.bind(3, check_val);
 
 		stmt.spin();
-		}
 	}
+}
 
 Session_Manager_SQLite::~Session_Manager_SQLite()
-	{
+{
 	delete m_db;
-	}
+}
 
 bool Session_Manager_SQLite::load_from_session_id(in Array!byte session_id,
 																  Session& session)
-	{
+{
 	sqlite3_statement stmt(m_db, "select session from tls_sessions where session_id = ?1");
 
 	stmt.bind(1, hex_encode(session_id));
 
 	while(stmt.step())
-		{
+	{
 		std::pair<const byte*, size_t> blob = stmt.get_blob(0);
 
 		try
-			{
+		{
 			session = Session::decrypt(blob.first, blob.second, m_session_key);
 			return true;
-			}
-		catch(...)
-			{
-			}
 		}
+		catch(...)
+		{
+		}
+	}
 
 	return false;
-	}
+}
 
 bool Session_Manager_SQLite::load_from_server_info(const Server_Information& server,
 																	Session& session)
-	{
+{
 	sqlite3_statement stmt(m_db, "select session from tls_sessions"
 										  " where hostname = ?1 and hostport = ?2"
 										  " order by session_start desc");
@@ -156,33 +153,33 @@ bool Session_Manager_SQLite::load_from_server_info(const Server_Information& ser
 	stmt.bind(2, server.port());
 
 	while(stmt.step())
-		{
+	{
 		std::pair<const byte*, size_t> blob = stmt.get_blob(0);
 
 		try
-			{
+		{
 			session = Session::decrypt(blob.first, blob.second, m_session_key);
 			return true;
-			}
-		catch(...)
-			{
-			}
 		}
-
-	return false;
+		catch(...)
+		{
+		}
 	}
 
+	return false;
+}
+
 void Session_Manager_SQLite::remove_entry(in Array!byte session_id)
-	{
+{
 	sqlite3_statement stmt(m_db, "delete from tls_sessions where session_id = ?1");
 
 	stmt.bind(1, hex_encode(session_id));
 
 	stmt.spin();
-	}
+}
 
 void Session_Manager_SQLite::save(const Session& session)
-	{
+{
 	sqlite3_statement stmt(m_db, "insert or replace into tls_sessions"
 										  " values(?1, ?2, ?3, ?4, ?5)");
 
@@ -195,10 +192,10 @@ void Session_Manager_SQLite::save(const Session& session)
 	stmt.spin();
 
 	prune_session_cache();
-	}
+}
 
 void Session_Manager_SQLite::prune_session_cache()
-	{
+{
 	sqlite3_statement remove_expired(m_db, "delete from tls_sessions where session_start <= ?1");
 
 	remove_expired.bind(1, std::chrono::system_clock::now() - m_session_lifetime);
@@ -208,14 +205,14 @@ void Session_Manager_SQLite::prune_session_cache()
 	const size_t sessions = m_db->row_count("tls_sessions");
 
 	if(sessions > m_max_sessions)
-		{
+	{
 		sqlite3_statement remove_some(m_db, "delete from tls_sessions where session_id in "
 														"(select session_id from tls_sessions limit ?1)");
 
 		remove_some.bind(1, sessions - m_max_sessions);
 		remove_some.spin();
-		}
 	}
+}
 
 }
 

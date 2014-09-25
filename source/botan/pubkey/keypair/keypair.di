@@ -5,13 +5,9 @@
 * Distributed under the terms of the Botan license
 */
 
-#ifndef BOTAN_KEYPAIR_CHECKS_H__
 #define BOTAN_KEYPAIR_CHECKS_H__
 
 #include <botan/pk_keys.h>
-
-namespace Botan {
-
 namespace KeyPair {
 
 /**
@@ -22,7 +18,7 @@ namespace KeyPair {
 * @param padding the encryption padding method to use
 * @return true if consistent otherwise false
 */
-BOTAN_DLL bool
+bool
 encryption_consistency_check(RandomNumberGenerator& rng,
 									  const Private_Key& key,
 									  in string padding);
@@ -35,13 +31,9 @@ encryption_consistency_check(RandomNumberGenerator& rng,
 * @param padding the signature padding method to use
 * @return true if consistent otherwise false
 */
-BOTAN_DLL bool
+bool
 signature_consistency_check(RandomNumberGenerator& rng,
 									 const Private_Key& key,
 									 in string padding);
 
 }
-
-}
-
-#endif

@@ -5,14 +5,10 @@
 * Distributed under the terms of the Botan license
 */
 
-#ifndef BOTAN_DER_ENCODER_H__
 #define BOTAN_DER_ENCODER_H__
 
 #include <botan/asn1_obj.h>
 #include <vector>
-
-namespace Botan {
-
 class BigInt;
 class ASN1_Object;
 
@@ -20,12 +16,12 @@ class ASN1_Object;
 * General DER Encoding Object
 */
 class DER_Encoder
-	{
+{
 	public:
 		SafeArray!byte get_contents();
 
 		std::vector<byte> get_contents_unlocked()
-			{ return unlock(get_contents()); }
+		{ return unlock(get_contents()); }
 
 		DER_Encoder& start_cons(ASN1_Tag type_tag,
 										ASN1_Tag class_tag = UNIVERSAL);
@@ -75,19 +71,19 @@ class DER_Encoder
 
 		template<typename T>
 		DER_Encoder& encode_optional(const T& value, const T& default_value)
-			{
+		{
 			if(value != default_value)
 				encode(value);
 			return (*this);
-			}
+		}
 
 		template<typename T>
 		DER_Encoder& encode_list(const std::vector<T>& values)
-			{
+		{
 			for(size_t i = 0; i != values.size(); ++i)
 				encode(values[i]);
 			return (*this);
-			}
+		}
 
 		DER_Encoder& encode(const ASN1_Object& obj);
 		DER_Encoder& encode_if(bool pred, DER_Encoder& enc);
@@ -98,15 +94,15 @@ class DER_Encoder
 
 		DER_Encoder& add_object(ASN1_Tag type_tag, ASN1_Tag class_tag,
 										in Array!byte rep)
-			{
+		{
 			return add_object(type_tag, class_tag, &rep[0], rep.size());
-			}
+		}
 
 		DER_Encoder& add_object(ASN1_Tag type_tag, ASN1_Tag class_tag,
 										in SafeArray!byte rep)
-			{
+		{
 			return add_object(type_tag, class_tag, &rep[0], rep.size());
-			}
+		}
 
 		DER_Encoder& add_object(ASN1_Tag type_tag, ASN1_Tag class_tag,
 										in string str);
@@ -116,7 +112,7 @@ class DER_Encoder
 
 	private:
 		class DER_Sequence
-			{
+		{
 			public:
 				ASN1_Tag tag_of() const;
 				SafeArray!byte get_contents();
@@ -126,12 +122,8 @@ class DER_Encoder
 				ASN1_Tag type_tag, class_tag;
 				SafeArray!byte contents;
 				std::vector< SafeArray!byte > set_contents;
-			};
+		};
 
 		SafeArray!byte contents;
 		std::vector<DER_Sequence> subsequences;
-	};
-
-}
-
-#endif
+};

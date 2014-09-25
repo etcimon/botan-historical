@@ -5,18 +5,14 @@
 * Distributed under the terms of the Botan license
 */
 
-#ifndef BOTAN_STREAM_CIPHER_H__
 #define BOTAN_STREAM_CIPHER_H__
 
 #include <botan/sym_algo.h>
-
-namespace Botan {
-
 /**
 * Base class for all stream ciphers
 */
 class StreamCipher : public SymmetricAlgorithm
-	{
+{
 	public:
 		/**
 		* Encrypt or decrypt a message
@@ -32,19 +28,19 @@ class StreamCipher : public SymmetricAlgorithm
 		* @param len the length of buf in bytes
 		*/
 		void cipher1(byte buf[], size_t len)
-			{ cipher(buf, buf, len); }
+		{ cipher(buf, buf, len); }
 
 		template<typename Alloc>
 			void encipher(std::vector<byte, Alloc>& inout)
-			{ cipher(&inout[0], &inout[0], inout.size()); }
+		{ cipher(&inout[0], &inout[0], inout.size()); }
 
 		template<typename Alloc>
 			void encrypt(std::vector<byte, Alloc>& inout)
-			{ cipher(&inout[0], &inout[0], inout.size()); }
+		{ cipher(&inout[0], &inout[0], inout.size()); }
 
 		template<typename Alloc>
 			void decrypt(std::vector<byte, Alloc>& inout)
-			{ cipher(&inout[0], &inout[0], inout.size()); }
+		{ cipher(&inout[0], &inout[0], inout.size()); }
 
 		/**
 		* Resync the cipher using the IV
@@ -63,8 +59,4 @@ class StreamCipher : public SymmetricAlgorithm
 		* Get a new object representing the same algorithm as *this
 		*/
 		abstract StreamCipher* clone() const = 0;
-	};
-
-}
-
-#endif
+};

@@ -5,19 +5,15 @@
 * Distributed under the terms of the Botan license
 */
 
-#ifndef BOTAN_KDF2_H__
 #define BOTAN_KDF2_H__
 
 #include <botan/kdf.h>
 #include <botan/hash.h>
-
-namespace Botan {
-
 /**
 * KDF2, from IEEE 1363
 */
 class KDF2 : public KDF
-	{
+{
 	public:
 		SafeArray!byte derive(size_t, const byte[], size_t,
 										  const byte[], size_t) const;
@@ -28,8 +24,4 @@ class KDF2 : public KDF
 		KDF2(HashFunction* h) : hash(h) {}
 	private:
 		std::unique_ptr<HashFunction> hash;
-	};
-
-}
-
-#endif
+};

@@ -7,13 +7,10 @@
 
 #include <botan/tls_alert.h>
 #include <botan/exceptn.h>
-
-namespace Botan {
-
 namespace TLS {
 
 Alert::Alert(in SafeArray!byte buf)
-	{
+{
 	if(buf.size() != 2)
 		throw Decoding_Error("Alert: Bad size " + std::to_string(buf.size()) +
 									" for alert message");
@@ -26,20 +23,20 @@ Alert::Alert(in SafeArray!byte buf)
 	const byte dc = buf[1];
 
 	m_type_code = static_cast<Type>(dc);
-	}
+}
 
 std::vector<byte> Alert::serialize() const
-	{
+{
 	return std::vector<byte>({
 		static_cast<byte>(is_fatal() ? 2 : 1),
 		static_cast<byte>(type())
-		});
-	}
+	});
+}
 
 string Alert::type_string() const
-	{
+{
 	switch(type())
-		{
+	{
 		case CLOSE_NOTIFY:
 			return "close_notify";
 		case UNEXPECTED_MESSAGE:
@@ -107,7 +104,7 @@ string Alert::type_string() const
 
 		case HEARTBEAT_PAYLOAD:
 			return "heartbeat_payload";
-		}
+	}
 
 	/*
 	* This is effectively the default case for the switch above, but we
@@ -116,7 +113,7 @@ string Alert::type_string() const
 	* statement.
 	*/
 	return "unrecognized_alert_" + std::to_string(type());
-	}
+}
 
 }
 

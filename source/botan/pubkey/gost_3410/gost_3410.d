@@ -10,11 +10,8 @@
 #include <botan/gost_3410.h>
 #include <botan/der_enc.h>
 #include <botan/ber_dec.h>
-
-namespace Botan {
-
 std::vector<byte> GOST_3410_PublicKey::x509_subject_public_key() const
-	{
+{
 	// Trust CryptoPro to come up with something obnoxious
 	const BigInt x = public_point().get_affine_x();
 	const BigInt y = public_point().get_affine_y();
@@ -28,16 +25,16 @@ std::vector<byte> GOST_3410_PublicKey::x509_subject_public_key() const
 
 	// Keys are stored in little endian format (WTF)
 	for(size_t i = 0; i != part_size / 2; ++i)
-		{
+	{
 		std::swap(bits[i], bits[part_size-1-i]);
 		std::swap(bits[part_size+i], bits[2*part_size-1-i]);
-		}
-
-	return DER_Encoder().encode(bits, OCTET_STRING).get_contents_unlocked();
 	}
 
+	return DER_Encoder().encode(bits, OCTET_STRING).get_contents_unlocked();
+}
+
 AlgorithmIdentifier GOST_3410_PublicKey::algorithm_identifier() const
-	{
+{
 	std::vector<byte> params =
 		DER_Encoder().start_cons(SEQUENCE)
 			.encode(OID(domain().get_oid()))
@@ -45,11 +42,11 @@ AlgorithmIdentifier GOST_3410_PublicKey::algorithm_identifier() const
 		.get_contents_unlocked();
 
 	return AlgorithmIdentifier(get_oid(), params);
-	}
+}
 
 GOST_3410_PublicKey::GOST_3410_PublicKey(const AlgorithmIdentifier& alg_id,
 													  in SafeArray!byte key_bits)
-	{
+{
 	OID ecc_param_id;
 
 	// Also includes hash and cipher OIDs... brilliant design guys
@@ -64,10 +61,10 @@ GOST_3410_PublicKey::GOST_3410_PublicKey(const AlgorithmIdentifier& alg_id,
 
 	// Keys are stored in little endian format (WTF)
 	for(size_t i = 0; i != part_size / 2; ++i)
-		{
+	{
 		std::swap(bits[i], bits[part_size-1-i]);
 		std::swap(bits[part_size+i], bits[2*part_size-1-i]);
-		}
+	}
 
 	BigInt x(&bits[0], part_size);
 	BigInt y(&bits[part_size], part_size);
@@ -76,19 +73,19 @@ GOST_3410_PublicKey::GOST_3410_PublicKey(const AlgorithmIdentifier& alg_id,
 
 	BOTAN_ASSERT(public_key.on_the_curve(),
 					 "Loaded GOST 34.10 public key is on the curve");
-	}
+}
 
 namespace {
 
 BigInt decode_le(const byte msg[], size_t msg_len)
-	{
+{
 	SafeArray!byte msg_le(msg, msg + msg_len);
 
 	for(size_t i = 0; i != msg_le.size() / 2; ++i)
 		std::swap(msg_le[i], msg_le[msg_le.size()-1-i]);
 
 	return BigInt(&msg_le[0], msg_le.size());
-	}
+}
 
 }
 
@@ -98,13 +95,13 @@ GOST_3410_Signature_Operation::GOST_3410_Signature_Operation(
 	base_point(gost_3410.domain().get_base_point()),
 	order(gost_3410.domain().get_order()),
 	x(gost_3410.private_value())
-	{
-	}
+{
+}
 
 SafeArray!byte
 GOST_3410_Signature_Operation::sign(const byte msg[], size_t msg_len,
 												RandomNumberGenerator& rng)
-	{
+{
 	BigInt k;
 	do
 		k.randomize(rng, order.bits()-1);
@@ -132,18 +129,18 @@ GOST_3410_Signature_Operation::sign(const byte msg[], size_t msg_len,
 	s.binary_encode(&output[output.size() / 2 - s.bytes()]);
 	r.binary_encode(&output[output.size() - r.bytes()]);
 	return output;
-	}
+}
 
 GOST_3410_Verification_Operation::GOST_3410_Verification_Operation(const GOST_3410_PublicKey& gost) :
 	base_point(gost.domain().get_base_point()),
 	public_point(gost.public_point()),
 	order(gost.domain().get_order())
-	{
-	}
+{
+}
 
 bool GOST_3410_Verification_Operation::verify(const byte msg[], size_t msg_len,
 															 const byte sig[], size_t sig_len)
-	{
+{
 	if(sig_len != order.bytes()*2)
 		return false;
 
@@ -171,6 +168,6 @@ bool GOST_3410_Verification_Operation::verify(const byte msg[], size_t msg_len,
 	  return false;
 
 	return (R.get_affine_x() == r);
-	}
+}
 
 }

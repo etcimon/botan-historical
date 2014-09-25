@@ -5,19 +5,15 @@
 * Distributed under the terms of the Botan license
 */
 
-#ifndef BOTAN_GOST_3411_H__
 #define BOTAN_GOST_3411_H__
 
 #include <botan/hash.h>
 #include <botan/gost_28147.h>
-
-namespace Botan {
-
 /**
 * GOST 34.11
 */
 class GOST_34_11 : public HashFunction
-	{
+{
 	public:
 		string name() const { return "GOST-R-34.11-94" ; }
 		size_t output_length() const { return 32; }
@@ -37,8 +33,4 @@ class GOST_34_11 : public HashFunction
 		SafeArray!byte buffer, sum, hash;
 		size_t position;
 		u64bit count;
-	};
-
-}
-
-#endif
+};

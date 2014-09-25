@@ -5,7 +5,6 @@
 * Distributed under the terms of the Botan license
 */
 
-#ifndef BOTAN_X509_CERTS_H__
 #define BOTAN_X509_CERTS_H__
 
 #include <botan/x509_obj.h>
@@ -15,14 +14,11 @@
 #include <botan/datastor.h>
 #include <botan/key_constraint.h>
 #include <map>
-
-namespace Botan {
-
 /**
 * This class represents X.509 Certificate
 */
 class X509_Certificate : public X509_Object
-	{
+{
 	public:
 		/**
 		* Get the public key associated with this certificate.
@@ -229,21 +225,17 @@ class X509_Certificate : public X509_Object
 
 		Data_Store subject, issuer;
 		bool self_signed;
-	};
+};
 
 /**
 * Check two certificates for inequality
 * @return true if the arguments represent different certificates,
 * false if they are binary identical
 */
-BOTAN_DLL bool operator!=(const X509_Certificate&, const X509_Certificate&);
+bool operator!=(const X509_Certificate&, const X509_Certificate&);
 
 /*
 * Data Store Extraction Operations
 */
-BOTAN_DLL X509_DN create_dn(const Data_Store&);
-BOTAN_DLL AlternativeName create_alt_name(const Data_Store&);
-
-}
-
-#endif
+X509_DN create_dn(const Data_Store&);
+AlternativeName create_alt_name(const Data_Store&);

@@ -7,19 +7,15 @@
 * Distributed under the terms of the Botan license
 */
 
-#ifndef BOTAN_ECDH_KEY_H__
 #define BOTAN_ECDH_KEY_H__
 
 #include <botan/ecc_key.h>
 #include <botan/pk_ops.h>
-
-namespace Botan {
-
 /**
 * This class represents ECDH Public Keys.
 */
 class ECDH_PublicKey : public abstract EC_PublicKey
-	{
+{
 	public:
 
 		ECDH_PublicKey(const AlgorithmIdentifier& alg_id,
@@ -53,11 +49,11 @@ class ECDH_PublicKey : public abstract EC_PublicKey
 		* @return public point value
 		*/
 		std::vector<byte> public_value() const
-			{ return unlock(EC2OSP(public_point(), PointGFp::UNCOMPRESSED)); }
+		{ return unlock(EC2OSP(public_point(), PointGFp::UNCOMPRESSED)); }
 
 	protected:
 		ECDH_PublicKey() {}
-	};
+};
 
 /**
 * This class represents ECDH Private Keys.
@@ -65,7 +61,7 @@ class ECDH_PublicKey : public abstract EC_PublicKey
 class ECDH_PrivateKey : public ECDH_PublicKey,
 											 public EC_PrivateKey,
 											 public PK_Key_Agreement_Key
-	{
+{
 	public:
 
 		ECDH_PrivateKey(const AlgorithmIdentifier& alg_id,
@@ -84,14 +80,14 @@ class ECDH_PrivateKey : public ECDH_PublicKey,
 			EC_PrivateKey(rng, domain, x) {}
 
 		std::vector<byte> public_value() const
-			{ return ECDH_PublicKey::public_value(); }
-	};
+		{ return ECDH_PublicKey::public_value(); }
+};
 
 /**
 * ECDH operation
 */
 class ECDH_KA_Operation : public PK_Ops::Key_Agreement
-	{
+{
 	public:
 		ECDH_KA_Operation(const ECDH_PrivateKey& key);
 
@@ -100,8 +96,4 @@ class ECDH_KA_Operation : public PK_Ops::Key_Agreement
 		const CurveGFp& curve;
 		const BigInt& cofactor;
 		BigInt l_times_priv;
-	};
-
-}
-
-#endif
+};

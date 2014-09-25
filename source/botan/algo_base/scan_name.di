@@ -5,7 +5,6 @@
 * Distributed under the terms of the Botan license
 */
 
-#ifndef BOTAN_SCAN_NAME_H__
 #define BOTAN_SCAN_NAME_H__
 
 #include <botan/types.h>
@@ -13,15 +12,12 @@
 #include <vector>
 #include <mutex>
 #include <map>
-
-namespace Botan {
-
 /**
 A class encapsulating a SCAN name (similar to JCE conventions)
 http://www.users.zetnet.co.uk/hopwood/crypto/scan/
 */
 class SCAN_Name
-	{
+{
 	public:
 		/**
 		* @param algo_spec A SCAN-format name
@@ -54,7 +50,7 @@ class SCAN_Name
 		* @return if the number of arguments is between lower and upper
 		*/
 		bool arg_count_between(size_t lower, size_t upper) const
-			{ return ((arg_count() >= lower) && (arg_count() <= upper)); }
+		{ return ((arg_count() >= lower) && (arg_count() <= upper)); }
 
 		/**
 		* @param i which argument
@@ -80,13 +76,13 @@ class SCAN_Name
 		* @return cipher mode (if any)
 		*/
 		string cipher_mode() const
-			{ return (mode_info.size() >= 1) ? mode_info[0] : ""; }
+		{ return (mode_info.size() >= 1) ? mode_info[0] : ""; }
 
 		/**
 		* @return cipher mode padding (if any)
 		*/
 		string cipher_mode_pad() const
-			{ return (mode_info.size() >= 2) ? mode_info[1] : ""; }
+		{ return (mode_info.size() >= 2) ? mode_info[1] : ""; }
 
 		static void add_alias(in string alias, in string basename);
 
@@ -101,8 +97,4 @@ class SCAN_Name
 		string alg_name;
 		std::vector<string> args;
 		std::vector<string> mode_info;
-	};
-
-}
-
-#endif
+};

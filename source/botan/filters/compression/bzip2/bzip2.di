@@ -6,18 +6,14 @@
 * Distributed under the terms of the Botan license
 */
 
-#ifndef BOTAN_BZIP2_H__
 #define BOTAN_BZIP2_H__
 
 #include <botan/filter.h>
-
-namespace Botan {
-
 /**
 * Bzip Compression Filter
 */
 class Bzip_Compression : public Filter
-	{
+{
 	public:
 		string name() const { return "Bzip_Compression"; }
 
@@ -35,13 +31,13 @@ class Bzip_Compression : public Filter
 		const size_t level;
 		SafeArray!byte buffer;
 		class Bzip_Stream* bz;
-	};
+};
 
 /**
 * Bzip Decompression Filter
 */
 class Bzip_Decompression : public Filter
-	{
+{
 	public:
 		string name() const { return "Bzip_Decompression"; }
 
@@ -58,8 +54,4 @@ class Bzip_Decompression : public Filter
 		SafeArray!byte buffer;
 		class Bzip_Stream* bz;
 		bool no_writes;
-	};
-
-}
-
-#endif
+};

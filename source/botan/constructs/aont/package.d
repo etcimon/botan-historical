@@ -11,14 +11,11 @@
 #include <botan/ctr.h>
 #include <botan/get_byte.h>
 #include <botan/internal/xor_buf.h>
-
-namespace Botan {
-
 void aont_package(RandomNumberGenerator& rng,
 						BlockCipher* cipher,
 						const byte input[], size_t input_len,
 						byte output[])
-	{
+{
 	const size_t BLOCK_SIZE = cipher->block_size();
 
 	if(!cipher->valid_keylength(BLOCK_SIZE))
@@ -47,7 +44,7 @@ void aont_package(RandomNumberGenerator& rng,
 
 	// XOR the hash blocks into the final block
 	for(size_t i = 0; i != blocks; ++i)
-		{
+	{
 		const size_t left = std::min<size_t>(BLOCK_SIZE,
 														 input_len - BLOCK_SIZE * i);
 
@@ -60,16 +57,16 @@ void aont_package(RandomNumberGenerator& rng,
 		cipher->encrypt(&buf[0]);
 
 		xor_buf(&final_block[0], &buf[0], BLOCK_SIZE);
-		}
+	}
 
 	// XOR the random package key into the final block
 	xor_buf(&final_block[0], package_key.begin(), BLOCK_SIZE);
-	}
+}
 
 void aont_unpackage(BlockCipher* cipher,
 						  const byte input[], size_t input_len,
 						  byte output[])
-	{
+{
 	const size_t BLOCK_SIZE = cipher->block_size();
 
 	if(!cipher->valid_keylength(BLOCK_SIZE))
@@ -95,7 +92,7 @@ void aont_unpackage(BlockCipher* cipher,
 
 	// XOR the blocks into the package key bits
 	for(size_t i = 0; i != blocks; ++i)
-		{
+	{
 		const size_t left = std::min<size_t>(BLOCK_SIZE,
 														 input_len - BLOCK_SIZE * (i+1));
 
@@ -108,13 +105,13 @@ void aont_unpackage(BlockCipher* cipher,
 		cipher->encrypt(&buf[0]);
 
 		xor_buf(&package_key[0], &buf[0], BLOCK_SIZE);
-		}
+	}
 
 	Pipe pipe(new StreamCipher_Filter(new CTR_BE(cipher), package_key));
 
 	pipe.process_msg(input, input_len - BLOCK_SIZE);
 
 	pipe.read(output, pipe.remaining());
-	}
+}
 
 }

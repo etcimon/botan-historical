@@ -11,9 +11,6 @@
 #include <botan/pbkdf2.h>
 #include <botan/b64_filt.h>
 #include <botan/pipe.h>
-
-namespace Botan {
-
 namespace {
 
 const string MAGIC_PREFIX = "$9$";
@@ -26,11 +23,11 @@ const size_t PASSHASH9_PBKDF_OUTPUT_LEN = 24; // 192 bits output
 const size_t WORK_FACTOR_SCALE = 10000;
 
 MessageAuthenticationCode* get_pbkdf_prf(byte alg_id)
-	{
+{
 	Algorithm_Factory& af = global_state().algorithm_factory();
 
 	try
-		{
+	{
 		if(alg_id == 0)
 			return af.make_mac("HMAC(SHA-1)");
 		else if(alg_id == 1)
@@ -41,11 +38,11 @@ MessageAuthenticationCode* get_pbkdf_prf(byte alg_id)
 			return af.make_mac("HMAC(SHA-384)");
 		else if(alg_id == 4)
 			return af.make_mac("HMAC(SHA-512)");
-		}
+	}
 	catch(Algorithm_Not_Found) {}
 
 	return nullptr;
-	}
+}
 
 }
 
@@ -53,7 +50,7 @@ string generate_passhash9(in string pass,
 										 RandomNumberGenerator& rng,
 										 u16bit work_factor,
 										 byte alg_id)
-	{
+{
 	MessageAuthenticationCode* prf = get_pbkdf_prf(alg_id);
 
 	if(!prf)
@@ -84,10 +81,10 @@ string generate_passhash9(in string pass,
 	pipe.end_msg();
 
 	return MAGIC_PREFIX + pipe.read_all_as_string();
-	}
+}
 
 bool check_passhash9(in string pass, in string hash)
-	{
+{
 	const size_t BINARY_LENGTH =
 	  ALGID_BYTES +
 	  WORKFACTOR_BYTES +
@@ -144,6 +141,6 @@ bool check_passhash9(in string pass, in string hash)
 	return same_mem(&cmp[0],
 						 &bin[ALGID_BYTES + WORKFACTOR_BYTES + SALT_BYTES],
 						 PASSHASH9_PBKDF_OUTPUT_LEN);
-	}
+}
 
 }

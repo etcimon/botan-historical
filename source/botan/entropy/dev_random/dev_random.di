@@ -5,20 +5,16 @@
 * Distributed under the terms of the Botan license
 */
 
-#ifndef BOTAN_ENTROPY_SRC_DEVICE_H__
 #define BOTAN_ENTROPY_SRC_DEVICE_H__
 
 #include <botan/entropy_src.h>
 #include <vector>
 #include <string>
-
-namespace Botan {
-
 /**
 * Entropy source reading from kernel devices like /dev/random
 */
 class Device_EntropySource : public EntropySource
-	{
+{
 	public:
 		string name() const { return "RNG Device Reader"; }
 
@@ -30,8 +26,4 @@ class Device_EntropySource : public EntropySource
 		typedef int fd_type;
 
 		std::vector<fd_type> m_devices;
-	};
-
-}
-
-#endif
+};

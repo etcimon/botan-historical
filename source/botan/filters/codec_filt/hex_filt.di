@@ -5,19 +5,15 @@
 * Distributed under the terms of the Botan license
 */
 
-#ifndef BOTAN_HEX_FILTER_H__
 #define BOTAN_HEX_FILTER_H__
 
 #include <botan/filter.h>
-
-namespace Botan {
-
 /**
 * Converts arbitrary binary data to hex strings, optionally with
 * newlines inserted
 */
 class Hex_Encoder : public Filter
-	{
+{
 	public:
 		/**
 		* Whether to use uppercase or lowercase letters for the encoded string.
@@ -51,13 +47,13 @@ class Hex_Encoder : public Filter
 		const size_t line_length;
 		std::vector<byte> in, out;
 		size_t position, counter;
-	};
+};
 
 /**
 * Converts hex strings to bytes
 */
 class Hex_Decoder : public Filter
-	{
+{
 	public:
 		string name() const { return "Hex_Decoder"; }
 
@@ -74,8 +70,4 @@ class Hex_Decoder : public Filter
 		const Decoder_Checking checking;
 		std::vector<byte> in, out;
 		size_t position;
-	};
-
-}
-
-#endif
+};

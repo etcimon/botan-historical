@@ -7,9 +7,6 @@
 
 #include <botan/hash_id.h>
 #include <botan/exceptn.h>
-
-namespace Botan {
-
 namespace {
 
 const byte MD2_PKCS_ID[] = {
@@ -58,7 +55,7 @@ const byte TIGER_PKCS_ID[] = {
 * HashID as specified by PKCS
 */
 std::vector<byte> pkcs_hash_id(in string name)
-	{
+{
 	// Special case for SSL/TLS RSA signatures
 	if(name == "Parallel(MD5,SHA-160)")
 		return std::vector<byte>();
@@ -104,13 +101,13 @@ std::vector<byte> pkcs_hash_id(in string name)
 										 TIGER_PKCS_ID + sizeof(TIGER_PKCS_ID));
 
 	throw Invalid_Argument("No PKCS #1 identifier for " + name);
-	}
+}
 
 /*
 * HashID as specified by IEEE 1363/X9.31
 */
 byte ieee1363_hash_id(in string name)
-	{
+{
 	if(name == "SHA-160")	 return 0x33;
 
 	if(name == "SHA-224")	 return 0x38;
@@ -124,6 +121,6 @@ byte ieee1363_hash_id(in string name)
 	if(name == "Whirlpool")  return 0x37;
 
 	return 0;
-	}
+}
 
 }

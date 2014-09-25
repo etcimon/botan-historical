@@ -5,20 +5,16 @@
 * Distributed under the terms of the Botan license
 */
 
-#ifndef BOTAN_EMSA1_H__
 #define BOTAN_EMSA1_H__
 
 #include <botan/emsa.h>
 #include <botan/hash.h>
-
-namespace Botan {
-
 /**
 * EMSA1 from IEEE 1363
 * Essentially, sign the hash directly
 */
 class EMSA1 : public EMSA
-	{
+{
 	public:
 		/**
 		* @param hash the hash function to use
@@ -40,8 +36,4 @@ class EMSA1 : public EMSA
 						size_t key_bits);
 
 		std::unique_ptr<HashFunction> m_hash;
-	};
-
-}
-
-#endif
+};

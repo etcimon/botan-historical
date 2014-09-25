@@ -11,16 +11,13 @@
 #include <botan/internal/mp_core.h>
 #include <botan/exceptn.h>
 #include <botan/mem_ops.h>
-
-namespace Botan {
-
 extern "C" {
 
 /*
 * Two Operand Addition, No Carry
 */
 word bigint_add2_nc(word x[], size_t x_size, const word y[], size_t y_size)
-	{
+{
 	word carry = 0;
 
 	const size_t blocks = y_size - (y_size % 8);
@@ -35,16 +32,16 @@ word bigint_add2_nc(word x[], size_t x_size, const word y[], size_t y_size)
 		x[i] = word_add(x[i], 0, &carry);
 
 	return carry;
-	}
+}
 
 /*
 * Three Operand Addition, No Carry
 */
 word bigint_add3_nc(word z[], const word x[], size_t x_size,
 										const word y[], size_t y_size)
-	{
+{
 	if(x_size < y_size)
-		{ return bigint_add3_nc(z, y, y_size, x, x_size); }
+	{ return bigint_add3_nc(z, y, y_size, x, x_size); }
 
 	word carry = 0;
 
@@ -60,32 +57,32 @@ word bigint_add3_nc(word z[], const word x[], size_t x_size,
 		z[i] = word_add(x[i], 0, &carry);
 
 	return carry;
-	}
+}
 
 /*
 * Two Operand Addition
 */
 void bigint_add2(word x[], size_t x_size, const word y[], size_t y_size)
-	{
+{
 	if(bigint_add2_nc(x, x_size, y, y_size))
 		x[x_size] += 1;
-	}
+}
 
 /*
 * Three Operand Addition
 */
 void bigint_add3(word z[], const word x[], size_t x_size,
 									const word y[], size_t y_size)
-	{
+{
 	z[(x_size > y_size ? x_size : y_size)] +=
 		bigint_add3_nc(z, x, x_size, y, y_size);
-	}
+}
 
 /*
 * Two Operand Subtraction
 */
 word bigint_sub2(word x[], size_t x_size, const word y[], size_t y_size)
-	{
+{
 	word borrow = 0;
 
 	const size_t blocks = y_size - (y_size % 8);
@@ -100,13 +97,13 @@ word bigint_sub2(word x[], size_t x_size, const word y[], size_t y_size)
 		x[i] = word_sub(x[i], 0, &borrow);
 
 	return borrow;
-	}
+}
 
 /*
 * Two Operand Subtraction x = y - x
 */
 void bigint_sub2_rev(word x[],  const word y[], size_t y_size)
-	{
+{
 	word borrow = 0;
 
 	const size_t blocks = y_size - (y_size % 8);
@@ -119,14 +116,14 @@ void bigint_sub2_rev(word x[],  const word y[], size_t y_size)
 
 	if(borrow)
 		throw Internal_Error("bigint_sub2_rev: x >= y");
-	}
+}
 
 /*
 * Three Operand Subtraction
 */
 word bigint_sub3(word z[], const word x[], size_t x_size,
 									const word y[], size_t y_size)
-	{
+{
 	word borrow = 0;
 
 	const size_t blocks = y_size - (y_size % 8);
@@ -141,13 +138,13 @@ word bigint_sub3(word z[], const word x[], size_t x_size,
 		z[i] = word_sub(x[i], 0, &borrow);
 
 	return borrow;
-	}
+}
 
 /*
 * Two Operand Linear Multiply
 */
 void bigint_linmul2(word x[], size_t x_size, word y)
-	{
+{
 	const size_t blocks = x_size - (x_size % 8);
 
 	word carry = 0;
@@ -159,13 +156,13 @@ void bigint_linmul2(word x[], size_t x_size, word y)
 		x[i] = word_madd2(x[i], y, &carry);
 
 	x[x_size] = carry;
-	}
+}
 
 /*
 * Three Operand Linear Multiply
 */
 void bigint_linmul3(word z[], const word x[], size_t x_size, word y)
-	{
+{
 	const size_t blocks = x_size - (x_size % 8);
 
 	word carry = 0;
@@ -177,7 +174,7 @@ void bigint_linmul3(word z[], const word x[], size_t x_size, word y)
 		z[i] = word_madd2(x[i], y, &carry);
 
 	z[x_size] = carry;
-	}
+}
 
 }
 

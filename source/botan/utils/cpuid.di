@@ -5,19 +5,15 @@
 * Distributed under the terms of the Botan license
 */
 
-#ifndef BOTAN_CPUID_H__
 #define BOTAN_CPUID_H__
 
 #include <botan/types.h>
 #include <iosfwd>
-
-namespace Botan {
-
 /**
 * A class handling runtime CPU feature detection
 */
 class CPUID
-	{
+{
 	public:
 		/**
 		* Probe the CPU and see what extensions are supported
@@ -33,85 +29,85 @@ class CPUID
 		* Check if the processor supports RDTSC
 		*/
 		static bool has_rdtsc()
-			{ return x86_processor_flags_has(CPUID_RDTSC_BIT); }
+		{ return x86_processor_flags_has(CPUID_RDTSC_BIT); }
 
 		/**
 		* Check if the processor supports SSE2
 		*/
 		static bool has_sse2()
-			{ return x86_processor_flags_has(CPUID_SSE2_BIT); }
+		{ return x86_processor_flags_has(CPUID_SSE2_BIT); }
 
 		/**
 		* Check if the processor supports SSSE3
 		*/
 		static bool has_ssse3()
-			{ return x86_processor_flags_has(CPUID_SSSE3_BIT); }
+		{ return x86_processor_flags_has(CPUID_SSSE3_BIT); }
 
 		/**
 		* Check if the processor supports SSE4.1
 		*/
 		static bool has_sse41()
-			{ return x86_processor_flags_has(CPUID_SSE41_BIT); }
+		{ return x86_processor_flags_has(CPUID_SSE41_BIT); }
 
 		/**
 		* Check if the processor supports SSE4.2
 		*/
 		static bool has_sse42()
-			{ return x86_processor_flags_has(CPUID_SSE42_BIT); }
+		{ return x86_processor_flags_has(CPUID_SSE42_BIT); }
 
 		/**
 		* Check if the processor supports AVX2
 		*/
 		static bool has_avx2()
-			{ return x86_processor_flags_has(CPUID_AVX2_BIT); }
+		{ return x86_processor_flags_has(CPUID_AVX2_BIT); }
 
 		/**
 		* Check if the processor supports AVX-512F
 		*/
 		static bool has_avx512f()
-			{ return x86_processor_flags_has(CPUID_AVX512F_BIT); }
+		{ return x86_processor_flags_has(CPUID_AVX512F_BIT); }
 
 		/**
 		* Check if the processor supports BMI2
 		*/
 		static bool has_bmi2()
-			{ return x86_processor_flags_has(CPUID_BMI2_BIT); }
+		{ return x86_processor_flags_has(CPUID_BMI2_BIT); }
 
 		/**
 		* Check if the processor supports AES-NI
 		*/
 		static bool has_aes_ni()
-			{ return x86_processor_flags_has(CPUID_AESNI_BIT); }
+		{ return x86_processor_flags_has(CPUID_AESNI_BIT); }
 
 		/**
 		* Check if the processor supports CLMUL
 		*/
 		static bool has_clmul()
-			{ return x86_processor_flags_has(CPUID_CLMUL_BIT); }
+		{ return x86_processor_flags_has(CPUID_CLMUL_BIT); }
 
 		/**
 		* Check if the processor supports Intel SHA extension
 		*/
 		static bool has_intel_sha()
-			{ return x86_processor_flags_has(CPUID_SHA_BIT); }
+		{ return x86_processor_flags_has(CPUID_SHA_BIT); }
 
 		/**
 		* Check if the processor supports ADX extension
 		*/
 		static bool has_adx()
-			{ return x86_processor_flags_has(CPUID_ADX_BIT); }
+		{ return x86_processor_flags_has(CPUID_ADX_BIT); }
 
 		/**
 		* Check if the processor supports RDRAND
 		*/
 		static bool has_rdrand()
-			{ return x86_processor_flags_has(CPUID_RDRAND_BIT); }
+		{ return x86_processor_flags_has(CPUID_RDRAND_BIT); }
 
 		/**
 		* Check if the processor supports RDSEED
 		*/
 		static bool has_rdseed()
-			{ return x86_processor_flags_has(CPUID_RDSEED_BIT); }
+		{ return x86_processor_flags_has(CPUID_RDSEED_BIT); }
 
 		/**
 		* Check if the processor supports AltiVec/VMX
@@ -136,18 +132,14 @@ class CPUID
 			CPUID_RDSEED_BIT = 64+18,
 			CPUID_ADX_BIT = 64+19,
 			CPUID_SHA_BIT = 64+29,
-		};
+	};
 
 		static bool x86_processor_flags_has(u64bit bit)
-			{
+		{
 			return ((m_x86_processor_flags[bit/64] >> (bit % 64)) & 1);
-			}
+		}
 
 		static u64bit m_x86_processor_flags[2];
 		static size_t m_cache_line_size;
 		static bool m_altivec_capable;
-	};
-
-}
-
-#endif
+};

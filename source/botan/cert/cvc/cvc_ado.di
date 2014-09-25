@@ -5,23 +5,19 @@
 * Distributed under the terms of the Botan license
 */
 
-#ifndef BOTAN_EAC_CVC_ADO_H__
 #define BOTAN_EAC_CVC_ADO_H__
 
 #include <botan/eac_obj.h>
 #include <botan/eac_asn_obj.h>
 #include <botan/cvc_req.h>
 #include <string>
-
-namespace Botan {
-
 /**
 * This class represents a TR03110 (EAC) v1.1 CVC ADO request
 */
 
  // CRTP continuation from EAC1_1_obj
 class EAC1_1_ADO : public EAC1_1_obj<EAC1_1_ADO>
-	{
+{
 	public:
 		friend class EAC1_1_obj<EAC1_1_ADO>;
 
@@ -84,15 +80,10 @@ class EAC1_1_ADO : public EAC1_1_obj<EAC1_1_ADO>
 		static void decode_info(DataSource& source,
 										std::vector<byte> & res_tbs_bits,
 										ECDSA_Signature & res_sig);
-	};
+};
 
 inline bool operator!=(EAC1_1_ADO const& lhs, EAC1_1_ADO const& rhs)
-	{
+{
 	return (!(lhs == rhs));
-	}
-
 }
-
-#endif
-
 

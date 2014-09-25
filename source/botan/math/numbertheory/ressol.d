@@ -8,14 +8,11 @@
 
 #include <botan/numthry.h>
 #include <botan/reducer.h>
-
-namespace Botan {
-
 /*
 * Shanks-Tonnelli algorithm
 */
 BigInt ressol(const BigInt& a, const BigInt& p)
-	{
+{
 	if(a < 0)
 		throw Invalid_Argument("ressol(): a to solve for must be positive");
 	if(p <= 1)
@@ -55,15 +52,15 @@ BigInt ressol(const BigInt& a, const BigInt& p)
 	BigInt c = power_mod(z, (q << 1) + 1, p);
 
 	while(n > 1)
-		{
+	{
 		q = n;
 
 		size_t i = 0;
 		while(q != 1)
-			{
+		{
 			q = mod_p.square(q);
 			++i;
-			}
+		}
 
 		if(s <= i)
 			return -BigInt(1);
@@ -73,9 +70,9 @@ BigInt ressol(const BigInt& a, const BigInt& p)
 		c = mod_p.square(c);
 		n = mod_p.multiply(n, c);
 		s = i;
-		}
+	}
 
 	return r;
-	}
+}
 
 }

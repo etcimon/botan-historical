@@ -28,16 +28,13 @@
 #if defined(BOTAN_HAS_ANSI_X919_MAC)
   #include <botan/x919_mac.h>
 #endif
-
-namespace Botan {
-
 /*
 * Look for an algorithm with this name
 */
 MessageAuthenticationCode*
 Core_Engine::find_mac(const SCAN_Name& request,
 							 Algorithm_Factory& af) const
-	{
+{
 
 #if defined(BOTAN_HAS_CBC_MAC)
 	if(request.algo_name() == "CBC-MAC" && request.arg_count() == 1)
@@ -65,6 +62,6 @@ Core_Engine::find_mac(const SCAN_Name& request,
 #endif
 
 	return nullptr;
-	}
+}
 
 }

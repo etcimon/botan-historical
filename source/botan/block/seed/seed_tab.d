@@ -6,9 +6,6 @@
 */
 
 #include <botan/seed.h>
-
-namespace Botan {
-
 const u32bit SEED::G_FUNC::S0[256] = {
 	0x2989A1A8, 0x05858184, 0x16C6D2D4, 0x13C3D3D0, 0x14445054, 0x1D0D111C,
 	0x2C8CA0AC, 0x25052124, 0x1D4D515C, 0x03434340, 0x18081018, 0x1E0E121C,

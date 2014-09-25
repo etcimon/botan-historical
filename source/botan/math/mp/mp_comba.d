@@ -7,16 +7,13 @@
 
 #include <botan/internal/mp_core.h>
 #include <botan/internal/mp_asmi.h>
-
-namespace Botan {
-
 extern "C" {
 
 /*
 * Comba 4x4 Squaring
 */
 void bigint_comba_sqr4(word z[8], const word x[4])
-	{
+{
 	word w2 = 0, w1 = 0, w0 = 0;
 
 	word3_muladd(&w2, &w1, &w0, x[ 0], x[ 0]);
@@ -43,13 +40,13 @@ void bigint_comba_sqr4(word z[8], const word x[4])
 	word3_muladd(&w2, &w1, &w0, x[ 3], x[ 3]);
 	z[ 6] = w0;
 	z[ 7] = w1;
-	}
+}
 
 /*
 * Comba 4x4 Multiplication
 */
 void bigint_comba_mul4(word z[8], const word x[4], const word y[4])
-	{
+{
 	word w2 = 0, w1 = 0, w0 = 0;
 
 	word3_muladd(&w2, &w1, &w0, x[ 0], y[ 0]);
@@ -82,13 +79,13 @@ void bigint_comba_mul4(word z[8], const word x[4], const word y[4])
 	word3_muladd(&w2, &w1, &w0, x[ 3], y[ 3]);
 	z[ 6] = w0;
 	z[ 7] = w1;
-	}
+}
 
 /*
 * Comba 6x6 Squaring
 */
 void bigint_comba_sqr6(word z[12], const word x[6])
-	{
+{
 	word w2 = 0, w1 = 0, w0 = 0;
 
 	word3_muladd(&w2, &w1, &w0, x[ 0], x[ 0]);
@@ -134,13 +131,13 @@ void bigint_comba_sqr6(word z[12], const word x[6])
 	word3_muladd(&w0, &w2, &w1, x[ 5], x[ 5]);
 	z[10] = w1;
 	z[11] = w2;
-	}
+}
 
 /*
 * Comba 6x6 Multiplication
 */
 void bigint_comba_mul6(word z[12], const word x[6], const word y[6])
-	{
+{
 	word w2 = 0, w1 = 0, w0 = 0;
 
 	word3_muladd(&w2, &w1, &w0, x[ 0], y[ 0]);
@@ -201,13 +198,13 @@ void bigint_comba_mul6(word z[12], const word x[6], const word y[6])
 	word3_muladd(&w0, &w2, &w1, x[ 5], y[ 5]);
 	z[10] = w1;
 	z[11] = w2;
-	}
+}
 
 /*
 * Comba 8x8 Squaring
 */
 void bigint_comba_sqr8(word z[16], const word x[8])
-	{
+{
 	word w2 = 0, w1 = 0, w0 = 0;
 
 	word3_muladd(&w2, &w1, &w0, x[ 0], x[ 0]);
@@ -276,13 +273,13 @@ void bigint_comba_sqr8(word z[16], const word x[8])
 	word3_muladd(&w1, &w0, &w2, x[ 7], x[ 7]);
 	z[14] = w2;
 	z[15] = w0;
-	}
+}
 
 /*
 * Comba 8x8 Multiplication
 */
 void bigint_comba_mul8(word z[16], const word x[8], const word y[8])
-	{
+{
 	word w2 = 0, w1 = 0, w0 = 0;
 
 	word3_muladd(&w2, &w1, &w0, x[ 0], y[ 0]);
@@ -379,13 +376,13 @@ void bigint_comba_mul8(word z[16], const word x[8], const word y[8])
 	word3_muladd(&w1, &w0, &w2, x[ 7], y[ 7]);
 	z[14] = w2;
 	z[15] = w0;
-	}
+}
 
 /*
 * Comba 16x16 Squaring
 */
 void bigint_comba_sqr16(word z[32], const word x[16])
-	{
+{
 	word w2 = 0, w1 = 0, w0 = 0;
 
 	word3_muladd(&w2, &w1, &w0, x[ 0], x[ 0]);
@@ -586,13 +583,13 @@ void bigint_comba_sqr16(word z[32], const word x[16])
 	word3_muladd(&w2, &w1, &w0, x[15], x[15]);
 	z[30] = w0;
 	z[31] = w1;
-	}
+}
 
 /*
 * Comba 16x16 Multiplication
 */
 void bigint_comba_mul16(word z[32], const word x[16], const word y[16])
-	{
+{
 	word w2 = 0, w1 = 0, w0 = 0;
 
 	word3_muladd(&w2, &w1, &w0, x[ 0], y[ 0]);
@@ -913,7 +910,7 @@ void bigint_comba_mul16(word z[32], const word x[16], const word y[16])
 	word3_muladd(&w2, &w1, &w0, x[15], y[15]);
 	z[30] = w0;
 	z[31] = w1;
-	}
+}
 
 }
 

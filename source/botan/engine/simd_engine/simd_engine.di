@@ -5,18 +5,14 @@
 * Distributed under the terms of the Botan license
 */
 
-#ifndef BOTAN_SIMD_ENGINE_H__
 #define BOTAN_SIMD_ENGINE_H__
 
 #include <botan/engine.h>
-
-namespace Botan {
-
 /**
 * Engine for implementations that use some kind of SIMD
 */
 class SIMD_Engine : public Engine
-	{
+{
 	public:
 		string provider_name() const { return "simd"; }
 
@@ -25,8 +21,4 @@ class SIMD_Engine : public Engine
 
 		HashFunction* find_hash(const SCAN_Name& request,
 										Algorithm_Factory&) const;
-	};
-
-}
-
-#endif
+};

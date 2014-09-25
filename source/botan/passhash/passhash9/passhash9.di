@@ -5,13 +5,9 @@
 * Distributed under the terms of the Botan license
 */
 
-#ifndef BOTAN_PASSHASH9_H__
 #define BOTAN_PASSHASH9_H__
 
 #include <botan/rng.h>
-
-namespace Botan {
-
 /**
 * Create a password hash using PBKDF2
 * @param password the password
@@ -25,7 +21,7 @@ namespace Botan {
 *		  4 is HMAC(SHA-512)
 *		  all other values are currently undefined
 */
-string BOTAN_DLL generate_passhash9(in string password,
+string generate_passhash9(in string password,
 													  RandomNumberGenerator& rng,
 													  u16bit work_factor = 10,
 													  byte alg_id = 1);
@@ -35,9 +31,5 @@ string BOTAN_DLL generate_passhash9(in string password,
 * @param password the password to check against
 * @param hash the stored hash to check against
 */
-bool BOTAN_DLL check_passhash9(in string password,
+bool check_passhash9(in string password,
 										 in string hash);
-
-}
-
-#endif

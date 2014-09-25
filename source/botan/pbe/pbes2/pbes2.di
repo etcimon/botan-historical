@@ -5,7 +5,6 @@
 * Distributed under the terms of the Botan license
 */
 
-#ifndef BOTAN_PBE_PKCS_v20_H__
 #define BOTAN_PBE_PKCS_v20_H__
 
 #include <botan/pbe.h>
@@ -13,14 +12,11 @@
 #include <botan/mac.h>
 #include <botan/pipe.h>
 #include <chrono>
-
-namespace Botan {
-
 /**
 * PKCS #5 v2.0 PBE
 */
 class PBE_PKCS5v20 : public PBE
-	{
+{
 	public:
 		OID get_oid() const;
 
@@ -63,8 +59,4 @@ class PBE_PKCS5v20 : public PBE
 		SafeArray!byte salt, key, iv;
 		size_t iterations, key_length;
 		Pipe pipe;
-	};
-
-}
-
-#endif
+};

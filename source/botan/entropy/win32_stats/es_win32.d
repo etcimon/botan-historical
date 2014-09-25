@@ -8,14 +8,11 @@
 #include <botan/internal/es_win32.h>
 #include <windows.h>
 #include <tlhelp32.h>
-
-namespace Botan {
-
 /**
 * Win32 poll using stats functions including Tooltip32
 */
 void Win32_EntropySource::poll(Entropy_Accumulator& accum)
-	{
+{
 	/*
 	First query a bunch of basic statistical stuff, though
 	don't count it for much in terms of contributed entropy.
@@ -55,17 +52,17 @@ void Win32_EntropySource::poll(Entropy_Accumulator& accum)
 
 #define TOOLHELP32_ITER(DATA_TYPE, FUNC_FIRST, FUNC_NEXT) \
 	if(!accum.polling_goal_achieved())							\
-		{																	\
+	{																	\
 		DATA_TYPE info;												 \
 		info.dwSize = sizeof(DATA_TYPE);						  \
 		if(FUNC_FIRST(snapshot, &info))							\
-			{																\
+		{																\
 			do															  \
-				{															\
+			{															\
 				accum.add(info, 1);									\
-				} while(FUNC_NEXT(snapshot, &info));			 \
-			}																\
-		}
+			} while(FUNC_NEXT(snapshot, &info));			 \
+		}																\
+	}
 
 	TOOLHELP32_ITER(MODULEENTRY32, Module32First, Module32Next);
 	TOOLHELP32_ITER(PROCESSENTRY32, Process32First, Process32Next);
@@ -74,7 +71,7 @@ void Win32_EntropySource::poll(Entropy_Accumulator& accum)
 #undef TOOLHELP32_ITER
 
 	if(!accum.polling_goal_achieved())
-		{
+	{
 		size_t heap_lists_found = 0;
 		HEAPLIST32 heap_list;
 		heap_list.dwSize = sizeof(HEAPLIST32);
@@ -83,9 +80,9 @@ void Win32_EntropySource::poll(Entropy_Accumulator& accum)
 		const size_t HEAP_OBJS_PER_LIST = 128;
 
 		if(Heap32ListFirst(snapshot, &heap_list))
-			{
+		{
 			do
-				{
+			{
 				accum.add(heap_list, 1);
 
 				if(++heap_lists_found > HEAP_LISTS_MAX)
@@ -96,23 +93,23 @@ void Win32_EntropySource::poll(Entropy_Accumulator& accum)
 				heap_entry.dwSize = sizeof(HEAPENTRY32);
 				if(Heap32First(&heap_entry, heap_list.th32ProcessID,
 									heap_list.th32HeapID))
-					{
+				{
 					do
-						{
+					{
 						if(heap_objs_found++ > HEAP_OBJS_PER_LIST)
 							break;
 						accum.add(heap_entry, 1);
-						} while(Heap32Next(&heap_entry));
-					}
+					} while(Heap32Next(&heap_entry));
+				}
 
 				if(accum.polling_goal_achieved())
 					break;
 
-				} while(Heap32ListNext(snapshot, &heap_list));
-			}
+			} while(Heap32ListNext(snapshot, &heap_list));
 		}
+	}
 
 	CloseHandle(snapshot);
-	}
+}
 
 }

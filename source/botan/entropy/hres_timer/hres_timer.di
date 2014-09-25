@@ -5,13 +5,9 @@
 * Distributed under the terms of the Botan license
 */
 
-#ifndef BOTAN_ENTROPY_SRC_HRES_TIMER_H__
 #define BOTAN_ENTROPY_SRC_HRES_TIMER_H__
 
 #include <botan/entropy_src.h>
-
-namespace Botan {
-
 /**
 * Entropy source using high resolution timers
 *
@@ -19,12 +15,8 @@ namespace Botan {
 * to the poll, as a local attacker could observe them directly.
 */
 class High_Resolution_Timestamp : public EntropySource
-	{
+{
 	public:
 		string name() const { return "High Resolution Timestamp"; }
 		void poll(Entropy_Accumulator& accum);
-	};
-
-}
-
-#endif
+};

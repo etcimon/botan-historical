@@ -5,21 +5,17 @@
 * Distributed under the terms of the Botan license
 */
 
-#ifndef BOTAN_X509_CERT_PATH_VALIDATION_H__
 #define BOTAN_X509_CERT_PATH_VALIDATION_H__
 
 #include <botan/cert_status.h>
 #include <botan/x509cert.h>
 #include <botan/certstor.h>
 #include <set>
-
-namespace Botan {
-
 /**
 * Specifies restrictions on the PKIX path validation
 */
 class Path_Validation_Restrictions
-	{
+{
 	public:
 		/**
 		* @param require_rev if true, revocation information is required
@@ -51,29 +47,29 @@ class Path_Validation_Restrictions
 			m_minimum_key_strength(minimum_key_strength) {}
 
 		bool require_revocation_information() const
-			{ return m_require_revocation_information; }
+		{ return m_require_revocation_information; }
 
 		bool ocsp_all_intermediates() const
-			{ return m_ocsp_all_intermediates; }
+		{ return m_ocsp_all_intermediates; }
 
 		const std::set<string>& trusted_hashes() const
-			{ return m_trusted_hashes; }
+		{ return m_trusted_hashes; }
 
 		size_t minimum_key_strength() const
-			{ return m_minimum_key_strength; }
+		{ return m_minimum_key_strength; }
 
 	private:
 		bool m_require_revocation_information;
 		bool m_ocsp_all_intermediates;
 		std::set<string> m_trusted_hashes;
 		size_t m_minimum_key_strength;
-	};
+};
 
 /**
 * Represents the result of a PKIX path validation
 */
 class Path_Validation_Result
-	{
+{
 	public:
 		typedef Certificate_Status_Code Code;
 
@@ -107,7 +103,7 @@ class Path_Validation_Result
 		* Return a set of status codes for each certificate in the chain
 		*/
 		const std::vector<std::set<Certificate_Status_Code>>& all_statuses() const
-			{ return m_all_status; }
+		{ return m_all_status; }
 
 		/**
 		* @return string representation of the validation result
@@ -130,12 +126,12 @@ class Path_Validation_Result
 		Certificate_Status_Code m_overall;
 		std::vector<std::set<Certificate_Status_Code>> m_all_status;
 		std::vector<X509_Certificate> m_cert_path;
-	};
+};
 
 /**
 * PKIX Path Validation
 */
-Path_Validation_Result BOTAN_DLL x509_path_validate(
+Path_Validation_Result x509_path_validate(
 	const std::vector<X509_Certificate>& end_certs,
 	const Path_Validation_Restrictions& restrictions,
 	const std::vector<Certificate_Store*>& certstores);
@@ -143,7 +139,7 @@ Path_Validation_Result BOTAN_DLL x509_path_validate(
 /**
 * PKIX Path Validation
 */
-Path_Validation_Result BOTAN_DLL x509_path_validate(
+Path_Validation_Result x509_path_validate(
 	const X509_Certificate& end_cert,
 	const Path_Validation_Restrictions& restrictions,
 	const std::vector<Certificate_Store*>& certstores);
@@ -151,7 +147,7 @@ Path_Validation_Result BOTAN_DLL x509_path_validate(
 /**
 * PKIX Path Validation
 */
-Path_Validation_Result BOTAN_DLL x509_path_validate(
+Path_Validation_Result x509_path_validate(
 	const X509_Certificate& end_cert,
 	const Path_Validation_Restrictions& restrictions,
 	const Certificate_Store& store);
@@ -159,11 +155,7 @@ Path_Validation_Result BOTAN_DLL x509_path_validate(
 /**
 * PKIX Path Validation
 */
-Path_Validation_Result BOTAN_DLL x509_path_validate(
+Path_Validation_Result x509_path_validate(
 	const std::vector<X509_Certificate>& end_certs,
 	const Path_Validation_Restrictions& restrictions,
 	const Certificate_Store& store);
-
-}
-
-#endif

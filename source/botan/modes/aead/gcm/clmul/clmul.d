@@ -8,11 +8,8 @@
 #include <botan/internal/clmul.h>
 #include <immintrin.h>
 #include <wmmintrin.h>
-
-namespace Botan {
-
 void gcm_multiply_clmul(byte x[16], const byte H[16])
-	{
+{
 	/*
 	* Algorithms 1 and 5 from Intel's CLMUL guide
 	*/
@@ -72,6 +69,6 @@ void gcm_multiply_clmul(byte x[16], const byte H[16])
 	T3 = _mm_shuffle_epi8(T3, BSWAP_MASK);
 
 	_mm_storeu_si128(reinterpret_cast<__m128i*>(&x[0]), T3);
-	}
+}
 
 }

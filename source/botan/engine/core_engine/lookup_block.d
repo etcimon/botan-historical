@@ -102,15 +102,12 @@
 #if defined(BOTAN_HAS_XTEA)
   #include <botan/xtea.h>
 #endif
-
-namespace Botan {
-
 /*
 * Look for an algorithm with this name
 */
 BlockCipher* Core_Engine::find_block_cipher(const SCAN_Name& request,
 														  Algorithm_Factory& af) const
-	{
+{
 
 #if defined(BOTAN_HAS_AES)
 	if(request.algo_name() == "AES-128")
@@ -233,18 +230,18 @@ BlockCipher* Core_Engine::find_block_cipher(const SCAN_Name& request,
 
 #if defined(BOTAN_HAS_CASCADE)
 	if(request.algo_name() == "Cascade" && request.arg_count() == 2)
-		{
+	{
 		const BlockCipher* c1 = af.prototype_block_cipher(request.arg(0));
 		const BlockCipher* c2 = af.prototype_block_cipher(request.arg(1));
 
 		if(c1 && c2)
 			return new Cascade_Cipher(c1->clone(), c2->clone());
-		}
+	}
 #endif
 
 #if defined(BOTAN_HAS_LION)
 	if(request.algo_name() == "Lion" && request.arg_count_between(2, 3))
-		{
+	{
 		const size_t block_size = request.arg_as_integer(2, 1024);
 
 		const HashFunction* hash =
@@ -257,10 +254,10 @@ BlockCipher* Core_Engine::find_block_cipher(const SCAN_Name& request,
 			return nullptr;
 
 		return new Lion(hash->clone(), stream_cipher->clone(), block_size);
-		}
+	}
 #endif
 
 	return nullptr;
-	}
+}
 
 }

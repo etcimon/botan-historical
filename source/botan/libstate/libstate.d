@@ -37,29 +37,26 @@
 #if defined(BOTAN_HAS_ENGINE_OPENSSL)
   #include <botan/internal/openssl_engine.h>
 #endif
-
-namespace Botan {
-
 /*
 * Return a reference to the Algorithm_Factory
 */
 Algorithm_Factory& Library_State::algorithm_factory() const
-	{
+{
 	if(!m_algorithm_factory)
 		throw Invalid_State("Uninitialized in Library_State::algorithm_factory");
 	return *m_algorithm_factory;
-	}
+}
 
 /*
 * Return a reference to the global PRNG
 */
 RandomNumberGenerator& Library_State::global_rng()
-	{
+{
 	return *m_global_prng;
-	}
+}
 
 void Library_State::initialize()
-	{
+{
 	if(m_algorithm_factory.get())
 		throw Invalid_State("Library_State has already been initialized");
 
@@ -99,6 +96,6 @@ void Library_State::initialize()
 #if defined(BOTAN_HAS_SELFTESTS)
 	confirm_startup_self_tests(algorithm_factory());
 #endif
-	}
+}
 
 }

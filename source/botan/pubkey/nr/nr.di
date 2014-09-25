@@ -5,21 +5,17 @@
 * Distributed under the terms of the Botan license
 */
 
-#ifndef BOTAN_NYBERG_RUEPPEL_H__
 #define BOTAN_NYBERG_RUEPPEL_H__
 
 #include <botan/dl_algo.h>
 #include <botan/pk_ops.h>
 #include <botan/numthry.h>
 #include <botan/reducer.h>
-
-namespace Botan {
-
 /**
 * Nyberg-Rueppel Public Key
 */
 class NR_PublicKey : public abstract DL_Scheme_PublicKey
-	{
+{
 	public:
 		string algo_name() const { return "NR"; }
 
@@ -35,14 +31,14 @@ class NR_PublicKey : public abstract DL_Scheme_PublicKey
 		NR_PublicKey(const DL_Group& group, const BigInt& pub_key);
 	protected:
 		NR_PublicKey() {}
-	};
+};
 
 /**
 * Nyberg-Rueppel Private Key
 */
 class NR_PrivateKey : public NR_PublicKey,
 										  public abstract DL_Scheme_PrivateKey
-	{
+{
 	public:
 		bool check_key(RandomNumberGenerator& rng, bool strong) const;
 
@@ -53,13 +49,13 @@ class NR_PrivateKey : public NR_PublicKey,
 		NR_PrivateKey(RandomNumberGenerator& rng,
 						  const DL_Group& group,
 						  const BigInt& x = 0);
-	};
+};
 
 /**
 * Nyberg-Rueppel signature operation
 */
 class NR_Signature_Operation : public PK_Ops::Signature
-	{
+{
 	public:
 		NR_Signature_Operation(const NR_PrivateKey& nr);
 
@@ -74,13 +70,13 @@ class NR_Signature_Operation : public PK_Ops::Signature
 		const BigInt& x;
 		Fixed_Base_Power_Mod powermod_g_p;
 		Modular_Reducer mod_q;
-	};
+};
 
 /**
 * Nyberg-Rueppel verification operation
 */
 class NR_Verification_Operation : public PK_Ops::Verification
-	{
+{
 	public:
 		NR_Verification_Operation(const NR_PublicKey& nr);
 
@@ -97,8 +93,4 @@ class NR_Verification_Operation : public PK_Ops::Verification
 
 		Fixed_Base_Power_Mod powermod_g_p, powermod_y_p;
 		Modular_Reducer mod_p, mod_q;
-	};
-
-}
-
-#endif
+};

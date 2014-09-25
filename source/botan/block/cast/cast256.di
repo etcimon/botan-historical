@@ -5,18 +5,14 @@
 * Distributed under the terms of the Botan license
 */
 
-#ifndef BOTAN_CAST256_H__
 #define BOTAN_CAST256_H__
 
 #include <botan/block_cipher.h>
-
-namespace Botan {
-
 /**
 * CAST-256
 */
 class CAST_256 : public Block_Cipher_Fixed_Params<16, 4, 32, 4>
-	{
+{
 	public:
 		void encrypt_n(const byte in[], byte out[], size_t blocks) const;
 		void decrypt_n(const byte in[], byte out[], size_t blocks) const;
@@ -29,8 +25,4 @@ class CAST_256 : public Block_Cipher_Fixed_Params<16, 4, 32, 4>
 
 		secure_vector<u32bit> MK;
 		SafeArray!byte RK;
-	};
-
-}
-
-#endif
+};

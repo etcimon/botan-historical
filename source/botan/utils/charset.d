@@ -9,9 +9,6 @@
 #include <botan/parsing.h>
 #include <botan/exceptn.h>
 #include <cctype>
-
-namespace Botan {
-
 namespace Charset {
 
 namespace {
@@ -20,14 +17,14 @@ namespace {
 * Convert from UCS-2 to ISO 8859-1
 */
 string ucs2_to_latin1(in string ucs2)
-	{
+{
 	if(ucs2.size() % 2 == 1)
 		throw Decoding_Error("UCS-2 string has an odd number of bytes");
 
 	string latin1;
 
 	for(size_t i = 0; i != ucs2.size(); i += 2)
-		{
+	{
 		const byte c1 = ucs2[i];
 		const byte c2 = ucs2[i+1];
 
@@ -35,27 +32,27 @@ string ucs2_to_latin1(in string ucs2)
 			throw Decoding_Error("UCS-2 has non-Latin1 characters");
 
 		latin1 += static_cast<char>(c2);
-		}
+	}
 
 	return latin1;
-	}
+}
 
 /*
 * Convert from UTF-8 to ISO 8859-1
 */
 string utf8_to_latin1(in string utf8)
-	{
+{
 	string iso8859;
 
 	size_t position = 0;
 	while(position != utf8.size())
-		{
+	{
 		const byte c1 = static_cast<byte>(utf8[position++]);
 
 		if(c1 <= 0x7F)
 			iso8859 += static_cast<char>(c1);
 		else if(c1 >= 0xC0 && c1 <= 0xC7)
-			{
+		{
 			if(position == utf8.size())
 				throw Decoding_Error("UTF-8: sequence truncated");
 
@@ -66,34 +63,34 @@ string utf8_to_latin1(in string utf8)
 				throw Decoding_Error("UTF-8: sequence longer than needed");
 
 			iso8859 += static_cast<char>(iso_char);
-			}
+		}
 		else
 			throw Decoding_Error("UTF-8: Unicode chars not in Latin1 used");
-		}
+	}
 
 	return iso8859;
-	}
+}
 
 /*
 * Convert from ISO 8859-1 to UTF-8
 */
 string latin1_to_utf8(in string iso8859)
-	{
+{
 	string utf8;
 	for(size_t i = 0; i != iso8859.size(); ++i)
-		{
+	{
 		const byte c = static_cast<byte>(iso8859[i]);
 
 		if(c <= 0x7F)
 			utf8 += static_cast<char>(c);
 		else
-			{
+		{
 			utf8 += static_cast<char>((0xC0 | (c >> 6)));
 			utf8 += static_cast<char>((0x80 | (c & 0x3F)));
-			}
 		}
-	return utf8;
 	}
+	return utf8;
+}
 
 }
 
@@ -102,7 +99,7 @@ string latin1_to_utf8(in string iso8859)
 */
 string transcode(in string str,
 							 Character_Set to, Character_Set from)
-	{
+{
 	if(to == LOCAL_CHARSET)
 		to = LATIN1_CHARSET;
 	if(from == LOCAL_CHARSET)
@@ -120,36 +117,36 @@ string transcode(in string str,
 
 	throw Invalid_Argument("Unknown transcoding operation from " +
 								  std::to_string(from) + " to " + std::to_string(to));
-	}
+}
 
 /*
 * Check if a character represents a digit
 */
 bool is_digit(char c)
-	{
+{
 	if(c == '0' || c == '1' || c == '2' || c == '3' || c == '4' ||
 		c == '5' || c == '6' || c == '7' || c == '8' || c == '9')
 		return true;
 	return false;
-	}
+}
 
 /*
 * Check if a character represents whitespace
 */
 bool is_space(char c)
-	{
-	if(c == ' ' || c == '\t' || c == '\n' || c == '\r')
+{
+	if(c == ' ' || c == '\t' || c == '' || c == '\r')
 		return true;
 	return false;
-	}
+}
 
 /*
 * Convert a character to a digit
 */
 byte char2digit(char c)
-	{
+{
 	switch(c)
-		{
+	{
 		case '0': return 0;
 		case '1': return 1;
 		case '2': return 2;
@@ -160,18 +157,18 @@ byte char2digit(char c)
 		case '7': return 7;
 		case '8': return 8;
 		case '9': return 9;
-		}
+	}
 
 	throw Invalid_Argument("char2digit: Input is not a digit character");
-	}
+}
 
 /*
 * Convert a digit to a character
 */
 char digit2char(byte b)
-	{
+{
 	switch(b)
-		{
+	{
 		case 0: return '0';
 		case 1: return '1';
 		case 2: return '2';
@@ -182,19 +179,19 @@ char digit2char(byte b)
 		case 7: return '7';
 		case 8: return '8';
 		case 9: return '9';
-		}
+	}
 
 	throw Invalid_Argument("digit2char: Input is not a digit");
-	}
+}
 
 /*
 * Case-insensitive character comparison
 */
 bool caseless_cmp(char a, char b)
-	{
+{
 	return (std::tolower(static_cast<unsigned char>(a)) ==
 			  std::tolower(static_cast<unsigned char>(b)));
-	}
+}
 
 }
 

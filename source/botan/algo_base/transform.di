@@ -5,7 +5,6 @@
 * Distributed under the terms of the Botan license
 */
 
-#ifndef BOTAN_TRANSFORM_H__
 #define BOTAN_TRANSFORM_H__
 
 #include <botan/secmem.h>
@@ -14,14 +13,11 @@
 #include <botan/symkey.h>
 #include <string>
 #include <vector>
-
-namespace Botan {
-
 /**
 * Interface for general transformations on data
 */
 class Transformation
-	{
+{
 	public:
 		/**
 		* Begin processing a message.
@@ -29,9 +25,9 @@ class Transformation
 		*/
 		template<typename Alloc>
 		SafeArray!byte start_vec(const std::vector<byte, Alloc>& nonce)
-			{
+		{
 			return start(&nonce[0], nonce.size());
-			}
+		}
 
 		/**
 		* Begin processing a message.
@@ -97,10 +93,10 @@ class Transformation
 		abstract void clear() = 0;
 
 		abstract ~Transformation() {}
-	};
+};
 
 class Keyed_Transform : public Transformation
-	{
+{
 	public:
 		/**
 		* @return object describing limits on key size
@@ -113,20 +109,20 @@ class Keyed_Transform : public Transformation
 		* @return true if the key length is valid.
 		*/
 		bool valid_keylength(size_t length) const
-			{
+		{
 			return key_spec().valid_keylength(length);
-			}
+		}
 
 		template<typename Alloc>
 		void set_key(const std::vector<byte, Alloc>& key)
-			{
+		{
 			set_key(&key[0], key.size());
-			}
+		}
 
 		void set_key(const SymmetricKey& key)
-			{
+		{
 			set_key(key.begin(), key.length());
-			}
+		}
 
 		/**
 		* Set the symmetric key of this transform
@@ -134,16 +130,12 @@ class Keyed_Transform : public Transformation
 		* @param length in bytes of key param
 		*/
 		void set_key(const byte key[], size_t length)
-			{
+		{
 			if(!valid_keylength(length))
 				throw Invalid_Key_Length(name(), length);
 			key_schedule(key, length);
-			}
+		}
 
 	private:
 		abstract void key_schedule(const byte key[], size_t length) = 0;
-	};
-
-}
-
-#endif
+};

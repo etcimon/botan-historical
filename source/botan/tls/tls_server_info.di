@@ -5,21 +5,17 @@
 * Released under the terms of the Botan license
 */
 
-#ifndef BOTAN_TLS_SERVER_INFO_H__
 #define BOTAN_TLS_SERVER_INFO_H__
 
 #include <botan/types.h>
 #include <string>
-
-namespace Botan {
-
 namespace TLS {
 
 /**
 * Represents information known about a TLS server.
 */
 class Server_Information
-	{
+{
 	public:
 		/**
 		* An empty server info - nothing known
@@ -58,23 +54,23 @@ class Server_Information
 	private:
 		string m_hostname, m_service;
 		u16bit m_port;
-	};
+};
 
 inline bool operator==(const Server_Information& a, const Server_Information& b)
-	{
+{
 	return (a.hostname() == b.hostname()) &&
 			 (a.service() == b.service()) &&
 			 (a.port() == b.port());
 
-	}
+}
 
 inline bool operator!=(const Server_Information& a, const Server_Information& b)
-	{
+{
 	return !(a == b);
-	}
+}
 
 inline bool operator<(const Server_Information& a, const Server_Information& b)
-	{
+{
 	if(a.hostname() != b.hostname())
 		return (a.hostname() < b.hostname());
 	if(a.service() != b.service())
@@ -82,10 +78,6 @@ inline bool operator<(const Server_Information& a, const Server_Information& b)
 	if(a.port() != b.port())
 		return (a.port() < b.port());
 	return false; // equal
-	}
-
 }
 
 }
-
-#endif

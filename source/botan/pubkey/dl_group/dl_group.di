@@ -5,20 +5,16 @@
 * Distributed under the terms of the Botan license
 */
 
-#ifndef BOTAN_DL_PARAM_H__
 #define BOTAN_DL_PARAM_H__
 
 #include <botan/bigint.h>
 #include <botan/data_src.h>
-
-namespace Botan {
-
 /**
 * This class represents discrete logarithm groups. It holds a prime p,
 * a prime q = (p-1)/2 and g = x^((p-1)/q) mod p.
 */
 class DL_Group
-	{
+{
 	public:
 
 		/**
@@ -51,7 +47,7 @@ class DL_Group
 			DH_PARAMETERS = ANSI_X9_42,
 			X942_DH_PARAMETERS = ANSI_X9_42,
 			PKCS3_DH_PARAMETERS = PKCS_3
-		};
+	};
 
 		/**
 		* Determine the prime creation for DL groups.
@@ -163,8 +159,4 @@ class DL_Group
 		void initialize(const BigInt&, const BigInt&, const BigInt&);
 		bool initialized;
 		BigInt p, q, g;
-	};
-
-}
-
-#endif
+};

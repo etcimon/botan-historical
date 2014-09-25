@@ -5,18 +5,14 @@
 * Distributed under the terms of the Botan license
 */
 
-#ifndef BOTAN_AES_H__
 #define BOTAN_AES_H__
 
 #include <botan/block_cipher.h>
-
-namespace Botan {
-
 /**
 * AES-128
 */
 class AES_128 : public Block_Cipher_Fixed_Params<16, 16>
-	{
+{
 	public:
 		void encrypt_n(const byte in[], byte out[], size_t blocks) const;
 		void decrypt_n(const byte in[], byte out[], size_t blocks) const;
@@ -30,13 +26,13 @@ class AES_128 : public Block_Cipher_Fixed_Params<16, 16>
 
 		secure_vector<u32bit> EK, DK;
 		SafeArray!byte ME, MD;
-	};
+};
 
 /**
 * AES-192
 */
 class AES_192 : public Block_Cipher_Fixed_Params<16, 24>
-	{
+{
 	public:
 		void encrypt_n(const byte in[], byte out[], size_t blocks) const;
 		void decrypt_n(const byte in[], byte out[], size_t blocks) const;
@@ -50,13 +46,13 @@ class AES_192 : public Block_Cipher_Fixed_Params<16, 24>
 
 		secure_vector<u32bit> EK, DK;
 		SafeArray!byte ME, MD;
-	};
+};
 
 /**
 * AES-256
 */
 class AES_256 : public Block_Cipher_Fixed_Params<16, 32>
-	{
+{
 	public:
 		void encrypt_n(const byte in[], byte out[], size_t blocks) const;
 		void decrypt_n(const byte in[], byte out[], size_t blocks) const;
@@ -70,8 +66,4 @@ class AES_256 : public Block_Cipher_Fixed_Params<16, 32>
 
 		secure_vector<u32bit> EK, DK;
 		SafeArray!byte ME, MD;
-	};
-
-}
-
-#endif
+};

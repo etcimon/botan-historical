@@ -5,19 +5,15 @@
 * Distributed under the terms of the Botan license
 */
 
-#ifndef BOTAN_DATA_SINK_H__
 #define BOTAN_DATA_SINK_H__
 
 #include <botan/filter.h>
 #include <iosfwd>
-
-namespace Botan {
-
 /**
 * This class represents abstract data sink objects.
 */
 class DataSink : public Filter
-	{
+{
 	public:
 		bool attachable() { return false; }
 		DataSink() {}
@@ -25,13 +21,13 @@ class DataSink : public Filter
 
 		DataSink& operator=(const DataSink&) = delete;
 		DataSink(const DataSink&) = delete;
-	};
+};
 
 /**
 * This class represents a data sink which writes its output to a stream.
 */
 class DataSink_Stream : public DataSink
-	{
+{
 	public:
 		string name() const { return identifier; }
 
@@ -60,8 +56,4 @@ class DataSink_Stream : public DataSink
 
 		std::ostream* sink_p;
 		std::ostream& sink;
-	};
-
-}
-
-#endif
+};

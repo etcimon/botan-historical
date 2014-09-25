@@ -5,20 +5,16 @@
 * Distributed under the terms of the Botan license
 */
 
-#ifndef BOTAN_KECCAK_H__
 #define BOTAN_KECCAK_H__
 
 #include <botan/hash.h>
 #include <botan/secmem.h>
 #include <string>
-
-namespace Botan {
-
 /**
 * Keccak[1600], a SHA-3 candidate
 */
 class Keccak_1600 : public HashFunction
-	{
+{
 	public:
 
 		/**
@@ -40,8 +36,4 @@ class Keccak_1600 : public HashFunction
 		size_t output_bits, bitrate;
 		secure_vector<u64bit> S;
 		size_t S_pos;
-	};
-
-}
-
-#endif
+};

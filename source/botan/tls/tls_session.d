@@ -11,9 +11,6 @@
 #include <botan/asn1_str.h>
 #include <botan/pem.h>
 #include <botan/cryptobox_psk.h>
-
-namespace Botan {
-
 namespace TLS {
 
 Session::Session(in Array!byte session_identifier,
@@ -39,18 +36,18 @@ Session::Session(in Array!byte session_identifier,
 	m_peer_certs(certs),
 	m_server_info(server_info),
 	m_srp_identifier(srp_identifier)
-	{
-	}
+{
+}
 
 Session::Session(in string pem)
-	{
+{
 	SafeArray!byte der = PEM_Code::decode_check_label(pem, "SSL SESSION");
 
 	*this = Session(&der[0], der.size());
-	}
+}
 
 Session::Session(const byte ber[], size_t ber_len)
-	{
+{
 	byte side_code = 0;
 
 	ASN1_String server_hostname;
@@ -98,16 +95,16 @@ Session::Session(const byte ber[], size_t ber_len)
 	m_srp_identifier = srp_identifier_str.value();
 
 	if(!peer_cert_bits.empty())
-		{
+	{
 		DataSource_Memory certs(&peer_cert_bits[0], peer_cert_bits.size());
 
 		while(!certs.end_of_data())
 			m_peer_certs.push_back(X509_Certificate(certs));
-		}
 	}
+}
 
 SafeArray!byte Session::DER_encode() const
-	{
+{
 	std::vector<byte> peer_cert_bits;
 	for(size_t i = 0; i != m_peer_certs.size(); ++i)
 		peer_cert_bits += m_peer_certs[i].BER_encode();
@@ -132,43 +129,43 @@ SafeArray!byte Session::DER_encode() const
 			.encode(ASN1_String(m_srp_identifier, UTF8_STRING))
 		.end_cons()
 	.get_contents();
-	}
+}
 
 string Session::PEM_encode() const
-	{
+{
 	return PEM_Code::encode(this->DER_encode(), "SSL SESSION");
-	}
+}
 
 std::chrono::seconds Session::session_age() const
-	{
+{
 	return std::chrono::duration_cast<std::chrono::seconds>(
 		std::chrono::system_clock::now() - m_start_time);
-	}
+}
 
 std::vector<byte>
 Session::encrypt(const SymmetricKey& master_key,
 					  RandomNumberGenerator& rng) const
-	{
+{
 	const auto der = this->DER_encode();
 
 	return CryptoBox::encrypt(&der[0], der.size(), master_key, rng);
-	}
+}
 
 Session Session::decrypt(const byte buf[], size_t buf_len,
 								 const SymmetricKey& master_key)
-	{
+{
 	try
-		{
+	{
 		const auto ber = CryptoBox::decrypt(buf, buf_len, master_key);
 
 		return Session(&ber[0], ber.size());
-		}
+	}
 	catch(std::exception& e)
-		{
+	{
 		throw Decoding_Error("Failed to decrypt encrypted session -" +
 									string(e.what()));
-		}
 	}
+}
 
 }
 

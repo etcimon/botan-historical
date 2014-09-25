@@ -5,15 +5,11 @@
 * Distributed under the terms of the Botan license
 */
 
-#ifndef BOTAN_AEAD_OCB_H__
 #define BOTAN_AEAD_OCB_H__
 
 #include <botan/aead.h>
 #include <botan/block_cipher.h>
 #include <botan/buf_filt.h>
-
-namespace Botan {
-
 class L_computer;
 
 /**
@@ -26,7 +22,7 @@ class L_computer;
 * @see OCB home page http://www.cs.ucdavis.edu/~rogaway/ocb
 */
 class OCB_Mode : public AEAD_Mode
-	{
+{
 	public:
 		SafeArray!byte start(const byte nonce[], size_t nonce_len) override;
 
@@ -69,10 +65,10 @@ class OCB_Mode : public AEAD_Mode
 		size_t m_tag_size = 0;
 		SafeArray!byte m_last_nonce;
 		SafeArray!byte m_stretch;
-	};
+};
 
 class OCB_Encryption : public OCB_Mode
-	{
+{
 	public:
 		/**
 		* @param cipher the 128-bit block cipher to use
@@ -82,7 +78,7 @@ class OCB_Encryption : public OCB_Mode
 			OCB_Mode(cipher, tag_size) {}
 
 		size_t output_length(size_t input_length) const override
-			{ return input_length + tag_size(); }
+		{ return input_length + tag_size(); }
 
 		size_t minimum_final_size() const override { return 0; }
 
@@ -91,10 +87,10 @@ class OCB_Encryption : public OCB_Mode
 		void finish(SafeArray!byte& final_block, size_t offset = 0) override;
 	private:
 		void encrypt(byte input[], size_t blocks);
-	};
+};
 
 class OCB_Decryption : public OCB_Mode
-	{
+{
 	public:
 		/**
 		* @param cipher the 128-bit block cipher to use
@@ -104,10 +100,10 @@ class OCB_Decryption : public OCB_Mode
 			OCB_Mode(cipher, tag_size) {}
 
 		size_t output_length(size_t input_length) const override
-			{
+		{
 			BOTAN_ASSERT(input_length > tag_size(), "Sufficient input");
 			return input_length - tag_size();
-			}
+		}
 
 		size_t minimum_final_size() const override { return tag_size(); }
 
@@ -116,8 +112,4 @@ class OCB_Decryption : public OCB_Mode
 		void finish(SafeArray!byte& final_block, size_t offset = 0) override;
 	private:
 		void decrypt(byte input[], size_t blocks);
-	};
-
-}
-
-#endif
+};

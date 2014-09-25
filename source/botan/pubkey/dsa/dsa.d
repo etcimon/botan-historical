@@ -8,17 +8,14 @@
 #include <botan/dsa.h>
 #include <botan/numthry.h>
 #include <botan/keypair.h>
-#include <future>
-namespace Botan {
-
-/*
+#include <future>/*
 * DSA_PublicKey Constructor
 */
 DSA_PublicKey::DSA_PublicKey(const DL_Group& grp, const BigInt& y1)
-	{
+{
 	group = grp;
 	y = y1;
-	}
+}
 
 /*
 * Create a DSA private key
@@ -26,7 +23,7 @@ DSA_PublicKey::DSA_PublicKey(const DL_Group& grp, const BigInt& y1)
 DSA_PrivateKey::DSA_PrivateKey(RandomNumberGenerator& rng,
 										 const DL_Group& grp,
 										 const BigInt& x_arg)
-	{
+{
 	group = grp;
 	x = x_arg;
 
@@ -39,23 +36,23 @@ DSA_PrivateKey::DSA_PrivateKey(RandomNumberGenerator& rng,
 		gen_check(rng);
 	else
 		load_check(rng);
-	}
+}
 
 DSA_PrivateKey::DSA_PrivateKey(const AlgorithmIdentifier& alg_id,
 										 in SafeArray!byte key_bits,
 										 RandomNumberGenerator& rng) :
 	DL_Scheme_PrivateKey(alg_id, key_bits, DL_Group::ANSI_X9_57)
-	{
+{
 	y = power_mod(group_g(), x, group_p());
 
 	load_check(rng);
-	}
+}
 
 /*
 * Check Private DSA Parameters
 */
 bool DSA_PrivateKey::check_key(RandomNumberGenerator& rng, bool strong) const
-	{
+{
 	if(!DL_Scheme_PrivateKey::check_key(rng, strong) || x >= group_q())
 		return false;
 
@@ -63,27 +60,27 @@ bool DSA_PrivateKey::check_key(RandomNumberGenerator& rng, bool strong) const
 		return true;
 
 	return KeyPair::signature_consistency_check(rng, *this, "EMSA1(SHA-1)");
-	}
+}
 
 DSA_Signature_Operation::DSA_Signature_Operation(const DSA_PrivateKey& dsa) :
 	q(dsa.group_q()),
 	x(dsa.get_x()),
 	powermod_g_p(dsa.group_g(), dsa.group_p()),
 	mod_q(dsa.group_q())
-	{
-	}
+{
+}
 
 SafeArray!byte
 DSA_Signature_Operation::sign(const byte msg[], size_t msg_len,
 										RandomNumberGenerator& rng)
-	{
+{
 	rng.add_entropy(msg, msg_len);
 
 	BigInt i(msg, msg_len);
 	BigInt r = 0, s = 0;
 
 	while(r == 0 || s == 0)
-		{
+	{
 		BigInt k;
 		do
 			k.randomize(rng, q.bits());
@@ -95,26 +92,26 @@ DSA_Signature_Operation::sign(const byte msg[], size_t msg_len,
 		s = inverse_mod(k, q);
 		r = future_r.get();
 		s = mod_q.multiply(s, mul_add(x, r, i));
-		}
+	}
 
 	SafeArray!byte output(2*q.bytes());
 	r.binary_encode(&output[output.size() / 2 - r.bytes()]);
 	s.binary_encode(&output[output.size() - s.bytes()]);
 	return output;
-	}
+}
 
 DSA_Verification_Operation::DSA_Verification_Operation(const DSA_PublicKey& dsa) :
 	q(dsa.group_q()), y(dsa.get_y())
-	{
+{
 	powermod_g_p = Fixed_Base_Power_Mod(dsa.group_g(), dsa.group_p());
 	powermod_y_p = Fixed_Base_Power_Mod(y, dsa.group_p());
 	mod_p = Modular_Reducer(dsa.group_p());
 	mod_q = Modular_Reducer(dsa.group_q());
-	}
+}
 
 bool DSA_Verification_Operation::verify(const byte msg[], size_t msg_len,
 													 const byte sig[], size_t sig_len)
-	{
+{
 	const BigInt& q = mod_q.get_modulus();
 
 	if(sig_len != 2*q.bytes() || msg_len > q.bytes())
@@ -138,6 +135,6 @@ bool DSA_Verification_Operation::verify(const byte msg[], size_t msg_len,
 	s = mod_p.multiply(s_i, s_r);
 
 	return (mod_q.reduce(s) == r);
-	}
+}
 
 }

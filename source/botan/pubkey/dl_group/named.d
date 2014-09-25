@@ -6,11 +6,8 @@
 */
 
 #include <botan/dl_group.h>
-
-namespace Botan {
-
 const char* DL_Group::PEM_for_named_group(in string name)
-	{
+{
 	if(name == "modp/ietf/1024")
 		return
 			"-----BEGIN X942 DH PARAMETERS-----"
@@ -355,6 +352,6 @@ const char* DL_Group::PEM_for_named_group(in string name)
 			"-----END DSA PARAMETERS-----";
 
 	return nullptr;
-	}
+}
 
 }

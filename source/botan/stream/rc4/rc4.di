@@ -5,19 +5,15 @@
 * Distributed under the terms of the Botan license
 */
 
-#ifndef BOTAN_RC4_H__
 #define BOTAN_RC4_H__
 
 #include <botan/stream_cipher.h>
 #include <botan/types.h>
-
-namespace Botan {
-
 /**
 * RC4 stream cipher
 */
 class RC4 : public StreamCipher
-	{
+{
 	public:
 		void cipher(const byte in[], byte out[], size_t length);
 
@@ -27,9 +23,9 @@ class RC4 : public StreamCipher
 		StreamCipher* clone() const { return new RC4(SKIP); }
 
 		Key_Length_Specification key_spec() const
-			{
+		{
 			return Key_Length_Specification(1, 256);
-			}
+		}
 
 		/**
 		* @param skip skip this many initial bytes in the keystream
@@ -48,8 +44,4 @@ class RC4 : public StreamCipher
 
 		SafeArray!byte buffer;
 		size_t position;
-	};
-
-}
-
-#endif
+};

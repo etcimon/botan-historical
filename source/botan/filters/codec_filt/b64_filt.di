@@ -5,18 +5,14 @@
 * Distributed under the terms of the Botan license
 */
 
-#ifndef BOTAN_BASE64_FILTER_H__
 #define BOTAN_BASE64_FILTER_H__
 
 #include <botan/filter.h>
-
-namespace Botan {
-
 /**
 * This class represents a Base64 encoder.
 */
 class Base64_Encoder : public Filter
-	{
+{
 	public:
 		string name() const { return "Base64_Encoder"; }
 
@@ -49,13 +45,13 @@ class Base64_Encoder : public Filter
 		const bool trailing_newline;
 		std::vector<byte> in, out;
 		size_t position, out_position;
-	};
+};
 
 /**
 * This object represents a Base64 decoder.
 */
 class Base64_Decoder : public Filter
-	{
+{
 	public:
 		string name() const { return "Base64_Decoder"; }
 
@@ -81,8 +77,4 @@ class Base64_Decoder : public Filter
 		const Decoder_Checking checking;
 		std::vector<byte> in, out;
 		size_t position;
-	};
-
-}
-
-#endif
+};

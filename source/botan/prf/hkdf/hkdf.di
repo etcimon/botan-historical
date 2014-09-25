@@ -5,19 +5,15 @@
 * Distributed under the terms of the Botan license
 */
 
-#ifndef BOTAN_HKDF_H__
 #define BOTAN_HKDF_H__
 
 #include <botan/mac.h>
 #include <botan/hash.h>
-
-namespace Botan {
-
 /**
 * HKDF, see @rfc 5869 for details
 */
 class HKDF
-	{
+{
 	public:
 		HKDF(MessageAuthenticationCode* extractor,
 			  MessageAuthenticationCode* prf) :
@@ -43,8 +39,4 @@ class HKDF
 	private:
 		std::unique_ptr<MessageAuthenticationCode> m_extractor;
 		std::unique_ptr<MessageAuthenticationCode> m_prf;
-	};
-
-}
-
-#endif
+};

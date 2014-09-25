@@ -7,31 +7,28 @@
 */
 
 #include <botan/ecdsa_sig.h>
-
-namespace Botan {
-
 ECDSA_Signature::ECDSA_Signature(in Array!byte ber)
-	{
+{
 	BER_Decoder(ber)
 		.start_cons(SEQUENCE)
 			.decode(m_r)
 			.decode(m_s)
 		.end_cons()
 		.verify_end();
-	}
+}
 
 std::vector<byte> ECDSA_Signature::DER_encode() const
-	{
+{
 	return DER_Encoder()
 		.start_cons(SEQUENCE)
 		  .encode(get_r())
 		  .encode(get_s())
 		.end_cons()
 		.get_contents_unlocked();
-	}
+}
 
 std::vector<byte> ECDSA_Signature::get_concatenation() const
-	{
+{
 	// use the larger
 	const size_t enc_len = m_r > m_s ? m_r.bytes() : m_s.bytes();
 
@@ -41,10 +38,10 @@ std::vector<byte> ECDSA_Signature::get_concatenation() const
 	SafeArray!byte result(sv_r);
 	result += sv_s;
 	return unlock(result);
-	}
+}
 
 ECDSA_Signature decode_concatenation(in Array!byte concat)
-	{
+{
 	if(concat.size() % 2 != 0)
 		throw Invalid_Argument("Erroneous length of signature");
 
@@ -54,6 +51,6 @@ ECDSA_Signature decode_concatenation(in Array!byte concat)
 	BigInt s = BigInt::decode(&concat[rs_len], rs_len);
 
 	return ECDSA_Signature(r, s);
-	}
+}
 
 }

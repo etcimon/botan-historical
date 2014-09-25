@@ -8,9 +8,6 @@
 #include <botan/rmd128.h>
 #include <botan/loadstor.h>
 #include <botan/rotate.h>
-
-namespace Botan {
-
 namespace RIPEMD_128_F {
 
 /*
@@ -18,40 +15,40 @@ namespace RIPEMD_128_F {
 */
 inline void F1(u32bit& A, u32bit B, u32bit C, u32bit D,
 					u32bit msg, u32bit shift)
-	{
+{
 	A += (B ^ C ^ D) + msg;
 	A  = rotate_left(A, shift);
-	}
+}
 
 /*
 * RIPEMD-128 F2 Function
 */
 inline void F2(u32bit& A, u32bit B, u32bit C, u32bit D,
 					u32bit msg, u32bit shift, u32bit magic)
-	{
+{
 	A += (D ^ (B & (C ^ D))) + msg + magic;
 	A  = rotate_left(A, shift);
-	}
+}
 
 /*
 * RIPEMD-128 F3 Function
 */
 inline void F3(u32bit& A, u32bit B, u32bit C, u32bit D,
 					u32bit msg, u32bit shift, u32bit magic)
-	{
+{
 	A += (D ^ (B | ~C)) + msg + magic;
 	A  = rotate_left(A, shift);
-	}
+}
 
 /*
 * RIPEMD-128 F4 Function
 */
 inline void F4(u32bit& A, u32bit B, u32bit C, u32bit D,
 					u32bit msg, u32bit shift, u32bit magic)
-	{
+{
 	A += (C ^ (D & (B ^ C))) + msg + magic;
 	A  = rotate_left(A, shift);
-	}
+}
 
 }
 
@@ -59,7 +56,7 @@ inline void F4(u32bit& A, u32bit B, u32bit C, u32bit D,
 * RIPEMD-128 Compression Function
 */
 void RIPEMD_128::compress_n(const byte input[], size_t blocks)
-	{
+{
 	using namespace RIPEMD_128_F;
 
 	const u32bit MAGIC2 = 0x5A827999, MAGIC3 = 0x6ED9EBA1,
@@ -67,7 +64,7 @@ void RIPEMD_128::compress_n(const byte input[], size_t blocks)
 					 MAGIC6 = 0x5C4DD124, MAGIC7 = 0x6D703EF3;
 
 	for(size_t i = 0; i != blocks; ++i)
-		{
+	{
 		load_le(&M[0], input, M.size());
 
 		u32bit A1 = digest[0], A2 = A1, B1 = digest[1], B2 = B1,
@@ -148,29 +145,29 @@ void RIPEMD_128::compress_n(const byte input[], size_t blocks)
 		digest[0] = D2;
 
 		input += hash_block_size();
-		}
 	}
+}
 
 /*
 * Copy out the digest
 */
 void RIPEMD_128::copy_out(byte output[])
-	{
+{
 	for(size_t i = 0; i != output_length(); i += 4)
 		store_le(digest[i/4], output + i);
-	}
+}
 
 /*
 * Clear memory of sensitive data
 */
 void RIPEMD_128::clear()
-	{
+{
 	MDx_HashFunction::clear();
 	zeroise(M);
 	digest[0] = 0x67452301;
 	digest[1] = 0xEFCDAB89;
 	digest[2] = 0x98BADCFE;
 	digest[3] = 0x10325476;
-	}
+}
 
 }

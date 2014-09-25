@@ -5,20 +5,16 @@
 * Distributed under the terms of the Botan license
 */
 
-#ifndef BOTAN_DL_ALGO_H__
 #define BOTAN_DL_ALGO_H__
 
 #include <botan/dl_group.h>
 #include <botan/x509_key.h>
 #include <botan/pkcs8.h>
-
-namespace Botan {
-
 /**
 * This class represents discrete logarithm (DL) public keys.
 */
 class DL_Scheme_PublicKey : public abstract Public_Key
-	{
+{
 	public:
 		bool check_key(RandomNumberGenerator& rng, bool) const;
 
@@ -79,14 +75,14 @@ class DL_Scheme_PublicKey : public abstract Public_Key
 		* The DL group
 		*/
 		DL_Group group;
-	};
+};
 
 /**
 * This class represents discrete logarithm (DL) private keys.
 */
 class DL_Scheme_PrivateKey : public abstract DL_Scheme_PublicKey,
 													public abstract Private_Key
-	{
+{
 	public:
 		bool check_key(RandomNumberGenerator& rng, bool) const;
 
@@ -109,8 +105,4 @@ class DL_Scheme_PrivateKey : public abstract DL_Scheme_PublicKey,
 		* The DL private key
 		*/
 		BigInt x;
-	};
-
-}
-
-#endif
+};

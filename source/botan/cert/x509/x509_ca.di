@@ -5,7 +5,6 @@
 * Distributed under the terms of the Botan license
 */
 
-#ifndef BOTAN_X509_CA_H__
 #define BOTAN_X509_CA_H__
 
 #include <botan/x509cert.h>
@@ -14,14 +13,11 @@
 #include <botan/pkcs8.h>
 #include <botan/pkcs10.h>
 #include <botan/pubkey.h>
-
-namespace Botan {
-
 /**
 * This class represents X.509 Certificate Authorities (CAs).
 */
 class X509_CA
-	{
+{
 	public:
 
 		/**
@@ -111,7 +107,7 @@ class X509_CA
 		AlgorithmIdentifier ca_sig_algo;
 		X509_Certificate cert;
 		PK_Signer* signer;
-	};
+};
 
 /**
 * Choose the default signature format for a certain public key signature
@@ -121,10 +117,6 @@ class X509_CA
 * @param alg_id will be set to the chosen scheme
 * @return A PK_Signer object for generating signatures
 */
-BOTAN_DLL PK_Signer* choose_sig_format(const Private_Key& key,
+PK_Signer* choose_sig_format(const Private_Key& key,
 													in string hash_fn,
 													AlgorithmIdentifier& alg_id);
-
-}
-
-#endif

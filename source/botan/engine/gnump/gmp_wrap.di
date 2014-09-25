@@ -5,19 +5,15 @@
 * Distributed under the terms of the Botan license
 */
 
-#ifndef BOTAN_GMP_MPZ_WRAP_H__
 #define BOTAN_GMP_MPZ_WRAP_H__
 
 #include <botan/bigint.h>
 #include <gmp.h>
-
-namespace Botan {
-
 /**
 * Lightweight GMP mpz_t wrapper. For internal use only.
 */
 class GMP_MPZ
-	{
+{
 	public:
 		mpz_t value;
 
@@ -26,7 +22,7 @@ class GMP_MPZ
 		size_t bytes() const;
 
 		SafeArray!byte to_bytes() const
-			{ return BigInt::encode_locked(to_bigint()); }
+		{ return BigInt::encode_locked(to_bigint()); }
 
 		GMP_MPZ& operator=(const GMP_MPZ&);
 
@@ -34,8 +30,4 @@ class GMP_MPZ
 		GMP_MPZ(const BigInt& = 0);
 		GMP_MPZ(const byte[], size_t);
 		~GMP_MPZ();
-	};
-
-}
-
-#endif
+};

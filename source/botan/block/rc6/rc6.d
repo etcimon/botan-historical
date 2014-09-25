@@ -9,16 +9,13 @@
 #include <botan/loadstor.h>
 #include <botan/rotate.h>
 #include <algorithm>
-
-namespace Botan {
-
 /*
 * RC6 Encryption
 */
 void RC6::encrypt_n(const byte in[], byte out[], size_t blocks) const
-	{
+{
 	for(size_t i = 0; i != blocks; ++i)
-		{
+	{
 		u32bit A = load_le<u32bit>(in, 0);
 		u32bit B = load_le<u32bit>(in, 1);
 		u32bit C = load_le<u32bit>(in, 2);
@@ -27,7 +24,7 @@ void RC6::encrypt_n(const byte in[], byte out[], size_t blocks) const
 		B += S[0]; D += S[1];
 
 		for(size_t j = 0; j != 20; j += 4)
-			{
+		{
 			u32bit T1, T2;
 
 			T1 = rotate_left(B*(2*B+1), 5);
@@ -49,7 +46,7 @@ void RC6::encrypt_n(const byte in[], byte out[], size_t blocks) const
 			T2 = rotate_left(C*(2*C+1), 5);
 			D = rotate_left(D ^ T1, T2 % 32) + S[2*j+8];
 			B = rotate_left(B ^ T2, T1 % 32) + S[2*j+9];
-			}
+		}
 
 		A += S[42]; C += S[43];
 
@@ -57,16 +54,16 @@ void RC6::encrypt_n(const byte in[], byte out[], size_t blocks) const
 
 		in += BLOCK_SIZE;
 		out += BLOCK_SIZE;
-		}
 	}
+}
 
 /*
 * RC6 Decryption
 */
 void RC6::decrypt_n(const byte in[], byte out[], size_t blocks) const
-	{
+{
 	for(size_t i = 0; i != blocks; ++i)
-		{
+	{
 		u32bit A = load_le<u32bit>(in, 0);
 		u32bit B = load_le<u32bit>(in, 1);
 		u32bit C = load_le<u32bit>(in, 2);
@@ -75,7 +72,7 @@ void RC6::decrypt_n(const byte in[], byte out[], size_t blocks) const
 		C -= S[43]; A -= S[42];
 
 		for(size_t j = 0; j != 20; j += 4)
-			{
+		{
 			u32bit T1, T2;
 
 			T1 = rotate_left(A*(2*A+1), 5);
@@ -97,7 +94,7 @@ void RC6::decrypt_n(const byte in[], byte out[], size_t blocks) const
 			T2 = rotate_left(D*(2*D+1), 5);
 			C = rotate_right(C - S[35 - 2*j], T1 % 32) ^ T2;
 			A = rotate_right(A - S[34 - 2*j], T2 % 32) ^ T1;
-			}
+		}
 
 		D -= S[1]; B -= S[0];
 
@@ -105,14 +102,14 @@ void RC6::decrypt_n(const byte in[], byte out[], size_t blocks) const
 
 		in += BLOCK_SIZE;
 		out += BLOCK_SIZE;
-		}
 	}
+}
 
 /*
 * RC6 Key Schedule
 */
 void RC6::key_schedule(const byte key[], size_t length)
-	{
+{
 	S.resize(44);
 
 	const size_t WORD_KEYLENGTH = (((length - 1) / 4) + 1);
@@ -129,17 +126,17 @@ void RC6::key_schedule(const byte key[], size_t length)
 
 	u32bit A = 0, B = 0;
 	for(size_t i = 0; i != MIX_ROUNDS; ++i)
-		{
+	{
 		A = rotate_left(S[i % S.size()] + A + B, 3);
 		B = rotate_left(K[i % WORD_KEYLENGTH] + A + B, (A + B) % 32);
 		S[i % S.size()] = A;
 		K[i % WORD_KEYLENGTH] = B;
-		}
 	}
+}
 
 void RC6::clear()
-	{
+{
 	zap(S);
-	}
+}
 
 }

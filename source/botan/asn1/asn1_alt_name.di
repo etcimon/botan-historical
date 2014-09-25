@@ -6,21 +6,17 @@
 * Distributed under the terms of the Botan license
 */
 
-#ifndef BOTAN_ASN1_ALT_NAME_H__
 #define BOTAN_ASN1_ALT_NAME_H__
 
 #include <botan/asn1_obj.h>
 #include <botan/asn1_str.h>
 #include <botan/asn1_oid.h>
 #include <map>
-
-namespace Botan {
-
 /**
 * Alternative Name
 */
 class AlternativeName : public ASN1_Object
-	{
+{
 	public:
 		void encode_into(class DER_Encoder&) const;
 		void decode_from(class BER_Decoder&);
@@ -40,8 +36,4 @@ class AlternativeName : public ASN1_Object
 	private:
 		std::multimap<string, string> alt_info;
 		std::multimap<OID, ASN1_String> othernames;
-	};
-
-}
-
-#endif
+};

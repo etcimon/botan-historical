@@ -8,37 +8,34 @@
 #include <botan/md4.h>
 #include <botan/loadstor.h>
 #include <botan/rotate.h>
-
-namespace Botan {
-
 namespace {
 
 /*
 * MD4 FF Function
 */
 inline void FF(u32bit& A, u32bit B, u32bit C, u32bit D, u32bit M, byte S)
-	{
+{
 	A += (D ^ (B & (C ^ D))) + M;
 	A  = rotate_left(A, S);
-	}
+}
 
 /*
 * MD4 GG Function
 */
 inline void GG(u32bit& A, u32bit B, u32bit C, u32bit D, u32bit M, byte S)
-	{
+{
 	A += ((B & C) | (D & (B | C))) + M + 0x5A827999;
 	A  = rotate_left(A, S);
-	}
+}
 
 /*
 * MD4 HH Function
 */
 inline void HH(u32bit& A, u32bit B, u32bit C, u32bit D, u32bit M, byte S)
-	{
+{
 	A += (B ^ C ^ D) + M + 0x6ED9EBA1;
 	A  = rotate_left(A, S);
-	}
+}
 
 }
 
@@ -46,11 +43,11 @@ inline void HH(u32bit& A, u32bit B, u32bit C, u32bit D, u32bit M, byte S)
 * MD4 Compression Function
 */
 void MD4::compress_n(const byte input[], size_t blocks)
-	{
+{
 	u32bit A = digest[0], B = digest[1], C = digest[2], D = digest[3];
 
 	for(size_t i = 0; i != blocks; ++i)
-		{
+	{
 		load_le(&M[0], input, M.size());
 
 		FF(A,B,C,D,M[ 0], 3);	FF(D,A,B,C,M[ 1], 7);
@@ -86,29 +83,29 @@ void MD4::compress_n(const byte input[], size_t blocks)
 		D = (digest[3] += D);
 
 		input += hash_block_size();
-		}
 	}
+}
 
 /*
 * Copy out the digest
 */
 void MD4::copy_out(byte output[])
-	{
+{
 	for(size_t i = 0; i != output_length(); i += 4)
 		store_le(digest[i/4], output + i);
-	}
+}
 
 /*
 * Clear memory of sensitive data
 */
 void MD4::clear()
-	{
+{
 	MDx_HashFunction::clear();
 	zeroise(M);
 	digest[0] = 0x67452301;
 	digest[1] = 0xEFCDAB89;
 	digest[2] = 0x98BADCFE;
 	digest[3] = 0x10325476;
-	}
+}
 
 }

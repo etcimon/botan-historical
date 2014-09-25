@@ -5,22 +5,18 @@
 * Released under the terms of the Botan license
 */
 
-#ifndef BOTAN_TLS_CLIENT_H__
 #define BOTAN_TLS_CLIENT_H__
 
 #include <botan/tls_channel.h>
 #include <botan/credentials_manager.h>
 #include <vector>
-
-namespace Botan {
-
 namespace TLS {
 
 /**
 * SSL/TLS Client
 */
 class Client : public Channel
-	{
+{
 	public:
 		/**
 		* Set up a new TLS client session
@@ -97,10 +93,6 @@ class Client : public Channel
 		const Policy& m_policy;
 		Credentials_Manager& m_creds;
 		const Server_Information m_info;
-	};
+};
 
 }
-
-}
-
-#endif

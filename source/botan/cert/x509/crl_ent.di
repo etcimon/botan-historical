@@ -5,14 +5,10 @@
 * Distributed under the terms of the Botan license
 */
 
-#ifndef BOTAN_CRL_ENTRY_H__
 #define BOTAN_CRL_ENTRY_H__
 
 #include <botan/x509cert.h>
 #include <botan/asn1_time.h>
-
-namespace Botan {
-
 /**
 * X.509v2 CRL Reason Code.
 */
@@ -37,7 +33,7 @@ enum CRL_Code {
 * This class represents CRL entries
 */
 class CRL_Entry : public ASN1_Object
-	{
+{
 	public:
 		void encode_into(class DER_Encoder&) const;
 		void decode_from(class BER_Decoder&);
@@ -78,18 +74,14 @@ class CRL_Entry : public ASN1_Object
 		std::vector<byte> serial;
 		X509_Time time;
 		CRL_Code reason;
-	};
+};
 
 /**
 * Test two CRL entries for equality in all fields.
 */
-BOTAN_DLL bool operator==(const CRL_Entry&, const CRL_Entry&);
+bool operator==(const CRL_Entry&, const CRL_Entry&);
 
 /**
 * Test two CRL entries for inequality in at least one field.
 */
-BOTAN_DLL bool operator!=(const CRL_Entry&, const CRL_Entry&);
-
-}
-
-#endif
+bool operator!=(const CRL_Entry&, const CRL_Entry&);

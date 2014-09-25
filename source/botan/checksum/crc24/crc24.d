@@ -7,14 +7,11 @@
 
 #include <botan/crc24.h>
 #include <botan/get_byte.h>
-
-namespace Botan {
-
 /*
 * Update a CRC24 Checksum
 */
 void CRC24::add_data(const byte input[], size_t length)
-	{
+{
 	const u32bit TABLE[256] = {
 		0x00000000, 0x00864CFB, 0x008AD50D, 0x000C99F6, 0x0093E6E1, 0x0015AA1A,
 		0x001933EC, 0x009F7F17, 0x00A18139, 0x0027CDC2, 0x002B5434, 0x00AD18CF,
@@ -62,7 +59,7 @@ void CRC24::add_data(const byte input[], size_t length)
 
 	u32bit tmp = crc;
 	while(length >= 16)
-		{
+	{
 		tmp = TABLE[((tmp >> 16) ^ input[ 0]) & 0xFF] ^ (tmp << 8);
 		tmp = TABLE[((tmp >> 16) ^ input[ 1]) & 0xFF] ^ (tmp << 8);
 		tmp = TABLE[((tmp >> 16) ^ input[ 2]) & 0xFF] ^ (tmp << 8);
@@ -81,22 +78,22 @@ void CRC24::add_data(const byte input[], size_t length)
 		tmp = TABLE[((tmp >> 16) ^ input[15]) & 0xFF] ^ (tmp << 8);
 		input += 16;
 		length -= 16;
-		}
+	}
 
 	for(size_t i = 0; i != length; ++i)
 		tmp = TABLE[((tmp >> 16) ^ input[i]) & 0xFF] ^ (tmp << 8);
 
 	crc = tmp;
-	}
+}
 
 /*
 * Finalize a CRC24 Checksum
 */
 void CRC24::final_result(byte output[])
-	{
+{
 	for(size_t i = 0; i != 3; ++i)
 		output[i] = get_byte(i+1, crc);
 	clear();
-	}
+}
 
 }

@@ -5,17 +5,13 @@
 * Distributed under the terms of the Botan license
 */
 
-#ifndef BOTAN_MLOCK_ALLOCATOR_H__
 #define BOTAN_MLOCK_ALLOCATOR_H__
 
 #include <botan/types.h>
 #include <vector>
 #include <mutex>
-
-namespace Botan {
-
 class mlock_allocator
-	{
+{
 	public:
 		static mlock_allocator& instance();
 
@@ -37,8 +33,4 @@ class mlock_allocator
 		std::mutex m_mutex;
 		std::vector<std::pair<size_t, size_t>> m_freelist;
 		byte* m_pool;
-	};
-
-}
-
-#endif
+};

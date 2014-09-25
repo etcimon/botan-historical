@@ -9,24 +9,21 @@
 #include <botan/mgf1.h>
 #include <botan/internal/bit_ops.h>
 #include <botan/internal/xor_buf.h>
-
-namespace Botan {
-
 /*
 * PSSR Update Operation
 */
 void PSSR::update(const byte input[], size_t length)
-	{
+{
 	hash->update(input, length);
-	}
+}
 
 /*
 * Return the raw (unencoded) data
 */
 SafeArray!byte PSSR::raw_data()
-	{
+{
 	return hash->final();
-	}
+}
 
 /*
 * PSSR Encode Operation
@@ -34,7 +31,7 @@ SafeArray!byte PSSR::raw_data()
 SafeArray!byte PSSR::encoding_of(in SafeArray!byte msg,
 												  size_t output_bits,
 												  RandomNumberGenerator& rng)
-	{
+{
 	const size_t HASH_SIZE = hash->output_length();
 
 	if(msg.size() != HASH_SIZE)
@@ -62,14 +59,14 @@ SafeArray!byte PSSR::encoding_of(in SafeArray!byte msg,
 	EM[output_length-1] = 0xBC;
 
 	return EM;
-	}
+}
 
 /*
 * PSSR Decode/Verify Operation
 */
 bool PSSR::verify(in SafeArray!byte const_coded,
 						 in SafeArray!byte raw, size_t key_bits)
-	{
+{
 	const size_t HASH_SIZE = hash->output_length();
 	const size_t KEY_BYTES = (key_bits + 7) / 8;
 
@@ -87,11 +84,11 @@ bool PSSR::verify(in SafeArray!byte const_coded,
 
 	SafeArray!byte coded = const_coded;
 	if(coded.size() < KEY_BYTES)
-		{
+	{
 		SafeArray!byte temp(KEY_BYTES);
 		buffer_insert(temp, KEY_BYTES - coded.size(), coded);
 		coded = temp;
-		}
+	}
 
 	const size_t TOP_BITS = 8 * ((key_bits + 7) / 8) - key_bits;
 	if(TOP_BITS > 8 - high_bit(coded[0]))
@@ -108,12 +105,12 @@ bool PSSR::verify(in SafeArray!byte const_coded,
 
 	size_t salt_offset = 0;
 	for(size_t j = 0; j != DB_size; ++j)
-		{
+	{
 		if(DB[j] == 0x01)
-			{ salt_offset = j + 1; break; }
+		{ salt_offset = j + 1; break; }
 		if(DB[j])
 			return false;
-		}
+	}
 	if(salt_offset == 0)
 		return false;
 
@@ -124,16 +121,16 @@ bool PSSR::verify(in SafeArray!byte const_coded,
 	SafeArray!byte H2 = hash->final();
 
 	return same_mem(&H[0], &H2[0], HASH_SIZE);
-	}
+}
 
 PSSR::PSSR(HashFunction* h) :
 	SALT_SIZE(h->output_length()), hash(h)
-	{
-	}
+{
+}
 
 PSSR::PSSR(HashFunction* h, size_t salt_size) :
 	SALT_SIZE(salt_size), hash(h)
-	{
-	}
+{
+}
 
 }

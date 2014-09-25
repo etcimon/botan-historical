@@ -8,9 +8,6 @@
 #include <botan/has160.h>
 #include <botan/loadstor.h>
 #include <botan/rotate.h>
-
-namespace Botan {
-
 namespace HAS_160_F {
 
 /*
@@ -18,40 +15,40 @@ namespace HAS_160_F {
 */
 inline void F1(u32bit A, u32bit& B, u32bit C, u32bit D, u32bit& E,
 					u32bit msg, u32bit rot)
-	{
+{
 	E += rotate_left(A, rot) + (D ^ (B & (C ^ D))) + msg;
 	B  = rotate_left(B, 10);
-	}
+}
 
 /*
 * HAS-160 F2 Function
 */
 inline void F2(u32bit A, u32bit& B, u32bit C, u32bit D, u32bit& E,
 					u32bit msg, u32bit rot)
-	{
+{
 	E += rotate_left(A, rot) + (B ^ C ^ D) + msg + 0x5A827999;
 	B  = rotate_left(B, 17);
-	}
+}
 
 /*
 * HAS-160 F3 Function
 */
 inline void F3(u32bit A, u32bit& B, u32bit C, u32bit D, u32bit& E,
 					u32bit msg, u32bit rot)
-	{
+{
 	E += rotate_left(A, rot) + (C ^ (B | ~D)) + msg + 0x6ED9EBA1;
 	B  = rotate_left(B, 25);
-	}
+}
 
 /*
 * HAS-160 F4 Function
 */
 inline void F4(u32bit A, u32bit& B, u32bit C, u32bit D, u32bit& E,
 					u32bit msg, u32bit rot)
-	{
+{
 	E += rotate_left(A, rot) + (B ^ C ^ D) + msg + 0x8F1BBCDC;
 	B  = rotate_left(B, 30);
-	}
+}
 
 }
 
@@ -59,14 +56,14 @@ inline void F4(u32bit A, u32bit& B, u32bit C, u32bit D, u32bit& E,
 * HAS-160 Compression Function
 */
 void HAS_160::compress_n(const byte input[], size_t blocks)
-	{
+{
 	using namespace HAS_160_F;
 
 	u32bit A = digest[0], B = digest[1], C = digest[2],
 			 D = digest[3], E = digest[4];
 
 	for(size_t i = 0; i != blocks; ++i)
-		{
+	{
 		load_le(&X[0], input, 16);
 
 		X[16] = X[ 0] ^ X[ 1] ^ X[ 2] ^ X[ 3];
@@ -136,23 +133,23 @@ void HAS_160::compress_n(const byte input[], size_t blocks)
 		E = (digest[4] += E);
 
 		input += hash_block_size();
-		}
 	}
+}
 
 /*
 * Copy out the digest
 */
 void HAS_160::copy_out(byte output[])
-	{
+{
 	for(size_t i = 0; i != output_length(); i += 4)
 		store_le(digest[i/4], output + i);
-	}
+}
 
 /*
 * Clear memory of sensitive data
 */
 void HAS_160::clear()
-	{
+{
 	MDx_HashFunction::clear();
 	zeroise(X);
 	digest[0] = 0x67452301;
@@ -160,6 +157,6 @@ void HAS_160::clear()
 	digest[2] = 0x98BADCFE;
 	digest[3] = 0x10325476;
 	digest[4] = 0xC3D2E1F0;
-	}
+}
 
 }

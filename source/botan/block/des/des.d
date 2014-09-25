@@ -11,16 +11,13 @@
 #include <botan/des.h>
 #include <botan/loadstor.h>
 #include <botan/rotate.h>
-
-namespace Botan {
-
 namespace {
 
 /*
 * DES Key Schedule
 */
 void des_key_schedule(u32bit round_key[32], const byte key[8])
-	{
+{
 	static const byte ROT[16] = { 1, 1, 2, 2, 2, 2, 2, 2,
 											1, 2, 2, 2, 2, 2, 2, 1 };
 
@@ -54,7 +51,7 @@ void des_key_schedule(u32bit round_key[32], const byte key[8])
 				  ((key[1] & 0x10) >>  3) | ((key[0] & 0x10) >>  4);
 
 	for(size_t i = 0; i != 16; ++i)
-		{
+	{
 		C = ((C << ROT[i]) | (C >> (28-ROT[i]))) & 0x0FFFFFFF;
 		D = ((D << ROT[i]) | (D >> (28-ROT[i]))) & 0x0FFFFFFF;
 		round_key[2*i  ] = ((C & 0x00000010) << 22) | ((C & 0x00000800) << 17) |
@@ -79,17 +76,17 @@ void des_key_schedule(u32bit round_key[32], const byte key[8])
 								 ((D & 0x00004000) >> 10) | ((D & 0x04000000) >> 13) |
 								 ((D & 0x00800000) >> 14) | ((D & 0x00100000) >> 18) |
 								 ((D & 0x01000000) >> 24) | ((D & 0x08000000) >> 26);
-		}
 	}
+}
 
 /*
 * DES Encryption
 */
 void des_encrypt(u32bit& L, u32bit& R,
 					  const u32bit round_key[32])
-	{
+{
 	for(size_t i = 0; i != 16; i += 2)
-		{
+	{
 		u32bit T0, T1;
 
 		T0 = rotate_right(R, 4) ^ round_key[2*i];
@@ -107,17 +104,17 @@ void des_encrypt(u32bit& L, u32bit& R,
 			  DES_SPBOX3[get_byte(1, T0)] ^ DES_SPBOX4[get_byte(1, T1)] ^
 			  DES_SPBOX5[get_byte(2, T0)] ^ DES_SPBOX6[get_byte(2, T1)] ^
 			  DES_SPBOX7[get_byte(3, T0)] ^ DES_SPBOX8[get_byte(3, T1)];
-		}
 	}
+}
 
 /*
 * DES Decryption
 */
 void des_decrypt(u32bit& L, u32bit& R,
 					  const u32bit round_key[32])
-	{
+{
 	for(size_t i = 16; i != 0; i -= 2)
-		{
+	{
 		u32bit T0, T1;
 
 		T0 = rotate_right(R, 4) ^ round_key[2*i - 2];
@@ -135,8 +132,8 @@ void des_decrypt(u32bit& L, u32bit& R,
 			  DES_SPBOX3[get_byte(1, T0)] ^ DES_SPBOX4[get_byte(1, T1)] ^
 			  DES_SPBOX5[get_byte(2, T0)] ^ DES_SPBOX6[get_byte(2, T1)] ^
 			  DES_SPBOX7[get_byte(3, T0)] ^ DES_SPBOX8[get_byte(3, T1)];
-		}
 	}
+}
 
 }
 
@@ -144,9 +141,9 @@ void des_decrypt(u32bit& L, u32bit& R,
 * DES Encryption
 */
 void DES::encrypt_n(const byte in[], byte out[], size_t blocks) const
-	{
+{
 	for(size_t i = 0; i != blocks; ++i)
-		{
+	{
 		u64bit T = (DES_IPTAB1[in[0]]	  ) | (DES_IPTAB1[in[1]] << 1) |
 					  (DES_IPTAB1[in[2]] << 2) | (DES_IPTAB1[in[3]] << 3) |
 					  (DES_IPTAB1[in[4]] << 4) | (DES_IPTAB1[in[5]] << 5) |
@@ -167,16 +164,16 @@ void DES::encrypt_n(const byte in[], byte out[], size_t blocks) const
 
 		in += BLOCK_SIZE;
 		out += BLOCK_SIZE;
-		}
 	}
+}
 
 /*
 * DES Decryption
 */
 void DES::decrypt_n(const byte in[], byte out[], size_t blocks) const
-	{
+{
 	for(size_t i = 0; i != blocks; ++i)
-		{
+	{
 		u64bit T = (DES_IPTAB1[in[0]]	  ) | (DES_IPTAB1[in[1]] << 1) |
 					  (DES_IPTAB1[in[2]] << 2) | (DES_IPTAB1[in[3]] << 3) |
 					  (DES_IPTAB1[in[4]] << 4) | (DES_IPTAB1[in[5]] << 5) |
@@ -198,30 +195,30 @@ void DES::decrypt_n(const byte in[], byte out[], size_t blocks) const
 
 		in += BLOCK_SIZE;
 		out += BLOCK_SIZE;
-		}
 	}
+}
 
 /*
 * DES Key Schedule
 */
 void DES::key_schedule(const byte key[], size_t)
-	{
+{
 	round_key.resize(32);
 	des_key_schedule(&round_key[0], key);
-	}
+}
 
 void DES::clear()
-	{
+{
 	zap(round_key);
-	}
+}
 
 /*
 * TripleDES Encryption
 */
 void TripleDES::encrypt_n(const byte in[], byte out[], size_t blocks) const
-	{
+{
 	for(size_t i = 0; i != blocks; ++i)
-		{
+	{
 		u64bit T = (DES_IPTAB1[in[0]]	  ) | (DES_IPTAB1[in[1]] << 1) |
 					  (DES_IPTAB1[in[2]] << 2) | (DES_IPTAB1[in[3]] << 3) |
 					  (DES_IPTAB1[in[4]] << 4) | (DES_IPTAB1[in[5]] << 5) |
@@ -245,16 +242,16 @@ void TripleDES::encrypt_n(const byte in[], byte out[], size_t blocks) const
 
 		in += BLOCK_SIZE;
 		out += BLOCK_SIZE;
-		}
 	}
+}
 
 /*
 * TripleDES Decryption
 */
 void TripleDES::decrypt_n(const byte in[], byte out[], size_t blocks) const
-	{
+{
 	for(size_t i = 0; i != blocks; ++i)
-		{
+	{
 		u64bit T = (DES_IPTAB1[in[0]]	  ) | (DES_IPTAB1[in[1]] << 1) |
 					  (DES_IPTAB1[in[2]] << 2) | (DES_IPTAB1[in[3]] << 3) |
 					  (DES_IPTAB1[in[4]] << 4) | (DES_IPTAB1[in[5]] << 5) |
@@ -278,14 +275,14 @@ void TripleDES::decrypt_n(const byte in[], byte out[], size_t blocks) const
 
 		in += BLOCK_SIZE;
 		out += BLOCK_SIZE;
-		}
 	}
+}
 
 /*
 * TripleDES Key Schedule
 */
 void TripleDES::key_schedule(const byte key[], size_t length)
-	{
+{
 	round_key.resize(3*32);
 	des_key_schedule(&round_key[0], key);
 	des_key_schedule(&round_key[32], key + 8);
@@ -294,11 +291,11 @@ void TripleDES::key_schedule(const byte key[], size_t length)
 		des_key_schedule(&round_key[64], key + 16);
 	else
 		copy_mem(&round_key[64], &round_key[0], 32);
-	}
+}
 
 void TripleDES::clear()
-	{
+{
 	zap(round_key);
-	}
+}
 
 }

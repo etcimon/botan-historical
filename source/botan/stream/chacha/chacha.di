@@ -5,30 +5,26 @@
 * Distributed under the terms of the Botan license
 */
 
-#ifndef BOTAN_CHACHA_H__
 #define BOTAN_CHACHA_H__
 
 #include <botan/stream_cipher.h>
-
-namespace Botan {
-
 /**
 * DJB's ChaCha (http://cr.yp.to/chacha.html)
 */
 class ChaCha : public StreamCipher
-	{
+{
 	public:
 		void cipher(const byte in[], byte out[], size_t length);
 
 		void set_iv(const byte iv[], size_t iv_len);
 
 		bool valid_iv_length(size_t iv_len) const
-			{ return (iv_len == 8); }
+		{ return (iv_len == 8); }
 
 		Key_Length_Specification key_spec() const
-			{
+		{
 			return Key_Length_Specification(16, 32, 16);
-			}
+		}
 
 		void clear();
 		string name() const;
@@ -42,8 +38,4 @@ class ChaCha : public StreamCipher
 		secure_vector<u32bit> m_state;
 		SafeArray!byte m_buffer;
 		size_t m_position = 0;
-	};
-
-}
-
-#endif
+};

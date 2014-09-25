@@ -5,20 +5,16 @@
 * Distributed under the terms of the Botan license
 */
 
-#ifndef BOTAN_MODE_ECB_H__
 #define BOTAN_MODE_ECB_H__
 
 #include <botan/cipher_mode.h>
 #include <botan/block_cipher.h>
 #include <botan/mode_pad.h>
-
-namespace Botan {
-
 /**
 * ECB mode
 */
 class ECB_Mode : public Cipher_Mode
-	{
+{
 	public:
 		SafeArray!byte start(const byte nonce[], size_t nonce_len) override;
 
@@ -45,13 +41,13 @@ class ECB_Mode : public Cipher_Mode
 
 		std::unique_ptr<BlockCipher> m_cipher;
 		std::unique_ptr<BlockCipherModePaddingMethod> m_padding;
-	};
+};
 
 /**
 * ECB Encryption
 */
 class ECB_Encryption : public ECB_Mode
-	{
+{
 	public:
 		ECB_Encryption(BlockCipher* cipher, BlockCipherModePaddingMethod* padding) :
 			ECB_Mode(cipher, padding) {}
@@ -63,13 +59,13 @@ class ECB_Encryption : public ECB_Mode
 		size_t output_length(size_t input_length) const override;
 
 		size_t minimum_final_size() const override;
-	};
+};
 
 /**
 * ECB Decryption
 */
 class ECB_Decryption : public ECB_Mode
-	{
+{
 	public:
 		ECB_Decryption(BlockCipher* cipher, BlockCipherModePaddingMethod* padding) :
 			ECB_Mode(cipher, padding) {}
@@ -81,8 +77,4 @@ class ECB_Decryption : public ECB_Mode
 		size_t output_length(size_t input_length) const override;
 
 		size_t minimum_final_size() const override;
-	};
-
-}
-
-#endif
+};

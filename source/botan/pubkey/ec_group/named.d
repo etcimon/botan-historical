@@ -6,11 +6,8 @@
 */
 
 #include <botan/ec_group.h>
-
-namespace Botan {
-
 const char* EC_Group::PEM_for_named_group(in string name)
-	{
+{
 	if(name == "secp112r1")
 		return
 			"-----BEGIN EC PARAMETERS-----"
@@ -302,6 +299,6 @@ const char* EC_Group::PEM_for_named_group(in string name)
 			"-----END EC PARAMETERS-----";
 
 	return nullptr;
-	}
+}
 
 }

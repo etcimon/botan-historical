@@ -5,23 +5,19 @@
 * Distributed under the terms of the Botan license
 */
 
-#ifndef BOTAN_PKCS8_H__
 #define BOTAN_PKCS8_H__
 
 #include <botan/x509_key.h>
 #include <functional>
 #include <chrono>
-
-namespace Botan {
-
 /**
 * PKCS #8 General Exception
 */
-struct BOTAN_DLL PKCS8_Exception : public Decoding_Error
-	{
+struct PKCS8_Exception : public Decoding_Error
+{
 	PKCS8_Exception(in string error) :
 		Decoding_Error("PKCS #8: " + error) {}
-	};
+};
 
 /**
 * This namespace contains functions for handling PKCS #8 private keys
@@ -33,14 +29,14 @@ namespace PKCS8 {
 * @param key the private key to encode
 * @return BER encoded key
 */
-BOTAN_DLL SafeArray!byte BER_encode(const Private_Key& key);
+SafeArray!byte BER_encode(const Private_Key& key);
 
 /**
 * Get a string containing a PEM encoded private key.
 * @param key the key to encode
 * @return encoded key
 */
-BOTAN_DLL string PEM_encode(const Private_Key& key);
+string PEM_encode(const Private_Key& key);
 
 /**
 * Encrypt a key using PKCS #8 encryption
@@ -53,7 +49,7 @@ BOTAN_DLL string PEM_encode(const Private_Key& key);
 			default will be chosen.
 * @return encrypted key in binary BER form
 */
-BOTAN_DLL std::vector<byte>
+std::vector<byte>
 BER_encode(const Private_Key& key,
 			  RandomNumberGenerator& rng,
 			  in string pass,
@@ -72,7 +68,7 @@ BER_encode(const Private_Key& key,
 			default will be chosen.
 * @return encrypted key in PEM form
 */
-BOTAN_DLL string
+string
 PEM_encode(const Private_Key& key,
 			  RandomNumberGenerator& rng,
 			  in string pass,
@@ -86,7 +82,7 @@ PEM_encode(const Private_Key& key,
 * @param get_passphrase a function that returns passphrases
 * @return loaded private key object
 */
-BOTAN_DLL Private_Key* load_key(
+Private_Key* load_key(
   DataSource& source,
   RandomNumberGenerator& rng,
   std::function<std::pair<bool, string> ()> get_passphrase);
@@ -98,7 +94,7 @@ BOTAN_DLL Private_Key* load_key(
 * string if the key is not encrypted
 * @return loaded private key object
 */
-BOTAN_DLL Private_Key* load_key(DataSource& source,
+Private_Key* load_key(DataSource& source,
 										  RandomNumberGenerator& rng,
 										  in string pass = "");
 
@@ -109,7 +105,7 @@ BOTAN_DLL Private_Key* load_key(DataSource& source,
 * @param get_passphrase a function that returns passphrases
 * @return loaded private key object
 */
-BOTAN_DLL Private_Key* load_key(
+Private_Key* load_key(
   in string filename,
   RandomNumberGenerator& rng,
   std::function<std::pair<bool, string> ()> get_passphrase);
@@ -121,7 +117,7 @@ BOTAN_DLL Private_Key* load_key(
 * string if the key is not encrypted
 * @return loaded private key object
 */
-BOTAN_DLL Private_Key* load_key(in string filename,
+Private_Key* load_key(in string filename,
 										  RandomNumberGenerator& rng,
 										  in string pass = "");
 
@@ -131,11 +127,7 @@ BOTAN_DLL Private_Key* load_key(in string filename,
 * @param rng the rng to use
 * @return new copy of the key
 */
-BOTAN_DLL Private_Key* copy_key(const Private_Key& key,
+Private_Key* copy_key(const Private_Key& key,
 										  RandomNumberGenerator& rng);
 
 }
-
-}
-
-#endif

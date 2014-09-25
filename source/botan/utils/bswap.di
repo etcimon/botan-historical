@@ -6,7 +6,6 @@
 * Distributed under the terms of the Botan license
 */
 
-#ifndef BOTAN_BYTE_SWAP_H__
 #define BOTAN_BYTE_SWAP_H__
 
 #include <botan/types.h>
@@ -15,22 +14,19 @@
 #if defined(BOTAN_TARGET_CPU_HAS_SSE2) && !defined(BOTAN_NO_SSE_INTRINSICS)
   #include <emmintrin.h>
 #endif
-
-namespace Botan {
-
 /**
 * Swap a 16 bit integer
 */
 inline u16bit reverse_bytes(u16bit val)
-	{
+{
 	return rotate_left(val, 8);
-	}
+}
 
 /**
 * Swap a 32 bit integer
 */
 inline u32bit reverse_bytes(u32bit val)
-	{
+{
 #if BOTAN_GCC_VERSION >= 430 && !defined(BOTAN_TARGET_CPU_IS_ARM_FAMILY)
 	/*
 	GCC intrinsic added in 4.3, works for a number of CPUs
@@ -49,9 +45,9 @@ inline u32bit reverse_bytes(u32bit val)
 
 #elif BOTAN_USE_GCC_INLINE_ASM && defined(BOTAN_TARGET_CPU_IS_ARM_FAMILY)
 
-	asm ("eor r3, %1, %1, ror #16\n\t"
-		  "bic r3, r3, #0x00FF0000\n\t"
-		  "mov %0, %1, ror #8\n\t"
+	asm ("eor r3, %1, %1, ror #16\t"
+		  "bic r3, r3, #0x00FF0000\t"
+		  "mov %0, %1, ror #8\t"
 		  "eor %0, %0, r3, lsr #8"
 		  : "=r" (val)
 		  : "0" (val)
@@ -72,13 +68,13 @@ inline u32bit reverse_bytes(u32bit val)
 			 (rotate_left (val, 8) & 0x00FF00FF);
 
 #endif
-	}
+}
 
 /**
 * Swap a 64 bit integer
 */
 inline u64bit reverse_bytes(u64bit val)
-	{
+{
 #if BOTAN_GCC_VERSION >= 430
 
 	// GCC intrinsic added in 4.3, works for a number of CPUs
@@ -103,19 +99,19 @@ inline u64bit reverse_bytes(u64bit val)
 
 	return (static_cast<u64bit>(lo) << 32) | hi;
 #endif
-	}
+}
 
 /**
 * Swap 4 Ts in an array
 */
 template<typename T>
 inline void bswap_4(T x[4])
-	{
+{
 	x[0] = reverse_bytes(x[0]);
 	x[1] = reverse_bytes(x[1]);
 	x[2] = reverse_bytes(x[2]);
 	x[3] = reverse_bytes(x[3]);
-	}
+}
 
 #if defined(BOTAN_TARGET_CPU_HAS_SSE2) && !defined(BOTAN_NO_SSE_INTRINSICS)
 
@@ -124,7 +120,7 @@ inline void bswap_4(T x[4])
 */
 template<>
 inline void bswap_4(u32bit x[4])
-	{
+{
 	__m128i T = _mm_loadu_si128(reinterpret_cast<const __m128i*>(x));
 
 	T = _mm_shufflehi_epi16(T, _MM_SHUFFLE(2, 3, 0, 1));
@@ -133,10 +129,3 @@ inline void bswap_4(u32bit x[4])
 	T =  _mm_or_si128(_mm_srli_epi16(T, 8), _mm_slli_epi16(T, 8));
 
 	_mm_storeu_si128(reinterpret_cast<__m128i*>(x), T);
-	}
-
-#endif
-
-}
-
-#endif

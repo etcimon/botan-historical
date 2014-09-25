@@ -5,16 +5,12 @@
 *
 */
 
-#ifndef BOTAN_SEMAPHORE_H__
 #define BOTAN_SEMAPHORE_H__
 
 #include <mutex>
 #include <condition_variable>
-
-namespace Botan {
-
 class Semaphore
-	{
+{
 	public:
 		Semaphore(int value = 0) : m_value(value), m_wakeups(0) {}
 
@@ -27,8 +23,4 @@ class Semaphore
 		int m_wakeups;
 		std::mutex m_mutex;
 		std::condition_variable m_cond;
-	};
-
-}
-
-#endif
+};

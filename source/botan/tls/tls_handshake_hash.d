@@ -9,9 +9,6 @@
 #include <botan/tls_exceptn.h>
 #include <botan/libstate.h>
 #include <botan/hash.h>
-
-namespace Botan {
-
 namespace TLS {
 
 /**
@@ -19,30 +16,30 @@ namespace TLS {
 */
 SafeArray!byte Handshake_Hash::final(Protocol_Version version,
 														in string mac_algo) const
-	{
+{
 	Algorithm_Factory& af = global_state().algorithm_factory();
 
 	std::unique_ptr<HashFunction> hash;
 
 	if(version.supports_ciphersuite_specific_prf())
-		{
+	{
 		if(mac_algo == "MD5" || mac_algo == "SHA-1")
 			hash.reset(af.make_hash_function("SHA-256"));
 		else
 			hash.reset(af.make_hash_function(mac_algo));
-		}
+	}
 	else
 		hash.reset(af.make_hash_function("Parallel(MD5,SHA-160)"));
 
 	hash->update(data);
 	return hash->final();
-	}
+}
 
 /**
 * Return a SSLv3 Handshake Hash
 */
 SafeArray!byte Handshake_Hash::final_ssl3(in SafeArray!byte secret) const
-	{
+{
 	const byte PAD_INNER = 0x36, PAD_OUTER = 0x5C;
 
 	Algorithm_Factory& af = global_state().algorithm_factory();
@@ -78,7 +75,7 @@ SafeArray!byte Handshake_Hash::final_ssl3(in SafeArray!byte secret) const
 	output += md5->final();
 	output += sha1->final();
 	return output;
-	}
+}
 
 }
 

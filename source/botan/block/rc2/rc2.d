@@ -8,23 +8,20 @@
 #include <botan/rc2.h>
 #include <botan/loadstor.h>
 #include <botan/rotate.h>
-
-namespace Botan {
-
 /*
 * RC2 Encryption
 */
 void RC2::encrypt_n(const byte in[], byte out[], size_t blocks) const
-	{
+{
 	for(size_t i = 0; i != blocks; ++i)
-		{
+	{
 		u16bit R0 = load_le<u16bit>(in, 0);
 		u16bit R1 = load_le<u16bit>(in, 1);
 		u16bit R2 = load_le<u16bit>(in, 2);
 		u16bit R3 = load_le<u16bit>(in, 3);
 
 		for(size_t j = 0; j != 16; ++j)
-			{
+		{
 			R0 += (R1 & ~R3) + (R2 & R3) + K[4*j];
 			R0 = rotate_left(R0, 1);
 
@@ -38,35 +35,35 @@ void RC2::encrypt_n(const byte in[], byte out[], size_t blocks) const
 			R3 = rotate_left(R3, 5);
 
 			if(j == 4 || j == 10)
-				{
+			{
 				R0 += K[R3 % 64];
 				R1 += K[R0 % 64];
 				R2 += K[R1 % 64];
 				R3 += K[R2 % 64];
-				}
 			}
+		}
 
 		store_le(out, R0, R1, R2, R3);
 
 		in += BLOCK_SIZE;
 		out += BLOCK_SIZE;
-		}
 	}
+}
 
 /*
 * RC2 Decryption
 */
 void RC2::decrypt_n(const byte in[], byte out[], size_t blocks) const
-	{
+{
 	for(size_t i = 0; i != blocks; ++i)
-		{
+	{
 		u16bit R0 = load_le<u16bit>(in, 0);
 		u16bit R1 = load_le<u16bit>(in, 1);
 		u16bit R2 = load_le<u16bit>(in, 2);
 		u16bit R3 = load_le<u16bit>(in, 3);
 
 		for(size_t j = 0; j != 16; ++j)
-			{
+		{
 			R3 = rotate_right(R3, 5);
 			R3 -= (R0 & ~R2) + (R1 & R2) + K[63 - (4*j + 0)];
 
@@ -80,26 +77,26 @@ void RC2::decrypt_n(const byte in[], byte out[], size_t blocks) const
 			R0 -= (R1 & ~R3) + (R2 & R3) + K[63 - (4*j + 3)];
 
 			if(j == 4 || j == 10)
-				{
+			{
 				R3 -= K[R2 % 64];
 				R2 -= K[R1 % 64];
 				R1 -= K[R0 % 64];
 				R0 -= K[R3 % 64];
-				}
 			}
+		}
 
 		store_le(out, R0, R1, R2, R3);
 
 		in += BLOCK_SIZE;
 		out += BLOCK_SIZE;
-		}
 	}
+}
 
 /*
 * RC2 Key Schedule
 */
 void RC2::key_schedule(const byte key[], size_t length)
-	{
+{
 	static const byte TABLE[256] = {
 		0xD9, 0x78, 0xF9, 0xC4, 0x19, 0xDD, 0xB5, 0xED, 0x28, 0xE9, 0xFD, 0x79,
 		0x4A, 0xA0, 0xD8, 0x9D, 0xC6, 0x7E, 0x37, 0x83, 0x2B, 0x76, 0x53, 0x8E,
@@ -137,18 +134,18 @@ void RC2::key_schedule(const byte key[], size_t length)
 
 	K.resize(64);
 	load_le<u16bit>(&K[0], &L[0], 64);
-	}
+}
 
 void RC2::clear()
-	{
+{
 	zap(K);
-	}
+}
 
 /*
 * Return the code of the effective key bits
 */
 byte RC2::EKB_code(size_t ekb)
-	{
+{
 	const byte EKB[256] = {
 		0xBD, 0x56, 0xEA, 0xF2, 0xA2, 0xF1, 0xAC, 0x2A, 0xB0, 0x93, 0xD1, 0x9C,
 		0x1B, 0x33, 0xFD, 0xD0, 0x30, 0x04, 0xB6, 0xDC, 0x7D, 0xDF, 0x32, 0x4B,
@@ -177,6 +174,6 @@ byte RC2::EKB_code(size_t ekb)
 		return EKB[ekb];
 	else
 		throw Encoding_Error("RC2::EKB_code: EKB is too large");
-	}
+}
 
 }

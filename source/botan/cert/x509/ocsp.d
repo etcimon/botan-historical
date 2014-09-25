@@ -15,9 +15,6 @@
 #include <botan/pubkey.h>
 #include <botan/x509path.h>
 #include <botan/http_util.h>
-
-namespace Botan {
-
 namespace OCSP {
 
 namespace {
@@ -25,30 +22,30 @@ namespace {
 void decode_optional_list(BER_Decoder& ber,
 								  ASN1_Tag tag,
 								  std::vector<X509_Certificate>& output)
-	{
+{
 	BER_Object obj = ber.get_next_object();
 
 	if(obj.type_tag != tag || obj.class_tag != (CONTEXT_SPECIFIC | CONSTRUCTED))
-		{
+	{
 		ber.push_back(obj);
 		return;
-		}
+	}
 
 	BER_Decoder list(obj.value);
 
 	while(list.more_items())
-		{
+	{
 		BER_Object certbits = list.get_next_object();
 		X509_Certificate cert(unlock(certbits.value));
 		output.push_back(std::move(cert));
-		}
 	}
+}
 
 void check_signature(in Array!byte tbs_response,
 							const AlgorithmIdentifier& sig_algo,
 							in Array!byte signature,
 							const X509_Certificate& cert)
-	{
+{
 	std::unique_ptr<Public_Key> pub_key(cert.subject_public_key());
 
 	const std::vector<string> sig_info =
@@ -65,14 +62,14 @@ void check_signature(in Array!byte tbs_response,
 
 	if(!verifier.verify_message(ASN1::put_in_sequence(tbs_response), signature))
 		throw std::runtime_error("Signature on OCSP response does not verify");
-	}
+}
 
 void check_signature(in Array!byte tbs_response,
 							const AlgorithmIdentifier& sig_algo,
 							in Array!byte signature,
 							const Certificate_Store& trusted_roots,
 							const std::vector<X509_Certificate>& certs)
-	{
+{
 	if(certs.size() < 1)
 		throw std::invalid_argument("Short cert chain for check_signature");
 
@@ -95,12 +92,12 @@ void check_signature(in Array!byte tbs_response,
 	const std::vector<X509_Certificate>& cert_path = result.cert_path();
 
 	check_signature(tbs_response, sig_algo, signature, cert_path[0]);
-	}
+}
 
 }
 
 std::vector<byte> Request::BER_encode() const
-	{
+{
 	CertID certid(m_issuer, m_subject);
 
 	return DER_Encoder().start_cons(SEQUENCE)
@@ -115,16 +112,16 @@ std::vector<byte> Request::BER_encode() const
 				.end_cons()
 			 .end_cons()
 		.end_cons().get_contents_unlocked();
-	}
+}
 
 string Request::base64_encode() const
-	{
+{
 	return Botan::base64_encode(BER_encode());
-	}
+}
 
 Response::Response(const Certificate_Store& trusted_roots,
 						 in Array!byte response_bits)
-	{
+{
 	BER_Decoder response_outer = BER_Decoder(response_bits).start_cons(SEQUENCE);
 
 	size_t resp_status = 0;
@@ -135,7 +132,7 @@ Response::Response(const Certificate_Store& trusted_roots,
 		throw std::runtime_error("OCSP response status " + std::to_string(resp_status));
 
 	if(response_outer.more_items())
-		{
+	{
 		BER_Decoder response_bytes =
 			response_outer.start_cons(ASN1_Tag(0), CONTEXT_SPECIFIC).start_cons(SEQUENCE);
 
@@ -181,26 +178,26 @@ Response::Response(const Certificate_Store& trusted_roots,
 								  ASN1_Tag(CONSTRUCTED | CONTEXT_SPECIFIC));
 
 		if(certs.empty())
-			{
+		{
 			if(auto cert = trusted_roots.find_cert(name, std::vector<byte>()))
 				certs.push_back(*cert);
 			else
 				throw std::runtime_error("Could not find certificate that signed OCSP response");
-			}
-
-		check_signature(tbs_bits, sig_algo, signature, trusted_roots, certs);
 		}
 
-	response_outer.end_cons();
+		check_signature(tbs_bits, sig_algo, signature, trusted_roots, certs);
 	}
+
+	response_outer.end_cons();
+}
 
 Certificate_Status_Code Response::status_for(const X509_Certificate& issuer,
 																	const X509_Certificate& subject) const
-	{
+{
 	for(const auto& response : m_responses)
-		{
+	{
 		if(response.certid().is_id_for(issuer, subject))
-			{
+		{
 			X509_Time current_time(std::chrono::system_clock::now());
 
 			if(response.cert_status() == 1)
@@ -216,16 +213,16 @@ Certificate_Status_Code Response::status_for(const X509_Certificate& issuer,
 				return Certificate_Status_Code::OCSP_RESPONSE_GOOD;
 			else
 				return Certificate_Status_Code::OCSP_BAD_STATUS;
-			}
 		}
+	}
 
 	return Certificate_Status_Code::OCSP_CERT_NOT_LISTED;
-	}
+}
 
 Response online_check(const X509_Certificate& issuer,
 							 const X509_Certificate& subject,
 							 const Certificate_Store* trusted_roots)
-	{
+{
 	const string responder_url = subject.ocsp_responder();
 
 	if(responder_url == "")
@@ -244,7 +241,7 @@ Response online_check(const X509_Certificate& issuer,
 	OCSP::Response response(*trusted_roots, http.body());
 
 	return response;
-	}
+}
 
 }
 

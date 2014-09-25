@@ -9,40 +9,37 @@
 #include <botan/internal/cast_sboxes.h>
 #include <botan/loadstor.h>
 #include <botan/rotate.h>
-
-namespace Botan {
-
 namespace {
 
 /*
 * CAST-128 Round Type 1
 */
 inline void R1(u32bit& L, u32bit R, u32bit MK, byte RK)
-	{
+{
 	u32bit T = rotate_left(MK + R, RK);
 	L ^= (CAST_SBOX1[get_byte(0, T)] ^ CAST_SBOX2[get_byte(1, T)]) -
 			CAST_SBOX3[get_byte(2, T)] + CAST_SBOX4[get_byte(3, T)];
-	}
+}
 
 /*
 * CAST-128 Round Type 2
 */
 inline void R2(u32bit& L, u32bit R, u32bit MK, byte RK)
-	{
+{
 	u32bit T = rotate_left(MK ^ R, RK);
 	L ^= (CAST_SBOX1[get_byte(0, T)]  - CAST_SBOX2[get_byte(1, T)] +
 			CAST_SBOX3[get_byte(2, T)]) ^ CAST_SBOX4[get_byte(3, T)];
-	}
+}
 
 /*
 * CAST-128 Round Type 3
 */
 inline void R3(u32bit& L, u32bit R, u32bit MK, byte RK)
-	{
+{
 	u32bit T = rotate_left(MK - R, RK);
 	L ^= ((CAST_SBOX1[get_byte(0, T)]  + CAST_SBOX2[get_byte(1, T)]) ^
 			 CAST_SBOX3[get_byte(2, T)]) - CAST_SBOX4[get_byte(3, T)];
-	}
+}
 
 }
 
@@ -50,9 +47,9 @@ inline void R3(u32bit& L, u32bit R, u32bit MK, byte RK)
 * CAST-128 Encryption
 */
 void CAST_128::encrypt_n(const byte in[], byte out[], size_t blocks) const
-	{
+{
 	for(size_t i = 0; i != blocks; ++i)
-		{
+	{
 		u32bit L = load_be<u32bit>(in, 0);
 		u32bit R = load_be<u32bit>(in, 1);
 
@@ -77,16 +74,16 @@ void CAST_128::encrypt_n(const byte in[], byte out[], size_t blocks) const
 
 		in += BLOCK_SIZE;
 		out += BLOCK_SIZE;
-		}
 	}
+}
 
 /*
 * CAST-128 Decryption
 */
 void CAST_128::decrypt_n(const byte in[], byte out[], size_t blocks) const
-	{
+{
 	for(size_t i = 0; i != blocks; ++i)
-		{
+	{
 		u32bit L = load_be<u32bit>(in, 0);
 		u32bit R = load_be<u32bit>(in, 1);
 
@@ -111,14 +108,14 @@ void CAST_128::decrypt_n(const byte in[], byte out[], size_t blocks) const
 
 		in += BLOCK_SIZE;
 		out += BLOCK_SIZE;
-		}
 	}
+}
 
 /*
 * CAST-128 Key Schedule
 */
 void CAST_128::key_schedule(const byte key[], size_t length)
-	{
+{
 	MK.resize(48);
 	RK.resize(48);
 
@@ -133,20 +130,20 @@ void CAST_128::key_schedule(const byte key[], size_t length)
 
 	for(size_t i = 0; i != 16; ++i)
 		RK[i] = RK32[i] % 32;
-	}
+}
 
 void CAST_128::clear()
-	{
+{
 	zap(MK);
 	zap(RK);
-	}
+}
 
 /*
 * S-Box Based Key Expansion
 */
 void CAST_128::cast_ks(secure_vector<u32bit>& K,
 							  secure_vector<u32bit>& X)
-	{
+{
 	static const u32bit S5[256] = {
 		0x7EC90C04, 0x2C6E74B9, 0x9B0E66DF, 0xA6337911, 0xB86A7FFF, 0x1DD358F5,
 		0x44DD9D44, 0x1731167F, 0x08FBF1FA, 0xE7F511CC, 0xD2051B00, 0x735ABA00,
@@ -328,13 +325,13 @@ void CAST_128::cast_ks(secure_vector<u32bit>& K,
 		0x50B2AD80, 0xEAEE6801, 0x8DB2A283, 0xEA8BF59E };
 
 	class ByteReader
-		{
+	{
 		public:
 			byte operator()(size_t i) { return (X[i/4] >> (8*(3 - (i%4)))); }
 			ByteReader(const u32bit* x) : X(x) {}
 		private:
 			const u32bit* X;
-		};
+	};
 
 	secure_vector<u32bit> Z(4);
 	ByteReader x(&X[0]), z(&Z[0]);
@@ -371,6 +368,6 @@ void CAST_128::cast_ks(secure_vector<u32bit>& K,
 	K[13] = S5[x(10)] ^ S6[x(11)] ^ S7[x( 5)] ^ S8[x( 4)] ^ S6[x( 7)];
 	K[14] = S5[x(12)] ^ S6[x(13)] ^ S7[x( 3)] ^ S8[x( 2)] ^ S7[x( 8)];
 	K[15] = S5[x(14)] ^ S6[x(15)] ^ S7[x( 1)] ^ S8[x( 0)] ^ S8[x(13)];
-	}
+}
 
 }

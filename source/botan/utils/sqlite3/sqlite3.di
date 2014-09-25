@@ -5,7 +5,6 @@
 * Released under the terms of the Botan license
 */
 
-#ifndef BOTAN_UTILS_SQLITE_WRAPPER_H__
 #define BOTAN_UTILS_SQLITE_WRAPPER_H__
 
 #include <botan/types.h>
@@ -15,11 +14,8 @@
 
 class sqlite3;
 class sqlite3_stmt;
-
-namespace Botan {
-
 class sqlite3_database
-	{
+{
 	public:
 		sqlite3_database(in string file);
 
@@ -32,10 +28,10 @@ class sqlite3_database
 		friend class sqlite3_statement;
 
 		sqlite3* m_db;
-	};
+};
 
 class sqlite3_statement
-	{
+{
 	public:
 		sqlite3_statement(sqlite3_database* db,
 								in string base_sql);
@@ -61,8 +57,4 @@ class sqlite3_statement
 		~sqlite3_statement();
 	private:
 		sqlite3_stmt* m_stmt;
-	};
-
-}
-
-#endif
+};

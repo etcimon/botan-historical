@@ -5,20 +5,16 @@
 * Released under the terms of the Botan license
 */
 
-#ifndef BOTAN_TLS_HEARTBEATS_H__
 #define BOTAN_TLS_HEARTBEATS_H__
 
 #include <botan/secmem.h>
-
-namespace Botan {
-
 namespace TLS {
 
 /**
 * TLS Heartbeat message
 */
 class Heartbeat_Message
-	{
+{
 	public:
 		enum Type { REQUEST = 1, RESPONSE = 2 };
 
@@ -34,10 +30,6 @@ class Heartbeat_Message
 	private:
 		Type m_type;
 		std::vector<byte> m_payload;
-	};
+};
 
 }
-
-}
-
-#endif

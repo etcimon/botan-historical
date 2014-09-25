@@ -6,34 +6,31 @@
 */
 
 #include <botan/ssl3_mac.h>
-
-namespace Botan {
-
 /*
 * Update a SSL3-MAC Calculation
 */
 void SSL3_MAC::add_data(const byte input[], size_t length)
-	{
+{
 	m_hash->update(input, length);
-	}
+}
 
 /*
 * Finalize a SSL3-MAC Calculation
 */
 void SSL3_MAC::final_result(byte mac[])
-	{
+{
 	m_hash->final(mac);
 	m_hash->update(m_okey);
 	m_hash->update(mac, output_length());
 	m_hash->final(mac);
 	m_hash->update(m_ikey);
-	}
+}
 
 /*
 * SSL3-MAC Key Schedule
 */
 void SSL3_MAC::key_schedule(const byte key[], size_t length)
-	{
+{
 	m_hash->clear();
 
 	// Quirk to deal with specification bug
@@ -50,41 +47,41 @@ void SSL3_MAC::key_schedule(const byte key[], size_t length)
 	copy_mem(&m_okey[0], key, length);
 
 	m_hash->update(m_ikey);
-	}
+}
 
 /*
 * Clear memory of sensitive data
 */
 void SSL3_MAC::clear()
-	{
+{
 	m_hash->clear();
 	zap(m_ikey);
 	zap(m_okey);
-	}
+}
 
 /*
 * Return the name of this type
 */
 string SSL3_MAC::name() const
-	{
+{
 	return "SSL3-MAC(" + m_hash->name() + ")";
-	}
+}
 
 /*
 * Return a clone of this object
 */
 MessageAuthenticationCode* SSL3_MAC::clone() const
-	{
+{
 	return new SSL3_MAC(m_hash->clone());
-	}
+}
 
 /*
 * SSL3-MAC Constructor
 */
 SSL3_MAC::SSL3_MAC(HashFunction* hash) : m_hash(hash)
-	{
+{
 	if(m_hash->hash_block_size() == 0)
 		throw Invalid_Argument("SSL3-MAC cannot be used with " + m_hash->name());
-	}
+}
 
 }

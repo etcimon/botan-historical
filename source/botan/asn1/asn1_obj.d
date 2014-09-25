@@ -10,9 +10,6 @@
 #include <botan/ber_dec.h>
 #include <botan/data_src.h>
 #include <botan/parsing.h>
-
-namespace Botan {
-
 /*
 * BER Decoding Exceptions
 */
@@ -32,28 +29,28 @@ namespace ASN1 {
 * Put some arbitrary bytes into a SEQUENCE
 */
 std::vector<byte> put_in_sequence(in Array!byte contents)
-	{
+{
 	return DER_Encoder()
 		.start_cons(SEQUENCE)
 			.raw_bytes(contents)
 		.end_cons()
 	.get_contents_unlocked();
-	}
+}
 
 /*
 * Convert a BER object into a string object
 */
 string to_string(const BER_Object& obj)
-	{
+{
 	return string(reinterpret_cast<const char*>(&obj.value[0]),
 							 obj.value.size());
-	}
+}
 
 /*
 * Do heuristic tests for BER data
 */
 bool maybe_BER(DataSource& source)
-	{
+{
 	byte first_byte;
 	if(!source.peek_byte(first_byte))
 		throw Stream_IO_Error("ASN1::maybe_BER: Source was empty");
@@ -61,7 +58,7 @@ bool maybe_BER(DataSource& source)
 	if(first_byte == (SEQUENCE | CONSTRUCTED))
 		return true;
 	return false;
-	}
+}
 
 }
 

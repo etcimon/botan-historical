@@ -13,11 +13,8 @@
 #include <botan/libstate.h>
 #include <botan/oids.h>
 #include <botan/pem.h>
-
-namespace Botan {
-
 EC_Group::EC_Group(const OID& domain_oid)
-	{
+{
 	const char* pem = PEM_for_named_group(OIDS::lookup(domain_oid));
 
 	if(!pem)
@@ -25,41 +22,41 @@ EC_Group::EC_Group(const OID& domain_oid)
 
 	*this = EC_Group(pem);
 	oid = domain_oid.as_string();
-	}
+}
 
 EC_Group::EC_Group(in string str)
-	{
+{
 	if(str == "")
 		return; // no initialization / uninitialized
 
 	try
-		{
+	{
 		std::vector<byte> ber =
 			unlock(PEM_Code::decode_check_label(str, "EC PARAMETERS"));
 
 		*this = EC_Group(ber);
-		}
-	catch(Decoding_Error) // hmm, not PEM?
-		{
-		*this = EC_Group(OIDS::lookup(str));
-		}
 	}
+	catch(Decoding_Error) // hmm, not PEM?
+	{
+		*this = EC_Group(OIDS::lookup(str));
+	}
+}
 
 EC_Group::EC_Group(in Array!byte ber_data)
-	{
+{
 	BER_Decoder ber(ber_data);
 	BER_Object obj = ber.get_next_object();
 
 	if(obj.type_tag == NULL_TAG)
 		throw Decoding_Error("Cannot handle ImplicitCA ECDSA parameters");
 	else if(obj.type_tag == OBJECT_ID)
-		{
+	{
 		OID dom_par_oid;
 		BER_Decoder(ber_data).decode(dom_par_oid);
 		*this = EC_Group(dom_par_oid);
-		}
+	}
 	else if(obj.type_tag == SEQUENCE)
-		{
+	{
 		BigInt p, a, b;
 		std::vector<byte> sv_base_point;
 
@@ -83,16 +80,16 @@ EC_Group::EC_Group(in Array!byte ber_data)
 
 		curve = CurveGFp(p, a, b);
 		base_point = OS2ECP(sv_base_point, curve);
-		}
+	}
 	else
 		throw Decoding_Error("Unexpected tag while decoding ECC domain params");
-	}
+}
 
 std::vector<byte>
 EC_Group::DER_encode(EC_Group_Encoding form) const
-	{
+{
 	if(form == EC_DOMPAR_ENC_EXPLICIT)
-		{
+	{
 		const size_t ecpVers1 = 1;
 		OID curve_type("1.2.840.10045.1.1");
 
@@ -116,19 +113,19 @@ EC_Group::DER_encode(EC_Group_Encoding form) const
 				.encode(cofactor)
 			.end_cons()
 			.get_contents_unlocked();
-		}
+	}
 	else if(form == EC_DOMPAR_ENC_OID)
 		return DER_Encoder().encode(OID(get_oid())).get_contents_unlocked();
 	else if(form == EC_DOMPAR_ENC_IMPLICITCA)
 		return DER_Encoder().encode_null().get_contents_unlocked();
 	else
 		throw Internal_Error("EC_Group::DER_encode: Unknown encoding");
-	}
+}
 
 string EC_Group::PEM_encode() const
-	{
+{
 	const std::vector<byte> der = DER_encode(EC_DOMPAR_ENC_EXPLICIT);
 	return PEM_Code::encode(der, "EC PARAMETERS");
-	}
+}
 
 }

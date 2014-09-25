@@ -8,9 +8,6 @@
 #include <botan/threefish.h>
 #include <botan/rotate.h>
 #include <botan/loadstor.h>
-
-namespace Botan {
-
 #define THREEFISH_ROUND(X0,X1,X2,X3,X4,X5,X6,X7,ROT1,ROT2,ROT3,ROT4) \
 	do {																				  \
 		X0 += X4;																		\
@@ -25,7 +22,7 @@ namespace Botan {
 		X5 ^= X1;																		\
 		X6 ^= X2;																		\
 		X7 ^= X3;																		\
-	} while(0)
+} while(0)
 
 #define THREEFISH_INJECT_KEY(r)				  \
 	do {												  \
@@ -37,7 +34,7 @@ namespace Botan {
 		X5 += m_K[(r+5) % 9] + m_T[(r  ) % 3]; \
 		X6 += m_K[(r+6) % 9] + m_T[(r+1) % 3]; \
 		X7 += m_K[(r+7) % 9] + (r);				\
-	} while(0)
+} while(0)
 
 #define THREEFISH_ENC_8_ROUNDS(R1,R2)								 \
 	do {																		 \
@@ -52,11 +49,11 @@ namespace Botan {
 		THREEFISH_ROUND(X4,X6,X0,X2, X1,X3,X5,X7, 25,29,39,43); \
 		THREEFISH_ROUND(X6,X0,X2,X4, X1,X7,X5,X3,  8,35,56,22); \
 		THREEFISH_INJECT_KEY(R2);										 \
-	} while(0)
+} while(0)
 
 void Threefish_512::skein_feedfwd(const secure_vector<u64bit>& M,
 											 const secure_vector<u64bit>& T)
-	{
+{
 	BOTAN_ASSERT(m_K.size() == 9, "Key was set");
 	BOTAN_ASSERT(M.size() == 8, "Single block");
 
@@ -96,15 +93,15 @@ void Threefish_512::skein_feedfwd(const secure_vector<u64bit>& M,
 
 	m_K[8] = m_K[0] ^ m_K[1] ^ m_K[2] ^ m_K[3] ^
 				m_K[4] ^ m_K[5] ^ m_K[6] ^ m_K[7] ^ 0x1BD11BDAA9FC1A22;
-	}
+}
 
 void Threefish_512::encrypt_n(const byte in[], byte out[], size_t blocks) const
-	{
+{
 	BOTAN_ASSERT(m_K.size() == 9, "Key was set");
 	BOTAN_ASSERT(m_T.size() == 3, "Tweak was set");
 
 	for(size_t i = 0; i != blocks; ++i)
-		{
+	{
 		u64bit X0 = load_le<u64bit>(in, 0);
 		u64bit X1 = load_le<u64bit>(in, 1);
 		u64bit X2 = load_le<u64bit>(in, 2);
@@ -130,15 +127,15 @@ void Threefish_512::encrypt_n(const byte in[], byte out[], size_t blocks) const
 
 		in += 64;
 		out += 64;
-		}
 	}
+}
 
 #undef THREEFISH_ENC_8_ROUNDS
 #undef THREEFISH_INJECT_KEY
 #undef THREEFISH_ROUND
 
 void Threefish_512::decrypt_n(const byte in[], byte out[], size_t blocks) const
-	{
+{
 	BOTAN_ASSERT(m_K.size() == 9, "Key was set");
 	BOTAN_ASSERT(m_T.size() == 3, "Tweak was set");
 
@@ -156,7 +153,7 @@ void Threefish_512::decrypt_n(const byte in[], byte out[], size_t blocks) const
 		X1 -= X5;																		\
 		X2 -= X6;																		\
 		X3 -= X7;																		\
-	} while(0)
+} while(0)
 
 #define THREEFISH_INJECT_KEY(r)				  \
 	do {												  \
@@ -168,7 +165,7 @@ void Threefish_512::decrypt_n(const byte in[], byte out[], size_t blocks) const
 		X5 -= m_K[(r+5) % 9] + m_T[(r  ) % 3]; \
 		X6 -= m_K[(r+6) % 9] + m_T[(r+1) % 3]; \
 		X7 -= m_K[(r+7) % 9] + (r);				\
-	} while(0)
+} while(0)
 
 #define THREEFISH_DEC_8_ROUNDS(R1,R2)								 \
 	do {																		 \
@@ -183,10 +180,10 @@ void Threefish_512::decrypt_n(const byte in[], byte out[], size_t blocks) const
 		THREEFISH_ROUND(X2,X4,X6,X0, X1,X7,X5,X3, 33,27,14,42); \
 		THREEFISH_ROUND(X0,X2,X4,X6, X1,X3,X5,X7, 46,36,19,37); \
 		THREEFISH_INJECT_KEY(R2);										 \
-	} while(0)
+} while(0)
 
 	for(size_t i = 0; i != blocks; ++i)
-		{
+	{
 		u64bit X0 = load_le<u64bit>(in, 0);
 		u64bit X1 = load_le<u64bit>(in, 1);
 		u64bit X2 = load_le<u64bit>(in, 2);
@@ -212,24 +209,24 @@ void Threefish_512::decrypt_n(const byte in[], byte out[], size_t blocks) const
 
 		in += 64;
 		out += 64;
-		}
+	}
 
 #undef THREEFISH_DEC_8_ROUNDS
 #undef THREEFISH_INJECT_KEY
 #undef THREEFISH_ROUND
-	}
+}
 
 void Threefish_512::set_tweak(const byte tweak[], size_t len)
-	{
+{
 	if(len != 16)
 		throw std::runtime_error("Unsupported twofish tweak length");
 	m_T[0] = load_le<u64bit>(tweak, 0);
 	m_T[1] = load_le<u64bit>(tweak, 1);
 	m_T[2] = m_T[0] ^ m_T[1];
-	}
+}
 
 void Threefish_512::key_schedule(const byte key[], size_t)
-	{
+{
 	// todo: define key schedule for smaller keys
 	m_K.resize(9);
 
@@ -238,12 +235,12 @@ void Threefish_512::key_schedule(const byte key[], size_t)
 
 	m_K[8] = m_K[0] ^ m_K[1] ^ m_K[2] ^ m_K[3] ^
 				m_K[4] ^ m_K[5] ^ m_K[6] ^ m_K[7] ^ 0x1BD11BDAA9FC1A22;
-	}
+}
 
 void Threefish_512::clear()
-	{
+{
 	zeroise(m_K);
 	zeroise(m_T);
-	}
+}
 
 }

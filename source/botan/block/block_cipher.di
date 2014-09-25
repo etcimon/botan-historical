@@ -5,18 +5,14 @@
 * Distributed under the terms of the Botan license
 */
 
-#ifndef BOTAN_BLOCK_CIPHER_H__
 #define BOTAN_BLOCK_CIPHER_H__
 
 #include <botan/sym_algo.h>
-
-namespace Botan {
-
 /**
 * This class represents a block cipher object.
 */
 class BlockCipher : public SymmetricAlgorithm
-	{
+{
 	public:
 
 		/**
@@ -33,9 +29,9 @@ class BlockCipher : public SymmetricAlgorithm
 		* @return prefererred parallelism of this cipher in bytes
 		*/
 		size_t parallel_bytes() const
-			{
+		{
 			return parallelism() * block_size() * BOTAN_BLOCK_CIPHER_PAR_MULT;
-			}
+		}
 
 		/**
 		* Encrypt a block.
@@ -45,7 +41,7 @@ class BlockCipher : public SymmetricAlgorithm
 		* Must be of length block_size().
 		*/
 		void encrypt(const byte in[], byte out[]) const
-			{ encrypt_n(in, out, 1); }
+		{ encrypt_n(in, out, 1); }
 
 		/**
 		* Decrypt a block.
@@ -55,7 +51,7 @@ class BlockCipher : public SymmetricAlgorithm
 		* Must be of length block_size().
 		*/
 		void decrypt(const byte in[], byte out[]) const
-			{ decrypt_n(in, out, 1); }
+		{ decrypt_n(in, out, 1); }
 
 		/**
 		* Encrypt a block.
@@ -79,9 +75,9 @@ class BlockCipher : public SymmetricAlgorithm
 		*/
 		template<typename Alloc>
 		void encrypt(std::vector<byte, Alloc>& block) const
-			{
+		{
 			return encrypt_n(&block[0], &block[0], block.size() / block_size());
-			}
+		}
 
 		/**
 		* Decrypt one or more blocks
@@ -89,9 +85,9 @@ class BlockCipher : public SymmetricAlgorithm
 		*/
 		template<typename Alloc>
 		void decrypt(std::vector<byte, Alloc>& block) const
-			{
+		{
 			return decrypt_n(&block[0], &block[0], block.size() / block_size());
-			}
+		}
 
 		/**
 		* Encrypt one or more blocks
@@ -101,9 +97,9 @@ class BlockCipher : public SymmetricAlgorithm
 		template<typename Alloc, typename Alloc2>
 		void encrypt(const std::vector<byte, Alloc>& in,
 						 std::vector<byte, Alloc2>& out) const
-			{
+		{
 			return encrypt_n(&in[0], &out[0], in.size() / block_size());
-			}
+		}
 
 		/**
 		* Decrypt one or more blocks
@@ -113,9 +109,9 @@ class BlockCipher : public SymmetricAlgorithm
 		template<typename Alloc, typename Alloc2>
 		void decrypt(const std::vector<byte, Alloc>& in,
 						 std::vector<byte, Alloc2>& out) const
-			{
+		{
 			return decrypt_n(&in[0], &out[0], in.size() / block_size());
-			}
+		}
 
 		/**
 		* Encrypt one or more blocks
@@ -139,24 +135,20 @@ class BlockCipher : public SymmetricAlgorithm
 		* @return new object representing the same algorithm as *this
 		*/
 		abstract BlockCipher* clone() const = 0;
-	};
+};
 
 /**
 * Represents a block cipher with a single fixed block size
 */
 template<size_t BS, size_t KMIN, size_t KMAX = 0, size_t KMOD = 1>
 class Block_Cipher_Fixed_Params : public BlockCipher
-	{
+{
 	public:
 		enum { BLOCK_SIZE = BS };
 		size_t block_size() const { return BS; }
 
 		Key_Length_Specification key_spec() const
-			{
+		{
 			return Key_Length_Specification(KMIN, KMAX, KMOD);
-			}
-	};
-
-}
-
-#endif
+		}
+};

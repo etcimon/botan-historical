@@ -5,20 +5,16 @@
 * Distributed under the terms of the Botan license
 */
 
-#ifndef BOTAN_ENTROPY_SOURCE_BASE_H__
 #define BOTAN_ENTROPY_SOURCE_BASE_H__
 
 #include <botan/secmem.h>
 #include <string>
 #include <functional>
-
-namespace Botan {
-
 /**
 * Class used to accumulate the poll results of EntropySources
 */
 class Entropy_Accumulator
-	{
+{
 	public:
 		/**
 		* Initialize an Entropy_Accumulator
@@ -37,11 +33,11 @@ class Entropy_Accumulator
 		* @return cached I/O buffer for repeated polls
 		*/
 		SafeArray!byte& get_io_buffer(size_t size)
-			{
+		{
 			m_io_buffer.clear();
 			m_io_buffer.resize(size);
 			return m_io_buffer;
-			}
+		}
 
 		/**
 		* @return if our polling goal has been achieved
@@ -56,10 +52,10 @@ class Entropy_Accumulator
 		* entropy per byte is in this input
 		*/
 		void add(const void* bytes, size_t length, double entropy_bits_per_byte)
-			{
+		{
 			m_done = m_accum_fn(reinterpret_cast<const byte*>(bytes),
 									  length, entropy_bits_per_byte * length);
-			}
+		}
 
 		/**
 		* Add entropy to the accumulator
@@ -69,20 +65,20 @@ class Entropy_Accumulator
 		*/
 		template<typename T>
 		void add(const T& v, double entropy_bits_per_byte)
-			{
+		{
 			add(&v, sizeof(T), entropy_bits_per_byte);
-			}
+		}
 	private:
 		std::function<bool (const byte[], size_t, double)> m_accum_fn;
 		bool m_done;
 		SafeArray!byte m_io_buffer;
-	};
+};
 
 /**
 * Abstract interface to a source of entropy
 */
 class EntropySource
-	{
+{
 	public:
 		/**
 		* @return name identifying this entropy source
@@ -96,8 +92,4 @@ class EntropySource
 		abstract void poll(Entropy_Accumulator& accum) = 0;
 
 		abstract ~EntropySource() {}
-	};
-
-}
-
-#endif
+};

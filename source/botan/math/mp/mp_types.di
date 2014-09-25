@@ -5,14 +5,10 @@
 * Distributed under the terms of the Botan license
 */
 
-#ifndef BOTAN_MPI_TYPES_H__
 #define BOTAN_MPI_TYPES_H__
 
 #include <botan/types.h>
 #include <botan/mul128.h>
-
-namespace Botan {
-
 #if (BOTAN_MP_WORD_BITS == 8)
   typedef byte word;
   typedef u16bit dword;
@@ -40,7 +36,3 @@ namespace Botan {
 const word MP_WORD_MASK = ~static_cast<word>(0);
 const word MP_WORD_TOP_BIT = static_cast<word>(1) << (8*sizeof(word) - 1);
 const word MP_WORD_MAX = MP_WORD_MASK;
-
-}
-
-#endif

@@ -5,18 +5,14 @@
 * Distributed under the terms of the Botan license
 */
 
-#ifndef BOTAN_CORE_ENGINE_H__
 #define BOTAN_CORE_ENGINE_H__
 
 #include <botan/engine.h>
-
-namespace Botan {
-
 /**
 * Core Engine
 */
 class Core_Engine : public Engine
-	{
+{
 	public:
 		string provider_name() const override { return "core"; }
 
@@ -52,7 +48,7 @@ class Core_Engine : public Engine
 
 		PBKDF* find_pbkdf(const SCAN_Name& algo_spec,
 								Algorithm_Factory& af) const override;
-	};
+};
 
 /**
 * Create a cipher mode filter object
@@ -65,7 +61,3 @@ Keyed_Filter* get_cipher_mode(const BlockCipher* block_cipher,
 										Cipher_Dir direction,
 										in string mode,
 										in string padding);
-
-}
-
-#endif

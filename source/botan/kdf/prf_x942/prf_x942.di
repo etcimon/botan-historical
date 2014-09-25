@@ -5,18 +5,14 @@
 * Distributed under the terms of the Botan license
 */
 
-#ifndef BOTAN_ANSI_X942_PRF_H__
 #define BOTAN_ANSI_X942_PRF_H__
 
 #include <botan/kdf.h>
-
-namespace Botan {
-
 /**
 * PRF from ANSI X9.42
 */
 class X942_PRF : public KDF
-	{
+{
 	public:
 		SafeArray!byte derive(size_t, const byte[], size_t,
 										  const byte[], size_t) const;
@@ -27,8 +23,4 @@ class X942_PRF : public KDF
 		X942_PRF(in string oid);
 	private:
 		string key_wrap_oid;
-	};
-
-}
-
-#endif
+};

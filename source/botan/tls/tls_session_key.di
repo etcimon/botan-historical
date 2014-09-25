@@ -5,20 +5,16 @@
 * Released under the terms of the Botan license
 */
 
-#ifndef BOTAN_TLS_SESSION_KEYS_H__
 #define BOTAN_TLS_SESSION_KEYS_H__
 
 #include <botan/symkey.h>
-
-namespace Botan {
-
 namespace TLS {
 
 /**
 * TLS Session Keys
 */
 class Session_Keys
-	{
+{
 	public:
 		SymmetricKey client_cipher_key() const { return c_cipher; }
 		SymmetricKey server_cipher_key() const { return s_cipher; }
@@ -41,10 +37,6 @@ class Session_Keys
 		SafeArray!byte master_sec;
 		SymmetricKey c_cipher, s_cipher, c_mac, s_mac;
 		InitializationVector c_iv, s_iv;
-	};
+};
 
 }
-
-}
-
-#endif

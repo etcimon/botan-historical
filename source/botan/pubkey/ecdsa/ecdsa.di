@@ -7,20 +7,16 @@
 * Distributed under the terms of the Botan license
 */
 
-#ifndef BOTAN_ECDSA_KEY_H__
 #define BOTAN_ECDSA_KEY_H__
 
 #include <botan/ecc_key.h>
 #include <botan/reducer.h>
 #include <botan/pk_ops.h>
-
-namespace Botan {
-
 /**
 * This class represents ECDSA Public Keys.
 */
 class ECDSA_PublicKey : public abstract EC_PublicKey
-	{
+{
 	public:
 
 		/**
@@ -52,18 +48,18 @@ class ECDSA_PublicKey : public abstract EC_PublicKey
 		size_t message_parts() const { return 2; }
 
 		size_t message_part_size() const
-			{ return domain().get_order().bytes(); }
+		{ return domain().get_order().bytes(); }
 
 	protected:
 		ECDSA_PublicKey() {}
-	};
+};
 
 /**
 * This class represents ECDSA Private Keys
 */
 class ECDSA_PrivateKey : public ECDSA_PublicKey,
 											  public EC_PrivateKey
-	{
+{
 	public:
 
 		/**
@@ -87,13 +83,13 @@ class ECDSA_PrivateKey : public ECDSA_PublicKey,
 			EC_PrivateKey(rng, domain, x) {}
 
 		bool check_key(RandomNumberGenerator& rng, bool) const;
-	};
+};
 
 /**
 * ECDSA signature operation
 */
 class ECDSA_Signature_Operation : public PK_Ops::Signature
-	{
+{
 	public:
 		ECDSA_Signature_Operation(const ECDSA_PrivateKey& ecdsa);
 
@@ -109,13 +105,13 @@ class ECDSA_Signature_Operation : public PK_Ops::Signature
 		const BigInt& order;
 		const BigInt& x;
 		Modular_Reducer mod_order;
-	};
+};
 
 /**
 * ECDSA verification operation
 */
 class ECDSA_Verification_Operation : public PK_Ops::Verification
-	{
+{
 	public:
 		ECDSA_Verification_Operation(const ECDSA_PublicKey& ecdsa);
 
@@ -131,8 +127,4 @@ class ECDSA_Verification_Operation : public PK_Ops::Verification
 		const PointGFp& base_point;
 		const PointGFp& public_point;
 		const BigInt& order;
-	};
-
-}
-
-#endif
+};

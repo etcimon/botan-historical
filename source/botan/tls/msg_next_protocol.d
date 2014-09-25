@@ -9,30 +9,27 @@
 #include <botan/internal/tls_extensions.h>
 #include <botan/internal/tls_reader.h>
 #include <botan/internal/tls_handshake_io.h>
-
-namespace Botan {
-
 namespace TLS {
 
 Next_Protocol::Next_Protocol(Handshake_IO& io,
 									  Handshake_Hash& hash,
 									  in string protocol) :
 	m_protocol(protocol)
-	{
+{
 	hash.update(io.send(*this));
-	}
+}
 
 Next_Protocol::Next_Protocol(in Array!byte buf)
-	{
+{
 	TLS_Data_Reader reader("NextProtocol", buf);
 
 	m_protocol = reader.get_string(1, 0, 255);
 
 	reader.get_range_vector<byte>(1, 0, 255); // padding, ignored
-	}
+}
 
 std::vector<byte> Next_Protocol::serialize() const
-	{
+{
 	std::vector<byte> buf;
 
 	append_tls_length_value(buf,
@@ -48,7 +45,7 @@ std::vector<byte> Next_Protocol::serialize() const
 		buf.push_back(0);
 
 	return buf;
-	}
+}
 
 }
 

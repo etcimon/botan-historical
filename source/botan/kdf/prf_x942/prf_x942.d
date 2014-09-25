@@ -11,20 +11,17 @@
 #include <botan/sha160.h>
 #include <botan/loadstor.h>
 #include <algorithm>
-
-namespace Botan {
-
 namespace {
 
 /*
 * Encode an integer as an OCTET STRING
 */
 std::vector<byte> encode_x942_int(u32bit n)
-	{
+{
 	byte n_buf[4] = { 0 };
 	store_be(n, n_buf);
 	return DER_Encoder().encode(n_buf, 4, OCTET_STRING).get_contents_unlocked();
-	}
+}
 
 }
 
@@ -34,7 +31,7 @@ std::vector<byte> encode_x942_int(u32bit n)
 SafeArray!byte X942_PRF::derive(size_t key_len,
 												const byte secret[], size_t secret_len,
 												const byte salt[], size_t salt_len) const
-	{
+{
 	SHA_160 hash;
 	const OID kek_algo(key_wrap_oid);
 
@@ -42,7 +39,7 @@ SafeArray!byte X942_PRF::derive(size_t key_len,
 	u32bit counter = 1;
 
 	while(key.size() != key_len && counter)
-		{
+	{
 		hash.update(secret, secret_len);
 
 		hash.update(
@@ -72,20 +69,20 @@ SafeArray!byte X942_PRF::derive(size_t key_len,
 		key += std::make_pair(&digest[0], needed);
 
 		++counter;
-		}
+	}
 
 	return key;
-	}
+}
 
 /*
 * X9.42 Constructor
 */
 X942_PRF::X942_PRF(in string oid)
-	{
+{
 	if(OIDS::have_oid(oid))
 		key_wrap_oid = OIDS::lookup(oid).as_string();
 	else
 		key_wrap_oid = oid;
-	}
+}
 
 }

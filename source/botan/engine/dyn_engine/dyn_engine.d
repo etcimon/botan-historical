@@ -7,9 +7,6 @@
 
 #include <botan/dyn_engine.h>
 #include <botan/internal/dyn_load.h>
-
-namespace Botan {
-
 namespace {
 
 extern "C" {
@@ -22,11 +19,11 @@ extern "C" {
 Dynamically_Loaded_Engine::Dynamically_Loaded_Engine(
 	in string library_path) :
 	engine(nullptr)
-	{
+{
 	lib = new Dynamically_Loaded_Library(library_path);
 
 	try
-		{
+	{
 		module_version_func get_version =
 			lib->resolve<module_version_func>("module_version");
 
@@ -45,19 +42,19 @@ Dynamically_Loaded_Engine::Dynamically_Loaded_Engine(
 		if(!engine)
 			throw std::runtime_error("Creator function in " +
 											 library_path + " failed");
-		}
+	}
 	catch(...)
-		{
+	{
 		delete lib;
 		lib = nullptr;
 		throw;
-		}
 	}
+}
 
 Dynamically_Loaded_Engine::~Dynamically_Loaded_Engine()
-	{
+{
 	delete engine;
 	delete lib;
-	}
+}
 
 }

@@ -5,20 +5,16 @@
 * Distributed under the terms of the Botan license
 */
 
-#ifndef BOTAN_DLIES_H__
 #define BOTAN_DLIES_H__
 
 #include <botan/pubkey.h>
 #include <botan/mac.h>
 #include <botan/kdf.h>
-
-namespace Botan {
-
 /**
 * DLIES Encryption
 */
 class DLIES_Encryptor : public PK_Encryptor
-	{
+{
 	public:
 		DLIES_Encryptor(const PK_Key_Agreement_Key&,
 							 KDF* kdf,
@@ -38,13 +34,13 @@ class DLIES_Encryptor : public PK_Encryptor
 		std::unique_ptr<KDF> kdf;
 		std::unique_ptr<MessageAuthenticationCode> mac;
 		size_t mac_keylen;
-	};
+};
 
 /**
 * DLIES Decryption
 */
 class DLIES_Decryptor : public PK_Decryptor
-	{
+{
 	public:
 		DLIES_Decryptor(const PK_Key_Agreement_Key&,
 							 KDF* kdf,
@@ -60,8 +56,4 @@ class DLIES_Decryptor : public PK_Decryptor
 		std::unique_ptr<KDF> kdf;
 		std::unique_ptr<MessageAuthenticationCode> mac;
 		size_t mac_keylen;
-	};
-
-}
-
-#endif
+};

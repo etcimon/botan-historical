@@ -9,9 +9,6 @@
 #include <botan/rotate.h>
 #include <botan/parsing.h>
 #include <botan/rotate.h>
-
-namespace Botan {
-
 namespace {
 
 const byte EXP[256] = {
@@ -89,14 +86,14 @@ const byte LOG[512] = {
 * SAFER-SK Encryption
 */
 void SAFER_SK::encrypt_n(const byte in[], byte out[], size_t blocks) const
-	{
+{
 	for(size_t i = 0; i != blocks; ++i)
-		{
+	{
 		byte A = in[0], B = in[1], C = in[2], D = in[3],
 			  E = in[4], F = in[5], G = in[6], H = in[7], X, Y;
 
 		for(size_t j = 0; j != 16*rounds; j += 16)
-			{
+		{
 			A = EXP[A ^ EK[j  ]]; B = LOG[B + EK[j+1]];
 			C = LOG[C + EK[j+2]]; D = EXP[D ^ EK[j+3]];
 			E = EXP[E ^ EK[j+4]]; F = LOG[F + EK[j+5]];
@@ -109,7 +106,7 @@ void SAFER_SK::encrypt_n(const byte in[], byte out[], size_t blocks) const
 			C += A; G += E; D += B; H += F; A += C; E += G; B += D; F += H;
 			H += D; Y = D + H; D = B + F; X = B + D; B = A + E;
 			A += B; F = C + G; E = C + F; C = X; G = Y;
-			}
+		}
 
 		out[0] = A ^ EK[16*rounds+0]; out[1] = B + EK[16*rounds+1];
 		out[2] = C + EK[16*rounds+2]; out[3] = D ^ EK[16*rounds+3];
@@ -118,16 +115,16 @@ void SAFER_SK::encrypt_n(const byte in[], byte out[], size_t blocks) const
 
 		in += BLOCK_SIZE;
 		out += BLOCK_SIZE;
-		}
 	}
+}
 
 /*
 * SAFER-SK Decryption
 */
 void SAFER_SK::decrypt_n(const byte in[], byte out[], size_t blocks) const
-	{
+{
 	for(size_t i = 0; i != blocks; ++i)
-		{
+	{
 		byte A = in[0], B = in[1], C = in[2], D = in[3],
 			  E = in[4], F = in[5], G = in[6], H = in[7];
 
@@ -136,7 +133,7 @@ void SAFER_SK::decrypt_n(const byte in[], byte out[], size_t blocks) const
 		G -= EK[16*rounds+6]; H ^= EK[16*rounds+7];
 
 		for(s32bit j = 16*(rounds-1); j >= 0; j -= 16)
-			{
+		{
 			byte T = E; E = B; B = C; C = T; T = F; F = D; D = G; G = T;
 			A -= E; B -= F; C -= G; D -= H; E -= A; F -= B; G -= C; H -= D;
 			A -= C; E -= G; B -= D; F -= H; C -= A; G -= E; D -= B; H -= F;
@@ -149,21 +146,21 @@ void SAFER_SK::decrypt_n(const byte in[], byte out[], size_t blocks) const
 
 			A ^= EK[j+0]; B -= EK[j+1]; C -= EK[j+2]; D ^= EK[j+3];
 			E ^= EK[j+4]; F -= EK[j+5]; G -= EK[j+6]; H ^= EK[j+7];
-			}
+		}
 
 		out[0] = A; out[1] = B; out[2] = C; out[3] = D;
 		out[4] = E; out[5] = F; out[6] = G; out[7] = H;
 
 		in += BLOCK_SIZE;
 		out += BLOCK_SIZE;
-		}
 	}
+}
 
 /*
 * SAFER-SK Key Schedule
 */
 void SAFER_SK::key_schedule(const byte key[], size_t)
-	{
+{
 	const byte BIAS[208] = {
 		0x16, 0x73, 0x3B, 0x1E, 0x8E, 0x70, 0xBD, 0x86, 0x47, 0x7E, 0x24, 0x56,
 		0xF1, 0x77, 0x88, 0x46, 0xB1, 0xBA, 0xA3, 0xB7, 0x10, 0x0A, 0xC5, 0x37,
@@ -209,48 +206,48 @@ void SAFER_SK::key_schedule(const byte key[], size_t)
 	SafeArray!byte KB(18);
 
 	for(size_t i = 0; i != 8; ++i)
-		{
+	{
 		KB[ 8] ^= KB[i] = rotate_left(key[i], 5);
 		KB[17] ^= KB[i+9] = EK[i] = key[i+8];
-		}
+	}
 
 	for(size_t i = 0; i != rounds; ++i)
-		{
+	{
 		for(size_t j = 0; j != 18; ++j)
 			KB[j] = rotate_left(KB[j], 6);
 		for(size_t j = 0; j != 16; ++j)
 			EK[16*i+j+8] = KB[KEY_INDEX[16*i+j]] + BIAS[16*i+j];
-		}
 	}
+}
 
 void SAFER_SK::clear()
-	{
+{
 	zap(EK);
-	}
+}
 
 /*
 * Return the name of this type
 */
 string SAFER_SK::name() const
-	{
+{
 	return "SAFER-SK(" + std::to_string(rounds) + ")";
-	}
+}
 
 /*
 * Return a clone of this object
 */
 BlockCipher* SAFER_SK::clone() const
-	{
+{
 	return new SAFER_SK(rounds);
-	}
+}
 
 /*
 * SAFER-SK Constructor
 */
 SAFER_SK::SAFER_SK(size_t r) : rounds(r)
-	{
+{
 	if(rounds > 13 || rounds == 0)
 		throw Invalid_Argument(name() + ": Invalid number of rounds");
-	}
+}
 
 }

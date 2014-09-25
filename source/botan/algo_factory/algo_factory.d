@@ -18,9 +18,6 @@
 #include <botan/pbkdf.h>
 
 #include <algorithm>
-
-namespace Botan {
-
 namespace {
 
 /*
@@ -30,37 +27,37 @@ template<typename T>
 T* engine_get_algo(Engine*,
 						 const SCAN_Name&,
 						 Algorithm_Factory&)
-	{ return nullptr; }
+{ return nullptr; }
 
 template<>
 BlockCipher* engine_get_algo(Engine* engine,
 									  const SCAN_Name& request,
 									  Algorithm_Factory& af)
-	{ return engine->find_block_cipher(request, af); }
+{ return engine->find_block_cipher(request, af); }
 
 template<>
 StreamCipher* engine_get_algo(Engine* engine,
 										const SCAN_Name& request,
 										Algorithm_Factory& af)
-	{ return engine->find_stream_cipher(request, af); }
+{ return engine->find_stream_cipher(request, af); }
 
 template<>
 HashFunction* engine_get_algo(Engine* engine,
 										const SCAN_Name& request,
 										Algorithm_Factory& af)
-	{ return engine->find_hash(request, af); }
+{ return engine->find_hash(request, af); }
 
 template<>
 MessageAuthenticationCode* engine_get_algo(Engine* engine,
 														 const SCAN_Name& request,
 														 Algorithm_Factory& af)
-	{ return engine->find_mac(request, af); }
+{ return engine->find_mac(request, af); }
 
 template<>
 PBKDF* engine_get_algo(Engine* engine,
 							  const SCAN_Name& request,
 							  Algorithm_Factory& af)
-	{ return engine->find_pbkdf(request, af); }
+{ return engine->find_pbkdf(request, af); }
 
 template<typename T>
 const T* factory_prototype(in string algo_spec,
@@ -68,7 +65,7 @@ const T* factory_prototype(in string algo_spec,
 									const std::vector<Engine*>& engines,
 									Algorithm_Factory& af,
 									Algorithm_Cache<T>& cache)
-	{
+{
 	if(const T* cache_hit = cache.get(algo_spec, provider))
 		return cache_hit;
 
@@ -78,16 +75,16 @@ const T* factory_prototype(in string algo_spec,
 		return nullptr;
 
 	for(size_t i = 0; i != engines.size(); ++i)
-		{
+	{
 		if(provider == "" || engines[i]->provider_name() == provider)
-			{
+		{
 			if(T* impl = engine_get_algo<T>(engines[i], scan_name, af))
 				cache.add(impl, algo_spec, engines[i]->provider_name());
-			}
 		}
+	}
 
 	return cache.get(algo_spec, provider);
-	}
+}
 
 }
 
@@ -95,44 +92,44 @@ const T* factory_prototype(in string algo_spec,
 * Setup caches
 */
 Algorithm_Factory::Algorithm_Factory()
-	{
+{
 	block_cipher_cache.reset(new Algorithm_Cache<BlockCipher>());
 	stream_cipher_cache.reset(new Algorithm_Cache<StreamCipher>());
 	hash_cache.reset(new Algorithm_Cache<HashFunction>());
 	mac_cache.reset(new Algorithm_Cache<MessageAuthenticationCode>());
 	pbkdf_cache.reset(new Algorithm_Cache<PBKDF>());
-	}
+}
 
 /*
 * Delete all engines
 */
 Algorithm_Factory::~Algorithm_Factory()
-	{
+{
 	for(auto i = engines.begin(); i != engines.end(); ++i)
 		delete *i;
-	}
+}
 
 void Algorithm_Factory::clear_caches()
-	{
+{
 	block_cipher_cache->clear_cache();
 	stream_cipher_cache->clear_cache();
 	hash_cache->clear_cache();
 	mac_cache->clear_cache();
 	pbkdf_cache->clear_cache();
-	}
+}
 
 void Algorithm_Factory::add_engine(Engine* engine)
-	{
+{
 	clear_caches();
 	engines.push_back(engine);
-	}
+}
 
 /*
 * Set the preferred provider for an algorithm
 */
 void Algorithm_Factory::set_preferred_provider(in string algo_spec,
 															  in string provider)
-	{
+{
 	if(prototype_block_cipher(algo_spec))
 		block_cipher_cache->set_preferred_provider(algo_spec, provider);
 	else if(prototype_stream_cipher(algo_spec))
@@ -143,17 +140,17 @@ void Algorithm_Factory::set_preferred_provider(in string algo_spec,
 		mac_cache->set_preferred_provider(algo_spec, provider);
 	else if(prototype_pbkdf(algo_spec))
 		pbkdf_cache->set_preferred_provider(algo_spec, provider);
-	}
+}
 
 /*
 * Get an engine out of the list
 */
 Engine* Algorithm_Factory::get_engine_n(size_t n) const
-	{
+{
 	if(n >= engines.size())
 		return nullptr;
 	return engines[n];
-	}
+}
 
 /*
 * Return the possible providers of a request
@@ -161,7 +158,7 @@ Engine* Algorithm_Factory::get_engine_n(size_t n) const
 */
 std::vector<string>
 Algorithm_Factory::providers_of(in string algo_spec)
-	{
+{
 	/* The checks with if(prototype_X(algo_spec)) have the effect of
 		forcing a full search, since otherwise there might not be any
 		providers at all in the cache.
@@ -179,7 +176,7 @@ Algorithm_Factory::providers_of(in string algo_spec)
 		return pbkdf_cache->providers_of(algo_spec);
 	else
 		return std::vector<string>();
-	}
+}
 
 /*
 * Return the prototypical block cipher corresponding to this request
@@ -187,10 +184,10 @@ Algorithm_Factory::providers_of(in string algo_spec)
 const BlockCipher*
 Algorithm_Factory::prototype_block_cipher(in string algo_spec,
 														in string provider)
-	{
+{
 	return factory_prototype<BlockCipher>(algo_spec, provider, engines,
 														*this, *block_cipher_cache);
-	}
+}
 
 /*
 * Return the prototypical stream cipher corresponding to this request
@@ -198,10 +195,10 @@ Algorithm_Factory::prototype_block_cipher(in string algo_spec,
 const StreamCipher*
 Algorithm_Factory::prototype_stream_cipher(in string algo_spec,
 														 in string provider)
-	{
+{
 	return factory_prototype<StreamCipher>(algo_spec, provider, engines,
 														*this, *stream_cipher_cache);
-	}
+}
 
 /*
 * Return the prototypical object corresponding to this request (if found)
@@ -209,10 +206,10 @@ Algorithm_Factory::prototype_stream_cipher(in string algo_spec,
 const HashFunction*
 Algorithm_Factory::prototype_hash_function(in string algo_spec,
 														 in string provider)
-	{
+{
 	return factory_prototype<HashFunction>(algo_spec, provider, engines,
 														*this, *hash_cache);
-	}
+}
 
 /*
 * Return the prototypical object corresponding to this request
@@ -220,11 +217,11 @@ Algorithm_Factory::prototype_hash_function(in string algo_spec,
 const MessageAuthenticationCode*
 Algorithm_Factory::prototype_mac(in string algo_spec,
 											in string provider)
-	{
+{
 	return factory_prototype<MessageAuthenticationCode>(algo_spec, provider,
 																		 engines,
 																		 *this, *mac_cache);
-	}
+}
 
 /*
 * Return the prototypical object corresponding to this request
@@ -232,11 +229,11 @@ Algorithm_Factory::prototype_mac(in string algo_spec,
 const PBKDF*
 Algorithm_Factory::prototype_pbkdf(in string algo_spec,
 											  in string provider)
-	{
+{
 	return factory_prototype<PBKDF>(algo_spec, provider,
 											  engines,
 											  *this, *pbkdf_cache);
-	}
+}
 
 /*
 * Return a new block cipher corresponding to this request
@@ -244,11 +241,11 @@ Algorithm_Factory::prototype_pbkdf(in string algo_spec,
 BlockCipher*
 Algorithm_Factory::make_block_cipher(in string algo_spec,
 												 in string provider)
-	{
+{
 	if(const BlockCipher* proto = prototype_block_cipher(algo_spec, provider))
 		return proto->clone();
 	throw Algorithm_Not_Found(algo_spec);
-	}
+}
 
 /*
 * Return a new stream cipher corresponding to this request
@@ -256,11 +253,11 @@ Algorithm_Factory::make_block_cipher(in string algo_spec,
 StreamCipher*
 Algorithm_Factory::make_stream_cipher(in string algo_spec,
 												  in string provider)
-	{
+{
 	if(const StreamCipher* proto = prototype_stream_cipher(algo_spec, provider))
 		return proto->clone();
 	throw Algorithm_Not_Found(algo_spec);
-	}
+}
 
 /*
 * Return a new object corresponding to this request
@@ -268,11 +265,11 @@ Algorithm_Factory::make_stream_cipher(in string algo_spec,
 HashFunction*
 Algorithm_Factory::make_hash_function(in string algo_spec,
 												  in string provider)
-	{
+{
 	if(const HashFunction* proto = prototype_hash_function(algo_spec, provider))
 		return proto->clone();
 	throw Algorithm_Not_Found(algo_spec);
-	}
+}
 
 /*
 * Return a new object corresponding to this request
@@ -280,11 +277,11 @@ Algorithm_Factory::make_hash_function(in string algo_spec,
 MessageAuthenticationCode*
 Algorithm_Factory::make_mac(in string algo_spec,
 									 in string provider)
-	{
+{
 	if(const MessageAuthenticationCode* proto = prototype_mac(algo_spec, provider))
 		return proto->clone();
 	throw Algorithm_Not_Found(algo_spec);
-	}
+}
 
 /*
 * Return a new object corresponding to this request
@@ -292,55 +289,55 @@ Algorithm_Factory::make_mac(in string algo_spec,
 PBKDF*
 Algorithm_Factory::make_pbkdf(in string algo_spec,
 										in string provider)
-	{
+{
 	if(const PBKDF* proto = prototype_pbkdf(algo_spec, provider))
 		return proto->clone();
 	throw Algorithm_Not_Found(algo_spec);
-	}
+}
 
 /*
 * Add a new block cipher
 */
 void Algorithm_Factory::add_block_cipher(BlockCipher* block_cipher,
 													  in string provider)
-	{
+{
 	block_cipher_cache->add(block_cipher, block_cipher->name(), provider);
-	}
+}
 
 /*
 * Add a new stream cipher
 */
 void Algorithm_Factory::add_stream_cipher(StreamCipher* stream_cipher,
 													  in string provider)
-	{
+{
 	stream_cipher_cache->add(stream_cipher, stream_cipher->name(), provider);
-	}
+}
 
 /*
 * Add a new hash
 */
 void Algorithm_Factory::add_hash_function(HashFunction* hash,
 														in string provider)
-	{
+{
 	hash_cache->add(hash, hash->name(), provider);
-	}
+}
 
 /*
 * Add a new mac
 */
 void Algorithm_Factory::add_mac(MessageAuthenticationCode* mac,
 										  in string provider)
-	{
+{
 	mac_cache->add(mac, mac->name(), provider);
-	}
+}
 
 /*
 * Add a new PBKDF
 */
 void Algorithm_Factory::add_pbkdf(PBKDF* pbkdf,
 											 in string provider)
-	{
+{
 	pbkdf_cache->add(pbkdf, pbkdf->name(), provider);
-	}
+}
 
 }

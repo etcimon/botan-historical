@@ -8,9 +8,6 @@
 #include <botan/noekeon.h>
 #include <botan/loadstor.h>
 #include <botan/rotate.h>
-
-namespace Botan {
-
 namespace {
 
 /*
@@ -19,7 +16,7 @@ namespace {
 inline void theta(u32bit& A0, u32bit& A1,
 						u32bit& A2, u32bit& A3,
 						const u32bit EK[4])
-	{
+{
 	u32bit T = A0 ^ A2;
 	T ^= rotate_left(T, 8) ^ rotate_right(T, 8);
 	A1 ^= T;
@@ -34,14 +31,14 @@ inline void theta(u32bit& A0, u32bit& A1,
 	T ^= rotate_left(T, 8) ^ rotate_right(T, 8);
 	A0 ^= T;
 	A2 ^= T;
-	}
+}
 
 /*
 * Theta With Null Key
 */
 inline void theta(u32bit& A0, u32bit& A1,
 						u32bit& A2, u32bit& A3)
-	{
+{
 	u32bit T = A0 ^ A2;
 	T ^= rotate_left(T, 8) ^ rotate_right(T, 8);
 	A1 ^= T;
@@ -51,13 +48,13 @@ inline void theta(u32bit& A0, u32bit& A1,
 	T ^= rotate_left(T, 8) ^ rotate_right(T, 8);
 	A0 ^= T;
 	A2 ^= T;
-	}
+}
 
 /*
 * Noekeon's Gamma S-Box Layer
 */
 inline void gamma(u32bit& A0, u32bit& A1, u32bit& A2, u32bit& A3)
-	{
+{
 	A1 ^= ~A3 & ~A2;
 	A0 ^= A2 & A1;
 
@@ -69,7 +66,7 @@ inline void gamma(u32bit& A0, u32bit& A1, u32bit& A2, u32bit& A3)
 
 	A1 ^= ~A3 & ~A2;
 	A0 ^= A2 & A1;
-	}
+}
 
 }
 
@@ -85,16 +82,16 @@ const byte Noekeon::RC[] = {
 * Noekeon Encryption
 */
 void Noekeon::encrypt_n(const byte in[], byte out[], size_t blocks) const
-	{
+{
 	for(size_t i = 0; i != blocks; ++i)
-		{
+	{
 		u32bit A0 = load_be<u32bit>(in, 0);
 		u32bit A1 = load_be<u32bit>(in, 1);
 		u32bit A2 = load_be<u32bit>(in, 2);
 		u32bit A3 = load_be<u32bit>(in, 3);
 
 		for(size_t j = 0; j != 16; ++j)
-			{
+		{
 			A0 ^= RC[j];
 			theta(A0, A1, A2, A3, &EK[0]);
 
@@ -107,7 +104,7 @@ void Noekeon::encrypt_n(const byte in[], byte out[], size_t blocks) const
 			A1 = rotate_right(A1, 1);
 			A2 = rotate_right(A2, 5);
 			A3 = rotate_right(A3, 2);
-			}
+		}
 
 		A0 ^= RC[16];
 		theta(A0, A1, A2, A3, &EK[0]);
@@ -116,23 +113,23 @@ void Noekeon::encrypt_n(const byte in[], byte out[], size_t blocks) const
 
 		in += BLOCK_SIZE;
 		out += BLOCK_SIZE;
-		}
 	}
+}
 
 /*
 * Noekeon Encryption
 */
 void Noekeon::decrypt_n(const byte in[], byte out[], size_t blocks) const
-	{
+{
 	for(size_t i = 0; i != blocks; ++i)
-		{
+	{
 		u32bit A0 = load_be<u32bit>(in, 0);
 		u32bit A1 = load_be<u32bit>(in, 1);
 		u32bit A2 = load_be<u32bit>(in, 2);
 		u32bit A3 = load_be<u32bit>(in, 3);
 
 		for(size_t j = 16; j != 0; --j)
-			{
+		{
 			theta(A0, A1, A2, A3, &DK[0]);
 			A0 ^= RC[j];
 
@@ -145,7 +142,7 @@ void Noekeon::decrypt_n(const byte in[], byte out[], size_t blocks) const
 			A1 = rotate_right(A1, 1);
 			A2 = rotate_right(A2, 5);
 			A3 = rotate_right(A3, 2);
-			}
+		}
 
 		theta(A0, A1, A2, A3, &DK[0]);
 		A0 ^= RC[0];
@@ -154,21 +151,21 @@ void Noekeon::decrypt_n(const byte in[], byte out[], size_t blocks) const
 
 		in += BLOCK_SIZE;
 		out += BLOCK_SIZE;
-		}
 	}
+}
 
 /*
 * Noekeon Key Schedule
 */
 void Noekeon::key_schedule(const byte key[], size_t)
-	{
+{
 	u32bit A0 = load_be<u32bit>(key, 0);
 	u32bit A1 = load_be<u32bit>(key, 1);
 	u32bit A2 = load_be<u32bit>(key, 2);
 	u32bit A3 = load_be<u32bit>(key, 3);
 
 	for(size_t i = 0; i != 16; ++i)
-		{
+	{
 		A0 ^= RC[i];
 		theta(A0, A1, A2, A3);
 
@@ -181,7 +178,7 @@ void Noekeon::key_schedule(const byte key[], size_t)
 		A1 = rotate_right(A1, 1);
 		A2 = rotate_right(A2, 5);
 		A3 = rotate_right(A3, 2);
-		}
+	}
 
 	A0 ^= RC[16];
 
@@ -198,15 +195,15 @@ void Noekeon::key_schedule(const byte key[], size_t)
 	EK[1] = A1;
 	EK[2] = A2;
 	EK[3] = A3;
-	}
+}
 
 /*
 * Clear memory of sensitive data
 */
 void Noekeon::clear()
-	{
+{
 	zap(EK);
 	zap(DK);
-	}
+}
 
 }

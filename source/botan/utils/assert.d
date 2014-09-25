@@ -7,15 +7,12 @@
 
 #include <botan/exceptn.h>
 #include <sstream>
-
-namespace Botan {
-
 void assertion_failure(const char* expr_str,
 							  const char* assertion_made,
 							  const char* func,
 							  const char* file,
 							  int line)
-	{
+{
 	std::ostringstream format;
 
 	format << "False assertion ";
@@ -31,6 +28,6 @@ void assertion_failure(const char* expr_str,
 	format << "@" << file << ":" << line;
 
 	throw std::runtime_error(format.str());
-	}
+}
 
 }

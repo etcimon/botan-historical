@@ -6,26 +6,23 @@
 */
 
 #include <botan/emsa_raw.h>
-
-namespace Botan {
-
 /*
 * EMSA-Raw Encode Operation
 */
 void EMSA_Raw::update(const byte input[], size_t length)
-	{
+{
 	message += std::make_pair(input, length);
-	}
+}
 
 /*
 * Return the raw (unencoded) data
 */
 SafeArray!byte EMSA_Raw::raw_data()
-	{
+{
 	SafeArray!byte output;
 	std::swap(message, output);
 	return output;
-	}
+}
 
 /*
 * EMSA-Raw Encode Operation
@@ -33,9 +30,9 @@ SafeArray!byte EMSA_Raw::raw_data()
 SafeArray!byte EMSA_Raw::encoding_of(in SafeArray!byte msg,
 													  size_t,
 													  RandomNumberGenerator&)
-	{
+{
 	return msg;
-	}
+}
 
 /*
 * EMSA-Raw Verify Operation
@@ -43,7 +40,7 @@ SafeArray!byte EMSA_Raw::encoding_of(in SafeArray!byte msg,
 bool EMSA_Raw::verify(in SafeArray!byte coded,
 							 in SafeArray!byte raw,
 							 size_t)
-	{
+{
 	if(coded.size() == raw.size())
 		return (coded == raw);
 
@@ -63,6 +60,6 @@ bool EMSA_Raw::verify(in SafeArray!byte coded,
 		same_modulo_leading_zeros = false;
 
 	return same_modulo_leading_zeros;
-	}
+}
 
 }

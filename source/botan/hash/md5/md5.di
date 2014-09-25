@@ -5,18 +5,14 @@
 * Distributed under the terms of the Botan license
 */
 
-#ifndef BOTAN_MD5_H__
 #define BOTAN_MD5_H__
 
 #include <botan/mdx_hash.h>
-
-namespace Botan {
-
 /**
 * MD5
 */
 class MD5 : public MDx_HashFunction
-	{
+{
 	public:
 		string name() const { return "MD5"; }
 		size_t output_length() const { return 16; }
@@ -25,7 +21,7 @@ class MD5 : public MDx_HashFunction
 		void clear();
 
 		MD5() : MDx_HashFunction(64, false, true), M(16), digest(4)
-			{ clear(); }
+		{ clear(); }
 	protected:
 		void compress_n(const byte[], size_t blocks);
 		void copy_out(byte[]);
@@ -39,8 +35,4 @@ class MD5 : public MDx_HashFunction
 		* The digest value, exposed for use by subclasses (x86 asm)
 		*/
 		secure_vector<u32bit> digest;
-	};
-
-}
-
-#endif
+};

@@ -5,20 +5,16 @@
 * Distributed under the terms of the Botan license
 */
 
-#ifndef BOTAN_MODE_CFB_H__
 #define BOTAN_MODE_CFB_H__
 
 #include <botan/cipher_mode.h>
 #include <botan/block_cipher.h>
 #include <botan/mode_pad.h>
-
-namespace Botan {
-
 /**
 * CFB Mode
 */
 class CFB_Mode : public Cipher_Mode
-	{
+{
 	public:
 		SafeArray!byte start(const byte nonce[], size_t nonce_len) override;
 
@@ -55,13 +51,13 @@ class CFB_Mode : public Cipher_Mode
 		SafeArray!byte m_shift_register;
 		SafeArray!byte m_keystream_buf;
 		size_t m_feedback_bytes;
-	};
+};
 
 /**
 * CFB Encryption
 */
 class CFB_Encryption : public CFB_Mode
-	{
+{
 	public:
 		CFB_Encryption(BlockCipher* cipher, size_t feedback_bits) :
 			CFB_Mode(cipher, feedback_bits) {}
@@ -69,13 +65,13 @@ class CFB_Encryption : public CFB_Mode
 		void update(SafeArray!byte& blocks, size_t offset = 0) override;
 
 		void finish(SafeArray!byte& final_block, size_t offset = 0) override;
-	};
+};
 
 /**
 * CFB Decryption
 */
 class CFB_Decryption : public CFB_Mode
-	{
+{
 	public:
 		CFB_Decryption(BlockCipher* cipher, size_t feedback_bits) :
 			CFB_Mode(cipher, feedback_bits) {}
@@ -83,8 +79,4 @@ class CFB_Decryption : public CFB_Mode
 		void update(SafeArray!byte& blocks, size_t offset = 0) override;
 
 		void finish(SafeArray!byte& final_block, size_t offset = 0) override;
-	};
-
-}
-
-#endif
+};

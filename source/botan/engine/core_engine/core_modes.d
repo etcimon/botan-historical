@@ -57,9 +57,6 @@
 #endif
 
 #endif
-
-namespace Botan {
-
 namespace {
 
 /**
@@ -67,7 +64,7 @@ namespace {
 */
 BlockCipherModePaddingMethod* get_bc_pad(in string algo_spec,
 													  in string def_if_empty)
-	{
+{
 #if defined(BOTAN_HAS_CIPHER_MODE_PADDING)
 	if(algo_spec == "NoPadding" || (algo_spec == "" && def_if_empty == "NoPadding"))
 		return new Null_Padding;
@@ -84,7 +81,7 @@ BlockCipherModePaddingMethod* get_bc_pad(in string algo_spec,
 #endif
 
 	throw Algorithm_Not_Found(algo_spec);
-	}
+}
 
 }
 
@@ -92,7 +89,7 @@ Keyed_Filter* get_cipher_mode(const BlockCipher* block_cipher,
 										Cipher_Dir direction,
 										in string mode,
 										in string padding)
-	{
+{
 #if defined(BOTAN_HAS_OFB)
 	if(mode == "OFB")
 		return new StreamCipher_Filter(new OFB(block_cipher->clone()));
@@ -105,26 +102,26 @@ Keyed_Filter* get_cipher_mode(const BlockCipher* block_cipher,
 
 #if defined(BOTAN_HAS_MODE_ECB)
 	if(mode == "ECB" || mode == "")
-		{
+	{
 		if(direction == ENCRYPTION)
 			return new Transformation_Filter(
 				new ECB_Encryption(block_cipher->clone(), get_bc_pad(padding, "NoPadding")));
 		else
 			return new Transformation_Filter(
 				new ECB_Decryption(block_cipher->clone(), get_bc_pad(padding, "NoPadding")));
-		}
+	}
 #endif
 
 	if(mode == "CBC")
-		{
+	{
 #if defined(BOTAN_HAS_MODE_CBC)
 		if(padding == "CTS")
-			{
+		{
 			if(direction == ENCRYPTION)
 				return new Transformation_Filter(new CTS_Encryption(block_cipher->clone()));
 			else
 				return new Transformation_Filter(new CTS_Decryption(block_cipher->clone()));
-			}
+		}
 
 		if(direction == ENCRYPTION)
 			return new Transformation_Filter(
@@ -135,16 +132,16 @@ Keyed_Filter* get_cipher_mode(const BlockCipher* block_cipher,
 #else
 		return nullptr;
 #endif
-		}
+	}
 
 #if defined(BOTAN_HAS_MODE_XTS)
 	if(mode == "XTS")
-		{
+	{
 		if(direction == ENCRYPTION)
 			return new Transformation_Filter(new XTS_Encryption(block_cipher->clone()));
 		else
 			return new Transformation_Filter(new XTS_Decryption(block_cipher->clone()));
-		}
+	}
 #endif
 
 	if(mode.find("CFB") != string::npos ||
@@ -152,7 +149,7 @@ Keyed_Filter* get_cipher_mode(const BlockCipher* block_cipher,
 		mode.find("GCM") != string::npos ||
 		mode.find("OCB") != string::npos ||
 		mode.find("CCM") != string::npos)
-		{
+	{
 		std::vector<string> algo_info = parse_algorithm_name(mode);
 		const string mode_name = algo_info[0];
 
@@ -162,12 +159,12 @@ Keyed_Filter* get_cipher_mode(const BlockCipher* block_cipher,
 
 #if defined(BOTAN_HAS_MODE_CFB)
 		if(mode_name == "CFB")
-			{
+		{
 			if(direction == ENCRYPTION)
 				return new Transformation_Filter(new CFB_Encryption(block_cipher->clone(), bits));
 			else
 				return new Transformation_Filter(new CFB_Decryption(block_cipher->clone(), bits));
-			}
+		}
 #endif
 
 		if(bits % 8 != 0)
@@ -179,50 +176,50 @@ Keyed_Filter* get_cipher_mode(const BlockCipher* block_cipher,
 
 #if defined(BOTAN_HAS_AEAD_CCM)
 		if(mode_name == "CCM")
-			{
+		{
 			const size_t L = (algo_info.size() == 3) ? to_u32bit(algo_info[2]) : 3;
 			if(direction == ENCRYPTION)
 				return new AEAD_Filter(new CCM_Encryption(block_cipher->clone(), tag_size, L));
 			else
 				return new AEAD_Filter(new CCM_Decryption(block_cipher->clone(), tag_size, L));
-			}
+		}
 #endif
 
 #if defined(BOTAN_HAS_AEAD_EAX)
 		if(mode_name == "EAX")
-			{
+		{
 			if(direction == ENCRYPTION)
 				return new AEAD_Filter(new EAX_Encryption(block_cipher->clone(), tag_size));
 			else
 				return new AEAD_Filter(new EAX_Decryption(block_cipher->clone(), tag_size));
-			}
+		}
 #endif
 
 #if defined(BOTAN_HAS_AEAD_OCB)
 	if(mode_name == "OCB")
-		{
+	{
 		if(direction == ENCRYPTION)
 			return new AEAD_Filter(new OCB_Encryption(block_cipher->clone(), tag_size));
 		else
 			return new AEAD_Filter(new OCB_Decryption(block_cipher->clone(), tag_size));
-		}
+	}
 #endif
 
 #if defined(BOTAN_HAS_AEAD_GCM)
 	if(mode_name == "GCM")
-		{
+	{
 		if(direction == ENCRYPTION)
 			return new AEAD_Filter(new GCM_Encryption(block_cipher->clone(), tag_size));
 		else
 			return new AEAD_Filter(new GCM_Decryption(block_cipher->clone(), tag_size));
-		}
+	}
 #endif
 
 #endif
-		}
+	}
 
 	return nullptr;
-	}
+}
 
 /*
 * Get a cipher object
@@ -230,7 +227,7 @@ Keyed_Filter* get_cipher_mode(const BlockCipher* block_cipher,
 Keyed_Filter* Core_Engine::get_cipher(in string algo_spec,
 												  Cipher_Dir direction,
 												  Algorithm_Factory& af)
-	{
+{
 	std::vector<string> algo_parts = split_on(algo_spec, '/');
 	if(algo_parts.empty())
 		throw Invalid_Algorithm_Name(algo_spec);
@@ -274,6 +271,6 @@ Keyed_Filter* Core_Engine::get_cipher(in string algo_spec,
 		throw Algorithm_Not_Found(cipher_name + "/" + mode + "/" + padding);
 	else
 		throw Algorithm_Not_Found(cipher_name + "/" + mode);
-	}
+}
 
 }

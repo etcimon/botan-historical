@@ -5,14 +5,10 @@
 * Distributed under the terms of the Botan license
 */
 
-#ifndef BOTAN_BASE64_CODEC_H__
 #define BOTAN_BASE64_CODEC_H__
 
 #include <botan/secmem.h>
 #include <string>
-
-namespace Botan {
-
 /**
 * Perform base64 encoding
 * @param output an array of at least input_length*4/3 bytes
@@ -26,7 +22,7 @@ namespace Botan {
 			padding chars will be applied if needed
 * @return number of bytes written to output
 */
-size_t BOTAN_DLL base64_encode(char output[],
+size_t base64_encode(char output[],
 										 const byte input[],
 										 size_t input_length,
 										 size_t& input_consumed,
@@ -38,7 +34,7 @@ size_t BOTAN_DLL base64_encode(char output[],
 * @param input_length length of input in bytes
 * @return base64adecimal representation of input
 */
-string BOTAN_DLL base64_encode(const byte input[],
+string base64_encode(const byte input[],
 												size_t input_length);
 
 /**
@@ -48,9 +44,9 @@ string BOTAN_DLL base64_encode(const byte input[],
 */
 template<typename Alloc>
 string base64_encode(const std::vector<byte, Alloc>& input)
-	{
+{
 	return base64_encode(&input[0], input.size());
-	}
+}
 
 /**
 * Perform base64 decoding
@@ -67,7 +63,7 @@ string base64_encode(const std::vector<byte, Alloc>& input)
 						 exception if whitespace is encountered
 * @return number of bytes written to output
 */
-size_t BOTAN_DLL base64_decode(byte output[],
+size_t base64_decode(byte output[],
 										 const char input[],
 										 size_t input_length,
 										 size_t& input_consumed,
@@ -83,7 +79,7 @@ size_t BOTAN_DLL base64_decode(byte output[],
 						 exception if whitespace is encountered
 * @return number of bytes written to output
 */
-size_t BOTAN_DLL base64_decode(byte output[],
+size_t base64_decode(byte output[],
 										 const char input[],
 										 size_t input_length,
 										 bool ignore_ws = true);
@@ -96,7 +92,7 @@ size_t BOTAN_DLL base64_decode(byte output[],
 						 exception if whitespace is encountered
 * @return number of bytes written to output
 */
-size_t BOTAN_DLL base64_decode(byte output[],
+size_t base64_decode(byte output[],
 										 in string input,
 										 bool ignore_ws = true);
 
@@ -108,7 +104,7 @@ size_t BOTAN_DLL base64_decode(byte output[],
 						 exception if whitespace is encountered
 * @return decoded base64 output
 */
-SafeArray!byte BOTAN_DLL base64_decode(const char input[],
+SafeArray!byte base64_decode(const char input[],
 														 size_t input_length,
 														 bool ignore_ws = true);
 
@@ -119,9 +115,5 @@ SafeArray!byte BOTAN_DLL base64_decode(const char input[],
 						 exception if whitespace is encountered
 * @return decoded base64 output
 */
-SafeArray!byte BOTAN_DLL base64_decode(in string input,
+SafeArray!byte base64_decode(in string input,
 														 bool ignore_ws = true);
-
-}
-
-#endif

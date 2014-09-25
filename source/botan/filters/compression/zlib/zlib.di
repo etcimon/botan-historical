@@ -6,18 +6,14 @@
 * Distributed under the terms of the Botan license
 */
 
-#ifndef BOTAN_ZLIB_H__
 #define BOTAN_ZLIB_H__
 
 #include <botan/filter.h>
-
-namespace Botan {
-
 /**
 * Zlib Compression Filter
 */
 class Zlib_Compression : public Filter
-	{
+{
 	public:
 		string name() const { return "Zlib_Compression"; }
 
@@ -47,13 +43,13 @@ class Zlib_Compression : public Filter
 
 		SafeArray!byte buffer;
 		class Zlib_Stream* zlib;
-	};
+};
 
 /**
 * Zlib Decompression Filter
 */
 class Zlib_Decompression : public Filter
-	{
+{
 	public:
 		string name() const { return "Zlib_Decompression"; }
 
@@ -71,8 +67,4 @@ class Zlib_Decompression : public Filter
 		SafeArray!byte buffer;
 		class Zlib_Stream* zlib;
 		bool no_writes;
-	};
-
-}
-
-#endif
+};

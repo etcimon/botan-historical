@@ -5,16 +5,12 @@
 * Distributed under the terms of the Botan license
 */
 
-#ifndef BOTAN_LOOKUP_PBE_H__
 #define BOTAN_LOOKUP_PBE_H__
 
 #include <botan/pbe.h>
 #include <vector>
 #include <string>
 #include <chrono>
-
-namespace Botan {
-
 /**
 * Factory function for PBEs.
 * @param algo_spec the name of the PBE algorithm to retrieve
@@ -23,7 +19,7 @@ namespace Botan {
 * @param rng a random number generator
 * @return pointer to a PBE with randomly created parameters
 */
-BOTAN_DLL PBE* get_pbe(in string algo_spec,
+PBE* get_pbe(in string algo_spec,
 							  in string passphrase,
 							  std::chrono::milliseconds msec,
 							  RandomNumberGenerator& rng);
@@ -35,10 +31,6 @@ BOTAN_DLL PBE* get_pbe(in string algo_spec,
 * @param passphrase the passphrase to use for decryption
 * @return pointer to the PBE with the specified parameters
 */
-BOTAN_DLL PBE* get_pbe(const OID& pbe_oid,
+PBE* get_pbe(const OID& pbe_oid,
 							  in Array!byte params,
 							  in string passphrase);
-
-}
-
-#endif

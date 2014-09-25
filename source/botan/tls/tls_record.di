@@ -5,7 +5,6 @@
 * Released under the terms of the Botan license
 */
 
-#ifndef BOTAN_TLS_RECORDS_H__
 #define BOTAN_TLS_RECORDS_H__
 
 #include <botan/tls_magic.h>
@@ -16,9 +15,6 @@
 #include <botan/mac.h>
 #include <vector>
 #include <chrono>
-
-namespace Botan {
-
 namespace TLS {
 
 class Ciphersuite;
@@ -30,7 +26,7 @@ class Connection_Sequence_Numbers;
 * TLS Cipher State
 */
 class Connection_Cipher_State
-	{
+{
 	public:
 		/**
 		* Initialize a new cipher state
@@ -70,13 +66,13 @@ class Connection_Cipher_State
 		bool cipher_padding_single_byte() const { return m_is_ssl3; }
 
 		bool cbc_without_explicit_iv() const
-			{ return (m_block_size > 0) && (m_iv_size == 0); }
+		{ return (m_block_size > 0) && (m_iv_size == 0); }
 
 		std::chrono::seconds age() const
-			{
+		{
 			return std::chrono::duration_cast<std::chrono::seconds>(
 				std::chrono::system_clock::now() - m_start_time);
-			}
+		}
 
 	private:
 		std::chrono::system_clock::time_point m_start_time;
@@ -91,7 +87,7 @@ class Connection_Cipher_State
 		size_t m_block_size = 0;
 		size_t m_iv_size = 0;
 		bool m_is_ssl3 = false;
-	};
+};
 
 /**
 * Create a TLS record
@@ -128,7 +124,3 @@ size_t read_record(SafeArray!byte& read_buffer,
 						 std::function<Connection_Cipher_State* (u16bit)> get_cipherstate);
 
 }
-
-}
-
-#endif

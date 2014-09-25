@@ -5,7 +5,6 @@
 * Distributed under the terms of the Botan license
 */
 
-#ifndef BOTAN_PUBKEY_H__
 #define BOTAN_PUBKEY_H__
 
 #include <botan/pk_keys.h>
@@ -15,9 +14,6 @@
 #include <botan/eme.h>
 #include <botan/emsa.h>
 #include <botan/kdf.h>
-
-namespace Botan {
-
 /**
 * The two types of signature format supported by Botan.
 */
@@ -35,7 +31,7 @@ enum Fault_Protection {
 * Public Key Encryptor
 */
 class PK_Encryptor
-	{
+{
 	public:
 
 		/**
@@ -47,9 +43,9 @@ class PK_Encryptor
 		*/
 		std::vector<byte> encrypt(const byte in[], size_t length,
 											RandomNumberGenerator& rng) const
-			{
+		{
 			return enc(in, length, rng);
-			}
+		}
 
 		/**
 		* Encrypt a message.
@@ -60,9 +56,9 @@ class PK_Encryptor
 		template<typename Alloc>
 		std::vector<byte> encrypt(const std::vector<byte, Alloc>& in,
 										  RandomNumberGenerator& rng) const
-			{
+		{
 			return enc(&in[0], in.size(), rng);
-			}
+		}
 
 		/**
 		* Return the maximum allowed message size in bytes.
@@ -80,13 +76,13 @@ class PK_Encryptor
 	private:
 		abstract std::vector<byte> enc(const byte[], size_t,
 												 RandomNumberGenerator&) const = 0;
-	};
+};
 
 /**
 * Public Key Decryptor
 */
 class PK_Decryptor
-	{
+{
 	public:
 		/**
 		* Decrypt a ciphertext.
@@ -95,9 +91,9 @@ class PK_Decryptor
 		* @return decrypted message
 		*/
 		SafeArray!byte decrypt(const byte in[], size_t length) const
-			{
+		{
 			return dec(in, length);
-			}
+		}
 
 		/**
 		* Decrypt a ciphertext.
@@ -106,9 +102,9 @@ class PK_Decryptor
 		*/
 		template<typename Alloc>
 		SafeArray!byte decrypt(const std::vector<byte, Alloc>& in) const
-			{
+		{
 			return dec(&in[0], in.size());
-			}
+		}
 
 		PK_Decryptor() {}
 		abstract ~PK_Decryptor() {}
@@ -118,7 +114,7 @@ class PK_Decryptor
 
 	private:
 		abstract SafeArray!byte dec(const byte[], size_t) const = 0;
-	};
+};
 
 /**
 * Public Key Signer. Use the sign_message() functions for small
@@ -126,7 +122,7 @@ class PK_Decryptor
 * generate the signature by finally calling signature().
 */
 class PK_Signer
-	{
+{
 	public:
 		/**
 		* Sign a message.
@@ -146,11 +142,11 @@ class PK_Signer
 		*/
 		std::vector<byte> sign_message(in Array!byte in,
 												 RandomNumberGenerator& rng)
-			{ return sign_message(&in[0], in.size(), rng); }
+		{ return sign_message(&in[0], in.size(), rng); }
 
 		std::vector<byte> sign_message(in SafeArray!byte in,
 												 RandomNumberGenerator& rng)
-			{ return sign_message(&in[0], in.size(), rng); }
+		{ return sign_message(&in[0], in.size(), rng); }
 
 		/**
 		* Add a message part (single byte).
@@ -205,7 +201,7 @@ class PK_Signer
 		std::unique_ptr<PK_Ops::Verification> m_verify_op;
 		std::unique_ptr<EMSA> m_emsa;
 		Signature_Format m_sig_format;
-	};
+};
 
 /**
 * Public Key Verifier. Use the verify_message() functions for small
@@ -213,7 +209,7 @@ class PK_Signer
 * verify the signature by finally calling check_signature().
 */
 class PK_Verifier
-	{
+{
 	public:
 		/**
 		* Verify a signature.
@@ -234,10 +230,10 @@ class PK_Verifier
 		template<typename Alloc, typename Alloc2>
 		bool verify_message(const std::vector<byte, Alloc>& msg,
 								  const std::vector<byte, Alloc2>& sig)
-			{
+		{
 			return verify_message(&msg[0], msg.size(),
 										 &sig[0], sig.size());
-			}
+		}
 
 		/**
 		* Add a message part (single byte) of the message corresponding to the
@@ -260,7 +256,7 @@ class PK_Verifier
 		* @param in the new message part
 		*/
 		void update(in Array!byte in)
-			{ update(&in[0], in.size()); }
+		{ update(&in[0], in.size()); }
 
 		/**
 		* Check the signature of the buffered message, i.e. the one build
@@ -279,9 +275,9 @@ class PK_Verifier
 		*/
 		template<typename Alloc>
 		bool check_signature(const std::vector<byte, Alloc>& sig)
-			{
+		{
 			return check_signature(&sig[0], sig.size());
-			}
+		}
 
 		/**
 		* Set the format of the signatures fed to this verifier.
@@ -305,13 +301,13 @@ class PK_Verifier
 		std::unique_ptr<PK_Ops::Verification> m_op;
 		std::unique_ptr<EMSA> m_emsa;
 		Signature_Format m_sig_format;
-	};
+};
 
 /**
 * Key used for key agreement
 */
 class PK_Key_Agreement
-	{
+{
 	public:
 
 		/*
@@ -340,10 +336,10 @@ class PK_Key_Agreement
 										in Array!byte in,
 										const byte params[],
 										size_t params_len) const
-			{
+		{
 			return derive_key(key_len, &in[0], in.size(),
 									params, params_len);
-			}
+		}
 
 		/*
 		* Perform Key Agreement Operation
@@ -355,11 +351,11 @@ class PK_Key_Agreement
 		SymmetricKey derive_key(size_t key_len,
 										const byte in[], size_t in_len,
 										in string params = "") const
-			{
+		{
 			return derive_key(key_len, in, in_len,
 									reinterpret_cast<const byte*>(params.data()),
 									params.length());
-			}
+		}
 
 		/*
 		* Perform Key Agreement Operation
@@ -370,11 +366,11 @@ class PK_Key_Agreement
 		SymmetricKey derive_key(size_t key_len,
 										in Array!byte in,
 										in string params = "") const
-			{
+		{
 			return derive_key(key_len, &in[0], in.size(),
 									reinterpret_cast<const byte*>(params.data()),
 									params.length());
-			}
+		}
 
 		/**
 		* Construct a PK Key Agreement.
@@ -386,13 +382,13 @@ class PK_Key_Agreement
 	private:
 		std::unique_ptr<PK_Ops::Key_Agreement> m_op;
 		std::unique_ptr<KDF> m_kdf;
-	};
+};
 
 /**
 * Encryption with an MR algorithm and an EME.
 */
 class PK_Encryptor_EME : public PK_Encryptor
-	{
+{
 	public:
 		size_t maximum_input_size() const;
 
@@ -409,13 +405,13 @@ class PK_Encryptor_EME : public PK_Encryptor
 
 		std::unique_ptr<PK_Ops::Encryption> m_op;
 		std::unique_ptr<EME> m_eme;
-	};
+};
 
 /**
 * Decryption with an MR algorithm and an EME.
 */
 class PK_Decryptor_EME : public PK_Decryptor
-	{
+{
 	public:
 	  /**
 		* Construct an instance.
@@ -429,8 +425,4 @@ class PK_Decryptor_EME : public PK_Decryptor
 
 		std::unique_ptr<PK_Ops::Decryption> m_op;
 		std::unique_ptr<EME> m_eme;
-	};
-
-}
-
-#endif
+};

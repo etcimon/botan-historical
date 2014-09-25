@@ -5,20 +5,16 @@
 * Distributed under the terms of the Botan license
 */
 
-#ifndef BOTAN_ASN1_OID_H__
 #define BOTAN_ASN1_OID_H__
 
 #include <botan/asn1_obj.h>
 #include <string>
 #include <vector>
-
-namespace Botan {
-
 /**
 * This class represents ASN.1 object identifiers.
 */
 class OID : public ASN1_Object
-	{
+{
 	public:
 		void encode_into(class DER_Encoder&) const;
 		void decode_from(class BER_Decoder&);
@@ -66,14 +62,14 @@ class OID : public ASN1_Object
 		OID(in string str = "");
 	private:
 		std::vector<u32bit> id;
-	};
+};
 
 /**
 * Append another component onto the OID.
 * @param oid the OID to add the new component to
 * @param new_comp the new component to add
 */
-OID BOTAN_DLL operator+(const OID& oid, u32bit new_comp);
+OID operator+(const OID& oid, u32bit new_comp);
 
 /**
 * Compare two OIDs.
@@ -81,7 +77,7 @@ OID BOTAN_DLL operator+(const OID& oid, u32bit new_comp);
 * @param b the second OID
 * @return true if a is not equal to b
 */
-bool BOTAN_DLL operator!=(const OID& a, const OID& b);
+bool operator!=(const OID& a, const OID& b);
 
 /**
 * Compare two OIDs.
@@ -89,8 +85,4 @@ bool BOTAN_DLL operator!=(const OID& a, const OID& b);
 * @param b the second OID
 * @return true if a is lexicographically smaller than b
 */
-bool BOTAN_DLL operator<(const OID& a, const OID& b);
-
-}
-
-#endif
+bool operator<(const OID& a, const OID& b);

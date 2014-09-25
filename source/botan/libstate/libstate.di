@@ -5,7 +5,6 @@
 * Distributed under the terms of the Botan license
 */
 
-#ifndef BOTAN_LIB_STATE_H__
 #define BOTAN_LIB_STATE_H__
 
 #include <botan/global_state.h>
@@ -15,14 +14,11 @@
 #include <string>
 #include <vector>
 #include <map>
-
-namespace Botan {
-
 /**
 * Global Library State
 */
 class Library_State
-	{
+{
 	public:
 		Library_State() {}
 
@@ -52,8 +48,4 @@ class Library_State
 		std::vector<std::unique_ptr<EntropySource>> m_sources;
 
 		std::unique_ptr<Algorithm_Factory> m_algorithm_factory;
-	};
-
-}
-
-#endif
+};

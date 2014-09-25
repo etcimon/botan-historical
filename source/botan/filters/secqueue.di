@@ -6,19 +6,15 @@
 * Distributed under the terms of the Botan license
 */
 
-#ifndef BOTAN_SECURE_QUEUE_H__
 #define BOTAN_SECURE_QUEUE_H__
 
 #include <botan/data_src.h>
 #include <botan/filter.h>
-
-namespace Botan {
-
 /**
 * A queue that knows how to zeroize itself
 */
 class SecureQueue : public Fanout_Filter, public DataSource
-	{
+{
 	public:
 		string name() const { return "Queue"; }
 
@@ -62,8 +58,4 @@ class SecureQueue : public Fanout_Filter, public DataSource
 		void destroy();
 		class SecureQueueNode* head;
 		class SecureQueueNode* tail;
-	};
-
-}
-
-#endif
+};

@@ -7,16 +7,13 @@
 
 #include <botan/internal/openssl_engine.h>
 #include <openssl/evp.h>
-
-namespace Botan {
-
 namespace {
 
 /*
 * EVP Block Cipher
 */
 class EVP_BlockCipher : public BlockCipher
-	{
+{
 	public:
 		void clear();
 		string name() const { return cipher_name; }
@@ -41,7 +38,7 @@ class EVP_BlockCipher : public BlockCipher
 		Key_Length_Specification cipher_key_spec;
 		string cipher_name;
 		mutable EVP_CIPHER_CTX encrypt, decrypt;
-	};
+};
 
 /*
 * EVP Block Cipher Constructor
@@ -51,7 +48,7 @@ EVP_BlockCipher::EVP_BlockCipher(const EVP_CIPHER* algo,
 	block_sz(EVP_CIPHER_block_size(algo)),
 	cipher_key_spec(EVP_CIPHER_key_length(algo)),
 	cipher_name(algo_name)
-	{
+{
 	if(EVP_CIPHER_mode(algo) != EVP_CIPH_ECB_MODE)
 		throw Invalid_Argument("EVP_BlockCipher: Non-ECB EVP was passed in");
 
@@ -63,7 +60,7 @@ EVP_BlockCipher::EVP_BlockCipher(const EVP_CIPHER* algo,
 
 	EVP_CIPHER_CTX_set_padding(&encrypt, 0);
 	EVP_CIPHER_CTX_set_padding(&decrypt, 0);
-	}
+}
 
 /*
 * EVP Block Cipher Constructor
@@ -75,7 +72,7 @@ EVP_BlockCipher::EVP_BlockCipher(const EVP_CIPHER* algo,
 	block_sz(EVP_CIPHER_block_size(algo)),
 	cipher_key_spec(key_min, key_max, key_mod),
 	cipher_name(algo_name)
-	{
+{
 	if(EVP_CIPHER_mode(algo) != EVP_CIPH_ECB_MODE)
 		throw Invalid_Argument("EVP_BlockCipher: Non-ECB EVP was passed in");
 
@@ -87,48 +84,48 @@ EVP_BlockCipher::EVP_BlockCipher(const EVP_CIPHER* algo,
 
 	EVP_CIPHER_CTX_set_padding(&encrypt, 0);
 	EVP_CIPHER_CTX_set_padding(&decrypt, 0);
-	}
+}
 
 /*
 * EVP Block Cipher Destructor
 */
 EVP_BlockCipher::~EVP_BlockCipher()
-	{
+{
 	EVP_CIPHER_CTX_cleanup(&encrypt);
 	EVP_CIPHER_CTX_cleanup(&decrypt);
-	}
+}
 
 /*
 * Encrypt a block
 */
 void EVP_BlockCipher::encrypt_n(const byte in[], byte out[],
 										  size_t blocks) const
-	{
+{
 	int out_len = 0;
 	EVP_EncryptUpdate(&encrypt, out, &out_len, in, blocks * block_sz);
-	}
+}
 
 /*
 * Decrypt a block
 */
 void EVP_BlockCipher::decrypt_n(const byte in[], byte out[],
 										  size_t blocks) const
-	{
+{
 	int out_len = 0;
 	EVP_DecryptUpdate(&decrypt, out, &out_len, in, blocks * block_sz);
-	}
+}
 
 /*
 * Set the key
 */
 void EVP_BlockCipher::key_schedule(const byte key[], size_t length)
-	{
+{
 	SafeArray!byte full_key(key, key + length);
 
 	if(cipher_name == "TripleDES" && length == 16)
-		{
+	{
 		full_key += std::make_pair(key, 8);
-		}
+	}
 	else
 		if(EVP_CIPHER_CTX_set_key_length(&encrypt, length) == 0 ||
 			EVP_CIPHER_CTX_set_key_length(&decrypt, length) == 0)
@@ -136,32 +133,32 @@ void EVP_BlockCipher::key_schedule(const byte key[], size_t length)
 										  cipher_name);
 
 	if(cipher_name == "RC2")
-		{
+	{
 		EVP_CIPHER_CTX_ctrl(&encrypt, EVP_CTRL_SET_RC2_KEY_BITS, length*8, 0);
 		EVP_CIPHER_CTX_ctrl(&decrypt, EVP_CTRL_SET_RC2_KEY_BITS, length*8, 0);
-		}
+	}
 
 	EVP_EncryptInit_ex(&encrypt, 0, 0, &full_key[0], 0);
 	EVP_DecryptInit_ex(&decrypt, 0, 0, &full_key[0], 0);
-	}
+}
 
 /*
 * Return a clone of this object
 */
 BlockCipher* EVP_BlockCipher::clone() const
-	{
+{
 	return new EVP_BlockCipher(EVP_CIPHER_CTX_cipher(&encrypt),
 										cipher_name,
 										cipher_key_spec.minimum_keylength(),
 										cipher_key_spec.maximum_keylength(),
 										cipher_key_spec.keylength_multiple());
-	}
+}
 
 /*
 * Clear memory of sensitive data
 */
 void EVP_BlockCipher::clear()
-	{
+{
 	const EVP_CIPHER* algo = EVP_CIPHER_CTX_cipher(&encrypt);
 
 	EVP_CIPHER_CTX_cleanup(&encrypt);
@@ -172,7 +169,7 @@ void EVP_BlockCipher::clear()
 	EVP_DecryptInit_ex(&decrypt, algo, 0, 0, 0);
 	EVP_CIPHER_CTX_set_padding(&encrypt, 0);
 	EVP_CIPHER_CTX_set_padding(&decrypt, 0);
-	}
+}
 
 }
 
@@ -182,7 +179,7 @@ void EVP_BlockCipher::clear()
 BlockCipher*
 OpenSSL_Engine::find_block_cipher(const SCAN_Name& request,
 											 Algorithm_Factory&) const
-	{
+{
 #define HANDLE_EVP_CIPHER(NAME, EVP)									 \
 	if(request.algo_name() == NAME && request.arg_count() == 0)  \
 		return new EVP_BlockCipher(EVP, NAME);
@@ -243,6 +240,6 @@ OpenSSL_Engine::find_block_cipher(const SCAN_Name& request,
 #undef HANDLE_EVP_CIPHER_KEYLEN
 
 	return 0;
-	}
+}
 
 }

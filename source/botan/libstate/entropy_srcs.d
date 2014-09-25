@@ -42,11 +42,8 @@
 #if defined(BOTAN_HAS_ENTROPY_SRC_PROC_WALKER)
   #include <botan/internal/proc_walk.h>
 #endif
-
-namespace Botan {
-
 std::vector<std::unique_ptr<EntropySource>> Library_State::entropy_sources()
-	{
+{
 	std::vector<std::unique_ptr<EntropySource>> sources;
 
 #if defined(BOTAN_HAS_ENTROPY_SRC_HIGH_RESOLUTION_TIMER)
@@ -63,7 +60,7 @@ std::vector<std::unique_ptr<EntropySource>> Library_State::entropy_sources()
 
 #if defined(BOTAN_HAS_ENTROPY_SRC_DEV_RANDOM)
 	sources.push_back(std::unique_ptr<EntropySource>(new Device_EntropySource(
-		{ "/dev/random", "/dev/srandom", "/dev/urandom" }
+	{ "/dev/random", "/dev/srandom", "/dev/urandom" }
 	)));
 #endif
 
@@ -87,7 +84,7 @@ std::vector<std::unique_ptr<EntropySource>> Library_State::entropy_sources()
 #if defined(BOTAN_HAS_ENTROPY_SRC_UNIX_PROCESS_RUNNER)
 	sources.push_back(std::unique_ptr<EntropySource>(
 		new Unix_EntropySource(
-			{ "/bin", "/sbin", "/usr/bin", "/usr/sbin" }
+		{ "/bin", "/sbin", "/usr/bin", "/usr/sbin" }
 		)));
 #endif
 
@@ -98,10 +95,10 @@ std::vector<std::unique_ptr<EntropySource>> Library_State::entropy_sources()
 #endif
 
 	return sources;
-	}
+}
 
 void Library_State::poll_available_sources(class Entropy_Accumulator& accum)
-	{
+{
 	std::lock_guard<std::mutex> lock(m_entropy_src_mutex);
 
 	if(m_sources.empty())
@@ -110,12 +107,12 @@ void Library_State::poll_available_sources(class Entropy_Accumulator& accum)
 	size_t poll_attempt = 0;
 
 	while(!accum.polling_goal_achieved() && poll_attempt < 16)
-		{
+	{
 		const size_t src_idx = poll_attempt % m_sources.size();
 		m_sources[src_idx]->poll(accum);
 		++poll_attempt;
-		}
 	}
+}
 
 }
 

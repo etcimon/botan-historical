@@ -5,15 +5,11 @@
 * Distributed under the terms of the Botan license
 */
 
-#ifndef BOTAN_ENTROPY_SRC_UNIX_H__
 #define BOTAN_ENTROPY_SRC_UNIX_H__
 
 #include <botan/entropy_src.h>
 #include <vector>
 #include <sys/types.h>
-
-namespace Botan {
-
 /**
 * Entropy source for generic Unix. Runs various programs trying to
 * gather data hard for a remote attacker to guess. Probably not too
@@ -21,7 +17,7 @@ namespace Botan {
 * distribution.
 */
 class Unix_EntropySource : public EntropySource
-	{
+{
 	public:
 		string name() const { return "Unix Process Runner"; }
 
@@ -39,7 +35,7 @@ class Unix_EntropySource : public EntropySource
 		static std::vector<std::vector<string>> get_default_sources();
 
 		class Unix_Process
-			{
+		{
 			public:
 				int fd() const { return m_fd; }
 
@@ -53,17 +49,17 @@ class Unix_EntropySource : public EntropySource
 				~Unix_Process() { shutdown(); }
 
 				Unix_Process(Unix_Process&& other)
-					{
+				{
 					std::swap(m_fd, other.m_fd);
 					std::swap(m_pid, other.m_pid);
-					}
+				}
 
 				Unix_Process(const Unix_Process&) = delete;
 				Unix_Process& operator=(const Unix_Process&) = delete;
 			private:
 				int m_fd = -1;
 				pid_t m_pid = -1;
-			};
+		};
 
 		const std::vector<string>& next_source();
 
@@ -74,16 +70,12 @@ class Unix_EntropySource : public EntropySource
 		size_t m_sources_idx = 0;
 
 		std::vector<Unix_Process> m_procs;
-	};
+};
 
 class UnixProcessInfo_EntropySource : public EntropySource
-	{
+{
 	public:
 		string name() const { return "Unix Process Info"; }
 
 		void poll(Entropy_Accumulator& accum);
-	};
-
-}
-
-#endif
+};

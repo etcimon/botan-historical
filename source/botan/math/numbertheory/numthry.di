@@ -5,15 +5,11 @@
 * Distributed under the terms of the Botan license
 */
 
-#ifndef BOTAN_NUMBER_THEORY_H__
 #define BOTAN_NUMBER_THEORY_H__
 
 #include <botan/bigint.h>
 #include <botan/pow_mod.h>
 #include <botan/rng.h>
-
-namespace Botan {
-
 /**
 * Fused multiply-add
 * @param a an integer
@@ -21,7 +17,7 @@ namespace Botan {
 * @param c an integer
 * @return (a*b)+c
 */
-BigInt BOTAN_DLL mul_add(const BigInt& a,
+BigInt mul_add(const BigInt& a,
 								 const BigInt& b,
 								 const BigInt& c);
 
@@ -32,7 +28,7 @@ BigInt BOTAN_DLL mul_add(const BigInt& a,
 * @param c an integer
 * @return (a-b)*c
 */
-BigInt BOTAN_DLL sub_mul(const BigInt& a,
+BigInt sub_mul(const BigInt& a,
 								 const BigInt& b,
 								 const BigInt& c);
 
@@ -49,7 +45,7 @@ inline BigInt abs(const BigInt& n) { return n.abs(); }
 * @param y a positive integer
 * @return gcd(x,y)
 */
-BigInt BOTAN_DLL gcd(const BigInt& x, const BigInt& y);
+BigInt gcd(const BigInt& x, const BigInt& y);
 
 /**
 * Least common multiple
@@ -57,13 +53,13 @@ BigInt BOTAN_DLL gcd(const BigInt& x, const BigInt& y);
 * @param y a positive integer
 * @return z, smallest integer such that z % x == 0 and z % y == 0
 */
-BigInt BOTAN_DLL lcm(const BigInt& x, const BigInt& y);
+BigInt lcm(const BigInt& x, const BigInt& y);
 
 /**
 * @param x an integer
 * @return (x*x)
 */
-BigInt BOTAN_DLL square(const BigInt& x);
+BigInt square(const BigInt& x);
 
 /**
 * Modular inversion
@@ -71,7 +67,7 @@ BigInt BOTAN_DLL square(const BigInt& x);
 * @param modulus a positive integer
 * @return y st (x*y) % modulus == 1
 */
-BigInt BOTAN_DLL inverse_mod(const BigInt& x,
+BigInt inverse_mod(const BigInt& x,
 									  const BigInt& modulus);
 
 /**
@@ -83,7 +79,7 @@ BigInt BOTAN_DLL inverse_mod(const BigInt& x,
 * @param n is an odd integer > 1
 * @return (n / m)
 */
-s32bit BOTAN_DLL jacobi(const BigInt& a,
+s32bit jacobi(const BigInt& a,
 								const BigInt& n);
 
 /**
@@ -93,7 +89,7 @@ s32bit BOTAN_DLL jacobi(const BigInt& a,
 * @param m a positive modulus
 * @return (b^x) % m
 */
-BigInt BOTAN_DLL power_mod(const BigInt& b,
+BigInt power_mod(const BigInt& b,
 									const BigInt& x,
 									const BigInt& m);
 
@@ -105,14 +101,14 @@ BigInt BOTAN_DLL power_mod(const BigInt& b,
 * @param p the prime
 * @return y such that (y*y)%p == x, or -1 if no such integer
 */
-BigInt BOTAN_DLL ressol(const BigInt& x, const BigInt& p);
+BigInt ressol(const BigInt& x, const BigInt& p);
 
 /*
 * Compute -input^-1 mod 2^MP_WORD_BITS. Returns zero if input
 * is even. If input is odd, input and 2^n are relatively prime
 * and an inverse exists.
 */
-word BOTAN_DLL monty_inverse(word input);
+word monty_inverse(word input);
 
 /**
 * @param x a positive integer
@@ -120,7 +116,7 @@ word BOTAN_DLL monty_inverse(word input);
 *			value of n such that 2^n divides x evenly. Returns zero if
 *			n is less than or equal to zero.
 */
-size_t BOTAN_DLL low_zero_bits(const BigInt& x);
+size_t low_zero_bits(const BigInt& x);
 
 /**
 * Check for primality
@@ -130,22 +126,19 @@ size_t BOTAN_DLL low_zero_bits(const BigInt& x);
 * @param is_random true if n was randomly chosen by us
 * @return true if all primality tests passed, otherwise false
 */
-bool BOTAN_DLL is_prime(const BigInt& n,
+bool is_prime(const BigInt& n,
 								RandomNumberGenerator& rng,
 								size_t prob = 56,
 								bool is_random = false);
 
 inline bool quick_check_prime(const BigInt& n, RandomNumberGenerator& rng)
-	{ return is_prime(n, rng, 32); }
+{ return is_prime(n, rng, 32); }
 
 inline bool check_prime(const BigInt& n, RandomNumberGenerator& rng)
-	{ return is_prime(n, rng, 56); }
+{ return is_prime(n, rng, 56); }
 
 inline bool verify_prime(const BigInt& n, RandomNumberGenerator& rng)
-	{ return is_prime(n, rng, 80); }
-
-
-/**
+{ return is_prime(n, rng, 80); }/**
 * Randomly generate a prime
 * @param rng a random number generator
 * @param bits how large the resulting prime should be in bits
@@ -155,7 +148,7 @@ inline bool verify_prime(const BigInt& n, RandomNumberGenerator& rng)
 * @param equiv_mod the modulus equiv should be checked against
 * @return random prime with the specified criteria
 */
-BigInt BOTAN_DLL random_prime(RandomNumberGenerator& rng,
+BigInt random_prime(RandomNumberGenerator& rng,
 										size_t bits, const BigInt& coprime = 1,
 										size_t equiv = 1, size_t equiv_mod = 2);
 
@@ -165,7 +158,7 @@ BigInt BOTAN_DLL random_prime(RandomNumberGenerator& rng,
 * @param bits is how long the resulting prime should be
 * @return prime randomly chosen from safe primes of length bits
 */
-BigInt BOTAN_DLL random_safe_prime(RandomNumberGenerator& rng,
+BigInt random_safe_prime(RandomNumberGenerator& rng,
 											  size_t bits);
 
 class Algorithm_Factory;
@@ -213,8 +206,4 @@ const size_t PRIME_TABLE_SIZE = 6541;
 /**
 * A const array of all primes less than 65535
 */
-extern const u16bit BOTAN_DLL PRIMES[];
-
-}
-
-#endif
+extern const u16bit PRIMES[];

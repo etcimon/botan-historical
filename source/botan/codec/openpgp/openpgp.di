@@ -5,22 +5,18 @@
 * Distributed under the terms of the Botan license
 */
 
-#ifndef BOTAN_OPENPGP_CODEC_H__
 #define BOTAN_OPENPGP_CODEC_H__
 
 #include <botan/data_src.h>
 #include <string>
 #include <map>
-
-namespace Botan {
-
 /**
 * @param input the input data
 * @param length length of input in bytes
 * @param label the human-readable label
 * @param headers a set of key/value pairs included in the header
 */
-BOTAN_DLL string PGP_encode(
+string PGP_encode(
 	const byte input[],
 	size_t length,
 	in string label,
@@ -31,7 +27,7 @@ BOTAN_DLL string PGP_encode(
 * @param length length of input in bytes
 * @param label the human-readable label
 */
-BOTAN_DLL string PGP_encode(
+string PGP_encode(
 	const byte input[],
 	size_t length,
 	in string label);
@@ -42,7 +38,7 @@ BOTAN_DLL string PGP_encode(
 * @param headers is set to any headers
 * @return decoded output as raw binary
 */
-BOTAN_DLL SafeArray!byte PGP_decode(
+SafeArray!byte PGP_decode(
 	DataSource& source,
 	string& label,
 	std::map<string, string>& headers);
@@ -52,10 +48,6 @@ BOTAN_DLL SafeArray!byte PGP_decode(
 * @param label is set to the human-readable label
 * @return decoded output as raw binary
 */
-BOTAN_DLL SafeArray!byte PGP_decode(
+SafeArray!byte PGP_decode(
 	DataSource& source,
 	string& label);
-
-}
-
-#endif

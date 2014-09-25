@@ -5,18 +5,14 @@
 * Distributed under the terms of the Botan license
 */
 
-#ifndef BOTAN_MDX_BASE_H__
 #define BOTAN_MDX_BASE_H__
 
 #include <botan/hash.h>
-
-namespace Botan {
-
 /**
 * MDx Hash Function Base Class
 */
 class MDx_HashFunction : public HashFunction
-	{
+{
 	public:
 		/**
 		* @param block_length is the number of bytes per block
@@ -61,8 +57,4 @@ class MDx_HashFunction : public HashFunction
 
 		const bool BIG_BYTE_ENDIAN, BIG_BIT_ENDIAN;
 		const size_t COUNT_SIZE;
-	};
-
-}
-
-#endif
+};

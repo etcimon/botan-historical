@@ -5,20 +5,16 @@
 * Distributed under the terms of the Botan license
 */
 
-#ifndef BOTAN_MODE_CBC_H__
 #define BOTAN_MODE_CBC_H__
 
 #include <botan/cipher_mode.h>
 #include <botan/block_cipher.h>
 #include <botan/mode_pad.h>
-
-namespace Botan {
-
 /**
 * CBC Mode
 */
 class CBC_Mode : public Cipher_Mode
-	{
+{
 	public:
 		SafeArray!byte start(const byte nonce[], size_t nonce_len) override;
 
@@ -39,10 +35,10 @@ class CBC_Mode : public Cipher_Mode
 		const BlockCipher& cipher() const { return *m_cipher; }
 
 		const BlockCipherModePaddingMethod& padding() const
-			{
+		{
 			BOTAN_ASSERT_NONNULL(m_padding);
 			return *m_padding;
-			}
+		}
 
 		SafeArray!byte& state() { return m_state; }
 
@@ -54,13 +50,13 @@ class CBC_Mode : public Cipher_Mode
 		std::unique_ptr<BlockCipher> m_cipher;
 		std::unique_ptr<BlockCipherModePaddingMethod> m_padding;
 		SafeArray!byte m_state;
-	};
+};
 
 /**
 * CBC Encryption
 */
 class CBC_Encryption : public CBC_Mode
-	{
+{
 	public:
 		CBC_Encryption(BlockCipher* cipher, BlockCipherModePaddingMethod* padding) :
 			CBC_Mode(cipher, padding) {}
@@ -72,13 +68,13 @@ class CBC_Encryption : public CBC_Mode
 		size_t output_length(size_t input_length) const override;
 
 		size_t minimum_final_size() const override;
-	};
+};
 
 /**
 * CBC Encryption with ciphertext stealing (CBC-CS3 variant)
 */
 class CTS_Encryption : public CBC_Encryption
-	{
+{
 	public:
 		CTS_Encryption(BlockCipher* cipher) : CBC_Encryption(cipher, nullptr) {}
 
@@ -89,13 +85,13 @@ class CTS_Encryption : public CBC_Encryption
 		size_t minimum_final_size() const override;
 
 		bool valid_nonce_length(size_t n) const;
-	};
+};
 
 /**
 * CBC Decryption
 */
 class CBC_Decryption : public CBC_Mode
-	{
+{
 	public:
 		CBC_Decryption(BlockCipher* cipher, BlockCipherModePaddingMethod* padding) :
 			CBC_Mode(cipher, padding), m_tempbuf(update_granularity()) {}
@@ -109,13 +105,13 @@ class CBC_Decryption : public CBC_Mode
 		size_t minimum_final_size() const override;
 	private:
 		SafeArray!byte m_tempbuf;
-	};
+};
 
 /**
 * CBC Decryption with ciphertext stealing (CBC-CS3 variant)
 */
 class CTS_Decryption : public CBC_Decryption
-	{
+{
 	public:
 		CTS_Decryption(BlockCipher* cipher) : CBC_Decryption(cipher, nullptr) {}
 
@@ -124,8 +120,4 @@ class CTS_Decryption : public CBC_Decryption
 		size_t minimum_final_size() const override;
 
 		bool valid_nonce_length(size_t n) const;
-	};
-
-}
-
-#endif
+};

@@ -5,19 +5,15 @@
 * Distributed under the terms of the Botan license
 */
 
-#ifndef BOTAN_HMAC_DRBG_H__
 #define BOTAN_HMAC_DRBG_H__
 
 #include <botan/rng.h>
 #include <botan/mac.h>
-
-namespace Botan {
-
 /**
 * HMAC_DRBG (SP800-90A)
 */
 class HMAC_DRBG : public RandomNumberGenerator
-	{
+{
 	public:
 		void randomize(byte buf[], size_t buf_len);
 		bool is_seeded() const;
@@ -43,8 +39,4 @@ class HMAC_DRBG : public RandomNumberGenerator
 
 		SafeArray!byte m_V;
 		size_t m_reseed_counter;
-	};
-
-}
-
-#endif
+};

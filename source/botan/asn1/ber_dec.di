@@ -5,19 +5,15 @@
 * Distributed under the terms of the Botan license
 */
 
-#ifndef BOTAN_BER_DECODER_H__
 #define BOTAN_BER_DECODER_H__
 
 #include <botan/asn1_oid.h>
 #include <botan/data_src.h>
-
-namespace Botan {
-
 /**
 * BER Decoding Object
 */
 class BER_Decoder
-	{
+{
 	public:
 		BER_Object get_next_object();
 
@@ -77,18 +73,18 @@ class BER_Decoder
 													 size_t T_bytes);
 
 		template<typename T> BER_Decoder& decode_integer_type(T& out)
-			{
+		{
 			return decode_integer_type<T>(out, INTEGER, UNIVERSAL);
-			}
+		}
 
 		template<typename T>
 			BER_Decoder& decode_integer_type(T& out,
 														ASN1_Tag type_tag,
 														ASN1_Tag class_tag = CONTEXT_SPECIFIC)
-			{
+		{
 			out = decode_constrained_integer(type_tag, class_tag, sizeof(out));
 			return (*this);
-			}
+		}
 
 		template<typename T>
 			BER_Decoder& decode_optional(T& out,
@@ -113,7 +109,7 @@ class BER_Decoder
 		template<typename T>
 			BER_Decoder& decode_and_check(const T& expected,
 													in string error_msg)
-			{
+		{
 			T actual;
 			decode(actual);
 
@@ -121,7 +117,7 @@ class BER_Decoder
 				throw Decoding_Error(error_msg);
 
 			return (*this);
-			}
+		}
 
 		/*
 		* Decode an OPTIONAL string type
@@ -131,29 +127,29 @@ class BER_Decoder
 														ASN1_Tag real_type,
 														u16bit type_no,
 														ASN1_Tag class_tag = CONTEXT_SPECIFIC)
-			{
+		{
 			BER_Object obj = get_next_object();
 
 			ASN1_Tag type_tag = static_cast<ASN1_Tag>(type_no);
 
 			if(obj.type_tag == type_tag && obj.class_tag == class_tag)
-				{
+			{
 				if((class_tag & CONSTRUCTED) && (class_tag & CONTEXT_SPECIFIC))
 					BER_Decoder(obj.value).decode(out, real_type).verify_end();
 				else
-					{
+				{
 					push_back(obj);
 					decode(out, real_type, type_tag, class_tag);
-					}
 				}
+			}
 			else
-				{
+			{
 				out.clear();
 				push_back(obj);
-				}
+			}
 
 			return (*this);
-			}
+		}
 
 		BER_Decoder& operator=(const BER_Decoder&) = delete;
 
@@ -172,7 +168,7 @@ class BER_Decoder
 		DataSource* source;
 		BER_Object pushed;
 		mutable bool owns;
-	};
+};
 
 /*
 * Decode an OPTIONAL or DEFAULT element
@@ -182,27 +178,27 @@ BER_Decoder& BER_Decoder::decode_optional(T& out,
 														ASN1_Tag type_tag,
 														ASN1_Tag class_tag,
 														const T& default_value)
-	{
+{
 	BER_Object obj = get_next_object();
 
 	if(obj.type_tag == type_tag && obj.class_tag == class_tag)
-		{
+	{
 		if((class_tag & CONSTRUCTED) && (class_tag & CONTEXT_SPECIFIC))
 			BER_Decoder(obj.value).decode(out).verify_end();
 		else
-			{
+		{
 			push_back(obj);
 			decode(out, type_tag, class_tag);
-			}
 		}
+	}
 	else
-		{
+	{
 		out = default_value;
 		push_back(obj);
-		}
+	}
 
 	return (*this);
-	}
+}
 
 /*
 * Decode an OPTIONAL or DEFAULT element
@@ -215,24 +211,24 @@ BER_Decoder& BER_Decoder::decode_optional_implicit(
 	ASN1_Tag real_type,
 	ASN1_Tag real_class,
 	const T& default_value)
-	{
+{
 	BER_Object obj = get_next_object();
 
 	if(obj.type_tag == type_tag && obj.class_tag == class_tag)
-		{
+	{
 		obj.type_tag = real_type;
 		obj.class_tag = real_class;
 		push_back(obj);
 		decode(out, real_type, real_class);
-		}
+	}
 	else
-		{
+	{
 		out = default_value;
 		push_back(obj);
-		}
+	}
 
 	return (*this);
-	}
+}
 /*
 * Decode a list of homogenously typed values
 */
@@ -240,21 +236,17 @@ template<typename T>
 BER_Decoder& BER_Decoder::decode_list(std::vector<T>& vec,
 												  ASN1_Tag type_tag,
 												  ASN1_Tag class_tag)
-	{
+{
 	BER_Decoder list = start_cons(type_tag, class_tag);
 
 	while(list.more_items())
-		{
+	{
 		T value;
 		list.decode(value);
 		vec.push_back(value);
-		}
+	}
 
 	list.end_cons();
 
 	return (*this);
-	}
-
 }
-
-#endif

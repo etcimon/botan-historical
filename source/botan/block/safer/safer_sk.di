@@ -5,18 +5,14 @@
 * Distributed under the terms of the Botan license
 */
 
-#ifndef BOTAN_SAFER_SK_H__
 #define BOTAN_SAFER_SK_H__
 
 #include <botan/block_cipher.h>
-
-namespace Botan {
-
 /**
 * SAFER-SK
 */
 class SAFER_SK : public Block_Cipher_Fixed_Params<8, 16>
-	{
+{
 	public:
 		void encrypt_n(const byte in[], byte out[], size_t blocks) const;
 		void decrypt_n(const byte in[], byte out[], size_t blocks) const;
@@ -35,8 +31,4 @@ class SAFER_SK : public Block_Cipher_Fixed_Params<8, 16>
 
 		size_t rounds;
 		SafeArray!byte EK;
-	};
-
-}
-
-#endif
+};

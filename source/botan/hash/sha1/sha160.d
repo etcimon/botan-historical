@@ -8,9 +8,6 @@
 #include <botan/sha160.h>
 #include <botan/loadstor.h>
 #include <botan/rotate.h>
-
-namespace Botan {
-
 namespace SHA1_F {
 
 namespace {
@@ -19,37 +16,37 @@ namespace {
 * SHA-160 F1 Function
 */
 inline void F1(u32bit A, u32bit& B, u32bit C, u32bit D, u32bit& E, u32bit msg)
-	{
+{
 	E += (D ^ (B & (C ^ D))) + msg + 0x5A827999 + rotate_left(A, 5);
 	B  = rotate_left(B, 30);
-	}
+}
 
 /*
 * SHA-160 F2 Function
 */
 inline void F2(u32bit A, u32bit& B, u32bit C, u32bit D, u32bit& E, u32bit msg)
-	{
+{
 	E += (B ^ C ^ D) + msg + 0x6ED9EBA1 + rotate_left(A, 5);
 	B  = rotate_left(B, 30);
-	}
+}
 
 /*
 * SHA-160 F3 Function
 */
 inline void F3(u32bit A, u32bit& B, u32bit C, u32bit D, u32bit& E, u32bit msg)
-	{
+{
 	E += ((B & C) | ((B | C) & D)) + msg + 0x8F1BBCDC + rotate_left(A, 5);
 	B  = rotate_left(B, 30);
-	}
+}
 
 /*
 * SHA-160 F4 Function
 */
 inline void F4(u32bit A, u32bit& B, u32bit C, u32bit D, u32bit& E, u32bit msg)
-	{
+{
 	E += (B ^ C ^ D) + msg + 0xCA62C1D6 + rotate_left(A, 5);
 	B  = rotate_left(B, 30);
-	}
+}
 
 }
 
@@ -59,18 +56,18 @@ inline void F4(u32bit A, u32bit& B, u32bit C, u32bit D, u32bit& E, u32bit msg)
 * SHA-160 Compression Function
 */
 void SHA_160::compress_n(const byte input[], size_t blocks)
-	{
+{
 	using namespace SHA1_F;
 
 	u32bit A = digest[0], B = digest[1], C = digest[2],
 			 D = digest[3], E = digest[4];
 
 	for(size_t i = 0; i != blocks; ++i)
-		{
+	{
 		load_be(&W[0], input, 16);
 
 		for(size_t j = 16; j != 80; j += 8)
-			{
+		{
 			W[j  ] = rotate_left((W[j-3] ^ W[j-8] ^ W[j-14] ^ W[j-16]), 1);
 			W[j+1] = rotate_left((W[j-2] ^ W[j-7] ^ W[j-13] ^ W[j-15]), 1);
 			W[j+2] = rotate_left((W[j-1] ^ W[j-6] ^ W[j-12] ^ W[j-14]), 1);
@@ -79,7 +76,7 @@ void SHA_160::compress_n(const byte input[], size_t blocks)
 			W[j+5] = rotate_left((W[j+2] ^ W[j-3] ^ W[j- 9] ^ W[j-11]), 1);
 			W[j+6] = rotate_left((W[j+3] ^ W[j-2] ^ W[j- 8] ^ W[j-10]), 1);
 			W[j+7] = rotate_left((W[j+4] ^ W[j-1] ^ W[j- 7] ^ W[j- 9]), 1);
-			}
+		}
 
 		F1(A, B, C, D, E, W[ 0]);	F1(E, A, B, C, D, W[ 1]);
 		F1(D, E, A, B, C, W[ 2]);	F1(C, D, E, A, B, W[ 3]);
@@ -132,23 +129,23 @@ void SHA_160::compress_n(const byte input[], size_t blocks)
 		E = (digest[4] += E);
 
 		input += hash_block_size();
-		}
 	}
+}
 
 /*
 * Copy out the digest
 */
 void SHA_160::copy_out(byte output[])
-	{
+{
 	for(size_t i = 0; i != output_length(); i += 4)
 		store_be(digest[i/4], output + i);
-	}
+}
 
 /*
 * Clear memory of sensitive data
 */
 void SHA_160::clear()
-	{
+{
 	MDx_HashFunction::clear();
 	zeroise(W);
 	digest[0] = 0x67452301;
@@ -156,6 +153,6 @@ void SHA_160::clear()
 	digest[2] = 0x98BADCFE;
 	digest[3] = 0x10325476;
 	digest[4] = 0xC3D2E1F0;
-	}
+}
 
 }

@@ -5,31 +5,27 @@
 * Distributed under the terms of the Botan license
 */
 
-#ifndef BOTAN_X509_CRL_H__
 #define BOTAN_X509_CRL_H__
 
 #include <botan/x509_obj.h>
 #include <botan/crl_ent.h>
 #include <vector>
-
-namespace Botan {
-
 class X509_Certificate;
 
 /**
 * This class represents X.509 Certificate Revocation Lists (CRLs).
 */
 class X509_CRL : public X509_Object
-	{
+{
 	public:
 		/**
 		* This class represents CRL related errors.
 		*/
-		struct BOTAN_DLL X509_CRL_Error : public Exception
-			{
+		struct X509_CRL_Error : public Exception
+		{
 			X509_CRL_Error(in string error) :
 				Exception("X509_CRL: " + error) {}
-			};
+		};
 
 		/**
 		* Check if this particular certificate is listed in the CRL
@@ -104,8 +100,4 @@ class X509_CRL : public X509_Object
 		bool throw_on_unknown_critical;
 		std::vector<CRL_Entry> revoked;
 		Data_Store info;
-	};
-
-}
-
-#endif
+};

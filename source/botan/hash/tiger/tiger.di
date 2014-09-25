@@ -5,26 +5,22 @@
 * Distributed under the terms of the Botan license
 */
 
-#ifndef BOTAN_TIGER_H__
 #define BOTAN_TIGER_H__
 
 #include <botan/mdx_hash.h>
-
-namespace Botan {
-
 /**
 * Tiger
 */
 class Tiger : public MDx_HashFunction
-	{
+{
 	public:
 		string name() const;
 		size_t output_length() const { return hash_len; }
 
 		HashFunction* clone() const
-			{
+		{
 			return new Tiger(output_length(), passes);
-			}
+		}
 
 		void clear();
 
@@ -48,8 +44,4 @@ class Tiger : public MDx_HashFunction
 
 		secure_vector<u64bit> X, digest;
 		const size_t hash_len, passes;
-	};
-
-}
-
-#endif
+};

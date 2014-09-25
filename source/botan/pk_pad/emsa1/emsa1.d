@@ -6,14 +6,11 @@
 */
 
 #include <botan/emsa1.h>
-
-namespace Botan {
-
 namespace {
 
 SafeArray!byte emsa1_encoding(in SafeArray!byte msg,
 											 size_t output_bits)
-	{
+{
 	if(8*msg.size() <= output_bits)
 		return msg;
 
@@ -26,42 +23,42 @@ SafeArray!byte emsa1_encoding(in SafeArray!byte msg,
 		digest[j] = msg[j];
 
 	if(bit_shift)
-		{
+	{
 		byte carry = 0;
 		for(size_t j = 0; j != digest.size(); ++j)
-			{
+		{
 			byte temp = digest[j];
 			digest[j] = (temp >> bit_shift) | carry;
 			carry = (temp << (8 - bit_shift));
-			}
 		}
-	return digest;
 	}
+	return digest;
+}
 
 }
 
 void EMSA1::update(const byte input[], size_t length)
-	{
+{
 	m_hash->update(input, length);
-	}
+}
 
 SafeArray!byte EMSA1::raw_data()
-	{
+{
 	return m_hash->final();
-	}
+}
 
 SafeArray!byte EMSA1::encoding_of(in SafeArray!byte msg,
 													size_t output_bits,
 													RandomNumberGenerator&)
-	{
+{
 	if(msg.size() != hash_output_length())
 		throw Encoding_Error("EMSA1::encoding_of: Invalid size for input");
 	return emsa1_encoding(msg, output_bits);
-	}
+}
 
 bool EMSA1::verify(in SafeArray!byte coded,
 						 in SafeArray!byte raw, size_t key_bits)
-	{
+{
 	try {
 		if(raw.size() != m_hash->output_length())
 			throw Encoding_Error("EMSA1::encoding_of: Invalid size for input");
@@ -83,11 +80,11 @@ bool EMSA1::verify(in SafeArray!byte coded,
 				return false;
 
 		return true;
-		}
-	catch(Invalid_Argument)
-		{
-		return false;
-		}
 	}
+	catch(Invalid_Argument)
+	{
+		return false;
+	}
+}
 
 }

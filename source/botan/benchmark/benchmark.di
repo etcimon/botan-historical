@@ -5,7 +5,6 @@
 * Distributed under the terms of the Botan license
 */
 
-#ifndef BOTAN_RUNTIME_BENCHMARK_H__
 #define BOTAN_RUNTIME_BENCHMARK_H__
 
 #include <botan/algo_factory.h>
@@ -13,9 +12,6 @@
 #include <map>
 #include <string>
 #include <chrono>
-
-namespace Botan {
-
 /**
 * Time aspects of an algorithm/provider
 * @param name the name of the algorithm to test
@@ -27,7 +23,7 @@ namespace Botan {
 * @return results a map from op type to operations per second
 */
 std::map<string, double>
-BOTAN_DLL time_algorithm_ops(in string name,
+time_algorithm_ops(in string name,
 									  Algorithm_Factory& af,
 									  in string provider,
 									  RandomNumberGenerator& rng,
@@ -44,7 +40,7 @@ BOTAN_DLL time_algorithm_ops(in string name,
 * @return results a map from provider to speed in mebibytes per second
 */
 std::map<string, double>
-BOTAN_DLL algorithm_benchmark(in string name,
+algorithm_benchmark(in string name,
 										Algorithm_Factory& af,
 										RandomNumberGenerator& rng,
 										std::chrono::milliseconds milliseconds,
@@ -52,7 +48,3 @@ BOTAN_DLL algorithm_benchmark(in string name,
 
 double BOTAN_DLL
 time_op(std::chrono::nanoseconds runtime, std::function<void ()> op);
-
-}
-
-#endif

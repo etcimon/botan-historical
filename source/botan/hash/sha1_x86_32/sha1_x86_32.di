@@ -5,18 +5,14 @@
 * Distributed under the terms of the Botan license
 */
 
-#ifndef BOTAN_SHA_160_X86_32_H__
 #define BOTAN_SHA_160_X86_32_H__
 
 #include <botan/sha160.h>
-
-namespace Botan {
-
 /**
 * SHA-160 in x86 assembly
 */
 class SHA_160_X86_32 : public SHA_160
-	{
+{
 	public:
 		HashFunction* clone() const { return new SHA_160_X86_32; }
 
@@ -24,8 +20,4 @@ class SHA_160_X86_32 : public SHA_160
 		SHA_160_X86_32() : SHA_160(81) {}
 	private:
 		void compress_n(const byte[], size_t blocks);
-	};
-
-}
-
-#endif
+};

@@ -10,15 +10,12 @@
 #include <botan/numthry.h>
 #include <botan/keypair.h>
 #include <future>
-
-namespace Botan {
-
 /*
 * Create a RSA private key
 */
 RSA_PrivateKey::RSA_PrivateKey(RandomNumberGenerator& rng,
 										 size_t bits, size_t exp)
-	{
+{
 	if(bits < 1024)
 		throw Invalid_Argument(algo_name() + ": Can't make a key that is only " +
 									  std::to_string(bits) + " bits long");
@@ -28,11 +25,11 @@ RSA_PrivateKey::RSA_PrivateKey(RandomNumberGenerator& rng,
 	e = exp;
 
 	do
-		{
+	{
 		p = random_prime(rng, (bits + 1) / 2, e);
 		q = random_prime(rng, bits - p.bits(), e);
 		n = p * q;
-		} while(n.bits() != bits);
+	} while(n.bits() != bits);
 
 	d = inverse_mod(e, lcm(p - 1, q - 1));
 	d1 = d % (p - 1);
@@ -40,13 +37,13 @@ RSA_PrivateKey::RSA_PrivateKey(RandomNumberGenerator& rng,
 	c = inverse_mod(q, p);
 
 	gen_check(rng);
-	}
+}
 
 /*
 * Check Private RSA Parameters
 */
 bool RSA_PrivateKey::check_key(RandomNumberGenerator& rng, bool strong) const
-	{
+{
 	if(!IF_Scheme_PrivateKey::check_key(rng, strong))
 		return false;
 
@@ -57,7 +54,7 @@ bool RSA_PrivateKey::check_key(RandomNumberGenerator& rng, bool strong) const
 		return false;
 
 	return KeyPair::signature_consistency_check(rng, *this, "EMSA4(SHA-1)");
-	}
+}
 
 RSA_Private_Operation::RSA_Private_Operation(const RSA_PrivateKey& rsa,
 															RandomNumberGenerator& rng) :
@@ -68,13 +65,13 @@ RSA_Private_Operation::RSA_Private_Operation(const RSA_PrivateKey& rsa,
 	powermod_d1_p(rsa.get_d1(), rsa.get_p()),
 	powermod_d2_q(rsa.get_d2(), rsa.get_q()),
 	mod_p(rsa.get_p())
-	{
+{
 	BigInt k(rng, n.bits() - 1);
 	blinder = Blinder(powermod_e_n(k), inverse_mod(k, n), n);
-	}
+}
 
 BigInt RSA_Private_Operation::private_op(const BigInt& m) const
-	{
+{
 	if(m >= n)
 		throw Invalid_Argument("RSA private op - input is too large");
 
@@ -85,12 +82,12 @@ BigInt RSA_Private_Operation::private_op(const BigInt& m) const
 	j1 = mod_p.reduce(sub_mul(j1, j2, c));
 
 	return mul_add(j1, q, j2);
-	}
+}
 
 SafeArray!byte
 RSA_Private_Operation::sign(const byte msg[], size_t msg_len,
 									 RandomNumberGenerator& rng)
-	{
+{
 	rng.add_entropy(msg, msg_len);
 
 	/* We don't check signatures against powermod_e_n here because
@@ -101,14 +98,14 @@ RSA_Private_Operation::sign(const byte msg[], size_t msg_len,
 	const BigInt m(msg, msg_len);
 	const BigInt x = blinder.unblind(private_op(blinder.blind(m)));
 	return BigInt::encode_1363(x, n.bytes());
-	}
+}
 
 /*
 * RSA Decryption Operation
 */
 SafeArray!byte
 RSA_Private_Operation::decrypt(const byte msg[], size_t msg_len)
-	{
+{
 	const BigInt m(msg, msg_len);
 	const BigInt x = blinder.unblind(private_op(blinder.blind(m)));
 
@@ -116,6 +113,6 @@ RSA_Private_Operation::decrypt(const byte msg[], size_t msg_len)
 					 "RSA decrypt passed consistency check");
 
 	return BigInt::encode_locked(x);
-	}
+}
 
 }

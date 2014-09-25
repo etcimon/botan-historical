@@ -5,21 +5,17 @@
 * Distributed under the terms of the Botan license
 */
 
-#ifndef BOTAN_X509_SELF_H__
 #define BOTAN_X509_SELF_H__
 
 #include <botan/x509cert.h>
 #include <botan/pkcs8.h>
 #include <botan/pkcs10.h>
 #include <botan/asn1_time.h>
-
-namespace Botan {
-
 /**
 * Options for X.509 certificates.
 */
 class X509_Cert_Options
-	{
+{
 	public:
 		/**
 		* the subject common name
@@ -164,7 +160,7 @@ class X509_Cert_Options
 		*/
 		X509_Cert_Options(in string opts = "",
 								u32bit expire_time = 365 * 24 * 60 * 60);
-	};
+};
 
 namespace X509 {
 
@@ -177,7 +173,7 @@ namespace X509 {
 * @param rng the rng to use
 * @return newly created self-signed certificate
 */
-BOTAN_DLL X509_Certificate
+X509_Certificate
 create_self_signed_cert(const X509_Cert_Options& opts,
 								const Private_Key& key,
 								in string hash_fn,
@@ -191,13 +187,9 @@ create_self_signed_cert(const X509_Cert_Options& opts,
 * @param hash_fn the hash function to use
 * @return newly created PKCS#10 request
 */
-BOTAN_DLL PKCS10_Request create_cert_req(const X509_Cert_Options& opts,
+PKCS10_Request create_cert_req(const X509_Cert_Options& opts,
 													  const Private_Key& key,
 													  in string hash_fn,
 													  RandomNumberGenerator& rng);
 
 }
-
-}
-
-#endif

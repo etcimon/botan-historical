@@ -5,18 +5,14 @@
 * Distributed under the terms of the Botan license
 */
 
-#ifndef BOTAN_ASN1_STRING_H__
 #define BOTAN_ASN1_STRING_H__
 
 #include <botan/asn1_obj.h>
-
-namespace Botan {
-
 /**
 * Simple String
 */
 class ASN1_String : public ASN1_Object
-	{
+{
 	public:
 		void encode_into(class DER_Encoder&) const;
 		void decode_from(class BER_Decoder&);
@@ -31,8 +27,4 @@ class ASN1_String : public ASN1_Object
 	private:
 		string iso_8859_str;
 		ASN1_Tag tag;
-	};
-
-}
-
-#endif
+};

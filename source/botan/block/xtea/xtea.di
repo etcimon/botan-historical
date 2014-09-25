@@ -5,18 +5,14 @@
 * Distributed under the terms of the Botan license
 */
 
-#ifndef BOTAN_XTEA_H__
 #define BOTAN_XTEA_H__
 
 #include <botan/block_cipher.h>
-
-namespace Botan {
-
 /**
 * XTEA
 */
 class XTEA : public Block_Cipher_Fixed_Params<8, 16>
-	{
+{
 	public:
 		void encrypt_n(const byte in[], byte out[], size_t blocks) const;
 		void decrypt_n(const byte in[], byte out[], size_t blocks) const;
@@ -33,8 +29,4 @@ class XTEA : public Block_Cipher_Fixed_Params<8, 16>
 	private:
 		void key_schedule(const byte[], size_t);
 		secure_vector<u32bit> EK;
-	};
-
-}
-
-#endif
+};

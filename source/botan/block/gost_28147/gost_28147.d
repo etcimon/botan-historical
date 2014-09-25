@@ -8,18 +8,15 @@
 #include <botan/gost_28147.h>
 #include <botan/loadstor.h>
 #include <botan/rotate.h>
-
-namespace Botan {
-
 byte GOST_28147_89_Params::sbox_entry(size_t row, size_t col) const
-	{
+{
 	byte x = sboxes[4 * col + (row / 2)];
 
 	return (row % 2 == 0) ? (x >> 4) : (x & 0x0F);
-	}
+}
 
 GOST_28147_89_Params::GOST_28147_89_Params(in string n) : name(n)
-	{
+{
 	// Encoded in the packed fromat from RFC 4357
 
 	// GostR3411_94_TestParamSet (OID 1.2.643.2.2.31.0)
@@ -46,25 +43,25 @@ GOST_28147_89_Params::GOST_28147_89_Params(in string n) : name(n)
 		sboxes = GOST_R_3411_CRYPTOPRO_PARAMS;
 	else
 		throw Invalid_Argument("GOST_28147_89_Params: Unknown " + name);
-	}
+}
 
 /*
 * GOST Constructor
 */
 GOST_28147_89::GOST_28147_89(const GOST_28147_89_Params& param) : SBOX(1024)
-	{
+{
 	// Convert the parallel 4x4 sboxes into larger word-based sboxes
 	for(size_t i = 0; i != 4; ++i)
 		for(size_t j = 0; j != 256; ++j)
-			{
+		{
 			const u32bit T = (param.sbox_entry(2*i  , j % 16)) |
 								  (param.sbox_entry(2*i+1, j / 16) << 4);
 			SBOX[256*i+j] = rotate_left(T, (11+8*i) % 32);
-			}
-	}
+		}
+}
 
 string GOST_28147_89::name() const
-	{
+{
 	/*
 	'Guess' the right name for the sbox on the basis of the values.
 	This would need to be updated if support for other sbox parameters
@@ -80,7 +77,7 @@ string GOST_28147_89::name() const
 		throw Internal_Error("GOST-28147 unrecognized sbox value");
 
 	return "GOST-28147-89(" + sbox_name + ")";
-	}
+}
 
 /*
 * Two rounds of GOST
@@ -98,25 +95,25 @@ string GOST_28147_89::name() const
 			SBOX[get_byte(2, T1)+256] |  \
 			SBOX[get_byte(1, T1)+512] |  \
 			SBOX[get_byte(0, T1)+768];	\
-	} while(0)
+} while(0)
 
 /*
 * GOST Encryption
 */
 void GOST_28147_89::encrypt_n(const byte in[], byte out[], size_t blocks) const
-	{
+{
 	for(size_t i = 0; i != blocks; ++i)
-		{
+	{
 		u32bit N1 = load_le<u32bit>(in, 0);
 		u32bit N2 = load_le<u32bit>(in, 1);
 
 		for(size_t j = 0; j != 3; ++j)
-			{
+		{
 			GOST_2ROUND(N1, N2, 0, 1);
 			GOST_2ROUND(N1, N2, 2, 3);
 			GOST_2ROUND(N1, N2, 4, 5);
 			GOST_2ROUND(N1, N2, 6, 7);
-			}
+		}
 
 		GOST_2ROUND(N1, N2, 7, 6);
 		GOST_2ROUND(N1, N2, 5, 4);
@@ -127,16 +124,16 @@ void GOST_28147_89::encrypt_n(const byte in[], byte out[], size_t blocks) const
 
 		in += BLOCK_SIZE;
 		out += BLOCK_SIZE;
-		}
 	}
+}
 
 /*
 * GOST Decryption
 */
 void GOST_28147_89::decrypt_n(const byte in[], byte out[], size_t blocks) const
-	{
+{
 	for(size_t i = 0; i != blocks; ++i)
-		{
+	{
 		u32bit N1 = load_le<u32bit>(in, 0);
 		u32bit N2 = load_le<u32bit>(in, 1);
 
@@ -146,32 +143,32 @@ void GOST_28147_89::decrypt_n(const byte in[], byte out[], size_t blocks) const
 		GOST_2ROUND(N1, N2, 6, 7);
 
 		for(size_t j = 0; j != 3; ++j)
-			{
+		{
 			GOST_2ROUND(N1, N2, 7, 6);
 			GOST_2ROUND(N1, N2, 5, 4);
 			GOST_2ROUND(N1, N2, 3, 2);
 			GOST_2ROUND(N1, N2, 1, 0);
-			}
+		}
 
 		store_le(out, N2, N1);
 		in += BLOCK_SIZE;
 		out += BLOCK_SIZE;
-		}
 	}
+}
 
 /*
 * GOST Key Schedule
 */
 void GOST_28147_89::key_schedule(const byte key[], size_t)
-	{
+{
 	EK.resize(8);
 	for(size_t i = 0; i != 8; ++i)
 		EK[i] = load_le<u32bit>(key, i);
-	}
+}
 
 void GOST_28147_89::clear()
-	{
+{
 	zap(EK);
-	}
+}
 
 }

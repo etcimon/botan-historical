@@ -5,21 +5,17 @@
 * Distributed under the terms of the Botan license
 */
 
-#ifndef BOTAN_DIFFIE_HELLMAN_H__
 #define BOTAN_DIFFIE_HELLMAN_H__
 
 #include <botan/dl_algo.h>
 #include <botan/pow_mod.h>
 #include <botan/blinding.h>
 #include <botan/pk_ops.h>
-
-namespace Botan {
-
 /**
 * This class represents Diffie-Hellman public keys.
 */
 class DH_PublicKey : public abstract DL_Scheme_PublicKey
-	{
+{
 	public:
 		string algo_name() const { return "DH"; }
 
@@ -40,7 +36,7 @@ class DH_PublicKey : public abstract DL_Scheme_PublicKey
 		DH_PublicKey(const DL_Group& grp, const BigInt& y);
 	protected:
 		DH_PublicKey() {}
-	};
+};
 
 /**
 * This class represents Diffie-Hellman private keys.
@@ -48,7 +44,7 @@ class DH_PublicKey : public abstract DL_Scheme_PublicKey
 class DH_PrivateKey : public DH_PublicKey,
 										  public PK_Key_Agreement_Key,
 										  public abstract DL_Scheme_PrivateKey
-	{
+{
 	public:
 		std::vector<byte> public_value() const;
 
@@ -70,13 +66,13 @@ class DH_PrivateKey : public DH_PublicKey,
 		*/
 		DH_PrivateKey(RandomNumberGenerator& rng, const DL_Group& grp,
 						  const BigInt& x = 0);
-	};
+};
 
 /**
 * DH operation
 */
 class DH_KA_Operation : public PK_Ops::Key_Agreement
-	{
+{
 	public:
 		DH_KA_Operation(const DH_PrivateKey& key,
 							 RandomNumberGenerator& rng);
@@ -87,8 +83,4 @@ class DH_KA_Operation : public PK_Ops::Key_Agreement
 
 		Fixed_Exponent_Power_Mod powermod_x_p;
 		Blinder blinder;
-	};
-
-}
-
-#endif
+};

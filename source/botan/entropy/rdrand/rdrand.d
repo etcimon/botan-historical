@@ -11,14 +11,11 @@
 #if !defined(BOTAN_USE_GCC_INLINE_ASM)
   #include <immintrin.h>
 #endif
-
-namespace Botan {
-
 /*
 * Get the timestamp
 */
 void Intel_Rdrand::poll(Entropy_Accumulator& accum)
-	{
+{
 	if(!CPUID::has_rdrand())
 		return;
 
@@ -39,7 +36,7 @@ void Intel_Rdrand::poll(Entropy_Accumulator& accum)
 		static_cast<double>(POLL_UPPER_BOUND) / (RDRAND_POLLS * 4);
 
 	for(size_t i = 0; i != RDRAND_POLLS; ++i)
-		{
+	{
 		unsigned int r = 0;
 
 #if BOTAN_USE_GCC_INLINE_ASM
@@ -54,7 +51,7 @@ void Intel_Rdrand::poll(Entropy_Accumulator& accum)
 
 		if(cf == 1)
 			accum.add(r, ENTROPY_PER_POLL);
-		}
 	}
+}
 
 }

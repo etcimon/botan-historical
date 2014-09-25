@@ -9,9 +9,6 @@
 #include <botan/pipe.h>
 #include <botan/lookup.h>
 #include <botan/loadstor.h>
-
-namespace Botan {
-
 namespace CryptoBox {
 
 namespace {
@@ -33,7 +30,7 @@ const size_t MAC_OUTPUT_LENGTH = 32;
 std::vector<byte> encrypt(const byte input[], size_t input_len,
 								  const SymmetricKey& master_key,
 								  RandomNumberGenerator& rng)
-	{
+{
 	std::unique_ptr<KDF> kdf(get_kdf(CRYPTOBOX_KDF));
 
 	const SafeArray!byte cipher_key_salt =
@@ -72,11 +69,11 @@ std::vector<byte> encrypt(const byte input[], size_t input_len,
 
 	out += mac->final();
 	return out;
-	}
+}
 
 SafeArray!byte decrypt(const byte input[], size_t input_len,
 									 const SymmetricKey& master_key)
-	{
+{
 	const size_t MIN_CTEXT_SIZE = 16; // due to using CBC with padding
 
 	const size_t MIN_POSSIBLE_LENGTH =
@@ -126,7 +123,7 @@ SafeArray!byte decrypt(const byte input[], size_t input_len,
 	pipe.process_msg(&input[CTEXT_OFFSET],
 						  input_len - (MAC_OUTPUT_LENGTH + CTEXT_OFFSET));
 	return pipe.read_all();
-	}
+}
 
 }
 

@@ -5,21 +5,17 @@
 * Distributed under the terms of the Botan license
 */
 
-#ifndef BOTAN_X509_EXTENSIONS_H__
 #define BOTAN_X509_EXTENSIONS_H__
 
 #include <botan/asn1_obj.h>
 #include <botan/asn1_oid.h>
 #include <botan/datastor.h>
 #include <botan/crl_ent.h>
-
-namespace Botan {
-
 /**
 * X.509 Certificate Extension
 */
 class Certificate_Extension
-	{
+{
 	public:
 		/**
 		* @return OID representing this extension
@@ -52,13 +48,13 @@ class Certificate_Extension
 		abstract bool should_encode() const { return true; }
 		abstract std::vector<byte> encode_inner() const = 0;
 		abstract void decode_inner(in Array!byte) = 0;
-	};
+};
 
 /**
 * X.509 Certificate Extension List
 */
 class Extensions : public ASN1_Object
-	{
+{
 	public:
 		void encode_into(class DER_Encoder&) const;
 		void decode_from(class BER_Decoder&);
@@ -77,7 +73,7 @@ class Extensions : public ASN1_Object
 
 		std::vector<std::pair<Certificate_Extension*, bool> > extensions;
 		bool m_throw_on_unknown_critical;
-	};
+};
 
 namespace Cert_Extension {
 
@@ -87,10 +83,10 @@ static const size_t NO_CERT_PATH_LIMIT = 0xFFFFFFF0;
 * Basic Constraints Extension
 */
 class Basic_Constraints : public Certificate_Extension
-	{
+{
 	public:
 		Basic_Constraints* copy() const
-			{ return new Basic_Constraints(is_ca, path_limit); }
+		{ return new Basic_Constraints(is_ca, path_limit); }
 
 		Basic_Constraints(bool ca = false, size_t limit = 0) :
 			is_ca(ca), path_limit(limit) {}
@@ -106,13 +102,13 @@ class Basic_Constraints : public Certificate_Extension
 
 		bool is_ca;
 		size_t path_limit;
-	};
+};
 
 /**
 * Key Usage Constraints Extension
 */
 class Key_Usage : public Certificate_Extension
-	{
+{
 	public:
 		Key_Usage* copy() const { return new Key_Usage(constraints); }
 
@@ -128,13 +124,13 @@ class Key_Usage : public Certificate_Extension
 		void contents_to(Data_Store&, Data_Store&) const;
 
 		Key_Constraints constraints;
-	};
+};
 
 /**
 * Subject Key Identifier Extension
 */
 class Subject_Key_ID : public Certificate_Extension
-	{
+{
 	public:
 		Subject_Key_ID* copy() const { return new Subject_Key_ID(key_id); }
 
@@ -151,13 +147,13 @@ class Subject_Key_ID : public Certificate_Extension
 		void contents_to(Data_Store&, Data_Store&) const;
 
 		std::vector<byte> key_id;
-	};
+};
 
 /**
 * Authority Key Identifier Extension
 */
 class Authority_Key_ID : public Certificate_Extension
-	{
+{
 	public:
 		Authority_Key_ID* copy() const { return new Authority_Key_ID(key_id); }
 
@@ -174,13 +170,13 @@ class Authority_Key_ID : public Certificate_Extension
 		void contents_to(Data_Store&, Data_Store&) const;
 
 		std::vector<byte> key_id;
-	};
+};
 
 /**
 * Alternative Name Extension Base Class
 */
 class Alternative_Name : public Certificate_Extension
-	{
+{
 	public:
 		AlternativeName get_alt_name() const { return alt_name; }
 
@@ -198,37 +194,37 @@ class Alternative_Name : public Certificate_Extension
 
 		string oid_name_str;
 		AlternativeName alt_name;
-	};
+};
 
 /**
 * Subject Alternative Name Extension
 */
 class Subject_Alternative_Name : public Alternative_Name
-	{
+{
 	public:
 		Subject_Alternative_Name* copy() const
-			{ return new Subject_Alternative_Name(get_alt_name()); }
+		{ return new Subject_Alternative_Name(get_alt_name()); }
 
 		Subject_Alternative_Name(const AlternativeName& = AlternativeName());
-	};
+};
 
 /**
 * Issuer Alternative Name Extension
 */
 class Issuer_Alternative_Name : public Alternative_Name
-	{
+{
 	public:
 		Issuer_Alternative_Name* copy() const
-			{ return new Issuer_Alternative_Name(get_alt_name()); }
+		{ return new Issuer_Alternative_Name(get_alt_name()); }
 
 		Issuer_Alternative_Name(const AlternativeName& = AlternativeName());
-	};
+};
 
 /**
 * Extended Key Usage Extension
 */
 class Extended_Key_Usage : public Certificate_Extension
-	{
+{
 	public:
 		Extended_Key_Usage* copy() const { return new Extended_Key_Usage(oids); }
 
@@ -245,16 +241,16 @@ class Extended_Key_Usage : public Certificate_Extension
 		void contents_to(Data_Store&, Data_Store&) const;
 
 		std::vector<OID> oids;
-	};
+};
 
 /**
 * Certificate Policies Extension
 */
 class Certificate_Policies : public Certificate_Extension
-	{
+{
 	public:
 		Certificate_Policies* copy() const
-			{ return new Certificate_Policies(oids); }
+		{ return new Certificate_Policies(oids); }
 
 		Certificate_Policies() {}
 		Certificate_Policies(const std::vector<OID>& o) : oids(o) {}
@@ -269,13 +265,13 @@ class Certificate_Policies : public Certificate_Extension
 		void contents_to(Data_Store&, Data_Store&) const;
 
 		std::vector<OID> oids;
-	};
+};
 
 class Authority_Information_Access : public Certificate_Extension
-	{
+{
 	public:
 		Authority_Information_Access* copy() const
-			{ return new Authority_Information_Access(m_ocsp_responder); }
+		{ return new Authority_Information_Access(m_ocsp_responder); }
 
 		Authority_Information_Access() {}
 
@@ -293,13 +289,13 @@ class Authority_Information_Access : public Certificate_Extension
 		void contents_to(Data_Store&, Data_Store&) const;
 
 		string m_ocsp_responder;
-	};
+};
 
 /**
 * CRL Number Extension
 */
 class CRL_Number : public Certificate_Extension
-	{
+{
 	public:
 		CRL_Number* copy() const;
 
@@ -317,13 +313,13 @@ class CRL_Number : public Certificate_Extension
 
 		bool has_value;
 		size_t crl_number;
-	};
+};
 
 /**
 * CRL Entry Reason Code Extension
 */
 class CRL_ReasonCode : public Certificate_Extension
-	{
+{
 	public:
 		CRL_ReasonCode* copy() const { return new CRL_ReasonCode(reason); }
 
@@ -339,16 +335,16 @@ class CRL_ReasonCode : public Certificate_Extension
 		void contents_to(Data_Store&, Data_Store&) const;
 
 		CRL_Code reason;
-	};
+};
 
 /**
 * CRL Distribution Points Extension
 */
 class CRL_Distribution_Points : public Certificate_Extension
-	{
+{
 	public:
 		class Distribution_Point : public ASN1_Object
-			{
+		{
 			public:
 				void encode_into(class DER_Encoder&) const;
 				void decode_from(class BER_Decoder&);
@@ -356,10 +352,10 @@ class CRL_Distribution_Points : public Certificate_Extension
 				const AlternativeName& point() const { return m_point; }
 			private:
 				AlternativeName m_point;
-			};
+		};
 
 		CRL_Distribution_Points* copy() const
-			{ return new CRL_Distribution_Points(m_distribution_points); }
+		{ return new CRL_Distribution_Points(m_distribution_points); }
 
 		CRL_Distribution_Points() {}
 
@@ -367,7 +363,7 @@ class CRL_Distribution_Points : public Certificate_Extension
 			m_distribution_points(points) {}
 
 		std::vector<Distribution_Point> distribution_points() const
-			{ return m_distribution_points; }
+		{ return m_distribution_points; }
 
 	private:
 		string oid_name() const { return "X509v3.CRLDistributionPoints"; }
@@ -379,10 +375,6 @@ class CRL_Distribution_Points : public Certificate_Extension
 		void contents_to(Data_Store&, Data_Store&) const;
 
 		std::vector<Distribution_Point> m_distribution_points;
-	};
+};
 
 }
-
-}
-
-#endif

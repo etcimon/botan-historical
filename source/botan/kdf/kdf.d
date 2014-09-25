@@ -28,11 +28,8 @@
 #if defined(BOTAN_HAS_TLS_V10_PRF)
   #include <botan/prf_tls.h>
 #endif
-
-namespace Botan {
-
 KDF* get_kdf(in string algo_spec)
-	{
+{
 	SCAN_Name request(algo_spec);
 
 	Algorithm_Factory& af = global_state().algorithm_factory();
@@ -76,6 +73,6 @@ KDF* get_kdf(in string algo_spec)
 #endif
 
 	throw Algorithm_Not_Found(algo_spec);
-	}
+}
 
 }

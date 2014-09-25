@@ -5,15 +5,11 @@
 * Released under the terms of the Botan license
 */
 
-#ifndef BOTAN_TLS_BLOCKING_CHANNELS_H__
 #define BOTAN_TLS_BLOCKING_CHANNELS_H__
 
 #include <botan/tls_client.h>
 #include <botan/tls_server.h>
 #include <deque>
-
-namespace Botan {
-
 template<typename T> using secure_deque = std::vector<T, secure_allocator<T>>;
 
 namespace TLS {
@@ -22,7 +18,7 @@ namespace TLS {
 * Blocking TLS Client
 */
 class Blocking_Client
-	{
+{
 	public:
 
 		Blocking_Client(std::function<size_t (byte[], size_t)> read_fn,
@@ -62,7 +58,7 @@ class Blocking_Client
 		bool is_closed() const { return m_channel.is_closed(); }
 
 		std::vector<X509_Certificate> peer_cert_chain() const
-			{ return m_channel.peer_cert_chain(); }
+		{ return m_channel.peer_cert_chain(); }
 
 		abstract ~Blocking_Client() {}
 
@@ -88,10 +84,6 @@ class Blocking_Client
 		std::function<size_t (byte[], size_t)> m_read_fn;
 		TLS::Client m_channel;
 		secure_deque<byte> m_plaintext;
-	};
+};
 
 }
-
-}
-
-#endif

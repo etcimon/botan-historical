@@ -9,9 +9,6 @@
 #include <botan/loadstor.h>
 #include <botan/rotate.h>
 #include <botan/internal/xor_buf.h>
-
-namespace Botan {
-
 /**
 * GOST 34.11 Constructor
 */
@@ -20,39 +17,39 @@ GOST_34_11::GOST_34_11() :
 	buffer(32),
 	sum(32),
 	hash(32)
-	{
+{
 	count = 0;
 	position = 0;
-	}
+}
 
 void GOST_34_11::clear()
-	{
+{
 	cipher.clear();
 	zeroise(sum);
 	zeroise(hash);
 	count = 0;
 	position = 0;
-	}
+}
 
 /**
 * Hash additional inputs
 */
 void GOST_34_11::add_data(const byte input[], size_t length)
-	{
+{
 	count += length;
 
 	if(position)
-		{
+	{
 		buffer_insert(buffer, position, input, length);
 
 		if(position + length >= hash_block_size())
-			{
+		{
 			compress_n(&buffer[0], 1);
 			input += (hash_block_size() - position);
 			length -= (hash_block_size() - position);
 			position = 0;
-			}
 		}
+	}
 
 	const size_t full_blocks = length / hash_block_size();
 	const size_t remaining	= length % hash_block_size();
@@ -62,21 +59,21 @@ void GOST_34_11::add_data(const byte input[], size_t length)
 
 	buffer_insert(buffer, position, input + full_blocks * hash_block_size(), remaining);
 	position += remaining;
-	}
+}
 
 /**
 * The GOST 34.11 compression function
 */
 void GOST_34_11::compress_n(const byte input[], size_t blocks)
-	{
+{
 	for(size_t i = 0; i != blocks; ++i)
-		{
+	{
 		for(u16bit j = 0, carry = 0; j != 32; ++j)
-			{
+		{
 			u16bit s = sum[j] + input[32*i+j] + carry;
 			carry = get_byte(0, s);
 			sum[j] = get_byte(1, s);
-			}
+		}
 
 		byte S[32] = { 0 };
 
@@ -85,7 +82,7 @@ void GOST_34_11::compress_n(const byte input[], size_t blocks)
 		load_be(V, input + 32*i, 4);
 
 		for(size_t j = 0; j != 4; ++j)
-			{
+		{
 			byte key[32] = { 0 };
 
 			// P transformation
@@ -107,12 +104,12 @@ void GOST_34_11::compress_n(const byte input[], size_t blocks)
 			U[3] = U[0] ^ A_U;
 
 			if(j == 1) // C_3
-				{
+			{
 				U[0] ^= 0x00FF00FF00FF00FF;
 				U[1] ^= 0xFF00FF00FF00FF00;
 				U[2] ^= 0x00FFFF00FF0000FF;
 				U[3] ^= 0xFF000000FFFF00FF;
-				}
+			}
 
 			// A(A(x))
 			u64bit AA_V_1 = V[0] ^ V[1];
@@ -121,7 +118,7 @@ void GOST_34_11::compress_n(const byte input[], size_t blocks)
 			V[1] = V[3];
 			V[2] = AA_V_1;
 			V[3] = AA_V_2;
-			}
+		}
 
 		byte S2[32] = { 0 };
 
@@ -211,19 +208,19 @@ void GOST_34_11::compress_n(const byte input[], size_t blocks)
 		S2[31] = S[ 3] ^ S[ 5] ^ S[ 9] ^ S[15] ^ S[17] ^ S[19] ^ S[23] ^ S[25] ^ S[29] ^ S[31];
 
 		copy_mem(&hash[0], &S2[0], 32);
-		}
 	}
+}
 
 /**
 * Produce the final GOST 34.11 output
 */
 void GOST_34_11::final_result(byte out[])
-	{
+{
 	if(position)
-		{
+	{
 		clear_mem(&buffer[0] + position, buffer.size() - position);
 		compress_n(&buffer[0], 1);
-		}
+	}
 
 	SafeArray!byte length_buf(32);
 	const u64bit bit_count = count * 8;
@@ -237,6 +234,6 @@ void GOST_34_11::final_result(byte out[])
 	copy_mem(out, &hash[0], 32);
 
 	clear();
-	}
+}
 
 }

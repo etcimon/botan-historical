@@ -5,19 +5,15 @@
 * Distributed under the terms of the Botan license
 */
 
-#ifndef BOTAN_ANSI_X919_MAC_H__
 #define BOTAN_ANSI_X919_MAC_H__
 
 #include <botan/mac.h>
 #include <botan/block_cipher.h>
-
-namespace Botan {
-
 /**
 * DES/3DES-based MAC from ANSI X9.19
 */
 class ANSI_X919_MAC : public MessageAuthenticationCode
-	{
+{
 	public:
 		void clear();
 		string name() const;
@@ -26,9 +22,9 @@ class ANSI_X919_MAC : public MessageAuthenticationCode
 		MessageAuthenticationCode* clone() const;
 
 		Key_Length_Specification key_spec() const
-			{
+		{
 			return Key_Length_Specification(8, 16, 8);
-			}
+		}
 
 		/**
 		* @param cipher the underlying block cipher to use
@@ -45,8 +41,4 @@ class ANSI_X919_MAC : public MessageAuthenticationCode
 		std::unique_ptr<BlockCipher> m_des1, m_des2;
 		SafeArray!byte m_state;
 		size_t m_position;
-	};
-
-}
-
-#endif
+};

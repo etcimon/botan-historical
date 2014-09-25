@@ -8,11 +8,8 @@
 #include <botan/workfactor.h>
 #include <algorithm>
 #include <cmath>
-
-namespace Botan {
-
 size_t dl_work_factor(size_t bits)
-	{
+{
 	/*
 	Based on GNFS work factors. Constant is 1.43 times the asymptotic
 	value; I'm not sure but I believe that came from a paper on 'real
@@ -45,6 +42,6 @@ size_t dl_work_factor(size_t bits)
 		2.76 * std::pow(log_p, 1.0/3.0) * std::pow(std::log(log_p), 2.0/3.0);
 
 	return std::max(static_cast<size_t>(strength), MIN_WORKFACTOR);
-	}
+}
 
 }

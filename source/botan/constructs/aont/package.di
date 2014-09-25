@@ -5,14 +5,10 @@
 * Distributed under the terms of the Botan license
 */
 
-#ifndef BOTAN_AONT_PACKAGE_TRANSFORM_H__
 #define BOTAN_AONT_PACKAGE_TRANSFORM_H__
 
 #include <botan/block_cipher.h>
 #include <botan/rng.h>
-
-namespace Botan {
-
 /**
 * Rivest's Package Tranform
 * @param rng the random number generator to use
@@ -22,7 +18,7 @@ namespace Botan {
 * @param output the output data buffer (must be at least
 *		  input_len + cipher->BLOCK_SIZE bytes long)
 */
-void BOTAN_DLL aont_package(RandomNumberGenerator& rng,
+void aont_package(RandomNumberGenerator& rng,
 									 BlockCipher* cipher,
 									 const byte input[], size_t input_len,
 									 byte output[]);
@@ -35,10 +31,6 @@ void BOTAN_DLL aont_package(RandomNumberGenerator& rng,
 * @param output the output data buffer (must be at least
 *		  input_len - cipher->BLOCK_SIZE bytes long)
 */
-void BOTAN_DLL aont_unpackage(BlockCipher* cipher,
+void aont_unpackage(BlockCipher* cipher,
 										const byte input[], size_t input_len,
 										byte output[]);
-
-}
-
-#endif

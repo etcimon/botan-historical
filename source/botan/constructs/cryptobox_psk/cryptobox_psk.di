@@ -5,15 +5,11 @@
 * Distributed under the terms of the Botan license
 */
 
-#ifndef BOTAN_CRYPTOBOX_PSK_H__
 #define BOTAN_CRYPTOBOX_PSK_H__
 
 #include <string>
 #include <botan/rng.h>
 #include <botan/symkey.h>
-
-namespace Botan {
-
 /**
 * This namespace holds various high-level crypto functions
 */
@@ -26,7 +22,7 @@ namespace CryptoBox {
 * @param key the key used to encrypt the message
 * @param rng a ref to a random number generator, such as AutoSeeded_RNG
 */
-BOTAN_DLL std::vector<byte> encrypt(const byte input[], size_t input_len,
+std::vector<byte> encrypt(const byte input[], size_t input_len,
 												const SymmetricKey& key,
 												RandomNumberGenerator& rng);
 
@@ -37,11 +33,7 @@ BOTAN_DLL std::vector<byte> encrypt(const byte input[], size_t input_len,
 * @param key the key used to encrypt the message
 * @param rng a ref to a random number generator, such as AutoSeeded_RNG
 */
-BOTAN_DLL SafeArray!byte decrypt(const byte input[], size_t input_len,
+SafeArray!byte decrypt(const byte input[], size_t input_len,
 												  const SymmetricKey& key);
 
 }
-
-}
-
-#endif

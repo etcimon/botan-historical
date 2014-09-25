@@ -7,9 +7,6 @@
 
 #include <botan/dlies.h>
 #include <botan/internal/xor_buf.h>
-
-namespace Botan {
-
 /*
 * DLIES_Encryptor Constructor
 */
@@ -21,16 +18,16 @@ DLIES_Encryptor::DLIES_Encryptor(const PK_Key_Agreement_Key& key,
 	kdf(kdf_obj),
 	mac(mac_obj),
 	mac_keylen(mac_kl)
-	{
+{
 	my_key = key.public_value();
-	}
+}
 
 /*
 * DLIES Encryption
 */
 std::vector<byte> DLIES_Encryptor::enc(const byte in[], size_t length,
 													RandomNumberGenerator&) const
-	{
+{
 	if(length > maximum_input_size())
 		throw Invalid_Argument("DLIES: Plaintext too large");
 	if(other_key.empty())
@@ -60,23 +57,23 @@ std::vector<byte> DLIES_Encryptor::enc(const byte in[], size_t length,
 	mac->final(C + length);
 
 	return unlock(out);
-	}
+}
 
 /*
 * Set the other parties public key
 */
 void DLIES_Encryptor::set_other_key(in Array!byte ok)
-	{
+{
 	other_key = ok;
-	}
+}
 
 /*
 * Return the max size, in bytes, of a message
 */
 size_t DLIES_Encryptor::maximum_input_size() const
-	{
+{
 	return 32;
-	}
+}
 
 /*
 * DLIES_Decryptor Constructor
@@ -89,15 +86,15 @@ DLIES_Decryptor::DLIES_Decryptor(const PK_Key_Agreement_Key& key,
 	kdf(kdf_obj),
 	mac(mac_obj),
 	mac_keylen(mac_kl)
-	{
+{
 	my_key = key.public_value();
-	}
+}
 
 /*
 * DLIES Decryption
 */
 SafeArray!byte DLIES_Decryptor::dec(const byte msg[], size_t length) const
-	{
+{
 	if(length < my_key.size() + mac->output_length())
 		throw Decoding_Error("DLIES decryption: ciphertext is too short");
 
@@ -129,6 +126,6 @@ SafeArray!byte DLIES_Decryptor::dec(const byte msg[], size_t length) const
 	xor_buf(C, K.begin() + mac_keylen, C.size());
 
 	return C;
-	}
+}
 
 }

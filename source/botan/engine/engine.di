@@ -5,7 +5,6 @@
 * Distributed under the terms of the Botan license
 */
 
-#ifndef BOTAN_ENGINE_H__
 #define BOTAN_ENGINE_H__
 
 #include <botan/scan_name.h>
@@ -17,9 +16,6 @@
 #include <botan/pow_mod.h>
 #include <botan/pk_keys.h>
 #include <botan/pk_ops.h>
-
-namespace Botan {
-
 class Algorithm_Factory;
 class Keyed_Filter;
 class RandomNumberGenerator;
@@ -31,7 +27,7 @@ class RandomNumberGenerator;
 * they want to hook in a particular type.
 */
 class Engine
-	{
+{
 	public:
 		abstract ~Engine() {}
 
@@ -143,8 +139,4 @@ class Engine
 		*/
 		abstract PK_Ops::Decryption*
 			get_decryption_op(const Private_Key& key, RandomNumberGenerator& rng) const;
-	};
-
-}
-
-#endif
+};

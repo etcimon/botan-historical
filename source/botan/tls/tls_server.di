@@ -5,22 +5,18 @@
 * Released under the terms of the Botan license
 */
 
-#ifndef BOTAN_TLS_SERVER_H__
 #define BOTAN_TLS_SERVER_H__
 
 #include <botan/tls_channel.h>
 #include <botan/credentials_manager.h>
 #include <vector>
-
-namespace Botan {
-
 namespace TLS {
 
 /**
 * TLS Server
 */
 class Server : public Channel
-	{
+{
 	public:
 		/**
 		* Server initialization
@@ -62,10 +58,6 @@ class Server : public Channel
 
 		std::vector<string> m_possible_protocols;
 		string m_next_protocol;
-	};
+};
 
 }
-
-}
-
-#endif

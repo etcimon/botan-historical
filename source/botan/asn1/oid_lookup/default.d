@@ -6,16 +6,13 @@
 */
 
 #include <botan/oids.h>
-
-namespace Botan {
-
 namespace OIDS {
 
 /*
 * Load all of the default OIDs
 */
 void set_defaults()
-	{
+{
 	/* Public key types */
 	OIDS::add_oidstr("1.2.840.113549.1.1.1", "RSA");
 	OIDS::add_oidstr("2.5.8.1.1", "RSA"); // RSA alternate
@@ -230,7 +227,7 @@ void set_defaults()
 
 	/* CVC */
 	OIDS::add_oidstr("0.4.0.127.0.7.3.1.2.1", "CertificateHolderAuthorizationTemplate");
-	}
+}
 
 }
 

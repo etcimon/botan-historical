@@ -17,9 +17,6 @@
 #include <botan/rsa.h>
 #include <botan/srp6.h>
 #include <botan/oids.h>
-
-namespace Botan {
-
 namespace TLS {
 
 /**
@@ -31,29 +28,29 @@ Server_Key_Exchange::Server_Key_Exchange(Handshake_IO& io,
 													  Credentials_Manager& creds,
 													  RandomNumberGenerator& rng,
 													  const Private_Key* signing_key)
-	{
+{
 	const string hostname = state.client_hello()->sni_hostname();
 	const string kex_algo = state.ciphersuite().kex_algo();
 
 	if(kex_algo == "PSK" || kex_algo == "DHE_PSK" || kex_algo == "ECDHE_PSK")
-		{
+	{
 		string identity_hint =
 			creds.psk_identity_hint("tls-server", hostname);
 
 		append_tls_length_value(m_params, identity_hint, 2);
-		}
+	}
 
 	if(kex_algo == "DH" || kex_algo == "DHE_PSK")
-		{
+	{
 		std::unique_ptr<DH_PrivateKey> dh(new DH_PrivateKey(rng, policy.dh_group()));
 
 		append_tls_length_value(m_params, BigInt::encode(dh->get_domain().get_p()), 2);
 		append_tls_length_value(m_params, BigInt::encode(dh->get_domain().get_g()), 2);
 		append_tls_length_value(m_params, dh->public_value(), 2);
 		m_kex_key.reset(dh.release());
-		}
+	}
 	else if(kex_algo == "ECDH" || kex_algo == "ECDHE_PSK")
-		{
+	{
 		const std::vector<string>& curves =
 			state.client_hello()->supported_ecc_curves();
 
@@ -85,9 +82,9 @@ Server_Key_Exchange::Server_Key_Exchange(Handshake_IO& io,
 		append_tls_length_value(m_params, ecdh->public_value(), 1);
 
 		m_kex_key.reset(ecdh.release());
-		}
+	}
 	else if(kex_algo == "SRP_SHA")
-		{
+	{
 		const string srp_identifier = state.client_hello()->srp_identifier();
 
 		string group_id;
@@ -114,12 +111,12 @@ Server_Key_Exchange::Server_Key_Exchange(Handshake_IO& io,
 		append_tls_length_value(m_params, BigInt::encode(group.get_g()), 2);
 		append_tls_length_value(m_params, salt, 1);
 		append_tls_length_value(m_params, BigInt::encode(B), 2);
-		}
+	}
 	else if(kex_algo != "PSK")
 		throw Internal_Error("Server_Key_Exchange: Unknown kex type " + kex_algo);
 
 	if(state.ciphersuite().sig_algo() != "")
-		{
+	{
 		BOTAN_ASSERT(signing_key, "Signing key was set");
 
 		std::pair<string, Signature_Format> format =
@@ -131,10 +128,10 @@ Server_Key_Exchange::Server_Key_Exchange(Handshake_IO& io,
 		signer.update(state.server_hello()->random());
 		signer.update(params());
 		m_signature = signer.signature(rng);
-		}
+	}
 
 	state.hash().update(io.send(*this));
-	}
+}
 
 /**
 * Deserialize a Server Key Exchange message
@@ -144,7 +141,7 @@ Server_Key_Exchange::Server_Key_Exchange(in Array!byte buf,
 													  in string sig_algo,
 													  Protocol_Version version) :
 	m_kex_key(nullptr), m_srp_params(nullptr)
-	{
+{
 	if(buf.size() < 6)
 		throw Decoding_Error("Server_Key_Exchange: Packet corrupted");
 
@@ -157,23 +154,23 @@ Server_Key_Exchange::Server_Key_Exchange(in Array!byte buf,
 	*/
 
 	if(kex_algo == "PSK" || kex_algo == "DHE_PSK" || kex_algo == "ECDHE_PSK")
-		{
+	{
 		const string identity_hint = reader.get_string(2, 0, 65535);
 		append_tls_length_value(m_params, identity_hint, 2);
-		}
+	}
 
 	if(kex_algo == "DH" || kex_algo == "DHE_PSK")
-		{
+	{
 		// 3 bigints, DH p, g, Y
 
 		for(size_t i = 0; i != 3; ++i)
-			{
+		{
 			BigInt v = BigInt::decode(reader.get_range<byte>(2, 1, 65535));
 			append_tls_length_value(m_params, BigInt::encode(v), 2);
-			}
 		}
+	}
 	else if(kex_algo == "ECDH" || kex_algo == "ECDHE_PSK")
-		{
+	{
 		const byte curve_type = reader.get_byte();
 
 		if(curve_type != 3)
@@ -193,9 +190,9 @@ Server_Key_Exchange::Server_Key_Exchange(in Array!byte buf,
 		m_params.push_back(get_byte(0, curve_id));
 		m_params.push_back(get_byte(1, curve_id));
 		append_tls_length_value(m_params, ecdh_key, 1);
-		}
+	}
 	else if(kex_algo == "SRP_SHA")
-		{
+	{
 		// 2 bigints (N,g) then salt, then server B
 
 		const BigInt N = BigInt::decode(reader.get_range<byte>(2, 1, 65535));
@@ -207,23 +204,23 @@ Server_Key_Exchange::Server_Key_Exchange(in Array!byte buf,
 		append_tls_length_value(m_params, BigInt::encode(g), 2);
 		append_tls_length_value(m_params, salt, 1);
 		append_tls_length_value(m_params, BigInt::encode(B), 2);
-		}
+	}
 	else if(kex_algo != "PSK")
 		throw Decoding_Error("Server_Key_Exchange: Unsupported kex type " + kex_algo);
 
 	if(sig_algo != "")
-		{
+	{
 		if(version.supports_negotiable_signature_algorithms())
-			{
+		{
 			m_hash_algo = Signature_Algorithms::hash_algo_name(reader.get_byte());
 			m_sig_algo = Signature_Algorithms::sig_algo_name(reader.get_byte());
-			}
-
-		m_signature = reader.get_range<byte>(2, 0, 65535);
 		}
 
-	reader.assert_done();
+		m_signature = reader.get_range<byte>(2, 0, 65535);
 	}
+
+	reader.assert_done();
+}
 
 Server_Key_Exchange::~Server_Key_Exchange() {}
 
@@ -231,30 +228,30 @@ Server_Key_Exchange::~Server_Key_Exchange() {}
 * Serialize a Server Key Exchange message
 */
 std::vector<byte> Server_Key_Exchange::serialize() const
-	{
+{
 	std::vector<byte> buf = params();
 
 	if(m_signature.size())
-		{
+	{
 		// This should be an explicit version check
 		if(m_hash_algo != "" && m_sig_algo != "")
-			{
+		{
 			buf.push_back(Signature_Algorithms::hash_algo_code(m_hash_algo));
 			buf.push_back(Signature_Algorithms::sig_algo_code(m_sig_algo));
-			}
-
-		append_tls_length_value(buf, m_signature, 2);
 		}
 
-	return buf;
+		append_tls_length_value(buf, m_signature, 2);
 	}
+
+	return buf;
+}
 
 /**
 * Verify a Server Key Exchange message
 */
 bool Server_Key_Exchange::verify(const Public_Key& server_key,
 											const Handshake_State& state) const
-	{
+{
 	std::pair<string, Signature_Format> format =
 		state.understand_sig_format(server_key, m_hash_algo, m_sig_algo, false);
 
@@ -265,20 +262,20 @@ bool Server_Key_Exchange::verify(const Public_Key& server_key,
 	verifier.update(params());
 
 	return verifier.check_signature(m_signature);
-	}
+}
 
 const Private_Key& Server_Key_Exchange::server_kex_key() const
-	{
+{
 	BOTAN_ASSERT_NONNULL(m_kex_key);
 	return *m_kex_key;
-	}
+}
 
 // Only valid for SRP negotiation
 SRP6_Server_Session& Server_Key_Exchange::server_srp_params() const
-	{
+{
 	BOTAN_ASSERT_NONNULL(m_srp_params);
 	return *m_srp_params;
-	}
+}
 }
 
 }

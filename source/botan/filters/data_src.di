@@ -6,20 +6,16 @@
 * Distributed under the terms of the Botan license
 */
 
-#ifndef BOTAN_DATA_SRC_H__
 #define BOTAN_DATA_SRC_H__
 
 #include <botan/secmem.h>
 #include <string>
 #include <iosfwd>
-
-namespace Botan {
-
 /**
 * This class represents an abstract data source object.
 */
 class DataSource
-	{
+{
 	public:
 		/**
 		* Read from the source. Moves the internal offset so that every
@@ -89,13 +85,13 @@ class DataSource
 		abstract ~DataSource() {}
 		DataSource& operator=(const DataSource&) = delete;
 		DataSource(const DataSource&) = delete;
-	};
+};
 
 /**
 * This class represents a Memory-Based DataSource
 */
 class DataSource_Memory : public DataSource
-	{
+{
 	public:
 		size_t read(byte[], size_t);
 		size_t peek(byte[], size_t, size_t) const;
@@ -133,13 +129,13 @@ class DataSource_Memory : public DataSource
 	private:
 		SafeArray!byte source;
 		size_t offset;
-	};
+};
 
 /**
 * This class represents a Stream-Based DataSource.
 */
 class DataSource_Stream : public DataSource
-	{
+{
 	public:
 		size_t read(byte[], size_t);
 		size_t peek(byte[], size_t, size_t) const;
@@ -169,8 +165,4 @@ class DataSource_Stream : public DataSource
 		std::istream* source_p;
 		std::istream& source;
 		size_t total_read;
-	};
-
-}
-
-#endif
+};

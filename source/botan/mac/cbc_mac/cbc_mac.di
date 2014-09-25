@@ -5,19 +5,15 @@
 * Distributed under the terms of the Botan license
 */
 
-#ifndef BOTAN_CBC_MAC_H__
 #define BOTAN_CBC_MAC_H__
 
 #include <botan/mac.h>
 #include <botan/block_cipher.h>
-
-namespace Botan {
-
 /**
 * CBC-MAC
 */
 class CBC_MAC : public MessageAuthenticationCode
-	{
+{
 	public:
 		string name() const;
 		MessageAuthenticationCode* clone() const;
@@ -25,9 +21,9 @@ class CBC_MAC : public MessageAuthenticationCode
 		void clear();
 
 		Key_Length_Specification key_spec() const
-			{
+		{
 			return m_cipher->key_spec();
-			}
+		}
 
 		/**
 		* @param cipher the underlying block cipher to use
@@ -42,8 +38,4 @@ class CBC_MAC : public MessageAuthenticationCode
 		std::unique_ptr<BlockCipher> m_cipher;
 		SafeArray!byte m_state;
 		size_t m_position = 0;
-	};
-
-}
-
-#endif
+};

@@ -5,21 +5,17 @@
 * Distributed under the terms of the Botan license
 */
 
-#ifndef BOTAN_IF_ALGO_H__
 #define BOTAN_IF_ALGO_H__
 
 #include <botan/bigint.h>
 #include <botan/x509_key.h>
 #include <botan/pkcs8.h>
-
-namespace Botan {
-
 /**
 * This class represents public keys
 * of integer factorization based (IF) public key schemes.
 */
 class IF_Scheme_PublicKey : public abstract Public_Key
-	{
+{
 	public:
 		IF_Scheme_PublicKey(const AlgorithmIdentifier& alg_id,
 								  in SafeArray!byte key_bits);
@@ -51,7 +47,7 @@ class IF_Scheme_PublicKey : public abstract Public_Key
 		IF_Scheme_PublicKey() {}
 
 		BigInt n, e;
-	};
+};
 
 /**
 * This class represents public keys
@@ -59,7 +55,7 @@ class IF_Scheme_PublicKey : public abstract Public_Key
 */
 class IF_Scheme_PrivateKey : public abstract IF_Scheme_PublicKey,
 													public abstract Private_Key
-	{
+{
 	public:
 
 		IF_Scheme_PrivateKey(RandomNumberGenerator& rng,
@@ -101,8 +97,4 @@ class IF_Scheme_PrivateKey : public abstract IF_Scheme_PublicKey,
 		IF_Scheme_PrivateKey() {}
 
 		BigInt d, p, q, d1, d2, c;
-	};
-
-}
-
-#endif
+};

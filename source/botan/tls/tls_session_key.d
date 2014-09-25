@@ -8,9 +8,6 @@
 #include <botan/internal/tls_session_key.h>
 #include <botan/internal/tls_handshake_state.h>
 #include <botan/internal/tls_messages.h>
-
-namespace Botan {
-
 namespace TLS {
 
 /**
@@ -19,7 +16,7 @@ namespace TLS {
 Session_Keys::Session_Keys(const Handshake_State* state,
 									in SafeArray!byte pre_master_secret,
 									bool resuming)
-	{
+{
 	const size_t cipher_keylen = state->ciphersuite().cipher_keylen();
 	const size_t mac_keylen = state->ciphersuite().mac_keylen();
 	const size_t cipher_ivlen = state->ciphersuite().cipher_ivlen();
@@ -35,11 +32,11 @@ Session_Keys::Session_Keys(const Handshake_State* state,
 	std::unique_ptr<KDF> prf(state->protocol_specific_prf());
 
 	if(resuming)
-		{
+	{
 		master_sec = pre_master_secret;
-		}
+	}
 	else
-		{
+	{
 		SafeArray!byte salt;
 
 		if(state->version() != Protocol_Version::SSL_V3)
@@ -49,7 +46,7 @@ Session_Keys::Session_Keys(const Handshake_State* state,
 		salt += state->server_hello()->random();
 
 		master_sec = prf->derive_key(48, pre_master_secret, salt);
-		}
+	}
 
 	SafeArray!byte salt;
 	if(state->version() != Protocol_Version::SSL_V3)
@@ -77,7 +74,7 @@ Session_Keys::Session_Keys(const Handshake_State* state,
 	key_data += cipher_ivlen;
 
 	s_iv = InitializationVector(key_data, cipher_ivlen);
-	}
+}
 
 }
 

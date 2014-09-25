@@ -5,19 +5,15 @@
 * Distributed under the terms of the Botan license
 */
 
-#ifndef BOTAN_PUBKEY_EMSA_H__
 #define BOTAN_PUBKEY_EMSA_H__
 
 #include <botan/secmem.h>
 #include <botan/rng.h>
-
-namespace Botan {
-
 /**
 * Encoding Method for Signatures, Appendix
 */
 class EMSA
-	{
+{
 	public:
 		/**
 		* Add more data to the signature computation
@@ -53,7 +49,7 @@ class EMSA
 								  in SafeArray!byte raw,
 								  size_t key_bits) = 0;
 		abstract ~EMSA() {}
-	};
+};
 
 /**
 * Factory method for EMSA (message-encoding methods for signatures
@@ -61,8 +57,4 @@ class EMSA
 * @param algo_spec the name of the EME to create
 * @return pointer to newly allocated object of that type
 */
-BOTAN_DLL EMSA* get_emsa(in string algo_spec);
-
-}
-
-#endif
+EMSA* get_emsa(in string algo_spec);

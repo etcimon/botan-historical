@@ -5,13 +5,9 @@
 * Distributed under the terms of the Botan license
 */
 
-#ifndef BOTAN_UTIL_MUL128_H__
 #define BOTAN_UTIL_MUL128_H__
 
 #include <botan/types.h>
-
-namespace Botan {
-
 #if defined(__SIZEOF_INT128__)
 	#define BOTAN_TARGET_HAS_NATIVE_UINT128
 	typedef unsigned __int128 uint128_t;
@@ -30,7 +26,7 @@ namespace Botan {
 		const uint128_t r = static_cast<uint128_t>(a) * b;	\
 		*hi = (r >> 64) & 0xFFFFFFFFFFFFFFFF;  \
 		*lo = (r		) & 0xFFFFFFFFFFFFFFFF;  \
-	} while(0)
+} while(0)
 
 #elif defined(BOTAN_BUILD_COMPILER_IS_MSVC) && defined(BOTAN_TARGET_CPU_HAS_NATIVE_64BIT)
 
@@ -46,7 +42,7 @@ namespace Botan {
 
 #define BOTAN_FAST_64X64_MUL(a,b,lo,hi) do {									\
 	asm("mulq %3" : "=d" (*hi), "=a" (*lo) : "a" (a), "rm" (b) : "cc"); \
-	} while(0)
+} while(0)
 
 #elif defined(BOTAN_TARGET_ARCH_IS_ALPHA)
 
@@ -72,14 +68,11 @@ namespace Botan {
 #endif
 
 #endif
-
-namespace Botan {
-
 /**
 * Perform a 64x64->128 bit multiplication
 */
 inline void mul64x64_128(u64bit a, u64bit b, u64bit* lo, u64bit* hi)
-	{
+{
 #if defined(BOTAN_FAST_64X64_MUL)
 	BOTAN_FAST_64X64_MUL(a, b, lo, hi);
 #else
@@ -114,8 +107,4 @@ inline void mul64x64_128(u64bit a, u64bit b, u64bit* lo, u64bit* hi)
 	*hi = x0 + (x2 >> HWORD_BITS);
 	*lo  = ((x2 & HWORD_MASK) << HWORD_BITS) + (x3 & HWORD_MASK);
 #endif
-	}
-
 }
-
-#endif

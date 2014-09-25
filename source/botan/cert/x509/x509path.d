@@ -17,16 +17,13 @@
 #include <set>
 
 #include <iostream>
-
-namespace Botan {
-
 namespace {
 
 const X509_Certificate*
 find_issuing_cert(const X509_Certificate& cert,
 						Certificate_Store& end_certs,
 						const std::vector<Certificate_Store*>& certstores)
-	{
+{
 	const X509_DN issuer_dn = cert.issuer_dn();
 	const std::vector<byte> auth_key_id = cert.authority_key_id();
 
@@ -34,31 +31,31 @@ find_issuing_cert(const X509_Certificate& cert,
 		return cert;
 
 	for(size_t i = 0; i != certstores.size(); ++i)
-		{
+	{
 		if(const X509_Certificate* cert = certstores[i]->find_cert(issuer_dn, auth_key_id))
 			return cert;
-		}
+	}
 
 	return nullptr;
-	}
+}
 
 const X509_CRL* find_crls_for(const X509_Certificate& cert,
 										const std::vector<Certificate_Store*>& certstores)
-	{
+{
 	for(size_t i = 0; i != certstores.size(); ++i)
-		{
+	{
 		if(const X509_CRL* crl = certstores[i]->find_crl_for(cert))
 			return crl;
-		}
+	}
 
 #if 0
 	const string crl_url = cert.crl_distribution_point();
 	if(crl_url != "")
-		{
-		std::cout << "Downloading CRL " << crl_url << "\n";
+	{
+		std::cout << "Downloading CRL " << crl_url << "";
 		auto http = HTTP::GET_sync(crl_url);
 
-		std::cout << http.status_message() << "\n";
+		std::cout << http.status_message() << "";
 
 		http.throw_unless_ok();
 		// check the mime type
@@ -66,17 +63,17 @@ const X509_CRL* find_crls_for(const X509_Certificate& cert,
 		std::unique_ptr<X509_CRL> crl(new X509_CRL(http.body()));
 
 		return crl.release();
-		}
+	}
 #endif
 
 	return nullptr;
-	}
+}
 
 std::vector<std::set<Certificate_Status_Code>>
 check_chain(const std::vector<X509_Certificate>& cert_path,
 				const Path_Validation_Restrictions& restrictions,
 				const std::vector<Certificate_Store*>& certstores)
-	{
+{
 	const std::set<string>& trusted_hashes = restrictions.trusted_hashes();
 
 	const bool self_signed_ee_cert = (cert_path.size() == 1);
@@ -88,7 +85,7 @@ check_chain(const std::vector<X509_Certificate>& cert_path,
 	std::vector<std::set<Certificate_Status_Code>> cert_status(cert_path.size());
 
 	for(size_t i = 0; i != cert_path.size(); ++i)
-		{
+	{
 		std::set<Certificate_Status_Code>& status = cert_status.at(i);
 
 		const bool at_self_signed_root = (i == cert_path.size() - 1);
@@ -130,51 +127,51 @@ check_chain(const std::vector<X509_Certificate>& cert_path,
 
 		// Allow untrusted hashes on self-signed roots
 		if(!trusted_hashes.empty() && !at_self_signed_root)
-			{
+		{
 			if(!trusted_hashes.count(subject.hash_used_for_signature()))
 				status.insert(Certificate_Status_Code::UNTRUSTED_HASH);
-			}
 		}
+	}
 
 	for(size_t i = 0; i != cert_path.size() - 1; ++i)
-		{
+	{
 		std::set<Certificate_Status_Code>& status = cert_status.at(i);
 
 		const X509_Certificate& subject = cert_path.at(i);
 		const X509_Certificate& ca = cert_path.at(i+1);
 
 		if(i < ocsp_responses.size())
-			{
+		{
 			try
-				{
+			{
 				OCSP::Response ocsp = ocsp_responses[i].get();
 
 				auto ocsp_status = ocsp.status_for(ca, subject);
 
 				status.insert(ocsp_status);
 
-				//std::cout << "OCSP status: " << Path_Validation_Result::status_string(ocsp_status) << "\n";
+				//std::cout << "OCSP status: " << Path_Validation_Result::status_string(ocsp_status) << "";
 
 				// Either way we have a definitive answer, no need to check CRLs
 				if(ocsp_status == Certificate_Status_Code::CERT_IS_REVOKED)
 					return cert_status;
 				else if(ocsp_status == Certificate_Status_Code::OCSP_RESPONSE_GOOD)
 					continue;
-				}
-			catch(std::exception& e)
-				{
-				//std::cout << "OCSP error: " << e.what() << "\n";
-				}
 			}
+			catch(std::exception& e)
+			{
+				//std::cout << "OCSP error: " << e.what() << "";
+			}
+		}
 
 		const X509_CRL* crl_p = find_crls_for(subject, certstores);
 
 		if(!crl_p)
-			{
+		{
 			if(restrictions.require_revocation_information())
 				status.insert(Certificate_Status_Code::NO_REVOCATION_DATA);
 			continue;
-			}
+		}
 
 		const X509_CRL& crl = *crl_p;
 
@@ -192,13 +189,13 @@ check_chain(const std::vector<X509_Certificate>& cert_path,
 
 		if(crl.is_revoked(subject))
 			status.insert(Certificate_Status_Code::CERT_IS_REVOKED);
-		}
+	}
 
 	if(self_signed_ee_cert)
 		cert_status.back().insert(Certificate_Status_Code::CANNOT_ESTABLISH_TRUST);
 
 	return cert_status;
-	}
+}
 
 }
 
@@ -206,7 +203,7 @@ Path_Validation_Result x509_path_validate(
 	const std::vector<X509_Certificate>& end_certs,
 	const Path_Validation_Restrictions& restrictions,
 	const std::vector<Certificate_Store*>& certstores)
-	{
+{
 	if(end_certs.empty())
 		throw std::invalid_argument("x509_path_validate called with no subjects");
 
@@ -217,44 +214,44 @@ Path_Validation_Result x509_path_validate(
 
 	// iterate until we reach a root or cannot find the issuer
 	while(!cert_path.back().is_self_signed())
-		{
+	{
 		const X509_Certificate* cert = find_issuing_cert(cert_path.back(), extra, certstores);
 		if(!cert)
 			return Path_Validation_Result(Certificate_Status_Code::CERT_ISSUER_NOT_FOUND);
 
 		cert_path.push_back(*cert);
-		}
+	}
 
 	return Path_Validation_Result(check_chain(cert_path, restrictions, certstores),
 											std::move(cert_path));
-	}
+}
 
 Path_Validation_Result x509_path_validate(
 	const X509_Certificate& end_cert,
 	const Path_Validation_Restrictions& restrictions,
 	const std::vector<Certificate_Store*>& certstores)
-	{
+{
 	std::vector<X509_Certificate> certs;
 	certs.push_back(end_cert);
 	return x509_path_validate(certs, restrictions, certstores);
-	}
+}
 
 Path_Validation_Result x509_path_validate(
 	const std::vector<X509_Certificate>& end_certs,
 	const Path_Validation_Restrictions& restrictions,
 	const Certificate_Store& store)
-	{
+{
 	std::vector<Certificate_Store*> certstores;
 	certstores.push_back(const_cast<Certificate_Store*>(&store));
 
 	return x509_path_validate(end_certs, restrictions, certstores);
-	}
+}
 
 Path_Validation_Result x509_path_validate(
 	const X509_Certificate& end_cert,
 	const Path_Validation_Restrictions& restrictions,
 	const Certificate_Store& store)
-	{
+{
 	std::vector<X509_Certificate> certs;
 	certs.push_back(end_cert);
 
@@ -262,7 +259,7 @@ Path_Validation_Result x509_path_validate(
 	certstores.push_back(const_cast<Certificate_Store*>(&store));
 
 	return x509_path_validate(certs, restrictions, certstores);
-	}
+}
 
 Path_Validation_Restrictions::Path_Validation_Restrictions(bool require_rev,
 																			  size_t key_strength,
@@ -270,7 +267,7 @@ Path_Validation_Restrictions::Path_Validation_Restrictions(bool require_rev,
 	m_require_revocation_information(require_rev),
 	m_ocsp_all_intermediates(ocsp_all),
 	m_minimum_key_strength(key_strength)
-	{
+{
 	if(key_strength <= 80)
 		m_trusted_hashes.insert("SHA-160");
 
@@ -278,57 +275,57 @@ Path_Validation_Restrictions::Path_Validation_Restrictions(bool require_rev,
 	m_trusted_hashes.insert("SHA-256");
 	m_trusted_hashes.insert("SHA-384");
 	m_trusted_hashes.insert("SHA-512");
-	}
+}
 
 Path_Validation_Result::Path_Validation_Result(std::vector<std::set<Certificate_Status_Code>> status,
 															  std::vector<X509_Certificate>&& cert_chain) :
 	m_overall(Certificate_Status_Code::VERIFIED),
 	m_all_status(status),
 	m_cert_path(cert_chain)
-	{
+{
 	// take the "worst" error as overall
 	for(const auto& s : m_all_status)
-		{
+	{
 		if(!s.empty())
-			{
+		{
 			auto worst = *s.rbegin();
 			// Leave OCSP confirmations on cert-level status only
 			if(worst != Certificate_Status_Code::OCSP_RESPONSE_GOOD)
 				m_overall = worst;
-			}
 		}
 	}
+}
 
 const X509_Certificate& Path_Validation_Result::trust_root() const
-	{
+{
 	return m_cert_path[m_cert_path.size()-1];
-	}
+}
 
 std::set<string> Path_Validation_Result::trusted_hashes() const
-	{
+{
 	std::set<string> hashes;
 	for(size_t i = 0; i != m_cert_path.size(); ++i)
 		hashes.insert(m_cert_path[i].hash_used_for_signature());
 	return hashes;
-	}
+}
 
 bool Path_Validation_Result::successful_validation() const
-	{
+{
 	if(result() == Certificate_Status_Code::VERIFIED ||
 		result() == Certificate_Status_Code::OCSP_RESPONSE_GOOD)
 		return true;
 	return false;
-	}
+}
 
 string Path_Validation_Result::result_string() const
-	{
+{
 	return status_string(result());
-	}
+}
 
 const char* Path_Validation_Result::status_string(Certificate_Status_Code code)
-	{
+{
 	switch(code)
-		{
+	{
 		case Certificate_Status_Code::VERIFIED:
 			return "Verified";
 		case Certificate_Status_Code::OCSP_RESPONSE_GOOD:
@@ -381,7 +378,7 @@ const char* Path_Validation_Result::status_string(Certificate_Status_Code code)
 			return "Signature error";
 		default:
 			return "Unknown error";
-		}
 	}
+}
 
 }

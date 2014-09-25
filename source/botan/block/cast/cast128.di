@@ -5,18 +5,14 @@
 * Distributed under the terms of the Botan license
 */
 
-#ifndef BOTAN_CAST128_H__
 #define BOTAN_CAST128_H__
 
 #include <botan/block_cipher.h>
-
-namespace Botan {
-
 /**
 * CAST-128
 */
 class CAST_128 : public Block_Cipher_Fixed_Params<8, 11, 16>
-	{
+{
 	public:
 		void encrypt_n(const byte in[], byte out[], size_t blocks) const;
 		void decrypt_n(const byte in[], byte out[], size_t blocks) const;
@@ -33,8 +29,4 @@ class CAST_128 : public Block_Cipher_Fixed_Params<8, 11, 16>
 
 		secure_vector<u32bit> MK;
 		SafeArray!byte RK;
-	};
-
-}
-
-#endif
+};

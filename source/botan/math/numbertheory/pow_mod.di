@@ -5,31 +5,27 @@
 * Distributed under the terms of the Botan license
 */
 
-#ifndef BOTAN_POWER_MOD_H__
 #define BOTAN_POWER_MOD_H__
 
 #include <botan/bigint.h>
-
-namespace Botan {
-
 /**
 * Modular Exponentiator Interface
 */
 class Modular_Exponentiator
-	{
+{
 	public:
 		abstract void set_base(const BigInt&) = 0;
 		abstract void set_exponent(const BigInt&) = 0;
 		abstract BigInt execute() const = 0;
 		abstract Modular_Exponentiator* copy() const = 0;
 		abstract ~Modular_Exponentiator() {}
-	};
+};
 
 /**
 * Modular Exponentiator Proxy
 */
 class Power_Mod
-	{
+{
 	public:
 
 		enum Usage_Hints {
@@ -43,7 +39,7 @@ class Power_Mod
 			EXP_IS_FIXED	 = 0x0100,
 			EXP_IS_SMALL	 = 0x0200,
 			EXP_IS_LARGE	 = 0x0400
-		};
+	};
 
 		/*
 		* Try to choose a good window size
@@ -64,40 +60,36 @@ class Power_Mod
 		abstract ~Power_Mod();
 	private:
 		mutable Modular_Exponentiator* core;
-	};
+};
 
 /**
 * Fixed Exponent Modular Exponentiator Proxy
 */
 class Fixed_Exponent_Power_Mod : public Power_Mod
-	{
+{
 	public:
 		BigInt operator()(const BigInt& b) const
-			{ set_base(b); return execute(); }
+		{ set_base(b); return execute(); }
 
 		Fixed_Exponent_Power_Mod() {}
 
 		Fixed_Exponent_Power_Mod(const BigInt& exponent,
 										 const BigInt& modulus,
 										 Usage_Hints hints = NO_HINTS);
-	};
+};
 
 /**
 * Fixed Base Modular Exponentiator Proxy
 */
 class Fixed_Base_Power_Mod : public Power_Mod
-	{
+{
 	public:
 		BigInt operator()(const BigInt& e) const
-			{ set_exponent(e); return execute(); }
+		{ set_exponent(e); return execute(); }
 
 		Fixed_Base_Power_Mod() {}
 
 		Fixed_Base_Power_Mod(const BigInt& base,
 									const BigInt& modulus,
 									Usage_Hints hints = NO_HINTS);
-	};
-
-}
-
-#endif
+};

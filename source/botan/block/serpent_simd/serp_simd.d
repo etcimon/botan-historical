@@ -9,9 +9,6 @@
 #include <botan/internal/serpent_sbox.h>
 #include <botan/internal/simd_32.h>
 #include <botan/loadstor.h>
-
-namespace Botan {
-
 namespace {
 
 #define key_xor(round, B0, B1, B2, B3)									  \
@@ -20,7 +17,7 @@ namespace {
 		B1 ^= SIMD_32(keys[4*round+1]);										\
 		B2 ^= SIMD_32(keys[4*round+2]);										\
 		B3 ^= SIMD_32(keys[4*round+3]);										\
-	} while(0);
+} while(0);
 
 /*
 * Serpent's linear transformations
@@ -37,7 +34,7 @@ namespace {
 		B2 ^= B3 ^ (B1 << 7);													 \
 		B0.rotate_left(5);														 \
 		B2.rotate_left(22);														\
-	} while(0);
+} while(0);
 
 #define i_transform(B0, B1, B2, B3)										  \
 	do {																				\
@@ -51,7 +48,7 @@ namespace {
 		B1 ^= B0 ^ B2;															  \
 		B2.rotate_right(3);														\
 		B0.rotate_right(13);													  \
-	} while(0);
+} while(0);
 
 /*
 * SIMD Serpent Encryption of 4 blocks in parallel
@@ -59,7 +56,7 @@ namespace {
 void serpent_encrypt_4(const byte in[64],
 							  byte out[64],
 							  const u32bit keys[132])
-	{
+{
 	SIMD_32 B0 = SIMD_32::load_le(in);
 	SIMD_32 B1 = SIMD_32::load_le(in + 16);
 	SIMD_32 B2 = SIMD_32::load_le(in + 32);
@@ -109,7 +106,7 @@ void serpent_encrypt_4(const byte in[64],
 	B1.store_le(out + 16);
 	B2.store_le(out + 32);
 	B3.store_le(out + 48);
-	}
+}
 
 /*
 * SIMD Serpent Decryption of 4 blocks in parallel
@@ -117,7 +114,7 @@ void serpent_encrypt_4(const byte in[64],
 void serpent_decrypt_4(const byte in[64],
 							  byte out[64],
 							  const u32bit keys[132])
-	{
+{
 	SIMD_32 B0 = SIMD_32::load_le(in);
 	SIMD_32 B1 = SIMD_32::load_le(in + 16);
 	SIMD_32 B2 = SIMD_32::load_le(in + 32);
@@ -167,7 +164,7 @@ void serpent_decrypt_4(const byte in[64],
 	B1.store_le(out + 16);
 	B2.store_le(out + 32);
 	B3.store_le(out + 48);
-	}
+}
 
 }
 
@@ -179,38 +176,38 @@ void serpent_decrypt_4(const byte in[64],
 * Serpent Encryption
 */
 void Serpent_SIMD::encrypt_n(const byte in[], byte out[], size_t blocks) const
-	{
+{
 	const u32bit* KS = &(this->get_round_keys()[0]);
 
 	while(blocks >= 4)
-		{
+	{
 		serpent_encrypt_4(in, out, KS);
 		in += 4 * BLOCK_SIZE;
 		out += 4 * BLOCK_SIZE;
 		blocks -= 4;
-		}
+	}
 
 	if(blocks)
 	  Serpent::encrypt_n(in, out, blocks);
-	}
+}
 
 /*
 * Serpent Decryption
 */
 void Serpent_SIMD::decrypt_n(const byte in[], byte out[], size_t blocks) const
-	{
+{
 	const u32bit* KS = &(this->get_round_keys()[0]);
 
 	while(blocks >= 4)
-		{
+	{
 		serpent_decrypt_4(in, out, KS);
 		in += 4 * BLOCK_SIZE;
 		out += 4 * BLOCK_SIZE;
 		blocks -= 4;
-		}
+	}
 
 	if(blocks)
 	  Serpent::decrypt_n(in, out, blocks);
-	}
+}
 
 }

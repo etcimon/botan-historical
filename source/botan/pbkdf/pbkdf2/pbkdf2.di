@@ -5,29 +5,25 @@
 * Distributed under the terms of the Botan license
 */
 
-#ifndef BOTAN_PBKDF2_H__
 #define BOTAN_PBKDF2_H__
 
 #include <botan/pbkdf.h>
 #include <botan/mac.h>
-
-namespace Botan {
-
 /**
 * PKCS #5 PBKDF2
 */
 class PKCS5_PBKDF2 : public PBKDF
-	{
+{
 	public:
 		string name() const override
-			{
+		{
 			return "PBKDF2(" + mac->name() + ")";
-			}
+		}
 
 		PBKDF* clone() const override
-			{
+		{
 			return new PKCS5_PBKDF2(mac->clone());
-			}
+		}
 
 		std::pair<size_t, OctetString>
 			key_derivation(size_t output_len,
@@ -43,8 +39,4 @@ class PKCS5_PBKDF2 : public PBKDF
 		PKCS5_PBKDF2(MessageAuthenticationCode* mac_fn) : mac(mac_fn) {}
 	private:
 		std::unique_ptr<MessageAuthenticationCode> mac;
-	};
-
-}
-
-#endif
+};

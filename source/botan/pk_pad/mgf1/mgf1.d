@@ -9,17 +9,14 @@
 #include <botan/exceptn.h>
 #include <botan/internal/xor_buf.h>
 #include <algorithm>
-
-namespace Botan {
-
 void mgf1_mask(HashFunction& hash,
 					const byte in[], size_t in_len,
 					byte out[], size_t out_len)
-	{
+{
 	u32bit counter = 0;
 
 	while(out_len)
-		{
+	{
 		hash.update(in, in_len);
 		hash.update_be(counter);
 		SafeArray!byte buffer = hash.final();
@@ -30,7 +27,7 @@ void mgf1_mask(HashFunction& hash,
 		out_len -= xored;
 
 		++counter;
-		}
 	}
+}
 
 }

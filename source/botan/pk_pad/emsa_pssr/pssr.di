@@ -5,19 +5,15 @@
 * Distributed under the terms of the Botan license
 */
 
-#ifndef BOTAN_PSSR_H__
 #define BOTAN_PSSR_H__
 
 #include <botan/emsa.h>
 #include <botan/hash.h>
-
-namespace Botan {
-
 /**
 * PSSR (called EMSA4 in IEEE 1363 and in old versions of the library)
 */
 class PSSR : public EMSA
-	{
+{
 	public:
 
 		/**
@@ -45,8 +41,4 @@ class PSSR : public EMSA
 
 		size_t SALT_SIZE;
 		std::unique_ptr<HashFunction> hash;
-	};
-
-}
-
-#endif
+};

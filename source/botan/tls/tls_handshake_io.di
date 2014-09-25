@@ -5,7 +5,6 @@
 * Released under the terms of the Botan license
 */
 
-#ifndef BOTAN_TLS_HANDSHAKE_IO_H__
 #define BOTAN_TLS_HANDSHAKE_IO_H__
 
 #include <botan/tls_magic.h>
@@ -18,9 +17,6 @@
 #include <set>
 #include <utility>
 #include <tuple>
-
-namespace Botan {
-
 namespace TLS {
 
 class Handshake_Message;
@@ -29,7 +25,7 @@ class Handshake_Message;
 * Handshake IO Interface
 */
 class Handshake_IO
-	{
+{
 	public:
 		abstract Protocol_Version initial_record_version() const = 0;
 
@@ -56,13 +52,13 @@ class Handshake_IO
 		Handshake_IO& operator=(const Handshake_IO&) = delete;
 
 		abstract ~Handshake_IO() {}
-	};
+};
 
 /**
 * Handshake IO for stream-based handshakes
 */
 class Stream_Handshake_IO : public Handshake_IO
-	{
+{
 	public:
 		Stream_Handshake_IO(std::function<void (byte, in Array!byte)> writer) :
 			m_send_hs(writer) {}
@@ -84,13 +80,13 @@ class Stream_Handshake_IO : public Handshake_IO
 	private:
 		std::deque<byte> m_queue;
 		std::function<void (byte, in Array!byte)> m_send_hs;
-	};
+};
 
 /**
 * Handshake IO for datagram-based handshakes
 */
 class Datagram_Handshake_IO : public Handshake_IO
-	{
+{
 	public:
 		Datagram_Handshake_IO(class Connection_Sequence_Numbers& seq,
 									 std::function<void (u16bit, byte, in Array!byte)> writer) :
@@ -125,7 +121,7 @@ class Datagram_Handshake_IO : public Handshake_IO
 			u16bit msg_sequence) const;
 
 		class Handshake_Reassembly
-			{
+		{
 			public:
 				void add_fragment(const byte fragment[],
 										size_t fragment_length,
@@ -146,7 +142,7 @@ class Datagram_Handshake_IO : public Handshake_IO
 
 				std::map<size_t, byte> m_fragments;
 				std::vector<byte> m_message;
-			};
+		};
 
 		class Connection_Sequence_Numbers& m_seqs;
 		std::map<u16bit, Handshake_Reassembly> m_messages;
@@ -159,10 +155,6 @@ class Datagram_Handshake_IO : public Handshake_IO
 		u16bit m_in_message_seq = 0;
 		u16bit m_out_message_seq = 0;
 		std::function<void (u16bit, byte, in Array!byte)> m_send_hs;
-	};
+};
 
 }
-
-}
-
-#endif

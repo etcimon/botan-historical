@@ -5,18 +5,14 @@
 * Distributed under the terms of the Botan license
 */
 
-#ifndef BOTAN_MD2_H__
 #define BOTAN_MD2_H__
 
 #include <botan/hash.h>
-
-namespace Botan {
-
 /**
 * MD2
 */
 class MD2 : public HashFunction
-	{
+{
 	public:
 		string name() const { return "MD2"; }
 		size_t output_length() const { return 16; }
@@ -26,7 +22,7 @@ class MD2 : public HashFunction
 		void clear();
 
 		MD2() : X(48), checksum(16), buffer(16)
-			{ clear(); }
+		{ clear(); }
 	private:
 		void add_data(const byte[], size_t);
 		void hash(const byte[]);
@@ -34,8 +30,4 @@ class MD2 : public HashFunction
 
 		SafeArray!byte X, checksum, buffer;
 		size_t position;
-	};
-
-}
-
-#endif
+};

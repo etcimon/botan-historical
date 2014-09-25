@@ -6,7 +6,6 @@
 * Distributed under the terms of the Botan license
 */
 
-#ifndef BOTAN_MP_WORD_MULADD_H__
 #define BOTAN_MP_WORD_MULADD_H__
 
 #include <botan/mp_types.h>
@@ -14,21 +13,18 @@
 #if (BOTAN_MP_WORD_BITS != 64)
 	#error The mp_x86_64 module requires that BOTAN_MP_WORD_BITS == 64
 #endif
-
-namespace Botan {
-
 extern "C" {
 
 /*
 * Helper Macros for x86-64 Assembly
 */
-#define ASM(x) x "\n\t"
+#define ASM(x) x "\t"
 
 /*
 * Word Multiply
 */
 inline word word_madd2(word a, word b, word* c)
-	{
+{
 	asm(
 		ASM("mulq %[b]")
 		ASM("addq %[c],%[a]")
@@ -38,13 +34,13 @@ inline word word_madd2(word a, word b, word* c)
 		: "0"(a), "1"(b), [c]"g"(*c) : "cc");
 
 	return a;
-	}
+}
 
 /*
 * Word Multiply/Add
 */
 inline word word_madd3(word a, word b, word c, word* d)
-	{
+{
 	asm(
 		ASM("mulq %[b]")
 
@@ -58,12 +54,8 @@ inline word word_madd3(word a, word b, word c, word* d)
 		: "0"(a), "1"(b), [c]"g"(c), [d]"g"(*d) : "cc");
 
 	return a;
-	}
+}
 
 #undef ASM
 
 }
-
-}
-
-#endif

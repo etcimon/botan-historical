@@ -5,22 +5,18 @@
 * Released under the terms of the Botan license
 */
 
-#ifndef BOTAN_TLS_CIPHER_SUITES_H__
 #define BOTAN_TLS_CIPHER_SUITES_H__
 
 #include <botan/types.h>
 #include <string>
 #include <vector>
-
-namespace Botan {
-
 namespace TLS {
 
 /**
 * Ciphersuite Information
 */
 class Ciphersuite
-	{
+{
 	public:
 		/**
 		* Convert an SSL/TLS ciphersuite to algorithm fields
@@ -85,9 +81,9 @@ class Ciphersuite
 		string mac_algo() const { return m_mac_algo; }
 
 		string prf_algo() const
-			{
+		{
 			return (m_prf_algo != "") ? m_prf_algo : m_mac_algo;
-			}
+		}
 
 		/**
 		* @return cipher key length used by this ciphersuite
@@ -128,10 +124,6 @@ class Ciphersuite
 		size_t m_cipher_keylen = 0;
 		size_t m_cipher_ivlen = 0;
 		size_t m_mac_keylen = 0;
-	};
+};
 
 }
-
-}
-
-#endif

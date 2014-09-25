@@ -5,21 +5,17 @@
 * Distributed under the terms of the Botan license
 */
 
-#ifndef BOTAN_DSA_H__
 #define BOTAN_DSA_H__
 
 #include <botan/dl_algo.h>
 #include <botan/pk_ops.h>
 #include <botan/reducer.h>
 #include <botan/pow_mod.h>
-
-namespace Botan {
-
 /**
 * DSA Public Key
 */
 class DSA_PublicKey : public abstract DL_Scheme_PublicKey
-	{
+{
 	public:
 		string algo_name() const { return "DSA"; }
 
@@ -31,20 +27,20 @@ class DSA_PublicKey : public abstract DL_Scheme_PublicKey
 		DSA_PublicKey(const AlgorithmIdentifier& alg_id,
 						  in SafeArray!byte key_bits) :
 			DL_Scheme_PublicKey(alg_id, key_bits, DL_Group::ANSI_X9_57)
-			{
-			}
+		{
+		}
 
 		DSA_PublicKey(const DL_Group& group, const BigInt& y);
 	protected:
 		DSA_PublicKey() {}
-	};
+};
 
 /**
 * DSA Private Key
 */
 class DSA_PrivateKey : public DSA_PublicKey,
 											public abstract DL_Scheme_PrivateKey
-	{
+{
 	public:
 		DSA_PrivateKey(const AlgorithmIdentifier& alg_id,
 							in SafeArray!byte key_bits,
@@ -55,13 +51,13 @@ class DSA_PrivateKey : public DSA_PublicKey,
 							const BigInt& private_key = 0);
 
 		bool check_key(RandomNumberGenerator& rng, bool strong) const;
-	};
+};
 
 /**
 * Object that can create a DSA signature
 */
 class DSA_Signature_Operation : public PK_Ops::Signature
-	{
+{
 	public:
 		DSA_Signature_Operation(const DSA_PrivateKey& dsa);
 
@@ -76,13 +72,13 @@ class DSA_Signature_Operation : public PK_Ops::Signature
 		const BigInt& x;
 		Fixed_Base_Power_Mod powermod_g_p;
 		Modular_Reducer mod_q;
-	};
+};
 
 /**
 * Object that can verify a DSA signature
 */
 class DSA_Verification_Operation : public PK_Ops::Verification
-	{
+{
 	public:
 		DSA_Verification_Operation(const DSA_PublicKey& dsa);
 
@@ -100,8 +96,4 @@ class DSA_Verification_Operation : public PK_Ops::Verification
 
 		Fixed_Base_Power_Mod powermod_g_p, powermod_y_p;
 		Modular_Reducer mod_p, mod_q;
-	};
-
-}
-
-#endif
+};

@@ -5,19 +5,15 @@
 * Distributed under the terms of the Botan license
 */
 
-#ifndef BOTAN_PUBKEY_EME_ENCRYPTION_PAD_H__
 #define BOTAN_PUBKEY_EME_ENCRYPTION_PAD_H__
 
 #include <botan/secmem.h>
 #include <botan/rng.h>
-
-namespace Botan {
-
 /**
 * Encoding Method for Encryption
 */
 class EME
-	{
+{
 	public:
 		/**
 		* Return the maximum input size in bytes we can support
@@ -95,15 +91,11 @@ class EME
 		abstract SafeArray!byte unpad(const byte in[],
 													size_t in_length,
 													size_t key_length) const = 0;
-	};
+};
 
 /**
 * Factory method for EME (message-encoding methods for encryption) objects
 * @param algo_spec the name of the EME to create
 * @return pointer to newly allocated object of that type
 */
-BOTAN_DLL EME*  get_eme(in string algo_spec);
-
-}
-
-#endif
+EME*  get_eme(in string algo_spec);

@@ -5,7 +5,6 @@
 * Distributed under the terms of the Botan license
 */
 
-#ifndef BOTAN_BOTAN_H__
 #define BOTAN_BOTAN_H__
 
 #include <botan/init.h>

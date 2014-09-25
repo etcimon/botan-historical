@@ -9,13 +9,10 @@
 #include <botan/loadstor.h>
 #include <botan/blowfish.h>
 #include <botan/base64.h>
-
-namespace Botan {
-
 namespace {
 
 string bcrypt_base64_encode(const byte input[], size_t length)
-	{
+{
 	// Bcrypt uses a non-standard base64 alphabet
 	const byte OPENBSD_BASE64_SUB[256] = {
 		0x00, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80,
@@ -40,7 +37,7 @@ string bcrypt_base64_encode(const byte input[], size_t length)
 		0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80,
 		0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80,
 		0x80, 0x80, 0x80, 0x80
-	};
+};
 
 	string b64 = base64_encode(input, length);
 
@@ -51,10 +48,10 @@ string bcrypt_base64_encode(const byte input[], size_t length)
 		b64[i] = OPENBSD_BASE64_SUB[static_cast<byte>(b64[i])];
 
 	return b64;
-	}
+}
 
 std::vector<byte> bcrypt_base64_decode(string input)
-	{
+{
 	const byte OPENBSD_BASE64_SUB[256] = {
 		0x00, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80,
 		0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80,
@@ -78,23 +75,23 @@ std::vector<byte> bcrypt_base64_decode(string input)
 		0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80,
 		0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80,
 		0x80, 0x80, 0x80, 0x80
-	};
+};
 
 	for(size_t i = 0; i != input.size(); ++i)
 		input[i] = OPENBSD_BASE64_SUB[static_cast<byte>(input[i])];
 
 	return unlock(base64_decode(input));
-	}
+}
 
 string make_bcrypt(in string pass,
 								in Array!byte salt,
 								u16bit work_factor)
-	{
+{
 	const byte magic[24] = {
 		0x4F, 0x72, 0x70, 0x68, 0x65, 0x61, 0x6E, 0x42,
 		0x65, 0x68, 0x6F, 0x6C, 0x64, 0x65, 0x72, 0x53,
 		0x63, 0x72, 0x79, 0x44, 0x6F, 0x75, 0x62, 0x74
-	};
+};
 
 	std::vector<byte> ctext(magic, magic + sizeof(magic));
 
@@ -118,25 +115,25 @@ string make_bcrypt(in string pass,
 	return "$2a$" + work_factor_str +
 			 "$" + salt_b64.substr(0, 22) +
 			 bcrypt_base64_encode(&ctext[0], ctext.size() - 1);
-	}
+}
 
 }
 
 string generate_bcrypt(in string pass,
 									 RandomNumberGenerator& rng,
 									 u16bit work_factor)
-	{
+{
 	return make_bcrypt(pass, unlock(rng.random_vec(16)), work_factor);
-	}
+}
 
 bool check_bcrypt(in string pass, in string hash)
-	{
+{
 	if(hash.size() != 60 ||
 		hash[0] != '$' || hash[1] != '2' || hash[2] != 'a' ||
 		hash[3] != '$' || hash[6] != '$')
-		{
+	{
 		return false;
-		}
+	}
 
 	const u16bit workfactor = to_u32bit(hash.substr(4, 2));
 
@@ -145,6 +142,6 @@ bool check_bcrypt(in string pass, in string hash)
 	const string compare = make_bcrypt(pass, salt, workfactor);
 
 	return (hash == compare);
-	}
+}
 
 }

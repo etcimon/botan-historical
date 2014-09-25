@@ -5,15 +5,11 @@
 * Released under the terms of the Botan license
 */
 
-#ifndef BOTAN_TLS_HANDSHAKE_HASH_H__
 #define BOTAN_TLS_HANDSHAKE_HASH_H__
 
 #include <botan/secmem.h>
 #include <botan/tls_version.h>
 #include <botan/tls_magic.h>
-
-namespace Botan {
-
 namespace TLS {
 
 using namespace Botan;
@@ -22,13 +18,13 @@ using namespace Botan;
 * TLS Handshake Hash
 */
 class Handshake_Hash
-	{
+{
 	public:
 		void update(const byte in[], size_t length)
-			{ data += std::make_pair(in, length); }
+		{ data += std::make_pair(in, length); }
 
 		void update(in Array!byte in)
-			{ data += in; }
+		{ data += in; }
 
 		SafeArray!byte final(Protocol_Version version,
 										  in string mac_algo) const;
@@ -36,15 +32,11 @@ class Handshake_Hash
 		SafeArray!byte final_ssl3(in SafeArray!byte master_secret) const;
 
 		in Array!byte get_contents() const
-			{ return data; }
+		{ return data; }
 
 		void reset() { data.clear(); }
 	private:
 		std::vector<byte> data;
-	};
+};
 
 }
-
-}
-
-#endif

@@ -14,40 +14,37 @@
 #include <botan/parsing.h>
 #include <botan/pem.h>
 #include <algorithm>
-
-namespace Botan {
-
 /*
 * Create a generic X.509 object
 */
 X509_Object::X509_Object(DataSource& stream, in string labels)
-	{
+{
 	init(stream, labels);
-	}
+}
 
 /*
 * Create a generic X.509 object
 */
 X509_Object::X509_Object(in string file, in string labels)
-	{
+{
 	DataSource_Stream stream(file, true);
 	init(stream, labels);
-	}
+}
 
 /*
 * Create a generic X.509 object
 */
 X509_Object::X509_Object(in Array!byte vec, in string labels)
-	{
+{
 	DataSource_Memory stream(&vec[0], vec.size());
 	init(stream, labels);
-	}
+}
 
 /*
 * Read a PEM or BER X.509 object
 */
 void X509_Object::init(DataSource& in, in string labels)
-	{
+{
 	PEM_labels_allowed = split_on(labels, '/');
 	if(PEM_labels_allowed.size() < 1)
 		throw Invalid_Argument("Bad labels argument to X509_Object");
@@ -57,12 +54,12 @@ void X509_Object::init(DataSource& in, in string labels)
 
 	try {
 		if(ASN1::maybe_BER(in) && !PEM_Code::matches(in))
-			{
+		{
 			BER_Decoder dec(in);
 			decode_from(dec);
-			}
+		}
 		else
-			{
+		{
 			string got_label;
 			DataSource_Memory ber(PEM_Code::decode(in, got_label));
 
@@ -72,17 +69,14 @@ void X509_Object::init(DataSource& in, in string labels)
 
 			BER_Decoder dec(ber);
 			decode_from(dec);
-			}
-		}
-	catch(Decoding_Error& e)
-		{
-		throw Decoding_Error(PEM_label_pref + " decoding failed: " + e.what());
 		}
 	}
-
-
-void X509_Object::encode_into(DER_Encoder& to) const
+	catch(Decoding_Error& e)
 	{
+		throw Decoding_Error(PEM_label_pref + " decoding failed: " + e.what());
+	}
+}void X509_Object::encode_into(DER_Encoder& to) const
+{
 	to.start_cons(SEQUENCE)
 			.start_cons(SEQUENCE)
 				.raw_bytes(tbs_bits)
@@ -90,13 +84,13 @@ void X509_Object::encode_into(DER_Encoder& to) const
 			.encode(sig_algo)
 			.encode(sig, BIT_STRING)
 		.end_cons();
-	}
+}
 
 /*
 * Read a BER encoded X.509 object
 */
 void X509_Object::decode_from(BER_Decoder& from)
-	{
+{
 	from.start_cons(SEQUENCE)
 			.start_cons(SEQUENCE)
 				.raw_bytes(tbs_bits)
@@ -105,55 +99,55 @@ void X509_Object::decode_from(BER_Decoder& from)
 			.decode(sig, BIT_STRING)
 			.verify_end()
 		.end_cons();
-	}
+}
 
 /*
 * Return a BER encoded X.509 object
 */
 std::vector<byte> X509_Object::BER_encode() const
-	{
+{
 	DER_Encoder der;
 	encode_into(der);
 	return der.get_contents_unlocked();
-	}
+}
 
 /*
 * Return a PEM encoded X.509 object
 */
 string X509_Object::PEM_encode() const
-	{
+{
 	return PEM_Code::encode(BER_encode(), PEM_label_pref);
-	}
+}
 
 /*
 * Return the TBS data
 */
 std::vector<byte> X509_Object::tbs_data() const
-	{
+{
 	return ASN1::put_in_sequence(tbs_bits);
-	}
+}
 
 /*
 * Return the signature of this object
 */
 std::vector<byte> X509_Object::signature() const
-	{
+{
 	return sig;
-	}
+}
 
 /*
 * Return the algorithm used to sign this object
 */
 AlgorithmIdentifier X509_Object::signature_algorithm() const
-	{
+{
 	return sig_algo;
-	}
+}
 
 /*
 * Return the hash used in generating the signature
 */
 string X509_Object::hash_used_for_signature() const
-	{
+{
 	std::vector<string> sig_info =
 		split_on(OIDS::lookup(sig_algo.oid), '/');
 
@@ -168,22 +162,22 @@ string X509_Object::hash_used_for_signature() const
 		throw Internal_Error("Invalid name format " + sig_info[1]);
 
 	return pad_and_hash[1];
-	}
+}
 
 /*
 * Check the signature on an object
 */
 bool X509_Object::check_signature(const Public_Key* pub_key) const
-	{
+{
 	std::unique_ptr<const Public_Key> key(pub_key);
 	return check_signature(*key);
-	}
+}
 
 /*
 * Check the signature on an object
 */
 bool X509_Object::check_signature(const Public_Key& pub_key) const
-	{
+{
 	try {
 		std::vector<string> sig_info =
 			split_on(OIDS::lookup(sig_algo.oid), '/');
@@ -198,12 +192,12 @@ bool X509_Object::check_signature(const Public_Key& pub_key) const
 		PK_Verifier verifier(pub_key, padding, format);
 
 		return verifier.verify_message(tbs_data(), signature());
-		}
-	catch(std::exception& e)
-		{
-		return false;
-		}
 	}
+	catch(std::exception& e)
+	{
+		return false;
+	}
+}
 
 /*
 * Apply the X.509 SIGNED macro
@@ -212,7 +206,7 @@ std::vector<byte> X509_Object::make_signed(PK_Signer* signer,
 														  RandomNumberGenerator& rng,
 														  const AlgorithmIdentifier& algo,
 														  in SafeArray!byte tbs_bits)
-	{
+{
 	return DER_Encoder()
 		.start_cons(SEQUENCE)
 			.raw_bytes(tbs_bits)
@@ -220,26 +214,26 @@ std::vector<byte> X509_Object::make_signed(PK_Signer* signer,
 			.encode(signer->sign_message(tbs_bits, rng), BIT_STRING)
 		.end_cons()
 	.get_contents_unlocked();
-	}
+}
 
 /*
 * Try to decode the actual information
 */
 void X509_Object::do_decode()
-	{
+{
 	try {
 		force_decode();
-		}
-	catch(Decoding_Error& e)
-		{
-		throw Decoding_Error(PEM_label_pref + " decoding failed (" +
-									e.what() + ")");
-		}
-	catch(Invalid_Argument& e)
-		{
-		throw Decoding_Error(PEM_label_pref + " decoding failed (" +
-									e.what() + ")");
-		}
 	}
+	catch(Decoding_Error& e)
+	{
+		throw Decoding_Error(PEM_label_pref + " decoding failed (" +
+									e.what() + ")");
+	}
+	catch(Invalid_Argument& e)
+	{
+		throw Decoding_Error(PEM_label_pref + " decoding failed (" +
+									e.what() + ")");
+	}
+}
 
 }

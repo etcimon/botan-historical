@@ -5,16 +5,12 @@
 * Distributed under the terms of the Botan license
 */
 
-#ifndef BOTAN_CREDENTIALS_MANAGER_H__
 #define BOTAN_CREDENTIALS_MANAGER_H__
 
 #include <botan/x509cert.h>
 #include <botan/certstor.h>
 #include <botan/symkey.h>
 #include <string>
-
-namespace Botan {
-
 class BigInt;
 
 /**
@@ -26,7 +22,7 @@ class BigInt;
 * username, or other identifier.
 */
 class Credentials_Manager
-	{
+{
 	public:
 		abstract ~Credentials_Manager() {}
 
@@ -182,8 +178,4 @@ class Credentials_Manager
 		abstract SymmetricKey psk(in string type,
 										 in string context,
 										 in string identity);
-	};
-
-}
-
-#endif
+};

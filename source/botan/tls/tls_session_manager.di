@@ -5,16 +5,12 @@
 * Released under the terms of the Botan license
 */
 
-#ifndef BOTAN_TLS_SESSION_MANAGER_H__
 #define BOTAN_TLS_SESSION_MANAGER_H__
 
 #include <botan/tls_session.h>
 #include <mutex>
 #include <chrono>
 #include <map>
-
-namespace Botan {
-
 namespace TLS {
 
 /**
@@ -27,7 +23,7 @@ namespace TLS {
 * Implementations should strive to be thread safe
 */
 class Session_Manager
-	{
+{
 	public:
 		/**
 		* Try to load a saved session (using session ID)
@@ -72,34 +68,34 @@ class Session_Manager
 		abstract std::chrono::seconds session_lifetime() const = 0;
 
 		abstract ~Session_Manager() {}
-	};
+};
 
 /**
 * An implementation of Session_Manager that does not save sessions at
 * all, preventing session resumption.
 */
 class Session_Manager_Noop : public Session_Manager
-	{
+{
 	public:
 		bool load_from_session_id(in Array!byte, Session&) override
-			{ return false; }
+		{ return false; }
 
 		bool load_from_server_info(const Server_Information&, Session&) override
-			{ return false; }
+		{ return false; }
 
 		void remove_entry(in Array!byte) override {}
 
 		void save(const Session&) override {}
 
 		std::chrono::seconds session_lifetime() const override
-			{ return std::chrono::seconds(0); }
-	};
+		{ return std::chrono::seconds(0); }
+};
 
 /**
 * An implementation of Session_Manager that saves values in memory.
 */
 class Session_Manager_In_Memory : public Session_Manager
-	{
+{
 	public:
 		/**
 		* @param max_sessions a hint on the maximum number of sessions
@@ -123,7 +119,7 @@ class Session_Manager_In_Memory : public Session_Manager
 		void save(const Session& session_data) override;
 
 		std::chrono::seconds session_lifetime() const override
-			{ return m_session_lifetime; }
+		{ return m_session_lifetime; }
 
 	private:
 		bool load_from_session_str(in string session_str,
@@ -140,10 +136,6 @@ class Session_Manager_In_Memory : public Session_Manager
 
 		std::map<string, std::vector<byte>> m_sessions; // hex(session_id) -> session
 		std::map<Server_Information, string> m_info_sessions;
-	};
+};
 
 }
-
-}
-
-#endif

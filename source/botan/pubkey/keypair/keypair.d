@@ -7,9 +7,6 @@
 
 #include <botan/keypair.h>
 #include <botan/pubkey.h>
-
-namespace Botan {
-
 namespace KeyPair {
 
 /*
@@ -18,7 +15,7 @@ namespace KeyPair {
 bool encryption_consistency_check(RandomNumberGenerator& rng,
 											 const Private_Key& key,
 											 in string padding)
-	{
+{
 	PK_Encryptor_EME encryptor(key, padding);
 	PK_Decryptor_EME decryptor(key, padding);
 
@@ -39,7 +36,7 @@ bool encryption_consistency_check(RandomNumberGenerator& rng,
 	std::vector<byte> decrypted = unlock(decryptor.decrypt(ciphertext));
 
 	return (plaintext == decrypted);
-	}
+}
 
 /*
 * Check a signature key pair for consistency
@@ -47,7 +44,7 @@ bool encryption_consistency_check(RandomNumberGenerator& rng,
 bool signature_consistency_check(RandomNumberGenerator& rng,
 											const Private_Key& key,
 											in string padding)
-	{
+{
 	PK_Signer signer(key, padding);
 	PK_Verifier verifier(key, padding);
 
@@ -56,13 +53,13 @@ bool signature_consistency_check(RandomNumberGenerator& rng,
 	std::vector<byte> signature;
 
 	try
-		{
+	{
 		signature = signer.sign_message(message, rng);
-		}
+	}
 	catch(Encoding_Error)
-		{
+	{
 		return false;
-		}
+	}
 
 	if(!verifier.verify_message(message, signature))
 		return false;
@@ -74,7 +71,7 @@ bool signature_consistency_check(RandomNumberGenerator& rng,
 		return false;
 
 	return true;
-	}
+}
 
 }
 

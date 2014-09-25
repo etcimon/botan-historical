@@ -5,22 +5,18 @@
 * Distributed under the terms of the Botan license
 */
 
-#ifndef BOTAN_AEAD_CCM_H__
 #define BOTAN_AEAD_CCM_H__
 
 #include <botan/aead.h>
 #include <botan/block_cipher.h>
 #include <botan/stream_cipher.h>
 #include <botan/mac.h>
-
-namespace Botan {
-
 /**
 * Base class for CCM encryption and decryption
 * @see RFC 3610
 */
 class CCM_Mode : public AEAD_Mode
-	{
+{
 	public:
 		SafeArray!byte start(const byte nonce[], size_t nonce_len) override;
 
@@ -69,13 +65,13 @@ class CCM_Mode : public AEAD_Mode
 
 		std::unique_ptr<BlockCipher> m_cipher;
 		SafeArray!byte m_nonce, m_msg_buf, m_ad_buf;
-	};
+};
 
 /**
 * CCM Encryption
 */
 class CCM_Encryption : public CCM_Mode
-	{
+{
 	public:
 		/**
 		* @param cipher a 128-bit block cipher
@@ -90,16 +86,16 @@ class CCM_Encryption : public CCM_Mode
 		void finish(SafeArray!byte& final_block, size_t offset = 0) override;
 
 		size_t output_length(size_t input_length) const override
-			{ return input_length + tag_size(); }
+		{ return input_length + tag_size(); }
 
 		size_t minimum_final_size() const override { return 0; }
-	};
+};
 
 /**
 * CCM Decryption
 */
 class CCM_Decryption : public CCM_Mode
-	{
+{
 	public:
 		/**
 		* @param cipher a 128-bit block cipher
@@ -114,14 +110,10 @@ class CCM_Decryption : public CCM_Mode
 		void finish(SafeArray!byte& final_block, size_t offset = 0) override;
 
 		size_t output_length(size_t input_length) const override
-			{
+		{
 			BOTAN_ASSERT(input_length > tag_size(), "Sufficient input");
 			return input_length - tag_size();
-			}
+		}
 
 		size_t minimum_final_size() const override { return tag_size(); }
-	};
-
-}
-
-#endif
+};

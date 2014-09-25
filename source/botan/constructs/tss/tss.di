@@ -5,21 +5,17 @@
 * Distributed under the terms of the Botan license
 */
 
-#ifndef BOTAN_RTSS_H__
 #define BOTAN_RTSS_H__
 
 #include <botan/secmem.h>
 #include <botan/hash.h>
 #include <botan/rng.h>
 #include <vector>
-
-namespace Botan {
-
 /**
 * A split secret, using the format from draft-mcgrew-tss-03
 */
 class RTSS_Share
-	{
+{
 	public:
 		/**
 		* @param M the number of shares needed to reconstruct
@@ -69,8 +65,4 @@ class RTSS_Share
 		bool initialized() const { return (contents.size() > 0); }
 	private:
 		SafeArray!byte contents;
-	};
-
-}
-
-#endif
+};

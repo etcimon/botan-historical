@@ -6,20 +6,16 @@
 * Distributed under the terms of the Botan license
 */
 
-#ifndef BOTAN_FILTER_H__
 #define BOTAN_FILTER_H__
 
 #include <botan/secmem.h>
 #include <vector>
 #include <string>
-
-namespace Botan {
-
 /**
 * This class represents general abstract filter objects.
 */
 class Filter
-	{
+{
 	public:
 		/**
 		* @return descriptive name for this filter
@@ -79,18 +75,18 @@ class Filter
 		* @param length the number of bytes of in to send
 		*/
 		void send(in SafeArray!byte in, size_t length)
-			{
+		{
 			send(&in[0], length);
-			}
+		}
 
 		/**
 		* @param in some input for the filter
 		* @param length the number of bytes of in to send
 		*/
 		void send(in Array!byte in, size_t length)
-			{
+		{
 			send(&in[0], length);
-			}
+		}
 
 		Filter();
 
@@ -144,13 +140,13 @@ class Filter
 
 		// true if filter belongs to a pipe --> prohibit filter sharing!
 		bool owned;
-	};
+};
 
 /**
 * This is the abstract Fanout_Filter base class.
 **/
 class Fanout_Filter : public Filter
-	{
+{
 	protected:
 		/**
 		* Increment the number of filters past us that we own
@@ -168,7 +164,7 @@ class Fanout_Filter : public Filter
 		using Filter::write_queue;
 		using Filter::total_ports;
 		using Filter::next;
-	};
+};
 
 /**
 * The type of checking to be performed by decoders:
@@ -177,7 +173,3 @@ class Fanout_Filter : public Filter
 * about white spaces.
 */
 enum Decoder_Checking { NONE, IGNORE_WS, FULL_CHECK };
-
-}
-
-#endif

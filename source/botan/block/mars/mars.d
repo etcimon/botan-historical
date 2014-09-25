@@ -8,9 +8,6 @@
 #include <botan/mars.h>
 #include <botan/loadstor.h>
 #include <botan/rotate.h>
-
-namespace Botan {
-
 namespace {
 
 /**
@@ -109,7 +106,7 @@ const u32bit SBOX[512] = {
 */
 inline void encrypt_round(u32bit& A, u32bit& B, u32bit& C, u32bit& D,
 								  u32bit EK1, u32bit EK2)
-	{
+{
 	const u32bit X = A + EK1;
 	A  = rotate_left(A, 13);
 	u32bit Y = A * EK2;
@@ -122,14 +119,14 @@ inline void encrypt_round(u32bit& A, u32bit& B, u32bit& C, u32bit& D,
 	Z ^= Y;
 	D ^= Y;
 	B += rotate_left(Z, Y % 32);
-	}
+}
 
 /*
 * MARS Decryption Round
 */
 inline void decrypt_round(u32bit& A, u32bit& B, u32bit& C, u32bit& D,
 								  u32bit EK1, u32bit EK2)
-	{
+{
 	u32bit Y = A * EK1;
 	A = rotate_right(A, 13);
 	const u32bit X = A + EK2;
@@ -142,15 +139,15 @@ inline void decrypt_round(u32bit& A, u32bit& B, u32bit& C, u32bit& D,
 	Z ^= Y;
 	D ^= Y;
 	B -= rotate_left(Z, Y % 32);
-	}
+}
 
 /*
 * MARS Forward Mixing Operation
 */
 void forward_mix(u32bit& A, u32bit& B, u32bit& C, u32bit& D)
-	{
+{
 	for(size_t j = 0; j != 2; ++j)
-		{
+	{
 		B ^= SBOX[get_byte(3, A)]; B += SBOX[get_byte(2, A) + 256];
 		C += SBOX[get_byte(1, A)]; D ^= SBOX[get_byte(0, A) + 256];
 		A = rotate_right(A, 24) + D;
@@ -166,16 +163,16 @@ void forward_mix(u32bit& A, u32bit& B, u32bit& C, u32bit& D)
 		A ^= SBOX[get_byte(3, D)]; A += SBOX[get_byte(2, D) + 256];
 		B += SBOX[get_byte(1, D)]; C ^= SBOX[get_byte(0, D) + 256];
 		D = rotate_right(D, 24);
-		}
 	}
+}
 
 /*
 * MARS Reverse Mixing Operation
 */
 void reverse_mix(u32bit& A, u32bit& B, u32bit& C, u32bit& D)
-	{
+{
 	for(size_t j = 0; j != 2; ++j)
-		{
+	{
 		B ^= SBOX[get_byte(3, A) + 256]; C -= SBOX[get_byte(0, A)];
 		D -= SBOX[get_byte(1, A) + 256]; D ^= SBOX[get_byte(2, A)];
 		A = rotate_left(A, 24);
@@ -192,40 +189,40 @@ void reverse_mix(u32bit& A, u32bit& B, u32bit& C, u32bit& D)
 		A ^= SBOX[get_byte(3, D) + 256]; B -= SBOX[get_byte(0, D)];
 		C -= SBOX[get_byte(1, D) + 256]; C ^= SBOX[get_byte(2, D)];
 		D = rotate_left(D, 24);
-		}
 	}
+}
 
 /*
 * Generate a mask for runs of bits
 */
 u32bit gen_mask(u32bit input)
-	{
+{
 	u32bit mask = 0;
 
 	for(u32bit j = 2; j != 31; ++j)
-		{
+	{
 		const u32bit region = (input >> (j-1)) & 0x07;
 
 		if(region == 0x00 || region == 0x07)
-			{
+		{
 			const u32bit low = (j < 9) ? 0 : (j - 9);
 			const u32bit high = (j < 23) ? j : 23;
 
 			for(u32bit k = low; k != high; ++k)
-				{
+			{
 				const u32bit value = (input >> k) & 0x3FF;
 
 				if(value == 0 || value == 0x3FF)
-					{
+				{
 					mask |= 1 << j;
 					break;
-					}
 				}
 			}
 		}
+	}
 
 	return mask;
-	}
+}
 
 }
 
@@ -233,9 +230,9 @@ u32bit gen_mask(u32bit input)
 * MARS Encryption
 */
 void MARS::encrypt_n(const byte in[], byte out[], size_t blocks) const
-	{
+{
 	for(size_t i = 0; i != blocks; ++i)
-		{
+	{
 		u32bit A = load_le<u32bit>(in, 0) + EK[0];
 		u32bit B = load_le<u32bit>(in, 1) + EK[1];
 		u32bit C = load_le<u32bit>(in, 2) + EK[2];
@@ -269,16 +266,16 @@ void MARS::encrypt_n(const byte in[], byte out[], size_t blocks) const
 
 		in += BLOCK_SIZE;
 		out += BLOCK_SIZE;
-		}
 	}
+}
 
 /*
 * MARS Decryption
 */
 void MARS::decrypt_n(const byte in[], byte out[], size_t blocks) const
-	{
+{
 	for(size_t i = 0; i != blocks; ++i)
-		{
+	{
 		u32bit A = load_le<u32bit>(in, 3) + EK[39];
 		u32bit B = load_le<u32bit>(in, 2) + EK[38];
 		u32bit C = load_le<u32bit>(in, 1) + EK[37];
@@ -312,14 +309,14 @@ void MARS::decrypt_n(const byte in[], byte out[], size_t blocks) const
 
 		in += BLOCK_SIZE;
 		out += BLOCK_SIZE;
-		}
 	}
+}
 
 /*
 * MARS Key Schedule
 */
 void MARS::key_schedule(const byte key[], size_t length)
-	{
+{
 	secure_vector<u32bit> T(15);
 	for(size_t i = 0; i != length / 4; ++i)
 		T[i] = load_le<u32bit>(key, i);
@@ -329,7 +326,7 @@ void MARS::key_schedule(const byte key[], size_t length)
 	EK.resize(40);
 
 	for(u32bit i = 0; i != 4; ++i)
-		{
+	{
 		T[ 0] ^= rotate_left(T[ 8] ^ T[13], 3) ^ (i	  );
 		T[ 1] ^= rotate_left(T[ 9] ^ T[14], 3) ^ (i +  4);
 		T[ 2] ^= rotate_left(T[10] ^ T[ 0], 3) ^ (i +  8);
@@ -347,7 +344,7 @@ void MARS::key_schedule(const byte key[], size_t length)
 		T[14] ^= rotate_left(T[ 7] ^ T[12], 3) ^ (i + 56);
 
 		for(size_t j = 0; j != 4; ++j)
-			{
+		{
 			T[ 0] = rotate_left(T[ 0] + SBOX[T[14] % 512], 9);
 			T[ 1] = rotate_left(T[ 1] + SBOX[T[ 0] % 512], 9);
 			T[ 2] = rotate_left(T[ 2] + SBOX[T[ 1] % 512], 9);
@@ -363,7 +360,7 @@ void MARS::key_schedule(const byte key[], size_t length)
 			T[12] = rotate_left(T[12] + SBOX[T[11] % 512], 9);
 			T[13] = rotate_left(T[13] + SBOX[T[12] % 512], 9);
 			T[14] = rotate_left(T[14] + SBOX[T[13] % 512], 9);
-			}
+		}
 
 		EK[10*i + 0] = T[ 0];
 		EK[10*i + 1] = T[ 4];
@@ -375,19 +372,19 @@ void MARS::key_schedule(const byte key[], size_t length)
 		EK[10*i + 7] = T[13];
 		EK[10*i + 8] = T[ 2];
 		EK[10*i + 9] = T[ 6];
-		}
+	}
 
 	for(size_t i = 5; i != 37; i += 2)
-		{
+	{
 		const u32bit key3 = EK[i] & 3;
 		EK[i] |= 3;
 		EK[i] ^= rotate_left(SBOX[265 + key3], EK[i-1] % 32) & gen_mask(EK[i]);
-		}
 	}
+}
 
 void MARS::clear()
-	{
+{
 	zap(EK);
-	}
+}
 
 }

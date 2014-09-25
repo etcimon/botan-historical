@@ -5,21 +5,17 @@
 * Distributed under the terms of the Botan license
 */
 
-#ifndef BOTAN_AEAD_EAX_H__
 #define BOTAN_AEAD_EAX_H__
 
 #include <botan/aead.h>
 #include <botan/block_cipher.h>
 #include <botan/stream_cipher.h>
 #include <botan/mac.h>
-
-namespace Botan {
-
 /**
 * EAX base class
 */
 class EAX_Mode : public AEAD_Mode
-	{
+{
 	public:
 		SafeArray!byte start(const byte nonce[], size_t nonce_len) override;
 
@@ -57,13 +53,13 @@ class EAX_Mode : public AEAD_Mode
 		SafeArray!byte m_ad_mac;
 
 		SafeArray!byte m_nonce_mac;
-	};
+};
 
 /**
 * EAX Encryption
 */
 class EAX_Encryption : public EAX_Mode
-	{
+{
 	public:
 		/**
 		* @param cipher a 128-bit block cipher
@@ -73,20 +69,20 @@ class EAX_Encryption : public EAX_Mode
 			EAX_Mode(cipher, tag_size) {}
 
 		size_t output_length(size_t input_length) const override
-			{ return input_length + tag_size(); }
+		{ return input_length + tag_size(); }
 
 		size_t minimum_final_size() const override { return 0; }
 
 		void update(SafeArray!byte& blocks, size_t offset = 0) override;
 
 		void finish(SafeArray!byte& final_block, size_t offset = 0) override;
-	};
+};
 
 /**
 * EAX Decryption
 */
 class EAX_Decryption : public EAX_Mode
-	{
+{
 	public:
 		/**
 		* @param cipher a 128-bit block cipher
@@ -96,18 +92,14 @@ class EAX_Decryption : public EAX_Mode
 			EAX_Mode(cipher, tag_size) {}
 
 		size_t output_length(size_t input_length) const override
-			{
+		{
 			BOTAN_ASSERT(input_length > tag_size(), "Sufficient input");
 			return input_length - tag_size();
-			}
+		}
 
 		size_t minimum_final_size() const override { return tag_size(); }
 
 		void update(SafeArray!byte& blocks, size_t offset = 0) override;
 
 		void finish(SafeArray!byte& final_block, size_t offset = 0) override;
-	};
-
-}
-
-#endif
+};

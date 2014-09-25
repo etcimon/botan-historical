@@ -43,12 +43,9 @@
 #if defined(BOTAN_HAS_ECDH)
   #include <botan/ecdh.h>
 #endif
-
-namespace Botan {
-
 Public_Key* make_public_key(const AlgorithmIdentifier& alg_id,
 									 in SafeArray!byte key_bits)
-	{
+{
 	const string alg_name = OIDS::lookup(alg_id.oid);
 	if(alg_name == "")
 		throw Decoding_Error("Unknown algorithm OID: " + alg_id.oid.as_string());
@@ -99,12 +96,12 @@ Public_Key* make_public_key(const AlgorithmIdentifier& alg_id,
 #endif
 
 	return nullptr;
-	}
+}
 
 Private_Key* make_private_key(const AlgorithmIdentifier& alg_id,
 										in SafeArray!byte key_bits,
 										RandomNumberGenerator& rng)
-	{
+{
 	const string alg_name = OIDS::lookup(alg_id.oid);
 	if(alg_name == "")
 		throw Decoding_Error("Unknown algorithm OID: " + alg_id.oid.as_string());
@@ -155,6 +152,6 @@ Private_Key* make_private_key(const AlgorithmIdentifier& alg_id,
 #endif
 
 	return nullptr;
-	}
+}
 
 }

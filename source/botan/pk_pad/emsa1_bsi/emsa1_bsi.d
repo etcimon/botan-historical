@@ -7,16 +7,13 @@
 */
 
 #include <botan/emsa1_bsi.h>
-
-namespace Botan {
-
 /*
 * EMSA1 BSI Encode Operation
 */
 SafeArray!byte EMSA1_BSI::encoding_of(in SafeArray!byte msg,
 														size_t output_bits,
 														RandomNumberGenerator&)
-	{
+{
 	if(msg.size() != hash_output_length())
 		throw Encoding_Error("EMSA1_BSI::encoding_of: Invalid size for input");
 
@@ -24,6 +21,6 @@ SafeArray!byte EMSA1_BSI::encoding_of(in SafeArray!byte msg,
 		return msg;
 
 	throw Encoding_Error("EMSA1_BSI::encoding_of: max key input size exceeded");
-	}
+}
 
 }

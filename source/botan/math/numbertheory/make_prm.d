@@ -8,16 +8,13 @@
 #include <botan/numthry.h>
 #include <botan/parsing.h>
 #include <algorithm>
-
-namespace Botan {
-
 /*
 * Generate a random prime
 */
 BigInt random_prime(RandomNumberGenerator& rng,
 						  size_t bits, const BigInt& coprime,
 						  size_t equiv, size_t modulo)
-	{
+{
 	if(bits <= 1)
 		throw Invalid_Argument("random_prime: Can't make a prime of " +
 									  std::to_string(bits) + " bits");
@@ -36,7 +33,7 @@ BigInt random_prime(RandomNumberGenerator& rng,
 		throw Invalid_Argument("random_prime: equiv must be < modulo, and odd");
 
 	while(true)
-		{
+	{
 		BigInt p(rng, bits);
 
 		// Force lowest and two top bits on
@@ -55,7 +52,7 @@ BigInt random_prime(RandomNumberGenerator& rng,
 
 		size_t counter = 0;
 		while(true)
-			{
+		{
 			if(counter == 4096 || p.bits() > bits)
 				break;
 
@@ -67,25 +64,25 @@ BigInt random_prime(RandomNumberGenerator& rng,
 				break;
 
 			for(size_t j = 0; j != sieve.size(); ++j)
-				{
+			{
 				sieve[j] = (sieve[j] + modulo) % PRIMES[j];
 				if(sieve[j] == 0)
 					passes_sieve = false;
-				}
+			}
 
 			if(!passes_sieve || gcd(p - 1, coprime) != 1)
 				continue;
 			if(is_prime(p, rng, 64, true))
 				return p;
-			}
 		}
 	}
+}
 
 /*
 * Generate a random safe prime
 */
 BigInt random_safe_prime(RandomNumberGenerator& rng, size_t bits)
-	{
+{
 	if(bits <= 64)
 		throw Invalid_Argument("random_safe_prime: Can't make a prime of " +
 									  std::to_string(bits) + " bits");
@@ -95,6 +92,6 @@ BigInt random_safe_prime(RandomNumberGenerator& rng, size_t bits)
 		p = (random_prime(rng, bits - 1) << 1) + 1;
 	while(!is_prime(p, rng, 64, true));
 	return p;
-	}
+}
 
 }

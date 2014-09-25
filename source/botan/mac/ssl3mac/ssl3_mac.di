@@ -5,19 +5,15 @@
 * Distributed under the terms of the Botan license
 */
 
-#ifndef BOTAN_SSL3_MAC_H__
 #define BOTAN_SSL3_MAC_H__
 
 #include <botan/hash.h>
 #include <botan/mac.h>
-
-namespace Botan {
-
 /**
 * A MAC only used in SSLv3. Do not use elsewhere! Use HMAC instead.
 */
 class SSL3_MAC : public MessageAuthenticationCode
-	{
+{
 	public:
 		string name() const;
 		size_t output_length() const { return m_hash->output_length(); }
@@ -26,9 +22,9 @@ class SSL3_MAC : public MessageAuthenticationCode
 		void clear();
 
 		Key_Length_Specification key_spec() const
-			{
+		{
 			return Key_Length_Specification(m_hash->output_length());
-			}
+		}
 
 		/**
 		* @param hash the underlying hash to use
@@ -41,8 +37,4 @@ class SSL3_MAC : public MessageAuthenticationCode
 
 		std::unique_ptr<HashFunction> m_hash;
 		SafeArray!byte m_ikey, m_okey;
-	};
-
-}
-
-#endif
+};

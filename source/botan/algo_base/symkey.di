@@ -5,19 +5,15 @@
 * Distributed under the terms of the Botan license
 */
 
-#ifndef BOTAN_SYMKEY_H__
 #define BOTAN_SYMKEY_H__
 
 #include <botan/secmem.h>
 #include <string>
-
-namespace Botan {
-
 /**
 * Octet String
 */
 class OctetString
-	{
+{
 	public:
 		/**
 		* @return size of this octet string in bytes
@@ -37,7 +33,7 @@ class OctetString
 		/**
 		* @return end of this string
 		*/
-		const byte* end() const	{ return begin() + bits.size(); }
+		const byte* end() const{ return begin() + bits.size(); }
 
 		/**
 		* @return this encoded as hex
@@ -89,7 +85,7 @@ class OctetString
 		OctetString(in Array!byte in) : bits(&in[0], &in[in.size()]) {}
 	private:
 		SafeArray!byte bits;
-	};
+};
 
 /**
 * Compare two strings
@@ -97,7 +93,7 @@ class OctetString
 * @param y an octet string
 * @return if x is equal to y
 */
-BOTAN_DLL bool operator==(const OctetString& x,
+bool operator==(const OctetString& x,
 								  const OctetString& y);
 
 /**
@@ -106,7 +102,7 @@ BOTAN_DLL bool operator==(const OctetString& x,
 * @param y an octet string
 * @return if x is not equal to y
 */
-BOTAN_DLL bool operator!=(const OctetString& x,
+bool operator!=(const OctetString& x,
 								  const OctetString& y);
 
 /**
@@ -115,7 +111,7 @@ BOTAN_DLL bool operator!=(const OctetString& x,
 * @param y an octet string
 * @return x concatenated with y
 */
-BOTAN_DLL OctetString operator+(const OctetString& x,
+OctetString operator+(const OctetString& x,
 										  const OctetString& y);
 
 /**
@@ -124,11 +120,8 @@ BOTAN_DLL OctetString operator+(const OctetString& x,
 * @param y an octet string
 * @return x XORed with y
 */
-BOTAN_DLL OctetString operator^(const OctetString& x,
-										  const OctetString& y);
-
-
-/**
+OctetString operator^(const OctetString& x,
+										  const OctetString& y);/**
 * Alternate name for octet string showing intent to use as a key
 */
 typedef OctetString SymmetricKey;
@@ -137,7 +130,3 @@ typedef OctetString SymmetricKey;
 * Alternate name for octet string showing intent to use as an IV
 */
 typedef OctetString InitializationVector;
-
-}
-
-#endif

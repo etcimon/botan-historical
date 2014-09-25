@@ -8,17 +8,14 @@
 #include <botan/cvc_req.h>
 #include <botan/cvc_cert.h>
 #include <botan/ber_dec.h>
-
-namespace Botan {
-
 bool EAC1_1_Req::operator==(EAC1_1_Req const& rhs) const
-	{
+{
 	return (this->tbs_data() == rhs.tbs_data() &&
 			  this->get_concat_sig() == rhs.get_concat_sig());
-	}
+}
 
 void EAC1_1_Req::force_decode()
-	{
+{
 	std::vector<byte> enc_pk;
 	BER_Decoder tbs_cert(tbs_bits);
 	size_t cpi;
@@ -33,21 +30,21 @@ void EAC1_1_Req::force_decode()
 		throw Decoding_Error("EAC1_1 requests cpi was not 0");
 
 	m_pk = decode_eac1_1_key(enc_pk, sig_algo);
-	}
+}
 
 EAC1_1_Req::EAC1_1_Req(DataSource& in)
-	{
+{
 	init(in);
 	self_signed = true;
 	do_decode();
-	}
+}
 
 EAC1_1_Req::EAC1_1_Req(in string in)
-	{
+{
 	DataSource_Stream stream(in, true);
 	init(stream);
 	self_signed = true;
 	do_decode();
-	}
+}
 
 }

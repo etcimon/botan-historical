@@ -5,14 +5,10 @@
 * Distributed under the terms of the Botan license
 */
 
-#ifndef BOTAN_LIBRARY_INITIALIZER_H__
 #define BOTAN_LIBRARY_INITIALIZER_H__
 
 #include <botan/build.h>
 #include <string>
-
-namespace Botan {
-
 /**
 * This class represents the Library Initialization/Shutdown Object. It
 * has to exceed the lifetime of any Botan object used in an
@@ -20,7 +16,7 @@ namespace Botan {
 * LibraryInitializer in the RAII style.
 */
 class LibraryInitializer
-	{
+{
 	public:
 		/**
 		* Initialize the library
@@ -38,11 +34,7 @@ class LibraryInitializer
 		* @param options a string listing initialization options
 		*/
 		LibraryInitializer(in string options = "")
-			{ LibraryInitializer::initialize(options); }
+		{ LibraryInitializer::initialize(options); }
 
 		~LibraryInitializer() { LibraryInitializer::deinitialize(); }
-	};
-
-}
-
-#endif
+};

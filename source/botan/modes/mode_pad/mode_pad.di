@@ -5,14 +5,10 @@
 * Distributed under the terms of the Botan license
 */
 
-#ifndef BOTAN_MODE_PADDING_H__
 #define BOTAN_MODE_PADDING_H__
 
 #include <botan/secmem.h>
 #include <string>
-
-namespace Botan {
-
 /**
 * Block Cipher Mode Padding Method
 * This class is pretty limited, it cannot deal well with
@@ -23,7 +19,7 @@ namespace Botan {
 * two block (and requires use of the block cipher).
 */
 class BlockCipherModePaddingMethod
-	{
+{
 	public:
 		abstract void add_padding(SafeArray!byte& buffer,
 										 size_t final_block_bytes,
@@ -51,13 +47,13 @@ class BlockCipherModePaddingMethod
 		* abstract destructor
 		*/
 		abstract ~BlockCipherModePaddingMethod() {}
-	};
+};
 
 /**
 * PKCS#7 Padding
 */
 class PKCS7_Padding : public BlockCipherModePaddingMethod
-	{
+{
 	public:
 		void add_padding(SafeArray!byte& buffer,
 							  size_t final_block_bytes,
@@ -68,13 +64,13 @@ class PKCS7_Padding : public BlockCipherModePaddingMethod
 		bool valid_blocksize(size_t bs) const { return (bs > 0 && bs < 256); }
 
 		string name() const { return "PKCS7"; }
-	};
+};
 
 /**
 * ANSI X9.23 Padding
 */
 class ANSI_X923_Padding : public BlockCipherModePaddingMethod
-	{
+{
 	public:
 		void add_padding(SafeArray!byte& buffer,
 							  size_t final_block_bytes,
@@ -85,13 +81,13 @@ class ANSI_X923_Padding : public BlockCipherModePaddingMethod
 		bool valid_blocksize(size_t bs) const { return (bs > 0 && bs < 256); }
 
 		string name() const { return "X9.23"; }
-	};
+};
 
 /**
 * One And Zeros Padding
 */
 class OneAndZeros_Padding : public BlockCipherModePaddingMethod
-	{
+{
 	public:
 		void add_padding(SafeArray!byte& buffer,
 							  size_t final_block_bytes,
@@ -102,13 +98,13 @@ class OneAndZeros_Padding : public BlockCipherModePaddingMethod
 		bool valid_blocksize(size_t bs) const { return (bs > 0); }
 
 		string name() const { return "OneAndZeros"; }
-	};
+};
 
 /**
 * Null Padding
 */
 class Null_Padding : public BlockCipherModePaddingMethod
-	{
+{
 	public:
 		void add_padding(SafeArray!byte&, size_t, size_t) const override {}
 
@@ -117,8 +113,4 @@ class Null_Padding : public BlockCipherModePaddingMethod
 		bool valid_blocksize(size_t) const { return true; }
 
 		string name() const { return "NoPadding"; }
-	};
-
-}
-
-#endif
+};

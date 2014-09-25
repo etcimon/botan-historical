@@ -6,13 +6,9 @@
 * Distributed under the terms of the Botan license
 */
 
-#ifndef BOTAN_MP_CORE_OPS_H__
 #define BOTAN_MP_CORE_OPS_H__
 
 #include <botan/mp_types.h>
-
-namespace Botan {
-
 /*
 * The size of the word type, in bits
 */
@@ -169,7 +165,3 @@ void bigint_mul(word z[], size_t z_size, word workspace[],
 
 void bigint_sqr(word z[], size_t z_size, word workspace[],
 					 const word x[], size_t x_size, size_t x_sw);
-
-}
-
-#endif

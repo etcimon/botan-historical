@@ -5,21 +5,17 @@
 * Released under the terms of the Botan license
 */
 
-#ifndef BOTAN_TLS_PROTOCOL_VERSION_H__
 #define BOTAN_TLS_PROTOCOL_VERSION_H__
 
 #include <botan/get_byte.h>
 #include <string>
-
-namespace Botan {
-
 namespace TLS {
 
 /**
 * TLS Protocol Version
 */
 class Protocol_Version
-	{
+{
 	public:
 		enum Version_Code {
 			SSL_V3				 = 0x0300,
@@ -29,17 +25,17 @@ class Protocol_Version
 
 			DTLS_V10			  = 0xFEFF,
 			DTLS_V12			  = 0xFEFD
-		};
+	};
 
 		static Protocol_Version latest_tls_version()
-			{
+		{
 			return Protocol_Version(TLS_V12);
-			}
+		}
 
 		static Protocol_Version latest_dtls_version()
-			{
+		{
 			return Protocol_Version(DTLS_V12);
-			}
+		}
 
 		Protocol_Version() : m_version(0) {}
 
@@ -114,17 +110,17 @@ class Protocol_Version
 		* @return if this version is equal to other
 		*/
 		bool operator==(const Protocol_Version& other) const
-			{
+		{
 			return (m_version == other.m_version);
-			}
+		}
 
 		/**
 		* @return if this version is not equal to other
 		*/
 		bool operator!=(const Protocol_Version& other) const
-			{
+		{
 			return (m_version != other.m_version);
-			}
+		}
 
 		/**
 		* @return if this version is later than other
@@ -135,17 +131,12 @@ class Protocol_Version
 		* @return if this version is later than or equal to other
 		*/
 		bool operator>=(const Protocol_Version& other) const
-			{
+		{
 			return (*this == other || *this > other);
-			}
+		}
 
 	private:
 		u16bit m_version;
-	};
+};
 
 }
-
-}
-
-#endif
-

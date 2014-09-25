@@ -5,15 +5,11 @@
 * Distributed under the terms of the Botan license
 */
 
-#ifndef BOTAN_CRYPTOBOX_H__
 #define BOTAN_CRYPTOBOX_H__
 
 #include <string>
 #include <botan/rng.h>
 #include <botan/symkey.h>
-
-namespace Botan {
-
 /**
 * This namespace holds various high-level crypto functions
 */
@@ -26,18 +22,15 @@ namespace CryptoBox {
 * @param passphrase the passphrase used to encrypt the message
 * @param rng a ref to a random number generator, such as AutoSeeded_RNG
 */
-BOTAN_DLL string encrypt(const byte input[], size_t input_len,
+string encrypt(const byte input[], size_t input_len,
 										in string passphrase,
-										RandomNumberGenerator& rng);
-
-
-/**
+										RandomNumberGenerator& rng);/**
 * Decrypt a message encrypted with CryptoBox::encrypt
 * @param input the input data
 * @param input_len the length of input in bytes
 * @param passphrase the passphrase used to encrypt the message
 */
-BOTAN_DLL string decrypt(const byte input[], size_t input_len,
+string decrypt(const byte input[], size_t input_len,
 										in string passphrase);
 
 /**
@@ -45,11 +38,7 @@ BOTAN_DLL string decrypt(const byte input[], size_t input_len,
 * @param input the input data
 * @param passphrase the passphrase used to encrypt the message
 */
-BOTAN_DLL string decrypt(in string input,
+string decrypt(in string input,
 										in string passphrase);
 
 }
-
-}
-
-#endif

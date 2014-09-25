@@ -9,9 +9,6 @@
 #include <botan/sha2_32.h>
 #include <botan/loadstor.h>
 #include <botan/rotate.h>
-
-namespace Botan {
-
 namespace {
 
 namespace SHA2_32 {
@@ -20,18 +17,18 @@ namespace SHA2_32 {
 * SHA-256 Rho Function
 */
 inline u32bit rho(u32bit X, u32bit rot1, u32bit rot2, u32bit rot3)
-	{
+{
 	return (rotate_right(X, rot1) ^ rotate_right(X, rot2) ^
 			  rotate_right(X, rot3));
-	}
+}
 
 /*
 * SHA-256 Sigma Function
 */
 inline u32bit sigma(u32bit X, u32bit rot1, u32bit rot2, u32bit shift)
-	{
+{
 	return (rotate_right(X, rot1) ^ rotate_right(X, rot2) ^ (X >> shift));
-	}
+}
 
 /*
 * SHA-256 F1 Function
@@ -45,20 +42,20 @@ inline u32bit sigma(u32bit X, u32bit rot1, u32bit rot2, u32bit shift)
 		D += H;																		\
 		H += rho(A, 2, 13, 22) + ((A & B) | ((A | B) & C));			 \
 		M1 += sigma(M2, 17, 19, 10) + M3 + sigma(M4, 7, 18, 3);		\
-	} while(0);
+} while(0);
 
 /*
 * SHA-224 / SHA-256 compression function
 */
 void compress(secure_vector<u32bit>& digest,
 				  const byte input[], size_t blocks)
-	{
+{
 	u32bit A = digest[0], B = digest[1], C = digest[2],
 			 D = digest[3], E = digest[4], F = digest[5],
 			 G = digest[6], H = digest[7];
 
 	for(size_t i = 0; i != blocks; ++i)
-		{
+	{
 		u32bit W00 = load_be<u32bit>(input,  0);
 		u32bit W01 = load_be<u32bit>(input,  1);
 		u32bit W02 = load_be<u32bit>(input,  2);
@@ -151,8 +148,8 @@ void compress(secure_vector<u32bit>& digest,
 		H = (digest[7] += H);
 
 		input += 64;
-		}
 	}
+}
 
 }
 
@@ -162,24 +159,24 @@ void compress(secure_vector<u32bit>& digest,
 * SHA-224 compression function
 */
 void SHA_224::compress_n(const byte input[], size_t blocks)
-	{
+{
 	SHA2_32::compress(digest, input, blocks);
-	}
+}
 
 /*
 * Copy out the digest
 */
 void SHA_224::copy_out(byte output[])
-	{
+{
 	for(size_t i = 0; i != output_length(); i += 4)
 		store_be(digest[i/4], output + i);
-	}
+}
 
 /*
 * Clear memory of sensitive data
 */
 void SHA_224::clear()
-	{
+{
 	MDx_HashFunction::clear();
 	digest[0] = 0xC1059ED8;
 	digest[1] = 0x367CD507;
@@ -189,30 +186,30 @@ void SHA_224::clear()
 	digest[5] = 0x68581511;
 	digest[6] = 0x64F98FA7;
 	digest[7] = 0xBEFA4FA4;
-	}
+}
 
 /*
 * SHA-256 compression function
 */
 void SHA_256::compress_n(const byte input[], size_t blocks)
-	{
+{
 	SHA2_32::compress(digest, input, blocks);
-	}
+}
 
 /*
 * Copy out the digest
 */
 void SHA_256::copy_out(byte output[])
-	{
+{
 	for(size_t i = 0; i != output_length(); i += 4)
 		store_be(digest[i/4], output + i);
-	}
+}
 
 /*
 * Clear memory of sensitive data
 */
 void SHA_256::clear()
-	{
+{
 	MDx_HashFunction::clear();
 	digest[0] = 0x6A09E667;
 	digest[1] = 0xBB67AE85;
@@ -222,6 +219,6 @@ void SHA_256::clear()
 	digest[5] = 0x9B05688C;
 	digest[6] = 0x1F83D9AB;
 	digest[7] = 0x5BE0CD19;
-	}
+}
 
 }

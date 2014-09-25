@@ -5,19 +5,15 @@
 * Distributed under the terms of the Botan license
 */
 
-#ifndef BOTAN_HMAC_H__
 #define BOTAN_HMAC_H__
 
 #include <botan/mac.h>
 #include <botan/hash.h>
-
-namespace Botan {
-
 /**
 * HMAC
 */
 class HMAC : public MessageAuthenticationCode
-	{
+{
 	public:
 		void clear();
 		string name() const;
@@ -26,10 +22,10 @@ class HMAC : public MessageAuthenticationCode
 		size_t output_length() const { return m_hash->output_length(); }
 
 		Key_Length_Specification key_spec() const
-			{
+		{
 			// Absurd max length here is to support PBKDF2
 			return Key_Length_Specification(0, 512);
-			}
+		}
 
 		/**
 		* @param hash the hash to use for HMACing
@@ -45,8 +41,4 @@ class HMAC : public MessageAuthenticationCode
 
 		std::unique_ptr<HashFunction> m_hash;
 		SafeArray!byte m_ikey, m_okey;
-	};
-
-}
-
-#endif
+};

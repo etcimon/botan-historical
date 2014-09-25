@@ -8,19 +8,16 @@
 */
 
 #include <botan/ecdh.h>
-
-namespace Botan {
-
 ECDH_KA_Operation::ECDH_KA_Operation(const ECDH_PrivateKey& key) :
 	curve(key.domain().get_curve()),
 	cofactor(key.domain().get_cofactor())
-	{
+{
 	l_times_priv = inverse_mod(cofactor, key.domain().get_order()) *
 						key.private_value();
-	}
+}
 
 SafeArray!byte ECDH_KA_Operation::agree(const byte w[], size_t w_len)
-	{
+{
 	PointGFp point = OS2ECP(w, w_len, curve);
 
 	PointGFp S = (cofactor * point) * l_times_priv;
@@ -30,6 +27,6 @@ SafeArray!byte ECDH_KA_Operation::agree(const byte w[], size_t w_len)
 
 	return BigInt::encode_1363(S.get_affine_x(),
 										curve.get_p().bytes());
-	}
+}
 
 }

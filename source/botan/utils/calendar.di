@@ -5,19 +5,15 @@
 * Distributed under the terms of the Botan license
 */
 
-#ifndef BOTAN_CALENDAR_H__
 #define BOTAN_CALENDAR_H__
 
 #include <botan/types.h>
 #include <chrono>
-
-namespace Botan {
-
 /**
 * Struct representing a particular date and time
 */
-struct BOTAN_DLL calendar_point
-	{
+struct calendar_point
+{
 	/** The year */
 	u32bit year;
 
@@ -49,15 +45,11 @@ struct BOTAN_DLL calendar_point
 	*/
 	calendar_point(u32bit y, byte mon, byte d, byte h, byte min, byte sec) :
 		year(y), month(mon), day(d), hour(h), minutes(min), seconds(sec) {}
-	};
+};
 
 /*
 * @param time_point a time point from the system clock
 * @return calendar_point object representing this time point
 */
-BOTAN_DLL calendar_point calendar_value(
+calendar_point calendar_value(
 	const std::chrono::system_clock::time_point& time_point);
-
-}
-
-#endif

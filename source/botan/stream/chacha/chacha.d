@@ -9,11 +9,8 @@
 #include <botan/loadstor.h>
 #include <botan/rotate.h>
 #include <botan/internal/xor_buf.h>
-
-namespace Botan {
-
 void ChaCha::chacha(byte output[64], const u32bit input[16])
-	{
+{
 	u32bit x00 = input[ 0], x01 = input[ 1], x02 = input[ 2], x03 = input[ 3],
 			 x04 = input[ 4], x05 = input[ 5], x06 = input[ 6], x07 = input[ 7],
 			 x08 = input[ 8], x09 = input[ 9], x10 = input[10], x11 = input[11],
@@ -25,10 +22,10 @@ void ChaCha::chacha(byte output[64], const u32bit input[16])
 	c += d; b ^= c; b = rotate_left(b, 12); \
 	a += b; d ^= a; d = rotate_left(d, 8);  \
 	c += d; b ^= c; b = rotate_left(b, 7);  \
-	} while(0)
+} while(0)
 
 	for(size_t i = 0; i != 10; ++i)
-		{
+	{
 		CHACHA_QUARTER_ROUND(x00, x04, x08, x12);
 		CHACHA_QUARTER_ROUND(x01, x05, x09, x13);
 		CHACHA_QUARTER_ROUND(x02, x06, x10, x14);
@@ -38,7 +35,7 @@ void ChaCha::chacha(byte output[64], const u32bit input[16])
 		CHACHA_QUARTER_ROUND(x01, x06, x11, x12);
 		CHACHA_QUARTER_ROUND(x02, x07, x08, x13);
 		CHACHA_QUARTER_ROUND(x03, x04, x09, x14);
-		}
+	}
 
 #undef CHACHA_QUARTER_ROUND
 
@@ -58,15 +55,15 @@ void ChaCha::chacha(byte output[64], const u32bit input[16])
 	store_le(x13 + input[13], output + 4 * 13);
 	store_le(x14 + input[14], output + 4 * 14);
 	store_le(x15 + input[15], output + 4 * 15);
-	}
+}
 
 /*
 * Combine cipher stream with message
 */
 void ChaCha::cipher(const byte in[], byte out[], size_t length)
-	{
+{
 	while(length >= m_buffer.size() - m_position)
-		{
+	{
 		xor_buf(out, in, &m_buffer[m_position], m_buffer.size() - m_position);
 		length -= (m_buffer.size() - m_position);
 		in += (m_buffer.size() - m_position);
@@ -77,23 +74,23 @@ void ChaCha::cipher(const byte in[], byte out[], size_t length)
 		m_state[13] += (m_state[12] == 0);
 
 		m_position = 0;
-		}
+	}
 
 	xor_buf(out, in, &m_buffer[m_position], length);
 
 	m_position += length;
-	}
+}
 
 /*
 * ChaCha Key Schedule
 */
 void ChaCha::key_schedule(const byte key[], size_t length)
-	{
+{
 	static const u32bit TAU[] =
-		{ 0x61707865, 0x3120646e, 0x79622d36, 0x6b206574 };
+	{ 0x61707865, 0x3120646e, 0x79622d36, 0x6b206574 };
 
 	static const u32bit SIGMA[] =
-		{ 0x61707865, 0x3320646e, 0x79622d32, 0x6b206574 };
+	{ 0x61707865, 0x3320646e, 0x79622d32, 0x6b206574 };
 
 	const u32bit* CONSTANTS = (length == 16) ? TAU : SIGMA;
 
@@ -122,13 +119,13 @@ void ChaCha::key_schedule(const byte key[], size_t length)
 
 	const byte ZERO[8] = { 0 };
 	set_iv(ZERO, sizeof(ZERO));
-	}
+}
 
 /*
 * Return the name of this type
 */
 void ChaCha::set_iv(const byte iv[], size_t length)
-	{
+{
 	if(!valid_iv_length(length))
 		throw Invalid_IV_Length(name(), length);
 
@@ -143,24 +140,24 @@ void ChaCha::set_iv(const byte iv[], size_t length)
 	m_state[13] += (m_state[12] == 0);
 
 	m_position = 0;
-	}
+}
 
 /*
 * Return the name of this type
 */
 string ChaCha::name() const
-	{
+{
 	return "ChaCha";
-	}
+}
 
 /*
 * Clear memory of sensitive data
 */
 void ChaCha::clear()
-	{
+{
 	zap(m_state);
 	zap(m_buffer);
 	m_position = 0;
-	}
+}
 
 }

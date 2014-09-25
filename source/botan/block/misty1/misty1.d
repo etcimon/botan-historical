@@ -8,9 +8,6 @@
 #include <botan/misty1.h>
 #include <botan/loadstor.h>
 #include <botan/parsing.h>
-
-namespace Botan {
-
 namespace {
 
 static const byte MISTY1_SBOX_S7[128] = {
@@ -89,13 +86,13 @@ static const u16bit MISTY1_SBOX_S9[512] = {
 * MISTY1 FI Function
 */
 u16bit FI(u16bit input, u16bit key7, u16bit key9)
-	{
+{
 	u16bit D9 = input >> 7, D7 = input & 0x7F;
 	D9 = MISTY1_SBOX_S9[D9] ^ D7;
 	D7 = (MISTY1_SBOX_S7[D7] ^ key7 ^ D9) & 0x7F;
 	D9 = MISTY1_SBOX_S9[D9 ^ key9] ^ D7;
 	return static_cast<u16bit>((D7 << 9) | D9);
-	}
+}
 
 }
 
@@ -103,16 +100,16 @@ u16bit FI(u16bit input, u16bit key7, u16bit key9)
 * MISTY1 Encryption
 */
 void MISTY1::encrypt_n(const byte in[], byte out[], size_t blocks) const
-	{
+{
 	for(size_t i = 0; i != blocks; ++i)
-		{
+	{
 		u16bit B0 = load_be<u16bit>(in, 0);
 		u16bit B1 = load_be<u16bit>(in, 1);
 		u16bit B2 = load_be<u16bit>(in, 2);
 		u16bit B3 = load_be<u16bit>(in, 3);
 
 		for(size_t j = 0; j != 12; j += 3)
-			{
+		{
 			const u16bit* RK = &EK[8 * j];
 
 			B1 ^= B0 & RK[0];
@@ -135,7 +132,7 @@ void MISTY1::encrypt_n(const byte in[], byte out[], size_t blocks) const
 
 			B0 ^= T1 ^ RK[23];
 			B1 ^= T0;
-			}
+		}
 
 		B1 ^= B0 & EK[96];
 		B0 ^= B1 | EK[97];
@@ -146,23 +143,23 @@ void MISTY1::encrypt_n(const byte in[], byte out[], size_t blocks) const
 
 		in += BLOCK_SIZE;
 		out += BLOCK_SIZE;
-		}
 	}
+}
 
 /*
 * MISTY1 Decryption
 */
 void MISTY1::decrypt_n(const byte in[], byte out[], size_t blocks) const
-	{
+{
 	for(size_t i = 0; i != blocks; ++i)
-		{
+	{
 		u16bit B0 = load_be<u16bit>(in, 2);
 		u16bit B1 = load_be<u16bit>(in, 3);
 		u16bit B2 = load_be<u16bit>(in, 0);
 		u16bit B3 = load_be<u16bit>(in, 1);
 
 		for(size_t j = 0; j != 12; j += 3)
-			{
+		{
 			const u16bit* RK = &DK[8 * j];
 
 			B2 ^= B3 | RK[0];
@@ -185,7 +182,7 @@ void MISTY1::decrypt_n(const byte in[], byte out[], size_t blocks) const
 
 			B2 ^= T1 ^ RK[23];
 			B3 ^= T0;
-			}
+		}
 
 		B2 ^= B3 | DK[96];
 		B3 ^= B2 & DK[97];
@@ -196,24 +193,24 @@ void MISTY1::decrypt_n(const byte in[], byte out[], size_t blocks) const
 
 		in += BLOCK_SIZE;
 		out += BLOCK_SIZE;
-		}
 	}
+}
 
 /*
 * MISTY1 Key Schedule
 */
 void MISTY1::key_schedule(const byte key[], size_t length)
-	{
+{
 	secure_vector<u16bit> KS(32);
 	for(size_t i = 0; i != length / 2; ++i)
 		KS[i] = load_be<u16bit>(key, i);
 
 	for(size_t i = 0; i != 8; ++i)
-		{
+	{
 		KS[i+ 8] = FI(KS[i], KS[(i+1) % 8] >> 9, KS[(i+1) % 8] & 0x1FF);
 		KS[i+16] = KS[i+8] >> 9;
 		KS[i+24] = KS[i+8] & 0x1FF;
-		}
+	}
 
 	/*
 	* Precomputed indexes for the orderings of the subkeys (MISTY1 reuses
@@ -245,26 +242,26 @@ void MISTY1::key_schedule(const byte key[], size_t length)
 	DK.resize(100);
 
 	for(size_t i = 0; i != 100; ++i)
-		{
+	{
 		EK[i] = KS[EK_ORDER[i]];
 		DK[i] = KS[DK_ORDER[i]];
-		}
 	}
+}
 
 void MISTY1::clear()
-	{
+{
 	zap(EK);
 	zap(DK);
-	}
+}
 
 /*
 * MISTY1 Constructor
 */
 MISTY1::MISTY1(size_t rounds)
-	{
+{
 	if(rounds != 8)
 		throw Invalid_Argument("MISTY1: Invalid number of rounds: "
 									  + std::to_string(rounds));
-	}
+}
 
 }

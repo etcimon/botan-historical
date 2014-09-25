@@ -5,20 +5,16 @@
 * Distributed under the terms of the Botan license
 */
 
-#ifndef BOTAN_ENTROPY_SRC_EGD_H__
 #define BOTAN_ENTROPY_SRC_EGD_H__
 
 #include <botan/entropy_src.h>
 #include <string>
 #include <vector>
-
-namespace Botan {
-
 /**
 * EGD Entropy Source
 */
 class EGD_EntropySource : public EntropySource
-	{
+{
 	public:
 		string name() const { return "EGD/PRNGD"; }
 
@@ -28,7 +24,7 @@ class EGD_EntropySource : public EntropySource
 		~EGD_EntropySource();
 	private:
 		class EGD_Socket
-			{
+		{
 			public:
 				EGD_Socket(in string path);
 
@@ -39,11 +35,7 @@ class EGD_EntropySource : public EntropySource
 
 				string socket_path;
 				int m_fd; // cached fd
-			};
+		};
 
 		std::vector<EGD_Socket> sockets;
-	};
-
-}
-
-#endif
+};

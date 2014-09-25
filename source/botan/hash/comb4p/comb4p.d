@@ -8,9 +8,6 @@
 #include <botan/comb4p.h>
 #include <botan/internal/xor_buf.h>
 #include <stdexcept>
-
-namespace Botan {
-
 namespace {
 
 void comb4p_round(SafeArray!byte& out,
@@ -18,7 +15,7 @@ void comb4p_round(SafeArray!byte& out,
 						byte round_no,
 						HashFunction& h1,
 						HashFunction& h2)
-	{
+{
 	h1.update(round_no);
 	h2.update(round_no);
 
@@ -30,13 +27,13 @@ void comb4p_round(SafeArray!byte& out,
 
 	h_buf = h2.final();
 	xor_buf(&out[0], &h_buf[0], std::min(out.size(), h_buf.size()));
-	}
+}
 
 }
 
 Comb4P::Comb4P(HashFunction* h1, HashFunction* h2) :
 	m_hash1(h1), m_hash2(h2)
-	{
+{
 	if(m_hash1->name() == m_hash2->name())
 		throw std::invalid_argument("Comb4P: Must use two distinct hashes");
 
@@ -46,10 +43,10 @@ Comb4P::Comb4P(HashFunction* h1, HashFunction* h2) :
 											 m_hash2->name());
 
 	clear();
-	}
+}
 
 size_t Comb4P::hash_block_size() const
-	{
+{
 	if(m_hash1->hash_block_size() == m_hash2->hash_block_size())
 		return m_hash1->hash_block_size();
 
@@ -58,26 +55,26 @@ size_t Comb4P::hash_block_size() const
 	* HMAC, which is the main thing relying on knowing the block size.
 	*/
 	return 0;
-	}
+}
 
 void Comb4P::clear()
-	{
+{
 	m_hash1->clear();
 	m_hash2->clear();
 
 	// Prep for processing next message, if any
 	m_hash1->update(0);
 	m_hash2->update(0);
-	}
+}
 
 void Comb4P::add_data(const byte input[], size_t length)
-	{
+{
 	m_hash1->update(input, length);
 	m_hash2->update(input, length);
-	}
+}
 
 void Comb4P::final_result(byte out[])
-	{
+{
 	SafeArray!byte h1 = m_hash1->final();
 	SafeArray!byte h2 = m_hash2->final();
 
@@ -96,7 +93,7 @@ void Comb4P::final_result(byte out[])
 	// Prep for processing next message, if any
 	m_hash1->update(0);
 	m_hash2->update(0);
-	}
+}
 
 }
 

@@ -7,32 +7,29 @@
 
 #include <botan/cvc_cert.h>
 #include <botan/oids.h>
-
-namespace Botan {
-
 ASN1_Car EAC1_1_CVC::get_car() const
-	{
+{
 	return m_car;
-	}
+}
 
 ASN1_Ced EAC1_1_CVC::get_ced() const
-	{
+{
 	return m_ced;
-	}
+}
 ASN1_Cex EAC1_1_CVC::get_cex() const
-	{
+{
 	return m_cex;
-	}
+}
 u32bit EAC1_1_CVC::get_chat_value() const
-	{
+{
 	return m_chat_val;
-	}
+}
 
 /*
 * Decode the TBSCertificate data
 */
 void EAC1_1_CVC::force_decode()
-	{
+{
 	std::vector<byte> enc_pk;
 	std::vector<byte> enc_chat_val;
 	size_t cpi;
@@ -62,38 +59,38 @@ void EAC1_1_CVC::force_decode()
 	m_chat_val = enc_chat_val[0];
 
 	self_signed = (m_car.iso_8859() == m_chr.iso_8859());
-	}
+}
 
 /*
 * CVC Certificate Constructor
 */
 EAC1_1_CVC::EAC1_1_CVC(DataSource& in)
-	{
+{
 	init(in);
 	self_signed = false;
 	do_decode();
-	}
+}
 
 EAC1_1_CVC::EAC1_1_CVC(in string in)
-	{
+{
 	DataSource_Stream stream(in, true);
 	init(stream);
 	self_signed = false;
 	do_decode();
-	}
+}
 
 bool EAC1_1_CVC::operator==(EAC1_1_CVC const& rhs) const
-	{
+{
 	return (tbs_data() == rhs.tbs_data()
 			  && get_concat_sig() == rhs.get_concat_sig());
-	}
+}
 
 ECDSA_PublicKey* decode_eac1_1_key(in Array!byte,
 											  AlgorithmIdentifier&)
-	{
+{
 	throw Internal_Error("decode_eac1_1_key: Unimplemented");
 	return 0;
-	}
+}
 
 EAC1_1_CVC make_cvc_cert(PK_Signer& signer,
 								 in Array!byte public_key,
@@ -103,7 +100,7 @@ EAC1_1_CVC make_cvc_cert(PK_Signer& signer,
 								 ASN1_Ced ced,
 								 ASN1_Cex cex,
 								 RandomNumberGenerator& rng)
-	{
+{
 	OID chat_oid(OIDS::lookup("CertificateHolderAuthorizationTemplate"));
 	std::vector<byte> enc_chat_val;
 	enc_chat_val.push_back(holder_auth_templ);
@@ -130,6 +127,6 @@ EAC1_1_CVC make_cvc_cert(PK_Signer& signer,
 
 	DataSource_Memory source(signed_cert);
 	return EAC1_1_CVC(source);
-	}
+}
 
 }

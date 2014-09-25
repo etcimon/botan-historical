@@ -6,7 +6,6 @@
 * Distributed under the terms of the Botan license
 */
 
-#ifndef BOTAN_EAC_SIGNED_OBJECT_H__
 #define BOTAN_EAC_SIGNED_OBJECT_H__
 
 #include <botan/asn1_obj.h>
@@ -14,14 +13,11 @@
 #include <botan/x509_key.h>
 #include <botan/pipe.h>
 #include <vector>
-
-namespace Botan {
-
 /**
 * This class represents abstract signed EAC object
 */
 class EAC_Signed_Object
-	{
+{
 	public:
 		/**
 		* Get the TBS (to-be-signed) data in this object.
@@ -89,8 +85,4 @@ class EAC_Signed_Object
 		std::vector<string> PEM_labels_allowed;
 	private:
 		abstract void force_decode() = 0;
-	};
-
-}
-
-#endif
+};

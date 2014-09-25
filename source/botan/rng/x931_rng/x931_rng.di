@@ -5,19 +5,15 @@
 * Distributed under the terms of the Botan license
 */
 
-#ifndef BOTAN_ANSI_X931_RNG_H__
 #define BOTAN_ANSI_X931_RNG_H__
 
 #include <botan/rng.h>
 #include <botan/block_cipher.h>
-
-namespace Botan {
-
 /**
 * ANSI X9.31 RNG
 */
 class ANSI_X931_RNG : public RandomNumberGenerator
-	{
+{
 	public:
 		void randomize(byte[], size_t);
 		bool is_seeded() const;
@@ -43,8 +39,4 @@ class ANSI_X931_RNG : public RandomNumberGenerator
 		std::unique_ptr<RandomNumberGenerator> m_prng;
 		SafeArray!byte m_V, m_R;
 		size_t m_R_pos;
-	};
-
-}
-
-#endif
+};

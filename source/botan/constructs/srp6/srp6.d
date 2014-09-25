@@ -9,16 +9,13 @@
 #include <botan/dl_group.h>
 #include <botan/libstate.h>
 #include <botan/numthry.h>
-
-namespace Botan {
-
 namespace {
 
 BigInt hash_seq(in string hash_id,
 					 size_t pad_to,
 					 const BigInt& in1,
 					 const BigInt& in2)
-	{
+{
 	std::unique_ptr<HashFunction> hash_fn(
 		global_state().algorithm_factory().make_hash_function(hash_id));
 
@@ -26,13 +23,13 @@ BigInt hash_seq(in string hash_id,
 	hash_fn->update(BigInt::encode_1363(in2, pad_to));
 
 	return BigInt::decode(hash_fn->final());
-	}
+}
 
 BigInt compute_x(in string hash_id,
 					  in string identifier,
 					  in string password,
 					  in Array!byte salt)
-	{
+{
 	std::unique_ptr<HashFunction> hash_fn(
 		global_state().algorithm_factory().make_hash_function(hash_id));
 
@@ -48,18 +45,18 @@ BigInt compute_x(in string hash_id,
 	SafeArray!byte outer_h = hash_fn->final();
 
 	return BigInt::decode(outer_h);
-	}
+}
 
 }
 
 string srp6_group_identifier(const BigInt& N, const BigInt& g)
-	{
+{
 	/*
 	This function assumes that only one 'standard' SRP parameter set has
 	been defined for a particular bitsize. As of this writing that is the case.
 	*/
 	try
-		{
+	{
 		const string group_name = "modp/srp/" + std::to_string(N.bits());
 
 		DL_Group group(group_name);
@@ -68,12 +65,12 @@ string srp6_group_identifier(const BigInt& N, const BigInt& g)
 			return group_name;
 
 		throw std::runtime_error("Unknown SRP params");
-		}
-	catch(...)
-		{
-		throw Invalid_Argument("Bad SRP group parameters");
-		}
 	}
+	catch(...)
+	{
+		throw Invalid_Argument("Bad SRP group parameters");
+	}
+}
 
 std::pair<BigInt, SymmetricKey>
 srp6_client_agree(in string identifier,
@@ -83,7 +80,7 @@ srp6_client_agree(in string identifier,
 						in Array!byte salt,
 						const BigInt& B,
 						RandomNumberGenerator& rng)
-	{
+{
 	DL_Group group(group_id);
 	const BigInt& g = group.get_g();
 	const BigInt& p = group.get_p();
@@ -108,25 +105,25 @@ srp6_client_agree(in string identifier,
 	SymmetricKey Sk(BigInt::encode_1363(S, p_bytes));
 
 	return std::make_pair(A, Sk);
-	}
+}
 
 BigInt generate_srp6_verifier(in string identifier,
 										in string password,
 										in Array!byte salt,
 										in string group_id,
 										in string hash_id)
-	{
+{
 	const BigInt x = compute_x(hash_id, identifier, password, salt);
 
 	DL_Group group(group_id);
 	return power_mod(group.get_g(), x, group.get_p());
-	}
+}
 
 BigInt SRP6_Server_Session::step1(const BigInt& v,
 											 in string group_id,
 											 in string hash_id,
 											 RandomNumberGenerator& rng)
-	{
+{
 	DL_Group group(group_id);
 	const BigInt& g = group.get_g();
 	const BigInt& p = group.get_p();
@@ -145,10 +142,10 @@ BigInt SRP6_Server_Session::step1(const BigInt& v,
 	this->hash_id = hash_id;
 
 	return B;
-	}
+}
 
 SymmetricKey SRP6_Server_Session::step2(const BigInt& A)
-	{
+{
 	if(A <= 0 || A >= p)
 		throw std::runtime_error("Invalid SRP parameter from client");
 
@@ -157,6 +154,6 @@ SymmetricKey SRP6_Server_Session::step2(const BigInt& A)
 	BigInt S = power_mod(A * power_mod(v, u, p), b, p);
 
 	return BigInt::encode_1363(S, p_bytes);
-	}
+}
 
 }

@@ -5,18 +5,14 @@
 * Released under the terms of the Botan license
 */
 
-#ifndef BOTAN_TLS_SEQ_NUMBERS_H__
 #define BOTAN_TLS_SEQ_NUMBERS_H__
 
 #include <botan/types.h>
 #include <stdexcept>
-
-namespace Botan {
-
 namespace TLS {
 
 class Connection_Sequence_Numbers
-	{
+{
 	public:
 		abstract void new_read_cipher_state() = 0;
 		abstract void new_write_cipher_state() = 0;
@@ -29,10 +25,10 @@ class Connection_Sequence_Numbers
 
 		abstract bool already_seen(u64bit seq) const = 0;
 		abstract void read_accept(u64bit seq) = 0;
-	};
+};
 
 class Stream_Sequence_Numbers : public Connection_Sequence_Numbers
-	{
+{
 	public:
 		void new_read_cipher_state() override { m_read_seq_no = 0; m_read_epoch += 1; }
 		void new_write_cipher_state() override { m_write_seq_no = 0; m_write_epoch += 1; }
@@ -50,18 +46,18 @@ class Stream_Sequence_Numbers : public Connection_Sequence_Numbers
 		u64bit m_read_seq_no = 0;
 		u16bit m_read_epoch = 0;
 		u16bit m_write_epoch = 0;
-	};
+};
 
 class Datagram_Sequence_Numbers : public Connection_Sequence_Numbers
-	{
+{
 	public:
 		void new_read_cipher_state() override { m_read_epoch += 1; }
 
 		void new_write_cipher_state() override
-			{
+		{
 			// increment epoch
 			m_write_seq_no = ((m_write_seq_no >> 48) + 1) << 48;
-			}
+		}
 
 		u16bit current_read_epoch() const override { return m_read_epoch; }
 		u16bit current_write_epoch() const override { return (m_write_seq_no >> 48); }
@@ -69,12 +65,12 @@ class Datagram_Sequence_Numbers : public Connection_Sequence_Numbers
 		u64bit next_write_sequence() override { return m_write_seq_no++; }
 
 		u64bit next_read_sequence() override
-			{
+		{
 			throw std::runtime_error("DTLS uses explicit sequence numbers");
-			}
+		}
 
 		bool already_seen(u64bit sequence) const override
-			{
+		{
 			const size_t window_size = sizeof(m_window_bits) * 8;
 
 			if(sequence > m_window_highest)
@@ -86,14 +82,14 @@ class Datagram_Sequence_Numbers : public Connection_Sequence_Numbers
 				return true; // really old?
 
 			return (((m_window_bits >> offset) & 1) == 1);
-			}
+		}
 
 		void read_accept(u64bit sequence) override
-			{
+		{
 			const size_t window_size = sizeof(m_window_bits) * 8;
 
 			if(sequence > m_window_highest)
-				{
+			{
 				const size_t offset = sequence - m_window_highest;
 				m_window_highest += offset;
 
@@ -103,23 +99,19 @@ class Datagram_Sequence_Numbers : public Connection_Sequence_Numbers
 					m_window_bits <<= offset;
 
 				m_window_bits |= 0x01;
-				}
+			}
 			else
-				{
+			{
 				const u64bit offset = m_window_highest - sequence;
 				m_window_bits |= (static_cast<u64bit>(1) << offset);
-				}
 			}
+		}
 
 	private:
 		u64bit m_write_seq_no = 0;
 		u16bit m_read_epoch = 0;
 		u64bit m_window_highest = 0;
 		u64bit m_window_bits = 0;
-	};
+};
 
 }
-
-}
-
-#endif

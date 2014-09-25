@@ -5,18 +5,14 @@
 * Distributed under the terms of the Botan license
 */
 
-#ifndef BOTAN_THREEFISH_H__
 #define BOTAN_THREEFISH_H__
 
 #include <botan/block_cipher.h>
-
-namespace Botan {
-
 /**
 * Threefish-512
 */
 class Threefish_512 : public Block_Cipher_Fixed_Params<64, 64>
-	{
+{
 	public:
 		void encrypt_n(const byte in[], byte out[], size_t blocks) const override;
 		void decrypt_n(const byte in[], byte out[], size_t blocks) const override;
@@ -44,8 +40,4 @@ class Threefish_512 : public Block_Cipher_Fixed_Params<64, 64>
 		// Private data
 		secure_vector<u64bit> m_T;
 		secure_vector<u64bit> m_K;
-	};
-
-}
-
-#endif
+};

@@ -5,13 +5,9 @@
 * Distributed under the terms of the Botan license
 */
 
-#ifndef BOTAN_ENUMS_H__
 #define BOTAN_ENUMS_H__
 
 #include <botan/ber_dec.h>
-
-namespace Botan {
-
 /**
 * X.509v3 Key Constraints.
 */
@@ -40,7 +36,7 @@ class Public_Key;
 * additional limits
 */
 
-BOTAN_DLL Key_Constraints find_constraints(const Public_Key& pub_key,
+Key_Constraints find_constraints(const Public_Key& pub_key,
 														 Key_Constraints limits);
 
 /**
@@ -48,10 +44,6 @@ BOTAN_DLL Key_Constraints find_constraints(const Public_Key& pub_key,
 */
 namespace BER {
 
-void BOTAN_DLL decode(BER_Decoder&, Key_Constraints&);
+void decode(BER_Decoder&, Key_Constraints&);
 
 }
-
-}
-
-#endif

@@ -5,13 +5,9 @@
 * Distributed under the terms of the Botan license
 */
 
-#ifndef BOTAN_GOST_28147_89_H__
 #define BOTAN_GOST_28147_89_H__
 
 #include <botan/block_cipher.h>
-
-namespace Botan {
-
 /**
 * The GOST 28147-89 block cipher uses a set of 4 bit Sboxes, however
 * the standard does not actually define these Sboxes; they are
@@ -19,7 +15,7 @@ namespace Botan {
 * used.
 */
 class GOST_28147_89_Params
-	{
+{
 	public:
 		/**
 		* @param row the row
@@ -44,13 +40,13 @@ class GOST_28147_89_Params
 	private:
 		const byte* sboxes;
 		string name;
-	};
+};
 
 /**
 * GOST 28147-89
 */
 class GOST_28147_89 : public Block_Cipher_Fixed_Params<8, 32>
-	{
+{
 	public:
 		void encrypt_n(const byte in[], byte out[], size_t blocks) const;
 		void decrypt_n(const byte in[], byte out[], size_t blocks) const;
@@ -77,8 +73,4 @@ class GOST_28147_89 : public Block_Cipher_Fixed_Params<8, 32>
 		std::vector<u32bit> SBOX;
 
 		secure_vector<u32bit> EK;
-	};
-
-}
-
-#endif
+};

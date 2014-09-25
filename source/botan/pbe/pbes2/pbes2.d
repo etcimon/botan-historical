@@ -16,62 +16,59 @@
 #include <botan/oids.h>
 #include <botan/lookup.h>
 #include <algorithm>
-
-namespace Botan {
-
 /*
 * Encrypt some bytes using PBES2
 */
 void PBE_PKCS5v20::write(const byte input[], size_t length)
-	{
+{
 	pipe.write(input, length);
 	flush_pipe(true);
-	}
+}
 
 /*
 * Start encrypting with PBES2
 */
 void PBE_PKCS5v20::start_msg()
-	{
+{
 	pipe.append(get_cipher(block_cipher->name() + "/CBC/PKCS7",
 								  key, iv, direction));
 
 	pipe.start_msg();
 	if(pipe.message_count() > 1)
 		pipe.set_default_msg(pipe.default_msg() + 1);
-	}
+}
 
 /*
 * Finish encrypting with PBES2
 */
 void PBE_PKCS5v20::end_msg()
-	{
+{
 	pipe.end_msg();
 	flush_pipe(false);
 	pipe.reset();
-	}
+}
 
 /*
 * Flush the pipe
 */
 void PBE_PKCS5v20::flush_pipe(bool safe_to_skip)
-	{
+{
 	if(safe_to_skip && pipe.remaining() < 64)
 		return;
 
 	SafeArray!byte buffer(DEFAULT_BUFFERSIZE);
 	while(pipe.remaining())
-		{
+	{
 		const size_t got = pipe.read(&buffer[0], buffer.size());
 		send(buffer, got);
-		}
 	}
+}
 
 /*
 * Encode PKCS#5 PBES2 parameters
 */
 std::vector<byte> PBE_PKCS5v20::encode_params() const
-	{
+{
 	return DER_Encoder()
 		.start_cons(SEQUENCE)
 		.encode(
@@ -96,21 +93,21 @@ std::vector<byte> PBE_PKCS5v20::encode_params() const
 			)
 		.end_cons()
 		.get_contents_unlocked();
-	}
+}
 
 /*
 * Return an OID for PBES2
 */
 OID PBE_PKCS5v20::get_oid() const
-	{
+{
 	return OIDS::lookup("PBE-PKCS5v20");
-	}
+}
 
 string PBE_PKCS5v20::name() const
-	{
+{
 	return "PBE-PKCS5v20(" + block_cipher->name() + "," +
 									 m_prf->name() + ")";
-	}
+}
 
 /*
 * PKCS#5 v2.0 PBE Constructor
@@ -127,13 +124,13 @@ PBE_PKCS5v20::PBE_PKCS5v20(BlockCipher* cipher,
 	iv(rng.random_vec(block_cipher->block_size())),
 	iterations(0),
 	key_length(block_cipher->maximum_keylength())
-	{
+{
 	PKCS5_PBKDF2 pbkdf(m_prf->clone());
 
 	key = pbkdf.derive_key(key_length, passphrase,
 								  &salt[0], salt.size(),
 								  msec, iterations).bits_of();
-	}
+}
 
 /*
 * PKCS#5 v2.0 PBE Constructor
@@ -143,7 +140,7 @@ PBE_PKCS5v20::PBE_PKCS5v20(in Array!byte params,
 	direction(DECRYPTION),
 	block_cipher(nullptr),
 	m_prf(nullptr)
-	{
+{
 	AlgorithmIdentifier kdf_algo, enc_algo;
 
 	BER_Decoder(params)
@@ -197,12 +194,12 @@ PBE_PKCS5v20::PBE_PKCS5v20(in Array!byte params,
 	key = pbkdf.derive_key(key_length, passphrase,
 								  &salt[0], salt.size(),
 								  iterations).bits_of();
-	}
+}
 
 PBE_PKCS5v20::~PBE_PKCS5v20()
-	{
+{
 	delete m_prf;
 	delete block_cipher;
-	}
+}
 
 }

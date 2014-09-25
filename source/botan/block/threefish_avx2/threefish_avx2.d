@@ -7,13 +7,10 @@
 
 #include <botan/threefish_avx2.h>
 #include <immintrin.h>
-
-namespace Botan {
-
 namespace {
 
 inline void interleave_epi64(__m256i& X0, __m256i& X1)
-	{
+{
 	// interleave X0 and X1 qwords
 	// (X0,X1,X2,X3),(X4,X5,X6,X7) -> (X0,X2,X4,X6),(X1,X3,X5,X7)
 
@@ -22,21 +19,21 @@ inline void interleave_epi64(__m256i& X0, __m256i& X1)
 
 	X0 = _mm256_permute4x64_epi64(T0, _MM_SHUFFLE(3,1,2,0));
 	X1 = _mm256_permute4x64_epi64(T1, _MM_SHUFFLE(3,1,2,0));
-	}
+}
 
 inline void deinterleave_epi64(__m256i& X0, __m256i& X1)
-	{
+{
 	const __m256i T0 = _mm256_permute4x64_epi64(X0, _MM_SHUFFLE(3,1,2,0));
 	const __m256i T1 = _mm256_permute4x64_epi64(X1, _MM_SHUFFLE(3,1,2,0));
 
 	X0 = _mm256_unpacklo_epi64(T0, T1);
 	X1 = _mm256_unpackhi_epi64(T0, T1);
-	}
+}
 
 }
 
 void Threefish_512_AVX2::encrypt_n(const byte in[], byte out[], size_t blocks) const
-	{
+{
 	const u64bit* K = &get_K()[0];
 	const u64bit* T_64 = &get_T()[0];
 
@@ -57,7 +54,7 @@ void Threefish_512_AVX2::encrypt_n(const byte in[], byte out[], size_t blocks) c
 		X1 = _mm256_xor_si256(X1, X0);																\
 		X0 = _mm256_permute4x64_epi64(X0, _MM_SHUFFLE(0, 3, 2, 1));						 \
 		X1 = _mm256_permute4x64_epi64(X1, _MM_SHUFFLE(1, 2, 3, 0));						 \
-	} while(0)
+} while(0)
 
 #define THREEFISH_ROUND_2(X0, X1, X2, X3, SHL)									\
 	do {																									  \
@@ -72,7 +69,7 @@ void Threefish_512_AVX2::encrypt_n(const byte in[], byte out[], size_t blocks) c
 		X2 = _mm256_permute4x64_epi64(X2, _MM_SHUFFLE(0, 3, 2, 1));						 \
 		X1 = _mm256_permute4x64_epi64(X1, _MM_SHUFFLE(1, 2, 3, 0));						 \
 		X3 = _mm256_permute4x64_epi64(X3, _MM_SHUFFLE(1, 2, 3, 0));						 \
-	} while(0)
+} while(0)
 
 #define THREEFISH_INJECT_KEY(X0, X1, R, K0, K1, T0I, T1I)								\
 	do {																								  \
@@ -84,7 +81,7 @@ void Threefish_512_AVX2::encrypt_n(const byte in[], byte out[], size_t blocks) c
 		X0 = _mm256_add_epi64(X0, T0);															\
 		X1 = _mm256_add_epi64(X1, T1);															\
 		R = _mm256_add_epi64(R, ONE);															 \
-	} while(0)
+} while(0)
 
 #define THREEFISH_INJECT_KEY_2(X0, X1, X2, X3, R, K0, K1, T0I, T1I)				  \
 	do {																								  \
@@ -100,7 +97,7 @@ void Threefish_512_AVX2::encrypt_n(const byte in[], byte out[], size_t blocks) c
 		X1 = _mm256_add_epi64(X1, T1);															\
 		X3 = _mm256_add_epi64(X3, T1);															\
 		R = _mm256_add_epi64(R, ONE);															 \
-	} while(0)
+} while(0)
 
 #define THREEFISH_ENC_8_ROUNDS(X0, X1, R, K1, K2, K3, T0, T1, T2)		  \
 	do {																		  \
@@ -115,7 +112,7 @@ void Threefish_512_AVX2::encrypt_n(const byte in[], byte out[], size_t blocks) c
 		THREEFISH_ROUND(X0, X1, ROTATE_7);							  \
 		THREEFISH_ROUND(X0, X1, ROTATE_8);							  \
 		THREEFISH_INJECT_KEY(X0, X1, R, K2, K3, T2, T0);			\
-	} while(0)
+} while(0)
 
 #define THREEFISH_ENC_2_8_ROUNDS(X0, X1, X2, X3, R, K1, K2, K3, T0, T1, T2) \
 	do {																						\
@@ -130,7 +127,7 @@ void Threefish_512_AVX2::encrypt_n(const byte in[], byte out[], size_t blocks) c
 		THREEFISH_ROUND_2(X0, X1, X2, X3, ROTATE_7);							  \
 		THREEFISH_ROUND_2(X0, X1, X2, X3, ROTATE_8);							  \
 		THREEFISH_INJECT_KEY_2(X0, X1, X2, X3, R, K2, K3, T2, T0);			\
-	} while(0)
+} while(0)
 
 	/*
 	v1.0 key schedule: 9 ymm registers (only need 2 or 3)
@@ -153,7 +150,7 @@ void Threefish_512_AVX2::encrypt_n(const byte in[], byte out[], size_t blocks) c
 	__m256i* out_mm = reinterpret_cast<__m256i*>(out);
 
 	while(blocks >= 2)
-		{
+	{
 		__m256i X0 = _mm256_loadu_si256(in_mm++);
 		__m256i X1 = _mm256_loadu_si256(in_mm++);
 		__m256i X2 = _mm256_loadu_si256(in_mm++);
@@ -189,10 +186,10 @@ void Threefish_512_AVX2::encrypt_n(const byte in[], byte out[], size_t blocks) c
 		_mm256_storeu_si256(out_mm++, X3);
 
 		blocks -= 2;
-		}
+	}
 
 	for(size_t i = 0; i != blocks; ++i)
-		{
+	{
 		__m256i X0 = _mm256_loadu_si256(in_mm++);
 		__m256i X1 = _mm256_loadu_si256(in_mm++);
 
@@ -220,7 +217,7 @@ void Threefish_512_AVX2::encrypt_n(const byte in[], byte out[], size_t blocks) c
 
 		_mm256_storeu_si256(out_mm++, X0);
 		_mm256_storeu_si256(out_mm++, X1);
-		}
+	}
 
 #undef THREEFISH_ENC_8_ROUNDS
 #undef THREEFISH_ROUND
@@ -228,10 +225,10 @@ void Threefish_512_AVX2::encrypt_n(const byte in[], byte out[], size_t blocks) c
 #undef THREEFISH_ENC_2_8_ROUNDS
 #undef THREEFISH_ROUND_2
 #undef THREEFISH_INJECT_KEY_2
-	}
+}
 
 void Threefish_512_AVX2::decrypt_n(const byte in[], byte out[], size_t blocks) const
-	{
+{
 	const u64bit* K = &get_K()[0];
 	const u64bit* T_64 = &get_T()[0];
 
@@ -252,7 +249,7 @@ void Threefish_512_AVX2::decrypt_n(const byte in[], byte out[], size_t blocks) c
 		X1 = _mm256_xor_si256(X1, X0);																\
 		X1 = _mm256_or_si256(_mm256_sllv_epi64(X1, SHL), _mm256_srlv_epi64(X1, SHR)); \
 		X0 = _mm256_sub_epi64(X0, X1);																\
-	} while(0)
+} while(0)
 
 #define THREEFISH_INJECT_KEY(X0, X1, R, K0, K1, T0I, T1I)					 \
 	do {																								  \
@@ -264,7 +261,7 @@ void Threefish_512_AVX2::decrypt_n(const byte in[], byte out[], size_t blocks) c
 		R = _mm256_sub_epi64(R, ONE);															 \
 		X0 = _mm256_sub_epi64(X0, T0);															\
 		X1 = _mm256_sub_epi64(X1, T1);															\
-	} while(0)
+} while(0)
 
 #define THREEFISH_DEC_8_ROUNDS(X0, X1, R, K1, K2, K3, T0, T1, T2)	\
 	do {																		\
@@ -279,7 +276,7 @@ void Threefish_512_AVX2::decrypt_n(const byte in[], byte out[], size_t blocks) c
 		THREEFISH_ROUND(X0, X1, ROTATE_3);							\
 		THREEFISH_ROUND(X0, X1, ROTATE_2);							\
 		THREEFISH_ROUND(X0, X1, ROTATE_1);							\
-	} while(0)
+} while(0)
 
 	/*
 	v1.0 key schedule: 9 ymm registers (only need 2 or 3)
@@ -302,7 +299,7 @@ void Threefish_512_AVX2::decrypt_n(const byte in[], byte out[], size_t blocks) c
 	__m256i* out_mm = reinterpret_cast<__m256i*>(out);
 
 	for(size_t i = 0; i != blocks; ++i)
-		{
+	{
 		__m256i X0 = _mm256_loadu_si256(in_mm++);
 		__m256i X1 = _mm256_loadu_si256(in_mm++);
 
@@ -328,7 +325,7 @@ void Threefish_512_AVX2::decrypt_n(const byte in[], byte out[], size_t blocks) c
 
 		_mm256_storeu_si256(out_mm++, X0);
 		_mm256_storeu_si256(out_mm++, X1);
-		}
+	}
 
 #undef THREEFISH_DEC_8_ROUNDS
 #undef THREEFISH_ROUND
@@ -336,6 +333,6 @@ void Threefish_512_AVX2::decrypt_n(const byte in[], byte out[], size_t blocks) c
 #undef THREEFISH_DEC_2_8_ROUNDS
 #undef THREEFISH_ROUND_2
 #undef THREEFISH_INJECT_KEY_2
-	}
+}
 
 }

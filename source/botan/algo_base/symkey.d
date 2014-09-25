@@ -11,40 +11,37 @@
 #include <botan/pipe.h>
 #include <botan/hex.h>
 #include <algorithm>
-
-namespace Botan {
-
 /*
 * Create an OctetString from RNG output
 */
 OctetString::OctetString(RandomNumberGenerator& rng,
 								 size_t length)
-	{
+{
 	bits = rng.random_vec(length);
-	}
+}
 
 /*
 * Create an OctetString from a hex string
 */
 OctetString::OctetString(in string hex_string)
-	{
+{
 	bits.resize(1 + hex_string.length() / 2);
 	bits.resize(hex_decode(&bits[0], hex_string));
-	}
+}
 
 /*
 * Create an OctetString from a byte string
 */
 OctetString::OctetString(const byte in[], size_t n)
-	{
+{
 	bits.assign(in, in + n);
-	}
+}
 
 /*
 * Set the parity of each key byte to odd
 */
 void OctetString::set_odd_parity()
-	{
+{
 	const byte ODD_PARITY[256] = {
 		0x01, 0x01, 0x02, 0x02, 0x04, 0x04, 0x07, 0x07, 0x08, 0x08, 0x0B, 0x0B,
 		0x0D, 0x0D, 0x0E, 0x0E, 0x10, 0x10, 0x13, 0x13, 0x15, 0x15, 0x16, 0x16,
@@ -71,63 +68,63 @@ void OctetString::set_odd_parity()
 
 	for(size_t j = 0; j != bits.size(); ++j)
 		bits[j] = ODD_PARITY[bits[j]];
-	}
+}
 
 /*
 * Hex encode an OctetString
 */
 string OctetString::as_string() const
-	{
+{
 	return hex_encode(&bits[0], bits.size());
-	}
+}
 
 /*
 * XOR Operation for OctetStrings
 */
 OctetString& OctetString::operator^=(const OctetString& k)
-	{
+{
 	if(&k == this) { zeroise(bits); return (*this); }
 	xor_buf(&bits[0], k.begin(), std::min(length(), k.length()));
 	return (*this);
-	}
+}
 
 /*
 * Equality Operation for OctetStrings
 */
 bool operator==(const OctetString& s1, const OctetString& s2)
-	{
+{
 	return (s1.bits_of() == s2.bits_of());
-	}
+}
 
 /*
 * Unequality Operation for OctetStrings
 */
 bool operator!=(const OctetString& s1, const OctetString& s2)
-	{
+{
 	return !(s1 == s2);
-	}
+}
 
 /*
 * Append Operation for OctetStrings
 */
 OctetString operator+(const OctetString& k1, const OctetString& k2)
-	{
+{
 	SafeArray!byte out;
 	out += k1.bits_of();
 	out += k2.bits_of();
 	return OctetString(out);
-	}
+}
 
 /*
 * XOR Operation for OctetStrings
 */
 OctetString operator^(const OctetString& k1, const OctetString& k2)
-	{
+{
 	SafeArray!byte ret(std::max(k1.length(), k2.length()));
 
 	copy_mem(&ret[0], k1.begin(), k1.length());
 	xor_buf(&ret[0], k2.begin(), k2.length());
 	return OctetString(ret);
-	}
+}
 
 }

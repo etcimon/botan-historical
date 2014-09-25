@@ -5,18 +5,14 @@
 * Distributed under the terms of the Botan license
 */
 
-#ifndef BOTAN_ENGINE_OPENSSL_H__
 #define BOTAN_ENGINE_OPENSSL_H__
 
 #include <botan/engine.h>
-
-namespace Botan {
-
 /**
 * OpenSSL Engine
 */
 class OpenSSL_Engine : public Engine
-	{
+{
 	public:
 		string provider_name() const override { return "openssl"; }
 
@@ -42,8 +38,4 @@ class OpenSSL_Engine : public Engine
 													Algorithm_Factory&) const override;
 
 		HashFunction* find_hash(const SCAN_Name&, Algorithm_Factory&) const override;
-	};
-
-}
-
-#endif
+};

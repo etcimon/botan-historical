@@ -6,21 +6,17 @@
 * Distributed under the terms of the Botan license
 */
 
-#ifndef BOTAN_EAC_ASN1_OBJ_H__
 #define BOTAN_EAC_ASN1_OBJ_H__
 
 #include <botan/asn1_obj.h>
 #include <chrono>
-
-namespace Botan {
-
 /**
 * This class represents CVC EAC Time objects.
 * It only models year, month and day. Only limited sanity checks of
 * the inputted date value are performed.
 */
 class EAC_Time : public ASN1_Object
-	{
+{
 	public:
 		void encode_into(class DER_Encoder&) const;
 		void decode_from(class BER_Decoder&);
@@ -103,14 +99,14 @@ class EAC_Time : public ASN1_Object
 		bool passes_sanity_check() const;
 		u32bit year, month, day;
 		ASN1_Tag tag;
-	};
+};
 
 /**
 * This class represents CVC CEDs. Only limited sanity checks of
 * the inputted date value are performed.
 */
 class ASN1_Ced : public EAC_Time
-	{
+{
 	public:
 		/**
 		* Construct a CED from a string value.
@@ -133,15 +129,15 @@ class ASN1_Ced : public EAC_Time
 		ASN1_Ced(const EAC_Time& other) :
 			EAC_Time(other.get_year(), other.get_month(), other.get_day(),
 						ASN1_Tag(37))
-			{}
-	};
+		{}
+};
 
 /**
 * This class represents CVC CEXs. Only limited sanity checks of
 * the inputted date value are performed.
 */
 class ASN1_Cex : public EAC_Time
-	{
+{
 	public:
 		/**
 		* Construct a CEX from a string value.
@@ -157,14 +153,14 @@ class ASN1_Cex : public EAC_Time
 		ASN1_Cex(const EAC_Time& other) :
 			EAC_Time(other.get_year(), other.get_month(), other.get_day(),
 						ASN1_Tag(36))
-			{}
-	};
+		{}
+};
 
 /**
 * Base class for car/chr of cv certificates.
 */
 class ASN1_EAC_String: public ASN1_Object
-	{
+{
 	public:
 		void encode_into(class DER_Encoder&) const;
 		void decode_from(class BER_Decoder&);
@@ -190,50 +186,46 @@ class ASN1_EAC_String: public ASN1_Object
 	private:
 		string iso_8859_str;
 		ASN1_Tag tag;
-	};
+};
 
 /**
 * This class represents CARs of CVCs. (String tagged with 2)
 */
 class ASN1_Car : public ASN1_EAC_String
-	{
+{
 	public:
 		/**
 		* Create a CAR with the specified content.
 		* @param str the CAR value
 		*/
 		ASN1_Car(string const& str = "");
-	};
+};
 
 /**
 * This class represents CHRs of CVCs (tag 32)
 */
 class ASN1_Chr : public ASN1_EAC_String
-	{
+{
 	public:
 		/**
 		* Create a CHR with the specified content.
 		* @param str the CHR value
 		*/
 		ASN1_Chr(string const& str = "");
-	};
+};
 
 /*
 * Comparison Operations
 */
-bool BOTAN_DLL operator==(const EAC_Time&, const EAC_Time&);
-bool BOTAN_DLL operator!=(const EAC_Time&, const EAC_Time&);
-bool BOTAN_DLL operator<=(const EAC_Time&, const EAC_Time&);
-bool BOTAN_DLL operator>=(const EAC_Time&, const EAC_Time&);
-bool BOTAN_DLL operator>(const EAC_Time&, const EAC_Time&);
-bool BOTAN_DLL operator<(const EAC_Time&, const EAC_Time&);
+bool operator==(const EAC_Time&, const EAC_Time&);
+bool operator!=(const EAC_Time&, const EAC_Time&);
+bool operator<=(const EAC_Time&, const EAC_Time&);
+bool operator>=(const EAC_Time&, const EAC_Time&);
+bool operator>(const EAC_Time&, const EAC_Time&);
+bool operator<(const EAC_Time&, const EAC_Time&);
 
-bool BOTAN_DLL operator==(const ASN1_EAC_String&, const ASN1_EAC_String&);
+bool operator==(const ASN1_EAC_String&, const ASN1_EAC_String&);
 inline bool operator!=(const ASN1_EAC_String& lhs, const ASN1_EAC_String& rhs)
-	{
+{
 	return !(lhs == rhs);
-	}
-
 }
-
-#endif

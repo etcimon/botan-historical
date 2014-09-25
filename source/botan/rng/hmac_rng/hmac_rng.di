@@ -5,15 +5,11 @@
 * Distributed under the terms of the Botan license
 */
 
-#ifndef BOTAN_HMAC_RNG_H__
 #define BOTAN_HMAC_RNG_H__
 
 #include <botan/mac.h>
 #include <botan/rng.h>
 #include <vector>
-
-namespace Botan {
-
 /**
 * HMAC_RNG - based on the design described in "On Extract-then-Expand
 * Key Derivation Functions and an HMAC-based KDF" by Hugo Krawczyk
@@ -25,7 +21,7 @@ namespace Botan {
 * extractor and CMAC(AES-256) as the PRF.
 */
 class HMAC_RNG : public RandomNumberGenerator
-	{
+{
 	public:
 		void randomize(byte buf[], size_t len);
 		bool is_seeded() const;
@@ -50,8 +46,4 @@ class HMAC_RNG : public RandomNumberGenerator
 
 		SafeArray!byte m_K;
 		u32bit m_counter = 0;
-	};
-
-}
-
-#endif
+};

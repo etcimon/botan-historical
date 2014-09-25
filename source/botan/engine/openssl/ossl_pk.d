@@ -24,35 +24,32 @@
 #if defined(BOTAN_HAS_DIFFIE_HELLMAN)
   #include <botan/dh.h>
 #endif
-
-namespace Botan {
-
 namespace {
 
 #if defined(BOTAN_HAS_DIFFIE_HELLMAN)
 class OSSL_DH_KA_Operation : public PK_Ops::Key_Agreement
-	{
+{
 	public:
 		OSSL_DH_KA_Operation(const DH_PrivateKey& dh) :
 			x(dh.get_x()), p(dh.group_p()) {}
 
 		SafeArray!byte agree(const byte w[], size_t w_len)
-			{
+		{
 			OSSL_BN i(w, w_len), r;
 			BN_mod_exp(r.ptr(), i.ptr(), x.ptr(), p.ptr(), ctx.ptr());
 			return r.to_bytes();
-			}
+		}
 
 	private:
 		const OSSL_BN x, p;
 		OSSL_BN_CTX ctx;
-	};
+};
 #endif
 
 #if defined(BOTAN_HAS_DSA)
 
 class OSSL_DSA_Signature_Operation : public PK_Ops::Signature
-	{
+{
 	public:
 		OSSL_DSA_Signature_Operation(const DSA_PrivateKey& dsa) :
 			x(dsa.get_x()),
@@ -71,12 +68,12 @@ class OSSL_DSA_Signature_Operation : public PK_Ops::Signature
 		const OSSL_BN x, p, q, g;
 		const OSSL_BN_CTX ctx;
 		size_t q_bits;
-	};
+};
 
 SafeArray!byte
 OSSL_DSA_Signature_Operation::sign(const byte msg[], size_t msg_len,
 											 RandomNumberGenerator& rng)
-	{
+{
 	const size_t q_bytes = (q_bits + 7) / 8;
 
 	rng.add_entropy(msg, msg_len);
@@ -107,10 +104,10 @@ OSSL_DSA_Signature_Operation::sign(const byte msg[], size_t msg_len,
 	r.encode(&output[0], q_bytes);
 	s.encode(&output[q_bytes], q_bytes);
 	return output;
-	}
+}
 
 class OSSL_DSA_Verification_Operation : public PK_Ops::Verification
-	{
+{
 	public:
 		OSSL_DSA_Verification_Operation(const DSA_PublicKey& dsa) :
 			y(dsa.get_y()),
@@ -131,11 +128,11 @@ class OSSL_DSA_Verification_Operation : public PK_Ops::Verification
 		const OSSL_BN y, p, q, g;
 		const OSSL_BN_CTX ctx;
 		size_t q_bits;
-	};
+};
 
 bool OSSL_DSA_Verification_Operation::verify(const byte msg[], size_t msg_len,
 														  const byte sig[], size_t sig_len)
-	{
+{
 	const size_t q_bytes = q.bytes();
 
 	if(sig_len != 2*q_bytes || msg_len > q_bytes)
@@ -168,16 +165,11 @@ bool OSSL_DSA_Verification_Operation::verify(const byte msg[], size_t msg_len,
 		return true;
 	return false;
 
-	return false;
-	}
-
-#endif
-
-#if defined(BOTAN_HAS_RSA)
+	return false;#if defined(BOTAN_HAS_RSA)
 
 class OSSL_RSA_Private_Operation : public PK_Ops::Signature,
 											  public PK_Ops::Decryption
-	{
+{
 	public:
 		OSSL_RSA_Private_Operation(const RSA_PrivateKey& rsa) :
 			mod(rsa.get_n()),
@@ -187,23 +179,23 @@ class OSSL_RSA_Private_Operation : public PK_Ops::Signature,
 			d2(rsa.get_d2()),
 			c(rsa.get_c()),
 			n_bits(rsa.get_n().bits())
-			{}
+		{}
 
 		size_t max_input_bits() const { return (n_bits - 1); }
 
 		SafeArray!byte sign(const byte msg[], size_t msg_len,
 										RandomNumberGenerator&)
-			{
+		{
 			BigInt m(msg, msg_len);
 			BigInt x = private_op(m);
 			return BigInt::encode_1363(x, (n_bits + 7) / 8);
-			}
+		}
 
 		SafeArray!byte decrypt(const byte msg[], size_t msg_len)
-			{
+		{
 			BigInt m(msg, msg_len);
 			return BigInt::encode_locked(private_op(m));
-			}
+		}
 
 	private:
 		BigInt private_op(const BigInt& m) const;
@@ -211,10 +203,10 @@ class OSSL_RSA_Private_Operation : public PK_Ops::Signature,
 		const OSSL_BN mod, p, q, d1, d2, c;
 		const OSSL_BN_CTX ctx;
 		size_t n_bits;
-	};
+};
 
 BigInt OSSL_RSA_Private_Operation::private_op(const BigInt& m) const
-	{
+{
 	OSSL_BN j1, j2, h(m);
 
 	BN_mod_exp(j1.ptr(), h.ptr(), d1.ptr(), p.ptr(), ctx.ptr());
@@ -224,47 +216,47 @@ BigInt OSSL_RSA_Private_Operation::private_op(const BigInt& m) const
 	BN_mul(h.ptr(), h.ptr(), q.ptr(), ctx.ptr());
 	BN_add(h.ptr(), h.ptr(), j2.ptr());
 	return h.to_bigint();
-	}
+}
 
 class OSSL_RSA_Public_Operation : public PK_Ops::Verification,
 											 public PK_Ops::Encryption
-	{
+{
 	public:
 		OSSL_RSA_Public_Operation(const RSA_PublicKey& rsa) :
 			n(rsa.get_n()), e(rsa.get_e()), mod(rsa.get_n())
-			{}
+		{}
 
 		size_t max_input_bits() const { return (n.bits() - 1); }
 		bool with_recovery() const { return true; }
 
 		SafeArray!byte encrypt(const byte msg[], size_t msg_len,
 											RandomNumberGenerator&)
-			{
+		{
 			BigInt m(msg, msg_len);
 			return BigInt::encode_1363(public_op(m), n.bytes());
-			}
+		}
 
 		SafeArray!byte verify_mr(const byte msg[], size_t msg_len)
-			{
+		{
 			BigInt m(msg, msg_len);
 			return BigInt::encode_locked(public_op(m));
-			}
+		}
 
 	private:
 		BigInt public_op(const BigInt& m) const
-			{
+		{
 			if(m >= n)
 				throw Invalid_Argument("RSA public op - input is too large");
 
 			OSSL_BN m_bn(m), r;
 			BN_mod_exp(r.ptr(), m_bn.ptr(), e.ptr(), mod.ptr(), ctx.ptr());
 			return r.to_bigint();
-			}
+		}
 
 		const BigInt& n;
 		const OSSL_BN e, mod;
 		const OSSL_BN_CTX ctx;
-	};
+};
 
 #endif
 
@@ -272,18 +264,18 @@ class OSSL_RSA_Public_Operation : public PK_Ops::Verification,
 
 PK_Ops::Key_Agreement*
 OpenSSL_Engine::get_key_agreement_op(const Private_Key& key, RandomNumberGenerator&) const
-	{
+{
 #if defined(BOTAN_HAS_DIFFIE_HELLMAN)
 	if(const DH_PrivateKey* dh = dynamic_cast<const DH_PrivateKey*>(&key))
 		return new OSSL_DH_KA_Operation(*dh);
 #endif
 
 	return 0;
-	}
+}
 
 PK_Ops::Signature*
 OpenSSL_Engine::get_signature_op(const Private_Key& key, RandomNumberGenerator&) const
-	{
+{
 #if defined(BOTAN_HAS_RSA)
 	if(const RSA_PrivateKey* s = dynamic_cast<const RSA_PrivateKey*>(&key))
 		return new OSSL_RSA_Private_Operation(*s);
@@ -295,11 +287,11 @@ OpenSSL_Engine::get_signature_op(const Private_Key& key, RandomNumberGenerator&)
 #endif
 
 	return 0;
-	}
+}
 
 PK_Ops::Verification*
 OpenSSL_Engine::get_verify_op(const Public_Key& key, RandomNumberGenerator&) const
-	{
+{
 #if defined(BOTAN_HAS_RSA)
 	if(const RSA_PublicKey* s = dynamic_cast<const RSA_PublicKey*>(&key))
 		return new OSSL_RSA_Public_Operation(*s);
@@ -311,28 +303,28 @@ OpenSSL_Engine::get_verify_op(const Public_Key& key, RandomNumberGenerator&) con
 #endif
 
 	return 0;
-	}
+}
 
 PK_Ops::Encryption*
 OpenSSL_Engine::get_encryption_op(const Public_Key& key, RandomNumberGenerator&) const
-	{
+{
 #if defined(BOTAN_HAS_RSA)
 	if(const RSA_PublicKey* s = dynamic_cast<const RSA_PublicKey*>(&key))
 		return new OSSL_RSA_Public_Operation(*s);
 #endif
 
 	return 0;
-	}
+}
 
 PK_Ops::Decryption*
 OpenSSL_Engine::get_decryption_op(const Private_Key& key, RandomNumberGenerator&) const
-	{
+{
 #if defined(BOTAN_HAS_RSA)
 	if(const RSA_PrivateKey* s = dynamic_cast<const RSA_PrivateKey*>(&key))
 		return new OSSL_RSA_Private_Operation(*s);
 #endif
 
 	return 0;
-	}
+}
 
 }

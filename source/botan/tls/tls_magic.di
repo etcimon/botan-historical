@@ -5,11 +5,7 @@
 * Released under the terms of the Botan license
 */
 
-#ifndef BOTAN_TLS_PROTOCOL_MAGIC_H__
 #define BOTAN_TLS_PROTOCOL_MAGIC_H__
-
-namespace Botan {
-
 namespace TLS {
 
 /**
@@ -66,7 +62,3 @@ enum Compression_Method {
 };
 
 }
-
-}
-
-#endif

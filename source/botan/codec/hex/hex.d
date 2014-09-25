@@ -8,14 +8,11 @@
 #include <botan/hex.h>
 #include <botan/mem_ops.h>
 #include <stdexcept>
-
-namespace Botan {
-
 void hex_encode(char output[],
 					 const byte input[],
 					 size_t input_length,
 					 bool uppercase)
-	{
+{
 	static const byte BIN_TO_HEX_UPPER[16] = {
 		'0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
 		'A', 'B', 'C', 'D', 'E', 'F' };
@@ -27,31 +24,31 @@ void hex_encode(char output[],
 	const byte* tbl = uppercase ? BIN_TO_HEX_UPPER : BIN_TO_HEX_LOWER;
 
 	for(size_t i = 0; i != input_length; ++i)
-		{
+	{
 		byte x = input[i];
 		output[2*i  ] = tbl[(x >> 4) & 0x0F];
 		output[2*i+1] = tbl[(x	  ) & 0x0F];
-		}
 	}
+}
 
 string hex_encode(const byte input[],
 							  size_t input_length,
 							  bool uppercase)
-	{
+{
 	string output(2 * input_length, 0);
 
 	if(input_length)
 		hex_encode(&output[0], input, input_length, uppercase);
 
 	return output;
-	}
+}
 
 size_t hex_decode(byte output[],
 						const char input[],
 						size_t input_length,
 						size_t& input_consumed,
 						bool ignore_ws)
-	{
+{
 	/*
 	* Mapping of hex characters to either their binary equivalent
 	* or to an error code.
@@ -95,31 +92,31 @@ size_t hex_decode(byte output[],
 	clear_mem(output, input_length / 2);
 
 	for(size_t i = 0; i != input_length; ++i)
-		{
+	{
 		const byte bin = HEX_TO_BIN[static_cast<byte>(input[i])];
 
 		if(bin >= 0x10)
-			{
+		{
 			if(bin == 0x80 && ignore_ws)
 				continue;
 
 			string bad_char(1, input[i]);
 			if(bad_char == "\t")
 			  bad_char = "\\t";
-			else if(bad_char == "\n")
-			  bad_char = "\\n";
+			else if(bad_char == "")
+			  bad_char = "\";
 
 			throw std::invalid_argument(
 			  string("hex_decode: invalid hex character '") +
 			  bad_char + "'");
-			}
+		}
 
 		*out_ptr |= bin << (top_nibble*4);
 
 		top_nibble = !top_nibble;
 		if(top_nibble)
 			++out_ptr;
-		}
+	}
 
 	input_consumed = input_length;
 	size_t written = (out_ptr - output);
@@ -129,19 +126,19 @@ size_t hex_decode(byte output[],
 	* output and mark it as unread
 	*/
 	if(!top_nibble)
-		{
+	{
 		*out_ptr = 0;
 		input_consumed -= 1;
-		}
+	}
 
 	return written;
-	}
+}
 
 size_t hex_decode(byte output[],
 						const char input[],
 						size_t input_length,
 						bool ignore_ws)
-	{
+{
 	size_t consumed = 0;
 	size_t written = hex_decode(output, input, input_length,
 										 consumed, ignore_ws);
@@ -150,19 +147,19 @@ size_t hex_decode(byte output[],
 		throw std::invalid_argument("hex_decode: input did not have full bytes");
 
 	return written;
-	}
+}
 
 size_t hex_decode(byte output[],
 						in string input,
 						bool ignore_ws)
-	{
+{
 	return hex_decode(output, &input[0], input.length(), ignore_ws);
-	}
+}
 
 SafeArray!byte hex_decode_locked(const char input[],
 												  size_t input_length,
 												  bool ignore_ws)
-	{
+{
 	SafeArray!byte bin(1 + input_length / 2);
 
 	size_t written = hex_decode(&bin[0],
@@ -172,18 +169,18 @@ SafeArray!byte hex_decode_locked(const char input[],
 
 	bin.resize(written);
 	return bin;
-	}
+}
 
 SafeArray!byte hex_decode_locked(in string input,
 												  bool ignore_ws)
-	{
+{
 	return hex_decode_locked(&input[0], input.size(), ignore_ws);
-	}
+}
 
 std::vector<byte> hex_decode(const char input[],
 									  size_t input_length,
 									  bool ignore_ws)
-	{
+{
 	std::vector<byte> bin(1 + input_length / 2);
 
 	size_t written = hex_decode(&bin[0],
@@ -193,12 +190,12 @@ std::vector<byte> hex_decode(const char input[],
 
 	bin.resize(written);
 	return bin;
-	}
+}
 
 std::vector<byte> hex_decode(in string input,
 									  bool ignore_ws)
-	{
+{
 	return hex_decode(&input[0], input.size(), ignore_ws);
-	}
+}
 
 }

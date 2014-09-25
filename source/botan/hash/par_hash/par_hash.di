@@ -5,19 +5,15 @@
 * Distributed under the terms of the Botan license
 */
 
-#ifndef BOTAN_PARALLEL_HASH_H__
 #define BOTAN_PARALLEL_HASH_H__
 
 #include <botan/hash.h>
 #include <vector>
-
-namespace Botan {
-
 /**
 * Parallel Hashes
 */
 class Parallel : public HashFunction
-	{
+{
 	public:
 		void clear();
 		string name() const;
@@ -34,8 +30,4 @@ class Parallel : public HashFunction
 		void add_data(const byte[], size_t);
 		void final_result(byte[]);
 		std::vector<HashFunction*> hashes;
-	};
-
-}
-
-#endif
+};

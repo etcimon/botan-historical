@@ -5,21 +5,17 @@
 * Distributed under the terms of the Botan license
 */
 
-#ifndef BOTAN_SKEIN_512_H__
 #define BOTAN_SKEIN_512_H__
 
 #include <botan/hash.h>
 #include <botan/threefish.h>
 #include <string>
 #include <memory>
-
-namespace Botan {
-
 /**
 * Skein-512, a SHA-3 candidate
 */
 class Skein_512 : public HashFunction
-	{
+{
 	public:
 		/**
 		* @param output_bits the output size of Skein in bits
@@ -45,7 +41,7 @@ class Skein_512 : public HashFunction
 			SKEIN_NONCE = 20,
 			SKEIN_MSG = 48,
 			SKEIN_OUTPUT = 63
-		};
+	};
 
 		void add_data(const byte input[], size_t length);
 		void final_result(byte out[]);
@@ -62,8 +58,4 @@ class Skein_512 : public HashFunction
 		secure_vector<u64bit> T;
 		SafeArray!byte buffer;
 		size_t buf_pos;
-	};
-
-}
-
-#endif
+};

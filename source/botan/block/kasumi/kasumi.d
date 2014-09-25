@@ -8,9 +8,6 @@
 #include <botan/kasumi.h>
 #include <botan/loadstor.h>
 #include <botan/rotate.h>
-
-namespace Botan {
-
 namespace {
 
 /*
@@ -92,7 +89,7 @@ const u16bit KASUMI_SBOX_S9[512] = {
 * KASUMI FI Function
 */
 u16bit FI(u16bit I, u16bit K)
-	{
+{
 	u16bit D9 = (I >> 7);
 	byte D7 = (I & 0x7F);
 	D9 = KASUMI_SBOX_S9[D9] ^ D7;
@@ -102,7 +99,7 @@ u16bit FI(u16bit I, u16bit K)
 	D9 = KASUMI_SBOX_S9[D9 ^ (K & 0x1FF)] ^ D7;
 	D7 = KASUMI_SBOX_S7[D7] ^ (D9 & 0x7F);
 	return (D7 << 9) | D9;
-	}
+}
 
 }
 
@@ -110,16 +107,16 @@ u16bit FI(u16bit I, u16bit K)
 * KASUMI Encryption
 */
 void KASUMI::encrypt_n(const byte in[], byte out[], size_t blocks) const
-	{
+{
 	for(size_t i = 0; i != blocks; ++i)
-		{
+	{
 		u16bit B0 = load_be<u16bit>(in, 0);
 		u16bit B1 = load_be<u16bit>(in, 1);
 		u16bit B2 = load_be<u16bit>(in, 2);
 		u16bit B3 = load_be<u16bit>(in, 3);
 
 		for(size_t j = 0; j != 8; j += 2)
-			{
+		{
 			const u16bit* K = &EK[8*j];
 
 			u16bit R = B1 ^ (rotate_left(B0, 1) & K[0]);
@@ -141,29 +138,29 @@ void KASUMI::encrypt_n(const byte in[], byte out[], size_t blocks) const
 
 			B0 ^= L;
 			B1 ^= R;
-			}
+		}
 
 		store_be(out, B0, B1, B2, B3);
 
 		in += BLOCK_SIZE;
 		out += BLOCK_SIZE;
-		}
 	}
+}
 
 /*
 * KASUMI Decryption
 */
 void KASUMI::decrypt_n(const byte in[], byte out[], size_t blocks) const
-	{
+{
 	for(size_t i = 0; i != blocks; ++i)
-		{
+	{
 		u16bit B0 = load_be<u16bit>(in, 0);
 		u16bit B1 = load_be<u16bit>(in, 1);
 		u16bit B2 = load_be<u16bit>(in, 2);
 		u16bit B3 = load_be<u16bit>(in, 3);
 
 		for(size_t j = 0; j != 8; j += 2)
-			{
+		{
 			const u16bit* K = &EK[8*(6-j)];
 
 			u16bit L = B2, R = B3;
@@ -187,34 +184,34 @@ void KASUMI::decrypt_n(const byte in[], byte out[], size_t blocks) const
 
 			B2 ^= L;
 			B3 ^= R;
-			}
+		}
 
 		store_be(out, B0, B1, B2, B3);
 
 		in += BLOCK_SIZE;
 		out += BLOCK_SIZE;
-		}
 	}
+}
 
 /*
 * KASUMI Key Schedule
 */
 void KASUMI::key_schedule(const byte key[], size_t)
-	{
+{
 	static const u16bit RC[] = { 0x0123, 0x4567, 0x89AB, 0xCDEF,
 										  0xFEDC, 0xBA98, 0x7654, 0x3210 };
 
 	secure_vector<u16bit> K(16);
 	for(size_t i = 0; i != 8; ++i)
-		{
+	{
 		K[i] = load_be<u16bit>(key, i);
 		K[i+8] = K[i] ^ RC[i];
-		}
+	}
 
 	EK.resize(64);
 
 	for(size_t i = 0; i != 8; ++i)
-		{
+	{
 		EK[8*i  ] = rotate_left(K[(i+0) % 8	 ], 2);
 		EK[8*i+1] = rotate_left(K[(i+2) % 8 + 8], 1);
 		EK[8*i+2] = rotate_left(K[(i+1) % 8	 ], 5);
@@ -223,12 +220,12 @@ void KASUMI::key_schedule(const byte key[], size_t)
 		EK[8*i+5] = K[(i+3) % 8 + 8];
 		EK[8*i+6] = rotate_left(K[(i+6) % 8	 ], 13);
 		EK[8*i+7] = K[(i+7) % 8 + 8];
-		}
 	}
+}
 
 void KASUMI::clear()
-	{
+{
 	zap(EK);
-	}
+}
 
 }

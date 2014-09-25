@@ -18,29 +18,26 @@
 #include <typeinfo>
 #include <iterator>
 #include <set>
-
-namespace Botan {
-
 /*
 * Load the certificate and private key
 */
 X509_CA::X509_CA(const X509_Certificate& c,
 					  const Private_Key& key,
 					  in string hash_fn) : cert(c)
-	{
+{
 	if(!cert.is_CA_cert())
 		throw Invalid_Argument("X509_CA: This certificate is not for a CA");
 
 	signer = choose_sig_format(key, hash_fn, ca_sig_algo);
-	}
+}
 
 /*
 * X509_CA Destructor
 */
 X509_CA::~X509_CA()
-	{
+{
 	delete signer;
-	}
+}
 
 /*
 * Sign a PKCS #10 certificate request
@@ -49,15 +46,15 @@ X509_Certificate X509_CA::sign_request(const PKCS10_Request& req,
 													RandomNumberGenerator& rng,
 													const X509_Time& not_before,
 													const X509_Time& not_after)
-	{
+{
 	Key_Constraints constraints;
 	if(req.is_CA())
 		constraints = Key_Constraints(KEY_CERT_SIGN | CRL_SIGN);
 	else
-		{
+	{
 		std::unique_ptr<Public_Key> key(req.subject_public_key());
 		constraints = find_constraints(*key, req.constraints());
-		}
+	}
 
 	Extensions extensions;
 
@@ -81,7 +78,7 @@ X509_Certificate X509_CA::sign_request(const PKCS10_Request& req,
 						  not_before, not_after,
 						  cert.subject_dn(), req.subject_dn(),
 						  extensions);
-	}
+}
 
 /*
 * Create a new certificate
@@ -95,7 +92,7 @@ X509_Certificate X509_CA::make_cert(PK_Signer* signer,
 												const X509_DN& issuer_dn,
 												const X509_DN& subject_dn,
 												const Extensions& extensions)
-	{
+{
 	const size_t X509_CERT_VERSION = 3;
 	const size_t SERIAL_BITS = 128;
 
@@ -130,17 +127,17 @@ X509_Certificate X509_CA::make_cert(PK_Signer* signer,
 		.get_contents());
 
 	return X509_Certificate(cert);
-	}
+}
 
 /*
 * Create a new, empty CRL
 */
 X509_CRL X509_CA::new_crl(RandomNumberGenerator& rng,
 								  u32bit next_update) const
-	{
+{
 	std::vector<CRL_Entry> empty;
 	return make_crl(empty, 1, next_update, rng);
-	}
+}
 
 /*
 * Update a CRL with new entries
@@ -149,14 +146,14 @@ X509_CRL X509_CA::update_crl(const X509_CRL& crl,
 									  const std::vector<CRL_Entry>& new_revoked,
 									  RandomNumberGenerator& rng,
 									  u32bit next_update) const
-	{
+{
 	std::vector<CRL_Entry> revoked = crl.get_revoked();
 
 	std::copy(new_revoked.begin(), new_revoked.end(),
 				 std::back_inserter(revoked));
 
 	return make_crl(revoked, crl.crl_number() + 1, next_update, rng);
-	}
+}
 
 /*
 * Create a CRL
@@ -164,7 +161,7 @@ X509_CRL X509_CA::update_crl(const X509_CRL& crl,
 X509_CRL X509_CA::make_crl(const std::vector<CRL_Entry>& revoked,
 									u32bit crl_number, u32bit next_update,
 									RandomNumberGenerator& rng) const
-	{
+{
 	const size_t X509_CRL_VERSION = 2;
 
 	if(next_update == 0)
@@ -202,15 +199,15 @@ X509_CRL X509_CA::make_crl(const std::vector<CRL_Entry>& revoked,
 		.get_contents());
 
 	return X509_CRL(crl);
-	}
+}
 
 /*
 * Return the CA's certificate
 */
 X509_Certificate X509_CA::ca_certificate() const
-	{
+{
 	return cert;
-	}
+}
 
 /*
 * Choose a signing format for the key
@@ -218,7 +215,7 @@ X509_Certificate X509_CA::ca_certificate() const
 PK_Signer* choose_sig_format(const Private_Key& key,
 									  in string hash_fn,
 									  AlgorithmIdentifier& sig_algo)
-	{
+{
 	string padding;
 
 	const string algo_name = key.algo_name();
@@ -248,6 +245,6 @@ PK_Signer* choose_sig_format(const Private_Key& key,
 	sig_algo.parameters = key.algorithm_identifier().parameters;
 
 	return new PK_Signer(key, padding, format);
-	}
+}
 
 }

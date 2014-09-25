@@ -7,13 +7,10 @@
 
 #include <botan/idea_sse2.h>
 #include <emmintrin.h>
-
-namespace Botan {
-
 namespace {
 
 inline __m128i mul(__m128i X, u16bit K_16)
-	{
+{
 	const __m128i zeros = _mm_set1_epi16(0);
 	const __m128i ones = _mm_set1_epi16(1);
 
@@ -50,7 +47,7 @@ inline __m128i mul(__m128i X, u16bit K_16)
 		_mm_and_si128(_mm_sub_epi16(ones, X), K_is_zero));
 
 	return T;
-	}
+}
 
 /*
 * 4x8 matrix transpose
@@ -61,7 +58,7 @@ inline __m128i mul(__m128i X, u16bit K_16)
 * also help a lot with register pressure on 32-bit x86
 */
 void transpose_in(__m128i& B0, __m128i& B1, __m128i& B2, __m128i& B3)
-	{
+{
 	__m128i T0 = _mm_unpackhi_epi32(B0, B1);
 	__m128i T1 = _mm_unpacklo_epi32(B0, B1);
 	__m128i T2 = _mm_unpackhi_epi32(B2, B3);
@@ -91,13 +88,13 @@ void transpose_in(__m128i& B0, __m128i& B1, __m128i& B2, __m128i& B3)
 	B1 = _mm_unpackhi_epi64(T0, T2);
 	B2 = _mm_unpacklo_epi64(T1, T3);
 	B3 = _mm_unpackhi_epi64(T1, T3);
-	}
+}
 
 /*
 * 4x8 matrix transpose (reverse)
 */
 void transpose_out(__m128i& B0, __m128i& B1, __m128i& B2, __m128i& B3)
-	{
+{
 	__m128i T0 = _mm_unpacklo_epi64(B0, B1);
 	__m128i T1 = _mm_unpacklo_epi64(B2, B3);
 	__m128i T2 = _mm_unpackhi_epi64(B0, B1);
@@ -122,13 +119,13 @@ void transpose_out(__m128i& B0, __m128i& B1, __m128i& B2, __m128i& B3)
 	B1 = _mm_unpackhi_epi32(T0, T1);
 	B2 = _mm_unpacklo_epi32(T2, T3);
 	B3 = _mm_unpackhi_epi32(T2, T3);
-	}
+}
 
 /*
 * IDEA encryption/decryption in SSE2
 */
 void idea_op_8(const byte in[64], byte out[64], const u16bit EK[52])
-	{
+{
 	const __m128i* in_mm = reinterpret_cast<const __m128i*>(in);
 
 	__m128i B0 = _mm_loadu_si128(in_mm + 0);
@@ -145,7 +142,7 @@ void idea_op_8(const byte in[64], byte out[64], const u16bit EK[52])
 	B3 = _mm_or_si128(_mm_slli_epi16(B3, 8), _mm_srli_epi16(B3, 8));
 
 	for(size_t i = 0; i != 8; ++i)
-		{
+	{
 		B0 = mul(B0, EK[6*i+0]);
 		B1 = _mm_add_epi16(B1, _mm_set1_epi16(EK[6*i+1]));
 		B2 = _mm_add_epi16(B2, _mm_set1_epi16(EK[6*i+2]));
@@ -168,7 +165,7 @@ void idea_op_8(const byte in[64], byte out[64], const u16bit EK[52])
 		B1 = _mm_xor_si128(B1, T0);
 		B3 = _mm_xor_si128(B3, B2);
 		B2 = _mm_xor_si128(B2, T1);
-		}
+	}
 
 	B0 = mul(B0, EK[48]);
 	B1 = _mm_add_epi16(B1, _mm_set1_epi16(EK[50]));
@@ -189,7 +186,7 @@ void idea_op_8(const byte in[64], byte out[64], const u16bit EK[52])
 	_mm_storeu_si128(out_mm + 1, B2);
 	_mm_storeu_si128(out_mm + 2, B1);
 	_mm_storeu_si128(out_mm + 3, B3);
-	}
+}
 
 }
 
@@ -197,38 +194,38 @@ void idea_op_8(const byte in[64], byte out[64], const u16bit EK[52])
 * IDEA Encryption
 */
 void IDEA_SSE2::encrypt_n(const byte in[], byte out[], size_t blocks) const
-	{
+{
 	const u16bit* KS = &this->get_EK()[0];
 
 	while(blocks >= 8)
-		{
+	{
 		idea_op_8(in, out, KS);
 		in += 8 * BLOCK_SIZE;
 		out += 8 * BLOCK_SIZE;
 		blocks -= 8;
-		}
+	}
 
 	if(blocks)
 	  IDEA::encrypt_n(in, out, blocks);
-	}
+}
 
 /*
 * IDEA Decryption
 */
 void IDEA_SSE2::decrypt_n(const byte in[], byte out[], size_t blocks) const
-	{
+{
 	const u16bit* KS = &this->get_DK()[0];
 
 	while(blocks >= 8)
-		{
+	{
 		idea_op_8(in, out, KS);
 		in += 8 * BLOCK_SIZE;
 		out += 8 * BLOCK_SIZE;
 		blocks -= 8;
-		}
+	}
 
 	if(blocks)
 	  IDEA::decrypt_n(in, out, blocks);
-	}
+}
 
 }

@@ -5,25 +5,21 @@
 * Distributed under the terms of the Botan license
 */
 
-#ifndef BOTAN_ENTROPY_SRC_PROC_WALK_H__
 #define BOTAN_ENTROPY_SRC_PROC_WALK_H__
 
 #include <botan/entropy_src.h>
-
-namespace Botan {
-
 class File_Descriptor_Source
-	{
+{
 	public:
 		abstract int next_fd() = 0;
 		abstract ~File_Descriptor_Source() {}
-	};
+};
 
 /**
 * File Tree Walking Entropy Source
 */
 class ProcWalking_EntropySource : public EntropySource
-	{
+{
 	public:
 		string name() const { return "Proc Walker"; }
 
@@ -35,8 +31,4 @@ class ProcWalking_EntropySource : public EntropySource
 	private:
 		const string m_path;
 		std::unique_ptr<File_Descriptor_Source> m_dir;
-	};
-
-}
-
-#endif
+};

@@ -5,21 +5,17 @@
 * Distributed under the terms of the Botan license
 */
 
-#ifndef BOTAN_PBKDF_H__
 #define BOTAN_PBKDF_H__
 
 #include <botan/symkey.h>
 #include <chrono>
-
-namespace Botan {
-
 /**
 * Base class for PBKDF (password based key derivation function)
 * implementations. Converts a password into a key using a salt
 * and iterated hashing to make brute force attacks harder.
 */
 class PBKDF
-	{
+{
 	public:
 
 		abstract ~PBKDF() {}
@@ -56,9 +52,9 @@ class PBKDF
 									  in string passphrase,
 									  const std::vector<byte, Alloc>& salt,
 									  size_t iterations) const
-			{
+		{
 			return derive_key(output_len, passphrase, &salt[0], salt.size(), iterations);
-			}
+		}
 
 		/**
 		* Derive a key from a passphrase
@@ -89,9 +85,9 @@ class PBKDF
 									  const std::vector<byte, Alloc>& salt,
 									  std::chrono::milliseconds msec,
 									  size_t& iterations) const
-			{
+		{
 			return derive_key(output_len, passphrase, &salt[0], salt.size(), msec, iterations);
-			}
+		}
 
 		/**
 		* Derive a key from a passphrase for a number of iterations
@@ -113,8 +109,4 @@ class PBKDF
 								const byte salt[], size_t salt_len,
 								size_t iterations,
 								std::chrono::milliseconds msec) const = 0;
-	};
-
-}
-
-#endif
+};

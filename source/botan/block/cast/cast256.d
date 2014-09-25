@@ -9,40 +9,37 @@
 #include <botan/internal/cast_sboxes.h>
 #include <botan/loadstor.h>
 #include <botan/rotate.h>
-
-namespace Botan {
-
 namespace {
 
 /*
 * CAST-256 Round Type 1
 */
 void round1(u32bit& out, u32bit in, u32bit mask, u32bit rot)
-	{
+{
 	u32bit temp = rotate_left(mask + in, rot);
 	out  ^= (CAST_SBOX1[get_byte(0, temp)] ^ CAST_SBOX2[get_byte(1, temp)]) -
 				CAST_SBOX3[get_byte(2, temp)] + CAST_SBOX4[get_byte(3, temp)];
-	}
+}
 
 /*
 * CAST-256 Round Type 2
 */
 void round2(u32bit& out, u32bit in, u32bit mask, u32bit rot)
-	{
+{
 	u32bit temp = rotate_left(mask ^ in, rot);
 	out  ^= (CAST_SBOX1[get_byte(0, temp)]  - CAST_SBOX2[get_byte(1, temp)] +
 				CAST_SBOX3[get_byte(2, temp)]) ^ CAST_SBOX4[get_byte(3, temp)];
-	}
+}
 
 /*
 * CAST-256 Round Type 3
 */
 void round3(u32bit& out, u32bit in, u32bit mask, u32bit rot)
-	{
+{
 	u32bit temp = rotate_left(mask - in, rot);
 	out  ^= ((CAST_SBOX1[get_byte(0, temp)]  + CAST_SBOX2[get_byte(1, temp)]) ^
 				 CAST_SBOX3[get_byte(2, temp)]) - CAST_SBOX4[get_byte(3, temp)];
-	}
+}
 
 }
 
@@ -50,9 +47,9 @@ void round3(u32bit& out, u32bit in, u32bit mask, u32bit rot)
 * CAST-256 Encryption
 */
 void CAST_256::encrypt_n(const byte in[], byte out[], size_t blocks) const
-	{
+{
 	for(size_t i = 0; i != blocks; ++i)
-		{
+	{
 		u32bit A = load_be<u32bit>(in, 0);
 		u32bit B = load_be<u32bit>(in, 1);
 		u32bit C = load_be<u32bit>(in, 2);
@@ -87,16 +84,16 @@ void CAST_256::encrypt_n(const byte in[], byte out[], size_t blocks) const
 
 		in += BLOCK_SIZE;
 		out += BLOCK_SIZE;
-		}
 	}
+}
 
 /*
 * CAST-256 Decryption
 */
 void CAST_256::decrypt_n(const byte in[], byte out[], size_t blocks) const
-	{
+{
 	for(size_t i = 0; i != blocks; ++i)
-		{
+	{
 		u32bit A = load_be<u32bit>(in, 0);
 		u32bit B = load_be<u32bit>(in, 1);
 		u32bit C = load_be<u32bit>(in, 2);
@@ -131,14 +128,14 @@ void CAST_256::decrypt_n(const byte in[], byte out[], size_t blocks) const
 
 		in += BLOCK_SIZE;
 		out += BLOCK_SIZE;
-		}
 	}
+}
 
 /*
 * CAST-256 Key Schedule
 */
 void CAST_256::key_schedule(const byte key[], size_t length)
-	{
+{
 	static const u32bit KEY_MASK[192] = {
 		0x5A827999, 0xC95C653A, 0x383650DB, 0xA7103C7C, 0x15EA281D, 0x84C413BE,
 		0xF39DFF5F, 0x6277EB00, 0xD151D6A1, 0x402BC242, 0xAF05ADE3, 0x1DDF9984,
@@ -190,7 +187,7 @@ void CAST_256::key_schedule(const byte key[], size_t length)
 			 E = K[4], F = K[5], G = K[6], H = K[7];
 
 	for(size_t i = 0; i != 48; i += 4)
-		{
+	{
 		round1(G, H, KEY_MASK[4*i+ 0], KEY_ROT[(4*i+ 0) % 32]);
 		round2(F, G, KEY_MASK[4*i+ 1], KEY_ROT[(4*i+ 1) % 32]);
 		round3(E, F, KEY_MASK[4*i+ 2], KEY_ROT[(4*i+ 2) % 32]);
@@ -216,13 +213,13 @@ void CAST_256::key_schedule(const byte key[], size_t length)
 		MK[i+1] = F;
 		MK[i+2] = D;
 		MK[i+3] = B;
-		}
 	}
+}
 
 void CAST_256::clear()
-	{
+{
 	zap(MK);
 	zap(RK);
-	}
+}
 
 }

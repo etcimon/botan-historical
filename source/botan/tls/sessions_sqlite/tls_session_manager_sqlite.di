@@ -5,14 +5,10 @@
 * Released under the terms of the Botan license
 */
 
-#ifndef BOTAN_TLS_SQLITE3_SESSION_MANAGER_H__
 #define BOTAN_TLS_SQLITE3_SESSION_MANAGER_H__
 
 #include <botan/tls_session_manager.h>
 #include <botan/rng.h>
-
-namespace Botan {
-
 class sqlite3_database;
 
 namespace TLS {
@@ -26,7 +22,7 @@ namespace TLS {
 * serious privacy risk in some situations.
 */
 class Session_Manager_SQLite : public Session_Manager
-	{
+{
 	public:
 		/**
 		* @param passphrase used to encrypt the session data
@@ -58,7 +54,7 @@ class Session_Manager_SQLite : public Session_Manager
 		void save(const Session& session_data) override;
 
 		std::chrono::seconds session_lifetime() const override
-			{ return m_session_lifetime; }
+		{ return m_session_lifetime; }
 
 	private:
 		Session_Manager_SQLite(const Session_Manager_SQLite&);
@@ -71,10 +67,6 @@ class Session_Manager_SQLite : public Session_Manager
 		size_t m_max_sessions;
 		std::chrono::seconds m_session_lifetime;
 		sqlite3_database* m_db;
-	};
+};
 
 }
-
-}
-
-#endif

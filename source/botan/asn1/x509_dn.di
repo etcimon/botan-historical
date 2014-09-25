@@ -5,7 +5,6 @@
 * Distributed under the terms of the Botan license
 */
 
-#ifndef BOTAN_X509_DN_H__
 #define BOTAN_X509_DN_H__
 
 #include <botan/asn1_obj.h>
@@ -13,14 +12,11 @@
 #include <botan/asn1_str.h>
 #include <map>
 #include <iosfwd>
-
-namespace Botan {
-
 /**
 * Distinguished Name
 */
 class X509_DN : public ASN1_Object
-	{
+{
 	public:
 		void encode_into(class DER_Encoder&) const;
 		void decode_from(class BER_Decoder&);
@@ -43,14 +39,10 @@ class X509_DN : public ASN1_Object
 	private:
 		std::multimap<OID, ASN1_String> dn_info;
 		std::vector<byte> dn_bits;
-	};
+};
 
-bool BOTAN_DLL operator==(const X509_DN&, const X509_DN&);
-bool BOTAN_DLL operator!=(const X509_DN&, const X509_DN&);
-bool BOTAN_DLL operator<(const X509_DN&, const X509_DN&);
+bool operator==(const X509_DN&, const X509_DN&);
+bool operator!=(const X509_DN&, const X509_DN&);
+bool operator<(const X509_DN&, const X509_DN&);
 
-BOTAN_DLL std::ostream& operator<<(std::ostream& out, const X509_DN& dn);
-
-}
-
-#endif
+std::ostream& operator<<(std::ostream& out, const X509_DN& dn);

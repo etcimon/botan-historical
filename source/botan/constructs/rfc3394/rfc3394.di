@@ -5,13 +5,9 @@
 * Distributed under the terms of the Botan license
 */
 
-#ifndef BOTAN_AES_KEY_WRAP_H__
 #define BOTAN_AES_KEY_WRAP_H__
 
 #include <botan/symkey.h>
-
-namespace Botan {
-
 class Algorithm_Factory;
 
 /**
@@ -23,7 +19,7 @@ class Algorithm_Factory;
 * @param af an algorithm factory
 * @return key encrypted under kek
 */
-SafeArray!byte BOTAN_DLL rfc3394_keywrap(in SafeArray!byte key,
+SafeArray!byte rfc3394_keywrap(in SafeArray!byte key,
 															const SymmetricKey& kek,
 															Algorithm_Factory& af);
 
@@ -36,10 +32,6 @@ SafeArray!byte BOTAN_DLL rfc3394_keywrap(in SafeArray!byte key,
 * @param af an algorithm factory
 * @return key decrypted under kek
 */
-SafeArray!byte BOTAN_DLL rfc3394_keyunwrap(in SafeArray!byte key,
+SafeArray!byte rfc3394_keyunwrap(in SafeArray!byte key,
 															  const SymmetricKey& kek,
 															  Algorithm_Factory& af);
-
-}
-
-#endif

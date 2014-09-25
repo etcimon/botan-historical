@@ -5,7 +5,6 @@
 * Distributed under the terms of the Botan license
 */
 
-#ifndef BOTAN_TYPES_H__
 #define BOTAN_TYPES_H__
 
 #include <botan/build.h>
@@ -16,10 +15,7 @@
 
 /**
 * The primary namespace for the botan library
-*/
-namespace Botan {
-
-using ::uint8_t;
+*/using ::uint8_t;
 using ::uint16_t;
 using ::uint32_t;
 using ::uint64_t;
@@ -51,7 +47,3 @@ namespace Botan_types {
 
 using Botan::byte;
 using Botan::u32bit;
-
-}
-
-#endif

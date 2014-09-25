@@ -5,18 +5,14 @@
 * Distributed under the terms of the Botan license
 */
 
-#ifndef BOTAN_CRC24_H__
 #define BOTAN_CRC24_H__
 
 #include <botan/hash.h>
-
-namespace Botan {
-
 /**
 * 24-bit cyclic redundancy check
 */
 class CRC24 : public HashFunction
-	{
+{
 	public:
 		string name() const { return "CRC24"; }
 		size_t output_length() const { return 3; }
@@ -30,8 +26,4 @@ class CRC24 : public HashFunction
 		void add_data(const byte[], size_t);
 		void final_result(byte[]);
 		u32bit crc;
-	};
-
-}
-
-#endif
+};

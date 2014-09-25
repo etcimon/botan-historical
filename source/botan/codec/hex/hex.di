@@ -5,14 +5,10 @@
 * Distributed under the terms of the Botan license
 */
 
-#ifndef BOTAN_HEX_CODEC_H__
 #define BOTAN_HEX_CODEC_H__
 
 #include <botan/secmem.h>
 #include <string>
-
-namespace Botan {
-
 /**
 * Perform hex encoding
 * @param output an array of at least input_length*2 bytes
@@ -20,7 +16,7 @@ namespace Botan {
 * @param input_length length of input in bytes
 * @param uppercase should output be upper or lower case?
 */
-void BOTAN_DLL hex_encode(char output[],
+void hex_encode(char output[],
 								  const byte input[],
 								  size_t input_length,
 								  bool uppercase = true);
@@ -32,7 +28,7 @@ void BOTAN_DLL hex_encode(char output[],
 * @param uppercase should output be upper or lower case?
 * @return hexadecimal representation of input
 */
-string BOTAN_DLL hex_encode(const byte input[],
+string hex_encode(const byte input[],
 											size_t input_length,
 											bool uppercase = true);
 
@@ -45,9 +41,9 @@ string BOTAN_DLL hex_encode(const byte input[],
 template<typename Alloc>
 string hex_encode(const std::vector<byte, Alloc>& input,
 							  bool uppercase = true)
-	{
+{
 	return hex_encode(&input[0], input.size(), uppercase);
-	}
+}
 
 /**
 * Perform hex decoding
@@ -62,7 +58,7 @@ string hex_encode(const std::vector<byte, Alloc>& input,
 						 exception if whitespace is encountered
 * @return number of bytes written to output
 */
-size_t BOTAN_DLL hex_decode(byte output[],
+size_t hex_decode(byte output[],
 									 const char input[],
 									 size_t input_length,
 									 size_t& input_consumed,
@@ -77,7 +73,7 @@ size_t BOTAN_DLL hex_decode(byte output[],
 						 exception if whitespace is encountered
 * @return number of bytes written to output
 */
-size_t BOTAN_DLL hex_decode(byte output[],
+size_t hex_decode(byte output[],
 									 const char input[],
 									 size_t input_length,
 									 bool ignore_ws = true);
@@ -90,7 +86,7 @@ size_t BOTAN_DLL hex_decode(byte output[],
 						 exception if whitespace is encountered
 * @return number of bytes written to output
 */
-size_t BOTAN_DLL hex_decode(byte output[],
+size_t hex_decode(byte output[],
 									 in string input,
 									 bool ignore_ws = true);
 
@@ -116,10 +112,7 @@ hex_decode(const char input[],
 */
 std::vector<byte> BOTAN_DLL
 hex_decode(in string input,
-			  bool ignore_ws = true);
-
-
-/**
+			  bool ignore_ws = true);/**
 * Perform hex decoding
 * @param input some hex input
 * @param input_length the length of input in bytes
@@ -142,7 +135,3 @@ hex_decode_locked(const char input[],
 SafeArray!byte BOTAN_DLL
 hex_decode_locked(in string input,
 						bool ignore_ws = true);
-
-}
-
-#endif

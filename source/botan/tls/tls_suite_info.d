@@ -9,15 +9,12 @@
 */
 
 #include <botan/tls_ciphersuite.h>
-
-namespace Botan {
-
 namespace TLS {
 
 Ciphersuite Ciphersuite::by_id(u16bit suite)
-	{
+{
 	switch(suite)
-		{
+	{
 		case 0x0013: // DHE_DSS_WITH_3DES_EDE_CBC_SHA
 			return Ciphersuite(0x0013, "DSA", "DH", "3DES", 24, 8, "SHA-1", 20);
 
@@ -465,10 +462,10 @@ Ciphersuite Ciphersuite::by_id(u16bit suite)
 		case 0xC020: // SRP_SHA_WITH_AES_256_CBC_SHA
 			return Ciphersuite(0xC020, "", "SRP_SHA", "AES-256", 32, 16, "SHA-1", 20);
 
-		}
+	}
 
 	return Ciphersuite(); // some unknown ciphersuite
-	}
+}
 
 }
 

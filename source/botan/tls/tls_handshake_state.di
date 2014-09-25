@@ -5,7 +5,6 @@
 * Released under the terms of the Botan license
 */
 
-#ifndef BOTAN_TLS_HANDSHAKE_STATE_H__
 #define BOTAN_TLS_HANDSHAKE_STATE_H__
 
 #include <botan/internal/tls_handshake_hash.h>
@@ -17,9 +16,6 @@
 #include <botan/pk_keys.h>
 #include <botan/pubkey.h>
 #include <functional>
-
-namespace Botan {
-
 class KDF;
 
 namespace TLS {
@@ -44,7 +40,7 @@ class Finished;
 * SSL/TLS Handshake State
 */
 class Handshake_State
-	{
+{
 	public:
 		Handshake_State(Handshake_IO* io,
 							 std::function<void (const Handshake_Message&)> msg_callback =
@@ -118,43 +114,43 @@ class Handshake_State
 		void client_finished(Finished* client_finished);
 
 		const Client_Hello* client_hello() const
-			{ return m_client_hello.get(); }
+		{ return m_client_hello.get(); }
 
 		const Server_Hello* server_hello() const
-			{ return m_server_hello.get(); }
+		{ return m_server_hello.get(); }
 
 		const Certificate* server_certs() const
-			{ return m_server_certs.get(); }
+		{ return m_server_certs.get(); }
 
 		const Server_Key_Exchange* server_kex() const
-			{ return m_server_kex.get(); }
+		{ return m_server_kex.get(); }
 
 		const Certificate_Req* cert_req() const
-			{ return m_cert_req.get(); }
+		{ return m_cert_req.get(); }
 
 		const Server_Hello_Done* server_hello_done() const
-			{ return m_server_hello_done.get(); }
+		{ return m_server_hello_done.get(); }
 
 		const Certificate* client_certs() const
-			{ return m_client_certs.get(); }
+		{ return m_client_certs.get(); }
 
 		const Client_Key_Exchange* client_kex() const
-			{ return m_client_kex.get(); }
+		{ return m_client_kex.get(); }
 
 		const Certificate_Verify* client_verify() const
-			{ return m_client_verify.get(); }
+		{ return m_client_verify.get(); }
 
 		const Next_Protocol* next_protocol() const
-			{ return m_next_protocol.get(); }
+		{ return m_next_protocol.get(); }
 
 		const New_Session_Ticket* new_session_ticket() const
-			{ return m_new_session_ticket.get(); }
+		{ return m_new_session_ticket.get(); }
 
 		const Finished* server_finished() const
-			{ return m_server_finished.get(); }
+		{ return m_server_finished.get(); }
 
 		const Finished* client_finished() const
-			{ return m_client_finished.get(); }
+		{ return m_client_finished.get(); }
 
 		const Ciphersuite& ciphersuite() const { return m_ciphersuite; }
 
@@ -169,10 +165,10 @@ class Handshake_State
 		const Handshake_Hash& hash() const { return m_handshake_hash; }
 
 		void note_message(const Handshake_Message& msg)
-			{
+		{
 			if(m_msg_callback)
 				m_msg_callback(msg);
-			}
+		}
 
 	private:
 
@@ -200,10 +196,6 @@ class Handshake_State
 		std::unique_ptr<New_Session_Ticket> m_new_session_ticket;
 		std::unique_ptr<Finished> m_server_finished;
 		std::unique_ptr<Finished> m_client_finished;
-	};
+};
 
 }
-
-}
-
-#endif

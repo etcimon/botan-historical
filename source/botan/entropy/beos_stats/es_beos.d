@@ -10,14 +10,11 @@
 #include <kernel/OS.h>
 #include <kernel/image.h>
 #include <interface/InterfaceDefs.h>
-
-namespace Botan {
-
 /**
 * BeOS entropy poll
 */
 void BeOS_EntropySource::poll(Entropy_Accumulator& accum)
-	{
+{
 	system_info info_sys;
 	get_system_info(&info_sys);
 	accum.add(info_sys, 2);
@@ -30,7 +27,7 @@ void BeOS_EntropySource::poll(Entropy_Accumulator& accum)
 	int32 cookie_team = 0;
 
 	while(get_next_team_info(&cookie_team, &info_team) == B_OK)
-		{
+	{
 		accum.add(info_team, 2);
 
 		team_id id = info_team.team;
@@ -57,7 +54,7 @@ void BeOS_EntropySource::poll(Entropy_Accumulator& accum)
 
 		if(accum.polling_goal_achieved())
 			break;
-		}
 	}
+}
 
 }

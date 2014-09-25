@@ -5,18 +5,14 @@
 * Distributed under the terms of the Botan license
 */
 
-#ifndef BOTAN_CASCADE_H__
 #define BOTAN_CASCADE_H__
 
 #include <botan/block_cipher.h>
-
-namespace Botan {
-
 /**
 * Block Cipher Cascade
 */
 class Cascade_Cipher : public BlockCipher
-	{
+{
 	public:
 		void encrypt_n(const byte in[], byte out[], size_t blocks) const;
 		void decrypt_n(const byte in[], byte out[], size_t blocks) const;
@@ -24,10 +20,10 @@ class Cascade_Cipher : public BlockCipher
 		size_t block_size() const { return m_block; }
 
 		Key_Length_Specification key_spec() const
-			{
+		{
 			return Key_Length_Specification(m_cipher1->maximum_keylength() +
 													  m_cipher2->maximum_keylength());
-			}
+		}
 
 		void clear();
 		string name() const;
@@ -47,9 +43,4 @@ class Cascade_Cipher : public BlockCipher
 
 		size_t m_block;
 		std::unique_ptr<BlockCipher> m_cipher1, m_cipher2;
-	};
-
-
-}
-
-#endif
+};

@@ -5,7 +5,6 @@
 * Distributed under the terms of the Botan license
 */
 
-#ifndef BOTAN_DATA_STORE_H__
 #define BOTAN_DATA_STORE_H__
 
 #include <botan/secmem.h>
@@ -14,14 +13,11 @@
 #include <string>
 #include <vector>
 #include <map>
-
-namespace Botan {
-
 /**
 * Data Store
 */
 class Data_Store
-	{
+{
 	public:
 		/**
 		* A search function
@@ -50,8 +46,4 @@ class Data_Store
 		void add(in string, in Array!byte);
 	private:
 		std::multimap<string, string> contents;
-	};
-
-}
-
-#endif
+};

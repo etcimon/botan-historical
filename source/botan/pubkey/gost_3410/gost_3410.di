@@ -7,19 +7,15 @@
 * Distributed under the terms of the Botan license
 */
 
-#ifndef BOTAN_GOST_3410_KEY_H__
 #define BOTAN_GOST_3410_KEY_H__
 
 #include <botan/ecc_key.h>
 #include <botan/pk_ops.h>
-
-namespace Botan {
-
 /**
 * GOST-34.10 Public Key
 */
 class GOST_3410_PublicKey : public abstract EC_PublicKey
-	{
+{
 	public:
 
 		/**
@@ -58,18 +54,18 @@ class GOST_3410_PublicKey : public abstract EC_PublicKey
 		size_t message_parts() const { return 2; }
 
 		size_t message_part_size() const
-			{ return domain().get_order().bytes(); }
+		{ return domain().get_order().bytes(); }
 
 	protected:
 		GOST_3410_PublicKey() {}
-	};
+};
 
 /**
 * GOST-34.10 Private Key
 */
 class GOST_3410_PrivateKey : public GOST_3410_PublicKey,
 													public EC_PrivateKey
-	{
+{
 	public:
 
 		GOST_3410_PrivateKey(const AlgorithmIdentifier& alg_id,
@@ -88,14 +84,14 @@ class GOST_3410_PrivateKey : public GOST_3410_PublicKey,
 			EC_PrivateKey(rng, domain, x) {}
 
 		AlgorithmIdentifier pkcs8_algorithm_identifier() const
-			{ return EC_PublicKey::algorithm_identifier(); }
-	};
+		{ return EC_PublicKey::algorithm_identifier(); }
+};
 
 /**
 * GOST-34.10 signature operation
 */
 class GOST_3410_Signature_Operation : public PK_Ops::Signature
-	{
+{
 	public:
 		GOST_3410_Signature_Operation(const GOST_3410_PrivateKey& gost_3410);
 
@@ -110,13 +106,13 @@ class GOST_3410_Signature_Operation : public PK_Ops::Signature
 		const PointGFp& base_point;
 		const BigInt& order;
 		const BigInt& x;
-	};
+};
 
 /**
 * GOST-34.10 verification operation
 */
 class GOST_3410_Verification_Operation : public PK_Ops::Verification
-	{
+{
 	public:
 		GOST_3410_Verification_Operation(const GOST_3410_PublicKey& gost);
 
@@ -132,8 +128,4 @@ class GOST_3410_Verification_Operation : public PK_Ops::Verification
 		const PointGFp& base_point;
 		const PointGFp& public_point;
 		const BigInt& order;
-	};
-
-}
-
-#endif
+};

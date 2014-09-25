@@ -5,7 +5,6 @@
 * Released under the terms of the Botan license
 */
 
-#ifndef BOTAN_TLS_EXTENSIONS_H__
 #define BOTAN_TLS_EXTENSIONS_H__
 
 #include <botan/secmem.h>
@@ -14,9 +13,6 @@
 #include <string>
 #include <map>
 #include <set>
-
-namespace Botan {
-
 namespace TLS {
 
 class TLS_Data_Reader;
@@ -46,7 +42,7 @@ enum Handshake_Extension_Type {
 * Base class representing a TLS extension of some kind
 */
 class Extension
-	{
+{
 	public:
 		/**
 		* @return code number of the extension
@@ -64,16 +60,16 @@ class Extension
 		abstract bool empty() const = 0;
 
 		abstract ~Extension() {}
-	};
+};
 
 /**
 * Server Name Indicator extension (RFC 3546)
 */
 class Server_Name_Indicator : public Extension
-	{
+{
 	public:
 		static Handshake_Extension_Type static_type()
-			{ return TLSEXT_SERVER_NAME_INDICATION; }
+		{ return TLSEXT_SERVER_NAME_INDICATION; }
 
 		Handshake_Extension_Type type() const { return static_type(); }
 
@@ -90,16 +86,16 @@ class Server_Name_Indicator : public Extension
 		bool empty() const { return sni_host_name == ""; }
 	private:
 		string sni_host_name;
-	};
+};
 
 /**
 * SRP identifier extension (RFC 5054)
 */
 class SRP_Identifier : public Extension
-	{
+{
 	public:
 		static Handshake_Extension_Type static_type()
-			{ return TLSEXT_SRP_IDENTIFIER; }
+		{ return TLSEXT_SRP_IDENTIFIER; }
 
 		Handshake_Extension_Type type() const { return static_type(); }
 
@@ -116,16 +112,16 @@ class SRP_Identifier : public Extension
 		bool empty() const { return srp_identifier == ""; }
 	private:
 		string srp_identifier;
-	};
+};
 
 /**
 * Renegotiation Indication Extension (RFC 5746)
 */
 class Renegotiation_Extension : public Extension
-	{
+{
 	public:
 		static Handshake_Extension_Type static_type()
-			{ return TLSEXT_SAFE_RENEGOTIATION; }
+		{ return TLSEXT_SAFE_RENEGOTIATION; }
 
 		Handshake_Extension_Type type() const { return static_type(); }
 
@@ -138,23 +134,23 @@ class Renegotiation_Extension : public Extension
 									  u16bit extension_size);
 
 		in Array!byte renegotiation_info() const
-			{ return reneg_data; }
+		{ return reneg_data; }
 
 		std::vector<byte> serialize() const;
 
 		bool empty() const { return false; } // always send this
 	private:
 		std::vector<byte> reneg_data;
-	};
+};
 
 /**
 * Maximum Fragment Length Negotiation Extension (RFC 4366 sec 3.2)
 */
 class Maximum_Fragment_Length : public Extension
-	{
+{
 	public:
 		static Handshake_Extension_Type static_type()
-			{ return TLSEXT_MAX_FRAGMENT_LENGTH; }
+		{ return TLSEXT_MAX_FRAGMENT_LENGTH; }
 
 		Handshake_Extension_Type type() const { return static_type(); }
 
@@ -177,7 +173,7 @@ class Maximum_Fragment_Length : public Extension
 
 	private:
 		size_t m_max_fragment;
-	};
+};
 
 /**
 * Next Protocol Negotiation
@@ -188,15 +184,15 @@ class Maximum_Fragment_Length : public Extension
 * unspecified.
 */
 class Next_Protocol_Notification : public Extension
-	{
+{
 	public:
 		static Handshake_Extension_Type static_type()
-			{ return TLSEXT_NEXT_PROTOCOL; }
+		{ return TLSEXT_NEXT_PROTOCOL; }
 
 		Handshake_Extension_Type type() const { return static_type(); }
 
 		const std::vector<string>& protocols() const
-			{ return m_protocols; }
+		{ return m_protocols; }
 
 		/**
 		* Empty extension, used by client
@@ -217,16 +213,16 @@ class Next_Protocol_Notification : public Extension
 		bool empty() const { return false; }
 	private:
 		std::vector<string> m_protocols;
-	};
+};
 
 /**
 * Session Ticket Extension (RFC 5077)
 */
 class Session_Ticket : public Extension
-	{
+{
 	public:
 		static Handshake_Extension_Type static_type()
-			{ return TLSEXT_SESSION_TICKET; }
+		{ return TLSEXT_SESSION_TICKET; }
 
 		Handshake_Extension_Type type() const { return static_type(); }
 
@@ -256,16 +252,16 @@ class Session_Ticket : public Extension
 		bool empty() const { return false; }
 	private:
 		std::vector<byte> m_ticket;
-	};
+};
 
 /**
 * Supported Elliptic Curves Extension (RFC 4492)
 */
 class Supported_Elliptic_Curves : public Extension
-	{
+{
 	public:
 		static Handshake_Extension_Type static_type()
-			{ return TLSEXT_USABLE_ELLIPTIC_CURVES; }
+		{ return TLSEXT_USABLE_ELLIPTIC_CURVES; }
 
 		Handshake_Extension_Type type() const { return static_type(); }
 
@@ -285,16 +281,16 @@ class Supported_Elliptic_Curves : public Extension
 		bool empty() const { return m_curves.empty(); }
 	private:
 		std::vector<string> m_curves;
-	};
+};
 
 /**
 * Signature Algorithms Extension for TLS 1.2 (RFC 5246)
 */
 class Signature_Algorithms : public Extension
-	{
+{
 	public:
 		static Handshake_Extension_Type static_type()
-			{ return TLSEXT_SIGNATURE_ALGORITHMS; }
+		{ return TLSEXT_SIGNATURE_ALGORITHMS; }
 
 		Handshake_Extension_Type type() const { return static_type(); }
 
@@ -306,9 +302,9 @@ class Signature_Algorithms : public Extension
 
 		std::vector<std::pair<string, string> >
 			supported_signature_algorthms() const
-			{
+		{
 			return m_supported_algos;
-			}
+		}
 
 		std::vector<byte> serialize() const;
 
@@ -324,16 +320,16 @@ class Signature_Algorithms : public Extension
 									u16bit extension_size);
 	private:
 		std::vector<std::pair<string, string> > m_supported_algos;
-	};
+};
 
 /**
 * Heartbeat Extension (RFC 6520)
 */
 class Heartbeat_Support_Indicator : public Extension
-	{
+{
 	public:
 		static Handshake_Extension_Type static_type()
-			{ return TLSEXT_HEARTBEAT_SUPPORT; }
+		{ return TLSEXT_HEARTBEAT_SUPPORT; }
 
 		Handshake_Extension_Type type() const { return static_type(); }
 
@@ -350,19 +346,19 @@ class Heartbeat_Support_Indicator : public Extension
 
 	private:
 		bool m_peer_allowed_to_send;
-	};
+};
 
 /**
 * Represents a block of extensions in a hello message
 */
 class Extensions
-	{
+{
 	public:
 		std::set<Handshake_Extension_Type> extension_types() const;
 
 		template<typename T>
 		T* get() const
-			{
+		{
 			Handshake_Extension_Type type = T::static_type();
 
 			auto i = extensions.find(type);
@@ -370,12 +366,12 @@ class Extensions
 			if(i != extensions.end())
 				return dynamic_cast<T*>(i->second.get());
 			return nullptr;
-			}
+		}
 
 		void add(Extension* extn)
-			{
+		{
 			extensions[extn->type()].reset(extn);
-			}
+		}
 
 		std::vector<byte> serialize() const;
 
@@ -390,10 +386,6 @@ class Extensions
 		Extensions& operator=(const Extensions&) { return (*this); }
 
 		std::map<Handshake_Extension_Type, std::unique_ptr<Extension>> extensions;
-	};
+};
 
 }
-
-}
-
-#endif

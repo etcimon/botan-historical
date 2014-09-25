@@ -5,18 +5,14 @@
 * Distributed under the terms of the Botan license
 */
 
-#ifndef BOTAN_CRC32_H__
 #define BOTAN_CRC32_H__
 
 #include <botan/hash.h>
-
-namespace Botan {
-
 /**
 * 32-bit cyclic redundancy check
 */
 class CRC32 : public HashFunction
-	{
+{
 	public:
 		string name() const { return "CRC32"; }
 		size_t output_length() const { return 4; }
@@ -30,8 +26,4 @@ class CRC32 : public HashFunction
 		void add_data(const byte[], size_t);
 		void final_result(byte[]);
 		u32bit crc;
-	};
-
-}
-
-#endif
+};

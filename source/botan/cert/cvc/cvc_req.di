@@ -6,18 +6,14 @@
 * Distributed under the terms of the Botan license
 */
 
-#ifndef BOTAN_EAC_CVC_REQ_H__
 #define BOTAN_EAC_CVC_REQ_H__
 
 #include <botan/cvc_gen_cert.h>
-
-namespace Botan {
-
 /**
 * This class represents TR03110 v1.1 EAC CV Certificate Requests.
 */
 class EAC1_1_Req : public EAC1_1_gen_CVC<EAC1_1_Req>
-	{
+{
 	public:
 		friend class EAC1_1_ADO;
 		friend class EAC1_1_obj<EAC1_1_Req>;
@@ -44,16 +40,12 @@ class EAC1_1_Req : public EAC1_1_gen_CVC<EAC1_1_Req>
 	private:
 		void force_decode();
 		EAC1_1_Req() {}
-	};
+};
 
 /*
 * Comparison Operator
 */
 inline bool operator!=(EAC1_1_Req const& lhs, EAC1_1_Req const& rhs)
-	{
+{
 	return !(lhs == rhs);
-	}
-
 }
-
-#endif

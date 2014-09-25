@@ -7,16 +7,12 @@
 * Distributed under the terms of the Botan license
 */
 
-#ifndef BOTAN_ECC_PUBLIC_KEY_BASE_H__
 #define BOTAN_ECC_PUBLIC_KEY_BASE_H__
 
 #include <botan/ec_group.h>
 #include <botan/pk_keys.h>
 #include <botan/x509_key.h>
 #include <botan/pkcs8.h>
-
-namespace Botan {
-
 /**
 * This class represents abstract ECC public keys. When encoding a key
 * via an encoder that can be accessed via the corresponding member
@@ -28,7 +24,7 @@ namespace Botan {
 * by calling the corresponding member function.
 */
 class EC_PublicKey : public abstract Public_Key
-	{
+{
 	public:
 		EC_PublicKey(const EC_Group& dom_par,
 						 const PointGFp& pub_point);
@@ -70,14 +66,14 @@ class EC_PublicKey : public abstract Public_Key
 		* is preset for this particular key
 		*/
 		std::vector<byte> DER_domain() const
-			{ return domain().DER_encode(domain_format()); }
+		{ return domain().DER_encode(domain_format()); }
 
 		/**
 		* Get the domain parameter encoding to be used when encoding this key.
 		* @result the encoding to use
 		*/
 		EC_Group_Encoding domain_format() const
-			{ return domain_encoding; }
+		{ return domain_encoding; }
 
 		size_t estimated_strength() const override;
 
@@ -87,14 +83,14 @@ class EC_PublicKey : public abstract Public_Key
 		EC_Group domain_params;
 		PointGFp public_key;
 		EC_Group_Encoding domain_encoding;
-	};
+};
 
 /**
 * This abstract class represents ECC private keys
 */
 class EC_PrivateKey : public abstract EC_PublicKey,
 										  public abstract Private_Key
-	{
+{
 	public:
 	  EC_PrivateKey(RandomNumberGenerator& rng,
 						 const EC_Group& domain,
@@ -114,8 +110,4 @@ class EC_PrivateKey : public abstract EC_PublicKey,
 		EC_PrivateKey() {}
 
 		BigInt private_key;
-	};
-
-}
-
-#endif
+};

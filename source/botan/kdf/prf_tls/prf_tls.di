@@ -5,19 +5,15 @@
 * Distributed under the terms of the Botan license
 */
 
-#ifndef BOTAN_TLS_PRF_H__
 #define BOTAN_TLS_PRF_H__
 
 #include <botan/kdf.h>
 #include <botan/mac.h>
-
-namespace Botan {
-
 /**
 * PRF used in TLS 1.0/1.1
 */
 class TLS_PRF : public KDF
-	{
+{
 	public:
 		SafeArray!byte derive(size_t key_len,
 										  const byte secret[], size_t secret_len,
@@ -30,13 +26,13 @@ class TLS_PRF : public KDF
 	private:
 		std::unique_ptr<MessageAuthenticationCode> hmac_md5;
 		std::unique_ptr<MessageAuthenticationCode> hmac_sha1;
-	};
+};
 
 /**
 * PRF used in TLS 1.2
 */
 class TLS_12_PRF : public KDF
-	{
+{
 	public:
 		SafeArray!byte derive(size_t key_len,
 										  const byte secret[], size_t secret_len,
@@ -48,8 +44,4 @@ class TLS_12_PRF : public KDF
 		TLS_12_PRF(MessageAuthenticationCode* hmac);
 	private:
 		std::unique_ptr<MessageAuthenticationCode> hmac;
-	};
-
-}
-
-#endif
+};

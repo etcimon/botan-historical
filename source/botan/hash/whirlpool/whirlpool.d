@@ -7,24 +7,21 @@
 
 #include <botan/whrlpool.h>
 #include <botan/loadstor.h>
-
-namespace Botan {
-
 /*
 * Whirlpool Compression Function
 */
 void Whirlpool::compress_n(const byte in[], size_t blocks)
-	{
+{
 	static const u64bit RC[10] = {
 		0x1823C6E887B8014F, 0x36A6D2F5796F9152,
 		0x60BC9B8EA30C7B35, 0x1DE0D7C22E4BFE57,
 		0x157737E59FF04ADA, 0x58C9290AB1A06B85,
 		0xBD5D10F4CB3E0567, 0xE427418BA77D95D8,
 		0xFBEE7C66DD17479E, 0xCA2DBF07AD5A8333
-	};
+};
 
 	for(size_t i = 0; i != blocks; ++i)
-		{
+	{
 		load_be(&M[0], in, M.size());
 
 		u64bit K0, K1, K2, K3, K4, K5, K6, K7;
@@ -36,7 +33,7 @@ void Whirlpool::compress_n(const byte in[], size_t blocks)
 		B4 = K4 ^ M[4]; B5 = K5 ^ M[5]; B6 = K6 ^ M[6]; B7 = K7 ^ M[7];
 
 		for(size_t j = 0; j != 10; ++j)
-			{
+		{
 			u64bit T0, T1, T2, T3, T4, T5, T6, T7;
 			T0 = C0[get_byte(0, K0)] ^ C1[get_byte(1, K7)] ^
 				  C2[get_byte(2, K6)] ^ C3[get_byte(3, K5)] ^
@@ -109,7 +106,7 @@ void Whirlpool::compress_n(const byte in[], size_t blocks)
 
 			B0 = T0; B1 = T1; B2 = T2; B3 = T3;
 			B4 = T4; B5 = T5; B6 = T6; B7 = T7;
-			}
+		}
 
 		digest[0] ^= B0 ^ M[0];
 		digest[1] ^= B1 ^ M[1];
@@ -121,26 +118,26 @@ void Whirlpool::compress_n(const byte in[], size_t blocks)
 		digest[7] ^= B7 ^ M[7];
 
 		in += hash_block_size();
-		}
 	}
+}
 
 /*
 * Copy out the digest
 */
 void Whirlpool::copy_out(byte output[])
-	{
+{
 	for(size_t i = 0; i != output_length(); i += 8)
 		store_be(digest[i/8], output + i);
-	}
+}
 
 /*
 * Clear memory of sensitive data
 */
 void Whirlpool::clear()
-	{
+{
 	MDx_HashFunction::clear();
 	zeroise(M);
 	zeroise(digest);
-	}
+}
 
 }

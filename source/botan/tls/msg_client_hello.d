@@ -11,9 +11,6 @@
 #include <botan/internal/tls_handshake_io.h>
 #include <botan/internal/stl_util.h>
 #include <chrono>
-
-namespace Botan {
-
 namespace TLS {
 
 enum {
@@ -21,7 +18,7 @@ enum {
 };
 
 std::vector<byte> make_hello_random(RandomNumberGenerator& rng)
-	{
+{
 	std::vector<byte> buf(32);
 
 	const u32bit time32 = static_cast<u32bit>(
@@ -30,32 +27,32 @@ std::vector<byte> make_hello_random(RandomNumberGenerator& rng)
 	store_be(time32, &buf[0]);
 	rng.randomize(&buf[4], buf.size() - 4);
 	return buf;
-	}
+}
 
 /*
 * Create a new Hello Request message
 */
 Hello_Request::Hello_Request(Handshake_IO& io)
-	{
+{
 	io.send(*this);
-	}
+}
 
 /*
 * Deserialize a Hello Request message
 */
 Hello_Request::Hello_Request(in Array!byte buf)
-	{
+{
 	if(buf.size())
 		throw Decoding_Error("Bad Hello_Request, has non-zero size");
-	}
+}
 
 /*
 * Serialize a Hello Request message
 */
 std::vector<byte> Hello_Request::serialize() const
-	{
+{
 	return std::vector<byte>();
-	}
+}
 
 /*
 * Create a new Client Hello message
@@ -73,7 +70,7 @@ Client_Hello::Client_Hello(Handshake_IO& io,
 	m_random(make_hello_random(rng)),
 	m_suites(policy.ciphersuite_list(m_version, (srp_identifier != ""))),
 	m_comp_methods(policy.compression())
-	{
+{
 	m_extensions.add(new Renegotiation_Extension(reneg_info));
 	m_extensions.add(new SRP_Identifier(srp_identifier));
 	m_extensions.add(new Server_Name_Indicator(hostname));
@@ -91,7 +88,7 @@ Client_Hello::Client_Hello(Handshake_IO& io,
 		m_extensions.add(new Next_Protocol_Notification());
 
 	hash.update(io.send(*this));
-	}
+}
 
 /*
 * Create a new Client Hello message (session resumption case)
@@ -108,7 +105,7 @@ Client_Hello::Client_Hello(Handshake_IO& io,
 	m_random(make_hello_random(rng)),
 	m_suites(policy.ciphersuite_list(m_version, (session.srp_identifier() != ""))),
 	m_comp_methods(policy.compression())
-	{
+{
 	if(!value_exists(m_suites, session.ciphersuite_code()))
 		m_suites.push_back(session.ciphersuite_code());
 
@@ -135,32 +132,32 @@ Client_Hello::Client_Hello(Handshake_IO& io,
 		m_extensions.add(new Next_Protocol_Notification());
 
 	hash.update(io.send(*this));
-	}
+}
 
 /*
 * Read a counterparty client hello
 */
 Client_Hello::Client_Hello(in Array!byte buf, Handshake_Type type)
-	{
+{
 	if(type == CLIENT_HELLO)
 		deserialize(buf);
 	else
 		deserialize_sslv2(buf);
-	}
+}
 
 void Client_Hello::update_hello_cookie(const Hello_Verify_Request& hello_verify)
-	{
+{
 	if(!m_version.is_datagram_protocol())
 		throw std::runtime_error("Cannot use hello cookie with stream protocol");
 
 	m_hello_cookie = hello_verify.cookie();
-	}
+}
 
 /*
 * Serialize a Client Hello message
 */
 std::vector<byte> Client_Hello::serialize() const
-	{
+{
 	std::vector<byte> buf;
 
 	buf.push_back(m_version.major_version());
@@ -184,10 +181,10 @@ std::vector<byte> Client_Hello::serialize() const
 	buf += m_extensions.serialize();
 
 	return buf;
-	}
+}
 
 void Client_Hello::deserialize_sslv2(in Array!byte buf)
-	{
+{
 	if(buf.size() < 12 || buf[0] != 1)
 		throw Decoding_Error("Client_Hello: SSLv2 hello corrupted");
 
@@ -203,32 +200,32 @@ void Client_Hello::deserialize_sslv2(in Array!byte buf)
 
 	if(m_session_id_len != 0 || cipher_spec_len % 3 != 0 ||
 		(challenge_len < 16 || challenge_len > 32))
-		{
+	{
 		throw Decoding_Error("Client_Hello: SSLv2 hello corrupted");
-		}
+	}
 
 	m_version = Protocol_Version(buf[1], buf[2]);
 
 	for(size_t i = 9; i != 9 + cipher_spec_len; i += 3)
-		{
+	{
 		if(buf[i] != 0) // a SSLv2 cipherspec; ignore it
 			continue;
 
 		m_suites.push_back(make_u16bit(buf[i+1], buf[i+2]));
-		}
+	}
 
 	m_random.resize(challenge_len);
 	copy_mem(&m_random[0], &buf[9+cipher_spec_len+m_session_id_len], challenge_len);
 
 	if(offered_suite(static_cast<u16bit>(TLS_EMPTY_RENEGOTIATION_INFO_SCSV)))
 		m_extensions.add(new Renegotiation_Extension());
-	}
+}
 
 /*
 * Deserialize a Client Hello message
 */
 void Client_Hello::deserialize(in Array!byte buf)
-	{
+{
 	if(buf.size() == 0)
 		throw Decoding_Error("Client_Hello: Packet corrupted");
 
@@ -256,31 +253,31 @@ void Client_Hello::deserialize(in Array!byte buf)
 	m_extensions.deserialize(reader);
 
 	if(offered_suite(static_cast<u16bit>(TLS_EMPTY_RENEGOTIATION_INFO_SCSV)))
-		{
+	{
 		if(Renegotiation_Extension* reneg = m_extensions.get<Renegotiation_Extension>())
-			{
+		{
 			if(!reneg->renegotiation_info().empty())
 				throw TLS_Exception(Alert::HANDSHAKE_FAILURE,
 										  "Client send renegotiation SCSV and non-empty extension");
-			}
+		}
 		else
-			{
+		{
 			// add fake extension
 			m_extensions.add(new Renegotiation_Extension());
-			}
 		}
 	}
+}
 
 /*
 * Check if we offered this ciphersuite
 */
 bool Client_Hello::offered_suite(u16bit ciphersuite) const
-	{
+{
 	for(size_t i = 0; i != m_suites.size(); ++i)
 		if(m_suites[i] == ciphersuite)
 			return true;
 	return false;
-	}
+}
 
 }
 

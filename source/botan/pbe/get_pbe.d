@@ -15,9 +15,6 @@
   #include <botan/pbes2.h>
   #include <botan/hmac.h>
 #endif
-
-namespace Botan {
-
 /*
 * Get an encryption PBE, set new parameters
 */
@@ -25,7 +22,7 @@ PBE* get_pbe(in string algo_spec,
 				 in string passphrase,
 				 std::chrono::milliseconds msec,
 				 RandomNumberGenerator& rng)
-	{
+{
 	SCAN_Name request(algo_spec);
 
 	const string pbe = request.algo_name();
@@ -65,7 +62,7 @@ PBE* get_pbe(in string algo_spec,
 #endif
 
 	throw Algorithm_Not_Found(algo_spec);
-	}
+}
 
 /*
 * Get a decryption PBE, decode parameters
@@ -73,7 +70,7 @@ PBE* get_pbe(in string algo_spec,
 PBE* get_pbe(const OID& pbe_oid,
 				 in Array!byte params,
 				 in string passphrase)
-	{
+{
 	SCAN_Name request(OIDS::lookup(pbe_oid));
 
 	const string pbe = request.algo_name();
@@ -84,6 +81,6 @@ PBE* get_pbe(const OID& pbe_oid,
 #endif
 
 	throw Algorithm_Not_Found(pbe_oid.as_string());
-	}
+}
 
 }

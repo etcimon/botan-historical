@@ -7,9 +7,6 @@
 
 #include <botan/noekeon_simd.h>
 #include <botan/internal/simd_32.h>
-
-namespace Botan {
-
 /*
 * Noekeon's Theta Operation
 */
@@ -39,14 +36,14 @@ namespace Botan {
 		T ^= T_r8;													 \
 		A0 ^= T;														\
 		A2 ^= T;														\
-		} while(0)
+	} while(0)
 
 /*
 * Noekeon's Gamma S-Box Layer
 */
 #define NOK_SIMD_GAMMA(A0, A1, A2, A3)											 \
 	do																						 \
-		{																					  \
+	{																					  \
 		A1 ^= A3.andc(~A2);															  \
 		A0 ^= A2 & A1;																	 \
 																								\
@@ -58,13 +55,13 @@ namespace Botan {
 																								\
 		A1 ^= A3.andc(~A2);															  \
 		A0 ^= A2 & A1;																	 \
-		} while(0)
+	} while(0)
 
 /*
 * Noekeon Encryption
 */
 void Noekeon_SIMD::encrypt_n(const byte in[], byte out[], size_t blocks) const
-	{
+{
 	const secure_vector<u32bit>& EK = this->get_EK();
 
 	SIMD_32 K0 = SIMD_32(EK[0]);
@@ -73,7 +70,7 @@ void Noekeon_SIMD::encrypt_n(const byte in[], byte out[], size_t blocks) const
 	SIMD_32 K3 = SIMD_32(EK[3]);
 
 	while(blocks >= 4)
-		{
+	{
 		SIMD_32 A0 = SIMD_32::load_be(in	  );
 		SIMD_32 A1 = SIMD_32::load_be(in + 16);
 		SIMD_32 A2 = SIMD_32::load_be(in + 32);
@@ -82,7 +79,7 @@ void Noekeon_SIMD::encrypt_n(const byte in[], byte out[], size_t blocks) const
 		SIMD_32::transpose(A0, A1, A2, A3);
 
 		for(size_t i = 0; i != 16; ++i)
-			{
+		{
 			A0 ^= SIMD_32(RC[i]);
 
 			NOK_SIMD_THETA(A0, A1, A2, A3, K0, K1, K2, K3);
@@ -96,7 +93,7 @@ void Noekeon_SIMD::encrypt_n(const byte in[], byte out[], size_t blocks) const
 			A1.rotate_right(1);
 			A2.rotate_right(5);
 			A3.rotate_right(2);
-			}
+		}
 
 		A0 ^= SIMD_32(RC[16]);
 		NOK_SIMD_THETA(A0, A1, A2, A3, K0, K1, K2, K3);
@@ -111,17 +108,17 @@ void Noekeon_SIMD::encrypt_n(const byte in[], byte out[], size_t blocks) const
 		in += 64;
 		out += 64;
 		blocks -= 4;
-		}
+	}
 
 	if(blocks)
 	  Noekeon::encrypt_n(in, out, blocks);
-	}
+}
 
 /*
 * Noekeon Encryption
 */
 void Noekeon_SIMD::decrypt_n(const byte in[], byte out[], size_t blocks) const
-	{
+{
 	const secure_vector<u32bit>& DK = this->get_DK();
 
 	SIMD_32 K0 = SIMD_32(DK[0]);
@@ -130,7 +127,7 @@ void Noekeon_SIMD::decrypt_n(const byte in[], byte out[], size_t blocks) const
 	SIMD_32 K3 = SIMD_32(DK[3]);
 
 	while(blocks >= 4)
-		{
+	{
 		SIMD_32 A0 = SIMD_32::load_be(in	  );
 		SIMD_32 A1 = SIMD_32::load_be(in + 16);
 		SIMD_32 A2 = SIMD_32::load_be(in + 32);
@@ -139,7 +136,7 @@ void Noekeon_SIMD::decrypt_n(const byte in[], byte out[], size_t blocks) const
 		SIMD_32::transpose(A0, A1, A2, A3);
 
 		for(size_t i = 0; i != 16; ++i)
-			{
+		{
 			NOK_SIMD_THETA(A0, A1, A2, A3, K0, K1, K2, K3);
 
 			A0 ^= SIMD_32(RC[16-i]);
@@ -153,7 +150,7 @@ void Noekeon_SIMD::decrypt_n(const byte in[], byte out[], size_t blocks) const
 			A1.rotate_right(1);
 			A2.rotate_right(5);
 			A3.rotate_right(2);
-			}
+		}
 
 		NOK_SIMD_THETA(A0, A1, A2, A3, K0, K1, K2, K3);
 		A0 ^= SIMD_32(RC[0]);
@@ -168,10 +165,10 @@ void Noekeon_SIMD::decrypt_n(const byte in[], byte out[], size_t blocks) const
 		in += 64;
 		out += 64;
 		blocks -= 4;
-		}
+	}
 
 	if(blocks)
 	  Noekeon::decrypt_n(in, out, blocks);
-	}
+}
 
 }

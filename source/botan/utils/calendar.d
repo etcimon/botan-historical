@@ -8,13 +8,10 @@
 #include <botan/calendar.h>
 #include <botan/exceptn.h>
 #include <ctime>
-
-namespace Botan {
-
 namespace {
 
 std::tm do_gmtime(std::time_t time_val)
-	{
+{
 	std::tm tm;
 
 #if defined(BOTAN_TARGET_OS_HAS_GMTIME_S)
@@ -29,7 +26,7 @@ std::tm do_gmtime(std::time_t time_val)
 #endif
 
 	return tm;
-	}
+}
 
 }
 
@@ -38,7 +35,7 @@ std::tm do_gmtime(std::time_t time_val)
 */
 calendar_point calendar_value(
 	const std::chrono::system_clock::time_point& time_point)
-	{
+{
 	std::tm tm = do_gmtime(std::chrono::system_clock::to_time_t(time_point));
 
 	return calendar_point(tm.tm_year + 1900,
@@ -47,6 +44,6 @@ calendar_point calendar_value(
 								 tm.tm_hour,
 								 tm.tm_min,
 								 tm.tm_sec);
-	}
+}
 
 }

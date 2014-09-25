@@ -12,16 +12,13 @@
 #include <botan/internal/xor_buf.h>
 #include <algorithm>
 #include <chrono>
-
-namespace Botan {
-
 namespace {
 
 void hmac_prf(MessageAuthenticationCode& prf,
 				  SafeArray!byte& K,
 				  u32bit& counter,
 				  in string label)
-	{
+{
 	typedef std::chrono::high_resolution_clock clock;
 
 	auto timestamp = clock::now().time_since_epoch().count();
@@ -33,7 +30,7 @@ void hmac_prf(MessageAuthenticationCode& prf,
 	prf.final(&K[0]);
 
 	++counter;
-	}
+}
 
 }
 
@@ -43,7 +40,7 @@ void hmac_prf(MessageAuthenticationCode& prf,
 HMAC_RNG::HMAC_RNG(MessageAuthenticationCode* extractor,
 						 MessageAuthenticationCode* prf) :
 	m_extractor(extractor), m_prf(prf)
-	{
+{
 	if(!m_prf->valid_keylength(m_extractor->output_length()) ||
 		!m_extractor->valid_keylength(m_prf->output_length()))
 		throw Invalid_Argument("HMAC_RNG: Bad algo combination " +
@@ -79,19 +76,19 @@ HMAC_RNG::HMAC_RNG(MessageAuthenticationCode* extractor,
 	using this fixed extractor key is safe to do.
 	*/
 	m_extractor->set_key(prf->process("Botan HMAC_RNG XTS"));
-	}
+}
 
 /*
 * Generate a buffer of random bytes
 */
 void HMAC_RNG::randomize(byte out[], size_t length)
-	{
+{
 	if(!is_seeded())
-		{
+	{
 		reseed(256);
 		if(!is_seeded())
 			throw PRNG_Unseeded(name());
-		}
+	}
 
 	const size_t max_per_prf_iter = m_prf->output_length() / 2;
 
@@ -99,7 +96,7 @@ void HMAC_RNG::randomize(byte out[], size_t length)
 	 HMAC KDF as described in E-t-E, using a CTXinfo of "rng"
 	*/
 	while(length)
-		{
+	{
 		hmac_prf(*m_prf, m_K, m_counter, "rng");
 
 		const size_t copied = std::min<size_t>(length, max_per_prf_iter);
@@ -112,14 +109,14 @@ void HMAC_RNG::randomize(byte out[], size_t length)
 
 		if(m_output_since_reseed >= BOTAN_RNG_MAX_OUTPUT_BEFORE_RESEED)
 			reseed(BOTAN_RNG_RESEED_POLL_BITS);
-		}
 	}
+}
 
 /*
 * Poll for entropy and reset the internal keys
 */
 void HMAC_RNG::reseed(size_t poll_bits)
-	{
+{
 	/*
 	Using the terminology of E-t-E, XTR is the MAC function (normally
 	HMAC) seeded with XTS (below) and we form SKM, the key material, by
@@ -132,11 +129,11 @@ void HMAC_RNG::reseed(size_t poll_bits)
 
 	Entropy_Accumulator accum(
 		[&](const byte in[], size_t in_len, double entropy_estimate)
-		{
+	{
 		m_extractor->update(in, in_len);
 		bits_collected += entropy_estimate;
 		return (bits_collected >= poll_bits);
-		});
+	});
 
 	global_state().poll_available_sources(accum);
 
@@ -174,40 +171,40 @@ void HMAC_RNG::reseed(size_t poll_bits)
 							  m_extractor->output_length() * 8);
 
 	m_output_since_reseed = 0;
-	}
+}
 
 bool HMAC_RNG::is_seeded() const
-	{
+{
 	return (m_collected_entropy_estimate >= 256);
-	}
+}
 
 /*
 * Add user-supplied entropy to the extractor input
 */
 void HMAC_RNG::add_entropy(const byte input[], size_t length)
-	{
+{
 	m_extractor->update(input, length);
 	reseed(BOTAN_RNG_RESEED_POLL_BITS);
-	}
+}
 
 /*
 * Clear memory of sensitive data
 */
 void HMAC_RNG::clear()
-	{
+{
 	m_collected_entropy_estimate = 0;
 	m_extractor->clear();
 	m_prf->clear();
 	zeroise(m_K);
 	m_counter = 0;
-	}
+}
 
 /*
 * Return the name of this type
 */
 string HMAC_RNG::name() const
-	{
+{
 	return "HMAC_RNG(" + m_extractor->name() + "," + m_prf->name() + ")";
-	}
+}
 
 }

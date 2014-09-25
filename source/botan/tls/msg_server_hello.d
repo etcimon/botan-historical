@@ -11,9 +11,6 @@
 #include <botan/internal/tls_extensions.h>
 #include <botan/internal/tls_handshake_io.h>
 #include <botan/internal/stl_util.h>
-
-namespace Botan {
-
 namespace TLS {
 
 /*
@@ -39,7 +36,7 @@ Server_Hello::Server_Hello(Handshake_IO& io,
 	m_random(make_hello_random(rng)),
 	m_ciphersuite(ciphersuite),
 	m_comp_method(compression)
-	{
+{
 	if(client_has_heartbeat && policy.negotiate_heartbeat_support())
 		m_extensions.add(new Heartbeat_Support_Indicator(true));
 
@@ -60,13 +57,13 @@ Server_Hello::Server_Hello(Handshake_IO& io,
 		m_extensions.add(new Session_Ticket());
 
 	hash.update(io.send(*this));
-	}
+}
 
 /*
 * Deserialize a Server Hello message
 */
 Server_Hello::Server_Hello(in Array!byte buf)
-	{
+{
 	if(buf.size() < 38)
 		throw Decoding_Error("Server_Hello: Packet corrupted");
 
@@ -86,13 +83,13 @@ Server_Hello::Server_Hello(in Array!byte buf)
 	m_comp_method = reader.get_byte();
 
 	m_extensions.deserialize(reader);
-	}
+}
 
 /*
 * Serialize a Server Hello message
 */
 std::vector<byte> Server_Hello::serialize() const
-	{
+{
 	std::vector<byte> buf;
 
 	buf.push_back(m_version.major_version());
@@ -109,33 +106,33 @@ std::vector<byte> Server_Hello::serialize() const
 	buf += m_extensions.serialize();
 
 	return buf;
-	}
+}
 
 /*
 * Create a new Server Hello Done message
 */
 Server_Hello_Done::Server_Hello_Done(Handshake_IO& io,
 												 Handshake_Hash& hash)
-	{
+{
 	hash.update(io.send(*this));
-	}
+}
 
 /*
 * Deserialize a Server Hello Done message
 */
 Server_Hello_Done::Server_Hello_Done(in Array!byte buf)
-	{
+{
 	if(buf.size())
 		throw Decoding_Error("Server_Hello_Done: Must be empty, and is not");
-	}
+}
 
 /*
 * Serialize a Server Hello Done message
 */
 std::vector<byte> Server_Hello_Done::serialize() const
-	{
+{
 	return std::vector<byte>();
-	}
+}
 
 }
 

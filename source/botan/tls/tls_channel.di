@@ -5,7 +5,6 @@
 * Released under the terms of the Botan license
 */
 
-#ifndef BOTAN_TLS_CHANNEL_H__
 #define BOTAN_TLS_CHANNEL_H__
 
 #include <botan/tls_policy.h>
@@ -16,9 +15,6 @@
 #include <vector>
 #include <string>
 #include <map>
-
-namespace Botan {
-
 namespace TLS {
 
 class Connection_Cipher_State;
@@ -29,7 +25,7 @@ class Handshake_State;
 * Generic interface for TLS endpoint
 */
 class Channel
-	{
+{
 	public:
 		/**
 		* Inject TLS traffic received from counterparty
@@ -60,9 +56,9 @@ class Channel
 		*/
 		template<typename Alloc>
 			void send(const std::vector<unsigned char, Alloc>& val)
-			{
+		{
 			send(&val[0], val.size());
-			}
+		}
 
 		/**
 		* Send a TLS alert message. If the alert is fatal, the internal
@@ -247,10 +243,6 @@ class Channel
 		/* I/O buffers */
 		SafeArray!byte m_writebuf;
 		SafeArray!byte m_readbuf;
-	};
+};
 
 }
-
-}
-
-#endif

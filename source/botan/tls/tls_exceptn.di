@@ -5,21 +5,17 @@
 * Released under the terms of the Botan license
 */
 
-#ifndef BOTAN_TLS_EXCEPTION_H__
 #define BOTAN_TLS_EXCEPTION_H__
 
 #include <botan/exceptn.h>
 #include <botan/tls_alert.h>
-
-namespace Botan {
-
 namespace TLS {
 
 /**
 * Exception Base Class
 */
 class TLS_Exception : public Exception
-	{
+{
 	public:
 		Alert::Type type() const noexcept { return alert_type; }
 
@@ -29,19 +25,15 @@ class TLS_Exception : public Exception
 
 	private:
 		Alert::Type alert_type;
-	};
+};
 
 /**
 * Unexpected_Message Exception
 */
-struct BOTAN_DLL Unexpected_Message : public TLS_Exception
-	{
+struct Unexpected_Message : public TLS_Exception
+{
 	Unexpected_Message(in string err) :
 		TLS_Exception(Alert::UNEXPECTED_MESSAGE, err) {}
-	};
+};
 
 }
-
-}
-
-#endif

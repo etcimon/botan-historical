@@ -5,19 +5,15 @@
 * Distributed under the terms of the Botan license
 */
 
-#ifndef BOTAN_PK_FILTERS_H__
 #define BOTAN_PK_FILTERS_H__
 
 #include <botan/filter.h>
 #include <botan/pubkey.h>
-
-namespace Botan {
-
 /**
 * PK_Encryptor Filter
 */
 class PK_Encryptor_Filter : public Filter
-	{
+{
 	public:
 		void write(const byte[], size_t);
 		void end_msg();
@@ -29,13 +25,13 @@ class PK_Encryptor_Filter : public Filter
 		PK_Encryptor* cipher;
 		RandomNumberGenerator& rng;
 		SafeArray!byte buffer;
-	};
+};
 
 /**
 * PK_Decryptor Filter
 */
 class PK_Decryptor_Filter : public Filter
-	{
+{
 	public:
 		void write(const byte[], size_t);
 		void end_msg();
@@ -44,13 +40,13 @@ class PK_Decryptor_Filter : public Filter
 	private:
 		PK_Decryptor* cipher;
 		SafeArray!byte buffer;
-	};
+};
 
 /**
 * PK_Signer Filter
 */
 class PK_Signer_Filter : public Filter
-	{
+{
 	public:
 		void write(const byte[], size_t);
 		void end_msg();
@@ -63,13 +59,13 @@ class PK_Signer_Filter : public Filter
 	private:
 		PK_Signer* signer;
 		RandomNumberGenerator& rng;
-	};
+};
 
 /**
 * PK_Verifier Filter
 */
 class PK_Verifier_Filter : public Filter
-	{
+{
 	public:
 		void write(const byte[], size_t);
 		void end_msg();
@@ -84,8 +80,4 @@ class PK_Verifier_Filter : public Filter
 	private:
 		PK_Verifier* verifier;
 		SafeArray!byte signature;
-	};
-
-}
-
-#endif
+};

@@ -5,14 +5,10 @@
 * Distributed under the terms of the Botan license
 */
 
-#ifndef BOTAN_ASN1_H__
 #define BOTAN_ASN1_H__
 
 #include <botan/secmem.h>
 #include <botan/exceptn.h>
-
-namespace Botan {
-
 /**
 * ASN.1 Type and Class Tags
 */
@@ -55,7 +51,7 @@ enum ASN1_Tag {
 * Basic ASN.1 Object Interface
 */
 class ASN1_Object
-	{
+{
 	public:
 		/**
 		* Encode whatever this object is into to
@@ -70,19 +66,19 @@ class ASN1_Object
 		abstract void decode_from(class BER_Decoder& from) = 0;
 
 		abstract ~ASN1_Object() {}
-	};
+};
 
 /**
 * BER Encoded Object
 */
 class BER_Object
-	{
+{
 	public:
 		void assert_is_a(ASN1_Tag, ASN1_Tag);
 
 		ASN1_Tag type_tag, class_tag;
 		SafeArray!byte value;
-	};
+};
 
 /*
 * ASN.1 Utility Functions
@@ -105,20 +101,16 @@ bool maybe_BER(DataSource& src);
 /**
 * General BER Decoding Error Exception
 */
-struct BOTAN_DLL BER_Decoding_Error : public Decoding_Error
-	{
+struct BER_Decoding_Error : public Decoding_Error
+{
 	BER_Decoding_Error(in string);
-	};
+};
 
 /**
 * Exception For Incorrect BER Taggings
 */
-struct BOTAN_DLL BER_Bad_Tag : public BER_Decoding_Error
-	{
+struct BER_Bad_Tag : public BER_Decoding_Error
+{
 	BER_Bad_Tag(in string msg, ASN1_Tag tag);
 	BER_Bad_Tag(in string msg, ASN1_Tag tag1, ASN1_Tag tag2);
-	};
-
-}
-
-#endif
+};

@@ -5,22 +5,18 @@
 * Distributed under the terms of the Botan license
 */
 
-#ifndef BOTAN_AEAD_GCM_H__
 #define BOTAN_AEAD_GCM_H__
 
 #include <botan/aead.h>
 #include <botan/block_cipher.h>
 #include <botan/stream_cipher.h>
-
-namespace Botan {
-
 class GHASH;
 
 /**
 * GCM Mode
 */
 class GCM_Mode : public AEAD_Mode
-	{
+{
 	public:
 		SafeArray!byte start(const byte nonce[], size_t nonce_len) override;
 
@@ -50,13 +46,13 @@ class GCM_Mode : public AEAD_Mode
 
 		std::unique_ptr<StreamCipher> m_ctr;
 		std::unique_ptr<GHASH> m_ghash;
-	};
+};
 
 /**
 * GCM Encryption
 */
 class GCM_Encryption : public GCM_Mode
-	{
+{
 	public:
 		/**
 		* @param cipher the 128 bit block cipher to use
@@ -66,20 +62,20 @@ class GCM_Encryption : public GCM_Mode
 			GCM_Mode(cipher, tag_size) {}
 
 		size_t output_length(size_t input_length) const override
-			{ return input_length + tag_size(); }
+		{ return input_length + tag_size(); }
 
 		size_t minimum_final_size() const override { return 0; }
 
 		void update(SafeArray!byte& blocks, size_t offset = 0) override;
 
 		void finish(SafeArray!byte& final_block, size_t offset = 0) override;
-	};
+};
 
 /**
 * GCM Decryption
 */
 class GCM_Decryption : public GCM_Mode
-	{
+{
 	public:
 		/**
 		* @param cipher the 128 bit block cipher to use
@@ -89,24 +85,24 @@ class GCM_Decryption : public GCM_Mode
 			GCM_Mode(cipher, tag_size) {}
 
 		size_t output_length(size_t input_length) const override
-			{
+		{
 			BOTAN_ASSERT(input_length > tag_size(), "Sufficient input");
 			return input_length - tag_size();
-			}
+		}
 
 		size_t minimum_final_size() const override { return tag_size(); }
 
 		void update(SafeArray!byte& blocks, size_t offset = 0) override;
 
 		void finish(SafeArray!byte& final_block, size_t offset = 0) override;
-	};
+};
 
 /**
 * GCM's GHASH
 * Maybe a Transform?
 */
 class GHASH : public SymmetricAlgorithm
-	{
+{
 	public:
 		void set_associated_data(const byte ad[], size_t ad_len);
 
@@ -142,8 +138,4 @@ class GHASH : public SymmetricAlgorithm
 		SafeArray!byte m_nonce;
 		SafeArray!byte m_ghash;
 		size_t m_ad_len = 0, m_text_len = 0;
-	};
-
-}
-
-#endif
+};

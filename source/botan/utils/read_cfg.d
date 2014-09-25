@@ -7,21 +7,18 @@
 
 #include <botan/parsing.h>
 #include <ctype.h>
-
-namespace Botan {
-
 void lex_cfg(std::istream& is,
 				 std::function<void (string)> cb)
-	{
+{
 	while(is.good())
-		{
+	{
 		string s;
 
 		std::getline(is, s);
 
 		while(is.good() && s.back() == '\\')
-			{
-			while(s.size() && (s.back() == '\\' || s.back() == '\n'))
+		{
+			while(s.size() && (s.back() == '\\' || s.back() == ''))
 				s.resize(s.size()-1);
 
 			string x;
@@ -33,7 +30,7 @@ void lex_cfg(std::istream& is,
 				++i;
 
 			s += x.substr(i);
-			}
+		}
 
 		auto comment = s.find('#');
 		if(comment)
@@ -45,77 +42,77 @@ void lex_cfg(std::istream& is,
 		auto parts = split_on_pred(s, [](char c) { return ::isspace(c); });
 
 		for(auto& p : parts)
-			{
+		{
 			if(p.empty())
 				continue;
 
 			auto eq = p.find("=");
 
 			if(eq == string::npos || p.size() < 2)
-				{
+			{
 				cb(p);
-				}
+			}
 			else if(eq == 0)
-				{
+			{
 				cb("=");
 				cb(p.substr(1, string::npos));
-				}
+			}
 			else if(eq == p.size() - 1)
-				{
+			{
 				cb(p.substr(0, p.size() - 1));
 				cb("=");
-				}
+			}
 			else if(eq != string::npos)
-				{
+			{
 				cb(p.substr(0, eq));
 				cb("=");
 				cb(p.substr(eq + 1, string::npos));
-				}
 			}
 		}
 	}
+}
 
 void lex_cfg_w_headers(std::istream& is,
 							  std::function<void (string)> cb,
 							  std::function<void (string)> hdr_cb)
-	{
+{
 	auto intercept = [cb,hdr_cb](in string s)
-		{
+	{
 		if(s[0] == '[' && s[s.length()-1] == ']')
 			hdr_cb(s.substr(1, s.length()-2));
 		else
 			cb(s);
-		};
+	};
 
 	lex_cfg(is, intercept);
-	}
+}
 
 std::map<string, std::map<string, string>>
 	parse_cfg(std::istream& is)
-	{
+{
 	string header = "default";
 	std::map<string, std::map<string, string>> vals;
 	string key;
 
 	auto header_cb = [&header](const string i) { header = i; };
 	auto cb = [&header,&key,&vals](const string s)
-		{
+	{
 		if(s == "=")
-			{
+		{
 			BOTAN_ASSERT(!key.empty(), "Valid assignment in config");
-			}
+		}
 		else if(key.empty())
 			key = s;
 		else
-			{
+		{
 			vals[header][key] = s;
 			key = "";
-			}
-		};
+		}
+	};
 
 	lex_cfg_w_headers(is, cb, header_cb);
 
 	return vals;
-	}
+}
 
 }

@@ -5,19 +5,15 @@
 * Distributed under the terms of the Botan license
 */
 
-#ifndef BOTAN_OCSP_TYPES_H__
 #define BOTAN_OCSP_TYPES_H__
 
 #include <botan/x509cert.h>
 #include <botan/asn1_time.h>
 #include <botan/bigint.h>
-
-namespace Botan {
-
 namespace OCSP {
 
 class CertID : public ASN1_Object
-	{
+{
 	public:
 		CertID() {}
 
@@ -37,10 +33,10 @@ class CertID : public ASN1_Object
 		std::vector<byte> m_issuer_dn_hash;
 		std::vector<byte> m_issuer_key_hash;
 		BigInt m_subject_serial;
-	};
+};
 
 class SingleResponse : public ASN1_Object
-	{
+{
 	public:
 		const CertID& certid() const { return m_certid; }
 
@@ -58,10 +54,6 @@ class SingleResponse : public ASN1_Object
 		size_t m_cert_status = 2; // unknown
 		X509_Time m_thisupdate;
 		X509_Time m_nextupdate;
-	};
+};
 
 }
-
-}
-
-#endif

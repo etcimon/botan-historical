@@ -5,7 +5,6 @@
 * Released under the terms of the Botan license
 */
 
-#ifndef BOTAN_TLS_POLICY_H__
 #define BOTAN_TLS_POLICY_H__
 
 #include <botan/tls_version.h>
@@ -13,9 +12,6 @@
 #include <botan/x509cert.h>
 #include <botan/dl_group.h>
 #include <vector>
-
-namespace Botan {
-
 namespace TLS {
 
 /**
@@ -23,7 +19,7 @@ namespace TLS {
 * Inherit and overload as desired to suit local policy concerns
 */
 class Policy
-	{
+{
 	public:
 
 		/**
@@ -144,51 +140,47 @@ class Policy
 																	bool have_srp) const;
 
 		abstract ~Policy() {}
-	};
+};
 
 /**
 * NSA Suite B 128-bit security level (see @rfc 6460)
 */
 class NSA_Suite_B_128 : public Policy
-	{
+{
 	public:
 		std::vector<string> allowed_ciphers() const override
-			{ return std::vector<string>({"AES-128/GCM"}); }
+		{ return std::vector<string>({"AES-128/GCM"}); }
 
 		std::vector<string> allowed_signature_hashes() const override
-			{ return std::vector<string>({"SHA-256"}); }
+		{ return std::vector<string>({"SHA-256"}); }
 
 		std::vector<string> allowed_macs() const override
-			{ return std::vector<string>({"AEAD"}); }
+		{ return std::vector<string>({"AEAD"}); }
 
 		std::vector<string> allowed_key_exchange_methods() const override
-			{ return std::vector<string>({"ECDH"}); }
+		{ return std::vector<string>({"ECDH"}); }
 
 		std::vector<string> allowed_signature_methods() const override
-			{ return std::vector<string>({"ECDSA"}); }
+		{ return std::vector<string>({"ECDSA"}); }
 
 		std::vector<string> allowed_ecc_curves() const override
-			{ return std::vector<string>({"secp256r1"}); }
+		{ return std::vector<string>({"secp256r1"}); }
 
 		bool acceptable_protocol_version(Protocol_Version version) const override
-			{ return version == Protocol_Version::TLS_V12; }
-	};
+		{ return version == Protocol_Version::TLS_V12; }
+};
 
 /**
 * Policy for DTLS. We require DTLS v1.2 and an AEAD mode
 */
 class Datagram_Policy : public Policy
-	{
+{
 	public:
 		std::vector<string> allowed_macs() const override
-			{ return std::vector<string>({"AEAD"}); }
+		{ return std::vector<string>({"AEAD"}); }
 
 		bool acceptable_protocol_version(Protocol_Version version) const override
-			{ return version == Protocol_Version::DTLS_V12; }
-	};
+		{ return version == Protocol_Version::DTLS_V12; }
+};
 
 }
-
-}
-
-#endif

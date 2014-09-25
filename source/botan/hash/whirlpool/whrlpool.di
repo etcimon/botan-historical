@@ -5,18 +5,14 @@
 * Distributed under the terms of the Botan license
 */
 
-#ifndef BOTAN_WHIRLPOOL_H__
 #define BOTAN_WHIRLPOOL_H__
 
 #include <botan/mdx_hash.h>
-
-namespace Botan {
-
 /**
 * Whirlpool
 */
 class Whirlpool : public MDx_HashFunction
-	{
+{
 	public:
 		string name() const { return "Whirlpool"; }
 		size_t output_length() const { return 64; }
@@ -25,7 +21,7 @@ class Whirlpool : public MDx_HashFunction
 		void clear();
 
 		Whirlpool() : MDx_HashFunction(64, true, true, 32), M(8), digest(8)
-			{ clear(); }
+		{ clear(); }
 	private:
 		void compress_n(const byte[], size_t blocks);
 		void copy_out(byte[]);
@@ -40,8 +36,4 @@ class Whirlpool : public MDx_HashFunction
 		static const u64bit C7[256];
 
 		secure_vector<u64bit> M, digest;
-	};
-
-}
-
-#endif
+};

@@ -11,9 +11,6 @@
 #include <botan/sha1_sse2.h>
 #include <botan/rotate.h>
 #include <emmintrin.h>
-
-namespace Botan {
-
 namespace SHA1_SSE2_F {
 
 namespace {
@@ -30,7 +27,7 @@ namespace {
 		W = _mm_or_si128(_mm_slli_epi16(W, 8),					  \
 							  _mm_srli_epi16(W, 8));					 \
 		P.u128 = _mm_add_epi32(W, K00_19);							\
-	} while(0)
+} while(0)
 
 /*
 For each multiple of 4, t, we want to calculate this:
@@ -108,43 +105,43 @@ W0 = W[t]..W[t+3]
 																								\
 		(XW0) = r0;																		 \
 		(prep).u128 = _mm_add_epi32(r0, K);										 \
-	} while(0)
+} while(0)
 
 /*
 * SHA-160 F1 Function
 */
 inline void F1(u32bit A, u32bit& B, u32bit C, u32bit D, u32bit& E, u32bit msg)
-	{
+{
 	E += (D ^ (B & (C ^ D))) + msg + rotate_left(A, 5);
 	B  = rotate_left(B, 30);
-	}
+}
 
 /*
 * SHA-160 F2 Function
 */
 inline void F2(u32bit A, u32bit& B, u32bit C, u32bit D, u32bit& E, u32bit msg)
-	{
+{
 	E += (B ^ C ^ D) + msg + rotate_left(A, 5);
 	B  = rotate_left(B, 30);
-	}
+}
 
 /*
 * SHA-160 F3 Function
 */
 inline void F3(u32bit A, u32bit& B, u32bit C, u32bit D, u32bit& E, u32bit msg)
-	{
+{
 	E += ((B & C) | ((B | C) & D)) + msg + rotate_left(A, 5);
 	B  = rotate_left(B, 30);
-	}
+}
 
 /*
 * SHA-160 F4 Function
 */
 inline void F4(u32bit A, u32bit& B, u32bit C, u32bit D, u32bit& E, u32bit msg)
-	{
+{
 	E += (B ^ C ^ D) + msg + rotate_left(A, 5);
 	B  = rotate_left(B, 30);
-	}
+}
 
 }
 
@@ -154,7 +151,7 @@ inline void F4(u32bit A, u32bit& B, u32bit C, u32bit D, u32bit& E, u32bit msg)
 * SHA-160 Compression Function using SSE for message expansion
 */
 void SHA_160_SSE2::compress_n(const byte input_bytes[], size_t blocks)
-	{
+{
 	using namespace SHA1_SSE2_F;
 
 	const __m128i K00_19 = _mm_set1_epi32(0x5A827999);
@@ -171,11 +168,11 @@ void SHA_160_SSE2::compress_n(const byte input_bytes[], size_t blocks)
 	const __m128i* input = reinterpret_cast<const __m128i*>(input_bytes);
 
 	for(size_t i = 0; i != blocks; ++i)
-		{
+	{
 		union v4si {
 			u32bit u32[4];
 			__m128i u128;
-			};
+		};
 
 		v4si P0, P1, P2, P3;
 
@@ -324,10 +321,10 @@ void SHA_160_SSE2::compress_n(const byte input_bytes[], size_t blocks)
 		E = (digest[4] += E);
 
 		input += (hash_block_size() / 16);
-		}
+	}
 
 #undef GET_P_32
-	}
+}
 
 #undef prep00_15
 #undef prep

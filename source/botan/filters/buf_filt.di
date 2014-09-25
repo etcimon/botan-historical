@@ -5,19 +5,15 @@
 * Distributed under the terms of the Botan license
 */
 
-#ifndef BOTAN_BUFFERED_FILTER_H__
 #define BOTAN_BUFFERED_FILTER_H__
 
 #include <botan/secmem.h>
-
-namespace Botan {
-
 /**
 * Filter mixin that breaks input into blocks, useful for
 * cipher modes
 */
 class Buffered_Filter
-	{
+{
 	public:
 		/**
 		* Write bytes into the buffered filter, which will them emit them
@@ -29,9 +25,9 @@ class Buffered_Filter
 
 		template<typename Alloc>
 			void write(const std::vector<byte, Alloc>& in, size_t length)
-			{
+		{
 			write(&in[0], length);
-			}
+		}
 
 		/**
 		* Finish a message, emitting to buffered_block and buffered_final
@@ -86,8 +82,4 @@ class Buffered_Filter
 
 		SafeArray!byte buffer;
 		size_t buffer_pos;
-	};
-
-}
-
-#endif
+};

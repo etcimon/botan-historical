@@ -18,14 +18,11 @@
 #if defined(BOTAN_TARGET_OS_HAS_CLOCK_GETTIME)
   #include <time.h>
 #endif
-
-namespace Botan {
-
 /*
 * Get the timestamp
 */
 void High_Resolution_Timestamp::poll(Entropy_Accumulator& accum)
-	{
+{
 	// Don't count any timestamps as contributing any entropy
 	const double ESTIMATED_ENTROPY_PER_BYTE = 0.0;
 
@@ -33,7 +30,7 @@ void High_Resolution_Timestamp::poll(Entropy_Accumulator& accum)
 	do {																			\
 		auto timestamp = clock::now().time_since_epoch().count(); \
 		accum.add(timestamp, ESTIMATED_ENTROPY_PER_BYTE);			\
-	} while(0)
+} while(0)
 
   STD_CHRONO_POLL(std::chrono::high_resolution_clock);
   STD_CHRONO_POLL(std::chrono::system_clock);
@@ -41,11 +38,11 @@ void High_Resolution_Timestamp::poll(Entropy_Accumulator& accum)
 #undef STD_CHRONO_POLL
 
 #if defined(BOTAN_TARGET_OS_HAS_QUERY_PERF_COUNTER)
-	{
+{
 	LARGE_INTEGER tv;
 	::QueryPerformanceCounter(&tv);
 	accum.add(tv.QuadPart, ESTIMATED_ENTROPY_PER_BYTE);
-	}
+}
 #endif
 
 #if defined(BOTAN_TARGET_OS_HAS_CLOCK_GETTIME)
@@ -55,7 +52,7 @@ void High_Resolution_Timestamp::poll(Entropy_Accumulator& accum)
 	  struct timespec ts;												 \
 	  ::clock_gettime(src, &ts);										\
 	  accum.add(&ts, sizeof(ts), ESTIMATED_ENTROPY_PER_BYTE); \
-	} while(0)
+} while(0)
 
 #if defined(CLOCK_REALTIME)
 	CLOCK_GETTIME_POLL(CLOCK_REALTIME);
@@ -99,11 +96,11 @@ void High_Resolution_Timestamp::poll(Entropy_Accumulator& accum)
 
 #if defined(BOTAN_TARGET_CPU_IS_X86_FAMILY)
 	if(CPUID::has_rdtsc()) // not availble on all x86 CPUs
-		{
+	{
 		u32bit rtc_low = 0, rtc_high = 0;
 		asm volatile("rdtsc" : "=d" (rtc_high), "=a" (rtc_low));
 		rtc = (static_cast<u64bit>(rtc_high) << 32) | rtc_low;
-		}
+	}
 
 #elif defined(BOTAN_TARGET_CPU_IS_PPC_FAMILY)
 	u32bit rtc_low = 0, rtc_high = 0;
@@ -130,6 +127,6 @@ void High_Resolution_Timestamp::poll(Entropy_Accumulator& accum)
 	accum.add(rtc, ESTIMATED_ENTROPY_PER_BYTE);
 
 #endif
-	}
+}
 
 }

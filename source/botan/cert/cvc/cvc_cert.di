@@ -6,15 +6,11 @@
 * Distributed under the terms of the Botan license
 */
 
-#ifndef BOTAN_CVC_EAC_H__
 #define BOTAN_CVC_EAC_H__
 
 #include <botan/cvc_gen_cert.h>
 #include <botan/ecdsa.h>
 #include <string>
-
-namespace Botan {
-
 /**
 * This class represents TR03110 (EAC) v1.1 CV Certificates
 */
@@ -77,9 +73,9 @@ class EAC1_1_CVC : public EAC1_1_gen_CVC<EAC1_1_CVC>//Signed_Object
 * Comparison
 */
 inline bool operator!=(EAC1_1_CVC const& lhs, EAC1_1_CVC const& rhs)
-	{
+{
 	return !(lhs == rhs);
-	}
+}
 
 /**
 * Create an arbitrary EAC 1.1 CVC.
@@ -95,7 +91,7 @@ inline bool operator!=(EAC1_1_CVC const& lhs, EAC1_1_CVC const& rhs)
 * @param cex the CEX to appear in the certificate
 * @param rng a random number generator
 */
-EAC1_1_CVC BOTAN_DLL make_cvc_cert(PK_Signer& signer,
+EAC1_1_CVC make_cvc_cert(PK_Signer& signer,
 											  in Array!byte public_key,
 											  ASN1_Car const& car,
 											  ASN1_Chr const& chr,
@@ -107,10 +103,5 @@ EAC1_1_CVC BOTAN_DLL make_cvc_cert(PK_Signer& signer,
 /**
 * Decode an EAC encoding ECDSA key
 */
-BOTAN_DLL ECDSA_PublicKey* decode_eac1_1_key(in Array!byte enc_key,
+ECDSA_PublicKey* decode_eac1_1_key(in Array!byte enc_key,
 															AlgorithmIdentifier& sig_algo);
-
-}
-
-#endif
-

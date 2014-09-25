@@ -7,16 +7,13 @@
 
 #include <botan/emsa_x931.h>
 #include <botan/hash_id.h>
-
-namespace Botan {
-
 namespace {
 
 SafeArray!byte emsa2_encoding(in SafeArray!byte msg,
 											  size_t output_bits,
 											  in SafeArray!byte empty_hash,
 											  byte hash_id)
-	{
+{
 	const size_t HASH_SIZE = empty_hash.size();
 
 	size_t output_length = (output_bits + 1) / 8;
@@ -38,19 +35,19 @@ SafeArray!byte emsa2_encoding(in SafeArray!byte msg,
 	output[output_length-1] = 0xCC;
 
 	return output;
-	}
+}
 
 }
 
 void EMSA_X931::update(const byte input[], size_t length)
-	{
+{
 	m_hash->update(input, length);
-	}
+}
 
 SafeArray!byte EMSA_X931::raw_data()
-	{
+{
 	return m_hash->final();
-	}
+}
 
 /*
 * EMSA_X931 Encode Operation
@@ -58,9 +55,9 @@ SafeArray!byte EMSA_X931::raw_data()
 SafeArray!byte EMSA_X931::encoding_of(in SafeArray!byte msg,
 												  size_t output_bits,
 												  RandomNumberGenerator&)
-	{
+{
 	return emsa2_encoding(msg, output_bits, m_empty_hash, m_hash_id);
-	}
+}
 
 /*
 * EMSA_X931 Verify Operation
@@ -68,29 +65,29 @@ SafeArray!byte EMSA_X931::encoding_of(in SafeArray!byte msg,
 bool EMSA_X931::verify(in SafeArray!byte coded,
 						 in SafeArray!byte raw,
 						 size_t key_bits)
-	{
+{
 	try
-		{
+	{
 		return (coded == emsa2_encoding(raw, key_bits,
 												  m_empty_hash, m_hash_id));
-		}
-	catch(...)
-		{
-		return false;
-		}
 	}
+	catch(...)
+	{
+		return false;
+	}
+}
 
 /*
 * EMSA_X931 Constructor
 */
 EMSA_X931::EMSA_X931(HashFunction* hash) : m_hash(hash)
-	{
+{
 	m_empty_hash = m_hash->final();
 
 	m_hash_id = ieee1363_hash_id(hash->name());
 
 	if(!m_hash_id)
 		throw Encoding_Error("EMSA_X931 no hash identifier for " + hash->name());
-	}
+}
 
 }

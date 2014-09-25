@@ -10,9 +10,6 @@
 #include <botan/hmac.h>
 #include <botan/sha2_32.h>
 #include <stdexcept>
-
-namespace Botan {
-
 namespace FPE {
 
 namespace {
@@ -29,7 +26,7 @@ const size_t MAX_N_BYTES = 128/8;
 * then this is always 3
 */
 void factor(BigInt n, BigInt& a, BigInt& b)
-	{
+{
 	a = 1;
 	b = 1;
 
@@ -40,15 +37,15 @@ void factor(BigInt n, BigInt& a, BigInt& b)
 	n >>= n_low_zero;
 
 	for(size_t i = 0; i != PRIME_TABLE_SIZE; ++i)
-		{
+	{
 		while(n % PRIMES[i] == 0)
-			{
+		{
 			a *= PRIMES[i];
 			if(a > b)
 				std::swap(a, b);
 			n /= PRIMES[i];
-			}
 		}
+	}
 
 	if(a > b)
 		std::swap(a, b);
@@ -58,7 +55,7 @@ void factor(BigInt n, BigInt& a, BigInt& b)
 
 	if(a <= 1 || b <= 1)
 		throw std::runtime_error("Could not factor n for use in FPE");
-	}
+}
 
 /*
 * According to a paper by Rogaway, Bellare, etc, the min safe number
@@ -67,17 +64,17 @@ void factor(BigInt n, BigInt& a, BigInt& b)
 * return a >= b, so just confirm that and return 3.
 */
 size_t rounds(const BigInt& a, const BigInt& b)
-	{
+{
 	if(a < b)
 		throw std::logic_error("FPE rounds: a < b");
 	return 3;
-	}
+}
 
 /*
 * A simple round function based on HMAC(SHA-256)
 */
 class FPE_Encryptor
-	{
+{
 	public:
 		FPE_Encryptor(const SymmetricKey& key,
 						  const BigInt& n,
@@ -88,12 +85,12 @@ class FPE_Encryptor
 	private:
 		std::unique_ptr<MessageAuthenticationCode> mac;
 		std::vector<byte> mac_n_t;
-	};
+};
 
 FPE_Encryptor::FPE_Encryptor(const SymmetricKey& key,
 									  const BigInt& n,
 									  in Array!byte tweak)
-	{
+{
 	mac.reset(new HMAC(new SHA_256));
 	mac->set_key(key);
 
@@ -109,10 +106,10 @@ FPE_Encryptor::FPE_Encryptor(const SymmetricKey& key,
 	mac->update(&tweak[0], tweak.size());
 
 	mac_n_t = unlock(mac->final());
-	}
+}
 
 BigInt FPE_Encryptor::operator()(size_t round_no, const BigInt& R)
-	{
+{
 	SafeArray!byte r_bin = BigInt::encode_locked(R);
 
 	mac->update(mac_n_t);
@@ -123,7 +120,7 @@ BigInt FPE_Encryptor::operator()(size_t round_no, const BigInt& R)
 
 	SafeArray!byte X = mac->final();
 	return BigInt(&X[0], X.size());
-	}
+}
 
 }
 
@@ -133,7 +130,7 @@ BigInt FPE_Encryptor::operator()(size_t round_no, const BigInt& R)
 BigInt fe1_encrypt(const BigInt& n, const BigInt& X0,
 						 const SymmetricKey& key,
 						 in Array!byte tweak)
-	{
+{
 	FPE_Encryptor F(key, n, tweak);
 
 	BigInt a, b;
@@ -144,16 +141,16 @@ BigInt fe1_encrypt(const BigInt& n, const BigInt& X0,
 	BigInt X = X0;
 
 	for(size_t i = 0; i != r; ++i)
-		{
+	{
 		BigInt L = X / b;
 		BigInt R = X % b;
 
 		BigInt W = (L + F(i, R)) % a;
 		X = a * R + W;
-		}
+	}
 
 	return X;
-	}
+}
 
 /*
 * Generic Z_n FPE decryption, FD1 scheme
@@ -161,7 +158,7 @@ BigInt fe1_encrypt(const BigInt& n, const BigInt& X0,
 BigInt fe1_decrypt(const BigInt& n, const BigInt& X0,
 						 const SymmetricKey& key,
 						 in Array!byte tweak)
-	{
+{
 	FPE_Encryptor F(key, n, tweak);
 
 	BigInt a, b;
@@ -172,16 +169,16 @@ BigInt fe1_decrypt(const BigInt& n, const BigInt& X0,
 	BigInt X = X0;
 
 	for(size_t i = 0; i != r; ++i)
-		{
+	{
 		BigInt W = X % a;
 		BigInt R = X / a;
 
 		BigInt L = (W - F(r-i-1, R)) % a;
 		X = b * L + R;
-		}
+	}
 
 	return X;
-	}
+}
 
 }
 

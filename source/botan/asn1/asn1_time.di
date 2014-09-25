@@ -5,19 +5,15 @@
 * Distributed under the terms of the Botan license
 */
 
-#ifndef BOTAN_ASN1_TIME_H__
 #define BOTAN_ASN1_TIME_H__
 
 #include <botan/asn1_obj.h>
 #include <chrono>
-
-namespace Botan {
-
 /**
 * X.509 Time
 */
 class X509_Time : public ASN1_Object
-	{
+{
 	public:
 		void encode_into(class DER_Encoder&) const;
 		void decode_from(class BER_Decoder&);
@@ -40,18 +36,14 @@ class X509_Time : public ASN1_Object
 		bool passes_sanity_check() const;
 		u32bit year, month, day, hour, minute, second;
 		ASN1_Tag tag;
-	};
+};
 
 /*
 * Comparison Operations
 */
-bool BOTAN_DLL operator==(const X509_Time&, const X509_Time&);
-bool BOTAN_DLL operator!=(const X509_Time&, const X509_Time&);
-bool BOTAN_DLL operator<=(const X509_Time&, const X509_Time&);
-bool BOTAN_DLL operator>=(const X509_Time&, const X509_Time&);
-bool BOTAN_DLL operator<(const X509_Time&, const X509_Time&);
-bool BOTAN_DLL operator>(const X509_Time&, const X509_Time&);
-
-}
-
-#endif
+bool operator==(const X509_Time&, const X509_Time&);
+bool operator!=(const X509_Time&, const X509_Time&);
+bool operator<=(const X509_Time&, const X509_Time&);
+bool operator>=(const X509_Time&, const X509_Time&);
+bool operator<(const X509_Time&, const X509_Time&);
+bool operator>(const X509_Time&, const X509_Time&);

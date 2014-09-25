@@ -7,38 +7,35 @@
 
 #include <botan/internal/openssl_engine.h>
 #include <botan/internal/bn_wrap.h>
-
-namespace Botan {
-
 namespace {
 
 /*
 * OpenSSL Modular Exponentiator
 */
 class OpenSSL_Modular_Exponentiator : public Modular_Exponentiator
-	{
+{
 	public:
 		void set_base(const BigInt& b) { base = b; }
 		void set_exponent(const BigInt& e) { exp = e; }
 		BigInt execute() const;
 		Modular_Exponentiator* copy() const
-			{ return new OpenSSL_Modular_Exponentiator(*this); }
+		{ return new OpenSSL_Modular_Exponentiator(*this); }
 
 		OpenSSL_Modular_Exponentiator(const BigInt& n) : mod(n) {}
 	private:
 		OSSL_BN base, exp, mod;
 		OSSL_BN_CTX ctx;
-	};
+};
 
 /*
 * Compute the result
 */
 BigInt OpenSSL_Modular_Exponentiator::execute() const
-	{
+{
 	OSSL_BN r;
 	BN_mod_exp(r.ptr(), base.ptr(), exp.ptr(), mod.ptr(), ctx.ptr());
 	return r.to_bigint();
-	}
+}
 
 }
 
@@ -47,8 +44,8 @@ BigInt OpenSSL_Modular_Exponentiator::execute() const
 */
 Modular_Exponentiator* OpenSSL_Engine::mod_exp(const BigInt& n,
 															  Power_Mod::Usage_Hints) const
-	{
+{
 	return new OpenSSL_Modular_Exponentiator(n);
-	}
+}
 
 }

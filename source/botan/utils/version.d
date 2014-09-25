@@ -7,9 +7,6 @@
 
 #include <botan/version.h>
 #include <botan/parsing.h>
-
-namespace Botan {
-
 /*
   These are intentionally compiled rather than inlined, so an
   application running against a shared library can test the true
@@ -20,7 +17,7 @@ namespace Botan {
 * Return the version as a string
 */
 string version_string()
-	{
+{
 #define QUOTE(name) #name
 #define STR(macro) QUOTE(macro)
 
@@ -41,7 +38,7 @@ string version_string()
 
 #undef STR
 #undef QUOTE
-	}
+}
 
 u32bit version_datestamp() { return BOTAN_VERSION_DATESTAMP; }
 

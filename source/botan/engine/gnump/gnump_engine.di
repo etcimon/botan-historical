@@ -5,18 +5,14 @@
 * Distributed under the terms of the Botan license
 */
 
-#ifndef BOTAN_ENGINE_GMP_H__
 #define BOTAN_ENGINE_GMP_H__
 
 #include <botan/engine.h>
-
-namespace Botan {
-
 /**
 * Engine using GNU MP
 */
 class GMP_Engine : public Engine
-	{
+{
 	public:
 		GMP_Engine();
 		~GMP_Engine();
@@ -37,8 +33,4 @@ class GMP_Engine : public Engine
 
 		Modular_Exponentiator* mod_exp(const BigInt&,
 												 Power_Mod::Usage_Hints) const override;
-	};
-
-}
-
-#endif
+};

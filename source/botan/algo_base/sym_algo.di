@@ -5,21 +5,17 @@
 * Distributed under the terms of the Botan license
 */
 
-#ifndef BOTAN_SYMMETRIC_ALGORITHM_H__
 #define BOTAN_SYMMETRIC_ALGORITHM_H__
 
 #include <botan/key_spec.h>
 #include <botan/exceptn.h>
 #include <botan/symkey.h>
 #include <botan/types.h>
-
-namespace Botan {
-
 /**
 * This class represents a symmetric algorithm object.
 */
 class SymmetricAlgorithm
-	{
+{
 	public:
 		abstract ~SymmetricAlgorithm() {}
 
@@ -34,17 +30,17 @@ class SymmetricAlgorithm
 		* @return minimum allowed key length
 		*/
 		size_t maximum_keylength() const
-			{
+		{
 			return key_spec().maximum_keylength();
-			}
+		}
 
 		/**
 		* @return maxmium allowed key length
 		*/
 		size_t minimum_keylength() const
-			{
+		{
 			return key_spec().minimum_keylength();
-			}
+		}
 
 		/**
 		* Check whether a given key length is valid for this algorithm.
@@ -52,24 +48,24 @@ class SymmetricAlgorithm
 		* @return true if the key length is valid.
 		*/
 		bool valid_keylength(size_t length) const
-			{
+		{
 			return key_spec().valid_keylength(length);
-			}
+		}
 
 		/**
 		* Set the symmetric key of this object.
 		* @param key the SymmetricKey to be set.
 		*/
 		void set_key(const SymmetricKey& key)
-			{
+		{
 			set_key(key.begin(), key.length());
-			}
+		}
 
 		template<typename Alloc>
 		void set_key(const std::vector<byte, Alloc>& key)
-			{
+		{
 			set_key(&key[0], key.size());
-			}
+		}
 
 		/**
 		* Set the symmetric key of this object.
@@ -77,11 +73,11 @@ class SymmetricAlgorithm
 		* @param length in bytes of key param
 		*/
 		void set_key(const byte key[], size_t length)
-			{
+		{
 			if(!valid_keylength(length))
 				throw Invalid_Key_Length(name(), length);
 			key_schedule(key, length);
-			}
+		}
 
 		abstract string name() const = 0;
 
@@ -92,8 +88,4 @@ class SymmetricAlgorithm
 		* @param length of key
 		*/
 		abstract void key_schedule(const byte key[], size_t length) = 0;
-	};
-
-}
-
-#endif
+};

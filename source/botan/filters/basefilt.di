@@ -6,23 +6,19 @@
 * Distributed under the terms of the Botan license
 */
 
-#ifndef BOTAN_BASEFILT_H__
 #define BOTAN_BASEFILT_H__
 
 #include <botan/filter.h>
 #include <thread>
-
-namespace Botan {
-
 /**
 * BitBucket is a filter which simply discards all inputs
 */
-struct BOTAN_DLL BitBucket : public Filter
-	{
+struct BitBucket : public Filter
+{
 	void write(const byte[], size_t) {}
 
 	string name() const { return "BitBucket"; }
-	};
+};
 
 /**
 * This class represents Filter chains. A Filter chain is an ordered
@@ -31,7 +27,7 @@ struct BOTAN_DLL BitBucket : public Filter
 */
 
 class Chain : public Fanout_Filter
-	{
+{
 	public:
 		void write(const byte input[], size_t length) { send(input, length); }
 
@@ -50,7 +46,7 @@ class Chain : public Fanout_Filter
 		* @param length how many filters
 		*/
 		Chain(Filter* filter_arr[], size_t length);
-	};
+};
 
 /**
 * This class represents a fork filter, whose purpose is to fork the
@@ -58,7 +54,7 @@ class Chain : public Fanout_Filter
 * the end of the filter, where n is the number of forks.
 */
 class Fork : public Fanout_Filter
-	{
+{
 	public:
 		void write(const byte input[], size_t length) { send(input, length); }
 		void set_port(size_t n) { Fanout_Filter::set_port(n); }
@@ -76,7 +72,7 @@ class Fork : public Fanout_Filter
 		* @param length how many filters
 		*/
 		Fork(Filter* filter_arr[], size_t length);
-	};
+};
 
 /**
 * This class is a threaded version of the Fork filter. While this uses
@@ -84,7 +80,7 @@ class Fork : public Fanout_Filter
 * in replacement for Fork where performance gains are possible.
 */
 class Threaded_Fork : public Fork
-	{
+{
 	public:
 		string name() const;
 
@@ -112,8 +108,4 @@ class Threaded_Fork : public Fork
 
 		std::vector<std::shared_ptr<std::thread>> m_threads;
 		std::unique_ptr<struct Threaded_Fork_Data> m_thread_data;
-	};
-
-}
-
-#endif
+};

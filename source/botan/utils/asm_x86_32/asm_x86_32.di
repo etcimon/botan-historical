@@ -5,7 +5,6 @@
 * Distributed under the terms of the Botan license
 */
 
-#ifndef BOTAN_ASM_MACROS_X86_32_H__
 #define BOTAN_ASM_MACROS_X86_32_H__
 
 /*

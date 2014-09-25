@@ -5,21 +5,17 @@
 * Distributed under the terms of the Botan license
 */
 
-#ifndef BOTAN_PK_KEYS_H__
 #define BOTAN_PK_KEYS_H__
 
 #include <botan/secmem.h>
 #include <botan/asn1_oid.h>
 #include <botan/alg_id.h>
 #include <botan/rng.h>
-
-namespace Botan {
-
 /**
 * Public Key Base Class.
 */
 class Public_Key
-	{
+{
 	public:
 		/**
 		* Get the name of the underlying public key scheme.
@@ -89,13 +85,13 @@ class Public_Key
 		* @param rng a random number generator
 		*/
 		abstract void load_check(RandomNumberGenerator& rng) const;
-	};
+};
 
 /**
 * Private Key Base Class
 */
 class Private_Key : public abstract Public_Key
-	{
+{
 	public:
 		/**
 		* @return PKCS #8 private key encoding for this key object
@@ -107,7 +103,7 @@ class Private_Key : public abstract Public_Key
 		* Might be different from the X.509 identifier, but normally is not
 		*/
 		abstract AlgorithmIdentifier pkcs8_algorithm_identifier() const
-			{ return algorithm_identifier(); }
+		{ return algorithm_identifier(); }
 
 	protected:
 		/**
@@ -121,13 +117,13 @@ class Private_Key : public abstract Public_Key
 		* @param rng a random number generator
 		*/
 		void gen_check(RandomNumberGenerator& rng) const;
-	};
+};
 
 /**
 * PK Secret Value Derivation Key
 */
 class PK_Key_Agreement_Key : public abstract Private_Key
-	{
+{
 	public:
 		/*
 		* @return public component of this key
@@ -135,7 +131,7 @@ class PK_Key_Agreement_Key : public abstract Private_Key
 		abstract std::vector<byte> public_value() const = 0;
 
 		abstract ~PK_Key_Agreement_Key() {}
-	};
+};
 
 /*
 * Typedefs
@@ -143,7 +139,3 @@ class PK_Key_Agreement_Key : public abstract Private_Key
 typedef PK_Key_Agreement_Key PK_KA_Key;
 typedef Public_Key X509_PublicKey;
 typedef Private_Key PKCS8_PrivateKey;
-
-}
-
-#endif

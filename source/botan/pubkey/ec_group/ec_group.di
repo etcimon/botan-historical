@@ -7,15 +7,11 @@
 * Distributed under the terms of the Botan license
 */
 
-#ifndef BOTAN_ECC_DOMAIN_PARAMETERS_H__
 #define BOTAN_ECC_DOMAIN_PARAMETERS_H__
 
 #include <botan/point_gfp.h>
 #include <botan/curve_gfp.h>
 #include <botan/asn1_oid.h>
-
-namespace Botan {
-
 /**
 * This class represents elliptic curce domain parameters
 */
@@ -29,7 +25,7 @@ enum EC_Group_Encoding {
 * Class representing an elliptic curve
 */
 class EC_Group
-	{
+{
 	public:
 
 		/**
@@ -48,7 +44,7 @@ class EC_Group
 			order(order),
 			cofactor(cofactor),
 			oid("")
-			{}
+		{}
 
 		/**
 		* Decode a BER encoded ECC domain parameter set
@@ -115,12 +111,12 @@ class EC_Group
 		string get_oid() const { return oid; }
 
 		bool operator==(const EC_Group& other) const
-			{
+		{
 			return ((get_curve() == other.get_curve()) &&
 					  (get_base_point() == other.get_base_point()) &&
 					  (get_order() == other.get_order()) &&
 					  (get_cofactor() == other.get_cofactor()));
-			}
+		}
 
 		/**
 		* Return PEM representation of named EC group
@@ -132,17 +128,13 @@ class EC_Group
 		PointGFp base_point;
 		BigInt order, cofactor;
 		string oid;
-	};
+};
 
 inline bool operator!=(const EC_Group& lhs,
 							  const EC_Group& rhs)
-	{
+{
 	return !(lhs == rhs);
-	}
+}
 
 // For compatability with 1.8
 typedef EC_Group EC_Domain_Params;
-
-}
-
-#endif

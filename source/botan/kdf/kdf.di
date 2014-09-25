@@ -5,20 +5,16 @@
 * Distributed under the terms of the Botan license
 */
 
-#ifndef BOTAN_KDF_BASE_H__
 #define BOTAN_KDF_BASE_H__
 
 #include <botan/secmem.h>
 #include <botan/types.h>
 #include <string>
-
-namespace Botan {
-
 /**
 * Key Derivation Function
 */
 class KDF
-	{
+{
 	public:
 		abstract ~KDF() {}
 
@@ -33,11 +29,11 @@ class KDF
 		SafeArray!byte derive_key(size_t key_len,
 												in SafeArray!byte secret,
 												in string salt = "") const
-			{
+		{
 			return derive_key(key_len, &secret[0], secret.size(),
 									reinterpret_cast<const byte*>(salt.data()),
 									salt.length());
-			}
+		}
 
 		/**
 		* Derive a key
@@ -49,11 +45,11 @@ class KDF
 		SafeArray!byte derive_key(size_t key_len,
 												 const std::vector<byte, Alloc>& secret,
 												 const std::vector<byte, Alloc2>& salt) const
-			{
+		{
 			return derive_key(key_len,
 									&secret[0], secret.size(),
 									&salt[0], salt.size());
-			}
+		}
 
 		/**
 		* Derive a key
@@ -66,11 +62,11 @@ class KDF
 												in SafeArray!byte secret,
 												const byte salt[],
 												size_t salt_len) const
-			{
+		{
 			return derive_key(key_len,
 									&secret[0], secret.size(),
 									salt, salt_len);
-			}
+		}
 
 		/**
 		* Derive a key
@@ -83,11 +79,11 @@ class KDF
 												const byte secret[],
 												size_t secret_len,
 												in string salt = "") const
-			{
+		{
 			return derive_key(key_len, secret, secret_len,
 									reinterpret_cast<const byte*>(salt.data()),
 									salt.length());
-			}
+		}
 
 		/**
 		* Derive a key
@@ -102,9 +98,9 @@ class KDF
 												size_t secret_len,
 												const byte salt[],
 												size_t salt_len) const
-			{
+		{
 			return derive(key_len, secret, secret_len, salt, salt_len);
-			}
+		}
 
 		abstract KDF* clone() const = 0;
 	private:
@@ -112,15 +108,11 @@ class KDF
 			derive(size_t key_len,
 					 const byte secret[], size_t secret_len,
 					 const byte salt[], size_t salt_len) const = 0;
-	};
+};
 
 /**
 * Factory method for KDF (key derivation function)
 * @param algo_spec the name of the KDF to create
 * @return pointer to newly allocated object of that type
 */
-BOTAN_DLL KDF*  get_kdf(in string algo_spec);
-
-}
-
-#endif
+KDF*  get_kdf(in string algo_spec);

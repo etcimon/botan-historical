@@ -7,14 +7,11 @@
 
 #include <botan/crc32.h>
 #include <botan/loadstor.h>
-
-namespace Botan {
-
 /*
 * Update a CRC32 Checksum
 */
 void CRC32::add_data(const byte input[], size_t length)
-	{
+{
 	const u32bit TABLE[256] = {
 		0x00000000, 0x77073096, 0xEE0E612C, 0x990951BA, 0x076DC419, 0x706AF48F,
 		0xE963A535, 0x9E6495A3, 0x0EDB8832, 0x79DCB8A4, 0xE0D5E91E, 0x97D2D988,
@@ -62,7 +59,7 @@ void CRC32::add_data(const byte input[], size_t length)
 
 	u32bit tmp = crc;
 	while(length >= 16)
-		{
+	{
 		tmp = TABLE[(tmp ^ input[ 0]) & 0xFF] ^ (tmp >> 8);
 		tmp = TABLE[(tmp ^ input[ 1]) & 0xFF] ^ (tmp >> 8);
 		tmp = TABLE[(tmp ^ input[ 2]) & 0xFF] ^ (tmp >> 8);
@@ -81,22 +78,22 @@ void CRC32::add_data(const byte input[], size_t length)
 		tmp = TABLE[(tmp ^ input[15]) & 0xFF] ^ (tmp >> 8);
 		input += 16;
 		length -= 16;
-		}
+	}
 
 	for(size_t i = 0; i != length; ++i)
 		tmp = TABLE[(tmp ^ input[i]) & 0xFF] ^ (tmp >> 8);
 
 	crc = tmp;
-	}
+}
 
 /*
 * Finalize a CRC32 Checksum
 */
 void CRC32::final_result(byte output[])
-	{
+{
 	crc ^= 0xFFFFFFFF;
 	store_be(crc, output);
 	clear();
-	}
+}
 
 }

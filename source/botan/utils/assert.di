@@ -5,17 +5,13 @@
 * Distributed under the terms of the Botan license
 */
 
-#ifndef BOTAN_ASSERTION_CHECKING_H__
 #define BOTAN_ASSERTION_CHECKING_H__
 
 #include <botan/build.h>
-
-namespace Botan {
-
 /**
 * Called when an assertion fails
 */
-void BOTAN_DLL assertion_failure(const char* expr_str,
+void assertion_failure(const char* expr_str,
 											const char* assertion_made,
 											const char* func,
 											const char* file,
@@ -32,7 +28,7 @@ void BOTAN_DLL assertion_failure(const char* expr_str,
 											 BOTAN_CURRENT_FUNCTION, \
 											 __FILE__,					\
 											 __LINE__);				  \
-	} while(0)
+} while(0)
 
 /**
 * Assert that value1 == value2
@@ -45,7 +41,7 @@ void BOTAN_DLL assertion_failure(const char* expr_str,
 											 BOTAN_CURRENT_FUNCTION,  \
 											 __FILE__,					 \
 											 __LINE__);					\
-	} while(0)
+} while(0)
 
 /**
 * Assert that expr1 (if true) implies expr2 is also true
@@ -58,7 +54,7 @@ void BOTAN_DLL assertion_failure(const char* expr_str,
 											 BOTAN_CURRENT_FUNCTION,  \
 											 __FILE__,					 \
 											 __LINE__);					\
-	} while(0)
+} while(0)
 
 /**
 * Assert that a pointer is not null
@@ -71,13 +67,9 @@ void BOTAN_DLL assertion_failure(const char* expr_str,
 											 BOTAN_CURRENT_FUNCTION,  \
 											 __FILE__,					 \
 											 __LINE__);					\
-	} while(0)
+} while(0)
 
 /**
 * Mark variable as unused
 */
 #define BOTAN_UNUSED(v) static_cast<void>(v)
-
-}
-
-#endif

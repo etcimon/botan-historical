@@ -6,14 +6,11 @@
 */
 
 #include <botan/internal/unix_procs.h>
-
-namespace Botan {
-
 /**
 * Default Commands for Entropy Gathering
 */
 std::vector<std::vector<string>> Unix_EntropySource::get_default_sources()
-	{
+{
 	std::vector<std::vector<string>> srcs;
 
 	srcs.push_back({ "netstat", "-in" });
@@ -60,6 +57,6 @@ std::vector<std::vector<string>> Unix_EntropySource::get_default_sources()
 	srcs.push_back({ "sar", "-A" });
 
 	return srcs;
-	}
+}
 
 }

@@ -5,15 +5,11 @@
 * Distributed under the terms of the Botan license
 */
 
-#ifndef BOTAN_LION_H__
 #define BOTAN_LION_H__
 
 #include <botan/block_cipher.h>
 #include <botan/stream_cipher.h>
 #include <botan/hash.h>
-
-namespace Botan {
-
 /**
 * Lion is a block cipher construction designed by Ross Anderson and
 * Eli Biham, described in "Two Practical and Provably Secure Block
@@ -23,7 +19,7 @@ namespace Botan {
 * http://www.cl.cam.ac.uk/~rja14/Papers/bear-lion.pdf
 */
 class Lion : public BlockCipher
-	{
+{
 	public:
 		void encrypt_n(const byte in[], byte out[], size_t blocks) const override;
 		void decrypt_n(const byte in[], byte out[], size_t blocks) const override;
@@ -31,9 +27,9 @@ class Lion : public BlockCipher
 		size_t block_size() const override { return m_block_size; }
 
 		Key_Length_Specification key_spec() const override
-			{
+		{
 			return Key_Length_Specification(2, 2*m_hash->output_length(), 2);
-			}
+		}
 
 		void clear() override;
 		string name() const override;
@@ -57,8 +53,4 @@ class Lion : public BlockCipher
 		std::unique_ptr<HashFunction> m_hash;
 		std::unique_ptr<StreamCipher> m_cipher;
 		SafeArray!byte m_key1, m_key2;
-	};
-
-}
-
-#endif
+};

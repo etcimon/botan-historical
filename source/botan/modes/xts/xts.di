@@ -5,19 +5,15 @@
 * Distributed under the terms of the Botan license
 */
 
-#ifndef BOTAN_MODE_XTS_H__
 #define BOTAN_MODE_XTS_H__
 
 #include <botan/cipher_mode.h>
 #include <botan/block_cipher.h>
-
-namespace Botan {
-
 /**
 * IEEE P1619 XTS Mode
 */
 class XTS_Mode : public Cipher_Mode
-	{
+{
 	public:
 		string name() const override;
 
@@ -48,13 +44,13 @@ class XTS_Mode : public Cipher_Mode
 
 		std::unique_ptr<BlockCipher> m_cipher, m_tweak_cipher;
 		SafeArray!byte m_tweak;
-	};
+};
 
 /**
 * IEEE P1619 XTS Encryption
 */
 class XTS_Encryption : public XTS_Mode
-	{
+{
 	public:
 		XTS_Encryption(BlockCipher* cipher) : XTS_Mode(cipher) {}
 
@@ -63,13 +59,13 @@ class XTS_Encryption : public XTS_Mode
 		void finish(SafeArray!byte& final_block, size_t offset = 0) override;
 
 		size_t output_length(size_t input_length) const override;
-	};
+};
 
 /**
 * IEEE P1619 XTS Decryption
 */
 class XTS_Decryption : public XTS_Mode
-	{
+{
 	public:
 		XTS_Decryption(BlockCipher* cipher) : XTS_Mode(cipher) {}
 
@@ -78,8 +74,4 @@ class XTS_Decryption : public XTS_Mode
 		void finish(SafeArray!byte& final_block, size_t offset = 0) override;
 
 		size_t output_length(size_t input_length) const override;
-	};
-
-}
-
-#endif
+};

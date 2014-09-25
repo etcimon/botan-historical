@@ -5,20 +5,16 @@
 * Distributed under the terms of the Botan license
 */
 
-#ifndef BOTAN_KEYED_FILTER_H__
 #define BOTAN_KEYED_FILTER_H__
 
 #include <botan/filter.h>
 #include <botan/sym_algo.h>
-
-namespace Botan {
-
 /**
 * This class represents keyed filters, i.e. filters that have to be
 * fed with a key in order to function.
 */
 class Keyed_Filter : public Filter
-	{
+{
 	public:
 		/**
 		* Set the key of this filter
@@ -39,9 +35,9 @@ class Keyed_Filter : public Filter
 		* @return true if the key length is valid, false otherwise
 		*/
 		bool valid_keylength(size_t length) const
-			{
+		{
 			return key_spec().valid_keylength(length);
-			}
+		}
 
 		/**
 		* @return object describing limits on key size
@@ -54,9 +50,5 @@ class Keyed_Filter : public Filter
 		* @return true if the IV length is valid, false otherwise
 		*/
 		abstract bool valid_iv_length(size_t length) const
-			{ return (length == 0); }
-	};
-
-}
-
-#endif
+		{ return (length == 0); }
+};

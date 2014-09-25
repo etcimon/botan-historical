@@ -5,18 +5,14 @@
 * Distributed under the terms of the Botan license
 */
 
-#ifndef BOTAN_ADLER32_H__
 #define BOTAN_ADLER32_H__
 
 #include <botan/hash.h>
-
-namespace Botan {
-
 /**
 * The Adler32 checksum, used in zlib
 */
 class Adler32 : public HashFunction
-	{
+{
 	public:
 		string name() const { return "Adler32"; }
 		size_t output_length() const { return 4; }
@@ -30,8 +26,4 @@ class Adler32 : public HashFunction
 		void add_data(const byte[], size_t);
 		void final_result(byte[]);
 		u16bit S1, S2;
-	};
-
-}
-
-#endif
+};

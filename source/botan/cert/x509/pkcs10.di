@@ -5,7 +5,6 @@
 * Distributed under the terms of the Botan license
 */
 
-#ifndef BOTAN_PKCS10_H__
 #define BOTAN_PKCS10_H__
 
 #include <botan/x509_obj.h>
@@ -16,14 +15,11 @@
 #include <botan/asn1_attribute.h>
 #include <botan/asn1_alt_name.h>
 #include <vector>
-
-namespace Botan {
-
 /**
 * PKCS #10 Certificate Request.
 */
 class PKCS10_Request : public X509_Object
-	{
+{
 	public:
 		/**
 		* Get the subject public key.
@@ -104,8 +100,4 @@ class PKCS10_Request : public X509_Object
 		void handle_attribute(const Attribute&);
 
 		Data_Store info;
-	};
-
-}
-
-#endif
+};

@@ -8,34 +8,31 @@
 #include <botan/rc4.h>
 #include <botan/internal/xor_buf.h>
 #include <botan/internal/rounding.h>
-
-namespace Botan {
-
 /*
 * Combine cipher stream with message
 */
 void RC4::cipher(const byte in[], byte out[], size_t length)
-	{
+{
 	while(length >= buffer.size() - position)
-		{
+	{
 		xor_buf(out, in, &buffer[position], buffer.size() - position);
 		length -= (buffer.size() - position);
 		in += (buffer.size() - position);
 		out += (buffer.size() - position);
 		generate();
-		}
+	}
 	xor_buf(out, in, &buffer[position], length);
 	position += length;
-	}
+}
 
 /*
 * Generate cipher stream
 */
 void RC4::generate()
-	{
+{
 	byte SX, SY;
 	for(size_t i = 0; i != buffer.size(); i += 4)
-		{
+	{
 		SX = state[X+1]; Y = (Y + SX) % 256; SY = state[Y];
 		state[X+1] = SY; state[Y] = SX;
 		buffer[i] = state[(SX + SY) % 256];
@@ -52,15 +49,15 @@ void RC4::generate()
 		SX = state[X]; Y = (Y + SX) % 256; SY = state[Y];
 		state[X] = SY; state[Y] = SX;
 		buffer[i+3] = state[(SX + SY) % 256];
-		}
-	position = 0;
 	}
+	position = 0;
+}
 
 /*
 * RC4 Key Schedule
 */
 void RC4::key_schedule(const byte key[], size_t length)
-	{
+{
 	state.resize(256);
 	buffer.resize(round_up<size_t>(DEFAULT_BUFFERSIZE, 4));
 
@@ -70,36 +67,36 @@ void RC4::key_schedule(const byte key[], size_t length)
 		state[i] = static_cast<byte>(i);
 
 	for(size_t i = 0, state_index = 0; i != 256; ++i)
-		{
+	{
 		state_index = (state_index + key[i % length] + state[i]) % 256;
 		std::swap(state[i], state[state_index]);
-		}
+	}
 
 	for(size_t i = 0; i <= SKIP; i += buffer.size())
 		generate();
 
 	position += (SKIP % buffer.size());
-	}
+}
 
 /*
 * Return the name of this type
 */
 string RC4::name() const
-	{
+{
 	if(SKIP == 0)	return "RC4";
 	if(SKIP == 256) return "MARK-4";
 	else				return "RC4_skip(" + std::to_string(SKIP) + ")";
-	}
+}
 
 /*
 * Clear memory of sensitive data
 */
 void RC4::clear()
-	{
+{
 	zap(state);
 	zap(buffer);
 	position = X = Y = 0;
-	}
+}
 
 /*
 * RC4 Constructor

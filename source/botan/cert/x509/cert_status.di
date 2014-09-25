@@ -5,11 +5,7 @@
 * Distributed under the terms of the Botan license
 */
 
-#ifndef BOTAN_X509_PATH_RESULT_H__
 #define BOTAN_X509_PATH_RESULT_H__
-
-namespace Botan {
-
 enum class Certificate_Status_Code {
 	VERIFIED = 0x00000000,
 	OCSP_RESPONSE_GOOD,
@@ -47,7 +43,3 @@ enum class Certificate_Status_Code {
 	CRL_BAD_SIGNATURE,
 	SIGNATURE_ERROR,
 };
-
-}
-
-#endif

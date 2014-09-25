@@ -5,7 +5,6 @@
 * Distributed under the terms of the Botan license
 */
 
-#ifndef BOTAN_RFC5054_SRP6_H__
 #define BOTAN_RFC5054_SRP6_H__
 
 #include <botan/bigint.h>
@@ -13,9 +12,6 @@
 #include <botan/rng.h>
 #include <botan/symkey.h>
 #include <string>
-
-namespace Botan {
-
 /**
 * SRP6a Client side
 * @param username the username we are attempting login for
@@ -29,7 +25,7 @@ namespace Botan {
 * @return (A,K) the client public key and the shared secret key
 */
 std::pair<BigInt,SymmetricKey>
-BOTAN_DLL srp6_client_agree(in string username,
+srp6_client_agree(in string username,
 									 in string password,
 									 in string group_id,
 									 in string hash_id,
@@ -45,7 +41,7 @@ BOTAN_DLL srp6_client_agree(in string username,
 * @param group_id specifies the shared SRP group
 * @param hash_id specifies a secure hash function
 */
-BigInt BOTAN_DLL generate_srp6_verifier(in string identifier,
+BigInt generate_srp6_verifier(in string identifier,
 													 in string password,
 													 in Array!byte salt,
 													 in string group_id,
@@ -58,13 +54,13 @@ BigInt BOTAN_DLL generate_srp6_verifier(in string identifier,
 * @param g the group generator
 * @return group identifier
 */
-string BOTAN_DLL srp6_group_identifier(const BigInt& N, const BigInt& g);
+string srp6_group_identifier(const BigInt& N, const BigInt& g);
 
 /**
 * Represents a SRP-6a server session
 */
 class SRP6_Server_Session
-	{
+{
 	public:
 		/**
 		* Server side step 1
@@ -90,8 +86,4 @@ class SRP6_Server_Session
 		string hash_id;
 		BigInt B, b, v, S, p;
 		size_t p_bytes;
-	};
-
-}
-
-#endif
+};

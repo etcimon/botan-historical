@@ -8,16 +8,13 @@
 #include <botan/oaep.h>
 #include <botan/mgf1.h>
 #include <botan/mem_ops.h>
-
-namespace Botan {
-
 /*
 * OAEP Pad Operation
 */
 SafeArray!byte OAEP::pad(const byte in[], size_t in_length,
 									  size_t key_length,
 									  RandomNumberGenerator& rng) const
-	{
+{
 	key_length /= 8;
 
 	if(key_length < in_length + 2*m_Phash.size() + 1)
@@ -40,14 +37,14 @@ SafeArray!byte OAEP::pad(const byte in[], size_t in_length,
 				 &out[0], m_Phash.size());
 
 	return out;
-	}
+}
 
 /*
 * OAEP Unpad Operation
 */
 SafeArray!byte OAEP::unpad(const byte in[], size_t in_length,
 										 size_t key_length) const
-	{
+{
 	/*
 	Must be careful about error messages here; if an attacker can
 	distinguish them, it is easy to use the differences as an oracle to
@@ -87,7 +84,7 @@ SafeArray!byte OAEP::unpad(const byte in[], size_t in_length,
 	* may or may not.
 	*/
 	for(size_t i = delim_idx; i < input.size(); ++i)
-		{
+	{
 		const bool zero_p = !input[i];
 		const bool one_p = input[i] == 0x01;
 
@@ -98,7 +95,7 @@ SafeArray!byte OAEP::unpad(const byte in[], size_t in_length,
 		delim_idx += add_1;
 
 		waiting_for_delim &= zero_p;
-		}
+	}
 
 	// If we never saw any non-zero byte, then it's not valid input
 	bad_input |= waiting_for_delim;
@@ -109,25 +106,25 @@ SafeArray!byte OAEP::unpad(const byte in[], size_t in_length,
 		throw Decoding_Error("Invalid OAEP encoding");
 
 	return SafeArray!byte(&input[delim_idx + 1], &input[input.size()]);
-	}
+}
 
 /*
 * Return the max input size for a given key size
 */
 size_t OAEP::maximum_input_size(size_t keybits) const
-	{
+{
 	if(keybits / 8 > 2*m_Phash.size() + 1)
 		return ((keybits / 8) - 2*m_Phash.size() - 1);
 	else
 		return 0;
-	}
+}
 
 /*
 * OAEP Constructor
 */
 OAEP::OAEP(HashFunction* hash, in string P) : m_hash(hash)
-	{
+{
 	m_Phash = m_hash->process(P);
-	}
+}
 
 }

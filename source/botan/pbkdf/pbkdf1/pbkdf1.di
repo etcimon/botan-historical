@@ -5,21 +5,17 @@
 * Distributed under the terms of the Botan license
 */
 
-#ifndef BOTAN_PBKDF1_H__
 #define BOTAN_PBKDF1_H__
 
 #include <botan/pbkdf.h>
 #include <botan/hash.h>
-
-namespace Botan {
-
 /**
 * PKCS #5 v1 PBKDF, aka PBKDF1
 * Can only generate a key up to the size of the hash output.
 * Unless needed for backwards compatability, use PKCS5_PBKDF2
 */
 class PKCS5_PBKDF1 : public PBKDF
-	{
+{
 	public:
 		/**
 		* Create a PKCS #5 instance using the specified hash function.
@@ -28,14 +24,14 @@ class PKCS5_PBKDF1 : public PBKDF
 		PKCS5_PBKDF1(HashFunction* hash_in) : hash(hash_in) {}
 
 		string name() const
-			{
+		{
 			return "PBKDF1(" + hash->name() + ")";
-			}
+		}
 
 		PBKDF* clone() const
-			{
+		{
 			return new PKCS5_PBKDF1(hash->clone());
-			}
+		}
 
 		std::pair<size_t, OctetString>
 			key_derivation(size_t output_len,
@@ -45,8 +41,4 @@ class PKCS5_PBKDF1 : public PBKDF
 								std::chrono::milliseconds msec) const override;
 	private:
 		std::unique_ptr<HashFunction> hash;
-	};
-
-}
-
-#endif
+};

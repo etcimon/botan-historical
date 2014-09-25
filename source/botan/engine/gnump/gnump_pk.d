@@ -26,34 +26,31 @@
 #if defined(BOTAN_HAS_DIFFIE_HELLMAN)
   #include <botan/dh.h>
 #endif
-
-namespace Botan {
-
 namespace {
 
 #if defined(BOTAN_HAS_DIFFIE_HELLMAN)
 class GMP_DH_KA_Operation : public PK_Ops::Key_Agreement
-	{
+{
 	public:
 		GMP_DH_KA_Operation(const DH_PrivateKey& dh) :
 			x(dh.get_x()), p(dh.group_p()) {}
 
 		SafeArray!byte agree(const byte w[], size_t w_len)
-			{
+		{
 			GMP_MPZ z(w, w_len);
 			mpz_powm(z.value, z.value, x.value, p.value);
 			return z.to_bytes();
-			}
+		}
 
 	private:
 		GMP_MPZ x, p;
-	};
+};
 #endif
 
 #if defined(BOTAN_HAS_DSA)
 
 class GMP_DSA_Signature_Operation : public PK_Ops::Signature
-	{
+{
 	public:
 		GMP_DSA_Signature_Operation(const DSA_PrivateKey& dsa) :
 			x(dsa.get_x()),
@@ -71,12 +68,12 @@ class GMP_DSA_Signature_Operation : public PK_Ops::Signature
 	private:
 		const GMP_MPZ x, p, q, g;
 		size_t q_bits;
-	};
+};
 
 SafeArray!byte
 GMP_DSA_Signature_Operation::sign(const byte msg[], size_t msg_len,
 											 RandomNumberGenerator& rng)
-	{
+{
 	const size_t q_bytes = (q_bits + 7) / 8;
 
 	rng.add_entropy(msg, msg_len);
@@ -108,10 +105,10 @@ GMP_DSA_Signature_Operation::sign(const byte msg[], size_t msg_len,
 	r.encode(&output[0], q_bytes);
 	s.encode(&output[q_bytes], q_bytes);
 	return output;
-	}
+}
 
 class GMP_DSA_Verification_Operation : public PK_Ops::Verification
-	{
+{
 	public:
 		GMP_DSA_Verification_Operation(const DSA_PublicKey& dsa) :
 			y(dsa.get_y()),
@@ -131,11 +128,11 @@ class GMP_DSA_Verification_Operation : public PK_Ops::Verification
 	private:
 		const GMP_MPZ y, p, q, g;
 		size_t q_bits;
-	};
+};
 
 bool GMP_DSA_Verification_Operation::verify(const byte msg[], size_t msg_len,
 														  const byte sig[], size_t sig_len)
-	{
+{
 	const size_t q_bytes = q.bytes();
 
 	if(sig_len != 2*q_bytes || msg_len > q_bytes)
@@ -169,16 +166,11 @@ bool GMP_DSA_Verification_Operation::verify(const byte msg[], size_t msg_len,
 
 	if(mpz_cmp(si.value, r.value) == 0)
 		return true;
-	return false;
-	}
-
-#endif
-
-#if defined(BOTAN_HAS_RSA)
+	return false;#if defined(BOTAN_HAS_RSA)
 
 class GMP_RSA_Private_Operation : public PK_Ops::Signature,
 											 public PK_Ops::Decryption
-	{
+{
 	public:
 		GMP_RSA_Private_Operation(const RSA_PrivateKey& rsa) :
 			mod(rsa.get_n()),
@@ -188,33 +180,33 @@ class GMP_RSA_Private_Operation : public PK_Ops::Signature,
 			d2(rsa.get_d2()),
 			c(rsa.get_c()),
 			n_bits(rsa.get_n().bits())
-			{}
+		{}
 
 		size_t max_input_bits() const { return (n_bits - 1); }
 
 		SafeArray!byte sign(const byte msg[], size_t msg_len,
 										RandomNumberGenerator&)
-			{
+		{
 			BigInt m(msg, msg_len);
 			BigInt x = private_op(m);
 			return BigInt::encode_1363(x, (n_bits + 7) / 8);
-			}
+		}
 
 		SafeArray!byte decrypt(const byte msg[], size_t msg_len)
-			{
+		{
 			BigInt m(msg, msg_len);
 			return BigInt::encode_locked(private_op(m));
-			}
+		}
 
 	private:
 		BigInt private_op(const BigInt& m) const;
 
 		GMP_MPZ mod, p, q, d1, d2, c;
 		size_t n_bits;
-	};
+};
 
 BigInt GMP_RSA_Private_Operation::private_op(const BigInt& m) const
-	{
+{
 	GMP_MPZ j1, j2, h(m);
 
 	mpz_powm(j1.value, h.value, d1.value, p.value);
@@ -225,46 +217,46 @@ BigInt GMP_RSA_Private_Operation::private_op(const BigInt& m) const
 	mpz_mul(h.value, h.value, q.value);
 	mpz_add(h.value, h.value, j2.value);
 	return h.to_bigint();
-	}
+}
 
 class GMP_RSA_Public_Operation : public PK_Ops::Verification,
 											public PK_Ops::Encryption
-	{
+{
 	public:
 		GMP_RSA_Public_Operation(const RSA_PublicKey& rsa) :
 			n(rsa.get_n()), e(rsa.get_e()), mod(rsa.get_n())
-			{}
+		{}
 
 		size_t max_input_bits() const { return (n.bits() - 1); }
 		bool with_recovery() const { return true; }
 
 		SafeArray!byte encrypt(const byte msg[], size_t msg_len,
 											RandomNumberGenerator&)
-			{
+		{
 			BigInt m(msg, msg_len);
 			return BigInt::encode_1363(public_op(m), n.bytes());
-			}
+		}
 
 		SafeArray!byte verify_mr(const byte msg[], size_t msg_len)
-			{
+		{
 			BigInt m(msg, msg_len);
 			return BigInt::encode_locked(public_op(m));
-			}
+		}
 
 	private:
 		BigInt public_op(const BigInt& m) const
-			{
+		{
 			if(m >= n)
 				throw Invalid_Argument("RSA public op - input is too large");
 
 			GMP_MPZ m_gmp(m);
 			mpz_powm(m_gmp.value, m_gmp.value, e.value, mod.value);
 			return m_gmp.to_bigint();
-			}
+		}
 
 		const BigInt& n;
 		const GMP_MPZ e, mod;
-	};
+};
 
 #endif
 
@@ -272,18 +264,18 @@ class GMP_RSA_Public_Operation : public PK_Ops::Verification,
 
 PK_Ops::Key_Agreement*
 GMP_Engine::get_key_agreement_op(const Private_Key& key, RandomNumberGenerator&) const
-	{
+{
 #if defined(BOTAN_HAS_DIFFIE_HELLMAN)
 	if(const DH_PrivateKey* dh = dynamic_cast<const DH_PrivateKey*>(&key))
 		return new GMP_DH_KA_Operation(*dh);
 #endif
 
 	return nullptr;
-	}
+}
 
 PK_Ops::Signature*
 GMP_Engine::get_signature_op(const Private_Key& key, RandomNumberGenerator&) const
-	{
+{
 #if defined(BOTAN_HAS_RSA)
 	if(const RSA_PrivateKey* s = dynamic_cast<const RSA_PrivateKey*>(&key))
 		return new GMP_RSA_Private_Operation(*s);
@@ -295,11 +287,11 @@ GMP_Engine::get_signature_op(const Private_Key& key, RandomNumberGenerator&) con
 #endif
 
 	return nullptr;
-	}
+}
 
 PK_Ops::Verification*
 GMP_Engine::get_verify_op(const Public_Key& key, RandomNumberGenerator&) const
-	{
+{
 #if defined(BOTAN_HAS_RSA)
 	if(const RSA_PublicKey* s = dynamic_cast<const RSA_PublicKey*>(&key))
 		return new GMP_RSA_Public_Operation(*s);
@@ -311,28 +303,28 @@ GMP_Engine::get_verify_op(const Public_Key& key, RandomNumberGenerator&) const
 #endif
 
 	return nullptr;
-	}
+}
 
 PK_Ops::Encryption*
 GMP_Engine::get_encryption_op(const Public_Key& key, RandomNumberGenerator&) const
-	{
+{
 #if defined(BOTAN_HAS_RSA)
 	if(const RSA_PublicKey* s = dynamic_cast<const RSA_PublicKey*>(&key))
 		return new GMP_RSA_Public_Operation(*s);
 #endif
 
 	return nullptr;
-	}
+}
 
 PK_Ops::Decryption*
 GMP_Engine::get_decryption_op(const Private_Key& key, RandomNumberGenerator&) const
-	{
+{
 #if defined(BOTAN_HAS_RSA)
 	if(const RSA_PrivateKey* s = dynamic_cast<const RSA_PrivateKey*>(&key))
 		return new GMP_RSA_Private_Operation(*s);
 #endif
 
 	return nullptr;
-	}
+}
 
 }

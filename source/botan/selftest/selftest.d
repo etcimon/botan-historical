@@ -11,9 +11,6 @@
 #include <botan/hex.h>
 #include <botan/internal/core_engine.h>
 #include <botan/internal/stl_util.h>
-
-namespace Botan {
-
 namespace {
 
 /*
@@ -22,9 +19,9 @@ namespace {
 string test_filter_kat(Filter* filter,
 									 in string input,
 									 in string expected)
-	{
+{
 	try
-		{
+	{
 		Pipe pipe(new Hex_Decoder, filter, new Hex_Encoder);
 		pipe.process_msg(input);
 
@@ -36,12 +33,12 @@ string test_filter_kat(Filter* filter,
 			return "passed";
 		else
 			return (string("got ") + got + " expected " + expected);
-		}
-	catch(std::exception& e)
-		{
-		return string("exception ") + e.what();
-		}
 	}
+	catch(std::exception& e)
+	{
+		return string("exception ") + e.what();
+	}
+}
 
 }
 
@@ -52,7 +49,7 @@ std::map<string, string>
 algorithm_kat_detailed(const SCAN_Name& algo_name,
 							  const std::map<string, string>& vars,
 							  Algorithm_Factory& af)
-	{
+{
 	in string algo = algo_name.algo_name_and_args();
 
 	std::vector<string> providers = af.providers_of(algo);
@@ -68,33 +65,33 @@ algorithm_kat_detailed(const SCAN_Name& algo_name,
 	InitializationVector iv(search_map(vars, string("iv")));
 
 	for(size_t i = 0; i != providers.size(); ++i)
-		{
+	{
 		const string provider = providers[i];
 
 		if(const HashFunction* proto =
 				af.prototype_hash_function(algo, provider))
-			{
+		{
 			Filter* filt = new Hash_Filter(proto->clone());
 			all_results[provider] = test_filter_kat(filt, input, output);
-			}
+		}
 		else if(const MessageAuthenticationCode* proto =
 					  af.prototype_mac(algo, provider))
-			{
+		{
 			Keyed_Filter* filt = new MAC_Filter(proto->clone(), key);
 			all_results[provider] = test_filter_kat(filt, input, output);
-			}
+		}
 		else if(const StreamCipher* proto =
 					  af.prototype_stream_cipher(algo, provider))
-			{
+		{
 			Keyed_Filter* filt = new StreamCipher_Filter(proto->clone());
 			filt->set_key(key);
 			filt->set_iv(iv);
 
 			all_results[provider] = test_filter_kat(filt, input, output);
-			}
+		}
 		else if(const BlockCipher* proto =
 					  af.prototype_block_cipher(algo, provider))
-			{
+		{
 			Keyed_Filter* enc = get_cipher_mode(proto, ENCRYPTION,
 															algo_name.cipher_mode(),
 															algo_name.cipher_mode_pad());
@@ -104,11 +101,11 @@ algorithm_kat_detailed(const SCAN_Name& algo_name,
 															algo_name.cipher_mode_pad());
 
 			if(!enc || !dec)
-				{
+			{
 				delete enc;
 				delete dec;
 				continue;
-				}
+			}
 
 			enc->set_key(key);
 
@@ -127,29 +124,29 @@ algorithm_kat_detailed(const SCAN_Name& algo_name,
 			const std::vector<byte> ad = hex_decode(search_map(vars, string("ad")));
 
 			if(!ad.empty())
-				{
+			{
 				if(AEAD_Filter* enc_aead = dynamic_cast<AEAD_Filter*>(enc))
-					{
+				{
 					enc_aead->set_associated_data(&ad[0], ad.size());
 
 					if(AEAD_Filter* dec_aead = dynamic_cast<AEAD_Filter*>(dec))
 						dec_aead->set_associated_data(&ad[0], ad.size());
-					}
 				}
+			}
 
 			all_results[provider + " (encrypt)"] = test_filter_kat(enc, input, output);
 			all_results[provider + " (decrypt)"] = test_filter_kat(dec, output, input);
-			}
 		}
+	}
 
 	return all_results;
-	}
+}
 
 std::map<string, bool>
 algorithm_kat(const SCAN_Name& algo_name,
 				  const std::map<string, string>& vars,
 				  Algorithm_Factory& af)
-	{
+{
 	const auto result = algorithm_kat_detailed(algo_name, vars, af);
 
 	std::map<string, bool> pass_or_fail;
@@ -158,46 +155,46 @@ algorithm_kat(const SCAN_Name& algo_name,
 		pass_or_fail[i.first] = (i.second == "passed");
 
 	return pass_or_fail;
-	}
+}
 
 namespace {
 
 void verify_results(in string algo,
 						  const std::map<string, string>& results)
-	{
+{
 	for(auto i = results.begin(); i != results.end(); ++i)
-		{
+	{
 		if(i->second != "passed")
 			throw Self_Test_Failure(algo + " self-test failed (" + i->second + ")" +
 											" with provider " + i->first);
-		}
 	}
+}
 
 void hash_test(Algorithm_Factory& af,
 					in string name,
 					in string in,
 					in string out)
-	{
+{
 	std::map<string, string> vars;
 	vars["input"] = in;
 	vars["output"] = out;
 
 	verify_results(name, algorithm_kat_detailed(name, vars, af));
-	}
+}
 
 void mac_test(Algorithm_Factory& af,
 				  in string name,
 				  in string in,
 				  in string out,
 				  in string key)
-	{
+{
 	std::map<string, string> vars;
 	vars["input"] = in;
 	vars["output"] = out;
 	vars["key"] = key;
 
 	verify_results(name, algorithm_kat_detailed(name, vars, af));
-	}
+}
 
 /*
 * Perform a KAT for a cipher
@@ -212,7 +209,7 @@ void cipher_kat(Algorithm_Factory& af,
 					 in string cfb_out,
 					 in string ofb_out,
 					 in string ctr_out)
-	{
+{
 	SymmetricKey key(key_str);
 	InitializationVector iv(iv_str);
 
@@ -238,7 +235,7 @@ void cipher_kat(Algorithm_Factory& af,
 
 	vars["output"] = ctr_out;
 	verify_results(algo + "/CTR", algorithm_kat_detailed(algo + "/CTR-BE", vars, af));
-	}
+}
 
 }
 
@@ -246,18 +243,18 @@ void cipher_kat(Algorithm_Factory& af,
 * Perform Self Tests
 */
 bool passes_self_tests(Algorithm_Factory& af)
-	{
+{
 	try
-		{
+	{
 		confirm_startup_self_tests(af);
-		}
+	}
 	catch(Self_Test_Failure)
-		{
+	{
 		return false;
-		}
+	}
 
 	return true;
-	}
+}
 
 /*
 * Perform Self Tests

@@ -6,21 +6,17 @@
 * Distributed under the terms of the Botan license
 */
 
-#ifndef BOTAN_BIGINT_H__
 #define BOTAN_BIGINT_H__
 
 #include <botan/rng.h>
 #include <botan/secmem.h>
 #include <botan/mp_types.h>
 #include <iosfwd>
-
-namespace Botan {
-
 /**
 * Arbitrary precision integer
 */
 class BigInt
-	{
+{
 	public:
 	  /**
 	  * Base enumerator for encoding and decoding
@@ -35,7 +31,7 @@ class BigInt
 	  /**
 	  * DivideByZero Exception
 	  */
-	  struct BOTAN_DLL DivideByZero : public Exception
+	  struct DivideByZero : public Exception
 		  { DivideByZero() : Exception("BigInt divide by zero") {} };
 
 	  /**
@@ -519,41 +515,41 @@ class BigInt
 	private:
 		secure_vector<word> m_reg;
 		Sign m_signedness = Positive;
-	};
+};
 
 /*
 * Arithmetic Operators
 */
-BigInt BOTAN_DLL operator+(const BigInt& x, const BigInt& y);
-BigInt BOTAN_DLL operator-(const BigInt& x, const BigInt& y);
-BigInt BOTAN_DLL operator*(const BigInt& x, const BigInt& y);
-BigInt BOTAN_DLL operator/(const BigInt& x, const BigInt& d);
-BigInt BOTAN_DLL operator%(const BigInt& x, const BigInt& m);
-word	BOTAN_DLL operator%(const BigInt& x, word m);
-BigInt BOTAN_DLL operator<<(const BigInt& x, size_t n);
-BigInt BOTAN_DLL operator>>(const BigInt& x, size_t n);
+BigInt operator+(const BigInt& x, const BigInt& y);
+BigInt operator-(const BigInt& x, const BigInt& y);
+BigInt operator*(const BigInt& x, const BigInt& y);
+BigInt operator/(const BigInt& x, const BigInt& d);
+BigInt operator%(const BigInt& x, const BigInt& m);
+word	operator%(const BigInt& x, word m);
+BigInt operator<<(const BigInt& x, size_t n);
+BigInt operator>>(const BigInt& x, size_t n);
 
 /*
 * Comparison Operators
 */
 inline bool operator==(const BigInt& a, const BigInt& b)
-	{ return (a.cmp(b) == 0); }
+{ return (a.cmp(b) == 0); }
 inline bool operator!=(const BigInt& a, const BigInt& b)
-	{ return (a.cmp(b) != 0); }
+{ return (a.cmp(b) != 0); }
 inline bool operator<=(const BigInt& a, const BigInt& b)
-	{ return (a.cmp(b) <= 0); }
+{ return (a.cmp(b) <= 0); }
 inline bool operator>=(const BigInt& a, const BigInt& b)
-	{ return (a.cmp(b) >= 0); }
+{ return (a.cmp(b) >= 0); }
 inline bool operator<(const BigInt& a, const BigInt& b)
-	{ return (a.cmp(b) < 0); }
+{ return (a.cmp(b) < 0); }
 inline bool operator>(const BigInt& a, const BigInt& b)
-	{ return (a.cmp(b) > 0); }
+{ return (a.cmp(b) > 0); }
 
 /*
 * I/O Operators
 */
-BOTAN_DLL std::ostream& operator<<(std::ostream&, const BigInt&);
-BOTAN_DLL std::istream& operator>>(std::istream&, BigInt&);
+std::ostream& operator<<(std::ostream&, const BigInt&);
+std::istream& operator>>(std::istream&, BigInt&);
 
 }
 
@@ -561,10 +557,6 @@ namespace std {
 
 template<>
 inline void swap<Botan::BigInt>(Botan::BigInt& x, Botan::BigInt& y)
-	{
+{
 	x.swap(y);
-	}
-
 }
-
-#endif

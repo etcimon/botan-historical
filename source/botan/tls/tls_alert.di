@@ -5,21 +5,17 @@
 * Released under the terms of the Botan license
 */
 
-#ifndef BOTAN_TLS_ALERT_H__
 #define BOTAN_TLS_ALERT_H__
 
 #include <botan/secmem.h>
 #include <string>
-
-namespace Botan {
-
 namespace TLS {
 
 /**
 * SSL/TLS Alert Message
 */
 class Alert
-	{
+{
 	public:
 		/**
 		* Type codes for TLS alerts
@@ -59,7 +55,7 @@ class Alert
 			// pseudo alert values
 			NULL_ALERT							 = 256,
 			HEARTBEAT_PAYLOAD					= 257
-		};
+	};
 
 		/**
 		* @return true iff this alert is non-empty
@@ -104,10 +100,6 @@ class Alert
 	private:
 		bool m_fatal;
 		Type m_type_code;
-	};
+};
 
 }
-
-}
-
-#endif

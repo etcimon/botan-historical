@@ -5,21 +5,17 @@
 * Distributed under the terms of the Botan license
 */
 
-#ifndef BOTAN_BUFFERED_COMPUTATION_H__
 #define BOTAN_BUFFERED_COMPUTATION_H__
 
 #include <botan/secmem.h>
 #include <botan/get_byte.h>
 #include <string>
-
-namespace Botan {
-
 /**
 * This class represents any kind of computation which uses an internal
 * state, such as hash functions or MACs
 */
 class Buffered_Computation
-	{
+{
 	public:
 		/**
 		* @return length of the output of this function in bytes
@@ -38,31 +34,31 @@ class Buffered_Computation
 		* @param in the input to process as a secure_vector
 		*/
 		void update(in SafeArray!byte in)
-			{
+		{
 			add_data(&in[0], in.size());
-			}
+		}
 
 		/**
 		* Add new input to process.
 		* @param in the input to process as a std::vector
 		*/
 		void update(in Array!byte in)
-			{
+		{
 			add_data(&in[0], in.size());
-			}
+		}
 
 		/**
 		* Add an integer in big-endian order
 		* @param in the value
 		*/
 		template<typename T> void update_be(const T in)
-			{
+		{
 			for(size_t i = 0; i != sizeof(T); ++i)
-				{
+			{
 				byte b = get_byte(i, in);
 				add_data(&b, 1);
-				}
 			}
+		}
 
 		/**
 		* Add new input to process.
@@ -71,9 +67,9 @@ class Buffered_Computation
 		* the strings encoding.
 		*/
 		void update(in string str)
-			{
+		{
 			add_data(reinterpret_cast<const byte*>(str.data()), str.size());
-			}
+		}
 
 		/**
 		* Process a single byte.
@@ -95,11 +91,11 @@ class Buffered_Computation
 		* @return secure_vector holding the result
 		*/
 		SafeArray!byte final()
-			{
+		{
 			SafeArray!byte output(output_length());
 			final_result(&output[0]);
 			return output;
-			}
+		}
 
 		/**
 		* Update and finalize computation. Does the same as calling update()
@@ -109,10 +105,10 @@ class Buffered_Computation
 		* @result the result of the call to final()
 		*/
 		SafeArray!byte process(const byte in[], size_t length)
-			{
+		{
 			add_data(in, length);
 			return final();
-			}
+		}
 
 		/**
 		* Update and finalize computation. Does the same as calling update()
@@ -121,10 +117,10 @@ class Buffered_Computation
 		* @result the result of the call to final()
 		*/
 		SafeArray!byte process(in SafeArray!byte in)
-			{
+		{
 			add_data(&in[0], in.size());
 			return final();
-			}
+		}
 
 		/**
 		* Update and finalize computation. Does the same as calling update()
@@ -133,10 +129,10 @@ class Buffered_Computation
 		* @result the result of the call to final()
 		*/
 		SafeArray!byte process(in Array!byte in)
-			{
+		{
 			add_data(&in[0], in.size());
 			return final();
-			}
+		}
 
 		/**
 		* Update and finalize computation. Does the same as calling update()
@@ -145,10 +141,10 @@ class Buffered_Computation
 		* @result the result of the call to final()
 		*/
 		SafeArray!byte process(in string in)
-			{
+		{
 			update(in);
 			return final();
-			}
+		}
 
 		abstract ~Buffered_Computation() {}
 	private:
@@ -164,8 +160,4 @@ class Buffered_Computation
 		* @param out is an output buffer of output_length()
 		*/
 		abstract void final_result(byte out[]) = 0;
-	};
-
-}
-
-#endif
+};

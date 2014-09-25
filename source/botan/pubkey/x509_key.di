@@ -5,16 +5,12 @@
 * Distributed under the terms of the Botan license
 */
 
-#ifndef BOTAN_X509_PUBLIC_KEY_H__
 #define BOTAN_X509_PUBLIC_KEY_H__
 
 #include <botan/pk_keys.h>
 #include <botan/alg_id.h>
 #include <botan/pipe.h>
 #include <string>
-
-namespace Botan {
-
 /**
 * The two types of X509 encoding supported by Botan.
 */
@@ -30,45 +26,41 @@ namespace X509 {
 * @param key the public key to encode
 * @return BER encoding of this key
 */
-BOTAN_DLL std::vector<byte> BER_encode(const Public_Key& key);
+std::vector<byte> BER_encode(const Public_Key& key);
 
 /**
 * PEM encode a public key into a string.
 * @param key the key to encode
 * @return PEM encoded key
 */
-BOTAN_DLL string PEM_encode(const Public_Key& key);
+string PEM_encode(const Public_Key& key);
 
 /**
 * Create a public key from a data source.
 * @param source the source providing the DER or PEM encoded key
 * @return new public key object
 */
-BOTAN_DLL Public_Key* load_key(DataSource& source);
+Public_Key* load_key(DataSource& source);
 
 /**
 * Create a public key from a file
 * @param filename pathname to the file to load
 * @return new public key object
 */
-BOTAN_DLL Public_Key* load_key(in string filename);
+Public_Key* load_key(in string filename);
 
 /**
 * Create a public key from a memory region.
 * @param enc the memory region containing the DER or PEM encoded key
 * @return new public key object
 */
-BOTAN_DLL Public_Key* load_key(in Array!byte enc);
+Public_Key* load_key(in Array!byte enc);
 
 /**
 * Copy a key.
 * @param key the public key to copy
 * @return new public key object
 */
-BOTAN_DLL Public_Key* copy_key(const Public_Key& key);
+Public_Key* copy_key(const Public_Key& key);
 
 }
-
-}
-
-#endif

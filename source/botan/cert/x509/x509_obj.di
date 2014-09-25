@@ -5,7 +5,6 @@
 * Distributed under the terms of the Botan license
 */
 
-#ifndef BOTAN_X509_OBJECT_H__
 #define BOTAN_X509_OBJECT_H__
 
 #include <botan/asn1_obj.h>
@@ -13,15 +12,12 @@
 #include <botan/x509_key.h>
 #include <botan/rng.h>
 #include <vector>
-
-namespace Botan {
-
 /**
 * This class represents abstract X.509 signed objects as
 * in the X.500 SIGNED macro
 */
 class X509_Object : public ASN1_Object
-	{
+{
 	public:
 		/**
 		* The underlying data that is to be or was signed
@@ -102,8 +98,4 @@ class X509_Object : public ASN1_Object
 
 		std::vector<string> PEM_labels_allowed;
 		string PEM_label_pref;
-	};
-
-}
-
-#endif
+};

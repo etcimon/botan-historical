@@ -5,20 +5,16 @@
 * Distributed under the terms of the Botan license
 */
 
-#ifndef BOTAN_ALGORITHM_IDENTIFIER_H__
 #define BOTAN_ALGORITHM_IDENTIFIER_H__
 
 #include <botan/asn1_obj.h>
 #include <botan/asn1_oid.h>
 #include <string>
-
-namespace Botan {
-
 /**
 * Algorithm Identifier
 */
 class AlgorithmIdentifier : public ASN1_Object
-	{
+{
 	public:
 		enum Encoding_Option { USE_NULL_PARAM };
 
@@ -34,16 +30,12 @@ class AlgorithmIdentifier : public ASN1_Object
 
 		OID oid;
 		std::vector<byte> parameters;
-	};
+};
 
 /*
 * Comparison Operations
 */
-bool BOTAN_DLL operator==(const AlgorithmIdentifier&,
+bool operator==(const AlgorithmIdentifier&,
 								  const AlgorithmIdentifier&);
-bool BOTAN_DLL operator!=(const AlgorithmIdentifier&,
+bool operator!=(const AlgorithmIdentifier&,
 								  const AlgorithmIdentifier&);
-
-}
-
-#endif

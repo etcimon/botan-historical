@@ -5,18 +5,14 @@
 * Distributed under the terms of the Botan license
 */
 
-#ifndef BOTAN_DYNAMIC_LOADER_H__
 #define BOTAN_DYNAMIC_LOADER_H__
 
 #include <string>
-
-namespace Botan {
-
 /**
 * Represents a DLL or shared object
 */
 class Dynamically_Loaded_Library
-	{
+{
 	public:
 		/**
 		* Load a DLL (or fail with an exception)
@@ -50,9 +46,9 @@ class Dynamically_Loaded_Library
 		*/
 		template<typename T>
 		T resolve(in string symbol)
-			{
+		{
 			return reinterpret_cast<T>(resolve_symbol(symbol));
-			}
+		}
 
 	private:
 		Dynamically_Loaded_Library(const Dynamically_Loaded_Library&);
@@ -60,8 +56,4 @@ class Dynamically_Loaded_Library
 
 		string lib_name;
 		void* lib;
-	};
-
-}
-
-#endif
+};

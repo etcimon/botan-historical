@@ -8,16 +8,13 @@
 #include <botan/key_constraint.h>
 #include <botan/x509_key.h>
 #include <botan/ber_dec.h>
-
-namespace Botan {
-
 namespace BER {
 
 /*
 * Decode a BER encoded KeyUsage
 */
 void decode(BER_Decoder& source, Key_Constraints& key_usage)
-	{
+{
 	BER_Object obj = source.get_next_object();
 
 	if(obj.type_tag != BIT_STRING || obj.class_tag != UNIVERSAL)
@@ -36,7 +33,7 @@ void decode(BER_Decoder& source, Key_Constraints& key_usage)
 		usage = (obj.value[j] << 8) | usage;
 
 	key_usage = Key_Constraints(usage);
-	}
+}
 
 }
 
@@ -45,7 +42,7 @@ void decode(BER_Decoder& source, Key_Constraints& key_usage)
 */
 Key_Constraints find_constraints(const Public_Key& pub_key,
 											Key_Constraints limits)
-	{
+{
 	const string name = pub_key.algo_name();
 
 	size_t constraints = 0;
@@ -64,6 +61,6 @@ Key_Constraints find_constraints(const Public_Key& pub_key,
 		constraints &= limits;
 
 	return Key_Constraints(constraints);
-	}
+}
 
 }

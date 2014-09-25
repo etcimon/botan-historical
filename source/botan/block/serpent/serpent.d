@@ -9,34 +9,31 @@
 #include <botan/internal/serpent_sbox.h>
 #include <botan/loadstor.h>
 #include <botan/rotate.h>
-
-namespace Botan {
-
 namespace {
 
 /*
 * Serpent's Linear Transformation
 */
 inline void transform(u32bit& B0, u32bit& B1, u32bit& B2, u32bit& B3)
-	{
+{
 	B0  = rotate_left(B0, 13);	B2  = rotate_left(B2, 3);
 	B1 ^= B0 ^ B2;					B3 ^= B2 ^ (B0 << 3);
 	B1  = rotate_left(B1, 1);	 B3  = rotate_left(B3, 7);
 	B0 ^= B1 ^ B3;					B2 ^= B3 ^ (B1 << 7);
 	B0  = rotate_left(B0, 5);	 B2  = rotate_left(B2, 22);
-	}
+}
 
 /*
 * Serpent's Inverse Linear Transformation
 */
 inline void i_transform(u32bit& B0, u32bit& B1, u32bit& B2, u32bit& B3)
-	{
+{
 	B2  = rotate_right(B2, 22);  B0  = rotate_right(B0, 5);
 	B2 ^= B3 ^ (B1 << 7);		  B0 ^= B1 ^ B3;
 	B3  = rotate_right(B3, 7);	B1  = rotate_right(B1, 1);
 	B3 ^= B2 ^ (B0 << 3);		  B1 ^= B0 ^ B2;
 	B2  = rotate_right(B2, 3);	B0  = rotate_right(B0, 13);
-	}
+}
 
 }
 
@@ -53,9 +50,9 @@ inline void i_transform(u32bit& B0, u32bit& B1, u32bit& B2, u32bit& B3)
 * Serpent Encryption
 */
 void Serpent::encrypt_n(const byte in[], byte out[], size_t blocks) const
-	{
+{
 	for(size_t i = 0; i != blocks; ++i)
-		{
+	{
 		u32bit B0 = load_le<u32bit>(in, 0);
 		u32bit B1 = load_le<u32bit>(in, 1);
 		u32bit B2 = load_le<u32bit>(in, 2);
@@ -98,16 +95,16 @@ void Serpent::encrypt_n(const byte in[], byte out[], size_t blocks) const
 
 		in += BLOCK_SIZE;
 		out += BLOCK_SIZE;
-		}
 	}
+}
 
 /*
 * Serpent Decryption
 */
 void Serpent::decrypt_n(const byte in[], byte out[], size_t blocks) const
-	{
+{
 	for(size_t i = 0; i != blocks; ++i)
-		{
+	{
 		u32bit B0 = load_le<u32bit>(in, 0);
 		u32bit B1 = load_le<u32bit>(in, 1);
 		u32bit B2 = load_le<u32bit>(in, 2);
@@ -150,8 +147,8 @@ void Serpent::decrypt_n(const byte in[], byte out[], size_t blocks) const
 
 		in += BLOCK_SIZE;
 		out += BLOCK_SIZE;
-		}
 	}
+}
 
 #undef key_xor
 #undef transform
@@ -161,7 +158,7 @@ void Serpent::decrypt_n(const byte in[], byte out[], size_t blocks) const
 * Serpent Key Schedule
 */
 void Serpent::key_schedule(const byte key[], size_t length)
-	{
+{
 	const u32bit PHI = 0x9E3779B9;
 
 	secure_vector<u32bit> W(140);
@@ -171,10 +168,10 @@ void Serpent::key_schedule(const byte key[], size_t length)
 	W[length / 4] |= u32bit(1) << ((length%4)*8);
 
 	for(size_t i = 8; i != 140; ++i)
-		{
+	{
 		u32bit wi = W[i-8] ^ W[i-5] ^ W[i-3] ^ W[i-1] ^ PHI ^ u32bit(i-8);
 		W[i] = rotate_left(wi, 11);
-		}
+	}
 
 	SBoxE4(W[  8],W[  9],W[ 10],W[ 11]); SBoxE3(W[ 12],W[ 13],W[ 14],W[ 15]);
 	SBoxE2(W[ 16],W[ 17],W[ 18],W[ 19]); SBoxE1(W[ 20],W[ 21],W[ 22],W[ 23]);
@@ -195,11 +192,11 @@ void Serpent::key_schedule(const byte key[], size_t length)
 	SBoxE4(W[136],W[137],W[138],W[139]);
 
 	round_key.assign(&W[8], &W[140]);
-	}
+}
 
 void Serpent::clear()
-	{
+{
 	zap(round_key);
-	}
+}
 
 }

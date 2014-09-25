@@ -44,11 +44,11 @@
 #elif defined(BOTAN_TARGET_ARCH_IS_X86_64) && BOTAN_USE_GCC_INLINE_ASM
 
 #define X86_CPUID(type, out)																	 \
-	asm("cpuid\n\t" : "=a" (out[0]), "=b" (out[1]), "=c" (out[2]), "=d" (out[3]) \
+	asm("cpuid\t" : "=a" (out[0]), "=b" (out[1]), "=c" (out[2]), "=d" (out[3]) \
 		 : "0" (type))
 
 #define X86_CPUID_SUBLEVEL(type, level, out)												\
-	asm("cpuid\n\t" : "=a" (out[0]), "=b" (out[1]), "=c" (out[2]), "=d" (out[3]) \
+	asm("cpuid\t" : "=a" (out[0]), "=b" (out[1]), "=c" (out[2]), "=d" (out[3]) \
 		 : "0" (type), "2" (level))
 
 #elif defined(BOTAN_BUILD_COMPILER_IS_GCC)
@@ -70,9 +70,6 @@
 #endif
 
 #endif
-
-namespace Botan {
-
 u64bit CPUID::m_x86_processor_flags[2] = { 0, 0 };
 size_t CPUID::m_cache_line_size = 0;
 bool CPUID::m_altivec_capable = false;
@@ -82,7 +79,7 @@ namespace {
 #if defined(BOTAN_TARGET_CPU_IS_PPC_FAMILY)
 
 bool altivec_check_sysctl()
-	{
+{
 #if defined(BOTAN_TARGET_OS_IS_DARWIN) || defined(BOTAN_TARGET_OS_IS_OPENBSD)
 
 #if defined(BOTAN_TARGET_OS_IS_OPENBSD)
@@ -100,10 +97,10 @@ bool altivec_check_sysctl()
 #endif
 
 	return false;
-	}
+}
 
 bool altivec_check_pvr_emul()
-	{
+{
 	bool altivec_capable = false;
 
 #if defined(BOTAN_TARGET_OS_IS_LINUX) || defined(BOTAN_TARGET_OS_IS_NETBSD)
@@ -147,15 +144,10 @@ bool altivec_check_pvr_emul()
 	altivec_capable |= (pvr == PVR_CELL_PPU);
 #endif
 
-	return altivec_capable;
-	}
-
-#endif
-
-}
+	return altivec_capable;}
 
 void CPUID::print(std::ostream& o)
-	{
+{
 	o << "CPUID flags: ";
 
 #define CPUID_PRINT(flag) do { if(has_##flag()) o << #flag << " "; } while(0)
@@ -176,11 +168,11 @@ void CPUID::print(std::ostream& o)
 	CPUID_PRINT(intel_sha);
 	CPUID_PRINT(adx);
 #undef CPUID_PRINT
-	o << "\n";
-	}
+	o << "";
+}
 
 void CPUID::initialize()
-	{
+{
 #if defined(BOTAN_TARGET_CPU_IS_PPC_FAMILY)
 		if(altivec_check_sysctl() || altivec_check_pvr_emul())
 			m_altivec_capable = true;
@@ -209,19 +201,17 @@ void CPUID::initialize()
 		m_cache_line_size = 8 * get_byte(2, cpuid[1]);
 
 	if(max_supported_sublevel >= 7)
-		{
+	{
 		clear_mem(cpuid, 4);
 		X86_CPUID_SUBLEVEL(7, 0, cpuid);
 		m_x86_processor_flags[1] = (static_cast<u64bit>(cpuid[2]) << 32) | cpuid[1];
-		}
+	}
 
 	if(is_amd)
-		{
+	{
 		X86_CPUID(0x80000005, cpuid);
 		m_cache_line_size = get_byte(3, cpuid[2]);
-		}
-
-#endif
+	
 
 #if defined(BOTAN_TARGET_ARCH_IS_X86_64)
 	/*
@@ -231,6 +221,6 @@ void CPUID::initialize()
 	if(m_x86_processor_flags[0] == 0)
 		m_x86_processor_flags[0] = (1 << CPUID_SSE2_BIT) | (1 << CPUID_RDTSC_BIT);
 #endif
-	}
+}
 
 }

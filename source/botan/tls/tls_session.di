@@ -5,7 +5,6 @@
 * Released under the terms of the Botan license
 */
 
-#ifndef BOTAN_TLS_SESSION_STATE_H__
 #define BOTAN_TLS_SESSION_STATE_H__
 
 #include <botan/x509cert.h>
@@ -16,16 +15,13 @@
 #include <botan/secmem.h>
 #include <botan/symkey.h>
 #include <chrono>
-
-namespace Botan {
-
 namespace TLS {
 
 /**
 * Class representing a TLS session state
 */
 class Session
-	{
+{
 	public:
 
 		/**
@@ -38,7 +34,7 @@ class Session
 			m_compression_method(0),
 			m_connection_side(static_cast<Connection_Side>(0)),
 			m_fragment_size(0)
-				{}
+			{}
 
 		/**
 		* New session (sets session start time)
@@ -76,10 +72,7 @@ class Session
 		* Encrypt a session (useful for serialization or session tickets)
 		*/
 		std::vector<byte> encrypt(const SymmetricKey& key,
-										  RandomNumberGenerator& rng) const;
-
-
-		/**
+										  RandomNumberGenerator& rng) const;		/**
 		* Decrypt a session created by encrypt
 		* @param ctext the ciphertext returned by encrypt
 		* @param ctext_size the size of ctext in bytes
@@ -96,9 +89,9 @@ class Session
 		*/
 		static inline Session decrypt(in Array!byte ctext,
 												const SymmetricKey& key)
-			{
+		{
 			return Session::decrypt(&ctext[0], ctext.size(), key);
-			}
+		}
 
 		/**
 		* Encode this session data for storage
@@ -142,13 +135,13 @@ class Session
 		* Get the saved master secret
 		*/
 		in SafeArray!byte master_secret() const
-			{ return m_master_secret; }
+		{ return m_master_secret; }
 
 		/**
 		* Get the session identifier
 		*/
 		in Array!byte session_id() const
-			{ return m_identifier; }
+		{ return m_identifier; }
 
 		/**
 		* Get the negotiated maximum fragment size (or 0 if default)
@@ -164,7 +157,7 @@ class Session
 		* Get the wall clock time this session began
 		*/
 		std::chrono::system_clock::time_point start_time() const
-			{ return m_start_time; }
+		{ return m_start_time; }
 
 		/**
 		* Return how long this session has existed (in seconds)
@@ -197,10 +190,6 @@ class Session
 		std::vector<X509_Certificate> m_peer_certs;
 		Server_Information m_server_info; // optional
 		string m_srp_identifier; // optional
-	};
+};
 
 }
-
-}
-
-#endif

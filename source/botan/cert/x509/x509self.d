@@ -11,9 +11,6 @@
 #include <botan/der_enc.h>
 #include <botan/oids.h>
 #include <botan/pipe.h>
-
-namespace Botan {
-
 namespace {
 
 /*
@@ -21,7 +18,7 @@ namespace {
 */
 void load_info(const X509_Cert_Options& opts, X509_DN& subject_dn,
 					AlternativeName& subject_alt)
-	{
+{
 	subject_dn.add_attribute("X520.CommonName", opts.common_name);
 	subject_dn.add_attribute("X520.Country", opts.country);
 	subject_dn.add_attribute("X520.State", opts.state);
@@ -32,7 +29,7 @@ void load_info(const X509_Cert_Options& opts, X509_DN& subject_dn,
 	subject_alt = AlternativeName(opts.email, opts.uri, opts.dns, opts.ip);
 	subject_alt.add_othername(OIDS::lookup("PKIX.XMPPAddr"),
 									  opts.xmpp, UTF8_STRING);
-	}
+}
 
 }
 
@@ -45,7 +42,7 @@ X509_Certificate create_self_signed_cert(const X509_Cert_Options& opts,
 													  const Private_Key& key,
 													  in string hash_fn,
 													  RandomNumberGenerator& rng)
-	{
+{
 	AlgorithmIdentifier sig_algo;
 	X509_DN subject_dn;
 	AlternativeName subject_alt;
@@ -82,7 +79,7 @@ X509_Certificate create_self_signed_cert(const X509_Cert_Options& opts,
 									  opts.start, opts.end,
 									  subject_dn, subject_dn,
 									  extensions);
-	}
+}
 
 /*
 * Create a PKCS #10 certificate request
@@ -91,7 +88,7 @@ PKCS10_Request create_cert_req(const X509_Cert_Options& opts,
 										 const Private_Key& key,
 										 in string hash_fn,
 										 RandomNumberGenerator& rng)
-	{
+{
 	AlgorithmIdentifier sig_algo;
 	X509_DN subject_dn;
 	AlternativeName subject_alt;
@@ -128,7 +125,7 @@ PKCS10_Request create_cert_req(const X509_Cert_Options& opts,
 		.start_explicit(0);
 
 	if(opts.challenge != "")
-		{
+	{
 		ASN1_String challenge(opts.challenge, DIRECTORY_STRING);
 
 		tbs_req.encode(
@@ -136,7 +133,7 @@ PKCS10_Request create_cert_req(const X509_Cert_Options& opts,
 						 DER_Encoder().encode(challenge).get_contents_unlocked()
 				)
 			);
-		}
+	}
 
 	tbs_req.encode(
 		Attribute("PKCS9.ExtensionRequest",
@@ -155,7 +152,7 @@ PKCS10_Request create_cert_req(const X509_Cert_Options& opts,
 										 tbs_req.get_contents());
 
 	return PKCS10_Request(req);
-	}
+}
 
 }
 

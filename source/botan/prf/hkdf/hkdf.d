@@ -6,38 +6,35 @@
 */
 
 #include <botan/hkdf.h>
-
-namespace Botan {
-
 string HKDF::name() const
-	{
+{
 	return "HKDF(" + m_prf->name() + ")";
-	}
+}
 
 void HKDF::clear()
-	{
+{
 	m_extractor->clear();
 	m_prf->clear();
-	}
+}
 
 void HKDF::start_extract(const byte salt[], size_t salt_len)
-	{
+{
 	m_extractor->set_key(salt, salt_len);
-	}
+}
 
 void HKDF::extract(const byte input[], size_t input_len)
-	{
+{
 	m_extractor->update(input, input_len);
-	}
+}
 
 void HKDF::finish_extract()
-	{
+{
 	m_prf->set_key(m_extractor->final());
-	}
+}
 
 void HKDF::expand(byte output[], size_t output_len,
 						const byte info[], size_t info_len)
-	{
+{
 	if(output_len > m_prf->output_length() * 255)
 		throw std::invalid_argument("HKDF requested output too large");
 
@@ -46,7 +43,7 @@ void HKDF::expand(byte output[], size_t output_len,
 	SafeArray!byte T;
 
 	while(output_len)
-		{
+	{
 		m_prf->update(T);
 		m_prf->update(info, info_len);
 		m_prf->update(counter++);
@@ -56,7 +53,7 @@ void HKDF::expand(byte output[], size_t output_len,
 		copy_mem(&output[0], &T[0], to_write);
 		output += to_write;
 		output_len -= to_write;
-		}
 	}
+}
 
 }

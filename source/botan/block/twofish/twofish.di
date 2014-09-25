@@ -5,18 +5,14 @@
 * Distributed under the terms of the Botan license
 */
 
-#ifndef BOTAN_TWOFISH_H__
 #define BOTAN_TWOFISH_H__
 
 #include <botan/block_cipher.h>
-
-namespace Botan {
-
 /**
 * Twofish, an AES finalist
 */
 class Twofish : public Block_Cipher_Fixed_Params<16, 16, 32, 8>
-	{
+{
 	public:
 		void encrypt_n(const byte in[], byte out[], size_t blocks) const;
 		void decrypt_n(const byte in[], byte out[], size_t blocks) const;
@@ -40,8 +36,4 @@ class Twofish : public Block_Cipher_Fixed_Params<16, 16, 32, 8>
 		static const byte POLY_TO_EXP[255];
 
 		secure_vector<u32bit> SB, RK;
-	};
-
-}
-
-#endif
+};

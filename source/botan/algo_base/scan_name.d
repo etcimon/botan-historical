@@ -9,56 +9,53 @@
 #include <botan/parsing.h>
 #include <botan/exceptn.h>
 #include <stdexcept>
-
-namespace Botan {
-
 namespace {
 
 string make_arg(
 	const std::vector<std::pair<size_t, string> >& name, size_t start)
-	{
+{
 	string output = name[start].second;
 	size_t level = name[start].first;
 
 	size_t paren_depth = 0;
 
 	for(size_t i = start + 1; i != name.size(); ++i)
-		{
+	{
 		if(name[i].first <= name[start].first)
 			break;
 
 		if(name[i].first > level)
-			{
+		{
 			output += '(' + name[i].second;
 			++paren_depth;
-			}
+		}
 		else if(name[i].first < level)
-			{
+		{
 			output += ")," + name[i].second;
 			--paren_depth;
-			}
+		}
 		else
-			{
+		{
 			if(output[output.size() - 1] != '(')
 				output += ",";
 			output += name[i].second;
-			}
+		}
 
 		level = name[i].first;
-		}
+	}
 
 	for(size_t i = 0; i != paren_depth; ++i)
 		output += ')';
 
 	return output;
-	}
+}
 
 std::pair<size_t, string>
 deref_aliases(const std::pair<size_t, string>& in)
-	{
+{
 	return std::make_pair(in.first,
 								 SCAN_Name::deref_alias(in.second));
-	}
+}
 
 }
 
@@ -66,7 +63,7 @@ std::mutex SCAN_Name::s_alias_map_mutex;
 std::map<string, string> SCAN_Name::s_alias_map;
 
 SCAN_Name::SCAN_Name(string algo_spec)
-	{
+{
 	orig_algo_spec = algo_spec;
 
 	std::vector<std::pair<size_t, string> > name;
@@ -78,32 +75,32 @@ SCAN_Name::SCAN_Name(string algo_spec)
 	algo_spec = SCAN_Name::deref_alias(algo_spec);
 
 	for(size_t i = 0; i != algo_spec.size(); ++i)
-		{
+	{
 		char c = algo_spec[i];
 
 		if(c == '/' || c == ',' || c == '(' || c == ')')
-			{
+		{
 			if(c == '(')
 				++level;
 			else if(c == ')')
-				{
+			{
 				if(level == 0)
 					throw Decoding_Error(decoding_error + "Mismatched parens");
 				--level;
-				}
+			}
 
 			if(c == '/' && level > 0)
 				accum.second.push_back(c);
 			else
-				{
+			{
 				if(accum.second != "")
 					name.push_back(deref_aliases(accum));
 				accum = std::make_pair(level, "");
-				}
 			}
+		}
 		else
 			accum.second.push_back(c);
-		}
+	}
 
 	if(accum.second != "")
 		name.push_back(deref_aliases(accum));
@@ -119,70 +116,70 @@ SCAN_Name::SCAN_Name(string algo_spec)
 	bool in_modes = false;
 
 	for(size_t i = 1; i != name.size(); ++i)
-		{
+	{
 		if(name[i].first == 0)
-			{
+		{
 			mode_info.push_back(make_arg(name, i));
 			in_modes = true;
-			}
+		}
 		else if(name[i].first == 1 && !in_modes)
 			args.push_back(make_arg(name, i));
-		}
 	}
+}
 
 string SCAN_Name::algo_name_and_args() const
-	{
+{
 	string out;
 
 	out = algo_name();
 
 	if(arg_count())
-		{
+	{
 		out += '(';
 		for(size_t i = 0; i != arg_count(); ++i)
-			{
+		{
 			out += arg(i);
 			if(i != arg_count() - 1)
 				out += ',';
-			}
+		}
 		out += ')';
 
-		}
-
-	return out;
 	}
 
+	return out;
+}
+
 string SCAN_Name::arg(size_t i) const
-	{
+{
 	if(i >= arg_count())
 		throw std::range_error("SCAN_Name::argument - i out of range");
 	return args[i];
-	}
+}
 
 string SCAN_Name::arg(size_t i, in string def_value) const
-	{
+{
 	if(i >= arg_count())
 		return def_value;
 	return args[i];
-	}
+}
 
 size_t SCAN_Name::arg_as_integer(size_t i, size_t def_value) const
-	{
+{
 	if(i >= arg_count())
 		return def_value;
 	return to_u32bit(args[i]);
-	}
+}
 
 void SCAN_Name::add_alias(in string alias, in string basename)
-	{
+{
 	std::lock_guard<std::mutex> lock(s_alias_map_mutex);
 
 	if(s_alias_map.find(alias) == s_alias_map.end())
 		s_alias_map[alias] = basename;
-	}
+}
 
 string SCAN_Name::deref_alias(in string alias)
-	{
+{
 	std::lock_guard<std::mutex> lock(s_alias_map_mutex);
 
 	string name = alias;
@@ -191,10 +188,10 @@ string SCAN_Name::deref_alias(in string alias)
 		name = i->second;
 
 	return name;
-	}
+}
 
 void SCAN_Name::set_default_aliases()
-	{
+{
 	// common variations worth supporting
 	SCAN_Name::add_alias("EME-PKCS1-v1_5",  "PKCS1v15");
 	SCAN_Name::add_alias("3DES",	  "TripleDES");
@@ -224,6 +221,6 @@ void SCAN_Name::set_default_aliases()
 	// probably can be removed
 	SCAN_Name::add_alias("GOST",	  "GOST-28147-89");
 	SCAN_Name::add_alias("GOST-34.11", "GOST-R-34.11-94");
-	}
+}
 
 }

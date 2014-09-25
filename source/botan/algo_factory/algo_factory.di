@@ -5,15 +5,11 @@
 * Distributed under the terms of the Botan license
 */
 
-#ifndef BOTAN_ALGORITHM_FACTORY_H__
 #define BOTAN_ALGORITHM_FACTORY_H__
 
 #include <botan/types.h>
 #include <string>
 #include <vector>
-
-namespace Botan {
-
 /**
 * Forward declarations (don't need full definitions here)
 */
@@ -31,7 +27,7 @@ class Engine;
 * Algorithm Factory
 */
 class Algorithm_Factory
-	{
+{
 	public:
 		/**
 		* Constructor
@@ -186,7 +182,7 @@ class Algorithm_Factory
 		* @deprecated Avoid in new code
 		*/
 		class Engine_Iterator
-			{
+		{
 			public:
 				/**
 				* @return next engine in the sequence
@@ -201,7 +197,7 @@ class Algorithm_Factory
 			private:
 				const Algorithm_Factory& af;
 				size_t n;
-			};
+		};
 		friend class Engine_Iterator;
 
 	private:
@@ -214,8 +210,4 @@ class Algorithm_Factory
 		std::unique_ptr<Algorithm_Cache<HashFunction>> hash_cache;
 		std::unique_ptr<Algorithm_Cache<MessageAuthenticationCode>> mac_cache;
 		std::unique_ptr<Algorithm_Cache<PBKDF>> pbkdf_cache;
-	};
-
-}
-
-#endif
+};

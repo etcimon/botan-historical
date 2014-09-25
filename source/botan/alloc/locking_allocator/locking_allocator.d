@@ -12,9 +12,6 @@
 
 #include <sys/mman.h>
 #include <sys/resource.h>
-
-namespace Botan {
-
 namespace {
 
 /**
@@ -24,7 +21,7 @@ namespace {
 const size_t ALIGNMENT_MULTIPLE = 2;
 
 size_t mlock_limit()
-	{
+{
 	/*
 	* Linux defaults to only 64 KiB of mlockable memory per process
 	* (too small) but BSDs offer a small fraction of total RAM (more
@@ -40,18 +37,18 @@ size_t mlock_limit()
 	::getrlimit(RLIMIT_MEMLOCK, &limits);
 
 	if(limits.rlim_cur < limits.rlim_max)
-		{
+	{
 		limits.rlim_cur = limits.rlim_max;
 		::setrlimit(RLIMIT_MEMLOCK, &limits);
 		::getrlimit(RLIMIT_MEMLOCK, &limits);
-		}
+	}
 
 	return std::min<size_t>(limits.rlim_cur, MLOCK_UPPER_BOUND);
-	}
+}
 
 bool ptr_in_pool(const void* pool_ptr, size_t poolsize,
 					  const void* buf_ptr, size_t bufsize)
-	{
+{
 	const uintptr_t pool = reinterpret_cast<uintptr_t>(pool_ptr);
 	const uintptr_t buf = reinterpret_cast<uintptr_t>(buf_ptr);
 
@@ -62,20 +59,20 @@ bool ptr_in_pool(const void* pool_ptr, size_t poolsize,
 					 "Pointer does not partially overlap pool");
 
 	return true;
-	}
+}
 
 size_t padding_for_alignment(size_t offset, size_t desired_alignment)
-	{
+{
 	size_t mod = offset % desired_alignment;
 	if(mod == 0)
 		return 0; // already right on
 	return desired_alignment - mod;
-	}
+}
 
 }
 
 void* mlock_allocator::allocate(size_t num_elems, size_t elem_size)
-	{
+{
 	if(!m_pool)
 		return nullptr;
 
@@ -93,10 +90,10 @@ void* mlock_allocator::allocate(size_t num_elems, size_t elem_size)
 	auto best_fit = m_freelist.end();
 
 	for(auto i = m_freelist.begin(); i != m_freelist.end(); ++i)
-		{
+	{
 		// If we have a perfect fit, use it immediately
 		if(i->second == n && (i->first % alignment) == 0)
-			{
+		{
 			const size_t offset = i->first;
 			m_freelist.erase(i);
 			clear_mem(m_pool + offset, n);
@@ -105,17 +102,17 @@ void* mlock_allocator::allocate(size_t num_elems, size_t elem_size)
 							 "Returning correctly aligned pointer");
 
 			return m_pool + offset;
-			}
+		}
 
 		if((i->second >= (n + padding_for_alignment(i->first, alignment)) &&
 			 ((best_fit == m_freelist.end()) || (best_fit->second > i->second))))
-			{
+		{
 			best_fit = i;
-			}
 		}
+	}
 
 	if(best_fit != m_freelist.end())
-		{
+	{
 		const size_t offset = best_fit->first;
 
 		const size_t alignment_padding = padding_for_alignment(offset, alignment);
@@ -125,7 +122,7 @@ void* mlock_allocator::allocate(size_t num_elems, size_t elem_size)
 
 		// Need to realign, split the block
 		if(alignment_padding)
-			{
+		{
 			/*
 			If we used the entire block except for small piece used for
 			alignment at the beginning, so just update the entry already
@@ -134,13 +131,13 @@ void* mlock_allocator::allocate(size_t num_elems, size_t elem_size)
 			same location.
 			*/
 			if(best_fit->second == 0)
-				{
+			{
 				best_fit->first = offset;
 				best_fit->second = alignment_padding;
-				}
+			}
 			else
 				m_freelist.insert(best_fit, std::make_pair(offset, alignment_padding));
-			}
+		}
 
 		clear_mem(m_pool + offset + alignment_padding, n);
 
@@ -148,13 +145,13 @@ void* mlock_allocator::allocate(size_t num_elems, size_t elem_size)
 						 "Returning correctly aligned pointer");
 
 		return m_pool + offset + alignment_padding;
-		}
-
-	return nullptr;
 	}
 
+	return nullptr;
+}
+
 bool mlock_allocator::deallocate(void* p, size_t num_elems, size_t elem_size)
-	{
+{
 	if(!m_pool)
 		return false;
 
@@ -181,43 +178,43 @@ bool mlock_allocator::deallocate(void* p, size_t num_elems, size_t elem_size)
 
 	// try to merge with later block
 	if(i != m_freelist.end() && start + n == i->first)
-		{
+	{
 		i->first = start;
 		i->second += n;
 		n = 0;
-		}
+	}
 
 	// try to merge with previous block
 	if(i != m_freelist.begin())
-		{
+	{
 		auto prev = std::prev(i);
 
 		if(prev->first + prev->second == start)
-			{
+		{
 			if(n)
-				{
+			{
 				prev->second += n;
 				n = 0;
-				}
+			}
 			else
-				{
+			{
 				// merge adjoining
 				prev->second += i->second;
 				m_freelist.erase(i);
-				}
 			}
 		}
+	}
 
 	if(n != 0) // no merge possible?
 		m_freelist.insert(i, std::make_pair(start, n));
 
 	return true;
-	}
+}
 
 mlock_allocator::mlock_allocator() :
 	m_poolsize(mlock_limit()),
 	m_pool(nullptr)
-	{
+{
 #if !defined(MAP_NOCORE)
 	#define MAP_NOCORE 0
 #endif
@@ -227,7 +224,7 @@ mlock_allocator::mlock_allocator() :
 #endif
 
 	if(m_poolsize)
-		{
+	{
 		m_pool = static_cast<byte*>(
 			::mmap(
 				nullptr, m_poolsize,
@@ -236,43 +233,43 @@ mlock_allocator::mlock_allocator() :
 				-1, 0));
 
 		if(m_pool == static_cast<byte*>(MAP_FAILED))
-			{
+		{
 			m_pool = nullptr;
 			throw std::runtime_error("Failed to mmap locking_allocator pool");
-			}
+		}
 
 		clear_mem(m_pool, m_poolsize);
 
 		if(::mlock(m_pool, m_poolsize) != 0)
-			{
+		{
 			::munmap(m_pool, m_poolsize);
 			m_pool = nullptr;
 			throw std::runtime_error("Could not mlock " + std::to_string(m_poolsize) + " bytes");
-			}
+		}
 
 #if defined(MADV_DONTDUMP)
 		::madvise(m_pool, m_poolsize, MADV_DONTDUMP);
 #endif
 
 		m_freelist.push_back(std::make_pair(0, m_poolsize));
-		}
 	}
+}
 
 mlock_allocator::~mlock_allocator()
-	{
+{
 	if(m_pool)
-		{
+	{
 		clear_mem(m_pool, m_poolsize);
 		::munlock(m_pool, m_poolsize);
 		::munmap(m_pool, m_poolsize);
 		m_pool = nullptr;
-		}
 	}
+}
 
 mlock_allocator& mlock_allocator::instance()
-	{
+{
 	static mlock_allocator mlock;
 	return mlock;
-	}
+}
 
 }

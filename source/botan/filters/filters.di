@@ -5,7 +5,6 @@
 * Distributed under the terms of the Botan license
 */
 
-#ifndef BOTAN_FILTERS_H__
 #define BOTAN_FILTERS_H__
 
 #include <botan/block_cipher.h>
@@ -24,14 +23,11 @@
   #include <botan/b64_filt.h>
   #include <botan/hex_filt.h>
 #endif
-
-namespace Botan {
-
 /**
 * Stream Cipher Filter
 */
 class StreamCipher_Filter : public Keyed_Filter
-	{
+{
 	public:
 
 		string name() const { return cipher->name(); }
@@ -44,7 +40,7 @@ class StreamCipher_Filter : public Keyed_Filter
 		void write(const byte input[], size_t input_len);
 
 		bool valid_iv_length(size_t iv_len) const
-			{ return cipher->valid_iv_length(iv_len); }
+		{ return cipher->valid_iv_length(iv_len); }
 
 		/**
 		* Set the initialization vector for this filter.
@@ -90,13 +86,13 @@ class StreamCipher_Filter : public Keyed_Filter
 	private:
 		SafeArray!byte buffer;
 		StreamCipher* cipher;
-	};
+};
 
 /**
 * Hash Filter.
 */
 class Hash_Filter : public Filter
-	{
+{
 	public:
 		void write(const byte input[], size_t len) { hash->update(input, len); }
 		void end_msg();
@@ -128,13 +124,13 @@ class Hash_Filter : public Filter
 	private:
 		const size_t OUTPUT_LENGTH;
 		HashFunction* hash;
-	};
+};
 
 /**
 * MessageAuthenticationCode Filter.
 */
 class MAC_Filter : public Keyed_Filter
-	{
+{
 	public:
 		void write(const byte input[], size_t len) { mac->update(input, len); }
 		void end_msg();
@@ -159,9 +155,9 @@ class MAC_Filter : public Keyed_Filter
 		*/
 		MAC_Filter(MessageAuthenticationCode* mac_obj,
 					  size_t out_len = 0) : OUTPUT_LENGTH(out_len)
-			{
+		{
 			mac = mac_obj;
-			}
+		}
 
 		/**
 		* Construct a MAC filter.
@@ -175,10 +171,10 @@ class MAC_Filter : public Keyed_Filter
 		MAC_Filter(MessageAuthenticationCode* mac_obj,
 					  const SymmetricKey& key,
 					  size_t out_len = 0) : OUTPUT_LENGTH(out_len)
-			{
+		{
 			mac = mac_obj;
 			mac->set_key(key);
-			}
+		}
 
 		/**
 		* Construct a MAC filter. The MAC key will be left empty.
@@ -206,8 +202,4 @@ class MAC_Filter : public Keyed_Filter
 	private:
 		const size_t OUTPUT_LENGTH;
 		MessageAuthenticationCode* mac;
-	};
-
-}
-
-#endif
+};

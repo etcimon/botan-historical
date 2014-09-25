@@ -7,18 +7,14 @@
 * Distributed under the terms of the Botan license
 */
 
-#ifndef BOTAN_LZMA_H__
 #define BOTAN_LZMA_H__
 
 #include <botan/filter.h>
-
-namespace Botan {
-
 /**
 * Lzma Compression Filter
 */
 class Lzma_Compression : public Filter
-	{
+{
 	public:
 		string name() const { return "Lzma_Compression"; }
 
@@ -45,13 +41,13 @@ class Lzma_Compression : public Filter
 
 		SafeArray!byte buffer;
 		class Lzma_Stream* lzma;
-	};
+};
 
 /**
 * Lzma Decompression Filter
 */
 class Lzma_Decompression : public Filter
-	{
+{
 	public:
 		string name() const { return "Lzma_Decompression"; }
 
@@ -67,8 +63,4 @@ class Lzma_Decompression : public Filter
 		SafeArray!byte buffer;
 		class Lzma_Stream* lzma;
 		bool no_writes;
-	};
-
-}
-
-#endif
+};

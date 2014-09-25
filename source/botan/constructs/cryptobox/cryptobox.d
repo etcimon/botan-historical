@@ -15,9 +15,6 @@
 #include <botan/pem.h>
 #include <botan/get_byte.h>
 #include <botan/mem_ops.h>
-
-namespace Botan {
-
 namespace CryptoBox {
 
 namespace {
@@ -43,7 +40,7 @@ const size_t PBKDF_OUTPUT_LEN = CIPHER_KEY_LEN + CIPHER_IV_LEN + MAC_KEY_LEN;
 string encrypt(const byte input[], size_t input_len,
 						  in string passphrase,
 						  RandomNumberGenerator& rng)
-	{
+{
 	SafeArray!byte pbkdf_salt(PBKDF_SALT_LEN);
 	rng.randomize(&pbkdf_salt[0], pbkdf_salt.size());
 
@@ -94,11 +91,11 @@ string encrypt(const byte input[], size_t input_len,
 				 ciphertext_len, 0);
 
 	return PEM_Code::encode(out_buf, "BOTAN CRYPTOBOX MESSAGE");
-	}
+}
 
 string decrypt(const byte input[], size_t input_len,
 						  in string passphrase)
-	{
+{
 	DataSource_Memory input_src(input, input_len);
 	SafeArray!byte ciphertext =
 		PEM_Code::decode_check_label(input_src,
@@ -148,15 +145,15 @@ string decrypt(const byte input[], size_t input_len,
 		throw Decoding_Error("CryptoBox integrity failure");
 
 	return pipe.read_all_as_string(0);
-	}
+}
 
 string decrypt(in string input,
 						  in string passphrase)
-	{
+{
 	return decrypt(reinterpret_cast<const byte*>(&input[0]),
 						input.size(),
 						passphrase);
-	}
+}
 
 }
 

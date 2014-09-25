@@ -7,13 +7,10 @@
 
 #include <botan/internal/tls_messages.h>
 #include <botan/lookup.h>
-
-namespace Botan {
-
 namespace TLS {
 
 Hello_Verify_Request::Hello_Verify_Request(in Array!byte buf)
-	{
+{
 	if(buf.size() < 3)
 		throw Decoding_Error("Hello verify request too small");
 
@@ -21,20 +18,20 @@ Hello_Verify_Request::Hello_Verify_Request(in Array!byte buf)
 
 	if(version != Protocol_Version::DTLS_V10 &&
 		version != Protocol_Version::DTLS_V12)
-		{
+	{
 		throw Decoding_Error("Unknown version from server in hello verify request");
-		}
+	}
 
 	if(static_cast<size_t>(buf[2]) + 3 != buf.size())
 		throw Decoding_Error("Bad length in hello verify request");
 
 	m_cookie.assign(&buf[3], &buf[buf.size()]);
-	}
+}
 
 Hello_Verify_Request::Hello_Verify_Request(in Array!byte client_hello_bits,
 														 in string client_identity,
 														 const SymmetricKey& secret_key)
-	{
+{
 	std::unique_ptr<MessageAuthenticationCode> hmac(get_mac("HMAC(SHA-256)"));
 	hmac->set_key(secret_key);
 
@@ -44,10 +41,10 @@ Hello_Verify_Request::Hello_Verify_Request(in Array!byte client_hello_bits,
 	hmac->update(client_identity);
 
 	m_cookie = unlock(hmac->final());
-	}
+}
 
 std::vector<byte> Hello_Verify_Request::serialize() const
-	{
+{
 	/* DTLS 1.2 server implementations SHOULD use DTLS version 1.0
 		regardless of the version of TLS that is expected to be
 		negotiated (RFC 6347, section 4.2.1)
@@ -61,7 +58,7 @@ std::vector<byte> Hello_Verify_Request::serialize() const
 	bits.push_back(static_cast<byte>(m_cookie.size()));
 	bits += m_cookie;
 	return bits;
-	}
+}
 
 }
 

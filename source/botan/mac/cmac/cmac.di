@@ -5,19 +5,15 @@
 * Distributed under the terms of the Botan license
 */
 
-#ifndef BOTAN_CMAC_H__
 #define BOTAN_CMAC_H__
 
 #include <botan/mac.h>
 #include <botan/block_cipher.h>
-
-namespace Botan {
-
 /**
 * CMAC, also known as OMAC1
 */
 class CMAC : public MessageAuthenticationCode
-	{
+{
 	public:
 		string name() const;
 		size_t output_length() const { return m_cipher->block_size(); }
@@ -26,9 +22,9 @@ class CMAC : public MessageAuthenticationCode
 		void clear();
 
 		Key_Length_Specification key_spec() const
-			{
+		{
 			return m_cipher->key_spec();
-			}
+		}
 
 		/**
 		* CMAC's polynomial doubling operation
@@ -52,8 +48,4 @@ class CMAC : public MessageAuthenticationCode
 		std::unique_ptr<BlockCipher> m_cipher;
 		SafeArray!byte m_buffer, m_state, m_B, m_P;
 		size_t m_position;
-	};
-
-}
-
-#endif
+};

@@ -9,18 +9,15 @@
 #include <botan/parsing.h>
 #include <botan/base64.h>
 #include <fstream>
-
-namespace Botan {
-
 SRP6_Authenticator_File::SRP6_Authenticator_File(in string filename)
-	{
+{
 	std::ifstream in(filename.c_str());
 
 	if(!in)
 		return; // no entries
 
 	while(in.good())
-		{
+	{
 		string line;
 		std::getline(in, line);
 
@@ -46,14 +43,14 @@ SRP6_Authenticator_File::SRP6_Authenticator_File(in string filename)
 			continue; // unknown group, ignored
 
 		entries[username] = SRP6_Data(v, salt, group_id);
-		}
 	}
+}
 
 bool SRP6_Authenticator_File::lookup_user(in string username,
 														BigInt& v,
 														std::vector<byte>& salt,
 														string& group_id) const
-	{
+{
 	std::map<string, SRP6_Data>::const_iterator i = entries.find(username);
 
 	if(i == entries.end())
@@ -64,6 +61,6 @@ bool SRP6_Authenticator_File::lookup_user(in string username,
 	group_id = i->second.group_id;
 
 	return true;
-	}
+}
 
 }

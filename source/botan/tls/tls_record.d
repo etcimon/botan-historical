@@ -14,9 +14,6 @@
 #include <botan/internal/tls_session_key.h>
 #include <botan/internal/rounding.h>
 #include <botan/internal/xor_buf.h>
-
-namespace Botan {
-
 namespace TLS {
 
 Connection_Cipher_State::Connection_Cipher_State(Protocol_Version version,
@@ -26,28 +23,28 @@ Connection_Cipher_State::Connection_Cipher_State(Protocol_Version version,
 																 const Session_Keys& keys) :
 	m_start_time(std::chrono::system_clock::now()),
 	m_is_ssl3(version == Protocol_Version::SSL_V3)
-	{
+{
 	SymmetricKey mac_key, cipher_key;
 	InitializationVector iv;
 
 	if(side == CLIENT)
-		{
+	{
 		cipher_key = keys.client_cipher_key();
 		iv = keys.client_iv();
 		mac_key = keys.client_mac_key();
-		}
+	}
 	else
-		{
+	{
 		cipher_key = keys.server_cipher_key();
 		iv = keys.server_iv();
 		mac_key = keys.server_mac_key();
-		}
+	}
 
 	const string cipher_algo = suite.cipher_algo();
 	const string mac_algo = suite.mac_algo();
 
 	if(AEAD_Mode* aead = get_aead(cipher_algo, our_side ? ENCRYPTION : DECRYPTION))
-		{
+	{
 		m_aead.reset(aead);
 		m_aead->set_key(cipher_key + mac_key);
 
@@ -55,12 +52,12 @@ Connection_Cipher_State::Connection_Cipher_State(Protocol_Version version,
 		m_nonce = iv.bits_of();
 		m_nonce.resize(12);
 		return;
-		}
+	}
 
 	Algorithm_Factory& af = global_state().algorithm_factory();
 
 	if(const BlockCipher* bc = af.prototype_block_cipher(cipher_algo))
-		{
+	{
 		m_block_cipher.reset(bc->clone());
 		m_block_cipher->set_key(cipher_key);
 		m_block_cipher_cbc_state = iv.bits_of();
@@ -68,12 +65,12 @@ Connection_Cipher_State::Connection_Cipher_State(Protocol_Version version,
 
 		if(version.supports_explicit_cbc_ivs())
 			m_iv_size = m_block_size;
-		}
+	}
 	else if(const StreamCipher* sc = af.prototype_stream_cipher(cipher_algo))
-		{
+	{
 		m_stream_cipher.reset(sc->clone());
 		m_stream_cipher->set_key(cipher_key);
-		}
+	}
 	else
 		throw Invalid_Argument("Unknown TLS cipher " + cipher_algo);
 
@@ -83,48 +80,48 @@ Connection_Cipher_State::Connection_Cipher_State(Protocol_Version version,
 		m_mac.reset(af.make_mac("HMAC(" + mac_algo + ")"));
 
 	m_mac->set_key(mac_key);
-	}
+}
 
 in SafeArray!byte Connection_Cipher_State::aead_nonce(u64bit seq)
-	{
+{
 	BOTAN_ASSERT(m_aead, "Using AEAD mode");
 	BOTAN_ASSERT(m_nonce.size() == 12, "Expected nonce size");
 	store_be(seq, &m_nonce[4]);
 	return m_nonce;
-	}
+}
 
 in SafeArray!byte
 Connection_Cipher_State::aead_nonce(const byte record[], size_t record_len)
-	{
+{
 	BOTAN_ASSERT(m_aead, "Using AEAD mode");
 	BOTAN_ASSERT(m_nonce.size() == 12, "Expected nonce size");
 	BOTAN_ASSERT(record_len >= 8, "Record includes nonce");
 	copy_mem(&m_nonce[4], record, 8);
 	return m_nonce;
-	}
+}
 
 in SafeArray!byte
 Connection_Cipher_State::format_ad(u64bit msg_sequence,
 											  byte msg_type,
 											  Protocol_Version version,
 											  u16bit msg_length)
-	{
+{
 	m_ad.clear();
 	for(size_t i = 0; i != 8; ++i)
 		m_ad.push_back(get_byte(i, msg_sequence));
 	m_ad.push_back(msg_type);
 
 	if(version != Protocol_Version::SSL_V3)
-		{
+	{
 		m_ad.push_back(version.major_version());
 		m_ad.push_back(version.minor_version());
-		}
+	}
 
 	m_ad.push_back(get_byte(0, msg_length));
 	m_ad.push_back(get_byte(1, msg_length));
 
 	return m_ad;
-	}
+}
 
 void write_record(SafeArray!byte& output,
 						byte msg_type, const byte msg[], size_t msg_length,
@@ -132,7 +129,7 @@ void write_record(SafeArray!byte& output,
 						u64bit msg_sequence,
 						Connection_Cipher_State* cipherstate,
 						RandomNumberGenerator& rng)
-	{
+{
 	output.clear();
 
 	output.push_back(msg_type);
@@ -140,23 +137,23 @@ void write_record(SafeArray!byte& output,
 	output.push_back(version.minor_version());
 
 	if(version.is_datagram_protocol())
-		{
+	{
 		for(size_t i = 0; i != 8; ++i)
 			output.push_back(get_byte(i, msg_sequence));
-		}
+	}
 
 	if(!cipherstate) // initial unencrypted handshake records
-		{
+	{
 		output.push_back(get_byte<u16bit>(0, msg_length));
 		output.push_back(get_byte<u16bit>(1, msg_length));
 
 		output.insert(output.end(), &msg[0], &msg[msg_length]);
 
 		return;
-		}
+	}
 
 	if(AEAD_Mode* aead = cipherstate->aead())
-		{
+	{
 		const size_t ctext_size = aead->output_length(msg_length);
 
 		auto nonce = cipherstate->aead_nonce(msg_sequence);
@@ -190,7 +187,7 @@ void write_record(SafeArray!byte& output,
 		BOTAN_ASSERT(output.size() < MAX_CIPHERTEXT_SIZE,
 						 "Produced ciphertext larger than protocol allows");
 		return;
-		}
+	}
 
 	cipherstate->mac()->update(
 		cipherstate->format_ad(msg_sequence, msg_type, version, msg_length)
@@ -215,10 +212,10 @@ void write_record(SafeArray!byte& output,
 	const size_t header_size = output.size();
 
 	if(iv_size)
-		{
+	{
 		output.resize(output.size() + iv_size);
 		rng.randomize(&output[output.size() - iv_size], iv_size);
-		}
+	}
 
 	output.insert(output.end(), &msg[0], &msg[msg_length]);
 
@@ -226,13 +223,13 @@ void write_record(SafeArray!byte& output,
 	cipherstate->mac()->final(&output[output.size() - mac_size]);
 
 	if(block_size)
-		{
+	{
 		const size_t pad_val =
 			buf_size - (iv_size + msg_length + mac_size + 1);
 
 		for(size_t i = 0; i != pad_val + 1; ++i)
 			output.push_back(pad_val);
-		}
+	}
 
 	if(buf_size > MAX_CIPHERTEXT_SIZE)
 		throw Internal_Error("Produced ciphertext larger than protocol allows");
@@ -241,11 +238,11 @@ void write_record(SafeArray!byte& output,
 					 "Output buffer is sized properly");
 
 	if(StreamCipher* sc = cipherstate->stream_cipher())
-		{
+	{
 		sc->cipher1(&output[header_size], buf_size);
-		}
+	}
 	else if(BlockCipher* bc = cipherstate->block_cipher())
-		{
+	{
 		SafeArray!byte& cbc_state = cipherstate->cbc_state();
 
 		BOTAN_ASSERT(buf_size % block_size == 0,
@@ -259,17 +256,17 @@ void write_record(SafeArray!byte& output,
 		bc->encrypt(&buf[0]);
 
 		for(size_t i = 1; i < blocks; ++i)
-			{
+		{
 			xor_buf(&buf[block_size*i], &buf[block_size*(i-1)], block_size);
 			bc->encrypt(&buf[block_size*i]);
-			}
+		}
 
 		cbc_state.assign(&buf[block_size*(blocks-1)],
 							  &buf[block_size*blocks]);
-		}
+	}
 	else
 		throw Internal_Error("NULL cipher not supported");
-	}
+}
 
 namespace {
 
@@ -278,7 +275,7 @@ size_t fill_buffer_to(SafeArray!byte& readbuf,
 							 size_t& input_size,
 							 size_t& input_consumed,
 							 size_t desired)
-	{
+{
 	if(readbuf.size() >= desired)
 		return 0; // already have it
 
@@ -290,7 +287,7 @@ size_t fill_buffer_to(SafeArray!byte& readbuf,
 	input += taken;
 
 	return (desired - readbuf.size()); // how many bytes do we still need?
-	}
+}
 
 /*
 * Checks the TLS padding. Returns 0 if the padding is invalid (we
@@ -312,7 +309,7 @@ size_t tls_padding_check(bool sslv3_padding,
 								 size_t block_size,
 								 const byte record[],
 								 size_t record_len)
-	{
+{
 	const size_t padding_length = record[(record_len-1)];
 
 	if(padding_length >= record_len)
@@ -323,12 +320,12 @@ size_t tls_padding_check(bool sslv3_padding,
 	* but not does specify the value of the padding bytes.
 	*/
 	if(sslv3_padding)
-		{
+	{
 		if(padding_length > 0 && padding_length < block_size)
 			return (padding_length + 1);
 		else
 			return 0;
-		}
+	}
 
 	/*
 	* TLS v1.0 and up require all the padding bytes be the same value
@@ -342,12 +339,12 @@ size_t tls_padding_check(bool sslv3_padding,
 		cmp += record[pad_start + i] ^ padding_length;
 
 	return cmp ? 0 : padding_length + 1;
-	}
+}
 
 void cbc_decrypt_record(byte record_contents[], size_t record_len,
 								Connection_Cipher_State& cipherstate,
 								const BlockCipher& bc)
-	{
+{
 	const size_t block_size = cipherstate.block_size();
 
 	BOTAN_ASSERT(record_len % block_size == 0,
@@ -368,15 +365,15 @@ void cbc_decrypt_record(byte record_contents[], size_t record_len,
 	SafeArray!byte last_ciphertext2;
 
 	for(size_t i = 1; i < blocks; ++i)
-		{
+	{
 		last_ciphertext2.assign(&buf[block_size*i], &buf[block_size*(i+1)]);
 		bc.decrypt(&buf[block_size*i]);
 		xor_buf(&buf[block_size*i], &last_ciphertext[0], block_size);
 		std::swap(last_ciphertext, last_ciphertext2);
-		}
+	}
 
 	cipherstate.cbc_state() = last_ciphertext;
-	}
+}
 
 void decrypt_record(SafeArray!byte& output,
 						  byte record_contents[], size_t record_len,
@@ -384,9 +381,9 @@ void decrypt_record(SafeArray!byte& output,
 						  Protocol_Version record_version,
 						  Record_Type record_type,
 						  Connection_Cipher_State& cipherstate)
-	{
+{
 	if(AEAD_Mode* aead = cipherstate.aead())
-		{
+	{
 		auto nonce = cipherstate.aead_nonce(record_contents, record_len);
 		const size_t nonce_length = 8; // fixme, take from ciphersuite
 
@@ -407,21 +404,21 @@ void decrypt_record(SafeArray!byte& output,
 		aead->finish(output, offset);
 
 		BOTAN_ASSERT(output.size() == ptext_size + offset, "Produced expected size");
-		}
+	}
 	else
-		{
+	{
 		// GenericBlockCipher / GenericStreamCipher case
 
 		volatile bool padding_bad = false;
 		size_t pad_size = 0;
 
 		if(StreamCipher* sc = cipherstate.stream_cipher())
-			{
+		{
 			sc->cipher1(record_contents, record_len);
 			// no padding to check or remove
-			}
+		}
 		else if(BlockCipher* bc = cipherstate.block_cipher())
-			{
+		{
 			cbc_decrypt_record(record_contents, record_len, cipherstate, *bc);
 
 			pad_size = tls_padding_check(cipherstate.cipher_padding_single_byte(),
@@ -429,11 +426,11 @@ void decrypt_record(SafeArray!byte& output,
 												  record_contents, record_len);
 
 			padding_bad = (pad_size == 0);
-			}
+		}
 		else
-			{
+		{
 			throw Internal_Error("No cipher state set but needed to decrypt");
-			}
+		}
 
 		const size_t mac_size = cipherstate.mac_size();
 		const size_t iv_size = cipherstate.iv_size();
@@ -463,8 +460,8 @@ void decrypt_record(SafeArray!byte& output,
 			throw TLS_Exception(Alert::BAD_RECORD_MAC, "Message authentication failure");
 
 		output.assign(plaintext_block, plaintext_block + plaintext_length);
-		}
 	}
+}
 
 }
 
@@ -478,11 +475,11 @@ size_t read_record(SafeArray!byte& readbuf,
 						 Record_Type* record_type,
 						 Connection_Sequence_Numbers* sequence_numbers,
 						 std::function<Connection_Cipher_State* (u16bit)> get_cipherstate)
-	{
+{
 	consumed = 0;
 
 	if(readbuf.size() < TLS_HEADER_SIZE) // header incomplete?
-		{
+	{
 		if(size_t needed = fill_buffer_to(readbuf,
 													 input, input_sz, consumed,
 													 TLS_HEADER_SIZE))
@@ -490,17 +487,17 @@ size_t read_record(SafeArray!byte& readbuf,
 
 		BOTAN_ASSERT_EQUAL(readbuf.size(), TLS_HEADER_SIZE,
 								 "Have an entire header");
-		}
+	}
 
 	// Possible SSLv2 format client hello
 	if(!sequence_numbers && (readbuf[0] & 0x80) && (readbuf[2] == 1))
-		{
+	{
 		if(readbuf[3] == 0 && readbuf[4] == 2)
 			throw TLS_Exception(Alert::PROTOCOL_VERSION,
 									  "Client claims to only support SSLv2, rejecting");
 
 		if(readbuf[3] >= 3) // SSLv2 mapped TLS hello, then?
-			{
+		{
 			const size_t record_len = make_u16bit(readbuf[0], readbuf[1]) & 0x7FFF;
 
 			if(size_t needed = fill_buffer_to(readbuf,
@@ -526,15 +523,15 @@ size_t read_record(SafeArray!byte& readbuf,
 
 			readbuf.clear();
 			return 0;
-			}
 		}
+	}
 
 	*record_version = Protocol_Version(readbuf[1], readbuf[2]);
 
 	const bool is_dtls = record_version->is_datagram_protocol();
 
 	if(is_dtls && readbuf.size() < DTLS_HEADER_SIZE)
-		{
+	{
 		if(size_t needed = fill_buffer_to(readbuf,
 													 input, input_sz, consumed,
 													 DTLS_HEADER_SIZE))
@@ -542,7 +539,7 @@ size_t read_record(SafeArray!byte& readbuf,
 
 		BOTAN_ASSERT_EQUAL(readbuf.size(), DTLS_HEADER_SIZE,
 								 "Have an entire header");
-		}
+	}
 
 	const size_t header_size = (is_dtls) ? DTLS_HEADER_SIZE : TLS_HEADER_SIZE;
 
@@ -567,21 +564,21 @@ size_t read_record(SafeArray!byte& readbuf,
 	u16bit epoch = 0;
 
 	if(is_dtls)
-		{
+	{
 		*record_sequence = load_be<u64bit>(&readbuf[3], 0);
 		epoch = (*record_sequence >> 48);
-		}
+	}
 	else if(sequence_numbers)
-		{
+	{
 		*record_sequence = sequence_numbers->next_read_sequence();
 		epoch = sequence_numbers->current_read_epoch();
-		}
+	}
 	else
-		{
+	{
 		// server initial handshake case
 		*record_sequence = 0;
 		epoch = 0;
-		}
+	}
 
 	if(sequence_numbers && sequence_numbers->already_seen(*record_sequence))
 		return 0;
@@ -589,11 +586,11 @@ size_t read_record(SafeArray!byte& readbuf,
 	byte* record_contents = &readbuf[header_size];
 
 	if(epoch == 0) // Unencrypted initial handshake
-		{
+	{
 		record.assign(&readbuf[header_size], &readbuf[header_size + record_len]);
 		readbuf.clear();
 		return 0; // got a full record
-		}
+	}
 
 	// Otherwise, decrypt, check MAC, return plaintext
 	Connection_Cipher_State* cipherstate = get_cipherstate(epoch);
@@ -615,7 +612,7 @@ size_t read_record(SafeArray!byte& readbuf,
 
 	readbuf.clear();
 	return 0;
-	}
+}
 
 }
 

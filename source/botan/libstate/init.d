@@ -8,17 +8,14 @@
 #include <botan/init.h>
 #include <botan/libstate.h>
 #include <botan/global_state.h>
-
-namespace Botan {
-
 /*
 * Library Initialization
 */
 void LibraryInitializer::initialize(in string)
-	{
+{
 
 	try
-		{
+	{
 		/*
 		This two stage initialization process is because Library_State's
 		constructor will implicitly refer to global state through the
@@ -28,20 +25,20 @@ void LibraryInitializer::initialize(in string)
 		Global_State_Management::set_global_state(new Library_State);
 
 		global_state().initialize();
-		}
+	}
 	catch(...)
-		{
+	{
 		deinitialize();
 		throw;
-		}
 	}
+}
 
 /*
 * Library Shutdown
 */
 void LibraryInitializer::deinitialize()
-	{
+{
 	Global_State_Management::set_global_state(nullptr);
-	}
+}
 
 }

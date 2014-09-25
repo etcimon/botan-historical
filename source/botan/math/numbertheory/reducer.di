@@ -5,18 +5,14 @@
 * Distributed under the terms of the Botan license
 */
 
-#ifndef BOTAN_MODULAR_REDUCER_H__
 #define BOTAN_MODULAR_REDUCER_H__
 
 #include <botan/numthry.h>
-
-namespace Botan {
-
 /**
 * Modular Reducer (using Barrett's technique)
 */
 class Modular_Reducer
-	{
+{
 	public:
 		const BigInt& get_modulus() const { return modulus; }
 
@@ -29,7 +25,7 @@ class Modular_Reducer
 		* @return (x * y) % p
 		*/
 		BigInt multiply(const BigInt& x, const BigInt& y) const
-			{ return reduce(x * y); }
+		{ return reduce(x * y); }
 
 		/**
 		* Square mod p
@@ -37,7 +33,7 @@ class Modular_Reducer
 		* @return (x * x) % p
 		*/
 		BigInt square(const BigInt& x) const
-			{ return reduce(Botan::square(x)); }
+		{ return reduce(Botan::square(x)); }
 
 		/**
 		* Cube mod p
@@ -45,7 +41,7 @@ class Modular_Reducer
 		* @return (x * x * x) % p
 		*/
 		BigInt cube(const BigInt& x) const
-			{ return multiply(x, this->square(x)); }
+		{ return multiply(x, this->square(x)); }
 
 		bool initialized() const { return (mod_words != 0); }
 
@@ -54,8 +50,4 @@ class Modular_Reducer
 	private:
 		BigInt modulus, modulus_2, mu;
 		size_t mod_words;
-	};
-
-}
-
-#endif
+};

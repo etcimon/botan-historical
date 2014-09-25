@@ -5,19 +5,15 @@
 * Distributed under the terms of the Botan license
 */
 
-#ifndef BOTAN_AEAD_FILTER_H__
 #define BOTAN_AEAD_FILTER_H__
 
 #include <botan/transform_filter.h>
 #include <botan/aead.h>
-
-namespace Botan {
-
 /**
 * Filter interface for AEAD Modes
 */
 class AEAD_Filter : public Transformation_Filter
-	{
+{
 	public:
 		AEAD_Filter(AEAD_Mode* aead) : Transformation_Filter(aead) {}
 
@@ -30,11 +26,7 @@ class AEAD_Filter : public Transformation_Filter
 		* @param ad_len length of add in bytes
 		*/
 		void set_associated_data(const byte ad[], size_t ad_len)
-			{
+		{
 			dynamic_cast<AEAD_Mode&>(get_transform()).set_associated_data(ad, ad_len);
-			}
-	};
-
-}
-
-#endif
+		}
+};

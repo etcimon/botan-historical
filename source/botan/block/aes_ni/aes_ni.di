@@ -5,18 +5,14 @@
 * Distributed under the terms of the Botan license
 */
 
-#ifndef BOTAN_AES_NI_H__
 #define BOTAN_AES_NI_H__
 
 #include <botan/block_cipher.h>
-
-namespace Botan {
-
 /**
 * AES-128 using AES-NI
 */
 class AES_128_NI : public Block_Cipher_Fixed_Params<16, 16>
-	{
+{
 	public:
 		size_t parallelism() const { return 4; }
 
@@ -30,13 +26,13 @@ class AES_128_NI : public Block_Cipher_Fixed_Params<16, 16>
 		void key_schedule(const byte[], size_t);
 
 		secure_vector<u32bit> EK, DK;
-	};
+};
 
 /**
 * AES-192 using AES-NI
 */
 class AES_192_NI : public Block_Cipher_Fixed_Params<16, 24>
-	{
+{
 	public:
 		size_t parallelism() const { return 4; }
 
@@ -50,13 +46,13 @@ class AES_192_NI : public Block_Cipher_Fixed_Params<16, 24>
 		void key_schedule(const byte[], size_t);
 
 		secure_vector<u32bit> EK, DK;
-	};
+};
 
 /**
 * AES-256 using AES-NI
 */
 class AES_256_NI : public Block_Cipher_Fixed_Params<16, 32>
-	{
+{
 	public:
 		size_t parallelism() const { return 4; }
 
@@ -70,8 +66,4 @@ class AES_256_NI : public Block_Cipher_Fixed_Params<16, 32>
 		void key_schedule(const byte[], size_t);
 
 		secure_vector<u32bit> EK, DK;
-	};
-
-}
-
-#endif
+};
