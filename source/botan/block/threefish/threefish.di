@@ -2,10 +2,8 @@
 * Threefish
 * (C) 2013,2014 Jack Lloyd
 *
-* Distributed under the terms of the Botan license
+* Distributed under the terms of the botan license.
 */
-
-#define BOTAN_THREEFISH_H__
 
 #include <botan/block_cipher.h>
 /**
@@ -14,10 +12,10 @@
 class Threefish_512 : public Block_Cipher_Fixed_Params<64, 64>
 {
 	public:
-		void encrypt_n(const byte in[], byte out[], size_t blocks) const override;
-		void decrypt_n(const byte in[], byte out[], size_t blocks) const override;
+		void encrypt_n(in byte[] input, ref byte[] output) const override;
+		void decrypt_n(in byte[] input, ref byte[] output) const override;
 
-		void set_tweak(const byte tweak[], size_t len);
+		void set_tweak(in byte[] tweak, size_t len);
 
 		void clear() override;
 		string name() const override { return "Threefish-512"; }
@@ -29,7 +27,7 @@ class Threefish_512 : public Block_Cipher_Fixed_Params<64, 64>
 		const secure_vector<u64bit>& get_T() const { return m_T; }
 		const secure_vector<u64bit>& get_K() const { return m_K; }
 	private:
-		void key_schedule(const byte key[], size_t key_len) override;
+		void key_schedule(in byte[] key) override;
 
 		// Interface for Skein
 		friend class Skein_512;

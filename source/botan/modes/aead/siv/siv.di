@@ -2,10 +2,8 @@
 * SIV Mode
 * (C) 2013 Jack Lloyd
 *
-* Distributed under the terms of the Botan license
+* Distributed under the terms of the botan license.
 */
-
-#define BOTAN_AEAD_SIV_H__
 
 #include <botan/aead.h>
 #include <botan/block_cipher.h>
@@ -17,13 +15,13 @@
 class SIV_Mode : public AEAD_Mode
 {
 	public:
-		SafeArray!byte start(const byte nonce[], size_t nonce_len) override;
+		SafeArray!byte start(in byte[] nonce, size_t nonce_len) override;
 
-		void update(SafeArray!byte& blocks, size_t offset = 0) override;
+		void update(SafeArray!byte blocks, size_t offset = 0) override;
 
-		void set_associated_data_n(size_t n, const byte ad[], size_t ad_len);
+		void set_associated_data_n(size_t n, in byte[] ad, size_t ad_len);
 
-		void set_associated_data(const byte ad[], size_t ad_len) override
+		void set_associated_data(in byte[] ad, size_t ad_len) override
 		{
 			set_associated_data_n(0, ad, ad_len);
 		}
@@ -47,13 +45,13 @@ class SIV_Mode : public AEAD_Mode
 
 		void set_ctr_iv(SafeArray!byte V);
 
-		SafeArray!byte& msg_buf() { return m_msg_buf; }
+		SafeArray!byte msg_buf() { return m_msg_buf; }
 
-		SafeArray!byte S2V(const byte text[], size_t text_len);
+		SafeArray!byte S2V(in byte[] text, size_t text_len);
 	private:
 		MessageAuthenticationCode& cmac() { return *m_cmac; }
 
-		void key_schedule(const byte key[], size_t length) override;
+		void key_schedule(in byte[] key) override;
 
 		const string m_name;
 
@@ -74,7 +72,7 @@ class SIV_Encryption : public SIV_Mode
 		*/
 		SIV_Encryption(BlockCipher* cipher) : SIV_Mode(cipher) {}
 
-		void finish(SafeArray!byte& final_block, size_t offset = 0) override;
+		void finish(SafeArray!byte final_block, size_t offset = 0) override;
 
 		size_t output_length(size_t input_length) const override
 		{ return input_length + tag_size(); }
@@ -93,7 +91,7 @@ class SIV_Decryption : public SIV_Mode
 		*/
 		SIV_Decryption(BlockCipher* cipher) : SIV_Mode(cipher) {}
 
-		void finish(SafeArray!byte& final_block, size_t offset = 0) override;
+		void finish(SafeArray!byte final_block, size_t offset = 0) override;
 
 		size_t output_length(size_t input_length) const override
 		{

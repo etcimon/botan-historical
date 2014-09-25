@@ -35,7 +35,7 @@ void MDx_HashFunction::clear()
 /*
 * Update the hash
 */
-void MDx_HashFunction::add_data(const byte input[], size_t length)
+void MDx_HashFunction::add_data(in byte[] input, size_t length)
 {
 	count += length;
 
@@ -87,7 +87,7 @@ void MDx_HashFunction::final_result(byte output[])
 /*
 * Write the count bits to the buffer
 */
-void MDx_HashFunction::write_count(byte out[])
+void MDx_HashFunction::write_count(ref byte[] output)
 {
 	if(COUNT_SIZE < 8)
 		throw Invalid_State("MDx_HashFunction::write_count: COUNT_SIZE < 8");

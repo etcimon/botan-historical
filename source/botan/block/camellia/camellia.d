@@ -92,7 +92,7 @@ inline u64bit FL(u64bit v, u64bit K)
 	x2 ^= rotate_left(x1 & k1, 1);
 	x1 ^= (x2 | k2);
 
-	return ((static_cast<u64bit>(x1) << 32) | x2);
+	return ((cast(u64bit)(x1) << 32) | x2);
 }
 
 inline u64bit FLINV(u64bit v, u64bit K)
@@ -106,19 +106,20 @@ inline u64bit FLINV(u64bit v, u64bit K)
 	x1 ^= (x2 | k2);
 	x2 ^= rotate_left(x1 & k1, 1);
 
-	return ((static_cast<u64bit>(x1) << 32) | x2);
+	return ((cast(u64bit)(x1) << 32) | x2);
 }
 
 /*
 * Camellia Encryption
 */
-void encrypt(const byte in[], byte out[], size_t blocks,
+void encrypt(in byte[] input, ref byte[] output,
 				 const secure_vector<u64bit>& SK, const size_t rounds)
 {
+	size_t blocks = input.length;
 	for(size_t i = 0; i != blocks; ++i)
 	{
-		u64bit D1 = load_be<u64bit>(in, 0);
-		u64bit D2 = load_be<u64bit>(in, 1);
+		u64bit D1 = load_be<u64bit>(input, 0);
+		u64bit D2 = load_be<u64bit>(input, 1);
 
 		const u64bit* K = &SK[0];
 
@@ -156,13 +157,14 @@ void encrypt(const byte in[], byte out[], size_t blocks,
 /*
 * Camellia Decryption
 */
-void decrypt(const byte in[], byte out[], size_t blocks,
+void decrypt(in byte[] input, ref byte[] output,
 				 const secure_vector<u64bit>& SK, const size_t rounds)
 {
+	size_t blocks = input.length;
 	for(size_t i = 0; i != blocks; ++i)
 	{
-		u64bit D1 = load_be<u64bit>(in, 0);
-		u64bit D2 = load_be<u64bit>(in, 1);
+		u64bit D1 = load_be<u64bit>(input, 0);
+		u64bit D2 = load_be<u64bit>(input, 1);
 
 		const u64bit* K = &SK[SK.size()-1];
 
@@ -210,7 +212,7 @@ u64bit left_rot_lo(u64bit h, u64bit l, size_t shift)
 /*
 * Camellia Key Schedule
 */
-void key_schedule(secure_vector<u64bit>& SK, const byte key[], size_t length)
+void key_schedule(secure_vector<u64bit>& SK, in byte[] key)
 {
 	const u64bit Sigma1 = 0xA09E667F3BCC908B;
 	const u64bit Sigma2 = 0xB67AE8584CAA73B2;
@@ -328,47 +330,47 @@ void key_schedule(secure_vector<u64bit>& SK, const byte key[], size_t length)
 
 }
 
-void Camellia_128::encrypt_n(const byte in[], byte out[], size_t blocks) const
+void Camellia_128::encrypt_n(in byte[] input, ref byte[] output) const
 {
-	Camellia_F::encrypt(in, out, blocks, SK, 9);
+	Camellia_F::encrypt(input, out, blocks, SK, 9);
 }
 
-void Camellia_192::encrypt_n(const byte in[], byte out[], size_t blocks) const
+void Camellia_192::encrypt_n(in byte[] input, ref byte[] output) const
 {
-	Camellia_F::encrypt(in, out, blocks, SK, 12);
+	Camellia_F::encrypt(input, out, blocks, SK, 12);
 }
 
-void Camellia_256::encrypt_n(const byte in[], byte out[], size_t blocks) const
+void Camellia_256::encrypt_n(in byte[] input, ref byte[] output) const
 {
-	Camellia_F::encrypt(in, out, blocks, SK, 12);
+	Camellia_F::encrypt(input, out, blocks, SK, 12);
 }
 
-void Camellia_128::decrypt_n(const byte in[], byte out[], size_t blocks) const
+void Camellia_128::decrypt_n(in byte[] input, ref byte[] output) const
 {
-	Camellia_F::decrypt(in, out, blocks, SK, 9);
+	Camellia_F::decrypt(input, out, blocks, SK, 9);
 }
 
-void Camellia_192::decrypt_n(const byte in[], byte out[], size_t blocks) const
+void Camellia_192::decrypt_n(in byte[] input, ref byte[] output) const
 {
-	Camellia_F::decrypt(in, out, blocks, SK, 12);
+	Camellia_F::decrypt(input, out, blocks, SK, 12);
 }
 
-void Camellia_256::decrypt_n(const byte in[], byte out[], size_t blocks) const
+void Camellia_256::decrypt_n(in byte[] input, ref byte[] output) const
 {
-	Camellia_F::decrypt(in, out, blocks, SK, 12);
+	Camellia_F::decrypt(input, out, blocks, SK, 12);
 }
 
-void Camellia_128::key_schedule(const byte key[], size_t length)
-{
-	Camellia_F::key_schedule(SK, key, length);
-}
-
-void Camellia_192::key_schedule(const byte key[], size_t length)
+void Camellia_128::key_schedule(in byte[] key)
 {
 	Camellia_F::key_schedule(SK, key, length);
 }
 
-void Camellia_256::key_schedule(const byte key[], size_t length)
+void Camellia_192::key_schedule(in byte[] key)
+{
+	Camellia_F::key_schedule(SK, key, length);
+}
+
+void Camellia_256::key_schedule(in byte[] key)
 {
 	Camellia_F::key_schedule(SK, key, length);
 }

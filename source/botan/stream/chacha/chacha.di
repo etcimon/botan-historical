@@ -2,10 +2,8 @@
 * ChaCha20
 * (C) 2014 Jack Lloyd
 *
-* Distributed under the terms of the Botan license
+* Distributed under the terms of the botan license.
 */
-
-#define BOTAN_CHACHA_H__
 
 #include <botan/stream_cipher.h>
 /**
@@ -14,9 +12,9 @@
 class ChaCha : public StreamCipher
 {
 	public:
-		void cipher(const byte in[], byte out[], size_t length);
+		void cipher(in byte[] input, ref byte[] output);
 
-		void set_iv(const byte iv[], size_t iv_len);
+		void set_iv(in byte[] iv, size_t iv_len);
 
 		bool valid_iv_length(size_t iv_len) const
 		{ return (iv_len == 8); }
@@ -33,7 +31,7 @@ class ChaCha : public StreamCipher
 	protected:
 		abstract void chacha(byte output[64], const u32bit input[16]);
 	private:
-		void key_schedule(const byte key[], size_t key_len);
+		void key_schedule(in byte[] key);
 
 		secure_vector<u32bit> m_state;
 		SafeArray!byte m_buffer;

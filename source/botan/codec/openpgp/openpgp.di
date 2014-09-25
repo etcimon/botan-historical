@@ -2,10 +2,8 @@
 * OpenPGP Codec
 * (C) 1999-2007 Jack Lloyd
 *
-* Distributed under the terms of the Botan license
+* Distributed under the terms of the botan license.
 */
-
-#define BOTAN_OPENPGP_CODEC_H__
 
 #include <botan/data_src.h>
 #include <string>
@@ -17,7 +15,7 @@
 * @param headers a set of key/value pairs included in the header
 */
 string PGP_encode(
-	const byte input[],
+	in byte[] input,
 	size_t length,
 	in string label,
 	const std::map<string, string>& headers);
@@ -28,7 +26,7 @@ string PGP_encode(
 * @param label the human-readable label
 */
 string PGP_encode(
-	const byte input[],
+	in byte[] input,
 	size_t length,
 	in string label);
 

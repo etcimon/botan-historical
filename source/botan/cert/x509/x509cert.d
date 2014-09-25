@@ -24,7 +24,7 @@ namespace {
 /*
 * Lookup each OID in the vector
 */
-std::vector<string> lookup_oids(const std::vector<string>& in)
+std::vector<string> lookup_oids(const std::vector<string>& input)
 {
 	std::vector<string> out;
 
@@ -38,8 +38,8 @@ std::vector<string> lookup_oids(const std::vector<string>& in)
 /*
 * X509_Certificate Constructor
 */
-X509_Certificate::X509_Certificate(DataSource& in) :
-	X509_Object(in, "CERTIFICATE/X509 CERTIFICATE")
+X509_Certificate::X509_Certificate(DataSource& input) :
+	X509_Object(input, "CERTIFICATE/X509 CERTIFICATE")
 {
 	self_signed = false;
 	do_decode();
@@ -48,8 +48,8 @@ X509_Certificate::X509_Certificate(DataSource& in) :
 /*
 * X509_Certificate Constructor
 */
-X509_Certificate::X509_Certificate(in string in) :
-	X509_Object(in, "CERTIFICATE/X509 CERTIFICATE")
+X509_Certificate::X509_Certificate(in string input) :
+	X509_Object(input, "CERTIFICATE/X509 CERTIFICATE")
 {
 	self_signed = false;
 	do_decode();
@@ -58,8 +58,8 @@ X509_Certificate::X509_Certificate(in string in) :
 /*
 * X509_Certificate Constructor
 */
-X509_Certificate::X509_Certificate(in Array!byte in) :
-	X509_Object(in, "CERTIFICATE/X509 CERTIFICATE")
+X509_Certificate::X509_Certificate(in Array!byte input) :
+	X509_Object(input, "CERTIFICATE/X509 CERTIFICATE")
 {
 	self_signed = false;
 	do_decode();

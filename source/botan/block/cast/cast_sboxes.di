@@ -2,10 +2,8 @@
 * S-Box Tables for CAST-128 and CAST-256
 * (C) 1999-2007 Jack Lloyd
 *
-* Distributed under the terms of the Botan license
+* Distributed under the terms of the botan license.
 */
-
-#define BOTAN_CAST_SBOX_TABLES_H__
 
 #include <botan/types.h>
 const u32bit CAST_SBOX1[256] = {

@@ -2,10 +2,8 @@
 * X.509 Certificates
 * (C) 1999-2007 Jack Lloyd
 *
-* Distributed under the terms of the Botan license
+* Distributed under the terms of the botan license.
 */
-
-#define BOTAN_X509_CERTS_H__
 
 #include <botan/x509_obj.h>
 #include <botan/x509_dn.h>
@@ -214,7 +212,7 @@ class X509_Certificate : public X509_Object
 		*/
 		X509_Certificate(in string filename);
 
-		X509_Certificate(in Array!byte in);
+		X509_Certificate(in Array!byte input);
 
 	private:
 		void force_decode();

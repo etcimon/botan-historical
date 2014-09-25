@@ -2,10 +2,8 @@
 * CFB mode
 * (C) 1999-2007,2013 Jack Lloyd
 *
-* Distributed under the terms of the Botan license
+* Distributed under the terms of the botan license.
 */
-
-#define BOTAN_MODE_CFB_H__
 
 #include <botan/cipher_mode.h>
 #include <botan/block_cipher.h>
@@ -16,7 +14,7 @@
 class CFB_Mode : public Cipher_Mode
 {
 	public:
-		SafeArray!byte start(const byte nonce[], size_t nonce_len) override;
+		SafeArray!byte start(in byte[] nonce, size_t nonce_len) override;
 
 		string name() const override;
 
@@ -40,12 +38,12 @@ class CFB_Mode : public Cipher_Mode
 
 		size_t feedback() const { return m_feedback_bytes; }
 
-		SafeArray!byte& shift_register() { return m_shift_register; }
+		SafeArray!byte shift_register() { return m_shift_register; }
 
-		SafeArray!byte& keystream_buf() { return m_keystream_buf; }
+		SafeArray!byte keystream_buf() { return m_keystream_buf; }
 
 	private:
-		void key_schedule(const byte key[], size_t length) override;
+		void key_schedule(in byte[] key) override;
 
 		std::unique_ptr<BlockCipher> m_cipher;
 		SafeArray!byte m_shift_register;
@@ -62,9 +60,9 @@ class CFB_Encryption : public CFB_Mode
 		CFB_Encryption(BlockCipher* cipher, size_t feedback_bits) :
 			CFB_Mode(cipher, feedback_bits) {}
 
-		void update(SafeArray!byte& blocks, size_t offset = 0) override;
+		void update(SafeArray!byte blocks, size_t offset = 0) override;
 
-		void finish(SafeArray!byte& final_block, size_t offset = 0) override;
+		void finish(SafeArray!byte final_block, size_t offset = 0) override;
 };
 
 /**
@@ -76,7 +74,7 @@ class CFB_Decryption : public CFB_Mode
 		CFB_Decryption(BlockCipher* cipher, size_t feedback_bits) :
 			CFB_Mode(cipher, feedback_bits) {}
 
-		void update(SafeArray!byte& blocks, size_t offset = 0) override;
+		void update(SafeArray!byte blocks, size_t offset = 0) override;
 
-		void finish(SafeArray!byte& final_block, size_t offset = 0) override;
+		void finish(SafeArray!byte final_block, size_t offset = 0) override;
 };

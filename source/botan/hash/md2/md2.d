@@ -10,7 +10,7 @@
 /**
 * MD2 Compression Function
 */
-void MD2::hash(const byte input[])
+void MD2::hash(in byte[] input)
 {
 	static const byte SBOX[256] = {
 		0x29, 0x2E, 0x43, 0xC9, 0xA2, 0xD8, 0x7C, 0x01, 0x3D, 0x36, 0x54, 0xA1,
@@ -50,7 +50,7 @@ void MD2::hash(const byte input[])
 			T = X[k+6] ^= SBOX[T]; T = X[k+7] ^= SBOX[T];
 		}
 
-		T += static_cast<byte>(i);
+		T += cast(byte)(i);
 	}
 
 	T = checksum[15];
@@ -61,7 +61,7 @@ void MD2::hash(const byte input[])
 /**
 * Update the hash
 */
-void MD2::add_data(const byte input[], size_t length)
+void MD2::add_data(in byte[] input, size_t length)
 {
 	buffer_insert(buffer, position, input, length);
 
@@ -88,7 +88,7 @@ void MD2::add_data(const byte input[], size_t length)
 void MD2::final_result(byte output[])
 {
 	for(size_t i = position; i != hash_block_size(); ++i)
-		buffer[i] = static_cast<byte>(hash_block_size() - position);
+		buffer[i] = cast(byte)(hash_block_size() - position);
 
 	hash(&buffer[0]);
 	hash(&checksum[0]);

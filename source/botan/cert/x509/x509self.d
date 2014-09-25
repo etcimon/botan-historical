@@ -39,7 +39,7 @@ namespace X509 {
 * Create a new self-signed X.509 certificate
 */
 X509_Certificate create_self_signed_cert(const X509_Cert_Options& opts,
-													  const Private_Key& key,
+													  in Private_Key key,
 													  in string hash_fn,
 													  RandomNumberGenerator& rng)
 {
@@ -85,7 +85,7 @@ X509_Certificate create_self_signed_cert(const X509_Cert_Options& opts,
 * Create a PKCS #10 certificate request
 */
 PKCS10_Request create_cert_req(const X509_Cert_Options& opts,
-										 const Private_Key& key,
+										 in Private_Key key,
 										 in string hash_fn,
 										 RandomNumberGenerator& rng)
 {

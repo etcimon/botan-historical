@@ -11,10 +11,10 @@
 #include <botan/internal/rounding.h>
 namespace {
 
-void poly_double_128(byte out[], const byte in[])
+void poly_double_128(ref byte[] output, in byte[] input)
 {
-	u64bit X0 = load_le<u64bit>(in, 0);
-	u64bit X1 = load_le<u64bit>(in, 1);
+	u64bit X0 = load_le<u64bit>(input, 0);
+	u64bit X1 = load_le<u64bit>(input, 1);
 
 	const bool carry = (X1 >> 63);
 
@@ -27,9 +27,9 @@ void poly_double_128(byte out[], const byte in[])
 	store_le(out, X0, X1);
 }
 
-void poly_double_64(byte out[], const byte in[])
+void poly_double_64(ref byte[] output, in byte[] input)
 {
-	u64bit X = load_le<u64bit>(in, 0);
+	u64bit X = load_le<u64bit>(input, 0);
 	const bool carry = (X >> 63);
 	X <<= 1;
 	if(carry)
@@ -37,12 +37,12 @@ void poly_double_64(byte out[], const byte in[])
 	store_le(X, out);
 }
 
-inline void poly_double(byte out[], const byte in[], size_t size)
+inline void poly_double(ref byte[] output, in byte[] input)
 {
 	if(size == 8)
-		poly_double_64(out, in);
+		poly_double_64(out, input);
 	else
-		poly_double_128(out, in);
+		poly_double_128(out, input);
 }
 
 }
@@ -93,7 +93,7 @@ bool XTS_Mode::valid_nonce_length(size_t n) const
 	return cipher().block_size() == n;
 }
 
-void XTS_Mode::key_schedule(const byte key[], size_t length)
+void XTS_Mode::key_schedule(in byte[] key)
 {
 	const size_t key_half = length / 2;
 
@@ -104,7 +104,7 @@ void XTS_Mode::key_schedule(const byte key[], size_t length)
 	m_tweak_cipher->set_key(&key[key_half], key_half);
 }
 
-SafeArray!byte XTS_Mode::start(const byte nonce[], size_t nonce_len)
+SafeArray!byte XTS_Mode::start(in byte[] nonce, size_t nonce_len)
 {
 	if(!valid_nonce_length(nonce_len))
 		throw Invalid_IV_Length(name(), nonce_len);
@@ -135,7 +135,7 @@ size_t XTS_Encryption::output_length(size_t input_length) const
 	return round_up(input_length, cipher().block_size());
 }
 
-void XTS_Encryption::update(SafeArray!byte& buffer, size_t offset)
+void XTS_Encryption::update(SafeArray!byte buffer, size_t offset)
 {
 	BOTAN_ASSERT(buffer.size() >= offset, "Offset is sane");
 	const size_t sz = buffer.size() - offset;
@@ -164,7 +164,7 @@ void XTS_Encryption::update(SafeArray!byte& buffer, size_t offset)
 	}
 }
 
-void XTS_Encryption::finish(SafeArray!byte& buffer, size_t offset)
+void XTS_Encryption::finish(SafeArray!byte buffer, size_t offset)
 {
 	BOTAN_ASSERT(buffer.size() >= offset, "Offset is sane");
 	const size_t sz = buffer.size() - offset;
@@ -214,7 +214,7 @@ size_t XTS_Decryption::output_length(size_t input_length) const
 	return input_length;
 }
 
-void XTS_Decryption::update(SafeArray!byte& buffer, size_t offset)
+void XTS_Decryption::update(SafeArray!byte buffer, size_t offset)
 {
 	BOTAN_ASSERT(buffer.size() >= offset, "Offset is sane");
 	const size_t sz = buffer.size() - offset;
@@ -243,7 +243,7 @@ void XTS_Decryption::update(SafeArray!byte& buffer, size_t offset)
 	}
 }
 
-void XTS_Decryption::finish(SafeArray!byte& buffer, size_t offset)
+void XTS_Decryption::finish(SafeArray!byte buffer, size_t offset)
 {
 	BOTAN_ASSERT(buffer.size() >= offset, "Offset is sane");
 	const size_t sz = buffer.size() - offset;

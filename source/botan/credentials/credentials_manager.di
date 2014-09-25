@@ -2,10 +2,8 @@
 * Credentials Manager
 * (C) 2011,2012 Jack Lloyd
 *
-* Distributed under the terms of the Botan license
+* Distributed under the terms of the botan license.
 */
-
-#define BOTAN_CREDENTIALS_MANAGER_H__
 
 #include <botan/x509cert.h>
 #include <botan/certstor.h>
@@ -56,14 +54,14 @@ class Credentials_Manager
 		abstract void verify_certificate_chain(
 			in string type,
 			in string hostname,
-			const std::vector<X509_Certificate>& cert_chain);
+			const std::vector<X509_Certificate>& cert_chainput);
 
 		/**
 		* Return a cert chain we can use, ordered from leaf to root,
 		* or else an empty vector.
 		*
 		* It is assumed that the caller can get the private key of the
-		* leaf with private_key_for
+		* leaf with Private_Key_for
 		*
 		* @param cert_key_types specifies the key types desired ("RSA",
 		*							  "DSA", "ECDSA", etc), or empty if there
@@ -83,7 +81,7 @@ class Credentials_Manager
 		* or else an empty vector.
 		*
 		* It is assumed that the caller can get the private key of the
-		* leaf with private_key_for
+		* leaf with Private_Key_for
 		*
 		* @param cert_key_type specifies the type of key requested
 		*							 ("RSA", "DSA", "ECDSA", etc)
@@ -103,7 +101,7 @@ class Credentials_Manager
 		* @note this object should retain ownership of the returned key;
 		*		 it should not be deleted by the caller.
 		*/
-		abstract Private_Key* private_key_for(const X509_Certificate& cert,
+		abstract Private_Key* Private_Key_for(const X509_Certificate& cert,
 														 in string type,
 														 in string context);
 

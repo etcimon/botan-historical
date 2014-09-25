@@ -2,10 +2,8 @@
 * Runtime assertion checking
 * (C) 2010 Jack Lloyd
 *
-* Distributed under the terms of the Botan license
+* Distributed under the terms of the botan license.
 */
-
-#define BOTAN_ASSERTION_CHECKING_H__
 
 #include <botan/build.h>
 /**
@@ -20,56 +18,33 @@ void assertion_failure(const char* expr_str,
 /**
 * Make an assertion
 */
-#define BOTAN_ASSERT(expr, assertion_made)					 \
-	do {																	\
-		if(!(expr))													  \
-			Botan::assertion_failure(#expr,						\
-											 assertion_made,			\
-											 BOTAN_CURRENT_FUNCTION, \
-											 __FILE__,					\
-											 __LINE__);				  \
-} while(0)
+void BOTAN_ASSERT(bool expr, string assertion_made) {
+	assert(expr, assertion_made);
+}
 
 /**
 * Assert that value1 == value2
 */
-#define BOTAN_ASSERT_EQUAL(expr1, expr2, assertion_made)	\
-	do {																	 \
-	  if((expr1) != (expr2))										  \
-		 Botan::assertion_failure(#expr1 " == " #expr2,		\
-											 assertion_made,			 \
-											 BOTAN_CURRENT_FUNCTION,  \
-											 __FILE__,					 \
-											 __LINE__);					\
-} while(0)
+void BOTAN_ASSERT_EQUAL(T)(T expr1, T expr2, string assertion_made) {
+	assert(expr1 == expr2, assertion_made);
+}
 
 /**
 * Assert that expr1 (if true) implies expr2 is also true
 */
-#define BOTAN_ASSERT_IMPLICATION(expr1, expr2, msg)		  \
-	do {																	 \
-	  if((expr1) && !(expr2))										 \
-		 Botan::assertion_failure(#expr1 " implies " #expr2, \
-										  msg,							  \
-											 BOTAN_CURRENT_FUNCTION,  \
-											 __FILE__,					 \
-											 __LINE__);					\
-} while(0)
+void BOTAN_ASSERT_IMPLICATION(bool expr1, bool expr2, string msg)
+{
+	assert(expr1 && !expr2, msg);
+}
 
 /**
 * Assert that a pointer is not null
 */
-#define BOTAN_ASSERT_NONNULL(ptr)								  \
-	do {																	 \
-		if(static_cast<bool>(ptr) == false)						\
-			Botan::assertion_failure(#ptr " is not null",	  \
-											 "",							 \
-											 BOTAN_CURRENT_FUNCTION,  \
-											 __FILE__,					 \
-											 __LINE__);					\
-} while(0)
+void BOTAN_ASSERT_NONNULL(void* ptr) {
+	assert(ptr !is null, "pointer is not null");
+}
 
 /**
 * Mark variable as unused
 */
-#define BOTAN_UNUSED(v) static_cast<void>(v)
+#define BOTAN_UNUSED(v) cast(void)(v)

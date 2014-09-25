@@ -2,10 +2,8 @@
 * Noekeon in SIMD
 * (C) 2010 Jack Lloyd
 *
-* Distributed under the terms of the Botan license
+* Distributed under the terms of the botan license.
 */
-
-#define BOTAN_NOEKEON_SIMD_H__
 
 #include <botan/noekeon.h>
 /**
@@ -16,8 +14,8 @@ class Noekeon_SIMD : public Noekeon
 	public:
 		size_t parallelism() const { return 4; }
 
-		void encrypt_n(const byte in[], byte out[], size_t blocks) const;
-		void decrypt_n(const byte in[], byte out[], size_t blocks) const;
+		void encrypt_n(in byte[] input, ref byte[] output) const;
+		void decrypt_n(in byte[] input, ref byte[] output) const;
 
 		BlockCipher* clone() const { return new Noekeon_SIMD; }
 };

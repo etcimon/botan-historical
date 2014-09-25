@@ -35,7 +35,7 @@ DL_Scheme_PublicKey::DL_Scheme_PublicKey(const AlgorithmIdentifier& alg_id,
 	BER_Decoder(key_bits).decode(y);
 }
 
-SafeArray!byte DL_Scheme_PrivateKey::pkcs8_private_key() const
+SafeArray!byte DL_Scheme_PrivateKey::pkcs8_Private_Key() const
 {
 	return DER_Encoder().encode(x).get_contents();
 }

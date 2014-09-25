@@ -2,10 +2,8 @@
 * Cryptobox Message Routines
 * (C) 2009,2013 Jack Lloyd
 *
-* Distributed under the terms of the Botan license
+* Distributed under the terms of the botan license.
 */
-
-#define BOTAN_CRYPTOBOX_PSK_H__
 
 #include <string>
 #include <botan/rng.h>
@@ -22,7 +20,7 @@ namespace CryptoBox {
 * @param key the key used to encrypt the message
 * @param rng a ref to a random number generator, such as AutoSeeded_RNG
 */
-std::vector<byte> encrypt(const byte input[], size_t input_len,
+std::vector<byte> encrypt(in byte[] input, size_t input_len,
 												const SymmetricKey& key,
 												RandomNumberGenerator& rng);
 
@@ -33,7 +31,7 @@ std::vector<byte> encrypt(const byte input[], size_t input_len,
 * @param key the key used to encrypt the message
 * @param rng a ref to a random number generator, such as AutoSeeded_RNG
 */
-SafeArray!byte decrypt(const byte input[], size_t input_len,
+SafeArray!byte decrypt(in byte[] input, size_t input_len,
 												  const SymmetricKey& key);
 
 }

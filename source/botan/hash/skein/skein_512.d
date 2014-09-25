@@ -49,9 +49,9 @@ void Skein_512::reset_tweak(type_code type, bool final)
 {
 	T[0] = 0;
 
-	T[1] = (static_cast<u64bit>(type) << 56) |
-			 (static_cast<u64bit>(1) << 62) |
-			 (static_cast<u64bit>(final) << 63);
+	T[1] = (cast(u64bit)(type) << 56) |
+			 (cast(u64bit)(1) << 62) |
+			 (cast(u64bit)(final) << 63);
 }
 
 void Skein_512::initial_block()
@@ -77,7 +77,7 @@ void Skein_512::initial_block()
 		if(personalization.length() > 64)
 			throw Invalid_Argument("Skein personalization must be less than 64 bytes");
 
-		const byte* bits = reinterpret_cast<const byte*>(personalization.data());
+		const byte* bits = cast(const byte*)(personalization.data());
 		reset_tweak(SKEIN_PERSONALIZATION, true);
 		ubi_512(bits, personalization.length());
 	}
@@ -85,7 +85,7 @@ void Skein_512::initial_block()
 	reset_tweak(SKEIN_MSG, false);
 }
 
-void Skein_512::ubi_512(const byte msg[], size_t msg_len)
+void Skein_512::ubi_512(in byte[] msg, size_t msg_len)
 {
 	secure_vector<u64bit> M(8);
 
@@ -99,20 +99,20 @@ void Skein_512::ubi_512(const byte msg[], size_t msg_len)
 		if(to_proc % 8)
 		{
 			for(size_t j = 0; j != to_proc % 8; ++j)
-			  M[to_proc/8] |= static_cast<u64bit>(msg[8*(to_proc/8)+j]) << (8*j);
+			  M[to_proc/8] |= cast(u64bit)(msg[8*(to_proc/8)+j]) << (8*j);
 		}
 
 		m_threefish->skein_feedfwd(M, T);
 
 		// clear first flag if set
-		T[1] &= ~(static_cast<u64bit>(1) << 62);
+		T[1] &= ~(cast(u64bit)(1) << 62);
 
 		msg_len -= to_proc;
 		msg += to_proc;
 	} while(msg_len);
 }
 
-void Skein_512::add_data(const byte input[], size_t length)
+void Skein_512::add_data(in byte[] input, size_t length)
 {
 	if(length == 0)
 		return;
@@ -141,9 +141,9 @@ void Skein_512::add_data(const byte input[], size_t length)
 	buf_pos += length;
 }
 
-void Skein_512::final_result(byte out[])
+void Skein_512::final_result(ref byte[] output)
 {
-	T[1] |= (static_cast<u64bit>(1) << 63); // final block flag
+	T[1] |= (cast(u64bit)(1) << 63); // final block flag
 
 	for(size_t i = buf_pos; i != buffer.size(); ++i)
 		buffer[i] = 0;

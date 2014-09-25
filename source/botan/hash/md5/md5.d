@@ -55,7 +55,7 @@ inline void II(u32bit& A, u32bit B, u32bit C, u32bit D, u32bit msg,
 /*
 * MD5 Compression Function
 */
-void MD5::compress_n(const byte input[], size_t blocks)
+void MD5::compress_n(in byte[] input, size_t blocks)
 {
 	u32bit A = digest[0], B = digest[1], C = digest[2], D = digest[3];
 

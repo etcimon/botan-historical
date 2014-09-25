@@ -168,7 +168,7 @@ BER_Decoder& BER_Decoder::verify_end()
 /*
 * Save all the bytes remaining in the source
 */
-BER_Decoder& BER_Decoder::raw_bytes(SafeArray!byte& out)
+BER_Decoder& BER_Decoder::raw_bytes(SafeArray!byte out)
 {
 	out.clear();
 	byte buf;
@@ -282,7 +282,7 @@ BER_Decoder::BER_Decoder(DataSource& src)
 /*
 * BER_Decoder Constructor
  */
-BER_Decoder::BER_Decoder(const byte data[], size_t length)
+BER_Decoder::BER_Decoder(in byte[] data, size_t length)
 {
 	source = new DataSource_Memory(data, length);
 	owns = true;
@@ -493,7 +493,7 @@ BER_Decoder& BER_Decoder::decode(BigInt& out,
 /*
 * BER decode a BIT STRING or OCTET STRING
 */
-BER_Decoder& BER_Decoder::decode(SafeArray!byte& out, ASN1_Tag real_type)
+BER_Decoder& BER_Decoder::decode(SafeArray!byte out, ASN1_Tag real_type)
 {
 	return decode(out, real_type, real_type, UNIVERSAL);
 }
@@ -509,7 +509,7 @@ BER_Decoder& BER_Decoder::decode(std::vector<byte>& out, ASN1_Tag real_type)
 /*
 * BER decode a BIT STRING or OCTET STRING
 */
-BER_Decoder& BER_Decoder::decode(SafeArray!byte& buffer,
+BER_Decoder& BER_Decoder::decode(SafeArray!byte buffer,
 											ASN1_Tag real_type,
 											ASN1_Tag type_tag, ASN1_Tag class_tag)
 {

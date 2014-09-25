@@ -2,10 +2,8 @@
 * Salsa20 / XSalsa20
 * (C) 1999-2010 Jack Lloyd
 *
-* Distributed under the terms of the Botan license
+* Distributed under the terms of the botan license.
 */
-
-#define BOTAN_SALSA20_H__
 
 #include <botan/stream_cipher.h>
 /**
@@ -14,9 +12,9 @@
 class Salsa20 : public StreamCipher
 {
 	public:
-		void cipher(const byte in[], byte out[], size_t length);
+		void cipher(in byte[] input, ref byte[] output);
 
-		void set_iv(const byte iv[], size_t iv_len);
+		void set_iv(in byte[] iv, size_t iv_len);
 
 		bool valid_iv_length(size_t iv_len) const
 		{ return (iv_len == 8 || iv_len == 24); }
@@ -30,7 +28,7 @@ class Salsa20 : public StreamCipher
 		string name() const;
 		StreamCipher* clone() const { return new Salsa20; }
 	private:
-		void key_schedule(const byte key[], size_t key_len);
+		void key_schedule(in byte[] key);
 
 		secure_vector<u32bit> m_state;
 		SafeArray!byte m_buffer;

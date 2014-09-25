@@ -19,7 +19,7 @@
 /*
 * GMP_MPZ Constructor
 */
-GMP_MPZ::GMP_MPZ(const BigInt& in)
+GMP_MPZ::GMP_MPZ(const BigInt& input)
 {
 	mpz_init(value);
 	if(in != 0)
@@ -29,10 +29,10 @@ GMP_MPZ::GMP_MPZ(const BigInt& in)
 /*
 * GMP_MPZ Constructor
 */
-GMP_MPZ::GMP_MPZ(const byte in[], size_t length)
+GMP_MPZ::GMP_MPZ(in byte[] input)
 {
 	mpz_init(value);
-	mpz_import(value, length, 1, 1, 0, 0, in);
+	mpz_import(value, length, 1, 1, 0, 0, input);
 }
 
 /*
@@ -63,10 +63,11 @@ GMP_MPZ& GMP_MPZ::operator=(const GMP_MPZ& other)
 /*
 * Export the mpz_t as a bytestring
 */
-void GMP_MPZ::encode(byte out[], size_t length) const
+void GMP_MPZ::encode(ref byte[] output) const
 {
+	size_t length = output.length;
 	size_t dummy = 0;
-	mpz_export(out + (length - bytes()), &dummy, 1, 1, 0, 0, value);
+	mpz_export(output.ptr + (length - bytes()), &dummy, 1, 1, 0, 0, value);
 }
 
 /*

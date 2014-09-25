@@ -61,12 +61,12 @@ bool CFB_Mode::valid_nonce_length(size_t n) const
 	return (n == cipher().block_size());
 }
 
-void CFB_Mode::key_schedule(const byte key[], size_t length)
+void CFB_Mode::key_schedule(in byte[] key)
 {
 	m_cipher->set_key(key, length);
 }
 
-SafeArray!byte CFB_Mode::start(const byte nonce[], size_t nonce_len)
+SafeArray!byte CFB_Mode::start(in byte[] nonce, size_t nonce_len)
 {
 	if(!valid_nonce_length(nonce_len))
 		throw Invalid_IV_Length(name(), nonce_len);
@@ -78,7 +78,7 @@ SafeArray!byte CFB_Mode::start(const byte nonce[], size_t nonce_len)
 	return SafeArray!byte();
 }
 
-void CFB_Encryption::update(SafeArray!byte& buffer, size_t offset)
+void CFB_Encryption::update(SafeArray!byte buffer, size_t offset)
 {
 	BOTAN_ASSERT(buffer.size() >= offset, "Offset is sane");
 	size_t sz = buffer.size() - offset;
@@ -86,7 +86,7 @@ void CFB_Encryption::update(SafeArray!byte& buffer, size_t offset)
 
 	const size_t BS = cipher().block_size();
 
-	SafeArray!byte& state = shift_register();
+	SafeArray!byte state = shift_register();
 	const size_t shift = feedback();
 
 	while(sz)
@@ -104,12 +104,12 @@ void CFB_Encryption::update(SafeArray!byte& buffer, size_t offset)
 	}
 }
 
-void CFB_Encryption::finish(SafeArray!byte& buffer, size_t offset)
+void CFB_Encryption::finish(SafeArray!byte buffer, size_t offset)
 {
 	update(buffer, offset);
 }
 
-void CFB_Decryption::update(SafeArray!byte& buffer, size_t offset)
+void CFB_Decryption::update(SafeArray!byte buffer, size_t offset)
 {
 	BOTAN_ASSERT(buffer.size() >= offset, "Offset is sane");
 	size_t sz = buffer.size() - offset;
@@ -117,7 +117,7 @@ void CFB_Decryption::update(SafeArray!byte& buffer, size_t offset)
 
 	const size_t BS = cipher().block_size();
 
-	SafeArray!byte& state = shift_register();
+	SafeArray!byte state = shift_register();
 	const size_t shift = feedback();
 
 	while(sz)
@@ -139,7 +139,7 @@ void CFB_Decryption::update(SafeArray!byte& buffer, size_t offset)
 	}
 }
 
-void CFB_Decryption::finish(SafeArray!byte& buffer, size_t offset)
+void CFB_Decryption::finish(SafeArray!byte buffer, size_t offset)
 {
 	update(buffer, offset);
 }

@@ -2,10 +2,8 @@
 * X.509 SIGNED Object
 * (C) 1999-2007 Jack Lloyd
 *
-* Distributed under the terms of the Botan license
+* Distributed under the terms of the botan license.
 */
-
-#define BOTAN_X509_OBJECT_H__
 
 #include <botan/asn1_obj.h>
 #include <botan/pipe.h>

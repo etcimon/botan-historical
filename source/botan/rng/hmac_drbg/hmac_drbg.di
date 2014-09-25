@@ -2,10 +2,8 @@
 * HMAC_DRBG (SP800-90A)
 * (C) 2014 Jack Lloyd
 *
-* Distributed under the terms of the Botan license
+* Distributed under the terms of the botan license.
 */
-
-#define BOTAN_HMAC_DRBG_H__
 
 #include <botan/rng.h>
 #include <botan/mac.h>
@@ -22,7 +20,7 @@ class HMAC_DRBG : public RandomNumberGenerator
 
 		void reseed(size_t poll_bits);
 
-		void add_entropy(const byte input[], size_t input_len);
+		void add_entropy(in byte[] input, size_t input_len);
 
 		/**
 		* @param mac the underlying mac function (eg HMAC(SHA-512))
@@ -32,7 +30,7 @@ class HMAC_DRBG : public RandomNumberGenerator
 					 RandomNumberGenerator* underlying_rng);
 
 	private:
-		void update(const byte input[], size_t input_len);
+		void update(in byte[] input, size_t input_len);
 
 		std::unique_ptr<MessageAuthenticationCode> m_mac;
 		std::unique_ptr<RandomNumberGenerator> m_prng;

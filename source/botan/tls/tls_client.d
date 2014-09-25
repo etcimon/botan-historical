@@ -19,8 +19,7 @@ class Client_Handshake_State : public Handshake_State
 		// using Handshake_State::Handshake_State;
 
 		Client_Handshake_State(Handshake_IO* io,
-									  std::function<void (const Handshake_Message&)> msg_callback =
-										  std::function<void (const Handshake_Message&)>()) :
+									  void delegate(const Handshake_Message) msg_callback) :
 			Handshake_State(io, msg_callback) {}
 
 		const Public_Key& get_server_public_Key() const
@@ -43,17 +42,17 @@ class Client_Handshake_State : public Handshake_State
 /*
 * TLS Client Constructor
 */
-Client::Client(std::function<void (const byte[], size_t)> output_fn,
-					std::function<void (const byte[], size_t)> proc_cb,
-					std::function<void (Alert, const byte[], size_t)> alert_cb,
-					std::function<bool (const Session&)> handshake_cb,
-					Session_Manager& session_manager,
-					Credentials_Manager& creds,
-					const Policy& policy,
-					RandomNumberGenerator& rng,
-					const Server_Information& info,
-					const Protocol_Version offer_version,
-					std::function<string (std::vector<string>)> next_protocol,
+Client::Client(void delegate(in byte[]) output_fn,
+					void delegate(in byte[]) proc_cb,
+					void delegate(Alert, in byte[]) alert_cb,
+					bool delegate(const Session) handshake_cb,
+					Session_Manager session_manager,
+					Credentials_Manager creds,
+					in Policy policy,
+					RandomNumberGenerator rng,
+					in Server_Information info,
+					in Protocol_Version offer_version,
+					string delegate(string[]) next_protocol,
 					size_t io_buf_sz) :
 	Channel(output_fn, proc_cb, alert_cb, handshake_cb, session_manager, rng, io_buf_sz),
 	m_policy(policy),
@@ -90,13 +89,13 @@ void Client::initiate_handshake(Handshake_State& state,
 							state.version());
 }
 
-void Client::send_client_hello(Handshake_State& state_base,
+void Client::send_client_hello(Handshake_State state_base,
 										 bool force_full_renegotiation,
 										 Protocol_Version version,
 										 in string srp_identifier,
-										 std::function<string (std::vector<string>)> next_protocol)
+										 string delegate(string[]) next_protocol)
 {
-	Client_Handshake_State& state = dynamic_cast<Client_Handshake_State&>(state_base);
+	Client_Handshake_State state = cast(Client_Handshake_State&)(state_base);
 
 	if(state.version().is_datagram_protocol())
 		state.set_expected_next(HELLO_VERIFY_REQUEST); // optional
@@ -104,7 +103,7 @@ void Client::send_client_hello(Handshake_State& state_base,
 
 	state.client_npn_cb = next_protocol;
 
-	const bool send_npn_request = static_cast<bool>(next_protocol);
+	const bool send_npn_request = cast(bool)(next_protocol);
 
 	if(!force_full_renegotiation && !m_info.empty())
 	{
@@ -152,7 +151,7 @@ void Client::process_handshake_msg(const Handshake_State* active_state,
 											  Handshake_Type type,
 											  in Array!byte contents)
 {
-	Client_Handshake_State& state = dynamic_cast<Client_Handshake_State&>(state_base);
+	Client_Handshake_State& state = cast(Client_Handshake_State&)(state_base);
 
 	if(type == HELLO_REQUEST && active_state)
 	{
@@ -406,8 +405,8 @@ void Client::process_handshake_msg(const Handshake_State* active_state,
 		if(state.received_handshake_msg(CERTIFICATE_REQUEST) &&
 			!state.client_certs()->empty())
 		{
-			Private_Key* private_key =
-				m_creds.private_key_for(state.client_certs()->cert_chain()[0],
+			Private_Key* Private_Key =
+				m_creds.Private_Key_for(state.client_certs()->cert_chain()[0],
 												"tls-client",
 												m_info.hostname());
 
@@ -416,7 +415,7 @@ void Client::process_handshake_msg(const Handshake_State* active_state,
 											  state,
 											  m_policy,
 											  rng(),
-											  private_key)
+											  Private_Key)
 				);
 		}
 

@@ -2,10 +2,8 @@
 * EAC1_1 CVC ADO
 * (C) 2008 Falko Strenzke
 *
-* Distributed under the terms of the Botan license
+* Distributed under the terms of the botan license.
 */
-
-#define BOTAN_EAC_CVC_ADO_H__
 
 #include <botan/eac_obj.h>
 #include <botan/eac_asn_obj.h>

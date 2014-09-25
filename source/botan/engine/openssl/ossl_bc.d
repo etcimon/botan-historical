@@ -30,8 +30,8 @@ class EVP_BlockCipher : public BlockCipher
 
 		~EVP_BlockCipher();
 	private:
-		void encrypt_n(const byte in[], byte out[], size_t blocks) const;
-		void decrypt_n(const byte in[], byte out[], size_t blocks) const;
+		void encrypt_n(in byte[] input, ref byte[] output) const;
+		void decrypt_n(in byte[] input, ref byte[] output) const;
 		void key_schedule(const byte[], size_t);
 
 		size_t block_sz;
@@ -98,7 +98,7 @@ EVP_BlockCipher::~EVP_BlockCipher()
 /*
 * Encrypt a block
 */
-void EVP_BlockCipher::encrypt_n(const byte in[], byte out[],
+void EVP_BlockCipher::encrypt_n(in byte[] input, ref byte[] output,
 										  size_t blocks) const
 {
 	int out_len = 0;
@@ -108,7 +108,7 @@ void EVP_BlockCipher::encrypt_n(const byte in[], byte out[],
 /*
 * Decrypt a block
 */
-void EVP_BlockCipher::decrypt_n(const byte in[], byte out[],
+void EVP_BlockCipher::decrypt_n(in byte[] input, ref byte[] output,
 										  size_t blocks) const
 {
 	int out_len = 0;
@@ -118,7 +118,7 @@ void EVP_BlockCipher::decrypt_n(const byte in[], byte out[],
 /*
 * Set the key
 */
-void EVP_BlockCipher::key_schedule(const byte key[], size_t length)
+void EVP_BlockCipher::key_schedule(in byte[] key)
 {
 	SafeArray!byte full_key(key, key + length);
 
@@ -208,7 +208,7 @@ OpenSSL_Engine::find_block_cipher(const SCAN_Name& request,
 #endif
 
 #if !defined(OPENSSL_NO_CAST)
-	HANDLE_EVP_CIPHER_KEYLEN("CAST-128", EVP_cast5_ecb(), 1, 16, 1);
+	HANDLE_EVP_CIPHER_KEYLEN("cast(-128", EVP_cast5_ecb)(), 1, 16, 1);
 #endif
 
 #if !defined(OPENSSL_NO_CAMELLIA)

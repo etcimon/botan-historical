@@ -22,7 +22,7 @@ Hello_Verify_Request::Hello_Verify_Request(in Array!byte buf)
 		throw Decoding_Error("Unknown version from server in hello verify request");
 	}
 
-	if(static_cast<size_t>(buf[2]) + 3 != buf.size())
+	if(cast(size_t)(buf[2]) + 3 != buf.size())
 		throw Decoding_Error("Bad length in hello verify request");
 
 	m_cookie.assign(&buf[3], &buf[buf.size()]);
@@ -55,7 +55,7 @@ std::vector<byte> Hello_Verify_Request::serialize() const
 	std::vector<byte> bits;
 	bits.push_back(format_version.major_version());
 	bits.push_back(format_version.minor_version());
-	bits.push_back(static_cast<byte>(m_cookie.size()));
+	bits.push_back(cast(byte)(m_cookie.size()));
 	bits += m_cookie;
 	return bits;
 }

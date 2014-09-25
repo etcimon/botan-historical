@@ -2,10 +2,8 @@
 * SCAN Name Abstraction
 * (C) 2008 Jack Lloyd
 *
-* Distributed under the terms of the Botan license
+* Distributed under the terms of the botan license.
 */
-
-#define BOTAN_SCAN_NAME_H__
 
 #include <botan/types.h>
 #include <string>

@@ -29,7 +29,7 @@ Pipe::message_id Pipe::get_message_no(in string func_name,
 /*
 * Write into a Pipe
 */
-void Pipe::write(const byte input[], size_t length)
+void Pipe::write(in byte[] input, size_t length)
 {
 	if(!inside_msg)
 		throw Invalid_State("Cannot write to a Pipe while it is not processing");
@@ -41,7 +41,7 @@ void Pipe::write(const byte input[], size_t length)
 */
 void Pipe::write(in string str)
 {
-	write(reinterpret_cast<const byte*>(str.data()), str.size());
+	write(cast(const byte*)(str.data()), str.size());
 }
 
 /*
@@ -116,7 +116,7 @@ string Pipe::read_all_as_string(message_id msg)
 		size_t got = read(&buffer[0], buffer.size(), msg);
 		if(got == 0)
 			break;
-		str.append(reinterpret_cast<const char*>(&buffer[0]), got);
+		str.append(cast(const char*)(&buffer[0]), got);
 	}
 
 	return str;

@@ -60,7 +60,7 @@
 /*
 * Noekeon Encryption
 */
-void Noekeon_SIMD::encrypt_n(const byte in[], byte out[], size_t blocks) const
+void Noekeon_SIMD::encrypt_n(in byte[] input, ref byte[] output) const
 {
 	const secure_vector<u32bit>& EK = this->get_EK();
 
@@ -111,13 +111,13 @@ void Noekeon_SIMD::encrypt_n(const byte in[], byte out[], size_t blocks) const
 	}
 
 	if(blocks)
-	  Noekeon::encrypt_n(in, out, blocks);
+	  Noekeon::encrypt_n(input, out, blocks);
 }
 
 /*
 * Noekeon Encryption
 */
-void Noekeon_SIMD::decrypt_n(const byte in[], byte out[], size_t blocks) const
+void Noekeon_SIMD::decrypt_n(in byte[] input, ref byte[] output) const
 {
 	const secure_vector<u32bit>& DK = this->get_DK();
 
@@ -168,7 +168,7 @@ void Noekeon_SIMD::decrypt_n(const byte in[], byte out[], size_t blocks) const
 	}
 
 	if(blocks)
-	  Noekeon::decrypt_n(in, out, blocks);
+	  Noekeon::decrypt_n(input, out, blocks);
 }
 
 }

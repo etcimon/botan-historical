@@ -95,21 +95,21 @@ void Threefish_512::skein_feedfwd(const secure_vector<u64bit>& M,
 				m_K[4] ^ m_K[5] ^ m_K[6] ^ m_K[7] ^ 0x1BD11BDAA9FC1A22;
 }
 
-void Threefish_512::encrypt_n(const byte in[], byte out[], size_t blocks) const
+void Threefish_512::encrypt_n(in byte[] input, ref byte[] output) const
 {
 	BOTAN_ASSERT(m_K.size() == 9, "Key was set");
 	BOTAN_ASSERT(m_T.size() == 3, "Tweak was set");
 
 	for(size_t i = 0; i != blocks; ++i)
 	{
-		u64bit X0 = load_le<u64bit>(in, 0);
-		u64bit X1 = load_le<u64bit>(in, 1);
-		u64bit X2 = load_le<u64bit>(in, 2);
-		u64bit X3 = load_le<u64bit>(in, 3);
-		u64bit X4 = load_le<u64bit>(in, 4);
-		u64bit X5 = load_le<u64bit>(in, 5);
-		u64bit X6 = load_le<u64bit>(in, 6);
-		u64bit X7 = load_le<u64bit>(in, 7);
+		u64bit X0 = load_le<u64bit>(input, 0);
+		u64bit X1 = load_le<u64bit>(input, 1);
+		u64bit X2 = load_le<u64bit>(input, 2);
+		u64bit X3 = load_le<u64bit>(input, 3);
+		u64bit X4 = load_le<u64bit>(input, 4);
+		u64bit X5 = load_le<u64bit>(input, 5);
+		u64bit X6 = load_le<u64bit>(input, 6);
+		u64bit X7 = load_le<u64bit>(input, 7);
 
 		THREEFISH_INJECT_KEY(0);
 
@@ -134,7 +134,7 @@ void Threefish_512::encrypt_n(const byte in[], byte out[], size_t blocks) const
 #undef THREEFISH_INJECT_KEY
 #undef THREEFISH_ROUND
 
-void Threefish_512::decrypt_n(const byte in[], byte out[], size_t blocks) const
+void Threefish_512::decrypt_n(in byte[] input, ref byte[] output) const
 {
 	BOTAN_ASSERT(m_K.size() == 9, "Key was set");
 	BOTAN_ASSERT(m_T.size() == 3, "Tweak was set");
@@ -184,14 +184,14 @@ void Threefish_512::decrypt_n(const byte in[], byte out[], size_t blocks) const
 
 	for(size_t i = 0; i != blocks; ++i)
 	{
-		u64bit X0 = load_le<u64bit>(in, 0);
-		u64bit X1 = load_le<u64bit>(in, 1);
-		u64bit X2 = load_le<u64bit>(in, 2);
-		u64bit X3 = load_le<u64bit>(in, 3);
-		u64bit X4 = load_le<u64bit>(in, 4);
-		u64bit X5 = load_le<u64bit>(in, 5);
-		u64bit X6 = load_le<u64bit>(in, 6);
-		u64bit X7 = load_le<u64bit>(in, 7);
+		u64bit X0 = load_le<u64bit>(input, 0);
+		u64bit X1 = load_le<u64bit>(input, 1);
+		u64bit X2 = load_le<u64bit>(input, 2);
+		u64bit X3 = load_le<u64bit>(input, 3);
+		u64bit X4 = load_le<u64bit>(input, 4);
+		u64bit X5 = load_le<u64bit>(input, 5);
+		u64bit X6 = load_le<u64bit>(input, 6);
+		u64bit X7 = load_le<u64bit>(input, 7);
 
 		THREEFISH_INJECT_KEY(18);
 
@@ -216,7 +216,7 @@ void Threefish_512::decrypt_n(const byte in[], byte out[], size_t blocks) const
 #undef THREEFISH_ROUND
 }
 
-void Threefish_512::set_tweak(const byte tweak[], size_t len)
+void Threefish_512::set_tweak(in byte[] tweak, size_t len)
 {
 	if(len != 16)
 		throw std::runtime_error("Unsupported twofish tweak length");
@@ -225,7 +225,7 @@ void Threefish_512::set_tweak(const byte tweak[], size_t len)
 	m_T[2] = m_T[0] ^ m_T[1];
 }
 
-void Threefish_512::key_schedule(const byte key[], size_t)
+void Threefish_512::key_schedule(in byte[] key, size_t)
 {
 	// todo: define key schedule for smaller keys
 	m_K.resize(9);

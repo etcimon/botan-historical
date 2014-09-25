@@ -23,7 +23,7 @@ void BigInt::encode(byte output[], const BigInt& n, Base base)
 		SafeArray!byte binary(n.encoded_size(Binary));
 		n.binary_encode(&binary[0]);
 
-		hex_encode(reinterpret_cast<char*>(output),
+		hex_encode(cast(char*)(output),
 					  &binary[0], binary.size());
 	}
 	else if(base == Decimal)
@@ -36,7 +36,7 @@ void BigInt::encode(byte output[], const BigInt& n, Base base)
 		{
 			divide(copy, 10, copy, remainder);
 			output[output_size - 1 - j] =
-				Charset::digit2char(static_cast<byte>(remainder.word_at(0)));
+				Charset::digit2char(cast(byte)(remainder.word_at(0)));
 			if(copy.is_zero())
 				break;
 		}
@@ -92,7 +92,7 @@ SafeArray!byte BigInt::encode_1363(const BigInt& n, size_t bytes)
 /*
 * Decode a BigInt
 */
-BigInt BigInt::decode(const byte buf[], size_t length, Base base)
+BigInt BigInt::decode(in byte[] buf, size_t length, Base base)
 {
 	BigInt r;
 	if(base == Binary)
@@ -105,16 +105,16 @@ BigInt BigInt::decode(const byte buf[], size_t length, Base base)
 		{
 			// Handle lack of leading 0
 			const char buf0_with_leading_0[2] =
-			{ '0', static_cast<char>(buf[0]) };
+			{ '0', cast(char)(buf[0]) };
 
 			binary = hex_decode_locked(buf0_with_leading_0, 2);
 
-			binary += hex_decode_locked(reinterpret_cast<const char*>(&buf[1]),
+			binary += hex_decode_locked(cast(const char*)(&buf[1]),
 												 length - 1,
 												 false);
 		}
 		else
-			binary = hex_decode_locked(reinterpret_cast<const char*>(buf),
+			binary = hex_decode_locked(cast(const char*)(buf),
 												length, false);
 
 		r.binary_decode(&binary[0], binary.size());

@@ -22,10 +22,10 @@ string Protocol_Version::to_string() const
 		return "TLS v1." + std::to_string(min-1);
 
 	if(maj == 254) // DTLS 1.x
-		return "DTLS v1." + std::to_string(255 - min);
+		return "DTLS v1." + std::to_string(255 - minput);
 
 	// Some very new or very old protocol (or bogus data)
-	return "Unknown " + std::to_string(maj) + "." + std::to_string(min);
+	return "Unknown " + std::to_string(maj) + "." + std::to_string(minput);
 }
 
 bool Protocol_Version::is_datagram_protocol() const

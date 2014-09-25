@@ -42,7 +42,7 @@ class EVP_HashFunction : public HashFunction
 /*
 * Update an EVP Hash Calculation
 */
-void EVP_HashFunction::add_data(const byte input[], size_t length)
+void EVP_HashFunction::add_data(in byte[] input, size_t length)
 {
 	EVP_DigestUpdate(&md, input, length);
 }

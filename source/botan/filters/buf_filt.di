@@ -2,10 +2,8 @@
 * Buffered Filter
 * (C) 1999-2007 Jack Lloyd
 *
-* Distributed under the terms of the Botan license
+* Distributed under the terms of the botan license.
 */
-
-#define BOTAN_BUFFERED_FILTER_H__
 
 #include <botan/secmem.h>
 /**
@@ -21,10 +19,10 @@ class Buffered_Filter
 		* @param in the input bytes
 		* @param length of in in bytes
 		*/
-		void write(const byte in[], size_t length);
+		void write(in byte[] input);
 
 		template<typename Alloc>
-			void write(const std::vector<byte, Alloc>& in, size_t length)
+			void write(const std::vector<byte, Alloc>& input)
 		{
 			write(&in[0], length);
 		}
@@ -53,7 +51,7 @@ class Buffered_Filter
 		* @param length the size of input, guaranteed to be a multiple
 		*		  of block_size
 		*/
-		abstract void buffered_block(const byte input[], size_t length) = 0;
+		abstract void buffered_block(in byte[] input, size_t length) = 0;
 
 		/**
 		* The final block, implemented by subclasses
@@ -61,7 +59,7 @@ class Buffered_Filter
 		* @param length the size of input, guaranteed to be at least
 		*		  final_minimum bytes
 		*/
-		abstract void buffered_final(const byte input[], size_t length) = 0;
+		abstract void buffered_final(in byte[] input, size_t length) = 0;
 
 		/**
 		* @return block size of inputs

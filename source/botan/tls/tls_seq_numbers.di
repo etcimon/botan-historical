@@ -2,10 +2,8 @@
 * TLS Sequence Number Handling
 * (C) 2012 Jack Lloyd
 *
-* Released under the terms of the Botan license
+* Released under the terms of the botan license.
 */
-
-#define BOTAN_TLS_SEQ_NUMBERS_H__
 
 #include <botan/types.h>
 #include <stdexcept>
@@ -103,7 +101,7 @@ class Datagram_Sequence_Numbers : public Connection_Sequence_Numbers
 			else
 			{
 				const u64bit offset = m_window_highest - sequence;
-				m_window_bits |= (static_cast<u64bit>(1) << offset);
+				m_window_bits |= (cast(u64bit)(1) << offset);
 			}
 		}
 

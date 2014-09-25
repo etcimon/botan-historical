@@ -128,7 +128,7 @@ void Keccak_1600::clear()
 	S_pos = 0;
 }
 
-void Keccak_1600::add_data(const byte input[], size_t length)
+void Keccak_1600::add_data(in byte[] input, size_t length)
 {
 	if(length == 0)
 		return;
@@ -141,7 +141,7 @@ void Keccak_1600::add_data(const byte input[], size_t length)
 
 		while(to_take && S_pos % 8)
 		{
-			S[S_pos / 8] ^= static_cast<u64bit>(input[0]) << (8 * (S_pos % 8));
+			S[S_pos / 8] ^= cast(u64bit)(input[0]) << (8 * (S_pos % 8));
 
 			++S_pos;
 			++input;
@@ -158,7 +158,7 @@ void Keccak_1600::add_data(const byte input[], size_t length)
 
 		while(to_take)
 		{
-			S[S_pos / 8] ^= static_cast<u64bit>(input[0]) << (8 * (S_pos % 8));
+			S[S_pos / 8] ^= cast(u64bit)(input[0]) << (8 * (S_pos % 8));
 
 			++S_pos;
 			++input;

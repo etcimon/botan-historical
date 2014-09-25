@@ -2,10 +2,8 @@
 * Format Preserving Encryption (FE1 scheme)
 * (C) 2009 Jack Lloyd
 *
-* Distributed under the terms of the Botan license
+* Distributed under the terms of the botan license.
 */
-
-#define BOTAN_FPE_FE1_H__
 
 #include <botan/bigint.h>
 #include <botan/symkey.h>

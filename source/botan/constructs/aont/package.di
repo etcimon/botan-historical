@@ -2,10 +2,8 @@
 * Rivest's Package Tranform
 * (C) 2009 Jack Lloyd
 *
-* Distributed under the terms of the Botan license
+* Distributed under the terms of the botan license.
 */
-
-#define BOTAN_AONT_PACKAGE_TRANSFORM_H__
 
 #include <botan/block_cipher.h>
 #include <botan/rng.h>
@@ -20,7 +18,7 @@
 */
 void aont_package(RandomNumberGenerator& rng,
 									 BlockCipher* cipher,
-									 const byte input[], size_t input_len,
+									 in byte[] input, size_t input_len,
 									 byte output[]);
 
 /**
@@ -32,5 +30,5 @@ void aont_package(RandomNumberGenerator& rng,
 *		  input_len - cipher->BLOCK_SIZE bytes long)
 */
 void aont_unpackage(BlockCipher* cipher,
-										const byte input[], size_t input_len,
+										in byte[] input, size_t input_len,
 										byte output[]);

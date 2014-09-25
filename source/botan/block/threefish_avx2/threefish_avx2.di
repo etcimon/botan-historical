@@ -2,10 +2,8 @@
 * Threefish-512 in AVX2
 * (C) 2013 Jack Lloyd
 *
-* Distributed under the terms of the Botan license
+* Distributed under the terms of the botan license.
 */
-
-#define BOTAN_THREEFISH_AVX2_H__
 
 #include <botan/threefish.h>
 /**
@@ -14,7 +12,7 @@
 class Threefish_512_AVX2 : public Threefish_512
 {
 	private:
-		void encrypt_n(const byte in[], byte out[], size_t blocks) const override;
-		void decrypt_n(const byte in[], byte out[], size_t blocks) const override;
+		void encrypt_n(in byte[] input, ref byte[] output) const override;
+		void decrypt_n(in byte[] input, ref byte[] output) const override;
 		BlockCipher* clone() const override { return new Threefish_512_AVX2; }
 };

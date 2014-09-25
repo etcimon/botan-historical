@@ -2,10 +2,8 @@
 * X.509 Self-Signed Certificate
 * (C) 1999-2007 Jack Lloyd
 *
-* Distributed under the terms of the Botan license
+* Distributed under the terms of the botan license.
 */
-
-#define BOTAN_X509_SELF_H__
 
 #include <botan/x509cert.h>
 #include <botan/pkcs8.h>
@@ -175,7 +173,7 @@ namespace X509 {
 */
 X509_Certificate
 create_self_signed_cert(const X509_Cert_Options& opts,
-								const Private_Key& key,
+								in Private_Key key,
 								in string hash_fn,
 								RandomNumberGenerator& rng);
 
@@ -188,7 +186,7 @@ create_self_signed_cert(const X509_Cert_Options& opts,
 * @return newly created PKCS#10 request
 */
 PKCS10_Request create_cert_req(const X509_Cert_Options& opts,
-													  const Private_Key& key,
+													  in Private_Key key,
 													  in string hash_fn,
 													  RandomNumberGenerator& rng);
 

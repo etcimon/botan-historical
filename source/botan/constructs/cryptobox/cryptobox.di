@@ -2,10 +2,8 @@
 * Cryptobox Message Routines
 * (C) 2009 Jack Lloyd
 *
-* Distributed under the terms of the Botan license
+* Distributed under the terms of the botan license.
 */
-
-#define BOTAN_CRYPTOBOX_H__
 
 #include <string>
 #include <botan/rng.h>
@@ -22,7 +20,7 @@ namespace CryptoBox {
 * @param passphrase the passphrase used to encrypt the message
 * @param rng a ref to a random number generator, such as AutoSeeded_RNG
 */
-string encrypt(const byte input[], size_t input_len,
+string encrypt(in byte[] input, size_t input_len,
 										in string passphrase,
 										RandomNumberGenerator& rng);/**
 * Decrypt a message encrypted with CryptoBox::encrypt
@@ -30,7 +28,7 @@ string encrypt(const byte input[], size_t input_len,
 * @param input_len the length of input in bytes
 * @param passphrase the passphrase used to encrypt the message
 */
-string decrypt(const byte input[], size_t input_len,
+string decrypt(in byte[] input, size_t input_len,
 										in string passphrase);
 
 /**

@@ -2,10 +2,8 @@
 * PK Key Types
 * (C) 1999-2007 Jack Lloyd
 *
-* Distributed under the terms of the Botan license
+* Distributed under the terms of the botan license.
 */
-
-#define BOTAN_PK_KEYS_H__
 
 #include <botan/secmem.h>
 #include <botan/asn1_oid.h>
@@ -96,7 +94,7 @@ class Private_Key : public abstract Public_Key
 		/**
 		* @return PKCS #8 private key encoding for this key object
 		*/
-		abstract SafeArray!byte pkcs8_private_key() const = 0;
+		abstract SafeArray!byte pkcs8_Private_Key() const = 0;
 
 		/**
 		* @return PKCS #8 AlgorithmIdentifier for this key

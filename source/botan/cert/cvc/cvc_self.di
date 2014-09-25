@@ -3,10 +3,8 @@
 * (C) 2007 FlexSecure GmbH
 *	  2008 Jack Lloyd
 *
-* Distributed under the terms of the Botan license
+* Distributed under the terms of the botan license.
 */
-
-#define BOTAN_CVC_EAC_SELF_H__
 
 #include <botan/pkcs8.h>
 #include <botan/cvc_cert.h>

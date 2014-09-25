@@ -2,10 +2,8 @@
 * Low Level MPI Types
 * (C) 1999-2007 Jack Lloyd
 *
-* Distributed under the terms of the Botan license
+* Distributed under the terms of the botan license.
 */
-
-#define BOTAN_MPI_TYPES_H__
 
 #include <botan/types.h>
 #include <botan/mul128.h>
@@ -33,6 +31,6 @@
   #error BOTAN_MP_WORD_BITS must be 8, 16, 32, or 64
 #endif
 
-const word MP_WORD_MASK = ~static_cast<word>(0);
-const word MP_WORD_TOP_BIT = static_cast<word>(1) << (8*sizeof(word) - 1);
+const word MP_WORD_MASK = ~cast(word)(0);
+const word MP_WORD_TOP_BIT = cast(word)(1) << (8*sizeof(word) - 1);
 const word MP_WORD_MAX = MP_WORD_MASK;

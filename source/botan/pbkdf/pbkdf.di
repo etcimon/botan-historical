@@ -2,10 +2,8 @@
 * PBKDF
 * (C) 1999-2007,2012 Jack Lloyd
 *
-* Distributed under the terms of the Botan license
+* Distributed under the terms of the botan license.
 */
-
-#define BOTAN_PBKDF_H__
 
 #include <botan/symkey.h>
 #include <chrono>
@@ -37,7 +35,7 @@ class PBKDF
 		*/
 		OctetString derive_key(size_t output_len,
 									  in string passphrase,
-									  const byte salt[], size_t salt_len,
+									  in byte[] salt, size_t salt_len,
 									  size_t iterations) const;
 
 		/**
@@ -67,7 +65,7 @@ class PBKDF
 		*/
 		OctetString derive_key(size_t output_len,
 									  in string passphrase,
-									  const byte salt[], size_t salt_len,
+									  in byte[] salt, size_t salt_len,
 									  std::chrono::milliseconds msec,
 									  size_t& iterations) const;
 
@@ -106,7 +104,7 @@ class PBKDF
 		abstract std::pair<size_t, OctetString>
 			key_derivation(size_t output_len,
 								in string passphrase,
-								const byte salt[], size_t salt_len,
+								in byte[] salt, size_t salt_len,
 								size_t iterations,
 								std::chrono::milliseconds msec) const = 0;
 };

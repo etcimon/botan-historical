@@ -71,7 +71,7 @@ DSA_Signature_Operation::DSA_Signature_Operation(const DSA_PrivateKey& dsa) :
 }
 
 SafeArray!byte
-DSA_Signature_Operation::sign(const byte msg[], size_t msg_len,
+DSA_Signature_Operation::sign(in byte[] msg, size_t msg_len,
 										RandomNumberGenerator& rng)
 {
 	rng.add_entropy(msg, msg_len);
@@ -109,8 +109,8 @@ DSA_Verification_Operation::DSA_Verification_Operation(const DSA_PublicKey& dsa)
 	mod_q = Modular_Reducer(dsa.group_q());
 }
 
-bool DSA_Verification_Operation::verify(const byte msg[], size_t msg_len,
-													 const byte sig[], size_t sig_len)
+bool DSA_Verification_Operation::verify(in byte[] msg, size_t msg_len,
+													 in byte[] sig, size_t sig_len)
 {
 	const BigInt& q = mod_q.get_modulus();
 

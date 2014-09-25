@@ -2,10 +2,8 @@
 * PKCS #5 v2.0 PBE
 * (C) 1999-2007 Jack Lloyd
 *
-* Distributed under the terms of the Botan license
+* Distributed under the terms of the botan license.
 */
-
-#define BOTAN_PBE_PKCS_v20_H__
 
 #include <botan/pbe.h>
 #include <botan/block_cipher.h>
@@ -24,7 +22,7 @@ class PBE_PKCS5v20 : public PBE
 
 		string name() const;
 
-		void write(const byte buf[], size_t buf_len);
+		void write(in byte[] buf, size_t buf_len);
 		void start_msg();
 		void end_msg();
 

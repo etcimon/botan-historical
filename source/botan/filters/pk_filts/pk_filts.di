@@ -2,10 +2,8 @@
 * PK Filters
 * (C) 1999-2009 Jack Lloyd
 *
-* Distributed under the terms of the Botan license
+* Distributed under the terms of the botan license.
 */
-
-#define BOTAN_PK_FILTERS_H__
 
 #include <botan/filter.h>
 #include <botan/pubkey.h>

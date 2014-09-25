@@ -2,10 +2,8 @@
 * IF Scheme
 * (C) 1999-2007 Jack Lloyd
 *
-* Distributed under the terms of the Botan license
+* Distributed under the terms of the botan license.
 */
-
-#define BOTAN_IF_ALGO_H__
 
 #include <botan/bigint.h>
 #include <botan/x509_key.h>
@@ -91,7 +89,7 @@ class IF_Scheme_PrivateKey : public abstract IF_Scheme_PublicKey,
 		const BigInt& get_d1() const { return d1; }
 		const BigInt& get_d2() const { return d2; }
 
-		SafeArray!byte pkcs8_private_key() const;
+		SafeArray!byte pkcs8_Private_Key() const;
 
 	protected:
 		IF_Scheme_PrivateKey() {}

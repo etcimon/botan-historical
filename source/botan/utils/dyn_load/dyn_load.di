@@ -2,10 +2,8 @@
 * Dynamically Loaded Object
 * (C) 2010 Jack Lloyd
 *
-* Distributed under the terms of the Botan license
+* Distributed under the terms of the botan license.
 */
-
-#define BOTAN_DYNAMIC_LOADER_H__
 
 #include <string>
 /**
@@ -47,7 +45,7 @@ class Dynamically_Loaded_Library
 		template<typename T>
 		T resolve(in string symbol)
 		{
-			return reinterpret_cast<T>(resolve_symbol(symbol));
+			return cast(T)(resolve_symbol(symbol));
 		}
 
 	private:

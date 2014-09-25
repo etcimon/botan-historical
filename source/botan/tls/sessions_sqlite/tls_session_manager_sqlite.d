@@ -16,7 +16,7 @@ namespace TLS {
 namespace {
 
 SymmetricKey derive_key(in string passphrase,
-								const byte salt[],
+								in byte[] salt,
 								size_t salt_len,
 								size_t iterations,
 								size_t& check_val)

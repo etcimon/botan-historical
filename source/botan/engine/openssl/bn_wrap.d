@@ -9,10 +9,10 @@
 /*
 * OSSL_BN Constructor
 */
-OSSL_BN::OSSL_BN(const BigInt& in)
+OSSL_BN::OSSL_BN(const BigInt& input)
 {
 	m_bn = BN_new();
-	SafeArray!byte encoding = BigInt::encode_locked(in);
+	SafeArray!byte encoding = BigInt::encode_locked(input);
 	if(in != 0)
 		BN_bin2bn(&encoding[0], encoding.size(), m_bn);
 }
@@ -20,10 +20,10 @@ OSSL_BN::OSSL_BN(const BigInt& in)
 /*
 * OSSL_BN Constructor
 */
-OSSL_BN::OSSL_BN(const byte in[], size_t length)
+OSSL_BN::OSSL_BN(in byte[] input)
 {
 	m_bn = BN_new();
-	BN_bin2bn(in, length, m_bn);
+	BN_bin2bn(input, length, m_bn);
 }
 
 /*
@@ -54,9 +54,10 @@ OSSL_BN& OSSL_BN::operator=(const OSSL_BN& other)
 /*
 * Export the BIGNUM as a bytestring
 */
-void OSSL_BN::encode(byte out[], size_t length) const
+void OSSL_BN::encode(ref byte[] output) const
 {
-	BN_bn2bin(m_bn, out + (length - bytes()));
+	size_t length = output.length;
+	BN_bn2bin(m_bn, output.ptr + (length - bytes()));
 }
 
 /*

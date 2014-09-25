@@ -26,7 +26,7 @@ Base64_Encoder::Base64_Encoder(bool breaks, size_t length, bool t_n) :
 /*
 * Encode and send a block
 */
-void Base64_Encoder::encode_and_send(const byte input[], size_t length,
+void Base64_Encoder::encode_and_send(in byte[] input, size_t length,
 												 bool final_inputs)
 {
 	while(length)
@@ -34,7 +34,7 @@ void Base64_Encoder::encode_and_send(const byte input[], size_t length,
 		const size_t proc = std::min(length, in.size());
 
 		size_t consumed = 0;
-		size_t produced = base64_encode(reinterpret_cast<char*>(&out[0]), input,
+		size_t produced = base64_encode(cast(char*)(&out[0]), input,
 												  proc, consumed, final_inputs);
 
 		do_output(&out[0], produced);
@@ -48,7 +48,7 @@ void Base64_Encoder::encode_and_send(const byte input[], size_t length,
 /*
 * Handle the output
 */
-void Base64_Encoder::do_output(const byte input[], size_t length)
+void Base64_Encoder::do_output(in byte[] input, size_t length)
 {
 	if(line_length == 0)
 		send(input, length);
@@ -74,9 +74,9 @@ void Base64_Encoder::do_output(const byte input[], size_t length)
 /*
 * Convert some data into Base64
 */
-void Base64_Encoder::write(const byte input[], size_t length)
+void Base64_Encoder::write(in byte[] input, size_t length)
 {
-	buffer_insert(in, position, input, length);
+	buffer_insert(input, position, input, length);
 	if(position + length >= in.size())
 	{
 		encode_and_send(&in[0], in.size());
@@ -118,7 +118,7 @@ Base64_Decoder::Base64_Decoder(Decoder_Checking c) :
 /*
 * Convert some data from Base64
 */
-void Base64_Decoder::write(const byte input[], size_t length)
+void Base64_Decoder::write(in byte[] input, size_t length)
 {
 	while(length)
 	{
@@ -128,7 +128,7 @@ void Base64_Decoder::write(const byte input[], size_t length)
 
 		size_t consumed = 0;
 		size_t written = base64_decode(&out[0],
-												 reinterpret_cast<const char*>(&in[0]),
+												 cast(const char*)(&in[0]),
 												 position,
 												 consumed,
 												 false,
@@ -156,7 +156,7 @@ void Base64_Decoder::end_msg()
 {
 	size_t consumed = 0;
 	size_t written = base64_decode(&out[0],
-											 reinterpret_cast<const char*>(&in[0]),
+											 cast(const char*)(&in[0]),
 											 position,
 											 consumed,
 											 true,

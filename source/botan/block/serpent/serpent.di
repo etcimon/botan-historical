@@ -2,10 +2,8 @@
 * Serpent
 * (C) 1999-2007 Jack Lloyd
 *
-* Distributed under the terms of the Botan license
+* Distributed under the terms of the botan license.
 */
-
-#define BOTAN_SERPENT_H__
 
 #include <botan/block_cipher.h>
 /**
@@ -14,8 +12,8 @@
 class Serpent : public Block_Cipher_Fixed_Params<16, 16, 32, 8>
 {
 	public:
-		void encrypt_n(const byte in[], byte out[], size_t blocks) const;
-		void decrypt_n(const byte in[], byte out[], size_t blocks) const;
+		void encrypt_n(in byte[] input, ref byte[] output) const;
+		void decrypt_n(in byte[] input, ref byte[] output) const;
 
 		void clear();
 		string name() const { return "Serpent"; }
@@ -38,6 +36,6 @@ class Serpent : public Block_Cipher_Fixed_Params<16, 16, 32, 8>
 		}
 
 	private:
-		void key_schedule(const byte key[], size_t length);
+		void key_schedule(in byte[] key);
 		secure_vector<u32bit> round_key;
 };

@@ -2,10 +2,8 @@
 * OFB Mode
 * (C) 1999-2007 Jack Lloyd
 *
-* Distributed under the terms of the Botan license
+* Distributed under the terms of the botan license.
 */
-
-#define BOTAN_OUTPUT_FEEDBACK_MODE_H__
 
 #include <botan/stream_cipher.h>
 #include <botan/block_cipher.h>
@@ -15,9 +13,9 @@
 class OFB : public StreamCipher
 {
 	public:
-		void cipher(const byte in[], byte out[], size_t length);
+		void cipher(in byte[] input, ref byte[] output);
 
-		void set_iv(const byte iv[], size_t iv_len);
+		void set_iv(in byte[] iv, size_t iv_len);
 
 		bool valid_iv_length(size_t iv_len) const
 		{ return (iv_len <= m_cipher->block_size()); }
@@ -39,7 +37,7 @@ class OFB : public StreamCipher
 		*/
 		OFB(BlockCipher* cipher);
 	private:
-		void key_schedule(const byte key[], size_t key_len);
+		void key_schedule(in byte[] key);
 
 		std::unique_ptr<BlockCipher> m_cipher;
 		SafeArray!byte m_buffer;

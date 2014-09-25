@@ -17,8 +17,9 @@ HMAC_DRBG::HMAC_DRBG(MessageAuthenticationCode* mac,
 	m_mac->set_key(SafeArray!byte(m_mac->output_length(), 0x00));
 }
 
-void HMAC_DRBG::randomize(byte out[], size_t length)
+void HMAC_DRBG::randomize(ref byte[] output)
 {
+	size_t length = output.length;
 	if(!is_seeded() || m_reseed_counter > BOTAN_RNG_MAX_OUTPUT_BEFORE_RESEED)
 		reseed(m_mac->output_length() * 8);
 
@@ -43,7 +44,7 @@ void HMAC_DRBG::randomize(byte out[], size_t length)
 /*
 * Reset V and the mac key with new values
 */
-void HMAC_DRBG::update(const byte input[], size_t input_len)
+void HMAC_DRBG::update(in byte[] input, size_t input_len)
 {
 	m_mac->update(m_V);
 	m_mac->update(0x00);
@@ -78,7 +79,7 @@ void HMAC_DRBG::reseed(size_t poll_bits)
 	}
 }
 
-void HMAC_DRBG::add_entropy(const byte input[], size_t length)
+void HMAC_DRBG::add_entropy(in byte[] input, size_t length)
 {
 	update(input, length);
 	m_reseed_counter = 1;

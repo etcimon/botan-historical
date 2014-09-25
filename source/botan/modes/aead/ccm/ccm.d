@@ -65,12 +65,12 @@ Key_Length_Specification CCM_Mode::key_spec() const
 	return m_cipher->key_spec();
 }
 
-void CCM_Mode::key_schedule(const byte key[], size_t length)
+void CCM_Mode::key_schedule(in byte[] key)
 {
 	m_cipher->set_key(key, length);
 }
 
-void CCM_Mode::set_associated_data(const byte ad[], size_t length)
+void CCM_Mode::set_associated_data(in byte[] ad, size_t length)
 {
 	m_ad_buf.clear();
 
@@ -87,7 +87,7 @@ void CCM_Mode::set_associated_data(const byte ad[], size_t length)
 	}
 }
 
-SafeArray!byte CCM_Mode::start(const byte nonce[], size_t nonce_len)
+SafeArray!byte CCM_Mode::start(in byte[] nonce, size_t nonce_len)
 {
 	if(!valid_nonce_length(nonce_len))
 		throw Invalid_IV_Length(name(), nonce_len);
@@ -98,7 +98,7 @@ SafeArray!byte CCM_Mode::start(const byte nonce[], size_t nonce_len)
 	return SafeArray!byte();
 }
 
-void CCM_Mode::update(SafeArray!byte& buffer, size_t offset)
+void CCM_Mode::update(SafeArray!byte buffer, size_t offset)
 {
 	BOTAN_ASSERT(buffer.size() >= offset, "Offset is sane");
 	const size_t sz = buffer.size() - offset;
@@ -108,7 +108,7 @@ void CCM_Mode::update(SafeArray!byte& buffer, size_t offset)
 	buffer.resize(offset); // truncate msg
 }
 
-void CCM_Mode::encode_length(size_t len, byte out[])
+void CCM_Mode::encode_length(size_t len, ref byte[] output)
 {
 	const size_t len_bytes = L();
 
@@ -120,7 +120,7 @@ void CCM_Mode::encode_length(size_t len, byte out[])
 	BOTAN_ASSERT((len >> (len_bytes*8)) == 0, "Message length fits in field");
 }
 
-void CCM_Mode::inc(SafeArray!byte& C)
+void CCM_Mode::inc(SafeArray!byte C)
 {
 	for(size_t i = 0; i != C.size(); ++i)
 		if(++C[C.size()-i-1])
@@ -152,7 +152,7 @@ SafeArray!byte CCM_Mode::format_c0()
 	return C;
 }
 
-void CCM_Encryption::finish(SafeArray!byte& buffer, size_t offset)
+void CCM_Encryption::finish(SafeArray!byte buffer, size_t offset)
 {
 	BOTAN_ASSERT(buffer.size() >= offset, "Offset is sane");
 
@@ -203,7 +203,7 @@ void CCM_Encryption::finish(SafeArray!byte& buffer, size_t offset)
 	buffer += std::make_pair(&T[0], tag_size());
 }
 
-void CCM_Decryption::finish(SafeArray!byte& buffer, size_t offset)
+void CCM_Decryption::finish(SafeArray!byte buffer, size_t offset)
 {
 	BOTAN_ASSERT(buffer.size() >= offset, "Offset is sane");
 

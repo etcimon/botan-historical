@@ -2,10 +2,8 @@
 * EAC1_1 objects
 * (C) 2008 Falko Strenzke
 *
-* Distributed under the terms of the Botan license
+* Distributed under the terms of the botan license.
 */
-
-#define BOTAN_EAC_OBJ_H__
 
 #include <botan/signed_obj.h>
 #include <botan/ecdsa_sig.h>
@@ -31,11 +29,11 @@ class EAC1_1_obj : public EAC_Signed_Object
 	protected:
 		ECDSA_Signature m_sig;
 
-		void init(DataSource& in)
+		void init(DataSource& input)
 		{
 			try
 			{
-				Derived::decode_info(in, tbs_bits, m_sig);
+				Derived::decode_info(input, tbs_bits, m_sig);
 			}
 			catch(Decoding_Error)
 			{

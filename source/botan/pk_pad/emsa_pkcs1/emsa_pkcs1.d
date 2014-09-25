@@ -11,7 +11,7 @@ namespace {
 
 SafeArray!byte emsa3_encoding(in SafeArray!byte msg,
 											  size_t output_bits,
-											  const byte hash_id[],
+											  in byte[] hash_id,
 											  size_t hash_id_length)
 {
 	size_t output_length = output_bits / 8;
@@ -31,7 +31,7 @@ SafeArray!byte emsa3_encoding(in SafeArray!byte msg,
 
 }
 
-void EMSA_PKCS1v15::update(const byte input[], size_t length)
+void EMSA_PKCS1v15::update(in byte[] input, size_t length)
 {
 	m_hash->update(input, length);
 }
@@ -76,7 +76,7 @@ EMSA_PKCS1v15::EMSA_PKCS1v15(HashFunction* hash) : m_hash(hash)
 	m_hash_id = pkcs_hash_id(m_hash->name());
 }
 
-void EMSA_PKCS1v15_Raw::update(const byte input[], size_t length)
+void EMSA_PKCS1v15_Raw::update(in byte[] input, size_t length)
 {
 	message += std::make_pair(input, length);
 }

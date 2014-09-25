@@ -2,10 +2,8 @@
 * Entropy Source Using Intel's rdrand instruction
 * (C) 2012 Jack Lloyd
 *
-* Distributed under the terms of the Botan license
+* Distributed under the terms of the botan license.
 */
-
-#define BOTAN_ENTROPY_SRC_RDRAND_H__
 
 #include <botan/entropy_src.h>
 /**

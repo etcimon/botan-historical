@@ -2,10 +2,8 @@
 * EntropySource
 * (C) 2008-2009,2014 Jack Lloyd
 *
-* Distributed under the terms of the Botan license
+* Distributed under the terms of the botan license.
 */
-
-#define BOTAN_ENTROPY_SOURCE_BASE_H__
 
 #include <botan/secmem.h>
 #include <string>
@@ -20,7 +18,7 @@ class Entropy_Accumulator
 		* Initialize an Entropy_Accumulator
 		* @param goal is how many bits we would like to collect
 		*/
-		Entropy_Accumulator(std::function<bool (const byte[], size_t, double)> accum) :
+		Entropy_Accumulator(bool delegate(in byte[], double) accum) :
 			m_accum_fn(accum), m_done(false) {}
 
 		abstract ~Entropy_Accumulator() {}
@@ -32,7 +30,7 @@ class Entropy_Accumulator
 		* @param size requested size for the I/O buffer
 		* @return cached I/O buffer for repeated polls
 		*/
-		SafeArray!byte& get_io_buffer(size_t size)
+		SafeArray!byte get_io_buffer(size_t size)
 		{
 			m_io_buffer.clear();
 			m_io_buffer.resize(size);
@@ -53,7 +51,7 @@ class Entropy_Accumulator
 		*/
 		void add(const void* bytes, size_t length, double entropy_bits_per_byte)
 		{
-			m_done = m_accum_fn(reinterpret_cast<const byte*>(bytes),
+			m_done = m_accum_fn(cast(const byte*)(bytes),
 									  length, entropy_bits_per_byte * length);
 		}
 

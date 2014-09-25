@@ -32,7 +32,7 @@ inline void deinterleave_epi64(__m256i& X0, __m256i& X1)
 
 }
 
-void Threefish_512_AVX2::encrypt_n(const byte in[], byte out[], size_t blocks) const
+void Threefish_512_AVX2::encrypt_n(in byte[] input, ref byte[] output) const
 {
 	const u64bit* K = &get_K()[0];
 	const u64bit* T_64 = &get_T()[0];
@@ -146,8 +146,8 @@ void Threefish_512_AVX2::encrypt_n(const byte in[], byte out[], size_t blocks) c
 
 	const __m256i ONE = _mm256_set_epi64x(1, 0, 0, 0);
 
-	const __m256i* in_mm = reinterpret_cast<const __m256i*>(in);
-	__m256i* out_mm = reinterpret_cast<__m256i*>(out);
+	const __m256i* in_mm = cast(const __m256i*)(input);
+	__m256i* out_mm = CAST__m256i*)(out);
 
 	while(blocks >= 2)
 	{
@@ -227,7 +227,7 @@ void Threefish_512_AVX2::encrypt_n(const byte in[], byte out[], size_t blocks) c
 #undef THREEFISH_INJECT_KEY_2
 }
 
-void Threefish_512_AVX2::decrypt_n(const byte in[], byte out[], size_t blocks) const
+void Threefish_512_AVX2::decrypt_n(in byte[] input, ref byte[] output) const
 {
 	const u64bit* K = &get_K()[0];
 	const u64bit* T_64 = &get_T()[0];
@@ -295,8 +295,8 @@ void Threefish_512_AVX2::decrypt_n(const byte in[], byte out[], size_t blocks) c
 
 	const __m256i ONE = _mm256_set_epi64x(1, 0, 0, 0);
 
-	const __m256i* in_mm = reinterpret_cast<const __m256i*>(in);
-	__m256i* out_mm = reinterpret_cast<__m256i*>(out);
+	const __m256i* in_mm = cast(const __m256i*)(input);
+	__m256i* out_mm = CAST__m256i*)(out);
 
 	for(size_t i = 0; i != blocks; ++i)
 	{

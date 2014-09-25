@@ -9,7 +9,7 @@
 #include <botan/loadstor.h>
 namespace {
 
-void adler32_update(const byte input[], size_t length,
+void adler32_update(in byte[] input, size_t length,
 						  u16bit& S1, u16bit& S2)
 {
 	u32bit S1x = S1;
@@ -52,7 +52,7 @@ void adler32_update(const byte input[], size_t length,
 /*
 * Update an Adler32 Checksum
 */
-void Adler32::add_data(const byte input[], size_t length)
+void Adler32::add_data(in byte[] input, size_t length)
 {
 	const size_t PROCESS_AMOUNT = 5552;
 

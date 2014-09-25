@@ -2,10 +2,8 @@
 * Buffered Computation
 * (C) 1999-2007 Jack Lloyd
 *
-* Distributed under the terms of the Botan license
+* Distributed under the terms of the botan license.
 */
-
-#define BOTAN_BUFFERED_COMPUTATION_H__
 
 #include <botan/secmem.h>
 #include <botan/get_byte.h>
@@ -27,13 +25,13 @@ class Buffered_Computation
 		* @param in the input to process as a byte array
 		* @param length of param in in bytes
 		*/
-		void update(const byte in[], size_t length) { add_data(in, length); }
+		void update(const byte[] input) { add_data(input, length); }
 
 		/**
 		* Add new input to process.
 		* @param in the input to process as a secure_vector
 		*/
-		void update(in SafeArray!byte in)
+		void update(in SafeArray!byte input)
 		{
 			add_data(&in[0], in.size());
 		}
@@ -42,7 +40,7 @@ class Buffered_Computation
 		* Add new input to process.
 		* @param in the input to process as a std::vector
 		*/
-		void update(in Array!byte in)
+		void update(in Array!byte input)
 		{
 			add_data(&in[0], in.size());
 		}
@@ -51,11 +49,11 @@ class Buffered_Computation
 		* Add an integer in big-endian order
 		* @param in the value
 		*/
-		template<typename T> void update_be(const T in)
+		template<typename T> void update_be(const T input)
 		{
 			for(size_t i = 0; i != sizeof(T); ++i)
 			{
-				byte b = get_byte(i, in);
+				byte b = get_byte(i, input);
 				add_data(&b, 1);
 			}
 		}
@@ -68,14 +66,14 @@ class Buffered_Computation
 		*/
 		void update(in string str)
 		{
-			add_data(reinterpret_cast<const byte*>(str.data()), str.size());
+			add_data(cast(const byte*)(str.data()), str.size());
 		}
 
 		/**
 		* Process a single byte.
 		* @param in the byte to process
 		*/
-		void update(byte in) { add_data(&in, 1); }
+		void update(byte input) { add_data(&in, 1); }
 
 		/**
 		* Complete the computation and retrieve the
@@ -83,7 +81,7 @@ class Buffered_Computation
 		* @param out The byte array to be filled with the result.
 		* Must be of length output_length()
 		*/
-		void final(byte out[]) { final_result(out); }
+		void final(ref byte[] output) { final_result(out); }
 
 		/**
 		* Complete the computation and retrieve the
@@ -104,9 +102,9 @@ class Buffered_Computation
 		* @param length the length of the byte array
 		* @result the result of the call to final()
 		*/
-		SafeArray!byte process(const byte in[], size_t length)
+		SafeArray!byte process(const byte[] input)
 		{
-			add_data(in, length);
+			add_data(input, length);
 			return final();
 		}
 
@@ -116,7 +114,7 @@ class Buffered_Computation
 		* @param in the input to process
 		* @result the result of the call to final()
 		*/
-		SafeArray!byte process(in SafeArray!byte in)
+		SafeArray!byte process(in SafeArray!byte input)
 		{
 			add_data(&in[0], in.size());
 			return final();
@@ -128,7 +126,7 @@ class Buffered_Computation
 		* @param in the input to process
 		* @result the result of the call to final()
 		*/
-		SafeArray!byte process(in Array!byte in)
+		SafeArray!byte process(in Array!byte input)
 		{
 			add_data(&in[0], in.size());
 			return final();
@@ -140,9 +138,9 @@ class Buffered_Computation
 		* @param in the input to process as a string
 		* @result the result of the call to final()
 		*/
-		SafeArray!byte process(in string in)
+		SafeArray!byte process(in string input)
 		{
-			update(in);
+			update(input);
 			return final();
 		}
 
@@ -153,11 +151,11 @@ class Buffered_Computation
 		* @param input is an input buffer
 		* @param length is the length of input in bytes
 		*/
-		abstract void add_data(const byte input[], size_t length) = 0;
+		abstract void add_data(const byte[] input, size_t length) = 0;
 
 		/**
 		* Write the final output to out
 		* @param out is an output buffer of output_length()
 		*/
-		abstract void final_result(byte out[]) = 0;
+		abstract void final_result(ref byte[] output) = 0;
 };

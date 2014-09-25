@@ -2,10 +2,8 @@
 * CBC mode
 * (C) 1999-2007,2013 Jack Lloyd
 *
-* Distributed under the terms of the Botan license
+* Distributed under the terms of the botan license.
 */
-
-#define BOTAN_MODE_CBC_H__
 
 #include <botan/cipher_mode.h>
 #include <botan/block_cipher.h>
@@ -16,7 +14,7 @@
 class CBC_Mode : public Cipher_Mode
 {
 	public:
-		SafeArray!byte start(const byte nonce[], size_t nonce_len) override;
+		SafeArray!byte start(in byte[] nonce, size_t nonce_len) override;
 
 		string name() const override;
 
@@ -40,12 +38,12 @@ class CBC_Mode : public Cipher_Mode
 			return *m_padding;
 		}
 
-		SafeArray!byte& state() { return m_state; }
+		SafeArray!byte state() { return m_state; }
 
 		byte* state_ptr() { return &m_state[0]; }
 
 	private:
-		void key_schedule(const byte key[], size_t length) override;
+		void key_schedule(in byte[] key) override;
 
 		std::unique_ptr<BlockCipher> m_cipher;
 		std::unique_ptr<BlockCipherModePaddingMethod> m_padding;
@@ -61,9 +59,9 @@ class CBC_Encryption : public CBC_Mode
 		CBC_Encryption(BlockCipher* cipher, BlockCipherModePaddingMethod* padding) :
 			CBC_Mode(cipher, padding) {}
 
-		void update(SafeArray!byte& blocks, size_t offset = 0) override;
+		void update(SafeArray!byte blocks, size_t offset = 0) override;
 
-		void finish(SafeArray!byte& final_block, size_t offset = 0) override;
+		void finish(SafeArray!byte final_block, size_t offset = 0) override;
 
 		size_t output_length(size_t input_length) const override;
 
@@ -80,7 +78,7 @@ class CTS_Encryption : public CBC_Encryption
 
 		size_t output_length(size_t input_length) const override;
 
-		void finish(SafeArray!byte& final_block, size_t offset = 0) override;
+		void finish(SafeArray!byte final_block, size_t offset = 0) override;
 
 		size_t minimum_final_size() const override;
 
@@ -96,9 +94,9 @@ class CBC_Decryption : public CBC_Mode
 		CBC_Decryption(BlockCipher* cipher, BlockCipherModePaddingMethod* padding) :
 			CBC_Mode(cipher, padding), m_tempbuf(update_granularity()) {}
 
-		void update(SafeArray!byte& blocks, size_t offset = 0) override;
+		void update(SafeArray!byte blocks, size_t offset = 0) override;
 
-		void finish(SafeArray!byte& final_block, size_t offset = 0) override;
+		void finish(SafeArray!byte final_block, size_t offset = 0) override;
 
 		size_t output_length(size_t input_length) const override;
 
@@ -115,7 +113,7 @@ class CTS_Decryption : public CBC_Decryption
 	public:
 		CTS_Decryption(BlockCipher* cipher) : CBC_Decryption(cipher, nullptr) {}
 
-		void finish(SafeArray!byte& final_block, size_t offset = 0) override;
+		void finish(SafeArray!byte final_block, size_t offset = 0) override;
 
 		size_t minimum_final_size() const override;
 

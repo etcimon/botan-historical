@@ -2,10 +2,8 @@
 * GOST 34.11
 * (C) 2009 Jack Lloyd
 *
-* Distributed under the terms of the Botan license
+* Distributed under the terms of the botan license.
 */
-
-#define BOTAN_GOST_3411_H__
 
 #include <botan/hash.h>
 #include <botan/gost_28147.h>
@@ -24,7 +22,7 @@ class GOST_34_11 : public HashFunction
 
 		GOST_34_11();
 	private:
-		void compress_n(const byte input[], size_t blocks);
+		void compress_n(in byte[] input, size_t blocks);
 
 		void add_data(const byte[], size_t);
 		void final_result(byte[]);

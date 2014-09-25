@@ -82,7 +82,7 @@ u32bit bitmask_for_handshake_type(Handshake_Type type)
 * Initialize the SSL/TLS Handshake State
 */
 Handshake_State::Handshake_State(Handshake_IO* io,
-											std::function<void (const Handshake_Message&)> msg_callback) :
+											void delegate(const Handshake_Message) msg_callback) :
 	m_msg_callback(msg_callback),
 	m_handshake_io(io),
 	m_version(m_handshake_io->initial_record_version())
@@ -91,7 +91,7 @@ Handshake_State::Handshake_State(Handshake_IO* io,
 
 Handshake_State::~Handshake_State() {}
 
-void Handshake_State::hello_verify_request(const Hello_Verify_Request& hello_verify)
+void Handshake_State::hello_verify_request(const Hello_Verify_Request hello_verify)
 {
 	note_message(hello_verify);
 
@@ -332,7 +332,7 @@ string choose_hash(in string sig_algo,
 }
 
 std::pair<string, Signature_Format>
-Handshake_State::choose_sig_format(const Private_Key& key,
+Handshake_State::choose_sig_format(in Private_Key key,
 											  string& hash_algo_out,
 											  string& sig_algo_out,
 											  bool for_client_auth,

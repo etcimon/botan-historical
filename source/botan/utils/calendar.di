@@ -2,10 +2,8 @@
 * Calendar Functions
 * (C) 1999-2009 Jack Lloyd
 *
-* Distributed under the terms of the Botan license
+* Distributed under the terms of the botan license.
 */
-
-#define BOTAN_CALENDAR_H__
 
 #include <botan/types.h>
 #include <chrono>
@@ -44,7 +42,7 @@ struct calendar_point
 	* @param sec the second
 	*/
 	calendar_point(u32bit y, byte mon, byte d, byte h, byte min, byte sec) :
-		year(y), month(mon), day(d), hour(h), minutes(min), seconds(sec) {}
+		year(y), month(mon), day(d), hour(h), minutes(minput), seconds(sec) {}
 };
 
 /*

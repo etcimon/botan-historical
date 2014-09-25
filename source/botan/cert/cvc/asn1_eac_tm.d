@@ -15,7 +15,7 @@
 #include <botan/calendar.h>
 namespace {
 
-std::vector<byte> enc_two_digit(u32bit in)
+std::vector<byte> enc_two_digit(u32bit input)
 {
 	std::vector<byte> result;
 	in %= 100;
@@ -23,12 +23,12 @@ std::vector<byte> enc_two_digit(u32bit in)
 		result.push_back(0x00);
 	else
 	{
-		u32bit y_first_pos = round_down<u32bit>(in, 10) / 10;
-		result.push_back(static_cast<byte>(y_first_pos));
+		u32bit y_first_pos = round_down<u32bit>(input, 10) / 10;
+		result.push_back(cast(byte)(y_first_pos));
 	}
 
 	u32bit y_sec_pos = in % 10;
-	result.push_back(static_cast<byte>(y_sec_pos));
+	result.push_back(cast(byte)(y_sec_pos));
 	return result;
 }
 

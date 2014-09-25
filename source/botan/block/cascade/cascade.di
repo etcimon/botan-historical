@@ -2,10 +2,8 @@
 * Block Cipher Cascade
 * (C) 2010 Jack Lloyd
 *
-* Distributed under the terms of the Botan license
+* Distributed under the terms of the botan license.
 */
-
-#define BOTAN_CASCADE_H__
 
 #include <botan/block_cipher.h>
 /**
@@ -14,8 +12,8 @@
 class Cascade_Cipher : public BlockCipher
 {
 	public:
-		void encrypt_n(const byte in[], byte out[], size_t blocks) const;
-		void decrypt_n(const byte in[], byte out[], size_t blocks) const;
+		void encrypt_n(in byte[] input, ref byte[] output) const;
+		void decrypt_n(in byte[] input, ref byte[] output) const;
 
 		size_t block_size() const { return m_block; }
 

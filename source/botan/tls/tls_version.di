@@ -2,10 +2,8 @@
 * TLS Protocol Version Management
 * (C) 2012 Jack Lloyd
 *
-* Released under the terms of the Botan license
+* Released under the terms of the botan license.
 */
-
-#define BOTAN_TLS_PROTOCOL_VERSION_H__
 
 #include <botan/get_byte.h>
 #include <string>
@@ -43,14 +41,14 @@ class Protocol_Version
 		* @param named_version a specific named version of the protocol
 		*/
 		Protocol_Version(Version_Code named_version) :
-			m_version(static_cast<u16bit>(named_version)) {}
+			m_version(cast(u16bit)(named_version)) {}
 
 		/**
 		* @param major the major version
 		* @param minor the minor version
 		*/
 		Protocol_Version(byte major, byte minor) :
-			m_version((static_cast<u16bit>(major) << 8) | minor) {}
+			m_version((cast(u16bit)(major) << 8) | minor) {}
 
 		/**
 		* @return true if this is a valid protocol version

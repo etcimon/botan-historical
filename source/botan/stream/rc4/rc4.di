@@ -2,10 +2,8 @@
 * RC4
 * (C) 1999-2008 Jack Lloyd
 *
-* Distributed under the terms of the Botan license
+* Distributed under the terms of the botan license.
 */
-
-#define BOTAN_RC4_H__
 
 #include <botan/stream_cipher.h>
 #include <botan/types.h>
@@ -15,7 +13,7 @@
 class RC4 : public StreamCipher
 {
 	public:
-		void cipher(const byte in[], byte out[], size_t length);
+		void cipher(in byte[] input, ref byte[] output);
 
 		void clear();
 		string name() const;

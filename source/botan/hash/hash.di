@@ -2,10 +2,8 @@
 * Hash Function Base Class
 * (C) 1999-2008 Jack Lloyd
 *
-* Distributed under the terms of the Botan license
+* Distributed under the terms of the botan license.
 */
-
-#define BOTAN_HASH_FUNCTION_BASE_CLASS_H__
 
 #include <botan/buf_comp.h>
 #include <string>

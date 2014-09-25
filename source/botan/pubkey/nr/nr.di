@@ -2,10 +2,8 @@
 * Nyberg-Rueppel
 * (C) 1999-2010 Jack Lloyd
 *
-* Distributed under the terms of the Botan license
+* Distributed under the terms of the botan license.
 */
-
-#define BOTAN_NYBERG_RUEPPEL_H__
 
 #include <botan/dl_algo.h>
 #include <botan/pk_ops.h>
@@ -63,7 +61,7 @@ class NR_Signature_Operation : public PK_Ops::Signature
 		size_t message_part_size() const { return q.bytes(); }
 		size_t max_input_bits() const { return (q.bits() - 1); }
 
-		SafeArray!byte sign(const byte msg[], size_t msg_len,
+		SafeArray!byte sign(in byte[] msg, size_t msg_len,
 										RandomNumberGenerator& rng);
 	private:
 		const BigInt& q;
@@ -86,7 +84,7 @@ class NR_Verification_Operation : public PK_Ops::Verification
 
 		bool with_recovery() const { return true; }
 
-		SafeArray!byte verify_mr(const byte msg[], size_t msg_len);
+		SafeArray!byte verify_mr(in byte[] msg, size_t msg_len);
 	private:
 		const BigInt& q;
 		const BigInt& y;

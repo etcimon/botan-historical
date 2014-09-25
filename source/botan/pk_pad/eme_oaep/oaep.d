@@ -11,7 +11,7 @@
 /*
 * OAEP Pad Operation
 */
-SafeArray!byte OAEP::pad(const byte in[], size_t in_length,
+SafeArray!byte OAEP::pad(in byte[] in, size_t in_length,
 									  size_t key_length,
 									  RandomNumberGenerator& rng) const
 {
@@ -42,7 +42,7 @@ SafeArray!byte OAEP::pad(const byte in[], size_t in_length,
 /*
 * OAEP Unpad Operation
 */
-SafeArray!byte OAEP::unpad(const byte in[], size_t in_length,
+SafeArray!byte OAEP::unpad(in byte[] in, size_t in_length,
 										 size_t key_length) const
 {
 	/*

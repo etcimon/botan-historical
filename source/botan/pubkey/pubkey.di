@@ -2,10 +2,8 @@
 * Public Key Interface
 * (C) 1999-2010 Jack Lloyd
 *
-* Distributed under the terms of the Botan license
+* Distributed under the terms of the botan license.
 */
-
-#define BOTAN_PUBKEY_H__
 
 #include <botan/pk_keys.h>
 #include <botan/pk_ops.h>
@@ -41,10 +39,10 @@ class PK_Encryptor
 		* @param rng the random number source to use
 		* @return encrypted message
 		*/
-		std::vector<byte> encrypt(const byte in[], size_t length,
+		std::vector<byte> encrypt(in byte[] in, size_t length,
 											RandomNumberGenerator& rng) const
 		{
-			return enc(in, length, rng);
+			return enc(input, length, rng);
 		}
 
 		/**
@@ -90,9 +88,9 @@ class PK_Decryptor
 		* @param length the length of the above byte array
 		* @return decrypted message
 		*/
-		SafeArray!byte decrypt(const byte in[], size_t length) const
+		SafeArray!byte decrypt(in byte[] input) const
 		{
-			return dec(in, length);
+			return dec(input, length);
 		}
 
 		/**
@@ -101,7 +99,7 @@ class PK_Decryptor
 		* @return decrypted message
 		*/
 		template<typename Alloc>
-		SafeArray!byte decrypt(const std::vector<byte, Alloc>& in) const
+		SafeArray!byte decrypt(const std::vector<byte, Alloc>& input) const
 		{
 			return dec(&in[0], in.size());
 		}
@@ -131,7 +129,7 @@ class PK_Signer
 		* @param rng the rng to use
 		* @return signature
 		*/
-		std::vector<byte> sign_message(const byte in[], size_t length,
+		std::vector<byte> sign_message(in byte[] in, size_t length,
 												  RandomNumberGenerator& rng);
 
 		/**
@@ -152,20 +150,20 @@ class PK_Signer
 		* Add a message part (single byte).
 		* @param in the byte to add
 		*/
-		void update(byte in) { update(&in, 1); }
+		void update(byte input) { update(&in, 1); }
 
 		/**
 		* Add a message part.
 		* @param in the message part to add as a byte array
 		* @param length the length of the above byte array
 		*/
-		void update(const byte in[], size_t length);
+		void update(in byte[] input);
 
 		/**
 		* Add a message part.
 		* @param in the message part to add
 		*/
-		void update(in Array!byte in) { update(&in[0], in.size()); }
+		void update(in Array!byte input) { update(&in[0], in.size()); }
 
 		/**
 		* Get the signature of the so far processed message (provided by the
@@ -189,7 +187,7 @@ class PK_Signer
 		* @param format the signature format to use
 		* @param prot says if fault protection should be enabled
 		*/
-		PK_Signer(const Private_Key& key,
+		PK_Signer(in Private_Key key,
 					 in string emsa,
 					 Signature_Format format = IEEE_1363,
 					 Fault_Protection prot = ENABLE_FAULT_PROTECTION);
@@ -219,8 +217,8 @@ class PK_Verifier
 		* @param sig_length the length of the above byte array sig
 		* @return true if the signature is valid
 		*/
-		bool verify_message(const byte msg[], size_t msg_length,
-								  const byte sig[], size_t sig_length);
+		bool verify_message(in byte[] msg, size_t msg_length,
+								  in byte[] sig, size_t sig_length);
 		/**
 		* Verify a signature.
 		* @param msg the message that the signature belongs to
@@ -240,7 +238,7 @@ class PK_Verifier
 		* signature to be verified.
 		* @param in the byte to add
 		*/
-		void update(byte in) { update(&in, 1); }
+		void update(byte input) { update(&in, 1); }
 
 		/**
 		* Add a message part of the message corresponding to the
@@ -248,14 +246,14 @@ class PK_Verifier
 		* @param msg_part the new message part as a byte array
 		* @param length the length of the above byte array
 		*/
-		void update(const byte msg_part[], size_t length);
+		void update(in byte[] msg_part, size_t length);
 
 		/**
 		* Add a message part of the message corresponding to the
 		* signature to be verified.
 		* @param in the new message part
 		*/
-		void update(in Array!byte in)
+		void update(in Array!byte input)
 		{ update(&in[0], in.size()); }
 
 		/**
@@ -265,7 +263,7 @@ class PK_Verifier
 		* @param length the length of the above byte array
 		* @return true if the signature is valid, false otherwise
 		*/
-		bool check_signature(const byte sig[], size_t length);
+		bool check_signature(in byte[] sig, size_t length);
 
 		/**
 		* Check the signature of the buffered message, i.e. the one build
@@ -296,7 +294,7 @@ class PK_Verifier
 						Signature_Format format = IEEE_1363);
 	private:
 		bool validate_signature(in SafeArray!byte msg,
-										const byte sig[], size_t sig_len);
+										in byte[] sig, size_t sig_len);
 
 		std::unique_ptr<PK_Ops::Verification> m_op;
 		std::unique_ptr<EMSA> m_emsa;
@@ -319,9 +317,9 @@ class PK_Key_Agreement
 		* @param params_len the length of params in bytes
 		*/
 		SymmetricKey derive_key(size_t key_len,
-										const byte in[],
+										in byte[] in,
 										size_t in_len,
-										const byte params[],
+										in byte[] params,
 										size_t params_len) const;
 
 		/*
@@ -334,7 +332,7 @@ class PK_Key_Agreement
 		*/
 		SymmetricKey derive_key(size_t key_len,
 										in Array!byte in,
-										const byte params[],
+										in byte[] params,
 										size_t params_len) const
 		{
 			return derive_key(key_len, &in[0], in.size(),
@@ -349,11 +347,11 @@ class PK_Key_Agreement
 		* @param params extra derivation params
 		*/
 		SymmetricKey derive_key(size_t key_len,
-										const byte in[], size_t in_len,
+										in byte[] in, size_t in_len,
 										in string params = "") const
 		{
 			return derive_key(key_len, in, in_len,
-									reinterpret_cast<const byte*>(params.data()),
+									cast(const byte*)(params.data()),
 									params.length());
 		}
 
@@ -368,7 +366,7 @@ class PK_Key_Agreement
 										in string params = "") const
 		{
 			return derive_key(key_len, &in[0], in.size(),
-									reinterpret_cast<const byte*>(params.data()),
+									cast(const byte*)(params.data()),
 									params.length());
 		}
 
@@ -418,7 +416,7 @@ class PK_Decryptor_EME : public PK_Decryptor
 		* @param key the key to use inside the encryptor
 		* @param eme the EME to use
 		*/
-		PK_Decryptor_EME(const Private_Key& key,
+		PK_Decryptor_EME(in Private_Key key,
 							  in string eme);
 	private:
 		SafeArray!byte dec(const byte[], size_t) const;

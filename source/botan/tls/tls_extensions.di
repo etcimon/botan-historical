@@ -2,10 +2,8 @@
 * TLS Extensions
 * (C) 2011-2012 Jack Lloyd
 *
-* Released under the terms of the Botan license
+* Released under the terms of the botan license.
 */
-
-#define BOTAN_TLS_EXTENSIONS_H__
 
 #include <botan/secmem.h>
 #include <botan/tls_magic.h>
@@ -364,7 +362,7 @@ class Extensions
 			auto i = extensions.find(type);
 
 			if(i != extensions.end())
-				return dynamic_cast<T*>(i->second.get());
+				return cast(T*)(i->second.get());
 			return nullptr;
 		}
 

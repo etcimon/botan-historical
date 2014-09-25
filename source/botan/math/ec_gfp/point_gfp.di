@@ -4,10 +4,8 @@
 * (C) 2007 Martin Doering, Christoph Ludwig, Falko Strenzke
 *	  2008-2011 Jack Lloyd
 *
-* Distributed under the terms of the Botan license
+* Distributed under the terms of the botan license.
 */
-
-#define BOTAN_POINT_GFP_H__
 
 #include <botan/curve_gfp.h>
 #include <vector>
@@ -276,7 +274,7 @@ inline PointGFp operator*(const PointGFp& point, const BigInt& scalar)
 // encoding and decoding
 SafeArray!byte EC2OSP(const PointGFp& point, byte format);
 
-PointGFp OS2ECP(const byte data[], size_t data_len,
+PointGFp OS2ECP(in byte[] data, size_t data_len,
 								  const CurveGFp& curve);
 
 template<typename Alloc>

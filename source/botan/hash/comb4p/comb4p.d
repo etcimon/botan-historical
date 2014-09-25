@@ -10,7 +10,7 @@
 #include <stdexcept>
 namespace {
 
-void comb4p_round(SafeArray!byte& out,
+void comb4p_round(SafeArray!byte out,
 						in SafeArray!byte in,
 						byte round_no,
 						HashFunction& h1,
@@ -67,13 +67,13 @@ void Comb4P::clear()
 	m_hash2->update(0);
 }
 
-void Comb4P::add_data(const byte input[], size_t length)
+void Comb4P::add_data(in byte[] input, size_t length)
 {
 	m_hash1->update(input, length);
 	m_hash2->update(input, length);
 }
 
-void Comb4P::final_result(byte out[])
+void Comb4P::final_result(ref byte[] output)
 {
 	SafeArray!byte h1 = m_hash1->final();
 	SafeArray!byte h2 = m_hash2->final();

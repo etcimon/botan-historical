@@ -4,10 +4,8 @@
 * (C) 2007 Martin Doering, Christoph Ludwig, Falko Strenzke
 *	  2010-2011,2012 Jack Lloyd
 *
-* Distributed under the terms of the Botan license
+* Distributed under the terms of the botan license.
 */
-
-#define BOTAN_GFP_CURVE_H__
 
 #include <botan/numthry.h>
 /**

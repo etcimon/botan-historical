@@ -2,10 +2,8 @@
 * ECB Mode
 * (C) 1999-2009,2013 Jack Lloyd
 *
-* Distributed under the terms of the Botan license
+* Distributed under the terms of the botan license.
 */
-
-#define BOTAN_MODE_ECB_H__
 
 #include <botan/cipher_mode.h>
 #include <botan/block_cipher.h>
@@ -16,7 +14,7 @@
 class ECB_Mode : public Cipher_Mode
 {
 	public:
-		SafeArray!byte start(const byte nonce[], size_t nonce_len) override;
+		SafeArray!byte start(in byte[] nonce, size_t nonce_len) override;
 
 		string name() const override;
 
@@ -37,7 +35,7 @@ class ECB_Mode : public Cipher_Mode
 		const BlockCipherModePaddingMethod& padding() const { return *m_padding; }
 
 	private:
-		void key_schedule(const byte key[], size_t length) override;
+		void key_schedule(in byte[] key) override;
 
 		std::unique_ptr<BlockCipher> m_cipher;
 		std::unique_ptr<BlockCipherModePaddingMethod> m_padding;
@@ -52,9 +50,9 @@ class ECB_Encryption : public ECB_Mode
 		ECB_Encryption(BlockCipher* cipher, BlockCipherModePaddingMethod* padding) :
 			ECB_Mode(cipher, padding) {}
 
-		void update(SafeArray!byte& blocks, size_t offset = 0) override;
+		void update(SafeArray!byte blocks, size_t offset = 0) override;
 
-		void finish(SafeArray!byte& final_block, size_t offset = 0) override;
+		void finish(SafeArray!byte final_block, size_t offset = 0) override;
 
 		size_t output_length(size_t input_length) const override;
 
@@ -70,9 +68,9 @@ class ECB_Decryption : public ECB_Mode
 		ECB_Decryption(BlockCipher* cipher, BlockCipherModePaddingMethod* padding) :
 			ECB_Mode(cipher, padding) {}
 
-		void update(SafeArray!byte& blocks, size_t offset = 0) override;
+		void update(SafeArray!byte blocks, size_t offset = 0) override;
 
-		void finish(SafeArray!byte& final_block, size_t offset = 0) override;
+		void finish(SafeArray!byte final_block, size_t offset = 0) override;
 
 		size_t output_length(size_t input_length) const override;
 

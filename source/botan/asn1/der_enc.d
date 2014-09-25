@@ -25,7 +25,7 @@ SafeArray!byte encode_tag(ASN1_Tag type_tag, ASN1_Tag class_tag)
 
 	SafeArray!byte encoded_tag;
 	if(type_tag <= 30)
-		encoded_tag.push_back(static_cast<byte>(type_tag | class_tag));
+		encoded_tag.push_back(cast(byte)(type_tag | class_tag));
 	else
 	{
 		size_t blocks = high_bit(type_tag) + 6;
@@ -47,12 +47,12 @@ SafeArray!byte encode_length(size_t length)
 {
 	SafeArray!byte encoded_length;
 	if(length <= 127)
-		encoded_length.push_back(static_cast<byte>(length));
+		encoded_length.push_back(cast(byte)(length));
 	else
 	{
 		const size_t top_byte = significant_bytes(length);
 
-		encoded_length.push_back(static_cast<byte>(0x80 | top_byte));
+		encoded_length.push_back(cast(byte)(0x80 | top_byte));
 
 		for(size_t i = sizeof(length) - top_byte; i != sizeof(length); ++i)
 			encoded_length.push_back(get_byte(i, length));
@@ -89,7 +89,7 @@ SafeArray!byte DER_Encoder::DER_Sequence::get_contents()
 /*
 * Add an encoded value to the SEQUENCE/SET
 */
-void DER_Encoder::DER_Sequence::add_bytes(const byte data[], size_t length)
+void DER_Encoder::DER_Sequence::add_bytes(in byte[] data, size_t length)
 {
 	if(type_tag == SET)
 		set_contents.push_back(SafeArray!byte(data, data + length));
@@ -155,7 +155,7 @@ DER_Encoder& DER_Encoder::end_cons()
 */
 DER_Encoder& DER_Encoder::start_explicit(u16bit type_no)
 {
-	ASN1_Tag type_tag = static_cast<ASN1_Tag>(type_no);
+	ASN1_Tag type_tag = cast(ASN1_Tag)(type_no);
 
 	if(type_tag == SET)
 		throw Internal_Error("DER_Encoder.start_explicit(SET); cannot perform");
@@ -187,7 +187,7 @@ DER_Encoder& DER_Encoder::raw_bytes(in Array!byte val)
 /*
 * Write raw bytes into the stream
 */
-DER_Encoder& DER_Encoder::raw_bytes(const byte bytes[], size_t length)
+DER_Encoder& DER_Encoder::raw_bytes(in byte[] bytes, size_t length)
 {
 	if(subsequences.size())
 		subsequences[subsequences.size()-1].add_bytes(bytes, length);
@@ -252,7 +252,7 @@ DER_Encoder& DER_Encoder::encode(in Array!byte bytes,
 /*
 * Encode this object
 */
-DER_Encoder& DER_Encoder::encode(const byte bytes[], size_t length,
+DER_Encoder& DER_Encoder::encode(in byte[] bytes, size_t length,
 											ASN1_Tag real_type)
 {
 	return encode(bytes, length, real_type, real_type, UNIVERSAL);
@@ -326,7 +326,7 @@ DER_Encoder& DER_Encoder::encode(in Array!byte bytes,
 /*
 * DER encode an OCTET STRING or BIT STRING
 */
-DER_Encoder& DER_Encoder::encode(const byte bytes[], size_t length,
+DER_Encoder& DER_Encoder::encode(in byte[] bytes, size_t length,
 											ASN1_Tag real_type,
 											ASN1_Tag type_tag, ASN1_Tag class_tag)
 {
@@ -374,7 +374,7 @@ DER_Encoder& DER_Encoder::encode(const ASN1_Object& obj)
 * Write the encoding of the byte(s)
 */
 DER_Encoder& DER_Encoder::add_object(ASN1_Tag type_tag, ASN1_Tag class_tag,
-												 const byte rep[], size_t length)
+												 in byte[] rep, size_t length)
 {
 	SafeArray!byte buffer;
 	buffer += encode_tag(type_tag, class_tag);
@@ -390,7 +390,7 @@ DER_Encoder& DER_Encoder::add_object(ASN1_Tag type_tag, ASN1_Tag class_tag,
 DER_Encoder& DER_Encoder::add_object(ASN1_Tag type_tag, ASN1_Tag class_tag,
 												 in string rep_str)
 {
-	const byte* rep = reinterpret_cast<const byte*>(rep_str.data());
+	const byte* rep = cast(const byte*)(rep_str.data());
 	const size_t rep_len = rep_str.size();
 	return add_object(type_tag, class_tag, rep, rep_len);
 }

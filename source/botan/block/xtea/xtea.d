@@ -12,7 +12,7 @@ namespace {
 void xtea_encrypt_4(const byte in[32], byte out[32], const u32bit EK[64])
 {
 	u32bit L0, R0, L1, R1, L2, R2, L3, R3;
-	load_be(in, L0, R0, L1, R1, L2, R2, L3, R3);
+	load_be(input, L0, R0, L1, R1, L2, R2, L3, R3);
 
 	for(size_t i = 0; i != 32; ++i)
 	{
@@ -33,7 +33,7 @@ void xtea_encrypt_4(const byte in[32], byte out[32], const u32bit EK[64])
 void xtea_decrypt_4(const byte in[32], byte out[32], const u32bit EK[64])
 {
 	u32bit L0, R0, L1, R1, L2, R2, L3, R3;
-	load_be(in, L0, R0, L1, R1, L2, R2, L3, R3);
+	load_be(input, L0, R0, L1, R1, L2, R2, L3, R3);
 
 	for(size_t i = 0; i != 32; ++i)
 	{
@@ -56,11 +56,11 @@ void xtea_decrypt_4(const byte in[32], byte out[32], const u32bit EK[64])
 /*
 * XTEA Encryption
 */
-void XTEA::encrypt_n(const byte in[], byte out[], size_t blocks) const
+void XTEA::encrypt_n(in byte[] input, ref byte[] output) const
 {
 	while(blocks >= 4)
 	{
-		xtea_encrypt_4(in, out, &(this->EK[0]));
+		xtea_encrypt_4(input, out, &(this->EK[0]));
 		in += 4 * BLOCK_SIZE;
 		out += 4 * BLOCK_SIZE;
 		blocks -= 4;
@@ -68,8 +68,8 @@ void XTEA::encrypt_n(const byte in[], byte out[], size_t blocks) const
 
 	for(size_t i = 0; i != blocks; ++i)
 	{
-		u32bit L = load_be<u32bit>(in, 0);
-		u32bit R = load_be<u32bit>(in, 1);
+		u32bit L = load_be<u32bit>(input, 0);
+		u32bit R = load_be<u32bit>(input, 1);
 
 		for(size_t j = 0; j != 32; ++j)
 		{
@@ -87,11 +87,11 @@ void XTEA::encrypt_n(const byte in[], byte out[], size_t blocks) const
 /*
 * XTEA Decryption
 */
-void XTEA::decrypt_n(const byte in[], byte out[], size_t blocks) const
+void XTEA::decrypt_n(in byte[] input, ref byte[] output) const
 {
 	while(blocks >= 4)
 	{
-		xtea_decrypt_4(in, out, &(this->EK[0]));
+		xtea_decrypt_4(input, out, &(this->EK[0]));
 		in += 4 * BLOCK_SIZE;
 		out += 4 * BLOCK_SIZE;
 		blocks -= 4;
@@ -99,8 +99,8 @@ void XTEA::decrypt_n(const byte in[], byte out[], size_t blocks) const
 
 	for(size_t i = 0; i != blocks; ++i)
 	{
-		u32bit L = load_be<u32bit>(in, 0);
-		u32bit R = load_be<u32bit>(in, 1);
+		u32bit L = load_be<u32bit>(input, 0);
+		u32bit R = load_be<u32bit>(input, 1);
 
 		for(size_t j = 0; j != 32; ++j)
 		{
@@ -118,7 +118,7 @@ void XTEA::decrypt_n(const byte in[], byte out[], size_t blocks) const
 /*
 * XTEA Key Schedule
 */
-void XTEA::key_schedule(const byte key[], size_t)
+void XTEA::key_schedule(in byte[] key, size_t)
 {
 	EK.resize(64);
 

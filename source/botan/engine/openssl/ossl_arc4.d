@@ -47,7 +47,7 @@ string RC4_OpenSSL::name() const
 /*
 * RC4 Key Schedule
 */
-void RC4_OpenSSL::key_schedule(const byte key[], size_t length)
+void RC4_OpenSSL::key_schedule(in byte[] key)
 {
 	RC4_set_key(&state, length, key);
 	byte dummy = 0;
@@ -58,7 +58,7 @@ void RC4_OpenSSL::key_schedule(const byte key[], size_t length)
 /*
 * RC4 Encryption
 */
-void RC4_OpenSSL::cipher(const byte in[], byte out[], size_t length)
+void RC4_OpenSSL::cipher(in byte[] input, ref byte[] output)
 {
 	RC4(&state, length, in, out);
 }

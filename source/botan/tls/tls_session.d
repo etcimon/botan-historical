@@ -46,7 +46,7 @@ Session::Session(in string pem)
 	*this = Session(&der[0], der.size());
 }
 
-Session::Session(const byte ber[], size_t ber_len)
+Session::Session(in byte[] ber, size_t ber_len)
 {
 	byte side_code = 0;
 
@@ -64,7 +64,7 @@ Session::Session(const byte ber[], size_t ber_len)
 
 	BER_Decoder(ber, ber_len)
 		.start_cons(SEQUENCE)
-		  .decode_and_check(static_cast<size_t>(TLS_SESSION_PARAM_STRUCT_VERSION),
+		  .decode_and_check(cast(size_t)(TLS_SESSION_PARAM_STRUCT_VERSION),
 								  "Unknown version in session structure")
 		  .decode_integer_type(start_time)
 		  .decode_integer_type(major_version)
@@ -86,7 +86,7 @@ Session::Session(const byte ber[], size_t ber_len)
 
 	m_version = Protocol_Version(major_version, minor_version);
 	m_start_time = std::chrono::system_clock::from_time_t(start_time);
-	m_connection_side = static_cast<Connection_Side>(side_code);
+	m_connection_side = cast(Connection_Side)(side_code);
 
 	m_server_info = Server_Information(server_hostname.value(),
 												  server_service.value(),
@@ -111,21 +111,21 @@ SafeArray!byte Session::DER_encode() const
 
 	return DER_Encoder()
 		.start_cons(SEQUENCE)
-			.encode(static_cast<size_t>(TLS_SESSION_PARAM_STRUCT_VERSION))
-			.encode(static_cast<size_t>(std::chrono::system_clock::to_time_t(m_start_time)))
-			.encode(static_cast<size_t>(m_version.major_version()))
-			.encode(static_cast<size_t>(m_version.minor_version()))
+			.encode(cast(size_t)(TLS_SESSION_PARAM_STRUCT_VERSION))
+			.encode(cast(size_t)(std::chrono::system_clock::to_time_t(m_start_time)))
+			.encode(cast(size_t)(m_version.major_version()))
+			.encode(cast(size_t)(m_version.minor_version()))
 			.encode(m_identifier, OCTET_STRING)
 			.encode(m_session_ticket, OCTET_STRING)
-			.encode(static_cast<size_t>(m_ciphersuite))
-			.encode(static_cast<size_t>(m_compression_method))
-			.encode(static_cast<size_t>(m_connection_side))
-			.encode(static_cast<size_t>(m_fragment_size))
+			.encode(cast(size_t)(m_ciphersuite))
+			.encode(cast(size_t)(m_compression_method))
+			.encode(cast(size_t)(m_connection_side))
+			.encode(cast(size_t)(m_fragment_size))
 			.encode(m_master_secret, OCTET_STRING)
 			.encode(peer_cert_bits, OCTET_STRING)
 			.encode(ASN1_String(m_server_info.hostname(), UTF8_STRING))
 			.encode(ASN1_String(m_server_info.service(), UTF8_STRING))
-			.encode(static_cast<size_t>(m_server_info.port()))
+			.encode(cast(size_t)(m_server_info.port()))
 			.encode(ASN1_String(m_srp_identifier, UTF8_STRING))
 		.end_cons()
 	.get_contents();
@@ -138,7 +138,7 @@ string Session::PEM_encode() const
 
 std::chrono::seconds Session::session_age() const
 {
-	return std::chrono::duration_cast<std::chrono::seconds>(
+	return std::chrono::duration_cast(<std::chrono::seconds>)(
 		std::chrono::system_clock::now() - m_start_time);
 }
 
@@ -151,7 +151,7 @@ Session::encrypt(const SymmetricKey& master_key,
 	return CryptoBox::encrypt(&der[0], der.size(), master_key, rng);
 }
 
-Session Session::decrypt(const byte buf[], size_t buf_len,
+Session Session::decrypt(in byte[] buf, size_t buf_len,
 								 const SymmetricKey& master_key)
 {
 	try

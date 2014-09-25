@@ -2,10 +2,8 @@
 * Engine
 * (C) 1999-2007 Jack Lloyd
 *
-* Distributed under the terms of the Botan license
+* Distributed under the terms of the botan license.
 */
-
-#define BOTAN_ENGINE_H__
 
 #include <botan/scan_name.h>
 #include <botan/block_cipher.h>
@@ -106,7 +104,7 @@ class Engine
 		* @return newly allocated operator object, or NULL
 		*/
 		abstract PK_Ops::Key_Agreement*
-			get_key_agreement_op(const Private_Key& key, RandomNumberGenerator& rng) const;
+			get_key_agreement_op(in Private_Key key, RandomNumberGenerator& rng) const;
 
 		/**
 		* Return a new operator object for this key, if possible
@@ -114,7 +112,7 @@ class Engine
 		* @return newly allocated operator object, or NULL
 		*/
 		abstract PK_Ops::Signature*
-			get_signature_op(const Private_Key& key, RandomNumberGenerator& rng) const;
+			get_signature_op(in Private_Key key, RandomNumberGenerator& rng) const;
 
 		/**
 		* Return a new operator object for this key, if possible
@@ -138,5 +136,5 @@ class Engine
 		* @return newly allocated operator object, or NULL
 		*/
 		abstract PK_Ops::Decryption*
-			get_decryption_op(const Private_Key& key, RandomNumberGenerator& rng) const;
+			get_decryption_op(in Private_Key key, RandomNumberGenerator& rng) const;
 };

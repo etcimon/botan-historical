@@ -2,10 +2,8 @@
 * Keccak
 * (C) 2010 Jack Lloyd
 *
-* Distributed under the terms of the Botan license
+* Distributed under the terms of the botan license.
 */
-
-#define BOTAN_KECCAK_H__
 
 #include <botan/hash.h>
 #include <botan/secmem.h>
@@ -30,8 +28,8 @@ class Keccak_1600 : public HashFunction
 		string name() const;
 		void clear();
 	private:
-		void add_data(const byte input[], size_t length);
-		void final_result(byte out[]);
+		void add_data(in byte[] input, size_t length);
+		void final_result(ref byte[] output);
 
 		size_t output_bits, bitrate;
 		secure_vector<u64bit> S;

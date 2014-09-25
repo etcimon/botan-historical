@@ -2,10 +2,8 @@
 * TLS Record Handling
 * (C) 2004-2012 Jack Lloyd
 *
-* Released under the terms of the Botan license
+* Released under the terms of the botan license.
 */
-
-#define BOTAN_TLS_RECORDS_H__
 
 #include <botan/tls_magic.h>
 #include <botan/tls_version.h>
@@ -34,26 +32,26 @@ class Connection_Cipher_State
 		Connection_Cipher_State(Protocol_Version version,
 										Connection_Side which_side,
 										bool is_our_side,
-										const Ciphersuite& suite,
-										const Session_Keys& keys);
+										const Ciphersuite suite,
+										const Session_Keys keys);
 
-		AEAD_Mode* aead() { return m_aead.get(); }
+		AEAD_Mode aead() { return m_aead.get(); }
 
-		in SafeArray!byte aead_nonce(u64bit seq);
+		const SafeArray!byte aead_nonce(u64bit seq);
 
-		in SafeArray!byte aead_nonce(const byte record[], size_t record_len);
+		const SafeArray!byte aead_nonce(in byte[] record);
 
-		in SafeArray!byte format_ad(u64bit seq, byte type,
+		const SafeArray!byte format_ad(u64bit seq, byte type,
 														 Protocol_Version version,
 														 u16bit ptext_length);
 
 		BlockCipher* block_cipher() { return m_block_cipher.get(); }
 
-		StreamCipher* stream_cipher() { return m_stream_cipher.get(); }
+		StreamCipher stream_cipher() { return m_stream_cipher.get(); }
 
-		MessageAuthenticationCode* mac() { return m_mac.get(); }
+		MessageAuthenticationCode mac() { return m_mac.get(); }
 
-		SafeArray!byte& cbc_state() { return m_block_cipher_cbc_state; }
+		SafeArray!byte cbc_state() { return m_block_cipher_cbc_state; }
 
 		size_t block_size() const { return m_block_size; }
 
@@ -70,7 +68,7 @@ class Connection_Cipher_State
 
 		std::chrono::seconds age() const
 		{
-			return std::chrono::duration_cast<std::chrono::seconds>(
+			return std::chrono::duration_cast(<std::chrono::seconds>)(
 				std::chrono::system_clock::now() - m_start_time);
 		}
 
@@ -101,26 +99,25 @@ class Connection_Cipher_State
 * @param rng is a random number generator
 * @return number of bytes written to write_buffer
 */
-void write_record(SafeArray!byte& write_buffer,
-						byte msg_type, const byte msg[], size_t msg_length,
+void write_record(SafeArray!byte write_buffer,
+						byte msg_type, in byte[] msg, size_t msg_length,
 						Protocol_Version version,
 						u64bit msg_sequence,
-						Connection_Cipher_State* cipherstate,
-						RandomNumberGenerator& rng);
+						Connection_Cipher_State cipherstate,
+						RandomNumberGenerator rng);
 
 /**
 * Decode a TLS record
 * @return zero if full message, else number of bytes still needed
 */
-size_t read_record(SafeArray!byte& read_buffer,
-						 const byte input[],
-						 size_t input_length,
-						 size_t& input_consumed,
-						 SafeArray!byte& record,
-						 u64bit* record_sequence,
-						 Protocol_Version* record_version,
-						 Record_Type* record_type,
-						 Connection_Sequence_Numbers* sequence_numbers,
-						 std::function<Connection_Cipher_State* (u16bit)> get_cipherstate);
+size_t read_record(SafeArray!byte read_buffer,
+						 in byte[] input,
+						 ref size_t input_consumed,
+						 SafeArray!byte record,
+						 ref u64bit record_sequence,
+						 Protocol_Version record_version,
+						 Record_Type record_type,
+						 Connection_Sequence_Numbers sequence_numbers,
+						 Connection_Cipher_State delegate(u16bit) get_cipherstate);
 
 }

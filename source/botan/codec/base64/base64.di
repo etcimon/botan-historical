@@ -2,10 +2,8 @@
 * Base64 Encoding and Decoding
 * (C) 2010 Jack Lloyd
 *
-* Distributed under the terms of the Botan license
+* Distributed under the terms of the botan license.
 */
-
-#define BOTAN_BASE64_CODEC_H__
 
 #include <botan/secmem.h>
 #include <string>
@@ -23,7 +21,7 @@
 * @return number of bytes written to output
 */
 size_t base64_encode(char output[],
-										 const byte input[],
+										 in byte[] input,
 										 size_t input_length,
 										 size_t& input_consumed,
 										 bool final_inputs);
@@ -34,7 +32,7 @@ size_t base64_encode(char output[],
 * @param input_length length of input in bytes
 * @return base64adecimal representation of input
 */
-string base64_encode(const byte input[],
+string base64_encode(in byte[] input,
 												size_t input_length);
 
 /**

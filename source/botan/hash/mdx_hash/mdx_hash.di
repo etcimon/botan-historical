@@ -2,10 +2,8 @@
 * MDx Hash Function
 * (C) 1999-2008 Jack Lloyd
 *
-* Distributed under the terms of the Botan license
+* Distributed under the terms of the botan license.
 */
-
-#define BOTAN_MDX_BASE_H__
 
 #include <botan/hash.h>
 /**
@@ -27,7 +25,7 @@ class MDx_HashFunction : public HashFunction
 
 		size_t hash_block_size() const { return buffer.size(); }
 	protected:
-		void add_data(const byte input[], size_t length);
+		void add_data(in byte[] input, size_t length);
 		void final_result(byte output[]);
 
 		/**
@@ -35,7 +33,7 @@ class MDx_HashFunction : public HashFunction
 		* @param blocks the input
 		* @param block_n the number of blocks
 		*/
-		abstract void compress_n(const byte blocks[], size_t block_n) = 0;
+		abstract void compress_n(in byte[] blocks, size_t block_n) = 0;
 
 		void clear();
 
@@ -49,7 +47,7 @@ class MDx_HashFunction : public HashFunction
 		* Write the count, if used, to this spot
 		* @param out where to write the counter to
 		*/
-		abstract void write_count(byte out[]);
+		abstract void write_count(ref byte[] output);
 	private:
 		SafeArray!byte buffer;
 		u64bit count;

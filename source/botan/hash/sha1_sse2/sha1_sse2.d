@@ -150,7 +150,7 @@ inline void F4(u32bit A, u32bit& B, u32bit C, u32bit D, u32bit& E, u32bit msg)
 /*
 * SHA-160 Compression Function using SSE for message expansion
 */
-void SHA_160_SSE2::compress_n(const byte input_bytes[], size_t blocks)
+void SHA_160_SSE2::compress_n(in byte[] input_bytes, size_t blocks)
 {
 	using namespace SHA1_SSE2_F;
 
@@ -165,7 +165,7 @@ void SHA_160_SSE2::compress_n(const byte input_bytes[], size_t blocks)
 			 D = digest[3],
 			 E = digest[4];
 
-	const __m128i* input = reinterpret_cast<const __m128i*>(input_bytes);
+	const __m128i* input = cast(const __m128i*)(input_bytes);
 
 	for(size_t i = 0; i != blocks; ++i)
 	{

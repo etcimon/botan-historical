@@ -9,7 +9,7 @@
 #include <botan/mem_ops.h>
 #include <stdexcept>
 void hex_encode(char output[],
-					 const byte input[],
+					 in byte[] input,
 					 size_t input_length,
 					 bool uppercase)
 {
@@ -31,7 +31,7 @@ void hex_encode(char output[],
 	}
 }
 
-string hex_encode(const byte input[],
+string hex_encode(in byte[] input,
 							  size_t input_length,
 							  bool uppercase)
 {
@@ -93,7 +93,7 @@ size_t hex_decode(byte output[],
 
 	for(size_t i = 0; i != input_length; ++i)
 	{
-		const byte bin = HEX_TO_BIN[static_cast<byte>(input[i])];
+		const byte bin = HEX_TO_BIN[cast(byte)(input[i])];
 
 		if(bin >= 0x10)
 		{

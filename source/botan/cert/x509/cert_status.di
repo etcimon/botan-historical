@@ -2,10 +2,8 @@
 * Result enums
 * (C) 2013 Jack Lloyd
 *
-* Distributed under the terms of the Botan license
+* Distributed under the terms of the botan license.
 */
-
-#define BOTAN_X509_PATH_RESULT_H__
 enum class Certificate_Status_Code {
 	VERIFIED = 0x00000000,
 	OCSP_RESPONSE_GOOD,

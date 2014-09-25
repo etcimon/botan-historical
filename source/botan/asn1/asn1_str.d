@@ -44,7 +44,7 @@ ASN1_Tag choose_encoding(in string str,
 
 	for(size_t i = 0; i != str.size(); ++i)
 	{
-		if(!IS_PRINTABLE[static_cast<byte>(str[i])])
+		if(!IS_PRINTABLE[cast(byte)(str[i])])
 		{
 			if(type == "utf8")	return UTF8_STRING;
 			if(type == "latin1") return T61_STRING;

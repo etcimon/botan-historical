@@ -2,10 +2,8 @@
 * OCSP subtypes
 * (C) 2012 Jack Lloyd
 *
-* Distributed under the terms of the Botan license
+* Distributed under the terms of the botan license.
 */
-
-#define BOTAN_OCSP_TYPES_H__
 
 #include <botan/x509cert.h>
 #include <botan/asn1_time.h>

@@ -12,7 +12,7 @@
 /*
 * PSSR Update Operation
 */
-void PSSR::update(const byte input[], size_t length)
+void PSSR::update(in byte[] input, size_t length)
 {
 	hash->update(input, length);
 }

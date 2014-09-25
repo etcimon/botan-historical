@@ -2,10 +2,8 @@
 * EAX Mode
 * (C) 1999-2007,2013 Jack Lloyd
 *
-* Distributed under the terms of the Botan license
+* Distributed under the terms of the botan license.
 */
-
-#define BOTAN_AEAD_EAX_H__
 
 #include <botan/aead.h>
 #include <botan/block_cipher.h>
@@ -17,9 +15,9 @@
 class EAX_Mode : public AEAD_Mode
 {
 	public:
-		SafeArray!byte start(const byte nonce[], size_t nonce_len) override;
+		SafeArray!byte start(in byte[] nonce, size_t nonce_len) override;
 
-		void set_associated_data(const byte ad[], size_t ad_len) override;
+		void set_associated_data(in byte[] ad, size_t ad_len) override;
 
 		string name() const override;
 
@@ -34,7 +32,7 @@ class EAX_Mode : public AEAD_Mode
 
 		void clear() override;
 	protected:
-		void key_schedule(const byte key[], size_t length) override;
+		void key_schedule(in byte[] key) override;
 
 		/**
 		* @param cipher the cipher to use
@@ -73,9 +71,9 @@ class EAX_Encryption : public EAX_Mode
 
 		size_t minimum_final_size() const override { return 0; }
 
-		void update(SafeArray!byte& blocks, size_t offset = 0) override;
+		void update(SafeArray!byte blocks, size_t offset = 0) override;
 
-		void finish(SafeArray!byte& final_block, size_t offset = 0) override;
+		void finish(SafeArray!byte final_block, size_t offset = 0) override;
 };
 
 /**
@@ -99,7 +97,7 @@ class EAX_Decryption : public EAX_Mode
 
 		size_t minimum_final_size() const override { return tag_size(); }
 
-		void update(SafeArray!byte& blocks, size_t offset = 0) override;
+		void update(SafeArray!byte blocks, size_t offset = 0) override;
 
-		void finish(SafeArray!byte& final_block, size_t offset = 0) override;
+		void finish(SafeArray!byte final_block, size_t offset = 0) override;
 };

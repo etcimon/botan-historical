@@ -2,10 +2,8 @@
 * Core Engine
 * (C) 1999-2007 Jack Lloyd
 *
-* Distributed under the terms of the Botan license
+* Distributed under the terms of the botan license.
 */
-
-#define BOTAN_CORE_ENGINE_H__
 
 #include <botan/engine.h>
 /**
@@ -17,16 +15,16 @@ class Core_Engine : public Engine
 		string provider_name() const override { return "core"; }
 
 		PK_Ops::Key_Agreement*
-			get_key_agreement_op(const Private_Key& key, RandomNumberGenerator& rng) const override;
+			get_key_agreement_op(in Private_Key key, RandomNumberGenerator& rng) const override;
 
 		PK_Ops::Signature*
-			get_signature_op(const Private_Key& key, RandomNumberGenerator& rng) const override;
+			get_signature_op(in Private_Key key, RandomNumberGenerator& rng) const override;
 
 		PK_Ops::Verification* get_verify_op(const Public_Key& key, RandomNumberGenerator& rng) const override;
 
 		PK_Ops::Encryption* get_encryption_op(const Public_Key& key, RandomNumberGenerator& rng) const override;
 
-		PK_Ops::Decryption* get_decryption_op(const Private_Key& key, RandomNumberGenerator& rng) const override;
+		PK_Ops::Decryption* get_decryption_op(in Private_Key key, RandomNumberGenerator& rng) const override;
 
 		Modular_Exponentiator* mod_exp(const BigInt& n,
 												 Power_Mod::Usage_Hints) const override;

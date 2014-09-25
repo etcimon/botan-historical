@@ -73,7 +73,7 @@ Server_Key_Exchange::Server_Key_Exchange(Handshake_IO& io,
 		if(domain == "")
 			throw Internal_Error("Could not find name of ECDH domain " + ecdh_domain_oid);
 
-		const u16bit named_curve_id = Supported_Elliptic_Curves::name_to_curve_id(domain);
+		const u16bit named_curve_id = Supported_Elliptic_Curves::name_to_curve_id(domainput);
 
 		m_params.push_back(3); // named curve
 		m_params.push_back(get_byte(0, named_curve_id));
@@ -264,7 +264,7 @@ bool Server_Key_Exchange::verify(const Public_Key& server_key,
 	return verifier.check_signature(m_signature);
 }
 
-const Private_Key& Server_Key_Exchange::server_kex_key() const
+in Private_Key Server_Key_Exchange::server_kex_key() const
 {
 	BOTAN_ASSERT_NONNULL(m_kex_key);
 	return *m_kex_key;

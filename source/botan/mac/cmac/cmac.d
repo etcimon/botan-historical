@@ -11,7 +11,7 @@
 /*
 * Perform CMAC's multiplication in GF(2^n)
 */
-SafeArray!byte CMAC::poly_double(in SafeArray!byte in)
+SafeArray!byte CMAC::poly_double(in SafeArray!byte input)
 {
 	const bool top_carry = (in[0] & 0x80);
 
@@ -52,7 +52,7 @@ SafeArray!byte CMAC::poly_double(in SafeArray!byte in)
 /*
 * Update an CMAC Calculation
 */
-void CMAC::add_data(const byte input[], size_t length)
+void CMAC::add_data(in byte[] input, size_t length)
 {
 	buffer_insert(m_buffer, m_position, input, length);
 	if(m_position + length > output_length())
@@ -104,7 +104,7 @@ void CMAC::final_result(byte mac[])
 /*
 * CMAC Key Schedule
 */
-void CMAC::key_schedule(const byte key[], size_t length)
+void CMAC::key_schedule(in byte[] key)
 {
 	clear();
 	m_cipher->set_key(key, length);

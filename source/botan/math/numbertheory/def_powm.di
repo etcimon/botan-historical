@@ -2,10 +2,8 @@
 * Modular Exponentiation
 * (C) 1999-2007 Jack Lloyd
 *
-* Distributed under the terms of the Botan license
+* Distributed under the terms of the botan license.
 */
-
-#define BOTAN_DEFAULT_MODEXP_H__
 
 #include <botan/pow_mod.h>
 #include <botan/reducer.h>

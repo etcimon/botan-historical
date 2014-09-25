@@ -2,10 +2,8 @@
 * RTSS (threshold secret sharing)
 * (C) 2009 Jack Lloyd
 *
-* Distributed under the terms of the Botan license
+* Distributed under the terms of the botan license.
 */
-
-#define BOTAN_RTSS_H__
 
 #include <botan/secmem.h>
 #include <botan/hash.h>
@@ -27,7 +25,7 @@ class RTSS_Share
 		*/
 		static std::vector<RTSS_Share>
 			split(byte M, byte N,
-					const byte secret[], u16bit secret_len,
+					in byte[] secret, u16bit secret_len,
 					const byte identifier[16],
 					RandomNumberGenerator& rng);
 

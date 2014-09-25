@@ -2,10 +2,8 @@
 * Transformations of data
 * (C) 2013 Jack Lloyd
 *
-* Distributed under the terms of the Botan license
+* Distributed under the terms of the botan license.
 */
-
-#define BOTAN_TRANSFORM_H__
 
 #include <botan/secmem.h>
 #include <botan/key_spec.h>
@@ -34,14 +32,14 @@ class Transformation
 		* @param nonce the per message nonce
 		* @param nonce_len length of nonce
 		*/
-		abstract SafeArray!byte start(const byte nonce[], size_t nonce_len) = 0;
+		abstract SafeArray!byte start(in byte[] nonce, size_t nonce_len) = 0;
 
 		/**
 		* Process some data. Input must be in size update_granularity() byte blocks.
 		* @param blocks in/out paramter which will possibly be resized
 		* @param offset an offset into blocks to begin processing
 		*/
-		abstract void update(SafeArray!byte& blocks, size_t offset = 0) = 0;
+		abstract void update(SafeArray!byte blocks, size_t offset = 0) = 0;
 
 		/**
 		* Complete processing of a message.
@@ -50,7 +48,7 @@ class Transformation
 		*		  minimum_final_size() bytes, and will be set to any final output
 		* @param offset an offset into final_block to begin processing
 		*/
-		abstract void finish(SafeArray!byte& final_block, size_t offset = 0) = 0;
+		abstract void finish(SafeArray!byte final_block, size_t offset = 0) = 0;
 
 		/**
 		* Returns the size of the output if this transform is used to process a
@@ -129,7 +127,7 @@ class Keyed_Transform : public Transformation
 		* @param key contains the key material
 		* @param length in bytes of key param
 		*/
-		void set_key(const byte key[], size_t length)
+		void set_key(in byte[] key)
 		{
 			if(!valid_keylength(length))
 				throw Invalid_Key_Length(name(), length);
@@ -137,5 +135,5 @@ class Keyed_Transform : public Transformation
 		}
 
 	private:
-		abstract void key_schedule(const byte key[], size_t length) = 0;
+		abstract void key_schedule(in byte[] key) = 0;
 };

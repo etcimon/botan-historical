@@ -123,7 +123,7 @@ SafeArray!byte PKCS8_decode(
 /*
 * BER encode a PKCS #8 private key, unencrypted
 */
-SafeArray!byte BER_encode(const Private_Key& key)
+SafeArray!byte BER_encode(in Private_Key key)
 {
 	const size_t PKCS8_VERSION = 0;
 
@@ -131,7 +131,7 @@ SafeArray!byte BER_encode(const Private_Key& key)
 			.start_cons(SEQUENCE)
 				.encode(PKCS8_VERSION)
 				.encode(key.pkcs8_algorithm_identifier())
-				.encode(key.pkcs8_private_key(), OCTET_STRING)
+				.encode(key.pkcs8_Private_Key(), OCTET_STRING)
 			.end_cons()
 		.get_contents();
 }
@@ -139,7 +139,7 @@ SafeArray!byte BER_encode(const Private_Key& key)
 /*
 * PEM encode a PKCS #8 private key, unencrypted
 */
-string PEM_encode(const Private_Key& key)
+string PEM_encode(in Private_Key key)
 {
 	return PEM_Code::encode(PKCS8::BER_encode(key), "PRIVATE KEY");
 }
@@ -147,7 +147,7 @@ string PEM_encode(const Private_Key& key)
 /*
 * BER encode a PKCS #8 private key, encrypted
 */
-std::vector<byte> BER_encode(const Private_Key& key,
+std::vector<byte> BER_encode(in Private_Key key,
 									  RandomNumberGenerator& rng,
 									  in string pass,
 									  std::chrono::milliseconds msec,
@@ -177,7 +177,7 @@ std::vector<byte> BER_encode(const Private_Key& key,
 /*
 * PEM encode a PKCS #8 private key, encrypted
 */
-string PEM_encode(const Private_Key& key,
+string PEM_encode(in Private_Key key,
 							  RandomNumberGenerator& rng,
 							  in string pass,
 							  std::chrono::milliseconds msec,
@@ -195,7 +195,7 @@ string PEM_encode(const Private_Key& key,
 */
 Private_Key* load_key(DataSource& source,
 							 RandomNumberGenerator& rng,
-							 std::function<std::pair<bool, string> ()> get_pass)
+							 Tuple!(bool, string) delegate() get_pass)
 {
 	AlgorithmIdentifier alg_id;
 	SafeArray!byte pkcs8_key = PKCS8_decode(source, get_pass, alg_id);
@@ -205,7 +205,7 @@ Private_Key* load_key(DataSource& source,
 		throw PKCS8_Exception("Unknown algorithm OID: " +
 									 alg_id.oid.as_string());
 
-	return make_private_key(alg_id, pkcs8_key, rng);
+	return make_Private_Key(alg_id, pkcs8_key, rng);
 }
 
 /*
@@ -213,7 +213,7 @@ Private_Key* load_key(DataSource& source,
 */
 Private_Key* load_key(in string fsname,
 							 RandomNumberGenerator& rng,
-							 std::function<std::pair<bool, string> ()> get_pass)
+							 Tuple!(bool, string) delegate() get_pass)
 {
 	DataSource_Stream source(fsname, true);
 	return PKCS8::load_key(source, rng, get_pass);
@@ -268,7 +268,7 @@ Private_Key* load_key(in string fsname,
 /*
 * Make a copy of this private key
 */
-Private_Key* copy_key(const Private_Key& key,
+Private_Key* copy_key(in Private_Key key,
 							 RandomNumberGenerator& rng)
 {
 	DataSource_Memory source(PEM_encode(key));

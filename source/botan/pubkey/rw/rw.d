@@ -69,7 +69,7 @@ RW_Signature_Operation::RW_Signature_Operation(const RW_PrivateKey& rw) :
 }
 
 SafeArray!byte
-RW_Signature_Operation::sign(const byte msg[], size_t msg_len,
+RW_Signature_Operation::sign(in byte[] msg, size_t msg_len,
 									  RandomNumberGenerator& rng)
 {
 	rng.add_entropy(msg, msg_len);
@@ -102,7 +102,7 @@ RW_Signature_Operation::sign(const byte msg[], size_t msg_len,
 }
 
 SafeArray!byte
-RW_Verification_Operation::verify_mr(const byte msg[], size_t msg_len)
+RW_Verification_Operation::verify_mr(in byte[] msg, size_t msg_len)
 {
 	BigInt m(msg, msg_len);
 

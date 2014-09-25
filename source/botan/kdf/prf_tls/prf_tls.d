@@ -15,10 +15,10 @@ namespace {
 /*
 * TLS PRF P_hash function
 */
-void P_hash(SafeArray!byte& output,
+void P_hash(SafeArray!byte output,
 				MessageAuthenticationCode& mac,
-				const byte secret[], size_t secret_len,
-				const byte seed[], size_t seed_len)
+				in byte[] secret, size_t secret_len,
+				in byte[] seed, size_t seed_len)
 {
 	try
 	{
@@ -66,8 +66,8 @@ TLS_PRF::TLS_PRF()
 * TLS PRF
 */
 SafeArray!byte TLS_PRF::derive(size_t key_len,
-											  const byte secret[], size_t secret_len,
-											  const byte seed[], size_t seed_len) const
+											  in byte[] secret, size_t secret_len,
+											  in byte[] seed, size_t seed_len) const
 {
 	SafeArray!byte output(key_len);
 
@@ -90,8 +90,8 @@ TLS_12_PRF::TLS_12_PRF(MessageAuthenticationCode* mac) : hmac(mac)
 }
 
 SafeArray!byte TLS_12_PRF::derive(size_t key_len,
-												  const byte secret[], size_t secret_len,
-												  const byte seed[], size_t seed_len) const
+												  in byte[] secret, size_t secret_len,
+												  in byte[] seed, size_t seed_len) const
 {
 	SafeArray!byte output(key_len);
 

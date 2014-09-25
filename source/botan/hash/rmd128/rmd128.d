@@ -55,7 +55,7 @@ inline void F4(u32bit& A, u32bit B, u32bit C, u32bit D,
 /*
 * RIPEMD-128 Compression Function
 */
-void RIPEMD_128::compress_n(const byte input[], size_t blocks)
+void RIPEMD_128::compress_n(in byte[] input, size_t blocks)
 {
 	using namespace RIPEMD_128_F;
 

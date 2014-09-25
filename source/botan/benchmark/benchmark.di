@@ -2,10 +2,8 @@
 * Runtime benchmarking
 * (C) 2008-2009 Jack Lloyd
 *
-* Distributed under the terms of the Botan license
+* Distributed under the terms of the botan license.
 */
-
-#define BOTAN_RUNTIME_BENCHMARK_H__
 
 #include <botan/algo_factory.h>
 #include <botan/rng.h>

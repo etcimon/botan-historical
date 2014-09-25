@@ -2,10 +2,8 @@
 * Blowfish
 * (C) 1999-2011 Jack Lloyd
 *
-* Distributed under the terms of the Botan license
+* Distributed under the terms of the botan license.
 */
-
-#define BOTAN_BLOWFISH_H__
 
 #include <botan/block_cipher.h>
 /**
@@ -14,22 +12,22 @@
 class Blowfish : public Block_Cipher_Fixed_Params<8, 1, 56>
 {
 	public:
-		void encrypt_n(const byte in[], byte out[], size_t blocks) const;
-		void decrypt_n(const byte in[], byte out[], size_t blocks) const;
+		void encrypt_n(in byte[] input, ref byte[] output) const;
+		void decrypt_n(in byte[] input, ref byte[] output) const;
 
 		/**
 		* Modified EKSBlowfish key schedule, used for bcrypt password hashing
 		*/
-		void eks_key_schedule(const byte key[], size_t key_length,
+		void eks_key_schedule(in byte[] key, size_t key_length,
 									 const byte salt[16], size_t workfactor);
 
 		void clear();
 		string name() const { return "Blowfish"; }
 		BlockCipher* clone() const { return new Blowfish; }
 	private:
-		void key_schedule(const byte key[], size_t length);
+		void key_schedule(in byte[] key);
 
-		void key_expansion(const byte key[],
+		void key_expansion(in byte[] key,
 								 size_t key_length,
 								 const byte salt[16]);
 

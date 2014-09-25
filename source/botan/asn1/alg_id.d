@@ -35,7 +35,7 @@ AlgorithmIdentifier::AlgorithmIdentifier(in string alg_id,
 AlgorithmIdentifier::AlgorithmIdentifier(const OID& alg_id,
 													  Encoding_Option option)
 {
-	const byte DER_NULL[] = { 0x05, 0x00 };
+	in byte[] DER_NULL = { 0x05, 0x00 };
 
 	oid = alg_id;
 
@@ -49,7 +49,7 @@ AlgorithmIdentifier::AlgorithmIdentifier(const OID& alg_id,
 AlgorithmIdentifier::AlgorithmIdentifier(in string alg_id,
 													  Encoding_Option option)
 {
-	const byte DER_NULL[] = { 0x05, 0x00 };
+	in byte[] DER_NULL = { 0x05, 0x00 };
 
 	oid = OIDS::lookup(alg_id);
 

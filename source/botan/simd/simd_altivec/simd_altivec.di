@@ -2,10 +2,8 @@
 * Lightweight wrappers around AltiVec for 32-bit operations
 * (C) 2009 Jack Lloyd
 *
-* Distributed under the terms of the Botan license
+* Distributed under the terms of the botan license.
 */
-
-#define BOTAN_SIMD_ALTIVEC_H__
 
 #if defined(BOTAN_TARGET_SUPPORTS_ALTIVEC)
 
@@ -35,9 +33,9 @@ class SIMD_Altivec
 			reg = (__vector unsigned int){B, B, B, B};
 		}
 
-		static SIMD_Altivec load_le(const void* in)
+		static SIMD_Altivec load_le(const void* input)
 		{
-			const u32bit* in_32 = static_cast<const u32bit*>(in);
+			const u32bit* in_32 = cast(const u32bit*)(input);
 
 			__vector unsigned int R0 = vec_ld(0, in_32);
 			__vector unsigned int R1 = vec_ld(12, in_32);
@@ -51,9 +49,9 @@ class SIMD_Altivec
 			return SIMD_Altivec(R0);
 		}
 
-		static SIMD_Altivec load_be(const void* in)
+		static SIMD_Altivec load_be(const void* input)
 		{
-			const u32bit* in_32 = static_cast<const u32bit*>(in);
+			const u32bit* in_32 = cast(const u32bit*)(input);
 
 			__vector unsigned int R0 = vec_ld(0, in_32);
 			__vector unsigned int R1 = vec_ld(12, in_32);
@@ -65,7 +63,7 @@ class SIMD_Altivec
 			return SIMD_Altivec(R0);
 		}
 
-		void store_le(byte out[]) const
+		void store_le(ref byte[] output) const
 		{
 			__vector unsigned char perm = vec_lvsl(0, (u32bit*)0);
 
@@ -81,7 +79,7 @@ class SIMD_Altivec
 			Botan::store_be(out, vec.R[0], vec.R[1], vec.R[2], vec.R[3]);
 		}
 
-		void store_be(byte out[]) const
+		void store_be(ref byte[] output) const
 		{
 			union {
 				__vector unsigned int V;

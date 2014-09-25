@@ -2,10 +2,8 @@
 * TLS Handshake State
 * (C) 2004-2006,2011,2012 Jack Lloyd
 *
-* Released under the terms of the Botan license
+* Released under the terms of the botan license.
 */
-
-#define BOTAN_TLS_HANDSHAKE_STATE_H__
 
 #include <botan/internal/tls_handshake_hash.h>
 #include <botan/internal/tls_handshake_io.h>
@@ -42,9 +40,8 @@ class Finished;
 class Handshake_State
 {
 	public:
-		Handshake_State(Handshake_IO* io,
-							 std::function<void (const Handshake_Message&)> msg_callback =
-								 std::function<void (const Handshake_Message&)>());
+		Handshake_State(Handshake_IO io,
+							 void (const Handshake_Message) msg_callback = null);
 
 		abstract ~Handshake_State();
 
@@ -83,7 +80,7 @@ class Handshake_State
 										 bool for_client_auth) const;
 
 		std::pair<string, Signature_Format>
-			choose_sig_format(const Private_Key& key,
+			choose_sig_format(in Private_Key key,
 									string& hash_algo,
 									string& sig_algo,
 									bool for_client_auth,
@@ -172,7 +169,7 @@ class Handshake_State
 
 	private:
 
-		std::function<void (const Handshake_Message&)> m_msg_callback;
+		void delegate(const Handshake_Message) m_msg_callback;
 
 		std::unique_ptr<Handshake_IO> m_handshake_io;
 

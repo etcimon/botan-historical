@@ -2,10 +2,8 @@
 * Lightweight wrappers for SSE2 intrinsics for 32-bit operations
 * (C) 2009 Jack Lloyd
 *
-* Distributed under the terms of the Botan license
+* Distributed under the terms of the botan license.
 */
-
-#define BOTAN_SIMD_SSE_H__
 
 #if defined(BOTAN_TARGET_SUPPORTS_SSE2)
 
@@ -18,7 +16,7 @@ class SIMD_SSE2
 
 		SIMD_SSE2(const u32bit B[4])
 		{
-			reg = _mm_loadu_si128(reinterpret_cast<const __m128i*>(B));
+			reg = _mm_loadu_si128(cast(const __m128i*)(B));
 		}
 
 		SIMD_SSE2(u32bit B0, u32bit B1, u32bit B2, u32bit B3)
@@ -31,30 +29,30 @@ class SIMD_SSE2
 			reg = _mm_set1_epi32(B);
 		}
 
-		static SIMD_SSE2 load_le(const void* in)
+		static SIMD_SSE2 load_le(const void* input)
 		{
-			return _mm_loadu_si128(reinterpret_cast<const __m128i*>(in));
+			return _mm_loadu_si128(cast(const __m128i*)(input));
 		}
 
-		static SIMD_SSE2 load_be(const void* in)
+		static SIMD_SSE2 load_be(const void* input)
 		{
-			return load_le(in).bswap();
+			return load_le(input).bswap();
 		}
 
-		void store_le(byte out[]) const
+		void store_le(ref byte[] output) const
 		{
-			_mm_storeu_si128(reinterpret_cast<__m128i*>(out), reg);
+			_mm_storeu_si128(CAST__m128i*)(out), reg);
 		}
 
-		void store_be(byte out[]) const
+		void store_be(ref byte[] output) const
 		{
 			bswap().store_le(out);
 		}
 
 		void rotate_left(size_t rot)
 		{
-			reg = _mm_or_si128(_mm_slli_epi32(reg, static_cast<int>(rot)),
-									 _mm_srli_epi32(reg, static_cast<int>(32-rot)));
+			reg = _mm_or_si128(_mm_slli_epi32(reg, cast(int)(rot)),
+									 _mm_srli_epi32(reg, cast(int)(32-rot)));
 		}
 
 		void rotate_right(size_t rot)
@@ -109,12 +107,12 @@ class SIMD_SSE2
 
 		SIMD_SSE2 operator<<(size_t shift) const
 		{
-			return _mm_slli_epi32(reg, static_cast<int>(shift));
+			return _mm_slli_epi32(reg, cast(int)(shift));
 		}
 
 		SIMD_SSE2 operator>>(size_t shift) const
 		{
-			return _mm_srli_epi32(reg, static_cast<int>(shift));
+			return _mm_srli_epi32(reg, cast(int)(shift));
 		}
 
 		SIMD_SSE2 operator~() const
@@ -153,7 +151,7 @@ class SIMD_SSE2
 		}
 
 	private:
-		SIMD_SSE2(__m128i in) { reg = in; }
+		SIMD_SSE2(__m128i input) { reg = in; }
 
 		__m128i reg;
 };

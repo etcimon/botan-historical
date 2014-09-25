@@ -2,10 +2,8 @@
 * TLS Server
 * (C) 2004-2011 Jack Lloyd
 *
-* Released under the terms of the Botan license
+* Released under the terms of the botan license.
 */
-
-#define BOTAN_TLS_SERVER_H__
 
 #include <botan/tls_channel.h>
 #include <botan/credentials_manager.h>
@@ -21,15 +19,15 @@ class Server : public Channel
 		/**
 		* Server initialization
 		*/
-		Server(std::function<void (const byte[], size_t)> socket_output_fn,
-				 std::function<void (const byte[], size_t)> data_cb,
-				 std::function<void (Alert, const byte[], size_t)> alert_cb,
-				 std::function<bool (const Session&)> handshake_cb,
-				 Session_Manager& session_manager,
-				 Credentials_Manager& creds,
-				 const Policy& policy,
-				 RandomNumberGenerator& rng,
-				 const std::vector<string>& protocols = std::vector<string>(),
+		Server(void delegate(in byte[]) socket_output_fn,
+				 void delegate(in byte[]) data_cb,
+				 void delegate(Alert, in byte[]) alert_cb,
+				 bool delegate(const Session) handshake_cb,
+				 Session_Manager session_manager,
+				 Credentials_Manager creds,
+				 const Policy policy,
+				 RandomNumberGenerator rng,
+				 in string[] protocols = [],
 				 size_t reserved_io_buffer_size = 16*1024
 			);
 
@@ -40,7 +38,7 @@ class Server : public Channel
 		string next_protocol() const { return m_next_protocol; }
 
 	private:
-		std::vector<X509_Certificate>
+		X509_Certificate[]
 			get_peer_cert_chain(const Handshake_State& state) const override;
 
 		void initiate_handshake(Handshake_State& state,

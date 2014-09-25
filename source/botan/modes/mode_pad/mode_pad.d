@@ -10,7 +10,7 @@
 /*
 * Pad with PKCS #7 Method
 */
-void PKCS7_Padding::add_padding(SafeArray!byte& buffer,
+void PKCS7_Padding::add_padding(SafeArray!byte buffer,
 										  size_t last_byte_pos,
 										  size_t block_size) const
 {
@@ -23,7 +23,7 @@ void PKCS7_Padding::add_padding(SafeArray!byte& buffer,
 /*
 * Unpad with PKCS #7 Method
 */
-size_t PKCS7_Padding::unpad(const byte block[], size_t size) const
+size_t PKCS7_Padding::unpad(in byte[] block, size_t size) const
 {
 	size_t position = block[size-1];
 
@@ -40,7 +40,7 @@ size_t PKCS7_Padding::unpad(const byte block[], size_t size) const
 /*
 * Pad with ANSI X9.23 Method
 */
-void ANSI_X923_Padding::add_padding(SafeArray!byte& buffer,
+void ANSI_X923_Padding::add_padding(SafeArray!byte buffer,
 												size_t last_byte_pos,
 												size_t block_size) const
 {
@@ -54,7 +54,7 @@ void ANSI_X923_Padding::add_padding(SafeArray!byte& buffer,
 /*
 * Unpad with ANSI X9.23 Method
 */
-size_t ANSI_X923_Padding::unpad(const byte block[], size_t size) const
+size_t ANSI_X923_Padding::unpad(in byte[] block, size_t size) const
 {
 	size_t position = block[size-1];
 	if(position > size)
@@ -68,7 +68,7 @@ size_t ANSI_X923_Padding::unpad(const byte block[], size_t size) const
 /*
 * Pad with One and Zeros Method
 */
-void OneAndZeros_Padding::add_padding(SafeArray!byte& buffer,
+void OneAndZeros_Padding::add_padding(SafeArray!byte buffer,
 												  size_t last_byte_pos,
 												  size_t block_size) const
 {
@@ -81,7 +81,7 @@ void OneAndZeros_Padding::add_padding(SafeArray!byte& buffer,
 /*
 * Unpad with One and Zeros Method
 */
-size_t OneAndZeros_Padding::unpad(const byte block[], size_t size) const
+size_t OneAndZeros_Padding::unpad(in byte[] block, size_t size) const
 {
 	while(size)
 	{

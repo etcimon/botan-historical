@@ -140,7 +140,7 @@ void des_decrypt(u32bit& L, u32bit& R,
 /*
 * DES Encryption
 */
-void DES::encrypt_n(const byte in[], byte out[], size_t blocks) const
+void DES::encrypt_n(in byte[] input, ref byte[] output) const
 {
 	for(size_t i = 0; i != blocks; ++i)
 	{
@@ -149,8 +149,8 @@ void DES::encrypt_n(const byte in[], byte out[], size_t blocks) const
 					  (DES_IPTAB1[in[4]] << 4) | (DES_IPTAB1[in[5]] << 5) |
 					  (DES_IPTAB1[in[6]] << 6) | (DES_IPTAB2[in[7]]	  );
 
-		u32bit L = static_cast<u32bit>(T >> 32);
-		u32bit R = static_cast<u32bit>(T);
+		u32bit L = cast(u32bit)(T >> 32);
+		u32bit R = cast(u32bit)(T);
 
 		des_encrypt(L, R, &round_key[0]);
 
@@ -170,7 +170,7 @@ void DES::encrypt_n(const byte in[], byte out[], size_t blocks) const
 /*
 * DES Decryption
 */
-void DES::decrypt_n(const byte in[], byte out[], size_t blocks) const
+void DES::decrypt_n(in byte[] input, ref byte[] output) const
 {
 	for(size_t i = 0; i != blocks; ++i)
 	{
@@ -179,8 +179,8 @@ void DES::decrypt_n(const byte in[], byte out[], size_t blocks) const
 					  (DES_IPTAB1[in[4]] << 4) | (DES_IPTAB1[in[5]] << 5) |
 					  (DES_IPTAB1[in[6]] << 6) | (DES_IPTAB2[in[7]]	  );
 
-		u32bit L = static_cast<u32bit>(T >> 32);
-		u32bit R = static_cast<u32bit>(T);
+		u32bit L = cast(u32bit)(T >> 32);
+		u32bit R = cast(u32bit)(T);
 
 		des_decrypt(L, R, &round_key[0]);
 
@@ -201,7 +201,7 @@ void DES::decrypt_n(const byte in[], byte out[], size_t blocks) const
 /*
 * DES Key Schedule
 */
-void DES::key_schedule(const byte key[], size_t)
+void DES::key_schedule(in byte[] key, size_t)
 {
 	round_key.resize(32);
 	des_key_schedule(&round_key[0], key);
@@ -215,7 +215,7 @@ void DES::clear()
 /*
 * TripleDES Encryption
 */
-void TripleDES::encrypt_n(const byte in[], byte out[], size_t blocks) const
+void TripleDES::encrypt_n(in byte[] input, ref byte[] output) const
 {
 	for(size_t i = 0; i != blocks; ++i)
 	{
@@ -224,8 +224,8 @@ void TripleDES::encrypt_n(const byte in[], byte out[], size_t blocks) const
 					  (DES_IPTAB1[in[4]] << 4) | (DES_IPTAB1[in[5]] << 5) |
 					  (DES_IPTAB1[in[6]] << 6) | (DES_IPTAB2[in[7]]	  );
 
-		u32bit L = static_cast<u32bit>(T >> 32);
-		u32bit R = static_cast<u32bit>(T);
+		u32bit L = cast(u32bit)(T >> 32);
+		u32bit R = cast(u32bit)(T);
 
 		des_encrypt(L, R, &round_key[0]);
 		des_decrypt(R, L, &round_key[32]);
@@ -248,7 +248,7 @@ void TripleDES::encrypt_n(const byte in[], byte out[], size_t blocks) const
 /*
 * TripleDES Decryption
 */
-void TripleDES::decrypt_n(const byte in[], byte out[], size_t blocks) const
+void TripleDES::decrypt_n(in byte[] input, ref byte[] output) const
 {
 	for(size_t i = 0; i != blocks; ++i)
 	{
@@ -257,8 +257,8 @@ void TripleDES::decrypt_n(const byte in[], byte out[], size_t blocks) const
 					  (DES_IPTAB1[in[4]] << 4) | (DES_IPTAB1[in[5]] << 5) |
 					  (DES_IPTAB1[in[6]] << 6) | (DES_IPTAB2[in[7]]	  );
 
-		u32bit L = static_cast<u32bit>(T >> 32);
-		u32bit R = static_cast<u32bit>(T);
+		u32bit L = cast(u32bit)(T >> 32);
+		u32bit R = cast(u32bit)(T);
 
 		des_decrypt(L, R, &round_key[64]);
 		des_encrypt(R, L, &round_key[32]);
@@ -281,7 +281,7 @@ void TripleDES::decrypt_n(const byte in[], byte out[], size_t blocks) const
 /*
 * TripleDES Key Schedule
 */
-void TripleDES::key_schedule(const byte key[], size_t length)
+void TripleDES::key_schedule(in byte[] key)
 {
 	round_key.resize(3*32);
 	des_key_schedule(&round_key[0], key);

@@ -2,10 +2,8 @@
 * Discrete Logarithm Group
 * (C) 1999-2008 Jack Lloyd
 *
-* Distributed under the terms of the Botan license
+* Distributed under the terms of the botan license.
 */
-
-#define BOTAN_DL_PARAM_H__
 
 #include <botan/bigint.h>
 #include <botan/data_src.h>

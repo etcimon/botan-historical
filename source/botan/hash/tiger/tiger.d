@@ -40,7 +40,7 @@ inline void mix(secure_vector<u64bit>& X)
 /*
 * Tiger Compression Function
 */
-void Tiger::compress_n(const byte input[], size_t blocks)
+void Tiger::compress_n(in byte[] input, size_t blocks)
 {
 	u64bit A = digest[0], B = digest[1], C = digest[2];
 

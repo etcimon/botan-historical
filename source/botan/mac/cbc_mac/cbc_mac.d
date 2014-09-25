@@ -11,7 +11,7 @@
 /*
 * Update an CBC-MAC Calculation
 */
-void CBC_MAC::add_data(const byte input[], size_t length)
+void CBC_MAC::add_data(in byte[] input, size_t length)
 {
 	size_t xored = std::min(output_length() - m_position, length);
 	xor_buf(&m_state[m_position], input, xored);
@@ -51,7 +51,7 @@ void CBC_MAC::final_result(byte mac[])
 /*
 * CBC-MAC Key Schedule
 */
-void CBC_MAC::key_schedule(const byte key[], size_t length)
+void CBC_MAC::key_schedule(in byte[] key)
 {
 	m_cipher->set_key(key, length);
 }

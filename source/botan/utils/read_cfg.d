@@ -8,7 +8,7 @@
 #include <botan/parsing.h>
 #include <ctype.h>
 void lex_cfg(std::istream& is,
-				 std::function<void (string)> cb)
+				void delegate(string) cb)
 {
 	while(is.good())
 	{
@@ -73,8 +73,8 @@ void lex_cfg(std::istream& is,
 }
 
 void lex_cfg_w_headers(std::istream& is,
-							  std::function<void (string)> cb,
-							  std::function<void (string)> hdr_cb)
+							  void delegate(string) cb,
+							  void delegate(string) hdr_cb)
 {
 	auto intercept = [cb,hdr_cb](in string s)
 	{

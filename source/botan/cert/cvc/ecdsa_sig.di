@@ -3,10 +3,8 @@
 * (C) 2007 Falko Strenzke, FlexSecure GmbH
 * (C) 2008-2010 Jack Lloyd
 *
-* Distributed under the terms of the Botan license
+* Distributed under the terms of the botan license.
 */
-
-#define BOTAN_ECDSA_SIGNATURE_H__
 
 #include <botan/bigint.h>
 #include <botan/der_enc.h>

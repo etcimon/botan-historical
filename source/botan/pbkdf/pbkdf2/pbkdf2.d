@@ -15,7 +15,7 @@
 std::pair<size_t, OctetString>
 PKCS5_PBKDF2::key_derivation(size_t key_len,
 									  in string passphrase,
-									  const byte salt[], size_t salt_len,
+									  in byte[] salt, size_t salt_len,
 									  size_t iterations,
 									  std::chrono::milliseconds msec) const
 {
@@ -24,7 +24,7 @@ PKCS5_PBKDF2::key_derivation(size_t key_len,
 
 	try
 	{
-		mac->set_key(reinterpret_cast<const byte*>(passphrase.data()),
+		mac->set_key(cast(const byte*)(passphrase.data()),
 						 passphrase.length());
 	}
 	catch(Invalid_Key_Length)
@@ -42,7 +42,7 @@ PKCS5_PBKDF2::key_derivation(size_t key_len,
 	const size_t blocks_needed = round_up(key_len, mac->output_length()) / mac->output_length();
 
 	std::chrono::microseconds usec_per_block =
-		std::chrono::duration_cast<std::chrono::microseconds>(msec) / blocks_needed;
+		std::chrono::duration_cast(<std::chrono::microseconds>)(msec) / blocks_needed;
 
 	u32bit counter = 1;
 	while(key_len)
@@ -81,7 +81,7 @@ PKCS5_PBKDF2::key_derivation(size_t key_len,
 				if(iterations % 10000 == 0)
 				{
 					auto time_taken = std::chrono::high_resolution_clock::now() - start;
-					auto usec_taken = std::chrono::duration_cast<std::chrono::microseconds>(time_taken);
+					auto usec_taken = std::chrono::duration_cast(<std::chrono::microseconds>)(time_taken);
 					if(usec_taken > usec_per_block)
 						break;
 				}

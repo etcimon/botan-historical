@@ -10,7 +10,7 @@
 /*
 * Whirlpool Compression Function
 */
-void Whirlpool::compress_n(const byte in[], size_t blocks)
+void Whirlpool::compress_n(in byte[] input)
 {
 	static const u64bit RC[10] = {
 		0x1823C6E887B8014F, 0x36A6D2F5796F9152,

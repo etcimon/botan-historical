@@ -2,10 +2,8 @@
 * A vague catch all include file for Botan
 * (C) 1999-2007 Jack Lloyd
 *
-* Distributed under the terms of the Botan license
+* Distributed under the terms of the botan license.
 */
-
-#define BOTAN_BOTAN_H__
 
 #include <botan/init.h>
 #include <botan/lookup.h>

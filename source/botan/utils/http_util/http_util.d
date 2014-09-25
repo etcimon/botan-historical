@@ -46,11 +46,11 @@ string http_transact_fail(in string hostname,
 									 ": network code disabled in build");
 }
 
-string url_encode(in string in)
+string url_encode(in string input)
 {
 	std::ostringstream out;
 
-	for(auto c : in)
+	for(auto c : input)
 	{
 		if(c >= 'A' && c <= 'Z')
 			out << c;
@@ -61,7 +61,7 @@ string url_encode(in string in)
 		else if(c == '-' || c == '_' || c == '.' || c == '~')
 			out << c;
 		else
-			out << '%' << hex_encode(reinterpret_cast<byte*>(&c), 1);
+			out << '%' << hex_encode(cast(byte*)(&c), 1);
 	}
 
 	return out.str();
@@ -73,7 +73,7 @@ std::ostream& operator<<(std::ostream& o, const Response& resp)
 	for(auto h : resp.headers())
 		o << "Header '" << h.first << "' = '" << h.second << "'";
 	o << "Body " << std::to_string(resp.body().size()) << " bytes:";
-	o.write(reinterpret_cast<const char*>(&resp.body()[0]), resp.body().size());
+	o.write(cast(const char*)(&resp.body()[0]), resp.body().size());
 	return o;
 }
 
@@ -120,7 +120,7 @@ Response http_sync(http_exch_fn http_transact,
 	if(content_type != "")
 		outbuf << "Content-Type: " << content_type << "\r";
 	outbuf << "Connection: close\r\r";
-	outbuf.write(reinterpret_cast<const char*>(&body[0]), body.size());
+	outbuf.write(cast(const char*)(&body[0]), body.size());
 
 	std::istringstream io(http_transact(hostname, outbuf.str()));
 
@@ -168,7 +168,7 @@ Response http_sync(http_exch_fn http_transact,
 	std::vector<byte> buf(4096);
 	while(io.good())
 	{
-		io.read(reinterpret_cast<char*>(&buf[0]), buf.size());
+		io.read(cast(char*)(&buf[0]), buf.size());
 		resp_body.insert(resp_body.end(), &buf[0], &buf[io.gcount()]);
 	}
 

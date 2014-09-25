@@ -2,10 +2,8 @@
 * The Skein-512 hash function
 * (C) 2009,2014 Jack Lloyd
 *
-* Distributed under the terms of the Botan license
+* Distributed under the terms of the botan license.
 */
-
-#define BOTAN_SKEIN_512_H__
 
 #include <botan/hash.h>
 #include <botan/threefish.h>
@@ -43,10 +41,10 @@ class Skein_512 : public HashFunction
 			SKEIN_OUTPUT = 63
 	};
 
-		void add_data(const byte input[], size_t length);
-		void final_result(byte out[]);
+		void add_data(in byte[] input, size_t length);
+		void final_result(ref byte[] output);
 
-		void ubi_512(const byte msg[], size_t msg_len);
+		void ubi_512(in byte[] msg, size_t msg_len);
 
 		void initial_block();
 		void reset_tweak(type_code type, bool final);

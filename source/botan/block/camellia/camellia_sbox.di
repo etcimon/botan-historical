@@ -2,10 +2,8 @@
 * Camellia SBox Tables
 * (C) 2012 Jack Lloyd
 *
-* Distributed under the terms of the Botan license
+* Distributed under the terms of the botan license.
 */
-
-#define BOTAN_CAMELLIA_SBOX_H__
 
 #include <botan/types.h>
 const u64bit Camellia_SBOX1[256] = {

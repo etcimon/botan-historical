@@ -2,10 +2,8 @@
 * PK Operation Types
 * (C) 2010 Jack Lloyd
 *
-* Distributed under the terms of the Botan license
+* Distributed under the terms of the botan license.
 */
-
-#define BOTAN_PK_OPERATIONS_H__
 
 #include <botan/secmem.h>
 #include <botan/rng.h>
@@ -19,7 +17,7 @@ class Encryption
 	public:
 		abstract size_t max_input_bits() const = 0;
 
-		abstract SafeArray!byte encrypt(const byte msg[], size_t msg_len,
+		abstract SafeArray!byte encrypt(in byte[] msg, size_t msg_len,
 													  RandomNumberGenerator& rng) = 0;
 
 		abstract ~Encryption() {}
@@ -33,7 +31,7 @@ class Decryption
 	public:
 		abstract size_t max_input_bits() const = 0;
 
-		abstract SafeArray!byte decrypt(const byte msg[],
+		abstract SafeArray!byte decrypt(in byte[] msg,
 													  size_t msg_len) = 0;
 
 		abstract ~Decryption() {}
@@ -69,7 +67,7 @@ class Signature
 		* @param msg_len the length of msg in bytes
 		* @param rng a random number generator
 		*/
-		abstract SafeArray!byte sign(const byte msg[], size_t msg_len,
+		abstract SafeArray!byte sign(in byte[] msg, size_t msg_len,
 												  RandomNumberGenerator& rng) = 0;
 
 		abstract ~Signature() {}
@@ -147,7 +145,7 @@ class Key_Agreement
 		* @param w_len the length of w in bytes
 		* @returns the agreed key
 		*/
-		abstract SafeArray!byte agree(const byte w[], size_t w_len) = 0;
+		abstract SafeArray!byte agree(in byte[] w, size_t w_len) = 0;
 
 		abstract ~Key_Agreement() {}
 };

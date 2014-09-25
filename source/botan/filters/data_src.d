@@ -13,17 +13,17 @@
 /*
 * Read a single byte from the DataSource
 */
-size_t DataSource::read_byte(byte& out)
+size_t DataSource::read_byte(ref byte output)
 {
-	return read(&out, 1);
+	return read(output.ptr[0..1]);
 }
 
 /*
 * Peek a single byte from the DataSource
 */
-size_t DataSource::peek_byte(byte& out) const
+size_t DataSource::peek_byte(ref byte output) const
 {
-	return peek(&out, 1, 0);
+	return peek(output.ptr[0..1]);
 }
 
 /*
@@ -41,8 +41,9 @@ size_t DataSource::discard_next(size_t n)
 /*
 * Read from a memory buffer
 */
-size_t DataSource_Memory::read(byte out[], size_t length)
+size_t DataSource_Memory::read(ref byte[] output)
 {
+	size_t length = output.length;
 	size_t got = std::min<size_t>(source.size() - offset, length);
 	copy_mem(out, &source[offset], got);
 	offset += got;
@@ -52,9 +53,10 @@ size_t DataSource_Memory::read(byte out[], size_t length)
 /*
 * Peek into a memory buffer
 */
-size_t DataSource_Memory::peek(byte out[], size_t length,
+size_t DataSource_Memory::peek(ref byte[] output,
 										 size_t peek_offset) const
 {
+	size_t length = output.length;
 	const size_t bytes_left = source.size() - offset;
 	if(peek_offset >= bytes_left) return 0;
 
@@ -74,9 +76,9 @@ bool DataSource_Memory::end_of_data() const
 /*
 * DataSource_Memory Constructor
 */
-DataSource_Memory::DataSource_Memory(in string in) :
-	source(reinterpret_cast<const byte*>(in.data()),
-			 reinterpret_cast<const byte*>(in.data()) + in.length()),
+DataSource_Memory::DataSource_Memory(in string input) :
+	source(cast(const byte*)(in.data()),
+			 cast(const byte*)(in.data()) + in.length()),
 	offset(0)
 {
 	offset = 0;
@@ -85,9 +87,10 @@ DataSource_Memory::DataSource_Memory(in string in) :
 /*
 * Read from a stream
 */
-size_t DataSource_Stream::read(byte out[], size_t length)
+size_t DataSource_Stream::read(ref byte[] output)
 {
-	source.read(reinterpret_cast<char*>(out), length);
+	size_t length = output.length;
+	source.read(cast(char*)(output), length);
 	if(source.bad())
 		throw Stream_IO_Error("DataSource_Stream::read: Source failure");
 
@@ -99,8 +102,9 @@ size_t DataSource_Stream::read(byte out[], size_t length)
 /*
 * Peek into a stream
 */
-size_t DataSource_Stream::peek(byte out[], size_t length, size_t offset) const
+size_t DataSource_Stream::peek(ref byte[] output, size_t offset) const
 {
+	size_t length = output.length;
 	if(end_of_data())
 		throw Invalid_State("DataSource_Stream: Cannot peek when out of data");
 
@@ -109,7 +113,7 @@ size_t DataSource_Stream::peek(byte out[], size_t length, size_t offset) const
 	if(offset)
 	{
 		SafeArray!byte buf(offset);
-		source.read(reinterpret_cast<char*>(&buf[0]), buf.size());
+		source.read(cast(char*)(&buf[0]), buf.size());
 		if(source.bad())
 			throw Stream_IO_Error("DataSource_Stream::peek: Source failure");
 		got = source.gcount();
@@ -117,7 +121,7 @@ size_t DataSource_Stream::peek(byte out[], size_t length, size_t offset) const
 
 	if(got == offset)
 	{
-		source.read(reinterpret_cast<char*>(out), length);
+		source.read(cast(char*)(out), length);
 		if(source.bad())
 			throw Stream_IO_Error("DataSource_Stream::peek: Source failure");
 		got = source.gcount();
@@ -154,7 +158,7 @@ DataSource_Stream::DataSource_Stream(in string path,
 	identifier(path),
 	source_p(new std::ifstream(
 					path.c_str(),
-					use_binary ? std::ios::binary : std::ios::in)),
+					use_binary ? std::ios::binary : std::ios::input)),
 	source(*source_p),
 	total_read(0)
 {
@@ -172,7 +176,7 @@ DataSource_Stream::DataSource_Stream(std::istream& in,
 												 in string name) :
 	identifier(name),
 	source_p(nullptr),
-	source(in),
+	source(input),
 	total_read(0)
 {
 }

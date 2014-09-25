@@ -2,10 +2,8 @@
 * ASN.1 Internals
 * (C) 1999-2007 Jack Lloyd
 *
-* Distributed under the terms of the Botan license
+* Distributed under the terms of the botan license.
 */
-
-#define BOTAN_ASN1_H__
 
 #include <botan/secmem.h>
 #include <botan/exceptn.h>

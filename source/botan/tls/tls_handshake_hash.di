@@ -2,10 +2,8 @@
 * TLS Handshake Hash
 * (C) 2004-2006,2011,2012 Jack Lloyd
 *
-* Released under the terms of the Botan license
+* Released under the terms of the botan license.
 */
-
-#define BOTAN_TLS_HANDSHAKE_HASH_H__
 
 #include <botan/secmem.h>
 #include <botan/tls_version.h>
@@ -20,10 +18,10 @@ using namespace Botan;
 class Handshake_Hash
 {
 	public:
-		void update(const byte in[], size_t length)
-		{ data += std::make_pair(in, length); }
+		void update(in byte[] input)
+		{ data += std::make_pair(input, length); }
 
-		void update(in Array!byte in)
+		void update(in Array!byte input)
 		{ data += in; }
 
 		SafeArray!byte final(Protocol_Version version,

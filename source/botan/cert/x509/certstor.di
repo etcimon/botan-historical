@@ -2,10 +2,8 @@
 * Certificate Store
 * (C) 1999-2010,2013 Jack Lloyd
 *
-* Distributed under the terms of the Botan license
+* Distributed under the terms of the botan license.
 */
-
-#define BOTAN_CERT_STORE_H__
 
 #include <botan/x509cert.h>
 #include <botan/x509_crl.h>

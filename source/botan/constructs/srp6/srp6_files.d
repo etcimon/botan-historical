@@ -13,13 +13,13 @@ SRP6_Authenticator_File::SRP6_Authenticator_File(in string filename)
 {
 	std::ifstream in(filename.c_str());
 
-	if(!in)
+	if(!input)
 		return; // no entries
 
 	while(in.good())
 	{
 		string line;
-		std::getline(in, line);
+		std::getline(input, line);
 
 		std::vector<string> parts = split_on(line, ':');
 

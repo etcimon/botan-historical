@@ -2,10 +2,8 @@
 * Hex Encoding and Decoding
 * (C) 2010 Jack Lloyd
 *
-* Distributed under the terms of the Botan license
+* Distributed under the terms of the botan license.
 */
-
-#define BOTAN_HEX_CODEC_H__
 
 #include <botan/secmem.h>
 #include <string>
@@ -17,7 +15,7 @@
 * @param uppercase should output be upper or lower case?
 */
 void hex_encode(char output[],
-								  const byte input[],
+								  in byte[] input,
 								  size_t input_length,
 								  bool uppercase = true);
 
@@ -28,7 +26,7 @@ void hex_encode(char output[],
 * @param uppercase should output be upper or lower case?
 * @return hexadecimal representation of input
 */
-string hex_encode(const byte input[],
+string hex_encode(in byte[] input,
 											size_t input_length,
 											bool uppercase = true);
 

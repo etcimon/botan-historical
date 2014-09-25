@@ -25,7 +25,7 @@ DLIES_Encryptor::DLIES_Encryptor(const PK_Key_Agreement_Key& key,
 /*
 * DLIES Encryption
 */
-std::vector<byte> DLIES_Encryptor::enc(const byte in[], size_t length,
+std::vector<byte> DLIES_Encryptor::enc(in byte[] in, size_t length,
 													RandomNumberGenerator&) const
 {
 	if(length > maximum_input_size())
@@ -93,7 +93,7 @@ DLIES_Decryptor::DLIES_Decryptor(const PK_Key_Agreement_Key& key,
 /*
 * DLIES Decryption
 */
-SafeArray!byte DLIES_Decryptor::dec(const byte msg[], size_t length) const
+SafeArray!byte DLIES_Decryptor::dec(in byte[] msg, size_t length) const
 {
 	if(length < my_key.size() + mac->output_length())
 		throw Decoding_Error("DLIES decryption: ciphertext is too short");

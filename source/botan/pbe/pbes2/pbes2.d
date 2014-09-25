@@ -19,7 +19,7 @@
 /*
 * Encrypt some bytes using PBES2
 */
-void PBE_PKCS5v20::write(const byte input[], size_t length)
+void PBE_PKCS5v20::write(in byte[] input, size_t length)
 {
 	pipe.write(input, length);
 	flush_pipe(true);

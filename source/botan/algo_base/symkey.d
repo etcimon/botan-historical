@@ -32,9 +32,9 @@ OctetString::OctetString(in string hex_string)
 /*
 * Create an OctetString from a byte string
 */
-OctetString::OctetString(const byte in[], size_t n)
+OctetString::OctetString(in byte[] input)
 {
-	bits.assign(in, in + n);
+	bits.assign(input);
 }
 
 /*

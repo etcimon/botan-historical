@@ -4,10 +4,8 @@
 *			 Manuel Hartl, FlexSecure GmbH
 * (C) 2008-2010 Jack Lloyd
 *
-* Distributed under the terms of the Botan license
+* Distributed under the terms of the botan license.
 */
-
-#define BOTAN_ECDSA_KEY_H__
 
 #include <botan/ecc_key.h>
 #include <botan/reducer.h>
@@ -93,7 +91,7 @@ class ECDSA_Signature_Operation : public PK_Ops::Signature
 	public:
 		ECDSA_Signature_Operation(const ECDSA_PrivateKey& ecdsa);
 
-		SafeArray!byte sign(const byte msg[], size_t msg_len,
+		SafeArray!byte sign(in byte[] msg, size_t msg_len,
 										RandomNumberGenerator& rng);
 
 		size_t message_parts() const { return 2; }
@@ -121,8 +119,8 @@ class ECDSA_Verification_Operation : public PK_Ops::Verification
 
 		bool with_recovery() const { return false; }
 
-		bool verify(const byte msg[], size_t msg_len,
-						const byte sig[], size_t sig_len);
+		bool verify(in byte[] msg, size_t msg_len,
+						in byte[] sig, size_t sig_len);
 	private:
 		const PointGFp& base_point;
 		const PointGFp& public_point;

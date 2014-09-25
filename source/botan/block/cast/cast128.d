@@ -46,12 +46,12 @@ inline void R3(u32bit& L, u32bit R, u32bit MK, byte RK)
 /*
 * CAST-128 Encryption
 */
-void CAST_128::encrypt_n(const byte in[], byte out[], size_t blocks) const
+void CAST_128::encrypt_n)(in byte[] input, ref byte[] output) const
 {
 	for(size_t i = 0; i != blocks; ++i)
 	{
-		u32bit L = load_be<u32bit>(in, 0);
-		u32bit R = load_be<u32bit>(in, 1);
+		u32bit L = load_be<u32bit>(input, 0);
+		u32bit R = load_be<u32bit>(input, 1);
 
 		R1(L, R, MK[ 0], RK[ 0]);
 		R2(R, L, MK[ 1], RK[ 1]);
@@ -80,12 +80,12 @@ void CAST_128::encrypt_n(const byte in[], byte out[], size_t blocks) const
 /*
 * CAST-128 Decryption
 */
-void CAST_128::decrypt_n(const byte in[], byte out[], size_t blocks) const
+void CAST_128::decrypt_n)(in byte[] input, ref byte[] output) const
 {
 	for(size_t i = 0; i != blocks; ++i)
 	{
-		u32bit L = load_be<u32bit>(in, 0);
-		u32bit R = load_be<u32bit>(in, 1);
+		u32bit L = load_be<u32bit>(input, 0);
+		u32bit R = load_be<u32bit>(input, 1);
 
 		R1(L, R, MK[15], RK[15]);
 		R3(R, L, MK[14], RK[14]);
@@ -114,7 +114,7 @@ void CAST_128::decrypt_n(const byte in[], byte out[], size_t blocks) const
 /*
 * CAST-128 Key Schedule
 */
-void CAST_128::key_schedule(const byte key[], size_t length)
+void CAST_128::key_schedule)(in byte[] key)
 {
 	MK.resize(48);
 	RK.resize(48);
@@ -132,7 +132,7 @@ void CAST_128::key_schedule(const byte key[], size_t length)
 		RK[i] = RK32[i] % 32;
 }
 
-void CAST_128::clear()
+void CAST_128::clear)()
 {
 	zap(MK);
 	zap(RK);

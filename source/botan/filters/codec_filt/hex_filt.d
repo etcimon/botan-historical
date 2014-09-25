@@ -40,9 +40,9 @@ Hex_Encoder::Hex_Encoder(Case c) : casing(c), line_length(0)
 /*
 * Encode and send a block
 */
-void Hex_Encoder::encode_and_send(const byte block[], size_t length)
+void Hex_Encoder::encode_and_send(in byte[] block, size_t length)
 {
-	hex_encode(reinterpret_cast<char*>(&out[0]),
+	hex_encode(cast(char*)(&out[0]),
 				  block, length,
 				  casing == Uppercase);
 
@@ -70,9 +70,9 @@ void Hex_Encoder::encode_and_send(const byte block[], size_t length)
 /*
 * Convert some data into hex format
 */
-void Hex_Encoder::write(const byte input[], size_t length)
+void Hex_Encoder::write(in byte[] input, size_t length)
 {
-	buffer_insert(in, position, input, length);
+	buffer_insert(input, position, input, length);
 	if(position + length >= in.size())
 	{
 		encode_and_send(&in[0], in.size());
@@ -114,7 +114,7 @@ Hex_Decoder::Hex_Decoder(Decoder_Checking c) : checking(c)
 /*
 * Convert some data from hex format
 */
-void Hex_Decoder::write(const byte input[], size_t length)
+void Hex_Decoder::write(in byte[] input, size_t length)
 {
 	while(length)
 	{
@@ -124,7 +124,7 @@ void Hex_Decoder::write(const byte input[], size_t length)
 
 		size_t consumed = 0;
 		size_t written = hex_decode(&out[0],
-											 reinterpret_cast<const char*>(&in[0]),
+											 cast(const char*)(&in[0]),
 											 position,
 											 consumed,
 											 checking != FULL_CHECK);
@@ -151,7 +151,7 @@ void Hex_Decoder::end_msg()
 {
 	size_t consumed = 0;
 	size_t written = hex_decode(&out[0],
-										 reinterpret_cast<const char*>(&in[0]),
+										 cast(const char*)(&in[0]),
 										 position,
 										 consumed,
 										 checking != FULL_CHECK);

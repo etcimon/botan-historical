@@ -2,10 +2,8 @@
 * PBKDF1
 * (C) 1999-2007 Jack Lloyd
 *
-* Distributed under the terms of the Botan license
+* Distributed under the terms of the botan license.
 */
-
-#define BOTAN_PBKDF1_H__
 
 #include <botan/pbkdf.h>
 #include <botan/hash.h>
@@ -21,7 +19,7 @@ class PKCS5_PBKDF1 : public PBKDF
 		* Create a PKCS #5 instance using the specified hash function.
 		* @param hash_in pointer to a hash function object to use
 		*/
-		PKCS5_PBKDF1(HashFunction* hash_in) : hash(hash_in) {}
+		PKCS5_PBKDF1(HashFunction* hash_input) : hash(hash_input) {}
 
 		string name() const
 		{
@@ -36,7 +34,7 @@ class PKCS5_PBKDF1 : public PBKDF
 		std::pair<size_t, OctetString>
 			key_derivation(size_t output_len,
 								in string passphrase,
-								const byte salt[], size_t salt_len,
+								in byte[] salt, size_t salt_len,
 								size_t iterations,
 								std::chrono::milliseconds msec) const override;
 	private:

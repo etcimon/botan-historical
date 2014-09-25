@@ -2,10 +2,8 @@
 * Stream Cipher
 * (C) 1999-2007 Jack Lloyd
 *
-* Distributed under the terms of the Botan license
+* Distributed under the terms of the botan license.
 */
-
-#define BOTAN_STREAM_CIPHER_H__
 
 #include <botan/sym_algo.h>
 /**
@@ -20,7 +18,7 @@ class StreamCipher : public SymmetricAlgorithm
 		* @param out the byte array to hold the output, i.e. the ciphertext
 		* @param len the length of both in and out in bytes
 		*/
-		abstract void cipher(const byte in[], byte out[], size_t len) = 0;
+		abstract void cipher(in byte[] input, ref byte[] output) = 0;
 
 		/**
 		* Encrypt or decrypt a message
@@ -47,7 +45,7 @@ class StreamCipher : public SymmetricAlgorithm
 		* @param iv the initialization vector
 		* @param iv_len the length of the IV in bytes
 		*/
-		abstract void set_iv(const byte iv[], size_t iv_len);
+		abstract void set_iv(in byte[] iv, size_t iv_len);
 
 		/**
 		* @param iv_len the length of the IV in bytes

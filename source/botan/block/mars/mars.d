@@ -229,14 +229,14 @@ u32bit gen_mask(u32bit input)
 /*
 * MARS Encryption
 */
-void MARS::encrypt_n(const byte in[], byte out[], size_t blocks) const
+void MARS::encrypt_n(in byte[] input, ref byte[] output) const
 {
 	for(size_t i = 0; i != blocks; ++i)
 	{
-		u32bit A = load_le<u32bit>(in, 0) + EK[0];
-		u32bit B = load_le<u32bit>(in, 1) + EK[1];
-		u32bit C = load_le<u32bit>(in, 2) + EK[2];
-		u32bit D = load_le<u32bit>(in, 3) + EK[3];
+		u32bit A = load_le<u32bit>(input, 0) + EK[0];
+		u32bit B = load_le<u32bit>(input, 1) + EK[1];
+		u32bit C = load_le<u32bit>(input, 2) + EK[2];
+		u32bit D = load_le<u32bit>(input, 3) + EK[3];
 
 		forward_mix(A, B, C, D);
 
@@ -272,14 +272,14 @@ void MARS::encrypt_n(const byte in[], byte out[], size_t blocks) const
 /*
 * MARS Decryption
 */
-void MARS::decrypt_n(const byte in[], byte out[], size_t blocks) const
+void MARS::decrypt_n(in byte[] input, ref byte[] output) const
 {
 	for(size_t i = 0; i != blocks; ++i)
 	{
-		u32bit A = load_le<u32bit>(in, 3) + EK[39];
-		u32bit B = load_le<u32bit>(in, 2) + EK[38];
-		u32bit C = load_le<u32bit>(in, 1) + EK[37];
-		u32bit D = load_le<u32bit>(in, 0) + EK[36];
+		u32bit A = load_le<u32bit>(input, 3) + EK[39];
+		u32bit B = load_le<u32bit>(input, 2) + EK[38];
+		u32bit C = load_le<u32bit>(input, 1) + EK[37];
+		u32bit D = load_le<u32bit>(input, 0) + EK[36];
 
 		forward_mix(A, B, C, D);
 
@@ -315,13 +315,13 @@ void MARS::decrypt_n(const byte in[], byte out[], size_t blocks) const
 /*
 * MARS Key Schedule
 */
-void MARS::key_schedule(const byte key[], size_t length)
+void MARS::key_schedule(in byte[] key)
 {
 	secure_vector<u32bit> T(15);
 	for(size_t i = 0; i != length / 4; ++i)
 		T[i] = load_le<u32bit>(key, i);
 
-	T[length / 4] = static_cast<u32bit>(length) / 4;
+	T[length / 4] = cast(u32bit)(length) / 4;
 
 	EK.resize(40);
 

@@ -108,7 +108,7 @@ std::vector<string> split_on(in string str, char delim)
 }
 
 std::vector<string> split_on_pred(in string str,
-													std::function<bool (char)> pred)
+									bool delegate(char) pred)
 {
 	std::vector<string> elems;
 	if(str == "") return elems;

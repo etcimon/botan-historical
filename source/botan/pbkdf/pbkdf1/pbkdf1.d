@@ -13,7 +13,7 @@
 std::pair<size_t, OctetString>
 PKCS5_PBKDF1::key_derivation(size_t key_len,
 									  in string passphrase,
-									  const byte salt[], size_t salt_len,
+									  in byte[] salt, size_t salt_len,
 									  size_t iterations,
 									  std::chrono::milliseconds msec) const
 {
@@ -34,7 +34,7 @@ PKCS5_PBKDF1::key_derivation(size_t key_len,
 			if(iterations_performed % 10000 == 0)
 			{
 				auto time_taken = std::chrono::high_resolution_clock::now() - start;
-				auto msec_taken = std::chrono::duration_cast<std::chrono::milliseconds>(time_taken);
+				auto msec_taken = std::chrono::duration_cast(<std::chrono::milliseconds>)(time_taken);
 				if(msec_taken > msec)
 					break;
 			}

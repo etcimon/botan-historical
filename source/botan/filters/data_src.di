@@ -3,10 +3,8 @@
 * (C) 1999-2007 Jack Lloyd
 *	  2012 Markus Wanner
 *
-* Distributed under the terms of the Botan license
+* Distributed under the terms of the botan license.
 */
-
-#define BOTAN_DATA_SRC_H__
 
 #include <botan/secmem.h>
 #include <string>
@@ -26,7 +24,7 @@ class DataSource
 		* @return length in bytes that was actually read and put
 		* into out
 		*/
-		abstract size_t read(byte out[], size_t length) = 0;
+		abstract size_t read(ref byte[] output) = 0;
 
 		/**
 		* Read from the source but do not modify the internal
@@ -39,7 +37,7 @@ class DataSource
 		* @return length in bytes that was actually read and put
 		* into out
 		*/
-		abstract size_t peek(byte out[], size_t length,
+		abstract size_t peek(ref byte[] output,
 								  size_t peek_offset) const = 0;
 
 		/**
@@ -59,7 +57,7 @@ class DataSource
 		* @return length in bytes that was actually read and put
 		* into out
 		*/
-		size_t read_byte(byte& out);
+		size_t read_byte(ref byte output);
 
 		/**
 		* Peek at one byte.
@@ -67,7 +65,7 @@ class DataSource
 		* @return length in bytes that was actually read and put
 		* into out
 		*/
-		size_t peek_byte(byte& out) const;
+		size_t peek_byte(ref byte output) const;
 
 		/**
 		* Discard the next N bytes of the data
@@ -101,28 +99,28 @@ class DataSource_Memory : public DataSource
 		* Construct a memory source that reads from a string
 		* @param in the string to read from
 		*/
-		DataSource_Memory(in string in);
+		DataSource_Memory(in string input);
 
 		/**
 		* Construct a memory source that reads from a byte array
 		* @param in the byte array to read from
 		* @param length the length of the byte array
 		*/
-		DataSource_Memory(const byte in[], size_t length) :
-			source(in, in + length), offset(0) {}
+		DataSource_Memory(in byte[] input) :
+			source(input, in + length), offset(0) {}
 
 		/**
 		* Construct a memory source that reads from a secure_vector
 		* @param in the MemoryRegion to read from
 		*/
-		DataSource_Memory(in SafeArray!byte in) :
-			source(in), offset(0) {}
+		DataSource_Memory(in SafeArray!byte input) :
+			source(input), offset(0) {}
 
 		/**
 		* Construct a memory source that reads from a std::vector
 		* @param in the MemoryRegion to read from
 		*/
-		DataSource_Memory(in Array!byte in) :
+		DataSource_Memory(in Array!byte input) :
 			source(&in[0], &in[in.size()]), offset(0) {}
 
 		abstract size_t get_bytes_read() const { return offset; }

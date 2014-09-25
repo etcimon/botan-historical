@@ -106,14 +106,14 @@ u16bit FI(u16bit I, u16bit K)
 /*
 * KASUMI Encryption
 */
-void KASUMI::encrypt_n(const byte in[], byte out[], size_t blocks) const
+void KASUMI::encrypt_n(in byte[] input, ref byte[] output) const
 {
 	for(size_t i = 0; i != blocks; ++i)
 	{
-		u16bit B0 = load_be<u16bit>(in, 0);
-		u16bit B1 = load_be<u16bit>(in, 1);
-		u16bit B2 = load_be<u16bit>(in, 2);
-		u16bit B3 = load_be<u16bit>(in, 3);
+		u16bit B0 = load_be<u16bit>(input, 0);
+		u16bit B1 = load_be<u16bit>(input, 1);
+		u16bit B2 = load_be<u16bit>(input, 2);
+		u16bit B3 = load_be<u16bit>(input, 3);
 
 		for(size_t j = 0; j != 8; j += 2)
 		{
@@ -150,14 +150,14 @@ void KASUMI::encrypt_n(const byte in[], byte out[], size_t blocks) const
 /*
 * KASUMI Decryption
 */
-void KASUMI::decrypt_n(const byte in[], byte out[], size_t blocks) const
+void KASUMI::decrypt_n(in byte[] input, ref byte[] output) const
 {
 	for(size_t i = 0; i != blocks; ++i)
 	{
-		u16bit B0 = load_be<u16bit>(in, 0);
-		u16bit B1 = load_be<u16bit>(in, 1);
-		u16bit B2 = load_be<u16bit>(in, 2);
-		u16bit B3 = load_be<u16bit>(in, 3);
+		u16bit B0 = load_be<u16bit>(input, 0);
+		u16bit B1 = load_be<u16bit>(input, 1);
+		u16bit B2 = load_be<u16bit>(input, 2);
+		u16bit B3 = load_be<u16bit>(input, 3);
 
 		for(size_t j = 0; j != 8; j += 2)
 		{
@@ -196,7 +196,7 @@ void KASUMI::decrypt_n(const byte in[], byte out[], size_t blocks) const
 /*
 * KASUMI Key Schedule
 */
-void KASUMI::key_schedule(const byte key[], size_t)
+void KASUMI::key_schedule(in byte[] key, size_t)
 {
 	static const u16bit RC[] = { 0x0123, 0x4567, 0x89AB, 0xCDEF,
 										  0xFEDC, 0xBA98, 0x7654, 0x3210 };

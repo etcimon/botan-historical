@@ -11,7 +11,7 @@
 #include <botan/base64.h>
 namespace {
 
-string bcrypt_base64_encode(const byte input[], size_t length)
+string bcrypt_base64_encode(in byte[] input, size_t length)
 {
 	// Bcrypt uses a non-standard base64 alphabet
 	const byte OPENBSD_BASE64_SUB[256] = {
@@ -45,7 +45,7 @@ string bcrypt_base64_encode(const byte input[], size_t length)
 		b64 = b64.substr(0, b64.size() - 1);
 
 	for(size_t i = 0; i != b64.size(); ++i)
-		b64[i] = OPENBSD_BASE64_SUB[static_cast<byte>(b64[i])];
+		b64[i] = OPENBSD_BASE64_SUB[cast(byte)(b64[i])];
 
 	return b64;
 }
@@ -78,7 +78,7 @@ std::vector<byte> bcrypt_base64_decode(string input)
 };
 
 	for(size_t i = 0; i != input.size(); ++i)
-		input[i] = OPENBSD_BASE64_SUB[static_cast<byte>(input[i])];
+		input[i] = OPENBSD_BASE64_SUB[cast(byte)(input[i])];
 
 	return unlock(base64_decode(input));
 }
@@ -98,7 +98,7 @@ string make_bcrypt(in string pass,
 	Blowfish blowfish;
 
 	// Include the trailing NULL byte
-	blowfish.eks_key_schedule(reinterpret_cast<const byte*>(pass.c_str()),
+	blowfish.eks_key_schedule(cast(const byte*)(pass.c_str()),
 									  pass.length() + 1,
 									  &salt[0],
 									  work_factor);

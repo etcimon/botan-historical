@@ -2,10 +2,8 @@
 * KDF1
 * (C) 1999-2007 Jack Lloyd
 *
-* Distributed under the terms of the Botan license
+* Distributed under the terms of the botan license.
 */
-
-#define BOTAN_KDF1_H__
 
 #include <botan/kdf.h>
 #include <botan/hash.h>
@@ -16,8 +14,8 @@ class KDF1 : public KDF
 {
 	public:
 		SafeArray!byte derive(size_t,
-										  const byte secret[], size_t secret_len,
-										  const byte P[], size_t P_len) const;
+										  in byte[] secret, size_t secret_len,
+										  in byte[] P, size_t P_len) const;
 
 		string name() const { return "KDF1(" + hash->name() + ")"; }
 		KDF* clone() const { return new KDF1(hash->clone()); }

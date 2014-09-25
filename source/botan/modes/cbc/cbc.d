@@ -54,12 +54,12 @@ bool CBC_Mode::valid_nonce_length(size_t n) const
 	return (n == 0 || n == cipher().block_size());
 }
 
-void CBC_Mode::key_schedule(const byte key[], size_t length)
+void CBC_Mode::key_schedule(in byte[] key)
 {
 	m_cipher->set_key(key, length);
 }
 
-SafeArray!byte CBC_Mode::start(const byte nonce[], size_t nonce_len)
+SafeArray!byte CBC_Mode::start(in byte[] nonce, size_t nonce_len)
 {
 	if(!valid_nonce_length(nonce_len))
 		throw Invalid_IV_Length(name(), nonce_len);
@@ -85,7 +85,7 @@ size_t CBC_Encryption::output_length(size_t input_length) const
 	return round_up(input_length, cipher().block_size());
 }
 
-void CBC_Encryption::update(SafeArray!byte& buffer, size_t offset)
+void CBC_Encryption::update(SafeArray!byte buffer, size_t offset)
 {
 	BOTAN_ASSERT(buffer.size() >= offset, "Offset is sane");
 	const size_t sz = buffer.size() - offset;
@@ -111,7 +111,7 @@ void CBC_Encryption::update(SafeArray!byte& buffer, size_t offset)
 	}
 }
 
-void CBC_Encryption::finish(SafeArray!byte& buffer, size_t offset)
+void CBC_Encryption::finish(SafeArray!byte buffer, size_t offset)
 {
 	BOTAN_ASSERT(buffer.size() >= offset, "Offset is sane");
 
@@ -142,7 +142,7 @@ size_t CTS_Encryption::output_length(size_t input_length) const
 	return input_length; // no ciphertext expansion in CTS
 }
 
-void CTS_Encryption::finish(SafeArray!byte& buffer, size_t offset)
+void CTS_Encryption::finish(SafeArray!byte buffer, size_t offset)
 {
 	BOTAN_ASSERT(buffer.size() >= offset, "Offset is sane");
 	byte* buf = &buffer[offset];
@@ -196,7 +196,7 @@ size_t CBC_Decryption::minimum_final_size() const
 	return cipher().block_size();
 }
 
-void CBC_Decryption::update(SafeArray!byte& buffer, size_t offset)
+void CBC_Decryption::update(SafeArray!byte buffer, size_t offset)
 {
 	BOTAN_ASSERT(buffer.size() >= offset, "Offset is sane");
 	const size_t sz = buffer.size() - offset;
@@ -224,7 +224,7 @@ void CBC_Decryption::update(SafeArray!byte& buffer, size_t offset)
 	}
 }
 
-void CBC_Decryption::finish(SafeArray!byte& buffer, size_t offset)
+void CBC_Decryption::finish(SafeArray!byte buffer, size_t offset)
 {
 	BOTAN_ASSERT(buffer.size() >= offset, "Offset is sane");
 	const size_t sz = buffer.size() - offset;
@@ -250,7 +250,7 @@ size_t CTS_Decryption::minimum_final_size() const
 	return cipher().block_size() + 1;
 }
 
-void CTS_Decryption::finish(SafeArray!byte& buffer, size_t offset)
+void CTS_Decryption::finish(SafeArray!byte buffer, size_t offset)
 {
 	BOTAN_ASSERT(buffer.size() >= offset, "Offset is sane");
 	const size_t sz = buffer.size() - offset;

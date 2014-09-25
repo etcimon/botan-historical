@@ -2,10 +2,8 @@
 * Cipher Modes
 * (C) 2013 Jack Lloyd
 *
-* Distributed under the terms of the Botan license
+* Distributed under the terms of the botan license.
 */
-
-#define BOTAN_CIPHER_MODE_H__
 
 #include <botan/transform.h>
 /**

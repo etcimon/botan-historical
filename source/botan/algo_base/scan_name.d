@@ -51,7 +51,7 @@ string make_arg(
 }
 
 std::pair<size_t, string>
-deref_aliases(const std::pair<size_t, string>& in)
+deref_aliases(const std::pair<size_t, string>& input)
 {
 	return std::make_pair(in.first,
 								 SCAN_Name::deref_alias(in.second));

@@ -2,10 +2,8 @@
 * Symmetric Key Length Specification
 * (C) 2010 Jack Lloyd
 *
-* Distributed under the terms of the Botan license
+* Distributed under the terms of the botan license.
 */
-
-#define BOTAN_KEY_LEN_SPECIFICATION_H__
 
 #include <botan/types.h>
 /**

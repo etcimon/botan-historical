@@ -2,10 +2,8 @@
 * TLS Cipher Suites
 * (C) 2004-2011,2012 Jack Lloyd
 *
-* Released under the terms of the Botan license
+* Released under the terms of the botan license.
 */
-
-#define BOTAN_TLS_CIPHER_SUITES_H__
 
 #include <botan/types.h>
 #include <string>

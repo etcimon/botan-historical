@@ -2,10 +2,8 @@
 * Memory Operations
 * (C) 1999-2009,2012 Jack Lloyd
 *
-* Distributed under the terms of the Botan license
+* Distributed under the terms of the botan license.
 */
-
-#define BOTAN_MEMORY_OPS_H__
 
 #include <botan/types.h>
 #include <cstring>
@@ -32,7 +30,7 @@ template<typename T> inline void clear_mem(T* ptr, size_t n)
 * @param in the source array
 * @param n the number of elements of in/out
 */
-template<typename T> inline void copy_mem(T* out, const T* in, size_t n)
+template<typename T> inline void copy_mem(T* out, const T* input)
 {
 	std::memmove(out, in, sizeof(T)*n);
 }

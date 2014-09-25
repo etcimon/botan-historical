@@ -2,10 +2,8 @@
 * Lion
 * (C) 1999-2007,2014 Jack Lloyd
 *
-* Distributed under the terms of the Botan license
+* Distributed under the terms of the botan license.
 */
-
-#define BOTAN_LION_H__
 
 #include <botan/block_cipher.h>
 #include <botan/stream_cipher.h>
@@ -21,8 +19,8 @@
 class Lion : public BlockCipher
 {
 	public:
-		void encrypt_n(const byte in[], byte out[], size_t blocks) const override;
-		void decrypt_n(const byte in[], byte out[], size_t blocks) const override;
+		void encrypt_n(in byte[] input, ref byte[] output) const override;
+		void decrypt_n(in byte[] input, ref byte[] output) const override;
 
 		size_t block_size() const override { return m_block_size; }
 

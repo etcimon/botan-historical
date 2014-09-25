@@ -2,10 +2,8 @@
 * Library Initialization
 * (C) 1999-2008 Jack Lloyd
 *
-* Distributed under the terms of the Botan license
+* Distributed under the terms of the botan license.
 */
-
-#define BOTAN_LIBRARY_INITIALIZER_H__
 
 #include <botan/build.h>
 #include <string>

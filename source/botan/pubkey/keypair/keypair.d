@@ -13,7 +13,7 @@ namespace KeyPair {
 * Check an encryption key pair for consistency
 */
 bool encryption_consistency_check(RandomNumberGenerator& rng,
-											 const Private_Key& key,
+											 in Private_Key key,
 											 in string padding)
 {
 	PK_Encryptor_EME encryptor(key, padding);
@@ -42,7 +42,7 @@ bool encryption_consistency_check(RandomNumberGenerator& rng,
 * Check a signature key pair for consistency
 */
 bool signature_consistency_check(RandomNumberGenerator& rng,
-											const Private_Key& key,
+											in Private_Key key,
 											in string padding)
 {
 	PK_Signer signer(key, padding);

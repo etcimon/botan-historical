@@ -2,10 +2,8 @@
 * PKCS #1 v1.5 signature padding
 * (C) 1999-2008 Jack Lloyd
 *
-* Distributed under the terms of the Botan license
+* Distributed under the terms of the botan license.
 */
-
-#define BOTAN_EMSA_PKCS1_H__
 
 #include <botan/emsa.h>
 #include <botan/hash.h>

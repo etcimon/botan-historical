@@ -31,7 +31,7 @@ class Lzma_Alloc_Info
 */
 void* lzma_malloc(void *opaque, size_t /*nmemb*/, size_t size)
 {
-	Lzma_Alloc_Info* info = static_cast<Lzma_Alloc_Info*>(opaque);
+	Lzma_Alloc_Info* info = cast(Lzma_Alloc_Info*)(opaque);
 	void* ptr = std::malloc(size);		// It is guaranteed by liblzma doc that nmemb is always set to 1
 	info->current_allocs[ptr] = size;
 	return ptr;
@@ -44,7 +44,7 @@ void lzma_free(void *opaque, void *ptr)
 {
 	if(!ptr) return;		 // liblzma sometimes does pass zero ptr
 
-	Lzma_Alloc_Info* info = static_cast<Lzma_Alloc_Info*>(opaque);
+	Lzma_Alloc_Info* info = cast(Lzma_Alloc_Info*)(opaque);
 	auto i = info->current_allocs.find(ptr);
 	if(i == info->current_allocs.end())
 		throw Invalid_Argument("lzma_free: Got pointer not allocated by us");
@@ -83,7 +83,7 @@ class Lzma_Stream
 		*/
 		~Lzma_Stream()
 		{
-			Lzma_Alloc_Info* info = static_cast<Lzma_Alloc_Info*>(stream.allocator->opaque);
+			Lzma_Alloc_Info* info = cast(Lzma_Alloc_Info*)(stream.allocator->opaque);
 			delete info;
 			delete stream.allocator;
 			std::memset(&stream, 0, sizeof(lzma_stream));
@@ -119,14 +119,14 @@ void Lzma_Compression::start_msg()
 /*
 * Compress Input with Lzma
 */
-void Lzma_Compression::write(const byte input[], size_t length)
+void Lzma_Compression::write(in byte[] input, size_t length)
 {
-	lzma->stream.next_in = static_cast<const uint8_t*>(input);
+	lzma->stream.next_in = cast(const uint8_t*)(input);
 	lzma->stream.avail_in = length;
 
 	while(lzma->stream.avail_in != 0)
 	{
-		lzma->stream.next_out = static_cast<uint8_t*>(&buffer[0]);
+		lzma->stream.next_out = cast(uint8_t*)(&buffer[0]);
 		lzma->stream.avail_out = buffer.size();
 
 		lzma_ret ret = lzma_code(&(lzma->stream), LZMA_RUN);
@@ -151,7 +151,7 @@ void Lzma_Compression::end_msg()
 	int ret = LZMA_OK;
 	while(ret != LZMA_STREAM_END)
 	{
-		lzma->stream.next_out = reinterpret_cast<uint8_t*>(&buffer[0]);
+		lzma->stream.next_out = cast(uint8_t*)(&buffer[0]);
 		lzma->stream.avail_out = buffer.size();
 
 		ret = lzma_code(&(lzma->stream), LZMA_FINISH);
@@ -171,7 +171,7 @@ void Lzma_Compression::flush()
 
 	while(true)
 	{
-		lzma->stream.next_out = reinterpret_cast<uint8_t*>(&buffer[0]);
+		lzma->stream.next_out = cast(uint8_t*)(&buffer[0]);
 		lzma->stream.avail_out = buffer.size();
 
 		lzma_ret ret = lzma_code(&(lzma->stream), LZMA_FULL_FLUSH);
@@ -232,18 +232,18 @@ void Lzma_Decompression::start_msg()
 /*
 * Decompress Input with Lzma
 */
-void Lzma_Decompression::write(const byte input_arr[], size_t length)
+void Lzma_Decompression::write(in byte[] input_arr, size_t length)
 {
 	if(length) no_writes = false;
 
-	const uint8_t* input = reinterpret_cast<const uint8_t*>(input_arr);
+	const uint8_t* input = cast(const uint8_t*)(input_arr);
 
 	lzma->stream.next_in = input;
 	lzma->stream.avail_in = length;
 
 	while(lzma->stream.avail_in != 0)
 	{
-		lzma->stream.next_out = reinterpret_cast<uint8_t*>(&buffer[0]);
+		lzma->stream.next_out = cast(uint8_t*)(&buffer[0]);
 		lzma->stream.avail_out = buffer.size();
 
 		lzma_ret ret = lzma_code(&(lzma->stream), LZMA_RUN);
@@ -288,7 +288,7 @@ void Lzma_Decompression::end_msg()
 
 	while(ret != LZMA_STREAM_END)
 	{
-		lzma->stream.next_out = reinterpret_cast<uint8_t*>(&buffer[0]);
+		lzma->stream.next_out = cast(uint8_t*)(&buffer[0]);
 		lzma->stream.avail_out = buffer.size();
 		ret = lzma_code(&(lzma->stream), LZMA_FINISH);
 

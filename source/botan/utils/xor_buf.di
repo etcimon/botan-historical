@@ -2,10 +2,8 @@
 * XOR operations
 * (C) 1999-2008 Jack Lloyd
 *
-* Distributed under the terms of the Botan license
+* Distributed under the terms of the botan license.
 */
-
-#define BOTAN_XOR_BUF_H__
 
 #include <botan/types.h>
 #include <vector>
@@ -64,11 +62,11 @@ template<typename T> void xor_buf(T out[],
 
 #if BOTAN_TARGET_UNALIGNED_MEMORY_ACCESS_OK
 
-inline void xor_buf(byte out[], const byte in[], size_t length)
+inline void xor_buf(ref byte[] output, in byte[] input)
 {
 	while(length >= 8)
 	{
-		*reinterpret_cast<u64bit*>(out) ^= *reinterpret_cast<const u64bit*>(in);
+		*cast(u64bit*)(out) ^= *cast(const u64bit*)(input);
 		out += 8; in += 8; length -= 8;
 	}
 
@@ -76,16 +74,16 @@ inline void xor_buf(byte out[], const byte in[], size_t length)
 		out[i] ^= in[i];
 }
 
-inline void xor_buf(byte out[],
-						  const byte in[],
-						  const byte in2[],
+inline void xor_buf(ref byte[] output,
+						  in byte[] in,
+						  in byte[] in2,
 						  size_t length)
 {
 	while(length >= 8)
 	{
-		*reinterpret_cast<u64bit*>(out) =
-			*reinterpret_cast<const u64bit*>(in) ^
-			*reinterpret_cast<const u64bit*>(in2);
+		*cast(u64bit*)(out) =
+			*cast(const u64bit*)(input) ^
+			*cast(const u64bit*)(in2);
 
 		in += 8; in2 += 8; out += 8; length -= 8;
 	}
@@ -119,7 +117,7 @@ void xor_buf(std::vector<byte, Alloc>& out,
 template<typename T, typename Alloc, typename Alloc2>
 std::vector<T, Alloc>&
 operator^=(std::vector<T, Alloc>& out,
-			  const std::vector<T, Alloc2>& in)
+			  const std::vector<T, Alloc2>& input)
 {
 	if(out.size() < in.size())
 		out.resize(in.size());

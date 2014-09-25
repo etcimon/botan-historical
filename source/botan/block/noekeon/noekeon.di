@@ -2,10 +2,8 @@
 * Noekeon
 * (C) 1999-2008 Jack Lloyd
 *
-* Distributed under the terms of the Botan license
+* Distributed under the terms of the botan license.
 */
-
-#define BOTAN_NOEKEON_H__
 
 #include <botan/block_cipher.h>
 /**
@@ -14,8 +12,8 @@
 class Noekeon : public Block_Cipher_Fixed_Params<16, 16>
 {
 	public:
-		void encrypt_n(const byte in[], byte out[], size_t blocks) const;
-		void decrypt_n(const byte in[], byte out[], size_t blocks) const;
+		void encrypt_n(in byte[] input, ref byte[] output) const;
+		void decrypt_n(in byte[] input, ref byte[] output) const;
 
 		void clear();
 		string name() const { return "Noekeon"; }

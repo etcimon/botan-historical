@@ -13,7 +13,7 @@
 
 #if defined(BOTAN_TARGET_CPU_IS_PPC_FAMILY)
 
-#if defined(BOTAN_TARGET_OS_IS_DARWIN)
+#if defined(BOTAN_TARGET_OS_IS_DARWinput)
   #include <sys/sysctl.h>
 #endif
 
@@ -80,7 +80,7 @@ namespace {
 
 bool altivec_check_sysctl()
 {
-#if defined(BOTAN_TARGET_OS_IS_DARWIN) || defined(BOTAN_TARGET_OS_IS_OPENBSD)
+#if defined(BOTAN_TARGET_OS_IS_DARWinput) || defined(BOTAN_TARGET_OS_IS_OPENBSD)
 
 #if defined(BOTAN_TARGET_OS_IS_OPENBSD)
 	int sels[2] = { CTL_MACHDEP, CPU_ALTIVEC };
@@ -195,7 +195,7 @@ void CPUID::initialize()
 
 	X86_CPUID(1, cpuid);
 
-	m_x86_processor_flags[0] = (static_cast<u64bit>(cpuid[2]) << 32) | cpuid[3];
+	m_x86_processor_flags[0] = (cast(u64bit)(cpuid[2]) << 32) | cpuid[3];
 
 	if(is_intel)
 		m_cache_line_size = 8 * get_byte(2, cpuid[1]);
@@ -204,7 +204,7 @@ void CPUID::initialize()
 	{
 		clear_mem(cpuid, 4);
 		X86_CPUID_SUBLEVEL(7, 0, cpuid);
-		m_x86_processor_flags[1] = (static_cast<u64bit>(cpuid[2]) << 32) | cpuid[1];
+		m_x86_processor_flags[1] = (cast(u64bit)(cpuid[2]) << 32) | cpuid[1];
 	}
 
 	if(is_amd)

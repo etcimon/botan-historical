@@ -29,8 +29,8 @@ std::vector<byte> encode_x942_int(u32bit n)
 * X9.42 PRF
 */
 SafeArray!byte X942_PRF::derive(size_t key_len,
-												const byte secret[], size_t secret_len,
-												const byte salt[], size_t salt_len) const
+												in byte[] secret, size_t secret_len,
+												in byte[] salt, size_t salt_len) const
 {
 	SHA_160 hash;
 	const OID kek_algo(key_wrap_oid);
@@ -58,7 +58,7 @@ SafeArray!byte X942_PRF::derive(size_t key_len,
 					)
 
 				.start_explicit(2)
-					.raw_bytes(encode_x942_int(static_cast<u32bit>(8 * key_len)))
+					.raw_bytes(encode_x942_int(cast(u32bit)(8 * key_len)))
 				.end_explicit()
 
 			.end_cons().get_contents()

@@ -49,7 +49,7 @@ bool ECB_Mode::valid_nonce_length(size_t n) const
 	return (n == 0);
 }
 
-void ECB_Mode::key_schedule(const byte key[], size_t length)
+void ECB_Mode::key_schedule(in byte[] key)
 {
 	m_cipher->set_key(key, length);
 }
@@ -72,7 +72,7 @@ size_t ECB_Encryption::output_length(size_t input_length) const
 	return round_up(input_length, cipher().block_size());
 }
 
-void ECB_Encryption::update(SafeArray!byte& buffer, size_t offset)
+void ECB_Encryption::update(SafeArray!byte buffer, size_t offset)
 {
 	BOTAN_ASSERT(buffer.size() >= offset, "Offset is sane");
 	const size_t sz = buffer.size() - offset;
@@ -86,7 +86,7 @@ void ECB_Encryption::update(SafeArray!byte& buffer, size_t offset)
 	cipher().encrypt_n(&buf[0], &buf[0], blocks);
 }
 
-void ECB_Encryption::finish(SafeArray!byte& buffer, size_t offset)
+void ECB_Encryption::finish(SafeArray!byte buffer, size_t offset)
 {
 	BOTAN_ASSERT(buffer.size() >= offset, "Offset is sane");
 	const size_t sz = buffer.size() - offset;
@@ -113,7 +113,7 @@ size_t ECB_Decryption::minimum_final_size() const
 	return cipher().block_size();
 }
 
-void ECB_Decryption::update(SafeArray!byte& buffer, size_t offset)
+void ECB_Decryption::update(SafeArray!byte buffer, size_t offset)
 {
 	BOTAN_ASSERT(buffer.size() >= offset, "Offset is sane");
 	const size_t sz = buffer.size() - offset;
@@ -127,7 +127,7 @@ void ECB_Decryption::update(SafeArray!byte& buffer, size_t offset)
 	cipher().decrypt_n(&buf[0], &buf[0], blocks);
 }
 
-void ECB_Decryption::finish(SafeArray!byte& buffer, size_t offset)
+void ECB_Decryption::finish(SafeArray!byte buffer, size_t offset)
 {
 	BOTAN_ASSERT(buffer.size() >= offset, "Offset is sane");
 	const size_t sz = buffer.size() - offset;

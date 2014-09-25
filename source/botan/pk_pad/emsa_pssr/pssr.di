@@ -2,10 +2,8 @@
 * PSSR
 * (C) 1999-2007 Jack Lloyd
 *
-* Distributed under the terms of the Botan license
+* Distributed under the terms of the botan license.
 */
-
-#define BOTAN_PSSR_H__
 
 #include <botan/emsa.h>
 #include <botan/hash.h>
@@ -27,7 +25,7 @@ class PSSR : public EMSA
 		*/
 		PSSR(HashFunction* hash, size_t salt_size);
 	private:
-		void update(const byte input[], size_t length);
+		void update(in byte[] input, size_t length);
 
 		SafeArray!byte raw_data();
 

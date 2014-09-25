@@ -3,10 +3,8 @@
 * (C) 1999-2011 Jack Lloyd
 *	  2007 FlexSecure GmbH
 *
-* Distributed under the terms of the Botan license
+* Distributed under the terms of the botan license.
 */
-
-#define BOTAN_SHA_224_256_H__
 
 #include <botan/mdx_hash.h>
 /**

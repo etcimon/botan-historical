@@ -2,10 +2,8 @@
 * Rabin-Williams
 * (C) 1999-2007 Jack Lloyd
 *
-* Distributed under the terms of the Botan license
+* Distributed under the terms of the botan license.
 */
-
-#define BOTAN_RW_H__
 
 #include <botan/if_algo.h>
 #include <botan/pk_ops.h>
@@ -65,7 +63,7 @@ class RW_Signature_Operation : public PK_Ops::Signature
 
 		size_t max_input_bits() const { return (n.bits() - 1); }
 
-		SafeArray!byte sign(const byte msg[], size_t msg_len,
+		SafeArray!byte sign(in byte[] msg, size_t msg_len,
 										RandomNumberGenerator& rng);
 	private:
 		const BigInt& n;
@@ -91,7 +89,7 @@ class RW_Verification_Operation : public PK_Ops::Verification
 		size_t max_input_bits() const { return (n.bits() - 1); }
 		bool with_recovery() const { return true; }
 
-		SafeArray!byte verify_mr(const byte msg[], size_t msg_len);
+		SafeArray!byte verify_mr(in byte[] msg, size_t msg_len);
 
 	private:
 		const BigInt& n;

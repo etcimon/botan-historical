@@ -33,7 +33,7 @@ std::vector<byte> Next_Protocol::serialize() const
 	std::vector<byte> buf;
 
 	append_tls_length_value(buf,
-									reinterpret_cast<const byte*>(m_protocol.data()),
+									cast(const byte*)(m_protocol.data()),
 									m_protocol.size(),
 									1);
 

@@ -103,7 +103,7 @@ std::vector<byte> Request::BER_encode() const
 	return DER_Encoder().start_cons(SEQUENCE)
 		  .start_cons(SEQUENCE)
 			 .start_explicit(0)
-				.encode(static_cast<size_t>(0)) // version #
+				.encode(cast(size_t)(0)) // version #
 			 .end_explicit()
 				.start_cons(SEQUENCE)
 				  .start_cons(SEQUENCE)

@@ -2,10 +2,8 @@
 * X.509 Public Key
 * (C) 1999-2010 Jack Lloyd
 *
-* Distributed under the terms of the Botan license
+* Distributed under the terms of the botan license.
 */
-
-#define BOTAN_X509_PUBLIC_KEY_H__
 
 #include <botan/pk_keys.h>
 #include <botan/alg_id.h>

@@ -2,10 +2,8 @@
 * Library Internal/Global State
 * (C) 1999-2008 Jack Lloyd
 *
-* Distributed under the terms of the Botan license
+* Distributed under the terms of the botan license.
 */
-
-#define BOTAN_LIB_STATE_H__
 
 #include <botan/global_state.h>
 #include <botan/algo_factory.h>

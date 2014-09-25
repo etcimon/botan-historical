@@ -2,10 +2,8 @@
 * TLS Messages
 * (C) 2004-2011 Jack Lloyd
 *
-* Released under the terms of the Botan license
+* Released under the terms of the botan license.
 */
-
-#define BOTAN_TLS_MESSAGES_H__
 
 #include <botan/internal/tls_handshake_state.h>
 #include <botan/internal/tls_extensions.h>
@@ -456,7 +454,7 @@ class Server_Key_Exchange : public Handshake_Message
 						const Handshake_State& state) const;
 
 		// Only valid for certain kex types
-		const Private_Key& server_kex_key() const;
+		in Private_Key server_kex_key() const;
 
 		// Only valid for SRP negotiation
 		SRP6_Server_Session& server_srp_params() const;

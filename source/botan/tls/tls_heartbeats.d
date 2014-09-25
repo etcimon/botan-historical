@@ -21,7 +21,7 @@ Heartbeat_Message::Heartbeat_Message(in Array!byte buf)
 		throw TLS_Exception(Alert::ILLEGAL_PARAMETER,
 								  "Unknown heartbeat message type");
 
-	m_type = static_cast<Type>(type);
+	m_type = cast(Type)(type);
 
 	m_payload = reader.get_range<byte>(2, 0, 16*1024);
 
@@ -29,7 +29,7 @@ Heartbeat_Message::Heartbeat_Message(in Array!byte buf)
 }
 
 Heartbeat_Message::Heartbeat_Message(Type type,
-												 const byte payload[],
+												 in byte[] payload,
 												 size_t payload_len) :
 	m_type(type),
 	m_payload(payload, payload + payload_len)

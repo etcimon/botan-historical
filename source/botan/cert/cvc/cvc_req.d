@@ -32,16 +32,16 @@ void EAC1_1_Req::force_decode()
 	m_pk = decode_eac1_1_key(enc_pk, sig_algo);
 }
 
-EAC1_1_Req::EAC1_1_Req(DataSource& in)
+EAC1_1_Req::EAC1_1_Req(DataSource& input)
 {
-	init(in);
+	init(input);
 	self_signed = true;
 	do_decode();
 }
 
-EAC1_1_Req::EAC1_1_Req(in string in)
+EAC1_1_Req::EAC1_1_Req(in string input)
 {
-	DataSource_Stream stream(in, true);
+	DataSource_Stream stream(input, true);
 	init(stream);
 	self_signed = true;
 	do_decode();

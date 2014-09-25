@@ -10,8 +10,8 @@
 * KDF2 Key Derivation Mechanism
 */
 SafeArray!byte KDF2::derive(size_t out_len,
-										  const byte secret[], size_t secret_len,
-										  const byte P[], size_t P_len) const
+										  in byte[] secret, size_t secret_len,
+										  in byte[] P, size_t P_len) const
 {
 	SafeArray!byte output;
 	u32bit counter = 1;

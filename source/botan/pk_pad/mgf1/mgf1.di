@@ -2,10 +2,8 @@
 * MGF1
 * (C) 1999-2007,2014 Jack Lloyd
 *
-* Distributed under the terms of the Botan license
+* Distributed under the terms of the botan license.
 */
-
-#define BOTAN_MGF1_H__
 
 #include <botan/kdf.h>
 #include <botan/hash.h>
@@ -13,5 +11,5 @@
 * MGF1 from PKCS #1 v2.0
 */
 void mgf1_mask(HashFunction& hash,
-					const byte in[], size_t in_len,
-					byte out[], size_t out_len);
+					in byte[] in,
+					ref byte[] output);

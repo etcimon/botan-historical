@@ -2,10 +2,8 @@
 * TLS Heartbeats
 * (C) 2012 Jack Lloyd
 *
-* Released under the terms of the Botan license
+* Released under the terms of the botan license.
 */
-
-#define BOTAN_TLS_HEARTBEATS_H__
 
 #include <botan/secmem.h>
 namespace TLS {
@@ -26,7 +24,7 @@ class Heartbeat_Message
 
 		Heartbeat_Message(in Array!byte buf);
 
-		Heartbeat_Message(Type type, const byte payload[], size_t payload_len);
+		Heartbeat_Message(Type type, in byte[] payload, size_t payload_len);
 	private:
 		Type m_type;
 		std::vector<byte> m_payload;

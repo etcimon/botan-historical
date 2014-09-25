@@ -78,7 +78,7 @@ NR_Signature_Operation::NR_Signature_Operation(const NR_PrivateKey& nr) :
 }
 
 SafeArray!byte
-NR_Signature_Operation::sign(const byte msg[], size_t msg_len,
+NR_Signature_Operation::sign(in byte[] msg, size_t msg_len,
 									  RandomNumberGenerator& rng)
 {
 	rng.add_entropy(msg, msg_len);
@@ -117,10 +117,10 @@ NR_Verification_Operation::NR_Verification_Operation(const NR_PublicKey& nr) :
 }
 
 SafeArray!byte
-NR_Verification_Operation::verify_mr(const byte msg[], size_t msg_len)
+NR_Verification_Operation::verify_mr(in byte[] msg, size_t msg_len)
 {
 	const BigInt& q = mod_q.get_modulus();
-
+	size_t msg_len = msg.length;
 	if(msg_len != 2*q.bytes())
 		throw Invalid_Argument("NR verification: Invalid signature");
 

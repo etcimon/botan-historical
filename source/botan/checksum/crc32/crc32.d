@@ -10,7 +10,7 @@
 /*
 * Update a CRC32 Checksum
 */
-void CRC32::add_data(const byte input[], size_t length)
+void CRC32::add_data(in byte[] input, size_t length)
 {
 	const u32bit TABLE[256] = {
 		0x00000000, 0x77073096, 0xEE0E612C, 0x990951BA, 0x076DC419, 0x706AF48F,

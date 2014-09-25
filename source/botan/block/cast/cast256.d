@@ -46,14 +46,14 @@ void round3(u32bit& out, u32bit in, u32bit mask, u32bit rot)
 /*
 * CAST-256 Encryption
 */
-void CAST_256::encrypt_n(const byte in[], byte out[], size_t blocks) const
+void CAST_256::encrypt_n)(in byte[] input, ref byte[] output) const
 {
 	for(size_t i = 0; i != blocks; ++i)
 	{
-		u32bit A = load_be<u32bit>(in, 0);
-		u32bit B = load_be<u32bit>(in, 1);
-		u32bit C = load_be<u32bit>(in, 2);
-		u32bit D = load_be<u32bit>(in, 3);
+		u32bit A = load_be<u32bit>(input, 0);
+		u32bit B = load_be<u32bit>(input, 1);
+		u32bit C = load_be<u32bit>(input, 2);
+		u32bit D = load_be<u32bit>(input, 3);
 
 		round1(C, D, MK[ 0], RK[ 0]); round2(B, C, MK[ 1], RK[ 1]);
 		round3(A, B, MK[ 2], RK[ 2]); round1(D, A, MK[ 3], RK[ 3]);
@@ -90,14 +90,14 @@ void CAST_256::encrypt_n(const byte in[], byte out[], size_t blocks) const
 /*
 * CAST-256 Decryption
 */
-void CAST_256::decrypt_n(const byte in[], byte out[], size_t blocks) const
+void CAST_256::decrypt_n)(in byte[] input, ref byte[] output) const
 {
 	for(size_t i = 0; i != blocks; ++i)
 	{
-		u32bit A = load_be<u32bit>(in, 0);
-		u32bit B = load_be<u32bit>(in, 1);
-		u32bit C = load_be<u32bit>(in, 2);
-		u32bit D = load_be<u32bit>(in, 3);
+		u32bit A = load_be<u32bit>(input, 0);
+		u32bit B = load_be<u32bit>(input, 1);
+		u32bit C = load_be<u32bit>(input, 2);
+		u32bit D = load_be<u32bit>(input, 3);
 
 		round1(C, D, MK[44], RK[44]); round2(B, C, MK[45], RK[45]);
 		round3(A, B, MK[46], RK[46]); round1(D, A, MK[47], RK[47]);
@@ -134,7 +134,7 @@ void CAST_256::decrypt_n(const byte in[], byte out[], size_t blocks) const
 /*
 * CAST-256 Key Schedule
 */
-void CAST_256::key_schedule(const byte key[], size_t length)
+void CAST_256::key_schedule)(in byte[] key)
 {
 	static const u32bit KEY_MASK[192] = {
 		0x5A827999, 0xC95C653A, 0x383650DB, 0xA7103C7C, 0x15EA281D, 0x84C413BE,
@@ -216,7 +216,7 @@ void CAST_256::key_schedule(const byte key[], size_t length)
 	}
 }
 
-void CAST_256::clear()
+void CAST_256::clear)()
 {
 	zap(MK);
 	zap(RK);

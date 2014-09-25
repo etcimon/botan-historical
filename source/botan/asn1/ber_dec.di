@@ -2,10 +2,8 @@
 * BER Decoder
 * (C) 1999-2010 Jack Lloyd
 *
-* Distributed under the terms of the Botan license
+* Distributed under the terms of the botan license.
 */
-
-#define BOTAN_BER_DECODER_H__
 
 #include <botan/asn1_oid.h>
 #include <botan/data_src.h>
@@ -30,7 +28,7 @@ class BER_Decoder
 
 		BER_Decoder& get_next(BER_Object& ber);
 
-		BER_Decoder& raw_bytes(SafeArray!byte& v);
+		BER_Decoder& raw_bytes(SafeArray!byte v);
 		BER_Decoder& raw_bytes(std::vector<byte>& v);
 
 		BER_Decoder& decode_null();
@@ -38,7 +36,7 @@ class BER_Decoder
 		BER_Decoder& decode(size_t& v);
 		BER_Decoder& decode(class BigInt& v);
 		BER_Decoder& decode(std::vector<byte>& v, ASN1_Tag type_tag);
-		BER_Decoder& decode(SafeArray!byte& v, ASN1_Tag type_tag);
+		BER_Decoder& decode(SafeArray!byte v, ASN1_Tag type_tag);
 
 		BER_Decoder& decode(bool& v,
 								  ASN1_Tag type_tag,
@@ -57,7 +55,7 @@ class BER_Decoder
 								  ASN1_Tag type_tag,
 								  ASN1_Tag class_tag = CONTEXT_SPECIFIC);
 
-		BER_Decoder& decode(SafeArray!byte& v,
+		BER_Decoder& decode(SafeArray!byte v,
 								  ASN1_Tag real_type,
 								  ASN1_Tag type_tag,
 								  ASN1_Tag class_tag = CONTEXT_SPECIFIC);
@@ -130,7 +128,7 @@ class BER_Decoder
 		{
 			BER_Object obj = get_next_object();
 
-			ASN1_Tag type_tag = static_cast<ASN1_Tag>(type_no);
+			ASN1_Tag type_tag = cast(ASN1_Tag)(type_no);
 
 			if(obj.type_tag == type_tag && obj.class_tag == class_tag)
 			{

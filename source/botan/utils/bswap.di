@@ -3,10 +3,8 @@
 * (C) 1999-2011 Jack Lloyd
 * (C) 2007 Yves Jerschow
 *
-* Distributed under the terms of the Botan license
+* Distributed under the terms of the botan license.
 */
-
-#define BOTAN_BYTE_SWAP_H__
 
 #include <botan/types.h>
 #include <botan/rotate.h>
@@ -91,13 +89,13 @@ inline u64bit reverse_bytes(u64bit val)
 	 * useful for 32-bit x86).
 	 */
 
-	u32bit hi = static_cast<u32bit>(val >> 32);
-	u32bit lo = static_cast<u32bit>(val);
+	u32bit hi = cast(u32bit)(val >> 32);
+	u32bit lo = cast(u32bit)(val);
 
 	hi = reverse_bytes(hi);
 	lo = reverse_bytes(lo);
 
-	return (static_cast<u64bit>(lo) << 32) | hi;
+	return (cast(u64bit)(lo) << 32) | hi;
 #endif
 }
 
@@ -121,11 +119,11 @@ inline void bswap_4(T x[4])
 template<>
 inline void bswap_4(u32bit x[4])
 {
-	__m128i T = _mm_loadu_si128(reinterpret_cast<const __m128i*>(x));
+	__m128i T = _mm_loadu_si128(cast(const __m128i*)(x));
 
 	T = _mm_shufflehi_epi16(T, _MM_SHUFFLE(2, 3, 0, 1));
 	T = _mm_shufflelo_epi16(T, _MM_SHUFFLE(2, 3, 0, 1));
 
 	T =  _mm_or_si128(_mm_srli_epi16(T, 8), _mm_slli_epi16(T, 8));
 
-	_mm_storeu_si128(reinterpret_cast<__m128i*>(x), T);
+	_mm_storeu_si128(CAST__m128i*)(x), T);

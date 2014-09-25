@@ -2,10 +2,8 @@
 * Data Store
 * (C) 1999-2007 Jack Lloyd
 *
-* Distributed under the terms of the Botan license
+* Distributed under the terms of the botan license.
 */
-
-#define BOTAN_DATA_STORE_H__
 
 #include <botan/secmem.h>
 #include <functional>
@@ -25,7 +23,7 @@ class Data_Store
 		bool operator==(const Data_Store&) const;
 
 		std::multimap<string, string> search_for(
-			std::function<bool (string, string)> predicate) const;
+			bool delegate(string, string) predicate) const;
 
 		std::vector<string> get(in string) const;
 

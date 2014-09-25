@@ -2,10 +2,8 @@
 * TLS Session Manager
 * (C) 2011 Jack Lloyd
 *
-* Released under the terms of the Botan license
+* Released under the terms of the botan license.
 */
-
-#define BOTAN_TLS_SESSION_MANAGER_H__
 
 #include <botan/tls_session.h>
 #include <mutex>

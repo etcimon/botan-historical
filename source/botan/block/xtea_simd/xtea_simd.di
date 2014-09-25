@@ -2,10 +2,8 @@
 * XTEA in SIMD
 * (C) 2009 Jack Lloyd
 *
-* Distributed under the terms of the Botan license
+* Distributed under the terms of the botan license.
 */
-
-#define BOTAN_XTEA_SIMD_H__
 
 #include <botan/xtea.h>
 /**
@@ -16,7 +14,7 @@ class XTEA_SIMD : public XTEA
 	public:
 		size_t parallelism() const { return 8; }
 
-		void encrypt_n(const byte in[], byte out[], size_t blocks) const;
-		void decrypt_n(const byte in[], byte out[], size_t blocks) const;
+		void encrypt_n(in byte[] input, ref byte[] output) const;
+		void decrypt_n(in byte[] input, ref byte[] output) const;
 		BlockCipher* clone() const { return new XTEA_SIMD; }
 };

@@ -2,10 +2,8 @@
 * Version Information
 * (C) 1999-2011 Jack Lloyd
 *
-* Distributed under the terms of the Botan license
+* Distributed under the terms of the botan license.
 */
-
-#define BOTAN_VERSION_H__
 
 #include <botan/types.h>
 #include <string>

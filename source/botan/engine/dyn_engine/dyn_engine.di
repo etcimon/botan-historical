@@ -2,10 +2,8 @@
 * Dynamically Loaded Engine
 * (C) 2010 Jack Lloyd
 *
-* Distributed under the terms of the Botan license
+* Distributed under the terms of the botan license.
 */
-
-#define BOTAN_DYN_LOADED_ENGINE_H__
 
 #include <botan/engine.h>
 /**
@@ -72,13 +70,13 @@ class Dynamically_Loaded_Engine : public Engine
 		}
 
 		PK_Ops::Key_Agreement*
-			get_key_agreement_op(const Private_Key& key, RandomNumberGenerator& rng) const override
+			get_key_agreement_op(in Private_Key key, RandomNumberGenerator& rng) const override
 		{
 			return engine->get_key_agreement_op(key, rng);
 		}
 
 		PK_Ops::Signature*
-			get_signature_op(const Private_Key& key, RandomNumberGenerator& rng) const override
+			get_signature_op(in Private_Key key, RandomNumberGenerator& rng) const override
 		{
 			return engine->get_signature_op(key, rng);
 		}
@@ -96,7 +94,7 @@ class Dynamically_Loaded_Engine : public Engine
 		}
 
 		PK_Ops::Decryption*
-			get_decryption_op(const Private_Key& key, RandomNumberGenerator& rng) const override
+			get_decryption_op(in Private_Key key, RandomNumberGenerator& rng) const override
 		{
 			return engine->get_decryption_op(key, rng);
 		}

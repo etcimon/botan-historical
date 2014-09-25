@@ -2,10 +2,8 @@
 * TLS Data Reader
 * (C) 2010-2011,2014 Jack Lloyd
 *
-* Released under the terms of the Botan license
+* Released under the terms of the botan license.
 */
-
-#define BOTAN_TLS_READER_H__
 
 #include <botan/exceptn.h>
 #include <botan/secmem.h>
@@ -21,8 +19,8 @@ namespace TLS {
 class TLS_Data_Reader
 {
 	public:
-		TLS_Data_Reader(const char* type, in Array!byte buf_in) :
-			m_typename(type), m_buf(buf_in), m_offset(0) {}
+		TLS_Data_Reader(const char* type, in Array!byte buf_input) :
+			m_typename(type), m_buf(buf_input), m_offset(0) {}
 
 		void assert_done() const
 		{
@@ -115,7 +113,7 @@ class TLS_Data_Reader
 			std::vector<byte> v =
 				get_range_vector<byte>(len_bytes, min_bytes, max_bytes);
 
-			return string(reinterpret_cast<char*>(&v[0]), v.size());
+			return string(cast(char*)(&v[0]), v.size());
 		}
 
 		template<typename T>
@@ -215,7 +213,7 @@ void append_tls_length_value(std::vector<byte, Alloc>& buf,
 									  size_t tag_size)
 {
 	append_tls_length_value(buf,
-									reinterpret_cast<const byte*>(&str[0]),
+									cast(const byte*)(&str[0]),
 									str.size(),
 									tag_size);
 }

@@ -2,10 +2,8 @@
 * Symmetric Algorithm Base Class
 * (C) 1999-2007 Jack Lloyd
 *
-* Distributed under the terms of the Botan license
+* Distributed under the terms of the botan license.
 */
-
-#define BOTAN_SYMMETRIC_ALGORITHM_H__
 
 #include <botan/key_spec.h>
 #include <botan/exceptn.h>
@@ -72,7 +70,7 @@ class SymmetricAlgorithm
 		* @param key the to be set as a byte array.
 		* @param length in bytes of key param
 		*/
-		void set_key(const byte key[], size_t length)
+		void set_key(in byte[] key)
 		{
 			if(!valid_keylength(length))
 				throw Invalid_Key_Length(name(), length);
@@ -87,5 +85,5 @@ class SymmetricAlgorithm
 		* @param key the key
 		* @param length of key
 		*/
-		abstract void key_schedule(const byte key[], size_t length) = 0;
+		abstract void key_schedule(in byte[] key) = 0;
 };

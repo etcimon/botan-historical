@@ -2,10 +2,8 @@
 * TLS Handshake Message
 * (C) 2012 Jack Lloyd
 *
-* Released under the terms of the Botan license
+* Released under the terms of the botan license.
 */
-
-#define BOTAN_TLS_HANDSHAKE_MSG_H__
 
 #include <botan/tls_magic.h>
 #include <vector>

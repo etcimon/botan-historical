@@ -2,10 +2,8 @@
 * GOST 28147-89
 * (C) 1999-2009 Jack Lloyd
 *
-* Distributed under the terms of the Botan license
+* Distributed under the terms of the botan license.
 */
-
-#define BOTAN_GOST_28147_89_H__
 
 #include <botan/block_cipher.h>
 /**
@@ -48,8 +46,8 @@ class GOST_28147_89_Params
 class GOST_28147_89 : public Block_Cipher_Fixed_Params<8, 32>
 {
 	public:
-		void encrypt_n(const byte in[], byte out[], size_t blocks) const;
-		void decrypt_n(const byte in[], byte out[], size_t blocks) const;
+		void encrypt_n(in byte[] input, ref byte[] output) const;
+		void decrypt_n(in byte[] input, ref byte[] output) const;
 
 		void clear();
 

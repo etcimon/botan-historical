@@ -3,10 +3,8 @@
 * (C) 1999-2007 Jack Lloyd
 *	  2012 Markus Wanner
 *
-* Distributed under the terms of the Botan license
+* Distributed under the terms of the botan license.
 */
-
-#define BOTAN_OUTPUT_BUFFER_H__
 
 #include <botan/types.h>
 #include <botan/pipe.h>

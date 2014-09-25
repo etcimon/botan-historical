@@ -18,12 +18,12 @@ namespace {
 */
 SafeArray!byte eax_prf(byte tag, size_t block_size,
 									MessageAuthenticationCode& mac,
-									const byte in[], size_t length)
+									in byte[] input)
 {
 	for(size_t i = 0; i != block_size - 1; ++i)
 		mac.update(0);
 	mac.update(tag);
-	mac.update(in, length);
+	mac.update(input, length);
 	return mac.final();
 }
 
@@ -69,7 +69,7 @@ Key_Length_Specification EAX_Mode::key_spec() const
 /*
 * Set the EAX key
 */
-void EAX_Mode::key_schedule(const byte key[], size_t length)
+void EAX_Mode::key_schedule(in byte[] key)
 {
 	/*
 	* These could share the key schedule, which is one nice part of EAX,
@@ -84,12 +84,12 @@ void EAX_Mode::key_schedule(const byte key[], size_t length)
 /*
 * Set the EAX associated data
 */
-void EAX_Mode::set_associated_data(const byte ad[], size_t length)
+void EAX_Mode::set_associated_data(in byte[] ad, size_t length)
 {
 	m_ad_mac = eax_prf(1, block_size(), *m_cmac, ad, length);
 }
 
-SafeArray!byte EAX_Mode::start(const byte nonce[], size_t nonce_len)
+SafeArray!byte EAX_Mode::start(in byte[] nonce, size_t nonce_len)
 {
 	if(!valid_nonce_length(nonce_len))
 		throw Invalid_IV_Length(name(), nonce_len);
@@ -105,7 +105,7 @@ SafeArray!byte EAX_Mode::start(const byte nonce[], size_t nonce_len)
 	return SafeArray!byte();
 }
 
-void EAX_Encryption::update(SafeArray!byte& buffer, size_t offset)
+void EAX_Encryption::update(SafeArray!byte buffer, size_t offset)
 {
 	BOTAN_ASSERT(buffer.size() >= offset, "Offset is sane");
 	const size_t sz = buffer.size() - offset;
@@ -115,7 +115,7 @@ void EAX_Encryption::update(SafeArray!byte& buffer, size_t offset)
 	m_cmac->update(buf, sz);
 }
 
-void EAX_Encryption::finish(SafeArray!byte& buffer, size_t offset)
+void EAX_Encryption::finish(SafeArray!byte buffer, size_t offset)
 {
 	update(buffer, offset);
 
@@ -126,7 +126,7 @@ void EAX_Encryption::finish(SafeArray!byte& buffer, size_t offset)
 	buffer += std::make_pair(&data_mac[0], tag_size());
 }
 
-void EAX_Decryption::update(SafeArray!byte& buffer, size_t offset)
+void EAX_Decryption::update(SafeArray!byte buffer, size_t offset)
 {
 	BOTAN_ASSERT(buffer.size() >= offset, "Offset is sane");
 	const size_t sz = buffer.size() - offset;
@@ -136,7 +136,7 @@ void EAX_Decryption::update(SafeArray!byte& buffer, size_t offset)
 	m_ctr->cipher(buf, buf, sz);
 }
 
-void EAX_Decryption::finish(SafeArray!byte& buffer, size_t offset)
+void EAX_Decryption::finish(SafeArray!byte buffer, size_t offset)
 {
 	BOTAN_ASSERT(buffer.size() >= offset, "Offset is sane");
 	const size_t sz = buffer.size() - offset;

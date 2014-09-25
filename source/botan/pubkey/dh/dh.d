@@ -80,7 +80,7 @@ DH_KA_Operation::DH_KA_Operation(const DH_PrivateKey& dh,
 	blinder = Blinder(k, powermod_x_p(inverse_mod(k, p)), p);
 }
 
-SafeArray!byte DH_KA_Operation::agree(const byte w[], size_t w_len)
+SafeArray!byte DH_KA_Operation::agree(in byte[] w, size_t w_len)
 {
 	BigInt input = BigInt::decode(w, w_len);
 

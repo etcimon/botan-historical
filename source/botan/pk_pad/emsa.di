@@ -2,10 +2,8 @@
 * EMSA Classes
 * (C) 1999-2007 Jack Lloyd
 *
-* Distributed under the terms of the Botan license
+* Distributed under the terms of the botan license.
 */
-
-#define BOTAN_PUBKEY_EMSA_H__
 
 #include <botan/secmem.h>
 #include <botan/rng.h>
@@ -20,7 +18,7 @@ class EMSA
 		* @param input some data
 		* @param length length of input in bytes
 		*/
-		abstract void update(const byte input[], size_t length) = 0;
+		abstract void update(in byte[] input, size_t length) = 0;
 
 		/**
 		* @return raw hash

@@ -64,16 +64,16 @@ void EAC1_1_CVC::force_decode()
 /*
 * CVC Certificate Constructor
 */
-EAC1_1_CVC::EAC1_1_CVC(DataSource& in)
+EAC1_1_CVC::EAC1_1_CVC(DataSource& input)
 {
-	init(in);
+	init(input);
 	self_signed = false;
 	do_decode();
 }
 
-EAC1_1_CVC::EAC1_1_CVC(in string in)
+EAC1_1_CVC::EAC1_1_CVC(in string input)
 {
-	DataSource_Stream stream(in, true);
+	DataSource_Stream stream(input, true);
 	init(stream);
 	self_signed = false;
 	do_decode();

@@ -19,8 +19,8 @@ std::vector<byte> finished_compute_verify(const Handshake_State& state,
 {
 	if(state.version() == Protocol_Version::SSL_V3)
 	{
-		const byte SSL_CLIENT_LABEL[] = { 0x43, 0x4C, 0x4E, 0x54 };
-		const byte SSL_SERVER_LABEL[] = { 0x53, 0x52, 0x56, 0x52 };
+		const(byte)[] SSL_CLIENT_LABEL = { 0x43, 0x4C, 0x4E, 0x54 };
+		const(byte)[] SSL_SERVER_LABEL = { 0x53, 0x52, 0x56, 0x52 };
 
 		Handshake_Hash hash = state.hash(); // don't modify state
 
@@ -35,11 +35,11 @@ std::vector<byte> finished_compute_verify(const Handshake_State& state,
 	}
 	else
 	{
-		const byte TLS_CLIENT_LABEL[] = {
+		const(byte)[] TLS_CLIENT_LABEL = {
 			0x63, 0x6C, 0x69, 0x65, 0x6E, 0x74, 0x20, 0x66, 0x69, 0x6E, 0x69,
 			0x73, 0x68, 0x65, 0x64 };
 
-		const byte TLS_SERVER_LABEL[] = {
+		const(byte)[] TLS_SERVER_LABEL = {
 			0x73, 0x65, 0x72, 0x76, 0x65, 0x72, 0x20, 0x66, 0x69, 0x6E, 0x69,
 			0x73, 0x68, 0x65, 0x64 };
 

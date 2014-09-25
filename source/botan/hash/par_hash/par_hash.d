@@ -10,7 +10,7 @@
 /*
 * Update the hash
 */
-void Parallel::add_data(const byte input[], size_t length)
+void Parallel::add_data(in byte[] input, size_t length)
 {
 	for(auto hash : hashes)
 		 hash->update(input, length);
@@ -19,7 +19,7 @@ void Parallel::add_data(const byte input[], size_t length)
 /*
 * Finalize the hash
 */
-void Parallel::final_result(byte out[])
+void Parallel::final_result(ref byte[] output)
 {
 	u32bit offset = 0;
 
@@ -80,8 +80,8 @@ void Parallel::clear()
 /*
 * Parallel Constructor
 */
-Parallel::Parallel(const std::vector<HashFunction*>& hash_in) :
-	hashes(hash_in)
+Parallel::Parallel(const std::vector<HashFunction*>& hash_input) :
+	hashes(hash_input)
 {
 }
 

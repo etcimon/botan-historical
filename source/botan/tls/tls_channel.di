@@ -2,10 +2,8 @@
 * TLS Channel
 * (C) 2011,2012 Jack Lloyd
 *
-* Released under the terms of the Botan license
+* Released under the terms of the botan license.
 */
-
-#define BOTAN_TLS_CHANNEL_H__
 
 #include <botan/tls_policy.h>
 #include <botan/tls_session.h>
@@ -32,7 +30,7 @@ class Channel
 		* @return a hint as the how many more bytes we need to process the
 		*			current record (this may be 0 if on a record boundary)
 		*/
-		size_t received_data(const byte buf[], size_t buf_size);
+		size_t received_data(in byte[] buf, size_t buf_size);
 
 		/**
 		* Inject TLS traffic received from counterparty
@@ -44,7 +42,7 @@ class Channel
 		/**
 		* Inject plaintext intended for counterparty
 		*/
-		void send(const byte buf[], size_t buf_size);
+		void send(in byte[] buf, size_t buf_size);
 
 		/**
 		* Inject plaintext intended for counterparty
@@ -120,7 +118,7 @@ class Channel
 		* @param payload will be echoed back
 		* @param payload_size size of payload in bytes
 		*/
-		void heartbeat(const byte payload[], size_t payload_size);
+		void heartbeat(in byte[] payload, size_t payload_size);
 
 		/**
 		* Attempt to send a heartbeat message (if negotiated with counterparty)
@@ -143,12 +141,12 @@ class Channel
 													in string context,
 													size_t length) const;
 
-		Channel(std::function<void (const byte[], size_t)> socket_output_fn,
-				  std::function<void (const byte[], size_t)> data_cb,
-				  std::function<void (Alert, const byte[], size_t)> alert_cb,
-				  std::function<bool (const Session&)> handshake_cb,
-				  Session_Manager& session_manager,
-				  RandomNumberGenerator& rng,
+		Channel(void delegate(in byte[]) socket_output_fn,
+				  void delegate(in byte[]) data_cb,
+				  void delegate(Alert, in byte[]) alert_cb,
+				  bool delegate(const Session) handshake_cb,
+				  Session_Manager session_manager,
+				  RandomNumberGenerator rng,
 				  size_t reserved_io_buffer_size);
 
 		Channel(const Channel&) = delete;
@@ -202,10 +200,10 @@ class Channel
 											  in Array!byte record);
 
 		void send_record_array(u16bit epoch, byte record_type,
-									  const byte input[], size_t length);
+									  in byte[] input, size_t length);
 
 		void write_record(Connection_Cipher_State* cipher_state,
-								byte type, const byte input[], size_t length);
+								byte type, in byte[] input, size_t length);
 
 		Connection_Sequence_Numbers& sequence_numbers() const;
 
@@ -220,14 +218,14 @@ class Channel
 		const Handshake_State* pending_state() const { return m_pending_state.get(); }
 
 		/* callbacks */
-		std::function<bool (const Session&)> m_handshake_cb;
-		std::function<void (const byte[], size_t)> m_data_cb;
-		std::function<void (Alert, const byte[], size_t)> m_alert_cb;
-		std::function<void (const byte[], size_t)> m_output_fn;
+		bool delegate(const Session) m_handshake_cb;
+		void delegate(in byte[]) m_data_cb;
+		void delegate(Alert, in byte[]) m_alert_cb;
+		void delegate(in byte[]) m_output_fn;
 
 		/* external state */
-		RandomNumberGenerator& m_rng;
-		Session_Manager& m_session_manager;
+		RandomNumberGenerator m_rng;
+		Session_Manager m_session_manager;
 
 		/* sequence number state */
 		std::unique_ptr<Connection_Sequence_Numbers> m_sequence_numbers;

@@ -2,10 +2,8 @@
 * OctetString
 * (C) 1999-2007 Jack Lloyd
 *
-* Distributed under the terms of the Botan license
+* Distributed under the terms of the botan license.
 */
-
-#define BOTAN_SYMKEY_H__
 
 #include <botan/secmem.h>
 #include <string>
@@ -70,19 +68,19 @@ class OctetString
 		* @param in is an array
 		* @param len is the length of in in bytes
 		*/
-		OctetString(const byte in[], size_t len);
+		OctetString(in byte[] input);
 
 		/**
 		* Create a new OctetString
 		* @param in a bytestring
 		*/
-		OctetString(in SafeArray!byte in) : bits(in) {}
+		OctetString(in SafeArray!byte input) : bits(input) {}
 
 		/**
 		* Create a new OctetString
 		* @param in a bytestring
 		*/
-		OctetString(in Array!byte in) : bits(&in[0], &in[in.size()]) {}
+		OctetString(in Array!byte input) : bits(&in[0], &in[in.size()]) {}
 	private:
 		SafeArray!byte bits;
 };

@@ -37,7 +37,7 @@ const size_t PBKDF_OUTPUT_LEN = CIPHER_KEY_LEN + CIPHER_IV_LEN + MAC_KEY_LEN;
 
 }
 
-string encrypt(const byte input[], size_t input_len,
+string encrypt(in byte[] input, size_t input_len,
 						  in string passphrase,
 						  RandomNumberGenerator& rng)
 {
@@ -93,7 +93,7 @@ string encrypt(const byte input[], size_t input_len,
 	return PEM_Code::encode(out_buf, "BOTAN CRYPTOBOX MESSAGE");
 }
 
-string decrypt(const byte input[], size_t input_len,
+string decrypt(in byte[] input, size_t input_len,
 						  in string passphrase)
 {
 	DataSource_Memory input_src(input, input_len);
@@ -150,7 +150,7 @@ string decrypt(const byte input[], size_t input_len,
 string decrypt(in string input,
 						  in string passphrase)
 {
-	return decrypt(reinterpret_cast<const byte*>(&input[0]),
+	return decrypt(cast(const byte*)(&input[0]),
 						input.size(),
 						passphrase);
 }

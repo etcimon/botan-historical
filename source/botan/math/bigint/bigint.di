@@ -3,10 +3,8 @@
 * (C) 1999-2008,2012 Jack Lloyd
 *	  2007 FlexSecure
 *
-* Distributed under the terms of the Botan license
+* Distributed under the terms of the botan license.
 */
-
-#define BOTAN_BIGINT_H__
 
 #include <botan/rng.h>
 #include <botan/secmem.h>
@@ -66,7 +64,7 @@ class BigInt
 	  * @param length size of buf
 	  * @param base is the number base of the integer in buf
 	  */
-	  BigInt(const byte buf[], size_t length, Base base = Binary);
+	  BigInt(in byte[] buf, size_t length, Base base = Binary);
 
 	  /**
 	  * Create a random BigInt of the specified size
@@ -405,7 +403,7 @@ class BigInt
 	  * @param buf byte array buffer containing the integer
 	  * @param length size of buf
 	  */
-	  void binary_decode(const byte buf[], size_t length);
+	  void binary_decode(in byte[] buf, size_t length);
 
 	  /**
 	  * Read integer value from a byte array (SafeArray!byte)
@@ -477,7 +475,7 @@ class BigInt
 	  * @param base number-base of the integer in buf
 	  * @result BigInt representing the integer in the byte array
 	  */
-	  static BigInt decode(const byte buf[], size_t length,
+	  static BigInt decode(in byte[] buf, size_t length,
 								  Base base = Binary);
 
 	  /**

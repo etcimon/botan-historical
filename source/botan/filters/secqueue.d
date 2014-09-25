@@ -19,7 +19,7 @@ class SecureQueueNode
 
 		~SecureQueueNode() { next = nullptr; start = end = 0; }
 
-		size_t write(const byte input[], size_t length)
+		size_t write(in byte[] input, size_t length)
 		{
 			size_t copied = std::min<size_t>(length, buffer.size() - end);
 			copy_mem(&buffer[end], input, copied);
@@ -114,7 +114,7 @@ SecureQueue& SecureQueue::operator=(const SecureQueue& input)
 /*
 * Add some bytes to the queue
 */
-void SecureQueue::write(const byte input[], size_t length)
+void SecureQueue::write(in byte[] input, size_t length)
 {
 	if(!head)
 		head = tail = new SecureQueueNode;

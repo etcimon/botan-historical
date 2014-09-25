@@ -3,10 +3,8 @@
 * (C) 2001 Peter J Jones
 *	  2001-2007 Jack Lloyd
 *
-* Distributed under the terms of the Botan license
+* Distributed under the terms of the botan license.
 */
-
-#define BOTAN_ZLIB_H__
 
 #include <botan/filter.h>
 /**
@@ -17,7 +15,7 @@ class Zlib_Compression : public Filter
 	public:
 		string name() const { return "Zlib_Compression"; }
 
-		void write(const byte input[], size_t length);
+		void write(in byte[] input, size_t length);
 		void start_msg();
 		void end_msg();
 
@@ -53,7 +51,7 @@ class Zlib_Decompression : public Filter
 	public:
 		string name() const { return "Zlib_Decompression"; }
 
-		void write(const byte input[], size_t length);
+		void write(in byte[] input, size_t length);
 		void start_msg();
 		void end_msg();
 

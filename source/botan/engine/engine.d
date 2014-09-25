@@ -56,13 +56,13 @@ Keyed_Filter* Engine::get_cipher(in string,
 }
 
 PK_Ops::Key_Agreement*
-Engine::get_key_agreement_op(const Private_Key&, RandomNumberGenerator&) const
+Engine::get_key_agreement_op(in Private_Key, RandomNumberGenerator&) const
 {
 	return nullptr;
 }
 
 PK_Ops::Signature*
-Engine::get_signature_op(const Private_Key&, RandomNumberGenerator&) const
+Engine::get_signature_op(in Private_Key, RandomNumberGenerator&) const
 {
 	return nullptr;
 }
@@ -80,7 +80,7 @@ Engine::get_encryption_op(const Public_Key&, RandomNumberGenerator&) const
 }
 
 PK_Ops::Decryption*
-Engine::get_decryption_op(const Private_Key&, RandomNumberGenerator&) const
+Engine::get_decryption_op(in Private_Key, RandomNumberGenerator&) const
 {
 	return nullptr;
 }

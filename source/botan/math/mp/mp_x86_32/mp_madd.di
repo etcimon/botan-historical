@@ -3,10 +3,8 @@
 * (C) 1999-2008 Jack Lloyd
 *	  2006 Luca Piccarreta
 *
-* Distributed under the terms of the Botan license
+* Distributed under the terms of the botan license.
 */
-
-#define BOTAN_MP_WORD_MULADD_H__
 
 #include <botan/mp_types.h>
 

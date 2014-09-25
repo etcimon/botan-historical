@@ -3,10 +3,8 @@
 * (C) 1999-2007 Jack Lloyd
 *	  2012 Markus Wanner
 *
-* Distributed under the terms of the Botan license
+* Distributed under the terms of the botan license.
 */
-
-#define BOTAN_PIPE_H__
 
 #include <botan/data_src.h>
 #include <botan/filter.h>
@@ -59,70 +57,70 @@ class Pipe : public DataSource
 		* @param in the byte array to write
 		* @param length the length of the byte array in
 		*/
-		void write(const byte in[], size_t length);
+		void write(in byte[] input);
 
 		/**
 		* Write input to the pipe, i.e. to its first filter.
 		* @param in the secure_vector containing the data to write
 		*/
-		void write(in SafeArray!byte in)
+		void write(in SafeArray!byte input)
 		{ write(&in[0], in.size()); }
 
 		/**
 		* Write input to the pipe, i.e. to its first filter.
 		* @param in the std::vector containing the data to write
 		*/
-		void write(in Array!byte in)
+		void write(in Array!byte input)
 		{ write(&in[0], in.size()); }
 
 		/**
 		* Write input to the pipe, i.e. to its first filter.
 		* @param in the string containing the data to write
 		*/
-		void write(in string in);
+		void write(in string input);
 
 		/**
 		* Write input to the pipe, i.e. to its first filter.
 		* @param in the DataSource to read the data from
 		*/
-		void write(DataSource& in);
+		void write(DataSource& input);
 
 		/**
 		* Write input to the pipe, i.e. to its first filter.
 		* @param in a single byte to be written
 		*/
-		void write(byte in);
+		void write(byte input);
 
 		/**
 		* Perform start_msg(), write() and end_msg() sequentially.
 		* @param in the byte array containing the data to write
 		* @param length the length of the byte array to write
 		*/
-		void process_msg(const byte in[], size_t length);
+		void process_msg(in byte[] input);
 
 		/**
 		* Perform start_msg(), write() and end_msg() sequentially.
 		* @param in the secure_vector containing the data to write
 		*/
-		void process_msg(in SafeArray!byte in);
+		void process_msg(in SafeArray!byte input);
 
 		/**
 		* Perform start_msg(), write() and end_msg() sequentially.
 		* @param in the secure_vector containing the data to write
 		*/
-		void process_msg(in Array!byte in);
+		void process_msg(in Array!byte input);
 
 		/**
 		* Perform start_msg(), write() and end_msg() sequentially.
 		* @param in the string containing the data to write
 		*/
-		void process_msg(in string in);
+		void process_msg(in string input);
 
 		/**
 		* Perform start_msg(), write() and end_msg() sequentially.
 		* @param in the DataSource providing the data to write
 		*/
-		void process_msg(DataSource& in);
+		void process_msg(DataSource& input);
 
 		/**
 		* Find out how many bytes are ready to read.
@@ -198,7 +196,7 @@ class Pipe : public DataSource
 		* @param msg the number identifying the message to peek from
 		* @return number of bytes actually peeked and written into output
 		*/
-		size_t peek(byte output[], size_t length,
+		size_t peek(byte output[],
 						size_t offset, message_id msg) const;
 
 		/** Read a single byte from the specified message but do not
@@ -209,7 +207,7 @@ class Pipe : public DataSource
 		* @param msg the number identifying the message to peek from
 		* @return number of bytes actually peeked and written into output
 		*/
-		size_t peek(byte& output, size_t offset,
+		size_t peek(ref byte output, size_t offset,
 						message_id msg = DEFAULT_MESSAGE) const;
 
 		/**

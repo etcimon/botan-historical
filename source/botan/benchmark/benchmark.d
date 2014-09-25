@@ -14,7 +14,7 @@
 #include <botan/mac.h>
 #include <vector>
 #include <chrono>
-double time_op(std::chrono::nanoseconds runtime, std::function<void ()> op)
+double time_op(std::chrono::nanoseconds runtime, void delegate() op)
 {
 	std::chrono::nanoseconds time_used(0);
 	size_t reps = 0;
@@ -28,9 +28,9 @@ double time_op(std::chrono::nanoseconds runtime, std::function<void ()> op)
 		time_used = std::chrono::high_resolution_clock::now() - start;
 	}
 
-	const u64bit nsec_used = std::chrono::duration_cast<std::chrono::nanoseconds>(time_used).count();
+	const u64bit nsec_used = std::chrono::duration_cast(<std::chrono::nanoseconds>)(time_used).count();
 
-	const double seconds_used = static_cast<double>(nsec_used) / 1000000000;
+	const double seconds_used = cast(double)(nsec_used) / 1000000000;
 
 	return reps / seconds_used; // ie, return ops per second
 }
@@ -48,7 +48,7 @@ time_algorithm_ops(in string name,
 	SafeArray!byte buffer(buf_size * 1024);
 	rng.randomize(&buffer[0], buffer.size());
 
-	const double mb_mult = buffer.size() / static_cast<double>(Mebibyte);
+	const double mb_mult = buffer.size() / cast(double)(Mebibyte);
 
 	if(const BlockCipher* proto = af.prototype_block_cipher(name, provider))
 	{

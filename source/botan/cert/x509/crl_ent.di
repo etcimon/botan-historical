@@ -2,10 +2,8 @@
 * CRL Entry
 * (C) 1999-2007 Jack Lloyd
 *
-* Distributed under the terms of the Botan license
+* Distributed under the terms of the botan license.
 */
-
-#define BOTAN_CRL_ENTRY_H__
 
 #include <botan/x509cert.h>
 #include <botan/asn1_time.h>

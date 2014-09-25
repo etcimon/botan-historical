@@ -2,10 +2,8 @@
 * Secure Memory Buffers
 * (C) 1999-2007,2012 Jack Lloyd
 *
-* Distributed under the terms of the Botan license
+* Distributed under the terms of the botan license.
 */
-
-#define BOTAN_SECURE_MEMORY_BUFFERS_H__
 
 #include <botan/mem_ops.h>
 #include <algorithm>
@@ -42,7 +40,7 @@ class secure_allocator
 		pointer allocate(size_type n, const void* = 0)
 		{
 #if defined(BOTAN_HAS_LOCKING_ALLOCATOR)
-			if(pointer p = static_cast<pointer>(mlock_allocator::instance().allocate(n, sizeof(T))))
+			if(pointer p = cast(pointer)(mlock_allocator::instance().allocate(n, sizeof(T))))
 				return p;
 #endif
 
@@ -65,13 +63,13 @@ class secure_allocator
 
 		size_type max_size() const noexcept
 		{
-			return static_cast<size_type>(-1) / sizeof(T);
+			return cast(size_type)(-1) / sizeof(T);
 		}
 
 		template<typename U, typename... Args>
 		void construct(U* p, Args&&... args)
 		{
-			::new(static_cast<void*>(p)) U(std::forward<Args>(args)...);
+			::new(cast(void*)(p)) U(std::forward<Args>(args)...);
 		}
 
 		template<typename U> void destroy(U* p) { p->~U(); }
@@ -88,7 +86,7 @@ operator!=(const secure_allocator<T>&, const secure_allocator<T>&)
 template<typename T> using secure_vector = std::vector<T, secure_allocator<T>>;
 
 template<typename T>
-std::vector<T> unlock(const secure_vector<T>& in)
+std::vector<T> unlock(const secure_vector<T>& input)
 {
 	std::vector<T> out(in.size());
 	copy_mem(&out[0], &in[0], in.size());
@@ -119,7 +117,7 @@ size_t buffer_insert(std::vector<T, Alloc>& buf,
 template<typename T, typename Alloc, typename Alloc2>
 std::vector<T, Alloc>&
 operator+=(std::vector<T, Alloc>& out,
-			  const std::vector<T, Alloc2>& in)
+			  const std::vector<T, Alloc2>& input)
 {
 	const size_t copy_offset = out.size();
 	out.resize(out.size() + in.size());
@@ -128,15 +126,15 @@ operator+=(std::vector<T, Alloc>& out,
 }
 
 template<typename T, typename Alloc>
-std::vector<T, Alloc>& operator+=(std::vector<T, Alloc>& out, T in)
+std::vector<T, Alloc>& operator+=(std::vector<T, Alloc>& out, T input)
 {
-	out.push_back(in);
+	out.push_back(input);
 	return out;
 }
 
 template<typename T, typename Alloc, typename L>
 std::vector<T, Alloc>& operator+=(std::vector<T, Alloc>& out,
-											 const std::pair<const T*, L>& in)
+											 const std::pair<const T*, L>& input)
 {
 	const size_t copy_offset = out.size();
 	out.resize(out.size() + in.second);
@@ -146,7 +144,7 @@ std::vector<T, Alloc>& operator+=(std::vector<T, Alloc>& out,
 
 template<typename T, typename Alloc, typename L>
 std::vector<T, Alloc>& operator+=(std::vector<T, Alloc>& out,
-											 const std::pair<T*, L>& in)
+											 const std::pair<T*, L>& input)
 {
 	const size_t copy_offset = out.size();
 	out.resize(out.size() + in.second);

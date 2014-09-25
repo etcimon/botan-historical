@@ -57,7 +57,7 @@ void Transformation_Filter::set_iv(const InitializationVector& iv)
 
 void Transformation_Filter::set_key(const SymmetricKey& key)
 {
-	if(Keyed_Transform* keyed = dynamic_cast<Keyed_Transform*>(m_transform.get()))
+	if(Keyed_Transform* keyed = cast(Keyed_Transform*)(m_transform.get()))
 		keyed->set_key(key);
 	else if(key.length() != 0)
 		throw std::runtime_error("Transformation " + name() + " does not accept keys");
@@ -65,7 +65,7 @@ void Transformation_Filter::set_key(const SymmetricKey& key)
 
 Key_Length_Specification Transformation_Filter::key_spec() const
 {
-	if(Keyed_Transform* keyed = dynamic_cast<Keyed_Transform*>(m_transform.get()))
+	if(Keyed_Transform* keyed = cast(Keyed_Transform*)(m_transform.get()))
 		return keyed->key_spec();
 	return Key_Length_Specification(0);
 }
@@ -75,7 +75,7 @@ bool Transformation_Filter::valid_iv_length(size_t length) const
 	return m_transform->valid_nonce_length(length);
 }
 
-void Transformation_Filter::write(const byte input[], size_t input_length)
+void Transformation_Filter::write(in byte[] input, size_t input_length)
 {
 	Buffered_Filter::write(input, input_length);
 }
@@ -90,7 +90,7 @@ void Transformation_Filter::start_msg()
 	send(m_transform->start_vec(m_nonce.get()));
 }
 
-void Transformation_Filter::buffered_block(const byte input[], size_t input_length)
+void Transformation_Filter::buffered_block(in byte[] input, size_t input_length)
 {
 	while(input_length)
 	{
@@ -106,7 +106,7 @@ void Transformation_Filter::buffered_block(const byte input[], size_t input_leng
 	}
 }
 
-void Transformation_Filter::buffered_final(const byte input[], size_t input_length)
+void Transformation_Filter::buffered_final(in byte[] input, size_t input_length)
 {
 	SafeArray!byte buf(input, input + input_length);
 	m_transform->finish(buf);

@@ -2,10 +2,8 @@
 * Filter interface for AEAD Modes
 * (C) 2013 Jack Lloyd
 *
-* Distributed under the terms of the Botan license
+* Distributed under the terms of the botan license.
 */
-
-#define BOTAN_AEAD_FILTER_H__
 
 #include <botan/transform_filter.h>
 #include <botan/aead.h>
@@ -25,8 +23,8 @@ class AEAD_Filter : public Transformation_Filter
 		* @param ad the associated data
 		* @param ad_len length of add in bytes
 		*/
-		void set_associated_data(const byte ad[], size_t ad_len)
+		void set_associated_data(in byte[] ad, size_t ad_len)
 		{
-			dynamic_cast<AEAD_Mode&>(get_transform()).set_associated_data(ad, ad_len);
+			cast(AEAD_Mode&)(get_transform()).set_associated_data(ad, ad_len);
 		}
 };

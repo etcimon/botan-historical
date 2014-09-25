@@ -2,10 +2,8 @@
 * Hash Function Identification
 * (C) 1999-2007 Jack Lloyd
 *
-* Distributed under the terms of the Botan license
+* Distributed under the terms of the botan license.
 */
-
-#define BOTAN_HASHID_H__
 
 #include <botan/secmem.h>
 #include <string>

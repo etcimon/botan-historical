@@ -2,10 +2,8 @@
 * Low Level Types
 * (C) 1999-2007 Jack Lloyd
 *
-* Distributed under the terms of the Botan license
+* Distributed under the terms of the botan license.
 */
-
-#define BOTAN_TYPES_H__
 
 #include <botan/build.h>
 #include <botan/assert.h>

@@ -2,10 +2,8 @@
 * Win32 CAPI EntropySource
 * (C) 1999-2007 Jack Lloyd
 *
-* Distributed under the terms of the Botan license
+* Distributed under the terms of the botan license.
 */
-
-#define BOTAN_ENTROPY_SRC_WIN32_CAPI_H__
 
 #include <botan/entropy_src.h>
 #include <vector>

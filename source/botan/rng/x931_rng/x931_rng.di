@@ -2,10 +2,8 @@
 * ANSI X9.31 RNG
 * (C) 1999-2009 Jack Lloyd
 *
-* Distributed under the terms of the Botan license
+* Distributed under the terms of the botan license.
 */
-
-#define BOTAN_ANSI_X931_RNG_H__
 
 #include <botan/rng.h>
 #include <botan/block_cipher.h>

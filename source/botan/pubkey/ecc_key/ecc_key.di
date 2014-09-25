@@ -4,10 +4,8 @@
 *			 Manuel Hartl, FlexSecure GmbH
 * (C) 2008-2010 Jack Lloyd
 *
-* Distributed under the terms of the Botan license
+* Distributed under the terms of the botan license.
 */
-
-#define BOTAN_ECC_PUBLIC_KEY_BASE_H__
 
 #include <botan/ec_group.h>
 #include <botan/pk_keys.h>
@@ -94,12 +92,12 @@ class EC_PrivateKey : public abstract EC_PublicKey,
 	public:
 	  EC_PrivateKey(RandomNumberGenerator& rng,
 						 const EC_Group& domain,
-						 const BigInt& private_key);
+						 const BigInt& Private_Key);
 
 		EC_PrivateKey(const AlgorithmIdentifier& alg_id,
 						  in SafeArray!byte key_bits);
 
-		SafeArray!byte pkcs8_private_key() const;
+		SafeArray!byte pkcs8_Private_Key() const;
 
 		/**
 		* Get the private key value of this key object.
@@ -109,5 +107,5 @@ class EC_PrivateKey : public abstract EC_PublicKey,
 	protected:
 		EC_PrivateKey() {}
 
-		BigInt private_key;
+		BigInt Private_Key;
 };

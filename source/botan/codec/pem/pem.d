@@ -13,7 +13,7 @@ namespace PEM_Code {
 /*
 * PEM encode BER/DER-encoded objects
 */
-string encode(const byte der[], size_t length, in string label,
+string encode(in byte[] der, size_t length, in string label,
 						 size_t width)
 {
 	const string PEM_HEADER = "-----BEGIN " + label + "-----";
@@ -73,7 +73,7 @@ SafeArray!byte decode(DataSource& source, string& label)
 			throw Decoding_Error("PEM: Malformed PEM header");
 
 		if(position == 0)
-			label += static_cast<char>(b);
+			label += cast(char)(b);
 	}
 
 	Pipe base64(new Base64_Decoder);

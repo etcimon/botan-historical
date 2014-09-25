@@ -91,8 +91,9 @@ in SafeArray!byte Connection_Cipher_State::aead_nonce(u64bit seq)
 }
 
 in SafeArray!byte
-Connection_Cipher_State::aead_nonce(const byte record[], size_t record_len)
+Connection_Cipher_State::aead_nonce(in byte[] record)
 {
+	size_t record_len = record.length;
 	BOTAN_ASSERT(m_aead, "Using AEAD mode");
 	BOTAN_ASSERT(m_nonce.size() == 12, "Expected nonce size");
 	BOTAN_ASSERT(record_len >= 8, "Record includes nonce");
@@ -123,8 +124,8 @@ Connection_Cipher_State::format_ad(u64bit msg_sequence,
 	return m_ad;
 }
 
-void write_record(SafeArray!byte& output,
-						byte msg_type, const byte msg[], size_t msg_length,
+void write_record(SafeArray!byte output,
+						byte msg_type, in byte[] msg, size_t msg_length,
 						Protocol_Version version,
 						u64bit msg_sequence,
 						Connection_Cipher_State* cipherstate,
@@ -243,7 +244,7 @@ void write_record(SafeArray!byte& output,
 	}
 	else if(BlockCipher* bc = cipherstate->block_cipher())
 	{
-		SafeArray!byte& cbc_state = cipherstate->cbc_state();
+		SafeArray!byte cbc_state = cipherstate->cbc_state();
 
 		BOTAN_ASSERT(buf_size % block_size == 0,
 						 "Buffer is an even multiple of block size");
@@ -270,7 +271,7 @@ void write_record(SafeArray!byte& output,
 
 namespace {
 
-size_t fill_buffer_to(SafeArray!byte& readbuf,
+size_t fill_buffer_to(SafeArray!byte readbuf,
 							 const byte*& input,
 							 size_t& input_size,
 							 size_t& input_consumed,
@@ -307,9 +308,9 @@ size_t fill_buffer_to(SafeArray!byte& readbuf,
 */
 size_t tls_padding_check(bool sslv3_padding,
 								 size_t block_size,
-								 const byte record[],
-								 size_t record_len)
+								 in byte[] record)
 {
+	size_t record_len = record.length;
 	const size_t padding_length = record[(record_len-1)];
 
 	if(padding_length >= record_len)
@@ -341,12 +342,13 @@ size_t tls_padding_check(bool sslv3_padding,
 	return cmp ? 0 : padding_length + 1;
 }
 
-void cbc_decrypt_record(byte record_contents[], size_t record_len,
-								Connection_Cipher_State& cipherstate,
+void cbc_decrypt_record(byte[] record_contents,
+								Connection_Cipher_State cipherstate,
 								const BlockCipher& bc)
 {
+	size_t record_len = record_contents.length;
 	const size_t block_size = cipherstate.block_size();
-
+	
 	BOTAN_ASSERT(record_len % block_size == 0,
 					 "Buffer is an even multiple of block size");
 
@@ -354,7 +356,7 @@ void cbc_decrypt_record(byte record_contents[], size_t record_len,
 
 	BOTAN_ASSERT(blocks >= 1, "At least one ciphertext block");
 
-	byte* buf = record_contents;
+	byte* buf = record_contents.ptr;
 
 	SafeArray!byte last_ciphertext(block_size);
 	copy_mem(&last_ciphertext[0], &buf[0], block_size);
@@ -375,16 +377,17 @@ void cbc_decrypt_record(byte record_contents[], size_t record_len,
 	cipherstate.cbc_state() = last_ciphertext;
 }
 
-void decrypt_record(SafeArray!byte& output,
-						  byte record_contents[], size_t record_len,
+void decrypt_record(SafeArray!byte output,
+						  in byte[] record_contents,
 						  u64bit record_sequence,
 						  Protocol_Version record_version,
 						  Record_Type record_type,
 						  Connection_Cipher_State& cipherstate)
 {
+	size_t record_len = record_contents.length;
 	if(AEAD_Mode* aead = cipherstate.aead())
 	{
-		auto nonce = cipherstate.aead_nonce(record_contents, record_len);
+		auto nonce = cipherstate.aead_nonce(record_contents);
 		const size_t nonce_length = 8; // fixme, take from ciphersuite
 
 		BOTAN_ASSERT(record_len > nonce_length, "Have data past the nonce");
@@ -412,12 +415,12 @@ void decrypt_record(SafeArray!byte& output,
 		volatile bool padding_bad = false;
 		size_t pad_size = 0;
 
-		if(StreamCipher* sc = cipherstate.stream_cipher())
+		if(StreamCipher sc = cipherstate.stream_cipher())
 		{
 			sc->cipher1(record_contents, record_len);
 			// no padding to check or remove
 		}
-		else if(BlockCipher* bc = cipherstate.block_cipher())
+		else if(BlockCipher bc = cipherstate.block_cipher())
 		{
 			cbc_decrypt_record(record_contents, record_len, cipherstate, *bc);
 
@@ -465,24 +468,23 @@ void decrypt_record(SafeArray!byte& output,
 
 }
 
-size_t read_record(SafeArray!byte& readbuf,
-						 const byte input[],
-						 size_t input_sz,
-						 size_t& consumed,
-						 SafeArray!byte& record,
-						 u64bit* record_sequence,
-						 Protocol_Version* record_version,
-						 Record_Type* record_type,
-						 Connection_Sequence_Numbers* sequence_numbers,
-						 std::function<Connection_Cipher_State* (u16bit)> get_cipherstate)
+size_t read_record(SafeArray!byte readbuf,
+						 in byte[] input,
+						 ref size_t consumed,
+						 SafeArray!byte record,
+						 ref u64bit record_sequence,
+						 Protocol_Version record_version,
+						 Record_Type record_type,
+						 Connection_Sequence_Numbers sequence_numbers,
+						 Connection_Cipher_State delegate(u16bit) get_cipherstate)
 {
 	consumed = 0;
-
+	size_t input_sz = input.length;
 	if(readbuf.size() < TLS_HEADER_SIZE) // header incomplete?
 	{
 		if(size_t needed = fill_buffer_to(readbuf,
-													 input, input_sz, consumed,
-													 TLS_HEADER_SIZE))
+											 input, input_sz, consumed,
+											 TLS_HEADER_SIZE))
 			return needed;
 
 		BOTAN_ASSERT_EQUAL(readbuf.size(), TLS_HEADER_SIZE,
@@ -533,8 +535,8 @@ size_t read_record(SafeArray!byte& readbuf,
 	if(is_dtls && readbuf.size() < DTLS_HEADER_SIZE)
 	{
 		if(size_t needed = fill_buffer_to(readbuf,
-													 input, input_sz, consumed,
-													 DTLS_HEADER_SIZE))
+											 input, input_sz, consumed,
+											 DTLS_HEADER_SIZE))
 			return needed;
 
 		BOTAN_ASSERT_EQUAL(readbuf.size(), DTLS_HEADER_SIZE,
@@ -544,22 +546,22 @@ size_t read_record(SafeArray!byte& readbuf,
 	const size_t header_size = (is_dtls) ? DTLS_HEADER_SIZE : TLS_HEADER_SIZE;
 
 	const size_t record_len = make_u16bit(readbuf[header_size-2],
-													  readbuf[header_size-1]);
+											readbuf[header_size-1]);
 
 	if(record_len > MAX_CIPHERTEXT_SIZE)
 		throw TLS_Exception(Alert::RECORD_OVERFLOW,
 								  "Got message that exceeds maximum size");
 
 	if(size_t needed = fill_buffer_to(readbuf,
-												 input, input_sz, consumed,
-												 header_size + record_len))
+										 input, input_sz, consumed,
+										 header_size + record_len))
 		return needed; // wrong for DTLS?
 
-	BOTAN_ASSERT_EQUAL(static_cast<size_t>(header_size) + record_len,
+	BOTAN_ASSERT_EQUAL(cast(size_t)(header_size) + record_len,
 							 readbuf.size(),
 							 "Have the full record");
 
-	*record_type = static_cast<Record_Type>(readbuf[0]);
+	*record_type = cast(Record_Type)(readbuf[0]);
 
 	u16bit epoch = 0;
 

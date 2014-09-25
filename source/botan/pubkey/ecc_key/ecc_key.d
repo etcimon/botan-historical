@@ -70,10 +70,10 @@ void EC_PublicKey::set_parameter_encoding(EC_Group_Encoding form)
 
 const BigInt& EC_PrivateKey::private_value() const
 {
-	if(private_key == 0)
+	if(Private_Key == 0)
 		throw Invalid_State("EC_PrivateKey::private_value - uninitialized");
 
-	return private_key;
+	return Private_Key;
 }
 
 /**
@@ -87,22 +87,22 @@ EC_PrivateKey::EC_PrivateKey(RandomNumberGenerator& rng,
 	domain_encoding = EC_DOMPAR_ENC_EXPLICIT;
 
 	if(x == 0)
-		private_key = BigInt::random_integer(rng, 1, domain().get_order());
+		Private_Key = BigInt::random_integer(rng, 1, domain().get_order());
 	else
-		private_key = x;
+		Private_Key = x;
 
-	public_key = domain().get_base_point() * private_key;
+	public_key = domain().get_base_point() * Private_Key;
 
 	BOTAN_ASSERT(public_key.on_the_curve(),
 					 "Generated public key point was on the curve");
 }
 
-SafeArray!byte EC_PrivateKey::pkcs8_private_key() const
+SafeArray!byte EC_PrivateKey::pkcs8_Private_Key() const
 {
 	return DER_Encoder()
 		.start_cons(SEQUENCE)
-			.encode(static_cast<size_t>(1))
-			.encode(BigInt::encode_1363(private_key, private_key.bytes()),
+			.encode(cast(size_t)(1))
+			.encode(BigInt::encode_1363(Private_Key, Private_Key.bytes()),
 					  OCTET_STRING)
 		.end_cons()
 		.get_contents();
@@ -120,7 +120,7 @@ EC_PrivateKey::EC_PrivateKey(const AlgorithmIdentifier& alg_id,
 	BER_Decoder(key_bits)
 		.start_cons(SEQUENCE)
 			.decode_and_check<size_t>(1, "Unknown version code for ECC key")
-			.decode_octet_string_bigint(private_key)
+			.decode_octet_string_bigint(Private_Key)
 			.decode_optional(key_parameters, ASN1_Tag(0), PRIVATE)
 			.decode_optional_string(public_key_bits, BIT_STRING, 1, PRIVATE)
 		.end_cons();
@@ -130,7 +130,7 @@ EC_PrivateKey::EC_PrivateKey(const AlgorithmIdentifier& alg_id,
 
 	if(public_key_bits.empty())
 	{
-		public_key = domain().get_base_point() * private_key;
+		public_key = domain().get_base_point() * Private_Key;
 
 		BOTAN_ASSERT(public_key.on_the_curve(),
 						 "Public point derived from loaded key was on the curve");

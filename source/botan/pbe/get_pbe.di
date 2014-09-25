@@ -2,10 +2,8 @@
 * PBE Lookup
 * (C) 1999-2007 Jack Lloyd
 *
-* Distributed under the terms of the Botan license
+* Distributed under the terms of the botan license.
 */
-
-#define BOTAN_LOOKUP_PBE_H__
 
 #include <botan/pbe.h>
 #include <vector>

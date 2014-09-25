@@ -34,7 +34,7 @@ class L_computer
 
 		in SafeArray!byte operator()(size_t i) const { return get(i); }
 
-		in SafeArray!byte compute_offsets(SafeArray!byte& offset,
+		in SafeArray!byte compute_offsets(SafeArray!byte offset,
 																 size_t block_index,
 																 size_t blocks) const
 		{
@@ -58,9 +58,9 @@ class L_computer
 			return m_L.at(i);
 		}
 
-		SafeArray!byte poly_double(in SafeArray!byte in) const
+		SafeArray!byte poly_double(in SafeArray!byte input) const
 		{
-			return CMAC::poly_double(in);
+			return CMAC::poly_double(input);
 		}
 
 		SafeArray!byte m_L_dollar, m_L_star;
@@ -75,7 +75,7 @@ namespace {
 */
 SafeArray!byte ocb_hash(const L_computer& L,
 									  const BlockCipher& cipher,
-									  const byte ad[], size_t ad_len)
+									  in byte[] ad, size_t ad_len)
 {
 	SafeArray!byte sum(BS);
 	SafeArray!byte offset(BS);
@@ -165,20 +165,20 @@ Key_Length_Specification OCB_Mode::key_spec() const
 	return m_cipher->key_spec();
 }
 
-void OCB_Mode::key_schedule(const byte key[], size_t length)
+void OCB_Mode::key_schedule(in byte[] key)
 {
 	m_cipher->set_key(key, length);
 	m_L.reset(new L_computer(*m_cipher));
 }
 
-void OCB_Mode::set_associated_data(const byte ad[], size_t ad_len)
+void OCB_Mode::set_associated_data(in byte[] ad, size_t ad_len)
 {
 	BOTAN_ASSERT(m_L, "A key was set");
 	m_ad_hash = ocb_hash(*m_L, *m_cipher, &ad[0], ad_len);
 }
 
 SafeArray!byte
-OCB_Mode::update_nonce(const byte nonce[], size_t nonce_len)
+OCB_Mode::update_nonce(in byte[] nonce, size_t nonce_len)
 {
 	BOTAN_ASSERT(nonce_len < BS, "Nonce is less than 128 bits");
 
@@ -220,7 +220,7 @@ OCB_Mode::update_nonce(const byte nonce[], size_t nonce_len)
 	return offset;
 }
 
-SafeArray!byte OCB_Mode::start(const byte nonce[], size_t nonce_len)
+SafeArray!byte OCB_Mode::start(in byte[] nonce, size_t nonce_len)
 {
 	if(!valid_nonce_length(nonce_len))
 		throw Invalid_IV_Length(name(), nonce_len);
@@ -259,7 +259,7 @@ void OCB_Encryption::encrypt(byte buffer[], size_t blocks)
 	}
 }
 
-void OCB_Encryption::update(SafeArray!byte& buffer, size_t offset)
+void OCB_Encryption::update(SafeArray!byte buffer, size_t offset)
 {
 	BOTAN_ASSERT(buffer.size() >= offset, "Offset is sane");
 	const size_t sz = buffer.size() - offset;
@@ -270,7 +270,7 @@ void OCB_Encryption::update(SafeArray!byte& buffer, size_t offset)
 	encrypt(buf, sz / BS);
 }
 
-void OCB_Encryption::finish(SafeArray!byte& buffer, size_t offset)
+void OCB_Encryption::finish(SafeArray!byte buffer, size_t offset)
 {
 	BOTAN_ASSERT(buffer.size() >= offset, "Offset is sane");
 	const size_t sz = buffer.size() - offset;
@@ -350,7 +350,7 @@ void OCB_Decryption::decrypt(byte buffer[], size_t blocks)
 	}
 }
 
-void OCB_Decryption::update(SafeArray!byte& buffer, size_t offset)
+void OCB_Decryption::update(SafeArray!byte buffer, size_t offset)
 {
 	BOTAN_ASSERT(buffer.size() >= offset, "Offset is sane");
 	const size_t sz = buffer.size() - offset;
@@ -361,7 +361,7 @@ void OCB_Decryption::update(SafeArray!byte& buffer, size_t offset)
 	decrypt(buf, sz / BS);
 }
 
-void OCB_Decryption::finish(SafeArray!byte& buffer, size_t offset)
+void OCB_Decryption::finish(SafeArray!byte buffer, size_t offset)
 {
 	BOTAN_ASSERT(buffer.size() >= offset, "Offset is sane");
 	const size_t sz = buffer.size() - offset;

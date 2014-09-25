@@ -2,10 +2,8 @@
 * GMP MPZ Wrapper
 * (C) 1999-2007 Jack Lloyd
 *
-* Distributed under the terms of the Botan license
+* Distributed under the terms of the botan license.
 */
-
-#define BOTAN_GMP_MPZ_WRAP_H__
 
 #include <botan/bigint.h>
 #include <gmp.h>

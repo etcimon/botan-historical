@@ -2,10 +2,8 @@
 * CAST-256
 * (C) 1999-2007 Jack Lloyd
 *
-* Distributed under the terms of the Botan license
+* Distributed under the terms of the botan license.
 */
-
-#define BOTAN_CAST256_H__
 
 #include <botan/block_cipher.h>
 /**
@@ -14,8 +12,8 @@
 class CAST_256 : public Block_Cipher_Fixed_Params<16, 4, 32, 4>
 {
 	public:
-		void encrypt_n(const byte in[], byte out[], size_t blocks) const;
-		void decrypt_n(const byte in[], byte out[], size_t blocks) const;
+		void encrypt_n(in byte[] input, ref byte[] output) const;
+		void decrypt_n(in byte[] input, ref byte[] output) const;
 
 		void clear();
 		string name() const { return "CAST-256"; }

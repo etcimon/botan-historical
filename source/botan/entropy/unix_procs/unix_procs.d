@@ -45,7 +45,7 @@ size_t concurrent_processes(size_t user_request)
 	const long online_cpus = ::sysconf(_SC_NPROCESSORS_ONLN);
 
 	if(online_cpus > 0)
-		return static_cast<size_t>(online_cpus); // maybe fewer?
+		return cast(size_t)(online_cpus); // maybe fewer?
 
 	return DEFAULT_CONCURRENT;
 }
@@ -202,7 +202,7 @@ void Unix_EntropySource::poll(Entropy_Accumulator& accum)
 	const size_t MS_WAIT_TIME = 32;
 	const double ENTROPY_ESTIMATE = 1.0 / 1024;
 
-	SafeArray!byte& io_buffer = accum.get_io_buffer(4*1024); // page
+	SafeArray!byte io_buffer = accum.get_io_buffer(4*1024); // page
 
 	while(!accum.polling_goal_achieved())
 	{

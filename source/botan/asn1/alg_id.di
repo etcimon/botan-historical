@@ -2,10 +2,8 @@
 * Algorithm Identifier
 * (C) 1999-2007 Jack Lloyd
 *
-* Distributed under the terms of the Botan license
+* Distributed under the terms of the botan license.
 */
-
-#define BOTAN_ALGORITHM_IDENTIFIER_H__
 
 #include <botan/asn1_obj.h>
 #include <botan/asn1_oid.h>

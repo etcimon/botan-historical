@@ -31,7 +31,7 @@ string ucs2_to_latin1(in string ucs2)
 		if(c1 != 0)
 			throw Decoding_Error("UCS-2 has non-Latin1 characters");
 
-		latin1 += static_cast<char>(c2);
+		latin1 += cast(char)(c2);
 	}
 
 	return latin1;
@@ -47,22 +47,22 @@ string utf8_to_latin1(in string utf8)
 	size_t position = 0;
 	while(position != utf8.size())
 	{
-		const byte c1 = static_cast<byte>(utf8[position++]);
+		const byte c1 = cast(byte)(utf8[position++]);
 
 		if(c1 <= 0x7F)
-			iso8859 += static_cast<char>(c1);
+			iso8859 += cast(char)(c1);
 		else if(c1 >= 0xC0 && c1 <= 0xC7)
 		{
 			if(position == utf8.size())
 				throw Decoding_Error("UTF-8: sequence truncated");
 
-			const byte c2 = static_cast<byte>(utf8[position++]);
+			const byte c2 = cast(byte)(utf8[position++]);
 			const byte iso_char = ((c1 & 0x07) << 6) | (c2 & 0x3F);
 
 			if(iso_char <= 0x7F)
 				throw Decoding_Error("UTF-8: sequence longer than needed");
 
-			iso8859 += static_cast<char>(iso_char);
+			iso8859 += cast(char)(iso_char);
 		}
 		else
 			throw Decoding_Error("UTF-8: Unicode chars not in Latin1 used");
@@ -79,14 +79,14 @@ string latin1_to_utf8(in string iso8859)
 	string utf8;
 	for(size_t i = 0; i != iso8859.size(); ++i)
 	{
-		const byte c = static_cast<byte>(iso8859[i]);
+		const byte c = cast(byte)(iso8859[i]);
 
 		if(c <= 0x7F)
-			utf8 += static_cast<char>(c);
+			utf8 += cast(char)(c);
 		else
 		{
-			utf8 += static_cast<char>((0xC0 | (c >> 6)));
-			utf8 += static_cast<char>((0x80 | (c & 0x3F)));
+			utf8 += cast(char)((0xC0 | (c >> 6)));
+			utf8 += cast(char)((0x80 | (c & 0x3F)));
 		}
 	}
 	return utf8;
@@ -189,8 +189,8 @@ char digit2char(byte b)
 */
 bool caseless_cmp(char a, char b)
 {
-	return (std::tolower(static_cast<unsigned char>(a)) ==
-			  std::tolower(static_cast<unsigned char>(b)));
+	return (std::tolower(cast(unsigned char)(a)) ==
+			  std::tolower(cast(unsigned char)(b)));
 }
 
 }

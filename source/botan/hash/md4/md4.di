@@ -2,10 +2,8 @@
 * MD4
 * (C) 1999-2007 Jack Lloyd
 *
-* Distributed under the terms of the Botan license
+* Distributed under the terms of the botan license.
 */
-
-#define BOTAN_MD4_H__
 
 #include <botan/mdx_hash.h>
 /**
@@ -23,7 +21,7 @@ class MD4 : public MDx_HashFunction
 		MD4() : MDx_HashFunction(64, false, true), M(16), digest(4)
 		{ clear(); }
 	protected:
-		void compress_n(const byte input[], size_t blocks);
+		void compress_n(in byte[] input, size_t blocks);
 		void copy_out(byte[]);
 
 		/**

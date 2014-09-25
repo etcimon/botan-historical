@@ -2,10 +2,8 @@
 * SRP-6a (RFC 5054 compatatible)
 * (C) 2011,2012 Jack Lloyd
 *
-* Distributed under the terms of the Botan license
+* Distributed under the terms of the botan license.
 */
-
-#define BOTAN_RFC5054_SRP6_H__
 
 #include <botan/bigint.h>
 #include <botan/hash.h>

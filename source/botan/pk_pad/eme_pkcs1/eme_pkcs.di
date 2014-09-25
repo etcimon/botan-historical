@@ -2,10 +2,8 @@
 * EME PKCS#1 v1.5
 * (C) 1999-2007 Jack Lloyd
 *
-* Distributed under the terms of the Botan license
+* Distributed under the terms of the botan license.
 */
-
-#define BOTAN_EME_PKCS1_H__
 
 #include <botan/eme.h>
 /**

@@ -2,10 +2,8 @@
 * Assembly Implementation Engine
 * (C) 1999-2010 Jack Lloyd
 *
-* Distributed under the terms of the Botan license
+* Distributed under the terms of the botan license.
 */
-
-#define BOTAN_X86_32_ASM_ENGINE_H__
 
 #include <botan/engine.h>
 /**

@@ -3,10 +3,8 @@
 * (C) 2007-2008 FlexSecure GmbH
 *	  2008-2010 Jack Lloyd
 *
-* Distributed under the terms of the Botan license
+* Distributed under the terms of the botan license.
 */
-
-#define BOTAN_EAC_ASN1_OBJ_H__
 
 #include <botan/asn1_obj.h>
 #include <chrono>

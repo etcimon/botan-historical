@@ -4,10 +4,8 @@
 *			 Manuel Hartl, FlexSecure GmbH
 * (C) 2008-2010 Jack Lloyd
 *
-* Distributed under the terms of the Botan license
+* Distributed under the terms of the botan license.
 */
-
-#define BOTAN_ECDH_KEY_H__
 
 #include <botan/ecc_key.h>
 #include <botan/pk_ops.h>
@@ -91,7 +89,7 @@ class ECDH_KA_Operation : public PK_Ops::Key_Agreement
 	public:
 		ECDH_KA_Operation(const ECDH_PrivateKey& key);
 
-		SafeArray!byte agree(const byte w[], size_t w_len);
+		SafeArray!byte agree(in byte[] w, size_t w_len);
 	private:
 		const CurveGFp& curve;
 		const BigInt& cofactor;

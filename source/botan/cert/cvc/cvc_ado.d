@@ -8,15 +8,15 @@
 
 #include <botan/cvc_ado.h>
 #include <fstream>
-EAC1_1_ADO::EAC1_1_ADO(DataSource& in)
+EAC1_1_ADO::EAC1_1_ADO(DataSource& input)
 {
-	init(in);
+	init(input);
 	do_decode();
 }
 
-EAC1_1_ADO::EAC1_1_ADO(in string in)
+EAC1_1_ADO::EAC1_1_ADO(in string input)
 {
-	DataSource_Stream stream(in, true);
+	DataSource_Stream stream(input, true);
 	init(stream);
 	do_decode();
 }

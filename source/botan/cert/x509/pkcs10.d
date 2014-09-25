@@ -16,8 +16,8 @@
 /*
 * PKCS10_Request Constructor
 */
-PKCS10_Request::PKCS10_Request(DataSource& in) :
-	X509_Object(in, "CERTIFICATE REQUEST/NEW CERTIFICATE REQUEST")
+PKCS10_Request::PKCS10_Request(DataSource& input) :
+	X509_Object(input, "CERTIFICATE REQUEST/NEW CERTIFICATE REQUEST")
 {
 	do_decode();
 }
@@ -25,8 +25,8 @@ PKCS10_Request::PKCS10_Request(DataSource& in) :
 /*
 * PKCS10_Request Constructor
 */
-PKCS10_Request::PKCS10_Request(in string in) :
-	X509_Object(in, "CERTIFICATE REQUEST/NEW CERTIFICATE REQUEST")
+PKCS10_Request::PKCS10_Request(in string input) :
+	X509_Object(input, "CERTIFICATE REQUEST/NEW CERTIFICATE REQUEST")
 {
 	do_decode();
 }
@@ -34,8 +34,8 @@ PKCS10_Request::PKCS10_Request(in string in) :
 /*
 * PKCS10_Request Constructor
 */
-PKCS10_Request::PKCS10_Request(in Array!byte in) :
-	X509_Object(in, "CERTIFICATE REQUEST/NEW CERTIFICATE REQUEST")
+PKCS10_Request::PKCS10_Request(in Array!byte input) :
+	X509_Object(input, "CERTIFICATE REQUEST/NEW CERTIFICATE REQUEST")
 {
 	do_decode();
 }

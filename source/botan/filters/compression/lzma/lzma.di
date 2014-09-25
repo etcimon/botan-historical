@@ -4,10 +4,8 @@
 *	  2001-2007 Jack Lloyd
 *	  2012 Vojtech Kral
 *
-* Distributed under the terms of the Botan license
+* Distributed under the terms of the botan license.
 */
-
-#define BOTAN_LZMA_H__
 
 #include <botan/filter.h>
 /**
@@ -18,7 +16,7 @@ class Lzma_Compression : public Filter
 	public:
 		string name() const { return "Lzma_Compression"; }
 
-		void write(const byte input[], size_t length);
+		void write(in byte[] input, size_t length);
 		void start_msg();
 		void end_msg();
 
@@ -51,7 +49,7 @@ class Lzma_Decompression : public Filter
 	public:
 		string name() const { return "Lzma_Decompression"; }
 
-		void write(const byte input[], size_t length);
+		void write(in byte[] input, size_t length);
 		void start_msg();
 		void end_msg();
 

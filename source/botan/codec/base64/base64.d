@@ -30,7 +30,7 @@ void do_base64_encode(char out[4], const byte in[3])
 }
 
 size_t base64_encode(char out[],
-							const byte in[],
+							in byte[] in,
 							size_t input_length,
 							size_t& input_consumed,
 							bool final_inputs)
@@ -72,7 +72,7 @@ size_t base64_encode(char out[],
 	return output_produced;
 }
 
-string base64_encode(const byte input[],
+string base64_encode(in byte[] input,
 								  size_t input_length)
 {
 	string output((round_up<size_t>(input_length, 3) / 3) * 4, 0);
@@ -136,7 +136,7 @@ size_t base64_decode(byte output[],
 
 	for(size_t i = 0; i != input_length; ++i)
 	{
-		const byte bin = BASE64_TO_BIN[static_cast<byte>(input[i])];
+		const byte bin = BASE64_TO_BIN[cast(byte)(input[i])];
 
 		if(bin <= 0x3F)
 		{
@@ -185,7 +185,7 @@ size_t base64_decode(byte output[],
 	}
 
 	while(input_consumed < input_length &&
-			BASE64_TO_BIN[static_cast<byte>(input[input_consumed])] == 0x80)
+			BASE64_TO_BIN[cast(byte)(input[input_consumed])] == 0x80)
 	{
 		++input_consumed;
 	}

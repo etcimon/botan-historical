@@ -2,10 +2,8 @@
 * Unix EntropySource
 * (C) 1999-2009,2013 Jack Lloyd
 *
-* Distributed under the terms of the Botan license
+* Distributed under the terms of the botan license.
 */
-
-#define BOTAN_ENTROPY_SRC_UNIX_H__
 
 #include <botan/entropy_src.h>
 #include <vector>

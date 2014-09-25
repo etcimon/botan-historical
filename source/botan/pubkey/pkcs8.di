@@ -2,10 +2,8 @@
 * PKCS #8
 * (C) 1999-2007 Jack Lloyd
 *
-* Distributed under the terms of the Botan license
+* Distributed under the terms of the botan license.
 */
-
-#define BOTAN_PKCS8_H__
 
 #include <botan/x509_key.h>
 #include <functional>
@@ -29,14 +27,14 @@ namespace PKCS8 {
 * @param key the private key to encode
 * @return BER encoded key
 */
-SafeArray!byte BER_encode(const Private_Key& key);
+SafeArray!byte BER_encode(in Private_Key key);
 
 /**
 * Get a string containing a PEM encoded private key.
 * @param key the key to encode
 * @return encoded key
 */
-string PEM_encode(const Private_Key& key);
+string PEM_encode(in Private_Key key);
 
 /**
 * Encrypt a key using PKCS #8 encryption
@@ -50,7 +48,7 @@ string PEM_encode(const Private_Key& key);
 * @return encrypted key in binary BER form
 */
 std::vector<byte>
-BER_encode(const Private_Key& key,
+BER_encode(in Private_Key key,
 			  RandomNumberGenerator& rng,
 			  in string pass,
 			  std::chrono::milliseconds msec = std::chrono::milliseconds(300),
@@ -69,8 +67,8 @@ BER_encode(const Private_Key& key,
 * @return encrypted key in PEM form
 */
 string
-PEM_encode(const Private_Key& key,
-			  RandomNumberGenerator& rng,
+PEM_encode(in Private_Key key,
+			  RandomNumberGenerator rng,
 			  in string pass,
 			  std::chrono::milliseconds msec = std::chrono::milliseconds(300),
 			  in string pbe_algo = "");
@@ -85,7 +83,7 @@ PEM_encode(const Private_Key& key,
 Private_Key* load_key(
   DataSource& source,
   RandomNumberGenerator& rng,
-  std::function<std::pair<bool, string> ()> get_passphrase);
+  Tuple!(bool, string) delegate() get_passphrase);
 
 /** Load a key from a data source.
 * @param source the data source providing the encoded key
@@ -108,7 +106,7 @@ Private_Key* load_key(DataSource& source,
 Private_Key* load_key(
   in string filename,
   RandomNumberGenerator& rng,
-  std::function<std::pair<bool, string> ()> get_passphrase);
+  Tuple!(bool, string) delegate() get_passphrase);
 
 /** Load a key from a file.
 * @param filename the path to the file containing the encoded key
@@ -127,7 +125,7 @@ Private_Key* load_key(in string filename,
 * @param rng the rng to use
 * @return new copy of the key
 */
-Private_Key* copy_key(const Private_Key& key,
+Private_Key* copy_key(in Private_Key key,
 										  RandomNumberGenerator& rng);
 
 }

@@ -2,10 +2,8 @@
 * TLS Session
 * (C) 2011-2012 Jack Lloyd
 *
-* Released under the terms of the Botan license
+* Released under the terms of the botan license.
 */
-
-#define BOTAN_TLS_SESSION_STATE_H__
 
 #include <botan/x509cert.h>
 #include <botan/tls_version.h>
@@ -32,7 +30,7 @@ class Session
 			m_version(),
 			m_ciphersuite(0),
 			m_compression_method(0),
-			m_connection_side(static_cast<Connection_Side>(0)),
+			m_connection_side(cast(Connection_Side)(0)),
 			m_fragment_size(0)
 			{}
 
@@ -54,7 +52,7 @@ class Session
 		/**
 		* Load a session from DER representation (created by DER_encode)
 		*/
-		Session(const byte ber[], size_t ber_len);
+		Session(in byte[] ber, size_t ber_len);
 
 		/**
 		* Load a session from PEM representation (created by PEM_encode)
@@ -78,7 +76,7 @@ class Session
 		* @param ctext_size the size of ctext in bytes
 		* @param key the same key used by the encrypting side
 		*/
-		static Session decrypt(const byte ctext[],
+		static Session decrypt(in byte[] ctext,
 									  size_t ctext_size,
 									  const SymmetricKey& key);
 

@@ -37,7 +37,7 @@ SafeArray!byte emsa1_encoding(in SafeArray!byte msg,
 
 }
 
-void EMSA1::update(const byte input[], size_t length)
+void EMSA1::update(in byte[] input, size_t length)
 {
 	m_hash->update(input, length);
 }

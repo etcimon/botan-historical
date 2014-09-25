@@ -49,8 +49,8 @@ size_t mlock_limit()
 bool ptr_in_pool(const void* pool_ptr, size_t poolsize,
 					  const void* buf_ptr, size_t bufsize)
 {
-	const uintptr_t pool = reinterpret_cast<uintptr_t>(pool_ptr);
-	const uintptr_t buf = reinterpret_cast<uintptr_t>(buf_ptr);
+	const uintptr_t pool = cast(uintptr_t)(pool_ptr);
+	const uintptr_t buf = cast(uintptr_t)(buf_ptr);
 
 	if(buf < pool || buf >= pool + poolsize)
 		return false;
@@ -98,7 +98,7 @@ void* mlock_allocator::allocate(size_t num_elems, size_t elem_size)
 			m_freelist.erase(i);
 			clear_mem(m_pool + offset, n);
 
-			BOTAN_ASSERT((reinterpret_cast<size_t>(m_pool) + offset) % alignment == 0,
+			BOTAN_ASSERT((cast(size_t)(m_pool) + offset) % alignment == 0,
 							 "Returning correctly aligned pointer");
 
 			return m_pool + offset;
@@ -141,7 +141,7 @@ void* mlock_allocator::allocate(size_t num_elems, size_t elem_size)
 
 		clear_mem(m_pool + offset + alignment_padding, n);
 
-		BOTAN_ASSERT((reinterpret_cast<size_t>(m_pool) + offset + alignment_padding) % alignment == 0,
+		BOTAN_ASSERT((cast(size_t)(m_pool) + offset + alignment_padding) % alignment == 0,
 						 "Returning correctly aligned pointer");
 
 		return m_pool + offset + alignment_padding;
@@ -169,7 +169,7 @@ bool mlock_allocator::deallocate(void* p, size_t num_elems, size_t elem_size)
 
 	std::lock_guard<std::mutex> lock(m_mutex);
 
-	const size_t start = static_cast<byte*>(p) - m_pool;
+	const size_t start = cast(byte*)(p) - m_pool;
 
 	auto comp = [](std::pair<size_t, size_t> x, std::pair<size_t, size_t> y){ return x.first < y.first; };
 
@@ -225,14 +225,14 @@ mlock_allocator::mlock_allocator() :
 
 	if(m_poolsize)
 	{
-		m_pool = static_cast<byte*>(
+		m_pool = cast(byte*)(
 			::mmap(
 				nullptr, m_poolsize,
 				PROT_READ | PROT_WRITE,
 				MAP_ANONYMOUS | MAP_SHARED | MAP_NOCORE,
 				-1, 0));
 
-		if(m_pool == static_cast<byte*>(MAP_FAILED))
+		if(m_pool == cast(byte*)(MAP_FAILED))
 		{
 			m_pool = nullptr;
 			throw std::runtime_error("Failed to mmap locking_allocator pool");

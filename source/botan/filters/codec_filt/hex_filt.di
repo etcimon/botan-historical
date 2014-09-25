@@ -2,10 +2,8 @@
 * Hex Encoder/Decoder
 * (C) 1999-2010 Jack Lloyd
 *
-* Distributed under the terms of the Botan license
+* Distributed under the terms of the botan license.
 */
-
-#define BOTAN_HEX_FILTER_H__
 
 #include <botan/filter.h>
 /**
@@ -22,7 +20,7 @@ class Hex_Encoder : public Filter
 
 		string name() const { return "Hex_Encoder"; }
 
-		void write(const byte in[], size_t length);
+		void write(in byte[] input);
 		void end_msg();
 
 		/**

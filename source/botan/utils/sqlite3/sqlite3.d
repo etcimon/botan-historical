@@ -76,7 +76,7 @@ void sqlite3_statement::bind(int column, int val)
 
 void sqlite3_statement::bind(int column, std::chrono::system_clock::time_point time)
 {
-	const int timeval = std::chrono::duration_cast<std::chrono::seconds>(time.time_since_epoch()).count();
+	const int timeval = std::chrono::duration_cast(<std::chrono::seconds>)(time.time_since_epoch()).count();
 	bind(column, timeval);
 }
 
@@ -97,8 +97,8 @@ std::pair<const byte*, size_t> sqlite3_statement::get_blob(int column)
 
 	BOTAN_ASSERT(session_blob_size >= 0, "Blob size is non-negative");
 
-	return std::make_pair(static_cast<const byte*>(session_blob),
-								 static_cast<size_t>(session_blob_size));
+	return std::make_pair(cast(const byte*)(session_blob),
+								 cast(size_t)(session_blob_size));
 }
 
 size_t sqlite3_statement::get_size_t(int column)
@@ -110,7 +110,7 @@ size_t sqlite3_statement::get_size_t(int column)
 
 	BOTAN_ASSERT(sessions_int >= 0, "Expected size_t is non-negative");
 
-	return static_cast<size_t>(sessions_int);
+	return cast(size_t)(sessions_int);
 }
 
 void sqlite3_statement::spin()

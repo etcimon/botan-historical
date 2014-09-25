@@ -65,7 +65,7 @@ BigInt::BigInt(in string str)
 		base = Hexadecimal;
 	}
 
-	*this = decode(reinterpret_cast<const byte*>(str.data()) + markers,
+	*this = decode(cast(const byte*)(str.data()) + markers,
 						str.length() - markers, base);
 
 	if(negative) set_sign(Negative);
@@ -75,7 +75,7 @@ BigInt::BigInt(in string str)
 /*
 * Construct a BigInt from an encoded BigInt
 */
-BigInt::BigInt(const byte input[], size_t length, Base base)
+BigInt::BigInt(in byte[] input, size_t length, Base base)
 {
 	*this = decode(input, length, base);
 }
@@ -155,10 +155,10 @@ u32bit BigInt::get_substring(size_t offset, size_t length) const
 		piece = (piece << 8) | part;
 	}
 
-	const u64bit mask = (static_cast<u64bit>(1) << length) - 1;
+	const u64bit mask = (cast(u64bit)(1) << length) - 1;
 	const size_t shift = (offset % 8);
 
-	return static_cast<u32bit>((piece >> shift) & mask);
+	return cast(u32bit)((piece >> shift) & mask);
 }
 
 /*
@@ -183,7 +183,7 @@ u32bit BigInt::to_u32bit() const
 void BigInt::set_bit(size_t n)
 {
 	const size_t which = n / MP_WORD_BITS;
-	const word mask = static_cast<word>(1) << (n % MP_WORD_BITS);
+	const word mask = cast(word)(1) << (n % MP_WORD_BITS);
 	if(which >= size()) grow_to(which + 1);
 	m_reg[which] |= mask;
 }
@@ -194,7 +194,7 @@ void BigInt::set_bit(size_t n)
 void BigInt::clear_bit(size_t n)
 {
 	const size_t which = n / MP_WORD_BITS;
-	const word mask = static_cast<word>(1) << (n % MP_WORD_BITS);
+	const word mask = cast(word)(1) << (n % MP_WORD_BITS);
 	if(which < size())
 		m_reg[which] &= ~mask;
 }
@@ -208,7 +208,7 @@ void BigInt::mask_bits(size_t n)
 	if(n >= bits()) return;
 
 	const size_t top_word = n / MP_WORD_BITS;
-	const word mask = (static_cast<word>(1) << (n % MP_WORD_BITS)) - 1;
+	const word mask = (cast(word)(1) << (n % MP_WORD_BITS)) - 1;
 
 	if(top_word < size())
 		clear_mem(&m_reg[top_word+1], size() - (top_word + 1));
@@ -255,7 +255,7 @@ size_t BigInt::encoded_size(Base base) const
 	else if(base == Hexadecimal)
 		return 2*bytes();
 	else if(base == Decimal)
-		return static_cast<size_t>((bits() * LOG_2_BASE_10) + 1);
+		return cast(size_t)((bits() * LOG_2_BASE_10) + 1);
 	else
 		throw Invalid_Argument("Unknown base for BigInt encoding");
 }
@@ -322,7 +322,7 @@ void BigInt::binary_encode(byte output[]) const
 /*
 * Set this number to the value in buf
 */
-void BigInt::binary_decode(const byte buf[], size_t length)
+void BigInt::binary_decode(in byte[] buf, size_t length)
 {
 	const size_t WORD_BYTES = sizeof(word);
 

@@ -13,7 +13,7 @@
 #include <botan/internal/xor_buf.h>
 void aont_package(RandomNumberGenerator& rng,
 						BlockCipher* cipher,
-						const byte input[], size_t input_len,
+						in byte[] input, size_t input_len,
 						byte output[])
 {
 	const size_t BLOCK_SIZE = cipher->block_size();
@@ -64,7 +64,7 @@ void aont_package(RandomNumberGenerator& rng,
 }
 
 void aont_unpackage(BlockCipher* cipher,
-						  const byte input[], size_t input_len,
+						  in byte[] input, size_t input_len,
 						  byte output[])
 {
 	const size_t BLOCK_SIZE = cipher->block_size();

@@ -2,10 +2,8 @@
 * CTR-BE Mode
 * (C) 1999-2007 Jack Lloyd
 *
-* Distributed under the terms of the Botan license
+* Distributed under the terms of the botan license.
 */
-
-#define BOTAN_CTR_BE_H__
 
 #include <botan/block_cipher.h>
 #include <botan/stream_cipher.h>
@@ -15,9 +13,9 @@
 class CTR_BE : public StreamCipher
 {
 	public:
-		void cipher(const byte in[], byte out[], size_t length);
+		void cipher(in byte[] input, ref byte[] output);
 
-		void set_iv(const byte iv[], size_t iv_len);
+		void set_iv(in byte[] iv, size_t iv_len);
 
 		bool valid_iv_length(size_t iv_len) const
 		{ return (iv_len <= m_cipher->block_size()); }
@@ -39,7 +37,7 @@ class CTR_BE : public StreamCipher
 		*/
 		CTR_BE(BlockCipher* cipher);
 	private:
-		void key_schedule(const byte key[], size_t key_len);
+		void key_schedule(in byte[] key);
 		void increment_counter();
 
 		std::unique_ptr<BlockCipher> m_cipher;

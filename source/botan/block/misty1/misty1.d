@@ -91,7 +91,7 @@ u16bit FI(u16bit input, u16bit key7, u16bit key9)
 	D9 = MISTY1_SBOX_S9[D9] ^ D7;
 	D7 = (MISTY1_SBOX_S7[D7] ^ key7 ^ D9) & 0x7F;
 	D9 = MISTY1_SBOX_S9[D9 ^ key9] ^ D7;
-	return static_cast<u16bit>((D7 << 9) | D9);
+	return cast(u16bit)((D7 << 9) | D9);
 }
 
 }
@@ -99,14 +99,14 @@ u16bit FI(u16bit input, u16bit key7, u16bit key9)
 /*
 * MISTY1 Encryption
 */
-void MISTY1::encrypt_n(const byte in[], byte out[], size_t blocks) const
+void MISTY1::encrypt_n(in byte[] input, ref byte[] output) const
 {
 	for(size_t i = 0; i != blocks; ++i)
 	{
-		u16bit B0 = load_be<u16bit>(in, 0);
-		u16bit B1 = load_be<u16bit>(in, 1);
-		u16bit B2 = load_be<u16bit>(in, 2);
-		u16bit B3 = load_be<u16bit>(in, 3);
+		u16bit B0 = load_be<u16bit>(input, 0);
+		u16bit B1 = load_be<u16bit>(input, 1);
+		u16bit B2 = load_be<u16bit>(input, 2);
+		u16bit B3 = load_be<u16bit>(input, 3);
 
 		for(size_t j = 0; j != 12; j += 3)
 		{
@@ -149,14 +149,14 @@ void MISTY1::encrypt_n(const byte in[], byte out[], size_t blocks) const
 /*
 * MISTY1 Decryption
 */
-void MISTY1::decrypt_n(const byte in[], byte out[], size_t blocks) const
+void MISTY1::decrypt_n(in byte[] input, ref byte[] output) const
 {
 	for(size_t i = 0; i != blocks; ++i)
 	{
-		u16bit B0 = load_be<u16bit>(in, 2);
-		u16bit B1 = load_be<u16bit>(in, 3);
-		u16bit B2 = load_be<u16bit>(in, 0);
-		u16bit B3 = load_be<u16bit>(in, 1);
+		u16bit B0 = load_be<u16bit>(input, 2);
+		u16bit B1 = load_be<u16bit>(input, 3);
+		u16bit B2 = load_be<u16bit>(input, 0);
+		u16bit B3 = load_be<u16bit>(input, 1);
 
 		for(size_t j = 0; j != 12; j += 3)
 		{
@@ -199,7 +199,7 @@ void MISTY1::decrypt_n(const byte in[], byte out[], size_t blocks) const
 /*
 * MISTY1 Key Schedule
 */
-void MISTY1::key_schedule(const byte key[], size_t length)
+void MISTY1::key_schedule(in byte[] key)
 {
 	secure_vector<u16bit> KS(32);
 	for(size_t i = 0; i != length / 2; ++i)

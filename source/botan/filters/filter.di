@@ -3,10 +3,8 @@
 * (C) 1999-2007 Jack Lloyd
 * (C) 2013 Joel Low
 *
-* Distributed under the terms of the Botan license
+* Distributed under the terms of the botan license.
 */
-
-#define BOTAN_FILTER_H__
 
 #include <botan/secmem.h>
 #include <vector>
@@ -27,7 +25,7 @@ class Filter
 		* @param input the input as a byte array
 		* @param length the length of the byte array input
 		*/
-		abstract void write(const byte input[], size_t length) = 0;
+		abstract void write(in byte[] input, size_t length) = 0;
 
 		/**
 		* Start a new message. Must be closed by end_msg() before another
@@ -53,28 +51,28 @@ class Filter
 		* @param in some input for the filter
 		* @param length the length of in
 		*/
-		abstract void send(const byte in[], size_t length);
+		abstract void send(in byte[] input);
 
 		/**
 		* @param in some input for the filter
 		*/
-		void send(byte in) { send(&in, 1); }
+		void send(byte input) { send(&in, 1); }
 
 		/**
 		* @param in some input for the filter
 		*/
-		void send(in SafeArray!byte in) { send(&in[0], in.size()); }
+		void send(in SafeArray!byte input) { send(&in[0], in.size()); }
 
 		/**
 		* @param in some input for the filter
 		*/
-		void send(in Array!byte in) { send(&in[0], in.size()); }
+		void send(in Array!byte input) { send(&in[0], in.size()); }
 
 		/**
 		* @param in some input for the filter
 		* @param length the number of bytes of in to send
 		*/
-		void send(in SafeArray!byte in, size_t length)
+		void send(in SafeArray!byte input)
 		{
 			send(&in[0], length);
 		}
@@ -83,7 +81,7 @@ class Filter
 		* @param in some input for the filter
 		* @param length the number of bytes of in to send
 		*/
-		void send(in Array!byte in, size_t length)
+		void send(in Array!byte input)
 		{
 			send(&in[0], length);
 		}

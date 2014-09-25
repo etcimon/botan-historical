@@ -14,7 +14,7 @@
 * OpenPGP Base64 encoding
 */
 string PGP_encode(
-	const byte input[], size_t length,
+	in byte[] input, size_t length,
 	in string label,
 	const std::map<string, string>& headers)
 {
@@ -54,7 +54,7 @@ string PGP_encode(
 /*
 * OpenPGP Base64 encoding
 */
-string PGP_encode(const byte input[], size_t length,
+string PGP_encode(in byte[] input, size_t length,
 							  in string type)
 {
 	std::map<string, string> empty;
@@ -98,7 +98,7 @@ SafeArray!byte PGP_decode(DataSource& source,
 			throw Decoding_Error("PGP: Malformed PGP header");
 
 		if(position == 0)
-			label += static_cast<char>(b);
+			label += cast(char)(b);
 	}
 
 	headers.clear();
@@ -112,7 +112,7 @@ SafeArray!byte PGP_decode(DataSource& source,
 			if(!source.read_byte(b))
 				throw Decoding_Error("PGP: Bad armor header");
 			if(b != '')
-				this_header += static_cast<char>(b);
+				this_header += cast(char)(b);
 		}
 
 		end_of_headers = true;
@@ -161,7 +161,7 @@ SafeArray!byte PGP_decode(DataSource& source,
 				if(!source.read_byte(b))
 					throw Decoding_Error("PGP: Bad CRC tail");
 				if(b != '')
-					crc += static_cast<char>(b);
+					crc += cast(char)(b);
 			}
 		}
 		else if(b == '')

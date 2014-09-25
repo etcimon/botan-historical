@@ -242,7 +242,7 @@ Path_Validation_Result x509_path_validate(
 	const Certificate_Store& store)
 {
 	std::vector<Certificate_Store*> certstores;
-	certstores.push_back(const_cast<Certificate_Store*>(&store));
+	certstores.push_back(const_cast(<Certificate_Store*>)(&store));
 
 	return x509_path_validate(end_certs, restrictions, certstores);
 }
@@ -256,7 +256,7 @@ Path_Validation_Result x509_path_validate(
 	certs.push_back(end_cert);
 
 	std::vector<Certificate_Store*> certstores;
-	certstores.push_back(const_cast<Certificate_Store*>(&store));
+	certstores.push_back(const_cast(<Certificate_Store*>)(&store));
 
 	return x509_path_validate(certs, restrictions, certstores);
 }
@@ -278,10 +278,10 @@ Path_Validation_Restrictions::Path_Validation_Restrictions(bool require_rev,
 }
 
 Path_Validation_Result::Path_Validation_Result(std::vector<std::set<Certificate_Status_Code>> status,
-															  std::vector<X509_Certificate>&& cert_chain) :
+															  std::vector<X509_Certificate>&& cert_chainput) :
 	m_overall(Certificate_Status_Code::VERIFIED),
 	m_all_status(status),
-	m_cert_path(cert_chain)
+	m_cert_path(cert_chainput)
 {
 	// take the "worst" error as overall
 	for(const auto& s : m_all_status)

@@ -2,10 +2,8 @@
 * Enumerations
 * (C) 1999-2007 Jack Lloyd
 *
-* Distributed under the terms of the Botan license
+* Distributed under the terms of the botan license.
 */
-
-#define BOTAN_ENUMS_H__
 
 #include <botan/ber_dec.h>
 /**

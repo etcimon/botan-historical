@@ -2,18 +2,16 @@
 * STL Utility Functions
 * (C) 1999-2007 Jack Lloyd
 *
-* Distributed under the terms of the Botan license
+* Distributed under the terms of the botan license.
 */
-
-#define BOTAN_STL_UTIL_H__
 
 #include <vector>
 #include <string>
 #include <map>
 inline std::vector<byte> to_byte_vector(in string s)
 {
-	return std::vector<byte>(reinterpret_cast<const byte*>(&s[0]),
-									 reinterpret_cast<const byte*>(&s[s.size()]));
+	return std::vector<byte>(cast(const byte*)(&s[0]),
+									 cast(const byte*)(&s[s.size()]));
 }
 
 /*

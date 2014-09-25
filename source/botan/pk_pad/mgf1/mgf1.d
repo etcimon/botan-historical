@@ -10,14 +10,16 @@
 #include <botan/internal/xor_buf.h>
 #include <algorithm>
 void mgf1_mask(HashFunction& hash,
-					const byte in[], size_t in_len,
-					byte out[], size_t out_len)
+					in byte[] input,
+					ref byte[] output)
 {
+	size_t in_len = input.length;
+	size_t out_len = output.length;
 	u32bit counter = 0;
 
 	while(out_len)
 	{
-		hash.update(in, in_len);
+		hash.update(input, in_len);
 		hash.update_be(counter);
 		SafeArray!byte buffer = hash.final();
 

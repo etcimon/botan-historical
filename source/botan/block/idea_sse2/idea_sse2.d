@@ -126,7 +126,7 @@ void transpose_out(__m128i& B0, __m128i& B1, __m128i& B2, __m128i& B3)
 */
 void idea_op_8(const byte in[64], byte out[64], const u16bit EK[52])
 {
-	const __m128i* in_mm = reinterpret_cast<const __m128i*>(in);
+	const __m128i* in_mm = cast(const __m128i*)(input);
 
 	__m128i B0 = _mm_loadu_si128(in_mm + 0);
 	__m128i B1 = _mm_loadu_si128(in_mm + 1);
@@ -180,7 +180,7 @@ void idea_op_8(const byte in[64], byte out[64], const u16bit EK[52])
 
 	transpose_out(B0, B2, B1, B3);
 
-	__m128i* out_mm = reinterpret_cast<__m128i*>(out);
+	__m128i* out_mm = CAST__m128i*)(out);
 
 	_mm_storeu_si128(out_mm + 0, B0);
 	_mm_storeu_si128(out_mm + 1, B2);
@@ -193,39 +193,39 @@ void idea_op_8(const byte in[64], byte out[64], const u16bit EK[52])
 /*
 * IDEA Encryption
 */
-void IDEA_SSE2::encrypt_n(const byte in[], byte out[], size_t blocks) const
+void IDEA_SSE2::encrypt_n(in byte[] input, ref byte[] output) const
 {
 	const u16bit* KS = &this->get_EK()[0];
 
 	while(blocks >= 8)
 	{
-		idea_op_8(in, out, KS);
+		idea_op_8(input, out, KS);
 		in += 8 * BLOCK_SIZE;
 		out += 8 * BLOCK_SIZE;
 		blocks -= 8;
 	}
 
 	if(blocks)
-	  IDEA::encrypt_n(in, out, blocks);
+	  IDEA::encrypt_n(input, out, blocks);
 }
 
 /*
 * IDEA Decryption
 */
-void IDEA_SSE2::decrypt_n(const byte in[], byte out[], size_t blocks) const
+void IDEA_SSE2::decrypt_n(in byte[] input, ref byte[] output) const
 {
 	const u16bit* KS = &this->get_DK()[0];
 
 	while(blocks >= 8)
 	{
-		idea_op_8(in, out, KS);
+		idea_op_8(input, out, KS);
 		in += 8 * BLOCK_SIZE;
 		out += 8 * BLOCK_SIZE;
 		blocks -= 8;
 	}
 
 	if(blocks)
-	  IDEA::decrypt_n(in, out, blocks);
+	  IDEA::decrypt_n(input, out, blocks);
 }
 
 }

@@ -2,10 +2,8 @@
 * X.509 Cert Path Validation
 * (C) 2010-2011 Jack Lloyd
 *
-* Distributed under the terms of the Botan license
+* Distributed under the terms of the botan license.
 */
-
-#define BOTAN_X509_CERT_PATH_VALIDATION_H__
 
 #include <botan/cert_status.h>
 #include <botan/x509cert.h>
@@ -113,7 +111,7 @@ class Path_Validation_Result
 		static const char* status_string(Certificate_Status_Code code);
 
 		Path_Validation_Result(std::vector<std::set<Certificate_Status_Code>> status,
-									  std::vector<X509_Certificate>&& cert_chain);
+									  std::vector<X509_Certificate>&& cert_chainput);
 
 		Path_Validation_Result(Certificate_Status_Code status) : m_overall(status) {}
 

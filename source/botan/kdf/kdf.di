@@ -2,10 +2,8 @@
 * Key Derivation Function interfaces
 * (C) 1999-2007 Jack Lloyd
 *
-* Distributed under the terms of the Botan license
+* Distributed under the terms of the botan license.
 */
-
-#define BOTAN_KDF_BASE_H__
 
 #include <botan/secmem.h>
 #include <botan/types.h>
@@ -31,7 +29,7 @@ class KDF
 												in string salt = "") const
 		{
 			return derive_key(key_len, &secret[0], secret.size(),
-									reinterpret_cast<const byte*>(salt.data()),
+									cast(const byte*)(salt.data()),
 									salt.length());
 		}
 
@@ -60,7 +58,7 @@ class KDF
 		*/
 		SafeArray!byte derive_key(size_t key_len,
 												in SafeArray!byte secret,
-												const byte salt[],
+												in byte[] salt,
 												size_t salt_len) const
 		{
 			return derive_key(key_len,
@@ -76,12 +74,12 @@ class KDF
 		* @param salt a diversifier
 		*/
 		SafeArray!byte derive_key(size_t key_len,
-												const byte secret[],
+												in byte[] secret,
 												size_t secret_len,
 												in string salt = "") const
 		{
 			return derive_key(key_len, secret, secret_len,
-									reinterpret_cast<const byte*>(salt.data()),
+									cast(const byte*)(salt.data()),
 									salt.length());
 		}
 
@@ -94,9 +92,9 @@ class KDF
 		* @param salt_len size of salt in bytes
 		*/
 		SafeArray!byte derive_key(size_t key_len,
-												const byte secret[],
+												in byte[] secret,
 												size_t secret_len,
-												const byte salt[],
+												in byte[] salt,
 												size_t salt_len) const
 		{
 			return derive(key_len, secret, secret_len, salt, salt_len);
@@ -106,8 +104,8 @@ class KDF
 	private:
 		abstract SafeArray!byte
 			derive(size_t key_len,
-					 const byte secret[], size_t secret_len,
-					 const byte salt[], size_t salt_len) const = 0;
+					 in byte[] secret, size_t secret_len,
+					 in byte[] salt, size_t salt_len) const = 0;
 };
 
 /**

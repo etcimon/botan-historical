@@ -2,10 +2,8 @@
 * Bit/Word Operations
 * (C) 1999-2008 Jack Lloyd
 *
-* Distributed under the terms of the Botan license
+* Distributed under the terms of the botan license.
 */
-
-#define BOTAN_BIT_OPS_H__
 
 #include <botan/types.h>
 /**
@@ -71,7 +69,7 @@ inline size_t significant_bytes(T n)
 template<typename T>
 inline size_t hamming_weight(T n)
 {
-	const byte NIBBLE_WEIGHTS[] = {
+	in byte[] NIBBLE_WEIGHTS = {
 		0, 1, 1, 2, 1, 2, 2, 3, 1, 2, 2, 3, 2, 3, 3, 4 };
 
 	size_t weight = 0;

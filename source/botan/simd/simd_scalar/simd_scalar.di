@@ -2,10 +2,8 @@
 * Scalar emulation of SIMD
 * (C) 2009,2013 Jack Lloyd
 *
-* Distributed under the terms of the Botan license
+* Distributed under the terms of the botan license.
 */
-
-#define BOTAN_SIMD_SCALAR_H__
 
 #include <botan/loadstor.h>
 #include <botan/bswap.h>
@@ -35,10 +33,10 @@ class SIMD_Scalar
 				m_v[i] = B;
 		}
 
-		static SIMD_Scalar<T,N> load_le(const void* in)
+		static SIMD_Scalar<T,N> load_le(const void* input)
 		{
 			SIMD_Scalar<T,N> out;
-			const byte* in_b = static_cast<const byte*>(in);
+			const byte* in_b = cast(const byte*)(input);
 
 			for(size_t i = 0; i != size(); ++i)
 				out.m_v[i] = Botan::load_le<T>(in_b, i);
@@ -46,10 +44,10 @@ class SIMD_Scalar
 			return out;
 		}
 
-		static SIMD_Scalar<T,N> load_be(const void* in)
+		static SIMD_Scalar<T,N> load_be(const void* input)
 		{
 			SIMD_Scalar<T,N> out;
-			const byte* in_b = static_cast<const byte*>(in);
+			const byte* in_b = cast(const byte*)(input);
 
 			for(size_t i = 0; i != size(); ++i)
 				out.m_v[i] = Botan::load_be<T>(in_b, i);
@@ -57,13 +55,13 @@ class SIMD_Scalar
 			return out;
 		}
 
-		void store_le(byte out[]) const
+		void store_le(ref byte[] output) const
 		{
 			for(size_t i = 0; i != size(); ++i)
 				Botan::store_le(m_v[i], out + i*sizeof(T));
 		}
 
-		void store_be(byte out[]) const
+		void store_be(ref byte[] output) const
 		{
 			for(size_t i = 0; i != size(); ++i)
 				Botan::store_be(m_v[i], out + i*sizeof(T));

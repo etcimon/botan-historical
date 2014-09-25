@@ -2,10 +2,8 @@
 * RandomNumberGenerator
 * (C) 1999-2009 Jack Lloyd
 *
-* Distributed under the terms of the Botan license
+* Distributed under the terms of the botan license.
 */
-
-#define BOTAN_RANDOM_NUMBER_GENERATOR_H__
 
 #include <botan/entropy_src.h>
 #include <botan/exceptn.h>
@@ -87,7 +85,7 @@ class RandomNumberGenerator
 		* @param in a byte array containg the entropy to be added
 		* @param length the length of the byte array in
 		*/
-		abstract void add_entropy(const byte in[], size_t length) = 0;
+		abstract void add_entropy(in byte[] input) = 0;
 
 		/*
 		* Never copy a RNG, create a new one
@@ -122,8 +120,9 @@ class Null_RNG : public RandomNumberGenerator
 class Serialized_RNG : public RandomNumberGenerator
 {
 	public:
-		void randomize(byte out[], size_t len)
+		void randomize(ref byte[] output)
 		{
+			size_t len = output.length;
 			std::lock_guard<std::mutex> lock(m_mutex);
 			m_rng->randomize(out, len);
 		}
@@ -152,10 +151,10 @@ class Serialized_RNG : public RandomNumberGenerator
 			m_rng->reseed(poll_bits);
 		}
 
-		void add_entropy(const byte in[], size_t len)
+		void add_entropy(in byte[] input)
 		{
 			std::lock_guard<std::mutex> lock(m_mutex);
-			m_rng->add_entropy(in, len);
+			m_rng->add_entropy(input, len);
 		}
 
 		Serialized_RNG() : m_rng(RandomNumberGenerator::make_rng()) {}

@@ -2,10 +2,8 @@
 * MD5
 * (C) 1999-2008 Jack Lloyd
 *
-* Distributed under the terms of the Botan license
+* Distributed under the terms of the botan license.
 */
-
-#define BOTAN_MD5_H__
 
 #include <botan/mdx_hash.h>
 /**

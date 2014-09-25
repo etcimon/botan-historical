@@ -166,7 +166,7 @@ std::vector<byte> Server_Name_Indicator::serialize() const
 	buf.push_back(get_byte<u16bit>(1, name_len));
 
 	buf += std::make_pair(
-		reinterpret_cast<const byte*>(sni_host_name.data()),
+		cast(const byte*)(sni_host_name.data()),
 		sni_host_name.size());
 
 	return buf;
@@ -186,7 +186,7 @@ std::vector<byte> SRP_Identifier::serialize() const
 	std::vector<byte> buf;
 
 	const byte* srp_bytes =
-		reinterpret_cast<const byte*>(srp_identifier.data());
+		cast(const byte*)(srp_identifier.data());
 
 	append_tls_length_value(buf, srp_bytes, srp_identifier.size(), 1);
 
@@ -278,7 +278,7 @@ std::vector<byte> Next_Protocol_Notification::serialize() const
 
 		if(p != "")
 			append_tls_length_value(buf,
-											reinterpret_cast<const byte*>(p.data()),
+											cast(const byte*)(p.data()),
 											p.size(),
 											1);
 	}

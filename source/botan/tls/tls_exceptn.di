@@ -2,10 +2,8 @@
 * Exceptions
 * (C) 2004-2006 Jack Lloyd
 *
-* Released under the terms of the Botan license
+* Released under the terms of the botan license.
 */
-
-#define BOTAN_TLS_EXCEPTION_H__
 
 #include <botan/exceptn.h>
 #include <botan/tls_alert.h>

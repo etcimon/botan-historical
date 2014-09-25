@@ -2,10 +2,8 @@
 * Mlock Allocator
 * (C) 2012 Jack Lloyd
 *
-* Distributed under the terms of the Botan license
+* Distributed under the terms of the botan license.
 */
-
-#define BOTAN_MLOCK_ALLOCATOR_H__
 
 #include <botan/types.h>
 #include <vector>

@@ -27,7 +27,7 @@ const size_t MAC_OUTPUT_LENGTH = 32;
 
 }
 
-std::vector<byte> encrypt(const byte input[], size_t input_len,
+std::vector<byte> encrypt(in byte[] input, size_t input_len,
 								  const SymmetricKey& master_key,
 								  RandomNumberGenerator& rng)
 {
@@ -71,7 +71,7 @@ std::vector<byte> encrypt(const byte input[], size_t input_len,
 	return out;
 }
 
-SafeArray!byte decrypt(const byte input[], size_t input_len,
+SafeArray!byte decrypt(in byte[] input, size_t input_len,
 									 const SymmetricKey& master_key)
 {
 	const size_t MIN_CTEXT_SIZE = 16; // due to using CBC with padding

@@ -88,7 +88,7 @@ EAC1_1_CVC create_self_signed_cert(Private_Key const& key,
 {
 	// NOTE: we ignore the value of opt.chr
 
-	const ECDSA_PrivateKey* priv_key = dynamic_cast<const ECDSA_PrivateKey*>(&key);
+	const ECDSA_PrivateKey* priv_key = cast(const ECDSA_PrivateKey*)(&key);
 
 	if(priv_key == 0)
 		throw Invalid_Argument("CVC_EAC::create_self_signed_cert(): unsupported key type");
@@ -117,7 +117,7 @@ EAC1_1_Req create_cvc_req(Private_Key const& key,
 								  RandomNumberGenerator& rng)
 {
 
-	ECDSA_PrivateKey const* priv_key = dynamic_cast<ECDSA_PrivateKey const*>(&key);
+	ECDSA_PrivateKey const* priv_key = cast(ECDSA_PrivateKey const*)(&key);
 	if (priv_key == 0)
 	{
 		throw Invalid_Argument("CVC_EAC::create_self_signed_cert(): unsupported key type");
@@ -154,7 +154,7 @@ EAC1_1_ADO create_ado_req(Private_Key const& key,
 								  RandomNumberGenerator& rng)
 {
 
-	ECDSA_PrivateKey const* priv_key = dynamic_cast<ECDSA_PrivateKey const*>(&key);
+	ECDSA_PrivateKey const* priv_key = cast(ECDSA_PrivateKey const*)(&key);
 	if (priv_key == 0)
 	{
 		throw Invalid_Argument("CVC_EAC::create_self_signed_cert(): unsupported key type");
@@ -182,7 +182,7 @@ EAC1_1_CVC create_cvca(Private_Key const& key,
 							  u32bit cvca_validity_months,
 							  RandomNumberGenerator& rng)
 {
-	ECDSA_PrivateKey const* priv_key = dynamic_cast<ECDSA_PrivateKey const*>(&key);
+	ECDSA_PrivateKey const* priv_key = cast(ECDSA_PrivateKey const*)(&key);
 	if (priv_key == 0)
 	{
 		throw Invalid_Argument("CVC_EAC::create_self_signed_cert(): unsupported key type");
@@ -202,14 +202,14 @@ EAC1_1_CVC link_cvca(EAC1_1_CVC const& signer,
 							EAC1_1_CVC const& signee,
 							RandomNumberGenerator& rng)
 {
-	const ECDSA_PrivateKey* priv_key = dynamic_cast<ECDSA_PrivateKey const*>(&key);
+	const ECDSA_PrivateKey* priv_key = cast(ECDSA_PrivateKey const*)(&key);
 
 	if (priv_key == 0)
 		throw Invalid_Argument("link_cvca(): unsupported key type");
 
 	ASN1_Ced ced(std::chrono::system_clock::now());
 	ASN1_Cex cex(signee.get_cex());
-	if (*static_cast<EAC_Time*>(&ced) > *static_cast<EAC_Time*>(&cex))
+	if (*cast(EAC_Time*)(&ced) > *cast(EAC_Time*)(&cex))
 	{
 		string detail("link_cvca(): validity periods of provided certificates don't overlap: currend time = ced = ");
 		detail += ced.as_string();
@@ -225,7 +225,7 @@ EAC1_1_CVC link_cvca(EAC1_1_CVC const& signer,
 	string padding_and_hash = padding_and_hash_from_oid(sig_algo.oid);
 	PK_Signer pk_signer(*priv_key, padding_and_hash);
 	std::unique_ptr<Public_Key> pk(signee.subject_public_key());
-	ECDSA_PublicKey* subj_pk = dynamic_cast<ECDSA_PublicKey*>(pk.get());
+	ECDSA_PublicKey* subj_pk = cast(ECDSA_PublicKey*)(pk.get());
 	subj_pk->set_parameter_encoding(EC_DOMPAR_ENC_EXPLICIT);
 
 	std::vector<byte> enc_public_key = eac_1_1_encoding(priv_key, sig_algo.oid);
@@ -248,7 +248,7 @@ EAC1_1_CVC sign_request(EAC1_1_CVC const& signer_cert,
 								u32bit ca_is_validity_months,
 								RandomNumberGenerator& rng)
 {
-	ECDSA_PrivateKey const* priv_key = dynamic_cast<ECDSA_PrivateKey const*>(&key);
+	ECDSA_PrivateKey const* priv_key = cast(ECDSA_PrivateKey const*)(&key);
 	if (priv_key == 0)
 	{
 		throw Invalid_Argument("CVC_EAC::create_self_signed_cert(): unsupported key type");
@@ -265,7 +265,7 @@ EAC1_1_CVC sign_request(EAC1_1_CVC const& signer_cert,
 	string padding_and_hash = padding_and_hash_from_oid(signee.signature_algorithm().oid);
 	PK_Signer pk_signer(*priv_key, padding_and_hash);
 	std::unique_ptr<Public_Key> pk(signee.subject_public_key());
-	ECDSA_PublicKey*  subj_pk = dynamic_cast<ECDSA_PublicKey*>(pk.get());
+	ECDSA_PublicKey*  subj_pk = cast(ECDSA_PublicKey*)(pk.get());
 	std::unique_ptr<Public_Key> signer_pk(signer_cert.subject_public_key());
 
 	// for the case that the domain parameters are not set...
@@ -318,7 +318,7 @@ EAC1_1_Req create_cvc_req(Private_Key const& prkey,
 								  string const& hash_alg,
 								  RandomNumberGenerator& rng)
 {
-	ECDSA_PrivateKey const* priv_key = dynamic_cast<ECDSA_PrivateKey const*>(&prkey);
+	ECDSA_PrivateKey const* priv_key = cast(ECDSA_PrivateKey const*)(&prkey);
 	if (priv_key == 0)
 	{
 		throw Invalid_Argument("CVC_EAC::create_self_signed_cert(): unsupported key type");

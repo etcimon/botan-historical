@@ -2,10 +2,8 @@
 * Algorithm Factory
 * (C) 2008 Jack Lloyd
 *
-* Distributed under the terms of the Botan license
+* Distributed under the terms of the botan license.
 */
-
-#define BOTAN_ALGORITHM_FACTORY_H__
 
 #include <botan/types.h>
 #include <string>

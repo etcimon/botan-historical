@@ -3,10 +3,8 @@
 * (C) 2007 FlexSecure GmbH
 *	  2008 Jack Lloyd
 *
-* Distributed under the terms of the Botan license
+* Distributed under the terms of the botan license.
 */
-
-#define BOTAN_EAC_SIGNED_OBJECT_H__
 
 #include <botan/asn1_obj.h>
 #include <botan/key_constraint.h>

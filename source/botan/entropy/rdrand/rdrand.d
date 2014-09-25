@@ -33,7 +33,7 @@ void Intel_Rdrand::poll(Entropy_Accumulator& accum)
 	const size_t POLL_UPPER_BOUND = 96;
 	const size_t RDRAND_POLLS = 32;
 	const double ENTROPY_PER_POLL =
-		static_cast<double>(POLL_UPPER_BOUND) / (RDRAND_POLLS * 4);
+		cast(double)(POLL_UPPER_BOUND) / (RDRAND_POLLS * 4);
 
 	for(size_t i = 0; i != RDRAND_POLLS; ++i)
 	{

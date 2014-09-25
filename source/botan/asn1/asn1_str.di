@@ -2,10 +2,8 @@
 * ASN.1 string type
 * (C) 1999-2010 Jack Lloyd
 *
-* Distributed under the terms of the Botan license
+* Distributed under the terms of the botan license.
 */
-
-#define BOTAN_ASN1_STRING_H__
 
 #include <botan/asn1_obj.h>
 /**

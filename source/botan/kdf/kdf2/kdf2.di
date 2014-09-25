@@ -2,10 +2,8 @@
 * KDF2
 * (C) 1999-2007 Jack Lloyd
 *
-* Distributed under the terms of the Botan license
+* Distributed under the terms of the botan license.
 */
-
-#define BOTAN_KDF2_H__
 
 #include <botan/kdf.h>
 #include <botan/hash.h>

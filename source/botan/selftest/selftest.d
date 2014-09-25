@@ -125,11 +125,11 @@ algorithm_kat_detailed(const SCAN_Name& algo_name,
 
 			if(!ad.empty())
 			{
-				if(AEAD_Filter* enc_aead = dynamic_cast<AEAD_Filter*>(enc))
+				if(AEAD_Filter* enc_aead = cast(AEAD_Filter*)(enc))
 				{
 					enc_aead->set_associated_data(&ad[0], ad.size());
 
-					if(AEAD_Filter* dec_aead = dynamic_cast<AEAD_Filter*>(dec))
+					if(AEAD_Filter* dec_aead = cast(AEAD_Filter*)(dec))
 						dec_aead->set_associated_data(&ad[0], ad.size());
 				}
 			}

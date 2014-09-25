@@ -409,7 +409,7 @@ const u32bit TD[1024] = {
 /*
 * AES Encryption
 */
-void aes_encrypt_n(const byte in[], byte out[],
+void aes_encrypt_n(in byte[] input, ref byte[] output,
 						 size_t blocks,
 						 const secure_vector<u32bit>& EK,
 						 in SafeArray!byte ME)
@@ -425,10 +425,10 @@ void aes_encrypt_n(const byte in[], byte out[],
 
 	for(size_t i = 0; i != blocks; ++i)
 	{
-		u32bit T0 = load_be<u32bit>(in, 0) ^ EK[0];
-		u32bit T1 = load_be<u32bit>(in, 1) ^ EK[1];
-		u32bit T2 = load_be<u32bit>(in, 2) ^ EK[2];
-		u32bit T3 = load_be<u32bit>(in, 3) ^ EK[3];
+		u32bit T0 = load_be<u32bit>(input, 0) ^ EK[0];
+		u32bit T1 = load_be<u32bit>(input, 1) ^ EK[1];
+		u32bit T2 = load_be<u32bit>(input, 2) ^ EK[2];
+		u32bit T3 = load_be<u32bit>(input, 3) ^ EK[3];
 
 		/* Use only the first 256 entries of the TE table and do the
 		* rotations directly in the code. This reduces the number of
@@ -523,10 +523,11 @@ void aes_encrypt_n(const byte in[], byte out[],
 /*
 * AES Decryption
 */
-void aes_decrypt_n(const byte in[], byte out[], size_t blocks,
+void aes_decrypt_n(in byte[] input, ref byte[] output,
 						 const secure_vector<u32bit>& DK,
 						 in SafeArray!byte MD)
 {
+	size_t blocks = input.length;
 	BOTAN_ASSERT(DK.size() && MD.size() == 16, "Key was set");
 
 	const size_t BLOCK_SIZE = 16;
@@ -538,10 +539,10 @@ void aes_decrypt_n(const byte in[], byte out[], size_t blocks,
 
 	for(size_t i = 0; i != blocks; ++i)
 	{
-		u32bit T0 = load_be<u32bit>(in, 0) ^ DK[0];
-		u32bit T1 = load_be<u32bit>(in, 1) ^ DK[1];
-		u32bit T2 = load_be<u32bit>(in, 2) ^ DK[2];
-		u32bit T3 = load_be<u32bit>(in, 3) ^ DK[3];
+		u32bit T0 = load_be<u32bit>(input, 0) ^ DK[0];
+		u32bit T1 = load_be<u32bit>(input, 1) ^ DK[1];
+		u32bit T2 = load_be<u32bit>(input, 2) ^ DK[2];
+		u32bit T3 = load_be<u32bit>(input, 3) ^ DK[3];
 
 		u32bit B0 = TD[get_byte(0, T0)] ^
 						rotate_right(TD[get_byte(1, T3)],  8) ^
@@ -606,11 +607,11 @@ void aes_decrypt_n(const byte in[], byte out[], size_t blocks,
 	}
 }
 
-void aes_key_schedule(const byte key[], size_t length,
+void aes_key_schedule(in byte[] key, size_t length,
 							 secure_vector<u32bit>& EK,
 							 secure_vector<u32bit>& DK,
-							 SafeArray!byte& ME,
-							 SafeArray!byte& MD)
+							 SafeArray!byte ME,
+							 SafeArray!byte MD)
 {
 	static const u32bit RC[10] = {
 		0x01000000, 0x02000000, 0x04000000, 0x08000000, 0x10000000,
@@ -677,17 +678,17 @@ void aes_key_schedule(const byte key[], size_t length,
 
 }
 
-void AES_128::encrypt_n(const byte in[], byte out[], size_t blocks) const
+void AES_128::encrypt_n(in byte[] input, ref byte[] output) const
 {
-	aes_encrypt_n(in, out, blocks, EK, ME);
+	aes_encrypt_n(input, out, blocks, EK, ME);
 }
 
-void AES_128::decrypt_n(const byte in[], byte out[], size_t blocks) const
+void AES_128::decrypt_n(in byte[] input, ref byte[] output) const
 {
-	aes_decrypt_n(in, out, blocks, DK, MD);
+	aes_decrypt_n(input, out, blocks, DK, MD);
 }
 
-void AES_128::key_schedule(const byte key[], size_t length)
+void AES_128::key_schedule(in byte[] key)
 {
 	aes_key_schedule(key, length, EK, DK, ME, MD);
 }
@@ -700,17 +701,17 @@ void AES_128::clear()
 	zap(MD);
 }
 
-void AES_192::encrypt_n(const byte in[], byte out[], size_t blocks) const
+void AES_192::encrypt_n(in byte[] input, ref byte[] output) const
 {
-	aes_encrypt_n(in, out, blocks, EK, ME);
+	aes_encrypt_n(input, out, blocks, EK, ME);
 }
 
-void AES_192::decrypt_n(const byte in[], byte out[], size_t blocks) const
+void AES_192::decrypt_n(in byte[] input, ref byte[] output) const
 {
-	aes_decrypt_n(in, out, blocks, DK, MD);
+	aes_decrypt_n(input, out, blocks, DK, MD);
 }
 
-void AES_192::key_schedule(const byte key[], size_t length)
+void AES_192::key_schedule(in byte[] key)
 {
 	aes_key_schedule(key, length, EK, DK, ME, MD);
 }
@@ -723,17 +724,17 @@ void AES_192::clear()
 	zap(MD);
 }
 
-void AES_256::encrypt_n(const byte in[], byte out[], size_t blocks) const
+void AES_256::encrypt_n(in byte[] input, ref byte[] output) const
 {
-	aes_encrypt_n(in, out, blocks, EK, ME);
+	aes_encrypt_n(input, out, blocks, EK, ME);
 }
 
-void AES_256::decrypt_n(const byte in[], byte out[], size_t blocks) const
+void AES_256::decrypt_n(in byte[] input, ref byte[] output) const
 {
-	aes_decrypt_n(in, out, blocks, DK, MD);
+	aes_decrypt_n(input, out, blocks, DK, MD);
 }
 
-void AES_256::key_schedule(const byte key[], size_t length)
+void AES_256::key_schedule(in byte[] key)
 {
 	aes_key_schedule(key, length, EK, DK, ME, MD);
 }

@@ -98,7 +98,7 @@ Public_Key* make_public_key(const AlgorithmIdentifier& alg_id,
 	return nullptr;
 }
 
-Private_Key* make_private_key(const AlgorithmIdentifier& alg_id,
+Private_Key* make_Private_Key(const AlgorithmIdentifier& alg_id,
 										in SafeArray!byte key_bits,
 										RandomNumberGenerator& rng)
 {

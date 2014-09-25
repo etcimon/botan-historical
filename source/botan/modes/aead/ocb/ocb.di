@@ -2,10 +2,8 @@
 * OCB Mode
 * (C) 2013 Jack Lloyd
 *
-* Distributed under the terms of the Botan license
+* Distributed under the terms of the botan license.
 */
-
-#define BOTAN_AEAD_OCB_H__
 
 #include <botan/aead.h>
 #include <botan/block_cipher.h>
@@ -24,9 +22,9 @@ class L_computer;
 class OCB_Mode : public AEAD_Mode
 {
 	public:
-		SafeArray!byte start(const byte nonce[], size_t nonce_len) override;
+		SafeArray!byte start(in byte[] nonce, size_t nonce_len) override;
 
-		void set_associated_data(const byte ad[], size_t ad_len) override;
+		void set_associated_data(in byte[] ad, size_t ad_len) override;
 
 		string name() const override;
 
@@ -48,7 +46,7 @@ class OCB_Mode : public AEAD_Mode
 		*/
 		OCB_Mode(BlockCipher* cipher, size_t tag_size);
 
-		void key_schedule(const byte key[], size_t length) override;
+		void key_schedule(in byte[] key) override;
 
 		// fixme make these private
 		std::unique_ptr<BlockCipher> m_cipher;
@@ -60,7 +58,7 @@ class OCB_Mode : public AEAD_Mode
 		SafeArray!byte m_offset;
 		SafeArray!byte m_ad_hash;
 	private:
-		SafeArray!byte update_nonce(const byte nonce[], size_t nonce_len);
+		SafeArray!byte update_nonce(in byte[] nonce, size_t nonce_len);
 
 		size_t m_tag_size = 0;
 		SafeArray!byte m_last_nonce;
@@ -82,9 +80,9 @@ class OCB_Encryption : public OCB_Mode
 
 		size_t minimum_final_size() const override { return 0; }
 
-		void update(SafeArray!byte& blocks, size_t offset = 0) override;
+		void update(SafeArray!byte blocks, size_t offset = 0) override;
 
-		void finish(SafeArray!byte& final_block, size_t offset = 0) override;
+		void finish(SafeArray!byte final_block, size_t offset = 0) override;
 	private:
 		void encrypt(byte input[], size_t blocks);
 };
@@ -107,9 +105,9 @@ class OCB_Decryption : public OCB_Mode
 
 		size_t minimum_final_size() const override { return tag_size(); }
 
-		void update(SafeArray!byte& blocks, size_t offset = 0) override;
+		void update(SafeArray!byte blocks, size_t offset = 0) override;
 
-		void finish(SafeArray!byte& final_block, size_t offset = 0) override;
+		void finish(SafeArray!byte final_block, size_t offset = 0) override;
 	private:
 		void decrypt(byte input[], size_t blocks);
 };

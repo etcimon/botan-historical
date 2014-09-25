@@ -16,7 +16,7 @@
 * Load a X.509 CRL
 */
 X509_CRL::X509_CRL(DataSource& in, bool touc) :
-	X509_Object(in, "X509 CRL/CRL"), throw_on_unknown_critical(touc)
+	X509_Object(input, "X509 CRL/CRL"), throw_on_unknown_critical(touc)
 {
 	do_decode();
 }
@@ -25,13 +25,13 @@ X509_CRL::X509_CRL(DataSource& in, bool touc) :
 * Load a X.509 CRL
 */
 X509_CRL::X509_CRL(in string in, bool touc) :
-	X509_Object(in, "CRL/X509 CRL"), throw_on_unknown_critical(touc)
+	X509_Object(input, "CRL/X509 CRL"), throw_on_unknown_critical(touc)
 {
 	do_decode();
 }
 
 X509_CRL::X509_CRL(in Array!byte in, bool touc) :
-	X509_Object(in, "CRL/X509 CRL"), throw_on_unknown_critical(touc)
+	X509_Object(input, "CRL/X509 CRL"), throw_on_unknown_critical(touc)
 {
 	do_decode();
 }

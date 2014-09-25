@@ -2,10 +2,8 @@
 * DER Encoder
 * (C) 1999-2007 Jack Lloyd
 *
-* Distributed under the terms of the Botan license
+* Distributed under the terms of the botan license.
 */
-
-#define BOTAN_DER_ENCODER_H__
 
 #include <botan/asn1_obj.h>
 #include <vector>
@@ -30,7 +28,7 @@ class DER_Encoder
 		DER_Encoder& start_explicit(u16bit type_tag);
 		DER_Encoder& end_explicit();
 
-		DER_Encoder& raw_bytes(const byte val[], size_t len);
+		DER_Encoder& raw_bytes(in byte[] val, size_t len);
 		DER_Encoder& raw_bytes(in SafeArray!byte val);
 		DER_Encoder& raw_bytes(in Array!byte val);
 
@@ -40,7 +38,7 @@ class DER_Encoder
 		DER_Encoder& encode(const BigInt& n);
 		DER_Encoder& encode(in SafeArray!byte v, ASN1_Tag real_type);
 		DER_Encoder& encode(in Array!byte v, ASN1_Tag real_type);
-		DER_Encoder& encode(const byte val[], size_t len, ASN1_Tag real_type);
+		DER_Encoder& encode(in byte[] val, size_t len, ASN1_Tag real_type);
 
 		DER_Encoder& encode(bool b,
 								  ASN1_Tag type_tag,
@@ -64,7 +62,7 @@ class DER_Encoder
 								  ASN1_Tag type_tag,
 								  ASN1_Tag class_tag = CONTEXT_SPECIFIC);
 
-		DER_Encoder& encode(const byte v[], size_t len,
+		DER_Encoder& encode(in byte[] v, size_t len,
 								  ASN1_Tag real_type,
 								  ASN1_Tag type_tag,
 								  ASN1_Tag class_tag = CONTEXT_SPECIFIC);
@@ -90,7 +88,7 @@ class DER_Encoder
 		DER_Encoder& encode_if(bool pred, const ASN1_Object& obj);
 
 		DER_Encoder& add_object(ASN1_Tag type_tag, ASN1_Tag class_tag,
-										const byte rep[], size_t length);
+										in byte[] rep, size_t length);
 
 		DER_Encoder& add_object(ASN1_Tag type_tag, ASN1_Tag class_tag,
 										in Array!byte rep)

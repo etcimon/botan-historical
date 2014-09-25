@@ -46,7 +46,7 @@ int EGD_EntropySource::EGD_Socket::open_socket(in string path)
 
 		int len = sizeof(addr.sun_family) + std::strlen(addr.sun_path) + 1;
 
-		if(::connect(fd, reinterpret_cast<struct ::sockaddr*>(&addr), len) < 0)
+		if(::connect(fd, cast(struct ::sockaddr*)(&addr), len) < 0)
 		{
 			::close(fd);
 			fd = -1;
@@ -59,8 +59,9 @@ int EGD_EntropySource::EGD_Socket::open_socket(in string path)
 /**
 * Attempt to read entropy from EGD
 */
-size_t EGD_EntropySource::EGD_Socket::read(byte outbuf[], size_t length)
+size_t EGD_EntropySource::EGD_Socket::read(ref byte[] outbuf)
 {
+	size_t length = outbuf.length;
 	if(length == 0)
 		return 0;
 
@@ -75,7 +76,7 @@ size_t EGD_EntropySource::EGD_Socket::read(byte outbuf[], size_t length)
 	{
 		// 1 == EGD command for non-blocking read
 		byte egd_read_command[2] = {
-			1, static_cast<byte>(std::min<size_t>(length, 255)) };
+			1, cast(byte)(std::min<size_t>(length, 255)) };
 
 		if(::write(m_fd, egd_read_command, 2) != 2)
 			throw std::runtime_error("Writing entropy read command to EGD failed");
@@ -92,7 +93,7 @@ size_t EGD_EntropySource::EGD_Socket::read(byte outbuf[], size_t length)
 		if(count != out_len)
 			throw std::runtime_error("Reading entropy result from EGD failed");
 
-		return static_cast<size_t>(count);
+		return cast(size_t)(count);
 	}
 	catch(std::exception)
 	{
@@ -135,7 +136,7 @@ void EGD_EntropySource::poll(Entropy_Accumulator& accum)
 {
 	const size_t READ_ATTEMPT = 32;
 
-	SafeArray!byte& io_buffer = accum.get_io_buffer(READ_ATTEMPT);
+	SafeArray!byte io_buffer = accum.get_io_buffer(READ_ATTEMPT);
 
 	for(size_t i = 0; i != sockets.size(); ++i)
 	{

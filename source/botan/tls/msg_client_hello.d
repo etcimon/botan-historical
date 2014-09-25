@@ -21,7 +21,7 @@ std::vector<byte> make_hello_random(RandomNumberGenerator& rng)
 {
 	std::vector<byte> buf(32);
 
-	const u32bit time32 = static_cast<u32bit>(
+	const u32bit time32 = cast(u32bit)(
 		std::chrono::system_clock::to_time_t(std::chrono::system_clock::now()));
 
 	store_be(time32, &buf[0]);
@@ -217,7 +217,7 @@ void Client_Hello::deserialize_sslv2(in Array!byte buf)
 	m_random.resize(challenge_len);
 	copy_mem(&m_random[0], &buf[9+cipher_spec_len+m_session_id_len], challenge_len);
 
-	if(offered_suite(static_cast<u16bit>(TLS_EMPTY_RENEGOTIATION_INFO_SCSV)))
+	if(offered_suite(cast(u16bit)(TLS_EMPTY_RENEGOTIATION_INFO_SCSV)))
 		m_extensions.add(new Renegotiation_Extension());
 }
 
@@ -252,7 +252,7 @@ void Client_Hello::deserialize(in Array!byte buf)
 
 	m_extensions.deserialize(reader);
 
-	if(offered_suite(static_cast<u16bit>(TLS_EMPTY_RENEGOTIATION_INFO_SCSV)))
+	if(offered_suite(cast(u16bit)(TLS_EMPTY_RENEGOTIATION_INFO_SCSV)))
 	{
 		if(Renegotiation_Extension* reneg = m_extensions.get<Renegotiation_Extension>())
 		{

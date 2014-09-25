@@ -2,10 +2,8 @@
 * 64x64->128 bit multiply operation
 * (C) 2013 Jack Lloyd
 *
-* Distributed under the terms of the Botan license
+* Distributed under the terms of the botan license.
 */
-
-#define BOTAN_UTIL_MUL128_H__
 
 #include <botan/types.h>
 #if defined(__SIZEOF_INT128__)
@@ -23,7 +21,7 @@
 
 #define BOTAN_FAST_64X64_MUL(a,b,lo,hi)		\
 	do {												  \
-		const uint128_t r = static_cast<uint128_t>(a) * b;	\
+		const uint128_t r = cast(uint128_t)(a) * b;	\
 		*hi = (r >> 64) & 0xFFFFFFFFFFFFFFFF;  \
 		*lo = (r		) & 0xFFFFFFFFFFFFFFFF;  \
 } while(0)
@@ -90,10 +88,10 @@ inline void mul64x64_128(u64bit a, u64bit b, u64bit* lo, u64bit* hi)
 	const u32bit b_hi = (b >> HWORD_BITS);
 	const u32bit b_lo = (b  & HWORD_MASK);
 
-	u64bit x0 = static_cast<u64bit>(a_hi) * b_hi;
-	u64bit x1 = static_cast<u64bit>(a_lo) * b_hi;
-	u64bit x2 = static_cast<u64bit>(a_hi) * b_lo;
-	u64bit x3 = static_cast<u64bit>(a_lo) * b_lo;
+	u64bit x0 = cast(u64bit)(a_hi) * b_hi;
+	u64bit x1 = cast(u64bit)(a_lo) * b_hi;
+	u64bit x2 = cast(u64bit)(a_hi) * b_lo;
+	u64bit x3 = cast(u64bit)(a_lo) * b_lo;
 
 	// this cannot overflow as (2^32-1)^2 + 2^32-1 < 2^64-1
 	x2 += x3 >> HWORD_BITS;
@@ -102,7 +100,7 @@ inline void mul64x64_128(u64bit a, u64bit b, u64bit* lo, u64bit* hi)
 	x2 += x1;
 
 	// propagate the carry if any
-	x0 += static_cast<u64bit>(static_cast<bool>(x2 < x1)) << HWORD_BITS;
+	x0 += cast(u64bit)(cast(bool)(x2 < x1)) << HWORD_BITS;
 
 	*hi = x0 + (x2 >> HWORD_BITS);
 	*lo  = ((x2 & HWORD_MASK) << HWORD_BITS) + (x3 & HWORD_MASK);

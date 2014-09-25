@@ -2,10 +2,8 @@
 * RSA
 * (C) 1999-2008 Jack Lloyd
 *
-* Distributed under the terms of the Botan license
+* Distributed under the terms of the botan license.
 */
-
-#define BOTAN_RSA_H__
 
 #include <botan/if_algo.h>
 #include <botan/pk_ops.h>
@@ -91,10 +89,10 @@ class RSA_Private_Operation : public PK_Ops::Signature,
 
 		size_t max_input_bits() const { return (n.bits() - 1); }
 
-		SafeArray!byte sign(const byte msg[], size_t msg_len,
+		SafeArray!byte sign(in byte[] msg, size_t msg_len,
 										RandomNumberGenerator& rng);
 
-		SafeArray!byte decrypt(const byte msg[], size_t msg_len);
+		SafeArray!byte decrypt(in byte[] msg, size_t msg_len);
 
 	private:
 		BigInt private_op(const BigInt& m) const;
@@ -121,14 +119,14 @@ class RSA_Public_Operation : public PK_Ops::Verification,
 		size_t max_input_bits() const { return (n.bits() - 1); }
 		bool with_recovery() const { return true; }
 
-		SafeArray!byte encrypt(const byte msg[], size_t msg_len,
+		SafeArray!byte encrypt(in byte[] msg, size_t msg_len,
 											RandomNumberGenerator&)
 		{
 			BigInt m(msg, msg_len);
 			return BigInt::encode_1363(public_op(m), n.bytes());
 		}
 
-		SafeArray!byte verify_mr(const byte msg[], size_t msg_len)
+		SafeArray!byte verify_mr(in byte[] msg, size_t msg_len)
 		{
 			BigInt m(msg, msg_len);
 			return BigInt::encode_locked(public_op(m));

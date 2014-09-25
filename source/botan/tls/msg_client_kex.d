@@ -230,7 +230,7 @@ Client_Key_Exchange::Client_Key_Exchange(Handshake_IO& io,
 		if(!server_public_key)
 			throw Internal_Error("No server public key for RSA exchange");
 
-		if(auto rsa_pub = dynamic_cast<const RSA_PublicKey*>(server_public_key))
+		if(auto rsa_pub = cast(const RSA_PublicKey*)(server_public_key))
 		{
 			const Protocol_Version offered_version = state.client_hello()->version();
 
@@ -276,7 +276,7 @@ Client_Key_Exchange::Client_Key_Exchange(in Array!byte contents,
 		if(!server_rsa_kex_key)
 			throw Internal_Error("Expected RSA kex but no server kex key set");
 
-		if(!dynamic_cast<const RSA_PrivateKey*>(server_rsa_kex_key))
+		if(!cast(const RSA_PrivateKey*)(server_rsa_kex_key))
 			throw Internal_Error("Expected RSA key but got " + server_rsa_kex_key->algo_name());
 
 		PK_Decryptor_EME decryptor(*server_rsa_kex_key, "PKCS1v15");
@@ -361,14 +361,14 @@ Client_Key_Exchange::Client_Key_Exchange(in Array!byte contents,
 		else if(kex_algo == "DH" || kex_algo == "DHE_PSK" ||
 				  kex_algo == "ECDH" || kex_algo == "ECDHE_PSK")
 		{
-			const Private_Key& private_key = state.server_kex()->server_kex_key();
+			in Private_Key Private_Key = state.server_kex()->server_kex_key();
 
 			const PK_Key_Agreement_Key* ka_key =
-				dynamic_cast<const PK_Key_Agreement_Key*>(&private_key);
+				cast(const PK_Key_Agreement_Key*)(&Private_Key);
 
 			if(!ka_key)
 				throw Internal_Error("Expected key agreement key type but got " +
-											private_key.algo_name());
+											Private_Key.algo_name());
 
 			try
 			{

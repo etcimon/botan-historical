@@ -11,14 +11,14 @@
 /*
 * RC2 Encryption
 */
-void RC2::encrypt_n(const byte in[], byte out[], size_t blocks) const
+void RC2::encrypt_n(in byte[] input, ref byte[] output) const
 {
 	for(size_t i = 0; i != blocks; ++i)
 	{
-		u16bit R0 = load_le<u16bit>(in, 0);
-		u16bit R1 = load_le<u16bit>(in, 1);
-		u16bit R2 = load_le<u16bit>(in, 2);
-		u16bit R3 = load_le<u16bit>(in, 3);
+		u16bit R0 = load_le<u16bit>(input, 0);
+		u16bit R1 = load_le<u16bit>(input, 1);
+		u16bit R2 = load_le<u16bit>(input, 2);
+		u16bit R3 = load_le<u16bit>(input, 3);
 
 		for(size_t j = 0; j != 16; ++j)
 		{
@@ -53,14 +53,14 @@ void RC2::encrypt_n(const byte in[], byte out[], size_t blocks) const
 /*
 * RC2 Decryption
 */
-void RC2::decrypt_n(const byte in[], byte out[], size_t blocks) const
+void RC2::decrypt_n(in byte[] input, ref byte[] output) const
 {
 	for(size_t i = 0; i != blocks; ++i)
 	{
-		u16bit R0 = load_le<u16bit>(in, 0);
-		u16bit R1 = load_le<u16bit>(in, 1);
-		u16bit R2 = load_le<u16bit>(in, 2);
-		u16bit R3 = load_le<u16bit>(in, 3);
+		u16bit R0 = load_le<u16bit>(input, 0);
+		u16bit R1 = load_le<u16bit>(input, 1);
+		u16bit R2 = load_le<u16bit>(input, 2);
+		u16bit R3 = load_le<u16bit>(input, 3);
 
 		for(size_t j = 0; j != 16; ++j)
 		{
@@ -95,7 +95,7 @@ void RC2::decrypt_n(const byte in[], byte out[], size_t blocks) const
 /*
 * RC2 Key Schedule
 */
-void RC2::key_schedule(const byte key[], size_t length)
+void RC2::key_schedule(in byte[] key)
 {
 	static const byte TABLE[256] = {
 		0xD9, 0x78, 0xF9, 0xC4, 0x19, 0xDD, 0xB5, 0xED, 0x28, 0xE9, 0xFD, 0x79,

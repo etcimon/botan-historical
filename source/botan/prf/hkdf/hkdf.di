@@ -2,10 +2,8 @@
 * HKDF
 * (C) 2013 Jack Lloyd
 *
-* Distributed under the terms of the Botan license
+* Distributed under the terms of the botan license.
 */
-
-#define BOTAN_HKDF_H__
 
 #include <botan/mac.h>
 #include <botan/hash.h>
@@ -22,8 +20,8 @@ class HKDF
 		HKDF(MessageAuthenticationCode* prf) :
 			m_extractor(prf), m_prf(m_extractor->clone()) {}
 
-		void start_extract(const byte salt[], size_t salt_len);
-		void extract(const byte input[], size_t input_len);
+		void start_extract(in byte[] salt, size_t salt_len);
+		void extract(in byte[] input, size_t input_len);
 		void finish_extract();
 
 		/**
@@ -31,7 +29,7 @@ class HKDF
 		* @param output_len must be less than 256*hashlen
 		*/
 		void expand(byte output[], size_t output_len,
-						const byte info[], size_t info_len);
+						in byte[] info, size_t info_len);
 
 		string name() const;
 

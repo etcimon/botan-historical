@@ -3,10 +3,8 @@
 * (C) 1999-2007 Jack Lloyd
 * (C) 2013 Joel Low
 *
-* Distributed under the terms of the Botan license
+* Distributed under the terms of the botan license.
 */
-
-#define BOTAN_BASEFILT_H__
 
 #include <botan/filter.h>
 #include <thread>
@@ -29,7 +27,7 @@ struct BitBucket : public Filter
 class Chain : public Fanout_Filter
 {
 	public:
-		void write(const byte input[], size_t length) { send(input, length); }
+		void write(in byte[] input, size_t length) { send(input, length); }
 
 		string name() const;
 
@@ -56,7 +54,7 @@ class Chain : public Fanout_Filter
 class Fork : public Fanout_Filter
 {
 	public:
-		void write(const byte input[], size_t length) { send(input, length); }
+		void write(in byte[] input, size_t length) { send(input, length); }
 		void set_port(size_t n) { Fanout_Filter::set_port(n); }
 
 		string name() const;
@@ -100,10 +98,10 @@ class Threaded_Fork : public Fork
 
 	protected:
 		void set_next(Filter* f[], size_t n);
-		void send(const byte in[], size_t length);
+		void send(in byte[] input);
 
 	private:
-		void thread_delegate_work(const byte input[], size_t length);
+		void thread_delegate_work(in byte[] input, size_t length);
 		void thread_entry(Filter* filter);
 
 		std::vector<std::shared_ptr<std::thread>> m_threads;

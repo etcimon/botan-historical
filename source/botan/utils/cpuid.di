@@ -2,10 +2,8 @@
 * Runtime CPU detection
 * (C) 2009-2010,2013 Jack Lloyd
 *
-* Distributed under the terms of the Botan license
+* Distributed under the terms of the botan license.
 */
-
-#define BOTAN_CPUID_H__
 
 #include <botan/types.h>
 #include <iosfwd>

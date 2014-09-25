@@ -2,10 +2,8 @@
 * Interface for AEAD modes
 * (C) 2013 Jack Lloyd
 *
-* Distributed under the terms of the Botan license
+* Distributed under the terms of the botan license.
 */
-
-#define BOTAN_AEAD_MODE_H__
 
 #include <botan/cipher_mode.h>
 /**
@@ -32,7 +30,7 @@ class AEAD_Mode : public Cipher_Mode
 		* @param ad the associated data
 		* @param ad_len length of add in bytes
 		*/
-		abstract void set_associated_data(const byte ad[], size_t ad_len) = 0;
+		abstract void set_associated_data(in byte[] ad, size_t ad_len) = 0;
 
 		template<typename Alloc>
 		void set_associated_data_vec(const std::vector<byte, Alloc>& ad)

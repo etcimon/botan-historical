@@ -34,7 +34,7 @@ void GOST_34_11::clear()
 /**
 * Hash additional inputs
 */
-void GOST_34_11::add_data(const byte input[], size_t length)
+void GOST_34_11::add_data(in byte[] input, size_t length)
 {
 	count += length;
 
@@ -64,7 +64,7 @@ void GOST_34_11::add_data(const byte input[], size_t length)
 /**
 * The GOST 34.11 compression function
 */
-void GOST_34_11::compress_n(const byte input[], size_t blocks)
+void GOST_34_11::compress_n(in byte[] input, size_t blocks)
 {
 	for(size_t i = 0; i != blocks; ++i)
 	{
@@ -214,7 +214,7 @@ void GOST_34_11::compress_n(const byte input[], size_t blocks)
 /**
 * Produce the final GOST 34.11 output
 */
-void GOST_34_11::final_result(byte out[])
+void GOST_34_11::final_result(ref byte[] output)
 {
 	if(position)
 	{

@@ -13,12 +13,12 @@
 /*
 * RC5 Encryption
 */
-void RC5::encrypt_n(const byte in[], byte out[], size_t blocks) const
+void RC5::encrypt_n(in byte[] input, ref byte[] output) const
 {
 	for(size_t i = 0; i != blocks; ++i)
 	{
-		u32bit A = load_le<u32bit>(in, 0);
-		u32bit B = load_le<u32bit>(in, 1);
+		u32bit A = load_le<u32bit>(input, 0);
+		u32bit B = load_le<u32bit>(input, 1);
 
 		A += S[0]; B += S[1];
 		for(size_t j = 0; j != rounds; j += 4)
@@ -46,12 +46,12 @@ void RC5::encrypt_n(const byte in[], byte out[], size_t blocks) const
 /*
 * RC5 Decryption
 */
-void RC5::decrypt_n(const byte in[], byte out[], size_t blocks) const
+void RC5::decrypt_n(in byte[] input, ref byte[] output) const
 {
 	for(size_t i = 0; i != blocks; ++i)
 	{
-		u32bit A = load_le<u32bit>(in, 0);
-		u32bit B = load_le<u32bit>(in, 1);
+		u32bit A = load_le<u32bit>(input, 0);
+		u32bit B = load_le<u32bit>(input, 1);
 
 		for(size_t j = rounds; j != 0; j -= 4)
 		{
@@ -79,7 +79,7 @@ void RC5::decrypt_n(const byte in[], byte out[], size_t blocks) const
 /*
 * RC5 Key Schedule
 */
-void RC5::key_schedule(const byte key[], size_t length)
+void RC5::key_schedule(in byte[] key)
 {
 	S.resize(2*rounds + 2);
 

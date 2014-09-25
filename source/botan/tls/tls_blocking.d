@@ -10,15 +10,15 @@ namespace TLS {
 
 using namespace std::placeholders;
 
-Blocking_Client::Blocking_Client(std::function<size_t (byte[], size_t)> read_fn,
-											std::function<void (const byte[], size_t)> write_fn,
-											Session_Manager& session_manager,
-											Credentials_Manager& creds,
-											const Policy& policy,
-											RandomNumberGenerator& rng,
-											const Server_Information& server_info,
-											const Protocol_Version offer_version,
-											std::function<string (std::vector<string>)> next_protocol) :
+Blocking_Client::Blocking_Client(size_t delegate(ref byte[]) read_fn,
+											void delegate(in byte[]) write_fn,
+											Session_Manager session_manager,
+											Credentials_Manager creds,
+											in Policy policy,
+											RandomNumberGenerator rng,
+											in Server_Information server_info,
+											in Protocol_Version offer_version,
+											string delegate(string[]) next_protocol) :
 	m_read_fn(read_fn),
 	m_channel(write_fn,
 				 std::bind(&Blocking_Client::data_cb, this, _1, _2),
@@ -44,7 +44,7 @@ void Blocking_Client::alert_cb(const Alert alert, const byte[], size_t)
 	this->alert_notification(alert);
 }
 
-void Blocking_Client::data_cb(const byte data[], size_t data_len)
+void Blocking_Client::data_cb(in byte[] data, size_t data_len)
 {
 	m_plaintext.insert(m_plaintext.end(), data, data + data_len);
 }

@@ -73,7 +73,7 @@ ElGamal_Encryption_Operation::ElGamal_Encryption_Operation(const ElGamal_PublicK
 }
 
 SafeArray!byte
-ElGamal_Encryption_Operation::encrypt(const byte msg[], size_t msg_len,
+ElGamal_Encryption_Operation::encrypt(in byte[] msg, size_t msg_len,
 												  RandomNumberGenerator& rng)
 {
 	const BigInt& p = mod_p.get_modulus();
@@ -107,7 +107,7 @@ ElGamal_Decryption_Operation::ElGamal_Decryption_Operation(const ElGamal_Private
 }
 
 SafeArray!byte
-ElGamal_Decryption_Operation::decrypt(const byte msg[], size_t msg_len)
+ElGamal_Decryption_Operation::decrypt(in byte[] msg, size_t msg_len)
 {
 	const BigInt& p = mod_p.get_modulus();
 

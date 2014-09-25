@@ -6,27 +6,27 @@
 */
 
 #include <botan/cascade.h>
-void Cascade_Cipher::encrypt_n(const byte in[], byte out[],
+void Cascade_Cipher::encrypt_n(in byte[] input, ref byte[] output,
 										 size_t blocks) const
 {
 	size_t c1_blocks = blocks * (block_size() / m_cipher1->block_size());
 	size_t c2_blocks = blocks * (block_size() / m_cipher2->block_size());
 
-	m_cipher1->encrypt_n(in, out, c1_blocks);
+	m_cipher1->encrypt_n(input, out, c1_blocks);
 	m_cipher2->encrypt_n(out, out, c2_blocks);
 }
 
-void Cascade_Cipher::decrypt_n(const byte in[], byte out[],
+void Cascade_Cipher::decrypt_n(in byte[] input, ref byte[] output,
 										 size_t blocks) const
 {
 	size_t c1_blocks = blocks * (block_size() / m_cipher1->block_size());
 	size_t c2_blocks = blocks * (block_size() / m_cipher2->block_size());
 
-	m_cipher2->decrypt_n(in, out, c2_blocks);
+	m_cipher2->decrypt_n(input, out, c2_blocks);
 	m_cipher1->decrypt_n(out, out, c1_blocks);
 }
 
-void Cascade_Cipher::key_schedule(const byte key[], size_t)
+void Cascade_Cipher::key_schedule(in byte[] key, size_t)
 {
 	const byte* key2 = key + m_cipher1->maximum_keylength();
 

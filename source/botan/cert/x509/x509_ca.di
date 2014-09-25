@@ -2,10 +2,8 @@
 * X.509 Certificate Authority
 * (C) 1999-2008 Jack Lloyd
 *
-* Distributed under the terms of the Botan license
+* Distributed under the terms of the botan license.
 */
-
-#define BOTAN_X509_CA_H__
 
 #include <botan/x509cert.h>
 #include <botan/x509_crl.h>
@@ -92,7 +90,7 @@ class X509_CA
 		* @param hash_fn name of a hash function to use for signing
 		*/
 		X509_CA(const X509_Certificate& ca_certificate,
-				  const Private_Key& key,
+				  in Private_Key key,
 				  in string hash_fn);
 
 		X509_CA(const X509_CA&) = delete;
@@ -117,6 +115,6 @@ class X509_CA
 * @param alg_id will be set to the chosen scheme
 * @return A PK_Signer object for generating signatures
 */
-PK_Signer* choose_sig_format(const Private_Key& key,
+PK_Signer* choose_sig_format(in Private_Key key,
 													in string hash_fn,
 													AlgorithmIdentifier& alg_id);

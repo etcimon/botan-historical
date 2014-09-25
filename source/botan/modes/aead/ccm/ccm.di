@@ -2,10 +2,8 @@
 * CCM Mode
 * (C) 2013 Jack Lloyd
 *
-* Distributed under the terms of the Botan license
+* Distributed under the terms of the botan license.
 */
-
-#define BOTAN_AEAD_CCM_H__
 
 #include <botan/aead.h>
 #include <botan/block_cipher.h>
@@ -18,11 +16,11 @@
 class CCM_Mode : public AEAD_Mode
 {
 	public:
-		SafeArray!byte start(const byte nonce[], size_t nonce_len) override;
+		SafeArray!byte start(in byte[] nonce, size_t nonce_len) override;
 
-		void update(SafeArray!byte& blocks, size_t offset = 0) override;
+		void update(SafeArray!byte blocks, size_t offset = 0) override;
 
-		void set_associated_data(const byte ad[], size_t ad_len) override;
+		void set_associated_data(in byte[] ad, size_t ad_len) override;
 
 		string name() const override;
 
@@ -47,18 +45,18 @@ class CCM_Mode : public AEAD_Mode
 
 		const BlockCipher& cipher() const { return *m_cipher; }
 
-		void encode_length(size_t len, byte out[]);
+		void encode_length(size_t len, ref byte[] output);
 
-		void inc(SafeArray!byte& C);
+		void inc(SafeArray!byte C);
 
 		in SafeArray!byte ad_buf() const { return m_ad_buf; }
 
-		SafeArray!byte& msg_buf() { return m_msg_buf; }
+		SafeArray!byte msg_buf() { return m_msg_buf; }
 
 		SafeArray!byte format_b0(size_t msg_size);
 		SafeArray!byte format_c0();
 	private:
-		void key_schedule(const byte key[], size_t length) override;
+		void key_schedule(in byte[] key) override;
 
 		const size_t m_tag_size;
 		const size_t m_L;
@@ -83,7 +81,7 @@ class CCM_Encryption : public CCM_Mode
 		CCM_Encryption(BlockCipher* cipher, size_t tag_size = 16, size_t L = 3) :
 			CCM_Mode(cipher, tag_size, L) {}
 
-		void finish(SafeArray!byte& final_block, size_t offset = 0) override;
+		void finish(SafeArray!byte final_block, size_t offset = 0) override;
 
 		size_t output_length(size_t input_length) const override
 		{ return input_length + tag_size(); }
@@ -107,7 +105,7 @@ class CCM_Decryption : public CCM_Mode
 		CCM_Decryption(BlockCipher* cipher, size_t tag_size = 16, size_t L = 3) :
 			CCM_Mode(cipher, tag_size, L) {}
 
-		void finish(SafeArray!byte& final_block, size_t offset = 0) override;
+		void finish(SafeArray!byte final_block, size_t offset = 0) override;
 
 		size_t output_length(size_t input_length) const override
 		{

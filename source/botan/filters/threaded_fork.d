@@ -38,7 +38,7 @@ struct Threaded_Fork_Data
 * Threaded_Fork constructor
 */
 Threaded_Fork::Threaded_Fork(Filter* f1, Filter* f2, Filter* f3, Filter* f4) :
-	Fork(nullptr, static_cast<size_t>(0)),
+	Fork(nullptr, cast(size_t)(0)),
 	m_thread_data(new Threaded_Fork_Data)
 {
 	Filter* filters[4] = { f1, f2, f3, f4 };
@@ -49,7 +49,7 @@ Threaded_Fork::Threaded_Fork(Filter* f1, Filter* f2, Filter* f3, Filter* f4) :
 * Threaded_Fork constructor
 */
 Threaded_Fork::Threaded_Fork(Filter* filters[], size_t count) :
-	Fork(nullptr, static_cast<size_t>(0)),
+	Fork(nullptr, cast(size_t)(0)),
 	m_thread_data(new Threaded_Fork_Data)
 {
 	set_next(filters, count);
@@ -91,7 +91,7 @@ void Threaded_Fork::set_next(Filter* f[], size_t n)
 	}
 }
 
-void Threaded_Fork::send(const byte input[], size_t length)
+void Threaded_Fork::send(in byte[] input, size_t length)
 {
 	if(write_queue.size())
 		thread_delegate_work(&write_queue[0], write_queue.size());
@@ -108,7 +108,7 @@ void Threaded_Fork::send(const byte input[], size_t length)
 		write_queue.clear();
 }
 
-void Threaded_Fork::thread_delegate_work(const byte input[], size_t length)
+void Threaded_Fork::thread_delegate_work(in byte[] input, size_t length)
 {
 	//Set the data to do.
 	m_thread_data->m_input = input;

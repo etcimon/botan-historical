@@ -2,10 +2,8 @@
 * Diffie-Hellman
 * (C) 1999-2007 Jack Lloyd
 *
-* Distributed under the terms of the Botan license
+* Distributed under the terms of the botan license.
 */
-
-#define BOTAN_DIFFIE_HELLMAN_H__
 
 #include <botan/dl_algo.h>
 #include <botan/pow_mod.h>
@@ -77,7 +75,7 @@ class DH_KA_Operation : public PK_Ops::Key_Agreement
 		DH_KA_Operation(const DH_PrivateKey& key,
 							 RandomNumberGenerator& rng);
 
-		SafeArray!byte agree(const byte w[], size_t w_len);
+		SafeArray!byte agree(in byte[] w, size_t w_len);
 	private:
 		const BigInt& p;
 

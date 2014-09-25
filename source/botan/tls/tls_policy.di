@@ -2,10 +2,8 @@
 * Hooks for application level policies on TLS connections
 * (C) 2004-2006,2013 Jack Lloyd
 *
-* Released under the terms of the Botan license
+* Released under the terms of the botan license.
 */
-
-#define BOTAN_TLS_POLICY_H__
 
 #include <botan/tls_version.h>
 #include <botan/tls_ciphersuite.h>

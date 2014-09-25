@@ -11,7 +11,7 @@
 /*
 * Lion Encryption
 */
-void Lion::encrypt_n(const byte in[], byte out[], size_t blocks) const
+void Lion::encrypt_n(in byte[] input, ref byte[] output) const
 {
 	const size_t LEFT_SIZE = left_size();
 	const size_t RIGHT_SIZE = right_size();
@@ -41,7 +41,7 @@ void Lion::encrypt_n(const byte in[], byte out[], size_t blocks) const
 /*
 * Lion Decryption
 */
-void Lion::decrypt_n(const byte in[], byte out[], size_t blocks) const
+void Lion::decrypt_n(in byte[] input, ref byte[] output) const
 {
 	const size_t LEFT_SIZE = left_size();
 	const size_t RIGHT_SIZE = right_size();
@@ -71,7 +71,7 @@ void Lion::decrypt_n(const byte in[], byte out[], size_t blocks) const
 /*
 * Lion Key Schedule
 */
-void Lion::key_schedule(const byte key[], size_t length)
+void Lion::key_schedule(in byte[] key)
 {
 	clear();
 

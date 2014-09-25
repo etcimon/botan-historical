@@ -2,10 +2,8 @@
 * HMAC RNG
 * (C) 2008,2013 Jack Lloyd
 *
-* Distributed under the terms of the Botan license
+* Distributed under the terms of the botan license.
 */
-
-#define BOTAN_HMAC_RNG_H__
 
 #include <botan/mac.h>
 #include <botan/rng.h>

@@ -2,10 +2,8 @@
 * ElGamal
 * (C) 1999-2007 Jack Lloyd
 *
-* Distributed under the terms of the Botan license
+* Distributed under the terms of the botan license.
 */
-
-#define BOTAN_ELGAMAL_H__
 
 #include <botan/dl_algo.h>
 #include <botan/numthry.h>
@@ -61,7 +59,7 @@ class ElGamal_Encryption_Operation : public PK_Ops::Encryption
 
 		ElGamal_Encryption_Operation(const ElGamal_PublicKey& key);
 
-		SafeArray!byte encrypt(const byte msg[], size_t msg_len,
+		SafeArray!byte encrypt(in byte[] msg, size_t msg_len,
 											RandomNumberGenerator& rng);
 
 	private:
@@ -80,7 +78,7 @@ class ElGamal_Decryption_Operation : public PK_Ops::Decryption
 		ElGamal_Decryption_Operation(const ElGamal_PrivateKey& key,
 											  RandomNumberGenerator& rng);
 
-		SafeArray!byte decrypt(const byte msg[], size_t msg_len);
+		SafeArray!byte decrypt(in byte[] msg, size_t msg_len);
 	private:
 		Fixed_Exponent_Power_Mod powermod_x_p;
 		Modular_Reducer mod_p;

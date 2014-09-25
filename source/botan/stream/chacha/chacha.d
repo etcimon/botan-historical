@@ -60,7 +60,7 @@ void ChaCha::chacha(byte output[64], const u32bit input[16])
 /*
 * Combine cipher stream with message
 */
-void ChaCha::cipher(const byte in[], byte out[], size_t length)
+void ChaCha::cipher(in byte[] input, ref byte[] output)
 {
 	while(length >= m_buffer.size() - m_position)
 	{
@@ -84,7 +84,7 @@ void ChaCha::cipher(const byte in[], byte out[], size_t length)
 /*
 * ChaCha Key Schedule
 */
-void ChaCha::key_schedule(const byte key[], size_t length)
+void ChaCha::key_schedule(in byte[] key)
 {
 	static const u32bit TAU[] =
 	{ 0x61707865, 0x3120646e, 0x79622d36, 0x6b206574 };
@@ -124,7 +124,7 @@ void ChaCha::key_schedule(const byte key[], size_t length)
 /*
 * Return the name of this type
 */
-void ChaCha::set_iv(const byte iv[], size_t length)
+void ChaCha::set_iv(in byte[] iv, size_t length)
 {
 	if(!valid_iv_length(length))
 		throw Invalid_IV_Length(name(), length);

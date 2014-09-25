@@ -2,10 +2,8 @@
 * Engine for AES instructions
 * (C) 2009 Jack Lloyd
 *
-* Distributed under the terms of the Botan license
+* Distributed under the terms of the botan license.
 */
-
-#define BOTAN_AES_ISA_ENGINE_H__
 
 #include <botan/engine.h>
 /**

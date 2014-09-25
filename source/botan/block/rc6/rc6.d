@@ -12,14 +12,14 @@
 /*
 * RC6 Encryption
 */
-void RC6::encrypt_n(const byte in[], byte out[], size_t blocks) const
+void RC6::encrypt_n(in byte[] input, ref byte[] output) const
 {
 	for(size_t i = 0; i != blocks; ++i)
 	{
-		u32bit A = load_le<u32bit>(in, 0);
-		u32bit B = load_le<u32bit>(in, 1);
-		u32bit C = load_le<u32bit>(in, 2);
-		u32bit D = load_le<u32bit>(in, 3);
+		u32bit A = load_le<u32bit>(input, 0);
+		u32bit B = load_le<u32bit>(input, 1);
+		u32bit C = load_le<u32bit>(input, 2);
+		u32bit D = load_le<u32bit>(input, 3);
 
 		B += S[0]; D += S[1];
 
@@ -60,14 +60,14 @@ void RC6::encrypt_n(const byte in[], byte out[], size_t blocks) const
 /*
 * RC6 Decryption
 */
-void RC6::decrypt_n(const byte in[], byte out[], size_t blocks) const
+void RC6::decrypt_n(in byte[] input, ref byte[] output) const
 {
 	for(size_t i = 0; i != blocks; ++i)
 	{
-		u32bit A = load_le<u32bit>(in, 0);
-		u32bit B = load_le<u32bit>(in, 1);
-		u32bit C = load_le<u32bit>(in, 2);
-		u32bit D = load_le<u32bit>(in, 3);
+		u32bit A = load_le<u32bit>(input, 0);
+		u32bit B = load_le<u32bit>(input, 1);
+		u32bit C = load_le<u32bit>(input, 2);
+		u32bit D = load_le<u32bit>(input, 3);
 
 		C -= S[43]; A -= S[42];
 
@@ -108,7 +108,7 @@ void RC6::decrypt_n(const byte in[], byte out[], size_t blocks) const
 /*
 * RC6 Key Schedule
 */
-void RC6::key_schedule(const byte key[], size_t length)
+void RC6::key_schedule(in byte[] key)
 {
 	S.resize(44);
 

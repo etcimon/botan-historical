@@ -2,10 +2,8 @@
 * ECB/CBC Padding Methods
 * (C) 1999-2008,2013 Jack Lloyd
 *
-* Distributed under the terms of the Botan license
+* Distributed under the terms of the botan license.
 */
-
-#define BOTAN_MODE_PADDING_H__
 
 #include <botan/secmem.h>
 #include <string>
@@ -21,7 +19,7 @@
 class BlockCipherModePaddingMethod
 {
 	public:
-		abstract void add_padding(SafeArray!byte& buffer,
+		abstract void add_padding(SafeArray!byte buffer,
 										 size_t final_block_bytes,
 										 size_t block_size) const = 0;
 
@@ -29,7 +27,7 @@ class BlockCipherModePaddingMethod
 		* @param block the last block
 		* @param size the of the block
 		*/
-		abstract size_t unpad(const byte block[],
+		abstract size_t unpad(in byte[] block,
 									size_t size) const = 0;
 
 		/**
@@ -55,7 +53,7 @@ class BlockCipherModePaddingMethod
 class PKCS7_Padding : public BlockCipherModePaddingMethod
 {
 	public:
-		void add_padding(SafeArray!byte& buffer,
+		void add_padding(SafeArray!byte buffer,
 							  size_t final_block_bytes,
 							  size_t block_size) const override;
 
@@ -72,7 +70,7 @@ class PKCS7_Padding : public BlockCipherModePaddingMethod
 class ANSI_X923_Padding : public BlockCipherModePaddingMethod
 {
 	public:
-		void add_padding(SafeArray!byte& buffer,
+		void add_padding(SafeArray!byte buffer,
 							  size_t final_block_bytes,
 							  size_t block_size) const override;
 
@@ -89,7 +87,7 @@ class ANSI_X923_Padding : public BlockCipherModePaddingMethod
 class OneAndZeros_Padding : public BlockCipherModePaddingMethod
 {
 	public:
-		void add_padding(SafeArray!byte& buffer,
+		void add_padding(SafeArray!byte buffer,
 							  size_t final_block_bytes,
 							  size_t block_size) const override;
 
@@ -106,7 +104,7 @@ class OneAndZeros_Padding : public BlockCipherModePaddingMethod
 class Null_Padding : public BlockCipherModePaddingMethod
 {
 	public:
-		void add_padding(SafeArray!byte&, size_t, size_t) const override {}
+		void add_padding(SafeArray!byte, size_t, size_t) const override {}
 
 		size_t unpad(const byte[], size_t size) const { return size; }
 

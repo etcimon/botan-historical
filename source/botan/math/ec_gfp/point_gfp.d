@@ -505,7 +505,7 @@ SafeArray!byte EC2OSP(const PointGFp& point, byte format)
 	else if(format == PointGFp::COMPRESSED)
 	{
 		SafeArray!byte result;
-		result.push_back(0x02 | static_cast<byte>(y.get_bit(0)));
+		result.push_back(0x02 | cast(byte)(y.get_bit(0)));
 
 		result += bX;
 
@@ -514,7 +514,7 @@ SafeArray!byte EC2OSP(const PointGFp& point, byte format)
 	else if(format == PointGFp::HYBRID)
 	{
 		SafeArray!byte result;
-		result.push_back(0x06 | static_cast<byte>(y.get_bit(0)));
+		result.push_back(0x06 | cast(byte)(y.get_bit(0)));
 
 		result += bX;
 		result += bY;
@@ -551,7 +551,7 @@ BigInt decompress_point(bool yMod2,
 
 }
 
-PointGFp OS2ECP(const byte data[], size_t data_len,
+PointGFp OS2ECP(in byte[] data, size_t data_len,
 					 const CurveGFp& curve)
 {
 	if(data_len <= 1)

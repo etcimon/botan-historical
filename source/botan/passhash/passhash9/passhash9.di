@@ -2,10 +2,8 @@
 * Passhash9 Password Hashing
 * (C) 2010 Jack Lloyd
 *
-* Distributed under the terms of the Botan license
+* Distributed under the terms of the botan license.
 */
-
-#define BOTAN_PASSHASH9_H__
 
 #include <botan/rng.h>
 /**

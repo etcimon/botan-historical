@@ -2,10 +2,8 @@
 * PEM Encoding/Decoding
 * (C) 1999-2007 Jack Lloyd
 *
-* Distributed under the terms of the Botan license
+* Distributed under the terms of the botan license.
 */
-
-#define BOTAN_PEM_H__
 
 #include <botan/data_src.h>
 namespace PEM_Code {
@@ -13,7 +11,7 @@ namespace PEM_Code {
 /**
 * Encode some binary data in PEM format
 */
-string encode(const byte data[],
+string encode(in byte[] data,
 									  size_t data_len,
 									  in string label,
 									  size_t line_width = 64);

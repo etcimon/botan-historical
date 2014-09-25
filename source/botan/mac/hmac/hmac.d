@@ -11,7 +11,7 @@
 /*
 * Update a HMAC Calculation
 */
-void HMAC::add_data(const byte input[], size_t length)
+void HMAC::add_data(in byte[] input, size_t length)
 {
 	m_hash->update(input, length);
 }
@@ -31,7 +31,7 @@ void HMAC::final_result(byte mac[])
 /*
 * HMAC Key Schedule
 */
-void HMAC::key_schedule(const byte key[], size_t length)
+void HMAC::key_schedule(in byte[] key)
 {
 	m_hash->clear();
 

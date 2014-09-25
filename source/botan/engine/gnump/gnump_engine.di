@@ -2,10 +2,8 @@
 * GMP Engine
 * (C) 1999-2007 Jack Lloyd
 *
-* Distributed under the terms of the Botan license
+* Distributed under the terms of the botan license.
 */
-
-#define BOTAN_ENGINE_GMP_H__
 
 #include <botan/engine.h>
 /**
@@ -20,16 +18,16 @@ class GMP_Engine : public Engine
 		string provider_name() const override { return "gmp"; }
 
 		PK_Ops::Key_Agreement*
-		get_key_agreement_op(const Private_Key& key, RandomNumberGenerator&) const override;
+		get_key_agreement_op(in Private_Key key, RandomNumberGenerator&) const override;
 
 		PK_Ops::Signature*
-		get_signature_op(const Private_Key& key, RandomNumberGenerator&) const override;
+		get_signature_op(in Private_Key key, RandomNumberGenerator&) const override;
 
 		PK_Ops::Verification* get_verify_op(const Public_Key& key, RandomNumberGenerator&) const override;
 
 		PK_Ops::Encryption* get_encryption_op(const Public_Key& key, RandomNumberGenerator&) const override;
 
-		PK_Ops::Decryption* get_decryption_op(const Private_Key& key, RandomNumberGenerator&) const override;
+		PK_Ops::Decryption* get_decryption_op(in Private_Key key, RandomNumberGenerator&) const override;
 
 		Modular_Exponentiator* mod_exp(const BigInt&,
 												 Power_Mod::Usage_Hints) const override;

@@ -70,7 +70,7 @@ inline void F5(u32bit& A, u32bit B, u32bit& C, u32bit D, u32bit E,
 /*
 * RIPEMD-160 Compression Function
 */
-void RIPEMD_160::compress_n(const byte input[], size_t blocks)
+void RIPEMD_160::compress_n(in byte[] input, size_t blocks)
 {
 	const u32bit MAGIC2 = 0x5A827999, MAGIC3 = 0x6ED9EBA1,
 					 MAGIC4 = 0x8F1BBCDC, MAGIC5 = 0xA953FD4E,

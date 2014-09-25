@@ -2,10 +2,8 @@
 * Block Cipher Base Class
 * (C) 1999-2009 Jack Lloyd
 *
-* Distributed under the terms of the Botan license
+* Distributed under the terms of the botan license.
 */
-
-#define BOTAN_BLOCK_CIPHER_H__
 
 #include <botan/sym_algo.h>
 /**
@@ -40,8 +38,8 @@ class BlockCipher : public SymmetricAlgorithm
 		* @param out The byte array designated to hold the encrypted block.
 		* Must be of length block_size().
 		*/
-		void encrypt(const byte in[], byte out[]) const
-		{ encrypt_n(in, out, 1); }
+		void encrypt(in byte[] input, ref byte[] output) const
+		{ encrypt_n(input, out, 1); }
 
 		/**
 		* Decrypt a block.
@@ -50,8 +48,8 @@ class BlockCipher : public SymmetricAlgorithm
 		* @param out The byte array designated to hold the decrypted block.
 		* Must be of length block_size().
 		*/
-		void decrypt(const byte in[], byte out[]) const
-		{ decrypt_n(in, out, 1); }
+		void decrypt(in byte[] input, ref byte[] output) const
+		{ decrypt_n(input, out, 1); }
 
 		/**
 		* Encrypt a block.
@@ -92,7 +90,7 @@ class BlockCipher : public SymmetricAlgorithm
 		/**
 		* Encrypt one or more blocks
 		* @param in the input buffer (multiple of block_size())
-		* @param out the output buffer (same size as in)
+		* @param out the output buffer (same size as input)
 		*/
 		template<typename Alloc, typename Alloc2>
 		void encrypt(const std::vector<byte, Alloc>& in,
@@ -104,7 +102,7 @@ class BlockCipher : public SymmetricAlgorithm
 		/**
 		* Decrypt one or more blocks
 		* @param in the input buffer (multiple of block_size())
-		* @param out the output buffer (same size as in)
+		* @param out the output buffer (same size as input)
 		*/
 		template<typename Alloc, typename Alloc2>
 		void decrypt(const std::vector<byte, Alloc>& in,
@@ -116,19 +114,19 @@ class BlockCipher : public SymmetricAlgorithm
 		/**
 		* Encrypt one or more blocks
 		* @param in the input buffer (multiple of block_size())
-		* @param out the output buffer (same size as in)
+		* @param out the output buffer (same size as input)
 		* @param blocks the number of blocks to process
 		*/
-		abstract void encrypt_n(const byte in[], byte out[],
+		abstract void encrypt_n(in byte[] input, ref byte[] output,
 									  size_t blocks) const = 0;
 
 		/**
 		* Decrypt one or more blocks
 		* @param in the input buffer (multiple of block_size())
-		* @param out the output buffer (same size as in)
+		* @param out the output buffer (same size as input)
 		* @param blocks the number of blocks to process
 		*/
-		abstract void decrypt_n(const byte in[], byte out[],
+		abstract void decrypt_n(in byte[] input, ref byte[] output,
 									  size_t blocks) const = 0;
 
 		/**

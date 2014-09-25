@@ -2,10 +2,8 @@
 * SSL/TLS Protocol Constants
 * (C) 2004-2010 Jack Lloyd
 *
-* Released under the terms of the Botan license
+* Released under the terms of the botan license.
 */
-
-#define BOTAN_TLS_PROTOCOL_MAGIC_H__
 namespace TLS {
 
 /**

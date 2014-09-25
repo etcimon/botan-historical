@@ -2,10 +2,8 @@
 * EME Classes
 * (C) 1999-2007 Jack Lloyd
 *
-* Distributed under the terms of the Botan license
+* Distributed under the terms of the botan license.
 */
-
-#define BOTAN_PUBKEY_EME_ENCRYPTION_PAD_H__
 
 #include <botan/secmem.h>
 #include <botan/rng.h>
@@ -30,7 +28,7 @@ class EME
 		* @param rng a random number generator
 		* @return encoded plaintext
 		*/
-		SafeArray!byte encode(const byte in[],
+		SafeArray!byte encode(in byte[] in,
 										  size_t in_length,
 										  size_t key_length,
 										  RandomNumberGenerator& rng) const;
@@ -53,7 +51,7 @@ class EME
 		* @param key_length length of the key in bits
 		* @return plaintext
 		*/
-		SafeArray!byte decode(const byte in[],
+		SafeArray!byte decode(in byte[] in,
 										  size_t in_length,
 										  size_t key_length) const;
 
@@ -76,7 +74,7 @@ class EME
 		* @param rng a random number generator
 		* @return encoded plaintext
 		*/
-		abstract SafeArray!byte pad(const byte in[],
+		abstract SafeArray!byte pad(in byte[] in,
 												 size_t in_length,
 												 size_t key_length,
 												 RandomNumberGenerator& rng) const = 0;
@@ -88,7 +86,7 @@ class EME
 		* @param key_length length of the key in bits
 		* @return plaintext
 		*/
-		abstract SafeArray!byte unpad(const byte in[],
+		abstract SafeArray!byte unpad(in byte[] in,
 													size_t in_length,
 													size_t key_length) const = 0;
 };

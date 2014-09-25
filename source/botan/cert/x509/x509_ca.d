@@ -22,7 +22,7 @@
 * Load the certificate and private key
 */
 X509_CA::X509_CA(const X509_Certificate& c,
-					  const Private_Key& key,
+					  in Private_Key key,
 					  in string hash_fn) : cert(c)
 {
 	if(!cert.is_CA_cert())
@@ -212,7 +212,7 @@ X509_Certificate X509_CA::ca_certificate() const
 /*
 * Choose a signing format for the key
 */
-PK_Signer* choose_sig_format(const Private_Key& key,
+PK_Signer* choose_sig_format(in Private_Key key,
 									  in string hash_fn,
 									  AlgorithmIdentifier& sig_algo)
 {

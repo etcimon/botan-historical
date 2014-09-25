@@ -2,10 +2,8 @@
 * Alert Message
 * (C) 2004-2006,2011,2012 Jack Lloyd
 *
-* Released under the terms of the Botan license
+* Released under the terms of the botan license.
 */
-
-#define BOTAN_TLS_ALERT_H__
 
 #include <botan/secmem.h>
 #include <string>

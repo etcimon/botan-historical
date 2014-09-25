@@ -2,10 +2,8 @@
 * X9.42 PRF
 * (C) 1999-2007 Jack Lloyd
 *
-* Distributed under the terms of the Botan license
+* Distributed under the terms of the botan license.
 */
-
-#define BOTAN_ANSI_X942_PRF_H__
 
 #include <botan/kdf.h>
 /**

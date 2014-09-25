@@ -17,7 +17,7 @@ namespace {
 class Null_Filter : public Filter
 {
 	public:
-		void write(const byte input[], size_t length)
+		void write(in byte[] input, size_t length)
 		{ send(input, length); }
 
 		string name() const { return "Null"; }
@@ -83,7 +83,7 @@ void Pipe::reset()
 */
 void Pipe::destruct(Filter* to_kill)
 {
-	if(!to_kill || dynamic_cast<SecureQueue*>(to_kill))
+	if(!to_kill || cast(SecureQueue*)(to_kill))
 		return;
 	for(size_t j = 0; j != to_kill->total_ports(); ++j)
 		destruct(to_kill->next[j]);
@@ -111,7 +111,7 @@ void Pipe::set_default_msg(message_id msg)
 /*
 * Process a full message at once
 */
-void Pipe::process_msg(const byte input[], size_t length)
+void Pipe::process_msg(in byte[] input, size_t length)
 {
 	start_msg();
 	write(input, length);
@@ -136,7 +136,7 @@ void Pipe::process_msg(in Array!byte input)
 */
 void Pipe::process_msg(in string input)
 {
-	process_msg(reinterpret_cast<const byte*>(input.data()), input.length());
+	process_msg(cast(const byte*)(input.data()), input.length());
 }
 
 /*
@@ -172,7 +172,7 @@ void Pipe::end_msg()
 		throw Invalid_State("Pipe::end_msg: Message was already ended");
 	pipe->finish_msg();
 	clear_endpoints(pipe);
-	if(dynamic_cast<Null_Filter*>(pipe))
+	if(cast(Null_Filter*)(pipe))
 	{
 		delete pipe;
 		pipe = nullptr;
@@ -188,7 +188,7 @@ void Pipe::end_msg()
 void Pipe::find_endpoints(Filter* f)
 {
 	for(size_t j = 0; j != f->total_ports(); ++j)
-		if(f->next[j] && !dynamic_cast<SecureQueue*>(f->next[j]))
+		if(f->next[j] && !cast(SecureQueue*)(f->next[j]))
 			find_endpoints(f->next[j]);
 		else
 		{
@@ -206,7 +206,7 @@ void Pipe::clear_endpoints(Filter* f)
 	if(!f) return;
 	for(size_t j = 0; j != f->total_ports(); ++j)
 	{
-		if(f->next[j] && dynamic_cast<SecureQueue*>(f->next[j]))
+		if(f->next[j] && cast(SecureQueue*)(f->next[j]))
 			f->next[j] = nullptr;
 		clear_endpoints(f->next[j]);
 	}
@@ -221,7 +221,7 @@ void Pipe::append(Filter* filter)
 		throw Invalid_State("Cannot append to a Pipe while it is processing");
 	if(!filter)
 		return;
-	if(dynamic_cast<SecureQueue*>(filter))
+	if(cast(SecureQueue*)(filter))
 		throw Invalid_Argument("Pipe::append: SecureQueue cannot be used");
 	if(filter->owned)
 		throw Invalid_Argument("Filters cannot be shared among multiple Pipes");
@@ -241,7 +241,7 @@ void Pipe::prepend(Filter* filter)
 		throw Invalid_State("Cannot prepend to a Pipe while it is processing");
 	if(!filter)
 		return;
-	if(dynamic_cast<SecureQueue*>(filter))
+	if(cast(SecureQueue*)(filter))
 		throw Invalid_Argument("Pipe::prepend: SecureQueue cannot be used");
 	if(filter->owned)
 		throw Invalid_Argument("Filters cannot be shared among multiple Pipes");
@@ -291,9 +291,9 @@ Pipe::message_id Pipe::message_count() const
 * Static Member Variables
 */
 const Pipe::message_id Pipe::LAST_MESSAGE =
-	static_cast<Pipe::message_id>(-2);
+	cast(Pipe::message_id)(-2);
 
 const Pipe::message_id Pipe::DEFAULT_MESSAGE =
-	static_cast<Pipe::message_id>(-1);
+	cast(Pipe::message_id)(-1);
 
 }

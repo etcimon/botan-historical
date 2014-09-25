@@ -2,10 +2,8 @@
 * Word Rotation Operations
 * (C) 1999-2008 Jack Lloyd
 *
-* Distributed under the terms of the Botan license
+* Distributed under the terms of the botan license.
 */
-
-#define BOTAN_WORD_ROTATE_H__
 
 #include <botan/types.h>
 /**
@@ -18,7 +16,7 @@ template<typename T> inline T rotate_left(T input, size_t rot)
 {
 	if(rot == 0)
 		return input;
-	return static_cast<T>((input << rot) | (input >> (8*sizeof(T)-rot)));;
+	return cast(T)((input << rot) | (input >> (8*sizeof(T)-rot)));;
 }
 
 /**
@@ -31,5 +29,5 @@ template<typename T> inline T rotate_right(T input, size_t rot)
 {
 	if(rot == 0)
 		return input;
-	return static_cast<T>((input >> rot) | (input << (8*sizeof(T)-rot)));
+	return cast(T)((input >> rot) | (input << (8*sizeof(T)-rot)));
 }

@@ -2,10 +2,8 @@
 * GCM Mode
 * (C) 2013 Jack Lloyd
 *
-* Distributed under the terms of the Botan license
+* Distributed under the terms of the botan license.
 */
-
-#define BOTAN_AEAD_GCM_H__
 
 #include <botan/aead.h>
 #include <botan/block_cipher.h>
@@ -18,9 +16,9 @@ class GHASH;
 class GCM_Mode : public AEAD_Mode
 {
 	public:
-		SafeArray!byte start(const byte nonce[], size_t nonce_len) override;
+		SafeArray!byte start(in byte[] nonce, size_t nonce_len) override;
 
-		void set_associated_data(const byte ad[], size_t ad_len) override;
+		void set_associated_data(in byte[] ad, size_t ad_len) override;
 
 		string name() const override;
 
@@ -35,7 +33,7 @@ class GCM_Mode : public AEAD_Mode
 
 		void clear() override;
 	protected:
-		void key_schedule(const byte key[], size_t length) override;
+		void key_schedule(in byte[] key) override;
 
 		GCM_Mode(BlockCipher* cipher, size_t tag_size);
 
@@ -66,9 +64,9 @@ class GCM_Encryption : public GCM_Mode
 
 		size_t minimum_final_size() const override { return 0; }
 
-		void update(SafeArray!byte& blocks, size_t offset = 0) override;
+		void update(SafeArray!byte blocks, size_t offset = 0) override;
 
-		void finish(SafeArray!byte& final_block, size_t offset = 0) override;
+		void finish(SafeArray!byte final_block, size_t offset = 0) override;
 };
 
 /**
@@ -92,9 +90,9 @@ class GCM_Decryption : public GCM_Mode
 
 		size_t minimum_final_size() const override { return tag_size(); }
 
-		void update(SafeArray!byte& blocks, size_t offset = 0) override;
+		void update(SafeArray!byte blocks, size_t offset = 0) override;
 
-		void finish(SafeArray!byte& final_block, size_t offset = 0) override;
+		void finish(SafeArray!byte final_block, size_t offset = 0) override;
 };
 
 /**
@@ -104,16 +102,16 @@ class GCM_Decryption : public GCM_Mode
 class GHASH : public SymmetricAlgorithm
 {
 	public:
-		void set_associated_data(const byte ad[], size_t ad_len);
+		void set_associated_data(in byte[] ad, size_t ad_len);
 
-		SafeArray!byte nonce_hash(const byte nonce[], size_t len);
+		SafeArray!byte nonce_hash(in byte[] nonce, size_t len);
 
-		void start(const byte nonce[], size_t len);
+		void start(in byte[] nonce, size_t len);
 
 		/*
 		* Assumes input len is multiple of 16
 		*/
-		void update(const byte in[], size_t len);
+		void update(in byte[] input);
 
 		SafeArray!byte final();
 
@@ -123,14 +121,14 @@ class GHASH : public SymmetricAlgorithm
 
 		string name() const { return "GHASH"; }
 	private:
-		void key_schedule(const byte key[], size_t key_len) override;
+		void key_schedule(in byte[] key) override;
 
-		void gcm_multiply(SafeArray!byte& x) const;
+		void gcm_multiply(SafeArray!byte x) const;
 
-		void ghash_update(SafeArray!byte& x,
-								const byte input[], size_t input_len);
+		void ghash_update(SafeArray!byte x,
+								in byte[] input, size_t input_len);
 
-		void add_final_block(SafeArray!byte& x,
+		void add_final_block(SafeArray!byte x,
 									size_t ad_len, size_t pt_len);
 
 		SafeArray!byte m_H;

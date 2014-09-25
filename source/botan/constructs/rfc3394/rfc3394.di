@@ -2,10 +2,8 @@
 * AES Key Wrap (RFC 3394)
 * (C) 2011 Jack Lloyd
 *
-* Distributed under the terms of the Botan license
+* Distributed under the terms of the botan license.
 */
-
-#define BOTAN_AES_KEY_WRAP_H__
 
 #include <botan/symkey.h>
 class Algorithm_Factory;

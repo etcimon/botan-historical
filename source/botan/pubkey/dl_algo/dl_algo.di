@@ -2,10 +2,8 @@
 * DL Scheme
 * (C) 1999-2007 Jack Lloyd
 *
-* Distributed under the terms of the Botan license
+* Distributed under the terms of the botan license.
 */
-
-#define BOTAN_DL_ALGO_H__
 
 #include <botan/dl_group.h>
 #include <botan/x509_key.h>
@@ -92,7 +90,7 @@ class DL_Scheme_PrivateKey : public abstract DL_Scheme_PublicKey,
 		*/
 		const BigInt& get_x() const { return x; }
 
-		SafeArray!byte pkcs8_private_key() const;
+		SafeArray!byte pkcs8_Private_Key() const;
 
 		DL_Scheme_PrivateKey(const AlgorithmIdentifier& alg_id,
 									in SafeArray!byte key_bits,

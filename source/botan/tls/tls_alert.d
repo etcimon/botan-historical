@@ -22,14 +22,14 @@ Alert::Alert(in SafeArray!byte buf)
 
 	const byte dc = buf[1];
 
-	m_type_code = static_cast<Type>(dc);
+	m_type_code = cast(Type)(dc);
 }
 
 std::vector<byte> Alert::serialize() const
 {
 	return std::vector<byte>({
-		static_cast<byte>(is_fatal() ? 2 : 1),
-		static_cast<byte>(type())
+		cast(byte)(is_fatal() ? 2 : 1),
+		cast(byte)(type())
 	});
 }
 

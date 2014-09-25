@@ -2,10 +2,8 @@
 * Comb4P hash combiner
 * (C) 2010 Jack Lloyd
 *
-* Distributed under the terms of the Botan license
+* Distributed under the terms of the botan license.
 */
-
-#define BOTAN_COMB4P_H__
 
 #include <botan/hash.h>
 /**
@@ -40,8 +38,8 @@ class Comb4P : public HashFunction
 
 		void clear();
 	private:
-		void add_data(const byte input[], size_t length);
-		void final_result(byte out[]);
+		void add_data(in byte[] input, size_t length);
+		void final_result(ref byte[] output);
 
 		std::unique_ptr<HashFunction> m_hash1, m_hash2;
 };

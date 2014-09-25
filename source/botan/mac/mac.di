@@ -2,10 +2,8 @@
 * Base class for message authentiction codes
 * (C) 1999-2007 Jack Lloyd
 *
-* Distributed under the terms of the Botan license
+* Distributed under the terms of the botan license.
 */
-
-#define BOTAN_MESSAGE_AUTH_CODE_BASE_H__
 
 #include <botan/buf_comp.h>
 #include <botan/sym_algo.h>
@@ -23,7 +21,7 @@ class MessageAuthenticationCode : public Buffered_Computation,
 		* @param length the length of param in
 		* @return true if the MAC is valid, false otherwise
 		*/
-		abstract bool verify_mac(const byte in[], size_t length);
+		abstract bool verify_mac(in byte[] input);
 
 		/**
 		* Get a new object representing the same algorithm as *this

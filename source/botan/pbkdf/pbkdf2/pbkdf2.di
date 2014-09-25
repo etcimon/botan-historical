@@ -2,10 +2,8 @@
 * PBKDF2
 * (C) 1999-2007,2012 Jack Lloyd
 *
-* Distributed under the terms of the Botan license
+* Distributed under the terms of the botan license.
 */
-
-#define BOTAN_PBKDF2_H__
 
 #include <botan/pbkdf.h>
 #include <botan/mac.h>
@@ -28,7 +26,7 @@ class PKCS5_PBKDF2 : public PBKDF
 		std::pair<size_t, OctetString>
 			key_derivation(size_t output_len,
 								in string passphrase,
-								const byte salt[], size_t salt_len,
+								in byte[] salt, size_t salt_len,
 								size_t iterations,
 								std::chrono::milliseconds msec) const override;
 

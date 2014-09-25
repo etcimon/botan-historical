@@ -16,12 +16,12 @@
 #include <botan/loadstor.h>
 namespace TLS {
 
-Channel::Channel(std::function<void (const byte[], size_t)> output_fn,
-					  std::function<void (const byte[], size_t)> data_cb,
-					  std::function<void (Alert, const byte[], size_t)> alert_cb,
-					  std::function<bool (const Session&)> handshake_cb,
-					  Session_Manager& session_manager,
-					  RandomNumberGenerator& rng,
+Channel::Channel(void delegate(in byte[]) output_fn,
+					  void delegate(in byte[]) data_cb,
+					  void delegate(Alert, in byte[]) alert_cb,
+					  bool delegate(in Session) handshake_cb,
+					  Session_Manager session_manager,
+					  RandomNumberGenerator rng,
 					  size_t reserved_io_buffer_size) :
 	m_handshake_cb(handshake_cb),
 	m_data_cb(data_cb),
@@ -275,7 +275,7 @@ size_t Channel::received_data(in Array!byte buf)
 	return this->received_data(&buf[0], buf.size());
 }
 
-size_t Channel::received_data(const byte input[], size_t input_size)
+size_t Channel::received_data(in byte[] input, size_t input_size)
 {
 	const auto get_cipherstate = [this](u16bit epoch)
 	{ return this->read_cipher_state_epoch(epoch).get(); };
@@ -436,7 +436,7 @@ size_t Channel::received_data(const byte input[], size_t input_size)
 	}
 }
 
-void Channel::heartbeat(const byte payload[], size_t payload_size)
+void Channel::heartbeat(in byte[] payload, size_t payload_size)
 {
 	if(heartbeat_sending_allowed())
 	{
@@ -448,7 +448,7 @@ void Channel::heartbeat(const byte payload[], size_t payload_size)
 }
 
 void Channel::write_record(Connection_Cipher_State* cipher_state,
-									byte record_type, const byte input[], size_t length)
+									byte record_type, in byte[] input, size_t length)
 {
 	BOTAN_ASSERT(m_pending_state || m_active_state,
 					 "Some connection state exists");
@@ -468,7 +468,7 @@ void Channel::write_record(Connection_Cipher_State* cipher_state,
 	m_output_fn(&m_writebuf[0], m_writebuf.size());
 }
 
-void Channel::send_record_array(u16bit epoch, byte type, const byte input[], size_t length)
+void Channel::send_record_array(u16bit epoch, byte type, in byte[] input, size_t length)
 {
 	if(length == 0)
 		return;
@@ -518,7 +518,7 @@ void Channel::send_record_under_epoch(u16bit epoch, byte record_type,
 	send_record_array(epoch, record_type, &record[0], record.size());
 }
 
-void Channel::send(const byte buf[], size_t buf_size)
+void Channel::send(in byte[] buf, size_t buf_size)
 {
 	if(!is_active())
 		throw std::runtime_error("Data cannot be sent on inactive TLS connection");
@@ -529,7 +529,7 @@ void Channel::send(const byte buf[], size_t buf_size)
 
 void Channel::send(in string string)
 {
-	this->send(reinterpret_cast<const byte*>(string.c_str()), string.size());
+	this->send(cast(const byte*)(string.c_str()), string.size());
 }
 
 void Channel::send_alert(const Alert& alert)
@@ -649,7 +649,7 @@ SymmetricKey Channel::key_material_export(in string label,
 
 		if(context != "")
 		{
-			size_t context_size = context.length();
+			size_t context_size = context.length;
 			if(context_size > 0xFFFF)
 				throw std::runtime_error("key_material_export context is too long");
 			salt.push_back(get_byte<u16bit>(0, context_size));

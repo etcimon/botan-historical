@@ -38,7 +38,7 @@ void* gmp_malloc(size_t n)
 */
 void gmp_free(void* ptr, size_t n)
 {
-	secure_allocator<byte>().deallocate(static_cast<byte*>(ptr), n);
+	secure_allocator<byte>().deallocate(cast(byte*)(ptr), n);
 }
 
 /*

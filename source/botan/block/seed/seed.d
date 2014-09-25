@@ -19,14 +19,14 @@ u32bit SEED::G_FUNC::operator()(u32bit X) const
 /*
 * SEED Encryption
 */
-void SEED::encrypt_n(const byte in[], byte out[], size_t blocks) const
+void SEED::encrypt_n(in byte[] input, ref byte[] output) const
 {
 	for(size_t i = 0; i != blocks; ++i)
 	{
-		u32bit B0 = load_be<u32bit>(in, 0);
-		u32bit B1 = load_be<u32bit>(in, 1);
-		u32bit B2 = load_be<u32bit>(in, 2);
-		u32bit B3 = load_be<u32bit>(in, 3);
+		u32bit B0 = load_be<u32bit>(input, 0);
+		u32bit B1 = load_be<u32bit>(input, 1);
+		u32bit B2 = load_be<u32bit>(input, 2);
+		u32bit B3 = load_be<u32bit>(input, 3);
 
 		G_FUNC G;
 
@@ -59,14 +59,14 @@ void SEED::encrypt_n(const byte in[], byte out[], size_t blocks) const
 /*
 * SEED Decryption
 */
-void SEED::decrypt_n(const byte in[], byte out[], size_t blocks) const
+void SEED::decrypt_n(in byte[] input, ref byte[] output) const
 {
 	for(size_t i = 0; i != blocks; ++i)
 	{
-		u32bit B0 = load_be<u32bit>(in, 0);
-		u32bit B1 = load_be<u32bit>(in, 1);
-		u32bit B2 = load_be<u32bit>(in, 2);
-		u32bit B3 = load_be<u32bit>(in, 3);
+		u32bit B0 = load_be<u32bit>(input, 0);
+		u32bit B1 = load_be<u32bit>(input, 1);
+		u32bit B2 = load_be<u32bit>(input, 2);
+		u32bit B3 = load_be<u32bit>(input, 3);
 
 		G_FUNC G;
 
@@ -99,7 +99,7 @@ void SEED::decrypt_n(const byte in[], byte out[], size_t blocks) const
 /*
 * SEED Key Schedule
 */
-void SEED::key_schedule(const byte key[], size_t)
+void SEED::key_schedule(in byte[] key, size_t)
 {
 	const u32bit RC[16] = {
 		0x9E3779B9, 0x3C6EF373, 0x78DDE6E6, 0xF1BBCDCC,

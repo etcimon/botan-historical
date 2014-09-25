@@ -85,7 +85,7 @@ const byte LOG[512] = {
 /*
 * SAFER-SK Encryption
 */
-void SAFER_SK::encrypt_n(const byte in[], byte out[], size_t blocks) const
+void SAFER_SK::encrypt_n(in byte[] input, ref byte[] output) const
 {
 	for(size_t i = 0; i != blocks; ++i)
 	{
@@ -121,7 +121,7 @@ void SAFER_SK::encrypt_n(const byte in[], byte out[], size_t blocks) const
 /*
 * SAFER-SK Decryption
 */
-void SAFER_SK::decrypt_n(const byte in[], byte out[], size_t blocks) const
+void SAFER_SK::decrypt_n(in byte[] input, ref byte[] output) const
 {
 	for(size_t i = 0; i != blocks; ++i)
 	{
@@ -159,7 +159,7 @@ void SAFER_SK::decrypt_n(const byte in[], byte out[], size_t blocks) const
 /*
 * SAFER-SK Key Schedule
 */
-void SAFER_SK::key_schedule(const byte key[], size_t)
+void SAFER_SK::key_schedule(in byte[] key, size_t)
 {
 	const byte BIAS[208] = {
 		0x16, 0x73, 0x3B, 0x1E, 0x8E, 0x70, 0xBD, 0x86, 0x47, 0x7E, 0x24, 0x56,

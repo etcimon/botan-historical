@@ -14,14 +14,14 @@
 /*
 * Twofish Encryption
 */
-void Twofish::encrypt_n(const byte in[], byte out[], size_t blocks) const
+void Twofish::encrypt_n(in byte[] input, ref byte[] output) const
 {
 	for(size_t i = 0; i != blocks; ++i)
 	{
-		u32bit A = load_le<u32bit>(in, 0) ^ RK[0];
-		u32bit B = load_le<u32bit>(in, 1) ^ RK[1];
-		u32bit C = load_le<u32bit>(in, 2) ^ RK[2];
-		u32bit D = load_le<u32bit>(in, 3) ^ RK[3];
+		u32bit A = load_le<u32bit>(input, 0) ^ RK[0];
+		u32bit B = load_le<u32bit>(input, 1) ^ RK[1];
+		u32bit C = load_le<u32bit>(input, 2) ^ RK[2];
+		u32bit D = load_le<u32bit>(input, 3) ^ RK[3];
 
 		for(size_t j = 0; j != 16; j += 2)
 		{
@@ -65,14 +65,14 @@ void Twofish::encrypt_n(const byte in[], byte out[], size_t blocks) const
 /*
 * Twofish Decryption
 */
-void Twofish::decrypt_n(const byte in[], byte out[], size_t blocks) const
+void Twofish::decrypt_n(in byte[] input, ref byte[] output) const
 {
 	for(size_t i = 0; i != blocks; ++i)
 	{
-		u32bit A = load_le<u32bit>(in, 0) ^ RK[4];
-		u32bit B = load_le<u32bit>(in, 1) ^ RK[5];
-		u32bit C = load_le<u32bit>(in, 2) ^ RK[6];
-		u32bit D = load_le<u32bit>(in, 3) ^ RK[7];
+		u32bit A = load_le<u32bit>(input, 0) ^ RK[4];
+		u32bit B = load_le<u32bit>(input, 1) ^ RK[5];
+		u32bit C = load_le<u32bit>(input, 2) ^ RK[6];
+		u32bit D = load_le<u32bit>(input, 3) ^ RK[7];
 
 		for(size_t j = 0; j != 16; j += 2)
 		{
@@ -116,7 +116,7 @@ void Twofish::decrypt_n(const byte in[], byte out[], size_t blocks) const
 /*
 * Twofish Key Schedule
 */
-void Twofish::key_schedule(const byte key[], size_t length)
+void Twofish::key_schedule(in byte[] key)
 {
 	SB.resize(1024);
 	RK.resize(40);

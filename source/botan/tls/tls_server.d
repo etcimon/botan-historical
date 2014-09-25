@@ -201,15 +201,15 @@ get_server_certs(in string hostname,
 /*
 * TLS Server Constructor
 */
-Server::Server(std::function<void (const byte[], size_t)> output_fn,
-					std::function<void (const byte[], size_t)> data_cb,
-					std::function<void (Alert, const byte[], size_t)> alert_cb,
-					std::function<bool (const Session&)> handshake_cb,
-					Session_Manager& session_manager,
-					Credentials_Manager& creds,
-					const Policy& policy,
-					RandomNumberGenerator& rng,
-					const std::vector<string>& next_protocols,
+Server::Server(void delegate(in byte[]) output_fn,
+					void delegate(in byte[]) data_cb,
+					void delegate(Alert, in byte[]) alert_cb,
+					bool delegate(const Session) handshake_cb,
+					Session_Manager session_manager,
+					Credentials_Manager creds,
+					const Policy policy,
+					RandomNumberGenerator rng,
+					in string[] next_protocols,
 					size_t io_buf_sz) :
 	Channel(output_fn, data_cb, alert_cb, handshake_cb, session_manager, rng, io_buf_sz),
 	m_policy(policy),
@@ -239,7 +239,7 @@ Server::get_peer_cert_chain(const Handshake_State& state) const
 void Server::initiate_handshake(Handshake_State& state,
 										  bool force_full_renegotiation)
 {
-	dynamic_cast<Server_Handshake_State&>(state).allow_session_resumption =
+	cast(Server_Handshake_State&)(state).allow_session_resumption =
 		!force_full_renegotiation;
 
 	Hello_Request hello_req(state.handshake_io());
@@ -253,7 +253,7 @@ void Server::process_handshake_msg(const Handshake_State* active_state,
 											  Handshake_Type type,
 											  in Array!byte contents)
 {
-	Server_Handshake_State& state = dynamic_cast<Server_Handshake_State&>(state_base);
+	Server_Handshake_State& state = cast(Server_Handshake_State&)(state_base);
 
 	state.confirm_transition_to(type);
 
@@ -502,22 +502,22 @@ void Server::process_handshake_msg(const Handshake_State* active_state,
 					);
 			}
 
-			Private_Key* private_key = nullptr;
+			Private_Key* Private_Key = nullptr;
 
 			if(kex_algo == "RSA" || sig_algo != "")
 			{
-				private_key = m_creds.private_key_for(
+				Private_Key = m_creds.Private_Key_for(
 					state.server_certs()->cert_chain()[0],
 					"tls-server",
 					sni_hostname);
 
-				if(!private_key)
+				if(!Private_Key)
 					throw Internal_Error("No private key located for associated server cert");
 			}
 
 			if(kex_algo == "RSA")
 			{
-				state.server_rsa_kex_key = private_key;
+				state.server_rsa_kex_key = Private_Key;
 			}
 			else
 			{
@@ -527,7 +527,7 @@ void Server::process_handshake_msg(const Handshake_State* active_state,
 													m_policy,
 													m_creds,
 													rng(),
-													private_key)
+													Private_Key)
 					);
 			}
 

@@ -2,10 +2,8 @@
 * SHA-160
 * (C) 1999-2007 Jack Lloyd
 *
-* Distributed under the terms of the Botan license
+* Distributed under the terms of the botan license.
 */
-
-#define BOTAN_SHA_160_H__
 
 #include <botan/mdx_hash.h>
 /**

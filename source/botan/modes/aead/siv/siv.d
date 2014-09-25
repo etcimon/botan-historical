@@ -52,7 +52,7 @@ Key_Length_Specification SIV_Mode::key_spec() const
 	return m_cmac->key_spec().multiple(2);
 }
 
-void SIV_Mode::key_schedule(const byte key[], size_t length)
+void SIV_Mode::key_schedule(in byte[] key)
 {
 	const size_t keylen = length / 2;
 	m_cmac->set_key(key, keylen);
@@ -60,7 +60,7 @@ void SIV_Mode::key_schedule(const byte key[], size_t length)
 	m_ad_macs.clear();
 }
 
-void SIV_Mode::set_associated_data_n(size_t n, const byte ad[], size_t length)
+void SIV_Mode::set_associated_data_n(size_t n, in byte[] ad, size_t length)
 {
 	if(n >= m_ad_macs.size())
 		m_ad_macs.resize(n+1);
@@ -68,7 +68,7 @@ void SIV_Mode::set_associated_data_n(size_t n, const byte ad[], size_t length)
 	m_ad_macs[n] = m_cmac->process(ad, length);
 }
 
-SafeArray!byte SIV_Mode::start(const byte nonce[], size_t nonce_len)
+SafeArray!byte SIV_Mode::start(in byte[] nonce, size_t nonce_len)
 {
 	if(!valid_nonce_length(nonce_len))
 		throw Invalid_IV_Length(name(), nonce_len);
@@ -83,7 +83,7 @@ SafeArray!byte SIV_Mode::start(const byte nonce[], size_t nonce_len)
 	return SafeArray!byte();
 }
 
-void SIV_Mode::update(SafeArray!byte& buffer, size_t offset)
+void SIV_Mode::update(SafeArray!byte buffer, size_t offset)
 {
 	BOTAN_ASSERT(buffer.size() >= offset, "Offset is sane");
 	const size_t sz = buffer.size() - offset;
@@ -134,7 +134,7 @@ void SIV_Mode::set_ctr_iv(SafeArray!byte V)
 	ctr().set_iv(&V[0], V.size());
 }
 
-void SIV_Encryption::finish(SafeArray!byte& buffer, size_t offset)
+void SIV_Encryption::finish(SafeArray!byte buffer, size_t offset)
 {
 	BOTAN_ASSERT(buffer.size() >= offset, "Offset is sane");
 
@@ -148,7 +148,7 @@ void SIV_Encryption::finish(SafeArray!byte& buffer, size_t offset)
 	ctr().cipher1(&buffer[offset + V.size()], buffer.size() - offset - V.size());
 }
 
-void SIV_Decryption::finish(SafeArray!byte& buffer, size_t offset)
+void SIV_Decryption::finish(SafeArray!byte buffer, size_t offset)
 {
 	BOTAN_ASSERT(buffer.size() >= offset, "Offset is sane");
 

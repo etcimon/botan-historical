@@ -3,10 +3,8 @@
 * (C) 2008 Falko Strenzke
 *	  2008 Jack Lloyd
 *
-* Distributed under the terms of the Botan license
+* Distributed under the terms of the botan license.
 */
-
-#define BOTAN_CVC_EAC_H__
 
 #include <botan/cvc_gen_cert.h>
 #include <botan/ecdsa.h>

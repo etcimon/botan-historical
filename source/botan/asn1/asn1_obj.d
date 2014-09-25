@@ -42,7 +42,7 @@ std::vector<byte> put_in_sequence(in Array!byte contents)
 */
 string to_string(const BER_Object& obj)
 {
-	return string(reinterpret_cast<const char*>(&obj.value[0]),
+	return string(cast(const char*)(&obj.value[0]),
 							 obj.value.size());
 }
 

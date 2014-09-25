@@ -10,7 +10,7 @@
 /*
 * DESX Encryption
 */
-void DESX::encrypt_n(const byte in[], byte out[], size_t blocks) const
+void DESX::encrypt_n(in byte[] input, ref byte[] output) const
 {
 	for(size_t i = 0; i != blocks; ++i)
 	{
@@ -26,7 +26,7 @@ void DESX::encrypt_n(const byte in[], byte out[], size_t blocks) const
 /*
 * DESX Decryption
 */
-void DESX::decrypt_n(const byte in[], byte out[], size_t blocks) const
+void DESX::decrypt_n(in byte[] input, ref byte[] output) const
 {
 	for(size_t i = 0; i != blocks; ++i)
 	{
@@ -42,7 +42,7 @@ void DESX::decrypt_n(const byte in[], byte out[], size_t blocks) const
 /*
 * DESX Key Schedule
 */
-void DESX::key_schedule(const byte key[], size_t)
+void DESX::key_schedule(in byte[] key, size_t)
 {
 	K1.assign(key, key + 8);
 	des.set_key(key + 8, 8);

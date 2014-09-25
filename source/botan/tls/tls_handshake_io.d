@@ -49,7 +49,7 @@ void Stream_Handshake_IO::add_record(in Array!byte record,
 			throw Decoding_Error("Invalid ChangeCipherSpec");
 
 		// Pretend it's a regular handshake message of zero length
-		const byte ccs_hs[] = { HANDSHAKE_CCS, 0, 0, 0 };
+		const(byte)[] ccs_hs = { HANDSHAKE_CCS, 0, 0, 0 };
 		m_queue.insert(m_queue.end(), ccs_hs, ccs_hs + sizeof(ccs_hs));
 	}
 	else
@@ -65,7 +65,7 @@ Stream_Handshake_IO::get_next_record(bool)
 
 		if(m_queue.size() >= length + 4)
 		{
-			Handshake_Type type = static_cast<Handshake_Type>(m_queue[0]);
+			Handshake_Type type = cast(Handshake_Type)(m_queue[0]);
 
 			std::vector<byte> contents(m_queue.begin() + 4,
 												m_queue.begin() + 4 + length);
@@ -120,7 +120,7 @@ void Datagram_Handshake_IO::add_record(in Array!byte record,
 													Record_Type record_type,
 													u64bit record_sequence)
 {
-	const u16bit epoch = static_cast<u16bit>(record_sequence >> 48);
+	const u16bit epoch = cast(u16bit)(record_sequence >> 48);
 
 	if(record_type == CHANGE_CIPHER_SPEC)
 	{
@@ -194,7 +194,7 @@ Datagram_Handshake_IO::get_next_record(bool expecting_ccs)
 }
 
 void Datagram_Handshake_IO::Handshake_Reassembly::add_fragment(
-	const byte fragment[],
+	in byte[] fragment,
 	size_t fragment_length,
 	size_t fragment_offset,
 	u16bit epoch,
@@ -259,11 +259,11 @@ Datagram_Handshake_IO::Handshake_Reassembly::message() const
 	if(!complete())
 		throw Internal_Error("Datagram_Handshake_IO - message not complete");
 
-	return std::make_pair(static_cast<Handshake_Type>(m_msg_type), m_message);
+	return std::make_pair(cast(Handshake_Type)(m_msg_type), m_message);
 }
 
 std::vector<byte>
-Datagram_Handshake_IO::format_fragment(const byte fragment[],
+Datagram_Handshake_IO::format_fragment(in byte[] fragment,
 													size_t frag_len,
 													u16bit frag_offset,
 													u16bit msg_len,

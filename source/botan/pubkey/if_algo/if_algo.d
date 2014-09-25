@@ -52,11 +52,11 @@ bool IF_Scheme_PublicKey::check_key(RandomNumberGenerator&, bool) const
 	return true;
 }
 
-SafeArray!byte IF_Scheme_PrivateKey::pkcs8_private_key() const
+SafeArray!byte IF_Scheme_PrivateKey::pkcs8_Private_Key() const
 {
 	return DER_Encoder()
 		.start_cons(SEQUENCE)
-			.encode(static_cast<size_t>(0))
+			.encode(cast(size_t)(0))
 			.encode(n)
 			.encode(e)
 			.encode(d)

@@ -2,10 +2,8 @@
 * CMAC
 * (C) 1999-2007,2014 Jack Lloyd
 *
-* Distributed under the terms of the Botan license
+* Distributed under the terms of the botan license.
 */
-
-#define BOTAN_CMAC_H__
 
 #include <botan/mac.h>
 #include <botan/block_cipher.h>
@@ -31,7 +29,7 @@ class CMAC : public MessageAuthenticationCode
 		* @param in the input
 		* @param polynomial the byte value of the polynomial
 		*/
-		static SafeArray!byte poly_double(in SafeArray!byte in);
+		static SafeArray!byte poly_double(in SafeArray!byte input);
 
 		/**
 		* @param cipher the underlying block cipher to use

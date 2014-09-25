@@ -75,7 +75,7 @@ std::vector<X509_Certificate> Credentials_Manager::cert_chain_single_type(
 	return cert_chain(cert_types, type, context);
 }
 
-Private_Key* Credentials_Manager::private_key_for(const X509_Certificate&,
+Private_Key* Credentials_Manager::Private_Key_for(const X509_Certificate&,
 																  in string,
 																  in string)
 {
@@ -106,7 +106,7 @@ bool cert_in_some_store(const std::vector<Certificate_Store*>& trusted_CAs,
 void Credentials_Manager::verify_certificate_chain(
 	in string type,
 	in string purported_hostname,
-	const std::vector<X509_Certificate>& cert_chain)
+	const std::vector<X509_Certificate>& cert_chainput)
 {
 	if(cert_chain.empty())
 		throw std::invalid_argument("Certificate chain was empty");

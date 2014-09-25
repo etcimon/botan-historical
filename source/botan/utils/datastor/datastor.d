@@ -30,7 +30,7 @@ bool Data_Store::has_value(in string key) const
 * Search based on an arbitrary predicate
 */
 std::multimap<string, string> Data_Store::search_for(
-	std::function<bool (string, string)> predicate) const
+	bool delegate(string, string) predicate) const
 {
 	std::multimap<string, string> out;
 
@@ -149,7 +149,7 @@ void Data_Store::add(in string key, in Array!byte val)
 /*
 * Insert a mapping of key/value pairs
 */
-void Data_Store::add(const std::multimap<string, string>& in)
+void Data_Store::add(const std::multimap<string, string>& input)
 {
 	std::multimap<string, string>::const_iterator i = in.begin();
 	while(i != in.end())

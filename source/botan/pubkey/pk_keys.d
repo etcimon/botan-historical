@@ -36,7 +36,7 @@ void Public_Key::load_check(RandomNumberGenerator& rng) const
 */
 void Private_Key::load_check(RandomNumberGenerator& rng) const
 {
-	if(!check_key(rng, BOTAN_PRIVATE_KEY_STRONG_CHECKS_ON_LOAD))
+	if(!check_key(rng, BOTAN_Private_Key_STRONG_CHECKS_ON_LOAD))
 		throw Invalid_Argument(algo_name() + ": Invalid private key");
 }
 
@@ -45,7 +45,7 @@ void Private_Key::load_check(RandomNumberGenerator& rng) const
 */
 void Private_Key::gen_check(RandomNumberGenerator& rng) const
 {
-	if(!check_key(rng, BOTAN_PRIVATE_KEY_STRONG_CHECKS_ON_GENERATE))
+	if(!check_key(rng, BOTAN_Private_Key_STRONG_CHECKS_ON_GENERATE))
 		throw Self_Test_Failure(algo_name() + " private key generation failed");
 }
 

@@ -2,10 +2,8 @@
 * TLS Handshake Serialization
 * (C) 2012 Jack Lloyd
 *
-* Released under the terms of the Botan license
+* Released under the terms of the botan license.
 */
-
-#define BOTAN_TLS_HANDSHAKE_IO_H__
 
 #include <botan/tls_magic.h>
 #include <botan/tls_version.h>
@@ -60,7 +58,7 @@ class Handshake_IO
 class Stream_Handshake_IO : public Handshake_IO
 {
 	public:
-		Stream_Handshake_IO(std::function<void (byte, in Array!byte)> writer) :
+		Stream_Handshake_IO(void delegate(byte, in Array!byte) writer) :
 			m_send_hs(writer) {}
 
 		Protocol_Version initial_record_version() const override;
@@ -79,7 +77,7 @@ class Stream_Handshake_IO : public Handshake_IO
 			get_next_record(bool expecting_ccs) override;
 	private:
 		std::deque<byte> m_queue;
-		std::function<void (byte, in Array!byte)> m_send_hs;
+		void delegate(byte, in Array!byte) m_send_hs;
 };
 
 /**
@@ -89,7 +87,7 @@ class Datagram_Handshake_IO : public Handshake_IO
 {
 	public:
 		Datagram_Handshake_IO(class Connection_Sequence_Numbers& seq,
-									 std::function<void (u16bit, byte, in Array!byte)> writer) :
+									 void delegate(u16bit, byte, in Array!byte) writer) :
 			m_seqs(seq), m_flights(1), m_send_hs(writer) {}
 
 		Protocol_Version initial_record_version() const override;
@@ -108,7 +106,7 @@ class Datagram_Handshake_IO : public Handshake_IO
 			get_next_record(bool expecting_ccs) override;
 	private:
 		std::vector<byte> format_fragment(
-			const byte fragment[],
+			in byte[] fragment,
 			size_t fragment_len,
 			u16bit frag_offset,
 			u16bit msg_len,
@@ -123,7 +121,7 @@ class Datagram_Handshake_IO : public Handshake_IO
 		class Handshake_Reassembly
 		{
 			public:
-				void add_fragment(const byte fragment[],
+				void add_fragment(in byte[] fragment,
 										size_t fragment_length,
 										size_t fragment_offset,
 										u16bit epoch,
@@ -154,7 +152,7 @@ class Datagram_Handshake_IO : public Handshake_IO
 		u16bit m_mtu = 1280 - 40 - 8;
 		u16bit m_in_message_seq = 0;
 		u16bit m_out_message_seq = 0;
-		std::function<void (u16bit, byte, in Array!byte)> m_send_hs;
+		void delegate(u16bit, byte, in Array!byte) m_send_hs;
 };
 
 }

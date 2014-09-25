@@ -2,10 +2,8 @@
 * Various string utils and parsing functions
 * (C) 1999-2007,2013 Jack Lloyd
 *
-* Distributed under the terms of the Botan license
+* Distributed under the terms of the botan license.
 */
-
-#define BOTAN_PARSER_H__
 
 #include <botan/types.h>
 #include <string>
@@ -38,7 +36,7 @@ std::vector<string> split_on(
 */
 std::vector<string>
 split_on_pred(in string str,
-				  std::function<bool (char)> pred);
+				  bool delegate(char) pred);
 
 /**
 * Erase characters from a string
@@ -53,8 +51,8 @@ string erase_chars(in string str, const std::set<char>& chars);
 * @return str with all instances of from_char replaced by to_char
 */
 string replace_char(in string str,
-											  char from_char,
-											  char to_char);
+						  char from_char,
+						  char to_char);
 
 /**
 * Replace a character in a string
@@ -121,11 +119,11 @@ u32bit string_to_ipv4(in string ip_str);
 string ipv4_to_string(u32bit ip_addr);
 
 void lex_cfg(std::istream& is,
-							  std::function<void (string)> cb);
+							  void delegate(string) cb);
 
 void lex_cfg_w_headers(std::istream& is,
-											std::function<void (string)> cb,
-											std::function<void (string)> header_cb);
+							void delegate(string) cb,
+							void delegate(string) header_cb);
 
 std::map<string, std::map<string, string>>
 BOTAN_DLL

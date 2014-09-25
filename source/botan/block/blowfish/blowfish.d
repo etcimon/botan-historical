@@ -10,7 +10,7 @@
 /*
 * Blowfish Encryption
 */
-void Blowfish::encrypt_n(const byte in[], byte out[], size_t blocks) const
+void Blowfish::encrypt_n(in byte[] input, ref byte[] output) const
 {
 	const u32bit* S1 = &S[0];
 	const u32bit* S2 = &S[256];
@@ -19,8 +19,8 @@ void Blowfish::encrypt_n(const byte in[], byte out[], size_t blocks) const
 
 	for(size_t i = 0; i != blocks; ++i)
 	{
-		u32bit L = load_be<u32bit>(in, 0);
-		u32bit R = load_be<u32bit>(in, 1);
+		u32bit L = load_be<u32bit>(input, 0);
+		u32bit R = load_be<u32bit>(input, 1);
 
 		for(size_t j = 0; j != 16; j += 2)
 		{
@@ -45,7 +45,7 @@ void Blowfish::encrypt_n(const byte in[], byte out[], size_t blocks) const
 /*
 * Blowfish Decryption
 */
-void Blowfish::decrypt_n(const byte in[], byte out[], size_t blocks) const
+void Blowfish::decrypt_n(in byte[] input, ref byte[] output) const
 {
 	const u32bit* S1 = &S[0];
 	const u32bit* S2 = &S[256];
@@ -54,8 +54,8 @@ void Blowfish::decrypt_n(const byte in[], byte out[], size_t blocks) const
 
 	for(size_t i = 0; i != blocks; ++i)
 	{
-		u32bit L = load_be<u32bit>(in, 0);
-		u32bit R = load_be<u32bit>(in, 1);
+		u32bit L = load_be<u32bit>(input, 0);
+		u32bit R = load_be<u32bit>(input, 1);
 
 		for(size_t j = 17; j != 1; j -= 2)
 		{
@@ -80,7 +80,7 @@ void Blowfish::decrypt_n(const byte in[], byte out[], size_t blocks) const
 /*
 * Blowfish Key Schedule
 */
-void Blowfish::key_schedule(const byte key[], size_t length)
+void Blowfish::key_schedule(in byte[] key)
 {
 	P.resize(18);
 	std::copy(P_INIT, P_INIT + 18, P.begin());
@@ -93,7 +93,7 @@ void Blowfish::key_schedule(const byte key[], size_t length)
 	key_expansion(key, length, null_salt);
 }
 
-void Blowfish::key_expansion(const byte key[],
+void Blowfish::key_expansion(in byte[] key,
 									  size_t length,
 									  const byte salt[16])
 {
@@ -109,7 +109,7 @@ void Blowfish::key_expansion(const byte key[],
 /*
 * Modified key schedule used for bcrypt password hashing
 */
-void Blowfish::eks_key_schedule(const byte key[], size_t length,
+void Blowfish::eks_key_schedule(in byte[] key, size_t length,
 										  const byte salt[16], size_t workfactor)
 {
 	// Truncate longer passwords to the 56 byte limit Blowfish enforces

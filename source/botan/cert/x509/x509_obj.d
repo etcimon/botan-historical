@@ -53,15 +53,15 @@ void X509_Object::init(DataSource& in, in string labels)
 	std::sort(PEM_labels_allowed.begin(), PEM_labels_allowed.end());
 
 	try {
-		if(ASN1::maybe_BER(in) && !PEM_Code::matches(in))
+		if(ASN1::maybe_BER(input) && !PEM_Code::matches(input))
 		{
-			BER_Decoder dec(in);
+			BER_Decoder dec(input);
 			decode_from(dec);
 		}
 		else
 		{
 			string got_label;
-			DataSource_Memory ber(PEM_Code::decode(in, got_label));
+			DataSource_Memory ber(PEM_Code::decode(input, got_label));
 
 			if(!std::binary_search(PEM_labels_allowed.begin(),
 										  PEM_labels_allowed.end(), got_label))

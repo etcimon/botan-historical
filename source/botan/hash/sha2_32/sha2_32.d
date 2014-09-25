@@ -48,7 +48,7 @@ inline u32bit sigma(u32bit X, u32bit rot1, u32bit rot2, u32bit shift)
 * SHA-224 / SHA-256 compression function
 */
 void compress(secure_vector<u32bit>& digest,
-				  const byte input[], size_t blocks)
+				  in byte[] input, size_t blocks)
 {
 	u32bit A = digest[0], B = digest[1], C = digest[2],
 			 D = digest[3], E = digest[4], F = digest[5],
@@ -158,7 +158,7 @@ void compress(secure_vector<u32bit>& digest,
 /*
 * SHA-224 compression function
 */
-void SHA_224::compress_n(const byte input[], size_t blocks)
+void SHA_224::compress_n(in byte[] input, size_t blocks)
 {
 	SHA2_32::compress(digest, input, blocks);
 }
@@ -191,7 +191,7 @@ void SHA_224::clear()
 /*
 * SHA-256 compression function
 */
-void SHA_256::compress_n(const byte input[], size_t blocks)
+void SHA_256::compress_n(in byte[] input, size_t blocks)
 {
 	SHA2_32::compress(digest, input, blocks);
 }
