@@ -1,0 +1,11 @@
+{
+	"name": "botan",
+	"description": "A library for crypto and TLS ",
+	"license": "MIT",
+	"authors": ["See readme.."],
+	"targetName": "botan",
+	"targetType": "staticLibrary",
+	"targetPath": "build",
+	"workingDirectory": "build",
+	"sourcePaths": ["source/botan"]
+}
