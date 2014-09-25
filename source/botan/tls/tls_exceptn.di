@@ -18,27 +18,27 @@ namespace TLS {
 /**
 * Exception Base Class
 */
-class BOTAN_DLL TLS_Exception : public Exception
-   {
-   public:
-      Alert::Type type() const noexcept { return alert_type; }
+class TLS_Exception : public Exception
+	{
+	public:
+		Alert::Type type() const noexcept { return alert_type; }
 
-      TLS_Exception(Alert::Type type,
-                    const std::string& err_msg = "Unknown error") :
-         Exception(err_msg), alert_type(type) {}
+		TLS_Exception(Alert::Type type,
+						  in string err_msg = "Unknown error") :
+			Exception(err_msg), alert_type(type) {}
 
-   private:
-      Alert::Type alert_type;
-   };
+	private:
+		Alert::Type alert_type;
+	};
 
 /**
 * Unexpected_Message Exception
 */
 struct BOTAN_DLL Unexpected_Message : public TLS_Exception
-   {
-   Unexpected_Message(const std::string& err) :
-      TLS_Exception(Alert::UNEXPECTED_MESSAGE, err) {}
-   };
+	{
+	Unexpected_Message(in string err) :
+		TLS_Exception(Alert::UNEXPECTED_MESSAGE, err) {}
+	};
 
 }
 

@@ -27,8 +27,8 @@ namespace FPE {
 * @param tweak will modify the ciphertext (think of as an IV)
 */
 BigInt BOTAN_DLL fe1_encrypt(const BigInt& n, const BigInt& X,
-                             const SymmetricKey& key,
-                             const std::vector<byte>& tweak);
+									  const SymmetricKey& key,
+									  in Array!byte tweak);
 
 /**
 * Decrypt X from and onto the group Z_n using key and tweak
@@ -38,8 +38,8 @@ BigInt BOTAN_DLL fe1_encrypt(const BigInt& n, const BigInt& X,
 * @param tweak the same tweak used for encryption
 */
 BigInt BOTAN_DLL fe1_decrypt(const BigInt& n, const BigInt& X,
-                             const SymmetricKey& key,
-                             const std::vector<byte>& tweak);
+									  const SymmetricKey& key,
+									  in Array!byte tweak);
 
 }
 

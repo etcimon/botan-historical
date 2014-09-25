@@ -16,34 +16,34 @@ namespace Botan {
 /**
 * PKCS #5 PBKDF2
 */
-class BOTAN_DLL PKCS5_PBKDF2 : public PBKDF
-   {
-   public:
-      std::string name() const override
-         {
-         return "PBKDF2(" + mac->name() + ")";
-         }
+class PKCS5_PBKDF2 : public PBKDF
+	{
+	public:
+		string name() const override
+			{
+			return "PBKDF2(" + mac->name() + ")";
+			}
 
-      PBKDF* clone() const override
-         {
-         return new PKCS5_PBKDF2(mac->clone());
-         }
+		PBKDF* clone() const override
+			{
+			return new PKCS5_PBKDF2(mac->clone());
+			}
 
-      std::pair<size_t, OctetString>
-         key_derivation(size_t output_len,
-                        const std::string& passphrase,
-                        const byte salt[], size_t salt_len,
-                        size_t iterations,
-                        std::chrono::milliseconds msec) const override;
+		std::pair<size_t, OctetString>
+			key_derivation(size_t output_len,
+								in string passphrase,
+								const byte salt[], size_t salt_len,
+								size_t iterations,
+								std::chrono::milliseconds msec) const override;
 
-      /**
-      * Create a PKCS #5 instance using the specified message auth code
-      * @param mac_fn the MAC object to use as PRF
-      */
-      PKCS5_PBKDF2(MessageAuthenticationCode* mac_fn) : mac(mac_fn) {}
-   private:
-      std::unique_ptr<MessageAuthenticationCode> mac;
-   };
+		/**
+		* Create a PKCS #5 instance using the specified message auth code
+		* @param mac_fn the MAC object to use as PRF
+		*/
+		PKCS5_PBKDF2(MessageAuthenticationCode* mac_fn) : mac(mac_fn) {}
+	private:
+		std::unique_ptr<MessageAuthenticationCode> mac;
+	};
 
 }
 

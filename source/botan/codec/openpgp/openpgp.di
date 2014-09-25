@@ -20,21 +20,21 @@ namespace Botan {
 * @param label the human-readable label
 * @param headers a set of key/value pairs included in the header
 */
-BOTAN_DLL std::string PGP_encode(
-   const byte input[],
-   size_t length,
-   const std::string& label,
-   const std::map<std::string, std::string>& headers);
+BOTAN_DLL string PGP_encode(
+	const byte input[],
+	size_t length,
+	in string label,
+	const std::map<string, string>& headers);
 
 /**
 * @param input the input data
 * @param length length of input in bytes
 * @param label the human-readable label
 */
-BOTAN_DLL std::string PGP_encode(
-   const byte input[],
-   size_t length,
-   const std::string& label);
+BOTAN_DLL string PGP_encode(
+	const byte input[],
+	size_t length,
+	in string label);
 
 /**
 * @param source the input source
@@ -42,19 +42,19 @@ BOTAN_DLL std::string PGP_encode(
 * @param headers is set to any headers
 * @return decoded output as raw binary
 */
-BOTAN_DLL secure_vector<byte> PGP_decode(
-   DataSource& source,
-   std::string& label,
-   std::map<std::string, std::string>& headers);
+BOTAN_DLL SafeArray!byte PGP_decode(
+	DataSource& source,
+	string& label,
+	std::map<string, string>& headers);
 
 /**
 * @param source the input source
 * @param label is set to the human-readable label
 * @return decoded output as raw binary
 */
-BOTAN_DLL secure_vector<byte> PGP_decode(
-   DataSource& source,
-   std::string& label);
+BOTAN_DLL SafeArray!byte PGP_decode(
+	DataSource& source,
+	string& label);
 
 }
 

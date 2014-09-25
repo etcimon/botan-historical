@@ -26,9 +26,9 @@ BOTAN_DLL void zero_mem(void* ptr, size_t n);
 * @param n the number of Ts pointed to by ptr
 */
 template<typename T> inline void clear_mem(T* ptr, size_t n)
-   {
-   zero_mem(ptr, sizeof(T)*n);
-   }
+	{
+	zero_mem(ptr, sizeof(T)*n);
+	}
 
 /**
 * Copy memory
@@ -37,9 +37,9 @@ template<typename T> inline void clear_mem(T* ptr, size_t n)
 * @param n the number of elements of in/out
 */
 template<typename T> inline void copy_mem(T* out, const T* in, size_t n)
-   {
-   std::memmove(out, in, sizeof(T)*n);
-   }
+	{
+	std::memmove(out, in, sizeof(T)*n);
+	}
 
 /**
 * Set memory to a fixed value
@@ -49,9 +49,9 @@ template<typename T> inline void copy_mem(T* out, const T* in, size_t n)
 */
 template<typename T>
 inline void set_mem(T* ptr, size_t n, byte val)
-   {
-   std::memset(ptr, val, sizeof(T)*n);
-   }
+	{
+	std::memset(ptr, val, sizeof(T)*n);
+	}
 
 /**
 * Memory comparison, input insensitive
@@ -61,14 +61,14 @@ inline void set_mem(T* ptr, size_t n, byte val)
 * @return true iff p1[i] == p2[i] forall i in [0...n)
 */
 template<typename T> inline bool same_mem(const T* p1, const T* p2, size_t n)
-   {
-   volatile T difference = 0;
+	{
+	volatile T difference = 0;
 
-   for(size_t i = 0; i != n; ++i)
-      difference |= (p1[i] ^ p2[i]);
+	for(size_t i = 0; i != n; ++i)
+		difference |= (p1[i] ^ p2[i]);
 
-   return difference == 0;
-   }
+	return difference == 0;
+	}
 
 }
 

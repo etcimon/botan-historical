@@ -16,12 +16,12 @@ namespace Botan {
 * BeOS Entropy Source
 */
 class BeOS_EntropySource : public EntropySource
-   {
-   private:
-      std::string name() const { return "BeOS Statistics"; }
+	{
+	private:
+		string name() const { return "BeOS Statistics"; }
 
-      void poll(Entropy_Accumulator& accum);
-   };
+		void poll(Entropy_Accumulator& accum);
+	};
 
 }
 

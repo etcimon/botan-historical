@@ -15,20 +15,20 @@ namespace Botan {
 /**
 * DESX
 */
-class BOTAN_DLL DESX : public Block_Cipher_Fixed_Params<8, 24>
-   {
-   public:
-      void encrypt_n(const byte in[], byte out[], size_t blocks) const;
-      void decrypt_n(const byte in[], byte out[], size_t blocks) const;
+class DESX : public Block_Cipher_Fixed_Params<8, 24>
+	{
+	public:
+		void encrypt_n(const byte in[], byte out[], size_t blocks) const;
+		void decrypt_n(const byte in[], byte out[], size_t blocks) const;
 
-      void clear();
-      std::string name() const { return "DESX"; }
-      BlockCipher* clone() const { return new DESX; }
-   private:
-      void key_schedule(const byte[], size_t);
-      secure_vector<byte> K1, K2;
-      DES des;
-   };
+		void clear();
+		string name() const { return "DESX"; }
+		BlockCipher* clone() const { return new DESX; }
+	private:
+		void key_schedule(const byte[], size_t);
+		SafeArray!byte K1, K2;
+		DES des;
+	};
 
 }
 

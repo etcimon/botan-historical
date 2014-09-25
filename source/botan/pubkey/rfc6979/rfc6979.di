@@ -20,9 +20,9 @@ namespace Botan {
 * @param hash the hash function used to generate h
 */
 BigInt BOTAN_DLL generate_rfc6979_nonce(const BigInt& x,
-                                        const BigInt& q,
-                                        const BigInt& h,
-                                        const std::string& hash);
+													 const BigInt& q,
+													 const BigInt& h,
+													 in string hash);
 
 }
 

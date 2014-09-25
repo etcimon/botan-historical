@@ -26,13 +26,13 @@ namespace Botan {
 * @param buf_size size of buffer to benchmark against, in KiB
 * @return results a map from op type to operations per second
 */
-std::map<std::string, double>
-BOTAN_DLL time_algorithm_ops(const std::string& name,
-                             Algorithm_Factory& af,
-                             const std::string& provider,
-                             RandomNumberGenerator& rng,
-                             std::chrono::nanoseconds runtime,
-                             size_t buf_size);
+std::map<string, double>
+BOTAN_DLL time_algorithm_ops(in string name,
+									  Algorithm_Factory& af,
+									  in string provider,
+									  RandomNumberGenerator& rng,
+									  std::chrono::nanoseconds runtime,
+									  size_t buf_size);
 
 /**
 * Algorithm benchmark
@@ -43,12 +43,12 @@ BOTAN_DLL time_algorithm_ops(const std::string& name,
 * @param buf_size size of buffer to benchmark against, in KiB
 * @return results a map from provider to speed in mebibytes per second
 */
-std::map<std::string, double>
-BOTAN_DLL algorithm_benchmark(const std::string& name,
-                              Algorithm_Factory& af,
-                              RandomNumberGenerator& rng,
-                              std::chrono::milliseconds milliseconds,
-                              size_t buf_size);
+std::map<string, double>
+BOTAN_DLL algorithm_benchmark(in string name,
+										Algorithm_Factory& af,
+										RandomNumberGenerator& rng,
+										std::chrono::milliseconds milliseconds,
+										size_t buf_size);
 
 double BOTAN_DLL
 time_op(std::chrono::nanoseconds runtime, std::function<void ()> op);

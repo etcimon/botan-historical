@@ -17,13 +17,13 @@ namespace Botan {
 * AES implementations (eg AES-NI, VIA C7, or AMD Geode)
 */
 class AES_ISA_Engine : public Engine
-   {
-   public:
-      std::string provider_name() const { return "aes_isa"; }
+	{
+	public:
+		string provider_name() const { return "aes_isa"; }
 
-      BlockCipher* find_block_cipher(const SCAN_Name&,
-                                     Algorithm_Factory&) const;
-   };
+		BlockCipher* find_block_cipher(const SCAN_Name&,
+												 Algorithm_Factory&) const;
+	};
 
 }
 

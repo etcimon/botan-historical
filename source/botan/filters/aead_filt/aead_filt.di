@@ -16,24 +16,24 @@ namespace Botan {
 /**
 * Filter interface for AEAD Modes
 */
-class BOTAN_DLL AEAD_Filter : public Transformation_Filter
-   {
-   public:
-      AEAD_Filter(AEAD_Mode* aead) : Transformation_Filter(aead) {}
+class AEAD_Filter : public Transformation_Filter
+	{
+	public:
+		AEAD_Filter(AEAD_Mode* aead) : Transformation_Filter(aead) {}
 
-      /**
-      * Set associated data that is not included in the ciphertext but
-      * that should be authenticated. Must be called after set_key
-      * and before end_msg.
-      *
-      * @param ad the associated data
-      * @param ad_len length of add in bytes
-      */
-      void set_associated_data(const byte ad[], size_t ad_len)
-         {
-         dynamic_cast<AEAD_Mode&>(get_transform()).set_associated_data(ad, ad_len);
-         }
-   };
+		/**
+		* Set associated data that is not included in the ciphertext but
+		* that should be authenticated. Must be called after set_key
+		* and before end_msg.
+		*
+		* @param ad the associated data
+		* @param ad_len length of add in bytes
+		*/
+		void set_associated_data(const byte ad[], size_t ad_len)
+			{
+			dynamic_cast<AEAD_Mode&>(get_transform()).set_associated_data(ad, ad_len);
+			}
+	};
 
 }
 

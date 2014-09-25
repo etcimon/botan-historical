@@ -15,16 +15,16 @@ namespace Botan {
 /**
 * Noekeon implementation using SIMD operations
 */
-class BOTAN_DLL Noekeon_SIMD : public Noekeon
-   {
-   public:
-      size_t parallelism() const { return 4; }
+class Noekeon_SIMD : public Noekeon
+	{
+	public:
+		size_t parallelism() const { return 4; }
 
-      void encrypt_n(const byte in[], byte out[], size_t blocks) const;
-      void decrypt_n(const byte in[], byte out[], size_t blocks) const;
+		void encrypt_n(const byte in[], byte out[], size_t blocks) const;
+		void decrypt_n(const byte in[], byte out[], size_t blocks) const;
 
-      BlockCipher* clone() const { return new Noekeon_SIMD; }
-   };
+		BlockCipher* clone() const { return new Noekeon_SIMD; }
+	};
 
 }
 

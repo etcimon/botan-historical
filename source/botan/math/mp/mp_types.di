@@ -29,8 +29,8 @@ namespace Botan {
   typedef u64bit word;
 
   #if defined(BOTAN_TARGET_HAS_NATIVE_UINT128)
-    typedef uint128_t dword;
-    #define BOTAN_HAS_MP_DWORD
+	 typedef uint128_t dword;
+	 #define BOTAN_HAS_MP_DWORD
   #endif
 
 #else

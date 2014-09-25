@@ -27,8 +27,8 @@ namespace CryptoBox {
 * @param rng a ref to a random number generator, such as AutoSeeded_RNG
 */
 BOTAN_DLL std::vector<byte> encrypt(const byte input[], size_t input_len,
-                                    const SymmetricKey& key,
-                                    RandomNumberGenerator& rng);
+												const SymmetricKey& key,
+												RandomNumberGenerator& rng);
 
 /**
 * Encrypt a message using a shared secret key
@@ -37,8 +37,8 @@ BOTAN_DLL std::vector<byte> encrypt(const byte input[], size_t input_len,
 * @param key the key used to encrypt the message
 * @param rng a ref to a random number generator, such as AutoSeeded_RNG
 */
-BOTAN_DLL secure_vector<byte> decrypt(const byte input[], size_t input_len,
-                                      const SymmetricKey& key);
+BOTAN_DLL SafeArray!byte decrypt(const byte input[], size_t input_len,
+												  const SymmetricKey& key);
 
 }
 

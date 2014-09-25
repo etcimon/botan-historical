@@ -15,26 +15,26 @@ namespace Botan {
 /**
 * MD2
 */
-class BOTAN_DLL MD2 : public HashFunction
-   {
-   public:
-      std::string name() const { return "MD2"; }
-      size_t output_length() const { return 16; }
-      size_t hash_block_size() const { return 16; }
-      HashFunction* clone() const { return new MD2; }
+class MD2 : public HashFunction
+	{
+	public:
+		string name() const { return "MD2"; }
+		size_t output_length() const { return 16; }
+		size_t hash_block_size() const { return 16; }
+		HashFunction* clone() const { return new MD2; }
 
-      void clear();
+		void clear();
 
-      MD2() : X(48), checksum(16), buffer(16)
-         { clear(); }
-   private:
-      void add_data(const byte[], size_t);
-      void hash(const byte[]);
-      void final_result(byte[]);
+		MD2() : X(48), checksum(16), buffer(16)
+			{ clear(); }
+	private:
+		void add_data(const byte[], size_t);
+		void hash(const byte[]);
+		void final_result(byte[]);
 
-      secure_vector<byte> X, checksum, buffer;
-      size_t position;
-   };
+		SafeArray!byte X, checksum, buffer;
+		size_t position;
+	};
 
 }
 

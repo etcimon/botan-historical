@@ -16,28 +16,28 @@ namespace Botan {
 /**
 * GOST 34.11
 */
-class BOTAN_DLL GOST_34_11 : public HashFunction
-   {
-   public:
-      std::string name() const { return "GOST-R-34.11-94" ; }
-      size_t output_length() const { return 32; }
-      size_t hash_block_size() const { return 32; }
-      HashFunction* clone() const { return new GOST_34_11; }
+class GOST_34_11 : public HashFunction
+	{
+	public:
+		string name() const { return "GOST-R-34.11-94" ; }
+		size_t output_length() const { return 32; }
+		size_t hash_block_size() const { return 32; }
+		HashFunction* clone() const { return new GOST_34_11; }
 
-      void clear();
+		void clear();
 
-      GOST_34_11();
-   private:
-      void compress_n(const byte input[], size_t blocks);
+		GOST_34_11();
+	private:
+		void compress_n(const byte input[], size_t blocks);
 
-      void add_data(const byte[], size_t);
-      void final_result(byte[]);
+		void add_data(const byte[], size_t);
+		void final_result(byte[]);
 
-      GOST_28147_89 cipher;
-      secure_vector<byte> buffer, sum, hash;
-      size_t position;
-      u64bit count;
-   };
+		GOST_28147_89 cipher;
+		SafeArray!byte buffer, sum, hash;
+		size_t position;
+		u64bit count;
+	};
 
 }
 

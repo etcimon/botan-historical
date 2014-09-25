@@ -19,29 +19,29 @@ namespace Botan {
 /*
 * Return the version as a string
 */
-std::string version_string()
-   {
+string version_string()
+	{
 #define QUOTE(name) #name
 #define STR(macro) QUOTE(macro)
 
-   /*
-   It is intentional that this string is a compile-time constant;
-   it makes it much easier to find in binaries.
-   */
+	/*
+	It is intentional that this string is a compile-time constant;
+	it makes it much easier to find in binaries.
+	*/
 
-   return "Botan " STR(BOTAN_VERSION_MAJOR) "."
-                   STR(BOTAN_VERSION_MINOR) "."
-                   STR(BOTAN_VERSION_PATCH) " ("
-                   BOTAN_VERSION_RELEASE_TYPE
+	return "Botan " STR(BOTAN_VERSION_MAJOR) "."
+						 STR(BOTAN_VERSION_MINOR) "."
+						 STR(BOTAN_VERSION_PATCH) " ("
+						 BOTAN_VERSION_RELEASE_TYPE
 #if (BOTAN_VERSION_DATESTAMP != 0)
-                   ", dated " STR(BOTAN_VERSION_DATESTAMP)
+						 ", dated " STR(BOTAN_VERSION_DATESTAMP)
 #endif
-                   ", revision " BOTAN_VERSION_VC_REVISION
-                   ", distribution " BOTAN_DISTRIBUTION_INFO ")";
+						 ", revision " BOTAN_VERSION_VC_REVISION
+						 ", distribution " BOTAN_DISTRIBUTION_INFO ")";
 
 #undef STR
 #undef QUOTE
-   }
+	}
 
 u32bit version_datestamp() { return BOTAN_VERSION_DATESTAMP; }
 

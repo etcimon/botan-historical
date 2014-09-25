@@ -11,26 +11,26 @@
 namespace Botan {
 
 void assertion_failure(const char* expr_str,
-                       const char* assertion_made,
-                       const char* func,
-                       const char* file,
-                       int line)
-   {
-   std::ostringstream format;
+							  const char* assertion_made,
+							  const char* func,
+							  const char* file,
+							  int line)
+	{
+	std::ostringstream format;
 
-   format << "False assertion ";
+	format << "False assertion ";
 
-   if(assertion_made && assertion_made[0] != 0)
-      format << "'" << assertion_made << "' (expression " << expr_str << ") ";
-   else
-      format << expr_str << " ";
+	if(assertion_made && assertion_made[0] != 0)
+		format << "'" << assertion_made << "' (expression " << expr_str << ") ";
+	else
+		format << expr_str << " ";
 
-   if(func)
-      format << "in " << func << " ";
+	if(func)
+		format << "in " << func << " ";
 
-   format << "@" << file << ":" << line;
+	format << "@" << file << ":" << line;
 
-   throw std::runtime_error(format.str());
-   }
+	throw std::runtime_error(format.str());
+	}
 
 }

@@ -16,25 +16,25 @@ namespace Botan {
 /**
 * Parallel Hashes
 */
-class BOTAN_DLL Parallel : public HashFunction
-   {
-   public:
-      void clear();
-      std::string name() const;
-      HashFunction* clone() const;
+class Parallel : public HashFunction
+	{
+	public:
+		void clear();
+		string name() const;
+		HashFunction* clone() const;
 
-      size_t output_length() const;
+		size_t output_length() const;
 
-      /**
-      * @param hashes a set of hashes to compute in parallel
-      */
-      Parallel(const std::vector<HashFunction*>& hashes);
-      ~Parallel();
-   private:
-      void add_data(const byte[], size_t);
-      void final_result(byte[]);
-      std::vector<HashFunction*> hashes;
-   };
+		/**
+		* @param hashes a set of hashes to compute in parallel
+		*/
+		Parallel(const std::vector<HashFunction*>& hashes);
+		~Parallel();
+	private:
+		void add_data(const byte[], size_t);
+		void final_result(byte[]);
+		std::vector<HashFunction*> hashes;
+	};
 
 }
 

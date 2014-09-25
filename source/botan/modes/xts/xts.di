@@ -16,69 +16,69 @@ namespace Botan {
 /**
 * IEEE P1619 XTS Mode
 */
-class BOTAN_DLL XTS_Mode : public Cipher_Mode
-   {
-   public:
-      std::string name() const override;
+class XTS_Mode : public Cipher_Mode
+	{
+	public:
+		string name() const override;
 
-      secure_vector<byte> start(const byte nonce[], size_t nonce_len) override;
+		SafeArray!byte start(const byte nonce[], size_t nonce_len) override;
 
-      size_t update_granularity() const override;
+		size_t update_granularity() const override;
 
-      size_t minimum_final_size() const override;
+		size_t minimum_final_size() const override;
 
-      Key_Length_Specification key_spec() const override;
+		Key_Length_Specification key_spec() const override;
 
-      size_t default_nonce_length() const override;
+		size_t default_nonce_length() const override;
 
-      bool valid_nonce_length(size_t n) const override;
+		bool valid_nonce_length(size_t n) const override;
 
-      void clear() override;
-   protected:
-      XTS_Mode(BlockCipher* cipher);
+		void clear() override;
+	protected:
+		XTS_Mode(BlockCipher* cipher);
 
-      const byte* tweak() const { return &m_tweak[0]; }
+		const byte* tweak() const { return &m_tweak[0]; }
 
-      const BlockCipher& cipher() const { return *m_cipher; }
+		const BlockCipher& cipher() const { return *m_cipher; }
 
-      void update_tweak(size_t last_used);
+		void update_tweak(size_t last_used);
 
-   private:
-      void key_schedule(const byte key[], size_t length) override;
+	private:
+		void key_schedule(const byte key[], size_t length) override;
 
-      std::unique_ptr<BlockCipher> m_cipher, m_tweak_cipher;
-      secure_vector<byte> m_tweak;
-   };
+		std::unique_ptr<BlockCipher> m_cipher, m_tweak_cipher;
+		SafeArray!byte m_tweak;
+	};
 
 /**
 * IEEE P1619 XTS Encryption
 */
-class BOTAN_DLL XTS_Encryption : public XTS_Mode
-   {
-   public:
-      XTS_Encryption(BlockCipher* cipher) : XTS_Mode(cipher) {}
+class XTS_Encryption : public XTS_Mode
+	{
+	public:
+		XTS_Encryption(BlockCipher* cipher) : XTS_Mode(cipher) {}
 
-      void update(secure_vector<byte>& blocks, size_t offset = 0) override;
+		void update(SafeArray!byte& blocks, size_t offset = 0) override;
 
-      void finish(secure_vector<byte>& final_block, size_t offset = 0) override;
+		void finish(SafeArray!byte& final_block, size_t offset = 0) override;
 
-      size_t output_length(size_t input_length) const override;
-   };
+		size_t output_length(size_t input_length) const override;
+	};
 
 /**
 * IEEE P1619 XTS Decryption
 */
-class BOTAN_DLL XTS_Decryption : public XTS_Mode
-   {
-   public:
-      XTS_Decryption(BlockCipher* cipher) : XTS_Mode(cipher) {}
+class XTS_Decryption : public XTS_Mode
+	{
+	public:
+		XTS_Decryption(BlockCipher* cipher) : XTS_Mode(cipher) {}
 
-      void update(secure_vector<byte>& blocks, size_t offset = 0) override;
+		void update(SafeArray!byte& blocks, size_t offset = 0) override;
 
-      void finish(secure_vector<byte>& final_block, size_t offset = 0) override;
+		void finish(SafeArray!byte& final_block, size_t offset = 0) override;
 
-      size_t output_length(size_t input_length) const override;
-   };
+		size_t output_length(size_t input_length) const override;
+	};
 
 }
 

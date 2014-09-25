@@ -19,15 +19,15 @@ namespace TLS {
 /**
 * TLS Handshake Message Base Class
 */
-class BOTAN_DLL Handshake_Message
-   {
-   public:
-      virtual Handshake_Type type() const = 0;
+class Handshake_Message
+	{
+	public:
+		abstract Handshake_Type type() const = 0;
 
-      virtual std::vector<byte> serialize() const = 0;
+		abstract std::vector<byte> serialize() const = 0;
 
-      virtual ~Handshake_Message() {}
-   };
+		abstract ~Handshake_Message() {}
+	};
 
 }
 

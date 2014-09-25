@@ -16,39 +16,39 @@ namespace Botan {
 /**
 * PRF used in TLS 1.0/1.1
 */
-class BOTAN_DLL TLS_PRF : public KDF
-   {
-   public:
-      secure_vector<byte> derive(size_t key_len,
-                                const byte secret[], size_t secret_len,
-                                const byte seed[], size_t seed_len) const;
+class TLS_PRF : public KDF
+	{
+	public:
+		SafeArray!byte derive(size_t key_len,
+										  const byte secret[], size_t secret_len,
+										  const byte seed[], size_t seed_len) const;
 
-      std::string name() const { return "TLS-PRF"; }
-      KDF* clone() const { return new TLS_PRF; }
+		string name() const { return "TLS-PRF"; }
+		KDF* clone() const { return new TLS_PRF; }
 
-      TLS_PRF();
-   private:
-      std::unique_ptr<MessageAuthenticationCode> hmac_md5;
-      std::unique_ptr<MessageAuthenticationCode> hmac_sha1;
-   };
+		TLS_PRF();
+	private:
+		std::unique_ptr<MessageAuthenticationCode> hmac_md5;
+		std::unique_ptr<MessageAuthenticationCode> hmac_sha1;
+	};
 
 /**
 * PRF used in TLS 1.2
 */
-class BOTAN_DLL TLS_12_PRF : public KDF
-   {
-   public:
-      secure_vector<byte> derive(size_t key_len,
-                                const byte secret[], size_t secret_len,
-                                const byte seed[], size_t seed_len) const;
+class TLS_12_PRF : public KDF
+	{
+	public:
+		SafeArray!byte derive(size_t key_len,
+										  const byte secret[], size_t secret_len,
+										  const byte seed[], size_t seed_len) const;
 
-      std::string name() const { return "TLSv12-PRF(" + hmac->name() + ")"; }
-      KDF* clone() const { return new TLS_12_PRF(hmac->clone()); }
+		string name() const { return "TLSv12-PRF(" + hmac->name() + ")"; }
+		KDF* clone() const { return new TLS_12_PRF(hmac->clone()); }
 
-      TLS_12_PRF(MessageAuthenticationCode* hmac);
-   private:
-      std::unique_ptr<MessageAuthenticationCode> hmac;
-   };
+		TLS_12_PRF(MessageAuthenticationCode* hmac);
+	private:
+		std::unique_ptr<MessageAuthenticationCode> hmac;
+	};
 
 }
 

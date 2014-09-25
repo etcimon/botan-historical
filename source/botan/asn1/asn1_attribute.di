@@ -17,19 +17,19 @@ namespace Botan {
 /**
 * Attribute
 */
-class BOTAN_DLL Attribute : public ASN1_Object
-   {
-   public:
-      void encode_into(class DER_Encoder& to) const;
-      void decode_from(class BER_Decoder& from);
+class Attribute : public ASN1_Object
+	{
+	public:
+		void encode_into(class DER_Encoder& to) const;
+		void decode_from(class BER_Decoder& from);
 
-      OID oid;
-      std::vector<byte> parameters;
+		OID oid;
+		std::vector<byte> parameters;
 
-      Attribute() {}
-      Attribute(const OID&, const std::vector<byte>&);
-      Attribute(const std::string&, const std::vector<byte>&);
-   };
+		Attribute() {}
+		Attribute(const OID&, in Array!byte);
+		Attribute(in string, in Array!byte);
+	};
 
 }
 

@@ -18,157 +18,157 @@ namespace Botan {
 /**
 * This class represents general abstract filter objects.
 */
-class BOTAN_DLL Filter
-   {
-   public:
-      /**
-      * @return descriptive name for this filter
-      */
-      virtual std::string name() const = 0;
+class Filter
+	{
+	public:
+		/**
+		* @return descriptive name for this filter
+		*/
+		abstract string name() const = 0;
 
-      /**
-      * Write a portion of a message to this filter.
-      * @param input the input as a byte array
-      * @param length the length of the byte array input
-      */
-      virtual void write(const byte input[], size_t length) = 0;
+		/**
+		* Write a portion of a message to this filter.
+		* @param input the input as a byte array
+		* @param length the length of the byte array input
+		*/
+		abstract void write(const byte input[], size_t length) = 0;
 
-      /**
-      * Start a new message. Must be closed by end_msg() before another
-      * message can be started.
-      */
-      virtual void start_msg() {}
+		/**
+		* Start a new message. Must be closed by end_msg() before another
+		* message can be started.
+		*/
+		abstract void start_msg() {}
 
-      /**
-      * Notify that the current message is finished; flush buffers and
-      * do end-of-message processing (if any).
-      */
-      virtual void end_msg() {}
+		/**
+		* Notify that the current message is finished; flush buffers and
+		* do end-of-message processing (if any).
+		*/
+		abstract void end_msg() {}
 
-      /**
-      * Check whether this filter is an attachable filter.
-      * @return true if this filter is attachable, false otherwise
-      */
-      virtual bool attachable() { return true; }
+		/**
+		* Check whether this filter is an attachable filter.
+		* @return true if this filter is attachable, false otherwise
+		*/
+		abstract bool attachable() { return true; }
 
-      virtual ~Filter() {}
-   protected:
-      /**
-      * @param in some input for the filter
-      * @param length the length of in
-      */
-      virtual void send(const byte in[], size_t length);
+		abstract ~Filter() {}
+	protected:
+		/**
+		* @param in some input for the filter
+		* @param length the length of in
+		*/
+		abstract void send(const byte in[], size_t length);
 
-      /**
-      * @param in some input for the filter
-      */
-      void send(byte in) { send(&in, 1); }
+		/**
+		* @param in some input for the filter
+		*/
+		void send(byte in) { send(&in, 1); }
 
-      /**
-      * @param in some input for the filter
-      */
-      void send(const secure_vector<byte>& in) { send(&in[0], in.size()); }
+		/**
+		* @param in some input for the filter
+		*/
+		void send(in SafeArray!byte in) { send(&in[0], in.size()); }
 
-      /**
-      * @param in some input for the filter
-      */
-      void send(const std::vector<byte>& in) { send(&in[0], in.size()); }
+		/**
+		* @param in some input for the filter
+		*/
+		void send(in Array!byte in) { send(&in[0], in.size()); }
 
-      /**
-      * @param in some input for the filter
-      * @param length the number of bytes of in to send
-      */
-      void send(const secure_vector<byte>& in, size_t length)
-         {
-         send(&in[0], length);
-         }
+		/**
+		* @param in some input for the filter
+		* @param length the number of bytes of in to send
+		*/
+		void send(in SafeArray!byte in, size_t length)
+			{
+			send(&in[0], length);
+			}
 
-      /**
-      * @param in some input for the filter
-      * @param length the number of bytes of in to send
-      */
-      void send(const std::vector<byte>& in, size_t length)
-         {
-         send(&in[0], length);
-         }
+		/**
+		* @param in some input for the filter
+		* @param length the number of bytes of in to send
+		*/
+		void send(in Array!byte in, size_t length)
+			{
+			send(&in[0], length);
+			}
 
-      Filter();
+		Filter();
 
-      Filter(const Filter&) = delete;
+		Filter(const Filter&) = delete;
 
-      Filter& operator=(const Filter&) = delete;
+		Filter& operator=(const Filter&) = delete;
 
-   private:
-      /**
-      * Start a new message in *this and all following filters. Only for
-      * internal use, not intended for use in client applications.
-      */
-      void new_msg();
+	private:
+		/**
+		* Start a new message in *this and all following filters. Only for
+		* internal use, not intended for use in client applications.
+		*/
+		void new_msg();
 
-      /**
-      * End a new message in *this and all following filters. Only for
-      * internal use, not intended for use in client applications.
-      */
-      void finish_msg();
+		/**
+		* End a new message in *this and all following filters. Only for
+		* internal use, not intended for use in client applications.
+		*/
+		void finish_msg();
 
-      friend class Pipe;
-      friend class Fanout_Filter;
+		friend class Pipe;
+		friend class Fanout_Filter;
 
-      size_t total_ports() const;
-      size_t current_port() const { return port_num; }
+		size_t total_ports() const;
+		size_t current_port() const { return port_num; }
 
-      /**
-      * Set the active port
-      * @param new_port the new value
-      */
-      void set_port(size_t new_port);
+		/**
+		* Set the active port
+		* @param new_port the new value
+		*/
+		void set_port(size_t new_port);
 
-      size_t owns() const { return filter_owns; }
+		size_t owns() const { return filter_owns; }
 
-      /**
-      * Attach another filter to this one
-      * @param f filter to attach
-      */
-      void attach(Filter* f);
+		/**
+		* Attach another filter to this one
+		* @param f filter to attach
+		*/
+		void attach(Filter* f);
 
-      /**
-      * @param filters the filters to set
-      * @param count number of items in filters
-      */
-      void set_next(Filter* filters[], size_t count);
-      Filter* get_next() const;
+		/**
+		* @param filters the filters to set
+		* @param count number of items in filters
+		*/
+		void set_next(Filter* filters[], size_t count);
+		Filter* get_next() const;
 
-      secure_vector<byte> write_queue;
-      std::vector<Filter*> next;
-      size_t port_num, filter_owns;
+		SafeArray!byte write_queue;
+		std::vector<Filter*> next;
+		size_t port_num, filter_owns;
 
-      // true if filter belongs to a pipe --> prohibit filter sharing!
-      bool owned;
-   };
+		// true if filter belongs to a pipe --> prohibit filter sharing!
+		bool owned;
+	};
 
 /**
 * This is the abstract Fanout_Filter base class.
 **/
-class BOTAN_DLL Fanout_Filter : public Filter
-   {
-   protected:
-      /**
-      * Increment the number of filters past us that we own
-      */
-      void incr_owns() { ++filter_owns; }
+class Fanout_Filter : public Filter
+	{
+	protected:
+		/**
+		* Increment the number of filters past us that we own
+		*/
+		void incr_owns() { ++filter_owns; }
 
-      void set_port(size_t n) { Filter::set_port(n); }
+		void set_port(size_t n) { Filter::set_port(n); }
 
-      void set_next(Filter* f[], size_t n) { Filter::set_next(f, n); }
+		void set_next(Filter* f[], size_t n) { Filter::set_next(f, n); }
 
-      void attach(Filter* f) { Filter::attach(f); }
+		void attach(Filter* f) { Filter::attach(f); }
 
-   private:
-      friend class Threaded_Fork;
-      using Filter::write_queue;
-      using Filter::total_ports;
-      using Filter::next;
-   };
+	private:
+		friend class Threaded_Fork;
+		using Filter::write_queue;
+		using Filter::total_ports;
+		using Filter::next;
+	};
 
 /**
 * The type of checking to be performed by decoders:

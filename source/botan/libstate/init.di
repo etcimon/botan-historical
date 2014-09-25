@@ -19,29 +19,29 @@ namespace Botan {
 * application.  You can call initialize/deinitialize or use
 * LibraryInitializer in the RAII style.
 */
-class BOTAN_DLL LibraryInitializer
-   {
-   public:
-      /**
-      * Initialize the library
-      * @param options a string listing initialization options
-      */
-      static void initialize(const std::string& options = "");
+class LibraryInitializer
+	{
+	public:
+		/**
+		* Initialize the library
+		* @param options a string listing initialization options
+		*/
+		static void initialize(in string options = "");
 
-      /**
-      * Shutdown the library
-      */
-      static void deinitialize();
+		/**
+		* Shutdown the library
+		*/
+		static void deinitialize();
 
-      /**
-      * Initialize the library
-      * @param options a string listing initialization options
-      */
-      LibraryInitializer(const std::string& options = "")
-         { LibraryInitializer::initialize(options); }
+		/**
+		* Initialize the library
+		* @param options a string listing initialization options
+		*/
+		LibraryInitializer(in string options = "")
+			{ LibraryInitializer::initialize(options); }
 
-      ~LibraryInitializer() { LibraryInitializer::deinitialize(); }
-   };
+		~LibraryInitializer() { LibraryInitializer::deinitialize(); }
+	};
 
 }
 

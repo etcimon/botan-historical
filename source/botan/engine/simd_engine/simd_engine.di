@@ -16,16 +16,16 @@ namespace Botan {
 * Engine for implementations that use some kind of SIMD
 */
 class SIMD_Engine : public Engine
-   {
-   public:
-      std::string provider_name() const { return "simd"; }
+	{
+	public:
+		string provider_name() const { return "simd"; }
 
-      BlockCipher* find_block_cipher(const SCAN_Name&,
-                                     Algorithm_Factory&) const;
+		BlockCipher* find_block_cipher(const SCAN_Name&,
+												 Algorithm_Factory&) const;
 
-      HashFunction* find_hash(const SCAN_Name& request,
-                              Algorithm_Factory&) const;
-   };
+		HashFunction* find_hash(const SCAN_Name& request,
+										Algorithm_Factory&) const;
+	};
 
 }
 

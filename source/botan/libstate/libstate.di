@@ -21,38 +21,38 @@ namespace Botan {
 /**
 * Global Library State
 */
-class BOTAN_DLL Library_State
-   {
-   public:
-      Library_State() {}
+class Library_State
+	{
+	public:
+		Library_State() {}
 
-      Library_State(const Library_State&) = delete;
-      Library_State& operator=(const Library_State&) = delete;
+		Library_State(const Library_State&) = delete;
+		Library_State& operator=(const Library_State&) = delete;
 
-      void initialize();
+		void initialize();
 
-      /**
-      * @return global Algorithm_Factory
-      */
-      Algorithm_Factory& algorithm_factory() const;
+		/**
+		* @return global Algorithm_Factory
+		*/
+		Algorithm_Factory& algorithm_factory() const;
 
-      /**
-      * @return global RandomNumberGenerator
-      */
-      RandomNumberGenerator& global_rng();
+		/**
+		* @return global RandomNumberGenerator
+		*/
+		RandomNumberGenerator& global_rng();
 
-      void poll_available_sources(class Entropy_Accumulator& accum);
+		void poll_available_sources(class Entropy_Accumulator& accum);
 
-   private:
-      static std::vector<std::unique_ptr<EntropySource>> entropy_sources();
+	private:
+		static std::vector<std::unique_ptr<EntropySource>> entropy_sources();
 
-      std::unique_ptr<Serialized_RNG> m_global_prng;
+		std::unique_ptr<Serialized_RNG> m_global_prng;
 
-      std::mutex m_entropy_src_mutex;
-      std::vector<std::unique_ptr<EntropySource>> m_sources;
+		std::mutex m_entropy_src_mutex;
+		std::vector<std::unique_ptr<EntropySource>> m_sources;
 
-      std::unique_ptr<Algorithm_Factory> m_algorithm_factory;
-   };
+		std::unique_ptr<Algorithm_Factory> m_algorithm_factory;
+	};
 
 }
 

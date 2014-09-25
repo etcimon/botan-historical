@@ -22,26 +22,26 @@ using namespace Botan;
 * TLS Handshake Hash
 */
 class Handshake_Hash
-   {
-   public:
-      void update(const byte in[], size_t length)
-         { data += std::make_pair(in, length); }
+	{
+	public:
+		void update(const byte in[], size_t length)
+			{ data += std::make_pair(in, length); }
 
-      void update(const std::vector<byte>& in)
-         { data += in; }
+		void update(in Array!byte in)
+			{ data += in; }
 
-      secure_vector<byte> final(Protocol_Version version,
-                                const std::string& mac_algo) const;
+		SafeArray!byte final(Protocol_Version version,
+										  in string mac_algo) const;
 
-      secure_vector<byte> final_ssl3(const secure_vector<byte>& master_secret) const;
+		SafeArray!byte final_ssl3(in SafeArray!byte master_secret) const;
 
-      const std::vector<byte>& get_contents() const
-         { return data; }
+		in Array!byte get_contents() const
+			{ return data; }
 
-      void reset() { data.clear(); }
-   private:
-      std::vector<byte> data;
-   };
+		void reset() { data.clear(); }
+	private:
+		std::vector<byte> data;
+	};
 
 }
 

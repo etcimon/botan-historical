@@ -23,9 +23,9 @@ class Algorithm_Factory;
 * @param af an algorithm factory
 * @return key encrypted under kek
 */
-secure_vector<byte> BOTAN_DLL rfc3394_keywrap(const secure_vector<byte>& key,
-                                             const SymmetricKey& kek,
-                                             Algorithm_Factory& af);
+SafeArray!byte BOTAN_DLL rfc3394_keywrap(in SafeArray!byte key,
+															const SymmetricKey& kek,
+															Algorithm_Factory& af);
 
 /**
 * Decrypt a key under a key encryption key using the algorithm
@@ -36,9 +36,9 @@ secure_vector<byte> BOTAN_DLL rfc3394_keywrap(const secure_vector<byte>& key,
 * @param af an algorithm factory
 * @return key decrypted under kek
 */
-secure_vector<byte> BOTAN_DLL rfc3394_keyunwrap(const secure_vector<byte>& key,
-                                               const SymmetricKey& kek,
-                                               Algorithm_Factory& af);
+SafeArray!byte BOTAN_DLL rfc3394_keyunwrap(in SafeArray!byte key,
+															  const SymmetricKey& kek,
+															  Algorithm_Factory& af);
 
 }
 

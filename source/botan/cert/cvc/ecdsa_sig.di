@@ -18,43 +18,43 @@ namespace Botan {
 /**
 * Class representing an ECDSA signature
 */
-class BOTAN_DLL ECDSA_Signature
-   {
-   public:
-      friend class ECDSA_Signature_Decoder;
+class ECDSA_Signature
+	{
+	public:
+		friend class ECDSA_Signature_Decoder;
 
-      ECDSA_Signature() {}
-      ECDSA_Signature(const BigInt& r, const BigInt& s) :
-         m_r(r), m_s(s) {}
+		ECDSA_Signature() {}
+		ECDSA_Signature(const BigInt& r, const BigInt& s) :
+			m_r(r), m_s(s) {}
 
-      ECDSA_Signature(const std::vector<byte>& ber);
+		ECDSA_Signature(in Array!byte ber);
 
-      const BigInt& get_r() const { return m_r; }
-      const BigInt& get_s() const { return m_s; }
+		const BigInt& get_r() const { return m_r; }
+		const BigInt& get_s() const { return m_s; }
 
-      /**
-      * return the r||s
-      */
-      std::vector<byte> get_concatenation() const;
+		/**
+		* return the r||s
+		*/
+		std::vector<byte> get_concatenation() const;
 
-      std::vector<byte> DER_encode() const;
+		std::vector<byte> DER_encode() const;
 
-      bool operator==(const ECDSA_Signature& other) const
-         {
-         return (get_r() == other.get_r() && get_s() == other.get_s());
-         }
+		bool operator==(const ECDSA_Signature& other) const
+			{
+			return (get_r() == other.get_r() && get_s() == other.get_s());
+			}
 
-   private:
-      BigInt m_r;
-      BigInt m_s;
-   };
+	private:
+		BigInt m_r;
+		BigInt m_s;
+	};
 
 inline bool operator!=(const ECDSA_Signature& lhs, const ECDSA_Signature& rhs)
-   {
-   return !(lhs == rhs);
-   }
+	{
+	return !(lhs == rhs);
+	}
 
-ECDSA_Signature decode_concatenation(const std::vector<byte>& concatenation);
+ECDSA_Signature decode_concatenation(in Array!byte concatenation);
 
 }
 

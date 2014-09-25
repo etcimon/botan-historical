@@ -17,11 +17,11 @@ namespace Botan {
 * Intel's Ivy Bridge architecture.
 */
 class Intel_Rdrand : public EntropySource
-   {
-   public:
-      std::string name() const { return "Intel Rdrand"; }
-      void poll(Entropy_Accumulator& accum);
-   };
+	{
+	public:
+		string name() const { return "Intel Rdrand"; }
+		void poll(Entropy_Accumulator& accum);
+	};
 
 }
 

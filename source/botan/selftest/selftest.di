@@ -33,27 +33,27 @@ BOTAN_DLL bool passes_self_tests(Algorithm_Factory& af);
 * Run a set of algorithm KATs (known answer tests)
 * @param algo_name the algorithm we are testing
 * @param vars a set of input variables for this test, all
-         hex encoded. Keys used: "input", "output", "key", and "iv"
+			hex encoded. Keys used: "input", "output", "key", and "iv"
 * @param af an algorithm factory
 * @returns map from provider name to test result for that provider
 */
-BOTAN_DLL std::map<std::string, bool>
+BOTAN_DLL std::map<string, bool>
 algorithm_kat(const SCAN_Name& algo_name,
-              const std::map<std::string, std::string>& vars,
-              Algorithm_Factory& af);
+				  const std::map<string, string>& vars,
+				  Algorithm_Factory& af);
 
 /**
 * Run a set of algorithm KATs (known answer tests)
 * @param algo_name the algorithm we are testing
 * @param vars a set of input variables for this test, all
-         hex encoded. Keys used: "input", "output", "key", and "iv"
+			hex encoded. Keys used: "input", "output", "key", and "iv"
 * @param af an algorithm factory
 * @returns map from provider name to test result for that provider
 */
-BOTAN_DLL std::map<std::string, std::string>
+BOTAN_DLL std::map<string, string>
 algorithm_kat_detailed(const SCAN_Name& algo_name,
-                       const std::map<std::string, std::string>& vars,
-                       Algorithm_Factory& af);
+							  const std::map<string, string>& vars,
+							  Algorithm_Factory& af);
 
 }
 

@@ -15,40 +15,40 @@ namespace Botan {
 namespace TLS {
 
 Next_Protocol::Next_Protocol(Handshake_IO& io,
-                             Handshake_Hash& hash,
-                             const std::string& protocol) :
-   m_protocol(protocol)
-   {
-   hash.update(io.send(*this));
-   }
+									  Handshake_Hash& hash,
+									  in string protocol) :
+	m_protocol(protocol)
+	{
+	hash.update(io.send(*this));
+	}
 
-Next_Protocol::Next_Protocol(const std::vector<byte>& buf)
-   {
-   TLS_Data_Reader reader("NextProtocol", buf);
+Next_Protocol::Next_Protocol(in Array!byte buf)
+	{
+	TLS_Data_Reader reader("NextProtocol", buf);
 
-   m_protocol = reader.get_string(1, 0, 255);
+	m_protocol = reader.get_string(1, 0, 255);
 
-   reader.get_range_vector<byte>(1, 0, 255); // padding, ignored
-   }
+	reader.get_range_vector<byte>(1, 0, 255); // padding, ignored
+	}
 
 std::vector<byte> Next_Protocol::serialize() const
-   {
-   std::vector<byte> buf;
+	{
+	std::vector<byte> buf;
 
-   append_tls_length_value(buf,
-                           reinterpret_cast<const byte*>(m_protocol.data()),
-                           m_protocol.size(),
-                           1);
+	append_tls_length_value(buf,
+									reinterpret_cast<const byte*>(m_protocol.data()),
+									m_protocol.size(),
+									1);
 
-   const byte padding_len = 32 - ((m_protocol.size() + 2) % 32);
+	const byte padding_len = 32 - ((m_protocol.size() + 2) % 32);
 
-   buf.push_back(padding_len);
+	buf.push_back(padding_len);
 
-   for(size_t i = 0; i != padding_len; ++i)
-      buf.push_back(0);
+	for(size_t i = 0; i != padding_len; ++i)
+		buf.push_back(0);
 
-   return buf;
-   }
+	return buf;
+	}
 
 }
 

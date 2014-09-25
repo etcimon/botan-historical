@@ -22,7 +22,7 @@ namespace Botan {
 * No particular format should be assumed.
 * @return version string
 */
-BOTAN_DLL std::string version_string();
+BOTAN_DLL string version_string();
 
 /**
 * Return the date this version of botan was released, in an integer of
@@ -60,12 +60,12 @@ BOTAN_DLL u32bit version_patch();
 /**
 * Compare using BOTAN_VERSION_CODE_FOR, as in
 *  # if BOTAN_VERSION_CODE < BOTAN_VERSION_CODE_FOR(1,8,0)
-*  #    error "Botan version too old"
+*  #	 error "Botan version too old"
 *  # endif
 */
 #define BOTAN_VERSION_CODE BOTAN_VERSION_CODE_FOR(BOTAN_VERSION_MAJOR, \
-                                                  BOTAN_VERSION_MINOR, \
-                                                  BOTAN_VERSION_PATCH)
+																  BOTAN_VERSION_MINOR, \
+																  BOTAN_VERSION_PATCH)
 
 }
 

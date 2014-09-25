@@ -13,56 +13,56 @@ namespace Botan {
 * EMSA-Raw Encode Operation
 */
 void EMSA_Raw::update(const byte input[], size_t length)
-   {
-   message += std::make_pair(input, length);
-   }
+	{
+	message += std::make_pair(input, length);
+	}
 
 /*
 * Return the raw (unencoded) data
 */
-secure_vector<byte> EMSA_Raw::raw_data()
-   {
-   secure_vector<byte> output;
-   std::swap(message, output);
-   return output;
-   }
+SafeArray!byte EMSA_Raw::raw_data()
+	{
+	SafeArray!byte output;
+	std::swap(message, output);
+	return output;
+	}
 
 /*
 * EMSA-Raw Encode Operation
 */
-secure_vector<byte> EMSA_Raw::encoding_of(const secure_vector<byte>& msg,
-                                         size_t,
-                                         RandomNumberGenerator&)
-   {
-   return msg;
-   }
+SafeArray!byte EMSA_Raw::encoding_of(in SafeArray!byte msg,
+													  size_t,
+													  RandomNumberGenerator&)
+	{
+	return msg;
+	}
 
 /*
 * EMSA-Raw Verify Operation
 */
-bool EMSA_Raw::verify(const secure_vector<byte>& coded,
-                      const secure_vector<byte>& raw,
-                      size_t)
-   {
-   if(coded.size() == raw.size())
-      return (coded == raw);
+bool EMSA_Raw::verify(in SafeArray!byte coded,
+							 in SafeArray!byte raw,
+							 size_t)
+	{
+	if(coded.size() == raw.size())
+		return (coded == raw);
 
-   if(coded.size() > raw.size())
-      return false;
+	if(coded.size() > raw.size())
+		return false;
 
-   // handle zero padding differences
-   const size_t leading_zeros_expected = raw.size() - coded.size();
+	// handle zero padding differences
+	const size_t leading_zeros_expected = raw.size() - coded.size();
 
-   bool same_modulo_leading_zeros = true;
+	bool same_modulo_leading_zeros = true;
 
-   for(size_t i = 0; i != leading_zeros_expected; ++i)
-      if(raw[i])
-         same_modulo_leading_zeros = false;
+	for(size_t i = 0; i != leading_zeros_expected; ++i)
+		if(raw[i])
+			same_modulo_leading_zeros = false;
 
-   if(!same_mem(&coded[0], &raw[leading_zeros_expected], coded.size()))
-      same_modulo_leading_zeros = false;
+	if(!same_mem(&coded[0], &raw[leading_zeros_expected], coded.size()))
+		same_modulo_leading_zeros = false;
 
-   return same_modulo_leading_zeros;
-   }
+	return same_modulo_leading_zeros;
+	}
 
 }

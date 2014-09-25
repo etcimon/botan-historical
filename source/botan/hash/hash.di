@@ -16,23 +16,23 @@ namespace Botan {
 /**
 * This class represents hash function (message digest) objects
 */
-class BOTAN_DLL HashFunction : public Buffered_Computation
-   {
-   public:
-      /**
-      * @return new object representing the same algorithm as *this
-      */
-      virtual HashFunction* clone() const = 0;
+class HashFunction : public Buffered_Computation
+	{
+	public:
+		/**
+		* @return new object representing the same algorithm as *this
+		*/
+		abstract HashFunction* clone() const = 0;
 
-      virtual void clear() = 0;
+		abstract void clear() = 0;
 
-      virtual std::string name() const = 0;
+		abstract string name() const = 0;
 
-      /**
-      * @return hash block size as defined for this algorithm
-      */
-      virtual size_t hash_block_size() const { return 0; }
-   };
+		/**
+		* @return hash block size as defined for this algorithm
+		*/
+		abstract size_t hash_block_size() const { return 0; }
+	};
 
 }
 

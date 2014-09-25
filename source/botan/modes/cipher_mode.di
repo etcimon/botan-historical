@@ -15,15 +15,15 @@ namespace Botan {
 /**
 * Interface for cipher modes
 */
-class BOTAN_DLL Cipher_Mode : public Keyed_Transform
-   {
-   public:
-      /**
-      * Returns true iff this mode provides authentication as well as
-      * confidentiality.
-      */
-      virtual bool authenticated() const { return false; }
-   };
+class Cipher_Mode : public Keyed_Transform
+	{
+	public:
+		/**
+		* Returns true iff this mode provides authentication as well as
+		* confidentiality.
+		*/
+		abstract bool authenticated() const { return false; }
+	};
 
 }
 

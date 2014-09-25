@@ -44,61 +44,61 @@ namespace Botan {
 * Return a reference to the Algorithm_Factory
 */
 Algorithm_Factory& Library_State::algorithm_factory() const
-   {
-   if(!m_algorithm_factory)
-      throw Invalid_State("Uninitialized in Library_State::algorithm_factory");
-   return *m_algorithm_factory;
-   }
+	{
+	if(!m_algorithm_factory)
+		throw Invalid_State("Uninitialized in Library_State::algorithm_factory");
+	return *m_algorithm_factory;
+	}
 
 /*
 * Return a reference to the global PRNG
 */
 RandomNumberGenerator& Library_State::global_rng()
-   {
-   return *m_global_prng;
-   }
+	{
+	return *m_global_prng;
+	}
 
 void Library_State::initialize()
-   {
-   if(m_algorithm_factory.get())
-      throw Invalid_State("Library_State has already been initialized");
+	{
+	if(m_algorithm_factory.get())
+		throw Invalid_State("Library_State has already been initialized");
 
-   CPUID::initialize();
+	CPUID::initialize();
 
-   SCAN_Name::set_default_aliases();
-   OIDS::set_defaults();
+	SCAN_Name::set_default_aliases();
+	OIDS::set_defaults();
 
-   m_algorithm_factory.reset(new Algorithm_Factory());
+	m_algorithm_factory.reset(new Algorithm_Factory());
 
 #if defined(BOTAN_HAS_ENGINE_GNU_MP)
-   algorithm_factory().add_engine(new GMP_Engine);
+	algorithm_factory().add_engine(new GMP_Engine);
 #endif
 
 #if defined(BOTAN_HAS_ENGINE_OPENSSL)
-   algorithm_factory().add_engine(new OpenSSL_Engine);
+	algorithm_factory().add_engine(new OpenSSL_Engine);
 #endif
 
 #if defined(BOTAN_HAS_ENGINE_AES_ISA)
-   algorithm_factory().add_engine(new AES_ISA_Engine);
+	algorithm_factory().add_engine(new AES_ISA_Engine);
 #endif
 
 #if defined(BOTAN_HAS_ENGINE_SIMD)
-   algorithm_factory().add_engine(new SIMD_Engine);
+	algorithm_factory().add_engine(new SIMD_Engine);
 #endif
 
 #if defined(BOTAN_HAS_ENGINE_ASSEMBLER)
-   algorithm_factory().add_engine(new Assembler_Engine);
+	algorithm_factory().add_engine(new Assembler_Engine);
 #endif
 
-   algorithm_factory().add_engine(new Core_Engine);
+	algorithm_factory().add_engine(new Core_Engine);
 
-   m_sources = entropy_sources();
+	m_sources = entropy_sources();
 
-   m_global_prng.reset(new Serialized_RNG());
+	m_global_prng.reset(new Serialized_RNG());
 
 #if defined(BOTAN_HAS_SELFTESTS)
-   confirm_startup_self_tests(algorithm_factory());
+	confirm_startup_self_tests(algorithm_factory());
 #endif
-   }
+	}
 
 }

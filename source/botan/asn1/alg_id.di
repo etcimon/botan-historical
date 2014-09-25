@@ -17,32 +17,32 @@ namespace Botan {
 /**
 * Algorithm Identifier
 */
-class BOTAN_DLL AlgorithmIdentifier : public ASN1_Object
-   {
-   public:
-      enum Encoding_Option { USE_NULL_PARAM };
+class AlgorithmIdentifier : public ASN1_Object
+	{
+	public:
+		enum Encoding_Option { USE_NULL_PARAM };
 
-      void encode_into(class DER_Encoder&) const;
-      void decode_from(class BER_Decoder&);
+		void encode_into(class DER_Encoder&) const;
+		void decode_from(class BER_Decoder&);
 
-      AlgorithmIdentifier() {}
-      AlgorithmIdentifier(const OID&, Encoding_Option);
-      AlgorithmIdentifier(const std::string&, Encoding_Option);
+		AlgorithmIdentifier() {}
+		AlgorithmIdentifier(const OID&, Encoding_Option);
+		AlgorithmIdentifier(in string, Encoding_Option);
 
-      AlgorithmIdentifier(const OID&, const std::vector<byte>&);
-      AlgorithmIdentifier(const std::string&, const std::vector<byte>&);
+		AlgorithmIdentifier(const OID&, in Array!byte);
+		AlgorithmIdentifier(in string, in Array!byte);
 
-      OID oid;
-      std::vector<byte> parameters;
-   };
+		OID oid;
+		std::vector<byte> parameters;
+	};
 
 /*
 * Comparison Operations
 */
 bool BOTAN_DLL operator==(const AlgorithmIdentifier&,
-                          const AlgorithmIdentifier&);
+								  const AlgorithmIdentifier&);
 bool BOTAN_DLL operator!=(const AlgorithmIdentifier&,
-                          const AlgorithmIdentifier&);
+								  const AlgorithmIdentifier&);
 
 }
 

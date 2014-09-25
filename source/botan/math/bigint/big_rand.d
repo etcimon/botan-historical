@@ -14,35 +14,35 @@ namespace Botan {
 * Randomize this number
 */
 void BigInt::randomize(RandomNumberGenerator& rng,
-                       size_t bitsize)
-   {
-   set_sign(Positive);
+							  size_t bitsize)
+	{
+	set_sign(Positive);
 
-   if(bitsize == 0)
-      clear();
-   else
-      {
-      secure_vector<byte> array = rng.random_vec((bitsize + 7) / 8);
+	if(bitsize == 0)
+		clear();
+	else
+		{
+		SafeArray!byte array = rng.random_vec((bitsize + 7) / 8);
 
-      if(bitsize % 8)
-         array[0] &= 0xFF >> (8 - (bitsize % 8));
-      array[0] |= 0x80 >> ((bitsize % 8) ? (8 - bitsize % 8) : 0);
-      binary_decode(&array[0], array.size());
-      }
-   }
+		if(bitsize % 8)
+			array[0] &= 0xFF >> (8 - (bitsize % 8));
+		array[0] |= 0x80 >> ((bitsize % 8) ? (8 - bitsize % 8) : 0);
+		binary_decode(&array[0], array.size());
+		}
+	}
 
 /*
 * Generate a random integer within given range
 */
 BigInt BigInt::random_integer(RandomNumberGenerator& rng,
-                              const BigInt& min, const BigInt& max)
-   {
-   BigInt range = max - min;
+										const BigInt& min, const BigInt& max)
+	{
+	BigInt range = max - min;
 
-   if(range <= 0)
-      throw Invalid_Argument("random_integer: invalid min/max values");
+	if(range <= 0)
+		throw Invalid_Argument("random_integer: invalid min/max values");
 
-   return (min + (BigInt(rng, range.bits() + 2) % range));
-   }
+	return (min + (BigInt(rng, range.bits() + 2) % range));
+	}
 
 }

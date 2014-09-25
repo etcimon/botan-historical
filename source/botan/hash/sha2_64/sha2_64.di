@@ -15,44 +15,44 @@ namespace Botan {
 /**
 * SHA-384
 */
-class BOTAN_DLL SHA_384 : public MDx_HashFunction
-   {
-   public:
-      std::string name() const { return "SHA-384"; }
-      size_t output_length() const { return 48; }
-      HashFunction* clone() const { return new SHA_384; }
+class SHA_384 : public MDx_HashFunction
+	{
+	public:
+		string name() const { return "SHA-384"; }
+		size_t output_length() const { return 48; }
+		HashFunction* clone() const { return new SHA_384; }
 
-      void clear();
+		void clear();
 
-      SHA_384() : MDx_HashFunction(128, true, true, 16), digest(8)
-         { clear(); }
-   private:
-      void compress_n(const byte[], size_t blocks);
-      void copy_out(byte[]);
+		SHA_384() : MDx_HashFunction(128, true, true, 16), digest(8)
+			{ clear(); }
+	private:
+		void compress_n(const byte[], size_t blocks);
+		void copy_out(byte[]);
 
-      secure_vector<u64bit> digest;
-   };
+		secure_vector<u64bit> digest;
+	};
 
 /**
 * SHA-512
 */
-class BOTAN_DLL SHA_512 : public MDx_HashFunction
-   {
-   public:
-      std::string name() const { return "SHA-512"; }
-      size_t output_length() const { return 64; }
-      HashFunction* clone() const { return new SHA_512; }
+class SHA_512 : public MDx_HashFunction
+	{
+	public:
+		string name() const { return "SHA-512"; }
+		size_t output_length() const { return 64; }
+		HashFunction* clone() const { return new SHA_512; }
 
-      void clear();
+		void clear();
 
-      SHA_512() : MDx_HashFunction(128, true, true, 16), digest(8)
-         { clear(); }
-   private:
-      void compress_n(const byte[], size_t blocks);
-      void copy_out(byte[]);
+		SHA_512() : MDx_HashFunction(128, true, true, 16), digest(8)
+			{ clear(); }
+	private:
+		void compress_n(const byte[], size_t blocks);
+		void copy_out(byte[]);
 
-      secure_vector<u64bit> digest;
-   };
+		secure_vector<u64bit> digest;
+	};
 
 }
 

@@ -18,31 +18,31 @@ namespace Botan {
 * EGD Entropy Source
 */
 class EGD_EntropySource : public EntropySource
-   {
-   public:
-      std::string name() const { return "EGD/PRNGD"; }
+	{
+	public:
+		string name() const { return "EGD/PRNGD"; }
 
-      void poll(Entropy_Accumulator& accum);
+		void poll(Entropy_Accumulator& accum);
 
-      EGD_EntropySource(const std::vector<std::string>&);
-      ~EGD_EntropySource();
-   private:
-      class EGD_Socket
-         {
-         public:
-            EGD_Socket(const std::string& path);
+		EGD_EntropySource(const std::vector<string>&);
+		~EGD_EntropySource();
+	private:
+		class EGD_Socket
+			{
+			public:
+				EGD_Socket(in string path);
 
-            void close();
-            size_t read(byte outbuf[], size_t length);
-         private:
-            static int open_socket(const std::string& path);
+				void close();
+				size_t read(byte outbuf[], size_t length);
+			private:
+				static int open_socket(in string path);
 
-            std::string socket_path;
-            int m_fd; // cached fd
-         };
+				string socket_path;
+				int m_fd; // cached fd
+			};
 
-      std::vector<EGD_Socket> sockets;
-   };
+		std::vector<EGD_Socket> sockets;
+	};
 
 }
 

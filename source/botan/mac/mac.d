@@ -14,13 +14,13 @@ namespace Botan {
 * Default (deterministic) MAC verification operation
 */
 bool MessageAuthenticationCode::verify_mac(const byte mac[], size_t length)
-   {
-   secure_vector<byte> our_mac = final();
+	{
+	SafeArray!byte our_mac = final();
 
-   if(our_mac.size() != length)
-      return false;
+	if(our_mac.size() != length)
+		return false;
 
-   return same_mem(&our_mac[0], &mac[0], length);
-   }
+	return same_mem(&our_mac[0], &mac[0], length);
+	}
 
 }

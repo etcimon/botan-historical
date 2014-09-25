@@ -11,34 +11,34 @@
 namespace Botan {
 
 OctetString PBKDF::derive_key(size_t output_len,
-                              const std::string& passphrase,
-                              const byte salt[], size_t salt_len,
-                              size_t iterations) const
-   {
-   if(iterations == 0)
-      throw std::invalid_argument(name() + ": Invalid iteration count");
+										in string passphrase,
+										const byte salt[], size_t salt_len,
+										size_t iterations) const
+	{
+	if(iterations == 0)
+		throw std::invalid_argument(name() + ": Invalid iteration count");
 
-   auto derived = key_derivation(output_len, passphrase,
-                                 salt, salt_len, iterations,
-                                 std::chrono::milliseconds(0));
+	auto derived = key_derivation(output_len, passphrase,
+											salt, salt_len, iterations,
+											std::chrono::milliseconds(0));
 
-   BOTAN_ASSERT(derived.first == iterations,
-                "PBKDF used the correct number of iterations");
+	BOTAN_ASSERT(derived.first == iterations,
+					 "PBKDF used the correct number of iterations");
 
-   return derived.second;
-   }
+	return derived.second;
+	}
 
 OctetString PBKDF::derive_key(size_t output_len,
-                              const std::string& passphrase,
-                              const byte salt[], size_t salt_len,
-                              std::chrono::milliseconds ms,
-                              size_t& iterations) const
-   {
-   auto derived = key_derivation(output_len, passphrase, salt, salt_len, 0, ms);
+										in string passphrase,
+										const byte salt[], size_t salt_len,
+										std::chrono::milliseconds ms,
+										size_t& iterations) const
+	{
+	auto derived = key_derivation(output_len, passphrase, salt, salt_len, 0, ms);
 
-   iterations = derived.first;
+	iterations = derived.first;
 
-   return derived.second;
-   }
+	return derived.second;
+	}
 
 }

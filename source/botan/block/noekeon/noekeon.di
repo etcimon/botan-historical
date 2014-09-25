@@ -15,35 +15,35 @@ namespace Botan {
 /**
 * Noekeon
 */
-class BOTAN_DLL Noekeon : public Block_Cipher_Fixed_Params<16, 16>
-   {
-   public:
-      void encrypt_n(const byte in[], byte out[], size_t blocks) const;
-      void decrypt_n(const byte in[], byte out[], size_t blocks) const;
+class Noekeon : public Block_Cipher_Fixed_Params<16, 16>
+	{
+	public:
+		void encrypt_n(const byte in[], byte out[], size_t blocks) const;
+		void decrypt_n(const byte in[], byte out[], size_t blocks) const;
 
-      void clear();
-      std::string name() const { return "Noekeon"; }
-      BlockCipher* clone() const { return new Noekeon; }
-   protected:
-      /**
-      * The Noekeon round constants
-      */
-      static const byte RC[17];
+		void clear();
+		string name() const { return "Noekeon"; }
+		BlockCipher* clone() const { return new Noekeon; }
+	protected:
+		/**
+		* The Noekeon round constants
+		*/
+		static const byte RC[17];
 
-      /**
-      * @return const reference to encryption subkeys
-      */
-      const secure_vector<u32bit>& get_EK() const { return EK; }
+		/**
+		* @return const reference to encryption subkeys
+		*/
+		const secure_vector<u32bit>& get_EK() const { return EK; }
 
-      /**
-      * @return const reference to decryption subkeys
-      */
-      const secure_vector<u32bit>& get_DK() const { return DK; }
+		/**
+		* @return const reference to decryption subkeys
+		*/
+		const secure_vector<u32bit>& get_DK() const { return DK; }
 
-   private:
-      void key_schedule(const byte[], size_t);
-      secure_vector<u32bit> EK, DK;
-   };
+	private:
+		void key_schedule(const byte[], size_t);
+		secure_vector<u32bit> EK, DK;
+	};
 
 }
 

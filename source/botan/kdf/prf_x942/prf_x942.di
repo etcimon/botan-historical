@@ -15,19 +15,19 @@ namespace Botan {
 /**
 * PRF from ANSI X9.42
 */
-class BOTAN_DLL X942_PRF : public KDF
-   {
-   public:
-      secure_vector<byte> derive(size_t, const byte[], size_t,
-                                const byte[], size_t) const;
+class X942_PRF : public KDF
+	{
+	public:
+		SafeArray!byte derive(size_t, const byte[], size_t,
+										  const byte[], size_t) const;
 
-      std::string name() const { return "X942_PRF(" + key_wrap_oid + ")"; }
-      KDF* clone() const { return new X942_PRF(key_wrap_oid); }
+		string name() const { return "X942_PRF(" + key_wrap_oid + ")"; }
+		KDF* clone() const { return new X942_PRF(key_wrap_oid); }
 
-      X942_PRF(const std::string& oid);
-   private:
-      std::string key_wrap_oid;
-   };
+		X942_PRF(in string oid);
+	private:
+		string key_wrap_oid;
+	};
 
 }
 

@@ -14,87 +14,87 @@ namespace Botan {
 * Update the hash
 */
 void Parallel::add_data(const byte input[], size_t length)
-   {
-   for(auto hash : hashes)
-       hash->update(input, length);
-   }
+	{
+	for(auto hash : hashes)
+		 hash->update(input, length);
+	}
 
 /*
 * Finalize the hash
 */
 void Parallel::final_result(byte out[])
-   {
-   u32bit offset = 0;
+	{
+	u32bit offset = 0;
 
-   for(auto hash : hashes)
-      {
-      hash->final(out + offset);
-      offset += hash->output_length();
-      }
-   }
+	for(auto hash : hashes)
+		{
+		hash->final(out + offset);
+		offset += hash->output_length();
+		}
+	}
 
 /*
 * Return output size
 */
 size_t Parallel::output_length() const
-   {
-   size_t sum = 0;
+	{
+	size_t sum = 0;
 
-   for(auto hash : hashes)
-      sum += hash->output_length();
-   return sum;
-   }
+	for(auto hash : hashes)
+		sum += hash->output_length();
+	return sum;
+	}
 
 /*
 * Return the name of this type
 */
-std::string Parallel::name() const
-   {
-   std::vector<std::string> names;
+string Parallel::name() const
+	{
+	std::vector<string> names;
 
-   for(auto hash : hashes)
-      names.push_back(hash->name());
+	for(auto hash : hashes)
+		names.push_back(hash->name());
 
-   return "Parallel(" + string_join(names, ',') + ")";
-   }
+	return "Parallel(" + string_join(names, ',') + ")";
+	}
 
 /*
 * Return a clone of this object
 */
 HashFunction* Parallel::clone() const
-   {
-   std::vector<HashFunction*> hash_copies;
+	{
+	std::vector<HashFunction*> hash_copies;
 
-   for(auto hash : hashes)
-      hash_copies.push_back(hash->clone());
+	for(auto hash : hashes)
+		hash_copies.push_back(hash->clone());
 
-   return new Parallel(hash_copies);
-   }
+	return new Parallel(hash_copies);
+	}
 
 /*
 * Clear memory of sensitive data
 */
 void Parallel::clear()
-   {
-   for(auto hash : hashes)
-      hash->clear();
-   }
+	{
+	for(auto hash : hashes)
+		hash->clear();
+	}
 
 /*
 * Parallel Constructor
 */
 Parallel::Parallel(const std::vector<HashFunction*>& hash_in) :
-   hashes(hash_in)
-   {
-   }
+	hashes(hash_in)
+	{
+	}
 
 /*
 * Parallel Destructor
 */
 Parallel::~Parallel()
-   {
-   for(auto hash : hashes)
-      delete hash;
-   }
+	{
+	for(auto hash : hashes)
+		delete hash;
+	}
 
 }

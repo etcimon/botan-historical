@@ -15,16 +15,16 @@ namespace Botan {
 /**
 * IDEA in SSE2
 */
-class BOTAN_DLL IDEA_SSE2 : public IDEA
-   {
-   public:
-      size_t parallelism() const { return 8; }
+class IDEA_SSE2 : public IDEA
+	{
+	public:
+		size_t parallelism() const { return 8; }
 
-      void encrypt_n(const byte in[], byte out[], size_t blocks) const;
-      void decrypt_n(const byte in[], byte out[], size_t blocks) const;
+		void encrypt_n(const byte in[], byte out[], size_t blocks) const;
+		void decrypt_n(const byte in[], byte out[], size_t blocks) const;
 
-      BlockCipher* clone() const { return new IDEA_SSE2; }
-   };
+		BlockCipher* clone() const { return new IDEA_SSE2; }
+	};
 
 }
 

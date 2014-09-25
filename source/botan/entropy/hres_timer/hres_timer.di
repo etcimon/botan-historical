@@ -19,11 +19,11 @@ namespace Botan {
 * to the poll, as a local attacker could observe them directly.
 */
 class High_Resolution_Timestamp : public EntropySource
-   {
-   public:
-      std::string name() const { return "High Resolution Timestamp"; }
-      void poll(Entropy_Accumulator& accum);
-   };
+	{
+	public:
+		string name() const { return "High Resolution Timestamp"; }
+		void poll(Entropy_Accumulator& accum);
+	};
 
 }
 

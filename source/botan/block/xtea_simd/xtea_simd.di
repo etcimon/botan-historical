@@ -15,15 +15,15 @@ namespace Botan {
 /**
 * XTEA implemented using SIMD operations
 */
-class BOTAN_DLL XTEA_SIMD : public XTEA
-   {
-   public:
-      size_t parallelism() const { return 8; }
+class XTEA_SIMD : public XTEA
+	{
+	public:
+		size_t parallelism() const { return 8; }
 
-      void encrypt_n(const byte in[], byte out[], size_t blocks) const;
-      void decrypt_n(const byte in[], byte out[], size_t blocks) const;
-      BlockCipher* clone() const { return new XTEA_SIMD; }
-   };
+		void encrypt_n(const byte in[], byte out[], size_t blocks) const;
+		void decrypt_n(const byte in[], byte out[], size_t blocks) const;
+		BlockCipher* clone() const { return new XTEA_SIMD; }
+	};
 
 }
 

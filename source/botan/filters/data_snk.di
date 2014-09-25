@@ -16,51 +16,51 @@ namespace Botan {
 /**
 * This class represents abstract data sink objects.
 */
-class BOTAN_DLL DataSink : public Filter
-   {
-   public:
-      bool attachable() { return false; }
-      DataSink() {}
-      virtual ~DataSink() {}
+class DataSink : public Filter
+	{
+	public:
+		bool attachable() { return false; }
+		DataSink() {}
+		abstract ~DataSink() {}
 
-      DataSink& operator=(const DataSink&) = delete;
-      DataSink(const DataSink&) = delete;
-   };
+		DataSink& operator=(const DataSink&) = delete;
+		DataSink(const DataSink&) = delete;
+	};
 
 /**
 * This class represents a data sink which writes its output to a stream.
 */
-class BOTAN_DLL DataSink_Stream : public DataSink
-   {
-   public:
-      std::string name() const { return identifier; }
+class DataSink_Stream : public DataSink
+	{
+	public:
+		string name() const { return identifier; }
 
-      void write(const byte[], size_t);
+		void write(const byte[], size_t);
 
-      /**
-      * Construct a DataSink_Stream from a stream.
-      * @param stream the stream to write to
-      * @param name identifier
-      */
-      DataSink_Stream(std::ostream& stream,
-                      const std::string& name = "<std::ostream>");
+		/**
+		* Construct a DataSink_Stream from a stream.
+		* @param stream the stream to write to
+		* @param name identifier
+		*/
+		DataSink_Stream(std::ostream& stream,
+							 in string name = "<std::ostream>");
 
-      /**
-      * Construct a DataSink_Stream from a stream.
-      * @param pathname the name of the file to open a stream to
-      * @param use_binary indicates whether to treat the file
-      * as a binary file or not
-      */
-      DataSink_Stream(const std::string& pathname,
-                      bool use_binary = false);
+		/**
+		* Construct a DataSink_Stream from a stream.
+		* @param pathname the name of the file to open a stream to
+		* @param use_binary indicates whether to treat the file
+		* as a binary file or not
+		*/
+		DataSink_Stream(in string pathname,
+							 bool use_binary = false);
 
-      ~DataSink_Stream();
-   private:
-      const std::string identifier;
+		~DataSink_Stream();
+	private:
+		const string identifier;
 
-      std::ostream* sink_p;
-      std::ostream& sink;
-   };
+		std::ostream* sink_p;
+		std::ostream& sink;
+	};
 
 }
 

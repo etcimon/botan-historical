@@ -16,11 +16,11 @@ namespace Botan {
 * Win32 Entropy Source
 */
 class Win32_EntropySource : public EntropySource
-   {
-   public:
-      std::string name() const { return "Win32 Statistics"; }
-      void poll(Entropy_Accumulator& accum);
-   };
+	{
+	public:
+		string name() const { return "Win32 Statistics"; }
+		void poll(Entropy_Accumulator& accum);
+	};
 
 }
 

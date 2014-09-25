@@ -18,86 +18,86 @@ namespace Botan {
 * Create a CRL_Entry
 */
 CRL_Entry::CRL_Entry(bool t_on_unknown_crit) :
-   throw_on_unknown_critical(t_on_unknown_crit)
-   {
-   reason = UNSPECIFIED;
-   }
+	throw_on_unknown_critical(t_on_unknown_crit)
+	{
+	reason = UNSPECIFIED;
+	}
 
 /*
 * Create a CRL_Entry
 */
 CRL_Entry::CRL_Entry(const X509_Certificate& cert, CRL_Code why) :
-   throw_on_unknown_critical(false)
-   {
-   serial = cert.serial_number();
-   time = X509_Time(std::chrono::system_clock::now());
-   reason = why;
-   }
+	throw_on_unknown_critical(false)
+	{
+	serial = cert.serial_number();
+	time = X509_Time(std::chrono::system_clock::now());
+	reason = why;
+	}
 
 /*
 * Compare two CRL_Entrys for equality
 */
 bool operator==(const CRL_Entry& a1, const CRL_Entry& a2)
-   {
-   if(a1.serial_number() != a2.serial_number())
-      return false;
-   if(a1.expire_time() != a2.expire_time())
-      return false;
-   if(a1.reason_code() != a2.reason_code())
-      return false;
-   return true;
-   }
+	{
+	if(a1.serial_number() != a2.serial_number())
+		return false;
+	if(a1.expire_time() != a2.expire_time())
+		return false;
+	if(a1.reason_code() != a2.reason_code())
+		return false;
+	return true;
+	}
 
 /*
 * Compare two CRL_Entrys for inequality
 */
 bool operator!=(const CRL_Entry& a1, const CRL_Entry& a2)
-   {
-   return !(a1 == a2);
-   }
+	{
+	return !(a1 == a2);
+	}
 
 /*
 * DER encode a CRL_Entry
 */
 void CRL_Entry::encode_into(DER_Encoder& der) const
-   {
-   Extensions extensions;
+	{
+	Extensions extensions;
 
-   extensions.add(new Cert_Extension::CRL_ReasonCode(reason));
+	extensions.add(new Cert_Extension::CRL_ReasonCode(reason));
 
-   der.start_cons(SEQUENCE)
-      .encode(BigInt::decode(serial))
-         .encode(time)
-         .start_cons(SEQUENCE)
-            .encode(extensions)
-          .end_cons()
-      .end_cons();
-   }
+	der.start_cons(SEQUENCE)
+		.encode(BigInt::decode(serial))
+			.encode(time)
+			.start_cons(SEQUENCE)
+				.encode(extensions)
+			 .end_cons()
+		.end_cons();
+	}
 
 /*
 * Decode a BER encoded CRL_Entry
 */
 void CRL_Entry::decode_from(BER_Decoder& source)
-   {
-   BigInt serial_number_bn;
-   reason = UNSPECIFIED;
+	{
+	BigInt serial_number_bn;
+	reason = UNSPECIFIED;
 
-   BER_Decoder entry = source.start_cons(SEQUENCE);
+	BER_Decoder entry = source.start_cons(SEQUENCE);
 
-   entry.decode(serial_number_bn).decode(time);
+	entry.decode(serial_number_bn).decode(time);
 
-   if(entry.more_items())
-      {
-      Extensions extensions(throw_on_unknown_critical);
-      entry.decode(extensions);
-      Data_Store info;
-      extensions.contents_to(info, info);
-      reason = CRL_Code(info.get1_u32bit("X509v3.CRLReasonCode"));
-      }
+	if(entry.more_items())
+		{
+		Extensions extensions(throw_on_unknown_critical);
+		entry.decode(extensions);
+		Data_Store info;
+		extensions.contents_to(info, info);
+		reason = CRL_Code(info.get1_u32bit("X509v3.CRLReasonCode"));
+		}
 
-   entry.end_cons();
+	entry.end_cons();
 
-   serial = BigInt::encode(serial_number_bn);
-   }
+	serial = BigInt::encode(serial_number_bn);
+	}
 
 }

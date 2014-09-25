@@ -14,9 +14,9 @@
 #define ALIGN .p2align 4,,15
 
 #define START_LISTING(FILENAME) \
-   .file #FILENAME;             \
-   .text;                       \
-   ALIGN;
+	.file #FILENAME;				 \
+	.text;							  \
+	ALIGN;
 
 #if defined(__ELF__)
 .section .note.GNU-stack,"",%progbits
@@ -26,39 +26,39 @@
 * Function Definitions
 */
 #define START_FUNCTION(func_name) \
-   ALIGN;                         \
-   .global  func_name;            \
-   .type    func_name,@function;  \
+	ALIGN;								 \
+	.global  func_name;				\
+	.type	 func_name,@function;  \
 func_name:
 
 #define END_FUNCTION(func_name) \
-   ret
+	ret
 
 /*
 * Loop Control
 */
 #define START_LOOP(LABEL) \
-   ALIGN;                 \
-   LABEL##_LOOP:
+	ALIGN;					  \
+	LABEL##_LOOP:
 
 #define LOOP_UNTIL_EQ(REG, NUM, LABEL) \
-   cmpl IMM(NUM), REG;                 \
-   jne LABEL##_LOOP
+	cmpl IMM(NUM), REG;					  \
+	jne LABEL##_LOOP
 
 #define LOOP_UNTIL_LT(REG, NUM, LABEL) \
-   cmpl IMM(NUM), REG;                 \
-   jge LABEL##_LOOP
+	cmpl IMM(NUM), REG;					  \
+	jge LABEL##_LOOP
 
 /*
  Conditional Jumps
 */
 #define JUMP_IF_ZERO(REG, LABEL) \
-   cmpl IMM(0), REG;             \
-   jz LABEL
+	cmpl IMM(0), REG;				 \
+	jz LABEL
 
 #define JUMP_IF_LT(REG, NUM, LABEL) \
-   cmpl IMM(NUM), REG;              \
-   jl LABEL
+	cmpl IMM(NUM), REG;				  \
+	jl LABEL
 
 /*
 * Register Names
@@ -87,16 +87,16 @@ func_name:
 #define POP(REG) popl REG
 
 #define SPILL_REGS() \
-   PUSH(EBP) ; \
-   PUSH(EDI) ; \
-   PUSH(ESI) ; \
-   PUSH(EBX)
+	PUSH(EBP) ; \
+	PUSH(EDI) ; \
+	PUSH(ESI) ; \
+	PUSH(EBX)
 
 #define RESTORE_REGS() \
-   POP(EBX) ;  \
-   POP(ESI) ;  \
-   POP(EDI) ;  \
-   POP(EBP)
+	POP(EBX) ;  \
+	POP(ESI) ;  \
+	POP(EDI) ;  \
+	POP(EBP)
 
 /*
 * ALU Operations

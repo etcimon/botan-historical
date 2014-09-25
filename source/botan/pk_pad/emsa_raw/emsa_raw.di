@@ -16,19 +16,19 @@ namespace Botan {
 * EMSA-Raw - sign inputs directly
 * Don't use this unless you know what you are doing.
 */
-class BOTAN_DLL EMSA_Raw : public EMSA
-   {
-   private:
-      void update(const byte[], size_t);
-      secure_vector<byte> raw_data();
+class EMSA_Raw : public EMSA
+	{
+	private:
+		void update(const byte[], size_t);
+		SafeArray!byte raw_data();
 
-      secure_vector<byte> encoding_of(const secure_vector<byte>&, size_t,
-                                     RandomNumberGenerator&);
-      bool verify(const secure_vector<byte>&, const secure_vector<byte>&,
-                  size_t);
+		SafeArray!byte encoding_of(in SafeArray!byte, size_t,
+												 RandomNumberGenerator&);
+		bool verify(in SafeArray!byte, in SafeArray!byte,
+						size_t);
 
-      secure_vector<byte> message;
-   };
+		SafeArray!byte message;
+	};
 
 }
 

@@ -39,8 +39,8 @@ BOTAN_DLL void set_global_state(Library_State* state);
 * Set the global state object unless it is already set
 * @param state the new global state to use
 * @return true if the state parameter is now being used as the global
-*         state, or false if one was already set, in which case the
-*         parameter was deleted immediately
+*			state, or false if one was already set, in which case the
+*			parameter was deleted immediately
 */
 BOTAN_DLL bool set_global_state_unless_set(Library_State* state);
 

@@ -15,13 +15,13 @@ namespace Botan {
 /**
 * MD4 using x86 assembly
 */
-class BOTAN_DLL MD4_X86_32 : public MD4
-   {
-   public:
-      HashFunction* clone() const { return new MD4_X86_32; }
-   private:
-      void compress_n(const byte[], size_t blocks);
-   };
+class MD4_X86_32 : public MD4
+	{
+	public:
+		HashFunction* clone() const { return new MD4_X86_32; }
+	private:
+		void compress_n(const byte[], size_t blocks);
+	};
 
 }
 

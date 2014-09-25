@@ -16,90 +16,90 @@ namespace Botan {
 * Create an AlgorithmIdentifier
 */
 AlgorithmIdentifier::AlgorithmIdentifier(const OID& alg_id,
-                                         const std::vector<byte>& param)
-   {
-   oid = alg_id;
-   parameters = param;
-   }
+													  in Array!byte param)
+	{
+	oid = alg_id;
+	parameters = param;
+	}
 
 /*
 * Create an AlgorithmIdentifier
 */
-AlgorithmIdentifier::AlgorithmIdentifier(const std::string& alg_id,
-                                         const std::vector<byte>& param)
-   {
-   oid = OIDS::lookup(alg_id);
-   parameters = param;
-   }
+AlgorithmIdentifier::AlgorithmIdentifier(in string alg_id,
+													  in Array!byte param)
+	{
+	oid = OIDS::lookup(alg_id);
+	parameters = param;
+	}
 
 /*
 * Create an AlgorithmIdentifier
 */
 AlgorithmIdentifier::AlgorithmIdentifier(const OID& alg_id,
-                                         Encoding_Option option)
-   {
-   const byte DER_NULL[] = { 0x05, 0x00 };
+													  Encoding_Option option)
+	{
+	const byte DER_NULL[] = { 0x05, 0x00 };
 
-   oid = alg_id;
+	oid = alg_id;
 
-   if(option == USE_NULL_PARAM)
-      parameters += std::pair<const byte*, size_t>(DER_NULL, sizeof(DER_NULL));
-   }
+	if(option == USE_NULL_PARAM)
+		parameters += std::pair<const byte*, size_t>(DER_NULL, sizeof(DER_NULL));
+	}
 
 /*
 * Create an AlgorithmIdentifier
 */
-AlgorithmIdentifier::AlgorithmIdentifier(const std::string& alg_id,
-                                         Encoding_Option option)
-   {
-   const byte DER_NULL[] = { 0x05, 0x00 };
+AlgorithmIdentifier::AlgorithmIdentifier(in string alg_id,
+													  Encoding_Option option)
+	{
+	const byte DER_NULL[] = { 0x05, 0x00 };
 
-   oid = OIDS::lookup(alg_id);
+	oid = OIDS::lookup(alg_id);
 
-   if(option == USE_NULL_PARAM)
-      parameters += std::pair<const byte*, size_t>(DER_NULL, sizeof(DER_NULL));
-   }
+	if(option == USE_NULL_PARAM)
+		parameters += std::pair<const byte*, size_t>(DER_NULL, sizeof(DER_NULL));
+	}
 
 /*
 * Compare two AlgorithmIdentifiers
 */
 bool operator==(const AlgorithmIdentifier& a1, const AlgorithmIdentifier& a2)
-   {
-   if(a1.oid != a2.oid)
-      return false;
-   if(a1.parameters != a2.parameters)
-      return false;
-   return true;
-   }
+	{
+	if(a1.oid != a2.oid)
+		return false;
+	if(a1.parameters != a2.parameters)
+		return false;
+	return true;
+	}
 
 /*
 * Compare two AlgorithmIdentifiers
 */
 bool operator!=(const AlgorithmIdentifier& a1, const AlgorithmIdentifier& a2)
-   {
-   return !(a1 == a2);
-   }
+	{
+	return !(a1 == a2);
+	}
 
 /*
 * DER encode an AlgorithmIdentifier
 */
 void AlgorithmIdentifier::encode_into(DER_Encoder& codec) const
-   {
-   codec.start_cons(SEQUENCE)
-      .encode(oid)
-      .raw_bytes(parameters)
-   .end_cons();
-   }
+	{
+	codec.start_cons(SEQUENCE)
+		.encode(oid)
+		.raw_bytes(parameters)
+	.end_cons();
+	}
 
 /*
 * Decode a BER encoded AlgorithmIdentifier
 */
 void AlgorithmIdentifier::decode_from(BER_Decoder& codec)
-   {
-   codec.start_cons(SEQUENCE)
-      .decode(oid)
-      .raw_bytes(parameters)
-   .end_cons();
-   }
+	{
+	codec.start_cons(SEQUENCE)
+		.decode(oid)
+		.raw_bytes(parameters)
+	.end_cons();
+	}
 
 }

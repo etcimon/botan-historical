@@ -15,21 +15,21 @@ namespace Botan {
 /**
 * CAST-256
 */
-class BOTAN_DLL CAST_256 : public Block_Cipher_Fixed_Params<16, 4, 32, 4>
-   {
-   public:
-      void encrypt_n(const byte in[], byte out[], size_t blocks) const;
-      void decrypt_n(const byte in[], byte out[], size_t blocks) const;
+class CAST_256 : public Block_Cipher_Fixed_Params<16, 4, 32, 4>
+	{
+	public:
+		void encrypt_n(const byte in[], byte out[], size_t blocks) const;
+		void decrypt_n(const byte in[], byte out[], size_t blocks) const;
 
-      void clear();
-      std::string name() const { return "CAST-256"; }
-      BlockCipher* clone() const { return new CAST_256; }
-   private:
-      void key_schedule(const byte[], size_t);
+		void clear();
+		string name() const { return "CAST-256"; }
+		BlockCipher* clone() const { return new CAST_256; }
+	private:
+		void key_schedule(const byte[], size_t);
 
-      secure_vector<u32bit> MK;
-      secure_vector<byte> RK;
-   };
+		secure_vector<u32bit> MK;
+		SafeArray!byte RK;
+	};
 
 }
 

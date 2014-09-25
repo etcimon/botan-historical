@@ -17,20 +17,20 @@ namespace Botan {
 * Win32 CAPI Entropy Source
 */
 class Win32_CAPI_EntropySource : public EntropySource
-   {
-   public:
-      std::string name() const { return "Win32 CryptoGenRandom"; }
+	{
+	public:
+		string name() const { return "Win32 CryptoGenRandom"; }
 
-      void poll(Entropy_Accumulator& accum);
+		void poll(Entropy_Accumulator& accum);
 
-     /**
-     * Win32_Capi_Entropysource Constructor
-     * @param provs list of providers, separated by ':'
-     */
-      Win32_CAPI_EntropySource(const std::string& provs = "");
-   private:
-      std::vector<u64bit> prov_types;
-   };
+	  /**
+	  * Win32_Capi_Entropysource Constructor
+	  * @param provs list of providers, separated by ':'
+	  */
+		Win32_CAPI_EntropySource(in string provs = "");
+	private:
+		std::vector<u64bit> prov_types;
+	};
 
 }
 

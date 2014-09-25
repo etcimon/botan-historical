@@ -17,10 +17,10 @@ namespace Botan {
 * The different charsets (nominally) supported by Botan.
 */
 enum Character_Set {
-   LOCAL_CHARSET,
-   UCS2_CHARSET,
-   UTF8_CHARSET,
-   LATIN1_CHARSET
+	LOCAL_CHARSET,
+	UCS2_CHARSET,
+	UTF8_CHARSET,
+	LATIN1_CHARSET
 };
 
 namespace Charset {
@@ -28,9 +28,9 @@ namespace Charset {
 /*
 * Character Set Handling
 */
-std::string BOTAN_DLL transcode(const std::string& str,
-                                Character_Set to,
-                                Character_Set from);
+string BOTAN_DLL transcode(in string str,
+										  Character_Set to,
+										  Character_Set from);
 
 bool BOTAN_DLL is_digit(char c);
 bool BOTAN_DLL is_space(char c);

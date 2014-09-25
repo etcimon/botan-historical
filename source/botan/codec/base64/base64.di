@@ -19,18 +19,18 @@ namespace Botan {
 * @param input is some binary data
 * @param input_length length of input in bytes
 * @param input_consumed is an output parameter which says how many
-*        bytes of input were actually consumed. If less than
-*        input_length, then the range input[consumed:length]
-*        should be passed in later along with more input.
+*		  bytes of input were actually consumed. If less than
+*		  input_length, then the range input[consumed:length]
+*		  should be passed in later along with more input.
 * @param final_inputs true iff this is the last input, in which case
-         padding chars will be applied if needed
+			padding chars will be applied if needed
 * @return number of bytes written to output
 */
 size_t BOTAN_DLL base64_encode(char output[],
-                               const byte input[],
-                               size_t input_length,
-                               size_t& input_consumed,
-                               bool final_inputs);
+										 const byte input[],
+										 size_t input_length,
+										 size_t& input_consumed,
+										 bool final_inputs);
 
 /**
 * Perform base64 encoding
@@ -38,8 +38,8 @@ size_t BOTAN_DLL base64_encode(char output[],
 * @param input_length length of input in bytes
 * @return base64adecimal representation of input
 */
-std::string BOTAN_DLL base64_encode(const byte input[],
-                                    size_t input_length);
+string BOTAN_DLL base64_encode(const byte input[],
+												size_t input_length);
 
 /**
 * Perform base64 encoding
@@ -47,10 +47,10 @@ std::string BOTAN_DLL base64_encode(const byte input[],
 * @return base64adecimal representation of input
 */
 template<typename Alloc>
-std::string base64_encode(const std::vector<byte, Alloc>& input)
-   {
-   return base64_encode(&input[0], input.size());
-   }
+string base64_encode(const std::vector<byte, Alloc>& input)
+	{
+	return base64_encode(&input[0], input.size());
+	}
 
 /**
 * Perform base64 decoding
@@ -58,21 +58,21 @@ std::string base64_encode(const std::vector<byte, Alloc>& input)
 * @param input some base64 input
 * @param input_length length of input in bytes
 * @param input_consumed is an output parameter which says how many
-*        bytes of input were actually consumed. If less than
-*        input_length, then the range input[consumed:length]
-*        should be passed in later along with more input.
+*		  bytes of input were actually consumed. If less than
+*		  input_length, then the range input[consumed:length]
+*		  should be passed in later along with more input.
 * @param final_inputs true iff this is the last input, in which case
-         padding is allowed
+			padding is allowed
 * @param ignore_ws ignore whitespace on input; if false, throw an
-                   exception if whitespace is encountered
+						 exception if whitespace is encountered
 * @return number of bytes written to output
 */
 size_t BOTAN_DLL base64_decode(byte output[],
-                               const char input[],
-                               size_t input_length,
-                               size_t& input_consumed,
-                               bool final_inputs,
-                               bool ignore_ws = true);
+										 const char input[],
+										 size_t input_length,
+										 size_t& input_consumed,
+										 bool final_inputs,
+										 bool ignore_ws = true);
 
 /**
 * Perform base64 decoding
@@ -80,47 +80,47 @@ size_t BOTAN_DLL base64_decode(byte output[],
 * @param input some base64 input
 * @param input_length length of input in bytes
 * @param ignore_ws ignore whitespace on input; if false, throw an
-                   exception if whitespace is encountered
+						 exception if whitespace is encountered
 * @return number of bytes written to output
 */
 size_t BOTAN_DLL base64_decode(byte output[],
-                               const char input[],
-                               size_t input_length,
-                               bool ignore_ws = true);
+										 const char input[],
+										 size_t input_length,
+										 bool ignore_ws = true);
 
 /**
 * Perform base64 decoding
 * @param output an array of at least input_length/3*4 bytes
 * @param input some base64 input
 * @param ignore_ws ignore whitespace on input; if false, throw an
-                   exception if whitespace is encountered
+						 exception if whitespace is encountered
 * @return number of bytes written to output
 */
 size_t BOTAN_DLL base64_decode(byte output[],
-                               const std::string& input,
-                               bool ignore_ws = true);
+										 in string input,
+										 bool ignore_ws = true);
 
 /**
 * Perform base64 decoding
 * @param input some base64 input
 * @param input_length the length of input in bytes
 * @param ignore_ws ignore whitespace on input; if false, throw an
-                   exception if whitespace is encountered
+						 exception if whitespace is encountered
 * @return decoded base64 output
 */
-secure_vector<byte> BOTAN_DLL base64_decode(const char input[],
-                                           size_t input_length,
-                                           bool ignore_ws = true);
+SafeArray!byte BOTAN_DLL base64_decode(const char input[],
+														 size_t input_length,
+														 bool ignore_ws = true);
 
 /**
 * Perform base64 decoding
 * @param input some base64 input
 * @param ignore_ws ignore whitespace on input; if false, throw an
-                   exception if whitespace is encountered
+						 exception if whitespace is encountered
 * @return decoded base64 output
 */
-secure_vector<byte> BOTAN_DLL base64_decode(const std::string& input,
-                                           bool ignore_ws = true);
+SafeArray!byte BOTAN_DLL base64_decode(in string input,
+														 bool ignore_ws = true);
 
 }
 

@@ -15,22 +15,22 @@ namespace Botan {
 /**
 * 32-bit cyclic redundancy check
 */
-class BOTAN_DLL CRC32 : public HashFunction
-   {
-   public:
-      std::string name() const { return "CRC32"; }
-      size_t output_length() const { return 4; }
-      HashFunction* clone() const { return new CRC32; }
+class CRC32 : public HashFunction
+	{
+	public:
+		string name() const { return "CRC32"; }
+		size_t output_length() const { return 4; }
+		HashFunction* clone() const { return new CRC32; }
 
-      void clear() { crc = 0xFFFFFFFF; }
+		void clear() { crc = 0xFFFFFFFF; }
 
-      CRC32() { clear(); }
-      ~CRC32() { clear(); }
-   private:
-      void add_data(const byte[], size_t);
-      void final_result(byte[]);
-      u32bit crc;
-   };
+		CRC32() { clear(); }
+		~CRC32() { clear(); }
+	private:
+		void add_data(const byte[], size_t);
+		void final_result(byte[]);
+		u32bit crc;
+	};
 
 }
 

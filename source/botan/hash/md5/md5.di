@@ -15,31 +15,31 @@ namespace Botan {
 /**
 * MD5
 */
-class BOTAN_DLL MD5 : public MDx_HashFunction
-   {
-   public:
-      std::string name() const { return "MD5"; }
-      size_t output_length() const { return 16; }
-      HashFunction* clone() const { return new MD5; }
+class MD5 : public MDx_HashFunction
+	{
+	public:
+		string name() const { return "MD5"; }
+		size_t output_length() const { return 16; }
+		HashFunction* clone() const { return new MD5; }
 
-      void clear();
+		void clear();
 
-      MD5() : MDx_HashFunction(64, false, true), M(16), digest(4)
-         { clear(); }
-   protected:
-      void compress_n(const byte[], size_t blocks);
-      void copy_out(byte[]);
+		MD5() : MDx_HashFunction(64, false, true), M(16), digest(4)
+			{ clear(); }
+	protected:
+		void compress_n(const byte[], size_t blocks);
+		void copy_out(byte[]);
 
-      /**
-      * The message buffer, exposed for use by subclasses (x86 asm)
-      */
-      secure_vector<u32bit> M;
+		/**
+		* The message buffer, exposed for use by subclasses (x86 asm)
+		*/
+		secure_vector<u32bit> M;
 
-      /**
-      * The digest value, exposed for use by subclasses (x86 asm)
-      */
-      secure_vector<u32bit> digest;
-   };
+		/**
+		* The digest value, exposed for use by subclasses (x86 asm)
+		*/
+		secure_vector<u32bit> digest;
+	};
 
 }
 

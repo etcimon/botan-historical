@@ -18,21 +18,21 @@ namespace Botan {
 /**
 * Password Based Encryption (PBE) Filter.
 */
-class BOTAN_DLL PBE : public Filter
-   {
-   public:
-      /**
-      * DER encode the params (the number of iterations and the salt value)
-      * @return encoded params
-      */
-      virtual std::vector<byte> encode_params() const = 0;
+class PBE : public Filter
+	{
+	public:
+		/**
+		* DER encode the params (the number of iterations and the salt value)
+		* @return encoded params
+		*/
+		abstract std::vector<byte> encode_params() const = 0;
 
-      /**
-      * Get this PBE's OID.
-      * @return object identifier
-      */
-      virtual OID get_oid() const = 0;
-   };
+		/**
+		* Get this PBE's OID.
+		* @return object identifier
+		*/
+		abstract OID get_oid() const = 0;
+	};
 
 }
 

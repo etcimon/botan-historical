@@ -16,31 +16,31 @@ namespace Botan {
 /**
 * X.509 Time
 */
-class BOTAN_DLL X509_Time : public ASN1_Object
-   {
-   public:
-      void encode_into(class DER_Encoder&) const;
-      void decode_from(class BER_Decoder&);
+class X509_Time : public ASN1_Object
+	{
+	public:
+		void encode_into(class DER_Encoder&) const;
+		void decode_from(class BER_Decoder&);
 
-      std::string as_string() const;
-      std::string readable_string() const;
-      bool time_is_set() const;
+		string as_string() const;
+		string readable_string() const;
+		bool time_is_set() const;
 
-      std::string to_string() const { return readable_string(); }
+		string to_string() const { return readable_string(); }
 
-      s32bit cmp(const X509_Time&) const;
+		s32bit cmp(const X509_Time&) const;
 
-      void set_to(const std::string&);
-      void set_to(const std::string&, ASN1_Tag);
+		void set_to(in string);
+		void set_to(in string, ASN1_Tag);
 
-      X509_Time(const std::chrono::system_clock::time_point& time);
-      X509_Time(const std::string& = "");
-      X509_Time(const std::string&, ASN1_Tag);
-   private:
-      bool passes_sanity_check() const;
-      u32bit year, month, day, hour, minute, second;
-      ASN1_Tag tag;
-   };
+		X509_Time(const std::chrono::system_clock::time_point& time);
+		X509_Time(in string = "");
+		X509_Time(in string, ASN1_Tag);
+	private:
+		bool passes_sanity_check() const;
+		u32bit year, month, day, hour, minute, second;
+		ASN1_Tag tag;
+	};
 
 /*
 * Comparison Operations

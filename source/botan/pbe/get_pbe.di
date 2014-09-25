@@ -23,10 +23,10 @@ namespace Botan {
 * @param rng a random number generator
 * @return pointer to a PBE with randomly created parameters
 */
-BOTAN_DLL PBE* get_pbe(const std::string& algo_spec,
-                       const std::string& passphrase,
-                       std::chrono::milliseconds msec,
-                       RandomNumberGenerator& rng);
+BOTAN_DLL PBE* get_pbe(in string algo_spec,
+							  in string passphrase,
+							  std::chrono::milliseconds msec,
+							  RandomNumberGenerator& rng);
 
 /**
 * Factory function for PBEs.
@@ -36,8 +36,8 @@ BOTAN_DLL PBE* get_pbe(const std::string& algo_spec,
 * @return pointer to the PBE with the specified parameters
 */
 BOTAN_DLL PBE* get_pbe(const OID& pbe_oid,
-                       const std::vector<byte>& params,
-                       const std::string& passphrase);
+							  in Array!byte params,
+							  in string passphrase);
 
 }
 

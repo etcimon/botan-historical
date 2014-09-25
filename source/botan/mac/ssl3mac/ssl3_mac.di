@@ -16,32 +16,32 @@ namespace Botan {
 /**
 * A MAC only used in SSLv3. Do not use elsewhere! Use HMAC instead.
 */
-class BOTAN_DLL SSL3_MAC : public MessageAuthenticationCode
-   {
-   public:
-      std::string name() const;
-      size_t output_length() const { return m_hash->output_length(); }
-      MessageAuthenticationCode* clone() const;
+class SSL3_MAC : public MessageAuthenticationCode
+	{
+	public:
+		string name() const;
+		size_t output_length() const { return m_hash->output_length(); }
+		MessageAuthenticationCode* clone() const;
 
-      void clear();
+		void clear();
 
-      Key_Length_Specification key_spec() const
-         {
-         return Key_Length_Specification(m_hash->output_length());
-         }
+		Key_Length_Specification key_spec() const
+			{
+			return Key_Length_Specification(m_hash->output_length());
+			}
 
-      /**
-      * @param hash the underlying hash to use
-      */
-      SSL3_MAC(HashFunction* hash);
-   private:
-      void add_data(const byte[], size_t);
-      void final_result(byte[]);
-      void key_schedule(const byte[], size_t);
+		/**
+		* @param hash the underlying hash to use
+		*/
+		SSL3_MAC(HashFunction* hash);
+	private:
+		void add_data(const byte[], size_t);
+		void final_result(byte[]);
+		void key_schedule(const byte[], size_t);
 
-      std::unique_ptr<HashFunction> m_hash;
-      secure_vector<byte> m_ikey, m_okey;
-   };
+		std::unique_ptr<HashFunction> m_hash;
+		SafeArray!byte m_ikey, m_okey;
+	};
 
 }
 

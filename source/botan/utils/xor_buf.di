@@ -21,20 +21,20 @@ namespace Botan {
 */
 template<typename T>
 void xor_buf(T out[], const T in[], size_t length)
-   {
-   while(length >= 8)
-      {
-      out[0] ^= in[0]; out[1] ^= in[1];
-      out[2] ^= in[2]; out[3] ^= in[3];
-      out[4] ^= in[4]; out[5] ^= in[5];
-      out[6] ^= in[6]; out[7] ^= in[7];
+	{
+	while(length >= 8)
+		{
+		out[0] ^= in[0]; out[1] ^= in[1];
+		out[2] ^= in[2]; out[3] ^= in[3];
+		out[4] ^= in[4]; out[5] ^= in[5];
+		out[6] ^= in[6]; out[7] ^= in[7];
 
-      out += 8; in += 8; length -= 8;
-      }
+		out += 8; in += 8; length -= 8;
+		}
 
-   for(size_t i = 0; i != length; ++i)
-      out[i] ^= in[i];
-   }
+	for(size_t i = 0; i != length; ++i)
+		out[i] ^= in[i];
+	}
 
 /**
 * XOR arrays. Postcondition out[i] = in[i] ^ in2[i] forall i = 0...length
@@ -44,98 +44,98 @@ void xor_buf(T out[], const T in[], size_t length)
 * @param length the length of the three buffers
 */
 template<typename T> void xor_buf(T out[],
-                                  const T in[],
-                                  const T in2[],
-                                  size_t length)
-   {
-   while(length >= 8)
-      {
-      out[0] = in[0] ^ in2[0];
-      out[1] = in[1] ^ in2[1];
-      out[2] = in[2] ^ in2[2];
-      out[3] = in[3] ^ in2[3];
-      out[4] = in[4] ^ in2[4];
-      out[5] = in[5] ^ in2[5];
-      out[6] = in[6] ^ in2[6];
-      out[7] = in[7] ^ in2[7];
+											 const T in[],
+											 const T in2[],
+											 size_t length)
+	{
+	while(length >= 8)
+		{
+		out[0] = in[0] ^ in2[0];
+		out[1] = in[1] ^ in2[1];
+		out[2] = in[2] ^ in2[2];
+		out[3] = in[3] ^ in2[3];
+		out[4] = in[4] ^ in2[4];
+		out[5] = in[5] ^ in2[5];
+		out[6] = in[6] ^ in2[6];
+		out[7] = in[7] ^ in2[7];
 
-      in += 8; in2 += 8; out += 8; length -= 8;
-      }
+		in += 8; in2 += 8; out += 8; length -= 8;
+		}
 
-   for(size_t i = 0; i != length; ++i)
-      out[i] = in[i] ^ in2[i];
-   }
+	for(size_t i = 0; i != length; ++i)
+		out[i] = in[i] ^ in2[i];
+	}
 
 #if BOTAN_TARGET_UNALIGNED_MEMORY_ACCESS_OK
 
 inline void xor_buf(byte out[], const byte in[], size_t length)
-   {
-   while(length >= 8)
-      {
-      *reinterpret_cast<u64bit*>(out) ^= *reinterpret_cast<const u64bit*>(in);
-      out += 8; in += 8; length -= 8;
-      }
+	{
+	while(length >= 8)
+		{
+		*reinterpret_cast<u64bit*>(out) ^= *reinterpret_cast<const u64bit*>(in);
+		out += 8; in += 8; length -= 8;
+		}
 
-   for(size_t i = 0; i != length; ++i)
-      out[i] ^= in[i];
-   }
+	for(size_t i = 0; i != length; ++i)
+		out[i] ^= in[i];
+	}
 
 inline void xor_buf(byte out[],
-                    const byte in[],
-                    const byte in2[],
-                    size_t length)
-   {
-   while(length >= 8)
-      {
-      *reinterpret_cast<u64bit*>(out) =
-         *reinterpret_cast<const u64bit*>(in) ^
-         *reinterpret_cast<const u64bit*>(in2);
+						  const byte in[],
+						  const byte in2[],
+						  size_t length)
+	{
+	while(length >= 8)
+		{
+		*reinterpret_cast<u64bit*>(out) =
+			*reinterpret_cast<const u64bit*>(in) ^
+			*reinterpret_cast<const u64bit*>(in2);
 
-      in += 8; in2 += 8; out += 8; length -= 8;
-      }
+		in += 8; in2 += 8; out += 8; length -= 8;
+		}
 
-   for(size_t i = 0; i != length; ++i)
-      out[i] = in[i] ^ in2[i];
-   }
+	for(size_t i = 0; i != length; ++i)
+		out[i] = in[i] ^ in2[i];
+	}
 
 #endif
 
 template<typename Alloc, typename Alloc2>
 void xor_buf(std::vector<byte, Alloc>& out,
-             const std::vector<byte, Alloc2>& in,
-             size_t n)
-   {
-   xor_buf(&out[0], &in[0], n);
-   }
+				 const std::vector<byte, Alloc2>& in,
+				 size_t n)
+	{
+	xor_buf(&out[0], &in[0], n);
+	}
 
 template<typename Alloc>
 void xor_buf(std::vector<byte, Alloc>& out,
-             const byte* in,
-             size_t n)
-   {
-   xor_buf(&out[0], in, n);
-   }
+				 const byte* in,
+				 size_t n)
+	{
+	xor_buf(&out[0], in, n);
+	}
 
 template<typename Alloc, typename Alloc2>
 void xor_buf(std::vector<byte, Alloc>& out,
-             const byte* in,
-             const std::vector<byte, Alloc2>& in2,
-             size_t n)
-   {
-   xor_buf(&out[0], &in[0], &in2[0], n);
-   }
+				 const byte* in,
+				 const std::vector<byte, Alloc2>& in2,
+				 size_t n)
+	{
+	xor_buf(&out[0], &in[0], &in2[0], n);
+	}
 
 template<typename T, typename Alloc, typename Alloc2>
 std::vector<T, Alloc>&
 operator^=(std::vector<T, Alloc>& out,
-           const std::vector<T, Alloc2>& in)
-   {
-   if(out.size() < in.size())
-      out.resize(in.size());
+			  const std::vector<T, Alloc2>& in)
+	{
+	if(out.size() < in.size())
+		out.resize(in.size());
 
-   xor_buf(&out[0], &in[0], in.size());
-   return out;
-   }
+	xor_buf(&out[0], &in[0], in.size());
+	return out;
+	}
 
 }
 

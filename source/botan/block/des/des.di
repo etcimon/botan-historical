@@ -15,38 +15,38 @@ namespace Botan {
 /**
 * DES
 */
-class BOTAN_DLL DES : public Block_Cipher_Fixed_Params<8, 8>
-   {
-   public:
-      void encrypt_n(const byte in[], byte out[], size_t blocks) const;
-      void decrypt_n(const byte in[], byte out[], size_t blocks) const;
+class DES : public Block_Cipher_Fixed_Params<8, 8>
+	{
+	public:
+		void encrypt_n(const byte in[], byte out[], size_t blocks) const;
+		void decrypt_n(const byte in[], byte out[], size_t blocks) const;
 
-      void clear();
-      std::string name() const { return "DES"; }
-      BlockCipher* clone() const { return new DES; }
-   private:
-      void key_schedule(const byte[], size_t);
+		void clear();
+		string name() const { return "DES"; }
+		BlockCipher* clone() const { return new DES; }
+	private:
+		void key_schedule(const byte[], size_t);
 
-      secure_vector<u32bit> round_key;
-   };
+		secure_vector<u32bit> round_key;
+	};
 
 /**
 * Triple DES
 */
-class BOTAN_DLL TripleDES : public Block_Cipher_Fixed_Params<8, 16, 24, 8>
-   {
-   public:
-      void encrypt_n(const byte in[], byte out[], size_t blocks) const;
-      void decrypt_n(const byte in[], byte out[], size_t blocks) const;
+class TripleDES : public Block_Cipher_Fixed_Params<8, 16, 24, 8>
+	{
+	public:
+		void encrypt_n(const byte in[], byte out[], size_t blocks) const;
+		void decrypt_n(const byte in[], byte out[], size_t blocks) const;
 
-      void clear();
-      std::string name() const { return "TripleDES"; }
-      BlockCipher* clone() const { return new TripleDES; }
-   private:
-      void key_schedule(const byte[], size_t);
+		void clear();
+		string name() const { return "TripleDES"; }
+		BlockCipher* clone() const { return new TripleDES; }
+	private:
+		void key_schedule(const byte[], size_t);
 
-      secure_vector<u32bit> round_key;
-   };
+		secure_vector<u32bit> round_key;
+	};
 
 /*
 * DES Tables

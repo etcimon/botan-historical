@@ -16,19 +16,19 @@ namespace Botan {
 /**
 * KDF2, from IEEE 1363
 */
-class BOTAN_DLL KDF2 : public KDF
-   {
-   public:
-      secure_vector<byte> derive(size_t, const byte[], size_t,
-                                const byte[], size_t) const;
+class KDF2 : public KDF
+	{
+	public:
+		SafeArray!byte derive(size_t, const byte[], size_t,
+										  const byte[], size_t) const;
 
-      std::string name() const { return "KDF2(" + hash->name() + ")"; }
-      KDF* clone() const { return new KDF2(hash->clone()); }
+		string name() const { return "KDF2(" + hash->name() + ")"; }
+		KDF* clone() const { return new KDF2(hash->clone()); }
 
-      KDF2(HashFunction* h) : hash(h) {}
-   private:
-      std::unique_ptr<HashFunction> hash;
-   };
+		KDF2(HashFunction* h) : hash(h) {}
+	private:
+		std::unique_ptr<HashFunction> hash;
+	};
 
 }
 

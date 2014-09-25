@@ -17,56 +17,56 @@ namespace Botan {
 /**
 * This class represents ASN.1 object identifiers.
 */
-class BOTAN_DLL OID : public ASN1_Object
-   {
-   public:
-      void encode_into(class DER_Encoder&) const;
-      void decode_from(class BER_Decoder&);
+class OID : public ASN1_Object
+	{
+	public:
+		void encode_into(class DER_Encoder&) const;
+		void decode_from(class BER_Decoder&);
 
-      /**
-      * Find out whether this OID is empty
-      * @return true is no OID value is set
-      */
-      bool empty() const { return id.size() == 0; }
+		/**
+		* Find out whether this OID is empty
+		* @return true is no OID value is set
+		*/
+		bool empty() const { return id.size() == 0; }
 
-      /**
-      * Get this OID as list (vector) of its components.
-      * @return vector representing this OID
-      */
-      const std::vector<u32bit>& get_id() const { return id; }
+		/**
+		* Get this OID as list (vector) of its components.
+		* @return vector representing this OID
+		*/
+		const std::vector<u32bit>& get_id() const { return id; }
 
-      /**
-      * Get this OID as a string
-      * @return string representing this OID
-      */
-      std::string as_string() const;
+		/**
+		* Get this OID as a string
+		* @return string representing this OID
+		*/
+		string as_string() const;
 
-      /**
-      * Compare two OIDs.
-      * @return true if they are equal, false otherwise
-      */
-      bool operator==(const OID&) const;
+		/**
+		* Compare two OIDs.
+		* @return true if they are equal, false otherwise
+		*/
+		bool operator==(const OID&) const;
 
-      /**
-      * Reset this instance to an empty OID.
-      */
-      void clear();
+		/**
+		* Reset this instance to an empty OID.
+		*/
+		void clear();
 
-      /**
-      * Add a component to this OID.
-      * @param new_comp the new component to add to the end of this OID
-      * @return reference to *this
-      */
-      OID& operator+=(u32bit new_comp);
+		/**
+		* Add a component to this OID.
+		* @param new_comp the new component to add to the end of this OID
+		* @return reference to *this
+		*/
+		OID& operator+=(u32bit new_comp);
 
-      /**
-      * Construct an OID from a string.
-      * @param str a string in the form "a.b.c" etc., where a,b,c are numbers
-      */
-      OID(const std::string& str = "");
-   private:
-      std::vector<u32bit> id;
-   };
+		/**
+		* Construct an OID from a string.
+		* @param str a string in the form "a.b.c" etc., where a,b,c are numbers
+		*/
+		OID(in string str = "");
+	private:
+		std::vector<u32bit> id;
+	};
 
 /**
 * Append another component onto the OID.

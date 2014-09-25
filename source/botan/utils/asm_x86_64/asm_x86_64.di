@@ -14,9 +14,9 @@
 #define ALIGN .p2align 4,,15
 
 #define START_LISTING(FILENAME) \
-   .file #FILENAME;             \
-   .text;                       \
-   ALIGN;
+	.file #FILENAME;				 \
+	.text;							  \
+	ALIGN;
 
 #if defined(__ELF__)
 .section .note.GNU-stack,"",%progbits
@@ -26,24 +26,24 @@
 * Function Definitions
 */
 #define START_FUNCTION(func_name) \
-   ALIGN;                         \
-   .global  func_name;            \
-   .type    func_name,@function;  \
+	ALIGN;								 \
+	.global  func_name;				\
+	.type	 func_name,@function;  \
 func_name:
 
 #define END_FUNCTION(func_name) \
-   ret
+	ret
 
 /*
 * Conditional Jumps
 */
 #define JUMP_IF_ZERO(REG, LABEL) \
-   cmp IMM(0), REG;              \
-   jz LABEL
+	cmp IMM(0), REG;				  \
+	jz LABEL
 
 #define JUMP_IF_LT(REG, NUM, LABEL) \
-   cmp IMM(NUM), REG;               \
-   jl LABEL
+	cmp IMM(NUM), REG;					\
+	jl LABEL
 
 /*
 * Register Names

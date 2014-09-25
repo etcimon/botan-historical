@@ -24,8 +24,8 @@ namespace KeyPair {
 */
 BOTAN_DLL bool
 encryption_consistency_check(RandomNumberGenerator& rng,
-                             const Private_Key& key,
-                             const std::string& padding);
+									  const Private_Key& key,
+									  in string padding);
 
 /**
 * Tests whether the key is consistent for signatures; whether a
@@ -37,8 +37,8 @@ encryption_consistency_check(RandomNumberGenerator& rng,
 */
 BOTAN_DLL bool
 signature_consistency_check(RandomNumberGenerator& rng,
-                            const Private_Key& key,
-                            const std::string& padding);
+									 const Private_Key& key,
+									 in string padding);
 
 }
 

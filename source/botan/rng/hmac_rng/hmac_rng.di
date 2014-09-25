@@ -24,33 +24,33 @@ namespace Botan {
 * Krawczyk's paper), for instance one could use HMAC(SHA-512) as the
 * extractor and CMAC(AES-256) as the PRF.
 */
-class BOTAN_DLL HMAC_RNG : public RandomNumberGenerator
-   {
-   public:
-      void randomize(byte buf[], size_t len);
-      bool is_seeded() const;
-      void clear();
-      std::string name() const;
+class HMAC_RNG : public RandomNumberGenerator
+	{
+	public:
+		void randomize(byte buf[], size_t len);
+		bool is_seeded() const;
+		void clear();
+		string name() const;
 
-      void reseed(size_t poll_bits);
-      void add_entropy(const byte[], size_t);
+		void reseed(size_t poll_bits);
+		void add_entropy(const byte[], size_t);
 
-      /**
-      * @param extractor a MAC used for extracting the entropy
-      * @param prf a MAC used as a PRF using HKDF construction
-      */
-      HMAC_RNG(MessageAuthenticationCode* extractor,
-               MessageAuthenticationCode* prf);
-   private:
-      std::unique_ptr<MessageAuthenticationCode> m_extractor;
-      std::unique_ptr<MessageAuthenticationCode> m_prf;
+		/**
+		* @param extractor a MAC used for extracting the entropy
+		* @param prf a MAC used as a PRF using HKDF construction
+		*/
+		HMAC_RNG(MessageAuthenticationCode* extractor,
+					MessageAuthenticationCode* prf);
+	private:
+		std::unique_ptr<MessageAuthenticationCode> m_extractor;
+		std::unique_ptr<MessageAuthenticationCode> m_prf;
 
-      size_t m_collected_entropy_estimate = 0;
-      size_t m_output_since_reseed = 0;
+		size_t m_collected_entropy_estimate = 0;
+		size_t m_output_since_reseed = 0;
 
-      secure_vector<byte> m_K;
-      u32bit m_counter = 0;
-   };
+		SafeArray!byte m_K;
+		u32bit m_counter = 0;
+	};
 
 }
 

@@ -37,7 +37,7 @@ BOTAN_DLL std::vector<byte> BER_encode(const Public_Key& key);
 * @param key the key to encode
 * @return PEM encoded key
 */
-BOTAN_DLL std::string PEM_encode(const Public_Key& key);
+BOTAN_DLL string PEM_encode(const Public_Key& key);
 
 /**
 * Create a public key from a data source.
@@ -51,14 +51,14 @@ BOTAN_DLL Public_Key* load_key(DataSource& source);
 * @param filename pathname to the file to load
 * @return new public key object
 */
-BOTAN_DLL Public_Key* load_key(const std::string& filename);
+BOTAN_DLL Public_Key* load_key(in string filename);
 
 /**
 * Create a public key from a memory region.
 * @param enc the memory region containing the DER or PEM encoded key
 * @return new public key object
 */
-BOTAN_DLL Public_Key* load_key(const std::vector<byte>& enc);
+BOTAN_DLL Public_Key* load_key(in Array!byte enc);
 
 /**
 * Copy a key.

@@ -20,9 +20,9 @@ namespace Botan {
 * @param r will be set to x % y
 */
 void BOTAN_DLL divide(const BigInt& x,
-                      const BigInt& y,
-                      BigInt& q,
-                      BigInt& r);
+							 const BigInt& y,
+							 BigInt& q,
+							 BigInt& r);
 
 }
 

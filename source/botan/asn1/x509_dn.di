@@ -19,31 +19,31 @@ namespace Botan {
 /**
 * Distinguished Name
 */
-class BOTAN_DLL X509_DN : public ASN1_Object
-   {
-   public:
-      void encode_into(class DER_Encoder&) const;
-      void decode_from(class BER_Decoder&);
+class X509_DN : public ASN1_Object
+	{
+	public:
+		void encode_into(class DER_Encoder&) const;
+		void decode_from(class BER_Decoder&);
 
-      std::multimap<OID, std::string> get_attributes() const;
-      std::vector<std::string> get_attribute(const std::string&) const;
+		std::multimap<OID, string> get_attributes() const;
+		std::vector<string> get_attribute(in string) const;
 
-      std::multimap<std::string, std::string> contents() const;
+		std::multimap<string, string> contents() const;
 
-      void add_attribute(const std::string&, const std::string&);
-      void add_attribute(const OID&, const std::string&);
+		void add_attribute(in string, in string);
+		void add_attribute(const OID&, in string);
 
-      static std::string deref_info_field(const std::string&);
+		static string deref_info_field(in string);
 
-      std::vector<byte> get_bits() const;
+		std::vector<byte> get_bits() const;
 
-      X509_DN();
-      X509_DN(const std::multimap<OID, std::string>&);
-      X509_DN(const std::multimap<std::string, std::string>&);
-   private:
-      std::multimap<OID, ASN1_String> dn_info;
-      std::vector<byte> dn_bits;
-   };
+		X509_DN();
+		X509_DN(const std::multimap<OID, string>&);
+		X509_DN(const std::multimap<string, string>&);
+	private:
+		std::multimap<OID, ASN1_String> dn_info;
+		std::vector<byte> dn_bits;
+	};
 
 bool BOTAN_DLL operator==(const X509_DN&, const X509_DN&);
 bool BOTAN_DLL operator!=(const X509_DN&, const X509_DN&);

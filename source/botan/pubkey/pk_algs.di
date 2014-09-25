@@ -13,11 +13,11 @@
 namespace Botan {
 
 Public_Key* make_public_key(const AlgorithmIdentifier& alg_id,
-                            const secure_vector<byte>& key_bits);
+									 in SafeArray!byte key_bits);
 
 Private_Key* make_private_key(const AlgorithmIdentifier& alg_id,
-                              const secure_vector<byte>& key_bits,
-                              RandomNumberGenerator& rng);
+										in SafeArray!byte key_bits,
+										RandomNumberGenerator& rng);
 
 }
 

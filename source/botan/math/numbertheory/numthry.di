@@ -22,8 +22,8 @@ namespace Botan {
 * @return (a*b)+c
 */
 BigInt BOTAN_DLL mul_add(const BigInt& a,
-                         const BigInt& b,
-                         const BigInt& c);
+								 const BigInt& b,
+								 const BigInt& c);
 
 /**
 * Fused subtract-multiply
@@ -33,8 +33,8 @@ BigInt BOTAN_DLL mul_add(const BigInt& a,
 * @return (a-b)*c
 */
 BigInt BOTAN_DLL sub_mul(const BigInt& a,
-                         const BigInt& b,
-                         const BigInt& c);
+								 const BigInt& b,
+								 const BigInt& c);
 
 /**
 * Return the absolute value
@@ -72,7 +72,7 @@ BigInt BOTAN_DLL square(const BigInt& x);
 * @return y st (x*y) % modulus == 1
 */
 BigInt BOTAN_DLL inverse_mod(const BigInt& x,
-                             const BigInt& modulus);
+									  const BigInt& modulus);
 
 /**
 * Compute the Jacobi symbol. If n is prime, this is equivalent
@@ -84,7 +84,7 @@ BigInt BOTAN_DLL inverse_mod(const BigInt& x,
 * @return (n / m)
 */
 s32bit BOTAN_DLL jacobi(const BigInt& a,
-                        const BigInt& n);
+								const BigInt& n);
 
 /**
 * Modular exponentation
@@ -94,8 +94,8 @@ s32bit BOTAN_DLL jacobi(const BigInt& a,
 * @return (b^x) % m
 */
 BigInt BOTAN_DLL power_mod(const BigInt& b,
-                           const BigInt& x,
-                           const BigInt& m);
+									const BigInt& x,
+									const BigInt& m);
 
 /**
 * Compute the square root of x modulo a prime using the
@@ -117,8 +117,8 @@ word BOTAN_DLL monty_inverse(word input);
 /**
 * @param x a positive integer
 * @return count of the zero bits in x, or, equivalently, the largest
-*         value of n such that 2^n divides x evenly. Returns zero if
-*         n is less than or equal to zero.
+*			value of n such that 2^n divides x evenly. Returns zero if
+*			n is less than or equal to zero.
 */
 size_t BOTAN_DLL low_zero_bits(const BigInt& x);
 
@@ -131,18 +131,18 @@ size_t BOTAN_DLL low_zero_bits(const BigInt& x);
 * @return true if all primality tests passed, otherwise false
 */
 bool BOTAN_DLL is_prime(const BigInt& n,
-                        RandomNumberGenerator& rng,
-                        size_t prob = 56,
-                        bool is_random = false);
+								RandomNumberGenerator& rng,
+								size_t prob = 56,
+								bool is_random = false);
 
 inline bool quick_check_prime(const BigInt& n, RandomNumberGenerator& rng)
-   { return is_prime(n, rng, 32); }
+	{ return is_prime(n, rng, 32); }
 
 inline bool check_prime(const BigInt& n, RandomNumberGenerator& rng)
-   { return is_prime(n, rng, 56); }
+	{ return is_prime(n, rng, 56); }
 
 inline bool verify_prime(const BigInt& n, RandomNumberGenerator& rng)
-   { return is_prime(n, rng, 80); }
+	{ return is_prime(n, rng, 80); }
 
 
 /**
@@ -151,13 +151,13 @@ inline bool verify_prime(const BigInt& n, RandomNumberGenerator& rng)
 * @param bits how large the resulting prime should be in bits
 * @param coprime a positive integer the result should be coprime to
 * @param equiv a non-negative number that the result should be
-               equivalent to modulo equiv_mod
+					equivalent to modulo equiv_mod
 * @param equiv_mod the modulus equiv should be checked against
 * @return random prime with the specified criteria
 */
 BigInt BOTAN_DLL random_prime(RandomNumberGenerator& rng,
-                              size_t bits, const BigInt& coprime = 1,
-                              size_t equiv = 1, size_t equiv_mod = 2);
+										size_t bits, const BigInt& coprime = 1,
+										size_t equiv = 1, size_t equiv_mod = 2);
 
 /**
 * Return a 'safe' prime, of the form p=2*q+1 with q prime
@@ -166,7 +166,7 @@ BigInt BOTAN_DLL random_prime(RandomNumberGenerator& rng,
 * @return prime randomly chosen from safe primes of length bits
 */
 BigInt BOTAN_DLL random_safe_prime(RandomNumberGenerator& rng,
-                                   size_t bits);
+											  size_t bits);
 
 class Algorithm_Factory;
 
@@ -182,9 +182,9 @@ class Algorithm_Factory;
 */
 std::vector<byte> BOTAN_DLL
 generate_dsa_primes(RandomNumberGenerator& rng,
-                    Algorithm_Factory& af,
-                    BigInt& p_out, BigInt& q_out,
-                    size_t pbits, size_t qbits);
+						  Algorithm_Factory& af,
+						  BigInt& p_out, BigInt& q_out,
+						  size_t pbits, size_t qbits);
 
 /**
 * Generate DSA parameters using the FIPS 186 kosherizer
@@ -196,14 +196,14 @@ generate_dsa_primes(RandomNumberGenerator& rng,
 * @param qbits how long q will be in bits
 * @param seed the seed used to generate the parameters
 * @return true if seed generated a valid DSA parameter set, otherwise
-          false. p_out and q_out are only valid if true was returned.
+			 false. p_out and q_out are only valid if true was returned.
 */
 bool BOTAN_DLL
 generate_dsa_primes(RandomNumberGenerator& rng,
-                    Algorithm_Factory& af,
-                    BigInt& p_out, BigInt& q_out,
-                    size_t pbits, size_t qbits,
-                    const std::vector<byte>& seed);
+						  Algorithm_Factory& af,
+						  BigInt& p_out, BigInt& q_out,
+						  size_t pbits, size_t qbits,
+						  in Array!byte seed);
 
 /**
 * The size of the PRIMES[] array
