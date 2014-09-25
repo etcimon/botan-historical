@@ -75,15 +75,15 @@ class Client : public Channel
 
 		void send_client_hello(Handshake_State& state,
 									  bool force_full_renegotiation,
-									  Protocol_Version version,
+									  Protocol_Version _version,
 									  in string srp_identifier = "",
-									  std::function<string (std::vector<string>)> next_protocol =
-										  std::function<string (std::vector<string>)>());
+									  std::function<string (Vector!( string ))> next_protocol =
+										  std::function<string (Vector!( string ))>());
 
 		void process_handshake_msg(const Handshake_State active_state,
 											Handshake_State pending_state,
 											Handshake_Type type,
-											in Array!byte contents) override;
+											in Vector!byte contents) override;
 
 		Handshake_State new_handshake_state(Handshake_IO io) override;
 

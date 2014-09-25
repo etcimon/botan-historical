@@ -27,22 +27,22 @@ class Unix_EntropySource : public EntropySource
 		*		  an executable to one of these directories then we will
 		*		  run arbitrary code.
 		*/
-		Unix_EntropySource(const std::vector<string>& trusted_paths,
+		Unix_EntropySource(in Vector!( string ) trusted_paths,
 								 size_t concurrent_processes = 0);
 	private:
-		static std::vector<std::vector<string>> get_default_sources();
+		static Vector!( std::vector<string )> get_default_sources();
 
 		class Unix_Process
 		{
 			public:
 				int fd() const { return m_fd; }
 
-				void spawn(const std::vector<string>& args);
+				void spawn(in Vector!( string ) args);
 				void shutdown();
 
 				Unix_Process() {}
 
-				Unix_Process(const std::vector<string>& args) { spawn(args); }
+				Unix_Process(in Vector!( string ) args) { spawn(args); }
 
 				~Unix_Process() { shutdown(); }
 
@@ -52,22 +52,22 @@ class Unix_EntropySource : public EntropySource
 					std::swap(m_pid, other.m_pid);
 				}
 
-				Unix_Process(const Unix_Process&) = delete;
-				Unix_Process& operator=(const Unix_Process&) = delete;
+				Unix_Process(in Unix_Process) = delete;
+				Unix_Process& operator=(in Unix_Process) = delete;
 			private:
 				int m_fd = -1;
 				pid_t m_pid = -1;
 		};
 
-		const std::vector<string>& next_source();
+		const Vector!( string )& next_source();
 
-		const std::vector<string> m_trusted_paths;
+		const Vector!( string ) m_trusted_paths;
 		const size_t m_concurrent;
 
-		std::vector<std::vector<string>> m_sources;
+		Vector!( std::vector<string )> m_sources;
 		size_t m_sources_idx = 0;
 
-		std::vector<Unix_Process> m_procs;
+		Vector!( Unix_Process ) m_procs;
 };
 
 class UnixProcessInfo_EntropySource : public EntropySource

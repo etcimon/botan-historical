@@ -12,15 +12,15 @@
 */
 void Blowfish::encrypt_n(in byte[] input, ref byte[] output) const
 {
-	const u32bit* S1 = &S[0];
-	const u32bit* S2 = &S[256];
-	const u32bit* S3 = &S[512];
-	const u32bit* S4 = &S[768];
+	const uint* S1 = &S[0];
+	const uint* S2 = &S[256];
+	const uint* S3 = &S[512];
+	const uint* S4 = &S[768];
 
 	for(size_t i = 0; i != blocks; ++i)
 	{
-		u32bit L = load_be<u32bit>(input, 0);
-		u32bit R = load_be<u32bit>(input, 1);
+		uint L = load_be<uint>(input, 0);
+		uint R = load_be<uint>(input, 1);
 
 		for(size_t j = 0; j != 16; j += 2)
 		{
@@ -37,8 +37,8 @@ void Blowfish::encrypt_n(in byte[] input, ref byte[] output) const
 
 		store_be(out, R, L);
 
-		in += BLOCK_SIZE;
-		out += BLOCK_SIZE;
+		input = input[BLOCK_SIZE .. $];
+		output = output[BLOCK_SIZE .. $];
 	}
 }
 
@@ -47,15 +47,15 @@ void Blowfish::encrypt_n(in byte[] input, ref byte[] output) const
 */
 void Blowfish::decrypt_n(in byte[] input, ref byte[] output) const
 {
-	const u32bit* S1 = &S[0];
-	const u32bit* S2 = &S[256];
-	const u32bit* S3 = &S[512];
-	const u32bit* S4 = &S[768];
+	const uint* S1 = &S[0];
+	const uint* S2 = &S[256];
+	const uint* S3 = &S[512];
+	const uint* S4 = &S[768];
 
 	for(size_t i = 0; i != blocks; ++i)
 	{
-		u32bit L = load_be<u32bit>(input, 0);
-		u32bit R = load_be<u32bit>(input, 1);
+		uint L = load_be<uint>(input, 0);
+		uint R = load_be<uint>(input, 1);
 
 		for(size_t j = 17; j != 1; j -= 2)
 		{
@@ -72,8 +72,8 @@ void Blowfish::decrypt_n(in byte[] input, ref byte[] output) const
 
 		store_be(out, R, L);
 
-		in += BLOCK_SIZE;
-		out += BLOCK_SIZE;
+		input = input[BLOCK_SIZE .. $];
+		output = output[BLOCK_SIZE .. $];
 	}
 }
 
@@ -98,10 +98,10 @@ void Blowfish::key_expansion(in byte[] key,
 									  const byte salt[16])
 {
 	for(size_t i = 0, j = 0; i != 18; ++i, j += 4)
-		P[i] ^= make_u32bit(key[(j  ) % length], key[(j+1) % length],
+		P[i] ^= make_uint(key[(j  ) % length], key[(j+1) % length],
 								  key[(j+2) % length], key[(j+3) % length]);
 
-	u32bit L = 0, R = 0;
+	uint L = 0, R = 0;
 	generate_sbox(P, L, R, salt, 0);
 	generate_sbox(S, L, R, salt, 2);
 }
@@ -116,7 +116,7 @@ void Blowfish::eks_key_schedule(in byte[] key, size_t length,
 	length = std::min<size_t>(length, 55);
 
 	if(workfactor == 0)
-		throw std::invalid_argument("Bcrypt work factor must be at least 1");
+		throw new std::invalid_argument("Bcrypt work factor must be at least 1");
 
 	/*
 	* On a 2.8 GHz Core-i7, workfactor == 18 takes about 25 seconds to
@@ -124,7 +124,7 @@ void Blowfish::eks_key_schedule(in byte[] key, size_t length,
 	* time being.
 	*/
 	if(workfactor > 18)
-		throw std::invalid_argument("Requested Bcrypt work factor " +
+		throw new std::invalid_argument("Requested Bcrypt work factor " +
 											 std::to_string(workfactor) + " too large");
 
 	P.resize(18);
@@ -148,20 +148,20 @@ void Blowfish::eks_key_schedule(in byte[] key, size_t length,
 /*
 * Generate one of the Sboxes
 */
-void Blowfish::generate_sbox(secure_vector<u32bit>& box,
-									  u32bit& L, u32bit& R,
+void Blowfish::generate_sbox(secure_vector<uint>& box,
+									  ref uint L, ref uint R,
 									  const byte salt[16],
 									  size_t salt_off) const
 {
-	const u32bit* S1 = &S[0];
-	const u32bit* S2 = &S[256];
-	const u32bit* S3 = &S[512];
-	const u32bit* S4 = &S[768];
+	const uint* S1 = &S[0];
+	const uint* S2 = &S[256];
+	const uint* S3 = &S[512];
+	const uint* S4 = &S[768];
 
 	for(size_t i = 0; i != box.size(); i += 2)
 	{
-		L ^= load_be<u32bit>(salt, (i + salt_off) % 4);
-		R ^= load_be<u32bit>(salt, (i + salt_off + 1) % 4);
+		L ^= load_be<uint>(salt, (i + salt_off) % 4);
+		R ^= load_be<uint>(salt, (i + salt_off + 1) % 4);
 
 		for(size_t j = 0; j != 16; j += 2)
 		{
@@ -174,7 +174,7 @@ void Blowfish::generate_sbox(secure_vector<u32bit>& box,
 					 S3[get_byte(2, R)]) + S4[get_byte(3, R)];
 		}
 
-		u32bit T = R; R = L ^ P[16]; L = T ^ P[17];
+		uint T = R; R = L ^ P[16]; L = T ^ P[17];
 		box[i] = L;
 		box[i+1] = R;
 	}

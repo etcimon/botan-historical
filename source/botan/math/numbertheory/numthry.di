@@ -15,7 +15,7 @@
 * @param c an integer
 * @return (a*b)+c
 */
-BigInt mul_add(const BigInt& a,
+BigInt mul_add(in BigInt a,
 								 const BigInt& b,
 								 const BigInt& c);
 
@@ -26,7 +26,7 @@ BigInt mul_add(const BigInt& a,
 * @param c an integer
 * @return (a-b)*c
 */
-BigInt sub_mul(const BigInt& a,
+BigInt sub_mul(in BigInt a,
 								 const BigInt& b,
 								 const BigInt& c);
 
@@ -35,7 +35,7 @@ BigInt sub_mul(const BigInt& a,
 * @param n an integer
 * @return absolute value of n
 */
-inline BigInt abs(const BigInt& n) { return n.abs(); }
+inline BigInt abs(in BigInt n) { return n.abs(); }
 
 /**
 * Compute the greatest common divisor
@@ -43,7 +43,7 @@ inline BigInt abs(const BigInt& n) { return n.abs(); }
 * @param y a positive integer
 * @return gcd(x,y)
 */
-BigInt gcd(const BigInt& x, const BigInt& y);
+BigInt gcd(in BigInt x, const BigInt& y);
 
 /**
 * Least common multiple
@@ -51,13 +51,13 @@ BigInt gcd(const BigInt& x, const BigInt& y);
 * @param y a positive integer
 * @return z, smallest integer such that z % x == 0 and z % y == 0
 */
-BigInt lcm(const BigInt& x, const BigInt& y);
+BigInt lcm(in BigInt x, const BigInt& y);
 
 /**
 * @param x an integer
 * @return (x*x)
 */
-BigInt square(const BigInt& x);
+BigInt square(in BigInt x);
 
 /**
 * Modular inversion
@@ -65,7 +65,7 @@ BigInt square(const BigInt& x);
 * @param modulus a positive integer
 * @return y st (x*y) % modulus == 1
 */
-BigInt inverse_mod(const BigInt& x,
+BigInt inverse_mod(in BigInt x,
 									  const BigInt& modulus);
 
 /**
@@ -77,7 +77,7 @@ BigInt inverse_mod(const BigInt& x,
 * @param n is an odd integer > 1
 * @return (n / m)
 */
-s32bit jacobi(const BigInt& a,
+s32bit jacobi(in BigInt a,
 								const BigInt& n);
 
 /**
@@ -87,7 +87,7 @@ s32bit jacobi(const BigInt& a,
 * @param m a positive modulus
 * @return (b^x) % m
 */
-BigInt power_mod(const BigInt& b,
+BigInt power_mod(in BigInt b,
 									const BigInt& x,
 									const BigInt& m);
 
@@ -99,7 +99,7 @@ BigInt power_mod(const BigInt& b,
 * @param p the prime
 * @return y such that (y*y)%p == x, or -1 if no such integer
 */
-BigInt ressol(const BigInt& x, const BigInt& p);
+BigInt ressol(in BigInt x, const BigInt& p);
 
 /*
 * Compute -input^-1 mod 2^MP_WORD_BITS. Returns zero if input
@@ -114,7 +114,7 @@ word monty_inverse(word input);
 *			value of n such that 2^n divides x evenly. Returns zero if
 *			n is less than or equal to zero.
 */
-size_t low_zero_bits(const BigInt& x);
+size_t low_zero_bits(in BigInt x);
 
 /**
 * Check for primality
@@ -124,18 +124,18 @@ size_t low_zero_bits(const BigInt& x);
 * @param is_random true if n was randomly chosen by us
 * @return true if all primality tests passed, otherwise false
 */
-bool is_prime(const BigInt& n,
+bool is_prime(in BigInt n,
 								RandomNumberGenerator& rng,
 								size_t prob = 56,
 								bool is_random = false);
 
-inline bool quick_check_prime(const BigInt& n, RandomNumberGenerator& rng)
+inline bool quick_check_prime(in BigInt n, RandomNumberGenerator& rng)
 { return is_prime(n, rng, 32); }
 
-inline bool check_prime(const BigInt& n, RandomNumberGenerator& rng)
+inline bool check_prime(in BigInt n, RandomNumberGenerator& rng)
 { return is_prime(n, rng, 56); }
 
-inline bool verify_prime(const BigInt& n, RandomNumberGenerator& rng)
+inline bool verify_prime(in BigInt n, RandomNumberGenerator& rng)
 { return is_prime(n, rng, 80); }/**
 * Randomly generate a prime
 * @param rng a random number generator
@@ -171,7 +171,7 @@ class Algorithm_Factory;
 * @param qbits how long q will be in bits
 * @return random seed used to generate this parameter set
 */
-std::vector<byte> BOTAN_DLL
+Vector!( byte ) BOTAN_DLL
 generate_dsa_primes(RandomNumberGenerator& rng,
 						  Algorithm_Factory& af,
 						  BigInt& p_out, BigInt& q_out,
@@ -194,7 +194,7 @@ generate_dsa_primes(RandomNumberGenerator& rng,
 						  Algorithm_Factory& af,
 						  BigInt& p_out, BigInt& q_out,
 						  size_t pbits, size_t qbits,
-						  in Array!byte seed);
+						  in Vector!byte seed);
 
 /**
 * The size of the PRIMES[] array

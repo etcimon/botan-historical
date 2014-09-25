@@ -22,10 +22,10 @@ class OAEP : public EME
 		*/
 		OAEP(HashFunction* hash, in string P = "");
 	private:
-		SafeArray!byte pad(const byte[], size_t, size_t,
+		SafeVector!byte pad(const byte[], size_t, size_t,
 									  RandomNumberGenerator&) const;
-		SafeArray!byte unpad(const byte[], size_t, size_t) const;
+		SafeVector!byte unpad(const byte[], size_t, size_t) const;
 
-		SafeArray!byte m_Phash;
+		SafeVector!byte m_Phash;
 		std::unique_ptr<HashFunction> m_hash;
 };

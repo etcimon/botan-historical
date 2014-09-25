@@ -15,7 +15,7 @@ namespace {
 /*
 * TLS PRF P_hash function
 */
-void P_hash(SafeArray!byte output,
+void P_hash(SafeVector!byte output,
 				MessageAuthenticationCode& mac,
 				in byte[] secret, size_t secret_len,
 				in byte[] seed, size_t seed_len)
@@ -26,12 +26,12 @@ void P_hash(SafeArray!byte output,
 	}
 	catch(Invalid_Key_Length)
 	{
-		throw Internal_Error("The premaster secret of " +
+		throw new Internal_Error("The premaster secret of " +
 									std::to_string(secret_len) +
 									" bytes is too long for the PRF");
 	}
 
-	SafeArray!byte A(seed, seed + seed_len);
+	SafeVector!byte A(seed, seed + seed_len);
 
 	size_t offset = 0;
 
@@ -44,7 +44,7 @@ void P_hash(SafeArray!byte output,
 
 		mac.update(A);
 		mac.update(seed, seed_len);
-		SafeArray!byte block = mac.final();
+		SafeVector!byte block = mac.flush();
 
 		xor_buf(&output[offset], &block[0], this_block_len);
 		offset += this_block_len;
@@ -65,11 +65,11 @@ TLS_PRF::TLS_PRF()
 /*
 * TLS PRF
 */
-SafeArray!byte TLS_PRF::derive(size_t key_len,
+SafeVector!byte TLS_PRF::derive(size_t key_len,
 											  in byte[] secret, size_t secret_len,
 											  in byte[] seed, size_t seed_len) const
 {
-	SafeArray!byte output(key_len);
+	SafeVector!byte output(key_len);
 
 	size_t S1_len = (secret_len + 1) / 2,
 			 S2_len = (secret_len + 1) / 2;
@@ -89,11 +89,11 @@ TLS_12_PRF::TLS_12_PRF(MessageAuthenticationCode* mac) : hmac(mac)
 {
 }
 
-SafeArray!byte TLS_12_PRF::derive(size_t key_len,
+SafeVector!byte TLS_12_PRF::derive(size_t key_len,
 												  in byte[] secret, size_t secret_len,
 												  in byte[] seed, size_t seed_len) const
 {
-	SafeArray!byte output(key_len);
+	SafeVector!byte output(key_len);
 
 	P_hash(output, *hmac, secret, secret_len, seed, seed_len);
 

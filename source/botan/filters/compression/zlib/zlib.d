@@ -47,7 +47,7 @@ void zlib_free(void* info_ptr, void* ptr)
 	Zlib_Alloc_Info* info = cast(Zlib_Alloc_Info*)(info_ptr);
 	auto i = info->current_allocs.find(ptr);
 	if(i == info->current_allocs.end())
-		throw Invalid_Argument("zlib_free: Got pointer not allocated by us");
+		throw new Invalid_Argument("zlib_free: Got pointer not allocated by us");
 
 	std::memset(ptr, 0, i->second);
 	std::free(ptr);
@@ -115,9 +115,9 @@ void Zlib_Compression::start_msg()
 								  Z_DEFAULT_STRATEGY);
 
 	if(res == Z_STREAM_ERROR)
-		throw Invalid_Argument("Bad setting in deflateInit2");
+		throw new Invalid_Argument("Bad setting in deflateInit2");
 	else if(res != Z_OK)
-		throw Memory_Exhaustion();
+		throw new Memory_Exhaustion();
 }
 
 /*
@@ -214,7 +214,7 @@ void Zlib_Decompression::start_msg()
 	zlib = new Zlib_Stream;
 
 	if(inflateInit2(&(zlib->stream), (raw_deflate ? -15 : 15)) != Z_OK)
-		throw Memory_Exhaustion();
+		throw new Memory_Exhaustion();
 }
 
 /*
@@ -241,13 +241,13 @@ void Zlib_Decompression::write(in byte[] input_arr, size_t length)
 		{
 			clear();
 			if(rc == Z_DATA_ERROR)
-				throw Decoding_Error("Zlib_Decompression: Data integrity error");
+				throw new Decoding_Error("Zlib_Decompression: Data integrity error");
 			else if(rc == Z_NEED_DICT)
-				throw Decoding_Error("Zlib_Decompression: Need preset dictionary");
+				throw new Decoding_Error("Zlib_Decompression: Need preset dictionary");
 			else if(rc == Z_MEM_ERROR)
-				throw Memory_Exhaustion();
+				throw new Memory_Exhaustion();
 			else
-				throw std::runtime_error("Zlib decompression: Unknown error");
+				throw new Exception("Zlib decompression: Unknown error");
 		}
 
 		send(&buffer[0], buffer.size() - zlib->stream.avail_out);
@@ -286,7 +286,7 @@ void Zlib_Decompression::end_msg()
 		if(rc != Z_OK && rc != Z_STREAM_END)
 		{
 			clear();
-			throw Decoding_Error("Zlib_Decompression: Error finalizing");
+			throw new Decoding_Error("Zlib_Decompression: Error finalizing");
 		}
 
 		send(&buffer[0], buffer.size() - zlib->stream.avail_out);

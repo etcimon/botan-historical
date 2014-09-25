@@ -10,7 +10,7 @@
 #include <botan/charset.h>
 #include <botan/get_byte.h>
 #include <set>
-u32bit to_u32bit(in string str)
+uint to_uint(in string str)
 {
 	return std::stoul(str, nullptr);
 }
@@ -18,7 +18,7 @@ u32bit to_u32bit(in string str)
 /*
 * Convert a string into a time duration
 */
-u32bit timespec_to_u32bit(in string timespec)
+uint timespec_to_uint(in string timespec)
 {
 	if(timespec == "")
 		return 0;
@@ -26,7 +26,7 @@ u32bit timespec_to_u32bit(in string timespec)
 	const char suffix = timespec[timespec.size()-1];
 	string value = timespec.substr(0, timespec.size()-1);
 
-	u32bit scale = 1;
+	uint scale = 1;
 
 	if(Charset::is_digit(suffix))
 		value += suffix;
@@ -41,22 +41,22 @@ u32bit timespec_to_u32bit(in string timespec)
 	else if(suffix == 'y')
 		scale = 365 * 24 * 60 * 60;
 	else
-		throw Decoding_Error("timespec_to_u32bit: Bad input " + timespec);
+		throw new Decoding_Error("timespec_to_uint: Bad input " + timespec);
 
-	return scale * to_u32bit(value);
+	return scale * to_uint(value);
 }
 
 /*
 * Parse a SCAN-style algorithm name
 */
-std::vector<string> parse_algorithm_name(in string namex)
+Vector!( string ) parse_algorithm_name(in string namex)
 {
 	if(namex.find('(') == string::npos &&
 		namex.find(')') == string::npos)
-		return std::vector<string>(1, namex);
+		return Vector!( string )(1, namex);
 
 	string name = namex, substring;
-	std::vector<string> elems;
+	Vector!( string ) elems;
 	size_t level = 0;
 
 	elems.push_back(name.substr(0, name.find('(')));
@@ -80,7 +80,7 @@ std::vector<string> parse_algorithm_name(in string namex)
 			}
 
 			if(level == 0 || (level == 1 && i != name.end() - 1))
-				throw Invalid_Algorithm_Name(namex);
+				throw new Invalid_Algorithm_Name(namex);
 			--level;
 		}
 
@@ -97,20 +97,20 @@ std::vector<string> parse_algorithm_name(in string namex)
 	}
 
 	if(substring != "")
-		throw Invalid_Algorithm_Name(namex);
+		throw new Invalid_Algorithm_Name(namex);
 
 	return elems;
 }
 
-std::vector<string> split_on(in string str, char delim)
+Vector!( string ) split_on(in string str, char delim)
 {
 	return split_on_pred(str, [delim](char c) { return c == delim; });
 }
 
-std::vector<string> split_on_pred(in string str,
+Vector!( string ) split_on_pred(in string str,
 									bool delegate(char) pred)
 {
-	std::vector<string> elems;
+	Vector!( string ) elems;
 	if(str == "") return elems;
 
 	string substr;
@@ -127,7 +127,7 @@ std::vector<string> split_on_pred(in string str,
 	}
 
 	if(substr == "")
-		throw Invalid_Argument("Unable to split string: " + str);
+		throw new Invalid_Argument("Unable to split string: " + str);
 	elems.push_back(substr);
 
 	return elems;
@@ -136,7 +136,7 @@ std::vector<string> split_on_pred(in string str,
 /*
 * Join a string
 */
-string string_join(const std::vector<string>& strs, char delim)
+string string_join(in Vector!( string ) strs, char delim)
 {
 	string out = "";
 
@@ -153,10 +153,10 @@ string string_join(const std::vector<string>& strs, char delim)
 /*
 * Parse an ASN.1 OID string
 */
-std::vector<u32bit> parse_asn1_oid(in string oid)
+Vector!( uint ) parse_asn1_oid(in string oid)
 {
 	string substring;
-	std::vector<u32bit> oid_elems;
+	Vector!( uint ) oid_elems;
 
 	for(auto i = oid.begin(); i != oid.end(); ++i)
 	{
@@ -165,8 +165,8 @@ std::vector<u32bit> parse_asn1_oid(in string oid)
 		if(c == '.')
 		{
 			if(substring == "")
-				throw Invalid_OID(oid);
-			oid_elems.push_back(to_u32bit(substring));
+				throw new Invalid_OID(oid);
+			oid_elems.push_back(to_uint(substring));
 			substring.clear();
 		}
 		else
@@ -174,11 +174,11 @@ std::vector<u32bit> parse_asn1_oid(in string oid)
 	}
 
 	if(substring == "")
-		throw Invalid_OID(oid);
-	oid_elems.push_back(to_u32bit(substring));
+		throw new Invalid_OID(oid);
+	oid_elems.push_back(to_uint(substring));
 
 	if(oid_elems.size() < 2)
-		throw Invalid_OID(oid);
+		throw new Invalid_OID(oid);
 
 	return oid_elems;
 }
@@ -225,21 +225,21 @@ bool x500_name_cmp(in string name1, in string name2)
 /*
 * Convert a decimal-dotted string to binary IP
 */
-u32bit string_to_ipv4(in string str)
+uint string_to_ipv4(in string str)
 {
-	std::vector<string> parts = split_on(str, '.');
+	Vector!( string ) parts = split_on(str, '.');
 
 	if(parts.size() != 4)
-		throw Decoding_Error("Invalid IP string " + str);
+		throw new Decoding_Error("Invalid IP string " + str);
 
-	u32bit ip = 0;
+	uint ip = 0;
 
 	for(auto part = parts.begin(); part != parts.end(); ++part)
 	{
-		u32bit octet = to_u32bit(*part);
+		uint octet = to_uint(*part);
 
 		if(octet > 255)
-			throw Decoding_Error("Invalid IP string " + str);
+			throw new Decoding_Error("Invalid IP string " + str);
 
 		ip = (ip << 8) | (octet & 0xFF);
 	}
@@ -250,7 +250,7 @@ u32bit string_to_ipv4(in string str)
 /*
 * Convert an IP address to decimal-dotted string
 */
-string ipv4_to_string(u32bit ip)
+string ipv4_to_string(uint ip)
 {
 	string str;
 

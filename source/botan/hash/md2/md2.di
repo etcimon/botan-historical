@@ -26,6 +26,6 @@ class MD2 : public HashFunction
 		void hash(const byte[]);
 		void final_result(byte[]);
 
-		SafeArray!byte X, checksum, buffer;
+		SafeVector!byte X, checksum, buffer;
 		size_t position;
 };

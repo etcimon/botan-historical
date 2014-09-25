@@ -41,22 +41,22 @@ class Session_Manager_SQLite : public Session_Manager
 
 		~Session_Manager_SQLite();
 
-		bool load_from_session_id(in Array!byte session_id,
+		bool load_from_session_id(in Vector!byte session_id,
 										  Session& session) override;
 
-		bool load_from_server_info(const Server_Information& info,
+		bool load_from_server_info(in Server_Information info,
 											Session& session) override;
 
-		void remove_entry(in Array!byte session_id) override;
+		void remove_entry(in Vector!byte session_id) override;
 
-		void save(const Session& session_data) override;
+		void save(in Session session_data) override;
 
 		std::chrono::seconds session_lifetime() const override
 		{ return m_session_lifetime; }
 
 	private:
-		Session_Manager_SQLite(const Session_Manager_SQLite&);
-		Session_Manager_SQLite& operator=(const Session_Manager_SQLite&);
+		Session_Manager_SQLite(in Session_Manager_SQLite);
+		Session_Manager_SQLite& operator=(in Session_Manager_SQLite);
 
 		void prune_session_cache();
 

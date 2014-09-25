@@ -16,7 +16,7 @@ class GHASH;
 class GCM_Mode : public AEAD_Mode
 {
 	public:
-		SafeArray!byte start(in byte[] nonce, size_t nonce_len) override;
+		SafeVector!byte start(in byte[] nonce, size_t nonce_len) override;
 
 		void set_associated_data(in byte[] ad, size_t ad_len) override;
 
@@ -64,9 +64,9 @@ class GCM_Encryption : public GCM_Mode
 
 		size_t minimum_final_size() const override { return 0; }
 
-		void update(SafeArray!byte blocks, size_t offset = 0) override;
+		void update(SafeVector!byte blocks, size_t offset = 0) override;
 
-		void finish(SafeArray!byte final_block, size_t offset = 0) override;
+		void finish(SafeVector!byte final_block, size_t offset = 0) override;
 };
 
 /**
@@ -90,9 +90,9 @@ class GCM_Decryption : public GCM_Mode
 
 		size_t minimum_final_size() const override { return tag_size(); }
 
-		void update(SafeArray!byte blocks, size_t offset = 0) override;
+		void update(SafeVector!byte blocks, size_t offset = 0) override;
 
-		void finish(SafeArray!byte final_block, size_t offset = 0) override;
+		void finish(SafeVector!byte final_block, size_t offset = 0) override;
 };
 
 /**
@@ -104,7 +104,7 @@ class GHASH : public SymmetricAlgorithm
 	public:
 		void set_associated_data(in byte[] ad, size_t ad_len);
 
-		SafeArray!byte nonce_hash(in byte[] nonce, size_t len);
+		SafeVector!byte nonce_hash(in byte[] nonce, size_t len);
 
 		void start(in byte[] nonce, size_t len);
 
@@ -113,7 +113,7 @@ class GHASH : public SymmetricAlgorithm
 		*/
 		void update(in byte[] input);
 
-		SafeArray!byte final();
+		SafeVector!byte flush();
 
 		Key_Length_Specification key_spec() const { return Key_Length_Specification(16); }
 
@@ -123,17 +123,17 @@ class GHASH : public SymmetricAlgorithm
 	private:
 		void key_schedule(in byte[] key) override;
 
-		void gcm_multiply(SafeArray!byte x) const;
+		void gcm_multiply(SafeVector!byte x) const;
 
-		void ghash_update(SafeArray!byte x,
+		void ghash_update(SafeVector!byte x,
 								in byte[] input, size_t input_len);
 
-		void add_final_block(SafeArray!byte x,
+		void add_final_block(SafeVector!byte x,
 									size_t ad_len, size_t pt_len);
 
-		SafeArray!byte m_H;
-		SafeArray!byte m_H_ad;
-		SafeArray!byte m_nonce;
-		SafeArray!byte m_ghash;
+		SafeVector!byte m_H;
+		SafeVector!byte m_H_ad;
+		SafeVector!byte m_nonce;
+		SafeVector!byte m_ghash;
 		size_t m_ad_len = 0, m_text_len = 0;
 };

@@ -22,16 +22,16 @@ class EMSA_PKCS1v15 : public EMSA
 
 		void update(const byte[], size_t);
 
-		SafeArray!byte raw_data();
+		SafeVector!byte raw_data();
 
-		SafeArray!byte encoding_of(in SafeArray!byte, size_t,
+		SafeVector!byte encoding_of(in SafeVector!byte, size_t,
 												 RandomNumberGenerator& rng);
 
-		bool verify(in SafeArray!byte, in SafeArray!byte,
+		bool verify(in SafeVector!byte, in SafeVector!byte,
 						size_t);
 	private:
 		std::unique_ptr<HashFunction> m_hash;
-		std::vector<byte> m_hash_id;
+		Vector!( byte ) m_hash_id;
 };
 
 /**
@@ -44,14 +44,14 @@ class EMSA_PKCS1v15_Raw : public EMSA
 	public:
 		void update(const byte[], size_t);
 
-		SafeArray!byte raw_data();
+		SafeVector!byte raw_data();
 
-		SafeArray!byte encoding_of(in SafeArray!byte, size_t,
+		SafeVector!byte encoding_of(in SafeVector!byte, size_t,
 												 RandomNumberGenerator& rng);
 
-		bool verify(in SafeArray!byte, in SafeArray!byte,
+		bool verify(in SafeVector!byte, in SafeVector!byte,
 						size_t);
 
 	private:
-		SafeArray!byte message;
+		SafeVector!byte message;
 };

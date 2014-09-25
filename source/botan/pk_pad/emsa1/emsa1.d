@@ -8,7 +8,7 @@
 #include <botan/emsa1.h>
 namespace {
 
-SafeArray!byte emsa1_encoding(in SafeArray!byte msg,
+SafeVector!byte emsa1_encoding(in SafeVector!byte msg,
 											 size_t output_bits)
 {
 	if(8*msg.size() <= output_bits)
@@ -17,7 +17,7 @@ SafeArray!byte emsa1_encoding(in SafeArray!byte msg,
 	size_t shift = 8*msg.size() - output_bits;
 
 	size_t byte_shift = shift / 8, bit_shift = shift % 8;
-	SafeArray!byte digest(msg.size() - byte_shift);
+	SafeVector!byte digest(msg.size() - byte_shift);
 
 	for(size_t j = 0; j != msg.size() - byte_shift; ++j)
 		digest[j] = msg[j];
@@ -42,28 +42,28 @@ void EMSA1::update(in byte[] input, size_t length)
 	m_hash->update(input, length);
 }
 
-SafeArray!byte EMSA1::raw_data()
+SafeVector!byte EMSA1::raw_data()
 {
-	return m_hash->final();
+	return m_hash->flush();
 }
 
-SafeArray!byte EMSA1::encoding_of(in SafeArray!byte msg,
+SafeVector!byte EMSA1::encoding_of(in SafeVector!byte msg,
 													size_t output_bits,
 													RandomNumberGenerator&)
 {
 	if(msg.size() != hash_output_length())
-		throw Encoding_Error("EMSA1::encoding_of: Invalid size for input");
+		throw new Encoding_Error("EMSA1::encoding_of: Invalid size for input");
 	return emsa1_encoding(msg, output_bits);
 }
 
-bool EMSA1::verify(in SafeArray!byte coded,
-						 in SafeArray!byte raw, size_t key_bits)
+bool EMSA1::verify(in SafeVector!byte coded,
+						 in SafeVector!byte raw, size_t key_bits)
 {
 	try {
 		if(raw.size() != m_hash->output_length())
-			throw Encoding_Error("EMSA1::encoding_of: Invalid size for input");
+			throw new Encoding_Error("EMSA1::encoding_of: Invalid size for input");
 
-		SafeArray!byte our_coding = emsa1_encoding(raw, key_bits);
+		SafeVector!byte our_coding = emsa1_encoding(raw, key_bits);
 
 		if(our_coding == coded) return true;
 		if(our_coding.empty() || our_coding[0] != 0) return false;

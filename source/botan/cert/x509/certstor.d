@@ -10,12 +10,12 @@
 #if defined(BOTAN_HAS_BOOST_FILESYSTEM)
 #include <boost/filesystem.hpp>
 #endif
-const X509_CRL* Certificate_Store::find_crl_for(const X509_Certificate&) const
+const X509_CRL* Certificate_Store::find_crl_for(in X509_Certificate) const
 {
 	return nullptr;
 }
 
-void Certificate_Store_In_Memory::add_certificate(const X509_Certificate& cert)
+void Certificate_Store_In_Memory::add_certificate(in X509_Certificate cert)
 {
 	for(size_t i = 0; i != m_certs.size(); ++i)
 	{
@@ -26,9 +26,9 @@ void Certificate_Store_In_Memory::add_certificate(const X509_Certificate& cert)
 	m_certs.push_back(cert);
 }
 
-std::vector<X509_DN> Certificate_Store_In_Memory::all_subjects() const
+Vector!( X509_DN ) Certificate_Store_In_Memory::all_subjects() const
 {
-	std::vector<X509_DN> subjects;
+	Vector!( X509_DN ) subjects;
 	for(size_t i = 0; i != m_certs.size(); ++i)
 		subjects.push_back(m_certs[i].subject_dn());
 	return subjects;
@@ -37,15 +37,15 @@ std::vector<X509_DN> Certificate_Store_In_Memory::all_subjects() const
 namespace {
 
 const X509_Certificate*
-cert_search(const X509_DN& subject_dn, in Array!byte key_id,
-				const std::vector<X509_Certificate>& certs)
+cert_search(in X509_DN subject_dn, in Vector!byte key_id,
+				const Vector!( X509_Certificate )& certs)
 {
 	for(size_t i = 0; i != certs.size(); ++i)
 	{
 		// Only compare key ids if set in both call and in the cert
 		if(key_id.size())
 		{
-			std::vector<byte> skid = certs[i].subject_key_id();
+			Vector!( byte ) skid = certs[i].subject_key_id();
 
 			if(skid.size() && skid != key_id) // no match
 				continue;
@@ -61,13 +61,13 @@ cert_search(const X509_DN& subject_dn, in Array!byte key_id,
 }
 
 const X509_Certificate*
-Certificate_Store_In_Memory::find_cert(const X509_DN& subject_dn,
-													in Array!byte key_id) const
+Certificate_Store_In_Memory::find_cert(in X509_DN subject_dn,
+													in Vector!byte key_id) const
 {
 	return cert_search(subject_dn, key_id, m_certs);
 }
 
-void Certificate_Store_In_Memory::add_crl(const X509_CRL& crl)
+void Certificate_Store_In_Memory::add_crl(in X509_CRL crl)
 {
 	X509_DN crl_issuer = crl.issuer_dn();
 
@@ -86,16 +86,16 @@ void Certificate_Store_In_Memory::add_crl(const X509_CRL& crl)
 	m_crls.push_back(crl);
 }
 
-const X509_CRL* Certificate_Store_In_Memory::find_crl_for(const X509_Certificate& subject) const
+const X509_CRL* Certificate_Store_In_Memory::find_crl_for(in X509_Certificate subject) const
 {
-	in Array!byte key_id = subject.authority_key_id();
+	in Vector!byte key_id = subject.authority_key_id();
 
 	for(size_t i = 0; i != m_crls.size(); ++i)
 	{
 		// Only compare key ids if set in both call and in the CRL
 		if(key_id.size())
 		{
-			std::vector<byte> akid = m_crls[i].authority_key_id();
+			Vector!( byte ) akid = m_crls[i].authority_key_id();
 
 			if(akid.size() && akid != key_id) // no match
 				continue;
@@ -130,20 +130,20 @@ Certificate_Store_In_Memory::Certificate_Store_In_Memory(in string dir)
 		catch(...) {}
 	}
 #else
-	throw std::runtime_error("Certificate_Store_In_Memory: FS access disabled");
+	throw new Exception("Certificate_Store_In_Memory: FS access disabled");
 #endif
 }
 
 const X509_Certificate*
-Certificate_Store_Overlay::find_cert(const X509_DN& subject_dn,
-												 in Array!byte key_id) const
+Certificate_Store_Overlay::find_cert(in X509_DN subject_dn,
+												 in Vector!byte key_id) const
 {
 	return cert_search(subject_dn, key_id, m_certs);
 }
 
-std::vector<X509_DN> Certificate_Store_Overlay::all_subjects() const
+Vector!( X509_DN ) Certificate_Store_Overlay::all_subjects() const
 {
-	std::vector<X509_DN> subjects;
+	Vector!( X509_DN ) subjects;
 	for(size_t i = 0; i != m_certs.size(); ++i)
 		subjects.push_back(m_certs[i].subject_dn());
 	return subjects;

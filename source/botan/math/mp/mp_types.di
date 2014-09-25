@@ -13,10 +13,10 @@
   #define BOTAN_HAS_MP_DWORD
 #elif (BOTAN_MP_WORD_BITS == 16)
   typedef u16bit word;
-  typedef u32bit dword;
+  typedef uint dword;
   #define BOTAN_HAS_MP_DWORD
 #elif (BOTAN_MP_WORD_BITS == 32)
-  typedef u32bit word;
+  typedef uint word;
   typedef u64bit dword;
   #define BOTAN_HAS_MP_DWORD
 #elif (BOTAN_MP_WORD_BITS == 64)

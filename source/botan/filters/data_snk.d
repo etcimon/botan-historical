@@ -16,7 +16,7 @@ void DataSink_Stream::write(in byte[] out, size_t length)
 {
 	sink.write(cast(const char*)(out), length);
 	if(!sink.good())
-		throw Stream_IO_Error("DataSink_Stream: Failure writing to " +
+		throw new Stream_IO_Error("DataSink_Stream: Failure writing to " +
 									 identifier);
 }
 
@@ -45,7 +45,7 @@ DataSink_Stream::DataSink_Stream(in string path,
 	if(!sink.good())
 	{
 		delete sink_p;
-		throw Stream_IO_Error("DataSink_Stream: Failure opening " + path);
+		throw new Stream_IO_Error("DataSink_Stream: Failure opening " + path);
 	}
 }
 

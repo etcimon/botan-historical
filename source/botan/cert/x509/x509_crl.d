@@ -30,7 +30,7 @@ X509_CRL::X509_CRL(in string in, bool touc) :
 	do_decode();
 }
 
-X509_CRL::X509_CRL(in Array!byte in, bool touc) :
+X509_CRL::X509_CRL(in Vector!byte in, bool touc) :
 	X509_Object(input, "CRL/X509 CRL"), throw_on_unknown_critical(touc)
 {
 	do_decode();
@@ -39,23 +39,23 @@ X509_CRL::X509_CRL(in Array!byte in, bool touc) :
 /**
 * Check if this particular certificate is listed in the CRL
 */
-bool X509_CRL::is_revoked(const X509_Certificate& cert) const
+bool X509_CRL::is_revoked(in X509_Certificate cert) const
 {
 	/*
 	If the cert wasn't issued by the CRL issuer, it's possible the cert
-	is revoked, but not by this CRL. Maybe throw an exception instead?
+	is revoked, but not by this CRL. Maybe throw new an exception instead?
 	*/
 	if(cert.issuer_dn() != issuer_dn())
 		return false;
 
-	std::vector<byte> crl_akid = authority_key_id();
-	std::vector<byte> cert_akid = cert.authority_key_id();
+	Vector!( byte ) crl_akid = authority_key_id();
+	Vector!( byte ) cert_akid = cert.authority_key_id();
 
 	if(!crl_akid.empty() && !cert_akid.empty())
 		if(crl_akid != cert_akid)
 			return false;
 
-	std::vector<byte> cert_serial = cert.serial_number();
+	Vector!( byte ) cert_serial = cert.serial_number();
 
 	bool is_revoked = false;
 
@@ -80,18 +80,18 @@ void X509_CRL::force_decode()
 {
 	BER_Decoder tbs_crl(tbs_bits);
 
-	size_t version;
-	tbs_crl.decode_optional(version, INTEGER, UNIVERSAL);
+	size_t _version;
+	tbs_crl.decode_optional(_version, INTEGER, UNIVERSAL);
 
-	if(version != 0 && version != 1)
-		throw X509_CRL_Error("Unknown X.509 CRL version " +
-									std::to_string(version+1));
+	if(_version != 0 && _version != 1)
+		throw new X509_CRL_Error("Unknown X.509 CRL version " +
+									std::to_string(_version+1));
 
 	AlgorithmIdentifier sig_algo_inner;
 	tbs_crl.decode(sig_algo_inner);
 
 	if(sig_algo != sig_algo_inner)
-		throw X509_CRL_Error("Algorithm identifier mismatch");
+		throw new X509_CRL_Error("Algorithm identifier mismatch");
 
 	X509_DN dn_issuer;
 	tbs_crl.decode(dn_issuer);
@@ -132,7 +132,7 @@ void X509_CRL::force_decode()
 	}
 
 	if(next.type_tag != NO_OBJECT)
-		throw X509_CRL_Error("Unknown tag in CRL");
+		throw new X509_CRL_Error("Unknown tag in CRL");
 
 	tbs_crl.verify_end();
 }
@@ -140,7 +140,7 @@ void X509_CRL::force_decode()
 /*
 * Return the list of revoked certificates
 */
-std::vector<CRL_Entry> X509_CRL::get_revoked() const
+Vector!( CRL_Entry ) X509_CRL::get_revoked() const
 {
 	return revoked;
 }
@@ -156,7 +156,7 @@ X509_DN X509_CRL::issuer_dn() const
 /*
 * Return the key identifier of the issuer
 */
-std::vector<byte> X509_CRL::authority_key_id() const
+Vector!( byte ) X509_CRL::authority_key_id() const
 {
 	return info.get1_memvec("X509v3.AuthorityKeyIdentifier");
 }
@@ -164,9 +164,9 @@ std::vector<byte> X509_CRL::authority_key_id() const
 /*
 * Return the CRL number of this CRL
 */
-u32bit X509_CRL::crl_number() const
+uint X509_CRL::crl_number() const
 {
-	return info.get1_u32bit("X509v3.CRLNumber");
+	return info.get1_uint("X509v3.CRLNumber");
 }
 
 /*

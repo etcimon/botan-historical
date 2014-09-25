@@ -24,14 +24,14 @@ namespace X509 {
 * @param key the public key to encode
 * @return BER encoding of this key
 */
-std::vector<byte> BER_encode(const Public_Key& key);
+Vector!( byte ) BER_encode(in Public_Key key);
 
 /**
 * PEM encode a public key into a string.
 * @param key the key to encode
 * @return PEM encoded key
 */
-string PEM_encode(const Public_Key& key);
+string PEM_encode(in Public_Key key);
 
 /**
 * Create a public key from a data source.
@@ -52,13 +52,13 @@ Public_Key* load_key(in string filename);
 * @param enc the memory region containing the DER or PEM encoded key
 * @return new public key object
 */
-Public_Key* load_key(in Array!byte enc);
+Public_Key* load_key(in Vector!byte enc);
 
 /**
 * Copy a key.
 * @param key the public key to copy
 * @return new public key object
 */
-Public_Key* copy_key(const Public_Key& key);
+Public_Key* copy_key(in Public_Key key);
 
 }

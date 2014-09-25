@@ -42,6 +42,6 @@ class HMAC_RNG : public RandomNumberGenerator
 		size_t m_collected_entropy_estimate = 0;
 		size_t m_output_since_reseed = 0;
 
-		SafeArray!byte m_K;
-		u32bit m_counter = 0;
+		SafeVector!byte m_K;
+		uint m_counter = 0;
 };

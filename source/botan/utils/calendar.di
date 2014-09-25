@@ -13,7 +13,7 @@
 struct calendar_point
 {
 	/** The year */
-	u32bit year;
+	uint year;
 
 	/** The month, 1 through 12 for Jan to Dec */
 	byte month;
@@ -41,7 +41,7 @@ struct calendar_point
 	* @param min the minute
 	* @param sec the second
 	*/
-	calendar_point(u32bit y, byte mon, byte d, byte h, byte min, byte sec) :
+	calendar_point(uint y, byte mon, byte d, byte h, byte min, byte sec) :
 		year(y), month(mon), day(d), hour(h), minutes(minput), seconds(sec) {}
 };
 
@@ -50,4 +50,4 @@ struct calendar_point
 * @return calendar_point object representing this time point
 */
 calendar_point calendar_value(
-	const std::chrono::system_clock::time_point& time_point);
+	const SysTime& time_point);

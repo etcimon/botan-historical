@@ -23,7 +23,7 @@ namespace TLS {
 
 class Handshake_IO;
 
-std::vector<byte> make_hello_random(RandomNumberGenerator& rng);
+Vector!( byte ) make_hello_random(RandomNumberGenerator& rng);
 
 /**
 * DTLS Hello Verify Request
@@ -31,18 +31,18 @@ std::vector<byte> make_hello_random(RandomNumberGenerator& rng);
 class Hello_Verify_Request : public Handshake_Message
 {
 	public:
-		std::vector<byte> serialize() const override;
+		Vector!( byte ) serialize() const override;
 		Handshake_Type type() const override { return HELLO_VERIFY_REQUEST; }
 
-		std::vector<byte> cookie() const { return m_cookie; }
+		Vector!( byte ) cookie() const { return m_cookie; }
 
-		Hello_Verify_Request(in Array!byte buf);
+		Hello_Verify_Request(in Vector!byte buf);
 
-		Hello_Verify_Request(in Array!byte client_hello_bits,
+		Hello_Verify_Request(in Vector!byte client_hello_bits,
 									in string client_identity,
 									const SymmetricKey& secret_key);
 	private:
-		std::vector<byte> m_cookie;
+		Vector!( byte ) m_cookie;
 };
 
 /**
@@ -53,30 +53,30 @@ class Client_Hello : public Handshake_Message
 	public:
 		Handshake_Type type() const override { return CLIENT_HELLO; }
 
-		Protocol_Version version() const { return m_version; }
+		Protocol_Version _version() const { return m_version; }
 
-		in Array!byte random() const { return m_random; }
+		in Vector!byte random() const { return m_random; }
 
-		in Array!byte session_id() const { return m_session_id; }
+		in Vector!byte session_id() const { return m_session_id; }
 
-		std::vector<u16bit> ciphersuites() const { return m_suites; }
+		Vector!( u16bit ) ciphersuites() const { return m_suites; }
 
-		std::vector<byte> compression_methods() const { return m_comp_methods; }
+		Vector!( byte ) compression_methods() const { return m_comp_methods; }
 
 		bool offered_suite(u16bit ciphersuite) const;
 
-		std::vector<std::pair<string, string>> supported_algos() const
+		Vector!( Pair!(string, string) ) supported_algos() const
 		{
 			if(Signature_Algorithms* sigs = m_extensions.get<Signature_Algorithms>())
 				return sigs->supported_signature_algorthms();
-			return std::vector<std::pair<string, string>>();
+			return Vector!( Pair!(string, string) )();
 		}
 
-		std::vector<string> supported_ecc_curves() const
+		Vector!( string ) supported_ecc_curves() const
 		{
 			if(Supported_Elliptic_Curves* ecc = m_extensions.get<Supported_Elliptic_Curves>())
 				return ecc->curves();
-			return std::vector<string>();
+			return Vector!( string )();
 		}
 
 		string sni_hostname() const
@@ -98,11 +98,11 @@ class Client_Hello : public Handshake_Message
 			return m_extensions.get<Renegotiation_Extension>();
 		}
 
-		std::vector<byte> renegotiation_info() const
+		Vector!( byte ) renegotiation_info() const
 		{
 			if(Renegotiation_Extension* reneg = m_extensions.get<Renegotiation_Extension>())
 				return reneg->renegotiation_info();
-			return std::vector<byte>();
+			return Vector!( byte )();
 		}
 
 		bool next_protocol_notification() const
@@ -122,11 +122,11 @@ class Client_Hello : public Handshake_Message
 			return m_extensions.get<Session_Ticket>();
 		}
 
-		std::vector<byte> session_ticket() const
+		Vector!( byte ) session_ticket() const
 		{
 			if(Session_Ticket* ticket = m_extensions.get<Session_Ticket>())
 				return ticket->contents();
-			return std::vector<byte>();
+			return Vector!( byte )();
 		}
 
 		bool supports_heartbeats() const
@@ -136,48 +136,48 @@ class Client_Hello : public Handshake_Message
 
 		bool peer_can_send_heartbeats() const
 		{
-			if(Heartbeat_Support_Indicator* hb = m_extensions.get<Heartbeat_Support_Indicator>())
+			if(Heartbeat_Support_Indicator hb = m_extensions.get<Heartbeat_Support_Indicator>())
 				return hb->peer_allowed_to_send();
 			return false;
 		}
 
-		void update_hello_cookie(const Hello_Verify_Request& hello_verify);
+		void update_hello_cookie(in Hello_Verify_Request hello_verify);
 
 		std::set<Handshake_Extension_Type> extension_types() const
 		{ return m_extensions.extension_types(); }
 
-		Client_Hello(Handshake_IO& io,
-						 Handshake_Hash& hash,
-						 Protocol_Version version,
-						 const Policy& policy,
-						 RandomNumberGenerator& rng,
-						 in Array!byte reneg_info,
+		Client_Hello(Handshake_IO io,
+						 Handshake_Hash hash,
+						 Protocol_Version _version,
+						 in Policy policy,
+						 RandomNumberGenerator rng,
+						 in Vector!byte reneg_info,
 						 bool next_protocol = false,
 						 in string hostname = "",
 						 in string srp_identifier = "");
 
-		Client_Hello(Handshake_IO& io,
-						 Handshake_Hash& hash,
-						 const Policy& policy,
-						 RandomNumberGenerator& rng,
-						 in Array!byte reneg_info,
-						 const Session& resumed_session,
+		Client_Hello(Handshake_IO io,
+						 Handshake_Hash hash,
+						 in Policy policy,
+						 RandomNumberGenerator rng,
+						 in Vector!byte reneg_info,
+						 in Session resumed_session,
 						 bool next_protocol = false);
 
-		Client_Hello(in Array!byte buf,
+		Client_Hello(in Vector!byte buf,
 						 Handshake_Type type);
 
 	private:
-		std::vector<byte> serialize() const override;
-		void deserialize(in Array!byte buf);
-		void deserialize_sslv2(in Array!byte buf);
+		Vector!( byte ) serialize() const override;
+		void deserialize(in Vector!byte buf);
+		void deserialize_sslv2(in Vector!byte buf);
 
 		Protocol_Version m_version;
-		std::vector<byte> m_session_id;
-		std::vector<byte> m_random;
-		std::vector<u16bit> m_suites;
-		std::vector<byte> m_comp_methods;
-		std::vector<byte> m_hello_cookie; // DTLS only
+		Vector!( byte ) m_session_id;
+		Vector!( byte ) m_random;
+		Vector!( u16bit ) m_suites;
+		Vector!( byte ) m_comp_methods;
+		Vector!( byte ) m_hello_cookie; // DTLS only
 
 		Extensions m_extensions;
 };
@@ -190,11 +190,11 @@ class Server_Hello : public Handshake_Message
 	public:
 		Handshake_Type type() const override { return SERVER_HELLO; }
 
-		Protocol_Version version() const { return m_version; }
+		Protocol_Version _version() const { return m_version; }
 
-		in Array!byte random() const { return m_random; }
+		in Vector!byte random() const { return m_random; }
 
-		in Array!byte session_id() const { return m_session_id; }
+		in Vector!byte session_id() const { return m_session_id; }
 
 		u16bit ciphersuite() const { return m_ciphersuite; }
 
@@ -205,11 +205,11 @@ class Server_Hello : public Handshake_Message
 			return m_extensions.get<Renegotiation_Extension>();
 		}
 
-		std::vector<byte> renegotiation_info() const
+		Vector!( byte ) renegotiation_info() const
 		{
 			if(Renegotiation_Extension* reneg = m_extensions.get<Renegotiation_Extension>())
 				return reneg->renegotiation_info();
-			return std::vector<byte>();
+			return Vector!( byte )();
 		}
 
 		bool next_protocol_notification() const
@@ -217,11 +217,11 @@ class Server_Hello : public Handshake_Message
 			return m_extensions.get<Next_Protocol_Notification>();
 		}
 
-		std::vector<string> next_protocols() const
+		Vector!( string ) next_protocols() const
 		{
 			if(Next_Protocol_Notification* npn = m_extensions.get<Next_Protocol_Notification>())
 				return npn->protocols();
-			return std::vector<string>();
+			return Vector!( string )();
 		}
 
 		size_t fragment_size() const
@@ -251,28 +251,28 @@ class Server_Hello : public Handshake_Message
 		std::set<Handshake_Extension_Type> extension_types() const
 		{ return m_extensions.extension_types(); }
 
-		Server_Hello(Handshake_IO& io,
-						 Handshake_Hash& hash,
-						 const Policy& policy,
-						 in Array!byte session_id,
-						 Protocol_Version ver,
+		Server_Hello(Handshake_IO io,
+						 Handshake_Hash hash,
+						 in Policy policy,
+						 in Vector!byte session_id,
+						 Protocol_Version _version,
 						 u16bit ciphersuite,
 						 byte compression,
 						 size_t max_fragment_size,
 						 bool client_has_secure_renegotiation,
-						 in Array!byte reneg_info,
+						 in Vector!byte reneg_info,
 						 bool offer_session_ticket,
 						 bool client_has_npn,
-						 const std::vector<string>& next_protocols,
+						 in Vector!( string ) next_protocols,
 						 bool client_has_heartbeat,
-						 RandomNumberGenerator& rng);
+						 RandomNumberGenerator rng);
 
-		Server_Hello(in Array!byte buf);
+		Server_Hello(in Vector!byte buf);
 	private:
-		std::vector<byte> serialize() const override;
+		Vector!( byte ) serialize() const override;
 
 		Protocol_Version m_version;
-		std::vector<byte> m_session_id, m_random;
+		Vector!( byte ) m_session_id, m_random;
 		u16bit m_ciphersuite;
 		byte m_comp_method;
 
@@ -287,30 +287,30 @@ class Client_Key_Exchange : public Handshake_Message
 	public:
 		Handshake_Type type() const override { return CLIENT_KEX; }
 
-		in SafeArray!byte pre_master_secret() const
+		in SafeVector!byte pre_master_secret() const
 		{ return m_pre_master; }
 
-		Client_Key_Exchange(Handshake_IO& io,
-								  Handshake_State& state,
-								  const Policy& policy,
+		Client_Key_Exchange(Handshake_IO io,
+								  Handshake_State state,
+								  in Policy policy,
 								  Credentials_Manager& creds,
-								  const Public_Key* server_public_key,
+								  in Public_Key server_public_key,
 								  in string hostname,
-								  RandomNumberGenerator& rng);
+								  RandomNumberGenerator rng);
 
-		Client_Key_Exchange(in Array!byte buf,
-								  const Handshake_State& state,
-								  const Private_Key* server_rsa_kex_key,
-								  Credentials_Manager& creds,
-								  const Policy& policy,
-								  RandomNumberGenerator& rng);
+		Client_Key_Exchange(in Vector!byte buf,
+								  in Handshake_State state,
+								  in Private_Key server_rsa_kex_key,
+								  Credentials_Manager creds,
+								  in Policy policy,
+								  RandomNumberGenerator rng);
 
 	private:
-		std::vector<byte> serialize() const override
+		Vector!( byte ) serialize() const override
 		{ return m_key_material; }
 
-		std::vector<byte> m_key_material;
-		SafeArray!byte m_pre_master;
+		Vector!( byte ) m_key_material;
+		SafeVector!byte m_pre_master;
 };
 
 /**
@@ -320,20 +320,20 @@ class Certificate : public Handshake_Message
 {
 	public:
 		Handshake_Type type() const override { return CERTIFICATE; }
-		const std::vector<X509_Certificate>& cert_chain() const { return m_certs; }
+		const Vector!( X509_Certificate )& cert_chain() const { return m_certs; }
 
 		size_t count() const { return m_certs.size(); }
 		bool empty() const { return m_certs.empty(); }
 
-		Certificate(Handshake_IO& io,
-						Handshake_Hash& hash,
-						const std::vector<X509_Certificate>& certs);
+		Certificate(Handshake_IO io,
+						Handshake_Hash hash,
+						const Vector!( X509_Certificate )& certs);
 
-		Certificate(in Array!byte buf);
+		Certificate(in Vector!byte buf);
 	private:
-		std::vector<byte> serialize() const override;
+		Vector!( byte ) serialize() const override;
 
-		std::vector<X509_Certificate> m_certs;
+		Vector!( X509_Certificate ) m_certs;
 };
 
 /**
@@ -344,29 +344,29 @@ class Certificate_Req : public Handshake_Message
 	public:
 		Handshake_Type type() const override { return CERTIFICATE_REQUEST; }
 
-		const std::vector<string>& acceptable_cert_types() const
+		const Vector!( string )& acceptable_cert_types() const
 		{ return m_cert_key_types; }
 
-		std::vector<X509_DN> acceptable_CAs() const { return m_names; }
+		Vector!( X509_DN ) acceptable_CAs() const { return m_names; }
 
-		std::vector<std::pair<string, string> > supported_algos() const
+		Vector!( Pair!(string, string)  ) supported_algos() const
 		{ return m_supported_algos; }
 
-		Certificate_Req(Handshake_IO& io,
-							 Handshake_Hash& hash,
-							 const Policy& policy,
-							 const std::vector<X509_DN>& allowed_cas,
-							 Protocol_Version version);
+		Certificate_Req(Handshake_IO io,
+							 Handshake_Hash hash,
+							 in Policy policy,
+							 in Vector!( X509_DN ) allowed_cas,
+							 Protocol_Version _version);
 
-		Certificate_Req(in Array!byte buf,
-							 Protocol_Version version);
+		Certificate_Req(in Vector!byte buf,
+							 Protocol_Version _version);
 	private:
-		std::vector<byte> serialize() const override;
+		Vector!( byte ) serialize() const override;
 
-		std::vector<X509_DN> m_names;
-		std::vector<string> m_cert_key_types;
+		Vector!( X509_DN ) m_names;
+		Vector!( string ) m_cert_key_types;
 
-		std::vector<std::pair<string, string> > m_supported_algos;
+		Vector!( Pair!(string, string)  ) m_supported_algos;
 };
 
 /**
@@ -382,23 +382,23 @@ class Certificate_Verify : public Handshake_Message
 		* @param cert the purported certificate
 		* @param state the handshake state
 		*/
-		bool verify(const X509_Certificate& cert,
-						const Handshake_State& state) const;
+		bool verify(in X509_Certificate cert,
+						in Handshake_State state) const;
 
-		Certificate_Verify(Handshake_IO& io,
-								 Handshake_State& state,
-								 const Policy& policy,
-								 RandomNumberGenerator& rng,
-								 const Private_Key* key);
+		Certificate_Verify(Handshake_IO io,
+								 Handshake_State state,
+								 in Policy policy,
+								 RandomNumberGenerator rng,
+								 in Private_Key key);
 
-		Certificate_Verify(in Array!byte buf,
-								 Protocol_Version version);
+		Certificate_Verify(in Vector!byte buf,
+								 Protocol_Version _version);
 	private:
-		std::vector<byte> serialize() const override;
+		Vector!( byte ) serialize() const override;
 
 		string m_sig_algo; // sig algo used to create signature
 		string m_hash_algo; // hash used to create signature
-		std::vector<byte> m_signature;
+		Vector!( byte ) m_signature;
 };
 
 /**
@@ -409,21 +409,21 @@ class Finished : public Handshake_Message
 	public:
 		Handshake_Type type() const override { return FINISHED; }
 
-		std::vector<byte> verify_data() const
+		Vector!( byte ) verify_data() const
 		{ return m_verification_data; }
 
-		bool verify(const Handshake_State& state,
+		bool verify(in Handshake_State state,
 						Connection_Side side) const;
 
-		Finished(Handshake_IO& io,
-					Handshake_State& state,
+		Finished(Handshake_IO io,
+					Handshake_State state,
 					Connection_Side side);
 
-		Finished(in Array!byte buf);
+		Finished(in Vector!byte buf);
 	private:
-		std::vector<byte> serialize() const override;
+		Vector!( byte ) serialize() const override;
 
-		std::vector<byte> m_verification_data;
+		Vector!( byte ) m_verification_data;
 };
 
 /**
@@ -434,10 +434,10 @@ class Hello_Request : public Handshake_Message
 	public:
 		Handshake_Type type() const override { return HELLO_REQUEST; }
 
-		Hello_Request(Handshake_IO& io);
-		Hello_Request(in Array!byte buf);
+		Hello_Request(Handshake_IO io);
+		Hello_Request(in Vector!byte buf);
 	private:
-		std::vector<byte> serialize() const override;
+		Vector!( byte ) serialize() const override;
 };
 
 /**
@@ -448,10 +448,10 @@ class Server_Key_Exchange : public Handshake_Message
 	public:
 		Handshake_Type type() const override { return SERVER_KEX; }
 
-		in Array!byte params() const { return m_params; }
+		in Vector!byte params() const { return m_params; }
 
-		bool verify(const Public_Key& server_key,
-						const Handshake_State& state) const;
+		bool verify(in Public_Key server_key,
+						in Handshake_State state) const;
 
 		// Only valid for certain kex types
 		in Private_Key server_kex_key() const;
@@ -459,30 +459,30 @@ class Server_Key_Exchange : public Handshake_Message
 		// Only valid for SRP negotiation
 		SRP6_Server_Session& server_srp_params() const;
 
-		Server_Key_Exchange(Handshake_IO& io,
-								  Handshake_State& state,
-								  const Policy& policy,
-								  Credentials_Manager& creds,
-								  RandomNumberGenerator& rng,
-								  const Private_Key* signing_key = nullptr);
+		Server_Key_Exchange(Handshake_IO io,
+								  Handshake_State state,
+								  in Policy policy,
+								  Credentials_Manager creds,
+								  RandomNumberGenerator rng,
+								  in Private_Key signing_key = nullptr);
 
-		Server_Key_Exchange(in Array!byte buf,
+		Server_Key_Exchange(in Vector!byte buf,
 								  in string kex_alg,
 								  in string sig_alg,
-								  Protocol_Version version);
+								  Protocol_Version _version);
 
 		~Server_Key_Exchange();
 	private:
-		std::vector<byte> serialize() const override;
+		Vector!( byte ) serialize() const override;
 
 		std::unique_ptr<Private_Key> m_kex_key;
 		std::unique_ptr<SRP6_Server_Session> m_srp_params;
 
-		std::vector<byte> m_params;
+		Vector!( byte ) m_params;
 
 		string m_sig_algo; // sig algo used to create signature
 		string m_hash_algo; // hash used to create signature
-		std::vector<byte> m_signature;
+		Vector!( byte ) m_signature;
 };
 
 /**
@@ -493,10 +493,10 @@ class Server_Hello_Done : public Handshake_Message
 	public:
 		Handshake_Type type() const override { return SERVER_HELLO_DONE; }
 
-		Server_Hello_Done(Handshake_IO& io, Handshake_Hash& hash);
-		Server_Hello_Done(in Array!byte buf);
+		Server_Hello_Done(Handshake_IO io, Handshake_Hash& hash);
+		Server_Hello_Done(in Vector!byte buf);
 	private:
-		std::vector<byte> serialize() const override;
+		Vector!( byte ) serialize() const override;
 };
 
 /**
@@ -509,13 +509,13 @@ class Next_Protocol : public Handshake_Message
 
 		string protocol() const { return m_protocol; }
 
-		Next_Protocol(Handshake_IO& io,
-						  Handshake_Hash& hash,
+		Next_Protocol(Handshake_IO io,
+						  Handshake_Hash hash,
 						  in string protocol);
 
-		Next_Protocol(in Array!byte buf);
+		Next_Protocol(in Vector!byte buf);
 	private:
-		std::vector<byte> serialize() const override;
+		Vector!( byte ) serialize() const override;
 
 		string m_protocol;
 };
@@ -528,23 +528,23 @@ class New_Session_Ticket : public Handshake_Message
 	public:
 		Handshake_Type type() const override { return NEW_SESSION_TICKET; }
 
-		u32bit ticket_lifetime_hint() const { return m_ticket_lifetime_hint; }
-		in Array!byte ticket() const { return m_ticket; }
+		uint ticket_lifetime_hint() const { return m_ticket_lifetime_hint; }
+		in Vector!byte ticket() const { return m_ticket; }
 
-		New_Session_Ticket(Handshake_IO& io,
-								 Handshake_Hash& hash,
-								 in Array!byte ticket,
-								 u32bit lifetime);
+		New_Session_Ticket(Handshake_IO io,
+								 Handshake_Hash hash,
+								 in Vector!byte ticket,
+								 uint lifetime);
 
-		New_Session_Ticket(Handshake_IO& io,
-								 Handshake_Hash& hash);
+		New_Session_Ticket(Handshake_IO io,
+								 Handshake_Hash hash);
 
-		New_Session_Ticket(in Array!byte buf);
+		New_Session_Ticket(in Vector!byte buf);
 	private:
-		std::vector<byte> serialize() const override;
+		Vector!( byte ) serialize() const override;
 
-		u32bit m_ticket_lifetime_hint = 0;
-		std::vector<byte> m_ticket;
+		uint m_ticket_lifetime_hint = 0;
+		Vector!( byte ) m_ticket;
 };
 
 /**
@@ -555,8 +555,8 @@ class Change_Cipher_Spec : public Handshake_Message
 	public:
 		Handshake_Type type() const override { return HANDSHAKE_CCS; }
 
-		std::vector<byte> serialize() const override
-		{ return std::vector<byte>(1, 1); }
+		Vector!( byte ) serialize() const override
+		{ return Vector!( byte )(1, 1); }
 };
 
 }

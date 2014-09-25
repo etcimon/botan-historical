@@ -51,7 +51,7 @@ class Algorithm_Factory
 		* @param algo_spec the algorithm we are querying
 		* @returns list of providers of this algorithm
 		*/
-		std::vector<string> providers_of(in string algo_spec);
+		Vector!( string ) providers_of(in string algo_spec);
 
 		/**
 		* @param algo_spec the algorithm we are setting a provider for
@@ -190,7 +190,7 @@ class Algorithm_Factory
 				/**
 				* @param a an algorithm factory
 				*/
-				Engine_Iterator(const Algorithm_Factory& a) :
+				Engine_Iterator(in Algorithm_Factory a) :
 					af(a) { n = 0; }
 			private:
 				const Algorithm_Factory& af;
@@ -201,7 +201,7 @@ class Algorithm_Factory
 	private:
 		Engine* get_engine_n(size_t n) const;
 
-		std::vector<Engine*> engines;
+		Vector!( Engine* ) engines;
 
 		std::unique_ptr<Algorithm_Cache<BlockCipher>> block_cipher_cache;
 		std::unique_ptr<Algorithm_Cache<StreamCipher>> stream_cipher_cache;

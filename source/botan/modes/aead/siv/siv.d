@@ -68,10 +68,10 @@ void SIV_Mode::set_associated_data_n(size_t n, in byte[] ad, size_t length)
 	m_ad_macs[n] = m_cmac->process(ad, length);
 }
 
-SafeArray!byte SIV_Mode::start(in byte[] nonce, size_t nonce_len)
+SafeVector!byte SIV_Mode::start(in byte[] nonce, size_t nonce_len)
 {
 	if(!valid_nonce_length(nonce_len))
-		throw Invalid_IV_Length(name(), nonce_len);
+		throw new Invalid_IV_Length(name(), nonce_len);
 
 	if(nonce_len)
 		m_nonce = m_cmac->process(nonce, nonce_len);
@@ -80,10 +80,10 @@ SafeArray!byte SIV_Mode::start(in byte[] nonce, size_t nonce_len)
 
 	m_msg_buf.clear();
 
-	return SafeArray!byte();
+	return SafeVector!byte();
 }
 
-void SIV_Mode::update(SafeArray!byte buffer, size_t offset)
+void SIV_Mode::update(SafeVector!byte buffer, size_t offset)
 {
 	BOTAN_ASSERT(buffer.size() >= offset, "Offset is sane");
 	const size_t sz = buffer.size() - offset;
@@ -93,11 +93,11 @@ void SIV_Mode::update(SafeArray!byte buffer, size_t offset)
 	buffer.resize(offset); // truncate msg
 }
 
-SafeArray!byte SIV_Mode::S2V(const byte* text, size_t text_len)
+SafeVector!byte SIV_Mode::S2V(const byte* text, size_t text_len)
 {
 	const byte zero[16] = { 0 };
 
-	SafeArray!byte V = cmac().process(zero, 16);
+	SafeVector!byte V = cmac().process(zero, 16);
 
 	for(size_t i = 0; i != m_ad_macs.size(); ++i)
 	{
@@ -123,10 +123,10 @@ SafeArray!byte SIV_Mode::S2V(const byte* text, size_t text_len)
 	xor_buf(&V[0], &text[text_len - 16], 16);
 	cmac().update(V);
 
-	return cmac().final();
+	return cmac().flush();
 }
 
-void SIV_Mode::set_ctr_iv(SafeArray!byte V)
+void SIV_Mode::set_ctr_iv(SafeVector!byte V)
 {
 	V[8] &= 0x7F;
 	V[12] &= 0x7F;
@@ -134,13 +134,13 @@ void SIV_Mode::set_ctr_iv(SafeArray!byte V)
 	ctr().set_iv(&V[0], V.size());
 }
 
-void SIV_Encryption::finish(SafeArray!byte buffer, size_t offset)
+void SIV_Encryption::finish(SafeVector!byte buffer, size_t offset)
 {
 	BOTAN_ASSERT(buffer.size() >= offset, "Offset is sane");
 
 	buffer.insert(buffer.begin() + offset, msg_buf().begin(), msg_buf().end());
 
-	SafeArray!byte V = S2V(&buffer[offset], buffer.size() - offset);
+	SafeVector!byte V = S2V(&buffer[offset], buffer.size() - offset);
 
 	buffer.insert(buffer.begin() + offset, V.begin(), V.end());
 
@@ -148,7 +148,7 @@ void SIV_Encryption::finish(SafeArray!byte buffer, size_t offset)
 	ctr().cipher1(&buffer[offset + V.size()], buffer.size() - offset - V.size());
 }
 
-void SIV_Decryption::finish(SafeArray!byte buffer, size_t offset)
+void SIV_Decryption::finish(SafeVector!byte buffer, size_t offset)
 {
 	BOTAN_ASSERT(buffer.size() >= offset, "Offset is sane");
 
@@ -158,7 +158,7 @@ void SIV_Decryption::finish(SafeArray!byte buffer, size_t offset)
 
 	BOTAN_ASSERT(sz >= tag_size(), "We have the tag");
 
-	SafeArray!byte V(&buffer[offset], &buffer[offset + 16]);
+	SafeVector!byte V(&buffer[offset], &buffer[offset + 16]);
 
 	set_ctr_iv(V);
 
@@ -166,10 +166,10 @@ void SIV_Decryption::finish(SafeArray!byte buffer, size_t offset)
 					 &buffer[offset],
 					 buffer.size() - offset - V.size());
 
-	SafeArray!byte T = S2V(&buffer[offset], buffer.size() - offset - V.size());
+	SafeVector!byte T = S2V(&buffer[offset], buffer.size() - offset - V.size());
 
 	if(T != V)
-		throw Integrity_Failure("SIV tag check failed");
+		throw new Integrity_Failure("SIV tag check failed");
 
 	buffer.resize(buffer.size() - tag_size());
 }

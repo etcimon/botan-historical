@@ -38,15 +38,15 @@ bool generate_dsa_primes(RandomNumberGenerator& rng,
 								 Algorithm_Factory& af,
 								 BigInt& p, BigInt& q,
 								 size_t pbits, size_t qbits,
-								 in Array!byte seed_c)
+								 in Vector!byte seed_c)
 {
 	if(!fips186_3_valid_size(pbits, qbits))
-		throw Invalid_Argument(
+		throw new Invalid_Argument(
 			"FIPS 186-3 does not allow DSA domain parameters of " +
 			std::to_string(pbits) + "/" + std::to_string(qbits) + " bits long");
 
 	if(seed_c.size() * 8 < qbits)
-		throw Invalid_Argument(
+		throw new Invalid_Argument(
 			"Generating a DSA parameter set with a " + std::to_string(qbits) +
 			"long q requires a seed at least as many bits long");
 
@@ -58,9 +58,9 @@ bool generate_dsa_primes(RandomNumberGenerator& rng,
 	class Seed
 	{
 		public:
-			Seed(in Array!byte s) : seed(s) {}
+			Seed(in Vector!byte s) : seed(s) {}
 
-			operator std::vector<byte>& () { return seed; }
+			operator Vector!( byte )& () { return seed; }
 
 			Seed& operator++()
 			{
@@ -70,7 +70,7 @@ bool generate_dsa_primes(RandomNumberGenerator& rng,
 				return (*this);
 			}
 		private:
-			std::vector<byte> seed;
+			Vector!( byte ) seed;
 	};
 
 	Seed seed(seed_c);
@@ -86,7 +86,7 @@ bool generate_dsa_primes(RandomNumberGenerator& rng,
 					 b = (pbits-1) % (HASH_SIZE * 8);
 
 	BigInt X;
-	std::vector<byte> V(HASH_SIZE * (n+1));
+	Vector!( byte ) V(HASH_SIZE * (n+1));
 
 	for(size_t j = 0; j != 4096; ++j)
 	{
@@ -94,7 +94,7 @@ bool generate_dsa_primes(RandomNumberGenerator& rng,
 		{
 			++seed;
 			hash->update(seed);
-			hash->final(&V[HASH_SIZE * (n-k)]);
+			hash->flushInto(&V[HASH_SIZE * (n-k)]);
 		}
 
 		X.binary_decode(&V[HASH_SIZE - 1 - b/8],
@@ -112,14 +112,14 @@ bool generate_dsa_primes(RandomNumberGenerator& rng,
 /*
 * Generate DSA Primes
 */
-std::vector<byte> generate_dsa_primes(RandomNumberGenerator& rng,
+Vector!( byte ) generate_dsa_primes(RandomNumberGenerator& rng,
 												  Algorithm_Factory& af,
 												  BigInt& p, BigInt& q,
 												  size_t pbits, size_t qbits)
 {
 	while(true)
 	{
-		std::vector<byte> seed(qbits / 8);
+		Vector!( byte ) seed(qbits / 8);
 		rng.randomize(&seed[0], seed.size());
 
 		if(generate_dsa_primes(rng, af, p, q, pbits, qbits, seed))

@@ -81,7 +81,7 @@ string OctetString::as_string() const
 /*
 * XOR Operation for OctetStrings
 */
-OctetString& OctetString::operator^=(const OctetString& k)
+OctetString& OctetString::operator^=(in OctetString k)
 {
 	if(&k == this) { zeroise(bits); return (*this); }
 	xor_buf(&bits[0], k.begin(), std::min(length(), k.length()));
@@ -91,7 +91,7 @@ OctetString& OctetString::operator^=(const OctetString& k)
 /*
 * Equality Operation for OctetStrings
 */
-bool operator==(const OctetString& s1, const OctetString& s2)
+bool operator==(in OctetString s1, const OctetString& s2)
 {
 	return (s1.bits_of() == s2.bits_of());
 }
@@ -99,7 +99,7 @@ bool operator==(const OctetString& s1, const OctetString& s2)
 /*
 * Unequality Operation for OctetStrings
 */
-bool operator!=(const OctetString& s1, const OctetString& s2)
+bool operator!=(in OctetString s1, const OctetString& s2)
 {
 	return !(s1 == s2);
 }
@@ -107,9 +107,9 @@ bool operator!=(const OctetString& s1, const OctetString& s2)
 /*
 * Append Operation for OctetStrings
 */
-OctetString operator+(const OctetString& k1, const OctetString& k2)
+OctetString operator+(in OctetString k1, const OctetString& k2)
 {
-	SafeArray!byte out;
+	SafeVector!byte out;
 	out += k1.bits_of();
 	out += k2.bits_of();
 	return OctetString(out);
@@ -118,9 +118,9 @@ OctetString operator+(const OctetString& k1, const OctetString& k2)
 /*
 * XOR Operation for OctetStrings
 */
-OctetString operator^(const OctetString& k1, const OctetString& k2)
+OctetString operator^(in OctetString k1, const OctetString& k2)
 {
-	SafeArray!byte ret(std::max(k1.length(), k2.length()));
+	SafeVector!byte ret(std::max(k1.length(), k2.length()));
 
 	copy_mem(&ret[0], k1.begin(), k1.length());
 	xor_buf(&ret[0], k2.begin(), k2.length());

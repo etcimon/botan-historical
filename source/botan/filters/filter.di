@@ -61,18 +61,18 @@ class Filter
 		/**
 		* @param in some input for the filter
 		*/
-		void send(in SafeArray!byte input) { send(&in[0], in.size()); }
+		void send(in SafeVector!byte input) { send(&in[0], in.size()); }
 
 		/**
 		* @param in some input for the filter
 		*/
-		void send(in Array!byte input) { send(&in[0], in.size()); }
+		void send(in Vector!byte input) { send(&in[0], in.size()); }
 
 		/**
 		* @param in some input for the filter
 		* @param length the number of bytes of in to send
 		*/
-		void send(in SafeArray!byte input)
+		void send(in SafeVector!byte input)
 		{
 			send(&in[0], length);
 		}
@@ -81,16 +81,16 @@ class Filter
 		* @param in some input for the filter
 		* @param length the number of bytes of in to send
 		*/
-		void send(in Array!byte input)
+		void send(in Vector!byte input)
 		{
 			send(&in[0], length);
 		}
 
 		Filter();
 
-		Filter(const Filter&) = delete;
+		Filter(in Filter) = delete;
 
-		Filter& operator=(const Filter&) = delete;
+		Filter& operator=(in Filter) = delete;
 
 	private:
 		/**
@@ -132,8 +132,8 @@ class Filter
 		void set_next(Filter* filters[], size_t count);
 		Filter* get_next() const;
 
-		SafeArray!byte write_queue;
-		std::vector<Filter*> next;
+		SafeVector!byte write_queue;
+		Vector!( Filter* ) next;
 		size_t port_num, filter_owns;
 
 		// true if filter belongs to a pipe --> prohibit filter sharing!

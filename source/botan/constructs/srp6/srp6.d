@@ -22,13 +22,13 @@ BigInt hash_seq(in string hash_id,
 	hash_fn->update(BigInt::encode_1363(in1, pad_to));
 	hash_fn->update(BigInt::encode_1363(in2, pad_to));
 
-	return BigInt::decode(hash_fn->final());
+	return BigInt::decode(hash_fn->flush());
 }
 
 BigInt compute_x(in string hash_id,
 					  in string identifier,
 					  in string password,
-					  in Array!byte salt)
+					  in Vector!byte salt)
 {
 	std::unique_ptr<HashFunction> hash_fn(
 		global_state().algorithm_factory().make_hash_function(hash_id));
@@ -37,19 +37,19 @@ BigInt compute_x(in string hash_id,
 	hash_fn->update(":");
 	hash_fn->update(password);
 
-	SafeArray!byte inner_h = hash_fn->final();
+	SafeVector!byte inner_h = hash_fn->flush();
 
 	hash_fn->update(salt);
 	hash_fn->update(inner_h);
 
-	SafeArray!byte outer_h = hash_fn->final();
+	SafeVector!byte outer_h = hash_fn->flush();
 
 	return BigInt::decode(outer_h);
 }
 
 }
 
-string srp6_group_identifier(const BigInt& N, const BigInt& g)
+string srp6_group_identifier(in BigInt N, const BigInt& g)
 {
 	/*
 	This function assumes that only one 'standard' SRP parameter set has
@@ -64,20 +64,20 @@ string srp6_group_identifier(const BigInt& N, const BigInt& g)
 		if(group.get_p() == N && group.get_g() == g)
 			return group_name;
 
-		throw std::runtime_error("Unknown SRP params");
+		throw new Exception("Unknown SRP params");
 	}
 	catch(...)
 	{
-		throw Invalid_Argument("Bad SRP group parameters");
+		throw new Invalid_Argument("Bad SRP group parameters");
 	}
 }
 
-std::pair<BigInt, SymmetricKey>
+Pair!(BigInt, SymmetricKey)
 srp6_client_agree(in string identifier,
 						in string password,
 						in string group_id,
 						in string hash_id,
-						in Array!byte salt,
+						in Vector!byte salt,
 						const BigInt& B,
 						RandomNumberGenerator& rng)
 {
@@ -88,7 +88,7 @@ srp6_client_agree(in string identifier,
 	const size_t p_bytes = group.get_p().bytes();
 
 	if(B <= 0 || B >= p)
-		throw std::runtime_error("Invalid SRP parameter from server");
+		throw new Exception("Invalid SRP parameter from server");
 
 	BigInt k = hash_seq(hash_id, p_bytes, p, g);
 
@@ -109,7 +109,7 @@ srp6_client_agree(in string identifier,
 
 BigInt generate_srp6_verifier(in string identifier,
 										in string password,
-										in Array!byte salt,
+										in Vector!byte salt,
 										in string group_id,
 										in string hash_id)
 {
@@ -119,7 +119,7 @@ BigInt generate_srp6_verifier(in string identifier,
 	return power_mod(group.get_g(), x, group.get_p());
 }
 
-BigInt SRP6_Server_Session::step1(const BigInt& v,
+BigInt SRP6_Server_Session::step1(in BigInt v,
 											 in string group_id,
 											 in string hash_id,
 											 RandomNumberGenerator& rng)
@@ -144,10 +144,10 @@ BigInt SRP6_Server_Session::step1(const BigInt& v,
 	return B;
 }
 
-SymmetricKey SRP6_Server_Session::step2(const BigInt& A)
+SymmetricKey SRP6_Server_Session::step2(in BigInt A)
 {
 	if(A <= 0 || A >= p)
-		throw std::runtime_error("Invalid SRP parameter from client");
+		throw new Exception("Invalid SRP parameter from client");
 
 	BigInt u = hash_seq(hash_id, p_bytes, A, B);
 

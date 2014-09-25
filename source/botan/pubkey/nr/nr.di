@@ -23,10 +23,10 @@ class NR_PublicKey : public abstract DL_Scheme_PublicKey
 		size_t message_part_size() const { return group_q().bytes(); }
 		size_t max_input_bits() const { return (group_q().bits() - 1); }
 
-		NR_PublicKey(const AlgorithmIdentifier& alg_id,
-						 in SafeArray!byte key_bits);
+		NR_PublicKey(in AlgorithmIdentifier alg_id,
+						 in SafeVector!byte key_bits);
 
-		NR_PublicKey(const DL_Group& group, const BigInt& pub_key);
+		NR_PublicKey(in DL_Group group, const BigInt& pub_key);
 	protected:
 		NR_PublicKey() {}
 };
@@ -40,8 +40,8 @@ class NR_PrivateKey : public NR_PublicKey,
 	public:
 		bool check_key(RandomNumberGenerator& rng, bool strong) const;
 
-		NR_PrivateKey(const AlgorithmIdentifier& alg_id,
-						  in SafeArray!byte key_bits,
+		NR_PrivateKey(in AlgorithmIdentifier alg_id,
+						  in SafeVector!byte key_bits,
 						  RandomNumberGenerator& rng);
 
 		NR_PrivateKey(RandomNumberGenerator& rng,
@@ -55,13 +55,13 @@ class NR_PrivateKey : public NR_PublicKey,
 class NR_Signature_Operation : public PK_Ops::Signature
 {
 	public:
-		NR_Signature_Operation(const NR_PrivateKey& nr);
+		NR_Signature_Operation(in NR_PrivateKey nr);
 
 		size_t message_parts() const { return 2; }
 		size_t message_part_size() const { return q.bytes(); }
 		size_t max_input_bits() const { return (q.bits() - 1); }
 
-		SafeArray!byte sign(in byte[] msg, size_t msg_len,
+		SafeVector!byte sign(in byte[] msg, size_t msg_len,
 										RandomNumberGenerator& rng);
 	private:
 		const BigInt& q;
@@ -76,7 +76,7 @@ class NR_Signature_Operation : public PK_Ops::Signature
 class NR_Verification_Operation : public PK_Ops::Verification
 {
 	public:
-		NR_Verification_Operation(const NR_PublicKey& nr);
+		NR_Verification_Operation(in NR_PublicKey nr);
 
 		size_t message_parts() const { return 2; }
 		size_t message_part_size() const { return q.bytes(); }
@@ -84,7 +84,7 @@ class NR_Verification_Operation : public PK_Ops::Verification
 
 		bool with_recovery() const { return true; }
 
-		SafeArray!byte verify_mr(in byte[] msg, size_t msg_len);
+		SafeVector!byte verify_mr(in byte[] msg, size_t msg_len);
 	private:
 		const BigInt& q;
 		const BigInt& y;

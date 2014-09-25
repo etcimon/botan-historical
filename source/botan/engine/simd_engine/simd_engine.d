@@ -37,7 +37,7 @@
   #include <botan/sha1_sse2.h>
 #endif
 BlockCipher*
-SIMD_Engine::find_block_cipher(const SCAN_Name& request,
+SIMD_Engine::find_block_cipher(in SCAN_Name request,
 										 Algorithm_Factory&) const
 {
 #if defined(BOTAN_HAS_AES_SSSE3)
@@ -78,7 +78,7 @@ SIMD_Engine::find_block_cipher(const SCAN_Name& request,
 }
 
 HashFunction*
-SIMD_Engine::find_hash(const SCAN_Name& request,
+SIMD_Engine::find_hash(in SCAN_Name request,
 							  Algorithm_Factory&) const
 {
 #if defined(BOTAN_HAS_SHA1_SSE2)

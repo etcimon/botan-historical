@@ -19,17 +19,17 @@ size_t EC_PublicKey::estimated_strength() const
 	return domain().get_curve().get_p().bits() / 2;
 }
 
-EC_PublicKey::EC_PublicKey(const EC_Group& dom_par,
+EC_PublicKey::EC_PublicKey(in EC_Group dom_par,
 									const PointGFp& pub_point) :
 	domain_params(dom_par), public_key(pub_point),
 	domain_encoding(EC_DOMPAR_ENC_EXPLICIT)
 {
 	if(domain().get_curve() != public_point().get_curve())
-		throw Invalid_Argument("EC_PublicKey: curve mismatch in constructor");
+		throw new Invalid_Argument("EC_PublicKey: curve mismatch in constructor");
 }
 
-EC_PublicKey::EC_PublicKey(const AlgorithmIdentifier& alg_id,
-									in SafeArray!byte key_bits)
+EC_PublicKey::EC_PublicKey(in AlgorithmIdentifier alg_id,
+									in SafeVector!byte key_bits)
 {
 	domain_params = EC_Group(alg_id.parameters);
 	domain_encoding = EC_DOMPAR_ENC_EXPLICIT;
@@ -48,7 +48,7 @@ AlgorithmIdentifier EC_PublicKey::algorithm_identifier() const
 	return AlgorithmIdentifier(get_oid(), DER_domain());
 }
 
-std::vector<byte> EC_PublicKey::x509_subject_public_key() const
+Vector!( byte ) EC_PublicKey::x509_subject_public_key() const
 {
 	return unlock(EC2OSP(public_point(), PointGFp::COMPRESSED));
 }
@@ -58,10 +58,10 @@ void EC_PublicKey::set_parameter_encoding(EC_Group_Encoding form)
 	if(form != EC_DOMPAR_ENC_EXPLICIT &&
 		form != EC_DOMPAR_ENC_IMPLICITCA &&
 		form != EC_DOMPAR_ENC_OID)
-		throw Invalid_Argument("Invalid encoding form for EC-key object specified");
+		throw new Invalid_Argument("Invalid encoding form for EC-key object specified");
 
 	if((form == EC_DOMPAR_ENC_OID) && (domain_params.get_oid() == ""))
-		throw Invalid_Argument("Invalid encoding form OID specified for "
+		throw new Invalid_Argument("Invalid encoding form OID specified for "
 									  "EC-key object whose corresponding domain "
 									  "parameters are without oid");
 
@@ -71,7 +71,7 @@ void EC_PublicKey::set_parameter_encoding(EC_Group_Encoding form)
 const BigInt& EC_PrivateKey::private_value() const
 {
 	if(Private_Key == 0)
-		throw Invalid_State("EC_PrivateKey::private_value - uninitialized");
+		throw new Invalid_State("EC_PrivateKey::private_value - uninitialized");
 
 	return Private_Key;
 }
@@ -97,7 +97,7 @@ EC_PrivateKey::EC_PrivateKey(RandomNumberGenerator& rng,
 					 "Generated public key point was on the curve");
 }
 
-SafeArray!byte EC_PrivateKey::pkcs8_Private_Key() const
+SafeVector!byte EC_PrivateKey::pkcs8_Private_Key() const
 {
 	return DER_Encoder()
 		.start_cons(SEQUENCE)
@@ -108,14 +108,14 @@ SafeArray!byte EC_PrivateKey::pkcs8_Private_Key() const
 		.get_contents();
 }
 
-EC_PrivateKey::EC_PrivateKey(const AlgorithmIdentifier& alg_id,
-									  in SafeArray!byte key_bits)
+EC_PrivateKey::EC_PrivateKey(in AlgorithmIdentifier alg_id,
+									  in SafeVector!byte key_bits)
 {
 	domain_params = EC_Group(alg_id.parameters);
 	domain_encoding = EC_DOMPAR_ENC_EXPLICIT;
 
 	OID key_parameters;
-	SafeArray!byte public_key_bits;
+	SafeVector!byte public_key_bits;
 
 	BER_Decoder(key_bits)
 		.start_cons(SEQUENCE)
@@ -126,7 +126,7 @@ EC_PrivateKey::EC_PrivateKey(const AlgorithmIdentifier& alg_id,
 		.end_cons();
 
 	if(!key_parameters.empty() && key_parameters != alg_id.oid)
-		throw Decoding_Error("EC_PrivateKey - inner and outer OIDs did not match");
+		throw new Decoding_Error("EC_PrivateKey - inner and outer OIDs did not match");
 
 	if(public_key_bits.empty())
 	{

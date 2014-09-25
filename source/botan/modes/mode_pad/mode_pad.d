@@ -10,7 +10,7 @@
 /*
 * Pad with PKCS #7 Method
 */
-void PKCS7_Padding::add_padding(SafeArray!byte buffer,
+void PKCS7_Padding::add_padding(SafeVector!byte buffer,
 										  size_t last_byte_pos,
 										  size_t block_size) const
 {
@@ -28,11 +28,11 @@ size_t PKCS7_Padding::unpad(in byte[] block, size_t size) const
 	size_t position = block[size-1];
 
 	if(position > size)
-		throw Decoding_Error("Bad padding in " + name());
+		throw new Decoding_Error("Bad padding in " + name());
 
 	for(size_t j = size-position; j != size-1; ++j)
 		if(block[j] != position)
-			throw Decoding_Error("Bad padding in " + name());
+			throw new Decoding_Error("Bad padding in " + name());
 
 	return (size-position);
 }
@@ -40,7 +40,7 @@ size_t PKCS7_Padding::unpad(in byte[] block, size_t size) const
 /*
 * Pad with ANSI X9.23 Method
 */
-void ANSI_X923_Padding::add_padding(SafeArray!byte buffer,
+void ANSI_X923_Padding::add_padding(SafeVector!byte buffer,
 												size_t last_byte_pos,
 												size_t block_size) const
 {
@@ -58,17 +58,17 @@ size_t ANSI_X923_Padding::unpad(in byte[] block, size_t size) const
 {
 	size_t position = block[size-1];
 	if(position > size)
-		throw Decoding_Error(name());
+		throw new Decoding_Error(name());
 	for(size_t j = size-position; j != size-1; ++j)
 		if(block[j] != 0)
-			throw Decoding_Error(name());
+			throw new Decoding_Error(name());
 	return (size-position);
 }
 
 /*
 * Pad with One and Zeros Method
 */
-void OneAndZeros_Padding::add_padding(SafeArray!byte buffer,
+void OneAndZeros_Padding::add_padding(SafeVector!byte buffer,
 												  size_t last_byte_pos,
 												  size_t block_size) const
 {
@@ -88,10 +88,10 @@ size_t OneAndZeros_Padding::unpad(in byte[] block, size_t size) const
 		if(block[size-1] == 0x80)
 			break;
 		if(block[size-1] != 0x00)
-			throw Decoding_Error(name());
+			throw new Decoding_Error(name());
 		size--;
 	}
 	if(!size)
-		throw Decoding_Error(name());
+		throw new Decoding_Error(name());
 	return (size-1);
 }}

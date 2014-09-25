@@ -37,7 +37,7 @@ class Lzma_Compression : public Filter
 		void clear();
 		const size_t level;
 
-		SafeArray!byte buffer;
+		SafeVector!byte buffer;
 		class Lzma_Stream* lzma;
 };
 
@@ -58,7 +58,7 @@ class Lzma_Decompression : public Filter
 	private:
 		void clear();
 
-		SafeArray!byte buffer;
+		SafeVector!byte buffer;
 		class Lzma_Stream* lzma;
 		bool no_writes;
 };

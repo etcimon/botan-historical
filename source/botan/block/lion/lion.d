@@ -16,25 +16,25 @@ void Lion::encrypt_n(in byte[] input, ref byte[] output) const
 	const size_t LEFT_SIZE = left_size();
 	const size_t RIGHT_SIZE = right_size();
 
-	SafeArray!byte buffer_vec(LEFT_SIZE);
+	SafeVector!byte buffer_vec(LEFT_SIZE);
 	byte* buffer = &buffer_vec[0];
 
 	for(size_t i = 0; i != blocks; ++i)
 	{
-		xor_buf(buffer, in, &m_key1[0], LEFT_SIZE);
+		xor_buf(buffer, input, &m_key1[0], LEFT_SIZE);
 		m_cipher->set_key(buffer, LEFT_SIZE);
-		m_cipher->cipher(in + LEFT_SIZE, out + LEFT_SIZE, RIGHT_SIZE);
+		m_cipher->cipher(input + LEFT_SIZE, output + LEFT_SIZE, RIGHT_SIZE);
 
-		m_hash->update(out + LEFT_SIZE, RIGHT_SIZE);
-		m_hash->final(buffer);
-		xor_buf(out, in, buffer, LEFT_SIZE);
+		m_hash->update(output + LEFT_SIZE, RIGHT_SIZE);
+		m_hash->flushInto(buffer);
+		xor_buf(output, input, buffer, LEFT_SIZE);
 
-		xor_buf(buffer, out, &m_key2[0], LEFT_SIZE);
+		xor_buf(buffer, output, &m_key2[0], LEFT_SIZE);
 		m_cipher->set_key(buffer, LEFT_SIZE);
-		m_cipher->cipher1(out + LEFT_SIZE, RIGHT_SIZE);
+		m_cipher->cipher1(output + LEFT_SIZE, RIGHT_SIZE);
 
-		in += m_block_size;
-		out += m_block_size;
+		input += m_block_size;
+		output += m_block_size;
 	}
 }
 
@@ -46,25 +46,25 @@ void Lion::decrypt_n(in byte[] input, ref byte[] output) const
 	const size_t LEFT_SIZE = left_size();
 	const size_t RIGHT_SIZE = right_size();
 
-	SafeArray!byte buffer_vec(LEFT_SIZE);
+	SafeVector!byte buffer_vec(LEFT_SIZE);
 	byte* buffer = &buffer_vec[0];
 
 	for(size_t i = 0; i != blocks; ++i)
 	{
-		xor_buf(buffer, in, &m_key2[0], LEFT_SIZE);
+		xor_buf(buffer, input, &m_key2[0], LEFT_SIZE);
 		m_cipher->set_key(buffer, LEFT_SIZE);
-		m_cipher->cipher(in + LEFT_SIZE, out + LEFT_SIZE, RIGHT_SIZE);
+		m_cipher->cipher(input + LEFT_SIZE, output + LEFT_SIZE, RIGHT_SIZE);
 
-		m_hash->update(out + LEFT_SIZE, RIGHT_SIZE);
-		m_hash->final(buffer);
-		xor_buf(out, in, buffer, LEFT_SIZE);
+		m_hash->update(output + LEFT_SIZE, RIGHT_SIZE);
+		m_hash->flushInto(buffer);
+		xor_buf(output, input, buffer, LEFT_SIZE);
 
-		xor_buf(buffer, out, &m_key1[0], LEFT_SIZE);
+		xor_buf(buffer, output, &m_key1[0], LEFT_SIZE);
 		m_cipher->set_key(buffer, LEFT_SIZE);
-		m_cipher->cipher1(out + LEFT_SIZE, RIGHT_SIZE);
+		m_cipher->cipher1(output + LEFT_SIZE, RIGHT_SIZE);
 
-		in += m_block_size;
-		out += m_block_size;
+		input += m_block_size;
+		output += m_block_size;
 	}
 }
 
@@ -75,7 +75,7 @@ void Lion::key_schedule(in byte[] key)
 {
 	clear();
 
-	const size_t half = length / 2;
+	const size_t half = key.length / 2;
 	copy_mem(&m_key1[0], key, half);
 	copy_mem(&m_key2[0], key + half, half);
 }
@@ -118,10 +118,10 @@ Lion::Lion(HashFunction* hash, StreamCipher* cipher, size_t block_size) :
 	m_cipher(cipher)
 {
 	if(2*left_size() + 1 > m_block_size)
-		throw Invalid_Argument(name() + ": Chosen block size is too small");
+		throw new Invalid_Argument(name() + ": Chosen block size is too small");
 
 	if(!m_cipher->valid_keylength(left_size()))
-		throw Invalid_Argument(name() + ": This stream/hash combo is invalid");
+		throw new Invalid_Argument(name() + ": This stream/hash combo is invalid");
 
 	m_key1.resize(left_size());
 	m_key2.resize(left_size());

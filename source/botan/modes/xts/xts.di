@@ -15,7 +15,7 @@ class XTS_Mode : public Cipher_Mode
 	public:
 		string name() const override;
 
-		SafeArray!byte start(in byte[] nonce, size_t nonce_len) override;
+		SafeVector!byte start(in byte[] nonce, size_t nonce_len) override;
 
 		size_t update_granularity() const override;
 
@@ -41,7 +41,7 @@ class XTS_Mode : public Cipher_Mode
 		void key_schedule(in byte[] key) override;
 
 		std::unique_ptr<BlockCipher> m_cipher, m_tweak_cipher;
-		SafeArray!byte m_tweak;
+		SafeVector!byte m_tweak;
 };
 
 /**
@@ -52,9 +52,9 @@ class XTS_Encryption : public XTS_Mode
 	public:
 		XTS_Encryption(BlockCipher* cipher) : XTS_Mode(cipher) {}
 
-		void update(SafeArray!byte blocks, size_t offset = 0) override;
+		void update(SafeVector!byte blocks, size_t offset = 0) override;
 
-		void finish(SafeArray!byte final_block, size_t offset = 0) override;
+		void finish(SafeVector!byte final_block, size_t offset = 0) override;
 
 		size_t output_length(size_t input_length) const override;
 };
@@ -67,9 +67,9 @@ class XTS_Decryption : public XTS_Mode
 	public:
 		XTS_Decryption(BlockCipher* cipher) : XTS_Mode(cipher) {}
 
-		void update(SafeArray!byte blocks, size_t offset = 0) override;
+		void update(SafeVector!byte blocks, size_t offset = 0) override;
 
-		void finish(SafeArray!byte final_block, size_t offset = 0) override;
+		void finish(SafeVector!byte final_block, size_t offset = 0) override;
 
 		size_t output_length(size_t input_length) const override;
 };

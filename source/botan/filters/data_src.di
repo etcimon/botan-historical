@@ -81,8 +81,8 @@ class DataSource
 
 		DataSource() {}
 		abstract ~DataSource() {}
-		DataSource& operator=(const DataSource&) = delete;
-		DataSource(const DataSource&) = delete;
+		DataSource& operator=(in DataSource) = delete;
+		DataSource(in DataSource) = delete;
 };
 
 /**
@@ -113,19 +113,19 @@ class DataSource_Memory : public DataSource
 		* Construct a memory source that reads from a secure_vector
 		* @param in the MemoryRegion to read from
 		*/
-		DataSource_Memory(in SafeArray!byte input) :
+		DataSource_Memory(in SafeVector!byte input) :
 			source(input), offset(0) {}
 
 		/**
 		* Construct a memory source that reads from a std::vector
 		* @param in the MemoryRegion to read from
 		*/
-		DataSource_Memory(in Array!byte input) :
+		DataSource_Memory(in Vector!byte input) :
 			source(&in[0], &in[in.size()]), offset(0) {}
 
 		abstract size_t get_bytes_read() const { return offset; }
 	private:
-		SafeArray!byte source;
+		SafeVector!byte source;
 		size_t offset;
 };
 
@@ -150,9 +150,9 @@ class DataSource_Stream : public DataSource
 		*/
 		DataSource_Stream(in string file, bool use_binary = false);
 
-		DataSource_Stream(const DataSource_Stream&) = delete;
+		DataSource_Stream(in DataSource_Stream) = delete;
 
-		DataSource_Stream& operator=(const DataSource_Stream&) = delete;
+		DataSource_Stream& operator=(in DataSource_Stream) = delete;
 
 		~DataSource_Stream();
 

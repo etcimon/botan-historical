@@ -50,7 +50,7 @@ inline void poly_double(ref byte[] output, in byte[] input)
 XTS_Mode::XTS_Mode(BlockCipher* cipher) : m_cipher(cipher)
 {
 	if(m_cipher->block_size() != 8 && m_cipher->block_size() != 16)
-		throw std::invalid_argument("Bad cipher for XTS: " + cipher->name());
+		throw new std::invalid_argument("Bad cipher for XTS: " + cipher->name());
 
 	m_tweak_cipher.reset(m_cipher->clone());
 	m_tweak.resize(update_granularity());
@@ -98,23 +98,23 @@ void XTS_Mode::key_schedule(in byte[] key)
 	const size_t key_half = length / 2;
 
 	if(length % 2 == 1 || !m_cipher->valid_keylength(key_half))
-		throw Invalid_Key_Length(name(), length);
+		throw new Invalid_Key_Length(name(), length);
 
 	m_cipher->set_key(&key[0], key_half);
 	m_tweak_cipher->set_key(&key[key_half], key_half);
 }
 
-SafeArray!byte XTS_Mode::start(in byte[] nonce, size_t nonce_len)
+SafeVector!byte XTS_Mode::start(in byte[] nonce, size_t nonce_len)
 {
 	if(!valid_nonce_length(nonce_len))
-		throw Invalid_IV_Length(name(), nonce_len);
+		throw new Invalid_IV_Length(name(), nonce_len);
 
 	copy_mem(&m_tweak[0], nonce, nonce_len);
 	m_tweak_cipher->encrypt(&m_tweak[0]);
 
 	update_tweak(0);
 
-	return SafeArray!byte();
+	return SafeVector!byte();
 }
 
 void XTS_Mode::update_tweak(size_t which)
@@ -135,7 +135,7 @@ size_t XTS_Encryption::output_length(size_t input_length) const
 	return round_up(input_length, cipher().block_size());
 }
 
-void XTS_Encryption::update(SafeArray!byte buffer, size_t offset)
+void XTS_Encryption::update(SafeVector!byte buffer, size_t offset)
 {
 	BOTAN_ASSERT(buffer.size() >= offset, "Offset is sane");
 	const size_t sz = buffer.size() - offset;
@@ -164,7 +164,7 @@ void XTS_Encryption::update(SafeArray!byte buffer, size_t offset)
 	}
 }
 
-void XTS_Encryption::finish(SafeArray!byte buffer, size_t offset)
+void XTS_Encryption::finish(SafeVector!byte buffer, size_t offset)
 {
 	BOTAN_ASSERT(buffer.size() >= offset, "Offset is sane");
 	const size_t sz = buffer.size() - offset;
@@ -185,7 +185,7 @@ void XTS_Encryption::finish(SafeArray!byte buffer, size_t offset)
 		const size_t final_bytes = sz - full_blocks;
 		BOTAN_ASSERT(final_bytes > BS && final_bytes < 2*BS, "Left over size in expected range");
 
-		SafeArray!byte last(buf + full_blocks, buf + full_blocks + final_bytes);
+		SafeVector!byte last(buf + full_blocks, buf + full_blocks + final_bytes);
 		buffer.resize(full_blocks + offset);
 		update(buffer, offset);
 
@@ -214,7 +214,7 @@ size_t XTS_Decryption::output_length(size_t input_length) const
 	return input_length;
 }
 
-void XTS_Decryption::update(SafeArray!byte buffer, size_t offset)
+void XTS_Decryption::update(SafeVector!byte buffer, size_t offset)
 {
 	BOTAN_ASSERT(buffer.size() >= offset, "Offset is sane");
 	const size_t sz = buffer.size() - offset;
@@ -243,7 +243,7 @@ void XTS_Decryption::update(SafeArray!byte buffer, size_t offset)
 	}
 }
 
-void XTS_Decryption::finish(SafeArray!byte buffer, size_t offset)
+void XTS_Decryption::finish(SafeVector!byte buffer, size_t offset)
 {
 	BOTAN_ASSERT(buffer.size() >= offset, "Offset is sane");
 	const size_t sz = buffer.size() - offset;
@@ -264,7 +264,7 @@ void XTS_Decryption::finish(SafeArray!byte buffer, size_t offset)
 		const size_t final_bytes = sz - full_blocks;
 		BOTAN_ASSERT(final_bytes > BS && final_bytes < 2*BS, "Left over size in expected range");
 
-		SafeArray!byte last(buf + full_blocks, buf + full_blocks + final_bytes);
+		SafeVector!byte last(buf + full_blocks, buf + full_blocks + final_bytes);
 		buffer.resize(full_blocks + offset);
 		update(buffer, offset);
 

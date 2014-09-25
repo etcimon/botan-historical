@@ -45,13 +45,13 @@ class Directory_Walker : public File_Descriptor_Source
 			m_dirlist.push_back(dirname);
 		}
 
-		std::pair<struct dirent*, string> get_next_dirent();
+		Pair!(struct dirent*, string) get_next_dirent();
 
-		std::pair<DIR*, string> m_cur_dir;
+		Pair!(DIR*, string) m_cur_dir;
 		std::deque<string> m_dirlist;
 };
 
-std::pair<struct dirent*, string> Directory_Walker::get_next_dirent()
+Pair!(struct dirent*, string) Directory_Walker::get_next_dirent()
 {
 	while(m_cur_dir.first)
 	{
@@ -78,7 +78,7 @@ int Directory_Walker::next_fd()
 {
 	while(true)
 	{
-		std::pair<struct dirent*, string> entry = get_next_dirent();
+		Pair!(struct dirent*, string) entry = get_next_dirent();
 
 		if(!entry.first)
 			break; // no more dirs
@@ -120,7 +120,7 @@ void ProcWalking_EntropySource::poll(Entropy_Accumulator& accum)
 	if(!m_dir)
 		m_dir.reset(new Directory_Walker(m_path));
 
-	SafeArray!byte io_buffer = accum.get_io_buffer(4096);
+	SafeVector!byte io_buffer = accum.get_io_buffer(4096);
 
 	for(size_t i = 0; i != MAX_FILES_READ_PER_POLL; ++i)
 	{

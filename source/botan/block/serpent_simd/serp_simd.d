@@ -55,7 +55,7 @@ namespace {
 */
 void serpent_encrypt_4(const byte in[64],
 							  byte out[64],
-							  const u32bit keys[132])
+							  const uint keys[132])
 {
 	SIMD_32 B0 = SIMD_32::load_le(input);
 	SIMD_32 B1 = SIMD_32::load_le(in + 16);
@@ -113,7 +113,7 @@ void serpent_encrypt_4(const byte in[64],
 */
 void serpent_decrypt_4(const byte in[64],
 							  byte out[64],
-							  const u32bit keys[132])
+							  const uint keys[132])
 {
 	SIMD_32 B0 = SIMD_32::load_le(input);
 	SIMD_32 B1 = SIMD_32::load_le(in + 16);
@@ -177,7 +177,7 @@ void serpent_decrypt_4(const byte in[64],
 */
 void Serpent_SIMD::encrypt_n(in byte[] input, ref byte[] output) const
 {
-	const u32bit* KS = &(this->get_round_keys()[0]);
+	const uint* KS = &(this->get_round_keys()[0]);
 
 	while(blocks >= 4)
 	{
@@ -196,7 +196,7 @@ void Serpent_SIMD::encrypt_n(in byte[] input, ref byte[] output) const
 */
 void Serpent_SIMD::decrypt_n(in byte[] input, ref byte[] output) const
 {
-	const u32bit* KS = &(this->get_round_keys()[0]);
+	const uint* KS = &(this->get_round_keys()[0]);
 
 	while(blocks >= 4)
 	{

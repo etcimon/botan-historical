@@ -17,8 +17,8 @@ class RSA_PublicKey : public abstract IF_Scheme_PublicKey
 	public:
 		string algo_name() const { return "RSA"; }
 
-		RSA_PublicKey(const AlgorithmIdentifier& alg_id,
-						  in SafeArray!byte key_bits) :
+		RSA_PublicKey(in AlgorithmIdentifier alg_id,
+						  in SafeVector!byte key_bits) :
 			IF_Scheme_PublicKey(alg_id, key_bits)
 		{}
 
@@ -27,7 +27,7 @@ class RSA_PublicKey : public abstract IF_Scheme_PublicKey
 		* @arg n the modulus
 		* @arg e the exponent
 		*/
-		RSA_PublicKey(const BigInt& n, const BigInt& e) :
+		RSA_PublicKey(in BigInt n, const BigInt& e) :
 			IF_Scheme_PublicKey(n, e)
 		{}
 
@@ -44,8 +44,8 @@ class RSA_PrivateKey : public RSA_PublicKey,
 	public:
 		bool check_key(RandomNumberGenerator& rng, bool) const;
 
-		RSA_PrivateKey(const AlgorithmIdentifier& alg_id,
-							in SafeArray!byte key_bits,
+		RSA_PrivateKey(in AlgorithmIdentifier alg_id,
+							in SafeVector!byte key_bits,
 							RandomNumberGenerator& rng) :
 			IF_Scheme_PrivateKey(rng, alg_id, key_bits) {}
 
@@ -84,18 +84,18 @@ class RSA_Private_Operation : public PK_Ops::Signature,
 													 public PK_Ops::Decryption
 {
 	public:
-		RSA_Private_Operation(const RSA_PrivateKey& rsa,
+		RSA_Private_Operation(in RSA_PrivateKey rsa,
 									 RandomNumberGenerator& rng);
 
 		size_t max_input_bits() const { return (n.bits() - 1); }
 
-		SafeArray!byte sign(in byte[] msg, size_t msg_len,
+		SafeVector!byte sign(in byte[] msg, size_t msg_len,
 										RandomNumberGenerator& rng);
 
-		SafeArray!byte decrypt(in byte[] msg, size_t msg_len);
+		SafeVector!byte decrypt(in byte[] msg, size_t msg_len);
 
 	private:
-		BigInt private_op(const BigInt& m) const;
+		BigInt private_op(in BigInt m) const;
 
 		const BigInt& n;
 		const BigInt& q;
@@ -112,31 +112,31 @@ class RSA_Public_Operation : public PK_Ops::Verification,
 													public PK_Ops::Encryption
 {
 	public:
-		RSA_Public_Operation(const RSA_PublicKey& rsa) :
+		RSA_Public_Operation(in RSA_PublicKey rsa) :
 			n(rsa.get_n()), powermod_e_n(rsa.get_e(), rsa.get_n())
 		{}
 
 		size_t max_input_bits() const { return (n.bits() - 1); }
 		bool with_recovery() const { return true; }
 
-		SafeArray!byte encrypt(in byte[] msg, size_t msg_len,
+		SafeVector!byte encrypt(in byte[] msg, size_t msg_len,
 											RandomNumberGenerator&)
 		{
 			BigInt m(msg, msg_len);
 			return BigInt::encode_1363(public_op(m), n.bytes());
 		}
 
-		SafeArray!byte verify_mr(in byte[] msg, size_t msg_len)
+		SafeVector!byte verify_mr(in byte[] msg, size_t msg_len)
 		{
 			BigInt m(msg, msg_len);
 			return BigInt::encode_locked(public_op(m));
 		}
 
 	private:
-		BigInt public_op(const BigInt& m) const
+		BigInt public_op(in BigInt m) const
 		{
 			if(m >= n)
-				throw Invalid_Argument("RSA public op - input is too large");
+				throw new Invalid_Argument("RSA public op - input is too large");
 			return powermod_e_n(m);
 		}
 

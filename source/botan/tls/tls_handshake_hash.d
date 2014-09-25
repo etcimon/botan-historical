@@ -14,14 +14,14 @@ namespace TLS {
 /**
 * Return a TLS Handshake Hash
 */
-SafeArray!byte Handshake_Hash::final(Protocol_Version version,
+SafeVector!byte Handshake_Hash::flushInto(Protocol_Version _version,
 														in string mac_algo) const
 {
 	Algorithm_Factory& af = global_state().algorithm_factory();
 
 	std::unique_ptr<HashFunction> hash;
 
-	if(version.supports_ciphersuite_specific_prf())
+	if(_version.supports_ciphersuite_specific_prf())
 	{
 		if(mac_algo == "MD5" || mac_algo == "SHA-1")
 			hash.reset(af.make_hash_function("SHA-256"));
@@ -32,13 +32,13 @@ SafeArray!byte Handshake_Hash::final(Protocol_Version version,
 		hash.reset(af.make_hash_function("Parallel(MD5,SHA-160)"));
 
 	hash->update(data);
-	return hash->final();
+	return hash->flush();
 }
 
 /**
 * Return a SSLv3 Handshake Hash
 */
-SafeArray!byte Handshake_Hash::final_ssl3(in SafeArray!byte secret) const
+SafeVector!byte Handshake_Hash::final_ssl3(in SafeVector!byte secret) const
 {
 	const byte PAD_INNER = 0x36, PAD_OUTER = 0x5C;
 
@@ -58,7 +58,7 @@ SafeArray!byte Handshake_Hash::final_ssl3(in SafeArray!byte secret) const
 	for(size_t i = 0; i != 40; ++i)
 		sha1->update(PAD_INNER);
 
-	SafeArray!byte inner_md5 = md5->final(), inner_sha1 = sha1->final();
+	SafeVector!byte inner_md5 = md5->flush(), inner_sha1 = sha1->flush();
 
 	md5->update(secret);
 	sha1->update(secret);
@@ -71,9 +71,9 @@ SafeArray!byte Handshake_Hash::final_ssl3(in SafeArray!byte secret) const
 	md5->update(inner_md5);
 	sha1->update(inner_sha1);
 
-	SafeArray!byte output;
-	output += md5->final();
-	output += sha1->final();
+	SafeVector!byte output;
+	output += md5->flush();
+	output += sha1->flush();
 	return output;
 }
 

@@ -31,13 +31,13 @@ class Blowfish : public Block_Cipher_Fixed_Params<8, 1, 56>
 								 size_t key_length,
 								 const byte salt[16]);
 
-		void generate_sbox(secure_vector<u32bit>& box,
-								 u32bit& L, u32bit& R,
+		void generate_sbox(secure_vector<uint>& box,
+								 ref uint L, ref uint R,
 								 const byte salt[16],
 								 size_t salt_off) const;
 
-		static const u32bit P_INIT[18];
-		static const u32bit S_INIT[1024];
+		static const uint P_INIT[18];
+		static const uint S_INIT[1024];
 
-		secure_vector<u32bit> S, P;
+		secure_vector<uint> S, P;
 };

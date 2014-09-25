@@ -51,16 +51,16 @@ Server_Key_Exchange::Server_Key_Exchange(Handshake_IO& io,
 	}
 	else if(kex_algo == "ECDH" || kex_algo == "ECDHE_PSK")
 	{
-		const std::vector<string>& curves =
+		const Vector!( string )& curves =
 			state.client_hello()->supported_ecc_curves();
 
 		if(curves.empty())
-			throw Internal_Error("Client sent no ECC extension but we negotiated ECDH");
+			throw new Internal_Error("Client sent no ECC extension but we negotiated ECDH");
 
 		const string curve_name = policy.choose_curve(curves);
 
 		if(curve_name == "")
-			throw TLS_Exception(Alert::HANDSHAKE_FAILURE,
+			throw new TLS_Exception(Alert::HANDSHAKE_FAILURE,
 									  "Could not agree on an ECC curve with the client");
 
 		EC_Group ec_group(curve_name);
@@ -71,7 +71,7 @@ Server_Key_Exchange::Server_Key_Exchange(Handshake_IO& io,
 		const string domain = OIDS::lookup(OID(ecdh_domain_oid));
 
 		if(domain == "")
-			throw Internal_Error("Could not find name of ECDH domain " + ecdh_domain_oid);
+			throw new Internal_Error("Could not find name of ECDH domain " + ecdh_domain_oid);
 
 		const u16bit named_curve_id = Supported_Elliptic_Curves::name_to_curve_id(domainput);
 
@@ -89,7 +89,7 @@ Server_Key_Exchange::Server_Key_Exchange(Handshake_IO& io,
 
 		string group_id;
 		BigInt v;
-		std::vector<byte> salt;
+		Vector!( byte ) salt;
 
 		const bool found = creds.srp_verifier("tls-server", hostname,
 														  srp_identifier,
@@ -97,7 +97,7 @@ Server_Key_Exchange::Server_Key_Exchange(Handshake_IO& io,
 														  policy.hide_unknown_users());
 
 		if(!found)
-			throw TLS_Exception(Alert::UNKNOWN_PSK_IDENTITY,
+			throw new TLS_Exception(Alert::UNKNOWN_PSK_IDENTITY,
 									  "Unknown SRP user " + srp_identifier);
 
 		m_srp_params.reset(new SRP6_Server_Session);
@@ -113,13 +113,13 @@ Server_Key_Exchange::Server_Key_Exchange(Handshake_IO& io,
 		append_tls_length_value(m_params, BigInt::encode(B), 2);
 	}
 	else if(kex_algo != "PSK")
-		throw Internal_Error("Server_Key_Exchange: Unknown kex type " + kex_algo);
+		throw new Internal_Error("Server_Key_Exchange: Unknown kex type " + kex_algo);
 
 	if(state.ciphersuite().sig_algo() != "")
 	{
 		BOTAN_ASSERT(signing_key, "Signing key was set");
 
-		std::pair<string, Signature_Format> format =
+		Pair!(string, Signature_Format) format =
 			state.choose_sig_format(*signing_key, m_hash_algo, m_sig_algo, false, policy);
 
 		PK_Signer signer(*signing_key, format.first, format.second);
@@ -136,14 +136,14 @@ Server_Key_Exchange::Server_Key_Exchange(Handshake_IO& io,
 /**
 * Deserialize a Server Key Exchange message
 */
-Server_Key_Exchange::Server_Key_Exchange(in Array!byte buf,
+Server_Key_Exchange::Server_Key_Exchange(in Vector!byte buf,
 													  in string kex_algo,
 													  in string sig_algo,
-													  Protocol_Version version) :
+													  Protocol_Version _version) :
 	m_kex_key(nullptr), m_srp_params(nullptr)
 {
 	if(buf.size() < 6)
-		throw Decoding_Error("Server_Key_Exchange: Packet corrupted");
+		throw new Decoding_Error("Server_Key_Exchange: Packet corrupted");
 
 	TLS_Data_Reader reader("ServerKeyExchange", buf);
 
@@ -174,16 +174,16 @@ Server_Key_Exchange::Server_Key_Exchange(in Array!byte buf,
 		const byte curve_type = reader.get_byte();
 
 		if(curve_type != 3)
-			throw Decoding_Error("Server_Key_Exchange: Server sent non-named ECC curve");
+			throw new Decoding_Error("Server_Key_Exchange: Server sent non-named ECC curve");
 
 		const u16bit curve_id = reader.get_u16bit();
 
 		const string name = Supported_Elliptic_Curves::curve_id_to_name(curve_id);
 
-		std::vector<byte> ecdh_key = reader.get_range<byte>(1, 1, 255);
+		Vector!( byte ) ecdh_key = reader.get_range<byte>(1, 1, 255);
 
 		if(name == "")
-			throw Decoding_Error("Server_Key_Exchange: Server sent unknown named curve " +
+			throw new Decoding_Error("Server_Key_Exchange: Server sent unknown named curve " +
 										std::to_string(curve_id));
 
 		m_params.push_back(curve_type);
@@ -197,7 +197,7 @@ Server_Key_Exchange::Server_Key_Exchange(in Array!byte buf,
 
 		const BigInt N = BigInt::decode(reader.get_range<byte>(2, 1, 65535));
 		const BigInt g = BigInt::decode(reader.get_range<byte>(2, 1, 65535));
-		std::vector<byte> salt = reader.get_range<byte>(1, 1, 255);
+		Vector!( byte ) salt = reader.get_range<byte>(1, 1, 255);
 		const BigInt B = BigInt::decode(reader.get_range<byte>(2, 1, 65535));
 
 		append_tls_length_value(m_params, BigInt::encode(N), 2);
@@ -206,11 +206,11 @@ Server_Key_Exchange::Server_Key_Exchange(in Array!byte buf,
 		append_tls_length_value(m_params, BigInt::encode(B), 2);
 	}
 	else if(kex_algo != "PSK")
-		throw Decoding_Error("Server_Key_Exchange: Unsupported kex type " + kex_algo);
+		throw new Decoding_Error("Server_Key_Exchange: Unsupported kex type " + kex_algo);
 
 	if(sig_algo != "")
 	{
-		if(version.supports_negotiable_signature_algorithms())
+		if(_version.supports_negotiable_signature_algorithms())
 		{
 			m_hash_algo = Signature_Algorithms::hash_algo_name(reader.get_byte());
 			m_sig_algo = Signature_Algorithms::sig_algo_name(reader.get_byte());
@@ -227,9 +227,9 @@ Server_Key_Exchange::~Server_Key_Exchange() {}
 /**
 * Serialize a Server Key Exchange message
 */
-std::vector<byte> Server_Key_Exchange::serialize() const
+Vector!( byte ) Server_Key_Exchange::serialize() const
 {
-	std::vector<byte> buf = params();
+	Vector!( byte ) buf = params();
 
 	if(m_signature.size())
 	{
@@ -249,10 +249,10 @@ std::vector<byte> Server_Key_Exchange::serialize() const
 /**
 * Verify a Server Key Exchange message
 */
-bool Server_Key_Exchange::verify(const Public_Key& server_key,
+bool Server_Key_Exchange::verify(in Public_Key server_key,
 											const Handshake_State& state) const
 {
-	std::pair<string, Signature_Format> format =
+	Pair!(string, Signature_Format) format =
 		state.understand_sig_format(server_key, m_hash_algo, m_sig_algo, false);
 
 	PK_Verifier verifier(server_key, format.first, format.second);

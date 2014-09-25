@@ -27,13 +27,13 @@ string encode(in byte[] der, size_t length, in string label,
 /*
 * Decode PEM down to raw BER/DER
 */
-SafeArray!byte decode_check_label(DataSource& source,
+SafeVector!byte decode_check_label(DataSource& source,
 												  in string label_want)
 {
 	string label_got;
-	SafeArray!byte ber = decode(source, label_got);
+	SafeVector!byte ber = decode(source, label_got);
 	if(label_got != label_want)
-		throw Decoding_Error("PEM: Label mismatch, wanted " + label_want +
+		throw new Decoding_Error("PEM: Label mismatch, wanted " + label_want +
 									", got " + label_got);
 	return ber;
 }
@@ -41,7 +41,7 @@ SafeArray!byte decode_check_label(DataSource& source,
 /*
 * Decode PEM down to raw BER/DER
 */
-SafeArray!byte decode(DataSource& source, string& label)
+SafeVector!byte decode(DataSource& source, string& label)
 {
 	const size_t RANDOM_CHAR_LIMIT = 8;
 
@@ -53,11 +53,11 @@ SafeArray!byte decode(DataSource& source, string& label)
 	{
 		byte b;
 		if(!source.read_byte(b))
-			throw Decoding_Error("PEM: No PEM header found");
+			throw new Decoding_Error("PEM: No PEM header found");
 		if(b == PEM_HEADER1[position])
 			++position;
 		else if(position >= RANDOM_CHAR_LIMIT)
-			throw Decoding_Error("PEM: Malformed PEM header");
+			throw new Decoding_Error("PEM: Malformed PEM header");
 		else
 			position = 0;
 	}
@@ -66,11 +66,11 @@ SafeArray!byte decode(DataSource& source, string& label)
 	{
 		byte b;
 		if(!source.read_byte(b))
-			throw Decoding_Error("PEM: No PEM header found");
+			throw new Decoding_Error("PEM: No PEM header found");
 		if(b == PEM_HEADER2[position])
 			++position;
 		else if(position)
-			throw Decoding_Error("PEM: Malformed PEM header");
+			throw new Decoding_Error("PEM: Malformed PEM header");
 
 		if(position == 0)
 			label += cast(char)(b);
@@ -85,11 +85,11 @@ SafeArray!byte decode(DataSource& source, string& label)
 	{
 		byte b;
 		if(!source.read_byte(b))
-			throw Decoding_Error("PEM: No PEM trailer found");
+			throw new Decoding_Error("PEM: No PEM trailer found");
 		if(b == PEM_TRAILER[position])
 			++position;
 		else if(position)
-			throw Decoding_Error("PEM: Malformed PEM trailer");
+			throw new Decoding_Error("PEM: Malformed PEM trailer");
 
 		if(position == 0)
 			base64.write(b);
@@ -98,14 +98,14 @@ SafeArray!byte decode(DataSource& source, string& label)
 	return base64.read_all();
 }
 
-SafeArray!byte decode_check_label(in string pem,
+SafeVector!byte decode_check_label(in string pem,
 												  in string label_want)
 {
 	DataSource_Memory src(pem);
 	return decode_check_label(src, label_want);
 }
 
-SafeArray!byte decode(in string pem, string& label)
+SafeVector!byte decode(in string pem, string& label)
 {
 	DataSource_Memory src(pem);
 	return decode(src, label);
@@ -119,7 +119,7 @@ bool matches(DataSource& source, in string extra,
 {
 	const string PEM_HEADER = "-----BEGIN " + extra;
 
-	SafeArray!byte search_buf(search_range);
+	SafeVector!byte search_buf(search_range);
 	size_t got = source.peek(&search_buf[0], search_buf.size(), 0);
 
 	if(got < PEM_HEADER.length())

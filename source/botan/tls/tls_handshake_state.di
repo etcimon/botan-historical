@@ -45,8 +45,8 @@ class Handshake_State
 
 		abstract ~Handshake_State();
 
-		Handshake_State(const Handshake_State&) = delete;
-		Handshake_State& operator=(const Handshake_State&) = delete;
+		Handshake_State(in Handshake_State) = delete;
+		Handshake_State& operator=(in Handshake_State) = delete;
 
 		Handshake_IO& handshake_io() { return *m_handshake_io; }
 
@@ -68,100 +68,100 @@ class Handshake_State
 		*/
 		void set_expected_next(Handshake_Type msg_type);
 
-		std::pair<Handshake_Type, std::vector<byte>>
+		Pair!(Handshake_Type, Vector!( byte) )
 			get_next_handshake_msg();
 
-		std::vector<byte> session_ticket() const;
+		Vector!( byte ) session_ticket() const;
 
-		std::pair<string, Signature_Format>
-			understand_sig_format(const Public_Key& key,
+		Pair!(string, Signature_Format)
+			understand_sig_format(in Public_Key key,
 										 string hash_algo,
 										 string sig_algo,
 										 bool for_client_auth) const;
 
-		std::pair<string, Signature_Format>
+		Pair!(string, Signature_Format)
 			choose_sig_format(in Private_Key key,
-									string& hash_algo,
-									string& sig_algo,
+									ref string hash_algo,
+									ref string sig_algo,
 									bool for_client_auth,
-									const Policy& policy) const;
+									in Policy policy) const;
 
 		string srp_identifier() const;
 
 		KDF* protocol_specific_prf() const;
 
-		Protocol_Version version() const { return m_version; }
+		Protocol_Version _version() const { return m_version; }
 
-		void set_version(const Protocol_Version& version);
+		void set_version(in Protocol_Version _version);
 
-		void hello_verify_request(const Hello_Verify_Request& hello_verify);
+		void hello_verify_request(in Hello_Verify_Request hello_verify);
 
-		void client_hello(Client_Hello* client_hello);
-		void server_hello(Server_Hello* server_hello);
-		void server_certs(Certificate* server_certs);
-		void server_kex(Server_Key_Exchange* server_kex);
-		void cert_req(Certificate_Req* cert_req);
-		void server_hello_done(Server_Hello_Done* server_hello_done);
-		void client_certs(Certificate* client_certs);
-		void client_kex(Client_Key_Exchange* client_kex);
-		void client_verify(Certificate_Verify* client_verify);
-		void next_protocol(Next_Protocol* next_protocol);
-		void new_session_ticket(New_Session_Ticket* new_session_ticket);
-		void server_finished(Finished* server_finished);
-		void client_finished(Finished* client_finished);
+		void client_hello(Client_Hello client_hello);
+		void server_hello(Server_Hello server_hello);
+		void server_certs(Certificate server_certs);
+		void server_kex(Server_Key_Exchange server_kex);
+		void cert_req(Certificate_Req cert_req);
+		void server_hello_done(Server_Hello_Done server_hello_done);
+		void client_certs(Certificate client_certs);
+		void client_kex(Client_Key_Exchange client_kex);
+		void client_verify(Certificate_Verify client_verify);
+		void next_protocol(Next_Protocol next_protocol);
+		void new_session_ticket(New_Session_Ticket new_session_ticket);
+		void server_finished(Finished server_finished);
+		void client_finished(Finished client_finished);
 
-		const Client_Hello* client_hello() const
+		const Client_Hello client_hello() const
 		{ return m_client_hello.get(); }
 
-		const Server_Hello* server_hello() const
+		const Server_Hello server_hello() const
 		{ return m_server_hello.get(); }
 
-		const Certificate* server_certs() const
+		const Certificate server_certs() const
 		{ return m_server_certs.get(); }
 
-		const Server_Key_Exchange* server_kex() const
+		const Server_Key_Exchange server_kex() const
 		{ return m_server_kex.get(); }
 
-		const Certificate_Req* cert_req() const
+		const Certificate_Req cert_req() const
 		{ return m_cert_req.get(); }
 
-		const Server_Hello_Done* server_hello_done() const
+		const Server_Hello_Done server_hello_done() const
 		{ return m_server_hello_done.get(); }
 
-		const Certificate* client_certs() const
+		const Certificate client_certs() const
 		{ return m_client_certs.get(); }
 
-		const Client_Key_Exchange* client_kex() const
+		const Client_Key_Exchange client_kex() const
 		{ return m_client_kex.get(); }
 
-		const Certificate_Verify* client_verify() const
+		const Certificate_Verify client_verify() const
 		{ return m_client_verify.get(); }
 
-		const Next_Protocol* next_protocol() const
+		const Next_Protocol next_protocol() const
 		{ return m_next_protocol.get(); }
 
-		const New_Session_Ticket* new_session_ticket() const
+		const New_Session_Ticket new_session_ticket() const
 		{ return m_new_session_ticket.get(); }
 
-		const Finished* server_finished() const
+		const Finished server_finished() const
 		{ return m_server_finished.get(); }
 
-		const Finished* client_finished() const
+		const Finished client_finished() const
 		{ return m_client_finished.get(); }
 
-		const Ciphersuite& ciphersuite() const { return m_ciphersuite; }
+		const Ciphersuite ciphersuite() const { return m_ciphersuite; }
 
-		const Session_Keys& session_keys() const { return m_session_keys; }
+		const Session_Keys session_keys() const { return m_session_keys; }
 
 		void compute_session_keys();
 
-		void compute_session_keys(in SafeArray!byte resume_master_secret);
+		void compute_session_keys(in SafeVector!byte resume_master_secret);
 
-		Handshake_Hash& hash() { return m_handshake_hash; }
+		Handshake_Hash hash() { return m_handshake_hash; }
 
-		const Handshake_Hash& hash() const { return m_handshake_hash; }
+		const Handshake_Hash hash() const { return m_handshake_hash; }
 
-		void note_message(const Handshake_Message& msg)
+		void note_message(in Handshake_Message msg)
 		{
 			if(m_msg_callback)
 				m_msg_callback(msg);
@@ -173,8 +173,8 @@ class Handshake_State
 
 		std::unique_ptr<Handshake_IO> m_handshake_io;
 
-		u32bit m_hand_expecting_mask = 0;
-		u32bit m_hand_received_mask = 0;
+		uint m_hand_expecting_mask = 0;
+		uint m_hand_received_mask = 0;
 		Protocol_Version m_version;
 		Ciphersuite m_ciphersuite;
 		Session_Keys m_session_keys;

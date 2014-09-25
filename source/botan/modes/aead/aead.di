@@ -33,7 +33,7 @@ class AEAD_Mode : public Cipher_Mode
 		abstract void set_associated_data(in byte[] ad, size_t ad_len) = 0;
 
 		template<typename Alloc>
-		void set_associated_data_vec(const std::vector<byte, Alloc>& ad)
+		void set_associated_data_vec(in Vector!( byte, Alloc ) ad)
 		{
 			set_associated_data(&ad[0], ad.size());
 		}

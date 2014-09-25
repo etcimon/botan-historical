@@ -10,7 +10,7 @@
 #include <botan/internal/simd_32.h>
 namespace {
 
-void xtea_encrypt_8(const byte in[64], byte out[64], const u32bit EK[64])
+void xtea_encrypt_8(const byte in[64], byte out[64], const uint EK[64])
 {
 	SIMD_32 L0 = SIMD_32::load_be(in	  );
 	SIMD_32 R0 = SIMD_32::load_be(in + 16);
@@ -47,7 +47,7 @@ void xtea_encrypt_8(const byte in[64], byte out[64], const u32bit EK[64])
 	R1.store_be(out + 48);
 }
 
-void xtea_decrypt_8(const byte in[64], byte out[64], const u32bit EK[64])
+void xtea_decrypt_8(const byte in[64], byte out[64], const uint EK[64])
 {
 	SIMD_32 L0 = SIMD_32::load_be(in	  );
 	SIMD_32 R0 = SIMD_32::load_be(in + 16);
@@ -91,7 +91,7 @@ void xtea_decrypt_8(const byte in[64], byte out[64], const u32bit EK[64])
 */
 void XTEA_SIMD::encrypt_n(in byte[] input, ref byte[] output) const
 {
-	const u32bit* KS = &(this->get_EK()[0]);
+	const uint* KS = &(this->get_EK()[0]);
 
 	while(blocks >= 8)
 	{
@@ -110,7 +110,7 @@ void XTEA_SIMD::encrypt_n(in byte[] input, ref byte[] output) const
 */
 void XTEA_SIMD::decrypt_n(in byte[] input, ref byte[] output) const
 {
-	const u32bit* KS = &(this->get_EK()[0]);
+	const uint* KS = &(this->get_EK()[0]);
 
 	while(blocks >= 8)
 	{

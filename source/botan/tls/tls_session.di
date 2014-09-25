@@ -26,7 +26,7 @@ class Session
 		* Uninitialized session
 		*/
 		Session() :
-			m_start_time(std::chrono::system_clock::time_point::min()),
+			m_start_time(SysTime::min()),
 			m_version(),
 			m_ciphersuite(0),
 			m_compression_method(0),
@@ -37,15 +37,15 @@ class Session
 		/**
 		* New session (sets session start time)
 		*/
-		Session(in Array!byte session_id,
-				  in SafeArray!byte master_secret,
-				  Protocol_Version version,
+		Session(in Vector!byte session_id,
+				  in SafeVector!byte master_secret,
+				  Protocol_Version _version,
 				  u16bit ciphersuite,
 				  byte compression_method,
 				  Connection_Side side,
 				  size_t fragment_size,
-				  const std::vector<X509_Certificate>& peer_certs,
-				  in Array!byte session_ticket,
+				  const Vector!( X509_Certificate )& peer_certs,
+				  in Vector!byte session_ticket,
 				  const Server_Information& server_info,
 				  in string srp_identifier);
 
@@ -64,12 +64,12 @@ class Session
 		* @warning if the master secret is compromised so is the
 		* session traffic
 		*/
-		SafeArray!byte DER_encode() const;
+		SafeVector!byte DER_encode() const;
 
 		/**
 		* Encrypt a session (useful for serialization or session tickets)
 		*/
-		std::vector<byte> encrypt(const SymmetricKey& key,
+		Vector!( byte ) encrypt(in SymmetricKey key,
 										  RandomNumberGenerator& rng) const;		/**
 		* Decrypt a session created by encrypt
 		* @param ctext the ciphertext returned by encrypt
@@ -85,7 +85,7 @@ class Session
 		* @param ctext the ciphertext returned by encrypt
 		* @param key the same key used by the encrypting side
 		*/
-		static inline Session decrypt(in Array!byte ctext,
+		static inline Session decrypt(in Vector!byte ctext,
 												const SymmetricKey& key)
 		{
 			return Session::decrypt(&ctext[0], ctext.size(), key);
@@ -101,7 +101,7 @@ class Session
 		/**
 		* Get the version of the saved session
 		*/
-		Protocol_Version version() const { return m_version; }
+		Protocol_Version _version() const { return m_version; }
 
 		/**
 		* Get the ciphersuite code of the saved session
@@ -132,13 +132,13 @@ class Session
 		/**
 		* Get the saved master secret
 		*/
-		in SafeArray!byte master_secret() const
+		in SafeVector!byte master_secret() const
 		{ return m_master_secret; }
 
 		/**
 		* Get the session identifier
 		*/
-		in Array!byte session_id() const
+		in Vector!byte session_id() const
 		{ return m_identifier; }
 
 		/**
@@ -149,12 +149,12 @@ class Session
 		/**
 		* Return the certificate chain of the peer (possibly empty)
 		*/
-		std::vector<X509_Certificate> peer_certs() const { return m_peer_certs; }
+		Vector!( X509_Certificate ) peer_certs() const { return m_peer_certs; }
 
 		/**
 		* Get the wall clock time this session began
 		*/
-		std::chrono::system_clock::time_point start_time() const
+		SysTime start_time() const
 		{ return m_start_time; }
 
 		/**
@@ -165,18 +165,18 @@ class Session
 		/**
 		* Return the session ticket the server gave us
 		*/
-		in Array!byte session_ticket() const { return m_session_ticket; }
+		in Vector!byte session_ticket() const { return m_session_ticket; }
 
 		Server_Information server_info() const { return m_server_info; }
 
 	private:
 		enum { TLS_SESSION_PARAM_STRUCT_VERSION = 0x2994e301 };
 
-		std::chrono::system_clock::time_point m_start_time;
+		SysTime m_start_time;
 
-		std::vector<byte> m_identifier;
-		std::vector<byte> m_session_ticket; // only used by client side
-		SafeArray!byte m_master_secret;
+		Vector!( byte ) m_identifier;
+		Vector!( byte ) m_session_ticket; // only used by client side
+		SafeVector!byte m_master_secret;
 
 		Protocol_Version m_version;
 		u16bit m_ciphersuite;
@@ -185,7 +185,7 @@ class Session
 
 		size_t m_fragment_size;
 
-		std::vector<X509_Certificate> m_peer_certs;
+		Vector!( X509_Certificate ) m_peer_certs;
 		Server_Information m_server_info; // optional
 		string m_srp_identifier; // optional
 };

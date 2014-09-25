@@ -41,6 +41,6 @@ class CTR_BE : public StreamCipher
 		void increment_counter();
 
 		std::unique_ptr<BlockCipher> m_cipher;
-		SafeArray!byte m_counter, m_pad;
+		SafeVector!byte m_counter, m_pad;
 		size_t m_pad_pos;
 };

@@ -32,9 +32,9 @@ AEAD_Mode* get_aead(in string algo_spec, Cipher_Dir direction)
 {
 	Algorithm_Factory& af = global_state().algorithm_factory();
 
-	const std::vector<string> algo_parts = split_on(algo_spec, '/');
+	const Vector!( string ) algo_parts = split_on(algo_spec, '/');
 	if(algo_parts.empty())
-		throw Invalid_Algorithm_Name(algo_spec);
+		throw new Invalid_Algorithm_Name(algo_spec);
 
 	if(algo_parts.size() < 2)
 		return nullptr;
@@ -44,14 +44,14 @@ AEAD_Mode* get_aead(in string algo_spec, Cipher_Dir direction)
 	if(!cipher)
 		return nullptr;
 
-	const std::vector<string> mode_info = parse_algorithm_name(algo_parts[1]);
+	const Vector!( string ) mode_info = parse_algorithm_name(algo_parts[1]);
 
 	if(mode_info.empty())
 		return nullptr;
 
 	const string mode_name = mode_info[0];
 
-	const size_t tag_size = (mode_info.size() > 1) ? to_u32bit(mode_info[1]) : cipher->block_size();
+	const size_t tag_size = (mode_info.size() > 1) ? to_uint(mode_info[1]) : cipher->block_size();
 
 #if defined(BOTAN_HAS_AEAD_CCM)
 	if(mode_name == "CCM-8")
@@ -64,7 +64,7 @@ AEAD_Mode* get_aead(in string algo_spec, Cipher_Dir direction)
 
 	if(mode_name == "CCM" || mode_name == "CCM-8")
 	{
-		const size_t L = (mode_info.size() > 2) ? to_u32bit(mode_info[2]) : 3;
+		const size_t L = (mode_info.size() > 2) ? to_uint(mode_info[2]) : 3;
 
 		if(direction == ENCRYPTION)
 			return new CCM_Encryption(cipher->clone(), tag_size, L);

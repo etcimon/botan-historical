@@ -30,7 +30,7 @@ class Entropy_Accumulator
 		* @param size requested size for the I/O buffer
 		* @return cached I/O buffer for repeated polls
 		*/
-		SafeArray!byte get_io_buffer(size_t size)
+		SafeVector!byte get_io_buffer(size_t size)
 		{
 			m_io_buffer.clear();
 			m_io_buffer.resize(size);
@@ -62,14 +62,14 @@ class Entropy_Accumulator
 		* entropy per byte is in this input
 		*/
 		template<typename T>
-		void add(const T& v, double entropy_bits_per_byte)
+		void add(in T v, double entropy_bits_per_byte)
 		{
 			add(&v, sizeof(T), entropy_bits_per_byte);
 		}
 	private:
 		std::function<bool (const byte[], size_t, double)> m_accum_fn;
 		bool m_done;
-		SafeArray!byte m_io_buffer;
+		SafeVector!byte m_io_buffer;
 };
 
 /**

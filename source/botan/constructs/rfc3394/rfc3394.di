@@ -17,7 +17,7 @@ class Algorithm_Factory;
 * @param af an algorithm factory
 * @return key encrypted under kek
 */
-SafeArray!byte rfc3394_keywrap(in SafeArray!byte key,
+SafeVector!byte rfc3394_keywrap(in SafeVector!byte key,
 															const SymmetricKey& kek,
 															Algorithm_Factory& af);
 
@@ -30,6 +30,6 @@ SafeArray!byte rfc3394_keywrap(in SafeArray!byte key,
 * @param af an algorithm factory
 * @return key decrypted under kek
 */
-SafeArray!byte rfc3394_keyunwrap(in SafeArray!byte key,
+SafeVector!byte rfc3394_keyunwrap(in SafeVector!byte key,
 															  const SymmetricKey& kek,
 															  Algorithm_Factory& af);

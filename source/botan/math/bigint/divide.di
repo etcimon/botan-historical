@@ -13,7 +13,7 @@
 * @param q will be set to x / y
 * @param r will be set to x % y
 */
-void divide(const BigInt& x,
+void divide(in BigInt x,
 							 const BigInt& y,
 							 BigInt& q,
 							 BigInt& r);

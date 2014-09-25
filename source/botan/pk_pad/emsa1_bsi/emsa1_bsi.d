@@ -10,17 +10,17 @@
 /*
 * EMSA1 BSI Encode Operation
 */
-SafeArray!byte EMSA1_BSI::encoding_of(in SafeArray!byte msg,
+SafeVector!byte EMSA1_BSI::encoding_of(in SafeVector!byte msg,
 														size_t output_bits,
 														RandomNumberGenerator&)
 {
 	if(msg.size() != hash_output_length())
-		throw Encoding_Error("EMSA1_BSI::encoding_of: Invalid size for input");
+		throw new Encoding_Error("EMSA1_BSI::encoding_of: Invalid size for input");
 
 	if(8*msg.size() <= output_bits)
 		return msg;
 
-	throw Encoding_Error("EMSA1_BSI::encoding_of: max key input size exceeded");
+	throw new Encoding_Error("EMSA1_BSI::encoding_of: max key input size exceeded");
 }
 
 }

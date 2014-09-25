@@ -27,7 +27,7 @@ class OID : public ASN1_Object
 		* Get this OID as list (vector) of its components.
 		* @return vector representing this OID
 		*/
-		const std::vector<u32bit>& get_id() const { return id; }
+		const Vector!( uint )& get_id() const { return id; }
 
 		/**
 		* Get this OID as a string
@@ -39,7 +39,7 @@ class OID : public ASN1_Object
 		* Compare two OIDs.
 		* @return true if they are equal, false otherwise
 		*/
-		bool operator==(const OID&) const;
+		bool operator==(in OID) const;
 
 		/**
 		* Reset this instance to an empty OID.
@@ -51,7 +51,7 @@ class OID : public ASN1_Object
 		* @param new_comp the new component to add to the end of this OID
 		* @return reference to *this
 		*/
-		OID& operator+=(u32bit new_comp);
+		OID& operator+=(uint new_comp);
 
 		/**
 		* Construct an OID from a string.
@@ -59,7 +59,7 @@ class OID : public ASN1_Object
 		*/
 		OID(in string str = "");
 	private:
-		std::vector<u32bit> id;
+		Vector!( uint ) id;
 };
 
 /**
@@ -67,7 +67,7 @@ class OID : public ASN1_Object
 * @param oid the OID to add the new component to
 * @param new_comp the new component to add
 */
-OID operator+(const OID& oid, u32bit new_comp);
+OID operator+(in OID oid, uint new_comp);
 
 /**
 * Compare two OIDs.
@@ -75,7 +75,7 @@ OID operator+(const OID& oid, u32bit new_comp);
 * @param b the second OID
 * @return true if a is not equal to b
 */
-bool operator!=(const OID& a, const OID& b);
+bool operator!=(in OID a, const OID& b);
 
 /**
 * Compare two OIDs.
@@ -83,4 +83,4 @@ bool operator!=(const OID& a, const OID& b);
 * @param b the second OID
 * @return true if a is lexicographically smaller than b
 */
-bool operator<(const OID& a, const OID& b);
+bool operator<(in OID a, const OID& b);

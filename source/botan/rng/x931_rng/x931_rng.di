@@ -35,6 +35,6 @@ class ANSI_X931_RNG : public RandomNumberGenerator
 
 		std::unique_ptr<BlockCipher> m_cipher;
 		std::unique_ptr<RandomNumberGenerator> m_prng;
-		SafeArray!byte m_V, m_R;
+		SafeVector!byte m_V, m_R;
 		size_t m_R_pos;
 };

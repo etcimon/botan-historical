@@ -222,11 +222,11 @@ void GOST_34_11::final_result(ref byte[] output)
 		compress_n(&buffer[0], 1);
 	}
 
-	SafeArray!byte length_buf(32);
+	SafeVector!byte length_buf(32);
 	const u64bit bit_count = count * 8;
 	store_le(bit_count, &length_buf[0]);
 
-	SafeArray!byte sum_buf = sum;
+	SafeVector!byte sum_buf = sum;
 
 	compress_n(&length_buf[0], 1);
 	compress_n(&sum_buf[0], 1);

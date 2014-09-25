@@ -35,13 +35,13 @@ string Transformation_Filter::name() const
 	return m_transform->name();
 }
 
-void Transformation_Filter::Nonce_State::update(const InitializationVector& iv)
+void Transformation_Filter::Nonce_State::update(in InitializationVector iv)
 {
 	m_nonce = unlock(iv.bits_of());
 	m_fresh_nonce = true;
 }
 
-std::vector<byte> Transformation_Filter::Nonce_State::get()
+Vector!( byte ) Transformation_Filter::Nonce_State::get()
 {
 	BOTAN_ASSERT(m_fresh_nonce, "The nonce is fresh for this message");
 
@@ -50,17 +50,17 @@ std::vector<byte> Transformation_Filter::Nonce_State::get()
 	return m_nonce;
 }
 
-void Transformation_Filter::set_iv(const InitializationVector& iv)
+void Transformation_Filter::set_iv(in InitializationVector iv)
 {
 	m_nonce.update(iv);
 }
 
-void Transformation_Filter::set_key(const SymmetricKey& key)
+void Transformation_Filter::set_key(in SymmetricKey key)
 {
 	if(Keyed_Transform* keyed = cast(Keyed_Transform*)(m_transform.get()))
 		keyed->set_key(key);
 	else if(key.length() != 0)
-		throw std::runtime_error("Transformation " + name() + " does not accept keys");
+		throw new Exception("Transformation " + name() + " does not accept keys");
 }
 
 Key_Length_Specification Transformation_Filter::key_spec() const
@@ -108,7 +108,7 @@ void Transformation_Filter::buffered_block(in byte[] input, size_t input_length)
 
 void Transformation_Filter::buffered_final(in byte[] input, size_t input_length)
 {
-	SafeArray!byte buf(input, input + input_length);
+	SafeVector!byte buf(input, input + input_length);
 	m_transform->finish(buf);
 	send(buf);
 }

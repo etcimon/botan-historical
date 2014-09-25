@@ -17,13 +17,13 @@ class OSSL_BN
 		void encode(byte[], size_t) const;
 		size_t bytes() const;
 
-		SafeArray!byte to_bytes() const
+		SafeVector!byte to_bytes() const
 		{ return BigInt::encode_locked(to_bigint()); }
 
-		OSSL_BN& operator=(const OSSL_BN&);
+		OSSL_BN& operator=(in OSSL_BN);
 
-		OSSL_BN(const OSSL_BN&);
-		OSSL_BN(const BigInt& = 0);
+		OSSL_BN(in OSSL_BN);
+		OSSL_BN(in BigInt = 0);
 		OSSL_BN(const byte[], size_t);
 		~OSSL_BN();
 
@@ -38,10 +38,10 @@ class OSSL_BN
 class OSSL_BN_CTX
 {
 	public:
-		OSSL_BN_CTX& operator=(const OSSL_BN_CTX&);
+		OSSL_BN_CTX& operator=(in OSSL_BN_CTX);
 
 		OSSL_BN_CTX();
-		OSSL_BN_CTX(const OSSL_BN_CTX&);
+		OSSL_BN_CTX(in OSSL_BN_CTX);
 		~OSSL_BN_CTX();
 
 		BN_CTX* ptr() const { return m_ctx; }

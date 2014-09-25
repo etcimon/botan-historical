@@ -14,19 +14,19 @@
 class Fixed_Window_Exponentiator : public Modular_Exponentiator
 {
 	public:
-		void set_exponent(const BigInt&);
-		void set_base(const BigInt&);
+		void set_exponent(in BigInt);
+		void set_base(in BigInt);
 		BigInt execute() const;
 
 		Modular_Exponentiator* copy() const
 		{ return new Fixed_Window_Exponentiator(*this); }
 
-		Fixed_Window_Exponentiator(const BigInt&, Power_Mod::Usage_Hints);
+		Fixed_Window_Exponentiator(in BigInt, Power_Mod::Usage_Hints);
 	private:
 		Modular_Reducer reducer;
 		BigInt exp;
 		size_t window_bits;
-		std::vector<BigInt> g;
+		Vector!( BigInt ) g;
 		Power_Mod::Usage_Hints hints;
 };
 
@@ -36,18 +36,18 @@ class Fixed_Window_Exponentiator : public Modular_Exponentiator
 class Montgomery_Exponentiator : public Modular_Exponentiator
 {
 	public:
-		void set_exponent(const BigInt&);
-		void set_base(const BigInt&);
+		void set_exponent(in BigInt);
+		void set_base(in BigInt);
 		BigInt execute() const;
 
 		Modular_Exponentiator* copy() const
 		{ return new Montgomery_Exponentiator(*this); }
 
-		Montgomery_Exponentiator(const BigInt&, Power_Mod::Usage_Hints);
+		Montgomery_Exponentiator(in BigInt, Power_Mod::Usage_Hints);
 	private:
 		BigInt m_exp, m_modulus, m_R_mod, m_R2_mod;
 		word m_mod_prime;
 		size_t m_mod_words, m_exp_bits, m_window_bits;
 		Power_Mod::Usage_Hints m_hints;
-		std::vector<BigInt> m_g;
+		Vector!( BigInt ) m_g;
 };

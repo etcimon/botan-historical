@@ -50,14 +50,14 @@ class EAC1_1_gen_CVC : public EAC1_1_obj<Derived> // CRTP continuation from EAC1
 		* Get the to-be-signed (TBS) data of this object.
 		* @result the TBS data of this object
 		*/
-		std::vector<byte> tbs_data() const;
+		Vector!( byte ) tbs_data() const;
 
 		/**
 		* Build the DER encoded certifcate body of an object
 		* @param tbs the data to be signed
 		* @result the correctly encoded body of the object
 		*/
-		static std::vector<byte> build_cert_body(in Array!byte tbs);
+		static Vector!( byte ) build_cert_body(in Vector!byte tbs);
 
 		/**
 		* Create a signed generalized CVC object.
@@ -66,9 +66,9 @@ class EAC1_1_gen_CVC : public EAC1_1_obj<Derived> // CRTP continuation from EAC1
 		* @param rng a random number generator
 		* @result the DER encoded signed generalized CVC object
 		*/
-		static std::vector<byte> make_signed(
+		static Vector!( byte ) make_signed(
 			PK_Signer& signer,
-			in Array!byte tbs_bits,
+			in Vector!byte tbs_bits,
 			RandomNumberGenerator& rng);
 
 		EAC1_1_gen_CVC() { m_pk = 0; }
@@ -82,7 +82,7 @@ class EAC1_1_gen_CVC : public EAC1_1_obj<Derived> // CRTP continuation from EAC1
 		bool self_signed;
 
 		static void decode_info(DataSource& source,
-										std::vector<byte> & res_tbs_bits,
+										Vector!( byte ) & res_tbs_bits,
 										ECDSA_Signature & res_sig);
 
 };
@@ -98,9 +98,9 @@ template<typename Derived> bool EAC1_1_gen_CVC<Derived>::is_self_signed() const
 }
 
 template<typename Derived>
-std::vector<byte> EAC1_1_gen_CVC<Derived>::make_signed(
+Vector!( byte ) EAC1_1_gen_CVC<Derived>::make_signed(
 	PK_Signer& signer,
-	in Array!byte tbs_bits,
+	in Vector!byte tbs_bits,
 	RandomNumberGenerator& rng) // static
 {
 	const auto concat_sig = signer.sign_message(tbs_bits, rng);
@@ -119,7 +119,7 @@ Public_Key* EAC1_1_gen_CVC<Derived>::subject_public_key() const
 	return new ECDSA_PublicKey(*m_pk);
 }
 
-template<typename Derived> std::vector<byte> EAC1_1_gen_CVC<Derived>::build_cert_body(in Array!byte tbs)
+template<typename Derived> Vector!( byte ) EAC1_1_gen_CVC<Derived>::build_cert_body(in Vector!byte tbs)
 {
 	return DER_Encoder()
 		.start_cons(ASN1_Tag(78), APPLICATION)
@@ -127,15 +127,15 @@ template<typename Derived> std::vector<byte> EAC1_1_gen_CVC<Derived>::build_cert
 		.end_cons().get_contents_unlocked();
 }
 
-template<typename Derived> std::vector<byte> EAC1_1_gen_CVC<Derived>::tbs_data() const
+template<typename Derived> Vector!( byte ) EAC1_1_gen_CVC<Derived>::tbs_data() const
 {
 	return build_cert_body(EAC1_1_obj<Derived>::tbs_bits);
 }
 
 template<typename Derived> void EAC1_1_gen_CVC<Derived>::encode(Pipe& out, X509_Encoding encoding) const
 {
-	std::vector<byte> concat_sig(EAC1_1_obj<Derived>::m_sig.get_concatenation());
-	std::vector<byte> der = DER_Encoder()
+	Vector!( byte ) concat_sig(EAC1_1_obj<Derived>::m_sig.get_concatenation());
+	Vector!( byte ) der = DER_Encoder()
 		.start_cons(ASN1_Tag(33), APPLICATION)
 		.start_cons(ASN1_Tag(78), APPLICATION)
 		.raw_bytes(EAC1_1_obj<Derived>::tbs_bits)
@@ -145,7 +145,7 @@ template<typename Derived> void EAC1_1_gen_CVC<Derived>::encode(Pipe& out, X509_
 		.get_contents_unlocked();
 
 	if (encoding == PEM)
-		throw Invalid_Argument("EAC1_1_gen_CVC::encode() cannot PEM encode an EAC object");
+		throw new Invalid_Argument("EAC1_1_gen_CVC::encode() cannot PEM encode an EAC object");
 	else
 		out.write(der);
 }
@@ -153,10 +153,10 @@ template<typename Derived> void EAC1_1_gen_CVC<Derived>::encode(Pipe& out, X509_
 template<typename Derived>
 void EAC1_1_gen_CVC<Derived>::decode_info(
 	DataSource& source,
-	std::vector<byte> & res_tbs_bits,
+	Vector!( byte ) & res_tbs_bits,
 	ECDSA_Signature & res_sig)
 {
-	std::vector<byte> concat_sig;
+	Vector!( byte ) concat_sig;
 	BER_Decoder(source)
 		.start_cons(ASN1_Tag(33))
 		.start_cons(ASN1_Tag(78))

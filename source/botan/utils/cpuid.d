@@ -126,7 +126,7 @@ bool altivec_check_pvr_emul()
 	// Motorola produced G4s with PVR 0x800[0123C] (at least)
 	const u16bit PVR_G4_74xx_24  = 0x800;
 
-	u32bit pvr = 0;
+	uint pvr = 0;
 
 	asm volatile("mfspr %0, 287" : "=r" (pvr));
 
@@ -179,13 +179,13 @@ void CPUID::initialize()
 #endif
 
 #if defined(BOTAN_TARGET_CPU_IS_X86_FAMILY)
-	const u32bit INTEL_CPUID[3] = { 0x756E6547, 0x6C65746E, 0x49656E69 };
-	const u32bit AMD_CPUID[3] = { 0x68747541, 0x444D4163, 0x69746E65 };
+	const uint INTEL_CPUID[3] = { 0x756E6547, 0x6C65746E, 0x49656E69 };
+	const uint AMD_CPUID[3] = { 0x68747541, 0x444D4163, 0x69746E65 };
 
-	u32bit cpuid[4] = { 0 };
+	uint cpuid[4] = { 0 };
 	X86_CPUID(0, cpuid);
 
-	const u32bit max_supported_sublevel = cpuid[0];
+	const uint max_supported_sublevel = cpuid[0];
 
 	if(max_supported_sublevel == 0)
 		return;

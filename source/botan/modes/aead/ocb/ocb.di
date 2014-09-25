@@ -22,7 +22,7 @@ class L_computer;
 class OCB_Mode : public AEAD_Mode
 {
 	public:
-		SafeArray!byte start(in byte[] nonce, size_t nonce_len) override;
+		SafeVector!byte start(in byte[] nonce, size_t nonce_len) override;
 
 		void set_associated_data(in byte[] ad, size_t ad_len) override;
 
@@ -54,15 +54,15 @@ class OCB_Mode : public AEAD_Mode
 
 		size_t m_block_index = 0;
 
-		SafeArray!byte m_checksum;
-		SafeArray!byte m_offset;
-		SafeArray!byte m_ad_hash;
+		SafeVector!byte m_checksum;
+		SafeVector!byte m_offset;
+		SafeVector!byte m_ad_hash;
 	private:
-		SafeArray!byte update_nonce(in byte[] nonce, size_t nonce_len);
+		SafeVector!byte update_nonce(in byte[] nonce, size_t nonce_len);
 
 		size_t m_tag_size = 0;
-		SafeArray!byte m_last_nonce;
-		SafeArray!byte m_stretch;
+		SafeVector!byte m_last_nonce;
+		SafeVector!byte m_stretch;
 };
 
 class OCB_Encryption : public OCB_Mode
@@ -80,9 +80,9 @@ class OCB_Encryption : public OCB_Mode
 
 		size_t minimum_final_size() const override { return 0; }
 
-		void update(SafeArray!byte blocks, size_t offset = 0) override;
+		void update(SafeVector!byte blocks, size_t offset = 0) override;
 
-		void finish(SafeArray!byte final_block, size_t offset = 0) override;
+		void finish(SafeVector!byte final_block, size_t offset = 0) override;
 	private:
 		void encrypt(byte input[], size_t blocks);
 };
@@ -105,9 +105,9 @@ class OCB_Decryption : public OCB_Mode
 
 		size_t minimum_final_size() const override { return tag_size(); }
 
-		void update(SafeArray!byte blocks, size_t offset = 0) override;
+		void update(SafeVector!byte blocks, size_t offset = 0) override;
 
-		void finish(SafeArray!byte final_block, size_t offset = 0) override;
+		void finish(SafeVector!byte final_block, size_t offset = 0) override;
 	private:
 		void decrypt(byte input[], size_t blocks);
 };

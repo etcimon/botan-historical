@@ -13,7 +13,7 @@ CFB_Mode::CFB_Mode(BlockCipher* cipher, size_t feedback_bits) :
 	m_feedback_bytes(feedback_bits ? feedback_bits / 8 : cipher->block_size())
 {
 	if(feedback_bits % 8 || feedback() > cipher->block_size())
-		throw std::invalid_argument(name() + ": feedback bits " +
+		throw new std::invalid_argument(name() + ": feedback bits " +
 											 std::to_string(feedback_bits) + " not supported");
 }
 
@@ -66,19 +66,19 @@ void CFB_Mode::key_schedule(in byte[] key)
 	m_cipher->set_key(key, length);
 }
 
-SafeArray!byte CFB_Mode::start(in byte[] nonce, size_t nonce_len)
+SafeVector!byte CFB_Mode::start(in byte[] nonce, size_t nonce_len)
 {
 	if(!valid_nonce_length(nonce_len))
-		throw Invalid_IV_Length(name(), nonce_len);
+		throw new Invalid_IV_Length(name(), nonce_len);
 
 	m_shift_register.assign(nonce, nonce + nonce_len);
 	m_keystream_buf.resize(m_shift_register.size());
 	cipher().encrypt(m_shift_register, m_keystream_buf);
 
-	return SafeArray!byte();
+	return SafeVector!byte();
 }
 
-void CFB_Encryption::update(SafeArray!byte buffer, size_t offset)
+void CFB_Encryption::update(SafeVector!byte buffer, size_t offset)
 {
 	BOTAN_ASSERT(buffer.size() >= offset, "Offset is sane");
 	size_t sz = buffer.size() - offset;
@@ -86,7 +86,7 @@ void CFB_Encryption::update(SafeArray!byte buffer, size_t offset)
 
 	const size_t BS = cipher().block_size();
 
-	SafeArray!byte state = shift_register();
+	SafeVector!byte state = shift_register();
 	const size_t shift = feedback();
 
 	while(sz)
@@ -104,12 +104,12 @@ void CFB_Encryption::update(SafeArray!byte buffer, size_t offset)
 	}
 }
 
-void CFB_Encryption::finish(SafeArray!byte buffer, size_t offset)
+void CFB_Encryption::finish(SafeVector!byte buffer, size_t offset)
 {
 	update(buffer, offset);
 }
 
-void CFB_Decryption::update(SafeArray!byte buffer, size_t offset)
+void CFB_Decryption::update(SafeVector!byte buffer, size_t offset)
 {
 	BOTAN_ASSERT(buffer.size() >= offset, "Offset is sane");
 	size_t sz = buffer.size() - offset;
@@ -117,7 +117,7 @@ void CFB_Decryption::update(SafeArray!byte buffer, size_t offset)
 
 	const size_t BS = cipher().block_size();
 
-	SafeArray!byte state = shift_register();
+	SafeVector!byte state = shift_register();
 	const size_t shift = feedback();
 
 	while(sz)
@@ -139,7 +139,7 @@ void CFB_Decryption::update(SafeArray!byte buffer, size_t offset)
 	}
 }
 
-void CFB_Decryption::finish(SafeArray!byte buffer, size_t offset)
+void CFB_Decryption::finish(SafeVector!byte buffer, size_t offset)
 {
 	update(buffer, offset);
 }

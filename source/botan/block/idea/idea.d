@@ -14,13 +14,13 @@ namespace {
 */
 inline u16bit mul(u16bit x, u16bit y)
 {
-	const u32bit P = cast(u32bit)(x) * y;
+	const uint P = cast(uint)(x) * y;
 
 	// P ? 0xFFFF : 0
 	const u16bit P_mask = !P - 1;
 
-	const u32bit P_hi = P >> 16;
-	const u32bit P_lo = P & 0xFFFF;
+	const uint P_hi = P >> 16;
+	const uint P_lo = P & 0xFFFF;
 
 	const u16bit r_1 = (P_lo - P_hi) + (P_lo < P_hi);
 	const u16bit r_2 = 1 - x - y;
@@ -93,8 +93,8 @@ void idea_op(in byte[] input, ref byte[] output)
 
 		store_be(out, X1, X3, X2, X4);
 
-		in += BLOCK_SIZE;
-		out += BLOCK_SIZE;
+		input = input[BLOCK_SIZE .. $];
+		output = output[BLOCK_SIZE .. $];
 	}
 }
 

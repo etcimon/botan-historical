@@ -34,6 +34,6 @@ class CBC_MAC : public MessageAuthenticationCode
 		void key_schedule(const byte[], size_t);
 
 		std::unique_ptr<BlockCipher> m_cipher;
-		SafeArray!byte m_state;
+		SafeVector!byte m_state;
 		size_t m_position = 0;
 };

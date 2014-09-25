@@ -52,7 +52,7 @@ void OFB::cipher(in byte[] input, ref byte[] output)
 void OFB::set_iv(in byte[] iv, size_t iv_len)
 {
 	if(!valid_iv_length(iv_len))
-		throw Invalid_IV_Length(name(), iv_len);
+		throw new Invalid_IV_Length(name(), iv_len);
 
 	zeroise(m_buffer);
 	buffer_insert(m_buffer, 0, iv, iv_len);

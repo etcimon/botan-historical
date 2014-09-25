@@ -70,7 +70,7 @@ void PK_Verifier_Filter::write(in byte[] input, size_t length)
 void PK_Verifier_Filter::end_msg()
 {
 	if(signature.empty())
-		throw Invalid_State("PK_Verifier_Filter: No signature to check against");
+		throw new Invalid_State("PK_Verifier_Filter: No signature to check against");
 	bool is_valid = verifier->check_signature(signature);
 	send((is_valid ? 1 : 0));
 }
@@ -86,7 +86,7 @@ void PK_Verifier_Filter::set_signature(in byte[] sig, size_t length)
 /*
 * Set the signature to check
 */
-void PK_Verifier_Filter::set_signature(in SafeArray!byte sig)
+void PK_Verifier_Filter::set_signature(in SafeVector!byte sig)
 {
 	signature = sig;
 }
@@ -104,7 +104,7 @@ PK_Verifier_Filter::PK_Verifier_Filter(PK_Verifier* v, in byte[] sig,
 * PK_Verifier_Filter Constructor
 */
 PK_Verifier_Filter::PK_Verifier_Filter(PK_Verifier* v,
-													in SafeArray!byte sig) :
+													in SafeVector!byte sig) :
 	verifier(v), signature(sig)
 {
 }

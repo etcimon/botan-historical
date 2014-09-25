@@ -62,7 +62,7 @@
 */
 void Noekeon_SIMD::encrypt_n(in byte[] input, ref byte[] output) const
 {
-	const secure_vector<u32bit>& EK = this->get_EK();
+	const secure_vector<uint>& EK = this->get_EK();
 
 	SIMD_32 K0 = SIMD_32(EK[0]);
 	SIMD_32 K1 = SIMD_32(EK[1]);
@@ -119,7 +119,7 @@ void Noekeon_SIMD::encrypt_n(in byte[] input, ref byte[] output) const
 */
 void Noekeon_SIMD::decrypt_n(in byte[] input, ref byte[] output) const
 {
-	const secure_vector<u32bit>& DK = this->get_DK();
+	const secure_vector<uint>& DK = this->get_DK();
 
 	SIMD_32 K0 = SIMD_32(DK[0]);
 	SIMD_32 K1 = SIMD_32(DK[1]);

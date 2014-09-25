@@ -18,7 +18,7 @@
 * @param scan_name the name
 * @return the name components
 */
-std::vector<string>
+Vector!( string )
 parse_algorithm_name(in string scan_name);
 
 /**
@@ -27,14 +27,14 @@ parse_algorithm_name(in string scan_name);
 * @param delim the delimitor
 * @return string split by delim
 */
-std::vector<string> split_on(
+Vector!( string ) split_on(
 	in string str, char delim);
 
 /**
 * Split a string on a character predicate
 * @param str the input string
 */
-std::vector<string>
+Vector!( string )
 split_on_pred(in string str,
 				  bool delegate(char) pred);
 
@@ -71,7 +71,7 @@ string replace_chars(in string str,
 * @param delim the delimitor
 * @return string joined by delim
 */
-string string_join(const std::vector<string>& strs,
+string string_join(in Vector!( string ) strs,
 											 char delim);
 
 /**
@@ -79,7 +79,7 @@ string string_join(const std::vector<string>& strs,
 * @param oid the OID in string form
 * @return OID components
 */
-std::vector<u32bit> parse_asn1_oid(in string oid);
+Vector!( uint ) parse_asn1_oid(in string oid);
 
 /**
 * Compare two names using the X.509 comparison algorithm
@@ -95,28 +95,28 @@ bool x500_name_cmp(in string name1,
 * @param str the string to convert
 * @return number value of the string
 */
-u32bit to_u32bit(in string str);
+uint to_uint(in string str);
 
 /**
 * Convert a time specification to a number
 * @param timespec the time specification
 * @return number of seconds represented by timespec
 */
-u32bit timespec_to_u32bit(in string timespec);
+uint timespec_to_uint(in string timespec);
 
 /**
 * Convert a string representation of an IPv4 address to a number
 * @param ip_str the string representation
 * @return integer IPv4 address
 */
-u32bit string_to_ipv4(in string ip_str);
+uint string_to_ipv4(in string ip_str);
 
 /**
 * Convert an IPv4 address to a string
 * @param ip_addr the IPv4 address to convert
 * @return string representation of the IPv4 address
 */
-string ipv4_to_string(u32bit ip_addr);
+string ipv4_to_string(uint ip_addr);
 
 void lex_cfg(std::istream& is,
 							  void delegate(string) cb);

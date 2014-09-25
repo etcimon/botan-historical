@@ -75,7 +75,7 @@ class BER_Object
 		void assert_is_a(ASN1_Tag, ASN1_Tag);
 
 		ASN1_Tag type_tag, class_tag;
-		SafeArray!byte value;
+		SafeVector!byte value;
 };
 
 /*
@@ -85,7 +85,7 @@ class DataSource;
 
 namespace ASN1 {
 
-std::vector<byte> put_in_sequence(in Array!byte val);
+Vector!( byte ) put_in_sequence(in Vector!byte val);
 string to_string(const BER_Object& obj);
 
 /**

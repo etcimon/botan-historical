@@ -38,8 +38,8 @@ class RC4 : public StreamCipher
 		const size_t SKIP;
 
 		byte X, Y;
-		SafeArray!byte state;
+		SafeVector!byte state;
 
-		SafeArray!byte buffer;
+		SafeVector!byte buffer;
 		size_t position;
 };

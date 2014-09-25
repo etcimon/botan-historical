@@ -16,7 +16,7 @@ namespace {
 /*
 * Encode an integer as an OCTET STRING
 */
-std::vector<byte> encode_x942_int(u32bit n)
+Vector!( byte ) encode_x942_int(uint n)
 {
 	byte n_buf[4] = { 0 };
 	store_be(n, n_buf);
@@ -28,15 +28,15 @@ std::vector<byte> encode_x942_int(u32bit n)
 /*
 * X9.42 PRF
 */
-SafeArray!byte X942_PRF::derive(size_t key_len,
+SafeVector!byte X942_PRF::derive(size_t key_len,
 												in byte[] secret, size_t secret_len,
 												in byte[] salt, size_t salt_len) const
 {
 	SHA_160 hash;
 	const OID kek_algo(key_wrap_oid);
 
-	SafeArray!byte key;
-	u32bit counter = 1;
+	SafeVector!byte key;
+	uint counter = 1;
 
 	while(key.size() != key_len && counter)
 	{
@@ -58,13 +58,13 @@ SafeArray!byte X942_PRF::derive(size_t key_len,
 					)
 
 				.start_explicit(2)
-					.raw_bytes(encode_x942_int(cast(u32bit)(8 * key_len)))
+					.raw_bytes(encode_x942_int(cast(uint)(8 * key_len)))
 				.end_explicit()
 
 			.end_cons().get_contents()
 			);
 
-		SafeArray!byte digest = hash.final();
+		SafeVector!byte digest = hash.flush();
 		const size_t needed = std::min(digest.size(), key_len - key.size());
 		key += std::make_pair(&digest[0], needed);
 

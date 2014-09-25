@@ -13,22 +13,22 @@
 #include <botan/cryptobox_psk.h>
 namespace TLS {
 
-Session::Session(in Array!byte session_identifier,
-					  in SafeArray!byte master_secret,
-					  Protocol_Version version,
+Session::Session(in Vector!byte session_identifier,
+					  in SafeVector!byte master_secret,
+					  Protocol_Version _version,
 					  u16bit ciphersuite,
 					  byte compression_method,
 					  Connection_Side side,
 					  size_t fragment_size,
-					  const std::vector<X509_Certificate>& certs,
-					  in Array!byte ticket,
+					  const Vector!( X509_Certificate )& certs,
+					  in Vector!byte ticket,
 					  const Server_Information& server_info,
 					  in string srp_identifier) :
 	m_start_time(std::chrono::system_clock::now()),
 	m_identifier(session_identifier),
 	m_session_ticket(ticket),
 	m_master_secret(master_secret),
-	m_version(version),
+	m_version(_version),
 	m_ciphersuite(ciphersuite),
 	m_compression_method(compression_method),
 	m_connection_side(side),
@@ -41,7 +41,7 @@ Session::Session(in Array!byte session_identifier,
 
 Session::Session(in string pem)
 {
-	SafeArray!byte der = PEM_Code::decode_check_label(pem, "SSL SESSION");
+	SafeVector!byte der = PEM_Code::decode_check_label(pem, "SSL SESSION");
 
 	*this = Session(&der[0], der.size());
 }
@@ -58,7 +58,7 @@ Session::Session(in byte[] ber, size_t ber_len)
 
 	byte major_version = 0, minor_version = 0;
 
-	std::vector<byte> peer_cert_bits;
+	Vector!( byte ) peer_cert_bits;
 
 	size_t start_time = 0;
 
@@ -103,9 +103,9 @@ Session::Session(in byte[] ber, size_t ber_len)
 	}
 }
 
-SafeArray!byte Session::DER_encode() const
+SafeVector!byte Session::DER_encode() const
 {
-	std::vector<byte> peer_cert_bits;
+	Vector!( byte ) peer_cert_bits;
 	for(size_t i = 0; i != m_peer_certs.size(); ++i)
 		peer_cert_bits += m_peer_certs[i].BER_encode();
 
@@ -142,8 +142,8 @@ std::chrono::seconds Session::session_age() const
 		std::chrono::system_clock::now() - m_start_time);
 }
 
-std::vector<byte>
-Session::encrypt(const SymmetricKey& master_key,
+Vector!( byte )
+Session::encrypt(in SymmetricKey master_key,
 					  RandomNumberGenerator& rng) const
 {
 	const auto der = this->DER_encode();
@@ -162,7 +162,7 @@ Session Session::decrypt(in byte[] buf, size_t buf_len,
 	}
 	catch(std::exception& e)
 	{
-		throw Decoding_Error("Failed to decrypt encrypted session -" +
+		throw new Decoding_Error("Failed to decrypt encrypted session -" +
 									string(e.what()));
 	}
 }

@@ -22,7 +22,7 @@ X509_Time::X509_Time(in string time_str)
 /*
 * Create a X509_Time from a time point
 */
-X509_Time::X509_Time(const std::chrono::system_clock::time_point& time)
+X509_Time::X509_Time(in SysTime time)
 {
 	calendar_point cal = calendar_value(time);
 
@@ -56,7 +56,7 @@ void X509_Time::set_to(in string time_str)
 		return;
 	}
 
-	std::vector<string> params;
+	Vector!( string ) params;
 	string current;
 
 	for(size_t j = 0; j != time_str.size(); ++j)
@@ -74,19 +74,19 @@ void X509_Time::set_to(in string time_str)
 		params.push_back(current);
 
 	if(params.size() < 3 || params.size() > 6)
-		throw Invalid_Argument("Invalid time specification " + time_str);
+		throw new Invalid_Argument("Invalid time specification " + time_str);
 
-	year	= to_u32bit(params[0]);
-	month  = to_u32bit(params[1]);
-	day	 = to_u32bit(params[2]);
-	hour	= (params.size() >= 4) ? to_u32bit(params[3]) : 0;
-	minute = (params.size() >= 5) ? to_u32bit(params[4]) : 0;
-	second = (params.size() == 6) ? to_u32bit(params[5]) : 0;
+	year	= to_uint(params[0]);
+	month  = to_uint(params[1]);
+	day	 = to_uint(params[2]);
+	hour	= (params.size() >= 4) ? to_uint(params[3]) : 0;
+	minute = (params.size() >= 5) ? to_uint(params[4]) : 0;
+	second = (params.size() == 6) ? to_uint(params[5]) : 0;
 
 	tag = (year >= 2050) ? GENERALIZED_TIME : UTC_TIME;
 
 	if(!passes_sanity_check())
-		throw Invalid_Argument("Invalid time specification " + time_str);
+		throw new Invalid_Argument("Invalid time specification " + time_str);
 }
 
 /*
@@ -97,24 +97,24 @@ void X509_Time::set_to(in string t_spec, ASN1_Tag spec_tag)
 	if(spec_tag == GENERALIZED_TIME)
 	{
 		if(t_spec.size() != 13 && t_spec.size() != 15)
-			throw Invalid_Argument("Invalid GeneralizedTime: " + t_spec);
+			throw new Invalid_Argument("Invalid GeneralizedTime: " + t_spec);
 	}
 	else if(spec_tag == UTC_TIME)
 	{
 		if(t_spec.size() != 11 && t_spec.size() != 13)
-			throw Invalid_Argument("Invalid UTCTime: " + t_spec);
+			throw new Invalid_Argument("Invalid UTCTime: " + t_spec);
 	}
 	else
 	{
-		throw Invalid_Argument("Invalid time tag " + std::to_string(spec_tag) + " val " + t_spec);
+		throw new Invalid_Argument("Invalid time tag " + std::to_string(spec_tag) + " val " + t_spec);
 	}
 
 	if(t_spec[t_spec.size()-1] != 'Z')
-		throw Invalid_Argument("Invalid time encoding: " + t_spec);
+		throw new Invalid_Argument("Invalid time encoding: " + t_spec);
 
 	const size_t YEAR_SIZE = (spec_tag == UTC_TIME) ? 2 : 4;
 
-	std::vector<string> params;
+	Vector!( string ) params;
 	string current;
 
 	for(size_t j = 0; j != YEAR_SIZE; ++j)
@@ -132,12 +132,12 @@ void X509_Time::set_to(in string t_spec, ASN1_Tag spec_tag)
 		}
 	}
 
-	year	= to_u32bit(params[0]);
-	month  = to_u32bit(params[1]);
-	day	 = to_u32bit(params[2]);
-	hour	= to_u32bit(params[3]);
-	minute = to_u32bit(params[4]);
-	second = (params.size() == 6) ? to_u32bit(params[5]) : 0;
+	year	= to_uint(params[0]);
+	month  = to_uint(params[1]);
+	day	 = to_uint(params[2]);
+	hour	= to_uint(params[3]);
+	minute = to_uint(params[4]);
+	second = (params.size() == 6) ? to_uint(params[5]) : 0;
 	tag	 = spec_tag;
 
 	if(spec_tag == UTC_TIME)
@@ -147,7 +147,7 @@ void X509_Time::set_to(in string t_spec, ASN1_Tag spec_tag)
 	}
 
 	if(!passes_sanity_check())
-		throw Invalid_Argument("Invalid time specification " + t_spec);
+		throw new Invalid_Argument("Invalid time specification " + t_spec);
 }
 
 /*
@@ -156,7 +156,7 @@ void X509_Time::set_to(in string t_spec, ASN1_Tag spec_tag)
 void X509_Time::encode_into(DER_Encoder& der) const
 {
 	if(tag != GENERALIZED_TIME && tag != UTC_TIME)
-		throw Invalid_Argument("X509_Time: Bad encoding tag");
+		throw new Invalid_Argument("X509_Time: Bad encoding tag");
 
 	der.add_object(tag, UNIVERSAL,
 						Charset::transcode(as_string(),
@@ -183,14 +183,14 @@ void X509_Time::decode_from(BER_Decoder& source)
 string X509_Time::as_string() const
 {
 	if(time_is_set() == false)
-		throw Invalid_State("X509_Time::as_string: No time set");
+		throw new Invalid_State("X509_Time::as_string: No time set");
 
-	u32bit full_year = year;
+	uint full_year = year;
 
 	if(tag == UTC_TIME)
 	{
 		if(year < 1950 || year >= 2050)
-			throw Encoding_Error("X509_Time: The time " + readable_string() +
+			throw new Encoding_Error("X509_Time: The time " + readable_string() +
 										" cannot be encoded as a UTCTime");
 
 		full_year = (year >= 2000) ? (year - 2000) : (year - 1900);
@@ -203,7 +203,7 @@ string X509_Time::as_string() const
 												 minute*100 +
 												 second) + "Z";
 
-	u32bit desired_size = (tag == UTC_TIME) ? 13 : 15;
+	uint desired_size = (tag == UTC_TIME) ? 13 : 15;
 
 	while(repr.size() < desired_size)
 		repr = "0" + repr;
@@ -225,7 +225,7 @@ bool X509_Time::time_is_set() const
 string X509_Time::readable_string() const
 {
 	if(time_is_set() == false)
-		throw Invalid_State("X509_Time::readable_string: No time set");
+		throw new Invalid_State("X509_Time::readable_string: No time set");
 
 	string output(24, 0);
 
@@ -256,10 +256,10 @@ bool X509_Time::passes_sanity_check() const
 /*
 * Compare this time against another
 */
-s32bit X509_Time::cmp(const X509_Time& other) const
+s32bit X509_Time::cmp(in X509_Time other) const
 {
 	if(time_is_set() == false)
-		throw Invalid_State("X509_Time::cmp: No time set");
+		throw new Invalid_State("X509_Time::cmp: No time set");
 
 	const s32bit EARLIER = -1, LATER = 1, SAME_TIME = 0;
 
@@ -282,19 +282,19 @@ s32bit X509_Time::cmp(const X509_Time& other) const
 /*
 * Compare two X509_Times for in various ways
 */
-bool operator==(const X509_Time& t1, const X509_Time& t2)
+bool operator==(in X509_Time t1, const X509_Time& t2)
 { return (t1.cmp(t2) == 0); }
-bool operator!=(const X509_Time& t1, const X509_Time& t2)
+bool operator!=(in X509_Time t1, const X509_Time& t2)
 { return (t1.cmp(t2) != 0); }
 
-bool operator<=(const X509_Time& t1, const X509_Time& t2)
+bool operator<=(in X509_Time t1, const X509_Time& t2)
 { return (t1.cmp(t2) <= 0); }
-bool operator>=(const X509_Time& t1, const X509_Time& t2)
+bool operator>=(in X509_Time t1, const X509_Time& t2)
 { return (t1.cmp(t2) >= 0); }
 
-bool operator<(const X509_Time& t1, const X509_Time& t2)
+bool operator<(in X509_Time t1, const X509_Time& t2)
 { return (t1.cmp(t2) < 0); }
-bool operator>(const X509_Time& t1, const X509_Time& t2)
+bool operator>(in X509_Time t1, const X509_Time& t2)
 { return (t1.cmp(t2) > 0); }
 
 }

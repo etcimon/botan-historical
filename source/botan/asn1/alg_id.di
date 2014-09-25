@@ -20,20 +20,20 @@ class AlgorithmIdentifier : public ASN1_Object
 		void decode_from(class BER_Decoder&);
 
 		AlgorithmIdentifier() {}
-		AlgorithmIdentifier(const OID&, Encoding_Option);
+		AlgorithmIdentifier(in OID, Encoding_Option);
 		AlgorithmIdentifier(in string, Encoding_Option);
 
-		AlgorithmIdentifier(const OID&, in Array!byte);
-		AlgorithmIdentifier(in string, in Array!byte);
+		AlgorithmIdentifier(in OID, in Vector!byte);
+		AlgorithmIdentifier(in string, in Vector!byte);
 
 		OID oid;
-		std::vector<byte> parameters;
+		Vector!( byte ) parameters;
 };
 
 /*
 * Comparison Operations
 */
-bool operator==(const AlgorithmIdentifier&,
+bool operator==(in AlgorithmIdentifier,
 								  const AlgorithmIdentifier&);
-bool operator!=(const AlgorithmIdentifier&,
+bool operator!=(in AlgorithmIdentifier,
 								  const AlgorithmIdentifier&);

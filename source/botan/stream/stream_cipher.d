@@ -9,7 +9,7 @@
 void StreamCipher::set_iv(const byte[], size_t iv_len)
 {
 	if(iv_len)
-		throw Invalid_Argument("The stream cipher " + name() +
+		throw new Invalid_Argument("The stream cipher " + name() +
 									  " does not support resyncronization");
 }
 

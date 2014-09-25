@@ -20,7 +20,7 @@ ASN1_Cex EAC1_1_CVC::get_cex() const
 {
 	return m_cex;
 }
-u32bit EAC1_1_CVC::get_chat_value() const
+uint EAC1_1_CVC::get_chat_value() const
 {
 	return m_chat_val;
 }
@@ -30,8 +30,8 @@ u32bit EAC1_1_CVC::get_chat_value() const
 */
 void EAC1_1_CVC::force_decode()
 {
-	std::vector<byte> enc_pk;
-	std::vector<byte> enc_chat_val;
+	Vector!( byte ) enc_pk;
+	Vector!( byte ) enc_chat_val;
 	size_t cpi;
 	BER_Decoder tbs_cert(tbs_bits);
 	tbs_cert.decode(cpi, ASN1_Tag(41), APPLICATION)
@@ -49,10 +49,10 @@ void EAC1_1_CVC::force_decode()
 		.verify_end();
 
 	if(enc_chat_val.size() != 1)
-		throw Decoding_Error("CertificateHolderAuthorizationValue was not of length 1");
+		throw new Decoding_Error("CertificateHolderAuthorizationValue was not of length 1");
 
 	if(cpi != 0)
-		throw Decoding_Error("EAC1_1 certificate's cpi was not 0");
+		throw new Decoding_Error("EAC1_1 certificate's cpi was not 0");
 
 	m_pk = decode_eac1_1_key(enc_pk, sig_algo);
 
@@ -85,15 +85,15 @@ bool EAC1_1_CVC::operator==(EAC1_1_CVC const& rhs) const
 			  && get_concat_sig() == rhs.get_concat_sig());
 }
 
-ECDSA_PublicKey* decode_eac1_1_key(in Array!byte,
+ECDSA_PublicKey* decode_eac1_1_key(in Vector!byte,
 											  AlgorithmIdentifier&)
 {
-	throw Internal_Error("decode_eac1_1_key: Unimplemented");
+	throw new Internal_Error("decode_eac1_1_key: Unimplemented");
 	return 0;
 }
 
 EAC1_1_CVC make_cvc_cert(PK_Signer& signer,
-								 in Array!byte public_key,
+								 in Vector!byte public_key,
 								 ASN1_Car const& car,
 								 ASN1_Chr const& chr,
 								 byte holder_auth_templ,
@@ -102,12 +102,12 @@ EAC1_1_CVC make_cvc_cert(PK_Signer& signer,
 								 RandomNumberGenerator& rng)
 {
 	OID chat_oid(OIDS::lookup("CertificateHolderAuthorizationTemplate"));
-	std::vector<byte> enc_chat_val;
+	Vector!( byte ) enc_chat_val;
 	enc_chat_val.push_back(holder_auth_templ);
 
-	std::vector<byte> enc_cpi;
+	Vector!( byte ) enc_cpi;
 	enc_cpi.push_back(0x00);
-	std::vector<byte> tbs = DER_Encoder()
+	Vector!( byte ) tbs = DER_Encoder()
 		.encode(enc_cpi, OCTET_STRING, ASN1_Tag(41), APPLICATION) // cpi
 		.encode(car)
 		.raw_bytes(public_key)
@@ -120,7 +120,7 @@ EAC1_1_CVC make_cvc_cert(PK_Signer& signer,
 		.encode(cex)
 		.get_contents_unlocked();
 
-	std::vector<byte> signed_cert =
+	Vector!( byte ) signed_cert =
 		EAC1_1_CVC::make_signed(signer,
 										EAC1_1_CVC::build_cert_body(tbs),
 										rng);

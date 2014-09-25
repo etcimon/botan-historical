@@ -18,7 +18,7 @@ class PBE_PKCS5v20 : public PBE
 	public:
 		OID get_oid() const;
 
-		std::vector<byte> encode_params() const;
+		Vector!( byte ) encode_params() const;
 
 		string name() const;
 
@@ -31,7 +31,7 @@ class PBE_PKCS5v20 : public PBE
 		* @param params the PBES2 parameters
 		* @param passphrase the passphrase to use for decryption
 		*/
-		PBE_PKCS5v20(in Array!byte params,
+		PBE_PKCS5v20(in Vector!byte params,
 						 in string passphrase);
 
 		/**
@@ -54,7 +54,7 @@ class PBE_PKCS5v20 : public PBE
 		Cipher_Dir direction;
 		BlockCipher* block_cipher;
 		MessageAuthenticationCode* m_prf;
-		SafeArray!byte salt, key, iv;
+		SafeVector!byte salt, key, iv;
 		size_t iterations, key_length;
 		Pipe pipe;
 };

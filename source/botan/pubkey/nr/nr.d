@@ -9,8 +9,8 @@
 #include <botan/numthry.h>
 #include <botan/keypair.h>
 #include <future>
-NR_PublicKey::NR_PublicKey(const AlgorithmIdentifier& alg_id,
-									in SafeArray!byte key_bits) :
+NR_PublicKey::NR_PublicKey(in AlgorithmIdentifier alg_id,
+									in SafeVector!byte key_bits) :
 	DL_Scheme_PublicKey(alg_id, key_bits, DL_Group::ANSI_X9_57)
 {
 }
@@ -18,7 +18,7 @@ NR_PublicKey::NR_PublicKey(const AlgorithmIdentifier& alg_id,
 /*
 * NR_PublicKey Constructor
 */
-NR_PublicKey::NR_PublicKey(const DL_Group& grp, const BigInt& y1)
+NR_PublicKey::NR_PublicKey(in DL_Group grp, const BigInt& y1)
 {
 	group = grp;
 	y = y1;
@@ -45,8 +45,8 @@ NR_PrivateKey::NR_PrivateKey(RandomNumberGenerator& rng,
 		load_check(rng);
 }
 
-NR_PrivateKey::NR_PrivateKey(const AlgorithmIdentifier& alg_id,
-									  in SafeArray!byte key_bits,
+NR_PrivateKey::NR_PrivateKey(in AlgorithmIdentifier alg_id,
+									  in SafeVector!byte key_bits,
 									  RandomNumberGenerator& rng) :
 	DL_Scheme_PrivateKey(alg_id, key_bits, DL_Group::ANSI_X9_57)
 {
@@ -69,7 +69,7 @@ bool NR_PrivateKey::check_key(RandomNumberGenerator& rng, bool strong) const
 	return KeyPair::signature_consistency_check(rng, *this, "EMSA1(SHA-1)");
 }
 
-NR_Signature_Operation::NR_Signature_Operation(const NR_PrivateKey& nr) :
+NR_Signature_Operation::NR_Signature_Operation(in NR_PrivateKey nr) :
 	q(nr.group_q()),
 	x(nr.get_x()),
 	powermod_g_p(nr.group_g(), nr.group_p()),
@@ -77,7 +77,7 @@ NR_Signature_Operation::NR_Signature_Operation(const NR_PrivateKey& nr) :
 {
 }
 
-SafeArray!byte
+SafeVector!byte
 NR_Signature_Operation::sign(in byte[] msg, size_t msg_len,
 									  RandomNumberGenerator& rng)
 {
@@ -86,7 +86,7 @@ NR_Signature_Operation::sign(in byte[] msg, size_t msg_len,
 	BigInt f(msg, msg_len);
 
 	if(f >= q)
-		throw Invalid_Argument("NR_Signature_Operation: Input is out of range");
+		throw new Invalid_Argument("NR_Signature_Operation: Input is out of range");
 
 	BigInt c, d;
 
@@ -101,13 +101,13 @@ NR_Signature_Operation::sign(in byte[] msg, size_t msg_len,
 		d = mod_q.reduce(k - x * c);
 	}
 
-	SafeArray!byte output(2*q.bytes());
+	SafeVector!byte output(2*q.bytes());
 	c.binary_encode(&output[output.size() / 2 - c.bytes()]);
 	d.binary_encode(&output[output.size() - d.bytes()]);
 	return output;
 }
 
-NR_Verification_Operation::NR_Verification_Operation(const NR_PublicKey& nr) :
+NR_Verification_Operation::NR_Verification_Operation(in NR_PublicKey nr) :
 	q(nr.group_q()), y(nr.get_y())
 {
 	powermod_g_p = Fixed_Base_Power_Mod(nr.group_g(), nr.group_p());
@@ -116,19 +116,19 @@ NR_Verification_Operation::NR_Verification_Operation(const NR_PublicKey& nr) :
 	mod_q = Modular_Reducer(nr.group_q());
 }
 
-SafeArray!byte
+SafeVector!byte
 NR_Verification_Operation::verify_mr(in byte[] msg, size_t msg_len)
 {
 	const BigInt& q = mod_q.get_modulus();
 	size_t msg_len = msg.length;
 	if(msg_len != 2*q.bytes())
-		throw Invalid_Argument("NR verification: Invalid signature");
+		throw new Invalid_Argument("NR verification: Invalid signature");
 
 	BigInt c(msg, q.bytes());
 	BigInt d(msg + q.bytes(), q.bytes());
 
 	if(c.is_zero() || c >= q || d >= q)
-		throw Invalid_Argument("NR verification: Invalid signature");
+		throw new Invalid_Argument("NR verification: Invalid signature");
 
 	auto future_y_c = std::async(std::launch::async, powermod_y_p, c);
 	BigInt g_d = powermod_g_p(d);

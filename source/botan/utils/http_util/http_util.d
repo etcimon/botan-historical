@@ -27,7 +27,7 @@ string http_transact_asio(in string hostname,
 	tcp.connect(hostname, "http");
 
 	if(!tcp)
-		throw std::runtime_error("HTTP connection to " + hostname + " failed");
+		throw new Exception("HTTP connection to " + hostname + " failed");
 
 	tcp << message;
 	tcp.flush();
@@ -42,7 +42,7 @@ string http_transact_asio(in string hostname,
 string http_transact_fail(in string hostname,
 										 in string)
 {
-	throw std::runtime_error("Cannot connect to " + hostname +
+	throw new Exception("Cannot connect to " + hostname +
 									 ": network code disabled in build");
 }
 
@@ -73,7 +73,7 @@ std::ostream& operator<<(std::ostream& o, const Response& resp)
 	for(auto h : resp.headers())
 		o << "Header '" << h.first << "' = '" << h.second << "'";
 	o << "Body " << std::to_string(resp.body().size()) << " bytes:";
-	o.write(cast(const char*)(&resp.body()[0]), resp.body().size());
+	o.write(cast(in char*)(resp.body()[0]), resp.body().size());
 	return o;
 }
 
@@ -81,12 +81,12 @@ Response http_sync(http_exch_fn http_transact,
 						 in string verb,
 						 in string url,
 						 in string content_type,
-						 in Array!byte body,
+						 in Vector!byte body,
 						 size_t allowable_redirects)
 {
 	const auto protocol_host_sep = url.find("://");
 	if(protocol_host_sep == string::npos)
-		throw std::runtime_error("Invalid URL " + url);
+		throw new Exception("Invalid URL " + url);
 	const string protocol = url.substr(0, protocol_host_sep);
 
 	const auto host_loc_sep = url.find('/', protocol_host_sep + 3);
@@ -120,14 +120,14 @@ Response http_sync(http_exch_fn http_transact,
 	if(content_type != "")
 		outbuf << "Content-Type: " << content_type << "\r";
 	outbuf << "Connection: close\r\r";
-	outbuf.write(cast(const char*)(&body[0]), body.size());
+	outbuf.write(cast(in char*)(body[0]), body.size());
 
 	std::istringstream io(http_transact(hostname, outbuf.str()));
 
 	string line1;
 	std::getline(io, line1);
 	if(!io || line1.empty())
-		throw std::runtime_error("No response");
+		throw new Exception("No response");
 
 	stringstream response_stream(line1);
 	string http_version;
@@ -139,7 +139,7 @@ Response http_sync(http_exch_fn http_transact,
 	std::getline(response_stream, status_message);
 
 	if(!response_stream || http_version.substr(0,5) != "HTTP/")
-		throw std::runtime_error("Not an HTTP response");
+		throw new Exception("Not an HTTP response");
 
 	std::map<string, string> headers;
 	string header_line;
@@ -147,7 +147,7 @@ Response http_sync(http_exch_fn http_transact,
 	{
 		auto sep = header_line.find(": ");
 		if(sep == string::npos || sep > header_line.size() - 2)
-			throw std::runtime_error("Invalid HTTP header " + header_line);
+			throw new Exception("Invalid HTTP header " + header_line);
 		const string key = header_line.substr(0, sep);
 
 		if(sep + 2 < header_line.size() - 1)
@@ -160,12 +160,12 @@ Response http_sync(http_exch_fn http_transact,
 	if(status_code == 301 && headers.count("Location"))
 	{
 		if(allowable_redirects == 0)
-			throw std::runtime_error("HTTP redirection count exceeded");
+			throw new Exception("HTTP redirection count exceeded");
 		return GET_sync(headers["Location"], allowable_redirects - 1);
 	}
 
-	std::vector<byte> resp_body;
-	std::vector<byte> buf(4096);
+	Vector!( byte ) resp_body;
+	Vector!( byte ) buf(4096);
 	while(io.good())
 	{
 		io.read(cast(char*)(&buf[0]), buf.size());
@@ -176,8 +176,8 @@ Response http_sync(http_exch_fn http_transact,
 
 	if(header_size != "")
 	{
-		if(resp_body.size() != to_u32bit(header_size))
-			throw std::runtime_error("Content-Length disagreement, header says " +
+		if(resp_body.size() != to_uint(header_size))
+			throw new Exception("Content-Length disagreement, header says " +
 											 header_size + " got " + std::to_string(resp_body.size()));
 	}
 
@@ -187,7 +187,7 @@ Response http_sync(http_exch_fn http_transact,
 Response http_sync(in string verb,
 						 in string url,
 						 in string content_type,
-						 in Array!byte body,
+						 in Vector!byte body,
 						 size_t allowable_redirects)
 {
 	return http_sync(
@@ -205,12 +205,12 @@ Response http_sync(in string verb,
 
 Response GET_sync(in string url, size_t allowable_redirects)
 {
-	return http_sync("GET", url, "", std::vector<byte>(), allowable_redirects);
+	return http_sync("GET", url, "", Vector!( byte )(), allowable_redirects);
 }
 
 Response POST_sync(in string url,
 						 in string content_type,
-						 in Array!byte body,
+						 in Vector!byte body,
 						 size_t allowable_redirects)
 {
 	return http_sync("POST", url, content_type, body, allowable_redirects);

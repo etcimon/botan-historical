@@ -21,7 +21,7 @@ bool ECDSA_PrivateKey::check_key(RandomNumberGenerator& rng,
 	return KeyPair::signature_consistency_check(rng, *this, "EMSA1(SHA-1)");
 }
 
-ECDSA_Signature_Operation::ECDSA_Signature_Operation(const ECDSA_PrivateKey& ecdsa) :
+ECDSA_Signature_Operation::ECDSA_Signature_Operation(in ECDSA_PrivateKey ecdsa) :
 	base_point(ecdsa.domain().get_base_point()),
 	order(ecdsa.domain().get_order()),
 	x(ecdsa.private_value()),
@@ -29,7 +29,7 @@ ECDSA_Signature_Operation::ECDSA_Signature_Operation(const ECDSA_PrivateKey& ecd
 {
 }
 
-SafeArray!byte
+SafeVector!byte
 ECDSA_Signature_Operation::sign(in byte[] msg, size_t msg_len,
 										  RandomNumberGenerator& rng)
 {
@@ -53,13 +53,13 @@ ECDSA_Signature_Operation::sign(in byte[] msg, size_t msg_len,
 		s = mod_order.multiply(inverse_mod(k, order), mul_add(x, r, m));
 	}
 
-	SafeArray!byte output(2*order.bytes());
+	SafeVector!byte output(2*order.bytes());
 	r.binary_encode(&output[output.size() / 2 - r.bytes()]);
 	s.binary_encode(&output[output.size() - s.bytes()]);
 	return output;
 }
 
-ECDSA_Verification_Operation::ECDSA_Verification_Operation(const ECDSA_PublicKey& ecdsa) :
+ECDSA_Verification_Operation::ECDSA_Verification_Operation(in ECDSA_PublicKey ecdsa) :
 	base_point(ecdsa.domain().get_base_point()),
 	public_point(ecdsa.public_point()),
 	order(ecdsa.domain().get_order())

@@ -50,5 +50,5 @@ class Lion : public BlockCipher
 		const size_t m_block_size;
 		std::unique_ptr<HashFunction> m_hash;
 		std::unique_ptr<StreamCipher> m_cipher;
-		SafeArray!byte m_key1, m_key2;
+		SafeVector!byte m_key1, m_key2;
 };

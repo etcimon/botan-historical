@@ -29,7 +29,7 @@ class PKCS10_Request : public X509_Object
 		* Get the raw DER encoded public key.
 		* @return raw DER encoded public key
 		*/
-		std::vector<byte> raw_public_key() const;
+		Vector!( byte ) raw_public_key() const;
 
 		/**
 		* Get the subject DN.
@@ -54,7 +54,7 @@ class PKCS10_Request : public X509_Object
 		* Get the extendend key constraints (if any).
 		* @return extended key constraints
 		*/
-		std::vector<OID> ex_constraints() const;
+		Vector!( OID ) ex_constraints() const;
 
 		/**
 		* Find out whether this is a CA request.
@@ -67,7 +67,7 @@ class PKCS10_Request : public X509_Object
 		* in the BasicConstraints extension.
 		* @return path limit
 		*/
-		u32bit path_limit() const;
+		uint path_limit() const;
 
 		/**
 		* Get the challenge password for this request
@@ -92,10 +92,10 @@ class PKCS10_Request : public X509_Object
 		* Create a PKCS#10 Request from binary data.
 		* @param vec a std::vector containing the DER value
 		*/
-		PKCS10_Request(in Array!byte vec);
+		PKCS10_Request(in Vector!byte vec);
 	private:
 		void force_decode();
-		void handle_attribute(const Attribute&);
+		void handle_attribute(in Attribute);
 
 		Data_Store info;
 };

@@ -83,7 +83,7 @@ Cascade_Cipher::Cascade_Cipher(BlockCipher* c1, BlockCipher* c2) :
 	m_block = block_size_for_cascade(c1->block_size(), c2->block_size());
 
 	if(block_size() % c1->block_size() || block_size() % c2->block_size())
-		throw Internal_Error("Failure in " + name() + " constructor");
+		throw new Internal_Error("Failure in " + name() + " constructor");
 }
 
 }

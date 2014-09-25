@@ -13,7 +13,7 @@
 /*
 * Data_Store Equality Comparison
 */
-bool Data_Store::operator==(const Data_Store& other) const
+bool Data_Store::operator==(in Data_Store other) const
 {
 	return (contents == other.contents);
 }
@@ -44,9 +44,9 @@ std::multimap<string, string> Data_Store::search_for(
 /*
 * Search based on key equality
 */
-std::vector<string> Data_Store::get(in string looking_for) const
+Vector!( string ) Data_Store::get(in string looking_for) const
 {
-	std::vector<string> out;
+	Vector!( string ) out;
 	auto range = contents.equal_range(looking_for);
 	for(auto i = range.first; i != range.second; ++i)
 		out.push_back(i->second);
@@ -58,12 +58,12 @@ std::vector<string> Data_Store::get(in string looking_for) const
 */
 string Data_Store::get1(in string key) const
 {
-	std::vector<string> vals = get(key);
+	Vector!( string ) vals = get(key);
 
 	if(vals.empty())
-		throw Invalid_State("Data_Store::get1: No values set for " + key);
+		throw new Invalid_State("Data_Store::get1: No values set for " + key);
 	if(vals.size() > 1)
-		throw Invalid_State("Data_Store::get1: More than one value for " + key);
+		throw new Invalid_State("Data_Store::get1: More than one value for " + key);
 
 	return vals[0];
 }
@@ -71,10 +71,10 @@ string Data_Store::get1(in string key) const
 string Data_Store::get1(in string key,
 									  in string default_value) const
 {
-	std::vector<string> vals = get(key);
+	Vector!( string ) vals = get(key);
 
 	if(vals.size() > 1)
-		throw Invalid_State("Data_Store::get1: More than one value for " + key);
+		throw new Invalid_State("Data_Store::get1: More than one value for " + key);
 
 	if(vals.empty())
 		return default_value;
@@ -85,36 +85,36 @@ string Data_Store::get1(in string key,
 /*
 * Get a single std::vector atom
 */
-std::vector<byte>
+Vector!( byte )
 Data_Store::get1_memvec(in string key) const
 {
-	std::vector<string> vals = get(key);
+	Vector!( string ) vals = get(key);
 
 	if(vals.empty())
-		return std::vector<byte>();
+		return Vector!( byte )();
 
 	if(vals.size() > 1)
-		throw Invalid_State("Data_Store::get1_memvec: Multiple values for " +
+		throw new Invalid_State("Data_Store::get1_memvec: Multiple values for " +
 								  key);
 
 	return hex_decode(vals[0]);
 }
 
 /*
-* Get a single u32bit atom
+* Get a single uint atom
 */
-u32bit Data_Store::get1_u32bit(in string key,
-										 u32bit default_val) const
+uint Data_Store::get1_uint(in string key,
+										 uint default_val) const
 {
-	std::vector<string> vals = get(key);
+	Vector!( string ) vals = get(key);
 
 	if(vals.empty())
 		return default_val;
 	else if(vals.size() > 1)
-		throw Invalid_State("Data_Store::get1_u32bit: Multiple values for " +
+		throw new Invalid_State("Data_Store::get1_uint: Multiple values for " +
 								  key);
 
-	return to_u32bit(vals[0]);
+	return to_uint(vals[0]);
 }
 
 /*
@@ -128,7 +128,7 @@ void Data_Store::add(in string key, in string val)
 /*
 * Insert a single key and value
 */
-void Data_Store::add(in string key, u32bit val)
+void Data_Store::add(in string key, uint val)
 {
 	add(key, std::to_string(val));
 }
@@ -136,12 +136,12 @@ void Data_Store::add(in string key, u32bit val)
 /*
 * Insert a single key and value
 */
-void Data_Store::add(in string key, in SafeArray!byte val)
+void Data_Store::add(in string key, in SafeVector!byte val)
 {
 	add(key, hex_encode(&val[0], val.size()));
 }
 
-void Data_Store::add(in string key, in Array!byte val)
+void Data_Store::add(in string key, in Vector!byte val)
 {
 	add(key, hex_encode(&val[0], val.size()));
 }
@@ -149,7 +149,7 @@ void Data_Store::add(in string key, in Array!byte val)
 /*
 * Insert a mapping of key/value pairs
 */
-void Data_Store::add(const std::multimap<string, string>& input)
+void Data_Store::add(in std::multimap<string, string> input)
 {
 	std::multimap<string, string>::const_iterator i = in.begin();
 	while(i != in.end())

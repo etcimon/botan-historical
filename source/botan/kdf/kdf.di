@@ -24,8 +24,8 @@ class KDF
 		* @param secret the secret input
 		* @param salt a diversifier
 		*/
-		SafeArray!byte derive_key(size_t key_len,
-												in SafeArray!byte secret,
+		SafeVector!byte derive_key(size_t key_len,
+												in SafeVector!byte secret,
 												in string salt = "") const
 		{
 			return derive_key(key_len, &secret[0], secret.size(),
@@ -40,9 +40,9 @@ class KDF
 		* @param salt a diversifier
 		*/
 		template<typename Alloc, typename Alloc2>
-		SafeArray!byte derive_key(size_t key_len,
-												 const std::vector<byte, Alloc>& secret,
-												 const std::vector<byte, Alloc2>& salt) const
+		SafeVector!byte derive_key(size_t key_len,
+												 const Vector!( byte, Alloc )& secret,
+												 const Vector!( byte, Alloc2 )& salt) const
 		{
 			return derive_key(key_len,
 									&secret[0], secret.size(),
@@ -56,8 +56,8 @@ class KDF
 		* @param salt a diversifier
 		* @param salt_len size of salt in bytes
 		*/
-		SafeArray!byte derive_key(size_t key_len,
-												in SafeArray!byte secret,
+		SafeVector!byte derive_key(size_t key_len,
+												in SafeVector!byte secret,
 												in byte[] salt,
 												size_t salt_len) const
 		{
@@ -73,7 +73,7 @@ class KDF
 		* @param secret_len size of secret in bytes
 		* @param salt a diversifier
 		*/
-		SafeArray!byte derive_key(size_t key_len,
+		SafeVector!byte derive_key(size_t key_len,
 												in byte[] secret,
 												size_t secret_len,
 												in string salt = "") const
@@ -91,7 +91,7 @@ class KDF
 		* @param salt a diversifier
 		* @param salt_len size of salt in bytes
 		*/
-		SafeArray!byte derive_key(size_t key_len,
+		SafeVector!byte derive_key(size_t key_len,
 												in byte[] secret,
 												size_t secret_len,
 												in byte[] salt,
@@ -102,7 +102,7 @@ class KDF
 
 		abstract KDF* clone() const = 0;
 	private:
-		abstract SafeArray!byte
+		abstract SafeVector!byte
 			derive(size_t key_len,
 					 in byte[] secret, size_t secret_len,
 					 in byte[] salt, size_t salt_len) const = 0;

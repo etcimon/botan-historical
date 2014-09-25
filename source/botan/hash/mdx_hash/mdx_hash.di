@@ -49,7 +49,7 @@ class MDx_HashFunction : public HashFunction
 		*/
 		abstract void write_count(ref byte[] output);
 	private:
-		SafeArray!byte buffer;
+		SafeVector!byte buffer;
 		u64bit count;
 		size_t position;
 

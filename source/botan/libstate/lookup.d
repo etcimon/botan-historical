@@ -18,7 +18,7 @@ PBKDF* get_pbkdf(in string algo_spec)
 	if(PBKDF* pbkdf = af.make_pbkdf(algo_spec))
 		return pbkdf;
 
-	throw Algorithm_Not_Found(algo_spec);
+	throw new Algorithm_Not_Found(algo_spec);
 }
 
 /*
@@ -52,7 +52,7 @@ size_t block_size_of(in string name)
 	if(const HashFunction* hash = af.prototype_hash_function(name))
 		return hash->hash_block_size();
 
-	throw Algorithm_Not_Found(name);
+	throw new Algorithm_Not_Found(name);
 }
 
 /*
@@ -68,7 +68,7 @@ size_t output_length_of(in string name)
 	if(const MessageAuthenticationCode* mac = af.prototype_mac(name))
 		return mac->output_length();
 
-	throw Algorithm_Not_Found(name);
+	throw new Algorithm_Not_Found(name);
 }
 
 /*
@@ -87,7 +87,7 @@ Keyed_Filter* get_cipher(in string algo_spec,
 			return algo;
 	}
 
-	throw Algorithm_Not_Found(algo_spec);
+	throw new Algorithm_Not_Found(algo_spec);
 }
 
 /*

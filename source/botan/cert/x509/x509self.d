@@ -16,7 +16,7 @@ namespace {
 /*
 * Load information from the X509_Cert_Options
 */
-void load_info(const X509_Cert_Options& opts, X509_DN& subject_dn,
+void load_info(in X509_Cert_Options opts, X509_DN& subject_dn,
 					AlternativeName& subject_alt)
 {
 	subject_dn.add_attribute("X520.CommonName", opts.common_name);
@@ -38,7 +38,7 @@ namespace X509 {
 /*
 * Create a new self-signed X.509 certificate
 */
-X509_Certificate create_self_signed_cert(const X509_Cert_Options& opts,
+X509_Certificate create_self_signed_cert(in X509_Cert_Options opts,
 													  in Private_Key key,
 													  in string hash_fn,
 													  RandomNumberGenerator& rng)
@@ -49,7 +49,7 @@ X509_Certificate create_self_signed_cert(const X509_Cert_Options& opts,
 
 	opts.sanity_check();
 
-	std::vector<byte> pub_key = X509::BER_encode(key);
+	Vector!( byte ) pub_key = X509::BER_encode(key);
 	std::unique_ptr<PK_Signer> signer(choose_sig_format(key, hash_fn, sig_algo));
 	load_info(opts, subject_dn, subject_alt);
 
@@ -84,7 +84,7 @@ X509_Certificate create_self_signed_cert(const X509_Cert_Options& opts,
 /*
 * Create a PKCS #10 certificate request
 */
-PKCS10_Request create_cert_req(const X509_Cert_Options& opts,
+PKCS10_Request create_cert_req(in X509_Cert_Options opts,
 										 in Private_Key key,
 										 in string hash_fn,
 										 RandomNumberGenerator& rng)
@@ -95,7 +95,7 @@ PKCS10_Request create_cert_req(const X509_Cert_Options& opts,
 
 	opts.sanity_check();
 
-	std::vector<byte> pub_key = X509::BER_encode(key);
+	Vector!( byte ) pub_key = X509::BER_encode(key);
 	std::unique_ptr<PK_Signer> signer(choose_sig_format(key, hash_fn, sig_algo));
 	load_info(opts, subject_dn, subject_alt);
 
@@ -147,7 +147,7 @@ PKCS10_Request create_cert_req(const X509_Cert_Options& opts,
 		.end_explicit()
 		.end_cons();
 
-	const std::vector<byte> req =
+	const Vector!( byte ) req =
 		X509_Object::make_signed(signer.get(), rng, sig_algo,
 										 tbs_req.get_contents());
 

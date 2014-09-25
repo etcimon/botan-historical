@@ -18,7 +18,7 @@ class EAC1_1_obj : public EAC_Signed_Object
 		* Return the signature as a concatenation of the encoded parts.
 		* @result the concatenated signature
 		*/
-		std::vector<byte> get_concat_sig() const
+		Vector!( byte ) get_concat_sig() const
 		{ return m_sig.get_concatenation(); }
 
 		bool check_signature(class Public_Key& key) const
@@ -37,7 +37,7 @@ class EAC1_1_obj : public EAC_Signed_Object
 			}
 			catch(Decoding_Error)
 			{
-				throw Decoding_Error(PEM_label_pref + " decoding failed");
+				throw new Decoding_Error(PEM_label_pref + " decoding failed");
 			}
 		}
 

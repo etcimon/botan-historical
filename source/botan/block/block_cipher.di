@@ -72,7 +72,7 @@ class BlockCipher : public SymmetricAlgorithm
 		* @param block the input/output buffer (multiple of block_size())
 		*/
 		template<typename Alloc>
-		void encrypt(std::vector<byte, Alloc>& block) const
+		void encrypt(Vector!( byte, Alloc )& block) const
 		{
 			return encrypt_n(&block[0], &block[0], block.size() / block_size());
 		}
@@ -82,7 +82,7 @@ class BlockCipher : public SymmetricAlgorithm
 		* @param block the input/output buffer (multiple of block_size())
 		*/
 		template<typename Alloc>
-		void decrypt(std::vector<byte, Alloc>& block) const
+		void decrypt(Vector!( byte, Alloc )& block) const
 		{
 			return decrypt_n(&block[0], &block[0], block.size() / block_size());
 		}
@@ -93,10 +93,10 @@ class BlockCipher : public SymmetricAlgorithm
 		* @param out the output buffer (same size as input)
 		*/
 		template<typename Alloc, typename Alloc2>
-		void encrypt(const std::vector<byte, Alloc>& in,
-						 std::vector<byte, Alloc2>& out) const
+		void encrypt(in Vector!( byte, Alloc ) input,
+						 Vector!( byte, Alloc2 )& out) const
 		{
-			return encrypt_n(&in[0], &out[0], in.size() / block_size());
+			return encrypt_n(&input[0], &out[0], input.size() / block_size());
 		}
 
 		/**
@@ -105,10 +105,10 @@ class BlockCipher : public SymmetricAlgorithm
 		* @param out the output buffer (same size as input)
 		*/
 		template<typename Alloc, typename Alloc2>
-		void decrypt(const std::vector<byte, Alloc>& in,
-						 std::vector<byte, Alloc2>& out) const
+		void decrypt(in Vector!( byte, Alloc ) input,
+						 Vector!( byte, Alloc2 )& out) const
 		{
-			return decrypt_n(&in[0], &out[0], in.size() / block_size());
+			return decrypt_n(&input[0], &out[0], input.size() / block_size());
 		}
 
 		/**

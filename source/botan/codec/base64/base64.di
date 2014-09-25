@@ -41,7 +41,7 @@ string base64_encode(in byte[] input,
 * @return base64adecimal representation of input
 */
 template<typename Alloc>
-string base64_encode(const std::vector<byte, Alloc>& input)
+string base64_encode(in Vector!( byte, Alloc ) input)
 {
 	return base64_encode(&input[0], input.size());
 }
@@ -57,7 +57,7 @@ string base64_encode(const std::vector<byte, Alloc>& input)
 *		  should be passed in later along with more input.
 * @param final_inputs true iff this is the last input, in which case
 			padding is allowed
-* @param ignore_ws ignore whitespace on input; if false, throw an
+* @param ignore_ws ignore whitespace on input; if false, throw new an
 						 exception if whitespace is encountered
 * @return number of bytes written to output
 */
@@ -73,7 +73,7 @@ size_t base64_decode(byte output[],
 * @param output an array of at least input_length*3/4 bytes
 * @param input some base64 input
 * @param input_length length of input in bytes
-* @param ignore_ws ignore whitespace on input; if false, throw an
+* @param ignore_ws ignore whitespace on input; if false, throw new an
 						 exception if whitespace is encountered
 * @return number of bytes written to output
 */
@@ -86,7 +86,7 @@ size_t base64_decode(byte output[],
 * Perform base64 decoding
 * @param output an array of at least input_length/3*4 bytes
 * @param input some base64 input
-* @param ignore_ws ignore whitespace on input; if false, throw an
+* @param ignore_ws ignore whitespace on input; if false, throw new an
 						 exception if whitespace is encountered
 * @return number of bytes written to output
 */
@@ -98,20 +98,20 @@ size_t base64_decode(byte output[],
 * Perform base64 decoding
 * @param input some base64 input
 * @param input_length the length of input in bytes
-* @param ignore_ws ignore whitespace on input; if false, throw an
+* @param ignore_ws ignore whitespace on input; if false, throw new an
 						 exception if whitespace is encountered
 * @return decoded base64 output
 */
-SafeArray!byte base64_decode(const char input[],
+SafeVector!byte base64_decode(const char input[],
 														 size_t input_length,
 														 bool ignore_ws = true);
 
 /**
 * Perform base64 decoding
 * @param input some base64 input
-* @param ignore_ws ignore whitespace on input; if false, throw an
+* @param ignore_ws ignore whitespace on input; if false, throw new an
 						 exception if whitespace is encountered
 * @return decoded base64 output
 */
-SafeArray!byte base64_decode(in string input,
+SafeVector!byte base64_decode(in string input,
 														 bool ignore_ws = true);

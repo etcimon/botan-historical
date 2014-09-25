@@ -18,12 +18,12 @@ void decode(BER_Decoder& source, Key_Constraints& key_usage)
 	BER_Object obj = source.get_next_object();
 
 	if(obj.type_tag != BIT_STRING || obj.class_tag != UNIVERSAL)
-		throw BER_Bad_Tag("Bad tag for usage constraint",
+		throw new BER_Bad_Tag("Bad tag for usage constraint",
 								obj.type_tag, obj.class_tag);
 	if(obj.value.size() != 2 && obj.value.size() != 3)
-		throw BER_Decoding_Error("Bad size for BITSTRING in usage constraint");
+		throw new BER_Decoding_Error("Bad size for BITSTRING in usage constraint");
 	if(obj.value[0] >= 8)
-		throw BER_Decoding_Error("Invalid unused bits in usage constraint");
+		throw new BER_Decoding_Error("Invalid unused bits in usage constraint");
 
 	const byte mask = (0xFF << obj.value[0]);
 	obj.value[obj.value.size()-1] &= mask;
@@ -40,7 +40,7 @@ void decode(BER_Decoder& source, Key_Constraints& key_usage)
 /*
 * Find the allowable key constraints
 */
-Key_Constraints find_constraints(const Public_Key& pub_key,
+Key_Constraints find_constraints(in Public_Key pub_key,
 											Key_Constraints limits)
 {
 	const string name = pub_key.algo_name();

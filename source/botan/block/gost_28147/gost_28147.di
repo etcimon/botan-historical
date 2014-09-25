@@ -57,9 +57,9 @@ class GOST_28147_89 : public Block_Cipher_Fixed_Params<8, 32>
 		/**
 		* @param params the sbox parameters to use
 		*/
-		GOST_28147_89(const GOST_28147_89_Params& params);
+		GOST_28147_89(in GOST_28147_89_Params params);
 	private:
-		GOST_28147_89(const std::vector<u32bit>& other_SBOX) :
+		GOST_28147_89(in Vector!( uint ) other_SBOX) :
 			SBOX(other_SBOX), EK(8) {}
 
 		void key_schedule(const byte[], size_t);
@@ -68,7 +68,7 @@ class GOST_28147_89 : public Block_Cipher_Fixed_Params<8, 32>
 		* The sbox is not secret, this is just a larger expansion of it
 		* which we generate at runtime for faster execution
 		*/
-		std::vector<u32bit> SBOX;
+		Vector!( uint ) SBOX;
 
-		secure_vector<u32bit> EK;
+		secure_vector<uint> EK;
 };

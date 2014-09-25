@@ -19,16 +19,16 @@ namespace TLS {
 Server_Hello::Server_Hello(Handshake_IO& io,
 									Handshake_Hash& hash,
 									const Policy& policy,
-									in Array!byte session_id,
+									in Vector!byte session_id,
 									Protocol_Version ver,
 									u16bit ciphersuite,
 									byte compression,
 									size_t max_fragment_size,
 									bool client_has_secure_renegotiation,
-									in Array!byte reneg_info,
+									in Vector!byte reneg_info,
 									bool offer_session_ticket,
 									bool client_has_npn,
-									const std::vector<string>& next_protocols,
+									const Vector!( string )& next_protocols,
 									bool client_has_heartbeat,
 									RandomNumberGenerator& rng) :
 	m_version(ver),
@@ -62,10 +62,10 @@ Server_Hello::Server_Hello(Handshake_IO& io,
 /*
 * Deserialize a Server Hello message
 */
-Server_Hello::Server_Hello(in Array!byte buf)
+Server_Hello::Server_Hello(in Vector!byte buf)
 {
 	if(buf.size() < 38)
-		throw Decoding_Error("Server_Hello: Packet corrupted");
+		throw new Decoding_Error("Server_Hello: Packet corrupted");
 
 	TLS_Data_Reader reader("ServerHello", buf);
 
@@ -88,9 +88,9 @@ Server_Hello::Server_Hello(in Array!byte buf)
 /*
 * Serialize a Server Hello message
 */
-std::vector<byte> Server_Hello::serialize() const
+Vector!( byte ) Server_Hello::serialize() const
 {
-	std::vector<byte> buf;
+	Vector!( byte ) buf;
 
 	buf.push_back(m_version.major_version());
 	buf.push_back(m_version.minor_version());
@@ -120,18 +120,18 @@ Server_Hello_Done::Server_Hello_Done(Handshake_IO& io,
 /*
 * Deserialize a Server Hello Done message
 */
-Server_Hello_Done::Server_Hello_Done(in Array!byte buf)
+Server_Hello_Done::Server_Hello_Done(in Vector!byte buf)
 {
 	if(buf.size())
-		throw Decoding_Error("Server_Hello_Done: Must be empty, and is not");
+		throw new Decoding_Error("Server_Hello_Done: Must be empty, and is not");
 }
 
 /*
 * Serialize a Server Hello Done message
 */
-std::vector<byte> Server_Hello_Done::serialize() const
+Vector!( byte ) Server_Hello_Done::serialize() const
 {
-	return std::vector<byte>();
+	return Vector!( byte )();
 }
 
 }

@@ -37,7 +37,7 @@ class Channel
 		* @return a hint as the how many more bytes we need to process the
 		*			current record (this may be 0 if on a record boundary)
 		*/
-		size_t received_data(in Array!byte buf);
+		size_t received_data(in Vector!byte buf);
 
 		/**
 		* Inject plaintext intended for counterparty
@@ -53,7 +53,7 @@ class Channel
 		* Inject plaintext intended for counterparty
 		*/
 		template<typename Alloc>
-			void send(const std::vector<unsigned char, Alloc>& val)
+			void send(in Vector!( unsigned char, Alloc ) val)
 		{
 			send(&val[0], val.size());
 		}
@@ -63,7 +63,7 @@ class Channel
 		* state (keys, etc) will be reset.
 		* @param alert the Alert to send
 		*/
-		void send_alert(const Alert& alert);
+		void send_alert(in Alert alert);
 
 		/**
 		* Send a warning alert
@@ -128,7 +128,7 @@ class Channel
 		/**
 		* @return certificate chain of the peer (may be empty)
 		*/
-		std::vector<X509_Certificate> peer_cert_chain() const;
+		Vector!( X509_Certificate ) peer_cert_chain() const;
 
 		/**
 		* Key material export (RFC 5705)
@@ -149,9 +149,9 @@ class Channel
 				  RandomNumberGenerator rng,
 				  size_t reserved_io_buffer_size);
 
-		Channel(const Channel&) = delete;
+		Channel(in Channel) = delete;
 
-		Channel& operator=(const Channel&) = delete;
+		Channel& operator=(in Channel) = delete;
 
 		abstract ~Channel();
 	protected:
@@ -159,13 +159,13 @@ class Channel
 		abstract void process_handshake_msg(const Handshake_State* active_state,
 													  Handshake_State& pending_state,
 													  Handshake_Type type,
-													  in Array!byte contents) = 0;
+													  in Vector!byte contents) = 0;
 
 		abstract void initiate_handshake(Handshake_State& state,
 												  bool force_full_renegotiation) = 0;
 
-		abstract std::vector<X509_Certificate>
-			get_peer_cert_chain(const Handshake_State& state) const = 0;
+		abstract Vector!( X509_Certificate )
+			get_peer_cert_chain(in Handshake_State state) const = 0;
 
 		abstract Handshake_State* new_handshake_state(class Handshake_IO* io) = 0;
 
@@ -182,22 +182,22 @@ class Channel
 		void secure_renegotiation_check(const class Client_Hello* client_hello);
 		void secure_renegotiation_check(const class Server_Hello* server_hello);
 
-		std::vector<byte> secure_renegotiation_data_for_client_hello() const;
-		std::vector<byte> secure_renegotiation_data_for_server_hello() const;
+		Vector!( byte ) secure_renegotiation_data_for_client_hello() const;
+		Vector!( byte ) secure_renegotiation_data_for_server_hello() const;
 
 		RandomNumberGenerator& rng() { return m_rng; }
 
 		Session_Manager& session_manager() { return m_session_manager; }
 
-		bool save_session(const Session& session) const { return m_handshake_cb(session); }
+		bool save_session(in Session session) const { return m_handshake_cb(session); }
 
 	private:
 		size_t maximum_fragment_size() const;
 
-		void send_record(byte record_type, in Array!byte record);
+		void send_record(byte record_type, in Vector!byte record);
 
 		void send_record_under_epoch(u16bit epoch, byte record_type,
-											  in Array!byte record);
+											  in Vector!byte record);
 
 		void send_record_array(u16bit epoch, byte record_type,
 									  in byte[] input, size_t length);
@@ -239,8 +239,8 @@ class Channel
 		std::map<u16bit, std::shared_ptr<Connection_Cipher_State>> m_read_cipher_states;
 
 		/* I/O buffers */
-		SafeArray!byte m_writebuf;
-		SafeArray!byte m_readbuf;
+		SafeVector!byte m_writebuf;
+		SafeVector!byte m_readbuf;
 };
 
 }

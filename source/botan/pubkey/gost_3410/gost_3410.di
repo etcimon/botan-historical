@@ -21,15 +21,15 @@ class GOST_3410_PublicKey : public abstract EC_PublicKey
 		* @param dom_par the domain parameters associated with this key
 		* @param public_point the public point defining this key
 		*/
-		GOST_3410_PublicKey(const EC_Group& dom_par,
+		GOST_3410_PublicKey(in EC_Group dom_par,
 								  const PointGFp& public_point) :
 			EC_PublicKey(dom_par, public_point) {}
 
 		/**
 		* Construct from X.509 algorithm id and subject public key bits
 		*/
-		GOST_3410_PublicKey(const AlgorithmIdentifier& alg_id,
-								  in SafeArray!byte key_bits);
+		GOST_3410_PublicKey(in AlgorithmIdentifier alg_id,
+								  in SafeVector!byte key_bits);
 
 		/**
 		* Get this keys algorithm name.
@@ -39,7 +39,7 @@ class GOST_3410_PublicKey : public abstract EC_PublicKey
 
 		AlgorithmIdentifier algorithm_identifier() const;
 
-		std::vector<byte> x509_subject_public_key() const;
+		Vector!( byte ) x509_subject_public_key() const;
 
 		/**
 		* Get the maximum number of bits allowed to be fed to this key.
@@ -66,8 +66,8 @@ class GOST_3410_PrivateKey : public GOST_3410_PublicKey,
 {
 	public:
 
-		GOST_3410_PrivateKey(const AlgorithmIdentifier& alg_id,
-									in SafeArray!byte key_bits) :
+		GOST_3410_PrivateKey(in AlgorithmIdentifier alg_id,
+									in SafeVector!byte key_bits) :
 			EC_PrivateKey(alg_id, key_bits) {}
 
 		/**
@@ -91,13 +91,13 @@ class GOST_3410_PrivateKey : public GOST_3410_PublicKey,
 class GOST_3410_Signature_Operation : public PK_Ops::Signature
 {
 	public:
-		GOST_3410_Signature_Operation(const GOST_3410_PrivateKey& gost_3410);
+		GOST_3410_Signature_Operation(in GOST_3410_PrivateKey gost_3410);
 
 		size_t message_parts() const { return 2; }
 		size_t message_part_size() const { return order.bytes(); }
 		size_t max_input_bits() const { return order.bits(); }
 
-		SafeArray!byte sign(in byte[] msg, size_t msg_len,
+		SafeVector!byte sign(in byte[] msg, size_t msg_len,
 										RandomNumberGenerator& rng);
 
 	private:
@@ -112,7 +112,7 @@ class GOST_3410_Signature_Operation : public PK_Ops::Signature
 class GOST_3410_Verification_Operation : public PK_Ops::Verification
 {
 	public:
-		GOST_3410_Verification_Operation(const GOST_3410_PublicKey& gost);
+		GOST_3410_Verification_Operation(in GOST_3410_PublicKey gost);
 
 		size_t message_parts() const { return 2; }
 		size_t message_part_size() const { return order.bytes(); }

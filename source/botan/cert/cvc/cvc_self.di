@@ -99,7 +99,7 @@ EAC1_1_CVC create_cvca(Private_Key const& priv_key,
 											ASN1_Car const& car,
 											bool iris,
 											bool fingerpr,
-											u32bit cvca_validity_months,
+											uint cvca_validity_months,
 											RandomNumberGenerator& rng);
 
 /**
@@ -151,10 +151,10 @@ EAC1_1_Req create_cvc_req(Private_Key const& priv_key,
 EAC1_1_CVC sign_request(EAC1_1_CVC const& signer_cert,
 											 Private_Key const& priv_key,
 											 EAC1_1_Req const& req,
-											 u32bit seqnr,
-											 u32bit seqnr_len,
+											 uint seqnr,
+											 uint seqnr_len,
 											 bool domestic,
-											 u32bit dvca_validity_months,
-											 u32bit ca_is_validity_months,
+											 uint dvca_validity_months,
+											 uint ca_is_validity_months,
 											 RandomNumberGenerator& rng);
 }

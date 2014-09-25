@@ -46,13 +46,13 @@ string test_filter_kat(Filter* filter,
 * Run a set of KATs
 */
 std::map<string, string>
-algorithm_kat_detailed(const SCAN_Name& algo_name,
+algorithm_kat_detailed(in SCAN_Name algo_name,
 							  const std::map<string, string>& vars,
 							  Algorithm_Factory& af)
 {
 	in string algo = algo_name.algo_name_and_args();
 
-	std::vector<string> providers = af.providers_of(algo);
+	Vector!( string ) providers = af.providers_of(algo);
 	std::map<string, string> all_results;
 
 	if(providers.empty()) // no providers, nothing to do
@@ -112,16 +112,16 @@ algorithm_kat_detailed(const SCAN_Name& algo_name,
 			if(enc->valid_iv_length(iv.length()))
 				enc->set_iv(iv);
 			else if(!enc->valid_iv_length(0))
-				throw Invalid_IV_Length(algo, iv.length());
+				throw new Invalid_IV_Length(algo, iv.length());
 
 			dec->set_key(key);
 
 			if(dec->valid_iv_length(iv.length()))
 				dec->set_iv(iv);
 			else if(!dec->valid_iv_length(0))
-				throw Invalid_IV_Length(algo, iv.length());
+				throw new Invalid_IV_Length(algo, iv.length());
 
-			const std::vector<byte> ad = hex_decode(search_map(vars, string("ad")));
+			const Vector!( byte ) ad = hex_decode(search_map(vars, string("ad")));
 
 			if(!ad.empty())
 			{
@@ -143,7 +143,7 @@ algorithm_kat_detailed(const SCAN_Name& algo_name,
 }
 
 std::map<string, bool>
-algorithm_kat(const SCAN_Name& algo_name,
+algorithm_kat(in SCAN_Name algo_name,
 				  const std::map<string, string>& vars,
 				  Algorithm_Factory& af)
 {
@@ -165,7 +165,7 @@ void verify_results(in string algo,
 	for(auto i = results.begin(); i != results.end(); ++i)
 	{
 		if(i->second != "passed")
-			throw Self_Test_Failure(algo + " self-test failed (" + i->second + ")" +
+			throw new Self_Test_Failure(algo + " self-test failed (" + i->second + ")" +
 											" with provider " + i->first);
 	}
 }

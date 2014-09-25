@@ -51,7 +51,7 @@
 		THREEFISH_INJECT_KEY(R2);										 \
 } while(0)
 
-void Threefish_512::skein_feedfwd(const secure_vector<u64bit>& M,
+void Threefish_512::skein_feedfwd(in secure_vector<u64bit> M,
 											 const secure_vector<u64bit>& T)
 {
 	BOTAN_ASSERT(m_K.size() == 9, "Key was set");
@@ -219,7 +219,7 @@ void Threefish_512::decrypt_n(in byte[] input, ref byte[] output) const
 void Threefish_512::set_tweak(in byte[] tweak, size_t len)
 {
 	if(len != 16)
-		throw std::runtime_error("Unsupported twofish tweak length");
+		throw new Exception("Unsupported twofish tweak length");
 	m_T[0] = load_le<u64bit>(tweak, 0);
 	m_T[1] = load_le<u64bit>(tweak, 1);
 	m_T[2] = m_T[0] ^ m_T[1];

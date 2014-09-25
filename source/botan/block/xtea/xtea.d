@@ -9,9 +9,9 @@
 #include <botan/loadstor.h>
 namespace {
 
-void xtea_encrypt_4(const byte in[32], byte out[32], const u32bit EK[64])
+void xtea_encrypt_4(const byte in[32], byte out[32], const uint EK[64])
 {
-	u32bit L0, R0, L1, R1, L2, R2, L3, R3;
+	uint L0, R0, L1, R1, L2, R2, L3, R3;
 	load_be(input, L0, R0, L1, R1, L2, R2, L3, R3);
 
 	for(size_t i = 0; i != 32; ++i)
@@ -30,9 +30,9 @@ void xtea_encrypt_4(const byte in[32], byte out[32], const u32bit EK[64])
 	store_be(out, L0, R0, L1, R1, L2, R2, L3, R3);
 }
 
-void xtea_decrypt_4(const byte in[32], byte out[32], const u32bit EK[64])
+void xtea_decrypt_4(const byte in[32], byte out[32], const uint EK[64])
 {
-	u32bit L0, R0, L1, R1, L2, R2, L3, R3;
+	uint L0, R0, L1, R1, L2, R2, L3, R3;
 	load_be(input, L0, R0, L1, R1, L2, R2, L3, R3);
 
 	for(size_t i = 0; i != 32; ++i)
@@ -68,8 +68,8 @@ void XTEA::encrypt_n(in byte[] input, ref byte[] output) const
 
 	for(size_t i = 0; i != blocks; ++i)
 	{
-		u32bit L = load_be<u32bit>(input, 0);
-		u32bit R = load_be<u32bit>(input, 1);
+		uint L = load_be<uint>(input, 0);
+		uint R = load_be<uint>(input, 1);
 
 		for(size_t j = 0; j != 32; ++j)
 		{
@@ -79,8 +79,8 @@ void XTEA::encrypt_n(in byte[] input, ref byte[] output) const
 
 		store_be(out, L, R);
 
-		in += BLOCK_SIZE;
-		out += BLOCK_SIZE;
+		input = input[BLOCK_SIZE .. $];
+		output = output[BLOCK_SIZE .. $];
 	}
 }
 
@@ -99,8 +99,8 @@ void XTEA::decrypt_n(in byte[] input, ref byte[] output) const
 
 	for(size_t i = 0; i != blocks; ++i)
 	{
-		u32bit L = load_be<u32bit>(input, 0);
-		u32bit R = load_be<u32bit>(input, 1);
+		uint L = load_be<uint>(input, 0);
+		uint R = load_be<uint>(input, 1);
 
 		for(size_t j = 0; j != 32; ++j)
 		{
@@ -110,8 +110,8 @@ void XTEA::decrypt_n(in byte[] input, ref byte[] output) const
 
 		store_be(out, L, R);
 
-		in += BLOCK_SIZE;
-		out += BLOCK_SIZE;
+		input = input[BLOCK_SIZE .. $];
+		output = output[BLOCK_SIZE .. $];
 	}
 }
 
@@ -122,11 +122,11 @@ void XTEA::key_schedule(in byte[] key, size_t)
 {
 	EK.resize(64);
 
-	secure_vector<u32bit> UK(4);
+	secure_vector<uint> UK(4);
 	for(size_t i = 0; i != 4; ++i)
-		UK[i] = load_be<u32bit>(key, i);
+		UK[i] = load_be<uint>(key, i);
 
-	u32bit D = 0;
+	uint D = 0;
 	for(size_t i = 0; i != 64; i += 2)
 	{
 		EK[i  ] = D + UK[D % 4];

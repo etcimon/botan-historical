@@ -20,7 +20,7 @@ class EAC1_1_Req : public EAC1_1_gen_CVC<EAC1_1_Req>
 		* Compare for equality with other
 		* @param other compare for equality with this object
 		*/
-		bool operator==(const EAC1_1_Req& other) const;
+		bool operator==(in EAC1_1_Req other) const;
 
 		/**
 		* Construct a CVC request from a data source.

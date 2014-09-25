@@ -27,14 +27,14 @@ class PSSR : public EMSA
 	private:
 		void update(in byte[] input, size_t length);
 
-		SafeArray!byte raw_data();
+		SafeVector!byte raw_data();
 
-		SafeArray!byte encoding_of(in SafeArray!byte msg,
+		SafeVector!byte encoding_of(in SafeVector!byte msg,
 												  size_t output_bits,
 												  RandomNumberGenerator& rng);
 
-		bool verify(in SafeArray!byte coded,
-						in SafeArray!byte raw,
+		bool verify(in SafeVector!byte coded,
+						in SafeVector!byte raw,
 						size_t key_bits);
 
 		size_t SALT_SIZE;

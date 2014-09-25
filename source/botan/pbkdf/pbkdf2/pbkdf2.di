@@ -23,7 +23,7 @@ class PKCS5_PBKDF2 : public PBKDF
 			return new PKCS5_PBKDF2(mac->clone());
 		}
 
-		std::pair<size_t, OctetString>
+		Pair!(size_t, OctetString)
 			key_derivation(size_t output_len,
 								in string passphrase,
 								in byte[] salt, size_t salt_len,

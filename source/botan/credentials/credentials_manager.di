@@ -33,7 +33,7 @@ class Credentials_Manager
 		* @param context specifies a context relative to type. For instance
 		*		  for type "tls-client", context specifies the servers name.
 		*/
-		abstract std::vector<Certificate_Store*> trusted_certificate_authorities(
+		abstract Vector!( Certificate_Store* ) trusted_certificate_authorities(
 			in string type,
 			in string context);
 
@@ -42,7 +42,7 @@ class Credentials_Manager
 		* optionally (if hostname != "") that the hostname given is
 		* consistent with the leaf certificate.
 		*
-		* This function should throw an exception derived from
+		* This function should throw new an exception derived from
 		* std::exception with an informative what() result if the
 		* certificate chain cannot be verified.
 
@@ -54,7 +54,7 @@ class Credentials_Manager
 		abstract void verify_certificate_chain(
 			in string type,
 			in string hostname,
-			const std::vector<X509_Certificate>& cert_chainput);
+			const Vector!( X509_Certificate )& cert_chainput);
 
 		/**
 		* Return a cert chain we can use, ordered from leaf to root,
@@ -71,8 +71,8 @@ class Credentials_Manager
 		*
 		* @param context specifies a context relative to type.
 		*/
-		abstract std::vector<X509_Certificate> cert_chain(
-			const std::vector<string>& cert_key_types,
+		abstract Vector!( X509_Certificate ) cert_chain(
+			const Vector!( string )& cert_key_types,
 			in string type,
 			in string context);
 
@@ -90,7 +90,7 @@ class Credentials_Manager
 		*
 		* @param context specifies a context relative to type.
 		*/
-		std::vector<X509_Certificate> cert_chain_single_type(
+		Vector!( X509_Certificate ) cert_chain_single_type(
 			in string cert_key_type,
 			in string type,
 			in string context);
@@ -101,7 +101,7 @@ class Credentials_Manager
 		* @note this object should retain ownership of the returned key;
 		*		 it should not be deleted by the caller.
 		*/
-		abstract Private_Key* Private_Key_for(const X509_Certificate& cert,
+		abstract Private_Key* Private_Key_for(in X509_Certificate cert,
 														 in string type,
 														 in string context);
 
@@ -144,7 +144,7 @@ class Credentials_Manager
 										  in string identifier,
 										  string& group_name,
 										  BigInt& verifier,
-										  std::vector<byte>& salt,
+										  Vector!( byte )& salt,
 										  bool generate_fake_on_unknown);
 
 		/**
@@ -170,7 +170,7 @@ class Credentials_Manager
 		* @param context specifies a context relative to type.
 		* @param identity is a PSK identity previously returned by
 					psk_identity for the same type and context.
-		* @return the PSK used for identity, or throw an exception if no
+		* @return the PSK used for identity, or throw new an exception if no
 		* key exists
 		*/
 		abstract SymmetricKey psk(in string type,

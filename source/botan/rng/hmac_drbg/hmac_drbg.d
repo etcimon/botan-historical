@@ -14,7 +14,7 @@ HMAC_DRBG::HMAC_DRBG(MessageAuthenticationCode* mac,
 	m_V(m_mac->output_length(), 0x01),
 	m_reseed_counter(0)
 {
-	m_mac->set_key(SafeArray!byte(m_mac->output_length(), 0x00));
+	m_mac->set_key(SafeVector!byte(m_mac->output_length(), 0x00));
 }
 
 void HMAC_DRBG::randomize(ref byte[] output)
@@ -24,7 +24,7 @@ void HMAC_DRBG::randomize(ref byte[] output)
 		reseed(m_mac->output_length() * 8);
 
 	if(!is_seeded())
-		throw PRNG_Unseeded(name());
+		throw new PRNG_Unseeded(name());
 
 	while(length)
 	{
@@ -49,7 +49,7 @@ void HMAC_DRBG::update(in byte[] input, size_t input_len)
 	m_mac->update(m_V);
 	m_mac->update(0x00);
 	m_mac->update(input, input_len);
-	m_mac->set_key(m_mac->final());
+	m_mac->set_key(m_mac->flush());
 
 	m_V = m_mac->process(m_V);
 
@@ -58,7 +58,7 @@ void HMAC_DRBG::update(in byte[] input, size_t input_len)
 		m_mac->update(m_V);
 		m_mac->update(0x01);
 		m_mac->update(input, input_len);
-		m_mac->set_key(m_mac->final());
+		m_mac->set_key(m_mac->flush());
 
 		m_V = m_mac->process(m_V);
 	}
@@ -72,7 +72,7 @@ void HMAC_DRBG::reseed(size_t poll_bits)
 
 		if(m_prng->is_seeded())
 		{
-			SafeArray!byte input = m_prng->random_vec(m_mac->output_length());
+			SafeVector!byte input = m_prng->random_vec(m_mac->output_length());
 			update(&input[0], input.size());
 			m_reseed_counter = 1;
 		}

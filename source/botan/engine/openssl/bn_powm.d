@@ -15,13 +15,13 @@ namespace {
 class OpenSSL_Modular_Exponentiator : public Modular_Exponentiator
 {
 	public:
-		void set_base(const BigInt& b) { base = b; }
-		void set_exponent(const BigInt& e) { exp = e; }
+		void set_base(in BigInt b) { base = b; }
+		void set_exponent(in BigInt e) { exp = e; }
 		BigInt execute() const;
 		Modular_Exponentiator* copy() const
 		{ return new OpenSSL_Modular_Exponentiator(*this); }
 
-		OpenSSL_Modular_Exponentiator(const BigInt& n) : mod(n) {}
+		OpenSSL_Modular_Exponentiator(in BigInt n) : mod(n) {}
 	private:
 		OSSL_BN base, exp, mod;
 		OSSL_BN_CTX ctx;
@@ -42,7 +42,7 @@ BigInt OpenSSL_Modular_Exponentiator::execute() const
 /*
 * Return the OpenSSL-based modular exponentiator
 */
-Modular_Exponentiator* OpenSSL_Engine::mod_exp(const BigInt& n,
+Modular_Exponentiator* OpenSSL_Engine::mod_exp(in BigInt n,
 															  Power_Mod::Usage_Hints) const
 {
 	return new OpenSSL_Modular_Exponentiator(n);

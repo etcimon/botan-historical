@@ -17,7 +17,7 @@
 
 #elif defined(BOTAN_HAS_SIMD_SCALAR)
   #include <botan/internal/simd_scalar.h>
-   typedef SIMD_Scalar<u32bit,4> SIMD_32; }
+   typedef SIMD_Scalar<uint,4> SIMD_32; }
 
 #else
   #error "No SIMD module defined"

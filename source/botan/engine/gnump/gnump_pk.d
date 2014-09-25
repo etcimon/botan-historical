@@ -32,10 +32,10 @@ namespace {
 class GMP_DH_KA_Operation : public PK_Ops::Key_Agreement
 {
 	public:
-		GMP_DH_KA_Operation(const DH_PrivateKey& dh) :
+		GMP_DH_KA_Operation(in DH_PrivateKey dh) :
 			x(dh.get_x()), p(dh.group_p()) {}
 
-		SafeArray!byte agree(in byte[] w, size_t w_len)
+		SafeVector!byte agree(in byte[] w, size_t w_len)
 		{
 			GMP_MPZ z(w, w_len);
 			mpz_powm(z.value, z.value, x.value, p.value);
@@ -52,7 +52,7 @@ class GMP_DH_KA_Operation : public PK_Ops::Key_Agreement
 class GMP_DSA_Signature_Operation : public PK_Ops::Signature
 {
 	public:
-		GMP_DSA_Signature_Operation(const DSA_PrivateKey& dsa) :
+		GMP_DSA_Signature_Operation(in DSA_PrivateKey dsa) :
 			x(dsa.get_x()),
 			p(dsa.group_p()),
 			q(dsa.group_q()),
@@ -63,14 +63,14 @@ class GMP_DSA_Signature_Operation : public PK_Ops::Signature
 		size_t message_part_size() const { return (q_bits + 7) / 8; }
 		size_t max_input_bits() const { return q_bits; }
 
-		SafeArray!byte sign(in byte[] msg, size_t msg_len,
+		SafeVector!byte sign(in byte[] msg, size_t msg_len,
 										RandomNumberGenerator& rng);
 	private:
 		const GMP_MPZ x, p, q, g;
 		size_t q_bits;
 };
 
-SafeArray!byte
+SafeVector!byte
 GMP_DSA_Signature_Operation::sign(in byte[] msg, size_t msg_len,
 											 RandomNumberGenerator& rng)
 {
@@ -99,9 +99,9 @@ GMP_DSA_Signature_Operation::sign(in byte[] msg, size_t msg_len,
 	mpz_mod(s.value, s.value, q.value);
 
 	if(mpz_cmp_ui(r.value, 0) == 0 || mpz_cmp_ui(s.value, 0) == 0)
-		throw Internal_Error("GMP_DSA_Op::sign: r or s was zero");
+		throw new Internal_Error("GMP_DSA_Op::sign: r or s was zero");
 
-	SafeArray!byte output(2*q_bytes);
+	SafeVector!byte output(2*q_bytes);
 	r.encode(&output[0], q_bytes);
 	s.encode(&output[q_bytes], q_bytes);
 	return output;
@@ -110,7 +110,7 @@ GMP_DSA_Signature_Operation::sign(in byte[] msg, size_t msg_len,
 class GMP_DSA_Verification_Operation : public PK_Ops::Verification
 {
 	public:
-		GMP_DSA_Verification_Operation(const DSA_PublicKey& dsa) :
+		GMP_DSA_Verification_Operation(in DSA_PublicKey dsa) :
 			y(dsa.get_y()),
 			p(dsa.group_p()),
 			q(dsa.group_q()),
@@ -172,7 +172,7 @@ class GMP_RSA_Private_Operation : public PK_Ops::Signature,
 											 public PK_Ops::Decryption
 {
 	public:
-		GMP_RSA_Private_Operation(const RSA_PrivateKey& rsa) :
+		GMP_RSA_Private_Operation(in RSA_PrivateKey rsa) :
 			mod(rsa.get_n()),
 			p(rsa.get_p()),
 			q(rsa.get_q()),
@@ -184,7 +184,7 @@ class GMP_RSA_Private_Operation : public PK_Ops::Signature,
 
 		size_t max_input_bits() const { return (n_bits - 1); }
 
-		SafeArray!byte sign(in byte[] msg, size_t msg_len,
+		SafeVector!byte sign(in byte[] msg, size_t msg_len,
 										RandomNumberGenerator&)
 		{
 			BigInt m(msg, msg_len);
@@ -192,20 +192,20 @@ class GMP_RSA_Private_Operation : public PK_Ops::Signature,
 			return BigInt::encode_1363(x, (n_bits + 7) / 8);
 		}
 
-		SafeArray!byte decrypt(in byte[] msg, size_t msg_len)
+		SafeVector!byte decrypt(in byte[] msg, size_t msg_len)
 		{
 			BigInt m(msg, msg_len);
 			return BigInt::encode_locked(private_op(m));
 		}
 
 	private:
-		BigInt private_op(const BigInt& m) const;
+		BigInt private_op(in BigInt m) const;
 
 		GMP_MPZ mod, p, q, d1, d2, c;
 		size_t n_bits;
 };
 
-BigInt GMP_RSA_Private_Operation::private_op(const BigInt& m) const
+BigInt GMP_RSA_Private_Operation::private_op(in BigInt m) const
 {
 	GMP_MPZ j1, j2, h(m);
 
@@ -223,31 +223,31 @@ class GMP_RSA_Public_Operation : public PK_Ops::Verification,
 											public PK_Ops::Encryption
 {
 	public:
-		GMP_RSA_Public_Operation(const RSA_PublicKey& rsa) :
+		GMP_RSA_Public_Operation(in RSA_PublicKey rsa) :
 			n(rsa.get_n()), e(rsa.get_e()), mod(rsa.get_n())
 		{}
 
 		size_t max_input_bits() const { return (n.bits() - 1); }
 		bool with_recovery() const { return true; }
 
-		SafeArray!byte encrypt(in byte[] msg, size_t msg_len,
+		SafeVector!byte encrypt(in byte[] msg, size_t msg_len,
 											RandomNumberGenerator&)
 		{
 			BigInt m(msg, msg_len);
 			return BigInt::encode_1363(public_op(m), n.bytes());
 		}
 
-		SafeArray!byte verify_mr(in byte[] msg, size_t msg_len)
+		SafeVector!byte verify_mr(in byte[] msg, size_t msg_len)
 		{
 			BigInt m(msg, msg_len);
 			return BigInt::encode_locked(public_op(m));
 		}
 
 	private:
-		BigInt public_op(const BigInt& m) const
+		BigInt public_op(in BigInt m) const
 		{
 			if(m >= n)
-				throw Invalid_Argument("RSA public op - input is too large");
+				throw new Invalid_Argument("RSA public op - input is too large");
 
 			GMP_MPZ m_gmp(m);
 			mpz_powm(m_gmp.value, m_gmp.value, e.value, mod.value);
@@ -266,7 +266,7 @@ PK_Ops::Key_Agreement*
 GMP_Engine::get_key_agreement_op(in Private_Key key, RandomNumberGenerator&) const
 {
 #if defined(BOTAN_HAS_DIFFIE_HELLMAN)
-	if(const DH_PrivateKey* dh = cast(const DH_PrivateKey*)(&key))
+	if(in DH_PrivateKey* dh = cast(const DH_PrivateKey*)(key))
 		return new GMP_DH_KA_Operation(*dh);
 #endif
 
@@ -277,12 +277,12 @@ PK_Ops::Signature*
 GMP_Engine::get_signature_op(in Private_Key key, RandomNumberGenerator&) const
 {
 #if defined(BOTAN_HAS_RSA)
-	if(const RSA_PrivateKey* s = cast(const RSA_PrivateKey*)(&key))
+	if(in RSA_PrivateKey* s = cast(const RSA_PrivateKey*)(key))
 		return new GMP_RSA_Private_Operation(*s);
 #endif
 
 #if defined(BOTAN_HAS_DSA)
-	if(const DSA_PrivateKey* s = cast(const DSA_PrivateKey*)(&key))
+	if(in DSA_PrivateKey* s = cast(const DSA_PrivateKey*)(key))
 		return new GMP_DSA_Signature_Operation(*s);
 #endif
 
@@ -290,15 +290,15 @@ GMP_Engine::get_signature_op(in Private_Key key, RandomNumberGenerator&) const
 }
 
 PK_Ops::Verification*
-GMP_Engine::get_verify_op(const Public_Key& key, RandomNumberGenerator&) const
+GMP_Engine::get_verify_op(in Public_Key key, RandomNumberGenerator&) const
 {
 #if defined(BOTAN_HAS_RSA)
-	if(const RSA_PublicKey* s = cast(const RSA_PublicKey*)(&key))
+	if(in RSA_PublicKey* s = cast(const RSA_PublicKey*)(key))
 		return new GMP_RSA_Public_Operation(*s);
 #endif
 
 #if defined(BOTAN_HAS_DSA)
-	if(const DSA_PublicKey* s = cast(const DSA_PublicKey*)(&key))
+	if(in DSA_PublicKey* s = cast(const DSA_PublicKey*)(key))
 		return new GMP_DSA_Verification_Operation(*s);
 #endif
 
@@ -306,10 +306,10 @@ GMP_Engine::get_verify_op(const Public_Key& key, RandomNumberGenerator&) const
 }
 
 PK_Ops::Encryption*
-GMP_Engine::get_encryption_op(const Public_Key& key, RandomNumberGenerator&) const
+GMP_Engine::get_encryption_op(in Public_Key key, RandomNumberGenerator&) const
 {
 #if defined(BOTAN_HAS_RSA)
-	if(const RSA_PublicKey* s = cast(const RSA_PublicKey*)(&key))
+	if(in RSA_PublicKey* s = cast(const RSA_PublicKey*)(key))
 		return new GMP_RSA_Public_Operation(*s);
 #endif
 
@@ -320,7 +320,7 @@ PK_Ops::Decryption*
 GMP_Engine::get_decryption_op(in Private_Key key, RandomNumberGenerator&) const
 {
 #if defined(BOTAN_HAS_RSA)
-	if(const RSA_PrivateKey* s = cast(const RSA_PrivateKey*)(&key))
+	if(in RSA_PrivateKey* s = cast(const RSA_PrivateKey*)(key))
 		return new GMP_RSA_Private_Operation(*s);
 #endif
 

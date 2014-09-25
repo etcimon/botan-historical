@@ -6,9 +6,9 @@
 */
 
 #include <botan/pk_keys.h>
-Public_Key* make_public_key(const AlgorithmIdentifier& alg_id,
-									 in SafeArray!byte key_bits);
+Public_Key* make_public_key(in AlgorithmIdentifier alg_id,
+									 in SafeVector!byte key_bits);
 
-Private_Key* make_Private_Key(const AlgorithmIdentifier& alg_id,
-										in SafeArray!byte key_bits,
+Private_Key* make_Private_Key(in AlgorithmIdentifier alg_id,
+										in SafeVector!byte key_bits,
 										RandomNumberGenerator& rng);

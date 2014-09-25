@@ -23,7 +23,7 @@ class EMSA
 		/**
 		* @return raw hash
 		*/
-		abstract SafeArray!byte raw_data() = 0;
+		abstract SafeVector!byte raw_data() = 0;
 
 		/**
 		* Return the encoding of a message
@@ -32,7 +32,7 @@ class EMSA
 		* @param rng a random number generator
 		* @return encoded signature
 		*/
-		abstract SafeArray!byte encoding_of(in SafeArray!byte msg,
+		abstract SafeVector!byte encoding_of(in SafeVector!byte msg,
 															size_t output_bits,
 															RandomNumberGenerator& rng) = 0;
 
@@ -43,8 +43,8 @@ class EMSA
 		* @param key_bits the size of the key in bits
 		* @return true if coded is a valid encoding of raw, otherwise false
 		*/
-		abstract bool verify(in SafeArray!byte coded,
-								  in SafeArray!byte raw,
+		abstract bool verify(in SafeVector!byte coded,
+								  in SafeVector!byte raw,
 								  size_t key_bits) = 0;
 		abstract ~EMSA() {}
 };

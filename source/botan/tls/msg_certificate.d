@@ -19,7 +19,7 @@ namespace TLS {
 */
 Certificate::Certificate(Handshake_IO& io,
 								 Handshake_Hash& hash,
-								 const std::vector<X509_Certificate>& cert_list) :
+								 const Vector!( X509_Certificate )& cert_list) :
 	m_certs(cert_list)
 {
 	hash.update(io.send(*this));
@@ -28,27 +28,27 @@ Certificate::Certificate(Handshake_IO& io,
 /**
 * Deserialize a Certificate message
 */
-Certificate::Certificate(in Array!byte buf)
+Certificate::Certificate(in Vector!byte buf)
 {
 	if(buf.size() < 3)
-		throw Decoding_Error("Certificate: Message malformed");
+		throw new Decoding_Error("Certificate: Message malformed");
 
-	const size_t total_size = make_u32bit(0, buf[0], buf[1], buf[2]);
+	const size_t total_size = make_uint(0, buf[0], buf[1], buf[2]);
 
 	if(total_size != buf.size() - 3)
-		throw Decoding_Error("Certificate: Message malformed");
+		throw new Decoding_Error("Certificate: Message malformed");
 
 	const byte* certs = &buf[3];
 
 	while(size_t remaining_bytes = &buf[buf.size()] - certs)
 	{
 		if(remaining_bytes < 3)
-			throw Decoding_Error("Certificate: Message malformed");
+			throw new Decoding_Error("Certificate: Message malformed");
 
-		const size_t cert_size = make_u32bit(0, certs[0], certs[1], certs[2]);
+		const size_t cert_size = make_uint(0, certs[0], certs[1], certs[2]);
 
 		if(remaining_bytes < (3 + cert_size))
-			throw Decoding_Error("Certificate: Message malformed");
+			throw new Decoding_Error("Certificate: Message malformed");
 
 		DataSource_Memory cert_buf(&certs[3], cert_size);
 		m_certs.push_back(X509_Certificate(cert_buf));
@@ -60,22 +60,22 @@ Certificate::Certificate(in Array!byte buf)
 /**
 * Serialize a Certificate message
 */
-std::vector<byte> Certificate::serialize() const
+Vector!( byte ) Certificate::serialize() const
 {
-	std::vector<byte> buf(3);
+	Vector!( byte ) buf(3);
 
 	for(size_t i = 0; i != m_certs.size(); ++i)
 	{
-		std::vector<byte> raw_cert = m_certs[i].BER_encode();
+		Vector!( byte ) raw_cert = m_certs[i].BER_encode();
 		const size_t cert_size = raw_cert.size();
 		for(size_t i = 0; i != 3; ++i)
-			buf.push_back(get_byte<u32bit>(i+1, cert_size));
+			buf.push_back(get_byte<uint>(i+1, cert_size));
 		buf += raw_cert;
 	}
 
 	const size_t buf_size = buf.size() - 3;
 	for(size_t i = 0; i != 3; ++i)
-		buf[i] = get_byte<u32bit>(i+1, buf_size);
+		buf[i] = get_byte<uint>(i+1, buf_size);
 
 	return buf;
 }

@@ -54,7 +54,7 @@ class CSP_Handle
 */
 void Win32_CAPI_EntropySource::poll(Entropy_Accumulator& accum)
 {
-	SafeArray!byte io_buffer = accum.get_io_buffer(32);
+	SafeVector!byte io_buffer = accum.get_io_buffer(32);
 
 	for(size_t i = 0; i != prov_types.size(); ++i)
 	{
@@ -75,7 +75,7 @@ void Win32_CAPI_EntropySource::poll(Entropy_Accumulator& accum)
 */
 Win32_CAPI_EntropySource::Win32_CAPI_EntropySource(in string provs)
 {
-	std::vector<string> capi_provs = split_on(provs, ':');
+	Vector!( string ) capi_provs = split_on(provs, ':');
 
 	for(size_t i = 0; i != capi_provs.size(); ++i)
 	{

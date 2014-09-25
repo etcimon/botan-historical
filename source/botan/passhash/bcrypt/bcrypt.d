@@ -50,7 +50,7 @@ string bcrypt_base64_encode(in byte[] input, size_t length)
 	return b64;
 }
 
-std::vector<byte> bcrypt_base64_decode(string input)
+Vector!( byte ) bcrypt_base64_decode(string input)
 {
 	const byte OPENBSD_BASE64_SUB[256] = {
 		0x00, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80,
@@ -84,7 +84,7 @@ std::vector<byte> bcrypt_base64_decode(string input)
 }
 
 string make_bcrypt(in string pass,
-								in Array!byte salt,
+								in Vector!byte salt,
 								u16bit work_factor)
 {
 	const byte magic[24] = {
@@ -93,7 +93,7 @@ string make_bcrypt(in string pass,
 		0x63, 0x72, 0x79, 0x44, 0x6F, 0x75, 0x62, 0x74
 };
 
-	std::vector<byte> ctext(magic, magic + sizeof(magic));
+	Vector!( byte ) ctext(magic, magic + sizeof(magic));
 
 	Blowfish blowfish;
 
@@ -135,9 +135,9 @@ bool check_bcrypt(in string pass, in string hash)
 		return false;
 	}
 
-	const u16bit workfactor = to_u32bit(hash.substr(4, 2));
+	const u16bit workfactor = to_uint(hash.substr(4, 2));
 
-	std::vector<byte> salt = bcrypt_base64_decode(hash.substr(7, 22));
+	Vector!( byte ) salt = bcrypt_base64_decode(hash.substr(7, 22));
 
 	const string compare = make_bcrypt(pass, salt, workfactor);
 

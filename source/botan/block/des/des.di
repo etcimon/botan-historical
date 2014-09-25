@@ -21,7 +21,7 @@ class DES : public Block_Cipher_Fixed_Params<8, 8>
 	private:
 		void key_schedule(const byte[], size_t);
 
-		secure_vector<u32bit> round_key;
+		secure_vector<uint> round_key;
 };
 
 /**
@@ -39,20 +39,20 @@ class TripleDES : public Block_Cipher_Fixed_Params<8, 16, 24, 8>
 	private:
 		void key_schedule(const byte[], size_t);
 
-		secure_vector<u32bit> round_key;
+		secure_vector<uint> round_key;
 };
 
 /*
 * DES Tables
 */
-extern const u32bit DES_SPBOX1[256];
-extern const u32bit DES_SPBOX2[256];
-extern const u32bit DES_SPBOX3[256];
-extern const u32bit DES_SPBOX4[256];
-extern const u32bit DES_SPBOX5[256];
-extern const u32bit DES_SPBOX6[256];
-extern const u32bit DES_SPBOX7[256];
-extern const u32bit DES_SPBOX8[256];
+extern const uint DES_SPBOX1[256];
+extern const uint DES_SPBOX2[256];
+extern const uint DES_SPBOX3[256];
+extern const uint DES_SPBOX4[256];
+extern const uint DES_SPBOX5[256];
+extern const uint DES_SPBOX6[256];
+extern const uint DES_SPBOX7[256];
+extern const uint DES_SPBOX8[256];
 
 extern const u64bit DES_IPTAB1[256];
 extern const u64bit DES_IPTAB2[256];

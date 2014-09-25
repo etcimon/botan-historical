@@ -27,14 +27,14 @@ class Noekeon : public Block_Cipher_Fixed_Params<16, 16>
 		/**
 		* @return const reference to encryption subkeys
 		*/
-		const secure_vector<u32bit>& get_EK() const { return EK; }
+		const secure_vector<uint>& get_EK() const { return EK; }
 
 		/**
 		* @return const reference to decryption subkeys
 		*/
-		const secure_vector<u32bit>& get_DK() const { return DK; }
+		const secure_vector<uint>& get_DK() const { return DK; }
 
 	private:
 		void key_schedule(const byte[], size_t);
-		secure_vector<u32bit> EK, DK;
+		secure_vector<uint> EK, DK;
 };

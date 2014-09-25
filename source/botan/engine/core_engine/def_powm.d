@@ -11,7 +11,7 @@
 * Choose a modular exponentation algorithm
 */
 Modular_Exponentiator*
-Core_Engine::mod_exp(const BigInt& n, Power_Mod::Usage_Hints hints) const
+Core_Engine::mod_exp(in BigInt n, Power_Mod::Usage_Hints hints) const
 {
 	if(n.is_odd())
 		return new Montgomery_Exponentiator(n, hints);

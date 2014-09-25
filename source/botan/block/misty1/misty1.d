@@ -117,7 +117,7 @@ void MISTY1::encrypt_n(in byte[] input, ref byte[] output) const
 			B3 ^= B2 & RK[2];
 			B2 ^= B3 | RK[3];
 
-			u32bit T0, T1;
+			uint T0, T1;
 
 			T0  = FI(B0 ^ RK[ 4], RK[ 5], RK[ 6]) ^ B1;
 			T1  = FI(B1 ^ RK[ 7], RK[ 8], RK[ 9]) ^ T0;
@@ -141,8 +141,8 @@ void MISTY1::encrypt_n(in byte[] input, ref byte[] output) const
 
 		store_be(out, B2, B3, B0, B1);
 
-		in += BLOCK_SIZE;
-		out += BLOCK_SIZE;
+		input = input[BLOCK_SIZE .. $];
+		output = output[BLOCK_SIZE .. $];
 	}
 }
 
@@ -167,7 +167,7 @@ void MISTY1::decrypt_n(in byte[] input, ref byte[] output) const
 			B0 ^= B1 | RK[2];
 			B1 ^= B0 & RK[3];
 
-			u32bit T0, T1;
+			uint T0, T1;
 
 			T0  = FI(B2 ^ RK[ 4], RK[ 5], RK[ 6]) ^ B3;
 			T1  = FI(B3 ^ RK[ 7], RK[ 8], RK[ 9]) ^ T0;
@@ -191,8 +191,8 @@ void MISTY1::decrypt_n(in byte[] input, ref byte[] output) const
 
 		store_be(out, B0, B1, B2, B3);
 
-		in += BLOCK_SIZE;
-		out += BLOCK_SIZE;
+		input = input[BLOCK_SIZE .. $];
+		output = output[BLOCK_SIZE .. $];
 	}
 }
 
@@ -260,7 +260,7 @@ void MISTY1::clear()
 MISTY1::MISTY1(size_t rounds)
 {
 	if(rounds != 8)
-		throw Invalid_Argument("MISTY1: Invalid number of rounds: "
+		throw new Invalid_Argument("MISTY1: Invalid number of rounds: "
 									  + std::to_string(rounds));
 }
 

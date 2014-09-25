@@ -23,7 +23,7 @@ class RTSS_Share
 		* @param identifier the 16 byte share identifier
 		* @param rng the random number generator to use
 		*/
-		static std::vector<RTSS_Share>
+		static Vector!( RTSS_Share )
 			split(byte M, byte N,
 					in byte[] secret, u16bit secret_len,
 					const byte identifier[16],
@@ -32,8 +32,8 @@ class RTSS_Share
 		/**
 		* @param shares the list of shares
 		*/
-		static SafeArray!byte
-		  reconstruct(const std::vector<RTSS_Share>& shares);
+		static SafeVector!byte
+		  reconstruct(in Vector!( RTSS_Share ) shares);
 
 		RTSS_Share() {}
 
@@ -62,5 +62,5 @@ class RTSS_Share
 		*/
 		bool initialized() const { return (contents.size() > 0); }
 	private:
-		SafeArray!byte contents;
+		SafeVector!byte contents;
 };

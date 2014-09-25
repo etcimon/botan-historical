@@ -10,7 +10,7 @@
 /*
 * Return a PKCS#5 PBKDF1 derived key
 */
-std::pair<size_t, OctetString>
+Pair!(size_t, OctetString)
 PKCS5_PBKDF1::key_derivation(size_t key_len,
 									  in string passphrase,
 									  in byte[] salt, size_t salt_len,
@@ -18,11 +18,11 @@ PKCS5_PBKDF1::key_derivation(size_t key_len,
 									  std::chrono::milliseconds msec) const
 {
 	if(key_len > hash->output_length())
-		throw Invalid_Argument("PKCS5_PBKDF1: Requested output length too long");
+		throw new Invalid_Argument("PKCS5_PBKDF1: Requested output length too long");
 
 	hash->update(passphrase);
 	hash->update(salt, salt_len);
-	SafeArray!byte key = hash->final();
+	SafeVector!byte key = hash->flush();
 
 	const auto start = std::chrono::high_resolution_clock::now();
 	size_t iterations_performed = 1;
@@ -43,7 +43,7 @@ PKCS5_PBKDF1::key_derivation(size_t key_len,
 			break;
 
 		hash->update(key);
-		hash->final(&key[0]);
+		hash->flushInto(&key[0]);
 
 		++iterations_performed;
 	}

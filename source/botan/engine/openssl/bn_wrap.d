@@ -9,10 +9,10 @@
 /*
 * OSSL_BN Constructor
 */
-OSSL_BN::OSSL_BN(const BigInt& input)
+OSSL_BN::OSSL_BN(in BigInt input)
 {
 	m_bn = BN_new();
-	SafeArray!byte encoding = BigInt::encode_locked(input);
+	SafeVector!byte encoding = BigInt::encode_locked(input);
 	if(in != 0)
 		BN_bin2bn(&encoding[0], encoding.size(), m_bn);
 }
@@ -29,7 +29,7 @@ OSSL_BN::OSSL_BN(in byte[] input)
 /*
 * OSSL_BN Copy Constructor
 */
-OSSL_BN::OSSL_BN(const OSSL_BN& other)
+OSSL_BN::OSSL_BN(in OSSL_BN other)
 {
 	m_bn = BN_dup(other.m_bn);
 }
@@ -45,7 +45,7 @@ OSSL_BN::~OSSL_BN()
 /*
 * OSSL_BN Assignment Operator
 */
-OSSL_BN& OSSL_BN::operator=(const OSSL_BN& other)
+OSSL_BN& OSSL_BN::operator=(in OSSL_BN other)
 {
 	BN_copy(m_bn, other.m_bn);
 	return (*this);
@@ -73,7 +73,7 @@ size_t OSSL_BN::bytes() const
 */
 BigInt OSSL_BN::to_bigint() const
 {
-	SafeArray!byte out(bytes());
+	SafeVector!byte out(bytes());
 	BN_bn2bin(m_bn, &out[0]);
 	return BigInt::decode(out);
 }
@@ -89,7 +89,7 @@ OSSL_BN_CTX::OSSL_BN_CTX()
 /*
 * OSSL_BN_CTX Copy Constructor
 */
-OSSL_BN_CTX::OSSL_BN_CTX(const OSSL_BN_CTX&)
+OSSL_BN_CTX::OSSL_BN_CTX(in OSSL_BN_CTX)
 {
 	m_ctx = BN_CTX_new();
 }
@@ -105,7 +105,7 @@ OSSL_BN_CTX::~OSSL_BN_CTX()
 /*
 * OSSL_BN_CTX Assignment Operator
 */
-OSSL_BN_CTX& OSSL_BN_CTX::operator=(const OSSL_BN_CTX&)
+OSSL_BN_CTX& OSSL_BN_CTX::operator=(in OSSL_BN_CTX)
 {
 	m_ctx = BN_CTX_new();
 	return (*this);

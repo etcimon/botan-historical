@@ -15,7 +15,7 @@
 class EAX_Mode : public AEAD_Mode
 {
 	public:
-		SafeArray!byte start(in byte[] nonce, size_t nonce_len) override;
+		SafeVector!byte start(in byte[] nonce, size_t nonce_len) override;
 
 		void set_associated_data(in byte[] ad, size_t ad_len) override;
 
@@ -48,9 +48,9 @@ class EAX_Mode : public AEAD_Mode
 		std::unique_ptr<StreamCipher> m_ctr;
 		std::unique_ptr<MessageAuthenticationCode> m_cmac;
 
-		SafeArray!byte m_ad_mac;
+		SafeVector!byte m_ad_mac;
 
-		SafeArray!byte m_nonce_mac;
+		SafeVector!byte m_nonce_mac;
 };
 
 /**
@@ -71,9 +71,9 @@ class EAX_Encryption : public EAX_Mode
 
 		size_t minimum_final_size() const override { return 0; }
 
-		void update(SafeArray!byte blocks, size_t offset = 0) override;
+		void update(SafeVector!byte blocks, size_t offset = 0) override;
 
-		void finish(SafeArray!byte final_block, size_t offset = 0) override;
+		void finish(SafeVector!byte final_block, size_t offset = 0) override;
 };
 
 /**
@@ -97,7 +97,7 @@ class EAX_Decryption : public EAX_Mode
 
 		size_t minimum_final_size() const override { return tag_size(); }
 
-		void update(SafeArray!byte blocks, size_t offset = 0) override;
+		void update(SafeVector!byte blocks, size_t offset = 0) override;
 
-		void finish(SafeArray!byte final_block, size_t offset = 0) override;
+		void finish(SafeVector!byte final_block, size_t offset = 0) override;
 };

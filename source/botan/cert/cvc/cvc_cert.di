@@ -39,9 +39,9 @@ class EAC1_1_CVC : public EAC1_1_gen_CVC<EAC1_1_CVC>//Signed_Object
 		 * Get the CHAT value.
 		 * @result the CHAT value
 		 */
-		 u32bit get_chat_value() const;
+		 uint get_chat_value() const;
 
-		 bool operator==(const EAC1_1_CVC&) const;
+		 bool operator==(in EAC1_1_CVC) const;
 
 		 /**
 		 * Construct a CVC from a data source
@@ -90,7 +90,7 @@ inline bool operator!=(EAC1_1_CVC const& lhs, EAC1_1_CVC const& rhs)
 * @param rng a random number generator
 */
 EAC1_1_CVC make_cvc_cert(PK_Signer& signer,
-											  in Array!byte public_key,
+											  in Vector!byte public_key,
 											  ASN1_Car const& car,
 											  ASN1_Chr const& chr,
 											  byte holder_auth_templ,
@@ -101,5 +101,5 @@ EAC1_1_CVC make_cvc_cert(PK_Signer& signer,
 /**
 * Decode an EAC encoding ECDSA key
 */
-ECDSA_PublicKey* decode_eac1_1_key(in Array!byte enc_key,
+ECDSA_PublicKey* decode_eac1_1_key(in Vector!byte enc_key,
 															AlgorithmIdentifier& sig_algo);

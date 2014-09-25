@@ -28,5 +28,5 @@ class SAFER_SK : public Block_Cipher_Fixed_Params<8, 16>
 		void key_schedule(const byte[], size_t);
 
 		size_t rounds;
-		SafeArray!byte EK;
+		SafeVector!byte EK;
 };

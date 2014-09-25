@@ -104,7 +104,7 @@ bool Pipe::end_of_data() const
 void Pipe::set_default_msg(message_id msg)
 {
 	if(msg >= message_count())
-		throw Invalid_Argument("Pipe::set_default_msg: msg number is too high");
+		throw new Invalid_Argument("Pipe::set_default_msg: msg number is too high");
 	default_read = msg;
 }
 
@@ -121,12 +121,12 @@ void Pipe::process_msg(in byte[] input, size_t length)
 /*
 * Process a full message at once
 */
-void Pipe::process_msg(in SafeArray!byte input)
+void Pipe::process_msg(in SafeVector!byte input)
 {
 	process_msg(&input[0], input.size());
 }
 
-void Pipe::process_msg(in Array!byte input)
+void Pipe::process_msg(in Vector!byte input)
 {
 	process_msg(&input[0], input.size());
 }
@@ -155,7 +155,7 @@ void Pipe::process_msg(DataSource& input)
 void Pipe::start_msg()
 {
 	if(inside_msg)
-		throw Invalid_State("Pipe::start_msg: Message was already started");
+		throw new Invalid_State("Pipe::start_msg: Message was already started");
 	if(pipe == nullptr)
 		pipe = new Null_Filter;
 	find_endpoints(pipe);
@@ -169,7 +169,7 @@ void Pipe::start_msg()
 void Pipe::end_msg()
 {
 	if(!inside_msg)
-		throw Invalid_State("Pipe::end_msg: Message was already ended");
+		throw new Invalid_State("Pipe::end_msg: Message was already ended");
 	pipe->finish_msg();
 	clear_endpoints(pipe);
 	if(cast(Null_Filter*)(pipe))
@@ -218,13 +218,13 @@ void Pipe::clear_endpoints(Filter* f)
 void Pipe::append(Filter* filter)
 {
 	if(inside_msg)
-		throw Invalid_State("Cannot append to a Pipe while it is processing");
+		throw new Invalid_State("Cannot append to a Pipe while it is processing");
 	if(!filter)
 		return;
 	if(cast(SecureQueue*)(filter))
-		throw Invalid_Argument("Pipe::append: SecureQueue cannot be used");
+		throw new Invalid_Argument("Pipe::append: SecureQueue cannot be used");
 	if(filter->owned)
-		throw Invalid_Argument("Filters cannot be shared among multiple Pipes");
+		throw new Invalid_Argument("Filters cannot be shared among multiple Pipes");
 
 	filter->owned = true;
 
@@ -238,13 +238,13 @@ void Pipe::append(Filter* filter)
 void Pipe::prepend(Filter* filter)
 {
 	if(inside_msg)
-		throw Invalid_State("Cannot prepend to a Pipe while it is processing");
+		throw new Invalid_State("Cannot prepend to a Pipe while it is processing");
 	if(!filter)
 		return;
 	if(cast(SecureQueue*)(filter))
-		throw Invalid_Argument("Pipe::prepend: SecureQueue cannot be used");
+		throw new Invalid_Argument("Pipe::prepend: SecureQueue cannot be used");
 	if(filter->owned)
-		throw Invalid_Argument("Filters cannot be shared among multiple Pipes");
+		throw new Invalid_Argument("Filters cannot be shared among multiple Pipes");
 
 	filter->owned = true;
 
@@ -258,13 +258,13 @@ void Pipe::prepend(Filter* filter)
 void Pipe::pop()
 {
 	if(inside_msg)
-		throw Invalid_State("Cannot pop off a Pipe while it is processing");
+		throw new Invalid_State("Cannot pop off a Pipe while it is processing");
 
 	if(!pipe)
 		return;
 
 	if(pipe->total_ports() > 1)
-		throw Invalid_State("Cannot pop off a Filter with multiple ports");
+		throw new Invalid_State("Cannot pop off a Filter with multiple ports");
 
 	Filter* f = pipe;
 	size_t owns = f->owns();

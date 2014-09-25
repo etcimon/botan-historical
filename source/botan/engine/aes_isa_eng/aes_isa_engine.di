@@ -15,6 +15,6 @@ class AES_ISA_Engine : public Engine
 	public:
 		string provider_name() const { return "aes_isa"; }
 
-		BlockCipher* find_block_cipher(const SCAN_Name&,
+		BlockCipher* find_block_cipher(in SCAN_Name,
 												 Algorithm_Factory&) const;
 };

@@ -12,7 +12,7 @@
 class SSL3_PRF : public KDF
 {
 	public:
-		SafeArray!byte derive(size_t, const byte[], size_t,
+		SafeVector!byte derive(size_t, const byte[], size_t,
 										  const byte[], size_t) const;
 
 		string name() const { return "SSL3-PRF"; }

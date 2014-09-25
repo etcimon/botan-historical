@@ -48,7 +48,7 @@ ASN1_Tag choose_encoding(in string str,
 		{
 			if(type == "utf8")	return UTF8_STRING;
 			if(type == "latin1") return T61_STRING;
-			throw Invalid_Argument("choose_encoding: Bad string type " + type);
+			throw new Invalid_Argument("choose_encoding: Bad string type " + type);
 		}
 	}
 	return PRINTABLE_STRING;
@@ -73,7 +73,7 @@ ASN1_String::ASN1_String(in string str, ASN1_Tag t) : tag(t)
 		tag != IA5_STRING &&
 		tag != UTF8_STRING &&
 		tag != BMP_STRING)
-		throw Invalid_Argument("ASN1_String: Unknown string type " +
+		throw new Invalid_Argument("ASN1_String: Unknown string type " +
 									  std::to_string(tag));
 }
 

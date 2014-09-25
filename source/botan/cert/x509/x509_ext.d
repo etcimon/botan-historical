@@ -16,7 +16,7 @@
 /*
 * List of X.509 Certificate Extensions
 */
-Certificate_Extension* Extensions::get_extension(const OID& oid)
+Certificate_Extension* Extensions::get_extension(in OID oid)
 {
 #define X509_EXTENSION(NAME, TYPE) \
 	if(OIDS::name_of(oid, NAME))	 \
@@ -41,7 +41,7 @@ Certificate_Extension* Extensions::get_extension(const OID& oid)
 /*
 * Extensions Copy Constructor
 */
-Extensions::Extensions(const Extensions& extensions) : ASN1_Object()
+Extensions::Extensions(in Extensions extensions) : ASN1_Object()
 {
 	*this = extensions;
 }
@@ -49,7 +49,7 @@ Extensions::Extensions(const Extensions& extensions) : ASN1_Object()
 /*
 * Extensions Assignment Operator
 */
-Extensions& Extensions::operator=(const Extensions& other)
+Extensions& Extensions::operator=(in Extensions other)
 {
 	for(size_t i = 0; i != extensions.size(); ++i)
 		delete extensions[i].first;
@@ -113,7 +113,7 @@ void Extensions::decode_from(BER_Decoder& from_source)
 	while(sequence.more_items())
 	{
 		OID oid;
-		std::vector<byte> value;
+		Vector!( byte ) value;
 		bool critical;
 
 		sequence.start_cons(SEQUENCE)
@@ -126,7 +126,7 @@ void Extensions::decode_from(BER_Decoder& from_source)
 		Certificate_Extension* ext = get_extension(oid);
 
 		if(!ext && critical && m_throw_on_unknown_critical)
-			throw Decoding_Error("Encountered unknown X.509 extension marked "
+			throw new Decoding_Error("Encountered unknown X.509 extension marked "
 										"as critical; OID = " + oid.as_string());
 
 		if(ext)
@@ -137,7 +137,7 @@ void Extensions::decode_from(BER_Decoder& from_source)
 			}
 			catch(std::exception& e)
 			{
-				throw Decoding_Error("Exception while decoding extension " +
+				throw new Decoding_Error("Exception while decoding extension " +
 											oid.as_string() + ": " + e.what());
 			}
 
@@ -175,14 +175,14 @@ namespace Cert_Extension {
 size_t Basic_Constraints::get_path_limit() const
 {
 	if(!is_ca)
-		throw Invalid_State("Basic_Constraints::get_path_limit: Not a CA");
+		throw new Invalid_State("Basic_Constraints::get_path_limit: Not a CA");
 	return path_limit;
 }
 
 /*
 * Encode the extension
 */
-std::vector<byte> Basic_Constraints::encode_inner() const
+Vector!( byte ) Basic_Constraints::encode_inner() const
 {
 	return DER_Encoder()
 		.start_cons(SEQUENCE)
@@ -198,7 +198,7 @@ std::vector<byte> Basic_Constraints::encode_inner() const
 /*
 * Decode the extension
 */
-void Basic_Constraints::decode_inner(in Array!byte input)
+void Basic_Constraints::decode_inner(in Vector!byte input)
 {
 	BER_Decoder(input)
 		.start_cons(SEQUENCE)
@@ -223,14 +223,14 @@ void Basic_Constraints::contents_to(Data_Store& subject, Data_Store&) const
 /*
 * Encode the extension
 */
-std::vector<byte> Key_Usage::encode_inner() const
+Vector!( byte ) Key_Usage::encode_inner() const
 {
 	if(constraints == NO_CONSTRAINTS)
-		throw Encoding_Error("Cannot encode zero usage constraints");
+		throw new Encoding_Error("Cannot encode zero usage constraints");
 
 	const size_t unused_bits = low_bit(constraints) - 1;
 
-	std::vector<byte> der;
+	Vector!( byte ) der;
 	der.push_back(BIT_STRING);
 	der.push_back(2 + ((unused_bits < 8) ? 1 : 0));
 	der.push_back(unused_bits % 8);
@@ -244,21 +244,21 @@ std::vector<byte> Key_Usage::encode_inner() const
 /*
 * Decode the extension
 */
-void Key_Usage::decode_inner(in Array!byte input)
+void Key_Usage::decode_inner(in Vector!byte input)
 {
 	BER_Decoder ber(input);
 
 	BER_Object obj = ber.get_next_object();
 
 	if(obj.type_tag != BIT_STRING || obj.class_tag != UNIVERSAL)
-		throw BER_Bad_Tag("Bad tag for usage constraint",
+		throw new BER_Bad_Tag("Bad tag for usage constraint",
 								obj.type_tag, obj.class_tag);
 
 	if(obj.value.size() != 2 && obj.value.size() != 3)
-		throw BER_Decoding_Error("Bad size for BITSTRING in usage constraint");
+		throw new BER_Decoding_Error("Bad size for BITSTRING in usage constraint");
 
 	if(obj.value[0] >= 8)
-		throw BER_Decoding_Error("Invalid unused bits in usage constraint");
+		throw new BER_Decoding_Error("Invalid unused bits in usage constraint");
 
 	obj.value[obj.value.size()-1] &= (0xFF << obj.value[0]);
 
@@ -280,7 +280,7 @@ void Key_Usage::contents_to(Data_Store& subject, Data_Store&) const
 /*
 * Encode the extension
 */
-std::vector<byte> Subject_Key_ID::encode_inner() const
+Vector!( byte ) Subject_Key_ID::encode_inner() const
 {
 	return DER_Encoder().encode(key_id, OCTET_STRING).get_contents_unlocked();
 }
@@ -288,7 +288,7 @@ std::vector<byte> Subject_Key_ID::encode_inner() const
 /*
 * Decode the extension
 */
-void Subject_Key_ID::decode_inner(in Array!byte input)
+void Subject_Key_ID::decode_inner(in Vector!byte input)
 {
 	BER_Decoder(input).decode(key_id, OCTET_STRING).verify_end();
 }
@@ -304,7 +304,7 @@ void Subject_Key_ID::contents_to(Data_Store& subject, Data_Store&) const
 /*
 * Subject_Key_ID Constructor
 */
-Subject_Key_ID::Subject_Key_ID(in Array!byte pub_key)
+Subject_Key_ID::Subject_Key_ID(in Vector!byte pub_key)
 {
 	SHA_160 hash;
 	key_id = unlock(hash.process(pub_key));
@@ -313,7 +313,7 @@ Subject_Key_ID::Subject_Key_ID(in Array!byte pub_key)
 /*
 * Encode the extension
 */
-std::vector<byte> Authority_Key_ID::encode_inner() const
+Vector!( byte ) Authority_Key_ID::encode_inner() const
 {
 	return DER_Encoder()
 			.start_cons(SEQUENCE)
@@ -325,7 +325,7 @@ std::vector<byte> Authority_Key_ID::encode_inner() const
 /*
 * Decode the extension
 */
-void Authority_Key_ID::decode_inner(in Array!byte input)
+void Authority_Key_ID::decode_inner(in Vector!byte input)
 {
 	BER_Decoder(input)
 		.start_cons(SEQUENCE)
@@ -344,7 +344,7 @@ void Authority_Key_ID::contents_to(Data_Store&, Data_Store& issuer) const
 /*
 * Encode the extension
 */
-std::vector<byte> Alternative_Name::encode_inner() const
+Vector!( byte ) Alternative_Name::encode_inner() const
 {
 	return DER_Encoder().encode(alt_name).get_contents_unlocked();
 }
@@ -352,7 +352,7 @@ std::vector<byte> Alternative_Name::encode_inner() const
 /*
 * Decode the extension
 */
-void Alternative_Name::decode_inner(in Array!byte input)
+void Alternative_Name::decode_inner(in Vector!byte input)
 {
 	BER_Decoder(input).decode(alt_name);
 }
@@ -371,14 +371,14 @@ void Alternative_Name::contents_to(Data_Store& subject_info,
 	else if(oid_name_str == "X509v3.IssuerAlternativeName")
 		issuer_info.add(contents);
 	else
-		throw Internal_Error("In Alternative_Name, unknown type " +
+		throw new Internal_Error("In Alternative_Name, unknown type " +
 									oid_name_str);
 }
 
 /*
 * Alternative_Name Constructor
 */
-Alternative_Name::Alternative_Name(const AlternativeName& alt_name,
+Alternative_Name::Alternative_Name(in AlternativeName alt_name,
 											  in string oid_name_str)
 {
 	this->alt_name = alt_name;
@@ -397,7 +397,7 @@ Subject_Alternative_Name::Subject_Alternative_Name(
 /*
 * Issuer_Alternative_Name Constructor
 */
-Issuer_Alternative_Name::Issuer_Alternative_Name(const AlternativeName& name) :
+Issuer_Alternative_Name::Issuer_Alternative_Name(in AlternativeName name) :
 	Alternative_Name(name, "X509v3.IssuerAlternativeName")
 {
 }
@@ -405,7 +405,7 @@ Issuer_Alternative_Name::Issuer_Alternative_Name(const AlternativeName& name) :
 /*
 * Encode the extension
 */
-std::vector<byte> Extended_Key_Usage::encode_inner() const
+Vector!( byte ) Extended_Key_Usage::encode_inner() const
 {
 	return DER_Encoder()
 		.start_cons(SEQUENCE)
@@ -417,7 +417,7 @@ std::vector<byte> Extended_Key_Usage::encode_inner() const
 /*
 * Decode the extension
 */
-void Extended_Key_Usage::decode_inner(in Array!byte input)
+void Extended_Key_Usage::decode_inner(in Vector!byte input)
 {
 	BER_Decoder(input).decode_list(oids);
 }
@@ -442,7 +442,7 @@ class Policy_Information : public ASN1_Object
 		OID oid;
 
 		Policy_Information() {}
-		Policy_Information(const OID& oid) : oid(oid) {}
+		Policy_Information(in OID oid) : oid(oid) {}
 
 		void encode_into(DER_Encoder& codec) const
 		{
@@ -465,9 +465,9 @@ class Policy_Information : public ASN1_Object
 /*
 * Encode the extension
 */
-std::vector<byte> Certificate_Policies::encode_inner() const
+Vector!( byte ) Certificate_Policies::encode_inner() const
 {
-	std::vector<Policy_Information> policies;
+	Vector!( Policy_Information ) policies;
 
 	for(size_t i = 0; i != oids.size(); ++i)
 		policies.push_back(oids[i]);
@@ -482,9 +482,9 @@ std::vector<byte> Certificate_Policies::encode_inner() const
 /*
 * Decode the extension
 */
-void Certificate_Policies::decode_inner(in Array!byte input)
+void Certificate_Policies::decode_inner(in Vector!byte input)
 {
-	std::vector<Policy_Information> policies;
+	Vector!( Policy_Information ) policies;
 
 	BER_Decoder(input).decode_list(policies);
 
@@ -502,7 +502,7 @@ void Certificate_Policies::contents_to(Data_Store& info, Data_Store&) const
 		info.add("X509v3.CertificatePolicies", oids[i].as_string());
 }
 
-std::vector<byte> Authority_Information_Access::encode_inner() const
+Vector!( byte ) Authority_Information_Access::encode_inner() const
 {
 	ASN1_String url(m_ocsp_responder, IA5_STRING);
 
@@ -515,7 +515,7 @@ std::vector<byte> Authority_Information_Access::encode_inner() const
 		.end_cons().get_contents_unlocked();
 }
 
-void Authority_Information_Access::decode_inner(in Array!byte input)
+void Authority_Information_Access::decode_inner(in Vector!byte input)
 {
 	BER_Decoder ber = BER_Decoder(input).start_cons(SEQUENCE);
 
@@ -554,7 +554,7 @@ void Authority_Information_Access::contents_to(Data_Store& subject, Data_Store&)
 size_t CRL_Number::get_crl_number() const
 {
 	if(!has_value)
-		throw Invalid_State("CRL_Number::get_crl_number: Not set");
+		throw new Invalid_State("CRL_Number::get_crl_number: Not set");
 	return crl_number;
 }
 
@@ -564,14 +564,14 @@ size_t CRL_Number::get_crl_number() const
 CRL_Number* CRL_Number::copy() const
 {
 	if(!has_value)
-		throw Invalid_State("CRL_Number::copy: Not set");
+		throw new Invalid_State("CRL_Number::copy: Not set");
 	return new CRL_Number(crl_number);
 }
 
 /*
 * Encode the extension
 */
-std::vector<byte> CRL_Number::encode_inner() const
+Vector!( byte ) CRL_Number::encode_inner() const
 {
 	return DER_Encoder().encode(crl_number).get_contents_unlocked();
 }
@@ -579,7 +579,7 @@ std::vector<byte> CRL_Number::encode_inner() const
 /*
 * Decode the extension
 */
-void CRL_Number::decode_inner(in Array!byte input)
+void CRL_Number::decode_inner(in Vector!byte input)
 {
 	BER_Decoder(input).decode(crl_number);
 }
@@ -595,7 +595,7 @@ void CRL_Number::contents_to(Data_Store& info, Data_Store&) const
 /*
 * Encode the extension
 */
-std::vector<byte> CRL_ReasonCode::encode_inner() const
+Vector!( byte ) CRL_ReasonCode::encode_inner() const
 {
 	return DER_Encoder()
 		.encode(cast(size_t)(reason), ENUMERATED, UNIVERSAL)
@@ -605,7 +605,7 @@ std::vector<byte> CRL_ReasonCode::encode_inner() const
 /*
 * Decode the extension
 */
-void CRL_ReasonCode::decode_inner(in Array!byte input)
+void CRL_ReasonCode::decode_inner(in Vector!byte input)
 {
 	size_t reason_code = 0;
 	BER_Decoder(input).decode(reason_code, ENUMERATED, UNIVERSAL);
@@ -620,12 +620,12 @@ void CRL_ReasonCode::contents_to(Data_Store& info, Data_Store&) const
 	info.add("X509v3.CRLReasonCode", reason);
 }
 
-std::vector<byte> CRL_Distribution_Points::encode_inner() const
+Vector!( byte ) CRL_Distribution_Points::encode_inner() const
 {
-	throw std::runtime_error("CRL_Distribution_Points encoding not implemented");
+	throw new Exception("CRL_Distribution_Points encoding not implemented");
 }
 
-void CRL_Distribution_Points::decode_inner(in Array!byte buf)
+void CRL_Distribution_Points::decode_inner(in Vector!byte buf)
 {
 	BER_Decoder(buf).decode_list(m_distribution_points).verify_end();
 }
@@ -645,7 +645,7 @@ void CRL_Distribution_Points::contents_to(Data_Store& info, Data_Store&) const
 
 void CRL_Distribution_Points::Distribution_Point::encode_into(class DER_Encoder&) const
 {
-	throw std::runtime_error("CRL_Distribution_Points encoding not implemented");
+	throw new Exception("CRL_Distribution_Points encoding not implemented");
 }
 
 void CRL_Distribution_Points::Distribution_Point::decode_from(class BER_Decoder& ber)

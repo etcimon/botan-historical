@@ -54,7 +54,7 @@ void factor(BigInt n, BigInt& a, BigInt& b)
 		std::swap(a, b);
 
 	if(a <= 1 || b <= 1)
-		throw std::runtime_error("Could not factor n for use in FPE");
+		throw new Exception("Could not factor n for use in FPE");
 }
 
 /*
@@ -63,10 +63,10 @@ void factor(BigInt n, BigInt& a, BigInt& b)
 * so 3 rounds is safe. The FPE factorization routine should always
 * return a >= b, so just confirm that and return 3.
 */
-size_t rounds(const BigInt& a, const BigInt& b)
+size_t rounds(in BigInt a, const BigInt& b)
 {
 	if(a < b)
-		throw std::logic_error("FPE rounds: a < b");
+		throw new std::logic_error("FPE rounds: a < b");
 	return 3;
 }
 
@@ -76,49 +76,49 @@ size_t rounds(const BigInt& a, const BigInt& b)
 class FPE_Encryptor
 {
 	public:
-		FPE_Encryptor(const SymmetricKey& key,
+		FPE_Encryptor(in SymmetricKey key,
 						  const BigInt& n,
-						  in Array!byte tweak);
+						  in Vector!byte tweak);
 
 		BigInt operator()(size_t i, const BigInt& R);
 
 	private:
 		std::unique_ptr<MessageAuthenticationCode> mac;
-		std::vector<byte> mac_n_t;
+		Vector!( byte ) mac_n_t;
 };
 
-FPE_Encryptor::FPE_Encryptor(const SymmetricKey& key,
+FPE_Encryptor::FPE_Encryptor(in SymmetricKey key,
 									  const BigInt& n,
-									  in Array!byte tweak)
+									  in Vector!byte tweak)
 {
 	mac.reset(new HMAC(new SHA_256));
 	mac->set_key(key);
 
-	std::vector<byte> n_bin = BigInt::encode(n);
+	Vector!( byte ) n_bin = BigInt::encode(n);
 
 	if(n_bin.size() > MAX_N_BYTES)
-		throw std::runtime_error("N is too large for FPE encryption");
+		throw new Exception("N is too large for FPE encryption");
 
-	mac->update_be(cast(u32bit)(n_bin.size()));
+	mac->update_be(cast(uint)(n_bin.size()));
 	mac->update(&n_bin[0], n_bin.size());
 
-	mac->update_be(cast(u32bit)(tweak.size()));
+	mac->update_be(cast(uint)(tweak.size()));
 	mac->update(&tweak[0], tweak.size());
 
-	mac_n_t = unlock(mac->final());
+	mac_n_t = unlock(mac->flush());
 }
 
 BigInt FPE_Encryptor::operator()(size_t round_no, const BigInt& R)
 {
-	SafeArray!byte r_bin = BigInt::encode_locked(R);
+	SafeVector!byte r_bin = BigInt::encode_locked(R);
 
 	mac->update(mac_n_t);
-	mac->update_be(cast(u32bit)(round_no));
+	mac->update_be(cast(uint)(round_no));
 
-	mac->update_be(cast(u32bit)(r_bin.size()));
+	mac->update_be(cast(uint)(r_bin.size()));
 	mac->update(&r_bin[0], r_bin.size());
 
-	SafeArray!byte X = mac->final();
+	SafeVector!byte X = mac->flush();
 	return BigInt(&X[0], X.size());
 }
 
@@ -127,9 +127,9 @@ BigInt FPE_Encryptor::operator()(size_t round_no, const BigInt& R)
 /*
 * Generic Z_n FPE encryption, FE1 scheme
 */
-BigInt fe1_encrypt(const BigInt& n, const BigInt& X0,
+BigInt fe1_encrypt(in BigInt n, const BigInt& X0,
 						 const SymmetricKey& key,
-						 in Array!byte tweak)
+						 in Vector!byte tweak)
 {
 	FPE_Encryptor F(key, n, tweak);
 
@@ -155,9 +155,9 @@ BigInt fe1_encrypt(const BigInt& n, const BigInt& X0,
 /*
 * Generic Z_n FPE decryption, FD1 scheme
 */
-BigInt fe1_decrypt(const BigInt& n, const BigInt& X0,
+BigInt fe1_decrypt(in BigInt n, const BigInt& X0,
 						 const SymmetricKey& key,
-						 in Array!byte tweak)
+						 in Vector!byte tweak)
 {
 	FPE_Encryptor F(key, n, tweak);
 

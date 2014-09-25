@@ -50,7 +50,7 @@ class Extension
 		/**
 		* @return serialized binary for the extension
 		*/
-		abstract std::vector<byte> serialize() const = 0;
+		abstract Vector!( byte ) serialize() const = 0;
 
 		/**
 		* @return if we should encode this extension or not
@@ -79,7 +79,7 @@ class Server_Name_Indicator : public Extension
 
 		string host_name() const { return sni_host_name; }
 
-		std::vector<byte> serialize() const;
+		Vector!( byte ) serialize() const;
 
 		bool empty() const { return sni_host_name == ""; }
 	private:
@@ -105,7 +105,7 @@ class SRP_Identifier : public Extension
 
 		string identifier() const { return srp_identifier; }
 
-		std::vector<byte> serialize() const;
+		Vector!( byte ) serialize() const;
 
 		bool empty() const { return srp_identifier == ""; }
 	private:
@@ -125,20 +125,20 @@ class Renegotiation_Extension : public Extension
 
 		Renegotiation_Extension() {}
 
-		Renegotiation_Extension(in Array!byte bits) :
+		Renegotiation_Extension(in Vector!byte bits) :
 			reneg_data(bits) {}
 
 		Renegotiation_Extension(TLS_Data_Reader& reader,
 									  u16bit extension_size);
 
-		in Array!byte renegotiation_info() const
+		in Vector!byte renegotiation_info() const
 		{ return reneg_data; }
 
-		std::vector<byte> serialize() const;
+		Vector!( byte ) serialize() const;
 
 		bool empty() const { return false; } // always send this
 	private:
-		std::vector<byte> reneg_data;
+		Vector!( byte ) reneg_data;
 };
 
 /**
@@ -156,7 +156,7 @@ class Maximum_Fragment_Length : public Extension
 
 		size_t fragment_size() const { return m_max_fragment; }
 
-		std::vector<byte> serialize() const;
+		Vector!( byte ) serialize() const;
 
 		/**
 		* @param max_fragment specifies what maximum fragment size to
@@ -189,7 +189,7 @@ class Next_Protocol_Notification : public Extension
 
 		Handshake_Extension_Type type() const { return static_type(); }
 
-		const std::vector<string>& protocols() const
+		const Vector!( string )& protocols() const
 		{ return m_protocols; }
 
 		/**
@@ -200,17 +200,17 @@ class Next_Protocol_Notification : public Extension
 		/**
 		* List of protocols, used by server
 		*/
-		Next_Protocol_Notification(const std::vector<string>& protocols) :
+		Next_Protocol_Notification(in Vector!( string ) protocols) :
 			m_protocols(protocols) {}
 
 		Next_Protocol_Notification(TLS_Data_Reader& reader,
 											u16bit extension_size);
 
-		std::vector<byte> serialize() const;
+		Vector!( byte ) serialize() const;
 
 		bool empty() const { return false; }
 	private:
-		std::vector<string> m_protocols;
+		Vector!( string ) m_protocols;
 };
 
 /**
@@ -227,7 +227,7 @@ class Session_Ticket : public Extension
 		/**
 		* @return contents of the session ticket
 		*/
-		in Array!byte contents() const { return m_ticket; }
+		in Vector!byte contents() const { return m_ticket; }
 
 		/**
 		* Create empty extension, used by both client and server
@@ -237,7 +237,7 @@ class Session_Ticket : public Extension
 		/**
 		* Extension with ticket, used by client
 		*/
-		Session_Ticket(in Array!byte session_ticket) :
+		Session_Ticket(in Vector!byte session_ticket) :
 			m_ticket(session_ticket) {}
 
 		/**
@@ -245,11 +245,11 @@ class Session_Ticket : public Extension
 		*/
 		Session_Ticket(TLS_Data_Reader& reader, u16bit extension_size);
 
-		std::vector<byte> serialize() const { return m_ticket; }
+		Vector!( byte ) serialize() const { return m_ticket; }
 
 		bool empty() const { return false; }
 	private:
-		std::vector<byte> m_ticket;
+		Vector!( byte ) m_ticket;
 };
 
 /**
@@ -266,11 +266,11 @@ class Supported_Elliptic_Curves : public Extension
 		static string curve_id_to_name(u16bit id);
 		static u16bit name_to_curve_id(in string name);
 
-		const std::vector<string>& curves() const { return m_curves; }
+		const Vector!( string )& curves() const { return m_curves; }
 
-		std::vector<byte> serialize() const;
+		Vector!( byte ) serialize() const;
 
-		Supported_Elliptic_Curves(const std::vector<string>& curves) :
+		Supported_Elliptic_Curves(in Vector!( string ) curves) :
 			m_curves(curves) {}
 
 		Supported_Elliptic_Curves(TLS_Data_Reader& reader,
@@ -278,7 +278,7 @@ class Supported_Elliptic_Curves : public Extension
 
 		bool empty() const { return m_curves.empty(); }
 	private:
-		std::vector<string> m_curves;
+		Vector!( string ) m_curves;
 };
 
 /**
@@ -298,26 +298,26 @@ class Signature_Algorithms : public Extension
 		static string sig_algo_name(byte code);
 		static byte sig_algo_code(in string name);
 
-		std::vector<std::pair<string, string> >
+		Vector!( Pair!(string, string)  )
 			supported_signature_algorthms() const
 		{
 			return m_supported_algos;
 		}
 
-		std::vector<byte> serialize() const;
+		Vector!( byte ) serialize() const;
 
 		bool empty() const { return false; }
 
-		Signature_Algorithms(const std::vector<string>& hashes,
-									const std::vector<string>& sig_algos);
+		Signature_Algorithms(in Vector!( string ) hashes,
+									const Vector!( string )& sig_algos);
 
-		Signature_Algorithms(const std::vector<std::pair<string, string> >& algos) :
+		Signature_Algorithms(in Vector!( Pair!(string, string)  ) algos) :
 			m_supported_algos(algos) {}
 
 		Signature_Algorithms(TLS_Data_Reader& reader,
 									u16bit extension_size);
 	private:
-		std::vector<std::pair<string, string> > m_supported_algos;
+		Vector!( Pair!(string, string)  ) m_supported_algos;
 };
 
 /**
@@ -333,7 +333,7 @@ class Heartbeat_Support_Indicator : public Extension
 
 		bool peer_allowed_to_send() const { return m_peer_allowed_to_send; }
 
-		std::vector<byte> serialize() const;
+		Vector!( byte ) serialize() const;
 
 		bool empty() const { return false; }
 
@@ -371,7 +371,7 @@ class Extensions
 			extensions[extn->type()].reset(extn);
 		}
 
-		std::vector<byte> serialize() const;
+		Vector!( byte ) serialize() const;
 
 		void deserialize(TLS_Data_Reader& reader);
 
@@ -380,8 +380,8 @@ class Extensions
 		Extensions(TLS_Data_Reader& reader) { deserialize(reader); }
 
 	private:
-		Extensions(const Extensions&) {}
-		Extensions& operator=(const Extensions&) { return (*this); }
+		Extensions(in Extensions) {}
+		Extensions& operator=(in Extensions) { return (*this); }
 
 		std::map<Handshake_Extension_Type, std::unique_ptr<Extension>> extensions;
 };

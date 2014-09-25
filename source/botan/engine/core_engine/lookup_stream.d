@@ -32,7 +32,7 @@
 * Look for an algorithm with this name
 */
 StreamCipher*
-Core_Engine::find_stream_cipher(const SCAN_Name& request,
+Core_Engine::find_stream_cipher(in SCAN_Name request,
 										  Algorithm_Factory& af) const
 {
 #if defined(BOTAN_HAS_OFB)

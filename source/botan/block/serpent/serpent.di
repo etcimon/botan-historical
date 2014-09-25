@@ -23,19 +23,19 @@ class Serpent : public Block_Cipher_Fixed_Params<16, 16, 32, 8>
 		* For use by subclasses using SIMD, asm, etc
 		* @return const reference to the key schedule
 		*/
-		const secure_vector<u32bit>& get_round_keys() const
+		const secure_vector<uint>& get_round_keys() const
 		{ return round_key; }
 
 		/**
 		* For use by subclasses that implement the key schedule
 		* @param ks is the new key schedule value to set
 		*/
-		void set_round_keys(const u32bit ks[132])
+		void set_round_keys(const uint ks[132])
 		{
 			round_key.assign(&ks[0], &ks[132]);
 		}
 
 	private:
 		void key_schedule(in byte[] key);
-		secure_vector<u32bit> round_key;
+		secure_vector<uint> round_key;
 };

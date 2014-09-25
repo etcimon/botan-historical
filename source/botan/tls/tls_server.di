@@ -39,7 +39,7 @@ class Server : public Channel
 
 	private:
 		X509_Certificate[]
-			get_peer_cert_chain(const Handshake_State& state) const override;
+			get_peer_cert_chain(in Handshake_State state) const override;
 
 		void initiate_handshake(Handshake_State& state,
 										bool force_full_renegotiation) override;
@@ -47,14 +47,14 @@ class Server : public Channel
 		void process_handshake_msg(const Handshake_State* active_state,
 											Handshake_State& pending_state,
 											Handshake_Type type,
-											in Array!byte contents) override;
+											in Vector!byte contents) override;
 
 		Handshake_State* new_handshake_state(Handshake_IO* io) override;
 
 		const Policy& m_policy;
 		Credentials_Manager& m_creds;
 
-		std::vector<string> m_possible_protocols;
+		Vector!( string ) m_possible_protocols;
 		string m_next_protocol;
 };
 

@@ -15,9 +15,9 @@
 class SIV_Mode : public AEAD_Mode
 {
 	public:
-		SafeArray!byte start(in byte[] nonce, size_t nonce_len) override;
+		SafeVector!byte start(in byte[] nonce, size_t nonce_len) override;
 
-		void update(SafeArray!byte blocks, size_t offset = 0) override;
+		void update(SafeVector!byte blocks, size_t offset = 0) override;
 
 		void set_associated_data_n(size_t n, in byte[] ad, size_t ad_len);
 
@@ -43,11 +43,11 @@ class SIV_Mode : public AEAD_Mode
 
 		StreamCipher& ctr() { return *m_ctr; }
 
-		void set_ctr_iv(SafeArray!byte V);
+		void set_ctr_iv(SafeVector!byte V);
 
-		SafeArray!byte msg_buf() { return m_msg_buf; }
+		SafeVector!byte msg_buf() { return m_msg_buf; }
 
-		SafeArray!byte S2V(in byte[] text, size_t text_len);
+		SafeVector!byte S2V(in byte[] text, size_t text_len);
 	private:
 		MessageAuthenticationCode& cmac() { return *m_cmac; }
 
@@ -57,8 +57,8 @@ class SIV_Mode : public AEAD_Mode
 
 		std::unique_ptr<StreamCipher> m_ctr;
 		std::unique_ptr<MessageAuthenticationCode> m_cmac;
-		SafeArray!byte m_nonce, m_msg_buf;
-		std::vector<SafeArray!byte> m_ad_macs;
+		SafeVector!byte m_nonce, m_msg_buf;
+		Vector!( SafeVector!byte ) m_ad_macs;
 };
 
 /**
@@ -72,7 +72,7 @@ class SIV_Encryption : public SIV_Mode
 		*/
 		SIV_Encryption(BlockCipher* cipher) : SIV_Mode(cipher) {}
 
-		void finish(SafeArray!byte final_block, size_t offset = 0) override;
+		void finish(SafeVector!byte final_block, size_t offset = 0) override;
 
 		size_t output_length(size_t input_length) const override
 		{ return input_length + tag_size(); }
@@ -91,7 +91,7 @@ class SIV_Decryption : public SIV_Mode
 		*/
 		SIV_Decryption(BlockCipher* cipher) : SIV_Mode(cipher) {}
 
-		void finish(SafeArray!byte final_block, size_t offset = 0) override;
+		void finish(SafeVector!byte final_block, size_t offset = 0) override;
 
 		size_t output_length(size_t input_length) const override
 		{

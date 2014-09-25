@@ -26,25 +26,25 @@ string version_string();
 *
 * @return release date, or zero if unreleased
 */
-u32bit version_datestamp();
+uint version_datestamp();
 
 /**
 * Get the major version number.
 * @return major version number
 */
-u32bit version_major();
+uint version_major();
 
 /**
 * Get the minor version number.
 * @return minor version number
 */
-u32bit version_minor();
+uint version_minor();
 
 /**
 * Get the patch number.
 * @return patch number
 */
-u32bit version_patch();
+uint version_patch();
 
 /*
 * Macros for compile-time version checks

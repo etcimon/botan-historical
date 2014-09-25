@@ -18,7 +18,7 @@ class EGD_EntropySource : public EntropySource
 
 		void poll(Entropy_Accumulator& accum);
 
-		EGD_EntropySource(const std::vector<string>&);
+		EGD_EntropySource(in Vector!( string ));
 		~EGD_EntropySource();
 	private:
 		class EGD_Socket
@@ -35,5 +35,5 @@ class EGD_EntropySource : public EntropySource
 				int m_fd; // cached fd
 		};
 
-		std::vector<EGD_Socket> sockets;
+		Vector!( EGD_Socket ) sockets;
 };

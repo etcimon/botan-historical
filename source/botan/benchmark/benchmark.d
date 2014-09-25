@@ -45,7 +45,7 @@ time_algorithm_ops(in string name,
 {
 	const size_t Mebibyte = 1024*1024;
 
-	SafeArray!byte buffer(buf_size * 1024);
+	SafeVector!byte buffer(buf_size * 1024);
 	rng.randomize(&buffer[0], buffer.size());
 
 	const double mb_mult = buffer.size() / cast(double)(Mebibyte);
@@ -114,8 +114,8 @@ time_algorithm_ops(in string name,
 
 namespace {
 
-double find_first_in(const std::map<string, double>& m,
-							const std::vector<string>& keys)
+double find_first_in(in std::map<string, double> m,
+							const Vector!( string )& keys)
 {
 	for(auto key : keys)
 	{
@@ -124,7 +124,7 @@ double find_first_in(const std::map<string, double>& m,
 			return i->second;
 	}
 
-	throw std::runtime_error("algorithm_factory no usable keys found in result");
+	throw new Exception("algorithm_factory no usable keys found in result");
 }
 
 }
@@ -136,7 +136,7 @@ algorithm_benchmark(in string name,
 						  std::chrono::milliseconds milliseconds,
 						  size_t buf_size)
 {
-	const std::vector<string> providers = af.providers_of(name);
+	const Vector!( string ) providers = af.providers_of(name);
 
 	std::map<string, double> all_results; // provider -> ops/sec
 

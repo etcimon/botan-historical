@@ -50,12 +50,12 @@ class PointGFp
 		* Construct the zero point
 		* @param curve The base curve
 		*/
-		PointGFp(const CurveGFp& curve);
+		PointGFp(in CurveGFp curve);
 
 		/**
 		* Copy constructor
 		*/
-		PointGFp(const PointGFp&) = default;
+		PointGFp(in PointGFp) = default;
 
 		/**
 		* Move Constructor
@@ -68,7 +68,7 @@ class PointGFp
 		/**
 		* Standard Assignment
 		*/
-		PointGFp& operator=(const PointGFp&) = default;
+		PointGFp& operator=(in PointGFp) = default;
 
 		/**
 		* Move Assignment
@@ -86,28 +86,28 @@ class PointGFp
 		* @param x affine x coordinate
 		* @param y affine y coordinate
 		*/
-		PointGFp(const CurveGFp& curve, const BigInt& x, const BigInt& y);
+		PointGFp(in CurveGFp curve, const BigInt& x, const BigInt& y);
 
 		/**
 		* += Operator
 		* @param rhs the PointGFp to add to the local value
 		* @result resulting PointGFp
 		*/
-		PointGFp& operator+=(const PointGFp& rhs);
+		PointGFp& operator+=(in PointGFp rhs);
 
 		/**
 		* -= Operator
 		* @param rhs the PointGFp to subtract from the local value
 		* @result resulting PointGFp
 		*/
-		PointGFp& operator-=(const PointGFp& rhs);
+		PointGFp& operator-=(in PointGFp rhs);
 
 		/**
 		* *= Operator
 		* @param scalar the PointGFp to multiply with *this
 		* @result resulting PointGFp
 		*/
-		PointGFp& operator*=(const BigInt& scalar);
+		PointGFp& operator*=(in BigInt scalar);
 
 		/**
 		* Multiplication Operator
@@ -115,7 +115,7 @@ class PointGFp
 		* @param point the point value
 		* @return scalar*point on the curve
 		*/
-		friend PointGFp operator*(const BigInt& scalar, const PointGFp& point);
+		friend PointGFp operator*(in BigInt scalar, const PointGFp& point);
 
 		/**
 		* Multiexponentiation
@@ -181,7 +181,7 @@ class PointGFp
 		/**
 		* Equality operator
 		*/
-		bool operator==(const PointGFp& other) const;
+		bool operator==(in PointGFp other) const;
 	private:
 
 		/**
@@ -190,7 +190,7 @@ class PointGFp
 		* @param y second multiplicand
 		* @param workspace temp space
 		*/
-		BigInt monty_mult(const BigInt& x, const BigInt& y) const
+		BigInt monty_mult(in BigInt x, const BigInt& y) const
 		{
 			BigInt result;
 			monty_mult(result, x, y);
@@ -210,7 +210,7 @@ class PointGFp
 		* Montgomery squaring/reduction
 		* @param x multiplicand
 		*/
-		BigInt monty_sqr(const BigInt& x) const
+		BigInt monty_sqr(in BigInt x) const
 		{
 			BigInt result;
 			monty_sqr(result, x);
@@ -229,13 +229,13 @@ class PointGFp
 		* Point addition
 		* @param workspace temp space, at least 11 elements
 		*/
-		void add(const PointGFp& other, std::vector<BigInt>& workspace);
+		void add(in PointGFp other, Vector!( BigInt )& workspace);
 
 		/**
 		* Point doubling
 		* @param workspace temp space, at least 9 elements
 		*/
-		void mult2(std::vector<BigInt>& workspace);
+		void mult2(Vector!( BigInt )& workspace);
 
 		CurveGFp curve;
 		BigInt coord_x, coord_y, coord_z;
@@ -243,42 +243,42 @@ class PointGFp
 };
 
 // relational operators
-inline bool operator!=(const PointGFp& lhs, const PointGFp& rhs)
+inline bool operator!=(in PointGFp lhs, const PointGFp& rhs)
 {
 	return !(rhs == lhs);
 }
 
 // arithmetic operators
-inline PointGFp operator-(const PointGFp& lhs)
+inline PointGFp operator-(in PointGFp lhs)
 {
 	return PointGFp(lhs).negate();
 }
 
-inline PointGFp operator+(const PointGFp& lhs, const PointGFp& rhs)
+inline PointGFp operator+(in PointGFp lhs, const PointGFp& rhs)
 {
 	PointGFp tmp(lhs);
 	return tmp += rhs;
 }
 
-inline PointGFp operator-(const PointGFp& lhs, const PointGFp& rhs)
+inline PointGFp operator-(in PointGFp lhs, const PointGFp& rhs)
 {
 	PointGFp tmp(lhs);
 	return tmp -= rhs;
 }
 
-inline PointGFp operator*(const PointGFp& point, const BigInt& scalar)
+inline PointGFp operator*(in PointGFp point, const BigInt& scalar)
 {
 	return scalar * point;
 }
 
 // encoding and decoding
-SafeArray!byte EC2OSP(const PointGFp& point, byte format);
+SafeVector!byte EC2OSP(in PointGFp point, byte format);
 
 PointGFp OS2ECP(in byte[] data, size_t data_len,
 								  const CurveGFp& curve);
 
 template<typename Alloc>
-PointGFp OS2ECP(const std::vector<byte, Alloc>& data, const CurveGFp& curve)
+PointGFp OS2ECP(in Vector!( byte, Alloc ) data, const CurveGFp& curve)
 { return OS2ECP(&data[0], data.size(), curve); }
 
 }

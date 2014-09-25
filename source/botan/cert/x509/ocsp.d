@@ -21,7 +21,7 @@ namespace {
 
 void decode_optional_list(BER_Decoder& ber,
 								  ASN1_Tag tag,
-								  std::vector<X509_Certificate>& output)
+								  Vector!( X509_Certificate )& output)
 {
 	BER_Object obj = ber.get_next_object();
 
@@ -41,18 +41,18 @@ void decode_optional_list(BER_Decoder& ber,
 	}
 }
 
-void check_signature(in Array!byte tbs_response,
+void check_signature(in Vector!byte tbs_response,
 							const AlgorithmIdentifier& sig_algo,
-							in Array!byte signature,
+							in Vector!byte signature,
 							const X509_Certificate& cert)
 {
 	std::unique_ptr<Public_Key> pub_key(cert.subject_public_key());
 
-	const std::vector<string> sig_info =
+	const Vector!( string ) sig_info =
 		split_on(OIDS::lookup(sig_algo.oid), '/');
 
 	if(sig_info.size() != 2 || sig_info[0] != pub_key->algo_name())
-		throw std::runtime_error("Information in OCSP response does not match cert");
+		throw new Exception("Information in OCSP response does not match cert");
 
 	string padding = sig_info[1];
 	Signature_Format format =
@@ -61,17 +61,17 @@ void check_signature(in Array!byte tbs_response,
 	PK_Verifier verifier(*pub_key, padding, format);
 
 	if(!verifier.verify_message(ASN1::put_in_sequence(tbs_response), signature))
-		throw std::runtime_error("Signature on OCSP response does not verify");
+		throw new Exception("Signature on OCSP response does not verify");
 }
 
-void check_signature(in Array!byte tbs_response,
+void check_signature(in Vector!byte tbs_response,
 							const AlgorithmIdentifier& sig_algo,
-							in Array!byte signature,
+							in Vector!byte signature,
 							const Certificate_Store& trusted_roots,
-							const std::vector<X509_Certificate>& certs)
+							const Vector!( X509_Certificate )& certs)
 {
 	if(certs.size() < 1)
-		throw std::invalid_argument("Short cert chain for check_signature");
+		throw new std::invalid_argument("Short cert chain for check_signature");
 
 	if(trusted_roots.certificate_known(certs[0]))
 		return check_signature(tbs_response, sig_algo, signature, certs[0]);
@@ -79,24 +79,24 @@ void check_signature(in Array!byte tbs_response,
 	// Otherwise attempt to chain the signing cert to a trust root
 
 	if(!certs[0].allowed_usage("PKIX.OCSPSigning"))
-		throw std::runtime_error("OCSP response cert does not allow OCSP signing");
+		throw new Exception("OCSP response cert does not allow OCSP signing");
 
 	auto result = x509_path_validate(certs, Path_Validation_Restrictions(), trusted_roots);
 
 	if(!result.successful_validation())
-		throw std::runtime_error("Certificate validation failure: " + result.result_string());
+		throw new Exception("Certificate validation failure: " + result.result_string());
 
 	if(!trusted_roots.certificate_known(result.trust_root())) // not needed anymore?
-		throw std::runtime_error("Certificate chain roots in unknown/untrusted CA");
+		throw new Exception("Certificate chain roots in unknown/untrusted CA");
 
-	const std::vector<X509_Certificate>& cert_path = result.cert_path();
+	const Vector!( X509_Certificate )& cert_path = result.cert_path();
 
 	check_signature(tbs_response, sig_algo, signature, cert_path[0]);
 }
 
 }
 
-std::vector<byte> Request::BER_encode() const
+Vector!( byte ) Request::BER_encode() const
 {
 	CertID certid(m_issuer, m_subject);
 
@@ -119,8 +119,8 @@ string Request::base64_encode() const
 	return Botan::base64_encode(BER_encode());
 }
 
-Response::Response(const Certificate_Store& trusted_roots,
-						 in Array!byte response_bits)
+Response::Response(in Certificate_Store trusted_roots,
+						 in Vector!byte response_bits)
 {
 	BER_Decoder response_outer = BER_Decoder(response_bits).start_cons(SEQUENCE);
 
@@ -129,7 +129,7 @@ Response::Response(const Certificate_Store& trusted_roots,
 	response_outer.decode(resp_status, ENUMERATED, UNIVERSAL);
 
 	if(resp_status != 0)
-		throw std::runtime_error("OCSP response status " + std::to_string(resp_status));
+		throw new Exception("OCSP response status " + std::to_string(resp_status));
 
 	if(response_outer.more_items())
 	{
@@ -142,10 +142,10 @@ Response::Response(const Certificate_Store& trusted_roots,
 		BER_Decoder basicresponse =
 			BER_Decoder(response_bytes.get_next_octet_string()).start_cons(SEQUENCE);
 
-		std::vector<byte> tbs_bits;
+		Vector!( byte ) tbs_bits;
 		AlgorithmIdentifier sig_algo;
-		std::vector<byte> signature;
-		std::vector<X509_Certificate> certs;
+		Vector!( byte ) signature;
+		Vector!( X509_Certificate ) certs;
 
 		basicresponse.start_cons(SEQUENCE)
 			  .raw_bytes(tbs_bits)
@@ -156,7 +156,7 @@ Response::Response(const Certificate_Store& trusted_roots,
 
 		size_t responsedata_version = 0;
 		X509_DN name;
-		std::vector<byte> key_hash;
+		Vector!( byte ) key_hash;
 		X509_Time produced_at;
 		Extensions extensions;
 
@@ -179,10 +179,10 @@ Response::Response(const Certificate_Store& trusted_roots,
 
 		if(certs.empty())
 		{
-			if(auto cert = trusted_roots.find_cert(name, std::vector<byte>()))
+			if(auto cert = trusted_roots.find_cert(name, Vector!( byte )()))
 				certs.push_back(*cert);
 			else
-				throw std::runtime_error("Could not find certificate that signed OCSP response");
+				throw new Exception("Could not find certificate that signed OCSP response");
 		}
 
 		check_signature(tbs_bits, sig_algo, signature, trusted_roots, certs);
@@ -191,10 +191,10 @@ Response::Response(const Certificate_Store& trusted_roots,
 	response_outer.end_cons();
 }
 
-Certificate_Status_Code Response::status_for(const X509_Certificate& issuer,
+Certificate_Status_Code Response::status_for(in X509_Certificate issuer,
 																	const X509_Certificate& subject) const
 {
-	for(const auto& response : m_responses)
+	for(in auto response : m_responses)
 	{
 		if(response.certid().is_id_for(issuer, subject))
 		{
@@ -219,14 +219,14 @@ Certificate_Status_Code Response::status_for(const X509_Certificate& issuer,
 	return Certificate_Status_Code::OCSP_CERT_NOT_LISTED;
 }
 
-Response online_check(const X509_Certificate& issuer,
+Response online_check(in X509_Certificate issuer,
 							 const X509_Certificate& subject,
 							 const Certificate_Store* trusted_roots)
 {
 	const string responder_url = subject.ocsp_responder();
 
 	if(responder_url == "")
-		throw std::runtime_error("No OCSP responder specified");
+		throw new Exception("No OCSP responder specified");
 
 	OCSP::Request req(issuer, subject);
 

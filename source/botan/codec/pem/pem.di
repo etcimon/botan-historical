@@ -19,7 +19,7 @@ string encode(in byte[] data,
 /**
 * Encode some binary data in PEM format
 */
-inline string encode(in Array!byte data,
+inline string encode(in Vector!byte data,
 								  in string label,
 								  size_t line_width = 64)
 {
@@ -29,7 +29,7 @@ inline string encode(in Array!byte data,
 /**
 * Encode some binary data in PEM format
 */
-inline string encode(in SafeArray!byte data,
+inline string encode(in SafeVector!byte data,
 								  in string label,
 								  size_t line_width = 64)
 {
@@ -41,7 +41,7 @@ inline string encode(in SafeArray!byte data,
 * @param pem a datasource containing PEM encoded data
 * @param label is set to the PEM label found for later inspection
 */
-SafeArray!byte decode(DataSource& pem,
+SafeVector!byte decode(DataSource& pem,
 												 string& label);
 
 /**
@@ -49,7 +49,7 @@ SafeArray!byte decode(DataSource& pem,
 * @param pem a string containing PEM encoded data
 * @param label is set to the PEM label found for later inspection
 */
-SafeArray!byte decode(in string pem,
+SafeVector!byte decode(in string pem,
 												 string& label);
 
 /**
@@ -57,7 +57,7 @@ SafeArray!byte decode(in string pem,
 * @param pem a datasource containing PEM encoded data
 * @param label is what we expect the label to be
 */
-SafeArray!byte decode_check_label(
+SafeVector!byte decode_check_label(
 	DataSource& pem,
 	in string label);
 
@@ -66,7 +66,7 @@ SafeArray!byte decode_check_label(
 * @param pem a string containing PEM encoded data
 * @param label is what we expect the label to be
 */
-SafeArray!byte decode_check_label(
+SafeVector!byte decode_check_label(
 	in string pem,
 	in string label);
 

@@ -32,7 +32,7 @@ bool passes_self_tests(Algorithm_Factory& af);
 * @returns map from provider name to test result for that provider
 */
 std::map<string, bool>
-algorithm_kat(const SCAN_Name& algo_name,
+algorithm_kat(in SCAN_Name algo_name,
 				  const std::map<string, string>& vars,
 				  Algorithm_Factory& af);
 
@@ -45,6 +45,6 @@ algorithm_kat(const SCAN_Name& algo_name,
 * @returns map from provider name to test result for that provider
 */
 std::map<string, string>
-algorithm_kat_detailed(const SCAN_Name& algo_name,
+algorithm_kat_detailed(in SCAN_Name algo_name,
 							  const std::map<string, string>& vars,
 							  Algorithm_Factory& af);

@@ -14,17 +14,17 @@ class SIMD_SSE2
 	public:
 		static bool enabled() { return CPUID::has_sse2(); }
 
-		SIMD_SSE2(const u32bit B[4])
+		SIMD_SSE2(const uint B[4])
 		{
 			reg = _mm_loadu_si128(cast(const __m128i*)(B));
 		}
 
-		SIMD_SSE2(u32bit B0, u32bit B1, u32bit B2, u32bit B3)
+		SIMD_SSE2(uint B0, uint B1, uint B2, uint B3)
 		{
 			reg = _mm_set_epi32(B0, B1, B2, B3);
 		}
 
-		SIMD_SSE2(u32bit B)
+		SIMD_SSE2(uint B)
 		{
 			reg = _mm_set1_epi32(B);
 		}
@@ -60,47 +60,47 @@ class SIMD_SSE2
 			rotate_left(32 - rot);
 		}
 
-		void operator+=(const SIMD_SSE2& other)
+		void operator+=(in SIMD_SSE2 other)
 		{
 			reg = _mm_add_epi32(reg, other.reg);
 		}
 
-		SIMD_SSE2 operator+(const SIMD_SSE2& other) const
+		SIMD_SSE2 operator+(in SIMD_SSE2 other) const
 		{
 			return _mm_add_epi32(reg, other.reg);
 		}
 
-		void operator-=(const SIMD_SSE2& other)
+		void operator-=(in SIMD_SSE2 other)
 		{
 			reg = _mm_sub_epi32(reg, other.reg);
 		}
 
-		SIMD_SSE2 operator-(const SIMD_SSE2& other) const
+		SIMD_SSE2 operator-(in SIMD_SSE2 other) const
 		{
 			return _mm_sub_epi32(reg, other.reg);
 		}
 
-		void operator^=(const SIMD_SSE2& other)
+		void operator^=(in SIMD_SSE2 other)
 		{
 			reg = _mm_xor_si128(reg, other.reg);
 		}
 
-		SIMD_SSE2 operator^(const SIMD_SSE2& other) const
+		SIMD_SSE2 operator^(in SIMD_SSE2 other) const
 		{
 			return _mm_xor_si128(reg, other.reg);
 		}
 
-		void operator|=(const SIMD_SSE2& other)
+		void operator|=(in SIMD_SSE2 other)
 		{
 			reg = _mm_or_si128(reg, other.reg);
 		}
 
-		SIMD_SSE2 operator&(const SIMD_SSE2& other)
+		SIMD_SSE2 operator&(in SIMD_SSE2 other)
 		{
 			return _mm_and_si128(reg, other.reg);
 		}
 
-		void operator&=(const SIMD_SSE2& other)
+		void operator&=(in SIMD_SSE2 other)
 		{
 			reg = _mm_and_si128(reg, other.reg);
 		}
@@ -121,7 +121,7 @@ class SIMD_SSE2
 		}
 
 		// (~reg) & other
-		SIMD_SSE2 andc(const SIMD_SSE2& other)
+		SIMD_SSE2 andc(in SIMD_SSE2 other)
 		{
 			return _mm_andnot_si128(reg, other.reg);
 		}

@@ -20,7 +20,7 @@ void BigInt::encode(byte output[], const BigInt& n, Base base)
 	}
 	else if(base == Hexadecimal)
 	{
-		SafeArray!byte binary(n.encoded_size(Binary));
+		SafeVector!byte binary(n.encoded_size(Binary));
 		n.binary_encode(&binary[0]);
 
 		hex_encode(cast(char*)(output),
@@ -42,15 +42,15 @@ void BigInt::encode(byte output[], const BigInt& n, Base base)
 		}
 	}
 	else
-		throw Invalid_Argument("Unknown BigInt encoding method");
+		throw new Invalid_Argument("Unknown BigInt encoding method");
 }
 
 /*
 * Encode a BigInt
 */
-std::vector<byte> BigInt::encode(const BigInt& n, Base base)
+Vector!( byte ) BigInt::encode(in BigInt n, Base base)
 {
-	std::vector<byte> output(n.encoded_size(base));
+	Vector!( byte ) output(n.encoded_size(base));
 	encode(&output[0], n, base);
 	if(base != Binary)
 		for(size_t j = 0; j != output.size(); ++j)
@@ -62,9 +62,9 @@ std::vector<byte> BigInt::encode(const BigInt& n, Base base)
 /*
 * Encode a BigInt
 */
-SafeArray!byte BigInt::encode_locked(const BigInt& n, Base base)
+SafeVector!byte BigInt::encode_locked(in BigInt n, Base base)
 {
-	SafeArray!byte output(n.encoded_size(base));
+	SafeVector!byte output(n.encoded_size(base));
 	encode(&output[0], n, base);
 	if(base != Binary)
 		for(size_t j = 0; j != output.size(); ++j)
@@ -76,15 +76,15 @@ SafeArray!byte BigInt::encode_locked(const BigInt& n, Base base)
 /*
 * Encode a BigInt, with leading 0s if needed
 */
-SafeArray!byte BigInt::encode_1363(const BigInt& n, size_t bytes)
+SafeVector!byte BigInt::encode_1363(in BigInt n, size_t bytes)
 {
 	const size_t n_bytes = n.bytes();
 	if(n_bytes > bytes)
-		throw Encoding_Error("encode_1363: n is too large to encode properly");
+		throw new Encoding_Error("encode_1363: n is too large to encode properly");
 
 	const size_t leading_0s = bytes - n_bytes;
 
-	SafeArray!byte output(bytes);
+	SafeVector!byte output(bytes);
 	encode(&output[leading_0s], n, Binary);
 	return output;
 }
@@ -99,7 +99,7 @@ BigInt BigInt::decode(in byte[] buf, size_t length, Base base)
 		r.binary_decode(buf, length);
 	else if(base == Hexadecimal)
 	{
-		SafeArray!byte binary;
+		SafeVector!byte binary;
 
 		if(length % 2)
 		{
@@ -109,7 +109,7 @@ BigInt BigInt::decode(in byte[] buf, size_t length, Base base)
 
 			binary = hex_decode_locked(buf0_with_leading_0, 2);
 
-			binary += hex_decode_locked(cast(const char*)(&buf[1]),
+			binary += hex_decode_locked(cast(in char*)(buf[1]),
 												 length - 1,
 												 false);
 		}
@@ -127,20 +127,20 @@ BigInt BigInt::decode(in byte[] buf, size_t length, Base base)
 				continue;
 
 			if(!Charset::is_digit(buf[i]))
-				throw Invalid_Argument("BigInt::decode: "
+				throw new Invalid_Argument("BigInt::decode: "
 											  "Invalid character in decimal input");
 
 			const byte x = Charset::char2digit(buf[i]);
 
 			if(x >= 10)
-				throw Invalid_Argument("BigInt: Invalid decimal string");
+				throw new Invalid_Argument("BigInt: Invalid decimal string");
 
 			r *= 10;
 			r += x;
 		}
 	}
 	else
-		throw Invalid_Argument("Unknown BigInt decoding method");
+		throw new Invalid_Argument("Unknown BigInt decoding method");
 	return r;
 }
 

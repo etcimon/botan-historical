@@ -12,9 +12,9 @@
 * @see RFC 3447 section 9.2
 * @param hash_name the name of the hash function
 * @return byte sequence identifying the hash
-* @throw Invalid_Argument if the hash has no known PKCS #1 hash id
+* @throw new Invalid_Argument if the hash has no known PKCS #1 hash id
 */
-std::vector<byte> pkcs_hash_id(in string hash_name);
+Vector!( byte ) pkcs_hash_id(in string hash_name);
 
 /**
 * Return the IEEE 1363 hash identifier

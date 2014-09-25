@@ -10,7 +10,7 @@
 #include <botan/gost_3410.h>
 #include <botan/der_enc.h>
 #include <botan/ber_dec.h>
-std::vector<byte> GOST_3410_PublicKey::x509_subject_public_key() const
+Vector!( byte ) GOST_3410_PublicKey::x509_subject_public_key() const
 {
 	// Trust CryptoPro to come up with something obnoxious
 	const BigInt x = public_point().get_affine_x();
@@ -18,7 +18,7 @@ std::vector<byte> GOST_3410_PublicKey::x509_subject_public_key() const
 
 	size_t part_size = std::max(x.bytes(), y.bytes());
 
-	std::vector<byte> bits(2*part_size);
+	Vector!( byte ) bits(2*part_size);
 
 	x.binary_encode(&bits[part_size - x.bytes()]);
 	y.binary_encode(&bits[2*part_size - y.bytes()]);
@@ -35,7 +35,7 @@ std::vector<byte> GOST_3410_PublicKey::x509_subject_public_key() const
 
 AlgorithmIdentifier GOST_3410_PublicKey::algorithm_identifier() const
 {
-	std::vector<byte> params =
+	Vector!( byte ) params =
 		DER_Encoder().start_cons(SEQUENCE)
 			.encode(OID(domain().get_oid()))
 			.end_cons()
@@ -44,8 +44,8 @@ AlgorithmIdentifier GOST_3410_PublicKey::algorithm_identifier() const
 	return AlgorithmIdentifier(get_oid(), params);
 }
 
-GOST_3410_PublicKey::GOST_3410_PublicKey(const AlgorithmIdentifier& alg_id,
-													  in SafeArray!byte key_bits)
+GOST_3410_PublicKey::GOST_3410_PublicKey(in AlgorithmIdentifier alg_id,
+													  in SafeVector!byte key_bits)
 {
 	OID ecc_param_id;
 
@@ -54,7 +54,7 @@ GOST_3410_PublicKey::GOST_3410_PublicKey(const AlgorithmIdentifier& alg_id,
 
 	domain_params = EC_Group(ecc_param_id);
 
-	SafeArray!byte bits;
+	SafeVector!byte bits;
 	BER_Decoder(key_bits).decode(bits, OCTET_STRING);
 
 	const size_t part_size = bits.size() / 2;
@@ -79,7 +79,7 @@ namespace {
 
 BigInt decode_le(in byte[] msg, size_t msg_len)
 {
-	SafeArray!byte msg_le(msg, msg + msg_len);
+	SafeVector!byte msg_le(msg, msg + msg_len);
 
 	for(size_t i = 0; i != msg_le.size() / 2; ++i)
 		std::swap(msg_le[i], msg_le[msg_le.size()-1-i]);
@@ -98,7 +98,7 @@ GOST_3410_Signature_Operation::GOST_3410_Signature_Operation(
 {
 }
 
-SafeArray!byte
+SafeVector!byte
 GOST_3410_Signature_Operation::sign(in byte[] msg, size_t msg_len,
 												RandomNumberGenerator& rng)
 {
@@ -123,15 +123,15 @@ GOST_3410_Signature_Operation::sign(in byte[] msg, size_t msg_len,
 	BigInt s = (r*x + k*e) % order;
 
 	if(r == 0 || s == 0)
-		throw Invalid_State("GOST 34.10: r == 0 || s == 0");
+		throw new Invalid_State("GOST 34.10: r == 0 || s == 0");
 
-	SafeArray!byte output(2*order.bytes());
+	SafeVector!byte output(2*order.bytes());
 	s.binary_encode(&output[output.size() / 2 - s.bytes()]);
 	r.binary_encode(&output[output.size() - r.bytes()]);
 	return output;
 }
 
-GOST_3410_Verification_Operation::GOST_3410_Verification_Operation(const GOST_3410_PublicKey& gost) :
+GOST_3410_Verification_Operation::GOST_3410_Verification_Operation(in GOST_3410_PublicKey gost) :
 	base_point(gost.domain().get_base_point()),
 	public_point(gost.public_point()),
 	order(gost.domain().get_order())

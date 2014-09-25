@@ -23,25 +23,25 @@ BlockCipher* make_aes(size_t keylength,
 	else if(keylength == 32)
 		return af.make_block_cipher("AES-256");
 	else
-		throw std::invalid_argument("Bad KEK length for NIST keywrap");
+		throw new std::invalid_argument("Bad KEK length for NIST keywrap");
 }
 
 }
 
-SafeArray!byte rfc3394_keywrap(in SafeArray!byte key,
+SafeVector!byte rfc3394_keywrap(in SafeVector!byte key,
 												const SymmetricKey& kek,
 												Algorithm_Factory& af)
 {
 	if(key.size() % 8 != 0)
-		throw std::invalid_argument("Bad input key size for NIST key wrap");
+		throw new std::invalid_argument("Bad input key size for NIST key wrap");
 
 	std::unique_ptr<BlockCipher> aes(make_aes(kek.length(), af));
 	aes->set_key(kek);
 
 	const size_t n = key.size() / 8;
 
-	SafeArray!byte R((n + 1) * 8);
-	SafeArray!byte A(16);
+	SafeVector!byte R((n + 1) * 8);
+	SafeVector!byte A(16);
 
 	for(size_t i = 0; i != 8; ++i)
 		A[i] = 0xA6;
@@ -52,7 +52,7 @@ SafeArray!byte rfc3394_keywrap(in SafeArray!byte key,
 	{
 		for(size_t i = 1; i <= n; ++i)
 		{
-			const u32bit t = (n * j) + i;
+			const uint t = (n * j) + i;
 
 			copy_mem(&A[8], &R[8*i], 8);
 
@@ -70,20 +70,20 @@ SafeArray!byte rfc3394_keywrap(in SafeArray!byte key,
 	return R;
 }
 
-SafeArray!byte rfc3394_keyunwrap(in SafeArray!byte key,
+SafeVector!byte rfc3394_keyunwrap(in SafeVector!byte key,
 												 const SymmetricKey& kek,
 												 Algorithm_Factory& af)
 {
 	if(key.size() < 16 || key.size() % 8 != 0)
-		throw std::invalid_argument("Bad input key size for NIST key unwrap");
+		throw new std::invalid_argument("Bad input key size for NIST key unwrap");
 
 	std::unique_ptr<BlockCipher> aes(make_aes(kek.length(), af));
 	aes->set_key(kek);
 
 	const size_t n = (key.size() - 8) / 8;
 
-	SafeArray!byte R(n * 8);
-	SafeArray!byte A(16);
+	SafeVector!byte R(n * 8);
+	SafeVector!byte A(16);
 
 	for(size_t i = 0; i != 8; ++i)
 		A[i] = key[i];
@@ -94,7 +94,7 @@ SafeArray!byte rfc3394_keyunwrap(in SafeArray!byte key,
 	{
 		for(size_t i = n; i != 0; --i)
 		{
-			const u32bit t = (5 - j) * n + i;
+			const uint t = (5 - j) * n + i;
 
 			byte t_buf[4] = { 0 };
 			store_be(t, t_buf);
@@ -110,7 +110,7 @@ SafeArray!byte rfc3394_keyunwrap(in SafeArray!byte key,
 	}
 
 	if(load_be<u64bit>(&A[0], 0) != 0xA6A6A6A6A6A6A6A6)
-		throw Integrity_Failure("NIST key unwrap failed");
+		throw new Integrity_Failure("NIST key unwrap failed");
 
 	return R;
 }

@@ -12,8 +12,8 @@ namespace {
 void adler32_update(in byte[] input, size_t length,
 						  u16bit& S1, u16bit& S2)
 {
-	u32bit S1x = S1;
-	u32bit S2x = S2;
+	uint S1x = S1;
+	uint S2x = S2;
 
 	while(length >= 16)
 	{

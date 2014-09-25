@@ -44,13 +44,13 @@ class StreamCipher_Filter : public Keyed_Filter
 		* Set the initialization vector for this filter.
 		* @param iv the initialization vector to set
 		*/
-		void set_iv(const InitializationVector& iv);
+		void set_iv(in InitializationVector iv);
 
 		/**
 		* Set the key of this filter.
 		* @param key the key to set
 		*/
-		void set_key(const SymmetricKey& key) { cipher->set_key(key); }
+		void set_key(in SymmetricKey key) { cipher->set_key(key); }
 
 		Key_Length_Specification key_spec() const override { return cipher->key_spec(); }
 
@@ -82,7 +82,7 @@ class StreamCipher_Filter : public Keyed_Filter
 
 		~StreamCipher_Filter() { delete cipher; }
 	private:
-		SafeArray!byte buffer;
+		SafeVector!byte buffer;
 		StreamCipher* cipher;
 };
 
@@ -139,7 +139,7 @@ class MAC_Filter : public Keyed_Filter
 		* Set the key of this filter.
 		* @param key the key to set
 		*/
-		void set_key(const SymmetricKey& key) { mac->set_key(key); }
+		void set_key(in SymmetricKey key) { mac->set_key(key); }
 
 		Key_Length_Specification key_spec() const override { return mac->key_spec(); }
 

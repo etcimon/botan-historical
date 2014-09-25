@@ -106,7 +106,7 @@ size_t hex_decode(byte output[],
 			else if(bad_char == "")
 			  bad_char = "\";
 
-			throw std::invalid_argument(
+			throw new std::invalid_argument(
 			  string("hex_decode: invalid hex character '") +
 			  bad_char + "'");
 		}
@@ -144,7 +144,7 @@ size_t hex_decode(byte output[],
 										 consumed, ignore_ws);
 
 	if(consumed != input_length)
-		throw std::invalid_argument("hex_decode: input did not have full bytes");
+		throw new std::invalid_argument("hex_decode: input did not have full bytes");
 
 	return written;
 }
@@ -156,11 +156,11 @@ size_t hex_decode(byte output[],
 	return hex_decode(output, &input[0], input.length(), ignore_ws);
 }
 
-SafeArray!byte hex_decode_locked(const char input[],
+SafeVector!byte hex_decode_locked(const char input[],
 												  size_t input_length,
 												  bool ignore_ws)
 {
-	SafeArray!byte bin(1 + input_length / 2);
+	SafeVector!byte bin(1 + input_length / 2);
 
 	size_t written = hex_decode(&bin[0],
 										 input,
@@ -171,17 +171,17 @@ SafeArray!byte hex_decode_locked(const char input[],
 	return bin;
 }
 
-SafeArray!byte hex_decode_locked(in string input,
+SafeVector!byte hex_decode_locked(in string input,
 												  bool ignore_ws)
 {
 	return hex_decode_locked(&input[0], input.size(), ignore_ws);
 }
 
-std::vector<byte> hex_decode(const char input[],
+Vector!( byte ) hex_decode(const char input[],
 									  size_t input_length,
 									  bool ignore_ws)
 {
-	std::vector<byte> bin(1 + input_length / 2);
+	Vector!( byte ) bin(1 + input_length / 2);
 
 	size_t written = hex_decode(&bin[0],
 										 input,
@@ -192,7 +192,7 @@ std::vector<byte> hex_decode(const char input[],
 	return bin;
 }
 
-std::vector<byte> hex_decode(in string input,
+Vector!( byte ) hex_decode(in string input,
 									  bool ignore_ws)
 {
 	return hex_decode(&input[0], input.size(), ignore_ws);

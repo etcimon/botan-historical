@@ -12,9 +12,9 @@
 #include <botan/internal/stl_util.h>
 namespace TLS {
 
-std::vector<string> Policy::allowed_ciphers() const
+Vector!( string ) Policy::allowed_ciphers() const
 {
-	return std::vector<string>({
+	return Vector!( string )({
 		"AES-256/GCM",
 		"AES-128/GCM",
 		"AES-256/CCM",
@@ -33,9 +33,9 @@ std::vector<string> Policy::allowed_ciphers() const
 	});
 }
 
-std::vector<string> Policy::allowed_signature_hashes() const
+Vector!( string ) Policy::allowed_signature_hashes() const
 {
-	return std::vector<string>({
+	return Vector!( string )({
 		"SHA-512",
 		"SHA-384",
 		"SHA-256",
@@ -45,9 +45,9 @@ std::vector<string> Policy::allowed_signature_hashes() const
 	});
 }
 
-std::vector<string> Policy::allowed_macs() const
+Vector!( string ) Policy::allowed_macs() const
 {
-	return std::vector<string>({
+	return Vector!( string )({
 		"AEAD",
 		"SHA-384",
 		"SHA-256",
@@ -56,9 +56,9 @@ std::vector<string> Policy::allowed_macs() const
 	});
 }
 
-std::vector<string> Policy::allowed_key_exchange_methods() const
+Vector!( string ) Policy::allowed_key_exchange_methods() const
 {
-	return std::vector<string>({
+	return Vector!( string )({
 		"SRP_SHA",
 		//"ECDHE_PSK",
 		//"DHE_PSK",
@@ -69,9 +69,9 @@ std::vector<string> Policy::allowed_key_exchange_methods() const
 	});
 }
 
-std::vector<string> Policy::allowed_signature_methods() const
+Vector!( string ) Policy::allowed_signature_methods() const
 {
-	return std::vector<string>({
+	return Vector!( string )({
 		"ECDSA",
 		"RSA",
 		"DSA",
@@ -79,9 +79,9 @@ std::vector<string> Policy::allowed_signature_methods() const
 	});
 }
 
-std::vector<string> Policy::allowed_ecc_curves() const
+Vector!( string ) Policy::allowed_ecc_curves() const
 {
-	return std::vector<string>({
+	return Vector!( string )({
 		"brainpool512r1",
 		"brainpool384r1",
 		"brainpool256r1",
@@ -102,9 +102,9 @@ std::vector<string> Policy::allowed_ecc_curves() const
 /*
 * Choose an ECC curve to use
 */
-string Policy::choose_curve(const std::vector<string>& curve_names) const
+string Policy::choose_curve(in Vector!( string ) curve_names) const
 {
-	const std::vector<string> our_curves = allowed_ecc_curves();
+	const Vector!( string ) our_curves = allowed_ecc_curves();
 
 	for(size_t i = 0; i != our_curves.size(); ++i)
 		if(value_exists(curve_names, our_curves[i]))
@@ -126,26 +126,26 @@ size_t Policy::minimum_dh_group_size() const
 /*
 * Return allowed compression algorithms
 */
-std::vector<byte> Policy::compression() const
+Vector!( byte ) Policy::compression() const
 {
-	return std::vector<byte>{ NO_COMPRESSION };
+	return Vector!( byte ){ NO_COMPRESSION };
 }
 
-u32bit Policy::session_ticket_lifetime() const
+uint Policy::session_ticket_lifetime() const
 {
 	return 86400; // 1 day
 }
 
-bool Policy::acceptable_protocol_version(Protocol_Version version) const
+bool Policy::acceptable_protocol_version(Protocol_Version _version) const
 {
 	// By default require TLS to minimize surprise
-	if(version.is_datagram_protocol())
+	if(_version.is_datagram_protocol())
 		return false;
 
-	return (version > Protocol_Version::SSL_V3);
+	return (_version > Protocol_Version::SSL_V3);
 }
 
-bool Policy::acceptable_ciphersuite(const Ciphersuite&) const
+bool Policy::acceptable_ciphersuite(in Ciphersuite) const
 {
 	return true;
 }
@@ -165,13 +165,13 @@ namespace {
 class Ciphersuite_Preference_Ordering
 {
 	public:
-		Ciphersuite_Preference_Ordering(const std::vector<string>& ciphers,
-												  const std::vector<string>& macs,
-												  const std::vector<string>& kex,
-												  const std::vector<string>& sigs) :
+		Ciphersuite_Preference_Ordering(in Vector!( string ) ciphers,
+												  const Vector!( string )& macs,
+												  const Vector!( string )& kex,
+												  const Vector!( string )& sigs) :
 			m_ciphers(ciphers), m_macs(macs), m_kex(kex), m_sigs(sigs) {}
 
-		bool operator()(const Ciphersuite& a, const Ciphersuite& b) const
+		bool operator()(in Ciphersuite a, const Ciphersuite& b) const
 		{
 			if(a.kex_algo() != b.kex_algo())
 			{
@@ -228,18 +228,18 @@ class Ciphersuite_Preference_Ordering
 			return false; // equal (?!?)
 		}
 	private:
-		std::vector<string> m_ciphers, m_macs, m_kex, m_sigs;
+		Vector!( string ) m_ciphers, m_macs, m_kex, m_sigs;
 };
 
 }
 
-std::vector<u16bit> Policy::ciphersuite_list(Protocol_Version version,
+Vector!( u16bit ) Policy::ciphersuite_list(Protocol_Version _version,
 															bool have_srp) const
 {
-	const std::vector<string> ciphers = allowed_ciphers();
-	const std::vector<string> macs = allowed_macs();
-	const std::vector<string> kex = allowed_key_exchange_methods();
-	const std::vector<string> sigs = allowed_signature_methods();
+	const Vector!( string ) ciphers = allowed_ciphers();
+	const Vector!( string ) macs = allowed_macs();
+	const Vector!( string ) kex = allowed_key_exchange_methods();
+	const Vector!( string ) sigs = allowed_signature_methods();
 
 	Ciphersuite_Preference_Ordering order(ciphers, macs, kex, sigs);
 
@@ -253,10 +253,10 @@ std::vector<u16bit> Policy::ciphersuite_list(Protocol_Version version,
 		if(!have_srp && suite.kex_algo() == "SRP_SHA")
 			continue;
 
-		if(version.is_datagram_protocol() && suite.cipher_algo() == "RC4")
+		if(_version.is_datagram_protocol() && suite.cipher_algo() == "RC4")
 			continue;
 
-		if(!version.supports_aead_modes() && suite.mac_algo() == "AEAD")
+		if(!_version.supports_aead_modes() && suite.mac_algo() == "AEAD")
 			continue;
 
 		if(!value_exists(kex, suite.kex_algo()))
@@ -280,9 +280,9 @@ std::vector<u16bit> Policy::ciphersuite_list(Protocol_Version version,
 	}
 
 	if(ciphersuites.empty())
-		throw std::logic_error("Policy does not allow any available cipher suite");
+		throw new std::logic_error("Policy does not allow any available cipher suite");
 
-	std::vector<u16bit> ciphersuite_codes;
+	Vector!( u16bit ) ciphersuite_codes;
 	for(auto i : ciphersuites)
 		ciphersuite_codes.push_back(i.ciphersuite_code());
 	return ciphersuite_codes;

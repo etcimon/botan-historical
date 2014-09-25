@@ -12,8 +12,8 @@
 class Modular_Exponentiator
 {
 	public:
-		abstract void set_base(const BigInt&) = 0;
-		abstract void set_exponent(const BigInt&) = 0;
+		abstract void set_base(in BigInt) = 0;
+		abstract void set_exponent(in BigInt) = 0;
 		abstract BigInt execute() const = 0;
 		abstract Modular_Exponentiator* copy() const = 0;
 		abstract ~Modular_Exponentiator() {}
@@ -45,16 +45,16 @@ class Power_Mod
 		static size_t window_bits(size_t exp_bits, size_t base_bits,
 										  Power_Mod::Usage_Hints hints);
 
-		void set_modulus(const BigInt&, Usage_Hints = NO_HINTS) const;
-		void set_base(const BigInt&) const;
-		void set_exponent(const BigInt&) const;
+		void set_modulus(in BigInt, Usage_Hints = NO_HINTS) const;
+		void set_base(in BigInt) const;
+		void set_exponent(in BigInt) const;
 
 		BigInt execute() const;
 
-		Power_Mod& operator=(const Power_Mod&);
+		Power_Mod& operator=(in Power_Mod);
 
-		Power_Mod(const BigInt& = 0, Usage_Hints = NO_HINTS);
-		Power_Mod(const Power_Mod&);
+		Power_Mod(in BigInt = 0, Usage_Hints = NO_HINTS);
+		Power_Mod(in Power_Mod);
 		abstract ~Power_Mod();
 	private:
 		mutable Modular_Exponentiator* core;
@@ -66,12 +66,12 @@ class Power_Mod
 class Fixed_Exponent_Power_Mod : public Power_Mod
 {
 	public:
-		BigInt operator()(const BigInt& b) const
+		BigInt operator()(in BigInt b) const
 		{ set_base(b); return execute(); }
 
 		Fixed_Exponent_Power_Mod() {}
 
-		Fixed_Exponent_Power_Mod(const BigInt& exponent,
+		Fixed_Exponent_Power_Mod(in BigInt exponent,
 										 const BigInt& modulus,
 										 Usage_Hints hints = NO_HINTS);
 };
@@ -82,12 +82,12 @@ class Fixed_Exponent_Power_Mod : public Power_Mod
 class Fixed_Base_Power_Mod : public Power_Mod
 {
 	public:
-		BigInt operator()(const BigInt& e) const
+		BigInt operator()(in BigInt e) const
 		{ set_exponent(e); return execute(); }
 
 		Fixed_Base_Power_Mod() {}
 
-		Fixed_Base_Power_Mod(const BigInt& base,
+		Fixed_Base_Power_Mod(in BigInt base,
 									const BigInt& modulus,
 									Usage_Hints hints = NO_HINTS);
 };

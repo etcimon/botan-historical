@@ -11,14 +11,14 @@
 #include <botan/tls_exceptn.h>
 namespace TLS {
 
-Heartbeat_Message::Heartbeat_Message(in Array!byte buf)
+Heartbeat_Message::Heartbeat_Message(in Vector!byte buf)
 {
 	TLS_Data_Reader reader("Heartbeat", buf);
 
 	const byte type = reader.get_byte();
 
 	if(type != 1 && type != 2)
-		throw TLS_Exception(Alert::ILLEGAL_PARAMETER,
+		throw new TLS_Exception(Alert::ILLEGAL_PARAMETER,
 								  "Unknown heartbeat message type");
 
 	m_type = cast(Type)(type);
@@ -36,9 +36,9 @@ Heartbeat_Message::Heartbeat_Message(Type type,
 {
 }
 
-std::vector<byte> Heartbeat_Message::contents() const
+Vector!( byte ) Heartbeat_Message::contents() const
 {
-	std::vector<byte> send_buf(3 + m_payload.size() + 16);
+	Vector!( byte ) send_buf(3 + m_payload.size() + 16);
 	send_buf[0] = m_type;
 	send_buf[1] = get_byte<u16bit>(0, m_payload.size());
 	send_buf[2] = get_byte<u16bit>(1, m_payload.size());
@@ -48,9 +48,9 @@ std::vector<byte> Heartbeat_Message::contents() const
 	return send_buf;
 }
 
-std::vector<byte> Heartbeat_Support_Indicator::serialize() const
+Vector!( byte ) Heartbeat_Support_Indicator::serialize() const
 {
-	std::vector<byte> heartbeat(1);
+	Vector!( byte ) heartbeat(1);
 	heartbeat[0] = (m_peer_allowed_to_send ? 1 : 2);
 	return heartbeat;
 }
@@ -59,12 +59,12 @@ Heartbeat_Support_Indicator::Heartbeat_Support_Indicator(TLS_Data_Reader& reader
 																			u16bit extension_size)
 {
 	if(extension_size != 1)
-		throw Decoding_Error("Strange size for heartbeat extension");
+		throw new Decoding_Error("Strange size for heartbeat extension");
 
 	const byte code = reader.get_byte();
 
 	if(code != 1 && code != 2)
-		throw TLS_Exception(Alert::ILLEGAL_PARAMETER,
+		throw new TLS_Exception(Alert::ILLEGAL_PARAMETER,
 								  "Unknown heartbeat code " + std::to_string(code));
 
 	m_peer_allowed_to_send = (code == 1);

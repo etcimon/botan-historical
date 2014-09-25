@@ -13,7 +13,7 @@
 class TLS_PRF : public KDF
 {
 	public:
-		SafeArray!byte derive(size_t key_len,
+		SafeVector!byte derive(size_t key_len,
 										  in byte[] secret, size_t secret_len,
 										  in byte[] seed, size_t seed_len) const;
 
@@ -32,7 +32,7 @@ class TLS_PRF : public KDF
 class TLS_12_PRF : public KDF
 {
 	public:
-		SafeArray!byte derive(size_t key_len,
+		SafeVector!byte derive(size_t key_len,
 										  in byte[] secret, size_t secret_len,
 										  in byte[] seed, size_t seed_len) const;
 

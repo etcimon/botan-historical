@@ -90,15 +90,15 @@ inline void xor_buf(ref byte[] output,
 
 	for(size_t i = 0; i != length; ++i)
 		out[i] = in[i] ^ in2[i];template<typename Alloc, typename Alloc2>
-void xor_buf(std::vector<byte, Alloc>& out,
-				 const std::vector<byte, Alloc2>& in,
+void xor_buf(Vector!( byte, Alloc )& out,
+				 const Vector!( byte, Alloc2 )& in,
 				 size_t n)
 {
 	xor_buf(&out[0], &in[0], n);
 }
 
 template<typename Alloc>
-void xor_buf(std::vector<byte, Alloc>& out,
+void xor_buf(Vector!( byte, Alloc )& out,
 				 const byte* in,
 				 size_t n)
 {
@@ -106,18 +106,18 @@ void xor_buf(std::vector<byte, Alloc>& out,
 }
 
 template<typename Alloc, typename Alloc2>
-void xor_buf(std::vector<byte, Alloc>& out,
+void xor_buf(Vector!( byte, Alloc )& out,
 				 const byte* in,
-				 const std::vector<byte, Alloc2>& in2,
+				 const Vector!( byte, Alloc2 )& in2,
 				 size_t n)
 {
 	xor_buf(&out[0], &in[0], &in2[0], n);
 }
 
 template<typename T, typename Alloc, typename Alloc2>
-std::vector<T, Alloc>&
-operator^=(std::vector<T, Alloc>& out,
-			  const std::vector<T, Alloc2>& input)
+Vector!( T, Alloc )&
+operator^=(Vector!( T, Alloc )& out,
+			  const Vector!( T, Alloc2 )& input)
 {
 	if(out.size() < in.size())
 		out.resize(in.size());

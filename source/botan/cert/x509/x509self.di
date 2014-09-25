@@ -107,7 +107,7 @@ class X509_Cert_Options
 		/**
 		* The key extended constraints for the subject public key
 		*/
-		std::vector<OID> ex_constraints;
+		Vector!( OID ) ex_constraints;
 
 		/**
 		* Check the options set in this object for validity.
@@ -142,7 +142,7 @@ class X509_Cert_Options
 		* Add constraints to the ExtendedKeyUsage extension.
 		* @param oid the oid to add
 		*/
-		void add_ex_constraint(const OID& oid);
+		void add_ex_constraint(in OID oid);
 
 		/**
 		* Add constraints to the ExtendedKeyUsage extension.
@@ -157,7 +157,7 @@ class X509_Cert_Options
 		* @param expire_time the expiration time (from the current clock in seconds)
 		*/
 		X509_Cert_Options(in string opts = "",
-								u32bit expire_time = 365 * 24 * 60 * 60);
+								uint expire_time = 365 * 24 * 60 * 60);
 };
 
 namespace X509 {
@@ -172,7 +172,7 @@ namespace X509 {
 * @return newly created self-signed certificate
 */
 X509_Certificate
-create_self_signed_cert(const X509_Cert_Options& opts,
+create_self_signed_cert(in X509_Cert_Options opts,
 								in Private_Key key,
 								in string hash_fn,
 								RandomNumberGenerator& rng);
@@ -185,7 +185,7 @@ create_self_signed_cert(const X509_Cert_Options& opts,
 * @param hash_fn the hash function to use
 * @return newly created PKCS#10 request
 */
-PKCS10_Request create_cert_req(const X509_Cert_Options& opts,
+PKCS10_Request create_cert_req(in X509_Cert_Options opts,
 													  in Private_Key key,
 													  in string hash_fn,
 													  RandomNumberGenerator& rng);

@@ -79,58 +79,58 @@ class SIMD_Scalar
 				m_v[i] = Botan::rotate_right(m_v[i], rot);
 		}
 
-		void operator+=(const SIMD_Scalar<T,N>& other)
+		void operator+=(in SIMD_Scalar<T,N> other)
 		{
 			for(size_t i = 0; i != size(); ++i)
 				m_v[i] += other.m_v[i];
 		}
 
-		void operator-=(const SIMD_Scalar<T,N>& other)
+		void operator-=(in SIMD_Scalar<T,N> other)
 		{
 			for(size_t i = 0; i != size(); ++i)
 				m_v[i] -= other.m_v[i];
 		}
 
-		SIMD_Scalar<T,N> operator+(const SIMD_Scalar<T,N>& other) const
+		SIMD_Scalar<T,N> operator+(in SIMD_Scalar<T,N> other) const
 		{
 			SIMD_Scalar<T,N> out = *this;
 			out += other;
 			return out;
 		}
 
-		SIMD_Scalar<T,N> operator-(const SIMD_Scalar<T,N>& other) const
+		SIMD_Scalar<T,N> operator-(in SIMD_Scalar<T,N> other) const
 		{
 			SIMD_Scalar<T,N> out = *this;
 			out -= other;
 			return out;
 		}
 
-		void operator^=(const SIMD_Scalar<T,N>& other)
+		void operator^=(in SIMD_Scalar<T,N> other)
 		{
 			for(size_t i = 0; i != size(); ++i)
 				m_v[i] ^= other.m_v[i];
 		}
 
-		SIMD_Scalar<T,N> operator^(const SIMD_Scalar<T,N>& other) const
+		SIMD_Scalar<T,N> operator^(in SIMD_Scalar<T,N> other) const
 		{
 			SIMD_Scalar<T,N> out = *this;
 			out ^= other;
 			return out;
 		}
 
-		void operator|=(const SIMD_Scalar<T,N>& other)
+		void operator|=(in SIMD_Scalar<T,N> other)
 		{
 			for(size_t i = 0; i != size(); ++i)
 				m_v[i] |= other.m_v[i];
 		}
 
-		void operator&=(const SIMD_Scalar<T,N>& other)
+		void operator&=(in SIMD_Scalar<T,N> other)
 		{
 			for(size_t i = 0; i != size(); ++i)
 				m_v[i] &= other.m_v[i];
 		}
 
-		SIMD_Scalar<T,N> operator&(const SIMD_Scalar<T,N>& other)
+		SIMD_Scalar<T,N> operator&(in SIMD_Scalar<T,N> other)
 		{
 			SIMD_Scalar<T,N> out = *this;
 			out &= other;
@@ -162,7 +162,7 @@ class SIMD_Scalar
 		}
 
 		// (~reg) & other
-		SIMD_Scalar<T,N> andc(const SIMD_Scalar<T,N>& other)
+		SIMD_Scalar<T,N> andc(in SIMD_Scalar<T,N> other)
 		{
 			SIMD_Scalar<T,N> out;
 			for(size_t i = 0; i != size(); ++i)

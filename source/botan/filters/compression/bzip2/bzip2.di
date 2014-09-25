@@ -27,7 +27,7 @@ class Bzip_Compression : public Filter
 		void clear();
 
 		const size_t level;
-		SafeArray!byte buffer;
+		SafeVector!byte buffer;
 		class Bzip_Stream* bz;
 };
 
@@ -49,7 +49,7 @@ class Bzip_Decompression : public Filter
 		void clear();
 
 		const bool small_mem;
-		SafeArray!byte buffer;
+		SafeVector!byte buffer;
 		class Bzip_Stream* bz;
 		bool no_writes;
 };

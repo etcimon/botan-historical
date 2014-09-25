@@ -36,8 +36,8 @@ bool check_for_resume(Session& session_info,
 							 const Client_Hello* client_hello,
 							 std::chrono::seconds session_ticket_lifetime)
 {
-	in Array!byte client_session_id = client_hello->session_id();
-	in Array!byte session_ticket = client_hello->session_ticket();
+	in Vector!byte client_session_id = client_hello->session_id();
+	in Vector!byte session_ticket = client_hello->session_ticket();
 
 	if(session_ticket.empty())
 	{
@@ -68,7 +68,7 @@ bool check_for_resume(Session& session_info,
 	}
 
 	// wrong version
-	if(client_hello->version() != session_info.version())
+	if(client_hello->_version() != session_info._version())
 		return false;
 
 	// client didn't send original ciphersuite
@@ -103,9 +103,9 @@ bool check_for_resume(Session& session_info,
 */
 u16bit choose_ciphersuite(
 	const Policy& policy,
-	Protocol_Version version,
+	Protocol_Version _version,
 	Credentials_Manager& creds,
-	const std::map<string, std::vector<X509_Certificate> >& cert_chains,
+	const std::map<string, Vector!( X509_Certificate ) >& cert_chains,
 	const Client_Hello* client_hello)
 {
 	const bool our_choice = policy.server_uses_own_ciphersuite_preferences();
@@ -113,19 +113,19 @@ u16bit choose_ciphersuite(
 	const bool have_srp = creds.attempt_srp("tls-server",
 														 client_hello->sni_hostname());
 
-	const std::vector<u16bit> client_suites = client_hello->ciphersuites();
+	const Vector!( u16bit ) client_suites = client_hello->ciphersuites();
 
-	const std::vector<u16bit> server_suites = policy.ciphersuite_list(version, have_srp);
+	const Vector!( u16bit ) server_suites = policy.ciphersuite_list(_version, have_srp);
 
 	if(server_suites.empty())
-		throw TLS_Exception(Alert::HANDSHAKE_FAILURE,
+		throw new TLS_Exception(Alert::HANDSHAKE_FAILURE,
 								  "Policy forbids us from negotiating any ciphersuite");
 
 	const bool have_shared_ecc_curve =
 		(policy.choose_curve(client_hello->supported_ecc_curves()) != "");
 
-	std::vector<u16bit> pref_list = server_suites;
-	std::vector<u16bit> other_list = client_suites;
+	Vector!( u16bit ) pref_list = server_suites;
+	Vector!( u16bit ) other_list = client_suites;
 
 	if(!our_choice)
 		std::swap(pref_list, other_list);
@@ -152,21 +152,21 @@ u16bit choose_ciphersuite(
 		 - RFC 5054 section 2.5.1.2
 		*/
 		if(suite.kex_algo() == "SRP_SHA" && client_hello->srp_identifier() == "")
-			throw TLS_Exception(Alert::UNKNOWN_PSK_IDENTITY,
+			throw new TLS_Exception(Alert::UNKNOWN_PSK_IDENTITY,
 									  "Client wanted SRP but did not send username");
 
 		return suite_id;
 	}
 
-	throw TLS_Exception(Alert::HANDSHAKE_FAILURE,
+	throw new TLS_Exception(Alert::HANDSHAKE_FAILURE,
 							  "Can't agree on a ciphersuite with client");
 }/*
 * Choose which compression algorithm to use
 */
-byte choose_compression(const Policy& policy,
-								in Array!byte c_comp)
+byte choose_compression(in Policy policy,
+								in Vector!byte c_comp)
 {
-	std::vector<byte> s_comp = policy.compression();
+	Vector!( byte ) s_comp = policy.compression();
 
 	for(size_t i = 0; i != s_comp.size(); ++i)
 		for(size_t j = 0; j != c_comp.size(); ++j)
@@ -176,17 +176,17 @@ byte choose_compression(const Policy& policy,
 	return NO_COMPRESSION;
 }
 
-std::map<string, std::vector<X509_Certificate> >
+std::map<string, Vector!( X509_Certificate ) >
 get_server_certs(in string hostname,
 					  Credentials_Manager& creds)
 {
 	const char* cert_types[] = { "RSA", "DSA", "ECDSA", nullptr };
 
-	std::map<string, std::vector<X509_Certificate> > cert_chains;
+	std::map<string, Vector!( X509_Certificate ) > cert_chains;
 
 	for(size_t i = 0; cert_types[i]; ++i)
 	{
-		std::vector<X509_Certificate> certs =
+		Vector!( X509_Certificate ) certs =
 			creds.cert_chain_single_type(cert_types[i], "tls-server", hostname);
 
 		if(!certs.empty())
@@ -225,12 +225,12 @@ Handshake_State* Server::new_handshake_state(Handshake_IO* io)
 	return state.release();
 }
 
-std::vector<X509_Certificate>
-Server::get_peer_cert_chain(const Handshake_State& state) const
+Vector!( X509_Certificate )
+Server::get_peer_cert_chain(in Handshake_State state) const
 {
 	if(state.client_certs())
 		return state.client_certs()->cert_chain();
-	return std::vector<X509_Certificate>();
+	return Vector!( X509_Certificate )();
 }
 
 /*
@@ -251,7 +251,7 @@ void Server::initiate_handshake(Handshake_State& state,
 void Server::process_handshake_msg(const Handshake_State* active_state,
 											  Handshake_State& state_base,
 											  Handshake_Type type,
-											  in Array!byte contents)
+											  in Vector!byte contents)
 {
 	Server_Handshake_State& state = cast(Server_Handshake_State&)(state_base);
 
@@ -285,12 +285,12 @@ void Server::process_handshake_msg(const Handshake_State* active_state,
 
 		state.client_hello(new Client_Hello(contents, type));
 
-		Protocol_Version client_version = state.client_hello()->version();
+		Protocol_Version client_version = state.client_hello()->_version();
 
 		Protocol_Version negotiated_version;
 
 		if((initial_handshake && client_version.known_version()) ||
-			(!initial_handshake && client_version == active_state->version()))
+			(!initial_handshake && client_version == active_state->_version()))
 		{
 			/*
 			Common cases: new client hello with some known version, or a
@@ -300,7 +300,7 @@ void Server::process_handshake_msg(const Handshake_State* active_state,
 
 			negotiated_version = client_version;
 		}
-		else if(!initial_handshake && (client_version != active_state->version()))
+		else if(!initial_handshake && (client_version != active_state->_version()))
 		{
 			/*
 			* If this is a renegotiation, and the client has offered a
@@ -309,16 +309,16 @@ void Server::process_handshake_msg(const Handshake_State* active_state,
 			* client is offering a version earlier than what it initially
 			* negotiated, reject as a probable attack.
 			*/
-			if(active_state->version() > client_version)
+			if(active_state->_version() > client_version)
 			{
-				throw TLS_Exception(Alert::PROTOCOL_VERSION,
+				throw new TLS_Exception(Alert::PROTOCOL_VERSION,
 										  "Client negotiated " +
-										  active_state->version().to_string() +
+										  active_state->_version().to_string() +
 										  " then renegotiated with " +
 										  client_version.to_string());
 			}
 			else
-				negotiated_version = active_state->version();
+				negotiated_version = active_state->_version();
 		}
 		else
 		{
@@ -331,12 +331,12 @@ void Server::process_handshake_msg(const Handshake_State* active_state,
 
 		if(!m_policy.acceptable_protocol_version(negotiated_version))
 		{
-			throw TLS_Exception(Alert::PROTOCOL_VERSION,
+			throw new TLS_Exception(Alert::PROTOCOL_VERSION,
 									  "Client version is unacceptable by policy");
 		}
 
 		if(!initial_handshake && state.client_hello()->next_protocol_notification())
-			throw TLS_Exception(Alert::HANDSHAKE_FAILURE,
+			throw new TLS_Exception(Alert::HANDSHAKE_FAILURE,
 									  "Client included NPN extension for renegotiation");
 
 		secure_renegotiation_check(state.client_hello());
@@ -376,7 +376,7 @@ void Server::process_handshake_msg(const Handshake_State* active_state,
 					state.hash(),
 					m_policy,
 					state.client_hello()->session_id(),
-					Protocol_Version(session_info.version()),
+					Protocol_Version(session_info._version()),
 					session_info.ciphersuite_code(),
 					session_info.compression_method(),
 					session_info.fragment_size(),
@@ -441,7 +441,7 @@ void Server::process_handshake_msg(const Handshake_State* active_state,
 		}
 		else // new session
 		{
-			std::map<string, std::vector<X509_Certificate> > cert_chains;
+			std::map<string, Vector!( X509_Certificate ) > cert_chains;
 
 			const string sni_hostname = state.client_hello()->sni_hostname();
 
@@ -468,9 +468,9 @@ void Server::process_handshake_msg(const Handshake_State* active_state,
 					state.hash(),
 					m_policy,
 					make_hello_random(rng()), // new session ID
-					state.version(),
+					state._version(),
 					choose_ciphersuite(m_policy,
-											 state.version(),
+											 state._version(),
 											 m_creds,
 											 cert_chains,
 											 state.client_hello()),
@@ -512,7 +512,7 @@ void Server::process_handshake_msg(const Handshake_State* active_state,
 					sni_hostname);
 
 				if(!Private_Key)
-					throw Internal_Error("No private key located for associated server cert");
+					throw new Internal_Error("No private key located for associated server cert");
 			}
 
 			if(kex_algo == "RSA")
@@ -534,7 +534,7 @@ void Server::process_handshake_msg(const Handshake_State* active_state,
 			auto trusted_CAs =
 				m_creds.trusted_certificate_authorities("tls-server", sni_hostname);
 
-			std::vector<X509_DN> client_auth_CAs;
+			Vector!( X509_DN ) client_auth_CAs;
 
 			for(auto store : trusted_CAs)
 			{
@@ -551,7 +551,7 @@ void Server::process_handshake_msg(const Handshake_State* active_state,
 											  state.hash(),
 											  m_policy,
 											  client_auth_CAs,
-											  state.version())
+											  state._version())
 					);
 
 				state.set_expected_next(CERTIFICATE);
@@ -592,9 +592,9 @@ void Server::process_handshake_msg(const Handshake_State* active_state,
 	}
 	else if(type == CERTIFICATE_VERIFY)
 	{
-		state.client_verify(new Certificate_Verify(contents, state.version()));
+		state.client_verify(new Certificate_Verify(contents, state._version()));
 
-		const std::vector<X509_Certificate>& client_certs =
+		const Vector!( X509_Certificate )& client_certs =
 			state.client_certs()->cert_chain();
 
 		const bool sig_valid =
@@ -608,7 +608,7 @@ void Server::process_handshake_msg(const Handshake_State* active_state,
 		* unable to correctly verify a signature, ..."
 		*/
 		if(!sig_valid)
-			throw TLS_Exception(Alert::DECRYPT_ERROR, "Client cert verify failed");
+			throw new TLS_Exception(Alert::DECRYPT_ERROR, "Client cert verify failed");
 
 		try
 		{
@@ -616,7 +616,7 @@ void Server::process_handshake_msg(const Handshake_State* active_state,
 		}
 		catch(std::exception& e)
 		{
-			throw TLS_Exception(Alert::BAD_CERTIFICATE, e.what());
+			throw new TLS_Exception(Alert::BAD_CERTIFICATE, e.what());
 		}
 
 		state.set_expected_next(HANDSHAKE_CCS);
@@ -646,7 +646,7 @@ void Server::process_handshake_msg(const Handshake_State* active_state,
 		state.client_finished(new Finished(contents));
 
 		if(!state.client_finished()->verify(state, CLIENT))
-			throw TLS_Exception(Alert::DECRYPT_ERROR,
+			throw new TLS_Exception(Alert::DECRYPT_ERROR,
 									  "Finished message didn't verify");
 
 		if(!state.server_finished())
@@ -658,13 +658,13 @@ void Server::process_handshake_msg(const Handshake_State* active_state,
 			Session session_info(
 				state.server_hello()->session_id(),
 				state.session_keys().master_secret(),
-				state.server_hello()->version(),
+				state.server_hello()->_version(),
 				state.server_hello()->ciphersuite(),
 				state.server_hello()->compression_method(),
 				SERVER,
 				state.server_hello()->fragment_size(),
 				get_peer_cert_chain(state),
-				std::vector<byte>(),
+				Vector!( byte )(),
 				Server_Information(state.client_hello()->sni_hostname()),
 				state.srp_identifier()
 				);
@@ -710,7 +710,7 @@ void Server::process_handshake_msg(const Handshake_State* active_state,
 		activate_session();
 	}
 	else
-		throw Unexpected_Message("Unknown handshake message received");
+		throw new Unexpected_Message("Unknown handshake message received");
 }
 
 }

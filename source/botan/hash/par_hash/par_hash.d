@@ -21,11 +21,11 @@ void Parallel::add_data(in byte[] input, size_t length)
 */
 void Parallel::final_result(ref byte[] output)
 {
-	u32bit offset = 0;
+	uint offset = 0;
 
 	for(auto hash : hashes)
 	{
-		hash->final(out + offset);
+		hash->flushInto(out + offset);
 		offset += hash->output_length();
 	}
 }
@@ -47,7 +47,7 @@ size_t Parallel::output_length() const
 */
 string Parallel::name() const
 {
-	std::vector<string> names;
+	Vector!( string ) names;
 
 	for(auto hash : hashes)
 		names.push_back(hash->name());
@@ -60,7 +60,7 @@ string Parallel::name() const
 */
 HashFunction* Parallel::clone() const
 {
-	std::vector<HashFunction*> hash_copies;
+	Vector!( HashFunction* ) hash_copies;
 
 	for(auto hash : hashes)
 		hash_copies.push_back(hash->clone());
@@ -80,7 +80,7 @@ void Parallel::clear()
 /*
 * Parallel Constructor
 */
-Parallel::Parallel(const std::vector<HashFunction*>& hash_input) :
+Parallel::Parallel(in Vector!( HashFunction* ) hash_input) :
 	hashes(hash_input)
 {
 }

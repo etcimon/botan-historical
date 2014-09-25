@@ -128,7 +128,7 @@ void Base64_Decoder::write(in byte[] input, size_t length)
 
 		size_t consumed = 0;
 		size_t written = base64_decode(&out[0],
-												 cast(const char*)(&in[0]),
+												 cast(in char*)(in[0]),
 												 position,
 												 consumed,
 												 false,
@@ -156,7 +156,7 @@ void Base64_Decoder::end_msg()
 {
 	size_t consumed = 0;
 	size_t written = base64_decode(&out[0],
-											 cast(const char*)(&in[0]),
+											 cast(in char*)(in[0]),
 											 position,
 											 consumed,
 											 true,
@@ -169,7 +169,7 @@ void Base64_Decoder::end_msg()
 	position = 0;
 
 	if(not_full_bytes)
-		throw std::invalid_argument("Base64_Decoder: Input not full bytes");
+		throw new std::invalid_argument("Base64_Decoder: Input not full bytes");
 }
 
 }

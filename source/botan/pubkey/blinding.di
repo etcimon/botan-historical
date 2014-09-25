@@ -13,8 +13,8 @@
 class Blinder
 {
 	public:
-		BigInt blind(const BigInt& x) const;
-		BigInt unblind(const BigInt& x) const;
+		BigInt blind(in BigInt x) const;
+		BigInt unblind(in BigInt x) const;
 
 		bool initialized() const { return reducer.initialized(); }
 
@@ -26,7 +26,7 @@ class Blinder
 		* @param inverse_mask the inverse of mask (depends on algo)
 		* @param modulus of the group operations are performed in
 		*/
-		Blinder(const BigInt& mask,
+		Blinder(in BigInt mask,
 				  const BigInt& inverse_mask,
 				  const BigInt& modulus);
 

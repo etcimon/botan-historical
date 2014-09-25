@@ -17,11 +17,11 @@ enum {
 	TLS_EMPTY_RENEGOTIATION_INFO_SCSV		  = 0x00FF
 };
 
-std::vector<byte> make_hello_random(RandomNumberGenerator& rng)
+Vector!( byte ) make_hello_random(RandomNumberGenerator& rng)
 {
-	std::vector<byte> buf(32);
+	Vector!( byte ) buf(32);
 
-	const u32bit time32 = cast(u32bit)(
+	const uint time32 = cast(uint)(
 		std::chrono::system_clock::to_time_t(std::chrono::system_clock::now()));
 
 	store_be(time32, &buf[0]);
@@ -40,18 +40,18 @@ Hello_Request::Hello_Request(Handshake_IO& io)
 /*
 * Deserialize a Hello Request message
 */
-Hello_Request::Hello_Request(in Array!byte buf)
+Hello_Request::Hello_Request(in Vector!byte buf)
 {
 	if(buf.size())
-		throw Decoding_Error("Bad Hello_Request, has non-zero size");
+		throw new Decoding_Error("Bad Hello_Request, has non-zero size");
 }
 
 /*
 * Serialize a Hello Request message
 */
-std::vector<byte> Hello_Request::serialize() const
+Vector!( byte ) Hello_Request::serialize() const
 {
-	return std::vector<byte>();
+	return Vector!( byte )();
 }
 
 /*
@@ -59,14 +59,14 @@ std::vector<byte> Hello_Request::serialize() const
 */
 Client_Hello::Client_Hello(Handshake_IO& io,
 									Handshake_Hash& hash,
-									Protocol_Version version,
+									Protocol_Version _version,
 									const Policy& policy,
 									RandomNumberGenerator& rng,
-									in Array!byte reneg_info,
+									in Vector!byte reneg_info,
 									bool next_protocol,
 									in string hostname,
 									in string srp_identifier) :
-	m_version(version),
+	m_version(_version),
 	m_random(make_hello_random(rng)),
 	m_suites(policy.ciphersuite_list(m_version, (srp_identifier != ""))),
 	m_comp_methods(policy.compression())
@@ -97,10 +97,10 @@ Client_Hello::Client_Hello(Handshake_IO& io,
 									Handshake_Hash& hash,
 									const Policy& policy,
 									RandomNumberGenerator& rng,
-									in Array!byte reneg_info,
+									in Vector!byte reneg_info,
 									const Session& session,
 									bool next_protocol) :
-	m_version(session.version()),
+	m_version(session._version()),
 	m_session_id(session.session_id()),
 	m_random(make_hello_random(rng)),
 	m_suites(policy.ciphersuite_list(m_version, (session.srp_identifier() != ""))),
@@ -137,7 +137,7 @@ Client_Hello::Client_Hello(Handshake_IO& io,
 /*
 * Read a counterparty client hello
 */
-Client_Hello::Client_Hello(in Array!byte buf, Handshake_Type type)
+Client_Hello::Client_Hello(in Vector!byte buf, Handshake_Type type)
 {
 	if(type == CLIENT_HELLO)
 		deserialize(buf);
@@ -145,10 +145,10 @@ Client_Hello::Client_Hello(in Array!byte buf, Handshake_Type type)
 		deserialize_sslv2(buf);
 }
 
-void Client_Hello::update_hello_cookie(const Hello_Verify_Request& hello_verify)
+void Client_Hello::update_hello_cookie(in Hello_Verify_Request hello_verify)
 {
 	if(!m_version.is_datagram_protocol())
-		throw std::runtime_error("Cannot use hello cookie with stream protocol");
+		throw new Exception("Cannot use hello cookie with stream protocol");
 
 	m_hello_cookie = hello_verify.cookie();
 }
@@ -156,9 +156,9 @@ void Client_Hello::update_hello_cookie(const Hello_Verify_Request& hello_verify)
 /*
 * Serialize a Client Hello message
 */
-std::vector<byte> Client_Hello::serialize() const
+Vector!( byte ) Client_Hello::serialize() const
 {
-	std::vector<byte> buf;
+	Vector!( byte ) buf;
 
 	buf.push_back(m_version.major_version());
 	buf.push_back(m_version.minor_version());
@@ -183,10 +183,10 @@ std::vector<byte> Client_Hello::serialize() const
 	return buf;
 }
 
-void Client_Hello::deserialize_sslv2(in Array!byte buf)
+void Client_Hello::deserialize_sslv2(in Vector!byte buf)
 {
 	if(buf.size() < 12 || buf[0] != 1)
-		throw Decoding_Error("Client_Hello: SSLv2 hello corrupted");
+		throw new Decoding_Error("Client_Hello: SSLv2 hello corrupted");
 
 	const size_t cipher_spec_len = make_u16bit(buf[3], buf[4]);
 	const size_t m_session_id_len = make_u16bit(buf[5], buf[6]);
@@ -196,12 +196,12 @@ void Client_Hello::deserialize_sslv2(in Array!byte buf)
 		(9 + m_session_id_len + cipher_spec_len + challenge_len);
 
 	if(buf.size() != expected_size)
-		throw Decoding_Error("Client_Hello: SSLv2 hello corrupted");
+		throw new Decoding_Error("Client_Hello: SSLv2 hello corrupted");
 
 	if(m_session_id_len != 0 || cipher_spec_len % 3 != 0 ||
 		(challenge_len < 16 || challenge_len > 32))
 	{
-		throw Decoding_Error("Client_Hello: SSLv2 hello corrupted");
+		throw new Decoding_Error("Client_Hello: SSLv2 hello corrupted");
 	}
 
 	m_version = Protocol_Version(buf[1], buf[2]);
@@ -224,13 +224,13 @@ void Client_Hello::deserialize_sslv2(in Array!byte buf)
 /*
 * Deserialize a Client Hello message
 */
-void Client_Hello::deserialize(in Array!byte buf)
+void Client_Hello::deserialize(in Vector!byte buf)
 {
 	if(buf.size() == 0)
-		throw Decoding_Error("Client_Hello: Packet corrupted");
+		throw new Decoding_Error("Client_Hello: Packet corrupted");
 
 	if(buf.size() < 41)
-		throw Decoding_Error("Client_Hello: Packet corrupted");
+		throw new Decoding_Error("Client_Hello: Packet corrupted");
 
 	TLS_Data_Reader reader("ClientHello", buf);
 
@@ -257,7 +257,7 @@ void Client_Hello::deserialize(in Array!byte buf)
 		if(Renegotiation_Extension* reneg = m_extensions.get<Renegotiation_Extension>())
 		{
 			if(!reneg->renegotiation_info().empty())
-				throw TLS_Exception(Alert::HANDSHAKE_FAILURE,
+				throw new TLS_Exception(Alert::HANDSHAKE_FAILURE,
 										  "Client send renegotiation SCSV and non-empty extension");
 		}
 		else

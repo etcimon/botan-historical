@@ -23,7 +23,7 @@ namespace {
 First 24 bits of SHA-256("Botan Cryptobox"), followed by 8 0 bits
 for later use as flags, etc if needed
 */
-const u32bit CRYPTOBOX_VERSION_CODE = 0xEFC22400;
+const uint CRYPTOBOX_VERSION_CODE = 0xEFC22400;
 
 const size_t VERSION_CODE_LEN = 4;
 const size_t CIPHER_KEY_LEN = 32;
@@ -41,7 +41,7 @@ string encrypt(in byte[] input, size_t input_len,
 						  in string passphrase,
 						  RandomNumberGenerator& rng)
 {
-	SafeArray!byte pbkdf_salt(PBKDF_SALT_LEN);
+	SafeVector!byte pbkdf_salt(PBKDF_SALT_LEN);
 	rng.randomize(&pbkdf_salt[0], pbkdf_salt.size());
 
 	PKCS5_PBKDF2 pbkdf(new HMAC(new SHA_512));
@@ -76,7 +76,7 @@ string encrypt(in byte[] input, size_t input_len,
 	*/
 	const size_t ciphertext_len = pipe.remaining(0);
 
-	std::vector<byte> out_buf(VERSION_CODE_LEN +
+	Vector!( byte ) out_buf(VERSION_CODE_LEN +
 									  PBKDF_SALT_LEN +
 									  MAC_OUTPUT_LEN +
 									  ciphertext_len);
@@ -97,16 +97,16 @@ string decrypt(in byte[] input, size_t input_len,
 						  in string passphrase)
 {
 	DataSource_Memory input_src(input, input_len);
-	SafeArray!byte ciphertext =
+	SafeVector!byte ciphertext =
 		PEM_Code::decode_check_label(input_src,
 											  "BOTAN CRYPTOBOX MESSAGE");
 
 	if(ciphertext.size() < (VERSION_CODE_LEN + PBKDF_SALT_LEN + MAC_OUTPUT_LEN))
-		throw Decoding_Error("Invalid CryptoBox input");
+		throw new Decoding_Error("Invalid CryptoBox input");
 
 	for(size_t i = 0; i != VERSION_CODE_LEN; ++i)
 		if(ciphertext[i] != get_byte(i, CRYPTOBOX_VERSION_CODE))
-			throw Decoding_Error("Bad CryptoBox version");
+			throw new Decoding_Error("Bad CryptoBox version");
 
 	const byte* pbkdf_salt = &ciphertext[VERSION_CODE_LEN];
 
@@ -142,7 +142,7 @@ string decrypt(in byte[] input, size_t input_len,
 	if(!same_mem(computed_mac,
 					 &ciphertext[VERSION_CODE_LEN + PBKDF_SALT_LEN],
 					 MAC_OUTPUT_LEN))
-		throw Decoding_Error("CryptoBox integrity failure");
+		throw new Decoding_Error("CryptoBox integrity failure");
 
 	return pipe.read_all_as_string(0);
 }
@@ -150,7 +150,7 @@ string decrypt(in byte[] input, size_t input_len,
 string decrypt(in string input,
 						  in string passphrase)
 {
-	return decrypt(cast(const byte*)(&input[0]),
+	return decrypt(cast(in byte*)(input[0]),
 						input.size(),
 						passphrase);
 }

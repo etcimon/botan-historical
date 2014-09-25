@@ -10,10 +10,10 @@
 /*
 * Blinder Constructor
 */
-Blinder::Blinder(const BigInt& e, const BigInt& d, const BigInt& n)
+Blinder::Blinder(in BigInt e, const BigInt& d, const BigInt& n)
 {
 	if(e < 1 || d < 1 || n < 1)
-		throw Invalid_Argument("Blinder: Arguments too small");
+		throw new Invalid_Argument("Blinder: Arguments too small");
 
 	reducer = Modular_Reducer(n);
 	this->e = e;
@@ -23,7 +23,7 @@ Blinder::Blinder(const BigInt& e, const BigInt& d, const BigInt& n)
 /*
 * Blind a number
 */
-BigInt Blinder::blind(const BigInt& i) const
+BigInt Blinder::blind(in BigInt i) const
 {
 	if(!reducer.initialized())
 		return i;
@@ -36,7 +36,7 @@ BigInt Blinder::blind(const BigInt& i) const
 /*
 * Unblind a number
 */
-BigInt Blinder::unblind(const BigInt& i) const
+BigInt Blinder::unblind(in BigInt i) const
 {
 	if(!reducer.initialized())
 		return i;

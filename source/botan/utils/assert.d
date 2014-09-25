@@ -27,7 +27,7 @@ void assertion_failure(const char* expr_str,
 
 	format << "@" << file << ":" << line;
 
-	throw std::runtime_error(format.str());
+	throw new Exception(format.str());
 }
 
 }

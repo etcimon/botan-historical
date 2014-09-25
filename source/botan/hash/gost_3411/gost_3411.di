@@ -28,7 +28,7 @@ class GOST_34_11 : public HashFunction
 		void final_result(byte[]);
 
 		GOST_28147_89 cipher;
-		SafeArray!byte buffer, sum, hash;
+		SafeVector!byte buffer, sum, hash;
 		size_t position;
 		u64bit count;
 };

@@ -55,7 +55,7 @@ class Algorithm_Cache
 		* @param algo_name names the algorithm
 		* @return list of providers of this algorithm
 		*/
-		std::vector<string> providers_of(in string algo_name);
+		Vector!( string ) providers_of(in string algo_name);
 
 		/**
 		* Clear the cache
@@ -170,12 +170,12 @@ void Algorithm_Cache<T>::add(T* algo,
 /*
 * Find the providers of this algo (if any)
 */
-template<typename T> std::vector<string>
+template<typename T> Vector!( string )
 Algorithm_Cache<T>::providers_of(in string algo_name)
 {
 	std::lock_guard<std::mutex> lock(mutex);
 
-	std::vector<string> providers;
+	Vector!( string ) providers;
 
 	auto algo = find_algorithm(algo_name);
 	if(algo != algorithms.end())

@@ -17,9 +17,9 @@ class mlock_allocator
 
 		bool deallocate(void* p, size_t num_elems, size_t elem_size);
 
-		mlock_allocator(const mlock_allocator&) = delete;
+		mlock_allocator(in mlock_allocator) = delete;
 
-		mlock_allocator& operator=(const mlock_allocator&) = delete;
+		mlock_allocator& operator=(in mlock_allocator) = delete;
 
 	private:
 		mlock_allocator();
@@ -29,6 +29,6 @@ class mlock_allocator
 		const size_t m_poolsize;
 
 		std::mutex m_mutex;
-		std::vector<std::pair<size_t, size_t>> m_freelist;
+		Vector!( Pair!(size_t, size_t) ) m_freelist;
 		byte* m_pool;
 };

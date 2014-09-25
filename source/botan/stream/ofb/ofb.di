@@ -40,6 +40,6 @@ class OFB : public StreamCipher
 		void key_schedule(in byte[] key);
 
 		std::unique_ptr<BlockCipher> m_cipher;
-		SafeArray!byte m_buffer;
+		SafeVector!byte m_buffer;
 		size_t m_buf_pos;
 };

@@ -19,9 +19,9 @@ class OctetString
 		size_t length() const { return bits.size(); }
 
 		/**
-		* @return this object as a SafeArray!byte
+		* @return this object as a SafeVector!byte
 		*/
-		SafeArray!byte bits_of() const { return bits; }
+		SafeVector!byte bits_of() const { return bits; }
 
 		/**
 		* @return start of this string
@@ -43,7 +43,7 @@ class OctetString
 		* @param other octet string
 		* @return reference to this
 		*/
-		OctetString& operator^=(const OctetString& other);
+		OctetString& operator^=(in OctetString other);
 
 		/**
 		* Force to have odd parity
@@ -74,15 +74,15 @@ class OctetString
 		* Create a new OctetString
 		* @param in a bytestring
 		*/
-		OctetString(in SafeArray!byte input) : bits(input) {}
+		OctetString(in SafeVector!byte input) : bits(input) {}
 
 		/**
 		* Create a new OctetString
 		* @param in a bytestring
 		*/
-		OctetString(in Array!byte input) : bits(&in[0], &in[in.size()]) {}
+		OctetString(in Vector!byte input) : bits(&in[0], &in[in.size()]) {}
 	private:
-		SafeArray!byte bits;
+		SafeVector!byte bits;
 };
 
 /**
@@ -91,7 +91,7 @@ class OctetString
 * @param y an octet string
 * @return if x is equal to y
 */
-bool operator==(const OctetString& x,
+bool operator==(in OctetString x,
 								  const OctetString& y);
 
 /**
@@ -100,7 +100,7 @@ bool operator==(const OctetString& x,
 * @param y an octet string
 * @return if x is not equal to y
 */
-bool operator!=(const OctetString& x,
+bool operator!=(in OctetString x,
 								  const OctetString& y);
 
 /**
@@ -109,7 +109,7 @@ bool operator!=(const OctetString& x,
 * @param y an octet string
 * @return x concatenated with y
 */
-OctetString operator+(const OctetString& x,
+OctetString operator+(in OctetString x,
 										  const OctetString& y);
 
 /**
@@ -118,7 +118,7 @@ OctetString operator+(const OctetString& x,
 * @param y an octet string
 * @return x XORed with y
 */
-OctetString operator^(const OctetString& x,
+OctetString operator^(in OctetString x,
 										  const OctetString& y);/**
 * Alternate name for octet string showing intent to use as a key
 */

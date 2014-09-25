@@ -18,7 +18,7 @@ class Handshake_Message
 	public:
 		abstract Handshake_Type type() const = 0;
 
-		abstract std::vector<byte> serialize() const = 0;
+		abstract Vector!( byte ) serialize() const = 0;
 
 		abstract ~Handshake_Message() {}
 };

@@ -21,12 +21,12 @@
 /*
 * Load the certificate and private key
 */
-X509_CA::X509_CA(const X509_Certificate& c,
+X509_CA::X509_CA(in X509_Certificate c,
 					  in Private_Key key,
 					  in string hash_fn) : cert(c)
 {
 	if(!cert.is_CA_cert())
-		throw Invalid_Argument("X509_CA: This certificate is not for a CA");
+		throw new Invalid_Argument("X509_CA: This certificate is not for a CA");
 
 	signer = choose_sig_format(key, hash_fn, ca_sig_algo);
 }
@@ -42,7 +42,7 @@ X509_CA::~X509_CA()
 /*
 * Sign a PKCS #10 certificate request
 */
-X509_Certificate X509_CA::sign_request(const PKCS10_Request& req,
+X509_Certificate X509_CA::sign_request(in PKCS10_Request req,
 													RandomNumberGenerator& rng,
 													const X509_Time& not_before,
 													const X509_Time& not_after)
@@ -86,7 +86,7 @@ X509_Certificate X509_CA::sign_request(const PKCS10_Request& req,
 X509_Certificate X509_CA::make_cert(PK_Signer* signer,
 												RandomNumberGenerator& rng,
 												const AlgorithmIdentifier& sig_algo,
-												in Array!byte pub_key,
+												in Vector!byte pub_key,
 												const X509_Time& not_before,
 												const X509_Time& not_after,
 												const X509_DN& issuer_dn,
@@ -98,7 +98,7 @@ X509_Certificate X509_CA::make_cert(PK_Signer* signer,
 
 	BigInt serial_no(rng, SERIAL_BITS);
 
-	const std::vector<byte> cert = X509_Object::make_signed(
+	const Vector!( byte ) cert = X509_Object::make_signed(
 		signer, rng, sig_algo,
 		DER_Encoder().start_cons(SEQUENCE)
 			.start_explicit(0)
@@ -133,21 +133,21 @@ X509_Certificate X509_CA::make_cert(PK_Signer* signer,
 * Create a new, empty CRL
 */
 X509_CRL X509_CA::new_crl(RandomNumberGenerator& rng,
-								  u32bit next_update) const
+								  uint next_update) const
 {
-	std::vector<CRL_Entry> empty;
+	Vector!( CRL_Entry ) empty;
 	return make_crl(empty, 1, next_update, rng);
 }
 
 /*
 * Update a CRL with new entries
 */
-X509_CRL X509_CA::update_crl(const X509_CRL& crl,
-									  const std::vector<CRL_Entry>& new_revoked,
+X509_CRL X509_CA::update_crl(in X509_CRL crl,
+									  const Vector!( CRL_Entry )& new_revoked,
 									  RandomNumberGenerator& rng,
-									  u32bit next_update) const
+									  uint next_update) const
 {
-	std::vector<CRL_Entry> revoked = crl.get_revoked();
+	Vector!( CRL_Entry ) revoked = crl.get_revoked();
 
 	std::copy(new_revoked.begin(), new_revoked.end(),
 				 std::back_inserter(revoked));
@@ -158,14 +158,14 @@ X509_CRL X509_CA::update_crl(const X509_CRL& crl,
 /*
 * Create a CRL
 */
-X509_CRL X509_CA::make_crl(const std::vector<CRL_Entry>& revoked,
-									u32bit crl_number, u32bit next_update,
+X509_CRL X509_CA::make_crl(in Vector!( CRL_Entry ) revoked,
+									uint crl_number, uint next_update,
 									RandomNumberGenerator& rng) const
 {
 	const size_t X509_CRL_VERSION = 2;
 
 	if(next_update == 0)
-		next_update = timespec_to_u32bit("7d");
+		next_update = timespec_to_uint("7d");
 
 	// Totally stupid: ties encoding logic to the return of std::time!!
 	auto current_time = std::chrono::system_clock::now();
@@ -176,7 +176,7 @@ X509_CRL X509_CA::make_crl(const std::vector<CRL_Entry>& revoked,
 		new Cert_Extension::Authority_Key_ID(cert.subject_key_id()));
 	extensions.add(new Cert_Extension::CRL_Number(crl_number));
 
-	const std::vector<byte> crl = X509_Object::make_signed(
+	const Vector!( byte ) crl = X509_Object::make_signed(
 		signer, rng, ca_sig_algo,
 		DER_Encoder().start_cons(SEQUENCE)
 			.encode(X509_CRL_VERSION-1)
@@ -222,10 +222,10 @@ PK_Signer* choose_sig_format(in Private_Key key,
 
 	const HashFunction* proto_hash = retrieve_hash(hash_fn);
 	if(!proto_hash)
-		throw Algorithm_Not_Found(hash_fn);
+		throw new Algorithm_Not_Found(hash_fn);
 
 	if(key.max_input_bits() < proto_hash->output_length()*8)
-		throw Invalid_Argument("Key is too small for chosen hash function");
+		throw new Invalid_Argument("Key is too small for chosen hash function");
 
 	if(algo_name == "RSA")
 		padding = "EMSA3";
@@ -234,7 +234,7 @@ PK_Signer* choose_sig_format(in Private_Key key,
 	else if(algo_name == "ECDSA")
 		padding = "EMSA1_BSI";
 	else
-		throw Invalid_Argument("Unknown X.509 signing key type: " + algo_name);
+		throw new Invalid_Argument("Unknown X.509 signing key type: " + algo_name);
 
 	Signature_Format format =
 		(key.message_parts() > 1) ? DER_SEQUENCE : IEEE_1363;

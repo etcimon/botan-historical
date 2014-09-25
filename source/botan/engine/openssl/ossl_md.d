@@ -99,7 +99,7 @@ EVP_HashFunction::~EVP_HashFunction()
 /*
 * Look for an algorithm with this name
 */
-HashFunction* OpenSSL_Engine::find_hash(const SCAN_Name& request,
+HashFunction* OpenSSL_Engine::find_hash(in SCAN_Name request,
 													 Algorithm_Factory&) const
 {
 #if !defined(OPENSSL_NO_SHA)

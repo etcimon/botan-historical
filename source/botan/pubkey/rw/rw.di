@@ -17,12 +17,12 @@ class RW_PublicKey : public abstract IF_Scheme_PublicKey
 	public:
 		string algo_name() const { return "RW"; }
 
-		RW_PublicKey(const AlgorithmIdentifier& alg_id,
-						 in SafeArray!byte key_bits) :
+		RW_PublicKey(in AlgorithmIdentifier alg_id,
+						 in SafeVector!byte key_bits) :
 			IF_Scheme_PublicKey(alg_id, key_bits)
 		{}
 
-		RW_PublicKey(const BigInt& mod, const BigInt& exponent) :
+		RW_PublicKey(in BigInt mod, const BigInt& exponent) :
 			IF_Scheme_PublicKey(mod, exponent)
 		{}
 
@@ -37,8 +37,8 @@ class RW_PrivateKey : public RW_PublicKey,
 										  public IF_Scheme_PrivateKey
 {
 	public:
-		RW_PrivateKey(const AlgorithmIdentifier& alg_id,
-						  in SafeArray!byte key_bits,
+		RW_PrivateKey(in AlgorithmIdentifier alg_id,
+						  in SafeVector!byte key_bits,
 						  RandomNumberGenerator& rng) :
 			IF_Scheme_PrivateKey(rng, alg_id, key_bits) {}
 
@@ -59,11 +59,11 @@ class RW_PrivateKey : public RW_PublicKey,
 class RW_Signature_Operation : public PK_Ops::Signature
 {
 	public:
-		RW_Signature_Operation(const RW_PrivateKey& rw);
+		RW_Signature_Operation(in RW_PrivateKey rw);
 
 		size_t max_input_bits() const { return (n.bits() - 1); }
 
-		SafeArray!byte sign(in byte[] msg, size_t msg_len,
+		SafeVector!byte sign(in byte[] msg, size_t msg_len,
 										RandomNumberGenerator& rng);
 	private:
 		const BigInt& n;
@@ -82,14 +82,14 @@ class RW_Signature_Operation : public PK_Ops::Signature
 class RW_Verification_Operation : public PK_Ops::Verification
 {
 	public:
-		RW_Verification_Operation(const RW_PublicKey& rw) :
+		RW_Verification_Operation(in RW_PublicKey rw) :
 			n(rw.get_n()), powermod_e_n(rw.get_e(), rw.get_n())
 		{}
 
 		size_t max_input_bits() const { return (n.bits() - 1); }
 		bool with_recovery() const { return true; }
 
-		SafeArray!byte verify_mr(in byte[] msg, size_t msg_len);
+		SafeVector!byte verify_mr(in byte[] msg, size_t msg_len);
 
 	private:
 		const BigInt& n;

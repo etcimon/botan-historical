@@ -47,7 +47,7 @@ class BigInt
 	  * Copy Constructor
 	  * @param other the BigInt to copy
 	  */
-	  BigInt(const BigInt& other);
+	  BigInt(in BigInt other);
 
 	  /**
 	  * Create BigInt from a string. If the string starts with 0x the
@@ -102,7 +102,7 @@ class BigInt
 	  /**
 	  * Copy assignment
 	  */
-	  BigInt& operator=(const BigInt&) = default;
+	  BigInt& operator=(in BigInt) = default;
 
 	  /**
 	  * Swap this value with another
@@ -118,31 +118,31 @@ class BigInt
 	  * += operator
 	  * @param y the BigInt to add to this
 	  */
-	  BigInt& operator+=(const BigInt& y);
+	  BigInt& operator+=(in BigInt y);
 
 	  /**
 	  * -= operator
 	  * @param y the BigInt to subtract from this
 	  */
-	  BigInt& operator-=(const BigInt& y);
+	  BigInt& operator-=(in BigInt y);
 
 	  /**
 	  * *= operator
 	  * @param y the BigInt to multiply with this
 	  */
-	  BigInt& operator*=(const BigInt& y);
+	  BigInt& operator*=(in BigInt y);
 
 	  /**
 	  * /= operator
 	  * @param y the BigInt to divide this by
 	  */
-	  BigInt& operator/=(const BigInt& y);
+	  BigInt& operator/=(in BigInt y);
 
 	  /**
 	  * Modulo operator
 	  * @param y the modulus to reduce this by
 	  */
-	  BigInt& operator%=(const BigInt& y);
+	  BigInt& operator%=(in BigInt y);
 
 	  /**
 	  * Modulo operator
@@ -207,7 +207,7 @@ class BigInt
 	  * @result if (this<n) return -1, if (this>n) return 1, if both
 	  * values are identical return 0 [like Perl's <=> operator]
 	  */
-	  s32bit cmp(const BigInt& n, bool check_signs = true) const;
+	  s32bit cmp(in BigInt n, bool check_signs = true) const;
 
 	  /**
 	  * Test if the integer has an even value
@@ -273,14 +273,14 @@ class BigInt
 	  * @result the integer extracted from the register starting at
 	  * offset with specified length
 	  */
-	  u32bit get_substring(size_t offset, size_t length) const;
+	  uint get_substring(size_t offset, size_t length) const;
 
 	  /**
-	  * Convert this value into a u32bit, if it is in the range
-	  * [0 ... 2**32-1], or otherwise throw an exception.
-	  * @result the value as a u32bit if conversion is possible
+	  * Convert this value into a uint, if it is in the range
+	  * [0 ... 2**32-1], or otherwise throw new an exception.
+	  * @result the value as a uint if conversion is possible
 	  */
-	  u32bit to_u32bit() const;
+	  uint to_uint() const;
 
 	  /**
 	  * @param n the offset to get a byte from
@@ -406,10 +406,10 @@ class BigInt
 	  void binary_decode(in byte[] buf, size_t length);
 
 	  /**
-	  * Read integer value from a byte array (SafeArray!byte)
+	  * Read integer value from a byte array (SafeVector!byte)
 	  * @param buf the array to load from
 	  */
-	  void binary_decode(in SafeArray!byte buf)
+	  void binary_decode(in SafeVector!byte buf)
 		  {
 		  binary_decode(&buf[0], buf.size());
 		  }
@@ -448,7 +448,7 @@ class BigInt
 	  * @param base number-base of resulting byte array representation
 	  * @result secure_vector of bytes containing the integer with given base
 	  */
-	  static std::vector<byte> encode(const BigInt& n, Base base = Binary);
+	  static Vector!( byte ) encode(in BigInt n, Base base = Binary);
 
 	  /**
 	  * Encode the integer value from a BigInt to a secure_vector of bytes
@@ -456,7 +456,7 @@ class BigInt
 	  * @param base number-base of resulting byte array representation
 	  * @result secure_vector of bytes containing the integer with given base
 	  */
-	  static SafeArray!byte encode_locked(const BigInt& n,
+	  static SafeVector!byte encode_locked(in BigInt n,
 															 Base base = Binary);
 
 	  /**
@@ -484,7 +484,7 @@ class BigInt
 	  * @param base number-base of the integer in buf
 	  * @result BigInt representing the integer in the byte array
 	  */
-	  static BigInt decode(in SafeArray!byte buf,
+	  static BigInt decode(in SafeVector!byte buf,
 								  Base base = Binary)
 		  {
 		  return BigInt::decode(&buf[0], buf.size(), base);
@@ -496,7 +496,7 @@ class BigInt
 	  * @param base number-base of the integer in buf
 	  * @result BigInt representing the integer in the byte array
 	  */
-	  static BigInt decode(in Array!byte buf,
+	  static BigInt decode(in Vector!byte buf,
 								  Base base = Binary)
 		  {
 		  return BigInt::decode(&buf[0], buf.size(), base);
@@ -505,10 +505,10 @@ class BigInt
 	  /**
 	  * Encode a BigInt to a byte array according to IEEE 1363
 	  * @param n the BigInt to encode
-	  * @param bytes the length of the resulting SafeArray!byte
-	  * @result a SafeArray!byte containing the encoded BigInt
+	  * @param bytes the length of the resulting SafeVector!byte
+	  * @result a SafeVector!byte containing the encoded BigInt
 	  */
-	  static SafeArray!byte encode_1363(const BigInt& n, size_t bytes);
+	  static SafeVector!byte encode_1363(in BigInt n, size_t bytes);
 
 	private:
 		secure_vector<word> m_reg;
@@ -518,29 +518,29 @@ class BigInt
 /*
 * Arithmetic Operators
 */
-BigInt operator+(const BigInt& x, const BigInt& y);
-BigInt operator-(const BigInt& x, const BigInt& y);
-BigInt operator*(const BigInt& x, const BigInt& y);
-BigInt operator/(const BigInt& x, const BigInt& d);
-BigInt operator%(const BigInt& x, const BigInt& m);
-word	operator%(const BigInt& x, word m);
-BigInt operator<<(const BigInt& x, size_t n);
-BigInt operator>>(const BigInt& x, size_t n);
+BigInt operator+(in BigInt x, const BigInt& y);
+BigInt operator-(in BigInt x, const BigInt& y);
+BigInt operator*(in BigInt x, const BigInt& y);
+BigInt operator/(in BigInt x, const BigInt& d);
+BigInt operator%(in BigInt x, const BigInt& m);
+word	operator%(in BigInt x, word m);
+BigInt operator<<(in BigInt x, size_t n);
+BigInt operator>>(in BigInt x, size_t n);
 
 /*
 * Comparison Operators
 */
-inline bool operator==(const BigInt& a, const BigInt& b)
+inline bool operator==(in BigInt a, const BigInt& b)
 { return (a.cmp(b) == 0); }
-inline bool operator!=(const BigInt& a, const BigInt& b)
+inline bool operator!=(in BigInt a, const BigInt& b)
 { return (a.cmp(b) != 0); }
-inline bool operator<=(const BigInt& a, const BigInt& b)
+inline bool operator<=(in BigInt a, const BigInt& b)
 { return (a.cmp(b) <= 0); }
-inline bool operator>=(const BigInt& a, const BigInt& b)
+inline bool operator>=(in BigInt a, const BigInt& b)
 { return (a.cmp(b) >= 0); }
-inline bool operator<(const BigInt& a, const BigInt& b)
+inline bool operator<(in BigInt a, const BigInt& b)
 { return (a.cmp(b) < 0); }
-inline bool operator>(const BigInt& a, const BigInt& b)
+inline bool operator>(in BigInt a, const BigInt& b)
 { return (a.cmp(b) > 0); }
 
 /*

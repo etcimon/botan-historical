@@ -32,7 +32,7 @@
 * Look for an algorithm with this name
 */
 MessageAuthenticationCode*
-Core_Engine::find_mac(const SCAN_Name& request,
+Core_Engine::find_mac(in SCAN_Name request,
 							 Algorithm_Factory& af) const
 {
 

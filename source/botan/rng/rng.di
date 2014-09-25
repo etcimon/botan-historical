@@ -39,9 +39,9 @@ class RandomNumberGenerator
 		* @param bytes number of bytes in the result
 		* @return randomized vector of length bytes
 		*/
-		abstract SafeArray!byte random_vec(size_t bytes)
+		abstract SafeVector!byte random_vec(size_t bytes)
 		{
-			SafeArray!byte output(bytes);
+			SafeVector!byte output(bytes);
 			randomize(&output[0], output.size());
 			return output;
 		}
@@ -90,8 +90,8 @@ class RandomNumberGenerator
 		/*
 		* Never copy a RNG, create a new one
 		*/
-		RandomNumberGenerator(const RandomNumberGenerator& rng) = delete;
-		RandomNumberGenerator& operator=(const RandomNumberGenerator& rng) = delete;
+		RandomNumberGenerator(in RandomNumberGenerator rng) = delete;
+		RandomNumberGenerator& operator=(in RandomNumberGenerator rng) = delete;
 
 		RandomNumberGenerator() {}
 		abstract ~RandomNumberGenerator() {}
@@ -103,7 +103,7 @@ class RandomNumberGenerator
 class Null_RNG : public RandomNumberGenerator
 {
 	public:
-		void randomize(byte[], size_t) override { throw PRNG_Unseeded("Null_RNG"); }
+		void randomize(byte[], size_t) override { throw new PRNG_Unseeded("Null_RNG"); }
 
 		void clear() override {}
 

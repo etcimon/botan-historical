@@ -11,7 +11,7 @@
 /*
 * Power_Mod Constructor
 */
-Power_Mod::Power_Mod(const BigInt& n, Usage_Hints hints)
+Power_Mod::Power_Mod(in BigInt n, Usage_Hints hints)
 {
 	core = nullptr;
 	set_modulus(n, hints);
@@ -20,7 +20,7 @@ Power_Mod::Power_Mod(const BigInt& n, Usage_Hints hints)
 /*
 * Power_Mod Copy Constructor
 */
-Power_Mod::Power_Mod(const Power_Mod& other)
+Power_Mod::Power_Mod(in Power_Mod other)
 {
 	core = nullptr;
 	if(other.core)
@@ -30,7 +30,7 @@ Power_Mod::Power_Mod(const Power_Mod& other)
 /*
 * Power_Mod Assignment Operator
 */
-Power_Mod& Power_Mod::operator=(const Power_Mod& other)
+Power_Mod& Power_Mod::operator=(in Power_Mod other)
 {
 	delete core;
 	core = nullptr;
@@ -50,7 +50,7 @@ Power_Mod::~Power_Mod()
 /*
 * Set the modulus
 */
-void Power_Mod::set_modulus(const BigInt& n, Usage_Hints hints) const
+void Power_Mod::set_modulus(in BigInt n, Usage_Hints hints) const
 {
 	delete core;
 	core = nullptr;
@@ -68,33 +68,33 @@ void Power_Mod::set_modulus(const BigInt& n, Usage_Hints hints) const
 		}
 
 		if(!core)
-			throw Lookup_Error("Power_Mod: Unable to find a working engine");
+			throw new Lookup_Error("Power_Mod: Unable to find a working engine");
 	}
 }
 
 /*
 * Set the base
 */
-void Power_Mod::set_base(const BigInt& b) const
+void Power_Mod::set_base(in BigInt b) const
 {
 	if(b.is_zero() || b.is_negative())
-		throw Invalid_Argument("Power_Mod::set_base: arg must be > 0");
+		throw new Invalid_Argument("Power_Mod::set_base: arg must be > 0");
 
 	if(!core)
-		throw Internal_Error("Power_Mod::set_base: core was NULL");
+		throw new Internal_Error("Power_Mod::set_base: core was NULL");
 	core->set_base(b);
 }
 
 /*
 * Set the exponent
 */
-void Power_Mod::set_exponent(const BigInt& e) const
+void Power_Mod::set_exponent(in BigInt e) const
 {
 	if(e.is_negative())
-		throw Invalid_Argument("Power_Mod::set_exponent: arg must be > 0");
+		throw new Invalid_Argument("Power_Mod::set_exponent: arg must be > 0");
 
 	if(!core)
-		throw Internal_Error("Power_Mod::set_exponent: core was NULL");
+		throw new Internal_Error("Power_Mod::set_exponent: core was NULL");
 	core->set_exponent(e);
 }
 
@@ -104,7 +104,7 @@ void Power_Mod::set_exponent(const BigInt& e) const
 BigInt Power_Mod::execute() const
 {
 	if(!core)
-		throw Internal_Error("Power_Mod::execute: core was NULL");
+		throw new Internal_Error("Power_Mod::execute: core was NULL");
 	return core->execute();
 }
 
@@ -150,7 +150,7 @@ namespace {
 /*
 * Choose potentially useful hints
 */
-Power_Mod::Usage_Hints choose_base_hints(const BigInt& b, const BigInt& n)
+Power_Mod::Usage_Hints choose_base_hints(in BigInt b, const BigInt& n)
 {
 	if(b == 2)
 		return Power_Mod::Usage_Hints(Power_Mod::BASE_IS_2 |
@@ -170,7 +170,7 @@ Power_Mod::Usage_Hints choose_base_hints(const BigInt& b, const BigInt& n)
 /*
 * Choose potentially useful hints
 */
-Power_Mod::Usage_Hints choose_exp_hints(const BigInt& e, const BigInt& n)
+Power_Mod::Usage_Hints choose_exp_hints(in BigInt e, const BigInt& n)
 {
 	const size_t e_bits = e.bits();
 	const size_t n_bits = n.bits();
@@ -187,7 +187,7 @@ Power_Mod::Usage_Hints choose_exp_hints(const BigInt& e, const BigInt& n)
 /*
 * Fixed_Exponent_Power_Mod Constructor
 */
-Fixed_Exponent_Power_Mod::Fixed_Exponent_Power_Mod(const BigInt& e,
+Fixed_Exponent_Power_Mod::Fixed_Exponent_Power_Mod(in BigInt e,
 																	const BigInt& n,
 																	Usage_Hints hints) :
 	Power_Mod(n, Usage_Hints(hints | EXP_IS_FIXED | choose_exp_hints(e, n)))
@@ -198,7 +198,7 @@ Fixed_Exponent_Power_Mod::Fixed_Exponent_Power_Mod(const BigInt& e,
 /*
 * Fixed_Base_Power_Mod Constructor
 */
-Fixed_Base_Power_Mod::Fixed_Base_Power_Mod(const BigInt& b, const BigInt& n,
+Fixed_Base_Power_Mod::Fixed_Base_Power_Mod(in BigInt b, const BigInt& n,
 														 Usage_Hints hints) :
 	Power_Mod(n, Usage_Hints(hints | BASE_IS_FIXED | choose_base_hints(b, n)))
 {

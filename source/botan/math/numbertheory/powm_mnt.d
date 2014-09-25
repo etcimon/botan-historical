@@ -11,7 +11,7 @@
 /*
 * Set the exponent
 */
-void Montgomery_Exponentiator::set_exponent(const BigInt& exp)
+void Montgomery_Exponentiator::set_exponent(in BigInt exp)
 {
 	m_exp = exp;
 	m_exp_bits = exp.bits();
@@ -20,7 +20,7 @@ void Montgomery_Exponentiator::set_exponent(const BigInt& exp)
 /*
 * Set the base
 */
-void Montgomery_Exponentiator::set_base(const BigInt& base)
+void Montgomery_Exponentiator::set_base(in BigInt base)
 {
 	m_window_bits = Power_Mod::window_bits(m_exp.bits(), base.bits(), m_hints);
 
@@ -93,7 +93,7 @@ BigInt Montgomery_Exponentiator::execute() const
 			x = z;
 		}
 
-		const u32bit nibble = m_exp.get_substring(m_window_bits*(i-1), m_window_bits);
+		const uint nibble = m_exp.get_substring(m_window_bits*(i-1), m_window_bits);
 
 		const BigInt& y = m_g[nibble];
 
@@ -118,7 +118,7 @@ BigInt Montgomery_Exponentiator::execute() const
 /*
 * Montgomery_Exponentiator Constructor
 */
-Montgomery_Exponentiator::Montgomery_Exponentiator(const BigInt& mod,
+Montgomery_Exponentiator::Montgomery_Exponentiator(in BigInt mod,
 																	Power_Mod::Usage_Hints hints) :
 	m_modulus(mod),
 	m_mod_words(m_modulus.sig_words()),
@@ -127,7 +127,7 @@ Montgomery_Exponentiator::Montgomery_Exponentiator(const BigInt& mod,
 {
 	// Montgomery reduction only works for positive odd moduli
 	if(!m_modulus.is_positive() || m_modulus.is_even())
-		throw Invalid_Argument("Montgomery_Exponentiator: invalid modulus");
+		throw new Invalid_Argument("Montgomery_Exponentiator: invalid modulus");
 
 	m_mod_prime = monty_inverse(mod.word_at(0));
 

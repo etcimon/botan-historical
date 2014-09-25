@@ -14,7 +14,7 @@
   #include <botan/internal/clmul.h>
   #include <botan/cpuid.h>
 #endif
-void GHASH::gcm_multiply(SafeArray!byte x) const
+void GHASH::gcm_multiply(SafeVector!byte x) const
 {
 #if defined(BOTAN_HAS_GCM_CLMUL)
 	if(CPUID::has_clmul())
@@ -54,7 +54,7 @@ void GHASH::gcm_multiply(SafeArray!byte x) const
 	store_be<u64bit>(&x[0], Z[0], Z[1]);
 }
 
-void GHASH::ghash_update(SafeArray!byte ghash,
+void GHASH::ghash_update(SafeVector!byte ghash,
 								 in byte[] input, size_t length)
 {
 	const size_t BS = 16;
@@ -107,19 +107,19 @@ void GHASH::update(in byte[] input, size_t length)
 	ghash_update(m_ghash, input, length);
 }
 
-void GHASH::add_final_block(SafeArray!byte hash,
+void GHASH::add_final_block(SafeVector!byte hash,
 									 size_t ad_len, size_t text_len)
 {
-	SafeArray!byte final_block(16);
+	SafeVector!byte final_block(16);
 	store_be<u64bit>(&final_block[0], 8*ad_len, 8*text_len);
 	ghash_update(hash, &final_block[0], final_block.size());
 }
 
-SafeArray!byte GHASH::final()
+SafeVector!byte GHASH::flush()
 {
 	add_final_block(m_ghash, m_ad_len, m_text_len);
 
-	SafeArray!byte mac;
+	SafeVector!byte mac;
 	mac.swap(m_ghash);
 
 	mac ^= m_nonce;
@@ -127,10 +127,10 @@ SafeArray!byte GHASH::final()
 	return mac;
 }
 
-SafeArray!byte GHASH::nonce_hash(in byte[] nonce, size_t nonce_len)
+SafeVector!byte GHASH::nonce_hash(in byte[] nonce, size_t nonce_len)
 {
 	BOTAN_ASSERT(m_ghash.size() == 0, "nonce_hash called during wrong time");
-	SafeArray!byte y0(16);
+	SafeVector!byte y0(16);
 
 	ghash_update(y0, nonce, nonce_len);
 	add_final_block(y0, 0, nonce_len);
@@ -154,7 +154,7 @@ GCM_Mode::GCM_Mode(BlockCipher* cipher, size_t tag_size) :
 	m_cipher_name(cipher->name())
 {
 	if(cipher->block_size() != BS)
-		throw std::invalid_argument("GCM requires a 128 bit cipher so cannot be used with " +
+		throw new std::invalid_argument("GCM requires a 128 bit cipher so cannot be used with " +
 											 cipher->name());
 
 	m_ghash.reset(new GHASH);
@@ -162,7 +162,7 @@ GCM_Mode::GCM_Mode(BlockCipher* cipher, size_t tag_size) :
 	m_ctr.reset(new CTR_BE(cipher)); // CTR_BE takes ownership of cipher
 
 	if(m_tag_size != 8 && m_tag_size != 16)
-		throw Invalid_Argument(name() + ": Bad tag size " + std::to_string(m_tag_size));
+		throw new Invalid_Argument(name() + ": Bad tag size " + std::to_string(m_tag_size));
 }
 
 void GCM_Mode::clear()
@@ -190,10 +190,10 @@ void GCM_Mode::key_schedule(in byte[] key)
 {
 	m_ctr->set_key(key, keylen);
 
-	const std::vector<byte> zeros(BS);
+	const Vector!( byte ) zeros(BS);
 	m_ctr->set_iv(&zeros[0], zeros.size());
 
-	SafeArray!byte H(BS);
+	SafeVector!byte H(BS);
 	m_ctr->encipher(H);
 	m_ghash->set_key(H);
 }
@@ -203,12 +203,12 @@ void GCM_Mode::set_associated_data(in byte[] ad, size_t ad_len)
 	m_ghash->set_associated_data(ad, ad_len);
 }
 
-SafeArray!byte GCM_Mode::start(in byte[] nonce, size_t nonce_len)
+SafeVector!byte GCM_Mode::start(in byte[] nonce, size_t nonce_len)
 {
 	if(!valid_nonce_length(nonce_len))
-		throw Invalid_IV_Length(name(), nonce_len);
+		throw new Invalid_IV_Length(name(), nonce_len);
 
-	SafeArray!byte y0(BS);
+	SafeVector!byte y0(BS);
 
 	if(nonce_len == 12)
 	{
@@ -222,15 +222,15 @@ SafeArray!byte GCM_Mode::start(in byte[] nonce, size_t nonce_len)
 
 	m_ctr->set_iv(&y0[0], y0.size());
 
-	SafeArray!byte m_enc_y0(BS);
+	SafeVector!byte m_enc_y0(BS);
 	m_ctr->encipher(m_enc_y0);
 
 	m_ghash->start(&m_enc_y0[0], m_enc_y0.size());
 
-	return SafeArray!byte();
+	return SafeVector!byte();
 }
 
-void GCM_Encryption::update(SafeArray!byte buffer, size_t offset)
+void GCM_Encryption::update(SafeVector!byte buffer, size_t offset)
 {
 	BOTAN_ASSERT(buffer.size() >= offset, "Offset is sane");
 	const size_t sz = buffer.size() - offset;
@@ -240,14 +240,14 @@ void GCM_Encryption::update(SafeArray!byte buffer, size_t offset)
 	m_ghash->update(buf, sz);
 }
 
-void GCM_Encryption::finish(SafeArray!byte buffer, size_t offset)
+void GCM_Encryption::finish(SafeVector!byte buffer, size_t offset)
 {
 	update(buffer, offset);
-	auto mac = m_ghash->final();
+	auto mac = m_ghash->flush();
 	buffer += std::make_pair(&mac[0], tag_size());
 }
 
-void GCM_Decryption::update(SafeArray!byte buffer, size_t offset)
+void GCM_Decryption::update(SafeVector!byte buffer, size_t offset)
 {
 	BOTAN_ASSERT(buffer.size() >= offset, "Offset is sane");
 	const size_t sz = buffer.size() - offset;
@@ -257,7 +257,7 @@ void GCM_Decryption::update(SafeArray!byte buffer, size_t offset)
 	m_ctr->cipher(buf, buf, sz);
 }
 
-void GCM_Decryption::finish(SafeArray!byte buffer, size_t offset)
+void GCM_Decryption::finish(SafeVector!byte buffer, size_t offset)
 {
 	BOTAN_ASSERT(buffer.size() >= offset, "Offset is sane");
 	const size_t sz = buffer.size() - offset;
@@ -274,12 +274,12 @@ void GCM_Decryption::finish(SafeArray!byte buffer, size_t offset)
 		m_ctr->cipher(buf, buf, remaining);
 	}
 
-	auto mac = m_ghash->final();
+	auto mac = m_ghash->flush();
 
 	const byte* included_tag = &buffer[remaining];
 
 	if(!same_mem(&mac[0], included_tag, tag_size()))
-		throw Integrity_Failure("GCM tag check failed");
+		throw new Integrity_Failure("GCM tag check failed");
 
 	buffer.resize(offset + remaining);
 }

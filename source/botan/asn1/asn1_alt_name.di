@@ -24,7 +24,7 @@ class AlternativeName : public ASN1_Object
 		void add_attribute(in string, in string);
 		std::multimap<string, string> get_attributes() const;
 
-		void add_othername(const OID&, in string, ASN1_Tag);
+		void add_othername(in OID, in string, ASN1_Tag);
 		std::multimap<OID, ASN1_String> get_othernames() const;
 
 		bool has_items() const;

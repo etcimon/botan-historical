@@ -14,7 +14,7 @@ class Modular_Reducer
 	public:
 		const BigInt& get_modulus() const { return modulus; }
 
-		BigInt reduce(const BigInt& x) const;
+		BigInt reduce(in BigInt x) const;
 
 		/**
 		* Multiply mod p
@@ -22,7 +22,7 @@ class Modular_Reducer
 		* @param y
 		* @return (x * y) % p
 		*/
-		BigInt multiply(const BigInt& x, const BigInt& y) const
+		BigInt multiply(in BigInt x, const BigInt& y) const
 		{ return reduce(x * y); }
 
 		/**
@@ -30,7 +30,7 @@ class Modular_Reducer
 		* @param x
 		* @return (x * x) % p
 		*/
-		BigInt square(const BigInt& x) const
+		BigInt square(in BigInt x) const
 		{ return reduce(Botan::square(x)); }
 
 		/**
@@ -38,13 +38,13 @@ class Modular_Reducer
 		* @param x
 		* @return (x * x * x) % p
 		*/
-		BigInt cube(const BigInt& x) const
+		BigInt cube(in BigInt x) const
 		{ return multiply(x, this->square(x)); }
 
 		bool initialized() const { return (mod_words != 0); }
 
 		Modular_Reducer() { mod_words = 0; }
-		Modular_Reducer(const BigInt& mod);
+		Modular_Reducer(in BigInt mod);
 	private:
 		BigInt modulus, modulus_2, mu;
 		size_t mod_words;

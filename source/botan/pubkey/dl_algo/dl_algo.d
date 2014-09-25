@@ -21,13 +21,13 @@ AlgorithmIdentifier DL_Scheme_PublicKey::algorithm_identifier() const
 										group.DER_encode(group_format()));
 }
 
-std::vector<byte> DL_Scheme_PublicKey::x509_subject_public_key() const
+Vector!( byte ) DL_Scheme_PublicKey::x509_subject_public_key() const
 {
 	return DER_Encoder().encode(y).get_contents_unlocked();
 }
 
-DL_Scheme_PublicKey::DL_Scheme_PublicKey(const AlgorithmIdentifier& alg_id,
-													  in SafeArray!byte key_bits,
+DL_Scheme_PublicKey::DL_Scheme_PublicKey(in AlgorithmIdentifier alg_id,
+													  in SafeVector!byte key_bits,
 													  DL_Group::Format format)
 {
 	group.BER_decode(alg_id.parameters, format);
@@ -35,13 +35,13 @@ DL_Scheme_PublicKey::DL_Scheme_PublicKey(const AlgorithmIdentifier& alg_id,
 	BER_Decoder(key_bits).decode(y);
 }
 
-SafeArray!byte DL_Scheme_PrivateKey::pkcs8_Private_Key() const
+SafeVector!byte DL_Scheme_PrivateKey::pkcs8_Private_Key() const
 {
 	return DER_Encoder().encode(x).get_contents();
 }
 
-DL_Scheme_PrivateKey::DL_Scheme_PrivateKey(const AlgorithmIdentifier& alg_id,
-														 in SafeArray!byte key_bits,
+DL_Scheme_PrivateKey::DL_Scheme_PrivateKey(in AlgorithmIdentifier alg_id,
+														 in SafeVector!byte key_bits,
 														 DL_Group::Format format)
 {
 	group.BER_decode(alg_id.parameters, format);

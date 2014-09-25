@@ -12,9 +12,9 @@
 * @param input the input block
 * @param M the message buffer
 */
-extern "C" void botan_md4_x86_32_compress(u32bit digest[4],
+extern "C" void botan_md4_x86_32_compress(uint digest[4],
 													 const byte input[64],
-													 u32bit M[16]);
+													 uint M[16]);
 
 /*
 * MD4 Compression Function

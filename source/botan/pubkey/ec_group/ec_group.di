@@ -33,7 +33,7 @@ class EC_Group
 		* @param order the order of the base point
 		* @param cofactor the cofactor
 		*/
-		EC_Group(const CurveGFp& curve,
+		EC_Group(in CurveGFp curve,
 					const PointGFp& base_point,
 					const BigInt& order,
 					const BigInt& cofactor) :
@@ -48,13 +48,13 @@ class EC_Group
 		* Decode a BER encoded ECC domain parameter set
 		* @param ber_encoding the bytes of the BER encoding
 		*/
-		EC_Group(in Array!byte ber_encoding);
+		EC_Group(in Vector!byte ber_encoding);
 
 		/**
-		* Create an EC domain by OID (or throw if unknown)
+		* Create an EC domain by OID (or throw new if unknown)
 		* @param oid the OID of the EC domain to create
 		*/
-		EC_Group(const OID& oid);
+		EC_Group(in OID oid);
 
 		/**
 		* Create an EC domain from PEM encoding (as from PEM_encode), or
@@ -68,7 +68,7 @@ class EC_Group
 		* @param form of encoding to use
 		* @returns bytes encododed as DER
 		*/
-		std::vector<byte> DER_encode(EC_Group_Encoding form) const;
+		Vector!( byte ) DER_encode(EC_Group_Encoding form) const;
 
 		/**
 		* Return the PEM encoding (always in explicit form)
@@ -108,7 +108,7 @@ class EC_Group
 		*/
 		string get_oid() const { return oid; }
 
-		bool operator==(const EC_Group& other) const
+		bool operator==(in EC_Group other) const
 		{
 			return ((get_curve() == other.get_curve()) &&
 					  (get_base_point() == other.get_base_point()) &&
@@ -128,7 +128,7 @@ class EC_Group
 		string oid;
 };
 
-inline bool operator!=(const EC_Group& lhs,
+inline bool operator!=(in EC_Group lhs,
 							  const EC_Group& rhs)
 {
 	return !(lhs == rhs);

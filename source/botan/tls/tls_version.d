@@ -33,10 +33,10 @@ bool Protocol_Version::is_datagram_protocol() const
 	return major_version() == 254;
 }
 
-bool Protocol_Version::operator>(const Protocol_Version& other) const
+bool Protocol_Version::operator>(in Protocol_Version other) const
 {
 	if(this->is_datagram_protocol() != other.is_datagram_protocol())
-		throw TLS_Exception(Alert::PROTOCOL_VERSION,
+		throw new TLS_Exception(Alert::PROTOCOL_VERSION,
 								  "Version comparing " + to_string() +
 								  " with " + other.to_string());
 

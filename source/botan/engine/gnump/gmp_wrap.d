@@ -19,7 +19,7 @@
 /*
 * GMP_MPZ Constructor
 */
-GMP_MPZ::GMP_MPZ(const BigInt& input)
+GMP_MPZ::GMP_MPZ(in BigInt input)
 {
 	mpz_init(value);
 	if(in != 0)
@@ -38,7 +38,7 @@ GMP_MPZ::GMP_MPZ(in byte[] input)
 /*
 * GMP_MPZ Copy Constructor
 */
-GMP_MPZ::GMP_MPZ(const GMP_MPZ& other)
+GMP_MPZ::GMP_MPZ(in GMP_MPZ other)
 {
 	mpz_init_set(value, other.value);
 }
@@ -54,7 +54,7 @@ GMP_MPZ::~GMP_MPZ()
 /*
 * GMP_MPZ Assignment Operator
 */
-GMP_MPZ& GMP_MPZ::operator=(const GMP_MPZ& other)
+GMP_MPZ& GMP_MPZ::operator=(in GMP_MPZ other)
 {
 	mpz_set(value, other.value);
 	return (*this);

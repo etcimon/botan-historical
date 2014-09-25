@@ -19,10 +19,10 @@ void SSL3_MAC::add_data(in byte[] input, size_t length)
 */
 void SSL3_MAC::final_result(byte mac[])
 {
-	m_hash->final(mac);
+	m_hash->flushInto(mac);
 	m_hash->update(m_okey);
 	m_hash->update(mac, output_length());
-	m_hash->final(mac);
+	m_hash->flushInto(mac);
 	m_hash->update(m_ikey);
 }
 
@@ -81,7 +81,7 @@ MessageAuthenticationCode* SSL3_MAC::clone() const
 SSL3_MAC::SSL3_MAC(HashFunction* hash) : m_hash(hash)
 {
 	if(m_hash->hash_block_size() == 0)
-		throw Invalid_Argument("SSL3-MAC cannot be used with " + m_hash->name());
+		throw new Invalid_Argument("SSL3-MAC cannot be used with " + m_hash->name());
 }
 
 }

@@ -22,7 +22,7 @@ X509_DN::X509_DN()
 /*
 * Create an X509_DN
 */
-X509_DN::X509_DN(const std::multimap<OID, string>& args)
+X509_DN::X509_DN(in std::multimap<OID, string> args)
 {
 	for(auto i = args.begin(); i != args.end(); ++i)
 		add_attribute(i->first, i->second);
@@ -31,7 +31,7 @@ X509_DN::X509_DN(const std::multimap<OID, string>& args)
 /*
 * Create an X509_DN
 */
-X509_DN::X509_DN(const std::multimap<string, string>& args)
+X509_DN::X509_DN(in std::multimap<string, string> args)
 {
 	for(auto i = args.begin(); i != args.end(); ++i)
 		add_attribute(OIDS::lookup(i->first), i->second);
@@ -50,7 +50,7 @@ void X509_DN::add_attribute(in string type,
 /*
 * Add an attribute to a X509_DN
 */
-void X509_DN::add_attribute(const OID& oid, in string str)
+void X509_DN::add_attribute(in OID oid, in string str)
 {
 	if(str == "")
 		return;
@@ -89,13 +89,13 @@ std::multimap<string, string> X509_DN::contents() const
 /*
 * Get a single attribute type
 */
-std::vector<string> X509_DN::get_attribute(in string attr) const
+Vector!( string ) X509_DN::get_attribute(in string attr) const
 {
 	const OID oid = OIDS::lookup(deref_info_field(attr));
 
 	auto range = dn_info.equal_range(oid);
 
-	std::vector<string> values;
+	Vector!( string ) values;
 	for(auto i = range.first; i != range.second; ++i)
 		values.push_back(i->second.value());
 	return values;
@@ -104,7 +104,7 @@ std::vector<string> X509_DN::get_attribute(in string attr) const
 /*
 * Return the BER encoded data, if any
 */
-std::vector<byte> X509_DN::get_bits() const
+Vector!( byte ) X509_DN::get_bits() const
 {
 	return dn_bits;
 }
@@ -129,7 +129,7 @@ string X509_DN::deref_info_field(in string info)
 /*
 * Compare two X509_DNs for equality
 */
-bool operator==(const X509_DN& dn1, const X509_DN& dn2)
+bool operator==(in X509_DN dn1, const X509_DN& dn2)
 {
 	auto attr1 = dn1.get_attributes();
 	auto attr2 = dn2.get_attributes();
@@ -157,7 +157,7 @@ bool operator==(const X509_DN& dn1, const X509_DN& dn2)
 /*
 * Compare two X509_DNs for inequality
 */
-bool operator!=(const X509_DN& dn1, const X509_DN& dn2)
+bool operator!=(in X509_DN dn1, const X509_DN& dn2)
 {
 	return !(dn1 == dn2);
 }
@@ -165,7 +165,7 @@ bool operator!=(const X509_DN& dn1, const X509_DN& dn2)
 /*
 * Induce an arbitrary ordering on DNs
 */
-bool operator<(const X509_DN& dn1, const X509_DN& dn2)
+bool operator<(in X509_DN dn1, const X509_DN& dn2)
 {
 	auto attr1 = dn1.get_attributes();
 	auto attr2 = dn2.get_attributes();
@@ -197,7 +197,7 @@ void do_ava(DER_Encoder& encoder,
 	const bool exists = (dn_info.find(oid) != dn_info.end());
 
 	if(!exists && must_exist)
-		throw Encoding_Error("X509_DN: No entry for " + oid_str);
+		throw new Encoding_Error("X509_DN: No entry for " + oid_str);
 	if(!exists) return;
 
 	auto range = dn_info.equal_range(oid);
@@ -245,7 +245,7 @@ void X509_DN::encode_into(DER_Encoder& der) const
 */
 void X509_DN::decode_from(BER_Decoder& source)
 {
-	std::vector<byte> bits;
+	Vector!( byte ) bits;
 
 	source.start_cons(SEQUENCE)
 		.raw_bytes(bits)

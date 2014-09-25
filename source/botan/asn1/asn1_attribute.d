@@ -12,7 +12,7 @@
 /*
 * Create an Attribute
 */
-Attribute::Attribute(const OID& attr_oid, in Array!byte attr_value)
+Attribute::Attribute(in OID attr_oid, in Vector!byte attr_value)
 {
 	oid = attr_oid;
 	parameters = attr_value;
@@ -22,7 +22,7 @@ Attribute::Attribute(const OID& attr_oid, in Array!byte attr_value)
 * Create an Attribute
 */
 Attribute::Attribute(in string attr_oid,
-							in Array!byte attr_value)
+							in Vector!byte attr_value)
 {
 	oid = OIDS::lookup(attr_oid);
 	parameters = attr_value;

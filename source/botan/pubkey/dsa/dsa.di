@@ -22,13 +22,13 @@ class DSA_PublicKey : public abstract DL_Scheme_PublicKey
 		size_t message_part_size() const { return group_q().bytes(); }
 		size_t max_input_bits() const { return group_q().bits(); }
 
-		DSA_PublicKey(const AlgorithmIdentifier& alg_id,
-						  in SafeArray!byte key_bits) :
+		DSA_PublicKey(in AlgorithmIdentifier alg_id,
+						  in SafeVector!byte key_bits) :
 			DL_Scheme_PublicKey(alg_id, key_bits, DL_Group::ANSI_X9_57)
 		{
 		}
 
-		DSA_PublicKey(const DL_Group& group, const BigInt& y);
+		DSA_PublicKey(in DL_Group group, const BigInt& y);
 	protected:
 		DSA_PublicKey() {}
 };
@@ -40,8 +40,8 @@ class DSA_PrivateKey : public DSA_PublicKey,
 											public abstract DL_Scheme_PrivateKey
 {
 	public:
-		DSA_PrivateKey(const AlgorithmIdentifier& alg_id,
-							in SafeArray!byte key_bits,
+		DSA_PrivateKey(in AlgorithmIdentifier alg_id,
+							in SafeVector!byte key_bits,
 							RandomNumberGenerator& rng);
 
 		DSA_PrivateKey(RandomNumberGenerator& rng,
@@ -57,13 +57,13 @@ class DSA_PrivateKey : public DSA_PublicKey,
 class DSA_Signature_Operation : public PK_Ops::Signature
 {
 	public:
-		DSA_Signature_Operation(const DSA_PrivateKey& dsa);
+		DSA_Signature_Operation(in DSA_PrivateKey dsa);
 
 		size_t message_parts() const { return 2; }
 		size_t message_part_size() const { return q.bytes(); }
 		size_t max_input_bits() const { return q.bits(); }
 
-		SafeArray!byte sign(in byte[] msg, size_t msg_len,
+		SafeVector!byte sign(in byte[] msg, size_t msg_len,
 										RandomNumberGenerator& rng);
 	private:
 		const BigInt& q;
@@ -78,7 +78,7 @@ class DSA_Signature_Operation : public PK_Ops::Signature
 class DSA_Verification_Operation : public PK_Ops::Verification
 {
 	public:
-		DSA_Verification_Operation(const DSA_PublicKey& dsa);
+		DSA_Verification_Operation(in DSA_PublicKey dsa);
 
 		size_t message_parts() const { return 2; }
 		size_t message_part_size() const { return q.bytes(); }

@@ -9,7 +9,7 @@
 namespace {
 
 extern "C"
-void botan_md5_x86_32_compress(u32bit[4], const byte[64], u32bit[16]);
+void botan_md5_x86_32_compress(uint[4], const byte[64], uint[16]);
 
 }
 

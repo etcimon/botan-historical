@@ -13,7 +13,7 @@ namespace CryptoBox {
 
 namespace {
 
-const u32bit CRYPTOBOX_MAGIC = 0x571B0E4F;
+const uint CRYPTOBOX_MAGIC = 0x571B0E4F;
 const string CRYPTOBOX_CIPHER = "AES-256/CBC";
 const string CRYPTOBOX_MAC = "HMAC(SHA-256)";
 const string CRYPTOBOX_KDF = "KDF2(SHA-256)";
@@ -27,16 +27,16 @@ const size_t MAC_OUTPUT_LENGTH = 32;
 
 }
 
-std::vector<byte> encrypt(in byte[] input, size_t input_len,
+Vector!( byte ) encrypt(in byte[] input, size_t input_len,
 								  const SymmetricKey& master_key,
 								  RandomNumberGenerator& rng)
 {
 	std::unique_ptr<KDF> kdf(get_kdf(CRYPTOBOX_KDF));
 
-	const SafeArray!byte cipher_key_salt =
+	const SafeVector!byte cipher_key_salt =
 		rng.random_vec(KEY_KDF_SALT_LENGTH);
 
-	const SafeArray!byte mac_key_salt =
+	const SafeVector!byte mac_key_salt =
 		rng.random_vec(KEY_KDF_SALT_LENGTH);
 
 	SymmetricKey cipher_key =
@@ -56,9 +56,9 @@ std::vector<byte> encrypt(in byte[] input, size_t input_len,
 
 	Pipe pipe(get_cipher(CRYPTOBOX_CIPHER, cipher_key, cipher_iv, ENCRYPTION));
 	pipe.process_msg(input, input_len);
-	SafeArray!byte ctext = pipe.read_all(0);
+	SafeVector!byte ctext = pipe.read_all(0);
 
-	std::vector<byte> out(MAGIC_LENGTH);
+	Vector!( byte ) out(MAGIC_LENGTH);
 	store_be(CRYPTOBOX_MAGIC, &out[0]);
 	out += cipher_key_salt;
 	out += mac_key_salt;
@@ -67,11 +67,11 @@ std::vector<byte> encrypt(in byte[] input, size_t input_len,
 
 	mac->update(out);
 
-	out += mac->final();
+	out += mac->flush();
 	return out;
 }
 
-SafeArray!byte decrypt(in byte[] input, size_t input_len,
+SafeVector!byte decrypt(in byte[] input, size_t input_len,
 									 const SymmetricKey& master_key)
 {
 	const size_t MIN_CTEXT_SIZE = 16; // due to using CBC with padding
@@ -84,10 +84,10 @@ SafeArray!byte decrypt(in byte[] input, size_t input_len,
 		MAC_OUTPUT_LENGTH;
 
 	if(input_len < MIN_POSSIBLE_LENGTH)
-		throw Decoding_Error("Encrypted input too short to be valid");
+		throw new Decoding_Error("Encrypted input too short to be valid");
 
-	if(load_be<u32bit>(input, 0) != CRYPTOBOX_MAGIC)
-		throw Decoding_Error("Unknown header value in cryptobox");
+	if(load_be<uint>(input, 0) != CRYPTOBOX_MAGIC)
+		throw new Decoding_Error("Unknown header value in cryptobox");
 
 	std::unique_ptr<KDF> kdf(get_kdf(CRYPTOBOX_KDF));
 
@@ -104,10 +104,10 @@ SafeArray!byte decrypt(in byte[] input, size_t input_len,
 	mac->set_key(mac_key);
 
 	mac->update(&input[0], input_len - MAC_OUTPUT_LENGTH);
-	SafeArray!byte computed_mac = mac->final();
+	SafeVector!byte computed_mac = mac->flush();
 
 	if(!same_mem(&input[input_len - MAC_OUTPUT_LENGTH], &computed_mac[0], computed_mac.size()))
-		throw Decoding_Error("MAC verification failed");
+		throw new Decoding_Error("MAC verification failed");
 
 	SymmetricKey cipher_key =
 		kdf->derive_key(CIPHER_KEY_LENGTH,

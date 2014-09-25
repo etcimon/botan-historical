@@ -18,9 +18,9 @@ namespace {
 * This way all work happens at the constuctor call, and we can
 * rely on that happening only once in C++11.
 */
-std::vector<Ciphersuite> gather_known_ciphersuites()
+Vector!( Ciphersuite ) gather_known_ciphersuites()
 {
-	std::vector<Ciphersuite> ciphersuites;
+	Vector!( Ciphersuite ) ciphersuites;
 
 	for(size_t i = 0; i <= 0xFFFF; ++i)
 	{
@@ -35,9 +35,9 @@ std::vector<Ciphersuite> gather_known_ciphersuites()
 
 }
 
-const std::vector<Ciphersuite>& Ciphersuite::all_known_ciphersuites()
+const Vector!( Ciphersuite )& Ciphersuite::all_known_ciphersuites()
 {
-	static std::vector<Ciphersuite> all_ciphersuites(gather_known_ciphersuites());
+	static Vector!( Ciphersuite ) all_ciphersuites(gather_known_ciphersuites());
 	return all_ciphersuites;
 }
 
@@ -173,7 +173,7 @@ bool Ciphersuite::valid() const
 string Ciphersuite::to_string() const
 {
 	if(m_cipher_keylen == 0)
-		throw std::runtime_error("Ciphersuite::to_string - no value set");
+		throw new Exception("Ciphersuite::to_string - no value set");
 
 	std::ostringstream out;
 

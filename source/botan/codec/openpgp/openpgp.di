@@ -36,7 +36,7 @@ string PGP_encode(
 * @param headers is set to any headers
 * @return decoded output as raw binary
 */
-SafeArray!byte PGP_decode(
+SafeVector!byte PGP_decode(
 	DataSource& source,
 	string& label,
 	std::map<string, string>& headers);
@@ -46,6 +46,6 @@ SafeArray!byte PGP_decode(
 * @param label is set to the human-readable label
 * @return decoded output as raw binary
 */
-SafeArray!byte PGP_decode(
+SafeVector!byte PGP_decode(
 	DataSource& source,
 	string& label);

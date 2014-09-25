@@ -15,9 +15,9 @@ class BER_Decoder
 	public:
 		BER_Object get_next_object();
 
-		std::vector<byte> get_next_octet_string();
+		Vector!( byte ) get_next_octet_string();
 
-		void push_back(const BER_Object& obj);
+		void push_back(in BER_Object obj);
 
 		bool more_items() const;
 		BER_Decoder& verify_end();
@@ -28,15 +28,15 @@ class BER_Decoder
 
 		BER_Decoder& get_next(BER_Object& ber);
 
-		BER_Decoder& raw_bytes(SafeArray!byte v);
-		BER_Decoder& raw_bytes(std::vector<byte>& v);
+		BER_Decoder& raw_bytes(SafeVector!byte v);
+		BER_Decoder& raw_bytes(Vector!( byte )& v);
 
 		BER_Decoder& decode_null();
 		BER_Decoder& decode(bool& v);
 		BER_Decoder& decode(size_t& v);
 		BER_Decoder& decode(class BigInt& v);
-		BER_Decoder& decode(std::vector<byte>& v, ASN1_Tag type_tag);
-		BER_Decoder& decode(SafeArray!byte v, ASN1_Tag type_tag);
+		BER_Decoder& decode(Vector!( byte )& v, ASN1_Tag type_tag);
+		BER_Decoder& decode(SafeVector!byte v, ASN1_Tag type_tag);
 
 		BER_Decoder& decode(bool& v,
 								  ASN1_Tag type_tag,
@@ -50,12 +50,12 @@ class BER_Decoder
 								  ASN1_Tag type_tag,
 								  ASN1_Tag class_tag = CONTEXT_SPECIFIC);
 
-		BER_Decoder& decode(std::vector<byte>& v,
+		BER_Decoder& decode(Vector!( byte )& v,
 								  ASN1_Tag real_type,
 								  ASN1_Tag type_tag,
 								  ASN1_Tag class_tag = CONTEXT_SPECIFIC);
 
-		BER_Decoder& decode(SafeArray!byte v,
+		BER_Decoder& decode(SafeVector!byte v,
 								  ASN1_Tag real_type,
 								  ASN1_Tag type_tag,
 								  ASN1_Tag class_tag = CONTEXT_SPECIFIC);
@@ -100,19 +100,19 @@ class BER_Decoder
 				const T& default_value = T());
 
 		template<typename T>
-			BER_Decoder& decode_list(std::vector<T>& out,
+			BER_Decoder& decode_list(Vector!( T )& out,
 											 ASN1_Tag type_tag = SEQUENCE,
 											 ASN1_Tag class_tag = UNIVERSAL);
 
 		template<typename T>
-			BER_Decoder& decode_and_check(const T& expected,
+			BER_Decoder& decode_and_check(in T expected,
 													in string error_msg)
 		{
 			T actual;
 			decode(actual);
 
 			if(actual != expected)
-				throw Decoding_Error(error_msg);
+				throw new Decoding_Error(error_msg);
 
 			return (*this);
 		}
@@ -121,7 +121,7 @@ class BER_Decoder
 		* Decode an OPTIONAL string type
 		*/
 		template<typename Alloc>
-		BER_Decoder& decode_optional_string(std::vector<byte, Alloc>& out,
+		BER_Decoder& decode_optional_string(Vector!( byte, Alloc )& out,
 														ASN1_Tag real_type,
 														u16bit type_no,
 														ASN1_Tag class_tag = CONTEXT_SPECIFIC)
@@ -149,17 +149,17 @@ class BER_Decoder
 			return (*this);
 		}
 
-		BER_Decoder& operator=(const BER_Decoder&) = delete;
+		BER_Decoder& operator=(in BER_Decoder) = delete;
 
 		BER_Decoder(DataSource&);
 
 		BER_Decoder(const byte[], size_t);
 
-		BER_Decoder(in SafeArray!byte);
+		BER_Decoder(in SafeVector!byte);
 
-		BER_Decoder(in Array!byte vec);
+		BER_Decoder(in Vector!byte vec);
 
-		BER_Decoder(const BER_Decoder&);
+		BER_Decoder(in BER_Decoder);
 		~BER_Decoder();
 	private:
 		BER_Decoder* parent;
@@ -231,7 +231,7 @@ BER_Decoder& BER_Decoder::decode_optional_implicit(
 * Decode a list of homogenously typed values
 */
 template<typename T>
-BER_Decoder& BER_Decoder::decode_list(std::vector<T>& vec,
+BER_Decoder& BER_Decoder::decode_list(Vector!( T )& vec,
 												  ASN1_Tag type_tag,
 												  ASN1_Tag class_tag)
 {

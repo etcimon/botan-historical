@@ -171,7 +171,7 @@ bool mlock_allocator::deallocate(void* p, size_t num_elems, size_t elem_size)
 
 	const size_t start = cast(byte*)(p) - m_pool;
 
-	auto comp = [](std::pair<size_t, size_t> x, std::pair<size_t, size_t> y){ return x.first < y.first; };
+	auto comp = [](Pair!(size_t, size_t) x, Pair!(size_t, size_t) y){ return x.first < y.first; };
 
 	auto i = std::lower_bound(m_freelist.begin(), m_freelist.end(),
 									  std::make_pair(start, 0), comp);
@@ -235,7 +235,7 @@ mlock_allocator::mlock_allocator() :
 		if(m_pool == cast(byte*)(MAP_FAILED))
 		{
 			m_pool = nullptr;
-			throw std::runtime_error("Failed to mmap locking_allocator pool");
+			throw new Exception("Failed to mmap locking_allocator pool");
 		}
 
 		clear_mem(m_pool, m_poolsize);
@@ -244,7 +244,7 @@ mlock_allocator::mlock_allocator() :
 		{
 			::munmap(m_pool, m_poolsize);
 			m_pool = nullptr;
-			throw std::runtime_error("Could not mlock " + std::to_string(m_poolsize) + " bytes");
+			throw new Exception("Could not mlock " + std::to_string(m_poolsize) + " bytes");
 		}
 
 #if defined(MADV_DONTDUMP)

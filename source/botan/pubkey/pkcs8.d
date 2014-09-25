@@ -20,10 +20,10 @@ namespace {
 /*
 * Get info from an EncryptedPrivateKeyInfo
 */
-SafeArray!byte PKCS8_extract(DataSource& source,
+SafeVector!byte PKCS8_extract(DataSource& source,
 											 AlgorithmIdentifier& pbe_alg_id)
 {
-	SafeArray!byte key_data;
+	SafeVector!byte key_data;
 
 	BER_Decoder(source)
 		.start_cons(SEQUENCE)
@@ -37,13 +37,13 @@ SafeArray!byte PKCS8_extract(DataSource& source,
 /*
 * PEM decode and/or decrypt a private key
 */
-SafeArray!byte PKCS8_decode(
+SafeVector!byte PKCS8_decode(
 	DataSource& source,
 	std::function<std::pair<bool,string> ()> get_passphrase,
 	AlgorithmIdentifier& pk_alg_id)
 {
 	AlgorithmIdentifier pbe_alg_id;
-	SafeArray!byte key_data, key;
+	SafeVector!byte key_data, key;
 	bool is_encrypted = true;
 
 	try {
@@ -61,15 +61,15 @@ SafeArray!byte PKCS8_decode(
 				key_data = PKCS8_extract(key_source, pbe_alg_id);
 			}
 			else
-				throw PKCS8_Exception("Unknown PEM label " + label);
+				throw new PKCS8_Exception("Unknown PEM label " + label);
 		}
 
 		if(key_data.empty())
-			throw PKCS8_Exception("No key data found");
+			throw new PKCS8_Exception("No key data found");
 	}
 	catch(Decoding_Error& e)
 	{
-		throw Decoding_Error("PKCS #8 private key decoding failed: " + string(e.what()));
+		throw new Decoding_Error("PKCS #8 private key decoding failed: " + string(e.what()));
 	}
 
 	if(!is_encrypted)
@@ -86,7 +86,7 @@ SafeArray!byte PKCS8_decode(
 
 			if(is_encrypted)
 			{
-				std::pair<bool, string> pass = get_passphrase();
+				Pair!(bool, string) pass = get_passphrase();
 
 				if(pass.first == false)
 					break;
@@ -114,7 +114,7 @@ SafeArray!byte PKCS8_decode(
 	}
 
 	if(key.empty())
-		throw Decoding_Error("PKCS #8 private key decoding failed");
+		throw new Decoding_Error("PKCS #8 private key decoding failed");
 	return key;
 }
 
@@ -123,7 +123,7 @@ SafeArray!byte PKCS8_decode(
 /*
 * BER encode a PKCS #8 private key, unencrypted
 */
-SafeArray!byte BER_encode(in Private_Key key)
+SafeVector!byte BER_encode(in Private_Key key)
 {
 	const size_t PKCS8_VERSION = 0;
 
@@ -147,7 +147,7 @@ string PEM_encode(in Private_Key key)
 /*
 * BER encode a PKCS #8 private key, encrypted
 */
-std::vector<byte> BER_encode(in Private_Key key,
+Vector!( byte ) BER_encode(in Private_Key key,
 									  RandomNumberGenerator& rng,
 									  in string pass,
 									  std::chrono::milliseconds msec,
@@ -198,11 +198,11 @@ Private_Key* load_key(DataSource& source,
 							 Tuple!(bool, string) delegate() get_pass)
 {
 	AlgorithmIdentifier alg_id;
-	SafeArray!byte pkcs8_key = PKCS8_decode(source, get_pass, alg_id);
+	SafeVector!byte pkcs8_key = PKCS8_decode(source, get_pass, alg_id);
 
 	const string alg_name = OIDS::lookup(alg_id.oid);
 	if(alg_name == "" || alg_name == alg_id.oid.as_string())
-		throw PKCS8_Exception("Unknown algorithm OID: " +
+		throw new PKCS8_Exception("Unknown algorithm OID: " +
 									 alg_id.oid.as_string());
 
 	return make_Private_Key(alg_id, pkcs8_key, rng);
@@ -227,7 +227,7 @@ class Single_Shot_Passphrase
 		Single_Shot_Passphrase(in string pass) :
 			passphrase(pass), first(true) {}
 
-		std::pair<bool, string> operator()()
+		Pair!(bool, string) operator()()
 		{
 			if(first)
 			{

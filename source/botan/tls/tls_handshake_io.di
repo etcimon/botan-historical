@@ -27,27 +27,27 @@ class Handshake_IO
 	public:
 		abstract Protocol_Version initial_record_version() const = 0;
 
-		abstract std::vector<byte> send(const Handshake_Message& msg) = 0;
+		abstract Vector!( byte ) send(in Handshake_Message msg) = 0;
 
-		abstract std::vector<byte> format(
-			in Array!byte handshake_msg,
+		abstract Vector!( byte ) format(
+			in Vector!byte handshake_msg,
 			Handshake_Type handshake_type) const = 0;
 
-		abstract void add_record(in Array!byte record,
+		abstract void add_record(in Vector!byte record,
 										Record_Type type,
 										u64bit sequence_number) = 0;
 
 		/**
-		* Returns (HANDSHAKE_NONE, std::vector<>()) if no message currently available
+		* Returns (HANDSHAKE_NONE, Vector!(  )()) if no message currently available
 		*/
-		abstract std::pair<Handshake_Type, std::vector<byte>>
+		abstract Pair!(Handshake_Type, Vector!( byte) )
 			get_next_record(bool expecting_ccs) = 0;
 
 		Handshake_IO() {}
 
-		Handshake_IO(const Handshake_IO&) = delete;
+		Handshake_IO(in Handshake_IO) = delete;
 
-		Handshake_IO& operator=(const Handshake_IO&) = delete;
+		Handshake_IO& operator=(in Handshake_IO) = delete;
 
 		abstract ~Handshake_IO() {}
 };
@@ -58,26 +58,26 @@ class Handshake_IO
 class Stream_Handshake_IO : public Handshake_IO
 {
 	public:
-		Stream_Handshake_IO(void delegate(byte, in Array!byte) writer) :
+		Stream_Handshake_IO(void delegate(byte, in Vector!byte) writer) :
 			m_send_hs(writer) {}
 
 		Protocol_Version initial_record_version() const override;
 
-		std::vector<byte> send(const Handshake_Message& msg) override;
+		Vector!( byte ) send(in Handshake_Message msg) override;
 
-		std::vector<byte> format(
-			in Array!byte handshake_msg,
+		Vector!( byte ) format(
+			in Vector!byte handshake_msg,
 			Handshake_Type handshake_type) const override;
 
-		void add_record(in Array!byte record,
+		void add_record(in Vector!byte record,
 							 Record_Type type,
 							 u64bit sequence_number) override;
 
-		std::pair<Handshake_Type, std::vector<byte>>
+		Pair!(Handshake_Type, Vector!( byte) )
 			get_next_record(bool expecting_ccs) override;
 	private:
 		std::deque<byte> m_queue;
-		void delegate(byte, in Array!byte) m_send_hs;
+		void delegate(byte, in Vector!byte) m_send_hs;
 };
 
 /**
@@ -87,25 +87,25 @@ class Datagram_Handshake_IO : public Handshake_IO
 {
 	public:
 		Datagram_Handshake_IO(class Connection_Sequence_Numbers& seq,
-									 void delegate(u16bit, byte, in Array!byte) writer) :
+									 void delegate(u16bit, byte, in Vector!byte) writer) :
 			m_seqs(seq), m_flights(1), m_send_hs(writer) {}
 
 		Protocol_Version initial_record_version() const override;
 
-		std::vector<byte> send(const Handshake_Message& msg) override;
+		Vector!( byte ) send(in Handshake_Message msg) override;
 
-		std::vector<byte> format(
-			in Array!byte handshake_msg,
+		Vector!( byte ) format(
+			in Vector!byte handshake_msg,
 			Handshake_Type handshake_type) const override;
 
-		void add_record(in Array!byte record,
+		void add_record(in Vector!byte record,
 							 Record_Type type,
 							 u64bit sequence_number) override;
 
-		std::pair<Handshake_Type, std::vector<byte>>
+		Pair!(Handshake_Type, Vector!( byte) )
 			get_next_record(bool expecting_ccs) override;
 	private:
-		std::vector<byte> format_fragment(
+		Vector!( byte ) format_fragment(
 			in byte[] fragment,
 			size_t fragment_len,
 			u16bit frag_offset,
@@ -113,8 +113,8 @@ class Datagram_Handshake_IO : public Handshake_IO
 			Handshake_Type type,
 			u16bit msg_sequence) const;
 
-		std::vector<byte> format_w_seq(
-			in Array!byte handshake_msg,
+		Vector!( byte ) format_w_seq(
+			in Vector!byte handshake_msg,
 			Handshake_Type handshake_type,
 			u16bit msg_sequence) const;
 
@@ -132,27 +132,27 @@ class Datagram_Handshake_IO : public Handshake_IO
 
 				u16bit epoch() const { return m_epoch; }
 
-				std::pair<Handshake_Type, std::vector<byte>> message() const;
+				Pair!(Handshake_Type, Vector!( byte) ) message() const;
 			private:
 				byte m_msg_type = HANDSHAKE_NONE;
 				size_t m_msg_length = 0;
 				u16bit m_epoch = 0;
 
 				std::map<size_t, byte> m_fragments;
-				std::vector<byte> m_message;
+				Vector!( byte ) m_message;
 		};
 
 		class Connection_Sequence_Numbers& m_seqs;
 		std::map<u16bit, Handshake_Reassembly> m_messages;
 		std::set<u16bit> m_ccs_epochs;
-		std::vector<std::vector<u16bit>> m_flights;
-		std::map<u16bit, std::tuple<u16bit, byte, std::vector<byte>>> m_flight_data;
+		Vector!( std::vector<u16bit )> m_flights;
+		std::map<u16bit, std::tuple<u16bit, byte, Vector!( byte )>> m_flight_data;
 
 		// default MTU is IPv6 min MTU minus UDP/IP headers
 		u16bit m_mtu = 1280 - 40 - 8;
 		u16bit m_in_message_seq = 0;
 		u16bit m_out_message_seq = 0;
-		void delegate(u16bit, byte, in Array!byte) m_send_hs;
+		void delegate(u16bit, byte, in Vector!byte) m_send_hs;
 };
 
 }

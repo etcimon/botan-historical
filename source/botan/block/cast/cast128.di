@@ -22,9 +22,9 @@ class CAST_128 : public Block_Cipher_Fixed_Params<8, 11, 16>
 	private:
 		void key_schedule(const byte[], size_t);
 
-		static void cast_ks(secure_vector<u32bit>& ks,
-								  secure_vector<u32bit>& user_key);
+		static void cast_ks(secure_vector<uint>& ks,
+								  secure_vector<uint>& user_key);
 
-		secure_vector<u32bit> MK;
-		SafeArray!byte RK;
+		secure_vector<uint> MK;
+		SafeVector!byte RK;
 };

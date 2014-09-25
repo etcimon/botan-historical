@@ -21,7 +21,7 @@ AlgorithmIdentifier IF_Scheme_PublicKey::algorithm_identifier() const
 										AlgorithmIdentifier::USE_NULL_PARAM);
 }
 
-std::vector<byte> IF_Scheme_PublicKey::x509_subject_public_key() const
+Vector!( byte ) IF_Scheme_PublicKey::x509_subject_public_key() const
 {
 	return DER_Encoder()
 		.start_cons(SEQUENCE)
@@ -31,8 +31,8 @@ std::vector<byte> IF_Scheme_PublicKey::x509_subject_public_key() const
 		.get_contents_unlocked();
 }
 
-IF_Scheme_PublicKey::IF_Scheme_PublicKey(const AlgorithmIdentifier&,
-													  in SafeArray!byte key_bits)
+IF_Scheme_PublicKey::IF_Scheme_PublicKey(in AlgorithmIdentifier,
+													  in SafeVector!byte key_bits)
 {
 	BER_Decoder(key_bits)
 		.start_cons(SEQUENCE)
@@ -52,7 +52,7 @@ bool IF_Scheme_PublicKey::check_key(RandomNumberGenerator&, bool) const
 	return true;
 }
 
-SafeArray!byte IF_Scheme_PrivateKey::pkcs8_Private_Key() const
+SafeVector!byte IF_Scheme_PrivateKey::pkcs8_Private_Key() const
 {
 	return DER_Encoder()
 		.start_cons(SEQUENCE)
@@ -71,7 +71,7 @@ SafeArray!byte IF_Scheme_PrivateKey::pkcs8_Private_Key() const
 
 IF_Scheme_PrivateKey::IF_Scheme_PrivateKey(RandomNumberGenerator& rng,
 														 const AlgorithmIdentifier&,
-														 in SafeArray!byte key_bits)
+														 in SafeVector!byte key_bits)
 {
 	BER_Decoder(key_bits)
 		.start_cons(SEQUENCE)

@@ -13,7 +13,7 @@ namespace {
 /*
 * MD4 FF Function
 */
-inline void FF(u32bit& A, u32bit B, u32bit C, u32bit D, u32bit M, byte S)
+inline void FF(ref uint A, uint B, uint C, uint D, uint M, byte S)
 {
 	A += (D ^ (B & (C ^ D))) + M;
 	A  = rotate_left(A, S);
@@ -22,7 +22,7 @@ inline void FF(u32bit& A, u32bit B, u32bit C, u32bit D, u32bit M, byte S)
 /*
 * MD4 GG Function
 */
-inline void GG(u32bit& A, u32bit B, u32bit C, u32bit D, u32bit M, byte S)
+inline void GG(ref uint A, uint B, uint C, uint D, uint M, byte S)
 {
 	A += ((B & C) | (D & (B | C))) + M + 0x5A827999;
 	A  = rotate_left(A, S);
@@ -31,7 +31,7 @@ inline void GG(u32bit& A, u32bit B, u32bit C, u32bit D, u32bit M, byte S)
 /*
 * MD4 HH Function
 */
-inline void HH(u32bit& A, u32bit B, u32bit C, u32bit D, u32bit M, byte S)
+inline void HH(ref uint A, uint B, uint C, uint D, uint M, byte S)
 {
 	A += (B ^ C ^ D) + M + 0x6ED9EBA1;
 	A  = rotate_left(A, S);
@@ -44,7 +44,7 @@ inline void HH(u32bit& A, u32bit B, u32bit C, u32bit D, u32bit M, byte S)
 */
 void MD4::compress_n(in byte[] input, size_t blocks)
 {
-	u32bit A = digest[0], B = digest[1], C = digest[2], D = digest[3];
+	uint A = digest[0], B = digest[1], C = digest[2], D = digest[3];
 
 	for(size_t i = 0; i != blocks; ++i)
 	{

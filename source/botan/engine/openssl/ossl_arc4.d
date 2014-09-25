@@ -69,7 +69,7 @@ void RC4_OpenSSL::cipher(in byte[] input, ref byte[] output)
 * Look for an OpenSSL-supported stream cipher (RC4)
 */
 StreamCipher*
-OpenSSL_Engine::find_stream_cipher(const SCAN_Name& request,
+OpenSSL_Engine::find_stream_cipher(in SCAN_Name request,
 											  Algorithm_Factory&) const
 {
 	if(request.algo_name() == "RC4")

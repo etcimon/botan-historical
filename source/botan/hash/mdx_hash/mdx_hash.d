@@ -90,9 +90,9 @@ void MDx_HashFunction::final_result(byte output[])
 void MDx_HashFunction::write_count(ref byte[] output)
 {
 	if(COUNT_SIZE < 8)
-		throw Invalid_State("MDx_HashFunction::write_count: COUNT_SIZE < 8");
+		throw new Invalid_State("MDx_HashFunction::write_count: COUNT_SIZE < 8");
 	if(COUNT_SIZE >= output_length() || COUNT_SIZE >= hash_block_size())
-		throw Invalid_Argument("MDx_HashFunction: COUNT_SIZE is too big");
+		throw new Invalid_Argument("MDx_HashFunction: COUNT_SIZE is too big");
 
 	const u64bit bit_count = count * 8;
 

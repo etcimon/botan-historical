@@ -13,7 +13,7 @@
 #include <botan/internal/pk_algs.h>
 namespace X509 {
 
-std::vector<byte> BER_encode(const Public_Key& key)
+Vector!( byte ) BER_encode(in Public_Key key)
 {
 	return DER_Encoder()
 			.start_cons(SEQUENCE)
@@ -26,7 +26,7 @@ std::vector<byte> BER_encode(const Public_Key& key)
 /*
 * PEM encode a X.509 public key
 */
-string PEM_encode(const Public_Key& key)
+string PEM_encode(in Public_Key key)
 {
 	return PEM_Code::encode(X509::BER_encode(key),
 									"PUBLIC KEY");
@@ -39,7 +39,7 @@ Public_Key* load_key(DataSource& source)
 {
 	try {
 		AlgorithmIdentifier alg_id;
-		SafeArray!byte key_bits;
+		SafeVector!byte key_bits;
 
 		if(ASN1::maybe_BER(source) && !PEM_Code::matches(source))
 		{
@@ -65,13 +65,13 @@ Public_Key* load_key(DataSource& source)
 		}
 
 		if(key_bits.empty())
-			throw Decoding_Error("X.509 public key decoding failed");
+			throw new Decoding_Error("X.509 public key decoding failed");
 
 		return make_public_key(alg_id, key_bits);
 	}
 	catch(Decoding_Error)
 	{
-		throw Decoding_Error("X.509 public key decoding failed");
+		throw new Decoding_Error("X.509 public key decoding failed");
 	}
 }
 
@@ -87,7 +87,7 @@ Public_Key* load_key(in string fsname)
 /*
 * Extract a public key and return it
 */
-Public_Key* load_key(in Array!byte mem)
+Public_Key* load_key(in Vector!byte mem)
 {
 	DataSource_Memory source(mem);
 	return X509::load_key(source);
@@ -96,7 +96,7 @@ Public_Key* load_key(in Array!byte mem)
 /*
 * Make a copy of this public key
 */
-Public_Key* copy_key(const Public_Key& key)
+Public_Key* copy_key(in Public_Key key)
 {
 	DataSource_Memory source(PEM_encode(key));
 	return X509::load_key(source);

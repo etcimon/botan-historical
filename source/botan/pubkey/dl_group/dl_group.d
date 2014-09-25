@@ -30,7 +30,7 @@ DL_Group::DL_Group(in string name)
 	const char* pem = PEM_for_named_group(name);
 
 	if(!pem)
-		throw Invalid_Argument("DL_Group: Unknown group " + name);
+		throw new Invalid_Argument("DL_Group: Unknown group " + name);
 
 	PEM_decode(pem);
 }
@@ -42,7 +42,7 @@ DL_Group::DL_Group(RandomNumberGenerator& rng,
 						 PrimeType type, size_t pbits, size_t qbits)
 {
 	if(pbits < 512)
-		throw Invalid_Argument("DL_Group: prime size " + std::to_string(pbits) +
+		throw new Invalid_Argument("DL_Group: prime size " + std::to_string(pbits) +
 									  " is too small");
 
 	if(type == Strong)
@@ -85,13 +85,13 @@ DL_Group::DL_Group(RandomNumberGenerator& rng,
 * DL_Group Constructor
 */
 DL_Group::DL_Group(RandomNumberGenerator& rng,
-						 in Array!byte seed,
+						 in Vector!byte seed,
 						 size_t pbits, size_t qbits)
 {
 	if(!generate_dsa_primes(rng,
 									global_state().algorithm_factory(),
 									p, q, pbits, qbits, seed))
-		throw Invalid_Argument("DL_Group: The seed given does not "
+		throw new Invalid_Argument("DL_Group: The seed given does not "
 									  "generate a DSA group");
 
 	g = make_dsa_generator(p, q);
@@ -102,7 +102,7 @@ DL_Group::DL_Group(RandomNumberGenerator& rng,
 /*
 * DL_Group Constructor
 */
-DL_Group::DL_Group(const BigInt& p1, const BigInt& g1)
+DL_Group::DL_Group(in BigInt p1, const BigInt& g1)
 {
 	initialize(p1, 0, g1);
 }
@@ -110,7 +110,7 @@ DL_Group::DL_Group(const BigInt& p1, const BigInt& g1)
 /*
 * DL_Group Constructor
 */
-DL_Group::DL_Group(const BigInt& p1, const BigInt& q1, const BigInt& g1)
+DL_Group::DL_Group(in BigInt p1, const BigInt& q1, const BigInt& g1)
 {
 	initialize(p1, q1, g1);
 }
@@ -118,14 +118,14 @@ DL_Group::DL_Group(const BigInt& p1, const BigInt& q1, const BigInt& g1)
 /*
 * DL_Group Initializer
 */
-void DL_Group::initialize(const BigInt& p1, const BigInt& q1, const BigInt& g1)
+void DL_Group::initialize(in BigInt p1, const BigInt& q1, const BigInt& g1)
 {
 	if(p1 < 3)
-		throw Invalid_Argument("DL_Group: Prime invalid");
+		throw new Invalid_Argument("DL_Group: Prime invalid");
 	if(g1 < 2 || g1 >= p1)
-		throw Invalid_Argument("DL_Group: Generator invalid");
+		throw new Invalid_Argument("DL_Group: Generator invalid");
 	if(q1 < 0 || q1 >= p1)
-		throw Invalid_Argument("DL_Group: Subgroup invalid");
+		throw new Invalid_Argument("DL_Group: Subgroup invalid");
 
 	p = p1;
 	g = g1;
@@ -140,7 +140,7 @@ void DL_Group::initialize(const BigInt& p1, const BigInt& q1, const BigInt& g1)
 void DL_Group::init_check() const
 {
 	if(!initialized)
-		throw Invalid_State("DLP group cannot be used uninitialized");
+		throw new Invalid_State("DLP group cannot be used uninitialized");
 }
 
 /*
@@ -190,19 +190,19 @@ const BigInt& DL_Group::get_q() const
 {
 	init_check();
 	if(q == 0)
-		throw Invalid_State("DLP group has no q prime specified");
+		throw new Invalid_State("DLP group has no q prime specified");
 	return q;
 }
 
 /*
 * DER encode the parameters
 */
-std::vector<byte> DL_Group::DER_encode(Format format) const
+Vector!( byte ) DL_Group::DER_encode(Format format) const
 {
 	init_check();
 
 	if((q == 0) && (format != PKCS_3))
-		throw Encoding_Error("The ANSI DL parameter formats require a subgroup");
+		throw new Encoding_Error("The ANSI DL parameter formats require a subgroup");
 
 	if(format == ANSI_X9_57)
 	{
@@ -234,7 +234,7 @@ std::vector<byte> DL_Group::DER_encode(Format format) const
 		.get_contents_unlocked();
 	}
 
-	throw Invalid_Argument("Unknown DL_Group encoding " + std::to_string(format));
+	throw new Invalid_Argument("Unknown DL_Group encoding " + std::to_string(format));
 }
 
 /*
@@ -242,7 +242,7 @@ std::vector<byte> DL_Group::DER_encode(Format format) const
 */
 string DL_Group::PEM_encode(Format format) const
 {
-	const std::vector<byte> encoding = DER_encode(format);
+	const Vector!( byte ) encoding = DER_encode(format);
 
 	if(format == PKCS_3)
 		return PEM_Code::encode(encoding, "DH PARAMETERS");
@@ -251,13 +251,13 @@ string DL_Group::PEM_encode(Format format) const
 	else if(format == ANSI_X9_42)
 		return PEM_Code::encode(encoding, "X942 DH PARAMETERS");
 	else
-		throw Invalid_Argument("Unknown DL_Group encoding " + std::to_string(format));
+		throw new Invalid_Argument("Unknown DL_Group encoding " + std::to_string(format));
 }
 
 /*
 * Decode BER encoded parameters
 */
-void DL_Group::BER_decode(in Array!byte data,
+void DL_Group::BER_decode(in Vector!byte data,
 								  Format format)
 {
 	BigInt new_p, new_q, new_g;
@@ -286,7 +286,7 @@ void DL_Group::BER_decode(in Array!byte data,
 			.discard_remaining();
 	}
 	else
-		throw Invalid_Argument("Unknown DL_Group encoding " + std::to_string(format));
+		throw new Invalid_Argument("Unknown DL_Group encoding " + std::to_string(format));
 
 	initialize(new_p, new_q, new_g);
 }
@@ -307,18 +307,18 @@ void DL_Group::PEM_decode(in string pem)
 	else if(label == "X942 DH PARAMETERS")
 		BER_decode(ber, ANSI_X9_42);
 	else
-		throw Decoding_Error("DL_Group: Invalid PEM label " + label);
+		throw new Decoding_Error("DL_Group: Invalid PEM label " + label);
 }
 
 /*
 * Create generator of the q-sized subgroup (DSA style generator)
 */
-BigInt DL_Group::make_dsa_generator(const BigInt& p, const BigInt& q)
+BigInt DL_Group::make_dsa_generator(in BigInt p, const BigInt& q)
 {
 	const BigInt e = (p - 1) / q;
 
 	if(e == 0 || (p - 1) % q > 0)
-		throw std::invalid_argument("make_dsa_generator q does not divide p-1");
+		throw new std::invalid_argument("make_dsa_generator q does not divide p-1");
 
 	for(size_t i = 0; i != PRIME_TABLE_SIZE; ++i)
 	{
@@ -327,7 +327,7 @@ BigInt DL_Group::make_dsa_generator(const BigInt& p, const BigInt& q)
 			return g;
 	}
 
-	throw Internal_Error("DL_Group: Couldn't create a suitable generator");
+	throw new Internal_Error("DL_Group: Couldn't create a suitable generator");
 }
 
 }

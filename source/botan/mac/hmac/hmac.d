@@ -21,10 +21,10 @@ void HMAC::add_data(in byte[] input, size_t length)
 */
 void HMAC::final_result(byte mac[])
 {
-	m_hash->final(mac);
+	m_hash->flushInto(mac);
 	m_hash->update(m_okey);
 	m_hash->update(mac, output_length());
-	m_hash->final(mac);
+	m_hash->flushInto(mac);
 	m_hash->update(m_ikey);
 }
 
@@ -43,7 +43,7 @@ void HMAC::key_schedule(in byte[] key)
 
 	if(length > m_hash->hash_block_size())
 	{
-		SafeArray!byte hmac_key = m_hash->process(key, length);
+		SafeVector!byte hmac_key = m_hash->process(key, length);
 		xor_buf(m_ikey, hmac_key, hmac_key.size());
 		xor_buf(m_okey, hmac_key, hmac_key.size());
 	}
@@ -88,7 +88,7 @@ MessageAuthenticationCode* HMAC::clone() const
 HMAC::HMAC(HashFunction* hash) : m_hash(hash)
 {
 	if(m_hash->hash_block_size() == 0)
-		throw Invalid_Argument("HMAC cannot be used with " + m_hash->name());
+		throw new Invalid_Argument("HMAC cannot be used with " + m_hash->name());
 }
 
 }

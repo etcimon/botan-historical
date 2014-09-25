@@ -20,27 +20,27 @@ class X509_DN : public ASN1_Object
 		void decode_from(class BER_Decoder&);
 
 		std::multimap<OID, string> get_attributes() const;
-		std::vector<string> get_attribute(in string) const;
+		Vector!( string ) get_attribute(in string) const;
 
 		std::multimap<string, string> contents() const;
 
 		void add_attribute(in string, in string);
-		void add_attribute(const OID&, in string);
+		void add_attribute(in OID, in string);
 
 		static string deref_info_field(in string);
 
-		std::vector<byte> get_bits() const;
+		Vector!( byte ) get_bits() const;
 
 		X509_DN();
-		X509_DN(const std::multimap<OID, string>&);
-		X509_DN(const std::multimap<string, string>&);
+		X509_DN(in std::multimap<OID, string>);
+		X509_DN(in std::multimap<string, string>);
 	private:
 		std::multimap<OID, ASN1_String> dn_info;
-		std::vector<byte> dn_bits;
+		Vector!( byte ) dn_bits;
 };
 
-bool operator==(const X509_DN&, const X509_DN&);
-bool operator!=(const X509_DN&, const X509_DN&);
-bool operator<(const X509_DN&, const X509_DN&);
+bool operator==(in X509_DN, const X509_DN&);
+bool operator!=(in X509_DN, const X509_DN&);
+bool operator<(in X509_DN, const X509_DN&);
 
 std::ostream& operator<<(std::ostream& out, const X509_DN& dn);

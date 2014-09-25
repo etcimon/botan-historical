@@ -23,7 +23,7 @@ CRL_Entry::CRL_Entry(bool t_on_unknown_crit) :
 /*
 * Create a CRL_Entry
 */
-CRL_Entry::CRL_Entry(const X509_Certificate& cert, CRL_Code why) :
+CRL_Entry::CRL_Entry(in X509_Certificate cert, CRL_Code why) :
 	throw_on_unknown_critical(false)
 {
 	serial = cert.serial_number();
@@ -34,7 +34,7 @@ CRL_Entry::CRL_Entry(const X509_Certificate& cert, CRL_Code why) :
 /*
 * Compare two CRL_Entrys for equality
 */
-bool operator==(const CRL_Entry& a1, const CRL_Entry& a2)
+bool operator==(in CRL_Entry a1, const CRL_Entry& a2)
 {
 	if(a1.serial_number() != a2.serial_number())
 		return false;
@@ -48,7 +48,7 @@ bool operator==(const CRL_Entry& a1, const CRL_Entry& a2)
 /*
 * Compare two CRL_Entrys for inequality
 */
-bool operator!=(const CRL_Entry& a1, const CRL_Entry& a2)
+bool operator!=(in CRL_Entry a1, const CRL_Entry& a2)
 {
 	return !(a1 == a2);
 }
@@ -89,7 +89,7 @@ void CRL_Entry::decode_from(BER_Decoder& source)
 		entry.decode(extensions);
 		Data_Store info;
 		extensions.contents_to(info, info);
-		reason = CRL_Code(info.get1_u32bit("X509v3.CRLReasonCode"));
+		reason = CRL_Code(info.get1_uint("X509v3.CRLReasonCode"));
 	}
 
 	entry.end_cons();

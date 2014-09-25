@@ -66,7 +66,7 @@ void AlternativeName::add_attribute(in string type,
 /*
 * Add an OtherName field
 */
-void AlternativeName::add_othername(const OID& oid, in string value,
+void AlternativeName::add_othername(in OID oid, in string value,
 												ASN1_Tag type)
 {
 	if(value == "")
@@ -134,7 +134,7 @@ void encode_entries(DER_Encoder& encoder,
 		}
 		else if(type == "IP")
 		{
-			const u32bit ip = string_to_ipv4(i->second);
+			const uint ip = string_to_ipv4(i->second);
 			byte ip_buf[4] = { 0 };
 			store_be(ip, ip_buf);
 			encoder.add_object(tagging, CONTEXT_SPECIFIC, ip_buf, 4);
@@ -200,7 +200,7 @@ void AlternativeName::decode_from(BER_Decoder& source)
 					othername_value_outer.class_tag !=
 						 (CONTEXT_SPECIFIC | CONSTRUCTED)
 					)
-					throw Decoding_Error("Invalid tags on otherName value");
+					throw new Decoding_Error("Invalid tags on otherName value");
 
 				BER_Decoder othername_value_inner(othername_value_outer.value);
 
@@ -227,7 +227,7 @@ void AlternativeName::decode_from(BER_Decoder& source)
 		{
 			if(obj.value.size() == 4)
 			{
-				const u32bit ip = load_be<u32bit>(&obj.value[0], 0);
+				const uint ip = load_be<uint>(&obj.value[0], 0);
 				add_attribute("IP", ipv4_to_string(ip));
 			}
 		}

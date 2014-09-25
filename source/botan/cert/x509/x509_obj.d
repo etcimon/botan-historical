@@ -34,7 +34,7 @@ X509_Object::X509_Object(in string file, in string labels)
 /*
 * Create a generic X.509 object
 */
-X509_Object::X509_Object(in Array!byte vec, in string labels)
+X509_Object::X509_Object(in Vector!byte vec, in string labels)
 {
 	DataSource_Memory stream(&vec[0], vec.size());
 	init(stream, labels);
@@ -47,7 +47,7 @@ void X509_Object::init(DataSource& in, in string labels)
 {
 	PEM_labels_allowed = split_on(labels, '/');
 	if(PEM_labels_allowed.size() < 1)
-		throw Invalid_Argument("Bad labels argument to X509_Object");
+		throw new Invalid_Argument("Bad labels argument to X509_Object");
 
 	PEM_label_pref = PEM_labels_allowed[0];
 	std::sort(PEM_labels_allowed.begin(), PEM_labels_allowed.end());
@@ -65,7 +65,7 @@ void X509_Object::init(DataSource& in, in string labels)
 
 			if(!std::binary_search(PEM_labels_allowed.begin(),
 										  PEM_labels_allowed.end(), got_label))
-				throw Decoding_Error("Invalid PEM label: " + got_label);
+				throw new Decoding_Error("Invalid PEM label: " + got_label);
 
 			BER_Decoder dec(ber);
 			decode_from(dec);
@@ -73,7 +73,7 @@ void X509_Object::init(DataSource& in, in string labels)
 	}
 	catch(Decoding_Error& e)
 	{
-		throw Decoding_Error(PEM_label_pref + " decoding failed: " + e.what());
+		throw new Decoding_Error(PEM_label_pref + " decoding failed: " + e.what());
 	}
 }void X509_Object::encode_into(DER_Encoder& to) const
 {
@@ -104,7 +104,7 @@ void X509_Object::decode_from(BER_Decoder& from)
 /*
 * Return a BER encoded X.509 object
 */
-std::vector<byte> X509_Object::BER_encode() const
+Vector!( byte ) X509_Object::BER_encode() const
 {
 	DER_Encoder der;
 	encode_into(der);
@@ -122,7 +122,7 @@ string X509_Object::PEM_encode() const
 /*
 * Return the TBS data
 */
-std::vector<byte> X509_Object::tbs_data() const
+Vector!( byte ) X509_Object::tbs_data() const
 {
 	return ASN1::put_in_sequence(tbs_bits);
 }
@@ -130,7 +130,7 @@ std::vector<byte> X509_Object::tbs_data() const
 /*
 * Return the signature of this object
 */
-std::vector<byte> X509_Object::signature() const
+Vector!( byte ) X509_Object::signature() const
 {
 	return sig;
 }
@@ -148,18 +148,18 @@ AlgorithmIdentifier X509_Object::signature_algorithm() const
 */
 string X509_Object::hash_used_for_signature() const
 {
-	std::vector<string> sig_info =
+	Vector!( string ) sig_info =
 		split_on(OIDS::lookup(sig_algo.oid), '/');
 
 	if(sig_info.size() != 2)
-		throw Internal_Error("Invalid name format found for " +
+		throw new Internal_Error("Invalid name format found for " +
 									sig_algo.oid.as_string());
 
-	std::vector<string> pad_and_hash =
+	Vector!( string ) pad_and_hash =
 		parse_algorithm_name(sig_info[1]);
 
 	if(pad_and_hash.size() != 2)
-		throw Internal_Error("Invalid name format " + sig_info[1]);
+		throw new Internal_Error("Invalid name format " + sig_info[1]);
 
 	return pad_and_hash[1];
 }
@@ -176,10 +176,10 @@ bool X509_Object::check_signature(const Public_Key* pub_key) const
 /*
 * Check the signature on an object
 */
-bool X509_Object::check_signature(const Public_Key& pub_key) const
+bool X509_Object::check_signature(in Public_Key pub_key) const
 {
 	try {
-		std::vector<string> sig_info =
+		Vector!( string ) sig_info =
 			split_on(OIDS::lookup(sig_algo.oid), '/');
 
 		if(sig_info.size() != 2 || sig_info[0] != pub_key.algo_name())
@@ -202,10 +202,10 @@ bool X509_Object::check_signature(const Public_Key& pub_key) const
 /*
 * Apply the X.509 SIGNED macro
 */
-std::vector<byte> X509_Object::make_signed(PK_Signer* signer,
+Vector!( byte ) X509_Object::make_signed(PK_Signer* signer,
 														  RandomNumberGenerator& rng,
 														  const AlgorithmIdentifier& algo,
-														  in SafeArray!byte tbs_bits)
+														  in SafeVector!byte tbs_bits)
 {
 	return DER_Encoder()
 		.start_cons(SEQUENCE)
@@ -226,12 +226,12 @@ void X509_Object::do_decode()
 	}
 	catch(Decoding_Error& e)
 	{
-		throw Decoding_Error(PEM_label_pref + " decoding failed (" +
+		throw new Decoding_Error(PEM_label_pref + " decoding failed (" +
 									e.what() + ")");
 	}
 	catch(Invalid_Argument& e)
 	{
-		throw Decoding_Error(PEM_label_pref + " decoding failed (" +
+		throw new Decoding_Error(PEM_label_pref + " decoding failed (" +
 									e.what() + ")");
 	}
 }

@@ -10,7 +10,7 @@
 #include <exception>
 #include <stdexcept>
 #include <string>
-typedef std::runtime_error Exception;
+typedef Exception Exception;
 typedef std::invalid_argument Invalid_Argument;
 
 /**

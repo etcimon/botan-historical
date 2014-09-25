@@ -8,7 +8,7 @@
 #include <botan/rfc6979.h>
 #include <botan/hmac_drbg.h>
 #include <botan/libstate.h>
-BigInt generate_rfc6979_nonce(const BigInt& x,
+BigInt generate_rfc6979_nonce(in BigInt x,
 										const BigInt& q,
 										const BigInt& h,
 										in string hash)
@@ -20,7 +20,7 @@ BigInt generate_rfc6979_nonce(const BigInt& x,
 	const size_t qlen = q.bits();
 	const size_t rlen = qlen / 8 + (qlen % 8 ? 1 : 0);
 
-	SafeArray!byte input = BigInt::encode_1363(x, rlen);
+	SafeVector!byte input = BigInt::encode_1363(x, rlen);
 
 	input += BigInt::encode_1363(h, rlen);
 
@@ -28,7 +28,7 @@ BigInt generate_rfc6979_nonce(const BigInt& x,
 
 	BigInt k;
 
-	SafeArray!byte kbits(rlen);
+	SafeVector!byte kbits(rlen);
 
 	while(k == 0 || k >= q)
 	{

@@ -45,8 +45,8 @@ void RC2::encrypt_n(in byte[] input, ref byte[] output) const
 
 		store_le(out, R0, R1, R2, R3);
 
-		in += BLOCK_SIZE;
-		out += BLOCK_SIZE;
+		input = input[BLOCK_SIZE .. $];
+		output = output[BLOCK_SIZE .. $];
 	}
 }
 
@@ -87,8 +87,8 @@ void RC2::decrypt_n(in byte[] input, ref byte[] output) const
 
 		store_le(out, R0, R1, R2, R3);
 
-		in += BLOCK_SIZE;
-		out += BLOCK_SIZE;
+		input = input[BLOCK_SIZE .. $];
+		output = output[BLOCK_SIZE .. $];
 	}
 }
 
@@ -121,7 +121,7 @@ void RC2::key_schedule(in byte[] key)
 		0xC5, 0xF3, 0xDB, 0x47, 0xE5, 0xA5, 0x9C, 0x77, 0x0A, 0xA6, 0x20, 0x68,
 		0xFE, 0x7F, 0xC1, 0xAD };
 
-	SafeArray!byte L(128);
+	SafeVector!byte L(128);
 	copy_mem(&L[0], key, length);
 
 	for(size_t i = length; i != 128; ++i)
@@ -173,7 +173,7 @@ byte RC2::EKB_code(size_t ekb)
 	if(ekb < 256)
 		return EKB[ekb];
 	else
-		throw Encoding_Error("RC2::EKB_code: EKB is too large");
+		throw new Encoding_Error("RC2::EKB_code: EKB is too large");
 }
 
 }

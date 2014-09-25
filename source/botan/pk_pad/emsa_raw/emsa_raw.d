@@ -17,9 +17,9 @@ void EMSA_Raw::update(in byte[] input, size_t length)
 /*
 * Return the raw (unencoded) data
 */
-SafeArray!byte EMSA_Raw::raw_data()
+SafeVector!byte EMSA_Raw::raw_data()
 {
-	SafeArray!byte output;
+	SafeVector!byte output;
 	std::swap(message, output);
 	return output;
 }
@@ -27,7 +27,7 @@ SafeArray!byte EMSA_Raw::raw_data()
 /*
 * EMSA-Raw Encode Operation
 */
-SafeArray!byte EMSA_Raw::encoding_of(in SafeArray!byte msg,
+SafeVector!byte EMSA_Raw::encoding_of(in SafeVector!byte msg,
 													  size_t,
 													  RandomNumberGenerator&)
 {
@@ -37,8 +37,8 @@ SafeArray!byte EMSA_Raw::encoding_of(in SafeArray!byte msg,
 /*
 * EMSA-Raw Verify Operation
 */
-bool EMSA_Raw::verify(in SafeArray!byte coded,
-							 in SafeArray!byte raw,
+bool EMSA_Raw::verify(in SafeVector!byte coded,
+							 in SafeVector!byte raw,
 							 size_t)
 {
 	if(coded.size() == raw.size())

@@ -30,11 +30,11 @@ void encode_eac_bigint(DER_Encoder& der, const BigInt& x, ASN1_Tag tag)
 	der.encode(BigInt::encode_1363(x, x.bytes()), OCTET_STRING, tag);
 }
 
-std::vector<byte> eac_1_1_encoding(const EC_PublicKey* key,
+Vector!( byte ) eac_1_1_encoding(const EC_PublicKey* key,
 												const OID& sig_algo)
 {
 	if(key->domain_format() == EC_DOMPAR_ENC_OID)
-		throw Encoding_Error("CVC encoder: cannot encode parameters by OID");
+		throw new Encoding_Error("CVC encoder: cannot encode parameters by OID");
 
 	const EC_Group& domain = key->domain();
 
@@ -72,7 +72,7 @@ string padding_and_hash_from_oid(OID const& oid)
 	string padding_and_hash = OIDS::lookup(oid); // use the hash
 
 	if(padding_and_hash.substr(0,6) != "ECDSA/")
-		throw Invalid_State("CVC: Can only use ECDSA, not " + padding_and_hash);
+		throw new Invalid_State("CVC: Can only use ECDSA, not " + padding_and_hash);
 
 	padding_and_hash.erase(0, padding_and_hash.find("/") + 1);
 	return padding_and_hash;
@@ -88,10 +88,10 @@ EAC1_1_CVC create_self_signed_cert(Private_Key const& key,
 {
 	// NOTE: we ignore the value of opt.chr
 
-	const ECDSA_PrivateKey* priv_key = cast(const ECDSA_PrivateKey*)(&key);
+	const ECDSA_PrivateKey* priv_key = cast(in ECDSA_PrivateKey*)(key);
 
 	if(priv_key == 0)
-		throw Invalid_Argument("CVC_EAC::create_self_signed_cert(): unsupported key type");
+		throw new Invalid_Argument("CVC_EAC::create_self_signed_cert(): unsupported key type");
 
 	ASN1_Chr chr(opt.car.value());
 
@@ -102,7 +102,7 @@ EAC1_1_CVC create_self_signed_cert(Private_Key const& key,
 
 	PK_Signer signer(*priv_key, padding_and_hash);
 
-	std::vector<byte> enc_public_key = eac_1_1_encoding(priv_key, sig_algo.oid);
+	Vector!( byte ) enc_public_key = eac_1_1_encoding(priv_key, sig_algo.oid);
 
 	return make_cvc_cert(signer,
 								enc_public_key,
@@ -120,7 +120,7 @@ EAC1_1_Req create_cvc_req(Private_Key const& key,
 	ECDSA_PrivateKey const* priv_key = cast(ECDSA_PrivateKey const*)(&key);
 	if (priv_key == 0)
 	{
-		throw Invalid_Argument("CVC_EAC::create_self_signed_cert(): unsupported key type");
+		throw new Invalid_Argument("CVC_EAC::create_self_signed_cert(): unsupported key type");
 	}
 	AlgorithmIdentifier sig_algo;
 	string padding_and_hash("EMSA1_BSI(" + hash_alg + ")");
@@ -129,17 +129,17 @@ EAC1_1_Req create_cvc_req(Private_Key const& key,
 
 	PK_Signer signer(*priv_key, padding_and_hash);
 
-	std::vector<byte> enc_public_key = eac_1_1_encoding(priv_key, sig_algo.oid);
+	Vector!( byte ) enc_public_key = eac_1_1_encoding(priv_key, sig_algo.oid);
 
-	std::vector<byte> enc_cpi;
+	Vector!( byte ) enc_cpi;
 	enc_cpi.push_back(0x00);
-	std::vector<byte> tbs = DER_Encoder()
+	Vector!( byte ) tbs = DER_Encoder()
 		.encode(enc_cpi, OCTET_STRING, ASN1_Tag(41), APPLICATION)
 		.raw_bytes(enc_public_key)
 		.encode(chr)
 		.get_contents_unlocked();
 
-	std::vector<byte> signed_cert =
+	Vector!( byte ) signed_cert =
 		EAC1_1_gen_CVC<EAC1_1_Req>::make_signed(signer,
 															 EAC1_1_gen_CVC<EAC1_1_Req>::build_cert_body(tbs),
 															 rng);
@@ -157,15 +157,15 @@ EAC1_1_ADO create_ado_req(Private_Key const& key,
 	ECDSA_PrivateKey const* priv_key = cast(ECDSA_PrivateKey const*)(&key);
 	if (priv_key == 0)
 	{
-		throw Invalid_Argument("CVC_EAC::create_self_signed_cert(): unsupported key type");
+		throw new Invalid_Argument("CVC_EAC::create_self_signed_cert(): unsupported key type");
 	}
 
 	string padding_and_hash = padding_and_hash_from_oid(req.signature_algorithm().oid);
 	PK_Signer signer(*priv_key, padding_and_hash);
-	std::vector<byte> tbs_bits = req.BER_encode();
+	Vector!( byte ) tbs_bits = req.BER_encode();
 	tbs_bits += DER_Encoder().encode(car).get_contents();
 
-	std::vector<byte> signed_cert =
+	Vector!( byte ) signed_cert =
 		EAC1_1_ADO::make_signed(signer, tbs_bits, rng);
 
 	DataSource_Memory source(signed_cert);
@@ -179,13 +179,13 @@ namespace DE_EAC
 EAC1_1_CVC create_cvca(Private_Key const& key,
 							  string const& hash,
 							  ASN1_Car const& car, bool iris, bool fingerpr,
-							  u32bit cvca_validity_months,
+							  uint cvca_validity_months,
 							  RandomNumberGenerator& rng)
 {
 	ECDSA_PrivateKey const* priv_key = cast(ECDSA_PrivateKey const*)(&key);
 	if (priv_key == 0)
 	{
-		throw Invalid_Argument("CVC_EAC::create_self_signed_cert(): unsupported key type");
+		throw new Invalid_Argument("CVC_EAC::create_self_signed_cert(): unsupported key type");
 	}
 	EAC1_1_CVC_Options opts;
 	opts.car = car;
@@ -205,7 +205,7 @@ EAC1_1_CVC link_cvca(EAC1_1_CVC const& signer,
 	const ECDSA_PrivateKey* priv_key = cast(ECDSA_PrivateKey const*)(&key);
 
 	if (priv_key == 0)
-		throw Invalid_Argument("link_cvca(): unsupported key type");
+		throw new Invalid_Argument("link_cvca(): unsupported key type");
 
 	ASN1_Ced ced(std::chrono::system_clock::now());
 	ASN1_Cex cex(signee.get_cex());
@@ -215,11 +215,11 @@ EAC1_1_CVC link_cvca(EAC1_1_CVC const& signer,
 		detail += ced.as_string();
 		detail += ", signee.cex = ";
 		detail += cex.as_string();
-		throw Invalid_Argument(detail);
+		throw new Invalid_Argument(detail);
 	}
 	if (signer.signature_algorithm() != signee.signature_algorithm())
 	{
-		throw Invalid_Argument("link_cvca(): signature algorithms of signer and signee don't match");
+		throw new Invalid_Argument("link_cvca(): signature algorithms of signer and signee don't match");
 	}
 	AlgorithmIdentifier sig_algo = signer.signature_algorithm();
 	string padding_and_hash = padding_and_hash_from_oid(sig_algo.oid);
@@ -228,7 +228,7 @@ EAC1_1_CVC link_cvca(EAC1_1_CVC const& signer,
 	ECDSA_PublicKey* subj_pk = cast(ECDSA_PublicKey*)(pk.get());
 	subj_pk->set_parameter_encoding(EC_DOMPAR_ENC_EXPLICIT);
 
-	std::vector<byte> enc_public_key = eac_1_1_encoding(priv_key, sig_algo.oid);
+	Vector!( byte ) enc_public_key = eac_1_1_encoding(priv_key, sig_algo.oid);
 
 	return make_cvc_cert(pk_signer, enc_public_key,
 								signer.get_car(),
@@ -241,17 +241,17 @@ EAC1_1_CVC link_cvca(EAC1_1_CVC const& signer,
 EAC1_1_CVC sign_request(EAC1_1_CVC const& signer_cert,
 								Private_Key const& key,
 								EAC1_1_Req const& signee,
-								u32bit seqnr,
-								u32bit seqnr_len,
+								uint seqnr,
+								uint seqnr_len,
 								bool domestic,
-								u32bit dvca_validity_months,
-								u32bit ca_is_validity_months,
+								uint dvca_validity_months,
+								uint ca_is_validity_months,
 								RandomNumberGenerator& rng)
 {
 	ECDSA_PrivateKey const* priv_key = cast(ECDSA_PrivateKey const*)(&key);
 	if (priv_key == 0)
 	{
-		throw Invalid_Argument("CVC_EAC::create_self_signed_cert(): unsupported key type");
+		throw new Invalid_Argument("CVC_EAC::create_self_signed_cert(): unsupported key type");
 	}
 	string chr_str = signee.get_chr().value();
 
@@ -278,8 +278,8 @@ EAC1_1_CVC sign_request(EAC1_1_CVC const& signer_cert,
 
 	ASN1_Ced ced(std::chrono::system_clock::now());
 
-	u32bit chat_val;
-	u32bit chat_low = signer_cert.get_chat_value() & 0x3; // take the chat rights from signer
+	uint chat_val;
+	uint chat_low = signer_cert.get_chat_value() & 0x3; // take the chat rights from signer
 	ASN1_Cex cex(ced);
 	if ((signer_cert.get_chat_value() & CVCA) == CVCA)
 	{
@@ -298,11 +298,11 @@ EAC1_1_CVC sign_request(EAC1_1_CVC const& signer_cert,
 	}
 	else
 	{
-		throw Invalid_Argument("sign_request(): encountered illegal value for CHAT");
+		throw new Invalid_Argument("sign_request(): encountered illegal value for CHAT");
 		// (IS cannot sign certificates)
 	}
 
-	std::vector<byte> enc_public_key = eac_1_1_encoding(priv_key, sig_algo.oid);
+	Vector!( byte ) enc_public_key = eac_1_1_encoding(priv_key, sig_algo.oid);
 
 	return make_cvc_cert(pk_signer, enc_public_key,
 								ASN1_Car(signer_cert.get_chr().iso_8859()),
@@ -321,7 +321,7 @@ EAC1_1_Req create_cvc_req(Private_Key const& prkey,
 	ECDSA_PrivateKey const* priv_key = cast(ECDSA_PrivateKey const*)(&prkey);
 	if (priv_key == 0)
 	{
-		throw Invalid_Argument("CVC_EAC::create_self_signed_cert(): unsupported key type");
+		throw new Invalid_Argument("CVC_EAC::create_self_signed_cert(): unsupported key type");
 	}
 	ECDSA_PrivateKey key(*priv_key);
 	key.set_parameter_encoding(EC_DOMPAR_ENC_IMPLICITCA);

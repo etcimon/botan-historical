@@ -16,8 +16,8 @@ class ECDH_PublicKey : public abstract EC_PublicKey
 {
 	public:
 
-		ECDH_PublicKey(const AlgorithmIdentifier& alg_id,
-							in SafeArray!byte key_bits) :
+		ECDH_PublicKey(in AlgorithmIdentifier alg_id,
+							in SafeVector!byte key_bits) :
 			EC_PublicKey(alg_id, key_bits) {}
 
 		/**
@@ -25,7 +25,7 @@ class ECDH_PublicKey : public abstract EC_PublicKey
 		* @param dom_par the domain parameters associated with this key
 		* @param public_point the public point defining this key
 		*/
-		ECDH_PublicKey(const EC_Group& dom_par,
+		ECDH_PublicKey(in EC_Group dom_par,
 							const PointGFp& public_point) :
 			EC_PublicKey(dom_par, public_point) {}
 
@@ -46,7 +46,7 @@ class ECDH_PublicKey : public abstract EC_PublicKey
 		/**
 		* @return public point value
 		*/
-		std::vector<byte> public_value() const
+		Vector!( byte ) public_value() const
 		{ return unlock(EC2OSP(public_point(), PointGFp::UNCOMPRESSED)); }
 
 	protected:
@@ -62,8 +62,8 @@ class ECDH_PrivateKey : public ECDH_PublicKey,
 {
 	public:
 
-		ECDH_PrivateKey(const AlgorithmIdentifier& alg_id,
-							 in SafeArray!byte key_bits) :
+		ECDH_PrivateKey(in AlgorithmIdentifier alg_id,
+							 in SafeVector!byte key_bits) :
 			EC_PrivateKey(alg_id, key_bits) {}
 
 		/**
@@ -77,7 +77,7 @@ class ECDH_PrivateKey : public ECDH_PublicKey,
 							 const BigInt& x = 0) :
 			EC_PrivateKey(rng, domain, x) {}
 
-		std::vector<byte> public_value() const
+		Vector!( byte ) public_value() const
 		{ return ECDH_PublicKey::public_value(); }
 };
 
@@ -87,9 +87,9 @@ class ECDH_PrivateKey : public ECDH_PublicKey,
 class ECDH_KA_Operation : public PK_Ops::Key_Agreement
 {
 	public:
-		ECDH_KA_Operation(const ECDH_PrivateKey& key);
+		ECDH_KA_Operation(in ECDH_PrivateKey key);
 
-		SafeArray!byte agree(in byte[] w, size_t w_len);
+		SafeVector!byte agree(in byte[] w, size_t w_len);
 	private:
 		const CurveGFp& curve;
 		const BigInt& cofactor;

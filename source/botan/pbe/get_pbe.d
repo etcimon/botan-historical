@@ -29,28 +29,28 @@ PBE* get_pbe(in string algo_spec,
 	string digest_name = request.arg(0);
 	const string cipher = request.arg(1);
 
-	std::vector<string> cipher_spec = split_on(cipher, '/');
+	Vector!( string ) cipher_spec = split_on(cipher, '/');
 	if(cipher_spec.size() != 2)
-		throw Invalid_Argument("PBE: Invalid cipher spec " + cipher);
+		throw new Invalid_Argument("PBE: Invalid cipher spec " + cipher);
 
 	const string cipher_algo = SCAN_Name::deref_alias(cipher_spec[0]);
 	const string cipher_mode = cipher_spec[1];
 
 	if(cipher_mode != "CBC")
-		throw Invalid_Argument("PBE: Invalid cipher mode " + cipher);
+		throw new Invalid_Argument("PBE: Invalid cipher mode " + cipher);
 
 	Algorithm_Factory& af = global_state().algorithm_factory();
 
 	const BlockCipher* block_cipher = af.prototype_block_cipher(cipher_algo);
 	if(!block_cipher)
-		throw Algorithm_Not_Found(cipher_algo);
+		throw new Algorithm_Not_Found(cipher_algo);
 
 	const HashFunction* hash_function = af.prototype_hash_function(digest_name);
 	if(!hash_function)
-		throw Algorithm_Not_Found(digest_name);
+		throw new Algorithm_Not_Found(digest_name);
 
 	if(request.arg_count() != 2)
-		throw Invalid_Algorithm_Name(algo_spec);
+		throw new Invalid_Algorithm_Name(algo_spec);
 
 #if defined(BOTAN_HAS_PBE_PKCS_V20)
 	if(pbe == "PBE-PKCS5v20")
@@ -61,14 +61,14 @@ PBE* get_pbe(in string algo_spec,
 										rng);
 #endif
 
-	throw Algorithm_Not_Found(algo_spec);
+	throw new Algorithm_Not_Found(algo_spec);
 }
 
 /*
 * Get a decryption PBE, decode parameters
 */
-PBE* get_pbe(const OID& pbe_oid,
-				 in Array!byte params,
+PBE* get_pbe(in OID pbe_oid,
+				 in Vector!byte params,
 				 in string passphrase)
 {
 	SCAN_Name request(OIDS::lookup(pbe_oid));
@@ -80,7 +80,7 @@ PBE* get_pbe(const OID& pbe_oid,
 		return new PBE_PKCS5v20(params, passphrase);
 #endif
 
-	throw Algorithm_Not_Found(pbe_oid.as_string());
+	throw new Algorithm_Not_Found(pbe_oid.as_string());
 }
 
 }

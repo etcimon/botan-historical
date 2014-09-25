@@ -8,10 +8,10 @@
 #include <vector>
 #include <string>
 #include <map>
-inline std::vector<byte> to_byte_vector(in string s)
+inline Vector!( byte ) to_byte_vector(in string s)
 {
-	return std::vector<byte>(cast(const byte*)(&s[0]),
-									 cast(const byte*)(&s[s.size()]));
+	return Vector!( byte )(cast(in byte*)(s[0]),
+									 cast(in byte*)(s[s.size()]));
 }
 
 /*
@@ -22,7 +22,7 @@ inline std::vector<byte> to_byte_vector(in string s)
 * @return mapping[key] or null_result
 */
 template<typename K, typename V>
-inline V search_map(const std::map<K, V>& mapping,
+inline V search_map(in std::map<K, V> mapping,
 						  const K& key,
 						  const V& null_result = V())
 {
@@ -33,7 +33,7 @@ inline V search_map(const std::map<K, V>& mapping,
 }
 
 template<typename K, typename V, typename R>
-inline R search_map(const std::map<K, V>& mapping, const K& key,
+inline R search_map(in std::map<K, V> mapping, const K& key,
 						  const R& null_result, const R& found_result)
 {
 	auto i = mapping.find(key);
@@ -61,7 +61,7 @@ void multimap_insert(std::multimap<K, V>& multimap,
 * Existence check for values
 */
 template<typename T>
-bool value_exists(const std::vector<T>& vec,
+bool value_exists(in Vector!( T ) vec,
 						const T& val)
 {
 	for(size_t i = 0; i != vec.size(); ++i)

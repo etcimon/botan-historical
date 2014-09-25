@@ -9,16 +9,16 @@
 #include <botan/hash_id.h>
 namespace {
 
-SafeArray!byte emsa3_encoding(in SafeArray!byte msg,
+SafeVector!byte emsa3_encoding(in SafeVector!byte msg,
 											  size_t output_bits,
 											  in byte[] hash_id,
 											  size_t hash_id_length)
 {
 	size_t output_length = output_bits / 8;
 	if(output_length < hash_id_length + msg.size() + 10)
-		throw Encoding_Error("emsa3_encoding: Output length is too small");
+		throw new Encoding_Error("emsa3_encoding: Output length is too small");
 
-	SafeArray!byte T(output_length);
+	SafeVector!byte T(output_length);
 	const size_t P_LENGTH = output_length - msg.size() - hash_id_length - 2;
 
 	T[0] = 0x01;
@@ -36,25 +36,25 @@ void EMSA_PKCS1v15::update(in byte[] input, size_t length)
 	m_hash->update(input, length);
 }
 
-SafeArray!byte EMSA_PKCS1v15::raw_data()
+SafeVector!byte EMSA_PKCS1v15::raw_data()
 {
-	return m_hash->final();
+	return m_hash->flush();
 }
 
-SafeArray!byte
-EMSA_PKCS1v15::encoding_of(in SafeArray!byte msg,
+SafeVector!byte
+EMSA_PKCS1v15::encoding_of(in SafeVector!byte msg,
 									size_t output_bits,
 									RandomNumberGenerator&)
 {
 	if(msg.size() != m_hash->output_length())
-		throw Encoding_Error("EMSA_PKCS1v15::encoding_of: Bad input length");
+		throw new Encoding_Error("EMSA_PKCS1v15::encoding_of: Bad input length");
 
 	return emsa3_encoding(msg, output_bits,
 								 &m_hash_id[0], m_hash_id.size());
 }
 
-bool EMSA_PKCS1v15::verify(in SafeArray!byte coded,
-									in SafeArray!byte raw,
+bool EMSA_PKCS1v15::verify(in SafeVector!byte coded,
+									in SafeVector!byte raw,
 									size_t key_bits)
 {
 	if(raw.size() != m_hash->output_length())
@@ -81,23 +81,23 @@ void EMSA_PKCS1v15_Raw::update(in byte[] input, size_t length)
 	message += std::make_pair(input, length);
 }
 
-SafeArray!byte EMSA_PKCS1v15_Raw::raw_data()
+SafeVector!byte EMSA_PKCS1v15_Raw::raw_data()
 {
-	SafeArray!byte ret;
+	SafeVector!byte ret;
 	std::swap(ret, message);
 	return ret;
 }
 
-SafeArray!byte
-EMSA_PKCS1v15_Raw::encoding_of(in SafeArray!byte msg,
+SafeVector!byte
+EMSA_PKCS1v15_Raw::encoding_of(in SafeVector!byte msg,
 										 size_t output_bits,
 										 RandomNumberGenerator&)
 {
 	return emsa3_encoding(msg, output_bits, nullptr, 0);
 }
 
-bool EMSA_PKCS1v15_Raw::verify(in SafeArray!byte coded,
-										 in SafeArray!byte raw,
+bool EMSA_PKCS1v15_Raw::verify(in SafeVector!byte coded,
+										 in SafeVector!byte raw,
 										 size_t key_bits)
 {
 	try

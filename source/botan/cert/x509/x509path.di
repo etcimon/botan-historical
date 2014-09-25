@@ -85,7 +85,7 @@ class Path_Validation_Result
 		/**
 		* @return the full path from subject to trust root
 		*/
-		const std::vector<X509_Certificate>& cert_path() const { return m_cert_path; }
+		const Vector!( X509_Certificate )& cert_path() const { return m_cert_path; }
 
 		/**
 		* @return true iff the validation was succesful
@@ -100,7 +100,7 @@ class Path_Validation_Result
 		/**
 		* Return a set of status codes for each certificate in the chain
 		*/
-		const std::vector<std::set<Certificate_Status_Code>>& all_statuses() const
+		const Vector!( std::set<Certificate_Status_Code )>& all_statuses() const
 		{ return m_all_status; }
 
 		/**
@@ -110,29 +110,29 @@ class Path_Validation_Result
 
 		static const char* status_string(Certificate_Status_Code code);
 
-		Path_Validation_Result(std::vector<std::set<Certificate_Status_Code>> status,
-									  std::vector<X509_Certificate>&& cert_chainput);
+		Path_Validation_Result(Vector!( std::set<Certificate_Status_Code )> status,
+									  Vector!( X509_Certificate )&& cert_chainput);
 
 		Path_Validation_Result(Certificate_Status_Code status) : m_overall(status) {}
 
 	private:
 		friend Path_Validation_Result x509_path_validate(
-			const std::vector<X509_Certificate>& end_certs,
+			const Vector!( X509_Certificate )& end_certs,
 			const Path_Validation_Restrictions& restrictions,
-			const std::vector<Certificate_Store*>& certstores);
+			const Vector!( Certificate_Store* )& certstores);
 
 		Certificate_Status_Code m_overall;
-		std::vector<std::set<Certificate_Status_Code>> m_all_status;
-		std::vector<X509_Certificate> m_cert_path;
+		Vector!( std::set<Certificate_Status_Code )> m_all_status;
+		Vector!( X509_Certificate ) m_cert_path;
 };
 
 /**
 * PKIX Path Validation
 */
 Path_Validation_Result x509_path_validate(
-	const std::vector<X509_Certificate>& end_certs,
+	const Vector!( X509_Certificate )& end_certs,
 	const Path_Validation_Restrictions& restrictions,
-	const std::vector<Certificate_Store*>& certstores);
+	const Vector!( Certificate_Store* )& certstores);
 
 /**
 * PKIX Path Validation
@@ -140,7 +140,7 @@ Path_Validation_Result x509_path_validate(
 Path_Validation_Result x509_path_validate(
 	const X509_Certificate& end_cert,
 	const Path_Validation_Restrictions& restrictions,
-	const std::vector<Certificate_Store*>& certstores);
+	const Vector!( Certificate_Store* )& certstores);
 
 /**
 * PKIX Path Validation
@@ -154,6 +154,6 @@ Path_Validation_Result x509_path_validate(
 * PKIX Path Validation
 */
 Path_Validation_Result x509_path_validate(
-	const std::vector<X509_Certificate>& end_certs,
+	const Vector!( X509_Certificate )& end_certs,
 	const Path_Validation_Restrictions& restrictions,
 	const Certificate_Store& store);

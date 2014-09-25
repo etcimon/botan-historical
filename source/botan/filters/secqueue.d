@@ -48,7 +48,7 @@ class SecureQueueNode
 	private:
 		friend class SecureQueue;
 		SecureQueueNode* next;
-		SafeArray!byte buffer;
+		SafeVector!byte buffer;
 		size_t start, end;
 };
 
@@ -65,7 +65,7 @@ SecureQueue::SecureQueue()
 /*
 * Copy a SecureQueue
 */
-SecureQueue::SecureQueue(const SecureQueue& input) :
+SecureQueue::SecureQueue(in SecureQueue input) :
 	Fanout_Filter(), DataSource()
 {
 	bytes_read = 0;
@@ -98,7 +98,7 @@ void SecureQueue::destroy()
 /*
 * Copy a SecureQueue
 */
-SecureQueue& SecureQueue::operator=(const SecureQueue& input)
+SecureQueue& SecureQueue::operator=(in SecureQueue input)
 {
 	destroy();
 	head = tail = new SecureQueueNode;

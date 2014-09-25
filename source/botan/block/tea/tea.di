@@ -20,5 +20,5 @@ class TEA : public Block_Cipher_Fixed_Params<8, 16>
 		BlockCipher* clone() const { return new TEA; }
 	private:
 		void key_schedule(const byte[], size_t);
-		secure_vector<u32bit> K;
+		secure_vector<uint> K;
 };

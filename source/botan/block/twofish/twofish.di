@@ -23,15 +23,15 @@ class Twofish : public Block_Cipher_Fixed_Params<16, 16, 32, 8>
 
 		static void rs_mul(byte[4], byte, size_t);
 
-		static const u32bit MDS0[256];
-		static const u32bit MDS1[256];
-		static const u32bit MDS2[256];
-		static const u32bit MDS3[256];
+		static const uint MDS0[256];
+		static const uint MDS1[256];
+		static const uint MDS2[256];
+		static const uint MDS3[256];
 		static const byte Q0[256];
 		static const byte Q1[256];
 		static const byte RS[32];
 		static const byte EXP_TO_POLY[255];
 		static const byte POLY_TO_EXP[255];
 
-		secure_vector<u32bit> SB, RK;
+		secure_vector<uint> SB, RK;
 };

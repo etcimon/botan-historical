@@ -50,7 +50,7 @@ EVP_BlockCipher::EVP_BlockCipher(const EVP_CIPHER* algo,
 	cipher_name(algo_name)
 {
 	if(EVP_CIPHER_mode(algo) != EVP_CIPH_ECB_MODE)
-		throw Invalid_Argument("EVP_BlockCipher: Non-ECB EVP was passed in");
+		throw new Invalid_Argument("EVP_BlockCipher: Non-ECB EVP was passed in");
 
 	EVP_CIPHER_CTX_init(&encrypt);
 	EVP_CIPHER_CTX_init(&decrypt);
@@ -74,7 +74,7 @@ EVP_BlockCipher::EVP_BlockCipher(const EVP_CIPHER* algo,
 	cipher_name(algo_name)
 {
 	if(EVP_CIPHER_mode(algo) != EVP_CIPH_ECB_MODE)
-		throw Invalid_Argument("EVP_BlockCipher: Non-ECB EVP was passed in");
+		throw new Invalid_Argument("EVP_BlockCipher: Non-ECB EVP was passed in");
 
 	EVP_CIPHER_CTX_init(&encrypt);
 	EVP_CIPHER_CTX_init(&decrypt);
@@ -120,7 +120,7 @@ void EVP_BlockCipher::decrypt_n(in byte[] input, ref byte[] output,
 */
 void EVP_BlockCipher::key_schedule(in byte[] key)
 {
-	SafeArray!byte full_key(key, key + length);
+	SafeVector!byte full_key(key, key + length);
 
 	if(cipher_name == "TripleDES" && length == 16)
 	{
@@ -129,7 +129,7 @@ void EVP_BlockCipher::key_schedule(in byte[] key)
 	else
 		if(EVP_CIPHER_CTX_set_key_length(&encrypt, length) == 0 ||
 			EVP_CIPHER_CTX_set_key_length(&decrypt, length) == 0)
-			throw Invalid_Argument("EVP_BlockCipher: Bad key length for " +
+			throw new Invalid_Argument("EVP_BlockCipher: Bad key length for " +
 										  cipher_name);
 
 	if(cipher_name == "RC2")
@@ -177,7 +177,7 @@ void EVP_BlockCipher::clear()
 * Look for an algorithm with this name
 */
 BlockCipher*
-OpenSSL_Engine::find_block_cipher(const SCAN_Name& request,
+OpenSSL_Engine::find_block_cipher(in SCAN_Name request,
 											 Algorithm_Factory&) const
 {
 #define HANDLE_EVP_CIPHER(NAME, EVP)									 \

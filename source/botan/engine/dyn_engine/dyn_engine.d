@@ -11,7 +11,7 @@ namespace {
 
 extern "C" {
 	typedef Engine* (*creator_func)(void);
-	typedef u32bit (*module_version_func)(void);
+	typedef uint (*module_version_func)(void);
 }
 
 }
@@ -27,10 +27,10 @@ Dynamically_Loaded_Engine::Dynamically_Loaded_Engine(
 		module_version_func get_version =
 			lib->resolve<module_version_func>("module_version");
 
-		const u32bit mod_version = get_version();
+		const uint mod_version = get_version();
 
 		if(mod_version != 20101003)
-			throw std::runtime_error("Incompatible version in " +
+			throw new Exception("Incompatible version in " +
 											 library_path + " of " +
 											 std::to_string(mod_version));
 
@@ -40,7 +40,7 @@ Dynamically_Loaded_Engine::Dynamically_Loaded_Engine(
 		engine = creator();
 
 		if(!engine)
-			throw std::runtime_error("Creator function in " +
+			throw new Exception("Creator function in " +
 											 library_path + " failed");
 	}
 	catch(...)

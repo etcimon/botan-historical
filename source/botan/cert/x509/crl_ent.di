@@ -40,7 +40,7 @@ class CRL_Entry : public ASN1_Object
 		* Get the serial number of the certificate associated with this entry.
 		* @return certificate's serial number
 		*/
-		std::vector<byte> serial_number() const { return serial; }
+		Vector!( byte ) serial_number() const { return serial; }
 
 		/**
 		* Get the revocation date of the certificate associated with this entry
@@ -64,12 +64,12 @@ class CRL_Entry : public ASN1_Object
 		* @param cert the certificate to revoke
 		* @param reason the reason code to set in the entry
 		*/
-		CRL_Entry(const X509_Certificate& cert,
+		CRL_Entry(in X509_Certificate cert,
 					 CRL_Code reason = UNSPECIFIED);
 
 	private:
 		bool throw_on_unknown_critical;
-		std::vector<byte> serial;
+		Vector!( byte ) serial;
 		X509_Time time;
 		CRL_Code reason;
 };
@@ -77,9 +77,9 @@ class CRL_Entry : public ASN1_Object
 /**
 * Test two CRL entries for equality in all fields.
 */
-bool operator==(const CRL_Entry&, const CRL_Entry&);
+bool operator==(in CRL_Entry, const CRL_Entry&);
 
 /**
 * Test two CRL entries for inequality in at least one field.
 */
-bool operator!=(const CRL_Entry&, const CRL_Entry&);
+bool operator!=(in CRL_Entry, const CRL_Entry&);

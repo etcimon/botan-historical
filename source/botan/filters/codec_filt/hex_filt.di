@@ -43,7 +43,7 @@ class Hex_Encoder : public Filter
 
 		const Case casing;
 		const size_t line_length;
-		std::vector<byte> in, out;
+		Vector!( byte ) in, out;
 		size_t position, counter;
 };
 
@@ -66,6 +66,6 @@ class Hex_Decoder : public Filter
 		Hex_Decoder(Decoder_Checking checking = NONE);
 	private:
 		const Decoder_Checking checking;
-		std::vector<byte> in, out;
+		Vector!( byte ) in, out;
 		size_t position;
 };

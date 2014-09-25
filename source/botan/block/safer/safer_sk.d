@@ -113,8 +113,8 @@ void SAFER_SK::encrypt_n(in byte[] input, ref byte[] output) const
 		out[4] = E ^ EK[16*rounds+4]; out[5] = F + EK[16*rounds+5];
 		out[6] = G + EK[16*rounds+6]; out[7] = H ^ EK[16*rounds+7];
 
-		in += BLOCK_SIZE;
-		out += BLOCK_SIZE;
+		input = input[BLOCK_SIZE .. $];
+		output = output[BLOCK_SIZE .. $];
 	}
 }
 
@@ -151,8 +151,8 @@ void SAFER_SK::decrypt_n(in byte[] input, ref byte[] output) const
 		out[0] = A; out[1] = B; out[2] = C; out[3] = D;
 		out[4] = E; out[5] = F; out[6] = G; out[7] = H;
 
-		in += BLOCK_SIZE;
-		out += BLOCK_SIZE;
+		input = input[BLOCK_SIZE .. $];
+		output = output[BLOCK_SIZE .. $];
 	}
 }
 
@@ -203,7 +203,7 @@ void SAFER_SK::key_schedule(in byte[] key, size_t)
 
 	EK.resize(16 * rounds + 8);
 
-	SafeArray!byte KB(18);
+	SafeVector!byte KB(18);
 
 	for(size_t i = 0; i != 8; ++i)
 	{
@@ -247,7 +247,7 @@ BlockCipher* SAFER_SK::clone() const
 SAFER_SK::SAFER_SK(size_t r) : rounds(r)
 {
 	if(rounds > 13 || rounds == 0)
-		throw Invalid_Argument(name() + ": Invalid number of rounds");
+		throw new Invalid_Argument(name() + ": Invalid number of rounds");
 }
 
 }

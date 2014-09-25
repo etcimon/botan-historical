@@ -21,7 +21,7 @@ namespace TLS {
 
 namespace {
 
-SafeArray!byte strip_leading_zeros(in SafeArray!byte input)
+SafeVector!byte strip_leading_zeros(in SafeVector!byte input)
 {
 	size_t leading_zeros = 0;
 
@@ -32,7 +32,7 @@ SafeArray!byte strip_leading_zeros(in SafeArray!byte input)
 		++leading_zeros;
 	}
 
-	SafeArray!byte output(&input[leading_zeros],
+	SafeVector!byte output(&input[leading_zeros],
 										&input[input.size()]);
 	return output;
 }
@@ -72,7 +72,7 @@ Client_Key_Exchange::Client_Key_Exchange(Handshake_IO& io,
 
 		SymmetricKey psk = creds.psk("tls-client", hostname, psk_identity);
 
-		std::vector<byte> zeros(psk.length());
+		Vector!( byte ) zeros(psk.length());
 
 		append_tls_length_value(m_pre_master, zeros, 2);
 		append_tls_length_value(m_pre_master, psk.bits_of(), 2);
@@ -105,10 +105,10 @@ Client_Key_Exchange::Client_Key_Exchange(Handshake_IO& io,
 			BigInt Y = BigInt::decode(reader.get_range<byte>(2, 1, 65535));
 
 			if(reader.remaining_bytes())
-				throw Decoding_Error("Bad params size for DH key exchange");
+				throw new Decoding_Error("Bad params size for DH key exchange");
 
 			if(p.bits() < policy.minimum_dh_group_size())
-				throw TLS_Exception(Alert::INSUFFICIENT_SECURITY,
+				throw new TLS_Exception(Alert::INSUFFICIENT_SECURITY,
 										  "Server sent DH group of " +
 										  std::to_string(p.bits()) +
 										  " bits, policy requires at least " +
@@ -121,13 +121,13 @@ Client_Key_Exchange::Client_Key_Exchange(Handshake_IO& io,
 			* advantage to bogus keys anyway.
 			*/
 			if(Y <= 1 || Y >= p - 1)
-				throw TLS_Exception(Alert::INSUFFICIENT_SECURITY,
+				throw new TLS_Exception(Alert::INSUFFICIENT_SECURITY,
 										  "Server sent bad DH key for DHE exchange");
 
 			DL_Group group(p, g);
 
 			if(!group.verify_group(rng, true))
-				throw Internal_Error("DH group failed validation, possible attack");
+				throw new Internal_Error("DH group failed validation, possible attack");
 
 			DH_PublicKey counterparty_key(group, Y);
 
@@ -135,7 +135,7 @@ Client_Key_Exchange::Client_Key_Exchange(Handshake_IO& io,
 
 			PK_Key_Agreement ka(priv_key, "Raw");
 
-			SafeArray!byte dh_secret = strip_leading_zeros(
+			SafeVector!byte dh_secret = strip_leading_zeros(
 				ka.derive_key(0, counterparty_key.public_value()).bits_of());
 
 			if(kex_algo == "DH")
@@ -153,18 +153,18 @@ Client_Key_Exchange::Client_Key_Exchange(Handshake_IO& io,
 			const byte curve_type = reader.get_byte();
 
 			if(curve_type != 3)
-				throw Decoding_Error("Server sent non-named ECC curve");
+				throw new Decoding_Error("Server sent non-named ECC curve");
 
 			const u16bit curve_id = reader.get_u16bit();
 
 			const string name = Supported_Elliptic_Curves::curve_id_to_name(curve_id);
 
 			if(name == "")
-				throw Decoding_Error("Server sent unknown named curve " + std::to_string(curve_id));
+				throw new Decoding_Error("Server sent unknown named curve " + std::to_string(curve_id));
 
 			EC_Group group(name);
 
-			std::vector<byte> ecdh_key = reader.get_range<byte>(1, 1, 255);
+			Vector!( byte ) ecdh_key = reader.get_range<byte>(1, 1, 255);
 
 			ECDH_PublicKey counterparty_key(group, OS2ECP(ecdh_key, group.get_curve()));
 
@@ -172,7 +172,7 @@ Client_Key_Exchange::Client_Key_Exchange(Handshake_IO& io,
 
 			PK_Key_Agreement ka(priv_key, "Raw");
 
-			SafeArray!byte ecdh_secret =
+			SafeVector!byte ecdh_secret =
 				ka.derive_key(0, counterparty_key.public_value()).bits_of();
 
 			if(kex_algo == "ECDH")
@@ -189,7 +189,7 @@ Client_Key_Exchange::Client_Key_Exchange(Handshake_IO& io,
 		{
 			const BigInt N = BigInt::decode(reader.get_range<byte>(2, 1, 65535));
 			const BigInt g = BigInt::decode(reader.get_range<byte>(2, 1, 65535));
-			std::vector<byte> salt = reader.get_range<byte>(1, 1, 255);
+			Vector!( byte ) salt = reader.get_range<byte>(1, 1, 255);
 			const BigInt B = BigInt::decode(reader.get_range<byte>(2, 1, 65535));
 
 			const string srp_group = srp6_group_identifier(N, g);
@@ -200,7 +200,7 @@ Client_Key_Exchange::Client_Key_Exchange(Handshake_IO& io,
 			const string srp_password =
 				creds.srp_password("tls-client", hostname, srp_identifier);
 
-			std::pair<BigInt, SymmetricKey> srp_vals =
+			Pair!(BigInt, SymmetricKey) srp_vals =
 				srp6_client_agree(srp_identifier,
 										srp_password,
 										srp_group,
@@ -214,7 +214,7 @@ Client_Key_Exchange::Client_Key_Exchange(Handshake_IO& io,
 		}
 		else
 		{
-			throw Internal_Error("Client_Key_Exchange: Unknown kex " +
+			throw new Internal_Error("Client_Key_Exchange: Unknown kex " +
 										kex_algo);
 		}
 
@@ -225,14 +225,14 @@ Client_Key_Exchange::Client_Key_Exchange(Handshake_IO& io,
 		// No server key exchange msg better mean RSA kex + RSA key in cert
 
 		if(kex_algo != "RSA")
-			throw Unexpected_Message("No server kex but negotiated kex " + kex_algo);
+			throw new Unexpected_Message("No server kex but negotiated kex " + kex_algo);
 
 		if(!server_public_key)
-			throw Internal_Error("No server public key for RSA exchange");
+			throw new Internal_Error("No server public key for RSA exchange");
 
 		if(auto rsa_pub = cast(const RSA_PublicKey*)(server_public_key))
 		{
-			const Protocol_Version offered_version = state.client_hello()->version();
+			const Protocol_Version offered_version = state.client_hello()->_version();
 
 			m_pre_master = rng.random_vec(48);
 			m_pre_master[0] = offered_version.major_version();
@@ -240,15 +240,15 @@ Client_Key_Exchange::Client_Key_Exchange(Handshake_IO& io,
 
 			PK_Encryptor_EME encryptor(*rsa_pub, "PKCS1v15");
 
-			std::vector<byte> encrypted_key = encryptor.encrypt(m_pre_master, rng);
+			Vector!( byte ) encrypted_key = encryptor.encrypt(m_pre_master, rng);
 
-			if(state.version() == Protocol_Version::SSL_V3)
+			if(state._version() == Protocol_Version::SSL_V3)
 				m_key_material = encrypted_key; // no length field
 			else
 				append_tls_length_value(m_key_material, encrypted_key, 2);
 		}
 		else
-			throw TLS_Exception(Alert::HANDSHAKE_FAILURE,
+			throw new TLS_Exception(Alert::HANDSHAKE_FAILURE,
 									  "Expected a RSA key in server cert but got " +
 									  server_public_key->algo_name());
 	}
@@ -259,7 +259,7 @@ Client_Key_Exchange::Client_Key_Exchange(Handshake_IO& io,
 /*
 * Read a Client Key Exchange message
 */
-Client_Key_Exchange::Client_Key_Exchange(in Array!byte contents,
+Client_Key_Exchange::Client_Key_Exchange(in Vector!byte contents,
 													  const Handshake_State& state,
 													  const Private_Key* server_rsa_kex_key,
 													  Credentials_Manager& creds,
@@ -274,14 +274,14 @@ Client_Key_Exchange::Client_Key_Exchange(in Array!byte contents,
 						 "RSA key exchange negotiated so server sent a certificate");
 
 		if(!server_rsa_kex_key)
-			throw Internal_Error("Expected RSA kex but no server kex key set");
+			throw new Internal_Error("Expected RSA kex but no server kex key set");
 
 		if(!cast(const RSA_PrivateKey*)(server_rsa_kex_key))
-			throw Internal_Error("Expected RSA key but got " + server_rsa_kex_key->algo_name());
+			throw new Internal_Error("Expected RSA key but got " + server_rsa_kex_key->algo_name());
 
 		PK_Decryptor_EME decryptor(*server_rsa_kex_key, "PKCS1v15");
 
-		Protocol_Version client_version = state.client_hello()->version();
+		Protocol_Version client_version = state.client_hello()->_version();
 
 		/*
 		* This is used as the pre-master if RSA decryption fails.
@@ -294,13 +294,13 @@ Client_Key_Exchange::Client_Key_Exchange(in Array!byte contents,
 		* Some timing channel likely remains due to exception handling
 		* and the like.
 		*/
-		SafeArray!byte fake_pre_master = rng.random_vec(48);
+		SafeVector!byte fake_pre_master = rng.random_vec(48);
 		fake_pre_master[0] = client_version.major_version();
 		fake_pre_master[1] = client_version.minor_version();
 
 		try
 		{
-			if(state.version() == Protocol_Version::SSL_V3)
+			if(state._version() == Protocol_Version::SSL_V3)
 			{
 				m_pre_master = decryptor.decrypt(contents);
 			}
@@ -314,7 +314,7 @@ Client_Key_Exchange::Client_Key_Exchange(in Array!byte contents,
 				client_version.major_version() != m_pre_master[0] ||
 				client_version.minor_version() != m_pre_master[1])
 			{
-				throw Decoding_Error("Client_Key_Exchange: Secret corrupted");
+				throw new Decoding_Error("Client_Key_Exchange: Secret corrupted");
 			}
 		}
 		catch(...)
@@ -341,14 +341,14 @@ Client_Key_Exchange::Client_Key_Exchange(in Array!byte contents,
 				if(policy.hide_unknown_users())
 					psk = SymmetricKey(rng, 16);
 				else
-					throw TLS_Exception(Alert::UNKNOWN_PSK_IDENTITY,
+					throw new TLS_Exception(Alert::UNKNOWN_PSK_IDENTITY,
 											  "No PSK for identifier " + psk_identity);
 			}
 		}
 
 		if(kex_algo == "PSK")
 		{
-			std::vector<byte> zeros(psk.length());
+			Vector!( byte ) zeros(psk.length());
 			append_tls_length_value(m_pre_master, zeros, 2);
 			append_tls_length_value(m_pre_master, psk.bits_of(), 2);
 		}
@@ -364,24 +364,24 @@ Client_Key_Exchange::Client_Key_Exchange(in Array!byte contents,
 			in Private_Key Private_Key = state.server_kex()->server_kex_key();
 
 			const PK_Key_Agreement_Key* ka_key =
-				cast(const PK_Key_Agreement_Key*)(&Private_Key);
+				cast(in PK_Key_Agreement_Key*)(Private_Key);
 
 			if(!ka_key)
-				throw Internal_Error("Expected key agreement key type but got " +
+				throw new Internal_Error("Expected key agreement key type but got " +
 											Private_Key.algo_name());
 
 			try
 			{
 				PK_Key_Agreement ka(*ka_key, "Raw");
 
-				std::vector<byte> client_pubkey;
+				Vector!( byte ) client_pubkey;
 
 				if(ka_key->algo_name() == "DH")
 					client_pubkey = reader.get_range<byte>(2, 0, 65535);
 				else
 					client_pubkey = reader.get_range<byte>(1, 0, 255);
 
-				SafeArray!byte shared_secret = ka.derive_key(0, client_pubkey).bits_of();
+				SafeVector!byte shared_secret = ka.derive_key(0, client_pubkey).bits_of();
 
 				if(ka_key->algo_name() == "DH")
 					shared_secret = strip_leading_zeros(shared_secret);
@@ -406,7 +406,7 @@ Client_Key_Exchange::Client_Key_Exchange(in Array!byte contents,
 			}
 		}
 		else
-			throw Internal_Error("Client_Key_Exchange: Unknown kex type " + kex_algo);
+			throw new Internal_Error("Client_Key_Exchange: Unknown kex type " + kex_algo);
 	}
 }
 

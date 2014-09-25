@@ -19,7 +19,7 @@ void BigInt::randomize(RandomNumberGenerator& rng,
 		clear();
 	else
 	{
-		SafeArray!byte array = rng.random_vec((bitsize + 7) / 8);
+		SafeVector!byte array = rng.random_vec((bitsize + 7) / 8);
 
 		if(bitsize % 8)
 			array[0] &= 0xFF >> (8 - (bitsize % 8));
@@ -37,7 +37,7 @@ BigInt BigInt::random_integer(RandomNumberGenerator& rng,
 	BigInt range = max - min;
 
 	if(range <= 0)
-		throw Invalid_Argument("random_integer: invalid min/max values");
+		throw new Invalid_Argument("random_integer: invalid min/max values");
 
 	return (min + (BigInt(rng, range.bits() + 2) % range));
 }

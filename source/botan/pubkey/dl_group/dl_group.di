@@ -72,14 +72,14 @@ class DL_Group
 		* @param format the encoding format
 		* @return string holding the DER encoded group
 		*/
-		std::vector<byte> DER_encode(Format format) const;
+		Vector!( byte ) DER_encode(Format format) const;
 
 		/**
 		* Decode a DER/BER encoded group into this instance.
 		* @param ber a vector containing the DER/BER encoded group
 		* @param format the format of the encoded group
 		*/
-		void BER_decode(in Array!byte ber,
+		void BER_decode(in Vector!byte ber,
 							 Format format);
 
 		/**
@@ -128,7 +128,7 @@ class DL_Group
 		* @param qbits the desired bit size of the prime q.
 		*/
 		DL_Group(RandomNumberGenerator& rng,
-					in Array!byte seed,
+					in Vector!byte seed,
 					size_t pbits = 1024, size_t qbits = 0);
 
 		/**
@@ -136,7 +136,7 @@ class DL_Group
 		* @param p the prime p
 		* @param g the base g
 		*/
-		DL_Group(const BigInt& p, const BigInt& g);
+		DL_Group(in BigInt p, const BigInt& g);
 
 		/**
 		* Create a DL group.
@@ -144,17 +144,17 @@ class DL_Group
 		* @param q the prime q
 		* @param g the base g
 		*/
-		DL_Group(const BigInt& p, const BigInt& q, const BigInt& g);
+		DL_Group(in BigInt p, const BigInt& q, const BigInt& g);
 
 		/**
 		* Return PEM representation of named DL group
 		*/
 		static const char* PEM_for_named_group(in string name);
 	private:
-		static BigInt make_dsa_generator(const BigInt&, const BigInt&);
+		static BigInt make_dsa_generator(in BigInt, const BigInt&);
 
 		void init_check() const;
-		void initialize(const BigInt&, const BigInt&, const BigInt&);
+		void initialize(in BigInt, const BigInt&, const BigInt&);
 		bool initialized;
 		BigInt p, q, g;
 };

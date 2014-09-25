@@ -15,13 +15,13 @@ void mgf1_mask(HashFunction& hash,
 {
 	size_t in_len = input.length;
 	size_t out_len = output.length;
-	u32bit counter = 0;
+	uint counter = 0;
 
 	while(out_len)
 	{
 		hash.update(input, in_len);
 		hash.update_be(counter);
-		SafeArray!byte buffer = hash.final();
+		SafeVector!byte buffer = hash.flush();
 
 		size_t xored = std::min<size_t>(buffer.size(), out_len);
 		xor_buf(out, &buffer[0], xored);

@@ -16,7 +16,7 @@
 #if defined(BOTAN_HAS_PBKDF2)
   #include <botan/pbkdf2.h>
 #endif
-PBKDF* Core_Engine::find_pbkdf(const SCAN_Name& algo_spec,
+PBKDF* Core_Engine::find_pbkdf(in SCAN_Name algo_spec,
 										 Algorithm_Factory& af) const
 {
 #if defined(BOTAN_HAS_PBKDF1)

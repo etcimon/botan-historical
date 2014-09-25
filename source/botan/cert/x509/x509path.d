@@ -20,12 +20,12 @@
 namespace {
 
 const X509_Certificate*
-find_issuing_cert(const X509_Certificate& cert,
+find_issuing_cert(in X509_Certificate cert,
 						Certificate_Store& end_certs,
-						const std::vector<Certificate_Store*>& certstores)
+						const Vector!( Certificate_Store* )& certstores)
 {
 	const X509_DN issuer_dn = cert.issuer_dn();
-	const std::vector<byte> auth_key_id = cert.authority_key_id();
+	const Vector!( byte ) auth_key_id = cert.authority_key_id();
 
 	if(const X509_Certificate* cert = end_certs.find_cert(issuer_dn, auth_key_id))
 		return cert;
@@ -39,8 +39,8 @@ find_issuing_cert(const X509_Certificate& cert,
 	return nullptr;
 }
 
-const X509_CRL* find_crls_for(const X509_Certificate& cert,
-										const std::vector<Certificate_Store*>& certstores)
+const X509_CRL* find_crls_for(in X509_Certificate cert,
+										const Vector!( Certificate_Store* )& certstores)
 {
 	for(size_t i = 0; i != certstores.size(); ++i)
 	{
@@ -69,10 +69,10 @@ const X509_CRL* find_crls_for(const X509_Certificate& cert,
 	return nullptr;
 }
 
-std::vector<std::set<Certificate_Status_Code>>
-check_chain(const std::vector<X509_Certificate>& cert_path,
+Vector!( std::set<Certificate_Status_Code )>
+check_chain(in Vector!( X509_Certificate ) cert_path,
 				const Path_Validation_Restrictions& restrictions,
-				const std::vector<Certificate_Store*>& certstores)
+				const Vector!( Certificate_Store* )& certstores)
 {
 	const std::set<string>& trusted_hashes = restrictions.trusted_hashes();
 
@@ -80,9 +80,9 @@ check_chain(const std::vector<X509_Certificate>& cert_path,
 
 	X509_Time current_time(std::chrono::system_clock::now());
 
-	std::vector<std::future<OCSP::Response>> ocsp_responses;
+	Vector!( std::future<OCSP::Response )> ocsp_responses;
 
-	std::vector<std::set<Certificate_Status_Code>> cert_status(cert_path.size());
+	Vector!( std::set<Certificate_Status_Code )> cert_status(cert_path.size());
 
 	for(size_t i = 0; i != cert_path.size(); ++i)
 	{
@@ -200,14 +200,14 @@ check_chain(const std::vector<X509_Certificate>& cert_path,
 }
 
 Path_Validation_Result x509_path_validate(
-	const std::vector<X509_Certificate>& end_certs,
+	const Vector!( X509_Certificate )& end_certs,
 	const Path_Validation_Restrictions& restrictions,
-	const std::vector<Certificate_Store*>& certstores)
+	const Vector!( Certificate_Store* )& certstores)
 {
 	if(end_certs.empty())
-		throw std::invalid_argument("x509_path_validate called with no subjects");
+		throw new std::invalid_argument("x509_path_validate called with no subjects");
 
-	std::vector<X509_Certificate> cert_path;
+	Vector!( X509_Certificate ) cert_path;
 	cert_path.push_back(end_certs[0]);
 
 	Certificate_Store_Overlay extra(end_certs);
@@ -229,19 +229,19 @@ Path_Validation_Result x509_path_validate(
 Path_Validation_Result x509_path_validate(
 	const X509_Certificate& end_cert,
 	const Path_Validation_Restrictions& restrictions,
-	const std::vector<Certificate_Store*>& certstores)
+	const Vector!( Certificate_Store* )& certstores)
 {
-	std::vector<X509_Certificate> certs;
+	Vector!( X509_Certificate ) certs;
 	certs.push_back(end_cert);
 	return x509_path_validate(certs, restrictions, certstores);
 }
 
 Path_Validation_Result x509_path_validate(
-	const std::vector<X509_Certificate>& end_certs,
+	const Vector!( X509_Certificate )& end_certs,
 	const Path_Validation_Restrictions& restrictions,
 	const Certificate_Store& store)
 {
-	std::vector<Certificate_Store*> certstores;
+	Vector!( Certificate_Store* ) certstores;
 	certstores.push_back(const_cast(<Certificate_Store*>)(&store));
 
 	return x509_path_validate(end_certs, restrictions, certstores);
@@ -252,10 +252,10 @@ Path_Validation_Result x509_path_validate(
 	const Path_Validation_Restrictions& restrictions,
 	const Certificate_Store& store)
 {
-	std::vector<X509_Certificate> certs;
+	Vector!( X509_Certificate ) certs;
 	certs.push_back(end_cert);
 
-	std::vector<Certificate_Store*> certstores;
+	Vector!( Certificate_Store* ) certstores;
 	certstores.push_back(const_cast(<Certificate_Store*>)(&store));
 
 	return x509_path_validate(certs, restrictions, certstores);
@@ -277,14 +277,14 @@ Path_Validation_Restrictions::Path_Validation_Restrictions(bool require_rev,
 	m_trusted_hashes.insert("SHA-512");
 }
 
-Path_Validation_Result::Path_Validation_Result(std::vector<std::set<Certificate_Status_Code>> status,
-															  std::vector<X509_Certificate>&& cert_chainput) :
+Path_Validation_Result::Path_Validation_Result(Vector!( std::set<Certificate_Status_Code )> status,
+															  Vector!( X509_Certificate )&& cert_chainput) :
 	m_overall(Certificate_Status_Code::VERIFIED),
 	m_all_status(status),
 	m_cert_path(cert_chainput)
 {
 	// take the "worst" error as overall
-	for(const auto& s : m_all_status)
+	for(in auto s : m_all_status)
 	{
 		if(!s.empty())
 		{

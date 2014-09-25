@@ -54,13 +54,13 @@ class SymmetricAlgorithm
 		* Set the symmetric key of this object.
 		* @param key the SymmetricKey to be set.
 		*/
-		void set_key(const SymmetricKey& key)
+		void set_key(in SymmetricKey key)
 		{
 			set_key(key.begin(), key.length());
 		}
 
 		template<typename Alloc>
-		void set_key(const std::vector<byte, Alloc>& key)
+		void set_key(in Vector!( byte, Alloc ) key)
 		{
 			set_key(&key[0], key.size());
 		}
@@ -73,7 +73,7 @@ class SymmetricAlgorithm
 		void set_key(in byte[] key)
 		{
 			if(!valid_keylength(length))
-				throw Invalid_Key_Length(name(), length);
+				throw new Invalid_Key_Length(name(), length);
 			key_schedule(key, length);
 		}
 

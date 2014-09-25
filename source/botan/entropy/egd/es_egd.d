@@ -40,7 +40,7 @@ int EGD_EntropySource::EGD_Socket::open_socket(in string path)
 		addr.sun_family = PF_LOCAL;
 
 		if(sizeof(addr.sun_path) < path.length() + 1)
-			throw std::invalid_argument("EGD socket path is too long");
+			throw new std::invalid_argument("EGD socket path is too long");
 
 		std::strncpy(addr.sun_path, path.c_str(), sizeof(addr.sun_path));
 
@@ -79,19 +79,19 @@ size_t EGD_EntropySource::EGD_Socket::read(ref byte[] outbuf)
 			1, cast(byte)(std::min<size_t>(length, 255)) };
 
 		if(::write(m_fd, egd_read_command, 2) != 2)
-			throw std::runtime_error("Writing entropy read command to EGD failed");
+			throw new Exception("Writing entropy read command to EGD failed");
 
 		byte out_len = 0;
 		if(::read(m_fd, &out_len, 1) != 1)
-			throw std::runtime_error("Reading response length from EGD failed");
+			throw new Exception("Reading response length from EGD failed");
 
 		if(out_len > egd_read_command[1])
-			throw std::runtime_error("Bogus length field received from EGD");
+			throw new Exception("Bogus length field received from EGD");
 
 		ssize_t count = ::read(m_fd, outbuf, out_len);
 
 		if(count != out_len)
-			throw std::runtime_error("Reading entropy result from EGD failed");
+			throw new Exception("Reading entropy result from EGD failed");
 
 		return cast(size_t)(count);
 	}
@@ -116,7 +116,7 @@ void EGD_EntropySource::EGD_Socket::close()
 /**
 * EGD_EntropySource constructor
 */
-EGD_EntropySource::EGD_EntropySource(const std::vector<string>& paths)
+EGD_EntropySource::EGD_EntropySource(in Vector!( string ) paths)
 {
 	for(size_t i = 0; i != paths.size(); ++i)
 		sockets.push_back(EGD_Socket(paths[i]));
@@ -136,7 +136,7 @@ void EGD_EntropySource::poll(Entropy_Accumulator& accum)
 {
 	const size_t READ_ATTEMPT = 32;
 
-	SafeArray!byte io_buffer = accum.get_io_buffer(READ_ATTEMPT);
+	SafeVector!byte io_buffer = accum.get_io_buffer(READ_ATTEMPT);
 
 	for(size_t i = 0; i != sockets.size(); ++i)
 	{

@@ -43,12 +43,12 @@
 #if defined(BOTAN_HAS_ECDH)
   #include <botan/ecdh.h>
 #endif
-Public_Key* make_public_key(const AlgorithmIdentifier& alg_id,
-									 in SafeArray!byte key_bits)
+Public_Key* make_public_key(in AlgorithmIdentifier alg_id,
+									 in SafeVector!byte key_bits)
 {
 	const string alg_name = OIDS::lookup(alg_id.oid);
 	if(alg_name == "")
-		throw Decoding_Error("Unknown algorithm OID: " + alg_id.oid.as_string());
+		throw new Decoding_Error("Unknown algorithm OID: " + alg_id.oid.as_string());
 
 #if defined(BOTAN_HAS_RSA)
 	if(alg_name == "RSA")
@@ -98,13 +98,13 @@ Public_Key* make_public_key(const AlgorithmIdentifier& alg_id,
 	return nullptr;
 }
 
-Private_Key* make_Private_Key(const AlgorithmIdentifier& alg_id,
-										in SafeArray!byte key_bits,
+Private_Key* make_Private_Key(in AlgorithmIdentifier alg_id,
+										in SafeVector!byte key_bits,
 										RandomNumberGenerator& rng)
 {
 	const string alg_name = OIDS::lookup(alg_id.oid);
 	if(alg_name == "")
-		throw Decoding_Error("Unknown algorithm OID: " + alg_id.oid.as_string());
+		throw new Decoding_Error("Unknown algorithm OID: " + alg_id.oid.as_string());
 
 #if defined(BOTAN_HAS_RSA)
 	if(alg_name == "RSA")

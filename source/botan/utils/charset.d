@@ -19,7 +19,7 @@ namespace {
 string ucs2_to_latin1(in string ucs2)
 {
 	if(ucs2.size() % 2 == 1)
-		throw Decoding_Error("UCS-2 string has an odd number of bytes");
+		throw new Decoding_Error("UCS-2 string has an odd number of bytes");
 
 	string latin1;
 
@@ -29,7 +29,7 @@ string ucs2_to_latin1(in string ucs2)
 		const byte c2 = ucs2[i+1];
 
 		if(c1 != 0)
-			throw Decoding_Error("UCS-2 has non-Latin1 characters");
+			throw new Decoding_Error("UCS-2 has non-Latin1 characters");
 
 		latin1 += cast(char)(c2);
 	}
@@ -54,18 +54,18 @@ string utf8_to_latin1(in string utf8)
 		else if(c1 >= 0xC0 && c1 <= 0xC7)
 		{
 			if(position == utf8.size())
-				throw Decoding_Error("UTF-8: sequence truncated");
+				throw new Decoding_Error("UTF-8: sequence truncated");
 
 			const byte c2 = cast(byte)(utf8[position++]);
 			const byte iso_char = ((c1 & 0x07) << 6) | (c2 & 0x3F);
 
 			if(iso_char <= 0x7F)
-				throw Decoding_Error("UTF-8: sequence longer than needed");
+				throw new Decoding_Error("UTF-8: sequence longer than needed");
 
 			iso8859 += cast(char)(iso_char);
 		}
 		else
-			throw Decoding_Error("UTF-8: Unicode chars not in Latin1 used");
+			throw new Decoding_Error("UTF-8: Unicode chars not in Latin1 used");
 	}
 
 	return iso8859;
@@ -115,7 +115,7 @@ string transcode(in string str,
 	if(from == UCS2_CHARSET && to == LATIN1_CHARSET)
 		return ucs2_to_latin1(str);
 
-	throw Invalid_Argument("Unknown transcoding operation from " +
+	throw new Invalid_Argument("Unknown transcoding operation from " +
 								  std::to_string(from) + " to " + std::to_string(to));
 }
 
@@ -159,7 +159,7 @@ byte char2digit(char c)
 		case '9': return 9;
 	}
 
-	throw Invalid_Argument("char2digit: Input is not a digit character");
+	throw new Invalid_Argument("char2digit: Input is not a digit character");
 }
 
 /*
@@ -181,7 +181,7 @@ char digit2char(byte b)
 		case 9: return '9';
 	}
 
-	throw Invalid_Argument("digit2char: Input is not a digit");
+	throw new Invalid_Argument("digit2char: Input is not a digit");
 }
 
 /*

@@ -12,14 +12,16 @@
 */
 void DESX::encrypt_n(in byte[] input, ref byte[] output) const
 {
+	const byte[] cached = output;
+	scope(exit) output = cached;
 	for(size_t i = 0; i != blocks; ++i)
 	{
-		xor_buf(out, in, &K1[0], BLOCK_SIZE);
-		des.encrypt(out);
-		xor_buf(out, &K2[0], BLOCK_SIZE);
+		xor_buf(output, input, &K1[0], BLOCK_SIZE);
+		des.encrypt(output);
+		xor_buf(output, &K2[0], BLOCK_SIZE);
 
-		in += BLOCK_SIZE;
-		out += BLOCK_SIZE;
+		input = input[BLOCK_SIZE .. $];
+		output = output[BLOCK_SIZE .. $];
 	}
 }
 
@@ -27,15 +29,17 @@ void DESX::encrypt_n(in byte[] input, ref byte[] output) const
 * DESX Decryption
 */
 void DESX::decrypt_n(in byte[] input, ref byte[] output) const
-{
+{	
+	const byte[] cached = output;
+	scope(exit) output = cached;
 	for(size_t i = 0; i != blocks; ++i)
 	{
-		xor_buf(out, in, &K2[0], BLOCK_SIZE);
-		des.decrypt(out);
-		xor_buf(out, &K1[0], BLOCK_SIZE);
+		xor_buf(output, input, &K2[0], BLOCK_SIZE);
+		des.decrypt(output);
+		xor_buf(output, &K1[0], BLOCK_SIZE);
 
-		in += BLOCK_SIZE;
-		out += BLOCK_SIZE;
+		input = input[BLOCK_SIZE .. $];
+		output = output[BLOCK_SIZE .. $];
 	}
 }
 
@@ -54,6 +58,4 @@ void DESX::clear()
 	des.clear();
 	zap(K1);
 	zap(K2);
-}
-
 }

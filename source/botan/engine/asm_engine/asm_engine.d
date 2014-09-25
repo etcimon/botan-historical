@@ -27,7 +27,7 @@
   #include <botan/sha1_x86_32.h>
 #endif
 BlockCipher*
-Assembler_Engine::find_block_cipher(const SCAN_Name& request,
+Assembler_Engine::find_block_cipher(in SCAN_Name request,
 												Algorithm_Factory&) const
 {
 	if(request.algo_name() == "Serpent")
@@ -41,7 +41,7 @@ Assembler_Engine::find_block_cipher(const SCAN_Name& request,
 }
 
 HashFunction*
-Assembler_Engine::find_hash(const SCAN_Name& request,
+Assembler_Engine::find_hash(in SCAN_Name request,
 									 Algorithm_Factory&) const
 {
 #if defined(BOTAN_HAS_MD4_X86_32)

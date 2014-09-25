@@ -44,23 +44,23 @@ inline u16bit make_u16bit(byte i0, byte i1)
 }
 
 /**
-* Make a u32bit from four bytes
+* Make a uint from four bytes
 * @param i0 the first byte
 * @param i1 the second byte
 * @param i2 the third byte
 * @param i3 the fourth byte
 * @return i0 || i1 || i2 || i3
 */
-inline u32bit make_u32bit(byte i0, byte i1, byte i2, byte i3)
+inline uint make_uint(byte i0, byte i1, byte i2, byte i3)
 {
-	return ((cast(u32bit)(i0) << 24) |
-			  (cast(u32bit)(i1) << 16) |
-			  (cast(u32bit)(i2) <<  8) |
-			  (cast(u32bit)(i3)));
+	return ((cast(uint)(i0) << 24) |
+			  (cast(uint)(i1) << 16) |
+			  (cast(uint)(i2) <<  8) |
+			  (cast(uint)(i3)));
 }
 
 /**
-* Make a u32bit from eight bytes
+* Make a uint from eight bytes
 * @param i0 the first byte
 * @param i1 the second byte
 * @param i2 the third byte
@@ -151,36 +151,36 @@ inline u16bit load_le<u16bit>(in byte[] input)
 }
 
 /**
-* Load a big-endian u32bit
+* Load a big-endian uint
 * @param in a pointer to some bytes
 * @param off an offset into the array
-* @return off'th u32bit of in, as a big-endian value
+* @return off'th uint of in, as a big-endian value
 */
 template<>
-inline u32bit load_be<u32bit>(in byte[] input)
+inline uint load_be<uint>(in byte[] input)
 {
 #if BOTAN_TARGET_UNALIGNED_MEMORY_ACCESS_OK
-	return BOTAN_ENDIAN_N2B(*(cast(const u32bit*)(input) + off));
+	return BOTAN_ENDIAN_N2B(*(cast(const uint*)(input) + off));
 #else
-	in += off * sizeof(u32bit);
-	return make_u32bit(in[0], in[1], in[2], in[3]);
+	in += off * sizeof(uint);
+	return make_uint(in[0], in[1], in[2], in[3]);
 #endif
 }
 
 /**
-* Load a little-endian u32bit
+* Load a little-endian uint
 * @param in a pointer to some bytes
 * @param off an offset into the array
-* @return off'th u32bit of in, as a little-endian value
+* @return off'th uint of in, as a little-endian value
 */
 template<>
-inline u32bit load_le<u32bit>(in byte[] input)
+inline uint load_le<uint>(in byte[] input)
 {
 #if BOTAN_TARGET_UNALIGNED_MEMORY_ACCESS_OK
-	return BOTAN_ENDIAN_N2L(*(cast(const u32bit*)(input) + off));
+	return BOTAN_ENDIAN_N2L(*(cast(const uint*)(input) + off));
 #else
-	in += off * sizeof(u32bit);
-	return make_u32bit(in[3], in[2], in[1], in[0]);
+	in += off * sizeof(uint);
+	return make_uint(in[3], in[2], in[1], in[0]);
 #endif
 }
 
@@ -429,14 +429,14 @@ inline void store_le(u16bit in, byte out[2])
 }
 
 /**
-* Store a big-endian u32bit
-* @param in the input u32bit
+* Store a big-endian uint
+* @param in the input uint
 * @param out the byte array to write to
 */
-inline void store_be(u32bit in, byte out[4])
+inline void store_be(uint in, byte out[4])
 {
 #if BOTAN_TARGET_UNALIGNED_MEMORY_ACCESS_OK
-	*cast(u32bit*)(out) = BOTAN_ENDIAN_B2N(input);
+	*cast(uint*)(out) = BOTAN_ENDIAN_B2N(input);
 #else
 	out[0] = get_byte(0, input);
 	out[1] = get_byte(1, input);
@@ -446,14 +446,14 @@ inline void store_be(u32bit in, byte out[4])
 }
 
 /**
-* Store a little-endian u32bit
-* @param in the input u32bit
+* Store a little-endian uint
+* @param in the input uint
 * @param out the byte array to write to
 */
-inline void store_le(u32bit in, byte out[4])
+inline void store_le(uint in, byte out[4])
 {
 #if BOTAN_TARGET_UNALIGNED_MEMORY_ACCESS_OK
-	*cast(u32bit*)(out) = BOTAN_ENDIAN_L2N(input);
+	*cast(uint*)(out) = BOTAN_ENDIAN_L2N(input);
 #else
 	out[0] = get_byte(3, input);
 	out[1] = get_byte(2, input);

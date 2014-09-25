@@ -14,7 +14,7 @@
 class ECB_Mode : public Cipher_Mode
 {
 	public:
-		SafeArray!byte start(in byte[] nonce, size_t nonce_len) override;
+		SafeVector!byte start(in byte[] nonce, size_t nonce_len) override;
 
 		string name() const override;
 
@@ -50,9 +50,9 @@ class ECB_Encryption : public ECB_Mode
 		ECB_Encryption(BlockCipher* cipher, BlockCipherModePaddingMethod* padding) :
 			ECB_Mode(cipher, padding) {}
 
-		void update(SafeArray!byte blocks, size_t offset = 0) override;
+		void update(SafeVector!byte blocks, size_t offset = 0) override;
 
-		void finish(SafeArray!byte final_block, size_t offset = 0) override;
+		void finish(SafeVector!byte final_block, size_t offset = 0) override;
 
 		size_t output_length(size_t input_length) const override;
 
@@ -68,9 +68,9 @@ class ECB_Decryption : public ECB_Mode
 		ECB_Decryption(BlockCipher* cipher, BlockCipherModePaddingMethod* padding) :
 			ECB_Mode(cipher, padding) {}
 
-		void update(SafeArray!byte blocks, size_t offset = 0) override;
+		void update(SafeVector!byte blocks, size_t offset = 0) override;
 
-		void finish(SafeArray!byte final_block, size_t offset = 0) override;
+		void finish(SafeVector!byte final_block, size_t offset = 0) override;
 
 		size_t output_length(size_t input_length) const override;
 

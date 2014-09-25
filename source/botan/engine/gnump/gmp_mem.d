@@ -26,7 +26,7 @@ void* gmp_malloc(size_t n)
 	if(n % 8 == 0)
 		return secure_allocator<u64bit>().allocate(n / 8);
 	else if(n % 4 == 0)
-		return secure_allocator<u32bit>().allocate(n / 4);
+		return secure_allocator<uint>().allocate(n / 4);
 	else if(n % 2 == 0)
 		return secure_allocator<u16bit>().allocate(n / 2);
 

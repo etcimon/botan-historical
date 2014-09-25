@@ -22,9 +22,9 @@ class XTEA : public Block_Cipher_Fixed_Params<8, 16>
 		/**
 		* @return const reference to the key schedule
 		*/
-		const secure_vector<u32bit>& get_EK() const { return EK; }
+		const secure_vector<uint>& get_EK() const { return EK; }
 
 	private:
 		void key_schedule(const byte[], size_t);
-		secure_vector<u32bit> EK;
+		secure_vector<uint> EK;
 };

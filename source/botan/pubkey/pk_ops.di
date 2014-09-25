@@ -17,7 +17,7 @@ class Encryption
 	public:
 		abstract size_t max_input_bits() const = 0;
 
-		abstract SafeArray!byte encrypt(in byte[] msg, size_t msg_len,
+		abstract SafeVector!byte encrypt(in byte[] msg, size_t msg_len,
 													  RandomNumberGenerator& rng) = 0;
 
 		abstract ~Encryption() {}
@@ -31,7 +31,7 @@ class Decryption
 	public:
 		abstract size_t max_input_bits() const = 0;
 
-		abstract SafeArray!byte decrypt(in byte[] msg,
+		abstract SafeVector!byte decrypt(in byte[] msg,
 													  size_t msg_len) = 0;
 
 		abstract ~Decryption() {}
@@ -67,7 +67,7 @@ class Signature
 		* @param msg_len the length of msg in bytes
 		* @param rng a random number generator
 		*/
-		abstract SafeArray!byte sign(in byte[] msg, size_t msg_len,
+		abstract SafeVector!byte sign(in byte[] msg, size_t msg_len,
 												  RandomNumberGenerator& rng) = 0;
 
 		abstract ~Signature() {}
@@ -114,7 +114,7 @@ class Verification
 		abstract bool verify(const byte[], size_t,
 								  const byte[], size_t)
 		{
-			throw Invalid_State("Message recovery required");
+			throw new Invalid_State("Message recovery required");
 		}
 
 		/*
@@ -124,10 +124,10 @@ class Verification
 		* @param msg_len the length of msg in bytes
 		* @returns recovered message
 		*/
-		abstract SafeArray!byte verify_mr(const byte[],
+		abstract SafeVector!byte verify_mr(const byte[],
 														 size_t)
 		{
-			throw Invalid_State("Message recovery not supported");
+			throw new Invalid_State("Message recovery not supported");
 		}
 
 		abstract ~Verification() {}
@@ -145,7 +145,7 @@ class Key_Agreement
 		* @param w_len the length of w in bytes
 		* @returns the agreed key
 		*/
-		abstract SafeArray!byte agree(in byte[] w, size_t w_len) = 0;
+		abstract SafeVector!byte agree(in byte[] w, size_t w_len) = 0;
 
 		abstract ~Key_Agreement() {}
 };

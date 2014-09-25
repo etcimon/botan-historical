@@ -22,8 +22,8 @@ class AES_128 : public Block_Cipher_Fixed_Params<16, 16>
 	private:
 		void key_schedule(in byte[] key);
 
-		secure_vector<u32bit> EK, DK;
-		SafeArray!byte ME, MD;
+		secure_vector<uint> EK, DK;
+		SafeVector!byte ME, MD;
 };
 
 /**
@@ -42,8 +42,8 @@ class AES_192 : public Block_Cipher_Fixed_Params<16, 24>
 	private:
 		void key_schedule(in byte[] key);
 
-		secure_vector<u32bit> EK, DK;
-		SafeArray!byte ME, MD;
+		secure_vector<uint> EK, DK;
+		SafeVector!byte ME, MD;
 };
 
 /**
@@ -62,6 +62,6 @@ class AES_256 : public Block_Cipher_Fixed_Params<16, 32>
 	private:
 		void key_schedule(in byte[] key);
 
-		secure_vector<u32bit> EK, DK;
-		SafeArray!byte ME, MD;
+		secure_vector<uint> EK, DK;
+		SafeVector!byte ME, MD;
 };

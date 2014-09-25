@@ -13,8 +13,8 @@ namespace RIPEMD_128_F {
 /*
 * RIPEMD-128 F1 Function
 */
-inline void F1(u32bit& A, u32bit B, u32bit C, u32bit D,
-					u32bit msg, u32bit shift)
+inline void F1(ref uint A, uint B, uint C, uint D,
+					uint msg, uint shift)
 {
 	A += (B ^ C ^ D) + msg;
 	A  = rotate_left(A, shift);
@@ -23,8 +23,8 @@ inline void F1(u32bit& A, u32bit B, u32bit C, u32bit D,
 /*
 * RIPEMD-128 F2 Function
 */
-inline void F2(u32bit& A, u32bit B, u32bit C, u32bit D,
-					u32bit msg, u32bit shift, u32bit magic)
+inline void F2(ref uint A, uint B, uint C, uint D,
+					uint msg, uint shift, uint magic)
 {
 	A += (D ^ (B & (C ^ D))) + msg + magic;
 	A  = rotate_left(A, shift);
@@ -33,8 +33,8 @@ inline void F2(u32bit& A, u32bit B, u32bit C, u32bit D,
 /*
 * RIPEMD-128 F3 Function
 */
-inline void F3(u32bit& A, u32bit B, u32bit C, u32bit D,
-					u32bit msg, u32bit shift, u32bit magic)
+inline void F3(ref uint A, uint B, uint C, uint D,
+					uint msg, uint shift, uint magic)
 {
 	A += (D ^ (B | ~C)) + msg + magic;
 	A  = rotate_left(A, shift);
@@ -43,8 +43,8 @@ inline void F3(u32bit& A, u32bit B, u32bit C, u32bit D,
 /*
 * RIPEMD-128 F4 Function
 */
-inline void F4(u32bit& A, u32bit B, u32bit C, u32bit D,
-					u32bit msg, u32bit shift, u32bit magic)
+inline void F4(ref uint A, uint B, uint C, uint D,
+					uint msg, uint shift, uint magic)
 {
 	A += (C ^ (D & (B ^ C))) + msg + magic;
 	A  = rotate_left(A, shift);
@@ -59,7 +59,7 @@ void RIPEMD_128::compress_n(in byte[] input, size_t blocks)
 {
 	using namespace RIPEMD_128_F;
 
-	const u32bit MAGIC2 = 0x5A827999, MAGIC3 = 0x6ED9EBA1,
+	const uint MAGIC2 = 0x5A827999, MAGIC3 = 0x6ED9EBA1,
 					 MAGIC4 = 0x8F1BBCDC, MAGIC5 = 0x50A28BE6,
 					 MAGIC6 = 0x5C4DD124, MAGIC7 = 0x6D703EF3;
 
@@ -67,7 +67,7 @@ void RIPEMD_128::compress_n(in byte[] input, size_t blocks)
 	{
 		load_le(&M[0], input, M.size());
 
-		u32bit A1 = digest[0], A2 = A1, B1 = digest[1], B2 = B1,
+		uint A1 = digest[0], A2 = A1, B1 = digest[1], B2 = B1,
 				 C1 = digest[2], C2 = C1, D1 = digest[3], D2 = D1;
 
 		F1(A1,B1,C1,D1,M[ 0],11		 );	F4(A2,B2,C2,D2,M[ 5], 8,MAGIC5);

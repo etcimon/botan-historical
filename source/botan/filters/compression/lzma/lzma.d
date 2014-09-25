@@ -47,7 +47,7 @@ void lzma_free(void *opaque, void *ptr)
 	Lzma_Alloc_Info* info = cast(Lzma_Alloc_Info*)(opaque);
 	auto i = info->current_allocs.find(ptr);
 	if(i == info->current_allocs.end())
-		throw Invalid_Argument("lzma_free: Got pointer not allocated by us");
+		throw new Invalid_Argument("lzma_free: Got pointer not allocated by us");
 
 	std::memset(ptr, 0, i->second);
 	std::free(ptr);
@@ -111,9 +111,9 @@ void Lzma_Compression::start_msg()
 	lzma_ret ret = lzma_easy_encoder(&(lzma->stream), level, LZMA_CHECK_CRC64);
 
 	if(ret == LZMA_MEM_ERROR)
-		throw Memory_Exhaustion();
+		throw new Memory_Exhaustion();
 	else if(ret != LZMA_OK)
-		throw Invalid_Argument("Bad setting in lzma_easy_encoder");
+		throw new Invalid_Argument("Bad setting in lzma_easy_encoder");
 }
 
 /*
@@ -132,9 +132,9 @@ void Lzma_Compression::write(in byte[] input, size_t length)
 		lzma_ret ret = lzma_code(&(lzma->stream), LZMA_RUN);
 
 		if(ret == LZMA_MEM_ERROR)
-			throw Memory_Exhaustion();
+			throw new Memory_Exhaustion();
 		else if (ret != LZMA_OK)
-			throw std::runtime_error("Lzma compression: Error writing");
+			throw new Exception("Lzma compression: Error writing");
 
 		send(&buffer[0], buffer.size() - lzma->stream.avail_out);
 	}
@@ -177,9 +177,9 @@ void Lzma_Compression::flush()
 		lzma_ret ret = lzma_code(&(lzma->stream), LZMA_FULL_FLUSH);
 
 		if(ret == LZMA_MEM_ERROR)
-			throw Memory_Exhaustion();
+			throw new Memory_Exhaustion();
 		else if (ret != LZMA_OK && ret != LZMA_STREAM_END)
-			throw std::runtime_error("Lzma compression: Error flushing");
+			throw new Exception("Lzma compression: Error flushing");
 
 		send(&buffer[0], buffer.size() - lzma->stream.avail_out);
 
@@ -224,9 +224,9 @@ void Lzma_Decompression::start_msg()
 	lzma_ret ret = lzma_stream_decoder(&(lzma->stream), UINT64_MAX, LZMA_TELL_UNSUPPORTED_CHECK | LZMA_CONCATENATED);
 
 	if(ret == LZMA_MEM_ERROR)
-		throw Memory_Exhaustion();
+		throw new Memory_Exhaustion();
 	else if(ret != LZMA_OK)
-		throw Invalid_Argument("Bad setting in lzma_stream_decoder");
+		throw new Invalid_Argument("Bad setting in lzma_stream_decoder");
 }
 
 /*
@@ -252,11 +252,11 @@ void Lzma_Decompression::write(in byte[] input_arr, size_t length)
 		{
 			clear();
 			if(ret == LZMA_DATA_ERROR)
-				throw Decoding_Error("Lzma_Decompression: Data integrity error");
+				throw new Decoding_Error("Lzma_Decompression: Data integrity error");
 			else if(ret == LZMA_MEM_ERROR)
-				throw Memory_Exhaustion();
+				throw new Memory_Exhaustion();
 			else
-				throw std::runtime_error("Lzma decompression: Unknown error");
+				throw new Exception("Lzma decompression: Unknown error");
 		}
 
 		send(&buffer[0], buffer.size() - lzma->stream.avail_out);
@@ -295,7 +295,7 @@ void Lzma_Decompression::end_msg()
 		if(ret != LZMA_OK && ret != LZMA_STREAM_END)
 		{
 			clear();
-			throw Decoding_Error("Lzma_Decompression: Error finalizing");
+			throw new Decoding_Error("Lzma_Decompression: Error finalizing");
 		}
 
 		send(&buffer[0], buffer.size() - lzma->stream.avail_out);

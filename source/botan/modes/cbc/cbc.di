@@ -14,7 +14,7 @@
 class CBC_Mode : public Cipher_Mode
 {
 	public:
-		SafeArray!byte start(in byte[] nonce, size_t nonce_len) override;
+		SafeVector!byte start(in byte[] nonce, size_t nonce_len) override;
 
 		string name() const override;
 
@@ -38,7 +38,7 @@ class CBC_Mode : public Cipher_Mode
 			return *m_padding;
 		}
 
-		SafeArray!byte state() { return m_state; }
+		SafeVector!byte state() { return m_state; }
 
 		byte* state_ptr() { return &m_state[0]; }
 
@@ -47,7 +47,7 @@ class CBC_Mode : public Cipher_Mode
 
 		std::unique_ptr<BlockCipher> m_cipher;
 		std::unique_ptr<BlockCipherModePaddingMethod> m_padding;
-		SafeArray!byte m_state;
+		SafeVector!byte m_state;
 };
 
 /**
@@ -59,9 +59,9 @@ class CBC_Encryption : public CBC_Mode
 		CBC_Encryption(BlockCipher* cipher, BlockCipherModePaddingMethod* padding) :
 			CBC_Mode(cipher, padding) {}
 
-		void update(SafeArray!byte blocks, size_t offset = 0) override;
+		void update(SafeVector!byte blocks, size_t offset = 0) override;
 
-		void finish(SafeArray!byte final_block, size_t offset = 0) override;
+		void finish(SafeVector!byte final_block, size_t offset = 0) override;
 
 		size_t output_length(size_t input_length) const override;
 
@@ -78,7 +78,7 @@ class CTS_Encryption : public CBC_Encryption
 
 		size_t output_length(size_t input_length) const override;
 
-		void finish(SafeArray!byte final_block, size_t offset = 0) override;
+		void finish(SafeVector!byte final_block, size_t offset = 0) override;
 
 		size_t minimum_final_size() const override;
 
@@ -94,15 +94,15 @@ class CBC_Decryption : public CBC_Mode
 		CBC_Decryption(BlockCipher* cipher, BlockCipherModePaddingMethod* padding) :
 			CBC_Mode(cipher, padding), m_tempbuf(update_granularity()) {}
 
-		void update(SafeArray!byte blocks, size_t offset = 0) override;
+		void update(SafeVector!byte blocks, size_t offset = 0) override;
 
-		void finish(SafeArray!byte final_block, size_t offset = 0) override;
+		void finish(SafeVector!byte final_block, size_t offset = 0) override;
 
 		size_t output_length(size_t input_length) const override;
 
 		size_t minimum_final_size() const override;
 	private:
-		SafeArray!byte m_tempbuf;
+		SafeVector!byte m_tempbuf;
 };
 
 /**
@@ -113,7 +113,7 @@ class CTS_Decryption : public CBC_Decryption
 	public:
 		CTS_Decryption(BlockCipher* cipher) : CBC_Decryption(cipher, nullptr) {}
 
-		void finish(SafeArray!byte final_block, size_t offset = 0) override;
+		void finish(SafeVector!byte final_block, size_t offset = 0) override;
 
 		size_t minimum_final_size() const override;
 

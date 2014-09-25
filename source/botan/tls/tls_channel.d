@@ -78,40 +78,40 @@ std::shared_ptr<Connection_Cipher_State> Channel::write_cipher_state_epoch(u16bi
 	return i->second;
 }
 
-std::vector<X509_Certificate> Channel::peer_cert_chain() const
+Vector!( X509_Certificate ) Channel::peer_cert_chain() const
 {
 	if(auto active = active_state())
 		return get_peer_cert_chain(*active);
-	return std::vector<X509_Certificate>();
+	return Vector!( X509_Certificate )();
 }
 
-Handshake_State& Channel::create_handshake_state(Protocol_Version version)
+Handshake_State& Channel::create_handshake_state(Protocol_Version _version)
 {
 	if(pending_state())
-		throw Internal_Error("create_handshake_state called during handshake");
+		throw new Internal_Error("create_handshake_state called during handshake");
 
 	if(auto active = active_state())
 	{
-		Protocol_Version active_version = active->version();
+		Protocol_Version active_version = active->_version();
 
-		if(active_version.is_datagram_protocol() != version.is_datagram_protocol())
-			throw std::runtime_error("Active state using version " +
+		if(active_version.is_datagram_protocol() != _version.is_datagram_protocol())
+			throw new Exception("Active state using version " +
 											 active_version.to_string() +
 											 " cannot change to " +
-											 version.to_string() +
+											 _version.to_string() +
 											 " in pending");
 	}
 
 	if(!m_sequence_numbers)
 	{
-		if(version.is_datagram_protocol())
+		if(_version.is_datagram_protocol())
 			m_sequence_numbers.reset(new Datagram_Sequence_Numbers);
 		else
 			m_sequence_numbers.reset(new Stream_Sequence_Numbers);
 	}
 
 	std::unique_ptr<Handshake_IO> io;
-	if(version.is_datagram_protocol())
+	if(_version.is_datagram_protocol())
 		io.reset(new Datagram_Handshake_IO(
 						sequence_numbers(),
 						std::bind(&Channel::send_record_under_epoch, this,
@@ -127,7 +127,7 @@ Handshake_State& Channel::create_handshake_state(Protocol_Version version)
 	m_pending_state.reset(new_handshake_state(io.release()));
 
 	if(auto active = active_state())
-		m_pending_state->set_version(active->version());
+		m_pending_state->set_version(active->_version());
 
 	return *m_pending_state.get();
 }
@@ -138,10 +138,10 @@ void Channel::renegotiate(bool force_full_renegotiation)
 		return;
 
 	if(auto active = active_state())
-		initiate_handshake(create_handshake_state(active->version()),
+		initiate_handshake(create_handshake_state(active->_version()),
 								 force_full_renegotiation);
 	else
-		throw std::runtime_error("Cannot renegotiate on inactive connection");
+		throw new Exception("Cannot renegotiate on inactive connection");
 }
 
 size_t Channel::maximum_fragment_size() const
@@ -168,7 +168,7 @@ void Channel::change_cipher_spec_reader(Connection_Side side)
 					 "Have received server hello");
 
 	if(pending->server_hello()->compression_method() != NO_COMPRESSION)
-		throw Internal_Error("Negotiated unknown compression algorithm");
+		throw new Internal_Error("Negotiated unknown compression algorithm");
 
 	sequence_numbers().new_read_cipher_state();
 
@@ -179,7 +179,7 @@ void Channel::change_cipher_spec_reader(Connection_Side side)
 
 	// flip side as we are reading
 	std::shared_ptr<Connection_Cipher_State> read_state(
-		new Connection_Cipher_State(pending->version(),
+		new Connection_Cipher_State(pending->_version(),
 											 (side == CLIENT) ? SERVER : CLIENT,
 											 false,
 											 pending->ciphersuite(),
@@ -196,7 +196,7 @@ void Channel::change_cipher_spec_writer(Connection_Side side)
 					 "Have received server hello");
 
 	if(pending->server_hello()->compression_method() != NO_COMPRESSION)
-		throw Internal_Error("Negotiated unknown compression algorithm");
+		throw new Internal_Error("Negotiated unknown compression algorithm");
 
 	sequence_numbers().new_write_cipher_state();
 
@@ -206,7 +206,7 @@ void Channel::change_cipher_spec_writer(Connection_Side side)
 					 "No write cipher state currently set for next epoch");
 
 	std::shared_ptr<Connection_Cipher_State> write_state(
-		new Connection_Cipher_State(pending->version(),
+		new Connection_Cipher_State(pending->_version(),
 											 side,
 											 true,
 											 pending->ciphersuite(),
@@ -239,7 +239,7 @@ void Channel::activate_session()
 	std::swap(m_active_state, m_pending_state);
 	m_pending_state.reset();
 
-	if(m_active_state->version().is_datagram_protocol())
+	if(m_active_state->_version().is_datagram_protocol())
 	{
 		// FIXME, remove old states when we are sure not needed anymore
 	}
@@ -270,7 +270,7 @@ bool Channel::heartbeat_sending_allowed() const
 	return false;
 }
 
-size_t Channel::received_data(in Array!byte buf)
+size_t Channel::received_data(in Vector!byte buf)
 {
 	return this->received_data(&buf[0], buf.size());
 }
@@ -286,7 +286,7 @@ size_t Channel::received_data(in byte[] input, size_t input_size)
 	{
 		while(!is_closed() && input_size)
 		{
-			SafeArray!byte record;
+			SafeVector!byte record;
 			u64bit record_sequence = 0;
 			Record_Type record_type = NO_RECORD;
 			Protocol_Version record_version;
@@ -318,7 +318,7 @@ size_t Channel::received_data(in byte[] input, size_t input_size)
 				return needed; // need more data to complete record
 
 			if(record.size() > max_fragment_size)
-				throw TLS_Exception(Alert::RECORD_OVERFLOW,
+				throw new TLS_Exception(Alert::RECORD_OVERFLOW,
 										  "Plaintext record is too large");
 
 			if(record_type == HANDSHAKE || record_type == CHANGE_CIPHER_SPEC)
@@ -348,11 +348,11 @@ size_t Channel::received_data(in byte[] input, size_t input_size)
 			else if(record_type == HEARTBEAT && peer_supports_heartbeats())
 			{
 				if(!active_state())
-					throw Unexpected_Message("Heartbeat sent before handshake done");
+					throw new Unexpected_Message("Heartbeat sent before handshake done");
 
 				Heartbeat_Message heartbeat(unlock(record));
 
-				in Array!byte payload = heartbeat.payload();
+				in Vector!byte payload = heartbeat.payload();
 
 				if(heartbeat.is_request())
 				{
@@ -372,7 +372,7 @@ size_t Channel::received_data(in byte[] input, size_t input_size)
 			else if(record_type == APPLICATION_DATA)
 			{
 				if(!active_state())
-					throw Unexpected_Message("Application data before handshake done");
+					throw new Unexpected_Message("Application data before handshake done");
 
 				/*
 				* OpenSSL among others sends empty records in versions
@@ -407,7 +407,7 @@ size_t Channel::received_data(in byte[] input, size_t input_size)
 				}
 			}
 			else
-				throw Unexpected_Message("Unexpected record type " +
+				throw new Unexpected_Message("Unexpected record type " +
 												 std::to_string(record_type) +
 												 " from counterparty");
 		}
@@ -454,7 +454,7 @@ void Channel::write_record(Connection_Cipher_State* cipher_state,
 					 "Some connection state exists");
 
 	Protocol_Version record_version =
-		(m_pending_state) ? (m_pending_state->version()) : (m_active_state->version());
+		(m_pending_state) ? (m_pending_state->_version()) : (m_active_state->_version());
 
 	TLS::write_record(m_writebuf,
 							record_type,
@@ -506,14 +506,14 @@ void Channel::send_record_array(u16bit epoch, byte type, in byte[] input, size_t
 	}
 }
 
-void Channel::send_record(byte record_type, in Array!byte record)
+void Channel::send_record(byte record_type, in Vector!byte record)
 {
 	send_record_array(sequence_numbers().current_write_epoch(),
 							record_type, &record[0], record.size());
 }
 
 void Channel::send_record_under_epoch(u16bit epoch, byte record_type,
-												  in Array!byte record)
+												  in Vector!byte record)
 {
 	send_record_array(epoch, record_type, &record[0], record.size());
 }
@@ -521,7 +521,7 @@ void Channel::send_record_under_epoch(u16bit epoch, byte record_type,
 void Channel::send(in byte[] buf, size_t buf_size)
 {
 	if(!is_active())
-		throw std::runtime_error("Data cannot be sent on inactive TLS connection");
+		throw new Exception("Data cannot be sent on inactive TLS connection");
 
 	send_record_array(sequence_numbers().current_write_epoch(),
 							APPLICATION_DATA, buf, buf_size);
@@ -532,7 +532,7 @@ void Channel::send(in string string)
 	this->send(cast(const byte*)(string.c_str()), string.size());
 }
 
-void Channel::send_alert(const Alert& alert)
+void Channel::send_alert(in Alert alert)
 {
 	if(alert.is_valid() && !is_closed())
 	{
@@ -563,16 +563,16 @@ void Channel::secure_renegotiation_check(const Client_Hello* client_hello)
 		const bool active_sr = active->client_hello()->secure_renegotiation();
 
 		if(active_sr != secure_renegotiation)
-			throw TLS_Exception(Alert::HANDSHAKE_FAILURE,
+			throw new TLS_Exception(Alert::HANDSHAKE_FAILURE,
 									  "Client changed its mind about secure renegotiation");
 	}
 
 	if(secure_renegotiation)
 	{
-		in Array!byte data = client_hello->renegotiation_info();
+		in Vector!byte data = client_hello->renegotiation_info();
 
 		if(data != secure_renegotiation_data_for_client_hello())
-			throw TLS_Exception(Alert::HANDSHAKE_FAILURE,
+			throw new TLS_Exception(Alert::HANDSHAKE_FAILURE,
 									  "Client sent bad values for secure renegotiation");
 	}
 }
@@ -586,37 +586,37 @@ void Channel::secure_renegotiation_check(const Server_Hello* server_hello)
 		const bool active_sr = active->client_hello()->secure_renegotiation();
 
 		if(active_sr != secure_renegotiation)
-			throw TLS_Exception(Alert::HANDSHAKE_FAILURE,
+			throw new TLS_Exception(Alert::HANDSHAKE_FAILURE,
 									  "Server changed its mind about secure renegotiation");
 	}
 
 	if(secure_renegotiation)
 	{
-		in Array!byte data = server_hello->renegotiation_info();
+		in Vector!byte data = server_hello->renegotiation_info();
 
 		if(data != secure_renegotiation_data_for_server_hello())
-			throw TLS_Exception(Alert::HANDSHAKE_FAILURE,
+			throw new TLS_Exception(Alert::HANDSHAKE_FAILURE,
 									  "Server sent bad values for secure renegotiation");
 	}
 }
 
-std::vector<byte> Channel::secure_renegotiation_data_for_client_hello() const
+Vector!( byte ) Channel::secure_renegotiation_data_for_client_hello() const
 {
 	if(auto active = active_state())
 		return active->client_finished()->verify_data();
-	return std::vector<byte>();
+	return Vector!( byte )();
 }
 
-std::vector<byte> Channel::secure_renegotiation_data_for_server_hello() const
+Vector!( byte ) Channel::secure_renegotiation_data_for_server_hello() const
 {
 	if(auto active = active_state())
 	{
-		std::vector<byte> buf = active->client_finished()->verify_data();
+		Vector!( byte ) buf = active->client_finished()->verify_data();
 		buf += active->server_finished()->verify_data();
 		return buf;
 	}
 
-	return std::vector<byte>();
+	return Vector!( byte )();
 }
 
 bool Channel::secure_renegotiation_supported() const
@@ -639,10 +639,10 @@ SymmetricKey Channel::key_material_export(in string label,
 	{
 		std::unique_ptr<KDF> prf(active->protocol_specific_prf());
 
-		in SafeArray!byte master_secret =
+		in SafeVector!byte master_secret =
 			active->session_keys().master_secret();
 
-		std::vector<byte> salt;
+		Vector!( byte ) salt;
 		salt += to_byte_vector(label);
 		salt += active->client_hello()->random();
 		salt += active->server_hello()->random();
@@ -651,7 +651,7 @@ SymmetricKey Channel::key_material_export(in string label,
 		{
 			size_t context_size = context.length;
 			if(context_size > 0xFFFF)
-				throw std::runtime_error("key_material_export context is too long");
+				throw new Exception("key_material_export context is too long");
 			salt.push_back(get_byte<u16bit>(0, context_size));
 			salt.push_back(get_byte<u16bit>(1, context_size));
 			salt += to_byte_vector(context);
@@ -660,7 +660,7 @@ SymmetricKey Channel::key_material_export(in string label,
 		return prf->derive_key(length, master_secret, salt);
 	}
 	else
-		throw std::runtime_error("Channel::key_material_export connection not active");
+		throw new Exception("Channel::key_material_export connection not active");
 }
 
 }

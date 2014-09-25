@@ -12,8 +12,8 @@
 /*
 * Create an AlgorithmIdentifier
 */
-AlgorithmIdentifier::AlgorithmIdentifier(const OID& alg_id,
-													  in Array!byte param)
+AlgorithmIdentifier::AlgorithmIdentifier(in OID alg_id,
+													  in Vector!byte param)
 {
 	oid = alg_id;
 	parameters = param;
@@ -23,7 +23,7 @@ AlgorithmIdentifier::AlgorithmIdentifier(const OID& alg_id,
 * Create an AlgorithmIdentifier
 */
 AlgorithmIdentifier::AlgorithmIdentifier(in string alg_id,
-													  in Array!byte param)
+													  in Vector!byte param)
 {
 	oid = OIDS::lookup(alg_id);
 	parameters = param;
@@ -32,7 +32,7 @@ AlgorithmIdentifier::AlgorithmIdentifier(in string alg_id,
 /*
 * Create an AlgorithmIdentifier
 */
-AlgorithmIdentifier::AlgorithmIdentifier(const OID& alg_id,
+AlgorithmIdentifier::AlgorithmIdentifier(in OID alg_id,
 													  Encoding_Option option)
 {
 	in byte[] DER_NULL = { 0x05, 0x00 };
@@ -40,7 +40,7 @@ AlgorithmIdentifier::AlgorithmIdentifier(const OID& alg_id,
 	oid = alg_id;
 
 	if(option == USE_NULL_PARAM)
-		parameters += std::pair<const byte*, size_t>(DER_NULL, sizeof(DER_NULL));
+		parameters += Pair!(const byte*, size_t)(DER_NULL, sizeof(DER_NULL));
 }
 
 /*
@@ -54,13 +54,13 @@ AlgorithmIdentifier::AlgorithmIdentifier(in string alg_id,
 	oid = OIDS::lookup(alg_id);
 
 	if(option == USE_NULL_PARAM)
-		parameters += std::pair<const byte*, size_t>(DER_NULL, sizeof(DER_NULL));
+		parameters += Pair!(const byte*, size_t)(DER_NULL, sizeof(DER_NULL));
 }
 
 /*
 * Compare two AlgorithmIdentifiers
 */
-bool operator==(const AlgorithmIdentifier& a1, const AlgorithmIdentifier& a2)
+bool operator==(in AlgorithmIdentifier a1, const AlgorithmIdentifier& a2)
 {
 	if(a1.oid != a2.oid)
 		return false;
@@ -72,7 +72,7 @@ bool operator==(const AlgorithmIdentifier& a1, const AlgorithmIdentifier& a2)
 /*
 * Compare two AlgorithmIdentifiers
 */
-bool operator!=(const AlgorithmIdentifier& a1, const AlgorithmIdentifier& a2)
+bool operator!=(in AlgorithmIdentifier a1, const AlgorithmIdentifier& a2)
 {
 	return !(a1 == a2);
 }

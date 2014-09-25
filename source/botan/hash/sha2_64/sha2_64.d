@@ -15,7 +15,7 @@ namespace SHA2_64 {
 /*
 * SHA-{384,512} Rho Function
 */
-inline u64bit rho(u64bit X, u32bit rot1, u32bit rot2, u32bit rot3)
+inline u64bit rho(u64bit X, uint rot1, uint rot2, uint rot3)
 {
 	return (rotate_right(X, rot1) ^ rotate_right(X, rot2) ^
 			  rotate_right(X, rot3));
@@ -24,7 +24,7 @@ inline u64bit rho(u64bit X, u32bit rot1, u32bit rot2, u32bit rot3)
 /*
 * SHA-{384,512} Sigma Function
 */
-inline u64bit sigma(u64bit X, u32bit rot1, u32bit rot2, u32bit shift)
+inline u64bit sigma(u64bit X, uint rot1, uint rot2, uint shift)
 {
 	return (rotate_right(X, rot1) ^ rotate_right(X, rot2) ^ (X >> shift));
 }

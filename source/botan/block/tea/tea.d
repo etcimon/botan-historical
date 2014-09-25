@@ -14,10 +14,10 @@ void TEA::encrypt_n(in byte[] input, ref byte[] output) const
 {
 	for(size_t i = 0; i != blocks; ++i)
 	{
-		u32bit L = load_be<u32bit>(input, 0);
-		u32bit R = load_be<u32bit>(input, 1);
+		uint L = load_be<uint>(input, 0);
+		uint R = load_be<uint>(input, 1);
 
-		u32bit S = 0;
+		uint S = 0;
 		for(size_t j = 0; j != 32; ++j)
 		{
 			S += 0x9E3779B9;
@@ -27,8 +27,8 @@ void TEA::encrypt_n(in byte[] input, ref byte[] output) const
 
 		store_be(out, L, R);
 
-		in += BLOCK_SIZE;
-		out += BLOCK_SIZE;
+		input = input[BLOCK_SIZE .. $];
+		output = output[BLOCK_SIZE .. $];
 	}
 }
 
@@ -39,10 +39,10 @@ void TEA::decrypt_n(in byte[] input, ref byte[] output) const
 {
 	for(size_t i = 0; i != blocks; ++i)
 	{
-		u32bit L = load_be<u32bit>(input, 0);
-		u32bit R = load_be<u32bit>(input, 1);
+		uint L = load_be<uint>(input, 0);
+		uint R = load_be<uint>(input, 1);
 
-		u32bit S = 0xC6EF3720;
+		uint S = 0xC6EF3720;
 		for(size_t j = 0; j != 32; ++j)
 		{
 			R -= ((L << 4) + K[2]) ^ (L + S) ^ ((L >> 5) + K[3]);
@@ -52,8 +52,8 @@ void TEA::decrypt_n(in byte[] input, ref byte[] output) const
 
 		store_be(out, L, R);
 
-		in += BLOCK_SIZE;
-		out += BLOCK_SIZE;
+		input = input[BLOCK_SIZE .. $];
+		output = output[BLOCK_SIZE .. $];
 	}
 }
 
@@ -64,7 +64,7 @@ void TEA::key_schedule(in byte[] key, size_t)
 {
 	K.resize(4);
 	for(size_t i = 0; i != 4; ++i)
-		K[i] = load_be<u32bit>(key, i);
+		K[i] = load_be<uint>(key, i);
 }
 
 void TEA::clear()

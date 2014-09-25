@@ -20,6 +20,6 @@ class DESX : public Block_Cipher_Fixed_Params<8, 24>
 		BlockCipher* clone() const { return new DESX; }
 	private:
 		void key_schedule(const byte[], size_t);
-		SafeArray!byte K1, K2;
+		SafeVector!byte K1, K2;
 		DES des;
 };

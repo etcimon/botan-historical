@@ -42,9 +42,9 @@
 #if defined(BOTAN_HAS_ENTROPY_SRC_PROC_WALKER)
   #include <botan/internal/proc_walk.h>
 #endif
-std::vector<std::unique_ptr<EntropySource>> Library_State::entropy_sources()
+Vector!( std::unique_ptr<EntropySource )> Library_State::entropy_sources()
 {
-	std::vector<std::unique_ptr<EntropySource>> sources;
+	Vector!( std::unique_ptr<EntropySource )> sources;
 
 #if defined(BOTAN_HAS_ENTROPY_SRC_HIGH_RESOLUTION_TIMER)
 	sources.push_back(std::unique_ptr<EntropySource>(new High_Resolution_Timestamp));
@@ -102,7 +102,7 @@ void Library_State::poll_available_sources(class Entropy_Accumulator& accum)
 	std::lock_guard<std::mutex> lock(m_entropy_src_mutex);
 
 	if(m_sources.empty())
-		throw std::runtime_error("No entropy sources enabled at build time, poll failed");
+		throw new Exception("No entropy sources enabled at build time, poll failed");
 
 	size_t poll_attempt = 0;
 

@@ -16,7 +16,7 @@ void ANSI_X931_RNG::randomize(ref byte[] output)
 		reseed(BOTAN_RNG_RESEED_POLL_BITS);
 
 		if(!is_seeded())
-			throw PRNG_Unseeded(name());
+			throw new PRNG_Unseeded(name());
 	}
 
 	while(length)
@@ -40,7 +40,7 @@ void ANSI_X931_RNG::update_buffer()
 {
 	const size_t BLOCK_SIZE = m_cipher->block_size();
 
-	SafeArray!byte DT = m_prng->random_vec(BLOCK_SIZE);
+	SafeVector!byte DT = m_prng->random_vec(BLOCK_SIZE);
 	m_cipher->encrypt(DT);
 
 	xor_buf(&m_R[0], &m_V[0], &DT[0], BLOCK_SIZE);

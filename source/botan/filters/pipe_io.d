@@ -12,14 +12,14 @@
 */
 std::ostream& operator<<(std::ostream& stream, Pipe& pipe)
 {
-	SafeArray!byte buffer(DEFAULT_BUFFERSIZE);
+	SafeVector!byte buffer(DEFAULT_BUFFERSIZE);
 	while(stream.good() && pipe.remaining())
 	{
 		size_t got = pipe.read(&buffer[0], buffer.size());
-		stream.write(cast(const char*)(&buffer[0]), got);
+		stream.write(cast(in char*)(buffer[0]), got);
 	}
 	if(!stream.good())
-		throw Stream_IO_Error("Pipe output operator (iostream) has failed");
+		throw new Stream_IO_Error("Pipe output operator (iostream) has failed");
 	return stream;
 }
 
@@ -28,14 +28,14 @@ std::ostream& operator<<(std::ostream& stream, Pipe& pipe)
 */
 std::istream& operator>>(std::istream& stream, Pipe& pipe)
 {
-	SafeArray!byte buffer(DEFAULT_BUFFERSIZE);
+	SafeVector!byte buffer(DEFAULT_BUFFERSIZE);
 	while(stream.good())
 	{
 		stream.read(cast(char*)(&buffer[0]), buffer.size());
 		pipe.write(&buffer[0], stream.gcount());
 	}
 	if(stream.bad() || (stream.fail() && !stream.eof()))
-		throw Stream_IO_Error("Pipe input operator (iostream) has failed");
+		throw new Stream_IO_Error("Pipe input operator (iostream) has failed");
 	return stream;
 }
 

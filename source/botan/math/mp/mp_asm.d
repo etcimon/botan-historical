@@ -115,7 +115,7 @@ void bigint_sub2_rev(word x[],  const word y[], size_t y_size)
 		x[i] = word_sub(y[i], x[i], &borrow);
 
 	if(borrow)
-		throw Internal_Error("bigint_sub2_rev: x >= y");
+		throw new Internal_Error("bigint_sub2_rev: x >= y");
 }
 
 /*

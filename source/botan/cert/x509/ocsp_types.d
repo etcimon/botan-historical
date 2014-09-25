@@ -14,7 +14,7 @@
 #include <botan/oids.h>
 namespace OCSP {
 
-CertID::CertID(const X509_Certificate& issuer,
+CertID::CertID(in X509_Certificate issuer,
 					const X509_Certificate& subject)
 {
 	/*
@@ -29,12 +29,12 @@ CertID::CertID(const X509_Certificate& issuer,
 	m_subject_serial = BigInt::decode(subject.serial_number());
 }
 
-std::vector<byte> CertID::extract_key_bitstr(const X509_Certificate& cert) const
+Vector!( byte ) CertID::extract_key_bitstr(in X509_Certificate cert) const
 {
 	const auto key_bits = cert.subject_public_key_bits();
 
 	AlgorithmIdentifier public_key_algid;
-	std::vector<byte> public_key_bitstr;
+	Vector!( byte ) public_key_bitstr;
 
 	BER_Decoder(key_bits)
 		.decode(public_key_algid)
@@ -43,7 +43,7 @@ std::vector<byte> CertID::extract_key_bitstr(const X509_Certificate& cert) const
 	return public_key_bitstr;
 }
 
-bool CertID::is_id_for(const X509_Certificate& issuer,
+bool CertID::is_id_for(in X509_Certificate issuer,
 							  const X509_Certificate& subject) const
 {
 	try
@@ -90,7 +90,7 @@ void CertID::decode_from(class BER_Decoder& from)
 
 void SingleResponse::encode_into(class DER_Encoder&) const
 {
-	throw std::runtime_error("Not implemented (SingleResponse::encode_into)");
+	throw new Exception("Not implemented (SingleResponse::encode_into)");
 }
 
 void SingleResponse::decode_from(class BER_Decoder& from)

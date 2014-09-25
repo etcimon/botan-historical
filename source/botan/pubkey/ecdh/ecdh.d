@@ -8,7 +8,7 @@
 */
 
 #include <botan/ecdh.h>
-ECDH_KA_Operation::ECDH_KA_Operation(const ECDH_PrivateKey& key) :
+ECDH_KA_Operation::ECDH_KA_Operation(in ECDH_PrivateKey key) :
 	curve(key.domain().get_curve()),
 	cofactor(key.domain().get_cofactor())
 {
@@ -16,7 +16,7 @@ ECDH_KA_Operation::ECDH_KA_Operation(const ECDH_PrivateKey& key) :
 						key.private_value();
 }
 
-SafeArray!byte ECDH_KA_Operation::agree(in byte[] w, size_t w_len)
+SafeVector!byte ECDH_KA_Operation::agree(in byte[] w, size_t w_len)
 {
 	PointGFp point = OS2ECP(w, w_len, curve);
 

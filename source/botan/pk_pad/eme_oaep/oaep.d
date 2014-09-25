@@ -11,16 +11,16 @@
 /*
 * OAEP Pad Operation
 */
-SafeArray!byte OAEP::pad(in byte[] in, size_t in_length,
+SafeVector!byte OAEP::pad(in byte[] in, size_t in_length,
 									  size_t key_length,
 									  RandomNumberGenerator& rng) const
 {
 	key_length /= 8;
 
 	if(key_length < in_length + 2*m_Phash.size() + 1)
-		throw Invalid_Argument("OAEP: Input is too large");
+		throw new Invalid_Argument("OAEP: Input is too large");
 
-	SafeArray!byte out(key_length);
+	SafeVector!byte out(key_length);
 
 	rng.randomize(&out[0], m_Phash.size());
 
@@ -42,7 +42,7 @@ SafeArray!byte OAEP::pad(in byte[] in, size_t in_length,
 /*
 * OAEP Unpad Operation
 */
-SafeArray!byte OAEP::unpad(in byte[] in, size_t in_length,
+SafeVector!byte OAEP::unpad(in byte[] in, size_t in_length,
 										 size_t key_length) const
 {
 	/*
@@ -63,7 +63,7 @@ SafeArray!byte OAEP::unpad(in byte[] in, size_t in_length,
 	if(in_length > key_length)
 		in_length = 0;
 
-	SafeArray!byte input(key_length);
+	SafeVector!byte input(key_length);
 	buffer_insert(input, key_length - in_length, in, in_length);
 
 	mgf1_mask(*m_hash,
@@ -103,9 +103,9 @@ SafeArray!byte OAEP::unpad(in byte[] in, size_t in_length,
 	bad_input |= !same_mem(&input[m_Phash.size()], &m_Phash[0], m_Phash.size());
 
 	if(bad_input)
-		throw Decoding_Error("Invalid OAEP encoding");
+		throw new Decoding_Error("Invalid OAEP encoding");
 
-	return SafeArray!byte(&input[delim_idx + 1], &input[input.size()]);
+	return SafeVector!byte(&input[delim_idx + 1], &input[input.size()]);
 }
 
 /*

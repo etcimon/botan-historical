@@ -9,9 +9,9 @@
 /**
 * Default Commands for Entropy Gathering
 */
-std::vector<std::vector<string>> Unix_EntropySource::get_default_sources()
+Vector!( std::vector<string )> Unix_EntropySource::get_default_sources()
 {
-	std::vector<std::vector<string>> srcs;
+	Vector!( std::vector<string )> srcs;
 
 	srcs.push_back({ "netstat", "-in" });
 	srcs.push_back({ "pfstat" });

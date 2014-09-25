@@ -29,15 +29,15 @@ class StreamCipher : public SymmetricAlgorithm
 		{ cipher(buf, buf, len); }
 
 		template<typename Alloc>
-			void encipher(std::vector<byte, Alloc>& inout)
+			void encipher(Vector!( byte, Alloc )& inout)
 		{ cipher(&inout[0], &inout[0], inout.size()); }
 
 		template<typename Alloc>
-			void encrypt(std::vector<byte, Alloc>& inout)
+			void encrypt(Vector!( byte, Alloc )& inout)
 		{ cipher(&inout[0], &inout[0], inout.size()); }
 
 		template<typename Alloc>
-			void decrypt(std::vector<byte, Alloc>& inout)
+			void decrypt(Vector!( byte, Alloc )& inout)
 		{ cipher(&inout[0], &inout[0], inout.size()); }
 
 		/**

@@ -34,7 +34,7 @@ class Public_Key;
 * additional limits
 */
 
-Key_Constraints find_constraints(const Public_Key& pub_key,
+Key_Constraints find_constraints(in Public_Key pub_key,
 														 Key_Constraints limits);
 
 /**

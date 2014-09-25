@@ -19,7 +19,7 @@ Skein_512::Skein_512(size_t arg_output_bits,
 	T(2), buffer(64), buf_pos(0)
 {
 	if(output_bits == 0 || output_bits % 8 != 0 || output_bits > 512)
-		throw Invalid_Argument("Bad output bits size for Skein-512");
+		throw new Invalid_Argument("Bad output bits size for Skein-512");
 
 	initial_block();
 }
@@ -62,7 +62,7 @@ void Skein_512::initial_block()
 
 	// ASCII("SHA3") followed by version (0x0001) code
 	byte config_str[32] = { 0x53, 0x48, 0x41, 0x33, 0x01, 0x00, 0 };
-	store_le(u32bit(output_bits), config_str + 8);
+	store_le(uint(output_bits), config_str + 8);
 
 	reset_tweak(SKEIN_CONFIG, true);
 	ubi_512(config_str, sizeof(config_str));
@@ -75,7 +75,7 @@ void Skein_512::initial_block()
 		  doesn't seem worth the trouble.
 		*/
 		if(personalization.length() > 64)
-			throw Invalid_Argument("Skein personalization must be less than 64 bytes");
+			throw new Invalid_Argument("Skein personalization must be less than 64 bytes");
 
 		const byte* bits = cast(const byte*)(personalization.data());
 		reset_tweak(SKEIN_PERSONALIZATION, true);

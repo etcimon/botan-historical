@@ -21,14 +21,14 @@ SRP6_Authenticator_File::SRP6_Authenticator_File(in string filename)
 		string line;
 		std::getline(input, line);
 
-		std::vector<string> parts = split_on(line, ':');
+		Vector!( string ) parts = split_on(line, ':');
 
 		if(parts.size() != 4)
-			throw Decoding_Error("Invalid line in SRP authenticator file");
+			throw new Decoding_Error("Invalid line in SRP authenticator file");
 
 		string username = parts[0];
 		BigInt v = BigInt::decode(base64_decode(parts[1]));
-		std::vector<byte> salt = unlock(base64_decode(parts[2]));
+		Vector!( byte ) salt = unlock(base64_decode(parts[2]));
 		BigInt group_id_idx = BigInt::decode(base64_decode(parts[3]));
 
 		string group_id;
@@ -48,7 +48,7 @@ SRP6_Authenticator_File::SRP6_Authenticator_File(in string filename)
 
 bool SRP6_Authenticator_File::lookup_user(in string username,
 														BigInt& v,
-														std::vector<byte>& salt,
+														Vector!( byte )& salt,
 														string& group_id) const
 {
 	std::map<string, SRP6_Data>::const_iterator i = entries.find(username);

@@ -21,12 +21,12 @@ class X509_Object : public ASN1_Object
 		* The underlying data that is to be or was signed
 		* @return data that is or was signed
 		*/
-		std::vector<byte> tbs_data() const;
+		Vector!( byte ) tbs_data() const;
 
 		/**
 		* @return signature on tbs_data()
 		*/
-		std::vector<byte> signature() const;
+		Vector!( byte ) signature() const;
 
 		/**
 		* @return signature algorithm that was used to generate signature
@@ -46,17 +46,17 @@ class X509_Object : public ASN1_Object
 		* @param tbs the tbs bits to be signed
 		* @return signed X509 object
 		*/
-		static std::vector<byte> make_signed(class PK_Signer* signer,
+		static Vector!( byte ) make_signed(class PK_Signer* signer,
 														 RandomNumberGenerator& rng,
 														 const AlgorithmIdentifier& alg_id,
-														 in SafeArray!byte tbs);
+														 in SafeVector!byte tbs);
 
 		/**
 		* Check the signature on this data
 		* @param key the public key purportedly used to sign this data
 		* @return true if the signature is valid, otherwise false
 		*/
-		bool check_signature(const Public_Key& key) const;
+		bool check_signature(in Public_Key key) const;
 
 		/**
 		* Check the signature on this data
@@ -73,7 +73,7 @@ class X509_Object : public ASN1_Object
 		/**
 		* @return BER encoding of this
 		*/
-		std::vector<byte> BER_encode() const;
+		Vector!( byte ) BER_encode() const;
 
 		/**
 		* @return PEM encoding of this
@@ -84,16 +84,16 @@ class X509_Object : public ASN1_Object
 	protected:
 		X509_Object(DataSource& src, in string pem_labels);
 		X509_Object(in string file, in string pem_labels);
-		X509_Object(in Array!byte vec, in string labels);
+		X509_Object(in Vector!byte vec, in string labels);
 
 		void do_decode();
 		X509_Object() {}
 		AlgorithmIdentifier sig_algo;
-		std::vector<byte> tbs_bits, sig;
+		Vector!( byte ) tbs_bits, sig;
 	private:
 		abstract void force_decode() = 0;
 		void init(DataSource&, in string);
 
-		std::vector<string> PEM_labels_allowed;
+		Vector!( string ) PEM_labels_allowed;
 		string PEM_label_pref;
 };

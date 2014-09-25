@@ -110,7 +110,7 @@ W0 = W[t]..W[t+3]
 /*
 * SHA-160 F1 Function
 */
-inline void F1(u32bit A, u32bit& B, u32bit C, u32bit D, u32bit& E, u32bit msg)
+inline void F1(uint A, ref uint B, uint C, uint D, ref uint E, uint msg)
 {
 	E += (D ^ (B & (C ^ D))) + msg + rotate_left(A, 5);
 	B  = rotate_left(B, 30);
@@ -119,7 +119,7 @@ inline void F1(u32bit A, u32bit& B, u32bit C, u32bit D, u32bit& E, u32bit msg)
 /*
 * SHA-160 F2 Function
 */
-inline void F2(u32bit A, u32bit& B, u32bit C, u32bit D, u32bit& E, u32bit msg)
+inline void F2(uint A, ref uint B, uint C, uint D, ref uint E, uint msg)
 {
 	E += (B ^ C ^ D) + msg + rotate_left(A, 5);
 	B  = rotate_left(B, 30);
@@ -128,7 +128,7 @@ inline void F2(u32bit A, u32bit& B, u32bit C, u32bit D, u32bit& E, u32bit msg)
 /*
 * SHA-160 F3 Function
 */
-inline void F3(u32bit A, u32bit& B, u32bit C, u32bit D, u32bit& E, u32bit msg)
+inline void F3(uint A, ref uint B, uint C, uint D, ref uint E, uint msg)
 {
 	E += ((B & C) | ((B | C) & D)) + msg + rotate_left(A, 5);
 	B  = rotate_left(B, 30);
@@ -137,7 +137,7 @@ inline void F3(u32bit A, u32bit& B, u32bit C, u32bit D, u32bit& E, u32bit msg)
 /*
 * SHA-160 F4 Function
 */
-inline void F4(u32bit A, u32bit& B, u32bit C, u32bit D, u32bit& E, u32bit msg)
+inline void F4(uint A, ref uint B, uint C, uint D, ref uint E, uint msg)
 {
 	E += (B ^ C ^ D) + msg + rotate_left(A, 5);
 	B  = rotate_left(B, 30);
@@ -159,7 +159,7 @@ void SHA_160_SSE2::compress_n(in byte[] input_bytes, size_t blocks)
 	const __m128i K40_59 = _mm_set1_epi32(0x8F1BBCDC);
 	const __m128i K60_79 = _mm_set1_epi32(0xCA62C1D6);
 
-	u32bit A = digest[0],
+	uint A = digest[0],
 			 B = digest[1],
 			 C = digest[2],
 			 D = digest[3],
@@ -170,7 +170,7 @@ void SHA_160_SSE2::compress_n(in byte[] input_bytes, size_t blocks)
 	for(size_t i = 0; i != blocks; ++i)
 	{
 		union v4si {
-			u32bit u32[4];
+			uint u32[4];
 			__m128i u128;
 		};
 

@@ -102,7 +102,7 @@ EMSA* get_emsa(in string algo_spec)
 	}
 #endif
 
-	throw Algorithm_Not_Found(algo_spec);
+	throw new Algorithm_Not_Found(algo_spec);
 }
 
 /*
@@ -133,7 +133,7 @@ EME* get_eme(in string algo_spec)
 	}
 #endif
 
-	throw Algorithm_Not_Found(algo_spec);
+	throw new Algorithm_Not_Found(algo_spec);
 }
 
 }

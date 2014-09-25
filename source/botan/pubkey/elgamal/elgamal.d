@@ -12,7 +12,7 @@
 /*
 * ElGamal_PublicKey Constructor
 */
-ElGamal_PublicKey::ElGamal_PublicKey(const DL_Group& grp, const BigInt& y1)
+ElGamal_PublicKey::ElGamal_PublicKey(in DL_Group grp, const BigInt& y1)
 {
 	group = grp;
 	y = y1;
@@ -39,8 +39,8 @@ ElGamal_PrivateKey::ElGamal_PrivateKey(RandomNumberGenerator& rng,
 		load_check(rng);
 }
 
-ElGamal_PrivateKey::ElGamal_PrivateKey(const AlgorithmIdentifier& alg_id,
-													in SafeArray!byte key_bits,
+ElGamal_PrivateKey::ElGamal_PrivateKey(in AlgorithmIdentifier alg_id,
+													in SafeVector!byte key_bits,
 													RandomNumberGenerator& rng) :
 	DL_Scheme_PrivateKey(alg_id, key_bits, DL_Group::ANSI_X9_42)
 {
@@ -63,7 +63,7 @@ bool ElGamal_PrivateKey::check_key(RandomNumberGenerator& rng,
 	return KeyPair::encryption_consistency_check(rng, *this, "EME1(SHA-1)");
 }
 
-ElGamal_Encryption_Operation::ElGamal_Encryption_Operation(const ElGamal_PublicKey& key)
+ElGamal_Encryption_Operation::ElGamal_Encryption_Operation(in ElGamal_PublicKey key)
 {
 	const BigInt& p = key.group_p();
 
@@ -72,7 +72,7 @@ ElGamal_Encryption_Operation::ElGamal_Encryption_Operation(const ElGamal_PublicK
 	mod_p = Modular_Reducer(p);
 }
 
-SafeArray!byte
+SafeVector!byte
 ElGamal_Encryption_Operation::encrypt(in byte[] msg, size_t msg_len,
 												  RandomNumberGenerator& rng)
 {
@@ -81,20 +81,20 @@ ElGamal_Encryption_Operation::encrypt(in byte[] msg, size_t msg_len,
 	BigInt m(msg, msg_len);
 
 	if(m >= p)
-		throw Invalid_Argument("ElGamal encryption: Input is too large");
+		throw new Invalid_Argument("ElGamal encryption: Input is too large");
 
 	BigInt k(rng, 2 * dl_work_factor(p.bits()));
 
 	BigInt a = powermod_g_p(k);
 	BigInt b = mod_p.multiply(m, powermod_y_p(k));
 
-	SafeArray!byte output(2*p.bytes());
+	SafeVector!byte output(2*p.bytes());
 	a.binary_encode(&output[p.bytes() - a.bytes()]);
 	b.binary_encode(&output[output.size() / 2 + (p.bytes() - b.bytes())]);
 	return output;
 }
 
-ElGamal_Decryption_Operation::ElGamal_Decryption_Operation(const ElGamal_PrivateKey& key,
+ElGamal_Decryption_Operation::ElGamal_Decryption_Operation(in ElGamal_PrivateKey key,
 																			  RandomNumberGenerator& rng)
 {
 	const BigInt& p = key.group_p();
@@ -106,7 +106,7 @@ ElGamal_Decryption_Operation::ElGamal_Decryption_Operation(const ElGamal_Private
 	blinder = Blinder(k, powermod_x_p(k), p);
 }
 
-SafeArray!byte
+SafeVector!byte
 ElGamal_Decryption_Operation::decrypt(in byte[] msg, size_t msg_len)
 {
 	const BigInt& p = mod_p.get_modulus();
@@ -114,13 +114,13 @@ ElGamal_Decryption_Operation::decrypt(in byte[] msg, size_t msg_len)
 	const size_t p_bytes = p.bytes();
 
 	if(msg_len != 2 * p_bytes)
-		throw Invalid_Argument("ElGamal decryption: Invalid message");
+		throw new Invalid_Argument("ElGamal decryption: Invalid message");
 
 	BigInt a(msg, p_bytes);
 	BigInt b(msg + p_bytes, p_bytes);
 
 	if(a >= p || b >= p)
-		throw Invalid_Argument("ElGamal decryption: Invalid message");
+		throw new Invalid_Argument("ElGamal decryption: Invalid message");
 
 	a = blinder.blind(a);
 

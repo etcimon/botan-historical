@@ -15,21 +15,21 @@ class CertID : public ASN1_Object
 	public:
 		CertID() {}
 
-		CertID(const X509_Certificate& issuer,
+		CertID(in X509_Certificate issuer,
 				 const X509_Certificate& subject);
 
-		bool is_id_for(const X509_Certificate& issuer,
+		bool is_id_for(in X509_Certificate issuer,
 							const X509_Certificate& subject) const;
 
 		void encode_into(class DER_Encoder& to) const override;
 
 		void decode_from(class BER_Decoder& from) override;
 	private:
-		std::vector<byte> extract_key_bitstr(const X509_Certificate& cert) const;
+		Vector!( byte ) extract_key_bitstr(in X509_Certificate cert) const;
 
 		AlgorithmIdentifier m_hash_id;
-		std::vector<byte> m_issuer_dn_hash;
-		std::vector<byte> m_issuer_key_hash;
+		Vector!( byte ) m_issuer_dn_hash;
+		Vector!( byte ) m_issuer_key_hash;
 		BigInt m_subject_serial;
 };
 

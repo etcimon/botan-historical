@@ -11,11 +11,11 @@
 /*
 * Perform CMAC's multiplication in GF(2^n)
 */
-SafeArray!byte CMAC::poly_double(in SafeArray!byte input)
+SafeVector!byte CMAC::poly_double(in SafeVector!byte input)
 {
 	const bool top_carry = (in[0] & 0x80);
 
-	SafeArray!byte out = in;
+	SafeVector!byte out = in;
 
 	byte carry = 0;
 	for(size_t i = out.size(); i != 0; --i)
@@ -150,7 +150,7 @@ CMAC::CMAC(BlockCipher* cipher) : m_cipher(cipher)
 	if(m_cipher->block_size() !=  8 && m_cipher->block_size() != 16 &&
 		m_cipher->block_size() != 32 && m_cipher->block_size() != 64)
 	{
-		throw Invalid_Argument("CMAC cannot use the " +
+		throw new Invalid_Argument("CMAC cannot use the " +
 									  std::to_string(m_cipher->block_size() * 8) +
 									  " bit cipher " + m_cipher->name());
 	}

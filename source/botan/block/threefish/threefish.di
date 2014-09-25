@@ -32,7 +32,7 @@ class Threefish_512 : public Block_Cipher_Fixed_Params<64, 64>
 		// Interface for Skein
 		friend class Skein_512;
 
-		abstract void skein_feedfwd(const secure_vector<u64bit>& M,
+		abstract void skein_feedfwd(in secure_vector<u64bit> M,
 											const secure_vector<u64bit>& T);
 
 		// Private data

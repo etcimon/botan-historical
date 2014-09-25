@@ -42,19 +42,19 @@ GOST_28147_89_Params::GOST_28147_89_Params(in string n) : name(n)
 	else if(name == "R3411_CryptoPro")
 		sboxes = GOST_R_3411_CRYPTOPRO_PARAMS;
 	else
-		throw Invalid_Argument("GOST_28147_89_Params: Unknown " + name);
+		throw new Invalid_Argument("GOST_28147_89_Params: Unknown " + name);
 }
 
 /*
 * GOST Constructor
 */
-GOST_28147_89::GOST_28147_89(const GOST_28147_89_Params& param) : SBOX(1024)
+GOST_28147_89::GOST_28147_89(in GOST_28147_89_Params param) : SBOX(1024)
 {
 	// Convert the parallel 4x4 sboxes into larger word-based sboxes
 	for(size_t i = 0; i != 4; ++i)
 		for(size_t j = 0; j != 256; ++j)
 		{
-			const u32bit T = (param.sbox_entry(2*i  , j % 16)) |
+			const uint T = (param.sbox_entry(2*i  , j % 16)) |
 								  (param.sbox_entry(2*i+1, j / 16) << 4);
 			SBOX[256*i+j] = rotate_left(T, (11+8*i) % 32);
 		}
@@ -74,7 +74,7 @@ string GOST_28147_89::name() const
 	else if(SBOX[0] == 0x0002D000)
 		sbox_name = "R3411_CryptoPro";
 	else
-		throw Internal_Error("GOST-28147 unrecognized sbox value");
+		throw new Internal_Error("GOST-28147 unrecognized sbox value");
 
 	return "GOST-28147-89(" + sbox_name + ")";
 }
@@ -84,13 +84,13 @@ string GOST_28147_89::name() const
 */
 #define GOST_2ROUND(N1, N2, R1, R2)	\
 	do {										 \
-	u32bit T0 = N1 + EK[R1];			  \
+	uint T0 = N1 + EK[R1];			  \
 	N2 ^= SBOX[get_byte(3, T0)] |		\
 			SBOX[get_byte(2, T0)+256] |  \
 			SBOX[get_byte(1, T0)+512] |  \
 			SBOX[get_byte(0, T0)+768];	\
 												  \
-	u32bit T1 = N2 + EK[R2];			  \
+	uint T1 = N2 + EK[R2];			  \
 	N1 ^= SBOX[get_byte(3, T1)] |		\
 			SBOX[get_byte(2, T1)+256] |  \
 			SBOX[get_byte(1, T1)+512] |  \
@@ -104,8 +104,8 @@ void GOST_28147_89::encrypt_n(in byte[] input, ref byte[] output) const
 {
 	for(size_t i = 0; i != blocks; ++i)
 	{
-		u32bit N1 = load_le<u32bit>(input, 0);
-		u32bit N2 = load_le<u32bit>(input, 1);
+		uint N1 = load_le<uint>(input, 0);
+		uint N2 = load_le<uint>(input, 1);
 
 		for(size_t j = 0; j != 3; ++j)
 		{
@@ -122,8 +122,8 @@ void GOST_28147_89::encrypt_n(in byte[] input, ref byte[] output) const
 
 		store_le(out, N2, N1);
 
-		in += BLOCK_SIZE;
-		out += BLOCK_SIZE;
+		input = input[BLOCK_SIZE .. $];
+		output = output[BLOCK_SIZE .. $];
 	}
 }
 
@@ -134,8 +134,8 @@ void GOST_28147_89::decrypt_n(in byte[] input, ref byte[] output) const
 {
 	for(size_t i = 0; i != blocks; ++i)
 	{
-		u32bit N1 = load_le<u32bit>(input, 0);
-		u32bit N2 = load_le<u32bit>(input, 1);
+		uint N1 = load_le<uint>(input, 0);
+		uint N2 = load_le<uint>(input, 1);
 
 		GOST_2ROUND(N1, N2, 0, 1);
 		GOST_2ROUND(N1, N2, 2, 3);
@@ -151,8 +151,8 @@ void GOST_28147_89::decrypt_n(in byte[] input, ref byte[] output) const
 		}
 
 		store_le(out, N2, N1);
-		in += BLOCK_SIZE;
-		out += BLOCK_SIZE;
+		input = input[BLOCK_SIZE .. $];
+		output = output[BLOCK_SIZE .. $];
 	}
 }
 
@@ -163,7 +163,7 @@ void GOST_28147_89::key_schedule(in byte[] key, size_t)
 {
 	EK.resize(8);
 	for(size_t i = 0; i != 8; ++i)
-		EK[i] = load_le<u32bit>(key, i);
+		EK[i] = load_le<uint>(key, i);
 }
 
 void GOST_28147_89::clear()

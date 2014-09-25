@@ -19,7 +19,7 @@ void aont_package(RandomNumberGenerator& rng,
 	const size_t BLOCK_SIZE = cipher->block_size();
 
 	if(!cipher->valid_keylength(BLOCK_SIZE))
-		throw Invalid_Argument("AONT::package: Invalid cipher");
+		throw new Invalid_Argument("AONT::package: Invalid cipher");
 
 	// The all-zero string which is used both as the CTR IV and as K0
 	const string all_zeros(BLOCK_SIZE*2, '0');
@@ -34,7 +34,7 @@ void aont_package(RandomNumberGenerator& rng,
 	// Set K0 (the all zero key)
 	cipher->set_key(SymmetricKey(all_zeros));
 
-	SafeArray!byte buf(BLOCK_SIZE);
+	SafeVector!byte buf(BLOCK_SIZE);
 
 	const size_t blocks =
 		(input_len + BLOCK_SIZE - 1) / BLOCK_SIZE;
@@ -70,18 +70,18 @@ void aont_unpackage(BlockCipher* cipher,
 	const size_t BLOCK_SIZE = cipher->block_size();
 
 	if(!cipher->valid_keylength(BLOCK_SIZE))
-		throw Invalid_Argument("AONT::unpackage: Invalid cipher");
+		throw new Invalid_Argument("AONT::unpackage: Invalid cipher");
 
 	if(input_len < BLOCK_SIZE)
-		throw Invalid_Argument("AONT::unpackage: Input too short");
+		throw new Invalid_Argument("AONT::unpackage: Input too short");
 
 	// The all-zero string which is used both as the CTR IV and as K0
 	const string all_zeros(BLOCK_SIZE*2, '0');
 
 	cipher->set_key(SymmetricKey(all_zeros));
 
-	SafeArray!byte package_key(BLOCK_SIZE);
-	SafeArray!byte buf(BLOCK_SIZE);
+	SafeVector!byte package_key(BLOCK_SIZE);
+	SafeVector!byte buf(BLOCK_SIZE);
 
 	// Copy the package key (masked with the block hashes)
 	copy_mem(&package_key[0],

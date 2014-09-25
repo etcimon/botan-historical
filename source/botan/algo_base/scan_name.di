@@ -93,6 +93,6 @@ class SCAN_Name
 
 		string orig_algo_spec;
 		string alg_name;
-		std::vector<string> args;
-		std::vector<string> mode_info;
+		Vector!( string ) args;
+		Vector!( string ) mode_info;
 };

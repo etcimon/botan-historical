@@ -14,12 +14,12 @@ class EMSA_Raw : public EMSA
 {
 	private:
 		void update(const byte[], size_t);
-		SafeArray!byte raw_data();
+		SafeVector!byte raw_data();
 
-		SafeArray!byte encoding_of(in SafeArray!byte, size_t,
+		SafeVector!byte encoding_of(in SafeVector!byte, size_t,
 												 RandomNumberGenerator&);
-		bool verify(in SafeArray!byte, in SafeArray!byte,
+		bool verify(in SafeVector!byte, in SafeVector!byte,
 						size_t);
 
-		SafeArray!byte message;
+		SafeVector!byte message;
 };

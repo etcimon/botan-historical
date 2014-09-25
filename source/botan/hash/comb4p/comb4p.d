@@ -10,8 +10,8 @@
 #include <stdexcept>
 namespace {
 
-void comb4p_round(SafeArray!byte out,
-						in SafeArray!byte in,
+void comb4p_round(SafeVector!byte out,
+						in SafeVector!byte in,
 						byte round_no,
 						HashFunction& h1,
 						HashFunction& h2)
@@ -22,10 +22,10 @@ void comb4p_round(SafeArray!byte out,
 	h1.update(&in[0], in.size());
 	h2.update(&in[0], in.size());
 
-	SafeArray!byte h_buf = h1.final();
+	SafeVector!byte h_buf = h1.flush();
 	xor_buf(&out[0], &h_buf[0], std::min(out.size(), h_buf.size()));
 
-	h_buf = h2.final();
+	h_buf = h2.flush();
 	xor_buf(&out[0], &h_buf[0], std::min(out.size(), h_buf.size()));
 }
 
@@ -35,10 +35,10 @@ Comb4P::Comb4P(HashFunction* h1, HashFunction* h2) :
 	m_hash1(h1), m_hash2(h2)
 {
 	if(m_hash1->name() == m_hash2->name())
-		throw std::invalid_argument("Comb4P: Must use two distinct hashes");
+		throw new std::invalid_argument("Comb4P: Must use two distinct hashes");
 
 	if(m_hash1->output_length() != m_hash2->output_length())
-		throw std::invalid_argument("Comb4P: Incompatible hashes " +
+		throw new std::invalid_argument("Comb4P: Incompatible hashes " +
 											 m_hash1->name() + " and " +
 											 m_hash2->name());
 
@@ -75,8 +75,8 @@ void Comb4P::add_data(in byte[] input, size_t length)
 
 void Comb4P::final_result(ref byte[] output)
 {
-	SafeArray!byte h1 = m_hash1->final();
-	SafeArray!byte h2 = m_hash2->final();
+	SafeVector!byte h1 = m_hash1->flush();
+	SafeVector!byte h2 = m_hash2->flush();
 
 	// First round
 	xor_buf(&h1[0], &h2[0], std::min(h1.size(), h2.size()));

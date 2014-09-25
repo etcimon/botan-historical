@@ -15,7 +15,7 @@ CBC_Mode::CBC_Mode(BlockCipher* cipher, BlockCipherModePaddingMethod* padding) :
 	m_state(m_cipher->block_size())
 {
 	if(m_padding && !m_padding->valid_blocksize(cipher->block_size()))
-		throw std::invalid_argument("Padding " + m_padding->name() +
+		throw new std::invalid_argument("Padding " + m_padding->name() +
 											 " cannot be used with " +
 											 cipher->name() + "/CBC");
 }
@@ -59,10 +59,10 @@ void CBC_Mode::key_schedule(in byte[] key)
 	m_cipher->set_key(key, length);
 }
 
-SafeArray!byte CBC_Mode::start(in byte[] nonce, size_t nonce_len)
+SafeVector!byte CBC_Mode::start(in byte[] nonce, size_t nonce_len)
 {
 	if(!valid_nonce_length(nonce_len))
-		throw Invalid_IV_Length(name(), nonce_len);
+		throw new Invalid_IV_Length(name(), nonce_len);
 
 	/*
 	* A nonce of zero length means carry the last ciphertext value over
@@ -72,7 +72,7 @@ SafeArray!byte CBC_Mode::start(in byte[] nonce, size_t nonce_len)
 	if(nonce_len)
 		m_state.assign(nonce, nonce + nonce_len);
 
-	return SafeArray!byte();
+	return SafeVector!byte();
 }
 
 size_t CBC_Encryption::minimum_final_size() const
@@ -85,7 +85,7 @@ size_t CBC_Encryption::output_length(size_t input_length) const
 	return round_up(input_length, cipher().block_size());
 }
 
-void CBC_Encryption::update(SafeArray!byte buffer, size_t offset)
+void CBC_Encryption::update(SafeVector!byte buffer, size_t offset)
 {
 	BOTAN_ASSERT(buffer.size() >= offset, "Offset is sane");
 	const size_t sz = buffer.size() - offset;
@@ -111,7 +111,7 @@ void CBC_Encryption::update(SafeArray!byte buffer, size_t offset)
 	}
 }
 
-void CBC_Encryption::finish(SafeArray!byte buffer, size_t offset)
+void CBC_Encryption::finish(SafeVector!byte buffer, size_t offset)
 {
 	BOTAN_ASSERT(buffer.size() >= offset, "Offset is sane");
 
@@ -122,7 +122,7 @@ void CBC_Encryption::finish(SafeArray!byte buffer, size_t offset)
 	padding().add_padding(buffer, bytes_in_final_block, BS);
 
 	if((buffer.size()-offset) % BS)
-		throw std::runtime_error("Did not pad to full block size in " + name());
+		throw new Exception("Did not pad to full block size in " + name());
 
 	update(buffer, offset);
 }
@@ -142,7 +142,7 @@ size_t CTS_Encryption::output_length(size_t input_length) const
 	return input_length; // no ciphertext expansion in CTS
 }
 
-void CTS_Encryption::finish(SafeArray!byte buffer, size_t offset)
+void CTS_Encryption::finish(SafeVector!byte buffer, size_t offset)
 {
 	BOTAN_ASSERT(buffer.size() >= offset, "Offset is sane");
 	byte* buf = &buffer[offset];
@@ -151,7 +151,7 @@ void CTS_Encryption::finish(SafeArray!byte buffer, size_t offset)
 	const size_t BS = cipher().block_size();
 
 	if(sz < BS + 1)
-		throw Encoding_Error(name() + ": insufficient data to encrypt");
+		throw new Encoding_Error(name() + ": insufficient data to encrypt");
 
 	if(sz % BS == 0)
 	{
@@ -167,7 +167,7 @@ void CTS_Encryption::finish(SafeArray!byte buffer, size_t offset)
 		const size_t final_bytes = sz - full_blocks;
 		BOTAN_ASSERT(final_bytes > BS && final_bytes < 2*BS, "Left over size in expected range");
 
-		SafeArray!byte last(buf + full_blocks, buf + full_blocks + final_bytes);
+		SafeVector!byte last(buf + full_blocks, buf + full_blocks + final_bytes);
 		buffer.resize(full_blocks + offset);
 		update(buffer, offset);
 
@@ -196,7 +196,7 @@ size_t CBC_Decryption::minimum_final_size() const
 	return cipher().block_size();
 }
 
-void CBC_Decryption::update(SafeArray!byte buffer, size_t offset)
+void CBC_Decryption::update(SafeVector!byte buffer, size_t offset)
 {
 	BOTAN_ASSERT(buffer.size() >= offset, "Offset is sane");
 	const size_t sz = buffer.size() - offset;
@@ -224,7 +224,7 @@ void CBC_Decryption::update(SafeArray!byte buffer, size_t offset)
 	}
 }
 
-void CBC_Decryption::finish(SafeArray!byte buffer, size_t offset)
+void CBC_Decryption::finish(SafeVector!byte buffer, size_t offset)
 {
 	BOTAN_ASSERT(buffer.size() >= offset, "Offset is sane");
 	const size_t sz = buffer.size() - offset;
@@ -232,7 +232,7 @@ void CBC_Decryption::finish(SafeArray!byte buffer, size_t offset)
 	const size_t BS = cipher().block_size();
 
 	if(sz == 0 || sz % BS)
-		throw Decoding_Error(name() + ": Ciphertext not a multiple of block size");
+		throw new Decoding_Error(name() + ": Ciphertext not a multiple of block size");
 
 	update(buffer, offset);
 
@@ -250,7 +250,7 @@ size_t CTS_Decryption::minimum_final_size() const
 	return cipher().block_size() + 1;
 }
 
-void CTS_Decryption::finish(SafeArray!byte buffer, size_t offset)
+void CTS_Decryption::finish(SafeVector!byte buffer, size_t offset)
 {
 	BOTAN_ASSERT(buffer.size() >= offset, "Offset is sane");
 	const size_t sz = buffer.size() - offset;
@@ -259,7 +259,7 @@ void CTS_Decryption::finish(SafeArray!byte buffer, size_t offset)
 	const size_t BS = cipher().block_size();
 
 	if(sz < BS + 1)
-		throw Encoding_Error(name() + ": insufficient data to decrypt");
+		throw new Encoding_Error(name() + ": insufficient data to decrypt");
 
 	if(sz % BS == 0)
 	{
@@ -276,7 +276,7 @@ void CTS_Decryption::finish(SafeArray!byte buffer, size_t offset)
 		const size_t final_bytes = sz - full_blocks;
 		BOTAN_ASSERT(final_bytes > BS && final_bytes < 2*BS, "Left over size in expected range");
 
-		SafeArray!byte last(buf + full_blocks, buf + full_blocks + final_bytes);
+		SafeVector!byte last(buf + full_blocks, buf + full_blocks + final_bytes);
 		buffer.resize(full_blocks + offset);
 		update(buffer, offset);
 

@@ -12,7 +12,7 @@
 namespace {
 
 string make_arg(
-	const std::vector<std::pair<size_t, string> >& name, size_t start)
+	const Vector!( Pair!(size_t, string)  )& name, size_t start)
 {
 	string output = name[start].second;
 	size_t level = name[start].first;
@@ -50,8 +50,8 @@ string make_arg(
 	return output;
 }
 
-std::pair<size_t, string>
-deref_aliases(const std::pair<size_t, string>& input)
+Pair!(size_t, string)
+deref_aliases(in Pair!(size_t, string) input)
 {
 	return std::make_pair(in.first,
 								 SCAN_Name::deref_alias(in.second));
@@ -66,9 +66,9 @@ SCAN_Name::SCAN_Name(string algo_spec)
 {
 	orig_algo_spec = algo_spec;
 
-	std::vector<std::pair<size_t, string> > name;
+	Vector!( Tuple!(size_t, string)  ) name;
 	size_t level = 0;
-	std::pair<size_t, string> accum = std::make_pair(level, "");
+	Pair!(size_t, string) accum = std::make_pair(level, "");
 
 	string decoding_error = "Bad SCAN name '" + algo_spec + "': ";
 
@@ -85,7 +85,7 @@ SCAN_Name::SCAN_Name(string algo_spec)
 			else if(c == ')')
 			{
 				if(level == 0)
-					throw Decoding_Error(decoding_error + "Mismatched parens");
+					throw new Decoding_Error(decoding_error + "Mismatched parens");
 				--level;
 			}
 
@@ -106,10 +106,10 @@ SCAN_Name::SCAN_Name(string algo_spec)
 		name.push_back(deref_aliases(accum));
 
 	if(level != 0)
-		throw Decoding_Error(decoding_error + "Missing close paren");
+		throw new Decoding_Error(decoding_error + "Missing close paren");
 
 	if(name.size() == 0)
-		throw Decoding_Error(decoding_error + "Empty name");
+		throw new Decoding_Error(decoding_error + "Empty name");
 
 	alg_name = name[0].second;
 
@@ -152,7 +152,7 @@ string SCAN_Name::algo_name_and_args() const
 string SCAN_Name::arg(size_t i) const
 {
 	if(i >= arg_count())
-		throw std::range_error("SCAN_Name::argument - i out of range");
+		throw new std::range_error("SCAN_Name::argument - i out of range");
 	return args[i];
 }
 
@@ -167,7 +167,7 @@ size_t SCAN_Name::arg_as_integer(size_t i, size_t def_value) const
 {
 	if(i >= arg_count())
 		return def_value;
-	return to_u32bit(args[i]);
+	return to_uint(args[i]);
 }
 
 void SCAN_Name::add_alias(in string alias, in string basename)

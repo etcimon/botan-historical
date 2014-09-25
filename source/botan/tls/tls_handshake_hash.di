@@ -21,20 +21,20 @@ class Handshake_Hash
 		void update(in byte[] input)
 		{ data += std::make_pair(input, length); }
 
-		void update(in Array!byte input)
+		void update(in Vector!byte input)
 		{ data += in; }
 
-		SafeArray!byte final(Protocol_Version version,
+		SafeVector!byte flushInto(Protocol_Version _version,
 										  in string mac_algo) const;
 
-		SafeArray!byte final_ssl3(in SafeArray!byte master_secret) const;
+		SafeVector!byte final_ssl3(in SafeVector!byte master_secret) const;
 
-		in Array!byte get_contents() const
+		in Vector!byte get_contents() const
 		{ return data; }
 
 		void reset() { data.clear(); }
 	private:
-		std::vector<byte> data;
+		Vector!( byte ) data;
 };
 
 }

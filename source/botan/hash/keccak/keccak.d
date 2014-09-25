@@ -108,7 +108,7 @@ Keccak_1600::Keccak_1600(size_t output_bits) :
 
 	if(output_bits != 224 && output_bits != 256 &&
 		output_bits != 384 && output_bits != 512)
-		throw Invalid_Argument("Keccak_1600: Invalid output length " +
+		throw new Invalid_Argument("Keccak_1600: Invalid output length " +
 									  std::to_string(output_bits));
 }
 
@@ -175,7 +175,7 @@ void Keccak_1600::add_data(in byte[] input, size_t length)
 
 void Keccak_1600::final_result(byte output[])
 {
-	std::vector<byte> padding(bitrate / 8 - S_pos);
+	Vector!( byte ) padding(bitrate / 8 - S_pos);
 
 	padding[0] = 0x01;
 	padding[padding.size()-1] |= 0x80;

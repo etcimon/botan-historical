@@ -23,7 +23,7 @@ inline u16bit reverse_bytes(u16bit val)
 /**
 * Swap a 32 bit integer
 */
-inline u32bit reverse_bytes(u32bit val)
+inline uint reverse_bytes(uint val)
 {
 #if BOTAN_GCC_VERSION >= 430 && !defined(BOTAN_TARGET_CPU_IS_ARM_FAMILY)
 	/*
@@ -89,8 +89,8 @@ inline u64bit reverse_bytes(u64bit val)
 	 * useful for 32-bit x86).
 	 */
 
-	u32bit hi = cast(u32bit)(val >> 32);
-	u32bit lo = cast(u32bit)(val);
+	uint hi = cast(uint)(val >> 32);
+	uint lo = cast(uint)(val);
 
 	hi = reverse_bytes(hi);
 	lo = reverse_bytes(lo);
@@ -114,10 +114,10 @@ inline void bswap_4(T x[4])
 #if defined(BOTAN_TARGET_CPU_HAS_SSE2) && !defined(BOTAN_NO_SSE_INTRINSICS)
 
 /**
-* Swap 4 u32bits in an array using SSE2 shuffle instructions
+* Swap 4 uints in an array using SSE2 shuffle instructions
 */
 template<>
-inline void bswap_4(u32bit x[4])
+inline void bswap_4(uint x[4])
 {
 	__m128i T = _mm_loadu_si128(cast(const __m128i*)(x));
 

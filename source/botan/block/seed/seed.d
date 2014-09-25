@@ -10,7 +10,7 @@
 /*
 * SEED G Function
 */
-u32bit SEED::G_FUNC::operator()(u32bit X) const
+uint SEED::G_FUNC::operator()(uint X) const
 {
 	return (S0[get_byte(3, X)] ^ S1[get_byte(2, X)] ^
 			  S2[get_byte(1, X)] ^ S3[get_byte(0, X)]);
@@ -23,16 +23,16 @@ void SEED::encrypt_n(in byte[] input, ref byte[] output) const
 {
 	for(size_t i = 0; i != blocks; ++i)
 	{
-		u32bit B0 = load_be<u32bit>(input, 0);
-		u32bit B1 = load_be<u32bit>(input, 1);
-		u32bit B2 = load_be<u32bit>(input, 2);
-		u32bit B3 = load_be<u32bit>(input, 3);
+		uint B0 = load_be<uint>(input, 0);
+		uint B1 = load_be<uint>(input, 1);
+		uint B2 = load_be<uint>(input, 2);
+		uint B3 = load_be<uint>(input, 3);
 
 		G_FUNC G;
 
 		for(size_t j = 0; j != 16; j += 2)
 		{
-			u32bit T0, T1;
+			uint T0, T1;
 
 			T0 = B2 ^ K[2*j];
 			T1 = G(B2 ^ B3 ^ K[2*j+1]);
@@ -51,8 +51,8 @@ void SEED::encrypt_n(in byte[] input, ref byte[] output) const
 
 		store_be(out, B2, B3, B0, B1);
 
-		in += BLOCK_SIZE;
-		out += BLOCK_SIZE;
+		input = input[BLOCK_SIZE .. $];
+		output = output[BLOCK_SIZE .. $];
 	}
 }
 
@@ -63,16 +63,16 @@ void SEED::decrypt_n(in byte[] input, ref byte[] output) const
 {
 	for(size_t i = 0; i != blocks; ++i)
 	{
-		u32bit B0 = load_be<u32bit>(input, 0);
-		u32bit B1 = load_be<u32bit>(input, 1);
-		u32bit B2 = load_be<u32bit>(input, 2);
-		u32bit B3 = load_be<u32bit>(input, 3);
+		uint B0 = load_be<uint>(input, 0);
+		uint B1 = load_be<uint>(input, 1);
+		uint B2 = load_be<uint>(input, 2);
+		uint B3 = load_be<uint>(input, 3);
 
 		G_FUNC G;
 
 		for(size_t j = 0; j != 16; j += 2)
 		{
-			u32bit T0, T1;
+			uint T0, T1;
 
 			T0 = B2 ^ K[30-2*j];
 			T1 = G(B2 ^ B3 ^ K[31-2*j]);
@@ -91,8 +91,8 @@ void SEED::decrypt_n(in byte[] input, ref byte[] output) const
 
 		store_be(out, B2, B3, B0, B1);
 
-		in += BLOCK_SIZE;
-		out += BLOCK_SIZE;
+		input = input[BLOCK_SIZE .. $];
+		output = output[BLOCK_SIZE .. $];
 	}
 }
 
@@ -101,17 +101,17 @@ void SEED::decrypt_n(in byte[] input, ref byte[] output) const
 */
 void SEED::key_schedule(in byte[] key, size_t)
 {
-	const u32bit RC[16] = {
+	const uint RC[16] = {
 		0x9E3779B9, 0x3C6EF373, 0x78DDE6E6, 0xF1BBCDCC,
 		0xE3779B99, 0xC6EF3733, 0x8DDE6E67, 0x1BBCDCCF,
 		0x3779B99E, 0x6EF3733C, 0xDDE6E678, 0xBBCDCCF1,
 		0x779B99E3, 0xEF3733C6, 0xDE6E678D, 0xBCDCCF1B
 };
 
-	secure_vector<u32bit> WK(4);
+	secure_vector<uint> WK(4);
 
 	for(size_t i = 0; i != 4; ++i)
-		WK[i] = load_be<u32bit>(key, i);
+		WK[i] = load_be<uint>(key, i);
 
 	G_FUNC G;
 

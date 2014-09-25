@@ -18,10 +18,10 @@ class Device_EntropySource : public EntropySource
 
 		void poll(Entropy_Accumulator& accum);
 
-		Device_EntropySource(const std::vector<string>& fsnames);
+		Device_EntropySource(in Vector!( string ) fsnames);
 		~Device_EntropySource();
 	private:
 		typedef int fd_type;
 
-		std::vector<fd_type> m_devices;
+		Vector!( fd_type ) m_devices;
 };

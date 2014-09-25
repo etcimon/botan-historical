@@ -14,7 +14,7 @@ ECB_Mode::ECB_Mode(BlockCipher* cipher, BlockCipherModePaddingMethod* padding) :
 	m_padding(padding)
 {
 	if(!m_padding->valid_blocksize(cipher->block_size()))
-		throw std::invalid_argument("Padding " + m_padding->name() +
+		throw new std::invalid_argument("Padding " + m_padding->name() +
 											 " cannot be used with " +
 											 cipher->name() + "/ECB");
 }
@@ -54,12 +54,12 @@ void ECB_Mode::key_schedule(in byte[] key)
 	m_cipher->set_key(key, length);
 }
 
-SafeArray!byte ECB_Mode::start(const byte[], size_t nonce_len)
+SafeVector!byte ECB_Mode::start(const byte[], size_t nonce_len)
 {
 	if(!valid_nonce_length(nonce_len))
-		throw Invalid_IV_Length(name(), nonce_len);
+		throw new Invalid_IV_Length(name(), nonce_len);
 
-	return SafeArray!byte();
+	return SafeVector!byte();
 }
 
 size_t ECB_Encryption::minimum_final_size() const
@@ -72,7 +72,7 @@ size_t ECB_Encryption::output_length(size_t input_length) const
 	return round_up(input_length, cipher().block_size());
 }
 
-void ECB_Encryption::update(SafeArray!byte buffer, size_t offset)
+void ECB_Encryption::update(SafeVector!byte buffer, size_t offset)
 {
 	BOTAN_ASSERT(buffer.size() >= offset, "Offset is sane");
 	const size_t sz = buffer.size() - offset;
@@ -86,7 +86,7 @@ void ECB_Encryption::update(SafeArray!byte buffer, size_t offset)
 	cipher().encrypt_n(&buf[0], &buf[0], blocks);
 }
 
-void ECB_Encryption::finish(SafeArray!byte buffer, size_t offset)
+void ECB_Encryption::finish(SafeVector!byte buffer, size_t offset)
 {
 	BOTAN_ASSERT(buffer.size() >= offset, "Offset is sane");
 	const size_t sz = buffer.size() - offset;
@@ -98,7 +98,7 @@ void ECB_Encryption::finish(SafeArray!byte buffer, size_t offset)
 	padding().add_padding(buffer, bytes_in_final_block, BS);
 
 	if(buffer.size() % BS)
-		throw std::runtime_error("Did not pad to full block size in " + name());
+		throw new Exception("Did not pad to full block size in " + name());
 
 	update(buffer, offset);
 }
@@ -113,7 +113,7 @@ size_t ECB_Decryption::minimum_final_size() const
 	return cipher().block_size();
 }
 
-void ECB_Decryption::update(SafeArray!byte buffer, size_t offset)
+void ECB_Decryption::update(SafeVector!byte buffer, size_t offset)
 {
 	BOTAN_ASSERT(buffer.size() >= offset, "Offset is sane");
 	const size_t sz = buffer.size() - offset;
@@ -127,7 +127,7 @@ void ECB_Decryption::update(SafeArray!byte buffer, size_t offset)
 	cipher().decrypt_n(&buf[0], &buf[0], blocks);
 }
 
-void ECB_Decryption::finish(SafeArray!byte buffer, size_t offset)
+void ECB_Decryption::finish(SafeVector!byte buffer, size_t offset)
 {
 	BOTAN_ASSERT(buffer.size() >= offset, "Offset is sane");
 	const size_t sz = buffer.size() - offset;
@@ -135,7 +135,7 @@ void ECB_Decryption::finish(SafeArray!byte buffer, size_t offset)
 	const size_t BS = cipher().block_size();
 
 	if(sz == 0 || sz % BS)
-		throw Decoding_Error(name() + ": Ciphertext not a multiple of block size");
+		throw new Decoding_Error(name() + ": Ciphertext not a multiple of block size");
 
 	update(buffer, offset);
 

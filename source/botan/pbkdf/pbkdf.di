@@ -48,7 +48,7 @@ class PBKDF
 		template<typename Alloc>
 		OctetString derive_key(size_t output_len,
 									  in string passphrase,
-									  const std::vector<byte, Alloc>& salt,
+									  const Vector!( byte, Alloc )& salt,
 									  size_t iterations) const
 		{
 			return derive_key(output_len, passphrase, &salt[0], salt.size(), iterations);
@@ -80,7 +80,7 @@ class PBKDF
 		template<typename Alloc>
 		OctetString derive_key(size_t output_len,
 									  in string passphrase,
-									  const std::vector<byte, Alloc>& salt,
+									  const Vector!( byte, Alloc )& salt,
 									  std::chrono::milliseconds msec,
 									  size_t& iterations) const
 		{
@@ -101,7 +101,7 @@ class PBKDF
 		*		  run until msec milliseconds has passed.
 		* @return the number of iterations performed and the derived key
 		*/
-		abstract std::pair<size_t, OctetString>
+		abstract Pair!(size_t, OctetString)
 			key_derivation(size_t output_len,
 								in string passphrase,
 								in byte[] salt, size_t salt_len,

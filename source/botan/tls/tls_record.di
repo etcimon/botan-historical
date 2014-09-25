@@ -29,7 +29,7 @@ class Connection_Cipher_State
 		/**
 		* Initialize a new cipher state
 		*/
-		Connection_Cipher_State(Protocol_Version version,
+		Connection_Cipher_State(Protocol_Version _version,
 										Connection_Side which_side,
 										bool is_our_side,
 										const Ciphersuite suite,
@@ -37,12 +37,12 @@ class Connection_Cipher_State
 
 		AEAD_Mode aead() { return m_aead.get(); }
 
-		const SafeArray!byte aead_nonce(u64bit seq);
+		const SafeVector!byte aead_nonce(u64bit seq);
 
-		const SafeArray!byte aead_nonce(in byte[] record);
+		const SafeVector!byte aead_nonce(in byte[] record);
 
-		const SafeArray!byte format_ad(u64bit seq, byte type,
-														 Protocol_Version version,
+		const SafeVector!byte format_ad(u64bit seq, byte type,
+														 Protocol_Version _version,
 														 u16bit ptext_length);
 
 		BlockCipher* block_cipher() { return m_block_cipher.get(); }
@@ -51,7 +51,7 @@ class Connection_Cipher_State
 
 		MessageAuthenticationCode mac() { return m_mac.get(); }
 
-		SafeArray!byte cbc_state() { return m_block_cipher_cbc_state; }
+		SafeVector!byte cbc_state() { return m_block_cipher_cbc_state; }
 
 		size_t block_size() const { return m_block_size; }
 
@@ -73,14 +73,14 @@ class Connection_Cipher_State
 		}
 
 	private:
-		std::chrono::system_clock::time_point m_start_time;
+		SysTime m_start_time;
 		std::unique_ptr<BlockCipher> m_block_cipher;
-		SafeArray!byte m_block_cipher_cbc_state;
+		SafeVector!byte m_block_cipher_cbc_state;
 		std::unique_ptr<StreamCipher> m_stream_cipher;
 		std::unique_ptr<MessageAuthenticationCode> m_mac;
 
 		std::unique_ptr<AEAD_Mode> m_aead;
-		SafeArray!byte m_nonce, m_ad;
+		SafeVector!byte m_nonce, m_ad;
 
 		size_t m_block_size = 0;
 		size_t m_iv_size = 0;
@@ -94,14 +94,14 @@ class Connection_Cipher_State
 * @param msg is the plaintext message
 * @param msg_length is the length of msg
 * @param msg_sequence is the sequence number
-* @param version is the protocol version
+* @param _version is the protocol version
 * @param cipherstate is the writing cipher state
 * @param rng is a random number generator
 * @return number of bytes written to write_buffer
 */
-void write_record(SafeArray!byte write_buffer,
+void write_record(SafeVector!byte write_buffer,
 						byte msg_type, in byte[] msg, size_t msg_length,
-						Protocol_Version version,
+						Protocol_Version _version,
 						u64bit msg_sequence,
 						Connection_Cipher_State cipherstate,
 						RandomNumberGenerator rng);
@@ -110,10 +110,10 @@ void write_record(SafeArray!byte write_buffer,
 * Decode a TLS record
 * @return zero if full message, else number of bytes still needed
 */
-size_t read_record(SafeArray!byte read_buffer,
+size_t read_record(SafeVector!byte read_buffer,
 						 in byte[] input,
 						 ref size_t input_consumed,
-						 SafeArray!byte record,
+						 SafeVector!byte record,
 						 ref u64bit record_sequence,
 						 Protocol_Version record_version,
 						 Record_Type record_type,

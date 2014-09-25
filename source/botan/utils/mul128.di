@@ -81,12 +81,12 @@ inline void mul64x64_128(u64bit a, u64bit b, u64bit* lo, u64bit* hi)
 	* 64-bit registers/ALU, but no 64x64->128 multiply) or 32-bit CPUs.
 	*/
 	const size_t HWORD_BITS = 32;
-	const u32bit HWORD_MASK = 0xFFFFFFFF;
+	const uint HWORD_MASK = 0xFFFFFFFF;
 
-	const u32bit a_hi = (a >> HWORD_BITS);
-	const u32bit a_lo = (a  & HWORD_MASK);
-	const u32bit b_hi = (b >> HWORD_BITS);
-	const u32bit b_lo = (b  & HWORD_MASK);
+	const uint a_hi = (a >> HWORD_BITS);
+	const uint a_lo = (a  & HWORD_MASK);
+	const uint b_hi = (b >> HWORD_BITS);
+	const uint b_lo = (b  & HWORD_MASK);
 
 	u64bit x0 = cast(u64bit)(a_hi) * b_hi;
 	u64bit x1 = cast(u64bit)(a_lo) * b_hi;

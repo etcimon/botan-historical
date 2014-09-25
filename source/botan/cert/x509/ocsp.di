@@ -14,13 +14,13 @@ namespace OCSP {
 class Request
 {
 	public:
-		Request(const X509_Certificate& issuer_cert,
+		Request(in X509_Certificate issuer_cert,
 				  const X509_Certificate& subject_cert) :
 			m_issuer(issuer_cert),
 			m_subject(subject_cert)
 		{}
 
-		std::vector<byte> BER_encode() const;
+		Vector!( byte ) BER_encode() const;
 
 		string base64_encode() const;
 
@@ -36,17 +36,17 @@ class Response
 	public:
 		Response() {}
 
-		Response(const Certificate_Store& trusted_roots,
-					in Array!byte response);
+		Response(in Certificate_Store trusted_roots,
+					in Vector!byte response);
 
-		Certificate_Status_Code status_for(const X509_Certificate& issuer,
+		Certificate_Status_Code status_for(in X509_Certificate issuer,
 															  const X509_Certificate& subject) const;
 
 	private:
-		std::vector<SingleResponse> m_responses;
+		Vector!( SingleResponse ) m_responses;
 };
 
-Response online_check(const X509_Certificate& issuer,
+Response online_check(in X509_Certificate issuer,
 										  const X509_Certificate& subject,
 										  const Certificate_Store* trusted_roots);
 

@@ -16,12 +16,12 @@ namespace {
 /*
 * DES Key Schedule
 */
-void des_key_schedule(u32bit round_key[32], const byte key[8])
+void des_key_schedule(uint round_key[32], const byte key[8])
 {
 	static const byte ROT[16] = { 1, 1, 2, 2, 2, 2, 2, 2,
 											1, 2, 2, 2, 2, 2, 2, 1 };
 
-	u32bit C = ((key[7] & 0x80) << 20) | ((key[6] & 0x80) << 19) |
+	uint C = ((key[7] & 0x80) << 20) | ((key[6] & 0x80) << 19) |
 				  ((key[5] & 0x80) << 18) | ((key[4] & 0x80) << 17) |
 				  ((key[3] & 0x80) << 16) | ((key[2] & 0x80) << 15) |
 				  ((key[1] & 0x80) << 14) | ((key[0] & 0x80) << 13) |
@@ -35,7 +35,7 @@ void des_key_schedule(u32bit round_key[32], const byte key[8])
 				  ((key[1] & 0x20)		) | ((key[0] & 0x20) >>  1) |
 				  ((key[7] & 0x10) >>  1) | ((key[6] & 0x10) >>  2) |
 				  ((key[5] & 0x10) >>  3) | ((key[4] & 0x10) >>  4);
-	u32bit D = ((key[7] & 0x02) << 26) | ((key[6] & 0x02) << 25) |
+	uint D = ((key[7] & 0x02) << 26) | ((key[6] & 0x02) << 25) |
 				  ((key[5] & 0x02) << 24) | ((key[4] & 0x02) << 23) |
 				  ((key[3] & 0x02) << 22) | ((key[2] & 0x02) << 21) |
 				  ((key[1] & 0x02) << 20) | ((key[0] & 0x02) << 19) |
@@ -82,12 +82,12 @@ void des_key_schedule(u32bit round_key[32], const byte key[8])
 /*
 * DES Encryption
 */
-void des_encrypt(u32bit& L, u32bit& R,
-					  const u32bit round_key[32])
+void des_encrypt(ref uint L, ref uint R,
+					  const uint round_key[32])
 {
 	for(size_t i = 0; i != 16; i += 2)
 	{
-		u32bit T0, T1;
+		uint T0, T1;
 
 		T0 = rotate_right(R, 4) ^ round_key[2*i];
 		T1 =				  R	  ^ round_key[2*i + 1];
@@ -110,12 +110,12 @@ void des_encrypt(u32bit& L, u32bit& R,
 /*
 * DES Decryption
 */
-void des_decrypt(u32bit& L, u32bit& R,
-					  const u32bit round_key[32])
+void des_decrypt(ref uint L, ref uint R,
+					  const uint round_key[32])
 {
 	for(size_t i = 16; i != 0; i -= 2)
 	{
-		u32bit T0, T1;
+		uint T0, T1;
 
 		T0 = rotate_right(R, 4) ^ round_key[2*i - 2];
 		T1 =				  R	  ^ round_key[2*i - 1];
@@ -149,8 +149,8 @@ void DES::encrypt_n(in byte[] input, ref byte[] output) const
 					  (DES_IPTAB1[in[4]] << 4) | (DES_IPTAB1[in[5]] << 5) |
 					  (DES_IPTAB1[in[6]] << 6) | (DES_IPTAB2[in[7]]	  );
 
-		u32bit L = cast(u32bit)(T >> 32);
-		u32bit R = cast(u32bit)(T);
+		uint L = cast(uint)(T >> 32);
+		uint R = cast(uint)(T);
 
 		des_encrypt(L, R, &round_key[0]);
 
@@ -162,8 +162,8 @@ void DES::encrypt_n(in byte[] input, ref byte[] output) const
 
 		store_be(T, out);
 
-		in += BLOCK_SIZE;
-		out += BLOCK_SIZE;
+		input = input[BLOCK_SIZE .. $];
+		output = output[BLOCK_SIZE .. $];
 	}
 }
 
@@ -179,8 +179,8 @@ void DES::decrypt_n(in byte[] input, ref byte[] output) const
 					  (DES_IPTAB1[in[4]] << 4) | (DES_IPTAB1[in[5]] << 5) |
 					  (DES_IPTAB1[in[6]] << 6) | (DES_IPTAB2[in[7]]	  );
 
-		u32bit L = cast(u32bit)(T >> 32);
-		u32bit R = cast(u32bit)(T);
+		uint L = cast(uint)(T >> 32);
+		uint R = cast(uint)(T);
 
 		des_decrypt(L, R, &round_key[0]);
 
@@ -193,8 +193,8 @@ void DES::decrypt_n(in byte[] input, ref byte[] output) const
 
 		store_be(T, out);
 
-		in += BLOCK_SIZE;
-		out += BLOCK_SIZE;
+		input = input[BLOCK_SIZE .. $];
+		output = output[BLOCK_SIZE .. $];
 	}
 }
 
@@ -224,8 +224,8 @@ void TripleDES::encrypt_n(in byte[] input, ref byte[] output) const
 					  (DES_IPTAB1[in[4]] << 4) | (DES_IPTAB1[in[5]] << 5) |
 					  (DES_IPTAB1[in[6]] << 6) | (DES_IPTAB2[in[7]]	  );
 
-		u32bit L = cast(u32bit)(T >> 32);
-		u32bit R = cast(u32bit)(T);
+		uint L = cast(uint)(T >> 32);
+		uint R = cast(uint)(T);
 
 		des_encrypt(L, R, &round_key[0]);
 		des_decrypt(R, L, &round_key[32]);
@@ -240,8 +240,8 @@ void TripleDES::encrypt_n(in byte[] input, ref byte[] output) const
 
 		store_be(T, out);
 
-		in += BLOCK_SIZE;
-		out += BLOCK_SIZE;
+		input = input[BLOCK_SIZE .. $];
+		output = output[BLOCK_SIZE .. $];
 	}
 }
 
@@ -257,8 +257,8 @@ void TripleDES::decrypt_n(in byte[] input, ref byte[] output) const
 					  (DES_IPTAB1[in[4]] << 4) | (DES_IPTAB1[in[5]] << 5) |
 					  (DES_IPTAB1[in[6]] << 6) | (DES_IPTAB2[in[7]]	  );
 
-		u32bit L = cast(u32bit)(T >> 32);
-		u32bit R = cast(u32bit)(T);
+		uint L = cast(uint)(T >> 32);
+		uint R = cast(uint)(T);
 
 		des_decrypt(L, R, &round_key[64]);
 		des_encrypt(R, L, &round_key[32]);
@@ -273,8 +273,8 @@ void TripleDES::decrypt_n(in byte[] input, ref byte[] output) const
 
 		store_be(T, out);
 
-		in += BLOCK_SIZE;
-		out += BLOCK_SIZE;
+		input = input[BLOCK_SIZE .. $];
+		output = output[BLOCK_SIZE .. $];
 	}
 }
 

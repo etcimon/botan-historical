@@ -22,7 +22,7 @@ class PK_Encryptor_Filter : public Filter
 	private:
 		PK_Encryptor* cipher;
 		RandomNumberGenerator& rng;
-		SafeArray!byte buffer;
+		SafeVector!byte buffer;
 };
 
 /**
@@ -37,7 +37,7 @@ class PK_Decryptor_Filter : public Filter
 		~PK_Decryptor_Filter() { delete cipher; }
 	private:
 		PK_Decryptor* cipher;
-		SafeArray!byte buffer;
+		SafeVector!byte buffer;
 };
 
 /**
@@ -69,13 +69,13 @@ class PK_Verifier_Filter : public Filter
 		void end_msg();
 
 		void set_signature(const byte[], size_t);
-		void set_signature(in SafeArray!byte);
+		void set_signature(in SafeVector!byte);
 
 		PK_Verifier_Filter(PK_Verifier* v) : verifier(v) {}
 		PK_Verifier_Filter(PK_Verifier*, const byte[], size_t);
-		PK_Verifier_Filter(PK_Verifier*, in SafeArray!byte);
+		PK_Verifier_Filter(PK_Verifier*, in SafeVector!byte);
 		~PK_Verifier_Filter() { delete verifier; }
 	private:
 		PK_Verifier* verifier;
-		SafeArray!byte signature;
+		SafeVector!byte signature;
 };

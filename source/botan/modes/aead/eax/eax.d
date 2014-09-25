@@ -16,7 +16,7 @@ namespace {
 /*
 * EAX MAC-based PRF
 */
-SafeArray!byte eax_prf(byte tag, size_t block_size,
+SafeVector!byte eax_prf(byte tag, size_t block_size,
 									MessageAuthenticationCode& mac,
 									in byte[] input)
 {
@@ -24,7 +24,7 @@ SafeArray!byte eax_prf(byte tag, size_t block_size,
 		mac.update(0);
 	mac.update(tag);
 	mac.update(input, length);
-	return mac.final();
+	return mac.flush();
 }
 
 }
@@ -39,7 +39,7 @@ EAX_Mode::EAX_Mode(BlockCipher* cipher, size_t tag_size) :
 	m_cmac(new CMAC(m_cipher->clone()))
 {
 	if(m_tag_size < 8 || m_tag_size > m_cmac->output_length())
-		throw Invalid_Argument(name() + ": Bad tag size " + std::to_string(tag_size));
+		throw new Invalid_Argument(name() + ": Bad tag size " + std::to_string(tag_size));
 }
 
 void EAX_Mode::clear()
@@ -89,10 +89,10 @@ void EAX_Mode::set_associated_data(in byte[] ad, size_t length)
 	m_ad_mac = eax_prf(1, block_size(), *m_cmac, ad, length);
 }
 
-SafeArray!byte EAX_Mode::start(in byte[] nonce, size_t nonce_len)
+SafeVector!byte EAX_Mode::start(in byte[] nonce, size_t nonce_len)
 {
 	if(!valid_nonce_length(nonce_len))
-		throw Invalid_IV_Length(name(), nonce_len);
+		throw new Invalid_IV_Length(name(), nonce_len);
 
 	m_nonce_mac = eax_prf(0, block_size(), *m_cmac, nonce, nonce_len);
 
@@ -102,10 +102,10 @@ SafeArray!byte EAX_Mode::start(in byte[] nonce, size_t nonce_len)
 		m_cmac->update(0);
 	m_cmac->update(2);
 
-	return SafeArray!byte();
+	return SafeVector!byte();
 }
 
-void EAX_Encryption::update(SafeArray!byte buffer, size_t offset)
+void EAX_Encryption::update(SafeVector!byte buffer, size_t offset)
 {
 	BOTAN_ASSERT(buffer.size() >= offset, "Offset is sane");
 	const size_t sz = buffer.size() - offset;
@@ -115,18 +115,18 @@ void EAX_Encryption::update(SafeArray!byte buffer, size_t offset)
 	m_cmac->update(buf, sz);
 }
 
-void EAX_Encryption::finish(SafeArray!byte buffer, size_t offset)
+void EAX_Encryption::finish(SafeVector!byte buffer, size_t offset)
 {
 	update(buffer, offset);
 
-	SafeArray!byte data_mac = m_cmac->final();
+	SafeVector!byte data_mac = m_cmac->flush();
 	xor_buf(data_mac, m_nonce_mac, data_mac.size());
 	xor_buf(data_mac, m_ad_mac, data_mac.size());
 
 	buffer += std::make_pair(&data_mac[0], tag_size());
 }
 
-void EAX_Decryption::update(SafeArray!byte buffer, size_t offset)
+void EAX_Decryption::update(SafeVector!byte buffer, size_t offset)
 {
 	BOTAN_ASSERT(buffer.size() >= offset, "Offset is sane");
 	const size_t sz = buffer.size() - offset;
@@ -136,7 +136,7 @@ void EAX_Decryption::update(SafeArray!byte buffer, size_t offset)
 	m_ctr->cipher(buf, buf, sz);
 }
 
-void EAX_Decryption::finish(SafeArray!byte buffer, size_t offset)
+void EAX_Decryption::finish(SafeVector!byte buffer, size_t offset)
 {
 	BOTAN_ASSERT(buffer.size() >= offset, "Offset is sane");
 	const size_t sz = buffer.size() - offset;
@@ -154,12 +154,12 @@ void EAX_Decryption::finish(SafeArray!byte buffer, size_t offset)
 
 	const byte* included_tag = &buf[remaining];
 
-	SafeArray!byte mac = m_cmac->final();
+	SafeVector!byte mac = m_cmac->flush();
 	mac ^= m_nonce_mac;
 	mac ^= m_ad_mac;
 
 	if(!same_mem(&mac[0], included_tag, tag_size()))
-		throw Integrity_Failure("EAX tag check failed");
+		throw new Integrity_Failure("EAX tag check failed");
 
 	buffer.resize(offset + remaining);
 }

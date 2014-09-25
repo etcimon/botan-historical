@@ -92,7 +92,7 @@ size_t DataSource_Stream::read(ref byte[] output)
 	size_t length = output.length;
 	source.read(cast(char*)(output), length);
 	if(source.bad())
-		throw Stream_IO_Error("DataSource_Stream::read: Source failure");
+		throw new Stream_IO_Error("DataSource_Stream::read: Source failure");
 
 	size_t got = source.gcount();
 	total_read += got;
@@ -106,16 +106,16 @@ size_t DataSource_Stream::peek(ref byte[] output, size_t offset) const
 {
 	size_t length = output.length;
 	if(end_of_data())
-		throw Invalid_State("DataSource_Stream: Cannot peek when out of data");
+		throw new Invalid_State("DataSource_Stream: Cannot peek when out of data");
 
 	size_t got = 0;
 
 	if(offset)
 	{
-		SafeArray!byte buf(offset);
+		SafeVector!byte buf(offset);
 		source.read(cast(char*)(&buf[0]), buf.size());
 		if(source.bad())
-			throw Stream_IO_Error("DataSource_Stream::peek: Source failure");
+			throw new Stream_IO_Error("DataSource_Stream::peek: Source failure");
 		got = source.gcount();
 	}
 
@@ -123,7 +123,7 @@ size_t DataSource_Stream::peek(ref byte[] output, size_t offset) const
 	{
 		source.read(cast(char*)(out), length);
 		if(source.bad())
-			throw Stream_IO_Error("DataSource_Stream::peek: Source failure");
+			throw new Stream_IO_Error("DataSource_Stream::peek: Source failure");
 		got = source.gcount();
 	}
 
@@ -165,7 +165,7 @@ DataSource_Stream::DataSource_Stream(in string path,
 	if(!source.good())
 	{
 		delete source_p;
-		throw Stream_IO_Error("DataSource: Failure opening file " + path);
+		throw new Stream_IO_Error("DataSource: Failure opening file " + path);
 	}
 }
 

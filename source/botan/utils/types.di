@@ -23,7 +23,7 @@ using ::size_t;
 
 typedef uint8_t byte;
 typedef uint16_t u16bit;
-typedef uint32_t u32bit;
+typedef uint32_t uint;
 typedef uint64_t u64bit;
 
 typedef int32_t s32bit;
@@ -44,4 +44,4 @@ enum Cipher_Dir { ENCRYPTION, DECRYPTION };
 namespace Botan_types {
 
 using Botan::byte;
-using Botan::u32bit;
+using Botan::uint;

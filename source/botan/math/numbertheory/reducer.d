@@ -10,10 +10,10 @@
 /*
 * Modular_Reducer Constructor
 */
-Modular_Reducer::Modular_Reducer(const BigInt& mod)
+Modular_Reducer::Modular_Reducer(in BigInt mod)
 {
 	if(mod <= 0)
-		throw Invalid_Argument("Modular_Reducer: modulus must be positive");
+		throw new Invalid_Argument("Modular_Reducer: modulus must be positive");
 
 	modulus = mod;
 	mod_words = modulus.sig_words();
@@ -26,10 +26,10 @@ Modular_Reducer::Modular_Reducer(const BigInt& mod)
 /*
 * Barrett Reduction
 */
-BigInt Modular_Reducer::reduce(const BigInt& x) const
+BigInt Modular_Reducer::reduce(in BigInt x) const
 {
 	if(mod_words == 0)
-		throw Invalid_State("Modular_Reducer: Never initalized");
+		throw new Invalid_State("Modular_Reducer: Never initalized");
 
 	if(x.cmp(modulus, false) < 0)
 	{

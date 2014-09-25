@@ -11,7 +11,7 @@
 #include <botan/numthry.h>
 #include <botan/reducer.h>
 #include <botan/internal/mp_core.h>
-PointGFp::PointGFp(const CurveGFp& curve) :
+PointGFp::PointGFp(in CurveGFp curve) :
 	curve(curve), ws(2 * (curve.get_p_words() + 2))
 {
 	coord_x = 0;
@@ -19,7 +19,7 @@ PointGFp::PointGFp(const CurveGFp& curve) :
 	coord_z = 0;
 }
 
-PointGFp::PointGFp(const CurveGFp& curve, const BigInt& x, const BigInt& y) :
+PointGFp::PointGFp(in CurveGFp curve, const BigInt& x, const BigInt& y) :
 	curve(curve), ws(2 * (curve.get_p_words() + 2))
 {
 	coord_x = monty_mult(x, curve.get_r2());
@@ -81,7 +81,7 @@ void PointGFp::monty_sqr(BigInt& z, const BigInt& x) const
 }
 
 // Point addition
-void PointGFp::add(const PointGFp& rhs, std::vector<BigInt>& ws_bn)
+void PointGFp::add(in PointGFp rhs, Vector!( BigInt )& ws_bn)
 {
 	if(is_zero())
 	{
@@ -161,7 +161,7 @@ void PointGFp::add(const PointGFp& rhs, std::vector<BigInt>& ws_bn)
 }
 
 // *this *= 2
-void PointGFp::mult2(std::vector<BigInt>& ws_bn)
+void PointGFp::mult2(Vector!( BigInt )& ws_bn)
 {
 	if(is_zero())
 		return;
@@ -229,14 +229,14 @@ void PointGFp::mult2(std::vector<BigInt>& ws_bn)
 }
 
 // arithmetic operators
-PointGFp& PointGFp::operator+=(const PointGFp& rhs)
+PointGFp& PointGFp::operator+=(in PointGFp rhs)
 {
-	std::vector<BigInt> ws(9);
+	Vector!( BigInt ) ws(9);
 	add(rhs, ws);
 	return *this;
 }
 
-PointGFp& PointGFp::operator-=(const PointGFp& rhs)
+PointGFp& PointGFp::operator-=(in PointGFp rhs)
 {
 	PointGFp minus_rhs = PointGFp(rhs).negate();
 
@@ -248,13 +248,13 @@ PointGFp& PointGFp::operator-=(const PointGFp& rhs)
 	return *this;
 }
 
-PointGFp& PointGFp::operator*=(const BigInt& scalar)
+PointGFp& PointGFp::operator*=(in BigInt scalar)
 {
 	*this = scalar * *this;
 	return *this;
 }
 
-PointGFp multi_exponentiate(const PointGFp& p1, const BigInt& z1,
+PointGFp multi_exponentiate(in PointGFp p1, const BigInt& z1,
 									 const PointGFp& p2, const BigInt& z2)
 {
 	const PointGFp p3 = p1 + p2;
@@ -262,7 +262,7 @@ PointGFp multi_exponentiate(const PointGFp& p1, const BigInt& z1,
 	PointGFp H(p1.curve); // create as zero
 	size_t bits_left = std::max(z1.bits(), z2.bits());
 
-	std::vector<BigInt> ws(9);
+	Vector!( BigInt ) ws(9);
 
 	while(bits_left)
 	{
@@ -287,14 +287,14 @@ PointGFp multi_exponentiate(const PointGFp& p1, const BigInt& z1,
 	return H;
 }
 
-PointGFp operator*(const BigInt& scalar, const PointGFp& point)
+PointGFp operator*(in BigInt scalar, const PointGFp& point)
 {
 	const CurveGFp& curve = point.get_curve();
 
 	if(scalar.is_zero())
 		return PointGFp(curve); // zero point
 
-	std::vector<BigInt> ws(9);
+	Vector!( BigInt ) ws(9);
 
 	if(scalar.abs() <= 2) // special cases for small values
 	{
@@ -347,7 +347,7 @@ PointGFp operator*(const BigInt& scalar, const PointGFp& point)
 #else
 	const size_t window_size = 4;
 
-	std::vector<PointGFp> Ps(1 << window_size);
+	Vector!( PointGFp ) Ps(1 << window_size);
 	Ps[0] = PointGFp(curve);
 	Ps[1] = point;
 
@@ -365,7 +365,7 @@ PointGFp operator*(const BigInt& scalar, const PointGFp& point)
 		for(size_t i = 0; i != window_size; ++i)
 			H.mult2(ws);
 
-		const u32bit nibble = scalar.get_substring(bits_left - window_size,
+		const uint nibble = scalar.get_substring(bits_left - window_size,
 																 window_size);
 
 		H.add(Ps[nibble], ws);
@@ -392,7 +392,7 @@ PointGFp operator*(const BigInt& scalar, const PointGFp& point)
 BigInt PointGFp::get_affine_x() const
 {
 	if(is_zero())
-		throw Illegal_Transformation("Cannot convert zero point to affine");
+		throw new Illegal_Transformation("Cannot convert zero point to affine");
 
 	const BigInt& r2 = curve.get_r2();
 
@@ -406,7 +406,7 @@ BigInt PointGFp::get_affine_x() const
 BigInt PointGFp::get_affine_y() const
 {
 	if(is_zero())
-		throw Illegal_Transformation("Cannot convert zero point to affine");
+		throw new Illegal_Transformation("Cannot convert zero point to affine");
 
 	const BigInt& r2 = curve.get_r2();
 
@@ -465,7 +465,7 @@ void PointGFp::swap(PointGFp& other)
 	ws.swap(other.ws);
 }
 
-bool PointGFp::operator==(const PointGFp& other) const
+bool PointGFp::operator==(in PointGFp other) const
 {
 	if(get_curve() != other.get_curve())
 		return false;
@@ -479,22 +479,22 @@ bool PointGFp::operator==(const PointGFp& other) const
 }
 
 // encoding and decoding
-SafeArray!byte EC2OSP(const PointGFp& point, byte format)
+SafeVector!byte EC2OSP(in PointGFp point, byte format)
 {
 	if(point.is_zero())
-		return SafeArray!byte(1); // single 0 byte
+		return SafeVector!byte(1); // single 0 byte
 
 	const size_t p_bytes = point.get_curve().get_p().bytes();
 
 	BigInt x = point.get_affine_x();
 	BigInt y = point.get_affine_y();
 
-	SafeArray!byte bX = BigInt::encode_1363(x, p_bytes);
-	SafeArray!byte bY = BigInt::encode_1363(y, p_bytes);
+	SafeVector!byte bX = BigInt::encode_1363(x, p_bytes);
+	SafeVector!byte bY = BigInt::encode_1363(y, p_bytes);
 
 	if(format == PointGFp::UNCOMPRESSED)
 	{
-		SafeArray!byte result;
+		SafeVector!byte result;
 		result.push_back(0x04);
 
 		result += bX;
@@ -504,7 +504,7 @@ SafeArray!byte EC2OSP(const PointGFp& point, byte format)
 	}
 	else if(format == PointGFp::COMPRESSED)
 	{
-		SafeArray!byte result;
+		SafeVector!byte result;
 		result.push_back(0x02 | cast(byte)(y.get_bit(0)));
 
 		result += bX;
@@ -513,7 +513,7 @@ SafeArray!byte EC2OSP(const PointGFp& point, byte format)
 	}
 	else if(format == PointGFp::HYBRID)
 	{
-		SafeArray!byte result;
+		SafeVector!byte result;
 		result.push_back(0x06 | cast(byte)(y.get_bit(0)));
 
 		result += bX;
@@ -522,7 +522,7 @@ SafeArray!byte EC2OSP(const PointGFp& point, byte format)
 		return result;
 	}
 	else
-		throw Invalid_Argument("illegal point encoding format specification");
+		throw new Invalid_Argument("illegal point encoding format specification");
 }
 
 namespace {
@@ -541,7 +541,7 @@ BigInt decompress_point(bool yMod2,
 	BigInt z = ressol(g, curve.get_p());
 
 	if(z < 0)
-		throw Illegal_Point("error during decompression");
+		throw new Illegal_Point("error during decompression");
 
 	if(z.get_bit(0) != yMod2)
 		z = curve.get_p() - z;
@@ -588,15 +588,15 @@ PointGFp OS2ECP(in byte[] data, size_t data_len,
 		const bool y_mod_2 = ((pc & 0x01) == 1);
 
 		if(decompress_point(y_mod_2, x, curve) != y)
-			throw Illegal_Point("OS2ECP: Decoding error in hybrid format");
+			throw new Illegal_Point("OS2ECP: Decoding error in hybrid format");
 	}
 	else
-		throw Invalid_Argument("OS2ECP: Unknown format type " + std::to_string(pc));
+		throw new Invalid_Argument("OS2ECP: Unknown format type " + std::to_string(pc));
 
 	PointGFp result(curve, x, y);
 
 	if(!result.on_the_curve())
-		throw Illegal_Point("OS2ECP: Decoded point was not on the curve");
+		throw new Illegal_Point("OS2ECP: Decoded point was not on the curve");
 
 	return result;
 }

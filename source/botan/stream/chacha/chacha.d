@@ -9,9 +9,9 @@
 #include <botan/loadstor.h>
 #include <botan/rotate.h>
 #include <botan/internal/xor_buf.h>
-void ChaCha::chacha(byte output[64], const u32bit input[16])
+void ChaCha::chacha(byte output[64], const uint input[16])
 {
-	u32bit x00 = input[ 0], x01 = input[ 1], x02 = input[ 2], x03 = input[ 3],
+	uint x00 = input[ 0], x01 = input[ 1], x02 = input[ 2], x03 = input[ 3],
 			 x04 = input[ 4], x05 = input[ 5], x06 = input[ 6], x07 = input[ 7],
 			 x08 = input[ 8], x09 = input[ 9], x10 = input[10], x11 = input[11],
 			 x12 = input[12], x13 = input[13], x14 = input[14], x15 = input[15];
@@ -86,13 +86,13 @@ void ChaCha::cipher(in byte[] input, ref byte[] output)
 */
 void ChaCha::key_schedule(in byte[] key)
 {
-	static const u32bit TAU[] =
+	static const uint TAU[] =
 	{ 0x61707865, 0x3120646e, 0x79622d36, 0x6b206574 };
 
-	static const u32bit SIGMA[] =
+	static const uint SIGMA[] =
 	{ 0x61707865, 0x3320646e, 0x79622d32, 0x6b206574 };
 
-	const u32bit* CONSTANTS = (length == 16) ? TAU : SIGMA;
+	const uint* CONSTANTS = (length == 16) ? TAU : SIGMA;
 
 	m_state.resize(16);
 	m_buffer.resize(64);
@@ -102,18 +102,18 @@ void ChaCha::key_schedule(in byte[] key)
 	m_state[2] = CONSTANTS[2];
 	m_state[3] = CONSTANTS[3];
 
-	m_state[4] = load_le<u32bit>(key, 0);
-	m_state[5] = load_le<u32bit>(key, 1);
-	m_state[6] = load_le<u32bit>(key, 2);
-	m_state[7] = load_le<u32bit>(key, 3);
+	m_state[4] = load_le<uint>(key, 0);
+	m_state[5] = load_le<uint>(key, 1);
+	m_state[6] = load_le<uint>(key, 2);
+	m_state[7] = load_le<uint>(key, 3);
 
 	if(length == 32)
 		key += 16;
 
-	m_state[8] = load_le<u32bit>(key, 0);
-	m_state[9] = load_le<u32bit>(key, 1);
-	m_state[10] = load_le<u32bit>(key, 2);
-	m_state[11] = load_le<u32bit>(key, 3);
+	m_state[8] = load_le<uint>(key, 0);
+	m_state[9] = load_le<uint>(key, 1);
+	m_state[10] = load_le<uint>(key, 2);
+	m_state[11] = load_le<uint>(key, 3);
 
 	m_position = 0;
 
@@ -127,13 +127,13 @@ void ChaCha::key_schedule(in byte[] key)
 void ChaCha::set_iv(in byte[] iv, size_t length)
 {
 	if(!valid_iv_length(length))
-		throw Invalid_IV_Length(name(), length);
+		throw new Invalid_IV_Length(name(), length);
 
 	m_state[12] = 0;
 	m_state[13] = 0;
 
-	m_state[14] = load_le<u32bit>(iv, 0);
-	m_state[15] = load_le<u32bit>(iv, 1);
+	m_state[14] = load_le<uint>(iv, 0);
+	m_state[15] = load_le<uint>(iv, 1);
 
 	chacha(&m_buffer[0], &m_state[0]);
 	++m_state[12];

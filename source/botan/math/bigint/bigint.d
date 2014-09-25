@@ -37,7 +37,7 @@ BigInt::BigInt(Sign s, size_t size)
 /*
 * Copy constructor
 */
-BigInt::BigInt(const BigInt& other)
+BigInt::BigInt(in BigInt other)
 {
 	m_reg = other.m_reg;
 	m_signedness = other.m_signedness;
@@ -100,7 +100,7 @@ void BigInt::grow_to(size_t n)
 /*
 * Comparison Function
 */
-s32bit BigInt::cmp(const BigInt& other, bool check_signs) const
+s32bit BigInt::cmp(in BigInt other, bool check_signs) const
 {
 	if(check_signs)
 	{
@@ -143,10 +143,10 @@ bool BigInt::get_bit(size_t n) const
 /*
 * Return bits {offset...offset+length}
 */
-u32bit BigInt::get_substring(size_t offset, size_t length) const
+uint BigInt::get_substring(size_t offset, size_t length) const
 {
 	if(length > 32)
-		throw Invalid_Argument("BigInt::get_substring: Substring size too big");
+		throw new Invalid_Argument("BigInt::get_substring: Substring size too big");
 
 	u64bit piece = 0;
 	for(size_t i = 0; i != 8; ++i)
@@ -158,21 +158,21 @@ u32bit BigInt::get_substring(size_t offset, size_t length) const
 	const u64bit mask = (cast(u64bit)(1) << length) - 1;
 	const size_t shift = (offset % 8);
 
-	return cast(u32bit)((piece >> shift) & mask);
+	return cast(uint)((piece >> shift) & mask);
 }
 
 /*
-* Convert this number to a u32bit, if possible
+* Convert this number to a uint, if possible
 */
-u32bit BigInt::to_u32bit() const
+uint BigInt::to_uint() const
 {
 	if(is_negative())
-		throw Encoding_Error("BigInt::to_u32bit: Number is negative");
+		throw new Encoding_Error("BigInt::to_uint: Number is negative");
 	if(bits() >= 32)
-		throw Encoding_Error("BigInt::to_u32bit: Number is too big to convert");
+		throw new Encoding_Error("BigInt::to_uint: Number is too big to convert");
 
-	u32bit out = 0;
-	for(u32bit j = 0; j != 4; ++j)
+	uint out = 0;
+	for(uint j = 0; j != 4; ++j)
 		out = (out << 8) | byte_at(3-j);
 	return out;
 }
@@ -257,7 +257,7 @@ size_t BigInt::encoded_size(Base base) const
 	else if(base == Decimal)
 		return cast(size_t)((bits() * LOG_2_BASE_10) + 1);
 	else
-		throw Invalid_Argument("Unknown base for BigInt encoding");
+		throw new Invalid_Argument("Unknown base for BigInt encoding");
 }
 
 /*

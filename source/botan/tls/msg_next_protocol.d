@@ -19,7 +19,7 @@ Next_Protocol::Next_Protocol(Handshake_IO& io,
 	hash.update(io.send(*this));
 }
 
-Next_Protocol::Next_Protocol(in Array!byte buf)
+Next_Protocol::Next_Protocol(in Vector!byte buf)
 {
 	TLS_Data_Reader reader("NextProtocol", buf);
 
@@ -28,9 +28,9 @@ Next_Protocol::Next_Protocol(in Array!byte buf)
 	reader.get_range_vector<byte>(1, 0, 255); // padding, ignored
 }
 
-std::vector<byte> Next_Protocol::serialize() const
+Vector!( byte ) Next_Protocol::serialize() const
 {
-	std::vector<byte> buf;
+	Vector!( byte ) buf;
 
 	append_tls_length_value(buf,
 									cast(const byte*)(m_protocol.data()),

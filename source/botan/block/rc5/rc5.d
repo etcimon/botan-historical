@@ -17,8 +17,8 @@ void RC5::encrypt_n(in byte[] input, ref byte[] output) const
 {
 	for(size_t i = 0; i != blocks; ++i)
 	{
-		u32bit A = load_le<u32bit>(input, 0);
-		u32bit B = load_le<u32bit>(input, 1);
+		uint A = load_le<uint>(input, 0);
+		uint B = load_le<uint>(input, 1);
 
 		A += S[0]; B += S[1];
 		for(size_t j = 0; j != rounds; j += 4)
@@ -38,8 +38,8 @@ void RC5::encrypt_n(in byte[] input, ref byte[] output) const
 
 		store_le(out, A, B);
 
-		in += BLOCK_SIZE;
-		out += BLOCK_SIZE;
+		input = input[BLOCK_SIZE .. $];
+		output = output[BLOCK_SIZE .. $];
 	}
 }
 
@@ -50,8 +50,8 @@ void RC5::decrypt_n(in byte[] input, ref byte[] output) const
 {
 	for(size_t i = 0; i != blocks; ++i)
 	{
-		u32bit A = load_le<u32bit>(input, 0);
-		u32bit B = load_le<u32bit>(input, 1);
+		uint A = load_le<uint>(input, 0);
+		uint B = load_le<uint>(input, 1);
 
 		for(size_t j = rounds; j != 0; j -= 4)
 		{
@@ -71,8 +71,8 @@ void RC5::decrypt_n(in byte[] input, ref byte[] output) const
 
 		store_le(out, A, B);
 
-		in += BLOCK_SIZE;
-		out += BLOCK_SIZE;
+		input = input[BLOCK_SIZE .. $];
+		output = output[BLOCK_SIZE .. $];
 	}
 }
 
@@ -90,12 +90,12 @@ void RC5::key_schedule(in byte[] key)
 	for(size_t i = 1; i != S.size(); ++i)
 		S[i] = S[i-1] + 0x9E3779B9;
 
-	secure_vector<u32bit> K(8);
+	secure_vector<uint> K(8);
 
 	for(s32bit i = length-1; i >= 0; --i)
 		K[i/4] = (K[i/4] << 8) + key[i];
 
-	u32bit A = 0, B = 0;
+	uint A = 0, B = 0;
 
 	for(size_t i = 0; i != MIX_ROUNDS; ++i)
 	{
@@ -125,7 +125,7 @@ string RC5::name() const
 RC5::RC5(size_t r) : rounds(r)
 {
 	if(rounds < 8 || rounds > 32 || (rounds % 4 != 0))
-		throw Invalid_Argument("RC5: Invalid number of rounds " +
+		throw new Invalid_Argument("RC5: Invalid number of rounds " +
 									  std::to_string(rounds));
 }
 

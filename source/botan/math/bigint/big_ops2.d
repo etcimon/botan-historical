@@ -12,7 +12,7 @@
 /*
 * Addition Operator
 */
-BigInt& BigInt::operator+=(const BigInt& y)
+BigInt& BigInt::operator+=(in BigInt y)
 {
 	const size_t x_sw = sig_words(), y_sw = y.sig_words();
 
@@ -47,7 +47,7 @@ BigInt& BigInt::operator+=(const BigInt& y)
 /*
 * Subtraction Operator
 */
-BigInt& BigInt::operator-=(const BigInt& y)
+BigInt& BigInt::operator-=(in BigInt y)
 {
 	const size_t x_sw = sig_words(), y_sw = y.sig_words();
 
@@ -89,7 +89,7 @@ BigInt& BigInt::operator-=(const BigInt& y)
 /*
 * Multiplication Operator
 */
-BigInt& BigInt::operator*=(const BigInt& y)
+BigInt& BigInt::operator*=(in BigInt y)
 {
 	const size_t x_sw = sig_words(), y_sw = y.sig_words();
 	set_sign((sign() == y.sign()) ? Positive : Negative);
@@ -127,7 +127,7 @@ BigInt& BigInt::operator*=(const BigInt& y)
 /*
 * Division Operator
 */
-BigInt& BigInt::operator/=(const BigInt& y)
+BigInt& BigInt::operator/=(in BigInt y)
 {
 	if(y.sig_words() == 1 && is_power_of_2(y.word_at(0)))
 		(*this) >>= (y.bits() - 1);
@@ -139,7 +139,7 @@ BigInt& BigInt::operator/=(const BigInt& y)
 /*
 * Modulo Operator
 */
-BigInt& BigInt::operator%=(const BigInt& mod)
+BigInt& BigInt::operator%=(in BigInt mod)
 {
 	return (*this = (*this) % mod);
 }
@@ -150,7 +150,7 @@ BigInt& BigInt::operator%=(const BigInt& mod)
 word BigInt::operator%=(word mod)
 {
 	if(mod == 0)
-		throw BigInt::DivideByZero();
+		throw new BigInt::DivideByZero();
 
 	if(is_power_of_2(mod))
 		 {

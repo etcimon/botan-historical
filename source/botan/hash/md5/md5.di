@@ -27,10 +27,10 @@ class MD5 : public MDx_HashFunction
 		/**
 		* The message buffer, exposed for use by subclasses (x86 asm)
 		*/
-		secure_vector<u32bit> M;
+		secure_vector<uint> M;
 
 		/**
 		* The digest value, exposed for use by subclasses (x86 asm)
 		*/
-		secure_vector<u32bit> digest;
+		secure_vector<uint> digest;
 };

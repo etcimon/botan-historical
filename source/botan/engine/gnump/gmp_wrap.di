@@ -19,13 +19,13 @@ class GMP_MPZ
 		void encode(byte[], size_t) const;
 		size_t bytes() const;
 
-		SafeArray!byte to_bytes() const
+		SafeVector!byte to_bytes() const
 		{ return BigInt::encode_locked(to_bigint()); }
 
-		GMP_MPZ& operator=(const GMP_MPZ&);
+		GMP_MPZ& operator=(in GMP_MPZ);
 
-		GMP_MPZ(const GMP_MPZ&);
-		GMP_MPZ(const BigInt& = 0);
+		GMP_MPZ(in GMP_MPZ);
+		GMP_MPZ(in BigInt = 0);
 		GMP_MPZ(const byte[], size_t);
 		~GMP_MPZ();
 };

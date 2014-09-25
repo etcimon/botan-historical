@@ -20,36 +20,36 @@ void PSSR::update(in byte[] input, size_t length)
 /*
 * Return the raw (unencoded) data
 */
-SafeArray!byte PSSR::raw_data()
+SafeVector!byte PSSR::raw_data()
 {
-	return hash->final();
+	return hash->flush();
 }
 
 /*
 * PSSR Encode Operation
 */
-SafeArray!byte PSSR::encoding_of(in SafeArray!byte msg,
+SafeVector!byte PSSR::encoding_of(in SafeVector!byte msg,
 												  size_t output_bits,
 												  RandomNumberGenerator& rng)
 {
 	const size_t HASH_SIZE = hash->output_length();
 
 	if(msg.size() != HASH_SIZE)
-		throw Encoding_Error("PSSR::encoding_of: Bad input length");
+		throw new Encoding_Error("PSSR::encoding_of: Bad input length");
 	if(output_bits < 8*HASH_SIZE + 8*SALT_SIZE + 9)
-		throw Encoding_Error("PSSR::encoding_of: Output length is too small");
+		throw new Encoding_Error("PSSR::encoding_of: Output length is too small");
 
 	const size_t output_length = (output_bits + 7) / 8;
 
-	SafeArray!byte salt = rng.random_vec(SALT_SIZE);
+	SafeVector!byte salt = rng.random_vec(SALT_SIZE);
 
 	for(size_t j = 0; j != 8; ++j)
 		hash->update(0);
 	hash->update(msg);
 	hash->update(salt);
-	SafeArray!byte H = hash->final();
+	SafeVector!byte H = hash->flush();
 
-	SafeArray!byte EM(output_length);
+	SafeVector!byte EM(output_length);
 
 	EM[output_length - HASH_SIZE - SALT_SIZE - 2] = 0x01;
 	buffer_insert(EM, output_length - 1 - HASH_SIZE - SALT_SIZE, salt);
@@ -64,8 +64,8 @@ SafeArray!byte PSSR::encoding_of(in SafeArray!byte msg,
 /*
 * PSSR Decode/Verify Operation
 */
-bool PSSR::verify(in SafeArray!byte const_coded,
-						 in SafeArray!byte raw, size_t key_bits)
+bool PSSR::verify(in SafeVector!byte const_coded,
+						 in SafeVector!byte raw, size_t key_bits)
 {
 	const size_t HASH_SIZE = hash->output_length();
 	const size_t KEY_BYTES = (key_bits + 7) / 8;
@@ -82,10 +82,10 @@ bool PSSR::verify(in SafeArray!byte const_coded,
 	if(const_coded[const_coded.size()-1] != 0xBC)
 		return false;
 
-	SafeArray!byte coded = const_coded;
+	SafeVector!byte coded = const_coded;
 	if(coded.size() < KEY_BYTES)
 	{
-		SafeArray!byte temp(KEY_BYTES);
+		SafeVector!byte temp(KEY_BYTES);
 		buffer_insert(temp, KEY_BYTES - coded.size(), coded);
 		coded = temp;
 	}
@@ -118,7 +118,7 @@ bool PSSR::verify(in SafeArray!byte const_coded,
 		hash->update(0);
 	hash->update(raw);
 	hash->update(&DB[salt_offset], DB_size - salt_offset);
-	SafeArray!byte H2 = hash->final();
+	SafeVector!byte H2 = hash->flush();
 
 	return same_mem(&H[0], &H2[0], HASH_SIZE);
 }

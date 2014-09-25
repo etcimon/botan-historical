@@ -37,7 +37,7 @@ class SecureQueue : public Fanout_Filter, public DataSource
 		* SecureQueue assignment
 		* @param other the queue to copy
 		*/
-		SecureQueue& operator=(const SecureQueue& other);
+		SecureQueue& operator=(in SecureQueue other);
 
 		/**
 		* SecureQueue default constructor (creates empty queue)
@@ -48,7 +48,7 @@ class SecureQueue : public Fanout_Filter, public DataSource
 		* SecureQueue copy constructor
 		* @param other the queue to copy
 		*/
-		SecureQueue(const SecureQueue& other);
+		SecureQueue(in SecureQueue other);
 
 		~SecureQueue() { destroy(); }
 	private:

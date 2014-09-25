@@ -41,7 +41,7 @@ class Base64_Encoder : public Filter
 
 		const size_t line_length;
 		const bool trailing_newline;
-		std::vector<byte> in, out;
+		Vector!( byte ) in, out;
 		size_t position, out_position;
 };
 
@@ -73,6 +73,6 @@ class Base64_Decoder : public Filter
 		Base64_Decoder(Decoder_Checking checking = NONE);
 	private:
 		const Decoder_Checking checking;
-		std::vector<byte> in, out;
+		Vector!( byte ) in, out;
 		size_t position;
 };

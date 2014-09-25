@@ -9,25 +9,25 @@
 #include <botan/exceptn.h>
 namespace TLS {
 
-Alert::Alert(in SafeArray!byte buf)
+Alert::Alert(in SafeVector!byte buf)
 {
 	if(buf.size() != 2)
-		throw Decoding_Error("Alert: Bad size " + std::to_string(buf.size()) +
+		throw new Decoding_Error("Alert: Bad size " + std::to_string(buf.size()) +
 									" for alert message");
 
 	if(buf[0] == 1)		m_fatal = false;
 	else if(buf[0] == 2) m_fatal = true;
 	else
-		throw Decoding_Error("Alert: Bad code for alert level");
+		throw new Decoding_Error("Alert: Bad code for alert level");
 
 	const byte dc = buf[1];
 
 	m_type_code = cast(Type)(dc);
 }
 
-std::vector<byte> Alert::serialize() const
+Vector!( byte ) Alert::serialize() const
 {
-	return std::vector<byte>({
+	return Vector!( byte )({
 		cast(byte)(is_fatal() ? 2 : 1),
 		cast(byte)(type())
 	});

@@ -153,7 +153,7 @@ size_t base64_decode(byte output[],
 			else if(bad_char == "\r")
 			  bad_char = "\\r";
 
-			throw std::invalid_argument(
+			throw new std::invalid_argument(
 			  string("base64_decode: invalid base64 character '") +
 			  bad_char + "'");
 		}
@@ -205,7 +205,7 @@ size_t base64_decode(byte output[],
 											 consumed, true, ignore_ws);
 
 	if(consumed != input_length)
-		throw std::invalid_argument("base64_decode: input did not have full bytes");
+		throw new std::invalid_argument("base64_decode: input did not have full bytes");
 
 	return written;
 }
@@ -217,11 +217,11 @@ size_t base64_decode(byte output[],
 	return base64_decode(output, &input[0], input.length(), ignore_ws);
 }
 
-SafeArray!byte base64_decode(const char input[],
+SafeVector!byte base64_decode(const char input[],
 											size_t input_length,
 											bool ignore_ws)
 {
-	SafeArray!byte bin((round_up<size_t>(input_length, 4) * 3) / 4);
+	SafeVector!byte bin((round_up<size_t>(input_length, 4) * 3) / 4);
 
 	size_t written = base64_decode(&bin[0],
 											 input,
@@ -232,7 +232,7 @@ SafeArray!byte base64_decode(const char input[],
 	return bin;
 }
 
-SafeArray!byte base64_decode(in string input,
+SafeVector!byte base64_decode(in string input,
 											bool ignore_ws)
 {
 	return base64_decode(&input[0], input.size(), ignore_ws);

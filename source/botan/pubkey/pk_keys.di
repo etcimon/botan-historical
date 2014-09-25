@@ -74,7 +74,7 @@ class Public_Key
 		/**
 		* @return X.509 subject key encoding for this key object
 		*/
-		abstract std::vector<byte> x509_subject_public_key() const = 0;
+		abstract Vector!( byte ) x509_subject_public_key() const = 0;
 
 		abstract ~Public_Key() {}
 	protected:
@@ -94,7 +94,7 @@ class Private_Key : public abstract Public_Key
 		/**
 		* @return PKCS #8 private key encoding for this key object
 		*/
-		abstract SafeArray!byte pkcs8_Private_Key() const = 0;
+		abstract SafeVector!byte pkcs8_Private_Key() const = 0;
 
 		/**
 		* @return PKCS #8 AlgorithmIdentifier for this key
@@ -126,7 +126,7 @@ class PK_Key_Agreement_Key : public abstract Private_Key
 		/*
 		* @return public component of this key
 		*/
-		abstract std::vector<byte> public_value() const = 0;
+		abstract Vector!( byte ) public_value() const = 0;
 
 		abstract ~PK_Key_Agreement_Key() {}
 };

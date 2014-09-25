@@ -37,9 +37,9 @@ class EAC1_1_ADO : public EAC1_1_obj<EAC1_1_ADO>
 		* @param tbs_bits the TBS data to sign
 		* @param rng a random number generator
 		*/
-		static std::vector<byte> make_signed(
+		static Vector!( byte ) make_signed(
 			PK_Signer& signer,
-			in Array!byte tbs_bits,
+			in Vector!byte tbs_bits,
 			RandomNumberGenerator& rng);
 
 		/**
@@ -67,7 +67,7 @@ class EAC1_1_ADO : public EAC1_1_obj<EAC1_1_ADO>
 		* Get the TBS data of this CVC ADO request.
 		* @result the TBS data
 		*/
-		std::vector<byte> tbs_data() const;
+		Vector!( byte ) tbs_data() const;
 
 		abstract ~EAC1_1_ADO() {}
 	private:
@@ -76,7 +76,7 @@ class EAC1_1_ADO : public EAC1_1_obj<EAC1_1_ADO>
 
 		void force_decode();
 		static void decode_info(DataSource& source,
-										std::vector<byte> & res_tbs_bits,
+										Vector!( byte ) & res_tbs_bits,
 										ECDSA_Signature & res_sig);
 };
 

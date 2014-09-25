@@ -13,7 +13,7 @@
 /*
 * Addition Operator
 */
-BigInt operator+(const BigInt& x, const BigInt& y)
+BigInt operator+(in BigInt x, const BigInt& y)
 {
 	const size_t x_sw = x.sig_words(), y_sw = y.sig_words();
 
@@ -42,7 +42,7 @@ BigInt operator+(const BigInt& x, const BigInt& y)
 /*
 * Subtraction Operator
 */
-BigInt operator-(const BigInt& x, const BigInt& y)
+BigInt operator-(in BigInt x, const BigInt& y)
 {
 	const size_t x_sw = x.sig_words(), y_sw = y.sig_words();
 
@@ -77,7 +77,7 @@ BigInt operator-(const BigInt& x, const BigInt& y)
 /*
 * Multiplication Operator
 */
-BigInt operator*(const BigInt& x, const BigInt& y)
+BigInt operator*(in BigInt x, const BigInt& y)
 {
 	const size_t x_sw = x.sig_words(), y_sw = y.sig_words();
 
@@ -103,7 +103,7 @@ BigInt operator*(const BigInt& x, const BigInt& y)
 /*
 * Division Operator
 */
-BigInt operator/(const BigInt& x, const BigInt& y)
+BigInt operator/(in BigInt x, const BigInt& y)
 {
 	BigInt q, r;
 	divide(x, y, q, r);
@@ -113,12 +113,12 @@ BigInt operator/(const BigInt& x, const BigInt& y)
 /*
 * Modulo Operator
 */
-BigInt operator%(const BigInt& n, const BigInt& mod)
+BigInt operator%(in BigInt n, const BigInt& mod)
 {
 	if(mod.is_zero())
-		throw BigInt::DivideByZero();
+		throw new BigInt::DivideByZero();
 	if(mod.is_negative())
-		throw Invalid_Argument("BigInt::operator%: modulus must be > 0");
+		throw new Invalid_Argument("BigInt::operator%: modulus must be > 0");
 	if(n.is_positive() && mod.is_positive() && n < mod)
 		return n;
 
@@ -130,10 +130,10 @@ BigInt operator%(const BigInt& n, const BigInt& mod)
 /*
 * Modulo Operator
 */
-word operator%(const BigInt& n, word mod)
+word operator%(in BigInt n, word mod)
 {
 	if(mod == 0)
-		throw BigInt::DivideByZero();
+		throw new BigInt::DivideByZero();
 
 	if(is_power_of_2(mod))
 		return (n.word_at(0) & (mod - 1));
@@ -151,7 +151,7 @@ word operator%(const BigInt& n, word mod)
 /*
 * Left Shift Operator
 */
-BigInt operator<<(const BigInt& x, size_t shift)
+BigInt operator<<(in BigInt x, size_t shift)
 {
 	if(shift == 0)
 		return x;
@@ -169,7 +169,7 @@ BigInt operator<<(const BigInt& x, size_t shift)
 /*
 * Right Shift Operator
 */
-BigInt operator>>(const BigInt& x, size_t shift)
+BigInt operator>>(in BigInt x, size_t shift)
 {
 	if(shift == 0)
 		return x;

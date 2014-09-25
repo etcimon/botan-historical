@@ -7,10 +7,10 @@
 
 #include <botan/basefilt.h>
 #include <botan/key_filt.h>
-void Keyed_Filter::set_iv(const InitializationVector& iv)
+void Keyed_Filter::set_iv(in InitializationVector iv)
 {
 	if(iv.length() != 0)
-		throw Invalid_IV_Length(name(), iv.length());
+		throw new Invalid_IV_Length(name(), iv.length());
 }
 
 /*

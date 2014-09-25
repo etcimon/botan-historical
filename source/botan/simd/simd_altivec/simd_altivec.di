@@ -18,24 +18,24 @@ class SIMD_Altivec
 	public:
 		static bool enabled() { return CPUID::has_altivec(); }
 
-		SIMD_Altivec(const u32bit B[4])
+		SIMD_Altivec(const uint B[4])
 		{
 			reg = (__vector unsigned int){B[0], B[1], B[2], B[3]};
 		}
 
-		SIMD_Altivec(u32bit B0, u32bit B1, u32bit B2, u32bit B3)
+		SIMD_Altivec(uint B0, uint B1, uint B2, uint B3)
 		{
 			reg = (__vector unsigned int){B0, B1, B2, B3};
 		}
 
-		SIMD_Altivec(u32bit B)
+		SIMD_Altivec(uint B)
 		{
 			reg = (__vector unsigned int){B, B, B, B};
 		}
 
 		static SIMD_Altivec load_le(const void* input)
 		{
-			const u32bit* in_32 = cast(const u32bit*)(input);
+			const uint* in_32 = cast(const uint*)(input);
 
 			__vector unsigned int R0 = vec_ld(0, in_32);
 			__vector unsigned int R1 = vec_ld(12, in_32);
@@ -51,7 +51,7 @@ class SIMD_Altivec
 
 		static SIMD_Altivec load_be(const void* input)
 		{
-			const u32bit* in_32 = cast(const u32bit*)(input);
+			const uint* in_32 = cast(const uint*)(input);
 
 			__vector unsigned int R0 = vec_ld(0, in_32);
 			__vector unsigned int R1 = vec_ld(12, in_32);
@@ -65,13 +65,13 @@ class SIMD_Altivec
 
 		void store_le(ref byte[] output) const
 		{
-			__vector unsigned char perm = vec_lvsl(0, (u32bit*)0);
+			__vector unsigned char perm = vec_lvsl(0, (uint*)0);
 
 			perm = vec_xor(perm, vec_splat_u8(3));
 
 			union {
 				__vector unsigned int V;
-				u32bit R[4];
+				uint R[4];
 			} vec;
 
 			vec.V = vec_perm(reg, reg, perm);
@@ -83,7 +83,7 @@ class SIMD_Altivec
 		{
 			union {
 				__vector unsigned int V;
-				u32bit R[4];
+				uint R[4];
 			} vec;
 
 			vec.V = reg;
@@ -104,47 +104,47 @@ class SIMD_Altivec
 			rotate_left(32 - rot);
 		}
 
-		void operator+=(const SIMD_Altivec& other)
+		void operator+=(in SIMD_Altivec other)
 		{
 			reg = vec_add(reg, other.reg);
 		}
 
-		SIMD_Altivec operator+(const SIMD_Altivec& other) const
+		SIMD_Altivec operator+(in SIMD_Altivec other) const
 		{
 			return vec_add(reg, other.reg);
 		}
 
-		void operator-=(const SIMD_Altivec& other)
+		void operator-=(in SIMD_Altivec other)
 		{
 			reg = vec_sub(reg, other.reg);
 		}
 
-		SIMD_Altivec operator-(const SIMD_Altivec& other) const
+		SIMD_Altivec operator-(in SIMD_Altivec other) const
 		{
 			return vec_sub(reg, other.reg);
 		}
 
-		void operator^=(const SIMD_Altivec& other)
+		void operator^=(in SIMD_Altivec other)
 		{
 			reg = vec_xor(reg, other.reg);
 		}
 
-		SIMD_Altivec operator^(const SIMD_Altivec& other) const
+		SIMD_Altivec operator^(in SIMD_Altivec other) const
 		{
 			return vec_xor(reg, other.reg);
 		}
 
-		void operator|=(const SIMD_Altivec& other)
+		void operator|=(in SIMD_Altivec other)
 		{
 			reg = vec_or(reg, other.reg);
 		}
 
-		SIMD_Altivec operator&(const SIMD_Altivec& other)
+		SIMD_Altivec operator&(in SIMD_Altivec other)
 		{
 			return vec_and(reg, other.reg);
 		}
 
-		void operator&=(const SIMD_Altivec& other)
+		void operator&=(in SIMD_Altivec other)
 		{
 			reg = vec_and(reg, other.reg);
 		}
@@ -170,7 +170,7 @@ class SIMD_Altivec
 			return vec_nor(reg, reg);
 		}
 
-		SIMD_Altivec andc(const SIMD_Altivec& other)
+		SIMD_Altivec andc(in SIMD_Altivec other)
 		{
 			// AltiVec does arg1 & ~arg2 rather than SSE's ~arg1 & arg2
 			return vec_andc(other.reg, reg);
@@ -178,7 +178,7 @@ class SIMD_Altivec
 
 		SIMD_Altivec bswap() const
 		{
-			__vector unsigned char perm = vec_lvsl(0, (u32bit*)0);
+			__vector unsigned char perm = vec_lvsl(0, (uint*)0);
 
 			perm = vec_xor(perm, vec_splat_u8(3));
 

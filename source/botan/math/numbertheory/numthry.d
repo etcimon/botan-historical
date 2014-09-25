@@ -13,7 +13,7 @@
 /*
 * Return the number of 0 bits at the end of n
 */
-size_t low_zero_bits(const BigInt& n)
+size_t low_zero_bits(in BigInt n)
 {
 	size_t low_zero = 0;
 
@@ -39,7 +39,7 @@ size_t low_zero_bits(const BigInt& n)
 /*
 * Calculate the GCD
 */
-BigInt gcd(const BigInt& a, const BigInt& b)
+BigInt gcd(in BigInt a, const BigInt& b)
 {
 	if(a.is_zero() || b.is_zero()) return 0;
 	if(a == 1 || b == 1)			  return 1;
@@ -66,7 +66,7 @@ BigInt gcd(const BigInt& a, const BigInt& b)
 /*
 * Calculate the LCM
 */
-BigInt lcm(const BigInt& a, const BigInt& b)
+BigInt lcm(in BigInt a, const BigInt& b)
 {
 	return ((a * b) / gcd(a, b));
 }
@@ -79,7 +79,7 @@ namespace {
 * the common case for crypto, so worth special casing. See note 14.64
 * in Handbook of Applied Cryptography for more details.
 */
-BigInt inverse_mod_odd_modulus(const BigInt& n, const BigInt& mod)
+BigInt inverse_mod_odd_modulus(in BigInt n, const BigInt& mod)
 {
 	BigInt u = mod, v = n;
 	BigInt B = 0, D = 1;
@@ -122,12 +122,12 @@ BigInt inverse_mod_odd_modulus(const BigInt& n, const BigInt& mod)
 /*
 * Find the Modular Inverse
 */
-BigInt inverse_mod(const BigInt& n, const BigInt& mod)
+BigInt inverse_mod(in BigInt n, const BigInt& mod)
 {
 	if(mod.is_zero())
-		throw BigInt::DivideByZero();
+		throw new BigInt::DivideByZero();
 	if(mod.is_negative() || n.is_negative())
-		throw Invalid_Argument("inverse_mod: arguments must be non-negative");
+		throw new Invalid_Argument("inverse_mod: arguments must be non-negative");
 
 	if(n.is_zero() || (n.is_even() && mod.is_even()))
 		return 0; // fast fail checks
@@ -213,7 +213,7 @@ word monty_inverse(word input)
 /*
 * Modular Exponentiation
 */
-BigInt power_mod(const BigInt& base, const BigInt& exp, const BigInt& mod)
+BigInt power_mod(in BigInt base, const BigInt& exp, const BigInt& mod)
 {
 	Power_Mod pow_mod(mod);
 
@@ -281,7 +281,7 @@ size_t mr_test_iterations(size_t n_bits, size_t prob, bool random)
 /*
 * Test for primaility using Miller-Rabin
 */
-bool is_prime(const BigInt& n, RandomNumberGenerator& rng,
+bool is_prime(in BigInt n, RandomNumberGenerator& rng,
 				  size_t prob, bool is_random)
 {
 	if(n == 2)

@@ -13,7 +13,7 @@
 class KDF2 : public KDF
 {
 	public:
-		SafeArray!byte derive(size_t, const byte[], size_t,
+		SafeVector!byte derive(size_t, const byte[], size_t,
 										  const byte[], size_t) const;
 
 		string name() const { return "KDF2(" + hash->name() + ")"; }

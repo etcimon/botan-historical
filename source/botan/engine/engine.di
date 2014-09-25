@@ -40,7 +40,7 @@ class Engine
 		* @return newly allocated object, or NULL
 		*/
 		abstract BlockCipher*
-			find_block_cipher(const SCAN_Name& algo_spec,
+			find_block_cipher(in SCAN_Name algo_spec,
 									Algorithm_Factory& af) const;
 
 		/**
@@ -49,7 +49,7 @@ class Engine
 		* @return newly allocated object, or NULL
 		*/
 		abstract StreamCipher*
-			find_stream_cipher(const SCAN_Name& algo_spec,
+			find_stream_cipher(in SCAN_Name algo_spec,
 									 Algorithm_Factory& af) const;
 
 		/**
@@ -58,7 +58,7 @@ class Engine
 		* @return newly allocated object, or NULL
 		*/
 		abstract HashFunction*
-			find_hash(const SCAN_Name& algo_spec,
+			find_hash(in SCAN_Name algo_spec,
 						 Algorithm_Factory& af) const;
 
 		/**
@@ -67,7 +67,7 @@ class Engine
 		* @return newly allocated object, or NULL
 		*/
 		abstract MessageAuthenticationCode*
-			find_mac(const SCAN_Name& algo_spec,
+			find_mac(in SCAN_Name algo_spec,
 						Algorithm_Factory& af) const;
 
 		/**
@@ -75,7 +75,7 @@ class Engine
 		* @param af an algorithm factory object
 		* @return newly allocated object, or NULL
 		*/
-		abstract PBKDF* find_pbkdf(const SCAN_Name& algo_spec,
+		abstract PBKDF* find_pbkdf(in SCAN_Name algo_spec,
 										  Algorithm_Factory& af) const;
 
 		/**
@@ -84,7 +84,7 @@ class Engine
 		* @return newly allocated object, or NULL
 		*/
 		abstract Modular_Exponentiator*
-			mod_exp(const BigInt& n,
+			mod_exp(in BigInt n,
 					  Power_Mod::Usage_Hints hints) const;
 
 		/**
@@ -120,7 +120,7 @@ class Engine
 		* @return newly allocated operator object, or NULL
 		*/
 		abstract PK_Ops::Verification*
-			get_verify_op(const Public_Key& key, RandomNumberGenerator& rng) const;
+			get_verify_op(in Public_Key key, RandomNumberGenerator& rng) const;
 
 		/**
 		* Return a new operator object for this key, if possible
@@ -128,7 +128,7 @@ class Engine
 		* @return newly allocated operator object, or NULL
 		*/
 		abstract PK_Ops::Encryption*
-			get_encryption_op(const Public_Key& key, RandomNumberGenerator& rng) const;
+			get_encryption_op(in Public_Key key, RandomNumberGenerator& rng) const;
 
 		/**
 		* Return a new operator object for this key, if possible

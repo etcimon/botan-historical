@@ -18,9 +18,9 @@ class Attribute : public ASN1_Object
 		void decode_from(class BER_Decoder& from);
 
 		OID oid;
-		std::vector<byte> parameters;
+		Vector!( byte ) parameters;
 
 		Attribute() {}
-		Attribute(const OID&, in Array!byte);
-		Attribute(in string, in Array!byte);
+		Attribute(in OID, in Vector!byte);
+		Attribute(in string, in Vector!byte);
 };

@@ -11,7 +11,7 @@
 /*
 * Set the exponent
 */
-void Fixed_Window_Exponentiator::set_exponent(const BigInt& e)
+void Fixed_Window_Exponentiator::set_exponent(in BigInt e)
 {
 	exp = e;
 }
@@ -19,7 +19,7 @@ void Fixed_Window_Exponentiator::set_exponent(const BigInt& e)
 /*
 * Set the base
 */
-void Fixed_Window_Exponentiator::set_base(const BigInt& base)
+void Fixed_Window_Exponentiator::set_base(in BigInt base)
 {
 	window_bits = Power_Mod::window_bits(exp.bits(), base.bits(), hints);
 
@@ -45,7 +45,7 @@ BigInt Fixed_Window_Exponentiator::execute() const
 		for(size_t j = 0; j != window_bits; ++j)
 			x = reducer.square(x);
 
-		const u32bit nibble = exp.get_substring(window_bits*(i-1), window_bits);
+		const uint nibble = exp.get_substring(window_bits*(i-1), window_bits);
 
 		x = reducer.multiply(x, g[nibble]);
 	}
@@ -55,7 +55,7 @@ BigInt Fixed_Window_Exponentiator::execute() const
 /*
 * Fixed_Window_Exponentiator Constructor
 */
-Fixed_Window_Exponentiator::Fixed_Window_Exponentiator(const BigInt& n,
+Fixed_Window_Exponentiator::Fixed_Window_Exponentiator(in BigInt n,
 																		 Power_Mod::Usage_Hints hints)
 {
 	reducer = Modular_Reducer(n);

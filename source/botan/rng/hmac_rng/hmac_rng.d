@@ -15,8 +15,8 @@
 namespace {
 
 void hmac_prf(MessageAuthenticationCode& prf,
-				  SafeArray!byte K,
-				  u32bit& counter,
+				  SafeVector!byte K,
+				  ref uint counter,
 				  in string label)
 {
 	typedef std::chrono::high_resolution_clock clock;
@@ -27,7 +27,7 @@ void hmac_prf(MessageAuthenticationCode& prf,
 	prf.update(label);
 	prf.update_be(timestamp);
 	prf.update_be(counter);
-	prf.final(&K[0]);
+	prf.flushInto(&K[0]);
 
 	++counter;
 }
@@ -43,7 +43,7 @@ HMAC_RNG::HMAC_RNG(MessageAuthenticationCode* extractor,
 {
 	if(!m_prf->valid_keylength(m_extractor->output_length()) ||
 		!m_extractor->valid_keylength(m_prf->output_length()))
-		throw Invalid_Argument("HMAC_RNG: Bad algo combination " +
+		throw new Invalid_Argument("HMAC_RNG: Bad algo combination " +
 									  m_extractor->name() + " and " +
 									  m_prf->name());
 
@@ -63,7 +63,7 @@ HMAC_RNG::HMAC_RNG(MessageAuthenticationCode* extractor,
 	The PRF key will not be used to generate outputs until after reseed
 	sets m_seeded to true.
 	*/
-	SafeArray!byte prf_key(m_extractor->output_length());
+	SafeVector!byte prf_key(m_extractor->output_length());
 	m_prf->set_key(prf_key);
 
 	/*
@@ -88,7 +88,7 @@ void HMAC_RNG::randomize(ref byte[] output)
 	{
 		reseed(256);
 		if(!is_seeded())
-			throw PRNG_Unseeded(name());
+			throw new PRNG_Unseeded(name());
 	}
 
 	const size_t max_per_prf_iter = m_prf->output_length() / 2;
@@ -157,7 +157,7 @@ void HMAC_RNG::reseed(size_t poll_bits)
 
 	/* Now derive the new PRK using everything that has been fed into
 		the extractor, and set the PRF key to that */
-	m_prf->set_key(m_extractor->final());
+	m_prf->set_key(m_extractor->flush());
 
 	// Now generate a new PRF output to use as the XTS extractor salt
 	hmac_prf(*m_prf, m_K, m_counter, "xts");

@@ -28,7 +28,7 @@ class X509_Certificate : public X509_Object
 		* Get the public key associated with this certificate.
 		* @return subject public key of this certificate
 		*/
-		std::vector<byte> subject_public_key_bits() const;
+		Vector!( byte ) subject_public_key_bits() const;
 
 		/**
 		* Get the issuer certificate DN.
@@ -54,7 +54,7 @@ class X509_Certificate : public X509_Object
 		* "X509.Certificate.serial".
 		* @return value(s) of the specified parameter
 		*/
-		std::vector<string> subject_info(in string name) const;
+		Vector!( string ) subject_info(in string name) const;
 
 		/**
 		* Get a value for a specific subject_info parameter name.
@@ -62,17 +62,17 @@ class X509_Certificate : public X509_Object
 		* "X509.Certificate.v2.key_id" or "X509v3.AuthorityKeyIdentifier".
 		* @return value(s) of the specified parameter
 		*/
-		std::vector<string> issuer_info(in string name) const;
+		Vector!( string ) issuer_info(in string name) const;
 
 		/**
 		* Raw subject DN
 		*/
-		std::vector<byte> raw_issuer_dn() const;
+		Vector!( byte ) raw_issuer_dn() const;
 
 		/**
 		* Raw issuer DN
 		*/
-		std::vector<byte> raw_subject_dn() const;
+		Vector!( byte ) raw_subject_dn() const;
 
 		/**
 		* Get the notBefore of the certificate.
@@ -90,25 +90,25 @@ class X509_Certificate : public X509_Object
 		* Get the X509 version of this certificate object.
 		* @return X509 version
 		*/
-		u32bit x509_version() const;
+		uint x509_version() const;
 
 		/**
 		* Get the serial number of this certificate.
 		* @return certificates serial number
 		*/
-		std::vector<byte> serial_number() const;
+		Vector!( byte ) serial_number() const;
 
 		/**
 		* Get the DER encoded AuthorityKeyIdentifier of this certificate.
 		* @return DER encoded AuthorityKeyIdentifier
 		*/
-		std::vector<byte> authority_key_id() const;
+		Vector!( byte ) authority_key_id() const;
 
 		/**
 		* Get the DER encoded SubjectKeyIdentifier of this certificate.
 		* @return DER encoded SubjectKeyIdentifier
 		*/
-		std::vector<byte> subject_key_id() const;
+		Vector!( byte ) subject_key_id() const;
 
 		/**
 		* Check whether this certificate is self signed.
@@ -136,7 +136,7 @@ class X509_Certificate : public X509_Object
 		* this certificate.
 		* @return path limit
 		*/
-		u32bit path_limit() const;
+		uint path_limit() const;
 
 		/**
 		* Get the key constraints as defined in the KeyUsage extension of this
@@ -151,14 +151,14 @@ class X509_Certificate : public X509_Object
 		* certificate.
 		* @return key constraints
 		*/
-		std::vector<string> ex_constraints() const;
+		Vector!( string ) ex_constraints() const;
 
 		/**
 		* Get the policies as defined in the CertificatePolicies extension
 		* of this certificate.
 		* @return certificate policies
 		*/
-		std::vector<string> policies() const;
+		Vector!( string ) policies() const;
 
 		/**
 		* Return the listed address of an OCSP responder, or empty if not set
@@ -190,13 +190,13 @@ class X509_Certificate : public X509_Object
 		* Check to certificates for equality.
 		* @return true both certificates are (binary) equal
 		*/
-		bool operator==(const X509_Certificate& other) const;
+		bool operator==(in X509_Certificate other) const;
 
 		/**
 		* Impose an arbitrary (but consistent) ordering
 		* @return true if this is less than other by some unspecified criteria
 		*/
-		bool operator<(const X509_Certificate& other) const;
+		bool operator<(in X509_Certificate other) const;
 
 		/**
 		* Create a certificate from a data source providing the DER or
@@ -212,7 +212,7 @@ class X509_Certificate : public X509_Object
 		*/
 		X509_Certificate(in string filename);
 
-		X509_Certificate(in Array!byte input);
+		X509_Certificate(in Vector!byte input);
 
 	private:
 		void force_decode();
@@ -230,10 +230,10 @@ class X509_Certificate : public X509_Object
 * @return true if the arguments represent different certificates,
 * false if they are binary identical
 */
-bool operator!=(const X509_Certificate&, const X509_Certificate&);
+bool operator!=(in X509_Certificate, const X509_Certificate&);
 
 /*
 * Data Store Extraction Operations
 */
-X509_DN create_dn(const Data_Store&);
-AlternativeName create_alt_name(const Data_Store&);
+X509_DN create_dn(in Data_Store);
+AlternativeName create_alt_name(in Data_Store);

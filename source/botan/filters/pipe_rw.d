@@ -21,7 +21,7 @@ Pipe::message_id Pipe::get_message_no(in string func_name,
 		msg = message_count() - 1;
 
 	if(msg >= message_count())
-		throw Invalid_Message_Number(func_name, msg);
+		throw new Invalid_Message_Number(func_name, msg);
 
 	return msg;
 }
@@ -32,7 +32,7 @@ Pipe::message_id Pipe::get_message_no(in string func_name,
 void Pipe::write(in byte[] input, size_t length)
 {
 	if(!inside_msg)
-		throw Invalid_State("Cannot write to a Pipe while it is not processing");
+		throw new Invalid_State("Cannot write to a Pipe while it is not processing");
 	pipe->write(input, length);
 }
 
@@ -57,7 +57,7 @@ void Pipe::write(byte input)
 */
 void Pipe::write(DataSource& source)
 {
-	SafeArray!byte buffer(DEFAULT_BUFFERSIZE);
+	SafeVector!byte buffer(DEFAULT_BUFFERSIZE);
 	while(!source.end_of_data())
 	{
 		size_t got = source.read(&buffer[0], buffer.size());
@@ -92,10 +92,10 @@ size_t Pipe::read(byte& out, message_id msg)
 /*
 * Return all data in the pipe
 */
-SafeArray!byte Pipe::read_all(message_id msg)
+SafeVector!byte Pipe::read_all(message_id msg)
 {
 	msg = ((msg != DEFAULT_MESSAGE) ? msg : default_msg());
-	SafeArray!byte buffer(remaining(msg));
+	SafeVector!byte buffer(remaining(msg));
 	size_t got = read(&buffer[0], buffer.size(), msg);
 	buffer.resize(got);
 	return buffer;
@@ -107,7 +107,7 @@ SafeArray!byte Pipe::read_all(message_id msg)
 string Pipe::read_all_as_string(message_id msg)
 {
 	msg = ((msg != DEFAULT_MESSAGE) ? msg : default_msg());
-	SafeArray!byte buffer(DEFAULT_BUFFERSIZE);
+	SafeVector!byte buffer(DEFAULT_BUFFERSIZE);
 	string str;
 	str.reserve(remaining(msg));
 
@@ -116,7 +116,7 @@ string Pipe::read_all_as_string(message_id msg)
 		size_t got = read(&buffer[0], buffer.size(), msg);
 		if(got == 0)
 			break;
-		str.append(cast(const char*)(&buffer[0]), got);
+		str.append(cast(in char*)(buffer[0]), got);
 	}
 
 	return str;

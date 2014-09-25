@@ -13,8 +13,8 @@ namespace {
 /*
 * MD5 FF Function
 */
-inline void FF(u32bit& A, u32bit B, u32bit C, u32bit D, u32bit msg,
-					byte S, u32bit magic)
+inline void FF(ref uint A, uint B, uint C, uint D, uint msg,
+					byte S, uint magic)
 {
 	A += (D ^ (B & (C ^ D))) + msg + magic;
 	A  = rotate_left(A, S) + B;
@@ -23,8 +23,8 @@ inline void FF(u32bit& A, u32bit B, u32bit C, u32bit D, u32bit msg,
 /*
 * MD5 GG Function
 */
-inline void GG(u32bit& A, u32bit B, u32bit C, u32bit D, u32bit msg,
-					byte S, u32bit magic)
+inline void GG(ref uint A, uint B, uint C, uint D, uint msg,
+					byte S, uint magic)
 {
 	A += (C ^ (D & (B ^ C))) + msg + magic;
 	A  = rotate_left(A, S) + B;
@@ -33,8 +33,8 @@ inline void GG(u32bit& A, u32bit B, u32bit C, u32bit D, u32bit msg,
 /*
 * MD5 HH Function
 */
-inline void HH(u32bit& A, u32bit B, u32bit C, u32bit D, u32bit msg,
-					byte S, u32bit magic)
+inline void HH(ref uint A, uint B, uint C, uint D, uint msg,
+					byte S, uint magic)
 {
 	A += (B ^ C ^ D) + msg + magic;
 	A  = rotate_left(A, S) + B;
@@ -43,8 +43,8 @@ inline void HH(u32bit& A, u32bit B, u32bit C, u32bit D, u32bit msg,
 /*
 * MD5 II Function
 */
-inline void II(u32bit& A, u32bit B, u32bit C, u32bit D, u32bit msg,
-					byte S, u32bit magic)
+inline void II(ref uint A, uint B, uint C, uint D, uint msg,
+					byte S, uint magic)
 {
 	A += (C ^ (B | ~D)) + msg + magic;
 	A  = rotate_left(A, S) + B;
@@ -57,7 +57,7 @@ inline void II(u32bit& A, u32bit B, u32bit C, u32bit D, u32bit msg,
 */
 void MD5::compress_n(in byte[] input, size_t blocks)
 {
-	u32bit A = digest[0], B = digest[1], C = digest[2], D = digest[3];
+	uint A = digest[0], B = digest[1], C = digest[2], D = digest[3];
 
 	for(size_t i = 0; i != blocks; ++i)
 	{

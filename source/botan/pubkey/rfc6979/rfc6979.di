@@ -13,7 +13,7 @@
 * @param h the message hash already reduced mod q
 * @param hash the hash function used to generate h
 */
-BigInt generate_rfc6979_nonce(const BigInt& x,
+BigInt generate_rfc6979_nonce(in BigInt x,
 													 const BigInt& q,
 													 const BigInt& h,
 													 in string hash);

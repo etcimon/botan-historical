@@ -29,6 +29,6 @@ PBE* get_pbe(in string algo_spec,
 * @param passphrase the passphrase to use for decryption
 * @return pointer to the PBE with the specified parameters
 */
-PBE* get_pbe(const OID& pbe_oid,
-							  in Array!byte params,
+PBE* get_pbe(in OID pbe_oid,
+							  in Vector!byte params,
 							  in string passphrase);

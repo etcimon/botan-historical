@@ -54,18 +54,18 @@ string generate_passhash9(in string pass,
 	MessageAuthenticationCode* prf = get_pbkdf_prf(alg_id);
 
 	if(!prf)
-		throw Invalid_Argument("Passhash9: Algorithm id " +
+		throw new Invalid_Argument("Passhash9: Algorithm id " +
 									  std::to_string(alg_id) +
 									  " is not defined");
 
 	PKCS5_PBKDF2 kdf(prf); // takes ownership of pointer
 
-	SafeArray!byte salt(SALT_BYTES);
+	SafeVector!byte salt(SALT_BYTES);
 	rng.randomize(&salt[0], salt.size());
 
 	const size_t kdf_iterations = WORK_FACTOR_SCALE * work_factor;
 
-	SafeArray!byte pbkdf2_output =
+	SafeVector!byte pbkdf2_output =
 		kdf.derive_key(PASSHASH9_PBKDF_OUTPUT_LEN,
 							pass,
 							&salt[0], salt.size(),
@@ -106,7 +106,7 @@ bool check_passhash9(in string pass, in string hash)
 	pipe.write(hash.c_str() + MAGIC_PREFIX.size());
 	pipe.end_msg();
 
-	SafeArray!byte bin = pipe.read_all();
+	SafeVector!byte bin = pipe.read_all();
 
 	if(bin.size() != BINARY_LENGTH)
 		return false;
@@ -120,7 +120,7 @@ bool check_passhash9(in string pass, in string hash)
 		return false;
 
 	if(work_factor > 512)
-		throw std::invalid_argument("Requested Bcrypt work factor " +
+		throw new std::invalid_argument("Requested Bcrypt work factor " +
 											 std::to_string(work_factor) + " too large");
 
 	const size_t kdf_iterations = WORK_FACTOR_SCALE * work_factor;
@@ -132,7 +132,7 @@ bool check_passhash9(in string pass, in string hash)
 
 	PKCS5_PBKDF2 kdf(pbkdf_prf); // takes ownership of pointer
 
-	SafeArray!byte cmp = kdf.derive_key(
+	SafeVector!byte cmp = kdf.derive_key(
 		PASSHASH9_PBKDF_OUTPUT_LEN,
 		pass,
 		&bin[ALGID_BYTES + WORKFACTOR_BYTES], SALT_BYTES,

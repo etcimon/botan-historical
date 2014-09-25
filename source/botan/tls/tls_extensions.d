@@ -59,7 +59,7 @@ void Extensions::deserialize(TLS_Data_Reader& reader)
 		const u16bit all_extn_size = reader.get_u16bit();
 
 		if(reader.remaining_bytes() != all_extn_size)
-			throw Decoding_Error("Bad extension size");
+			throw new Decoding_Error("Bad extension size");
 
 		while(reader.has_remaining())
 		{
@@ -78,9 +78,9 @@ void Extensions::deserialize(TLS_Data_Reader& reader)
 	}
 }
 
-std::vector<byte> Extensions::serialize() const
+Vector!( byte ) Extensions::serialize() const
 {
-	std::vector<byte> buf(2); // 2 bytes for length field
+	Vector!( byte ) buf(2); // 2 bytes for length field
 
 	for(auto& extn : extensions)
 	{
@@ -89,7 +89,7 @@ std::vector<byte> Extensions::serialize() const
 
 		const u16bit extn_code = extn.second->type();
 
-		std::vector<byte> extn_val = extn.second->serialize();
+		Vector!( byte ) extn_val = extn.second->serialize();
 
 		buf.push_back(get_byte(0, extn_code));
 		buf.push_back(get_byte(1, extn_code));
@@ -107,7 +107,7 @@ std::vector<byte> Extensions::serialize() const
 
 	// avoid sending a completely empty extensions block
 	if(buf.size() == 2)
-		return std::vector<byte>();
+		return Vector!( byte )();
 
 	return buf;
 }
@@ -132,7 +132,7 @@ Server_Name_Indicator::Server_Name_Indicator(TLS_Data_Reader& reader,
 	u16bit name_bytes = reader.get_u16bit();
 
 	if(name_bytes + 2 != extension_size)
-		throw Decoding_Error("Bad encoding of SNI extension");
+		throw new Decoding_Error("Bad encoding of SNI extension");
 
 	while(name_bytes)
 	{
@@ -152,9 +152,9 @@ Server_Name_Indicator::Server_Name_Indicator(TLS_Data_Reader& reader,
 	}
 }
 
-std::vector<byte> Server_Name_Indicator::serialize() const
+Vector!( byte ) Server_Name_Indicator::serialize() const
 {
-	std::vector<byte> buf;
+	Vector!( byte ) buf;
 
 	size_t name_len = sni_host_name.size();
 
@@ -178,12 +178,12 @@ SRP_Identifier::SRP_Identifier(TLS_Data_Reader& reader,
 	srp_identifier = reader.get_string(1, 1, 255);
 
 	if(srp_identifier.size() + 1 != extension_size)
-		throw Decoding_Error("Bad encoding for SRP identifier extension");
+		throw new Decoding_Error("Bad encoding for SRP identifier extension");
 }
 
-std::vector<byte> SRP_Identifier::serialize() const
+Vector!( byte ) SRP_Identifier::serialize() const
 {
-	std::vector<byte> buf;
+	Vector!( byte ) buf;
 
 	const byte* srp_bytes =
 		cast(const byte*)(srp_identifier.data());
@@ -199,17 +199,17 @@ Renegotiation_Extension::Renegotiation_Extension(TLS_Data_Reader& reader,
 	reneg_data = reader.get_range<byte>(1, 0, 255);
 
 	if(reneg_data.size() + 1 != extension_size)
-		throw Decoding_Error("Bad encoding for secure renegotiation extn");
+		throw new Decoding_Error("Bad encoding for secure renegotiation extn");
 }
 
-std::vector<byte> Renegotiation_Extension::serialize() const
+Vector!( byte ) Renegotiation_Extension::serialize() const
 {
-	std::vector<byte> buf;
+	Vector!( byte ) buf;
 	append_tls_length_value(buf, reneg_data, 1);
 	return buf;
 }
 
-std::vector<byte> Maximum_Fragment_Length::serialize() const
+Vector!( byte ) Maximum_Fragment_Length::serialize() const
 {
 	const std::map<size_t, byte> fragment_to_code = { {  512, 1 },
 																	  { 1024, 2 },
@@ -219,18 +219,18 @@ std::vector<byte> Maximum_Fragment_Length::serialize() const
 	auto i = fragment_to_code.find(m_max_fragment);
 
 	if(i == fragment_to_code.end())
-		throw std::invalid_argument("Bad setting " +
+		throw new std::invalid_argument("Bad setting " +
 											 std::to_string(m_max_fragment) +
 											 " for maximum fragment size");
 
-	return std::vector<byte>(1, i->second);
+	return Vector!( byte )(1, i->second);
 }
 
 Maximum_Fragment_Length::Maximum_Fragment_Length(TLS_Data_Reader& reader,
 																 u16bit extension_size)
 {
 	if(extension_size != 1)
-		throw Decoding_Error("Bad size for maximum fragment extension");
+		throw new Decoding_Error("Bad size for maximum fragment extension");
 	byte val = reader.get_byte();
 
 	const std::map<byte, size_t> code_to_fragment = { { 1,  512 },
@@ -241,7 +241,7 @@ Maximum_Fragment_Length::Maximum_Fragment_Length(TLS_Data_Reader& reader,
 	auto i = code_to_fragment.find(val);
 
 	if(i == code_to_fragment.end())
-		throw TLS_Exception(Alert::ILLEGAL_PARAMETER,
+		throw new TLS_Exception(Alert::ILLEGAL_PARAMETER,
 								  "Bad value in maximum fragment extension");
 
 	m_max_fragment = i->second;
@@ -260,7 +260,7 @@ Next_Protocol_Notification::Next_Protocol_Notification(TLS_Data_Reader& reader,
 		const string p = reader.get_string(1, 0, 255);
 
 		if(bytes_remaining < p.size() + 1)
-			throw Decoding_Error("Bad encoding for next protocol extension");
+			throw new Decoding_Error("Bad encoding for next protocol extension");
 
 		bytes_remaining -= (p.size() + 1);
 
@@ -268,9 +268,9 @@ Next_Protocol_Notification::Next_Protocol_Notification(TLS_Data_Reader& reader,
 	}
 }
 
-std::vector<byte> Next_Protocol_Notification::serialize() const
+Vector!( byte ) Next_Protocol_Notification::serialize() const
 {
-	std::vector<byte> buf;
+	Vector!( byte ) buf;
 
 	for(size_t i = 0; i != m_protocols.size(); ++i)
 	{
@@ -354,12 +354,12 @@ u16bit Supported_Elliptic_Curves::name_to_curve_id(in string name)
 	if(name == "brainpool512r1")
 		return 28;
 
-	throw Invalid_Argument("name_to_curve_id unknown name " + name);
+	throw new Invalid_Argument("name_to_curve_id unknown name " + name);
 }
 
-std::vector<byte> Supported_Elliptic_Curves::serialize() const
+Vector!( byte ) Supported_Elliptic_Curves::serialize() const
 {
-	std::vector<byte> buf(2);
+	Vector!( byte ) buf(2);
 
 	for(size_t i = 0; i != m_curves.size(); ++i)
 	{
@@ -380,10 +380,10 @@ Supported_Elliptic_Curves::Supported_Elliptic_Curves(TLS_Data_Reader& reader,
 	u16bit len = reader.get_u16bit();
 
 	if(len + 2 != extension_size)
-		throw Decoding_Error("Inconsistent length field in elliptic curve list");
+		throw new Decoding_Error("Inconsistent length field in elliptic curve list");
 
 	if(len % 2 == 1)
-		throw Decoding_Error("Elliptic curve list of strange size");
+		throw new Decoding_Error("Elliptic curve list of strange size");
 
 	len /= 2;
 
@@ -440,7 +440,7 @@ byte Signature_Algorithms::hash_algo_code(in string name)
 	if(name == "SHA-512")
 		return 6;
 
-	throw Internal_Error("Unknown hash ID " + name + " for signature_algorithms");
+	throw new Internal_Error("Unknown hash ID " + name + " for signature_algorithms");
 }
 
 string Signature_Algorithms::sig_algo_name(byte code)
@@ -469,12 +469,12 @@ byte Signature_Algorithms::sig_algo_code(in string name)
 	if(name == "ECDSA")
 		return 3;
 
-	throw Internal_Error("Unknown sig ID " + name + " for signature_algorithms");
+	throw new Internal_Error("Unknown sig ID " + name + " for signature_algorithms");
 }
 
-std::vector<byte> Signature_Algorithms::serialize() const
+Vector!( byte ) Signature_Algorithms::serialize() const
 {
-	std::vector<byte> buf(2);
+	Vector!( byte ) buf(2);
 
 	for(size_t i = 0; i != m_supported_algos.size(); ++i)
 	{
@@ -496,8 +496,8 @@ std::vector<byte> Signature_Algorithms::serialize() const
 	return buf;
 }
 
-Signature_Algorithms::Signature_Algorithms(const std::vector<string>& hashes,
-														 const std::vector<string>& sigs)
+Signature_Algorithms::Signature_Algorithms(in Vector!( string ) hashes,
+														 const Vector!( string )& sigs)
 {
 	for(size_t i = 0; i != hashes.size(); ++i)
 		for(size_t j = 0; j != sigs.size(); ++j)
@@ -510,7 +510,7 @@ Signature_Algorithms::Signature_Algorithms(TLS_Data_Reader& reader,
 	u16bit len = reader.get_u16bit();
 
 	if(len + 2 != extension_size)
-		throw Decoding_Error("Bad encoding on signature algorithms extension");
+		throw new Decoding_Error("Bad encoding on signature algorithms extension");
 
 	while(len)
 	{
@@ -530,7 +530,7 @@ Signature_Algorithms::Signature_Algorithms(TLS_Data_Reader& reader,
 Session_Ticket::Session_Ticket(TLS_Data_Reader& reader,
 										 u16bit extension_size)
 {
-	m_ticket = reader.get_elem<byte, std::vector<byte> >(extension_size);
+	m_ticket = reader.get_elem<byte, Vector!( byte ) >(extension_size);
 }
 
 }

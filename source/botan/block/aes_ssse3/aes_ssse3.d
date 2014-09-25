@@ -304,7 +304,7 @@ __m128i aes_ssse3_decrypt(__m128i B, const __m128i* keys, size_t rounds)
 			x = _mm_xor_si128(x, K);
 			x = _mm_xor_si128(x, y);
 
-			const u32bit which_sr = ((((rounds - 1) << 4) ^ 48) & 48) / 16;
+			const uint which_sr = ((((rounds - 1) << 4) ^ 48) & 48) / 16;
 			return _mm_shuffle_epi8(x, sr[which_sr]);
 		}
 
@@ -339,7 +339,7 @@ void AES_128_SSSE3::encrypt_n(in byte[] input, ref byte[] output) const
 	const __m128i* in_mm = cast(const __m128i*)(input);
 	__m128i* out_mm = CAST__m128i*)(out);
 
-	const __m128i* keys = cast(const __m128i*)(&EK[0]);
+	const __m128i* keys = cast(in __m128i*)(EK[0]);
 
 	for(size_t i = 0; i != blocks; ++i)
 	{
@@ -356,7 +356,7 @@ void AES_128_SSSE3::decrypt_n(in byte[] input, ref byte[] output) const
 	const __m128i* in_mm = cast(const __m128i*)(input);
 	__m128i* out_mm = CAST__m128i*)(out);
 
-	const __m128i* keys = cast(const __m128i*)(&DK[0]);
+	const __m128i* keys = cast(in __m128i*)(DK[0]);
 
 	for(size_t i = 0; i != blocks; ++i)
 	{
@@ -417,7 +417,7 @@ void AES_192_SSSE3::encrypt_n(in byte[] input, ref byte[] output) const
 	const __m128i* in_mm = cast(const __m128i*)(input);
 	__m128i* out_mm = CAST__m128i*)(out);
 
-	const __m128i* keys = cast(const __m128i*)(&EK[0]);
+	const __m128i* keys = cast(in __m128i*)(EK[0]);
 
 	for(size_t i = 0; i != blocks; ++i)
 	{
@@ -434,7 +434,7 @@ void AES_192_SSSE3::decrypt_n(in byte[] input, ref byte[] output) const
 	const __m128i* in_mm = cast(const __m128i*)(input);
 	__m128i* out_mm = CAST__m128i*)(out);
 
-	const __m128i* keys = cast(const __m128i*)(&DK[0]);
+	const __m128i* keys = cast(in __m128i*)(DK[0]);
 
 	for(size_t i = 0; i != blocks; ++i)
 	{
@@ -524,7 +524,7 @@ void AES_256_SSSE3::encrypt_n(in byte[] input, ref byte[] output) const
 	const __m128i* in_mm = cast(const __m128i*)(input);
 	__m128i* out_mm = CAST__m128i*)(out);
 
-	const __m128i* keys = cast(const __m128i*)(&EK[0]);
+	const __m128i* keys = cast(in __m128i*)(EK[0]);
 
 	for(size_t i = 0; i != blocks; ++i)
 	{
@@ -541,7 +541,7 @@ void AES_256_SSSE3::decrypt_n(in byte[] input, ref byte[] output) const
 	const __m128i* in_mm = cast(const __m128i*)(input);
 	__m128i* out_mm = CAST__m128i*)(out);
 
-	const __m128i* keys = cast(const __m128i*)(&DK[0]);
+	const __m128i* keys = cast(in __m128i*)(DK[0]);
 
 	for(size_t i = 0; i != blocks; ++i)
 	{

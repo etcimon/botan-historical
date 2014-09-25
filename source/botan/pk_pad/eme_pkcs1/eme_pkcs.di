@@ -14,7 +14,7 @@ class EME_PKCS1v15 : public EME
 	public:
 		size_t maximum_input_size(size_t) const;
 	private:
-		SafeArray!byte pad(const byte[], size_t, size_t,
+		SafeVector!byte pad(const byte[], size_t, size_t,
 									  RandomNumberGenerator&) const;
-		SafeArray!byte unpad(const byte[], size_t, size_t) const;
+		SafeVector!byte unpad(const byte[], size_t, size_t) const;
 };

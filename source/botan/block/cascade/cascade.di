@@ -34,8 +34,8 @@ class Cascade_Cipher : public BlockCipher
 		*/
 		Cascade_Cipher(BlockCipher* cipher1, BlockCipher* cipher2);
 
-		Cascade_Cipher(const Cascade_Cipher&) = delete;
-		Cascade_Cipher& operator=(const Cascade_Cipher&) = delete;
+		Cascade_Cipher(in Cascade_Cipher) = delete;
+		Cascade_Cipher& operator=(in Cascade_Cipher) = delete;
 	private:
 		void key_schedule(const byte[], size_t);
 

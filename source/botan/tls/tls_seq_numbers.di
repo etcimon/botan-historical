@@ -64,7 +64,7 @@ class Datagram_Sequence_Numbers : public Connection_Sequence_Numbers
 
 		u64bit next_read_sequence() override
 		{
-			throw std::runtime_error("DTLS uses explicit sequence numbers");
+			throw new Exception("DTLS uses explicit sequence numbers");
 		}
 
 		bool already_seen(u64bit sequence) const override

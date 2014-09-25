@@ -15,21 +15,21 @@ namespace TLS {
 * Create a new Certificate Verify message
 */
 Certificate_Verify::Certificate_Verify(Handshake_IO& io,
-													Handshake_State& state,
-													const Policy& policy,
-													RandomNumberGenerator& rng,
-													const Private_Key* priv_key)
+													Handshake_State state,
+													const Policy policy,
+													RandomNumberGenerator rng,
+													const Private_Key priv_key)
 {
 	BOTAN_ASSERT_NONNULL(priv_key);
 
-	std::pair<string, Signature_Format> format =
+	Pair!(string, Signature_Format) format =
 		state.choose_sig_format(*priv_key, m_hash_algo, m_sig_algo, true, policy);
 
 	PK_Signer signer(*priv_key, format.first, format.second);
 
-	if(state.version() == Protocol_Version::SSL_V3)
+	if(state._version() == Protocol_Version::SSL_V3)
 	{
-		SafeArray!byte md5_sha = state.hash().final_ssl3(
+		SafeVector!byte md5_sha = state.hash().final_ssl3(
 			state.session_keys().master_secret());
 
 		if(priv_key->algo_name() == "DSA")
@@ -48,12 +48,12 @@ Certificate_Verify::Certificate_Verify(Handshake_IO& io,
 /*
 * Deserialize a Certificate Verify message
 */
-Certificate_Verify::Certificate_Verify(in Array!byte buf,
-													Protocol_Version version)
+Certificate_Verify::Certificate_Verify(in Vector!byte buf,
+													Protocol_Version _version)
 {
 	TLS_Data_Reader reader("CertificateVerify", buf);
 
-	if(version.supports_negotiable_signature_algorithms())
+	if(_version.supports_negotiable_signature_algorithms())
 	{
 		m_hash_algo = Signature_Algorithms::hash_algo_name(reader.get_byte());
 		m_sig_algo = Signature_Algorithms::sig_algo_name(reader.get_byte());
@@ -65,9 +65,9 @@ Certificate_Verify::Certificate_Verify(in Array!byte buf,
 /*
 * Serialize a Certificate Verify message
 */
-std::vector<byte> Certificate_Verify::serialize() const
+Vector!( byte ) Certificate_Verify::serialize() const
 {
-	std::vector<byte> buf;
+	Vector!( byte ) buf;
 
 	if(m_hash_algo != "" && m_sig_algo != "")
 	{
@@ -86,19 +86,19 @@ std::vector<byte> Certificate_Verify::serialize() const
 /*
 * Verify a Certificate Verify message
 */
-bool Certificate_Verify::verify(const X509_Certificate& cert,
-										  const Handshake_State& state) const
+bool Certificate_Verify::verify(const X509_Certificate cert,
+										  const Handshake_State state) const
 {
 	std::unique_ptr<Public_Key> key(cert.subject_public_key());
 
-	std::pair<string, Signature_Format> format =
+	Pair!(string, Signature_Format) format =
 		state.understand_sig_format(*key.get(), m_hash_algo, m_sig_algo, true);
 
 	PK_Verifier verifier(*key, format.first, format.second);
 
-	if(state.version() == Protocol_Version::SSL_V3)
+	if(state._version() == Protocol_Version::SSL_V3)
 	{
-		SafeArray!byte md5_sha = state.hash().final_ssl3(
+		SafeVector!byte md5_sha = state.hash().final_ssl3(
 			state.session_keys().master_secret());
 
 		return verifier.verify_message(&md5_sha[16], md5_sha.size()-16,

@@ -29,11 +29,11 @@ OctetString next_hash(size_t where, size_t want,
 	  sha1.update(cast(byte)(ASCII_A_CHAR + where));
 	sha1.update(secret, secret_len);
 	sha1.update(seed, seed_len);
-	SafeArray!byte sha1_hash = sha1.final();
+	SafeVector!byte sha1_hash = sha1.flush();
 
 	md5.update(secret, secret_len);
 	md5.update(sha1_hash);
-	SafeArray!byte md5_hash = md5.final();
+	SafeVector!byte md5_hash = md5.flush();
 
 	return OctetString(&md5_hash[0], want);
 }
@@ -43,12 +43,12 @@ OctetString next_hash(size_t where, size_t want,
 /*
 * SSL3 PRF
 */
-SafeArray!byte SSL3_PRF::derive(size_t key_len,
+SafeVector!byte SSL3_PRF::derive(size_t key_len,
 												in byte[] secret, size_t secret_len,
 												in byte[] seed, size_t seed_len) const
 {
 	if(key_len > 416)
-		throw Invalid_Argument("SSL3_PRF: Requested key length is too large");
+		throw new Invalid_Argument("SSL3_PRF: Requested key length is too large");
 
 	MD5 md5;
 	SHA_160 sha1;

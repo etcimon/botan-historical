@@ -34,7 +34,7 @@ Blocking_Client::Blocking_Client(size_t delegate(ref byte[]) read_fn,
 {
 }
 
-bool Blocking_Client::handshake_cb(const Session& session)
+bool Blocking_Client::handshake_cb(in Session session)
 {
 	return this->handshake_complete(session);
 }
@@ -51,7 +51,7 @@ void Blocking_Client::data_cb(in byte[] data, size_t data_len)
 
 void Blocking_Client::do_handshake()
 {
-	std::vector<byte> readbuf(4096);
+	Vector!( byte ) readbuf(4096);
 
 	while(!m_channel.is_closed() && !m_channel.is_active())
 	{
@@ -62,7 +62,7 @@ void Blocking_Client::do_handshake()
 
 size_t Blocking_Client::read(byte buf[], size_t buf_len)
 {
-	std::vector<byte> readbuf(4096);
+	Vector!( byte ) readbuf(4096);
 
 	while(m_plaintext.empty() && !m_channel.is_closed())
 	{

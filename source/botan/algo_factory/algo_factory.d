@@ -62,7 +62,7 @@ PBKDF* engine_get_algo(Engine* engine,
 template<typename T>
 const T* factory_prototype(in string algo_spec,
 									in string provider,
-									const std::vector<Engine*>& engines,
+									const Vector!( Engine* )& engines,
 									Algorithm_Factory& af,
 									Algorithm_Cache<T>& cache)
 {
@@ -156,7 +156,7 @@ Engine* Algorithm_Factory::get_engine_n(size_t n) const
 * Return the possible providers of a request
 * Note: assumes you don't have different types by the same name
 */
-std::vector<string>
+Vector!( string )
 Algorithm_Factory::providers_of(in string algo_spec)
 {
 	/* The checks with if(prototype_X(algo_spec)) have the effect of
@@ -175,7 +175,7 @@ Algorithm_Factory::providers_of(in string algo_spec)
 	else if(prototype_pbkdf(algo_spec))
 		return pbkdf_cache->providers_of(algo_spec);
 	else
-		return std::vector<string>();
+		return Vector!( string )();
 }
 
 /*
@@ -244,7 +244,7 @@ Algorithm_Factory::make_block_cipher(in string algo_spec,
 {
 	if(const BlockCipher* proto = prototype_block_cipher(algo_spec, provider))
 		return proto->clone();
-	throw Algorithm_Not_Found(algo_spec);
+	throw new Algorithm_Not_Found(algo_spec);
 }
 
 /*
@@ -256,7 +256,7 @@ Algorithm_Factory::make_stream_cipher(in string algo_spec,
 {
 	if(const StreamCipher* proto = prototype_stream_cipher(algo_spec, provider))
 		return proto->clone();
-	throw Algorithm_Not_Found(algo_spec);
+	throw new Algorithm_Not_Found(algo_spec);
 }
 
 /*
@@ -268,7 +268,7 @@ Algorithm_Factory::make_hash_function(in string algo_spec,
 {
 	if(const HashFunction* proto = prototype_hash_function(algo_spec, provider))
 		return proto->clone();
-	throw Algorithm_Not_Found(algo_spec);
+	throw new Algorithm_Not_Found(algo_spec);
 }
 
 /*
@@ -280,7 +280,7 @@ Algorithm_Factory::make_mac(in string algo_spec,
 {
 	if(const MessageAuthenticationCode* proto = prototype_mac(algo_spec, provider))
 		return proto->clone();
-	throw Algorithm_Not_Found(algo_spec);
+	throw new Algorithm_Not_Found(algo_spec);
 }
 
 /*
@@ -292,7 +292,7 @@ Algorithm_Factory::make_pbkdf(in string algo_spec,
 {
 	if(const PBKDF* proto = prototype_pbkdf(algo_spec, provider))
 		return proto->clone();
-	throw Algorithm_Not_Found(algo_spec);
+	throw new Algorithm_Not_Found(algo_spec);
 }
 
 /*

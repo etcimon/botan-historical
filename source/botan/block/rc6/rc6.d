@@ -16,16 +16,16 @@ void RC6::encrypt_n(in byte[] input, ref byte[] output) const
 {
 	for(size_t i = 0; i != blocks; ++i)
 	{
-		u32bit A = load_le<u32bit>(input, 0);
-		u32bit B = load_le<u32bit>(input, 1);
-		u32bit C = load_le<u32bit>(input, 2);
-		u32bit D = load_le<u32bit>(input, 3);
+		uint A = load_le<uint>(input, 0);
+		uint B = load_le<uint>(input, 1);
+		uint C = load_le<uint>(input, 2);
+		uint D = load_le<uint>(input, 3);
 
 		B += S[0]; D += S[1];
 
 		for(size_t j = 0; j != 20; j += 4)
 		{
-			u32bit T1, T2;
+			uint T1, T2;
 
 			T1 = rotate_left(B*(2*B+1), 5);
 			T2 = rotate_left(D*(2*D+1), 5);
@@ -52,8 +52,8 @@ void RC6::encrypt_n(in byte[] input, ref byte[] output) const
 
 		store_le(out, A, B, C, D);
 
-		in += BLOCK_SIZE;
-		out += BLOCK_SIZE;
+		input = input[BLOCK_SIZE .. $];
+		output = output[BLOCK_SIZE .. $];
 	}
 }
 
@@ -64,16 +64,16 @@ void RC6::decrypt_n(in byte[] input, ref byte[] output) const
 {
 	for(size_t i = 0; i != blocks; ++i)
 	{
-		u32bit A = load_le<u32bit>(input, 0);
-		u32bit B = load_le<u32bit>(input, 1);
-		u32bit C = load_le<u32bit>(input, 2);
-		u32bit D = load_le<u32bit>(input, 3);
+		uint A = load_le<uint>(input, 0);
+		uint B = load_le<uint>(input, 1);
+		uint C = load_le<uint>(input, 2);
+		uint D = load_le<uint>(input, 3);
 
 		C -= S[43]; A -= S[42];
 
 		for(size_t j = 0; j != 20; j += 4)
 		{
-			u32bit T1, T2;
+			uint T1, T2;
 
 			T1 = rotate_left(A*(2*A+1), 5);
 			T2 = rotate_left(C*(2*C+1), 5);
@@ -100,8 +100,8 @@ void RC6::decrypt_n(in byte[] input, ref byte[] output) const
 
 		store_le(out, A, B, C, D);
 
-		in += BLOCK_SIZE;
-		out += BLOCK_SIZE;
+		input = input[BLOCK_SIZE .. $];
+		output = output[BLOCK_SIZE .. $];
 	}
 }
 
@@ -119,12 +119,12 @@ void RC6::key_schedule(in byte[] key)
 	for(size_t i = 1; i != S.size(); ++i)
 		S[i] = S[i-1] + 0x9E3779B9;
 
-	secure_vector<u32bit> K(8);
+	secure_vector<uint> K(8);
 
 	for(s32bit i = length-1; i >= 0; --i)
 		K[i/4] = (K[i/4] << 8) + key[i];
 
-	u32bit A = 0, B = 0;
+	uint A = 0, B = 0;
 	for(size_t i = 0; i != MIX_ROUNDS; ++i)
 	{
 		A = rotate_left(S[i % S.size()] + A + B, 3);

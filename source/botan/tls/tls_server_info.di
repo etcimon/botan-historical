@@ -54,7 +54,7 @@ class Server_Information
 		u16bit m_port;
 };
 
-inline bool operator==(const Server_Information& a, const Server_Information& b)
+inline bool operator==(in Server_Information a, const Server_Information& b)
 {
 	return (a.hostname() == b.hostname()) &&
 			 (a.service() == b.service()) &&
@@ -62,12 +62,12 @@ inline bool operator==(const Server_Information& a, const Server_Information& b)
 
 }
 
-inline bool operator!=(const Server_Information& a, const Server_Information& b)
+inline bool operator!=(in Server_Information a, const Server_Information& b)
 {
 	return !(a == b);
 }
 
-inline bool operator<(const Server_Information& a, const Server_Information& b)
+inline bool operator<(in Server_Information a, const Server_Information& b)
 {
 	if(a.hostname() != b.hostname())
 		return (a.hostname() < b.hostname());

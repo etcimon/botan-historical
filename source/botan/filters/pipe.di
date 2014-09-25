@@ -63,14 +63,14 @@ class Pipe : public DataSource
 		* Write input to the pipe, i.e. to its first filter.
 		* @param in the secure_vector containing the data to write
 		*/
-		void write(in SafeArray!byte input)
+		void write(in SafeVector!byte input)
 		{ write(&in[0], in.size()); }
 
 		/**
 		* Write input to the pipe, i.e. to its first filter.
 		* @param in the std::vector containing the data to write
 		*/
-		void write(in Array!byte input)
+		void write(in Vector!byte input)
 		{ write(&in[0], in.size()); }
 
 		/**
@@ -102,13 +102,13 @@ class Pipe : public DataSource
 		* Perform start_msg(), write() and end_msg() sequentially.
 		* @param in the secure_vector containing the data to write
 		*/
-		void process_msg(in SafeArray!byte input);
+		void process_msg(in SafeVector!byte input);
 
 		/**
 		* Perform start_msg(), write() and end_msg() sequentially.
 		* @param in the secure_vector containing the data to write
 		*/
-		void process_msg(in Array!byte input);
+		void process_msg(in Vector!byte input);
 
 		/**
 		* Perform start_msg(), write() and end_msg() sequentially.
@@ -168,7 +168,7 @@ class Pipe : public DataSource
 		* @param msg the number identifying the message to read from
 		* @return secure_vector holding the contents of the pipe
 		*/
-		SafeArray!byte read_all(message_id msg = DEFAULT_MESSAGE);
+		SafeVector!byte read_all(message_id msg = DEFAULT_MESSAGE);
 
 		/**
 		* Read the full contents of the pipe.
@@ -290,8 +290,8 @@ class Pipe : public DataSource
 		*/
 		Pipe(std::initializer_list<Filter*> filters);
 
-		Pipe(const Pipe&) = delete;
-		Pipe& operator=(const Pipe&) = delete;
+		Pipe(in Pipe) = delete;
+		Pipe& operator=(in Pipe) = delete;
 
 		~Pipe();
 	private:

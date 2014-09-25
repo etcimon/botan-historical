@@ -39,7 +39,7 @@ class Zlib_Compression : public Filter
 		const size_t level;
 		const bool raw_deflate;
 
-		SafeArray!byte buffer;
+		SafeVector!byte buffer;
 		class Zlib_Stream* zlib;
 };
 
@@ -62,7 +62,7 @@ class Zlib_Decompression : public Filter
 
 		const bool raw_deflate;
 
-		SafeArray!byte buffer;
+		SafeVector!byte buffer;
 		class Zlib_Stream* zlib;
 		bool no_writes;
 };

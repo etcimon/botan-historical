@@ -23,7 +23,7 @@ class AES_128_NI : public Block_Cipher_Fixed_Params<16, 16>
 	private:
 		void key_schedule(const byte[], size_t);
 
-		secure_vector<u32bit> EK, DK;
+		secure_vector<uint> EK, DK;
 };
 
 /**
@@ -43,7 +43,7 @@ class AES_192_NI : public Block_Cipher_Fixed_Params<16, 24>
 	private:
 		void key_schedule(const byte[], size_t);
 
-		secure_vector<u32bit> EK, DK;
+		secure_vector<uint> EK, DK;
 };
 
 /**
@@ -63,5 +63,5 @@ class AES_256_NI : public Block_Cipher_Fixed_Params<16, 32>
 	private:
 		void key_schedule(const byte[], size_t);
 
-		secure_vector<u32bit> EK, DK;
+		secure_vector<uint> EK, DK;
 };

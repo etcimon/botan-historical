@@ -16,9 +16,9 @@
 class CCM_Mode : public AEAD_Mode
 {
 	public:
-		SafeArray!byte start(in byte[] nonce, size_t nonce_len) override;
+		SafeVector!byte start(in byte[] nonce, size_t nonce_len) override;
 
-		void update(SafeArray!byte blocks, size_t offset = 0) override;
+		void update(SafeVector!byte blocks, size_t offset = 0) override;
 
 		void set_associated_data(in byte[] ad, size_t ad_len) override;
 
@@ -47,14 +47,14 @@ class CCM_Mode : public AEAD_Mode
 
 		void encode_length(size_t len, ref byte[] output);
 
-		void inc(SafeArray!byte C);
+		void inc(SafeVector!byte C);
 
-		in SafeArray!byte ad_buf() const { return m_ad_buf; }
+		in SafeVector!byte ad_buf() const { return m_ad_buf; }
 
-		SafeArray!byte msg_buf() { return m_msg_buf; }
+		SafeVector!byte msg_buf() { return m_msg_buf; }
 
-		SafeArray!byte format_b0(size_t msg_size);
-		SafeArray!byte format_c0();
+		SafeVector!byte format_b0(size_t msg_size);
+		SafeVector!byte format_c0();
 	private:
 		void key_schedule(in byte[] key) override;
 
@@ -62,7 +62,7 @@ class CCM_Mode : public AEAD_Mode
 		const size_t m_L;
 
 		std::unique_ptr<BlockCipher> m_cipher;
-		SafeArray!byte m_nonce, m_msg_buf, m_ad_buf;
+		SafeVector!byte m_nonce, m_msg_buf, m_ad_buf;
 };
 
 /**
@@ -81,7 +81,7 @@ class CCM_Encryption : public CCM_Mode
 		CCM_Encryption(BlockCipher* cipher, size_t tag_size = 16, size_t L = 3) :
 			CCM_Mode(cipher, tag_size, L) {}
 
-		void finish(SafeArray!byte final_block, size_t offset = 0) override;
+		void finish(SafeVector!byte final_block, size_t offset = 0) override;
 
 		size_t output_length(size_t input_length) const override
 		{ return input_length + tag_size(); }
@@ -105,7 +105,7 @@ class CCM_Decryption : public CCM_Mode
 		CCM_Decryption(BlockCipher* cipher, size_t tag_size = 16, size_t L = 3) :
 			CCM_Mode(cipher, tag_size, L) {}
 
-		void finish(SafeArray!byte final_block, size_t offset = 0) override;
+		void finish(SafeVector!byte final_block, size_t offset = 0) override;
 
 		size_t output_length(size_t input_length) const override
 		{

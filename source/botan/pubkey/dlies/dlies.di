@@ -14,19 +14,19 @@
 class DLIES_Encryptor : public PK_Encryptor
 {
 	public:
-		DLIES_Encryptor(const PK_Key_Agreement_Key&,
+		DLIES_Encryptor(in PK_Key_Agreement_Key,
 							 KDF* kdf,
 							 MessageAuthenticationCode* mac,
 							 size_t mac_key_len = 20);
 
-		void set_other_key(in Array!byte);
+		void set_other_key(in Vector!byte);
 	private:
-		std::vector<byte> enc(const byte[], size_t,
+		Vector!( byte ) enc(const byte[], size_t,
 									 RandomNumberGenerator&) const;
 
 		size_t maximum_input_size() const;
 
-		std::vector<byte> other_key, my_key;
+		Vector!( byte ) other_key, my_key;
 
 		PK_Key_Agreement ka;
 		std::unique_ptr<KDF> kdf;
@@ -40,15 +40,15 @@ class DLIES_Encryptor : public PK_Encryptor
 class DLIES_Decryptor : public PK_Decryptor
 {
 	public:
-		DLIES_Decryptor(const PK_Key_Agreement_Key&,
+		DLIES_Decryptor(in PK_Key_Agreement_Key,
 							 KDF* kdf,
 							 MessageAuthenticationCode* mac,
 							 size_t mac_key_len = 20);
 
 	private:
-		SafeArray!byte dec(const byte[], size_t) const;
+		SafeVector!byte dec(const byte[], size_t) const;
 
-		std::vector<byte> my_key;
+		Vector!( byte ) my_key;
 
 		PK_Key_Agreement ka;
 		std::unique_ptr<KDF> kdf;

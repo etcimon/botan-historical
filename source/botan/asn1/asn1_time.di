@@ -22,26 +22,26 @@ class X509_Time : public ASN1_Object
 
 		string to_string() const { return readable_string(); }
 
-		s32bit cmp(const X509_Time&) const;
+		s32bit cmp(in X509_Time) const;
 
 		void set_to(in string);
 		void set_to(in string, ASN1_Tag);
 
-		X509_Time(const std::chrono::system_clock::time_point& time);
+		X509_Time(in SysTime time);
 		X509_Time(in string = "");
 		X509_Time(in string, ASN1_Tag);
 	private:
 		bool passes_sanity_check() const;
-		u32bit year, month, day, hour, minute, second;
+		uint year, month, day, hour, minute, second;
 		ASN1_Tag tag;
 };
 
 /*
 * Comparison Operations
 */
-bool operator==(const X509_Time&, const X509_Time&);
-bool operator!=(const X509_Time&, const X509_Time&);
-bool operator<=(const X509_Time&, const X509_Time&);
-bool operator>=(const X509_Time&, const X509_Time&);
-bool operator<(const X509_Time&, const X509_Time&);
-bool operator>(const X509_Time&, const X509_Time&);
+bool operator==(in X509_Time, const X509_Time&);
+bool operator!=(in X509_Time, const X509_Time&);
+bool operator<=(in X509_Time, const X509_Time&);
+bool operator>=(in X509_Time, const X509_Time&);
+bool operator<(in X509_Time, const X509_Time&);
+bool operator>(in X509_Time, const X509_Time&);

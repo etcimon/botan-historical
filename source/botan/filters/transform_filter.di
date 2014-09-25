@@ -17,9 +17,9 @@ class Transformation_Filter : public Keyed_Filter,
 	public:
 		Transformation_Filter(Transformation* t);
 
-		void set_iv(const InitializationVector& iv) override;
+		void set_iv(in InitializationVector iv) override;
 
-		void set_key(const SymmetricKey& key) override;
+		void set_key(in SymmetricKey key) override;
 
 		Key_Length_Specification key_spec() const override;
 
@@ -45,14 +45,14 @@ class Transformation_Filter : public Keyed_Filter,
 			public:
 				Nonce_State(bool allow_null_nonce) : m_fresh_nonce(allow_null_nonce) {}
 
-				void update(const InitializationVector& iv);
-				std::vector<byte> get();
+				void update(in InitializationVector iv);
+				Vector!( byte ) get();
 			private:
 				bool m_fresh_nonce;
-				std::vector<byte> m_nonce;
+				Vector!( byte ) m_nonce;
 		};
 
 		Nonce_State m_nonce;
 		std::unique_ptr<Transformation> m_transform;
-		SafeArray!byte m_buffer;
+		SafeVector!byte m_buffer;
 };

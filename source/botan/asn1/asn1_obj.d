@@ -28,7 +28,7 @@ namespace ASN1 {
 /*
 * Put some arbitrary bytes into a SEQUENCE
 */
-std::vector<byte> put_in_sequence(in Array!byte contents)
+Vector!( byte ) put_in_sequence(in Vector!byte contents)
 {
 	return DER_Encoder()
 		.start_cons(SEQUENCE)
@@ -40,9 +40,9 @@ std::vector<byte> put_in_sequence(in Array!byte contents)
 /*
 * Convert a BER object into a string object
 */
-string to_string(const BER_Object& obj)
+string to_string(in BER_Object obj)
 {
-	return string(cast(const char*)(&obj.value[0]),
+	return string(cast(in char*)(obj.value[0]),
 							 obj.value.size());
 }
 
@@ -53,7 +53,7 @@ bool maybe_BER(DataSource& source)
 {
 	byte first_byte;
 	if(!source.peek_byte(first_byte))
-		throw Stream_IO_Error("ASN1::maybe_BER: Source was empty");
+		throw new Stream_IO_Error("ASN1::maybe_BER: Source was empty");
 
 	if(first_byte == (SEQUENCE | CONSTRUCTED))
 		return true;

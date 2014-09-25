@@ -15,8 +15,8 @@ void gcm_multiply_clmul(byte x[16], const byte H[16])
 	*/
 	const __m128i BSWAP_MASK = _mm_set_epi8(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15);
 
-	__m128i a = _mm_loadu_si128(cast(const __m128i*)(&x[0]));
-	__m128i b = _mm_loadu_si128(cast(const __m128i*)(&H[0]));
+	__m128i a = _mm_loadu_si128(cast(in __m128i*)(x[0]));
+	__m128i b = _mm_loadu_si128(cast(in __m128i*)(H[0]));
 
 	a = _mm_shuffle_epi8(a, BSWAP_MASK);
 	b = _mm_shuffle_epi8(b, BSWAP_MASK);

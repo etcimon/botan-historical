@@ -9,7 +9,7 @@
 namespace {
 
 extern "C"
-void botan_sha160_x86_32_compress(u32bit[5], const byte[64], u32bit[81]);
+void botan_sha160_x86_32_compress(uint[5], const byte[64], uint[81]);
 
 }
 

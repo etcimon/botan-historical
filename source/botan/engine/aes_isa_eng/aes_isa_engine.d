@@ -12,7 +12,7 @@
   #include <botan/aes_ni.h>
 #endif
 BlockCipher*
-AES_ISA_Engine::find_block_cipher(const SCAN_Name& request,
+AES_ISA_Engine::find_block_cipher(in SCAN_Name request,
 											 Algorithm_Factory&) const
 {
 #if defined(BOTAN_HAS_AES_NI)

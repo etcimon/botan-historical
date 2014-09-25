@@ -16,13 +16,13 @@
 #include <botan/internal/xor_buf.h>
 namespace TLS {
 
-Connection_Cipher_State::Connection_Cipher_State(Protocol_Version version,
+Connection_Cipher_State::Connection_Cipher_State(Protocol_Version _version,
 																 Connection_Side side,
 																 bool our_side,
 																 const Ciphersuite& suite,
 																 const Session_Keys& keys) :
 	m_start_time(std::chrono::system_clock::now()),
-	m_is_ssl3(version == Protocol_Version::SSL_V3)
+	m_is_ssl3(_version == Protocol_Version::SSL_V3)
 {
 	SymmetricKey mac_key, cipher_key;
 	InitializationVector iv;
@@ -63,7 +63,7 @@ Connection_Cipher_State::Connection_Cipher_State(Protocol_Version version,
 		m_block_cipher_cbc_state = iv.bits_of();
 		m_block_size = bc->block_size();
 
-		if(version.supports_explicit_cbc_ivs())
+		if(_version.supports_explicit_cbc_ivs())
 			m_iv_size = m_block_size;
 	}
 	else if(const StreamCipher* sc = af.prototype_stream_cipher(cipher_algo))
@@ -72,9 +72,9 @@ Connection_Cipher_State::Connection_Cipher_State(Protocol_Version version,
 		m_stream_cipher->set_key(cipher_key);
 	}
 	else
-		throw Invalid_Argument("Unknown TLS cipher " + cipher_algo);
+		throw new Invalid_Argument("Unknown TLS cipher " + cipher_algo);
 
-	if(version == Protocol_Version::SSL_V3)
+	if(_version == Protocol_Version::SSL_V3)
 		m_mac.reset(af.make_mac("SSL3-MAC(" + mac_algo + ")"));
 	else
 		m_mac.reset(af.make_mac("HMAC(" + mac_algo + ")"));
@@ -82,7 +82,7 @@ Connection_Cipher_State::Connection_Cipher_State(Protocol_Version version,
 	m_mac->set_key(mac_key);
 }
 
-in SafeArray!byte Connection_Cipher_State::aead_nonce(u64bit seq)
+in SafeVector!byte Connection_Cipher_State::aead_nonce(u64bit seq)
 {
 	BOTAN_ASSERT(m_aead, "Using AEAD mode");
 	BOTAN_ASSERT(m_nonce.size() == 12, "Expected nonce size");
@@ -90,7 +90,7 @@ in SafeArray!byte Connection_Cipher_State::aead_nonce(u64bit seq)
 	return m_nonce;
 }
 
-in SafeArray!byte
+in SafeVector!byte
 Connection_Cipher_State::aead_nonce(in byte[] record)
 {
 	size_t record_len = record.length;
@@ -101,10 +101,10 @@ Connection_Cipher_State::aead_nonce(in byte[] record)
 	return m_nonce;
 }
 
-in SafeArray!byte
+in SafeVector!byte
 Connection_Cipher_State::format_ad(u64bit msg_sequence,
 											  byte msg_type,
-											  Protocol_Version version,
+											  Protocol_Version _version,
 											  u16bit msg_length)
 {
 	m_ad.clear();
@@ -112,10 +112,10 @@ Connection_Cipher_State::format_ad(u64bit msg_sequence,
 		m_ad.push_back(get_byte(i, msg_sequence));
 	m_ad.push_back(msg_type);
 
-	if(version != Protocol_Version::SSL_V3)
+	if(_version != Protocol_Version::SSL_V3)
 	{
-		m_ad.push_back(version.major_version());
-		m_ad.push_back(version.minor_version());
+		m_ad.push_back(_version.major_version());
+		m_ad.push_back(_version.minor_version());
 	}
 
 	m_ad.push_back(get_byte(0, msg_length));
@@ -124,9 +124,9 @@ Connection_Cipher_State::format_ad(u64bit msg_sequence,
 	return m_ad;
 }
 
-void write_record(SafeArray!byte output,
+void write_record(SafeVector!byte output,
 						byte msg_type, in byte[] msg, size_t msg_length,
-						Protocol_Version version,
+						Protocol_Version _version,
 						u64bit msg_sequence,
 						Connection_Cipher_State* cipherstate,
 						RandomNumberGenerator& rng)
@@ -134,10 +134,10 @@ void write_record(SafeArray!byte output,
 	output.clear();
 
 	output.push_back(msg_type);
-	output.push_back(version.major_version());
-	output.push_back(version.minor_version());
+	output.push_back(_version.major_version());
+	output.push_back(_version.minor_version());
 
-	if(version.is_datagram_protocol())
+	if(_version.is_datagram_protocol())
 	{
 		for(size_t i = 0; i != 8; ++i)
 			output.push_back(get_byte(i, msg_sequence));
@@ -173,7 +173,7 @@ void write_record(SafeArray!byte output,
 		output.push_back(get_byte<u16bit>(1, rec_size));
 
 		aead->set_associated_data_vec(
-			cipherstate->format_ad(msg_sequence, msg_type, version, msg_length)
+			cipherstate->format_ad(msg_sequence, msg_type, _version, msg_length)
 			);
 
 		output += std::make_pair(&nonce[implicit_nonce_bytes], explicit_nonce_bytes);
@@ -191,7 +191,7 @@ void write_record(SafeArray!byte output,
 	}
 
 	cipherstate->mac()->update(
-		cipherstate->format_ad(msg_sequence, msg_type, version, msg_length)
+		cipherstate->format_ad(msg_sequence, msg_type, _version, msg_length)
 		);
 
 	cipherstate->mac()->update(msg, msg_length);
@@ -205,7 +205,7 @@ void write_record(SafeArray!byte output,
 		block_size);
 
 	if(buf_size > MAX_CIPHERTEXT_SIZE)
-		throw Internal_Error("Output record is larger than allowed by protocol");
+		throw new Internal_Error("Output record is larger than allowed by protocol");
 
 	output.push_back(get_byte<u16bit>(0, buf_size));
 	output.push_back(get_byte<u16bit>(1, buf_size));
@@ -221,7 +221,7 @@ void write_record(SafeArray!byte output,
 	output.insert(output.end(), &msg[0], &msg[msg_length]);
 
 	output.resize(output.size() + mac_size);
-	cipherstate->mac()->final(&output[output.size() - mac_size]);
+	cipherstate->mac()->flushInto(&output[output.size() - mac_size]);
 
 	if(block_size)
 	{
@@ -233,7 +233,7 @@ void write_record(SafeArray!byte output,
 	}
 
 	if(buf_size > MAX_CIPHERTEXT_SIZE)
-		throw Internal_Error("Produced ciphertext larger than protocol allows");
+		throw new Internal_Error("Produced ciphertext larger than protocol allows");
 
 	BOTAN_ASSERT(buf_size + header_size == output.size(),
 					 "Output buffer is sized properly");
@@ -244,7 +244,7 @@ void write_record(SafeArray!byte output,
 	}
 	else if(BlockCipher* bc = cipherstate->block_cipher())
 	{
-		SafeArray!byte cbc_state = cipherstate->cbc_state();
+		SafeVector!byte cbc_state = cipherstate->cbc_state();
 
 		BOTAN_ASSERT(buf_size % block_size == 0,
 						 "Buffer is an even multiple of block size");
@@ -266,12 +266,12 @@ void write_record(SafeArray!byte output,
 							  &buf[block_size*blocks]);
 	}
 	else
-		throw Internal_Error("NULL cipher not supported");
+		throw new Internal_Error("NULL cipher not supported");
 }
 
 namespace {
 
-size_t fill_buffer_to(SafeArray!byte readbuf,
+size_t fill_buffer_to(SafeVector!byte readbuf,
 							 const byte*& input,
 							 size_t& input_size,
 							 size_t& input_consumed,
@@ -358,13 +358,13 @@ void cbc_decrypt_record(byte[] record_contents,
 
 	byte* buf = record_contents.ptr;
 
-	SafeArray!byte last_ciphertext(block_size);
+	SafeVector!byte last_ciphertext(block_size);
 	copy_mem(&last_ciphertext[0], &buf[0], block_size);
 
 	bc.decrypt(&buf[0]);
 	xor_buf(&buf[0], &cipherstate.cbc_state()[0], block_size);
 
-	SafeArray!byte last_ciphertext2;
+	SafeVector!byte last_ciphertext2;
 
 	for(size_t i = 1; i < blocks; ++i)
 	{
@@ -377,7 +377,7 @@ void cbc_decrypt_record(byte[] record_contents,
 	cipherstate.cbc_state() = last_ciphertext;
 }
 
-void decrypt_record(SafeArray!byte output,
+void decrypt_record(SafeVector!byte output,
 						  in byte[] record_contents,
 						  u64bit record_sequence,
 						  Protocol_Version record_version,
@@ -432,7 +432,7 @@ void decrypt_record(SafeArray!byte output,
 		}
 		else
 		{
-			throw Internal_Error("No cipher state set but needed to decrypt");
+			throw new Internal_Error("No cipher state set but needed to decrypt");
 		}
 
 		const size_t mac_size = cipherstate.mac_size();
@@ -441,7 +441,7 @@ void decrypt_record(SafeArray!byte output,
 		const size_t mac_pad_iv_size = mac_size + pad_size + iv_size;
 
 		if(record_len < mac_pad_iv_size)
-			throw Decoding_Error("Record sent with invalid length");
+			throw new Decoding_Error("Record sent with invalid length");
 
 		const byte* plaintext_block = &record_contents[iv_size];
 		const u16bit plaintext_length = record_len - mac_pad_iv_size;
@@ -452,15 +452,15 @@ void decrypt_record(SafeArray!byte output,
 
 		cipherstate.mac()->update(plaintext_block, plaintext_length);
 
-		std::vector<byte> mac_buf(mac_size);
-		cipherstate.mac()->final(&mac_buf[0]);
+		Vector!( byte ) mac_buf(mac_size);
+		cipherstate.mac()->flushInto(&mac_buf[0]);
 
 		const size_t mac_offset = record_len - (mac_size + pad_size);
 
 		const bool mac_bad = !same_mem(&record_contents[mac_offset], &mac_buf[0], mac_size);
 
 		if(mac_bad || padding_bad)
-			throw TLS_Exception(Alert::BAD_RECORD_MAC, "Message authentication failure");
+			throw new TLS_Exception(Alert::BAD_RECORD_MAC, "Message authentication failure");
 
 		output.assign(plaintext_block, plaintext_block + plaintext_length);
 	}
@@ -468,10 +468,10 @@ void decrypt_record(SafeArray!byte output,
 
 }
 
-size_t read_record(SafeArray!byte readbuf,
+size_t read_record(SafeVector!byte readbuf,
 						 in byte[] input,
 						 ref size_t consumed,
-						 SafeArray!byte record,
+						 SafeVector!byte record,
 						 ref u64bit record_sequence,
 						 Protocol_Version record_version,
 						 Record_Type record_type,
@@ -495,7 +495,7 @@ size_t read_record(SafeArray!byte readbuf,
 	if(!sequence_numbers && (readbuf[0] & 0x80) && (readbuf[2] == 1))
 	{
 		if(readbuf[3] == 0 && readbuf[4] == 2)
-			throw TLS_Exception(Alert::PROTOCOL_VERSION,
+			throw new TLS_Exception(Alert::PROTOCOL_VERSION,
 									  "Client claims to only support SSLv2, rejecting");
 
 		if(readbuf[3] >= 3) // SSLv2 mapped TLS hello, then?
@@ -549,7 +549,7 @@ size_t read_record(SafeArray!byte readbuf,
 											readbuf[header_size-1]);
 
 	if(record_len > MAX_CIPHERTEXT_SIZE)
-		throw TLS_Exception(Alert::RECORD_OVERFLOW,
+		throw new TLS_Exception(Alert::RECORD_OVERFLOW,
 								  "Got message that exceeds maximum size");
 
 	if(size_t needed = fill_buffer_to(readbuf,

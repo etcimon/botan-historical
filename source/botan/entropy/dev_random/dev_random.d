@@ -18,7 +18,7 @@
 Device_EntropySource constructor
 Open a file descriptor to each (available) device in fsnames
 */
-Device_EntropySource::Device_EntropySource(const std::vector<string>& fsnames)
+Device_EntropySource::Device_EntropySource(in Vector!( string ) fsnames)
 {
   #define O_NONBLOCK 0
 #endif
@@ -77,7 +77,7 @@ void Device_EntropySource::poll(Entropy_Accumulator& accum)
 	if(::select(max_fd + 1, &read_set, nullptr, nullptr, &timeout) < 0)
 		return;
 
-	SafeArray!byte io_buffer = accum.get_io_buffer(READ_ATTEMPT);
+	SafeVector!byte io_buffer = accum.get_io_buffer(READ_ATTEMPT);
 
 	for(size_t i = 0; i != m_devices.size(); ++i)
 	{

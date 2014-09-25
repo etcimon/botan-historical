@@ -9,12 +9,12 @@
 /*
 * KDF2 Key Derivation Mechanism
 */
-SafeArray!byte KDF2::derive(size_t out_len,
+SafeVector!byte KDF2::derive(size_t out_len,
 										  in byte[] secret, size_t secret_len,
 										  in byte[] P, size_t P_len) const
 {
-	SafeArray!byte output;
-	u32bit counter = 1;
+	SafeVector!byte output;
+	uint counter = 1;
 
 	while(out_len && counter)
 	{
@@ -22,7 +22,7 @@ SafeArray!byte KDF2::derive(size_t out_len,
 		hash->update_be(counter);
 		hash->update(P, P_len);
 
-		SafeArray!byte hash_result = hash->final();
+		SafeVector!byte hash_result = hash->flush();
 
 		size_t added = std::min(hash_result.size(), out_len);
 		output += std::make_pair(&hash_result[0], added);

@@ -23,14 +23,14 @@ class EMSA1 : public EMSA
 		size_t hash_output_length() const { return m_hash->output_length(); }
 	private:
 		void update(const byte[], size_t);
-		SafeArray!byte raw_data();
+		SafeVector!byte raw_data();
 
-		SafeArray!byte encoding_of(in SafeArray!byte msg,
+		SafeVector!byte encoding_of(in SafeVector!byte msg,
 												  size_t output_bits,
 												  RandomNumberGenerator& rng);
 
-		bool verify(in SafeArray!byte coded,
-						in SafeArray!byte raw,
+		bool verify(in SafeVector!byte coded,
+						in SafeVector!byte raw,
 						size_t key_bits);
 
 		std::unique_ptr<HashFunction> m_hash;

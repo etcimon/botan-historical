@@ -38,11 +38,11 @@ class sqlite3_statement
 
 		void bind(int column, int val);
 
-		void bind(int column, std::chrono::system_clock::time_point time);
+		void bind(int column, SysTime time);
 
-		void bind(int column, in Array!byte val);
+		void bind(int column, in Vector!byte val);
 
-		std::pair<const byte*, size_t> get_blob(int column);
+		Pair!(const byte*, size_t) get_blob(int column);
 
 		size_t get_size_t(int column);
 

@@ -13,7 +13,7 @@ namespace {
 /*
 * Handle signed operands, if necessary
 */
-void sign_fixup(const BigInt& x, const BigInt& y, BigInt& q, BigInt& r)
+void sign_fixup(in BigInt x, const BigInt& y, BigInt& q, BigInt& r)
 {
 	if(x.sign() == BigInt::Negative)
 	{
@@ -52,10 +52,10 @@ bool division_check(word q, word y2, word y1,
 /*
 * Solve x = q * y + r
 */
-void divide(const BigInt& x, const BigInt& y_arg, BigInt& q, BigInt& r)
+void divide(in BigInt x, const BigInt& y_arg, BigInt& q, BigInt& r)
 {
 	if(y_arg.is_zero())
-		throw BigInt::DivideByZero();
+		throw new BigInt::DivideByZero();
 
 	BigInt y = y_arg;
 	const size_t y_words = y.sig_words();
@@ -84,7 +84,7 @@ void divide(const BigInt& x, const BigInt& y_arg, BigInt& q, BigInt& r)
 		const size_t n = r.sig_words() - 1, t = y_words - 1;
 
 		if(n < t)
-			throw Internal_Error("BigInt division word sizes");
+			throw new Internal_Error("BigInt division word sizes");
 
 		q.grow_to(n - t + 1);
 

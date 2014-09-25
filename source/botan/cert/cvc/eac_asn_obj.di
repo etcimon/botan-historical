@@ -43,7 +43,7 @@ class EAC_Time : public ASN1_Object
 		* other, +1 in the opposite case, and 0 if both dates are
 		* equal.
 		*/
-		s32bit cmp(const EAC_Time& other) const;
+		s32bit cmp(in EAC_Time other) const;
 
 		/**
 		* Set this' value by a string value.
@@ -56,46 +56,46 @@ class EAC_Time : public ASN1_Object
 		* Add the specified number of years to this.
 		* @param years the number of years to add
 		*/
-		void add_years(u32bit years);
+		void add_years(uint years);
 
 		/**
 		* Add the specified number of months to this.
 		* @param months the number of months to add
 		*/
-		void add_months(u32bit months);
+		void add_months(uint months);
 
 		/**
 		* Get the year value of this objects.
 		* @return year value
 		*/
-		u32bit get_year() const { return year; }
+		uint get_year() const { return year; }
 
 		/**
 		* Get the month value of this objects.
 		* @return month value
 		*/
-		u32bit get_month() const { return month; }
+		uint get_month() const { return month; }
 
 		/**
 		* Get the day value of this objects.
 		* @return day value
 		*/
-		u32bit get_day() const { return day; }
+		uint get_day() const { return day; }
 
-		EAC_Time(const std::chrono::system_clock::time_point& time,
+		EAC_Time(in SysTime time,
 					ASN1_Tag tag = ASN1_Tag(0));
 
 		EAC_Time(in string yyyy_mm_dd,
 					ASN1_Tag tag = ASN1_Tag(0));
 
-		EAC_Time(u32bit year, u32bit month, u32bit day,
+		EAC_Time(uint year, uint month, uint day,
 					ASN1_Tag tag = ASN1_Tag(0));
 
 		abstract ~EAC_Time() {}
 	private:
-		std::vector<byte> encoded_eac_time() const;
+		Vector!( byte ) encoded_eac_time() const;
 		bool passes_sanity_check() const;
-		u32bit year, month, day;
+		uint year, month, day;
 		ASN1_Tag tag;
 };
 
@@ -117,14 +117,14 @@ class ASN1_Ced : public EAC_Time
 		/**
 		* Construct a CED from a time point
 		*/
-		ASN1_Ced(const std::chrono::system_clock::time_point& time) :
+		ASN1_Ced(in SysTime time) :
 			EAC_Time(time, ASN1_Tag(37)) {}
 
 		/**
 		* Copy constructor (for general EAC_Time objects).
 		* @param other the object to copy from
 		*/
-		ASN1_Ced(const EAC_Time& other) :
+		ASN1_Ced(in EAC_Time other) :
 			EAC_Time(other.get_year(), other.get_month(), other.get_day(),
 						ASN1_Tag(37))
 		{}
@@ -145,10 +145,10 @@ class ASN1_Cex : public EAC_Time
 		ASN1_Cex(in string str = "") :
 			EAC_Time(str, ASN1_Tag(36)) {}
 
-		ASN1_Cex(const std::chrono::system_clock::time_point& time) :
+		ASN1_Cex(in SysTime time) :
 			EAC_Time(time, ASN1_Tag(36)) {}
 
-		ASN1_Cex(const EAC_Time& other) :
+		ASN1_Cex(in EAC_Time other) :
 			EAC_Time(other.get_year(), other.get_month(), other.get_day(),
 						ASN1_Tag(36))
 		{}
@@ -215,15 +215,15 @@ class ASN1_Chr : public ASN1_EAC_String
 /*
 * Comparison Operations
 */
-bool operator==(const EAC_Time&, const EAC_Time&);
-bool operator!=(const EAC_Time&, const EAC_Time&);
-bool operator<=(const EAC_Time&, const EAC_Time&);
-bool operator>=(const EAC_Time&, const EAC_Time&);
-bool operator>(const EAC_Time&, const EAC_Time&);
-bool operator<(const EAC_Time&, const EAC_Time&);
+bool operator==(in EAC_Time, const EAC_Time&);
+bool operator!=(in EAC_Time, const EAC_Time&);
+bool operator<=(in EAC_Time, const EAC_Time&);
+bool operator>=(in EAC_Time, const EAC_Time&);
+bool operator>(in EAC_Time, const EAC_Time&);
+bool operator<(in EAC_Time, const EAC_Time&);
 
-bool operator==(const ASN1_EAC_String&, const ASN1_EAC_String&);
-inline bool operator!=(const ASN1_EAC_String& lhs, const ASN1_EAC_String& rhs)
+bool operator==(in ASN1_EAC_String, const ASN1_EAC_String&);
+inline bool operator!=(in ASN1_EAC_String lhs, const ASN1_EAC_String& rhs)
 {
 	return !(lhs == rhs);
 }

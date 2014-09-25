@@ -11,7 +11,7 @@
 #include <future>/*
 * DSA_PublicKey Constructor
 */
-DSA_PublicKey::DSA_PublicKey(const DL_Group& grp, const BigInt& y1)
+DSA_PublicKey::DSA_PublicKey(in DL_Group grp, const BigInt& y1)
 {
 	group = grp;
 	y = y1;
@@ -38,8 +38,8 @@ DSA_PrivateKey::DSA_PrivateKey(RandomNumberGenerator& rng,
 		load_check(rng);
 }
 
-DSA_PrivateKey::DSA_PrivateKey(const AlgorithmIdentifier& alg_id,
-										 in SafeArray!byte key_bits,
+DSA_PrivateKey::DSA_PrivateKey(in AlgorithmIdentifier alg_id,
+										 in SafeVector!byte key_bits,
 										 RandomNumberGenerator& rng) :
 	DL_Scheme_PrivateKey(alg_id, key_bits, DL_Group::ANSI_X9_57)
 {
@@ -62,7 +62,7 @@ bool DSA_PrivateKey::check_key(RandomNumberGenerator& rng, bool strong) const
 	return KeyPair::signature_consistency_check(rng, *this, "EMSA1(SHA-1)");
 }
 
-DSA_Signature_Operation::DSA_Signature_Operation(const DSA_PrivateKey& dsa) :
+DSA_Signature_Operation::DSA_Signature_Operation(in DSA_PrivateKey dsa) :
 	q(dsa.group_q()),
 	x(dsa.get_x()),
 	powermod_g_p(dsa.group_g(), dsa.group_p()),
@@ -70,7 +70,7 @@ DSA_Signature_Operation::DSA_Signature_Operation(const DSA_PrivateKey& dsa) :
 {
 }
 
-SafeArray!byte
+SafeVector!byte
 DSA_Signature_Operation::sign(in byte[] msg, size_t msg_len,
 										RandomNumberGenerator& rng)
 {
@@ -94,13 +94,13 @@ DSA_Signature_Operation::sign(in byte[] msg, size_t msg_len,
 		s = mod_q.multiply(s, mul_add(x, r, i));
 	}
 
-	SafeArray!byte output(2*q.bytes());
+	SafeVector!byte output(2*q.bytes());
 	r.binary_encode(&output[output.size() / 2 - r.bytes()]);
 	s.binary_encode(&output[output.size() - s.bytes()]);
 	return output;
 }
 
-DSA_Verification_Operation::DSA_Verification_Operation(const DSA_PublicKey& dsa) :
+DSA_Verification_Operation::DSA_Verification_Operation(in DSA_PublicKey dsa) :
 	q(dsa.group_q()), y(dsa.get_y())
 {
 	powermod_g_p = Fixed_Base_Power_Mod(dsa.group_g(), dsa.group_p());

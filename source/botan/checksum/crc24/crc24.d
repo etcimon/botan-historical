@@ -12,7 +12,7 @@
 */
 void CRC24::add_data(in byte[] input, size_t length)
 {
-	const u32bit TABLE[256] = {
+	const uint TABLE[256] = {
 		0x00000000, 0x00864CFB, 0x008AD50D, 0x000C99F6, 0x0093E6E1, 0x0015AA1A,
 		0x001933EC, 0x009F7F17, 0x00A18139, 0x0027CDC2, 0x002B5434, 0x00AD18CF,
 		0x003267D8, 0x00B42B23, 0x00B8B2D5, 0x003EFE2E, 0x00C54E89, 0x00430272,
@@ -57,7 +57,7 @@ void CRC24::add_data(in byte[] input, size_t length)
 		0x00FA48FA, 0x007C0401, 0x0042FA2F, 0x00C4B6D4, 0x00C82F22, 0x004E63D9,
 		0x00D11CCE, 0x00575035, 0x005BC9C3, 0x00DD8538 };
 
-	u32bit tmp = crc;
+	uint tmp = crc;
 	while(length >= 16)
 	{
 		tmp = TABLE[((tmp >> 16) ^ input[ 0]) & 0xFF] ^ (tmp << 8);

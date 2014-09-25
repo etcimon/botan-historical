@@ -40,13 +40,13 @@ string version_string()
 #undef QUOTE
 }
 
-u32bit version_datestamp() { return BOTAN_VERSION_DATESTAMP; }
+uint version_datestamp() { return BOTAN_VERSION_DATESTAMP; }
 
 /*
 * Return parts of the version as integers
 */
-u32bit version_major() { return BOTAN_VERSION_MAJOR; }
-u32bit version_minor() { return BOTAN_VERSION_MINOR; }
-u32bit version_patch() { return BOTAN_VERSION_PATCH; }
+uint version_major() { return BOTAN_VERSION_MAJOR; }
+uint version_minor() { return BOTAN_VERSION_MINOR; }
+uint version_patch() { return BOTAN_VERSION_PATCH; }
 
 }

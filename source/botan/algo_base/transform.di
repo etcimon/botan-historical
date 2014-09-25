@@ -22,7 +22,7 @@ class Transformation
 		* @param nonce the per message nonce
 		*/
 		template<typename Alloc>
-		SafeArray!byte start_vec(const std::vector<byte, Alloc>& nonce)
+		SafeVector!byte start_vec(in Vector!( byte, Alloc ) nonce)
 		{
 			return start(&nonce[0], nonce.size());
 		}
@@ -32,14 +32,14 @@ class Transformation
 		* @param nonce the per message nonce
 		* @param nonce_len length of nonce
 		*/
-		abstract SafeArray!byte start(in byte[] nonce, size_t nonce_len) = 0;
+		abstract SafeVector!byte start(in byte[] nonce, size_t nonce_len) = 0;
 
 		/**
 		* Process some data. Input must be in size update_granularity() byte blocks.
 		* @param blocks in/out paramter which will possibly be resized
 		* @param offset an offset into blocks to begin processing
 		*/
-		abstract void update(SafeArray!byte blocks, size_t offset = 0) = 0;
+		abstract void update(SafeVector!byte blocks, size_t offset = 0) = 0;
 
 		/**
 		* Complete processing of a message.
@@ -48,11 +48,11 @@ class Transformation
 		*		  minimum_final_size() bytes, and will be set to any final output
 		* @param offset an offset into final_block to begin processing
 		*/
-		abstract void finish(SafeArray!byte final_block, size_t offset = 0) = 0;
+		abstract void finish(SafeVector!byte final_block, size_t offset = 0) = 0;
 
 		/**
 		* Returns the size of the output if this transform is used to process a
-		* message with input_length bytes. Will throw if unable to give a precise
+		* message with input_length bytes. Will throw new if unable to give a precise
 		* answer.
 		*/
 		abstract size_t output_length(size_t input_length) const = 0;
@@ -112,12 +112,12 @@ class Keyed_Transform : public Transformation
 		}
 
 		template<typename Alloc>
-		void set_key(const std::vector<byte, Alloc>& key)
+		void set_key(in Vector!( byte, Alloc ) key)
 		{
 			set_key(&key[0], key.size());
 		}
 
-		void set_key(const SymmetricKey& key)
+		void set_key(in SymmetricKey key)
 		{
 			set_key(key.begin(), key.length());
 		}
@@ -130,7 +130,7 @@ class Keyed_Transform : public Transformation
 		void set_key(in byte[] key)
 		{
 			if(!valid_keylength(length))
-				throw Invalid_Key_Length(name(), length);
+				throw new Invalid_Key_Length(name(), length);
 			key_schedule(key, length);
 		}
 

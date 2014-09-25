@@ -23,5 +23,5 @@ class CRC24 : public HashFunction
 	private:
 		void add_data(const byte[], size_t);
 		void final_result(byte[]);
-		u32bit crc;
+		uint crc;
 };

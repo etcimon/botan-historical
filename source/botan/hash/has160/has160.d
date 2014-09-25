@@ -13,8 +13,8 @@ namespace HAS_160_F {
 /*
 * HAS-160 F1 Function
 */
-inline void F1(u32bit A, u32bit& B, u32bit C, u32bit D, u32bit& E,
-					u32bit msg, u32bit rot)
+inline void F1(uint A, ref uint B, uint C, uint D, ref uint E,
+					uint msg, uint rot)
 {
 	E += rotate_left(A, rot) + (D ^ (B & (C ^ D))) + msg;
 	B  = rotate_left(B, 10);
@@ -23,8 +23,8 @@ inline void F1(u32bit A, u32bit& B, u32bit C, u32bit D, u32bit& E,
 /*
 * HAS-160 F2 Function
 */
-inline void F2(u32bit A, u32bit& B, u32bit C, u32bit D, u32bit& E,
-					u32bit msg, u32bit rot)
+inline void F2(uint A, ref uint B, uint C, uint D, ref uint E,
+					uint msg, uint rot)
 {
 	E += rotate_left(A, rot) + (B ^ C ^ D) + msg + 0x5A827999;
 	B  = rotate_left(B, 17);
@@ -33,8 +33,8 @@ inline void F2(u32bit A, u32bit& B, u32bit C, u32bit D, u32bit& E,
 /*
 * HAS-160 F3 Function
 */
-inline void F3(u32bit A, u32bit& B, u32bit C, u32bit D, u32bit& E,
-					u32bit msg, u32bit rot)
+inline void F3(uint A, ref uint B, uint C, uint D, ref uint E,
+					uint msg, uint rot)
 {
 	E += rotate_left(A, rot) + (C ^ (B | ~D)) + msg + 0x6ED9EBA1;
 	B  = rotate_left(B, 25);
@@ -43,8 +43,8 @@ inline void F3(u32bit A, u32bit& B, u32bit C, u32bit D, u32bit& E,
 /*
 * HAS-160 F4 Function
 */
-inline void F4(u32bit A, u32bit& B, u32bit C, u32bit D, u32bit& E,
-					u32bit msg, u32bit rot)
+inline void F4(uint A, ref uint B, uint C, uint D, ref uint E,
+					uint msg, uint rot)
 {
 	E += rotate_left(A, rot) + (B ^ C ^ D) + msg + 0x8F1BBCDC;
 	B  = rotate_left(B, 30);
@@ -59,7 +59,7 @@ void HAS_160::compress_n(in byte[] input, size_t blocks)
 {
 	using namespace HAS_160_F;
 
-	u32bit A = digest[0], B = digest[1], C = digest[2],
+	uint A = digest[0], B = digest[1], C = digest[2],
 			 D = digest[3], E = digest[4];
 
 	for(size_t i = 0; i != blocks; ++i)

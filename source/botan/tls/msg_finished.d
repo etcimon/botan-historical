@@ -14,17 +14,17 @@ namespace {
 /*
 * Compute the verify_data
 */
-std::vector<byte> finished_compute_verify(const Handshake_State& state,
+Vector!( byte ) finished_compute_verify(in Handshake_State state,
 														Connection_Side side)
 {
-	if(state.version() == Protocol_Version::SSL_V3)
+	if(state._version() == Protocol_Version::SSL_V3)
 	{
 		const(byte)[] SSL_CLIENT_LABEL = { 0x43, 0x4C, 0x4E, 0x54 };
 		const(byte)[] SSL_SERVER_LABEL = { 0x53, 0x52, 0x56, 0x52 };
 
 		Handshake_Hash hash = state.hash(); // don't modify state
 
-		std::vector<byte> ssl3_finished;
+		Vector!( byte ) ssl3_finished;
 
 		if(side == CLIENT)
 			hash.update(SSL_CLIENT_LABEL, sizeof(SSL_CLIENT_LABEL));
@@ -45,13 +45,13 @@ std::vector<byte> finished_compute_verify(const Handshake_State& state,
 
 		std::unique_ptr<KDF> prf(state.protocol_specific_prf());
 
-		std::vector<byte> input;
+		Vector!( byte ) input;
 		if(side == CLIENT)
 			input += std::make_pair(TLS_CLIENT_LABEL, sizeof(TLS_CLIENT_LABEL));
 		else
 			input += std::make_pair(TLS_SERVER_LABEL, sizeof(TLS_SERVER_LABEL));
 
-		input += state.hash().final(state.version(), state.ciphersuite().prf_algo());
+		input += state.hash().flushInto(state._version(), state.ciphersuite().prf_algo());
 
 		return unlock(prf->derive_key(12, state.session_keys().master_secret(), input));
 	}
@@ -73,7 +73,7 @@ Finished::Finished(Handshake_IO& io,
 /*
 * Serialize a Finished message
 */
-std::vector<byte> Finished::serialize() const
+Vector!( byte ) Finished::serialize() const
 {
 	return m_verification_data;
 }
@@ -81,7 +81,7 @@ std::vector<byte> Finished::serialize() const
 /*
 * Deserialize a Finished message
 */
-Finished::Finished(in Array!byte buf)
+Finished::Finished(in Vector!byte buf)
 {
 	m_verification_data = buf;
 }
@@ -89,7 +89,7 @@ Finished::Finished(in Array!byte buf)
 /*
 * Verify a Finished message
 */
-bool Finished::verify(const Handshake_State& state,
+bool Finished::verify(in Handshake_State state,
 							 Connection_Side side) const
 {
 	return (m_verification_data == finished_compute_verify(state, side));

@@ -12,7 +12,7 @@ namespace TLS {
 
 namespace {
 
-u32bit bitmask_for_handshake_type(Handshake_Type type)
+uint bitmask_for_handshake_type(Handshake_Type type)
 {
 	switch(type)
 	{
@@ -73,7 +73,7 @@ u32bit bitmask_for_handshake_type(Handshake_Type type)
 			return 0;
 	}
 
-	throw Internal_Error("Unknown handshake type " + std::to_string(type));
+	throw new Internal_Error("Unknown handshake type " + std::to_string(type));
 }
 
 }
@@ -180,9 +180,9 @@ void Handshake_State::client_finished(Finished* client_finished)
 	note_message(*m_client_finished);
 }
 
-void Handshake_State::set_version(const Protocol_Version& version)
+void Handshake_State::set_version(in Protocol_Version _version)
 {
-	m_version = version;
+	m_version = _version;
 }
 
 void Handshake_State::compute_session_keys()
@@ -190,21 +190,21 @@ void Handshake_State::compute_session_keys()
 	m_session_keys = Session_Keys(this, client_kex()->pre_master_secret(), false);
 }
 
-void Handshake_State::compute_session_keys(in SafeArray!byte resume_master_secret)
+void Handshake_State::compute_session_keys(in SafeVector!byte resume_master_secret)
 {
 	m_session_keys = Session_Keys(this, resume_master_secret, true);
 }
 
 void Handshake_State::confirm_transition_to(Handshake_Type handshake_msg)
 {
-	const u32bit mask = bitmask_for_handshake_type(handshake_msg);
+	const uint mask = bitmask_for_handshake_type(handshake_msg);
 
 	m_hand_received_mask |= mask;
 
 	const bool ok = (m_hand_expecting_mask & mask); // overlap?
 
 	if(!ok)
-		throw Unexpected_Message("Unexpected state transition in handshake, got " +
+		throw new Unexpected_Message("Unexpected state transition in handshake, got " +
 										 std::to_string(handshake_msg) +
 										 " expected " + std::to_string(m_hand_expecting_mask) +
 										 " received " + std::to_string(m_hand_received_mask));
@@ -223,12 +223,12 @@ void Handshake_State::set_expected_next(Handshake_Type handshake_msg)
 
 bool Handshake_State::received_handshake_msg(Handshake_Type handshake_msg) const
 {
-	const u32bit mask = bitmask_for_handshake_type(handshake_msg);
+	const uint mask = bitmask_for_handshake_type(handshake_msg);
 
 	return (m_hand_received_mask & mask);
 }
 
-std::pair<Handshake_Type, std::vector<byte>>
+Pair!(Handshake_Type, Vector!( byte) )
 Handshake_State::get_next_handshake_msg()
 {
 	const bool expecting_ccs =
@@ -245,7 +245,7 @@ string Handshake_State::srp_identifier() const
 	return "";
 }
 
-std::vector<byte> Handshake_State::session_ticket() const
+Vector!( byte ) Handshake_State::session_ticket() const
 {
 	if(new_session_ticket() && !new_session_ticket()->ticket().empty())
 		return new_session_ticket()->ticket();
@@ -255,11 +255,11 @@ std::vector<byte> Handshake_State::session_ticket() const
 
 KDF* Handshake_State::protocol_specific_prf() const
 {
-	if(version() == Protocol_Version::SSL_V3)
+	if(_version() == Protocol_Version::SSL_V3)
 	{
 		return get_kdf("SSL3-PRF");
 	}
-	else if(version().supports_ciphersuite_specific_prf())
+	else if(_version().supports_ciphersuite_specific_prf())
 	{
 		const string prf_algo = ciphersuite().prf_algo();
 
@@ -274,17 +274,17 @@ KDF* Handshake_State::protocol_specific_prf() const
 		return get_kdf("TLS-PRF");
 	}
 
-	throw Internal_Error("Unknown version code " + version().to_string());
+	throw new Internal_Error("Unknown version code " + _version().to_string());
 }
 
 namespace {
 
 string choose_hash(in string sig_algo,
 								Protocol_Version negotiated_version,
-								const Policy& policy,
+								in Policy policy,
 								bool for_client_auth,
-								const Client_Hello* client_hello,
-								const Certificate_Req* cert_req)
+								in Client_Hello client_hello,
+								in Certificate_Req cert_req)
 {
 	if(!negotiated_version.supports_negotiable_signature_algorithms())
 	{
@@ -300,7 +300,7 @@ string choose_hash(in string sig_algo,
 		if(sig_algo == "ECDSA")
 			return "SHA-1";
 
-		throw Internal_Error("Unknown TLS signature algo " + sig_algo);
+		throw new Internal_Error("Unknown TLS signature algo " + sig_algo);
 	}
 
 	const auto supported_algos = for_client_auth ?
@@ -331,24 +331,24 @@ string choose_hash(in string sig_algo,
 
 }
 
-std::pair<string, Signature_Format>
+Pair!(string, Signature_Format)
 Handshake_State::choose_sig_format(in Private_Key key,
-											  string& hash_algo_out,
-											  string& sig_algo_out,
-											  bool for_client_auth,
-											  const Policy& policy) const
+											 ref string hash_algo_out,
+											 ref string sig_algo_out,
+											 bool for_client_auth,
+											 const Policy policy) const
 {
 	const string sig_algo = key.algo_name();
 
 	const string hash_algo =
 		choose_hash(sig_algo,
-						this->version(),
+						this->_version(),
 						policy,
 						for_client_auth,
 						client_hello(),
 						cert_req());
 
-	if(this->version().supports_negotiable_signature_algorithms())
+	if(this->_version().supports_negotiable_signature_algorithms())
 	{
 		hash_algo_out = hash_algo;
 		sig_algo_out = sig_algo;
@@ -367,11 +367,11 @@ Handshake_State::choose_sig_format(in Private_Key key,
 		return std::make_pair(padding, DER_SEQUENCE);
 	}
 
-	throw Invalid_Argument(sig_algo + " is invalid/unknown for TLS signatures");
+	throw new Invalid_Argument(sig_algo + " is invalid/unknown for TLS signatures");
 }
 
-std::pair<string, Signature_Format>
-Handshake_State::understand_sig_format(const Public_Key& key,
+Pair!(string, Signature_Format)
+Handshake_State::understand_sig_format(const Public_Key key,
 													string hash_algo,
 													string sig_algo,
 													bool for_client_auth) const
@@ -386,27 +386,27 @@ Handshake_State::understand_sig_format(const Public_Key& key,
 	Or not?
 	*/
 
-	if(this->version().supports_negotiable_signature_algorithms())
+	if(this->_version().supports_negotiable_signature_algorithms())
 	{
 		if(hash_algo == "")
-			throw Decoding_Error("Counterparty did not send hash/sig IDS");
+			throw new Decoding_Error("Counterparty did not send hash/sig IDS");
 
 		if(sig_algo != algo_name)
-			throw Decoding_Error("Counterparty sent inconsistent key and sig types");
+			throw new Decoding_Error("Counterparty sent inconsistent key and sig types");
 	}
 	else
 	{
 		if(hash_algo != "" || sig_algo != "")
-			throw Decoding_Error("Counterparty sent hash/sig IDs with old version");
+			throw new Decoding_Error("Counterparty sent hash/sig IDs with old version");
 	}
 
 	if(algo_name == "RSA")
 	{
-		if(for_client_auth && this->version() == Protocol_Version::SSL_V3)
+		if(for_client_auth && this->_version() == Protocol_Version::SSL_V3)
 		{
 			hash_algo = "Raw";
 		}
-		else if(!this->version().supports_negotiable_signature_algorithms())
+		else if(!this->_version().supports_negotiable_signature_algorithms())
 		{
 			hash_algo = "Parallel(MD5,SHA-160)";
 		}
@@ -416,11 +416,11 @@ Handshake_State::understand_sig_format(const Public_Key& key,
 	}
 	else if(algo_name == "DSA" || algo_name == "ECDSA")
 	{
-		if(algo_name == "DSA" && for_client_auth && this->version() == Protocol_Version::SSL_V3)
+		if(algo_name == "DSA" && for_client_auth && this->_version() == Protocol_Version::SSL_V3)
 		{
 			hash_algo = "Raw";
 		}
-		else if(!this->version().supports_negotiable_signature_algorithms())
+		else if(!this->_version().supports_negotiable_signature_algorithms())
 		{
 			hash_algo = "SHA-1";
 		}
@@ -430,7 +430,7 @@ Handshake_State::understand_sig_format(const Public_Key& key,
 		return std::make_pair(padding, DER_SEQUENCE);
 	}
 
-	throw Invalid_Argument(algo_name + " is invalid/unknown for TLS signatures");
+	throw new Invalid_Argument(algo_name + " is invalid/unknown for TLS signatures");
 }
 
 }

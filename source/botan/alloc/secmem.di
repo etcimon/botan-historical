@@ -76,25 +76,25 @@ class secure_allocator
 };
 
 template<typename T> inline bool
-operator==(const secure_allocator<T>&, const secure_allocator<T>&)
+operator==(in secure_allocator<T>, const secure_allocator<T>&)
 { return true; }
 
 template<typename T> inline bool
-operator!=(const secure_allocator<T>&, const secure_allocator<T>&)
+operator!=(in secure_allocator<T>, const secure_allocator<T>&)
 { return false; }
 
-template<typename T> using secure_vector = std::vector<T, secure_allocator<T>>;
+template<typename T> using secure_vector = Vector!( T, secure_allocator<T )>;
 
 template<typename T>
-std::vector<T> unlock(const secure_vector<T>& input)
+Vector!( T ) unlock(in secure_vector<T> input)
 {
-	std::vector<T> out(in.size());
+	Vector!( T ) out(in.size());
 	copy_mem(&out[0], &in[0], in.size());
 	return out;
 }
 
 template<typename T, typename Alloc>
-size_t buffer_insert(std::vector<T, Alloc>& buf,
+size_t buffer_insert(Vector!( T, Alloc )& buf,
 							size_t buf_offset,
 							const T input[],
 							size_t input_length)
@@ -105,9 +105,9 @@ size_t buffer_insert(std::vector<T, Alloc>& buf,
 }
 
 template<typename T, typename Alloc, typename Alloc2>
-size_t buffer_insert(std::vector<T, Alloc>& buf,
+size_t buffer_insert(Vector!( T, Alloc )& buf,
 							size_t buf_offset,
-							const std::vector<T, Alloc2>& input)
+							const Vector!( T, Alloc2 )& input)
 {
 	const size_t to_copy = std::min(input.size(), buf.size() - buf_offset);
 	copy_mem(&buf[buf_offset], &input[0], to_copy);
@@ -115,9 +115,9 @@ size_t buffer_insert(std::vector<T, Alloc>& buf,
 }
 
 template<typename T, typename Alloc, typename Alloc2>
-std::vector<T, Alloc>&
-operator+=(std::vector<T, Alloc>& out,
-			  const std::vector<T, Alloc2>& input)
+Vector!( T, Alloc )&
+operator+=(Vector!( T, Alloc )& out,
+			  const Vector!( T, Alloc2 )& input)
 {
 	const size_t copy_offset = out.size();
 	out.resize(out.size() + in.size());
@@ -126,15 +126,15 @@ operator+=(std::vector<T, Alloc>& out,
 }
 
 template<typename T, typename Alloc>
-std::vector<T, Alloc>& operator+=(std::vector<T, Alloc>& out, T input)
+Vector!( T, Alloc )& operator+=(Vector!( T, Alloc )& out, T input)
 {
 	out.push_back(input);
 	return out;
 }
 
 template<typename T, typename Alloc, typename L>
-std::vector<T, Alloc>& operator+=(std::vector<T, Alloc>& out,
-											 const std::pair<const T*, L>& input)
+Vector!( T, Alloc )& operator+=(Vector!( T, Alloc )& out,
+											 const Pair!(in T*, L) input)
 {
 	const size_t copy_offset = out.size();
 	out.resize(out.size() + in.second);
@@ -143,8 +143,8 @@ std::vector<T, Alloc>& operator+=(std::vector<T, Alloc>& out,
 }
 
 template<typename T, typename Alloc, typename L>
-std::vector<T, Alloc>& operator+=(std::vector<T, Alloc>& out,
-											 const std::pair<T*, L>& input)
+Vector!( T, Alloc )& operator+=(Vector!( T, Alloc )& out,
+											 const Pair!(T*, L)& input)
 {
 	const size_t copy_offset = out.size();
 	out.resize(out.size() + in.second);
@@ -157,7 +157,7 @@ std::vector<T, Alloc>& operator+=(std::vector<T, Alloc>& out,
 * @param vec the vector to zeroise
 */
 template<typename T, typename Alloc>
-void zeroise(std::vector<T, Alloc>& vec)
+void zeroise(Vector!( T, Alloc )& vec)
 {
 	clear_mem(&vec[0], vec.size());
 }
@@ -167,7 +167,7 @@ void zeroise(std::vector<T, Alloc>& vec)
 * @param vec the vector to zeroise and free
 */
 template<typename T, typename Alloc>
-void zap(std::vector<T, Alloc>& vec)
+void zap(Vector!( T, Alloc )& vec)
 {
 	zeroise(vec);
 	vec.clear();

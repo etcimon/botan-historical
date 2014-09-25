@@ -44,8 +44,8 @@ class Certificate_Extension
 	protected:
 		friend class Extensions;
 		abstract bool should_encode() const { return true; }
-		abstract std::vector<byte> encode_inner() const = 0;
-		abstract void decode_inner(in Array!byte) = 0;
+		abstract Vector!( byte ) encode_inner() const = 0;
+		abstract void decode_inner(in Vector!byte) = 0;
 };
 
 /**
@@ -61,15 +61,15 @@ class Extensions : public ASN1_Object
 
 		void add(Certificate_Extension* extn, bool critical = false);
 
-		Extensions& operator=(const Extensions&);
+		Extensions& operator=(in Extensions);
 
-		Extensions(const Extensions&);
+		Extensions(in Extensions);
 		Extensions(bool st = true) : m_throw_on_unknown_critical(st) {}
 		~Extensions();
 	private:
-		static Certificate_Extension* get_extension(const OID&);
+		static Certificate_Extension* get_extension(in OID);
 
-		std::vector<std::pair<Certificate_Extension*, bool> > extensions;
+		Vector!( Pair!(Certificate_Extension*, bool)  ) extensions;
 		bool m_throw_on_unknown_critical;
 };
 
@@ -94,8 +94,8 @@ class Basic_Constraints : public Certificate_Extension
 	private:
 		string oid_name() const { return "X509v3.BasicConstraints"; }
 
-		std::vector<byte> encode_inner() const;
-		void decode_inner(in Array!byte);
+		Vector!( byte ) encode_inner() const;
+		void decode_inner(in Vector!byte);
 		void contents_to(Data_Store&, Data_Store&) const;
 
 		bool is_ca;
@@ -117,8 +117,8 @@ class Key_Usage : public Certificate_Extension
 		string oid_name() const { return "X509v3.KeyUsage"; }
 
 		bool should_encode() const { return (constraints != NO_CONSTRAINTS); }
-		std::vector<byte> encode_inner() const;
-		void decode_inner(in Array!byte);
+		Vector!( byte ) encode_inner() const;
+		void decode_inner(in Vector!byte);
 		void contents_to(Data_Store&, Data_Store&) const;
 
 		Key_Constraints constraints;
@@ -133,18 +133,18 @@ class Subject_Key_ID : public Certificate_Extension
 		Subject_Key_ID* copy() const { return new Subject_Key_ID(key_id); }
 
 		Subject_Key_ID() {}
-		Subject_Key_ID(in Array!byte);
+		Subject_Key_ID(in Vector!byte);
 
-		std::vector<byte> get_key_id() const { return key_id; }
+		Vector!( byte ) get_key_id() const { return key_id; }
 	private:
 		string oid_name() const { return "X509v3.SubjectKeyIdentifier"; }
 
 		bool should_encode() const { return (key_id.size() > 0); }
-		std::vector<byte> encode_inner() const;
-		void decode_inner(in Array!byte);
+		Vector!( byte ) encode_inner() const;
+		void decode_inner(in Vector!byte);
 		void contents_to(Data_Store&, Data_Store&) const;
 
-		std::vector<byte> key_id;
+		Vector!( byte ) key_id;
 };
 
 /**
@@ -156,18 +156,18 @@ class Authority_Key_ID : public Certificate_Extension
 		Authority_Key_ID* copy() const { return new Authority_Key_ID(key_id); }
 
 		Authority_Key_ID() {}
-		Authority_Key_ID(in Array!byte k) : key_id(k) {}
+		Authority_Key_ID(in Vector!byte k) : key_id(k) {}
 
-		std::vector<byte> get_key_id() const { return key_id; }
+		Vector!( byte ) get_key_id() const { return key_id; }
 	private:
 		string oid_name() const { return "X509v3.AuthorityKeyIdentifier"; }
 
 		bool should_encode() const { return (key_id.size() > 0); }
-		std::vector<byte> encode_inner() const;
-		void decode_inner(in Array!byte);
+		Vector!( byte ) encode_inner() const;
+		void decode_inner(in Vector!byte);
 		void contents_to(Data_Store&, Data_Store&) const;
 
-		std::vector<byte> key_id;
+		Vector!( byte ) key_id;
 };
 
 /**
@@ -179,15 +179,15 @@ class Alternative_Name : public Certificate_Extension
 		AlternativeName get_alt_name() const { return alt_name; }
 
 	protected:
-		Alternative_Name(const AlternativeName&, in string oid_name);
+		Alternative_Name(in AlternativeName, in string oid_name);
 
 		Alternative_Name(in string, in string);
 	private:
 		string oid_name() const { return oid_name_str; }
 
 		bool should_encode() const { return alt_name.has_items(); }
-		std::vector<byte> encode_inner() const;
-		void decode_inner(in Array!byte);
+		Vector!( byte ) encode_inner() const;
+		void decode_inner(in Vector!byte);
 		void contents_to(Data_Store&, Data_Store&) const;
 
 		string oid_name_str;
@@ -203,7 +203,7 @@ class Subject_Alternative_Name : public Alternative_Name
 		Subject_Alternative_Name* copy() const
 		{ return new Subject_Alternative_Name(get_alt_name()); }
 
-		Subject_Alternative_Name(const AlternativeName& = AlternativeName());
+		Subject_Alternative_Name(in AlternativeName = AlternativeName());
 };
 
 /**
@@ -215,7 +215,7 @@ class Issuer_Alternative_Name : public Alternative_Name
 		Issuer_Alternative_Name* copy() const
 		{ return new Issuer_Alternative_Name(get_alt_name()); }
 
-		Issuer_Alternative_Name(const AlternativeName& = AlternativeName());
+		Issuer_Alternative_Name(in AlternativeName = AlternativeName());
 };
 
 /**
@@ -227,18 +227,18 @@ class Extended_Key_Usage : public Certificate_Extension
 		Extended_Key_Usage* copy() const { return new Extended_Key_Usage(oids); }
 
 		Extended_Key_Usage() {}
-		Extended_Key_Usage(const std::vector<OID>& o) : oids(o) {}
+		Extended_Key_Usage(in Vector!( OID ) o) : oids(o) {}
 
-		std::vector<OID> get_oids() const { return oids; }
+		Vector!( OID ) get_oids() const { return oids; }
 	private:
 		string oid_name() const { return "X509v3.ExtendedKeyUsage"; }
 
 		bool should_encode() const { return (oids.size() > 0); }
-		std::vector<byte> encode_inner() const;
-		void decode_inner(in Array!byte);
+		Vector!( byte ) encode_inner() const;
+		void decode_inner(in Vector!byte);
 		void contents_to(Data_Store&, Data_Store&) const;
 
-		std::vector<OID> oids;
+		Vector!( OID ) oids;
 };
 
 /**
@@ -251,18 +251,18 @@ class Certificate_Policies : public Certificate_Extension
 		{ return new Certificate_Policies(oids); }
 
 		Certificate_Policies() {}
-		Certificate_Policies(const std::vector<OID>& o) : oids(o) {}
+		Certificate_Policies(in Vector!( OID ) o) : oids(o) {}
 
-		std::vector<OID> get_oids() const { return oids; }
+		Vector!( OID ) get_oids() const { return oids; }
 	private:
 		string oid_name() const { return "X509v3.CertificatePolicies"; }
 
 		bool should_encode() const { return (oids.size() > 0); }
-		std::vector<byte> encode_inner() const;
-		void decode_inner(in Array!byte);
+		Vector!( byte ) encode_inner() const;
+		void decode_inner(in Vector!byte);
 		void contents_to(Data_Store&, Data_Store&) const;
 
-		std::vector<OID> oids;
+		Vector!( OID ) oids;
 };
 
 class Authority_Information_Access : public Certificate_Extension
@@ -281,8 +281,8 @@ class Authority_Information_Access : public Certificate_Extension
 
 		bool should_encode() const { return (m_ocsp_responder != ""); }
 
-		std::vector<byte> encode_inner() const;
-		void decode_inner(in Array!byte);
+		Vector!( byte ) encode_inner() const;
+		void decode_inner(in Vector!byte);
 
 		void contents_to(Data_Store&, Data_Store&) const;
 
@@ -305,8 +305,8 @@ class CRL_Number : public Certificate_Extension
 		string oid_name() const { return "X509v3.CRLNumber"; }
 
 		bool should_encode() const { return has_value; }
-		std::vector<byte> encode_inner() const;
-		void decode_inner(in Array!byte);
+		Vector!( byte ) encode_inner() const;
+		void decode_inner(in Vector!byte);
 		void contents_to(Data_Store&, Data_Store&) const;
 
 		bool has_value;
@@ -328,8 +328,8 @@ class CRL_ReasonCode : public Certificate_Extension
 		string oid_name() const { return "X509v3.ReasonCode"; }
 
 		bool should_encode() const { return (reason != UNSPECIFIED); }
-		std::vector<byte> encode_inner() const;
-		void decode_inner(in Array!byte);
+		Vector!( byte ) encode_inner() const;
+		void decode_inner(in Vector!byte);
 		void contents_to(Data_Store&, Data_Store&) const;
 
 		CRL_Code reason;
@@ -357,10 +357,10 @@ class CRL_Distribution_Points : public Certificate_Extension
 
 		CRL_Distribution_Points() {}
 
-		CRL_Distribution_Points(const std::vector<Distribution_Point>& points) :
+		CRL_Distribution_Points(in Vector!( Distribution_Point ) points) :
 			m_distribution_points(points) {}
 
-		std::vector<Distribution_Point> distribution_points() const
+		Vector!( Distribution_Point ) distribution_points() const
 		{ return m_distribution_points; }
 
 	private:
@@ -368,11 +368,11 @@ class CRL_Distribution_Points : public Certificate_Extension
 
 		bool should_encode() const { return !m_distribution_points.empty(); }
 
-		std::vector<byte> encode_inner() const;
-		void decode_inner(in Array!byte);
+		Vector!( byte ) encode_inner() const;
+		void decode_inner(in Vector!byte);
 		void contents_to(Data_Store&, Data_Store&) const;
 
-		std::vector<Distribution_Point> m_distribution_points;
+		Vector!( Distribution_Point ) m_distribution_points;
 };
 
 }

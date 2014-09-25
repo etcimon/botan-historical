@@ -13,7 +13,7 @@
 */
 int operator<<(int fd, Pipe& pipe)
 {
-	SafeArray!byte buffer(DEFAULT_BUFFERSIZE);
+	SafeVector!byte buffer(DEFAULT_BUFFERSIZE);
 	while(pipe.remaining())
 	{
 		size_t got = pipe.read(&buffer[0], buffer.size());
@@ -22,7 +22,7 @@ int operator<<(int fd, Pipe& pipe)
 		{
 			ssize_t ret = write(fd, &buffer[position], got);
 			if(ret == -1)
-				throw Stream_IO_Error("Pipe output operator (unixfd) has failed");
+				throw new Stream_IO_Error("Pipe output operator (unixfd) has failed");
 			position += ret;
 			got -= ret;
 		}
@@ -35,13 +35,13 @@ int operator<<(int fd, Pipe& pipe)
 */
 int operator>>(int fd, Pipe& pipe)
 {
-	SafeArray!byte buffer(DEFAULT_BUFFERSIZE);
+	SafeVector!byte buffer(DEFAULT_BUFFERSIZE);
 	while(true)
 	{
 		ssize_t ret = read(fd, &buffer[0], buffer.size());
 		if(ret == 0) break;
 		if(ret == -1)
-			throw Stream_IO_Error("Pipe input operator (unixfd) has failed");
+			throw new Stream_IO_Error("Pipe input operator (unixfd) has failed");
 		pipe.write(&buffer[0], ret);
 	}
 	return fd;

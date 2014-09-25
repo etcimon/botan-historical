@@ -30,13 +30,13 @@ class HMAC : public MessageAuthenticationCode
 		*/
 		HMAC(HashFunction* hash);
 
-		HMAC(const HMAC&) = delete;
-		HMAC& operator=(const HMAC&) = delete;
+		HMAC(in HMAC) = delete;
+		HMAC& operator=(in HMAC) = delete;
 	private:
 		void add_data(const byte[], size_t);
 		void final_result(byte[]);
 		void key_schedule(const byte[], size_t);
 
 		std::unique_ptr<HashFunction> m_hash;
-		SafeArray!byte m_ikey, m_okey;
+		SafeVector!byte m_ikey, m_okey;
 };

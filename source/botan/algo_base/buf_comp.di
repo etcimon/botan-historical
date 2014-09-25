@@ -23,24 +23,23 @@ class Buffered_Computation
 		/**
 		* Add new input to process.
 		* @param in the input to process as a byte array
-		* @param length of param in in bytes
 		*/
-		void update(const byte[] input) { add_data(input, length); }
+		void update(const byte[] input) { add_data(input); }
 
 		/**
 		* Add new input to process.
 		* @param in the input to process as a secure_vector
 		*/
-		void update(in SafeArray!byte input)
+		void update(in SafeVector!byte input)
 		{
 			add_data(&in[0], in.size());
 		}
 
 		/**
 		* Add new input to process.
-		* @param in the input to process as a std::vector
+		* @param in the input to process as a Vector
 		*/
-		void update(in Array!byte input)
+		void update(in Vector!byte input)
 		{
 			add_data(&in[0], in.size());
 		}
@@ -66,14 +65,14 @@ class Buffered_Computation
 		*/
 		void update(in string str)
 		{
-			add_data(cast(const byte*)(str.data()), str.size());
+			add_data(cast(const byte[]) str);
 		}
 
 		/**
 		* Process a single byte.
 		* @param in the byte to process
 		*/
-		void update(byte input) { add_data(&in, 1); }
+		void update(byte input) { add_data(&input, 1); }
 
 		/**
 		* Complete the computation and retrieve the
@@ -81,67 +80,67 @@ class Buffered_Computation
 		* @param out The byte array to be filled with the result.
 		* Must be of length output_length()
 		*/
-		void final(ref byte[] output) { final_result(out); }
+		void flushInto(ref byte[] output) { final_result(out); }
 
 		/**
 		* Complete the computation and retrieve the
 		* final result.
 		* @return secure_vector holding the result
 		*/
-		SafeArray!byte final()
+		SafeVector!byte flush()
 		{
-			SafeArray!byte output(output_length());
+			SafeVector!byte output(output_length());
 			final_result(&output[0]);
 			return output;
 		}
 
 		/**
 		* Update and finalize computation. Does the same as calling update()
-		* and final() consecutively.
+		* and flush() consecutively.
 		* @param in the input to process as a byte array
 		* @param length the length of the byte array
-		* @result the result of the call to final()
+		* @result the result of the call to flush()
 		*/
-		SafeArray!byte process(const byte[] input)
+		SafeVector!byte process(const byte[] input)
 		{
-			add_data(input, length);
-			return final();
+			add_data(input);
+			return flush();
 		}
 
 		/**
 		* Update and finalize computation. Does the same as calling update()
-		* and final() consecutively.
+		* and flush() consecutively.
 		* @param in the input to process
-		* @result the result of the call to final()
+		* @result the result of the call to flush()
 		*/
-		SafeArray!byte process(in SafeArray!byte input)
+		SafeVector!byte process(in SafeVector!byte input)
 		{
-			add_data(&in[0], in.size());
-			return final();
+			add_data(input[]);
+			return flush();
 		}
 
 		/**
 		* Update and finalize computation. Does the same as calling update()
-		* and final() consecutively.
+		* and flush() consecutively.
 		* @param in the input to process
-		* @result the result of the call to final()
+		* @result the result of the call to flush()
 		*/
-		SafeArray!byte process(in Array!byte input)
+		SafeVector!byte process(in Vector!byte input)
 		{
-			add_data(&in[0], in.size());
-			return final();
+			add_data(input[]);
+			return flush();
 		}
 
 		/**
 		* Update and finalize computation. Does the same as calling update()
-		* and final() consecutively.
+		* and flush() consecutively.
 		* @param in the input to process as a string
-		* @result the result of the call to final()
+		* @result the result of the call to flush()
 		*/
-		SafeArray!byte process(in string input)
+		SafeVector!byte process(in string input)
 		{
 			update(input);
-			return final();
+			return flush();
 		}
 
 		abstract ~Buffered_Computation() {}
@@ -151,7 +150,7 @@ class Buffered_Computation
 		* @param input is an input buffer
 		* @param length is the length of input in bytes
 		*/
-		abstract void add_data(const byte[] input, size_t length) = 0;
+		abstract void add_data(const byte[] input) = 0;
 
 		/**
 		* Write the final output to out

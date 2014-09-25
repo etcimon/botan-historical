@@ -83,11 +83,11 @@ inline u64bit F(u64bit v, u64bit K)
 
 inline u64bit FL(u64bit v, u64bit K)
 {
-	u32bit x1 = (v >> 32);
-	u32bit x2 = (v & 0xFFFFFFFF);
+	uint x1 = (v >> 32);
+	uint x2 = (v & 0xFFFFFFFF);
 
-	const u32bit k1 = (K >> 32);
-	const u32bit k2 = (K & 0xFFFFFFFF);
+	const uint k1 = (K >> 32);
+	const uint k2 = (K & 0xFFFFFFFF);
 
 	x2 ^= rotate_left(x1 & k1, 1);
 	x1 ^= (x2 | k2);
@@ -97,11 +97,11 @@ inline u64bit FL(u64bit v, u64bit K)
 
 inline u64bit FLINV(u64bit v, u64bit K)
 {
-	u32bit x1 = (v >> 32);
-	u32bit x2 = (v & 0xFFFFFFFF);
+	uint x1 = (v >> 32);
+	uint x2 = (v & 0xFFFFFFFF);
 
-	const u32bit k1 = (K >> 32);
-	const u32bit k2 = (K & 0xFFFFFFFF);
+	const uint k1 = (K >> 32);
+	const uint k2 = (K & 0xFFFFFFFF);
 
 	x1 ^= (x2 | k2);
 	x2 ^= rotate_left(x1 & k1, 1);

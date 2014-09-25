@@ -105,7 +105,7 @@
 /*
 * Look for an algorithm with this name
 */
-BlockCipher* Core_Engine::find_block_cipher(const SCAN_Name& request,
+BlockCipher* Core_Engine::find_block_cipher(in SCAN_Name request,
 														  Algorithm_Factory& af) const
 {
 

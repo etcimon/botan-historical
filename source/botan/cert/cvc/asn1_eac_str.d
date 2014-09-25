@@ -21,7 +21,7 @@ ASN1_EAC_String::ASN1_EAC_String(in string str, ASN1_Tag t) : tag(t)
 	iso_8859_str = Charset::transcode(str, LOCAL_CHARSET, LATIN1_CHARSET);
 
 	if(!sanity_check())
-		throw Invalid_Argument("ASN1_EAC_String contains illegal characters");
+		throw new Invalid_Argument("ASN1_EAC_String contains illegal characters");
 }
 
 /*
@@ -73,7 +73,7 @@ void ASN1_EAC_String::decode_from(BER_Decoder& source)
 			<< " expected "
 			<< std::hex << this->tag;
 
-		throw Decoding_Error(ss.str());
+		throw new Decoding_Error(ss.str());
 	}
 
 	Character_Set charset_is;
@@ -87,7 +87,7 @@ void ASN1_EAC_String::decode_from(BER_Decoder& source)
 	}
 	catch(Invalid_Argument& inv_arg)
 	{
-		throw Decoding_Error(string("ASN1_EAC_String decoding failed: ") +
+		throw new Decoding_Error(string("ASN1_EAC_String decoding failed: ") +
 									inv_arg.what());
 	}
 }
@@ -108,7 +108,7 @@ bool ASN1_EAC_String::sanity_check() const
 	return true;
 }
 
-bool operator==(const ASN1_EAC_String& lhs, const ASN1_EAC_String& rhs)
+bool operator==(in ASN1_EAC_String lhs, const ASN1_EAC_String& rhs)
 {
 	return (lhs.iso_8859() == rhs.iso_8859());
 }

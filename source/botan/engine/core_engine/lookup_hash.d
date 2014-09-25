@@ -87,7 +87,7 @@
 /*
 * Look for an algorithm with this name
 */
-HashFunction* Core_Engine::find_hash(const SCAN_Name& request,
+HashFunction* Core_Engine::find_hash(in SCAN_Name request,
 												 Algorithm_Factory& af) const
 {
 #if defined(BOTAN_HAS_ADLER32)
@@ -196,7 +196,7 @@ HashFunction* Core_Engine::find_hash(const SCAN_Name& request,
 
 	if(request.algo_name() == "Parallel")
 	{
-		std::vector<const HashFunction*> hash_prototypes;
+		Vector!( const HashFunction* ) hash_prototypes;
 
 		/* First pass, just get the prototypes (no memory allocation). Then
 			if all were found, replace each prototype with a newly created clone
@@ -210,7 +210,7 @@ HashFunction* Core_Engine::find_hash(const SCAN_Name& request,
 			hash_prototypes.push_back(hash);
 		}
 
-		std::vector<HashFunction*> hashes;
+		Vector!( HashFunction* ) hashes;
 		for(size_t i = 0; i != hash_prototypes.size(); ++i)
 			hashes.push_back(hash_prototypes[i]->clone());
 

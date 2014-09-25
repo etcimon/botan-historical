@@ -13,10 +13,10 @@ namespace OIDS {
 * @param oid the oid to register
 * @param name the name to be associated with the oid
 */
-void add_oid(const OID& oid, in string name);
+void add_oid(in OID oid, in string name);
 
-void add_oid2str(const OID& oid, in string name);
-void add_str2oid(const OID& oid, in string name);
+void add_oid2str(in OID oid, in string name);
+void add_str2oid(in OID oid, in string name);
 
 void add_oidstr(const char* oidstr, const char* name);
 
@@ -32,7 +32,7 @@ bool have_oid(in string oid);
 * @param oid the OID to look up
 * @return name associated with this OID
 */
-string lookup(const OID& oid);
+string lookup(in OID oid);
 
 /**
 * Find the OID to a name. The lookup will be performed in the
@@ -48,7 +48,7 @@ OID lookup(in string name);
 * @param name the name to check
 * @return true if the specified OID stands for the specified name
 */
-bool name_of(const OID& oid, in string name);
+bool name_of(in OID oid, in string name);
 
 void set_defaults();
 

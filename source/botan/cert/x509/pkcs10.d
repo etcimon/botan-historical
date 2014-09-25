@@ -34,7 +34,7 @@ PKCS10_Request::PKCS10_Request(in string input) :
 /*
 * PKCS10_Request Constructor
 */
-PKCS10_Request::PKCS10_Request(in Array!byte input) :
+PKCS10_Request::PKCS10_Request(in Vector!byte input) :
 	X509_Object(input, "CERTIFICATE REQUEST/NEW CERTIFICATE REQUEST")
 {
 	do_decode();
@@ -47,11 +47,11 @@ void PKCS10_Request::force_decode()
 {
 	BER_Decoder cert_req_info(tbs_bits);
 
-	size_t version;
-	cert_req_info.decode(version);
-	if(version != 0)
-		throw Decoding_Error("Unknown version code in PKCS #10 request: " +
-									std::to_string(version));
+	size_t _version;
+	cert_req_info.decode(_version);
+	if(_version != 0)
+		throw new Decoding_Error("Unknown version code in PKCS #10 request: " +
+									std::to_string(_version));
 
 	X509_DN dn_subject;
 	cert_req_info.decode(dn_subject);
@@ -60,7 +60,7 @@ void PKCS10_Request::force_decode()
 
 	BER_Object public_key = cert_req_info.get_next_object();
 	if(public_key.type_tag != SEQUENCE || public_key.class_tag != CONSTRUCTED)
-		throw BER_Bad_Tag("PKCS10_Request: Unexpected tag for public key",
+		throw new BER_Bad_Tag("PKCS10_Request: Unexpected tag for public key",
 								public_key.type_tag, public_key.class_tag);
 
 	info.add("X509.Certificate.public_key",
@@ -85,19 +85,19 @@ void PKCS10_Request::force_decode()
 		attributes.verify_end();
 	}
 	else if(attr_bits.type_tag != NO_OBJECT)
-		throw BER_Bad_Tag("PKCS10_Request: Unexpected tag for attributes",
+		throw new BER_Bad_Tag("PKCS10_Request: Unexpected tag for attributes",
 								attr_bits.type_tag, attr_bits.class_tag);
 
 	cert_req_info.verify_end();
 
 	if(!this->check_signature(subject_public_key()))
-		throw Decoding_Error("PKCS #10 request: Bad signature detected");
+		throw new Decoding_Error("PKCS #10 request: Bad signature detected");
 }
 
 /*
 * Handle attributes in a PKCS #10 request
 */
-void PKCS10_Request::handle_attribute(const Attribute& attr)
+void PKCS10_Request::handle_attribute(in Attribute attr)
 {
 	BER_Decoder value(attr.parameters);
 
@@ -142,7 +142,7 @@ X509_DN PKCS10_Request::subject_dn() const
 /*
 * Return the public key of the requestor
 */
-std::vector<byte> PKCS10_Request::raw_public_key() const
+Vector!( byte ) PKCS10_Request::raw_public_key() const
 {
 	DataSource_Memory source(info.get1("X509.Certificate.public_key"));
 	return unlock(PEM_Code::decode_check_label(source, "PUBLIC KEY"));
@@ -170,17 +170,17 @@ AlternativeName PKCS10_Request::subject_alt_name() const
 */
 Key_Constraints PKCS10_Request::constraints() const
 {
-	return Key_Constraints(info.get1_u32bit("X509v3.KeyUsage", NO_CONSTRAINTS));
+	return Key_Constraints(info.get1_uint("X509v3.KeyUsage", NO_CONSTRAINTS));
 }
 
 /*
 * Return the extendend key constraints (if any)
 */
-std::vector<OID> PKCS10_Request::ex_constraints() const
+Vector!( OID ) PKCS10_Request::ex_constraints() const
 {
-	std::vector<string> oids = info.get("X509v3.ExtendedKeyUsage");
+	Vector!( string ) oids = info.get("X509v3.ExtendedKeyUsage");
 
-	std::vector<OID> result;
+	Vector!( OID ) result;
 	for(size_t i = 0; i != oids.size(); ++i)
 		result.push_back(OID(oids[i]));
 	return result;
@@ -191,15 +191,15 @@ std::vector<OID> PKCS10_Request::ex_constraints() const
 */
 bool PKCS10_Request::is_CA() const
 {
-	return (info.get1_u32bit("X509v3.BasicConstraints.is_ca") > 0);
+	return (info.get1_uint("X509v3.BasicConstraints.is_ca") > 0);
 }
 
 /*
 * Return the desired path limit (if any)
 */
-u32bit PKCS10_Request::path_limit() const
+uint PKCS10_Request::path_limit() const
 {
-	return info.get1_u32bit("X509v3.BasicConstraints.path_constraint", 0);
+	return info.get1_uint("X509v3.BasicConstraints.path_constraint", 0);
 }
 
 }

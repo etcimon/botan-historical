@@ -23,7 +23,7 @@ SymmetricKey derive_key(in string passphrase,
 {
 	std::unique_ptr<PBKDF> pbkdf(get_pbkdf("PBKDF2(SHA-512)"));
 
-	SafeArray!byte x = pbkdf->derive_key(32 + 2,
+	SafeVector!byte x = pbkdf->derive_key(32 + 2,
 															passphrase,
 															salt, salt_len,
 															iterations).bits_of();
@@ -72,7 +72,7 @@ Session_Manager_SQLite::Session_Manager_SQLite(in string passphrase,
 
 		if(stmt.step())
 		{
-			std::pair<const byte*, size_t> salt = stmt.get_blob(0);
+			Pair!(const byte*, size_t) salt = stmt.get_blob(0);
 			const size_t iterations = stmt.get_size_t(1);
 			const size_t check_val_db = stmt.get_size_t(2);
 
@@ -84,18 +84,18 @@ Session_Manager_SQLite::Session_Manager_SQLite(in string passphrase,
 												check_val_created);
 
 			if(check_val_created != check_val_db)
-				throw std::runtime_error("Session database password not valid");
+				throw new Exception("Session database password not valid");
 		}
 	}
 	else
 	{
 		// maybe just zap the salts + sessions tables in this case?
 		if(salts != 0)
-			throw std::runtime_error("Seemingly corrupted database, multiple salts found");
+			throw new Exception("Seemingly corrupted database, multiple salts found");
 
 		// new database case
 
-		std::vector<byte> salt = unlock(rng.random_vec(16));
+		Vector!( byte ) salt = unlock(rng.random_vec(16));
 		const size_t iterations = 256 * 1024;
 		size_t check_val = 0;
 
@@ -118,7 +118,7 @@ Session_Manager_SQLite::~Session_Manager_SQLite()
 	delete m_db;
 }
 
-bool Session_Manager_SQLite::load_from_session_id(in Array!byte session_id,
+bool Session_Manager_SQLite::load_from_session_id(in Vector!byte session_id,
 																  Session& session)
 {
 	sqlite3_statement stmt(m_db, "select session from tls_sessions where session_id = ?1");
@@ -127,7 +127,7 @@ bool Session_Manager_SQLite::load_from_session_id(in Array!byte session_id,
 
 	while(stmt.step())
 	{
-		std::pair<const byte*, size_t> blob = stmt.get_blob(0);
+		Pair!(const byte*, size_t) blob = stmt.get_blob(0);
 
 		try
 		{
@@ -142,7 +142,7 @@ bool Session_Manager_SQLite::load_from_session_id(in Array!byte session_id,
 	return false;
 }
 
-bool Session_Manager_SQLite::load_from_server_info(const Server_Information& server,
+bool Session_Manager_SQLite::load_from_server_info(in Server_Information server,
 																	Session& session)
 {
 	sqlite3_statement stmt(m_db, "select session from tls_sessions"
@@ -154,7 +154,7 @@ bool Session_Manager_SQLite::load_from_server_info(const Server_Information& ser
 
 	while(stmt.step())
 	{
-		std::pair<const byte*, size_t> blob = stmt.get_blob(0);
+		Pair!(const byte*, size_t) blob = stmt.get_blob(0);
 
 		try
 		{
@@ -169,7 +169,7 @@ bool Session_Manager_SQLite::load_from_server_info(const Server_Information& ser
 	return false;
 }
 
-void Session_Manager_SQLite::remove_entry(in Array!byte session_id)
+void Session_Manager_SQLite::remove_entry(in Vector!byte session_id)
 {
 	sqlite3_statement stmt(m_db, "delete from tls_sessions where session_id = ?1");
 
@@ -178,7 +178,7 @@ void Session_Manager_SQLite::remove_entry(in Array!byte session_id)
 	stmt.spin();
 }
 
-void Session_Manager_SQLite::save(const Session& session)
+void Session_Manager_SQLite::save(in Session session)
 {
 	sqlite3_statement stmt(m_db, "insert or replace into tls_sessions"
 										  " values(?1, ?2, ?3, ?4, ?5)");

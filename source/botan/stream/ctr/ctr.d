@@ -53,7 +53,7 @@ void CTR_BE::cipher(in byte[] input, ref byte[] output)
 void CTR_BE::set_iv(in byte[] iv, size_t iv_len)
 {
 	if(!valid_iv_length(iv_len))
-		throw Invalid_IV_Length(name(), iv_len);
+		throw new Invalid_IV_Length(name(), iv_len);
 
 	const size_t bs = m_cipher->block_size();
 

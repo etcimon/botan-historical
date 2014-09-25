@@ -39,7 +39,7 @@ class PK_Encryptor
 		* @param rng the random number source to use
 		* @return encrypted message
 		*/
-		std::vector<byte> encrypt(in byte[] in, size_t length,
+		Vector!( byte ) encrypt(in byte[] in, size_t length,
 											RandomNumberGenerator& rng) const
 		{
 			return enc(input, length, rng);
@@ -52,7 +52,7 @@ class PK_Encryptor
 		* @return encrypted message
 		*/
 		template<typename Alloc>
-		std::vector<byte> encrypt(const std::vector<byte, Alloc>& in,
+		Vector!( byte ) encrypt(in Vector!( byte, Alloc ) in,
 										  RandomNumberGenerator& rng) const
 		{
 			return enc(&in[0], in.size(), rng);
@@ -67,12 +67,12 @@ class PK_Encryptor
 		PK_Encryptor() {}
 		abstract ~PK_Encryptor() {}
 
-		PK_Encryptor(const PK_Encryptor&) = delete;
+		PK_Encryptor(in PK_Encryptor) = delete;
 
-		PK_Encryptor& operator=(const PK_Encryptor&) = delete;
+		PK_Encryptor& operator=(in PK_Encryptor) = delete;
 
 	private:
-		abstract std::vector<byte> enc(const byte[], size_t,
+		abstract Vector!( byte ) enc(const byte[], size_t,
 												 RandomNumberGenerator&) const = 0;
 };
 
@@ -88,7 +88,7 @@ class PK_Decryptor
 		* @param length the length of the above byte array
 		* @return decrypted message
 		*/
-		SafeArray!byte decrypt(in byte[] input) const
+		SafeVector!byte decrypt(in byte[] input) const
 		{
 			return dec(input, length);
 		}
@@ -99,7 +99,7 @@ class PK_Decryptor
 		* @return decrypted message
 		*/
 		template<typename Alloc>
-		SafeArray!byte decrypt(const std::vector<byte, Alloc>& input) const
+		SafeVector!byte decrypt(in Vector!( byte, Alloc ) input) const
 		{
 			return dec(&in[0], in.size());
 		}
@@ -107,11 +107,11 @@ class PK_Decryptor
 		PK_Decryptor() {}
 		abstract ~PK_Decryptor() {}
 
-		PK_Decryptor(const PK_Decryptor&) = delete;
-		PK_Decryptor& operator=(const PK_Decryptor&) = delete;
+		PK_Decryptor(in PK_Decryptor) = delete;
+		PK_Decryptor& operator=(in PK_Decryptor) = delete;
 
 	private:
-		abstract SafeArray!byte dec(const byte[], size_t) const = 0;
+		abstract SafeVector!byte dec(const byte[], size_t) const = 0;
 };
 
 /**
@@ -129,7 +129,7 @@ class PK_Signer
 		* @param rng the rng to use
 		* @return signature
 		*/
-		std::vector<byte> sign_message(in byte[] in, size_t length,
+		Vector!( byte ) sign_message(in byte[] in, size_t length,
 												  RandomNumberGenerator& rng);
 
 		/**
@@ -138,11 +138,11 @@ class PK_Signer
 		* @param rng the rng to use
 		* @return signature
 		*/
-		std::vector<byte> sign_message(in Array!byte in,
+		Vector!( byte ) sign_message(in Vector!byte in,
 												 RandomNumberGenerator& rng)
 		{ return sign_message(&in[0], in.size(), rng); }
 
-		std::vector<byte> sign_message(in SafeArray!byte in,
+		Vector!( byte ) sign_message(in SafeVector!byte in,
 												 RandomNumberGenerator& rng)
 		{ return sign_message(&in[0], in.size(), rng); }
 
@@ -163,7 +163,7 @@ class PK_Signer
 		* Add a message part.
 		* @param in the message part to add
 		*/
-		void update(in Array!byte input) { update(&in[0], in.size()); }
+		void update(in Vector!byte input) { update(&in[0], in.size()); }
 
 		/**
 		* Get the signature of the so far processed message (provided by the
@@ -171,7 +171,7 @@ class PK_Signer
 		* @param rng the rng to use
 		* @return signature of the total message
 		*/
-		std::vector<byte> signature(RandomNumberGenerator& rng);
+		Vector!( byte ) signature(RandomNumberGenerator& rng);
 
 		/**
 		* Set the output format of the signature.
@@ -192,8 +192,8 @@ class PK_Signer
 					 Signature_Format format = IEEE_1363,
 					 Fault_Protection prot = ENABLE_FAULT_PROTECTION);
 	private:
-		bool self_test_signature(in Array!byte msg,
-										 in Array!byte sig) const;
+		bool self_test_signature(in Vector!byte msg,
+										 in Vector!byte sig) const;
 
 		std::unique_ptr<PK_Ops::Signature> m_op;
 		std::unique_ptr<PK_Ops::Verification> m_verify_op;
@@ -226,8 +226,8 @@ class PK_Verifier
 		* @return true if the signature is valid
 		*/
 		template<typename Alloc, typename Alloc2>
-		bool verify_message(const std::vector<byte, Alloc>& msg,
-								  const std::vector<byte, Alloc2>& sig)
+		bool verify_message(in Vector!( byte, Alloc ) msg,
+								  const Vector!( byte, Alloc2 )& sig)
 		{
 			return verify_message(&msg[0], msg.size(),
 										 &sig[0], sig.size());
@@ -253,7 +253,7 @@ class PK_Verifier
 		* signature to be verified.
 		* @param in the new message part
 		*/
-		void update(in Array!byte input)
+		void update(in Vector!byte input)
 		{ update(&in[0], in.size()); }
 
 		/**
@@ -272,7 +272,7 @@ class PK_Verifier
 		* @return true if the signature is valid, false otherwise
 		*/
 		template<typename Alloc>
-		bool check_signature(const std::vector<byte, Alloc>& sig)
+		bool check_signature(in Vector!( byte, Alloc ) sig)
 		{
 			return check_signature(&sig[0], sig.size());
 		}
@@ -289,11 +289,11 @@ class PK_Verifier
 		* @param emsa the EMSA to use (eg "EMSA3(SHA-1)")
 		* @param format the signature format to use
 		*/
-		PK_Verifier(const Public_Key& pub_key,
+		PK_Verifier(in Public_Key pub_key,
 						in string emsa,
 						Signature_Format format = IEEE_1363);
 	private:
-		bool validate_signature(in SafeArray!byte msg,
+		bool validate_signature(in SafeVector!byte msg,
 										in byte[] sig, size_t sig_len);
 
 		std::unique_ptr<PK_Ops::Verification> m_op;
@@ -331,7 +331,7 @@ class PK_Key_Agreement
 		* @param params_len the length of params in bytes
 		*/
 		SymmetricKey derive_key(size_t key_len,
-										in Array!byte in,
+										in Vector!byte in,
 										in byte[] params,
 										size_t params_len) const
 		{
@@ -362,7 +362,7 @@ class PK_Key_Agreement
 		* @param params extra derivation params
 		*/
 		SymmetricKey derive_key(size_t key_len,
-										in Array!byte in,
+										in Vector!byte in,
 										in string params = "") const
 		{
 			return derive_key(key_len, &in[0], in.size(),
@@ -375,7 +375,7 @@ class PK_Key_Agreement
 		* @param key the key to use
 		* @param kdf name of the KDF to use (or 'Raw' for no KDF)
 		*/
-		PK_Key_Agreement(const PK_Key_Agreement_Key& key,
+		PK_Key_Agreement(in PK_Key_Agreement_Key key,
 							  in string kdf);
 	private:
 		std::unique_ptr<PK_Ops::Key_Agreement> m_op;
@@ -395,10 +395,10 @@ class PK_Encryptor_EME : public PK_Encryptor
 		* @param key the key to use inside the decryptor
 		* @param eme the EME to use
 		*/
-		PK_Encryptor_EME(const Public_Key& key,
+		PK_Encryptor_EME(in Public_Key key,
 							  in string eme);
 	private:
-		std::vector<byte> enc(const byte[], size_t,
+		Vector!( byte ) enc(const byte[], size_t,
 									  RandomNumberGenerator& rng) const;
 
 		std::unique_ptr<PK_Ops::Encryption> m_op;
@@ -419,7 +419,7 @@ class PK_Decryptor_EME : public PK_Decryptor
 		PK_Decryptor_EME(in Private_Key key,
 							  in string eme);
 	private:
-		SafeArray!byte dec(const byte[], size_t) const;
+		SafeVector!byte dec(const byte[], size_t) const;
 
 		std::unique_ptr<PK_Ops::Decryption> m_op;
 		std::unique_ptr<EME> m_eme;

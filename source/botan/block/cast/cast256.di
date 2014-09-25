@@ -21,6 +21,6 @@ class CAST_256 : public Block_Cipher_Fixed_Params<16, 4, 32, 4>
 	private:
 		void key_schedule(const byte[], size_t);
 
-		secure_vector<u32bit> MK;
-		SafeArray!byte RK;
+		secure_vector<uint> MK;
+		SafeVector!byte RK;
 };

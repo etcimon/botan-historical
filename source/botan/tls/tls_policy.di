@@ -24,36 +24,36 @@ class Policy
 		* Returns a list of ciphers we are willing to negotiate, in
 		* order of preference.
 		*/
-		abstract std::vector<string> allowed_ciphers() const;
+		abstract Vector!( string ) allowed_ciphers() const;
 
 		/**
 		* Returns a list of hash algorithms we are willing to use for
 		* signatures, in order of preference.
 		*/
-		abstract std::vector<string> allowed_signature_hashes() const;
+		abstract Vector!( string ) allowed_signature_hashes() const;
 
 		/**
 		* Returns a list of MAC algorithms we are willing to use.
 		*/
-		abstract std::vector<string> allowed_macs() const;
+		abstract Vector!( string ) allowed_macs() const;
 
 		/**
 		* Returns a list of key exchange algorithms we are willing to
 		* use, in order of preference. Allowed values: DH, empty string
 		* (representing RSA using server certificate key)
 		*/
-		abstract std::vector<string> allowed_key_exchange_methods() const;
+		abstract Vector!( string ) allowed_key_exchange_methods() const;
 
 		/**
 		* Returns a list of signature algorithms we are willing to
 		* use, in order of preference. Allowed values RSA and DSA.
 		*/
-		abstract std::vector<string> allowed_signature_methods() const;
+		abstract Vector!( string ) allowed_signature_methods() const;
 
 		/**
 		* Return list of ECC curves we are willing to use in order of preference
 		*/
-		abstract std::vector<string> allowed_ecc_curves() const;
+		abstract Vector!( string ) allowed_ecc_curves() const;
 
 		/**
 		* Returns a list of compression algorithms we are willing to use,
@@ -62,12 +62,12 @@ class Policy
 		*
 		* @note Compression is not currently supported
 		*/
-		abstract std::vector<byte> compression() const;
+		abstract Vector!( byte ) compression() const;
 
 		/**
 		* Choose an elliptic curve to use
 		*/
-		abstract string choose_curve(const std::vector<string>& curve_names) const;
+		abstract string choose_curve(in Vector!( string ) curve_names) const;
 
 		/**
 		* Attempt to negotiate the use of the heartbeat extension
@@ -113,16 +113,16 @@ class Policy
 		* tickets do not expire until the session ticket key rolls over.
 		* Expired session tickets cannot be used to resume a session.
 		*/
-		abstract u32bit session_ticket_lifetime() const;
+		abstract uint session_ticket_lifetime() const;
 
 		/**
 		* @return true if and only if we are willing to accept this version
 		* Default accepts only TLS, so override if you want to enable DTLS
 		* in your application.
 		*/
-		abstract bool acceptable_protocol_version(Protocol_Version version) const;
+		abstract bool acceptable_protocol_version(Protocol_Version _version) const;
 
-		abstract bool acceptable_ciphersuite(const Ciphersuite& suite) const;
+		abstract bool acceptable_ciphersuite(in Ciphersuite suite) const;
 
 		/**
 		* @return true if servers should choose the ciphersuite matching
@@ -134,7 +134,7 @@ class Policy
 		/**
 		* Return allowed ciphersuites, in order of preference
 		*/
-		abstract std::vector<u16bit> ciphersuite_list(Protocol_Version version,
+		abstract Vector!( u16bit ) ciphersuite_list(Protocol_Version _version,
 																	bool have_srp) const;
 
 		abstract ~Policy() {}
@@ -146,26 +146,26 @@ class Policy
 class NSA_Suite_B_128 : public Policy
 {
 	public:
-		std::vector<string> allowed_ciphers() const override
-		{ return std::vector<string>({"AES-128/GCM"}); }
+		Vector!( string ) allowed_ciphers() const override
+		{ return Vector!( string )({"AES-128/GCM"}); }
 
-		std::vector<string> allowed_signature_hashes() const override
-		{ return std::vector<string>({"SHA-256"}); }
+		Vector!( string ) allowed_signature_hashes() const override
+		{ return Vector!( string )({"SHA-256"}); }
 
-		std::vector<string> allowed_macs() const override
-		{ return std::vector<string>({"AEAD"}); }
+		Vector!( string ) allowed_macs() const override
+		{ return Vector!( string )({"AEAD"}); }
 
-		std::vector<string> allowed_key_exchange_methods() const override
-		{ return std::vector<string>({"ECDH"}); }
+		Vector!( string ) allowed_key_exchange_methods() const override
+		{ return Vector!( string )({"ECDH"}); }
 
-		std::vector<string> allowed_signature_methods() const override
-		{ return std::vector<string>({"ECDSA"}); }
+		Vector!( string ) allowed_signature_methods() const override
+		{ return Vector!( string )({"ECDSA"}); }
 
-		std::vector<string> allowed_ecc_curves() const override
-		{ return std::vector<string>({"secp256r1"}); }
+		Vector!( string ) allowed_ecc_curves() const override
+		{ return Vector!( string )({"secp256r1"}); }
 
-		bool acceptable_protocol_version(Protocol_Version version) const override
-		{ return version == Protocol_Version::TLS_V12; }
+		bool acceptable_protocol_version(Protocol_Version _version) const override
+		{ return _version == Protocol_Version::TLS_V12; }
 };
 
 /**
@@ -174,11 +174,11 @@ class NSA_Suite_B_128 : public Policy
 class Datagram_Policy : public Policy
 {
 	public:
-		std::vector<string> allowed_macs() const override
-		{ return std::vector<string>({"AEAD"}); }
+		Vector!( string ) allowed_macs() const override
+		{ return Vector!( string )({"AEAD"}); }
 
-		bool acceptable_protocol_version(Protocol_Version version) const override
-		{ return version == Protocol_Version::DTLS_V12; }
+		bool acceptable_protocol_version(Protocol_Version _version) const override
+		{ return _version == Protocol_Version::DTLS_V12; }
 };
 
 }

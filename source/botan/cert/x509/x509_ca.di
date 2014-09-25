@@ -26,7 +26,7 @@ class X509_CA
 		* @param not_after the expiration time for the certificate
 		* @return resulting certificate
 		*/
-		X509_Certificate sign_request(const PKCS10_Request& req,
+		X509_Certificate sign_request(in PKCS10_Request req,
 												RandomNumberGenerator& rng,
 												const X509_Time& not_before,
 												const X509_Time& not_after);
@@ -45,7 +45,7 @@ class X509_CA
 		* @return new CRL
 		*/
 		X509_CRL new_crl(RandomNumberGenerator& rng,
-							  u32bit next_update = 0) const;
+							  uint next_update = 0) const;
 
 		/**
 		* Create a new CRL by with additional entries.
@@ -55,10 +55,10 @@ class X509_CA
 		* @param next_update the time to set in next update in seconds
 		* as the offset from the current time
 		*/
-		X509_CRL update_crl(const X509_CRL& last_crl,
-								  const std::vector<CRL_Entry>& new_entries,
+		X509_CRL update_crl(in X509_CRL last_crl,
+								  const Vector!( CRL_Entry )& new_entries,
 								  RandomNumberGenerator& rng,
-								  u32bit next_update = 0) const;
+								  uint next_update = 0) const;
 
 		/**
 		* Interface for creating new certificates
@@ -76,7 +76,7 @@ class X509_CA
 		static X509_Certificate make_cert(PK_Signer* signer,
 													 RandomNumberGenerator& rng,
 													 const AlgorithmIdentifier& sig_algo,
-													 in Array!byte pub_key,
+													 in Vector!byte pub_key,
 													 const X509_Time& not_before,
 													 const X509_Time& not_after,
 													 const X509_DN& issuer_dn,
@@ -89,17 +89,17 @@ class X509_CA
 		* @param key the private key of the CA
 		* @param hash_fn name of a hash function to use for signing
 		*/
-		X509_CA(const X509_Certificate& ca_certificate,
+		X509_CA(in X509_Certificate ca_certificate,
 				  in Private_Key key,
 				  in string hash_fn);
 
-		X509_CA(const X509_CA&) = delete;
-		X509_CA& operator=(const X509_CA&) = delete;
+		X509_CA(in X509_CA) = delete;
+		X509_CA& operator=(in X509_CA) = delete;
 
 		~X509_CA();
 	private:
-		X509_CRL make_crl(const std::vector<CRL_Entry>& entries,
-								u32bit crl_number, u32bit next_update,
+		X509_CRL make_crl(in Vector!( CRL_Entry ) entries,
+								uint crl_number, uint next_update,
 								RandomNumberGenerator& rng) const;
 
 		AlgorithmIdentifier ca_sig_algo;

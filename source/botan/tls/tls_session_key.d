@@ -14,7 +14,7 @@ namespace TLS {
 * Session_Keys Constructor
 */
 Session_Keys::Session_Keys(const Handshake_State* state,
-									in SafeArray!byte pre_master_secret,
+									in SafeVector!byte pre_master_secret,
 									bool resuming)
 {
 	const size_t cipher_keylen = state->ciphersuite().cipher_keylen();
@@ -37,7 +37,7 @@ Session_Keys::Session_Keys(const Handshake_State* state,
 	}
 	else
 	{
-		SafeArray!byte salt;
+		SafeVector!byte salt;
 
 		if(state->version() != Protocol_Version::SSL_V3)
 			salt += std::make_pair(MASTER_SECRET_MAGIC, sizeof(MASTER_SECRET_MAGIC));
@@ -48,7 +48,7 @@ Session_Keys::Session_Keys(const Handshake_State* state,
 		master_sec = prf->derive_key(48, pre_master_secret, salt);
 	}
 
-	SafeArray!byte salt;
+	SafeVector!byte salt;
 	if(state->version() != Protocol_Version::SSL_V3)
 		salt += std::make_pair(KEY_GEN_MAGIC, sizeof(KEY_GEN_MAGIC));
 	salt += state->server_hello()->random();

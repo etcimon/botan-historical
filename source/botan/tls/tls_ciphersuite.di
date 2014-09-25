@@ -35,7 +35,7 @@ class Ciphersuite
 		*
 		* @return list of all known ciphersuites
 		*/
-		static const std::vector<Ciphersuite>& all_known_ciphersuites();
+		static const Vector!( Ciphersuite )& all_known_ciphersuites();
 
 		/**
 		* Formats the ciphersuite back to an RFC-style ciphersuite string

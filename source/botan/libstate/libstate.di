@@ -20,8 +20,8 @@ class Library_State
 	public:
 		Library_State() {}
 
-		Library_State(const Library_State&) = delete;
-		Library_State& operator=(const Library_State&) = delete;
+		Library_State(in Library_State) = delete;
+		Library_State& operator=(in Library_State) = delete;
 
 		void initialize();
 
@@ -38,12 +38,12 @@ class Library_State
 		void poll_available_sources(class Entropy_Accumulator& accum);
 
 	private:
-		static std::vector<std::unique_ptr<EntropySource>> entropy_sources();
+		static Vector!( std::unique_ptr<EntropySource )> entropy_sources();
 
 		std::unique_ptr<Serialized_RNG> m_global_prng;
 
 		std::mutex m_entropy_src_mutex;
-		std::vector<std::unique_ptr<EntropySource>> m_sources;
+		Vector!( std::unique_ptr<EntropySource )> m_sources;
 
 		std::unique_ptr<Algorithm_Factory> m_algorithm_factory;
 };

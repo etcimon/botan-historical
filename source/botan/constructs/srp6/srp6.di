@@ -27,7 +27,7 @@ srp6_client_agree(in string username,
 									 in string password,
 									 in string group_id,
 									 in string hash_id,
-									 in Array!byte salt,
+									 in Vector!byte salt,
 									 const BigInt& B,
 									 RandomNumberGenerator& rng);
 
@@ -41,7 +41,7 @@ srp6_client_agree(in string username,
 */
 BigInt generate_srp6_verifier(in string identifier,
 													 in string password,
-													 in Array!byte salt,
+													 in Vector!byte salt,
 													 in string group_id,
 													 in string hash_id);
 
@@ -52,7 +52,7 @@ BigInt generate_srp6_verifier(in string identifier,
 * @param g the group generator
 * @return group identifier
 */
-string srp6_group_identifier(const BigInt& N, const BigInt& g);
+string srp6_group_identifier(in BigInt N, const BigInt& g);
 
 /**
 * Represents a SRP-6a server session
@@ -68,7 +68,7 @@ class SRP6_Server_Session
 		* @param rng a random number generator
 		* @return SRP-6 B value
 		*/
-		BigInt step1(const BigInt& v,
+		BigInt step1(in BigInt v,
 						 in string group_id,
 						 in string hash_id,
 						 RandomNumberGenerator& rng);
@@ -78,7 +78,7 @@ class SRP6_Server_Session
 		* @param A the client's value
 		* @return shared symmetric key
 		*/
-		SymmetricKey step2(const BigInt& A);
+		SymmetricKey step2(in BigInt A);
 
 	private:
 		string hash_id;

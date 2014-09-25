@@ -22,14 +22,14 @@ class Buffered_Filter
 		void write(in byte[] input);
 
 		template<typename Alloc>
-			void write(const std::vector<byte, Alloc>& input)
+			void write(in Vector!( byte, Alloc ) input)
 		{
 			write(&in[0], length);
 		}
 
 		/**
 		* Finish a message, emitting to buffered_block and buffered_final
-		* Will throw an exception if less than final_minimum bytes were
+		* Will throw new an exception if less than final_minimum bytes were
 		* written into the filter.
 		*/
 		void end_msg();
@@ -78,6 +78,6 @@ class Buffered_Filter
 	private:
 		size_t main_block_mod, final_minimum;
 
-		SafeArray!byte buffer;
+		SafeVector!byte buffer;
 		size_t buffer_pos;
 };

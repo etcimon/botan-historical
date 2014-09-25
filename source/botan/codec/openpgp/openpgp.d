@@ -64,7 +64,7 @@ string PGP_encode(in byte[] input, size_t length,
 /*
 * OpenPGP Base64 decoding
 */
-SafeArray!byte PGP_decode(DataSource& source,
+SafeVector!byte PGP_decode(DataSource& source,
 										string& label,
 										std::map<string, string>& headers)
 {
@@ -78,11 +78,11 @@ SafeArray!byte PGP_decode(DataSource& source,
 	{
 		byte b;
 		if(!source.read_byte(b))
-			throw Decoding_Error("PGP: No PGP header found");
+			throw new Decoding_Error("PGP: No PGP header found");
 		if(b == PGP_HEADER1[position])
 			++position;
 		else if(position >= RANDOM_CHAR_LIMIT)
-			throw Decoding_Error("PGP: Malformed PGP header");
+			throw new Decoding_Error("PGP: Malformed PGP header");
 		else
 			position = 0;
 	}
@@ -91,11 +91,11 @@ SafeArray!byte PGP_decode(DataSource& source,
 	{
 		byte b;
 		if(!source.read_byte(b))
-			throw Decoding_Error("PGP: No PGP header found");
+			throw new Decoding_Error("PGP: No PGP header found");
 		if(b == PGP_HEADER2[position])
 			++position;
 		else if(position)
-			throw Decoding_Error("PGP: Malformed PGP header");
+			throw new Decoding_Error("PGP: Malformed PGP header");
 
 		if(position == 0)
 			label += cast(char)(b);
@@ -110,7 +110,7 @@ SafeArray!byte PGP_decode(DataSource& source,
 		while(b != '')
 		{
 			if(!source.read_byte(b))
-				throw Decoding_Error("PGP: Bad armor header");
+				throw new Decoding_Error("PGP: Bad armor header");
 			if(b != '')
 				this_header += cast(char)(b);
 		}
@@ -124,7 +124,7 @@ SafeArray!byte PGP_decode(DataSource& source,
 		{
 			string::size_type pos = this_header.find(": ");
 			if(pos == string::npos)
-				throw Decoding_Error("OpenPGP: Bad headers");
+				throw new Decoding_Error("OpenPGP: Bad headers");
 
 			string key = this_header.substr(0, pos);
 			string value = this_header.substr(pos + 2, string::npos);
@@ -148,18 +148,18 @@ SafeArray!byte PGP_decode(DataSource& source,
 	{
 		byte b;
 		if(!source.read_byte(b))
-			throw Decoding_Error("PGP: No PGP trailer found");
+			throw new Decoding_Error("PGP: No PGP trailer found");
 		if(b == PGP_TRAILER[position])
 			++position;
 		else if(position)
-			throw Decoding_Error("PGP: Malformed PGP trailer");
+			throw new Decoding_Error("PGP: Malformed PGP trailer");
 
 		if(b == '=' && newline_seen)
 		{
 			while(b != '')
 			{
 				if(!source.read_byte(b))
-					throw Decoding_Error("PGP: Bad CRC tail");
+					throw new Decoding_Error("PGP: Bad CRC tail");
 				if(b != '')
 					crc += cast(char)(b);
 			}
@@ -175,7 +175,7 @@ SafeArray!byte PGP_decode(DataSource& source,
 	base64.end_msg();
 
 	if(crc != "" && crc != base64.read_all_as_string(1))
-		throw Decoding_Error("PGP: Corrupt CRC");
+		throw new Decoding_Error("PGP: Corrupt CRC");
 
 	return base64.read_all();
 }
@@ -183,7 +183,7 @@ SafeArray!byte PGP_decode(DataSource& source,
 /*
 * OpenPGP Base64 decoding
 */
-SafeArray!byte PGP_decode(DataSource& source, string& label)
+SafeVector!byte PGP_decode(DataSource& source, string& label)
 {
 	std::map<string, string> ignored;
 	return PGP_decode(source, label, ignored);

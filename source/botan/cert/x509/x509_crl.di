@@ -28,13 +28,13 @@ class X509_CRL : public X509_Object
 		/**
 		* Check if this particular certificate is listed in the CRL
 		*/
-		bool is_revoked(const X509_Certificate& cert) const;
+		bool is_revoked(in X509_Certificate cert) const;
 
 		/**
 		* Get the entries of this CRL in the form of a vector.
 		* @return vector containing the entries of this CRL.
 		*/
-		std::vector<CRL_Entry> get_revoked() const;
+		Vector!( CRL_Entry ) get_revoked() const;
 
 		/**
 		* Get the issuer DN of this CRL.
@@ -46,13 +46,13 @@ class X509_CRL : public X509_Object
 		* Get the AuthorityKeyIdentifier of this CRL.
 		* @return this CRLs AuthorityKeyIdentifier
 		*/
-		std::vector<byte> authority_key_id() const;
+		Vector!( byte ) authority_key_id() const;
 
 		/**
 		* Get the serial number of this CRL.
 		* @return CRLs serial number
 		*/
-		u32bit crl_number() const;
+		uint crl_number() const;
 
 		/**
 		* Get the CRL's thisUpdate value.
@@ -69,7 +69,7 @@ class X509_CRL : public X509_Object
 		/**
 		* Construct a CRL from a data source.
 		* @param source the data source providing the DER or PEM encoded CRL.
-		* @param throw_on_unknown_critical should we throw an exception
+		* @param throw_on_unknown_critical should we throw new an exception
 		* if an unknown CRL extension marked as critical is encountered.
 		*/
 		X509_CRL(DataSource& source, bool throw_on_unknown_critical = false);
@@ -77,7 +77,7 @@ class X509_CRL : public X509_Object
 		/**
 		* Construct a CRL from a file containing the DER or PEM encoded CRL.
 		* @param filename the name of the CRL file
-		* @param throw_on_unknown_critical should we throw an exception
+		* @param throw_on_unknown_critical should we throw new an exception
 		* if an unknown CRL extension marked as critical is encountered.
 		*/
 		X509_CRL(in string filename,
@@ -86,16 +86,16 @@ class X509_CRL : public X509_Object
 		/**
 		* Construct a CRL from a binary vector
 		* @param vec the binary (DER) representation of the CRL
-		* @param throw_on_unknown_critical should we throw an exception
+		* @param throw_on_unknown_critical should we throw new an exception
 		* if an unknown CRL extension marked as critical is encountered.
 		*/
-		X509_CRL(in Array!byte vec,
+		X509_CRL(in Vector!byte vec,
 					bool throw_on_unknown_critical = false);
 
 	private:
 		void force_decode();
 
 		bool throw_on_unknown_critical;
-		std::vector<CRL_Entry> revoked;
+		Vector!( CRL_Entry ) revoked;
 		Data_Store info;
 };

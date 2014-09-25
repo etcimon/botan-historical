@@ -29,21 +29,21 @@ class CMAC : public MessageAuthenticationCode
 		* @param in the input
 		* @param polynomial the byte value of the polynomial
 		*/
-		static SafeArray!byte poly_double(in SafeArray!byte input);
+		static SafeVector!byte poly_double(in SafeVector!byte input);
 
 		/**
 		* @param cipher the underlying block cipher to use
 		*/
 		CMAC(BlockCipher* cipher);
 
-		CMAC(const CMAC&) = delete;
-		CMAC& operator=(const CMAC&) = delete;
+		CMAC(in CMAC) = delete;
+		CMAC& operator=(in CMAC) = delete;
 	private:
 		void add_data(const byte[], size_t);
 		void final_result(byte[]);
 		void key_schedule(const byte[], size_t);
 
 		std::unique_ptr<BlockCipher> m_cipher;
-		SafeArray!byte m_buffer, m_state, m_B, m_P;
+		SafeVector!byte m_buffer, m_state, m_B, m_P;
 		size_t m_position;
 };

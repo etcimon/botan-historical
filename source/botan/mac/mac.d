@@ -12,7 +12,7 @@
 */
 bool MessageAuthenticationCode::verify_mac(in byte[] mac, size_t length)
 {
-	SafeArray!byte our_mac = final();
+	SafeVector!byte our_mac = flush();
 
 	if(our_mac.size() != length)
 		return false;

@@ -16,7 +16,7 @@ std::ostream& operator<<(std::ostream& stream, const BigInt& n)
 	if(stream.flags() & std::ios::hex)
 		base = BigInt::Hexadecimal;
 	else if(stream.flags() & std::ios::oct)
-		throw std::runtime_error("Octal output of BigInt not supported");
+		throw new Exception("Octal output of BigInt not supported");
 
 	if(n == 0)
 		stream.write("0", 1);
@@ -24,15 +24,15 @@ std::ostream& operator<<(std::ostream& stream, const BigInt& n)
 	{
 		if(n < 0)
 			stream.write("-", 1);
-		const std::vector<byte> buffer = BigInt::encode(n, base);
+		const Vector!( byte ) buffer = BigInt::encode(n, base);
 		size_t skip = 0;
 		while(skip < buffer.size() && buffer[skip] == '0')
 			++skip;
-		stream.write(cast(const char*)(&buffer[0]) + skip,
+		stream.write(cast(in char*)(buffer[0]) + skip,
 						 buffer.size() - skip);
 	}
 	if(!stream.good())
-		throw Stream_IO_Error("BigInt output operator has failed");
+		throw new Stream_IO_Error("BigInt output operator has failed");
 	return stream;
 }
 
@@ -44,7 +44,7 @@ std::istream& operator>>(std::istream& stream, BigInt& n)
 	string str;
 	std::getline(stream, str);
 	if(stream.bad() || (stream.fail() && !stream.eof()))
-		throw Stream_IO_Error("BigInt input operator has failed");
+		throw new Stream_IO_Error("BigInt input operator has failed");
 	n = BigInt(str);
 	return stream;
 }

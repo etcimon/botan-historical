@@ -54,6 +54,6 @@ class Skein_512 : public HashFunction
 
 		std::unique_ptr<Threefish_512> m_threefish;
 		secure_vector<u64bit> T;
-		SafeArray!byte buffer;
+		SafeVector!byte buffer;
 		size_t buf_pos;
 };

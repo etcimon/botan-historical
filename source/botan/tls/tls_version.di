@@ -107,7 +107,7 @@ class Protocol_Version
 		/**
 		* @return if this version is equal to other
 		*/
-		bool operator==(const Protocol_Version& other) const
+		bool operator==(in Protocol_Version other) const
 		{
 			return (m_version == other.m_version);
 		}
@@ -115,7 +115,7 @@ class Protocol_Version
 		/**
 		* @return if this version is not equal to other
 		*/
-		bool operator!=(const Protocol_Version& other) const
+		bool operator!=(in Protocol_Version other) const
 		{
 			return (m_version != other.m_version);
 		}
@@ -123,12 +123,12 @@ class Protocol_Version
 		/**
 		* @return if this version is later than other
 		*/
-		bool operator>(const Protocol_Version& other) const;
+		bool operator>(in Protocol_Version other) const;
 
 		/**
 		* @return if this version is later than or equal to other
 		*/
-		bool operator>=(const Protocol_Version& other) const
+		bool operator>=(in Protocol_Version other) const
 		{
 			return (*this == other || *this > other);
 		}

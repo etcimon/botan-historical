@@ -29,11 +29,11 @@ class ChaCha : public StreamCipher
 
 		StreamCipher* clone() const { return new ChaCha; }
 	protected:
-		abstract void chacha(byte output[64], const u32bit input[16]);
+		abstract void chacha(byte output[64], const uint input[16]);
 	private:
 		void key_schedule(in byte[] key);
 
-		secure_vector<u32bit> m_state;
-		SafeArray!byte m_buffer;
+		secure_vector<uint> m_state;
+		SafeVector!byte m_buffer;
 		size_t m_position = 0;
 };

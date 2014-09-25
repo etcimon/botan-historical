@@ -26,7 +26,7 @@ class CurveGFp
 		* @param a first coefficient
 		* @param b second coefficient
 		*/
-		CurveGFp(const BigInt& p, const BigInt& a, const BigInt& b) :
+		CurveGFp(in BigInt p, const BigInt& a, const BigInt& b) :
 			m_p(p),
 			m_a(a),
 			m_b(b),
@@ -40,9 +40,9 @@ class CurveGFp
 			m_b_r = (b * r) % p;
 		}
 
-		CurveGFp(const CurveGFp&) = default;
+		CurveGFp(in CurveGFp) = default;
 
-		CurveGFp& operator=(const CurveGFp&) = default;
+		CurveGFp& operator=(in CurveGFp) = default;
 
 		/**
 		* @return curve coefficient a
@@ -110,7 +110,7 @@ class CurveGFp
 		* @param other curve to compare with
 		* @return true iff this is the same curve as other
 		*/
-		bool operator==(const CurveGFp& other) const
+		bool operator==(in CurveGFp other) const
 		{
 			return (m_p == other.m_p &&
 					  m_a == other.m_a &&
@@ -134,7 +134,7 @@ class CurveGFp
 * @param rhs a curve
 * @return true iff lhs is not the same as rhs
 */
-inline bool operator!=(const CurveGFp& lhs, const CurveGFp& rhs)
+inline bool operator!=(in CurveGFp lhs, const CurveGFp& rhs)
 {
 	return !(lhs == rhs);
 }

@@ -21,7 +21,7 @@ std::tm do_gmtime(std::time_t time_val)
 #else
 	std::tm* tm_p = std::gmtime(&time_val);
 	if (tm_p == 0)
-		throw Encoding_Error("time_t_to_tm could not convert");
+		throw new Encoding_Error("time_t_to_tm could not convert");
 	tm = *tm_p;
 #endif
 
@@ -34,7 +34,7 @@ std::tm do_gmtime(std::time_t time_val)
 * Convert a time_point to a calendar_point
 */
 calendar_point calendar_value(
-	const std::chrono::system_clock::time_point& time_point)
+	const SysTime& time_point)
 {
 	std::tm tm = do_gmtime(std::chrono::system_clock::to_time_t(time_point));
 

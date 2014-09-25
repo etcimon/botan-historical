@@ -23,13 +23,13 @@ OID::OID(in string oid_str)
 		}
 		catch(...)
 		{
-			throw Invalid_OID(oid_str);
+			throw new Invalid_OID(oid_str);
 		}
 
 		if(id.size() < 2 || id[0] > 2)
-			throw Invalid_OID(oid_str);
+			throw new Invalid_OID(oid_str);
 		if((id[0] == 0 || id[0] == 1) && id[1] > 39)
-			throw Invalid_OID(oid_str);
+			throw new Invalid_OID(oid_str);
 	}
 }
 
@@ -59,7 +59,7 @@ string OID::as_string() const
 /*
 * OID equality comparison
 */
-bool OID::operator==(const OID& oid) const
+bool OID::operator==(in OID oid) const
 {
 	if(id.size() != oid.id.size())
 		return false;
@@ -72,7 +72,7 @@ bool OID::operator==(const OID& oid) const
 /*
 * Append another component to the OID
 */
-OID& OID::operator+=(u32bit component)
+OID& OID::operator+=(uint component)
 {
 	id.push_back(component);
 	return (*this);
@@ -81,7 +81,7 @@ OID& OID::operator+=(u32bit component)
 /*
 * Append another component to the OID
 */
-OID operator+(const OID& oid, u32bit component)
+OID operator+(in OID oid, uint component)
 {
 	OID new_oid(oid);
 	new_oid += component;
@@ -91,7 +91,7 @@ OID operator+(const OID& oid, u32bit component)
 /*
 * OID inequality comparison
 */
-bool operator!=(const OID& a, const OID& b)
+bool operator!=(in OID a, const OID& b)
 {
 	return !(a == b);
 }
@@ -99,10 +99,10 @@ bool operator!=(const OID& a, const OID& b)
 /*
 * Compare two OIDs
 */
-bool operator<(const OID& a, const OID& b)
+bool operator<(in OID a, const OID& b)
 {
-	const std::vector<u32bit>& oid1 = a.get_id();
-	const std::vector<u32bit>& oid2 = b.get_id();
+	const Vector!( uint )& oid1 = a.get_id();
+	const Vector!( uint )& oid2 = b.get_id();
 
 	if(oid1.size() < oid2.size())
 		return true;
@@ -124,9 +124,9 @@ bool operator<(const OID& a, const OID& b)
 void OID::encode_into(DER_Encoder& der) const
 {
 	if(id.size() < 2)
-		throw Invalid_Argument("OID::encode_into: OID is invalid");
+		throw new Invalid_Argument("OID::encode_into: OID is invalid");
 
-	std::vector<byte> encoding;
+	Vector!( byte ) encoding;
 	encoding.push_back(40 * id[0] + id[1]);
 
 	for(size_t i = 2; i != id.size(); ++i)
@@ -153,23 +153,23 @@ void OID::decode_from(BER_Decoder& decoder)
 {
 	BER_Object obj = decoder.get_next_object();
 	if(obj.type_tag != OBJECT_ID || obj.class_tag != UNIVERSAL)
-		throw BER_Bad_Tag("Error decoding OID, unknown tag",
+		throw new BER_Bad_Tag("Error decoding OID, unknown tag",
 								obj.type_tag, obj.class_tag);
 	if(obj.value.size() < 2)
-		throw BER_Decoding_Error("OID encoding is too short");	clear();
+		throw new BER_Decoding_Error("OID encoding is too short");	clear();
 	id.push_back(obj.value[0] / 40);
 	id.push_back(obj.value[0] % 40);
 
 	size_t i = 0;
 	while(i != obj.value.size() - 1)
 	{
-		u32bit component = 0;
+		uint component = 0;
 		while(i != obj.value.size() - 1)
 		{
 			++i;
 
 			if(component >> (32-7))
-				throw Decoding_Error("OID component overflow");
+				throw new Decoding_Error("OID component overflow");
 
 			component = (component << 7) + (obj.value[i] & 0x7F);
 

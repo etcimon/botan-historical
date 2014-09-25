@@ -22,12 +22,12 @@ class ECDSA_PublicKey : public abstract EC_PublicKey
 		* @param dom_par the domain parameters associated with this key
 		* @param public_point the public point defining this key
 		*/
-		ECDSA_PublicKey(const EC_Group& dom_par,
+		ECDSA_PublicKey(in EC_Group dom_par,
 							 const PointGFp& public_point) :
 			EC_PublicKey(dom_par, public_point) {}
 
-		ECDSA_PublicKey(const AlgorithmIdentifier& alg_id,
-							 in SafeArray!byte key_bits) :
+		ECDSA_PublicKey(in AlgorithmIdentifier alg_id,
+							 in SafeVector!byte key_bits) :
 			EC_PublicKey(alg_id, key_bits) {}
 
 		/**
@@ -65,8 +65,8 @@ class ECDSA_PrivateKey : public ECDSA_PublicKey,
 		* @param alg_id the X.509 algorithm identifier
 		* @param key_bits PKCS #8 structure
 		*/
-		ECDSA_PrivateKey(const AlgorithmIdentifier& alg_id,
-							  in SafeArray!byte key_bits) :
+		ECDSA_PrivateKey(in AlgorithmIdentifier alg_id,
+							  in SafeVector!byte key_bits) :
 			EC_PrivateKey(alg_id, key_bits) {}
 
 		/**
@@ -89,9 +89,9 @@ class ECDSA_PrivateKey : public ECDSA_PublicKey,
 class ECDSA_Signature_Operation : public PK_Ops::Signature
 {
 	public:
-		ECDSA_Signature_Operation(const ECDSA_PrivateKey& ecdsa);
+		ECDSA_Signature_Operation(in ECDSA_PrivateKey ecdsa);
 
-		SafeArray!byte sign(in byte[] msg, size_t msg_len,
+		SafeVector!byte sign(in byte[] msg, size_t msg_len,
 										RandomNumberGenerator& rng);
 
 		size_t message_parts() const { return 2; }
@@ -111,7 +111,7 @@ class ECDSA_Signature_Operation : public PK_Ops::Signature
 class ECDSA_Verification_Operation : public PK_Ops::Verification
 {
 	public:
-		ECDSA_Verification_Operation(const ECDSA_PublicKey& ecdsa);
+		ECDSA_Verification_Operation(in ECDSA_PublicKey ecdsa);
 
 		size_t message_parts() const { return 2; }
 		size_t message_part_size() const { return order.bytes(); }

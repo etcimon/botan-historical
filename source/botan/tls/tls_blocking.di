@@ -8,7 +8,7 @@
 #include <botan/tls_client.h>
 #include <botan/tls_server.h>
 #include <deque>
-template<typename T> using secure_deque = std::vector<T, secure_allocator<T>>;
+template<typename T> using secure_deque = Vector!( T, secure_allocator<T )>;
 
 namespace TLS {
 
@@ -63,16 +63,16 @@ class Blocking_Client
 		/**
 		* Can override to get the handshake complete notification
 		*/
-		abstract bool handshake_complete(const Session&) { return true; }
+		abstract bool handshake_complete(in Session) { return true; }
 
 		/**
 		* Can override to get notification of alerts
 		*/
-		abstract void alert_notification(const Alert&) {}
+		abstract void alert_notification(in Alert) {}
 
 	private:
 
-		bool handshake_cb(const Session&);
+		bool handshake_cb(in Session);
 
 		void data_cb(in byte[] data);
 

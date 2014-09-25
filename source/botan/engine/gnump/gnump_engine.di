@@ -23,12 +23,12 @@ class GMP_Engine : public Engine
 		PK_Ops::Signature*
 		get_signature_op(in Private_Key key, RandomNumberGenerator&) const override;
 
-		PK_Ops::Verification* get_verify_op(const Public_Key& key, RandomNumberGenerator&) const override;
+		PK_Ops::Verification* get_verify_op(in Public_Key key, RandomNumberGenerator&) const override;
 
-		PK_Ops::Encryption* get_encryption_op(const Public_Key& key, RandomNumberGenerator&) const override;
+		PK_Ops::Encryption* get_encryption_op(in Public_Key key, RandomNumberGenerator&) const override;
 
 		PK_Ops::Decryption* get_decryption_op(in Private_Key key, RandomNumberGenerator&) const override;
 
-		Modular_Exponentiator* mod_exp(const BigInt&,
+		Modular_Exponentiator* mod_exp(in BigInt,
 												 Power_Mod::Usage_Hints) const override;
 };

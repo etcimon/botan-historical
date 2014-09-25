@@ -80,7 +80,7 @@ BlockCipherModePaddingMethod* get_bc_pad(in string algo_spec,
 
 #endif
 
-	throw Algorithm_Not_Found(algo_spec);
+	throw new Algorithm_Not_Found(algo_spec);
 }
 
 }
@@ -150,12 +150,12 @@ Keyed_Filter* get_cipher_mode(const BlockCipher* block_cipher,
 		mode.find("OCB") != string::npos ||
 		mode.find("CCM") != string::npos)
 	{
-		std::vector<string> algo_info = parse_algorithm_name(mode);
+		Vector!( string ) algo_info = parse_algorithm_name(mode);
 		const string mode_name = algo_info[0];
 
 		size_t bits = 8 * block_cipher->block_size();
 		if(algo_info.size() > 1)
-			bits = to_u32bit(algo_info[1]);
+			bits = to_uint(algo_info[1]);
 
 #if defined(BOTAN_HAS_MODE_CFB)
 		if(mode_name == "CFB")
@@ -168,7 +168,7 @@ Keyed_Filter* get_cipher_mode(const BlockCipher* block_cipher,
 #endif
 
 		if(bits % 8 != 0)
-			throw std::invalid_argument("AEAD interface does not support non-octet length tags");
+			throw new std::invalid_argument("AEAD interface does not support non-octet length tags");
 
 #if defined(BOTAN_HAS_AEAD_FILTER)
 
@@ -177,7 +177,7 @@ Keyed_Filter* get_cipher_mode(const BlockCipher* block_cipher,
 #if defined(BOTAN_HAS_AEAD_CCM)
 		if(mode_name == "CCM")
 		{
-			const size_t L = (algo_info.size() == 3) ? to_u32bit(algo_info[2]) : 3;
+			const size_t L = (algo_info.size() == 3) ? to_uint(algo_info[2]) : 3;
 			if(direction == ENCRYPTION)
 				return new AEAD_Filter(new CCM_Encryption(block_cipher->clone(), tag_size, L));
 			else
@@ -228,9 +228,9 @@ Keyed_Filter* Core_Engine::get_cipher(in string algo_spec,
 												  Cipher_Dir direction,
 												  Algorithm_Factory& af)
 {
-	std::vector<string> algo_parts = split_on(algo_spec, '/');
+	Vector!( string ) algo_parts = split_on(algo_spec, '/');
 	if(algo_parts.empty())
-		throw Invalid_Algorithm_Name(algo_spec);
+		throw new Invalid_Algorithm_Name(algo_spec);
 
 	const string cipher_name = algo_parts[0];
 
@@ -247,7 +247,7 @@ Keyed_Filter* Core_Engine::get_cipher(in string algo_spec,
 		return nullptr; // 4 part mode, not something we know about
 
 	if(algo_parts.size() < 2)
-		throw Lookup_Error("Cipher specification '" + algo_spec +
+		throw new Lookup_Error("Cipher specification '" + algo_spec +
 								 "' is missing mode identifier");
 
 	string mode = algo_parts[1];
@@ -261,16 +261,16 @@ Keyed_Filter* Core_Engine::get_cipher(in string algo_spec,
 	if(mode == "ECB" && padding == "CTS")
 		return nullptr;
 	else if((mode != "CBC" && mode != "ECB") && padding != "NoPadding")
-		throw Invalid_Algorithm_Name(algo_spec);
+		throw new Invalid_Algorithm_Name(algo_spec);
 
 	Keyed_Filter* filt = get_cipher_mode(block_cipher, direction, mode, padding);
 	if(filt)
 		return filt;
 
 	if(padding != "NoPadding")
-		throw Algorithm_Not_Found(cipher_name + "/" + mode + "/" + padding);
+		throw new Algorithm_Not_Found(cipher_name + "/" + mode + "/" + padding);
 	else
-		throw Algorithm_Not_Found(cipher_name + "/" + mode);
+		throw new Algorithm_Not_Found(cipher_name + "/" + mode);
 }
 
 }

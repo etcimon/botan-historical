@@ -29,14 +29,14 @@ class ANSI_X919_MAC : public MessageAuthenticationCode
 		*/
 		ANSI_X919_MAC(BlockCipher* cipher);
 
-		ANSI_X919_MAC(const ANSI_X919_MAC&) = delete;
-		ANSI_X919_MAC& operator=(const ANSI_X919_MAC&) = delete;
+		ANSI_X919_MAC(in ANSI_X919_MAC) = delete;
+		ANSI_X919_MAC& operator=(in ANSI_X919_MAC) = delete;
 	private:
 		void add_data(const byte[], size_t);
 		void final_result(byte[]);
 		void key_schedule(const byte[], size_t);
 
 		std::unique_ptr<BlockCipher> m_des1, m_des2;
-		SafeArray!byte m_state;
+		SafeVector!byte m_state;
 		size_t m_position;
 };

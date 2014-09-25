@@ -72,7 +72,7 @@ KDF* get_kdf(in string algo_spec)
 		return new TLS_12_PRF(af.make_mac("HMAC(" + request.arg(0) + ")"));
 #endif
 
-	throw Algorithm_Not_Found(algo_spec);
+	throw new Algorithm_Not_Found(algo_spec);
 }
 
 }

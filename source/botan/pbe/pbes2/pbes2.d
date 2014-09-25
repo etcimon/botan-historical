@@ -56,7 +56,7 @@ void PBE_PKCS5v20::flush_pipe(bool safe_to_skip)
 	if(safe_to_skip && pipe.remaining() < 64)
 		return;
 
-	SafeArray!byte buffer(DEFAULT_BUFFERSIZE);
+	SafeVector!byte buffer(DEFAULT_BUFFERSIZE);
 	while(pipe.remaining())
 	{
 		const size_t got = pipe.read(&buffer[0], buffer.size());
@@ -67,7 +67,7 @@ void PBE_PKCS5v20::flush_pipe(bool safe_to_skip)
 /*
 * Encode PKCS#5 PBES2 parameters
 */
-std::vector<byte> PBE_PKCS5v20::encode_params() const
+Vector!( byte ) PBE_PKCS5v20::encode_params() const
 {
 	return DER_Encoder()
 		.start_cons(SEQUENCE)
@@ -135,7 +135,7 @@ PBE_PKCS5v20::PBE_PKCS5v20(BlockCipher* cipher,
 /*
 * PKCS#5 v2.0 PBE Constructor
 */
-PBE_PKCS5v20::PBE_PKCS5v20(in Array!byte params,
+PBE_PKCS5v20::PBE_PKCS5v20(in Vector!byte params,
 									in string passphrase) :
 	direction(DECRYPTION),
 	block_cipher(nullptr),
@@ -153,7 +153,7 @@ PBE_PKCS5v20::PBE_PKCS5v20(in Array!byte params,
 	AlgorithmIdentifier prf_algo;
 
 	if(kdf_algo.oid != OIDS::lookup("PKCS5.PBKDF2"))
-		throw Decoding_Error("PBE-PKCS5 v2.0: Unknown KDF algorithm " +
+		throw new Decoding_Error("PBE-PKCS5 v2.0: Unknown KDF algorithm " +
 									kdf_algo.oid.as_string());
 
 	BER_Decoder(kdf_algo.parameters)
@@ -170,12 +170,12 @@ PBE_PKCS5v20::PBE_PKCS5v20(in Array!byte params,
 	Algorithm_Factory& af = global_state().algorithm_factory();
 
 	string cipher = OIDS::lookup(enc_algo.oid);
-	std::vector<string> cipher_spec = split_on(cipher, '/');
+	Vector!( string ) cipher_spec = split_on(cipher, '/');
 	if(cipher_spec.size() != 2)
-		throw Decoding_Error("PBE-PKCS5 v2.0: Invalid cipher spec " + cipher);
+		throw new Decoding_Error("PBE-PKCS5 v2.0: Invalid cipher spec " + cipher);
 
 	if(cipher_spec[1] != "CBC")
-		throw Decoding_Error("PBE-PKCS5 v2.0: Don't know param format for " +
+		throw new Decoding_Error("PBE-PKCS5 v2.0: Don't know param format for " +
 									cipher);
 
 	BER_Decoder(enc_algo.parameters).decode(iv, OCTET_STRING).verify_end();
@@ -187,7 +187,7 @@ PBE_PKCS5v20::PBE_PKCS5v20(in Array!byte params,
 		key_length = block_cipher->maximum_keylength();
 
 	if(salt.size() < 8)
-		throw Decoding_Error("PBE-PKCS5 v2.0: Encoded salt is too small");
+		throw new Decoding_Error("PBE-PKCS5 v2.0: Encoded salt is too small");
 
 	PKCS5_PBKDF2 pbkdf(m_prf->clone());
 
