@@ -12,8 +12,8 @@
 class IDEA : public Block_Cipher_Fixed_Params<8, 16>
 {
 	public:
-		void encrypt_n(in byte[] input, ref byte[] output) const;
-		void decrypt_n(in byte[] input, ref byte[] output) const;
+		void encrypt_n(byte* input, byte* output, size_t blocks) const;
+		void decrypt_n(byte* input, byte* output, size_t blocks) const;
 
 		void clear();
 		string name() const { return "IDEA"; }
@@ -22,15 +22,15 @@ class IDEA : public Block_Cipher_Fixed_Params<8, 16>
 		/**
 		* @return const reference to encryption subkeys
 		*/
-		const secure_vector<u16bit>& get_EK() const { return EK; }
+		const secure_vector<ushort>& get_EK() const { return EK; }
 
 		/**
 		* @return const reference to decryption subkeys
 		*/
-		const secure_vector<u16bit>& get_DK() const { return DK; }
+		const secure_vector<ushort>& get_DK() const { return DK; }
 
 	private:
-		void key_schedule(const byte[], size_t);
+		void key_schedule(in byte*, size_t);
 
-		secure_vector<u16bit> EK, DK;
+		secure_vector<ushort> EK, DK;
 };

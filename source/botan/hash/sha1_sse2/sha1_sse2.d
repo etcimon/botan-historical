@@ -110,7 +110,7 @@ W0 = W[t]..W[t+3]
 /*
 * SHA-160 F1 Function
 */
-inline void F1(uint A, ref uint B, uint C, uint D, ref uint E, uint msg)
+ void F1(uint A, ref uint B, uint C, uint D, ref uint E, uint msg)
 {
 	E += (D ^ (B & (C ^ D))) + msg + rotate_left(A, 5);
 	B  = rotate_left(B, 30);
@@ -119,7 +119,7 @@ inline void F1(uint A, ref uint B, uint C, uint D, ref uint E, uint msg)
 /*
 * SHA-160 F2 Function
 */
-inline void F2(uint A, ref uint B, uint C, uint D, ref uint E, uint msg)
+ void F2(uint A, ref uint B, uint C, uint D, ref uint E, uint msg)
 {
 	E += (B ^ C ^ D) + msg + rotate_left(A, 5);
 	B  = rotate_left(B, 30);
@@ -128,7 +128,7 @@ inline void F2(uint A, ref uint B, uint C, uint D, ref uint E, uint msg)
 /*
 * SHA-160 F3 Function
 */
-inline void F3(uint A, ref uint B, uint C, uint D, ref uint E, uint msg)
+ void F3(uint A, ref uint B, uint C, uint D, ref uint E, uint msg)
 {
 	E += ((B & C) | ((B | C) & D)) + msg + rotate_left(A, 5);
 	B  = rotate_left(B, 30);
@@ -137,7 +137,7 @@ inline void F3(uint A, ref uint B, uint C, uint D, ref uint E, uint msg)
 /*
 * SHA-160 F4 Function
 */
-inline void F4(uint A, ref uint B, uint C, uint D, ref uint E, uint msg)
+ void F4(uint A, ref uint B, uint C, uint D, ref uint E, uint msg)
 {
 	E += (B ^ C ^ D) + msg + rotate_left(A, 5);
 	B  = rotate_left(B, 30);
@@ -150,7 +150,7 @@ inline void F4(uint A, ref uint B, uint C, uint D, ref uint E, uint msg)
 /*
 * SHA-160 Compression Function using SSE for message expansion
 */
-void SHA_160_SSE2::compress_n(in byte[] input_bytes, size_t blocks)
+void SHA_160_SSE2::compress_n(in byte* input_bytes, size_t blocks)
 {
 	using namespace SHA1_SSE2_F;
 

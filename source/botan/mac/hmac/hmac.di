@@ -30,8 +30,8 @@ class HMAC : public MessageAuthenticationCode
 		*/
 		HMAC(HashFunction* hash);
 
-		HMAC(in HMAC) = delete;
-		HMAC& operator=(in HMAC) = delete;
+		HMAC(in HMAC);
+		HMAC& operator=(in HMAC);
 	private:
 		void add_data(const byte[], size_t);
 		void final_result(byte[]);

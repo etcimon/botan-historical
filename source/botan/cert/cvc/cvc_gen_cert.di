@@ -13,10 +13,9 @@
 /**
 *  This class represents TR03110 (EAC) v1.1 generalized CV Certificates
 */
-template<typename Derived>
-class EAC1_1_gen_CVC : public EAC1_1_obj<Derived> // CRTP continuation from EAC1_1_obj
+class EAC1_1_gen_CVC(Derived) : public EAC1_1_obj!Derived // CRTP continuation from EAC1_1_obj
 {
-		friend class EAC1_1_obj<EAC1_1_gen_CVC>;
+		friend class EAC1_1_obj!EAC1_1_gen_CVC;
 
 	public:
 
@@ -36,7 +35,9 @@ class EAC1_1_gen_CVC : public EAC1_1_obj<Derived> // CRTP continuation from EAC1
 		* Get the CHR of the certificate.
 		* @result the CHR of the certificate
 		*/
-		ASN1_Chr get_chr() const;
+		ASN1_Chr get_chr() const {
+			return m_chr;
+		};
 
 		/**
 		* Put the DER encoded version of this object into a pipe. PEM
@@ -44,7 +45,7 @@ class EAC1_1_gen_CVC : public EAC1_1_obj<Derived> // CRTP continuation from EAC1
 		* @param out the pipe to push the DER encoded version into
 		* @param encoding the encoding to use. Must be DER.
 		*/
-		void encode(Pipe& out, X509_Encoding encoding) const;
+		void encode(Pipe output, X509_Encoding encoding) const;
 
 		/**
 		* Get the to-be-signed (TBS) data of this object.
@@ -67,9 +68,9 @@ class EAC1_1_gen_CVC : public EAC1_1_obj<Derived> // CRTP continuation from EAC1
 		* @result the DER encoded signed generalized CVC object
 		*/
 		static Vector!( byte ) make_signed(
-			PK_Signer& signer,
+			PK_Signer signer,
 			in Vector!byte tbs_bits,
-			RandomNumberGenerator& rng);
+			RandomNumberGenerator rng);
 
 		EAC1_1_gen_CVC() { m_pk = 0; }
 
@@ -81,16 +82,13 @@ class EAC1_1_gen_CVC : public EAC1_1_obj<Derived> // CRTP continuation from EAC1
 		ASN1_Chr m_chr;
 		bool self_signed;
 
-		static void decode_info(DataSource& source,
-										Vector!( byte ) & res_tbs_bits,
-										ECDSA_Signature & res_sig);
+		static void decode_info(DataSource source,
+										Vector!( byte ) res_tbs_bits,
+										ECDSA_Signature res_sig);
 
 };
 
-template<typename Derived> ASN1_Chr EAC1_1_gen_CVC<Derived>::get_chr() const
-{
-	return m_chr;
-}
+template<typename Derived> ASN1_Chr EAC1_1_gen_CVC<Derived>::
 
 template<typename Derived> bool EAC1_1_gen_CVC<Derived>::is_self_signed() const
 {
@@ -99,9 +97,9 @@ template<typename Derived> bool EAC1_1_gen_CVC<Derived>::is_self_signed() const
 
 template<typename Derived>
 Vector!( byte ) EAC1_1_gen_CVC<Derived>::make_signed(
-	PK_Signer& signer,
+	PK_Signer signer,
 	in Vector!byte tbs_bits,
-	RandomNumberGenerator& rng) // static
+	RandomNumberGenerator rng) // static
 {
 	const auto concat_sig = signer.sign_message(tbs_bits, rng);
 
@@ -116,7 +114,7 @@ Vector!( byte ) EAC1_1_gen_CVC<Derived>::make_signed(
 template<typename Derived>
 Public_Key* EAC1_1_gen_CVC<Derived>::subject_public_key() const
 {
-	return new ECDSA_PublicKey(*m_pk);
+	return new ECDSA_PublicKey(m_pk);
 }
 
 template<typename Derived> Vector!( byte ) EAC1_1_gen_CVC<Derived>::build_cert_body(in Vector!byte tbs)
@@ -132,7 +130,7 @@ template<typename Derived> Vector!( byte ) EAC1_1_gen_CVC<Derived>::tbs_data() c
 	return build_cert_body(EAC1_1_obj<Derived>::tbs_bits);
 }
 
-template<typename Derived> void EAC1_1_gen_CVC<Derived>::encode(Pipe& out, X509_Encoding encoding) const
+template<typename Derived> void EAC1_1_gen_CVC<Derived>::encode(Pipe out, X509_Encoding encoding) const
 {
 	Vector!( byte ) concat_sig(EAC1_1_obj<Derived>::m_sig.get_concatenation());
 	Vector!( byte ) der = DER_Encoder()
@@ -152,9 +150,9 @@ template<typename Derived> void EAC1_1_gen_CVC<Derived>::encode(Pipe& out, X509_
 
 template<typename Derived>
 void EAC1_1_gen_CVC<Derived>::decode_info(
-	DataSource& source,
-	Vector!( byte ) & res_tbs_bits,
-	ECDSA_Signature & res_sig)
+	DataSource source,
+	Vector!( byte ) res_tbs_bits,
+	ECDSA_Signature res_sig)
 {
 	Vector!( byte ) concat_sig;
 	BER_Decoder(source)

@@ -51,8 +51,8 @@
 		THREEFISH_INJECT_KEY(R2);										 \
 } while(0)
 
-void Threefish_512::skein_feedfwd(in secure_vector<u64bit> M,
-											 const secure_vector<u64bit>& T)
+void Threefish_512::skein_feedfwd(in secure_vector<ulong> M,
+											 const secure_vector<ulong>& T)
 {
 	BOTAN_ASSERT(m_K.size() == 9, "Key was set");
 	BOTAN_ASSERT(M.size() == 8, "Single block");
@@ -61,14 +61,14 @@ void Threefish_512::skein_feedfwd(in secure_vector<u64bit> M,
 	m_T[1] = T[1];
 	m_T[2] = T[0] ^ T[1];
 
-	u64bit X0 = M[0];
-	u64bit X1 = M[1];
-	u64bit X2 = M[2];
-	u64bit X3 = M[3];
-	u64bit X4 = M[4];
-	u64bit X5 = M[5];
-	u64bit X6 = M[6];
-	u64bit X7 = M[7];
+	ulong X0 = M[0];
+	ulong X1 = M[1];
+	ulong X2 = M[2];
+	ulong X3 = M[3];
+	ulong X4 = M[4];
+	ulong X5 = M[5];
+	ulong X6 = M[6];
+	ulong X7 = M[7];
 
 	THREEFISH_INJECT_KEY(0);
 
@@ -95,21 +95,21 @@ void Threefish_512::skein_feedfwd(in secure_vector<u64bit> M,
 				m_K[4] ^ m_K[5] ^ m_K[6] ^ m_K[7] ^ 0x1BD11BDAA9FC1A22;
 }
 
-void Threefish_512::encrypt_n(in byte[] input, ref byte[] output) const
+void Threefish_512::encrypt_n(byte* input, byte* output, size_t blocks) const
 {
 	BOTAN_ASSERT(m_K.size() == 9, "Key was set");
 	BOTAN_ASSERT(m_T.size() == 3, "Tweak was set");
 
 	for(size_t i = 0; i != blocks; ++i)
 	{
-		u64bit X0 = load_le<u64bit>(input, 0);
-		u64bit X1 = load_le<u64bit>(input, 1);
-		u64bit X2 = load_le<u64bit>(input, 2);
-		u64bit X3 = load_le<u64bit>(input, 3);
-		u64bit X4 = load_le<u64bit>(input, 4);
-		u64bit X5 = load_le<u64bit>(input, 5);
-		u64bit X6 = load_le<u64bit>(input, 6);
-		u64bit X7 = load_le<u64bit>(input, 7);
+		ulong X0 = load_le!ulong(input, 0);
+		ulong X1 = load_le!ulong(input, 1);
+		ulong X2 = load_le!ulong(input, 2);
+		ulong X3 = load_le!ulong(input, 3);
+		ulong X4 = load_le!ulong(input, 4);
+		ulong X5 = load_le!ulong(input, 5);
+		ulong X6 = load_le!ulong(input, 6);
+		ulong X7 = load_le!ulong(input, 7);
 
 		THREEFISH_INJECT_KEY(0);
 
@@ -134,7 +134,7 @@ void Threefish_512::encrypt_n(in byte[] input, ref byte[] output) const
 #undef THREEFISH_INJECT_KEY
 #undef THREEFISH_ROUND
 
-void Threefish_512::decrypt_n(in byte[] input, ref byte[] output) const
+void Threefish_512::decrypt_n(byte* input, byte* output, size_t blocks) const
 {
 	BOTAN_ASSERT(m_K.size() == 9, "Key was set");
 	BOTAN_ASSERT(m_T.size() == 3, "Tweak was set");
@@ -184,14 +184,14 @@ void Threefish_512::decrypt_n(in byte[] input, ref byte[] output) const
 
 	for(size_t i = 0; i != blocks; ++i)
 	{
-		u64bit X0 = load_le<u64bit>(input, 0);
-		u64bit X1 = load_le<u64bit>(input, 1);
-		u64bit X2 = load_le<u64bit>(input, 2);
-		u64bit X3 = load_le<u64bit>(input, 3);
-		u64bit X4 = load_le<u64bit>(input, 4);
-		u64bit X5 = load_le<u64bit>(input, 5);
-		u64bit X6 = load_le<u64bit>(input, 6);
-		u64bit X7 = load_le<u64bit>(input, 7);
+		ulong X0 = load_le!ulong(input, 0);
+		ulong X1 = load_le!ulong(input, 1);
+		ulong X2 = load_le!ulong(input, 2);
+		ulong X3 = load_le!ulong(input, 3);
+		ulong X4 = load_le!ulong(input, 4);
+		ulong X5 = load_le!ulong(input, 5);
+		ulong X6 = load_le!ulong(input, 6);
+		ulong X7 = load_le!ulong(input, 7);
 
 		THREEFISH_INJECT_KEY(18);
 
@@ -216,22 +216,22 @@ void Threefish_512::decrypt_n(in byte[] input, ref byte[] output) const
 #undef THREEFISH_ROUND
 }
 
-void Threefish_512::set_tweak(in byte[] tweak, size_t len)
+void Threefish_512::set_tweak(in byte* tweak, size_t len)
 {
 	if(len != 16)
 		throw new Exception("Unsupported twofish tweak length");
-	m_T[0] = load_le<u64bit>(tweak, 0);
-	m_T[1] = load_le<u64bit>(tweak, 1);
+	m_T[0] = load_le!ulong(tweak, 0);
+	m_T[1] = load_le!ulong(tweak, 1);
 	m_T[2] = m_T[0] ^ m_T[1];
 }
 
-void Threefish_512::key_schedule(in byte[] key, size_t)
+void Threefish_512::key_schedule(in byte* key, size_t)
 {
 	// todo: define key schedule for smaller keys
 	m_K.resize(9);
 
 	for(size_t i = 0; i != 8; ++i)
-		m_K[i] = load_le<u64bit>(key, i);
+		m_K[i] = load_le!ulong(key, i);
 
 	m_K[8] = m_K[0] ^ m_K[1] ^ m_K[2] ^ m_K[3] ^
 				m_K[4] ^ m_K[5] ^ m_K[6] ^ m_K[7] ^ 0x1BD11BDAA9FC1A22;

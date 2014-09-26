@@ -12,10 +12,10 @@
 class Modular_Exponentiator
 {
 	public:
-		abstract void set_base(in BigInt) = 0;
-		abstract void set_exponent(in BigInt) = 0;
-		abstract BigInt execute() const = 0;
-		abstract Modular_Exponentiator* copy() const = 0;
+		abstract void set_base(in BigInt);
+		abstract void set_exponent(in BigInt);
+		abstract BigInt execute() const;
+		abstract Modular_Exponentiator* copy() const;
 		abstract ~Modular_Exponentiator() {}
 };
 

@@ -10,8 +10,8 @@
 class AutoSeeded_RNG : public RandomNumberGenerator
 {
 	public:
-		void randomize(ref byte[] output, size_t len)
-		{ m_rng->randomize(out, len); }
+		void randomize(byte* output, size_t len)
+		{ m_rng->randomize(output, len); }
 
 		bool is_seeded() const { return m_rng->is_seeded(); }
 
@@ -21,7 +21,7 @@ class AutoSeeded_RNG : public RandomNumberGenerator
 
 		void reseed(size_t poll_bits = 256) { m_rng->reseed(poll_bits); }
 
-		void add_entropy(in byte[] input)
+		void add_entropy(in byte* input, size_t len)
 		{ m_rng->add_entropy(input, len); }
 
 		AutoSeeded_RNG() : m_rng(RandomNumberGenerator::make_rng()) {}

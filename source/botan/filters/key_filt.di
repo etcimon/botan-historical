@@ -18,7 +18,7 @@ class Keyed_Filter : public Filter
 		* Set the key of this filter
 		* @param key the key to use
 		*/
-		abstract void set_key(in SymmetricKey key) = 0;
+		abstract void set_key(in SymmetricKey key);
 
 		/**
 		* Set the initialization vector of this filter. Note: you should
@@ -40,7 +40,7 @@ class Keyed_Filter : public Filter
 		/**
 		* @return object describing limits on key size
 		*/
-		abstract Key_Length_Specification key_spec() const = 0;
+		abstract Key_Length_Specification key_spec() const;
 
 		/**
 		* Check whether an IV length is valid for this filter

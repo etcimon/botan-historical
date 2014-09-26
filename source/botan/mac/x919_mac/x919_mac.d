@@ -11,7 +11,7 @@
 /*
 * Update an ANSI X9.19 MAC Calculation
 */
-void ANSI_X919_MAC::add_data(in byte[] input, size_t length)
+void ANSI_X919_MAC::add_data(in byte* input, size_t length)
 {
 	size_t xored = std::min(8 - m_position, length);
 	xor_buf(&m_state[m_position], input, xored);
@@ -50,7 +50,7 @@ void ANSI_X919_MAC::final_result(byte mac[])
 /*
 * ANSI X9.19 MAC Key Schedule
 */
-void ANSI_X919_MAC::key_schedule(in byte[] key)
+void ANSI_X919_MAC::key_schedule(in byte* key, size_t length)
 {
 	m_des1->set_key(key, 8);
 

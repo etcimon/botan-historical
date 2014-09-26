@@ -16,7 +16,7 @@ namespace TLS {
 namespace {
 
 SymmetricKey derive_key(in string passphrase,
-								in byte[] salt,
+								in byte* salt,
 								size_t salt_len,
 								size_t iterations,
 								size_t& check_val)
@@ -28,7 +28,7 @@ SymmetricKey derive_key(in string passphrase,
 															salt, salt_len,
 															iterations).bits_of();
 
-	check_val = make_u16bit(x[0], x[1]);
+	check_val = make_ushort(x[0], x[1]);
 	return SymmetricKey(&x[2], x.size() - 2);
 }
 

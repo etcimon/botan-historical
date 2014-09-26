@@ -11,7 +11,7 @@
 #include <botan/base64.h>
 namespace {
 
-string bcrypt_base64_encode(in byte[] input, size_t length)
+string bcrypt_base64_encode(in byte* input, size_t length)
 {
 	// Bcrypt uses a non-standard base64 alphabet
 	const byte OPENBSD_BASE64_SUB[256] = {
@@ -85,7 +85,7 @@ Vector!( byte ) bcrypt_base64_decode(string input)
 
 string make_bcrypt(in string pass,
 								in Vector!byte salt,
-								u16bit work_factor)
+								ushort work_factor)
 {
 	const byte magic[24] = {
 		0x4F, 0x72, 0x70, 0x68, 0x65, 0x61, 0x6E, 0x42,
@@ -121,7 +121,7 @@ string make_bcrypt(in string pass,
 
 string generate_bcrypt(in string pass,
 									 RandomNumberGenerator& rng,
-									 u16bit work_factor)
+									 ushort work_factor)
 {
 	return make_bcrypt(pass, unlock(rng.random_vec(16)), work_factor);
 }
@@ -135,7 +135,7 @@ bool check_bcrypt(in string pass, in string hash)
 		return false;
 	}
 
-	const u16bit workfactor = to_uint(hash.substr(4, 2));
+	const ushort workfactor = to_uint(hash.substr(4, 2));
 
 	Vector!( byte ) salt = bcrypt_base64_decode(hash.substr(7, 22));
 

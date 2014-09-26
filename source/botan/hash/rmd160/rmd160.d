@@ -13,7 +13,7 @@ namespace {
 /*
 * RIPEMD-160 F1 Function
 */
-inline void F1(ref uint A, uint B, ref uint C, uint D, uint E,
+ void F1(ref uint A, uint B, ref uint C, uint D, uint E,
 					uint msg, uint shift)
 {
 	A += (B ^ C ^ D) + msg;
@@ -24,7 +24,7 @@ inline void F1(ref uint A, uint B, ref uint C, uint D, uint E,
 /*
 * RIPEMD-160 F2 Function
 */
-inline void F2(ref uint A, uint B, ref uint C, uint D, uint E,
+ void F2(ref uint A, uint B, ref uint C, uint D, uint E,
 					uint msg, uint shift, uint magic)
 {
 	A += (D ^ (B & (C ^ D))) + msg + magic;
@@ -35,7 +35,7 @@ inline void F2(ref uint A, uint B, ref uint C, uint D, uint E,
 /*
 * RIPEMD-160 F3 Function
 */
-inline void F3(ref uint A, uint B, ref uint C, uint D, uint E,
+ void F3(ref uint A, uint B, ref uint C, uint D, uint E,
 					uint msg, uint shift, uint magic)
 {
 	A += (D ^ (B | ~C)) + msg + magic;
@@ -46,7 +46,7 @@ inline void F3(ref uint A, uint B, ref uint C, uint D, uint E,
 /*
 * RIPEMD-160 F4 Function
 */
-inline void F4(ref uint A, uint B, ref uint C, uint D, uint E,
+ void F4(ref uint A, uint B, ref uint C, uint D, uint E,
 					uint msg, uint shift, uint magic)
 {
 	A += (C ^ (D & (B ^ C))) + msg + magic;
@@ -57,7 +57,7 @@ inline void F4(ref uint A, uint B, ref uint C, uint D, uint E,
 /*
 * RIPEMD-160 F5 Function
 */
-inline void F5(ref uint A, uint B, ref uint C, uint D, uint E,
+ void F5(ref uint A, uint B, ref uint C, uint D, uint E,
 					uint msg, uint shift, uint magic)
 {
 	A += (B ^ (C | ~D)) + msg + magic;
@@ -70,7 +70,7 @@ inline void F5(ref uint A, uint B, ref uint C, uint D, uint E,
 /*
 * RIPEMD-160 Compression Function
 */
-void RIPEMD_160::compress_n(in byte[] input, size_t blocks)
+void RIPEMD_160::compress_n(in byte* input, size_t blocks)
 {
 	const uint MAGIC2 = 0x5A827999, MAGIC3 = 0x6ED9EBA1,
 					 MAGIC4 = 0x8F1BBCDC, MAGIC5 = 0xA953FD4E,
@@ -184,7 +184,7 @@ void RIPEMD_160::compress_n(in byte[] input, size_t blocks)
 /*
 * Copy out the digest
 */
-void RIPEMD_160::copy_out(byte output[])
+void RIPEMD_160::copy_out(byte* output)
 {
 	for(size_t i = 0; i != output_length(); i += 4)
 		store_le(digest[i/4], output + i);

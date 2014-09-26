@@ -15,7 +15,7 @@ class XTS_Mode : public Cipher_Mode
 	public:
 		string name() const override;
 
-		SafeVector!byte start(in byte[] nonce, size_t nonce_len) override;
+		SafeVector!byte start(in byte* nonce, size_t nonce_len) override;
 
 		size_t update_granularity() const override;
 
@@ -38,7 +38,7 @@ class XTS_Mode : public Cipher_Mode
 		void update_tweak(size_t last_used);
 
 	private:
-		void key_schedule(in byte[] key) override;
+		void key_schedule(in byte* key, size_t length) override;
 
 		std::unique_ptr<BlockCipher> m_cipher, m_tweak_cipher;
 		SafeVector!byte m_tweak;

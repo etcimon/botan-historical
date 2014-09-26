@@ -10,8 +10,8 @@
 #include <botan/internal/xor_buf.h>
 #include <algorithm>
 void mgf1_mask(HashFunction& hash,
-					in byte[] input,
-					ref byte[] output)
+					in byte* input,
+					byte* output)
 {
 	size_t in_len = input.length;
 	size_t out_len = output.length;

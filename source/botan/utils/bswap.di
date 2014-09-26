@@ -15,7 +15,7 @@
 /**
 * Swap a 16 bit integer
 */
-inline u16bit reverse_bytes(u16bit val)
+ ushort reverse_bytes(ushort val)
 {
 	return rotate_left(val, 8);
 }
@@ -23,21 +23,21 @@ inline u16bit reverse_bytes(u16bit val)
 /**
 * Swap a 32 bit integer
 */
-inline uint reverse_bytes(uint val)
+ uint reverse_bytes(uint val)
 {
 #if BOTAN_GCC_VERSION >= 430 && !defined(BOTAN_TARGET_CPU_IS_ARM_FAMILY)
 	/*
 	GCC intrinsic added in 4.3, works for a number of CPUs
 
 	However avoid under ARM, as it branches to a function in libgcc
-	instead of generating inline asm, so slower even than the generic
+	instead of generating  asm, so slower even than the generic
 	rotate version below.
 	*/
 	return __builtin_bswap32(val);
 
 #elif BOTAN_USE_GCC_INLINE_ASM && defined(BOTAN_TARGET_CPU_IS_X86_FAMILY)
 
-	// GCC-style inline assembly for x86 or x86-64
+	// GCC-style  assembly for x86 or x86-64
 	asm("bswapl %0" : "=r" (val) : "0" (val));
 	return val;
 
@@ -55,7 +55,7 @@ inline uint reverse_bytes(uint val)
 
 #elif defined(_MSC_VER) && defined(BOTAN_TARGET_ARCH_IS_X86_32)
 
-	// Visual C++ inline asm for 32-bit x86, by Yves Jerschow
+	// Visual C++  asm for 32-bit x86, by Yves Jerschow
 	__asm mov eax, val;
 	__asm bswap eax;
 
@@ -71,7 +71,7 @@ inline uint reverse_bytes(uint val)
 /**
 * Swap a 64 bit integer
 */
-inline u64bit reverse_bytes(u64bit val)
+ ulong reverse_bytes(ulong val)
 {
 #if BOTAN_GCC_VERSION >= 430
 
@@ -79,7 +79,7 @@ inline u64bit reverse_bytes(u64bit val)
 	return __builtin_bswap64(val);
 
 #elif BOTAN_USE_GCC_INLINE_ASM && defined(BOTAN_TARGET_ARCH_IS_X86_64)
-	// GCC-style inline assembly for x86-64
+	// GCC-style  assembly for x86-64
 	asm("bswapq %0" : "=r" (val) : "0" (val));
 	return val;
 
@@ -95,15 +95,14 @@ inline u64bit reverse_bytes(u64bit val)
 	hi = reverse_bytes(hi);
 	lo = reverse_bytes(lo);
 
-	return (cast(u64bit)(lo) << 32) | hi;
+	return (cast(ulong)(lo) << 32) | hi;
 #endif
 }
 
 /**
 * Swap 4 Ts in an array
 */
-template<typename T>
-inline void bswap_4(T x[4])
+void bswap_4(T[4] x)
 {
 	x[0] = reverse_bytes(x[0]);
 	x[1] = reverse_bytes(x[1]);
@@ -117,13 +116,13 @@ inline void bswap_4(T x[4])
 * Swap 4 uints in an array using SSE2 shuffle instructions
 */
 template<>
-inline void bswap_4(uint x[4])
+ void bswap_4(uint[4] x)
 {
-	__m128i T = _mm_loadu_si128(cast(const __m128i*)(x));
+	__m128i T = _mm_loadu_si128(cast(const __m128i*)(x.ptr));
 
 	T = _mm_shufflehi_epi16(T, _MM_SHUFFLE(2, 3, 0, 1));
 	T = _mm_shufflelo_epi16(T, _MM_SHUFFLE(2, 3, 0, 1));
 
 	T =  _mm_or_si128(_mm_srli_epi16(T, 8), _mm_slli_epi16(T, 8));
 
-	_mm_storeu_si128(CAST__m128i*)(x), T);
+	_mm_storeu_si128(CAST__m128i*)(x.ptr), T);

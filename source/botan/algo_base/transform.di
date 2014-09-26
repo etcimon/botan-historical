@@ -21,8 +21,8 @@ class Transformation
 		* Begin processing a message.
 		* @param nonce the per message nonce
 		*/
-		template<typename Alloc>
-		SafeVector!byte start_vec(in Vector!( byte, Alloc ) nonce)
+		
+		SafeVector!byte start_vec(Alloc)(in Vector!( byte, Alloc ) nonce)
 		{
 			return start(&nonce[0], nonce.size());
 		}
@@ -32,14 +32,14 @@ class Transformation
 		* @param nonce the per message nonce
 		* @param nonce_len length of nonce
 		*/
-		abstract SafeVector!byte start(in byte[] nonce, size_t nonce_len) = 0;
+		abstract SafeVector!byte start(in byte* nonce, size_t nonce_len);
 
 		/**
 		* Process some data. Input must be in size update_granularity() byte blocks.
 		* @param blocks in/out paramter which will possibly be resized
 		* @param offset an offset into blocks to begin processing
 		*/
-		abstract void update(SafeVector!byte blocks, size_t offset = 0) = 0;
+		abstract void update(SafeVector!byte blocks, size_t offset = 0);
 
 		/**
 		* Complete processing of a message.
@@ -48,35 +48,35 @@ class Transformation
 		*		  minimum_final_size() bytes, and will be set to any final output
 		* @param offset an offset into final_block to begin processing
 		*/
-		abstract void finish(SafeVector!byte final_block, size_t offset = 0) = 0;
+		abstract void finish(SafeVector!byte final_block, size_t offset = 0);
 
 		/**
 		* Returns the size of the output if this transform is used to process a
 		* message with input_length bytes. Will throw new if unable to give a precise
 		* answer.
 		*/
-		abstract size_t output_length(size_t input_length) const = 0;
+		abstract size_t output_length(size_t input_length) const;
 
 		/**
 		* @return size of required blocks to update
 		*/
-		abstract size_t update_granularity() const = 0;
+		abstract size_t update_granularity() const;
 
 		/**
 		* @return required minimium size to finalize() - may be any
 		*			length larger than this.
 		*/
-		abstract size_t minimum_final_size() const = 0;
+		abstract size_t minimum_final_size() const;
 
 		/**
 		* Return the default size for a nonce
 		*/
-		abstract size_t default_nonce_length() const = 0;
+		abstract size_t default_nonce_length() const;
 
 		/**
 		* Return true iff nonce_len is a valid length for the nonce
 		*/
-		abstract bool valid_nonce_length(size_t nonce_len) const = 0;
+		abstract bool valid_nonce_length(size_t nonce_len) const;
 
 		/**
 		* Return some short name describing the provider of this tranformation.
@@ -86,9 +86,9 @@ class Transformation
 		*/
 		abstract string provider() const { return "core"; }
 
-		abstract string name() const = 0;
+		abstract string name() const;
 
-		abstract void clear() = 0;
+		abstract void clear();
 
 		abstract ~Transformation() {}
 };
@@ -99,7 +99,7 @@ class Keyed_Transform : public Transformation
 		/**
 		* @return object describing limits on key size
 		*/
-		abstract Key_Length_Specification key_spec() const = 0;
+		abstract Key_Length_Specification key_spec() const;
 
 		/**
 		* Check whether a given key length is valid for this algorithm.
@@ -111,8 +111,7 @@ class Keyed_Transform : public Transformation
 			return key_spec().valid_keylength(length);
 		}
 
-		template<typename Alloc>
-		void set_key(in Vector!( byte, Alloc ) key)
+		void set_key(Alloc)(in Vector!( byte, Alloc ) key)
 		{
 			set_key(&key[0], key.size());
 		}
@@ -127,7 +126,7 @@ class Keyed_Transform : public Transformation
 		* @param key contains the key material
 		* @param length in bytes of key param
 		*/
-		void set_key(in byte[] key)
+		void set_key(in byte* key, size_t length)
 		{
 			if(!valid_keylength(length))
 				throw new Invalid_Key_Length(name(), length);
@@ -135,5 +134,5 @@ class Keyed_Transform : public Transformation
 		}
 
 	private:
-		abstract void key_schedule(in byte[] key) = 0;
+		abstract void key_schedule(in byte* key, size_t length);
 };

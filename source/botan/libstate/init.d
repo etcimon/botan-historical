@@ -38,7 +38,7 @@ void LibraryInitializer::initialize(in string)
 */
 void LibraryInitializer::deinitialize()
 {
-	Global_State_Management::set_global_state(nullptr);
+	Global_State_Management::set_global_state(null);
 }
 
 }

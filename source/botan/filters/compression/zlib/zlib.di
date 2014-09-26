@@ -15,7 +15,7 @@ class Zlib_Compression : public Filter
 	public:
 		string name() const { return "Zlib_Compression"; }
 
-		void write(in byte[] input, size_t length);
+		void write(in byte* input, size_t length);
 		void start_msg();
 		void end_msg();
 
@@ -51,7 +51,7 @@ class Zlib_Decompression : public Filter
 	public:
 		string name() const { return "Zlib_Decompression"; }
 
-		void write(in byte[] input, size_t length);
+		void write(in byte* input, size_t length);
 		void start_msg();
 		void end_msg();
 

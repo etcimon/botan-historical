@@ -31,7 +31,7 @@ class Session_Manager
 		* @return true if session was modified
 		*/
 		abstract bool load_from_session_id(in Vector!byte session_id,
-													 Session& session) = 0;
+													 Session& session);
 
 		/**
 		* Try to load a saved session (using info about server)
@@ -41,12 +41,12 @@ class Session_Manager
 		* @return true if session was modified
 		*/
 		abstract bool load_from_server_info(in Server_Information info,
-													  Session& session) = 0;
+													  Session& session);
 
 		/**
 		* Remove this session id from the cache, if it exists
 		*/
-		abstract void remove_entry(in Vector!byte session_id) = 0;
+		abstract void remove_entry(in Vector!byte session_id);
 
 		/**
 		* Save a session on a best effort basis; the manager may not in
@@ -56,14 +56,14 @@ class Session_Manager
 		*
 		* @param session to save
 		*/
-		abstract void save(in Session session) = 0;
+		abstract void save(in Session session);
 
 		/**
 		* Return the allowed lifetime of a session; beyond this time,
 		* sessions are not resumed. Returns 0 if unknown/no explicit
 		* expiration policy.
 		*/
-		abstract std::chrono::seconds session_lifetime() const = 0;
+		abstract std::chrono::seconds session_lifetime() const;
 
 		abstract ~Session_Manager() {}
 };

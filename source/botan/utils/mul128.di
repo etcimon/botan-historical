@@ -69,7 +69,7 @@
 /**
 * Perform a 64x64->128 bit multiplication
 */
-inline void mul64x64_128(u64bit a, u64bit b, u64bit* lo, u64bit* hi)
+ void mul64x64_128(ulong a, ulong b, ulong* lo, ulong* hi)
 {
 #if defined(BOTAN_FAST_64X64_MUL)
 	BOTAN_FAST_64X64_MUL(a, b, lo, hi);
@@ -88,10 +88,10 @@ inline void mul64x64_128(u64bit a, u64bit b, u64bit* lo, u64bit* hi)
 	const uint b_hi = (b >> HWORD_BITS);
 	const uint b_lo = (b  & HWORD_MASK);
 
-	u64bit x0 = cast(u64bit)(a_hi) * b_hi;
-	u64bit x1 = cast(u64bit)(a_lo) * b_hi;
-	u64bit x2 = cast(u64bit)(a_hi) * b_lo;
-	u64bit x3 = cast(u64bit)(a_lo) * b_lo;
+	ulong x0 = cast(ulong)(a_hi) * b_hi;
+	ulong x1 = cast(ulong)(a_lo) * b_hi;
+	ulong x2 = cast(ulong)(a_hi) * b_lo;
+	ulong x3 = cast(ulong)(a_lo) * b_lo;
 
 	// this cannot overflow as (2^32-1)^2 + 2^32-1 < 2^64-1
 	x2 += x3 >> HWORD_BITS;
@@ -100,7 +100,7 @@ inline void mul64x64_128(u64bit a, u64bit b, u64bit* lo, u64bit* hi)
 	x2 += x1;
 
 	// propagate the carry if any
-	x0 += cast(u64bit)(cast(bool)(x2 < x1)) << HWORD_BITS;
+	x0 += cast(ulong)(cast(bool)(x2 < x1)) << HWORD_BITS;
 
 	*hi = x0 + (x2 >> HWORD_BITS);
 	*lo  = ((x2 & HWORD_MASK) << HWORD_BITS) + (x3 & HWORD_MASK);

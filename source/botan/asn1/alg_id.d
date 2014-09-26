@@ -35,7 +35,7 @@ AlgorithmIdentifier::AlgorithmIdentifier(in string alg_id,
 AlgorithmIdentifier::AlgorithmIdentifier(in OID alg_id,
 													  Encoding_Option option)
 {
-	in byte[] DER_NULL = { 0x05, 0x00 };
+	imutable byte[] DER_NULL = { 0x05, 0x00 };
 
 	oid = alg_id;
 
@@ -49,7 +49,7 @@ AlgorithmIdentifier::AlgorithmIdentifier(in OID alg_id,
 AlgorithmIdentifier::AlgorithmIdentifier(in string alg_id,
 													  Encoding_Option option)
 {
-	in byte[] DER_NULL = { 0x05, 0x00 };
+	imutable byte[] DER_NULL = { 0x05, 0x00 };
 
 	oid = OIDS::lookup(alg_id);
 
@@ -80,7 +80,7 @@ bool operator!=(in AlgorithmIdentifier a1, const AlgorithmIdentifier& a2)
 /*
 * DER encode an AlgorithmIdentifier
 */
-void AlgorithmIdentifier::encode_into(DER_Encoder& codec) const
+void AlgorithmIdentifier::encode_into(DER_Encoder codec) const
 {
 	codec.start_cons(SEQUENCE)
 		.encode(oid)
@@ -91,7 +91,7 @@ void AlgorithmIdentifier::encode_into(DER_Encoder& codec) const
 /*
 * Decode a BER encoded AlgorithmIdentifier
 */
-void AlgorithmIdentifier::decode_from(BER_Decoder& codec)
+void AlgorithmIdentifier::decode_from(BER_Decoder codec)
 {
 	codec.start_cons(SEQUENCE)
 		.decode(oid)

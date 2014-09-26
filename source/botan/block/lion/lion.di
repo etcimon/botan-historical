@@ -19,8 +19,8 @@
 class Lion : public BlockCipher
 {
 	public:
-		void encrypt_n(in byte[] input, ref byte[] output) const override;
-		void decrypt_n(in byte[] input, ref byte[] output) const override;
+		void encrypt_n(byte* input, byte* output, size_t blocks) const override;
+		void decrypt_n(byte* input, byte* output, size_t blocks) const override;
 
 		size_t block_size() const override { return m_block_size; }
 
@@ -42,7 +42,7 @@ class Lion : public BlockCipher
 			  StreamCipher* cipher,
 			  size_t block_size);
 	private:
-		void key_schedule(const byte[], size_t);
+		void key_schedule(in byte*, size_t);
 
 		size_t left_size() const { return m_hash->output_length(); }
 		size_t right_size() const { return m_block_size - left_size(); }

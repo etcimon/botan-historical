@@ -21,7 +21,7 @@ class EAC_Signed_Object
 		* Get the TBS (to-be-signed) data in this object.
 		* @return DER encoded TBS data of this object
 		*/
-		abstract Vector!( byte ) tbs_data() const = 0;
+		abstract Vector!( byte ) tbs_data() const;
 
 		/**
 		* Get the signature of this object as a concatenation, i.e. if the
@@ -34,7 +34,7 @@ class EAC_Signed_Object
 		 NOTE: this is here only because abstract signature objects have
 		 not yet been introduced
 		*/
-		abstract Vector!( byte ) get_concat_sig() const = 0;
+		abstract Vector!( byte ) get_concat_sig() const;
 
 		/**
 		* Get the signature algorithm identifier used to sign this object.
@@ -58,7 +58,7 @@ class EAC_Signed_Object
 		* @param encoding the encoding type to use
 		*/
 		abstract void encode(Pipe& pipe,
-								  X509_Encoding encoding = PEM) const = 0;
+								  X509_Encoding encoding = PEM) const;
 
 		/**
 		* BER encode this object.
@@ -82,5 +82,5 @@ class EAC_Signed_Object
 		string PEM_label_pref;
 		Vector!( string ) PEM_labels_allowed;
 	private:
-		abstract void force_decode() = 0;
+		abstract void force_decode();
 };

@@ -30,7 +30,7 @@ class Channel
 		* @return a hint as the how many more bytes we need to process the
 		*			current record (this may be 0 if on a record boundary)
 		*/
-		size_t received_data(in byte[] buf, size_t buf_size);
+		size_t received_data(in byte* buf, size_t buf_size);
 
 		/**
 		* Inject TLS traffic received from counterparty
@@ -42,7 +42,7 @@ class Channel
 		/**
 		* Inject plaintext intended for counterparty
 		*/
-		void send(in byte[] buf, size_t buf_size);
+		void send(in byte* buf, size_t buf_size);
 
 		/**
 		* Inject plaintext intended for counterparty
@@ -52,8 +52,7 @@ class Channel
 		/**
 		* Inject plaintext intended for counterparty
 		*/
-		template<typename Alloc>
-			void send(in Vector!( unsigned char, Alloc ) val)
+		void send(Alloc)(in Vector!( unsigned char, Alloc ) val)
 		{
 			send(&val[0], val.size());
 		}
@@ -118,12 +117,12 @@ class Channel
 		* @param payload will be echoed back
 		* @param payload_size size of payload in bytes
 		*/
-		void heartbeat(in byte[] payload, size_t payload_size);
+		void heartbeat(in byte* payload, size_t payload_size);
 
 		/**
 		* Attempt to send a heartbeat message (if negotiated with counterparty)
 		*/
-		void heartbeat() { heartbeat(nullptr, 0); }
+		void heartbeat() { heartbeat(null, 0); }
 
 		/**
 		* @return certificate chain of the peer (may be empty)
@@ -149,9 +148,9 @@ class Channel
 				  RandomNumberGenerator rng,
 				  size_t reserved_io_buffer_size);
 
-		Channel(in Channel) = delete;
+		Channel(in Channel);
 
-		Channel& operator=(in Channel) = delete;
+		Channel& operator=(in Channel);
 
 		abstract ~Channel();
 	protected:
@@ -159,15 +158,15 @@ class Channel
 		abstract void process_handshake_msg(const Handshake_State* active_state,
 													  Handshake_State& pending_state,
 													  Handshake_Type type,
-													  in Vector!byte contents) = 0;
+													  in Vector!byte contents);
 
 		abstract void initiate_handshake(Handshake_State& state,
-												  bool force_full_renegotiation) = 0;
+												  bool force_full_renegotiation);
 
 		abstract Vector!( X509_Certificate )
-			get_peer_cert_chain(in Handshake_State state) const = 0;
+			get_peer_cert_chain(in Handshake_State state) const;
 
-		abstract Handshake_State* new_handshake_state(class Handshake_IO* io) = 0;
+		abstract Handshake_State* new_handshake_state(class Handshake_IO* io);
 
 		Handshake_State& create_handshake_state(Protocol_Version version);
 
@@ -196,20 +195,20 @@ class Channel
 
 		void send_record(byte record_type, in Vector!byte record);
 
-		void send_record_under_epoch(u16bit epoch, byte record_type,
+		void send_record_under_epoch(ushort epoch, byte record_type,
 											  in Vector!byte record);
 
-		void send_record_array(u16bit epoch, byte record_type,
-									  in byte[] input, size_t length);
+		void send_record_array(ushort epoch, byte record_type,
+									  in byte* input, size_t length);
 
 		void write_record(Connection_Cipher_State* cipher_state,
-								byte type, in byte[] input, size_t length);
+								byte type, in byte* input, size_t length);
 
 		Connection_Sequence_Numbers& sequence_numbers() const;
 
-		std::shared_ptr<Connection_Cipher_State> read_cipher_state_epoch(u16bit epoch) const;
+		std::shared_ptr<Connection_Cipher_State> read_cipher_state_epoch(ushort epoch) const;
 
-		std::shared_ptr<Connection_Cipher_State> write_cipher_state_epoch(u16bit epoch) const;
+		std::shared_ptr<Connection_Cipher_State> write_cipher_state_epoch(ushort epoch) const;
 
 		void reset_state();
 
@@ -235,8 +234,8 @@ class Channel
 		std::unique_ptr<Handshake_State> m_pending_state;
 
 		/* cipher states for each epoch */
-		std::map<u16bit, std::shared_ptr<Connection_Cipher_State>> m_write_cipher_states;
-		std::map<u16bit, std::shared_ptr<Connection_Cipher_State>> m_read_cipher_states;
+		std::map<ushort, std::shared_ptr<Connection_Cipher_State>> m_write_cipher_states;
+		std::map<ushort, std::shared_ptr<Connection_Cipher_State>> m_read_cipher_states;
 
 		/* I/O buffers */
 		SafeVector!byte m_writebuf;

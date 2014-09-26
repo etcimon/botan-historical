@@ -37,17 +37,17 @@ AEAD_Mode* get_aead(in string algo_spec, Cipher_Dir direction)
 		throw new Invalid_Algorithm_Name(algo_spec);
 
 	if(algo_parts.size() < 2)
-		return nullptr;
+		return null;
 
 	const string cipher_name = algo_parts[0];
 	const BlockCipher* cipher = af.prototype_block_cipher(cipher_name);
 	if(!cipher)
-		return nullptr;
+		return null;
 
 	const Vector!( string ) mode_info = parse_algorithm_name(algo_parts[1]);
 
 	if(mode_info.empty())
-		return nullptr;
+		return null;
 
 	const string mode_name = mode_info[0];
 
@@ -114,7 +114,7 @@ AEAD_Mode* get_aead(in string algo_spec, Cipher_Dir direction)
 	}
 #endif
 
-	return nullptr;
+	return null;
 }
 
 }

@@ -91,7 +91,7 @@ class X509_Object : public ASN1_Object
 		AlgorithmIdentifier sig_algo;
 		Vector!( byte ) tbs_bits, sig;
 	private:
-		abstract void force_decode() = 0;
+		abstract void force_decode();
 		void init(DataSource&, in string);
 
 		Vector!( string ) PEM_labels_allowed;

@@ -18,14 +18,14 @@ class Filter
 		/**
 		* @return descriptive name for this filter
 		*/
-		abstract string name() const = 0;
+		abstract string name() const;
 
 		/**
 		* Write a portion of a message to this filter.
 		* @param input the input as a byte array
 		* @param length the length of the byte array input
 		*/
-		abstract void write(in byte[] input, size_t length) = 0;
+		abstract void write(in byte* input, size_t length);
 
 		/**
 		* Start a new message. Must be closed by end_msg() before another
@@ -51,7 +51,7 @@ class Filter
 		* @param in some input for the filter
 		* @param length the length of in
 		*/
-		abstract void send(in byte[] input);
+		abstract void send(in byte* input, size_t length);
 
 		/**
 		* @param in some input for the filter
@@ -61,12 +61,12 @@ class Filter
 		/**
 		* @param in some input for the filter
 		*/
-		void send(in SafeVector!byte input) { send(&in[0], in.size()); }
+		void send(in SafeVector!byte input) { send(&input[0], in.size()); }
 
 		/**
 		* @param in some input for the filter
 		*/
-		void send(in Vector!byte input) { send(&in[0], in.size()); }
+		void send(in Vector!byte input) { send(&input[0], in.size()); }
 
 		/**
 		* @param in some input for the filter
@@ -74,7 +74,7 @@ class Filter
 		*/
 		void send(in SafeVector!byte input)
 		{
-			send(&in[0], length);
+			send(&input[0], length);
 		}
 
 		/**
@@ -83,14 +83,14 @@ class Filter
 		*/
 		void send(in Vector!byte input)
 		{
-			send(&in[0], length);
+			send(&input[0], length);
 		}
 
 		Filter();
 
-		Filter(in Filter) = delete;
+		Filter(in Filter);
 
-		Filter& operator=(in Filter) = delete;
+		Filter& operator=(in Filter);
 
 	private:
 		/**

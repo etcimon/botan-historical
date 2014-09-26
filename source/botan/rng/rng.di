@@ -32,7 +32,7 @@ class RandomNumberGenerator
 		* @param output the byte array to hold the random output.
 		* @param length the length of the byte array output.
 		*/
-		abstract void randomize(byte output[], size_t length) = 0;
+		abstract void randomize(byte* output, size_t length);
 
 		/**
 		* Return a random vector
@@ -61,37 +61,37 @@ class RandomNumberGenerator
 		* Check whether this RNG is seeded.
 		* @return true if this RNG was already seeded, false otherwise.
 		*/
-		abstract bool is_seeded() const = 0;
+		abstract bool is_seeded() const;
 
 		/**
 		* Clear all internally held values of this RNG.
 		*/
-		abstract void clear() = 0;
+		abstract void clear();
 
 		/**
 		* Return the name of this object
 		*/
-		abstract string name() const = 0;
+		abstract string name() const;
 
 		/**
 		* Seed this RNG using the entropy sources it contains.
 		* @param bits_to_collect is the number of bits of entropy to
 					attempt to gather from the entropy sources
 		*/
-		abstract void reseed(size_t bits_to_collect) = 0;
+		abstract void reseed(size_t bits_to_collect);
 
 		/**
 		* Add entropy to this RNG.
 		* @param in a byte array containg the entropy to be added
 		* @param length the length of the byte array in
 		*/
-		abstract void add_entropy(in byte[] input) = 0;
+		abstract void add_entropy(in byte* input, size_t length);
 
 		/*
 		* Never copy a RNG, create a new one
 		*/
-		RandomNumberGenerator(in RandomNumberGenerator rng) = delete;
-		RandomNumberGenerator& operator=(in RandomNumberGenerator rng) = delete;
+		RandomNumberGenerator(in RandomNumberGenerator rng);
+		RandomNumberGenerator& operator=(in RandomNumberGenerator rng);
 
 		RandomNumberGenerator() {}
 		abstract ~RandomNumberGenerator() {}
@@ -120,7 +120,7 @@ class Null_RNG : public RandomNumberGenerator
 class Serialized_RNG : public RandomNumberGenerator
 {
 	public:
-		void randomize(ref byte[] output)
+		void randomize(byte* output)
 		{
 			size_t len = output.length;
 			std::lock_guard<std::mutex> lock(m_mutex);
@@ -151,7 +151,7 @@ class Serialized_RNG : public RandomNumberGenerator
 			m_rng->reseed(poll_bits);
 		}
 
-		void add_entropy(in byte[] input)
+		void add_entropy(in byte* input, size_t len)
 		{
 			std::lock_guard<std::mutex> lock(m_mutex);
 			m_rng->add_entropy(input, len);

@@ -78,7 +78,7 @@ NR_Signature_Operation::NR_Signature_Operation(in NR_PrivateKey nr) :
 }
 
 SafeVector!byte
-NR_Signature_Operation::sign(in byte[] msg, size_t msg_len,
+NR_Signature_Operation::sign(in byte* msg, size_t msg_len,
 									  RandomNumberGenerator& rng)
 {
 	rng.add_entropy(msg, msg_len);
@@ -117,7 +117,7 @@ NR_Verification_Operation::NR_Verification_Operation(in NR_PublicKey nr) :
 }
 
 SafeVector!byte
-NR_Verification_Operation::verify_mr(in byte[] msg, size_t msg_len)
+NR_Verification_Operation::verify_mr(in byte* msg, size_t msg_len)
 {
 	const BigInt& q = mod_q.get_modulus();
 	size_t msg_len = msg.length;

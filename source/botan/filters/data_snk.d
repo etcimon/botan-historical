@@ -12,7 +12,7 @@
 /*
 * Write to a stream
 */
-void DataSink_Stream::write(in byte[] out, size_t length)
+void DataSink_Stream::write(in byte* out, size_t length)
 {
 	sink.write(cast(const char*)(out), length);
 	if(!sink.good())
@@ -26,7 +26,7 @@ void DataSink_Stream::write(in byte[] out, size_t length)
 DataSink_Stream::DataSink_Stream(std::ostream& out,
 											in string name) :
 	identifier(name),
-	sink_p(nullptr),
+	sink_p(null),
 	sink(out)
 {
 }

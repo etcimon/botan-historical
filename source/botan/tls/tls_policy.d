@@ -233,7 +233,7 @@ class Ciphersuite_Preference_Ordering
 
 }
 
-Vector!( u16bit ) Policy::ciphersuite_list(Protocol_Version _version,
+Vector!( ushort ) Policy::ciphersuite_list(Protocol_Version _version,
 															bool have_srp) const
 {
 	const Vector!( string ) ciphers = allowed_ciphers();
@@ -282,7 +282,7 @@ Vector!( u16bit ) Policy::ciphersuite_list(Protocol_Version _version,
 	if(ciphersuites.empty())
 		throw new std::logic_error("Policy does not allow any available cipher suite");
 
-	Vector!( u16bit ) ciphersuite_codes;
+	Vector!( ushort ) ciphersuite_codes;
 	for(auto i : ciphersuites)
 		ciphersuite_codes.push_back(i.ciphersuite_code());
 	return ciphersuite_codes;

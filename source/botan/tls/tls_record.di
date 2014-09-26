@@ -37,13 +37,13 @@ class Connection_Cipher_State
 
 		AEAD_Mode aead() { return m_aead.get(); }
 
-		const SafeVector!byte aead_nonce(u64bit seq);
+		const SafeVector!byte aead_nonce(ulong seq);
 
-		const SafeVector!byte aead_nonce(in byte[] record);
+		const SafeVector!byte aead_nonce(in byte* record);
 
-		const SafeVector!byte format_ad(u64bit seq, byte type,
+		const SafeVector!byte format_ad(ulong seq, byte type,
 														 Protocol_Version _version,
-														 u16bit ptext_length);
+														 ushort ptext_length);
 
 		BlockCipher* block_cipher() { return m_block_cipher.get(); }
 
@@ -100,9 +100,9 @@ class Connection_Cipher_State
 * @return number of bytes written to write_buffer
 */
 void write_record(SafeVector!byte write_buffer,
-						byte msg_type, in byte[] msg, size_t msg_length,
+						byte msg_type, in byte* msg, size_t msg_length,
 						Protocol_Version _version,
-						u64bit msg_sequence,
+						ulong msg_sequence,
 						Connection_Cipher_State cipherstate,
 						RandomNumberGenerator rng);
 
@@ -111,13 +111,13 @@ void write_record(SafeVector!byte write_buffer,
 * @return zero if full message, else number of bytes still needed
 */
 size_t read_record(SafeVector!byte read_buffer,
-						 in byte[] input,
+						 in byte* input,
 						 ref size_t input_consumed,
 						 SafeVector!byte record,
-						 ref u64bit record_sequence,
+						 ref ulong record_sequence,
 						 Protocol_Version record_version,
 						 Record_Type record_type,
 						 Connection_Sequence_Numbers sequence_numbers,
-						 Connection_Cipher_State delegate(u16bit) get_cipherstate);
+						 Connection_Cipher_State delegate(ushort) get_cipherstate);
 
 }

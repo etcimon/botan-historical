@@ -49,7 +49,7 @@ bool ECB_Mode::valid_nonce_length(size_t n) const
 	return (n == 0);
 }
 
-void ECB_Mode::key_schedule(in byte[] key)
+void ECB_Mode::key_schedule(in byte* key, size_t length)
 {
 	m_cipher->set_key(key, length);
 }

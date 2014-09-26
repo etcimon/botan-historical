@@ -10,12 +10,12 @@
 #include <botan/internal/simd_32.h>
 namespace {
 
-void xtea_encrypt_8(const byte in[64], byte out[64], const uint EK[64])
+void xtea_encrypt_8(const byte[64] input, byte[64] output, const uint[64] EK)
 {
-	SIMD_32 L0 = SIMD_32::load_be(in	  );
-	SIMD_32 R0 = SIMD_32::load_be(in + 16);
-	SIMD_32 L1 = SIMD_32::load_be(in + 32);
-	SIMD_32 R1 = SIMD_32::load_be(in + 48);
+	SIMD_32 L0 = SIMD_32::load_be(input	  );
+	SIMD_32 R0 = SIMD_32::load_be(input + 16);
+	SIMD_32 L1 = SIMD_32::load_be(input + 32);
+	SIMD_32 R1 = SIMD_32::load_be(input + 48);
 
 	SIMD_32::transpose(L0, R0, L1, R1);
 
@@ -41,18 +41,18 @@ void xtea_encrypt_8(const byte in[64], byte out[64], const uint EK[64])
 
 	SIMD_32::transpose(L0, R0, L1, R1);
 
-	L0.store_be(out);
-	R0.store_be(out + 16);
-	L1.store_be(out + 32);
-	R1.store_be(out + 48);
+	L0.store_be(output);
+	R0.store_be(output + 16);
+	L1.store_be(output + 32);
+	R1.store_be(output + 48);
 }
 
-void xtea_decrypt_8(const byte in[64], byte out[64], const uint EK[64])
+void xtea_decrypt_8(const byte[64] input, byte[64] out, const uint[64] EK)
 {
-	SIMD_32 L0 = SIMD_32::load_be(in	  );
-	SIMD_32 R0 = SIMD_32::load_be(in + 16);
-	SIMD_32 L1 = SIMD_32::load_be(in + 32);
-	SIMD_32 R1 = SIMD_32::load_be(in + 48);
+	SIMD_32 L0 = SIMD_32::load_be(input	  );
+	SIMD_32 R0 = SIMD_32::load_be(input + 16);
+	SIMD_32 L1 = SIMD_32::load_be(input + 32);
+	SIMD_32 R1 = SIMD_32::load_be(input + 48);
 
 	SIMD_32::transpose(L0, R0, L1, R1);
 
@@ -78,10 +78,10 @@ void xtea_decrypt_8(const byte in[64], byte out[64], const uint EK[64])
 
 	SIMD_32::transpose(L0, R0, L1, R1);
 
-	L0.store_be(out);
-	R0.store_be(out + 16);
-	L1.store_be(out + 32);
-	R1.store_be(out + 48);
+	L0.store_be(output);
+	R0.store_be(output + 16);
+	L1.store_be(output + 32);
+	R1.store_be(output + 48);
 }
 
 }
@@ -89,39 +89,39 @@ void xtea_decrypt_8(const byte in[64], byte out[64], const uint EK[64])
 /*
 * XTEA Encryption
 */
-void XTEA_SIMD::encrypt_n(in byte[] input, ref byte[] output) const
+void XTEA_SIMD::encrypt_n(byte* input, byte* output, size_t blocks) const
 {
 	const uint* KS = &(this->get_EK()[0]);
 
 	while(blocks >= 8)
 	{
-		xtea_encrypt_8(input, out, KS);
-		in += 8 * BLOCK_SIZE;
-		out += 8 * BLOCK_SIZE;
+		xtea_encrypt_8(input, output, KS);
+		input += 8 * BLOCK_SIZE;
+		output += 8 * BLOCK_SIZE;
 		blocks -= 8;
 	}
 
 	if(blocks)
-	  XTEA::encrypt_n(input, out, blocks);
+	  XTEA::encrypt_n(input, output, blocks);
 }
 
 /*
 * XTEA Decryption
 */
-void XTEA_SIMD::decrypt_n(in byte[] input, ref byte[] output) const
+void XTEA_SIMD::decrypt_n(byte* input, byte* output, size_t blocks) const
 {
 	const uint* KS = &(this->get_EK()[0]);
 
 	while(blocks >= 8)
 	{
-		xtea_decrypt_8(input, out, KS);
-		in += 8 * BLOCK_SIZE;
-		out += 8 * BLOCK_SIZE;
+		xtea_decrypt_8(input, output, KS);
+		input += 8 * BLOCK_SIZE;
+		output += 8 * BLOCK_SIZE;
 		blocks -= 8;
 	}
 
 	if(blocks)
-	  XTEA::decrypt_n(input, out, blocks);
+	  XTEA::decrypt_n(input, output, blocks);
 }
 
 }

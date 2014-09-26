@@ -17,8 +17,8 @@ namespace {
 */
 OctetString next_hash(size_t where, size_t want,
 							 HashFunction& md5, HashFunction& sha1,
-							 in byte[] secret, size_t secret_len,
-							 in byte[] seed, size_t seed_len)
+							 in byte* secret, size_t secret_len,
+							 in byte* seed, size_t seed_len)
 {
 	BOTAN_ASSERT(want <= md5.output_length(),
 					 "Output size producable by MD5");
@@ -44,8 +44,8 @@ OctetString next_hash(size_t where, size_t want,
 * SSL3 PRF
 */
 SafeVector!byte SSL3_PRF::derive(size_t key_len,
-												in byte[] secret, size_t secret_len,
-												in byte[] seed, size_t seed_len) const
+												in byte* secret, size_t secret_len,
+												in byte* seed, size_t seed_len) const
 {
 	if(key_len > 416)
 		throw new Invalid_Argument("SSL3_PRF: Requested key length is too large");

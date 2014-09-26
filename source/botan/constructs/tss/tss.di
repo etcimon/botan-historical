@@ -25,7 +25,7 @@ class RTSS_Share
 		*/
 		static Vector!( RTSS_Share )
 			split(byte M, byte N,
-					in byte[] secret, u16bit secret_len,
+					in byte* secret, ushort secret_len,
 					const byte identifier[16],
 					RandomNumberGenerator& rng);
 

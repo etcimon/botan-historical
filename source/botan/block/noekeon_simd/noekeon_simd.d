@@ -60,7 +60,7 @@
 /*
 * Noekeon Encryption
 */
-void Noekeon_SIMD::encrypt_n(in byte[] input, ref byte[] output) const
+void Noekeon_SIMD::encrypt_n(byte* input, byte* output, size_t blocks) const
 {
 	const secure_vector<uint>& EK = this->get_EK();
 
@@ -71,10 +71,10 @@ void Noekeon_SIMD::encrypt_n(in byte[] input, ref byte[] output) const
 
 	while(blocks >= 4)
 	{
-		SIMD_32 A0 = SIMD_32::load_be(in	  );
-		SIMD_32 A1 = SIMD_32::load_be(in + 16);
-		SIMD_32 A2 = SIMD_32::load_be(in + 32);
-		SIMD_32 A3 = SIMD_32::load_be(in + 48);
+		SIMD_32 A0 = SIMD_32::load_be(input	  );
+		SIMD_32 A1 = SIMD_32::load_be(input + 16);
+		SIMD_32 A2 = SIMD_32::load_be(input + 32);
+		SIMD_32 A3 = SIMD_32::load_be(input + 48);
 
 		SIMD_32::transpose(A0, A1, A2, A3);
 
@@ -100,24 +100,24 @@ void Noekeon_SIMD::encrypt_n(in byte[] input, ref byte[] output) const
 
 		SIMD_32::transpose(A0, A1, A2, A3);
 
-		A0.store_be(out);
-		A1.store_be(out + 16);
-		A2.store_be(out + 32);
-		A3.store_be(out + 48);
+		A0.store_be(output);
+		A1.store_be(output + 16);
+		A2.store_be(output + 32);
+		A3.store_be(output + 48);
 
-		in += 64;
-		out += 64;
+		input += 64;
+		output += 64;
 		blocks -= 4;
 	}
 
 	if(blocks)
-	  Noekeon::encrypt_n(input, out, blocks);
+	  Noekeon::encrypt_n(input, output, blocks);
 }
 
 /*
 * Noekeon Encryption
 */
-void Noekeon_SIMD::decrypt_n(in byte[] input, ref byte[] output) const
+void Noekeon_SIMD::decrypt_n(byte* input, byte* output, size_t blocks) const
 {
 	const secure_vector<uint>& DK = this->get_DK();
 
@@ -157,18 +157,18 @@ void Noekeon_SIMD::decrypt_n(in byte[] input, ref byte[] output) const
 
 		SIMD_32::transpose(A0, A1, A2, A3);
 
-		A0.store_be(out);
-		A1.store_be(out + 16);
-		A2.store_be(out + 32);
-		A3.store_be(out + 48);
+		A0.store_be(output);
+		A1.store_be(output + 16);
+		A2.store_be(output + 32);
+		A3.store_be(output + 48);
 
-		in += 64;
-		out += 64;
+		input += 64;
+		output += 64;
 		blocks -= 4;
 	}
 
 	if(blocks)
-	  Noekeon::decrypt_n(input, out, blocks);
+	  Noekeon::decrypt_n(input, output, blocks);
 }
 
 }

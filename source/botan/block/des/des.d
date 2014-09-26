@@ -140,14 +140,14 @@ void des_decrypt(ref uint L, ref uint R,
 /*
 * DES Encryption
 */
-void DES::encrypt_n(in byte[] input, ref byte[] output) const
+void DES::encrypt_n(byte* input, byte* output, size_t blocks) const
 {
 	for(size_t i = 0; i != blocks; ++i)
 	{
-		u64bit T = (DES_IPTAB1[in[0]]	  ) | (DES_IPTAB1[in[1]] << 1) |
-					  (DES_IPTAB1[in[2]] << 2) | (DES_IPTAB1[in[3]] << 3) |
-					  (DES_IPTAB1[in[4]] << 4) | (DES_IPTAB1[in[5]] << 5) |
-					  (DES_IPTAB1[in[6]] << 6) | (DES_IPTAB2[in[7]]	  );
+		ulong T = (DES_IPTAB1[input[0]]	  ) | (DES_IPTAB1[input[1]] << 1) |
+					  (DES_IPTAB1[input[2]] << 2) | (DES_IPTAB1[input[3]] << 3) |
+					  (DES_IPTAB1[input[4]] << 4) | (DES_IPTAB1[input[5]] << 5) |
+					  (DES_IPTAB1[input[6]] << 6) | (DES_IPTAB2[input[7]]	  );
 
 		uint L = cast(uint)(T >> 32);
 		uint R = cast(uint)(T);
@@ -162,22 +162,22 @@ void DES::encrypt_n(in byte[] input, ref byte[] output) const
 
 		store_be(T, out);
 
-		input = input[BLOCK_SIZE .. $];
-		output = output[BLOCK_SIZE .. $];
+		input += BLOCK_SIZE;
+		output += BLOCK_SIZE;
 	}
 }
 
 /*
 * DES Decryption
 */
-void DES::decrypt_n(in byte[] input, ref byte[] output) const
+void DES::decrypt_n(byte* input, byte* output, size_t blocks) const
 {
 	for(size_t i = 0; i != blocks; ++i)
 	{
-		u64bit T = (DES_IPTAB1[in[0]]	  ) | (DES_IPTAB1[in[1]] << 1) |
-					  (DES_IPTAB1[in[2]] << 2) | (DES_IPTAB1[in[3]] << 3) |
-					  (DES_IPTAB1[in[4]] << 4) | (DES_IPTAB1[in[5]] << 5) |
-					  (DES_IPTAB1[in[6]] << 6) | (DES_IPTAB2[in[7]]	  );
+		ulong T = (DES_IPTAB1[input[0]]	  ) | (DES_IPTAB1[input[1]] << 1) |
+					  (DES_IPTAB1[input[2]] << 2) | (DES_IPTAB1[input[3]] << 3) |
+					  (DES_IPTAB1[input[4]] << 4) | (DES_IPTAB1[input[5]] << 5) |
+					  (DES_IPTAB1[input[6]] << 6) | (DES_IPTAB2[input[7]]	  );
 
 		uint L = cast(uint)(T >> 32);
 		uint R = cast(uint)(T);
@@ -193,15 +193,15 @@ void DES::decrypt_n(in byte[] input, ref byte[] output) const
 
 		store_be(T, out);
 
-		input = input[BLOCK_SIZE .. $];
-		output = output[BLOCK_SIZE .. $];
+		input += BLOCK_SIZE;
+		output += BLOCK_SIZE;
 	}
 }
 
 /*
 * DES Key Schedule
 */
-void DES::key_schedule(in byte[] key, size_t)
+void DES::key_schedule(in byte* key, size_t)
 {
 	round_key.resize(32);
 	des_key_schedule(&round_key[0], key);
@@ -215,14 +215,14 @@ void DES::clear()
 /*
 * TripleDES Encryption
 */
-void TripleDES::encrypt_n(in byte[] input, ref byte[] output) const
+void TripleDES::encrypt_n(byte* input, byte* output, size_t blocks) const
 {
 	for(size_t i = 0; i != blocks; ++i)
 	{
-		u64bit T = (DES_IPTAB1[in[0]]	  ) | (DES_IPTAB1[in[1]] << 1) |
-					  (DES_IPTAB1[in[2]] << 2) | (DES_IPTAB1[in[3]] << 3) |
-					  (DES_IPTAB1[in[4]] << 4) | (DES_IPTAB1[in[5]] << 5) |
-					  (DES_IPTAB1[in[6]] << 6) | (DES_IPTAB2[in[7]]	  );
+		ulong T = (DES_IPTAB1[input[0]]	  ) | (DES_IPTAB1[input[1]] << 1) |
+					  (DES_IPTAB1[input[2]] << 2) | (DES_IPTAB1[input[3]] << 3) |
+					  (DES_IPTAB1[input[4]] << 4) | (DES_IPTAB1[input[5]] << 5) |
+					  (DES_IPTAB1[input[6]] << 6) | (DES_IPTAB2[input[7]]	  );
 
 		uint L = cast(uint)(T >> 32);
 		uint R = cast(uint)(T);
@@ -240,22 +240,22 @@ void TripleDES::encrypt_n(in byte[] input, ref byte[] output) const
 
 		store_be(T, out);
 
-		input = input[BLOCK_SIZE .. $];
-		output = output[BLOCK_SIZE .. $];
+		input += BLOCK_SIZE;
+		output += BLOCK_SIZE;
 	}
 }
 
 /*
 * TripleDES Decryption
 */
-void TripleDES::decrypt_n(in byte[] input, ref byte[] output) const
+void TripleDES::decrypt_n(byte* input, byte* output, size_t blocks) const
 {
 	for(size_t i = 0; i != blocks; ++i)
 	{
-		u64bit T = (DES_IPTAB1[in[0]]	  ) | (DES_IPTAB1[in[1]] << 1) |
-					  (DES_IPTAB1[in[2]] << 2) | (DES_IPTAB1[in[3]] << 3) |
-					  (DES_IPTAB1[in[4]] << 4) | (DES_IPTAB1[in[5]] << 5) |
-					  (DES_IPTAB1[in[6]] << 6) | (DES_IPTAB2[in[7]]	  );
+		ulong T = (DES_IPTAB1[input[0]]	  ) | (DES_IPTAB1[input[1]] << 1) |
+					  (DES_IPTAB1[input[2]] << 2) | (DES_IPTAB1[input[3]] << 3) |
+					  (DES_IPTAB1[input[4]] << 4) | (DES_IPTAB1[input[5]] << 5) |
+					  (DES_IPTAB1[input[6]] << 6) | (DES_IPTAB2[input[7]]	  );
 
 		uint L = cast(uint)(T >> 32);
 		uint R = cast(uint)(T);
@@ -273,15 +273,15 @@ void TripleDES::decrypt_n(in byte[] input, ref byte[] output) const
 
 		store_be(T, out);
 
-		input = input[BLOCK_SIZE .. $];
-		output = output[BLOCK_SIZE .. $];
+		input += BLOCK_SIZE;
+		output += BLOCK_SIZE;
 	}
 }
 
 /*
 * TripleDES Key Schedule
 */
-void TripleDES::key_schedule(in byte[] key)
+void TripleDES::key_schedule(in byte* key)
 {
 	round_key.resize(3*32);
 	des_key_schedule(&round_key[0], key);

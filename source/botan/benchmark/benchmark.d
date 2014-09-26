@@ -28,7 +28,7 @@ double time_op(std::chrono::nanoseconds runtime, void delegate() op)
 		time_used = std::chrono::high_resolution_clock::now() - start;
 	}
 
-	const u64bit nsec_used = std::chrono::duration_cast(<std::chrono::nanoseconds>)(time_used).count();
+	const ulong nsec_used = std::chrono::duration_cast(<std::chrono::nanoseconds>)(time_used).count();
 
 	const double seconds_used = cast(double)(nsec_used) / 1000000000;
 

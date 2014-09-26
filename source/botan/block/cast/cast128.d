@@ -14,7 +14,7 @@ namespace {
 /*
 * CAST-128 Round Type 1
 */
-inline void R1(ref uint L, uint R, uint MK, byte RK)
+ void R1(ref uint L, uint R, uint MK, byte RK)
 {
 	uint T = rotate_left(MK + R, RK);
 	L ^= (CAST_SBOX1[get_byte(0, T)] ^ CAST_SBOX2[get_byte(1, T)]) -
@@ -24,7 +24,7 @@ inline void R1(ref uint L, uint R, uint MK, byte RK)
 /*
 * CAST-128 Round Type 2
 */
-inline void R2(ref uint L, uint R, uint MK, byte RK)
+ void R2(ref uint L, uint R, uint MK, byte RK)
 {
 	uint T = rotate_left(MK ^ R, RK);
 	L ^= (CAST_SBOX1[get_byte(0, T)]  - CAST_SBOX2[get_byte(1, T)] +
@@ -34,7 +34,7 @@ inline void R2(ref uint L, uint R, uint MK, byte RK)
 /*
 * CAST-128 Round Type 3
 */
-inline void R3(ref uint L, uint R, uint MK, byte RK)
+ void R3(ref uint L, uint R, uint MK, byte RK)
 {
 	uint T = rotate_left(MK - R, RK);
 	L ^= ((CAST_SBOX1[get_byte(0, T)]  + CAST_SBOX2[get_byte(1, T)]) ^
@@ -46,12 +46,12 @@ inline void R3(ref uint L, uint R, uint MK, byte RK)
 /*
 * CAST-128 Encryption
 */
-void CAST_128::encrypt_n)(in byte[] input, ref byte[] output) const
+void CAST_128::encrypt_n(byte* input, byte* output, size_t blocks) const
 {
 	for(size_t i = 0; i != blocks; ++i)
 	{
-		uint L = load_be<uint>(input, 0);
-		uint R = load_be<uint>(input, 1);
+		uint L = load_be!uint(input, 0);
+		uint R = load_be!uint(input, 1);
 
 		R1(L, R, MK[ 0], RK[ 0]);
 		R2(R, L, MK[ 1], RK[ 1]);
@@ -72,20 +72,20 @@ void CAST_128::encrypt_n)(in byte[] input, ref byte[] output) const
 
 		store_be(out, R, L);
 
-		input = input[BLOCK_SIZE .. $];
-		output = output[BLOCK_SIZE .. $];
+		input += BLOCK_SIZE;
+		output += BLOCK_SIZE;
 	}
 }
 
 /*
 * CAST-128 Decryption
 */
-void CAST_128::decrypt_n)(in byte[] input, ref byte[] output) const
+void CAST_128::decrypt_n(byte* input, byte* output, size_t blocks) const
 {
 	for(size_t i = 0; i != blocks; ++i)
 	{
-		uint L = load_be<uint>(input, 0);
-		uint R = load_be<uint>(input, 1);
+		uint L = load_be!uint(input, 0);
+		uint R = load_be!uint(input, 1);
 
 		R1(L, R, MK[15], RK[15]);
 		R3(R, L, MK[14], RK[14]);
@@ -106,15 +106,15 @@ void CAST_128::decrypt_n)(in byte[] input, ref byte[] output) const
 
 		store_be(out, R, L);
 
-		input = input[BLOCK_SIZE .. $];
-		output = output[BLOCK_SIZE .. $];
+		input += BLOCK_SIZE;
+		output += BLOCK_SIZE;
 	}
 }
 
 /*
 * CAST-128 Key Schedule
 */
-void CAST_128::key_schedule)(in byte[] key)
+void CAST_128::key_schedule(in byte* key)
 {
 	MK.resize(48);
 	RK.resize(48);
@@ -132,7 +132,7 @@ void CAST_128::key_schedule)(in byte[] key)
 		RK[i] = RK32[i] % 32;
 }
 
-void CAST_128::clear)()
+void CAST_128::clear()
 {
 	zap(MK);
 	zap(RK);

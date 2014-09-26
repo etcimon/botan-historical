@@ -17,7 +17,7 @@ class HashFunction;
 class MessageAuthenticationCode;
 class PBKDF;
 
-template<typename T> class Algorithm_Cache;
+class Algorithm_Cache(T);
 
 class Engine;
 

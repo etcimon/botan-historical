@@ -14,8 +14,8 @@
 class OID : public ASN1_Object
 {
 	public:
-		void encode_into(class DER_Encoder&) const;
-		void decode_from(class BER_Decoder&);
+		void encode_into(class DER_Encoder) const;
+		void decode_from(class BER_Decoder);
 
 		/**
 		* Find out whether this OID is empty

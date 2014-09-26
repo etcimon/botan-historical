@@ -12,7 +12,7 @@
 * @param rot the number of bits to rotate
 * @return input rotated left by rot bits
 */
-template<typename T> inline T rotate_left(T input, size_t rot)
+T rotate_left(T)(T input, size_t rot)
 {
 	if(rot == 0)
 		return input;
@@ -25,7 +25,7 @@ template<typename T> inline T rotate_left(T input, size_t rot)
 * @param rot the number of bits to rotate
 * @return input rotated right by rot bits
 */
-template<typename T> inline T rotate_right(T input, size_t rot)
+T rotate_right(T)(T input, size_t rot)
 {
 	if(rot == 0)
 		return input;

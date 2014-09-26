@@ -19,7 +19,7 @@ void zero_mem(void* ptr, size_t n);
 * @param ptr a pointer to an array
 * @param n the number of Ts pointed to by ptr
 */
-template<typename T> inline void clear_mem(T* ptr, size_t n)
+void clear_mem(T)(T* ptr, size_t n)
 {
 	zero_mem(ptr, sizeof(T)*n);
 }
@@ -30,9 +30,9 @@ template<typename T> inline void clear_mem(T* ptr, size_t n)
 * @param in the source array
 * @param n the number of elements of in/out
 */
-template<typename T> inline void copy_mem(T* out, const T* input)
+void copy_mem(T)(T* output, const T* input)
 {
-	std::memmove(out, in, sizeof(T)*n);
+	std::memmove(output, input, sizeof(T)*n);
 }
 
 /**
@@ -41,8 +41,7 @@ template<typename T> inline void copy_mem(T* out, const T* input)
 * @param n the number of Ts pointed to by ptr
 * @param val the value to set each byte to
 */
-template<typename T>
-inline void set_mem(T* ptr, size_t n, byte val)
+void set_mem(T)(T* ptr, size_t n, byte val)
 {
 	std::memset(ptr, val, sizeof(T)*n);
 }
@@ -54,7 +53,7 @@ inline void set_mem(T* ptr, size_t n, byte val)
 * @param n the number of Ts in p1 and p2
 * @return true iff p1[i] == p2[i] forall i in [0...n)
 */
-template<typename T> inline bool same_mem(const T* p1, const T* p2, size_t n)
+bool same_mem(T)(const T* p1, const T* p2, size_t n)
 {
 	volatile T difference = 0;
 

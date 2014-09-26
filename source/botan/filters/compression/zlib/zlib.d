@@ -123,7 +123,7 @@ void Zlib_Compression::start_msg()
 /*
 * Compress Input with Zlib
 */
-void Zlib_Compression::write(in byte[] input, size_t length)
+void Zlib_Compression::write(in byte* input, size_t length)
 {
 	zlib->stream.next_in = cast(Bytef*)(const_cast(<byte*>)(input));
 	zlib->stream.avail_in = length;
@@ -220,7 +220,7 @@ void Zlib_Decompression::start_msg()
 /*
 * Decompress Input with Zlib
 */
-void Zlib_Decompression::write(in byte[] input_arr, size_t length)
+void Zlib_Decompression::write(in byte* input_arr, size_t length)
 {
 	if(length) no_writes = false;
 

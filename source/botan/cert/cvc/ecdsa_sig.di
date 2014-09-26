@@ -43,7 +43,7 @@ class ECDSA_Signature
 		BigInt m_s;
 };
 
-inline bool operator!=(in ECDSA_Signature lhs, const ECDSA_Signature& rhs)
+ bool operator!=(in ECDSA_Signature lhs, const ECDSA_Signature& rhs)
 {
 	return !(lhs == rhs);
 }

@@ -89,7 +89,7 @@ class ECDH_KA_Operation : public PK_Ops::Key_Agreement
 	public:
 		ECDH_KA_Operation(in ECDH_PrivateKey key);
 
-		SafeVector!byte agree(in byte[] w, size_t w_len);
+		SafeVector!byte agree(in byte* w, size_t w_len);
 	private:
 		const CurveGFp& curve;
 		const BigInt& cofactor;

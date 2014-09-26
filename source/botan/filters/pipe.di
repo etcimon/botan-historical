@@ -57,21 +57,21 @@ class Pipe : public DataSource
 		* @param in the byte array to write
 		* @param length the length of the byte array in
 		*/
-		void write(in byte[] input);
+		void write(in byte* input, size_t length);
 
 		/**
 		* Write input to the pipe, i.e. to its first filter.
 		* @param in the secure_vector containing the data to write
 		*/
 		void write(in SafeVector!byte input)
-		{ write(&in[0], in.size()); }
+		{ write(&input[0], in.size()); }
 
 		/**
 		* Write input to the pipe, i.e. to its first filter.
 		* @param in the std::vector containing the data to write
 		*/
 		void write(in Vector!byte input)
-		{ write(&in[0], in.size()); }
+		{ write(&input[0], in.size()); }
 
 		/**
 		* Write input to the pipe, i.e. to its first filter.
@@ -96,7 +96,7 @@ class Pipe : public DataSource
 		* @param in the byte array containing the data to write
 		* @param length the length of the byte array to write
 		*/
-		void process_msg(in byte[] input);
+		void process_msg(in byte* input, size_t length);
 
 		/**
 		* Perform start_msg(), write() and end_msg() sequentially.
@@ -139,7 +139,7 @@ class Pipe : public DataSource
 		* @param length the length of the byte array output
 		* @return number of bytes actually read into output
 		*/
-		size_t read(byte output[], size_t length);
+		size_t read(byte* output, size_t length);
 
 		/**
 		* Read a specified message from the pipe. Moves the internal
@@ -150,7 +150,7 @@ class Pipe : public DataSource
 		* @param msg the number identifying the message to read from
 		* @return number of bytes actually read into output
 		*/
-		size_t read(byte output[], size_t length, message_id msg);
+		size_t read(byte* output, size_t length, message_id msg);
 
 		/**
 		* Read a single byte from the pipe. Moves the internal offset so
@@ -185,7 +185,7 @@ class Pipe : public DataSource
 		* @param offset the offset from the current position in message
 		* @return number of bytes actually peeked and written into output
 		*/
-		size_t peek(byte output[], size_t length, size_t offset) const;
+		size_t peek(byte* output, size_t length, size_t offset) const;
 
 		/** Read from the specified message but do not modify the
 		* internal offset. Consecutive calls to peek() will return
@@ -196,8 +196,8 @@ class Pipe : public DataSource
 		* @param msg the number identifying the message to peek from
 		* @return number of bytes actually peeked and written into output
 		*/
-		size_t peek(byte output[],
-						size_t offset, message_id msg) const;
+		size_t peek(byte* output,
+					size_t offset, message_id msg) const;
 
 		/** Read a single byte from the specified message but do not
 		* modify the internal offset. Consecutive calls to peek() will
@@ -208,7 +208,7 @@ class Pipe : public DataSource
 		* @return number of bytes actually peeked and written into output
 		*/
 		size_t peek(ref byte output, size_t offset,
-						message_id msg = DEFAULT_MESSAGE) const;
+					message_id msg = DEFAULT_MESSAGE) const;
 
 		/**
 		* @return the number of bytes read from the default message.
@@ -281,8 +281,8 @@ class Pipe : public DataSource
 		* Construct a Pipe of up to four filters. The filters are set up
 		* in the same order as the arguments.
 		*/
-		Pipe(Filter* = nullptr, Filter* = nullptr,
-			  Filter* = nullptr, Filter* = nullptr);
+		Pipe(Filter* = null, Filter* = null,
+			  Filter* = null, Filter* = null);
 
 		/**
 		* Construct a Pipe from a list of filters
@@ -290,8 +290,8 @@ class Pipe : public DataSource
 		*/
 		Pipe(std::initializer_list<Filter*> filters);
 
-		Pipe(in Pipe) = delete;
-		Pipe& operator=(in Pipe) = delete;
+		Pipe(in Pipe);
+		Pipe& operator=(in Pipe);
 
 		~Pipe();
 	private:

@@ -30,8 +30,8 @@ class EVP_BlockCipher : public BlockCipher
 
 		~EVP_BlockCipher();
 	private:
-		void encrypt_n(in byte[] input, ref byte[] output) const;
-		void decrypt_n(in byte[] input, ref byte[] output) const;
+		void encrypt_n(in byte* input, byte* output, size_t blocks) const;
+		void decrypt_n(in byte* input, byte* output, size_t blocks) const;
 		void key_schedule(const byte[], size_t);
 
 		size_t block_sz;
@@ -98,33 +98,33 @@ EVP_BlockCipher::~EVP_BlockCipher()
 /*
 * Encrypt a block
 */
-void EVP_BlockCipher::encrypt_n(in byte[] input, ref byte[] output,
+void EVP_BlockCipher::encrypt_n(in byte* input, byte* output,
 										  size_t blocks) const
 {
 	int out_len = 0;
-	EVP_EncryptUpdate(&encrypt, out, &out_len, in, blocks * block_sz);
+	EVP_EncryptUpdate(&encrypt, output, &out_len, input, blocks * block_sz);
 }
 
 /*
 * Decrypt a block
 */
-void EVP_BlockCipher::decrypt_n(in byte[] input, ref byte[] output,
+void EVP_BlockCipher::decrypt_n(in byte* input, byte* output,
 										  size_t blocks) const
 {
 	int out_len = 0;
-	EVP_DecryptUpdate(&decrypt, out, &out_len, in, blocks * block_sz);
+	EVP_DecryptUpdate(&decrypt, output, &out_len, input, blocks * block_sz);
 }
 
 /*
 * Set the key
 */
-void EVP_BlockCipher::key_schedule(in byte[] key)
+void EVP_BlockCipher::key_schedule(in byte* key, size_t length)
 {
 	SafeVector!byte full_key(key, key + length);
 
 	if(cipher_name == "TripleDES" && length == 16)
 	{
-		full_key += std::make_pair(key, 8);
+		full_key += Pair(key, 8);
 	}
 	else
 		if(EVP_CIPHER_CTX_set_key_length(&encrypt, length) == 0 ||

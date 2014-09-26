@@ -12,8 +12,8 @@
 class Cascade_Cipher : public BlockCipher
 {
 	public:
-		void encrypt_n(in byte[] input, ref byte[] output) const;
-		void decrypt_n(in byte[] input, ref byte[] output) const;
+		void encrypt_n(byte* input, byte* output, size_t blocks) const;
+		void decrypt_n(byte* input, byte* output, size_t blocks) const;
 
 		size_t block_size() const { return m_block; }
 
@@ -34,10 +34,10 @@ class Cascade_Cipher : public BlockCipher
 		*/
 		Cascade_Cipher(BlockCipher* cipher1, BlockCipher* cipher2);
 
-		Cascade_Cipher(in Cascade_Cipher) = delete;
-		Cascade_Cipher& operator=(in Cascade_Cipher) = delete;
+		Cascade_Cipher(in Cascade_Cipher);
+		Cascade_Cipher& operator=(in Cascade_Cipher);
 	private:
-		void key_schedule(const byte[], size_t);
+		void key_schedule(in byte*, size_t);
 
 		size_t m_block;
 		std::unique_ptr<BlockCipher> m_cipher1, m_cipher2;

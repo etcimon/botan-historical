@@ -20,11 +20,11 @@
 			padding chars will be applied if needed
 * @return number of bytes written to output
 */
-size_t base64_encode(char output[],
-										 in byte[] input,
-										 size_t input_length,
-										 size_t& input_consumed,
-										 bool final_inputs);
+size_t base64_encode(char* output,
+					 in byte* input,
+					 size_t input_length,
+					 size_t& input_consumed,
+					 bool final_inputs);
 
 /**
 * Perform base64 encoding
@@ -32,16 +32,15 @@ size_t base64_encode(char output[],
 * @param input_length length of input in bytes
 * @return base64adecimal representation of input
 */
-string base64_encode(in byte[] input,
-												size_t input_length);
+string base64_encode(in byte* input,
+					size_t input_length);
 
 /**
 * Perform base64 encoding
 * @param input some input
 * @return base64adecimal representation of input
 */
-template<typename Alloc>
-string base64_encode(in Vector!( byte, Alloc ) input)
+string base64_encode(Alloc)(in Vector!( byte, Alloc ) input)
 {
 	return base64_encode(&input[0], input.size());
 }
@@ -61,12 +60,12 @@ string base64_encode(in Vector!( byte, Alloc ) input)
 						 exception if whitespace is encountered
 * @return number of bytes written to output
 */
-size_t base64_decode(byte output[],
-										 const char input[],
-										 size_t input_length,
-										 size_t& input_consumed,
-										 bool final_inputs,
-										 bool ignore_ws = true);
+size_t base64_decode(byte* output,
+					 in char* input,
+					 size_t input_length,
+					 ref size_t input_consumed,
+					 bool final_inputs,
+					 bool ignore_ws = true);
 
 /**
 * Perform base64 decoding
@@ -77,10 +76,10 @@ size_t base64_decode(byte output[],
 						 exception if whitespace is encountered
 * @return number of bytes written to output
 */
-size_t base64_decode(byte output[],
-										 const char input[],
-										 size_t input_length,
-										 bool ignore_ws = true);
+size_t base64_decode(byte* output,
+					 const char* input,
+					 size_t input_length,
+					 bool ignore_ws = true);
 
 /**
 * Perform base64 decoding
@@ -90,9 +89,9 @@ size_t base64_decode(byte output[],
 						 exception if whitespace is encountered
 * @return number of bytes written to output
 */
-size_t base64_decode(byte output[],
-										 in string input,
-										 bool ignore_ws = true);
+size_t base64_decode(byte* output,
+					 in string input,
+					 bool ignore_ws = true);
 
 /**
 * Perform base64 decoding
@@ -102,9 +101,9 @@ size_t base64_decode(byte output[],
 						 exception if whitespace is encountered
 * @return decoded base64 output
 */
-SafeVector!byte base64_decode(const char input[],
-														 size_t input_length,
-														 bool ignore_ws = true);
+SafeVector!byte base64_decode(const char* input,
+							 size_t input_length,
+							 bool ignore_ws = true);
 
 /**
 * Perform base64 decoding
@@ -114,4 +113,4 @@ SafeVector!byte base64_decode(const char input[],
 * @return decoded base64 output
 */
 SafeVector!byte base64_decode(in string input,
-														 bool ignore_ws = true);
+							 bool ignore_ws = true);

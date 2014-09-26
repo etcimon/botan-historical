@@ -9,8 +9,8 @@
 #include <botan/loadstor.h>
 namespace {
 
-void adler32_update(in byte[] input, size_t length,
-						  u16bit& S1, u16bit& S2)
+void adler32_update(in byte* input, size_t length,
+						  ushort& S1, ushort& S2)
 {
 	uint S1x = S1;
 	uint S2x = S2;
@@ -52,7 +52,7 @@ void adler32_update(in byte[] input, size_t length,
 /*
 * Update an Adler32 Checksum
 */
-void Adler32::add_data(in byte[] input, size_t length)
+void Adler32::add_data(in byte* input, size_t length)
 {
 	const size_t PROCESS_AMOUNT = 5552;
 
@@ -69,7 +69,7 @@ void Adler32::add_data(in byte[] input, size_t length)
 /*
 * Finalize an Adler32 Checksum
 */
-void Adler32::final_result(byte output[])
+void Adler32::final_result(byte* output)
 {
 	store_be(output, S2, S1);
 	clear();

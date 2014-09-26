@@ -21,7 +21,7 @@
 */
 string generate_passhash9(in string password,
 													  RandomNumberGenerator& rng,
-													  u16bit work_factor = 10,
+													  ushort work_factor = 10,
 													  byte alg_id = 1);
 
 /**

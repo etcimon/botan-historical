@@ -59,7 +59,7 @@ class ElGamal_Encryption_Operation : public PK_Ops::Encryption
 
 		ElGamal_Encryption_Operation(in ElGamal_PublicKey key);
 
-		SafeVector!byte encrypt(in byte[] msg, size_t msg_len,
+		SafeVector!byte encrypt(in byte* msg, size_t msg_len,
 											RandomNumberGenerator& rng);
 
 	private:
@@ -78,7 +78,7 @@ class ElGamal_Decryption_Operation : public PK_Ops::Decryption
 		ElGamal_Decryption_Operation(in ElGamal_PrivateKey key,
 											  RandomNumberGenerator& rng);
 
-		SafeVector!byte decrypt(in byte[] msg, size_t msg_len);
+		SafeVector!byte decrypt(in byte* msg, size_t msg_len);
 	private:
 		Fixed_Exponent_Power_Mod powermod_x_p;
 		Modular_Reducer mod_p;

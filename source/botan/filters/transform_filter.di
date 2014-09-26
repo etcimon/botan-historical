@@ -33,12 +33,12 @@ class Transformation_Filter : public Keyed_Filter,
 		Transformation& get_transform() { return *m_transform; }
 
 	private:
-		void write(in byte[] input, size_t input_length) override;
+		void write(in byte* input, size_t input_length) override;
 		void start_msg() override;
 		void end_msg() override;
 
-		void buffered_block(in byte[] input, size_t input_length) override;
-		void buffered_final(in byte[] input, size_t input_length) override;
+		void buffered_block(in byte* input, size_t input_length) override;
+		void buffered_final(in byte* input, size_t input_length) override;
 
 		class Nonce_State
 		{

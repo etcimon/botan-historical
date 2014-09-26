@@ -25,7 +25,7 @@ DLIES_Encryptor::DLIES_Encryptor(in PK_Key_Agreement_Key key,
 /*
 * DLIES Encryption
 */
-Vector!( byte ) DLIES_Encryptor::enc(in byte[] in, size_t length,
+Vector!( byte ) DLIES_Encryptor::enc(in byte* in, size_t length,
 													RandomNumberGenerator&) const
 {
 	if(length > maximum_input_size())
@@ -45,7 +45,7 @@ Vector!( byte ) DLIES_Encryptor::enc(in byte[] in, size_t length,
 
 	if(K.length() != K_LENGTH)
 		throw new Encoding_Error("DLIES: KDF did not provide sufficient output");
-	byte* C = &out[my_key.size()];
+	byte* C = &output[my_key.size()];
 
 	xor_buf(C, K.begin() + mac_keylen, length);
 	mac->set_key(K.begin(), mac_keylen);
@@ -93,7 +93,7 @@ DLIES_Decryptor::DLIES_Decryptor(in PK_Key_Agreement_Key key,
 /*
 * DLIES Decryption
 */
-SafeVector!byte DLIES_Decryptor::dec(in byte[] msg, size_t length) const
+SafeVector!byte DLIES_Decryptor::dec(in byte* msg, size_t length) const
 {
 	if(length < my_key.size() + mac->output_length())
 		throw new Decoding_Error("DLIES decryption: ciphertext is too short");

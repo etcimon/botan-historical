@@ -35,7 +35,7 @@ BigInt sub_mul(in BigInt a,
 * @param n an integer
 * @return absolute value of n
 */
-inline BigInt abs(in BigInt n) { return n.abs(); }
+ BigInt abs(in BigInt n) { return n.abs(); }
 
 /**
 * Compute the greatest common divisor
@@ -129,13 +129,13 @@ bool is_prime(in BigInt n,
 								size_t prob = 56,
 								bool is_random = false);
 
-inline bool quick_check_prime(in BigInt n, RandomNumberGenerator& rng)
+ bool quick_check_prime(in BigInt n, RandomNumberGenerator& rng)
 { return is_prime(n, rng, 32); }
 
-inline bool check_prime(in BigInt n, RandomNumberGenerator& rng)
+ bool check_prime(in BigInt n, RandomNumberGenerator& rng)
 { return is_prime(n, rng, 56); }
 
-inline bool verify_prime(in BigInt n, RandomNumberGenerator& rng)
+ bool verify_prime(in BigInt n, RandomNumberGenerator& rng)
 { return is_prime(n, rng, 80); }/**
 * Randomly generate a prime
 * @param rng a random number generator
@@ -171,7 +171,7 @@ class Algorithm_Factory;
 * @param qbits how long q will be in bits
 * @return random seed used to generate this parameter set
 */
-Vector!( byte ) BOTAN_DLL
+Vector!( byte )
 generate_dsa_primes(RandomNumberGenerator& rng,
 						  Algorithm_Factory& af,
 						  BigInt& p_out, BigInt& q_out,
@@ -189,7 +189,7 @@ generate_dsa_primes(RandomNumberGenerator& rng,
 * @return true if seed generated a valid DSA parameter set, otherwise
 			 false. p_out and q_out are only valid if true was returned.
 */
-bool BOTAN_DLL
+bool
 generate_dsa_primes(RandomNumberGenerator& rng,
 						  Algorithm_Factory& af,
 						  BigInt& p_out, BigInt& q_out,
@@ -204,4 +204,4 @@ const size_t PRIME_TABLE_SIZE = 6541;
 /**
 * A const array of all primes less than 65535
 */
-extern const u16bit PRIMES[];
+extern const ushort PRIMES[];

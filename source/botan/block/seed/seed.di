@@ -12,14 +12,14 @@
 class SEED : public Block_Cipher_Fixed_Params<16, 16>
 {
 	public:
-		void encrypt_n(in byte[] input, ref byte[] output) const;
-		void decrypt_n(in byte[] input, ref byte[] output) const;
+		void encrypt_n(byte* input, byte* output, size_t blocks) const;
+		void decrypt_n(byte* input, byte* output, size_t blocks) const;
 
 		void clear();
 		string name() const { return "SEED"; }
 		BlockCipher* clone() const { return new SEED; }
 	private:
-		void key_schedule(const byte[], size_t);
+		void key_schedule(in byte*, size_t);
 
 		class G_FUNC
 		{

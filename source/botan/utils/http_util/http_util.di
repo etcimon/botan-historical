@@ -20,7 +20,7 @@ struct Response
 
 		Response(unsigned int status_code, in string status_message,
 					in Vector!byte body,
-					const std::map<string, string>& headers) :
+					const HashMap!(string, string)& headers) :
 			m_status_code(status_code),
 			m_status_message(status_message),
 			m_body(body),
@@ -30,7 +30,7 @@ struct Response
 
 		in Vector!byte body() const { return m_body; }
 
-		const std::map<string, string>& headers() const { return m_headers; }
+		const HashMap!(string, string)& headers() const { return m_headers; }
 
 		string status_message() const { return m_status_message; }
 
@@ -44,7 +44,7 @@ struct Response
 		unsigned int m_status_code;
 		string m_status_message;
 		Vector!( byte ) m_body;
-		std::map<string, string> m_headers;
+		HashMap!(string, string) m_headers;
 };
 
 std::ostream& operator<<(std::ostream& o, const Response& resp);

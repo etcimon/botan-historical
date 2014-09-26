@@ -52,8 +52,8 @@ class Unix_EntropySource : public EntropySource
 					std::swap(m_pid, other.m_pid);
 				}
 
-				Unix_Process(in Unix_Process) = delete;
-				Unix_Process& operator=(in Unix_Process) = delete;
+				Unix_Process(in Unix_Process);
+				Unix_Process& operator=(in Unix_Process);
 			private:
 				int m_fd = -1;
 				pid_t m_pid = -1;

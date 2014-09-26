@@ -298,7 +298,7 @@ const char* EC_Group::PEM_for_named_group(in string name)
 			"/////////////////////2xhEHCZWtEARYQbCbdhuJMCAQE="
 			"-----END EC PARAMETERS-----";
 
-	return nullptr;
+	return null;
 }
 
 }

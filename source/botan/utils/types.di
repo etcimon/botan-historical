@@ -22,9 +22,9 @@ using ::int32_t;
 using ::size_t;
 
 typedef uint8_t byte;
-typedef uint16_t u16bit;
+typedef uint16_t ushort;
 typedef uint32_t uint;
-typedef uint64_t u64bit;
+typedef uint64_t ulong;
 
 typedef int32_t s32bit;
 

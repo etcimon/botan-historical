@@ -9,7 +9,7 @@
 class File_Descriptor_Source
 {
 	public:
-		abstract int next_fd() = 0;
+		abstract int next_fd();
 		abstract ~File_Descriptor_Source() {}
 };
 
@@ -24,7 +24,7 @@ class ProcWalking_EntropySource : public EntropySource
 		void poll(Entropy_Accumulator& accum);
 
 		ProcWalking_EntropySource(in string root_dir) :
-			m_path(root_dir), m_dir(nullptr) {}
+			m_path(root_dir), m_dir(null) {}
 
 	private:
 		const string m_path;

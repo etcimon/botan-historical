@@ -18,7 +18,7 @@ class EME
 		* @param keybits the size of the key in bits
 		* @return upper bound of input in bytes
 		*/
-		abstract size_t maximum_input_size(size_t keybits) const = 0;
+		abstract size_t maximum_input_size(size_t keybits) const;
 
 		/**
 		* Encode an input
@@ -28,7 +28,7 @@ class EME
 		* @param rng a random number generator
 		* @return encoded plaintext
 		*/
-		SafeVector!byte encode(in byte[] in,
+		SafeVector!byte encode(in byte* in,
 										  size_t in_length,
 										  size_t key_length,
 										  RandomNumberGenerator& rng) const;
@@ -51,7 +51,7 @@ class EME
 		* @param key_length length of the key in bits
 		* @return plaintext
 		*/
-		SafeVector!byte decode(in byte[] in,
+		SafeVector!byte decode(in byte* in,
 										  size_t in_length,
 										  size_t key_length) const;
 
@@ -74,10 +74,10 @@ class EME
 		* @param rng a random number generator
 		* @return encoded plaintext
 		*/
-		abstract SafeVector!byte pad(in byte[] in,
+		abstract SafeVector!byte pad(in byte* in,
 												 size_t in_length,
 												 size_t key_length,
-												 RandomNumberGenerator& rng) const = 0;
+												 RandomNumberGenerator& rng) const;
 
 		/**
 		* Decode an input
@@ -86,9 +86,9 @@ class EME
 		* @param key_length length of the key in bits
 		* @return plaintext
 		*/
-		abstract SafeVector!byte unpad(in byte[] in,
+		abstract SafeVector!byte unpad(in byte* in,
 													size_t in_length,
-													size_t key_length) const = 0;
+													size_t key_length) const;
 };
 
 /**

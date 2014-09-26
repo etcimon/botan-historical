@@ -12,17 +12,17 @@ namespace TLS {
 class Connection_Sequence_Numbers
 {
 	public:
-		abstract void new_read_cipher_state() = 0;
-		abstract void new_write_cipher_state() = 0;
+		abstract void new_read_cipher_state();
+		abstract void new_write_cipher_state();
 
-		abstract u16bit current_read_epoch() const = 0;
-		abstract u16bit current_write_epoch() const = 0;
+		abstract ushort current_read_epoch() const;
+		abstract ushort current_write_epoch() const;
 
-		abstract u64bit next_write_sequence() = 0;
-		abstract u64bit next_read_sequence() = 0;
+		abstract ulong next_write_sequence();
+		abstract ulong next_read_sequence();
 
-		abstract bool already_seen(u64bit seq) const = 0;
-		abstract void read_accept(u64bit seq) = 0;
+		abstract bool already_seen(ulong seq) const;
+		abstract void read_accept(ulong seq);
 };
 
 class Stream_Sequence_Numbers : public Connection_Sequence_Numbers
@@ -31,19 +31,19 @@ class Stream_Sequence_Numbers : public Connection_Sequence_Numbers
 		void new_read_cipher_state() override { m_read_seq_no = 0; m_read_epoch += 1; }
 		void new_write_cipher_state() override { m_write_seq_no = 0; m_write_epoch += 1; }
 
-		u16bit current_read_epoch() const override { return m_read_epoch; }
-		u16bit current_write_epoch() const override { return m_write_epoch; }
+		ushort current_read_epoch() const override { return m_read_epoch; }
+		ushort current_write_epoch() const override { return m_write_epoch; }
 
-		u64bit next_write_sequence() override { return m_write_seq_no++; }
-		u64bit next_read_sequence() override { return m_read_seq_no; }
+		ulong next_write_sequence() override { return m_write_seq_no++; }
+		ulong next_read_sequence() override { return m_read_seq_no; }
 
-		bool already_seen(u64bit) const override { return false; }
-		void read_accept(u64bit) override { m_read_seq_no++; }
+		bool already_seen(ulong) const override { return false; }
+		void read_accept(ulong) override { m_read_seq_no++; }
 	private:
-		u64bit m_write_seq_no = 0;
-		u64bit m_read_seq_no = 0;
-		u16bit m_read_epoch = 0;
-		u16bit m_write_epoch = 0;
+		ulong m_write_seq_no = 0;
+		ulong m_read_seq_no = 0;
+		ushort m_read_epoch = 0;
+		ushort m_write_epoch = 0;
 };
 
 class Datagram_Sequence_Numbers : public Connection_Sequence_Numbers
@@ -57,24 +57,24 @@ class Datagram_Sequence_Numbers : public Connection_Sequence_Numbers
 			m_write_seq_no = ((m_write_seq_no >> 48) + 1) << 48;
 		}
 
-		u16bit current_read_epoch() const override { return m_read_epoch; }
-		u16bit current_write_epoch() const override { return (m_write_seq_no >> 48); }
+		ushort current_read_epoch() const override { return m_read_epoch; }
+		ushort current_write_epoch() const override { return (m_write_seq_no >> 48); }
 
-		u64bit next_write_sequence() override { return m_write_seq_no++; }
+		ulong next_write_sequence() override { return m_write_seq_no++; }
 
-		u64bit next_read_sequence() override
+		ulong next_read_sequence() override
 		{
 			throw new Exception("DTLS uses explicit sequence numbers");
 		}
 
-		bool already_seen(u64bit sequence) const override
+		bool already_seen(ulong sequence) const override
 		{
 			const size_t window_size = sizeof(m_window_bits) * 8;
 
 			if(sequence > m_window_highest)
 				return false;
 
-			const u64bit offset = m_window_highest - sequence;
+			const ulong offset = m_window_highest - sequence;
 
 			if(offset >= window_size)
 				return true; // really old?
@@ -82,7 +82,7 @@ class Datagram_Sequence_Numbers : public Connection_Sequence_Numbers
 			return (((m_window_bits >> offset) & 1) == 1);
 		}
 
-		void read_accept(u64bit sequence) override
+		void read_accept(ulong sequence) override
 		{
 			const size_t window_size = sizeof(m_window_bits) * 8;
 
@@ -100,16 +100,16 @@ class Datagram_Sequence_Numbers : public Connection_Sequence_Numbers
 			}
 			else
 			{
-				const u64bit offset = m_window_highest - sequence;
-				m_window_bits |= (cast(u64bit)(1) << offset);
+				const ulong offset = m_window_highest - sequence;
+				m_window_bits |= (cast(ulong)(1) << offset);
 			}
 		}
 
 	private:
-		u64bit m_write_seq_no = 0;
-		u16bit m_read_epoch = 0;
-		u64bit m_window_highest = 0;
-		u64bit m_window_bits = 0;
+		ulong m_write_seq_no = 0;
+		ushort m_read_epoch = 0;
+		ulong m_window_highest = 0;
+		ulong m_window_bits = 0;
 };
 
 }

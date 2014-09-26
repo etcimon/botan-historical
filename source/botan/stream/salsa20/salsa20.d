@@ -22,7 +22,7 @@ namespace {
 /*
 * Generate HSalsa20 cipher stream (for XSalsa20 IV setup)
 */
-void hsalsa20(uint output[8], const uint input[16])
+void hsalsa20(uint[8] output, const uint[16] input)
 {
 	uint x00 = input[ 0], x01 = input[ 1], x02 = input[ 2], x03 = input[ 3],
 			 x04 = input[ 4], x05 = input[ 5], x06 = input[ 6], x07 = input[ 7],
@@ -55,7 +55,7 @@ void hsalsa20(uint output[8], const uint input[16])
 /*
 * Generate Salsa20 cipher stream
 */
-void salsa20(byte output[64], const uint input[16])
+void salsa20(byte[64] output, const uint[16] input)
 {
 	uint x00 = input[ 0], x01 = input[ 1], x02 = input[ 2], x03 = input[ 3],
 			 x04 = input[ 4], x05 = input[ 5], x06 = input[ 6], x07 = input[ 7],
@@ -100,7 +100,7 @@ void salsa20(byte output[64], const uint input[16])
 /*
 * Combine cipher stream with message
 */
-void Salsa20::cipher(in byte[] input, ref byte[] output)
+void Salsa20::cipher(in byte* input, byte* output)
 {
 	while(length >= m_buffer.size() - m_position)
 	{
@@ -124,7 +124,7 @@ void Salsa20::cipher(in byte[] input, ref byte[] output)
 /*
 * Salsa20 Key Schedule
 */
-void Salsa20::key_schedule(in byte[] key)
+void Salsa20::key_schedule(in byte* key, size_t length)
 {
 	static const uint TAU[] =
 	{ 0x61707865, 0x3120646e, 0x79622d36, 0x6b206574 };
@@ -142,18 +142,18 @@ void Salsa20::key_schedule(in byte[] key)
 	m_state[10] = CONSTANTS[2];
 	m_state[15] = CONSTANTS[3];
 
-	m_state[1] = load_le<uint>(key, 0);
-	m_state[2] = load_le<uint>(key, 1);
-	m_state[3] = load_le<uint>(key, 2);
-	m_state[4] = load_le<uint>(key, 3);
+	m_state[1] = load_le!uint(key, 0);
+	m_state[2] = load_le!uint(key, 1);
+	m_state[3] = load_le!uint(key, 2);
+	m_state[4] = load_le!uint(key, 3);
 
 	if(length == 32)
 		key += 16;
 
-	m_state[11] = load_le<uint>(key, 0);
-	m_state[12] = load_le<uint>(key, 1);
-	m_state[13] = load_le<uint>(key, 2);
-	m_state[14] = load_le<uint>(key, 3);
+	m_state[11] = load_le!uint(key, 0);
+	m_state[12] = load_le!uint(key, 1);
+	m_state[13] = load_le!uint(key, 2);
+	m_state[14] = load_le!uint(key, 3);
 
 	m_position = 0;
 
@@ -164,7 +164,7 @@ void Salsa20::key_schedule(in byte[] key)
 /*
 * Return the name of this type
 */
-void Salsa20::set_iv(in byte[] iv, size_t length)
+void Salsa20::set_iv(in byte* iv, size_t length)
 {
 	if(!valid_iv_length(length))
 		throw new Invalid_IV_Length(name(), length);
@@ -172,16 +172,16 @@ void Salsa20::set_iv(in byte[] iv, size_t length)
 	if(length == 8)
 	{
 		// Salsa20
-		m_state[6] = load_le<uint>(iv, 0);
-		m_state[7] = load_le<uint>(iv, 1);
+		m_state[6] = load_le!uint(iv, 0);
+		m_state[7] = load_le!uint(iv, 1);
 	}
 	else
 	{
 		// XSalsa20
-		m_state[6] = load_le<uint>(iv, 0);
-		m_state[7] = load_le<uint>(iv, 1);
-		m_state[8] = load_le<uint>(iv, 2);
-		m_state[9] = load_le<uint>(iv, 3);
+		m_state[6] = load_le!uint(iv, 0);
+		m_state[7] = load_le!uint(iv, 1);
+		m_state[8] = load_le!uint(iv, 2);
+		m_state[9] = load_le!uint(iv, 3);
 
 		secure_vector<uint> hsalsa(8);
 		hsalsa20(&hsalsa[0], &m_state[0]);
@@ -190,8 +190,8 @@ void Salsa20::set_iv(in byte[] iv, size_t length)
 		m_state[ 2] = hsalsa[1];
 		m_state[ 3] = hsalsa[2];
 		m_state[ 4] = hsalsa[3];
-		m_state[ 6] = load_le<uint>(iv, 4);
-		m_state[ 7] = load_le<uint>(iv, 5);
+		m_state[ 6] = load_le!uint(iv, 4);
+		m_state[ 7] = load_le!uint(iv, 5);
 		m_state[11] = hsalsa[4];
 		m_state[12] = hsalsa[5];
 		m_state[13] = hsalsa[6];

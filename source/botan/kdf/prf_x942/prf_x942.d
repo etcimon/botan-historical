@@ -29,8 +29,8 @@ Vector!( byte ) encode_x942_int(uint n)
 * X9.42 PRF
 */
 SafeVector!byte X942_PRF::derive(size_t key_len,
-												in byte[] secret, size_t secret_len,
-												in byte[] salt, size_t salt_len) const
+												in byte* secret, size_t secret_len,
+												in byte* salt, size_t salt_len) const
 {
 	SHA_160 hash;
 	const OID kek_algo(key_wrap_oid);
@@ -66,7 +66,7 @@ SafeVector!byte X942_PRF::derive(size_t key_len,
 
 		SafeVector!byte digest = hash.flush();
 		const size_t needed = std::min(digest.size(), key_len - key.size());
-		key += std::make_pair(&digest[0], needed);
+		key += Pair(&digest[0], needed);
 
 		++counter;
 	}

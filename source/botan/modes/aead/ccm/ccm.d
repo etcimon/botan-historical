@@ -65,12 +65,12 @@ Key_Length_Specification CCM_Mode::key_spec() const
 	return m_cipher->key_spec();
 }
 
-void CCM_Mode::key_schedule(in byte[] key)
+void CCM_Mode::key_schedule(in byte* key, size_t length)
 {
 	m_cipher->set_key(key, length);
 }
 
-void CCM_Mode::set_associated_data(in byte[] ad, size_t length)
+void CCM_Mode::set_associated_data(in byte* ad, size_t length)
 {
 	m_ad_buf.clear();
 
@@ -79,15 +79,15 @@ void CCM_Mode::set_associated_data(in byte[] ad, size_t length)
 		// FIXME: support larger AD using length encoding rules
 		BOTAN_ASSERT(length < (0xFFFF - 0xFF), "Supported CCM AD length");
 
-		m_ad_buf.push_back(get_byte<u16bit>(0, length));
-		m_ad_buf.push_back(get_byte<u16bit>(1, length));
-		m_ad_buf += std::make_pair(ad, length);
+		m_ad_buf.push_back(get_byte<ushort>(0, length));
+		m_ad_buf.push_back(get_byte<ushort>(1, length));
+		m_ad_buf += Pair(ad, length);
 		while(m_ad_buf.size() % BS)
 			m_ad_buf.push_back(0); // pad with zeros to full block size
 	}
 }
 
-SafeVector!byte CCM_Mode::start(in byte[] nonce, size_t nonce_len)
+SafeVector!byte CCM_Mode::start(in byte* nonce, size_t nonce_len)
 {
 	if(!valid_nonce_length(nonce_len))
 		throw new Invalid_IV_Length(name(), nonce_len);
@@ -108,14 +108,14 @@ void CCM_Mode::update(SafeVector!byte buffer, size_t offset)
 	buffer.resize(offset); // truncate msg
 }
 
-void CCM_Mode::encode_length(size_t len, ref byte[] output)
+void CCM_Mode::encode_length(size_t len, byte* output)
 {
 	const size_t len_bytes = L();
 
 	BOTAN_ASSERT(len_bytes < sizeof(size_t), "Length field fits");
 
 	for(size_t i = 0; i != len_bytes; ++i)
-		out[len_bytes-1-i] = get_byte(sizeof(size_t)-1-i, len);
+		output[len_bytes-1-i] = get_byte(sizeof(size_t)-1-i, len);
 
 	BOTAN_ASSERT((len >> (len_bytes*8)) == 0, "Message length fits in field");
 }
@@ -200,7 +200,7 @@ void CCM_Encryption::finish(SafeVector!byte buffer, size_t offset)
 
 	T ^= S0;
 
-	buffer += std::make_pair(&T[0], tag_size());
+	buffer += Pair(&T[0], tag_size());
 }
 
 void CCM_Decryption::finish(SafeVector!byte buffer, size_t offset)

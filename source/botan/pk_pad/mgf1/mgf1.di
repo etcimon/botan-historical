@@ -11,5 +11,5 @@
 * MGF1 from PKCS #1 v2.0
 */
 void mgf1_mask(HashFunction& hash,
-					in byte[] in,
-					ref byte[] output);
+					in byte* in,
+					byte* output);

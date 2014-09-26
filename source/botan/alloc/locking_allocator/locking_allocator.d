@@ -12,7 +12,6 @@
 
 #include <sys/mman.h>
 #include <sys/resource.h>
-namespace {
 
 /**
 * Requests for objects of sizeof(T) will be aligned at
@@ -74,16 +73,16 @@ size_t padding_for_alignment(size_t offset, size_t desired_alignment)
 void* mlock_allocator::allocate(size_t num_elems, size_t elem_size)
 {
 	if(!m_pool)
-		return nullptr;
+		return null;
 
 	const size_t n = num_elems * elem_size;
 	const size_t alignment = ALIGNMENT_MULTIPLE * elem_size;
 
 	if(n / elem_size != num_elems)
-		return nullptr; // overflow!
+		return null; // overflow!
 
 	if(n > m_poolsize || n > BOTAN_MLOCK_ALLOCATOR_MAX_ALLOCATION)
-		return nullptr;
+		return null;
 
 	std::lock_guard<std::mutex> lock(m_mutex);
 
@@ -136,7 +135,7 @@ void* mlock_allocator::allocate(size_t num_elems, size_t elem_size)
 				best_fit->second = alignment_padding;
 			}
 			else
-				m_freelist.insert(best_fit, std::make_pair(offset, alignment_padding));
+				m_freelist.insert(best_fit, Pair(offset, alignment_padding));
 		}
 
 		clear_mem(m_pool + offset + alignment_padding, n);
@@ -147,7 +146,7 @@ void* mlock_allocator::allocate(size_t num_elems, size_t elem_size)
 		return m_pool + offset + alignment_padding;
 	}
 
-	return nullptr;
+	return null;
 }
 
 bool mlock_allocator::deallocate(void* p, size_t num_elems, size_t elem_size)
@@ -158,7 +157,7 @@ bool mlock_allocator::deallocate(void* p, size_t num_elems, size_t elem_size)
 	size_t n = num_elems * elem_size;
 
 	/*
-	We return nullptr in allocate if there was an overflow, so we
+	We return null in allocate if there was an overflow, so we
 	should never ever see an overflow in a deallocation.
 	*/
 	BOTAN_ASSERT(n / elem_size == num_elems,
@@ -174,7 +173,7 @@ bool mlock_allocator::deallocate(void* p, size_t num_elems, size_t elem_size)
 	auto comp = [](Pair!(size_t, size_t) x, Pair!(size_t, size_t) y){ return x.first < y.first; };
 
 	auto i = std::lower_bound(m_freelist.begin(), m_freelist.end(),
-									  std::make_pair(start, 0), comp);
+									  Pair(start, 0), comp);
 
 	// try to merge with later block
 	if(i != m_freelist.end() && start + n == i->first)
@@ -206,14 +205,14 @@ bool mlock_allocator::deallocate(void* p, size_t num_elems, size_t elem_size)
 	}
 
 	if(n != 0) // no merge possible?
-		m_freelist.insert(i, std::make_pair(start, n));
+		m_freelist.insert(i, Pair(start, n));
 
 	return true;
 }
 
 mlock_allocator::mlock_allocator() :
 	m_poolsize(mlock_limit()),
-	m_pool(nullptr)
+	m_pool(null)
 {
 #if !defined(MAP_NOCORE)
 	#define MAP_NOCORE 0
@@ -227,14 +226,14 @@ mlock_allocator::mlock_allocator() :
 	{
 		m_pool = cast(byte*)(
 			::mmap(
-				nullptr, m_poolsize,
+				null, m_poolsize,
 				PROT_READ | PROT_WRITE,
 				MAP_ANONYMOUS | MAP_SHARED | MAP_NOCORE,
 				-1, 0));
 
 		if(m_pool == cast(byte*)(MAP_FAILED))
 		{
-			m_pool = nullptr;
+			m_pool = null;
 			throw new Exception("Failed to mmap locking_allocator pool");
 		}
 
@@ -243,7 +242,7 @@ mlock_allocator::mlock_allocator() :
 		if(::mlock(m_pool, m_poolsize) != 0)
 		{
 			::munmap(m_pool, m_poolsize);
-			m_pool = nullptr;
+			m_pool = null;
 			throw new Exception("Could not mlock " + std::to_string(m_poolsize) + " bytes");
 		}
 
@@ -251,7 +250,7 @@ mlock_allocator::mlock_allocator() :
 		::madvise(m_pool, m_poolsize, MADV_DONTDUMP);
 #endif
 
-		m_freelist.push_back(std::make_pair(0, m_poolsize));
+		m_freelist.push_back(Pair(0, m_poolsize));
 	}
 }
 
@@ -262,7 +261,7 @@ mlock_allocator::~mlock_allocator()
 		clear_mem(m_pool, m_poolsize);
 		::munlock(m_pool, m_poolsize);
 		::munmap(m_pool, m_poolsize);
-		m_pool = nullptr;
+		m_pool = null;
 	}
 }
 
@@ -270,6 +269,4 @@ mlock_allocator& mlock_allocator::instance()
 {
 	static mlock_allocator mlock;
 	return mlock;
-}
-
 }

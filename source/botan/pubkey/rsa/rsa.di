@@ -89,10 +89,10 @@ class RSA_Private_Operation : public PK_Ops::Signature,
 
 		size_t max_input_bits() const { return (n.bits() - 1); }
 
-		SafeVector!byte sign(in byte[] msg, size_t msg_len,
+		SafeVector!byte sign(in byte* msg, size_t msg_len,
 										RandomNumberGenerator& rng);
 
-		SafeVector!byte decrypt(in byte[] msg, size_t msg_len);
+		SafeVector!byte decrypt(in byte* msg, size_t msg_len);
 
 	private:
 		BigInt private_op(in BigInt m) const;
@@ -119,14 +119,14 @@ class RSA_Public_Operation : public PK_Ops::Verification,
 		size_t max_input_bits() const { return (n.bits() - 1); }
 		bool with_recovery() const { return true; }
 
-		SafeVector!byte encrypt(in byte[] msg, size_t msg_len,
+		SafeVector!byte encrypt(in byte* msg, size_t msg_len,
 											RandomNumberGenerator&)
 		{
 			BigInt m(msg, msg_len);
 			return BigInt::encode_1363(public_op(m), n.bytes());
 		}
 
-		SafeVector!byte verify_mr(in byte[] msg, size_t msg_len)
+		SafeVector!byte verify_mr(in byte* msg, size_t msg_len)
 		{
 			BigInt m(msg, msg_len);
 			return BigInt::encode_locked(public_op(m));

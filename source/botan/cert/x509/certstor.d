@@ -12,7 +12,7 @@
 #endif
 const X509_CRL* Certificate_Store::find_crl_for(in X509_Certificate) const
 {
-	return nullptr;
+	return null;
 }
 
 void Certificate_Store_In_Memory::add_certificate(in X509_Certificate cert)
@@ -55,7 +55,7 @@ cert_search(in X509_DN subject_dn, in Vector!byte key_id,
 			return &certs[i];
 	}
 
-	return nullptr;
+	return null;
 }
 
 }
@@ -105,7 +105,7 @@ const X509_CRL* Certificate_Store_In_Memory::find_crl_for(in X509_Certificate su
 			return &m_crls[i];
 	}
 
-	return nullptr;
+	return null;
 }
 
 Certificate_Store_In_Memory::Certificate_Store_In_Memory(in string dir)

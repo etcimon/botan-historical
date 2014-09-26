@@ -16,7 +16,7 @@ sqlite3_database::sqlite3_database(in string db_filename)
 	{
 		const string err_msg = ::sqlite3_errmsg(m_db);
 		::sqlite3_close(m_db);
-		m_db = nullptr;
+		m_db = null;
 		throw new Exception("sqlite3_open failed - " + err_msg);
 	}
 }
@@ -25,7 +25,7 @@ sqlite3_database::~sqlite3_database()
 {
 	if(m_db)
 		::sqlite3_close(m_db);
-	m_db = nullptr;
+	m_db = null;
 }
 
 size_t sqlite3_database::row_count(in string table_name)
@@ -40,20 +40,20 @@ size_t sqlite3_database::row_count(in string table_name)
 
 void sqlite3_database::create_table(in string table_schema)
 {
-	char* errmsg = nullptr;
-	int rc = ::sqlite3_exec(m_db, table_schema.c_str(), nullptr, nullptr, &errmsg);
+	char* errmsg = null;
+	int rc = ::sqlite3_exec(m_db, table_schema.c_str(), null, null, &errmsg);
 
 	if(rc != SQLITE_OK)
 	{
 		const string err_msg = errmsg;
 		::sqlite3_free(errmsg);
 		::sqlite3_close(m_db);
-		m_db = nullptr;
+		m_db = null;
 		throw new Exception("sqlite3_exec for table failed - " + err_msg);
 	}
 }sqlite3_statement::sqlite3_statement(sqlite3_database* db, in string base_sql)
 {
-	int rc = ::sqlite3_prepare_v2(db->m_db, base_sql.c_str(), -1, &m_stmt, nullptr);
+	int rc = ::sqlite3_prepare_v2(db->m_db, base_sql.c_str(), -1, &m_stmt, null);
 
 	if(rc != SQLITE_OK)
 		throw new Exception("sqlite3_prepare failed " + base_sql +
@@ -97,7 +97,7 @@ Pair!(const byte*, size_t) sqlite3_statement::get_blob(int column)
 
 	BOTAN_ASSERT(session_blob_size >= 0, "Blob size is non-negative");
 
-	return std::make_pair(cast(const byte*)(session_blob),
+	return Pair(cast(const byte*)(session_blob),
 								 cast(size_t)(session_blob_size));
 }
 

@@ -31,15 +31,15 @@ class Tiger : public MDx_HashFunction
 		void compress_n(const byte[], size_t block);
 		void copy_out(byte[]);
 
-		static void pass(u64bit& A, u64bit& B, u64bit& C,
-							  const secure_vector<u64bit>& M,
+		static void pass(ref ulong A, ref ulong B, ref ulong C,
+							  const secure_vector<ulong>& M,
 							  byte mul);
 
-		static const u64bit SBOX1[256];
-		static const u64bit SBOX2[256];
-		static const u64bit SBOX3[256];
-		static const u64bit SBOX4[256];
+		static const ulong SBOX1[256];
+		static const ulong SBOX2[256];
+		static const ulong SBOX3[256];
+		static const ulong SBOX4[256];
 
-		secure_vector<u64bit> X, digest;
+		secure_vector<ulong> X, digest;
 		const size_t hash_len, passes;
 };

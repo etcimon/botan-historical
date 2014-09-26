@@ -13,12 +13,12 @@
 /*
 * RC5 Encryption
 */
-void RC5::encrypt_n(in byte[] input, ref byte[] output) const
+void RC5::encrypt_n(byte* input, byte* output, size_t blocks) const
 {
 	for(size_t i = 0; i != blocks; ++i)
 	{
-		uint A = load_le<uint>(input, 0);
-		uint B = load_le<uint>(input, 1);
+		uint A = load_le!uint(input, 0);
+		uint B = load_le!uint(input, 1);
 
 		A += S[0]; B += S[1];
 		for(size_t j = 0; j != rounds; j += 4)
@@ -38,20 +38,20 @@ void RC5::encrypt_n(in byte[] input, ref byte[] output) const
 
 		store_le(out, A, B);
 
-		input = input[BLOCK_SIZE .. $];
-		output = output[BLOCK_SIZE .. $];
+		input += BLOCK_SIZE;
+		output += BLOCK_SIZE;
 	}
 }
 
 /*
 * RC5 Decryption
 */
-void RC5::decrypt_n(in byte[] input, ref byte[] output) const
+void RC5::decrypt_n(byte* input, byte* output, size_t blocks) const
 {
 	for(size_t i = 0; i != blocks; ++i)
 	{
-		uint A = load_le<uint>(input, 0);
-		uint B = load_le<uint>(input, 1);
+		uint A = load_le!uint(input, 0);
+		uint B = load_le!uint(input, 1);
 
 		for(size_t j = rounds; j != 0; j -= 4)
 		{
@@ -71,15 +71,15 @@ void RC5::decrypt_n(in byte[] input, ref byte[] output) const
 
 		store_le(out, A, B);
 
-		input = input[BLOCK_SIZE .. $];
-		output = output[BLOCK_SIZE .. $];
+		input += BLOCK_SIZE;
+		output += BLOCK_SIZE;
 	}
 }
 
 /*
 * RC5 Key Schedule
 */
-void RC5::key_schedule(in byte[] key)
+void RC5::key_schedule(in byte* key)
 {
 	S.resize(2*rounds + 2);
 

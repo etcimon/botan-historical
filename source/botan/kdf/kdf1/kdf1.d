@@ -10,8 +10,8 @@
 * KDF1 Key Derivation Mechanism
 */
 SafeVector!byte KDF1::derive(size_t,
-										  in byte[] secret, size_t secret_len,
-										  in byte[] P, size_t P_len) const
+										  in byte* secret, size_t secret_len,
+										  in byte* P, size_t P_len) const
 {
 	hash->update(secret, secret_len);
 	hash->update(P, P_len);

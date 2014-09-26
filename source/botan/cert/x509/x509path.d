@@ -36,7 +36,7 @@ find_issuing_cert(in X509_Certificate cert,
 			return cert;
 	}
 
-	return nullptr;
+	return null;
 }
 
 const X509_CRL* find_crls_for(in X509_Certificate cert,
@@ -66,7 +66,7 @@ const X509_CRL* find_crls_for(in X509_Certificate cert,
 	}
 #endif
 
-	return nullptr;
+	return null;
 }
 
 Vector!( std::set<Certificate_Status_Code )>

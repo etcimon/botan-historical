@@ -11,14 +11,14 @@
 /*
 * RC2 Encryption
 */
-void RC2::encrypt_n(in byte[] input, ref byte[] output) const
+void RC2::encrypt_n(byte* input, byte* output, size_t blocks) const
 {
 	for(size_t i = 0; i != blocks; ++i)
 	{
-		u16bit R0 = load_le<u16bit>(input, 0);
-		u16bit R1 = load_le<u16bit>(input, 1);
-		u16bit R2 = load_le<u16bit>(input, 2);
-		u16bit R3 = load_le<u16bit>(input, 3);
+		ushort R0 = load_le!ushort(input, 0);
+		ushort R1 = load_le!ushort(input, 1);
+		ushort R2 = load_le!ushort(input, 2);
+		ushort R3 = load_le!ushort(input, 3);
 
 		for(size_t j = 0; j != 16; ++j)
 		{
@@ -45,22 +45,22 @@ void RC2::encrypt_n(in byte[] input, ref byte[] output) const
 
 		store_le(out, R0, R1, R2, R3);
 
-		input = input[BLOCK_SIZE .. $];
-		output = output[BLOCK_SIZE .. $];
+		input += BLOCK_SIZE;
+		output += BLOCK_SIZE;
 	}
 }
 
 /*
 * RC2 Decryption
 */
-void RC2::decrypt_n(in byte[] input, ref byte[] output) const
+void RC2::decrypt_n(byte* input, byte* output, size_t blocks) const
 {
 	for(size_t i = 0; i != blocks; ++i)
 	{
-		u16bit R0 = load_le<u16bit>(input, 0);
-		u16bit R1 = load_le<u16bit>(input, 1);
-		u16bit R2 = load_le<u16bit>(input, 2);
-		u16bit R3 = load_le<u16bit>(input, 3);
+		ushort R0 = load_le!ushort(input, 0);
+		ushort R1 = load_le!ushort(input, 1);
+		ushort R2 = load_le!ushort(input, 2);
+		ushort R3 = load_le!ushort(input, 3);
 
 		for(size_t j = 0; j != 16; ++j)
 		{
@@ -87,15 +87,15 @@ void RC2::decrypt_n(in byte[] input, ref byte[] output) const
 
 		store_le(out, R0, R1, R2, R3);
 
-		input = input[BLOCK_SIZE .. $];
-		output = output[BLOCK_SIZE .. $];
+		input += BLOCK_SIZE;
+		output += BLOCK_SIZE;
 	}
 }
 
 /*
 * RC2 Key Schedule
 */
-void RC2::key_schedule(in byte[] key)
+void RC2::key_schedule(in byte* key)
 {
 	static const byte TABLE[256] = {
 		0xD9, 0x78, 0xF9, 0xC4, 0x19, 0xDD, 0xB5, 0xED, 0x28, 0xE9, 0xFD, 0x79,
@@ -133,7 +133,7 @@ void RC2::key_schedule(in byte[] key)
 		L[i] = TABLE[L[i+1] ^ L[i+length]];
 
 	K.resize(64);
-	load_le<u16bit>(&K[0], &L[0], 64);
+	load_le!ushort(&K[0], &L[0], 64);
 }
 
 void RC2::clear()

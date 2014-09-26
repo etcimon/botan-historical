@@ -16,7 +16,7 @@ ECDH_KA_Operation::ECDH_KA_Operation(in ECDH_PrivateKey key) :
 						key.private_value();
 }
 
-SafeVector!byte ECDH_KA_Operation::agree(in byte[] w, size_t w_len)
+SafeVector!byte ECDH_KA_Operation::agree(in byte* w, size_t w_len)
 {
 	PointGFp point = OS2ECP(w, w_len, curve);
 

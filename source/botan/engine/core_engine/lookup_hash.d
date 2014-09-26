@@ -205,7 +205,7 @@ HashFunction* Core_Engine::find_hash(in SCAN_Name request,
 		{
 			const HashFunction* hash = af.prototype_hash_function(request.arg(i));
 			if(!hash)
-				return nullptr;
+				return null;
 
 			hash_prototypes.push_back(hash);
 		}
@@ -217,7 +217,7 @@ HashFunction* Core_Engine::find_hash(in SCAN_Name request,
 		return new Parallel(hashes);
 	
 
-	return nullptr;
+	return null;
 }
 
 }

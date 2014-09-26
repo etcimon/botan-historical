@@ -8,7 +8,7 @@
 #include <botan/version.h>
 #include <botan/parsing.h>
 /*
-  These are intentionally compiled rather than inlined, so an
+  These are intentionally compiled rather than d, so an
   application running against a shared library can test the true
   version they are running against.
 */

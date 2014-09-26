@@ -22,9 +22,9 @@ class L_computer;
 class OCB_Mode : public AEAD_Mode
 {
 	public:
-		SafeVector!byte start(in byte[] nonce, size_t nonce_len) override;
+		SafeVector!byte start(in byte* nonce, size_t nonce_len) override;
 
-		void set_associated_data(in byte[] ad, size_t ad_len) override;
+		void set_associated_data(in byte* ad, size_t ad_len) override;
 
 		string name() const override;
 
@@ -46,7 +46,7 @@ class OCB_Mode : public AEAD_Mode
 		*/
 		OCB_Mode(BlockCipher* cipher, size_t tag_size);
 
-		void key_schedule(in byte[] key) override;
+		void key_schedule(in byte* key, size_t length) override;
 
 		// fixme make these private
 		std::unique_ptr<BlockCipher> m_cipher;
@@ -58,7 +58,7 @@ class OCB_Mode : public AEAD_Mode
 		SafeVector!byte m_offset;
 		SafeVector!byte m_ad_hash;
 	private:
-		SafeVector!byte update_nonce(in byte[] nonce, size_t nonce_len);
+		SafeVector!byte update_nonce(in byte* nonce, size_t nonce_len);
 
 		size_t m_tag_size = 0;
 		SafeVector!byte m_last_nonce;
@@ -84,7 +84,7 @@ class OCB_Encryption : public OCB_Mode
 
 		void finish(SafeVector!byte final_block, size_t offset = 0) override;
 	private:
-		void encrypt(byte input[], size_t blocks);
+		void encrypt(byte* input, size_t blocks);
 };
 
 class OCB_Decryption : public OCB_Mode
@@ -109,5 +109,5 @@ class OCB_Decryption : public OCB_Mode
 
 		void finish(SafeVector!byte final_block, size_t offset = 0) override;
 	private:
-		void decrypt(byte input[], size_t blocks);
+		void decrypt(byte* input, size_t blocks);
 };

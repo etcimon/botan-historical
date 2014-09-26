@@ -91,7 +91,7 @@ class ECDSA_Signature_Operation : public PK_Ops::Signature
 	public:
 		ECDSA_Signature_Operation(in ECDSA_PrivateKey ecdsa);
 
-		SafeVector!byte sign(in byte[] msg, size_t msg_len,
+		SafeVector!byte sign(in byte* msg, size_t msg_len,
 										RandomNumberGenerator& rng);
 
 		size_t message_parts() const { return 2; }
@@ -119,8 +119,8 @@ class ECDSA_Verification_Operation : public PK_Ops::Verification
 
 		bool with_recovery() const { return false; }
 
-		bool verify(in byte[] msg, size_t msg_len,
-						in byte[] sig, size_t sig_len);
+		bool verify(in byte* msg, size_t msg_len,
+						in byte* sig, size_t sig_len);
 	private:
 		const PointGFp& base_point;
 		const PointGFp& public_point;

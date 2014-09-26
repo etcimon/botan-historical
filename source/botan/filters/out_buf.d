@@ -11,7 +11,7 @@
 /*
 * Read data from a message
 */
-size_t Output_Buffers::read(byte output[], size_t length,
+size_t Output_Buffers::read(byte* output, size_t length,
 									 Pipe::message_id msg)
 {
 	SecureQueue* q = get(msg);
@@ -23,7 +23,7 @@ size_t Output_Buffers::read(byte output[], size_t length,
 /*
 * Peek at data in a message
 */
-size_t Output_Buffers::peek(byte output[], size_t length,
+size_t Output_Buffers::peek(byte* output, size_t length,
 									 size_t stream_offset,
 									 Pipe::message_id msg) const
 {
@@ -77,7 +77,7 @@ void Output_Buffers::retire()
 		if(buffers[i] && buffers[i]->size() == 0)
 		{
 			delete buffers[i];
-			buffers[i] = nullptr;
+			buffers[i] = null;
 		}
 
 	while(buffers.size() && !buffers[0])
@@ -93,7 +93,7 @@ void Output_Buffers::retire()
 SecureQueue* Output_Buffers::get(Pipe::message_id msg) const
 {
 	if(msg < offset)
-		return nullptr;
+		return null;
 
 	BOTAN_ASSERT(msg < message_count(), "Message number is in range");
 

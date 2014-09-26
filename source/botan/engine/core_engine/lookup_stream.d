@@ -68,7 +68,7 @@ Core_Engine::find_stream_cipher(in SCAN_Name request,
 		return new Salsa20;
 #endif
 
-	return nullptr;
+	return null;
 }
 
 }

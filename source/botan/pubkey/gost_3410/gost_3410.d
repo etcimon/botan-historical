@@ -77,7 +77,7 @@ GOST_3410_PublicKey::GOST_3410_PublicKey(in AlgorithmIdentifier alg_id,
 
 namespace {
 
-BigInt decode_le(in byte[] msg, size_t msg_len)
+BigInt decode_le(in byte* msg, size_t msg_len)
 {
 	SafeVector!byte msg_le(msg, msg + msg_len);
 
@@ -99,7 +99,7 @@ GOST_3410_Signature_Operation::GOST_3410_Signature_Operation(
 }
 
 SafeVector!byte
-GOST_3410_Signature_Operation::sign(in byte[] msg, size_t msg_len,
+GOST_3410_Signature_Operation::sign(in byte* msg, size_t msg_len,
 												RandomNumberGenerator& rng)
 {
 	BigInt k;
@@ -138,8 +138,8 @@ GOST_3410_Verification_Operation::GOST_3410_Verification_Operation(in GOST_3410_
 {
 }
 
-bool GOST_3410_Verification_Operation::verify(in byte[] msg, size_t msg_len,
-															 in byte[] sig, size_t sig_len)
+bool GOST_3410_Verification_Operation::verify(in byte* msg, size_t msg_len,
+															 in byte* sig, size_t sig_len)
 {
 	if(sig_len != order.bytes()*2)
 		return false;

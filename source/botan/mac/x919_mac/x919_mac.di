@@ -29,8 +29,8 @@ class ANSI_X919_MAC : public MessageAuthenticationCode
 		*/
 		ANSI_X919_MAC(BlockCipher* cipher);
 
-		ANSI_X919_MAC(in ANSI_X919_MAC) = delete;
-		ANSI_X919_MAC& operator=(in ANSI_X919_MAC) = delete;
+		ANSI_X919_MAC(in ANSI_X919_MAC);
+		ANSI_X919_MAC& operator=(in ANSI_X919_MAC);
 	private:
 		void add_data(const byte[], size_t);
 		void final_result(byte[]);

@@ -32,7 +32,7 @@ class Engine
 		/**
 		* @return name of this engine
 		*/
-		abstract string provider_name() const = 0;
+		abstract string provider_name() const;
 
 		/**
 		* @param algo_spec the algorithm name/specification

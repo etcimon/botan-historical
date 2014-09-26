@@ -37,7 +37,7 @@ Assembler_Engine::find_block_cipher(in SCAN_Name request,
 #endif
 	}
 
-	return nullptr;
+	return null;
 }
 
 HashFunction*
@@ -63,7 +63,7 @@ Assembler_Engine::find_hash(in SCAN_Name request,
 #endif
 	}
 
-	return nullptr;
+	return null;
 }
 
 }

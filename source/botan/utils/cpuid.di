@@ -132,12 +132,12 @@ class CPUID
 			CPUID_SHA_BIT = 64+29,
 	};
 
-		static bool x86_processor_flags_has(u64bit bit)
+		static bool x86_processor_flags_has(ulong bit)
 		{
 			return ((m_x86_processor_flags[bit/64] >> (bit % 64)) & 1);
 		}
 
-		static u64bit m_x86_processor_flags[2];
+		static ulong m_x86_processor_flags[2];
 		static size_t m_cache_line_size;
 		static bool m_altivec_capable;
 };

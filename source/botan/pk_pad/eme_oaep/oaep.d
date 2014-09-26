@@ -11,7 +11,7 @@
 /*
 * OAEP Pad Operation
 */
-SafeVector!byte OAEP::pad(in byte[] in, size_t in_length,
+SafeVector!byte OAEP::pad(in byte* in, size_t in_length,
 									  size_t key_length,
 									  RandomNumberGenerator& rng) const
 {
@@ -22,19 +22,19 @@ SafeVector!byte OAEP::pad(in byte[] in, size_t in_length,
 
 	SafeVector!byte out(key_length);
 
-	rng.randomize(&out[0], m_Phash.size());
+	rng.randomize(&output[0], m_Phash.size());
 
 	buffer_insert(out, m_Phash.size(), &m_Phash[0], m_Phash.size());
-	out[out.size() - in_length - 1] = 0x01;
+	output[out.size() - in_length - 1] = 0x01;
 	buffer_insert(out, out.size() - in_length, in, in_length);
 
 	mgf1_mask(*m_hash,
-				 &out[0], m_Phash.size(),
-				 &out[m_Phash.size()], out.size() - m_Phash.size());
+				 &output[0], m_Phash.size(),
+				 &output[m_Phash.size()], out.size() - m_Phash.size());
 
 	mgf1_mask(*m_hash,
-				 &out[m_Phash.size()], out.size() - m_Phash.size(),
-				 &out[0], m_Phash.size());
+				 &output[m_Phash.size()], out.size() - m_Phash.size(),
+				 &output[0], m_Phash.size());
 
 	return out;
 }
@@ -42,7 +42,7 @@ SafeVector!byte OAEP::pad(in byte[] in, size_t in_length,
 /*
 * OAEP Unpad Operation
 */
-SafeVector!byte OAEP::unpad(in byte[] in, size_t in_length,
+SafeVector!byte OAEP::unpad(in byte* in, size_t in_length,
 										 size_t key_length) const
 {
 	/*

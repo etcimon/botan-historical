@@ -11,10 +11,10 @@
 #include <botan/internal/rounding.h>
 namespace {
 
-void poly_double_128(ref byte[] output, in byte[] input)
+void poly_double_128(byte* output, in byte* input)
 {
-	u64bit X0 = load_le<u64bit>(input, 0);
-	u64bit X1 = load_le<u64bit>(input, 1);
+	ulong X0 = load_le!ulong(input, 0);
+	ulong X1 = load_le!ulong(input, 1);
 
 	const bool carry = (X1 >> 63);
 
@@ -24,25 +24,25 @@ void poly_double_128(ref byte[] output, in byte[] input)
 	if(carry)
 		X0 ^= 0x87;
 
-	store_le(out, X0, X1);
+	store_le(output, X0, X1);
 }
 
-void poly_double_64(ref byte[] output, in byte[] input)
+void poly_double_64(byte* output, in byte* input)
 {
-	u64bit X = load_le<u64bit>(input, 0);
+	ulong X = load_le!ulong(input, 0);
 	const bool carry = (X >> 63);
 	X <<= 1;
 	if(carry)
 		X ^= 0x1B;
-	store_le(X, out);
+	store_le(X, output);
 }
 
-inline void poly_double(ref byte[] output, in byte[] input)
+void poly_double(byte* output, in byte* input)
 {
 	if(size == 8)
-		poly_double_64(out, input);
+		poly_double_64(output, input);
 	else
-		poly_double_128(out, input);
+		poly_double_128(output, input);
 }
 
 }
@@ -93,7 +93,7 @@ bool XTS_Mode::valid_nonce_length(size_t n) const
 	return cipher().block_size() == n;
 }
 
-void XTS_Mode::key_schedule(in byte[] key)
+void XTS_Mode::key_schedule(in byte* key, size_t length)
 {
 	const size_t key_half = length / 2;
 
@@ -104,7 +104,7 @@ void XTS_Mode::key_schedule(in byte[] key)
 	m_tweak_cipher->set_key(&key[key_half], key_half);
 }
 
-SafeVector!byte XTS_Mode::start(in byte[] nonce, size_t nonce_len)
+SafeVector!byte XTS_Mode::start(in byte* nonce, size_t nonce_len)
 {
 	if(!valid_nonce_length(nonce_len))
 		throw new Invalid_IV_Length(name(), nonce_len);

@@ -18,7 +18,7 @@ extern "C" {
 
 Dynamically_Loaded_Engine::Dynamically_Loaded_Engine(
 	in string library_path) :
-	engine(nullptr)
+	engine(null)
 {
 	lib = new Dynamically_Loaded_Library(library_path);
 
@@ -46,7 +46,7 @@ Dynamically_Loaded_Engine::Dynamically_Loaded_Engine(
 	catch(...)
 	{
 		delete lib;
-		lib = nullptr;
+		lib = null;
 		throw;
 	}
 }

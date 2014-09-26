@@ -14,7 +14,7 @@
 class CFB_Mode : public Cipher_Mode
 {
 	public:
-		SafeVector!byte start(in byte[] nonce, size_t nonce_len) override;
+		SafeVector!byte start(in byte* nonce, size_t nonce_len) override;
 
 		string name() const override;
 
@@ -43,7 +43,7 @@ class CFB_Mode : public Cipher_Mode
 		SafeVector!byte keystream_buf() { return m_keystream_buf; }
 
 	private:
-		void key_schedule(in byte[] key) override;
+		void key_schedule(in byte* key, size_t length) override;
 
 		std::unique_ptr<BlockCipher> m_cipher;
 		SafeVector!byte m_shift_register;

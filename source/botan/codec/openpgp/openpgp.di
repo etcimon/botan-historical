@@ -15,10 +15,10 @@
 * @param headers a set of key/value pairs included in the header
 */
 string PGP_encode(
-	in byte[] input,
+	in byte* input,
 	size_t length,
 	in string label,
-	const std::map<string, string>& headers);
+	in HashMap!(string, string) headers);
 
 /**
 * @param input the input data
@@ -26,7 +26,7 @@ string PGP_encode(
 * @param label the human-readable label
 */
 string PGP_encode(
-	in byte[] input,
+	in byte* input,
 	size_t length,
 	in string label);
 
@@ -39,7 +39,7 @@ string PGP_encode(
 SafeVector!byte PGP_decode(
 	DataSource& source,
 	string& label,
-	std::map<string, string>& headers);
+	HashMap!(string, string)& headers);
 
 /**
 * @param source the input source

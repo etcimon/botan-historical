@@ -125,6 +125,6 @@ void lex_cfg_w_headers(std::istream& is,
 							void delegate(string) cb,
 							void delegate(string) header_cb);
 
-std::map<string, std::map<string, string>>
+std::map<string, HashMap!(string, string)>
 BOTAN_DLL
 parse_cfg(std::istream& is);

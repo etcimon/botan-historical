@@ -37,7 +37,7 @@ const size_t PBKDF_OUTPUT_LEN = CIPHER_KEY_LEN + CIPHER_IV_LEN + MAC_KEY_LEN;
 
 }
 
-string encrypt(in byte[] input, size_t input_len,
+string encrypt(in byte* input, size_t input_len,
 						  in string passphrase,
 						  RandomNumberGenerator& rng)
 {
@@ -61,7 +61,7 @@ string encrypt(in byte[] input, size_t input_len,
 
 	Pipe pipe(get_cipher("Serpent/CTR-BE", cipher_key, iv, ENCRYPTION),
 				 new Fork(
-					 nullptr,
+					 null,
 					 new MAC_Filter(new HMAC(new SHA_512),
 										 mac_key, MAC_OUTPUT_LEN)));
 
@@ -93,7 +93,7 @@ string encrypt(in byte[] input, size_t input_len,
 	return PEM_Code::encode(out_buf, "BOTAN CRYPTOBOX MESSAGE");
 }
 
-string decrypt(in byte[] input, size_t input_len,
+string decrypt(in byte* input, size_t input_len,
 						  in string passphrase)
 {
 	DataSource_Memory input_src(input, input_len);

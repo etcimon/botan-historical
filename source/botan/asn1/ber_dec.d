@@ -104,7 +104,7 @@ size_t find_eoc(DataSource* ber)
 		if(got == 0)
 			break;
 
-		data += std::make_pair(&buffer[0], got);
+		data += Pair(&buffer[0], got);
 	}
 
 	DataSource_Memory source(data);
@@ -158,43 +158,43 @@ bool BER_Decoder::more_items() const
 /*
 * Verify that no bytes remain in the source
 */
-BER_Decoder& BER_Decoder::verify_end()
+BER_Decoder BER_Decoder::verify_end()
 {
 	if(!source->end_of_data() || (pushed.type_tag != NO_OBJECT))
 		throw new Invalid_State("BER_Decoder::verify_end called, but data remains");
-	return (*this);
+	return this;
 }
 
 /*
 * Save all the bytes remaining in the source
 */
-BER_Decoder& BER_Decoder::raw_bytes(SafeVector!byte out)
+BER_Decoder BER_Decoder::raw_bytes(SafeVector!byte out)
 {
 	out.clear();
 	byte buf;
 	while(source->read_byte(buf))
 		out.push_back(buf);
-	return (*this);
+	return this;
 }
 
-BER_Decoder& BER_Decoder::raw_bytes(Vector!( byte )& out)
+BER_Decoder BER_Decoder::raw_bytes(Vector!( byte )& out)
 {
 	out.clear();
 	byte buf;
 	while(source->read_byte(buf))
 		out.push_back(buf);
-	return (*this);
+	return this;
 }
 
 /*
 * Discard all the bytes remaining in the source
 */
-BER_Decoder& BER_Decoder::discard_remaining()
+BER_Decoder BER_Decoder::discard_remaining()
 {
 	byte buf;
 	while(source->read_byte(buf))
 		;
-	return (*this);
+	return this;
 }
 
 /*
@@ -226,10 +226,10 @@ BER_Object BER_Decoder::get_next_object()
 	return next;
 }
 
-BER_Decoder& BER_Decoder::get_next(BER_Object& ber)
+BER_Decoder BER_Decoder::get_next(BER_Object& ber)
 {
 	ber = get_next_object();
-	return (*this);
+	return this;
 }
 
 /*
@@ -259,7 +259,7 @@ BER_Decoder BER_Decoder::start_cons(ASN1_Tag type_tag,
 /*
 * Finish decoding a CONSTRUCTED type
 */
-BER_Decoder& BER_Decoder::end_cons()
+BER_Decoder BER_Decoder::end_cons()
 {
 	if(!parent)
 		throw new Invalid_State("BER_Decoder::end_cons called with NULL parent");
@@ -276,18 +276,18 @@ BER_Decoder::BER_Decoder(DataSource& src)
 	source = &src;
 	owns = false;
 	pushed.type_tag = pushed.class_tag = NO_OBJECT;
-	parent = nullptr;
+	parent = null;
 }
 
 /*
 * BER_Decoder Constructor
  */
-BER_Decoder::BER_Decoder(in byte[] data, size_t length)
+BER_Decoder::BER_Decoder(in byte* data, size_t length)
 {
 	source = new DataSource_Memory(data, length);
 	owns = true;
 	pushed.type_tag = pushed.class_tag = NO_OBJECT;
-	parent = nullptr;
+	parent = null;
 }
 
 /*
@@ -298,7 +298,7 @@ BER_Decoder::BER_Decoder(in SafeVector!byte data)
 	source = new DataSource_Memory(data);
 	owns = true;
 	pushed.type_tag = pushed.class_tag = NO_OBJECT;
-	parent = nullptr;
+	parent = null;
 }
 
 /*
@@ -309,7 +309,7 @@ BER_Decoder::BER_Decoder(in Vector!byte data)
 	source = new DataSource_Memory(&data[0], data.size());
 	owns = true;
 	pushed.type_tag = pushed.class_tag = NO_OBJECT;
-	parent = nullptr;
+	parent = null;
 }
 
 /*
@@ -335,35 +335,35 @@ BER_Decoder::~BER_Decoder()
 {
 	if(owns)
 		delete source;
-	source = nullptr;
+	source = null;
 }
 
 /*
 * Request for an object to decode itself
 */
-BER_Decoder& BER_Decoder::decode(ASN1_Object& obj,
+BER_Decoder BER_Decoder::decode(ASN1_Object& obj,
 											ASN1_Tag, ASN1_Tag)
 {
 	obj.decode_from(*this);
-	return (*this);
+	return this;
 }
 
 /*
 * Decode a BER encoded NULL
 */
-BER_Decoder& BER_Decoder::decode_null()
+BER_Decoder BER_Decoder::decode_null()
 {
 	BER_Object obj = get_next_object();
 	obj.assert_is_a(NULL_TAG, UNIVERSAL);
 	if(obj.value.size())
 		throw new BER_Decoding_Error("NULL object had nonzero size");
-	return (*this);
+	return this;
 }
 
 /*
 * Decode a BER encoded BOOLEAN
 */
-BER_Decoder& BER_Decoder::decode(bool& out)
+BER_Decoder BER_Decoder::decode(bool& out)
 {
 	return decode(out, BOOLEAN, UNIVERSAL);
 }
@@ -371,7 +371,7 @@ BER_Decoder& BER_Decoder::decode(bool& out)
 /*
 * Decode a small BER encoded INTEGER
 */
-BER_Decoder& BER_Decoder::decode(size_t& out)
+BER_Decoder BER_Decoder::decode(size_t& out)
 {
 	return decode(out, INTEGER, UNIVERSAL);
 }
@@ -379,17 +379,17 @@ BER_Decoder& BER_Decoder::decode(size_t& out)
 /*
 * Decode a BER encoded INTEGER
 */
-BER_Decoder& BER_Decoder::decode(BigInt& out)
+BER_Decoder BER_Decoder::decode(BigInt& out)
 {
 	return decode(out, INTEGER, UNIVERSAL);
 }
 
-BER_Decoder& BER_Decoder::decode_octet_string_bigint(BigInt& out)
+BER_Decoder BER_Decoder::decode_octet_string_bigint(BigInt& out)
 {
 	SafeVector!byte out_vec;
 	decode(out_vec, OCTET_STRING);
 	out = BigInt::decode(&out_vec[0], out_vec.size());
-	return (*this);
+	return this;
 }
 
 Vector!( byte ) BER_Decoder::get_next_octet_string()
@@ -402,7 +402,7 @@ Vector!( byte ) BER_Decoder::get_next_octet_string()
 /*
 * Decode a BER encoded BOOLEAN
 */
-BER_Decoder& BER_Decoder::decode(bool& out,
+BER_Decoder BER_Decoder::decode(bool& out,
 											ASN1_Tag type_tag, ASN1_Tag class_tag)
 {
 	BER_Object obj = get_next_object();
@@ -412,13 +412,13 @@ BER_Decoder& BER_Decoder::decode(bool& out,
 		throw new BER_Decoding_Error("BER boolean value had invalid size");
 
 	out = (obj.value[0]) ? true : false;
-	return (*this);
+	return this;
 }
 
 /*
 * Decode a small BER encoded INTEGER
 */
-BER_Decoder& BER_Decoder::decode(size_t& out,
+BER_Decoder BER_Decoder::decode(size_t& out,
 											ASN1_Tag type_tag, ASN1_Tag class_tag)
 {
 	BigInt integer;
@@ -431,13 +431,13 @@ BER_Decoder& BER_Decoder::decode(size_t& out,
 	for(size_t i = 0; i != 4; ++i)
 		out = (out << 8) | integer.byte_at(3-i);
 
-	return (*this);
+	return this;
 }
 
 /*
 * Decode a small BER encoded INTEGER
 */
-u64bit BER_Decoder::decode_constrained_integer(ASN1_Tag type_tag,
+ulong BER_Decoder::decode_constrained_integer(ASN1_Tag type_tag,
 															  ASN1_Tag class_tag,
 															  size_t T_bytes)
 {
@@ -450,7 +450,7 @@ u64bit BER_Decoder::decode_constrained_integer(ASN1_Tag type_tag,
 	if(integer.bits() > 8*T_bytes)
 		throw new BER_Decoding_Error("Decoded integer value larger than expected");
 
-	u64bit out = 0;
+	ulong out = 0;
 	for(size_t i = 0; i != 8; ++i)
 		out = (out << 8) | integer.byte_at(7-i);
 
@@ -460,7 +460,7 @@ u64bit BER_Decoder::decode_constrained_integer(ASN1_Tag type_tag,
 /*
 * Decode a BER encoded INTEGER
 */
-BER_Decoder& BER_Decoder::decode(BigInt& out,
+BER_Decoder BER_Decoder::decode(BigInt& out,
 											ASN1_Tag type_tag, ASN1_Tag class_tag)
 {
 	BER_Object obj = get_next_object();
@@ -487,13 +487,13 @@ BER_Decoder& BER_Decoder::decode(BigInt& out,
 			out.flip_sign();
 	}
 
-	return (*this);
+	return this;
 }
 
 /*
 * BER decode a BIT STRING or OCTET STRING
 */
-BER_Decoder& BER_Decoder::decode(SafeVector!byte out, ASN1_Tag real_type)
+BER_Decoder BER_Decoder::decode(SafeVector!byte out, ASN1_Tag real_type)
 {
 	return decode(out, real_type, real_type, UNIVERSAL);
 }
@@ -501,7 +501,7 @@ BER_Decoder& BER_Decoder::decode(SafeVector!byte out, ASN1_Tag real_type)
 /*
 * BER decode a BIT STRING or OCTET STRING
 */
-BER_Decoder& BER_Decoder::decode(Vector!( byte )& out, ASN1_Tag real_type)
+BER_Decoder BER_Decoder::decode(Vector!( byte )& out, ASN1_Tag real_type)
 {
 	return decode(out, real_type, real_type, UNIVERSAL);
 }
@@ -509,7 +509,7 @@ BER_Decoder& BER_Decoder::decode(Vector!( byte )& out, ASN1_Tag real_type)
 /*
 * BER decode a BIT STRING or OCTET STRING
 */
-BER_Decoder& BER_Decoder::decode(SafeVector!byte buffer,
+BER_Decoder BER_Decoder::decode(SafeVector!byte buffer,
 											ASN1_Tag real_type,
 											ASN1_Tag type_tag, ASN1_Tag class_tag)
 {
@@ -529,10 +529,10 @@ BER_Decoder& BER_Decoder::decode(SafeVector!byte buffer,
 		buffer.resize(obj.value.size() - 1);
 		copy_mem(&buffer[0], &obj.value[1], obj.value.size() - 1);
 	}
-	return (*this);
+	return this;
 }
 
-BER_Decoder& BER_Decoder::decode(Vector!( byte )& buffer,
+BER_Decoder BER_Decoder::decode(Vector!( byte )& buffer,
 											ASN1_Tag real_type,
 											ASN1_Tag type_tag, ASN1_Tag class_tag)
 {
@@ -552,7 +552,7 @@ BER_Decoder& BER_Decoder::decode(Vector!( byte )& buffer,
 		buffer.resize(obj.value.size() - 1);
 		copy_mem(&buffer[0], &obj.value[1], obj.value.size() - 1);
 	}
-	return (*this);
+	return this;
 }
 
 }

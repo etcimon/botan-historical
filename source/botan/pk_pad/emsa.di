@@ -18,12 +18,12 @@ class EMSA
 		* @param input some data
 		* @param length length of input in bytes
 		*/
-		abstract void update(in byte[] input, size_t length) = 0;
+		abstract void update(in byte* input, size_t length);
 
 		/**
 		* @return raw hash
 		*/
-		abstract SafeVector!byte raw_data() = 0;
+		abstract SafeVector!byte raw_data();
 
 		/**
 		* Return the encoding of a message
@@ -34,7 +34,7 @@ class EMSA
 		*/
 		abstract SafeVector!byte encoding_of(in SafeVector!byte msg,
 															size_t output_bits,
-															RandomNumberGenerator& rng) = 0;
+															RandomNumberGenerator& rng);
 
 		/**
 		* Verify the encoding
@@ -45,7 +45,7 @@ class EMSA
 		*/
 		abstract bool verify(in SafeVector!byte coded,
 								  in SafeVector!byte raw,
-								  size_t key_bits) = 0;
+								  size_t key_bits);
 		abstract ~EMSA() {}
 };
 

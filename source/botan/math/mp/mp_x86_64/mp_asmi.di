@@ -61,7 +61,7 @@ extern "C" {
 /*
 * Word Addition
 */
-inline word word_add(word x, word y, word* carry)
+ word word_add(word x, word y, word* carry)
 {
 	asm(
 		ADD_OR_SUBTRACT(ASM("adcq %[y],%[x]"))
@@ -74,7 +74,7 @@ inline word word_add(word x, word y, word* carry)
 /*
 * Eight Word Block Addition, Two Argument
 */
-inline word word8_add2(word x[8], const word y[8], word carry)
+ word word8_add2(word x[8], const word y[8], word carry)
 {
 	asm(
 		ADD_OR_SUBTRACT(DO_8_TIMES(ADDSUB2_OP, "adcq"))
@@ -87,7 +87,7 @@ inline word word8_add2(word x[8], const word y[8], word carry)
 /*
 * Eight Word Block Addition, Three Argument
 */
-inline word word8_add3(word z[8], const word x[8], const word y[8], word carry)
+ word word8_add3(word z[8], const word x[8], const word y[8], word carry)
 {
 	asm(
 		ADD_OR_SUBTRACT(DO_8_TIMES(ADDSUB3_OP, "adcq"))
@@ -100,7 +100,7 @@ inline word word8_add3(word z[8], const word x[8], const word y[8], word carry)
 /*
 * Word Subtraction
 */
-inline word word_sub(word x, word y, word* carry)
+ word word_sub(word x, word y, word* carry)
 {
 	asm(
 		ADD_OR_SUBTRACT(ASM("sbbq %[y],%[x]"))
@@ -113,7 +113,7 @@ inline word word_sub(word x, word y, word* carry)
 /*
 * Eight Word Block Subtraction, Two Argument
 */
-inline word word8_sub2(word x[8], const word y[8], word carry)
+ word word8_sub2(word x[8], const word y[8], word carry)
 {
 	asm(
 		ADD_OR_SUBTRACT(DO_8_TIMES(ADDSUB2_OP, "sbbq"))
@@ -126,7 +126,7 @@ inline word word8_sub2(word x[8], const word y[8], word carry)
 /*
 * Eight Word Block Subtraction, Two Argument
 */
-inline word word8_sub2_rev(word x[8], const word y[8], word carry)
+ word word8_sub2_rev(word x[8], const word y[8], word carry)
 {
 	asm(
 		ADD_OR_SUBTRACT(DO_8_TIMES(ADDSUB3_OP, "sbbq"))
@@ -139,7 +139,7 @@ inline word word8_sub2_rev(word x[8], const word y[8], word carry)
 /*
 * Eight Word Block Subtraction, Three Argument
 */
-inline word word8_sub3(word z[8], const word x[8], const word y[8], word carry)
+ word word8_sub3(word z[8], const word x[8], const word y[8], word carry)
 {
 	asm(
 		ADD_OR_SUBTRACT(DO_8_TIMES(ADDSUB3_OP, "sbbq"))
@@ -152,7 +152,7 @@ inline word word8_sub3(word z[8], const word x[8], const word y[8], word carry)
 /*
 * Eight Word Block Linear Multiplication
 */
-inline word word8_linmul2(word x[8], word y, word carry)
+ word word8_linmul2(word x[8], word y, word carry)
 {
 	asm(
 		DO_8_TIMES(LINMUL_OP, "x")
@@ -165,7 +165,7 @@ inline word word8_linmul2(word x[8], word y, word carry)
 /*
 * Eight Word Block Linear Multiplication
 */
-inline word word8_linmul3(word z[8], const word x[8], word y, word carry)
+ word word8_linmul3(word z[8], const word x[8], word y, word carry)
 {
 	asm(
 		DO_8_TIMES(LINMUL_OP, "z")
@@ -178,7 +178,7 @@ inline word word8_linmul3(word z[8], const word x[8], word y, word carry)
 /*
 * Eight Word Block Multiply/Add
 */
-inline word word8_madd3(word z[8], const word x[8], word y, word carry)
+ word word8_madd3(word z[8], const word x[8], word y, word carry)
 {
 	asm(
 		DO_8_TIMES(MULADD_OP, "")
@@ -191,7 +191,7 @@ inline word word8_madd3(word z[8], const word x[8], word y, word carry)
 /*
 * Multiply-Add Accumulator
 */
-inline void word3_muladd(word* w2, word* w1, word* w0, word x, word y)
+ void word3_muladd(word* w2, word* w1, word* w0, word x, word y)
 {
 	asm(
 		ASM("mulq %[y]")
@@ -208,7 +208,7 @@ inline void word3_muladd(word* w2, word* w1, word* w0, word x, word y)
 /*
 * Multiply-Add Accumulator
 */
-inline void word3_muladd_2(word* w2, word* w1, word* w0, word x, word y)
+ void word3_muladd_2(word* w2, word* w1, word* w0, word x, word y)
 {
 	asm(
 		ASM("mulq %[y]")

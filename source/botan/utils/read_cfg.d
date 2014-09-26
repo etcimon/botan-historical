@@ -87,11 +87,11 @@ void lex_cfg_w_headers(std::istream& is,
 	lex_cfg(is, intercept);
 }
 
-std::map<string, std::map<string, string>>
+std::map<string, HashMap!(string, string)>
 	parse_cfg(std::istream& is)
 {
 	string header = "default";
-	std::map<string, std::map<string, string>> vals;
+	std::map<string, HashMap!(string, string)> vals;
 	string key;
 
 	auto header_cb = [&header](const string i) { header = i; };

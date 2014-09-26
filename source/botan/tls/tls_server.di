@@ -19,9 +19,9 @@ class Server : public Channel
 		/**
 		* Server initialization
 		*/
-		Server(void delegate(in byte[]) socket_output_fn,
-				 void delegate(in byte[]) data_cb,
-				 void delegate(Alert, in byte[]) alert_cb,
+		Server(void delegate(in byte*) socket_output_fn,
+				 void delegate(in byte*) data_cb,
+				 void delegate(Alert, in byte*) alert_cb,
 				 bool delegate(const Session) handshake_cb,
 				 Session_Manager session_manager,
 				 Credentials_Manager creds,

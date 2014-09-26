@@ -23,12 +23,12 @@ void CTR_BE::clear()
 	m_pad_pos = 0;
 }
 
-void CTR_BE::key_schedule(in byte[] key)
+void CTR_BE::key_schedule(in byte* key, size_t length)
 {
 	m_cipher->set_key(key, key_len);
 
 	// Set a default all-zeros IV
-	set_iv(nullptr, 0);
+	set_iv(null, 0);
 }
 
 string CTR_BE::name() const
@@ -36,7 +36,7 @@ string CTR_BE::name() const
 	return ("CTR-BE(" + m_cipher->name() + ")");
 }
 
-void CTR_BE::cipher(in byte[] input, ref byte[] output)
+void CTR_BE::cipher(in byte* input, byte* output)
 {
 	while(length >= m_pad.size() - m_pad_pos)
 	{
@@ -50,7 +50,7 @@ void CTR_BE::cipher(in byte[] input, ref byte[] output)
 	m_pad_pos += length;
 }
 
-void CTR_BE::set_iv(in byte[] iv, size_t iv_len)
+void CTR_BE::set_iv(in byte* iv, size_t iv_len)
 {
 	if(!valid_iv_length(iv_len))
 		throw new Invalid_IV_Length(name(), iv_len);

@@ -30,7 +30,7 @@ ECDSA_Signature_Operation::ECDSA_Signature_Operation(in ECDSA_PrivateKey ecdsa) 
 }
 
 SafeVector!byte
-ECDSA_Signature_Operation::sign(in byte[] msg, size_t msg_len,
+ECDSA_Signature_Operation::sign(in byte* msg, size_t msg_len,
 										  RandomNumberGenerator& rng)
 {
 	rng.add_entropy(msg, msg_len);
@@ -66,8 +66,8 @@ ECDSA_Verification_Operation::ECDSA_Verification_Operation(in ECDSA_PublicKey ec
 {
 }
 
-bool ECDSA_Verification_Operation::verify(in byte[] msg, size_t msg_len,
-														in byte[] sig, size_t sig_len)
+bool ECDSA_Verification_Operation::verify(in byte* msg, size_t msg_len,
+														in byte* sig, size_t sig_len)
 {
 	if(sig_len != order.bytes()*2)
 		return false;

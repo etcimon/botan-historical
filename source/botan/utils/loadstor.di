@@ -33,14 +33,14 @@
 
 #endif
 /**
-* Make a u16bit from two bytes
+* Make a ushort from two bytes
 * @param i0 the first byte
 * @param i1 the second byte
 * @return i0 || i1
 */
-inline u16bit make_u16bit(byte i0, byte i1)
+ushort make_ushort(byte i0, byte i1)
 {
-	return ((cast(u16bit)(i0) << 8) | i1);
+	return ((cast(ushort)(i0) << 8) | i1);
 }
 
 /**
@@ -51,7 +51,7 @@ inline u16bit make_u16bit(byte i0, byte i1)
 * @param i3 the fourth byte
 * @return i0 || i1 || i2 || i3
 */
-inline uint make_uint(byte i0, byte i1, byte i2, byte i3)
+uint make_uint(byte i0, byte i1, byte i2, byte i3)
 {
 	return ((cast(uint)(i0) << 24) |
 			  (cast(uint)(i1) << 16) |
@@ -60,7 +60,7 @@ inline uint make_uint(byte i0, byte i1, byte i2, byte i3)
 }
 
 /**
-* Make a uint from eight bytes
+* Make a ulong from eight bytes
 * @param i0 the first byte
 * @param i1 the second byte
 * @param i2 the third byte
@@ -71,18 +71,18 @@ inline uint make_uint(byte i0, byte i1, byte i2, byte i3)
 * @param i7 the eighth byte
 * @return i0 || i1 || i2 || i3 || i4 || i5 || i6 || i7
 */
-inline u64bit make_u64bit(byte i0, byte i1, byte i2, byte i3,
-								  byte i4, byte i5, byte i6, byte i7)
-	 {
-	return ((cast(u64bit)(i0) << 56) |
-			  (cast(u64bit)(i1) << 48) |
-			  (cast(u64bit)(i2) << 40) |
-			  (cast(u64bit)(i3) << 32) |
-			  (cast(u64bit)(i4) << 24) |
-			  (cast(u64bit)(i5) << 16) |
-			  (cast(u64bit)(i6) <<  8) |
-			  (cast(u64bit)(i7)));
-	 }
+ulong make_ulong(byte i0, byte i1, byte i2, byte i3,
+				  byte i4, byte i5, byte i6, byte i7)
+{
+	return ((cast(ulong)(i0) << 56) |
+			  (cast(ulong)(i1) << 48) |
+			  (cast(ulong)(i2) << 40) |
+			  (cast(ulong)(i3) << 32) |
+			  (cast(ulong)(i4) << 24) |
+			  (cast(ulong)(i5) << 16) |
+			  (cast(ulong)(i6) <<  8) |
+			  (cast(ulong)(i7)));
+}
 
 /**
 * Load a big-endian word
@@ -90,13 +90,12 @@ inline u64bit make_u64bit(byte i0, byte i1, byte i2, byte i3,
 * @param off an offset into the array
 * @return off'th T of in, as a big-endian value
 */
-template<typename T>
-inline T load_be(in byte[] input)
+ T load_be(T)(in byte* input, size_t off)
 {
 	in += off * sizeof(T);
 	T out = 0;
 	for(size_t i = 0; i != sizeof(T); ++i)
-		out = (out << 8) | in[i];
+		out = (out << 8) | input[i];
 	return out;
 }
 
@@ -106,47 +105,46 @@ inline T load_be(in byte[] input)
 * @param off an offset into the array
 * @return off'th T of in, as a litte-endian value
 */
-template<typename T>
-inline T load_le(in byte[] input)
+ T load_le(T)(in byte* input, size_t off)
 {
 	in += off * sizeof(T);
 	T out = 0;
 	for(size_t i = 0; i != sizeof(T); ++i)
-		out = (out << 8) | in[sizeof(T)-1-i];
+		out = (out << 8) | input[sizeof(T)-1-i];
 	return out;
 }
 
 /**
-* Load a big-endian u16bit
+* Load a big-endian ushort
 * @param in a pointer to some bytes
 * @param off an offset into the array
-* @return off'th u16bit of in, as a big-endian value
+* @return off'th ushort of in, as a big-endian value
 */
 template<>
-inline u16bit load_be<u16bit>(in byte[] input)
+ ushort load_be(T : ushort)(in byte* input, size_t off)
 {
 #if BOTAN_TARGET_UNALIGNED_MEMORY_ACCESS_OK
-	return BOTAN_ENDIAN_N2B(*(cast(const u16bit*)(input) + off));
+	return BOTAN_ENDIAN_N2B(*(cast(const ushort*)(input) + off));
 #else
-	in += off * sizeof(u16bit);
-	return make_u16bit(in[0], in[1]);
+	in += off * sizeof(ushort);
+	return make_ushort(input[0], input[1]);
 #endif
 }
 
 /**
-* Load a little-endian u16bit
+* Load a little-endian ushort
 * @param in a pointer to some bytes
 * @param off an offset into the array
-* @return off'th u16bit of in, as a little-endian value
+* @return off'th ushort of in, as a little-endian value
 */
 template<>
-inline u16bit load_le<u16bit>(in byte[] input)
+ ushort load_le(T : ushort)(in byte* input, size_t off)
 {
 #if BOTAN_TARGET_UNALIGNED_MEMORY_ACCESS_OK
-	return BOTAN_ENDIAN_N2L(*(cast(const u16bit*)(input) + off));
+	return BOTAN_ENDIAN_N2L(*(cast(const ushort*)(input) + off));
 #else
-	in += off * sizeof(u16bit);
-	return make_u16bit(in[1], in[0]);
+	in += off * sizeof(ushort);
+	return make_ushort(input[1], input[0]);
 #endif
 }
 
@@ -157,13 +155,13 @@ inline u16bit load_le<u16bit>(in byte[] input)
 * @return off'th uint of in, as a big-endian value
 */
 template<>
-inline uint load_be<uint>(in byte[] input)
+ uint load_be(T : uint)(in byte* input, size_t off)
 {
 #if BOTAN_TARGET_UNALIGNED_MEMORY_ACCESS_OK
 	return BOTAN_ENDIAN_N2B(*(cast(const uint*)(input) + off));
 #else
 	in += off * sizeof(uint);
-	return make_uint(in[0], in[1], in[2], in[3]);
+	return make_uint(input[0], input[1], input[2], input[3]);
 #endif
 }
 
@@ -174,49 +172,49 @@ inline uint load_be<uint>(in byte[] input)
 * @return off'th uint of in, as a little-endian value
 */
 template<>
-inline uint load_le<uint>(in byte[] input)
+ uint load_le(T : uint)(in byte* input, size_t off)
 {
 #if BOTAN_TARGET_UNALIGNED_MEMORY_ACCESS_OK
 	return BOTAN_ENDIAN_N2L(*(cast(const uint*)(input) + off));
 #else
 	in += off * sizeof(uint);
-	return make_uint(in[3], in[2], in[1], in[0]);
+	return make_uint(input[3], input[2], input[1], input[0]);
 #endif
 }
 
 /**
-* Load a big-endian u64bit
+* Load a big-endian ulong
 * @param in a pointer to some bytes
 * @param off an offset into the array
-* @return off'th u64bit of in, as a big-endian value
+* @return off'th ulong of in, as a big-endian value
 */
 template<>
-inline u64bit load_be<u64bit>(in byte[] input)
+ ulong load_be(T : ulong)(in byte* input, size_t off)
 {
 #if BOTAN_TARGET_UNALIGNED_MEMORY_ACCESS_OK
-	return BOTAN_ENDIAN_N2B(*(cast(const u64bit*)(input) + off));
+	return BOTAN_ENDIAN_N2B(*(cast(const ulong*)(input) + off));
 #else
-	in += off * sizeof(u64bit);
-	return make_u64bit(in[0], in[1], in[2], in[3],
-							 in[4], in[5], in[6], in[7]);
+	in += off * sizeof(ulong);
+	return make_ulong(input[0], input[1], input[2], input[3],
+							 input[4], input[5], input[6], input[7]);
 #endif
 }
 
 /**
-* Load a little-endian u64bit
+* Load a little-endian ulong
 * @param in a pointer to some bytes
 * @param off an offset into the array
-* @return off'th u64bit of in, as a little-endian value
+* @return off'th ulong of in, as a little-endian value
 */
 template<>
-inline u64bit load_le<u64bit>(in byte[] input)
+ ulong load_le(T : ulong)(in byte* input, size_t off)
 {
 #if BOTAN_TARGET_UNALIGNED_MEMORY_ACCESS_OK
-	return BOTAN_ENDIAN_N2L(*(cast(const u64bit*)(input) + off));
+	return BOTAN_ENDIAN_N2L(*(cast(const ulong*)(input) + off));
 #else
-	in += off * sizeof(u64bit);
-	return make_u64bit(in[7], in[6], in[5], in[4],
-							 in[3], in[2], in[1], in[0]);
+	in += off * sizeof(ulong);
+	return make_ulong(input[7], input[6], input[5], input[4],
+							 input[3], input[2], input[1], input[0]);
 #endif
 }
 
@@ -226,11 +224,11 @@ inline u64bit load_le<u64bit>(in byte[] input)
 * @param x0 where the first word will be written
 * @param x1 where the second word will be written
 */
-template<typename T>
-inline void load_le(in byte[] in, T& x0, T& x1)
+
+void load_le(T)(in byte* input, ref T x0, ref T x1)
 {
-	x0 = load_le<T>(input, 0);
-	x1 = load_le<T>(input, 1);
+	x0 = load_le!T(input, 0);
+	x1 = load_le!T(input, 1);
 }
 
 /**
@@ -241,14 +239,13 @@ inline void load_le(in byte[] in, T& x0, T& x1)
 * @param x2 where the third word will be written
 * @param x3 where the fourth word will be written
 */
-template<typename T>
-inline void load_le(in byte[] in,
-						  T& x0, T& x1, T& x2, T& x3)
+void load_le(T)(in byte* in,
+						 ref T x0, ref T x1, ref T x2, ref T x3)
 {
-	x0 = load_le<T>(input, 0);
-	x1 = load_le<T>(input, 1);
-	x2 = load_le<T>(input, 2);
-	x3 = load_le<T>(input, 3);
+	x0 = load_le!T(input, 0);
+	x1 = load_le!T(input, 1);
+	x2 = load_le!T(input, 2);
+	x3 = load_le!T(input, 3);
 }
 
 /**
@@ -263,19 +260,18 @@ inline void load_le(in byte[] in,
 * @param x6 where the seventh word will be written
 * @param x7 where the eighth word will be written
 */
-template<typename T>
-inline void load_le(in byte[] in,
-						  T& x0, T& x1, T& x2, T& x3,
-						  T& x4, T& x5, T& x6, T& x7)
+void load_le(T)(in byte* input,
+				  ref T x0, ref T x1, ref T x2, ref T x3,
+				  ref T x4, ref T x5, ref T x6, ref T x7)
 {
-	x0 = load_le<T>(input, 0);
-	x1 = load_le<T>(input, 1);
-	x2 = load_le<T>(input, 2);
-	x3 = load_le<T>(input, 3);
-	x4 = load_le<T>(input, 4);
-	x5 = load_le<T>(input, 5);
-	x6 = load_le<T>(input, 6);
-	x7 = load_le<T>(input, 7);
+	x0 = load_le!T(input, 0);
+	x1 = load_le!T(input, 1);
+	x2 = load_le!T(input, 2);
+	x3 = load_le!T(input, 3);
+	x4 = load_le!T(input, 4);
+	x5 = load_le!T(input, 5);
+	x6 = load_le!T(input, 6);
+	x7 = load_le!T(input, 7);
 }
 
 /**
@@ -284,28 +280,27 @@ inline void load_le(in byte[] in,
 * @param in the input array of bytes
 * @param count how many words are in in
 */
-template<typename T>
-inline void load_le(T out[],
-						  in byte[] in,
-						  size_t count)
+void load_le(T)(T* output,
+				  in byte* input,
+				  size_t count)
 {
 #if defined(BOTAN_TARGET_CPU_HAS_KNOWN_ENDIANNESS)
-	std::memcpy(out, in, sizeof(T)*count);
+	std::memcpy(output, input, sizeof(T)*count);
 
 #if defined(BOTAN_TARGET_CPU_IS_BIG_ENDIAN)
 	const size_t blocks = count - (count % 4);
 	const size_t left = count - blocks;
 
 	for(size_t i = 0; i != blocks; i += 4)
-		bswap_4(out + i);
+		bswap_4(output + i);
 
 	for(size_t i = 0; i != left; ++i)
-		out[blocks+i] = reverse_bytes(out[blocks+i]);
+		output[blocks+i] = reverse_bytes(output[blocks+i]);
 #endif
 
 #else
 	for(size_t i = 0; i != count; ++i)
-		out[i] = load_le<T>(input, i);
+		output[i] = load_le!T(input, i);
 #endif
 }
 
@@ -315,11 +310,10 @@ inline void load_le(T out[],
 * @param x0 where the first word will be written
 * @param x1 where the second word will be written
 */
-template<typename T>
-inline void load_be(in byte[] in, T& x0, T& x1)
+void load_be(T)(in byte* input, ref T x0, ref T x1)
 {
-	x0 = load_be<T>(input, 0);
-	x1 = load_be<T>(input, 1);
+	x0 = load_be!T(input, 0);
+	x1 = load_be!T(input, 1);
 }
 
 /**
@@ -330,14 +324,13 @@ inline void load_be(in byte[] in, T& x0, T& x1)
 * @param x2 where the third word will be written
 * @param x3 where the fourth word will be written
 */
-template<typename T>
-inline void load_be(in byte[] in,
-						  T& x0, T& x1, T& x2, T& x3)
+void load_be(T)(in byte* input,
+				ref T x0, ref T x1, ref T x2, ref T x3)
 {
-	x0 = load_be<T>(input, 0);
-	x1 = load_be<T>(input, 1);
-	x2 = load_be<T>(input, 2);
-	x3 = load_be<T>(input, 3);
+	x0 = load_be!T(input, 0);
+	x1 = load_be!T(input, 1);
+	x2 = load_be!T(input, 2);
+	x3 = load_be!T(input, 3);
 }
 
 /**
@@ -352,19 +345,18 @@ inline void load_be(in byte[] in,
 * @param x6 where the seventh word will be written
 * @param x7 where the eighth word will be written
 */
-template<typename T>
-inline void load_be(in byte[] in,
-						  T& x0, T& x1, T& x2, T& x3,
-						  T& x4, T& x5, T& x6, T& x7)
+void load_be(T)(in byte* input,
+				  ref T x0, ref T x1, ref T x2, ref T x3,
+				  ref T x4, ref T x5, ref T x6, ref T x7)
 {
-	x0 = load_be<T>(input, 0);
-	x1 = load_be<T>(input, 1);
-	x2 = load_be<T>(input, 2);
-	x3 = load_be<T>(input, 3);
-	x4 = load_be<T>(input, 4);
-	x5 = load_be<T>(input, 5);
-	x6 = load_be<T>(input, 6);
-	x7 = load_be<T>(input, 7);
+	x0 = load_be!T(input, 0);
+	x1 = load_be!T(input, 1);
+	x2 = load_be!T(input, 2);
+	x3 = load_be!T(input, 3);
+	x4 = load_be!T(input, 4);
+	x5 = load_be!T(input, 5);
+	x6 = load_be!T(input, 6);
+	x7 = load_be!T(input, 7);
 }
 
 /**
@@ -373,58 +365,57 @@ inline void load_be(in byte[] in,
 * @param in the input array of bytes
 * @param count how many words are in in
 */
-template<typename T>
-inline void load_be(T out[],
-						  in byte[] in,
+void load_be(T)(T* output,
+						  in byte* input,
 						  size_t count)
 {
 #if defined(BOTAN_TARGET_CPU_HAS_KNOWN_ENDIANNESS)
-	std::memcpy(out, in, sizeof(T)*count);
+	std::memcpy(output, input, sizeof(T)*count);
 
 #if defined(BOTAN_TARGET_CPU_IS_LITTLE_ENDIAN)
 	const size_t blocks = count - (count % 4);
 	const size_t left = count - blocks;
 
 	for(size_t i = 0; i != blocks; i += 4)
-		bswap_4(out + i);
+		bswap_4(output + i);
 
 	for(size_t i = 0; i != left; ++i)
-		out[blocks+i] = reverse_bytes(out[blocks+i]);
+		output[blocks+i] = reverse_bytes(output[blocks+i]);
 #endif
 
 #else
 	for(size_t i = 0; i != count; ++i)
-		out[i] = load_be<T>(input, i);
+		output[i] = load_be!T(input, i);
 #endif
 }
 
 /**
-* Store a big-endian u16bit
-* @param in the input u16bit
+* Store a big-endian ushort
+* @param in the input ushort
 * @param out the byte array to write to
 */
-inline void store_be(u16bit in, byte out[2])
+void store_be(ushort input, byte* output)
 {
 #if BOTAN_TARGET_UNALIGNED_MEMORY_ACCESS_OK
-	*cast(u16bit*)(out) = BOTAN_ENDIAN_B2N(input);
+	*cast(ushort*)(output.ptr) = BOTAN_ENDIAN_B2N(input);
 #else
-	out[0] = get_byte(0, input);
-	out[1] = get_byte(1, input);
+	output[0] = get_byte(0, input);
+	output[1] = get_byte(1, input);
 #endif
 }
 
 /**
-* Store a little-endian u16bit
-* @param in the input u16bit
+* Store a little-endian ushort
+* @param in the input ushort
 * @param out the byte array to write to
 */
-inline void store_le(u16bit in, byte out[2])
+void store_le(ushort input, byte[2] output)
 {
 #if BOTAN_TARGET_UNALIGNED_MEMORY_ACCESS_OK
-	*cast(u16bit*)(out) = BOTAN_ENDIAN_L2N(input);
+	*cast(ushort*)(output) = BOTAN_ENDIAN_L2N(input);
 #else
-	out[0] = get_byte(1, input);
-	out[1] = get_byte(0, input);
+	output[0] = get_byte(1, input);
+	output[1] = get_byte(0, input);
 #endif
 }
 
@@ -433,15 +424,15 @@ inline void store_le(u16bit in, byte out[2])
 * @param in the input uint
 * @param out the byte array to write to
 */
-inline void store_be(uint in, byte out[4])
+void store_be(uint in, byte[4] output)
 {
 #if BOTAN_TARGET_UNALIGNED_MEMORY_ACCESS_OK
-	*cast(uint*)(out) = BOTAN_ENDIAN_B2N(input);
+	*cast(uint*)(output) = BOTAN_ENDIAN_B2N(input);
 #else
-	out[0] = get_byte(0, input);
-	out[1] = get_byte(1, input);
-	out[2] = get_byte(2, input);
-	out[3] = get_byte(3, input);
+	output[0] = get_byte(0, input);
+	output[1] = get_byte(1, input);
+	output[2] = get_byte(2, input);
+	output[3] = get_byte(3, input);
 #endif
 }
 
@@ -450,57 +441,57 @@ inline void store_be(uint in, byte out[4])
 * @param in the input uint
 * @param out the byte array to write to
 */
-inline void store_le(uint in, byte out[4])
+void store_le(uint input, byte[4] output)
 {
 #if BOTAN_TARGET_UNALIGNED_MEMORY_ACCESS_OK
-	*cast(uint*)(out) = BOTAN_ENDIAN_L2N(input);
+	*cast(uint*)(output) = BOTAN_ENDIAN_L2N(input);
 #else
-	out[0] = get_byte(3, input);
-	out[1] = get_byte(2, input);
-	out[2] = get_byte(1, input);
-	out[3] = get_byte(0, input);
+	output[0] = get_byte(3, input);
+	output[1] = get_byte(2, input);
+	output[2] = get_byte(1, input);
+	output[3] = get_byte(0, input);
 #endif
 }
 
 /**
-* Store a big-endian u64bit
-* @param in the input u64bit
+* Store a big-endian ulong
+* @param in the input ulong
 * @param out the byte array to write to
 */
-inline void store_be(u64bit in, byte out[8])
+void store_be(ulong input, byte[8] output)
 {
 #if BOTAN_TARGET_UNALIGNED_MEMORY_ACCESS_OK
-	*cast(u64bit*)(out) = BOTAN_ENDIAN_B2N(input);
+	*cast(ulong*)(output) = BOTAN_ENDIAN_B2N(input);
 #else
-	out[0] = get_byte(0, input);
-	out[1] = get_byte(1, input);
-	out[2] = get_byte(2, input);
-	out[3] = get_byte(3, input);
-	out[4] = get_byte(4, input);
-	out[5] = get_byte(5, input);
-	out[6] = get_byte(6, input);
-	out[7] = get_byte(7, input);
+	output[0] = get_byte(0, input);
+	output[1] = get_byte(1, input);
+	output[2] = get_byte(2, input);
+	output[3] = get_byte(3, input);
+	output[4] = get_byte(4, input);
+	output[5] = get_byte(5, input);
+	output[6] = get_byte(6, input);
+	output[7] = get_byte(7, input);
 #endif
 }
 
 /**
-* Store a little-endian u64bit
-* @param in the input u64bit
+* Store a little-endian ulong
+* @param in the input ulong
 * @param out the byte array to write to
 */
-inline void store_le(u64bit in, byte out[8])
+void store_le(ulong in, byte[8] output)
 {
 #if BOTAN_TARGET_UNALIGNED_MEMORY_ACCESS_OK
-	*cast(u64bit*)(out) = BOTAN_ENDIAN_L2N(input);
+	*cast(ulong*)(output) = BOTAN_ENDIAN_L2N(input);
 #else
-	out[0] = get_byte(7, input);
-	out[1] = get_byte(6, input);
-	out[2] = get_byte(5, input);
-	out[3] = get_byte(4, input);
-	out[4] = get_byte(3, input);
-	out[5] = get_byte(2, input);
-	out[6] = get_byte(1, input);
-	out[7] = get_byte(0, input);
+	output[0] = get_byte(7, input);
+	output[1] = get_byte(6, input);
+	output[2] = get_byte(5, input);
+	output[3] = get_byte(4, input);
+	output[4] = get_byte(3, input);
+	output[5] = get_byte(2, input);
+	output[6] = get_byte(1, input);
+	output[7] = get_byte(0, input);
 #endif
 }
 
@@ -510,11 +501,10 @@ inline void store_le(u64bit in, byte out[8])
 * @param x0 the first word
 * @param x1 the second word
 */
-template<typename T>
-inline void store_le(ref byte[] output, T x0, T x1)
+void store_le(T)(byte* output, T x0, T x1)
 {
-	store_le(x0, out + (0 * sizeof(T)));
-	store_le(x1, out + (1 * sizeof(T)));
+	store_le(x0, output + (0 * sizeof(T)));
+	store_le(x1, output + (1 * sizeof(T)));
 }
 
 /**
@@ -523,11 +513,10 @@ inline void store_le(ref byte[] output, T x0, T x1)
 * @param x0 the first word
 * @param x1 the second word
 */
-template<typename T>
-inline void store_be(ref byte[] output, T x0, T x1)
+void store_be(T)(ref byte* output, T x0, T x1)
 {
-	store_be(x0, out + (0 * sizeof(T)));
-	store_be(x1, out + (1 * sizeof(T)));
+	store_be(x0, output + (0 * sizeof(T)));
+	store_be(x1, output + (1 * sizeof(T)));
 }
 
 /**
@@ -538,13 +527,12 @@ inline void store_be(ref byte[] output, T x0, T x1)
 * @param x2 the third word
 * @param x3 the fourth word
 */
-template<typename T>
-inline void store_le(ref byte[] output, T x0, T x1, T x2, T x3)
+void store_le(T)(byte* output, T x0, T x1, T x2, T x3)
 {
-	store_le(x0, out + (0 * sizeof(T)));
-	store_le(x1, out + (1 * sizeof(T)));
-	store_le(x2, out + (2 * sizeof(T)));
-	store_le(x3, out + (3 * sizeof(T)));
+	store_le(x0, output + (0 * sizeof(T)));
+	store_le(x1, output + (1 * sizeof(T)));
+	store_le(x2, output + (2 * sizeof(T)));
+	store_le(x3, output + (3 * sizeof(T)));
 }
 
 /**
@@ -555,13 +543,12 @@ inline void store_le(ref byte[] output, T x0, T x1, T x2, T x3)
 * @param x2 the third word
 * @param x3 the fourth word
 */
-template<typename T>
-inline void store_be(ref byte[] output, T x0, T x1, T x2, T x3)
+void store_be(T)(ref byte* output, T x0, T x1, T x2, T x3)
 {
-	store_be(x0, out + (0 * sizeof(T)));
-	store_be(x1, out + (1 * sizeof(T)));
-	store_be(x2, out + (2 * sizeof(T)));
-	store_be(x3, out + (3 * sizeof(T)));
+	store_be(x0, output + (0 * sizeof(T)));
+	store_be(x1, output + (1 * sizeof(T)));
+	store_be(x2, output + (2 * sizeof(T)));
+	store_be(x3, output + (3 * sizeof(T)));
 }
 
 /**
@@ -576,18 +563,17 @@ inline void store_be(ref byte[] output, T x0, T x1, T x2, T x3)
 * @param x6 the seventh word
 * @param x7 the eighth word
 */
-template<typename T>
-inline void store_le(ref byte[] output, T x0, T x1, T x2, T x3,
-											T x4, T x5, T x6, T x7)
+void store_le(T)(byte* output, T x0, T x1, T x2, T x3,
+								T x4, T x5, T x6, T x7)
 {
-	store_le(x0, out + (0 * sizeof(T)));
-	store_le(x1, out + (1 * sizeof(T)));
-	store_le(x2, out + (2 * sizeof(T)));
-	store_le(x3, out + (3 * sizeof(T)));
-	store_le(x4, out + (4 * sizeof(T)));
-	store_le(x5, out + (5 * sizeof(T)));
-	store_le(x6, out + (6 * sizeof(T)));
-	store_le(x7, out + (7 * sizeof(T)));
+	store_le(x0, output + (0 * sizeof(T)));
+	store_le(x1, output + (1 * sizeof(T)));
+	store_le(x2, output + (2 * sizeof(T)));
+	store_le(x3, output + (3 * sizeof(T)));
+	store_le(x4, output + (4 * sizeof(T)));
+	store_le(x5, output + (5 * sizeof(T)));
+	store_le(x6, output + (6 * sizeof(T)));
+	store_le(x7, output + (7 * sizeof(T)));
 }
 
 /**
@@ -602,16 +588,15 @@ inline void store_le(ref byte[] output, T x0, T x1, T x2, T x3,
 * @param x6 the seventh word
 * @param x7 the eighth word
 */
-template<typename T>
-inline void store_be(ref byte[] output, T x0, T x1, T x2, T x3,
-											T x4, T x5, T x6, T x7)
+void store_be(T)(byte* output, T x0, T x1, T x2, T x3,
+								T x4, T x5, T x6, T x7)
 {
-	store_be(x0, out + (0 * sizeof(T)));
-	store_be(x1, out + (1 * sizeof(T)));
-	store_be(x2, out + (2 * sizeof(T)));
-	store_be(x3, out + (3 * sizeof(T)));
-	store_be(x4, out + (4 * sizeof(T)));
-	store_be(x5, out + (5 * sizeof(T)));
-	store_be(x6, out + (6 * sizeof(T)));
-	store_be(x7, out + (7 * sizeof(T)));
+	store_be(x0, output + (0 * sizeof(T)));
+	store_be(x1, output + (1 * sizeof(T)));
+	store_be(x2, output + (2 * sizeof(T)));
+	store_be(x3, output + (3 * sizeof(T)));
+	store_be(x4, output + (4 * sizeof(T)));
+	store_be(x5, output + (5 * sizeof(T)));
+	store_be(x6, output + (6 * sizeof(T)));
+	store_be(x7, output + (7 * sizeof(T)));
 }

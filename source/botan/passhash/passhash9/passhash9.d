@@ -41,14 +41,14 @@ MessageAuthenticationCode* get_pbkdf_prf(byte alg_id)
 	}
 	catch(Algorithm_Not_Found) {}
 
-	return nullptr;
+	return null;
 }
 
 }
 
 string generate_passhash9(in string pass,
 										 RandomNumberGenerator& rng,
-										 u16bit work_factor,
+										 ushort work_factor,
 										 byte alg_id)
 {
 	MessageAuthenticationCode* prf = get_pbkdf_prf(alg_id);
@@ -111,9 +111,9 @@ bool check_passhash9(in string pass, in string hash)
 	if(bin.size() != BINARY_LENGTH)
 		return false;
 
-	byte alg_id = bin[0];
+	byte alg_id = binput[0];
 
-	const size_t work_factor = load_be<u16bit>(&bin[ALGID_BYTES], 0);
+	const size_t work_factor = load_be<ushort>(&binput[ALGID_BYTES], 0);
 
 	// Bug in the format, bad states shouldn't be representable, but are...
 	if(work_factor == 0)
@@ -135,11 +135,11 @@ bool check_passhash9(in string pass, in string hash)
 	SafeVector!byte cmp = kdf.derive_key(
 		PASSHASH9_PBKDF_OUTPUT_LEN,
 		pass,
-		&bin[ALGID_BYTES + WORKFACTOR_BYTES], SALT_BYTES,
+		&binput[ALGID_BYTES + WORKFACTOR_BYTES], SALT_BYTES,
 		kdf_iterations).bits_of();
 
 	return same_mem(&cmp[0],
-						 &bin[ALGID_BYTES + WORKFACTOR_BYTES + SALT_BYTES],
+						 &binput[ALGID_BYTES + WORKFACTOR_BYTES + SALT_BYTES],
 						 PASSHASH9_PBKDF_OUTPUT_LEN);
 }
 

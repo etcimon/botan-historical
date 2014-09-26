@@ -188,7 +188,7 @@ namespace {
 /*
 * DER encode a RelativeDistinguishedName
 */
-void do_ava(DER_Encoder& encoder,
+void do_ava(DER_Encoder encoder,
 				const std::multimap<OID, string>& dn_info,
 				ASN1_Tag string_type, in string oid_str,
 				bool must_exist = false)
@@ -218,7 +218,7 @@ void do_ava(DER_Encoder& encoder,
 /*
 * DER encode a DistinguishedName
 */
-void X509_DN::encode_into(DER_Encoder& der) const
+void X509_DN::encode_into(DER_Encoder der) const
 {
 	auto dn_info = get_attributes();
 
@@ -243,7 +243,7 @@ void X509_DN::encode_into(DER_Encoder& der) const
 /*
 * Decode a BER encoded DistinguishedName
 */
-void X509_DN::decode_from(BER_Decoder& source)
+void X509_DN::decode_from(BER_Decoder source)
 {
 	Vector!( byte ) bits;
 

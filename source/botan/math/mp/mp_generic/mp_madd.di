@@ -12,7 +12,7 @@ extern "C" {
 /*
 * Word Multiply/Add
 */
-inline word word_madd2(word a, word b, word* c)
+ word word_madd2(word a, word b, word* c)
 {
 #if defined(BOTAN_HAS_MP_DWORD)
 	const dword s = cast(dword)(a) * b + *c;
@@ -36,7 +36,7 @@ inline word word_madd2(word a, word b, word* c)
 /*
 * Word Multiply/Add
 */
-inline word word_madd3(word a, word b, word c, word* d)
+ word word_madd3(word a, word b, word c, word* d)
 {
 #if defined(BOTAN_HAS_MP_DWORD)
 	const dword s = cast(dword)(a) * b + c + *d;

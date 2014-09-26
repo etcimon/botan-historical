@@ -188,9 +188,9 @@ void Client_Hello::deserialize_sslv2(in Vector!byte buf)
 	if(buf.size() < 12 || buf[0] != 1)
 		throw new Decoding_Error("Client_Hello: SSLv2 hello corrupted");
 
-	const size_t cipher_spec_len = make_u16bit(buf[3], buf[4]);
-	const size_t m_session_id_len = make_u16bit(buf[5], buf[6]);
-	const size_t challenge_len = make_u16bit(buf[7], buf[8]);
+	const size_t cipher_spec_len = make_ushort(buf[3], buf[4]);
+	const size_t m_session_id_len = make_ushort(buf[5], buf[6]);
+	const size_t challenge_len = make_ushort(buf[7], buf[8]);
 
 	const size_t expected_size =
 		(9 + m_session_id_len + cipher_spec_len + challenge_len);
@@ -211,13 +211,13 @@ void Client_Hello::deserialize_sslv2(in Vector!byte buf)
 		if(buf[i] != 0) // a SSLv2 cipherspec; ignore it
 			continue;
 
-		m_suites.push_back(make_u16bit(buf[i+1], buf[i+2]));
+		m_suites.push_back(make_ushort(buf[i+1], buf[i+2]));
 	}
 
 	m_random.resize(challenge_len);
 	copy_mem(&m_random[0], &buf[9+cipher_spec_len+m_session_id_len], challenge_len);
 
-	if(offered_suite(cast(u16bit)(TLS_EMPTY_RENEGOTIATION_INFO_SCSV)))
+	if(offered_suite(cast(ushort)(TLS_EMPTY_RENEGOTIATION_INFO_SCSV)))
 		m_extensions.add(new Renegotiation_Extension());
 }
 
@@ -246,13 +246,13 @@ void Client_Hello::deserialize(in Vector!byte buf)
 
 	m_session_id = reader.get_range<byte>(1, 0, 32);
 
-	m_suites = reader.get_range_vector<u16bit>(2, 1, 32767);
+	m_suites = reader.get_range_vector<ushort>(2, 1, 32767);
 
 	m_comp_methods = reader.get_range_vector<byte>(1, 1, 255);
 
 	m_extensions.deserialize(reader);
 
-	if(offered_suite(cast(u16bit)(TLS_EMPTY_RENEGOTIATION_INFO_SCSV)))
+	if(offered_suite(cast(ushort)(TLS_EMPTY_RENEGOTIATION_INFO_SCSV)))
 	{
 		if(Renegotiation_Extension* reneg = m_extensions.get<Renegotiation_Extension>())
 		{
@@ -271,7 +271,7 @@ void Client_Hello::deserialize(in Vector!byte buf)
 /*
 * Check if we offered this ciphersuite
 */
-bool Client_Hello::offered_suite(u16bit ciphersuite) const
+bool Client_Hello::offered_suite(ushort ciphersuite) const
 {
 	for(size_t i = 0; i != m_suites.size(); ++i)
 		if(m_suites[i] == ciphersuite)

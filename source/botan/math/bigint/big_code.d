@@ -12,7 +12,7 @@
 /*
 * Encode a BigInt
 */
-void BigInt::encode(byte output[], const BigInt& n, Base base)
+void BigInt::encode(byte* output, const BigInt& n, Base base)
 {
 	if(base == Binary)
 	{
@@ -92,7 +92,7 @@ SafeVector!byte BigInt::encode_1363(in BigInt n, size_t bytes)
 /*
 * Decode a BigInt
 */
-BigInt BigInt::decode(in byte[] buf, size_t length, Base base)
+BigInt BigInt::decode(in byte* buf, size_t length, Base base)
 {
 	BigInt r;
 	if(base == Binary)

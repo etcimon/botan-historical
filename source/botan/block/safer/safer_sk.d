@@ -11,7 +11,7 @@
 #include <botan/rotate.h>
 namespace {
 
-const byte EXP[256] = {
+const byte[256] EXP = {
 	0x01, 0x2D, 0xE2, 0x93, 0xBE, 0x45, 0x15, 0xAE, 0x78, 0x03, 0x87, 0xA4,
 	0xB8, 0x38, 0xCF, 0x3F, 0x08, 0x67, 0x09, 0x94, 0xEB, 0x26, 0xA8, 0x6B,
 	0xBD, 0x18, 0x34, 0x1B, 0xBB, 0xBF, 0x72, 0xF7, 0x40, 0x35, 0x48, 0x9C,
@@ -35,7 +35,7 @@ const byte EXP[256] = {
 	0xE1, 0x66, 0xDD, 0xB3, 0x58, 0x69, 0x63, 0x56, 0x0F, 0xA1, 0x31, 0x95,
 	0x17, 0x07, 0x3A, 0x28 };
 
-const byte LOG[512] = {
+const byte[512] LOG = {
 	0x80, 0x00, 0xB0, 0x09, 0x60, 0xEF, 0xB9, 0xFD, 0x10, 0x12, 0x9F, 0xE4,
 	0x69, 0xBA, 0xAD, 0xF8, 0xC0, 0x38, 0xC2, 0x65, 0x4F, 0x06, 0x94, 0xFC,
 	0x19, 0xDE, 0x6A, 0x1B, 0x5D, 0x4E, 0xA8, 0x82, 0x70, 0xED, 0xE8, 0xEC,
@@ -85,12 +85,12 @@ const byte LOG[512] = {
 /*
 * SAFER-SK Encryption
 */
-void SAFER_SK::encrypt_n(in byte[] input, ref byte[] output) const
+void SAFER_SK::encrypt_n(byte* input, byte* output, size_t blocks) const
 {
 	for(size_t i = 0; i != blocks; ++i)
 	{
-		byte A = in[0], B = in[1], C = in[2], D = in[3],
-			  E = in[4], F = in[5], G = in[6], H = in[7], X, Y;
+		byte A = input[0], B = input[1], C = input[2], D = input[3],
+			  E = input[4], F = input[5], G = input[6], H = input[7], X, Y;
 
 		for(size_t j = 0; j != 16*rounds; j += 16)
 		{
@@ -108,25 +108,25 @@ void SAFER_SK::encrypt_n(in byte[] input, ref byte[] output) const
 			A += B; F = C + G; E = C + F; C = X; G = Y;
 		}
 
-		out[0] = A ^ EK[16*rounds+0]; out[1] = B + EK[16*rounds+1];
-		out[2] = C + EK[16*rounds+2]; out[3] = D ^ EK[16*rounds+3];
-		out[4] = E ^ EK[16*rounds+4]; out[5] = F + EK[16*rounds+5];
-		out[6] = G + EK[16*rounds+6]; out[7] = H ^ EK[16*rounds+7];
+		output[0] = A ^ EK[16*rounds+0]; output[1] = B + EK[16*rounds+1];
+		output[2] = C + EK[16*rounds+2]; output[3] = D ^ EK[16*rounds+3];
+		output[4] = E ^ EK[16*rounds+4]; output[5] = F + EK[16*rounds+5];
+		output[6] = G + EK[16*rounds+6]; output[7] = H ^ EK[16*rounds+7];
 
-		input = input[BLOCK_SIZE .. $];
-		output = output[BLOCK_SIZE .. $];
+		input += BLOCK_SIZE;
+		output += BLOCK_SIZE;
 	}
 }
 
 /*
 * SAFER-SK Decryption
 */
-void SAFER_SK::decrypt_n(in byte[] input, ref byte[] output) const
+void SAFER_SK::decrypt_n(byte* input, byte* output, size_t blocks) const
 {
 	for(size_t i = 0; i != blocks; ++i)
 	{
-		byte A = in[0], B = in[1], C = in[2], D = in[3],
-			  E = in[4], F = in[5], G = in[6], H = in[7];
+		byte A = input[0], B = input[1], C = input[2], D = input[3],
+			  E = input[4], F = input[5], G = input[6], H = input[7];
 
 		A ^= EK[16*rounds+0]; B -= EK[16*rounds+1]; C -= EK[16*rounds+2];
 		D ^= EK[16*rounds+3]; E ^= EK[16*rounds+4]; F -= EK[16*rounds+5];
@@ -148,20 +148,20 @@ void SAFER_SK::decrypt_n(in byte[] input, ref byte[] output) const
 			E ^= EK[j+4]; F -= EK[j+5]; G -= EK[j+6]; H ^= EK[j+7];
 		}
 
-		out[0] = A; out[1] = B; out[2] = C; out[3] = D;
-		out[4] = E; out[5] = F; out[6] = G; out[7] = H;
+		output[0] = A; output[1] = B; output[2] = C; output[3] = D;
+		output[4] = E; output[5] = F; output[6] = G; output[7] = H;
 
-		input = input[BLOCK_SIZE .. $];
-		output = output[BLOCK_SIZE .. $];
+		input += BLOCK_SIZE;
+		output += BLOCK_SIZE;
 	}
 }
 
 /*
 * SAFER-SK Key Schedule
 */
-void SAFER_SK::key_schedule(in byte[] key, size_t)
+void SAFER_SK::key_schedule(in byte* key, size_t)
 {
-	const byte BIAS[208] = {
+	const byte[208] BIAS = {
 		0x16, 0x73, 0x3B, 0x1E, 0x8E, 0x70, 0xBD, 0x86, 0x47, 0x7E, 0x24, 0x56,
 		0xF1, 0x77, 0x88, 0x46, 0xB1, 0xBA, 0xA3, 0xB7, 0x10, 0x0A, 0xC5, 0x37,
 		0xC9, 0x5A, 0x28, 0xAC, 0x64, 0xA5, 0xEC, 0xAB, 0xC6, 0x67, 0x95, 0x58,
@@ -181,7 +181,7 @@ void SAFER_SK::key_schedule(in byte[] key, size_t)
 		0x4E, 0x9C, 0x35, 0x79, 0x45, 0x4D, 0x54, 0xE5, 0x3C, 0x0C, 0x4A, 0x8B,
 		0x3F, 0xCC, 0xA7, 0xDB };
 
-	const byte KEY_INDEX[208] = {
+	const byte[208] KEY_INDEX = {
 		0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x0B, 0x0C, 0x0D, 0x0E,
 		0x0F, 0x10, 0x11, 0x09, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x00, 0x01,
 		0x0D, 0x0E, 0x0F, 0x10, 0x11, 0x09, 0x0A, 0x0B, 0x05, 0x06, 0x07, 0x08,

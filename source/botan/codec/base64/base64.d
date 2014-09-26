@@ -11,7 +11,7 @@
 #include <stdexcept>
 namespace {
 
-static const byte BIN_TO_BASE64[64] = {
+static const byte[64] BIN_TO_BASE64 = {
 	'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M',
 	'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z',
 	'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm',
@@ -19,21 +19,21 @@ static const byte BIN_TO_BASE64[64] = {
 	'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '+', '/'
 };
 
-void do_base64_encode(char out[4], const byte in[3])
+void do_base64_encode(char[4] output, const byte[3] input)
 {
-	out[0] = BIN_TO_BASE64[((in[0] & 0xFC) >> 2)];
-	out[1] = BIN_TO_BASE64[((in[0] & 0x03) << 4) | (in[1] >> 4)];
-	out[2] = BIN_TO_BASE64[((in[1] & 0x0F) << 2) | (in[2] >> 6)];
-	out[3] = BIN_TO_BASE64[((in[2] & 0x3F)	  )];
+	output[0] = BIN_TO_BASE64[((input[0] & 0xFC) >> 2)];
+	output[1] = BIN_TO_BASE64[((input[0] & 0x03) << 4) | (input[1] >> 4)];
+	output[2] = BIN_TO_BASE64[((input[1] & 0x0F) << 2) | (input[2] >> 6)];
+	output[3] = BIN_TO_BASE64[((input[2] & 0x3F)	  )];
 }
 
 }
 
-size_t base64_encode(char out[],
-							in byte[] in,
-							size_t input_length,
-							size_t& input_consumed,
-							bool final_inputs)
+size_t base64_encode(char* output,
+						in byte* input,
+						size_t input_length,
+						ref size_t input_consumed,
+						bool final_inputs)
 {
 	input_consumed = 0;
 
@@ -42,7 +42,7 @@ size_t base64_encode(char out[],
 
 	while(input_remaining >= 3)
 	{
-		do_base64_encode(out + output_produced, in + input_consumed);
+		do_base64_encode(output + output_produced, input + input_consumed);
 
 		input_consumed += 3;
 		output_produced += 4;
@@ -51,17 +51,17 @@ size_t base64_encode(char out[],
 
 	if(final_inputs && input_remaining)
 	{
-		byte remainder[3] = { 0 };
+		byte[3] remainder = { 0 };
 		for(size_t i = 0; i != input_remaining; ++i)
-			remainder[i] = in[input_consumed + i];
+			remainder[i] = input[input_consumed + i];
 
-		do_base64_encode(out + output_produced, remainder);
+		do_base64_encode(output + output_produced, remainder);
 
 		size_t empty_bits = 8 * (3 - input_remaining);
 		size_t index = output_produced + 4 - 1;
 		while(empty_bits >= 8)
 		{
-			out[index--] = '=';
+			output[index--] = '=';
 			empty_bits -= 6;
 		}
 
@@ -72,7 +72,7 @@ size_t base64_encode(char out[],
 	return output_produced;
 }
 
-string base64_encode(in byte[] input,
+string base64_encode(in byte* input,
 								  size_t input_length)
 {
 	string output((round_up<size_t>(input_length, 3) / 3) * 4, 0);
@@ -88,8 +88,8 @@ string base64_encode(in byte[] input,
 	return output;
 }
 
-size_t base64_decode(byte output[],
-							const char input[],
+size_t base64_decode(byte* output,
+							const char* input,
 							size_t input_length,
 							size_t& input_consumed,
 							bool final_inputs,
@@ -99,7 +99,7 @@ size_t base64_decode(byte output[],
 	* Base64 Decoder Lookup Table
 	* Warning: assumes ASCII encodings
 	*/
-	static const byte BASE64_TO_BIN[256] = {
+	static const byte[256] BASE64_TO_BIN = {
 		0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0x80,
 		0x80, 0xFF, 0xFF, 0x80, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
 		0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
@@ -128,7 +128,7 @@ size_t base64_decode(byte output[],
 		0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF };
 
 	byte* out_ptr = output;
-	byte decode_buf[4];
+	byte[4] decode_buf;
 	size_t decode_buf_pos = 0;
 	size_t final_truncate = 0;
 
@@ -195,8 +195,8 @@ size_t base64_decode(byte output[],
 	return written;
 }
 
-size_t base64_decode(byte output[],
-							const char input[],
+size_t base64_decode(byte* output,
+							const char* input,
 							size_t input_length,
 							bool ignore_ws)
 {
@@ -210,20 +210,20 @@ size_t base64_decode(byte output[],
 	return written;
 }
 
-size_t base64_decode(byte output[],
+size_t base64_decode(byte* output,
 							in string input,
 							bool ignore_ws)
 {
 	return base64_decode(output, &input[0], input.length(), ignore_ws);
 }
 
-SafeVector!byte base64_decode(const char input[],
+SafeVector!byte base64_decode(const char* input,
 											size_t input_length,
 											bool ignore_ws)
 {
 	SafeVector!byte bin((round_up<size_t>(input_length, 4) * 3) / 4);
 
-	size_t written = base64_decode(&bin[0],
+	size_t written = base64_decode(&binput[0],
 											 input,
 											 input_length,
 											 ignore_ws);

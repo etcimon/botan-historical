@@ -75,7 +75,7 @@ bool Transformation_Filter::valid_iv_length(size_t length) const
 	return m_transform->valid_nonce_length(length);
 }
 
-void Transformation_Filter::write(in byte[] input, size_t input_length)
+void Transformation_Filter::write(in byte* input, size_t input_length)
 {
 	Buffered_Filter::write(input, input_length);
 }
@@ -90,7 +90,7 @@ void Transformation_Filter::start_msg()
 	send(m_transform->start_vec(m_nonce.get()));
 }
 
-void Transformation_Filter::buffered_block(in byte[] input, size_t input_length)
+void Transformation_Filter::buffered_block(in byte* input, size_t input_length)
 {
 	while(input_length)
 	{
@@ -106,7 +106,7 @@ void Transformation_Filter::buffered_block(in byte[] input, size_t input_length)
 	}
 }
 
-void Transformation_Filter::buffered_final(in byte[] input, size_t input_length)
+void Transformation_Filter::buffered_final(in byte* input, size_t input_length)
 {
 	SafeVector!byte buf(input, input + input_length);
 	m_transform->finish(buf);

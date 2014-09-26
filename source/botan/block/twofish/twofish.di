@@ -12,14 +12,14 @@
 class Twofish : public Block_Cipher_Fixed_Params<16, 16, 32, 8>
 {
 	public:
-		void encrypt_n(in byte[] input, ref byte[] output) const;
-		void decrypt_n(in byte[] input, ref byte[] output) const;
+		void encrypt_n(byte* input, byte* output, size_t blocks) const;
+		void decrypt_n(byte* input, byte* output, size_t blocks) const;
 
 		void clear();
 		string name() const { return "Twofish"; }
 		BlockCipher* clone() const { return new Twofish; }
 	private:
-		void key_schedule(const byte[], size_t);
+		void key_schedule(in byte*, size_t);
 
 		static void rs_mul(byte[4], byte, size_t);
 

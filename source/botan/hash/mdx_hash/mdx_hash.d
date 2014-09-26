@@ -12,9 +12,9 @@
 * MDx_HashFunction Constructor
 */
 MDx_HashFunction::MDx_HashFunction(size_t block_len,
-											  bool byte_end,
-											  bool bit_end,
-											  size_t cnt_size) :
+									  bool byte_end,
+									  bool bit_end,
+									  size_t cnt_size) :
 	buffer(block_len),
 	BIG_BYTE_ENDIAN(byte_end),
 	BIG_BIT_ENDIAN(bit_end),
@@ -35,7 +35,7 @@ void MDx_HashFunction::clear()
 /*
 * Update the hash
 */
-void MDx_HashFunction::add_data(in byte[] input, size_t length)
+void MDx_HashFunction::add_data(in byte* input, size_t length)
 {
 	count += length;
 
@@ -65,7 +65,7 @@ void MDx_HashFunction::add_data(in byte[] input, size_t length)
 /*
 * Finalize a hash
 */
-void MDx_HashFunction::final_result(byte output[])
+void MDx_HashFunction::final_result(byte* output)
 {
 	buffer[position] = (BIG_BIT_ENDIAN ? 0x80 : 0x01);
 	for(size_t i = position+1; i != buffer.size(); ++i)
@@ -87,19 +87,19 @@ void MDx_HashFunction::final_result(byte output[])
 /*
 * Write the count bits to the buffer
 */
-void MDx_HashFunction::write_count(ref byte[] output)
+void MDx_HashFunction::write_count(byte* output)
 {
 	if(COUNT_SIZE < 8)
 		throw new Invalid_State("MDx_HashFunction::write_count: COUNT_SIZE < 8");
 	if(COUNT_SIZE >= output_length() || COUNT_SIZE >= hash_block_size())
 		throw new Invalid_Argument("MDx_HashFunction: COUNT_SIZE is too big");
 
-	const u64bit bit_count = count * 8;
+	const ulong bit_count = count * 8;
 
 	if(BIG_BYTE_ENDIAN)
-		store_be(bit_count, out + COUNT_SIZE - 8);
+		store_be(bit_count, output + COUNT_SIZE - 8);
 	else
-		store_le(bit_count, out + COUNT_SIZE - 8);
+		store_le(bit_count, output + COUNT_SIZE - 8);
 }
 
 }

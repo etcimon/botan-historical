@@ -113,7 +113,7 @@ ASN1_Tag ASN1_String::tagging() const
 /*
 * DER encode an ASN1_String
 */
-void ASN1_String::encode_into(DER_Encoder& encoder) const
+void ASN1_String::encode_into(DER_Encoder encoder) const
 {
 	string value = iso_8859();
 	if(tagging() == UTF8_STRING)
@@ -124,7 +124,7 @@ void ASN1_String::encode_into(DER_Encoder& encoder) const
 /*
 * Decode a BER encoded ASN1_String
 */
-void ASN1_String::decode_from(BER_Decoder& source)
+void ASN1_String::decode_from(BER_Decoder source)
 {
 	BER_Object obj = source.get_next_object();
 

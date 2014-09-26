@@ -68,7 +68,7 @@ class OctetString
 		* @param in is an array
 		* @param len is the length of in in bytes
 		*/
-		OctetString(in byte[] input);
+		OctetString(in byte* input, size_t len);
 
 		/**
 		* Create a new OctetString
@@ -80,7 +80,7 @@ class OctetString
 		* Create a new OctetString
 		* @param in a bytestring
 		*/
-		OctetString(in Vector!byte input) : bits(&in[0], &in[in.size()]) {}
+		OctetString(in Vector!byte input) : bits(&input[0], &input[in.size()]) {}
 	private:
 		SafeVector!byte bits;
 };

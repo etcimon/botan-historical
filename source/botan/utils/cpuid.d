@@ -44,11 +44,11 @@
 #elif defined(BOTAN_TARGET_ARCH_IS_X86_64) && BOTAN_USE_GCC_INLINE_ASM
 
 #define X86_CPUID(type, out)																	 \
-	asm("cpuid\t" : "=a" (out[0]), "=b" (out[1]), "=c" (out[2]), "=d" (out[3]) \
+	asm("cpuid\t" : "=a" (output[0]), "=b" (output[1]), "=c" (output[2]), "=d" (output[3]) \
 		 : "0" (type))
 
 #define X86_CPUID_SUBLEVEL(type, level, out)												\
-	asm("cpuid\t" : "=a" (out[0]), "=b" (out[1]), "=c" (out[2]), "=d" (out[3]) \
+	asm("cpuid\t" : "=a" (output[0]), "=b" (output[1]), "=c" (output[2]), "=d" (output[3]) \
 		 : "0" (type), "2" (level))
 
 #elif defined(BOTAN_BUILD_COMPILER_IS_GCC)
@@ -58,7 +58,7 @@
 #define X86_CPUID(type, out) do { __get_cpuid(type, out, out+1, out+2, out+3); } while(0)
 
 #define X86_CPUID_SUBLEVEL(type, level, out) \
-	do { __cpuid_count(type, level, out[0], out[1], out[2], out[3]); } while(0)
+	do { __cpuid_count(type, level, output[0], output[1], output[2], output[3]); } while(0)
 
 #else
 
@@ -70,7 +70,7 @@
 #endif
 
 #endif
-u64bit CPUID::m_x86_processor_flags[2] = { 0, 0 };
+ulong CPUID::m_x86_processor_flags[2] = { 0, 0 };
 size_t CPUID::m_cache_line_size = 0;
 bool CPUID::m_altivec_capable = false;
 
@@ -114,17 +114,17 @@ bool altivec_check_pvr_emul()
 	PearPC and Linux sources, mostly.
 	*/
 
-	const u16bit PVR_G4_7400  = 0x000C;
-	const u16bit PVR_G5_970	= 0x0039;
-	const u16bit PVR_G5_970FX = 0x003C;
-	const u16bit PVR_G5_970MP = 0x0044;
-	const u16bit PVR_G5_970GX = 0x0045;
-	const u16bit PVR_POWER6	= 0x003E;
-	const u16bit PVR_POWER7	= 0x003F;
-	const u16bit PVR_CELL_PPU = 0x0070;
+	const ushort PVR_G4_7400  = 0x000C;
+	const ushort PVR_G5_970	= 0x0039;
+	const ushort PVR_G5_970FX = 0x003C;
+	const ushort PVR_G5_970MP = 0x0044;
+	const ushort PVR_G5_970GX = 0x0045;
+	const ushort PVR_POWER6	= 0x003E;
+	const ushort PVR_POWER7	= 0x003F;
+	const ushort PVR_CELL_PPU = 0x0070;
 
 	// Motorola produced G4s with PVR 0x800[0123C] (at least)
-	const u16bit PVR_G4_74xx_24  = 0x800;
+	const ushort PVR_G4_74xx_24  = 0x800;
 
 	uint pvr = 0;
 
@@ -195,7 +195,7 @@ void CPUID::initialize()
 
 	X86_CPUID(1, cpuid);
 
-	m_x86_processor_flags[0] = (cast(u64bit)(cpuid[2]) << 32) | cpuid[3];
+	m_x86_processor_flags[0] = (cast(ulong)(cpuid[2]) << 32) | cpuid[3];
 
 	if(is_intel)
 		m_cache_line_size = 8 * get_byte(2, cpuid[1]);
@@ -204,7 +204,7 @@ void CPUID::initialize()
 	{
 		clear_mem(cpuid, 4);
 		X86_CPUID_SUBLEVEL(7, 0, cpuid);
-		m_x86_processor_flags[1] = (cast(u64bit)(cpuid[2]) << 32) | cpuid[1];
+		m_x86_processor_flags[1] = (cast(ulong)(cpuid[2]) << 32) | cpuid[1];
 	}
 
 	if(is_amd)

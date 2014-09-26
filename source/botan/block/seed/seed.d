@@ -19,14 +19,14 @@ uint SEED::G_FUNC::operator()(uint X) const
 /*
 * SEED Encryption
 */
-void SEED::encrypt_n(in byte[] input, ref byte[] output) const
+void SEED::encrypt_n(byte* input, byte* output, size_t blocks) const
 {
 	for(size_t i = 0; i != blocks; ++i)
 	{
-		uint B0 = load_be<uint>(input, 0);
-		uint B1 = load_be<uint>(input, 1);
-		uint B2 = load_be<uint>(input, 2);
-		uint B3 = load_be<uint>(input, 3);
+		uint B0 = load_be!uint(input, 0);
+		uint B1 = load_be!uint(input, 1);
+		uint B2 = load_be!uint(input, 2);
+		uint B3 = load_be!uint(input, 3);
 
 		G_FUNC G;
 
@@ -51,22 +51,22 @@ void SEED::encrypt_n(in byte[] input, ref byte[] output) const
 
 		store_be(out, B2, B3, B0, B1);
 
-		input = input[BLOCK_SIZE .. $];
-		output = output[BLOCK_SIZE .. $];
+		input += BLOCK_SIZE;
+		output += BLOCK_SIZE;
 	}
 }
 
 /*
 * SEED Decryption
 */
-void SEED::decrypt_n(in byte[] input, ref byte[] output) const
+void SEED::decrypt_n(byte* input, byte* output, size_t blocks) const
 {
 	for(size_t i = 0; i != blocks; ++i)
 	{
-		uint B0 = load_be<uint>(input, 0);
-		uint B1 = load_be<uint>(input, 1);
-		uint B2 = load_be<uint>(input, 2);
-		uint B3 = load_be<uint>(input, 3);
+		uint B0 = load_be!uint(input, 0);
+		uint B1 = load_be!uint(input, 1);
+		uint B2 = load_be!uint(input, 2);
+		uint B3 = load_be!uint(input, 3);
 
 		G_FUNC G;
 
@@ -91,15 +91,15 @@ void SEED::decrypt_n(in byte[] input, ref byte[] output) const
 
 		store_be(out, B2, B3, B0, B1);
 
-		input = input[BLOCK_SIZE .. $];
-		output = output[BLOCK_SIZE .. $];
+		input += BLOCK_SIZE;
+		output += BLOCK_SIZE;
 	}
 }
 
 /*
 * SEED Key Schedule
 */
-void SEED::key_schedule(in byte[] key, size_t)
+void SEED::key_schedule(in byte* key, size_t)
 {
 	const uint RC[16] = {
 		0x9E3779B9, 0x3C6EF373, 0x78DDE6E6, 0xF1BBCDCC,
@@ -111,7 +111,7 @@ void SEED::key_schedule(in byte[] key, size_t)
 	secure_vector<uint> WK(4);
 
 	for(size_t i = 0; i != 4; ++i)
-		WK[i] = load_be<uint>(key, i);
+		WK[i] = load_be!uint(key, i);
 
 	G_FUNC G;
 

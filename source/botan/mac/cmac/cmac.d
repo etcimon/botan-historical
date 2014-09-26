@@ -13,15 +13,15 @@
 */
 SafeVector!byte CMAC::poly_double(in SafeVector!byte input)
 {
-	const bool top_carry = (in[0] & 0x80);
+	const bool top_carry = (input[0] & 0x80);
 
 	SafeVector!byte out = in;
 
 	byte carry = 0;
 	for(size_t i = out.size(); i != 0; --i)
 	{
-		byte temp = out[i-1];
-		out[i-1] = (temp << 1) | carry;
+		byte temp = output[i-1];
+		output[i-1] = (temp << 1) | carry;
 		carry = (temp >> 7);
 	}
 
@@ -30,18 +30,18 @@ SafeVector!byte CMAC::poly_double(in SafeVector!byte input)
 		switch(in.size())
 		{
 			case 8:
-				out[out.size()-1] ^= 0x1B;
+				output[out.size()-1] ^= 0x1B;
 				break;
 			case 16:
-				out[out.size()-1] ^= 0x87;
+				output[out.size()-1] ^= 0x87;
 				break;
 			case 32:
-				out[out.size()-2] ^= 0x4;
-				out[out.size()-1] ^= 0x25;
+				output[out.size()-2] ^= 0x4;
+				output[out.size()-1] ^= 0x25;
 				break;
 			case 64:
-				out[out.size()-2] ^= 0x1;
-				out[out.size()-1] ^= 0x25;
+				output[out.size()-2] ^= 0x1;
+				output[out.size()-1] ^= 0x25;
 				break;
 		}
 	}
@@ -52,7 +52,7 @@ SafeVector!byte CMAC::poly_double(in SafeVector!byte input)
 /*
 * Update an CMAC Calculation
 */
-void CMAC::add_data(in byte[] input, size_t length)
+void CMAC::add_data(in byte* input, size_t length)
 {
 	buffer_insert(m_buffer, m_position, input, length);
 	if(m_position + length > output_length())
@@ -104,7 +104,7 @@ void CMAC::final_result(byte mac[])
 /*
 * CMAC Key Schedule
 */
-void CMAC::key_schedule(in byte[] key)
+void CMAC::key_schedule(in byte* key, size_t length)
 {
 	clear();
 	m_cipher->set_key(key, length);

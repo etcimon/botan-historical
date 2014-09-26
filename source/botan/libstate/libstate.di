@@ -20,8 +20,8 @@ class Library_State
 	public:
 		Library_State() {}
 
-		Library_State(in Library_State) = delete;
-		Library_State& operator=(in Library_State) = delete;
+		Library_State(in Library_State);
+		Library_State& operator=(in Library_State);
 
 		void initialize();
 

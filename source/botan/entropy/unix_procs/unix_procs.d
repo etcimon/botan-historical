@@ -84,11 +84,11 @@ namespace {
 void do_exec(in Vector!( string ) args)
 {
 	// cleaner way to do this?
-	const char* arg0 = (args.size() > 0) ? args[0].c_str() : nullptr;
-	const char* arg1 = (args.size() > 1) ? args[1].c_str() : nullptr;
-	const char* arg2 = (args.size() > 2) ? args[2].c_str() : nullptr;
-	const char* arg3 = (args.size() > 3) ? args[3].c_str() : nullptr;
-	const char* arg4 = (args.size() > 4) ? args[4].c_str() : nullptr;
+	const char* arg0 = (args.size() > 0) ? args[0].c_str() : null;
+	const char* arg1 = (args.size() > 1) ? args[1].c_str() : null;
+	const char* arg2 = (args.size() > 2) ? args[2].c_str() : null;
+	const char* arg3 = (args.size() > 3) ? args[3].c_str() : null;
+	const char* arg4 = (args.size() > 4) ? args[4].c_str() : null;
 
 	::execl(arg0, arg0, arg1, arg2, arg3, arg4, NULL);
 }
@@ -138,7 +138,7 @@ void Unix_EntropySource::Unix_Process::shutdown()
 	::close(m_fd);
 	m_fd = -1;
 
-	pid_t reaped = waitpid(m_pid, nullptr, WNOHANG);
+	pid_t reaped = waitpid(m_pid, null, WNOHANG);
 
 	if(reaped == 0)
 	{
@@ -151,15 +151,15 @@ void Unix_EntropySource::Unix_Process::shutdown()
 		struct ::timeval tv;
 		tv.tv_sec = 0;
 		tv.tv_usec = 1000;
-		select(0, nullptr, nullptr, nullptr, &tv);
+		select(0, null, null, null, &tv);
 
-		reaped = ::waitpid(m_pid, nullptr, WNOHANG);
+		reaped = ::waitpid(m_pid, null, WNOHANG);
 
 		if(reaped == 0)
 		{
 			::kill(m_pid, SIGKILL);
 			do
-				reaped = ::waitpid(m_pid, nullptr, 0);
+				reaped = ::waitpid(m_pid, null, 0);
 			while(reaped == -1);
 		}
 	}
@@ -233,7 +233,7 @@ void Unix_EntropySource::poll(Entropy_Accumulator& accum)
 		timeout.tv_sec = (MS_WAIT_TIME / 1000);
 		timeout.tv_usec = (MS_WAIT_TIME % 1000) * 1000;
 
-		if(::select(max_fd + 1, &read_set, nullptr, nullptr, &timeout) < 0)
+		if(::select(max_fd + 1, &read_set, null, null, &timeout) < 0)
 			return; // or continue?
 
 		for(auto& proc : m_procs)

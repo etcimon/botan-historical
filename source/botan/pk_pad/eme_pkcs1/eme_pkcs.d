@@ -9,7 +9,7 @@
 /*
 * PKCS1 Pad Operation
 */
-SafeVector!byte EME_PKCS1v15::pad(in byte[] in, size_t inlen,
+SafeVector!byte EME_PKCS1v15::pad(in byte* in, size_t inlen,
 												 size_t olen,
 												 RandomNumberGenerator& rng) const
 {
@@ -22,10 +22,10 @@ SafeVector!byte EME_PKCS1v15::pad(in byte[] in, size_t inlen,
 
 	SafeVector!byte out(olen);
 
-	out[0] = 0x02;
+	output[0] = 0x02;
 	for(size_t j = 1; j != olen - inlen - 1; ++j)
-		while(out[j] == 0)
-			out[j] = rng.next_byte();
+		while(output[j] == 0)
+			output[j] = rng.next_byte();
 	buffer_insert(out, olen - inlen, in, inlen);
 
 	return out;
@@ -34,15 +34,15 @@ SafeVector!byte EME_PKCS1v15::pad(in byte[] in, size_t inlen,
 /*
 * PKCS1 Unpad Operation
 */
-SafeVector!byte EME_PKCS1v15::unpad(in byte[] in, size_t inlen,
+SafeVector!byte EME_PKCS1v15::unpad(in byte* in, size_t inlen,
 													size_t key_len) const
 {
-	if(inlen != key_len / 8 || inlen < 10 || in[0] != 0x02)
+	if(inlen != key_len / 8 || inlen < 10 || input[0] != 0x02)
 		throw new Decoding_Error("PKCS1::unpad");
 
 	size_t seperator = 0;
 	for(size_t j = 0; j != inlen; ++j)
-		if(in[j] == 0)
+		if(input[j] == 0)
 		{
 			seperator = j;
 			break;
@@ -50,7 +50,7 @@ SafeVector!byte EME_PKCS1v15::unpad(in byte[] in, size_t inlen,
 	if(seperator < 9)
 		throw new Decoding_Error("PKCS1::unpad");
 
-	return SafeVector!byte(&in[seperator + 1], &in[inlen]);
+	return SafeVector!byte(&input[seperator + 1], &input[inlen]);
 }
 
 /*

@@ -15,13 +15,13 @@
 class SIV_Mode : public AEAD_Mode
 {
 	public:
-		SafeVector!byte start(in byte[] nonce, size_t nonce_len) override;
+		SafeVector!byte start(in byte* nonce, size_t nonce_len) override;
 
 		void update(SafeVector!byte blocks, size_t offset = 0) override;
 
-		void set_associated_data_n(size_t n, in byte[] ad, size_t ad_len);
+		void set_associated_data_n(size_t n, in byte* ad, size_t ad_len);
 
-		void set_associated_data(in byte[] ad, size_t ad_len) override
+		void set_associated_data(in byte* ad, size_t ad_len) override
 		{
 			set_associated_data_n(0, ad, ad_len);
 		}
@@ -47,11 +47,11 @@ class SIV_Mode : public AEAD_Mode
 
 		SafeVector!byte msg_buf() { return m_msg_buf; }
 
-		SafeVector!byte S2V(in byte[] text, size_t text_len);
+		SafeVector!byte S2V(in byte* text, size_t text_len);
 	private:
 		MessageAuthenticationCode& cmac() { return *m_cmac; }
 
-		void key_schedule(in byte[] key) override;
+		void key_schedule(in byte* key, size_t length) override;
 
 		const string m_name;
 

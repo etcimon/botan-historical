@@ -82,7 +82,7 @@ Connection_Cipher_State::Connection_Cipher_State(Protocol_Version _version,
 	m_mac->set_key(mac_key);
 }
 
-in SafeVector!byte Connection_Cipher_State::aead_nonce(u64bit seq)
+in SafeVector!byte Connection_Cipher_State::aead_nonce(ulong seq)
 {
 	BOTAN_ASSERT(m_aead, "Using AEAD mode");
 	BOTAN_ASSERT(m_nonce.size() == 12, "Expected nonce size");
@@ -91,7 +91,7 @@ in SafeVector!byte Connection_Cipher_State::aead_nonce(u64bit seq)
 }
 
 in SafeVector!byte
-Connection_Cipher_State::aead_nonce(in byte[] record)
+Connection_Cipher_State::aead_nonce(in byte* record)
 {
 	size_t record_len = record.length;
 	BOTAN_ASSERT(m_aead, "Using AEAD mode");
@@ -102,10 +102,10 @@ Connection_Cipher_State::aead_nonce(in byte[] record)
 }
 
 in SafeVector!byte
-Connection_Cipher_State::format_ad(u64bit msg_sequence,
+Connection_Cipher_State::format_ad(ulong msg_sequence,
 											  byte msg_type,
 											  Protocol_Version _version,
-											  u16bit msg_length)
+											  ushort msg_length)
 {
 	m_ad.clear();
 	for(size_t i = 0; i != 8; ++i)
@@ -125,9 +125,9 @@ Connection_Cipher_State::format_ad(u64bit msg_sequence,
 }
 
 void write_record(SafeVector!byte output,
-						byte msg_type, in byte[] msg, size_t msg_length,
+						byte msg_type, in byte* msg, size_t msg_length,
 						Protocol_Version _version,
-						u64bit msg_sequence,
+						ulong msg_sequence,
 						Connection_Cipher_State* cipherstate,
 						RandomNumberGenerator& rng)
 {
@@ -145,8 +145,8 @@ void write_record(SafeVector!byte output,
 
 	if(!cipherstate) // initial unencrypted handshake records
 	{
-		output.push_back(get_byte<u16bit>(0, msg_length));
-		output.push_back(get_byte<u16bit>(1, msg_length));
+		output.push_back(get_byte<ushort>(0, msg_length));
+		output.push_back(get_byte<ushort>(1, msg_length));
 
 		output.insert(output.end(), &msg[0], &msg[msg_length]);
 
@@ -169,18 +169,18 @@ void write_record(SafeVector!byte output,
 
 		BOTAN_ASSERT(rec_size <= 0xFFFF, "Ciphertext length fits in field");
 
-		output.push_back(get_byte<u16bit>(0, rec_size));
-		output.push_back(get_byte<u16bit>(1, rec_size));
+		output.push_back(get_byte<ushort>(0, rec_size));
+		output.push_back(get_byte<ushort>(1, rec_size));
 
 		aead->set_associated_data_vec(
 			cipherstate->format_ad(msg_sequence, msg_type, _version, msg_length)
 			);
 
-		output += std::make_pair(&nonce[implicit_nonce_bytes], explicit_nonce_bytes);
+		output += Pair(&nonce[implicit_nonce_bytes], explicit_nonce_bytes);
 		output += aead->start_vec(nonce);
 
 		const size_t offset = output.size();
-		output += std::make_pair(&msg[0], msg_length);
+		output += Pair(&msg[0], msg_length);
 		aead->finish(output, offset);
 
 		BOTAN_ASSERT(output.size() == offset + ctext_size, "Expected size");
@@ -207,8 +207,8 @@ void write_record(SafeVector!byte output,
 	if(buf_size > MAX_CIPHERTEXT_SIZE)
 		throw new Internal_Error("Output record is larger than allowed by protocol");
 
-	output.push_back(get_byte<u16bit>(0, buf_size));
-	output.push_back(get_byte<u16bit>(1, buf_size));
+	output.push_back(get_byte<ushort>(0, buf_size));
+	output.push_back(get_byte<ushort>(1, buf_size));
 
 	const size_t header_size = output.size();
 
@@ -308,7 +308,7 @@ size_t fill_buffer_to(SafeVector!byte readbuf,
 */
 size_t tls_padding_check(bool sslv3_padding,
 								 size_t block_size,
-								 in byte[] record)
+								 in byte* record)
 {
 	size_t record_len = record.length;
 	const size_t padding_length = record[(record_len-1)];
@@ -378,8 +378,8 @@ void cbc_decrypt_record(byte[] record_contents,
 }
 
 void decrypt_record(SafeVector!byte output,
-						  in byte[] record_contents,
-						  u64bit record_sequence,
+						  in byte* record_contents,
+						  ulong record_sequence,
 						  Protocol_Version record_version,
 						  Record_Type record_type,
 						  Connection_Cipher_State& cipherstate)
@@ -403,7 +403,7 @@ void decrypt_record(SafeVector!byte output,
 		output += aead->start_vec(nonce);
 
 		const size_t offset = output.size();
-		output += std::make_pair(&msg[0], msg_length);
+		output += Pair(&msg[0], msg_length);
 		aead->finish(output, offset);
 
 		BOTAN_ASSERT(output.size() == ptext_size + offset, "Produced expected size");
@@ -444,7 +444,7 @@ void decrypt_record(SafeVector!byte output,
 			throw new Decoding_Error("Record sent with invalid length");
 
 		const byte* plaintext_block = &record_contents[iv_size];
-		const u16bit plaintext_length = record_len - mac_pad_iv_size;
+		const ushort plaintext_length = record_len - mac_pad_iv_size;
 
 		cipherstate.mac()->update(
 			cipherstate.format_ad(record_sequence, record_type, record_version, plaintext_length)
@@ -469,14 +469,14 @@ void decrypt_record(SafeVector!byte output,
 }
 
 size_t read_record(SafeVector!byte readbuf,
-						 in byte[] input,
+						 in byte* input,
 						 ref size_t consumed,
 						 SafeVector!byte record,
-						 ref u64bit record_sequence,
+						 ref ulong record_sequence,
 						 Protocol_Version record_version,
 						 Record_Type record_type,
 						 Connection_Sequence_Numbers sequence_numbers,
-						 Connection_Cipher_State delegate(u16bit) get_cipherstate)
+						 Connection_Cipher_State delegate(ushort) get_cipherstate)
 {
 	consumed = 0;
 	size_t input_sz = input.length;
@@ -500,7 +500,7 @@ size_t read_record(SafeVector!byte readbuf,
 
 		if(readbuf[3] >= 3) // SSLv2 mapped TLS hello, then?
 		{
-			const size_t record_len = make_u16bit(readbuf[0], readbuf[1]) & 0x7FFF;
+			const size_t record_len = make_ushort(readbuf[0], readbuf[1]) & 0x7FFF;
 
 			if(size_t needed = fill_buffer_to(readbuf,
 														 input, input_sz, consumed,
@@ -545,7 +545,7 @@ size_t read_record(SafeVector!byte readbuf,
 
 	const size_t header_size = (is_dtls) ? DTLS_HEADER_SIZE : TLS_HEADER_SIZE;
 
-	const size_t record_len = make_u16bit(readbuf[header_size-2],
+	const size_t record_len = make_ushort(readbuf[header_size-2],
 											readbuf[header_size-1]);
 
 	if(record_len > MAX_CIPHERTEXT_SIZE)
@@ -563,11 +563,11 @@ size_t read_record(SafeVector!byte readbuf,
 
 	*record_type = cast(Record_Type)(readbuf[0]);
 
-	u16bit epoch = 0;
+	ushort epoch = 0;
 
 	if(is_dtls)
 	{
-		*record_sequence = load_be<u64bit>(&readbuf[3], 0);
+		*record_sequence = load_be!ulong(&readbuf[3], 0);
 		epoch = (*record_sequence >> 48);
 	}
 	else if(sequence_numbers)

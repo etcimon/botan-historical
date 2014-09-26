@@ -39,7 +39,7 @@ PK_Encryptor_EME::PK_Encryptor_EME(in Public_Key key,
 * Encrypt a message
 */
 Vector!( byte )
-PK_Encryptor_EME::enc(in byte[] in,
+PK_Encryptor_EME::enc(in byte* in,
 							 size_t length,
 							 RandomNumberGenerator& rng) const
 {
@@ -55,10 +55,10 @@ PK_Encryptor_EME::enc(in byte[] in,
 	}
 	else
 	{
-		if(8*(length - 1) + high_bit(in[0]) > m_op->max_input_bits())
+		if(8*(length - 1) + high_bit(input[0]) > m_op->max_input_bits())
 			throw new Invalid_Argument("PK_Encryptor_EME: Input is too large");
 
-		return unlock(m_op->encrypt(&in[0], length, rng));
+		return unlock(m_op->encrypt(&input[0], length, rng));
 	}
 }
 
@@ -98,7 +98,7 @@ PK_Decryptor_EME::PK_Decryptor_EME(in Private_Key key,
 /*
 * Decrypt a message
 */
-SafeVector!byte PK_Decryptor_EME::dec(in byte[] msg,
+SafeVector!byte PK_Decryptor_EME::dec(in byte* msg,
 														size_t length) const
 {
 	try {
@@ -125,8 +125,8 @@ PK_Signer::PK_Signer(in Private_Key key,
 	Algorithm_Factory::Engine_Iterator i(global_state().algorithm_factory());
 	RandomNumberGenerator& rng = global_state().global_rng();
 
-	m_op = nullptr;
-	m_verify_op = nullptr;
+	m_op = null;
+	m_verify_op = null;
 
 	while(const Engine* engine = i.next())
 	{
@@ -150,7 +150,7 @@ PK_Signer::PK_Signer(in Private_Key key,
 /*
 * Sign a message
 */
-Vector!( byte ) PK_Signer::sign_message(in byte[] msg, size_t length,
+Vector!( byte ) PK_Signer::sign_message(in byte* msg, size_t length,
 														 RandomNumberGenerator& rng)
 {
 	update(msg, length);
@@ -160,7 +160,7 @@ Vector!( byte ) PK_Signer::sign_message(in byte[] msg, size_t length,
 /*
 * Add more to the message to be signed
 */
-void PK_Signer::update(in byte[] input)
+void PK_Signer::update(in byte* input, size_t length)
 {
 	m_emsa->update(input, length);
 }
@@ -271,8 +271,8 @@ void PK_Verifier::set_input_format(Signature_Format format)
 /*
 * Verify a message
 */
-bool PK_Verifier::verify_message(in byte[] msg, size_t msg_length,
-											in byte[] sig, size_t sig_length)
+bool PK_Verifier::verify_message(in byte* msg, size_t msg_length,
+											in byte* sig, size_t sig_length)
 {
 	update(msg, msg_length);
 	return check_signature(sig, sig_length);
@@ -281,7 +281,7 @@ bool PK_Verifier::verify_message(in byte[] msg, size_t msg_length,
 /*
 * Append to the message
 */
-void PK_Verifier::update(in byte[] input)
+void PK_Verifier::update(in byte* input, size_t length)
 {
 	m_emsa->update(input, length);
 }
@@ -289,7 +289,7 @@ void PK_Verifier::update(in byte[] input)
 /*
 * Check a signature
 */
-bool PK_Verifier::check_signature(in byte[] sig, size_t length)
+bool PK_Verifier::check_signature(in byte* sig, size_t length)
 {
 	try {
 		if(m_sig_format == IEEE_1363)
@@ -326,7 +326,7 @@ bool PK_Verifier::check_signature(in byte[] sig, size_t length)
 * Verify a signature
 */
 bool PK_Verifier::validate_signature(in SafeVector!byte msg,
-												 in byte[] sig, size_t sig_len)
+												 in byte* sig, size_t sig_len)
 {
 	if(m_op->with_recovery())
 	{
@@ -366,8 +366,8 @@ PK_Key_Agreement::PK_Key_Agreement(in PK_Key_Agreement_Key key,
 	m_kdf.reset(get_kdf(kdf_name));
 }
 
-SymmetricKey PK_Key_Agreement::derive_key(size_t key_len, in byte[] in,
-														size_t in_len, in byte[] params,
+SymmetricKey PK_Key_Agreement::derive_key(size_t key_len, in byte* in,
+														size_t in_len, in byte* params,
 														size_t params_len) const
 {
 	SafeVector!byte z = m_op->agree(input, in_len);

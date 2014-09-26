@@ -17,8 +17,9 @@ namespace {
 * EAX MAC-based PRF
 */
 SafeVector!byte eax_prf(byte tag, size_t block_size,
-									MessageAuthenticationCode& mac,
-									in byte[] input)
+						MessageAuthenticationCode mac,
+						in byte* input,
+						size_t length)
 {
 	for(size_t i = 0; i != block_size - 1; ++i)
 		mac.update(0);
@@ -69,7 +70,7 @@ Key_Length_Specification EAX_Mode::key_spec() const
 /*
 * Set the EAX key
 */
-void EAX_Mode::key_schedule(in byte[] key)
+void EAX_Mode::key_schedule(in byte* key, size_t length)
 {
 	/*
 	* These could share the key schedule, which is one nice part of EAX,
@@ -78,18 +79,18 @@ void EAX_Mode::key_schedule(in byte[] key)
 	m_ctr->set_key(key, length);
 	m_cmac->set_key(key, length);
 
-	m_ad_mac = eax_prf(1, block_size(), *m_cmac, nullptr, 0);
+	m_ad_mac = eax_prf(1, block_size(), *m_cmac, null, 0);
 }
 
 /*
 * Set the EAX associated data
 */
-void EAX_Mode::set_associated_data(in byte[] ad, size_t length)
+void EAX_Mode::set_associated_data(in byte* ad, size_t length)
 {
 	m_ad_mac = eax_prf(1, block_size(), *m_cmac, ad, length);
 }
 
-SafeVector!byte EAX_Mode::start(in byte[] nonce, size_t nonce_len)
+SafeVector!byte EAX_Mode::start(in byte* nonce, size_t nonce_len)
 {
 	if(!valid_nonce_length(nonce_len))
 		throw new Invalid_IV_Length(name(), nonce_len);
@@ -123,7 +124,7 @@ void EAX_Encryption::finish(SafeVector!byte buffer, size_t offset)
 	xor_buf(data_mac, m_nonce_mac, data_mac.size());
 	xor_buf(data_mac, m_ad_mac, data_mac.size());
 
-	buffer += std::make_pair(&data_mac[0], tag_size());
+	buffer += Pair(&data_mac[0], tag_size());
 }
 
 void EAX_Decryption::update(SafeVector!byte buffer, size_t offset)

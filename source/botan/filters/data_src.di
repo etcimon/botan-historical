@@ -24,7 +24,7 @@ class DataSource
 		* @return length in bytes that was actually read and put
 		* into out
 		*/
-		abstract size_t read(ref byte[] output) = 0;
+		abstract size_t read(byte* output);
 
 		/**
 		* Read from the source but do not modify the internal
@@ -37,14 +37,14 @@ class DataSource
 		* @return length in bytes that was actually read and put
 		* into out
 		*/
-		abstract size_t peek(ref byte[] output,
-								  size_t peek_offset) const = 0;
+		abstract size_t peek(byte* output,
+								  size_t peek_offset) const;
 
 		/**
 		* Test whether the source still has data that can be read.
 		* @return true if there is still data to read, false otherwise
 		*/
-		abstract bool end_of_data() const = 0;
+		abstract bool end_of_data() const;
 		/**
 		* return the id of this data source
 		* @return string representing the id of this data source
@@ -77,12 +77,12 @@ class DataSource
 		/**
 		* @return number of bytes read so far.
 		*/
-		abstract size_t get_bytes_read() const = 0;
+		abstract size_t get_bytes_read() const;
 
 		DataSource() {}
 		abstract ~DataSource() {}
-		DataSource& operator=(in DataSource) = delete;
-		DataSource(in DataSource) = delete;
+		DataSource& operator=(in DataSource);
+		DataSource(in DataSource);
 };
 
 /**
@@ -106,7 +106,7 @@ class DataSource_Memory : public DataSource
 		* @param in the byte array to read from
 		* @param length the length of the byte array
 		*/
-		DataSource_Memory(in byte[] input) :
+		DataSource_Memory(in byte* input, size_t length) :
 			source(input, in + length), offset(0) {}
 
 		/**
@@ -121,7 +121,7 @@ class DataSource_Memory : public DataSource
 		* @param in the MemoryRegion to read from
 		*/
 		DataSource_Memory(in Vector!byte input) :
-			source(&in[0], &in[in.size()]), offset(0) {}
+			source(&input[0], &input[in.size()]), offset(0) {}
 
 		abstract size_t get_bytes_read() const { return offset; }
 	private:
@@ -150,9 +150,9 @@ class DataSource_Stream : public DataSource
 		*/
 		DataSource_Stream(in string file, bool use_binary = false);
 
-		DataSource_Stream(in DataSource_Stream) = delete;
+		DataSource_Stream(in DataSource_Stream);
 
-		DataSource_Stream& operator=(in DataSource_Stream) = delete;
+		DataSource_Stream& operator=(in DataSource_Stream);
 
 		~DataSource_Stream();
 

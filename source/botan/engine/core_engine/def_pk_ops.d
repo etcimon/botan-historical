@@ -55,7 +55,7 @@ Core_Engine::get_encryption_op(in Public_Key key, RandomNumberGenerator&) const
 		return new ElGamal_Encryption_Operation(*s);
 #endif
 
-	return nullptr;
+	return null;
 }
 
 PK_Ops::Decryption*
@@ -71,7 +71,7 @@ Core_Engine::get_decryption_op(in Private_Key key, RandomNumberGenerator& rng) c
 		return new ElGamal_Decryption_Operation(*s, rng);
 #endif
 
-	return nullptr;
+	return null;
 }
 
 PK_Ops::Key_Agreement*
@@ -87,7 +87,7 @@ Core_Engine::get_key_agreement_op(in Private_Key key, RandomNumberGenerator& rng
 		return new ECDH_KA_Operation(*ecdh);
 #endif
 
-	return nullptr;
+	return null;
 }
 
 PK_Ops::Signature*
@@ -124,7 +124,7 @@ Core_Engine::get_signature_op(in Private_Key key, RandomNumberGenerator& rng) co
 		return new NR_Signature_Operation(*s);
 #endif
 
-	return nullptr;
+	return null;
 }
 
 PK_Ops::Verification*
@@ -161,7 +161,7 @@ Core_Engine::get_verify_op(in Public_Key key, RandomNumberGenerator&) const
 		return new NR_Verification_Operation(*s);
 #endif
 
-	return nullptr;
+	return null;
 }
 
 }

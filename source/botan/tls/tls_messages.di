@@ -59,11 +59,11 @@ class Client_Hello : public Handshake_Message
 
 		in Vector!byte session_id() const { return m_session_id; }
 
-		Vector!( u16bit ) ciphersuites() const { return m_suites; }
+		Vector!( ushort ) ciphersuites() const { return m_suites; }
 
 		Vector!( byte ) compression_methods() const { return m_comp_methods; }
 
-		bool offered_suite(u16bit ciphersuite) const;
+		bool offered_suite(ushort ciphersuite) const;
 
 		Vector!( Pair!(string, string) ) supported_algos() const
 		{
@@ -175,7 +175,7 @@ class Client_Hello : public Handshake_Message
 		Protocol_Version m_version;
 		Vector!( byte ) m_session_id;
 		Vector!( byte ) m_random;
-		Vector!( u16bit ) m_suites;
+		Vector!( ushort ) m_suites;
 		Vector!( byte ) m_comp_methods;
 		Vector!( byte ) m_hello_cookie; // DTLS only
 
@@ -196,7 +196,7 @@ class Server_Hello : public Handshake_Message
 
 		in Vector!byte session_id() const { return m_session_id; }
 
-		u16bit ciphersuite() const { return m_ciphersuite; }
+		ushort ciphersuite() const { return m_ciphersuite; }
 
 		byte compression_method() const { return m_comp_method; }
 
@@ -256,7 +256,7 @@ class Server_Hello : public Handshake_Message
 						 in Policy policy,
 						 in Vector!byte session_id,
 						 Protocol_Version _version,
-						 u16bit ciphersuite,
+						 ushort ciphersuite,
 						 byte compression,
 						 size_t max_fragment_size,
 						 bool client_has_secure_renegotiation,
@@ -273,7 +273,7 @@ class Server_Hello : public Handshake_Message
 
 		Protocol_Version m_version;
 		Vector!( byte ) m_session_id, m_random;
-		u16bit m_ciphersuite;
+		ushort m_ciphersuite;
 		byte m_comp_method;
 
 		Extensions m_extensions;
@@ -464,7 +464,7 @@ class Server_Key_Exchange : public Handshake_Message
 								  in Policy policy,
 								  Credentials_Manager creds,
 								  RandomNumberGenerator rng,
-								  in Private_Key signing_key = nullptr);
+								  in Private_Key signing_key = null);
 
 		Server_Key_Exchange(in Vector!byte buf,
 								  in string kex_alg,

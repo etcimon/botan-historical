@@ -153,7 +153,7 @@ void X509_Time::set_to(in string t_spec, ASN1_Tag spec_tag)
 /*
 * DER encode a X509_Time
 */
-void X509_Time::encode_into(DER_Encoder& der) const
+void X509_Time::encode_into(DER_Encoder der) const
 {
 	if(tag != GENERALIZED_TIME && tag != UTC_TIME)
 		throw new Invalid_Argument("X509_Time: Bad encoding tag");
@@ -167,7 +167,7 @@ void X509_Time::encode_into(DER_Encoder& der) const
 /*
 * Decode a BER encoded X509_Time
 */
-void X509_Time::decode_from(BER_Decoder& source)
+void X509_Time::decode_from(BER_Decoder source)
 {
 	BER_Object ber_time = source.get_next_object();
 

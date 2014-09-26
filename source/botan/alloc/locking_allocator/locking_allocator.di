@@ -17,9 +17,9 @@ class mlock_allocator
 
 		bool deallocate(void* p, size_t num_elems, size_t elem_size);
 
-		mlock_allocator(in mlock_allocator) = delete;
+		mlock_allocator(in mlock_allocator);
 
-		mlock_allocator& operator=(in mlock_allocator) = delete;
+		mlock_allocator& operator=(in mlock_allocator);
 
 	private:
 		mlock_allocator();

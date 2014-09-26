@@ -16,11 +16,11 @@ class HashFunction : public Buffered_Computation
 		/**
 		* @return new object representing the same algorithm as *this
 		*/
-		abstract HashFunction* clone() const = 0;
+		abstract HashFunction* clone() const;
 
-		abstract void clear() = 0;
+		abstract void clear();
 
-		abstract string name() const = 0;
+		abstract string name() const;
 
 		/**
 		* @return hash block size as defined for this algorithm

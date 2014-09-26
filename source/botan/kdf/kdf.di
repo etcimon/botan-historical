@@ -16,7 +16,7 @@ class KDF
 	public:
 		abstract ~KDF() {}
 
-		abstract string name() const = 0;
+		abstract string name() const;
 
 		/**
 		* Derive a key
@@ -25,8 +25,8 @@ class KDF
 		* @param salt a diversifier
 		*/
 		SafeVector!byte derive_key(size_t key_len,
-												in SafeVector!byte secret,
-												in string salt = "") const
+									in SafeVector!byte secret,
+									in string salt = "") const
 		{
 			return derive_key(key_len, &secret[0], secret.size(),
 									cast(const byte*)(salt.data()),
@@ -39,10 +39,10 @@ class KDF
 		* @param secret the secret input
 		* @param salt a diversifier
 		*/
-		template<typename Alloc, typename Alloc2>
-		SafeVector!byte derive_key(size_t key_len,
-												 const Vector!( byte, Alloc )& secret,
-												 const Vector!( byte, Alloc2 )& salt) const
+		
+		SafeVector!byte derive_key(Alloc, Alloc2)(size_t key_len,
+													 in Vector!( byte, Alloc ) secret,
+													 in Vector!( byte, Alloc2 ) salt) const
 		{
 			return derive_key(key_len,
 									&secret[0], secret.size(),
@@ -57,13 +57,13 @@ class KDF
 		* @param salt_len size of salt in bytes
 		*/
 		SafeVector!byte derive_key(size_t key_len,
-												in SafeVector!byte secret,
-												in byte[] salt,
-												size_t salt_len) const
+									in SafeVector!byte secret,
+									in byte* salt,
+									size_t salt_len) const
 		{
 			return derive_key(key_len,
-									&secret[0], secret.size(),
-									salt, salt_len);
+								&secret[0], secret.size(),
+								salt, salt_len);
 		}
 
 		/**
@@ -74,9 +74,9 @@ class KDF
 		* @param salt a diversifier
 		*/
 		SafeVector!byte derive_key(size_t key_len,
-												in byte[] secret,
-												size_t secret_len,
-												in string salt = "") const
+									in byte* secret,
+									size_t secret_len,
+									in string salt = "") const
 		{
 			return derive_key(key_len, secret, secret_len,
 									cast(const byte*)(salt.data()),
@@ -92,20 +92,20 @@ class KDF
 		* @param salt_len size of salt in bytes
 		*/
 		SafeVector!byte derive_key(size_t key_len,
-												in byte[] secret,
-												size_t secret_len,
-												in byte[] salt,
-												size_t salt_len) const
+									in byte* secret,
+									size_t secret_len,
+									in byte* salt,
+									size_t salt_len) const
 		{
 			return derive(key_len, secret, secret_len, salt, salt_len);
 		}
 
-		abstract KDF* clone() const = 0;
+		abstract KDF* clone() const;
 	private:
 		abstract SafeVector!byte
 			derive(size_t key_len,
-					 in byte[] secret, size_t secret_len,
-					 in byte[] salt, size_t salt_len) const = 0;
+					 in byte* secret, size_t secret_len,
+					 in byte* salt, size_t salt_len) const;
 };
 
 /**

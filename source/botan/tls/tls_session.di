@@ -40,7 +40,7 @@ class Session
 		Session(in Vector!byte session_id,
 				  in SafeVector!byte master_secret,
 				  Protocol_Version _version,
-				  u16bit ciphersuite,
+				  ushort ciphersuite,
 				  byte compression_method,
 				  Connection_Side side,
 				  size_t fragment_size,
@@ -52,7 +52,7 @@ class Session
 		/**
 		* Load a session from DER representation (created by DER_encode)
 		*/
-		Session(in byte[] ber, size_t ber_len);
+		Session(in byte* ber, size_t ber_len);
 
 		/**
 		* Load a session from PEM representation (created by PEM_encode)
@@ -76,7 +76,7 @@ class Session
 		* @param ctext_size the size of ctext in bytes
 		* @param key the same key used by the encrypting side
 		*/
-		static Session decrypt(in byte[] ctext,
+		static Session decrypt(in byte* ctext,
 									  size_t ctext_size,
 									  const SymmetricKey& key);
 
@@ -85,7 +85,7 @@ class Session
 		* @param ctext the ciphertext returned by encrypt
 		* @param key the same key used by the encrypting side
 		*/
-		static inline Session decrypt(in Vector!byte ctext,
+		static  Session decrypt(in Vector!byte ctext,
 												const SymmetricKey& key)
 		{
 			return Session::decrypt(&ctext[0], ctext.size(), key);
@@ -106,7 +106,7 @@ class Session
 		/**
 		* Get the ciphersuite code of the saved session
 		*/
-		u16bit ciphersuite_code() const { return m_ciphersuite; }
+		ushort ciphersuite_code() const { return m_ciphersuite; }
 
 		/**
 		* Get the ciphersuite info of the saved session
@@ -179,7 +179,7 @@ class Session
 		SafeVector!byte m_master_secret;
 
 		Protocol_Version m_version;
-		u16bit m_ciphersuite;
+		ushort m_ciphersuite;
 		byte m_compression_method;
 		Connection_Side m_connection_side;
 

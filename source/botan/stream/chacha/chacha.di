@@ -12,9 +12,9 @@
 class ChaCha : public StreamCipher
 {
 	public:
-		void cipher(in byte[] input, ref byte[] output);
+		void cipher(in byte* input, byte* output);
 
-		void set_iv(in byte[] iv, size_t iv_len);
+		void set_iv(in byte* iv, size_t iv_len);
 
 		bool valid_iv_length(size_t iv_len) const
 		{ return (iv_len == 8); }
@@ -31,7 +31,7 @@ class ChaCha : public StreamCipher
 	protected:
 		abstract void chacha(byte output[64], const uint input[16]);
 	private:
-		void key_schedule(in byte[] key);
+		void key_schedule(in byte* key, size_t length);
 
 		secure_vector<uint> m_state;
 		SafeVector!byte m_buffer;

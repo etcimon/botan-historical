@@ -16,7 +16,7 @@ namespace SHA2_32 {
 /*
 * SHA-256 Rho Function
 */
-inline uint rho(uint X, uint rot1, uint rot2, uint rot3)
+ uint rho(uint X, uint rot1, uint rot2, uint rot3)
 {
 	return (rotate_right(X, rot1) ^ rotate_right(X, rot2) ^
 			  rotate_right(X, rot3));
@@ -25,7 +25,7 @@ inline uint rho(uint X, uint rot1, uint rot2, uint rot3)
 /*
 * SHA-256 Sigma Function
 */
-inline uint sigma(uint X, uint rot1, uint rot2, uint shift)
+ uint sigma(uint X, uint rot1, uint rot2, uint shift)
 {
 	return (rotate_right(X, rot1) ^ rotate_right(X, rot2) ^ (X >> shift));
 }
@@ -33,8 +33,8 @@ inline uint sigma(uint X, uint rot1, uint rot2, uint shift)
 /*
 * SHA-256 F1 Function
 *
-* Use a macro as many compilers won't inline a function this big,
-* even though it is much faster if inlined.
+* Use a macro as many compilers won't  a function this big,
+* even though it is much faster if d.
 */
 #define SHA2_32_F(A, B, C, D, E, F, G, H, M1, M2, M3, M4, magic)	\
 	do {																				\
@@ -48,7 +48,7 @@ inline uint sigma(uint X, uint rot1, uint rot2, uint shift)
 * SHA-224 / SHA-256 compression function
 */
 void compress(secure_vector<uint>& digest,
-				  in byte[] input, size_t blocks)
+				  in byte* input, size_t blocks)
 {
 	uint A = digest[0], B = digest[1], C = digest[2],
 			 D = digest[3], E = digest[4], F = digest[5],
@@ -56,22 +56,22 @@ void compress(secure_vector<uint>& digest,
 
 	for(size_t i = 0; i != blocks; ++i)
 	{
-		uint W00 = load_be<uint>(input,  0);
-		uint W01 = load_be<uint>(input,  1);
-		uint W02 = load_be<uint>(input,  2);
-		uint W03 = load_be<uint>(input,  3);
-		uint W04 = load_be<uint>(input,  4);
-		uint W05 = load_be<uint>(input,  5);
-		uint W06 = load_be<uint>(input,  6);
-		uint W07 = load_be<uint>(input,  7);
-		uint W08 = load_be<uint>(input,  8);
-		uint W09 = load_be<uint>(input,  9);
-		uint W10 = load_be<uint>(input, 10);
-		uint W11 = load_be<uint>(input, 11);
-		uint W12 = load_be<uint>(input, 12);
-		uint W13 = load_be<uint>(input, 13);
-		uint W14 = load_be<uint>(input, 14);
-		uint W15 = load_be<uint>(input, 15);
+		uint W00 = load_be!uint(input,  0);
+		uint W01 = load_be!uint(input,  1);
+		uint W02 = load_be!uint(input,  2);
+		uint W03 = load_be!uint(input,  3);
+		uint W04 = load_be!uint(input,  4);
+		uint W05 = load_be!uint(input,  5);
+		uint W06 = load_be!uint(input,  6);
+		uint W07 = load_be!uint(input,  7);
+		uint W08 = load_be!uint(input,  8);
+		uint W09 = load_be!uint(input,  9);
+		uint W10 = load_be!uint(input, 10);
+		uint W11 = load_be!uint(input, 11);
+		uint W12 = load_be!uint(input, 12);
+		uint W13 = load_be!uint(input, 13);
+		uint W14 = load_be!uint(input, 14);
+		uint W15 = load_be!uint(input, 15);
 
 		SHA2_32_F(A, B, C, D, E, F, G, H, W00, W14, W09, W01, 0x428A2F98);
 		SHA2_32_F(H, A, B, C, D, E, F, G, W01, W15, W10, W02, 0x71374491);
@@ -158,7 +158,7 @@ void compress(secure_vector<uint>& digest,
 /*
 * SHA-224 compression function
 */
-void SHA_224::compress_n(in byte[] input, size_t blocks)
+void SHA_224::compress_n(in byte* input, size_t blocks)
 {
 	SHA2_32::compress(digest, input, blocks);
 }
@@ -166,7 +166,7 @@ void SHA_224::compress_n(in byte[] input, size_t blocks)
 /*
 * Copy out the digest
 */
-void SHA_224::copy_out(byte output[])
+void SHA_224::copy_out(byte* output)
 {
 	for(size_t i = 0; i != output_length(); i += 4)
 		store_be(digest[i/4], output + i);
@@ -191,7 +191,7 @@ void SHA_224::clear()
 /*
 * SHA-256 compression function
 */
-void SHA_256::compress_n(in byte[] input, size_t blocks)
+void SHA_256::compress_n(in byte* input, size_t blocks)
 {
 	SHA2_32::compress(digest, input, blocks);
 }
@@ -199,7 +199,7 @@ void SHA_256::compress_n(in byte[] input, size_t blocks)
 /*
 * Copy out the digest
 */
-void SHA_256::copy_out(byte output[])
+void SHA_256::copy_out(byte* output)
 {
 	for(size_t i = 0; i != output_length(); i += 4)
 		store_be(digest[i/4], output + i);

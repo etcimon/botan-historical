@@ -14,14 +14,14 @@
 /*
 * Twofish Encryption
 */
-void Twofish::encrypt_n(in byte[] input, ref byte[] output) const
+void Twofish::encrypt_n(byte* input, byte* output, size_t blocks) const
 {
 	for(size_t i = 0; i != blocks; ++i)
 	{
-		uint A = load_le<uint>(input, 0) ^ RK[0];
-		uint B = load_le<uint>(input, 1) ^ RK[1];
-		uint C = load_le<uint>(input, 2) ^ RK[2];
-		uint D = load_le<uint>(input, 3) ^ RK[3];
+		uint A = load_le!uint(input, 0) ^ RK[0];
+		uint B = load_le!uint(input, 1) ^ RK[1];
+		uint C = load_le!uint(input, 2) ^ RK[2];
+		uint D = load_le!uint(input, 3) ^ RK[3];
 
 		for(size_t j = 0; j != 16; j += 2)
 		{
@@ -57,22 +57,22 @@ void Twofish::encrypt_n(in byte[] input, ref byte[] output) const
 
 		store_le(out, C, D, A, B);
 
-		input = input[BLOCK_SIZE .. $];
-		output = output[BLOCK_SIZE .. $];
+		input += BLOCK_SIZE;
+		output += BLOCK_SIZE;
 	}
 }
 
 /*
 * Twofish Decryption
 */
-void Twofish::decrypt_n(in byte[] input, ref byte[] output) const
+void Twofish::decrypt_n(byte* input, byte* output, size_t blocks) const
 {
 	for(size_t i = 0; i != blocks; ++i)
 	{
-		uint A = load_le<uint>(input, 0) ^ RK[4];
-		uint B = load_le<uint>(input, 1) ^ RK[5];
-		uint C = load_le<uint>(input, 2) ^ RK[6];
-		uint D = load_le<uint>(input, 3) ^ RK[7];
+		uint A = load_le!uint(input, 0) ^ RK[4];
+		uint B = load_le!uint(input, 1) ^ RK[5];
+		uint C = load_le!uint(input, 2) ^ RK[6];
+		uint D = load_le!uint(input, 3) ^ RK[7];
 
 		for(size_t j = 0; j != 16; j += 2)
 		{
@@ -108,15 +108,15 @@ void Twofish::decrypt_n(in byte[] input, ref byte[] output) const
 
 		store_le(out, C, D, A, B);
 
-		input = input[BLOCK_SIZE .. $];
-		output = output[BLOCK_SIZE .. $];
+		input += BLOCK_SIZE;
+		output += BLOCK_SIZE;
 	}
 }
 
 /*
 * Twofish Key Schedule
 */
-void Twofish::key_schedule(in byte[] key)
+void Twofish::key_schedule(in byte* key)
 {
 	SB.resize(1024);
 	RK.resize(40);

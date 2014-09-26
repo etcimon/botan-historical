@@ -31,8 +31,8 @@ Channel::Channel(void delegate(in byte[]) output_fn,
 	m_session_manager(session_manager)
 {
 	/* epoch 0 is plaintext, thus null cipher state */
-	m_write_cipher_states[0] = nullptr;
-	m_read_cipher_states[0] = nullptr;
+	m_write_cipher_states[0] = null;
+	m_read_cipher_states[0] = null;
 
 	m_writebuf.reserve(reserved_io_buffer_size);
 	m_readbuf.reserve(reserved_io_buffer_size);
@@ -58,7 +58,7 @@ Connection_Sequence_Numbers& Channel::sequence_numbers() const
 	return *m_sequence_numbers;
 }
 
-std::shared_ptr<Connection_Cipher_State> Channel::read_cipher_state_epoch(u16bit epoch) const
+std::shared_ptr<Connection_Cipher_State> Channel::read_cipher_state_epoch(ushort epoch) const
 {
 	auto i = m_read_cipher_states.find(epoch);
 
@@ -68,7 +68,7 @@ std::shared_ptr<Connection_Cipher_State> Channel::read_cipher_state_epoch(u16bit
 	return i->second;
 }
 
-std::shared_ptr<Connection_Cipher_State> Channel::write_cipher_state_epoch(u16bit epoch) const
+std::shared_ptr<Connection_Cipher_State> Channel::write_cipher_state_epoch(ushort epoch) const
 {
 	auto i = m_write_cipher_states.find(epoch);
 
@@ -172,7 +172,7 @@ void Channel::change_cipher_spec_reader(Connection_Side side)
 
 	sequence_numbers().new_read_cipher_state();
 
-	const u16bit epoch = sequence_numbers().current_read_epoch();
+	const ushort epoch = sequence_numbers().current_read_epoch();
 
 	BOTAN_ASSERT(m_read_cipher_states.count(epoch) == 0,
 					 "No read cipher state currently set for next epoch");
@@ -200,7 +200,7 @@ void Channel::change_cipher_spec_writer(Connection_Side side)
 
 	sequence_numbers().new_write_cipher_state();
 
-	const u16bit epoch = sequence_numbers().current_write_epoch();
+	const ushort epoch = sequence_numbers().current_write_epoch();
 
 	BOTAN_ASSERT(m_write_cipher_states.count(epoch) == 0,
 					 "No write cipher state currently set for next epoch");
@@ -217,7 +217,7 @@ void Channel::change_cipher_spec_writer(Connection_Side side)
 
 bool Channel::is_active() const
 {
-	return (active_state() != nullptr);
+	return (active_state() != null);
 }
 
 bool Channel::is_closed() const
@@ -231,7 +231,7 @@ bool Channel::is_closed() const
 	* received a connection. This case is detectable by also lacking
 	* m_sequence_numbers
 	*/
-	return (m_sequence_numbers != nullptr);
+	return (m_sequence_numbers != null);
 }
 
 void Channel::activate_session()
@@ -249,7 +249,7 @@ void Channel::activate_session()
 		auto current_epoch = sequence_numbers().current_write_epoch();
 
 		const auto not_current_epoch =
-			[current_epoch](u16bit epoch) { return (epoch != current_epoch); };
+			[current_epoch](ushort epoch) { return (epoch != current_epoch); };
 
 		map_remove_if(not_current_epoch, m_write_cipher_states);
 		map_remove_if(not_current_epoch, m_read_cipher_states);
@@ -275,9 +275,9 @@ size_t Channel::received_data(in Vector!byte buf)
 	return this->received_data(&buf[0], buf.size());
 }
 
-size_t Channel::received_data(in byte[] input, size_t input_size)
+size_t Channel::received_data(in byte* input, size_t input_size)
 {
-	const auto get_cipherstate = [this](u16bit epoch)
+	const auto get_cipherstate = [this](ushort epoch)
 	{ return this->read_cipher_state_epoch(epoch).get(); };
 
 	const size_t max_fragment_size = maximum_fragment_size();
@@ -287,7 +287,7 @@ size_t Channel::received_data(in byte[] input, size_t input_size)
 		while(!is_closed() && input_size)
 		{
 			SafeVector!byte record;
-			u64bit record_sequence = 0;
+			ulong record_sequence = 0;
 			Record_Type record_type = NO_RECORD;
 			Protocol_Version record_version;
 
@@ -389,7 +389,7 @@ size_t Channel::received_data(in byte[] input, size_t input_size)
 				if(alert_msg.type() == Alert::NO_RENEGOTIATION)
 					m_pending_state.reset();
 
-				m_alert_cb(alert_msg, nullptr, 0);
+				m_alert_cb(alert_msg, null, 0);
 
 				if(alert_msg.is_fatal())
 				{
@@ -436,7 +436,7 @@ size_t Channel::received_data(in byte[] input, size_t input_size)
 	}
 }
 
-void Channel::heartbeat(in byte[] payload, size_t payload_size)
+void Channel::heartbeat(in byte* payload, size_t payload_size)
 {
 	if(heartbeat_sending_allowed())
 	{
@@ -448,7 +448,7 @@ void Channel::heartbeat(in byte[] payload, size_t payload_size)
 }
 
 void Channel::write_record(Connection_Cipher_State* cipher_state,
-									byte record_type, in byte[] input, size_t length)
+									byte record_type, in byte* input, size_t length)
 {
 	BOTAN_ASSERT(m_pending_state || m_active_state,
 					 "Some connection state exists");
@@ -468,7 +468,7 @@ void Channel::write_record(Connection_Cipher_State* cipher_state,
 	m_output_fn(&m_writebuf[0], m_writebuf.size());
 }
 
-void Channel::send_record_array(u16bit epoch, byte type, in byte[] input, size_t length)
+void Channel::send_record_array(ushort epoch, byte type, in byte* input, size_t length)
 {
 	if(length == 0)
 		return;
@@ -512,13 +512,13 @@ void Channel::send_record(byte record_type, in Vector!byte record)
 							record_type, &record[0], record.size());
 }
 
-void Channel::send_record_under_epoch(u16bit epoch, byte record_type,
+void Channel::send_record_under_epoch(ushort epoch, byte record_type,
 												  in Vector!byte record)
 {
 	send_record_array(epoch, record_type, &record[0], record.size());
 }
 
-void Channel::send(in byte[] buf, size_t buf_size)
+void Channel::send(in byte* buf, size_t buf_size)
 {
 	if(!is_active())
 		throw new Exception("Data cannot be sent on inactive TLS connection");
@@ -652,8 +652,8 @@ SymmetricKey Channel::key_material_export(in string label,
 			size_t context_size = context.length;
 			if(context_size > 0xFFFF)
 				throw new Exception("key_material_export context is too long");
-			salt.push_back(get_byte<u16bit>(0, context_size));
-			salt.push_back(get_byte<u16bit>(1, context_size));
+			salt.push_back(get_byte<ushort>(0, context_size));
+			salt.push_back(get_byte<ushort>(1, context_size));
 			salt += to_byte_vector(context);
 		}
 

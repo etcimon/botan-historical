@@ -61,7 +61,7 @@ class NR_Signature_Operation : public PK_Ops::Signature
 		size_t message_part_size() const { return q.bytes(); }
 		size_t max_input_bits() const { return (q.bits() - 1); }
 
-		SafeVector!byte sign(in byte[] msg, size_t msg_len,
+		SafeVector!byte sign(in byte* msg, size_t msg_len,
 										RandomNumberGenerator& rng);
 	private:
 		const BigInt& q;
@@ -84,7 +84,7 @@ class NR_Verification_Operation : public PK_Ops::Verification
 
 		bool with_recovery() const { return true; }
 
-		SafeVector!byte verify_mr(in byte[] msg, size_t msg_len);
+		SafeVector!byte verify_mr(in byte* msg, size_t msg_len);
 	private:
 		const BigInt& q;
 		const BigInt& y;

@@ -41,7 +41,7 @@ size_t DataSource::discard_next(size_t n)
 /*
 * Read from a memory buffer
 */
-size_t DataSource_Memory::read(ref byte[] output)
+size_t DataSource_Memory::read(byte* output)
 {
 	size_t length = output.length;
 	size_t got = std::min<size_t>(source.size() - offset, length);
@@ -53,7 +53,7 @@ size_t DataSource_Memory::read(ref byte[] output)
 /*
 * Peek into a memory buffer
 */
-size_t DataSource_Memory::peek(ref byte[] output,
+size_t DataSource_Memory::peek(byte* output,
 										 size_t peek_offset) const
 {
 	size_t length = output.length;
@@ -87,7 +87,7 @@ DataSource_Memory::DataSource_Memory(in string input) :
 /*
 * Read from a stream
 */
-size_t DataSource_Stream::read(ref byte[] output)
+size_t DataSource_Stream::read(byte* output)
 {
 	size_t length = output.length;
 	source.read(cast(char*)(output), length);
@@ -102,7 +102,7 @@ size_t DataSource_Stream::read(ref byte[] output)
 /*
 * Peek into a stream
 */
-size_t DataSource_Stream::peek(ref byte[] output, size_t offset) const
+size_t DataSource_Stream::peek(byte* output, size_t offset) const
 {
 	size_t length = output.length;
 	if(end_of_data())
@@ -175,7 +175,7 @@ DataSource_Stream::DataSource_Stream(in string path,
 DataSource_Stream::DataSource_Stream(std::istream& in,
 												 in string name) :
 	identifier(name),
-	source_p(nullptr),
+	source_p(null),
 	source(input),
 	total_read(0)
 {

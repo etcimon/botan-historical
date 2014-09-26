@@ -12,7 +12,7 @@
 * This class represents Message Authentication Code (MAC) objects.
 */
 class MessageAuthenticationCode : public Buffered_Computation,
-														  public SymmetricAlgorithm
+								  public SymmetricAlgorithm
 {
 	public:
 		/**
@@ -21,16 +21,16 @@ class MessageAuthenticationCode : public Buffered_Computation,
 		* @param length the length of param in
 		* @return true if the MAC is valid, false otherwise
 		*/
-		abstract bool verify_mac(in byte[] input);
+		abstract bool verify_mac(in byte* input, size_t length);
 
 		/**
 		* Get a new object representing the same algorithm as *this
 		*/
-		abstract MessageAuthenticationCode* clone() const = 0;
+		abstract MessageAuthenticationCode* clone() const;
 
 		/**
 		* Get the name of this algorithm.
 		* @return name of this algorithm
 		*/
-		abstract string name() const = 0;
+		abstract string name() const;
 };

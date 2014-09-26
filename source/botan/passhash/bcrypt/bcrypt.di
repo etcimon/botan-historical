@@ -16,7 +16,7 @@
 */
 string generate_bcrypt(in string password,
 												  RandomNumberGenerator& rng,
-												  u16bit work_factor = 10);
+												  ushort work_factor = 10);
 
 /**
 * Check a previously created password hash

@@ -75,7 +75,7 @@ bool OID::operator==(in OID oid) const
 OID& OID::operator+=(uint component)
 {
 	id.push_back(component);
-	return (*this);
+	return this;
 }
 
 /*
@@ -121,7 +121,7 @@ bool operator<(in OID a, const OID& b)
 /*
 * DER encode an OBJECT IDENTIFIER
 */
-void OID::encode_into(DER_Encoder& der) const
+void OID::encode_into(DER_Encoder der) const
 {
 	if(id.size() < 2)
 		throw new Invalid_Argument("OID::encode_into: OID is invalid");
@@ -149,7 +149,7 @@ void OID::encode_into(DER_Encoder& der) const
 /*
 * Decode a BER encoded OBJECT IDENTIFIER
 */
-void OID::decode_from(BER_Decoder& decoder)
+void OID::decode_from(BER_Decoder decoder)
 {
 	BER_Object obj = decoder.get_next_object();
 	if(obj.type_tag != OBJECT_ID || obj.class_tag != UNIVERSAL)

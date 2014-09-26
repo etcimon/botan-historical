@@ -11,7 +11,7 @@
 #include <botan/tls_ciphersuite.h>
 namespace TLS {
 
-Ciphersuite Ciphersuite::by_id(u16bit suite)
+Ciphersuite Ciphersuite::by_id(ushort suite)
 {
 	switch(suite)
 	{

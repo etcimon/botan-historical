@@ -8,7 +8,7 @@
 #include <vector>
 #include <string>
 #include <map>
-inline Vector!( byte ) to_byte_vector(in string s)
+ Vector!( byte ) to_byte_vector(in string s)
 {
 	return Vector!( byte )(cast(in byte*)(s[0]),
 									 cast(in byte*)(s[s.size()]));
@@ -22,7 +22,7 @@ inline Vector!( byte ) to_byte_vector(in string s)
 * @return mapping[key] or null_result
 */
 template<typename K, typename V>
-inline V search_map(in std::map<K, V> mapping,
+ V search_map(in std::map<K, V> mapping,
 						  const K& key,
 						  const V& null_result = V())
 {
@@ -33,7 +33,7 @@ inline V search_map(in std::map<K, V> mapping,
 }
 
 template<typename K, typename V, typename R>
-inline R search_map(in std::map<K, V> mapping, const K& key,
+ R search_map(in std::map<K, V> mapping, const K& key,
 						  const R& null_result, const R& found_result)
 {
 	auto i = mapping.find(key);
@@ -51,9 +51,9 @@ void multimap_insert(std::multimap<K, V>& multimap,
 {
 #if defined(BOTAN_BUILD_COMPILER_IS_SUN_STUDIO)
 	// Work around a strange bug in Sun Studio
-	multimap.insert(std::make_pair<const K, V>(key, value));
+	multimap.insert(Pair<const K, V>(key, value));
 #else
-	multimap.insert(std::make_pair(key, value));
+	multimap.insert(Pair(key, value));
 #endif
 }
 

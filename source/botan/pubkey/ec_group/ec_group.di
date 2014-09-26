@@ -128,7 +128,7 @@ class EC_Group
 		string oid;
 };
 
-inline bool operator!=(in EC_Group lhs,
+ bool operator!=(in EC_Group lhs,
 							  const EC_Group& rhs)
 {
 	return !(lhs == rhs);

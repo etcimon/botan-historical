@@ -75,7 +75,7 @@ namespace {
 */
 SafeVector!byte ocb_hash(in L_computer L,
 									  const BlockCipher& cipher,
-									  in byte[] ad, size_t ad_len)
+									  in byte* ad, size_t ad_len)
 {
 	SafeVector!byte sum(BS);
 	SafeVector!byte offset(BS);
@@ -165,20 +165,20 @@ Key_Length_Specification OCB_Mode::key_spec() const
 	return m_cipher->key_spec();
 }
 
-void OCB_Mode::key_schedule(in byte[] key)
+void OCB_Mode::key_schedule(in byte* key, size_t length)
 {
 	m_cipher->set_key(key, length);
 	m_L.reset(new L_computer(*m_cipher));
 }
 
-void OCB_Mode::set_associated_data(in byte[] ad, size_t ad_len)
+void OCB_Mode::set_associated_data(in byte* ad, size_t ad_len)
 {
 	BOTAN_ASSERT(m_L, "A key was set");
 	m_ad_hash = ocb_hash(*m_L, *m_cipher, &ad[0], ad_len);
 }
 
 SafeVector!byte
-OCB_Mode::update_nonce(in byte[] nonce, size_t nonce_len)
+OCB_Mode::update_nonce(in byte* nonce, size_t nonce_len)
 {
 	BOTAN_ASSERT(nonce_len < BS, "Nonce is less than 128 bits");
 
@@ -220,7 +220,7 @@ OCB_Mode::update_nonce(in byte[] nonce, size_t nonce_len)
 	return offset;
 }
 
-SafeVector!byte OCB_Mode::start(in byte[] nonce, size_t nonce_len)
+SafeVector!byte OCB_Mode::start(in byte* nonce, size_t nonce_len)
 {
 	if(!valid_nonce_length(nonce_len))
 		throw new Invalid_IV_Length(name(), nonce_len);
@@ -314,7 +314,7 @@ void OCB_Encryption::finish(SafeVector!byte buffer, size_t offset)
 
 	mac ^= m_ad_hash;
 
-	buffer += std::make_pair(&mac[0], tag_size());
+	buffer += Pair(&mac[0], tag_size());
 
 	zeroise(m_checksum);
 	zeroise(m_offset);

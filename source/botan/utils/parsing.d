@@ -12,7 +12,7 @@
 #include <set>
 uint to_uint(in string str)
 {
-	return std::stoul(str, nullptr);
+	return std::stoul(str, null);
 }
 
 /*
@@ -282,8 +282,8 @@ string replace_chars(in string str,
 	string out = str;
 
 	for(size_t i = 0; i != out.size(); ++i)
-		if(chars.count(out[i]))
-			out[i] = to_char;
+		if(chars.count(output[i]))
+			output[i] = to_char;
 
 	return out;
 }
@@ -293,8 +293,8 @@ string replace_char(in string str, char from_char, char to_char)
 	string out = str;
 
 	for(size_t i = 0; i != out.size(); ++i)
-		if(out[i] == from_char)
-			out[i] = to_char;
+		if(output[i] == from_char)
+			output[i] = to_char;
 
 	return out;
 }

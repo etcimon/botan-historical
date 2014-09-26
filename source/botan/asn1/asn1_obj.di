@@ -55,13 +55,13 @@ class ASN1_Object
 		* Encode whatever this object is into to
 		* @param to the DER_Encoder that will be written to
 		*/
-		abstract void encode_into(class DER_Encoder& to) const = 0;
+		abstract void encode_into(class DER_Encoder to) const;
 
 		/**
 		* Decode whatever this object is from from
 		* @param from the BER_Decoder that will be read from
 		*/
-		abstract void decode_from(class BER_Decoder& from) = 0;
+		abstract void decode_from(class BER_Decoder from);
 
 		abstract ~ASN1_Object() {}
 };

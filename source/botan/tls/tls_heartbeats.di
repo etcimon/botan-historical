@@ -24,7 +24,7 @@ class Heartbeat_Message
 
 		Heartbeat_Message(in Vector!byte buf);
 
-		Heartbeat_Message(Type type, in byte[] payload, size_t payload_len);
+		Heartbeat_Message(Type type, in byte* payload, size_t payload_len);
 	private:
 		Type m_type;
 		Vector!( byte ) m_payload;

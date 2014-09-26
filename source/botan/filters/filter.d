@@ -22,7 +22,7 @@ Filter::Filter()
 /*
 * Send data to all ports
 */
-void Filter::send(in byte[] input, size_t length)
+void Filter::send(in byte* input, size_t length)
 {
 	if(!length)
 		return;
@@ -38,7 +38,7 @@ void Filter::send(in byte[] input, size_t length)
 		}
 
 	if(nothing_attached)
-		write_queue += std::make_pair(input, length);
+		write_queue += Pair(input, length);
 	else
 		write_queue.clear();
 }
@@ -96,7 +96,7 @@ Filter* Filter::get_next() const
 {
 	if(port_num < next.size())
 		return next[port_num];
-	return nullptr;
+	return null;
 }
 
 /*
@@ -109,7 +109,7 @@ void Filter::set_next(Filter* filters[], size_t size)
 	port_num = 0;
 	filter_owns = 0;
 
-	while(size && filters && (filters[size-1] == nullptr))
+	while(size && filters && (filters[size-1] == null))
 		--size;
 
 	if(filters && size)

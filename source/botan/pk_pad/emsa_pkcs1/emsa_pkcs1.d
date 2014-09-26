@@ -11,7 +11,7 @@ namespace {
 
 SafeVector!byte emsa3_encoding(in SafeVector!byte msg,
 											  size_t output_bits,
-											  in byte[] hash_id,
+											  in byte* hash_id,
 											  size_t hash_id_length)
 {
 	size_t output_length = output_bits / 8;
@@ -31,7 +31,7 @@ SafeVector!byte emsa3_encoding(in SafeVector!byte msg,
 
 }
 
-void EMSA_PKCS1v15::update(in byte[] input, size_t length)
+void EMSA_PKCS1v15::update(in byte* input, size_t length)
 {
 	m_hash->update(input, length);
 }
@@ -76,9 +76,9 @@ EMSA_PKCS1v15::EMSA_PKCS1v15(HashFunction* hash) : m_hash(hash)
 	m_hash_id = pkcs_hash_id(m_hash->name());
 }
 
-void EMSA_PKCS1v15_Raw::update(in byte[] input, size_t length)
+void EMSA_PKCS1v15_Raw::update(in byte* input, size_t length)
 {
-	message += std::make_pair(input, length);
+	message += Pair(input, length);
 }
 
 SafeVector!byte EMSA_PKCS1v15_Raw::raw_data()
@@ -93,7 +93,7 @@ EMSA_PKCS1v15_Raw::encoding_of(in SafeVector!byte msg,
 										 size_t output_bits,
 										 RandomNumberGenerator&)
 {
-	return emsa3_encoding(msg, output_bits, nullptr, 0);
+	return emsa3_encoding(msg, output_bits, null, 0);
 }
 
 bool EMSA_PKCS1v15_Raw::verify(in SafeVector!byte coded,
@@ -102,7 +102,7 @@ bool EMSA_PKCS1v15_Raw::verify(in SafeVector!byte coded,
 {
 	try
 	{
-		return (coded == emsa3_encoding(raw, key_bits, nullptr, 0));
+		return (coded == emsa3_encoding(raw, key_bits, null, 0));
 	}
 	catch(...)
 	{

@@ -358,13 +358,13 @@ Handshake_State::choose_sig_format(in Private_Key key,
 	{
 		const string padding = "EMSA3(" + hash_algo + ")";
 
-		return std::make_pair(padding, IEEE_1363);
+		return Pair(padding, IEEE_1363);
 	}
 	else if(sig_algo == "DSA" || sig_algo == "ECDSA")
 	{
 		const string padding = "EMSA1(" + hash_algo + ")";
 
-		return std::make_pair(padding, DER_SEQUENCE);
+		return Pair(padding, DER_SEQUENCE);
 	}
 
 	throw new Invalid_Argument(sig_algo + " is invalid/unknown for TLS signatures");
@@ -412,7 +412,7 @@ Handshake_State::understand_sig_format(const Public_Key key,
 		}
 
 		const string padding = "EMSA3(" + hash_algo + ")";
-		return std::make_pair(padding, IEEE_1363);
+		return Pair(padding, IEEE_1363);
 	}
 	else if(algo_name == "DSA" || algo_name == "ECDSA")
 	{
@@ -427,7 +427,7 @@ Handshake_State::understand_sig_format(const Public_Key key,
 
 		const string padding = "EMSA1(" + hash_algo + ")";
 
-		return std::make_pair(padding, DER_SEQUENCE);
+		return Pair(padding, DER_SEQUENCE);
 	}
 
 	throw new Invalid_Argument(algo_name + " is invalid/unknown for TLS signatures");

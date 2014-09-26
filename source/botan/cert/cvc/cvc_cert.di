@@ -70,7 +70,7 @@ class EAC1_1_CVC : public EAC1_1_gen_CVC<EAC1_1_CVC>//Signed_Object
 /*
 * Comparison
 */
-inline bool operator!=(EAC1_1_CVC const& lhs, EAC1_1_CVC const& rhs)
+ bool operator!=(EAC1_1_CVC const& lhs, EAC1_1_CVC const& rhs)
 {
 	return !(lhs == rhs);
 }

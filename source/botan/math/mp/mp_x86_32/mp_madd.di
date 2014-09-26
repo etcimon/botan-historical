@@ -21,7 +21,7 @@ extern "C" {
 /*
 * Word Multiply
 */
-inline word word_madd2(word a, word b, word* c)
+ word word_madd2(word a, word b, word* c)
 {
 	asm(
 		ASM("mull %[b]")
@@ -37,7 +37,7 @@ inline word word_madd2(word a, word b, word* c)
 /*
 * Word Multiply/Add
 */
-inline word word_madd3(word a, word b, word c, word* d)
+ word word_madd3(word a, word b, word c, word* d)
 {
 	asm(
 		ASM("mull %[b]")

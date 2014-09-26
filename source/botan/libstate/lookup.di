@@ -19,7 +19,7 @@
 * @return constant prototype object (use clone to create usable object),
 			 library retains ownership
 */
-inline const BlockCipher*
+ const BlockCipher*
 retrieve_block_cipher(in string algo_spec)
 {
 	Algorithm_Factory& af = global_state().algorithm_factory();
@@ -32,7 +32,7 @@ retrieve_block_cipher(in string algo_spec)
 * @return constant prototype object (use clone to create usable object),
 			 library retains ownership
 */
-inline const StreamCipher*
+ const StreamCipher*
 retrieve_stream_cipher(in string algo_spec)
 {
 	Algorithm_Factory& af = global_state().algorithm_factory();
@@ -45,7 +45,7 @@ retrieve_stream_cipher(in string algo_spec)
 * @return constant prototype object (use clone to create usable object),
 			 library retains ownership
 */
-inline const HashFunction*
+ const HashFunction*
 retrieve_hash(in string algo_spec)
 {
 	Algorithm_Factory& af = global_state().algorithm_factory();
@@ -58,7 +58,7 @@ retrieve_hash(in string algo_spec)
 * @return constant prototype object (use clone to create usable object),
 			 library retains ownership
 */
-inline const MessageAuthenticationCode*
+ const MessageAuthenticationCode*
 retrieve_mac(in string algo_spec)
 {
 	Algorithm_Factory& af = global_state().algorithm_factory();
@@ -78,7 +78,7 @@ retrieve_mac(in string algo_spec)
 * @param algo_spec the name of the desired block cipher
 * @return pointer to the block cipher object
 */
-inline BlockCipher* get_block_cipher(in string algo_spec)
+ BlockCipher* get_block_cipher(in string algo_spec)
 {
 	Algorithm_Factory& af = global_state().algorithm_factory();
 	return af.make_block_cipher(algo_spec);
@@ -91,7 +91,7 @@ inline BlockCipher* get_block_cipher(in string algo_spec)
 * @param algo_spec the name of the desired stream cipher
 * @return pointer to the stream cipher object
 */
-inline StreamCipher* get_stream_cipher(in string algo_spec)
+ StreamCipher* get_stream_cipher(in string algo_spec)
 {
 	Algorithm_Factory& af = global_state().algorithm_factory();
 	return af.make_stream_cipher(algo_spec);
@@ -104,7 +104,7 @@ inline StreamCipher* get_stream_cipher(in string algo_spec)
 * @param algo_spec the name of the desired hash function
 * @return pointer to the hash function object
 */
-inline HashFunction* get_hash(in string algo_spec)
+ HashFunction* get_hash(in string algo_spec)
 {
 	Algorithm_Factory& af = global_state().algorithm_factory();
 	return af.make_hash_function(algo_spec);
@@ -117,7 +117,7 @@ inline HashFunction* get_hash(in string algo_spec)
 * @param algo_spec the name of the desired MAC
 * @return pointer to the MAC object
 */
-inline MessageAuthenticationCode* get_mac(in string algo_spec)
+ MessageAuthenticationCode* get_mac(in string algo_spec)
 {
 	Algorithm_Factory& af = global_state().algorithm_factory();
 	return af.make_mac(algo_spec);
@@ -135,7 +135,7 @@ PBKDF* get_pbkdf(in string algo_spec);
 * @param algo_spec the name of the desired algorithm
 * @return pointer to newly allocated object of that type
 */
-inline PBKDF* get_s2k(in string algo_spec)
+ PBKDF* get_s2k(in string algo_spec)
 {
 	return get_pbkdf(algo_spec);
 }
@@ -198,10 +198,10 @@ bool have_algorithm(in string algo_spec);
 * @param algo_spec the name of the algorithm to check for
 * @return true if the algorithm exists, false otherwise
 */
-inline bool have_block_cipher(in string algo_spec)
+ bool have_block_cipher(in string algo_spec)
 {
 	Algorithm_Factory& af = global_state().algorithm_factory();
-	return (af.prototype_block_cipher(algo_spec) != nullptr);
+	return (af.prototype_block_cipher(algo_spec) != null);
 }
 
 /**
@@ -211,10 +211,10 @@ inline bool have_block_cipher(in string algo_spec)
 * @param algo_spec the name of the algorithm to check for
 * @return true if the algorithm exists, false otherwise
 */
-inline bool have_stream_cipher(in string algo_spec)
+ bool have_stream_cipher(in string algo_spec)
 {
 	Algorithm_Factory& af = global_state().algorithm_factory();
-	return (af.prototype_stream_cipher(algo_spec) != nullptr);
+	return (af.prototype_stream_cipher(algo_spec) != null);
 }
 
 /**
@@ -224,10 +224,10 @@ inline bool have_stream_cipher(in string algo_spec)
 * @param algo_spec the name of the algorithm to check for
 * @return true if the algorithm exists, false otherwise
 */
-inline bool have_hash(in string algo_spec)
+ bool have_hash(in string algo_spec)
 {
 	Algorithm_Factory& af = global_state().algorithm_factory();
-	return (af.prototype_hash_function(algo_spec) != nullptr);
+	return (af.prototype_hash_function(algo_spec) != null);
 }
 
 /**
@@ -237,10 +237,10 @@ inline bool have_hash(in string algo_spec)
 * @param algo_spec the name of the algorithm to check for
 * @return true if the algorithm exists, false otherwise
 */
-inline bool have_mac(in string algo_spec)
+ bool have_mac(in string algo_spec)
 {
 	Algorithm_Factory& af = global_state().algorithm_factory();
-	return (af.prototype_mac(algo_spec) != nullptr);
+	return (af.prototype_mac(algo_spec) != null);
 }
 
 /*

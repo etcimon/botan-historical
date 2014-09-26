@@ -95,7 +95,7 @@ Public_Key* make_public_key(in AlgorithmIdentifier alg_id,
 		return new ECDH_PublicKey(alg_id, key_bits);
 #endif
 
-	return nullptr;
+	return null;
 }
 
 Private_Key* make_Private_Key(in AlgorithmIdentifier alg_id,
@@ -151,7 +151,7 @@ Private_Key* make_Private_Key(in AlgorithmIdentifier alg_id,
 		return new ECDH_PrivateKey(alg_id, key_bits);
 #endif
 
-	return nullptr;
+	return null;
 }
 
 }

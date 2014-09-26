@@ -36,8 +36,8 @@ class CMAC : public MessageAuthenticationCode
 		*/
 		CMAC(BlockCipher* cipher);
 
-		CMAC(in CMAC) = delete;
-		CMAC& operator=(in CMAC) = delete;
+		CMAC(in CMAC);
+		CMAC& operator=(in CMAC);
 	private:
 		void add_data(const byte[], size_t);
 		void final_result(byte[]);

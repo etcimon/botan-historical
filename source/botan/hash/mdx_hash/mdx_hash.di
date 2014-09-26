@@ -25,15 +25,15 @@ class MDx_HashFunction : public HashFunction
 
 		size_t hash_block_size() const { return buffer.size(); }
 	protected:
-		void add_data(in byte[] input, size_t length);
-		void final_result(byte output[]);
+		void add_data(in byte* input, size_t length);
+		void final_result(byte* output);
 
 		/**
 		* Run the hash's compression function over a set of blocks
 		* @param blocks the input
 		* @param block_n the number of blocks
 		*/
-		abstract void compress_n(in byte[] blocks, size_t block_n) = 0;
+		abstract void compress_n(in byte* blocks, size_t block_n);
 
 		void clear();
 
@@ -41,16 +41,16 @@ class MDx_HashFunction : public HashFunction
 		* Copy the output to the buffer
 		* @param buffer to put the output into
 		*/
-		abstract void copy_out(byte buffer[]) = 0;
+		abstract void copy_out(byte* buffer);
 
 		/**
 		* Write the count, if used, to this spot
 		* @param out where to write the counter to
 		*/
-		abstract void write_count(ref byte[] output);
+		abstract void write_count(byte* output);
 	private:
 		SafeVector!byte buffer;
-		u64bit count;
+		ulong count;
 		size_t position;
 
 		const bool BIG_BYTE_ENDIAN, BIG_BIT_ENDIAN;

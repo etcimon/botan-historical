@@ -6,8 +6,7 @@
 */
 
 #include <botan/cpuid.h>
-template<typename T>
-inline void prefetch_readonly(const T* addr, size_t length)
+void prefetch_readonly(T)(const T* addr, size_t length)
 {
 #if defined(__GNUG__)
 	const size_t Ts_per_cache_line = CPUID::cache_line_size() / sizeof(T);
@@ -17,8 +16,7 @@ inline void prefetch_readonly(const T* addr, size_t length)
 #endif
 }
 
-template<typename T>
-inline void prefetch_readwrite(const T* addr, size_t length)
+void prefetch_readwrite(T)(const T* addr, size_t length)
 {
 #if defined(__GNUG__)
 	const size_t Ts_per_cache_line = CPUID::cache_line_size() / sizeof(T);

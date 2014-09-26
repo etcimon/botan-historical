@@ -12,7 +12,7 @@
 #include <botan/rotate.h>
 namespace {
 
-const byte SE[256] = {
+immutable byte[256] SE = {
 	0x63, 0x7C, 0x77, 0x7B, 0xF2, 0x6B, 0x6F, 0xC5, 0x30, 0x01, 0x67, 0x2B,
 	0xFE, 0xD7, 0xAB, 0x76, 0xCA, 0x82, 0xC9, 0x7D, 0xFA, 0x59, 0x47, 0xF0,
 	0xAD, 0xD4, 0xA2, 0xAF, 0x9C, 0xA4, 0x72, 0xC0, 0xB7, 0xFD, 0x93, 0x26,
@@ -36,7 +36,7 @@ const byte SE[256] = {
 	0x8C, 0xA1, 0x89, 0x0D, 0xBF, 0xE6, 0x42, 0x68, 0x41, 0x99, 0x2D, 0x0F,
 	0xB0, 0x54, 0xBB, 0x16 };
 
-const byte SD[256] = {
+immutable byte[256] SD = {
 	0x52, 0x09, 0x6A, 0xD5, 0x30, 0x36, 0xA5, 0x38, 0xBF, 0x40, 0xA3, 0x9E,
 	0x81, 0xF3, 0xD7, 0xFB, 0x7C, 0xE3, 0x39, 0x82, 0x9B, 0x2F, 0xFF, 0x87,
 	0x34, 0x8E, 0x43, 0x44, 0xC4, 0xDE, 0xE9, 0xCB, 0x54, 0x7B, 0x94, 0x32,
@@ -60,7 +60,7 @@ const byte SD[256] = {
 	0x17, 0x2B, 0x04, 0x7E, 0xBA, 0x77, 0xD6, 0x26, 0xE1, 0x69, 0x14, 0x63,
 	0x55, 0x21, 0x0C, 0x7D };
 
-const uint TE[1024] = {
+imutable uint[1024] TE = {
 	0xC66363A5, 0xF87C7C84, 0xEE777799, 0xF67B7B8D, 0xFFF2F20D, 0xD66B6BBD,
 	0xDE6F6FB1, 0x91C5C554, 0x60303050, 0x02010103, 0xCE6767A9, 0x562B2B7D,
 	0xE7FEFE19, 0xB5D7D762, 0x4DABABE6, 0xEC76769A, 0x8FCACA45, 0x1F82829D,
@@ -233,7 +233,7 @@ const uint TE[1024] = {
 	0x4242C684, 0x6868B8D0, 0x4141C382, 0x9999B029, 0x2D2D775A, 0x0F0F111E,
 	0xB0B0CB7B, 0x5454FCA8, 0xBBBBD66D, 0x16163A2C };
 
-const uint TD[1024] = {
+immutable uint[1024] TD = {
 	0x51F4A750, 0x7E416553, 0x1A17A4C3, 0x3A275E96, 0x3BAB6BCB, 0x1F9D45F1,
 	0xACFA58AB, 0x4BE30393, 0x2030FA55, 0xAD766DF6, 0x88CC7691, 0xF5024C25,
 	0x4FE5D7FC, 0xC52ACBD7, 0x26354480, 0xB562A38F, 0xDEB15A49, 0x25BA1B67,
@@ -409,7 +409,7 @@ const uint TD[1024] = {
 /*
 * AES Encryption
 */
-void aes_encrypt_n(in byte[] input, ref byte[] output,
+void aes_encrypt_n(byte* input, byte* output,
 						 size_t blocks,
 						 const secure_vector<uint>& EK,
 						 in SafeVector!byte ME)
@@ -423,14 +423,12 @@ void aes_encrypt_n(in byte[] input, ref byte[] output,
 	const uint* TE2 = TE + 512;
 	const uint* TE3 = TE + 768;
 	
-	const byte[] cached = output;
-	scope(exit) output = cached;
 	for(size_t i = 0; i != blocks; ++i)
 	{
-		uint T0 = load_be<uint>(input, 0) ^ EK[0];
-		uint T1 = load_be<uint>(input, 1) ^ EK[1];
-		uint T2 = load_be<uint>(input, 2) ^ EK[2];
-		uint T3 = load_be<uint>(input, 3) ^ EK[3];
+		uint T0 = load_be!uint(input, 0) ^ EK[0];
+		uint T1 = load_be!uint(input, 1) ^ EK[1];
+		uint T2 = load_be!uint(input, 2) ^ EK[2];
+		uint T3 = load_be!uint(input, 3) ^ EK[3];
 
 		/* Use only the first 256 entries of the TE table and do the
 		* rotations directly in the code. This reduces the number of
@@ -500,36 +498,35 @@ void aes_encrypt_n(in byte[] input, ref byte[] output,
 		of the attacks."""
 		*/
 
-		out[ 0] = SE[get_byte(0, B0)] ^ ME[0];
-		out[ 1] = SE[get_byte(1, B1)] ^ ME[1];
-		out[ 2] = SE[get_byte(2, B2)] ^ ME[2];
-		out[ 3] = SE[get_byte(3, B3)] ^ ME[3];
-		out[ 4] = SE[get_byte(0, B1)] ^ ME[4];
-		out[ 5] = SE[get_byte(1, B2)] ^ ME[5];
-		out[ 6] = SE[get_byte(2, B3)] ^ ME[6];
-		out[ 7] = SE[get_byte(3, B0)] ^ ME[7];
-		out[ 8] = SE[get_byte(0, B2)] ^ ME[8];
-		out[ 9] = SE[get_byte(1, B3)] ^ ME[9];
-		out[10] = SE[get_byte(2, B0)] ^ ME[10];
-		out[11] = SE[get_byte(3, B1)] ^ ME[11];
-		out[12] = SE[get_byte(0, B3)] ^ ME[12];
-		out[13] = SE[get_byte(1, B0)] ^ ME[13];
-		out[14] = SE[get_byte(2, B1)] ^ ME[14];
-		out[15] = SE[get_byte(3, B2)] ^ ME[15];
+		output[ 0] = SE[get_byte(0, B0)] ^ ME[0];
+		output[ 1] = SE[get_byte(1, B1)] ^ ME[1];
+		output[ 2] = SE[get_byte(2, B2)] ^ ME[2];
+		output[ 3] = SE[get_byte(3, B3)] ^ ME[3];
+		output[ 4] = SE[get_byte(0, B1)] ^ ME[4];
+		output[ 5] = SE[get_byte(1, B2)] ^ ME[5];
+		output[ 6] = SE[get_byte(2, B3)] ^ ME[6];
+		output[ 7] = SE[get_byte(3, B0)] ^ ME[7];
+		output[ 8] = SE[get_byte(0, B2)] ^ ME[8];
+		output[ 9] = SE[get_byte(1, B3)] ^ ME[9];
+		output[10] = SE[get_byte(2, B0)] ^ ME[10];
+		output[11] = SE[get_byte(3, B1)] ^ ME[11];
+		output[12] = SE[get_byte(0, B3)] ^ ME[12];
+		output[13] = SE[get_byte(1, B0)] ^ ME[13];
+		output[14] = SE[get_byte(2, B1)] ^ ME[14];
+		output[15] = SE[get_byte(3, B2)] ^ ME[15];
 
-		input = input[BLOCK_SIZE .. $];
-		output = output[BLOCK_SIZE .. $];
+		input += BLOCK_SIZE;
+		output += BLOCK_SIZE;
 	}
 }
 
 /*
 * AES Decryption
 */
-void aes_decrypt_n(in byte[] input, ref byte[] output,
+void aes_decrypt_n(byte* input, byte* output, size_t blocks,
 						 const secure_vector<uint>& DK,
 						 in SafeVector!byte MD)
 {
-	size_t blocks = input.length;
 	BOTAN_ASSERT(DK.size() && MD.size() == 16, "Key was set");
 
 	const size_t BLOCK_SIZE = 16;
@@ -539,15 +536,12 @@ void aes_decrypt_n(in byte[] input, ref byte[] output,
 	const uint* TD2 = TD + 512;
 	const uint* TD3 = TD + 768;
 	
-	const byte[] cached = output;
-	scope(exit) output = cached;
-	
 	for(size_t i = 0; i != blocks; ++i)
 	{
-		uint T0 = load_be<uint>(input, 0) ^ DK[0];
-		uint T1 = load_be<uint>(input, 1) ^ DK[1];
-		uint T2 = load_be<uint>(input, 2) ^ DK[2];
-		uint T3 = load_be<uint>(input, 3) ^ DK[3];
+		uint T0 = load_be!uint(input, 0) ^ DK[0];
+		uint T1 = load_be!uint(input, 1) ^ DK[1];
+		uint T2 = load_be!uint(input, 2) ^ DK[2];
+		uint T3 = load_be!uint(input, 3) ^ DK[3];
 
 		uint B0 = TD[get_byte(0, T0)] ^
 						rotate_right(TD[get_byte(1, T3)],  8) ^
@@ -590,29 +584,29 @@ void aes_decrypt_n(in byte[] input, ref byte[] output,
 				  TD2[get_byte(2, T1)] ^ TD3[get_byte(3, T0)] ^ DK[r+7];
 		}
 
-		out[ 0] = SD[get_byte(0, B0)] ^ MD[0];
-		out[ 1] = SD[get_byte(1, B3)] ^ MD[1];
-		out[ 2] = SD[get_byte(2, B2)] ^ MD[2];
-		out[ 3] = SD[get_byte(3, B1)] ^ MD[3];
-		out[ 4] = SD[get_byte(0, B1)] ^ MD[4];
-		out[ 5] = SD[get_byte(1, B0)] ^ MD[5];
-		out[ 6] = SD[get_byte(2, B3)] ^ MD[6];
-		out[ 7] = SD[get_byte(3, B2)] ^ MD[7];
-		out[ 8] = SD[get_byte(0, B2)] ^ MD[8];
-		out[ 9] = SD[get_byte(1, B1)] ^ MD[9];
-		out[10] = SD[get_byte(2, B0)] ^ MD[10];
-		out[11] = SD[get_byte(3, B3)] ^ MD[11];
-		out[12] = SD[get_byte(0, B3)] ^ MD[12];
-		out[13] = SD[get_byte(1, B2)] ^ MD[13];
-		out[14] = SD[get_byte(2, B1)] ^ MD[14];
-		out[15] = SD[get_byte(3, B0)] ^ MD[15];
+		output[ 0] = SD[get_byte(0, B0)] ^ MD[0];
+		output[ 1] = SD[get_byte(1, B3)] ^ MD[1];
+		output[ 2] = SD[get_byte(2, B2)] ^ MD[2];
+		output[ 3] = SD[get_byte(3, B1)] ^ MD[3];
+		output[ 4] = SD[get_byte(0, B1)] ^ MD[4];
+		output[ 5] = SD[get_byte(1, B0)] ^ MD[5];
+		output[ 6] = SD[get_byte(2, B3)] ^ MD[6];
+		output[ 7] = SD[get_byte(3, B2)] ^ MD[7];
+		output[ 8] = SD[get_byte(0, B2)] ^ MD[8];
+		output[ 9] = SD[get_byte(1, B1)] ^ MD[9];
+		output[10] = SD[get_byte(2, B0)] ^ MD[10];
+		output[11] = SD[get_byte(3, B3)] ^ MD[11];
+		output[12] = SD[get_byte(0, B3)] ^ MD[12];
+		output[13] = SD[get_byte(1, B2)] ^ MD[13];
+		output[14] = SD[get_byte(2, B1)] ^ MD[14];
+		output[15] = SD[get_byte(3, B0)] ^ MD[15];
 
-		input = input[BLOCK_SIZE .. $];
-		output = output[BLOCK_SIZE .. $];
+		input += BLOCK_SIZE;
+		output += BLOCK_SIZE;
 	}
 }
 
-void aes_key_schedule(in byte[] key, size_t length,
+void aes_key_schedule(in byte* key, size_t length,
 							 secure_vector<uint>& EK,
 							 secure_vector<uint>& DK,
 							 SafeVector!byte ME,
@@ -628,7 +622,7 @@ void aes_key_schedule(in byte[] key, size_t length,
 
 	const size_t X = length / 4;
 	for(size_t i = 0; i != X; ++i)
-		XEK[i] = load_be<uint>(key, i);
+		XEK[i] = load_be!uint(key, i);
 
 	for(size_t i = X; i < 4*(rounds+1); i += X)
 	{
@@ -683,17 +677,17 @@ void aes_key_schedule(in byte[] key, size_t length,
 
 }
 
-void AES_128::encrypt_n(in byte[] input, ref byte[] output) const
+void AES_128::encrypt_n(byte* input, byte* output, size_t blocks) const
 {
-	aes_encrypt_n(input, out, blocks, EK, ME);
+	aes_encrypt_n(input, output, blocks, EK, ME);
 }
 
-void AES_128::decrypt_n(in byte[] input, ref byte[] output) const
+void AES_128::decrypt_n(byte* input, byte* output, size_t blocks) const
 {
-	aes_decrypt_n(input, out, blocks, DK, MD);
+	aes_decrypt_n(input, output, blocks, DK, MD);
 }
 
-void AES_128::key_schedule(in byte[] key)
+void AES_128::key_schedule(in byte* key)
 {
 	aes_key_schedule(key, length, EK, DK, ME, MD);
 }
@@ -706,17 +700,17 @@ void AES_128::clear()
 	zap(MD);
 }
 
-void AES_192::encrypt_n(in byte[] input, ref byte[] output) const
+void AES_192::encrypt_n(byte* input, byte* output, size_t blocks) const
 {
-	aes_encrypt_n(input, out, blocks, EK, ME);
+	aes_encrypt_n(input, output, blocks, EK, ME);
 }
 
-void AES_192::decrypt_n(in byte[] input, ref byte[] output) const
+void AES_192::decrypt_n(byte* input, byte* output, size_t blocks) const
 {
-	aes_decrypt_n(input, out, blocks, DK, MD);
+	aes_decrypt_n(input, output, blocks, DK, MD);
 }
 
-void AES_192::key_schedule(in byte[] key)
+void AES_192::key_schedule(in byte* key)
 {
 	aes_key_schedule(key, length, EK, DK, ME, MD);
 }
@@ -729,17 +723,17 @@ void AES_192::clear()
 	zap(MD);
 }
 
-void AES_256::encrypt_n(in byte[] input, ref byte[] output) const
+void AES_256::encrypt_n(byte* input, byte* output, size_t blocks) const
 {
-	aes_encrypt_n(input, out, blocks, EK, ME);
+	aes_encrypt_n(input, output, blocks, EK, ME);
 }
 
-void AES_256::decrypt_n(in byte[] input, ref byte[] output) const
+void AES_256::decrypt_n(byte* input, byte* output, size_t blocks) const
 {
-	aes_decrypt_n(input, out, blocks, DK, MD);
+	aes_decrypt_n(input, output, blocks, DK, MD);
 }
 
-void AES_256::key_schedule(in byte[] key)
+void AES_256::key_schedule(in byte* key)
 {
 	aes_key_schedule(key, length, EK, DK, ME, MD);
 }

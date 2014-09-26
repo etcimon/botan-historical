@@ -29,7 +29,7 @@ Pipe::message_id Pipe::get_message_no(in string func_name,
 /*
 * Write into a Pipe
 */
-void Pipe::write(in byte[] input, size_t length)
+void Pipe::write(in byte* input, size_t length)
 {
 	if(!inside_msg)
 		throw new Invalid_State("Cannot write to a Pipe while it is not processing");
@@ -68,7 +68,7 @@ void Pipe::write(DataSource& source)
 /*
 * Read some data from the pipe
 */
-size_t Pipe::read(byte output[], size_t length, message_id msg)
+size_t Pipe::read(byte* output, size_t length, message_id msg)
 {
 	return outputs->read(output, length, get_message_no("read", msg));
 }
@@ -76,7 +76,7 @@ size_t Pipe::read(byte output[], size_t length, message_id msg)
 /*
 * Read some data from the pipe
 */
-size_t Pipe::read(byte output[], size_t length)
+size_t Pipe::read(byte* output, size_t length)
 {
 	return read(output, length, DEFAULT_MESSAGE);
 }
@@ -84,9 +84,9 @@ size_t Pipe::read(byte output[], size_t length)
 /*
 * Read a single byte from the pipe
 */
-size_t Pipe::read(byte& out, message_id msg)
+size_t Pipe::read(ref byte output, message_id msg)
 {
-	return read(&out, 1, msg);
+	return read(&output, 1, msg);
 }
 
 /*
@@ -133,7 +133,7 @@ size_t Pipe::remaining(message_id msg) const
 /*
 * Peek at some data in the pipe
 */
-size_t Pipe::peek(byte output[], size_t length,
+size_t Pipe::peek(byte* output, size_t length,
 						size_t offset, message_id msg) const
 {
 	return outputs->peek(output, length, offset, get_message_no("peek", msg));
@@ -142,7 +142,7 @@ size_t Pipe::peek(byte output[], size_t length,
 /*
 * Peek at some data in the pipe
 */
-size_t Pipe::peek(byte output[], size_t length, size_t offset) const
+size_t Pipe::peek(byte* output, size_t length, size_t offset) const
 {
 	return peek(output, length, offset, DEFAULT_MESSAGE);
 }
@@ -150,9 +150,9 @@ size_t Pipe::peek(byte output[], size_t length, size_t offset) const
 /*
 * Peek at a byte in the pipe
 */
-size_t Pipe::peek(byte& out, size_t offset, message_id msg) const
+size_t Pipe::peek(ref byte output, size_t offset, message_id msg) const
 {
-	return peek(&out, 1, offset, msg);
+	return peek(&output, 1, offset, msg);
 }
 
 size_t Pipe::get_bytes_read() const

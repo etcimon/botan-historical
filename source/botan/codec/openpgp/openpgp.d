@@ -14,9 +14,9 @@
 * OpenPGP Base64 encoding
 */
 string PGP_encode(
-	in byte[] input, size_t length,
+	in byte* input, size_t length,
 	in string label,
-	const std::map<string, string>& headers)
+	const HashMap!(string, string)& headers)
 {
 	const string PGP_HEADER = "-----BEGIN PGP " + label + "-----";
 	const string PGP_TRAILER = "-----END PGP " + label + "-----";
@@ -27,7 +27,7 @@ string PGP_encode(
 	if(headers.find("Version") != headers.end())
 		pgp_encoded += "Version: " + headers.find("Version")->second + '';
 
-	std::map<string, string>::const_iterator i = headers.begin();
+	HashMap!(string, string)::const_iterator i = headers.begin();
 	while(i != headers.end())
 	{
 		if(i->first != "Version")
@@ -54,10 +54,10 @@ string PGP_encode(
 /*
 * OpenPGP Base64 encoding
 */
-string PGP_encode(in byte[] input, size_t length,
+string PGP_encode(in byte* input, size_t length,
 							  in string type)
 {
-	std::map<string, string> empty;
+	HashMap!(string, string) empty;
 	return PGP_encode(input, length, type, empty);
 }
 
@@ -66,7 +66,7 @@ string PGP_encode(in byte[] input, size_t length,
 */
 SafeVector!byte PGP_decode(DataSource& source,
 										string& label,
-										std::map<string, string>& headers)
+										HashMap!(string, string)& headers)
 {
 	const size_t RANDOM_CHAR_LIMIT = 5;
 
@@ -133,7 +133,7 @@ SafeVector!byte PGP_decode(DataSource& source,
 	}
 
 	Pipe base64(new Base64_Decoder,
-					new Fork(nullptr,
+					new Fork(null,
 								new Chain(new Hash_Filter(new CRC24),
 											 new Base64_Encoder)
 						)
@@ -185,7 +185,7 @@ SafeVector!byte PGP_decode(DataSource& source,
 */
 SafeVector!byte PGP_decode(DataSource& source, string& label)
 {
-	std::map<string, string> ignored;
+	HashMap!(string, string) ignored;
 	return PGP_decode(source, label, ignored);
 }
 

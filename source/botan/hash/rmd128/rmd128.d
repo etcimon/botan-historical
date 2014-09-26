@@ -13,7 +13,7 @@ namespace RIPEMD_128_F {
 /*
 * RIPEMD-128 F1 Function
 */
-inline void F1(ref uint A, uint B, uint C, uint D,
+void F1(ref uint A, uint B, uint C, uint D,
 					uint msg, uint shift)
 {
 	A += (B ^ C ^ D) + msg;
@@ -23,7 +23,7 @@ inline void F1(ref uint A, uint B, uint C, uint D,
 /*
 * RIPEMD-128 F2 Function
 */
-inline void F2(ref uint A, uint B, uint C, uint D,
+void F2(ref uint A, uint B, uint C, uint D,
 					uint msg, uint shift, uint magic)
 {
 	A += (D ^ (B & (C ^ D))) + msg + magic;
@@ -33,7 +33,7 @@ inline void F2(ref uint A, uint B, uint C, uint D,
 /*
 * RIPEMD-128 F3 Function
 */
-inline void F3(ref uint A, uint B, uint C, uint D,
+void F3(ref uint A, uint B, uint C, uint D,
 					uint msg, uint shift, uint magic)
 {
 	A += (D ^ (B | ~C)) + msg + magic;
@@ -43,7 +43,7 @@ inline void F3(ref uint A, uint B, uint C, uint D,
 /*
 * RIPEMD-128 F4 Function
 */
-inline void F4(ref uint A, uint B, uint C, uint D,
+ void F4(ref uint A, uint B, uint C, uint D,
 					uint msg, uint shift, uint magic)
 {
 	A += (C ^ (D & (B ^ C))) + msg + magic;
@@ -55,7 +55,7 @@ inline void F4(ref uint A, uint B, uint C, uint D,
 /*
 * RIPEMD-128 Compression Function
 */
-void RIPEMD_128::compress_n(in byte[] input, size_t blocks)
+void RIPEMD_128::compress_n(in byte* input, size_t blocks)
 {
 	using namespace RIPEMD_128_F;
 
@@ -151,7 +151,7 @@ void RIPEMD_128::compress_n(in byte[] input, size_t blocks)
 /*
 * Copy out the digest
 */
-void RIPEMD_128::copy_out(byte output[])
+void RIPEMD_128::copy_out(byte* output)
 {
 	for(size_t i = 0; i != output_length(); i += 4)
 		store_le(digest[i/4], output + i);

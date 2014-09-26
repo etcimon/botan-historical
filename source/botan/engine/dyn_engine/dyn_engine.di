@@ -18,9 +18,9 @@ class Dynamically_Loaded_Engine : public Engine
 		*/
 		Dynamically_Loaded_Engine(in string lib_path);
 
-		Dynamically_Loaded_Engine(in Dynamically_Loaded_Engine) = delete;
+		Dynamically_Loaded_Engine(in Dynamically_Loaded_Engine);
 
-		Dynamically_Loaded_Engine& operator=(in Dynamically_Loaded_Engine) = delete;
+		Dynamically_Loaded_Engine& operator=(in Dynamically_Loaded_Engine);
 
 		~Dynamically_Loaded_Engine();
 

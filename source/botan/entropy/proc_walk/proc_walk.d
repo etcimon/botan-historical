@@ -26,10 +26,10 @@ class Directory_Walker : public File_Descriptor_Source
 {
 	public:
 		Directory_Walker(in string root) :
-			m_cur_dir(std::make_pair<DIR*, string>(nullptr, ""))
+			m_cur_dir(Pair<DIR*, string>(null, ""))
 		{
 			if(DIR* root_dir = ::opendir(root.c_str()))
-				m_cur_dir = std::make_pair(root_dir, root);
+				m_cur_dir = Pair(root_dir, root);
 		}
 
 		~Directory_Walker()
@@ -56,10 +56,10 @@ Pair!(struct dirent*, string) Directory_Walker::get_next_dirent()
 	while(m_cur_dir.first)
 	{
 		if(struct dirent* dir = ::readdir(m_cur_dir.first))
-			return std::make_pair(dir, m_cur_dir.second);
+			return Pair(dir, m_cur_dir.second);
 
 		::closedir(m_cur_dir.first);
-		m_cur_dir = std::make_pair<DIR*, string>(nullptr, "");
+		m_cur_dir = Pair<DIR*, string>(null, "");
 
 		while(!m_dirlist.empty() && !m_cur_dir.first)
 		{
@@ -67,11 +67,11 @@ Pair!(struct dirent*, string) Directory_Walker::get_next_dirent()
 			m_dirlist.pop_front();
 
 			if(DIR* next_dir = ::opendir(next_dir_name.c_str()))
-				m_cur_dir = std::make_pair(next_dir, next_dir_name);
+				m_cur_dir = Pair(next_dir, next_dir_name);
 		}
 	}
 
-	return std::make_pair<struct dirent*, string>(nullptr, ""); // nothing left
+	return Pair<struct dirent*, string>(null, ""); // nothing left
 }
 
 int Directory_Walker::next_fd()

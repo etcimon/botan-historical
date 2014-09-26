@@ -14,7 +14,6 @@
 #include <botan/charset.h>
 #include <botan/parsing.h>
 #include <botan/loadstor.h>
-namespace {
 
 /*
 * Check if type is a known ASN.1 string type
@@ -28,8 +27,6 @@ bool is_string_type(ASN1_Tag tag)
 			  tag == IA5_STRING ||
 			  tag == UTF8_STRING ||
 			  tag == BMP_STRING);
-}
-
 }
 
 /*
@@ -114,12 +111,11 @@ bool AlternativeName::has_items() const
 	return (alt_info.size() > 0 || othernames.size() > 0);
 }
 
-namespace {
 
 /*
 * DER encode an AlternativeName entry
 */
-void encode_entries(DER_Encoder& encoder,
+void encode_entries(DER_Encoder encoder,
 						  const std::multimap<string, string>& attr,
 						  in string type, ASN1_Tag tagging)
 {
@@ -147,7 +143,7 @@ void encode_entries(DER_Encoder& encoder,
 /*
 * DER encode an AlternativeName extension
 */
-void AlternativeName::encode_into(DER_Encoder& der) const
+void AlternativeName::encode_into(DER_Encoder der) const
 {
 	der.start_cons(SEQUENCE);
 
@@ -172,7 +168,7 @@ void AlternativeName::encode_into(DER_Encoder& der) const
 /*
 * Decode a BER encoded AlternativeName
 */
-void AlternativeName::decode_from(BER_Decoder& source)
+void AlternativeName::decode_from(BER_Decoder source)
 {
 	BER_Decoder names = source.start_cons(SEQUENCE);
 
@@ -227,12 +223,10 @@ void AlternativeName::decode_from(BER_Decoder& source)
 		{
 			if(obj.value.size() == 4)
 			{
-				const uint ip = load_be<uint>(&obj.value[0], 0);
+				const uint ip = load_be!uint(&obj.value[0], 0);
 				add_attribute("IP", ipv4_to_string(ip));
 			}
 		}
 
 	}
-}
-
 }

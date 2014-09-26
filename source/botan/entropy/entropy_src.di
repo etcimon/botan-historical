@@ -18,7 +18,7 @@ class Entropy_Accumulator
 		* Initialize an Entropy_Accumulator
 		* @param goal is how many bits we would like to collect
 		*/
-		Entropy_Accumulator(bool delegate(in byte[], double) accum) :
+		Entropy_Accumulator(bool delegate(in byte*, size_t len, double) accum) :
 			m_accum_fn(accum), m_done(false) {}
 
 		abstract ~Entropy_Accumulator() {}
@@ -61,13 +61,12 @@ class Entropy_Accumulator
 		* @param entropy_bits_per_byte is a best guess at how much
 		* entropy per byte is in this input
 		*/
-		template<typename T>
-		void add(in T v, double entropy_bits_per_byte)
+		void add(T)(in T v, double entropy_bits_per_byte)
 		{
 			add(&v, sizeof(T), entropy_bits_per_byte);
 		}
 	private:
-		std::function<bool (const byte[], size_t, double)> m_accum_fn;
+		bool delegate(in byte*, size_t, double) m_accum_fn;
 		bool m_done;
 		SafeVector!byte m_io_buffer;
 };
@@ -81,13 +80,13 @@ class EntropySource
 		/**
 		* @return name identifying this entropy source
 		*/
-		abstract string name() const = 0;
+		abstract string name() const;
 
 		/**
 		* Perform an entropy gathering poll
 		* @param accum is an accumulator object that will be given entropy
 		*/
-		abstract void poll(Entropy_Accumulator& accum) = 0;
+		abstract void poll(Entropy_Accumulator& accum);
 
 		abstract ~EntropySource() {}
 };

@@ -16,7 +16,7 @@ class Lzma_Compression : public Filter
 	public:
 		string name() const { return "Lzma_Compression"; }
 
-		void write(in byte[] input, size_t length);
+		void write(in byte* input, size_t length);
 		void start_msg();
 		void end_msg();
 
@@ -49,7 +49,7 @@ class Lzma_Decompression : public Filter
 	public:
 		string name() const { return "Lzma_Decompression"; }
 
-		void write(in byte[] input, size_t length);
+		void write(in byte* input, size_t length);
 		void start_msg();
 		void end_msg();
 

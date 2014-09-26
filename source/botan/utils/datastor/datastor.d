@@ -36,7 +36,7 @@ std::multimap<string, string> Data_Store::search_for(
 
 	for(auto i = contents.begin(); i != contents.end(); ++i)
 		if(predicate(i->first, i->second))
-			out.insert(std::make_pair(i->first, i->second));
+			out.insert(Pair(i->first, i->second));
 
 	return out;
 }

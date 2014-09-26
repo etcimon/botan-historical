@@ -9,18 +9,18 @@
 #include <botan/mul128.h>
 #if (BOTAN_MP_WORD_BITS == 8)
   typedef byte word;
-  typedef u16bit dword;
+  typedef ushort dword;
   #define BOTAN_HAS_MP_DWORD
 #elif (BOTAN_MP_WORD_BITS == 16)
-  typedef u16bit word;
+  typedef ushort word;
   typedef uint dword;
   #define BOTAN_HAS_MP_DWORD
 #elif (BOTAN_MP_WORD_BITS == 32)
   typedef uint word;
-  typedef u64bit dword;
+  typedef ulong dword;
   #define BOTAN_HAS_MP_DWORD
 #elif (BOTAN_MP_WORD_BITS == 64)
-  typedef u64bit word;
+  typedef ulong word;
 
   #if defined(BOTAN_TARGET_HAS_NATIVE_UINT128)
 	 typedef uint128_t dword;

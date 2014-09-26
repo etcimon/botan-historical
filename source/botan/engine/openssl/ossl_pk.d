@@ -33,7 +33,7 @@ class OSSL_DH_KA_Operation : public PK_Ops::Key_Agreement
 		OSSL_DH_KA_Operation(in DH_PrivateKey dh) :
 			x(dh.get_x()), p(dh.group_p()) {}
 
-		SafeVector!byte agree(in byte[] w, size_t w_len)
+		SafeVector!byte agree(in byte* w, size_t w_len)
 		{
 			OSSL_BN i(w, w_len), r;
 			BN_mod_exp(r.ptr(), i.ptr(), x.ptr(), p.ptr(), ctx.ptr());
@@ -62,7 +62,7 @@ class OSSL_DSA_Signature_Operation : public PK_Ops::Signature
 		size_t message_part_size() const { return (q_bits + 7) / 8; }
 		size_t max_input_bits() const { return q_bits; }
 
-		SafeVector!byte sign(in byte[] msg, size_t msg_len,
+		SafeVector!byte sign(in byte* msg, size_t msg_len,
 										RandomNumberGenerator& rng);
 	private:
 		const OSSL_BN x, p, q, g;
@@ -71,7 +71,7 @@ class OSSL_DSA_Signature_Operation : public PK_Ops::Signature
 };
 
 SafeVector!byte
-OSSL_DSA_Signature_Operation::sign(in byte[] msg, size_t msg_len,
+OSSL_DSA_Signature_Operation::sign(in byte* msg, size_t msg_len,
 											 RandomNumberGenerator& rng)
 {
 	const size_t q_bytes = (q_bits + 7) / 8;
@@ -122,16 +122,16 @@ class OSSL_DSA_Verification_Operation : public PK_Ops::Verification
 
 		bool with_recovery() const { return false; }
 
-		bool verify(in byte[] msg, size_t msg_len,
-						in byte[] sig, size_t sig_len);
+		bool verify(in byte* msg, size_t msg_len,
+						in byte* sig, size_t sig_len);
 	private:
 		const OSSL_BN y, p, q, g;
 		const OSSL_BN_CTX ctx;
 		size_t q_bits;
 };
 
-bool OSSL_DSA_Verification_Operation::verify(in byte[] msg, size_t msg_len,
-														  in byte[] sig, size_t sig_len)
+bool OSSL_DSA_Verification_Operation::verify(in byte* msg, size_t msg_len,
+														  in byte* sig, size_t sig_len)
 {
 	const size_t q_bytes = q.bytes();
 
@@ -183,7 +183,7 @@ class OSSL_RSA_Private_Operation : public PK_Ops::Signature,
 
 		size_t max_input_bits() const { return (n_bits - 1); }
 
-		SafeVector!byte sign(in byte[] msg, size_t msg_len,
+		SafeVector!byte sign(in byte* msg, size_t msg_len,
 										RandomNumberGenerator&)
 		{
 			BigInt m(msg, msg_len);
@@ -191,7 +191,7 @@ class OSSL_RSA_Private_Operation : public PK_Ops::Signature,
 			return BigInt::encode_1363(x, (n_bits + 7) / 8);
 		}
 
-		SafeVector!byte decrypt(in byte[] msg, size_t msg_len)
+		SafeVector!byte decrypt(in byte* msg, size_t msg_len)
 		{
 			BigInt m(msg, msg_len);
 			return BigInt::encode_locked(private_op(m));
@@ -229,14 +229,14 @@ class OSSL_RSA_Public_Operation : public PK_Ops::Verification,
 		size_t max_input_bits() const { return (n.bits() - 1); }
 		bool with_recovery() const { return true; }
 
-		SafeVector!byte encrypt(in byte[] msg, size_t msg_len,
+		SafeVector!byte encrypt(in byte* msg, size_t msg_len,
 											RandomNumberGenerator&)
 		{
 			BigInt m(msg, msg_len);
 			return BigInt::encode_1363(public_op(m), n.bytes());
 		}
 
-		SafeVector!byte verify_mr(in byte[] msg, size_t msg_len)
+		SafeVector!byte verify_mr(in byte* msg, size_t msg_len)
 		{
 			BigInt m(msg, msg_len);
 			return BigInt::encode_locked(public_op(m));

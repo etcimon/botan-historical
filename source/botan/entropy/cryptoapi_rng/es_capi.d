@@ -16,7 +16,7 @@ namespace {
 class CSP_Handle
 {
 	public:
-		CSP_Handle(u64bit capi_provider)
+		CSP_Handle(ulong capi_provider)
 		{
 			valid = false;
 			DWORD prov_type = (DWORD)capi_provider;
@@ -32,7 +32,7 @@ class CSP_Handle
 				CryptReleaseContext(handle, 0);
 		}
 
-		size_t gen_random(ref byte[] output) const
+		size_t gen_random(byte* output) const
 		{
 			if(is_valid() && CryptGenRandom(handle, cast(DWORD)(output.length), out))
 				return output.length;

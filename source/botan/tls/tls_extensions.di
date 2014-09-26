@@ -16,25 +16,25 @@ namespace TLS {
 class TLS_Data_Reader;
 
 enum Handshake_Extension_Type {
-	TLSEXT_SERVER_NAME_INDICATION = 0,
-	TLSEXT_MAX_FRAGMENT_LENGTH	 = 1,
-	TLSEXT_CLIENT_CERT_URL		  = 2,
-	TLSEXT_TRUSTED_CA_KEYS		  = 3,
+	TLSEXT_SERVER_NAME_INDICATION 	= 0,
+	TLSEXT_MAX_FRAGMENT_LENGTH		= 1,
+	TLSEXT_CLIENT_CERT_URL		 	= 2,
+	TLSEXT_TRUSTED_CA_KEYS		 	= 3,
 	TLSEXT_TRUNCATED_HMAC			= 4,
 
 	TLSEXT_CERTIFICATE_TYPES		= 9,
-	TLSEXT_USABLE_ELLIPTIC_CURVES = 10,
-	TLSEXT_EC_POINT_FORMATS		 = 11,
+	TLSEXT_USABLE_ELLIPTIC_CURVES	= 10,
+	TLSEXT_EC_POINT_FORMATS			= 11,
 	TLSEXT_SRP_IDENTIFIER			= 12,
-	TLSEXT_SIGNATURE_ALGORITHMS	= 13,
+	TLSEXT_SIGNATURE_ALGORITHMS		= 13,
 	TLSEXT_HEARTBEAT_SUPPORT		= 15,
 
 	TLSEXT_SESSION_TICKET			= 35,
 
-	TLSEXT_NEXT_PROTOCOL			 = 13172,
+	TLSEXT_NEXT_PROTOCOL			= 13172,
 
-	TLSEXT_SAFE_RENEGOTIATION	  = 65281,
-};
+	TLSEXT_SAFE_RENEGOTIATION	  	= 65281,
+}
 
 /**
 * Base class representing a TLS extension of some kind
@@ -45,20 +45,20 @@ class Extension
 		/**
 		* @return code number of the extension
 		*/
-		abstract Handshake_Extension_Type type() const = 0;
+		abstract Handshake_Extension_Type type() const;
 
 		/**
 		* @return serialized binary for the extension
 		*/
-		abstract Vector!( byte ) serialize() const = 0;
+		abstract Vector!( byte ) serialize() const;
 
 		/**
 		* @return if we should encode this extension or not
 		*/
-		abstract bool empty() const = 0;
+		abstract bool empty() const;
 
 		abstract ~Extension() {}
-};
+}
 
 /**
 * Server Name Indicator extension (RFC 3546)
@@ -75,7 +75,7 @@ class Server_Name_Indicator : public Extension
 			sni_host_name(host_name) {}
 
 		Server_Name_Indicator(TLS_Data_Reader& reader,
-									 u16bit extension_size);
+									 ushort extension_size);
 
 		string host_name() const { return sni_host_name; }
 
@@ -84,7 +84,7 @@ class Server_Name_Indicator : public Extension
 		bool empty() const { return sni_host_name == ""; }
 	private:
 		string sni_host_name;
-};
+}
 
 /**
 * SRP identifier extension (RFC 5054)
@@ -101,7 +101,7 @@ class SRP_Identifier : public Extension
 			srp_identifier(identifier) {}
 
 		SRP_Identifier(TLS_Data_Reader& reader,
-							u16bit extension_size);
+							ushort extension_size);
 
 		string identifier() const { return srp_identifier; }
 
@@ -110,7 +110,7 @@ class SRP_Identifier : public Extension
 		bool empty() const { return srp_identifier == ""; }
 	private:
 		string srp_identifier;
-};
+}
 
 /**
 * Renegotiation Indication Extension (RFC 5746)
@@ -129,7 +129,7 @@ class Renegotiation_Extension : public Extension
 			reneg_data(bits) {}
 
 		Renegotiation_Extension(TLS_Data_Reader& reader,
-									  u16bit extension_size);
+									  ushort extension_size);
 
 		in Vector!byte renegotiation_info() const
 		{ return reneg_data; }
@@ -139,7 +139,7 @@ class Renegotiation_Extension : public Extension
 		bool empty() const { return false; } // always send this
 	private:
 		Vector!( byte ) reneg_data;
-};
+}
 
 /**
 * Maximum Fragment Length Negotiation Extension (RFC 4366 sec 3.2)
@@ -167,11 +167,11 @@ class Maximum_Fragment_Length : public Extension
 			m_max_fragment(max_fragment) {}
 
 		Maximum_Fragment_Length(TLS_Data_Reader& reader,
-										u16bit extension_size);
+										ushort extension_size);
 
 	private:
 		size_t m_max_fragment;
-};
+}
 
 /**
 * Next Protocol Negotiation
@@ -204,14 +204,14 @@ class Next_Protocol_Notification : public Extension
 			m_protocols(protocols) {}
 
 		Next_Protocol_Notification(TLS_Data_Reader& reader,
-											u16bit extension_size);
+											ushort extension_size);
 
 		Vector!( byte ) serialize() const;
 
 		bool empty() const { return false; }
 	private:
 		Vector!( string ) m_protocols;
-};
+}
 
 /**
 * Session Ticket Extension (RFC 5077)
@@ -243,14 +243,14 @@ class Session_Ticket : public Extension
 		/**
 		* Deserialize a session ticket
 		*/
-		Session_Ticket(TLS_Data_Reader& reader, u16bit extension_size);
+		Session_Ticket(TLS_Data_Reader& reader, ushort extension_size);
 
 		Vector!( byte ) serialize() const { return m_ticket; }
 
 		bool empty() const { return false; }
 	private:
 		Vector!( byte ) m_ticket;
-};
+}
 
 /**
 * Supported Elliptic Curves Extension (RFC 4492)
@@ -263,8 +263,8 @@ class Supported_Elliptic_Curves : public Extension
 
 		Handshake_Extension_Type type() const { return static_type(); }
 
-		static string curve_id_to_name(u16bit id);
-		static u16bit name_to_curve_id(in string name);
+		static string curve_id_to_name(ushort id);
+		static ushort name_to_curve_id(in string name);
 
 		const Vector!( string )& curves() const { return m_curves; }
 
@@ -274,12 +274,12 @@ class Supported_Elliptic_Curves : public Extension
 			m_curves(curves) {}
 
 		Supported_Elliptic_Curves(TLS_Data_Reader& reader,
-										  u16bit extension_size);
+										  ushort extension_size);
 
 		bool empty() const { return m_curves.empty(); }
 	private:
 		Vector!( string ) m_curves;
-};
+}
 
 /**
 * Signature Algorithms Extension for TLS 1.2 (RFC 5246)
@@ -315,10 +315,10 @@ class Signature_Algorithms : public Extension
 			m_supported_algos(algos) {}
 
 		Signature_Algorithms(TLS_Data_Reader& reader,
-									u16bit extension_size);
+									ushort extension_size);
 	private:
 		Vector!( Pair!(string, string)  ) m_supported_algos;
-};
+}
 
 /**
 * Heartbeat Extension (RFC 6520)
@@ -340,11 +340,11 @@ class Heartbeat_Support_Indicator : public Extension
 		Heartbeat_Support_Indicator(bool peer_allowed_to_send) :
 			m_peer_allowed_to_send(peer_allowed_to_send) {}
 
-		Heartbeat_Support_Indicator(TLS_Data_Reader& reader, u16bit extension_size);
+		Heartbeat_Support_Indicator(TLS_Data_Reader& reader, ushort extension_size);
 
 	private:
 		bool m_peer_allowed_to_send;
-};
+}
 
 /**
 * Represents a block of extensions in a hello message
@@ -354,8 +354,7 @@ class Extensions
 	public:
 		std::set<Handshake_Extension_Type> extension_types() const;
 
-		template<typename T>
-		T* get() const
+		T* get(T)() const
 		{
 			Handshake_Extension_Type type = T::static_type();
 
@@ -363,7 +362,7 @@ class Extensions
 
 			if(i != extensions.end())
 				return cast(T*)(i->second.get());
-			return nullptr;
+			return null;
 		}
 
 		void add(Extension* extn)
@@ -384,6 +383,6 @@ class Extensions
 		Extensions& operator=(in Extensions) { return (*this); }
 
 		std::map<Handshake_Extension_Type, std::unique_ptr<Extension>> extensions;
-};
+}
 
 }

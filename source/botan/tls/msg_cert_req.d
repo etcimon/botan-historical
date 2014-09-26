@@ -63,7 +63,7 @@ Certificate_Req::Certificate_Req(Handshake_IO& io,
 
 		for(size_t i = 0; i != hashes.size(); ++i)
 			for(size_t j = 0; j != sigs.size(); ++j)
-				m_supported_algos.push_back(std::make_pair(hashes[i], sigs[j]));
+				m_supported_algos.push_back(Pair(hashes[i], sigs[j]));
 	}
 
 	hash.update(io.send(*this));
@@ -103,11 +103,11 @@ Certificate_Req::Certificate_Req(in Vector!byte buf,
 		{
 			string hash = Signature_Algorithms::hash_algo_name(sig_hash_algs[i]);
 			string sig = Signature_Algorithms::sig_algo_name(sig_hash_algs[i+1]);
-			m_supported_algos.push_back(std::make_pair(hash, sig));
+			m_supported_algos.push_back(Pair(hash, sig));
 		}
 	}
 
-	const u16bit purported_size = reader.get_u16bit();
+	const ushort purported_size = reader.get_ushort();
 
 	if(reader.remaining_bytes() != purported_size)
 		throw new Decoding_Error("Inconsistent length in certificate request");

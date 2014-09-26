@@ -21,7 +21,7 @@ class Server_Handshake_State : public Handshake_State
 		Server_Handshake_State(Handshake_IO* io) : Handshake_State(io) {}
 
 		// Used by the server only, in case of RSA key exchange. Not owned
-		Private_Key* server_rsa_kex_key = nullptr;
+		Private_Key* server_rsa_kex_key = null;
 
 		/*
 		* Used by the server to know if resumption should be allowed on
@@ -101,7 +101,7 @@ bool check_for_resume(Session& session_info,
 /*
 * Choose which ciphersuite to use
 */
-u16bit choose_ciphersuite(
+ushort choose_ciphersuite(
 	const Policy& policy,
 	Protocol_Version _version,
 	Credentials_Manager& creds,
@@ -113,9 +113,9 @@ u16bit choose_ciphersuite(
 	const bool have_srp = creds.attempt_srp("tls-server",
 														 client_hello->sni_hostname());
 
-	const Vector!( u16bit ) client_suites = client_hello->ciphersuites();
+	const Vector!( ushort ) client_suites = client_hello->ciphersuites();
 
-	const Vector!( u16bit ) server_suites = policy.ciphersuite_list(_version, have_srp);
+	const Vector!( ushort ) server_suites = policy.ciphersuite_list(_version, have_srp);
 
 	if(server_suites.empty())
 		throw new TLS_Exception(Alert::HANDSHAKE_FAILURE,
@@ -124,8 +124,8 @@ u16bit choose_ciphersuite(
 	const bool have_shared_ecc_curve =
 		(policy.choose_curve(client_hello->supported_ecc_curves()) != "");
 
-	Vector!( u16bit ) pref_list = server_suites;
-	Vector!( u16bit ) other_list = client_suites;
+	Vector!( ushort ) pref_list = server_suites;
+	Vector!( ushort ) other_list = client_suites;
 
 	if(!our_choice)
 		std::swap(pref_list, other_list);
@@ -180,7 +180,7 @@ std::map<string, Vector!( X509_Certificate ) >
 get_server_certs(in string hostname,
 					  Credentials_Manager& creds)
 {
-	const char* cert_types[] = { "RSA", "DSA", "ECDSA", nullptr };
+	const char* cert_types[] = { "RSA", "DSA", "ECDSA", null };
 
 	std::map<string, Vector!( X509_Certificate ) > cert_chains;
 
@@ -201,9 +201,9 @@ get_server_certs(in string hostname,
 /*
 * TLS Server Constructor
 */
-Server::Server(void delegate(in byte[]) output_fn,
-					void delegate(in byte[]) data_cb,
-					void delegate(Alert, in byte[]) alert_cb,
+Server::Server(void delegate(in byte*) output_fn,
+					void delegate(in byte*) data_cb,
+					void delegate(Alert, in byte*) alert_cb,
 					bool delegate(const Session) handshake_cb,
 					Session_Manager session_manager,
 					Credentials_Manager creds,
@@ -502,7 +502,7 @@ void Server::process_handshake_msg(const Handshake_State* active_state,
 					);
 			}
 
-			Private_Key* Private_Key = nullptr;
+			Private_Key* Private_Key = null;
 
 			if(kex_algo == "RSA" || sig_algo != "")
 			{

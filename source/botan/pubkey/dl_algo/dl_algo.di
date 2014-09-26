@@ -53,7 +53,7 @@ class DL_Scheme_PublicKey : public abstract Public_Key
 		* Get the underlying groups encoding format.
 		* @return encoding format
 		*/
-		abstract DL_Group::Format group_format() const = 0;
+		abstract DL_Group::Format group_format() const;
 
 		size_t estimated_strength() const override;
 

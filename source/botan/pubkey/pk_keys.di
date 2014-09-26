@@ -19,7 +19,7 @@ class Public_Key
 		* Get the name of the underlying public key scheme.
 		* @return name of the public key scheme
 		*/
-		abstract string algo_name() const = 0;
+		abstract string algo_name() const;
 
 		/**
 		* Return the estimated strength of the underlying key against
@@ -30,7 +30,7 @@ class Public_Key
 		*
 		* @return estimated strength in bits
 		*/
-		abstract size_t estimated_strength() const = 0;
+		abstract size_t estimated_strength() const;
 
 		/**
 		* Get the OID of the underlying public key scheme.
@@ -46,7 +46,7 @@ class Public_Key
 		* @return true if the test is passed
 		*/
 		abstract bool check_key(RandomNumberGenerator& rng,
-									  bool strong) const = 0;
+									  bool strong) const;
 
 		/**
 		* Find out the number of message parts supported by this scheme.
@@ -64,17 +64,17 @@ class Public_Key
 		* Get the maximum message size in bits supported by this public key.
 		* @return maximum message size in bits
 		*/
-		abstract size_t max_input_bits() const = 0;
+		abstract size_t max_input_bits() const;
 
 		/**
 		* @return X.509 AlgorithmIdentifier for this key
 		*/
-		abstract AlgorithmIdentifier algorithm_identifier() const = 0;
+		abstract AlgorithmIdentifier algorithm_identifier() const;
 
 		/**
 		* @return X.509 subject key encoding for this key object
 		*/
-		abstract Vector!( byte ) x509_subject_public_key() const = 0;
+		abstract Vector!( byte ) x509_subject_public_key() const;
 
 		abstract ~Public_Key() {}
 	protected:
@@ -94,7 +94,7 @@ class Private_Key : public abstract Public_Key
 		/**
 		* @return PKCS #8 private key encoding for this key object
 		*/
-		abstract SafeVector!byte pkcs8_Private_Key() const = 0;
+		abstract SafeVector!byte pkcs8_Private_Key() const;
 
 		/**
 		* @return PKCS #8 AlgorithmIdentifier for this key
@@ -126,7 +126,7 @@ class PK_Key_Agreement_Key : public abstract Private_Key
 		/*
 		* @return public component of this key
 		*/
-		abstract Vector!( byte ) public_value() const = 0;
+		abstract Vector!( byte ) public_value() const;
 
 		abstract ~PK_Key_Agreement_Key() {}
 };

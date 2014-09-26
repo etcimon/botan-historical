@@ -44,19 +44,19 @@ class TLS_Data_Reader
 			m_offset += bytes;
 		}
 
-		u16bit get_uint()
+		ushort get_uint()
 		{
 			assert_at_least(4);
-			u16bit result = make_uint(m_buf[m_offset  ], m_buf[m_offset+1],
+			ushort result = make_uint(m_buf[m_offset  ], m_buf[m_offset+1],
 												 m_buf[m_offset+2], m_buf[m_offset+3]);
 			m_offset += 4;
 			return result;
 		}
 
-		u16bit get_u16bit()
+		ushort get_ushort()
 		{
 			assert_at_least(2);
-			u16bit result = make_u16bit(m_buf[m_offset], m_buf[m_offset+1]);
+			ushort result = make_ushort(m_buf[m_offset], m_buf[m_offset+1]);
 			m_offset += 2;
 			return result;
 		}
@@ -69,8 +69,8 @@ class TLS_Data_Reader
 			return result;
 		}
 
-		template<typename T, typename Container>
-		Container get_elem(size_t num_elems)
+		
+		Container get_elem(T, Container)(size_t num_elems)
 		{
 			assert_at_least(num_elems * sizeof(T));
 
@@ -84,10 +84,9 @@ class TLS_Data_Reader
 			return result;
 		}
 
-		template<typename T>
-		Vector!( T ) get_range(size_t len_bytes,
-										  size_t min_elems,
-										  size_t max_elems)
+		Vector!( T ) get_range(T)(size_t len_bytes,
+								  size_t min_elems,
+								  size_t max_elems)
 		{
 			const size_t num_elems =
 				get_num_elems(len_bytes, sizeof(T), min_elems, max_elems);
@@ -95,10 +94,9 @@ class TLS_Data_Reader
 			return get_elem<T, Vector!( T ) >(num_elems);
 		}
 
-		template<typename T>
-		Vector!( T ) get_range_vector(size_t len_bytes,
-												  size_t min_elems,
-												  size_t max_elems)
+		Vector!( T ) get_range_vector(T)(size_t len_bytes,
+										  size_t min_elems,
+										  size_t max_elems)
 		{
 			const size_t num_elems =
 				get_num_elems(len_bytes, sizeof(T), min_elems, max_elems);
@@ -116,8 +114,7 @@ class TLS_Data_Reader
 			return string(cast(char*)(&v[0]), v.size());
 		}
 
-		template<typename T>
-		Vector!( T ) get_fixed(size_t size)
+		Vector!( T ) get_fixed(T)(size_t size)
 		{
 			return get_elem<T, Vector!( T ) >(size);
 		}
@@ -130,15 +127,15 @@ class TLS_Data_Reader
 			if(len_bytes == 1)
 				return get_byte();
 			else if(len_bytes == 2)
-				return get_u16bit();
+				return get_ushort();
 
 			throw new decode_error("Bad length size");
 		}
 
 		size_t get_num_elems(size_t len_bytes,
-									size_t T_size,
-									size_t min_elems,
-									size_t max_elems)
+								size_t T_size,
+								size_t min_elems,
+								size_t max_elems)
 		{
 			const size_t byte_length = get_length_field(len_bytes);
 
@@ -175,11 +172,10 @@ class TLS_Data_Reader
 /**
 * Helper function for encoding length-tagged vectors
 */
-template<typename T, typename Alloc>
-void append_tls_length_value(Vector!( byte, Alloc )& buf,
-									  const T* vals,
-									  size_t vals_size,
-									  size_t tag_size)
+void append_tls_length_value(T, Alloc)(Vector!( byte, Alloc )& buf,
+										  const T* vals,
+										  size_t vals_size,
+										  size_t tag_size)
 {
 	const size_t T_size = sizeof(T);
 	const size_t val_bytes = T_size * vals_size;
@@ -199,23 +195,21 @@ void append_tls_length_value(Vector!( byte, Alloc )& buf,
 			buf.push_back(get_byte(j, vals[i]));
 }
 
-template<typename T, typename Alloc, typename Alloc2>
-void append_tls_length_value(Vector!( byte, Alloc )& buf,
-									  const Vector!( T, Alloc2 )& vals,
-									  size_t tag_size)
+void append_tls_length_value(T, Alloc, Alloc2)(Vector!( byte, Alloc )& buf,
+												  const Vector!( T, Alloc2 )& vals,
+												  size_t tag_size)
 {
 	append_tls_length_value(buf, &vals[0], vals.size(), tag_size);
 }
 
-template<typename Alloc>
-void append_tls_length_value(Vector!( byte, Alloc )& buf,
+void append_tls_length_value(Alloc)(Vector!( byte, Alloc )& buf,
 									  in string str,
 									  size_t tag_size)
 {
 	append_tls_length_value(buf,
-									cast(in byte*)(str[0]),
-									str.size(),
-									tag_size);
+							cast(in byte*)(str[0]),
+							str.size(),
+							tag_size);
 }
 
 }

@@ -20,7 +20,7 @@ class Hex_Encoder : public Filter
 
 		string name() const { return "Hex_Encoder"; }
 
-		void write(in byte[] input);
+		void write(in byte* input, size_t length);
 		void end_msg();
 
 		/**

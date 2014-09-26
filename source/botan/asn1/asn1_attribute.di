@@ -14,8 +14,8 @@
 class Attribute : public ASN1_Object
 {
 	public:
-		void encode_into(class DER_Encoder& to) const;
-		void decode_from(class BER_Decoder& from);
+		void encode_into(class DER_Encoder to) const;
+		void decode_from(class BER_Decoder from);
 
 		OID oid;
 		Vector!( byte ) parameters;

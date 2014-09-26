@@ -13,8 +13,8 @@
 class X509_Time : public ASN1_Object
 {
 	public:
-		void encode_into(class DER_Encoder&) const;
-		void decode_from(class BER_Decoder&);
+		void encode_into(class DER_Encoder) const;
+		void decode_from(class BER_Decoder);
 
 		string as_string() const;
 		string readable_string() const;

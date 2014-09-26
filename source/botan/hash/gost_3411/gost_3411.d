@@ -34,7 +34,7 @@ void GOST_34_11::clear()
 /**
 * Hash additional inputs
 */
-void GOST_34_11::add_data(in byte[] input, size_t length)
+void GOST_34_11::add_data(in byte* input, size_t length)
 {
 	count += length;
 
@@ -64,20 +64,20 @@ void GOST_34_11::add_data(in byte[] input, size_t length)
 /**
 * The GOST 34.11 compression function
 */
-void GOST_34_11::compress_n(in byte[] input, size_t blocks)
+void GOST_34_11::compress_n(in byte* input, size_t blocks)
 {
 	for(size_t i = 0; i != blocks; ++i)
 	{
-		for(u16bit j = 0, carry = 0; j != 32; ++j)
+		for(ushort j = 0, carry = 0; j != 32; ++j)
 		{
-			u16bit s = sum[j] + input[32*i+j] + carry;
+			ushort s = sum[j] + input[32*i+j] + carry;
 			carry = get_byte(0, s);
 			sum[j] = get_byte(1, s);
 		}
 
 		byte S[32] = { 0 };
 
-		u64bit U[4], V[4];
+		ulong U[4], V[4];
 		load_be(U, &hash[0], 4);
 		load_be(V, input + 32*i, 4);
 
@@ -97,7 +97,7 @@ void GOST_34_11::compress_n(in byte[] input, size_t blocks)
 				break;
 
 			// A(x)
-			u64bit A_U = U[0];
+			ulong A_U = U[0];
 			U[0] = U[1];
 			U[1] = U[2];
 			U[2] = U[3];
@@ -112,8 +112,8 @@ void GOST_34_11::compress_n(in byte[] input, size_t blocks)
 			}
 
 			// A(A(x))
-			u64bit AA_V_1 = V[0] ^ V[1];
-			u64bit AA_V_2 = V[1] ^ V[2];
+			ulong AA_V_1 = V[0] ^ V[1];
+			ulong AA_V_2 = V[1] ^ V[2];
 			V[0] = V[2];
 			V[1] = V[3];
 			V[2] = AA_V_1;
@@ -214,7 +214,7 @@ void GOST_34_11::compress_n(in byte[] input, size_t blocks)
 /**
 * Produce the final GOST 34.11 output
 */
-void GOST_34_11::final_result(ref byte[] output)
+void GOST_34_11::final_result(byte* output)
 {
 	if(position)
 	{
@@ -223,7 +223,7 @@ void GOST_34_11::final_result(ref byte[] output)
 	}
 
 	SafeVector!byte length_buf(32);
-	const u64bit bit_count = count * 8;
+	const ulong bit_count = count * 8;
 	store_le(bit_count, &length_buf[0]);
 
 	SafeVector!byte sum_buf = sum;

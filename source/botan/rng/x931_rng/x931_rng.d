@@ -8,7 +8,7 @@
 #include <botan/x931_rng.h>
 #include <botan/internal/xor_buf.h>
 #include <algorithm>
-void ANSI_X931_RNG::randomize(ref byte[] output)
+void ANSI_X931_RNG::randomize(byte* output)
 {
 	size_t length = output.length;
 	if(!is_seeded())
@@ -77,7 +77,7 @@ void ANSI_X931_RNG::reseed(size_t poll_bits)
 	rekey();
 }
 
-void ANSI_X931_RNG::add_entropy(in byte[] input, size_t length)
+void ANSI_X931_RNG::add_entropy(in byte* input, size_t length)
 {
 	m_prng->add_entropy(input, length);
 	rekey();

@@ -29,7 +29,7 @@ Heartbeat_Message::Heartbeat_Message(in Vector!byte buf)
 }
 
 Heartbeat_Message::Heartbeat_Message(Type type,
-												 in byte[] payload,
+												 in byte* payload,
 												 size_t payload_len) :
 	m_type(type),
 	m_payload(payload, payload + payload_len)
@@ -40,8 +40,8 @@ Vector!( byte ) Heartbeat_Message::contents() const
 {
 	Vector!( byte ) send_buf(3 + m_payload.size() + 16);
 	send_buf[0] = m_type;
-	send_buf[1] = get_byte<u16bit>(0, m_payload.size());
-	send_buf[2] = get_byte<u16bit>(1, m_payload.size());
+	send_buf[1] = get_byte<ushort>(0, m_payload.size());
+	send_buf[2] = get_byte<ushort>(1, m_payload.size());
 	copy_mem(&send_buf[3], &m_payload[0], m_payload.size());
 	// leave padding as all zeros
 
@@ -56,7 +56,7 @@ Vector!( byte ) Heartbeat_Support_Indicator::serialize() const
 }
 
 Heartbeat_Support_Indicator::Heartbeat_Support_Indicator(TLS_Data_Reader& reader,
-																			u16bit extension_size)
+																			ushort extension_size)
 {
 	if(extension_size != 1)
 		throw new Decoding_Error("Strange size for heartbeat extension");

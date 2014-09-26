@@ -16,7 +16,7 @@ namespace TLS {
 Session::Session(in Vector!byte session_identifier,
 					  in SafeVector!byte master_secret,
 					  Protocol_Version _version,
-					  u16bit ciphersuite,
+					  ushort ciphersuite,
 					  byte compression_method,
 					  Connection_Side side,
 					  size_t fragment_size,
@@ -46,7 +46,7 @@ Session::Session(in string pem)
 	*this = Session(&der[0], der.size());
 }
 
-Session::Session(in byte[] ber, size_t ber_len)
+Session::Session(in byte* ber, size_t ber_len)
 {
 	byte side_code = 0;
 
@@ -151,7 +151,7 @@ Session::encrypt(in SymmetricKey master_key,
 	return CryptoBox::encrypt(&der[0], der.size(), master_key, rng);
 }
 
-Session Session::decrypt(in byte[] buf, size_t buf_len,
+Session Session::decrypt(in byte* buf, size_t buf_len,
 								 const SymmetricKey& master_key)
 {
 	try

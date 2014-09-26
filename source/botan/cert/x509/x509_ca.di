@@ -93,8 +93,8 @@ class X509_CA
 				  in Private_Key key,
 				  in string hash_fn);
 
-		X509_CA(in X509_CA) = delete;
-		X509_CA& operator=(in X509_CA) = delete;
+		X509_CA(in X509_CA);
+		X509_CA& operator=(in X509_CA);
 
 		~X509_CA();
 	private:

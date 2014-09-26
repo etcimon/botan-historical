@@ -73,7 +73,7 @@ Server_Key_Exchange::Server_Key_Exchange(Handshake_IO& io,
 		if(domain == "")
 			throw new Internal_Error("Could not find name of ECDH domain " + ecdh_domain_oid);
 
-		const u16bit named_curve_id = Supported_Elliptic_Curves::name_to_curve_id(domainput);
+		const ushort named_curve_id = Supported_Elliptic_Curves::name_to_curve_id(domainput);
 
 		m_params.push_back(3); // named curve
 		m_params.push_back(get_byte(0, named_curve_id));
@@ -140,7 +140,7 @@ Server_Key_Exchange::Server_Key_Exchange(in Vector!byte buf,
 													  in string kex_algo,
 													  in string sig_algo,
 													  Protocol_Version _version) :
-	m_kex_key(nullptr), m_srp_params(nullptr)
+	m_kex_key(null), m_srp_params(null)
 {
 	if(buf.size() < 6)
 		throw new Decoding_Error("Server_Key_Exchange: Packet corrupted");
@@ -176,7 +176,7 @@ Server_Key_Exchange::Server_Key_Exchange(in Vector!byte buf,
 		if(curve_type != 3)
 			throw new Decoding_Error("Server_Key_Exchange: Server sent non-named ECC curve");
 
-		const u16bit curve_id = reader.get_u16bit();
+		const ushort curve_id = reader.get_ushort();
 
 		const string name = Supported_Elliptic_Curves::curve_id_to_name(curve_id);
 

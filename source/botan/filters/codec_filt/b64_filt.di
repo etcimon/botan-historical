@@ -19,7 +19,7 @@ class Base64_Encoder : public Filter
 		* @param input the message to input as a byte array
 		* @param length the length of the byte array input
 		*/
-		void write(in byte[] input, size_t length);
+		void write(in byte* input, size_t length);
 
 		/**
 		* Inform the Encoder that the current message shall be closed.
@@ -35,9 +35,9 @@ class Base64_Encoder : public Filter
 		Base64_Encoder(bool breaks = false, size_t length = 72,
 							bool t_n = false);
 	private:
-		void encode_and_send(in byte[] input, size_t length,
+		void encode_and_send(in byte* input, size_t length,
 									bool final_inputs = false);
-		void do_output(in byte[] output);
+		void do_output(in byte* output);
 
 		const size_t line_length;
 		const bool trailing_newline;
@@ -58,7 +58,7 @@ class Base64_Decoder : public Filter
 		* @param input the message to input as a byte array
 		* @param length the length of the byte array input
 		*/
-		void write(in byte[] input, size_t length);
+		void write(in byte* input, size_t length);
 
 		/**
 		* Finish up the current message

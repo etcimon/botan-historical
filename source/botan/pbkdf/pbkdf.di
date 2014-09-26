@@ -21,9 +21,9 @@ class PBKDF
 		/**
 		* @return new instance of this same algorithm
 		*/
-		abstract PBKDF* clone() const = 0;
+		abstract PBKDF* clone() const;
 
-		abstract string name() const = 0;
+		abstract string name() const;
 
 		/**
 		* Derive a key from a passphrase
@@ -35,7 +35,7 @@ class PBKDF
 		*/
 		OctetString derive_key(size_t output_len,
 									  in string passphrase,
-									  in byte[] salt, size_t salt_len,
+									  in byte* salt, size_t salt_len,
 									  size_t iterations) const;
 
 		/**
@@ -45,8 +45,7 @@ class PBKDF
 		* @param salt a randomly chosen salt
 		* @param iterations the number of iterations to use (use 10K or more)
 		*/
-		template<typename Alloc>
-		OctetString derive_key(size_t output_len,
+		OctetString derive_key(Alloc)(size_t output_len,
 									  in string passphrase,
 									  const Vector!( byte, Alloc )& salt,
 									  size_t iterations) const
@@ -65,7 +64,7 @@ class PBKDF
 		*/
 		OctetString derive_key(size_t output_len,
 									  in string passphrase,
-									  in byte[] salt, size_t salt_len,
+									  in byte* salt, size_t salt_len,
 									  std::chrono::milliseconds msec,
 									  size_t& iterations) const;
 
@@ -77,8 +76,7 @@ class PBKDF
 		* @param msec is how long to run the PBKDF
 		* @param iterations is set to the number of iterations used
 		*/
-		template<typename Alloc>
-		OctetString derive_key(size_t output_len,
+		OctetString derive_key(Alloc)(size_t output_len,
 									  in string passphrase,
 									  const Vector!( byte, Alloc )& salt,
 									  std::chrono::milliseconds msec,
@@ -104,7 +102,7 @@ class PBKDF
 		abstract Pair!(size_t, OctetString)
 			key_derivation(size_t output_len,
 								in string passphrase,
-								in byte[] salt, size_t salt_len,
+								in byte* salt, size_t salt_len,
 								size_t iterations,
-								std::chrono::milliseconds msec) const = 0;
+								std::chrono::milliseconds msec) const;
 };

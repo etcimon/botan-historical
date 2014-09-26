@@ -27,7 +27,7 @@ const size_t MAC_OUTPUT_LENGTH = 32;
 
 }
 
-Vector!( byte ) encrypt(in byte[] input, size_t input_len,
+Vector!( byte ) encrypt(in byte* input, size_t input_len,
 								  const SymmetricKey& master_key,
 								  RandomNumberGenerator& rng)
 {
@@ -59,7 +59,7 @@ Vector!( byte ) encrypt(in byte[] input, size_t input_len,
 	SafeVector!byte ctext = pipe.read_all(0);
 
 	Vector!( byte ) out(MAGIC_LENGTH);
-	store_be(CRYPTOBOX_MAGIC, &out[0]);
+	store_be(CRYPTOBOX_MAGIC, &output[0]);
 	out += cipher_key_salt;
 	out += mac_key_salt;
 	out += cipher_iv.bits_of();
@@ -71,7 +71,7 @@ Vector!( byte ) encrypt(in byte[] input, size_t input_len,
 	return out;
 }
 
-SafeVector!byte decrypt(in byte[] input, size_t input_len,
+SafeVector!byte decrypt(in byte* input, size_t input_len,
 									 const SymmetricKey& master_key)
 {
 	const size_t MIN_CTEXT_SIZE = 16; // due to using CBC with padding
@@ -86,7 +86,7 @@ SafeVector!byte decrypt(in byte[] input, size_t input_len,
 	if(input_len < MIN_POSSIBLE_LENGTH)
 		throw new Decoding_Error("Encrypted input too short to be valid");
 
-	if(load_be<uint>(input, 0) != CRYPTOBOX_MAGIC)
+	if(load_be!uint(input, 0) != CRYPTOBOX_MAGIC)
 		throw new Decoding_Error("Unknown header value in cryptobox");
 
 	std::unique_ptr<KDF> kdf(get_kdf(CRYPTOBOX_KDF));

@@ -12,8 +12,8 @@
 class RC2 : public Block_Cipher_Fixed_Params<8, 1, 32>
 {
 	public:
-		void encrypt_n(in byte[] input, ref byte[] output) const;
-		void decrypt_n(in byte[] input, ref byte[] output) const;
+		void encrypt_n(byte* input, byte* output, size_t blocks) const;
+		void decrypt_n(byte* input, byte* output, size_t blocks) const;
 
 		/**
 		* Return the code of the effective key bits
@@ -26,7 +26,7 @@ class RC2 : public Block_Cipher_Fixed_Params<8, 1, 32>
 		string name() const { return "RC2"; }
 		BlockCipher* clone() const { return new RC2; }
 	private:
-		void key_schedule(const byte[], size_t);
+		void key_schedule(in byte*, size_t);
 
-		secure_vector<u16bit> K;
+		secure_vector<ushort> K;
 };

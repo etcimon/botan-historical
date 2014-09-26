@@ -19,7 +19,7 @@ class Certificate_Store
 		* Subject DN and (optionally) key identifier
 		*/
 		abstract const X509_Certificate*
-			find_cert(in X509_DN subject_dn, in Vector!byte key_id) const = 0;
+			find_cert(in X509_DN subject_dn, in Vector!byte key_id) const;
 
 		abstract const X509_CRL* find_crl_for(in X509_Certificate subject) const;
 
@@ -29,7 +29,7 @@ class Certificate_Store
 		}
 
 		// remove this (used by TLS::Server)
-		abstract Vector!( X509_DN ) all_subjects() const = 0;
+		abstract Vector!( X509_DN ) all_subjects() const;
 };
 
 /**

@@ -63,7 +63,7 @@ class DSA_Signature_Operation : public PK_Ops::Signature
 		size_t message_part_size() const { return q.bytes(); }
 		size_t max_input_bits() const { return q.bits(); }
 
-		SafeVector!byte sign(in byte[] msg, size_t msg_len,
+		SafeVector!byte sign(in byte* msg, size_t msg_len,
 										RandomNumberGenerator& rng);
 	private:
 		const BigInt& q;
@@ -86,8 +86,8 @@ class DSA_Verification_Operation : public PK_Ops::Verification
 
 		bool with_recovery() const { return false; }
 
-		bool verify(in byte[] msg, size_t msg_len,
-						in byte[] sig, size_t sig_len);
+		bool verify(in byte* msg, size_t msg_len,
+						in byte* sig, size_t sig_len);
 	private:
 		const BigInt& q;
 		const BigInt& y;

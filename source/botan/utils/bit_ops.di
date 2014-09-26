@@ -11,8 +11,7 @@
 * @param arg an integer value
 * @return true iff arg is 2^n for some n > 0
 */
-template<typename T>
-inline bool is_power_of_2(T arg)
+bool is_power_of_2(T)(T arg)
 {
 	return ((arg != 0 && arg != 1) && ((arg & (arg-1)) == 0));
 }
@@ -23,8 +22,7 @@ inline bool is_power_of_2(T arg)
 * @param n an integer value
 * @return index of the highest set bit in n
 */
-template<typename T>
-inline size_t high_bit(T n)
+size_t high_bit(T)(T n)
 {
 	for(size_t i = 8*sizeof(T); i > 0; --i)
 		if((n >> (i - 1)) & 0x01)
@@ -38,8 +36,7 @@ inline size_t high_bit(T n)
 * @param n an integer value
 * @return index of the lowest set bit in n
 */
-template<typename T>
-inline size_t low_bit(T n)
+size_t low_bit(T)(T n)
 {
 	for(size_t i = 0; i != 8*sizeof(T); ++i)
 		if((n >> i) & 0x01)
@@ -52,8 +49,7 @@ inline size_t low_bit(T n)
 * @param n an integer value
 * @return number of significant bytes in n
 */
-template<typename T>
-inline size_t significant_bytes(T n)
+size_t significant_bytes(T)(T n)
 {
 	for(size_t i = 0; i != sizeof(T); ++i)
 		if(get_byte(i, n))
@@ -66,10 +62,9 @@ inline size_t significant_bytes(T n)
 * @param n an integer value
 * @return number of bits in n set to 1
 */
-template<typename T>
-inline size_t hamming_weight(T n)
+size_t hamming_weight(T)(T n)
 {
-	in byte[] NIBBLE_WEIGHTS = {
+	immutable byte[] NIBBLE_WEIGHTS = {
 		0, 1, 1, 2, 1, 2, 2, 3, 1, 2, 2, 3, 2, 3, 3, 4 };
 
 	size_t weight = 0;
@@ -83,8 +78,7 @@ inline size_t hamming_weight(T n)
 * @param n an integer value
 * @return maximum x st 2^x divides n
 */
-template<typename T>
-inline size_t ctz(T n)
+size_t ctz(T)(T n)
 {
 	for(size_t i = 0; i != 8*sizeof(T); ++i)
 		if((n >> i) & 0x01)

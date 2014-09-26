@@ -10,7 +10,7 @@
 /*
 * Default (deterministic) MAC verification operation
 */
-bool MessageAuthenticationCode::verify_mac(in byte[] mac, size_t length)
+bool MessageAuthenticationCode::verify_mac(in byte* mac, size_t length)
 {
 	SafeVector!byte our_mac = flush();
 

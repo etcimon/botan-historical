@@ -23,5 +23,5 @@ class Adler32 : public HashFunction
 	private:
 		void add_data(const byte[], size_t);
 		void final_result(byte[]);
-		u16bit S1, S2;
+		ushort S1, S2;
 };

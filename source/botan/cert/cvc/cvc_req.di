@@ -43,7 +43,7 @@ class EAC1_1_Req : public EAC1_1_gen_CVC<EAC1_1_Req>
 /*
 * Comparison Operator
 */
-inline bool operator!=(EAC1_1_Req const& lhs, EAC1_1_Req const& rhs)
+ bool operator!=(EAC1_1_Req const& lhs, EAC1_1_Req const& rhs)
 {
 	return !(lhs == rhs);
 }

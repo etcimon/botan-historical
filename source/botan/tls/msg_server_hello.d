@@ -21,7 +21,7 @@ Server_Hello::Server_Hello(Handshake_IO& io,
 									const Policy& policy,
 									in Vector!byte session_id,
 									Protocol_Version ver,
-									u16bit ciphersuite,
+									ushort ciphersuite,
 									byte compression,
 									size_t max_fragment_size,
 									bool client_has_secure_renegotiation,
@@ -78,7 +78,7 @@ Server_Hello::Server_Hello(in Vector!byte buf)
 
 	m_session_id = reader.get_range<byte>(1, 0, 32);
 
-	m_ciphersuite = reader.get_u16bit();
+	m_ciphersuite = reader.get_ushort();
 
 	m_comp_method = reader.get_byte();
 

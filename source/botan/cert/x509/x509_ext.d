@@ -35,7 +35,7 @@ Certificate_Extension* Extensions::get_extension(in OID oid)
 	X509_EXTENSION("X509v3.CRLNumber", CRL_Number);
 	X509_EXTENSION("X509v3.ReasonCode", CRL_ReasonCode);
 
-	return nullptr;
+	return null;
 }
 
 /*
@@ -57,7 +57,7 @@ Extensions& Extensions::operator=(in Extensions other)
 
 	for(size_t i = 0; i != other.extensions.size(); ++i)
 		extensions.push_back(
-			std::make_pair(other.extensions[i].first->copy(),
+			Pair(other.extensions[i].first->copy(),
 								other.extensions[i].second));
 
 	return (*this);
@@ -73,7 +73,7 @@ OID Certificate_Extension::oid_of() const
 
 void Extensions::add(Certificate_Extension* extn, bool critical)
 {
-	extensions.push_back(std::make_pair(extn, critical));
+	extensions.push_back(Pair(extn, critical));
 }
 
 /*
@@ -141,7 +141,7 @@ void Extensions::decode_from(BER_Decoder& from_source)
 											oid.as_string() + ": " + e.what());
 			}
 
-			extensions.push_back(std::make_pair(ext, critical));
+			extensions.push_back(Pair(ext, critical));
 		}
 	}
 
@@ -262,7 +262,7 @@ void Key_Usage::decode_inner(in Vector!byte input)
 
 	obj.value[obj.value.size()-1] &= (0xFF << obj.value[0]);
 
-	u16bit usage = 0;
+	ushort usage = 0;
 	for(size_t i = 1; i != obj.value.size(); ++i)
 		usage = (obj.value[i] << 8) | usage;
 

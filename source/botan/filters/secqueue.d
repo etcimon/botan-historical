@@ -15,11 +15,11 @@ class SecureQueueNode
 {
 	public:
 		SecureQueueNode() : buffer(DEFAULT_BUFFERSIZE)
-		{ next = nullptr; start = end = 0; }
+		{ next = null; start = end = 0; }
 
-		~SecureQueueNode() { next = nullptr; start = end = 0; }
+		~SecureQueueNode() { next = null; start = end = 0; }
 
-		size_t write(in byte[] input, size_t length)
+		size_t write(in byte* input, size_t length)
 		{
 			size_t copied = std::min<size_t>(length, buffer.size() - end);
 			copy_mem(&buffer[end], input, copied);
@@ -27,7 +27,7 @@ class SecureQueueNode
 			return copied;
 		}
 
-		size_t read(byte output[], size_t length)
+		size_t read(byte* output, size_t length)
 		{
 			size_t copied = std::min(length, end - start);
 			copy_mem(output, &buffer[start], copied);
@@ -35,7 +35,7 @@ class SecureQueueNode
 			return copied;
 		}
 
-		size_t peek(byte output[], size_t length, size_t offset = 0)
+		size_t peek(byte* output, size_t length, size_t offset = 0)
 		{
 			const size_t left = end - start;
 			if(offset >= left) return 0;
@@ -58,7 +58,7 @@ class SecureQueueNode
 SecureQueue::SecureQueue()
 {
 	bytes_read = 0;
-	set_next(nullptr, 0);
+	set_next(null, 0);
 	head = tail = new SecureQueueNode;
 }
 
@@ -69,7 +69,7 @@ SecureQueue::SecureQueue(in SecureQueue input) :
 	Fanout_Filter(), DataSource()
 {
 	bytes_read = 0;
-	set_next(nullptr, 0);
+	set_next(null, 0);
 
 	head = tail = new SecureQueueNode;
 	SecureQueueNode* temp = input.head;
@@ -92,7 +92,7 @@ void SecureQueue::destroy()
 		delete temp;
 		temp = holder;
 	}
-	head = tail = nullptr;
+	head = tail = null;
 }
 
 /*
@@ -114,7 +114,7 @@ SecureQueue& SecureQueue::operator=(in SecureQueue input)
 /*
 * Add some bytes to the queue
 */
-void SecureQueue::write(in byte[] input, size_t length)
+void SecureQueue::write(in byte* input, size_t length)
 {
 	if(!head)
 		head = tail = new SecureQueueNode;
@@ -134,7 +134,7 @@ void SecureQueue::write(in byte[] input, size_t length)
 /*
 * Read some bytes from the queue
 */
-size_t SecureQueue::read(byte output[], size_t length)
+size_t SecureQueue::read(byte* output, size_t length)
 {
 	size_t got = 0;
 	while(length && head)
@@ -157,7 +157,7 @@ size_t SecureQueue::read(byte output[], size_t length)
 /*
 * Read data, but do not remove it from queue
 */
-size_t SecureQueue::peek(byte output[], size_t length, size_t offset) const
+size_t SecureQueue::peek(byte* output, size_t length, size_t offset) const
 {
 	SecureQueueNode* current = head;
 

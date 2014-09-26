@@ -14,7 +14,7 @@ namespace {
 /*
 * Serpent's Linear Transformation
 */
-inline void transform(ref uint B0, ref uint B1, ref uint B2, ref uint B3)
+ void transform(ref uint B0, ref uint B1, ref uint B2, ref uint B3)
 {
 	B0  = rotate_left(B0, 13);	B2  = rotate_left(B2, 3);
 	B1 ^= B0 ^ B2;					B3 ^= B2 ^ (B0 << 3);
@@ -26,7 +26,7 @@ inline void transform(ref uint B0, ref uint B1, ref uint B2, ref uint B3)
 /*
 * Serpent's Inverse Linear Transformation
 */
-inline void i_transform(ref uint B0, ref uint B1, ref uint B2, ref uint B3)
+ void i_transform(ref uint B0, ref uint B1, ref uint B2, ref uint B3)
 {
 	B2  = rotate_right(B2, 22);  B0  = rotate_right(B0, 5);
 	B2 ^= B3 ^ (B1 << 7);		  B0 ^= B1 ^ B3;
@@ -49,14 +49,14 @@ inline void i_transform(ref uint B0, ref uint B1, ref uint B2, ref uint B3)
 /*
 * Serpent Encryption
 */
-void Serpent::encrypt_n(in byte[] input, ref byte[] output) const
+void Serpent::encrypt_n(byte* input, byte* output, size_t blocks) const
 {
 	for(size_t i = 0; i != blocks; ++i)
 	{
-		uint B0 = load_le<uint>(input, 0);
-		uint B1 = load_le<uint>(input, 1);
-		uint B2 = load_le<uint>(input, 2);
-		uint B3 = load_le<uint>(input, 3);
+		uint B0 = load_le!uint(input, 0);
+		uint B1 = load_le!uint(input, 1);
+		uint B2 = load_le!uint(input, 2);
+		uint B3 = load_le!uint(input, 3);
 
 		key_xor( 0,B0,B1,B2,B3); SBoxE1(B0,B1,B2,B3); transform(B0,B1,B2,B3);
 		key_xor( 1,B0,B1,B2,B3); SBoxE2(B0,B1,B2,B3); transform(B0,B1,B2,B3);
@@ -93,22 +93,22 @@ void Serpent::encrypt_n(in byte[] input, ref byte[] output) const
 
 		store_le(out, B0, B1, B2, B3);
 
-		input = input[BLOCK_SIZE .. $];
-		output = output[BLOCK_SIZE .. $];
+		input += BLOCK_SIZE;
+		output += BLOCK_SIZE;
 	}
 }
 
 /*
 * Serpent Decryption
 */
-void Serpent::decrypt_n(in byte[] input, ref byte[] output) const
+void Serpent::decrypt_n(byte* input, byte* output, size_t blocks) const
 {
 	for(size_t i = 0; i != blocks; ++i)
 	{
-		uint B0 = load_le<uint>(input, 0);
-		uint B1 = load_le<uint>(input, 1);
-		uint B2 = load_le<uint>(input, 2);
-		uint B3 = load_le<uint>(input, 3);
+		uint B0 = load_le!uint(input, 0);
+		uint B1 = load_le!uint(input, 1);
+		uint B2 = load_le!uint(input, 2);
+		uint B3 = load_le!uint(input, 3);
 
 		key_xor(32,B0,B1,B2,B3);  SBoxD8(B0,B1,B2,B3); key_xor(31,B0,B1,B2,B3);
 		i_transform(B0,B1,B2,B3); SBoxD7(B0,B1,B2,B3); key_xor(30,B0,B1,B2,B3);
@@ -145,8 +145,8 @@ void Serpent::decrypt_n(in byte[] input, ref byte[] output) const
 
 		store_le(out, B0, B1, B2, B3);
 
-		input = input[BLOCK_SIZE .. $];
-		output = output[BLOCK_SIZE .. $];
+		input += BLOCK_SIZE;
+		output += BLOCK_SIZE;
 	}
 }
 
@@ -157,13 +157,13 @@ void Serpent::decrypt_n(in byte[] input, ref byte[] output) const
 /*
 * Serpent Key Schedule
 */
-void Serpent::key_schedule(in byte[] key)
+void Serpent::key_schedule(in byte* key)
 {
 	const uint PHI = 0x9E3779B9;
 
 	secure_vector<uint> W(140);
 	for(size_t i = 0; i != length / 4; ++i)
-		W[i] = load_le<uint>(key, i);
+		W[i] = load_le!uint(key, i);
 
 	W[length / 4] |= uint(1) << ((length%4)*8);
 

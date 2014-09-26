@@ -13,7 +13,7 @@
 Pair!(size_t, OctetString)
 PKCS5_PBKDF1::key_derivation(size_t key_len,
 									  in string passphrase,
-									  in byte[] salt, size_t salt_len,
+									  in byte* salt, size_t salt_len,
 									  size_t iterations,
 									  std::chrono::milliseconds msec) const
 {
@@ -48,7 +48,7 @@ PKCS5_PBKDF1::key_derivation(size_t key_len,
 		++iterations_performed;
 	}
 
-	return std::make_pair(iterations_performed,
+	return Pair(iterations_performed,
 								 OctetString(&key[0], std::min(key_len, key.size())));
 }
 

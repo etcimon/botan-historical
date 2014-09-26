@@ -109,7 +109,7 @@ SafeVector!byte rfc3394_keyunwrap(in SafeVector!byte key,
 		}
 	}
 
-	if(load_be<u64bit>(&A[0], 0) != 0xA6A6A6A6A6A6A6A6)
+	if(load_be!ulong(&A[0], 0) != 0xA6A6A6A6A6A6A6A6)
 		throw new Integrity_Failure("NIST key unwrap failed");
 
 	return R;

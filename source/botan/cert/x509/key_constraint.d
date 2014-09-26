@@ -28,7 +28,7 @@ void decode(BER_Decoder& source, Key_Constraints& key_usage)
 	const byte mask = (0xFF << obj.value[0]);
 	obj.value[obj.value.size()-1] &= mask;
 
-	u16bit usage = 0;
+	ushort usage = 0;
 	for(size_t j = 1; j != obj.value.size(); ++j)
 		usage = (obj.value[j] << 8) | usage;
 

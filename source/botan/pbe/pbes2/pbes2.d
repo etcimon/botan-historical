@@ -19,7 +19,7 @@
 /*
 * Encrypt some bytes using PBES2
 */
-void PBE_PKCS5v20::write(in byte[] input, size_t length)
+void PBE_PKCS5v20::write(in byte* input, size_t length)
 {
 	pipe.write(input, length);
 	flush_pipe(true);
@@ -138,8 +138,8 @@ PBE_PKCS5v20::PBE_PKCS5v20(BlockCipher* cipher,
 PBE_PKCS5v20::PBE_PKCS5v20(in Vector!byte params,
 									in string passphrase) :
 	direction(DECRYPTION),
-	block_cipher(nullptr),
-	m_prf(nullptr)
+	block_cipher(null),
+	m_prf(null)
 {
 	AlgorithmIdentifier kdf_algo, enc_algo;
 

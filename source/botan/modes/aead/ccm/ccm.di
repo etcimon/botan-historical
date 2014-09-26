@@ -16,11 +16,11 @@
 class CCM_Mode : public AEAD_Mode
 {
 	public:
-		SafeVector!byte start(in byte[] nonce, size_t nonce_len) override;
+		SafeVector!byte start(in byte* nonce, size_t nonce_len) override;
 
 		void update(SafeVector!byte blocks, size_t offset = 0) override;
 
-		void set_associated_data(in byte[] ad, size_t ad_len) override;
+		void set_associated_data(in byte* ad, size_t ad_len) override;
 
 		string name() const override;
 
@@ -45,7 +45,7 @@ class CCM_Mode : public AEAD_Mode
 
 		const BlockCipher& cipher() const { return *m_cipher; }
 
-		void encode_length(size_t len, ref byte[] output);
+		void encode_length(size_t len, byte* output);
 
 		void inc(SafeVector!byte C);
 
@@ -56,7 +56,7 @@ class CCM_Mode : public AEAD_Mode
 		SafeVector!byte format_b0(size_t msg_size);
 		SafeVector!byte format_c0();
 	private:
-		void key_schedule(in byte[] key) override;
+		void key_schedule(in byte* key, size_t length) override;
 
 		const size_t m_tag_size;
 		const size_t m_L;

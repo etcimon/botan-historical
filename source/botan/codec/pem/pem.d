@@ -13,7 +13,7 @@ namespace PEM_Code {
 /*
 * PEM encode BER/DER-encoded objects
 */
-string encode(in byte[] der, size_t length, in string label,
+string encode(in byte* der, size_t length, in string label,
 						 size_t width)
 {
 	const string PEM_HEADER = "-----BEGIN " + label + "-----";

@@ -41,14 +41,14 @@ class Protocol_Version
 		* @param named_version a specific named version of the protocol
 		*/
 		Protocol_Version(Version_Code named_version) :
-			m_version(cast(u16bit)(named_version)) {}
+			m_version(cast(ushort)(named_version)) {}
 
 		/**
 		* @param major the major version
 		* @param minor the minor version
 		*/
 		Protocol_Version(byte major, byte minor) :
-			m_version((cast(u16bit)(major) << 8) | minor) {}
+			m_version((cast(ushort)(major) << 8) | minor) {}
 
 		/**
 		* @return true if this is a valid protocol version
@@ -134,7 +134,7 @@ class Protocol_Version
 		}
 
 	private:
-		u16bit m_version;
+		ushort m_version;
 };
 
 }

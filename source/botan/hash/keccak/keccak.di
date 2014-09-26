@@ -28,10 +28,10 @@ class Keccak_1600 : public HashFunction
 		string name() const;
 		void clear();
 	private:
-		void add_data(in byte[] input, size_t length);
-		void final_result(ref byte[] output);
+		void add_data(in byte* input, size_t length);
+		void final_result(byte* output);
 
 		size_t output_bits, bitrate;
-		secure_vector<u64bit> S;
+		secure_vector<ulong> S;
 		size_t S_pos;
 };

@@ -18,11 +18,11 @@ using namespace Botan;
 class Handshake_Hash
 {
 	public:
-		void update(in byte[] input)
-		{ data += std::make_pair(input, length); }
+		void update(in byte* input, size_t length)
+		{ data += Pair(input, length); }
 
 		void update(in Vector!byte input)
-		{ data += in; }
+		{ data += input; }
 
 		SafeVector!byte flushInto(Protocol_Version _version,
 										  in string mac_algo) const;

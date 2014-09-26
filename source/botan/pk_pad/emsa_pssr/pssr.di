@@ -25,7 +25,7 @@ class PSSR : public EMSA
 		*/
 		PSSR(HashFunction* hash, size_t salt_size);
 	private:
-		void update(in byte[] input, size_t length);
+		void update(in byte* input, size_t length);
 
 		SafeVector!byte raw_data();
 

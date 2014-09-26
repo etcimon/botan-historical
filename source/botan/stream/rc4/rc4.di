@@ -13,7 +13,7 @@
 class RC4 : public StreamCipher
 {
 	public:
-		void cipher(in byte[] input, ref byte[] output);
+		void cipher(in byte* input, byte* output);
 
 		void clear();
 		string name() const;

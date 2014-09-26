@@ -89,7 +89,7 @@ class SCAN_Name
 		static void set_default_aliases();
 	private:
 		static std::mutex s_alias_map_mutex;
-		static std::map<string, string> s_alias_map;
+		static HashMap!(string, string) s_alias_map;
 
 		string orig_algo_spec;
 		string alg_name;

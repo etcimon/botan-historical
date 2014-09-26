@@ -18,53 +18,45 @@
 #include <botan/pbkdf.h>
 
 #include <algorithm>
-namespace {
 
 /*
 * Template functions for the factory prototype/search algorithm
 */
-template<typename T>
-T* engine_get_algo(Engine*,
-						 const SCAN_Name&,
-						 Algorithm_Factory&)
-{ return nullptr; }
+T* engine_get_algo(T)(Engine*,
+					 const SCAN_Name&,
+					 Algorithm_Factory&)
+{ static assert(false, "Invalid engine"); }
 
-template<>
-BlockCipher* engine_get_algo(Engine* engine,
-									  const SCAN_Name& request,
-									  Algorithm_Factory& af)
+BlockCipher* engine_get_algo(T : BlockCipher)(Engine* engine,
+							  const SCAN_Name& request,
+							  Algorithm_Factory& af)
 { return engine->find_block_cipher(request, af); }
 
-template<>
-StreamCipher* engine_get_algo(Engine* engine,
+StreamCipher* engine_get_algo(T : StreamCipher)(Engine* engine,
 										const SCAN_Name& request,
 										Algorithm_Factory& af)
 { return engine->find_stream_cipher(request, af); }
 
-template<>
-HashFunction* engine_get_algo(Engine* engine,
+HashFunction* engine_get_algo(T : HashFunction)(Engine* engine,
 										const SCAN_Name& request,
 										Algorithm_Factory& af)
 { return engine->find_hash(request, af); }
 
-template<>
-MessageAuthenticationCode* engine_get_algo(Engine* engine,
+MessageAuthenticationCode* engine_get_algo(T : MessageAuthenticationCode)(Engine* engine,
 														 const SCAN_Name& request,
 														 Algorithm_Factory& af)
 { return engine->find_mac(request, af); }
 
-template<>
-PBKDF* engine_get_algo(Engine* engine,
+PBKDF* engine_get_algo(T : PBKDF)(Engine* engine,
 							  const SCAN_Name& request,
 							  Algorithm_Factory& af)
 { return engine->find_pbkdf(request, af); }
 
-template<typename T>
-const T* factory_prototype(in string algo_spec,
+const T* factory_prototype(T)(in string algo_spec,
 									in string provider,
-									const Vector!( Engine* )& engines,
-									Algorithm_Factory& af,
-									Algorithm_Cache<T>& cache)
+									in Vector!( Engine* ) engines,
+									Algorithm_Factory af,
+									Algorithm_Cache!T cache)
 {
 	if(const T* cache_hit = cache.get(algo_spec, provider))
 		return cache_hit;
@@ -72,7 +64,7 @@ const T* factory_prototype(in string algo_spec,
 	SCAN_Name scan_name(algo_spec);
 
 	if(scan_name.cipher_mode() != "")
-		return nullptr;
+		return null;
 
 	for(size_t i = 0; i != engines.size(); ++i)
 	{
@@ -148,7 +140,7 @@ void Algorithm_Factory::set_preferred_provider(in string algo_spec,
 Engine* Algorithm_Factory::get_engine_n(size_t n) const
 {
 	if(n >= engines.size())
-		return nullptr;
+		return null;
 	return engines[n];
 }
 
@@ -340,4 +332,3 @@ void Algorithm_Factory::add_pbkdf(PBKDF* pbkdf,
 	pbkdf_cache->add(pbkdf, pbkdf->name(), provider);
 }
 
-}

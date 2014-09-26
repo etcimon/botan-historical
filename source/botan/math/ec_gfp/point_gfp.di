@@ -86,7 +86,7 @@ class PointGFp
 		* @param x affine x coordinate
 		* @param y affine y coordinate
 		*/
-		PointGFp(in CurveGFp curve, const BigInt& x, const BigInt& y);
+		PointGFp(in CurveGFp curve, in BigInt x, in BigInt y);
 
 		/**
 		* += Operator
@@ -115,7 +115,7 @@ class PointGFp
 		* @param point the point value
 		* @return scalar*point on the curve
 		*/
-		friend PointGFp operator*(in BigInt scalar, const PointGFp& point);
+		friend PointGFp operator*(in BigInt scalar, in PointGFp point);
 
 		/**
 		* Multiexponentiation
@@ -126,8 +126,8 @@ class PointGFp
 		* @result (p1 * z1 + p2 * z2)
 		*/
 		friend PointGFp multi_exponentiate(
-		  const PointGFp& p1, const BigInt& z1,
-		  const PointGFp& p2, const BigInt& z2);
+		  in PointGFp p1, in BigInt z1,
+		  in PointGFp p2, in BigInt z2);
 
 		/**
 		* Negate this point
@@ -190,7 +190,7 @@ class PointGFp
 		* @param y second multiplicand
 		* @param workspace temp space
 		*/
-		BigInt monty_mult(in BigInt x, const BigInt& y) const
+		BigInt monty_mult(in BigInt x, in BigInt y) const
 		{
 			BigInt result;
 			monty_mult(result, x, y);
@@ -204,7 +204,7 @@ class PointGFp
 		* @param x first multiplicand
 		* @param y second multiplicand
 		*/
-		void monty_mult(BigInt& z, const BigInt& x, const BigInt& y) const;
+		void monty_mult(BigInt& z, in BigInt x, in BigInt y) const;
 
 		/**
 		* Montgomery squaring/reduction
@@ -223,7 +223,7 @@ class PointGFp
 		* @param z output
 		* @param x multiplicand
 		*/
-		void monty_sqr(BigInt& z, const BigInt& x) const;
+		void monty_sqr(BigInt& z, in BigInt x) const;
 
 		/**
 		* Point addition
@@ -243,30 +243,30 @@ class PointGFp
 };
 
 // relational operators
-inline bool operator!=(in PointGFp lhs, const PointGFp& rhs)
+ bool operator!=(in PointGFp lhs, in PointGFp rhs)
 {
 	return !(rhs == lhs);
 }
 
 // arithmetic operators
-inline PointGFp operator-(in PointGFp lhs)
+ PointGFp operator-(in PointGFp lhs)
 {
 	return PointGFp(lhs).negate();
 }
 
-inline PointGFp operator+(in PointGFp lhs, const PointGFp& rhs)
+ PointGFp operator+(in PointGFp lhs, in PointGFp rhs)
 {
 	PointGFp tmp(lhs);
 	return tmp += rhs;
 }
 
-inline PointGFp operator-(in PointGFp lhs, const PointGFp& rhs)
+ PointGFp operator-(in PointGFp lhs, in PointGFp rhs)
 {
 	PointGFp tmp(lhs);
 	return tmp -= rhs;
 }
 
-inline PointGFp operator*(in PointGFp point, const BigInt& scalar)
+ PointGFp operator*(in PointGFp point, in BigInt scalar)
 {
 	return scalar * point;
 }
@@ -274,11 +274,10 @@ inline PointGFp operator*(in PointGFp point, const BigInt& scalar)
 // encoding and decoding
 SafeVector!byte EC2OSP(in PointGFp point, byte format);
 
-PointGFp OS2ECP(in byte[] data, size_t data_len,
+PointGFp OS2ECP(in byte* data, size_t data_len,
 								  const CurveGFp& curve);
 
-template<typename Alloc>
-PointGFp OS2ECP(in Vector!( byte, Alloc ) data, const CurveGFp& curve)
+PointGFp OS2ECP(Alloc)(in Vector!( byte, Alloc ) data, const CurveGFp& curve)
 { return OS2ECP(&data[0], data.size(), curve); }
 
 }
@@ -286,5 +285,5 @@ PointGFp OS2ECP(in Vector!( byte, Alloc ) data, const CurveGFp& curve)
 namespace std {
 
 template<>
-inline void swap<Botan::PointGFp>(Botan::PointGFp& x, Botan::PointGFp& y)
+ void swap<Botan::PointGFp>(Botan::PointGFp& x, Botan::PointGFp& y)
 { x.swap(y); }

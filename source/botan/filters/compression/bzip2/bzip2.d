@@ -112,7 +112,7 @@ void Bzip_Compression::start_msg()
 /*
 * Compress Input with Bzip
 */
-void Bzip_Compression::write(in byte[] input, size_t length)
+void Bzip_Compression::write(in byte* input, size_t length)
 {
 	bz->stream.next_in = cast(char*)(const_cast(<byte*>)(input));
 	bz->stream.avail_in = length;
@@ -191,7 +191,7 @@ Bzip_Decompression::Bzip_Decompression(bool s) :
 /*
 * Decompress Input with Bzip
 */
-void Bzip_Decompression::write(in byte[] input_arr, size_t length)
+void Bzip_Decompression::write(in byte* input_arr, size_t length)
 {
 	if(length) no_writes = false;
 

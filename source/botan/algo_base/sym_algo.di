@@ -17,12 +17,12 @@ class SymmetricAlgorithm
 	public:
 		abstract ~SymmetricAlgorithm() {}
 
-		abstract void clear() = 0;
+		abstract void clear();
 
 		/**
 		* @return object describing limits on key size
 		*/
-		abstract Key_Length_Specification key_spec() const = 0;
+		abstract Key_Length_Specification key_spec() const;
 
 		/**
 		* @return minimum allowed key length
@@ -59,8 +59,7 @@ class SymmetricAlgorithm
 			set_key(key.begin(), key.length());
 		}
 
-		template<typename Alloc>
-		void set_key(in Vector!( byte, Alloc ) key)
+		void set_key(Alloc)(in Vector!( byte, Alloc ) key)
 		{
 			set_key(&key[0], key.size());
 		}
@@ -70,14 +69,14 @@ class SymmetricAlgorithm
 		* @param key the to be set as a byte array.
 		* @param length in bytes of key param
 		*/
-		void set_key(in byte[] key)
+		void set_key(in byte* key, size_t length)
 		{
 			if(!valid_keylength(length))
 				throw new Invalid_Key_Length(name(), length);
 			key_schedule(key, length);
 		}
 
-		abstract string name() const = 0;
+		abstract string name() const;
 
 	private:
 		/**
@@ -85,5 +84,5 @@ class SymmetricAlgorithm
 		* @param key the key
 		* @param length of key
 		*/
-		abstract void key_schedule(in byte[] key) = 0;
+		abstract void key_schedule(in byte* key, size_t length);
 };

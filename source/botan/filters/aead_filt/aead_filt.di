@@ -23,7 +23,7 @@ class AEAD_Filter : public Transformation_Filter
 		* @param ad the associated data
 		* @param ad_len length of add in bytes
 		*/
-		void set_associated_data(in byte[] ad, size_t ad_len)
+		void set_associated_data(in byte* ad, size_t ad_len)
 		{
 			cast(AEAD_Mode&)(get_transform()).set_associated_data(ad, ad_len);
 		}

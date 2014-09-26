@@ -26,7 +26,7 @@ class Server_Information
 		*		  TCP/UDP). Zero represents unknown.
 		*/
 		Server_Information(in string hostname,
-								u16bit port = 0) :
+								ushort port = 0) :
 			m_hostname(hostname), m_service(""), m_port(port) {}
 
 		/**
@@ -38,23 +38,23 @@ class Server_Information
 		*/
 		Server_Information(in string hostname,
 								in string service,
-								u16bit port = 0) :
+								ushort port = 0) :
 			m_hostname(hostname), m_service(service), m_port(port) {}
 
 		string hostname() const { return m_hostname; }
 
 		string service() const { return m_service; }
 
-		u16bit port() const { return m_port; }
+		ushort port() const { return m_port; }
 
 		bool empty() const { return m_hostname.empty(); }
 
 	private:
 		string m_hostname, m_service;
-		u16bit m_port;
+		ushort m_port;
 };
 
-inline bool operator==(in Server_Information a, const Server_Information& b)
+ bool operator==(in Server_Information a, const Server_Information& b)
 {
 	return (a.hostname() == b.hostname()) &&
 			 (a.service() == b.service()) &&
@@ -62,12 +62,12 @@ inline bool operator==(in Server_Information a, const Server_Information& b)
 
 }
 
-inline bool operator!=(in Server_Information a, const Server_Information& b)
+ bool operator!=(in Server_Information a, const Server_Information& b)
 {
 	return !(a == b);
 }
 
-inline bool operator<(in Server_Information a, const Server_Information& b)
+ bool operator<(in Server_Information a, const Server_Information& b)
 {
 	if(a.hostname() != b.hostname())
 		return (a.hostname() < b.hostname());

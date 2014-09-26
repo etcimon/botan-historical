@@ -92,20 +92,20 @@ void High_Resolution_Timestamp::poll(Entropy_Accumulator& accum)
 
 #if BOTAN_USE_GCC_INLINE_ASM
 
-	u64bit rtc = 0;
+	ulong rtc = 0;
 
 #if defined(BOTAN_TARGET_CPU_IS_X86_FAMILY)
 	if(CPUID::has_rdtsc()) // not availble on all x86 CPUs
 	{
 		uint rtc_low = 0, rtc_high = 0;
 		asm volatile("rdtsc" : "=d" (rtc_high), "=a" (rtc_low));
-		rtc = (cast(u64bit)(rtc_high) << 32) | rtc_low;
+		rtc = (cast(ulong)(rtc_high) << 32) | rtc_low;
 	}
 
 #elif defined(BOTAN_TARGET_CPU_IS_PPC_FAMILY)
 	uint rtc_low = 0, rtc_high = 0;
 	asm volatile("mftbu %0; mftb %1" : "=r" (rtc_high), "=r" (rtc_low));
-	rtc = (cast(u64bit)(rtc_high) << 32) | rtc_low;
+	rtc = (cast(ulong)(rtc_high) << 32) | rtc_low;
 
 #elif defined(BOTAN_TARGET_ARCH_IS_ALPHA)
 	asm volatile("rpcc %0" : "=r" (rtc));

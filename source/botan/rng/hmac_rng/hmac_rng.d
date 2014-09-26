@@ -81,7 +81,7 @@ HMAC_RNG::HMAC_RNG(MessageAuthenticationCode* extractor,
 /*
 * Generate a buffer of random bytes
 */
-void HMAC_RNG::randomize(ref byte[] output)
+void HMAC_RNG::randomize(byte* output)
 {
 	size_t length = output.length;
 	if(!is_seeded())
@@ -128,13 +128,13 @@ void HMAC_RNG::reseed(size_t poll_bits)
 
 	double bits_collected = 0;
 
-	Entropy_Accumulator accum(
-		[&](in byte[] input)
-	{
-		m_extractor->update(input, in_len);
-		bits_collected += entropy_estimate;
-		return (bits_collected >= poll_bits);
-	});
+	Entropy_Accumulator accum((in byte* input, size_t in_len)
+		{
+			m_extractor->update(input, in_len);
+			bits_collected += entropy_estimate;
+			return (bits_collected >= poll_bits);
+		}
+	);
 
 	global_state().poll_available_sources(accum);
 
@@ -182,7 +182,7 @@ bool HMAC_RNG::is_seeded() const
 /*
 * Add user-supplied entropy to the extractor input
 */
-void HMAC_RNG::add_entropy(in byte[] input, size_t length)
+void HMAC_RNG::add_entropy(in byte* input, size_t length)
 {
 	m_extractor->update(input, length);
 	reseed(BOTAN_RNG_RESEED_POLL_BITS);

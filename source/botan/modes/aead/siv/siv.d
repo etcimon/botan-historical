@@ -52,7 +52,7 @@ Key_Length_Specification SIV_Mode::key_spec() const
 	return m_cmac->key_spec().multiple(2);
 }
 
-void SIV_Mode::key_schedule(in byte[] key)
+void SIV_Mode::key_schedule(in byte* key, size_t length)
 {
 	const size_t keylen = length / 2;
 	m_cmac->set_key(key, keylen);
@@ -60,7 +60,7 @@ void SIV_Mode::key_schedule(in byte[] key)
 	m_ad_macs.clear();
 }
 
-void SIV_Mode::set_associated_data_n(size_t n, in byte[] ad, size_t length)
+void SIV_Mode::set_associated_data_n(size_t n, in byte* ad, size_t length)
 {
 	if(n >= m_ad_macs.size())
 		m_ad_macs.resize(n+1);
@@ -68,7 +68,7 @@ void SIV_Mode::set_associated_data_n(size_t n, in byte[] ad, size_t length)
 	m_ad_macs[n] = m_cmac->process(ad, length);
 }
 
-SafeVector!byte SIV_Mode::start(in byte[] nonce, size_t nonce_len)
+SafeVector!byte SIV_Mode::start(in byte* nonce, size_t nonce_len)
 {
 	if(!valid_nonce_length(nonce_len))
 		throw new Invalid_IV_Length(name(), nonce_len);

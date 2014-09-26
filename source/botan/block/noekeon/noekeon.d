@@ -13,7 +13,7 @@ namespace {
 /*
 * Noekeon's Theta Operation
 */
-inline void theta(ref uint A0, ref uint A1,
+ void theta(ref uint A0, ref uint A1,
 						ref uint A2, ref uint A3,
 						const uint EK[4])
 {
@@ -36,7 +36,7 @@ inline void theta(ref uint A0, ref uint A1,
 /*
 * Theta With Null Key
 */
-inline void theta(ref uint A0, ref uint A1,
+ void theta(ref uint A0, ref uint A1,
 						ref uint A2, ref uint A3)
 {
 	uint T = A0 ^ A2;
@@ -53,7 +53,7 @@ inline void theta(ref uint A0, ref uint A1,
 /*
 * Noekeon's Gamma S-Box Layer
 */
-inline void gamma(ref uint A0, ref uint A1, ref uint A2, ref uint A3)
+ void gamma(ref uint A0, ref uint A1, ref uint A2, ref uint A3)
 {
 	A1 ^= ~A3 & ~A2;
 	A0 ^= A2 & A1;
@@ -73,7 +73,7 @@ inline void gamma(ref uint A0, ref uint A1, ref uint A2, ref uint A3)
 /*
 * Noekeon Round Constants
 */
-in byte[] Noekeon::RC = {
+const byte[] Noekeon::RC = {
 	0x80, 0x1B, 0x36, 0x6C, 0xD8, 0xAB, 0x4D, 0x9A,
 	0x2F, 0x5E, 0xBC, 0x63, 0xC6, 0x97, 0x35, 0x6A,
 	0xD4 };
@@ -81,14 +81,14 @@ in byte[] Noekeon::RC = {
 /*
 * Noekeon Encryption
 */
-void Noekeon::encrypt_n(in byte[] input, ref byte[] output) const
+void Noekeon::encrypt_n(byte* input, byte* output, size_t blocks) const
 {
 	for(size_t i = 0; i != blocks; ++i)
 	{
-		uint A0 = load_be<uint>(input, 0);
-		uint A1 = load_be<uint>(input, 1);
-		uint A2 = load_be<uint>(input, 2);
-		uint A3 = load_be<uint>(input, 3);
+		uint A0 = load_be!uint(input, 0);
+		uint A1 = load_be!uint(input, 1);
+		uint A2 = load_be!uint(input, 2);
+		uint A3 = load_be!uint(input, 3);
 
 		for(size_t j = 0; j != 16; ++j)
 		{
@@ -111,22 +111,22 @@ void Noekeon::encrypt_n(in byte[] input, ref byte[] output) const
 
 		store_be(out, A0, A1, A2, A3);
 
-		input = input[BLOCK_SIZE .. $];
-		output = output[BLOCK_SIZE .. $];
+		input += BLOCK_SIZE;
+		output += BLOCK_SIZE;
 	}
 }
 
 /*
 * Noekeon Encryption
 */
-void Noekeon::decrypt_n(in byte[] input, ref byte[] output) const
+void Noekeon::decrypt_n(byte* input, byte* output, size_t blocks) const
 {
 	for(size_t i = 0; i != blocks; ++i)
 	{
-		uint A0 = load_be<uint>(input, 0);
-		uint A1 = load_be<uint>(input, 1);
-		uint A2 = load_be<uint>(input, 2);
-		uint A3 = load_be<uint>(input, 3);
+		uint A0 = load_be!uint(input, 0);
+		uint A1 = load_be!uint(input, 1);
+		uint A2 = load_be!uint(input, 2);
+		uint A3 = load_be!uint(input, 3);
 
 		for(size_t j = 16; j != 0; --j)
 		{
@@ -149,20 +149,20 @@ void Noekeon::decrypt_n(in byte[] input, ref byte[] output) const
 
 		store_be(out, A0, A1, A2, A3);
 
-		input = input[BLOCK_SIZE .. $];
-		output = output[BLOCK_SIZE .. $];
+		input += BLOCK_SIZE;
+		output += BLOCK_SIZE;
 	}
 }
 
 /*
 * Noekeon Key Schedule
 */
-void Noekeon::key_schedule(in byte[] key, size_t)
+void Noekeon::key_schedule(in byte* key, size_t)
 {
-	uint A0 = load_be<uint>(key, 0);
-	uint A1 = load_be<uint>(key, 1);
-	uint A2 = load_be<uint>(key, 2);
-	uint A3 = load_be<uint>(key, 3);
+	uint A0 = load_be!uint(key, 0);
+	uint A1 = load_be!uint(key, 1);
+	uint A2 = load_be!uint(key, 2);
+	uint A3 = load_be!uint(key, 3);
 
 	for(size_t i = 0; i != 16; ++i)
 	{

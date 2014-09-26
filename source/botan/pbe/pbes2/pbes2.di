@@ -22,7 +22,7 @@ class PBE_PKCS5v20 : public PBE
 
 		string name() const;
 
-		void write(in byte[] buf, size_t buf_len);
+		void write(in byte* buf, size_t buf_len);
 		void start_msg();
 		void end_msg();
 

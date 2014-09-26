@@ -134,7 +134,7 @@ class Policy
 		/**
 		* Return allowed ciphersuites, in order of preference
 		*/
-		abstract Vector!( u16bit ) ciphersuite_list(Protocol_Version _version,
+		abstract Vector!( ushort ) ciphersuite_list(Protocol_Version _version,
 																	bool have_srp) const;
 
 		abstract ~Policy() {}

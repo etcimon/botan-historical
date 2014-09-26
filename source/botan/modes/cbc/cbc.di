@@ -14,7 +14,7 @@
 class CBC_Mode : public Cipher_Mode
 {
 	public:
-		SafeVector!byte start(in byte[] nonce, size_t nonce_len) override;
+		SafeVector!byte start(in byte* nonce, size_t nonce_len) override;
 
 		string name() const override;
 
@@ -43,7 +43,7 @@ class CBC_Mode : public Cipher_Mode
 		byte* state_ptr() { return &m_state[0]; }
 
 	private:
-		void key_schedule(in byte[] key) override;
+		void key_schedule(in byte* key, size_t length) override;
 
 		std::unique_ptr<BlockCipher> m_cipher;
 		std::unique_ptr<BlockCipherModePaddingMethod> m_padding;
@@ -74,7 +74,7 @@ class CBC_Encryption : public CBC_Mode
 class CTS_Encryption : public CBC_Encryption
 {
 	public:
-		CTS_Encryption(BlockCipher* cipher) : CBC_Encryption(cipher, nullptr) {}
+		CTS_Encryption(BlockCipher* cipher) : CBC_Encryption(cipher, null) {}
 
 		size_t output_length(size_t input_length) const override;
 
@@ -111,7 +111,7 @@ class CBC_Decryption : public CBC_Mode
 class CTS_Decryption : public CBC_Decryption
 {
 	public:
-		CTS_Decryption(BlockCipher* cipher) : CBC_Decryption(cipher, nullptr) {}
+		CTS_Decryption(BlockCipher* cipher) : CBC_Decryption(cipher, null) {}
 
 		void finish(SafeVector!byte final_block, size_t offset = 0) override;
 

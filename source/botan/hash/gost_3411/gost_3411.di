@@ -22,7 +22,7 @@ class GOST_34_11 : public HashFunction
 
 		GOST_34_11();
 	private:
-		void compress_n(in byte[] input, size_t blocks);
+		void compress_n(in byte* input, size_t blocks);
 
 		void add_data(const byte[], size_t);
 		void final_result(byte[]);
@@ -30,5 +30,5 @@ class GOST_34_11 : public HashFunction
 		GOST_28147_89 cipher;
 		SafeVector!byte buffer, sum, hash;
 		size_t position;
-		u64bit count;
+		ulong count;
 };

@@ -130,7 +130,7 @@ Keyed_Filter* get_cipher_mode(const BlockCipher* block_cipher,
 			return new Transformation_Filter(
 				new CBC_Decryption(block_cipher->clone(), get_bc_pad(padding, "PKCS7")));
 #else
-		return nullptr;
+		return null;
 #endif
 	}
 
@@ -218,7 +218,7 @@ Keyed_Filter* get_cipher_mode(const BlockCipher* block_cipher,
 #endif
 	}
 
-	return nullptr;
+	return null;
 }
 
 /*
@@ -241,10 +241,10 @@ Keyed_Filter* Core_Engine::get_cipher(in string algo_spec,
 
 	const BlockCipher* block_cipher = af.prototype_block_cipher(cipher_name);
 	if(!block_cipher)
-		return nullptr;
+		return null;
 
 	if(algo_parts.size() >= 4)
-		return nullptr; // 4 part mode, not something we know about
+		return null; // 4 part mode, not something we know about
 
 	if(algo_parts.size() < 2)
 		throw new Lookup_Error("Cipher specification '" + algo_spec +
@@ -259,7 +259,7 @@ Keyed_Filter* Core_Engine::get_cipher(in string algo_spec,
 		padding = (mode == "CBC") ? "PKCS7" : "NoPadding";
 
 	if(mode == "ECB" && padding == "CTS")
-		return nullptr;
+		return null;
 	else if((mode != "CBC" && mode != "ECB") && padding != "NoPadding")
 		throw new Invalid_Algorithm_Name(algo_spec);
 

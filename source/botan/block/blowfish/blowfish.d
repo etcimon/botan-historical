@@ -10,7 +10,7 @@
 /*
 * Blowfish Encryption
 */
-void Blowfish::encrypt_n(in byte[] input, ref byte[] output) const
+void Blowfish::encrypt_n(byte* input, byte* output, size_t blocks) const
 {
 	const uint* S1 = &S[0];
 	const uint* S2 = &S[256];
@@ -19,8 +19,8 @@ void Blowfish::encrypt_n(in byte[] input, ref byte[] output) const
 
 	for(size_t i = 0; i != blocks; ++i)
 	{
-		uint L = load_be<uint>(input, 0);
-		uint R = load_be<uint>(input, 1);
+		uint L = load_be!uint(input, 0);
+		uint R = load_be!uint(input, 1);
 
 		for(size_t j = 0; j != 16; j += 2)
 		{
@@ -37,15 +37,15 @@ void Blowfish::encrypt_n(in byte[] input, ref byte[] output) const
 
 		store_be(out, R, L);
 
-		input = input[BLOCK_SIZE .. $];
-		output = output[BLOCK_SIZE .. $];
+		input += BLOCK_SIZE;
+		output += BLOCK_SIZE;
 	}
 }
 
 /*
 * Blowfish Decryption
 */
-void Blowfish::decrypt_n(in byte[] input, ref byte[] output) const
+void Blowfish::decrypt_n(byte* input, byte* output, size_t blocks) const
 {
 	const uint* S1 = &S[0];
 	const uint* S2 = &S[256];
@@ -54,8 +54,8 @@ void Blowfish::decrypt_n(in byte[] input, ref byte[] output) const
 
 	for(size_t i = 0; i != blocks; ++i)
 	{
-		uint L = load_be<uint>(input, 0);
-		uint R = load_be<uint>(input, 1);
+		uint L = load_be!uint(input, 0);
+		uint R = load_be!uint(input, 1);
 
 		for(size_t j = 17; j != 1; j -= 2)
 		{
@@ -72,15 +72,15 @@ void Blowfish::decrypt_n(in byte[] input, ref byte[] output) const
 
 		store_be(out, R, L);
 
-		input = input[BLOCK_SIZE .. $];
-		output = output[BLOCK_SIZE .. $];
+		input += BLOCK_SIZE;
+		output += BLOCK_SIZE;
 	}
 }
 
 /*
 * Blowfish Key Schedule
 */
-void Blowfish::key_schedule(in byte[] key)
+void Blowfish::key_schedule(in byte* key)
 {
 	P.resize(18);
 	std::copy(P_INIT, P_INIT + 18, P.begin());
@@ -93,7 +93,7 @@ void Blowfish::key_schedule(in byte[] key)
 	key_expansion(key, length, null_salt);
 }
 
-void Blowfish::key_expansion(in byte[] key,
+void Blowfish::key_expansion(in byte* key,
 									  size_t length,
 									  const byte salt[16])
 {
@@ -109,7 +109,7 @@ void Blowfish::key_expansion(in byte[] key,
 /*
 * Modified key schedule used for bcrypt password hashing
 */
-void Blowfish::eks_key_schedule(in byte[] key, size_t length,
+void Blowfish::eks_key_schedule(in byte* key, size_t length,
 										  const byte salt[16], size_t workfactor)
 {
 	// Truncate longer passwords to the 56 byte limit Blowfish enforces
@@ -160,8 +160,8 @@ void Blowfish::generate_sbox(secure_vector<uint>& box,
 
 	for(size_t i = 0; i != box.size(); i += 2)
 	{
-		L ^= load_be<uint>(salt, (i + salt_off) % 4);
-		R ^= load_be<uint>(salt, (i + salt_off + 1) % 4);
+		L ^= load_be!uint(salt, (i + salt_off) % 4);
+		R ^= load_be!uint(salt, (i + salt_off + 1) % 4);
 
 		for(size_t j = 0; j != 16; j += 2)
 		{

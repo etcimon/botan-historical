@@ -9,9 +9,9 @@
 /*
 * EMSA-Raw Encode Operation
 */
-void EMSA_Raw::update(in byte[] input, size_t length)
+void EMSA_Raw::update(in byte* input, size_t length)
 {
-	message += std::make_pair(input, length);
+	message += Pair(input, length);
 }
 
 /*

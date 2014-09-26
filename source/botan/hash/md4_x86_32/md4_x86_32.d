@@ -19,7 +19,7 @@ extern "C" void botan_md4_x86_32_compress(uint digest[4],
 /*
 * MD4 Compression Function
 */
-void MD4_X86_32::compress_n(in byte[] input, size_t blocks)
+void MD4_X86_32::compress_n(in byte* input, size_t blocks)
 {
 	for(size_t i = 0; i != blocks; ++i)
 	{

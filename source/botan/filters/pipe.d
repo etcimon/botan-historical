@@ -17,7 +17,7 @@ namespace {
 class Null_Filter : public Filter
 {
 	public:
-		void write(in byte[] input, size_t length)
+		void write(in byte* input, size_t length)
 		{ send(input, length); }
 
 		string name() const { return "Null"; }
@@ -63,7 +63,7 @@ Pipe::~Pipe()
 void Pipe::init()
 {
 	outputs = new Output_Buffers;
-	pipe = nullptr;
+	pipe = null;
 	default_read = 0;
 	inside_msg = false;
 }
@@ -74,7 +74,7 @@ void Pipe::init()
 void Pipe::reset()
 {
 	destruct(pipe);
-	pipe = nullptr;
+	pipe = null;
 	inside_msg = false;
 }
 
@@ -111,7 +111,7 @@ void Pipe::set_default_msg(message_id msg)
 /*
 * Process a full message at once
 */
-void Pipe::process_msg(in byte[] input, size_t length)
+void Pipe::process_msg(in byte* input, size_t length)
 {
 	start_msg();
 	write(input, length);
@@ -156,7 +156,7 @@ void Pipe::start_msg()
 {
 	if(inside_msg)
 		throw new Invalid_State("Pipe::start_msg: Message was already started");
-	if(pipe == nullptr)
+	if(pipe == null)
 		pipe = new Null_Filter;
 	find_endpoints(pipe);
 	pipe->new_msg();
@@ -175,7 +175,7 @@ void Pipe::end_msg()
 	if(cast(Null_Filter*)(pipe))
 	{
 		delete pipe;
-		pipe = nullptr;
+		pipe = null;
 	}
 	inside_msg = false;
 
@@ -207,7 +207,7 @@ void Pipe::clear_endpoints(Filter* f)
 	for(size_t j = 0; j != f->total_ports(); ++j)
 	{
 		if(f->next[j] && cast(SecureQueue*)(f->next[j]))
-			f->next[j] = nullptr;
+			f->next[j] = null;
 		clear_endpoints(f->next[j]);
 	}
 }

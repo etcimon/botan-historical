@@ -12,7 +12,7 @@ extern "C" {
 /*
 * Word Addition
 */
-inline word word_add(word x, word y, word* carry)
+ word word_add(word x, word y, word* carry)
 {
 	word z = x + y;
 	word c1 = (z < x);
@@ -24,7 +24,7 @@ inline word word_add(word x, word y, word* carry)
 /*
 * Eight Word Block Addition, Two Argument
 */
-inline word word8_add2(word x[8], const word y[8], word carry)
+ word word8_add2(word x[8], const word y[8], word carry)
 {
 	x[0] = word_add(x[0], y[0], &carry);
 	x[1] = word_add(x[1], y[1], &carry);
@@ -40,7 +40,7 @@ inline word word8_add2(word x[8], const word y[8], word carry)
 /*
 * Eight Word Block Addition, Three Argument
 */
-inline word word8_add3(word z[8], const word x[8],
+ word word8_add3(word z[8], const word x[8],
 							  const word y[8], word carry)
 {
 	z[0] = word_add(x[0], y[0], &carry);
@@ -57,7 +57,7 @@ inline word word8_add3(word z[8], const word x[8],
 /*
 * Word Subtraction
 */
-inline word word_sub(word x, word y, word* carry)
+ word word_sub(word x, word y, word* carry)
 {
 	word t0 = x - y;
 	word c1 = (t0 > x);
@@ -69,7 +69,7 @@ inline word word_sub(word x, word y, word* carry)
 /*
 * Eight Word Block Subtraction, Two Argument
 */
-inline word word8_sub2(word x[8], const word y[8], word carry)
+ word word8_sub2(word x[8], const word y[8], word carry)
 {
 	x[0] = word_sub(x[0], y[0], &carry);
 	x[1] = word_sub(x[1], y[1], &carry);
@@ -85,7 +85,7 @@ inline word word8_sub2(word x[8], const word y[8], word carry)
 /*
 * Eight Word Block Subtraction, Two Argument
 */
-inline word word8_sub2_rev(word x[8], const word y[8], word carry)
+ word word8_sub2_rev(word x[8], const word y[8], word carry)
 {
 	x[0] = word_sub(y[0], x[0], &carry);
 	x[1] = word_sub(y[1], x[1], &carry);
@@ -101,7 +101,7 @@ inline word word8_sub2_rev(word x[8], const word y[8], word carry)
 /*
 * Eight Word Block Subtraction, Three Argument
 */
-inline word word8_sub3(word z[8], const word x[8],
+ word word8_sub3(word z[8], const word x[8],
 							  const word y[8], word carry)
 {
 	z[0] = word_sub(x[0], y[0], &carry);
@@ -118,7 +118,7 @@ inline word word8_sub3(word z[8], const word x[8],
 /*
 * Eight Word Block Linear Multiplication
 */
-inline word word8_linmul2(word x[8], word y, word carry)
+ word word8_linmul2(word x[8], word y, word carry)
 {
 	x[0] = word_madd2(x[0], y, &carry);
 	x[1] = word_madd2(x[1], y, &carry);
@@ -134,7 +134,7 @@ inline word word8_linmul2(word x[8], word y, word carry)
 /*
 * Eight Word Block Linear Multiplication
 */
-inline word word8_linmul3(word z[8], const word x[8], word y, word carry)
+ word word8_linmul3(word z[8], const word x[8], word y, word carry)
 {
 	z[0] = word_madd2(x[0], y, &carry);
 	z[1] = word_madd2(x[1], y, &carry);
@@ -150,7 +150,7 @@ inline word word8_linmul3(word z[8], const word x[8], word y, word carry)
 /*
 * Eight Word Block Multiply/Add
 */
-inline word word8_madd3(word z[8], const word x[8], word y, word carry)
+ word word8_madd3(word z[8], const word x[8], word y, word carry)
 {
 	z[0] = word_madd3(x[0], y, z[0], &carry);
 	z[1] = word_madd3(x[1], y, z[1], &carry);
@@ -166,7 +166,7 @@ inline word word8_madd3(word z[8], const word x[8], word y, word carry)
 /*
 * Multiply-Add Accumulator
 */
-inline void word3_muladd(word* w2, word* w1, word* w0, word a, word b)
+ void word3_muladd(word* w2, word* w1, word* w0, word a, word b)
 {
 	word carry = *w0;
 	*w0 = word_madd2(a, b, &carry);
@@ -177,7 +177,7 @@ inline void word3_muladd(word* w2, word* w1, word* w0, word a, word b)
 /*
 * Multiply-Add Accumulator
 */
-inline void word3_muladd_2(word* w2, word* w1, word* w0, word a, word b)
+ void word3_muladd_2(word* w2, word* w1, word* w0, word a, word b)
 {
 	word carry = 0;
 	a = word_madd2(a, b, &carry);

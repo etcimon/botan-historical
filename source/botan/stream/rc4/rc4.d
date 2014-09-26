@@ -11,7 +11,7 @@
 /*
 * Combine cipher stream with message
 */
-void RC4::cipher(in byte[] input, ref byte[] output)
+void RC4::cipher(in byte* input, byte* output)
 {
 	while(length >= buffer.size() - position)
 	{
@@ -56,7 +56,7 @@ void RC4::generate()
 /*
 * RC4 Key Schedule
 */
-void RC4::key_schedule(in byte[] key)
+void RC4::key_schedule(in byte* key, size_t length)
 {
 	state.resize(256);
 	buffer.resize(round_up<size_t>(DEFAULT_BUFFERSIZE, 4));

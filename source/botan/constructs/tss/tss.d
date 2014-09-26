@@ -16,7 +16,7 @@ namespace {
 /**
 Table for GF(2^8) arithmetic (exponentials)
 */
-const byte RTSS_EXP[256] = {
+const byte[256] RTSS_EXP = {
 0x01, 0x03, 0x05, 0x0F, 0x11, 0x33, 0x55, 0xFF, 0x1A, 0x2E, 0x72,
 0x96, 0xA1, 0xF8, 0x13, 0x35, 0x5F, 0xE1, 0x38, 0x48, 0xD8, 0x73,
 0x95, 0xA4, 0xF7, 0x02, 0x06, 0x0A, 0x1E, 0x22, 0x66, 0xAA, 0xE5,
@@ -45,7 +45,7 @@ const byte RTSS_EXP[256] = {
 /**
 Table for GF(2^8) arithmetic (logarithms)
 */
-in byte[] RTSS_LOG = {
+const byte[] RTSS_LOG = {
 0x90, 0x00, 0x19, 0x01, 0x32, 0x02, 0x1A, 0xC6, 0x4B, 0xC7, 0x1B,
 0x68, 0x33, 0xEE, 0xDF, 0x03, 0x64, 0x04, 0xE0, 0x0E, 0x34, 0x8D,
 0x81, 0xEF, 0x4C, 0x71, 0x08, 0xC8, 0xF8, 0x69, 0x1C, 0xC1, 0x7D,
@@ -120,7 +120,7 @@ string RTSS_Share::to_string() const
 
 Vector!( RTSS_Share )
 RTSS_Share::split(byte M, byte N,
-						in byte[] S, u16bit S_len,
+						in byte* S, ushort S_len,
 						const byte identifier[16],
 						RandomNumberGenerator& rng)
 {
@@ -134,7 +134,7 @@ RTSS_Share::split(byte M, byte N,
 	// Create RTSS header in each share
 	for(byte i = 0; i != N; ++i)
 	{
-		shares[i].contents += std::make_pair(identifier, 16);
+		shares[i].contents += Pair(identifier, 16);
 		shares[i].contents += rtss_hash_id(hash.name());
 		shares[i].contents += M;
 		shares[i].contents += get_byte(0, S_len);
@@ -196,7 +196,7 @@ RTSS_Share::reconstruct(in Vector!( RTSS_Share ) shares)
 	if(shares.size() < shares[0].contents[17])
 		throw new Decoding_Error("Insufficient shares to do TSS reconstruction");
 
-	u16bit secret_len = make_u16bit(shares[0].contents[18],
+	ushort secret_len = make_ushort(shares[0].contents[18],
 											  shares[0].contents[19]);
 
 	byte hash_id = shares[0].contents[16];

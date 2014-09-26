@@ -21,7 +21,7 @@ class MD4 : public MDx_HashFunction
 		MD4() : MDx_HashFunction(64, false, true), M(16), digest(4)
 		{ clear(); }
 	protected:
-		void compress_n(in byte[] input, size_t blocks);
+		void compress_n(in byte* input, size_t blocks);
 		void copy_out(byte[]);
 
 		/**

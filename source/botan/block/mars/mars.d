@@ -104,7 +104,7 @@ const uint SBOX[512] = {
 /*
 * MARS Encryption Round
 */
-inline void encrypt_round(ref uint A, ref uint B, ref uint C, ref uint D,
+ void encrypt_round(ref uint A, ref uint B, ref uint C, ref uint D,
 								  uint EK1, uint EK2)
 {
 	const uint X = A + EK1;
@@ -124,7 +124,7 @@ inline void encrypt_round(ref uint A, ref uint B, ref uint C, ref uint D,
 /*
 * MARS Decryption Round
 */
-inline void decrypt_round(ref uint A, ref uint B, ref uint C, ref uint D,
+ void decrypt_round(ref uint A, ref uint B, ref uint C, ref uint D,
 								  uint EK1, uint EK2)
 {
 	uint Y = A * EK1;
@@ -229,14 +229,14 @@ uint gen_mask(uint input)
 /*
 * MARS Encryption
 */
-void MARS::encrypt_n(in byte[] input, ref byte[] output) const
+void MARS::encrypt_n(byte* input, byte* output, size_t blocks) const
 {
 	for(size_t i = 0; i != blocks; ++i)
 	{
-		uint A = load_le<uint>(input, 0) + EK[0];
-		uint B = load_le<uint>(input, 1) + EK[1];
-		uint C = load_le<uint>(input, 2) + EK[2];
-		uint D = load_le<uint>(input, 3) + EK[3];
+		uint A = load_le!uint(input, 0) + EK[0];
+		uint B = load_le!uint(input, 1) + EK[1];
+		uint C = load_le!uint(input, 2) + EK[2];
+		uint D = load_le!uint(input, 3) + EK[3];
 
 		forward_mix(A, B, C, D);
 
@@ -264,22 +264,22 @@ void MARS::encrypt_n(in byte[] input, ref byte[] output) const
 
 		store_le(out, A, B, C, D);
 
-		input = input[BLOCK_SIZE .. $];
-		output = output[BLOCK_SIZE .. $];
+		input += BLOCK_SIZE;
+		output += BLOCK_SIZE;
 	}
 }
 
 /*
 * MARS Decryption
 */
-void MARS::decrypt_n(in byte[] input, ref byte[] output) const
+void MARS::decrypt_n(byte* input, byte* output, size_t blocks) const
 {
 	for(size_t i = 0; i != blocks; ++i)
 	{
-		uint A = load_le<uint>(input, 3) + EK[39];
-		uint B = load_le<uint>(input, 2) + EK[38];
-		uint C = load_le<uint>(input, 1) + EK[37];
-		uint D = load_le<uint>(input, 0) + EK[36];
+		uint A = load_le!uint(input, 3) + EK[39];
+		uint B = load_le!uint(input, 2) + EK[38];
+		uint C = load_le!uint(input, 1) + EK[37];
+		uint D = load_le!uint(input, 0) + EK[36];
 
 		forward_mix(A, B, C, D);
 
@@ -307,19 +307,19 @@ void MARS::decrypt_n(in byte[] input, ref byte[] output) const
 
 		store_le(out, D, C, B, A);
 
-		input = input[BLOCK_SIZE .. $];
-		output = output[BLOCK_SIZE .. $];
+		input += BLOCK_SIZE;
+		output += BLOCK_SIZE;
 	}
 }
 
 /*
 * MARS Key Schedule
 */
-void MARS::key_schedule(in byte[] key)
+void MARS::key_schedule(in byte* key)
 {
 	secure_vector<uint> T(15);
 	for(size_t i = 0; i != length / 4; ++i)
-		T[i] = load_le<uint>(key, i);
+		T[i] = load_le!uint(key, i);
 
 	T[length / 4] = cast(uint)(length) / 4;
 

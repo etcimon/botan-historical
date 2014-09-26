@@ -35,7 +35,7 @@ KDF* get_kdf(in string algo_spec)
 	Algorithm_Factory& af = global_state().algorithm_factory();
 
 	if(request.algo_name() == "Raw")
-		return nullptr; // No KDF
+		return null; // No KDF
 
 #if defined(BOTAN_HAS_KDF1)
 	if(request.algo_name() == "KDF1" && request.arg_count() == 1)

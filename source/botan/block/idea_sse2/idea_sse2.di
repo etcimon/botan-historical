@@ -14,8 +14,8 @@ class IDEA_SSE2 : public IDEA
 	public:
 		size_t parallelism() const { return 8; }
 
-		void encrypt_n(in byte[] input, ref byte[] output) const;
-		void decrypt_n(in byte[] input, ref byte[] output) const;
+		void encrypt_n(byte* input, byte* output, size_t blocks) const;
+		void decrypt_n(byte* input, byte* output, size_t blocks) const;
 
 		BlockCipher* clone() const { return new IDEA_SSE2; }
 };

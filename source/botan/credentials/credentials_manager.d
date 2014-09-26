@@ -79,7 +79,7 @@ Private_Key* Credentials_Manager::Private_Key_for(in X509_Certificate,
 																  in string,
 																  in string)
 {
-	return nullptr;
+	return null;
 }
 
 Vector!( Certificate_Store* )
@@ -125,7 +125,7 @@ void Credentials_Manager::verify_certificate_chain(
 	if(!cert_in_some_store(trusted_CAs, result.trust_root()))
 		throw new Exception("Certificate chain roots in unknown/untrusted CA");
 
-	if(purported_hostname != "" && !cert_chain[0].matches_dns_name(purported_hostname))
+	if(purported_hostname != "" && !cert_chainput[0].matches_dns_name(purported_hostname))
 		throw new Exception("Certificate did not match hostname");
 }
 

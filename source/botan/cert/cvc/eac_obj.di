@@ -10,8 +10,8 @@
 /**
 * TR03110 v1.1 EAC CV Certificate
 */
-template<typename Derived> // CRTP is used enable the call sequence:
-class EAC1_1_obj : public EAC_Signed_Object
+// CRTP is used enable the call sequence:
+class EAC1_1_obj(Derived) : public EAC_Signed_Object!Derived
 {
 	public:
 		/**

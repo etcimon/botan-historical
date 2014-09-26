@@ -14,8 +14,8 @@ class TLS_PRF : public KDF
 {
 	public:
 		SafeVector!byte derive(size_t key_len,
-										  in byte[] secret, size_t secret_len,
-										  in byte[] seed, size_t seed_len) const;
+										  in byte* secret, size_t secret_len,
+										  in byte* seed, size_t seed_len) const;
 
 		string name() const { return "TLS-PRF"; }
 		KDF* clone() const { return new TLS_PRF; }
@@ -33,8 +33,8 @@ class TLS_12_PRF : public KDF
 {
 	public:
 		SafeVector!byte derive(size_t key_len,
-										  in byte[] secret, size_t secret_len,
-										  in byte[] seed, size_t seed_len) const;
+										  in byte* secret, size_t secret_len,
+										  in byte* seed, size_t seed_len) const;
 
 		string name() const { return "TLSv12-PRF(" + hmac->name() + ")"; }
 		KDF* clone() const { return new TLS_12_PRF(hmac->clone()); }

@@ -23,5 +23,5 @@ class Win32_CAPI_EntropySource : public EntropySource
 	  */
 		Win32_CAPI_EntropySource(in string provs = "");
 	private:
-		Vector!( u64bit ) prov_types;
+		Vector!( ulong ) prov_types;
 };

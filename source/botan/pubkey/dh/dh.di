@@ -75,7 +75,7 @@ class DH_KA_Operation : public PK_Ops::Key_Agreement
 		DH_KA_Operation(in DH_PrivateKey key,
 							 RandomNumberGenerator& rng);
 
-		SafeVector!byte agree(in byte[] w, size_t w_len);
+		SafeVector!byte agree(in byte* w, size_t w_len);
 	private:
 		const BigInt& p;
 

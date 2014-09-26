@@ -12,14 +12,14 @@
 /*
 * RC6 Encryption
 */
-void RC6::encrypt_n(in byte[] input, ref byte[] output) const
+void RC6::encrypt_n(byte* input, byte* output, size_t blocks) const
 {
 	for(size_t i = 0; i != blocks; ++i)
 	{
-		uint A = load_le<uint>(input, 0);
-		uint B = load_le<uint>(input, 1);
-		uint C = load_le<uint>(input, 2);
-		uint D = load_le<uint>(input, 3);
+		uint A = load_le!uint(input, 0);
+		uint B = load_le!uint(input, 1);
+		uint C = load_le!uint(input, 2);
+		uint D = load_le!uint(input, 3);
 
 		B += S[0]; D += S[1];
 
@@ -52,22 +52,22 @@ void RC6::encrypt_n(in byte[] input, ref byte[] output) const
 
 		store_le(out, A, B, C, D);
 
-		input = input[BLOCK_SIZE .. $];
-		output = output[BLOCK_SIZE .. $];
+		input += BLOCK_SIZE;
+		output += BLOCK_SIZE;
 	}
 }
 
 /*
 * RC6 Decryption
 */
-void RC6::decrypt_n(in byte[] input, ref byte[] output) const
+void RC6::decrypt_n(byte* input, byte* output, size_t blocks) const
 {
 	for(size_t i = 0; i != blocks; ++i)
 	{
-		uint A = load_le<uint>(input, 0);
-		uint B = load_le<uint>(input, 1);
-		uint C = load_le<uint>(input, 2);
-		uint D = load_le<uint>(input, 3);
+		uint A = load_le!uint(input, 0);
+		uint B = load_le!uint(input, 1);
+		uint C = load_le!uint(input, 2);
+		uint D = load_le!uint(input, 3);
 
 		C -= S[43]; A -= S[42];
 
@@ -100,15 +100,15 @@ void RC6::decrypt_n(in byte[] input, ref byte[] output) const
 
 		store_le(out, A, B, C, D);
 
-		input = input[BLOCK_SIZE .. $];
-		output = output[BLOCK_SIZE .. $];
+		input += BLOCK_SIZE;
+		output += BLOCK_SIZE;
 	}
 }
 
 /*
 * RC6 Key Schedule
 */
-void RC6::key_schedule(in byte[] key)
+void RC6::key_schedule(in byte* key)
 {
 	S.resize(44);
 

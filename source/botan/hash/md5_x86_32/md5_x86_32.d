@@ -16,7 +16,7 @@ void botan_md5_x86_32_compress(uint[4], const byte[64], uint[16]);
 /*
 * MD5 Compression Function
 */
-void MD5_X86_32::compress_n(in byte[] input, size_t blocks)
+void MD5_X86_32::compress_n(in byte* input, size_t blocks)
 {
 	for(size_t i = 0; i != blocks; ++i)
 	{

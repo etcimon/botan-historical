@@ -27,7 +27,7 @@ AES_ISA_Engine::find_block_cipher(in SCAN_Name request,
 	}
 #endif
 
-	return nullptr;
+	return null;
 }
 
 }

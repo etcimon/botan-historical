@@ -232,10 +232,10 @@ class Single_Shot_Passphrase
 			if(first)
 			{
 				first = false;
-				return std::make_pair(true, passphrase);
+				return Pair(true, passphrase);
 			}
 			else
-				return std::make_pair(false, "");
+				return Pair(false, "");
 		}
 
 	private:

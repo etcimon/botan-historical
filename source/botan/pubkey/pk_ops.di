@@ -15,10 +15,10 @@ namespace PK_Ops {
 class Encryption
 {
 	public:
-		abstract size_t max_input_bits() const = 0;
+		abstract size_t max_input_bits() const;
 
-		abstract SafeVector!byte encrypt(in byte[] msg, size_t msg_len,
-													  RandomNumberGenerator& rng) = 0;
+		abstract SafeVector!byte encrypt(in byte* msg, size_t msg_len,
+													  RandomNumberGenerator& rng);
 
 		abstract ~Encryption() {}
 };
@@ -29,10 +29,10 @@ class Encryption
 class Decryption
 {
 	public:
-		abstract size_t max_input_bits() const = 0;
+		abstract size_t max_input_bits() const;
 
-		abstract SafeVector!byte decrypt(in byte[] msg,
-													  size_t msg_len) = 0;
+		abstract SafeVector!byte decrypt(in byte* msg,
+													  size_t msg_len);
 
 		abstract ~Decryption() {}
 };
@@ -59,7 +59,7 @@ class Signature
 		* Get the maximum message size in bits supported by this public key.
 		* @return maximum message in bits
 		*/
-		abstract size_t max_input_bits() const = 0;
+		abstract size_t max_input_bits() const;
 
 		/*
 		* Perform a signature operation
@@ -67,8 +67,8 @@ class Signature
 		* @param msg_len the length of msg in bytes
 		* @param rng a random number generator
 		*/
-		abstract SafeVector!byte sign(in byte[] msg, size_t msg_len,
-												  RandomNumberGenerator& rng) = 0;
+		abstract SafeVector!byte sign(in byte* msg, size_t msg_len,
+												  RandomNumberGenerator& rng);
 
 		abstract ~Signature() {}
 };
@@ -83,7 +83,7 @@ class Verification
 		* Get the maximum message size in bits supported by this public key.
 		* @return maximum message in bits
 		*/
-		abstract size_t max_input_bits() const = 0;
+		abstract size_t max_input_bits() const;
 
 		/**
 		* Find out the number of message parts supported by this scheme.
@@ -101,7 +101,7 @@ class Verification
 		* @return boolean specifying if this key type supports message
 		* recovery and thus if you need to call verify() or verify_mr()
 		*/
-		abstract bool with_recovery() const = 0;
+		abstract bool with_recovery() const;
 
 		/*
 		* Perform a signature check operation
@@ -145,7 +145,7 @@ class Key_Agreement
 		* @param w_len the length of w in bytes
 		* @returns the agreed key
 		*/
-		abstract SafeVector!byte agree(in byte[] w, size_t w_len) = 0;
+		abstract SafeVector!byte agree(in byte* w, size_t w_len);
 
 		abstract ~Key_Agreement() {}
 };

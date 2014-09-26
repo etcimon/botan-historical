@@ -47,9 +47,9 @@ Vector!( byte ) finished_compute_verify(in Handshake_State state,
 
 		Vector!( byte ) input;
 		if(side == CLIENT)
-			input += std::make_pair(TLS_CLIENT_LABEL, sizeof(TLS_CLIENT_LABEL));
+			input += Pair(TLS_CLIENT_LABEL, sizeof(TLS_CLIENT_LABEL));
 		else
-			input += std::make_pair(TLS_SERVER_LABEL, sizeof(TLS_SERVER_LABEL));
+			input += Pair(TLS_SERVER_LABEL, sizeof(TLS_SERVER_LABEL));
 
 		input += state.hash().flushInto(state._version(), state.ciphersuite().prf_algo());
 

@@ -8,8 +8,8 @@
 #include <botan/hex.h>
 #include <botan/mem_ops.h>
 #include <stdexcept>
-void hex_encode(char output[],
-					 in byte[] input,
+void hex_encode(char* output,
+					 in byte* input,
 					 size_t input_length,
 					 bool uppercase)
 {
@@ -31,7 +31,7 @@ void hex_encode(char output[],
 	}
 }
 
-string hex_encode(in byte[] input,
+string hex_encode(in byte* input,
 							  size_t input_length,
 							  bool uppercase)
 {
@@ -43,8 +43,8 @@ string hex_encode(in byte[] input,
 	return output;
 }
 
-size_t hex_decode(byte output[],
-						const char input[],
+size_t hex_decode(byte* output,
+						const char* input,
 						size_t input_length,
 						size_t& input_consumed,
 						bool ignore_ws)
@@ -134,8 +134,8 @@ size_t hex_decode(byte output[],
 	return written;
 }
 
-size_t hex_decode(byte output[],
-						const char input[],
+size_t hex_decode(byte* output,
+						const char* input,
 						size_t input_length,
 						bool ignore_ws)
 {
@@ -149,20 +149,20 @@ size_t hex_decode(byte output[],
 	return written;
 }
 
-size_t hex_decode(byte output[],
+size_t hex_decode(byte* output,
 						in string input,
 						bool ignore_ws)
 {
 	return hex_decode(output, &input[0], input.length(), ignore_ws);
 }
 
-SafeVector!byte hex_decode_locked(const char input[],
+SafeVector!byte hex_decode_locked(const char* input,
 												  size_t input_length,
 												  bool ignore_ws)
 {
 	SafeVector!byte bin(1 + input_length / 2);
 
-	size_t written = hex_decode(&bin[0],
+	size_t written = hex_decode(&binput[0],
 										 input,
 										 input_length,
 										 ignore_ws);
@@ -177,13 +177,13 @@ SafeVector!byte hex_decode_locked(in string input,
 	return hex_decode_locked(&input[0], input.size(), ignore_ws);
 }
 
-Vector!( byte ) hex_decode(const char input[],
+Vector!( byte ) hex_decode(const char* input,
 									  size_t input_length,
 									  bool ignore_ws)
 {
 	Vector!( byte ) bin(1 + input_length / 2);
 
-	size_t written = hex_decode(&bin[0],
+	size_t written = hex_decode(&binput[0],
 										 input,
 										 input_length,
 										 ignore_ws);

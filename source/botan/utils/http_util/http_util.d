@@ -141,7 +141,7 @@ Response http_sync(http_exch_fn http_transact,
 	if(!response_stream || http_version.substr(0,5) != "HTTP/")
 		throw new Exception("Not an HTTP response");
 
-	std::map<string, string> headers;
+	HashMap!(string, string) headers;
 	string header_line;
 	while (std::getline(io, header_line) && header_line != "\r")
 	{

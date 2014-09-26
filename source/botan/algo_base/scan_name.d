@@ -9,7 +9,6 @@
 #include <botan/parsing.h>
 #include <botan/exceptn.h>
 #include <stdexcept>
-namespace {
 
 string make_arg(
 	const Vector!( Pair!(size_t, string)  )& name, size_t start)
@@ -53,14 +52,14 @@ string make_arg(
 Pair!(size_t, string)
 deref_aliases(in Pair!(size_t, string) input)
 {
-	return std::make_pair(in.first,
+	return Pair(in.first,
 								 SCAN_Name::deref_alias(in.second));
 }
 
 }
 
 std::mutex SCAN_Name::s_alias_map_mutex;
-std::map<string, string> SCAN_Name::s_alias_map;
+HashMap!(string, string) SCAN_Name::s_alias_map;
 
 SCAN_Name::SCAN_Name(string algo_spec)
 {
@@ -68,7 +67,7 @@ SCAN_Name::SCAN_Name(string algo_spec)
 
 	Vector!( Tuple!(size_t, string)  ) name;
 	size_t level = 0;
-	Pair!(size_t, string) accum = std::make_pair(level, "");
+	Pair!(size_t, string) accum = Pair(level, "");
 
 	string decoding_error = "Bad SCAN name '" + algo_spec + "': ";
 
@@ -95,7 +94,7 @@ SCAN_Name::SCAN_Name(string algo_spec)
 			{
 				if(accum.second != "")
 					name.push_back(deref_aliases(accum));
-				accum = std::make_pair(level, "");
+				accum = Pair(level, "");
 			}
 		}
 		else
@@ -223,4 +222,3 @@ void SCAN_Name::set_default_aliases()
 	SCAN_Name::add_alias("GOST-34.11", "GOST-R-34.11-94");
 }
 
-}

@@ -61,7 +61,7 @@ void StreamCipher_Filter::set_iv(in InitializationVector iv)
 /*
 * Write data into a StreamCipher_Filter
 */
-void StreamCipher_Filter::write(in byte[] input, size_t length)
+void StreamCipher_Filter::write(in byte* input, size_t length)
 {
 	while(length)
 	{

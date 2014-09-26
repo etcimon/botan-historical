@@ -52,7 +52,7 @@ Ciphersuite Ciphersuite::by_name(in string name)
 	return Ciphersuite(); // some unknown ciphersuite
 }
 
-Ciphersuite::Ciphersuite(u16bit ciphersuite_code,
+Ciphersuite::Ciphersuite(ushort ciphersuite_code,
 								 const char* sig_algo,
 								 const char* kex_algo,
 								 const char* cipher_algo,

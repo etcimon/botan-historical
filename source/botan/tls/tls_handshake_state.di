@@ -45,8 +45,8 @@ class Handshake_State
 
 		abstract ~Handshake_State();
 
-		Handshake_State(in Handshake_State) = delete;
-		Handshake_State& operator=(in Handshake_State) = delete;
+		Handshake_State(in Handshake_State);
+		Handshake_State& operator=(in Handshake_State);
 
 		Handshake_IO& handshake_io() { return *m_handshake_io; }
 

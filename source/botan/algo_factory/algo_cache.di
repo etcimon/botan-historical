@@ -20,8 +20,7 @@ size_t static_provider_weight(in string prov_name);
 /**
 * Algorithm_Cache (used by Algorithm_Factory)
 */
-template<typename T>
-class Algorithm_Cache
+class Algorithm_Cache(T)
 {
 	public:
 		/**
@@ -68,8 +67,8 @@ class Algorithm_Cache
 			find_algorithm(in string algo_spec);
 
 		std::mutex mutex;
-		std::map<string, string> aliases;
-		std::map<string, string> pref_providers;
+		HashMap!(string, string) aliases;
+		HashMap!(string, string) pref_providers;
 		std::map<string, std::map<string, T*> > algorithms;
 };
 
@@ -106,7 +105,7 @@ const T* Algorithm_Cache<T>::get(in string algo_spec,
 
 	auto algo = find_algorithm(algo_spec);
 	if(algo == algorithms.end()) // algo not found at all (no providers)
-		return nullptr;
+		return null;
 
 	// If a provider is requested specifically, return it or fail entirely
 	if(requested_provider != "")
@@ -114,10 +113,10 @@ const T* Algorithm_Cache<T>::get(in string algo_spec,
 		auto prov = algo->second.find(requested_provider);
 		if(prov != algo->second.end())
 			return prov->second;
-		return nullptr;
+		return null;
 	}
 
-	const T* prototype = nullptr;
+	const T* prototype = null;
 	string prototype_provider;
 	size_t prototype_prov_weight = 0;
 
@@ -131,7 +130,7 @@ const T* Algorithm_Cache<T>::get(in string algo_spec,
 
 		const size_t prov_weight = static_provider_weight(i->first);
 
-		if(prototype == nullptr || prov_weight > prototype_prov_weight)
+		if(prototype == null || prov_weight > prototype_prov_weight)
 		{
 			prototype = i->second;
 			prototype_provider = i->first;

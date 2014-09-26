@@ -46,16 +46,14 @@ void round3(ref uint output, uint input, uint mask, uint rot)
 /*
 * CAST-256 Encryption
 */
-void CAST_256::encrypt_n(in byte[] input, ref byte[] output) const
+void CAST_256::encrypt_n(byte* input, byte* output, size_t blocks) const
 {
-	const byte[] cached = output;
-	scope(exit) output = cached;
 	for(size_t i = 0; i != blocks; ++i)
 	{
-		uint A = load_be<uint>(input, 0);
-		uint B = load_be<uint>(input, 1);
-		uint C = load_be<uint>(input, 2);
-		uint D = load_be<uint>(input, 3);
+		uint A = load_be!uint(input, 0);
+		uint B = load_be!uint(input, 1);
+		uint C = load_be!uint(input, 2);
+		uint D = load_be!uint(input, 3);
 
 		round1(C, D, MK[ 0], RK[ 0]); round2(B, C, MK[ 1], RK[ 1]);
 		round3(A, B, MK[ 2], RK[ 2]); round1(D, A, MK[ 3], RK[ 3]);
@@ -84,24 +82,24 @@ void CAST_256::encrypt_n(in byte[] input, ref byte[] output) const
 
 		store_be(output, A, B, C, D);
 
-		input = input[BLOCK_SIZE .. $];
-		output = output[BLOCK_SIZE .. $];
+		input += BLOCK_SIZE;
+		output += BLOCK_SIZE;
 	}
 }
 
 /*
 * CAST-256 Decryption
 */
-void CAST_256::decrypt_n(in byte[] input, ref byte[] output) const
+void CAST_256::decrypt_n(byte* input, byte* output, size_t blocks) const
 {
-	const byte[] cached = output;
+	in byte* cached = output;
 	scope(exit) output = cached;
 	for(size_t i = 0; i != blocks; ++i)
 	{
-		uint A = load_be<uint>(input, 0);
-		uint B = load_be<uint>(input, 1);
-		uint C = load_be<uint>(input, 2);
-		uint D = load_be<uint>(input, 3);
+		uint A = load_be!uint(input, 0);
+		uint B = load_be!uint(input, 1);
+		uint C = load_be!uint(input, 2);
+		uint D = load_be!uint(input, 3);
 
 		round1(C, D, MK[44], RK[44]); round2(B, C, MK[45], RK[45]);
 		round3(A, B, MK[46], RK[46]); round1(D, A, MK[47], RK[47]);
@@ -130,17 +128,17 @@ void CAST_256::decrypt_n(in byte[] input, ref byte[] output) const
 
 		store_be(output, A, B, C, D);
 
-		input = input[BLOCK_SIZE .. $];
-		output = output[BLOCK_SIZE .. $];
+		input += BLOCK_SIZE;
+		output += BLOCK_SIZE;
 	}
 }
 
 /*
 * CAST-256 Key Schedule
 */
-void CAST_256::key_schedule(in byte[] key)
+void CAST_256::key_schedule(in byte* key)
 {
-	static const uint KEY_MASK[192] = {
+	static const uint[192] KEY_MASK = {
 		0x5A827999, 0xC95C653A, 0x383650DB, 0xA7103C7C, 0x15EA281D, 0x84C413BE,
 		0xF39DFF5F, 0x6277EB00, 0xD151D6A1, 0x402BC242, 0xAF05ADE3, 0x1DDF9984,
 		0x8CB98525, 0xFB9370C6, 0x6A6D5C67, 0xD9474808, 0x482133A9, 0xB6FB1F4A,
@@ -174,7 +172,7 @@ void CAST_256::key_schedule(in byte[] key)
 		0x4BBC26CD, 0xBA96126E, 0x296FFE0F, 0x9849E9B0, 0x0723D551, 0x75FDC0F2,
 		0xE4D7AC93, 0x53B19834, 0xC28B83D5, 0x31656F76, 0xA03F5B17, 0x0F1946B8 };
 
-	static const byte KEY_ROT[32] = {
+	static const byte[32] KEY_ROT = {
 		0x13, 0x04, 0x15, 0x06, 0x17, 0x08, 0x19, 0x0A, 0x1B, 0x0C,
 		0x1D, 0x0E, 0x1F, 0x10, 0x01, 0x12, 0x03, 0x14, 0x05, 0x16,
 		0x07, 0x18, 0x09, 0x1A, 0x0B, 0x1C, 0x0D, 0x1E, 0x0F, 0x00,

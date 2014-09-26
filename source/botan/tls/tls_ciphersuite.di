@@ -21,7 +21,7 @@ class Ciphersuite
 		* @param suite the ciphersuite code number
 		* @return ciphersuite object
 		*/
-		static Ciphersuite by_id(u16bit suite);
+		static Ciphersuite by_id(ushort suite);
 
 		/**
 		* Lookup a ciphersuite by name
@@ -46,7 +46,7 @@ class Ciphersuite
 		/**
 		* @return ciphersuite number
 		*/
-		u16bit ciphersuite_code() const { return m_ciphersuite_code; }
+		ushort ciphersuite_code() const { return m_ciphersuite_code; }
 
 		/**
 		* @return true if this is a PSK ciphersuite
@@ -101,7 +101,7 @@ class Ciphersuite
 
 	private:
 
-		Ciphersuite(u16bit ciphersuite_code,
+		Ciphersuite(ushort ciphersuite_code,
 						const char* sig_algo,
 						const char* kex_algo,
 						const char* cipher_algo,
@@ -111,7 +111,7 @@ class Ciphersuite
 						size_t mac_keylen,
 						const char* prf_algo = "");
 
-		u16bit m_ciphersuite_code = 0;
+		ushort m_ciphersuite_code = 0;
 
 		string m_sig_algo;
 		string m_kex_algo;

@@ -19,14 +19,14 @@ void comb4p_round(SafeVector!byte out,
 	h1.update(round_no);
 	h2.update(round_no);
 
-	h1.update(&in[0], in.size());
-	h2.update(&in[0], in.size());
+	h1.update(&input[0], in.size());
+	h2.update(&input[0], in.size());
 
 	SafeVector!byte h_buf = h1.flush();
-	xor_buf(&out[0], &h_buf[0], std::min(out.size(), h_buf.size()));
+	xor_buf(&output[0], &h_buf[0], std::min(out.size(), h_buf.size()));
 
 	h_buf = h2.flush();
-	xor_buf(&out[0], &h_buf[0], std::min(out.size(), h_buf.size()));
+	xor_buf(&output[0], &h_buf[0], std::min(out.size(), h_buf.size()));
 }
 
 }
@@ -67,13 +67,13 @@ void Comb4P::clear()
 	m_hash2->update(0);
 }
 
-void Comb4P::add_data(in byte[] input, size_t length)
+void Comb4P::add_data(in byte* input, size_t length)
 {
 	m_hash1->update(input, length);
 	m_hash2->update(input, length);
 }
 
-void Comb4P::final_result(ref byte[] output)
+void Comb4P::final_result(byte* output)
 {
 	SafeVector!byte h1 = m_hash1->flush();
 	SafeVector!byte h2 = m_hash2->flush();

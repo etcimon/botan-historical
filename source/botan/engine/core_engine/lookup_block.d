@@ -251,13 +251,13 @@ BlockCipher* Core_Engine::find_block_cipher(in SCAN_Name request,
 			af.prototype_stream_cipher(request.arg(1));
 
 		if(!hash || !stream_cipher)
-			return nullptr;
+			return null;
 
 		return new Lion(hash->clone(), stream_cipher->clone(), block_size);
 	}
 #endif
 
-	return nullptr;
+	return null;
 }
 
 }

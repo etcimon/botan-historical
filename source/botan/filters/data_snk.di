@@ -17,8 +17,8 @@ class DataSink : public Filter
 		DataSink() {}
 		abstract ~DataSink() {}
 
-		DataSink& operator=(in DataSink) = delete;
-		DataSink(in DataSink) = delete;
+		DataSink& operator=(in DataSink);
+		DataSink(in DataSink);
 };
 
 /**

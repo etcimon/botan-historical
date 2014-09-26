@@ -27,7 +27,7 @@ struct BitBucket : public Filter
 class Chain : public Fanout_Filter
 {
 	public:
-		void write(in byte[] input, size_t length) { send(input, length); }
+		void write(in byte* input, size_t length) { send(input, length); }
 
 		string name() const;
 
@@ -35,8 +35,8 @@ class Chain : public Fanout_Filter
 		* Construct a chain of up to four filters. The filters are set
 		* up in the same order as the arguments.
 		*/
-		Chain(Filter* = nullptr, Filter* = nullptr,
-				Filter* = nullptr, Filter* = nullptr);
+		Chain(Filter* = null, Filter* = null,
+				Filter* = null, Filter* = null);
 
 		/**
 		* Construct a chain from range of filters
@@ -54,7 +54,7 @@ class Chain : public Fanout_Filter
 class Fork : public Fanout_Filter
 {
 	public:
-		void write(in byte[] input, size_t length) { send(input, length); }
+		void write(in byte* input, size_t length) { send(input, length); }
 		void set_port(size_t n) { Fanout_Filter::set_port(n); }
 
 		string name() const;
@@ -62,7 +62,7 @@ class Fork : public Fanout_Filter
 		/**
 		* Construct a Fork filter with up to four forks.
 		*/
-		Fork(Filter*, Filter*, Filter* = nullptr, Filter* = nullptr);
+		Fork(Filter*, Filter*, Filter* = null, Filter* = null);
 
 		/**
 		* Construct a Fork from range of filters
@@ -85,7 +85,7 @@ class Threaded_Fork : public Fork
 		/**
 		* Construct a Threaded_Fork filter with up to four forks.
 		*/
-		Threaded_Fork(Filter*, Filter*, Filter* = nullptr, Filter* = nullptr);
+		Threaded_Fork(Filter*, Filter*, Filter* = null, Filter* = null);
 
 		/**
 		* Construct a Threaded_Fork from range of filters
@@ -98,10 +98,10 @@ class Threaded_Fork : public Fork
 
 	protected:
 		void set_next(Filter* f[], size_t n);
-		void send(in byte[] input);
+		void send(in byte* input, size_t length);
 
 	private:
-		void thread_delegate_work(in byte[] input, size_t length);
+		void thread_delegate_work(in byte* input, size_t length);
 		void thread_entry(Filter* filter);
 
 		Vector!( std::shared_ptr<std::thread )> m_threads;

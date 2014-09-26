@@ -11,8 +11,7 @@
 * Fake SIMD, using plain scalar operations
 * Often still faster than iterative on superscalar machines
 */
-template<typename T, size_t N>
-class SIMD_Scalar
+class SIMD_Scalar(T, size_t N)
 {
 	public:
 		static bool enabled() { return true; }
@@ -55,13 +54,13 @@ class SIMD_Scalar
 			return out;
 		}
 
-		void store_le(ref byte[] output) const
+		void store_le(byte* output) const
 		{
 			for(size_t i = 0; i != size(); ++i)
 				Botan::store_le(m_v[i], out + i*sizeof(T));
 		}
 
-		void store_be(ref byte[] output) const
+		void store_be(byte* output) const
 		{
 			for(size_t i = 0; i != size(); ++i)
 				Botan::store_be(m_v[i], out + i*sizeof(T));

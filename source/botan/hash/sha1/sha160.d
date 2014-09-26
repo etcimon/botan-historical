@@ -15,7 +15,7 @@ namespace {
 /*
 * SHA-160 F1 Function
 */
-inline void F1(uint A, ref uint B, uint C, uint D, ref uint E, uint msg)
+ void F1(uint A, ref uint B, uint C, uint D, ref uint E, uint msg)
 {
 	E += (D ^ (B & (C ^ D))) + msg + 0x5A827999 + rotate_left(A, 5);
 	B  = rotate_left(B, 30);
@@ -24,7 +24,7 @@ inline void F1(uint A, ref uint B, uint C, uint D, ref uint E, uint msg)
 /*
 * SHA-160 F2 Function
 */
-inline void F2(uint A, ref uint B, uint C, uint D, ref uint E, uint msg)
+ void F2(uint A, ref uint B, uint C, uint D, ref uint E, uint msg)
 {
 	E += (B ^ C ^ D) + msg + 0x6ED9EBA1 + rotate_left(A, 5);
 	B  = rotate_left(B, 30);
@@ -33,7 +33,7 @@ inline void F2(uint A, ref uint B, uint C, uint D, ref uint E, uint msg)
 /*
 * SHA-160 F3 Function
 */
-inline void F3(uint A, ref uint B, uint C, uint D, ref uint E, uint msg)
+ void F3(uint A, ref uint B, uint C, uint D, ref uint E, uint msg)
 {
 	E += ((B & C) | ((B | C) & D)) + msg + 0x8F1BBCDC + rotate_left(A, 5);
 	B  = rotate_left(B, 30);
@@ -42,7 +42,7 @@ inline void F3(uint A, ref uint B, uint C, uint D, ref uint E, uint msg)
 /*
 * SHA-160 F4 Function
 */
-inline void F4(uint A, ref uint B, uint C, uint D, ref uint E, uint msg)
+ void F4(uint A, ref uint B, uint C, uint D, ref uint E, uint msg)
 {
 	E += (B ^ C ^ D) + msg + 0xCA62C1D6 + rotate_left(A, 5);
 	B  = rotate_left(B, 30);
@@ -55,7 +55,7 @@ inline void F4(uint A, ref uint B, uint C, uint D, ref uint E, uint msg)
 /*
 * SHA-160 Compression Function
 */
-void SHA_160::compress_n(in byte[] input, size_t blocks)
+void SHA_160::compress_n(in byte* input, size_t blocks)
 {
 	using namespace SHA1_F;
 
@@ -135,7 +135,7 @@ void SHA_160::compress_n(in byte[] input, size_t blocks)
 /*
 * Copy out the digest
 */
-void SHA_160::copy_out(byte output[])
+void SHA_160::copy_out(byte* output)
 {
 	for(size_t i = 0; i != output_length(); i += 4)
 		store_be(digest[i/4], output + i);

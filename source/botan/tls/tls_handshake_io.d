@@ -14,7 +14,7 @@ namespace TLS {
 
 namespace {
 
-inline size_t load_be24(const byte q[3])
+ size_t load_be24(const byte q[3])
 {
 	return make_uint(0,
 							 q[0],
@@ -22,11 +22,11 @@ inline size_t load_be24(const byte q[3])
 							 q[2]);
 }
 
-void store_be24(byte out[3], size_t val)
+void store_be24(byte[3] output, size_t val)
 {
-	out[0] = get_byte<uint>(1, val);
-	out[1] = get_byte<uint>(2, val);
-	out[2] = get_byte<uint>(3, val);
+	output[0] = get_byte<uint>(1, val);
+	output[1] = get_byte<uint>(2, val);
+	output[2] = get_byte<uint>(3, val);
 }
 
 }
@@ -37,7 +37,7 @@ Protocol_Version Stream_Handshake_IO::initial_record_version() const
 }
 
 void Stream_Handshake_IO::add_record(in Vector!byte record,
-												 Record_Type record_type, u64bit)
+												 Record_Type record_type, ulong)
 {
 	if(record_type == HANDSHAKE)
 	{
@@ -72,16 +72,16 @@ Stream_Handshake_IO::get_next_record(bool)
 
 			m_queue.erase(m_queue.begin(), m_queue.begin() + 4 + length);
 
-			return std::make_pair(type, contents);
+			return Pair(type, contents);
 		}
 	}
 
-	return std::make_pair(HANDSHAKE_NONE, Vector!( byte )());
+	return Pair(HANDSHAKE_NONE, Vector!( byte )());
 }
 
 Vector!( byte )
 Stream_Handshake_IO::format(in Vector!byte msg,
-									 Handshake_Type type) const
+							Handshake_Type type) const
 {
 	Vector!( byte ) send_buf(4 + msg.size());
 
@@ -118,9 +118,9 @@ Protocol_Version Datagram_Handshake_IO::initial_record_version() const
 
 void Datagram_Handshake_IO::add_record(in Vector!byte record,
 													Record_Type record_type,
-													u64bit record_sequence)
+													ulong record_sequence)
 {
-	const u16bit epoch = cast(u16bit)(record_sequence >> 48);
+	const ushort epoch = cast(ushort)(record_sequence >> 48);
 
 	if(record_type == CHANGE_CIPHER_SPEC)
 	{
@@ -140,7 +140,7 @@ void Datagram_Handshake_IO::add_record(in Vector!byte record,
 
 		const byte msg_type = record_bits[0];
 		const size_t msg_len = load_be24(&record_bits[1]);
-		const u16bit message_seq = load_be<u16bit>(&record_bits[4], 0);
+		const ushort message_seq = load_be<ushort>(&record_bits[4], 0);
 		const size_t fragment_offset = load_be24(&record_bits[6]);
 		const size_t fragment_length = load_be24(&record_bits[9]);
 
@@ -168,25 +168,25 @@ Pair!(Handshake_Type, Vector!( byte) )
 Datagram_Handshake_IO::get_next_record(bool expecting_ccs)
 {
 	if(!m_flights.rbegin()->empty())
-		m_flights.push_back(Vector!( u16bit )());
+		m_flights.push_back(Vector!( ushort )());
 
 	if(expecting_ccs)
 	{
 		if(!m_messages.empty())
 		{
-			const u16bit current_epoch = m_messages.begin()->second.epoch();
+			const ushort current_epoch = m_messages.begin()->second.epoch();
 
 			if(m_ccs_epochs.count(current_epoch))
-				return std::make_pair(HANDSHAKE_CCS, Vector!( byte )());
+				return Pair(HANDSHAKE_CCS, Vector!( byte )());
 		}
 
-		return std::make_pair(HANDSHAKE_NONE, Vector!( byte )());
+		return Pair(HANDSHAKE_NONE, Vector!( byte )());
 	}
 
 	auto i = m_messages.find(m_in_message_seq);
 
 	if(i == m_messages.end() || !i->second.complete())
-		return std::make_pair(HANDSHAKE_NONE, Vector!( byte )());
+		return Pair(HANDSHAKE_NONE, Vector!( byte )());
 
 	m_in_message_seq += 1;
 
@@ -194,10 +194,10 @@ Datagram_Handshake_IO::get_next_record(bool expecting_ccs)
 }
 
 void Datagram_Handshake_IO::Handshake_Reassembly::add_fragment(
-	in byte[] fragment,
+	in byte* fragment,
 	size_t fragment_length,
 	size_t fragment_offset,
-	u16bit epoch,
+	ushort epoch,
 	byte msg_type,
 	size_t msg_length)
 {
@@ -259,16 +259,16 @@ Datagram_Handshake_IO::Handshake_Reassembly::message() const
 	if(!complete())
 		throw new Internal_Error("Datagram_Handshake_IO - message not complete");
 
-	return std::make_pair(cast(Handshake_Type)(m_msg_type), m_message);
+	return Pair(cast(Handshake_Type)(m_msg_type), m_message);
 }
 
 Vector!( byte )
-Datagram_Handshake_IO::format_fragment(in byte[] fragment,
+Datagram_Handshake_IO::format_fragment(in byte* fragment,
 													size_t frag_len,
-													u16bit frag_offset,
-													u16bit msg_len,
+													ushort frag_offset,
+													ushort msg_len,
 													Handshake_Type type,
-													u16bit msg_sequence) const
+													ushort msg_sequence) const
 {
 	Vector!( byte ) send_buf(12 + frag_len);
 
@@ -289,7 +289,7 @@ Datagram_Handshake_IO::format_fragment(in byte[] fragment,
 Vector!( byte )
 Datagram_Handshake_IO::format_w_seq(in Vector!byte msg,
 												Handshake_Type type,
-												u16bit msg_sequence) const
+												ushort msg_sequence) const
 {
 	return format_fragment(&msg[0], msg.size(), 0, msg.size(), type, msg_sequence);
 }
@@ -321,10 +321,10 @@ Vector!( byte )
 Datagram_Handshake_IO::send(in Handshake_Message msg)
 {
 	const Vector!( byte ) msg_bits = msg.serialize();
-	const u16bit epoch = m_seqs.current_write_epoch();
+	const ushort epoch = m_seqs.current_write_epoch();
 	const Handshake_Type msg_type = msg.type();
 
-	std::tuple<u16bit, byte, Vector!( byte )> msg_info(epoch, msg_type, msg_bits);
+	std::tuple<ushort, byte, Vector!( byte )> msg_info(epoch, msg_type, msg_bits);
 
 	if(msg_type == HANDSHAKE_CCS)
 	{

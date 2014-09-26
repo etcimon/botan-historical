@@ -100,12 +100,12 @@ string GOST_28147_89::name() const
 /*
 * GOST Encryption
 */
-void GOST_28147_89::encrypt_n(in byte[] input, ref byte[] output) const
+void GOST_28147_89::encrypt_n(byte* input, byte* output, size_t blocks) const
 {
 	for(size_t i = 0; i != blocks; ++i)
 	{
-		uint N1 = load_le<uint>(input, 0);
-		uint N2 = load_le<uint>(input, 1);
+		uint N1 = load_le!uint(input, 0);
+		uint N2 = load_le!uint(input, 1);
 
 		for(size_t j = 0; j != 3; ++j)
 		{
@@ -122,20 +122,20 @@ void GOST_28147_89::encrypt_n(in byte[] input, ref byte[] output) const
 
 		store_le(out, N2, N1);
 
-		input = input[BLOCK_SIZE .. $];
-		output = output[BLOCK_SIZE .. $];
+		input += BLOCK_SIZE;
+		output += BLOCK_SIZE;
 	}
 }
 
 /*
 * GOST Decryption
 */
-void GOST_28147_89::decrypt_n(in byte[] input, ref byte[] output) const
+void GOST_28147_89::decrypt_n(byte* input, byte* output, size_t blocks) const
 {
 	for(size_t i = 0; i != blocks; ++i)
 	{
-		uint N1 = load_le<uint>(input, 0);
-		uint N2 = load_le<uint>(input, 1);
+		uint N1 = load_le!uint(input, 0);
+		uint N2 = load_le!uint(input, 1);
 
 		GOST_2ROUND(N1, N2, 0, 1);
 		GOST_2ROUND(N1, N2, 2, 3);
@@ -151,19 +151,19 @@ void GOST_28147_89::decrypt_n(in byte[] input, ref byte[] output) const
 		}
 
 		store_le(out, N2, N1);
-		input = input[BLOCK_SIZE .. $];
-		output = output[BLOCK_SIZE .. $];
+		input += BLOCK_SIZE;
+		output += BLOCK_SIZE;
 	}
 }
 
 /*
 * GOST Key Schedule
 */
-void GOST_28147_89::key_schedule(in byte[] key, size_t)
+void GOST_28147_89::key_schedule(in byte* key, size_t)
 {
 	EK.resize(8);
 	for(size_t i = 0; i != 8; ++i)
-		EK[i] = load_le<uint>(key, i);
+		EK[i] = load_le!uint(key, i);
 }
 
 void GOST_28147_89::clear()

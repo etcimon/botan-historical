@@ -292,7 +292,7 @@ bool is_prime(in BigInt n, RandomNumberGenerator& rng,
 	// Fast path testing for small numbers (<= 65521)
 	if(n <= PRIMES[PRIME_TABLE_SIZE-1])
 	{
-		const u16bit num = n.word_at(0);
+		const ushort num = n.word_at(0);
 
 		return std::binary_search(PRIMES, PRIMES + PRIME_TABLE_SIZE, num);
 	}

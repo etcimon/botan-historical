@@ -15,7 +15,7 @@ class Bzip_Compression : public Filter
 	public:
 		string name() const { return "Bzip_Compression"; }
 
-		void write(in byte[] input, size_t length);
+		void write(in byte* input, size_t length);
 		void start_msg();
 		void end_msg();
 
@@ -39,7 +39,7 @@ class Bzip_Decompression : public Filter
 	public:
 		string name() const { return "Bzip_Decompression"; }
 
-		void write(in byte[] input, size_t length);
+		void write(in byte* input, size_t length);
 		void start_msg();
 		void end_msg();
 

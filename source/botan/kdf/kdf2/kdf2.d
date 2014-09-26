@@ -10,8 +10,8 @@
 * KDF2 Key Derivation Mechanism
 */
 SafeVector!byte KDF2::derive(size_t out_len,
-										  in byte[] secret, size_t secret_len,
-										  in byte[] P, size_t P_len) const
+										  in byte* secret, size_t secret_len,
+										  in byte* P, size_t P_len) const
 {
 	SafeVector!byte output;
 	uint counter = 1;
@@ -25,7 +25,7 @@ SafeVector!byte KDF2::derive(size_t out_len,
 		SafeVector!byte hash_result = hash->flush();
 
 		size_t added = std::min(hash_result.size(), out_len);
-		output += std::make_pair(&hash_result[0], added);
+		output += Pair(&hash_result[0], added);
 		out_len -= added;
 
 		++counter;

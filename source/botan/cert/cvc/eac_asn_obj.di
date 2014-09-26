@@ -223,7 +223,7 @@ bool operator>(in EAC_Time, const EAC_Time&);
 bool operator<(in EAC_Time, const EAC_Time&);
 
 bool operator==(in ASN1_EAC_String, const ASN1_EAC_String&);
-inline bool operator!=(in ASN1_EAC_String lhs, const ASN1_EAC_String& rhs)
+ bool operator!=(in ASN1_EAC_String lhs, const ASN1_EAC_String& rhs)
 {
 	return !(lhs == rhs);
 }

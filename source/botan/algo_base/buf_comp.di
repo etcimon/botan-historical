@@ -18,13 +18,14 @@ class Buffered_Computation
 		/**
 		* @return length of the output of this function in bytes
 		*/
-		abstract size_t output_length() const = 0;
+		abstract size_t output_length() const;
 
 		/**
 		* Add new input to process.
 		* @param in the input to process as a byte array
+		* @param length of param in in bytes
 		*/
-		void update(const byte[] input) { add_data(input); }
+		void update(in byte* input, size_t length) { add_data(input, length); }
 
 		/**
 		* Add new input to process.
@@ -32,7 +33,7 @@ class Buffered_Computation
 		*/
 		void update(in SafeVector!byte input)
 		{
-			add_data(&in[0], in.size());
+			add_data(&input[0], in.size());
 		}
 
 		/**
@@ -41,14 +42,14 @@ class Buffered_Computation
 		*/
 		void update(in Vector!byte input)
 		{
-			add_data(&in[0], in.size());
+			add_data(&input[0], in.size());
 		}
 
 		/**
 		* Add an integer in big-endian order
 		* @param in the value
 		*/
-		template<typename T> void update_be(const T input)
+		void update_be(T)(in T input)
 		{
 			for(size_t i = 0; i != sizeof(T); ++i)
 			{
@@ -65,7 +66,7 @@ class Buffered_Computation
 		*/
 		void update(in string str)
 		{
-			add_data(cast(const byte[]) str);
+			add_data(&str, str.length);
 		}
 
 		/**
@@ -80,7 +81,7 @@ class Buffered_Computation
 		* @param out The byte array to be filled with the result.
 		* Must be of length output_length()
 		*/
-		void flushInto(ref byte[] output) { final_result(out); }
+		void flushInto(byte* output) { final_result(output); }
 
 		/**
 		* Complete the computation and retrieve the
@@ -101,9 +102,9 @@ class Buffered_Computation
 		* @param length the length of the byte array
 		* @result the result of the call to flush()
 		*/
-		SafeVector!byte process(const byte[] input)
+		SafeVector!byte process(in byte* input, size_t length)
 		{
-			add_data(input);
+			add_data(input, length);
 			return flush();
 		}
 
@@ -150,11 +151,11 @@ class Buffered_Computation
 		* @param input is an input buffer
 		* @param length is the length of input in bytes
 		*/
-		abstract void add_data(const byte[] input) = 0;
+		abstract void add_data(in byte* input, size_t length);
 
 		/**
 		* Write the final output to out
 		* @param out is an output buffer of output_length()
 		*/
-		abstract void final_result(ref byte[] output) = 0;
-};
+		abstract void final_result(byte* output);
+}

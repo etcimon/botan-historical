@@ -49,9 +49,9 @@ void Skein_512::reset_tweak(type_code type, bool final)
 {
 	T[0] = 0;
 
-	T[1] = (cast(u64bit)(type) << 56) |
-			 (cast(u64bit)(1) << 62) |
-			 (cast(u64bit)(final) << 63);
+	T[1] = (cast(ulong)(type) << 56) |
+			 (cast(ulong)(1) << 62) |
+			 (cast(ulong)(final) << 63);
 }
 
 void Skein_512::initial_block()
@@ -85,9 +85,9 @@ void Skein_512::initial_block()
 	reset_tweak(SKEIN_MSG, false);
 }
 
-void Skein_512::ubi_512(in byte[] msg, size_t msg_len)
+void Skein_512::ubi_512(in byte* msg, size_t msg_len)
 {
-	secure_vector<u64bit> M(8);
+	secure_vector<ulong> M(8);
 
 	do
 	{
@@ -99,20 +99,20 @@ void Skein_512::ubi_512(in byte[] msg, size_t msg_len)
 		if(to_proc % 8)
 		{
 			for(size_t j = 0; j != to_proc % 8; ++j)
-			  M[to_proc/8] |= cast(u64bit)(msg[8*(to_proc/8)+j]) << (8*j);
+			  M[to_proc/8] |= cast(ulong)(msg[8*(to_proc/8)+j]) << (8*j);
 		}
 
 		m_threefish->skein_feedfwd(M, T);
 
 		// clear first flag if set
-		T[1] &= ~(cast(u64bit)(1) << 62);
+		T[1] &= ~(cast(ulong)(1) << 62);
 
 		msg_len -= to_proc;
 		msg += to_proc;
 	} while(msg_len);
 }
 
-void Skein_512::add_data(in byte[] input, size_t length)
+void Skein_512::add_data(in byte* input, size_t length)
 {
 	if(length == 0)
 		return;
@@ -141,9 +141,9 @@ void Skein_512::add_data(in byte[] input, size_t length)
 	buf_pos += length;
 }
 
-void Skein_512::final_result(ref byte[] output)
+void Skein_512::final_result(byte* output)
 {
-	T[1] |= (cast(u64bit)(1) << 63); // final block flag
+	T[1] |= (cast(ulong)(1) << 63); // final block flag
 
 	for(size_t i = buf_pos; i != buffer.size(); ++i)
 		buffer[i] = 0;
@@ -158,7 +158,7 @@ void Skein_512::final_result(ref byte[] output)
 	const size_t out_bytes = output_bits / 8;
 
 	for(size_t i = 0; i != out_bytes; ++i)
-		out[i] = get_byte(7-i%8, m_threefish->m_K[i/8]);
+		output[i] = get_byte(7-i%8, m_threefish->m_K[i/8]);
 
 	buf_pos = 0;
 	initial_block();

@@ -15,9 +15,9 @@
 class EAX_Mode : public AEAD_Mode
 {
 	public:
-		SafeVector!byte start(in byte[] nonce, size_t nonce_len) override;
+		SafeVector!byte start(in byte* nonce, size_t nonce_len) override;
 
-		void set_associated_data(in byte[] ad, size_t ad_len) override;
+		void set_associated_data(in byte* ad, size_t ad_len) override;
 
 		string name() const override;
 
@@ -32,7 +32,7 @@ class EAX_Mode : public AEAD_Mode
 
 		void clear() override;
 	protected:
-		void key_schedule(in byte[] key) override;
+		void key_schedule(in byte* key, size_t length) override;
 
 		/**
 		* @param cipher the cipher to use

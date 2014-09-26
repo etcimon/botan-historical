@@ -12,11 +12,11 @@
 #if defined(BOTAN_HAS_LOCKING_ALLOCATOR)
   #include <botan/locking_allocator.h>
 #endif
-template<typename T>
-class secure_allocator
+
+class secure_allocator(T)
 {
 	public:
-		typedef T			 value_type;
+		typedef T			value_type;
 
 		typedef T*			pointer;
 		typedef const T*	const_pointer;
@@ -67,7 +67,7 @@ class secure_allocator
 		}
 
 		template<typename U, typename... Args>
-		void construct(U* p, Args&&... args)
+		void construct(U, Args)(U* p, Args&&... args)
 		{
 			::new(cast(void*)(p)) U(std::forward<Args>(args)...);
 		}
@@ -75,11 +75,11 @@ class secure_allocator
 		template<typename U> void destroy(U* p) { p->~U(); }
 };
 
-template<typename T> inline bool
+template<typename T>  bool
 operator==(in secure_allocator<T>, const secure_allocator<T>&)
 { return true; }
 
-template<typename T> inline bool
+template<typename T>  bool
 operator!=(in secure_allocator<T>, const secure_allocator<T>&)
 { return false; }
 
@@ -89,14 +89,14 @@ template<typename T>
 Vector!( T ) unlock(in secure_vector<T> input)
 {
 	Vector!( T ) out(in.size());
-	copy_mem(&out[0], &in[0], in.size());
+	copy_mem(&output[0], &input[0], in.size());
 	return out;
 }
 
-template<typename T, typename Alloc>
-size_t buffer_insert(Vector!( T, Alloc )& buf,
+
+size_t buffer_insert(T, Alloc)(Vector!( T, Alloc ) buf,
 							size_t buf_offset,
-							const T input[],
+							in T* input,
 							size_t input_length)
 {
 	const size_t to_copy = std::min(input_length, buf.size() - buf_offset);
@@ -104,8 +104,7 @@ size_t buffer_insert(Vector!( T, Alloc )& buf,
 	return to_copy;
 }
 
-template<typename T, typename Alloc, typename Alloc2>
-size_t buffer_insert(Vector!( T, Alloc )& buf,
+size_t buffer_insert(T, Alloc, Alloc2)(Vector!( T, Alloc )& buf,
 							size_t buf_offset,
 							const Vector!( T, Alloc2 )& input)
 {
@@ -121,7 +120,7 @@ operator+=(Vector!( T, Alloc )& out,
 {
 	const size_t copy_offset = out.size();
 	out.resize(out.size() + in.size());
-	copy_mem(&out[copy_offset], &in[0], in.size());
+	copy_mem(&output[copy_offset], &input[0], in.size());
 	return out;
 }
 
@@ -138,7 +137,7 @@ Vector!( T, Alloc )& operator+=(Vector!( T, Alloc )& out,
 {
 	const size_t copy_offset = out.size();
 	out.resize(out.size() + in.second);
-	copy_mem(&out[copy_offset], in.first, in.second);
+	copy_mem(&output[copy_offset], in.first, in.second);
 	return out;
 }
 
@@ -148,7 +147,7 @@ Vector!( T, Alloc )& operator+=(Vector!( T, Alloc )& out,
 {
 	const size_t copy_offset = out.size();
 	out.resize(out.size() + in.second);
-	copy_mem(&out[copy_offset], in.first, in.second);
+	copy_mem(&output[copy_offset], in.first, in.second);
 	return out;
 }
 
@@ -156,8 +155,7 @@ Vector!( T, Alloc )& operator+=(Vector!( T, Alloc )& out,
 * Zeroise the values; length remains unchanged
 * @param vec the vector to zeroise
 */
-template<typename T, typename Alloc>
-void zeroise(Vector!( T, Alloc )& vec)
+void zeroise(T, Alloc)(Vector!( T, Alloc )& vec)
 {
 	clear_mem(&vec[0], vec.size());
 }
@@ -166,8 +164,7 @@ void zeroise(Vector!( T, Alloc )& vec)
 * Zeroise the values then free the memory
 * @param vec the vector to zeroise and free
 */
-template<typename T, typename Alloc>
-void zap(Vector!( T, Alloc )& vec)
+void zap(T, Alloc)(Vector!( T, Alloc ) vec)
 {
 	zeroise(vec);
 	vec.clear();

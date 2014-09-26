@@ -24,7 +24,7 @@ class Certificate_Extension
 		* Make a copy of this extension
 		* @return copy of this
 		*/
-		abstract Certificate_Extension* copy() const = 0;
+		abstract Certificate_Extension* copy() const;
 
 		/*
 		* Add the contents of this extension into the information
@@ -33,19 +33,19 @@ class Certificate_Extension
 		* @param issuer the issuer info
 		*/
 		abstract void contents_to(Data_Store& subject,
-										 Data_Store& issuer) const = 0;
+										 Data_Store& issuer) const;
 
 		/*
 		* @return specific OID name
 		*/
-		abstract string oid_name() const = 0;
+		abstract string oid_name() const;
 
 		abstract ~Certificate_Extension() {}
 	protected:
 		friend class Extensions;
 		abstract bool should_encode() const { return true; }
-		abstract Vector!( byte ) encode_inner() const = 0;
-		abstract void decode_inner(in Vector!byte) = 0;
+		abstract Vector!( byte ) encode_inner() const;
+		abstract void decode_inner(in Vector!byte);
 };
 
 /**

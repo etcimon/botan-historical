@@ -26,7 +26,7 @@ class CurveGFp
 		* @param a first coefficient
 		* @param b second coefficient
 		*/
-		CurveGFp(in BigInt p, const BigInt& a, const BigInt& b) :
+		CurveGFp(in BigInt p, in BigInt a, in BigInt b) :
 			m_p(p),
 			m_a(a),
 			m_b(b),
@@ -42,38 +42,38 @@ class CurveGFp
 
 		CurveGFp(in CurveGFp) = default;
 
-		CurveGFp& operator=(in CurveGFp) = default;
+		CurveGFp operator=(in CurveGFp) = default;
 
 		/**
 		* @return curve coefficient a
 		*/
-		const BigInt& get_a() const { return m_a; }
+		in BigInt get_a() const { return m_a; }
 
 		/**
 		* @return curve coefficient b
 		*/
-		const BigInt& get_b() const { return m_b; }
+		in BigInt get_b() const { return m_b; }
 
 		/**
 		* Get prime modulus of the field of the curve
 		* @return prime modulus of the field of the curve
 		*/
-		const BigInt& get_p() const { return m_p; }
+		in BigInt get_p() const { return m_p; }
 
 		/**
 		* @return Montgomery parameter r^2 % p
 		*/
-		const BigInt& get_r2() const { return m_r2; }
+		in BigInt get_r2() const { return m_r2; }
 
 		/**
 		* @return a * r mod p
 		*/
-		const BigInt& get_a_r() const { return m_a_r; }
+		in BigInt get_a_r() const { return m_a_r; }
 
 		/**
 		* @return b * r mod p
 		*/
-		const BigInt& get_b_r() const { return m_b_r; }
+		in BigInt get_b_r() const { return m_b_r; }
 
 		/**
 		* @return Montgomery parameter p-dash
@@ -89,7 +89,7 @@ class CurveGFp
 		* swaps the states of *this and other, does not throw
 		* @param other curve to swap values with
 		*/
-		void swap(CurveGFp& other)
+		void swap(CurveGFp other)
 		{
 			std::swap(m_p, other.m_p);
 
@@ -134,7 +134,7 @@ class CurveGFp
 * @param rhs a curve
 * @return true iff lhs is not the same as rhs
 */
-inline bool operator!=(in CurveGFp lhs, const CurveGFp& rhs)
+bool operator!=(in CurveGFp lhs, const CurveGFp rhs)
 {
 	return !(lhs == rhs);
 }
@@ -143,9 +143,9 @@ inline bool operator!=(in CurveGFp lhs, const CurveGFp& rhs)
 
 namespace std {
 
-template<> inline
-void swap<Botan::CurveGFp>(Botan::CurveGFp& curve1,
-									Botan::CurveGFp& curve2)
+template<> 
+void swap<Botan::CurveGFp>(Botan::CurveGFp curve1,
+									Botan::CurveGFp curve2)
 {
 	curve1.swap(curve2);
 }

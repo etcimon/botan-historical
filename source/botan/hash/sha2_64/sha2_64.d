@@ -15,7 +15,7 @@ namespace SHA2_64 {
 /*
 * SHA-{384,512} Rho Function
 */
-inline u64bit rho(u64bit X, uint rot1, uint rot2, uint rot3)
+ ulong rho(ulong X, uint rot1, uint rot2, uint rot3)
 {
 	return (rotate_right(X, rot1) ^ rotate_right(X, rot2) ^
 			  rotate_right(X, rot3));
@@ -24,7 +24,7 @@ inline u64bit rho(u64bit X, uint rot1, uint rot2, uint rot3)
 /*
 * SHA-{384,512} Sigma Function
 */
-inline u64bit sigma(u64bit X, uint rot1, uint rot2, uint shift)
+ ulong sigma(ulong X, uint rot1, uint rot2, uint shift)
 {
 	return (rotate_right(X, rot1) ^ rotate_right(X, rot2) ^ (X >> shift));
 }
@@ -32,8 +32,8 @@ inline u64bit sigma(u64bit X, uint rot1, uint rot2, uint shift)
 /*
 * SHA-512 F1 Function
 *
-* Use a macro as many compilers won't inline a function this big,
-* even though it is much faster if inlined.
+* Use a macro as many compilers won't  a function this big,
+* even though it is much faster if d.
 */
 #define SHA2_64_F(A, B, C, D, E, F, G, H, M1, M2, M3, M4, magic)	\
 	do {																				\
@@ -46,31 +46,31 @@ inline u64bit sigma(u64bit X, uint rot1, uint rot2, uint shift)
 /*
 * SHA-{384,512} Compression Function
 */
-void compress(secure_vector<u64bit>& digest,
-				  in byte[] input, size_t blocks)
+void compress(secure_vector<ulong>& digest,
+				  in byte* input, size_t blocks)
 {
-	u64bit A = digest[0], B = digest[1], C = digest[2],
+	ulong A = digest[0], B = digest[1], C = digest[2],
 			 D = digest[3], E = digest[4], F = digest[5],
 			 G = digest[6], H = digest[7];
 
 	for(size_t i = 0; i != blocks; ++i)
 	{
-		u64bit W00 = load_be<u64bit>(input,  0);
-		u64bit W01 = load_be<u64bit>(input,  1);
-		u64bit W02 = load_be<u64bit>(input,  2);
-		u64bit W03 = load_be<u64bit>(input,  3);
-		u64bit W04 = load_be<u64bit>(input,  4);
-		u64bit W05 = load_be<u64bit>(input,  5);
-		u64bit W06 = load_be<u64bit>(input,  6);
-		u64bit W07 = load_be<u64bit>(input,  7);
-		u64bit W08 = load_be<u64bit>(input,  8);
-		u64bit W09 = load_be<u64bit>(input,  9);
-		u64bit W10 = load_be<u64bit>(input, 10);
-		u64bit W11 = load_be<u64bit>(input, 11);
-		u64bit W12 = load_be<u64bit>(input, 12);
-		u64bit W13 = load_be<u64bit>(input, 13);
-		u64bit W14 = load_be<u64bit>(input, 14);
-		u64bit W15 = load_be<u64bit>(input, 15);
+		ulong W00 = load_be!ulong(input,  0);
+		ulong W01 = load_be!ulong(input,  1);
+		ulong W02 = load_be!ulong(input,  2);
+		ulong W03 = load_be!ulong(input,  3);
+		ulong W04 = load_be!ulong(input,  4);
+		ulong W05 = load_be!ulong(input,  5);
+		ulong W06 = load_be!ulong(input,  6);
+		ulong W07 = load_be!ulong(input,  7);
+		ulong W08 = load_be!ulong(input,  8);
+		ulong W09 = load_be!ulong(input,  9);
+		ulong W10 = load_be!ulong(input, 10);
+		ulong W11 = load_be!ulong(input, 11);
+		ulong W12 = load_be!ulong(input, 12);
+		ulong W13 = load_be!ulong(input, 13);
+		ulong W14 = load_be!ulong(input, 14);
+		ulong W15 = load_be!ulong(input, 15);
 
 		SHA2_64_F(A, B, C, D, E, F, G, H, W00, W14, W09, W01, 0x428A2F98D728AE22);
 		SHA2_64_F(H, A, B, C, D, E, F, G, W01, W15, W10, W02, 0x7137449123EF65CD);
@@ -173,7 +173,7 @@ void compress(secure_vector<u64bit>& digest,
 /*
 * SHA-384 compression function
 */
-void SHA_384::compress_n(in byte[] input, size_t blocks)
+void SHA_384::compress_n(in byte* input, size_t blocks)
 {
 	SHA2_64::compress(digest, input, blocks);
 }
@@ -181,7 +181,7 @@ void SHA_384::compress_n(in byte[] input, size_t blocks)
 /*
 * Copy out the digest
 */
-void SHA_384::copy_out(byte output[])
+void SHA_384::copy_out(byte* output)
 {
 	for(size_t i = 0; i != output_length(); i += 8)
 		store_be(digest[i/8], output + i);
@@ -206,7 +206,7 @@ void SHA_384::clear()
 /*
 * SHA-512 compression function
 */
-void SHA_512::compress_n(in byte[] input, size_t blocks)
+void SHA_512::compress_n(in byte* input, size_t blocks)
 {
 	SHA2_64::compress(digest, input, blocks);
 }
@@ -214,7 +214,7 @@ void SHA_512::compress_n(in byte[] input, size_t blocks)
 /*
 * Copy out the digest
 */
-void SHA_512::copy_out(byte output[])
+void SHA_512::copy_out(byte* output)
 {
 	for(size_t i = 0; i != output_length(); i += 8)
 		store_be(digest[i/8], output + i);

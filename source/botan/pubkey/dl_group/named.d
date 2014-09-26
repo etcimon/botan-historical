@@ -351,7 +351,7 @@ const char* DL_Group::PEM_for_named_group(in string name)
 			"eMFVkc39EVZP+I/zi3IdQjkv2kcyEtz9jS2IqXagCv/m//tDCjWeZMorNRyiQSOU"
 			"-----END DSA PARAMETERS-----";
 
-	return nullptr;
+	return null;
 }
 
 }

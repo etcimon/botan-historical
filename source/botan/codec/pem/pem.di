@@ -11,7 +11,7 @@ namespace PEM_Code {
 /**
 * Encode some binary data in PEM format
 */
-string encode(in byte[] data,
+string encode(in byte* data,
 									  size_t data_len,
 									  in string label,
 									  size_t line_width = 64);
@@ -19,7 +19,7 @@ string encode(in byte[] data,
 /**
 * Encode some binary data in PEM format
 */
-inline string encode(in Vector!byte data,
+ string encode(in Vector!byte data,
 								  in string label,
 								  size_t line_width = 64)
 {
@@ -29,7 +29,7 @@ inline string encode(in Vector!byte data,
 /**
 * Encode some binary data in PEM format
 */
-inline string encode(in SafeVector!byte data,
+ string encode(in SafeVector!byte data,
 								  in string label,
 								  size_t line_width = 64)
 {

@@ -32,9 +32,9 @@ OctetString::OctetString(in string hex_string)
 /*
 * Create an OctetString from a byte string
 */
-OctetString::OctetString(in byte[] input)
+OctetString::OctetString(in byte* input, size_t len)
 {
-	bits.assign(input);
+	bits.assign(input, len);
 }
 
 /*
@@ -109,10 +109,10 @@ bool operator!=(in OctetString s1, const OctetString& s2)
 */
 OctetString operator+(in OctetString k1, const OctetString& k2)
 {
-	SafeVector!byte out;
-	out += k1.bits_of();
-	out += k2.bits_of();
-	return OctetString(out);
+	SafeVector!byte output;
+	output += k1.bits_of();
+	output += k2.bits_of();
+	return OctetString(output);
 }
 
 /*

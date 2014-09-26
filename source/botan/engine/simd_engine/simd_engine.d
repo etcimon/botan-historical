@@ -74,7 +74,7 @@ SIMD_Engine::find_block_cipher(in SCAN_Name request,
 		return new XTEA_SIMD;
 #endif
 
-	return nullptr;
+	return null;
 }
 
 HashFunction*
@@ -88,7 +88,7 @@ SIMD_Engine::find_hash(in SCAN_Name request,
 
 	BOTAN_UNUSED(request);
 
-	return nullptr;
+	return null;
 }
 
 }

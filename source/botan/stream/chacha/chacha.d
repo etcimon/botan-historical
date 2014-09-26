@@ -60,7 +60,7 @@ void ChaCha::chacha(byte output[64], const uint input[16])
 /*
 * Combine cipher stream with message
 */
-void ChaCha::cipher(in byte[] input, ref byte[] output)
+void ChaCha::cipher(in byte* input, byte* output)
 {
 	while(length >= m_buffer.size() - m_position)
 	{
@@ -84,7 +84,7 @@ void ChaCha::cipher(in byte[] input, ref byte[] output)
 /*
 * ChaCha Key Schedule
 */
-void ChaCha::key_schedule(in byte[] key)
+void ChaCha::key_schedule(in byte* key, size_t length)
 {
 	static const uint TAU[] =
 	{ 0x61707865, 0x3120646e, 0x79622d36, 0x6b206574 };
@@ -102,18 +102,18 @@ void ChaCha::key_schedule(in byte[] key)
 	m_state[2] = CONSTANTS[2];
 	m_state[3] = CONSTANTS[3];
 
-	m_state[4] = load_le<uint>(key, 0);
-	m_state[5] = load_le<uint>(key, 1);
-	m_state[6] = load_le<uint>(key, 2);
-	m_state[7] = load_le<uint>(key, 3);
+	m_state[4] = load_le!uint(key, 0);
+	m_state[5] = load_le!uint(key, 1);
+	m_state[6] = load_le!uint(key, 2);
+	m_state[7] = load_le!uint(key, 3);
 
 	if(length == 32)
 		key += 16;
 
-	m_state[8] = load_le<uint>(key, 0);
-	m_state[9] = load_le<uint>(key, 1);
-	m_state[10] = load_le<uint>(key, 2);
-	m_state[11] = load_le<uint>(key, 3);
+	m_state[8] = load_le!uint(key, 0);
+	m_state[9] = load_le!uint(key, 1);
+	m_state[10] = load_le!uint(key, 2);
+	m_state[11] = load_le!uint(key, 3);
 
 	m_position = 0;
 
@@ -124,7 +124,7 @@ void ChaCha::key_schedule(in byte[] key)
 /*
 * Return the name of this type
 */
-void ChaCha::set_iv(in byte[] iv, size_t length)
+void ChaCha::set_iv(in byte* iv, size_t length)
 {
 	if(!valid_iv_length(length))
 		throw new Invalid_IV_Length(name(), length);
@@ -132,8 +132,8 @@ void ChaCha::set_iv(in byte[] iv, size_t length)
 	m_state[12] = 0;
 	m_state[13] = 0;
 
-	m_state[14] = load_le<uint>(iv, 0);
-	m_state[15] = load_le<uint>(iv, 1);
+	m_state[14] = load_le!uint(iv, 0);
+	m_state[15] = load_le!uint(iv, 1);
 
 	chacha(&m_buffer[0], &m_state[0]);
 	++m_state[12];

@@ -155,7 +155,7 @@ Client_Key_Exchange::Client_Key_Exchange(Handshake_IO& io,
 			if(curve_type != 3)
 				throw new Decoding_Error("Server sent non-named ECC curve");
 
-			const u16bit curve_id = reader.get_u16bit();
+			const ushort curve_id = reader.get_ushort();
 
 			const string name = Supported_Elliptic_Curves::curve_id_to_name(curve_id);
 

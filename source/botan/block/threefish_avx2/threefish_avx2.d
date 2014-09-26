@@ -9,7 +9,7 @@
 #include <immintrin.h>
 namespace {
 
-inline void interleave_epi64(__m256i& X0, __m256i& X1)
+ void interleave_epi64(__m256i& X0, __m256i& X1)
 {
 	// interleave X0 and X1 qwords
 	// (X0,X1,X2,X3),(X4,X5,X6,X7) -> (X0,X2,X4,X6),(X1,X3,X5,X7)
@@ -21,7 +21,7 @@ inline void interleave_epi64(__m256i& X0, __m256i& X1)
 	X1 = _mm256_permute4x64_epi64(T1, _MM_SHUFFLE(3,1,2,0));
 }
 
-inline void deinterleave_epi64(__m256i& X0, __m256i& X1)
+ void deinterleave_epi64(__m256i& X0, __m256i& X1)
 {
 	const __m256i T0 = _mm256_permute4x64_epi64(X0, _MM_SHUFFLE(3,1,2,0));
 	const __m256i T1 = _mm256_permute4x64_epi64(X1, _MM_SHUFFLE(3,1,2,0));
@@ -32,10 +32,10 @@ inline void deinterleave_epi64(__m256i& X0, __m256i& X1)
 
 }
 
-void Threefish_512_AVX2::encrypt_n(in byte[] input, ref byte[] output) const
+void Threefish_512_AVX2::encrypt_n(byte* input, byte* output, size_t blocks) const
 {
-	const u64bit* K = &get_K()[0];
-	const u64bit* T_64 = &get_T()[0];
+	const ulong* K = &get_K()[0];
+	const ulong* T_64 = &get_T()[0];
 
 	const __m256i ROTATE_1 = _mm256_set_epi64x(37,19,36,46);
 	const __m256i ROTATE_2 = _mm256_set_epi64x(42,14,27,33);
@@ -147,7 +147,7 @@ void Threefish_512_AVX2::encrypt_n(in byte[] input, ref byte[] output) const
 	const __m256i ONE = _mm256_set_epi64x(1, 0, 0, 0);
 
 	const __m256i* in_mm = cast(const __m256i*)(input);
-	__m256i* out_mm = CAST__m256i*)(out);
+	__m256i* out_mm = cast(__m256i*)(output);
 
 	while(blocks >= 2)
 	{
@@ -227,10 +227,10 @@ void Threefish_512_AVX2::encrypt_n(in byte[] input, ref byte[] output) const
 #undef THREEFISH_INJECT_KEY_2
 }
 
-void Threefish_512_AVX2::decrypt_n(in byte[] input, ref byte[] output) const
+void Threefish_512_AVX2::decrypt_n(byte* input, byte* output, size_t blocks) const
 {
-	const u64bit* K = &get_K()[0];
-	const u64bit* T_64 = &get_T()[0];
+	const ulong* K = &get_K()[0];
+	const ulong* T_64 = &get_T()[0];
 
 	const __m256i ROTATE_1 = _mm256_set_epi64x(37,19,36,46);
 	const __m256i ROTATE_2 = _mm256_set_epi64x(42,14,27,33);
@@ -296,7 +296,7 @@ void Threefish_512_AVX2::decrypt_n(in byte[] input, ref byte[] output) const
 	const __m256i ONE = _mm256_set_epi64x(1, 0, 0, 0);
 
 	const __m256i* in_mm = cast(const __m256i*)(input);
-	__m256i* out_mm = CAST__m256i*)(out);
+	__m256i* out_mm = cast(__m256i*)(output);
 
 	for(size_t i = 0; i != blocks; ++i)
 	{

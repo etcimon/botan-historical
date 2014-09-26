@@ -8,7 +8,7 @@
 #include <botan/tls_client.h>
 #include <botan/tls_server.h>
 #include <deque>
-template<typename T> using secure_deque = Vector!( T, secure_allocator<T )>;
+alias secure_deque(T) = Vector!( T, secure_allocator<T>);
 
 namespace TLS {
 
@@ -45,7 +45,7 @@ class Blocking_Client
 		*/
 		size_t read(ref byte[] buf);
 
-		void write(in byte[] buf) { m_channel.send(buf); }
+		void write(in byte* buf) { m_channel.send(buf); }
 
 		TLS::Channel underlying_channel() const { return m_channel; }
 		TLS::Channel underlying_channel() { return m_channel; }
@@ -74,11 +74,11 @@ class Blocking_Client
 
 		bool handshake_cb(in Session);
 
-		void data_cb(in byte[] data);
+		void data_cb(in byte* data);
 
-		void alert_cb(const Alert alert, in byte[] data, size_t data_len);
+		void alert_cb(const Alert alert, in byte* data, size_t data_len);
 
-		size_t delegate(ref byte[])> m_read_fn;
+		size_t delegate(ref byte[]) m_read_fn;
 		TLS::Client m_channel;
 		secure_deque<byte> m_plaintext;
 };

@@ -80,7 +80,7 @@ class EAC1_1_ADO : public EAC1_1_obj<EAC1_1_ADO>
 										ECDSA_Signature & res_sig);
 };
 
-inline bool operator!=(EAC1_1_ADO const& lhs, EAC1_1_ADO const& rhs)
+ bool operator!=(EAC1_1_ADO const& lhs, EAC1_1_ADO const& rhs)
 {
 	return (!(lhs == rhs));
 }

@@ -26,7 +26,7 @@ struct Threaded_Fork_Data
 	* are NOT running (i.e. before notifying the work condition, after
 	* the input_complete_semaphore is completely reset.)
 	*/
-	const byte* m_input = nullptr;
+	const byte* m_input = null;
 
 	/*
 	* The length of the work that needs to be done.
@@ -38,7 +38,7 @@ struct Threaded_Fork_Data
 * Threaded_Fork constructor
 */
 Threaded_Fork::Threaded_Fork(Filter* f1, Filter* f2, Filter* f3, Filter* f4) :
-	Fork(nullptr, cast(size_t)(0)),
+	Fork(null, cast(size_t)(0)),
 	m_thread_data(new Threaded_Fork_Data)
 {
 	Filter* filters[4] = { f1, f2, f3, f4 };
@@ -49,7 +49,7 @@ Threaded_Fork::Threaded_Fork(Filter* f1, Filter* f2, Filter* f3, Filter* f4) :
 * Threaded_Fork constructor
 */
 Threaded_Fork::Threaded_Fork(Filter* filters[], size_t count) :
-	Fork(nullptr, cast(size_t)(0)),
+	Fork(null, cast(size_t)(0)),
 	m_thread_data(new Threaded_Fork_Data)
 {
 	set_next(filters, count);
@@ -57,7 +57,7 @@ Threaded_Fork::Threaded_Fork(Filter* filters[], size_t count) :
 
 Threaded_Fork::~Threaded_Fork()
 {
-	m_thread_data->m_input = nullptr;
+	m_thread_data->m_input = null;
 	m_thread_data->m_input_length = 0;
 
 	m_thread_data->m_input_ready_semaphore.release(m_threads.size());
@@ -91,7 +91,7 @@ void Threaded_Fork::set_next(Filter* f[], size_t n)
 	}
 }
 
-void Threaded_Fork::send(in byte[] input, size_t length)
+void Threaded_Fork::send(in byte* input, size_t length)
 {
 	if(write_queue.size())
 		thread_delegate_work(&write_queue[0], write_queue.size());
@@ -103,12 +103,12 @@ void Threaded_Fork::send(in byte[] input, size_t length)
 			nothing_attached = false;
 
 	if(nothing_attached)
-		write_queue += std::make_pair(input, length);
+		write_queue += Pair(input, length);
 	else
 		write_queue.clear();
 }
 
-void Threaded_Fork::thread_delegate_work(in byte[] input, size_t length)
+void Threaded_Fork::thread_delegate_work(in byte* input, size_t length)
 {
 	//Set the data to do.
 	m_thread_data->m_input = input;
@@ -122,7 +122,7 @@ void Threaded_Fork::thread_delegate_work(in byte[] input, size_t length)
 		m_thread_data->m_input_complete_semaphore.acquire();
 
 	//Reset the thread data
-	m_thread_data->m_input = nullptr;
+	m_thread_data->m_input = null;
 	m_thread_data->m_input_length = 0;
 }
 

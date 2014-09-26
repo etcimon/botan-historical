@@ -551,7 +551,7 @@ BigInt decompress_point(bool yMod2,
 
 }
 
-PointGFp OS2ECP(in byte[] data, size_t data_len,
+PointGFp OS2ECP(in byte* data, size_t data_len,
 					 const CurveGFp& curve)
 {
 	if(data_len <= 1)

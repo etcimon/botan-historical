@@ -21,12 +21,12 @@ void OFB::clear()
 	m_buf_pos = 0;
 }
 
-void OFB::key_schedule(in byte[] key)
+void OFB::key_schedule(in byte* key, size_t length)
 {
 	m_cipher->set_key(key, key_len);
 
 	// Set a default all-zeros IV
-	set_iv(nullptr, 0);
+	set_iv(null, 0);
 }
 
 string OFB::name() const
@@ -34,7 +34,7 @@ string OFB::name() const
 	return "OFB(" + m_cipher->name() + ")";
 }
 
-void OFB::cipher(in byte[] input, ref byte[] output)
+void OFB::cipher(in byte* input, byte* output)
 {
 	while(length >= m_buffer.size() - m_buf_pos)
 	{
@@ -49,7 +49,7 @@ void OFB::cipher(in byte[] input, ref byte[] output)
 	m_buf_pos += length;
 }
 
-void OFB::set_iv(in byte[] iv, size_t iv_len)
+void OFB::set_iv(in byte* iv, size_t iv_len)
 {
 	if(!valid_iv_length(iv_len))
 		throw new Invalid_IV_Length(name(), iv_len);

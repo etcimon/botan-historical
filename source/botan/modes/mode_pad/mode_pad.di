@@ -21,25 +21,25 @@ class BlockCipherModePaddingMethod
 	public:
 		abstract void add_padding(SafeVector!byte buffer,
 										 size_t final_block_bytes,
-										 size_t block_size) const = 0;
+										 size_t block_size) const;
 
 		/**
 		* @param block the last block
 		* @param size the of the block
 		*/
-		abstract size_t unpad(in byte[] block,
-									size_t size) const = 0;
+		abstract size_t unpad(in byte* block,
+									size_t size) const;
 
 		/**
 		* @param block_size of the cipher
 		* @return valid block size for this padding mode
 		*/
-		abstract bool valid_blocksize(size_t block_size) const = 0;
+		abstract bool valid_blocksize(size_t block_size) const;
 
 		/**
 		* @return name of the mode
 		*/
-		abstract string name() const = 0;
+		abstract string name() const;
 
 		/**
 		* abstract destructor

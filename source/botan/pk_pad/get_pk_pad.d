@@ -113,7 +113,7 @@ EME* get_eme(in string algo_spec)
 	SCAN_Name request(algo_spec);
 
 	if(request.algo_name() == "Raw")
-		return nullptr; // No padding
+		return null; // No padding
 
 #if defined(BOTAN_HAS_EME_PKCS1v15)
 	if(request.algo_name() == "PKCS1v15" && request.arg_count() == 0)

@@ -37,7 +37,7 @@ SafeVector!byte emsa1_encoding(in SafeVector!byte msg,
 
 }
 
-void EMSA1::update(in byte[] input, size_t length)
+void EMSA1::update(in byte* input, size_t length)
 {
 	m_hash->update(input, length);
 }

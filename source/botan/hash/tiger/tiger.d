@@ -14,7 +14,7 @@ namespace {
 /*
 * Tiger Mixing Function
 */
-inline void mix(secure_vector<u64bit>& X)
+ void mix(secure_vector<ulong>& X)
 {
 	X[0] -= X[7] ^ 0xA5A5A5A5A5A5A5A5;
 	X[1] ^= X[0];
@@ -40,9 +40,9 @@ inline void mix(secure_vector<u64bit>& X)
 /*
 * Tiger Compression Function
 */
-void Tiger::compress_n(in byte[] input, size_t blocks)
+void Tiger::compress_n(in byte* input, size_t blocks)
 {
-	u64bit A = digest[0], B = digest[1], C = digest[2];
+	ulong A = digest[0], B = digest[1], C = digest[2];
 
 	for(size_t i = 0; i != blocks; ++i)
 	{
@@ -56,7 +56,7 @@ void Tiger::compress_n(in byte[] input, size_t blocks)
 		{
 			mix(X);
 			pass(A, B, C, X, 9);
-			u64bit T = A; A = C; C = B; B = T;
+			ulong T = A; A = C; C = B; B = T;
 		}
 
 		A = (digest[0] ^= A);
@@ -70,7 +70,7 @@ void Tiger::compress_n(in byte[] input, size_t blocks)
 /*
 * Copy out the digest
 */
-void Tiger::copy_out(byte output[])
+void Tiger::copy_out(byte* output)
 {
 	for(size_t i = 0; i != output_length(); ++i)
 		output[i] = get_byte(7 - (i % 8), digest[i/8]);
@@ -79,8 +79,8 @@ void Tiger::copy_out(byte output[])
 /*
 * Tiger Pass
 */
-void Tiger::pass(u64bit& A, u64bit& B, u64bit& C,
-					  const secure_vector<u64bit>& X,
+void Tiger::pass(ref ulong A, ref ulong B, ref ulong C,
+					  const secure_vector<ulong>& X,
 					  byte mul)
 {
 	C ^= X[0];

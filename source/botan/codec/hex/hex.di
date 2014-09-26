@@ -14,8 +14,8 @@
 * @param input_length length of input in bytes
 * @param uppercase should output be upper or lower case?
 */
-void hex_encode(char output[],
-								  in byte[] input,
+void hex_encode(char* output,
+								  in byte* input,
 								  size_t input_length,
 								  bool uppercase = true);
 
@@ -26,9 +26,9 @@ void hex_encode(char output[],
 * @param uppercase should output be upper or lower case?
 * @return hexadecimal representation of input
 */
-string hex_encode(in byte[] input,
-											size_t input_length,
-											bool uppercase = true);
+string hex_encode(in byte* input,
+					size_t input_length,
+					bool uppercase = true);
 
 /**
 * Perform hex encoding
@@ -36,9 +36,8 @@ string hex_encode(in byte[] input,
 * @param uppercase should output be upper or lower case?
 * @return hexadecimal representation of input
 */
-template<typename Alloc>
-string hex_encode(in Vector!( byte, Alloc ) input,
-							  bool uppercase = true)
+string hex_encode(Alloc)(in Vector!( byte, Alloc ) input,
+							bool uppercase = true)
 {
 	return hex_encode(&input[0], input.size(), uppercase);
 }
@@ -56,11 +55,11 @@ string hex_encode(in Vector!( byte, Alloc ) input,
 						 exception if whitespace is encountered
 * @return number of bytes written to output
 */
-size_t hex_decode(byte output[],
-									 const char input[],
-									 size_t input_length,
-									 size_t& input_consumed,
-									 bool ignore_ws = true);
+size_t hex_decode(byte* output,
+					 const char* input,
+					 size_t input_length,
+					 size_t& input_consumed,
+					 bool ignore_ws = true);
 
 /**
 * Perform hex decoding
@@ -71,10 +70,10 @@ size_t hex_decode(byte output[],
 						 exception if whitespace is encountered
 * @return number of bytes written to output
 */
-size_t hex_decode(byte output[],
-									 const char input[],
-									 size_t input_length,
-									 bool ignore_ws = true);
+size_t hex_decode(byte* output,
+					 const char* input,
+					 size_t input_length,
+					 bool ignore_ws = true);
 
 /**
 * Perform hex decoding
@@ -84,9 +83,9 @@ size_t hex_decode(byte output[],
 						 exception if whitespace is encountered
 * @return number of bytes written to output
 */
-size_t hex_decode(byte output[],
-									 in string input,
-									 bool ignore_ws = true);
+size_t hex_decode(byte* output,
+					 in string input,
+					 bool ignore_ws = true);
 
 /**
 * Perform hex decoding
@@ -96,8 +95,8 @@ size_t hex_decode(byte output[],
 						 exception if whitespace is encountered
 * @return decoded hex output
 */
-Vector!( byte ) BOTAN_DLL
-hex_decode(const char input[],
+Vector!( byte )
+hex_decode(const char* input,
 			  size_t input_length,
 			  bool ignore_ws = true);
 
@@ -108,9 +107,11 @@ hex_decode(const char input[],
 						 exception if whitespace is encountered
 * @return decoded hex output
 */
-Vector!( byte ) BOTAN_DLL
+Vector!( byte )
 hex_decode(in string input,
-			  bool ignore_ws = true);/**
+			bool ignore_ws = true);
+			
+/**
 * Perform hex decoding
 * @param input some hex input
 * @param input_length the length of input in bytes
@@ -118,10 +119,10 @@ hex_decode(in string input,
 						 exception if whitespace is encountered
 * @return decoded hex output
 */
-SafeVector!byte BOTAN_DLL
-hex_decode_locked(const char input[],
-						size_t input_length,
-						bool ignore_ws = true);
+SafeVector!byte
+hex_decode_locked(const char* input,
+					size_t input_length,
+					bool ignore_ws = true);
 
 /**
 * Perform hex decoding
@@ -130,6 +131,6 @@ hex_decode_locked(const char input[],
 						 exception if whitespace is encountered
 * @return decoded hex output
 */
-SafeVector!byte BOTAN_DLL
+SafeVector!byte
 hex_decode_locked(in string input,
-						bool ignore_ws = true);
+					bool ignore_ws = true);

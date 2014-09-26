@@ -13,7 +13,7 @@ namespace {
 /*
 * MD5 FF Function
 */
-inline void FF(ref uint A, uint B, uint C, uint D, uint msg,
+ void FF(ref uint A, uint B, uint C, uint D, uint msg,
 					byte S, uint magic)
 {
 	A += (D ^ (B & (C ^ D))) + msg + magic;
@@ -23,7 +23,7 @@ inline void FF(ref uint A, uint B, uint C, uint D, uint msg,
 /*
 * MD5 GG Function
 */
-inline void GG(ref uint A, uint B, uint C, uint D, uint msg,
+ void GG(ref uint A, uint B, uint C, uint D, uint msg,
 					byte S, uint magic)
 {
 	A += (C ^ (D & (B ^ C))) + msg + magic;
@@ -33,7 +33,7 @@ inline void GG(ref uint A, uint B, uint C, uint D, uint msg,
 /*
 * MD5 HH Function
 */
-inline void HH(ref uint A, uint B, uint C, uint D, uint msg,
+ void HH(ref uint A, uint B, uint C, uint D, uint msg,
 					byte S, uint magic)
 {
 	A += (B ^ C ^ D) + msg + magic;
@@ -43,7 +43,7 @@ inline void HH(ref uint A, uint B, uint C, uint D, uint msg,
 /*
 * MD5 II Function
 */
-inline void II(ref uint A, uint B, uint C, uint D, uint msg,
+ void II(ref uint A, uint B, uint C, uint D, uint msg,
 					byte S, uint magic)
 {
 	A += (C ^ (B | ~D)) + msg + magic;
@@ -55,7 +55,7 @@ inline void II(ref uint A, uint B, uint C, uint D, uint msg,
 /*
 * MD5 Compression Function
 */
-void MD5::compress_n(in byte[] input, size_t blocks)
+void MD5::compress_n(in byte* input, size_t blocks)
 {
 	uint A = digest[0], B = digest[1], C = digest[2], D = digest[3];
 
@@ -111,7 +111,7 @@ void MD5::compress_n(in byte[] input, size_t blocks)
 /*
 * Copy out the digest
 */
-void MD5::copy_out(byte output[])
+void MD5::copy_out(byte* output)
 {
 	for(size_t i = 0; i != output_length(); i += 4)
 		store_le(digest[i/4], output + i);

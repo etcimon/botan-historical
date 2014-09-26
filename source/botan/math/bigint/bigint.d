@@ -13,12 +13,12 @@
 /*
 * Construct a BigInt from a regular number
 */
-BigInt::BigInt(u64bit n)
+BigInt::BigInt(ulong n)
 {
 	if(n == 0)
 		return;
 
-	const size_t limbs_needed = sizeof(u64bit) / sizeof(word);
+	const size_t limbs_needed = sizeof(ulong) / sizeof(word);
 
 	m_reg.resize(4*limbs_needed);
 	for(size_t i = 0; i != limbs_needed; ++i)
@@ -75,7 +75,7 @@ BigInt::BigInt(in string str)
 /*
 * Construct a BigInt from an encoded BigInt
 */
-BigInt::BigInt(in byte[] input, size_t length, Base base)
+BigInt::BigInt(in byte* input, size_t length, Base base)
 {
 	*this = decode(input, length, base);
 }
@@ -148,14 +148,14 @@ uint BigInt::get_substring(size_t offset, size_t length) const
 	if(length > 32)
 		throw new Invalid_Argument("BigInt::get_substring: Substring size too big");
 
-	u64bit piece = 0;
+	ulong piece = 0;
 	for(size_t i = 0; i != 8; ++i)
 	{
 		const byte part = byte_at((offset / 8) + (7-i));
 		piece = (piece << 8) | part;
 	}
 
-	const u64bit mask = (cast(u64bit)(1) << length) - 1;
+	const ulong mask = (cast(ulong)(1) << length) - 1;
 	const size_t shift = (offset % 8);
 
 	return cast(uint)((piece >> shift) & mask);
@@ -312,7 +312,7 @@ BigInt BigInt::abs() const
 /*
 * Encode this number into bytes
 */
-void BigInt::binary_encode(byte output[]) const
+void BigInt::binary_encode(byte* output) const
 {
 	const size_t sig_bytes = bytes();
 	for(size_t i = 0; i != sig_bytes; ++i)
@@ -322,7 +322,7 @@ void BigInt::binary_encode(byte output[]) const
 /*
 * Set this number to the value in buf
 */
-void BigInt::binary_decode(in byte[] buf, size_t length)
+void BigInt::binary_decode(in byte* buf, size_t length)
 {
 	const size_t WORD_BYTES = sizeof(word);
 

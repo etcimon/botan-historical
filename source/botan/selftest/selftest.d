@@ -45,15 +45,15 @@ string test_filter_kat(Filter* filter,
 /*
 * Run a set of KATs
 */
-std::map<string, string>
+HashMap!(string, string)
 algorithm_kat_detailed(in SCAN_Name algo_name,
-							  const std::map<string, string>& vars,
+							  const HashMap!(string, string)& vars,
 							  Algorithm_Factory& af)
 {
 	in string algo = algo_name.algo_name_and_args();
 
 	Vector!( string ) providers = af.providers_of(algo);
-	std::map<string, string> all_results;
+	HashMap!(string, string) all_results;
 
 	if(providers.empty()) // no providers, nothing to do
 		return all_results;
@@ -144,7 +144,7 @@ algorithm_kat_detailed(in SCAN_Name algo_name,
 
 std::map<string, bool>
 algorithm_kat(in SCAN_Name algo_name,
-				  const std::map<string, string>& vars,
+				  const HashMap!(string, string)& vars,
 				  Algorithm_Factory& af)
 {
 	const auto result = algorithm_kat_detailed(algo_name, vars, af);
@@ -160,7 +160,7 @@ algorithm_kat(in SCAN_Name algo_name,
 namespace {
 
 void verify_results(in string algo,
-						  const std::map<string, string>& results)
+						  const HashMap!(string, string)& results)
 {
 	for(auto i = results.begin(); i != results.end(); ++i)
 	{
@@ -175,7 +175,7 @@ void hash_test(Algorithm_Factory& af,
 					in string in,
 					in string out)
 {
-	std::map<string, string> vars;
+	HashMap!(string, string) vars;
 	vars["input"] = in;
 	vars["output"] = out;
 
@@ -188,7 +188,7 @@ void mac_test(Algorithm_Factory& af,
 				  in string out,
 				  in string key)
 {
-	std::map<string, string> vars;
+	HashMap!(string, string) vars;
 	vars["input"] = in;
 	vars["output"] = out;
 	vars["key"] = key;
@@ -213,7 +213,7 @@ void cipher_kat(Algorithm_Factory& af,
 	SymmetricKey key(key_str);
 	InitializationVector iv(iv_str);
 
-	std::map<string, string> vars;
+	HashMap!(string, string) vars;
 	vars["key"] = key_str;
 	vars["iv"] = iv_str;
 	vars["input"] = in;

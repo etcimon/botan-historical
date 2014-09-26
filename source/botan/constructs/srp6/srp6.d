@@ -104,7 +104,7 @@ srp6_client_agree(in string identifier,
 
 	SymmetricKey Sk(BigInt::encode_1363(S, p_bytes));
 
-	return std::make_pair(A, Sk);
+	return Pair(A, Sk);
 }
 
 BigInt generate_srp6_verifier(in string identifier,

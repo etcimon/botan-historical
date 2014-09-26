@@ -13,9 +13,9 @@
 class OFB : public StreamCipher
 {
 	public:
-		void cipher(in byte[] input, ref byte[] output);
+		void cipher(in byte* input, byte* output);
 
-		void set_iv(in byte[] iv, size_t iv_len);
+		void set_iv(in byte* iv, size_t iv_len);
 
 		bool valid_iv_length(size_t iv_len) const
 		{ return (iv_len <= m_cipher->block_size()); }
@@ -37,7 +37,7 @@ class OFB : public StreamCipher
 		*/
 		OFB(BlockCipher* cipher);
 	private:
-		void key_schedule(in byte[] key);
+		void key_schedule(in byte* key, size_t length);
 
 		std::unique_ptr<BlockCipher> m_cipher;
 		SafeVector!byte m_buffer;

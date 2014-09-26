@@ -40,9 +40,9 @@ Hex_Encoder::Hex_Encoder(Case c) : casing(c), line_length(0)
 /*
 * Encode and send a block
 */
-void Hex_Encoder::encode_and_send(in byte[] block, size_t length)
+void Hex_Encoder::encode_and_send(in byte* block, size_t length)
 {
-	hex_encode(cast(char*)(&out[0]),
+	hex_encode(cast(char*)(&output[0]),
 				  block, length,
 				  casing == Uppercase);
 
@@ -54,7 +54,7 @@ void Hex_Encoder::encode_and_send(in byte[] block, size_t length)
 		while(remaining)
 		{
 			size_t sent = std::min(line_length - counter, remaining);
-			send(&out[offset], sent);
+			send(&output[offset], sent);
 			counter += sent;
 			remaining -= sent;
 			offset += sent;
@@ -70,12 +70,12 @@ void Hex_Encoder::encode_and_send(in byte[] block, size_t length)
 /*
 * Convert some data into hex format
 */
-void Hex_Encoder::write(in byte[] input, size_t length)
+void Hex_Encoder::write(in byte* input, size_t length)
 {
 	buffer_insert(input, position, input, length);
 	if(position + length >= in.size())
 	{
-		encode_and_send(&in[0], in.size());
+		encode_and_send(&input[0], in.size());
 		input += (in.size() - position);
 		length -= (in.size() - position);
 		while(length >= in.size())
@@ -84,7 +84,7 @@ void Hex_Encoder::write(in byte[] input, size_t length)
 			input += in.size();
 			length -= in.size();
 		}
-		copy_mem(&in[0], input, length);
+		copy_mem(&input[0], input, length);
 		position = 0;
 	}
 	position += length;
@@ -95,7 +95,7 @@ void Hex_Encoder::write(in byte[] input, size_t length)
 */
 void Hex_Encoder::end_msg()
 {
-	encode_and_send(&in[0], position);
+	encode_and_send(&input[0], position);
 	if(counter && line_length)
 		send('');
 	counter = position = 0;
@@ -114,17 +114,17 @@ Hex_Decoder::Hex_Decoder(Decoder_Checking c) : checking(c)
 /*
 * Convert some data from hex format
 */
-void Hex_Decoder::write(in byte[] input, size_t length)
+void Hex_Decoder::write(in byte* input, size_t length)
 {
 	while(length)
 	{
 		size_t to_copy = std::min<size_t>(length, in.size() - position);
-		copy_mem(&in[position], input, to_copy);
+		copy_mem(&input[position], input, to_copy);
 		position += to_copy;
 
 		size_t consumed = 0;
-		size_t written = hex_decode(&out[0],
-											 cast(in char*)(in[0]),
+		size_t written = hex_decode(&output[0],
+											 cast(in char*)(input[0]),
 											 position,
 											 consumed,
 											 checking != FULL_CHECK);
@@ -133,7 +133,7 @@ void Hex_Decoder::write(in byte[] input, size_t length)
 
 		if(consumed != position)
 		{
-			copy_mem(&in[0], &in[consumed], position - consumed);
+			copy_mem(&input[0], &input[consumed], position - consumed);
 			position = position - consumed;
 		}
 		else
@@ -150,8 +150,8 @@ void Hex_Decoder::write(in byte[] input, size_t length)
 void Hex_Decoder::end_msg()
 {
 	size_t consumed = 0;
-	size_t written = hex_decode(&out[0],
-										 cast(in char*)(in[0]),
+	size_t written = hex_decode(&output[0],
+										 cast(in char*)(input[0]),
 										 position,
 										 consumed,
 										 checking != FULL_CHECK);

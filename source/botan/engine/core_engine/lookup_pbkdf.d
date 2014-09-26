@@ -34,7 +34,7 @@ PBKDF* Core_Engine::find_pbkdf(in SCAN_Name algo_spec,
 	}
 #endif
 
-	return nullptr;
+	return null;
 }
 
 }

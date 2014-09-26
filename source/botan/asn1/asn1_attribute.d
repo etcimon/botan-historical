@@ -31,7 +31,7 @@ Attribute::Attribute(in string attr_oid,
 /*
 * DER encode a Attribute
 */
-void Attribute::encode_into(DER_Encoder& codec) const
+void Attribute::encode_into(DER_Encoder codec) const
 {
 	codec.start_cons(SEQUENCE)
 		.encode(oid)
@@ -44,7 +44,7 @@ void Attribute::encode_into(DER_Encoder& codec) const
 /*
 * Decode a BER encoded Attribute
 */
-void Attribute::decode_from(BER_Decoder& codec)
+void Attribute::decode_from(BER_Decoder codec)
 {
 	codec.start_cons(SEQUENCE)
 		.decode(oid)

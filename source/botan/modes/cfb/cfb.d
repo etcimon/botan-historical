@@ -61,12 +61,12 @@ bool CFB_Mode::valid_nonce_length(size_t n) const
 	return (n == cipher().block_size());
 }
 
-void CFB_Mode::key_schedule(in byte[] key)
+void CFB_Mode::key_schedule(in byte* key, size_t length)
 {
 	m_cipher->set_key(key, length);
 }
 
-SafeVector!byte CFB_Mode::start(in byte[] nonce, size_t nonce_len)
+SafeVector!byte CFB_Mode::start(in byte* nonce, size_t nonce_len)
 {
 	if(!valid_nonce_length(nonce_len))
 		throw new Invalid_IV_Length(name(), nonce_len);

@@ -17,8 +17,8 @@ namespace {
 */
 void P_hash(SafeVector!byte output,
 				MessageAuthenticationCode& mac,
-				in byte[] secret, size_t secret_len,
-				in byte[] seed, size_t seed_len)
+				in byte* secret, size_t secret_len,
+				in byte* seed, size_t seed_len)
 {
 	try
 	{
@@ -66,8 +66,8 @@ TLS_PRF::TLS_PRF()
 * TLS PRF
 */
 SafeVector!byte TLS_PRF::derive(size_t key_len,
-											  in byte[] secret, size_t secret_len,
-											  in byte[] seed, size_t seed_len) const
+											  in byte* secret, size_t secret_len,
+											  in byte* seed, size_t seed_len) const
 {
 	SafeVector!byte output(key_len);
 
@@ -90,8 +90,8 @@ TLS_12_PRF::TLS_12_PRF(MessageAuthenticationCode* mac) : hmac(mac)
 }
 
 SafeVector!byte TLS_12_PRF::derive(size_t key_len,
-												  in byte[] secret, size_t secret_len,
-												  in byte[] seed, size_t seed_len) const
+												  in byte* secret, size_t secret_len,
+												  in byte* seed, size_t seed_len) const
 {
 	SafeVector!byte output(key_len);
 
