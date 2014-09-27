@@ -171,10 +171,10 @@ uint BigInt::to_uint() const
 	if (bits() >= 32)
 		throw new Encoding_Error("BigInt::to_uint: Number is too big to convert");
 
-	uint out = 0;
+	uint output = 0;
 	for (uint j = 0; j != 4; ++j)
-		out = (out << 8) | byte_at(3-j);
-	return out;
+		output = (output << 8) | byte_at(3-j);
+	return output;
 }
 
 /*

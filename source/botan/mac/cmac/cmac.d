@@ -15,10 +15,10 @@ SafeVector!byte CMAC::poly_double(in SafeVector!byte input)
 {
 	const bool top_carry = (input[0] & 0x80);
 
-	SafeVector!byte out = in;
+	SafeVector!byte output = input;
 
 	byte carry = 0;
-	for (size_t i = out.size(); i != 0; --i)
+	for (size_t i = output.size(); i != 0; --i)
 	{
 		byte temp = output[i-1];
 		output[i-1] = (temp << 1) | carry;
@@ -27,26 +27,26 @@ SafeVector!byte CMAC::poly_double(in SafeVector!byte input)
 
 	if (top_carry)
 	{
-		switch(in.size())
+		switch(input.size())
 		{
 			case 8:
-				output[out.size()-1] ^= 0x1B;
+				output[output.size()-1] ^= 0x1B;
 				break;
 			case 16:
-				output[out.size()-1] ^= 0x87;
+				output[output.size()-1] ^= 0x87;
 				break;
 			case 32:
-				output[out.size()-2] ^= 0x4;
-				output[out.size()-1] ^= 0x25;
+				output[output.size()-2] ^= 0x4;
+				output[output.size()-1] ^= 0x25;
 				break;
 			case 64:
-				output[out.size()-2] ^= 0x1;
-				output[out.size()-1] ^= 0x25;
+				output[output.size()-2] ^= 0x1;
+				output[output.size()-1] ^= 0x25;
 				break;
 		}
 	}
 
-	return out;
+	return output;
 }
 
 /*

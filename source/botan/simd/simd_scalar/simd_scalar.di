@@ -32,38 +32,38 @@ class SIMD_Scalar(T, size_t N)
 				m_v[i] = B;
 		}
 
-		static SIMD_Scalar<T,N> load_le(const void* input)
+		static SIMD_Scalar!(T, N) load_le(const void* input)
 		{
-			SIMD_Scalar<T,N> out;
+			SIMD_Scalar!(T, N) output;
 			const byte* in_b = cast(const byte*)(input);
 
 			for (size_t i = 0; i != size(); ++i)
-				out.m_v[i] = Botan::load_le<T>(in_b, i);
+				output.m_v[i] = Botan::load_le<T>(in_b, i);
 
-			return out;
+			return output;
 		}
 
-		static SIMD_Scalar<T,N> load_be(const void* input)
+		static SIMD_Scalar!(T, N) load_be(const void* input)
 		{
-			SIMD_Scalar<T,N> out;
+			SIMD_Scalar!(T, N) output;
 			const byte* in_b = cast(const byte*)(input);
 
 			for (size_t i = 0; i != size(); ++i)
-				out.m_v[i] = Botan::load_be!T(in_b, i);
+				output.m_v[i] = Botan::load_be!T(in_b, i);
 
-			return out;
+			return output;
 		}
 
 		void store_le(byte* output) const
 		{
 			for (size_t i = 0; i != size(); ++i)
-				Botan::store_le(m_v[i], out + i*sizeof(T));
+				Botan::store_le(m_v[i], output + i*sizeof(T));
 		}
 
 		void store_be(byte* output) const
 		{
 			for (size_t i = 0; i != size(); ++i)
-				Botan::store_be(m_v[i], out + i*sizeof(T));
+				Botan::store_be(m_v[i], output + i*sizeof(T));
 		}
 
 		void rotate_left(size_t rot)
@@ -78,113 +78,113 @@ class SIMD_Scalar(T, size_t N)
 				m_v[i] = Botan::rotate_right(m_v[i], rot);
 		}
 
-		void operator+=(in SIMD_Scalar<T,N> other)
+		void operator+=(in SIMD_Scalar!(T, N) other)
 		{
 			for (size_t i = 0; i != size(); ++i)
 				m_v[i] += other.m_v[i];
 		}
 
-		void operator-=(in SIMD_Scalar<T,N> other)
+		void operator-=(in SIMD_Scalar!(T, N) other)
 		{
 			for (size_t i = 0; i != size(); ++i)
 				m_v[i] -= other.m_v[i];
 		}
 
-		SIMD_Scalar<T,N> operator+(in SIMD_Scalar<T,N> other) const
+		SIMD_Scalar!(T, N) operator+(in SIMD_Scalar!(T, N) other) const
 		{
-			SIMD_Scalar<T,N> out = *this;
-			out += other;
-			return out;
+			SIMD_Scalar!(T, N) output = *this;
+			output += other;
+			return output;
 		}
 
-		SIMD_Scalar<T,N> operator-(in SIMD_Scalar<T,N> other) const
+		SIMD_Scalar!(T, N) operator-(in SIMD_Scalar!(T, N) other) const
 		{
-			SIMD_Scalar<T,N> out = *this;
-			out -= other;
-			return out;
+			SIMD_Scalar!(T, N) output = *this;
+			output -= other;
+			return output;
 		}
 
-		void operator^=(in SIMD_Scalar<T,N> other)
+		void operator^=(in SIMD_Scalar!(T, N) other)
 		{
 			for (size_t i = 0; i != size(); ++i)
 				m_v[i] ^= other.m_v[i];
 		}
 
-		SIMD_Scalar<T,N> operator^(in SIMD_Scalar<T,N> other) const
+		SIMD_Scalar!(T, N) operator^(in SIMD_Scalar!(T, N) other) const
 		{
-			SIMD_Scalar<T,N> out = *this;
-			out ^= other;
-			return out;
+			SIMD_Scalar!(T, N) output = *this;
+			output ^= other;
+			return output;
 		}
 
-		void operator|=(in SIMD_Scalar<T,N> other)
+		void operator|=(in SIMD_Scalar!(T, N) other)
 		{
 			for (size_t i = 0; i != size(); ++i)
 				m_v[i] |= other.m_v[i];
 		}
 
-		void operator&=(in SIMD_Scalar<T,N> other)
+		void operator&=(in SIMD_Scalar!(T, N) other)
 		{
 			for (size_t i = 0; i != size(); ++i)
 				m_v[i] &= other.m_v[i];
 		}
 
-		SIMD_Scalar<T,N> operator&(in SIMD_Scalar<T,N> other)
+		SIMD_Scalar!(T, N) operator&(in SIMD_Scalar!(T, N) other)
 		{
-			SIMD_Scalar<T,N> out = *this;
-			out &= other;
-			return out;
+			SIMD_Scalar!(T, N) output = *this;
+			output &= other;
+			return output;
 		}
 
-		SIMD_Scalar<T,N> operator<<(size_t shift) const
+		SIMD_Scalar!(T, N) operator<<(size_t shift) const
 		{
-			SIMD_Scalar<T,N> out = *this;
+			SIMD_Scalar!(T, N) output = *this;
 			for (size_t i = 0; i != size(); ++i)
-				out.m_v[i] <<= shift;
-			return out;
+				output.m_v[i] <<= shift;
+			return output;
 		}
 
-		SIMD_Scalar<T,N> operator>>(size_t shift) const
+		SIMD_Scalar!(T, N) operator>>(size_t shift) const
 		{
-			SIMD_Scalar<T,N> out = *this;
+			SIMD_Scalar!(T, N) output = *this;
 			for (size_t i = 0; i != size(); ++i)
-				out.m_v[i] >>= shift;
-			return out;
+				output.m_v[i] >>= shift;
+			return output;
 		}
 
-		SIMD_Scalar<T,N> operator~() const
+		SIMD_Scalar!(T, N) operator~() const
 		{
-			SIMD_Scalar<T,N> out = *this;
+			SIMD_Scalar!(T, N) output = *this;
 			for (size_t i = 0; i != size(); ++i)
-				out.m_v[i] = ~out.m_v[i];
-			return out;
+				output.m_v[i] = ~output.m_v[i];
+			return output;
 		}
 
 		// (~reg) & other
-		SIMD_Scalar<T,N> andc(in SIMD_Scalar<T,N> other)
+		SIMD_Scalar!(T, N) andc(in SIMD_Scalar!(T, N) other)
 		{
-			SIMD_Scalar<T,N> out;
+			SIMD_Scalar!(T, N) output;
 			for (size_t i = 0; i != size(); ++i)
-				out.m_v[i] = (~m_v[i]) & other.m_v[i];
-			return out;
+				output.m_v[i] = (~m_v[i]) & other.m_v[i];
+			return output;
 		}
 
-		SIMD_Scalar<T,N> bswap() const
+		SIMD_Scalar!(T, N) bswap() const
 		{
-			SIMD_Scalar<T,N> out;
+			SIMD_Scalar!(T, N) output;
 			for (size_t i = 0; i != size(); ++i)
-				out.m_v[i] = reverse_bytes(m_v[i]);
-			return out;
+				output.m_v[i] = reverse_bytes(m_v[i]);
+			return output;
 		}
 
-		static void transpose(SIMD_Scalar<T,N>& B0, SIMD_Scalar<T,N>& B1,
-									 SIMD_Scalar<T,N>& B2, SIMD_Scalar<T,N>& B3)
+		static void transpose(SIMD_Scalar!(T, N)& B0, SIMD_Scalar!(T, N)& B1,
+									 SIMD_Scalar!(T, N)& B2, SIMD_Scalar!(T, N)& B3)
 		{
 			static_assert(N == 4, "4x4 transpose");
-			SIMD_Scalar<T,N> T0({B0.m_v[0], B1.m_v[0], B2.m_v[0], B3.m_v[0]});
-			SIMD_Scalar<T,N> T1({B0.m_v[1], B1.m_v[1], B2.m_v[1], B3.m_v[1]});
-			SIMD_Scalar<T,N> T2({B0.m_v[2], B1.m_v[2], B2.m_v[2], B3.m_v[2]});
-			SIMD_Scalar<T,N> T3({B0.m_v[3], B1.m_v[3], B2.m_v[3], B3.m_v[3]});
+			SIMD_Scalar!(T, N) T0({B0.m_v[0], B1.m_v[0], B2.m_v[0], B3.m_v[0]});
+			SIMD_Scalar!(T, N) T1({B0.m_v[1], B1.m_v[1], B2.m_v[1], B3.m_v[1]});
+			SIMD_Scalar!(T, N) T2({B0.m_v[2], B1.m_v[2], B2.m_v[2], B3.m_v[2]});
+			SIMD_Scalar!(T, N) T3({B0.m_v[3], B1.m_v[3], B2.m_v[3], B3.m_v[3]});
 
 			B0 = T0;
 			B1 = T1;

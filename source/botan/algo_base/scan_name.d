@@ -11,7 +11,7 @@ import botan.exceptn;
 import stdexcept;
 
 string make_arg(
-	const Vector!( Pair!(size_t, string)  )& name, size_t start)
+	const Vector!(ref Pair!(size_t, string)  ) name, size_t start)
 {
 	string output = name[start].second;
 	size_t level = name[start].first;
@@ -61,91 +61,27 @@ deref_aliases(in Pair!(size_t, string) input)
 std::mutex SCAN_Name::s_alias_map_mutex;
 HashMap!(string, string) SCAN_Name::s_alias_map;
 
-SCAN_Name::SCAN_Name(string algo_spec)
-{
-	orig_algo_spec = algo_spec;
-
-	Vector!( Tuple!(size_t, string)  ) name;
-	size_t level = 0;
-	Pair!(size_t, string) accum = Pair(level, "");
-
-	string decoding_error = "Bad SCAN name '" + algo_spec + "': ";
-
-	algo_spec = SCAN_Name::deref_alias(algo_spec);
-
-	for (size_t i = 0; i != algo_spec.size(); ++i)
-	{
-		char c = algo_spec[i];
-
-		if (c == '/' || c == ',' || c == '(' || c == ')')
-		{
-			if (c == '(')
-				++level;
-			else if (c == ')')
-			{
-				if (level == 0)
-					throw new Decoding_Error(decoding_error + "Mismatched parens");
-				--level;
-			}
-
-			if (c == '/' && level > 0)
-				accum.second.push_back(c);
-			else
-			{
-				if (accum.second != "")
-					name.push_back(deref_aliases(accum));
-				accum = Pair(level, "");
-			}
-		}
-		else
-			accum.second.push_back(c);
-	}
-
-	if (accum.second != "")
-		name.push_back(deref_aliases(accum));
-
-	if (level != 0)
-		throw new Decoding_Error(decoding_error + "Missing close paren");
-
-	if (name.size() == 0)
-		throw new Decoding_Error(decoding_error + "Empty name");
-
-	alg_name = name[0].second;
-
-	bool in_modes = false;
-
-	for (size_t i = 1; i != name.size(); ++i)
-	{
-		if (name[i].first == 0)
-		{
-			mode_info.push_back(make_arg(name, i));
-			in_modes = true;
-		}
-		else if (name[i].first == 1 && !in_modes)
-			args.push_back(make_arg(name, i));
-	}
-}
 
 string SCAN_Name::algo_name_and_args() const
 {
-	string out;
+	string output;
 
-	out = algo_name();
+	output = algo_name();
 
 	if (arg_count())
 	{
-		out += '(';
+		output += '(';
 		for (size_t i = 0; i != arg_count(); ++i)
 		{
-			out += arg(i);
+			output += arg(i);
 			if (i != arg_count() - 1)
-				out += ',';
+				output += ',';
 		}
-		out += ')';
+		output += ')';
 
 	}
 
-	return out;
+	return output;
 }
 
 string SCAN_Name::arg(size_t i) const
