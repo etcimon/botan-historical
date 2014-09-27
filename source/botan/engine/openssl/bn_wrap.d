@@ -13,7 +13,7 @@ OSSL_BN::OSSL_BN(in BigInt input)
 {
 	m_bn = BN_new();
 	SafeVector!byte encoding = BigInt::encode_locked(input);
-	if(in != 0)
+	if (in != 0)
 		BN_bin2bn(&encoding[0], encoding.size(), m_bn);
 }
 

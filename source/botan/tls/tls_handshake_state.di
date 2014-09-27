@@ -163,7 +163,7 @@ class Handshake_State
 
 		void note_message(in Handshake_Message msg)
 		{
-			if(m_msg_callback)
+			if (m_msg_callback)
 				m_msg_callback(msg);
 		}
 

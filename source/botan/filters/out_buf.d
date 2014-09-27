@@ -15,7 +15,7 @@ size_t Output_Buffers::read(byte* output, size_t length,
 									 Pipe::message_id msg)
 {
 	SecureQueue* q = get(msg);
-	if(q)
+	if (q)
 		return q->read(output, length);
 	return 0;
 }
@@ -28,7 +28,7 @@ size_t Output_Buffers::peek(byte* output, size_t length,
 									 Pipe::message_id msg) const
 {
 	SecureQueue* q = get(msg);
-	if(q)
+	if (q)
 		return q->peek(output, length, stream_offset);
 	return 0;
 }
@@ -39,7 +39,7 @@ size_t Output_Buffers::peek(byte* output, size_t length,
 size_t Output_Buffers::remaining(Pipe::message_id msg) const
 {
 	SecureQueue* q = get(msg);
-	if(q)
+	if (q)
 		return q->size();
 	return 0;
 }
@@ -73,8 +73,8 @@ void Output_Buffers::add(SecureQueue* queue)
 */
 void Output_Buffers::retire()
 {
-	for(size_t i = 0; i != buffers.size(); ++i)
-		if(buffers[i] && buffers[i]->size() == 0)
+	for (size_t i = 0; i != buffers.size(); ++i)
+		if (buffers[i] && buffers[i]->size() == 0)
 		{
 			delete buffers[i];
 			buffers[i] = null;
@@ -92,7 +92,7 @@ void Output_Buffers::retire()
 */
 SecureQueue* Output_Buffers::get(Pipe::message_id msg) const
 {
-	if(msg < offset)
+	if (msg < offset)
 		return null;
 
 	BOTAN_ASSERT(msg < message_count(), "Message number is in range");
@@ -121,7 +121,7 @@ Output_Buffers::Output_Buffers()
 */
 Output_Buffers::~Output_Buffers()
 {
-	for(size_t j = 0; j != buffers.size(); ++j)
+	for (size_t j = 0; j != buffers.size(); ++j)
 		delete buffers[j];
 }
 

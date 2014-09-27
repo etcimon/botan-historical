@@ -92,7 +92,7 @@ bool altivec_check_sysctl()
 	size_t length = sizeof(vector_type);
 	int error = sysctl(sels, 2, &vector_type, &length, NULL, 0);
 
-	if(error == 0 && vector_type > 0)
+	if (error == 0 && vector_type > 0)
 		return true;
 #endif
 
@@ -150,7 +150,7 @@ void CPUID::print(std::ostream& o)
 {
 	o << "CPUID flags: ";
 
-#define CPUID_PRINT(flag) do { if(has_##flag()) o << #flag << " "; } while(0)
+#define CPUID_PRINT(flag) do { if (has_##flag()) o << #flag << " "; } while(0)
 	CPUID_PRINT(sse2);
 	CPUID_PRINT(ssse3);
 	CPUID_PRINT(sse41);
@@ -174,7 +174,7 @@ void CPUID::print(std::ostream& o)
 void CPUID::initialize()
 {
 #if defined(BOTAN_TARGET_CPU_IS_PPC_FAMILY)
-		if(altivec_check_sysctl() || altivec_check_pvr_emul())
+		if (altivec_check_sysctl() || altivec_check_pvr_emul())
 			m_altivec_capable = true;
 #endif
 
@@ -187,7 +187,7 @@ void CPUID::initialize()
 
 	const uint max_supported_sublevel = cpuid[0];
 
-	if(max_supported_sublevel == 0)
+	if (max_supported_sublevel == 0)
 		return;
 
 	const bool is_intel = same_mem(cpuid + 1, INTEL_CPUID, 3);
@@ -197,17 +197,17 @@ void CPUID::initialize()
 
 	m_x86_processor_flags[0] = (cast(ulong)(cpuid[2]) << 32) | cpuid[3];
 
-	if(is_intel)
+	if (is_intel)
 		m_cache_line_size = 8 * get_byte(2, cpuid[1]);
 
-	if(max_supported_sublevel >= 7)
+	if (max_supported_sublevel >= 7)
 	{
 		clear_mem(cpuid, 4);
 		X86_CPUID_SUBLEVEL(7, 0, cpuid);
 		m_x86_processor_flags[1] = (cast(ulong)(cpuid[2]) << 32) | cpuid[1];
 	}
 
-	if(is_amd)
+	if (is_amd)
 	{
 		X86_CPUID(0x80000005, cpuid);
 		m_cache_line_size = get_byte(3, cpuid[2]);
@@ -218,7 +218,7 @@ void CPUID::initialize()
 	* If we don't have access to CPUID, we can still safely assume that
 	* any x86-64 processor has SSE2 and RDTSC
 	*/
-	if(m_x86_processor_flags[0] == 0)
+	if (m_x86_processor_flags[0] == 0)
 		m_x86_processor_flags[0] = (1 << CPUID_SSE2_BIT) | (1 << CPUID_RDTSC_BIT);
 #endif
 }

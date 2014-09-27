@@ -13,14 +13,14 @@
 */
 void RC2::encrypt_n(byte* input, byte* output, size_t blocks) const
 {
-	for(size_t i = 0; i != blocks; ++i)
+	for (size_t i = 0; i != blocks; ++i)
 	{
 		ushort R0 = load_le!ushort(input, 0);
 		ushort R1 = load_le!ushort(input, 1);
 		ushort R2 = load_le!ushort(input, 2);
 		ushort R3 = load_le!ushort(input, 3);
 
-		for(size_t j = 0; j != 16; ++j)
+		for (size_t j = 0; j != 16; ++j)
 		{
 			R0 += (R1 & ~R3) + (R2 & R3) + K[4*j];
 			R0 = rotate_left(R0, 1);
@@ -34,7 +34,7 @@ void RC2::encrypt_n(byte* input, byte* output, size_t blocks) const
 			R3 += (R0 & ~R2) + (R1 & R2) + K[4*j + 3];
 			R3 = rotate_left(R3, 5);
 
-			if(j == 4 || j == 10)
+			if (j == 4 || j == 10)
 			{
 				R0 += K[R3 % 64];
 				R1 += K[R0 % 64];
@@ -55,14 +55,14 @@ void RC2::encrypt_n(byte* input, byte* output, size_t blocks) const
 */
 void RC2::decrypt_n(byte* input, byte* output, size_t blocks) const
 {
-	for(size_t i = 0; i != blocks; ++i)
+	for (size_t i = 0; i != blocks; ++i)
 	{
 		ushort R0 = load_le!ushort(input, 0);
 		ushort R1 = load_le!ushort(input, 1);
 		ushort R2 = load_le!ushort(input, 2);
 		ushort R3 = load_le!ushort(input, 3);
 
-		for(size_t j = 0; j != 16; ++j)
+		for (size_t j = 0; j != 16; ++j)
 		{
 			R3 = rotate_right(R3, 5);
 			R3 -= (R0 & ~R2) + (R1 & R2) + K[63 - (4*j + 0)];
@@ -76,7 +76,7 @@ void RC2::decrypt_n(byte* input, byte* output, size_t blocks) const
 			R0 = rotate_right(R0, 1);
 			R0 -= (R1 & ~R3) + (R2 & R3) + K[63 - (4*j + 3)];
 
-			if(j == 4 || j == 10)
+			if (j == 4 || j == 10)
 			{
 				R3 -= K[R2 % 64];
 				R2 -= K[R1 % 64];
@@ -124,12 +124,12 @@ void RC2::key_schedule(in byte* key)
 	SafeVector!byte L(128);
 	copy_mem(&L[0], key, length);
 
-	for(size_t i = length; i != 128; ++i)
+	for (size_t i = length; i != 128; ++i)
 		L[i] = TABLE[(L[i-1] + L[i-length]) % 256];
 
 	L[128-length] = TABLE[L[128-length]];
 
-	for(s32bit i = 127-length; i >= 0; --i)
+	for (s32bit i = 127-length; i >= 0; --i)
 		L[i] = TABLE[L[i+1] ^ L[i+length]];
 
 	K.resize(64);
@@ -170,7 +170,7 @@ byte RC2::EKB_code(size_t ekb)
 		0xA7, 0x1C, 0xC9, 0x09, 0x69, 0x9A, 0x83, 0xCF, 0x29, 0x39, 0xB9, 0xE9,
 		0x4C, 0xFF, 0x43, 0xAB };
 
-	if(ekb < 256)
+	if (ekb < 256)
 		return EKB[ekb];
 	else
 		throw new Encoding_Error("RC2::EKB_code: EKB is too large");

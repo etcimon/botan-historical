@@ -15,7 +15,7 @@ SafeVector!byte emsa3_encoding(in SafeVector!byte msg,
 											  size_t hash_id_length)
 {
 	size_t output_length = output_bits / 8;
-	if(output_length < hash_id_length + msg.size() + 10)
+	if (output_length < hash_id_length + msg.size() + 10)
 		throw new Encoding_Error("emsa3_encoding: Output length is too small");
 
 	SafeVector!byte T(output_length);
@@ -46,7 +46,7 @@ EMSA_PKCS1v15::encoding_of(in SafeVector!byte msg,
 									size_t output_bits,
 									RandomNumberGenerator&)
 {
-	if(msg.size() != m_hash->output_length())
+	if (msg.size() != m_hash->output_length())
 		throw new Encoding_Error("EMSA_PKCS1v15::encoding_of: Bad input length");
 
 	return emsa3_encoding(msg, output_bits,
@@ -57,7 +57,7 @@ bool EMSA_PKCS1v15::verify(in SafeVector!byte coded,
 									in SafeVector!byte raw,
 									size_t key_bits)
 {
-	if(raw.size() != m_hash->output_length())
+	if (raw.size() != m_hash->output_length())
 		return false;
 
 	try

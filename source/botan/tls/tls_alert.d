@@ -11,12 +11,12 @@ namespace TLS {
 
 Alert::Alert(in SafeVector!byte buf)
 {
-	if(buf.size() != 2)
+	if (buf.size() != 2)
 		throw new Decoding_Error("Alert: Bad size " + std::to_string(buf.size()) +
 									" for alert message");
 
-	if(buf[0] == 1)		m_fatal = false;
-	else if(buf[0] == 2) m_fatal = true;
+	if (buf[0] == 1)		m_fatal = false;
+	else if (buf[0] == 2) m_fatal = true;
 	else
 		throw new Decoding_Error("Alert: Bad code for alert level");
 

@@ -33,11 +33,11 @@ string cert_type_code_to_name(byte code)
 
 byte cert_type_name_to_code(in string name)
 {
-	if(name == "RSA")
+	if (name == "RSA")
 		return 1;
-	if(name == "DSA")
+	if (name == "DSA")
 		return 2;
-	if(name == "ECDSA")
+	if (name == "ECDSA")
 		return 64;
 
 	throw new Invalid_Argument("Unknown cert type " + name);
@@ -56,13 +56,13 @@ Certificate_Req::Certificate_Req(Handshake_IO& io,
 	m_names(ca_certs),
 	m_cert_key_types({ "RSA", "DSA", "ECDSA" })
 {
-	if(_version.supports_negotiable_signature_algorithms())
+	if (_version.supports_negotiable_signature_algorithms())
 	{
 		Vector!( string ) hashes = policy.allowed_signature_hashes();
 		Vector!( string ) sigs = policy.allowed_signature_methods();
 
-		for(size_t i = 0; i != hashes.size(); ++i)
-			for(size_t j = 0; j != sigs.size(); ++j)
+		for (size_t i = 0; i != hashes.size(); ++i)
+			for (size_t j = 0; j != sigs.size(); ++j)
 				m_supported_algos.push_back(Pair(hashes[i], sigs[j]));
 	}
 
@@ -75,31 +75,31 @@ Certificate_Req::Certificate_Req(Handshake_IO& io,
 Certificate_Req::Certificate_Req(in Vector!byte buf,
 											Protocol_Version _version)
 {
-	if(buf.size() < 4)
+	if (buf.size() < 4)
 		throw new Decoding_Error("Certificate_Req: Bad certificate request");
 
 	TLS_Data_Reader reader("CertificateRequest", buf);
 
 	Vector!( byte ) cert_type_codes = reader.get_range_vector<byte>(1, 1, 255);
 
-	for(size_t i = 0; i != cert_type_codes.size(); ++i)
+	for (size_t i = 0; i != cert_type_codes.size(); ++i)
 	{
 		const string cert_type_name = cert_type_code_to_name(cert_type_codes[i]);
 
-		if(cert_type_name == "") // something we don't know
+		if (cert_type_name == "") // something we don't know
 			continue;
 
 		m_cert_key_types.push_back(cert_type_name);
 	}
 
-	if(_version.supports_negotiable_signature_algorithms())
+	if (_version.supports_negotiable_signature_algorithms())
 	{
 		Vector!( byte ) sig_hash_algs = reader.get_range_vector<byte>(2, 2, 65534);
 
-		if(sig_hash_algs.size() % 2 != 0)
+		if (sig_hash_algs.size() % 2 != 0)
 			throw new Decoding_Error("Bad length for signature IDs in certificate request");
 
-		for(size_t i = 0; i != sig_hash_algs.size(); i += 2)
+		for (size_t i = 0; i != sig_hash_algs.size(); i += 2)
 		{
 			string hash = Signature_Algorithms::hash_algo_name(sig_hash_algs[i]);
 			string sig = Signature_Algorithms::sig_algo_name(sig_hash_algs[i+1]);
@@ -109,7 +109,7 @@ Certificate_Req::Certificate_Req(in Vector!byte buf,
 
 	const ushort purported_size = reader.get_ushort();
 
-	if(reader.remaining_bytes() != purported_size)
+	if (reader.remaining_bytes() != purported_size)
 		throw new Decoding_Error("Inconsistent length in certificate request");
 
 	while(reader.has_remaining())
@@ -132,17 +132,17 @@ Vector!( byte ) Certificate_Req::serialize() const
 
 	Vector!( byte ) cert_types;
 
-	for(size_t i = 0; i != m_cert_key_types.size(); ++i)
+	for (size_t i = 0; i != m_cert_key_types.size(); ++i)
 		cert_types.push_back(cert_type_name_to_code(m_cert_key_types[i]));
 
 	append_tls_length_value(buf, cert_types, 1);
 
-	if(!m_supported_algos.empty())
+	if (!m_supported_algos.empty())
 		buf += Signature_Algorithms(m_supported_algos).serialize();
 
 	Vector!( byte ) encoded_names;
 
-	for(size_t i = 0; i != m_names.size(); ++i)
+	for (size_t i = 0; i != m_names.size(); ++i)
 	{
 		DER_Encoder encoder;
 		encoder.encode(m_names[i]);

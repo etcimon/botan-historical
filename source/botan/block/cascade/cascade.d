@@ -12,8 +12,8 @@ void Cascade_Cipher::encrypt_n(byte* input, byte* output, size_t blocks,
 	size_t c1_blocks = blocks * (block_size() / m_cipher1->block_size());
 	size_t c2_blocks = blocks * (block_size() / m_cipher2->block_size());
 
-	m_cipher1->encrypt_n(input, out, c1_blocks);
-	m_cipher2->encrypt_n(out, out, c2_blocks);
+	m_cipher1->encrypt_n(input, output, c1_blocks);
+	m_cipher2->encrypt_n(output, output, c2_blocks);
 }
 
 void Cascade_Cipher::decrypt_n(byte* input, byte* output, size_t blocks,
@@ -22,8 +22,8 @@ void Cascade_Cipher::decrypt_n(byte* input, byte* output, size_t blocks,
 	size_t c1_blocks = blocks * (block_size() / m_cipher1->block_size());
 	size_t c2_blocks = blocks * (block_size() / m_cipher2->block_size());
 
-	m_cipher2->decrypt_n(input, out, c2_blocks);
-	m_cipher1->decrypt_n(out, out, c1_blocks);
+	m_cipher2->decrypt_n(input, output, c2_blocks);
+	m_cipher1->decrypt_n(output, output, c1_blocks);
 }
 
 void Cascade_Cipher::key_schedule(in byte* key, size_t)
@@ -67,7 +67,7 @@ size_t euclids_algorithm(size_t a, size_t b)
 
 size_t block_size_for_cascade(size_t bs, size_t bs2)
 {
-	if(bs == bs2)
+	if (bs == bs2)
 		return bs;
 
 	size_t gcd = euclids_algorithm(bs, bs2);
@@ -82,7 +82,7 @@ Cascade_Cipher::Cascade_Cipher(BlockCipher* c1, BlockCipher* c2) :
 {
 	m_block = block_size_for_cascade(c1->block_size(), c2->block_size());
 
-	if(block_size() % c1->block_size() || block_size() % c2->block_size())
+	if (block_size() % c1->block_size() || block_size() % c2->block_size())
 		throw new Internal_Error("Failure in " + name() + " constructor");
 }
 

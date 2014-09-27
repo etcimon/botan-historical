@@ -34,8 +34,8 @@ std::multimap<string, string> Data_Store::search_for(
 {
 	std::multimap<string, string> out;
 
-	for(auto i = contents.begin(); i != contents.end(); ++i)
-		if(predicate(i->first, i->second))
+	for (auto i = contents.begin(); i != contents.end(); ++i)
+		if (predicate(i->first, i->second))
 			out.insert(Pair(i->first, i->second));
 
 	return out;
@@ -48,7 +48,7 @@ Vector!( string ) Data_Store::get(in string looking_for) const
 {
 	Vector!( string ) out;
 	auto range = contents.equal_range(looking_for);
-	for(auto i = range.first; i != range.second; ++i)
+	for (auto i = range.first; i != range.second; ++i)
 		out.push_back(i->second);
 	return out;
 }
@@ -60,9 +60,9 @@ string Data_Store::get1(in string key) const
 {
 	Vector!( string ) vals = get(key);
 
-	if(vals.empty())
+	if (vals.empty())
 		throw new Invalid_State("Data_Store::get1: No values set for " + key);
-	if(vals.size() > 1)
+	if (vals.size() > 1)
 		throw new Invalid_State("Data_Store::get1: More than one value for " + key);
 
 	return vals[0];
@@ -73,10 +73,10 @@ string Data_Store::get1(in string key,
 {
 	Vector!( string ) vals = get(key);
 
-	if(vals.size() > 1)
+	if (vals.size() > 1)
 		throw new Invalid_State("Data_Store::get1: More than one value for " + key);
 
-	if(vals.empty())
+	if (vals.empty())
 		return default_value;
 
 	return vals[0];
@@ -90,10 +90,10 @@ Data_Store::get1_memvec(in string key) const
 {
 	Vector!( string ) vals = get(key);
 
-	if(vals.empty())
+	if (vals.empty())
 		return Vector!( byte )();
 
-	if(vals.size() > 1)
+	if (vals.size() > 1)
 		throw new Invalid_State("Data_Store::get1_memvec: Multiple values for " +
 								  key);
 
@@ -108,9 +108,9 @@ uint Data_Store::get1_uint(in string key,
 {
 	Vector!( string ) vals = get(key);
 
-	if(vals.empty())
+	if (vals.empty())
 		return default_val;
-	else if(vals.size() > 1)
+	else if (vals.size() > 1)
 		throw new Invalid_State("Data_Store::get1_uint: Multiple values for " +
 								  key);
 

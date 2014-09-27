@@ -41,7 +41,7 @@ Public_Key* load_key(DataSource& source)
 		AlgorithmIdentifier alg_id;
 		SafeVector!byte key_bits;
 
-		if(ASN1::maybe_BER(source) && !PEM_Code::matches(source))
+		if (ASN1::maybe_BER(source) && !PEM_Code::matches(source))
 		{
 			BER_Decoder(source)
 				.start_cons(SEQUENCE)
@@ -64,7 +64,7 @@ Public_Key* load_key(DataSource& source)
 			.end_cons();
 		}
 
-		if(key_bits.empty())
+		if (key_bits.empty())
 			throw new Decoding_Error("X.509 public key decoding failed");
 
 		return make_public_key(alg_id, key_bits);

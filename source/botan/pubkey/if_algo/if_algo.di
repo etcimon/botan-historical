@@ -18,7 +18,7 @@ class IF_Scheme_PublicKey : public abstract Public_Key
 		IF_Scheme_PublicKey(in AlgorithmIdentifier alg_id,
 								  in SafeVector!byte key_bits);
 
-		IF_Scheme_PublicKey(in BigInt n, const BigInt& e) :
+		IF_Scheme_PublicKey(in BigInt n, ref const BigInt e) :
 			n(n), e(e) {}
 
 		bool check_key(RandomNumberGenerator& rng, bool) const;
@@ -30,12 +30,12 @@ class IF_Scheme_PublicKey : public abstract Public_Key
 		/**
 		* @return public modulus
 		*/
-		const BigInt& get_n() const { return n; }
+		ref const BigInt get_n() const { return n; }
 
 		/**
 		* @return public exponent
 		*/
-		const BigInt& get_e() const { return e; }
+		ref const BigInt get_e() const { return e; }
 
 		size_t max_input_bits() const { return (n.bits() - 1); }
 
@@ -57,9 +57,9 @@ class IF_Scheme_PrivateKey : public abstract IF_Scheme_PublicKey,
 	public:
 
 		IF_Scheme_PrivateKey(RandomNumberGenerator& rng,
-									const BigInt& prime1, const BigInt& prime2,
-									const BigInt& exp, const BigInt& d_exp,
-									const BigInt& mod);
+									ref const BigInt prime1, ref const BigInt prime2,
+									ref const BigInt exp, ref const BigInt d_exp,
+									ref const BigInt mod);
 
 		IF_Scheme_PrivateKey(RandomNumberGenerator& rng,
 									const AlgorithmIdentifier& alg_id,
@@ -71,23 +71,23 @@ class IF_Scheme_PrivateKey : public abstract IF_Scheme_PublicKey,
 		* Get the first prime p.
 		* @return prime p
 		*/
-		const BigInt& get_p() const { return p; }
+		ref const BigInt get_p() const { return p; }
 
 		/**
 		* Get the second prime q.
 		* @return prime q
 		*/
-		const BigInt& get_q() const { return q; }
+		ref const BigInt get_q() const { return q; }
 
 		/**
 		* Get d with exp * d = 1 mod (p - 1, q - 1).
 		* @return d
 		*/
-		const BigInt& get_d() const { return d; }
+		ref const BigInt get_d() const { return d; }
 
-		const BigInt& get_c() const { return c; }
-		const BigInt& get_d1() const { return d1; }
-		const BigInt& get_d2() const { return d2; }
+		ref const BigInt get_c() const { return c; }
+		ref const BigInt get_d1() const { return d1; }
+		ref const BigInt get_d2() const { return d2; }
 
 		SafeVector!byte pkcs8_Private_Key() const;
 

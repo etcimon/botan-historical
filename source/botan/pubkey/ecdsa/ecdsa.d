@@ -12,10 +12,10 @@
 bool ECDSA_PrivateKey::check_key(RandomNumberGenerator& rng,
 											bool strong) const
 {
-	if(!public_point().on_the_curve())
+	if (!public_point().on_the_curve())
 		return false;
 
-	if(!strong)
+	if (!strong)
 		return true;
 
 	return KeyPair::signature_consistency_check(rng, *this, "EMSA1(SHA-1)");
@@ -69,7 +69,7 @@ ECDSA_Verification_Operation::ECDSA_Verification_Operation(in ECDSA_PublicKey ec
 bool ECDSA_Verification_Operation::verify(in byte* msg, size_t msg_len,
 														in byte* sig, size_t sig_len)
 {
-	if(sig_len != order.bytes()*2)
+	if (sig_len != order.bytes()*2)
 		return false;
 
 	BigInt e(msg, msg_len);
@@ -77,7 +77,7 @@ bool ECDSA_Verification_Operation::verify(in byte* msg, size_t msg_len,
 	BigInt r(sig, sig_len / 2);
 	BigInt s(sig + sig_len / 2, sig_len / 2);
 
-	if(r <= 0 || r >= order || s <= 0 || s >= order)
+	if (r <= 0 || r >= order || s <= 0 || s >= order)
 		return false;
 
 	BigInt w = inverse_mod(s, order);
@@ -85,7 +85,7 @@ bool ECDSA_Verification_Operation::verify(in byte* msg, size_t msg_len,
 	PointGFp R = w * multi_exponentiate(base_point, e,
 													public_point, r);
 
-	if(R.is_zero())
+	if (R.is_zero())
 		return false;
 
 	return (R.get_affine_x() % order == r);

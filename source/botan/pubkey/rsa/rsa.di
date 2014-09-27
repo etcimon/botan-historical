@@ -27,7 +27,7 @@ class RSA_PublicKey : public abstract IF_Scheme_PublicKey
 		* @arg n the modulus
 		* @arg e the exponent
 		*/
-		RSA_PublicKey(in BigInt n, const BigInt& e) :
+		RSA_PublicKey(in BigInt n, ref const BigInt e) :
 			IF_Scheme_PublicKey(n, e)
 		{}
 
@@ -62,9 +62,9 @@ class RSA_PrivateKey : public RSA_PublicKey,
 		* if you wish to the constructor to calculate it.
 		*/
 		RSA_PrivateKey(RandomNumberGenerator& rng,
-							const BigInt& p, const BigInt& q,
-							const BigInt& e, const BigInt& d = 0,
-							const BigInt& n = 0) :
+							ref const BigInt p, ref const BigInt q,
+							ref const BigInt e, ref const BigInt d = 0,
+							ref const BigInt n = 0) :
 			IF_Scheme_PrivateKey(rng, p, q, e, d, n) {}
 
 		/**
@@ -97,9 +97,9 @@ class RSA_Private_Operation : public PK_Ops::Signature,
 	private:
 		BigInt private_op(in BigInt m) const;
 
-		const BigInt& n;
-		const BigInt& q;
-		const BigInt& c;
+		ref const BigInt n;
+		ref const BigInt q;
+		ref const BigInt c;
 		Fixed_Exponent_Power_Mod powermod_e_n, powermod_d1_p, powermod_d2_q;
 		Modular_Reducer mod_p;
 		Blinder blinder;
@@ -135,11 +135,11 @@ class RSA_Public_Operation : public PK_Ops::Verification,
 	private:
 		BigInt public_op(in BigInt m) const
 		{
-			if(m >= n)
+			if (m >= n)
 				throw new Invalid_Argument("RSA public op - input is too large");
 			return powermod_e_n(m);
 		}
 
-		const BigInt& n;
+		ref const BigInt n;
 		Fixed_Exponent_Power_Mod powermod_e_n;
 };

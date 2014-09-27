@@ -44,7 +44,7 @@ Pipe::Pipe(std::initializer_list<Filter*> args)
 {
 	init();
 
-	for(auto i = args.begin(); i != args.end(); ++i)
+	for (auto i = args.begin(); i != args.end(); ++i)
 		append(*i);
 }
 
@@ -83,9 +83,9 @@ void Pipe::reset()
 */
 void Pipe::destruct(Filter* to_kill)
 {
-	if(!to_kill || cast(SecureQueue*)(to_kill))
+	if (!to_kill || cast(SecureQueue*)(to_kill))
 		return;
-	for(size_t j = 0; j != to_kill->total_ports(); ++j)
+	for (size_t j = 0; j != to_kill->total_ports(); ++j)
 		destruct(to_kill->next[j]);
 	delete to_kill;
 }
@@ -103,7 +103,7 @@ bool Pipe::end_of_data() const
 */
 void Pipe::set_default_msg(message_id msg)
 {
-	if(msg >= message_count())
+	if (msg >= message_count())
 		throw new Invalid_Argument("Pipe::set_default_msg: msg number is too high");
 	default_read = msg;
 }
@@ -154,9 +154,9 @@ void Pipe::process_msg(DataSource& input)
 */
 void Pipe::start_msg()
 {
-	if(inside_msg)
+	if (inside_msg)
 		throw new Invalid_State("Pipe::start_msg: Message was already started");
-	if(pipe == null)
+	if (pipe == null)
 		pipe = new Null_Filter;
 	find_endpoints(pipe);
 	pipe->new_msg();
@@ -168,11 +168,11 @@ void Pipe::start_msg()
 */
 void Pipe::end_msg()
 {
-	if(!inside_msg)
+	if (!inside_msg)
 		throw new Invalid_State("Pipe::end_msg: Message was already ended");
 	pipe->finish_msg();
 	clear_endpoints(pipe);
-	if(cast(Null_Filter*)(pipe))
+	if (cast(Null_Filter*)(pipe))
 	{
 		delete pipe;
 		pipe = null;
@@ -187,8 +187,8 @@ void Pipe::end_msg()
 */
 void Pipe::find_endpoints(Filter* f)
 {
-	for(size_t j = 0; j != f->total_ports(); ++j)
-		if(f->next[j] && !cast(SecureQueue*)(f->next[j]))
+	for (size_t j = 0; j != f->total_ports(); ++j)
+		if (f->next[j] && !cast(SecureQueue*)(f->next[j]))
 			find_endpoints(f->next[j]);
 		else
 		{
@@ -203,10 +203,10 @@ void Pipe::find_endpoints(Filter* f)
 */
 void Pipe::clear_endpoints(Filter* f)
 {
-	if(!f) return;
-	for(size_t j = 0; j != f->total_ports(); ++j)
+	if (!f) return;
+	for (size_t j = 0; j != f->total_ports(); ++j)
 	{
-		if(f->next[j] && cast(SecureQueue*)(f->next[j]))
+		if (f->next[j] && cast(SecureQueue*)(f->next[j]))
 			f->next[j] = null;
 		clear_endpoints(f->next[j]);
 	}
@@ -217,18 +217,18 @@ void Pipe::clear_endpoints(Filter* f)
 */
 void Pipe::append(Filter* filter)
 {
-	if(inside_msg)
+	if (inside_msg)
 		throw new Invalid_State("Cannot append to a Pipe while it is processing");
-	if(!filter)
+	if (!filter)
 		return;
-	if(cast(SecureQueue*)(filter))
+	if (cast(SecureQueue*)(filter))
 		throw new Invalid_Argument("Pipe::append: SecureQueue cannot be used");
-	if(filter->owned)
+	if (filter->owned)
 		throw new Invalid_Argument("Filters cannot be shared among multiple Pipes");
 
 	filter->owned = true;
 
-	if(!pipe) pipe = filter;
+	if (!pipe) pipe = filter;
 	else		pipe->attach(filter);
 }
 
@@ -237,18 +237,18 @@ void Pipe::append(Filter* filter)
 */
 void Pipe::prepend(Filter* filter)
 {
-	if(inside_msg)
+	if (inside_msg)
 		throw new Invalid_State("Cannot prepend to a Pipe while it is processing");
-	if(!filter)
+	if (!filter)
 		return;
-	if(cast(SecureQueue*)(filter))
+	if (cast(SecureQueue*)(filter))
 		throw new Invalid_Argument("Pipe::prepend: SecureQueue cannot be used");
-	if(filter->owned)
+	if (filter->owned)
 		throw new Invalid_Argument("Filters cannot be shared among multiple Pipes");
 
 	filter->owned = true;
 
-	if(pipe) filter->attach(pipe);
+	if (pipe) filter->attach(pipe);
 	pipe = filter;
 }
 
@@ -257,13 +257,13 @@ void Pipe::prepend(Filter* filter)
 */
 void Pipe::pop()
 {
-	if(inside_msg)
+	if (inside_msg)
 		throw new Invalid_State("Cannot pop off a Pipe while it is processing");
 
-	if(!pipe)
+	if (!pipe)
 		return;
 
-	if(pipe->total_ports() > 1)
+	if (pipe->total_ports() > 1)
 		throw new Invalid_State("Cannot pop off a Filter with multiple ports");
 
 	Filter* f = pipe;

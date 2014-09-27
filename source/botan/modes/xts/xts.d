@@ -21,7 +21,7 @@ void poly_double_128(byte* output, in byte* input)
 	X1 = (X1 << 1) | (X0 >> 63);
 	X0 = (X0 << 1);
 
-	if(carry)
+	if (carry)
 		X0 ^= 0x87;
 
 	store_le(output, X0, X1);
@@ -32,14 +32,14 @@ void poly_double_64(byte* output, in byte* input)
 	ulong X = load_le!ulong(input, 0);
 	const bool carry = (X >> 63);
 	X <<= 1;
-	if(carry)
+	if (carry)
 		X ^= 0x1B;
 	store_le(X, output);
 }
 
 void poly_double(byte* output, in byte* input)
 {
-	if(size == 8)
+	if (size == 8)
 		poly_double_64(output, input);
 	else
 		poly_double_128(output, input);
@@ -49,7 +49,7 @@ void poly_double(byte* output, in byte* input)
 
 XTS_Mode::XTS_Mode(BlockCipher* cipher) : m_cipher(cipher)
 {
-	if(m_cipher->block_size() != 8 && m_cipher->block_size() != 16)
+	if (m_cipher->block_size() != 8 && m_cipher->block_size() != 16)
 		throw new std::invalid_argument("Bad cipher for XTS: " + cipher->name());
 
 	m_tweak_cipher.reset(m_cipher->clone());
@@ -97,7 +97,7 @@ void XTS_Mode::key_schedule(in byte* key, size_t length)
 {
 	const size_t key_half = length / 2;
 
-	if(length % 2 == 1 || !m_cipher->valid_keylength(key_half))
+	if (length % 2 == 1 || !m_cipher->valid_keylength(key_half))
 		throw new Invalid_Key_Length(name(), length);
 
 	m_cipher->set_key(&key[0], key_half);
@@ -106,7 +106,7 @@ void XTS_Mode::key_schedule(in byte* key, size_t length)
 
 SafeVector!byte XTS_Mode::start(in byte* nonce, size_t nonce_len)
 {
-	if(!valid_nonce_length(nonce_len))
+	if (!valid_nonce_length(nonce_len))
 		throw new Invalid_IV_Length(name(), nonce_len);
 
 	copy_mem(&m_tweak[0], nonce, nonce_len);
@@ -121,12 +121,12 @@ void XTS_Mode::update_tweak(size_t which)
 {
 	const size_t BS = m_tweak_cipher->block_size();
 
-	if(which > 0)
+	if (which > 0)
 		poly_double(&m_tweak[0], &m_tweak[(which-1)*BS], BS);
 
 	const size_t blocks_in_tweak = update_granularity() / BS;
 
-	for(size_t i = 1; i < blocks_in_tweak; ++i)
+	for (size_t i = 1; i < blocks_in_tweak; ++i)
 		poly_double(&m_tweak[i*BS], &m_tweak[(i-1)*BS], BS);
 }
 
@@ -174,7 +174,7 @@ void XTS_Encryption::finish(SafeVector!byte buffer, size_t offset)
 
 	const size_t BS = cipher().block_size();
 
-	if(sz % BS == 0)
+	if (sz % BS == 0)
 	{
 		update(buffer, offset);
 	}
@@ -193,7 +193,7 @@ void XTS_Encryption::finish(SafeVector!byte buffer, size_t offset)
 		cipher().encrypt(last);
 		xor_buf(last, tweak(), BS);
 
-		for(size_t i = 0; i != final_bytes - BS; ++i)
+		for (size_t i = 0; i != final_bytes - BS; ++i)
 		{
 			last[i] ^= last[i + BS];
 			last[i + BS] ^= last[i];
@@ -253,7 +253,7 @@ void XTS_Decryption::finish(SafeVector!byte buffer, size_t offset)
 
 	const size_t BS = cipher().block_size();
 
-	if(sz % BS == 0)
+	if (sz % BS == 0)
 	{
 		update(buffer, offset);
 	}
@@ -272,7 +272,7 @@ void XTS_Decryption::finish(SafeVector!byte buffer, size_t offset)
 		cipher().decrypt(last);
 		xor_buf(last, tweak() + BS, BS);
 
-		for(size_t i = 0; i != final_bytes - BS; ++i)
+		for (size_t i = 0; i != final_bytes - BS; ++i)
 		{
 			last[i] ^= last[i + BS];
 			last[i + BS] ^= last[i];

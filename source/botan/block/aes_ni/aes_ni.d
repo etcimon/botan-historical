@@ -33,7 +33,7 @@ void aes_192_key_expansion(__m128i* K1, __m128i* K2, __m128i key2_with_rcon,
 	*K1 = key1;
 	_mm_storeu_si128(cast(__m128i*)(output), key1);
 
-	if(last)
+	if (last)
 		return;
 
 	key2 = _mm_xor_si128(key2, _mm_slli_si128(key2, 4));
@@ -151,7 +151,7 @@ void AES_128_NI::encrypt_n(byte* input, byte* output, size_t blocks) const
 		out_mm += 4;
 	}
 
-	for(size_t i = 0; i != blocks; ++i)
+	for (size_t i = 0; i != blocks; ++i)
 	{
 		__m128i B = _mm_loadu_si128(in_mm + i);
 
@@ -227,7 +227,7 @@ void AES_128_NI::decrypt_n(byte* input, byte* output, size_t blocks) const
 		out_mm += 4;
 	}
 
-	for(size_t i = 0; i != blocks; ++i)
+	for (size_t i = 0; i != blocks; ++i)
 	{
 		__m128i B = _mm_loadu_si128(in_mm + i);
 
@@ -368,7 +368,7 @@ void AES_192_NI::encrypt_n(byte* input, byte* output, size_t blocks) const
 		out_mm += 4;
 	}
 
-	for(size_t i = 0; i != blocks; ++i)
+	for (size_t i = 0; i != blocks; ++i)
 	{
 		__m128i B = _mm_loadu_si128(in_mm + i);
 
@@ -450,7 +450,7 @@ void AES_192_NI::decrypt_n(byte* input, byte* output, size_t blocks) const
 		out_mm += 4;
 	}
 
-	for(size_t i = 0; i != blocks; ++i)
+	for (size_t i = 0; i != blocks; ++i)
 	{
 		__m128i B = _mm_loadu_si128(in_mm + i);
 
@@ -594,7 +594,7 @@ void AES_256_NI::encrypt_n(byte* input, byte* output, size_t blocks) const
 		out_mm += 4;
 	}
 
-	for(size_t i = 0; i != blocks; ++i)
+	for (size_t i = 0; i != blocks; ++i)
 	{
 		__m128i B = _mm_loadu_si128(in_mm + i);
 
@@ -682,7 +682,7 @@ void AES_256_NI::decrypt_n(byte* input, byte* output, size_t blocks) const
 		out_mm += 4;
 	}
 
-	for(size_t i = 0; i != blocks; ++i)
+	for (size_t i = 0; i != blocks; ++i)
 	{
 		__m128i B = _mm_loadu_si128(in_mm + i);
 

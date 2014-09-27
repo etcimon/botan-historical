@@ -67,28 +67,28 @@ class Client_Hello : public Handshake_Message
 
 		Vector!( Pair!(string, string) ) supported_algos() const
 		{
-			if(Signature_Algorithms* sigs = m_extensions.get<Signature_Algorithms>())
+			if (Signature_Algorithms* sigs = m_extensions.get<Signature_Algorithms>())
 				return sigs->supported_signature_algorthms();
 			return Vector!( Pair!(string, string) )();
 		}
 
 		Vector!( string ) supported_ecc_curves() const
 		{
-			if(Supported_Elliptic_Curves* ecc = m_extensions.get<Supported_Elliptic_Curves>())
+			if (Supported_Elliptic_Curves* ecc = m_extensions.get<Supported_Elliptic_Curves>())
 				return ecc->curves();
 			return Vector!( string )();
 		}
 
 		string sni_hostname() const
 		{
-			if(Server_Name_Indicator* sni = m_extensions.get<Server_Name_Indicator>())
+			if (Server_Name_Indicator* sni = m_extensions.get<Server_Name_Indicator>())
 				return sni->host_name();
 			return "";
 		}
 
 		string srp_identifier() const
 		{
-			if(SRP_Identifier* srp = m_extensions.get<SRP_Identifier>())
+			if (SRP_Identifier* srp = m_extensions.get<SRP_Identifier>())
 				return srp->identifier();
 			return "";
 		}
@@ -100,7 +100,7 @@ class Client_Hello : public Handshake_Message
 
 		Vector!( byte ) renegotiation_info() const
 		{
-			if(Renegotiation_Extension* reneg = m_extensions.get<Renegotiation_Extension>())
+			if (Renegotiation_Extension* reneg = m_extensions.get<Renegotiation_Extension>())
 				return reneg->renegotiation_info();
 			return Vector!( byte )();
 		}
@@ -112,7 +112,7 @@ class Client_Hello : public Handshake_Message
 
 		size_t fragment_size() const
 		{
-			if(Maximum_Fragment_Length* frag = m_extensions.get<Maximum_Fragment_Length>())
+			if (Maximum_Fragment_Length* frag = m_extensions.get<Maximum_Fragment_Length>())
 				return frag->fragment_size();
 			return 0;
 		}
@@ -124,7 +124,7 @@ class Client_Hello : public Handshake_Message
 
 		Vector!( byte ) session_ticket() const
 		{
-			if(Session_Ticket* ticket = m_extensions.get<Session_Ticket>())
+			if (Session_Ticket* ticket = m_extensions.get<Session_Ticket>())
 				return ticket->contents();
 			return Vector!( byte )();
 		}
@@ -136,7 +136,7 @@ class Client_Hello : public Handshake_Message
 
 		bool peer_can_send_heartbeats() const
 		{
-			if(Heartbeat_Support_Indicator hb = m_extensions.get<Heartbeat_Support_Indicator>())
+			if (Heartbeat_Support_Indicator hb = m_extensions.get<Heartbeat_Support_Indicator>())
 				return hb->peer_allowed_to_send();
 			return false;
 		}
@@ -207,7 +207,7 @@ class Server_Hello : public Handshake_Message
 
 		Vector!( byte ) renegotiation_info() const
 		{
-			if(Renegotiation_Extension* reneg = m_extensions.get<Renegotiation_Extension>())
+			if (Renegotiation_Extension* reneg = m_extensions.get<Renegotiation_Extension>())
 				return reneg->renegotiation_info();
 			return Vector!( byte )();
 		}
@@ -219,14 +219,14 @@ class Server_Hello : public Handshake_Message
 
 		Vector!( string ) next_protocols() const
 		{
-			if(Next_Protocol_Notification* npn = m_extensions.get<Next_Protocol_Notification>())
+			if (Next_Protocol_Notification* npn = m_extensions.get<Next_Protocol_Notification>())
 				return npn->protocols();
 			return Vector!( string )();
 		}
 
 		size_t fragment_size() const
 		{
-			if(Maximum_Fragment_Length* frag = m_extensions.get<Maximum_Fragment_Length>())
+			if (Maximum_Fragment_Length* frag = m_extensions.get<Maximum_Fragment_Length>())
 				return frag->fragment_size();
 			return 0;
 		}
@@ -243,7 +243,7 @@ class Server_Hello : public Handshake_Message
 
 		bool peer_can_send_heartbeats() const
 		{
-			if(Heartbeat_Support_Indicator* hb = m_extensions.get<Heartbeat_Support_Indicator>())
+			if (Heartbeat_Support_Indicator* hb = m_extensions.get<Heartbeat_Support_Indicator>())
 				return hb->peer_allowed_to_send();
 			return false;
 		}

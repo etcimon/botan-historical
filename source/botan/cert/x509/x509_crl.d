@@ -45,25 +45,25 @@ bool X509_CRL::is_revoked(in X509_Certificate cert) const
 	If the cert wasn't issued by the CRL issuer, it's possible the cert
 	is revoked, but not by this CRL. Maybe throw new an exception instead?
 	*/
-	if(cert.issuer_dn() != issuer_dn())
+	if (cert.issuer_dn() != issuer_dn())
 		return false;
 
 	Vector!( byte ) crl_akid = authority_key_id();
 	Vector!( byte ) cert_akid = cert.authority_key_id();
 
-	if(!crl_akid.empty() && !cert_akid.empty())
-		if(crl_akid != cert_akid)
+	if (!crl_akid.empty() && !cert_akid.empty())
+		if (crl_akid != cert_akid)
 			return false;
 
 	Vector!( byte ) cert_serial = cert.serial_number();
 
 	bool is_revoked = false;
 
-	for(size_t i = 0; i != revoked.size(); ++i)
+	for (size_t i = 0; i != revoked.size(); ++i)
 	{
-		if(cert_serial == revoked[i].serial_number())
+		if (cert_serial == revoked[i].serial_number())
 		{
-			if(revoked[i].reason_code() == REMOVE_FROM_CRL)
+			if (revoked[i].reason_code() == REMOVE_FROM_CRL)
 				is_revoked = false;
 			else
 				is_revoked = true;
@@ -83,14 +83,14 @@ void X509_CRL::force_decode()
 	size_t _version;
 	tbs_crl.decode_optional(_version, INTEGER, UNIVERSAL);
 
-	if(_version != 0 && _version != 1)
+	if (_version != 0 && _version != 1)
 		throw new X509_CRL_Error("Unknown X.509 CRL version " +
 									std::to_string(_version+1));
 
 	AlgorithmIdentifier sig_algo_inner;
 	tbs_crl.decode(sig_algo_inner);
 
-	if(sig_algo != sig_algo_inner)
+	if (sig_algo != sig_algo_inner)
 		throw new X509_CRL_Error("Algorithm identifier mismatch");
 
 	X509_DN dn_issuer;
@@ -104,7 +104,7 @@ void X509_CRL::force_decode()
 
 	BER_Object next = tbs_crl.get_next_object();
 
-	if(next.type_tag == SEQUENCE && next.class_tag == CONSTRUCTED)
+	if (next.type_tag == SEQUENCE && next.class_tag == CONSTRUCTED)
 	{
 		BER_Decoder cert_list(next.value);
 
@@ -117,7 +117,7 @@ void X509_CRL::force_decode()
 		next = tbs_crl.get_next_object();
 	}
 
-	if(next.type_tag == 0 &&
+	if (next.type_tag == 0 &&
 		next.class_tag == ASN1_Tag(CONSTRUCTED | CONTEXT_SPECIFIC))
 	{
 		BER_Decoder crl_options(next.value);
@@ -131,7 +131,7 @@ void X509_CRL::force_decode()
 		next = tbs_crl.get_next_object();
 	}
 
-	if(next.type_tag != NO_OBJECT)
+	if (next.type_tag != NO_OBJECT)
 		throw new X509_CRL_Error("Unknown tag in CRL");
 
 	tbs_crl.verify_end();

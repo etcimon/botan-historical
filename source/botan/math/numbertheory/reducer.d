@@ -12,7 +12,7 @@
 */
 Modular_Reducer::Modular_Reducer(in BigInt mod)
 {
-	if(mod <= 0)
+	if (mod <= 0)
 		throw new Invalid_Argument("Modular_Reducer: modulus must be positive");
 
 	modulus = mod;
@@ -28,16 +28,16 @@ Modular_Reducer::Modular_Reducer(in BigInt mod)
 */
 BigInt Modular_Reducer::reduce(in BigInt x) const
 {
-	if(mod_words == 0)
+	if (mod_words == 0)
 		throw new Invalid_State("Modular_Reducer: Never initalized");
 
-	if(x.cmp(modulus, false) < 0)
+	if (x.cmp(modulus, false) < 0)
 	{
-		if(x.is_negative())
+		if (x.is_negative())
 			return x + modulus; // make positive
 		return x;
 	}
-	else if(x.cmp(modulus_2, false) < 0)
+	else if (x.cmp(modulus_2, false) < 0)
 	{
 		BigInt t1 = x;
 		t1.set_sign(BigInt::Positive);
@@ -55,7 +55,7 @@ BigInt Modular_Reducer::reduce(in BigInt x) const
 
 		t2 -= t1;
 
-		if(t2.is_negative())
+		if (t2.is_negative())
 		{
 			t2 += BigInt::power_of_2(MP_WORD_BITS * (mod_words + 1));
 		}
@@ -63,7 +63,7 @@ BigInt Modular_Reducer::reduce(in BigInt x) const
 		while(t2 >= modulus)
 			t2 -= modulus;
 
-		if(x.is_positive())
+		if (x.is_positive())
 			return t2;
 		else
 			return (modulus - t2);

@@ -188,7 +188,7 @@ void Threefish_512_AVX2::encrypt_n(byte* input, byte* output, size_t blocks) con
 		blocks -= 2;
 	}
 
-	for(size_t i = 0; i != blocks; ++i)
+	for (size_t i = 0; i != blocks; ++i)
 	{
 		__m256i X0 = _mm256_loadu_si256(in_mm++);
 		__m256i X1 = _mm256_loadu_si256(in_mm++);
@@ -298,7 +298,7 @@ void Threefish_512_AVX2::decrypt_n(byte* input, byte* output, size_t blocks) con
 	const __m256i* in_mm = cast(const __m256i*)(input);
 	__m256i* out_mm = cast(__m256i*)(output);
 
-	for(size_t i = 0; i != blocks; ++i)
+	for (size_t i = 0; i != blocks; ++i)
 	{
 		__m256i X0 = _mm256_loadu_si256(in_mm++);
 		__m256i X1 = _mm256_loadu_si256(in_mm++);

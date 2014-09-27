@@ -49,10 +49,10 @@ size_t base64_encode(char* output,
 		input_remaining -= 3;
 	}
 
-	if(final_inputs && input_remaining)
+	if (final_inputs && input_remaining)
 	{
 		byte[3] remainder = { 0 };
-		for(size_t i = 0; i != input_remaining; ++i)
+		for (size_t i = 0; i != input_remaining; ++i)
 			remainder[i] = input[input_consumed + i];
 
 		do_base64_encode(output + output_produced, remainder);
@@ -134,23 +134,23 @@ size_t base64_decode(byte* output,
 
 	clear_mem(output, input_length * 3 / 4);
 
-	for(size_t i = 0; i != input_length; ++i)
+	for (size_t i = 0; i != input_length; ++i)
 	{
 		const byte bin = BASE64_TO_BIN[cast(byte)(input[i])];
 
-		if(bin <= 0x3F)
+		if (bin <= 0x3F)
 		{
 			decode_buf[decode_buf_pos] = bin;
 			decode_buf_pos += 1;
 		}
-		else if(!(bin == 0x81 || (bin == 0x80 && ignore_ws)))
+		else if (!(bin == 0x81 || (bin == 0x80 && ignore_ws)))
 		{
 			string bad_char(1, input[i]);
-			if(bad_char == "\t")
+			if (bad_char == "\t")
 			  bad_char = "\\t";
-			else if(bad_char == "")
+			else if (bad_char == "")
 			  bad_char = "\";
-			else if(bad_char == "\r")
+			else if (bad_char == "\r")
 			  bad_char = "\\r";
 
 			throw new std::invalid_argument(
@@ -161,18 +161,18 @@ size_t base64_decode(byte* output,
 		/*
 		* If we're at the end of the input, pad with 0s and truncate
 		*/
-		if(final_inputs && (i == input_length - 1))
+		if (final_inputs && (i == input_length - 1))
 		{
-			if(decode_buf_pos)
+			if (decode_buf_pos)
 			{
-				for(size_t i = decode_buf_pos; i != 4; ++i)
+				for (size_t i = decode_buf_pos; i != 4; ++i)
 					decode_buf[i] = 0;
 				final_truncate = (4 - decode_buf_pos);
 				decode_buf_pos = 4;
 			}
 		}
 
-		if(decode_buf_pos == 4)
+		if (decode_buf_pos == 4)
 		{
 			out_ptr[0] = (decode_buf[0] << 2) | (decode_buf[1] >> 4);
 			out_ptr[1] = (decode_buf[1] << 4) | (decode_buf[2] >> 2);
@@ -204,7 +204,7 @@ size_t base64_decode(byte* output,
 	size_t written = base64_decode(output, input, input_length,
 											 consumed, true, ignore_ws);
 
-	if(consumed != input_length)
+	if (consumed != input_length)
 		throw new std::invalid_argument("base64_decode: input did not have full bytes");
 
 	return written;

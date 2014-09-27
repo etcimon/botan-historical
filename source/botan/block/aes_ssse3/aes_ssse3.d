@@ -135,7 +135,7 @@ __m128i aes_schedule_mangle_last_dec(__m128i k)
 
 __m128i aes_schedule_round(__m128i* rcon, __m128i input1, __m128i input2)
 {
-	if(rcon)
+	if (rcon)
 	{
 		input2 = _mm_xor_si128(_mm_alignr_epi8(_mm_setzero_si128(), *rcon, 15),
 									  input2);
@@ -194,7 +194,7 @@ __m128i aes_ssse3_encrypt(__m128i B, const __m128i* keys, size_t rounds)
 											  4)),
 					_mm_loadu_si128(keys));
 
-	for(size_t r = 1; ; ++r)
+	for (size_t r = 1; ; ++r)
 	{
 		const __m128i K = _mm_loadu_si128(keys + r);
 
@@ -212,7 +212,7 @@ __m128i aes_ssse3_encrypt(__m128i B, const __m128i* keys, size_t rounds)
 		__m128i t5 = _mm_xor_si128(B, _mm_shuffle_epi8(k_inv1, t3));
 		__m128i t6 = _mm_xor_si128(t, _mm_shuffle_epi8(k_inv1, t4));
 
-		if(r == rounds)
+		if (r == rounds)
 		{
 			B = _mm_shuffle_epi8(
 				mm_xor3(_mm_shuffle_epi8(sbou, t5),
@@ -275,7 +275,7 @@ __m128i aes_ssse3_decrypt(__m128i B, const __m128i* keys, size_t rounds)
 	B = mm_xor3(t, _mm_loadu_si128(keys),
 					_mm_shuffle_epi8(k_dipt1, _mm_and_si128(B, low_nibs)));
 
-	for(size_t r = 1; ; ++r)
+	for (size_t r = 1; ; ++r)
 	{
 		const __m128i K = _mm_loadu_si128(keys + r);
 
@@ -292,7 +292,7 @@ __m128i aes_ssse3_decrypt(__m128i B, const __m128i* keys, size_t rounds)
 		__m128i t5 = _mm_xor_si128(B, _mm_shuffle_epi8(k_inv1, t3));
 		__m128i t6 = _mm_xor_si128(t, _mm_shuffle_epi8(k_inv1, t4));
 
-		if(r == rounds)
+		if (r == rounds)
 		{
 			const __m128i sbou = _mm_set_epi32(
 				0xC7AA6DB9, 0xD4943E2D, 0x1387EA53, 0x7EF94000);
@@ -341,7 +341,7 @@ void AES_128_SSSE3::encrypt_n(byte* input, byte* output, size_t blocks) const
 
 	const __m128i* keys = cast(in __m128i*)(EK[0]);
 
-	for(size_t i = 0; i != blocks; ++i)
+	for (size_t i = 0; i != blocks; ++i)
 	{
 		__m128i B = _mm_loadu_si128(in_mm + i);
 		_mm_storeu_si128(out_mm + i, aes_ssse3_encrypt(B, keys, 10));
@@ -358,7 +358,7 @@ void AES_128_SSSE3::decrypt_n(byte* input, byte* output, size_t blocks) const
 
 	const __m128i* keys = cast(in __m128i*)(DK[0]);
 
-	for(size_t i = 0; i != blocks; ++i)
+	for (size_t i = 0; i != blocks; ++i)
 	{
 		__m128i B = _mm_loadu_si128(in_mm + i);
 		_mm_storeu_si128(out_mm + i, aes_ssse3_decrypt(B, keys, 10));
@@ -387,7 +387,7 @@ void AES_128_SSSE3::key_schedule(in byte* keyb, size_t)
 
 	_mm_storeu_si128(EK_mm, key);
 
-	for(size_t i = 1; i != 10; ++i)
+	for (size_t i = 1; i != 10; ++i)
 	{
 		key = aes_schedule_round(&rcon, key, key);
 
@@ -419,7 +419,7 @@ void AES_192_SSSE3::encrypt_n(byte* input, byte* output, size_t blocks) const
 
 	const __m128i* keys = cast(in __m128i*)(EK[0]);
 
-	for(size_t i = 0; i != blocks; ++i)
+	for (size_t i = 0; i != blocks; ++i)
 	{
 		__m128i B = _mm_loadu_si128(in_mm + i);
 		_mm_storeu_si128(out_mm + i, aes_ssse3_encrypt(B, keys, 12));
@@ -436,7 +436,7 @@ void AES_192_SSSE3::decrypt_n(byte* input, byte* output, size_t blocks) const
 
 	const __m128i* keys = cast(in __m128i*)(DK[0]);
 
-	for(size_t i = 0; i != blocks; ++i)
+	for (size_t i = 0; i != blocks; ++i)
 	{
 		__m128i B = _mm_loadu_si128(in_mm + i);
 		_mm_storeu_si128(out_mm + i, aes_ssse3_decrypt(B, keys, 12));
@@ -470,7 +470,7 @@ void AES_192_SSSE3::key_schedule(in byte* keyb, size_t)
 	// key2 with 8 high bytes masked off
 	__m128i t = _mm_slli_si128(_mm_srli_si128(key2, 8), 8);
 
-	for(size_t i = 0; i != 4; ++i)
+	for (size_t i = 0; i != 4; ++i)
 	{
 		key2 = aes_schedule_round(&rcon, key2, key1);
 
@@ -488,7 +488,7 @@ void AES_192_SSSE3::key_schedule(in byte* keyb, size_t)
 
 		key2 = aes_schedule_round(&rcon, t, key2);
 
-		if(i == 3)
+		if (i == 3)
 		{
 			_mm_storeu_si128(EK_mm + 3*i+3,
 								  aes_schedule_mangle_last(key2, (i+1)%4));
@@ -526,7 +526,7 @@ void AES_256_SSSE3::encrypt_n(byte* input, byte* output, size_t blocks) const
 
 	const __m128i* keys = cast(in __m128i*)(EK[0]);
 
-	for(size_t i = 0; i != blocks; ++i)
+	for (size_t i = 0; i != blocks; ++i)
 	{
 		__m128i B = _mm_loadu_si128(in_mm + i);
 		_mm_storeu_si128(out_mm + i, aes_ssse3_encrypt(B, keys, 14));
@@ -543,7 +543,7 @@ void AES_256_SSSE3::decrypt_n(byte* input, byte* output, size_t blocks) const
 
 	const __m128i* keys = cast(in __m128i*)(DK[0]);
 
-	for(size_t i = 0; i != blocks; ++i)
+	for (size_t i = 0; i != blocks; ++i)
 	{
 		__m128i B = _mm_loadu_si128(in_mm + i);
 		_mm_storeu_si128(out_mm + i, aes_ssse3_decrypt(B, keys, 14));
@@ -577,7 +577,7 @@ void AES_256_SSSE3::key_schedule(in byte* keyb, size_t)
 
 	_mm_storeu_si128(DK_mm + 13, aes_schedule_mangle_dec(key2, 1));
 
-	for(size_t i = 2; i != 14; i += 2)
+	for (size_t i = 2; i != 14; i += 2)
 	{
 		__m128i k_t = key2;
 		key1 = key2 = aes_schedule_round(&rcon, key2, key1);

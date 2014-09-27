@@ -24,7 +24,7 @@ class OID_Map
 		{
 			std::lock_guard<std::mutex> lock(m_mutex);
 			auto i = m_str2oid.find(str);
-			if(i == m_str2oid.end())
+			if (i == m_str2oid.end())
 				m_str2oid.insert(Pair(str, oid));
 		}
 
@@ -32,7 +32,7 @@ class OID_Map
 		{
 			std::lock_guard<std::mutex> lock(m_mutex);
 			auto i = m_oid2str.find(oid);
-			if(i == m_oid2str.end())
+			if (i == m_oid2str.end())
 				m_oid2str.insert(Pair(oid, str));
 		}
 
@@ -41,7 +41,7 @@ class OID_Map
 			std::lock_guard<std::mutex> lock(m_mutex);
 
 			auto i = m_oid2str.find(oid);
-			if(i != m_oid2str.end())
+			if (i != m_oid2str.end())
 				return i->second;
 
 			return "";
@@ -52,7 +52,7 @@ class OID_Map
 			std::lock_guard<std::mutex> lock(m_mutex);
 
 			auto i = m_str2oid.find(str);
-			if(i != m_str2oid.end())
+			if (i != m_str2oid.end())
 				return i->second;
 
 			// Try to parse as plain OID

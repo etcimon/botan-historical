@@ -18,24 +18,24 @@ string make_arg(
 
 	size_t paren_depth = 0;
 
-	for(size_t i = start + 1; i != name.size(); ++i)
+	for (size_t i = start + 1; i != name.size(); ++i)
 	{
-		if(name[i].first <= name[start].first)
+		if (name[i].first <= name[start].first)
 			break;
 
-		if(name[i].first > level)
+		if (name[i].first > level)
 		{
 			output += '(' + name[i].second;
 			++paren_depth;
 		}
-		else if(name[i].first < level)
+		else if (name[i].first < level)
 		{
 			output += ")," + name[i].second;
 			--paren_depth;
 		}
 		else
 		{
-			if(output[output.size() - 1] != '(')
+			if (output[output.size() - 1] != '(')
 				output += ",";
 			output += name[i].second;
 		}
@@ -43,7 +43,7 @@ string make_arg(
 		level = name[i].first;
 	}
 
-	for(size_t i = 0; i != paren_depth; ++i)
+	for (size_t i = 0; i != paren_depth; ++i)
 		output += ')';
 
 	return output;
@@ -73,26 +73,26 @@ SCAN_Name::SCAN_Name(string algo_spec)
 
 	algo_spec = SCAN_Name::deref_alias(algo_spec);
 
-	for(size_t i = 0; i != algo_spec.size(); ++i)
+	for (size_t i = 0; i != algo_spec.size(); ++i)
 	{
 		char c = algo_spec[i];
 
-		if(c == '/' || c == ',' || c == '(' || c == ')')
+		if (c == '/' || c == ',' || c == '(' || c == ')')
 		{
-			if(c == '(')
+			if (c == '(')
 				++level;
-			else if(c == ')')
+			else if (c == ')')
 			{
-				if(level == 0)
+				if (level == 0)
 					throw new Decoding_Error(decoding_error + "Mismatched parens");
 				--level;
 			}
 
-			if(c == '/' && level > 0)
+			if (c == '/' && level > 0)
 				accum.second.push_back(c);
 			else
 			{
-				if(accum.second != "")
+				if (accum.second != "")
 					name.push_back(deref_aliases(accum));
 				accum = Pair(level, "");
 			}
@@ -101,27 +101,27 @@ SCAN_Name::SCAN_Name(string algo_spec)
 			accum.second.push_back(c);
 	}
 
-	if(accum.second != "")
+	if (accum.second != "")
 		name.push_back(deref_aliases(accum));
 
-	if(level != 0)
+	if (level != 0)
 		throw new Decoding_Error(decoding_error + "Missing close paren");
 
-	if(name.size() == 0)
+	if (name.size() == 0)
 		throw new Decoding_Error(decoding_error + "Empty name");
 
 	alg_name = name[0].second;
 
 	bool in_modes = false;
 
-	for(size_t i = 1; i != name.size(); ++i)
+	for (size_t i = 1; i != name.size(); ++i)
 	{
-		if(name[i].first == 0)
+		if (name[i].first == 0)
 		{
 			mode_info.push_back(make_arg(name, i));
 			in_modes = true;
 		}
-		else if(name[i].first == 1 && !in_modes)
+		else if (name[i].first == 1 && !in_modes)
 			args.push_back(make_arg(name, i));
 	}
 }
@@ -132,13 +132,13 @@ string SCAN_Name::algo_name_and_args() const
 
 	out = algo_name();
 
-	if(arg_count())
+	if (arg_count())
 	{
 		out += '(';
-		for(size_t i = 0; i != arg_count(); ++i)
+		for (size_t i = 0; i != arg_count(); ++i)
 		{
 			out += arg(i);
-			if(i != arg_count() - 1)
+			if (i != arg_count() - 1)
 				out += ',';
 		}
 		out += ')';
@@ -150,21 +150,21 @@ string SCAN_Name::algo_name_and_args() const
 
 string SCAN_Name::arg(size_t i) const
 {
-	if(i >= arg_count())
+	if (i >= arg_count())
 		throw new std::range_error("SCAN_Name::argument - i out of range");
 	return args[i];
 }
 
 string SCAN_Name::arg(size_t i, in string def_value) const
 {
-	if(i >= arg_count())
+	if (i >= arg_count())
 		return def_value;
 	return args[i];
 }
 
 size_t SCAN_Name::arg_as_integer(size_t i, size_t def_value) const
 {
-	if(i >= arg_count())
+	if (i >= arg_count())
 		return def_value;
 	return to_uint(args[i]);
 }
@@ -173,7 +173,7 @@ void SCAN_Name::add_alias(in string _alias, in string basename)
 {
 	std::lock_guard<std::mutex> lock(s_alias_map_mutex);
 
-	if(s_alias_map.find(_alias) == s_alias_map.end())
+	if (s_alias_map.find(_alias) == s_alias_map.end())
 		s_alias_map[_alias] = basename;
 }
 
@@ -183,7 +183,7 @@ string SCAN_Name::deref_alias(in string _alias)
 
 	string name = _alias;
 
-	for(auto i = s_alias_map.find(name); i != s_alias_map.end(); i = s_alias_map.find(name))
+	for (auto i = s_alias_map.find(name); i != s_alias_map.end(); i = s_alias_map.find(name))
 		name = i->second;
 
 	return name;

@@ -43,7 +43,7 @@ ushort mul_inv(ushort x)
 {
 	ushort y = x;
 
-	for(size_t i = 0; i != 15; ++i)
+	for (size_t i = 0; i != 15; ++i)
 	{
 		y = mul(y, y); // square
 		y = mul(y, x);
@@ -59,14 +59,14 @@ void idea_op(byte* input, byte* output, size_t blocks)
 {
 	const size_t BLOCK_SIZE = 8;
 
-	for(size_t i = 0; i != blocks; ++i)
+	for (size_t i = 0; i != blocks; ++i)
 	{
 		ushort X1 = load_be!ushort(input, 0);
 		ushort X2 = load_be!ushort(input, 1);
 		ushort X3 = load_be!ushort(input, 2);
 		ushort X4 = load_be!ushort(input, 3);
 
-		for(size_t j = 0; j != 8; ++j)
+		for (size_t j = 0; j != 8; ++j)
 		{
 			X1 = mul(X1, K[6*j+0]);
 			X2 += K[6*j+1];
@@ -124,10 +124,10 @@ void IDEA::key_schedule(in byte* key, size_t)
 	EK.resize(52);
 	DK.resize(52);
 
-	for(size_t i = 0; i != 8; ++i)
+	for (size_t i = 0; i != 8; ++i)
 		EK[i] = load_be!ushort(key, i);
 
-	for(size_t i = 1, j = 8, offset = 0; j != 52; i %= 8, ++i, ++j)
+	for (size_t i = 1, j = 8, offset = 0; j != 52; i %= 8, ++i, ++j)
 	{
 		EK[i+7+offset] = cast(ushort)((EK[(i	  % 8) + offset] << 9) |
 														 (EK[((i+1) % 8) + offset] >> 7));
@@ -139,7 +139,7 @@ void IDEA::key_schedule(in byte* key, size_t)
 	DK[49] = -EK[1];
 	DK[48] = mul_inv(EK[0]);
 
-	for(size_t i = 1, j = 4, counter = 47; i != 8; ++i, j += 6)
+	for (size_t i = 1, j = 4, counter = 47; i != 8; ++i, j += 6)
 	{
 		DK[counter--] = EK[j+1];
 		DK[counter--] = EK[j];

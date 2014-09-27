@@ -62,7 +62,7 @@ void SIV_Mode::key_schedule(in byte* key, size_t length)
 
 void SIV_Mode::set_associated_data_n(size_t n, in byte* ad, size_t length)
 {
-	if(n >= m_ad_macs.size())
+	if (n >= m_ad_macs.size())
 		m_ad_macs.resize(n+1);
 
 	m_ad_macs[n] = m_cmac->process(ad, length);
@@ -70,10 +70,10 @@ void SIV_Mode::set_associated_data_n(size_t n, in byte* ad, size_t length)
 
 SafeVector!byte SIV_Mode::start(in byte* nonce, size_t nonce_len)
 {
-	if(!valid_nonce_length(nonce_len))
+	if (!valid_nonce_length(nonce_len))
 		throw new Invalid_IV_Length(name(), nonce_len);
 
-	if(nonce_len)
+	if (nonce_len)
 		m_nonce = m_cmac->process(nonce, nonce_len);
 	else
 		m_nonce.clear();
@@ -99,19 +99,19 @@ SafeVector!byte SIV_Mode::S2V(const byte* text, size_t text_len)
 
 	SafeVector!byte V = cmac().process(zero, 16);
 
-	for(size_t i = 0; i != m_ad_macs.size(); ++i)
+	for (size_t i = 0; i != m_ad_macs.size(); ++i)
 	{
 		V = CMAC::poly_double(V);
 		V ^= m_ad_macs[i];
 	}
 
-	if(m_nonce.size())
+	if (m_nonce.size())
 	{
 		V = CMAC::poly_double(V);
 		V ^= m_nonce;
 	}
 
-	if(text_len < 16)
+	if (text_len < 16)
 	{
 		V = CMAC::poly_double(V);
 		xor_buf(&V[0], text, text_len);
@@ -168,7 +168,7 @@ void SIV_Decryption::finish(SafeVector!byte buffer, size_t offset)
 
 	SafeVector!byte T = S2V(&buffer[offset], buffer.size() - offset - V.size());
 
-	if(T != V)
+	if (T != V)
 		throw new Integrity_Failure("SIV tag check failed");
 
 	buffer.resize(buffer.size() - tag_size());

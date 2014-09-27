@@ -52,7 +52,7 @@ void CTR_BE::cipher(in byte* input, byte* output)
 
 void CTR_BE::set_iv(in byte* iv, size_t iv_len)
 {
-	if(!valid_iv_length(iv_len))
+	if (!valid_iv_length(iv_len))
 		throw new Invalid_IV_Length(name(), iv_len);
 
 	const size_t bs = m_cipher->block_size();
@@ -62,12 +62,12 @@ void CTR_BE::set_iv(in byte* iv, size_t iv_len)
 	buffer_insert(m_counter, 0, iv, iv_len);
 
 	// Set m_counter blocks to IV, IV + 1, ... IV + 255
-	for(size_t i = 1; i != 256; ++i)
+	for (size_t i = 1; i != 256; ++i)
 	{
 		buffer_insert(m_counter, i*bs, &m_counter[(i-1)*bs], bs);
 
-		for(size_t j = 0; j != bs; ++j)
-			if(++m_counter[i*bs + (bs - 1 - j)])
+		for (size_t j = 0; j != bs; ++j)
+			if (++m_counter[i*bs + (bs - 1 - j)])
 				break;
 	}
 
@@ -87,10 +87,10 @@ void CTR_BE::increment_counter()
 	* so we don't touch the lowest byte and instead treat it as
 	* an increment of one starting with the next byte.
 	*/
-	for(size_t i = 0; i != 256; ++i)
+	for (size_t i = 0; i != 256; ++i)
 	{
-		for(size_t j = 1; j != bs; ++j)
-			if(++m_counter[i*bs + (bs - 1 - j)])
+		for (size_t j = 1; j != bs; ++j)
+			if (++m_counter[i*bs + (bs - 1 - j)])
 				break;
 	}
 

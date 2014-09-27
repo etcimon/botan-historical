@@ -32,7 +32,7 @@ Server_Key_Exchange::Server_Key_Exchange(Handshake_IO& io,
 	const string hostname = state.client_hello()->sni_hostname();
 	const string kex_algo = state.ciphersuite().kex_algo();
 
-	if(kex_algo == "PSK" || kex_algo == "DHE_PSK" || kex_algo == "ECDHE_PSK")
+	if (kex_algo == "PSK" || kex_algo == "DHE_PSK" || kex_algo == "ECDHE_PSK")
 	{
 		string identity_hint =
 			creds.psk_identity_hint("tls-server", hostname);
@@ -40,7 +40,7 @@ Server_Key_Exchange::Server_Key_Exchange(Handshake_IO& io,
 		append_tls_length_value(m_params, identity_hint, 2);
 	}
 
-	if(kex_algo == "DH" || kex_algo == "DHE_PSK")
+	if (kex_algo == "DH" || kex_algo == "DHE_PSK")
 	{
 		std::unique_ptr<DH_PrivateKey> dh(new DH_PrivateKey(rng, policy.dh_group()));
 
@@ -49,17 +49,17 @@ Server_Key_Exchange::Server_Key_Exchange(Handshake_IO& io,
 		append_tls_length_value(m_params, dh->public_value(), 2);
 		m_kex_key.reset(dh.release());
 	}
-	else if(kex_algo == "ECDH" || kex_algo == "ECDHE_PSK")
+	else if (kex_algo == "ECDH" || kex_algo == "ECDHE_PSK")
 	{
 		const Vector!( string )& curves =
 			state.client_hello()->supported_ecc_curves();
 
-		if(curves.empty())
+		if (curves.empty())
 			throw new Internal_Error("Client sent no ECC extension but we negotiated ECDH");
 
 		const string curve_name = policy.choose_curve(curves);
 
-		if(curve_name == "")
+		if (curve_name == "")
 			throw new TLS_Exception(Alert::HANDSHAKE_FAILURE,
 									  "Could not agree on an ECC curve with the client");
 
@@ -70,7 +70,7 @@ Server_Key_Exchange::Server_Key_Exchange(Handshake_IO& io,
 		const string ecdh_domain_oid = ecdh->domain().get_oid();
 		const string domain = OIDS::lookup(OID(ecdh_domain_oid));
 
-		if(domain == "")
+		if (domain == "")
 			throw new Internal_Error("Could not find name of ECDH domain " + ecdh_domain_oid);
 
 		const ushort named_curve_id = Supported_Elliptic_Curves::name_to_curve_id(domainput);
@@ -83,7 +83,7 @@ Server_Key_Exchange::Server_Key_Exchange(Handshake_IO& io,
 
 		m_kex_key.reset(ecdh.release());
 	}
-	else if(kex_algo == "SRP_SHA")
+	else if (kex_algo == "SRP_SHA")
 	{
 		const string srp_identifier = state.client_hello()->srp_identifier();
 
@@ -96,7 +96,7 @@ Server_Key_Exchange::Server_Key_Exchange(Handshake_IO& io,
 														  group_id, v, salt,
 														  policy.hide_unknown_users());
 
-		if(!found)
+		if (!found)
 			throw new TLS_Exception(Alert::UNKNOWN_PSK_IDENTITY,
 									  "Unknown SRP user " + srp_identifier);
 
@@ -112,10 +112,10 @@ Server_Key_Exchange::Server_Key_Exchange(Handshake_IO& io,
 		append_tls_length_value(m_params, salt, 1);
 		append_tls_length_value(m_params, BigInt::encode(B), 2);
 	}
-	else if(kex_algo != "PSK")
+	else if (kex_algo != "PSK")
 		throw new Internal_Error("Server_Key_Exchange: Unknown kex type " + kex_algo);
 
-	if(state.ciphersuite().sig_algo() != "")
+	if (state.ciphersuite().sig_algo() != "")
 	{
 		BOTAN_ASSERT(signing_key, "Signing key was set");
 
@@ -142,7 +142,7 @@ Server_Key_Exchange::Server_Key_Exchange(in Vector!byte buf,
 													  Protocol_Version _version) :
 	m_kex_key(null), m_srp_params(null)
 {
-	if(buf.size() < 6)
+	if (buf.size() < 6)
 		throw new Decoding_Error("Server_Key_Exchange: Packet corrupted");
 
 	TLS_Data_Reader reader("ServerKeyExchange", buf);
@@ -153,27 +153,27 @@ Server_Key_Exchange::Server_Key_Exchange(in Vector!byte buf,
 	* to be able to parse the whole thing anyway.
 	*/
 
-	if(kex_algo == "PSK" || kex_algo == "DHE_PSK" || kex_algo == "ECDHE_PSK")
+	if (kex_algo == "PSK" || kex_algo == "DHE_PSK" || kex_algo == "ECDHE_PSK")
 	{
 		const string identity_hint = reader.get_string(2, 0, 65535);
 		append_tls_length_value(m_params, identity_hint, 2);
 	}
 
-	if(kex_algo == "DH" || kex_algo == "DHE_PSK")
+	if (kex_algo == "DH" || kex_algo == "DHE_PSK")
 	{
 		// 3 bigints, DH p, g, Y
 
-		for(size_t i = 0; i != 3; ++i)
+		for (size_t i = 0; i != 3; ++i)
 		{
 			BigInt v = BigInt::decode(reader.get_range<byte>(2, 1, 65535));
 			append_tls_length_value(m_params, BigInt::encode(v), 2);
 		}
 	}
-	else if(kex_algo == "ECDH" || kex_algo == "ECDHE_PSK")
+	else if (kex_algo == "ECDH" || kex_algo == "ECDHE_PSK")
 	{
 		const byte curve_type = reader.get_byte();
 
-		if(curve_type != 3)
+		if (curve_type != 3)
 			throw new Decoding_Error("Server_Key_Exchange: Server sent non-named ECC curve");
 
 		const ushort curve_id = reader.get_ushort();
@@ -182,7 +182,7 @@ Server_Key_Exchange::Server_Key_Exchange(in Vector!byte buf,
 
 		Vector!( byte ) ecdh_key = reader.get_range<byte>(1, 1, 255);
 
-		if(name == "")
+		if (name == "")
 			throw new Decoding_Error("Server_Key_Exchange: Server sent unknown named curve " +
 										std::to_string(curve_id));
 
@@ -191,7 +191,7 @@ Server_Key_Exchange::Server_Key_Exchange(in Vector!byte buf,
 		m_params.push_back(get_byte(1, curve_id));
 		append_tls_length_value(m_params, ecdh_key, 1);
 	}
-	else if(kex_algo == "SRP_SHA")
+	else if (kex_algo == "SRP_SHA")
 	{
 		// 2 bigints (N,g) then salt, then server B
 
@@ -205,12 +205,12 @@ Server_Key_Exchange::Server_Key_Exchange(in Vector!byte buf,
 		append_tls_length_value(m_params, salt, 1);
 		append_tls_length_value(m_params, BigInt::encode(B), 2);
 	}
-	else if(kex_algo != "PSK")
+	else if (kex_algo != "PSK")
 		throw new Decoding_Error("Server_Key_Exchange: Unsupported kex type " + kex_algo);
 
-	if(sig_algo != "")
+	if (sig_algo != "")
 	{
-		if(_version.supports_negotiable_signature_algorithms())
+		if (_version.supports_negotiable_signature_algorithms())
 		{
 			m_hash_algo = Signature_Algorithms::hash_algo_name(reader.get_byte());
 			m_sig_algo = Signature_Algorithms::sig_algo_name(reader.get_byte());
@@ -231,10 +231,10 @@ Vector!( byte ) Server_Key_Exchange::serialize() const
 {
 	Vector!( byte ) buf = params();
 
-	if(m_signature.size())
+	if (m_signature.size())
 	{
 		// This should be an explicit version check
-		if(m_hash_algo != "" && m_sig_algo != "")
+		if (m_hash_algo != "" && m_sig_algo != "")
 		{
 			buf.push_back(Signature_Algorithms::hash_algo_code(m_hash_algo));
 			buf.push_back(Signature_Algorithms::sig_algo_code(m_sig_algo));

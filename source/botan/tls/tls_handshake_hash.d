@@ -21,9 +21,9 @@ SafeVector!byte Handshake_Hash::flushInto(Protocol_Version _version,
 
 	std::unique_ptr<HashFunction> hash;
 
-	if(_version.supports_ciphersuite_specific_prf())
+	if (_version.supports_ciphersuite_specific_prf())
 	{
-		if(mac_algo == "MD5" || mac_algo == "SHA-1")
+		if (mac_algo == "MD5" || mac_algo == "SHA-1")
 			hash.reset(af.make_hash_function("SHA-256"));
 		else
 			hash.reset(af.make_hash_function(mac_algo));
@@ -53,9 +53,9 @@ SafeVector!byte Handshake_Hash::final_ssl3(in SafeVector!byte secret) const
 	md5->update(secret);
 	sha1->update(secret);
 
-	for(size_t i = 0; i != 48; ++i)
+	for (size_t i = 0; i != 48; ++i)
 		md5->update(PAD_INNER);
-	for(size_t i = 0; i != 40; ++i)
+	for (size_t i = 0; i != 40; ++i)
 		sha1->update(PAD_INNER);
 
 	SafeVector!byte inner_md5 = md5->flush(), inner_sha1 = sha1->flush();
@@ -63,9 +63,9 @@ SafeVector!byte Handshake_Hash::final_ssl3(in SafeVector!byte secret) const
 	md5->update(secret);
 	sha1->update(secret);
 
-	for(size_t i = 0; i != 48; ++i)
+	for (size_t i = 0; i != 48; ++i)
 		md5->update(PAD_OUTER);
-	for(size_t i = 0; i != 40; ++i)
+	for (size_t i = 0; i != 40; ++i)
 		sha1->update(PAD_OUTER);
 
 	md5->update(inner_md5);

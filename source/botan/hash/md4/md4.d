@@ -46,7 +46,7 @@ void MD4::compress_n(in byte* input, size_t blocks)
 {
 	uint A = digest[0], B = digest[1], C = digest[2], D = digest[3];
 
-	for(size_t i = 0; i != blocks; ++i)
+	for (size_t i = 0; i != blocks; ++i)
 	{
 		load_le(&M[0], input, M.size());
 
@@ -91,7 +91,7 @@ void MD4::compress_n(in byte* input, size_t blocks)
 */
 void MD4::copy_out(byte* output)
 {
-	for(size_t i = 0; i != output_length(); i += 4)
+	for (size_t i = 0; i != output_length(); i += 4)
 		store_le(digest[i/4], output + i);
 }
 

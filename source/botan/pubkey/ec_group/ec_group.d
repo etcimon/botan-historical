@@ -17,7 +17,7 @@ EC_Group::EC_Group(in OID domain_oid)
 {
 	string pem = PEM_for_named_group(OIDS::lookup(domain_oid));
 
-	if(!pem)
+	if (!pem)
 		throw new Lookup_Error("No ECC domain data for " + domain_oid.as_string());
 
 	*this = EC_Group(pem);
@@ -26,7 +26,7 @@ EC_Group::EC_Group(in OID domain_oid)
 
 EC_Group::EC_Group(in string str)
 {
-	if(str == "")
+	if (str == "")
 		return; // no initialization / uninitialized
 
 	try
@@ -47,15 +47,15 @@ EC_Group::EC_Group(in Vector!byte ber_data)
 	BER_Decoder ber(ber_data);
 	BER_Object obj = ber.get_next_object();
 
-	if(obj.type_tag == NULL_TAG)
+	if (obj.type_tag == NULL_TAG)
 		throw new Decoding_Error("Cannot handle ImplicitCA ECDSA parameters");
-	else if(obj.type_tag == OBJECT_ID)
+	else if (obj.type_tag == OBJECT_ID)
 	{
 		OID dom_par_oid;
 		BER_Decoder(ber_data).decode(dom_par_oid);
 		*this = EC_Group(dom_par_oid);
 	}
-	else if(obj.type_tag == SEQUENCE)
+	else if (obj.type_tag == SEQUENCE)
 	{
 		BigInt p, a, b;
 		Vector!( byte ) sv_base_point;
@@ -88,7 +88,7 @@ EC_Group::EC_Group(in Vector!byte ber_data)
 Vector!( byte )
 EC_Group::DER_encode(EC_Group_Encoding form) const
 {
-	if(form == EC_DOMPAR_ENC_EXPLICIT)
+	if (form == EC_DOMPAR_ENC_EXPLICIT)
 	{
 		const size_t ecpVers1 = 1;
 		OID curve_type("1.2.840.10045.1.1");
@@ -114,9 +114,9 @@ EC_Group::DER_encode(EC_Group_Encoding form) const
 			.end_cons()
 			.get_contents_unlocked();
 	}
-	else if(form == EC_DOMPAR_ENC_OID)
+	else if (form == EC_DOMPAR_ENC_OID)
 		return DER_Encoder().encode(OID(get_oid())).get_contents_unlocked();
-	else if(form == EC_DOMPAR_ENC_IMPLICITCA)
+	else if (form == EC_DOMPAR_ENC_IMPLICITCA)
 		return DER_Encoder().encode_null().get_contents_unlocked();
 	else
 		throw new Internal_Error("EC_Group::DER_encode: Unknown encoding");

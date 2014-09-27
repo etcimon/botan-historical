@@ -13,7 +13,7 @@ ECB_Mode::ECB_Mode(BlockCipher* cipher, BlockCipherModePaddingMethod* padding) :
 	m_cipher(cipher),
 	m_padding(padding)
 {
-	if(!m_padding->valid_blocksize(cipher->block_size()))
+	if (!m_padding->valid_blocksize(cipher->block_size()))
 		throw new std::invalid_argument("Padding " + m_padding->name() +
 											 " cannot be used with " +
 											 cipher->name() + "/ECB");
@@ -56,7 +56,7 @@ void ECB_Mode::key_schedule(in byte* key, size_t length)
 
 SafeVector!byte ECB_Mode::start(const byte[], size_t nonce_len)
 {
-	if(!valid_nonce_length(nonce_len))
+	if (!valid_nonce_length(nonce_len))
 		throw new Invalid_IV_Length(name(), nonce_len);
 
 	return SafeVector!byte();
@@ -97,7 +97,7 @@ void ECB_Encryption::finish(SafeVector!byte buffer, size_t offset)
 
 	padding().add_padding(buffer, bytes_in_final_block, BS);
 
-	if(buffer.size() % BS)
+	if (buffer.size() % BS)
 		throw new Exception("Did not pad to full block size in " + name());
 
 	update(buffer, offset);
@@ -134,7 +134,7 @@ void ECB_Decryption::finish(SafeVector!byte buffer, size_t offset)
 
 	const size_t BS = cipher().block_size();
 
-	if(sz == 0 || sz % BS)
+	if (sz == 0 || sz % BS)
 		throw new Decoding_Error(name() + ": Ciphertext not a multiple of block size");
 
 	update(buffer, offset);

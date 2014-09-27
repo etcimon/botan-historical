@@ -9,11 +9,11 @@
 /*
 * Calculate the Jacobi symbol
 */
-s32bit jacobi(in BigInt a, const BigInt& n)
+s32bit jacobi(in BigInt a, ref const BigInt n)
 {
-	if(a.is_negative())
+	if (a.is_negative())
 		throw new Invalid_Argument("jacobi: first argument must be non-negative");
-	if(n.is_even() || n < 2)
+	if (n.is_even() || n < 2)
 		throw new Invalid_Argument("jacobi: second argument must be odd and > 1");
 
 	BigInt x = a, y = n;
@@ -22,25 +22,25 @@ s32bit jacobi(in BigInt a, const BigInt& n)
 	while(y > 1)
 	{
 		x %= y;
-		if(x > y / 2)
+		if (x > y / 2)
 		{
 			x = y - x;
-			if(y % 4 == 3)
+			if (y % 4 == 3)
 				J = -J;
 		}
-		if(x.is_zero())
+		if (x.is_zero())
 			return 0;
 
 		size_t shifts = low_zero_bits(x);
 		x >>= shifts;
-		if(shifts % 2)
+		if (shifts % 2)
 		{
 			word y_mod_8 = y % 8;
-			if(y_mod_8 == 3 || y_mod_8 == 5)
+			if (y_mod_8 == 3 || y_mod_8 == 5)
 				J = -J;
 		}
 
-		if(x % 4 == 3 && y % 4 == 3)
+		if (x % 4 == 3 && y % 4 == 3)
 			J = -J;
 		std::swap(x, y);
 	}

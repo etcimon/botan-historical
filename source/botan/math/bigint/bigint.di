@@ -83,7 +83,7 @@ class BigInt
 	/**
 	* Move constructor
 	*/
-	BigInt(BigInt& other)
+	BigInt(ref BigInt other)
 		{
 		this->swap(other);
 		}
@@ -91,9 +91,9 @@ class BigInt
 	/**
 	* Move assignment
 	*/
-	BigInt operator=(BigInt& other)
+	BigInt operator=(ref BigInt other)
 		{
-		if(this != &other)
+		if (this != &other)
 			this->swap(other);
 
 		return (*this);
@@ -235,8 +235,8 @@ class BigInt
 		{
 		const size_t sw = sig_words();
 
-		for(size_t i = 0; i != sw; ++i)
-			if(m_reg[i])
+		for (size_t i = 0; i != sw; ++i)
+			if (m_reg[i])
 				return false;
 		return true;
 		}

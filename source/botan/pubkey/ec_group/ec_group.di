@@ -35,8 +35,8 @@ class EC_Group
 		*/
 		EC_Group(in CurveGFp curve,
 					const PointGFp& base_point,
-					const BigInt& order,
-					const BigInt& cofactor) :
+					ref const BigInt order,
+					ref const BigInt cofactor) :
 			curve(curve),
 			base_point(base_point),
 			order(order),
@@ -92,13 +92,13 @@ class EC_Group
 		* Return the order of the base point
 		* @result order of the base point
 		*/
-		const BigInt& get_order() const { return order; }
+		ref const BigInt get_order() const { return order; }
 
 		/**
 		* Return the cofactor
 		* @result the cofactor
 		*/
-		const BigInt& get_cofactor() const { return cofactor; }
+		ref const BigInt get_cofactor() const { return cofactor; }
 
 		bool initialized() const { return !base_point.is_zero(); }
 

@@ -66,7 +66,7 @@ void OctetString::set_odd_parity()
 		0xF1, 0xF1, 0xF2, 0xF2, 0xF4, 0xF4, 0xF7, 0xF7, 0xF8, 0xF8, 0xFB, 0xFB,
 		0xFD, 0xFD, 0xFE, 0xFE };
 
-	for(size_t j = 0; j != bits.size(); ++j)
+	for (size_t j = 0; j != bits.size(); ++j)
 		bits[j] = ODD_PARITY[bits[j]];
 }
 
@@ -83,7 +83,7 @@ string OctetString::as_string() const
 */
 OctetString& OctetString::operator^=(in OctetString k)
 {
-	if(&k == this) { zeroise(bits); return (*this); }
+	if (&k == this) { zeroise(bits); return (*this); }
 	xor_buf(&bits[0], k.begin(), std::min(length(), k.length()));
 	return (*this);
 }

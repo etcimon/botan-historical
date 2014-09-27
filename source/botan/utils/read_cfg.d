@@ -33,36 +33,36 @@ void lex_cfg(std::istream& is,
 		}
 
 		auto comment = s.find('#');
-		if(comment)
+		if (comment)
 			s = s.substr(0, comment);
 
-		if(s.empty())
+		if (s.empty())
 			continue;
 
 		auto parts = split_on_pred(s, [](char c) { return ::isspace(c); });
 
-		for(auto& p : parts)
+		foreach (ref p; parts)
 		{
-			if(p.empty())
+			if (p.empty())
 				continue;
 
 			auto eq = p.find("=");
 
-			if(eq == string::npos || p.size() < 2)
+			if (eq == string::npos || p.size() < 2)
 			{
 				cb(p);
 			}
-			else if(eq == 0)
+			else if (eq == 0)
 			{
 				cb("=");
 				cb(p.substr(1, string::npos));
 			}
-			else if(eq == p.size() - 1)
+			else if (eq == p.size() - 1)
 			{
 				cb(p.substr(0, p.size() - 1));
 				cb("=");
 			}
-			else if(eq != string::npos)
+			else if (eq != string::npos)
 			{
 				cb(p.substr(0, eq));
 				cb("=");
@@ -78,7 +78,7 @@ void lex_cfg_w_headers(std::istream& is,
 {
 	auto intercept = [cb,hdr_cb](in string s)
 	{
-		if(s[0] == '[' && s[s.length()-1] == ']')
+		if (s[0] == '[' && s[s.length()-1] == ']')
 			hdr_cb(s.substr(1, s.length()-2));
 		else
 			cb(s);
@@ -97,11 +97,11 @@ std::map<string, HashMap!(string, string)>
 	auto header_cb = [&header](const string i) { header = i; };
 	auto cb = [&header,&key,&vals](const string s)
 	{
-		if(s == "=")
+		if (s == "=")
 		{
 			BOTAN_ASSERT(!key.empty(), "Valid assignment in config");
 		}
-		else if(key.empty())
+		else if (key.empty())
 			key = s;
 		else
 		{

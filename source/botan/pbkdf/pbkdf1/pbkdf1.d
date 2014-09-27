@@ -17,7 +17,7 @@ PKCS5_PBKDF1::key_derivation(size_t key_len,
 									  size_t iterations,
 									  std::chrono::milliseconds msec) const
 {
-	if(key_len > hash->output_length())
+	if (key_len > hash->output_length())
 		throw new Invalid_Argument("PKCS5_PBKDF1: Requested output length too long");
 
 	hash->update(passphrase);
@@ -29,17 +29,17 @@ PKCS5_PBKDF1::key_derivation(size_t key_len,
 
 	while(true)
 	{
-		if(iterations == 0)
+		if (iterations == 0)
 		{
-			if(iterations_performed % 10000 == 0)
+			if (iterations_performed % 10000 == 0)
 			{
 				auto time_taken = std::chrono::high_resolution_clock::now() - start;
 				auto msec_taken = std::chrono::duration_cast(<std::chrono::milliseconds>)(time_taken);
-				if(msec_taken > msec)
+				if (msec_taken > msec)
 					break;
 			}
 		}
-		else if(iterations_performed == iterations)
+		else if (iterations_performed == iterations)
 			break;
 
 		hash->update(key);

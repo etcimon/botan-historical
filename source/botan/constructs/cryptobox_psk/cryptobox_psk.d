@@ -83,10 +83,10 @@ SafeVector!byte decrypt(in byte* input, size_t input_len,
 		MIN_CTEXT_SIZE +
 		MAC_OUTPUT_LENGTH;
 
-	if(input_len < MIN_POSSIBLE_LENGTH)
+	if (input_len < MIN_POSSIBLE_LENGTH)
 		throw new Decoding_Error("Encrypted input too short to be valid");
 
-	if(load_be!uint(input, 0) != CRYPTOBOX_MAGIC)
+	if (load_be!uint(input, 0) != CRYPTOBOX_MAGIC)
 		throw new Decoding_Error("Unknown header value in cryptobox");
 
 	std::unique_ptr<KDF> kdf(get_kdf(CRYPTOBOX_KDF));
@@ -106,7 +106,7 @@ SafeVector!byte decrypt(in byte* input, size_t input_len,
 	mac->update(&input[0], input_len - MAC_OUTPUT_LENGTH);
 	SafeVector!byte computed_mac = mac->flush();
 
-	if(!same_mem(&input[input_len - MAC_OUTPUT_LENGTH], &computed_mac[0], computed_mac.size()))
+	if (!same_mem(&input[input_len - MAC_OUTPUT_LENGTH], &computed_mac[0], computed_mac.size()))
 		throw new Decoding_Error("MAC verification failed");
 
 	SymmetricKey cipher_key =

@@ -47,15 +47,15 @@ SafeVector!byte PKCS8_decode(
 	bool is_encrypted = true;
 
 	try {
-		if(ASN1::maybe_BER(source) && !PEM_Code::matches(source))
+		if (ASN1::maybe_BER(source) && !PEM_Code::matches(source))
 			key_data = PKCS8_extract(source, pbe_alg_id);
 		else
 		{
 			string label;
 			key_data = PEM_Code::decode(source, label);
-			if(label == "PRIVATE KEY")
+			if (label == "PRIVATE KEY")
 				is_encrypted = false;
-			else if(label == "ENCRYPTED PRIVATE KEY")
+			else if (label == "ENCRYPTED PRIVATE KEY")
 			{
 				DataSource_Memory key_source(key_data);
 				key_data = PKCS8_extract(key_source, pbe_alg_id);
@@ -64,7 +64,7 @@ SafeVector!byte PKCS8_decode(
 				throw new PKCS8_Exception("Unknown PEM label " + label);
 		}
 
-		if(key_data.empty())
+		if (key_data.empty())
 			throw new PKCS8_Exception("No key data found");
 	}
 	catch(Decoding_Error& e)
@@ -72,7 +72,7 @@ SafeVector!byte PKCS8_decode(
 		throw new Decoding_Error("PKCS #8 private key decoding failed: " + string(e.what()));
 	}
 
-	if(!is_encrypted)
+	if (!is_encrypted)
 		key = key_data;
 
 	const size_t MAX_TRIES = 3;
@@ -81,14 +81,14 @@ SafeVector!byte PKCS8_decode(
 	while(true)
 	{
 		try {
-			if(MAX_TRIES && tries >= MAX_TRIES)
+			if (MAX_TRIES && tries >= MAX_TRIES)
 				break;
 
-			if(is_encrypted)
+			if (is_encrypted)
 			{
 				Pair!(bool, string) pass = get_passphrase();
 
-				if(pass.first == false)
+				if (pass.first == false)
 					break;
 
 				Pipe decryptor(get_pbe(pbe_alg_id.oid, pbe_alg_id.parameters, pass.second));
@@ -113,7 +113,7 @@ SafeVector!byte PKCS8_decode(
 		}
 	}
 
-	if(key.empty())
+	if (key.empty())
 		throw new Decoding_Error("PKCS #8 private key decoding failed");
 	return key;
 }
@@ -183,7 +183,7 @@ string PEM_encode(in Private_Key key,
 							  std::chrono::milliseconds msec,
 							  in string pbe_algo)
 {
-	if(pass == "")
+	if (pass == "")
 		return PEM_encode(key);
 
 	return PEM_Code::encode(PKCS8::BER_encode(key, rng, pass, msec, pbe_algo),
@@ -201,7 +201,7 @@ Private_Key* load_key(DataSource& source,
 	SafeVector!byte pkcs8_key = PKCS8_decode(source, get_pass, alg_id);
 
 	const string alg_name = OIDS::lookup(alg_id.oid);
-	if(alg_name == "" || alg_name == alg_id.oid.as_string())
+	if (alg_name == "" || alg_name == alg_id.oid.as_string())
 		throw new PKCS8_Exception("Unknown algorithm OID: " +
 									 alg_id.oid.as_string());
 
@@ -229,7 +229,7 @@ class Single_Shot_Passphrase
 
 		Pair!(bool, string) operator()()
 		{
-			if(first)
+			if (first)
 			{
 				first = false;
 				return Pair(true, passphrase);

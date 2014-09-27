@@ -42,11 +42,11 @@ void* lzma_malloc(void *opaque, size_t /*nmemb*/, size_t size)
 */
 void lzma_free(void *opaque, void *ptr)
 {
-	if(!ptr) return;		 // liblzma sometimes does pass zero ptr
+	if (!ptr) return;		 // liblzma sometimes does pass zero ptr
 
 	Lzma_Alloc_Info* info = cast(Lzma_Alloc_Info*)(opaque);
 	auto i = info->current_allocs.find(ptr);
-	if(i == info->current_allocs.end())
+	if (i == info->current_allocs.end())
 		throw new Invalid_Argument("lzma_free: Got pointer not allocated by us");
 
 	std::memset(ptr, 0, i->second);
@@ -110,9 +110,9 @@ void Lzma_Compression::start_msg()
 
 	lzma_ret ret = lzma_easy_encoder(&(lzma->stream), level, LZMA_CHECK_CRC64);
 
-	if(ret == LZMA_MEM_ERROR)
+	if (ret == LZMA_MEM_ERROR)
 		throw new Memory_Exhaustion();
-	else if(ret != LZMA_OK)
+	else if (ret != LZMA_OK)
 		throw new Invalid_Argument("Bad setting in lzma_easy_encoder");
 }
 
@@ -131,7 +131,7 @@ void Lzma_Compression::write(in byte* input, size_t length)
 
 		lzma_ret ret = lzma_code(&(lzma->stream), LZMA_RUN);
 
-		if(ret == LZMA_MEM_ERROR)
+		if (ret == LZMA_MEM_ERROR)
 			throw new Memory_Exhaustion();
 		else if (ret != LZMA_OK)
 			throw new Exception("Lzma compression: Error writing");
@@ -176,14 +176,14 @@ void Lzma_Compression::flush()
 
 		lzma_ret ret = lzma_code(&(lzma->stream), LZMA_FULL_FLUSH);
 
-		if(ret == LZMA_MEM_ERROR)
+		if (ret == LZMA_MEM_ERROR)
 			throw new Memory_Exhaustion();
 		else if (ret != LZMA_OK && ret != LZMA_STREAM_END)
 			throw new Exception("Lzma compression: Error flushing");
 
 		send(&buffer[0], buffer.size() - lzma->stream.avail_out);
 
-		if(lzma->stream.avail_out == buffer.size())
+		if (lzma->stream.avail_out == buffer.size())
 			break;
 	}
 }
@@ -195,7 +195,7 @@ void Lzma_Compression::clear()
 {
 	zeroise(buffer);
 
-	if(lzma)
+	if (lzma)
 	{
 		lzma_end(&(lzma->stream));
 		delete lzma;
@@ -223,9 +223,9 @@ void Lzma_Decompression::start_msg()
 
 	lzma_ret ret = lzma_stream_decoder(&(lzma->stream), UINT64_MAX, LZMA_TELL_UNSUPPORTED_CHECK | LZMA_CONCATENATED);
 
-	if(ret == LZMA_MEM_ERROR)
+	if (ret == LZMA_MEM_ERROR)
 		throw new Memory_Exhaustion();
-	else if(ret != LZMA_OK)
+	else if (ret != LZMA_OK)
 		throw new Invalid_Argument("Bad setting in lzma_stream_decoder");
 }
 
@@ -234,7 +234,7 @@ void Lzma_Decompression::start_msg()
 */
 void Lzma_Decompression::write(in byte* input_arr, size_t length)
 {
-	if(length) no_writes = false;
+	if (length) no_writes = false;
 
 	const uint8_t* input = cast(const uint8_t*)(input_arr);
 
@@ -248,12 +248,12 @@ void Lzma_Decompression::write(in byte* input_arr, size_t length)
 
 		lzma_ret ret = lzma_code(&(lzma->stream), LZMA_RUN);
 
-		if(ret != LZMA_OK && ret != LZMA_STREAM_END)
+		if (ret != LZMA_OK && ret != LZMA_STREAM_END)
 		{
 			clear();
-			if(ret == LZMA_DATA_ERROR)
+			if (ret == LZMA_DATA_ERROR)
 				throw new Decoding_Error("Lzma_Decompression: Data integrity error");
-			else if(ret == LZMA_MEM_ERROR)
+			else if (ret == LZMA_MEM_ERROR)
 				throw new Memory_Exhaustion();
 			else
 				throw new Exception("Lzma decompression: Unknown error");
@@ -261,7 +261,7 @@ void Lzma_Decompression::write(in byte* input_arr, size_t length)
 
 		send(&buffer[0], buffer.size() - lzma->stream.avail_out);
 
-		if(ret == LZMA_STREAM_END)
+		if (ret == LZMA_STREAM_END)
 		{
 			size_t read_from_block = length - lzma->stream.avail_in;
 			start_msg();
@@ -280,7 +280,7 @@ void Lzma_Decompression::write(in byte* input_arr, size_t length)
 */
 void Lzma_Decompression::end_msg()
 {
-	if(no_writes) return;
+	if (no_writes) return;
 	lzma->stream.next_in = 0;
 	lzma->stream.avail_in = 0;
 
@@ -292,7 +292,7 @@ void Lzma_Decompression::end_msg()
 		lzma->stream.avail_out = buffer.size();
 		ret = lzma_code(&(lzma->stream), LZMA_FINISH);
 
-		if(ret != LZMA_OK && ret != LZMA_STREAM_END)
+		if (ret != LZMA_OK && ret != LZMA_STREAM_END)
 		{
 			clear();
 			throw new Decoding_Error("Lzma_Decompression: Error finalizing");
@@ -313,7 +313,7 @@ void Lzma_Decompression::clear()
 
 	no_writes = true;
 
-	if(lzma)
+	if (lzma)
 	{
 		lzma_end(&(lzma->stream));
 		delete lzma;

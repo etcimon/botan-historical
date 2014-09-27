@@ -48,10 +48,10 @@ void EAC1_1_CVC::force_decode()
 		.decode(m_cex)
 		.verify_end();
 
-	if(enc_chat_val.size() != 1)
+	if (enc_chat_val.size() != 1)
 		throw new Decoding_Error("CertificateHolderAuthorizationValue was not of length 1");
 
-	if(cpi != 0)
+	if (cpi != 0)
 		throw new Decoding_Error("EAC1_1 certificate's cpi was not 0");
 
 	m_pk = decode_eac1_1_key(enc_pk, sig_algo);

@@ -98,7 +98,7 @@ GMP_DSA_Signature_Operation::sign(in byte* msg, size_t msg_len,
 	mpz_mul(s.value, s.value, k.value);
 	mpz_mod(s.value, s.value, q.value);
 
-	if(mpz_cmp_ui(r.value, 0) == 0 || mpz_cmp_ui(s.value, 0) == 0)
+	if (mpz_cmp_ui(r.value, 0) == 0 || mpz_cmp_ui(s.value, 0) == 0)
 		throw new Internal_Error("GMP_DSA_Op::sign: r or s was zero");
 
 	SafeVector!byte output(2*q_bytes);
@@ -135,19 +135,19 @@ bool GMP_DSA_Verification_Operation::verify(in byte* msg, size_t msg_len,
 {
 	const size_t q_bytes = q.bytes();
 
-	if(sig_len != 2*q_bytes || msg_len > q_bytes)
+	if (sig_len != 2*q_bytes || msg_len > q_bytes)
 		return false;
 
 	GMP_MPZ r(sig, q_bytes);
 	GMP_MPZ s(sig + q_bytes, q_bytes);
 	GMP_MPZ i(msg, msg_len);
 
-	if(mpz_cmp_ui(r.value, 0) <= 0 || mpz_cmp(r.value, q.value) >= 0)
+	if (mpz_cmp_ui(r.value, 0) <= 0 || mpz_cmp(r.value, q.value) >= 0)
 		return false;
-	if(mpz_cmp_ui(s.value, 0) <= 0 || mpz_cmp(s.value, q.value) >= 0)
+	if (mpz_cmp_ui(s.value, 0) <= 0 || mpz_cmp(s.value, q.value) >= 0)
 		return false;
 
-	if(mpz_invert(s.value, s.value, q.value) == 0)
+	if (mpz_invert(s.value, s.value, q.value) == 0)
 		return false;
 
 	GMP_MPZ si;
@@ -164,7 +164,7 @@ bool GMP_DSA_Verification_Operation::verify(in byte* msg, size_t msg_len,
 	mpz_mod(si.value, si.value, p.value);
 	mpz_mod(si.value, si.value, q.value);
 
-	if(mpz_cmp(si.value, r.value) == 0)
+	if (mpz_cmp(si.value, r.value) == 0)
 		return true;
 	return false;#if defined(BOTAN_HAS_RSA)
 
@@ -246,7 +246,7 @@ class GMP_RSA_Public_Operation : public PK_Ops::Verification,
 	private:
 		BigInt public_op(in BigInt m) const
 		{
-			if(m >= n)
+			if (m >= n)
 				throw new Invalid_Argument("RSA public op - input is too large");
 
 			GMP_MPZ m_gmp(m);
@@ -254,7 +254,7 @@ class GMP_RSA_Public_Operation : public PK_Ops::Verification,
 			return m_gmp.to_bigint();
 		}
 
-		const BigInt& n;
+		ref const BigInt n;
 		const GMP_MPZ e, mod;
 };
 
@@ -266,7 +266,7 @@ PK_Ops::Key_Agreement*
 GMP_Engine::get_key_agreement_op(in Private_Key key, RandomNumberGenerator&) const
 {
 #if defined(BOTAN_HAS_DIFFIE_HELLMAN)
-	if(in DH_PrivateKey* dh = cast(const DH_PrivateKey*)(key))
+	if (in DH_PrivateKey* dh = cast(const DH_PrivateKey*)(key))
 		return new GMP_DH_KA_Operation(*dh);
 #endif
 
@@ -277,12 +277,12 @@ PK_Ops::Signature*
 GMP_Engine::get_signature_op(in Private_Key key, RandomNumberGenerator&) const
 {
 #if defined(BOTAN_HAS_RSA)
-	if(in RSA_PrivateKey* s = cast(const RSA_PrivateKey*)(key))
+	if (in RSA_PrivateKey* s = cast(const RSA_PrivateKey*)(key))
 		return new GMP_RSA_Private_Operation(*s);
 #endif
 
 #if defined(BOTAN_HAS_DSA)
-	if(in DSA_PrivateKey* s = cast(const DSA_PrivateKey*)(key))
+	if (in DSA_PrivateKey* s = cast(const DSA_PrivateKey*)(key))
 		return new GMP_DSA_Signature_Operation(*s);
 #endif
 
@@ -293,12 +293,12 @@ PK_Ops::Verification*
 GMP_Engine::get_verify_op(in Public_Key key, RandomNumberGenerator&) const
 {
 #if defined(BOTAN_HAS_RSA)
-	if(in RSA_PublicKey* s = cast(const RSA_PublicKey*)(key))
+	if (in RSA_PublicKey* s = cast(const RSA_PublicKey*)(key))
 		return new GMP_RSA_Public_Operation(*s);
 #endif
 
 #if defined(BOTAN_HAS_DSA)
-	if(in DSA_PublicKey* s = cast(const DSA_PublicKey*)(key))
+	if (in DSA_PublicKey* s = cast(const DSA_PublicKey*)(key))
 		return new GMP_DSA_Verification_Operation(*s);
 #endif
 
@@ -309,7 +309,7 @@ PK_Ops::Encryption*
 GMP_Engine::get_encryption_op(in Public_Key key, RandomNumberGenerator&) const
 {
 #if defined(BOTAN_HAS_RSA)
-	if(in RSA_PublicKey* s = cast(const RSA_PublicKey*)(key))
+	if (in RSA_PublicKey* s = cast(const RSA_PublicKey*)(key))
 		return new GMP_RSA_Public_Operation(*s);
 #endif
 
@@ -320,7 +320,7 @@ PK_Ops::Decryption*
 GMP_Engine::get_decryption_op(in Private_Key key, RandomNumberGenerator&) const
 {
 #if defined(BOTAN_HAS_RSA)
-	if(in RSA_PrivateKey* s = cast(const RSA_PrivateKey*)(key))
+	if (in RSA_PrivateKey* s = cast(const RSA_PrivateKey*)(key))
 		return new GMP_RSA_Private_Operation(*s);
 #endif
 

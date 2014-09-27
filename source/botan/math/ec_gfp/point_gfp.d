@@ -19,7 +19,7 @@ PointGFp::PointGFp(in CurveGFp curve) :
 	coord_z = 0;
 }
 
-PointGFp::PointGFp(in CurveGFp curve, const BigInt& x, const BigInt& y) :
+PointGFp::PointGFp(in CurveGFp curve, ref const BigInt x, ref const BigInt y) :
 	curve(curve), ws(2 * (curve.get_p_words() + 2))
 {
 	coord_x = monty_mult(x, curve.get_r2());
@@ -28,17 +28,17 @@ PointGFp::PointGFp(in CurveGFp curve, const BigInt& x, const BigInt& y) :
 }
 
 // Montgomery multiplication
-void PointGFp::monty_mult(BigInt& z, const BigInt& x, const BigInt& y) const
+void PointGFp::monty_mult(ref BigInt z, ref const BigInt x, ref const BigInt y) const
 {
 	//assert(&z != &x && &z != &y);
 
-	if(x.is_zero() || y.is_zero())
+	if (x.is_zero() || y.is_zero())
 	{
 		z = 0;
 		return;
 	}
 
-	const BigInt& p = curve.get_p();
+	ref const BigInt p = curve.get_p();
 	const size_t p_size = curve.get_p_words();
 	const word p_dash = curve.get_p_dash();
 
@@ -55,17 +55,17 @@ void PointGFp::monty_mult(BigInt& z, const BigInt& x, const BigInt& y) const
 }
 
 // Montgomery squaring
-void PointGFp::monty_sqr(BigInt& z, const BigInt& x) const
+void PointGFp::monty_sqr(ref BigInt z, ref const BigInt x) const
 {
 	//assert(&z != &x);
 
-	if(x.is_zero())
+	if (x.is_zero())
 	{
 		z = 0;
 		return;
 	}
 
-	const BigInt& p = curve.get_p();
+	ref const BigInt p = curve.get_p();
 	const size_t p_size = curve.get_p_words();
 	const word p_dash = curve.get_p_dash();
 
@@ -83,28 +83,28 @@ void PointGFp::monty_sqr(BigInt& z, const BigInt& x) const
 // Point addition
 void PointGFp::add(in PointGFp rhs, Vector!( BigInt )& ws_bn)
 {
-	if(is_zero())
+	if (is_zero())
 	{
 		coord_x = rhs.coord_x;
 		coord_y = rhs.coord_y;
 		coord_z = rhs.coord_z;
 		return;
 	}
-	else if(rhs.is_zero())
+	else if (rhs.is_zero())
 		return;
 
-	const BigInt& p = curve.get_p();
+	ref const BigInt p = curve.get_p();
 
-	BigInt& rhs_z2 = ws_bn[0];
-	BigInt& U1 = ws_bn[1];
-	BigInt& S1 = ws_bn[2];
+	ref BigInt rhs_z2 = ws_bn[0];
+	ref BigInt U1 = ws_bn[1];
+	ref BigInt S1 = ws_bn[2];
 
-	BigInt& lhs_z2 = ws_bn[3];
-	BigInt& U2 = ws_bn[4];
-	BigInt& S2 = ws_bn[5];
+	ref BigInt lhs_z2 = ws_bn[3];
+	ref BigInt U2 = ws_bn[4];
+	ref BigInt S2 = ws_bn[5];
 
-	BigInt& H = ws_bn[6];
-	BigInt& r = ws_bn[7];
+	ref BigInt H = ws_bn[6];
+	ref BigInt r = ws_bn[7];
 
 	monty_sqr(rhs_z2, rhs.coord_z);
 	monty_mult(U1, coord_x, rhs_z2);
@@ -116,17 +116,17 @@ void PointGFp::add(in PointGFp rhs, Vector!( BigInt )& ws_bn)
 
 	H = U2;
 	H -= U1;
-	if(H.is_negative())
+	if (H.is_negative())
 		H += p;
 
 	r = S2;
 	r -= S1;
-	if(r.is_negative())
+	if (r.is_negative())
 		r += p;
 
-	if(H.is_zero())
+	if (H.is_zero())
 	{
-		if(r.is_zero())
+		if (r.is_zero())
 		{
 			mult2(ws_bn);
 			return;
@@ -149,12 +149,12 @@ void PointGFp::add(in PointGFp rhs, Vector!( BigInt )& ws_bn)
 		coord_x += p;
 
 	U2 -= coord_x;
-	if(U2.is_negative())
+	if (U2.is_negative())
 		U2 += p;
 
 	monty_mult(coord_y, r, U2);
 	coord_y -= monty_mult(S1, S2);
-	if(coord_y.is_negative())
+	if (coord_y.is_negative())
 		coord_y += p;
 
 	monty_mult(coord_z, monty_mult(coord_z, rhs.coord_z), H);
@@ -163,25 +163,25 @@ void PointGFp::add(in PointGFp rhs, Vector!( BigInt )& ws_bn)
 // *this *= 2
 void PointGFp::mult2(Vector!( BigInt )& ws_bn)
 {
-	if(is_zero())
+	if (is_zero())
 		return;
-	else if(coord_y.is_zero())
+	else if (coord_y.is_zero())
 	{
 		*this = PointGFp(curve); // setting myself to zero
 		return;
 	}
 
-	const BigInt& p = curve.get_p();
+	ref const BigInt p = curve.get_p();
 
-	BigInt& y_2 = ws_bn[0];
-	BigInt& S = ws_bn[1];
-	BigInt& z4 = ws_bn[2];
-	BigInt& a_z4 = ws_bn[3];
-	BigInt& M = ws_bn[4];
-	BigInt& U = ws_bn[5];
-	BigInt& x = ws_bn[6];
-	BigInt& y = ws_bn[7];
-	BigInt& z = ws_bn[8];
+	ref BigInt y_2 = ws_bn[0];
+	ref BigInt S = ws_bn[1];
+	ref BigInt z4 = ws_bn[2];
+	ref BigInt a_z4 = ws_bn[3];
+	ref BigInt M = ws_bn[4];
+	ref BigInt U = ws_bn[5];
+	ref BigInt x = ws_bn[6];
+	ref BigInt y = ws_bn[7];
+	ref BigInt z = ws_bn[8];
 
 	monty_sqr(y_2, coord_y);
 
@@ -215,12 +215,12 @@ void PointGFp::mult2(Vector!( BigInt )& ws_bn)
 
 	monty_mult(y, M, S);
 	y -= U;
-	if(y.is_negative())
+	if (y.is_negative())
 		y += p;
 
 	monty_mult(z, coord_y, coord_z);
 	z <<= 1;
-	if(z >= p)
+	if (z >= p)
 		z -= p;
 
 	coord_x = x;
@@ -240,7 +240,7 @@ PointGFp& PointGFp::operator-=(in PointGFp rhs)
 {
 	PointGFp minus_rhs = PointGFp(rhs).negate();
 
-	if(is_zero())
+	if (is_zero())
 		*this = minus_rhs;
 	else
 		*this += minus_rhs;
@@ -254,8 +254,8 @@ PointGFp& PointGFp::operator*=(in BigInt scalar)
 	return *this;
 }
 
-PointGFp multi_exponentiate(in PointGFp p1, const BigInt& z1,
-									 const PointGFp& p2, const BigInt& z2)
+PointGFp multi_exponentiate(in PointGFp p1, ref const BigInt z1,
+									 const PointGFp& p2, ref const BigInt z2)
 {
 	const PointGFp p3 = p1 + p2;
 
@@ -271,17 +271,17 @@ PointGFp multi_exponentiate(in PointGFp p1, const BigInt& z1,
 		const bool z1_b = z1.get_bit(bits_left - 1);
 		const bool z2_b = z2.get_bit(bits_left - 1);
 
-		if(z1_b == true && z2_b == true)
+		if (z1_b == true && z2_b == true)
 			H.add(p3, ws);
-		else if(z1_b)
+		else if (z1_b)
 			H.add(p1, ws);
-		else if(z2_b)
+		else if (z2_b)
 			H.add(p2, ws);
 
 		--bits_left;
 	}
 
-	if(z1.is_negative() != z2.is_negative())
+	if (z1.is_negative() != z2.is_negative())
 		H.negate();
 
 	return H;
@@ -291,21 +291,21 @@ PointGFp operator*(in BigInt scalar, const PointGFp& point)
 {
 	const CurveGFp& curve = point.get_curve();
 
-	if(scalar.is_zero())
+	if (scalar.is_zero())
 		return PointGFp(curve); // zero point
 
 	Vector!( BigInt ) ws(9);
 
-	if(scalar.abs() <= 2) // special cases for small values
+	if (scalar.abs() <= 2) // special cases for small values
 	{
 		byte value = scalar.abs().byte_at(0);
 
 		PointGFp result = point;
 
-		if(value == 2)
+		if (value == 2)
 			result.mult2(ws);
 
-		if(scalar.is_negative())
+		if (scalar.is_negative())
 			result.negate();
 
 		return result;
@@ -325,7 +325,7 @@ PointGFp operator*(in BigInt scalar, const PointGFp& point)
 	{
 		const bool bit_set = scalar.get_bit(bits_left - 1);
 
-		if(bit_set)
+		if (bit_set)
 		{
 			x1.add(x2, ws);
 			x2.mult2(ws);
@@ -339,7 +339,7 @@ PointGFp operator*(in BigInt scalar, const PointGFp& point)
 		--bits_left;
 	}
 
-	if(scalar.is_negative())
+	if (scalar.is_negative())
 		x1.negate();
 
 	return x1;
@@ -351,7 +351,7 @@ PointGFp operator*(in BigInt scalar, const PointGFp& point)
 	Ps[0] = PointGFp(curve);
 	Ps[1] = point;
 
-	for(size_t i = 2; i != Ps.size(); ++i)
+	for (size_t i = 2; i != Ps.size(); ++i)
 	{
 		Ps[i] = Ps[i-1];
 		Ps[i].add(point, ws);
@@ -362,7 +362,7 @@ PointGFp operator*(in BigInt scalar, const PointGFp& point)
 
 	while(bits_left >= window_size)
 	{
-		for(size_t i = 0; i != window_size; ++i)
+		for (size_t i = 0; i != window_size; ++i)
 			H.mult2(ws);
 
 		const uint nibble = scalar.get_substring(bits_left - window_size,
@@ -376,13 +376,13 @@ PointGFp operator*(in BigInt scalar, const PointGFp& point)
 	while(bits_left)
 	{
 		H.mult2(ws);
-		if(scalar.get_bit(bits_left-1))
+		if (scalar.get_bit(bits_left-1))
 			H.add(point, ws);
 
 		--bits_left;
 	}
 
-	if(scalar.is_negative())
+	if (scalar.is_negative())
 		H.negate();
 
 	return H;
@@ -391,10 +391,10 @@ PointGFp operator*(in BigInt scalar, const PointGFp& point)
 
 BigInt PointGFp::get_affine_x() const
 {
-	if(is_zero())
+	if (is_zero())
 		throw new Illegal_Transformation("Cannot convert zero point to affine");
 
-	const BigInt& r2 = curve.get_r2();
+	ref const BigInt r2 = curve.get_r2();
 
 	BigInt z2 = monty_sqr(coord_z);
 	z2 = inverse_mod(z2, curve.get_p());
@@ -405,10 +405,10 @@ BigInt PointGFp::get_affine_x() const
 
 BigInt PointGFp::get_affine_y() const
 {
-	if(is_zero())
+	if (is_zero())
 		throw new Illegal_Transformation("Cannot convert zero point to affine");
 
-	const BigInt& r2 = curve.get_r2();
+	ref const BigInt r2 = curve.get_r2();
 
 	BigInt z3 = monty_mult(coord_z, monty_sqr(coord_z));
 	z3 = inverse_mod(z3, curve.get_p());
@@ -425,7 +425,7 @@ bool PointGFp::on_the_curve() const
 	(or internal computational error), then return false.
 	*/
 
-	if(is_zero())
+	if (is_zero())
 		return true;
 
 	BigInt y2 = monty_mult(monty_sqr(coord_y), 1);
@@ -433,13 +433,13 @@ bool PointGFp::on_the_curve() const
 
 	BigInt ax = monty_mult(coord_x, curve.get_a_r());
 
-	const BigInt& b_r = curve.get_b_r();
+	ref const BigInt b_r = curve.get_b_r();
 
 	BigInt z2 = monty_sqr(coord_z);
 
-	if(coord_z == z2) // Is z equal to 1 (in Montgomery form)?
+	if (coord_z == z2) // Is z equal to 1 (in Montgomery form)?
 	{
-		if(y2 != monty_mult(x3 + ax + b_r, 1))
+		if (y2 != monty_mult(x3 + ax + b_r, 1))
 			return false;
 	}
 
@@ -449,7 +449,7 @@ bool PointGFp::on_the_curve() const
 
 	BigInt b_z6 = monty_mult(b_r, monty_sqr(z3));
 
-	if(y2 != monty_mult(x3 + ax_z4 + b_z6, 1))
+	if (y2 != monty_mult(x3 + ax_z4 + b_z6, 1))
 		return false;
 
 	return true;
@@ -467,11 +467,11 @@ void PointGFp::swap(PointGFp& other)
 
 bool PointGFp::operator==(in PointGFp other) const
 {
-	if(get_curve() != other.get_curve())
+	if (get_curve() != other.get_curve())
 		return false;
 
 	// If this is zero, only equal if other is also zero
-	if(is_zero())
+	if (is_zero())
 		return other.is_zero();
 
 	return (get_affine_x() == other.get_affine_x() &&
@@ -481,7 +481,7 @@ bool PointGFp::operator==(in PointGFp other) const
 // encoding and decoding
 SafeVector!byte EC2OSP(in PointGFp point, byte format)
 {
-	if(point.is_zero())
+	if (point.is_zero())
 		return SafeVector!byte(1); // single 0 byte
 
 	const size_t p_bytes = point.get_curve().get_p().bytes();
@@ -492,7 +492,7 @@ SafeVector!byte EC2OSP(in PointGFp point, byte format)
 	SafeVector!byte bX = BigInt::encode_1363(x, p_bytes);
 	SafeVector!byte bY = BigInt::encode_1363(y, p_bytes);
 
-	if(format == PointGFp::UNCOMPRESSED)
+	if (format == PointGFp::UNCOMPRESSED)
 	{
 		SafeVector!byte result;
 		result.push_back(0x04);
@@ -502,7 +502,7 @@ SafeVector!byte EC2OSP(in PointGFp point, byte format)
 
 		return result;
 	}
-	else if(format == PointGFp::COMPRESSED)
+	else if (format == PointGFp::COMPRESSED)
 	{
 		SafeVector!byte result;
 		result.push_back(0x02 | cast(byte)(y.get_bit(0)));
@@ -511,7 +511,7 @@ SafeVector!byte EC2OSP(in PointGFp point, byte format)
 
 		return result;
 	}
-	else if(format == PointGFp::HYBRID)
+	else if (format == PointGFp::HYBRID)
 	{
 		SafeVector!byte result;
 		result.push_back(0x06 | cast(byte)(y.get_bit(0)));
@@ -528,7 +528,7 @@ SafeVector!byte EC2OSP(in PointGFp point, byte format)
 namespace {
 
 BigInt decompress_point(bool yMod2,
-								const BigInt& x,
+								ref const BigInt x,
 								const CurveGFp& curve)
 {
 	BigInt xpow3 = x * x * x;
@@ -540,10 +540,10 @@ BigInt decompress_point(bool yMod2,
 
 	BigInt z = ressol(g, curve.get_p());
 
-	if(z < 0)
+	if (z < 0)
 		throw new Illegal_Point("error during decompression");
 
-	if(z.get_bit(0) != yMod2)
+	if (z.get_bit(0) != yMod2)
 		z = curve.get_p() - z;
 
 	return z;
@@ -554,14 +554,14 @@ BigInt decompress_point(bool yMod2,
 PointGFp OS2ECP(in byte* data, size_t data_len,
 					 const CurveGFp& curve)
 {
-	if(data_len <= 1)
+	if (data_len <= 1)
 		return PointGFp(curve); // return zero
 
 	const byte pc = data[0];
 
 	BigInt x, y;
 
-	if(pc == 2 || pc == 3)
+	if (pc == 2 || pc == 3)
 	{
 		//compressed form
 		x = BigInt::decode(&data[1], data_len - 1);
@@ -569,7 +569,7 @@ PointGFp OS2ECP(in byte* data, size_t data_len,
 		const bool y_mod_2 = ((pc & 0x01) == 1);
 		y = decompress_point(y_mod_2, x, curve);
 	}
-	else if(pc == 4)
+	else if (pc == 4)
 	{
 		const size_t l = (data_len - 1) / 2;
 
@@ -577,7 +577,7 @@ PointGFp OS2ECP(in byte* data, size_t data_len,
 		x = BigInt::decode(&data[1], l);
 		y = BigInt::decode(&data[l+1], l);
 	}
-	else if(pc == 6 || pc == 7)
+	else if (pc == 6 || pc == 7)
 	{
 		const size_t l = (data_len - 1) / 2;
 
@@ -587,7 +587,7 @@ PointGFp OS2ECP(in byte* data, size_t data_len,
 
 		const bool y_mod_2 = ((pc & 0x01) == 1);
 
-		if(decompress_point(y_mod_2, x, curve) != y)
+		if (decompress_point(y_mod_2, x, curve) != y)
 			throw new Illegal_Point("OS2ECP: Decoding error in hybrid format");
 	}
 	else
@@ -595,7 +595,7 @@ PointGFp OS2ECP(in byte* data, size_t data_len,
 
 	PointGFp result(curve, x, y);
 
-	if(!result.on_the_curve())
+	if (!result.on_the_curve())
 		throw new Illegal_Point("OS2ECP: Decoded point was not on the curve");
 
 	return result;

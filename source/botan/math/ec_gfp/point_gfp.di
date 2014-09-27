@@ -75,7 +75,7 @@ class PointGFp
 		*/
 		PointGFp& operator=(PointGFp&& other)
 		{
-			if(this != &other)
+			if (this != &other)
 				this->swap(other);
 			return (*this);
 		}
@@ -135,7 +135,7 @@ class PointGFp
 		*/
 		PointGFp& negate()
 		{
-			if(!is_zero())
+			if (!is_zero())
 				coord_y = curve.get_p() - coord_y;
 			return *this;
 		}
@@ -204,7 +204,7 @@ class PointGFp
 		* @param x first multiplicand
 		* @param y second multiplicand
 		*/
-		void monty_mult(BigInt& z, in BigInt x, in BigInt y) const;
+		void monty_mult(ref BigInt z, in BigInt x, in BigInt y) const;
 
 		/**
 		* Montgomery squaring/reduction
@@ -223,7 +223,7 @@ class PointGFp
 		* @param z output
 		* @param x multiplicand
 		*/
-		void monty_sqr(BigInt& z, in BigInt x) const;
+		void monty_sqr(ref BigInt z, in BigInt x) const;
 
 		/**
 		* Point addition

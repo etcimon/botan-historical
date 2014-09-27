@@ -80,7 +80,7 @@ void CRC32::add_data(in byte* input, size_t length)
 		length -= 16;
 	}
 
-	for(size_t i = 0; i != length; ++i)
+	for (size_t i = 0; i != length; ++i)
 		tmp = TABLE[(tmp ^ input[i]) & 0xFF] ^ (tmp >> 8);
 
 	crc = tmp;

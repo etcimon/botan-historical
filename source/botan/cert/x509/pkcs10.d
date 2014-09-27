@@ -49,7 +49,7 @@ void PKCS10_Request::force_decode()
 
 	size_t _version;
 	cert_req_info.decode(_version);
-	if(_version != 0)
+	if (_version != 0)
 		throw new Decoding_Error("Unknown version code in PKCS #10 request: " +
 									std::to_string(_version));
 
@@ -59,7 +59,7 @@ void PKCS10_Request::force_decode()
 	info.add(dn_subject.contents());
 
 	BER_Object public_key = cert_req_info.get_next_object();
-	if(public_key.type_tag != SEQUENCE || public_key.class_tag != CONSTRUCTED)
+	if (public_key.type_tag != SEQUENCE || public_key.class_tag != CONSTRUCTED)
 		throw new BER_Bad_Tag("PKCS10_Request: Unexpected tag for public key",
 								public_key.type_tag, public_key.class_tag);
 
@@ -72,7 +72,7 @@ void PKCS10_Request::force_decode()
 
 	BER_Object attr_bits = cert_req_info.get_next_object();
 
-	if(attr_bits.type_tag == 0 &&
+	if (attr_bits.type_tag == 0 &&
 		attr_bits.class_tag == ASN1_Tag(CONSTRUCTED | CONTEXT_SPECIFIC))
 	{
 		BER_Decoder attributes(attr_bits.value);
@@ -84,13 +84,13 @@ void PKCS10_Request::force_decode()
 		}
 		attributes.verify_end();
 	}
-	else if(attr_bits.type_tag != NO_OBJECT)
+	else if (attr_bits.type_tag != NO_OBJECT)
 		throw new BER_Bad_Tag("PKCS10_Request: Unexpected tag for attributes",
 								attr_bits.type_tag, attr_bits.class_tag);
 
 	cert_req_info.verify_end();
 
-	if(!this->check_signature(subject_public_key()))
+	if (!this->check_signature(subject_public_key()))
 		throw new Decoding_Error("PKCS #10 request: Bad signature detected");
 }
 
@@ -101,19 +101,19 @@ void PKCS10_Request::handle_attribute(in Attribute attr)
 {
 	BER_Decoder value(attr.parameters);
 
-	if(attr.oid == OIDS::lookup("PKCS9.EmailAddress"))
+	if (attr.oid == OIDS::lookup("PKCS9.EmailAddress"))
 	{
 		ASN1_String email;
 		value.decode(email);
 		info.add("RFC822", email.value());
 	}
-	else if(attr.oid == OIDS::lookup("PKCS9.ChallengePassword"))
+	else if (attr.oid == OIDS::lookup("PKCS9.ChallengePassword"))
 	{
 		ASN1_String challenge_password;
 		value.decode(challenge_password);
 		info.add("PKCS9.ChallengePassword", challenge_password.value());
 	}
-	else if(attr.oid == OIDS::lookup("PKCS9.ExtensionRequest"))
+	else if (attr.oid == OIDS::lookup("PKCS9.ExtensionRequest"))
 	{
 		Extensions extensions;
 		value.decode(extensions).verify_end();
@@ -181,7 +181,7 @@ Vector!( OID ) PKCS10_Request::ex_constraints() const
 	Vector!( string ) oids = info.get("X509v3.ExtendedKeyUsage");
 
 	Vector!( OID ) result;
-	for(size_t i = 0; i != oids.size(); ++i)
+	for (size_t i = 0; i != oids.size(); ++i)
 		result.push_back(OID(oids[i]));
 	return result;
 }

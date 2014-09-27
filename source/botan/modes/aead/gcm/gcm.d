@@ -17,7 +17,7 @@
 void GHASH::gcm_multiply(SafeVector!byte x) const
 {
 #if defined(BOTAN_HAS_GCM_CLMUL)
-	if(CPUID::has_clmul())
+	if (CPUID::has_clmul())
 		return gcm_multiply_clmul(&x[0], &m_H[0]);
 #endif
 
@@ -32,13 +32,13 @@ void GHASH::gcm_multiply(SafeVector!byte x) const
 
 	// SSE2 might be useful here
 
-	for(size_t i = 0; i != 2; ++i)
+	for (size_t i = 0; i != 2; ++i)
 	{
 		const ulong X = load_be!ulong(&x[0], i);
 
-		for(size_t j = 0; j != 64; ++j)
+		for (size_t j = 0; j != 64; ++j)
 		{
-			if((X >> (63-j)) & 1)
+			if ((X >> (63-j)) & 1)
 			{
 				Z[0] ^= H[0];
 				Z[1] ^= H[1];
@@ -153,7 +153,7 @@ GCM_Mode::GCM_Mode(BlockCipher* cipher, size_t tag_size) :
 	m_tag_size(tag_size),
 	m_cipher_name(cipher->name())
 {
-	if(cipher->block_size() != BS)
+	if (cipher->block_size() != BS)
 		throw new std::invalid_argument("GCM requires a 128 bit cipher so cannot be used with " +
 											 cipher->name());
 
@@ -161,7 +161,7 @@ GCM_Mode::GCM_Mode(BlockCipher* cipher, size_t tag_size) :
 
 	m_ctr.reset(new CTR_BE(cipher)); // CTR_BE takes ownership of cipher
 
-	if(m_tag_size != 8 && m_tag_size != 16)
+	if (m_tag_size != 8 && m_tag_size != 16)
 		throw new Invalid_Argument(name() + ": Bad tag size " + std::to_string(m_tag_size));
 }
 
@@ -205,12 +205,12 @@ void GCM_Mode::set_associated_data(in byte* ad, size_t ad_len)
 
 SafeVector!byte GCM_Mode::start(in byte* nonce, size_t nonce_len)
 {
-	if(!valid_nonce_length(nonce_len))
+	if (!valid_nonce_length(nonce_len))
 		throw new Invalid_IV_Length(name(), nonce_len);
 
 	SafeVector!byte y0(BS);
 
-	if(nonce_len == 12)
+	if (nonce_len == 12)
 	{
 		copy_mem(&y0[0], nonce, nonce_len);
 		y0[15] = 1;
@@ -268,7 +268,7 @@ void GCM_Decryption::finish(SafeVector!byte buffer, size_t offset)
 	const size_t remaining = sz - tag_size();
 
 	// handle any final input before the tag
-	if(remaining)
+	if (remaining)
 	{
 		m_ghash->update(buf, remaining);
 		m_ctr->cipher(buf, buf, remaining);
@@ -278,7 +278,7 @@ void GCM_Decryption::finish(SafeVector!byte buffer, size_t offset)
 
 	const byte* included_tag = &buffer[remaining];
 
-	if(!same_mem(&mac[0], included_tag, tag_size()))
+	if (!same_mem(&mac[0], included_tag, tag_size()))
 		throw new Integrity_Failure("GCM tag check failed");
 
 	buffer.resize(offset + remaining);

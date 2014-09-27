@@ -14,7 +14,7 @@
 */
 void RC6::encrypt_n(byte* input, byte* output, size_t blocks) const
 {
-	for(size_t i = 0; i != blocks; ++i)
+	for (size_t i = 0; i != blocks; ++i)
 	{
 		uint A = load_le!uint(input, 0);
 		uint B = load_le!uint(input, 1);
@@ -23,7 +23,7 @@ void RC6::encrypt_n(byte* input, byte* output, size_t blocks) const
 
 		B += S[0]; D += S[1];
 
-		for(size_t j = 0; j != 20; j += 4)
+		for (size_t j = 0; j != 20; j += 4)
 		{
 			uint T1, T2;
 
@@ -62,7 +62,7 @@ void RC6::encrypt_n(byte* input, byte* output, size_t blocks) const
 */
 void RC6::decrypt_n(byte* input, byte* output, size_t blocks) const
 {
-	for(size_t i = 0; i != blocks; ++i)
+	for (size_t i = 0; i != blocks; ++i)
 	{
 		uint A = load_le!uint(input, 0);
 		uint B = load_le!uint(input, 1);
@@ -71,7 +71,7 @@ void RC6::decrypt_n(byte* input, byte* output, size_t blocks) const
 
 		C -= S[43]; A -= S[42];
 
-		for(size_t j = 0; j != 20; j += 4)
+		for (size_t j = 0; j != 20; j += 4)
 		{
 			uint T1, T2;
 
@@ -116,16 +116,16 @@ void RC6::key_schedule(in byte* key)
 	const size_t MIX_ROUNDS	  = 3 * std::max(WORD_KEYLENGTH, S.size());
 
 	S[0] = 0xB7E15163;
-	for(size_t i = 1; i != S.size(); ++i)
+	for (size_t i = 1; i != S.size(); ++i)
 		S[i] = S[i-1] + 0x9E3779B9;
 
 	secure_vector<uint> K(8);
 
-	for(s32bit i = length-1; i >= 0; --i)
+	for (s32bit i = length-1; i >= 0; --i)
 		K[i/4] = (K[i/4] << 8) + key[i];
 
 	uint A = 0, B = 0;
-	for(size_t i = 0; i != MIX_ROUNDS; ++i)
+	for (size_t i = 0; i != MIX_ROUNDS; ++i)
 	{
 		A = rotate_left(S[i % S.size()] + A + B, 3);
 		B = rotate_left(K[i % WORD_KEYLENGTH] + A + B, (A + B) % 32);

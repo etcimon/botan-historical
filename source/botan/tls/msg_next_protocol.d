@@ -41,7 +41,7 @@ Vector!( byte ) Next_Protocol::serialize() const
 
 	buf.push_back(padding_len);
 
-	for(size_t i = 0; i != padding_len; ++i)
+	for (size_t i = 0; i != padding_len; ++i)
 		buf.push_back(0);
 
 	return buf;

@@ -16,14 +16,14 @@ size_t static_provider_weight(in string prov_name)
 	* them, set the provider explicitly for the algorithms you want
 	*/
 
-	if(prov_name == "aes_isa") return 9;
-	if(prov_name == "simd") return 8;
-	if(prov_name == "asm") return 7;
+	if (prov_name == "aes_isa") return 9;
+	if (prov_name == "simd") return 8;
+	if (prov_name == "asm") return 7;
 
-	if(prov_name == "core") return 5;
+	if (prov_name == "core") return 5;
 
-	if(prov_name == "openssl") return 2;
-	if(prov_name == "gmp") return 1;
+	if (prov_name == "openssl") return 2;
+	if (prov_name == "gmp") return 1;
 
 	return 0; // other/unknown
 }

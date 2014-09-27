@@ -97,7 +97,7 @@ OSSL_DSA_Signature_Operation::sign(in byte* msg, size_t msg_len,
 	BN_add(s.ptr(), s.ptr(), i.ptr());
 	BN_mod_mul(s.ptr(), s.ptr(), k.ptr(), q.ptr(), ctx.ptr());
 
-	if(BN_is_zero(r.ptr()) || BN_is_zero(s.ptr()))
+	if (BN_is_zero(r.ptr()) || BN_is_zero(s.ptr()))
 		throw new Internal_Error("OpenSSL_DSA_Op::sign: r or s was zero");
 
 	SafeVector!byte output(2*q_bytes);
@@ -135,19 +135,19 @@ bool OSSL_DSA_Verification_Operation::verify(in byte* msg, size_t msg_len,
 {
 	const size_t q_bytes = q.bytes();
 
-	if(sig_len != 2*q_bytes || msg_len > q_bytes)
+	if (sig_len != 2*q_bytes || msg_len > q_bytes)
 		return false;
 
 	OSSL_BN r(sig, q_bytes);
 	OSSL_BN s(sig + q_bytes, q_bytes);
 	OSSL_BN i(msg, msg_len);
 
-	if(BN_is_zero(r.ptr()) || BN_cmp(r.ptr(), q.ptr()) >= 0)
+	if (BN_is_zero(r.ptr()) || BN_cmp(r.ptr(), q.ptr()) >= 0)
 		return false;
-	if(BN_is_zero(s.ptr()) || BN_cmp(s.ptr(), q.ptr()) >= 0)
+	if (BN_is_zero(s.ptr()) || BN_cmp(s.ptr(), q.ptr()) >= 0)
 		return false;
 
-	if(BN_mod_inverse(s.ptr(), s.ptr(), q.ptr(), ctx.ptr()) == 0)
+	if (BN_mod_inverse(s.ptr(), s.ptr(), q.ptr(), ctx.ptr()) == 0)
 		return false;
 
 	OSSL_BN si;
@@ -161,7 +161,7 @@ bool OSSL_DSA_Verification_Operation::verify(in byte* msg, size_t msg_len,
 	BN_mod_mul(si.ptr(), si.ptr(), sr.ptr(), p.ptr(), ctx.ptr());
 	BN_nnmod(si.ptr(), si.ptr(), q.ptr(), ctx.ptr());
 
-	if(BN_cmp(si.ptr(), r.ptr()) == 0)
+	if (BN_cmp(si.ptr(), r.ptr()) == 0)
 		return true;
 	return false;
 
@@ -245,7 +245,7 @@ class OSSL_RSA_Public_Operation : public PK_Ops::Verification,
 	private:
 		BigInt public_op(in BigInt m) const
 		{
-			if(m >= n)
+			if (m >= n)
 				throw new Invalid_Argument("RSA public op - input is too large");
 
 			OSSL_BN m_bn(m), r;
@@ -253,7 +253,7 @@ class OSSL_RSA_Public_Operation : public PK_Ops::Verification,
 			return r.to_bigint();
 		}
 
-		const BigInt& n;
+		ref const BigInt n;
 		const OSSL_BN e, mod;
 		const OSSL_BN_CTX ctx;
 };
@@ -266,7 +266,7 @@ PK_Ops::Key_Agreement*
 OpenSSL_Engine::get_key_agreement_op(in Private_Key key, RandomNumberGenerator&) const
 {
 #if defined(BOTAN_HAS_DIFFIE_HELLMAN)
-	if(in DH_PrivateKey* dh = cast(const DH_PrivateKey*)(key))
+	if (in DH_PrivateKey* dh = cast(const DH_PrivateKey*)(key))
 		return new OSSL_DH_KA_Operation(*dh);
 #endif
 
@@ -277,12 +277,12 @@ PK_Ops::Signature*
 OpenSSL_Engine::get_signature_op(in Private_Key key, RandomNumberGenerator&) const
 {
 #if defined(BOTAN_HAS_RSA)
-	if(in RSA_PrivateKey* s = cast(const RSA_PrivateKey*)(key))
+	if (in RSA_PrivateKey* s = cast(const RSA_PrivateKey*)(key))
 		return new OSSL_RSA_Private_Operation(*s);
 #endif
 
 #if defined(BOTAN_HAS_DSA)
-	if(in DSA_PrivateKey* s = cast(const DSA_PrivateKey*)(key))
+	if (in DSA_PrivateKey* s = cast(const DSA_PrivateKey*)(key))
 		return new OSSL_DSA_Signature_Operation(*s);
 #endif
 
@@ -293,12 +293,12 @@ PK_Ops::Verification*
 OpenSSL_Engine::get_verify_op(in Public_Key key, RandomNumberGenerator&) const
 {
 #if defined(BOTAN_HAS_RSA)
-	if(in RSA_PublicKey* s = cast(const RSA_PublicKey*)(key))
+	if (in RSA_PublicKey* s = cast(const RSA_PublicKey*)(key))
 		return new OSSL_RSA_Public_Operation(*s);
 #endif
 
 #if defined(BOTAN_HAS_DSA)
-	if(in DSA_PublicKey* s = cast(const DSA_PublicKey*)(key))
+	if (in DSA_PublicKey* s = cast(const DSA_PublicKey*)(key))
 		return new OSSL_DSA_Verification_Operation(*s);
 #endif
 
@@ -309,7 +309,7 @@ PK_Ops::Encryption*
 OpenSSL_Engine::get_encryption_op(in Public_Key key, RandomNumberGenerator&) const
 {
 #if defined(BOTAN_HAS_RSA)
-	if(in RSA_PublicKey* s = cast(const RSA_PublicKey*)(key))
+	if (in RSA_PublicKey* s = cast(const RSA_PublicKey*)(key))
 		return new OSSL_RSA_Public_Operation(*s);
 #endif
 
@@ -320,7 +320,7 @@ PK_Ops::Decryption*
 OpenSSL_Engine::get_decryption_op(in Private_Key key, RandomNumberGenerator&) const
 {
 #if defined(BOTAN_HAS_RSA)
-	if(in RSA_PrivateKey* s = cast(const RSA_PrivateKey*)(key))
+	if (in RSA_PrivateKey* s = cast(const RSA_PrivateKey*)(key))
 		return new OSSL_RSA_Private_Operation(*s);
 #endif
 

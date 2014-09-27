@@ -28,13 +28,13 @@ class Directory_Walker : public File_Descriptor_Source
 		Directory_Walker(in string root) :
 			m_cur_dir(Pair<DIR*, string>(null, ""))
 		{
-			if(DIR* root_dir = ::opendir(root.c_str()))
+			if (DIR* root_dir = ::opendir(root.c_str()))
 				m_cur_dir = Pair(root_dir, root);
 		}
 
 		~Directory_Walker()
 		{
-			if(m_cur_dir.first)
+			if (m_cur_dir.first)
 				::closedir(m_cur_dir.first);
 		}
 
@@ -55,7 +55,7 @@ Pair!(struct dirent*, string) Directory_Walker::get_next_dirent()
 {
 	while(m_cur_dir.first)
 	{
-		if(struct dirent* dir = ::readdir(m_cur_dir.first))
+		if (struct dirent* dir = ::readdir(m_cur_dir.first))
 			return Pair(dir, m_cur_dir.second);
 
 		::closedir(m_cur_dir.first);
@@ -66,7 +66,7 @@ Pair!(struct dirent*, string) Directory_Walker::get_next_dirent()
 			const string next_dir_name = m_dirlist[0];
 			m_dirlist.pop_front();
 
-			if(DIR* next_dir = ::opendir(next_dir_name.c_str()))
+			if (DIR* next_dir = ::opendir(next_dir_name.c_str()))
 				m_cur_dir = Pair(next_dir, next_dir_name);
 		}
 	}
@@ -80,29 +80,29 @@ int Directory_Walker::next_fd()
 	{
 		Pair!(struct dirent*, string) entry = get_next_dirent();
 
-		if(!entry.first)
+		if (!entry.first)
 			break; // no more dirs
 
 		const string filename = entry.first->d_name;
 
-		if(filename == "." || filename == "..")
+		if (filename == "." || filename == "..")
 			continue;
 
 		const string full_path = entry.second + '/' + filename;
 
 		struct stat stat_buf;
-		if(::lstat(full_path.c_str(), &stat_buf) == -1)
+		if (::lstat(full_path.c_str(), &stat_buf) == -1)
 			continue;
 
-		if(S_ISDIR(stat_buf.st_mode))
+		if (S_ISDIR(stat_buf.st_mode))
 		{
 			add_directory(full_path);
 		}
-		else if(S_ISREG(stat_buf.st_mode) && (stat_buf.st_mode & S_IROTH))
+		else if (S_ISREG(stat_buf.st_mode) && (stat_buf.st_mode & S_IROTH))
 		{
 			int fd = ::open(full_path.c_str(), O_RDONLY | O_NOCTTY);
 
-			if(fd > 0)
+			if (fd > 0)
 				return fd;
 		}
 	}
@@ -117,17 +117,17 @@ void ProcWalking_EntropySource::poll(Entropy_Accumulator& accum)
 	const size_t MAX_FILES_READ_PER_POLL = 2048;
 	const double ENTROPY_ESTIMATE = 1.0 / (8*1024);
 
-	if(!m_dir)
+	if (!m_dir)
 		m_dir.reset(new Directory_Walker(m_path));
 
 	SafeVector!byte io_buffer = accum.get_io_buffer(4096);
 
-	for(size_t i = 0; i != MAX_FILES_READ_PER_POLL; ++i)
+	for (size_t i = 0; i != MAX_FILES_READ_PER_POLL; ++i)
 	{
 		int fd = m_dir->next_fd();
 
 		// If we've exhaused this walk of the directory, halt the poll
-		if(fd == -1)
+		if (fd == -1)
 		{
 			m_dir.reset();
 			break;
@@ -136,10 +136,10 @@ void ProcWalking_EntropySource::poll(Entropy_Accumulator& accum)
 		ssize_t got = ::read(fd, io_buffer[]);
 		::close(fd);
 
-		if(got > 0)
+		if (got > 0)
 			accum.add(&io_buffer[0], got, ENTROPY_ESTIMATE);
 
-		if(accum.polling_goal_achieved())
+		if (accum.polling_goal_achieved())
 			break;
 	}
 }

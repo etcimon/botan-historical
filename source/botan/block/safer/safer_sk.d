@@ -87,12 +87,12 @@ const byte[512] LOG = {
 */
 void SAFER_SK::encrypt_n(byte* input, byte* output, size_t blocks) const
 {
-	for(size_t i = 0; i != blocks; ++i)
+	for (size_t i = 0; i != blocks; ++i)
 	{
 		byte A = input[0], B = input[1], C = input[2], D = input[3],
 			  E = input[4], F = input[5], G = input[6], H = input[7], X, Y;
 
-		for(size_t j = 0; j != 16*rounds; j += 16)
+		for (size_t j = 0; j != 16*rounds; j += 16)
 		{
 			A = EXP[A ^ EK[j  ]]; B = LOG[B + EK[j+1]];
 			C = LOG[C + EK[j+2]]; D = EXP[D ^ EK[j+3]];
@@ -123,7 +123,7 @@ void SAFER_SK::encrypt_n(byte* input, byte* output, size_t blocks) const
 */
 void SAFER_SK::decrypt_n(byte* input, byte* output, size_t blocks) const
 {
-	for(size_t i = 0; i != blocks; ++i)
+	for (size_t i = 0; i != blocks; ++i)
 	{
 		byte A = input[0], B = input[1], C = input[2], D = input[3],
 			  E = input[4], F = input[5], G = input[6], H = input[7];
@@ -132,7 +132,7 @@ void SAFER_SK::decrypt_n(byte* input, byte* output, size_t blocks) const
 		D ^= EK[16*rounds+3]; E ^= EK[16*rounds+4]; F -= EK[16*rounds+5];
 		G -= EK[16*rounds+6]; H ^= EK[16*rounds+7];
 
-		for(s32bit j = 16*(rounds-1); j >= 0; j -= 16)
+		for (s32bit j = 16*(rounds-1); j >= 0; j -= 16)
 		{
 			byte T = E; E = B; B = C; C = T; T = F; F = D; D = G; G = T;
 			A -= E; B -= F; C -= G; D -= H; E -= A; F -= B; G -= C; H -= D;
@@ -205,17 +205,17 @@ void SAFER_SK::key_schedule(in byte* key, size_t)
 
 	SafeVector!byte KB(18);
 
-	for(size_t i = 0; i != 8; ++i)
+	for (size_t i = 0; i != 8; ++i)
 	{
 		KB[ 8] ^= KB[i] = rotate_left(key[i], 5);
 		KB[17] ^= KB[i+9] = EK[i] = key[i+8];
 	}
 
-	for(size_t i = 0; i != rounds; ++i)
+	for (size_t i = 0; i != rounds; ++i)
 	{
-		for(size_t j = 0; j != 18; ++j)
+		for (size_t j = 0; j != 18; ++j)
 			KB[j] = rotate_left(KB[j], 6);
-		for(size_t j = 0; j != 16; ++j)
+		for (size_t j = 0; j != 16; ++j)
 			EK[16*i+j+8] = KB[KEY_INDEX[16*i+j]] + BIAS[16*i+j];
 	}
 }
@@ -246,7 +246,7 @@ BlockCipher* SAFER_SK::clone() const
 */
 SAFER_SK::SAFER_SK(size_t r) : rounds(r)
 {
-	if(rounds > 13 || rounds == 0)
+	if (rounds > 13 || rounds == 0)
 		throw new Invalid_Argument(name() + ": Invalid number of rounds");
 }
 

@@ -29,7 +29,7 @@ string test_filter_kat(Filter* filter,
 
 		const bool same = (got == expected);
 
-		if(same)
+		if (same)
 			return "passed";
 		else
 			return (string("got ") + got + " expected " + expected);
@@ -55,7 +55,7 @@ algorithm_kat_detailed(in SCAN_Name algo_name,
 	Vector!( string ) providers = af.providers_of(algo);
 	HashMap!(string, string) all_results;
 
-	if(providers.empty()) // no providers, nothing to do
+	if (providers.empty()) // no providers, nothing to do
 		return all_results;
 
 	const string input = search_map(vars, string("input"));
@@ -64,23 +64,23 @@ algorithm_kat_detailed(in SCAN_Name algo_name,
 	SymmetricKey key(search_map(vars, string("key")));
 	InitializationVector iv(search_map(vars, string("iv")));
 
-	for(size_t i = 0; i != providers.size(); ++i)
+	for (size_t i = 0; i != providers.size(); ++i)
 	{
 		const string provider = providers[i];
 
-		if(const HashFunction* proto =
+		if (const HashFunction* proto =
 				af.prototype_hash_function(algo, provider))
 		{
 			Filter* filt = new Hash_Filter(proto->clone());
 			all_results[provider] = test_filter_kat(filt, input, output);
 		}
-		else if(const MessageAuthenticationCode* proto =
+		else if (const MessageAuthenticationCode* proto =
 					  af.prototype_mac(algo, provider))
 		{
 			Keyed_Filter* filt = new MAC_Filter(proto->clone(), key);
 			all_results[provider] = test_filter_kat(filt, input, output);
 		}
-		else if(const StreamCipher* proto =
+		else if (const StreamCipher* proto =
 					  af.prototype_stream_cipher(algo, provider))
 		{
 			Keyed_Filter* filt = new StreamCipher_Filter(proto->clone());
@@ -89,7 +89,7 @@ algorithm_kat_detailed(in SCAN_Name algo_name,
 
 			all_results[provider] = test_filter_kat(filt, input, output);
 		}
-		else if(const BlockCipher* proto =
+		else if (const BlockCipher* proto =
 					  af.prototype_block_cipher(algo, provider))
 		{
 			Keyed_Filter* enc = get_cipher_mode(proto, ENCRYPTION,
@@ -100,7 +100,7 @@ algorithm_kat_detailed(in SCAN_Name algo_name,
 															algo_name.cipher_mode(),
 															algo_name.cipher_mode_pad());
 
-			if(!enc || !dec)
+			if (!enc || !dec)
 			{
 				delete enc;
 				delete dec;
@@ -109,27 +109,27 @@ algorithm_kat_detailed(in SCAN_Name algo_name,
 
 			enc->set_key(key);
 
-			if(enc->valid_iv_length(iv.length()))
+			if (enc->valid_iv_length(iv.length()))
 				enc->set_iv(iv);
-			else if(!enc->valid_iv_length(0))
+			else if (!enc->valid_iv_length(0))
 				throw new Invalid_IV_Length(algo, iv.length());
 
 			dec->set_key(key);
 
-			if(dec->valid_iv_length(iv.length()))
+			if (dec->valid_iv_length(iv.length()))
 				dec->set_iv(iv);
-			else if(!dec->valid_iv_length(0))
+			else if (!dec->valid_iv_length(0))
 				throw new Invalid_IV_Length(algo, iv.length());
 
 			const Vector!( byte ) ad = hex_decode(search_map(vars, string("ad")));
 
-			if(!ad.empty())
+			if (!ad.empty())
 			{
-				if(AEAD_Filter* enc_aead = cast(AEAD_Filter*)(enc))
+				if (AEAD_Filter* enc_aead = cast(AEAD_Filter*)(enc))
 				{
 					enc_aead->set_associated_data(&ad[0], ad.size());
 
-					if(AEAD_Filter* dec_aead = cast(AEAD_Filter*)(dec))
+					if (AEAD_Filter* dec_aead = cast(AEAD_Filter*)(dec))
 						dec_aead->set_associated_data(&ad[0], ad.size());
 				}
 			}
@@ -151,7 +151,7 @@ algorithm_kat(in SCAN_Name algo_name,
 
 	std::map<string, bool> pass_or_fail;
 
-	for(auto i : result)
+	foreach (i; result)
 		pass_or_fail[i.first] = (i.second == "passed");
 
 	return pass_or_fail;
@@ -162,9 +162,9 @@ namespace {
 void verify_results(in string algo,
 						  const HashMap!(string, string)& results)
 {
-	for(auto i = results.begin(); i != results.end(); ++i)
+	for (auto i = results.begin(); i != results.end(); ++i)
 	{
-		if(i->second != "passed")
+		if (i->second != "passed")
 			throw new Self_Test_Failure(algo + " self-test failed (" + i->second + ")" +
 											" with provider " + i->first);
 	}

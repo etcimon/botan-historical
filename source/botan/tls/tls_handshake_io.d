@@ -39,13 +39,13 @@ Protocol_Version Stream_Handshake_IO::initial_record_version() const
 void Stream_Handshake_IO::add_record(in Vector!byte record,
 												 Record_Type record_type, ulong)
 {
-	if(record_type == HANDSHAKE)
+	if (record_type == HANDSHAKE)
 	{
 		m_queue.insert(m_queue.end(), record.begin(), record.end());
 	}
-	else if(record_type == CHANGE_CIPHER_SPEC)
+	else if (record_type == CHANGE_CIPHER_SPEC)
 	{
-		if(record.size() != 1 || record[0] != 1)
+		if (record.size() != 1 || record[0] != 1)
 			throw new Decoding_Error("Invalid ChangeCipherSpec");
 
 		// Pretend it's a regular handshake message of zero length
@@ -59,11 +59,11 @@ void Stream_Handshake_IO::add_record(in Vector!byte record,
 Pair!(Handshake_Type, Vector!( byte) )
 Stream_Handshake_IO::get_next_record(bool)
 {
-	if(m_queue.size() >= 4)
+	if (m_queue.size() >= 4)
 	{
 		const size_t length = make_uint(0, m_queue[1], m_queue[2], m_queue[3]);
 
-		if(m_queue.size() >= length + 4)
+		if (m_queue.size() >= length + 4)
 		{
 			Handshake_Type type = cast(Handshake_Type)(m_queue[0]);
 
@@ -100,7 +100,7 @@ Vector!( byte ) Stream_Handshake_IO::send(in Handshake_Message msg)
 {
 	const Vector!( byte ) msg_bits = msg.serialize();
 
-	if(msg.type() == HANDSHAKE_CCS)
+	if (msg.type() == HANDSHAKE_CCS)
 	{
 		m_send_hs(CHANGE_CIPHER_SPEC, msg_bits);
 		return Vector!( byte )(); // not included in handshake hashes
@@ -122,7 +122,7 @@ void Datagram_Handshake_IO::add_record(in Vector!byte record,
 {
 	const ushort epoch = cast(ushort)(record_sequence >> 48);
 
-	if(record_type == CHANGE_CIPHER_SPEC)
+	if (record_type == CHANGE_CIPHER_SPEC)
 	{
 		m_ccs_epochs.insert(epoch);
 		return;
@@ -135,7 +135,7 @@ void Datagram_Handshake_IO::add_record(in Vector!byte record,
 
 	while(record_size)
 	{
-		if(record_size < DTLS_HANDSHAKE_HEADER_LEN)
+		if (record_size < DTLS_HANDSHAKE_HEADER_LEN)
 			return; // completely bogus? at least degenerate/weird
 
 		const byte msg_type = record_bits[0];
@@ -146,10 +146,10 @@ void Datagram_Handshake_IO::add_record(in Vector!byte record,
 
 		const size_t total_size = DTLS_HANDSHAKE_HEADER_LEN + fragment_length;
 
-		if(record_size < total_size)
+		if (record_size < total_size)
 			throw new Decoding_Error("Bad lengths in DTLS header");
 
-		if(message_seq >= m_in_message_seq)
+		if (message_seq >= m_in_message_seq)
 		{
 			m_messages[message_seq].add_fragment(&record_bits[DTLS_HANDSHAKE_HEADER_LEN],
 															 fragment_length,
@@ -167,16 +167,16 @@ void Datagram_Handshake_IO::add_record(in Vector!byte record,
 Pair!(Handshake_Type, Vector!( byte) )
 Datagram_Handshake_IO::get_next_record(bool expecting_ccs)
 {
-	if(!m_flights.rbegin()->empty())
+	if (!m_flights.rbegin()->empty())
 		m_flights.push_back(Vector!( ushort )());
 
-	if(expecting_ccs)
+	if (expecting_ccs)
 	{
-		if(!m_messages.empty())
+		if (!m_messages.empty())
 		{
 			const ushort current_epoch = m_messages.begin()->second.epoch();
 
-			if(m_ccs_epochs.count(current_epoch))
+			if (m_ccs_epochs.count(current_epoch))
 				return Pair(HANDSHAKE_CCS, Vector!( byte )());
 		}
 
@@ -185,7 +185,7 @@ Datagram_Handshake_IO::get_next_record(bool expecting_ccs)
 
 	auto i = m_messages.find(m_in_message_seq);
 
-	if(i == m_messages.end() || !i->second.complete())
+	if (i == m_messages.end() || !i->second.complete())
 		return Pair(HANDSHAKE_NONE, Vector!( byte )());
 
 	m_in_message_seq += 1;
@@ -201,26 +201,26 @@ void Datagram_Handshake_IO::Handshake_Reassembly::add_fragment(
 	byte msg_type,
 	size_t msg_length)
 {
-	if(complete())
+	if (complete())
 		return; // already have entire message, ignore this
 
-	if(m_msg_type == HANDSHAKE_NONE)
+	if (m_msg_type == HANDSHAKE_NONE)
 	{
 		m_epoch = epoch;
 		m_msg_type = msg_type;
 		m_msg_length = msg_length;
 	}
 
-	if(msg_type != m_msg_type || msg_length != m_msg_length || epoch != m_epoch)
+	if (msg_type != m_msg_type || msg_length != m_msg_length || epoch != m_epoch)
 		throw new Decoding_Error("Inconsistent values in DTLS handshake header");
 
-	if(fragment_offset > m_msg_length)
+	if (fragment_offset > m_msg_length)
 		throw new Decoding_Error("Fragment offset past end of message");
 
-	if(fragment_offset + fragment_length > m_msg_length)
+	if (fragment_offset + fragment_length > m_msg_length)
 		throw new Decoding_Error("Fragment overlaps past end of message");
 
-	if(fragment_offset == 0 && fragment_length == m_msg_length)
+	if (fragment_offset == 0 && fragment_length == m_msg_length)
 	{
 		m_fragments.clear();
 		m_message.assign(fragment, fragment+fragment_length);
@@ -235,13 +235,13 @@ void Datagram_Handshake_IO::Handshake_Reassembly::add_fragment(
 		* otherwise we expose ourselves to the classic fingerprinting
 		* and IDS evasion attacks on IP fragmentation.
 		*/
-		for(size_t i = 0; i != fragment_length; ++i)
+		for (size_t i = 0; i != fragment_length; ++i)
 			m_fragments[fragment_offset+i] = fragment[i];
 
-		if(m_fragments.size() == m_msg_length)
+		if (m_fragments.size() == m_msg_length)
 		{
 			m_message.resize(m_msg_length);
-			for(size_t i = 0; i != m_msg_length; ++i)
+			for (size_t i = 0; i != m_msg_length; ++i)
 				m_message[i] = m_fragments[i];
 			m_fragments.clear();
 		}
@@ -256,7 +256,7 @@ bool Datagram_Handshake_IO::Handshake_Reassembly::complete() const
 Pair!(Handshake_Type, Vector!( byte) )
 Datagram_Handshake_IO::Handshake_Reassembly::message() const
 {
-	if(!complete())
+	if (!complete())
 		throw new Internal_Error("Datagram_Handshake_IO - message not complete");
 
 	return Pair(cast(Handshake_Type)(m_msg_type), m_message);
@@ -309,7 +309,7 @@ size_t split_for_mtu(size_t mtu, size_t msg_size)
 
 	const size_t parts = (msg_size + mtu) / mtu;
 
-	if(parts + DTLS_HEADERS_SIZE > mtu)
+	if (parts + DTLS_HEADERS_SIZE > mtu)
 		return parts + 1;
 
 	return parts;
@@ -326,7 +326,7 @@ Datagram_Handshake_IO::send(in Handshake_Message msg)
 
 	std::tuple<ushort, byte, Vector!( byte )> msg_info(epoch, msg_type, msg_bits);
 
-	if(msg_type == HANDSHAKE_CCS)
+	if (msg_type == HANDSHAKE_CCS)
 	{
 		m_send_hs(epoch, CHANGE_CIPHER_SPEC, msg_bits);
 		return Vector!( byte )(); // not included in handshake hashes
@@ -335,7 +335,7 @@ Datagram_Handshake_IO::send(in Handshake_Message msg)
 	const Vector!( byte ) no_fragment =
 		format_w_seq(msg_bits, msg_type, m_out_message_seq);
 
-	if(no_fragment.size() + DTLS_HEADER_SIZE <= m_mtu)
+	if (no_fragment.size() + DTLS_HEADER_SIZE <= m_mtu)
 		m_send_hs(epoch, HANDSHAKE, no_fragment);
 	else
 	{

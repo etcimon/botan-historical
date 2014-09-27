@@ -24,10 +24,10 @@ namespace {
 string find_full_path_if_exists(in Vector!( string ) trusted_path,
 												 in string proc)
 {
-	for(auto dir : trusted_path)
+	foreach (dir; trusted_path)
 	{
 		const string full_path = dir + "/" + proc;
-		if(::access(full_path.c_str(), X_OK) == 0)
+		if (::access(full_path.c_str(), X_OK) == 0)
 			return full_path;
 	}
 
@@ -39,12 +39,12 @@ size_t concurrent_processes(size_t user_request)
 	const size_t DEFAULT_CONCURRENT = 2;
 	const size_t MAX_CONCURRENT = 8;
 
-	if(user_request > 0 && user_request < MAX_CONCURRENT)
+	if (user_request > 0 && user_request < MAX_CONCURRENT)
 		return user_request;
 
 	const long online_cpus = ::sysconf(_SC_NPROCESSORS_ONLN);
 
-	if(online_cpus > 0)
+	if (online_cpus > 0)
 		return cast(size_t)(online_cpus); // maybe fewer?
 
 	return DEFAULT_CONCURRENT;
@@ -100,17 +100,17 @@ void Unix_EntropySource::Unix_Process::spawn(in Vector!( string ) args)
 	shutdown();
 
 	int pipe[2];
-	if(::pipe(pipe) != 0)
+	if (::pipe(pipe) != 0)
 		return;
 
 	pid_t pid = ::fork();
 
-	if(pid == -1)
+	if (pid == -1)
 	{
 		::close(pipe[0]);
 		::close(pipe[1]);
 	}
-	else if(pid > 0) // in parent
+	else if (pid > 0) // in parent
 	{
 		m_pid = pid;
 		m_fd = pipe[0];
@@ -118,11 +118,11 @@ void Unix_EntropySource::Unix_Process::spawn(in Vector!( string ) args)
 	}
 	else // in child
 	{
-		if(::dup2(pipe[1], STDOUT_FILENO) == -1)
+		if (::dup2(pipe[1], STDOUT_FILENO) == -1)
 			::exit(127);
-		if(::close(pipe[0]) != 0 || ::close(pipe[1]) != 0)
+		if (::close(pipe[0]) != 0 || ::close(pipe[1]) != 0)
 			::exit(127);
-		if(close(STDERR_FILENO) != 0)
+		if (close(STDERR_FILENO) != 0)
 			::exit(127);
 
 		do_exec(args);
@@ -132,7 +132,7 @@ void Unix_EntropySource::Unix_Process::spawn(in Vector!( string ) args)
 
 void Unix_EntropySource::Unix_Process::shutdown()
 {
-	if(m_pid == -1)
+	if (m_pid == -1)
 		return;
 
 	::close(m_fd);
@@ -140,7 +140,7 @@ void Unix_EntropySource::Unix_Process::shutdown()
 
 	pid_t reaped = waitpid(m_pid, null, WNOHANG);
 
-	if(reaped == 0)
+	if (reaped == 0)
 	{
 		/*
 		* Child is still alive - send it SIGTERM, sleep for a bit and
@@ -155,7 +155,7 @@ void Unix_EntropySource::Unix_Process::shutdown()
 
 		reaped = ::waitpid(m_pid, null, WNOHANG);
 
-		if(reaped == 0)
+		if (reaped == 0)
 		{
 			::kill(m_pid, SIGKILL);
 			do
@@ -178,17 +178,17 @@ void Unix_EntropySource::poll(Entropy_Accumulator& accum)
 {
 	// refuse to run as root (maybe instead setuid to nobody before exec?)
 	// fixme: this should also check for setgid
-	if(::getuid() == 0 || ::geteuid() == 0)
+	if (::getuid() == 0 || ::geteuid() == 0)
 		return;
 
-	if(m_sources.empty())
+	if (m_sources.empty())
 	{
 		auto sources = get_default_sources();
 
-		for(auto src : sources)
+		foreach (src; sources)
 		{
 			const string path = find_full_path_if_exists(m_trusted_paths, src[0]);
-			if(path != "")
+			if (path != "")
 			{
 				src[0] = path;
 				m_sources.push_back(src);
@@ -196,7 +196,7 @@ void Unix_EntropySource::poll(Entropy_Accumulator& accum)
 		}
 	}
 
-	if(m_sources.empty())
+	if (m_sources.empty())
 		return; // still empty, really nothing to try
 
 	const size_t MS_WAIT_TIME = 32;
@@ -214,17 +214,17 @@ void Unix_EntropySource::poll(Entropy_Accumulator& accum)
 
 		Vector!( int ) fds;
 
-		for(auto& proc : m_procs)
+		foreach (ref proc; m_procs)
 		{
 			int fd = proc.fd();
-			if(fd > 0)
+			if (fd > 0)
 			{
 				fds.push_back(fd);
 				FD_SET(fd, &read_set);
 			}
 		}
 
-		if(fds.empty())
+		if (fds.empty())
 			break;
 
 		const int max_fd = *std::max_element(fds.begin(), fds.end());
@@ -233,17 +233,17 @@ void Unix_EntropySource::poll(Entropy_Accumulator& accum)
 		timeout.tv_sec = (MS_WAIT_TIME / 1000);
 		timeout.tv_usec = (MS_WAIT_TIME % 1000) * 1000;
 
-		if(::select(max_fd + 1, &read_set, null, null, &timeout) < 0)
+		if (::select(max_fd + 1, &read_set, null, null, &timeout) < 0)
 			return; // or continue?
 
-		for(auto& proc : m_procs)
+		foreach (ref proc; m_procs)
 		{
 			int fd = proc.fd();
 
-			if(FD_ISSET(fd, &read_set))
+			if (FD_ISSET(fd, &read_set))
 			{
 				const ssize_t got = ::read(fd, &io_buffer[0], io_buffer.size());
-				if(got > 0)
+				if (got > 0)
 					accum.add(&io_buffer[0], got, ENTROPY_ESTIMATE);
 				else
 					proc.spawn(next_source());

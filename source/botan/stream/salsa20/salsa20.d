@@ -29,7 +29,7 @@ void hsalsa20(uint[8] output, const uint[16] input)
 			 x08 = input[ 8], x09 = input[ 9], x10 = input[10], x11 = input[11],
 			 x12 = input[12], x13 = input[13], x14 = input[14], x15 = input[15];
 
-	for(size_t i = 0; i != 10; ++i)
+	for (size_t i = 0; i != 10; ++i)
 	{
 		SALSA20_QUARTER_ROUND(x00, x04, x08, x12);
 		SALSA20_QUARTER_ROUND(x05, x09, x13, x01);
@@ -62,7 +62,7 @@ void salsa20(byte[64] output, const uint[16] input)
 			 x08 = input[ 8], x09 = input[ 9], x10 = input[10], x11 = input[11],
 			 x12 = input[12], x13 = input[13], x14 = input[14], x15 = input[15];
 
-	for(size_t i = 0; i != 10; ++i)
+	for (size_t i = 0; i != 10; ++i)
 	{
 		SALSA20_QUARTER_ROUND(x00, x04, x08, x12);
 		SALSA20_QUARTER_ROUND(x05, x09, x13, x01);
@@ -147,7 +147,7 @@ void Salsa20::key_schedule(in byte* key, size_t length)
 	m_state[3] = load_le!uint(key, 2);
 	m_state[4] = load_le!uint(key, 3);
 
-	if(length == 32)
+	if (length == 32)
 		key += 16;
 
 	m_state[11] = load_le!uint(key, 0);
@@ -166,10 +166,10 @@ void Salsa20::key_schedule(in byte* key, size_t length)
 */
 void Salsa20::set_iv(in byte* iv, size_t length)
 {
-	if(!valid_iv_length(length))
+	if (!valid_iv_length(length))
 		throw new Invalid_IV_Length(name(), length);
 
-	if(length == 8)
+	if (length == 8)
 	{
 		// Salsa20
 		m_state[6] = load_le!uint(iv, 0);

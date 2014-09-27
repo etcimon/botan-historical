@@ -63,7 +63,7 @@ void RIPEMD_128::compress_n(in byte* input, size_t blocks)
 					 MAGIC4 = 0x8F1BBCDC, MAGIC5 = 0x50A28BE6,
 					 MAGIC6 = 0x5C4DD124, MAGIC7 = 0x6D703EF3;
 
-	for(size_t i = 0; i != blocks; ++i)
+	for (size_t i = 0; i != blocks; ++i)
 	{
 		load_le(&M[0], input, M.size());
 
@@ -153,7 +153,7 @@ void RIPEMD_128::compress_n(in byte* input, size_t blocks)
 */
 void RIPEMD_128::copy_out(byte* output)
 {
-	for(size_t i = 0; i != output_length(); i += 4)
+	for (size_t i = 0; i != output_length(); i += 4)
 		store_le(digest[i/4], output + i);
 }
 

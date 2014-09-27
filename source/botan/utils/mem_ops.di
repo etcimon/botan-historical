@@ -57,7 +57,7 @@ bool same_mem(T)(const T* p1, const T* p2, size_t n)
 {
 	volatile T difference = 0;
 
-	for(size_t i = 0; i != n; ++i)
+	for (size_t i = 0; i != n; ++i)
 		difference |= (p1[i] ^ p2[i]);
 
 	return difference == 0;

@@ -36,7 +36,7 @@ struct Response
 
 		void throw_unless_ok()
 		{
-			if(status_code() != 200)
+			if (status_code() != 200)
 				throw new Exception("HTTP error: " + status_message());
 		}
 

@@ -19,7 +19,7 @@ void Lion::encrypt_n(byte* input, byte* output, size_t blocks) const
 	SafeVector!byte buffer_vec(LEFT_SIZE);
 	byte* buffer = &buffer_vec[0];
 
-	for(size_t i = 0; i != blocks; ++i)
+	for (size_t i = 0; i != blocks; ++i)
 	{
 		xor_buf(buffer, input, &m_key1[0], LEFT_SIZE);
 		m_cipher->set_key(buffer, LEFT_SIZE);
@@ -49,7 +49,7 @@ void Lion::decrypt_n(byte* input, byte* output, size_t blocks) const
 	SafeVector!byte buffer_vec(LEFT_SIZE);
 	byte* buffer = &buffer_vec[0];
 
-	for(size_t i = 0; i != blocks; ++i)
+	for (size_t i = 0; i != blocks; ++i)
 	{
 		xor_buf(buffer, input, &m_key2[0], LEFT_SIZE);
 		m_cipher->set_key(buffer, LEFT_SIZE);
@@ -117,10 +117,10 @@ Lion::Lion(HashFunction* hash, StreamCipher* cipher, size_t block_size) :
 	m_hash(hash),
 	m_cipher(cipher)
 {
-	if(2*left_size() + 1 > m_block_size)
+	if (2*left_size() + 1 > m_block_size)
 		throw new Invalid_Argument(name() + ": Chosen block size is too small");
 
-	if(!m_cipher->valid_keylength(left_size()))
+	if (!m_cipher->valid_keylength(left_size()))
 		throw new Invalid_Argument(name() + ": This stream/hash combo is invalid");
 
 	m_key1.resize(left_size());

@@ -31,7 +31,7 @@ Library_State& global_state()
 	/* Lazy initialization. Botan still needs to be deinitialized later
 		on or memory might leak.
 	*/
-	if(!global_lib_state)
+	if (!global_lib_state)
 	{
 		global_lib_state = new Library_State;
 		global_lib_state->initialize();
@@ -53,7 +53,7 @@ void set_global_state(Library_State* new_state)
 */
 bool set_global_state_unless_set(Library_State* new_state)
 {
-	if(global_lib_state)
+	if (global_lib_state)
 	{
 		delete new_state;
 		return false;

@@ -42,7 +42,7 @@
 */
 Algorithm_Factory& Library_State::algorithm_factory() const
 {
-	if(!m_algorithm_factory)
+	if (!m_algorithm_factory)
 		throw new Invalid_State("Uninitialized in Library_State::algorithm_factory");
 	return *m_algorithm_factory;
 }
@@ -57,7 +57,7 @@ RandomNumberGenerator& Library_State::global_rng()
 
 void Library_State::initialize()
 {
-	if(m_algorithm_factory.get())
+	if (m_algorithm_factory.get())
 		throw new Invalid_State("Library_State has already been initialized");
 
 	CPUID::initialize();

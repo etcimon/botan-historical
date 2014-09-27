@@ -18,7 +18,7 @@ void botan_sha160_x86_64_compress(uint[5], const byte[64], uint[80]);
 */
 void SHA_160_X86_64::compress_n(in byte* input, size_t blocks)
 {
-	for(size_t i = 0; i != blocks; ++i)
+	for (size_t i = 0; i != blocks; ++i)
 	{
 		botan_sha160_x86_64_compress(&digest[0], input, &W[0]);
 		input += hash_block_size();

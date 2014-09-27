@@ -18,7 +18,7 @@ NR_PublicKey::NR_PublicKey(in AlgorithmIdentifier alg_id,
 /*
 * NR_PublicKey Constructor
 */
-NR_PublicKey::NR_PublicKey(in DL_Group grp, const BigInt& y1)
+NR_PublicKey::NR_PublicKey(in DL_Group grp, ref const BigInt y1)
 {
 	group = grp;
 	y = y1;
@@ -29,17 +29,17 @@ NR_PublicKey::NR_PublicKey(in DL_Group grp, const BigInt& y1)
 */
 NR_PrivateKey::NR_PrivateKey(RandomNumberGenerator& rng,
 									  const DL_Group& grp,
-									  const BigInt& x_arg)
+									  ref const BigInt x_arg)
 {
 	group = grp;
 	x = x_arg;
 
-	if(x == 0)
+	if (x == 0)
 		x = BigInt::random_integer(rng, 2, group_q() - 1);
 
 	y = power_mod(group_g(), x, group_p());
 
-	if(x_arg == 0)
+	if (x_arg == 0)
 		gen_check(rng);
 	else
 		load_check(rng);
@@ -60,10 +60,10 @@ NR_PrivateKey::NR_PrivateKey(in AlgorithmIdentifier alg_id,
 */
 bool NR_PrivateKey::check_key(RandomNumberGenerator& rng, bool strong) const
 {
-	if(!DL_Scheme_PrivateKey::check_key(rng, strong) || x >= group_q())
+	if (!DL_Scheme_PrivateKey::check_key(rng, strong) || x >= group_q())
 		return false;
 
-	if(!strong)
+	if (!strong)
 		return true;
 
 	return KeyPair::signature_consistency_check(rng, *this, "EMSA1(SHA-1)");
@@ -85,7 +85,7 @@ NR_Signature_Operation::sign(in byte* msg, size_t msg_len,
 
 	BigInt f(msg, msg_len);
 
-	if(f >= q)
+	if (f >= q)
 		throw new Invalid_Argument("NR_Signature_Operation: Input is out of range");
 
 	BigInt c, d;
@@ -119,15 +119,15 @@ NR_Verification_Operation::NR_Verification_Operation(in NR_PublicKey nr) :
 SafeVector!byte
 NR_Verification_Operation::verify_mr(in byte* msg, size_t msg_len)
 {
-	const BigInt& q = mod_q.get_modulus();
+	ref const BigInt q = mod_q.get_modulus();
 	size_t msg_len = msg.length;
-	if(msg_len != 2*q.bytes())
+	if (msg_len != 2*q.bytes())
 		throw new Invalid_Argument("NR verification: Invalid signature");
 
 	BigInt c(msg, q.bytes());
 	BigInt d(msg + q.bytes(), q.bytes());
 
-	if(c.is_zero() || c >= q || d >= q)
+	if (c.is_zero() || c >= q || d >= q)
 		throw new Invalid_Argument("NR verification: Invalid signature");
 
 	auto future_y_c = std::async(std::launch::async, powermod_y_p, c);

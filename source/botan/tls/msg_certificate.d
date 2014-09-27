@@ -30,24 +30,24 @@ Certificate::Certificate(Handshake_IO& io,
 */
 Certificate::Certificate(in Vector!byte buf)
 {
-	if(buf.size() < 3)
+	if (buf.size() < 3)
 		throw new Decoding_Error("Certificate: Message malformed");
 
 	const size_t total_size = make_uint(0, buf[0], buf[1], buf[2]);
 
-	if(total_size != buf.size() - 3)
+	if (total_size != buf.size() - 3)
 		throw new Decoding_Error("Certificate: Message malformed");
 
 	const byte* certs = &buf[3];
 
 	while(size_t remaining_bytes = &buf[buf.size()] - certs)
 	{
-		if(remaining_bytes < 3)
+		if (remaining_bytes < 3)
 			throw new Decoding_Error("Certificate: Message malformed");
 
 		const size_t cert_size = make_uint(0, certs[0], certs[1], certs[2]);
 
-		if(remaining_bytes < (3 + cert_size))
+		if (remaining_bytes < (3 + cert_size))
 			throw new Decoding_Error("Certificate: Message malformed");
 
 		DataSource_Memory cert_buf(&certs[3], cert_size);
@@ -64,17 +64,17 @@ Vector!( byte ) Certificate::serialize() const
 {
 	Vector!( byte ) buf(3);
 
-	for(size_t i = 0; i != m_certs.size(); ++i)
+	for (size_t i = 0; i != m_certs.size(); ++i)
 	{
 		Vector!( byte ) raw_cert = m_certs[i].BER_encode();
 		const size_t cert_size = raw_cert.size();
-		for(size_t i = 0; i != 3; ++i)
+		for (size_t i = 0; i != 3; ++i)
 			buf.push_back(get_byte<uint>(i+1, cert_size));
 		buf += raw_cert;
 	}
 
 	const size_t buf_size = buf.size() - 3;
-	for(size_t i = 0; i != 3; ++i)
+	for (size_t i = 0; i != 3; ++i)
 		buf[i] = get_byte<uint>(i+1, buf_size);
 
 	return buf;

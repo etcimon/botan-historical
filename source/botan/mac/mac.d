@@ -14,7 +14,7 @@ bool MessageAuthenticationCode::verify_mac(in byte* mac, size_t length)
 {
 	SafeVector!byte our_mac = flush();
 
-	if(our_mac.size() != length)
+	if (our_mac.size() != length)
 		return false;
 
 	return same_mem(&our_mac[0], &mac[0], length);

@@ -20,10 +20,10 @@ HMAC_DRBG::HMAC_DRBG(MessageAuthenticationCode* mac,
 void HMAC_DRBG::randomize(byte* output)
 {
 	size_t length = output.length;
-	if(!is_seeded() || m_reseed_counter > BOTAN_RNG_MAX_OUTPUT_BEFORE_RESEED)
+	if (!is_seeded() || m_reseed_counter > BOTAN_RNG_MAX_OUTPUT_BEFORE_RESEED)
 		reseed(m_mac->output_length() * 8);
 
-	if(!is_seeded())
+	if (!is_seeded())
 		throw new PRNG_Unseeded(name());
 
 	while(length)
@@ -53,7 +53,7 @@ void HMAC_DRBG::update(in byte* input, size_t input_len)
 
 	m_V = m_mac->process(m_V);
 
-	if(input_len)
+	if (input_len)
 	{
 		m_mac->update(m_V);
 		m_mac->update(0x01);
@@ -66,11 +66,11 @@ void HMAC_DRBG::update(in byte* input, size_t input_len)
 
 void HMAC_DRBG::reseed(size_t poll_bits)
 {
-	if(m_prng)
+	if (m_prng)
 	{
 		m_prng->reseed(poll_bits);
 
-		if(m_prng->is_seeded())
+		if (m_prng->is_seeded())
 		{
 			SafeVector!byte input = m_prng->random_vec(m_mac->output_length());
 			update(&input[0], input.size());
@@ -96,7 +96,7 @@ void HMAC_DRBG::clear()
 
 	m_mac->clear();
 
-	if(m_prng)
+	if (m_prng)
 		m_prng->clear();
 }
 

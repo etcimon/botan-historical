@@ -8,7 +8,7 @@
 #include <botan/dl_group.h>
 string DL_Group::PEM_for_named_group(in string name)
 {
-	if(name == "modp/ietf/1024")
+	if (name == "modp/ietf/1024")
 		return
 			"-----BEGIN X942 DH PARAMETERS-----"
 			"MIIBCgKBgQD//////////8kP2qIhaMI0xMZii4DcHNEpAk4IimfMdAILvqY7E5si"
@@ -19,7 +19,7 @@ string DL_Group::PEM_for_named_group(in string name)
 			"Nf2tRM/S10+SCL4lj/MklDMo9nMpwP//////////"
 			"-----END X942 DH PARAMETERS-----";
 
-	if(name == "modp/srp/1024")
+	if (name == "modp/srp/1024")
 		return
 			"-----BEGIN X942 DH PARAMETERS-----"
 			"MIIBCgKBgQDurwq5rbON1pwz+Ar6j8XoYHJhh3X/PAueojFMnCVldtZ033SW6oHT"
@@ -30,7 +30,7 @@ string DL_Group::PEM_for_named_group(in string name)
 			"3h4CuTZgF+pl+ku3VU1+qJx/Qbshrc/jDpfgdYNx"
 			"-----END X942 DH PARAMETERS-----";
 
-	if(name == "modp/ietf/1536")
+	if (name == "modp/ietf/1536")
 		return
 			"-----BEGIN X942 DH PARAMETERS-----"
 			"MIIBigKBwQD//////////8kP2qIhaMI0xMZii4DcHNEpAk4IimfMdAILvqY7E5si"
@@ -44,7 +44,7 @@ string DL_Group::PEM_for_named_group(in string name)
 			"NgRlEbmT//////////8="
 			"-----END X942 DH PARAMETERS-----";
 
-	if(name == "modp/srp/1536")
+	if (name == "modp/srp/1536")
 		return
 			"-----BEGIN DH PARAMETERS-----"
 			"MIHHAoHBAJ3vPK+5OSd6sfEqhheke7vbpR30maxMgL7uqWFLGcxNX09fVW4ny95R"
@@ -54,7 +54,7 @@ string DL_Group::PEM_for_named_group(in string name)
 			"duP+0TX5uwIBAg=="
 			"-----END DH PARAMETERS-----";
 
-	if(name == "modp/ietf/2048")
+	if (name == "modp/ietf/2048")
 		return
 			"-----BEGIN X942 DH PARAMETERS-----"
 			"MIICDAKCAQEA///////////JD9qiIWjCNMTGYouA3BzRKQJOCIpnzHQCC76mOxOb"
@@ -70,7 +70,7 @@ string DL_Group::PEM_for_named_group(in string name)
 			"2uKu+DemKWTvFeX7SqwLjBzKpL51SrVyiukTDEx9AogKuUctRVZVNH//////////"
 			"-----END X942 DH PARAMETERS-----";
 
-	if(name == "modp/srp/2048")
+	if (name == "modp/srp/2048")
 		return
 			"-----BEGIN X942 DH PARAMETERS-----"
 			"MIICDAKCAQEArGvbQTJKmpvxZt5eE4lYL69ytmUZh+4H/DGSlD21YFCjcynLtKCZ"
@@ -86,7 +86,7 @@ string DL_Group::PEM_for_named_group(in string name)
 			"FStMedRoYcE41xr8dO3920pa5AHsT71yGu8RtqkvqjrNsvG5fmtHeQfTiI/PJX+5"
 			"-----END X942 DH PARAMETERS-----";
 
-	if(name == "modp/ietf/3072")
+	if (name == "modp/ietf/3072")
 		return
 			"-----BEGIN X942 DH PARAMETERS-----"
 			"MIIDDAKCAYEA///////////JD9qiIWjCNMTGYouA3BzRKQJOCIpnzHQCC76mOxOb"
@@ -108,7 +108,7 @@ string DL_Group::PEM_for_named_group(in string name)
 			"JcFokFSdaWV//////////w=="
 			"-----END X942 DH PARAMETERS-----";
 
-	if(name == "modp/srp/3072")
+	if (name == "modp/srp/3072")
 		return
 			"-----BEGIN DH PARAMETERS-----"
 			"MIIBiAKCAYEA///////////JD9qiIWjCNMTGYouA3BzRKQJOCIpnzHQCC76mOxOb"
@@ -122,7 +122,7 @@ string DL_Group::PEM_for_named_group(in string name)
 			"yv//////////AgEF"
 			"-----END DH PARAMETERS-----";
 
-	if(name == "modp/ietf/4096")
+	if (name == "modp/ietf/4096")
 		return
 			"-----BEGIN X942 DH PARAMETERS-----"
 			"MIIEDAKCAgEA///////////JD9qiIWjCNMTGYouA3BzRKQJOCIpnzHQCC76mOxOb"
@@ -149,7 +149,7 @@ string DL_Group::PEM_for_named_group(in string name)
 			"ydp1TEbH7uDDf9vuSFNgR6b6GuSaAxjM//////////8="
 			"-----END X942 DH PARAMETERS-----";
 
-	if(name == "modp/srp/4096")
+	if (name == "modp/srp/4096")
 		return
 			"-----BEGIN DH PARAMETERS-----"
 			"MIICCAKCAgEA///////////JD9qiIWjCNMTGYouA3BzRKQJOCIpnzHQCC76mOxOb"
@@ -165,7 +165,7 @@ string DL_Group::PEM_for_named_group(in string name)
 			"HNAGkSfVsFqpk7TqmI2P3cGG/7fckKbAj030Nck0BjGZ//////////8CAQU="
 			"-----END DH PARAMETERS-----";
 
-	if(name == "modp/ietf/6144")
+	if (name == "modp/ietf/6144")
 		return
 			"-----BEGIN X942 DH PARAMETERS-----"
 			"MIIGDAKCAwEA///////////JD9qiIWjCNMTGYouA3BzRKQJOCIpnzHQCC76mOxOb"
@@ -203,7 +203,7 @@ string DL_Group::PEM_for_named_group(in string name)
 			"jzbmIBJ//////////wIBAg=="
 			"-----END X942 DH PARAMETERS-----";
 
-	if(name == "modp/srp/6144")
+	if (name == "modp/srp/6144")
 		return
 			"-----BEGIN DH PARAMETERS-----"
 			"MIIDCAKCAwEA///////////JD9qiIWjCNMTGYouA3BzRKQJOCIpnzHQCC76mOxOb"
@@ -225,7 +225,7 @@ string DL_Group::PEM_for_named_group(in string name)
 			"JP//////////AgEF"
 			"-----END DH PARAMETERS-----";
 
-	if(name == "modp/ietf/8192")
+	if (name == "modp/ietf/8192")
 		return
 			"-----BEGIN X942 DH PARAMETERS-----"
 			"MIIIDAKCBAEA///////////JD9qiIWjCNMTGYouA3BzRKQJOCIpnzHQCC76mOxOb"
@@ -273,7 +273,7 @@ string DL_Group::PEM_for_named_group(in string name)
 			"034BNyPKrHIjqzv01U8YKHE7K0pv5A+rdEBctziwZMBuzHbp7///////////AgEC"
 			"-----END X942 DH PARAMETERS-----";
 
-	if(name == "modp/srp/8192")
+	if (name == "modp/srp/8192")
 		return
 			"-----BEGIN DH PARAMETERS-----"
 			"MIIECAKCBAEA///////////JD9qiIWjCNMTGYouA3BzRKQJOCIpnzHQCC76mOxOb"
@@ -300,7 +300,7 @@ string DL_Group::PEM_for_named_group(in string name)
 			"38gfVuiAuW5xYMmA3Zjt09///////////wIBEw=="
 			"-----END DH PARAMETERS-----";
 
-	if(name == "dsa/jce/1024")
+	if (name == "dsa/jce/1024")
 		return
 			"-----BEGIN DSA PARAMETERS-----"
 			"MIIBHgKBgQD9f1OBHXUSKVLfSpwu7OTn9hG3UjzvRADDHj+AtlEmaUVdQCJR+1k9"
@@ -312,7 +312,7 @@ string DL_Group::PEM_for_named_group(in string name)
 			"jJ0="
 			"-----END DSA PARAMETERS-----";
 
-	if(name == "dsa/botan/2048")
+	if (name == "dsa/botan/2048")
 		return
 			"-----BEGIN DSA PARAMETERS-----"
 			"MIICLAKCAQEAkcSKT9+898Aq6V59oSYSK13Shk9Vm4fo50oobVL1m9HeaN/WRdDg"
@@ -329,7 +329,7 @@ string DL_Group::PEM_for_named_group(in string name)
 			"mAV+HIbkTnIYaI6krg82NtzKdFydzU5q/7Z8y8E9YTE="
 			"-----END DSA PARAMETERS-----";
 
-	if(name == "dsa/botan/3072")
+	if (name == "dsa/botan/3072")
 		return
 			"-----BEGIN DSA PARAMETERS-----"
 			"MIIDLAKCAYEA5LUIgHWWY1heFCRgyi2d/xMviuTIQN2jomZoiRJP5WOLhOiim3rz"

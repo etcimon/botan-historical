@@ -50,7 +50,7 @@ time_algorithm_ops(in string name,
 
 	const double mb_mult = buffer.size() / cast(double)(Mebibyte);
 
-	if(const BlockCipher* proto = af.prototype_block_cipher(name, provider))
+	if (const BlockCipher* proto = af.prototype_block_cipher(name, provider))
 	{
 		std::unique_ptr<BlockCipher> bc(proto->clone());
 
@@ -62,7 +62,7 @@ time_algorithm_ops(in string name,
 			{ "decrypt", mb_mult * time_op(runtime / 2, [&]() { bc->decrypt(buffer); }) },
 		});
 	}
-	else if(const StreamCipher* proto = af.prototype_stream_cipher(name, provider))
+	else if (const StreamCipher* proto = af.prototype_stream_cipher(name, provider))
 	{
 		std::unique_ptr<StreamCipher> sc(proto->clone());
 
@@ -73,7 +73,7 @@ time_algorithm_ops(in string name,
 			{ "", mb_mult * time_op(runtime, [&]() { sc->encipher(buffer); }) },
 		});
 	}
-	else if(const HashFunction* proto = af.prototype_hash_function(name, provider))
+	else if (const HashFunction* proto = af.prototype_hash_function(name, provider))
 	{
 		std::unique_ptr<HashFunction> h(proto->clone());
 
@@ -81,7 +81,7 @@ time_algorithm_ops(in string name,
 			{ "", mb_mult * time_op(runtime, [&]() { h->update(buffer); }) },
 		});
 	}
-	else if(const MessageAuthenticationCode* proto = af.prototype_mac(name, provider))
+	else if (const MessageAuthenticationCode* proto = af.prototype_mac(name, provider))
 	{
 		std::unique_ptr<MessageAuthenticationCode> mac(proto->clone());
 
@@ -97,7 +97,7 @@ time_algorithm_ops(in string name,
 		std::unique_ptr<AEAD_Mode> enc(get_aead(name, ENCRYPTION));
 		std::unique_ptr<AEAD_Mode> dec(get_aead(name, DECRYPTION));
 
-		if(enc && dec)
+		if (enc && dec)
 		{
 			const SymmetricKey key(rng, enc->key_spec().maximum_keylength());
 
@@ -117,10 +117,10 @@ namespace {
 double find_first_in(in std::map<string, double> m,
 							const Vector!( string )& keys)
 {
-	for(auto key : keys)
+	foreach (key; keys)
 	{
 		auto i = m.find(key);
-		if(i != m.end())
+		if (i != m.end())
 			return i->second;
 	}
 
@@ -140,11 +140,11 @@ algorithm_benchmark(in string name,
 
 	std::map<string, double> all_results; // provider -> ops/sec
 
-	if(!providers.empty())
+	if (!providers.empty())
 	{
 		const std::chrono::nanoseconds ns_per_provider = milliseconds / providers.size();
 
-		for(auto provider : providers)
+		foreach (provider; providers)
 		{
 			auto results = time_algorithm_ops(name, af, provider, rng, ns_per_provider, buf_size);
 			all_results[provider] = find_first_in(results, { "", "update", "encrypt" });

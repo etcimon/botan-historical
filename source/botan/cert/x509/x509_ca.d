@@ -25,7 +25,7 @@ X509_CA::X509_CA(in X509_Certificate c,
 					  in Private_Key key,
 					  in string hash_fn) : cert(c)
 {
-	if(!cert.is_CA_cert())
+	if (!cert.is_CA_cert())
 		throw new Invalid_Argument("X509_CA: This certificate is not for a CA");
 
 	signer = choose_sig_format(key, hash_fn, ca_sig_algo);
@@ -48,7 +48,7 @@ X509_Certificate X509_CA::sign_request(in PKCS10_Request req,
 													const X509_Time& not_after)
 {
 	Key_Constraints constraints;
-	if(req.is_CA())
+	if (req.is_CA())
 		constraints = Key_Constraints(KEY_CERT_SIGN | CRL_SIGN);
 	else
 	{
@@ -164,7 +164,7 @@ X509_CRL X509_CA::make_crl(in Vector!( CRL_Entry ) revoked,
 {
 	const size_t X509_CRL_VERSION = 2;
 
-	if(next_update == 0)
+	if (next_update == 0)
 		next_update = timespec_to_uint("7d");
 
 	// Totally stupid: ties encoding logic to the return of std::time!!
@@ -184,7 +184,7 @@ X509_CRL X509_CA::make_crl(in Vector!( CRL_Entry ) revoked,
 			.encode(cert.issuer_dn())
 			.encode(X509_Time(current_time))
 			.encode(X509_Time(expire_time))
-			.encode_if(revoked.size() > 0,
+			.encode_if (revoked.size() > 0,
 				  DER_Encoder()
 					  .start_cons(SEQUENCE)
 						  .encode_list(revoked)
@@ -221,17 +221,17 @@ PK_Signer* choose_sig_format(in Private_Key key,
 	const string algo_name = key.algo_name();
 
 	const HashFunction* proto_hash = retrieve_hash(hash_fn);
-	if(!proto_hash)
+	if (!proto_hash)
 		throw new Algorithm_Not_Found(hash_fn);
 
-	if(key.max_input_bits() < proto_hash->output_length()*8)
+	if (key.max_input_bits() < proto_hash->output_length()*8)
 		throw new Invalid_Argument("Key is too small for chosen hash function");
 
-	if(algo_name == "RSA")
+	if (algo_name == "RSA")
 		padding = "EMSA3";
-	else if(algo_name == "DSA")
+	else if (algo_name == "DSA")
 		padding = "EMSA1";
-	else if(algo_name == "ECDSA")
+	else if (algo_name == "ECDSA")
 		padding = "EMSA1_BSI";
 	else
 		throw new Invalid_Argument("Unknown X.509 signing key type: " + algo_name);

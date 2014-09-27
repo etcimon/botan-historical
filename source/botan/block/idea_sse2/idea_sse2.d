@@ -34,7 +34,7 @@ namespace {
 	/* Selection: if X[i] is zero then assign 1-K
 					  if K is zero then assign 1-X[i]
 
-		Could if() off value of K_16 for the second, but this gives a
+		Could if () off value of K_16 for the second, but this gives a
 		constant time implementation which is a nice bonus.
 	*/
 
@@ -141,7 +141,7 @@ void idea_op_8(in byte[64] input, ref byte[64] output, in ushort[52] EK)
 	B2 = _mm_or_si128(_mm_slli_epi16(B2, 8), _mm_srli_epi16(B2, 8));
 	B3 = _mm_or_si128(_mm_slli_epi16(B3, 8), _mm_srli_epi16(B3, 8));
 
-	for(size_t i = 0; i != 8; ++i)
+	for (size_t i = 0; i != 8; ++i)
 	{
 		B0 = mul(B0, EK[6*i+0]);
 		B1 = _mm_add_epi16(B1, _mm_set1_epi16(EK[6*i+1]));
@@ -205,7 +205,7 @@ void IDEA_SSE2::encrypt_n(byte* input, byte* output, size_t blocks) const
 		blocks -= 8;
 	}
 
-	if(blocks)
+	if (blocks)
 	  IDEA::encrypt_n(input, output, blocks);
 }
 
@@ -224,7 +224,7 @@ void IDEA_SSE2::decrypt_n(byte* input, byte* output, size_t blocks) const
 		blocks -= 8;
 	}
 
-	if(blocks)
+	if (blocks)
 	  IDEA::decrypt_n(input, output, blocks);
 }
 

@@ -91,7 +91,7 @@ void EAC1_1_ADO::decode_info(DataSource& source,
 
 void EAC1_1_ADO::encode(Pipe output, X509_Encoding encoding) const
 {
-	if(encoding == PEM)
+	if (encoding == PEM)
 		throw new Invalid_Argument("EAC1_1_ADO::encode() cannot PEM encode an EAC object");
 
 	auto concat_sig = EAC1_1_obj<EAC1_1_ADO>::m_sig.get_concatenation();

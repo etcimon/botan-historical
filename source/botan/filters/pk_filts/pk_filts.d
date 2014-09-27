@@ -69,7 +69,7 @@ void PK_Verifier_Filter::write(in byte* input, size_t length)
 */
 void PK_Verifier_Filter::end_msg()
 {
-	if(signature.empty())
+	if (signature.empty())
 		throw new Invalid_State("PK_Verifier_Filter: No signature to check against");
 	bool is_valid = verifier->check_signature(signature);
 	send((is_valid ? 1 : 0));

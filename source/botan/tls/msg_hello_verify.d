@@ -11,18 +11,18 @@ namespace TLS {
 
 Hello_Verify_Request::Hello_Verify_Request(in Vector!byte buf)
 {
-	if(buf.size() < 3)
+	if (buf.size() < 3)
 		throw new Decoding_Error("Hello verify request too small");
 
 	Protocol_Version version(buf[0], buf[1]);
 
-	if(version != Protocol_Version::DTLS_V10 &&
+	if (version != Protocol_Version::DTLS_V10 &&
 		version != Protocol_Version::DTLS_V12)
 	{
 		throw new Decoding_Error("Unknown version from server in hello verify request");
 	}
 
-	if(cast(size_t)(buf[2]) + 3 != buf.size())
+	if (cast(size_t)(buf[2]) + 3 != buf.size())
 		throw new Decoding_Error("Bad length in hello verify request");
 
 	m_cookie.assign(&buf[3], &buf[buf.size()]);

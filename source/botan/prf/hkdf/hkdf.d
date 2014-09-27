@@ -35,7 +35,7 @@ void HKDF::finish_extract()
 void HKDF::expand(byte* output, size_t output_len,
 						in byte* info, size_t info_len)
 {
-	if(output_len > m_prf->output_length() * 255)
+	if (output_len > m_prf->output_length() * 255)
 		throw new std::invalid_argument("HKDF requested output too large");
 
 	byte counter = 1;

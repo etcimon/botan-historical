@@ -54,11 +54,11 @@ Extension* make_extension(TLS_Data_Reader& reader,
 
 void Extensions::deserialize(TLS_Data_Reader& reader)
 {
-	if(reader.has_remaining())
+	if (reader.has_remaining())
 	{
 		const ushort all_extn_size = reader.get_ushort();
 
-		if(reader.remaining_bytes() != all_extn_size)
+		if (reader.remaining_bytes() != all_extn_size)
 			throw new Decoding_Error("Bad extension size");
 
 		while(reader.has_remaining())
@@ -70,7 +70,7 @@ void Extensions::deserialize(TLS_Data_Reader& reader)
 														extension_code,
 														extension_size);
 
-			if(extn)
+			if (extn)
 				this->add(extn);
 			else // unknown/unhandled extension
 				reader.discard_next(extension_size);
@@ -82,9 +82,9 @@ Vector!( byte ) Extensions::serialize() const
 {
 	Vector!( byte ) buf(2); // 2 bytes for length field
 
-	for(auto& extn : extensions)
+	foreach (ref extn; extensions)
 	{
-		if(extn.second->empty())
+		if (extn.second->empty())
 			continue;
 
 		const ushort extn_code = extn.second->type();
@@ -106,7 +106,7 @@ Vector!( byte ) Extensions::serialize() const
 	buf[1] = get_byte(1, extn_size);
 
 	// avoid sending a completely empty extensions block
-	if(buf.size() == 2)
+	if (buf.size() == 2)
 		return Vector!( byte )();
 
 	return buf;
@@ -115,7 +115,7 @@ Vector!( byte ) Extensions::serialize() const
 std::set<Handshake_Extension_Type> Extensions::extension_types() const
 {
 	std::set<Handshake_Extension_Type> offers;
-	for(auto i = extensions.begin(); i != extensions.end(); ++i)
+	for (auto i = extensions.begin(); i != extensions.end(); ++i)
 		offers.insert(i->first);
 	return offers;
 }
@@ -126,12 +126,12 @@ Server_Name_Indicator::Server_Name_Indicator(TLS_Data_Reader& reader,
 	/*
 	* This is used by the server to confirm that it knew the name
 	*/
-	if(extension_size == 0)
+	if (extension_size == 0)
 		return;
 
 	ushort name_bytes = reader.get_ushort();
 
-	if(name_bytes + 2 != extension_size)
+	if (name_bytes + 2 != extension_size)
 		throw new Decoding_Error("Bad encoding of SNI extension");
 
 	while(name_bytes)
@@ -139,7 +139,7 @@ Server_Name_Indicator::Server_Name_Indicator(TLS_Data_Reader& reader,
 		byte name_type = reader.get_byte();
 		name_bytes--;
 
-		if(name_type == 0) // DNS
+		if (name_type == 0) // DNS
 		{
 			sni_host_name = reader.get_string(2, 1, 65535);
 			name_bytes -= (2 + sni_host_name.size());
@@ -177,7 +177,7 @@ SRP_Identifier::SRP_Identifier(TLS_Data_Reader& reader,
 {
 	srp_identifier = reader.get_string(1, 1, 255);
 
-	if(srp_identifier.size() + 1 != extension_size)
+	if (srp_identifier.size() + 1 != extension_size)
 		throw new Decoding_Error("Bad encoding for SRP identifier extension");
 }
 
@@ -198,7 +198,7 @@ Renegotiation_Extension::Renegotiation_Extension(TLS_Data_Reader& reader,
 {
 	reneg_data = reader.get_range<byte>(1, 0, 255);
 
-	if(reneg_data.size() + 1 != extension_size)
+	if (reneg_data.size() + 1 != extension_size)
 		throw new Decoding_Error("Bad encoding for secure renegotiation extn");
 }
 
@@ -218,7 +218,7 @@ Vector!( byte ) Maximum_Fragment_Length::serialize() const
 
 	auto i = fragment_to_code.find(m_max_fragment);
 
-	if(i == fragment_to_code.end())
+	if (i == fragment_to_code.end())
 		throw new std::invalid_argument("Bad setting " +
 											 std::to_string(m_max_fragment) +
 											 " for maximum fragment size");
@@ -229,7 +229,7 @@ Vector!( byte ) Maximum_Fragment_Length::serialize() const
 Maximum_Fragment_Length::Maximum_Fragment_Length(TLS_Data_Reader& reader,
 																 ushort extension_size)
 {
-	if(extension_size != 1)
+	if (extension_size != 1)
 		throw new Decoding_Error("Bad size for maximum fragment extension");
 	byte val = reader.get_byte();
 
@@ -240,7 +240,7 @@ Maximum_Fragment_Length::Maximum_Fragment_Length(TLS_Data_Reader& reader,
 
 	auto i = code_to_fragment.find(val);
 
-	if(i == code_to_fragment.end())
+	if (i == code_to_fragment.end())
 		throw new TLS_Exception(Alert::ILLEGAL_PARAMETER,
 								  "Bad value in maximum fragment extension");
 
@@ -250,7 +250,7 @@ Maximum_Fragment_Length::Maximum_Fragment_Length(TLS_Data_Reader& reader,
 Next_Protocol_Notification::Next_Protocol_Notification(TLS_Data_Reader& reader,
 																		 ushort extension_size)
 {
-	if(extension_size == 0)
+	if (extension_size == 0)
 		return; // empty extension
 
 	size_t bytes_remaining = extension_size;
@@ -259,7 +259,7 @@ Next_Protocol_Notification::Next_Protocol_Notification(TLS_Data_Reader& reader,
 	{
 		const string p = reader.get_string(1, 0, 255);
 
-		if(bytes_remaining < p.size() + 1)
+		if (bytes_remaining < p.size() + 1)
 			throw new Decoding_Error("Bad encoding for next protocol extension");
 
 		bytes_remaining -= (p.size() + 1);
@@ -272,11 +272,11 @@ Vector!( byte ) Next_Protocol_Notification::serialize() const
 {
 	Vector!( byte ) buf;
 
-	for(size_t i = 0; i != m_protocols.size(); ++i)
+	for (size_t i = 0; i != m_protocols.size(); ++i)
 	{
 		const string p = m_protocols[i];
 
-		if(p != "")
+		if (p != "")
 			append_tls_length_value(buf,
 											cast(const byte*)(p.data()),
 											p.size(),
@@ -325,33 +325,33 @@ string Supported_Elliptic_Curves::curve_id_to_name(ushort id)
 
 ushort Supported_Elliptic_Curves::name_to_curve_id(in string name)
 {
-	if(name == "secp160k1")
+	if (name == "secp160k1")
 		return 15;
-	if(name == "secp160r1")
+	if (name == "secp160r1")
 		return 16;
-	if(name == "secp160r2")
+	if (name == "secp160r2")
 		return 17;
-	if(name == "secp192k1")
+	if (name == "secp192k1")
 		return 18;
-	if(name == "secp192r1")
+	if (name == "secp192r1")
 		return 19;
-	if(name == "secp224k1")
+	if (name == "secp224k1")
 		return 20;
-	if(name == "secp224r1")
+	if (name == "secp224r1")
 		return 21;
-	if(name == "secp256k1")
+	if (name == "secp256k1")
 		return 22;
-	if(name == "secp256r1")
+	if (name == "secp256r1")
 		return 23;
-	if(name == "secp384r1")
+	if (name == "secp384r1")
 		return 24;
-	if(name == "secp521r1")
+	if (name == "secp521r1")
 		return 25;
-	if(name == "brainpool256r1")
+	if (name == "brainpool256r1")
 		return 26;
-	if(name == "brainpool384r1")
+	if (name == "brainpool384r1")
 		return 27;
-	if(name == "brainpool512r1")
+	if (name == "brainpool512r1")
 		return 28;
 
 	throw new Invalid_Argument("name_to_curve_id unknown name " + name);
@@ -361,7 +361,7 @@ Vector!( byte ) Supported_Elliptic_Curves::serialize() const
 {
 	Vector!( byte ) buf(2);
 
-	for(size_t i = 0; i != m_curves.size(); ++i)
+	for (size_t i = 0; i != m_curves.size(); ++i)
 	{
 		const ushort id = name_to_curve_id(m_curves[i]);
 		buf.push_back(get_byte(0, id));
@@ -379,20 +379,20 @@ Supported_Elliptic_Curves::Supported_Elliptic_Curves(TLS_Data_Reader& reader,
 {
 	ushort len = reader.get_ushort();
 
-	if(len + 2 != extension_size)
+	if (len + 2 != extension_size)
 		throw new Decoding_Error("Inconsistent length field in elliptic curve list");
 
-	if(len % 2 == 1)
+	if (len % 2 == 1)
 		throw new Decoding_Error("Elliptic curve list of strange size");
 
 	len /= 2;
 
-	for(size_t i = 0; i != len; ++i)
+	for (size_t i = 0; i != len; ++i)
 	{
 		const ushort id = reader.get_ushort();
 		const string name = curve_id_to_name(id);
 
-		if(name != "")
+		if (name != "")
 			m_curves.push_back(name);
 	}
 }
@@ -422,22 +422,22 @@ string Signature_Algorithms::hash_algo_name(byte code)
 
 byte Signature_Algorithms::hash_algo_code(in string name)
 {
-	if(name == "MD5")
+	if (name == "MD5")
 		return 1;
 
-	if(name == "SHA-1")
+	if (name == "SHA-1")
 		return 2;
 
-	if(name == "SHA-224")
+	if (name == "SHA-224")
 		return 3;
 
-	if(name == "SHA-256")
+	if (name == "SHA-256")
 		return 4;
 
-	if(name == "SHA-384")
+	if (name == "SHA-384")
 		return 5;
 
-	if(name == "SHA-512")
+	if (name == "SHA-512")
 		return 6;
 
 	throw new Internal_Error("Unknown hash ID " + name + " for signature_algorithms");
@@ -460,13 +460,13 @@ string Signature_Algorithms::sig_algo_name(byte code)
 
 byte Signature_Algorithms::sig_algo_code(in string name)
 {
-	if(name == "RSA")
+	if (name == "RSA")
 		return 1;
 
-	if(name == "DSA")
+	if (name == "DSA")
 		return 2;
 
-	if(name == "ECDSA")
+	if (name == "ECDSA")
 		return 3;
 
 	throw new Internal_Error("Unknown sig ID " + name + " for signature_algorithms");
@@ -476,7 +476,7 @@ Vector!( byte ) Signature_Algorithms::serialize() const
 {
 	Vector!( byte ) buf(2);
 
-	for(size_t i = 0; i != m_supported_algos.size(); ++i)
+	for (size_t i = 0; i != m_supported_algos.size(); ++i)
 	{
 		try
 		{
@@ -499,8 +499,8 @@ Vector!( byte ) Signature_Algorithms::serialize() const
 Signature_Algorithms::Signature_Algorithms(in Vector!( string ) hashes,
 														 const Vector!( string )& sigs)
 {
-	for(size_t i = 0; i != hashes.size(); ++i)
-		for(size_t j = 0; j != sigs.size(); ++j)
+	for (size_t i = 0; i != hashes.size(); ++i)
+		for (size_t j = 0; j != sigs.size(); ++j)
 			m_supported_algos.push_back(Pair(hashes[i], sigs[j]));
 }
 
@@ -509,7 +509,7 @@ Signature_Algorithms::Signature_Algorithms(TLS_Data_Reader& reader,
 {
 	ushort len = reader.get_ushort();
 
-	if(len + 2 != extension_size)
+	if (len + 2 != extension_size)
 		throw new Decoding_Error("Bad encoding on signature algorithms extension");
 
 	while(len)
@@ -520,7 +520,7 @@ Signature_Algorithms::Signature_Algorithms(TLS_Data_Reader& reader,
 		len -= 2;
 
 		// If not something we know, ignore it completely
-		if(hash_code == "" || sig_code == "")
+		if (hash_code == "" || sig_code == "")
 			continue;
 
 		m_supported_algos.push_back(Pair(hash_code, sig_code));

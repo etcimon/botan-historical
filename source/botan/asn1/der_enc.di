@@ -69,21 +69,21 @@ class DER_Encoder
 
 		DER_Encoder encode_optional(T)(in T value, ref const T default_value)
 		{
-			if(value != default_value)
+			if (value != default_value)
 				encode(value);
 			return this;
 		}
 
 		DER_Encoder encode_list(T)(in Vector!( T ) values)
 		{
-			for(size_t i = 0; i != values.size(); ++i)
+			for (size_t i = 0; i != values.size(); ++i)
 				encode(values[i]);
 			return this;
 		}
 
 		DER_Encoder encode(in ASN1_Object obj);
-		DER_Encoder encode_if(bool pred, DER_Encoder enc);
-		DER_Encoder encode_if(bool pred, ref const ASN1_Object obj);
+		DER_Encoder encode_if (bool pred, DER_Encoder enc);
+		DER_Encoder encode_if (bool pred, ref const ASN1_Object obj);
 
 		DER_Encoder add_object(ASN1_Tag type_tag, ASN1_Tag class_tag,
 								in byte* rep, size_t length);

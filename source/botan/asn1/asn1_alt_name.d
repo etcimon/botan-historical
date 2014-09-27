@@ -49,12 +49,12 @@ AlternativeName::AlternativeName(in string email_addr,
 void AlternativeName::add_attribute(in string type,
 												in string str)
 {
-	if(type == "" || str == "")
+	if (type == "" || str == "")
 		return;
 
 	auto range = alt_info.equal_range(type);
-	for(auto j = range.first; j != range.second; ++j)
-		if(j->second == str)
+	for (auto j = range.first; j != range.second; ++j)
+		if (j->second == str)
 			return;
 
 	multimap_insert(alt_info, type, str);
@@ -66,7 +66,7 @@ void AlternativeName::add_attribute(in string type,
 void AlternativeName::add_othername(in OID oid, in string value,
 												ASN1_Tag type)
 {
-	if(value == "")
+	if (value == "")
 		return;
 	multimap_insert(othernames, oid, ASN1_String(value, type));
 }
@@ -94,10 +94,10 @@ std::multimap<string, string> AlternativeName::contents() const
 {
 	std::multimap<string, string> names;
 
-	for(auto i = alt_info.begin(); i != alt_info.end(); ++i)
+	for (auto i = alt_info.begin(); i != alt_info.end(); ++i)
 		multimap_insert(names, i->first, i->second);
 
-	for(auto i = othernames.begin(); i != othernames.end(); ++i)
+	for (auto i = othernames.begin(); i != othernames.end(); ++i)
 		multimap_insert(names, OIDS::lookup(i->first), i->second.value());
 
 	return names;
@@ -121,14 +121,14 @@ void encode_entries(DER_Encoder encoder,
 {
 	auto range = attr.equal_range(type);
 
-	for(auto i = range.first; i != range.second; ++i)
+	for (auto i = range.first; i != range.second; ++i)
 	{
-		if(type == "RFC822" || type == "DNS" || type == "URI")
+		if (type == "RFC822" || type == "DNS" || type == "URI")
 		{
 			ASN1_String asn1_string(i->second, IA5_STRING);
 			encoder.add_object(tagging, CONTEXT_SPECIFIC, asn1_string.iso_8859());
 		}
-		else if(type == "IP")
+		else if (type == "IP")
 		{
 			const uint ip = string_to_ipv4(i->second);
 			byte ip_buf[4] = { 0 };
@@ -152,7 +152,7 @@ void AlternativeName::encode_into(DER_Encoder der) const
 	encode_entries(der, alt_info, "URI", ASN1_Tag(6));
 	encode_entries(der, alt_info, "IP", ASN1_Tag(7));
 
-	for(auto i = othernames.begin(); i != othernames.end(); ++i)
+	for (auto i = othernames.begin(); i != othernames.end(); ++i)
 	{
 		der.start_explicit(0)
 			.encode(i->first)
@@ -175,24 +175,24 @@ void AlternativeName::decode_from(BER_Decoder source)
 	while(names.more_items())
 	{
 		BER_Object obj = names.get_next_object();
-		if((obj.class_tag != CONTEXT_SPECIFIC) &&
+		if ((obj.class_tag != CONTEXT_SPECIFIC) &&
 			(obj.class_tag != (CONTEXT_SPECIFIC | CONSTRUCTED)))
 			continue;
 
 		const ASN1_Tag tag = obj.type_tag;
 
-		if(tag == 0)
+		if (tag == 0)
 		{
 			BER_Decoder othername(obj.value);
 
 			OID oid;
 			othername.decode(oid);
-			if(othername.more_items())
+			if (othername.more_items())
 			{
 				BER_Object othername_value_outer = othername.get_next_object();
 				othername.verify_end();
 
-				if(othername_value_outer.type_tag != ASN1_Tag(0) ||
+				if (othername_value_outer.type_tag != ASN1_Tag(0) ||
 					othername_value_outer.class_tag !=
 						 (CONTEXT_SPECIFIC | CONSTRUCTED)
 					)
@@ -205,23 +205,23 @@ void AlternativeName::decode_from(BER_Decoder source)
 
 				const ASN1_Tag value_type = value.type_tag;
 
-				if(is_string_type(value_type) && value.class_tag == UNIVERSAL)
+				if (is_string_type(value_type) && value.class_tag == UNIVERSAL)
 					add_othername(oid, ASN1::to_string(value), value_type);
 			}
 		}
-		else if(tag == 1 || tag == 2 || tag == 6)
+		else if (tag == 1 || tag == 2 || tag == 6)
 		{
 			const string value = Charset::transcode(ASN1::to_string(obj),
 																		LATIN1_CHARSET,
 																		LOCAL_CHARSET);
 
-			if(tag == 1) add_attribute("RFC822", value);
-			if(tag == 2) add_attribute("DNS", value);
-			if(tag == 6) add_attribute("URI", value);
+			if (tag == 1) add_attribute("RFC822", value);
+			if (tag == 2) add_attribute("DNS", value);
+			if (tag == 6) add_attribute("URI", value);
 		}
-		else if(tag == 7)
+		else if (tag == 7)
 		{
-			if(obj.value.size() == 4)
+			if (obj.value.size() == 4)
 			{
 				const uint ip = load_be!uint(&obj.value[0], 0);
 				add_attribute("IP", ipv4_to_string(ip));

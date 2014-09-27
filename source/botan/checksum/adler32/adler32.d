@@ -37,7 +37,7 @@ void adler32_update(in byte* input, size_t length,
 		length -= 16;
 	}
 
-	for(size_t j = 0; j != length; ++j)
+	for (size_t j = 0; j != length; ++j)
 	{
 		S1x += input[j];
 		S2x += S1x;

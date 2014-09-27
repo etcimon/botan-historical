@@ -10,7 +10,7 @@ void zero_mem(void* ptr, size_t n)
 {
 	volatile byte* p = cast(volatile byte*)(ptr);
 
-	for(size_t i = 0; i != n; ++i)
+	for (size_t i = 0; i != n; ++i)
 		p[i] = 0;
 }
 

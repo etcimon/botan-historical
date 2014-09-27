@@ -20,7 +20,7 @@ namespace FPE {
 * @param key a random key
 * @param tweak will modify the ciphertext (think of as an IV)
 */
-BigInt fe1_encrypt(in BigInt n, const BigInt& X,
+BigInt fe1_encrypt(in BigInt n, ref const BigInt X,
 									  const SymmetricKey& key,
 									  in Vector!byte tweak);
 
@@ -31,7 +31,7 @@ BigInt fe1_encrypt(in BigInt n, const BigInt& X,
 * @param key is the key used for encryption
 * @param tweak the same tweak used for encryption
 */
-BigInt fe1_decrypt(in BigInt n, const BigInt& X,
+BigInt fe1_decrypt(in BigInt n, ref const BigInt X,
 									  const SymmetricKey& key,
 									  in Vector!byte tweak);
 

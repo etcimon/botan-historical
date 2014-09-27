@@ -19,7 +19,7 @@ void xtea_encrypt_8(const byte[64] input, byte[64] output, const uint[64] EK)
 
 	SIMD_32::transpose(L0, R0, L1, R1);
 
-	for(size_t i = 0; i != 32; i += 2)
+	for (size_t i = 0; i != 32; i += 2)
 	{
 		SIMD_32 K0(EK[2*i  ]);
 		SIMD_32 K1(EK[2*i+1]);
@@ -56,7 +56,7 @@ void xtea_decrypt_8(const byte[64] input, byte[64] output, const uint[64] EK)
 
 	SIMD_32::transpose(L0, R0, L1, R1);
 
-	for(size_t i = 0; i != 32; i += 2)
+	for (size_t i = 0; i != 32; i += 2)
 	{
 		SIMD_32 K0(EK[63 - 2*i]);
 		SIMD_32 K1(EK[62 - 2*i]);
@@ -101,7 +101,7 @@ void XTEA_SIMD::encrypt_n(byte* input, byte* output, size_t blocks) const
 		blocks -= 8;
 	}
 
-	if(blocks)
+	if (blocks)
 	  XTEA::encrypt_n(input, output, blocks);
 }
 
@@ -120,7 +120,7 @@ void XTEA_SIMD::decrypt_n(byte* input, byte* output, size_t blocks) const
 		blocks -= 8;
 	}
 
-	if(blocks)
+	if (blocks)
 	  XTEA::decrypt_n(input, output, blocks);
 }
 

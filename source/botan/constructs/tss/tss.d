@@ -73,16 +73,16 @@ const byte[] RTSS_LOG = {
 
 byte gfp_mul(byte x, byte y)
 {
-	if(x == 0 || y == 0)
+	if (x == 0 || y == 0)
 		return 0;
 	return RTSS_EXP[(RTSS_LOG[x] + RTSS_LOG[y]) % 255];
 }
 
 byte rtss_hash_id(in string hash_name)
 {
-	if(hash_name == "SHA-160")
+	if (hash_name == "SHA-160")
 		return 1;
-	else if(hash_name == "SHA-256")
+	else if (hash_name == "SHA-256")
 		return 2;
 	else
 		throw new Invalid_Argument("RTSS only supports SHA-1 and SHA-256");
@@ -90,9 +90,9 @@ byte rtss_hash_id(in string hash_name)
 
 HashFunction* get_rtss_hash_by_id(byte id)
 {
-	if(id == 1)
+	if (id == 1)
 		return new SHA_160;
-	else if(id == 2)
+	else if (id == 2)
 		return new SHA_256;
 	else
 		throw new Decoding_Error("Bad RTSS hash identifier");
@@ -107,7 +107,7 @@ RTSS_Share::RTSS_Share(in string hex_input)
 
 byte RTSS_Share::share_id() const
 {
-	if(!initialized())
+	if (!initialized())
 		throw new Invalid_State("RTSS_Share::share_id not initialized");
 
 	return contents[20];
@@ -124,7 +124,7 @@ RTSS_Share::split(byte M, byte N,
 						const byte identifier[16],
 						RandomNumberGenerator& rng)
 {
-	if(M == 0 || N == 0 || M > N)
+	if (M == 0 || N == 0 || M > N)
 		throw new Encoding_Error("RTSS_Share::split: M == 0 or N == 0 or M > N");
 
 	SHA_256 hash; // always use SHA-256 when generating shares
@@ -132,7 +132,7 @@ RTSS_Share::split(byte M, byte N,
 	Vector!( RTSS_Share ) shares(N);
 
 	// Create RTSS header in each share
-	for(byte i = 0; i != N; ++i)
+	for (byte i = 0; i != N; ++i)
 	{
 		shares[i].contents += Pair(identifier, 16);
 		shares[i].contents += rtss_hash_id(hash.name());
@@ -142,26 +142,26 @@ RTSS_Share::split(byte M, byte N,
 	}
 
 	// Choose sequential values for X starting from 1
-	for(byte i = 0; i != N; ++i)
+	for (byte i = 0; i != N; ++i)
 		shares[i].contents.push_back(i+1);
 
 	// secret = S || H(S)
 	SafeVector!byte secret(S, S + S_len);
 	secret += hash.process(S, S_len);
 
-	for(size_t i = 0; i != secret.size(); ++i)
+	for (size_t i = 0; i != secret.size(); ++i)
 	{
 		Vector!( byte ) coefficients(M-1);
 		rng.randomize(&coefficients[0], coefficients.size());
 
-		for(byte j = 0; j != N; ++j)
+		for (byte j = 0; j != N; ++j)
 		{
 			const byte X = j + 1;
 
 			byte sum = secret[i];
 			byte X_i = X;
 
-			for(size_t k = 0; k != coefficients.size(); ++k)
+			for (size_t k = 0; k != coefficients.size(); ++k)
 			{
 				sum ^= gfp_mul(X_i, coefficients[k]);
 				X_i  = gfp_mul(X_i, X);
@@ -179,21 +179,21 @@ RTSS_Share::reconstruct(in Vector!( RTSS_Share ) shares)
 {
 	const size_t RTSS_HEADER_SIZE = 20;
 
-	for(size_t i = 0; i != shares.size(); ++i)
+	for (size_t i = 0; i != shares.size(); ++i)
 	{
-		if(shares[i].size() != shares[0].size())
+		if (shares[i].size() != shares[0].size())
 			throw new Decoding_Error("Different sized RTSS shares detected");
-		if(shares[i].share_id() == 0)
+		if (shares[i].share_id() == 0)
 			throw new Decoding_Error("Invalid (id = 0) RTSS share detected");
-		if(shares[i].size() < RTSS_HEADER_SIZE)
+		if (shares[i].size() < RTSS_HEADER_SIZE)
 			throw new Decoding_Error("Missing or malformed RTSS header");
 
-		if(!same_mem(&shares[0].contents[0],
+		if (!same_mem(&shares[0].contents[0],
 						 &shares[i].contents[0], RTSS_HEADER_SIZE))
 			throw new Decoding_Error("Different RTSS headers detected");
 	}
 
-	if(shares.size() < shares[0].contents[17])
+	if (shares.size() < shares[0].contents[17])
 		throw new Decoding_Error("Insufficient shares to do TSS reconstruction");
 
 	ushort secret_len = make_ushort(shares[0].contents[18],
@@ -203,31 +203,31 @@ RTSS_Share::reconstruct(in Vector!( RTSS_Share ) shares)
 
 	std::unique_ptr<HashFunction> hash(get_rtss_hash_by_id(hash_id));
 
-	if(shares[0].size() != secret_len + hash->output_length() + RTSS_HEADER_SIZE + 1)
+	if (shares[0].size() != secret_len + hash->output_length() + RTSS_HEADER_SIZE + 1)
 		throw new Decoding_Error("Bad RTSS length field in header");
 
 	Vector!( byte ) V(shares.size());
 	SafeVector!byte secret;
 
-	for(size_t i = RTSS_HEADER_SIZE + 1; i != shares[0].size(); ++i)
+	for (size_t i = RTSS_HEADER_SIZE + 1; i != shares[0].size(); ++i)
 	{
-		for(size_t j = 0; j != V.size(); ++j)
+		for (size_t j = 0; j != V.size(); ++j)
 			V[j] = shares[j].contents[i];
 
 		byte r = 0;
-		for(size_t k = 0; k != shares.size(); ++k)
+		for (size_t k = 0; k != shares.size(); ++k)
 		{
 			// L_i function:
 			byte r2 = 1;
-			for(size_t l = 0; l != shares.size(); ++l)
+			for (size_t l = 0; l != shares.size(); ++l)
 			{
-				if(k == l)
+				if (k == l)
 					continue;
 
 				byte share_k = shares[k].share_id();
 				byte share_l = shares[l].share_id();
 
-				if(share_k == share_l)
+				if (share_k == share_l)
 					throw new Decoding_Error("Duplicate shares found in RTSS recovery");
 
 				byte div = RTSS_EXP[(255 +
@@ -242,13 +242,13 @@ RTSS_Share::reconstruct(in Vector!( RTSS_Share ) shares)
 		secret.push_back(r);
 	}
 
-	if(secret.size() != secret_len + hash->output_length())
+	if (secret.size() != secret_len + hash->output_length())
 		throw new Decoding_Error("Bad length in RTSS output");
 
 	hash->update(&secret[0], secret_len);
 	SafeVector!byte hash_check = hash->flush();
 
-	if(!same_mem(&hash_check[0],
+	if (!same_mem(&hash_check[0],
 					 &secret[secret_len], hash->output_length()))
 		throw new Decoding_Error("RTSS hash check failed");
 

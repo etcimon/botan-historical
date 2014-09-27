@@ -26,7 +26,7 @@ void EAC1_1_Req::force_decode()
 		.decode(m_chr)
 		.verify_end();
 
-	if(cpi != 0)
+	if (cpi != 0)
 		throw new Decoding_Error("EAC1_1 requests cpi was not 0");
 
 	m_pk = decode_eac1_1_key(enc_pk, sig_algo);

@@ -21,7 +21,7 @@ SafeVector!byte eax_prf(byte tag, size_t block_size,
 						in byte* input,
 						size_t length)
 {
-	for(size_t i = 0; i != block_size - 1; ++i)
+	for (size_t i = 0; i != block_size - 1; ++i)
 		mac.update(0);
 	mac.update(tag);
 	mac.update(input, length);
@@ -39,7 +39,7 @@ EAX_Mode::EAX_Mode(BlockCipher* cipher, size_t tag_size) :
 	m_ctr(new CTR_BE(m_cipher->clone())),
 	m_cmac(new CMAC(m_cipher->clone()))
 {
-	if(m_tag_size < 8 || m_tag_size > m_cmac->output_length())
+	if (m_tag_size < 8 || m_tag_size > m_cmac->output_length())
 		throw new Invalid_Argument(name() + ": Bad tag size " + std::to_string(tag_size));
 }
 
@@ -92,14 +92,14 @@ void EAX_Mode::set_associated_data(in byte* ad, size_t length)
 
 SafeVector!byte EAX_Mode::start(in byte* nonce, size_t nonce_len)
 {
-	if(!valid_nonce_length(nonce_len))
+	if (!valid_nonce_length(nonce_len))
 		throw new Invalid_IV_Length(name(), nonce_len);
 
 	m_nonce_mac = eax_prf(0, block_size(), *m_cmac, nonce, nonce_len);
 
 	m_ctr->set_iv(&m_nonce_mac[0], m_nonce_mac.size());
 
-	for(size_t i = 0; i != block_size() - 1; ++i)
+	for (size_t i = 0; i != block_size() - 1; ++i)
 		m_cmac->update(0);
 	m_cmac->update(2);
 
@@ -147,7 +147,7 @@ void EAX_Decryption::finish(SafeVector!byte buffer, size_t offset)
 
 	const size_t remaining = sz - tag_size();
 
-	if(remaining)
+	if (remaining)
 	{
 		m_cmac->update(buf, remaining);
 		m_ctr->cipher(buf, buf, remaining);
@@ -159,7 +159,7 @@ void EAX_Decryption::finish(SafeVector!byte buffer, size_t offset)
 	mac ^= m_nonce_mac;
 	mac ^= m_ad_mac;
 
-	if(!same_mem(&mac[0], included_tag, tag_size()))
+	if (!same_mem(&mac[0], included_tag, tag_size()))
 		throw new Integrity_Failure("EAX tag check failed");
 
 	buffer.resize(offset + remaining);

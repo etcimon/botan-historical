@@ -17,7 +17,7 @@ Heartbeat_Message::Heartbeat_Message(in Vector!byte buf)
 
 	const byte type = reader.get_byte();
 
-	if(type != 1 && type != 2)
+	if (type != 1 && type != 2)
 		throw new TLS_Exception(Alert::ILLEGAL_PARAMETER,
 								  "Unknown heartbeat message type");
 
@@ -58,12 +58,12 @@ Vector!( byte ) Heartbeat_Support_Indicator::serialize() const
 Heartbeat_Support_Indicator::Heartbeat_Support_Indicator(TLS_Data_Reader& reader,
 																			ushort extension_size)
 {
-	if(extension_size != 1)
+	if (extension_size != 1)
 		throw new Decoding_Error("Strange size for heartbeat extension");
 
 	const byte code = reader.get_byte();
 
-	if(code != 1 && code != 2)
+	if (code != 1 && code != 2)
 		throw new TLS_Exception(Alert::ILLEGAL_PARAMETER,
 								  "Unknown heartbeat code " + std::to_string(code));
 

@@ -15,7 +15,7 @@ PBKDF* get_pbkdf(in string algo_spec)
 {
 	Algorithm_Factory& af = global_state().algorithm_factory();
 
-	if(PBKDF* pbkdf = af.make_pbkdf(algo_spec))
+	if (PBKDF* pbkdf = af.make_pbkdf(algo_spec))
 		return pbkdf;
 
 	throw new Algorithm_Not_Found(algo_spec);
@@ -28,13 +28,13 @@ bool have_algorithm(in string name)
 {
 	Algorithm_Factory& af = global_state().algorithm_factory();
 
-	if(af.prototype_block_cipher(name))
+	if (af.prototype_block_cipher(name))
 		return true;
-	if(af.prototype_stream_cipher(name))
+	if (af.prototype_stream_cipher(name))
 		return true;
-	if(af.prototype_hash_function(name))
+	if (af.prototype_hash_function(name))
 		return true;
-	if(af.prototype_mac(name))
+	if (af.prototype_mac(name))
 		return true;
 	return false;
 }
@@ -46,10 +46,10 @@ size_t block_size_of(in string name)
 {
 	Algorithm_Factory& af = global_state().algorithm_factory();
 
-	if(const BlockCipher* cipher = af.prototype_block_cipher(name))
+	if (const BlockCipher* cipher = af.prototype_block_cipher(name))
 		return cipher->block_size();
 
-	if(const HashFunction* hash = af.prototype_hash_function(name))
+	if (const HashFunction* hash = af.prototype_hash_function(name))
 		return hash->hash_block_size();
 
 	throw new Algorithm_Not_Found(name);
@@ -62,10 +62,10 @@ size_t output_length_of(in string name)
 {
 	Algorithm_Factory& af = global_state().algorithm_factory();
 
-	if(const HashFunction* hash = af.prototype_hash_function(name))
+	if (const HashFunction* hash = af.prototype_hash_function(name))
 		return hash->output_length();
 
-	if(const MessageAuthenticationCode* mac = af.prototype_mac(name))
+	if (const MessageAuthenticationCode* mac = af.prototype_mac(name))
 		return mac->output_length();
 
 	throw new Algorithm_Not_Found(name);
@@ -83,7 +83,7 @@ Keyed_Filter* get_cipher(in string algo_spec,
 
 	while(Engine* engine = i.next())
 	{
-		if(Keyed_Filter* algo = engine->get_cipher(algo_spec, direction, af))
+		if (Keyed_Filter* algo = engine->get_cipher(algo_spec, direction, af))
 			return algo;
 	}
 
@@ -101,7 +101,7 @@ Keyed_Filter* get_cipher(in string algo_spec,
 	Keyed_Filter* cipher = get_cipher(algo_spec, direction);
 	cipher->set_key(key);
 
-	if(iv.length())
+	if (iv.length())
 		cipher->set_iv(iv);
 
 	return cipher;

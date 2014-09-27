@@ -72,7 +72,7 @@ class Fixed_Exponent_Power_Mod : public Power_Mod
 		Fixed_Exponent_Power_Mod() {}
 
 		Fixed_Exponent_Power_Mod(in BigInt exponent,
-										 const BigInt& modulus,
+										 ref const BigInt modulus,
 										 Usage_Hints hints = NO_HINTS);
 };
 
@@ -88,6 +88,6 @@ class Fixed_Base_Power_Mod : public Power_Mod
 		Fixed_Base_Power_Mod() {}
 
 		Fixed_Base_Power_Mod(in BigInt base,
-									const BigInt& modulus,
+									ref const BigInt modulus,
 									Usage_Hints hints = NO_HINTS);
 };

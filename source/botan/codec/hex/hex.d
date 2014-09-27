@@ -23,7 +23,7 @@ void hex_encode(char* output,
 
 	const byte* tbl = uppercase ? BIN_TO_HEX_UPPER : BIN_TO_HEX_LOWER;
 
-	for(size_t i = 0; i != input_length; ++i)
+	for (size_t i = 0; i != input_length; ++i)
 	{
 		byte x = input[i];
 		output[2*i  ] = tbl[(x >> 4) & 0x0F];
@@ -37,7 +37,7 @@ string hex_encode(in byte* input,
 {
 	string output(2 * input_length, 0);
 
-	if(input_length)
+	if (input_length)
 		hex_encode(&output[0], input, input_length, uppercase);
 
 	return output;
@@ -91,19 +91,19 @@ size_t hex_decode(byte* output,
 
 	clear_mem(output, input_length / 2);
 
-	for(size_t i = 0; i != input_length; ++i)
+	for (size_t i = 0; i != input_length; ++i)
 	{
 		const byte bin = HEX_TO_BIN[cast(byte)(input[i])];
 
-		if(bin >= 0x10)
+		if (bin >= 0x10)
 		{
-			if(bin == 0x80 && ignore_ws)
+			if (bin == 0x80 && ignore_ws)
 				continue;
 
 			string bad_char(1, input[i]);
-			if(bad_char == "\t")
+			if (bad_char == "\t")
 			  bad_char = "\\t";
-			else if(bad_char == "")
+			else if (bad_char == "")
 			  bad_char = "\";
 
 			throw new std::invalid_argument(
@@ -114,7 +114,7 @@ size_t hex_decode(byte* output,
 		*out_ptr |= bin << (top_nibble*4);
 
 		top_nibble = !top_nibble;
-		if(top_nibble)
+		if (top_nibble)
 			++out_ptr;
 	}
 
@@ -125,7 +125,7 @@ size_t hex_decode(byte* output,
 	* We only got half of a byte at the end; zap the half-written
 	* output and mark it as unread
 	*/
-	if(!top_nibble)
+	if (!top_nibble)
 	{
 		*out_ptr = 0;
 		input_consumed -= 1;
@@ -143,7 +143,7 @@ size_t hex_decode(byte* output,
 	size_t written = hex_decode(output, input, input_length,
 										 consumed, ignore_ws);
 
-	if(consumed != input_length)
+	if (consumed != input_length)
 		throw new std::invalid_argument("hex_decode: input did not have full bytes");
 
 	return written;

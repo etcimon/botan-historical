@@ -54,7 +54,7 @@ void compress(secure_vector<uint>& digest,
 			 D = digest[3], E = digest[4], F = digest[5],
 			 G = digest[6], H = digest[7];
 
-	for(size_t i = 0; i != blocks; ++i)
+	for (size_t i = 0; i != blocks; ++i)
 	{
 		uint W00 = load_be!uint(input,  0);
 		uint W01 = load_be!uint(input,  1);
@@ -168,7 +168,7 @@ void SHA_224::compress_n(in byte* input, size_t blocks)
 */
 void SHA_224::copy_out(byte* output)
 {
-	for(size_t i = 0; i != output_length(); i += 4)
+	for (size_t i = 0; i != output_length(); i += 4)
 		store_be(digest[i/4], output + i);
 }
 
@@ -201,7 +201,7 @@ void SHA_256::compress_n(in byte* input, size_t blocks)
 */
 void SHA_256::copy_out(byte* output)
 {
-	for(size_t i = 0; i != output_length(); i += 4)
+	for (size_t i = 0; i != output_length(); i += 4)
 		store_be(digest[i/4], output + i);
 }
 

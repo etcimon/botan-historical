@@ -38,11 +38,11 @@ void GOST_34_11::add_data(in byte* input, size_t length)
 {
 	count += length;
 
-	if(position)
+	if (position)
 	{
 		buffer_insert(buffer, position, input, length);
 
-		if(position + length >= hash_block_size())
+		if (position + length >= hash_block_size())
 		{
 			compress_n(&buffer[0], 1);
 			input += (hash_block_size() - position);
@@ -54,7 +54,7 @@ void GOST_34_11::add_data(in byte* input, size_t length)
 	const size_t full_blocks = length / hash_block_size();
 	const size_t remaining	= length % hash_block_size();
 
-	if(full_blocks)
+	if (full_blocks)
 		compress_n(input, full_blocks);
 
 	buffer_insert(buffer, position, input + full_blocks * hash_block_size(), remaining);
@@ -66,9 +66,9 @@ void GOST_34_11::add_data(in byte* input, size_t length)
 */
 void GOST_34_11::compress_n(in byte* input, size_t blocks)
 {
-	for(size_t i = 0; i != blocks; ++i)
+	for (size_t i = 0; i != blocks; ++i)
 	{
-		for(ushort j = 0, carry = 0; j != 32; ++j)
+		for (ushort j = 0, carry = 0; j != 32; ++j)
 		{
 			ushort s = sum[j] + input[32*i+j] + carry;
 			carry = get_byte(0, s);
@@ -81,19 +81,19 @@ void GOST_34_11::compress_n(in byte* input, size_t blocks)
 		load_be(U, &hash[0], 4);
 		load_be(V, input + 32*i, 4);
 
-		for(size_t j = 0; j != 4; ++j)
+		for (size_t j = 0; j != 4; ++j)
 		{
 			byte key[32] = { 0 };
 
 			// P transformation
-			for(size_t k = 0; k != 4; ++k)
-				for(size_t l = 0; l != 8; ++l)
+			for (size_t k = 0; k != 4; ++k)
+				for (size_t l = 0; l != 8; ++l)
 					key[4*l+k] = get_byte(l, U[k]) ^ get_byte(l, V[k]);
 
 			cipher.set_key(key, 32);
 			cipher.encrypt(&hash[8*j], S + 8*j);
 
-			if(j == 3)
+			if (j == 3)
 				break;
 
 			// A(x)
@@ -103,7 +103,7 @@ void GOST_34_11::compress_n(in byte* input, size_t blocks)
 			U[2] = U[3];
 			U[3] = U[0] ^ A_U;
 
-			if(j == 1) // C_3
+			if (j == 1) // C_3
 			{
 				U[0] ^= 0x00FF00FF00FF00FF;
 				U[1] ^= 0xFF00FF00FF00FF00;
@@ -216,7 +216,7 @@ void GOST_34_11::compress_n(in byte* input, size_t blocks)
 */
 void GOST_34_11::final_result(byte* output)
 {
-	if(position)
+	if (position)
 	{
 		clear_mem(&buffer[0] + position, buffer.size() - position);
 		compress_n(&buffer[0], 1);

@@ -41,10 +41,10 @@ bool EMSA_Raw::verify(in SafeVector!byte coded,
 							 in SafeVector!byte raw,
 							 size_t)
 {
-	if(coded.size() == raw.size())
+	if (coded.size() == raw.size())
 		return (coded == raw);
 
-	if(coded.size() > raw.size())
+	if (coded.size() > raw.size())
 		return false;
 
 	// handle zero padding differences
@@ -52,11 +52,11 @@ bool EMSA_Raw::verify(in SafeVector!byte coded,
 
 	bool same_modulo_leading_zeros = true;
 
-	for(size_t i = 0; i != leading_zeros_expected; ++i)
-		if(raw[i])
+	for (size_t i = 0; i != leading_zeros_expected; ++i)
+		if (raw[i])
 			same_modulo_leading_zeros = false;
 
-	if(!same_mem(&coded[0], &raw[leading_zeros_expected], coded.size()))
+	if (!same_mem(&coded[0], &raw[leading_zeros_expected], coded.size()))
 		same_modulo_leading_zeros = false;
 
 	return same_modulo_leading_zeros;

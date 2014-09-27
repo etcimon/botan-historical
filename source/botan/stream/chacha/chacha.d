@@ -24,7 +24,7 @@ void ChaCha::chacha(byte output[64], const uint input[16])
 	c += d; b ^= c; b = rotate_left(b, 7);  \
 } while(0)
 
-	for(size_t i = 0; i != 10; ++i)
+	for (size_t i = 0; i != 10; ++i)
 	{
 		CHACHA_QUARTER_ROUND(x00, x04, x08, x12);
 		CHACHA_QUARTER_ROUND(x01, x05, x09, x13);
@@ -107,7 +107,7 @@ void ChaCha::key_schedule(in byte* key, size_t length)
 	m_state[6] = load_le!uint(key, 2);
 	m_state[7] = load_le!uint(key, 3);
 
-	if(length == 32)
+	if (length == 32)
 		key += 16;
 
 	m_state[8] = load_le!uint(key, 0);
@@ -126,7 +126,7 @@ void ChaCha::key_schedule(in byte* key, size_t length)
 */
 void ChaCha::set_iv(in byte* iv, size_t length)
 {
-	if(!valid_iv_length(length))
+	if (!valid_iv_length(length))
 		throw new Invalid_IV_Length(name(), length);
 
 	m_state[12] = 0;

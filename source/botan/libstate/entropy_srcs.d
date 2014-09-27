@@ -101,7 +101,7 @@ void Library_State::poll_available_sources(class Entropy_Accumulator& accum)
 {
 	std::lock_guard<std::mutex> lock(m_entropy_src_mutex);
 
-	if(m_sources.empty())
+	if (m_sources.empty())
 		throw new Exception("No entropy sources enabled at build time, poll failed");
 
 	size_t poll_attempt = 0;

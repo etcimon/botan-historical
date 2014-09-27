@@ -19,7 +19,7 @@ Vector!( byte ) enc_two_digit(uint input)
 {
 	Vector!( byte ) result;
 	in %= 100;
-	if(in < 10)
+	if (in < 10)
 		result.push_back(0x00);
 	else
 	{
@@ -37,7 +37,7 @@ uint dec_two_digit(byte b1, byte b2)
 	uint upper = b1;
 	uint lower = b2;
 
-	if(upper > 9 || lower > 9)
+	if (upper > 9 || lower > 9)
 		throw new Invalid_Argument("CVC dec_two_digit value too large");
 
 	return upper*10 + lower;
@@ -79,7 +79,7 @@ EAC_Time::EAC_Time(uint y, uint m, uint d, ASN1_Tag t) :
 */
 void EAC_Time::set_to(in string time_str)
 {
-	if(time_str == "")
+	if (time_str == "")
 	{
 		year = month = day = 0;
 		return;
@@ -88,28 +88,28 @@ void EAC_Time::set_to(in string time_str)
 	Vector!( string ) params;
 	string current;
 
-	for(uint j = 0; j != time_str.size(); ++j)
+	for (uint j = 0; j != time_str.size(); ++j)
 	{
-		if(Charset::is_digit(time_str[j]))
+		if (Charset::is_digit(time_str[j]))
 			current += time_str[j];
 		else
 		{
-			if(current != "")
+			if (current != "")
 				params.push_back(current);
 			current.clear();
 		}
 	}
-	if(current != "")
+	if (current != "")
 		params.push_back(current);
 
-	if(params.size() != 3)
+	if (params.size() != 3)
 		throw new Invalid_Argument("Invalid time specification " + time_str);
 
 	year	= to_uint(params[0]);
 	month  = to_uint(params[1]);
 	day	 = to_uint(params[2]);
 
-	if(!passes_sanity_check())
+	if (!passes_sanity_check())
 		throw new Invalid_Argument("Invalid time specification " + time_str);
 }/*
 * DER encode a EAC_Time
@@ -125,7 +125,7 @@ void EAC_Time::encode_into(DER_Encoder& der) const
 */
 string EAC_Time::as_string() const
 {
-	if(time_is_set() == false)
+	if (time_is_set() == false)
 		throw new Invalid_State("EAC_Time::as_string: No time set");
 
 	return std::to_string(year * 10000 + month * 100 + day);
@@ -144,7 +144,7 @@ bool EAC_Time::time_is_set() const
 */
 string EAC_Time::readable_string() const
 {
-	if(time_is_set() == false)
+	if (time_is_set() == false)
 		throw new Invalid_State("EAC_Time::readable_string: No time set");
 
 	string output(11, 0);
@@ -159,11 +159,11 @@ string EAC_Time::readable_string() const
 */
 bool EAC_Time::passes_sanity_check() const
 {
-	if(year < 2000 || year > 2099)
+	if (year < 2000 || year > 2099)
 		return false;
-	if(month == 0 || month > 12)
+	if (month == 0 || month > 12)
 		return false;
-	if(day == 0 || day > 31)
+	if (day == 0 || day > 31)
 		return false;
 
 	return true;
@@ -181,7 +181,7 @@ void EAC_Time::add_months(uint months)
 {
 	year += months/12;
 	month += months % 12;
-	if(month > 12)
+	if (month > 12)
 	{
 		year += 1;
 		month -= 12;
@@ -193,17 +193,17 @@ void EAC_Time::add_months(uint months)
 */
 s32bit EAC_Time::cmp(in EAC_Time other) const
 {
-	if(time_is_set() == false)
+	if (time_is_set() == false)
 		throw new Invalid_State("EAC_Time::cmp: No time set");
 
 	const s32bit EARLIER = -1, LATER = 1, SAME_TIME = 0;
 
-	if(year < other.year)	  return EARLIER;
-	if(year > other.year)	  return LATER;
-	if(month < other.month)	return EARLIER;
-	if(month > other.month)	return LATER;
-	if(day < other.day)		 return EARLIER;
-	if(day > other.day)		 return LATER;
+	if (year < other.year)	  return EARLIER;
+	if (year > other.year)	  return LATER;
+	if (month < other.month)	return EARLIER;
+	if (month > other.month)	return LATER;
+	if (day < other.day)		 return EARLIER;
+	if (day > other.day)		 return LATER;
 
 	return SAME_TIME;
 }
@@ -248,10 +248,10 @@ void EAC_Time::decode_from(BER_Decoder& source)
 {
 	BER_Object obj = source.get_next_object();
 
-	if(obj.type_tag != this->tag)
+	if (obj.type_tag != this->tag)
 		throw new BER_Decoding_Error("Tag mismatch when decoding");
 
-	if(obj.value.size() != 6)
+	if (obj.value.size() != 6)
 	{
 		throw new Decoding_Error("EAC_Time decoding failed");
 	}

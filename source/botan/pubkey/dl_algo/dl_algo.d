@@ -55,9 +55,9 @@ DL_Scheme_PrivateKey::DL_Scheme_PrivateKey(in AlgorithmIdentifier alg_id,
 bool DL_Scheme_PublicKey::check_key(RandomNumberGenerator& rng,
 												bool strong) const
 {
-	if(y < 2 || y >= group_p())
+	if (y < 2 || y >= group_p())
 		return false;
-	if(!group.verify_group(rng, strong))
+	if (!group.verify_group(rng, strong))
 		return false;
 	return true;
 }
@@ -68,18 +68,18 @@ bool DL_Scheme_PublicKey::check_key(RandomNumberGenerator& rng,
 bool DL_Scheme_PrivateKey::check_key(RandomNumberGenerator& rng,
 												 bool strong) const
 {
-	const BigInt& p = group_p();
-	const BigInt& g = group_g();
+	ref const BigInt p = group_p();
+	ref const BigInt g = group_g();
 
-	if(y < 2 || y >= p || x < 2 || x >= p)
+	if (y < 2 || y >= p || x < 2 || x >= p)
 		return false;
-	if(!group.verify_group(rng, strong))
+	if (!group.verify_group(rng, strong))
 		return false;
 
-	if(!strong)
+	if (!strong)
 		return true;
 
-	if(y != power_mod(g, x, p))
+	if (y != power_mod(g, x, p))
 		return false;
 
 	return true;

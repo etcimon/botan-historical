@@ -24,7 +24,7 @@ class TLS_Data_Reader
 
 		void assert_done() const
 		{
-			if(has_remaining())
+			if (has_remaining())
 				throw new decode_error("Extra bytes at end of message");
 		}
 
@@ -76,7 +76,7 @@ class TLS_Data_Reader
 
 			Container result(num_elems);
 
-			for(size_t i = 0; i != num_elems; ++i)
+			for (size_t i = 0; i != num_elems; ++i)
 				result[i] = load_be<T>(&m_buf[m_offset], i);
 
 			m_offset += num_elems * sizeof(T);
@@ -124,9 +124,9 @@ class TLS_Data_Reader
 		{
 			assert_at_least(len_bytes);
 
-			if(len_bytes == 1)
+			if (len_bytes == 1)
 				return get_byte();
-			else if(len_bytes == 2)
+			else if (len_bytes == 2)
 				return get_ushort();
 
 			throw new decode_error("Bad length size");
@@ -139,12 +139,12 @@ class TLS_Data_Reader
 		{
 			const size_t byte_length = get_length_field(len_bytes);
 
-			if(byte_length % T_size != 0)
+			if (byte_length % T_size != 0)
 				throw new decode_error("Size isn't multiple of T");
 
 			const size_t num_elems = byte_length / T_size;
 
-			if(num_elems < min_elems || num_elems > max_elems)
+			if (num_elems < min_elems || num_elems > max_elems)
 				throw new decode_error("Length field outside parameters");
 
 			return num_elems;
@@ -152,7 +152,7 @@ class TLS_Data_Reader
 
 		void assert_at_least(size_t n) const
 		{
-			if(m_buf.size() - m_offset < n)
+			if (m_buf.size() - m_offset < n)
 				throw new decode_error("Expected " + std::to_string(n) +
 										 " bytes remaining, only " +
 										 std::to_string(m_buf.size()-m_offset) +
@@ -180,18 +180,18 @@ void append_tls_length_value(T, Alloc)(Vector!( byte, Alloc )& buf,
 	const size_t T_size = sizeof(T);
 	const size_t val_bytes = T_size * vals_size;
 
-	if(tag_size != 1 && tag_size != 2)
+	if (tag_size != 1 && tag_size != 2)
 		throw new std::invalid_argument("append_tls_length_value: invalid tag size");
 
-	if((tag_size == 1 && val_bytes > 255) ||
+	if ((tag_size == 1 && val_bytes > 255) ||
 		(tag_size == 2 && val_bytes > 65535))
 		throw new std::invalid_argument("append_tls_length_value: value too large");
 
-	for(size_t i = 0; i != tag_size; ++i)
+	for (size_t i = 0; i != tag_size; ++i)
 		buf.push_back(get_byte(sizeof(val_bytes)-tag_size+i, val_bytes));
 
-	for(size_t i = 0; i != vals_size; ++i)
-		for(size_t j = 0; j != T_size; ++j)
+	for (size_t i = 0; i != vals_size; ++i)
+		for (size_t j = 0; j != T_size; ++j)
 			buf.push_back(get_byte(j, vals[i]));
 }
 

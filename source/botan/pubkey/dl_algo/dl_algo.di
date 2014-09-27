@@ -29,25 +29,25 @@ class DL_Scheme_PublicKey : public abstract Public_Key
 		/**
 		* Get the public value y with y = g^x mod p where x is the secret key.
 		*/
-		const BigInt& get_y() const { return y; }
+		ref const BigInt get_y() const { return y; }
 
 		/**
 		* Get the prime p of the underlying DL group.
 		* @return prime p
 		*/
-		const BigInt& group_p() const { return group.get_p(); }
+		ref const BigInt group_p() const { return group.get_p(); }
 
 		/**
 		* Get the prime q of the underlying DL group.
 		* @return prime q
 		*/
-		const BigInt& group_q() const { return group.get_q(); }
+		ref const BigInt group_q() const { return group.get_q(); }
 
 		/**
 		* Get the generator g of the underlying DL group.
 		* @return generator g
 		*/
-		const BigInt& group_g() const { return group.get_g(); }
+		ref const BigInt group_g() const { return group.get_g(); }
 
 		/**
 		* Get the underlying groups encoding format.
@@ -88,7 +88,7 @@ class DL_Scheme_PrivateKey : public abstract DL_Scheme_PublicKey,
 		* Get the secret key x.
 		* @return secret key
 		*/
-		const BigInt& get_x() const { return x; }
+		ref const BigInt get_x() const { return x; }
 
 		SafeVector!byte pkcs8_Private_Key() const;
 

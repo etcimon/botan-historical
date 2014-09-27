@@ -34,16 +34,16 @@ SafeVector!byte PSSR::encoding_of(in SafeVector!byte msg,
 {
 	const size_t HASH_SIZE = hash->output_length();
 
-	if(msg.size() != HASH_SIZE)
+	if (msg.size() != HASH_SIZE)
 		throw new Encoding_Error("PSSR::encoding_of: Bad input length");
-	if(output_bits < 8*HASH_SIZE + 8*SALT_SIZE + 9)
+	if (output_bits < 8*HASH_SIZE + 8*SALT_SIZE + 9)
 		throw new Encoding_Error("PSSR::encoding_of: Output length is too small");
 
 	const size_t output_length = (output_bits + 7) / 8;
 
 	SafeVector!byte salt = rng.random_vec(SALT_SIZE);
 
-	for(size_t j = 0; j != 8; ++j)
+	for (size_t j = 0; j != 8; ++j)
 		hash->update(0);
 	hash->update(msg);
 	hash->update(salt);
@@ -70,20 +70,20 @@ bool PSSR::verify(in SafeVector!byte const_coded,
 	const size_t HASH_SIZE = hash->output_length();
 	const size_t KEY_BYTES = (key_bits + 7) / 8;
 
-	if(key_bits < 8*HASH_SIZE + 9)
+	if (key_bits < 8*HASH_SIZE + 9)
 		return false;
 
-	if(raw.size() != HASH_SIZE)
+	if (raw.size() != HASH_SIZE)
 		return false;
 
-	if(const_coded.size() > KEY_BYTES || const_coded.size() <= 1)
+	if (const_coded.size() > KEY_BYTES || const_coded.size() <= 1)
 		return false;
 
-	if(const_coded[const_coded.size()-1] != 0xBC)
+	if (const_coded[const_coded.size()-1] != 0xBC)
 		return false;
 
 	SafeVector!byte coded = const_coded;
-	if(coded.size() < KEY_BYTES)
+	if (coded.size() < KEY_BYTES)
 	{
 		SafeVector!byte temp(KEY_BYTES);
 		buffer_insert(temp, KEY_BYTES - coded.size(), coded);
@@ -91,7 +91,7 @@ bool PSSR::verify(in SafeVector!byte const_coded,
 	}
 
 	const size_t TOP_BITS = 8 * ((key_bits + 7) / 8) - key_bits;
-	if(TOP_BITS > 8 - high_bit(coded[0]))
+	if (TOP_BITS > 8 - high_bit(coded[0]))
 		return false;
 
 	byte* DB = &coded[0];
@@ -104,17 +104,17 @@ bool PSSR::verify(in SafeVector!byte const_coded,
 	DB[0] &= 0xFF >> TOP_BITS;
 
 	size_t salt_offset = 0;
-	for(size_t j = 0; j != DB_size; ++j)
+	for (size_t j = 0; j != DB_size; ++j)
 	{
-		if(DB[j] == 0x01)
+		if (DB[j] == 0x01)
 		{ salt_offset = j + 1; break; }
-		if(DB[j])
+		if (DB[j])
 			return false;
 	}
-	if(salt_offset == 0)
+	if (salt_offset == 0)
 		return false;
 
-	for(size_t j = 0; j != 8; ++j)
+	for (size_t j = 0; j != 8; ++j)
 		hash->update(0);
 	hash->update(raw);
 	hash->update(&DB[salt_offset], DB_size - salt_offset);

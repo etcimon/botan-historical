@@ -15,15 +15,15 @@ SafeVector!byte EME_PKCS1v15::pad(in byte* input, size_t inlen,
 {
 	olen /= 8;
 
-	if(olen < 10)
+	if (olen < 10)
 		throw new Encoding_Error("PKCS1: Output space too small");
-	if(inlen > olen - 10)
+	if (inlen > olen - 10)
 		throw new Encoding_Error("PKCS1: Input is too large");
 
 	SafeVector!byte output(olen);
 
 	output[0] = 0x02;
-	for(size_t j = 1; j != olen - inlen - 1; ++j)
+	for (size_t j = 1; j != olen - inlen - 1; ++j)
 		while(output[j] == 0)
 			output[j] = rng.next_byte();
 	buffer_insert(output, olen - inlen, input, inlen);
@@ -37,17 +37,17 @@ SafeVector!byte EME_PKCS1v15::pad(in byte* input, size_t inlen,
 SafeVector!byte EME_PKCS1v15::unpad(in byte* input, size_t inlen,
 													size_t key_len) const
 {
-	if(inlen != key_len / 8 || inlen < 10 || input[0] != 0x02)
+	if (inlen != key_len / 8 || inlen < 10 || input[0] != 0x02)
 		throw new Decoding_Error("PKCS1::unpad");
 
 	size_t seperator = 0;
-	for(size_t j = 0; j != inlen; ++j)
-		if(input[j] == 0)
+	for (size_t j = 0; j != inlen; ++j)
+		if (input[j] == 0)
 		{
 			seperator = j;
 			break;
 		}
-	if(seperator < 9)
+	if (seperator < 9)
 		throw new Decoding_Error("PKCS1::unpad");
 
 	return SafeVector!byte(&input[seperator + 1], &input[inlen]);
@@ -58,7 +58,7 @@ SafeVector!byte EME_PKCS1v15::unpad(in byte* input, size_t inlen,
 */
 size_t EME_PKCS1v15::maximum_input_size(size_t keybits) const
 {
-	if(keybits / 8 > 10)
+	if (keybits / 8 > 10)
 		return ((keybits / 8) - 10);
 	else
 		return 0;

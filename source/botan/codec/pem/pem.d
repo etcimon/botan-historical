@@ -32,7 +32,7 @@ SafeVector!byte decode_check_label(DataSource& source,
 {
 	string label_got;
 	SafeVector!byte ber = decode(source, label_got);
-	if(label_got != label_want)
+	if (label_got != label_want)
 		throw new Decoding_Error("PEM: Label mismatch, wanted " + label_want +
 									", got " + label_got);
 	return ber;
@@ -52,11 +52,11 @@ SafeVector!byte decode(DataSource& source, string& label)
 	while(position != PEM_HEADER1.length())
 	{
 		byte b;
-		if(!source.read_byte(b))
+		if (!source.read_byte(b))
 			throw new Decoding_Error("PEM: No PEM header found");
-		if(b == PEM_HEADER1[position])
+		if (b == PEM_HEADER1[position])
 			++position;
-		else if(position >= RANDOM_CHAR_LIMIT)
+		else if (position >= RANDOM_CHAR_LIMIT)
 			throw new Decoding_Error("PEM: Malformed PEM header");
 		else
 			position = 0;
@@ -65,14 +65,14 @@ SafeVector!byte decode(DataSource& source, string& label)
 	while(position != PEM_HEADER2.length())
 	{
 		byte b;
-		if(!source.read_byte(b))
+		if (!source.read_byte(b))
 			throw new Decoding_Error("PEM: No PEM header found");
-		if(b == PEM_HEADER2[position])
+		if (b == PEM_HEADER2[position])
 			++position;
-		else if(position)
+		else if (position)
 			throw new Decoding_Error("PEM: Malformed PEM header");
 
-		if(position == 0)
+		if (position == 0)
 			label += cast(char)(b);
 	}
 
@@ -84,14 +84,14 @@ SafeVector!byte decode(DataSource& source, string& label)
 	while(position != PEM_TRAILER.length())
 	{
 		byte b;
-		if(!source.read_byte(b))
+		if (!source.read_byte(b))
 			throw new Decoding_Error("PEM: No PEM trailer found");
-		if(b == PEM_TRAILER[position])
+		if (b == PEM_TRAILER[position])
 			++position;
-		else if(position)
+		else if (position)
 			throw new Decoding_Error("PEM: Malformed PEM trailer");
 
-		if(position == 0)
+		if (position == 0)
 			base64.write(b);
 	}
 	base64.end_msg();
@@ -122,18 +122,18 @@ bool matches(DataSource& source, in string extra,
 	SafeVector!byte search_buf(search_range);
 	size_t got = source.peek(&search_buf[0], search_buf.size(), 0);
 
-	if(got < PEM_HEADER.length())
+	if (got < PEM_HEADER.length())
 		return false;
 
 	size_t index = 0;
 
-	for(size_t j = 0; j != got; ++j)
+	for (size_t j = 0; j != got; ++j)
 	{
-		if(search_buf[j] == PEM_HEADER[index])
+		if (search_buf[j] == PEM_HEADER[index])
 			++index;
 		else
 			index = 0;
-		if(index == PEM_HEADER.size())
+		if (index == PEM_HEADER.size())
 			return true;
 	}
 	return false;

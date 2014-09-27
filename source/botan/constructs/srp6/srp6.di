@@ -28,7 +28,7 @@ srp6_client_agree(in string username,
 									 in string group_id,
 									 in string hash_id,
 									 in Vector!byte salt,
-									 const BigInt& B,
+									 ref const BigInt B,
 									 RandomNumberGenerator& rng);
 
 /**
@@ -52,7 +52,7 @@ BigInt generate_srp6_verifier(in string identifier,
 * @param g the group generator
 * @return group identifier
 */
-string srp6_group_identifier(in BigInt N, const BigInt& g);
+string srp6_group_identifier(in BigInt N, ref const BigInt g);
 
 /**
 * Represents a SRP-6a server session

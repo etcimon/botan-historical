@@ -65,12 +65,12 @@ Session_Manager_SQLite::Session_Manager_SQLite(in string passphrase,
 
 	const size_t salts = m_db->row_count("tls_sessions_metadata");
 
-	if(salts == 1)
+	if (salts == 1)
 	{
 		// existing db
 		sqlite3_statement stmt(m_db, "select * from tls_sessions_metadata");
 
-		if(stmt.step())
+		if (stmt.step())
 		{
 			Pair!(const byte*, size_t) salt = stmt.get_blob(0);
 			const size_t iterations = stmt.get_size_t(1);
@@ -83,14 +83,14 @@ Session_Manager_SQLite::Session_Manager_SQLite(in string passphrase,
 												iterations,
 												check_val_created);
 
-			if(check_val_created != check_val_db)
+			if (check_val_created != check_val_db)
 				throw new Exception("Session database password not valid");
 		}
 	}
 	else
 	{
 		// maybe just zap the salts + sessions tables in this case?
-		if(salts != 0)
+		if (salts != 0)
 			throw new Exception("Seemingly corrupted database, multiple salts found");
 
 		// new database case
@@ -204,7 +204,7 @@ void Session_Manager_SQLite::prune_session_cache()
 
 	const size_t sessions = m_db->row_count("tls_sessions");
 
-	if(sessions > m_max_sessions)
+	if (sessions > m_max_sessions)
 	{
 		sqlite3_statement remove_some(m_db, "delete from tls_sessions where session_id in "
 														"(select session_id from tls_sessions limit ?1)");

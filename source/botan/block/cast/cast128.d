@@ -48,7 +48,7 @@ namespace {
 */
 void CAST_128::encrypt_n(byte* input, byte* output, size_t blocks) const
 {
-	for(size_t i = 0; i != blocks; ++i)
+	for (size_t i = 0; i != blocks; ++i)
 	{
 		uint L = load_be!uint(input, 0);
 		uint R = load_be!uint(input, 1);
@@ -82,7 +82,7 @@ void CAST_128::encrypt_n(byte* input, byte* output, size_t blocks) const
 */
 void CAST_128::decrypt_n(byte* input, byte* output, size_t blocks) const
 {
-	for(size_t i = 0; i != blocks; ++i)
+	for (size_t i = 0; i != blocks; ++i)
 	{
 		uint L = load_be!uint(input, 0);
 		uint R = load_be!uint(input, 1);
@@ -120,7 +120,7 @@ void CAST_128::key_schedule(in byte* key)
 	RK.resize(48);
 
 	secure_vector<uint> X(4);
-	for(size_t i = 0; i != length; ++i)
+	for (size_t i = 0; i != length; ++i)
 		X[i/4] = (X[i/4] << 8) + key[i];
 
 	cast_ks(MK, X);
@@ -128,7 +128,7 @@ void CAST_128::key_schedule(in byte* key)
 	secure_vector<uint> RK32(48);
 	cast_ks(RK32, X);
 
-	for(size_t i = 0; i != 16; ++i)
+	for (size_t i = 0; i != 16; ++i)
 		RK[i] = RK32[i] % 32;
 }
 

@@ -16,8 +16,8 @@
 * @return (a*b)+c
 */
 BigInt mul_add(in BigInt a,
-								 const BigInt& b,
-								 const BigInt& c);
+								 ref const BigInt b,
+								 ref const BigInt c);
 
 /**
 * Fused subtract-multiply
@@ -27,8 +27,8 @@ BigInt mul_add(in BigInt a,
 * @return (a-b)*c
 */
 BigInt sub_mul(in BigInt a,
-								 const BigInt& b,
-								 const BigInt& c);
+								 ref const BigInt b,
+								 ref const BigInt c);
 
 /**
 * Return the absolute value
@@ -43,7 +43,7 @@ BigInt sub_mul(in BigInt a,
 * @param y a positive integer
 * @return gcd(x,y)
 */
-BigInt gcd(in BigInt x, const BigInt& y);
+BigInt gcd(in BigInt x, ref const BigInt y);
 
 /**
 * Least common multiple
@@ -51,7 +51,7 @@ BigInt gcd(in BigInt x, const BigInt& y);
 * @param y a positive integer
 * @return z, smallest integer such that z % x == 0 and z % y == 0
 */
-BigInt lcm(in BigInt x, const BigInt& y);
+BigInt lcm(in BigInt x, ref const BigInt y);
 
 /**
 * @param x an integer
@@ -66,7 +66,7 @@ BigInt square(in BigInt x);
 * @return y st (x*y) % modulus == 1
 */
 BigInt inverse_mod(in BigInt x,
-									  const BigInt& modulus);
+									  ref const BigInt modulus);
 
 /**
 * Compute the Jacobi symbol. If n is prime, this is equivalent
@@ -78,7 +78,7 @@ BigInt inverse_mod(in BigInt x,
 * @return (n / m)
 */
 s32bit jacobi(in BigInt a,
-								const BigInt& n);
+								ref const BigInt n);
 
 /**
 * Modular exponentation
@@ -88,8 +88,8 @@ s32bit jacobi(in BigInt a,
 * @return (b^x) % m
 */
 BigInt power_mod(in BigInt b,
-									const BigInt& x,
-									const BigInt& m);
+									ref const BigInt x,
+									ref const BigInt m);
 
 /**
 * Compute the square root of x modulo a prime using the
@@ -99,7 +99,7 @@ BigInt power_mod(in BigInt b,
 * @param p the prime
 * @return y such that (y*y)%p == x, or -1 if no such integer
 */
-BigInt ressol(in BigInt x, const BigInt& p);
+BigInt ressol(in BigInt x, ref const BigInt p);
 
 /*
 * Compute -input^-1 mod 2^MP_WORD_BITS. Returns zero if input
@@ -147,7 +147,7 @@ bool is_prime(in BigInt n,
 * @return random prime with the specified criteria
 */
 BigInt random_prime(RandomNumberGenerator& rng,
-										size_t bits, const BigInt& coprime = 1,
+										size_t bits, ref const BigInt coprime = 1,
 										size_t equiv = 1, size_t equiv_mod = 2);
 
 /**
@@ -174,7 +174,7 @@ class Algorithm_Factory;
 Vector!( byte )
 generate_dsa_primes(RandomNumberGenerator& rng,
 						  Algorithm_Factory& af,
-						  BigInt& p_out, BigInt& q_out,
+						  ref BigInt p_out, ref BigInt q_out,
 						  size_t pbits, size_t qbits);
 
 /**
@@ -192,7 +192,7 @@ generate_dsa_primes(RandomNumberGenerator& rng,
 bool
 generate_dsa_primes(RandomNumberGenerator& rng,
 						  Algorithm_Factory& af,
-						  BigInt& p_out, BigInt& q_out,
+						  ref BigInt p_out, ref BigInt q_out,
 						  size_t pbits, size_t qbits,
 						  in Vector!byte seed);
 

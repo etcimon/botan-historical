@@ -167,7 +167,7 @@ void SHA_160_SSE2::compress_n(in byte* input_bytes, size_t blocks)
 
 	const __m128i* input = cast(const __m128i*)(input_bytes);
 
-	for(size_t i = 0; i != blocks; ++i)
+	for (size_t i = 0; i != blocks; ++i)
 	{
 		union v4si {
 			uint u32[4];

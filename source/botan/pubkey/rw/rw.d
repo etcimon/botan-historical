@@ -17,10 +17,10 @@
 RW_PrivateKey::RW_PrivateKey(RandomNumberGenerator& rng,
 									  size_t bits, size_t exp)
 {
-	if(bits < 1024)
+	if (bits < 1024)
 		throw new Invalid_Argument(algo_name() + ": Can't make a key that is only " +
 									  std::to_string(bits) + " bits long");
-	if(exp < 2 || exp % 2 == 1)
+	if (exp < 2 || exp % 2 == 1)
 		throw new Invalid_Argument(algo_name() + ": Invalid encryption exponent");
 
 	e = exp;
@@ -45,13 +45,13 @@ RW_PrivateKey::RW_PrivateKey(RandomNumberGenerator& rng,
 */
 bool RW_PrivateKey::check_key(RandomNumberGenerator& rng, bool strong) const
 {
-	if(!IF_Scheme_PrivateKey::check_key(rng, strong))
+	if (!IF_Scheme_PrivateKey::check_key(rng, strong))
 		return false;
 
-	if(!strong)
+	if (!strong)
 		return true;
 
-	if((e * d) % (lcm(p - 1, q - 1) / 2) != 1)
+	if ((e * d) % (lcm(p - 1, q - 1) / 2) != 1)
 		return false;
 
 	return KeyPair::signature_consistency_check(rng, *this, "EMSA2(SHA-1)");
@@ -74,7 +74,7 @@ RW_Signature_Operation::sign(in byte* msg, size_t msg_len,
 {
 	rng.add_entropy(msg, msg_len);
 
-	if(!blinder.initialized())
+	if (!blinder.initialized())
 	{
 		BigInt k(rng, std::min<size_t>(160, n.bits() - 1));
 		blinder = Blinder(power_mod(k, e, n), inverse_mod(k, n), n);
@@ -82,10 +82,10 @@ RW_Signature_Operation::sign(in byte* msg, size_t msg_len,
 
 	BigInt i(msg, msg_len);
 
-	if(i >= n || i % 16 != 12)
+	if (i >= n || i % 16 != 12)
 		throw new Invalid_Argument("Rabin-Williams: invalid input");
 
-	if(jacobi(i, n) != 1)
+	if (jacobi(i, n) != 1)
 		i >>= 1;
 
 	i = blinder.blind(i);
@@ -106,19 +106,19 @@ RW_Verification_Operation::verify_mr(in byte* msg, size_t msg_len)
 {
 	BigInt m(msg, msg_len);
 
-	if((m > (n >> 1)) || m.is_negative())
+	if ((m > (n >> 1)) || m.is_negative())
 		throw new Invalid_Argument("RW signature verification: m > n / 2 || m < 0");
 
 	BigInt r = powermod_e_n(m);
-	if(r % 16 == 12)
+	if (r % 16 == 12)
 		return BigInt::encode_locked(r);
-	if(r % 8 == 6)
+	if (r % 8 == 6)
 		return BigInt::encode_locked(2*r);
 
 	r = n - r;
-	if(r % 16 == 12)
+	if (r % 16 == 12)
 		return BigInt::encode_locked(r);
-	if(r % 8 == 6)
+	if (r % 8 == 6)
 		return BigInt::encode_locked(2*r);
 
 	throw new Invalid_Argument("RW signature verification: Invalid signature");

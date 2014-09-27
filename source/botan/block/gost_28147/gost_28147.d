@@ -37,9 +37,9 @@ GOST_28147_89_Params::GOST_28147_89_Params(in string n) : name(n)
 		0x03, 0x25, 0xEB, 0xFE, 0x9C, 0x6D, 0xF8, 0x6D, 0x2E, 0xAB, 0xDE,
 		0x20, 0xBA, 0x89, 0x3C, 0x92, 0xF8, 0xD3, 0x53, 0xBC };
 
-	if(name == "R3411_94_TestParam")
+	if (name == "R3411_94_TestParam")
 		sboxes = GOST_R_3411_TEST_PARAMS;
-	else if(name == "R3411_CryptoPro")
+	else if (name == "R3411_CryptoPro")
 		sboxes = GOST_R_3411_CRYPTOPRO_PARAMS;
 	else
 		throw new Invalid_Argument("GOST_28147_89_Params: Unknown " + name);
@@ -51,8 +51,8 @@ GOST_28147_89_Params::GOST_28147_89_Params(in string n) : name(n)
 GOST_28147_89::GOST_28147_89(in GOST_28147_89_Params param) : SBOX(1024)
 {
 	// Convert the parallel 4x4 sboxes into larger word-based sboxes
-	for(size_t i = 0; i != 4; ++i)
-		for(size_t j = 0; j != 256; ++j)
+	for (size_t i = 0; i != 4; ++i)
+		for (size_t j = 0; j != 256; ++j)
 		{
 			const uint T = (param.sbox_entry(2*i  , j % 16)) |
 								  (param.sbox_entry(2*i+1, j / 16) << 4);
@@ -69,9 +69,9 @@ string GOST_28147_89::name() const
 	constructor, but can't break binary compat.
 	*/
 	string sbox_name = "";
-	if(SBOX[0] == 0x00072000)
+	if (SBOX[0] == 0x00072000)
 		sbox_name = "R3411_94_TestParam";
-	else if(SBOX[0] == 0x0002D000)
+	else if (SBOX[0] == 0x0002D000)
 		sbox_name = "R3411_CryptoPro";
 	else
 		throw new Internal_Error("GOST-28147 unrecognized sbox value");
@@ -102,12 +102,12 @@ string GOST_28147_89::name() const
 */
 void GOST_28147_89::encrypt_n(byte* input, byte* output, size_t blocks) const
 {
-	for(size_t i = 0; i != blocks; ++i)
+	for (size_t i = 0; i != blocks; ++i)
 	{
 		uint N1 = load_le!uint(input, 0);
 		uint N2 = load_le!uint(input, 1);
 
-		for(size_t j = 0; j != 3; ++j)
+		for (size_t j = 0; j != 3; ++j)
 		{
 			GOST_2ROUND(N1, N2, 0, 1);
 			GOST_2ROUND(N1, N2, 2, 3);
@@ -132,7 +132,7 @@ void GOST_28147_89::encrypt_n(byte* input, byte* output, size_t blocks) const
 */
 void GOST_28147_89::decrypt_n(byte* input, byte* output, size_t blocks) const
 {
-	for(size_t i = 0; i != blocks; ++i)
+	for (size_t i = 0; i != blocks; ++i)
 	{
 		uint N1 = load_le!uint(input, 0);
 		uint N2 = load_le!uint(input, 1);
@@ -142,7 +142,7 @@ void GOST_28147_89::decrypt_n(byte* input, byte* output, size_t blocks) const
 		GOST_2ROUND(N1, N2, 4, 5);
 		GOST_2ROUND(N1, N2, 6, 7);
 
-		for(size_t j = 0; j != 3; ++j)
+		for (size_t j = 0; j != 3; ++j)
 		{
 			GOST_2ROUND(N1, N2, 7, 6);
 			GOST_2ROUND(N1, N2, 5, 4);
@@ -162,7 +162,7 @@ void GOST_28147_89::decrypt_n(byte* input, byte* output, size_t blocks) const
 void GOST_28147_89::key_schedule(in byte* key, size_t)
 {
 	EK.resize(8);
-	for(size_t i = 0; i != 8; ++i)
+	for (size_t i = 0; i != 8; ++i)
 		EK[i] = load_le!uint(key, i);
 }
 

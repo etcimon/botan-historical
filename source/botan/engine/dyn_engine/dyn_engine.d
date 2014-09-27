@@ -29,7 +29,7 @@ Dynamically_Loaded_Engine::Dynamically_Loaded_Engine(
 
 		const uint mod_version = get_version();
 
-		if(mod_version != 20101003)
+		if (mod_version != 20101003)
 			throw new Exception("Incompatible version in " +
 											 library_path + " of " +
 											 std::to_string(mod_version));
@@ -39,7 +39,7 @@ Dynamically_Loaded_Engine::Dynamically_Loaded_Engine(
 
 		engine = creator();
 
-		if(!engine)
+		if (!engine)
 			throw new Exception("Creator function in " +
 											 library_path + " failed");
 	}

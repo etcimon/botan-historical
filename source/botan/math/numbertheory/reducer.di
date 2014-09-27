@@ -12,7 +12,7 @@
 class Modular_Reducer
 {
 	public:
-		const BigInt& get_modulus() const { return modulus; }
+		ref const BigInt get_modulus() const { return modulus; }
 
 		BigInt reduce(in BigInt x) const;
 
@@ -22,7 +22,7 @@ class Modular_Reducer
 		* @param y
 		* @return (x * y) % p
 		*/
-		BigInt multiply(in BigInt x, const BigInt& y) const
+		BigInt multiply(in BigInt x, ref const BigInt y) const
 		{ return reduce(x * y); }
 
 		/**

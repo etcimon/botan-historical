@@ -40,9 +40,9 @@ void MD2::hash(in byte* input)
 	xor_buf(&X[32], &X[0], &X[16], hash_block_size());
 	byte T = 0;
 
-	for(size_t i = 0; i != 18; ++i)
+	for (size_t i = 0; i != 18; ++i)
 	{
-		for(size_t k = 0; k != 48; k += 8)
+		for (size_t k = 0; k != 48; k += 8)
 		{
 			T = X[k  ] ^= SBOX[T]; T = X[k+1] ^= SBOX[T];
 			T = X[k+2] ^= SBOX[T]; T = X[k+3] ^= SBOX[T];
@@ -54,7 +54,7 @@ void MD2::hash(in byte* input)
 	}
 
 	T = checksum[15];
-	for(size_t i = 0; i != hash_block_size(); ++i)
+	for (size_t i = 0; i != hash_block_size(); ++i)
 		T = checksum[i] ^= SBOX[input[i] ^ T];
 }
 
@@ -65,7 +65,7 @@ void MD2::add_data(in byte* input, size_t length)
 {
 	buffer_insert(buffer, position, input, length);
 
-	if(position + length >= hash_block_size())
+	if (position + length >= hash_block_size())
 	{
 		hash(&buffer[0]);
 		input += (hash_block_size() - position);
@@ -87,7 +87,7 @@ void MD2::add_data(in byte* input, size_t length)
 */
 void MD2::final_result(byte* output)
 {
-	for(size_t i = position; i != hash_block_size(); ++i)
+	for (size_t i = position; i != hash_block_size(); ++i)
 		buffer[i] = cast(byte)(hash_block_size() - position);
 
 	hash(&buffer[0]);

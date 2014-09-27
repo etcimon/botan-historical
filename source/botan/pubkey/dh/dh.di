@@ -31,7 +31,7 @@ class DH_PublicKey : public abstract DL_Scheme_PublicKey
 		* @param grp the DL group to use in the key
 		* @param y the public value y
 		*/
-		DH_PublicKey(in DL_Group grp, const BigInt& y);
+		DH_PublicKey(in DL_Group grp, ref const BigInt y);
 	protected:
 		DH_PublicKey() {}
 };
@@ -63,7 +63,7 @@ class DH_PrivateKey : public DH_PublicKey,
 		* @param x the key's secret value (or if zero, generate a new key)
 		*/
 		DH_PrivateKey(RandomNumberGenerator& rng, const DL_Group& grp,
-						  const BigInt& x = 0);
+						  ref const BigInt x = 0);
 };
 
 /**
@@ -77,7 +77,7 @@ class DH_KA_Operation : public PK_Ops::Key_Agreement
 
 		SafeVector!byte agree(in byte* w, size_t w_len);
 	private:
-		const BigInt& p;
+		ref const BigInt p;
 
 		Fixed_Exponent_Power_Mod powermod_x_p;
 		Blinder blinder;

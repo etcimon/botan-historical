@@ -11,7 +11,7 @@
 #include <future>/*
 * DSA_PublicKey Constructor
 */
-DSA_PublicKey::DSA_PublicKey(in DL_Group grp, const BigInt& y1)
+DSA_PublicKey::DSA_PublicKey(in DL_Group grp, ref const BigInt y1)
 {
 	group = grp;
 	y = y1;
@@ -22,17 +22,17 @@ DSA_PublicKey::DSA_PublicKey(in DL_Group grp, const BigInt& y1)
 */
 DSA_PrivateKey::DSA_PrivateKey(RandomNumberGenerator& rng,
 										 const DL_Group& grp,
-										 const BigInt& x_arg)
+										 ref const BigInt x_arg)
 {
 	group = grp;
 	x = x_arg;
 
-	if(x == 0)
+	if (x == 0)
 		x = BigInt::random_integer(rng, 2, group_q() - 1);
 
 	y = power_mod(group_g(), x, group_p());
 
-	if(x_arg == 0)
+	if (x_arg == 0)
 		gen_check(rng);
 	else
 		load_check(rng);
@@ -53,10 +53,10 @@ DSA_PrivateKey::DSA_PrivateKey(in AlgorithmIdentifier alg_id,
 */
 bool DSA_PrivateKey::check_key(RandomNumberGenerator& rng, bool strong) const
 {
-	if(!DL_Scheme_PrivateKey::check_key(rng, strong) || x >= group_q())
+	if (!DL_Scheme_PrivateKey::check_key(rng, strong) || x >= group_q())
 		return false;
 
-	if(!strong)
+	if (!strong)
 		return true;
 
 	return KeyPair::signature_consistency_check(rng, *this, "EMSA1(SHA-1)");
@@ -112,16 +112,16 @@ DSA_Verification_Operation::DSA_Verification_Operation(in DSA_PublicKey dsa) :
 bool DSA_Verification_Operation::verify(in byte* msg, size_t msg_len,
 													 in byte* sig, size_t sig_len)
 {
-	const BigInt& q = mod_q.get_modulus();
+	ref const BigInt q = mod_q.get_modulus();
 
-	if(sig_len != 2*q.bytes() || msg_len > q.bytes())
+	if (sig_len != 2*q.bytes() || msg_len > q.bytes())
 		return false;
 
 	BigInt r(sig, q.bytes());
 	BigInt s(sig + q.bytes(), q.bytes());
 	BigInt i(msg, msg_len);
 
-	if(r <= 0 || r >= q || s <= 0 || s >= q)
+	if (r <= 0 || r >= q || s <= 0 || s >= q)
 		return false;
 
 	s = inverse_mod(s, q);

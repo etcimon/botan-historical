@@ -12,7 +12,7 @@ CFB_Mode::CFB_Mode(BlockCipher* cipher, size_t feedback_bits) :
 	m_cipher(cipher),
 	m_feedback_bytes(feedback_bits ? feedback_bits / 8 : cipher->block_size())
 {
-	if(feedback_bits % 8 || feedback() > cipher->block_size())
+	if (feedback_bits % 8 || feedback() > cipher->block_size())
 		throw new std::invalid_argument(name() + ": feedback bits " +
 											 std::to_string(feedback_bits) + " not supported");
 }
@@ -25,7 +25,7 @@ void CFB_Mode::clear()
 
 string CFB_Mode::name() const
 {
-	if(feedback() == cipher().block_size())
+	if (feedback() == cipher().block_size())
 		return cipher().name() + "/CFB";
 	else
 		return cipher().name() + "/CFB(" + std::to_string(feedback()*8) + ")";
@@ -68,7 +68,7 @@ void CFB_Mode::key_schedule(in byte* key, size_t length)
 
 SafeVector!byte CFB_Mode::start(in byte* nonce, size_t nonce_len)
 {
-	if(!valid_nonce_length(nonce_len))
+	if (!valid_nonce_length(nonce_len))
 		throw new Invalid_IV_Length(name(), nonce_len);
 
 	m_shift_register.assign(nonce, nonce + nonce_len);

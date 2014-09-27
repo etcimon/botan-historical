@@ -18,17 +18,17 @@ namespace {
 */
 string ucs2_to_latin1(in string ucs2)
 {
-	if(ucs2.size() % 2 == 1)
+	if (ucs2.size() % 2 == 1)
 		throw new Decoding_Error("UCS-2 string has an odd number of bytes");
 
 	string latin1;
 
-	for(size_t i = 0; i != ucs2.size(); i += 2)
+	for (size_t i = 0; i != ucs2.size(); i += 2)
 	{
 		const byte c1 = ucs2[i];
 		const byte c2 = ucs2[i+1];
 
-		if(c1 != 0)
+		if (c1 != 0)
 			throw new Decoding_Error("UCS-2 has non-Latin1 characters");
 
 		latin1 += cast(char)(c2);
@@ -49,17 +49,17 @@ string utf8_to_latin1(in string utf8)
 	{
 		const byte c1 = cast(byte)(utf8[position++]);
 
-		if(c1 <= 0x7F)
+		if (c1 <= 0x7F)
 			iso8859 += cast(char)(c1);
-		else if(c1 >= 0xC0 && c1 <= 0xC7)
+		else if (c1 >= 0xC0 && c1 <= 0xC7)
 		{
-			if(position == utf8.size())
+			if (position == utf8.size())
 				throw new Decoding_Error("UTF-8: sequence truncated");
 
 			const byte c2 = cast(byte)(utf8[position++]);
 			const byte iso_char = ((c1 & 0x07) << 6) | (c2 & 0x3F);
 
-			if(iso_char <= 0x7F)
+			if (iso_char <= 0x7F)
 				throw new Decoding_Error("UTF-8: sequence longer than needed");
 
 			iso8859 += cast(char)(iso_char);
@@ -77,11 +77,11 @@ string utf8_to_latin1(in string utf8)
 string latin1_to_utf8(in string iso8859)
 {
 	string utf8;
-	for(size_t i = 0; i != iso8859.size(); ++i)
+	for (size_t i = 0; i != iso8859.size(); ++i)
 	{
 		const byte c = cast(byte)(iso8859[i]);
 
-		if(c <= 0x7F)
+		if (c <= 0x7F)
 			utf8 += cast(char)(c);
 		else
 		{
@@ -100,19 +100,19 @@ string latin1_to_utf8(in string iso8859)
 string transcode(in string str,
 							 Character_Set to, Character_Set from)
 {
-	if(to == LOCAL_CHARSET)
+	if (to == LOCAL_CHARSET)
 		to = LATIN1_CHARSET;
-	if(from == LOCAL_CHARSET)
+	if (from == LOCAL_CHARSET)
 		from = LATIN1_CHARSET;
 
-	if(to == from)
+	if (to == from)
 		return str;
 
-	if(from == LATIN1_CHARSET && to == UTF8_CHARSET)
+	if (from == LATIN1_CHARSET && to == UTF8_CHARSET)
 		return latin1_to_utf8(str);
-	if(from == UTF8_CHARSET && to == LATIN1_CHARSET)
+	if (from == UTF8_CHARSET && to == LATIN1_CHARSET)
 		return utf8_to_latin1(str);
-	if(from == UCS2_CHARSET && to == LATIN1_CHARSET)
+	if (from == UCS2_CHARSET && to == LATIN1_CHARSET)
 		return ucs2_to_latin1(str);
 
 	throw new Invalid_Argument("Unknown transcoding operation from " +
@@ -124,7 +124,7 @@ string transcode(in string str,
 */
 bool is_digit(char c)
 {
-	if(c == '0' || c == '1' || c == '2' || c == '3' || c == '4' ||
+	if (c == '0' || c == '1' || c == '2' || c == '3' || c == '4' ||
 		c == '5' || c == '6' || c == '7' || c == '8' || c == '9')
 		return true;
 	return false;
@@ -135,7 +135,7 @@ bool is_digit(char c)
 */
 bool is_space(char c)
 {
-	if(c == ' ' || c == '\t' || c == '' || c == '\r')
+	if (c == ' ' || c == '\t' || c == '' || c == '\r')
 		return true;
 	return false;
 }

@@ -143,7 +143,7 @@ class Credentials_Manager
 										  in string context,
 										  in string identifier,
 										  string& group_name,
-										  BigInt& verifier,
+										  ref BigInt verifier,
 										  Vector!( byte )& salt,
 										  bool generate_fake_on_unknown);
 

@@ -11,7 +11,7 @@
 /*
 * DH_PublicKey Constructor
 */
-DH_PublicKey::DH_PublicKey(in DL_Group grp, const BigInt& y1)
+DH_PublicKey::DH_PublicKey(in DL_Group grp, ref const BigInt y1)
 {
 	group = grp;
 	y = y1;
@@ -30,21 +30,21 @@ Vector!( byte ) DH_PublicKey::public_value() const
 */
 DH_PrivateKey::DH_PrivateKey(RandomNumberGenerator& rng,
 									  const DL_Group& grp,
-									  const BigInt& x_arg)
+									  ref const BigInt x_arg)
 {
 	group = grp;
 	x = x_arg;
 
-	if(x == 0)
+	if (x == 0)
 	{
-		const BigInt& p = group_p();
+		ref const BigInt p = group_p();
 		x.randomize(rng, 2 * dl_work_factor(p.bits()));
 	}
 
-	if(y == 0)
+	if (y == 0)
 		y = power_mod(group_g(), x, group_p());
 
-	if(x == 0)
+	if (x == 0)
 		gen_check(rng);
 	else
 		load_check(rng);
@@ -58,7 +58,7 @@ DH_PrivateKey::DH_PrivateKey(in AlgorithmIdentifier alg_id,
 									  RandomNumberGenerator& rng) :
 	DL_Scheme_PrivateKey(alg_id, key_bits, DL_Group::ANSI_X9_42)
 {
-	if(y == 0)
+	if (y == 0)
 		y = power_mod(group_g(), x, group_p());
 
 	load_check(rng);
@@ -84,7 +84,7 @@ SafeVector!byte DH_KA_Operation::agree(in byte* w, size_t w_len)
 {
 	BigInt input = BigInt::decode(w, w_len);
 
-	if(input <= 1 || input >= p - 1)
+	if (input <= 1 || input >= p - 1)
 		throw new Invalid_Argument("DH agreement - invalid key provided");
 
 	BigInt r = blinder.unblind(powermod_x_p(blinder.blind(input)));

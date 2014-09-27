@@ -17,13 +17,13 @@ namespace {
 */
 bool fips186_3_valid_size(size_t pbits, size_t qbits)
 {
-	if(qbits == 160)
+	if (qbits == 160)
 		return (pbits == 512 || pbits == 768 || pbits == 1024);
 
-	if(qbits == 224)
+	if (qbits == 224)
 		return (pbits == 2048);
 
-	if(qbits == 256)
+	if (qbits == 256)
 		return (pbits == 2048 || pbits == 3072);
 
 	return false;
@@ -36,16 +36,16 @@ bool fips186_3_valid_size(size_t pbits, size_t qbits)
 */
 bool generate_dsa_primes(RandomNumberGenerator& rng,
 								 Algorithm_Factory& af,
-								 BigInt& p, BigInt& q,
+								 ref BigInt p, ref BigInt q,
 								 size_t pbits, size_t qbits,
 								 in Vector!byte seed_c)
 {
-	if(!fips186_3_valid_size(pbits, qbits))
+	if (!fips186_3_valid_size(pbits, qbits))
 		throw new Invalid_Argument(
 			"FIPS 186-3 does not allow DSA domain parameters of " +
 			std::to_string(pbits) + "/" + std::to_string(qbits) + " bits long");
 
-	if(seed_c.size() * 8 < qbits)
+	if (seed_c.size() * 8 < qbits)
 		throw new Invalid_Argument(
 			"Generating a DSA parameter set with a " + std::to_string(qbits) +
 			"long q requires a seed at least as many bits long");
@@ -64,8 +64,8 @@ bool generate_dsa_primes(RandomNumberGenerator& rng,
 
 			Seed& operator++()
 			{
-				for(size_t j = seed.size(); j > 0; --j)
-					if(++seed[j-1])
+				for (size_t j = seed.size(); j > 0; --j)
+					if (++seed[j-1])
 						break;
 				return (*this);
 			}
@@ -79,7 +79,7 @@ bool generate_dsa_primes(RandomNumberGenerator& rng,
 	q.set_bit(qbits-1);
 	q.set_bit(0);
 
-	if(!is_prime(q, rng))
+	if (!is_prime(q, rng))
 		return false;
 
 	const size_t n = (pbits-1) / (HASH_SIZE * 8),
@@ -88,9 +88,9 @@ bool generate_dsa_primes(RandomNumberGenerator& rng,
 	BigInt X;
 	Vector!( byte ) V(HASH_SIZE * (n+1));
 
-	for(size_t j = 0; j != 4096; ++j)
+	for (size_t j = 0; j != 4096; ++j)
 	{
-		for(size_t k = 0; k <= n; ++k)
+		for (size_t k = 0; k <= n; ++k)
 		{
 			++seed;
 			hash->update(seed);
@@ -103,7 +103,7 @@ bool generate_dsa_primes(RandomNumberGenerator& rng,
 
 		p = X - (X % (2*q) - 1);
 
-		if(p.bits() == pbits && is_prime(p, rng))
+		if (p.bits() == pbits && is_prime(p, rng))
 			return true;
 	}
 	return false;
@@ -114,7 +114,7 @@ bool generate_dsa_primes(RandomNumberGenerator& rng,
 */
 Vector!( byte ) generate_dsa_primes(RandomNumberGenerator& rng,
 												  Algorithm_Factory& af,
-												  BigInt& p, BigInt& q,
+												  ref BigInt p, ref BigInt q,
 												  size_t pbits, size_t qbits)
 {
 	while(true)
@@ -122,7 +122,7 @@ Vector!( byte ) generate_dsa_primes(RandomNumberGenerator& rng,
 		Vector!( byte ) seed(qbits / 8);
 		rng.randomize(&seed[0], seed.size());
 
-		if(generate_dsa_primes(rng, af, p, q, pbits, qbits, seed))
+		if (generate_dsa_primes(rng, af, p, q, pbits, qbits, seed))
 			return seed;
 	}
 }

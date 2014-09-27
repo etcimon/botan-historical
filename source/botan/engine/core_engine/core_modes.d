@@ -66,16 +66,16 @@ BlockCipherModePaddingMethod* get_bc_pad(in string algo_spec,
 													  in string def_if_empty)
 {
 #if defined(BOTAN_HAS_CIPHER_MODE_PADDING)
-	if(algo_spec == "NoPadding" || (algo_spec == "" && def_if_empty == "NoPadding"))
+	if (algo_spec == "NoPadding" || (algo_spec == "" && def_if_empty == "NoPadding"))
 		return new Null_Padding;
 
-	if(algo_spec == "PKCS7" || (algo_spec == "" && def_if_empty == "PKCS7"))
+	if (algo_spec == "PKCS7" || (algo_spec == "" && def_if_empty == "PKCS7"))
 		return new PKCS7_Padding;
 
-	if(algo_spec == "OneAndZeros")
+	if (algo_spec == "OneAndZeros")
 		return new OneAndZeros_Padding;
 
-	if(algo_spec == "X9.23")
+	if (algo_spec == "X9.23")
 		return new ANSI_X923_Padding;
 
 #endif
@@ -91,19 +91,19 @@ Keyed_Filter* get_cipher_mode(const BlockCipher* block_cipher,
 										in string padding)
 {
 #if defined(BOTAN_HAS_OFB)
-	if(mode == "OFB")
+	if (mode == "OFB")
 		return new StreamCipher_Filter(new OFB(block_cipher->clone()));
 #endif
 
 #if defined(BOTAN_HAS_CTR_BE)
-	if(mode == "CTR-BE")
+	if (mode == "CTR-BE")
 		return new StreamCipher_Filter(new CTR_BE(block_cipher->clone()));
 #endif
 
 #if defined(BOTAN_HAS_MODE_ECB)
-	if(mode == "ECB" || mode == "")
+	if (mode == "ECB" || mode == "")
 	{
-		if(direction == ENCRYPTION)
+		if (direction == ENCRYPTION)
 			return new Transformation_Filter(
 				new ECB_Encryption(block_cipher->clone(), get_bc_pad(padding, "NoPadding")));
 		else
@@ -112,18 +112,18 @@ Keyed_Filter* get_cipher_mode(const BlockCipher* block_cipher,
 	}
 #endif
 
-	if(mode == "CBC")
+	if (mode == "CBC")
 	{
 #if defined(BOTAN_HAS_MODE_CBC)
-		if(padding == "CTS")
+		if (padding == "CTS")
 		{
-			if(direction == ENCRYPTION)
+			if (direction == ENCRYPTION)
 				return new Transformation_Filter(new CTS_Encryption(block_cipher->clone()));
 			else
 				return new Transformation_Filter(new CTS_Decryption(block_cipher->clone()));
 		}
 
-		if(direction == ENCRYPTION)
+		if (direction == ENCRYPTION)
 			return new Transformation_Filter(
 				new CBC_Encryption(block_cipher->clone(), get_bc_pad(padding, "PKCS7")));
 		else
@@ -135,16 +135,16 @@ Keyed_Filter* get_cipher_mode(const BlockCipher* block_cipher,
 	}
 
 #if defined(BOTAN_HAS_MODE_XTS)
-	if(mode == "XTS")
+	if (mode == "XTS")
 	{
-		if(direction == ENCRYPTION)
+		if (direction == ENCRYPTION)
 			return new Transformation_Filter(new XTS_Encryption(block_cipher->clone()));
 		else
 			return new Transformation_Filter(new XTS_Decryption(block_cipher->clone()));
 	}
 #endif
 
-	if(mode.find("CFB") != string::npos ||
+	if (mode.find("CFB") != string::npos ||
 		mode.find("EAX") != string::npos ||
 		mode.find("GCM") != string::npos ||
 		mode.find("OCB") != string::npos ||
@@ -154,20 +154,20 @@ Keyed_Filter* get_cipher_mode(const BlockCipher* block_cipher,
 		const string mode_name = algo_info[0];
 
 		size_t bits = 8 * block_cipher->block_size();
-		if(algo_info.size() > 1)
+		if (algo_info.size() > 1)
 			bits = to_uint(algo_info[1]);
 
 #if defined(BOTAN_HAS_MODE_CFB)
-		if(mode_name == "CFB")
+		if (mode_name == "CFB")
 		{
-			if(direction == ENCRYPTION)
+			if (direction == ENCRYPTION)
 				return new Transformation_Filter(new CFB_Encryption(block_cipher->clone(), bits));
 			else
 				return new Transformation_Filter(new CFB_Decryption(block_cipher->clone(), bits));
 		}
 #endif
 
-		if(bits % 8 != 0)
+		if (bits % 8 != 0)
 			throw new std::invalid_argument("AEAD interface does not support non-octet length tags");
 
 #if defined(BOTAN_HAS_AEAD_FILTER)
@@ -175,10 +175,10 @@ Keyed_Filter* get_cipher_mode(const BlockCipher* block_cipher,
 		const size_t tag_size = bits / 8;
 
 #if defined(BOTAN_HAS_AEAD_CCM)
-		if(mode_name == "CCM")
+		if (mode_name == "CCM")
 		{
 			const size_t L = (algo_info.size() == 3) ? to_uint(algo_info[2]) : 3;
-			if(direction == ENCRYPTION)
+			if (direction == ENCRYPTION)
 				return new AEAD_Filter(new CCM_Encryption(block_cipher->clone(), tag_size, L));
 			else
 				return new AEAD_Filter(new CCM_Decryption(block_cipher->clone(), tag_size, L));
@@ -186,9 +186,9 @@ Keyed_Filter* get_cipher_mode(const BlockCipher* block_cipher,
 #endif
 
 #if defined(BOTAN_HAS_AEAD_EAX)
-		if(mode_name == "EAX")
+		if (mode_name == "EAX")
 		{
-			if(direction == ENCRYPTION)
+			if (direction == ENCRYPTION)
 				return new AEAD_Filter(new EAX_Encryption(block_cipher->clone(), tag_size));
 			else
 				return new AEAD_Filter(new EAX_Decryption(block_cipher->clone(), tag_size));
@@ -196,9 +196,9 @@ Keyed_Filter* get_cipher_mode(const BlockCipher* block_cipher,
 #endif
 
 #if defined(BOTAN_HAS_AEAD_OCB)
-	if(mode_name == "OCB")
+	if (mode_name == "OCB")
 	{
-		if(direction == ENCRYPTION)
+		if (direction == ENCRYPTION)
 			return new AEAD_Filter(new OCB_Encryption(block_cipher->clone(), tag_size));
 		else
 			return new AEAD_Filter(new OCB_Decryption(block_cipher->clone(), tag_size));
@@ -206,9 +206,9 @@ Keyed_Filter* get_cipher_mode(const BlockCipher* block_cipher,
 #endif
 
 #if defined(BOTAN_HAS_AEAD_GCM)
-	if(mode_name == "GCM")
+	if (mode_name == "GCM")
 	{
-		if(direction == ENCRYPTION)
+		if (direction == ENCRYPTION)
 			return new AEAD_Filter(new GCM_Encryption(block_cipher->clone(), tag_size));
 		else
 			return new AEAD_Filter(new GCM_Decryption(block_cipher->clone(), tag_size));
@@ -229,45 +229,45 @@ Keyed_Filter* Core_Engine::get_cipher(in string algo_spec,
 												  Algorithm_Factory& af)
 {
 	Vector!( string ) algo_parts = split_on(algo_spec, '/');
-	if(algo_parts.empty())
+	if (algo_parts.empty())
 		throw new Invalid_Algorithm_Name(algo_spec);
 
 	const string cipher_name = algo_parts[0];
 
 	// check if it is a stream cipher first (easy case)
 	const StreamCipher* stream_cipher = af.prototype_stream_cipher(cipher_name);
-	if(stream_cipher)
+	if (stream_cipher)
 		return new StreamCipher_Filter(stream_cipher->clone());
 
 	const BlockCipher* block_cipher = af.prototype_block_cipher(cipher_name);
-	if(!block_cipher)
+	if (!block_cipher)
 		return null;
 
-	if(algo_parts.size() >= 4)
+	if (algo_parts.size() >= 4)
 		return null; // 4 part mode, not something we know about
 
-	if(algo_parts.size() < 2)
+	if (algo_parts.size() < 2)
 		throw new Lookup_Error("Cipher specification '" + algo_spec +
 								 "' is missing mode identifier");
 
 	string mode = algo_parts[1];
 
 	string padding;
-	if(algo_parts.size() == 3)
+	if (algo_parts.size() == 3)
 		padding = algo_parts[2];
 	else
 		padding = (mode == "CBC") ? "PKCS7" : "NoPadding";
 
-	if(mode == "ECB" && padding == "CTS")
+	if (mode == "ECB" && padding == "CTS")
 		return null;
-	else if((mode != "CBC" && mode != "ECB") && padding != "NoPadding")
+	else if ((mode != "CBC" && mode != "ECB") && padding != "NoPadding")
 		throw new Invalid_Algorithm_Name(algo_spec);
 
 	Keyed_Filter* filt = get_cipher_mode(block_cipher, direction, mode, padding);
-	if(filt)
+	if (filt)
 		return filt;
 
-	if(padding != "NoPadding")
+	if (padding != "NoPadding")
 		throw new Algorithm_Not_Found(cipher_name + "/" + mode + "/" + padding);
 	else
 		throw new Algorithm_Not_Found(cipher_name + "/" + mode);

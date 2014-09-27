@@ -22,13 +22,13 @@ class SIMD_Scalar(T, size_t N)
 
 		SIMD_Scalar(const T B[N])
 		{
-			for(size_t i = 0; i != size(); ++i)
+			for (size_t i = 0; i != size(); ++i)
 				m_v[i] = B[i];
 		}
 
 		SIMD_Scalar(T B)
 		{
-			for(size_t i = 0; i != size(); ++i)
+			for (size_t i = 0; i != size(); ++i)
 				m_v[i] = B;
 		}
 
@@ -37,7 +37,7 @@ class SIMD_Scalar(T, size_t N)
 			SIMD_Scalar<T,N> out;
 			const byte* in_b = cast(const byte*)(input);
 
-			for(size_t i = 0; i != size(); ++i)
+			for (size_t i = 0; i != size(); ++i)
 				out.m_v[i] = Botan::load_le<T>(in_b, i);
 
 			return out;
@@ -48,7 +48,7 @@ class SIMD_Scalar(T, size_t N)
 			SIMD_Scalar<T,N> out;
 			const byte* in_b = cast(const byte*)(input);
 
-			for(size_t i = 0; i != size(); ++i)
+			for (size_t i = 0; i != size(); ++i)
 				out.m_v[i] = Botan::load_be<T>(in_b, i);
 
 			return out;
@@ -56,37 +56,37 @@ class SIMD_Scalar(T, size_t N)
 
 		void store_le(byte* output) const
 		{
-			for(size_t i = 0; i != size(); ++i)
+			for (size_t i = 0; i != size(); ++i)
 				Botan::store_le(m_v[i], out + i*sizeof(T));
 		}
 
 		void store_be(byte* output) const
 		{
-			for(size_t i = 0; i != size(); ++i)
+			for (size_t i = 0; i != size(); ++i)
 				Botan::store_be(m_v[i], out + i*sizeof(T));
 		}
 
 		void rotate_left(size_t rot)
 		{
-			for(size_t i = 0; i != size(); ++i)
+			for (size_t i = 0; i != size(); ++i)
 				m_v[i] = Botan::rotate_left(m_v[i], rot);
 		}
 
 		void rotate_right(size_t rot)
 		{
-			for(size_t i = 0; i != size(); ++i)
+			for (size_t i = 0; i != size(); ++i)
 				m_v[i] = Botan::rotate_right(m_v[i], rot);
 		}
 
 		void operator+=(in SIMD_Scalar<T,N> other)
 		{
-			for(size_t i = 0; i != size(); ++i)
+			for (size_t i = 0; i != size(); ++i)
 				m_v[i] += other.m_v[i];
 		}
 
 		void operator-=(in SIMD_Scalar<T,N> other)
 		{
-			for(size_t i = 0; i != size(); ++i)
+			for (size_t i = 0; i != size(); ++i)
 				m_v[i] -= other.m_v[i];
 		}
 
@@ -106,7 +106,7 @@ class SIMD_Scalar(T, size_t N)
 
 		void operator^=(in SIMD_Scalar<T,N> other)
 		{
-			for(size_t i = 0; i != size(); ++i)
+			for (size_t i = 0; i != size(); ++i)
 				m_v[i] ^= other.m_v[i];
 		}
 
@@ -119,13 +119,13 @@ class SIMD_Scalar(T, size_t N)
 
 		void operator|=(in SIMD_Scalar<T,N> other)
 		{
-			for(size_t i = 0; i != size(); ++i)
+			for (size_t i = 0; i != size(); ++i)
 				m_v[i] |= other.m_v[i];
 		}
 
 		void operator&=(in SIMD_Scalar<T,N> other)
 		{
-			for(size_t i = 0; i != size(); ++i)
+			for (size_t i = 0; i != size(); ++i)
 				m_v[i] &= other.m_v[i];
 		}
 
@@ -139,7 +139,7 @@ class SIMD_Scalar(T, size_t N)
 		SIMD_Scalar<T,N> operator<<(size_t shift) const
 		{
 			SIMD_Scalar<T,N> out = *this;
-			for(size_t i = 0; i != size(); ++i)
+			for (size_t i = 0; i != size(); ++i)
 				out.m_v[i] <<= shift;
 			return out;
 		}
@@ -147,7 +147,7 @@ class SIMD_Scalar(T, size_t N)
 		SIMD_Scalar<T,N> operator>>(size_t shift) const
 		{
 			SIMD_Scalar<T,N> out = *this;
-			for(size_t i = 0; i != size(); ++i)
+			for (size_t i = 0; i != size(); ++i)
 				out.m_v[i] >>= shift;
 			return out;
 		}
@@ -155,7 +155,7 @@ class SIMD_Scalar(T, size_t N)
 		SIMD_Scalar<T,N> operator~() const
 		{
 			SIMD_Scalar<T,N> out = *this;
-			for(size_t i = 0; i != size(); ++i)
+			for (size_t i = 0; i != size(); ++i)
 				out.m_v[i] = ~out.m_v[i];
 			return out;
 		}
@@ -164,7 +164,7 @@ class SIMD_Scalar(T, size_t N)
 		SIMD_Scalar<T,N> andc(in SIMD_Scalar<T,N> other)
 		{
 			SIMD_Scalar<T,N> out;
-			for(size_t i = 0; i != size(); ++i)
+			for (size_t i = 0; i != size(); ++i)
 				out.m_v[i] = (~m_v[i]) & other.m_v[i];
 			return out;
 		}
@@ -172,7 +172,7 @@ class SIMD_Scalar(T, size_t N)
 		SIMD_Scalar<T,N> bswap() const
 		{
 			SIMD_Scalar<T,N> out;
-			for(size_t i = 0; i != size(); ++i)
+			for (size_t i = 0; i != size(); ++i)
 				out.m_v[i] = reverse_bytes(m_v[i]);
 			return out;
 		}
@@ -196,7 +196,7 @@ class SIMD_Scalar(T, size_t N)
 		SIMD_Scalar(std::initializer_list<T> B)
 		{
 			size_t i = 0;
-			for(auto v = B.begin(); v != B.end(); ++v)
+			for (auto v = B.begin(); v != B.end(); ++v)
 				m_v[i++] = *v;
 		}
 

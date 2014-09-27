@@ -74,7 +74,7 @@ class ECDH_PrivateKey : public ECDH_PublicKey,
 		*/
 		ECDH_PrivateKey(RandomNumberGenerator& rng,
 							 const EC_Group& domain,
-							 const BigInt& x = 0) :
+							 ref const BigInt x = 0) :
 			EC_PrivateKey(rng, domain, x) {}
 
 		Vector!( byte ) public_value() const
@@ -92,6 +92,6 @@ class ECDH_KA_Operation : public PK_Ops::Key_Agreement
 		SafeVector!byte agree(in byte* w, size_t w_len);
 	private:
 		const CurveGFp& curve;
-		const BigInt& cofactor;
+		ref const BigInt cofactor;
 		BigInt l_times_priv;
 };

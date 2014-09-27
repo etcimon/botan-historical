@@ -46,7 +46,7 @@ void zlib_free(void* info_ptr, void* ptr)
 {
 	Zlib_Alloc_Info* info = cast(Zlib_Alloc_Info*)(info_ptr);
 	auto i = info->current_allocs.find(ptr);
-	if(i == info->current_allocs.end())
+	if (i == info->current_allocs.end())
 		throw new Invalid_Argument("zlib_free: Got pointer not allocated by us");
 
 	std::memset(ptr, 0, i->second);
@@ -114,9 +114,9 @@ void Zlib_Compression::start_msg()
 								  8,
 								  Z_DEFAULT_STRATEGY);
 
-	if(res == Z_STREAM_ERROR)
+	if (res == Z_STREAM_ERROR)
 		throw new Invalid_Argument("Bad setting in deflateInit2");
-	else if(res != Z_OK)
+	else if (res != Z_OK)
 		throw new Memory_Exhaustion();
 }
 
@@ -174,7 +174,7 @@ void Zlib_Compression::flush()
 		deflate(&(zlib->stream), Z_FULL_FLUSH);
 		send(&buffer[0], buffer.size() - zlib->stream.avail_out);
 
-		if(zlib->stream.avail_out == buffer.size())
+		if (zlib->stream.avail_out == buffer.size())
 		  break;
 	}
 }
@@ -186,7 +186,7 @@ void Zlib_Compression::clear()
 {
 	zeroise(buffer);
 
-	if(zlib)
+	if (zlib)
 	{
 		deflateEnd(&(zlib->stream));
 		delete zlib;
@@ -213,7 +213,7 @@ void Zlib_Decompression::start_msg()
 	clear();
 	zlib = new Zlib_Stream;
 
-	if(inflateInit2(&(zlib->stream), (raw_deflate ? -15 : 15)) != Z_OK)
+	if (inflateInit2(&(zlib->stream), (raw_deflate ? -15 : 15)) != Z_OK)
 		throw new Memory_Exhaustion();
 }
 
@@ -222,7 +222,7 @@ void Zlib_Decompression::start_msg()
 */
 void Zlib_Decompression::write(in byte* input_arr, size_t length)
 {
-	if(length) no_writes = false;
+	if (length) no_writes = false;
 
 	// non-const needed by zlib api :(
 	Bytef* input = cast(Bytef*)(const_cast(<byte*>)(input_arr));
@@ -237,14 +237,14 @@ void Zlib_Decompression::write(in byte* input_arr, size_t length)
 
 		int rc = inflate(&(zlib->stream), Z_SYNC_FLUSH);
 
-		if(rc != Z_OK && rc != Z_STREAM_END)
+		if (rc != Z_OK && rc != Z_STREAM_END)
 		{
 			clear();
-			if(rc == Z_DATA_ERROR)
+			if (rc == Z_DATA_ERROR)
 				throw new Decoding_Error("Zlib_Decompression: Data integrity error");
-			else if(rc == Z_NEED_DICT)
+			else if (rc == Z_NEED_DICT)
 				throw new Decoding_Error("Zlib_Decompression: Need preset dictionary");
-			else if(rc == Z_MEM_ERROR)
+			else if (rc == Z_MEM_ERROR)
 				throw new Memory_Exhaustion();
 			else
 				throw new Exception("Zlib decompression: Unknown error");
@@ -252,7 +252,7 @@ void Zlib_Decompression::write(in byte* input_arr, size_t length)
 
 		send(&buffer[0], buffer.size() - zlib->stream.avail_out);
 
-		if(rc == Z_STREAM_END)
+		if (rc == Z_STREAM_END)
 		{
 			size_t read_from_block = length - zlib->stream.avail_in;
 			start_msg();
@@ -271,7 +271,7 @@ void Zlib_Decompression::write(in byte* input_arr, size_t length)
 */
 void Zlib_Decompression::end_msg()
 {
-	if(no_writes) return;
+	if (no_writes) return;
 	zlib->stream.next_in = 0;
 	zlib->stream.avail_in = 0;
 
@@ -283,7 +283,7 @@ void Zlib_Decompression::end_msg()
 		zlib->stream.avail_out = buffer.size();
 		rc = inflate(&(zlib->stream), Z_SYNC_FLUSH);
 
-		if(rc != Z_OK && rc != Z_STREAM_END)
+		if (rc != Z_OK && rc != Z_STREAM_END)
 		{
 			clear();
 			throw new Decoding_Error("Zlib_Decompression: Error finalizing");
@@ -304,7 +304,7 @@ void Zlib_Decompression::clear()
 
 	no_writes = true;
 
-	if(zlib)
+	if (zlib)
 	{
 		inflateEnd(&(zlib->stream));
 		delete zlib;

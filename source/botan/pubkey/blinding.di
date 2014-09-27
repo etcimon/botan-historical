@@ -27,8 +27,8 @@ class Blinder
 		* @param modulus of the group operations are performed in
 		*/
 		Blinder(in BigInt mask,
-				  const BigInt& inverse_mask,
-				  const BigInt& modulus);
+				  ref const BigInt inverse_mask,
+				  ref const BigInt modulus);
 
 	private:
 		Modular_Reducer reducer;

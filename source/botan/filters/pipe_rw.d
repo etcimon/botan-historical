@@ -15,12 +15,12 @@
 Pipe::message_id Pipe::get_message_no(in string func_name,
 												  message_id msg) const
 {
-	if(msg == DEFAULT_MESSAGE)
+	if (msg == DEFAULT_MESSAGE)
 		msg = default_msg();
-	else if(msg == LAST_MESSAGE)
+	else if (msg == LAST_MESSAGE)
 		msg = message_count() - 1;
 
-	if(msg >= message_count())
+	if (msg >= message_count())
 		throw new Invalid_Message_Number(func_name, msg);
 
 	return msg;
@@ -31,7 +31,7 @@ Pipe::message_id Pipe::get_message_no(in string func_name,
 */
 void Pipe::write(in byte* input, size_t length)
 {
-	if(!inside_msg)
+	if (!inside_msg)
 		throw new Invalid_State("Cannot write to a Pipe while it is not processing");
 	pipe->write(input, length);
 }
@@ -114,7 +114,7 @@ string Pipe::read_all_as_string(message_id msg)
 	while(true)
 	{
 		size_t got = read(&buffer[0], buffer.size(), msg);
-		if(got == 0)
+		if (got == 0)
 			break;
 		str.append(cast(string)(buffer[0]), got);
 	}

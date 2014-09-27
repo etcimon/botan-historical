@@ -17,12 +17,12 @@ void assertion_failure(string expr_str,
 
 	format << "False assertion ";
 
-	if(assertion_made && assertion_made[0] != 0)
+	if (assertion_made && assertion_made[0] != 0)
 		format << "'" << assertion_made << "' (expression " << expr_str << ") ";
 	else
 		format << expr_str << " ";
 
-	if(func)
+	if (func)
 		format << "in " << func << " ";
 
 	format << "@" << file << ":" << line;

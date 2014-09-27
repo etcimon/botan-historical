@@ -26,7 +26,7 @@ class NR_PublicKey : public abstract DL_Scheme_PublicKey
 		NR_PublicKey(in AlgorithmIdentifier alg_id,
 						 in SafeVector!byte key_bits);
 
-		NR_PublicKey(in DL_Group group, const BigInt& pub_key);
+		NR_PublicKey(in DL_Group group, ref const BigInt pub_key);
 	protected:
 		NR_PublicKey() {}
 };
@@ -46,7 +46,7 @@ class NR_PrivateKey : public NR_PublicKey,
 
 		NR_PrivateKey(RandomNumberGenerator& rng,
 						  const DL_Group& group,
-						  const BigInt& x = 0);
+						  ref const BigInt x = 0);
 };
 
 /**
@@ -64,8 +64,8 @@ class NR_Signature_Operation : public PK_Ops::Signature
 		SafeVector!byte sign(in byte* msg, size_t msg_len,
 										RandomNumberGenerator& rng);
 	private:
-		const BigInt& q;
-		const BigInt& x;
+		ref const BigInt q;
+		ref const BigInt x;
 		Fixed_Base_Power_Mod powermod_g_p;
 		Modular_Reducer mod_q;
 };
@@ -86,8 +86,8 @@ class NR_Verification_Operation : public PK_Ops::Verification
 
 		SafeVector!byte verify_mr(in byte* msg, size_t msg_len);
 	private:
-		const BigInt& q;
-		const BigInt& y;
+		ref const BigInt q;
+		ref const BigInt y;
 
 		Fixed_Base_Power_Mod powermod_g_p, powermod_y_p;
 		Modular_Reducer mod_p, mod_q;

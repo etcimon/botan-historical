@@ -83,14 +83,14 @@ immutable byte[] Noekeon::RC = {
 */
 void Noekeon::encrypt_n(byte* input, byte* output, size_t blocks) const
 {
-	for(size_t i = 0; i != blocks; ++i)
+	for (size_t i = 0; i != blocks; ++i)
 	{
 		uint A0 = load_be!uint(input, 0);
 		uint A1 = load_be!uint(input, 1);
 		uint A2 = load_be!uint(input, 2);
 		uint A3 = load_be!uint(input, 3);
 
-		for(size_t j = 0; j != 16; ++j)
+		for (size_t j = 0; j != 16; ++j)
 		{
 			A0 ^= RC[j];
 			theta(A0, A1, A2, A3, &EK[0]);
@@ -121,14 +121,14 @@ void Noekeon::encrypt_n(byte* input, byte* output, size_t blocks) const
 */
 void Noekeon::decrypt_n(byte* input, byte* output, size_t blocks) const
 {
-	for(size_t i = 0; i != blocks; ++i)
+	for (size_t i = 0; i != blocks; ++i)
 	{
 		uint A0 = load_be!uint(input, 0);
 		uint A1 = load_be!uint(input, 1);
 		uint A2 = load_be!uint(input, 2);
 		uint A3 = load_be!uint(input, 3);
 
-		for(size_t j = 16; j != 0; --j)
+		for (size_t j = 16; j != 0; --j)
 		{
 			theta(A0, A1, A2, A3, &DK[0]);
 			A0 ^= RC[j];
@@ -164,7 +164,7 @@ void Noekeon::key_schedule(in byte* key, size_t)
 	uint A2 = load_be!uint(key, 2);
 	uint A3 = load_be!uint(key, 3);
 
-	for(size_t i = 0; i != 16; ++i)
+	for (size_t i = 0; i != 16; ++i)
 	{
 		A0 ^= RC[i];
 		theta(A0, A1, A2, A3);

@@ -40,7 +40,7 @@ class secure_allocator(T)
 		pointer allocate(size_type n, const void* = 0)
 		{
 #if defined(BOTAN_HAS_LOCKING_ALLOCATOR)
-			if(pointer p = cast(pointer)(mlock_allocator::instance().allocate(n, sizeof(T))))
+			if (pointer p = cast(pointer)(mlock_allocator::instance().allocate(n, sizeof(T))))
 				return p;
 #endif
 
@@ -54,7 +54,7 @@ class secure_allocator(T)
 			clear_mem(p, n);
 
 #if defined(BOTAN_HAS_LOCKING_ALLOCATOR)
-			if(mlock_allocator::instance().deallocate(p, n, sizeof(T)))
+			if (mlock_allocator::instance().deallocate(p, n, sizeof(T)))
 				return;
 #endif
 

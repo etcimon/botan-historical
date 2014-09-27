@@ -25,7 +25,7 @@ void xor_buf(T)(T* output, in T* input, size_t length)
 		output += 8; input += 8; length -= 8;
 	}
 
-	for(size_t i = 0; i != length; ++i)
+	for (size_t i = 0; i != length; ++i)
 		output[i] ^= input[i];
 }
 
@@ -55,7 +55,7 @@ void xor_buf(T)(T* output,
 		input += 8; input2 += 8; output += 8; length -= 8;
 	}
 
-	for(size_t i = 0; i != length; ++i)
+	for (size_t i = 0; i != length; ++i)
 		output[i] = input[i] ^ input2[i];
 }
 
@@ -69,7 +69,7 @@ void xor_buf(T)(T* output,
 		output += 8; input += 8; length -= 8;
 	}
 
-	for(size_t i = 0; i != length; ++i)
+	for (size_t i = 0; i != length; ++i)
 		output[i] ^= input[i];
 }
 
@@ -87,7 +87,7 @@ void xor_buf(T)(T* output,
 		input += 8; input2 += 8; output += 8; length -= 8;
 	}
 
-	for(size_t i = 0; i != length; ++i)
+	for (size_t i = 0; i != length; ++i)
 		output[i] = input[i] ^ input2[i];
 }
 
@@ -118,7 +118,7 @@ Vector!( T, Alloc )
 operator^=(Vector!( T, Alloc ) output,
 			  in Vector!( T, Alloc2 ) input)
 {
-	if(output.size() < input.size())
+	if (output.size() < input.size())
 		output.resize(input.size());
 
 	xor_buf(&output[0], &input[0], input.size());

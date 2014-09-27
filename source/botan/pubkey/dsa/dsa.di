@@ -28,7 +28,7 @@ class DSA_PublicKey : public abstract DL_Scheme_PublicKey
 		{
 		}
 
-		DSA_PublicKey(in DL_Group group, const BigInt& y);
+		DSA_PublicKey(in DL_Group group, ref const BigInt y);
 	protected:
 		DSA_PublicKey() {}
 };
@@ -46,7 +46,7 @@ class DSA_PrivateKey : public DSA_PublicKey,
 
 		DSA_PrivateKey(RandomNumberGenerator& rng,
 							const DL_Group& group,
-							const BigInt& Private_Key = 0);
+							ref const BigInt Private_Key = 0);
 
 		bool check_key(RandomNumberGenerator& rng, bool strong) const;
 };
@@ -66,8 +66,8 @@ class DSA_Signature_Operation : public PK_Ops::Signature
 		SafeVector!byte sign(in byte* msg, size_t msg_len,
 										RandomNumberGenerator& rng);
 	private:
-		const BigInt& q;
-		const BigInt& x;
+		ref const BigInt q;
+		ref const BigInt x;
 		Fixed_Base_Power_Mod powermod_g_p;
 		Modular_Reducer mod_q;
 };
@@ -89,8 +89,8 @@ class DSA_Verification_Operation : public PK_Ops::Verification
 		bool verify(in byte* msg, size_t msg_len,
 						in byte* sig, size_t sig_len);
 	private:
-		const BigInt& q;
-		const BigInt& y;
+		ref const BigInt q;
+		ref const BigInt y;
 
 		Fixed_Base_Power_Mod powermod_g_p, powermod_y_p;
 		Modular_Reducer mod_p, mod_q;

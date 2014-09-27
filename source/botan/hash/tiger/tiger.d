@@ -44,7 +44,7 @@ void Tiger::compress_n(in byte* input, size_t blocks)
 {
 	ulong A = digest[0], B = digest[1], C = digest[2];
 
-	for(size_t i = 0; i != blocks; ++i)
+	for (size_t i = 0; i != blocks; ++i)
 	{
 		load_le(&X[0], input, X.size());
 
@@ -52,7 +52,7 @@ void Tiger::compress_n(in byte* input, size_t blocks)
 		pass(C, A, B, X, 7); mix(X);
 		pass(B, C, A, X, 9);
 
-		for(size_t j = 3; j != passes; ++j)
+		for (size_t j = 3; j != passes; ++j)
 		{
 			mix(X);
 			pass(A, B, C, X, 9);
@@ -72,7 +72,7 @@ void Tiger::compress_n(in byte* input, size_t blocks)
 */
 void Tiger::copy_out(byte* output)
 {
-	for(size_t i = 0; i != output_length(); ++i)
+	for (size_t i = 0; i != output_length(); ++i)
 		output[i] = get_byte(7 - (i % 8), digest[i/8]);
 }
 
@@ -171,11 +171,11 @@ Tiger::Tiger(size_t hash_len, size_t passes) :
 	hash_len(hash_len),
 	passes(passes)
 {
-	if(output_length() != 16 && output_length() != 20 && output_length() != 24)
+	if (output_length() != 16 && output_length() != 20 && output_length() != 24)
 		throw new Invalid_Argument("Tiger: Illegal hash output size: " +
 									  std::to_string(output_length()));
 
-	if(passes < 3)
+	if (passes < 3)
 		throw new Invalid_Argument("Tiger: Invalid number of passes: "
 									  + std::to_string(passes));
 	clear();

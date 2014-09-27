@@ -27,12 +27,12 @@ Certificate_Verify::Certificate_Verify(Handshake_IO& io,
 
 	PK_Signer signer(*priv_key, format.first, format.second);
 
-	if(state._version() == Protocol_Version::SSL_V3)
+	if (state._version() == Protocol_Version::SSL_V3)
 	{
 		SafeVector!byte md5_sha = state.hash().final_ssl3(
 			state.session_keys().master_secret());
 
-		if(priv_key->algo_name() == "DSA")
+		if (priv_key->algo_name() == "DSA")
 			m_signature = signer.sign_message(&md5_sha[16], md5_sha.size()-16, rng);
 		else
 			m_signature = signer.sign_message(md5_sha, rng);
@@ -53,7 +53,7 @@ Certificate_Verify::Certificate_Verify(in Vector!byte buf,
 {
 	TLS_Data_Reader reader("CertificateVerify", buf);
 
-	if(_version.supports_negotiable_signature_algorithms())
+	if (_version.supports_negotiable_signature_algorithms())
 	{
 		m_hash_algo = Signature_Algorithms::hash_algo_name(reader.get_byte());
 		m_sig_algo = Signature_Algorithms::sig_algo_name(reader.get_byte());
@@ -69,7 +69,7 @@ Vector!( byte ) Certificate_Verify::serialize() const
 {
 	Vector!( byte ) buf;
 
-	if(m_hash_algo != "" && m_sig_algo != "")
+	if (m_hash_algo != "" && m_sig_algo != "")
 	{
 		buf.push_back(Signature_Algorithms::hash_algo_code(m_hash_algo));
 		buf.push_back(Signature_Algorithms::sig_algo_code(m_sig_algo));
@@ -96,7 +96,7 @@ bool Certificate_Verify::verify(const X509_Certificate cert,
 
 	PK_Verifier verifier(*key, format.first, format.second);
 
-	if(state._version() == Protocol_Version::SSL_V3)
+	if (state._version() == Protocol_Version::SSL_V3)
 	{
 		SafeVector!byte md5_sha = state.hash().final_ssl3(
 			state.session_keys().master_secret());

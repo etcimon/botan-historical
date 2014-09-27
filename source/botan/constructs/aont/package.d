@@ -18,7 +18,7 @@ void aont_package(RandomNumberGenerator& rng,
 {
 	const size_t BLOCK_SIZE = cipher->block_size();
 
-	if(!cipher->valid_keylength(BLOCK_SIZE))
+	if (!cipher->valid_keylength(BLOCK_SIZE))
 		throw new Invalid_Argument("AONT::package: Invalid cipher");
 
 	// The all-zero string which is used both as the CTR IV and as K0
@@ -43,7 +43,7 @@ void aont_package(RandomNumberGenerator& rng,
 	clear_mem(final_block, BLOCK_SIZE);
 
 	// XOR the hash blocks into the final block
-	for(size_t i = 0; i != blocks; ++i)
+	for (size_t i = 0; i != blocks; ++i)
 	{
 		const size_t left = std::min<size_t>(BLOCK_SIZE,
 														 input_len - BLOCK_SIZE * i);
@@ -51,7 +51,7 @@ void aont_package(RandomNumberGenerator& rng,
 		zeroise(buf);
 		copy_mem(&buf[0], output + (BLOCK_SIZE * i), left);
 
-		for(size_t j = 0; j != sizeof(i); ++j)
+		for (size_t j = 0; j != sizeof(i); ++j)
 			buf[BLOCK_SIZE - 1 - j] ^= get_byte(sizeof(i)-1-j, i);
 
 		cipher->encrypt(&buf[0]);
@@ -69,10 +69,10 @@ void aont_unpackage(BlockCipher* cipher,
 {
 	const size_t BLOCK_SIZE = cipher->block_size();
 
-	if(!cipher->valid_keylength(BLOCK_SIZE))
+	if (!cipher->valid_keylength(BLOCK_SIZE))
 		throw new Invalid_Argument("AONT::unpackage: Invalid cipher");
 
-	if(input_len < BLOCK_SIZE)
+	if (input_len < BLOCK_SIZE)
 		throw new Invalid_Argument("AONT::unpackage: Input too short");
 
 	// The all-zero string which is used both as the CTR IV and as K0
@@ -91,7 +91,7 @@ void aont_unpackage(BlockCipher* cipher,
 	const size_t blocks = ((input_len - 1) / BLOCK_SIZE);
 
 	// XOR the blocks into the package key bits
-	for(size_t i = 0; i != blocks; ++i)
+	for (size_t i = 0; i != blocks; ++i)
 	{
 		const size_t left = std::min<size_t>(BLOCK_SIZE,
 														 input_len - BLOCK_SIZE * (i+1));
@@ -99,7 +99,7 @@ void aont_unpackage(BlockCipher* cipher,
 		zeroise(buf);
 		copy_mem(&buf[0], input + (BLOCK_SIZE * i), left);
 
-		for(size_t j = 0; j != sizeof(i); ++j)
+		for (size_t j = 0; j != sizeof(i); ++j)
 			buf[BLOCK_SIZE - 1 - j] ^= get_byte(sizeof(i)-1-j, i);
 
 		cipher->encrypt(&buf[0]);

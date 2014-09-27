@@ -50,7 +50,7 @@ bool Credentials_Manager::srp_verifier(in string,
 													in string,
 													in string,
 													string&,
-													BigInt&,
+													ref BigInt,
 													Vector!( byte )&,
 													bool)
 {
@@ -95,8 +95,8 @@ namespace {
 bool cert_in_some_store(in Vector!( Certificate_Store* ) trusted_CAs,
 								const X509_Certificate& trust_root)
 {
-	for(auto CAs : trusted_CAs)
-		if(CAs->certificate_known(trust_root))
+	foreach (CAs; trusted_CAs)
+		if (CAs->certificate_known(trust_root))
 			return true;
 	return false;
 }
@@ -108,7 +108,7 @@ void Credentials_Manager::verify_certificate_chain(
 	in string purported_hostname,
 	const Vector!( X509_Certificate )& cert_chainput)
 {
-	if(cert_chain.empty())
+	if (cert_chain.empty())
 		throw new std::invalid_argument("Certificate chain was empty");
 
 	auto trusted_CAs = trusted_certificate_authorities(type, purported_hostname);
@@ -119,13 +119,13 @@ void Credentials_Manager::verify_certificate_chain(
 												restrictions,
 												trusted_CAs);
 
-	if(!result.successful_validation())
+	if (!result.successful_validation())
 		throw new Exception("Certificate validation failure: " + result.result_string());
 
-	if(!cert_in_some_store(trusted_CAs, result.trust_root()))
+	if (!cert_in_some_store(trusted_CAs, result.trust_root()))
 		throw new Exception("Certificate chain roots in unknown/untrusted CA");
 
-	if(purported_hostname != "" && !cert_chainput[0].matches_dns_name(purported_hostname))
+	if (purported_hostname != "" && !cert_chainput[0].matches_dns_name(purported_hostname))
 		throw new Exception("Certificate did not match hostname");
 }
 

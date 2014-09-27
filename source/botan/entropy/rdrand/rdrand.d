@@ -16,7 +16,7 @@
 */
 void Intel_Rdrand::poll(Entropy_Accumulator& accum)
 {
-	if(!CPUID::has_rdrand())
+	if (!CPUID::has_rdrand())
 		return;
 
 	/*
@@ -35,7 +35,7 @@ void Intel_Rdrand::poll(Entropy_Accumulator& accum)
 	const double ENTROPY_PER_POLL =
 		cast(double)(POLL_UPPER_BOUND) / (RDRAND_POLLS * 4);
 
-	for(size_t i = 0; i != RDRAND_POLLS; ++i)
+	for (size_t i = 0; i != RDRAND_POLLS; ++i)
 	{
 		uint r = 0;
 
@@ -49,7 +49,7 @@ void Intel_Rdrand::poll(Entropy_Accumulator& accum)
 		int cf = _rdrand32_step(&r);
 #endif
 
-		if(cf == 1)
+		if (cf == 1)
 			accum.add(r, ENTROPY_PER_POLL);
 	}
 }

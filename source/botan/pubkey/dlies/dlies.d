@@ -28,9 +28,9 @@ DLIES_Encryptor::DLIES_Encryptor(in PK_Key_Agreement_Key key,
 Vector!( byte ) DLIES_Encryptor::enc(in byte* input, size_t length,
 													RandomNumberGenerator&) const
 {
-	if(length > maximum_input_size())
+	if (length > maximum_input_size())
 		throw new Invalid_Argument("DLIES: Plaintext too large");
-	if(other_key.empty())
+	if (other_key.empty())
 		throw new Invalid_State("DLIES: The other key was never set");
 
 	SafeVector!byte output(my_key.size() + length + mac->output_length());
@@ -43,7 +43,7 @@ Vector!( byte ) DLIES_Encryptor::enc(in byte* input, size_t length,
 	const size_t K_LENGTH = length + mac_keylen;
 	OctetString K = kdf->derive_key(K_LENGTH, vz);
 
-	if(K.length() != K_LENGTH)
+	if (K.length() != K_LENGTH)
 		throw new Encoding_Error("DLIES: KDF did not provide sufficient output");
 	byte* C = &output[my_key.size()];
 
@@ -51,7 +51,7 @@ Vector!( byte ) DLIES_Encryptor::enc(in byte* input, size_t length,
 	mac->set_key(K.begin(), mac_keylen);
 
 	mac->update(C, length);
-	for(size_t j = 0; j != 8; ++j)
+	for (size_t j = 0; j != 8; ++j)
 		mac->update(0);
 
 	mac->flushInto(C + length);
@@ -95,7 +95,7 @@ DLIES_Decryptor::DLIES_Decryptor(in PK_Key_Agreement_Key key,
 */
 SafeVector!byte DLIES_Decryptor::dec(in byte* msg, size_t length) const
 {
-	if(length < my_key.size() + mac->output_length())
+	if (length < my_key.size() + mac->output_length())
 		throw new Decoding_Error("DLIES decryption: ciphertext is too short");
 
 	const size_t CIPHER_LEN = length - my_key.size() - mac->output_length();
@@ -112,15 +112,15 @@ SafeVector!byte DLIES_Decryptor::dec(in byte* msg, size_t length) const
 
 	const size_t K_LENGTH = C.size() + mac_keylen;
 	OctetString K = kdf->derive_key(K_LENGTH, vz);
-	if(K.length() != K_LENGTH)
+	if (K.length() != K_LENGTH)
 		throw new Encoding_Error("DLIES: KDF did not provide sufficient output");
 
 	mac->set_key(K.begin(), mac_keylen);
 	mac->update(C);
-	for(size_t j = 0; j != 8; ++j)
+	for (size_t j = 0; j != 8; ++j)
 		mac->update(0);
 	SafeVector!byte T2 = mac->flush();
-	if(T != T2)
+	if (T != T2)
 		throw new Decoding_Error("DLIES: message authentication failed");
 
 	xor_buf(C, K.begin() + mac_keylen, C.size());

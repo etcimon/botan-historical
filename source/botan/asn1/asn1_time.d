@@ -49,7 +49,7 @@ X509_Time::X509_Time(in string t_spec, ASN1_Tag t) : tag(t)
 */
 void X509_Time::set_to(in string time_str)
 {
-	if(time_str == "")
+	if (time_str == "")
 	{
 		year = month = day = hour = minute = second = 0;
 		tag = NO_OBJECT;
@@ -59,21 +59,21 @@ void X509_Time::set_to(in string time_str)
 	Vector!( string ) params;
 	string current;
 
-	for(size_t j = 0; j != time_str.size(); ++j)
+	for (size_t j = 0; j != time_str.size(); ++j)
 	{
-		if(Charset::is_digit(time_str[j]))
+		if (Charset::is_digit(time_str[j]))
 			current += time_str[j];
 		else
 		{
-			if(current != "")
+			if (current != "")
 				params.push_back(current);
 			current.clear();
 		}
 	}
-	if(current != "")
+	if (current != "")
 		params.push_back(current);
 
-	if(params.size() < 3 || params.size() > 6)
+	if (params.size() < 3 || params.size() > 6)
 		throw new Invalid_Argument("Invalid time specification " + time_str);
 
 	year	= to_uint(params[0]);
@@ -85,7 +85,7 @@ void X509_Time::set_to(in string time_str)
 
 	tag = (year >= 2050) ? GENERALIZED_TIME : UTC_TIME;
 
-	if(!passes_sanity_check())
+	if (!passes_sanity_check())
 		throw new Invalid_Argument("Invalid time specification " + time_str);
 }
 
@@ -94,14 +94,14 @@ void X509_Time::set_to(in string time_str)
 */
 void X509_Time::set_to(in string t_spec, ASN1_Tag spec_tag)
 {
-	if(spec_tag == GENERALIZED_TIME)
+	if (spec_tag == GENERALIZED_TIME)
 	{
-		if(t_spec.size() != 13 && t_spec.size() != 15)
+		if (t_spec.size() != 13 && t_spec.size() != 15)
 			throw new Invalid_Argument("Invalid GeneralizedTime: " + t_spec);
 	}
-	else if(spec_tag == UTC_TIME)
+	else if (spec_tag == UTC_TIME)
 	{
-		if(t_spec.size() != 11 && t_spec.size() != 13)
+		if (t_spec.size() != 11 && t_spec.size() != 13)
 			throw new Invalid_Argument("Invalid UTCTime: " + t_spec);
 	}
 	else
@@ -109,7 +109,7 @@ void X509_Time::set_to(in string t_spec, ASN1_Tag spec_tag)
 		throw new Invalid_Argument("Invalid time tag " + std::to_string(spec_tag) + " val " + t_spec);
 	}
 
-	if(t_spec[t_spec.size()-1] != 'Z')
+	if (t_spec[t_spec.size()-1] != 'Z')
 		throw new Invalid_Argument("Invalid time encoding: " + t_spec);
 
 	const size_t YEAR_SIZE = (spec_tag == UTC_TIME) ? 2 : 4;
@@ -117,15 +117,15 @@ void X509_Time::set_to(in string t_spec, ASN1_Tag spec_tag)
 	Vector!( string ) params;
 	string current;
 
-	for(size_t j = 0; j != YEAR_SIZE; ++j)
+	for (size_t j = 0; j != YEAR_SIZE; ++j)
 		current += t_spec[j];
 	params.push_back(current);
 	current.clear();
 
-	for(size_t j = YEAR_SIZE; j != t_spec.size() - 1; ++j)
+	for (size_t j = YEAR_SIZE; j != t_spec.size() - 1; ++j)
 	{
 		current += t_spec[j];
-		if(current.size() == 2)
+		if (current.size() == 2)
 		{
 			params.push_back(current);
 			current.clear();
@@ -140,13 +140,13 @@ void X509_Time::set_to(in string t_spec, ASN1_Tag spec_tag)
 	second = (params.size() == 6) ? to_uint(params[5]) : 0;
 	tag	 = spec_tag;
 
-	if(spec_tag == UTC_TIME)
+	if (spec_tag == UTC_TIME)
 	{
-		if(year >= 50) year += 1900;
+		if (year >= 50) year += 1900;
 		else			  year += 2000;
 	}
 
-	if(!passes_sanity_check())
+	if (!passes_sanity_check())
 		throw new Invalid_Argument("Invalid time specification " + t_spec);
 }
 
@@ -155,7 +155,7 @@ void X509_Time::set_to(in string t_spec, ASN1_Tag spec_tag)
 */
 void X509_Time::encode_into(DER_Encoder der) const
 {
-	if(tag != GENERALIZED_TIME && tag != UTC_TIME)
+	if (tag != GENERALIZED_TIME && tag != UTC_TIME)
 		throw new Invalid_Argument("X509_Time: Bad encoding tag");
 
 	der.add_object(tag, UNIVERSAL,
@@ -182,14 +182,14 @@ void X509_Time::decode_from(BER_Decoder source)
 */
 string X509_Time::as_string() const
 {
-	if(time_is_set() == false)
+	if (time_is_set() == false)
 		throw new Invalid_State("X509_Time::as_string: No time set");
 
 	uint full_year = year;
 
-	if(tag == UTC_TIME)
+	if (tag == UTC_TIME)
 	{
-		if(year < 1950 || year >= 2050)
+		if (year < 1950 || year >= 2050)
 			throw new Encoding_Error("X509_Time: The time " + readable_string() +
 										" cannot be encoded as a UTCTime");
 
@@ -224,7 +224,7 @@ bool X509_Time::time_is_set() const
 */
 string X509_Time::readable_string() const
 {
-	if(time_is_set() == false)
+	if (time_is_set() == false)
 		throw new Invalid_State("X509_Time::readable_string: No time set");
 
 	string output(24, 0);
@@ -242,13 +242,13 @@ string X509_Time::readable_string() const
 */
 bool X509_Time::passes_sanity_check() const
 {
-	if(year < 1950 || year > 2100)
+	if (year < 1950 || year > 2100)
 		return false;
-	if(month == 0 || month > 12)
+	if (month == 0 || month > 12)
 		return false;
-	if(day == 0 || day > 31)
+	if (day == 0 || day > 31)
 		return false;
-	if(hour >= 24 || minute > 60 || second > 60)
+	if (hour >= 24 || minute > 60 || second > 60)
 		return false;
 	return true;
 }
@@ -258,23 +258,23 @@ bool X509_Time::passes_sanity_check() const
 */
 s32bit X509_Time::cmp(in X509_Time other) const
 {
-	if(time_is_set() == false)
+	if (time_is_set() == false)
 		throw new Invalid_State("X509_Time::cmp: No time set");
 
 	const s32bit EARLIER = -1, LATER = 1, SAME_TIME = 0;
 
-	if(year < other.year)	  return EARLIER;
-	if(year > other.year)	  return LATER;
-	if(month < other.month)	return EARLIER;
-	if(month > other.month)	return LATER;
-	if(day < other.day)		 return EARLIER;
-	if(day > other.day)		 return LATER;
-	if(hour < other.hour)	  return EARLIER;
-	if(hour > other.hour)	  return LATER;
-	if(minute < other.minute) return EARLIER;
-	if(minute > other.minute) return LATER;
-	if(second < other.second) return EARLIER;
-	if(second > other.second) return LATER;
+	if (year < other.year)	  return EARLIER;
+	if (year > other.year)	  return LATER;
+	if (month < other.month)	return EARLIER;
+	if (month > other.month)	return LATER;
+	if (day < other.day)		 return EARLIER;
+	if (day > other.day)		 return LATER;
+	if (hour < other.hour)	  return EARLIER;
+	if (hour > other.hour)	  return LATER;
+	if (minute < other.minute) return EARLIER;
+	if (minute > other.minute) return LATER;
+	if (second < other.second) return EARLIER;
+	if (second > other.second) return LATER;
 
 	return SAME_TIME;
 }

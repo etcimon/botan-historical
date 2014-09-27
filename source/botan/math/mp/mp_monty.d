@@ -23,7 +23,7 @@ void bigint_monty_redc(word z[],
 
 	const size_t blocks_of_8 = p_size - (p_size % 8);
 
-	for(size_t i = 0; i != p_size; ++i)
+	for (size_t i = 0; i != p_size; ++i)
 	{
 		word* z_i = z + i;
 
@@ -36,17 +36,17 @@ void bigint_monty_redc(word z[],
 
 		word carry = 0;
 
-		for(size_t j = 0; j != blocks_of_8; j += 8)
+		for (size_t j = 0; j != blocks_of_8; j += 8)
 			carry = word8_madd3(z_i + j, p + j, y, carry);
 
-		for(size_t j = blocks_of_8; j != p_size; ++j)
+		for (size_t j = blocks_of_8; j != p_size; ++j)
 			z_i[j] = word_madd3(p[j], y, z_i[j], &carry);
 
 		word z_sum = z_i[p_size] + carry;
 		carry = (z_sum < z_i[p_size]);
 		z_i[p_size] = z_sum;
 
-		for(size_t j = p_size + 1; carry && j != z_size - i; ++j)
+		for (size_t j = p_size + 1; carry && j != z_size - i; ++j)
 		{
 			++z_i[j];
 			carry = !z_i[j];
@@ -54,7 +54,7 @@ void bigint_monty_redc(word z[],
 	}
 
 	word borrow = 0;
-	for(size_t i = 0; i != p_size; ++i)
+	for (size_t i = 0; i != p_size; ++i)
 		ws[i] = word_sub(z[p_size + i], p[i], &borrow);
 
 	ws[p_size] = word_sub(z[p_size+p_size], 0, &borrow);

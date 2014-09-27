@@ -39,8 +39,8 @@ class RC4_OpenSSL : public StreamCipher
 */
 string RC4_OpenSSL::name() const
 {
-	if(SKIP == 0)	return "RC4";
-	if(SKIP == 256) return "MARK-4";
+	if (SKIP == 0)	return "RC4";
+	if (SKIP == 256) return "MARK-4";
 	else				return "RC4_skip(" + std::to_string(SKIP) + ")";
 }
 
@@ -51,7 +51,7 @@ void RC4_OpenSSL::key_schedule(in byte* key, size_t length)
 {
 	RC4_set_key(&state, length, key);
 	byte dummy = 0;
-	for(size_t i = 0; i != SKIP; ++i)
+	for (size_t i = 0; i != SKIP; ++i)
 		RC4(&state, 1, &dummy, &dummy);
 }
 
@@ -72,9 +72,9 @@ StreamCipher*
 OpenSSL_Engine::find_stream_cipher(in SCAN_Name request,
 											  Algorithm_Factory&) const
 {
-	if(request.algo_name() == "RC4")
+	if (request.algo_name() == "RC4")
 		return new RC4_OpenSSL(request.arg_as_integer(0, 0));
-	if(request.algo_name() == "RC4_drop")
+	if (request.algo_name() == "RC4_drop")
 		return new RC4_OpenSSL(768);
 
 	return 0;

@@ -51,7 +51,7 @@ namespace {
 */
 void Serpent::encrypt_n(byte* input, byte* output, size_t blocks) const
 {
-	for(size_t i = 0; i != blocks; ++i)
+	for (size_t i = 0; i != blocks; ++i)
 	{
 		uint B0 = load_le!uint(input, 0);
 		uint B1 = load_le!uint(input, 1);
@@ -103,7 +103,7 @@ void Serpent::encrypt_n(byte* input, byte* output, size_t blocks) const
 */
 void Serpent::decrypt_n(byte* input, byte* output, size_t blocks) const
 {
-	for(size_t i = 0; i != blocks; ++i)
+	for (size_t i = 0; i != blocks; ++i)
 	{
 		uint B0 = load_le!uint(input, 0);
 		uint B1 = load_le!uint(input, 1);
@@ -162,12 +162,12 @@ void Serpent::key_schedule(in byte* key)
 	const uint PHI = 0x9E3779B9;
 
 	secure_vector<uint> W(140);
-	for(size_t i = 0; i != length / 4; ++i)
+	for (size_t i = 0; i != length / 4; ++i)
 		W[i] = load_le!uint(key, i);
 
 	W[length / 4] |= uint(1) << ((length%4)*8);
 
-	for(size_t i = 8; i != 140; ++i)
+	for (size_t i = 8; i != 140; ++i)
 	{
 		uint wi = W[i-8] ^ W[i-5] ^ W[i-3] ^ W[i-1] ^ PHI ^ uint(i-8);
 		W[i] = rotate_left(wi, 11);

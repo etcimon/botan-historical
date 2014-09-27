@@ -17,13 +17,13 @@ size_t low_zero_bits(in BigInt n)
 {
 	size_t low_zero = 0;
 
-	if(n.is_positive() && n.is_nonzero())
+	if (n.is_positive() && n.is_nonzero())
 	{
-		for(size_t i = 0; i != n.size(); ++i)
+		for (size_t i = 0; i != n.size(); ++i)
 		{
 			const word x = n.word_at(i);
 
-			if(x)
+			if (x)
 			{
 				low_zero += ctz(x);
 				break;
@@ -39,10 +39,10 @@ size_t low_zero_bits(in BigInt n)
 /*
 * Calculate the GCD
 */
-BigInt gcd(in BigInt a, const BigInt& b)
+BigInt gcd(in BigInt a, ref const BigInt b)
 {
-	if(a.is_zero() || b.is_zero()) return 0;
-	if(a == 1 || b == 1)			  return 1;
+	if (a.is_zero() || b.is_zero()) return 0;
+	if (a == 1 || b == 1)			  return 1;
 
 	BigInt x = a, y = b;
 	x.set_sign(BigInt::Positive);
@@ -56,7 +56,7 @@ BigInt gcd(in BigInt a, const BigInt& b)
 	{
 		x >>= low_zero_bits(x);
 		y >>= low_zero_bits(y);
-		if(x >= y) { x -= y; x >>= 1; }
+		if (x >= y) { x -= y; x >>= 1; }
 		else		 { y -= x; y >>= 1; }
 	}
 
@@ -66,7 +66,7 @@ BigInt gcd(in BigInt a, const BigInt& b)
 /*
 * Calculate the LCM
 */
-BigInt lcm(in BigInt a, const BigInt& b)
+BigInt lcm(in BigInt a, ref const BigInt b)
 {
 	return ((a * b) / gcd(a, b));
 }
@@ -79,7 +79,7 @@ namespace {
 * the common case for crypto, so worth special casing. See note 14.64
 * in Handbook of Applied Cryptography for more details.
 */
-BigInt inverse_mod_odd_modulus(in BigInt n, const BigInt& mod)
+BigInt inverse_mod_odd_modulus(in BigInt n, ref const BigInt mod)
 {
 	BigInt u = mod, v = n;
 	BigInt B = 0, D = 1;
@@ -88,27 +88,27 @@ BigInt inverse_mod_odd_modulus(in BigInt n, const BigInt& mod)
 	{
 		const size_t u_zero_bits = low_zero_bits(u);
 		u >>= u_zero_bits;
-		for(size_t i = 0; i != u_zero_bits; ++i)
+		for (size_t i = 0; i != u_zero_bits; ++i)
 		{
-			if(B.is_odd())
+			if (B.is_odd())
 			{ B -= mod; }
 			B >>= 1;
 		}
 
 		const size_t v_zero_bits = low_zero_bits(v);
 		v >>= v_zero_bits;
-		for(size_t i = 0; i != v_zero_bits; ++i)
+		for (size_t i = 0; i != v_zero_bits; ++i)
 		{
-			if(D.is_odd())
+			if (D.is_odd())
 			{ D -= mod; }
 			D >>= 1;
 		}
 
-		if(u >= v) { u -= v; B -= D; }
+		if (u >= v) { u -= v; B -= D; }
 		else		 { v -= u; D -= B; }
 	}
 
-	if(v != 1)
+	if (v != 1)
 		return 0; // no modular inverse
 
 	while(D.is_negative()) D += mod;
@@ -122,17 +122,17 @@ BigInt inverse_mod_odd_modulus(in BigInt n, const BigInt& mod)
 /*
 * Find the Modular Inverse
 */
-BigInt inverse_mod(in BigInt n, const BigInt& mod)
+BigInt inverse_mod(in BigInt n, ref const BigInt mod)
 {
-	if(mod.is_zero())
+	if (mod.is_zero())
 		throw new BigInt::DivideByZero();
-	if(mod.is_negative() || n.is_negative())
+	if (mod.is_negative() || n.is_negative())
 		throw new Invalid_Argument("inverse_mod: arguments must be non-negative");
 
-	if(n.is_zero() || (n.is_even() && mod.is_even()))
+	if (n.is_zero() || (n.is_even() && mod.is_even()))
 		return 0; // fast fail checks
 
-	if(mod.is_odd())
+	if (mod.is_odd())
 		return inverse_mod_odd_modulus(n, mod);
 
 	BigInt u = mod, v = n;
@@ -142,27 +142,27 @@ BigInt inverse_mod(in BigInt n, const BigInt& mod)
 	{
 		const size_t u_zero_bits = low_zero_bits(u);
 		u >>= u_zero_bits;
-		for(size_t i = 0; i != u_zero_bits; ++i)
+		for (size_t i = 0; i != u_zero_bits; ++i)
 		{
-			if(A.is_odd() || B.is_odd())
+			if (A.is_odd() || B.is_odd())
 			{ A += n; B -= mod; }
 			A >>= 1; B >>= 1;
 		}
 
 		const size_t v_zero_bits = low_zero_bits(v);
 		v >>= v_zero_bits;
-		for(size_t i = 0; i != v_zero_bits; ++i)
+		for (size_t i = 0; i != v_zero_bits; ++i)
 		{
-			if(C.is_odd() || D.is_odd())
+			if (C.is_odd() || D.is_odd())
 			{ C += n; D -= mod; }
 			C >>= 1; D >>= 1;
 		}
 
-		if(u >= v) { u -= v; A -= C; B -= D; }
+		if (u >= v) { u -= v; A -= C; B -= D; }
 		else		 { v -= u; C -= A; D -= B; }
 	}
 
-	if(v != 1)
+	if (v != 1)
 		return 0; // no modular inverse
 
 	while(D.is_negative()) D += mod;
@@ -213,7 +213,7 @@ word monty_inverse(word input)
 /*
 * Modular Exponentiation
 */
-BigInt power_mod(in BigInt base, const BigInt& exp, const BigInt& mod)
+BigInt power_mod(in BigInt base, ref const BigInt exp, ref const BigInt mod)
 {
 	Power_Mod pow_mod(mod);
 
@@ -229,21 +229,21 @@ BigInt power_mod(in BigInt base, const BigInt& exp, const BigInt& mod)
 
 namespace {
 
-bool mr_witness(BigInt&& y,
+bool mr_witness(ref BigInt y,
 					 const Modular_Reducer& reducer_n,
-					 const BigInt& n_minus_1, size_t s)
+					 ref const BigInt n_minus_1, size_t s)
 {
-	if(y == 1 || y == n_minus_1)
+	if (y == 1 || y == n_minus_1)
 		return false;
 
-	for(size_t i = 1; i != s; ++i)
+	for (size_t i = 1; i != s; ++i)
 	{
 		y = reducer_n.square(y);
 
-		if(y == 1) // found a non-trivial square root
+		if (y == 1) // found a non-trivial square root
 			return true;
 
-		if(y == n_minus_1) // -1, trivial square root, so give up
+		if (y == n_minus_1) // -1, trivial square root, so give up
 			return false;
 	}
 
@@ -261,15 +261,15 @@ size_t mr_test_iterations(size_t n_bits, size_t prob, bool random)
 	* These values are derived from the inequality for p(k,t) given on
 	* the second page.
 	*/
-	if(random && prob <= 80)
+	if (random && prob <= 80)
 	{
-		if(n_bits >= 1536)
+		if (n_bits >= 1536)
 			return 2; // < 2^-89
-		if(n_bits >= 1024)
+		if (n_bits >= 1024)
 			return 4; // < 2^-89
-		if(n_bits >= 512)
+		if (n_bits >= 512)
 			return 5; // < 2^-80
-		if(n_bits >= 256)
+		if (n_bits >= 256)
 			return 11; // < 2^-80
 	}
 
@@ -284,13 +284,13 @@ size_t mr_test_iterations(size_t n_bits, size_t prob, bool random)
 bool is_prime(in BigInt n, RandomNumberGenerator& rng,
 				  size_t prob, bool is_random)
 {
-	if(n == 2)
+	if (n == 2)
 		return true;
-	if(n <= 1 || n.is_even())
+	if (n <= 1 || n.is_even())
 		return false;
 
 	// Fast path testing for small numbers (<= 65521)
-	if(n <= PRIMES[PRIME_TABLE_SIZE-1])
+	if (n <= PRIMES[PRIME_TABLE_SIZE-1])
 	{
 		const ushort num = n.word_at(0);
 
@@ -305,13 +305,13 @@ bool is_prime(in BigInt n, RandomNumberGenerator& rng,
 	Fixed_Exponent_Power_Mod pow_mod(n_minus_1 >> s, n);
 	Modular_Reducer reducer(n);
 
-	for(size_t i = 0; i != test_iterations; ++i)
+	for (size_t i = 0; i != test_iterations; ++i)
 	{
 		const BigInt a = BigInt::random_integer(rng, 2, n_minus_1);
 
 		BigInt y = pow_mod(a);
 
-		if(mr_witness(std::move(y), reducer, n_minus_1, s))
+		if (mr_witness(std::move(y), reducer, n_minus_1, s))
 			return false;
 	}
 

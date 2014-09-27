@@ -40,7 +40,7 @@ class L_computer
 		{
 			m_offset_buf.resize(blocks*BS);
 
-			for(size_t i = 0; i != blocks; ++i)
+			for (size_t i = 0; i != blocks; ++i)
 			{ // could be done in parallel
 				offset ^= get(ctz(block_index + 1 + i));
 				copy_mem(&m_offset_buf[BS*i], &offset[0], BS);
@@ -85,7 +85,7 @@ SafeVector!byte ocb_hash(in L_computer L,
 	const size_t ad_blocks = (ad_len / BS);
 	const size_t ad_remainder = (ad_len % BS);
 
-	for(size_t i = 0; i != ad_blocks; ++i)
+	for (size_t i = 0; i != ad_blocks; ++i)
 	{
 		// this loop could run in parallel
 		offset ^= L(ctz(i+1));
@@ -98,7 +98,7 @@ SafeVector!byte ocb_hash(in L_computer L,
 		sum ^= buf;
 	}
 
-	if(ad_remainder)
+	if (ad_remainder)
 	{
 		offset ^= L.star();
 
@@ -123,11 +123,11 @@ OCB_Mode::OCB_Mode(BlockCipher* cipher, size_t tag_size) :
 	m_ad_hash(BS),
 	m_tag_size(tag_size)
 {
-	if(m_cipher->block_size() != BS)
+	if (m_cipher->block_size() != BS)
 		throw new std::invalid_argument("OCB requires a 128 bit cipher so cannot be used with " +
 											 m_cipher->name());
 
-	if(m_tag_size != 8 && m_tag_size != 12 && m_tag_size != 16)
+	if (m_tag_size != 8 && m_tag_size != 12 && m_tag_size != 16)
 		throw new std::invalid_argument("OCB cannot produce a " + std::to_string(m_tag_size) +
 											 " byte tag");
 
@@ -193,13 +193,13 @@ OCB_Mode::update_nonce(in byte* nonce, size_t nonce_len)
 
 	const bool need_new_stretch = (m_last_nonce != nonce_buf);
 
-	if(need_new_stretch)
+	if (need_new_stretch)
 	{
 		m_last_nonce = nonce_buf;
 
 		m_cipher->encrypt(nonce_buf);
 
-		for(size_t i = 0; i != 8; ++i)
+		for (size_t i = 0; i != 8; ++i)
 			nonce_buf.push_back(nonce_buf[i] ^ nonce_buf[i+1]);
 
 		m_stretch = nonce_buf;
@@ -211,7 +211,7 @@ OCB_Mode::update_nonce(in byte* nonce, size_t nonce_len)
 	const size_t shift_bits  = bottom % 8;
 
 	SafeVector!byte offset(BS);
-	for(size_t i = 0; i != BS; ++i)
+	for (size_t i = 0; i != BS; ++i)
 	{
 		offset[i]  = (m_stretch[i+shift_bytes] << shift_bits);
 		offset[i] |= (m_stretch[i+shift_bytes+1] >> (8-shift_bits));
@@ -222,7 +222,7 @@ OCB_Mode::update_nonce(in byte* nonce, size_t nonce_len)
 
 SafeVector!byte OCB_Mode::start(in byte* nonce, size_t nonce_len)
 {
-	if(!valid_nonce_length(nonce_len))
+	if (!valid_nonce_length(nonce_len))
 		throw new Invalid_IV_Length(name(), nonce_len);
 
 	BOTAN_ASSERT(m_L, "A key was set");
@@ -276,14 +276,14 @@ void OCB_Encryption::finish(SafeVector!byte buffer, size_t offset)
 	const size_t sz = buffer.size() - offset;
 	byte* buf = &buffer[offset];
 
-	if(sz)
+	if (sz)
 	{
 		const size_t final_full_blocks = sz / BS;
 		const size_t remainder_bytes = sz - (final_full_blocks * BS);
 
 		encrypt(buf, final_full_blocks);
 
-		if(remainder_bytes)
+		if (remainder_bytes)
 		{
 			BOTAN_ASSERT(remainder_bytes < BS, "Only a partial block left");
 			byte* remainder = &buf[sz - remainder_bytes];
@@ -302,7 +302,7 @@ void OCB_Encryption::finish(SafeVector!byte buffer, size_t offset)
 	SafeVector!byte checksum(BS);
 
 	// fold checksum
-	for(size_t i = 0; i != m_checksum.size(); ++i)
+	for (size_t i = 0; i != m_checksum.size(); ++i)
 		checksum[i % checksum.size()] ^= m_checksum[i];
 
 	// now compute the tag
@@ -371,14 +371,14 @@ void OCB_Decryption::finish(SafeVector!byte buffer, size_t offset)
 
 	const size_t remaining = sz - tag_size();
 
-	if(remaining)
+	if (remaining)
 	{
 		const size_t final_full_blocks = remaining / BS;
 		const size_t final_bytes = remaining - (final_full_blocks * BS);
 
 		decrypt(&buf[0], final_full_blocks);
 
-		if(final_bytes)
+		if (final_bytes)
 		{
 			BOTAN_ASSERT(final_bytes < BS, "Only a partial block left");
 
@@ -399,7 +399,7 @@ void OCB_Decryption::finish(SafeVector!byte buffer, size_t offset)
 	SafeVector!byte checksum(BS);
 
 	// fold checksum
-	for(size_t i = 0; i != m_checksum.size(); ++i)
+	for (size_t i = 0; i != m_checksum.size(); ++i)
 		checksum[i % checksum.size()] ^= m_checksum[i];
 
 	// compute the mac
@@ -419,7 +419,7 @@ void OCB_Decryption::finish(SafeVector!byte buffer, size_t offset)
 	// compare mac
 	const byte* included_tag = &buf[remaining];
 
-	if(!same_mem(&mac[0], included_tag, tag_size()))
+	if (!same_mem(&mac[0], included_tag, tag_size()))
 		throw new Integrity_Failure("OCB tag check failed");
 
 	// remove tag from end of message

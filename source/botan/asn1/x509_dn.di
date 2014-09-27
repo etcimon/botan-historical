@@ -43,4 +43,4 @@ bool operator==(in X509_DN, const X509_DN&);
 bool operator!=(in X509_DN, const X509_DN&);
 bool operator<(in X509_DN, const X509_DN&);
 
-std::ostream& operator<<(std::ostream& out, const X509_DN& dn);
+std::ostream& operator<<(std::ostream& output, const X509_DN& dn);

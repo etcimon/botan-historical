@@ -16,13 +16,13 @@ namespace {
 size_t decode_tag(DataSource* ber, ASN1_Tag& type_tag, ASN1_Tag& class_tag)
 {
 	byte b;
-	if(!ber->read_byte(b))
+	if (!ber->read_byte(b))
 	{
 		class_tag = type_tag = NO_OBJECT;
 		return 0;
 	}
 
-	if((b & 0x1F) != 0x1F)
+	if ((b & 0x1F) != 0x1F)
 	{
 		type_tag = ASN1_Tag(b & 0x1F);
 		class_tag = ASN1_Tag(b & 0xE0);
@@ -35,13 +35,13 @@ size_t decode_tag(DataSource* ber, ASN1_Tag& type_tag, ASN1_Tag& class_tag)
 	size_t tag_buf = 0;
 	while(true)
 	{
-		if(!ber->read_byte(b))
+		if (!ber->read_byte(b))
 			throw new BER_Decoding_Error("Long-form tag truncated");
-		if(tag_buf & 0xFF000000)
+		if (tag_buf & 0xFF000000)
 			throw new BER_Decoding_Error("Long-form tag overflowed 32 bits");
 		++tag_bytes;
 		tag_buf = (tag_buf << 7) | (b & 0x7F);
-		if((b & 0x80) == 0) break;
+		if ((b & 0x80) == 0) break;
 	}
 	type_tag = ASN1_Tag(tag_buf);
 	return tag_bytes;
@@ -58,24 +58,24 @@ size_t find_eoc(DataSource*);
 size_t decode_length(DataSource* ber, size_t& field_size)
 {
 	byte b;
-	if(!ber->read_byte(b))
+	if (!ber->read_byte(b))
 		throw new BER_Decoding_Error("Length field not found");
 	field_size = 1;
-	if((b & 0x80) == 0)
+	if ((b & 0x80) == 0)
 		return b;
 
 	field_size += (b & 0x7F);
-	if(field_size == 1) return find_eoc(ber);
-	if(field_size > 5)
+	if (field_size == 1) return find_eoc(ber);
+	if (field_size > 5)
 		throw new BER_Decoding_Error("Length field is too large");
 
 	size_t length = 0;
 
-	for(size_t i = 0; i != field_size - 1; ++i)
+	for (size_t i = 0; i != field_size - 1; ++i)
 	{
-		if(get_byte(0, length) != 0)
+		if (get_byte(0, length) != 0)
 			throw new BER_Decoding_Error("Field length overflow");
-		if(!ber->read_byte(b))
+		if (!ber->read_byte(b))
 			throw new BER_Decoding_Error("Corrupted length field");
 		length = (length << 8) | b;
 	}
@@ -101,7 +101,7 @@ size_t find_eoc(DataSource* ber)
 	while(true)
 	{
 		const size_t got = ber->peek(&buffer[0], buffer.size(), data.size());
-		if(got == 0)
+		if (got == 0)
 			break;
 
 		data += Pair(&buffer[0], got);
@@ -115,7 +115,7 @@ size_t find_eoc(DataSource* ber)
 	{
 		ASN1_Tag type_tag, class_tag;
 		size_t tag_size = decode_tag(&source, type_tag, class_tag);
-		if(type_tag == NO_OBJECT)
+		if (type_tag == NO_OBJECT)
 			break;
 
 		size_t length_size = 0;
@@ -124,7 +124,7 @@ size_t find_eoc(DataSource* ber)
 
 		length += item_size + length_size + tag_size;
 
-		if(type_tag == EOC)
+		if (type_tag == EOC)
 			break;
 	}
 	return length;
@@ -137,7 +137,7 @@ size_t find_eoc(DataSource* ber)
 */
 void BER_Object::assert_is_a(ASN1_Tag type_tag, ASN1_Tag class_tag)
 {
-	if(this->type_tag != type_tag || this->class_tag != class_tag)
+	if (this->type_tag != type_tag || this->class_tag != class_tag)
 		throw new BER_Decoding_Error("Tag mismatch when decoding got " +
 										 std::to_string(this->type_tag) + "/" +
 										 std::to_string(this->class_tag) + " expected " +
@@ -150,7 +150,7 @@ void BER_Object::assert_is_a(ASN1_Tag type_tag, ASN1_Tag class_tag)
 */
 bool BER_Decoder::more_items() const
 {
-	if(source->end_of_data() && (pushed.type_tag == NO_OBJECT))
+	if (source->end_of_data() && (pushed.type_tag == NO_OBJECT))
 		return false;
 	return true;
 }
@@ -160,7 +160,7 @@ bool BER_Decoder::more_items() const
 */
 BER_Decoder BER_Decoder::verify_end()
 {
-	if(!source->end_of_data() || (pushed.type_tag != NO_OBJECT))
+	if (!source->end_of_data() || (pushed.type_tag != NO_OBJECT))
 		throw new Invalid_State("BER_Decoder::verify_end called, but data remains");
 	return this;
 }
@@ -168,21 +168,21 @@ BER_Decoder BER_Decoder::verify_end()
 /*
 * Save all the bytes remaining in the source
 */
-BER_Decoder BER_Decoder::raw_bytes(SafeVector!byte out)
+BER_Decoder BER_Decoder::raw_bytes(SafeVector!byte output)
 {
-	out.clear();
+	output.clear();
 	byte buf;
 	while(source->read_byte(buf))
-		out.push_back(buf);
+		output.push_back(buf);
 	return this;
 }
 
-BER_Decoder BER_Decoder::raw_bytes(Vector!( byte )& out)
+BER_Decoder BER_Decoder::raw_bytes(Vector!( byte )& output)
 {
-	out.clear();
+	output.clear();
 	byte buf;
 	while(source->read_byte(buf))
-		out.push_back(buf);
+		output.push_back(buf);
 	return this;
 }
 
@@ -193,7 +193,7 @@ BER_Decoder BER_Decoder::discard_remaining()
 {
 	byte buf;
 	while(source->read_byte(buf))
-		;
+		continue;
 	return this;
 }
 
@@ -204,7 +204,7 @@ BER_Object BER_Decoder::get_next_object()
 {
 	BER_Object next;
 
-	if(pushed.type_tag != NO_OBJECT)
+	if (pushed.type_tag != NO_OBJECT)
 	{
 		next = pushed;
 		pushed.class_tag = pushed.type_tag = NO_OBJECT;
@@ -212,15 +212,15 @@ BER_Object BER_Decoder::get_next_object()
 	}
 
 	decode_tag(source, next.type_tag, next.class_tag);
-	if(next.type_tag == NO_OBJECT)
+	if (next.type_tag == NO_OBJECT)
 		return next;
 
 	size_t length = decode_length(source);
 	next.value.resize(length);
-	if(source->read(&next.value[0], length) != length)
+	if (source->read(&next.value[0], length) != length)
 		throw new BER_Decoding_Error("Value truncated");
 
-	if(next.type_tag == EOC && next.class_tag == UNIVERSAL)
+	if (next.type_tag == EOC && next.class_tag == UNIVERSAL)
 		return get_next_object();
 
 	return next;
@@ -237,7 +237,7 @@ BER_Decoder BER_Decoder::get_next(BER_Object& ber)
 */
 void BER_Decoder::push_back(in BER_Object obj)
 {
-	if(pushed.type_tag != NO_OBJECT)
+	if (pushed.type_tag != NO_OBJECT)
 		throw new Invalid_State("BER_Decoder: Only one push back is allowed");
 	pushed = obj;
 }
@@ -261,9 +261,9 @@ BER_Decoder BER_Decoder::start_cons(ASN1_Tag type_tag,
 */
 BER_Decoder BER_Decoder::end_cons()
 {
-	if(!parent)
+	if (!parent)
 		throw new Invalid_State("BER_Decoder::end_cons called with NULL parent");
-	if(!source->end_of_data())
+	if (!source->end_of_data())
 		throw new Decoding_Error("BER_Decoder::end_cons called with data left");
 	return (*parent);
 }
@@ -319,7 +319,7 @@ BER_Decoder::BER_Decoder(in BER_Decoder other)
 {
 	source = other.source;
 	owns = false;
-	if(other.owns)
+	if (other.owns)
 	{
 		other.owns = false;
 		owns = true;
@@ -333,7 +333,7 @@ BER_Decoder::BER_Decoder(in BER_Decoder other)
 */
 BER_Decoder::~BER_Decoder()
 {
-	if(owns)
+	if (owns)
 		delete source;
 	source = null;
 }
@@ -341,7 +341,7 @@ BER_Decoder::~BER_Decoder()
 /*
 * Request for an object to decode itself
 */
-BER_Decoder BER_Decoder::decode(ASN1_Object& obj,
+BER_Decoder BER_Decoder::decode(ref ASN1_Object obj,
 											ASN1_Tag, ASN1_Tag)
 {
 	obj.decode_from(*this);
@@ -355,7 +355,7 @@ BER_Decoder BER_Decoder::decode_null()
 {
 	BER_Object obj = get_next_object();
 	obj.assert_is_a(NULL_TAG, UNIVERSAL);
-	if(obj.value.size())
+	if (obj.value.size())
 		throw new BER_Decoding_Error("NULL object had nonzero size");
 	return this;
 }
@@ -363,32 +363,32 @@ BER_Decoder BER_Decoder::decode_null()
 /*
 * Decode a BER encoded BOOLEAN
 */
-BER_Decoder BER_Decoder::decode(bool& out)
+BER_Decoder BER_Decoder::decode(ref bool output)
 {
-	return decode(out, BOOLEAN, UNIVERSAL);
+	return decode(output, BOOLEAN, UNIVERSAL);
 }
 
 /*
 * Decode a small BER encoded INTEGER
 */
-BER_Decoder BER_Decoder::decode(size_t& out)
+BER_Decoder BER_Decoder::decode(ref size_t output)
 {
-	return decode(out, INTEGER, UNIVERSAL);
+	return decode(output, INTEGER, UNIVERSAL);
 }
 
 /*
 * Decode a BER encoded INTEGER
 */
-BER_Decoder BER_Decoder::decode(BigInt& out)
+BER_Decoder BER_Decoder::decode(ref BigInt output)
 {
-	return decode(out, INTEGER, UNIVERSAL);
+	return decode(output, INTEGER, UNIVERSAL);
 }
 
-BER_Decoder BER_Decoder::decode_octet_string_bigint(BigInt& out)
+BER_Decoder BER_Decoder::decode_octet_string_bigint(ref BigInt output)
 {
 	SafeVector!byte out_vec;
 	decode(out_vec, OCTET_STRING);
-	out = BigInt::decode(&out_vec[0], out_vec.size());
+	output = BigInt::decode(&out_vec[0], out_vec.size());
 	return this;
 }
 
@@ -402,34 +402,34 @@ Vector!( byte ) BER_Decoder::get_next_octet_string()
 /*
 * Decode a BER encoded BOOLEAN
 */
-BER_Decoder BER_Decoder::decode(bool& out,
+BER_Decoder BER_Decoder::decode(bool& output,
 											ASN1_Tag type_tag, ASN1_Tag class_tag)
 {
 	BER_Object obj = get_next_object();
 	obj.assert_is_a(type_tag, class_tag);
 
-	if(obj.value.size() != 1)
+	if (obj.value.size() != 1)
 		throw new BER_Decoding_Error("BER boolean value had invalid size");
 
-	out = (obj.value[0]) ? true : false;
+	output = (obj.value[0]) ? true : false;
 	return this;
 }
 
 /*
 * Decode a small BER encoded INTEGER
 */
-BER_Decoder BER_Decoder::decode(size_t& out,
+BER_Decoder BER_Decoder::decode(ref size_t output,
 											ASN1_Tag type_tag, ASN1_Tag class_tag)
 {
 	BigInt integer;
 	decode(integer, type_tag, class_tag);
 
-	if(integer.bits() > 32)
+	if (integer.bits() > 32)
 		throw new BER_Decoding_Error("Decoded integer value larger than expected");
 
-	out = 0;
-	for(size_t i = 0; i != 4; ++i)
-		out = (out << 8) | integer.byte_at(3-i);
+	output = 0;
+	for (size_t i = 0; i != 4; ++i)
+		output = (output << 8) | integer.byte_at(3-i);
 
 	return this;
 }
@@ -441,50 +441,50 @@ ulong BER_Decoder::decode_constrained_integer(ASN1_Tag type_tag,
 															  ASN1_Tag class_tag,
 															  size_t T_bytes)
 {
-	if(T_bytes > 8)
+	if (T_bytes > 8)
 		throw new BER_Decoding_Error("Can't decode small integer over 8 bytes");
 
 	BigInt integer;
 	decode(integer, type_tag, class_tag);
 
-	if(integer.bits() > 8*T_bytes)
+	if (integer.bits() > 8*T_bytes)
 		throw new BER_Decoding_Error("Decoded integer value larger than expected");
 
-	ulong out = 0;
-	for(size_t i = 0; i != 8; ++i)
-		out = (out << 8) | integer.byte_at(7-i);
+	ulong output = 0;
+	for (size_t i = 0; i != 8; ++i)
+		output = (output << 8) | integer.byte_at(7-i);
 
-	return out;
+	return output;
 }
 
 /*
 * Decode a BER encoded INTEGER
 */
-BER_Decoder BER_Decoder::decode(BigInt& out,
+BER_Decoder BER_Decoder::decode(ref BigInt output,
 											ASN1_Tag type_tag, ASN1_Tag class_tag)
 {
 	BER_Object obj = get_next_object();
 	obj.assert_is_a(type_tag, class_tag);
 
-	if(obj.value.empty())
-		out = 0;
+	if (obj.value.empty())
+		output = 0;
 	else
 	{
 		const bool negative = (obj.value[0] & 0x80) ? true : false;
 
-		if(negative)
+		if (negative)
 		{
-			for(size_t i = obj.value.size(); i > 0; --i)
-				if(obj.value[i-1]--)
+			for (size_t i = obj.value.size(); i > 0; --i)
+				if (obj.value[i-1]--)
 					break;
-			for(size_t i = 0; i != obj.value.size(); ++i)
+			for (size_t i = 0; i != obj.value.size(); ++i)
 				obj.value[i] = ~obj.value[i];
 		}
 
-		out = BigInt(&obj.value[0], obj.value.size());
+		output = BigInt(&obj.value[0], obj.value.size());
 
-		if(negative)
-			out.flip_sign();
+		if (negative)
+			output.flip_sign();
 	}
 
 	return this;
@@ -493,17 +493,17 @@ BER_Decoder BER_Decoder::decode(BigInt& out,
 /*
 * BER decode a BIT STRING or OCTET STRING
 */
-BER_Decoder BER_Decoder::decode(SafeVector!byte out, ASN1_Tag real_type)
+BER_Decoder BER_Decoder::decode(SafeVector!byte output, ASN1_Tag real_type)
 {
-	return decode(out, real_type, real_type, UNIVERSAL);
+	return decode(output, real_type, real_type, UNIVERSAL);
 }
 
 /*
 * BER decode a BIT STRING or OCTET STRING
 */
-BER_Decoder BER_Decoder::decode(Vector!( byte )& out, ASN1_Tag real_type)
+BER_Decoder BER_Decoder::decode(Vector!( byte )& output, ASN1_Tag real_type)
 {
-	return decode(out, real_type, real_type, UNIVERSAL);
+	return decode(output, real_type, real_type, UNIVERSAL);
 }
 
 /*
@@ -513,17 +513,17 @@ BER_Decoder BER_Decoder::decode(SafeVector!byte buffer,
 											ASN1_Tag real_type,
 											ASN1_Tag type_tag, ASN1_Tag class_tag)
 {
-	if(real_type != OCTET_STRING && real_type != BIT_STRING)
+	if (real_type != OCTET_STRING && real_type != BIT_STRING)
 		throw new BER_Bad_Tag("Bad tag for {BIT,OCTET} STRING", real_type);
 
 	BER_Object obj = get_next_object();
 	obj.assert_is_a(type_tag, class_tag);
 
-	if(real_type == OCTET_STRING)
+	if (real_type == OCTET_STRING)
 		buffer = obj.value;
 	else
 	{
-		if(obj.value[0] >= 8)
+		if (obj.value[0] >= 8)
 			throw new BER_Decoding_Error("Bad number of unused bits in BIT STRING");
 
 		buffer.resize(obj.value.size() - 1);
@@ -536,17 +536,17 @@ BER_Decoder BER_Decoder::decode(Vector!( byte )& buffer,
 											ASN1_Tag real_type,
 											ASN1_Tag type_tag, ASN1_Tag class_tag)
 {
-	if(real_type != OCTET_STRING && real_type != BIT_STRING)
+	if (real_type != OCTET_STRING && real_type != BIT_STRING)
 		throw new BER_Bad_Tag("Bad tag for {BIT,OCTET} STRING", real_type);
 
 	BER_Object obj = get_next_object();
 	obj.assert_is_a(type_tag, class_tag);
 
-	if(real_type == OCTET_STRING)
+	if (real_type == OCTET_STRING)
 		buffer = unlock(obj.value);
 	else
 	{
-		if(obj.value[0] >= 8)
+		if (obj.value[0] >= 8)
 			throw new BER_Decoding_Error("Bad number of unused bits in BIT STRING");
 
 		buffer.resize(obj.value.size() - 1);

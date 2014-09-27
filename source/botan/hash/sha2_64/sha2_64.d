@@ -53,7 +53,7 @@ void compress(secure_vector<ulong>& digest,
 			 D = digest[3], E = digest[4], F = digest[5],
 			 G = digest[6], H = digest[7];
 
-	for(size_t i = 0; i != blocks; ++i)
+	for (size_t i = 0; i != blocks; ++i)
 	{
 		ulong W00 = load_be!ulong(input,  0);
 		ulong W01 = load_be!ulong(input,  1);
@@ -183,7 +183,7 @@ void SHA_384::compress_n(in byte* input, size_t blocks)
 */
 void SHA_384::copy_out(byte* output)
 {
-	for(size_t i = 0; i != output_length(); i += 8)
+	for (size_t i = 0; i != output_length(); i += 8)
 		store_be(digest[i/8], output + i);
 }
 
@@ -216,7 +216,7 @@ void SHA_512::compress_n(in byte* input, size_t blocks)
 */
 void SHA_512::copy_out(byte* output)
 {
-	for(size_t i = 0; i != output_length(); i += 8)
+	for (size_t i = 0; i != output_length(); i += 8)
 		store_be(digest[i/8], output + i);
 }
 

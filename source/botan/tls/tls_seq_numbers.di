@@ -71,12 +71,12 @@ class Datagram_Sequence_Numbers : public Connection_Sequence_Numbers
 		{
 			const size_t window_size = sizeof(m_window_bits) * 8;
 
-			if(sequence > m_window_highest)
+			if (sequence > m_window_highest)
 				return false;
 
 			const ulong offset = m_window_highest - sequence;
 
-			if(offset >= window_size)
+			if (offset >= window_size)
 				return true; // really old?
 
 			return (((m_window_bits >> offset) & 1) == 1);
@@ -86,12 +86,12 @@ class Datagram_Sequence_Numbers : public Connection_Sequence_Numbers
 		{
 			const size_t window_size = sizeof(m_window_bits) * 8;
 
-			if(sequence > m_window_highest)
+			if (sequence > m_window_highest)
 			{
 				const size_t offset = sequence - m_window_highest;
 				m_window_highest += offset;
 
-				if(offset >= window_size)
+				if (offset >= window_size)
 					m_window_bits = 0;
 				else
 					m_window_bits <<= offset;

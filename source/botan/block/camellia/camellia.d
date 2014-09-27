@@ -116,7 +116,7 @@ void encrypt(byte* input, byte* output, size_t blocks,
 				 const secure_vector<ulong>& SK, const size_t rounds)
 {
 	size_t blocks = input.length;
-	for(size_t i = 0; i != blocks; ++i)
+	for (size_t i = 0; i != blocks; ++i)
 	{
 		ulong D1 = load_be!ulong(input, 0);
 		ulong D2 = load_be!ulong(input, 1);
@@ -129,9 +129,9 @@ void encrypt(byte* input, byte* output, size_t blocks,
 		D2 ^= F_SLOW(D1, *K++);
 		D1 ^= F_SLOW(D2, *K++);
 
-		for(size_t r = 1; r != rounds - 1; ++r)
+		for (size_t r = 1; r != rounds - 1; ++r)
 		{
-			if(r % 3 == 0)
+			if (r % 3 == 0)
 			{
 				D1 = FL	(D1, *K++);
 				D2 = FLINV(D2, *K++);
@@ -161,7 +161,7 @@ void decrypt(byte* input, byte* output, size_t blocks,
 				 const secure_vector<ulong>& SK, const size_t rounds)
 {
 	size_t blocks = input.length;
-	for(size_t i = 0; i != blocks; ++i)
+	for (size_t i = 0; i != blocks; ++i)
 	{
 		ulong D1 = load_be!ulong(input, 0);
 		ulong D2 = load_be!ulong(input, 1);
@@ -174,9 +174,9 @@ void decrypt(byte* input, byte* output, size_t blocks,
 		D2 ^= F_SLOW(D1, *K--);
 		D1 ^= F_SLOW(D2, *K--);
 
-		for(size_t r = 1; r != rounds - 1; ++r)
+		for (size_t r = 1; r != rounds - 1; ++r)
 		{
-			if(r % 3 == 0)
+			if (r % 3 == 0)
 			{
 				D1 = FL	(D1, *K--);
 				D2 = FLINV(D2, *K--);
@@ -192,10 +192,10 @@ void decrypt(byte* input, byte* output, size_t blocks,
 		D1 ^= *K--;
 		D2 ^= *K;
 
-		store_be(out, D2, D1);
+		store_be(output, D2, D1);
 
-		in += 16;
-		out += 16;
+		input += 16;
+		output += 16;
 	}
 }
 
@@ -248,7 +248,7 @@ void key_schedule(secure_vector<ulong>& SK, in byte* key)
 	const ulong KB_H = D1;
 	const ulong KB_L = D2;
 
-	if(length == 16)
+	if (length == 16)
 	{
 		SK.resize(26);
 
@@ -332,32 +332,32 @@ void key_schedule(secure_vector<ulong>& SK, in byte* key)
 
 void Camellia_128::encrypt_n(byte* input, byte* output, size_t blocks) const
 {
-	Camellia_F::encrypt(input, out, blocks, SK, 9);
+	Camellia_F::encrypt(input, output, blocks, SK, 9);
 }
 
 void Camellia_192::encrypt_n(byte* input, byte* output, size_t blocks) const
 {
-	Camellia_F::encrypt(input, out, blocks, SK, 12);
+	Camellia_F::encrypt(input, output, blocks, SK, 12);
 }
 
 void Camellia_256::encrypt_n(byte* input, byte* output, size_t blocks) const
 {
-	Camellia_F::encrypt(input, out, blocks, SK, 12);
+	Camellia_F::encrypt(input, output, blocks, SK, 12);
 }
 
 void Camellia_128::decrypt_n(byte* input, byte* output, size_t blocks) const
 {
-	Camellia_F::decrypt(input, out, blocks, SK, 9);
+	Camellia_F::decrypt(input, output, blocks, SK, 9);
 }
 
 void Camellia_192::decrypt_n(byte* input, byte* output, size_t blocks) const
 {
-	Camellia_F::decrypt(input, out, blocks, SK, 12);
+	Camellia_F::decrypt(input, output, blocks, SK, 12);
 }
 
 void Camellia_256::decrypt_n(byte* input, byte* output, size_t blocks) const
 {
-	Camellia_F::decrypt(input, out, blocks, SK, 12);
+	Camellia_F::decrypt(input, output, blocks, SK, 12);
 }
 
 void Camellia_128::key_schedule(in byte* key)

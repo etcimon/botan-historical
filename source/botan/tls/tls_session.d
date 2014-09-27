@@ -94,7 +94,7 @@ Session::Session(in byte* ber, size_t ber_len)
 
 	m_srp_identifier = srp_identifier_str.value();
 
-	if(!peer_cert_bits.empty())
+	if (!peer_cert_bits.empty())
 	{
 		DataSource_Memory certs(&peer_cert_bits[0], peer_cert_bits.size());
 
@@ -106,7 +106,7 @@ Session::Session(in byte* ber, size_t ber_len)
 SafeVector!byte Session::DER_encode() const
 {
 	Vector!( byte ) peer_cert_bits;
-	for(size_t i = 0; i != m_peer_certs.size(); ++i)
+	for (size_t i = 0; i != m_peer_certs.size(); ++i)
 		peer_cert_bits += m_peer_certs[i].BER_encode();
 
 	return DER_Encoder()

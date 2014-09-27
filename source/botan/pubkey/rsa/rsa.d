@@ -16,10 +16,10 @@
 RSA_PrivateKey::RSA_PrivateKey(RandomNumberGenerator& rng,
 										 size_t bits, size_t exp)
 {
-	if(bits < 1024)
+	if (bits < 1024)
 		throw new Invalid_Argument(algo_name() + ": Can't make a key that is only " +
 									  std::to_string(bits) + " bits long");
-	if(exp < 3 || exp % 2 == 0)
+	if (exp < 3 || exp % 2 == 0)
 		throw new Invalid_Argument(algo_name() + ": Invalid encryption exponent");
 
 	e = exp;
@@ -44,13 +44,13 @@ RSA_PrivateKey::RSA_PrivateKey(RandomNumberGenerator& rng,
 */
 bool RSA_PrivateKey::check_key(RandomNumberGenerator& rng, bool strong) const
 {
-	if(!IF_Scheme_PrivateKey::check_key(rng, strong))
+	if (!IF_Scheme_PrivateKey::check_key(rng, strong))
 		return false;
 
-	if(!strong)
+	if (!strong)
 		return true;
 
-	if((e * d) % lcm(p - 1, q - 1) != 1)
+	if ((e * d) % lcm(p - 1, q - 1) != 1)
 		return false;
 
 	return KeyPair::signature_consistency_check(rng, *this, "EMSA4(SHA-1)");
@@ -72,7 +72,7 @@ RSA_Private_Operation::RSA_Private_Operation(in RSA_PrivateKey rsa,
 
 BigInt RSA_Private_Operation::private_op(in BigInt m) const
 {
-	if(m >= n)
+	if (m >= n)
 		throw new Invalid_Argument("RSA private op - input is too large");
 
 	auto future_j1 = std::async(std::launch::async, powermod_d1_p, m);

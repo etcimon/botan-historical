@@ -25,9 +25,9 @@ SafeVector!byte strip_leading_zeros(in SafeVector!byte input)
 {
 	size_t leading_zeros = 0;
 
-	for(size_t i = 0; i != input.size(); ++i)
+	for (size_t i = 0; i != input.size(); ++i)
 	{
-		if(input[i] != 0)
+		if (input[i] != 0)
 			break;
 		++leading_zeros;
 	}
@@ -52,11 +52,11 @@ Client_Key_Exchange::Client_Key_Exchange(Handshake_IO& io,
 {
 	const string kex_algo = state.ciphersuite().kex_algo();
 
-	if(kex_algo == "PSK")
+	if (kex_algo == "PSK")
 	{
 		string identity_hint = "";
 
-		if(state.server_kex())
+		if (state.server_kex())
 		{
 			TLS_Data_Reader reader("ClientKeyExchange", state.server_kex()->params());
 			identity_hint = reader.get_string(2, 0, 65535);
@@ -77,13 +77,13 @@ Client_Key_Exchange::Client_Key_Exchange(Handshake_IO& io,
 		append_tls_length_value(m_pre_master, zeros, 2);
 		append_tls_length_value(m_pre_master, psk.bits_of(), 2);
 	}
-	else if(state.server_kex())
+	else if (state.server_kex())
 	{
 		TLS_Data_Reader reader("ClientKeyExchange", state.server_kex()->params());
 
 		SymmetricKey psk;
 
-		if(kex_algo == "DHE_PSK" || kex_algo == "ECDHE_PSK")
+		if (kex_algo == "DHE_PSK" || kex_algo == "ECDHE_PSK")
 		{
 			string identity_hint = reader.get_string(2, 0, 65535);
 
@@ -98,16 +98,16 @@ Client_Key_Exchange::Client_Key_Exchange(Handshake_IO& io,
 			psk = creds.psk("tls-client", hostname, psk_identity);
 		}
 
-		if(kex_algo == "DH" || kex_algo == "DHE_PSK")
+		if (kex_algo == "DH" || kex_algo == "DHE_PSK")
 		{
 			BigInt p = BigInt::decode(reader.get_range<byte>(2, 1, 65535));
 			BigInt g = BigInt::decode(reader.get_range<byte>(2, 1, 65535));
 			BigInt Y = BigInt::decode(reader.get_range<byte>(2, 1, 65535));
 
-			if(reader.remaining_bytes())
+			if (reader.remaining_bytes())
 				throw new Decoding_Error("Bad params size for DH key exchange");
 
-			if(p.bits() < policy.minimum_dh_group_size())
+			if (p.bits() < policy.minimum_dh_group_size())
 				throw new TLS_Exception(Alert::INSUFFICIENT_SECURITY,
 										  "Server sent DH group of " +
 										  std::to_string(p.bits()) +
@@ -120,13 +120,13 @@ Client_Key_Exchange::Client_Key_Exchange(Handshake_IO& io,
 			* our key is ephemeral there does not seem to be any
 			* advantage to bogus keys anyway.
 			*/
-			if(Y <= 1 || Y >= p - 1)
+			if (Y <= 1 || Y >= p - 1)
 				throw new TLS_Exception(Alert::INSUFFICIENT_SECURITY,
 										  "Server sent bad DH key for DHE exchange");
 
 			DL_Group group(p, g);
 
-			if(!group.verify_group(rng, true))
+			if (!group.verify_group(rng, true))
 				throw new Internal_Error("DH group failed validation, possible attack");
 
 			DH_PublicKey counterparty_key(group, Y);
@@ -138,7 +138,7 @@ Client_Key_Exchange::Client_Key_Exchange(Handshake_IO& io,
 			SafeVector!byte dh_secret = strip_leading_zeros(
 				ka.derive_key(0, counterparty_key.public_value()).bits_of());
 
-			if(kex_algo == "DH")
+			if (kex_algo == "DH")
 				m_pre_master = dh_secret;
 			else
 			{
@@ -148,18 +148,18 @@ Client_Key_Exchange::Client_Key_Exchange(Handshake_IO& io,
 
 			append_tls_length_value(m_key_material, priv_key.public_value(), 2);
 		}
-		else if(kex_algo == "ECDH" || kex_algo == "ECDHE_PSK")
+		else if (kex_algo == "ECDH" || kex_algo == "ECDHE_PSK")
 		{
 			const byte curve_type = reader.get_byte();
 
-			if(curve_type != 3)
+			if (curve_type != 3)
 				throw new Decoding_Error("Server sent non-named ECC curve");
 
 			const ushort curve_id = reader.get_ushort();
 
 			const string name = Supported_Elliptic_Curves::curve_id_to_name(curve_id);
 
-			if(name == "")
+			if (name == "")
 				throw new Decoding_Error("Server sent unknown named curve " + std::to_string(curve_id));
 
 			EC_Group group(name);
@@ -175,7 +175,7 @@ Client_Key_Exchange::Client_Key_Exchange(Handshake_IO& io,
 			SafeVector!byte ecdh_secret =
 				ka.derive_key(0, counterparty_key.public_value()).bits_of();
 
-			if(kex_algo == "ECDH")
+			if (kex_algo == "ECDH")
 				m_pre_master = ecdh_secret;
 			else
 			{
@@ -185,7 +185,7 @@ Client_Key_Exchange::Client_Key_Exchange(Handshake_IO& io,
 
 			append_tls_length_value(m_key_material, priv_key.public_value(), 1);
 		}
-		else if(kex_algo == "SRP_SHA")
+		else if (kex_algo == "SRP_SHA")
 		{
 			const BigInt N = BigInt::decode(reader.get_range<byte>(2, 1, 65535));
 			const BigInt g = BigInt::decode(reader.get_range<byte>(2, 1, 65535));
@@ -224,13 +224,13 @@ Client_Key_Exchange::Client_Key_Exchange(Handshake_IO& io,
 	{
 		// No server key exchange msg better mean RSA kex + RSA key in cert
 
-		if(kex_algo != "RSA")
+		if (kex_algo != "RSA")
 			throw new Unexpected_Message("No server kex but negotiated kex " + kex_algo);
 
-		if(!server_public_key)
+		if (!server_public_key)
 			throw new Internal_Error("No server public key for RSA exchange");
 
-		if(auto rsa_pub = cast(const RSA_PublicKey*)(server_public_key))
+		if (auto rsa_pub = cast(const RSA_PublicKey*)(server_public_key))
 		{
 			const Protocol_Version offered_version = state.client_hello()->_version();
 
@@ -242,7 +242,7 @@ Client_Key_Exchange::Client_Key_Exchange(Handshake_IO& io,
 
 			Vector!( byte ) encrypted_key = encryptor.encrypt(m_pre_master, rng);
 
-			if(state._version() == Protocol_Version::SSL_V3)
+			if (state._version() == Protocol_Version::SSL_V3)
 				m_key_material = encrypted_key; // no length field
 			else
 				append_tls_length_value(m_key_material, encrypted_key, 2);
@@ -268,15 +268,15 @@ Client_Key_Exchange::Client_Key_Exchange(in Vector!byte contents,
 {
 	const string kex_algo = state.ciphersuite().kex_algo();
 
-	if(kex_algo == "RSA")
+	if (kex_algo == "RSA")
 	{
 		BOTAN_ASSERT(state.server_certs() && !state.server_certs()->cert_chain().empty(),
 						 "RSA key exchange negotiated so server sent a certificate");
 
-		if(!server_rsa_kex_key)
+		if (!server_rsa_kex_key)
 			throw new Internal_Error("Expected RSA kex but no server kex key set");
 
-		if(!cast(const RSA_PrivateKey*)(server_rsa_kex_key))
+		if (!cast(const RSA_PrivateKey*)(server_rsa_kex_key))
 			throw new Internal_Error("Expected RSA key but got " + server_rsa_kex_key->algo_name());
 
 		PK_Decryptor_EME decryptor(*server_rsa_kex_key, "PKCS1v15");
@@ -300,7 +300,7 @@ Client_Key_Exchange::Client_Key_Exchange(in Vector!byte contents,
 
 		try
 		{
-			if(state._version() == Protocol_Version::SSL_V3)
+			if (state._version() == Protocol_Version::SSL_V3)
 			{
 				m_pre_master = decryptor.decrypt(contents);
 			}
@@ -310,7 +310,7 @@ Client_Key_Exchange::Client_Key_Exchange(in Vector!byte contents,
 				m_pre_master = decryptor.decrypt(reader.get_range<byte>(2, 0, 65535));
 			}
 
-			if(m_pre_master.size() != 48 ||
+			if (m_pre_master.size() != 48 ||
 				client_version.major_version() != m_pre_master[0] ||
 				client_version.minor_version() != m_pre_master[1])
 			{
@@ -328,7 +328,7 @@ Client_Key_Exchange::Client_Key_Exchange(in Vector!byte contents,
 
 		SymmetricKey psk;
 
-		if(kex_algo == "PSK" || kex_algo == "DHE_PSK" || kex_algo == "ECDHE_PSK")
+		if (kex_algo == "PSK" || kex_algo == "DHE_PSK" || kex_algo == "ECDHE_PSK")
 		{
 			const string psk_identity = reader.get_string(2, 0, 65535);
 
@@ -336,9 +336,9 @@ Client_Key_Exchange::Client_Key_Exchange(in Vector!byte contents,
 								 state.client_hello()->sni_hostname(),
 								 psk_identity);
 
-			if(psk.length() == 0)
+			if (psk.length() == 0)
 			{
-				if(policy.hide_unknown_users())
+				if (policy.hide_unknown_users())
 					psk = SymmetricKey(rng, 16);
 				else
 					throw new TLS_Exception(Alert::UNKNOWN_PSK_IDENTITY,
@@ -346,19 +346,19 @@ Client_Key_Exchange::Client_Key_Exchange(in Vector!byte contents,
 			}
 		}
 
-		if(kex_algo == "PSK")
+		if (kex_algo == "PSK")
 		{
 			Vector!( byte ) zeros(psk.length());
 			append_tls_length_value(m_pre_master, zeros, 2);
 			append_tls_length_value(m_pre_master, psk.bits_of(), 2);
 		}
-		else if(kex_algo == "SRP_SHA")
+		else if (kex_algo == "SRP_SHA")
 		{
 			SRP6_Server_Session& srp = state.server_kex()->server_srp_params();
 
 			m_pre_master = srp.step2(BigInt::decode(reader.get_range<byte>(2, 0, 65535))).bits_of();
 		}
-		else if(kex_algo == "DH" || kex_algo == "DHE_PSK" ||
+		else if (kex_algo == "DH" || kex_algo == "DHE_PSK" ||
 				  kex_algo == "ECDH" || kex_algo == "ECDHE_PSK")
 		{
 			in Private_Key Private_Key = state.server_kex()->server_kex_key();
@@ -366,7 +366,7 @@ Client_Key_Exchange::Client_Key_Exchange(in Vector!byte contents,
 			const PK_Key_Agreement_Key* ka_key =
 				cast(in PK_Key_Agreement_Key*)(Private_Key);
 
-			if(!ka_key)
+			if (!ka_key)
 				throw new Internal_Error("Expected key agreement key type but got " +
 											Private_Key.algo_name());
 
@@ -376,17 +376,17 @@ Client_Key_Exchange::Client_Key_Exchange(in Vector!byte contents,
 
 				Vector!( byte ) client_pubkey;
 
-				if(ka_key->algo_name() == "DH")
+				if (ka_key->algo_name() == "DH")
 					client_pubkey = reader.get_range<byte>(2, 0, 65535);
 				else
 					client_pubkey = reader.get_range<byte>(1, 0, 255);
 
 				SafeVector!byte shared_secret = ka.derive_key(0, client_pubkey).bits_of();
 
-				if(ka_key->algo_name() == "DH")
+				if (ka_key->algo_name() == "DH")
 					shared_secret = strip_leading_zeros(shared_secret);
 
-				if(kex_algo == "DHE_PSK" || kex_algo == "ECDHE_PSK")
+				if (kex_algo == "DHE_PSK" || kex_algo == "ECDHE_PSK")
 				{
 					append_tls_length_value(m_pre_master, shared_secret, 2);
 					append_tls_length_value(m_pre_master, psk.bits_of(), 2);

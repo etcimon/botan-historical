@@ -13,7 +13,7 @@ size_t choose_update_size(size_t update_granularity)
 {
 	const size_t target_size = 1024;
 
-	if(update_granularity >= target_size)
+	if (update_granularity >= target_size)
 		return update_granularity;
 
 	return round_up(target_size, update_granularity);
@@ -45,7 +45,7 @@ Vector!( byte ) Transformation_Filter::Nonce_State::get()
 {
 	BOTAN_ASSERT(m_fresh_nonce, "The nonce is fresh for this message");
 
-	if(!m_nonce.empty())
+	if (!m_nonce.empty())
 		m_fresh_nonce = false;
 	return m_nonce;
 }
@@ -57,15 +57,15 @@ void Transformation_Filter::set_iv(in InitializationVector iv)
 
 void Transformation_Filter::set_key(in SymmetricKey key)
 {
-	if(Keyed_Transform* keyed = cast(Keyed_Transform*)(m_transform.get()))
+	if (Keyed_Transform* keyed = cast(Keyed_Transform*)(m_transform.get()))
 		keyed->set_key(key);
-	else if(key.length() != 0)
+	else if (key.length() != 0)
 		throw new Exception("Transformation " + name() + " does not accept keys");
 }
 
 Key_Length_Specification Transformation_Filter::key_spec() const
 {
-	if(Keyed_Transform* keyed = cast(Keyed_Transform*)(m_transform.get()))
+	if (Keyed_Transform* keyed = cast(Keyed_Transform*)(m_transform.get()))
 		return keyed->key_spec();
 	return Key_Length_Specification(0);
 }

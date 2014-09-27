@@ -47,7 +47,7 @@ void bzip_free(void* info_ptr, void* ptr)
 {
 	Bzip_Alloc_Info* info = cast(Bzip_Alloc_Info*)(info_ptr);
 	auto i = info->current_allocs.find(ptr);
-	if(i == info->current_allocs.end())
+	if (i == info->current_allocs.end())
 		throw new Invalid_Argument("bzip_free: Got pointer not allocated by us");
 
 	std::memset(ptr, 0, i->second);
@@ -105,7 +105,7 @@ void Bzip_Compression::start_msg()
 {
 	clear();
 	bz = new Bzip_Stream;
-	if(BZ2_bzCompressInit(&(bz->stream), level, 0, 0) != BZ_OK)
+	if (BZ2_bzCompressInit(&(bz->stream), level, 0, 0) != BZ_OK)
 		throw new Memory_Exhaustion();
 }
 
@@ -170,7 +170,7 @@ void Bzip_Compression::clear()
 {
 	zeroise(buffer);
 
-	if(bz)
+	if (bz)
 	{
 		BZ2_bzCompressEnd(&(bz->stream));
 		delete bz;
@@ -193,7 +193,7 @@ Bzip_Decompression::Bzip_Decompression(bool s) :
 */
 void Bzip_Decompression::write(in byte* input_arr, size_t length)
 {
-	if(length) no_writes = false;
+	if (length) no_writes = false;
 
 	char* input = cast(char*)(const_cast(<byte*>)(input_arr));
 
@@ -207,15 +207,15 @@ void Bzip_Decompression::write(in byte* input_arr, size_t length)
 
 		int rc = BZ2_bzDecompress(&(bz->stream));
 
-		if(rc != BZ_OK && rc != BZ_STREAM_END)
+		if (rc != BZ_OK && rc != BZ_STREAM_END)
 		{
 			clear();
 
-			if(rc == BZ_DATA_ERROR)
+			if (rc == BZ_DATA_ERROR)
 				throw new Decoding_Error("Bzip_Decompression: Data integrity error");
-			else if(rc == BZ_DATA_ERROR_MAGIC)
+			else if (rc == BZ_DATA_ERROR_MAGIC)
 				throw new Decoding_Error("Bzip_Decompression: Invalid input");
-			else if(rc == BZ_MEM_ERROR)
+			else if (rc == BZ_MEM_ERROR)
 				throw new Memory_Exhaustion();
 			else
 				throw new Exception("Bzip2 decompression: Unknown error");
@@ -223,7 +223,7 @@ void Bzip_Decompression::write(in byte* input_arr, size_t length)
 
 		send(buffer, buffer.size() - bz->stream.avail_out);
 
-		if(rc == BZ_STREAM_END)
+		if (rc == BZ_STREAM_END)
 		{
 			size_t read_from_block = length - bz->stream.avail_in;
 			start_msg();
@@ -243,7 +243,7 @@ void Bzip_Decompression::start_msg()
 	clear();
 	bz = new Bzip_Stream;
 
-	if(BZ2_bzDecompressInit(&(bz->stream), 0, small_mem) != BZ_OK)
+	if (BZ2_bzDecompressInit(&(bz->stream), 0, small_mem) != BZ_OK)
 		throw new Memory_Exhaustion();
 
 	no_writes = true;
@@ -254,7 +254,7 @@ void Bzip_Decompression::start_msg()
 */
 void Bzip_Decompression::end_msg()
 {
-	if(no_writes) return;
+	if (no_writes) return;
 	bz->stream.next_in = 0;
 	bz->stream.avail_in = 0;
 
@@ -265,7 +265,7 @@ void Bzip_Decompression::end_msg()
 		bz->stream.avail_out = buffer.size();
 		rc = BZ2_bzDecompress(&(bz->stream));
 
-		if(rc != BZ_OK && rc != BZ_STREAM_END)
+		if (rc != BZ_OK && rc != BZ_STREAM_END)
 		{
 			clear();
 			throw new Decoding_Error("Bzip_Decompression: Error finalizing");
@@ -284,7 +284,7 @@ void Bzip_Decompression::clear()
 {
 	zeroise(buffer);
 
-	if(bz)
+	if (bz)
 	{
 		BZ2_bzDecompressEnd(&(bz->stream));
 		delete bz;

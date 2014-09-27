@@ -27,7 +27,7 @@ Connection_Cipher_State::Connection_Cipher_State(Protocol_Version _version,
 	SymmetricKey mac_key, cipher_key;
 	InitializationVector iv;
 
-	if(side == CLIENT)
+	if (side == CLIENT)
 	{
 		cipher_key = keys.client_cipher_key();
 		iv = keys.client_iv();
@@ -43,7 +43,7 @@ Connection_Cipher_State::Connection_Cipher_State(Protocol_Version _version,
 	const string cipher_algo = suite.cipher_algo();
 	const string mac_algo = suite.mac_algo();
 
-	if(AEAD_Mode* aead = get_aead(cipher_algo, our_side ? ENCRYPTION : DECRYPTION))
+	if (AEAD_Mode* aead = get_aead(cipher_algo, our_side ? ENCRYPTION : DECRYPTION))
 	{
 		m_aead.reset(aead);
 		m_aead->set_key(cipher_key + mac_key);
@@ -56,17 +56,17 @@ Connection_Cipher_State::Connection_Cipher_State(Protocol_Version _version,
 
 	Algorithm_Factory& af = global_state().algorithm_factory();
 
-	if(const BlockCipher* bc = af.prototype_block_cipher(cipher_algo))
+	if (const BlockCipher* bc = af.prototype_block_cipher(cipher_algo))
 	{
 		m_block_cipher.reset(bc->clone());
 		m_block_cipher->set_key(cipher_key);
 		m_block_cipher_cbc_state = iv.bits_of();
 		m_block_size = bc->block_size();
 
-		if(_version.supports_explicit_cbc_ivs())
+		if (_version.supports_explicit_cbc_ivs())
 			m_iv_size = m_block_size;
 	}
-	else if(const StreamCipher* sc = af.prototype_stream_cipher(cipher_algo))
+	else if (const StreamCipher* sc = af.prototype_stream_cipher(cipher_algo))
 	{
 		m_stream_cipher.reset(sc->clone());
 		m_stream_cipher->set_key(cipher_key);
@@ -74,7 +74,7 @@ Connection_Cipher_State::Connection_Cipher_State(Protocol_Version _version,
 	else
 		throw new Invalid_Argument("Unknown TLS cipher " + cipher_algo);
 
-	if(_version == Protocol_Version::SSL_V3)
+	if (_version == Protocol_Version::SSL_V3)
 		m_mac.reset(af.make_mac("SSL3-MAC(" + mac_algo + ")"));
 	else
 		m_mac.reset(af.make_mac("HMAC(" + mac_algo + ")"));
@@ -108,11 +108,11 @@ Connection_Cipher_State::format_ad(ulong msg_sequence,
 											  ushort msg_length)
 {
 	m_ad.clear();
-	for(size_t i = 0; i != 8; ++i)
+	for (size_t i = 0; i != 8; ++i)
 		m_ad.push_back(get_byte(i, msg_sequence));
 	m_ad.push_back(msg_type);
 
-	if(_version != Protocol_Version::SSL_V3)
+	if (_version != Protocol_Version::SSL_V3)
 	{
 		m_ad.push_back(_version.major_version());
 		m_ad.push_back(_version.minor_version());
@@ -137,13 +137,13 @@ void write_record(SafeVector!byte output,
 	output.push_back(_version.major_version());
 	output.push_back(_version.minor_version());
 
-	if(_version.is_datagram_protocol())
+	if (_version.is_datagram_protocol())
 	{
-		for(size_t i = 0; i != 8; ++i)
+		for (size_t i = 0; i != 8; ++i)
 			output.push_back(get_byte(i, msg_sequence));
 	}
 
-	if(!cipherstate) // initial unencrypted handshake records
+	if (!cipherstate) // initial unencrypted handshake records
 	{
 		output.push_back(get_byte<ushort>(0, msg_length));
 		output.push_back(get_byte<ushort>(1, msg_length));
@@ -153,7 +153,7 @@ void write_record(SafeVector!byte output,
 		return;
 	}
 
-	if(AEAD_Mode* aead = cipherstate->aead())
+	if (AEAD_Mode* aead = cipherstate->aead())
 	{
 		const size_t ctext_size = aead->output_length(msg_length);
 
@@ -204,7 +204,7 @@ void write_record(SafeVector!byte output,
 		iv_size + msg_length + mac_size + (block_size ? 1 : 0),
 		block_size);
 
-	if(buf_size > MAX_CIPHERTEXT_SIZE)
+	if (buf_size > MAX_CIPHERTEXT_SIZE)
 		throw new Internal_Error("Output record is larger than allowed by protocol");
 
 	output.push_back(get_byte<ushort>(0, buf_size));
@@ -212,7 +212,7 @@ void write_record(SafeVector!byte output,
 
 	const size_t header_size = output.size();
 
-	if(iv_size)
+	if (iv_size)
 	{
 		output.resize(output.size() + iv_size);
 		rng.randomize(&output[output.size() - iv_size], iv_size);
@@ -223,26 +223,26 @@ void write_record(SafeVector!byte output,
 	output.resize(output.size() + mac_size);
 	cipherstate->mac()->flushInto(&output[output.size() - mac_size]);
 
-	if(block_size)
+	if (block_size)
 	{
 		const size_t pad_val =
 			buf_size - (iv_size + msg_length + mac_size + 1);
 
-		for(size_t i = 0; i != pad_val + 1; ++i)
+		for (size_t i = 0; i != pad_val + 1; ++i)
 			output.push_back(pad_val);
 	}
 
-	if(buf_size > MAX_CIPHERTEXT_SIZE)
+	if (buf_size > MAX_CIPHERTEXT_SIZE)
 		throw new Internal_Error("Produced ciphertext larger than protocol allows");
 
 	BOTAN_ASSERT(buf_size + header_size == output.size(),
 					 "Output buffer is sized properly");
 
-	if(StreamCipher* sc = cipherstate->stream_cipher())
+	if (StreamCipher* sc = cipherstate->stream_cipher())
 	{
 		sc->cipher1(&output[header_size], buf_size);
 	}
-	else if(BlockCipher* bc = cipherstate->block_cipher())
+	else if (BlockCipher* bc = cipherstate->block_cipher())
 	{
 		SafeVector!byte cbc_state = cipherstate->cbc_state();
 
@@ -256,7 +256,7 @@ void write_record(SafeVector!byte output,
 		xor_buf(&buf[0], &cbc_state[0], block_size);
 		bc->encrypt(&buf[0]);
 
-		for(size_t i = 1; i < blocks; ++i)
+		for (size_t i = 1; i < blocks; ++i)
 		{
 			xor_buf(&buf[block_size*i], &buf[block_size*(i-1)], block_size);
 			bc->encrypt(&buf[block_size*i]);
@@ -277,7 +277,7 @@ size_t fill_buffer_to(SafeVector!byte readbuf,
 							 size_t& input_consumed,
 							 size_t desired)
 {
-	if(readbuf.size() >= desired)
+	if (readbuf.size() >= desired)
 		return 0; // already have it
 
 	const size_t taken = std::min(input_size, desired - readbuf.size());
@@ -313,16 +313,16 @@ size_t tls_padding_check(bool sslv3_padding,
 	size_t record_len = record.length;
 	const size_t padding_length = record[(record_len-1)];
 
-	if(padding_length >= record_len)
+	if (padding_length >= record_len)
 		return 0;
 
 	/*
 	* SSL v3 requires that the padding be less than the block size
 	* but not does specify the value of the padding bytes.
 	*/
-	if(sslv3_padding)
+	if (sslv3_padding)
 	{
-		if(padding_length > 0 && padding_length < block_size)
+		if (padding_length > 0 && padding_length < block_size)
 			return (padding_length + 1);
 		else
 			return 0;
@@ -336,7 +336,7 @@ size_t tls_padding_check(bool sslv3_padding,
 
 	volatile size_t cmp = 0;
 
-	for(size_t i = 0; i != padding_length; ++i)
+	for (size_t i = 0; i != padding_length; ++i)
 		cmp += record[pad_start + i] ^ padding_length;
 
 	return cmp ? 0 : padding_length + 1;
@@ -366,7 +366,7 @@ void cbc_decrypt_record(byte[] record_contents,
 
 	SafeVector!byte last_ciphertext2;
 
-	for(size_t i = 1; i < blocks; ++i)
+	for (size_t i = 1; i < blocks; ++i)
 	{
 		last_ciphertext2.assign(&buf[block_size*i], &buf[block_size*(i+1)]);
 		bc.decrypt(&buf[block_size*i]);
@@ -385,7 +385,7 @@ void decrypt_record(SafeVector!byte output,
 						  Connection_Cipher_State& cipherstate)
 {
 	size_t record_len = record_contents.length;
-	if(AEAD_Mode* aead = cipherstate.aead())
+	if (AEAD_Mode* aead = cipherstate.aead())
 	{
 		auto nonce = cipherstate.aead_nonce(record_contents);
 		const size_t nonce_length = 8; // fixme, take from ciphersuite
@@ -415,12 +415,12 @@ void decrypt_record(SafeVector!byte output,
 		volatile bool padding_bad = false;
 		size_t pad_size = 0;
 
-		if(StreamCipher sc = cipherstate.stream_cipher())
+		if (StreamCipher sc = cipherstate.stream_cipher())
 		{
 			sc->cipher1(record_contents, record_len);
 			// no padding to check or remove
 		}
-		else if(BlockCipher bc = cipherstate.block_cipher())
+		else if (BlockCipher bc = cipherstate.block_cipher())
 		{
 			cbc_decrypt_record(record_contents, record_len, cipherstate, *bc);
 
@@ -440,7 +440,7 @@ void decrypt_record(SafeVector!byte output,
 
 		const size_t mac_pad_iv_size = mac_size + pad_size + iv_size;
 
-		if(record_len < mac_pad_iv_size)
+		if (record_len < mac_pad_iv_size)
 			throw new Decoding_Error("Record sent with invalid length");
 
 		const byte* plaintext_block = &record_contents[iv_size];
@@ -459,7 +459,7 @@ void decrypt_record(SafeVector!byte output,
 
 		const bool mac_bad = !same_mem(&record_contents[mac_offset], &mac_buf[0], mac_size);
 
-		if(mac_bad || padding_bad)
+		if (mac_bad || padding_bad)
 			throw new TLS_Exception(Alert::BAD_RECORD_MAC, "Message authentication failure");
 
 		output.assign(plaintext_block, plaintext_block + plaintext_length);
@@ -480,9 +480,9 @@ size_t read_record(SafeVector!byte readbuf,
 {
 	consumed = 0;
 	size_t input_sz = input.length;
-	if(readbuf.size() < TLS_HEADER_SIZE) // header incomplete?
+	if (readbuf.size() < TLS_HEADER_SIZE) // header incomplete?
 	{
-		if(size_t needed = fill_buffer_to(readbuf,
+		if (size_t needed = fill_buffer_to(readbuf,
 											 input, input_sz, consumed,
 											 TLS_HEADER_SIZE))
 			return needed;
@@ -492,17 +492,17 @@ size_t read_record(SafeVector!byte readbuf,
 	}
 
 	// Possible SSLv2 format client hello
-	if(!sequence_numbers && (readbuf[0] & 0x80) && (readbuf[2] == 1))
+	if (!sequence_numbers && (readbuf[0] & 0x80) && (readbuf[2] == 1))
 	{
-		if(readbuf[3] == 0 && readbuf[4] == 2)
+		if (readbuf[3] == 0 && readbuf[4] == 2)
 			throw new TLS_Exception(Alert::PROTOCOL_VERSION,
 									  "Client claims to only support SSLv2, rejecting");
 
-		if(readbuf[3] >= 3) // SSLv2 mapped TLS hello, then?
+		if (readbuf[3] >= 3) // SSLv2 mapped TLS hello, then?
 		{
 			const size_t record_len = make_ushort(readbuf[0], readbuf[1]) & 0x7FFF;
 
-			if(size_t needed = fill_buffer_to(readbuf,
+			if (size_t needed = fill_buffer_to(readbuf,
 														 input, input_sz, consumed,
 														 record_len + 2))
 				return needed;
@@ -532,9 +532,9 @@ size_t read_record(SafeVector!byte readbuf,
 
 	const bool is_dtls = record_version->is_datagram_protocol();
 
-	if(is_dtls && readbuf.size() < DTLS_HEADER_SIZE)
+	if (is_dtls && readbuf.size() < DTLS_HEADER_SIZE)
 	{
-		if(size_t needed = fill_buffer_to(readbuf,
+		if (size_t needed = fill_buffer_to(readbuf,
 											 input, input_sz, consumed,
 											 DTLS_HEADER_SIZE))
 			return needed;
@@ -548,11 +548,11 @@ size_t read_record(SafeVector!byte readbuf,
 	const size_t record_len = make_ushort(readbuf[header_size-2],
 											readbuf[header_size-1]);
 
-	if(record_len > MAX_CIPHERTEXT_SIZE)
+	if (record_len > MAX_CIPHERTEXT_SIZE)
 		throw new TLS_Exception(Alert::RECORD_OVERFLOW,
 								  "Got message that exceeds maximum size");
 
-	if(size_t needed = fill_buffer_to(readbuf,
+	if (size_t needed = fill_buffer_to(readbuf,
 										 input, input_sz, consumed,
 										 header_size + record_len))
 		return needed; // wrong for DTLS?
@@ -565,12 +565,12 @@ size_t read_record(SafeVector!byte readbuf,
 
 	ushort epoch = 0;
 
-	if(is_dtls)
+	if (is_dtls)
 	{
 		*record_sequence = load_be!ulong(&readbuf[3], 0);
 		epoch = (*record_sequence >> 48);
 	}
-	else if(sequence_numbers)
+	else if (sequence_numbers)
 	{
 		*record_sequence = sequence_numbers->next_read_sequence();
 		epoch = sequence_numbers->current_read_epoch();
@@ -582,12 +582,12 @@ size_t read_record(SafeVector!byte readbuf,
 		epoch = 0;
 	}
 
-	if(sequence_numbers && sequence_numbers->already_seen(*record_sequence))
+	if (sequence_numbers && sequence_numbers->already_seen(*record_sequence))
 		return 0;
 
 	byte* record_contents = &readbuf[header_size];
 
-	if(epoch == 0) // Unencrypted initial handshake
+	if (epoch == 0) // Unencrypted initial handshake
 	{
 		record.assign(&readbuf[header_size], &readbuf[header_size + record_len]);
 		readbuf.clear();
@@ -609,7 +609,7 @@ size_t read_record(SafeVector!byte readbuf,
 						*record_type,
 						*cipherstate);
 
-	if(sequence_numbers)
+	if (sequence_numbers)
 		sequence_numbers->read_accept(*record_sequence);
 
 	readbuf.clear();

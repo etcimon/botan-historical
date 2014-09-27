@@ -28,13 +28,13 @@ Device_EntropySource::Device_EntropySource(in Vector!( string ) fsnames)
 
 	const int flags = O_RDONLY | O_NONBLOCK | O_NOCTTY;
 
-	for(auto fsname : fsnames)
+	foreach (fsname; fsnames)
 	{
 		fd_type fd = ::open(fsname.c_str(), flags);
 
-		if(fd >= 0 && fd < FD_SETSIZE)
+		if (fd >= 0 && fd < FD_SETSIZE)
 			m_devices.push_back(fd);
-		else if(fd >= 0)
+		else if (fd >= 0)
 			::close(fd);
 	}
 }
@@ -44,7 +44,7 @@ Device_EntropySource destructor: close all open devices
 */
 Device_EntropySource::~Device_EntropySource()
 {
-	for(size_t i = 0; i != m_devices.size(); ++i)
+	for (size_t i = 0; i != m_devices.size(); ++i)
 		::close(m_devices[i]);
 }
 
@@ -53,7 +53,7 @@ Device_EntropySource::~Device_EntropySource()
 */
 void Device_EntropySource::poll(Entropy_Accumulator& accum)
 {
-	if(m_devices.empty())
+	if (m_devices.empty())
 		return;
 
 	const size_t ENTROPY_BITS_PER_BYTE = 8;
@@ -63,7 +63,7 @@ void Device_EntropySource::poll(Entropy_Accumulator& accum)
 	int max_fd = m_devices[0];
 	fd_set read_set;
 	FD_ZERO(&read_set);
-	for(size_t i = 0; i != m_devices.size(); ++i)
+	for (size_t i = 0; i != m_devices.size(); ++i)
 	{
 		FD_SET(m_devices[i], &read_set);
 		max_fd = std::max(m_devices[i], max_fd);
@@ -74,17 +74,17 @@ void Device_EntropySource::poll(Entropy_Accumulator& accum)
 	timeout.tv_sec = (MS_WAIT_TIME / 1000);
 	timeout.tv_usec = (MS_WAIT_TIME % 1000) * 1000;
 
-	if(::select(max_fd + 1, &read_set, null, null, &timeout) < 0)
+	if (::select(max_fd + 1, &read_set, null, null, &timeout) < 0)
 		return;
 
 	SafeVector!byte io_buffer = accum.get_io_buffer(READ_ATTEMPT);
 
-	for(size_t i = 0; i != m_devices.size(); ++i)
+	for (size_t i = 0; i != m_devices.size(); ++i)
 	{
-		if(FD_ISSET(m_devices[i], &read_set))
+		if (FD_ISSET(m_devices[i], &read_set))
 		{
 			const ssize_t got = ::read(m_devices[i], &io_buffer[0], io_buffer.size());
-			if(got > 0)
+			if (got > 0)
 				accum.add(&io_buffer[0], got, ENTROPY_BITS_PER_BYTE);
 		}
 	}

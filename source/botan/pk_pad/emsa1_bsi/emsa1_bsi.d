@@ -14,10 +14,10 @@ SafeVector!byte EMSA1_BSI::encoding_of(in SafeVector!byte msg,
 														size_t output_bits,
 														RandomNumberGenerator&)
 {
-	if(msg.size() != hash_output_length())
+	if (msg.size() != hash_output_length())
 		throw new Encoding_Error("EMSA1_BSI::encoding_of: Invalid size for input");
 
-	if(8*msg.size() <= output_bits)
+	if (8*msg.size() <= output_bits)
 		return msg;
 
 	throw new Encoding_Error("EMSA1_BSI::encoding_of: max key input size exceeded");

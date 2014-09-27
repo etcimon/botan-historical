@@ -23,11 +23,11 @@ std::atomic<size_t> gmp_alloc_refcnt(0);
 void* gmp_malloc(size_t n)
 {
 	// Maintain alignment, mlock goes for sizeof(T) alignment
-	if(n % 8 == 0)
+	if (n % 8 == 0)
 		return secure_allocator<ulong>().allocate(n / 8);
-	else if(n % 4 == 0)
+	else if (n % 4 == 0)
 		return secure_allocator<uint>().allocate(n / 4);
-	else if(n % 2 == 0)
+	else if (n % 2 == 0)
 		return secure_allocator<ushort>().allocate(n / 2);
 
 	return secure_allocator<byte>().allocate(n);
@@ -60,7 +60,7 @@ void* gmp_realloc(void* ptr, size_t old_n, size_t new_n)
 GMP_Engine::GMP_Engine()
 {
 	/*
-	if(gmp_alloc_refcnt == 0)
+	if (gmp_alloc_refcnt == 0)
 		mp_set_memory_functions(gmp_malloc, gmp_realloc, gmp_free);
 
 	gmp_alloc_refcnt++;
@@ -72,7 +72,7 @@ GMP_Engine::~GMP_Engine()
 	/*
 	--gmp_alloc_refcnt;
 
-	if(gmp_alloc_refcnt == 0)
+	if (gmp_alloc_refcnt == 0)
 		mp_set_memory_functions(NULL, NULL, NULL);
 	*/
 }

@@ -49,7 +49,7 @@ EVP_BlockCipher::EVP_BlockCipher(const EVP_CIPHER* algo,
 	cipher_key_spec(EVP_CIPHER_key_length(algo)),
 	cipher_name(algo_name)
 {
-	if(EVP_CIPHER_mode(algo) != EVP_CIPH_ECB_MODE)
+	if (EVP_CIPHER_mode(algo) != EVP_CIPH_ECB_MODE)
 		throw new Invalid_Argument("EVP_BlockCipher: Non-ECB EVP was passed in");
 
 	EVP_CIPHER_CTX_init(&encrypt);
@@ -73,7 +73,7 @@ EVP_BlockCipher::EVP_BlockCipher(const EVP_CIPHER* algo,
 	cipher_key_spec(key_min, key_max, key_mod),
 	cipher_name(algo_name)
 {
-	if(EVP_CIPHER_mode(algo) != EVP_CIPH_ECB_MODE)
+	if (EVP_CIPHER_mode(algo) != EVP_CIPH_ECB_MODE)
 		throw new Invalid_Argument("EVP_BlockCipher: Non-ECB EVP was passed in");
 
 	EVP_CIPHER_CTX_init(&encrypt);
@@ -122,17 +122,17 @@ void EVP_BlockCipher::key_schedule(in byte* key, size_t length)
 {
 	SafeVector!byte full_key(key, key + length);
 
-	if(cipher_name == "TripleDES" && length == 16)
+	if (cipher_name == "TripleDES" && length == 16)
 	{
 		full_key += Pair(key, 8);
 	}
 	else
-		if(EVP_CIPHER_CTX_set_key_length(&encrypt, length) == 0 ||
+		if (EVP_CIPHER_CTX_set_key_length(&encrypt, length) == 0 ||
 			EVP_CIPHER_CTX_set_key_length(&decrypt, length) == 0)
 			throw new Invalid_Argument("EVP_BlockCipher: Bad key length for " +
 										  cipher_name);
 
-	if(cipher_name == "RC2")
+	if (cipher_name == "RC2")
 	{
 		EVP_CIPHER_CTX_ctrl(&encrypt, EVP_CTRL_SET_RC2_KEY_BITS, length*8, 0);
 		EVP_CIPHER_CTX_ctrl(&decrypt, EVP_CTRL_SET_RC2_KEY_BITS, length*8, 0);
@@ -181,11 +181,11 @@ OpenSSL_Engine::find_block_cipher(in SCAN_Name request,
 											 Algorithm_Factory&) const
 {
 #define HANDLE_EVP_CIPHER(NAME, EVP)									 \
-	if(request.algo_name() == NAME && request.arg_count() == 0)  \
+	if (request.algo_name() == NAME && request.arg_count() == 0)  \
 		return new EVP_BlockCipher(EVP, NAME);
 
 #define HANDLE_EVP_CIPHER_KEYLEN(NAME, EVP, MIN, MAX, MOD)		\
-	if(request.algo_name() == NAME && request.arg_count() == 0)  \
+	if (request.algo_name() == NAME && request.arg_count() == 0)  \
 		return new EVP_BlockCipher(EVP, NAME, MIN, MAX, MOD);
 
 #if !defined(OPENSSL_NO_AES)
@@ -222,8 +222,8 @@ OpenSSL_Engine::find_block_cipher(in SCAN_Name request,
 #endif
 
 #if !defined(OPENSSL_NO_RC5) && 0
-	if(request.algo_name() == "RC5")
-		if(request.arg_as_integer(0, 12) == 12)
+	if (request.algo_name() == "RC5")
+		if (request.arg_as_integer(0, 12) == 12)
 			return new EVP_BlockCipher(EVP_rc5_32_12_16_ecb(),
 												"RC5(12)", 1, 32, 1);
 #endif

@@ -14,7 +14,7 @@
 */
 T rotate_left(T)(T input, size_t rot)
 {
-	if(rot == 0)
+	if (rot == 0)
 		return input;
 	return cast(T)((input << rot) | (input >> (8*sizeof(T)-rot)));;
 }
@@ -27,7 +27,7 @@ T rotate_left(T)(T input, size_t rot)
 */
 T rotate_right(T)(T input, size_t rot)
 {
-	if(rot == 0)
+	if (rot == 0)
 		return input;
 	return cast(T)((input >> rot) | (input << (8*sizeof(T)-rot)));
 }

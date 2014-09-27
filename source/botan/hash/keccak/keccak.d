@@ -26,7 +26,7 @@ void keccak_f_1600(ulong[25] A)
 		0x8000000000008080, 0x0000000080000001, 0x8000000080008008
 };
 
-	for(size_t i = 0; i != 24; ++i)
+	for (size_t i = 0; i != 24; ++i)
 	{
 		immutable ulong C0 = A[0] ^ A[5] ^ A[10] ^ A[15] ^ A[20];
 		immutable ulong C1 = A[1] ^ A[6] ^ A[11] ^ A[16] ^ A[21];
@@ -106,7 +106,7 @@ Keccak_1600::Keccak_1600(size_t output_bits) :
 {
 	// We only support the parameters for the SHA-3 proposal
 
-	if(output_bits != 224 && output_bits != 256 &&
+	if (output_bits != 224 && output_bits != 256 &&
 		output_bits != 384 && output_bits != 512)
 		throw new Invalid_Argument("Keccak_1600: Invalid output length " +
 									  std::to_string(output_bits));
@@ -130,7 +130,7 @@ void Keccak_1600::clear()
 
 void Keccak_1600::add_data(in byte* input, size_t length)
 {
-	if(length == 0)
+	if (length == 0)
 		return;
 
 	while(length)
@@ -165,7 +165,7 @@ void Keccak_1600::add_data(in byte* input, size_t length)
 			--to_take;
 		}
 
-		if(S_pos == bitrate / 8)
+		if (S_pos == bitrate / 8)
 		{
 			keccak_f_1600(&S[0]);
 			S_pos = 0;
@@ -186,7 +186,7 @@ void Keccak_1600::final_result(byte* output)
 	* We never have to run the permutation again because we only support
 	* limited output lengths
 	*/
-	for(size_t i = 0; i != output_bits/8; ++i)
+	for (size_t i = 0; i != output_bits/8; ++i)
 		output[i] = get_byte(7 - (i % 8), S[i/8]);
 
 	clear();

@@ -78,7 +78,7 @@ class GOST_3410_PrivateKey : public GOST_3410_PublicKey,
 		*/
 		GOST_3410_PrivateKey(RandomNumberGenerator& rng,
 									const EC_Group& domain,
-									const BigInt& x = 0) :
+									ref const BigInt x = 0) :
 			EC_PrivateKey(rng, domain, x) {}
 
 		AlgorithmIdentifier pkcs8_algorithm_identifier() const
@@ -102,8 +102,8 @@ class GOST_3410_Signature_Operation : public PK_Ops::Signature
 
 	private:
 		const PointGFp& base_point;
-		const BigInt& order;
-		const BigInt& x;
+		ref const BigInt order;
+		ref const BigInt x;
 };
 
 /**
@@ -125,5 +125,5 @@ class GOST_3410_Verification_Operation : public PK_Ops::Verification
 	private:
 		const PointGFp& base_point;
 		const PointGFp& public_point;
-		const BigInt& order;
+		ref const BigInt order;
 };

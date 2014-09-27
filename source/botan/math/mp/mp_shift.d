@@ -14,16 +14,16 @@ extern "C" {
 */
 void bigint_shl1(word x[], size_t x_size, size_t word_shift, size_t bit_shift)
 {
-	if(word_shift)
+	if (word_shift)
 	{
 		copy_mem(x + word_shift, x, x_size);
 		clear_mem(x, word_shift);
 	}
 
-	if(bit_shift)
+	if (bit_shift)
 	{
 		word carry = 0;
-		for(size_t j = word_shift; j != x_size + word_shift + 1; ++j)
+		for (size_t j = word_shift; j != x_size + word_shift + 1; ++j)
 		{
 			word temp = x[j];
 			x[j] = (temp << bit_shift) | carry;
@@ -37,19 +37,19 @@ void bigint_shl1(word x[], size_t x_size, size_t word_shift, size_t bit_shift)
 */
 void bigint_shr1(word x[], size_t x_size, size_t word_shift, size_t bit_shift)
 {
-	if(x_size < word_shift)
+	if (x_size < word_shift)
 	{
 		clear_mem(x, x_size);
 		return;
 	}
 
-	if(word_shift)
+	if (word_shift)
 	{
 		copy_mem(x, x + word_shift, x_size - word_shift);
 		clear_mem(x + x_size - word_shift, word_shift);
 	}
 
-	if(bit_shift)
+	if (bit_shift)
 	{
 		word carry = 0;
 
@@ -93,12 +93,12 @@ void bigint_shr1(word x[], size_t x_size, size_t word_shift, size_t bit_shift)
 void bigint_shl2(word y[], const word x[], size_t x_size,
 					  size_t word_shift, size_t bit_shift)
 {
-	for(size_t j = 0; j != x_size; ++j)
+	for (size_t j = 0; j != x_size; ++j)
 		y[j + word_shift] = x[j];
-	if(bit_shift)
+	if (bit_shift)
 	{
 		word carry = 0;
-		for(size_t j = word_shift; j != x_size + word_shift + 1; ++j)
+		for (size_t j = word_shift; j != x_size + word_shift + 1; ++j)
 		{
 			word w = y[j];
 			y[j] = (w << bit_shift) | carry;
@@ -113,14 +113,14 @@ void bigint_shl2(word y[], const word x[], size_t x_size,
 void bigint_shr2(word y[], const word x[], size_t x_size,
 					  size_t word_shift, size_t bit_shift)
 {
-	if(x_size < word_shift) return;
+	if (x_size < word_shift) return;
 
-	for(size_t j = 0; j != x_size - word_shift; ++j)
+	for (size_t j = 0; j != x_size - word_shift; ++j)
 		y[j] = x[j + word_shift];
-	if(bit_shift)
+	if (bit_shift)
 	{
 		word carry = 0;
-		for(size_t j = x_size - word_shift; j > 0; --j)
+		for (size_t j = x_size - word_shift; j > 0; --j)
 		{
 			word w = y[j-1];
 			y[j-1] = (w >> bit_shift) | carry;

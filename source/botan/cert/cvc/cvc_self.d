@@ -25,7 +25,7 @@ enum CHAT_values{
 		FINGERPRINT = 0x01
 };
 
-void encode_eac_bigint(DER_Encoder& der, const BigInt& x, ASN1_Tag tag)
+void encode_eac_bigint(DER_Encoder& der, ref const BigInt x, ASN1_Tag tag)
 {
 	der.encode(BigInt::encode_1363(x, x.bytes()), OCTET_STRING, tag);
 }
@@ -33,7 +33,7 @@ void encode_eac_bigint(DER_Encoder& der, const BigInt& x, ASN1_Tag tag)
 Vector!( byte ) eac_1_1_encoding(const EC_PublicKey* key,
 												const OID& sig_algo)
 {
-	if(key->domain_format() == EC_DOMPAR_ENC_OID)
+	if (key->domain_format() == EC_DOMPAR_ENC_OID)
 		throw new Encoding_Error("CVC encoder: cannot encode parameters by OID");
 
 	const EC_Group& domain = key->domain();
@@ -44,7 +44,7 @@ Vector!( byte ) eac_1_1_encoding(const EC_PublicKey* key,
 	enc.start_cons(ASN1_Tag(73), APPLICATION)
 		.encode(sig_algo);
 
-	if(key->domain_format() == EC_DOMPAR_ENC_EXPLICIT)
+	if (key->domain_format() == EC_DOMPAR_ENC_EXPLICIT)
 	{
 		encode_eac_bigint(enc, domain.get_curve().get_p(), ASN1_Tag(1));
 		encode_eac_bigint(enc, domain.get_curve().get_a(), ASN1_Tag(2));
@@ -59,7 +59,7 @@ Vector!( byte ) eac_1_1_encoding(const EC_PublicKey* key,
 	enc.encode(EC2OSP(key->public_point(), PointGFp::UNCOMPRESSED),
 				  OCTET_STRING, ASN1_Tag(6));
 
-	if(key->domain_format() == EC_DOMPAR_ENC_EXPLICIT)
+	if (key->domain_format() == EC_DOMPAR_ENC_EXPLICIT)
 		encode_eac_bigint(enc, domain.get_cofactor(), ASN1_Tag(7));
 
 	enc.end_cons();
@@ -71,7 +71,7 @@ string padding_and_hash_from_oid(OID const& oid)
 {
 	string padding_and_hash = OIDS::lookup(oid); // use the hash
 
-	if(padding_and_hash.substr(0,6) != "ECDSA/")
+	if (padding_and_hash.substr(0,6) != "ECDSA/")
 		throw new Invalid_State("CVC: Can only use ECDSA, not " + padding_and_hash);
 
 	padding_and_hash.erase(0, padding_and_hash.find("/") + 1);
@@ -90,7 +90,7 @@ EAC1_1_CVC create_self_signed_cert(Private_Key const& key,
 
 	const ECDSA_PrivateKey* priv_key = cast(in ECDSA_PrivateKey*)(key);
 
-	if(priv_key == 0)
+	if (priv_key == 0)
 		throw new Invalid_Argument("CVC_EAC::create_self_signed_cert(): unsupported key type");
 
 	ASN1_Chr chr(opt.car.value());

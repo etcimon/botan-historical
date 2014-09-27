@@ -187,7 +187,7 @@ void Serpent_SIMD::encrypt_n(byte* input, byte* output, size_t blocks) const
 		blocks -= 4;
 	}
 
-	if(blocks)
+	if (blocks)
 	  Serpent::encrypt_n(input, output, blocks);
 }
 
@@ -206,7 +206,7 @@ void Serpent_SIMD::decrypt_n(byte* input, byte* output, size_t blocks) const
 		blocks -= 4;
 	}
 
-	if(blocks)
+	if (blocks)
 	  Serpent::decrypt_n(input, output, blocks);
 }
 

@@ -19,7 +19,7 @@ PKCS5_PBKDF2::key_derivation(size_t key_len,
 									  size_t iterations,
 									  std::chrono::milliseconds msec) const
 {
-	if(key_len == 0)
+	if (key_len == 0)
 		return Pair(iterations, OctetString());
 
 	try
@@ -55,7 +55,7 @@ PKCS5_PBKDF2::key_derivation(size_t key_len,
 
 		xor_buf(T, &U[0], T_size);
 
-		if(iterations == 0)
+		if (iterations == 0)
 		{
 			/*
 			If no iterations set, run the first block to calibrate based
@@ -78,18 +78,18 @@ PKCS5_PBKDF2::key_derivation(size_t key_len,
 				avoids confusion, and likely some broken implementations
 				break on getting completely randomly distributed values
 				*/
-				if(iterations % 10000 == 0)
+				if (iterations % 10000 == 0)
 				{
 					auto time_taken = std::chrono::high_resolution_clock::now() - start;
 					auto usec_taken = std::chrono::duration_cast(<std::chrono::microseconds>)(time_taken);
-					if(usec_taken > usec_per_block)
+					if (usec_taken > usec_per_block)
 						break;
 				}
 			}
 		}
 		else
 		{
-			for(size_t i = 1; i != iterations; ++i)
+			for (size_t i = 1; i != iterations; ++i)
 			{
 				mac->update(U);
 				mac->flushInto(&U[0]);

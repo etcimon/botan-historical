@@ -46,14 +46,14 @@ X509_Object::X509_Object(in Vector!byte vec, in string labels)
 void X509_Object::init(DataSource& in, in string labels)
 {
 	PEM_labels_allowed = split_on(labels, '/');
-	if(PEM_labels_allowed.size() < 1)
+	if (PEM_labels_allowed.size() < 1)
 		throw new Invalid_Argument("Bad labels argument to X509_Object");
 
 	PEM_label_pref = PEM_labels_allowed[0];
 	std::sort(PEM_labels_allowed.begin(), PEM_labels_allowed.end());
 
 	try {
-		if(ASN1::maybe_BER(input) && !PEM_Code::matches(input))
+		if (ASN1::maybe_BER(input) && !PEM_Code::matches(input))
 		{
 			BER_Decoder dec(input);
 			decode_from(dec);
@@ -63,7 +63,7 @@ void X509_Object::init(DataSource& in, in string labels)
 			string got_label;
 			DataSource_Memory ber(PEM_Code::decode(input, got_label));
 
-			if(!std::binary_search(PEM_labels_allowed.begin(),
+			if (!std::binary_search(PEM_labels_allowed.begin(),
 										  PEM_labels_allowed.end(), got_label))
 				throw new Decoding_Error("Invalid PEM label: " + got_label);
 
@@ -151,14 +151,14 @@ string X509_Object::hash_used_for_signature() const
 	Vector!( string ) sig_info =
 		split_on(OIDS::lookup(sig_algo.oid), '/');
 
-	if(sig_info.size() != 2)
+	if (sig_info.size() != 2)
 		throw new Internal_Error("Invalid name format found for " +
 									sig_algo.oid.as_string());
 
 	Vector!( string ) pad_and_hash =
 		parse_algorithm_name(sig_info[1]);
 
-	if(pad_and_hash.size() != 2)
+	if (pad_and_hash.size() != 2)
 		throw new Internal_Error("Invalid name format " + sig_info[1]);
 
 	return pad_and_hash[1];
@@ -182,7 +182,7 @@ bool X509_Object::check_signature(in Public_Key pub_key) const
 		Vector!( string ) sig_info =
 			split_on(OIDS::lookup(sig_algo.oid), '/');
 
-		if(sig_info.size() != 2 || sig_info[0] != pub_key.algo_name())
+		if (sig_info.size() != 2 || sig_info[0] != pub_key.algo_name())
 			return false;
 
 		string padding = sig_info[1];

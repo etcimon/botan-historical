@@ -146,7 +146,7 @@ immutable uint[512] SBOX = {
 */
 void forward_mix(ref uint A, ref uint B, ref uint C, ref uint D)
 {
-	for(size_t j = 0; j != 2; ++j)
+	for (size_t j = 0; j != 2; ++j)
 	{
 		B ^= SBOX[get_byte(3, A)]; B += SBOX[get_byte(2, A) + 256];
 		C += SBOX[get_byte(1, A)]; D ^= SBOX[get_byte(0, A) + 256];
@@ -171,7 +171,7 @@ void forward_mix(ref uint A, ref uint B, ref uint C, ref uint D)
 */
 void reverse_mix(ref uint A, ref uint B, ref uint C, ref uint D)
 {
-	for(size_t j = 0; j != 2; ++j)
+	for (size_t j = 0; j != 2; ++j)
 	{
 		B ^= SBOX[get_byte(3, A) + 256]; C -= SBOX[get_byte(0, A)];
 		D -= SBOX[get_byte(1, A) + 256]; D ^= SBOX[get_byte(2, A)];
@@ -199,20 +199,20 @@ uint gen_mask(uint input)
 {
 	uint mask = 0;
 
-	for(uint j = 2; j != 31; ++j)
+	for (uint j = 2; j != 31; ++j)
 	{
 		const uint region = (input >> (j-1)) & 0x07;
 
-		if(region == 0x00 || region == 0x07)
+		if (region == 0x00 || region == 0x07)
 		{
 			const uint low = (j < 9) ? 0 : (j - 9);
 			const uint high = (j < 23) ? j : 23;
 
-			for(uint k = low; k != high; ++k)
+			for (uint k = low; k != high; ++k)
 			{
 				const uint value = (input >> k) & 0x3FF;
 
-				if(value == 0 || value == 0x3FF)
+				if (value == 0 || value == 0x3FF)
 				{
 					mask |= 1 << j;
 					break;
@@ -231,7 +231,7 @@ uint gen_mask(uint input)
 */
 void MARS::encrypt_n(byte* input, byte* output, size_t blocks) const
 {
-	for(size_t i = 0; i != blocks; ++i)
+	for (size_t i = 0; i != blocks; ++i)
 	{
 		uint A = load_le!uint(input, 0) + EK[0];
 		uint B = load_le!uint(input, 1) + EK[1];
@@ -274,7 +274,7 @@ void MARS::encrypt_n(byte* input, byte* output, size_t blocks) const
 */
 void MARS::decrypt_n(byte* input, byte* output, size_t blocks) const
 {
-	for(size_t i = 0; i != blocks; ++i)
+	for (size_t i = 0; i != blocks; ++i)
 	{
 		uint A = load_le!uint(input, 3) + EK[39];
 		uint B = load_le!uint(input, 2) + EK[38];
@@ -318,14 +318,14 @@ void MARS::decrypt_n(byte* input, byte* output, size_t blocks) const
 void MARS::key_schedule(in byte* key)
 {
 	secure_vector<uint> T(15);
-	for(size_t i = 0; i != length / 4; ++i)
+	for (size_t i = 0; i != length / 4; ++i)
 		T[i] = load_le!uint(key, i);
 
 	T[length / 4] = cast(uint)(length) / 4;
 
 	EK.resize(40);
 
-	for(uint i = 0; i != 4; ++i)
+	for (uint i = 0; i != 4; ++i)
 	{
 		T[ 0] ^= rotate_left(T[ 8] ^ T[13], 3) ^ (i	  );
 		T[ 1] ^= rotate_left(T[ 9] ^ T[14], 3) ^ (i +  4);
@@ -343,7 +343,7 @@ void MARS::key_schedule(in byte* key)
 		T[13] ^= rotate_left(T[ 6] ^ T[11], 3) ^ (i + 52);
 		T[14] ^= rotate_left(T[ 7] ^ T[12], 3) ^ (i + 56);
 
-		for(size_t j = 0; j != 4; ++j)
+		for (size_t j = 0; j != 4; ++j)
 		{
 			T[ 0] = rotate_left(T[ 0] + SBOX[T[14] % 512], 9);
 			T[ 1] = rotate_left(T[ 1] + SBOX[T[ 0] % 512], 9);
@@ -374,7 +374,7 @@ void MARS::key_schedule(in byte* key)
 		EK[10*i + 9] = T[ 6];
 	}
 
-	for(size_t i = 5; i != 37; i += 2)
+	for (size_t i = 5; i != 37; i += 2)
 	{
 		const uint key3 = EK[i] & 3;
 		EK[i] |= 3;

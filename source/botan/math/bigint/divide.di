@@ -14,6 +14,6 @@
 * @param r will be set to x % y
 */
 void divide(in BigInt x,
-							 const BigInt& y,
-							 BigInt& q,
-							 BigInt& r);
+							 ref const BigInt y,
+							 ref BigInt q,
+							 ref BigInt r);

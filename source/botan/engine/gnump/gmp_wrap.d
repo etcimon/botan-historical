@@ -22,7 +22,7 @@
 GMP_MPZ::GMP_MPZ(in BigInt input)
 {
 	mpz_init(value);
-	if(input != 0)
+	if (input != 0)
 		mpz_import(value, input.sig_words(), -1, sizeof(word), 0, 0, input.data());
 }
 
@@ -90,7 +90,7 @@ BigInt GMP_MPZ::to_bigint() const
 
 	mpz_export(reg, &dummy, -1, sizeof(word), 0, 0, value);
 
-	if(mpz_sgn(value) < 0)
+	if (mpz_sgn(value) < 0)
 		out.flip_sign();
 
 	return out;

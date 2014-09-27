@@ -77,7 +77,7 @@ class ECDSA_PrivateKey : public ECDSA_PublicKey,
 		*/
 		ECDSA_PrivateKey(RandomNumberGenerator& rng,
 							  const EC_Group& domain,
-							  const BigInt& x = 0) :
+							  ref const BigInt x = 0) :
 			EC_PrivateKey(rng, domain, x) {}
 
 		bool check_key(RandomNumberGenerator& rng, bool) const;
@@ -100,8 +100,8 @@ class ECDSA_Signature_Operation : public PK_Ops::Signature
 
 	private:
 		const PointGFp& base_point;
-		const BigInt& order;
-		const BigInt& x;
+		ref const BigInt order;
+		ref const BigInt x;
 		Modular_Reducer mod_order;
 };
 
@@ -124,5 +124,5 @@ class ECDSA_Verification_Operation : public PK_Ops::Verification
 	private:
 		const PointGFp& base_point;
 		const PointGFp& public_point;
-		const BigInt& order;
+		ref const BigInt order;
 };

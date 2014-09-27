@@ -80,21 +80,21 @@ std::shared_ptr<Connection_Cipher_State> Channel::write_cipher_state_epoch(ushor
 
 Vector!( X509_Certificate ) Channel::peer_cert_chain() const
 {
-	if(auto active = active_state())
+	if (auto active = active_state())
 		return get_peer_cert_chain(*active);
 	return Vector!( X509_Certificate )();
 }
 
 Handshake_State& Channel::create_handshake_state(Protocol_Version _version)
 {
-	if(pending_state())
+	if (pending_state())
 		throw new Internal_Error("create_handshake_state called during handshake");
 
-	if(auto active = active_state())
+	if (auto active = active_state())
 	{
 		Protocol_Version active_version = active->_version();
 
-		if(active_version.is_datagram_protocol() != _version.is_datagram_protocol())
+		if (active_version.is_datagram_protocol() != _version.is_datagram_protocol())
 			throw new Exception("Active state using version " +
 											 active_version.to_string() +
 											 " cannot change to " +
@@ -102,16 +102,16 @@ Handshake_State& Channel::create_handshake_state(Protocol_Version _version)
 											 " in pending");
 	}
 
-	if(!m_sequence_numbers)
+	if (!m_sequence_numbers)
 	{
-		if(_version.is_datagram_protocol())
+		if (_version.is_datagram_protocol())
 			m_sequence_numbers.reset(new Datagram_Sequence_Numbers);
 		else
 			m_sequence_numbers.reset(new Stream_Sequence_Numbers);
 	}
 
 	std::unique_ptr<Handshake_IO> io;
-	if(_version.is_datagram_protocol())
+	if (_version.is_datagram_protocol())
 		io.reset(new Datagram_Handshake_IO(
 						sequence_numbers(),
 						std::bind(&Channel::send_record_under_epoch, this,
@@ -126,7 +126,7 @@ Handshake_State& Channel::create_handshake_state(Protocol_Version _version)
 
 	m_pending_state.reset(new_handshake_state(io.release()));
 
-	if(auto active = active_state())
+	if (auto active = active_state())
 		m_pending_state->set_version(active->_version());
 
 	return *m_pending_state.get();
@@ -134,10 +134,10 @@ Handshake_State& Channel::create_handshake_state(Protocol_Version _version)
 
 void Channel::renegotiate(bool force_full_renegotiation)
 {
-	if(pending_state()) // currently in handshake?
+	if (pending_state()) // currently in handshake?
 		return;
 
-	if(auto active = active_state())
+	if (auto active = active_state())
 		initiate_handshake(create_handshake_state(active->_version()),
 								 force_full_renegotiation);
 	else
@@ -148,13 +148,13 @@ size_t Channel::maximum_fragment_size() const
 {
 	// should we be caching this value?
 
-	if(auto pending = pending_state())
-		if(auto server_hello = pending->server_hello())
-			if(size_t frag = server_hello->fragment_size())
+	if (auto pending = pending_state())
+		if (auto server_hello = pending->server_hello())
+			if (size_t frag = server_hello->fragment_size())
 				return frag;
 
-	if(auto active = active_state())
-		if(size_t frag = active->server_hello()->fragment_size())
+	if (auto active = active_state())
+		if (size_t frag = active->server_hello()->fragment_size())
 			return frag;
 
 	return MAX_PLAINTEXT_SIZE;
@@ -167,7 +167,7 @@ void Channel::change_cipher_spec_reader(Connection_Side side)
 	BOTAN_ASSERT(pending && pending->server_hello(),
 					 "Have received server hello");
 
-	if(pending->server_hello()->compression_method() != NO_COMPRESSION)
+	if (pending->server_hello()->compression_method() != NO_COMPRESSION)
 		throw new Internal_Error("Negotiated unknown compression algorithm");
 
 	sequence_numbers().new_read_cipher_state();
@@ -195,7 +195,7 @@ void Channel::change_cipher_spec_writer(Connection_Side side)
 	BOTAN_ASSERT(pending && pending->server_hello(),
 					 "Have received server hello");
 
-	if(pending->server_hello()->compression_method() != NO_COMPRESSION)
+	if (pending->server_hello()->compression_method() != NO_COMPRESSION)
 		throw new Internal_Error("Negotiated unknown compression algorithm");
 
 	sequence_numbers().new_write_cipher_state();
@@ -222,7 +222,7 @@ bool Channel::is_active() const
 
 bool Channel::is_closed() const
 {
-	if(active_state() || pending_state())
+	if (active_state() || pending_state())
 		return false;
 
 	/*
@@ -239,7 +239,7 @@ void Channel::activate_session()
 	std::swap(m_active_state, m_pending_state);
 	m_pending_state.reset();
 
-	if(m_active_state->_version().is_datagram_protocol())
+	if (m_active_state->_version().is_datagram_protocol())
 	{
 		// FIXME, remove old states when we are sure not needed anymore
 	}
@@ -251,21 +251,21 @@ void Channel::activate_session()
 		const auto not_current_epoch =
 			[current_epoch](ushort epoch) { return (epoch != current_epoch); };
 
-		map_remove_if(not_current_epoch, m_write_cipher_states);
-		map_remove_if(not_current_epoch, m_read_cipher_states);
+		map_remove_if (not_current_epoch, m_write_cipher_states);
+		map_remove_if (not_current_epoch, m_read_cipher_states);
 	}
 }
 
 bool Channel::peer_supports_heartbeats() const
 {
-	if(auto active = active_state())
+	if (auto active = active_state())
 		return active->server_hello()->supports_heartbeats();
 	return false;
 }
 
 bool Channel::heartbeat_sending_allowed() const
 {
-	if(auto active = active_state())
+	if (auto active = active_state())
 		return active->server_hello()->peer_can_send_heartbeats();
 	return false;
 }
@@ -314,19 +314,19 @@ size_t Channel::received_data(in byte* input, size_t input_size)
 			BOTAN_ASSERT(input_size == 0 || needed == 0,
 							 "Got a full record or consumed all input");
 
-			if(input_size == 0 && needed != 0)
+			if (input_size == 0 && needed != 0)
 				return needed; // need more data to complete record
 
-			if(record.size() > max_fragment_size)
+			if (record.size() > max_fragment_size)
 				throw new TLS_Exception(Alert::RECORD_OVERFLOW,
 										  "Plaintext record is too large");
 
-			if(record_type == HANDSHAKE || record_type == CHANGE_CIPHER_SPEC)
+			if (record_type == HANDSHAKE || record_type == CHANGE_CIPHER_SPEC)
 			{
-				if(!m_pending_state)
+				if (!m_pending_state)
 				{
 					create_handshake_state(record_version);
-					if(record_version.is_datagram_protocol())
+					if (record_version.is_datagram_protocol())
 						sequence_numbers().read_accept(record_sequence);
 				}
 
@@ -338,25 +338,25 @@ size_t Channel::received_data(in byte* input, size_t input_size)
 				{
 					auto msg = pending->get_next_handshake_msg();
 
-					if(msg.first == HANDSHAKE_NONE) // no full handshake yet
+					if (msg.first == HANDSHAKE_NONE) // no full handshake yet
 						break;
 
 					process_handshake_msg(active_state(), *pending,
 												 msg.first, msg.second);
 				}
 			}
-			else if(record_type == HEARTBEAT && peer_supports_heartbeats())
+			else if (record_type == HEARTBEAT && peer_supports_heartbeats())
 			{
-				if(!active_state())
+				if (!active_state())
 					throw new Unexpected_Message("Heartbeat sent before handshake done");
 
 				Heartbeat_Message heartbeat(unlock(record));
 
 				in Vector!byte payload = heartbeat.payload();
 
-				if(heartbeat.is_request())
+				if (heartbeat.is_request())
 				{
-					if(!pending_state())
+					if (!pending_state())
 					{
 						Heartbeat_Message response(Heartbeat_Message::RESPONSE,
 															&payload[0], payload.size());
@@ -369,9 +369,9 @@ size_t Channel::received_data(in byte* input, size_t input_size)
 					m_alert_cb(Alert(Alert::HEARTBEAT_PAYLOAD), &payload[0], payload.size());
 				}
 			}
-			else if(record_type == APPLICATION_DATA)
+			else if (record_type == APPLICATION_DATA)
 			{
-				if(!active_state())
+				if (!active_state())
 					throw new Unexpected_Message("Application data before handshake done");
 
 				/*
@@ -379,28 +379,28 @@ size_t Channel::received_data(in byte* input, size_t input_size)
 				* before TLS v1.1 in order to randomize the IV of the
 				* following record. Avoid spurious callbacks.
 				*/
-				if(record.size() > 0)
+				if (record.size() > 0)
 					m_data_cb(&record[0], record.size());
 			}
-			else if(record_type == ALERT)
+			else if (record_type == ALERT)
 			{
 				Alert alert_msg(record);
 
-				if(alert_msg.type() == Alert::NO_RENEGOTIATION)
+				if (alert_msg.type() == Alert::NO_RENEGOTIATION)
 					m_pending_state.reset();
 
 				m_alert_cb(alert_msg, null, 0);
 
-				if(alert_msg.is_fatal())
+				if (alert_msg.is_fatal())
 				{
-					if(auto active = active_state())
+					if (auto active = active_state())
 						m_session_manager.remove_entry(active->server_hello()->session_id());
 				}
 
-				if(alert_msg.type() == Alert::CLOSE_NOTIFY)
+				if (alert_msg.type() == Alert::CLOSE_NOTIFY)
 					send_warning_alert(Alert::CLOSE_NOTIFY); // reply in kind
 
-				if(alert_msg.type() == Alert::CLOSE_NOTIFY || alert_msg.is_fatal())
+				if (alert_msg.type() == Alert::CLOSE_NOTIFY || alert_msg.is_fatal())
 				{
 					reset_state();
 					return 0;
@@ -438,7 +438,7 @@ size_t Channel::received_data(in byte* input, size_t input_size)
 
 void Channel::heartbeat(in byte* payload, size_t payload_size)
 {
-	if(heartbeat_sending_allowed())
+	if (heartbeat_sending_allowed())
 	{
 		Heartbeat_Message heartbeat(Heartbeat_Message::REQUEST,
 											 payload, payload_size);
@@ -470,7 +470,7 @@ void Channel::write_record(Connection_Cipher_State* cipher_state,
 
 void Channel::send_record_array(ushort epoch, byte type, in byte* input, size_t length)
 {
-	if(length == 0)
+	if (length == 0)
 		return;
 
 	/*
@@ -487,7 +487,7 @@ void Channel::send_record_array(ushort epoch, byte type, in byte* input, size_t 
 
 	auto cipher_state = write_cipher_state_epoch(epoch);
 
-	if(type == APPLICATION_DATA && cipher_state->cbc_without_explicit_iv())
+	if (type == APPLICATION_DATA && cipher_state->cbc_without_explicit_iv())
 	{
 		write_record(cipher_state.get(), type, &input[0], 1);
 		input += 1;
@@ -520,7 +520,7 @@ void Channel::send_record_under_epoch(ushort epoch, byte record_type,
 
 void Channel::send(in byte* buf, size_t buf_size)
 {
-	if(!is_active())
+	if (!is_active())
 		throw new Exception("Data cannot be sent on inactive TLS connection");
 
 	send_record_array(sequence_numbers().current_write_epoch(),
@@ -534,7 +534,7 @@ void Channel::send(in string string)
 
 void Channel::send_alert(in Alert alert)
 {
-	if(alert.is_valid() && !is_closed())
+	if (alert.is_valid() && !is_closed())
 	{
 		try
 		{
@@ -543,14 +543,14 @@ void Channel::send_alert(in Alert alert)
 		catch(...) { /* swallow it */ }
 	}
 
-	if(alert.type() == Alert::NO_RENEGOTIATION)
+	if (alert.type() == Alert::NO_RENEGOTIATION)
 		m_pending_state.reset();
 
-	if(alert.is_fatal())
-		if(auto active = active_state())
+	if (alert.is_fatal())
+		if (auto active = active_state())
 			m_session_manager.remove_entry(active->server_hello()->session_id());
 
-	if(alert.type() == Alert::CLOSE_NOTIFY || alert.is_fatal())
+	if (alert.type() == Alert::CLOSE_NOTIFY || alert.is_fatal())
 		reset_state();
 }
 
@@ -558,20 +558,20 @@ void Channel::secure_renegotiation_check(const Client_Hello* client_hello)
 {
 	const bool secure_renegotiation = client_hello->secure_renegotiation();
 
-	if(auto active = active_state())
+	if (auto active = active_state())
 	{
 		const bool active_sr = active->client_hello()->secure_renegotiation();
 
-		if(active_sr != secure_renegotiation)
+		if (active_sr != secure_renegotiation)
 			throw new TLS_Exception(Alert::HANDSHAKE_FAILURE,
 									  "Client changed its mind about secure renegotiation");
 	}
 
-	if(secure_renegotiation)
+	if (secure_renegotiation)
 	{
 		in Vector!byte data = client_hello->renegotiation_info();
 
-		if(data != secure_renegotiation_data_for_client_hello())
+		if (data != secure_renegotiation_data_for_client_hello())
 			throw new TLS_Exception(Alert::HANDSHAKE_FAILURE,
 									  "Client sent bad values for secure renegotiation");
 	}
@@ -581,20 +581,20 @@ void Channel::secure_renegotiation_check(const Server_Hello* server_hello)
 {
 	const bool secure_renegotiation = server_hello->secure_renegotiation();
 
-	if(auto active = active_state())
+	if (auto active = active_state())
 	{
 		const bool active_sr = active->client_hello()->secure_renegotiation();
 
-		if(active_sr != secure_renegotiation)
+		if (active_sr != secure_renegotiation)
 			throw new TLS_Exception(Alert::HANDSHAKE_FAILURE,
 									  "Server changed its mind about secure renegotiation");
 	}
 
-	if(secure_renegotiation)
+	if (secure_renegotiation)
 	{
 		in Vector!byte data = server_hello->renegotiation_info();
 
-		if(data != secure_renegotiation_data_for_server_hello())
+		if (data != secure_renegotiation_data_for_server_hello())
 			throw new TLS_Exception(Alert::HANDSHAKE_FAILURE,
 									  "Server sent bad values for secure renegotiation");
 	}
@@ -602,14 +602,14 @@ void Channel::secure_renegotiation_check(const Server_Hello* server_hello)
 
 Vector!( byte ) Channel::secure_renegotiation_data_for_client_hello() const
 {
-	if(auto active = active_state())
+	if (auto active = active_state())
 		return active->client_finished()->verify_data();
 	return Vector!( byte )();
 }
 
 Vector!( byte ) Channel::secure_renegotiation_data_for_server_hello() const
 {
-	if(auto active = active_state())
+	if (auto active = active_state())
 	{
 		Vector!( byte ) buf = active->client_finished()->verify_data();
 		buf += active->server_finished()->verify_data();
@@ -621,11 +621,11 @@ Vector!( byte ) Channel::secure_renegotiation_data_for_server_hello() const
 
 bool Channel::secure_renegotiation_supported() const
 {
-	if(auto active = active_state())
+	if (auto active = active_state())
 		return active->server_hello()->secure_renegotiation();
 
-	if(auto pending = pending_state())
-		if(auto hello = pending->server_hello())
+	if (auto pending = pending_state())
+		if (auto hello = pending->server_hello())
 			return hello->secure_renegotiation();
 
 	return false;
@@ -635,7 +635,7 @@ SymmetricKey Channel::key_material_export(in string label,
 														in string context,
 														size_t length) const
 {
-	if(auto active = active_state())
+	if (auto active = active_state())
 	{
 		std::unique_ptr<KDF> prf(active->protocol_specific_prf());
 
@@ -647,10 +647,10 @@ SymmetricKey Channel::key_material_export(in string label,
 		salt += active->client_hello()->random();
 		salt += active->server_hello()->random();
 
-		if(context != "")
+		if (context != "")
 		{
 			size_t context_size = context.length;
-			if(context_size > 0xFFFF)
+			if (context_size > 0xFFFF)
 				throw new Exception("key_material_export context is too long");
 			salt.push_back(get_byte<ushort>(0, context_size));
 			salt.push_back(get_byte<ushort>(1, context_size));

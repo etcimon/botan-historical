@@ -15,20 +15,20 @@ extern "C" {
 s32bit bigint_cmp(const word x[], size_t x_size,
 						const word y[], size_t y_size)
 {
-	if(x_size < y_size) { return (-bigint_cmp(y, y_size, x, x_size)); }
+	if (x_size < y_size) { return (-bigint_cmp(y, y_size, x, x_size)); }
 
 	while(x_size > y_size)
 	{
-		if(x[x_size-1])
+		if (x[x_size-1])
 			return 1;
 		x_size--;
 	}
 
-	for(size_t i = x_size; i > 0; --i)
+	for (size_t i = x_size; i > 0; --i)
 	{
-		if(x[i-1] > y[i-1])
+		if (x[i-1] > y[i-1])
 			return 1;
-		if(x[i-1] < y[i-1])
+		if (x[i-1] < y[i-1])
 			return -1;
 	}
 
@@ -42,7 +42,7 @@ word bigint_divop(word n1, word n0, word d)
 {
 	word high = n1 % d, quotient = 0;
 
-	for(size_t i = 0; i != MP_WORD_BITS; ++i)
+	for (size_t i = 0; i != MP_WORD_BITS; ++i)
 	{
 		word high_top_bit = (high & MP_WORD_TOP_BIT);
 
@@ -50,7 +50,7 @@ word bigint_divop(word n1, word n0, word d)
 		high |= (n0 >> (MP_WORD_BITS-1-i)) & 1;
 		quotient <<= 1;
 
-		if(high_top_bit || high >= d)
+		if (high_top_bit || high >= d)
 		{
 			high -= d;
 			quotient |= 1;

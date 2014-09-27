@@ -50,7 +50,7 @@ void Base64_Encoder::encode_and_send(in byte* input, size_t length,
 */
 void Base64_Encoder::do_output(in byte* input, size_t length)
 {
-	if(line_length == 0)
+	if (line_length == 0)
 		send(input, length);
 	else
 	{
@@ -62,7 +62,7 @@ void Base64_Encoder::do_output(in byte* input, size_t length)
 			out_position += sent;
 			remaining -= sent;
 			offset += sent;
-			if(out_position == line_length)
+			if (out_position == line_length)
 			{
 				send('');
 				out_position = 0;
@@ -77,7 +77,7 @@ void Base64_Encoder::do_output(in byte* input, size_t length)
 void Base64_Encoder::write(in byte* input, size_t length)
 {
 	buffer_insert(input, position, input, length);
-	if(position + length >= input.size())
+	if (position + length >= input.size())
 	{
 		encode_and_send(&input[0], input.size());
 		input += (input.size() - position);
@@ -101,7 +101,7 @@ void Base64_Encoder::end_msg()
 {
 	encode_and_send(&input[0], position, true);
 
-	if(trailing_newline || (out_position && line_length))
+	if (trailing_newline || (out_position && line_length))
 		send('');
 
 	out_position = position = 0;
@@ -136,7 +136,7 @@ void Base64_Decoder::write(in byte* input, size_t length)
 
 		send(output, written);
 
-		if(consumed != position)
+		if (consumed != position)
 		{
 			copy_mem(&input[0], &input[consumed], position - consumed);
 			position = position - consumed;
@@ -168,7 +168,7 @@ void Base64_Decoder::end_msg()
 
 	position = 0;
 
-	if(not_full_bytes)
+	if (not_full_bytes)
 		throw new std::invalid_argument("Base64_Decoder: Input not full bytes");
 }
 

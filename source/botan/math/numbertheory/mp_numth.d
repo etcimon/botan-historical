@@ -28,13 +28,13 @@ BigInt square(in BigInt x)
 /*
 * Multiply-Add Operation
 */
-BigInt mul_add(in BigInt a, const BigInt& b, const BigInt& c)
+BigInt mul_add(in BigInt a, ref const BigInt b, ref const BigInt c)
 {
-	if(c.is_negative() || c.is_zero())
+	if (c.is_negative() || c.is_zero())
 		throw new Invalid_Argument("mul_add: Third argument must be > 0");
 
 	BigInt::Sign sign = BigInt::Positive;
-	if(a.sign() != b.sign())
+	if (a.sign() != b.sign())
 		sign = BigInt::Negative;
 
 	const size_t a_sw = a.sig_words();
@@ -57,9 +57,9 @@ BigInt mul_add(in BigInt a, const BigInt& b, const BigInt& c)
 /*
 * Subtract-Multiply Operation
 */
-BigInt sub_mul(in BigInt a, const BigInt& b, const BigInt& c)
+BigInt sub_mul(in BigInt a, ref const BigInt b, ref const BigInt c)
 {
-	if(a.is_negative() || b.is_negative())
+	if (a.is_negative() || b.is_negative())
 		throw new Invalid_Argument("sub_mul: First two arguments must be >= 0");
 
 	BigInt r = a;

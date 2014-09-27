@@ -92,7 +92,7 @@ class EC_PrivateKey : public abstract EC_PublicKey,
 	public:
 	  EC_PrivateKey(RandomNumberGenerator& rng,
 						 const EC_Group& domain,
-						 const BigInt& Private_Key);
+						 ref const BigInt Private_Key);
 
 		EC_PrivateKey(in AlgorithmIdentifier alg_id,
 						  in SafeVector!byte key_bits);
@@ -103,7 +103,7 @@ class EC_PrivateKey : public abstract EC_PublicKey,
 		* Get the private key value of this key object.
 		* @result the private key value of this key object
 		*/
-		const BigInt& private_value() const;
+		ref const BigInt private_value() const;
 	protected:
 		EC_PrivateKey() {}
 

@@ -50,7 +50,7 @@ void des_key_schedule(uint round_key[32], const byte key[8])
 				  ((key[3] & 0x10) >>  1) | ((key[2] & 0x10) >>  2) |
 				  ((key[1] & 0x10) >>  3) | ((key[0] & 0x10) >>  4);
 
-	for(size_t i = 0; i != 16; ++i)
+	for (size_t i = 0; i != 16; ++i)
 	{
 		C = ((C << ROT[i]) | (C >> (28-ROT[i]))) & 0x0FFFFFFF;
 		D = ((D << ROT[i]) | (D >> (28-ROT[i]))) & 0x0FFFFFFF;
@@ -85,7 +85,7 @@ void des_key_schedule(uint round_key[32], const byte key[8])
 void des_encrypt(ref uint L, ref uint R,
 					  const uint round_key[32])
 {
-	for(size_t i = 0; i != 16; i += 2)
+	for (size_t i = 0; i != 16; i += 2)
 	{
 		uint T0, T1;
 
@@ -113,7 +113,7 @@ void des_encrypt(ref uint L, ref uint R,
 void des_decrypt(ref uint L, ref uint R,
 					  const uint round_key[32])
 {
-	for(size_t i = 16; i != 0; i -= 2)
+	for (size_t i = 16; i != 0; i -= 2)
 	{
 		uint T0, T1;
 
@@ -142,7 +142,7 @@ void des_decrypt(ref uint L, ref uint R,
 */
 void DES::encrypt_n(byte* input, byte* output, size_t blocks) const
 {
-	for(size_t i = 0; i != blocks; ++i)
+	for (size_t i = 0; i != blocks; ++i)
 	{
 		ulong T = (DES_IPTAB1[input[0]]	  ) | (DES_IPTAB1[input[1]] << 1) |
 					  (DES_IPTAB1[input[2]] << 2) | (DES_IPTAB1[input[3]] << 3) |
@@ -172,7 +172,7 @@ void DES::encrypt_n(byte* input, byte* output, size_t blocks) const
 */
 void DES::decrypt_n(byte* input, byte* output, size_t blocks) const
 {
-	for(size_t i = 0; i != blocks; ++i)
+	for (size_t i = 0; i != blocks; ++i)
 	{
 		ulong T = (DES_IPTAB1[input[0]]	  ) | (DES_IPTAB1[input[1]] << 1) |
 					  (DES_IPTAB1[input[2]] << 2) | (DES_IPTAB1[input[3]] << 3) |
@@ -217,7 +217,7 @@ void DES::clear()
 */
 void TripleDES::encrypt_n(byte* input, byte* output, size_t blocks) const
 {
-	for(size_t i = 0; i != blocks; ++i)
+	for (size_t i = 0; i != blocks; ++i)
 	{
 		ulong T = (DES_IPTAB1[input[0]]	  ) | (DES_IPTAB1[input[1]] << 1) |
 					  (DES_IPTAB1[input[2]] << 2) | (DES_IPTAB1[input[3]] << 3) |
@@ -250,7 +250,7 @@ void TripleDES::encrypt_n(byte* input, byte* output, size_t blocks) const
 */
 void TripleDES::decrypt_n(byte* input, byte* output, size_t blocks) const
 {
-	for(size_t i = 0; i != blocks; ++i)
+	for (size_t i = 0; i != blocks; ++i)
 	{
 		ulong T = (DES_IPTAB1[input[0]]	  ) | (DES_IPTAB1[input[1]] << 1) |
 					  (DES_IPTAB1[input[2]] << 2) | (DES_IPTAB1[input[3]] << 3) |
@@ -287,7 +287,7 @@ void TripleDES::key_schedule(in byte* key)
 	des_key_schedule(&round_key[0], key);
 	des_key_schedule(&round_key[32], key + 8);
 
-	if(length == 24)
+	if (length == 24)
 		des_key_schedule(&round_key[64], key + 16);
 	else
 		copy_mem(&round_key[64], &round_key[0], 32);

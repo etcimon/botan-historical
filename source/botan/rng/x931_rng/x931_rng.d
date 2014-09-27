@@ -11,17 +11,17 @@
 void ANSI_X931_RNG::randomize(byte* output)
 {
 	size_t length = output.length;
-	if(!is_seeded())
+	if (!is_seeded())
 	{
 		reseed(BOTAN_RNG_RESEED_POLL_BITS);
 
-		if(!is_seeded())
+		if (!is_seeded())
 			throw new PRNG_Unseeded(name());
 	}
 
 	while(length)
 	{
-		if(m_R_pos == m_R.size())
+		if (m_R_pos == m_R.size())
 			update_buffer();
 
 		const size_t copied = std::min<size_t>(length, m_R.size() - m_R_pos);
@@ -59,11 +59,11 @@ void ANSI_X931_RNG::rekey()
 {
 	const size_t BLOCK_SIZE = m_cipher->block_size();
 
-	if(m_prng->is_seeded())
+	if (m_prng->is_seeded())
 	{
 		m_cipher->set_key(m_prng->random_vec(m_cipher->maximum_keylength()));
 
-		if(m_V.size() != BLOCK_SIZE)
+		if (m_V.size() != BLOCK_SIZE)
 			m_V.resize(BLOCK_SIZE);
 		m_prng->randomize(&m_V[0], m_V.size());
 

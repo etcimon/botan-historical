@@ -27,7 +27,7 @@ bool Session_Manager_In_Memory::load_from_session_str(
 
 	auto i = m_sessions.find(session_str);
 
-	if(i == m_sessions.end())
+	if (i == m_sessions.end())
 		return false;
 
 	try
@@ -42,7 +42,7 @@ bool Session_Manager_In_Memory::load_from_session_str(
 	// if session has expired, remove it
 	const auto now = std::chrono::system_clock::now();
 
-	if(session.start_time() + session_lifetime() < now)
+	if (session.start_time() + session_lifetime() < now)
 	{
 		m_sessions.erase(i);
 		return false;
@@ -66,10 +66,10 @@ bool Session_Manager_In_Memory::load_from_server_info(
 
 	auto i = m_info_sessions.find(info);
 
-	if(i == m_info_sessions.end())
+	if (i == m_info_sessions.end())
 		return false;
 
-	if(load_from_session_str(i->second, session))
+	if (load_from_session_str(i->second, session))
 		return true;
 
 	/*
@@ -88,7 +88,7 @@ void Session_Manager_In_Memory::remove_entry(
 
 	auto i = m_sessions.find(hex_encode(session_id));
 
-	if(i != m_sessions.end())
+	if (i != m_sessions.end())
 		m_sessions.erase(i);
 }
 
@@ -96,7 +96,7 @@ void Session_Manager_In_Memory::save(in Session session)
 {
 	std::lock_guard<std::mutex> lock(m_mutex);
 
-	if(m_max_sessions != 0)
+	if (m_max_sessions != 0)
 	{
 		/*
 		We generate new session IDs with the first 4 bytes being a
@@ -110,7 +110,7 @@ void Session_Manager_In_Memory::save(in Session session)
 
 	m_sessions[session_id_str] = session.encrypt(m_session_key, m_rng);
 
-	if(session.side() == CLIENT && !session.server_info().empty())
+	if (session.side() == CLIENT && !session.server_info().empty())
 		m_info_sessions[session.server_info()] = session_id_str;
 }
 

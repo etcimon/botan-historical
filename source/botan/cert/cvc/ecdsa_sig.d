@@ -42,7 +42,7 @@ Vector!( byte ) ECDSA_Signature::get_concatenation() const
 
 ECDSA_Signature decode_concatenation(in Vector!byte concat)
 {
-	if(concat.size() % 2 != 0)
+	if (concat.size() % 2 != 0)
 		throw new Invalid_Argument("Erroneous length of signature");
 
 	const size_t rs_len = concat.size() / 2;

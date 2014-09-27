@@ -63,11 +63,11 @@ void X509_Cert_Options::CA_key(size_t limit)
 */
 void X509_Cert_Options::sanity_check() const
 {
-	if(common_name == "" || country == "")
+	if (common_name == "" || country == "")
 		throw new Encoding_Error("X.509 certificate: name and country MUST be set");
-	if(country.size() != 2)
+	if (country.size() != 2)
 		throw new Encoding_Error("Invalid ISO country code: " + country);
-	if(start >= end)
+	if (start >= end)
 		throw new Encoding_Error("X509_Cert_Options: invalid time constraints");
 }
 
@@ -86,19 +86,19 @@ X509_Cert_Options::X509_Cert_Options(in string initial_opts,
 	start = X509_Time(now);
 	end = X509_Time(now + std::chrono::seconds(expiration_time));
 
-	if(initial_opts == "")
+	if (initial_opts == "")
 		return;
 
 	Vector!( string ) parsed = split_on(initial_opts, '/');
 
-	if(parsed.size() > 4)
+	if (parsed.size() > 4)
 		throw new Invalid_Argument("X.509 cert options: Too many names: "
 									  + initial_opts);
 
-	if(parsed.size() >= 1) common_name  = parsed[0];
-	if(parsed.size() >= 2) country		= parsed[1];
-	if(parsed.size() >= 3) organization = parsed[2];
-	if(parsed.size() == 4) org_unit	  = parsed[3];
+	if (parsed.size() >= 1) common_name  = parsed[0];
+	if (parsed.size() >= 2) country		= parsed[1];
+	if (parsed.size() >= 3) organization = parsed[2];
+	if (parsed.size() == 4) org_unit	  = parsed[3];
 }
 
 }

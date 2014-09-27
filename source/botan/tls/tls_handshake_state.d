@@ -203,7 +203,7 @@ void Handshake_State::confirm_transition_to(Handshake_Type handshake_msg)
 
 	const bool ok = (m_hand_expecting_mask & mask); // overlap?
 
-	if(!ok)
+	if (!ok)
 		throw new Unexpected_Message("Unexpected state transition in handshake, got " +
 										 std::to_string(handshake_msg) +
 										 " expected " + std::to_string(m_hand_expecting_mask) +
@@ -239,7 +239,7 @@ Handshake_State::get_next_handshake_msg()
 
 string Handshake_State::srp_identifier() const
 {
-	if(ciphersuite().valid() && ciphersuite().kex_algo() == "SRP_SHA")
+	if (ciphersuite().valid() && ciphersuite().kex_algo() == "SRP_SHA")
 		return client_hello()->srp_identifier();
 
 	return "";
@@ -247,7 +247,7 @@ string Handshake_State::srp_identifier() const
 
 Vector!( byte ) Handshake_State::session_ticket() const
 {
-	if(new_session_ticket() && !new_session_ticket()->ticket().empty())
+	if (new_session_ticket() && !new_session_ticket()->ticket().empty())
 		return new_session_ticket()->ticket();
 
 	return client_hello()->session_ticket();
@@ -255,15 +255,15 @@ Vector!( byte ) Handshake_State::session_ticket() const
 
 KDF* Handshake_State::protocol_specific_prf() const
 {
-	if(_version() == Protocol_Version::SSL_V3)
+	if (_version() == Protocol_Version::SSL_V3)
 	{
 		return get_kdf("SSL3-PRF");
 	}
-	else if(_version().supports_ciphersuite_specific_prf())
+	else if (_version().supports_ciphersuite_specific_prf())
 	{
 		const string prf_algo = ciphersuite().prf_algo();
 
-		if(prf_algo == "MD5" || prf_algo == "SHA-1")
+		if (prf_algo == "MD5" || prf_algo == "SHA-1")
 			return get_kdf("TLS-12-PRF(SHA-256)");
 
 		return get_kdf("TLS-12-PRF(" + prf_algo + ")");
@@ -286,18 +286,18 @@ string choose_hash(in string sig_algo,
 								in Client_Hello client_hello,
 								in Certificate_Req cert_req)
 {
-	if(!negotiated_version.supports_negotiable_signature_algorithms())
+	if (!negotiated_version.supports_negotiable_signature_algorithms())
 	{
-		if(for_client_auth && negotiated_version == Protocol_Version::SSL_V3)
+		if (for_client_auth && negotiated_version == Protocol_Version::SSL_V3)
 			return "Raw";
 
-		if(sig_algo == "RSA")
+		if (sig_algo == "RSA")
 			return "Parallel(MD5,SHA-160)";
 
-		if(sig_algo == "DSA")
+		if (sig_algo == "DSA")
 			return "SHA-1";
 
-		if(sig_algo == "ECDSA")
+		if (sig_algo == "ECDSA")
 			return "SHA-1";
 
 		throw new Internal_Error("Unknown TLS signature algo " + sig_algo);
@@ -307,7 +307,7 @@ string choose_hash(in string sig_algo,
 		cert_req->supported_algos() :
 		client_hello->supported_algos();
 
-	if(!supported_algos.empty())
+	if (!supported_algos.empty())
 	{
 		const auto hashes = policy.allowed_signature_hashes();
 
@@ -315,11 +315,11 @@ string choose_hash(in string sig_algo,
 		* Choose our most preferred hash that the counterparty supports
 		* in pairing with the signature algorithm we want to use.
 		*/
-		for(auto hash : hashes)
+		foreach (hash; hashes)
 		{
-			for(auto algo : supported_algos)
+			foreach (algo; supported_algos)
 			{
-				if(algo.first == hash && algo.second == sig_algo)
+				if (algo.first == hash && algo.second == sig_algo)
 					return hash;
 			}
 		}
@@ -348,19 +348,19 @@ Handshake_State::choose_sig_format(in Private_Key key,
 						client_hello(),
 						cert_req());
 
-	if(this->_version().supports_negotiable_signature_algorithms())
+	if (this->_version().supports_negotiable_signature_algorithms())
 	{
 		hash_algo_out = hash_algo;
 		sig_algo_out = sig_algo;
 	}
 
-	if(sig_algo == "RSA")
+	if (sig_algo == "RSA")
 	{
 		const string padding = "EMSA3(" + hash_algo + ")";
 
 		return Pair(padding, IEEE_1363);
 	}
-	else if(sig_algo == "DSA" || sig_algo == "ECDSA")
+	else if (sig_algo == "DSA" || sig_algo == "ECDSA")
 	{
 		const string padding = "EMSA1(" + hash_algo + ")";
 
@@ -386,27 +386,27 @@ Handshake_State::understand_sig_format(const Public_Key key,
 	Or not?
 	*/
 
-	if(this->_version().supports_negotiable_signature_algorithms())
+	if (this->_version().supports_negotiable_signature_algorithms())
 	{
-		if(hash_algo == "")
+		if (hash_algo == "")
 			throw new Decoding_Error("Counterparty did not send hash/sig IDS");
 
-		if(sig_algo != algo_name)
+		if (sig_algo != algo_name)
 			throw new Decoding_Error("Counterparty sent inconsistent key and sig types");
 	}
 	else
 	{
-		if(hash_algo != "" || sig_algo != "")
+		if (hash_algo != "" || sig_algo != "")
 			throw new Decoding_Error("Counterparty sent hash/sig IDs with old version");
 	}
 
-	if(algo_name == "RSA")
+	if (algo_name == "RSA")
 	{
-		if(for_client_auth && this->_version() == Protocol_Version::SSL_V3)
+		if (for_client_auth && this->_version() == Protocol_Version::SSL_V3)
 		{
 			hash_algo = "Raw";
 		}
-		else if(!this->_version().supports_negotiable_signature_algorithms())
+		else if (!this->_version().supports_negotiable_signature_algorithms())
 		{
 			hash_algo = "Parallel(MD5,SHA-160)";
 		}
@@ -414,13 +414,13 @@ Handshake_State::understand_sig_format(const Public_Key key,
 		const string padding = "EMSA3(" + hash_algo + ")";
 		return Pair(padding, IEEE_1363);
 	}
-	else if(algo_name == "DSA" || algo_name == "ECDSA")
+	else if (algo_name == "DSA" || algo_name == "ECDSA")
 	{
-		if(algo_name == "DSA" && for_client_auth && this->_version() == Protocol_Version::SSL_V3)
+		if (algo_name == "DSA" && for_client_auth && this->_version() == Protocol_Version::SSL_V3)
 		{
 			hash_algo = "Raw";
 		}
-		else if(!this->_version().supports_negotiable_signature_algorithms())
+		else if (!this->_version().supports_negotiable_signature_algorithms())
 		{
 			hash_algo = "SHA-1";
 		}

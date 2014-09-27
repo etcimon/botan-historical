@@ -18,13 +18,13 @@ class ECDSA_Signature
 		friend class ECDSA_Signature_Decoder;
 
 		ECDSA_Signature() {}
-		ECDSA_Signature(in BigInt r, const BigInt& s) :
+		ECDSA_Signature(in BigInt r, ref const BigInt s) :
 			m_r(r), m_s(s) {}
 
 		ECDSA_Signature(in Vector!byte ber);
 
-		const BigInt& get_r() const { return m_r; }
-		const BigInt& get_s() const { return m_s; }
+		ref const BigInt get_r() const { return m_r; }
+		ref const BigInt get_s() const { return m_s; }
 
 		/**
 		* return the r||s

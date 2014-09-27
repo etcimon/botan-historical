@@ -18,14 +18,14 @@ SafeVector!byte CMAC::poly_double(in SafeVector!byte input)
 	SafeVector!byte out = in;
 
 	byte carry = 0;
-	for(size_t i = out.size(); i != 0; --i)
+	for (size_t i = out.size(); i != 0; --i)
 	{
 		byte temp = output[i-1];
 		output[i-1] = (temp << 1) | carry;
 		carry = (temp >> 7);
 	}
 
-	if(top_carry)
+	if (top_carry)
 	{
 		switch(in.size())
 		{
@@ -55,7 +55,7 @@ SafeVector!byte CMAC::poly_double(in SafeVector!byte input)
 void CMAC::add_data(in byte* input, size_t length)
 {
 	buffer_insert(m_buffer, m_position, input, length);
-	if(m_position + length > output_length())
+	if (m_position + length > output_length())
 	{
 		xor_buf(m_state, m_buffer, output_length());
 		m_cipher->encrypt(m_state);
@@ -81,7 +81,7 @@ void CMAC::final_result(byte mac[])
 {
 	xor_buf(m_state, m_buffer, m_position);
 
-	if(m_position == output_length())
+	if (m_position == output_length())
 	{
 		xor_buf(m_state, m_B, output_length());
 	}
@@ -93,7 +93,7 @@ void CMAC::final_result(byte mac[])
 
 	m_cipher->encrypt(m_state);
 
-	for(size_t i = 0; i != output_length(); ++i)
+	for (size_t i = 0; i != output_length(); ++i)
 		mac[i] = m_state[i];
 
 	zeroise(m_state);
@@ -147,7 +147,7 @@ MessageAuthenticationCode* CMAC::clone() const
 */
 CMAC::CMAC(BlockCipher* cipher) : m_cipher(cipher)
 {
-	if(m_cipher->block_size() !=  8 && m_cipher->block_size() != 16 &&
+	if (m_cipher->block_size() !=  8 && m_cipher->block_size() != 16 &&
 		m_cipher->block_size() != 32 && m_cipher->block_size() != 64)
 	{
 		throw new Invalid_Argument("CMAC cannot use the " +

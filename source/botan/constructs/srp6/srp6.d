@@ -13,8 +13,8 @@ namespace {
 
 BigInt hash_seq(in string hash_id,
 					 size_t pad_to,
-					 const BigInt& in1,
-					 const BigInt& in2)
+					 ref const BigInt in1,
+					 ref const BigInt in2)
 {
 	std::unique_ptr<HashFunction> hash_fn(
 		global_state().algorithm_factory().make_hash_function(hash_id));
@@ -49,7 +49,7 @@ BigInt compute_x(in string hash_id,
 
 }
 
-string srp6_group_identifier(in BigInt N, const BigInt& g)
+string srp6_group_identifier(in BigInt N, ref const BigInt g)
 {
 	/*
 	This function assumes that only one 'standard' SRP parameter set has
@@ -61,7 +61,7 @@ string srp6_group_identifier(in BigInt N, const BigInt& g)
 
 		DL_Group group(group_name);
 
-		if(group.get_p() == N && group.get_g() == g)
+		if (group.get_p() == N && group.get_g() == g)
 			return group_name;
 
 		throw new Exception("Unknown SRP params");
@@ -78,16 +78,16 @@ srp6_client_agree(in string identifier,
 						in string group_id,
 						in string hash_id,
 						in Vector!byte salt,
-						const BigInt& B,
+						ref const BigInt B,
 						RandomNumberGenerator& rng)
 {
 	DL_Group group(group_id);
-	const BigInt& g = group.get_g();
-	const BigInt& p = group.get_p();
+	ref const BigInt g = group.get_g();
+	ref const BigInt p = group.get_p();
 
 	const size_t p_bytes = group.get_p().bytes();
 
-	if(B <= 0 || B >= p)
+	if (B <= 0 || B >= p)
 		throw new Exception("Invalid SRP parameter from server");
 
 	BigInt k = hash_seq(hash_id, p_bytes, p, g);
@@ -125,8 +125,8 @@ BigInt SRP6_Server_Session::step1(in BigInt v,
 											 RandomNumberGenerator& rng)
 {
 	DL_Group group(group_id);
-	const BigInt& g = group.get_g();
-	const BigInt& p = group.get_p();
+	ref const BigInt g = group.get_g();
+	ref const BigInt p = group.get_p();
 
 	p_bytes = p.bytes();
 
@@ -146,7 +146,7 @@ BigInt SRP6_Server_Session::step1(in BigInt v,
 
 SymmetricKey SRP6_Server_Session::step2(in BigInt A)
 {
-	if(A <= 0 || A >= p)
+	if (A <= 0 || A >= p)
 		throw new Exception("Invalid SRP parameter from client");
 
 	BigInt u = hash_seq(hash_id, p_bytes, A, B);

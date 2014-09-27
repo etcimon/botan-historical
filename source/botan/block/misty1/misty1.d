@@ -101,14 +101,14 @@ ushort FI(ushort input, ushort key7, ushort key9)
 */
 void MISTY1::encrypt_n(byte* input, byte* output, size_t blocks) const
 {
-	for(size_t i = 0; i != blocks; ++i)
+	for (size_t i = 0; i != blocks; ++i)
 	{
 		ushort B0 = load_be!ushort(input, 0);
 		ushort B1 = load_be!ushort(input, 1);
 		ushort B2 = load_be!ushort(input, 2);
 		ushort B3 = load_be!ushort(input, 3);
 
-		for(size_t j = 0; j != 12; j += 3)
+		for (size_t j = 0; j != 12; j += 3)
 		{
 			const ushort* RK = &EK[8 * j];
 
@@ -151,14 +151,14 @@ void MISTY1::encrypt_n(byte* input, byte* output, size_t blocks) const
 */
 void MISTY1::decrypt_n(byte* input, byte* output, size_t blocks) const
 {
-	for(size_t i = 0; i != blocks; ++i)
+	for (size_t i = 0; i != blocks; ++i)
 	{
 		ushort B0 = load_be!ushort(input, 2);
 		ushort B1 = load_be!ushort(input, 3);
 		ushort B2 = load_be!ushort(input, 0);
 		ushort B3 = load_be!ushort(input, 1);
 
-		for(size_t j = 0; j != 12; j += 3)
+		for (size_t j = 0; j != 12; j += 3)
 		{
 			const ushort* RK = &DK[8 * j];
 
@@ -202,10 +202,10 @@ void MISTY1::decrypt_n(byte* input, byte* output, size_t blocks) const
 void MISTY1::key_schedule(in byte* key)
 {
 	secure_vector<ushort> KS(32);
-	for(size_t i = 0; i != length / 2; ++i)
+	for (size_t i = 0; i != length / 2; ++i)
 		KS[i] = load_be!ushort(key, i);
 
-	for(size_t i = 0; i != 8; ++i)
+	for (size_t i = 0; i != 8; ++i)
 	{
 		KS[i+ 8] = FI(KS[i], KS[(i+1) % 8] >> 9, KS[(i+1) % 8] & 0x1FF);
 		KS[i+16] = KS[i+8] >> 9;
@@ -241,7 +241,7 @@ void MISTY1::key_schedule(in byte* key)
 	EK.resize(100);
 	DK.resize(100);
 
-	for(size_t i = 0; i != 100; ++i)
+	for (size_t i = 0; i != 100; ++i)
 	{
 		EK[i] = KS[EK_ORDER[i]];
 		DK[i] = KS[DK_ORDER[i]];
@@ -259,7 +259,7 @@ void MISTY1::clear()
 */
 MISTY1::MISTY1(size_t rounds)
 {
-	if(rounds != 8)
+	if (rounds != 8)
 		throw new Invalid_Argument("MISTY1: Invalid number of rounds: "
 									  + std::to_string(rounds));
 }

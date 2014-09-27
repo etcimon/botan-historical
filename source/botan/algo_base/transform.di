@@ -128,7 +128,7 @@ class Keyed_Transform : public Transformation
 		*/
 		void set_key(in byte* key, size_t length)
 		{
-			if(!valid_keylength(length))
+			if (!valid_keylength(length))
 				throw new Invalid_Key_Length(name(), length);
 			key_schedule(key, length);
 		}

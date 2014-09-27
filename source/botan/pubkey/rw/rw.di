@@ -22,7 +22,7 @@ class RW_PublicKey : public abstract IF_Scheme_PublicKey
 			IF_Scheme_PublicKey(alg_id, key_bits)
 		{}
 
-		RW_PublicKey(in BigInt mod, const BigInt& exponent) :
+		RW_PublicKey(in BigInt mod, ref const BigInt exponent) :
 			IF_Scheme_PublicKey(mod, exponent)
 		{}
 
@@ -43,9 +43,9 @@ class RW_PrivateKey : public RW_PublicKey,
 			IF_Scheme_PrivateKey(rng, alg_id, key_bits) {}
 
 		RW_PrivateKey(RandomNumberGenerator& rng,
-						  const BigInt& p, const BigInt& q,
-						  const BigInt& e, const BigInt& d = 0,
-						  const BigInt& n = 0) :
+						  ref const BigInt p, ref const BigInt q,
+						  ref const BigInt e, ref const BigInt d = 0,
+						  ref const BigInt n = 0) :
 			IF_Scheme_PrivateKey(rng, p, q, e, d, n) {}
 
 		RW_PrivateKey(RandomNumberGenerator& rng, size_t bits, size_t = 2);
@@ -66,10 +66,10 @@ class RW_Signature_Operation : public PK_Ops::Signature
 		SafeVector!byte sign(in byte* msg, size_t msg_len,
 										RandomNumberGenerator& rng);
 	private:
-		const BigInt& n;
-		const BigInt& e;
-		const BigInt& q;
-		const BigInt& c;
+		ref const BigInt n;
+		ref const BigInt e;
+		ref const BigInt q;
+		ref const BigInt c;
 
 		Fixed_Exponent_Power_Mod powermod_d1_p, powermod_d2_q;
 		Modular_Reducer mod_p;
@@ -92,6 +92,6 @@ class RW_Verification_Operation : public PK_Ops::Verification
 		SafeVector!byte verify_mr(in byte* msg, size_t msg_len);
 
 	private:
-		const BigInt& n;
+		ref const BigInt n;
 		Fixed_Exponent_Power_Mod powermod_e_n;
 };

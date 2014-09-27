@@ -41,7 +41,7 @@ HMAC_RNG::HMAC_RNG(MessageAuthenticationCode* extractor,
 						 MessageAuthenticationCode* prf) :
 	m_extractor(extractor), m_prf(prf)
 {
-	if(!m_prf->valid_keylength(m_extractor->output_length()) ||
+	if (!m_prf->valid_keylength(m_extractor->output_length()) ||
 		!m_extractor->valid_keylength(m_prf->output_length()))
 		throw new Invalid_Argument("HMAC_RNG: Bad algo combination " +
 									  m_extractor->name() + " and " +
@@ -84,10 +84,10 @@ HMAC_RNG::HMAC_RNG(MessageAuthenticationCode* extractor,
 void HMAC_RNG::randomize(byte* output)
 {
 	size_t length = output.length;
-	if(!is_seeded())
+	if (!is_seeded())
 	{
 		reseed(256);
-		if(!is_seeded())
+		if (!is_seeded())
 			throw new PRNG_Unseeded(name());
 	}
 
@@ -108,7 +108,7 @@ void HMAC_RNG::randomize(byte* output)
 
 		m_output_since_reseed += copied;
 
-		if(m_output_since_reseed >= BOTAN_RNG_MAX_OUTPUT_BEFORE_RESEED)
+		if (m_output_since_reseed >= BOTAN_RNG_MAX_OUTPUT_BEFORE_RESEED)
 			reseed(BOTAN_RNG_RESEED_POLL_BITS);
 	}
 }

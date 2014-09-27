@@ -11,22 +11,22 @@
 /*
 * Shanks-Tonnelli algorithm
 */
-BigInt ressol(in BigInt a, const BigInt& p)
+BigInt ressol(in BigInt a, ref const BigInt p)
 {
-	if(a < 0)
+	if (a < 0)
 		throw new Invalid_Argument("ressol(): a to solve for must be positive");
-	if(p <= 1)
+	if (p <= 1)
 		throw new Invalid_Argument("ressol(): prime must be > 1");
 
-	if(a == 0)
+	if (a == 0)
 		return 0;
-	if(p == 2)
+	if (p == 2)
 		return a;
 
-	if(jacobi(a, p) != 1) // not a quadratic residue
+	if (jacobi(a, p) != 1) // not a quadratic residue
 		return -BigInt(1);
 
-	if(p % 4 == 3)
+	if (p % 4 == 3)
 		return power_mod(a, ((p+1) >> 2), p);
 
 	size_t s = low_zero_bits(p - 1);
@@ -41,7 +41,7 @@ BigInt ressol(in BigInt a, const BigInt& p)
 	BigInt n = mod_p.multiply(a, mod_p.square(r));
 	r = mod_p.multiply(r, a);
 
-	if(n == 1)
+	if (n == 1)
 		return r;
 
 	// find random non quadratic residue z
@@ -62,7 +62,7 @@ BigInt ressol(in BigInt a, const BigInt& p)
 			++i;
 		}
 
-		if(s <= i)
+		if (s <= i)
 			return -BigInt(1);
 
 		c = power_mod(c, BigInt::power_of_2(s-i-1), p);

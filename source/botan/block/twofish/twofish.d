@@ -16,14 +16,14 @@
 */
 void Twofish::encrypt_n(byte* input, byte* output, size_t blocks) const
 {
-	for(size_t i = 0; i != blocks; ++i)
+	for (size_t i = 0; i != blocks; ++i)
 	{
 		uint A = load_le!uint(input, 0) ^ RK[0];
 		uint B = load_le!uint(input, 1) ^ RK[1];
 		uint C = load_le!uint(input, 2) ^ RK[2];
 		uint D = load_le!uint(input, 3) ^ RK[3];
 
-		for(size_t j = 0; j != 16; j += 2)
+		for (size_t j = 0; j != 16; j += 2)
 		{
 			uint X, Y;
 
@@ -67,14 +67,14 @@ void Twofish::encrypt_n(byte* input, byte* output, size_t blocks) const
 */
 void Twofish::decrypt_n(byte* input, byte* output, size_t blocks) const
 {
-	for(size_t i = 0; i != blocks; ++i)
+	for (size_t i = 0; i != blocks; ++i)
 	{
 		uint A = load_le!uint(input, 0) ^ RK[4];
 		uint B = load_le!uint(input, 1) ^ RK[5];
 		uint C = load_le!uint(input, 2) ^ RK[6];
 		uint D = load_le!uint(input, 3) ^ RK[7];
 
-		for(size_t j = 0; j != 16; j += 2)
+		for (size_t j = 0; j != 16; j += 2)
 		{
 			uint X, Y;
 
@@ -123,12 +123,12 @@ void Twofish::key_schedule(in byte* key)
 
 	SafeVector!byte S(16);
 
-	for(size_t i = 0; i != length; ++i)
+	for (size_t i = 0; i != length; ++i)
 		rs_mul(&S[4*(i/8)], key[i], i);
 
-	if(length == 16)
+	if (length == 16)
 	{
-		for(size_t i = 0; i != 256; ++i)
+		for (size_t i = 0; i != 256; ++i)
 		{
 			SB[	 i] = MDS0[Q0[Q0[i]^S[ 0]]^S[ 4]];
 			SB[256+i] = MDS1[Q0[Q1[i]^S[ 1]]^S[ 5]];
@@ -136,7 +136,7 @@ void Twofish::key_schedule(in byte* key)
 			SB[768+i] = MDS3[Q1[Q1[i]^S[ 3]]^S[ 7]];
 		}
 
-		for(size_t i = 0; i != 40; i += 2)
+		for (size_t i = 0; i != 40; i += 2)
 		{
 			uint X = MDS0[Q0[Q0[i  ]^key[ 8]]^key[ 0]] ^
 						  MDS1[Q0[Q1[i  ]^key[ 9]]^key[ 1]] ^
@@ -153,9 +153,9 @@ void Twofish::key_schedule(in byte* key)
 			RK[i+1] = rotate_left(Y, 9);
 		}
 	}
-	else if(length == 24)
+	else if (length == 24)
 	{
-		for(size_t i = 0; i != 256; ++i)
+		for (size_t i = 0; i != 256; ++i)
 		{
 			SB[	 i] = MDS0[Q0[Q0[Q1[i]^S[ 0]]^S[ 4]]^S[ 8]];
 			SB[256+i] = MDS1[Q0[Q1[Q1[i]^S[ 1]]^S[ 5]]^S[ 9]];
@@ -163,7 +163,7 @@ void Twofish::key_schedule(in byte* key)
 			SB[768+i] = MDS3[Q1[Q1[Q0[i]^S[ 3]]^S[ 7]]^S[11]];
 		}
 
-		for(size_t i = 0; i != 40; i += 2)
+		for (size_t i = 0; i != 40; i += 2)
 		{
 			uint X = MDS0[Q0[Q0[Q1[i  ]^key[16]]^key[ 8]]^key[ 0]] ^
 						  MDS1[Q0[Q1[Q1[i  ]^key[17]]^key[ 9]]^key[ 1]] ^
@@ -180,9 +180,9 @@ void Twofish::key_schedule(in byte* key)
 			RK[i+1] = rotate_left(Y, 9);
 		}
 	}
-	else if(length == 32)
+	else if (length == 32)
 	{
-		for(size_t i = 0; i != 256; ++i)
+		for (size_t i = 0; i != 256; ++i)
 		{
 			SB[	 i] = MDS0[Q0[Q0[Q1[Q1[i]^S[ 0]]^S[ 4]]^S[ 8]]^S[12]];
 			SB[256+i] = MDS1[Q0[Q1[Q1[Q0[i]^S[ 1]]^S[ 5]]^S[ 9]]^S[13]];
@@ -190,7 +190,7 @@ void Twofish::key_schedule(in byte* key)
 			SB[768+i] = MDS3[Q1[Q1[Q0[Q1[i]^S[ 3]]^S[ 7]]^S[11]]^S[15]];
 		}
 
-		for(size_t i = 0; i != 40; i += 2)
+		for (size_t i = 0; i != 40; i += 2)
 		{
 			uint X = MDS0[Q0[Q0[Q1[Q1[i  ]^key[24]]^key[16]]^key[ 8]]^key[ 0]] ^
 						  MDS1[Q0[Q1[Q1[Q0[i  ]^key[25]]^key[17]]^key[ 9]]^key[ 1]] ^
@@ -214,7 +214,7 @@ void Twofish::key_schedule(in byte* key)
 */
 void Twofish::rs_mul(byte S[4], byte key, size_t offset)
 {
-	if(key)
+	if (key)
 	{
 		byte X = POLY_TO_EXP[key - 1];
 

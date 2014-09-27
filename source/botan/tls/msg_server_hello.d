@@ -37,23 +37,23 @@ Server_Hello::Server_Hello(Handshake_IO& io,
 	m_ciphersuite(ciphersuite),
 	m_comp_method(compression)
 {
-	if(client_has_heartbeat && policy.negotiate_heartbeat_support())
+	if (client_has_heartbeat && policy.negotiate_heartbeat_support())
 		m_extensions.add(new Heartbeat_Support_Indicator(true));
 
 	/*
 	* Even a client that offered SSLv3 and sent the SCSV will get an
 	* extension back. This is probably the right thing to do.
 	*/
-	if(client_has_secure_renegotiation)
+	if (client_has_secure_renegotiation)
 		m_extensions.add(new Renegotiation_Extension(reneg_info));
 
-	if(max_fragment_size)
+	if (max_fragment_size)
 		m_extensions.add(new Maximum_Fragment_Length(max_fragment_size));
 
-	if(client_has_npn)
+	if (client_has_npn)
 		m_extensions.add(new Next_Protocol_Notification(next_protocols));
 
-	if(offer_session_ticket)
+	if (offer_session_ticket)
 		m_extensions.add(new Session_Ticket());
 
 	hash.update(io.send(*this));
@@ -64,7 +64,7 @@ Server_Hello::Server_Hello(Handshake_IO& io,
 */
 Server_Hello::Server_Hello(in Vector!byte buf)
 {
-	if(buf.size() < 38)
+	if (buf.size() < 38)
 		throw new Decoding_Error("Server_Hello: Packet corrupted");
 
 	TLS_Data_Reader reader("ServerHello", buf);
@@ -122,7 +122,7 @@ Server_Hello_Done::Server_Hello_Done(Handshake_IO& io,
 */
 Server_Hello_Done::Server_Hello_Done(in Vector!byte buf)
 {
-	if(buf.size())
+	if (buf.size())
 		throw new Decoding_Error("Server_Hello_Done: Must be empty, and is not");
 }
 

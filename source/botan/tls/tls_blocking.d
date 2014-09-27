@@ -72,7 +72,7 @@ size_t Blocking_Client::read(byte buf[], size_t buf_len)
 
 	const size_t returned = std::min(buf_len, m_plaintext.size());
 
-	for(size_t i = 0; i != returned; ++i)
+	for (size_t i = 0; i != returned; ++i)
 		buf[i] = m_plaintext[i];
 	m_plaintext.erase(m_plaintext.begin(), m_plaintext.begin() + returned);
 

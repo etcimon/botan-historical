@@ -17,7 +17,7 @@ SafeVector!byte OAEP::pad(in byte* input, size_t in_length,
 {
 	key_length /= 8;
 
-	if(key_length < in_length + 2*m_Phash.size() + 1)
+	if (key_length < in_length + 2*m_Phash.size() + 1)
 		throw new Invalid_Argument("OAEP: Input is too large");
 
 	SafeVector!byte output(key_length);
@@ -60,7 +60,7 @@ SafeVector!byte OAEP::unpad(in byte* input, size_t in_length,
 
 	// Invalid input: truncate to zero length input, causing later
 	// checks to fail
-	if(in_length > key_length)
+	if (in_length > key_length)
 		in_length = 0;
 
 	SafeVector!byte input(key_length);
@@ -83,7 +83,7 @@ SafeVector!byte OAEP::unpad(in byte* input, size_t in_length,
 	* to timing analysis. Other compilers, or GCC on other platforms,
 	* may or may not.
 	*/
-	for(size_t i = delim_idx; i < input.size(); ++i)
+	for (size_t i = delim_idx; i < input.size(); ++i)
 	{
 		const bool zero_p = !input[i];
 		const bool one_p = input[i] == 0x01;
@@ -102,7 +102,7 @@ SafeVector!byte OAEP::unpad(in byte* input, size_t in_length,
 
 	bad_input |= !same_mem(&input[m_Phash.size()], &m_Phash[0], m_Phash.size());
 
-	if(bad_input)
+	if (bad_input)
 		throw new Decoding_Error("Invalid OAEP encoding");
 
 	return SafeVector!byte(&input[delim_idx + 1], &input[input.size()]);
@@ -113,7 +113,7 @@ SafeVector!byte OAEP::unpad(in byte* input, size_t in_length,
 */
 size_t OAEP::maximum_input_size(size_t keybits) const
 {
-	if(keybits / 8 > 2*m_Phash.size() + 1)
+	if (keybits / 8 > 2*m_Phash.size() + 1)
 		return ((keybits / 8) - 2*m_Phash.size() - 1);
 	else
 		return 0;

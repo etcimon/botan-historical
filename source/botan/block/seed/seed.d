@@ -21,7 +21,7 @@ uint SEED::G_FUNC::operator()(uint X) const
 */
 void SEED::encrypt_n(byte* input, byte* output, size_t blocks) const
 {
-	for(size_t i = 0; i != blocks; ++i)
+	for (size_t i = 0; i != blocks; ++i)
 	{
 		uint B0 = load_be!uint(input, 0);
 		uint B1 = load_be!uint(input, 1);
@@ -30,7 +30,7 @@ void SEED::encrypt_n(byte* input, byte* output, size_t blocks) const
 
 		G_FUNC G;
 
-		for(size_t j = 0; j != 16; j += 2)
+		for (size_t j = 0; j != 16; j += 2)
 		{
 			uint T0, T1;
 
@@ -61,7 +61,7 @@ void SEED::encrypt_n(byte* input, byte* output, size_t blocks) const
 */
 void SEED::decrypt_n(byte* input, byte* output, size_t blocks) const
 {
-	for(size_t i = 0; i != blocks; ++i)
+	for (size_t i = 0; i != blocks; ++i)
 	{
 		uint B0 = load_be!uint(input, 0);
 		uint B1 = load_be!uint(input, 1);
@@ -70,7 +70,7 @@ void SEED::decrypt_n(byte* input, byte* output, size_t blocks) const
 
 		G_FUNC G;
 
-		for(size_t j = 0; j != 16; j += 2)
+		for (size_t j = 0; j != 16; j += 2)
 		{
 			uint T0, T1;
 
@@ -110,14 +110,14 @@ void SEED::key_schedule(in byte* key, size_t)
 
 	secure_vector<uint> WK(4);
 
-	for(size_t i = 0; i != 4; ++i)
+	for (size_t i = 0; i != 4; ++i)
 		WK[i] = load_be!uint(key, i);
 
 	G_FUNC G;
 
 	K.resize(32);
 
-	for(size_t i = 0; i != 16; i += 2)
+	for (size_t i = 0; i != 16; i += 2)
 	{
 		K[2*i  ] = G(WK[0] + WK[2] - RC[i]);
 		K[2*i+1] = G(WK[1] - WK[3] + RC[i]) ^ K[2*i];

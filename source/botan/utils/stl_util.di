@@ -27,7 +27,7 @@ template<typename K, typename V>
 						  const V& null_result = V())
 {
 	auto i = mapping.find(key);
-	if(i == mapping.end())
+	if (i == mapping.end())
 		return null_result;
 	return i->second;
 }
@@ -37,7 +37,7 @@ template<typename K, typename V, typename R>
 						  const R& null_result, const R& found_result)
 {
 	auto i = mapping.find(key);
-	if(i == mapping.end())
+	if (i == mapping.end())
 		return null_result;
 	return found_result;
 }
@@ -64,19 +64,19 @@ template<typename T>
 bool value_exists(in Vector!( T ) vec,
 						const T& val)
 {
-	for(size_t i = 0; i != vec.size(); ++i)
-		if(vec[i] == val)
+	for (size_t i = 0; i != vec.size(); ++i)
+		if (vec[i] == val)
 			return true;
 	return false;
 }
 
 template<typename T, typename Pred>
-void map_remove_if(Pred pred, T& assoc)
+void map_remove_if (Pred pred, T& assoc)
 {
 	auto i = assoc.begin();
 	while(i != assoc.end())
 	{
-		if(pred(i->first))
+		if (pred(i->first))
 			assoc.erase(i++);
 		else
 			i++;

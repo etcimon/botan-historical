@@ -9,7 +9,7 @@
 #include <botan/key_filt.h>
 void Keyed_Filter::set_iv(in InitializationVector iv)
 {
-	if(iv.length() != 0)
+	if (iv.length() != 0)
 		throw new Invalid_IV_Length(name(), iv.length());
 }
 
@@ -18,10 +18,10 @@ void Keyed_Filter::set_iv(in InitializationVector iv)
 */
 Chain::Chain(Filter* f1, Filter* f2, Filter* f3, Filter* f4)
 {
-	if(f1) { attach(f1); incr_owns(); }
-	if(f2) { attach(f2); incr_owns(); }
-	if(f3) { attach(f3); incr_owns(); }
-	if(f4) { attach(f4); incr_owns(); }
+	if (f1) { attach(f1); incr_owns(); }
+	if (f2) { attach(f2); incr_owns(); }
+	if (f3) { attach(f3); incr_owns(); }
+	if (f4) { attach(f4); incr_owns(); }
 }
 
 /*
@@ -29,8 +29,8 @@ Chain::Chain(Filter* f1, Filter* f2, Filter* f3, Filter* f4)
 */
 Chain::Chain(Filter* filters[], size_t count)
 {
-	for(size_t j = 0; j != count; ++j)
-		if(filters[j])
+	for (size_t j = 0; j != count; ++j)
+		if (filters[j])
 		{
 			attach(filters[j]);
 			incr_owns();

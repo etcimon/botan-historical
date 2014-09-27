@@ -31,7 +31,7 @@ void RC4::cipher(in byte* input, byte* output)
 void RC4::generate()
 {
 	byte SX, SY;
-	for(size_t i = 0; i != buffer.size(); i += 4)
+	for (size_t i = 0; i != buffer.size(); i += 4)
 	{
 		SX = state[X+1]; Y = (Y + SX) % 256; SY = state[Y];
 		state[X+1] = SY; state[Y] = SX;
@@ -63,16 +63,16 @@ void RC4::key_schedule(in byte* key, size_t length)
 
 	position = X = Y = 0;
 
-	for(size_t i = 0; i != 256; ++i)
+	for (size_t i = 0; i != 256; ++i)
 		state[i] = cast(byte)(i);
 
-	for(size_t i = 0, state_index = 0; i != 256; ++i)
+	for (size_t i = 0, state_index = 0; i != 256; ++i)
 	{
 		state_index = (state_index + key[i % length] + state[i]) % 256;
 		std::swap(state[i], state[state_index]);
 	}
 
-	for(size_t i = 0; i <= SKIP; i += buffer.size())
+	for (size_t i = 0; i <= SKIP; i += buffer.size())
 		generate();
 
 	position += (SKIP % buffer.size());
@@ -83,8 +83,8 @@ void RC4::key_schedule(in byte* key, size_t length)
 */
 string RC4::name() const
 {
-	if(SKIP == 0)	return "RC4";
-	if(SKIP == 256) return "MARK-4";
+	if (SKIP == 0)	return "RC4";
+	if (SKIP == 256) return "MARK-4";
 	else				return "RC4_skip(" + std::to_string(SKIP) + ")";
 }
 

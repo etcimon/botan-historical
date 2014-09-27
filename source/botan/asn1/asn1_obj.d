@@ -52,10 +52,10 @@ string to_string(in BER_Object obj)
 bool maybe_BER(DataSource& source)
 {
 	byte first_byte;
-	if(!source.peek_byte(first_byte))
+	if (!source.peek_byte(first_byte))
 		throw new Stream_IO_Error("ASN1::maybe_BER: Source was empty");
 
-	if(first_byte == (SEQUENCE | CONSTRUCTED))
+	if (first_byte == (SEQUENCE | CONSTRUCTED))
 		return true;
 	return false;
 }

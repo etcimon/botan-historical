@@ -8,7 +8,7 @@
 #include <botan/ec_group.h>
 string EC_Group::PEM_for_named_group(in string name)
 {
-	if(name == "secp112r1")
+	if (name == "secp112r1")
 		return
 			"-----BEGIN EC PARAMETERS-----"
 			"MHQCAQEwGgYHKoZIzj0BAQIPANt8Kr9i415mgHa+rSCLMCAEDtt8Kr9i415mgHa+"
@@ -16,7 +16,7 @@ string EC_Group::PEM_for_named_group(in string name)
 			"dQACDwDbfCq/YuNedijfrGVhxQIBAQ=="
 			"-----END EC PARAMETERS-----";
 
-	if(name == "secp112r2")
+	if (name == "secp112r2")
 		return
 			"-----BEGIN EC PARAMETERS-----"
 			"MHMCAQEwGgYHKoZIzj0BAQIPANt8Kr9i415mgHa+rSCLMCAEDmEnwkwF84oKqvZc"
@@ -24,7 +24,7 @@ string EC_Group::PEM_for_named_group(in string name)
 			"bpcCDjbfCq/YuNdZfKEFINBLAgEB"
 			"-----END EC PARAMETERS-----";
 
-	if(name == "secp128r1")
+	if (name == "secp128r1")
 		return
 			"-----BEGIN EC PARAMETERS-----"
 			"MIGAAgEBMBwGByqGSM49AQECEQD////9////////////////MCQEEP////3/////"
@@ -32,7 +32,7 @@ string EC_Group::PEM_for_named_group(in string name)
 			"OVuv6xPALaKS3e16gwIRAP////4AAAAAdaMNG5A4oRUCAQE="
 			"-----END EC PARAMETERS-----";
 
-	if(name == "secp128r2")
+	if (name == "secp128r2")
 		return
 			"-----BEGIN EC PARAMETERS-----"
 			"MH8CAQEwHAYHKoZIzj0BAQIRAP////3///////////////8wJAQQ1gMZmNGzu/6/"
@@ -40,7 +40,7 @@ string EC_Group::PEM_for_named_group(in string name)
 			"iU067nEG/oBfw0tEAhA/////f////74AJHIGE7WjAgEE"
 			"-----END EC PARAMETERS-----";
 
-	if(name == "secp160k1")
+	if (name == "secp160k1")
 		return
 			"-----BEGIN EC PARAMETERS-----"
 			"MIGYAgEBMCAGByqGSM49AQECFQD////////////////////+//+sczAsBBQAAAAA"
@@ -49,7 +49,7 @@ string EC_Group::PEM_for_named_group(in string name)
 			"Ft+rmsoWtrMCAQE="
 			"-----END EC PARAMETERS-----";
 
-	if(name == "secp160r1")
+	if (name == "secp160r1")
 		return
 			"-----BEGIN EC PARAMETERS-----"
 			"MIGYAgEBMCAGByqGSM49AQECFQD/////////////////////f////zAsBBT/////"
@@ -58,7 +58,7 @@ string EC_Group::PEM_for_named_group(in string name)
 			"+Seu08p1IlcCAQE="
 			"-----END EC PARAMETERS-----";
 
-	if(name == "secp160r2")
+	if (name == "secp160r2")
 		return
 			"-----BEGIN EC PARAMETERS-----"
 			"MIGYAgEBMCAGByqGSM49AQECFQD////////////////////+//+sczAsBBT/////"
@@ -67,7 +67,7 @@ string EC_Group::PEM_for_named_group(in string name)
 			"54aoGPOhoWsCAQE="
 			"-----END EC PARAMETERS-----";
 
-	if(name == "secp192k1")
+	if (name == "secp192k1")
 		return
 			"-----BEGIN EC PARAMETERS-----"
 			"MIGwAgEBMCQGByqGSM49AQECGQD//////////////////////////v//7jcwNAQY"
@@ -76,7 +76,7 @@ string EC_Group::PEM_for_named_group(in string name)
 			"iNleL50CGQD///////////////4m8vwXD2lGanTe/Y0CAQE="
 			"-----END EC PARAMETERS-----";
 
-	if(name == "secp192r1")
+	if (name == "secp192r1")
 		return
 			"-----BEGIN EC PARAMETERS-----"
 			"MIGwAgEBMCQGByqGSM49AQECGQD////////////////////+//////////8wNAQY"
@@ -85,7 +85,7 @@ string EC_Group::PEM_for_named_group(in string name)
 			"oR55SBECGQD///////////////+Z3vg2FGvJsbTSKDECAQE="
 			"-----END EC PARAMETERS-----";
 
-	if(name == "secp224k1")
+	if (name == "secp224k1")
 		return
 			"-----BEGIN EC PARAMETERS-----"
 			"MIHIAgEBMCgGByqGSM49AQECHQD///////////////////////////////7//+Vt"
@@ -95,7 +95,7 @@ string EC_Group::PEM_for_named_group(in string name)
 			"yvCpcXafsfcCAQE="
 			"-----END EC PARAMETERS-----";
 
-	if(name == "secp224r1")
+	if (name == "secp224r1")
 		return
 			"-----BEGIN EC PARAMETERS-----"
 			"MIHIAgEBMCgGByqGSM49AQECHQD/////////////////////AAAAAAAAAAAAAAAB"
@@ -105,7 +105,7 @@ string EC_Group::PEM_for_named_group(in string name)
 			"E90pRVxcKj0CAQE="
 			"-----END EC PARAMETERS-----";
 
-	if(name == "secp256k1")
+	if (name == "secp256k1")
 		return
 			"-----BEGIN EC PARAMETERS-----"
 			"MIHgAgEBMCwGByqGSM49AQECIQD////////////////////////////////////+"
@@ -115,7 +115,7 @@ string EC_Group::PEM_for_named_group(in string name)
 			"/////////////////////rqu3OavSKA7v9JejNA2QUECAQE="
 			"-----END EC PARAMETERS-----";
 
-	if(name == "secp256r1")
+	if (name == "secp256r1")
 		return
 			"-----BEGIN EC PARAMETERS-----"
 			"MIHgAgEBMCwGByqGSM49AQECIQD/////AAAAAQAAAAAAAAAAAAAAAP//////////"
@@ -125,7 +125,7 @@ string EC_Group::PEM_for_named_group(in string name)
 			"/////wAAAAD//////////7zm+q2nF56E87nKwvxjJVECAQE="
 			"-----END EC PARAMETERS-----";
 
-	if(name == "secp384r1")
+	if (name == "secp384r1")
 		return
 			"-----BEGIN EC PARAMETERS-----"
 			"MIIBQAIBATA8BgcqhkjOPQEBAjEA////////////////////////////////////"
@@ -137,7 +137,7 @@ string EC_Group::PEM_for_named_group(in string name)
 			"////////////x2NNgfQ3Ld9YGg2ySLCneuzsGWrMxSlzAgEB"
 			"-----END EC PARAMETERS-----";
 
-	if(name == "secp521r1")
+	if (name == "secp521r1")
 		return
 			"-----BEGIN EC PARAMETERS-----"
 			"MIIBrAIBATBNBgcqhkjOPQEBAkIB////////////////////////////////////"
@@ -151,7 +151,7 @@ string EC_Group::PEM_for_named_group(in string name)
 			"////////////////+lGGh4O/L5Zrf8wBSPcJpdA7tcm4iZxHrrtvtx6ROGQJAgEB"
 			"-----END EC PARAMETERS-----";
 
-	if(name == "1.3.6.1.4.1.8301.3.1.2.9.0.38")
+	if (name == "1.3.6.1.4.1.8301.3.1.2.9.0.38")
 		return
 			"-----BEGIN EC PARAMETERS-----"
 			"MIIBrAIBATBNBgcqhkjOPQEBAkIB////////////////////////////////////"
@@ -165,7 +165,7 @@ string EC_Group::PEM_for_named_group(in string name)
 			"////////////////+lGGh4O/L5Zrf8wBSPcJpdA7tcm4iZxHrrtvtx6ROGQJAgEB"
 			"-----END EC PARAMETERS-----";
 
-	if(name == "brainpool160r1")
+	if (name == "brainpool160r1")
 		return
 			"-----BEGIN EC PARAMETERS-----"
 			"MIGYAgEBMCAGByqGSM49AQECFQDpXkpfc3BZ3GDfx62Vs9gTlRViDzAsBBQ0Dnvi"
@@ -174,7 +174,7 @@ string EC_Group::PEM_for_named_group(in string name)
 			"1FApQJ5g/AkCAQE="
 			"-----END EC PARAMETERS-----";
 
-	if(name == "brainpool192r1")
+	if (name == "brainpool192r1")
 		return
 			"-----BEGIN EC PARAMETERS-----"
 			"MIGwAgEBMCQGByqGSM49AQECGQDDAvQdkyo2zaejRjCT0Y23j85HbeGoYpcwNAQY"
@@ -183,7 +183,7 @@ string EC_Group::PEM_for_named_group(in string name)
 			"ovopm48CGQDDAvQdkyo2zaejRi+enpFrW+jxAprErMECAQE="
 			"-----END EC PARAMETERS-----";
 
-	if(name == "brainpool224r1")
+	if (name == "brainpool224r1")
 		return
 			"-----BEGIN EC PARAMETERS-----"
 			"MIHIAgEBMCgGByqGSM49AQECHQDXwTSqJkNmhioYMCV10deHsJ8HV5faifV+yMD/"
@@ -193,7 +193,7 @@ string EC_Group::PEM_for_named_group(in string name)
 			"bd68o6Wnk58CAQE="
 			"-----END EC PARAMETERS-----";
 
-	if(name == "brainpool256r1")
+	if (name == "brainpool256r1")
 		return
 			"-----BEGIN EC PARAMETERS-----"
 			"MIHgAgEBMCwGByqGSM49AQECIQCp+1fboe6pvD5mCpCdg41ybjv2I9UmICggE0gd"
@@ -203,7 +203,7 @@ string EC_Group::PEM_for_named_group(in string name)
 			"qftX26Huqbw+ZgqQnYONcYw5eqO1Yab3kB4OgpdIVqcCAQE="
 			"-----END EC PARAMETERS-----";
 
-	if(name == "brainpool320r1")
+	if (name == "brainpool320r1")
 		return
 			"-----BEGIN EC PARAMETERS-----"
 			"MIIBEAIBATA0BgcqhkjOPQEBAikA015HIDa8T7fhPHhe0gHgZfmPz6b29A3vT5K5"
@@ -214,7 +214,7 @@ string EC_Group::PEM_for_named_group(in string name)
 			"t+E8eF7SAeBl+Y/PpbaPEqMtSC7H7oZY6YaRVVtExZMRAgEB"
 			"-----END EC PARAMETERS-----";
 
-	if(name == "brainpool384r1")
+	if (name == "brainpool384r1")
 		return
 			"-----BEGIN EC PARAMETERS-----"
 			"MIIBQAIBATA8BgcqhkjOPQEBAjEAjLkegqM4bSgPXW9+UOZB3xUvcQntVFa0ErHa"
@@ -226,7 +226,7 @@ string EC_Group::PEM_for_named_group(in string name)
 			"3xUvcQntVFazHxZubKwEJafPOrava3/DEDuIMgLpBGVlAgEB"
 			"-----END EC PARAMETERS-----";
 
-	if(name == "brainpool512r1")
+	if (name == "brainpool512r1")
 		return
 			"-----BEGIN EC PARAMETERS-----"
 			"MIIBogIBATBMBgcqhkjOPQEBAkEAqt2duNvpxIs/1OauM8n8B8swjbOzydIO1mOc"
@@ -240,7 +240,7 @@ string EC_Group::PEM_for_named_group(in string name)
 			"MwhwVT5cQUypJhlBhmEZf6wQRx2x04EIXdrdtYeWgpypAGkCAQE="
 			"-----END EC PARAMETERS-----";
 
-	if(name == "x962_p192v2")
+	if (name == "x962_p192v2")
 		return
 			"-----BEGIN EC PARAMETERS-----"
 			"MIGwAgEBMCQGByqGSM49AQECGQD////////////////////+//////////8wNAQY"
@@ -249,7 +249,7 @@ string EC_Group::PEM_for_named_group(in string name)
 			"6XCy3hUCGQD///////////////5fsack3IBBhkjY3TECAQE="
 			"-----END EC PARAMETERS-----";
 
-	if(name == "x962_p192v3")
+	if (name == "x962_p192v3")
 		return
 			"-----BEGIN EC PARAMETERS-----"
 			"MIGwAgEBMCQGByqGSM49AQECGQD////////////////////+//////////8wNAQY"
@@ -258,7 +258,7 @@ string EC_Group::PEM_for_named_group(in string name)
 			"dkipQ7ACGQD///////////////96YtAxyD9ClPZA7BMCAQE="
 			"-----END EC PARAMETERS-----";
 
-	if(name == "x962_p239v1")
+	if (name == "x962_p239v1")
 		return
 			"-----BEGIN EC PARAMETERS-----"
 			"MIHSAgEBMCkGByqGSM49AQECHn///////////////3///////4AAAAAAAH//////"
@@ -268,7 +268,7 @@ string EC_Group::PEM_for_named_group(in string name)
 			"f///nl6an12QcfvRUiaIkJ0LAgEB"
 			"-----END EC PARAMETERS-----";
 
-	if(name == "x962_p239v2")
+	if (name == "x962_p239v2")
 		return
 			"-----BEGIN EC PARAMETERS-----"
 			"MIHSAgEBMCkGByqGSM49AQECHn///////////////3///////4AAAAAAAH//////"
@@ -278,7 +278,7 @@ string EC_Group::PEM_for_named_group(in string name)
 			"gAAAz6foWUN31BTAOCG8WCBjAgEB"
 			"-----END EC PARAMETERS-----";
 
-	if(name == "x962_p239v3")
+	if (name == "x962_p239v3")
 		return
 			"-----BEGIN EC PARAMETERS-----"
 			"MIHSAgEBMCkGByqGSM49AQECHn///////////////3///////4AAAAAAAH//////"
@@ -288,7 +288,7 @@ string EC_Group::PEM_for_named_group(in string name)
 			"f///l13rQbOmBXw8QyFGUmVRAgEB"
 			"-----END EC PARAMETERS-----";
 
-	if(name == "gost_256A")
+	if (name == "gost_256A")
 		return
 			"-----BEGIN EC PARAMETERS-----"
 			"MIHgAgEBMCwGByqGSM49AQECIQD/////////////////////////////////////"

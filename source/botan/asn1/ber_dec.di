@@ -32,9 +32,9 @@ class BER_Decoder
 		BER_Decoder raw_bytes(Vector!( byte )& v);
 
 		BER_Decoder decode_null();
-		BER_Decoder decode(bool& v);
-		BER_Decoder decode(size_t& v);
-		BER_Decoder decode(class BigInt& v);
+		BER_Decoder decode(ref bool v);
+		BER_Decoder decode(ref size_t v);
+		BER_Decoder decode(class ref BigInt v);
 		BER_Decoder decode(Vector!( byte )& v, ASN1_Tag type_tag);
 		BER_Decoder decode(SafeVector!byte v, ASN1_Tag type_tag);
 
@@ -46,7 +46,7 @@ class BER_Decoder
 								  ASN1_Tag type_tag,
 								  ASN1_Tag class_tag = CONTEXT_SPECIFIC);
 
-		BER_Decoder decode(class BigInt& v,
+		BER_Decoder decode(class ref BigInt v,
 								  ASN1_Tag type_tag,
 								  ASN1_Tag class_tag = CONTEXT_SPECIFIC);
 
@@ -64,7 +64,7 @@ class BER_Decoder
 								  ASN1_Tag type_tag = NO_OBJECT,
 								  ASN1_Tag class_tag = NO_OBJECT);
 
-		BER_Decoder decode_octet_string_bigint(class BigInt& b);
+		BER_Decoder decode_octet_string_bigint(class ref BigInt b);
 
 		ulong decode_constrained_integer(ASN1_Tag type_tag,
 													 ASN1_Tag class_tag,
@@ -106,7 +106,7 @@ class BER_Decoder
 			T actual;
 			decode(actual);
 
-			if(actual != expected)
+			if (actual != expected)
 				throw new Decoding_Error(error_msg);
 
 			return this;
@@ -124,9 +124,9 @@ class BER_Decoder
 
 			ASN1_Tag type_tag = cast(ASN1_Tag)(type_no);
 
-			if(obj.type_tag == type_tag && obj.class_tag == class_tag)
+			if (obj.type_tag == type_tag && obj.class_tag == class_tag)
 			{
-				if((class_tag & CONSTRUCTED) && (class_tag & CONTEXT_SPECIFIC))
+				if ((class_tag & CONSTRUCTED) && (class_tag & CONTEXT_SPECIFIC))
 					BER_Decoder(obj.value).decode(output, real_type).verify_end();
 				else
 				{
@@ -172,9 +172,9 @@ BER_Decoder BER_Decoder::decode_optional(T)(ref T output,
 {
 	BER_Object obj = get_next_object();
 
-	if(obj.type_tag == type_tag && obj.class_tag == class_tag)
+	if (obj.type_tag == type_tag && obj.class_tag == class_tag)
 	{
-		if((class_tag & CONSTRUCTED) && (class_tag & CONTEXT_SPECIFIC))
+		if ((class_tag & CONSTRUCTED) && (class_tag & CONTEXT_SPECIFIC))
 			BER_Decoder(obj.value).decode(output).verify_end();
 		else
 		{
@@ -204,7 +204,7 @@ BER_Decoder BER_Decoder::decode_optional_implicit(T)(
 {
 	BER_Object obj = get_next_object();
 
-	if(obj.type_tag == type_tag && obj.class_tag == class_tag)
+	if (obj.type_tag == type_tag && obj.class_tag == class_tag)
 	{
 		obj.type_tag = real_type;
 		obj.class_tag = real_class;

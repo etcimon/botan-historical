@@ -33,7 +33,7 @@ size_t DataSource::discard_next(size_t n)
 {
 	size_t discarded = 0;
 	byte dummy;
-	for(size_t j = 0; j != n; ++j)
+	for (size_t j = 0; j != n; ++j)
 		discarded += read_byte(dummy);
 	return discarded;
 }
@@ -58,7 +58,7 @@ size_t DataSource_Memory::peek(byte* output,
 {
 	size_t length = output.length;
 	const size_t bytes_left = source.size() - offset;
-	if(peek_offset >= bytes_left) return 0;
+	if (peek_offset >= bytes_left) return 0;
 
 	size_t got = std::min(bytes_left - peek_offset, length);
 	copy_mem(output, &source[offset + peek_offset], got);
@@ -91,7 +91,7 @@ size_t DataSource_Stream::read(byte* output)
 {
 	size_t length = output.length;
 	source.read(cast(char*)(output), length);
-	if(source.bad())
+	if (source.bad())
 		throw new Stream_IO_Error("DataSource_Stream::read: Source failure");
 
 	size_t got = source.gcount();
@@ -105,29 +105,29 @@ size_t DataSource_Stream::read(byte* output)
 size_t DataSource_Stream::peek(byte* output, size_t offset) const
 {
 	size_t length = output.length;
-	if(end_of_data())
+	if (end_of_data())
 		throw new Invalid_State("DataSource_Stream: Cannot peek when out of data");
 
 	size_t got = 0;
 
-	if(offset)
+	if (offset)
 	{
 		SafeVector!byte buf(offset);
 		source.read(cast(char*)(&buf[0]), buf.size());
-		if(source.bad())
+		if (source.bad())
 			throw new Stream_IO_Error("DataSource_Stream::peek: Source failure");
 		got = source.gcount();
 	}
 
-	if(got == offset)
+	if (got == offset)
 	{
 		source.read(cast(char*)(out), length);
-		if(source.bad())
+		if (source.bad())
 			throw new Stream_IO_Error("DataSource_Stream::peek: Source failure");
 		got = source.gcount();
 	}
 
-	if(source.eof())
+	if (source.eof())
 		source.clear();
 	source.seekg(total_read, std::ios::beg);
 
@@ -162,7 +162,7 @@ DataSource_Stream::DataSource_Stream(in string path,
 	source(*source_p),
 	total_read(0)
 {
-	if(!source.good())
+	if (!source.good())
 	{
 		delete source_p;
 		throw new Stream_IO_Error("DataSource: Failure opening file " + path);

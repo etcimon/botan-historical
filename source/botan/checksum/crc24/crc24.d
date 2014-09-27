@@ -80,7 +80,7 @@ void CRC24::add_data(in byte* input, size_t length)
 		length -= 16;
 	}
 
-	for(size_t i = 0; i != length; ++i)
+	for (size_t i = 0; i != length; ++i)
 		tmp = TABLE[((tmp >> 16) ^ input[i]) & 0xFF] ^ (tmp << 8);
 
 	crc = tmp;
@@ -91,7 +91,7 @@ void CRC24::add_data(in byte* input, size_t length)
 */
 void CRC24::final_result(byte* output)
 {
-	for(size_t i = 0; i != 3; ++i)
+	for (size_t i = 0; i != 3; ++i)
 		output[i] = get_byte(i+1, crc);
 	clear();
 }

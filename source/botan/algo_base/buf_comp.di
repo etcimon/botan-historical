@@ -51,7 +51,7 @@ class Buffered_Computation
 		*/
 		void update_be(T)(in T input)
 		{
-			for(size_t i = 0; i != sizeof(T); ++i)
+			for (size_t i = 0; i != sizeof(T); ++i)
 			{
 				byte b = get_byte(i, input);
 				add_data(&b, 1);

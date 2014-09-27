@@ -12,32 +12,32 @@
 /*
 * Addition Operator
 */
-BigInt& BigInt::operator+=(in BigInt y)
+ref BigInt BigInt::operator+=(in BigInt y)
 {
 	const size_t x_sw = sig_words(), y_sw = y.sig_words();
 
 	const size_t reg_size = std::max(x_sw, y_sw) + 1;
 	grow_to(reg_size);
 
-	if(sign() == y.sign())
+	if (sign() == y.sign())
 		bigint_add2(mutable_data(), reg_size - 1, y.data(), y_sw);
 	else
 	{
 		s32bit relative_size = bigint_cmp(data(), x_sw, y.data(), y_sw);
 
-		if(relative_size < 0)
+		if (relative_size < 0)
 		{
 			secure_vector<word> z(reg_size - 1);
 			bigint_sub3(&z[0], y.data(), reg_size - 1, data(), x_sw);
 			std::swap(m_reg, z);
 			set_sign(y.sign());
 		}
-		else if(relative_size == 0)
+		else if (relative_size == 0)
 		{
 			zeroise(m_reg);
 			set_sign(Positive);
 		}
-		else if(relative_size > 0)
+		else if (relative_size > 0)
 			bigint_sub2(mutable_data(), x_sw, y.data(), y_sw);
 	}
 
@@ -47,7 +47,7 @@ BigInt& BigInt::operator+=(in BigInt y)
 /*
 * Subtraction Operator
 */
-BigInt& BigInt::operator-=(in BigInt y)
+ref BigInt BigInt::operator-=(in BigInt y)
 {
 	const size_t x_sw = sig_words(), y_sw = y.sig_words();
 
@@ -56,18 +56,18 @@ BigInt& BigInt::operator-=(in BigInt y)
 	const size_t reg_size = std::max(x_sw, y_sw) + 1;
 	grow_to(reg_size);
 
-	if(relative_size < 0)
+	if (relative_size < 0)
 	{
-		if(sign() == y.sign())
+		if (sign() == y.sign())
 			bigint_sub2_rev(mutable_data(), y.data(), y_sw);
 		else
 			bigint_add2(mutable_data(), reg_size - 1, y.data(), y_sw);
 
 		set_sign(y.reverse_sign());
 	}
-	else if(relative_size == 0)
+	else if (relative_size == 0)
 	{
-		if(sign() == y.sign())
+		if (sign() == y.sign())
 		{
 			clear();
 			set_sign(Positive);
@@ -75,9 +75,9 @@ BigInt& BigInt::operator-=(in BigInt y)
 		else
 			bigint_shl1(mutable_data(), x_sw, 0, 1);
 	}
-	else if(relative_size > 0)
+	else if (relative_size > 0)
 	{
-		if(sign() == y.sign())
+		if (sign() == y.sign())
 			bigint_sub2(mutable_data(), x_sw, y.data(), y_sw);
 		else
 			bigint_add2(mutable_data(), reg_size - 1, y.data(), y_sw);
@@ -89,22 +89,22 @@ BigInt& BigInt::operator-=(in BigInt y)
 /*
 * Multiplication Operator
 */
-BigInt& BigInt::operator*=(in BigInt y)
+ref BigInt BigInt::operator*=(in BigInt y)
 {
 	const size_t x_sw = sig_words(), y_sw = y.sig_words();
 	set_sign((sign() == y.sign()) ? Positive : Negative);
 
-	if(x_sw == 0 || y_sw == 0)
+	if (x_sw == 0 || y_sw == 0)
 	{
 		clear();
 		set_sign(Positive);
 	}
-	else if(x_sw == 1 && y_sw)
+	else if (x_sw == 1 && y_sw)
 	{
 		grow_to(y_sw + 2);
 		bigint_linmul3(mutable_data(), y.data(), y_sw, word_at(0));
 	}
-	else if(y_sw == 1 && x_sw)
+	else if (y_sw == 1 && x_sw)
 	{
 		grow_to(x_sw + 2);
 		bigint_linmul2(mutable_data(), x_sw, y.word_at(0));
@@ -127,9 +127,9 @@ BigInt& BigInt::operator*=(in BigInt y)
 /*
 * Division Operator
 */
-BigInt& BigInt::operator/=(in BigInt y)
+ref BigInt BigInt::operator/=(in BigInt y)
 {
-	if(y.sig_words() == 1 && is_power_of_2(y.word_at(0)))
+	if (y.sig_words() == 1 && is_power_of_2(y.word_at(0)))
 		(*this) >>= (y.bits() - 1);
 	else
 		(*this) = (*this) / y;
@@ -139,7 +139,7 @@ BigInt& BigInt::operator/=(in BigInt y)
 /*
 * Modulo Operator
 */
-BigInt& BigInt::operator%=(in BigInt mod)
+ref BigInt BigInt::operator%=(in BigInt mod)
 {
 	return (*this = (*this) % mod);
 }
@@ -149,10 +149,10 @@ BigInt& BigInt::operator%=(in BigInt mod)
 */
 word BigInt::operator%=(word mod)
 {
-	if(mod == 0)
+	if (mod == 0)
 		throw new BigInt::DivideByZero();
 
-	if(is_power_of_2(mod))
+	if (is_power_of_2(mod))
 		 {
 		 word result = (word_at(0) & (mod - 1));
 		 clear();
@@ -163,12 +163,12 @@ word BigInt::operator%=(word mod)
 
 	word remainder = 0;
 
-	for(size_t j = sig_words(); j > 0; --j)
+	for (size_t j = sig_words(); j > 0; --j)
 		remainder = bigint_modop(remainder, word_at(j-1), mod);
 	clear();
 	grow_to(2);
 
-	if(remainder && sign() == BigInt::Negative)
+	if (remainder && sign() == BigInt::Negative)
 		m_reg[0] = mod - remainder;
 	else
 		m_reg[0] = remainder;
@@ -181,9 +181,9 @@ word BigInt::operator%=(word mod)
 /*
 * Left Shift Operator
 */
-BigInt& BigInt::operator<<=(size_t shift)
+ref BigInt BigInt::operator<<=(size_t shift)
 {
-	if(shift)
+	if (shift)
 	{
 		const size_t shift_words = shift / MP_WORD_BITS,
 						 shift_bits  = shift % MP_WORD_BITS,
@@ -199,16 +199,16 @@ BigInt& BigInt::operator<<=(size_t shift)
 /*
 * Right Shift Operator
 */
-BigInt& BigInt::operator>>=(size_t shift)
+ref BigInt BigInt::operator>>=(size_t shift)
 {
-	if(shift)
+	if (shift)
 	{
 		const size_t shift_words = shift / MP_WORD_BITS,
 						 shift_bits  = shift % MP_WORD_BITS;
 
 		bigint_shr1(mutable_data(), sig_words(), shift_words, shift_bits);
 
-		if(is_zero())
+		if (is_zero())
 			set_sign(Positive);
 	}
 

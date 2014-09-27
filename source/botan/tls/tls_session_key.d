@@ -31,7 +31,7 @@ Session_Keys::Session_Keys(const Handshake_State* state,
 
 	std::unique_ptr<KDF> prf(state->protocol_specific_prf());
 
-	if(resuming)
+	if (resuming)
 	{
 		master_sec = pre_master_secret;
 	}
@@ -39,7 +39,7 @@ Session_Keys::Session_Keys(const Handshake_State* state,
 	{
 		SafeVector!byte salt;
 
-		if(state->version() != Protocol_Version::SSL_V3)
+		if (state->version() != Protocol_Version::SSL_V3)
 			salt += Pair(MASTER_SECRET_MAGIC, sizeof(MASTER_SECRET_MAGIC));
 
 		salt += state->client_hello()->random();
@@ -49,7 +49,7 @@ Session_Keys::Session_Keys(const Handshake_State* state,
 	}
 
 	SafeVector!byte salt;
-	if(state->version() != Protocol_Version::SSL_V3)
+	if (state->version() != Protocol_Version::SSL_V3)
 		salt += Pair(KEY_GEN_MAGIC, sizeof(KEY_GEN_MAGIC));
 	salt += state->server_hello()->random();
 	salt += state->client_hello()->random();

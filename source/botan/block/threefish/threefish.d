@@ -100,7 +100,7 @@ void Threefish_512::encrypt_n(byte* input, byte* output, size_t blocks) const
 	BOTAN_ASSERT(m_K.size() == 9, "Key was set");
 	BOTAN_ASSERT(m_T.size() == 3, "Tweak was set");
 
-	for(size_t i = 0; i != blocks; ++i)
+	for (size_t i = 0; i != blocks; ++i)
 	{
 		ulong X0 = load_le!ulong(input, 0);
 		ulong X1 = load_le!ulong(input, 1);
@@ -182,7 +182,7 @@ void Threefish_512::decrypt_n(byte* input, byte* output, size_t blocks) const
 		THREEFISH_INJECT_KEY(R2);										 \
 } while(0)
 
-	for(size_t i = 0; i != blocks; ++i)
+	for (size_t i = 0; i != blocks; ++i)
 	{
 		ulong X0 = load_le!ulong(input, 0);
 		ulong X1 = load_le!ulong(input, 1);
@@ -218,7 +218,7 @@ void Threefish_512::decrypt_n(byte* input, byte* output, size_t blocks) const
 
 void Threefish_512::set_tweak(in byte* tweak, size_t len)
 {
-	if(len != 16)
+	if (len != 16)
 		throw new Exception("Unsupported twofish tweak length");
 	m_T[0] = load_le!ulong(tweak, 0);
 	m_T[1] = load_le!ulong(tweak, 1);
@@ -230,7 +230,7 @@ void Threefish_512::key_schedule(in byte* key, size_t)
 	// todo: define key schedule for smaller keys
 	m_K.resize(9);
 
-	for(size_t i = 0; i != 8; ++i)
+	for (size_t i = 0; i != 8; ++i)
 		m_K[i] = load_le!ulong(key, i);
 
 	m_K[8] = m_K[0] ^ m_K[1] ^ m_K[2] ^ m_K[3] ^

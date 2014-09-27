@@ -58,19 +58,19 @@ const T* factory_prototype(T)(in string algo_spec,
 									Algorithm_Factory af,
 									Algorithm_Cache!T cache)
 {
-	if(const T* cache_hit = cache.get(algo_spec, provider))
+	if (const T* cache_hit = cache.get(algo_spec, provider))
 		return cache_hit;
 
 	SCAN_Name scan_name(algo_spec);
 
-	if(scan_name.cipher_mode() != "")
+	if (scan_name.cipher_mode() != "")
 		return null;
 
-	for(size_t i = 0; i != engines.size(); ++i)
+	for (size_t i = 0; i != engines.size(); ++i)
 	{
-		if(provider == "" || engines[i]->provider_name() == provider)
+		if (provider == "" || engines[i]->provider_name() == provider)
 		{
-			if(T* impl = engine_get_algo<T>(engines[i], scan_name, af))
+			if (T* impl = engine_get_algo<T>(engines[i], scan_name, af))
 				cache.add(impl, algo_spec, engines[i]->provider_name());
 		}
 	}
@@ -97,7 +97,7 @@ Algorithm_Factory::Algorithm_Factory()
 */
 Algorithm_Factory::~Algorithm_Factory()
 {
-	for(auto i = engines.begin(); i != engines.end(); ++i)
+	for (auto i = engines.begin(); i != engines.end(); ++i)
 		delete *i;
 }
 
@@ -122,15 +122,15 @@ void Algorithm_Factory::add_engine(Engine* engine)
 void Algorithm_Factory::set_preferred_provider(in string algo_spec,
 															  in string provider)
 {
-	if(prototype_block_cipher(algo_spec))
+	if (prototype_block_cipher(algo_spec))
 		block_cipher_cache->set_preferred_provider(algo_spec, provider);
-	else if(prototype_stream_cipher(algo_spec))
+	else if (prototype_stream_cipher(algo_spec))
 		stream_cipher_cache->set_preferred_provider(algo_spec, provider);
-	else if(prototype_hash_function(algo_spec))
+	else if (prototype_hash_function(algo_spec))
 		hash_cache->set_preferred_provider(algo_spec, provider);
-	else if(prototype_mac(algo_spec))
+	else if (prototype_mac(algo_spec))
 		mac_cache->set_preferred_provider(algo_spec, provider);
-	else if(prototype_pbkdf(algo_spec))
+	else if (prototype_pbkdf(algo_spec))
 		pbkdf_cache->set_preferred_provider(algo_spec, provider);
 }
 
@@ -139,7 +139,7 @@ void Algorithm_Factory::set_preferred_provider(in string algo_spec,
 */
 Engine* Algorithm_Factory::get_engine_n(size_t n) const
 {
-	if(n >= engines.size())
+	if (n >= engines.size())
 		return null;
 	return engines[n];
 }
@@ -151,20 +151,20 @@ Engine* Algorithm_Factory::get_engine_n(size_t n) const
 Vector!( string )
 Algorithm_Factory::providers_of(in string algo_spec)
 {
-	/* The checks with if(prototype_X(algo_spec)) have the effect of
+	/* The checks with if (prototype_X(algo_spec)) have the effect of
 		forcing a full search, since otherwise there might not be any
 		providers at all in the cache.
 	*/
 
-	if(prototype_block_cipher(algo_spec))
+	if (prototype_block_cipher(algo_spec))
 		return block_cipher_cache->providers_of(algo_spec);
-	else if(prototype_stream_cipher(algo_spec))
+	else if (prototype_stream_cipher(algo_spec))
 		return stream_cipher_cache->providers_of(algo_spec);
-	else if(prototype_hash_function(algo_spec))
+	else if (prototype_hash_function(algo_spec))
 		return hash_cache->providers_of(algo_spec);
-	else if(prototype_mac(algo_spec))
+	else if (prototype_mac(algo_spec))
 		return mac_cache->providers_of(algo_spec);
-	else if(prototype_pbkdf(algo_spec))
+	else if (prototype_pbkdf(algo_spec))
 		return pbkdf_cache->providers_of(algo_spec);
 	else
 		return Vector!( string )();
@@ -234,7 +234,7 @@ BlockCipher*
 Algorithm_Factory::make_block_cipher(in string algo_spec,
 												 in string provider)
 {
-	if(const BlockCipher* proto = prototype_block_cipher(algo_spec, provider))
+	if (const BlockCipher* proto = prototype_block_cipher(algo_spec, provider))
 		return proto->clone();
 	throw new Algorithm_Not_Found(algo_spec);
 }
@@ -246,7 +246,7 @@ StreamCipher*
 Algorithm_Factory::make_stream_cipher(in string algo_spec,
 												  in string provider)
 {
-	if(const StreamCipher* proto = prototype_stream_cipher(algo_spec, provider))
+	if (const StreamCipher* proto = prototype_stream_cipher(algo_spec, provider))
 		return proto->clone();
 	throw new Algorithm_Not_Found(algo_spec);
 }
@@ -258,7 +258,7 @@ HashFunction*
 Algorithm_Factory::make_hash_function(in string algo_spec,
 												  in string provider)
 {
-	if(const HashFunction* proto = prototype_hash_function(algo_spec, provider))
+	if (const HashFunction* proto = prototype_hash_function(algo_spec, provider))
 		return proto->clone();
 	throw new Algorithm_Not_Found(algo_spec);
 }
@@ -270,7 +270,7 @@ MessageAuthenticationCode*
 Algorithm_Factory::make_mac(in string algo_spec,
 									 in string provider)
 {
-	if(const MessageAuthenticationCode* proto = prototype_mac(algo_spec, provider))
+	if (const MessageAuthenticationCode* proto = prototype_mac(algo_spec, provider))
 		return proto->clone();
 	throw new Algorithm_Not_Found(algo_spec);
 }
@@ -282,7 +282,7 @@ PBKDF*
 Algorithm_Factory::make_pbkdf(in string algo_spec,
 										in string provider)
 {
-	if(const PBKDF* proto = prototype_pbkdf(algo_spec, provider))
+	if (const PBKDF* proto = prototype_pbkdf(algo_spec, provider))
 		return proto->clone();
 	throw new Algorithm_Not_Found(algo_spec);
 }

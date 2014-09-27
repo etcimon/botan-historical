@@ -50,7 +50,7 @@ SafeVector!byte X942_PRF::derive(size_t key_len,
 					.raw_bytes(encode_x942_int(counter))
 				.end_cons()
 
-				.encode_if(salt_len != 0,
+				.encode_if (salt_len != 0,
 					DER_Encoder()
 						.start_explicit(0)
 							.encode(salt, salt_len, OCTET_STRING)
@@ -79,7 +79,7 @@ SafeVector!byte X942_PRF::derive(size_t key_len,
 */
 X942_PRF::X942_PRF(in string oid)
 {
-	if(OIDS::have_oid(oid))
+	if (OIDS::have_oid(oid))
 		key_wrap_oid = OIDS::lookup(oid).as_string();
 	else
 		key_wrap_oid = oid;

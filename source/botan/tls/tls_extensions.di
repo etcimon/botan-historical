@@ -360,7 +360,7 @@ class Extensions
 
 			auto i = extensions.find(type);
 
-			if(i != extensions.end())
+			if (i != extensions.end())
 				return cast(T*)(i->second.get());
 			return null;
 		}

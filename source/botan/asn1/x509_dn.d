@@ -24,7 +24,7 @@ X509_DN::X509_DN()
 */
 X509_DN::X509_DN(in std::multimap<OID, string> args)
 {
-	for(auto i = args.begin(); i != args.end(); ++i)
+	for (auto i = args.begin(); i != args.end(); ++i)
 		add_attribute(i->first, i->second);
 }
 
@@ -33,7 +33,7 @@ X509_DN::X509_DN(in std::multimap<OID, string> args)
 */
 X509_DN::X509_DN(in std::multimap<string, string> args)
 {
-	for(auto i = args.begin(); i != args.end(); ++i)
+	for (auto i = args.begin(); i != args.end(); ++i)
 		add_attribute(OIDS::lookup(i->first), i->second);
 }
 
@@ -52,12 +52,12 @@ void X509_DN::add_attribute(in string type,
 */
 void X509_DN::add_attribute(in OID oid, in string str)
 {
-	if(str == "")
+	if (str == "")
 		return;
 
 	auto range = dn_info.equal_range(oid);
-	for(auto i = range.first; i != range.second; ++i)
-		if(i->second.value() == str)
+	for (auto i = range.first; i != range.second; ++i)
+		if (i->second.value() == str)
 			return;
 
 	multimap_insert(dn_info, oid, ASN1_String(str));
@@ -70,7 +70,7 @@ void X509_DN::add_attribute(in OID oid, in string str)
 std::multimap<OID, string> X509_DN::get_attributes() const
 {
 	std::multimap<OID, string> retval;
-	for(auto i = dn_info.begin(); i != dn_info.end(); ++i)
+	for (auto i = dn_info.begin(); i != dn_info.end(); ++i)
 		multimap_insert(retval, i->first, i->second.value());
 	return retval;
 }
@@ -81,7 +81,7 @@ std::multimap<OID, string> X509_DN::get_attributes() const
 std::multimap<string, string> X509_DN::contents() const
 {
 	std::multimap<string, string> retval;
-	for(auto i = dn_info.begin(); i != dn_info.end(); ++i)
+	for (auto i = dn_info.begin(); i != dn_info.end(); ++i)
 		multimap_insert(retval, OIDS::lookup(i->first), i->second.value());
 	return retval;
 }
@@ -96,7 +96,7 @@ Vector!( string ) X509_DN::get_attribute(in string attr) const
 	auto range = dn_info.equal_range(oid);
 
 	Vector!( string ) values;
-	for(auto i = range.first; i != range.second; ++i)
+	for (auto i = range.first; i != range.second; ++i)
 		values.push_back(i->second.value());
 	return values;
 }
@@ -114,15 +114,15 @@ Vector!( byte ) X509_DN::get_bits() const
 */
 string X509_DN::deref_info_field(in string info)
 {
-	if(info == "Name" || info == "CommonName") return "X520.CommonName";
-	if(info == "SerialNumber")					  return "X520.SerialNumber";
-	if(info == "Country")							 return "X520.Country";
-	if(info == "Organization")					  return "X520.Organization";
-	if(info == "Organizational Unit" || info == "OrgUnit")
+	if (info == "Name" || info == "CommonName") return "X520.CommonName";
+	if (info == "SerialNumber")					  return "X520.SerialNumber";
+	if (info == "Country")							 return "X520.Country";
+	if (info == "Organization")					  return "X520.Organization";
+	if (info == "Organizational Unit" || info == "OrgUnit")
 		return "X520.OrganizationalUnit";
-	if(info == "Locality")							return "X520.Locality";
-	if(info == "State" || info == "Province")  return "X520.State";
-	if(info == "Email")								return "RFC822";
+	if (info == "Locality")							return "X520.Locality";
+	if (info == "State" || info == "Province")  return "X520.State";
+	if (info == "Email")								return "RFC822";
 	return info;
 }
 
@@ -134,19 +134,19 @@ bool operator==(in X509_DN dn1, const X509_DN& dn2)
 	auto attr1 = dn1.get_attributes();
 	auto attr2 = dn2.get_attributes();
 
-	if(attr1.size() != attr2.size()) return false;
+	if (attr1.size() != attr2.size()) return false;
 
 	auto p1 = attr1.begin();
 	auto p2 = attr2.begin();
 
 	while(true)
 	{
-		if(p1 == attr1.end() && p2 == attr2.end())
+		if (p1 == attr1.end() && p2 == attr2.end())
 			break;
-		if(p1 == attr1.end())		return false;
-		if(p2 == attr2.end())		return false;
-		if(p1->first != p2->first) return false;
-		if(!x500_name_cmp(p1->second, p2->second))
+		if (p1 == attr1.end())		return false;
+		if (p2 == attr2.end())		return false;
+		if (p1->first != p2->first) return false;
+		if (!x500_name_cmp(p1->second, p2->second))
 			return false;
 		++p1;
 		++p2;
@@ -170,15 +170,15 @@ bool operator<(in X509_DN dn1, const X509_DN& dn2)
 	auto attr1 = dn1.get_attributes();
 	auto attr2 = dn2.get_attributes();
 
-	if(attr1.size() < attr2.size()) return true;
-	if(attr1.size() > attr2.size()) return false;
+	if (attr1.size() < attr2.size()) return true;
+	if (attr1.size() > attr2.size()) return false;
 
-	for(auto p1 = attr1.begin(); p1 != attr1.end(); ++p1)
+	for (auto p1 = attr1.begin(); p1 != attr1.end(); ++p1)
 	{
 		auto p2 = attr2.find(p1->first);
-		if(p2 == attr2.end())		 return false;
-		if(p1->second > p2->second) return false;
-		if(p1->second < p2->second) return true;
+		if (p2 == attr2.end())		 return false;
+		if (p1->second > p2->second) return false;
+		if (p1->second < p2->second) return true;
 	}
 	return false;
 }
@@ -196,13 +196,13 @@ void do_ava(DER_Encoder encoder,
 	const OID oid = OIDS::lookup(oid_str);
 	const bool exists = (dn_info.find(oid) != dn_info.end());
 
-	if(!exists && must_exist)
+	if (!exists && must_exist)
 		throw new Encoding_Error("X509_DN: No entry for " + oid_str);
-	if(!exists) return;
+	if (!exists) return;
 
 	auto range = dn_info.equal_range(oid);
 
-	for(auto i = range.first; i != range.second; ++i)
+	for (auto i = range.first; i != range.second; ++i)
 	{
 		encoder.start_cons(SET)
 			.start_cons(SEQUENCE)
@@ -224,7 +224,7 @@ void X509_DN::encode_into(DER_Encoder der) const
 
 	der.start_cons(SEQUENCE);
 
-	if(!dn_bits.empty())
+	if (!dn_bits.empty())
 		der.raw_bytes(dn_bits);
 	else
 	{
@@ -279,13 +279,13 @@ namespace {
 
 string to_short_form(in string long_id)
 {
-	if(long_id == "X520.CommonName")
+	if (long_id == "X520.CommonName")
 		return "CN";
 
-	if(long_id == "X520.Organization")
+	if (long_id == "X520.Organization")
 		return "O";
 
-	if(long_id == "X520.OrganizationalUnit")
+	if (long_id == "X520.OrganizationalUnit")
 		return "OU";
 
 	return long_id;
@@ -293,16 +293,16 @@ string to_short_form(in string long_id)
 
 }
 
-std::ostream& operator<<(std::ostream& out, const X509_DN& dn)
+std::ostream& operator<<(std::ostream& output, const X509_DN& dn)
 {
 	std::multimap<string, string> contents = dn.contents();
 
 	for(std::multimap<string, string>::const_iterator i = contents.begin();
 		 i != contents.end(); ++i)
 	{
-		out << to_short_form(i->first) << "=" << i->second << ' ';
+		output << to_short_form(i->first) << "=" << i->second << ' ';
 	}
-	return out;
+	return output;
 }
 
 }

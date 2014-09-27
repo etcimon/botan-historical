@@ -49,7 +49,7 @@ bool EAC_Signed_Object::check_signature(Public_Key& pub_key,
 		Vector!( string ) sig_info =
 			split_on(OIDS::lookup(sig_algo.oid), '/');
 
-		if(sig_info.size() != 2 || sig_info[0] != pub_key.algo_name())
+		if (sig_info.size() != 2 || sig_info[0] != pub_key.algo_name())
 		{
 			return false;
 		}

@@ -13,7 +13,7 @@
 Modular_Exponentiator*
 Core_Engine::mod_exp(in BigInt n, Power_Mod::Usage_Hints hints) const
 {
-	if(n.is_odd())
+	if (n.is_odd())
 		return new Montgomery_Exponentiator(n, hints);
 	return new Fixed_Window_Exponentiator(n, hints);
 }

@@ -26,7 +26,7 @@ string http_transact_asio(in string hostname,
 
 	tcp.connect(hostname, "http");
 
-	if(!tcp)
+	if (!tcp)
 		throw new Exception("HTTP connection to " + hostname + " failed");
 
 	tcp << message;
@@ -50,15 +50,15 @@ string url_encode(in string input)
 {
 	std::ostringstream out;
 
-	for(auto c : input)
+	foreach (c; input)
 	{
-		if(c >= 'A' && c <= 'Z')
+		if (c >= 'A' && c <= 'Z')
 			out << c;
-		else if(c >= 'a' && c <= 'z')
+		else if (c >= 'a' && c <= 'z')
 			out << c;
-		else if(c >= '0' && c <= '9')
+		else if (c >= '0' && c <= '9')
 			out << c;
-		else if(c == '-' || c == '_' || c == '.' || c == '~')
+		else if (c == '-' || c == '_' || c == '.' || c == '~')
 			out << c;
 		else
 			out << '%' << hex_encode(cast(byte*)(&c), 1);
@@ -70,7 +70,7 @@ string url_encode(in string input)
 std::ostream& operator<<(std::ostream& o, const Response& resp)
 {
 	o << "HTTP " << resp.status_code() << " " << resp.status_message() << "";
-	for(auto h : resp.headers())
+	foreach (h; resp.headers())
 		o << "Header '" << h.first << "' = '" << h.second << "'";
 	o << "Body " << std::to_string(resp.body().size()) << " bytes:";
 	o.write(cast(string)(resp.body()[0]), resp.body().size());
@@ -85,7 +85,7 @@ Response http_sync(http_exch_fn http_transact,
 						 size_t allowable_redirects)
 {
 	const auto protocol_host_sep = url.find("://");
-	if(protocol_host_sep == string::npos)
+	if (protocol_host_sep == string::npos)
 		throw new Exception("Invalid URL " + url);
 	const string protocol = url.substr(0, protocol_host_sep);
 
@@ -93,7 +93,7 @@ Response http_sync(http_exch_fn http_transact,
 
 	string hostname, loc;
 
-	if(host_loc_sep == string::npos)
+	if (host_loc_sep == string::npos)
 	{
 		hostname = url.substr(protocol_host_sep + 3, string::npos);
 		loc = "/";
@@ -109,15 +109,15 @@ Response http_sync(http_exch_fn http_transact,
 	outbuf << verb << " " << loc << " HTTP/1.0\r";
 	outbuf << "Host: " << hostname << "\r";
 
-	if(verb == "GET")
+	if (verb == "GET")
 	{
 		outbuf << "Accept: */*\r";
 		outbuf << "Cache-Control: no-cache\r";
 	}
-	else if(verb == "POST")
+	else if (verb == "POST")
 		outbuf << "Content-Length: " << body.size() << "\r";
 
-	if(content_type != "")
+	if (content_type != "")
 		outbuf << "Content-Type: " << content_type << "\r";
 	outbuf << "Connection: close\r\r";
 	outbuf.write(cast(string)(body[0]), body.size());
@@ -126,7 +126,7 @@ Response http_sync(http_exch_fn http_transact,
 
 	string line1;
 	std::getline(io, line1);
-	if(!io || line1.empty())
+	if (!io || line1.empty())
 		throw new Exception("No response");
 
 	stringstream response_stream(line1);
@@ -138,7 +138,7 @@ Response http_sync(http_exch_fn http_transact,
 
 	std::getline(response_stream, status_message);
 
-	if(!response_stream || http_version.substr(0,5) != "HTTP/")
+	if (!response_stream || http_version.substr(0,5) != "HTTP/")
 		throw new Exception("Not an HTTP response");
 
 	HashMap!(string, string) headers;
@@ -146,20 +146,20 @@ Response http_sync(http_exch_fn http_transact,
 	while (std::getline(io, header_line) && header_line != "\r")
 	{
 		auto sep = header_line.find(": ");
-		if(sep == string::npos || sep > header_line.size() - 2)
+		if (sep == string::npos || sep > header_line.size() - 2)
 			throw new Exception("Invalid HTTP header " + header_line);
 		const string key = header_line.substr(0, sep);
 
-		if(sep + 2 < header_line.size() - 1)
+		if (sep + 2 < header_line.size() - 1)
 		{
 			const string val = header_line.substr(sep + 2, (header_line.size() - 1) - (sep + 2));
 			headers[key] = val;
 		}
 	}
 
-	if(status_code == 301 && headers.count("Location"))
+	if (status_code == 301 && headers.count("Location"))
 	{
-		if(allowable_redirects == 0)
+		if (allowable_redirects == 0)
 			throw new Exception("HTTP redirection count exceeded");
 		return GET_sync(headers["Location"], allowable_redirects - 1);
 	}
@@ -174,9 +174,9 @@ Response http_sync(http_exch_fn http_transact,
 
 	const string header_size = search_map(headers, string("Content-Length"));
 
-	if(header_size != "")
+	if (header_size != "")
 	{
-		if(resp_body.size() != to_uint(header_size))
+		if (resp_body.size() != to_uint(header_size))
 			throw new Exception("Content-Length disagreement, header says " +
 											 header_size + " got " + std::to_string(resp_body.size()));
 	}

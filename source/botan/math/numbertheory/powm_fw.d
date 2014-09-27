@@ -27,7 +27,7 @@ void Fixed_Window_Exponentiator::set_base(in BigInt base)
 	g[0] = 1;
 	g[1] = base;
 
-	for(size_t i = 2; i != g.size(); ++i)
+	for (size_t i = 2; i != g.size(); ++i)
 		g[i] = reducer.multiply(g[i-1], g[0]);
 }
 
@@ -40,9 +40,9 @@ BigInt Fixed_Window_Exponentiator::execute() const
 
 	BigInt x = 1;
 
-	for(size_t i = exp_nibbles; i > 0; --i)
+	for (size_t i = exp_nibbles; i > 0; --i)
 	{
-		for(size_t j = 0; j != window_bits; ++j)
+		for (size_t j = 0; j != window_bits; ++j)
 			x = reducer.square(x);
 
 		const uint nibble = exp.get_substring(window_bits*(i-1), window_bits);

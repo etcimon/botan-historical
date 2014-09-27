@@ -48,7 +48,7 @@ void round3(ref uint output, uint input, uint mask, uint rot)
 */
 void CAST_256::encrypt_n(byte* input, byte* output, size_t blocks) const
 {
-	for(size_t i = 0; i != blocks; ++i)
+	for (size_t i = 0; i != blocks; ++i)
 	{
 		uint A = load_be!uint(input, 0);
 		uint B = load_be!uint(input, 1);
@@ -94,7 +94,7 @@ void CAST_256::decrypt_n(byte* input, byte* output, size_t blocks) const
 {
 	in byte* cached = output;
 	scope(exit) output = cached;
-	for(size_t i = 0; i != blocks; ++i)
+	for (size_t i = 0; i != blocks; ++i)
 	{
 		uint A = load_be!uint(input, 0);
 		uint B = load_be!uint(input, 1);
@@ -182,13 +182,13 @@ void CAST_256::key_schedule(in byte* key)
 	RK.resize(48);
 
 	secure_vector<uint> K(8);
-	for(size_t i = 0; i != length; ++i)
+	for (size_t i = 0; i != length; ++i)
 		K[i/4] = (K[i/4] << 8) + key[i];
 
 	uint A = K[0], B = K[1], C = K[2], D = K[3],
 			 E = K[4], F = K[5], G = K[6], H = K[7];
 
-	for(size_t i = 0; i != 48; i += 4)
+	for (size_t i = 0; i != 48; i += 4)
 	{
 		round1(G, H, KEY_MASK[4*i+ 0], KEY_ROT[(4*i+ 0) % 32]);
 		round2(F, G, KEY_MASK[4*i+ 1], KEY_ROT[(4*i+ 1) % 32]);

@@ -69,11 +69,11 @@ class Server_Information
 
  bool operator<(in Server_Information a, const Server_Information& b)
 {
-	if(a.hostname() != b.hostname())
+	if (a.hostname() != b.hostname())
 		return (a.hostname() < b.hostname());
-	if(a.service() != b.service())
+	if (a.service() != b.service())
 		return (a.service() < b.service());
-	if(a.port() != b.port())
+	if (a.port() != b.port())
 		return (a.port() < b.port());
 	return false; // equal
 }

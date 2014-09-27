@@ -20,7 +20,7 @@ void Whirlpool::compress_n(in byte* input, size_t blocks)
 		0xFBEE7C66DD17479E, 0xCA2DBF07AD5A8333
 };
 
-	for(size_t i = 0; i != blocks; ++i)
+	for (size_t i = 0; i != blocks; ++i)
 	{
 		load_be(&M[0], in, M.size());
 
@@ -32,7 +32,7 @@ void Whirlpool::compress_n(in byte* input, size_t blocks)
 		B0 = K0 ^ M[0]; B1 = K1 ^ M[1]; B2 = K2 ^ M[2]; B3 = K3 ^ M[3];
 		B4 = K4 ^ M[4]; B5 = K5 ^ M[5]; B6 = K6 ^ M[6]; B7 = K7 ^ M[7];
 
-		for(size_t j = 0; j != 10; ++j)
+		for (size_t j = 0; j != 10; ++j)
 		{
 			ulong T0, T1, T2, T3, T4, T5, T6, T7;
 			T0 = C0[get_byte(0, K0)] ^ C1[get_byte(1, K7)] ^
@@ -126,7 +126,7 @@ void Whirlpool::compress_n(in byte* input, size_t blocks)
 */
 void Whirlpool::copy_out(byte* output)
 {
-	for(size_t i = 0; i != output_length(); i += 8)
+	for (size_t i = 0; i != output_length(); i += 8)
 		store_be(digest[i/8], output + i);
 }
 

@@ -51,11 +51,11 @@ void Win32_EntropySource::poll(Entropy_Accumulator& accum)
 	HANDLE snapshot = CreateToolhelp32Snapshot(TH32CS_SNAPALL, 0);
 
 #define TOOLHELP32_ITER(DATA_TYPE, FUNC_FIRST, FUNC_NEXT) \
-	if(!accum.polling_goal_achieved())							\
+	if (!accum.polling_goal_achieved())							\
 	{																	\
 		DATA_TYPE info;												 \
 		info.dwSize = sizeof(DATA_TYPE);						  \
-		if(FUNC_FIRST(snapshot, &info))							\
+		if (FUNC_FIRST(snapshot, &info))							\
 		{																\
 			do															  \
 			{															\
@@ -70,7 +70,7 @@ void Win32_EntropySource::poll(Entropy_Accumulator& accum)
 
 #undef TOOLHELP32_ITER
 
-	if(!accum.polling_goal_achieved())
+	if (!accum.polling_goal_achieved())
 	{
 		size_t heap_lists_found = 0;
 		HEAPLIST32 heap_list;
@@ -79,30 +79,30 @@ void Win32_EntropySource::poll(Entropy_Accumulator& accum)
 		const size_t HEAP_LISTS_MAX = 32;
 		const size_t HEAP_OBJS_PER_LIST = 128;
 
-		if(Heap32ListFirst(snapshot, &heap_list))
+		if (Heap32ListFirst(snapshot, &heap_list))
 		{
 			do
 			{
 				accum.add(heap_list, 1);
 
-				if(++heap_lists_found > HEAP_LISTS_MAX)
+				if (++heap_lists_found > HEAP_LISTS_MAX)
 					break;
 
 				size_t heap_objs_found = 0;
 				HEAPENTRY32 heap_entry;
 				heap_entry.dwSize = sizeof(HEAPENTRY32);
-				if(Heap32First(&heap_entry, heap_list.th32ProcessID,
+				if (Heap32First(&heap_entry, heap_list.th32ProcessID,
 									heap_list.th32HeapID))
 				{
 					do
 					{
-						if(heap_objs_found++ > HEAP_OBJS_PER_LIST)
+						if (heap_objs_found++ > HEAP_OBJS_PER_LIST)
 							break;
 						accum.add(heap_entry, 1);
 					} while(Heap32Next(&heap_entry));
 				}
 
-				if(accum.polling_goal_achieved())
+				if (accum.polling_goal_achieved())
 					break;
 
 			} while(Heap32ListNext(snapshot, &heap_list));

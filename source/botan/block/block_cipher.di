@@ -49,7 +49,7 @@ class BlockCipher : public SymmetricAlgorithm
 		* Must be of length block_size().
 		*/
 		void decrypt(byte* input, byte* output) const
-		{ decrypt_n(input, out, 1); }
+		{ decrypt_n(input, output, 1); }
 
 		/**
 		* Encrypt a block.

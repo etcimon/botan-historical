@@ -24,7 +24,7 @@ Vector!( byte ) GOST_3410_PublicKey::x509_subject_public_key() const
 	y.binary_encode(&bits[2*part_size - y.bytes()]);
 
 	// Keys are stored in little endian format (WTF)
-	for(size_t i = 0; i != part_size / 2; ++i)
+	for (size_t i = 0; i != part_size / 2; ++i)
 	{
 		std::swap(bits[i], bits[part_size-1-i]);
 		std::swap(bits[part_size+i], bits[2*part_size-1-i]);
@@ -60,7 +60,7 @@ GOST_3410_PublicKey::GOST_3410_PublicKey(in AlgorithmIdentifier alg_id,
 	const size_t part_size = bits.size() / 2;
 
 	// Keys are stored in little endian format (WTF)
-	for(size_t i = 0; i != part_size / 2; ++i)
+	for (size_t i = 0; i != part_size / 2; ++i)
 	{
 		std::swap(bits[i], bits[part_size-1-i]);
 		std::swap(bits[part_size+i], bits[2*part_size-1-i]);
@@ -81,7 +81,7 @@ BigInt decode_le(in byte* msg, size_t msg_len)
 {
 	SafeVector!byte msg_le(msg, msg + msg_len);
 
-	for(size_t i = 0; i != msg_le.size() / 2; ++i)
+	for (size_t i = 0; i != msg_le.size() / 2; ++i)
 		std::swap(msg_le[i], msg_le[msg_le.size()-1-i]);
 
 	return BigInt(&msg_le[0], msg_le.size());
@@ -110,7 +110,7 @@ GOST_3410_Signature_Operation::sign(in byte* msg, size_t msg_len,
 	BigInt e = decode_le(msg, msg_len);
 
 	e %= order;
-	if(e == 0)
+	if (e == 0)
 		e = 1;
 
 	PointGFp k_times_P = base_point * k;
@@ -122,7 +122,7 @@ GOST_3410_Signature_Operation::sign(in byte* msg, size_t msg_len,
 
 	BigInt s = (r*x + k*e) % order;
 
-	if(r == 0 || s == 0)
+	if (r == 0 || s == 0)
 		throw new Invalid_State("GOST 34.10: r == 0 || s == 0");
 
 	SafeVector!byte output(2*order.bytes());
@@ -141,7 +141,7 @@ GOST_3410_Verification_Operation::GOST_3410_Verification_Operation(in GOST_3410_
 bool GOST_3410_Verification_Operation::verify(in byte* msg, size_t msg_len,
 															 in byte* sig, size_t sig_len)
 {
-	if(sig_len != order.bytes()*2)
+	if (sig_len != order.bytes()*2)
 		return false;
 
 	BigInt e = decode_le(msg, msg_len);
@@ -149,11 +149,11 @@ bool GOST_3410_Verification_Operation::verify(in byte* msg, size_t msg_len,
 	BigInt s(sig, sig_len / 2);
 	BigInt r(sig + sig_len / 2, sig_len / 2);
 
-	if(r <= 0 || r >= order || s <= 0 || s >= order)
+	if (r <= 0 || r >= order || s <= 0 || s >= order)
 		return false;
 
 	e %= order;
-	if(e == 0)
+	if (e == 0)
 		e = 1;
 
 	BigInt v = inverse_mod(e, order);
@@ -164,7 +164,7 @@ bool GOST_3410_Verification_Operation::verify(in byte* msg, size_t msg_len,
 	PointGFp R = multi_exponentiate(base_point, z1,
 											  public_point, z2);
 
-	if(R.is_zero())
+	if (R.is_zero())
 	  return false;
 
 	return (R.get_affine_x() == r);

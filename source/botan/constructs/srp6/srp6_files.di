@@ -21,7 +21,7 @@ class SRP6_Authenticator_File
 		SRP6_Authenticator_File(in string filename);
 
 		bool lookup_user(in string username,
-							  BigInt& v,
+							  ref BigInt v,
 							  Vector!( byte )& salt,
 							  string& group_id) const;
 	private:

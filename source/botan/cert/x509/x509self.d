@@ -54,7 +54,7 @@ X509_Certificate create_self_signed_cert(in X509_Cert_Options opts,
 	load_info(opts, subject_dn, subject_alt);
 
 	Key_Constraints constraints;
-	if(opts.is_CA)
+	if (opts.is_CA)
 		constraints = Key_Constraints(KEY_CERT_SIGN | CRL_SIGN);
 	else
 		constraints = find_constraints(key, opts.constraints);
@@ -124,7 +124,7 @@ PKCS10_Request create_cert_req(in X509_Cert_Options opts,
 		.raw_bytes(pub_key)
 		.start_explicit(0);
 
-	if(opts.challenge != "")
+	if (opts.challenge != "")
 	{
 		ASN1_String challenge(opts.challenge, DIRECTORY_STRING);
 

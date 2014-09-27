@@ -12,7 +12,7 @@
 */
 void Parallel::add_data(in byte* input, size_t length)
 {
-	for(auto hash : hashes)
+	foreach (hash; hashes)
 		 hash->update(input, length);
 }
 
@@ -23,7 +23,7 @@ void Parallel::final_result(byte* output)
 {
 	uint offset = 0;
 
-	for(auto hash : hashes)
+	foreach (hash; hashes)
 	{
 		hash->flushInto(out + offset);
 		offset += hash->output_length();
@@ -37,7 +37,7 @@ size_t Parallel::output_length() const
 {
 	size_t sum = 0;
 
-	for(auto hash : hashes)
+	foreach (hash; hashes)
 		sum += hash->output_length();
 	return sum;
 }
@@ -49,7 +49,7 @@ string Parallel::name() const
 {
 	Vector!( string ) names;
 
-	for(auto hash : hashes)
+	foreach (hash; hashes)
 		names.push_back(hash->name());
 
 	return "Parallel(" + string_join(names, ',') + ")";
@@ -62,7 +62,7 @@ HashFunction* Parallel::clone() const
 {
 	Vector!( HashFunction* ) hash_copies;
 
-	for(auto hash : hashes)
+	foreach (hash; hashes)
 		hash_copies.push_back(hash->clone());
 
 	return new Parallel(hash_copies);
@@ -73,7 +73,7 @@ HashFunction* Parallel::clone() const
 */
 void Parallel::clear()
 {
-	for(auto hash : hashes)
+	foreach (hash; hashes)
 		hash->clear();
 }
 
@@ -90,7 +90,7 @@ Parallel::Parallel(in Vector!( HashFunction* ) hash_input) :
 */
 Parallel::~Parallel()
 {
-	for(auto hash : hashes)
+	foreach (hash; hashes)
 		delete hash;
 }
 

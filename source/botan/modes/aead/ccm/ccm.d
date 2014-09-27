@@ -17,13 +17,13 @@ CCM_Mode::CCM_Mode(BlockCipher* cipher, size_t tag_size, size_t L) :
 	m_L(L),
 	m_cipher(cipher)
 {
-	if(m_cipher->block_size() != BS)
+	if (m_cipher->block_size() != BS)
 		throw new std::invalid_argument(m_cipher->name() + " cannot be used with CCM mode");
 
-	if(L < 2 || L > 8)
+	if (L < 2 || L > 8)
 		throw new std::invalid_argument("Invalid CCM L value " + std::to_string(L));
 
-	if(tag_size < 4 || tag_size > 16 || tag_size % 2 != 0)
+	if (tag_size < 4 || tag_size > 16 || tag_size % 2 != 0)
 		throw new std::invalid_argument("invalid CCM tag length " + std::to_string(tag_size));
 }
 
@@ -74,7 +74,7 @@ void CCM_Mode::set_associated_data(in byte* ad, size_t length)
 {
 	m_ad_buf.clear();
 
-	if(length)
+	if (length)
 	{
 		// FIXME: support larger AD using length encoding rules
 		BOTAN_ASSERT(length < (0xFFFF - 0xFF), "Supported CCM AD length");
@@ -89,7 +89,7 @@ void CCM_Mode::set_associated_data(in byte* ad, size_t length)
 
 SafeVector!byte CCM_Mode::start(in byte* nonce, size_t nonce_len)
 {
-	if(!valid_nonce_length(nonce_len))
+	if (!valid_nonce_length(nonce_len))
 		throw new Invalid_IV_Length(name(), nonce_len);
 
 	m_nonce.assign(nonce, nonce + nonce_len);
@@ -114,7 +114,7 @@ void CCM_Mode::encode_length(size_t len, byte* output)
 
 	BOTAN_ASSERT(len_bytes < sizeof(size_t), "Length field fits");
 
-	for(size_t i = 0; i != len_bytes; ++i)
+	for (size_t i = 0; i != len_bytes; ++i)
 		output[len_bytes-1-i] = get_byte(sizeof(size_t)-1-i, len);
 
 	BOTAN_ASSERT((len >> (len_bytes*8)) == 0, "Message length fits in field");
@@ -122,8 +122,8 @@ void CCM_Mode::encode_length(size_t len, byte* output)
 
 void CCM_Mode::inc(SafeVector!byte C)
 {
-	for(size_t i = 0; i != C.size(); ++i)
-		if(++C[C.size()-i-1])
+	for (size_t i = 0; i != C.size(); ++i)
+		if (++C[C.size()-i-1])
 			break;
 }
 
@@ -169,7 +169,7 @@ void CCM_Encryption::finish(SafeVector!byte buffer, size_t offset)
 	SafeVector!byte T(BS);
 	E.encrypt(format_b0(sz), T);
 
-	for(size_t i = 0; i != ad.size(); i += BS)
+	for (size_t i = 0; i != ad.size(); i += BS)
 	{
 		xor_buf(&T[0], &ad[i], BS);
 		E.encrypt(T);
@@ -222,7 +222,7 @@ void CCM_Decryption::finish(SafeVector!byte buffer, size_t offset)
 	SafeVector!byte T(BS);
 	E.encrypt(format_b0(sz - tag_size()), T);
 
-	for(size_t i = 0; i != ad.size(); i += BS)
+	for (size_t i = 0; i != ad.size(); i += BS)
 	{
 		xor_buf(&T[0], &ad[i], BS);
 		E.encrypt(T);
@@ -254,7 +254,7 @@ void CCM_Decryption::finish(SafeVector!byte buffer, size_t offset)
 
 	T ^= S0;
 
-	if(!same_mem(&T[0], buf_end, tag_size()))
+	if (!same_mem(&T[0], buf_end, tag_size()))
 		throw new Integrity_Failure("CCM tag check failed");
 
 	buffer.resize(buffer.size() - tag_size());

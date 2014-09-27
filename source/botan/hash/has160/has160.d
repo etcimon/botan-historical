@@ -62,7 +62,7 @@ void HAS_160::compress_n(in byte* input, size_t blocks)
 	uint A = digest[0], B = digest[1], C = digest[2],
 			 D = digest[3], E = digest[4];
 
-	for(size_t i = 0; i != blocks; ++i)
+	for (size_t i = 0; i != blocks; ++i)
 	{
 		load_le(&X[0], input, 16);
 
@@ -141,7 +141,7 @@ void HAS_160::compress_n(in byte* input, size_t blocks)
 */
 void HAS_160::copy_out(byte* output)
 {
-	for(size_t i = 0; i != output_length(); i += 4)
+	for (size_t i = 0; i != output_length(); i += 4)
 		store_le(digest[i/4], output + i);
 }
 

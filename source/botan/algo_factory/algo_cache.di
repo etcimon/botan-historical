@@ -83,11 +83,11 @@ Algorithm_Cache<T>::find_algorithm(in string algo_spec)
 	auto algo = algorithms.find(algo_spec);
 
 	// Not found? Check if a known alias
-	if(algo == algorithms.end())
+	if (algo == algorithms.end())
 	{
 		auto alias = aliases.find(algo_spec);
 
-		if(alias != aliases.end())
+		if (alias != aliases.end())
 			algo = algorithms.find(alias->second);
 	}
 
@@ -104,14 +104,14 @@ const T* Algorithm_Cache<T>::get(in string algo_spec,
 	std::lock_guard<std::mutex> lock(mutex);
 
 	auto algo = find_algorithm(algo_spec);
-	if(algo == algorithms.end()) // algo not found at all (no providers)
+	if (algo == algorithms.end()) // algo not found at all (no providers)
 		return null;
 
 	// If a provider is requested specifically, return it or fail entirely
-	if(requested_provider != "")
+	if (requested_provider != "")
 	{
 		auto prov = algo->second.find(requested_provider);
-		if(prov != algo->second.end())
+		if (prov != algo->second.end())
 			return prov->second;
 		return null;
 	}
@@ -122,15 +122,15 @@ const T* Algorithm_Cache<T>::get(in string algo_spec,
 
 	const string pref_provider = search_map(pref_providers, algo_spec);
 
-	for(auto i = algo->second.begin(); i != algo->second.end(); ++i)
+	for (auto i = algo->second.begin(); i != algo->second.end(); ++i)
 	{
 		// preferred prov exists, return immediately
-		if(i->first == pref_provider)
+		if (i->first == pref_provider)
 			return i->second;
 
 		const size_t prov_weight = static_provider_weight(i->first);
 
-		if(prototype == null || prov_weight > prototype_prov_weight)
+		if (prototype == null || prov_weight > prototype_prov_weight)
 		{
 			prototype = i->second;
 			prototype_provider = i->first;
@@ -149,18 +149,18 @@ void Algorithm_Cache<T>::add(T* algo,
 									  in string requested_name,
 									  in string provider)
 {
-	if(!algo)
+	if (!algo)
 		return;
 
 	std::lock_guard<std::mutex> lock(mutex);
 
-	if(algo->name() != requested_name &&
+	if (algo->name() != requested_name &&
 		aliases.find(requested_name) == aliases.end())
 	{
 		aliases[requested_name] = algo->name();
 	}
 
-	if(!algorithms[algo->name()][provider])
+	if (!algorithms[algo->name()][provider])
 		algorithms[algo->name()][provider] = algo;
 	else
 		delete algo;
@@ -177,7 +177,7 @@ Algorithm_Cache<T>::providers_of(in string algo_name)
 	Vector!( string ) providers;
 
 	auto algo = find_algorithm(algo_name);
-	if(algo != algorithms.end())
+	if (algo != algorithms.end())
 	{
 		auto provider = algo->second.begin();
 

@@ -108,14 +108,14 @@ ushort FI(ushort I, ushort K)
 */
 void KASUMI::encrypt_n(byte* input, byte* output, size_t blocks) const
 {
-	for(size_t i = 0; i != blocks; ++i)
+	for (size_t i = 0; i != blocks; ++i)
 	{
 		ushort B0 = load_be!ushort(input, 0);
 		ushort B1 = load_be!ushort(input, 1);
 		ushort B2 = load_be!ushort(input, 2);
 		ushort B3 = load_be!ushort(input, 3);
 
-		for(size_t j = 0; j != 8; j += 2)
+		for (size_t j = 0; j != 8; j += 2)
 		{
 			const ushort* K = &EK[8*j];
 
@@ -152,14 +152,14 @@ void KASUMI::encrypt_n(byte* input, byte* output, size_t blocks) const
 */
 void KASUMI::decrypt_n(byte* input, byte* output, size_t blocks) const
 {
-	for(size_t i = 0; i != blocks; ++i)
+	for (size_t i = 0; i != blocks; ++i)
 	{
 		ushort B0 = load_be!ushort(input, 0);
 		ushort B1 = load_be!ushort(input, 1);
 		ushort B2 = load_be!ushort(input, 2);
 		ushort B3 = load_be!ushort(input, 3);
 
-		for(size_t j = 0; j != 8; j += 2)
+		for (size_t j = 0; j != 8; j += 2)
 		{
 			const ushort* K = &EK[8*(6-j)];
 
@@ -202,7 +202,7 @@ void KASUMI::key_schedule(in byte* key, size_t)
 										  0xFEDC, 0xBA98, 0x7654, 0x3210 };
 
 	secure_vector<ushort> K(16);
-	for(size_t i = 0; i != 8; ++i)
+	for (size_t i = 0; i != 8; ++i)
 	{
 		K[i] = load_be!ushort(key, i);
 		K[i+8] = K[i] ^ RC[i];
@@ -210,7 +210,7 @@ void KASUMI::key_schedule(in byte* key, size_t)
 
 	EK.resize(64);
 
-	for(size_t i = 0; i != 8; ++i)
+	for (size_t i = 0; i != 8; ++i)
 	{
 		EK[8*i  ] = rotate_left(K[(i+0) % 8	 ], 2);
 		EK[8*i+1] = rotate_left(K[(i+2) % 8 + 8], 1);

@@ -34,7 +34,7 @@ void PBE_PKCS5v20::start_msg()
 								  key, iv, direction));
 
 	pipe.start_msg();
-	if(pipe.message_count() > 1)
+	if (pipe.message_count() > 1)
 		pipe.set_default_msg(pipe.default_msg() + 1);
 }
 
@@ -53,7 +53,7 @@ void PBE_PKCS5v20::end_msg()
 */
 void PBE_PKCS5v20::flush_pipe(bool safe_to_skip)
 {
-	if(safe_to_skip && pipe.remaining() < 64)
+	if (safe_to_skip && pipe.remaining() < 64)
 		return;
 
 	SafeVector!byte buffer(DEFAULT_BUFFERSIZE);
@@ -78,7 +78,7 @@ Vector!( byte ) PBE_PKCS5v20::encode_params() const
 						.encode(salt, OCTET_STRING)
 						.encode(iterations)
 						.encode(key_length)
-						.encode_if(
+						.encode_if (
 							m_prf->name() != "HMAC(SHA-160)",
 							AlgorithmIdentifier(m_prf->name(),
 													  AlgorithmIdentifier::USE_NULL_PARAM))
@@ -152,7 +152,7 @@ PBE_PKCS5v20::PBE_PKCS5v20(in Vector!byte params,
 
 	AlgorithmIdentifier prf_algo;
 
-	if(kdf_algo.oid != OIDS::lookup("PKCS5.PBKDF2"))
+	if (kdf_algo.oid != OIDS::lookup("PKCS5.PBKDF2"))
 		throw new Decoding_Error("PBE-PKCS5 v2.0: Unknown KDF algorithm " +
 									kdf_algo.oid.as_string());
 
@@ -171,10 +171,10 @@ PBE_PKCS5v20::PBE_PKCS5v20(in Vector!byte params,
 
 	string cipher = OIDS::lookup(enc_algo.oid);
 	Vector!( string ) cipher_spec = split_on(cipher, '/');
-	if(cipher_spec.size() != 2)
+	if (cipher_spec.size() != 2)
 		throw new Decoding_Error("PBE-PKCS5 v2.0: Invalid cipher spec " + cipher);
 
-	if(cipher_spec[1] != "CBC")
+	if (cipher_spec[1] != "CBC")
 		throw new Decoding_Error("PBE-PKCS5 v2.0: Don't know param format for " +
 									cipher);
 
@@ -183,10 +183,10 @@ PBE_PKCS5v20::PBE_PKCS5v20(in Vector!byte params,
 	block_cipher = af.make_block_cipher(cipher_spec[0]);
 	m_prf = af.make_mac(OIDS::lookup(prf_algo.oid));
 
-	if(key_length == 0)
+	if (key_length == 0)
 		key_length = block_cipher->maximum_keylength();
 
-	if(salt.size() < 8)
+	if (salt.size() < 8)
 		throw new Decoding_Error("PBE-PKCS5 v2.0: Encoded salt is too small");
 
 	PKCS5_PBKDF2 pbkdf(m_prf->clone());

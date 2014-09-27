@@ -17,7 +17,7 @@ namespace {
 Vector!( byte ) finished_compute_verify(in Handshake_State state,
 														Connection_Side side)
 {
-	if(state._version() == Protocol_Version::SSL_V3)
+	if (state._version() == Protocol_Version::SSL_V3)
 	{
 		const(byte)[] SSL_CLIENT_LABEL = { 0x43, 0x4C, 0x4E, 0x54 };
 		const(byte)[] SSL_SERVER_LABEL = { 0x53, 0x52, 0x56, 0x52 };
@@ -26,7 +26,7 @@ Vector!( byte ) finished_compute_verify(in Handshake_State state,
 
 		Vector!( byte ) ssl3_finished;
 
-		if(side == CLIENT)
+		if (side == CLIENT)
 			hash.update(SSL_CLIENT_LABEL, sizeof(SSL_CLIENT_LABEL));
 		else
 			hash.update(SSL_SERVER_LABEL, sizeof(SSL_SERVER_LABEL));
@@ -46,7 +46,7 @@ Vector!( byte ) finished_compute_verify(in Handshake_State state,
 		std::unique_ptr<KDF> prf(state.protocol_specific_prf());
 
 		Vector!( byte ) input;
-		if(side == CLIENT)
+		if (side == CLIENT)
 			input += Pair(TLS_CLIENT_LABEL, sizeof(TLS_CLIENT_LABEL));
 		else
 			input += Pair(TLS_SERVER_LABEL, sizeof(TLS_SERVER_LABEL));

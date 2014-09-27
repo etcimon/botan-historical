@@ -20,7 +20,7 @@ ASN1_EAC_String::ASN1_EAC_String(in string str, ASN1_Tag t) : tag(t)
 {
 	iso_8859_str = Charset::transcode(str, LOCAL_CHARSET, LATIN1_CHARSET);
 
-	if(!sanity_check())
+	if (!sanity_check())
 		throw new Invalid_Argument("ASN1_EAC_String contains illegal characters");
 }
 
@@ -64,7 +64,7 @@ void ASN1_EAC_String::decode_from(BER_Decoder& source)
 {
 	BER_Object obj = source.get_next_object();
 
-	if(obj.type_tag != this->tag)
+	if (obj.type_tag != this->tag)
 	{
 		stringstream ss;
 
@@ -99,9 +99,9 @@ bool ASN1_EAC_String::sanity_check() const
 	const byte* rep = cast(const byte*)(iso_8859_str.data());
 	const size_t rep_len = iso_8859_str.size();
 
-	for(size_t i = 0; i != rep_len; ++i)
+	for (size_t i = 0; i != rep_len; ++i)
 	{
-		if((rep[i] < 0x20) || ((rep[i] >= 0x7F) && (rep[i] < 0xA0)))
+		if ((rep[i] < 0x20) || ((rep[i] >= 0x7F) && (rep[i] < 0xA0)))
 			return false;
 	}
 

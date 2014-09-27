@@ -81,7 +81,7 @@ string encrypt(in byte* input, size_t input_len,
 									  MAC_OUTPUT_LEN +
 									  ciphertext_len);
 
-	for(size_t i = 0; i != VERSION_CODE_LEN; ++i)
+	for (size_t i = 0; i != VERSION_CODE_LEN; ++i)
 	  out_buf[i] = get_byte(i, CRYPTOBOX_VERSION_CODE);
 
 	copy_mem(&out_buf[VERSION_CODE_LEN], &pbkdf_salt[0],  PBKDF_SALT_LEN);
@@ -101,11 +101,11 @@ string decrypt(in byte* input, size_t input_len,
 		PEM_Code::decode_check_label(input_src,
 											  "BOTAN CRYPTOBOX MESSAGE");
 
-	if(ciphertext.size() < (VERSION_CODE_LEN + PBKDF_SALT_LEN + MAC_OUTPUT_LEN))
+	if (ciphertext.size() < (VERSION_CODE_LEN + PBKDF_SALT_LEN + MAC_OUTPUT_LEN))
 		throw new Decoding_Error("Invalid CryptoBox input");
 
-	for(size_t i = 0; i != VERSION_CODE_LEN; ++i)
-		if(ciphertext[i] != get_byte(i, CRYPTOBOX_VERSION_CODE))
+	for (size_t i = 0; i != VERSION_CODE_LEN; ++i)
+		if (ciphertext[i] != get_byte(i, CRYPTOBOX_VERSION_CODE))
 			throw new Decoding_Error("Bad CryptoBox version");
 
 	const byte* pbkdf_salt = &ciphertext[VERSION_CODE_LEN];
@@ -139,7 +139,7 @@ string decrypt(in byte* input, size_t input_len,
 	byte computed_mac[MAC_OUTPUT_LEN];
 	pipe.read(computed_mac, MAC_OUTPUT_LEN, 1);
 
-	if(!same_mem(computed_mac,
+	if (!same_mem(computed_mac,
 					 &ciphertext[VERSION_CODE_LEN + PBKDF_SALT_LEN],
 					 MAC_OUTPUT_LEN))
 		throw new Decoding_Error("CryptoBox integrity failure");

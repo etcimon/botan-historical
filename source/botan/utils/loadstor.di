@@ -94,7 +94,7 @@ ulong make_ulong(byte i0, byte i1, byte i2, byte i3,
 {
 	in += off * sizeof(T);
 	T out = 0;
-	for(size_t i = 0; i != sizeof(T); ++i)
+	for (size_t i = 0; i != sizeof(T); ++i)
 		out = (out << 8) | input[i];
 	return out;
 }
@@ -109,7 +109,7 @@ ulong make_ulong(byte i0, byte i1, byte i2, byte i3,
 {
 	in += off * sizeof(T);
 	T out = 0;
-	for(size_t i = 0; i != sizeof(T); ++i)
+	for (size_t i = 0; i != sizeof(T); ++i)
 		out = (out << 8) | input[sizeof(T)-1-i];
 	return out;
 }
@@ -291,15 +291,15 @@ void load_le(T)(T* output,
 	const size_t blocks = count - (count % 4);
 	const size_t left = count - blocks;
 
-	for(size_t i = 0; i != blocks; i += 4)
+	for (size_t i = 0; i != blocks; i += 4)
 		bswap_4(output + i);
 
-	for(size_t i = 0; i != left; ++i)
+	for (size_t i = 0; i != left; ++i)
 		output[blocks+i] = reverse_bytes(output[blocks+i]);
 #endif
 
 #else
-	for(size_t i = 0; i != count; ++i)
+	for (size_t i = 0; i != count; ++i)
 		output[i] = load_le!T(input, i);
 #endif
 }
@@ -376,15 +376,15 @@ void load_be(T)(T* output,
 	const size_t blocks = count - (count % 4);
 	const size_t left = count - blocks;
 
-	for(size_t i = 0; i != blocks; i += 4)
+	for (size_t i = 0; i != blocks; i += 4)
 		bswap_4(output + i);
 
-	for(size_t i = 0; i != left; ++i)
+	for (size_t i = 0; i != left; ++i)
 		output[blocks+i] = reverse_bytes(output[blocks+i]);
 #endif
 
 #else
-	for(size_t i = 0; i != count; ++i)
+	for (size_t i = 0; i != count; ++i)
 		output[i] = load_be!T(input, i);
 #endif
 }

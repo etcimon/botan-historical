@@ -26,7 +26,7 @@ class ElGamal_PublicKey : public abstract DL_Scheme_PublicKey
 			DL_Scheme_PublicKey(alg_id, key_bits, DL_Group::ANSI_X9_42)
 		{}
 
-		ElGamal_PublicKey(in DL_Group group, const BigInt& y);
+		ElGamal_PublicKey(in DL_Group group, ref const BigInt y);
 	protected:
 		ElGamal_PublicKey() {}
 };
@@ -46,7 +46,7 @@ class ElGamal_PrivateKey : public ElGamal_PublicKey,
 
 		ElGamal_PrivateKey(RandomNumberGenerator& rng,
 								 const DL_Group& group,
-								 const BigInt& priv_key = 0);
+								 ref const BigInt priv_key = 0);
 };
 
 /**

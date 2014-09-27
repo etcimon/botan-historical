@@ -28,15 +28,15 @@ MessageAuthenticationCode* get_pbkdf_prf(byte alg_id)
 
 	try
 	{
-		if(alg_id == 0)
+		if (alg_id == 0)
 			return af.make_mac("HMAC(SHA-1)");
-		else if(alg_id == 1)
+		else if (alg_id == 1)
 			return af.make_mac("HMAC(SHA-256)");
-		else if(alg_id == 2)
+		else if (alg_id == 2)
 			return af.make_mac("CMAC(Blowfish)");
-		else if(alg_id == 3)
+		else if (alg_id == 3)
 			return af.make_mac("HMAC(SHA-384)");
-		else if(alg_id == 4)
+		else if (alg_id == 4)
 			return af.make_mac("HMAC(SHA-512)");
 	}
 	catch(Algorithm_Not_Found) {}
@@ -53,7 +53,7 @@ string generate_passhash9(in string pass,
 {
 	MessageAuthenticationCode* prf = get_pbkdf_prf(alg_id);
 
-	if(!prf)
+	if (!prf)
 		throw new Invalid_Argument("Passhash9: Algorithm id " +
 									  std::to_string(alg_id) +
 									  " is not defined");
@@ -94,11 +94,11 @@ bool check_passhash9(in string pass, in string hash)
 	const size_t BASE64_LENGTH =
 		MAGIC_PREFIX.size() + (BINARY_LENGTH * 8) / 6;
 
-	if(hash.size() != BASE64_LENGTH)
+	if (hash.size() != BASE64_LENGTH)
 		return false;
 
-	for(size_t i = 0; i != MAGIC_PREFIX.size(); ++i)
-		if(hash[i] != MAGIC_PREFIX[i])
+	for (size_t i = 0; i != MAGIC_PREFIX.size(); ++i)
+		if (hash[i] != MAGIC_PREFIX[i])
 			return false;
 
 	Pipe pipe(new Base64_Decoder);
@@ -108,7 +108,7 @@ bool check_passhash9(in string pass, in string hash)
 
 	SafeVector!byte bin = pipe.read_all();
 
-	if(bin.size() != BINARY_LENGTH)
+	if (bin.size() != BINARY_LENGTH)
 		return false;
 
 	byte alg_id = binput[0];
@@ -116,10 +116,10 @@ bool check_passhash9(in string pass, in string hash)
 	const size_t work_factor = load_be!ushort(&binput[ALGID_BYTES], 0);
 
 	// Bug in the format, bad states shouldn't be representable, but are...
-	if(work_factor == 0)
+	if (work_factor == 0)
 		return false;
 
-	if(work_factor > 512)
+	if (work_factor > 512)
 		throw new std::invalid_argument("Requested Bcrypt work factor " +
 											 std::to_string(work_factor) + " too large");
 
@@ -127,7 +127,7 @@ bool check_passhash9(in string pass, in string hash)
 
 	MessageAuthenticationCode* pbkdf_prf = get_pbkdf_prf(alg_id);
 
-	if(!pbkdf_prf)
+	if (!pbkdf_prf)
 		return false; // unknown algorithm, reject
 
 	PKCS5_PBKDF2 kdf(pbkdf_prf); // takes ownership of pointer

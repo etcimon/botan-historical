@@ -39,7 +39,7 @@ AlgorithmIdentifier::AlgorithmIdentifier(in OID alg_id,
 
 	oid = alg_id;
 
-	if(option == USE_NULL_PARAM)
+	if (option == USE_NULL_PARAM)
 		parameters += Pair!(const byte*, size_t)(DER_NULL, sizeof(DER_NULL));
 }
 
@@ -53,7 +53,7 @@ AlgorithmIdentifier::AlgorithmIdentifier(in string alg_id,
 
 	oid = OIDS::lookup(alg_id);
 
-	if(option == USE_NULL_PARAM)
+	if (option == USE_NULL_PARAM)
 		parameters += Pair!(const byte*, size_t)(DER_NULL, sizeof(DER_NULL));
 }
 
@@ -62,9 +62,9 @@ AlgorithmIdentifier::AlgorithmIdentifier(in string alg_id,
 */
 bool operator==(in AlgorithmIdentifier a1, const AlgorithmIdentifier& a2)
 {
-	if(a1.oid != a2.oid)
+	if (a1.oid != a2.oid)
 		return false;
-	if(a1.parameters != a2.parameters)
+	if (a1.parameters != a2.parameters)
 		return false;
 	return true;
 }

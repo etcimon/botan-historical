@@ -57,46 +57,46 @@ imutable byte[] TIGER_PKCS_ID = {
 Vector!( byte ) pkcs_hash_id(in string name)
 {
 	// Special case for SSL/TLS RSA signatures
-	if(name == "Parallel(MD5,SHA-160)")
+	if (name == "Parallel(MD5,SHA-160)")
 		return Vector!( byte )();
 
-	if(name == "MD2")
+	if (name == "MD2")
 		return Vector!( byte )(MD2_PKCS_ID,
 										 MD2_PKCS_ID + sizeof(MD2_PKCS_ID));
 
-	if(name == "MD5")
+	if (name == "MD5")
 		return Vector!( byte )(MD5_PKCS_ID,
 										 MD5_PKCS_ID + sizeof(MD5_PKCS_ID));
 
-	if(name == "RIPEMD-128")
+	if (name == "RIPEMD-128")
 		return Vector!( byte )(RIPEMD_128_PKCS_ID,
 										 RIPEMD_128_PKCS_ID + sizeof(RIPEMD_128_PKCS_ID));
 
-	if(name == "RIPEMD-160")
+	if (name == "RIPEMD-160")
 		return Vector!( byte )(RIPEMD_160_PKCS_ID,
 										 RIPEMD_160_PKCS_ID + sizeof(RIPEMD_160_PKCS_ID));
 
-	if(name == "SHA-160")
+	if (name == "SHA-160")
 		return Vector!( byte )(SHA_160_PKCS_ID,
 										 SHA_160_PKCS_ID + sizeof(SHA_160_PKCS_ID));
 
-	if(name == "SHA-224")
+	if (name == "SHA-224")
 		return Vector!( byte )(SHA_224_PKCS_ID,
 										 SHA_224_PKCS_ID + sizeof(SHA_224_PKCS_ID));
 
-	if(name == "SHA-256")
+	if (name == "SHA-256")
 		return Vector!( byte )(SHA_256_PKCS_ID,
 										 SHA_256_PKCS_ID + sizeof(SHA_256_PKCS_ID));
 
-	if(name == "SHA-384")
+	if (name == "SHA-384")
 		return Vector!( byte )(SHA_384_PKCS_ID,
 										 SHA_384_PKCS_ID + sizeof(SHA_384_PKCS_ID));
 
-	if(name == "SHA-512")
+	if (name == "SHA-512")
 		return Vector!( byte )(SHA_512_PKCS_ID,
 										 SHA_512_PKCS_ID + sizeof(SHA_512_PKCS_ID));
 
-	if(name == "Tiger(24,3)")
+	if (name == "Tiger(24,3)")
 		return Vector!( byte )(TIGER_PKCS_ID,
 										 TIGER_PKCS_ID + sizeof(TIGER_PKCS_ID));
 
@@ -108,17 +108,17 @@ Vector!( byte ) pkcs_hash_id(in string name)
 */
 byte ieee1363_hash_id(in string name)
 {
-	if(name == "SHA-160")	 return 0x33;
+	if (name == "SHA-160")	 return 0x33;
 
-	if(name == "SHA-224")	 return 0x38;
-	if(name == "SHA-256")	 return 0x34;
-	if(name == "SHA-384")	 return 0x36;
-	if(name == "SHA-512")	 return 0x35;
+	if (name == "SHA-224")	 return 0x38;
+	if (name == "SHA-256")	 return 0x34;
+	if (name == "SHA-384")	 return 0x36;
+	if (name == "SHA-512")	 return 0x35;
 
-	if(name == "RIPEMD-160") return 0x31;
-	if(name == "RIPEMD-128") return 0x32;
+	if (name == "RIPEMD-160") return 0x31;
+	if (name == "RIPEMD-128") return 0x32;
 
-	if(name == "Whirlpool")  return 0x37;
+	if (name == "Whirlpool")  return 0x37;
 
 	return 0;
 }

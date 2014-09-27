@@ -62,11 +62,11 @@ void SHA_160::compress_n(in byte* input, size_t blocks)
 	uint A = digest[0], B = digest[1], C = digest[2],
 			 D = digest[3], E = digest[4];
 
-	for(size_t i = 0; i != blocks; ++i)
+	for (size_t i = 0; i != blocks; ++i)
 	{
 		load_be(&W[0], input, 16);
 
-		for(size_t j = 16; j != 80; j += 8)
+		for (size_t j = 16; j != 80; j += 8)
 		{
 			W[j  ] = rotate_left((W[j-3] ^ W[j-8] ^ W[j-14] ^ W[j-16]), 1);
 			W[j+1] = rotate_left((W[j-2] ^ W[j-7] ^ W[j-13] ^ W[j-15]), 1);
@@ -137,7 +137,7 @@ void SHA_160::compress_n(in byte* input, size_t blocks)
 */
 void SHA_160::copy_out(byte* output)
 {
-	for(size_t i = 0; i != output_length(); i += 4)
+	for (size_t i = 0; i != output_length(); i += 4)
 		store_be(digest[i/4], output + i);
 }
 

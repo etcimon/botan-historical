@@ -34,10 +34,10 @@ void comb4p_round(SafeVector!byte output,
 Comb4P::Comb4P(HashFunction* h1, HashFunction* h2) :
 	m_hash1(h1), m_hash2(h2)
 {
-	if(m_hash1->name() == m_hash2->name())
+	if (m_hash1->name() == m_hash2->name())
 		throw new std::invalid_argument("Comb4P: Must use two distinct hashes");
 
-	if(m_hash1->output_length() != m_hash2->output_length())
+	if (m_hash1->output_length() != m_hash2->output_length())
 		throw new std::invalid_argument("Comb4P: Incompatible hashes " +
 											 m_hash1->name() + " and " +
 											 m_hash2->name());
@@ -47,7 +47,7 @@ Comb4P::Comb4P(HashFunction* h1, HashFunction* h2) :
 
 size_t Comb4P::hash_block_size() const
 {
-	if(m_hash1->hash_block_size() == m_hash2->hash_block_size())
+	if (m_hash1->hash_block_size() == m_hash2->hash_block_size())
 		return m_hash1->hash_block_size();
 
 	/*

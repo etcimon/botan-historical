@@ -423,7 +423,7 @@ void aes_encrypt_n(byte* input, byte* output,
 	const uint* TE2 = TE + 512;
 	const uint* TE3 = TE + 768;
 	
-	for(size_t i = 0; i != blocks; ++i)
+	for (size_t i = 0; i != blocks; ++i)
 	{
 		uint T0 = load_be!uint(input, 0) ^ EK[0];
 		uint T1 = load_be!uint(input, 1) ^ EK[1];
@@ -458,7 +458,7 @@ void aes_encrypt_n(byte* input, byte* output,
 						rotate_right(TE[get_byte(2, T1)], 16) ^
 						rotate_right(TE[get_byte(3, T2)], 24) ^ EK[7];
 
-		for(size_t r = 2*4; r < EK.size(); r += 2*4)
+		for (size_t r = 2*4; r < EK.size(); r += 2*4)
 		{
 			T0 = TE0[get_byte(0, B0)] ^ TE1[get_byte(1, B1)] ^
 				  TE2[get_byte(2, B2)] ^ TE3[get_byte(3, B3)] ^ EK[r];
@@ -536,7 +536,7 @@ void aes_decrypt_n(byte* input, byte* output, size_t blocks,
 	const uint* TD2 = TD + 512;
 	const uint* TD3 = TD + 768;
 	
-	for(size_t i = 0; i != blocks; ++i)
+	for (size_t i = 0; i != blocks; ++i)
 	{
 		uint T0 = load_be!uint(input, 0) ^ DK[0];
 		uint T1 = load_be!uint(input, 1) ^ DK[1];
@@ -563,7 +563,7 @@ void aes_decrypt_n(byte* input, byte* output, size_t blocks,
 						rotate_right(TD[get_byte(2, T1)], 16) ^
 						rotate_right(TD[get_byte(3, T0)], 24) ^ DK[7];
 
-		for(size_t r = 2*4; r < DK.size(); r += 2*4)
+		for (size_t r = 2*4; r < DK.size(); r += 2*4)
 		{
 			T0 = TD0[get_byte(0, B0)] ^ TD1[get_byte(1, B3)] ^
 				  TD2[get_byte(2, B2)] ^ TD3[get_byte(3, B1)] ^ DK[r];
@@ -621,10 +621,10 @@ void aes_key_schedule(in byte* key, size_t length,
 	secure_vector<uint> XEK(length + 32), XDK(length + 32);
 
 	const size_t X = length / 4;
-	for(size_t i = 0; i != X; ++i)
+	for (size_t i = 0; i != X; ++i)
 		XEK[i] = load_be!uint(key, i);
 
-	for(size_t i = X; i < 4*(rounds+1); i += X)
+	for (size_t i = X; i < 4*(rounds+1); i += X)
 	{
 		XEK[i] = XEK[i-X] ^ RC[(i-X)/X] ^
 					make_uint(SE[get_byte(1, XEK[i-1])],
@@ -632,11 +632,11 @@ void aes_key_schedule(in byte* key, size_t length,
 									SE[get_byte(3, XEK[i-1])],
 									SE[get_byte(0, XEK[i-1])]);
 
-		for(size_t j = 1; j != X; ++j)
+		for (size_t j = 1; j != X; ++j)
 		{
 			XEK[i+j] = XEK[i+j-X];
 
-			if(X == 8 && j == 4)
+			if (X == 8 && j == 4)
 				XEK[i+j] ^= make_uint(SE[get_byte(0, XEK[i+j-1])],
 												SE[get_byte(1, XEK[i+j-1])],
 												SE[get_byte(2, XEK[i+j-1])],
@@ -646,7 +646,7 @@ void aes_key_schedule(in byte* key, size_t length,
 		}
 	}
 
-	for(size_t i = 0; i != 4*(rounds+1); i += 4)
+	for (size_t i = 0; i != 4*(rounds+1); i += 4)
 	{
 		XDK[i  ] = XEK[4*rounds-i  ];
 		XDK[i+1] = XEK[4*rounds-i+1];
@@ -654,7 +654,7 @@ void aes_key_schedule(in byte* key, size_t length,
 		XDK[i+3] = XEK[4*rounds-i+3];
 	}
 
-	for(size_t i = 4; i != length + 24; ++i)
+	for (size_t i = 4; i != length + 24; ++i)
 		XDK[i] = TD[SE[get_byte(0, XDK[i])] +	0] ^
 					TD[SE[get_byte(1, XDK[i])] + 256] ^
 					TD[SE[get_byte(2, XDK[i])] + 512] ^
@@ -663,7 +663,7 @@ void aes_key_schedule(in byte* key, size_t length,
 	ME.resize(16);
 	MD.resize(16);
 
-	for(size_t i = 0; i != 4; ++i)
+	for (size_t i = 0; i != 4; ++i)
 	{
 		store_be(XEK[i+4*rounds], &ME[4*i]);
 		store_be(XEK[i], &MD[4*i]);

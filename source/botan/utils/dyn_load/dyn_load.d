@@ -32,17 +32,17 @@ Dynamically_Loaded_Library::Dynamically_Loaded_Library(
 #if defined(BOTAN_TARGET_OS_HAS_DLOPEN)
 	lib = ::dlopen(lib_name.c_str(), RTLD_LAZY);
 
-	if(!lib)
+	if (!lib)
 		raise_runtime_loader_exception(lib_name, dlerror());
 
 #elif defined(BOTAN_TARGET_OS_HAS_LOADLIBRARY)
 	lib = ::LoadLibraryA(lib_name.c_str());
 
-	if(!lib)
+	if (!lib)
 		raise_runtime_loader_exception(lib_name, "LoadLibrary failed");
 #endif
 
-	if(!lib)
+	if (!lib)
 		raise_runtime_loader_exception(lib_name, "Dynamic load not supported");
 }
 
@@ -66,7 +66,7 @@ void* Dynamically_Loaded_Library::resolve_symbol(in string symbol)
 																	symbol.c_str()));
 #endif
 
-	if(!addr)
+	if (!addr)
 		throw new Exception("Failed to resolve symbol " + symbol +
 										 " in " + lib_name);
 
