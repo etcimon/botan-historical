@@ -154,7 +154,7 @@ class BER_Decoder
 		BER_Decoder(in Vector!byte vec);
 
 		BER_Decoder(in BER_Decoder);
-		~BER_Decoder();
+		~this();
 	private:
 		BER_Decoder* parent;
 		DataSource* source;

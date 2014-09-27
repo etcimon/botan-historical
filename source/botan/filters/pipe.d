@@ -51,7 +51,7 @@ Pipe::Pipe(std::initializer_list<Filter*> args)
 /*
 * Pipe Destructor
 */
-Pipe::~Pipe()
+Pipe::~this()
 {
 	destruct(pipe);
 	delete outputs;

@@ -26,7 +26,7 @@ class Output_Buffers
 		Pipe::message_id message_count() const;
 
 		Output_Buffers();
-		~Output_Buffers();
+		~this();
 	private:
 		class SecureQueue* get(Pipe::message_id) const;
 

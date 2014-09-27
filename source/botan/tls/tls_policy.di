@@ -137,7 +137,7 @@ class Policy
 		abstract Vector!( ushort ) ciphersuite_list(Protocol_Version _version,
 																	bool have_srp) const;
 
-		abstract ~Policy() {}
+		~this() {}
 };
 
 /**

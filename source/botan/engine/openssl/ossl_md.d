@@ -30,7 +30,7 @@ class EVP_HashFunction : public HashFunction
 		}
 
 		EVP_HashFunction(const EVP_MD*, in string);
-		~EVP_HashFunction();
+		~this();
 	private:
 		void add_data(const byte[], size_t);
 		void final_result(byte[]);
@@ -89,7 +89,7 @@ EVP_HashFunction::EVP_HashFunction(const EVP_MD* algo,
 /*
 * Destroy an EVP hash function
 */
-EVP_HashFunction::~EVP_HashFunction()
+EVP_HashFunction::~this()
 {
 	EVP_MD_CTX_cleanup(&md);
 }

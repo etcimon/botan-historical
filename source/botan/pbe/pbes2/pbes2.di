@@ -47,7 +47,7 @@ class PBE_PKCS5v20 : public PBE
 						 std::chrono::milliseconds msec,
 						 RandomNumberGenerator& rng);
 
-		~PBE_PKCS5v20();
+		~this();
 	private:
 		void flush_pipe(bool);
 

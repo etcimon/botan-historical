@@ -46,7 +46,7 @@ Dynamically_Loaded_Library::Dynamically_Loaded_Library(
 		raise_runtime_loader_exception(lib_name, "Dynamic load not supported");
 }
 
-Dynamically_Loaded_Library::~Dynamically_Loaded_Library()
+Dynamically_Loaded_Library::~this()
 {
 #if defined(BOTAN_TARGET_OS_HAS_DLOPEN)
 	::dlclose(lib);

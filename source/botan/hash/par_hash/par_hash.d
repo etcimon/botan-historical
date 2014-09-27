@@ -88,7 +88,7 @@ Parallel::Parallel(in Vector!( HashFunction* ) hash_input) :
 /*
 * Parallel Destructor
 */
-Parallel::~Parallel()
+Parallel::~this()
 {
 	foreach (hash; hashes)
 		delete hash;

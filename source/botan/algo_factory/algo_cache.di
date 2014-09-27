@@ -61,7 +61,7 @@ class Algorithm_Cache(T)
 		*/
 		void clear_cache();
 
-		~Algorithm_Cache() { clear_cache(); }
+		~this() { clear_cache(); }
 	private:
 		typename std::map<string, std::map<string, T*> >::const_iterator
 			find_algorithm(in string algo_spec);

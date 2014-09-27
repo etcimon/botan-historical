@@ -67,7 +67,7 @@ GMP_Engine::GMP_Engine()
 	*/
 }
 
-GMP_Engine::~GMP_Engine()
+GMP_Engine::~this()
 {
 	/*
 	--gmp_alloc_refcnt;

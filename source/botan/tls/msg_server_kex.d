@@ -222,7 +222,7 @@ Server_Key_Exchange::Server_Key_Exchange(in Vector!byte buf,
 	reader.assert_done();
 }
 
-Server_Key_Exchange::~Server_Key_Exchange() {}
+Server_Key_Exchange::~this() {}
 
 /**
 * Serialize a Server Key Exchange message

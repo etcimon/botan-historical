@@ -94,7 +94,7 @@ class Threaded_Fork : public Fork
 		*/
 		Threaded_Fork(Filter* filter_arr[], size_t length);
 
-		~Threaded_Fork();
+		~this();
 
 	protected:
 		void set_next(Filter* f[], size_t n);

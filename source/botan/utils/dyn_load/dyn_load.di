@@ -28,7 +28,7 @@ class Dynamically_Loaded_Library
 		* @warning Any pointers returned by resolve()/resolve_symbol()
 		* should not be used after this destructor runs.
 		*/
-		~Dynamically_Loaded_Library();
+		~this();
 
 		/**
 		* Load a symbol (or fail with an exception)
@@ -42,8 +42,7 @@ class Dynamically_Loaded_Library
 		* @param symbol names the symbol to load
 		* @return address of the loaded symbol
 		*/
-		template<typename T>
-		T resolve(in string symbol)
+		T resolve(T)(in string symbol)
 		{
 			return cast(T)(resolve_symbol(symbol));
 		}

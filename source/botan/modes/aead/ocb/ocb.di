@@ -38,7 +38,7 @@ class OCB_Mode : public AEAD_Mode
 
 		void clear() override;
 
-		~OCB_Mode();
+		~this();
 	protected:
 		/**
 		* @param cipher the 128-bit block cipher to use

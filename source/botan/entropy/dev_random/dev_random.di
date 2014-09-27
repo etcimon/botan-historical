@@ -19,7 +19,7 @@ class Device_EntropySource : public EntropySource
 		void poll(Entropy_Accumulator& accum);
 
 		Device_EntropySource(in Vector!( string ) fsnames);
-		~Device_EntropySource();
+		~this();
 	private:
 		typedef int fd_type;
 

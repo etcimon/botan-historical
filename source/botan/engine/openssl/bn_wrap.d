@@ -37,7 +37,7 @@ OSSL_BN::OSSL_BN(in OSSL_BN other)
 /*
 * OSSL_BN Destructor
 */
-OSSL_BN::~OSSL_BN()
+OSSL_BN::~this()
 {
 	BN_clear_free(m_bn);
 }
@@ -97,7 +97,7 @@ OSSL_BN_CTX::OSSL_BN_CTX(in OSSL_BN_CTX)
 /*
 * OSSL_BN_CTX Destructor
 */
-OSSL_BN_CTX::~OSSL_BN_CTX()
+OSSL_BN_CTX::~this()
 {
 	BN_CTX_free(m_ctx);
 }

@@ -80,7 +80,7 @@ class Zlib_Stream
 		/**
 		* Destructor
 		*/
-		~Zlib_Stream()
+		~this()
 		{
 			Zlib_Alloc_Info* info = cast(Zlib_Alloc_Info*)(stream.opaque);
 			delete info;

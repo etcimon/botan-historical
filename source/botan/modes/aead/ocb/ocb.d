@@ -133,7 +133,7 @@ OCB_Mode::OCB_Mode(BlockCipher* cipher, size_t tag_size) :
 
 }
 
-OCB_Mode::~OCB_Mode() { /* for unique_ptr destructor */ }
+OCB_Mode::~this() { /* for unique_ptr destructor */ }
 
 void OCB_Mode::clear()
 {

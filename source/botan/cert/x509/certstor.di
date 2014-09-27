@@ -13,7 +13,7 @@ import botan.x509_crl;
 class Certificate_Store
 {
 	public:
-		abstract ~Certificate_Store() {}
+		~this() {}
 
 		/**
 		* Subject DN and (optionally) key identifier

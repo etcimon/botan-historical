@@ -46,7 +46,7 @@ class EMSA
 		abstract bool verify(in SafeVector!byte coded,
 								  in SafeVector!byte raw,
 								  size_t key_bits);
-		abstract ~EMSA() {}
+		~this() {}
 };
 
 /**

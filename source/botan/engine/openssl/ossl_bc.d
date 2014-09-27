@@ -28,7 +28,7 @@ class EVP_BlockCipher : public BlockCipher
 
 		Key_Length_Specification key_spec() const { return cipher_key_spec; }
 
-		~EVP_BlockCipher();
+		~this();
 	private:
 		void encrypt_n(in byte* input, byte* output, size_t blocks) const;
 		void decrypt_n(in byte* input, byte* output, size_t blocks) const;
@@ -89,7 +89,7 @@ EVP_BlockCipher::EVP_BlockCipher(const EVP_CIPHER* algo,
 /*
 * EVP Block Cipher Destructor
 */
-EVP_BlockCipher::~EVP_BlockCipher()
+EVP_BlockCipher::~this()
 {
 	EVP_CIPHER_CTX_cleanup(&encrypt);
 	EVP_CIPHER_CTX_cleanup(&decrypt);

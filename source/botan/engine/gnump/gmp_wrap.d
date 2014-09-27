@@ -46,7 +46,7 @@ GMP_MPZ::GMP_MPZ(in GMP_MPZ other)
 /*
 * GMP_MPZ Destructor
 */
-GMP_MPZ::~GMP_MPZ()
+GMP_MPZ::~this()
 {
 	mpz_clear(value);
 }

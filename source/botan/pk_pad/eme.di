@@ -64,7 +64,7 @@ class EME
 		SafeVector!byte decode(in SafeVector!byte in,
 										  size_t key_length) const;
 
-		abstract ~EME() {}
+		~this() {}
 	private:
 		/**
 		* Encode an input

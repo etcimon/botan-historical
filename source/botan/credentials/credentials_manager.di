@@ -22,7 +22,7 @@ class BigInt;
 class Credentials_Manager
 {
 	public:
-		abstract ~Credentials_Manager() {}
+		~this() {}
 
 		/**
 		* Return a list of the certificates of CAs that we trust in this

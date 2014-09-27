@@ -55,7 +55,7 @@ Threaded_Fork::Threaded_Fork(Filter** filters, size_t count) :
 	set_next(filters, count);
 }
 
-Threaded_Fork::~Threaded_Fork()
+Threaded_Fork::~this()
 {
 	m_thread_data->m_input = null;
 	m_thread_data->m_input_length = 0;

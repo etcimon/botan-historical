@@ -81,7 +81,7 @@ class Lzma_Stream
 		/**
 		* Destructor
 		*/
-		~Lzma_Stream()
+		~this()
 		{
 			Lzma_Alloc_Info* info = cast(Lzma_Alloc_Info*)(stream.allocator->opaque);
 			delete info;

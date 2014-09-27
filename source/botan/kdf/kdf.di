@@ -14,7 +14,7 @@ import string;
 class KDF
 {
 	public:
-		abstract ~KDF() {}
+		~this() {}
 
 		abstract string name() const;
 

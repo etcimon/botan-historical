@@ -21,7 +21,7 @@ class Entropy_Accumulator
 		Entropy_Accumulator(bool delegate(in byte*, size_t len, double) accum) :
 			m_accum_fn(accum), m_done(false) {}
 
-		abstract ~Entropy_Accumulator() {}
+		~this() {}
 
 		/**
 		* Get a cached I/O buffer (purely for minimizing allocation
@@ -88,5 +88,5 @@ class EntropySource
 		*/
 		abstract void poll(Entropy_Accumulator& accum);
 
-		abstract ~EntropySource() {}
+		~this() {}
 };

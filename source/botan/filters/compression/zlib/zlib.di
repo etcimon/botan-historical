@@ -33,7 +33,7 @@ class Zlib_Compression : public Filter
 		Zlib_Compression(size_t level = 6,
 							  bool raw_deflate = false);
 
-		~Zlib_Compression() { clear(); }
+		~this() { clear(); }
 	private:
 		void clear();
 		const size_t level;
@@ -56,7 +56,7 @@ class Zlib_Decompression : public Filter
 		void end_msg();
 
 		Zlib_Decompression(bool raw_deflate = false);
-		~Zlib_Decompression() { clear(); }
+		~this() { clear(); }
 	private:
 		void clear();
 

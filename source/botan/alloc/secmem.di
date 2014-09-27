@@ -29,7 +29,7 @@ class secure_allocator(T)
 
 		secure_allocator() noexcept {}
 
-		~secure_allocator() noexcept {}
+		~this() noexcept {}
 
 		pointer address(reference x) const noexcept
 		{ return std::addressof(x); }
@@ -72,7 +72,7 @@ class secure_allocator(T)
 			::new(cast(void*)(p)) U(std::forward<Args>(args)...);
 		}
 
-		template<typename U> void destroy(U* p) { p->~U(); }
+		template<typename U> void destroy(U* p) { p->~this(); }
 };
 
 template<typename T>  bool

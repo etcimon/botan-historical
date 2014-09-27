@@ -80,7 +80,7 @@ class X509_Object : public ASN1_Object
 		*/
 		string PEM_encode() const;
 
-		abstract ~X509_Object() {}
+		~this() {}
 	protected:
 		X509_Object(DataSource& src, in string pem_labels);
 		X509_Object(in string file, in string pem_labels);

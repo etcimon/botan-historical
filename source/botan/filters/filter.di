@@ -45,7 +45,7 @@ class Filter
 		*/
 		abstract bool attachable() { return true; }
 
-		abstract ~Filter() {}
+		~this() {}
 	protected:
 		/**
 		* @param in some input for the filter

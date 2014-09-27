@@ -42,7 +42,7 @@ class Buffered_Filter
 		*/
 		Buffered_Filter(size_t block_size, size_t final_minimum);
 
-		abstract ~Buffered_Filter() {}
+		~this() {}
 	protected:
 		/**
 		* The block processor, implemented by subclasses

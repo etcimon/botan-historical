@@ -471,7 +471,7 @@ class Server_Key_Exchange : public Handshake_Message
 								  in string sig_alg,
 								  Protocol_Version _version);
 
-		~Server_Key_Exchange();
+		~this();
 	private:
 		Vector!( byte ) serialize() const override;
 

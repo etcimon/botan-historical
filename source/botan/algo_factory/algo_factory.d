@@ -95,7 +95,7 @@ Algorithm_Factory::Algorithm_Factory()
 /*
 * Delete all engines
 */
-Algorithm_Factory::~Algorithm_Factory()
+Algorithm_Factory::~this()
 {
 	for (auto i = engines.begin(); i != engines.end(); ++i)
 		delete *i;

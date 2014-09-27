@@ -25,7 +25,7 @@ class RC4_OpenSSL : public StreamCipher
 		{
 			return Key_Length_Specification(1, 32);
 		}		RC4_OpenSSL(size_t s = 0) : SKIP(s) { clear(); }
-		~RC4_OpenSSL() { clear(); }
+		~this() { clear(); }
 	private:
 		void cipher(const byte[], byte[], size_t);
 		void key_schedule(const byte[], size_t);

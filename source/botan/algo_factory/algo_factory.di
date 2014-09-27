@@ -35,7 +35,7 @@ class Algorithm_Factory
 		/**
 		* Destructor
 		*/
-		~Algorithm_Factory();
+		~this();
 
 		/**
 		* @param engine to add (Algorithm_Factory takes ownership)

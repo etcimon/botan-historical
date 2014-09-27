@@ -24,7 +24,7 @@ class mlock_allocator
 	private:
 		mlock_allocator();
 
-		~mlock_allocator();
+		~this();
 
 		const size_t m_poolsize;
 

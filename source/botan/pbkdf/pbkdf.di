@@ -16,7 +16,7 @@ class PBKDF
 {
 	public:
 
-		abstract ~PBKDF() {}
+		~this() {}
 
 		/**
 		* @return new instance of this same algorithm

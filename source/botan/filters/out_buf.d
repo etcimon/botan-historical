@@ -119,7 +119,7 @@ Output_Buffers::Output_Buffers()
 /*
 * Output_Buffers Destructor
 */
-Output_Buffers::~Output_Buffers()
+Output_Buffers::~this()
 {
 	for (size_t j = 0; j != buffers.size(); ++j)
 		delete buffers[j];

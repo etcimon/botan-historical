@@ -16,7 +16,7 @@ class Modular_Exponentiator
 		abstract void set_exponent(in BigInt);
 		abstract BigInt execute() const;
 		abstract Modular_Exponentiator* copy() const;
-		abstract ~Modular_Exponentiator() {}
+		~this() {}
 };
 
 /**
@@ -55,7 +55,7 @@ class Power_Mod
 
 		Power_Mod(in BigInt = 0, Usage_Hints = NO_HINTS);
 		Power_Mod(in Power_Mod);
-		abstract ~Power_Mod();
+		~this();
 	private:
 		mutable Modular_Exponentiator* core;
 };

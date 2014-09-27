@@ -51,7 +51,7 @@ Dynamically_Loaded_Engine::Dynamically_Loaded_Engine(
 	}
 }
 
-Dynamically_Loaded_Engine::~Dynamically_Loaded_Engine()
+Dynamically_Loaded_Engine::~this()
 {
 	delete engine;
 	delete lib;

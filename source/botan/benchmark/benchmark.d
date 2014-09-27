@@ -6,7 +6,7 @@
 */
 
 import botan.benchmark;
-import botan.buf_comp;
+import botan.algo_base.buf_comp;
 import botan.block_cipher;
 import botan.stream_cipher;
 import botan.aead;

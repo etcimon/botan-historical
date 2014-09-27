@@ -74,7 +74,7 @@ class EAC1_1_gen_CVC(Derived) : public EAC1_1_obj!Derived // CRTP continuation f
 
 		EAC1_1_gen_CVC() { m_pk = 0; }
 
-		abstract ~EAC1_1_gen_CVC<Derived>()
+		~this()
 		{ delete m_pk; }
 
 	protected:

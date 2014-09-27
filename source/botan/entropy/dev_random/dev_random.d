@@ -42,7 +42,7 @@ Device_EntropySource::Device_EntropySource(in Vector!( string ) fsnames)
 /**
 Device_EntropySource destructor: close all open devices
 */
-Device_EntropySource::~Device_EntropySource()
+Device_EntropySource::~this()
 {
 	for (size_t i = 0; i != m_devices.size(); ++i)
 		::close(m_devices[i]);

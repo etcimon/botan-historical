@@ -52,7 +52,7 @@ DataSink_Stream::DataSink_Stream(in string path,
 /*
 * DataSink_Stream Destructor
 */
-DataSink_Stream::~DataSink_Stream()
+DataSink_Stream::~this()
 {
 	delete sink_p;
 }

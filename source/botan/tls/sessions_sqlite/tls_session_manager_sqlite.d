@@ -113,7 +113,7 @@ Session_Manager_SQLite::Session_Manager_SQLite(in string passphrase,
 	}
 }
 
-Session_Manager_SQLite::~Session_Manager_SQLite()
+Session_Manager_SQLite::~this()
 {
 	delete m_db;
 }

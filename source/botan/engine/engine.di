@@ -27,7 +27,7 @@ class RandomNumberGenerator;
 class Engine
 {
 	public:
-		abstract ~Engine() {}
+		~this() {}
 
 		/**
 		* @return name of this engine

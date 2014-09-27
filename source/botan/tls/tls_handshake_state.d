@@ -89,7 +89,7 @@ Handshake_State::Handshake_State(Handshake_IO* io,
 {
 }
 
-Handshake_State::~Handshake_State() {}
+Handshake_State::~this() {}
 
 void Handshake_State::hello_verify_request(const Hello_Verify_Request hello_verify)
 {

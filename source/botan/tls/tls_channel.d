@@ -47,7 +47,7 @@ void Channel::reset_state()
 	m_read_cipher_states.clear();
 }
 
-Channel::~Channel()
+Channel::~this()
 {
 	// So unique_ptr destructors run correctly
 }

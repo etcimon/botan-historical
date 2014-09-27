@@ -42,7 +42,7 @@ Power_Mod& Power_Mod::operator=(in Power_Mod other)
 /*
 * Power_Mod Destructor
 */
-Power_Mod::~Power_Mod()
+Power_Mod::~this()
 {
 	delete core;
 }

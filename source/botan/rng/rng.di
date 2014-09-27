@@ -94,7 +94,7 @@ class RandomNumberGenerator
 		RandomNumberGenerator& operator=(in RandomNumberGenerator rng);
 
 		RandomNumberGenerator() {}
-		abstract ~RandomNumberGenerator() {}
+		~this() {}
 };
 
 /**

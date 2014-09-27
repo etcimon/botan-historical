@@ -81,7 +81,7 @@ class Bzip_Stream
 		/**
 		* Destructor
 		*/
-		~Bzip_Stream()
+		~this()
 		{
 			Bzip_Alloc_Info* info = cast(Bzip_Alloc_Info*)(stream.opaque);
 			delete info;

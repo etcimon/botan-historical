@@ -69,7 +69,7 @@ class EAC1_1_ADO : public EAC1_1_obj!EAC1_1_ADO
 		*/
 		Vector!( byte ) tbs_data() const;
 
-		abstract ~EAC1_1_ADO() {}
+		~this() {}
 	private:
 		ASN1_Car m_car;
 		EAC1_1_Req m_req;

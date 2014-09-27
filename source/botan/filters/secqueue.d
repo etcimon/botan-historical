@@ -17,7 +17,7 @@ class SecureQueueNode
 		SecureQueueNode() : buffer(DEFAULT_BUFFERSIZE)
 		{ next = null; start = end = 0; }
 
-		~SecureQueueNode() { next = null; start = end = 0; }
+		~this() { next = null; start = end = 0; }
 
 		size_t write(in byte* input, size_t length)
 		{

@@ -20,7 +20,7 @@ class Handshake_Message
 
 		abstract Vector!( byte ) serialize() const;
 
-		abstract ~Handshake_Message() {}
+		~this() {}
 };
 
 }

@@ -55,7 +55,7 @@ class EAC1_1_CVC : public EAC1_1_gen_CVC!EAC1_1_CVC//Signed_Object
 		 */
 		 EAC1_1_CVC(in string str);
 
-		 abstract ~EAC1_1_CVC() {}
+		 ~this() {}
 	 private:
 		 void force_decode();
 		 EAC1_1_CVC() {}

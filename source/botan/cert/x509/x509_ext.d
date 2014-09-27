@@ -161,7 +161,7 @@ void Extensions::contents_to(Data_Store& subject_info,
 /*
 * Delete an Extensions list
 */
-Extensions::~Extensions()
+Extensions::~this()
 {
 	for (size_t i = 0; i != extensions.size(); ++i)
 		delete extensions[i].first;

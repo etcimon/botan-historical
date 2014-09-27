@@ -30,7 +30,7 @@ class RC4 : public StreamCipher
 		*/
 		RC4(size_t skip = 0);
 
-		~RC4() { clear(); }
+		~this() { clear(); }
 	private:
 		void key_schedule(const byte[], size_t);
 		void generate();

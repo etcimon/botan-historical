@@ -49,7 +49,7 @@ class Handshake_IO
 
 		Handshake_IO& operator=(in Handshake_IO);
 
-		abstract ~Handshake_IO() {}
+		~this() {}
 };
 
 /**

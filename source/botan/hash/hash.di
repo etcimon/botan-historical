@@ -5,7 +5,7 @@
 * Distributed under the terms of the botan license.
 */
 
-import botan.buf_comp;
+import botan.algo_base.buf_comp;
 import string;
 /**
 * This class represents hash function (message digest) objects

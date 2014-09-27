@@ -22,7 +22,7 @@ class Dynamically_Loaded_Engine : public Engine
 
 		Dynamically_Loaded_Engine& operator=(in Dynamically_Loaded_Engine);
 
-		~Dynamically_Loaded_Engine();
+		~this();
 
 		string provider_name() const override { return engine->provider_name(); }
 

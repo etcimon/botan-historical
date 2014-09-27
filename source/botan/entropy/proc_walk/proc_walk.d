@@ -32,7 +32,7 @@ class Directory_Walker : public File_Descriptor_Source
 				m_cur_dir = Pair(root_dir, root);
 		}
 
-		~Directory_Walker()
+		~this()
 		{
 			if (m_cur_dir.first)
 				::closedir(m_cur_dir.first);

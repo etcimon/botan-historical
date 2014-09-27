@@ -80,7 +80,7 @@ class DataSource
 		abstract size_t get_bytes_read() const;
 
 		DataSource() {}
-		abstract ~DataSource() {}
+		~this() {}
 		DataSource& operator=(in DataSource);
 		DataSource(in DataSource);
 };
@@ -154,7 +154,7 @@ class DataSource_Stream : public DataSource
 
 		DataSource_Stream& operator=(in DataSource_Stream);
 
-		~DataSource_Stream();
+		~this();
 
 		abstract size_t get_bytes_read() const { return total_read; }
 	private:

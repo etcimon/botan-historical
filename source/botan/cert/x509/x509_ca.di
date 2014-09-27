@@ -96,7 +96,7 @@ class X509_CA
 		X509_CA(in X509_CA);
 		X509_CA& operator=(in X509_CA);
 
-		~X509_CA();
+		~this();
 	private:
 		X509_CRL make_crl(in Vector!( CRL_Entry ) entries,
 								uint crl_number, uint next_update,

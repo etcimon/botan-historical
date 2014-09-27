@@ -40,7 +40,7 @@ class Certificate_Extension
 		*/
 		abstract string oid_name() const;
 
-		abstract ~Certificate_Extension() {}
+		~this() {}
 	protected:
 		friend class Extensions;
 		abstract bool should_encode() const { return true; }
@@ -65,7 +65,7 @@ class Extensions : public ASN1_Object
 
 		Extensions(in Extensions);
 		Extensions(bool st = true) : m_throw_on_unknown_critical(st) {}
-		~Extensions();
+		~this();
 	private:
 		static Certificate_Extension* get_extension(in OID);
 

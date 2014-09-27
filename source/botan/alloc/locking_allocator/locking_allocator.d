@@ -254,7 +254,7 @@ mlock_allocator::mlock_allocator() :
 	}
 }
 
-mlock_allocator::~mlock_allocator()
+mlock_allocator::~this()
 {
 	if (m_pool)
 	{

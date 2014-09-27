@@ -10,7 +10,7 @@ class File_Descriptor_Source
 {
 	public:
 		abstract int next_fd();
-		abstract ~File_Descriptor_Source() {}
+		~this() {}
 };
 
 /**

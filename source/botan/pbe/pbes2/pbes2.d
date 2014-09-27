@@ -196,7 +196,7 @@ PBE_PKCS5v20::PBE_PKCS5v20(in Vector!byte params,
 								  iterations).bits_of();
 }
 
-PBE_PKCS5v20::~PBE_PKCS5v20()
+PBE_PKCS5v20::~this()
 {
 	delete m_prf;
 	delete block_cipher;

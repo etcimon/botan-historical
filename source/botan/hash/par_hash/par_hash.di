@@ -23,7 +23,7 @@ class Parallel : public HashFunction
 		* @param hashes a set of hashes to compute in parallel
 		*/
 		Parallel(in Vector!( HashFunction* ) hashes);
-		~Parallel();
+		~this();
 	private:
 		void add_data(const byte[], size_t);
 		void final_result(byte[]);

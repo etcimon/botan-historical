@@ -34,5 +34,5 @@ class LibraryInitializer
 		LibraryInitializer(in string options = "")
 		{ LibraryInitializer::initialize(options); }
 
-		~LibraryInitializer() { LibraryInitializer::deinitialize(); }
+		~this() { LibraryInitializer::deinitialize(); }
 };

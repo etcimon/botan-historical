@@ -57,7 +57,7 @@ class Extension
 		*/
 		abstract bool empty() const;
 
-		abstract ~Extension() {}
+		~this() {}
 }
 
 /**

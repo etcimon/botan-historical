@@ -27,5 +27,5 @@ class GMP_MPZ
 		GMP_MPZ(in GMP_MPZ);
 		GMP_MPZ(in BigInt = 0);
 		GMP_MPZ(const byte[], size_t);
-		~GMP_MPZ();
+		~this();
 };

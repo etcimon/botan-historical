@@ -50,7 +50,7 @@ class SecureQueue : public Fanout_Filter, public DataSource
 		*/
 		SecureQueue(in SecureQueue other);
 
-		~SecureQueue() { destroy(); }
+		~this() { destroy(); }
 	private:
 		size_t bytes_read;
 		void destroy();

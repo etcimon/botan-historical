@@ -20,7 +20,7 @@ class Encryption
 		abstract SafeVector!byte encrypt(in byte* msg, size_t msg_len,
 													  RandomNumberGenerator& rng);
 
-		abstract ~Encryption() {}
+		~this() {}
 };
 
 /**
@@ -34,7 +34,7 @@ class Decryption
 		abstract SafeVector!byte decrypt(in byte* msg,
 													  size_t msg_len);
 
-		abstract ~Decryption() {}
+		~this() {}
 };
 
 /**
@@ -70,7 +70,7 @@ class Signature
 		abstract SafeVector!byte sign(in byte* msg, size_t msg_len,
 												  RandomNumberGenerator& rng);
 
-		abstract ~Signature() {}
+		~this() {}
 };
 
 /**
@@ -130,7 +130,7 @@ class Verification
 			throw new Invalid_State("Message recovery not supported");
 		}
 
-		abstract ~Verification() {}
+		~this() {}
 };
 
 /**
@@ -147,7 +147,7 @@ class Key_Agreement
 		*/
 		abstract SafeVector!byte agree(in byte* w, size_t w_len);
 
-		abstract ~Key_Agreement() {}
+		~this() {}
 };
 
 }

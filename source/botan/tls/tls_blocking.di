@@ -57,7 +57,7 @@ class Blocking_Client
 		X509_Certificate[] peer_cert_chain() const
 		{ return m_channel.peer_cert_chain(); }
 
-		abstract ~Blocking_Client() {}
+		~this() {}
 
 	protected:
 		/**

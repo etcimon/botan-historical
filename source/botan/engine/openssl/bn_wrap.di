@@ -25,7 +25,7 @@ class OSSL_BN
 		OSSL_BN(in OSSL_BN);
 		OSSL_BN(in BigInt = 0);
 		OSSL_BN(const byte[], size_t);
-		~OSSL_BN();
+		~this();
 
 		BIGNUM* ptr() const { return m_bn; }
 	private:
@@ -42,7 +42,7 @@ class OSSL_BN_CTX
 
 		OSSL_BN_CTX();
 		OSSL_BN_CTX(in OSSL_BN_CTX);
-		~OSSL_BN_CTX();
+		~this();
 
 		BN_CTX* ptr() const { return m_ctx; }
 	private:

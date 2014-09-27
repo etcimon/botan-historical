@@ -26,7 +26,7 @@ class CSP_Handle
 				valid = true;
 		}
 
-		~CSP_Handle()
+		~this()
 		{
 			if (is_valid())
 				CryptReleaseContext(handle, 0);

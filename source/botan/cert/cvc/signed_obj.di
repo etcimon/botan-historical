@@ -72,7 +72,7 @@ class EAC_Signed_Object
 		*/
 		string PEM_encode() const;
 
-		abstract ~EAC_Signed_Object() {}
+		~this() {}
 	protected:
 		void do_decode();
 		EAC_Signed_Object() {}

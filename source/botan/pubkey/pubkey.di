@@ -64,7 +64,7 @@ class PK_Encryptor
 		abstract size_t maximum_input_size() const;
 
 		PK_Encryptor() {}
-		abstract ~PK_Encryptor() {}
+		~this() {}
 
 		PK_Encryptor(in PK_Encryptor);
 
@@ -103,7 +103,7 @@ class PK_Decryptor
 		}
 
 		PK_Decryptor() {}
-		abstract ~PK_Decryptor() {}
+		~this() {}
 
 		PK_Decryptor(in PK_Decryptor);
 		PK_Decryptor& operator=(in PK_Decryptor);

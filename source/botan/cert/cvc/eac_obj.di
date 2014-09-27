@@ -41,5 +41,5 @@ class EAC1_1_obj(Derived) : public EAC_Signed_Object!Derived
 			}
 		}
 
-		abstract ~EAC1_1_obj<Derived>(){}
+		~this(){}
 };

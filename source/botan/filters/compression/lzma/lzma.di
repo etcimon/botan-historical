@@ -32,7 +32,7 @@ class Lzma_Compression : public Filter
 		*/
 		Lzma_Compression(size_t level = 6);
 
-		~Lzma_Compression() { clear(); }
+		~this() { clear(); }
 	private:
 		void clear();
 		const size_t level;
@@ -54,7 +54,7 @@ class Lzma_Decompression : public Filter
 		void end_msg();
 
 		Lzma_Decompression();
-		~Lzma_Decompression() { clear(); }
+		~this() { clear(); }
 	private:
 		void clear();
 

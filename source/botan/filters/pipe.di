@@ -293,7 +293,7 @@ class Pipe : public DataSource
 		Pipe(in Pipe);
 		Pipe& operator=(in Pipe);
 
-		~Pipe();
+		~this();
 	private:
 		void init();
 		void destruct(Filter*);

@@ -65,7 +65,7 @@ class Session_Manager
 		*/
 		abstract std::chrono::seconds session_lifetime() const;
 
-		abstract ~Session_Manager() {}
+		~this() {}
 };
 
 /**

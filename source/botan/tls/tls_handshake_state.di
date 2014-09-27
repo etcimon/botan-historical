@@ -43,7 +43,7 @@ class Handshake_State
 		Handshake_State(Handshake_IO io,
 							 void (const Handshake_Message) msg_callback = null);
 
-		abstract ~Handshake_State();
+		~this();
 
 		Handshake_State(in Handshake_State);
 		Handshake_State& operator=(in Handshake_State);

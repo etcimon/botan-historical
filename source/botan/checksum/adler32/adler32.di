@@ -19,7 +19,7 @@ class Adler32 : public HashFunction
 		void clear() { S1 = 1; S2 = 0; }
 
 		Adler32() { clear(); }
-		~Adler32() { clear(); }
+		~this() { clear(); }
 	private:
 		void add_data(const byte[], size_t);
 		void final_result(byte[]);

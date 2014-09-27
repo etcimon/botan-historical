@@ -18,7 +18,7 @@ class PK_Encryptor_Filter : public Filter
 		PK_Encryptor_Filter(PK_Encryptor* c,
 								  RandomNumberGenerator& rng_ref) :
 			cipher(c), rng(rng_ref) {}
-		~PK_Encryptor_Filter() { delete cipher; }
+		~this() { delete cipher; }
 	private:
 		PK_Encryptor* cipher;
 		RandomNumberGenerator& rng;
@@ -34,7 +34,7 @@ class PK_Decryptor_Filter : public Filter
 		void write(in byte*, size_t);
 		void end_msg();
 		PK_Decryptor_Filter(PK_Decryptor* c) : cipher(c) {}
-		~PK_Decryptor_Filter() { delete cipher; }
+		~this() { delete cipher; }
 	private:
 		PK_Decryptor* cipher;
 		SafeVector!byte buffer;
@@ -53,7 +53,7 @@ class PK_Signer_Filter : public Filter
 							  RandomNumberGenerator& rng_ref) :
 			signer(s), rng(rng_ref) {}
 
-		~PK_Signer_Filter() { delete signer; }
+		~this() { delete signer; }
 	private:
 		PK_Signer* signer;
 		RandomNumberGenerator& rng;
@@ -74,7 +74,7 @@ class PK_Verifier_Filter : public Filter
 		PK_Verifier_Filter(PK_Verifier* v) : verifier(v) {}
 		PK_Verifier_Filter(PK_Verifier*, in byte*, size_t);
 		PK_Verifier_Filter(PK_Verifier*, in SafeVector!byte);
-		~PK_Verifier_Filter() { delete verifier; }
+		~this() { delete verifier; }
 	private:
 		PK_Verifier* verifier;
 		SafeVector!byte signature;

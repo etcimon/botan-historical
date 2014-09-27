@@ -44,7 +44,7 @@ class BlockCipherModePaddingMethod
 		/**
 		* abstract destructor
 		*/
-		abstract ~BlockCipherModePaddingMethod() {}
+		~this() {}
 };
 
 /**

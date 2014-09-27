@@ -330,7 +330,7 @@ BER_Decoder::BER_Decoder(in BER_Decoder other)
 /*
 * BER_Decoder Destructor
 */
-BER_Decoder::~BER_Decoder()
+BER_Decoder::~this()
 {
 	if (owns)
 		delete source;

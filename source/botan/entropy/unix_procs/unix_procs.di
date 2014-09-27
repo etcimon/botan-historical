@@ -44,7 +44,7 @@ class Unix_EntropySource : public EntropySource
 
 				Unix_Process(in Vector!( string ) args) { spawn(args); }
 
-				~Unix_Process() { shutdown(); }
+				~this() { shutdown(); }
 
 				Unix_Process(Unix_Process&& other)
 				{

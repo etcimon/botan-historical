@@ -184,7 +184,7 @@ DataSource_Stream::DataSource_Stream(std::istream& input,
 /*
 * DataSource_Stream Destructor
 */
-DataSource_Stream::~DataSource_Stream()
+DataSource_Stream::~this()
 {
 	delete source_p;
 }

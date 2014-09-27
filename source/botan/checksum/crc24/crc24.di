@@ -19,7 +19,7 @@ class CRC24 : public HashFunction
 		void clear() { crc = 0xB704CE; }
 
 		CRC24() { clear(); }
-		~CRC24() { clear(); }
+		~this() { clear(); }
 	private:
 		void add_data(const byte[], size_t);
 		void final_result(byte[]);

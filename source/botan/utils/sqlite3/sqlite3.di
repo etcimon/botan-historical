@@ -17,7 +17,7 @@ class sqlite3_database
 	public:
 		sqlite3_database(in string file);
 
-		~sqlite3_database();
+		~this();
 
 		size_t row_count(in string table_name);
 
@@ -52,7 +52,7 @@ class sqlite3_statement
 
 		sqlite3_stmt* stmt() { return m_stmt; }
 
-		~sqlite3_statement();
+		~this();
 	private:
 		sqlite3_stmt* m_stmt;
 };

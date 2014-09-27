@@ -91,7 +91,7 @@ class EAC_Time : public ASN1_Object
 		EAC_Time(uint year, uint month, uint day,
 					ASN1_Tag tag = ASN1_Tag(0));
 
-		abstract ~EAC_Time() {}
+		~this() {}
 	private:
 		Vector!( byte ) encoded_eac_time() const;
 		bool passes_sanity_check() const;
@@ -178,7 +178,7 @@ class ASN1_EAC_String: public ASN1_Object
 		ASN1_Tag tagging() const;
 		ASN1_EAC_String(in string str, ASN1_Tag the_tag);
 
-		abstract ~ASN1_EAC_String() {}
+		~this() {}
 	protected:
 		bool sanity_check() const;
 	private:

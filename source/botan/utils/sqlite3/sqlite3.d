@@ -21,7 +21,7 @@ sqlite3_database::sqlite3_database(in string db_filename)
 	}
 }
 
-sqlite3_database::~sqlite3_database()
+sqlite3_database::~this()
 {
 	if (m_db)
 		::sqlite3_close(m_db);
@@ -123,7 +123,7 @@ bool sqlite3_statement::step()
 	return (::sqlite3_step(m_stmt) == SQLITE_ROW);
 }
 
-sqlite3_statement::~sqlite3_statement()
+sqlite3_statement::~this()
 {
 	::sqlite3_finalize(m_stmt);
 }

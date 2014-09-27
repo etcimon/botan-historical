@@ -80,7 +80,7 @@ class StreamCipher_Filter : public Keyed_Filter
 		*/
 		StreamCipher_Filter(in string cipher, const SymmetricKey& key);
 
-		~StreamCipher_Filter() { delete cipher; }
+		~this() { delete cipher; }
 	private:
 		SafeVector!byte buffer;
 		StreamCipher* cipher;
@@ -118,7 +118,7 @@ class Hash_Filter : public Filter
 		*/
 		Hash_Filter(in string request, size_t len = 0);
 
-		~Hash_Filter() { delete hash; }
+		~this() { delete hash; }
 	private:
 		const size_t OUTPUT_LENGTH;
 		HashFunction* hash;
@@ -196,7 +196,7 @@ class MAC_Filter : public Keyed_Filter
 		MAC_Filter(in string mac, const SymmetricKey& key,
 					  size_t len = 0);
 
-		~MAC_Filter() { delete mac; }
+		~this() { delete mac; }
 	private:
 		const size_t OUTPUT_LENGTH;
 		MessageAuthenticationCode* mac;

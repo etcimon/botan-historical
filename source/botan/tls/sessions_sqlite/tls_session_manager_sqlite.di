@@ -39,7 +39,7 @@ class Session_Manager_SQLite : public Session_Manager
 									  size_t max_sessions = 1000,
 									  std::chrono::seconds session_lifetime = std::chrono::seconds(7200));
 
-		~Session_Manager_SQLite();
+		~this();
 
 		bool load_from_session_id(in Vector!byte session_id,
 										  Session& session) override;

@@ -152,7 +152,7 @@ class Channel
 
 		Channel& operator=(in Channel);
 
-		abstract ~Channel();
+		~this();
 	protected:
 
 		abstract void process_handshake_msg(const Handshake_State* active_state,

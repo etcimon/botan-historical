@@ -34,7 +34,7 @@ X509_CA::X509_CA(in X509_Certificate c,
 /*
 * X509_CA Destructor
 */
-X509_CA::~X509_CA()
+X509_CA::~this()
 {
 	delete signer;
 }

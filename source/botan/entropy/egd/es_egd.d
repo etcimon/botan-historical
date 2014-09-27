@@ -122,7 +122,7 @@ EGD_EntropySource::EGD_EntropySource(in Vector!( string ) paths)
 		sockets.push_back(EGD_Socket(paths[i]));
 }
 
-EGD_EntropySource::~EGD_EntropySource()
+EGD_EntropySource::~this()
 {
 	for (size_t i = 0; i != sockets.size(); ++i)
 		sockets[i].close();

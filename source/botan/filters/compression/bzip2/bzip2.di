@@ -22,7 +22,7 @@ class Bzip_Compression : public Filter
 		void flush();
 
 		Bzip_Compression(size_t = 9);
-		~Bzip_Compression() { clear(); }
+		~this() { clear(); }
 	private:
 		void clear();
 
@@ -44,7 +44,7 @@ class Bzip_Decompression : public Filter
 		void end_msg();
 
 		Bzip_Decompression(bool = false);
-		~Bzip_Decompression() { clear(); }
+		~this() { clear(); }
 	private:
 		void clear();
 

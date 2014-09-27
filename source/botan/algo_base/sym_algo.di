@@ -15,7 +15,7 @@ import botan.types;
 class SymmetricAlgorithm
 {
 	public:
-		abstract ~SymmetricAlgorithm() {}
+		~this() {}
 
 		abstract void clear();
 

@@ -19,7 +19,7 @@ class EGD_EntropySource : public EntropySource
 		void poll(Entropy_Accumulator& accum);
 
 		EGD_EntropySource(in Vector!( string ));
-		~EGD_EntropySource();
+		~this();
 	private:
 		class EGD_Socket
 		{

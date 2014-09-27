@@ -63,7 +63,7 @@ class ASN1_Object
 		*/
 		abstract void decode_from(class BER_Decoder from);
 
-		abstract ~ASN1_Object() {}
+		~this() {}
 };
 
 /**

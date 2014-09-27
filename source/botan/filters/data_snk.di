@@ -15,7 +15,7 @@ class DataSink : public Filter
 	public:
 		bool attachable() { return false; }
 		DataSink() {}
-		abstract ~DataSink() {}
+		~this() {}
 
 		DataSink& operator=(in DataSink);
 		DataSink(in DataSink);
@@ -48,7 +48,7 @@ class DataSink_Stream : public DataSink
 		DataSink_Stream(in string pathname,
 							 bool use_binary = false);
 
-		~DataSink_Stream();
+		~this();
 	private:
 		const string identifier;
 

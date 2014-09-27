@@ -13,7 +13,7 @@ class GMP_Engine : public Engine
 {
 	public:
 		GMP_Engine();
-		~GMP_Engine();
+		~this();
 
 		string provider_name() const override { return "gmp"; }
 

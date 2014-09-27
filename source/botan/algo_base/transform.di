@@ -90,7 +90,7 @@ class Transformation
 
 		abstract void clear();
 
-		abstract ~Transformation() {}
+		~this() {}
 };
 
 class Keyed_Transform : public Transformation

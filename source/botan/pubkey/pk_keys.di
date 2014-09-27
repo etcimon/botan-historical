@@ -76,7 +76,7 @@ class Public_Key
 		*/
 		abstract Vector!( byte ) x509_subject_public_key() const;
 
-		abstract ~Public_Key() {}
+		~this() {}
 	protected:
 		/**
 		* Self-test after loading a key
@@ -128,7 +128,7 @@ class PK_Key_Agreement_Key : public abstract Private_Key
 		*/
 		abstract Vector!( byte ) public_value() const;
 
-		abstract ~PK_Key_Agreement_Key() {}
+		~this() {}
 };
 
 /*

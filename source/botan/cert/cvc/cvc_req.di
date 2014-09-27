@@ -34,7 +34,7 @@ class EAC1_1_Req : public EAC1_1_gen_CVC!EAC1_1_Req
 		*/
 		EAC1_1_Req(in string str);
 
-		abstract ~EAC1_1_Req(){}
+		~this(){}
 	private:
 		void force_decode();
 		EAC1_1_Req() {}
