@@ -9,7 +9,7 @@ import botan.block_cipher;
 /**
 * RC6, Ron Rivest's AES candidate
 */
-class RC6 : public Block_Cipher_Fixed_Params<16, 1, 32>
+class RC6 : public Block_Cipher_Fixed_Params!(16, 1, 32)
 {
 	public:
 		void encrypt_n(byte* input, byte* output, size_t blocks) const;

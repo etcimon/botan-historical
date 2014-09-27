@@ -48,7 +48,7 @@ class Lion : public BlockCipher
 		size_t right_size() const { return m_block_size - left_size(); }
 
 		const size_t m_block_size;
-		std::unique_ptr<HashFunction> m_hash;
-		std::unique_ptr<StreamCipher> m_cipher;
+		Unique!HashFunction m_hash;
+		Unique!StreamCipher m_cipher;
 		SafeVector!byte m_key1, m_key2;
 };

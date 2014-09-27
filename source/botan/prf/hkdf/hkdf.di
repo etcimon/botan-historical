@@ -35,6 +35,6 @@ class HKDF
 
 		void clear();
 	private:
-		std::unique_ptr<MessageAuthenticationCode> m_extractor;
-		std::unique_ptr<MessageAuthenticationCode> m_prf;
+		Unique!MessageAuthenticationCode m_extractor;
+		Unique!MessageAuthenticationCode m_prf;
 };

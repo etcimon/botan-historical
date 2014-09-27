@@ -33,5 +33,5 @@ class EMSA1 : public EMSA
 						in SafeVector!byte raw,
 						size_t key_bits);
 
-		std::unique_ptr<HashFunction> m_hash;
+		Unique!HashFunction m_hash;
 };

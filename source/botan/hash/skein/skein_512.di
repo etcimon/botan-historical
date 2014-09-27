@@ -52,7 +52,7 @@ class Skein_512 : public HashFunction
 		string personalization;
 		size_t output_bits;
 
-		std::unique_ptr<Threefish_512> m_threefish;
+		Unique!Threefish_512 m_threefish;
 		secure_vector!ulong T;
 		SafeVector!byte buffer;
 		size_t buf_pos;

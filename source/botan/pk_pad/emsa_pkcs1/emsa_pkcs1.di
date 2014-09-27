@@ -30,7 +30,7 @@ class EMSA_PKCS1v15 : public EMSA
 		bool verify(in SafeVector!byte, in SafeVector!byte,
 						size_t);
 	private:
-		std::unique_ptr<HashFunction> m_hash;
+		Unique!HashFunction m_hash;
 		Vector!( byte ) m_hash_id;
 };
 

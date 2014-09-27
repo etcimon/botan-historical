@@ -33,6 +33,6 @@ class SSL3_MAC : public MessageAuthenticationCode
 		void final_result(byte[]);
 		void key_schedule(const byte[], size_t);
 
-		std::unique_ptr<HashFunction> m_hash;
+		Unique!HashFunction m_hash;
 		SafeVector!byte m_ikey, m_okey;
 };

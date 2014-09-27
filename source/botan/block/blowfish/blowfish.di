@@ -9,7 +9,7 @@ import botan.block_cipher;
 /**
 * Blowfish
 */
-class Blowfish : public Block_Cipher_Fixed_Params<8, 1, 56>
+class Blowfish : public Block_Cipher_Fixed_Params!(8, 1, 56)
 {
 	public:
 		void encrypt_n(byte* input, byte* output, size_t blocks) const;

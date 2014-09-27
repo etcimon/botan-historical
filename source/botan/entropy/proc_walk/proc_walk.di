@@ -28,5 +28,5 @@ class ProcWalking_EntropySource : public EntropySource
 
 	private:
 		const string m_path;
-		std::unique_ptr<File_Descriptor_Source> m_dir;
+		Unique!File_Descriptor_Source m_dir;
 };

@@ -26,5 +26,5 @@ class AutoSeeded_RNG : public RandomNumberGenerator
 
 		AutoSeeded_RNG() : m_rng(RandomNumberGenerator::make_rng()) {}
 	private:
-		std::unique_ptr<RandomNumberGenerator> m_rng;
+		Unique!RandomNumberGenerator m_rng;
 };

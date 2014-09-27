@@ -29,8 +29,8 @@ class DLIES_Encryptor : public PK_Encryptor
 		Vector!( byte ) other_key, my_key;
 
 		PK_Key_Agreement ka;
-		std::unique_ptr<KDF> kdf;
-		std::unique_ptr<MessageAuthenticationCode> mac;
+		Unique!KDF kdf;
+		Unique!MessageAuthenticationCode mac;
 		size_t mac_keylen;
 };
 
@@ -51,7 +51,7 @@ class DLIES_Decryptor : public PK_Decryptor
 		Vector!( byte ) my_key;
 
 		PK_Key_Agreement ka;
-		std::unique_ptr<KDF> kdf;
-		std::unique_ptr<MessageAuthenticationCode> mac;
+		Unique!KDF kdf;
+		Unique!MessageAuthenticationCode mac;
 		size_t mac_keylen;
 };

@@ -38,12 +38,12 @@ class Library_State
 		void poll_available_sources(class Entropy_Accumulator& accum);
 
 	private:
-		static Vector!( std::unique_ptr<EntropySource )> entropy_sources();
+		static Vector!( Unique!EntropySource ) entropy_sources();
 
-		std::unique_ptr<Serialized_RNG> m_global_prng;
+		Unique!Serialized_RNG m_global_prng;
 
 		std::mutex m_entropy_src_mutex;
-		Vector!( std::unique_ptr<EntropySource )> m_sources;
+		Vector!( Unique!EntropySource ) m_sources;
 
-		std::unique_ptr<Algorithm_Factory> m_algorithm_factory;
+		Unique!Algorithm_Factory m_algorithm_factory;
 };

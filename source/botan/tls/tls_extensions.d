@@ -196,7 +196,7 @@ Vector!( byte ) SRP_Identifier::serialize() const
 Renegotiation_Extension::Renegotiation_Extension(TLS_Data_Reader& reader,
 																 ushort extension_size)
 {
-	reneg_data = reader.get_range<byte>(1, 0, 255);
+	reneg_data = reader.get_range!byte(1, 0, 255);
 
 	if (reneg_data.size() + 1 != extension_size)
 		throw new Decoding_Error("Bad encoding for secure renegotiation extn");
@@ -530,7 +530,7 @@ Signature_Algorithms::Signature_Algorithms(TLS_Data_Reader& reader,
 Session_Ticket::Session_Ticket(TLS_Data_Reader& reader,
 										 ushort extension_size)
 {
-	m_ticket = reader.get_elem<byte, Vector!( byte ) >(extension_size);
+	m_ticket = reader.get_elem!(byte, Vector!byte)(extension_size);
 }
 
 }

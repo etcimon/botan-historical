@@ -27,5 +27,5 @@ class OAEP : public EME
 		SafeVector!byte unpad(const byte[], size_t, size_t) const;
 
 		SafeVector!byte m_Phash;
-		std::unique_ptr<HashFunction> m_hash;
+		Unique!HashFunction m_hash;
 };

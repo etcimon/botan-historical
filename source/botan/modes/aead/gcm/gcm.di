@@ -42,8 +42,8 @@ class GCM_Mode : public AEAD_Mode
 		const size_t m_tag_size;
 		const string m_cipher_name;
 
-		std::unique_ptr<StreamCipher> m_ctr;
-		std::unique_ptr<GHASH> m_ghash;
+		Unique!StreamCipher m_ctr;
+		Unique!GHASH m_ghash;
 };
 
 /**

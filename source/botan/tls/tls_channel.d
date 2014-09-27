@@ -110,7 +110,7 @@ Handshake_State& Channel::create_handshake_state(Protocol_Version _version)
 			m_sequence_numbers.reset(new Stream_Sequence_Numbers);
 	}
 
-	std::unique_ptr<Handshake_IO> io;
+	Unique!Handshake_IO io;
 	if (_version.is_datagram_protocol())
 		io.reset(new Datagram_Handshake_IO(
 						sequence_numbers(),
@@ -637,7 +637,7 @@ SymmetricKey Channel::key_material_export(in string label,
 {
 	if (auto active = active_state())
 	{
-		std::unique_ptr<KDF> prf(active->protocol_specific_prf());
+		Unique!KDF prf(active->protocol_specific_prf());
 
 		in SafeVector!byte master_secret =
 			active->session_keys().master_secret();

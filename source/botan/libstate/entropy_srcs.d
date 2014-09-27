@@ -42,54 +42,54 @@ import botan.libstate;
 #if defined(BOTAN_HAS_ENTROPY_SRC_PROC_WALKER)
   import botan.internal.proc_walk;
 #endif
-Vector!( std::unique_ptr<EntropySource )> Library_State::entropy_sources()
+Vector!( Unique!EntropySource ) Library_State::entropy_sources()
 {
-	Vector!( std::unique_ptr<EntropySource )> sources;
+	Vector!( Unique!EntropySource ) sources;
 
 #if defined(BOTAN_HAS_ENTROPY_SRC_HIGH_RESOLUTION_TIMER)
-	sources.push_back(std::unique_ptr<EntropySource>(new High_Resolution_Timestamp));
+	sources.push_back(Unique!EntropySource(new High_Resolution_Timestamp));
 #endif
 
 #if defined(BOTAN_HAS_ENTROPY_SRC_RDRAND)
-	sources.push_back(std::unique_ptr<EntropySource>(new Intel_Rdrand));
+	sources.push_back(Unique!EntropySource(new Intel_Rdrand));
 #endif
 
 #if defined(BOTAN_HAS_ENTROPY_SRC_UNIX_PROCESS_RUNNER)
-	sources.push_back(std::unique_ptr<EntropySource>(new UnixProcessInfo_EntropySource));
+	sources.push_back(Unique!EntropySource(new UnixProcessInfo_EntropySource));
 #endif
 
 #if defined(BOTAN_HAS_ENTROPY_SRC_DEV_RANDOM)
-	sources.push_back(std::unique_ptr<EntropySource>(new Device_EntropySource(
+	sources.push_back(Unique!EntropySource(new Device_EntropySource(
 	{ "/dev/random", "/dev/srandom", "/dev/urandom" }
 	)));
 #endif
 
 #if defined(BOTAN_HAS_ENTROPY_SRC_CAPI)
-	sources.push_back(std::unique_ptr<EntropySource>(new Win32_CAPI_EntropySource));
+	sources.push_back(Unique!EntropySource(new Win32_CAPI_EntropySource));
 #endif
 
 #if defined(BOTAN_HAS_ENTROPY_SRC_PROC_WALKER)
-	sources.push_back(std::unique_ptr<EntropySource>(
+	sources.push_back(Unique!EntropySource(
 		new ProcWalking_EntropySource("/proc")));
 #endif
 
 #if defined(BOTAN_HAS_ENTROPY_SRC_WIN32)
-	sources.push_back(std::unique_ptr<EntropySource>(new Win32_EntropySource));
+	sources.push_back(Unique!EntropySource(new Win32_EntropySource));
 #endif
 
 #if defined(BOTAN_HAS_ENTROPY_SRC_BEOS)
-	sources.push_back(std::unique_ptr<EntropySource>(new BeOS_EntropySource));
+	sources.push_back(Unique!EntropySource(new BeOS_EntropySource));
 #endif
 
 #if defined(BOTAN_HAS_ENTROPY_SRC_UNIX_PROCESS_RUNNER)
-	sources.push_back(std::unique_ptr<EntropySource>(
+	sources.push_back(Unique!EntropySource(
 		new Unix_EntropySource(
 		{ "/bin", "/sbin", "/usr/bin", "/usr/sbin" }
 		)));
 #endif
 
 #if defined(BOTAN_HAS_ENTROPY_SRC_EGD)
-	sources.push_back(std::unique_ptr<EntropySource>(
+	sources.push_back(Unique!EntropySource(
 		new EGD_EntropySource({ "/var/run/egd-pool", "/dev/egd-pool" })
 		));
 #endif

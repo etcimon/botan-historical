@@ -49,8 +49,8 @@ class OCB_Mode : public AEAD_Mode
 		void key_schedule(in byte* key, size_t length) override;
 
 		// fixme make these private
-		std::unique_ptr<BlockCipher> m_cipher;
-		std::unique_ptr<L_computer> m_L;
+		Unique!BlockCipher m_cipher;
+		Unique!L_computer m_L;
 
 		size_t m_block_index = 0;
 

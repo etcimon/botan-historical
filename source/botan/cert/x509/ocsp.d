@@ -46,7 +46,7 @@ void check_signature(in Vector!byte tbs_response,
 							in Vector!byte signature,
 							const X509_Certificate& cert)
 {
-	std::unique_ptr<Public_Key> pub_key(cert.subject_public_key());
+	Unique!Public_Key pub_key(cert.subject_public_key());
 
 	const Vector!( string ) sig_info =
 		split_on(OIDS::lookup(sig_algo.oid), '/');

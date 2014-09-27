@@ -49,7 +49,7 @@ class SIMD_Scalar(T, size_t N)
 			const byte* in_b = cast(const byte*)(input);
 
 			for (size_t i = 0; i != size(); ++i)
-				out.m_v[i] = Botan::load_be<T>(in_b, i);
+				out.m_v[i] = Botan::load_be!T(in_b, i);
 
 			return out;
 		}

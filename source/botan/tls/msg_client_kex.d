@@ -100,9 +100,9 @@ Client_Key_Exchange::Client_Key_Exchange(Handshake_IO& io,
 
 		if (kex_algo == "DH" || kex_algo == "DHE_PSK")
 		{
-			BigInt p = BigInt::decode(reader.get_range<byte>(2, 1, 65535));
-			BigInt g = BigInt::decode(reader.get_range<byte>(2, 1, 65535));
-			BigInt Y = BigInt::decode(reader.get_range<byte>(2, 1, 65535));
+			BigInt p = BigInt::decode(reader.get_range!byte(2, 1, 65535));
+			BigInt g = BigInt::decode(reader.get_range!byte(2, 1, 65535));
+			BigInt Y = BigInt::decode(reader.get_range!byte(2, 1, 65535));
 
 			if (reader.remaining_bytes())
 				throw new Decoding_Error("Bad params size for DH key exchange");
@@ -164,7 +164,7 @@ Client_Key_Exchange::Client_Key_Exchange(Handshake_IO& io,
 
 			EC_Group group(name);
 
-			Vector!( byte ) ecdh_key = reader.get_range<byte>(1, 1, 255);
+			Vector!( byte ) ecdh_key = reader.get_range!byte(1, 1, 255);
 
 			ECDH_PublicKey counterparty_key(group, OS2ECP(ecdh_key, group.get_curve()));
 
@@ -187,10 +187,10 @@ Client_Key_Exchange::Client_Key_Exchange(Handshake_IO& io,
 		}
 		else if (kex_algo == "SRP_SHA")
 		{
-			const BigInt N = BigInt::decode(reader.get_range<byte>(2, 1, 65535));
-			const BigInt g = BigInt::decode(reader.get_range<byte>(2, 1, 65535));
-			Vector!( byte ) salt = reader.get_range<byte>(1, 1, 255);
-			const BigInt B = BigInt::decode(reader.get_range<byte>(2, 1, 65535));
+			const BigInt N = BigInt::decode(reader.get_range!byte(2, 1, 65535));
+			const BigInt g = BigInt::decode(reader.get_range!byte(2, 1, 65535));
+			Vector!( byte ) salt = reader.get_range!byte(1, 1, 255);
+			const BigInt B = BigInt::decode(reader.get_range!byte(2, 1, 65535));
 
 			const string srp_group = srp6_group_identifier(N, g);
 
@@ -307,7 +307,7 @@ Client_Key_Exchange::Client_Key_Exchange(in Vector!byte contents,
 			else
 			{
 				TLS_Data_Reader reader("ClientKeyExchange", contents);
-				m_pre_master = decryptor.decrypt(reader.get_range<byte>(2, 0, 65535));
+				m_pre_master = decryptor.decrypt(reader.get_range!byte(2, 0, 65535));
 			}
 
 			if (m_pre_master.size() != 48 ||
@@ -356,7 +356,7 @@ Client_Key_Exchange::Client_Key_Exchange(in Vector!byte contents,
 		{
 			SRP6_Server_Session& srp = state.server_kex()->server_srp_params();
 
-			m_pre_master = srp.step2(BigInt::decode(reader.get_range<byte>(2, 0, 65535))).bits_of();
+			m_pre_master = srp.step2(BigInt::decode(reader.get_range!byte(2, 0, 65535))).bits_of();
 		}
 		else if (kex_algo == "DH" || kex_algo == "DHE_PSK" ||
 				  kex_algo == "ECDH" || kex_algo == "ECDHE_PSK")
@@ -377,9 +377,9 @@ Client_Key_Exchange::Client_Key_Exchange(in Vector!byte contents,
 				Vector!( byte ) client_pubkey;
 
 				if (ka_key->algo_name() == "DH")
-					client_pubkey = reader.get_range<byte>(2, 0, 65535);
+					client_pubkey = reader.get_range!byte(2, 0, 65535);
 				else
-					client_pubkey = reader.get_range<byte>(1, 0, 255);
+					client_pubkey = reader.get_range!byte(1, 0, 255);
 
 				SafeVector!byte shared_secret = ka.derive_key(0, client_pubkey).bits_of();
 

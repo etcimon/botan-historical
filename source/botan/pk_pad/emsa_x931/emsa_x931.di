@@ -30,6 +30,6 @@ class EMSA_X931 : public EMSA
 						size_t);
 
 		SafeVector!byte m_empty_hash;
-		std::unique_ptr<HashFunction> m_hash;
+		Unique!HashFunction m_hash;
 		byte m_hash_id;
 };

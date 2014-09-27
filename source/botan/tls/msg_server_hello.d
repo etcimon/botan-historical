@@ -76,7 +76,7 @@ Server_Hello::Server_Hello(in Vector!byte buf)
 
 	m_random = reader.get_fixed<byte>(32);
 
-	m_session_id = reader.get_range<byte>(1, 0, 32);
+	m_session_id = reader.get_range!byte(1, 0, 32);
 
 	m_ciphersuite = reader.get_ushort();
 

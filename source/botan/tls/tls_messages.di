@@ -475,8 +475,8 @@ class Server_Key_Exchange : public Handshake_Message
 	private:
 		Vector!( byte ) serialize() const override;
 
-		std::unique_ptr<Private_Key> m_kex_key;
-		std::unique_ptr<SRP6_Server_Session> m_srp_params;
+		Unique!Private_Key m_kex_key;
+		Unique!SRP6_Server_Session m_srp_params;
 
 		Vector!( byte ) m_params;
 

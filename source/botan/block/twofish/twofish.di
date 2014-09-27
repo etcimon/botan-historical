@@ -9,7 +9,7 @@ import botan.block_cipher;
 /**
 * Twofish, an AES finalist
 */
-class Twofish : public Block_Cipher_Fixed_Params<16, 16, 32, 8>
+class Twofish : public Block_Cipher_Fixed_Params!(16, 16, 32, 8)
 {
 	public:
 		void encrypt_n(byte* input, byte* output, size_t blocks) const;

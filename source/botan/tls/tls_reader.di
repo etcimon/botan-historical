@@ -77,7 +77,7 @@ class TLS_Data_Reader
 			Container result(num_elems);
 
 			for (size_t i = 0; i != num_elems; ++i)
-				result[i] = load_be<T>(&m_buf[m_offset], i);
+				result[i] = load_be!T(&m_buf[m_offset], i);
 
 			m_offset += num_elems * sizeof(T);
 
@@ -91,7 +91,7 @@ class TLS_Data_Reader
 			const size_t num_elems =
 				get_num_elems(len_bytes, sizeof(T), min_elems, max_elems);
 
-			return get_elem<T, Vector!( T ) >(num_elems);
+			return get_elem!(T, Vector!T)(num_elems);
 		}
 
 		Vector!( T ) get_range_vector(T)(size_t len_bytes,
@@ -101,7 +101,7 @@ class TLS_Data_Reader
 			const size_t num_elems =
 				get_num_elems(len_bytes, sizeof(T), min_elems, max_elems);
 
-			return get_elem<T, Vector!( T ) >(num_elems);
+			return get_elem!(T, Vector!T)(num_elems);
 		}
 
 		string get_string(size_t len_bytes,
@@ -109,14 +109,14 @@ class TLS_Data_Reader
 									  size_t max_bytes)
 		{
 			Vector!( byte ) v =
-				get_range_vector<byte>(len_bytes, min_bytes, max_bytes);
+				get_range_vector!byte(len_bytes, min_bytes, max_bytes);
 
 			return string(cast(char*)(&v[0]), v.size());
 		}
 
 		Vector!( T ) get_fixed(T)(size_t size)
 		{
-			return get_elem<T, Vector!( T ) >(size);
+			return get_elem!(T, Vector!T)(size);
 		}
 
 	private:

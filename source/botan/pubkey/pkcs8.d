@@ -155,7 +155,7 @@ Vector!( byte ) BER_encode(in Private_Key key,
 {
 	const string DEFAULT_PBE = "PBE-PKCS5v20(SHA-1,AES-256/CBC)";
 
-	std::unique_ptr<PBE> pbe(
+	Unique!PBE pbe(
 		get_pbe(((pbe_algo != "") ? pbe_algo : DEFAULT_PBE),
 				  pass,
 				  msec,

@@ -16,7 +16,7 @@ BigInt hash_seq(in string hash_id,
 					 ref const BigInt in1,
 					 ref const BigInt in2)
 {
-	std::unique_ptr<HashFunction> hash_fn(
+	Unique!HashFunction hash_fn(
 		global_state().algorithm_factory().make_hash_function(hash_id));
 
 	hash_fn->update(BigInt::encode_1363(in1, pad_to));
@@ -30,7 +30,7 @@ BigInt compute_x(in string hash_id,
 					  in string password,
 					  in Vector!byte salt)
 {
-	std::unique_ptr<HashFunction> hash_fn(
+	Unique!HashFunction hash_fn(
 		global_state().algorithm_factory().make_hash_function(hash_id));
 
 	hash_fn->update(identifier);

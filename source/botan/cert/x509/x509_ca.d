@@ -52,7 +52,7 @@ X509_Certificate X509_CA::sign_request(in PKCS10_Request req,
 		constraints = Key_Constraints(KEY_CERT_SIGN | CRL_SIGN);
 	else
 	{
-		std::unique_ptr<Public_Key> key(req.subject_public_key());
+		Unique!Public_Key key(req.subject_public_key());
 		constraints = find_constraints(*key, req.constraints());
 	}
 

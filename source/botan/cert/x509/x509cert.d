@@ -365,7 +365,7 @@ bool cert_subject_dns_match(in string name,
 
 string X509_Certificate::fingerprint(in string hash_name) const
 {
-	std::unique_ptr<HashFunction> hash(get_hash(hash_name));
+	Unique!HashFunction hash(get_hash(hash_name));
 	hash->update(this->BER_encode());
 	const auto hex_print = hex_encode(hash->flush());
 
@@ -533,7 +533,7 @@ string X509_Certificate::to_string() const
 	if (this->subject_key_id().size())
 	  output << "Subject keyid: " << hex_encode(this->subject_key_id()) << "";
 
-	std::unique_ptr<X509_PublicKey> pubkey(this->subject_public_key());
+	Unique!X509_PublicKey pubkey(this->subject_public_key());
 	output << "Public Key:" << X509::PEM_encode(*pubkey);
 
 	return output.str();

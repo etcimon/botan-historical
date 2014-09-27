@@ -203,9 +203,9 @@ class Algorithm_Factory
 
 		Vector!( Engine* ) engines;
 
-		std::unique_ptr<Algorithm_Cache<BlockCipher>> block_cipher_cache;
-		std::unique_ptr<Algorithm_Cache<StreamCipher>> stream_cipher_cache;
-		std::unique_ptr<Algorithm_Cache<HashFunction>> hash_cache;
-		std::unique_ptr<Algorithm_Cache<MessageAuthenticationCode>> mac_cache;
-		std::unique_ptr<Algorithm_Cache<PBKDF>> pbkdf_cache;
+		Unique!(Algorithm_Cache!(BlockCipher)) block_cipher_cache;
+		Unique!(Algorithm_Cache!(StreamCipher)) stream_cipher_cache;
+		Unique!(Algorithm_Cache!(HashFunction)) hash_cache;
+		Unique!(Algorithm_Cache!(MessageAuthenticationCode)) mac_cache;
+		Unique!(Algorithm_Cache!(PBKDF)) pbkdf_cache;
 };

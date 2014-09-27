@@ -41,5 +41,5 @@ class Comb4P : public HashFunction
 		void add_data(in byte* input, size_t length);
 		void final_result(byte* output);
 
-		std::unique_ptr<HashFunction> m_hash1, m_hash2;
+		Unique!HashFunction m_hash1, m_hash2;
 };

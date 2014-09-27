@@ -45,7 +45,7 @@ class CFB_Mode : public Cipher_Mode
 	private:
 		void key_schedule(in byte* key, size_t length) override;
 
-		std::unique_ptr<BlockCipher> m_cipher;
+		Unique!BlockCipher m_cipher;
 		SafeVector!byte m_shift_register;
 		SafeVector!byte m_keystream_buf;
 		size_t m_feedback_bytes;

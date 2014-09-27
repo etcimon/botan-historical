@@ -83,7 +83,7 @@ class FPE_Encryptor
 		BigInt operator()(size_t i, ref const BigInt R);
 
 	private:
-		std::unique_ptr<MessageAuthenticationCode> mac;
+		Unique!MessageAuthenticationCode mac;
 		Vector!( byte ) mac_n_t;
 };
 

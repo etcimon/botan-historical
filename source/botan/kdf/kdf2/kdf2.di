@@ -21,5 +21,5 @@ class KDF2 : public KDF
 
 		KDF2(HashFunction* h) : hash(h) {}
 	private:
-		std::unique_ptr<HashFunction> hash;
+		Unique!HashFunction hash;
 };

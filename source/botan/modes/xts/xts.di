@@ -40,7 +40,7 @@ class XTS_Mode : public Cipher_Mode
 	private:
 		void key_schedule(in byte* key, size_t length) override;
 
-		std::unique_ptr<BlockCipher> m_cipher, m_tweak_cipher;
+		Unique!BlockCipher m_cipher, m_tweak_cipher;
 		SafeVector!byte m_tweak;
 };
 

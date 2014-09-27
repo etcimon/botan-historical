@@ -9,7 +9,7 @@ import botan.des;
 /**
 * DESX
 */
-class DESX : public Block_Cipher_Fixed_Params<8, 24>
+class DESX : public Block_Cipher_Fixed_Params!(8, 24)
 {
 	public:
 		void encrypt_n(byte* input, byte* output, size_t blocks) const;

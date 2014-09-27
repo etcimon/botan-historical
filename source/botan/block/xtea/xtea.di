@@ -9,7 +9,7 @@ import botan.block_cipher;
 /**
 * XTEA
 */
-class XTEA : public Block_Cipher_Fixed_Params<8, 16>
+class XTEA : public Block_Cipher_Fixed_Params!(8, 16)
 {
 	public:
 		void encrypt_n(byte* input, byte* output, size_t blocks) const;

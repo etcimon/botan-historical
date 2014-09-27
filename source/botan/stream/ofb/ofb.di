@@ -39,7 +39,7 @@ class OFB : public StreamCipher
 	private:
 		void key_schedule(in byte* key, size_t length);
 
-		std::unique_ptr<BlockCipher> m_cipher;
+		Unique!BlockCipher m_cipher;
 		SafeVector!byte m_buffer;
 		size_t m_buf_pos;
 };

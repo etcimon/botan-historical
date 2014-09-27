@@ -61,7 +61,7 @@ class CCM_Mode : public AEAD_Mode
 		const size_t m_tag_size;
 		const size_t m_L;
 
-		std::unique_ptr<BlockCipher> m_cipher;
+		Unique!BlockCipher m_cipher;
 		SafeVector!byte m_nonce, m_msg_buf, m_ad_buf;
 };
 

@@ -9,7 +9,7 @@ import botan.block_cipher;
 /**
 * Threefish-512
 */
-class Threefish_512 : public Block_Cipher_Fixed_Params<64, 64>
+class Threefish_512 : public Block_Cipher_Fixed_Params!(64, 64)
 {
 	public:
 		void encrypt_n(byte* input, byte* output, size_t blocks) const override;

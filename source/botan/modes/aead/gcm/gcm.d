@@ -51,7 +51,7 @@ void GHASH::gcm_multiply(SafeVector!byte x) const
 		}
 	}
 
-	store_be<ulong>(&x[0], Z[0], Z[1]);
+	store_be!ulong(&x[0], Z[0], Z[1]);
 }
 
 void GHASH::ghash_update(SafeVector!byte ghash,
@@ -111,7 +111,7 @@ void GHASH::add_final_block(SafeVector!byte hash,
 									 size_t ad_len, size_t text_len)
 {
 	SafeVector!byte final_block(16);
-	store_be<ulong>(&final_block[0], 8*ad_len, 8*text_len);
+	store_be!ulong(&final_block[0], 8*ad_len, 8*text_len);
 	ghash_update(hash, &final_block[0], final_block.size());
 }
 

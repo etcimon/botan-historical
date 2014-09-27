@@ -36,5 +36,5 @@ class PKCS5_PBKDF2 : public PBKDF
 		*/
 		PKCS5_PBKDF2(MessageAuthenticationCode* mac_fn) : mac(mac_fn) {}
 	private:
-		std::unique_ptr<MessageAuthenticationCode> mac;
+		Unique!MessageAuthenticationCode mac;
 };

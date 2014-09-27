@@ -22,8 +22,8 @@ class TLS_PRF : public KDF
 
 		TLS_PRF();
 	private:
-		std::unique_ptr<MessageAuthenticationCode> hmac_md5;
-		std::unique_ptr<MessageAuthenticationCode> hmac_sha1;
+		Unique!MessageAuthenticationCode hmac_md5;
+		Unique!MessageAuthenticationCode hmac_sha1;
 };
 
 /**
@@ -41,5 +41,5 @@ class TLS_12_PRF : public KDF
 
 		TLS_12_PRF(MessageAuthenticationCode* hmac);
 	private:
-		std::unique_ptr<MessageAuthenticationCode> hmac;
+		Unique!MessageAuthenticationCode hmac;
 };

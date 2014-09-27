@@ -38,5 +38,5 @@ class PKCS5_PBKDF1 : public PBKDF
 								size_t iterations,
 								std::chrono::milliseconds msec) const override;
 	private:
-		std::unique_ptr<HashFunction> hash;
+		Unique!HashFunction hash;
 };

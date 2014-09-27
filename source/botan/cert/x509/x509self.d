@@ -50,7 +50,7 @@ X509_Certificate create_self_signed_cert(in X509_Cert_Options opts,
 	opts.sanity_check();
 
 	Vector!( byte ) pub_key = X509::BER_encode(key);
-	std::unique_ptr<PK_Signer> signer(choose_sig_format(key, hash_fn, sig_algo));
+	Unique!PK_Signer signer(choose_sig_format(key, hash_fn, sig_algo));
 	load_info(opts, subject_dn, subject_alt);
 
 	Key_Constraints constraints;
@@ -96,7 +96,7 @@ PKCS10_Request create_cert_req(in X509_Cert_Options opts,
 	opts.sanity_check();
 
 	Vector!( byte ) pub_key = X509::BER_encode(key);
-	std::unique_ptr<PK_Signer> signer(choose_sig_format(key, hash_fn, sig_algo));
+	Unique!PK_Signer signer(choose_sig_format(key, hash_fn, sig_algo));
 	load_info(opts, subject_dn, subject_alt);
 
 	const size_t PKCS10_VERSION = 0;

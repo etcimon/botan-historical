@@ -9,7 +9,7 @@ import botan.block_cipher;
 /**
 * MARS, IBM's candidate for AES
 */
-class MARS : public Block_Cipher_Fixed_Params<16, 16, 32, 4>
+class MARS : public Block_Cipher_Fixed_Params!(16, 16, 32, 4)
 {
 	public:
 		void encrypt_n(byte* input, byte* output, size_t blocks) const;

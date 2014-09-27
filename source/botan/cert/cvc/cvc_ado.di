@@ -14,10 +14,10 @@ import string;
 */
 
  // CRTP continuation from EAC1_1_obj
-class EAC1_1_ADO : public EAC1_1_obj<EAC1_1_ADO>
+class EAC1_1_ADO : public EAC1_1_obj!EAC1_1_ADO
 {
 	public:
-		friend class EAC1_1_obj<EAC1_1_ADO>;
+		friend class EAC1_1_obj!EAC1_1_ADO;
 
 		/**
 		* Construct a CVC ADO request from a DER encoded CVC ADO request file.

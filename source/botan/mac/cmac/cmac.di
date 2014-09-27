@@ -43,7 +43,7 @@ class CMAC : public MessageAuthenticationCode
 		void final_result(byte[]);
 		void key_schedule(const byte[], size_t);
 
-		std::unique_ptr<BlockCipher> m_cipher;
+		Unique!BlockCipher m_cipher;
 		SafeVector!byte m_buffer, m_state, m_B, m_P;
 		size_t m_position;
 };

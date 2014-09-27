@@ -40,5 +40,5 @@ class Cascade_Cipher : public BlockCipher
 		void key_schedule(in byte*, size_t);
 
 		size_t m_block;
-		std::unique_ptr<BlockCipher> m_cipher1, m_cipher2;
+		Unique!BlockCipher m_cipher1, m_cipher2;
 };

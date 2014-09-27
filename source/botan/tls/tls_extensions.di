@@ -382,7 +382,7 @@ class Extensions
 		Extensions(in Extensions) {}
 		Extensions& operator=(in Extensions) { return (*this); }
 
-		std::map<Handshake_Extension_Type, std::unique_ptr<Extension>> extensions;
+		std::map<Handshake_Extension_Type, Unique!Extension> extensions;
 }
 
 }

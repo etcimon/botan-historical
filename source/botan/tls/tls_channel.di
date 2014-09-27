@@ -227,11 +227,11 @@ class Channel
 		Session_Manager m_session_manager;
 
 		/* sequence number state */
-		std::unique_ptr<Connection_Sequence_Numbers> m_sequence_numbers;
+		Unique!Connection_Sequence_Numbers m_sequence_numbers;
 
 		/* pending and active connection states */
-		std::unique_ptr<Handshake_State> m_active_state;
-		std::unique_ptr<Handshake_State> m_pending_state;
+		Unique!Handshake_State m_active_state;
+		Unique!Handshake_State m_pending_state;
 
 		/* cipher states for each epoch */
 		std::map<ushort, std::shared_ptr<Connection_Cipher_State>> m_write_cipher_states;

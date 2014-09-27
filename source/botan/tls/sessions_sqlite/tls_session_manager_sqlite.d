@@ -21,7 +21,7 @@ SymmetricKey derive_key(in string passphrase,
 								size_t iterations,
 								size_t& check_val)
 {
-	std::unique_ptr<PBKDF> pbkdf(get_pbkdf("PBKDF2(SHA-512)"));
+	Unique!PBKDF pbkdf(get_pbkdf("PBKDF2(SHA-512)"));
 
 	SafeVector!byte x = pbkdf->derive_key(32 + 2,
 															passphrase,

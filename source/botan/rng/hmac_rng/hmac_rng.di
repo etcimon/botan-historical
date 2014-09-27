@@ -36,8 +36,8 @@ class HMAC_RNG : public RandomNumberGenerator
 		HMAC_RNG(MessageAuthenticationCode* extractor,
 					MessageAuthenticationCode* prf);
 	private:
-		std::unique_ptr<MessageAuthenticationCode> m_extractor;
-		std::unique_ptr<MessageAuthenticationCode> m_prf;
+		Unique!MessageAuthenticationCode m_extractor;
+		Unique!MessageAuthenticationCode m_prf;
 
 		size_t m_collected_entropy_estimate = 0;
 		size_t m_output_since_reseed = 0;

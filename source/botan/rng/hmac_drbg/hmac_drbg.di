@@ -32,8 +32,8 @@ class HMAC_DRBG : public RandomNumberGenerator
 	private:
 		void update(in byte* input, size_t input_len);
 
-		std::unique_ptr<MessageAuthenticationCode> m_mac;
-		std::unique_ptr<RandomNumberGenerator> m_prng;
+		Unique!MessageAuthenticationCode m_mac;
+		Unique!RandomNumberGenerator m_prng;
 
 		SafeVector!byte m_V;
 		size_t m_reseed_counter;

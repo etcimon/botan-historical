@@ -19,7 +19,7 @@ SafeVector!byte Handshake_Hash::flushInto(Protocol_Version _version,
 {
 	Algorithm_Factory& af = global_state().algorithm_factory();
 
-	std::unique_ptr<HashFunction> hash;
+	Unique!HashFunction hash;
 
 	if (_version.supports_ciphersuite_specific_prf())
 	{
@@ -44,8 +44,8 @@ SafeVector!byte Handshake_Hash::final_ssl3(in SafeVector!byte secret) const
 
 	Algorithm_Factory& af = global_state().algorithm_factory();
 
-	std::unique_ptr<HashFunction> md5(af.make_hash_function("MD5"));
-	std::unique_ptr<HashFunction> sha1(af.make_hash_function("SHA-1"));
+	Unique!HashFunction md5(af.make_hash_function("MD5"));
+	Unique!HashFunction sha1(af.make_hash_function("SHA-1"));
 
 	md5->update(data);
 	sha1->update(data);

@@ -242,13 +242,13 @@ void Client_Hello::deserialize(in Vector!byte buf)
 	m_random = reader.get_fixed<byte>(32);
 
 	if (m_version.is_datagram_protocol())
-		m_hello_cookie = reader.get_range<byte>(1, 0, 255);
+		m_hello_cookie = reader.get_range!byte(1, 0, 255);
 
-	m_session_id = reader.get_range<byte>(1, 0, 32);
+	m_session_id = reader.get_range!byte(1, 0, 32);
 
-	m_suites = reader.get_range_vector<ushort>(2, 1, 32767);
+	m_suites = reader.get_range_vector!ushort(2, 1, 32767);
 
-	m_comp_methods = reader.get_range_vector<byte>(1, 1, 255);
+	m_comp_methods = reader.get_range_vector!byte(1, 1, 255);
 
 	m_extensions.deserialize(reader);
 

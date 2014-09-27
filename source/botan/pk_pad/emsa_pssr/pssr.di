@@ -38,5 +38,5 @@ class PSSR : public EMSA
 						size_t key_bits);
 
 		size_t SALT_SIZE;
-		std::unique_ptr<HashFunction> hash;
+		Unique!HashFunction hash;
 };

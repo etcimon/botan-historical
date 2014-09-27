@@ -105,5 +105,5 @@ class Threaded_Fork : public Fork
 		void thread_entry(Filter* filter);
 
 		Vector!( std::shared_ptr<std::thread )> m_threads;
-		std::unique_ptr<struct Threaded_Fork_Data> m_thread_data;
+		Unique!struct Threaded_Fork_Data m_thread_data;
 };

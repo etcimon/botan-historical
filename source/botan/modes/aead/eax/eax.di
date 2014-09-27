@@ -44,9 +44,9 @@ class EAX_Mode : public AEAD_Mode
 
 		size_t m_tag_size;
 
-		std::unique_ptr<BlockCipher> m_cipher;
-		std::unique_ptr<StreamCipher> m_ctr;
-		std::unique_ptr<MessageAuthenticationCode> m_cmac;
+		Unique!BlockCipher m_cipher;
+		Unique!StreamCipher m_ctr;
+		Unique!MessageAuthenticationCode m_cmac;
 
 		SafeVector!byte m_ad_mac;
 

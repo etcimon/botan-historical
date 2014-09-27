@@ -193,9 +193,9 @@ class PK_Signer
 		bool self_test_signature(in Vector!byte msg,
 										 in Vector!byte sig) const;
 
-		std::unique_ptr<PK_Ops::Signature> m_op;
-		std::unique_ptr<PK_Ops::Verification> m_verify_op;
-		std::unique_ptr<EMSA> m_emsa;
+		Unique!PK_Ops::Signature m_op;
+		Unique!PK_Ops::Verification m_verify_op;
+		Unique!EMSA m_emsa;
 		Signature_Format m_sig_format;
 };
 
@@ -292,8 +292,8 @@ class PK_Verifier
 		bool validate_signature(in SafeVector!byte msg,
 										in byte* sig, size_t sig_len);
 
-		std::unique_ptr<PK_Ops::Verification> m_op;
-		std::unique_ptr<EMSA> m_emsa;
+		Unique!PK_Ops::Verification m_op;
+		Unique!EMSA m_emsa;
 		Signature_Format m_sig_format;
 };
 
@@ -374,8 +374,8 @@ class PK_Key_Agreement
 		PK_Key_Agreement(in PK_Key_Agreement_Key key,
 							  in string kdf);
 	private:
-		std::unique_ptr<PK_Ops::Key_Agreement> m_op;
-		std::unique_ptr<KDF> m_kdf;
+		Unique!PK_Ops::Key_Agreement m_op;
+		Unique!KDF m_kdf;
 };
 
 /**
@@ -397,8 +397,8 @@ class PK_Encryptor_EME : public PK_Encryptor
 		Vector!( byte ) enc(in byte*, size_t,
 									  RandomNumberGenerator& rng) const;
 
-		std::unique_ptr<PK_Ops::Encryption> m_op;
-		std::unique_ptr<EME> m_eme;
+		Unique!PK_Ops::Encryption m_op;
+		Unique!EME m_eme;
 };
 
 /**
@@ -417,6 +417,6 @@ class PK_Decryptor_EME : public PK_Decryptor
 	private:
 		SafeVector!byte dec(const byte[], size_t) const;
 
-		std::unique_ptr<PK_Ops::Decryption> m_op;
-		std::unique_ptr<EME> m_eme;
+		Unique!PK_Ops::Decryption m_op;
+		Unique!EME m_eme;
 };

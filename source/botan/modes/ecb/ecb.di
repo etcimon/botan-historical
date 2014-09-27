@@ -37,8 +37,8 @@ class ECB_Mode : public Cipher_Mode
 	private:
 		void key_schedule(in byte* key, size_t length) override;
 
-		std::unique_ptr<BlockCipher> m_cipher;
-		std::unique_ptr<BlockCipherModePaddingMethod> m_padding;
+		Unique!BlockCipher m_cipher;
+		Unique!BlockCipherModePaddingMethod m_padding;
 };
 
 /**

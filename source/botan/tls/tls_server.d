@@ -220,7 +220,7 @@ Server::Server(void delegate(in byte*) output_fn,
 
 Handshake_State* Server::new_handshake_state(Handshake_IO* io)
 {
-	std::unique_ptr<Handshake_State> state(new Server_Handshake_State(io));
+	Unique!Handshake_State state(new Server_Handshake_State(io));
 	state->set_expected_next(CLIENT_HELLO);
 	return state.release();
 }

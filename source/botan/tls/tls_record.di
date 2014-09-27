@@ -74,12 +74,12 @@ class Connection_Cipher_State
 
 	private:
 		SysTime m_start_time;
-		std::unique_ptr<BlockCipher> m_block_cipher;
+		Unique!BlockCipher m_block_cipher;
 		SafeVector!byte m_block_cipher_cbc_state;
-		std::unique_ptr<StreamCipher> m_stream_cipher;
-		std::unique_ptr<MessageAuthenticationCode> m_mac;
+		Unique!StreamCipher m_stream_cipher;
+		Unique!MessageAuthenticationCode m_mac;
 
-		std::unique_ptr<AEAD_Mode> m_aead;
+		Unique!AEAD_Mode m_aead;
 		SafeVector!byte m_nonce, m_ad;
 
 		size_t m_block_size = 0;

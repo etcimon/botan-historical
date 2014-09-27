@@ -9,7 +9,7 @@ import botan.block_cipher;
 /**
 * AES-128 using AES-NI
 */
-class AES_128_NI : public Block_Cipher_Fixed_Params<16, 16>
+class AES_128_NI : public Block_Cipher_Fixed_Params!(16, 16)
 {
 	public:
 		size_t parallelism() const { return 4; }
@@ -29,7 +29,7 @@ class AES_128_NI : public Block_Cipher_Fixed_Params<16, 16>
 /**
 * AES-192 using AES-NI
 */
-class AES_192_NI : public Block_Cipher_Fixed_Params<16, 24>
+class AES_192_NI : public Block_Cipher_Fixed_Params!(16, 24)
 {
 	public:
 		size_t parallelism() const { return 4; }
@@ -49,7 +49,7 @@ class AES_192_NI : public Block_Cipher_Fixed_Params<16, 24>
 /**
 * AES-256 using AES-NI
 */
-class AES_256_NI : public Block_Cipher_Fixed_Params<16, 32>
+class AES_256_NI : public Block_Cipher_Fixed_Params!(16, 32)
 {
 	public:
 		size_t parallelism() const { return 4; }

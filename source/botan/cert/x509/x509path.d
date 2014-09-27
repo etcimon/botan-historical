@@ -60,7 +60,7 @@ const X509_CRL* find_crls_for(in X509_Certificate cert,
 		http.throw_unless_ok();
 		// check the mime type
 
-		std::unique_ptr<X509_CRL> crl(new X509_CRL(http.body()));
+		Unique!X509_CRL crl(new X509_CRL(http.body()));
 
 		return crl.release();
 	}
@@ -117,7 +117,7 @@ check_chain(in Vector!( X509_Certificate ) cert_path,
 		if (issuer.path_limit() < i)
 			status.insert(Certificate_Status_Code::CERT_CHAIN_TOO_LONG);
 
-		std::unique_ptr<Public_Key> issuer_key(issuer.subject_public_key());
+		Unique!Public_Key issuer_key(issuer.subject_public_key());
 
 		if (subject.check_signature(*issuer_key) == false)
 			status.insert(Certificate_Status_Code::SIGNATURE_ERROR);

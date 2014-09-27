@@ -80,7 +80,7 @@ Certificate_Req::Certificate_Req(in Vector!byte buf,
 
 	TLS_Data_Reader reader("CertificateRequest", buf);
 
-	Vector!( byte ) cert_type_codes = reader.get_range_vector<byte>(1, 1, 255);
+	Vector!( byte ) cert_type_codes = reader.get_range_vector!byte(1, 1, 255);
 
 	for (size_t i = 0; i != cert_type_codes.size(); ++i)
 	{
@@ -94,7 +94,7 @@ Certificate_Req::Certificate_Req(in Vector!byte buf,
 
 	if (_version.supports_negotiable_signature_algorithms())
 	{
-		Vector!( byte ) sig_hash_algs = reader.get_range_vector<byte>(2, 2, 65534);
+		Vector!( byte ) sig_hash_algs = reader.get_range_vector!byte(2, 2, 65534);
 
 		if (sig_hash_algs.size() % 2 != 0)
 			throw new Decoding_Error("Bad length for signature IDs in certificate request");
@@ -114,7 +114,7 @@ Certificate_Req::Certificate_Req(in Vector!byte buf,
 
 	while(reader.has_remaining())
 	{
-		Vector!( byte ) name_bits = reader.get_range_vector<byte>(2, 0, 65535);
+		Vector!( byte ) name_bits = reader.get_range_vector!byte(2, 0, 65535);
 
 		BER_Decoder decoder(&name_bits[0], name_bits.size());
 		X509_DN name;

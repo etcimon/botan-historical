@@ -23,7 +23,7 @@ Heartbeat_Message::Heartbeat_Message(in Vector!byte buf)
 
 	m_type = cast(Type)(type);
 
-	m_payload = reader.get_range<byte>(2, 0, 16*1024);
+	m_payload = reader.get_range!byte(2, 0, 16*1024);
 
 	// padding follows and is ignored
 }

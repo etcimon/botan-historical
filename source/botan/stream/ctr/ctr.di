@@ -40,7 +40,7 @@ class CTR_BE : public StreamCipher
 		void key_schedule(in byte* key, size_t length);
 		void increment_counter();
 
-		std::unique_ptr<BlockCipher> m_cipher;
+		Unique!BlockCipher m_cipher;
 		SafeVector!byte m_counter, m_pad;
 		size_t m_pad_pos;
 };

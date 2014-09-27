@@ -36,7 +36,7 @@ class ANSI_X919_MAC : public MessageAuthenticationCode
 		void final_result(byte[]);
 		void key_schedule(const byte[], size_t);
 
-		std::unique_ptr<BlockCipher> m_des1, m_des2;
+		Unique!BlockCipher m_des1, m_des2;
 		SafeVector!byte m_state;
 		size_t m_position;
 };

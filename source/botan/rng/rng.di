@@ -25,7 +25,7 @@ class RandomNumberGenerator
 		* Create a seeded and active RNG object for general application use
 		* Added in 1.11.5
 		*/
-		static std::unique_ptr<RandomNumberGenerator> make_rng(class Algorithm_Factory& af);
+		static Unique!RandomNumberGenerator make_rng(class Algorithm_Factory& af);
 
 		/**
 		* Randomize a byte array.
@@ -160,5 +160,5 @@ class Serialized_RNG : public RandomNumberGenerator
 		Serialized_RNG() : m_rng(RandomNumberGenerator::make_rng()) {}
 	private:
 		mutable std::mutex m_mutex;
-		std::unique_ptr<RandomNumberGenerator> m_rng;
+		Unique!RandomNumberGenerator m_rng;
 };

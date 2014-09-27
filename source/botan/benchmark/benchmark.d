@@ -52,7 +52,7 @@ time_algorithm_ops(in string name,
 
 	if (const BlockCipher* proto = af.prototype_block_cipher(name, provider))
 	{
-		std::unique_ptr<BlockCipher> bc(proto->clone());
+		Unique!BlockCipher bc(proto->clone());
 
 		const SymmetricKey key(rng, bc->maximum_keylength());
 
@@ -64,7 +64,7 @@ time_algorithm_ops(in string name,
 	}
 	else if (const StreamCipher* proto = af.prototype_stream_cipher(name, provider))
 	{
-		std::unique_ptr<StreamCipher> sc(proto->clone());
+		Unique!StreamCipher sc(proto->clone());
 
 		const SymmetricKey key(rng, sc->maximum_keylength());
 
@@ -75,7 +75,7 @@ time_algorithm_ops(in string name,
 	}
 	else if (const HashFunction* proto = af.prototype_hash_function(name, provider))
 	{
-		std::unique_ptr<HashFunction> h(proto->clone());
+		Unique!HashFunction h(proto->clone());
 
 		return std::map<string, double>({
 			{ "", mb_mult * time_op(runtime, [&]() { h->update(buffer); }) },
@@ -83,7 +83,7 @@ time_algorithm_ops(in string name,
 	}
 	else if (const MessageAuthenticationCode* proto = af.prototype_mac(name, provider))
 	{
-		std::unique_ptr<MessageAuthenticationCode> mac(proto->clone());
+		Unique!MessageAuthenticationCode mac(proto->clone());
 
 		const SymmetricKey key(rng, mac->maximum_keylength());
 
@@ -94,8 +94,8 @@ time_algorithm_ops(in string name,
 	}
 	else
 	{
-		std::unique_ptr<AEAD_Mode> enc(get_aead(name, ENCRYPTION));
-		std::unique_ptr<AEAD_Mode> dec(get_aead(name, DECRYPTION));
+		Unique!AEAD_Mode enc(get_aead(name, ENCRYPTION));
+		Unique!AEAD_Mode dec(get_aead(name, DECRYPTION));
 
 		if (enc && dec)
 		{

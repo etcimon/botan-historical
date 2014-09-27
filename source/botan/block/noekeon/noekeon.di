@@ -9,7 +9,7 @@ import botan.block_cipher;
 /**
 * Noekeon
 */
-class Noekeon : public Block_Cipher_Fixed_Params<16, 16>
+class Noekeon : public Block_Cipher_Fixed_Params!(16, 16)
 {
 	public:
 		void encrypt_n(byte* input, byte* output, size_t blocks) const;

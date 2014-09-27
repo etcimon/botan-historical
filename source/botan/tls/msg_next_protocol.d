@@ -25,7 +25,7 @@ Next_Protocol::Next_Protocol(in Vector!byte buf)
 
 	m_protocol = reader.get_string(1, 0, 255);
 
-	reader.get_range_vector<byte>(1, 0, 255); // padding, ignored
+	reader.get_range_vector!byte(1, 0, 255); // padding, ignored
 }
 
 Vector!( byte ) Next_Protocol::serialize() const

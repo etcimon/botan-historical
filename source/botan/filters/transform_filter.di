@@ -53,6 +53,6 @@ class Transformation_Filter : public Keyed_Filter,
 		};
 
 		Nonce_State m_nonce;
-		std::unique_ptr<Transformation> m_transform;
+		Unique!Transformation m_transform;
 		SafeVector!byte m_buffer;
 };

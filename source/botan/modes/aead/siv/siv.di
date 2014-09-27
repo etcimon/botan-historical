@@ -55,8 +55,8 @@ class SIV_Mode : public AEAD_Mode
 
 		const string m_name;
 
-		std::unique_ptr<StreamCipher> m_ctr;
-		std::unique_ptr<MessageAuthenticationCode> m_cmac;
+		Unique!StreamCipher m_ctr;
+		Unique!MessageAuthenticationCode m_cmac;
 		SafeVector!byte m_nonce, m_msg_buf;
 		Vector!( SafeVector!byte ) m_ad_macs;
 };

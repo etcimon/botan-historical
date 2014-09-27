@@ -16,9 +16,9 @@ RandomNumberGenerator* RandomNumberGenerator::make_rng()
 /*
 * Create and seed a new RNG object
 */
-std::unique_ptr<RandomNumberGenerator> RandomNumberGenerator::make_rng(Algorithm_Factory& af)
+Unique!RandomNumberGenerator RandomNumberGenerator::make_rng(Algorithm_Factory& af)
 {
-	std::unique_ptr<RandomNumberGenerator> rng(
+	Unique!RandomNumberGenerator rng(
 		new HMAC_RNG(af.make_mac("HMAC(SHA-512)"),
 						 af.make_mac("HMAC(SHA-256)"))
 		);

@@ -12,7 +12,7 @@ import string;
 /**
 * This class represents TR03110 (EAC) v1.1 CV Certificates
 */
-class EAC1_1_CVC : public EAC1_1_gen_CVC<EAC1_1_CVC>//Signed_Object
+class EAC1_1_CVC : public EAC1_1_gen_CVC!EAC1_1_CVC//Signed_Object
 	 {
 	 public:
 		 friend class EAC1_1_obj<EAC1_1_CVC>;

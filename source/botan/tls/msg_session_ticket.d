@@ -36,7 +36,7 @@ New_Session_Ticket::New_Session_Ticket(in Vector!byte buf)
 	TLS_Data_Reader reader("SessionTicket", buf);
 
 	m_ticket_lifetime_hint = reader.get_uint();
-	m_ticket = reader.get_range<byte>(2, 0, 65535);
+	m_ticket = reader.get_range!byte(2, 0, 65535);
 }
 
 Vector!( byte ) New_Session_Ticket::serialize() const

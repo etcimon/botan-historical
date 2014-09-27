@@ -171,7 +171,7 @@ class Handshake_State
 
 		void delegate(const Handshake_Message) m_msg_callback;
 
-		std::unique_ptr<Handshake_IO> m_handshake_io;
+		Unique!Handshake_IO m_handshake_io;
 
 		uint m_hand_expecting_mask = 0;
 		uint m_hand_received_mask = 0;
@@ -180,19 +180,19 @@ class Handshake_State
 		Session_Keys m_session_keys;
 		Handshake_Hash m_handshake_hash;
 
-		std::unique_ptr<Client_Hello> m_client_hello;
-		std::unique_ptr<Server_Hello> m_server_hello;
-		std::unique_ptr<Certificate> m_server_certs;
-		std::unique_ptr<Server_Key_Exchange> m_server_kex;
-		std::unique_ptr<Certificate_Req> m_cert_req;
-		std::unique_ptr<Server_Hello_Done> m_server_hello_done;
-		std::unique_ptr<Certificate> m_client_certs;
-		std::unique_ptr<Client_Key_Exchange> m_client_kex;
-		std::unique_ptr<Certificate_Verify> m_client_verify;
-		std::unique_ptr<Next_Protocol> m_next_protocol;
-		std::unique_ptr<New_Session_Ticket> m_new_session_ticket;
-		std::unique_ptr<Finished> m_server_finished;
-		std::unique_ptr<Finished> m_client_finished;
+		Unique!Client_Hello m_client_hello;
+		Unique!Server_Hello m_server_hello;
+		Unique!Certificate m_server_certs;
+		Unique!Server_Key_Exchange m_server_kex;
+		Unique!Certificate_Req m_cert_req;
+		Unique!Server_Hello_Done m_server_hello_done;
+		Unique!Certificate m_client_certs;
+		Unique!Client_Key_Exchange m_client_kex;
+		Unique!Certificate_Verify m_client_verify;
+		Unique!Next_Protocol m_next_protocol;
+		Unique!New_Session_Ticket m_new_session_ticket;
+		Unique!Finished m_server_finished;
+		Unique!Finished m_client_finished;
 };
 
 }

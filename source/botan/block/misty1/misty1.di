@@ -9,7 +9,7 @@ import botan.block_cipher;
 /**
 * MISTY1
 */
-class MISTY1 : public Block_Cipher_Fixed_Params<8, 16>
+class MISTY1 : public Block_Cipher_Fixed_Params!(8, 16)
 {
 	public:
 		void encrypt_n(byte* input, byte* output, size_t blocks) const;
