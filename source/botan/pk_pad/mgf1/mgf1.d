@@ -24,8 +24,8 @@ void mgf1_mask(HashFunction& hash,
 		SafeVector!byte buffer = hash.flush();
 
 		size_t xored = std::min<size_t>(buffer.size(), out_len);
-		xor_buf(out, &buffer[0], xored);
-		out += xored;
+		xor_buf(output, &buffer[0], xored);
+		output += xored;
 		out_len -= xored;
 
 		++counter;

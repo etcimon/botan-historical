@@ -56,17 +56,17 @@ class Filter
 		/**
 		* @param in some input for the filter
 		*/
-		void send(byte input) { send(&in, 1); }
+		void send(byte input) { send(&input, 1); }
 
 		/**
 		* @param in some input for the filter
 		*/
-		void send(in SafeVector!byte input) { send(&input[0], in.size()); }
+		void send(in SafeVector!byte input) { send(&input[0], input.size()); }
 
 		/**
 		* @param in some input for the filter
 		*/
-		void send(in Vector!byte input) { send(&input[0], in.size()); }
+		void send(in Vector!byte input) { send(&input[0], input.size()); }
 
 		/**
 		* @param in some input for the filter

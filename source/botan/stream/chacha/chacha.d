@@ -64,10 +64,10 @@ void ChaCha::cipher(in byte* input, byte* output)
 {
 	while(length >= m_buffer.size() - m_position)
 	{
-		xor_buf(out, in, &m_buffer[m_position], m_buffer.size() - m_position);
+		xor_buf(output, input, &m_buffer[m_position], m_buffer.size() - m_position);
 		length -= (m_buffer.size() - m_position);
-		in += (m_buffer.size() - m_position);
-		out += (m_buffer.size() - m_position);
+		input += (m_buffer.size() - m_position);
+		output += (m_buffer.size() - m_position);
 		chacha(&m_buffer[0], &m_state[0]);
 
 		++m_state[12];
@@ -76,7 +76,7 @@ void ChaCha::cipher(in byte* input, byte* output)
 		m_position = 0;
 	}
 
-	xor_buf(out, in, &m_buffer[m_position], length);
+	xor_buf(output, input, &m_buffer[m_position], length);
 
 	m_position += length;
 }
@@ -86,10 +86,10 @@ void ChaCha::cipher(in byte* input, byte* output)
 */
 void ChaCha::key_schedule(in byte* key, size_t length)
 {
-	static const uint TAU[] =
+	immutable uint[] TAU =
 	{ 0x61707865, 0x3120646e, 0x79622d36, 0x6b206574 };
 
-	static const uint SIGMA[] =
+	immutable uint[] SIGMA =
 	{ 0x61707865, 0x3320646e, 0x79622d32, 0x6b206574 };
 
 	const uint* CONSTANTS = (length == 16) ? TAU : SIGMA;
@@ -117,7 +117,7 @@ void ChaCha::key_schedule(in byte* key, size_t length)
 
 	m_position = 0;
 
-	const byte ZERO[8] = { 0 };
+	const byte[8] ZERO = { 0 };
 	set_iv(ZERO, sizeof(ZERO));
 }
 

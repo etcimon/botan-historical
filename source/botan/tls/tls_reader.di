@@ -19,7 +19,7 @@ namespace TLS {
 class TLS_Data_Reader
 {
 	public:
-		TLS_Data_Reader(const char* type, in Vector!byte buf_input) :
+		TLS_Data_Reader(string type, in Vector!byte buf_input) :
 			m_typename(type), m_buf(buf_input), m_offset(0) {}
 
 		void assert_done() const
@@ -164,7 +164,7 @@ class TLS_Data_Reader
 			return Decoding_Error("Invalid " + string(m_typename) + ": " + why);
 		}
 
-		const char* m_typename;
+		string m_typename;
 		in Vector!byte m_buf;
 		size_t m_offset;
 };

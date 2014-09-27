@@ -13,7 +13,7 @@ namespace {
 /*
 * KASUMI S-Boxes
 */
-const byte KASUMI_SBOX_S7[128] = {
+immutable byte[128] KASUMI_SBOX_S7 = {
 	0x36, 0x32, 0x3E, 0x38, 0x16, 0x22, 0x5E, 0x60, 0x26, 0x06, 0x3F, 0x5D,
 	0x02, 0x12, 0x7B, 0x21, 0x37, 0x71, 0x27, 0x72, 0x15, 0x43, 0x41, 0x0C,
 	0x2F, 0x49, 0x2E, 0x1B, 0x19, 0x6F, 0x7C, 0x51, 0x35, 0x09, 0x79, 0x4F,
@@ -26,7 +26,7 @@ const byte KASUMI_SBOX_S7[128] = {
 	0x44, 0x1D, 0x73, 0x2C, 0x40, 0x6B, 0x6C, 0x18, 0x6E, 0x53, 0x24, 0x4E,
 	0x2A, 0x13, 0x0F, 0x29, 0x58, 0x77, 0x3B, 0x03 };
 
-const ushort KASUMI_SBOX_S9[512] = {
+immutable ushort[512] KASUMI_SBOX_S9 = {
 	0x00A7, 0x00EF, 0x00A1, 0x017B, 0x0187, 0x014E, 0x0009, 0x0152, 0x0026,
 	0x00E2, 0x0030, 0x0166, 0x01C4, 0x0181, 0x005A, 0x018D, 0x00B7, 0x00FD,
 	0x0093, 0x014B, 0x019F, 0x0154, 0x0033, 0x016A, 0x0132, 0x01F4, 0x0106,
@@ -110,10 +110,10 @@ void KASUMI::encrypt_n(byte* input, byte* output, size_t blocks) const
 {
 	for(size_t i = 0; i != blocks; ++i)
 	{
-		ushort B0 = load_be<ushort>(input, 0);
-		ushort B1 = load_be<ushort>(input, 1);
-		ushort B2 = load_be<ushort>(input, 2);
-		ushort B3 = load_be<ushort>(input, 3);
+		ushort B0 = load_be!ushort(input, 0);
+		ushort B1 = load_be!ushort(input, 1);
+		ushort B2 = load_be!ushort(input, 2);
+		ushort B3 = load_be!ushort(input, 3);
 
 		for(size_t j = 0; j != 8; j += 2)
 		{
@@ -140,7 +140,7 @@ void KASUMI::encrypt_n(byte* input, byte* output, size_t blocks) const
 			B1 ^= R;
 		}
 
-		store_be(out, B0, B1, B2, B3);
+		store_be(output, B0, B1, B2, B3);
 
 		input += BLOCK_SIZE;
 		output += BLOCK_SIZE;
@@ -154,10 +154,10 @@ void KASUMI::decrypt_n(byte* input, byte* output, size_t blocks) const
 {
 	for(size_t i = 0; i != blocks; ++i)
 	{
-		ushort B0 = load_be<ushort>(input, 0);
-		ushort B1 = load_be<ushort>(input, 1);
-		ushort B2 = load_be<ushort>(input, 2);
-		ushort B3 = load_be<ushort>(input, 3);
+		ushort B0 = load_be!ushort(input, 0);
+		ushort B1 = load_be!ushort(input, 1);
+		ushort B2 = load_be!ushort(input, 2);
+		ushort B3 = load_be!ushort(input, 3);
 
 		for(size_t j = 0; j != 8; j += 2)
 		{
@@ -186,7 +186,7 @@ void KASUMI::decrypt_n(byte* input, byte* output, size_t blocks) const
 			B3 ^= R;
 		}
 
-		store_be(out, B0, B1, B2, B3);
+		store_be(output, B0, B1, B2, B3);
 
 		input += BLOCK_SIZE;
 		output += BLOCK_SIZE;
@@ -204,7 +204,7 @@ void KASUMI::key_schedule(in byte* key, size_t)
 	secure_vector<ushort> K(16);
 	for(size_t i = 0; i != 8; ++i)
 	{
-		K[i] = load_be<ushort>(key, i);
+		K[i] = load_be!ushort(key, i);
 		K[i+8] = K[i] ^ RC[i];
 	}
 

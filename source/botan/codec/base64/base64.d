@@ -89,7 +89,7 @@ string base64_encode(in byte* input,
 }
 
 size_t base64_decode(byte* output,
-							const char* input,
+							string input,
 							size_t input_length,
 							size_t& input_consumed,
 							bool final_inputs,
@@ -196,7 +196,7 @@ size_t base64_decode(byte* output,
 }
 
 size_t base64_decode(byte* output,
-							const char* input,
+							string input,
 							size_t input_length,
 							bool ignore_ws)
 {
@@ -217,7 +217,7 @@ size_t base64_decode(byte* output,
 	return base64_decode(output, &input[0], input.length(), ignore_ws);
 }
 
-SafeVector!byte base64_decode(const char* input,
+SafeVector!byte base64_decode(string input,
 											size_t input_length,
 											bool ignore_ws)
 {

@@ -322,7 +322,7 @@ string Path_Validation_Result::result_string() const
 	return status_string(result());
 }
 
-const char* Path_Validation_Result::status_string(Certificate_Status_Code code)
+string Path_Validation_Result::status_string(Certificate_Status_Code code)
 {
 	switch(code)
 	{

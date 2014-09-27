@@ -27,7 +27,7 @@ DL_Group::DL_Group()
 */
 DL_Group::DL_Group(in string name)
 {
-	const char* pem = PEM_for_named_group(name);
+	string pem = PEM_for_named_group(name);
 
 	if(!pem)
 		throw new Invalid_Argument("DL_Group: Unknown group " + name);

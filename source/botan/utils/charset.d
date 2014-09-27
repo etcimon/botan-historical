@@ -189,8 +189,8 @@ char digit2char(byte b)
 */
 bool caseless_cmp(char a, char b)
 {
-	return (std::tolower(cast(unsigned char)(a)) ==
-			  std::tolower(cast(unsigned char)(b)));
+	return (std::tolower(cast(char)(a)) ==
+			  std::tolower(cast(char)(b)));
 }
 
 }

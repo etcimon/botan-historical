@@ -88,9 +88,9 @@ template<typename T> using secure_vector = Vector!( T, secure_allocator<T )>;
 template<typename T>
 Vector!( T ) unlock(in secure_vector<T> input)
 {
-	Vector!( T ) out(in.size());
-	copy_mem(&output[0], &input[0], in.size());
-	return out;
+	Vector!( T ) output(input.size());
+	copy_mem(&output[0], &input[0], input.size());
+	return output;
 }
 
 
@@ -115,40 +115,40 @@ size_t buffer_insert(T, Alloc, Alloc2)(Vector!( T, Alloc )& buf,
 
 template<typename T, typename Alloc, typename Alloc2>
 Vector!( T, Alloc )&
-operator+=(Vector!( T, Alloc )& out,
+operator+=(Vector!( T, Alloc )& output,
 			  const Vector!( T, Alloc2 )& input)
 {
-	const size_t copy_offset = out.size();
-	out.resize(out.size() + in.size());
-	copy_mem(&output[copy_offset], &input[0], in.size());
-	return out;
+	const size_t copy_offset = output.size();
+	output.resize(output.size() + input.size());
+	copy_mem(&output[copy_offset], &input[0], input.size());
+	return output;
 }
 
 template<typename T, typename Alloc>
-Vector!( T, Alloc )& operator+=(Vector!( T, Alloc )& out, T input)
+Vector!( T, Alloc )& operator+=(Vector!( T, Alloc )& output, T input)
 {
-	out.push_back(input);
-	return out;
+	output.push_back(input);
+	return output;
 }
 
 template<typename T, typename Alloc, typename L>
-Vector!( T, Alloc )& operator+=(Vector!( T, Alloc )& out,
-											 const Pair!(in T*, L) input)
+Vector!( T, Alloc )& operator+=(Vector!( T, Alloc )& output,
+											 const Pair!(const T*, L) input)
 {
-	const size_t copy_offset = out.size();
-	out.resize(out.size() + in.second);
-	copy_mem(&output[copy_offset], in.first, in.second);
-	return out;
+	const size_t copy_offset = output.size();
+	output.resize(output.size() + input.second);
+	copy_mem(&output[copy_offset], input.first, input.second);
+	return output;
 }
 
 template<typename T, typename Alloc, typename L>
-Vector!( T, Alloc )& operator+=(Vector!( T, Alloc )& out,
+Vector!( T, Alloc )& operator+=(Vector!( T, Alloc )& output,
 											 const Pair!(T*, L)& input)
 {
-	const size_t copy_offset = out.size();
-	out.resize(out.size() + in.second);
-	copy_mem(&output[copy_offset], in.first, in.second);
-	return out;
+	const size_t copy_offset = output.size();
+	output.resize(output.size() + input.second);
+	copy_mem(&output[copy_offset], input.first, input.second);
+	return output;
 }
 
 /**

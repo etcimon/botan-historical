@@ -49,7 +49,7 @@ void SEED::encrypt_n(byte* input, byte* output, size_t blocks) const
 			B2 ^= T0 + T1;
 		}
 
-		store_be(out, B2, B3, B0, B1);
+		store_be(output, B2, B3, B0, B1);
 
 		input += BLOCK_SIZE;
 		output += BLOCK_SIZE;
@@ -89,7 +89,7 @@ void SEED::decrypt_n(byte* input, byte* output, size_t blocks) const
 			B2 ^= T0 + T1;
 		}
 
-		store_be(out, B2, B3, B0, B1);
+		store_be(output, B2, B3, B0, B1);
 
 		input += BLOCK_SIZE;
 		output += BLOCK_SIZE;

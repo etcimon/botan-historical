@@ -12,7 +12,7 @@
 
 #elif (BOTAN_GCC_VERSION > 440) && defined(BOTAN_TARGET_CPU_HAS_NATIVE_64BIT)
 	#define BOTAN_TARGET_HAS_NATIVE_UINT128
-	typedef unsigned int uint128_t __attribute__((mode(TI)));
+	typedef uint uint128_t __attribute__((mode(TI)));
 #endif
 
 }

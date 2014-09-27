@@ -231,7 +231,7 @@ void GOST_34_11::final_result(byte* output)
 	compress_n(&length_buf[0], 1);
 	compress_n(&sum_buf[0], 1);
 
-	copy_mem(out, &hash[0], 32);
+	copy_mem(output, &hash[0], 32);
 
 	clear();
 }

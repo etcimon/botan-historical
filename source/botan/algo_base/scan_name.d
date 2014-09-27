@@ -52,8 +52,8 @@ string make_arg(
 Pair!(size_t, string)
 deref_aliases(in Pair!(size_t, string) input)
 {
-	return Pair(in.first,
-								 SCAN_Name::deref_alias(in.second));
+	return Pair(input.first,
+								 SCAN_Name::deref_alias(input.second));
 }
 
 }
@@ -169,19 +169,19 @@ size_t SCAN_Name::arg_as_integer(size_t i, size_t def_value) const
 	return to_uint(args[i]);
 }
 
-void SCAN_Name::add_alias(in string alias, in string basename)
+void SCAN_Name::add_alias(in string _alias, in string basename)
 {
 	std::lock_guard<std::mutex> lock(s_alias_map_mutex);
 
-	if(s_alias_map.find(alias) == s_alias_map.end())
-		s_alias_map[alias] = basename;
+	if(s_alias_map.find(_alias) == s_alias_map.end())
+		s_alias_map[_alias] = basename;
 }
 
-string SCAN_Name::deref_alias(in string alias)
+string SCAN_Name::deref_alias(in string _alias)
 {
 	std::lock_guard<std::mutex> lock(s_alias_map_mutex);
 
-	string name = alias;
+	string name = _alias;
 
 	for(auto i = s_alias_map.find(name); i != s_alias_map.end(); i = s_alias_map.find(name))
 		name = i->second;

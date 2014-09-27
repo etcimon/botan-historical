@@ -119,7 +119,7 @@ class EC_Group
 		/**
 		* Return PEM representation of named EC group
 		*/
-		static const char* PEM_for_named_group(in string name);
+		static string PEM_for_named_group(in string name);
 
 	private:
 		CurveGFp curve;

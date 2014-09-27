@@ -10,7 +10,7 @@
 #include <botan/parsing.h>
 namespace {
 
-static const byte MISTY1_SBOX_S7[128] = {
+immutable byte[128] MISTY1_SBOX_S7 = {
 	0x1B, 0x32, 0x33, 0x5A, 0x3B, 0x10, 0x17, 0x54, 0x5B, 0x1A, 0x72, 0x73,
 	0x6B, 0x2C, 0x66, 0x49, 0x1F, 0x24, 0x13, 0x6C, 0x37, 0x2E, 0x3F, 0x4A,
 	0x5D, 0x0F, 0x40, 0x56, 0x25, 0x51, 0x1C, 0x04, 0x0B, 0x46, 0x20, 0x0D,
@@ -23,7 +23,7 @@ static const byte MISTY1_SBOX_S7[128] = {
 	0x2D, 0x7A, 0x7F, 0x61, 0x50, 0x22, 0x11, 0x06, 0x47, 0x16, 0x52, 0x4E,
 	0x71, 0x3E, 0x69, 0x43, 0x34, 0x5C, 0x58, 0x7D };
 
-static const ushort MISTY1_SBOX_S9[512] = {
+immutable ushort[512] MISTY1_SBOX_S9 = {
 	0x01C3, 0x00CB, 0x0153, 0x019F, 0x01E3, 0x00E9, 0x00FB, 0x0035, 0x0181,
 	0x00B9, 0x0117, 0x01EB, 0x0133, 0x0009, 0x002D, 0x00D3, 0x00C7, 0x014A,
 	0x0037, 0x007E, 0x00EB, 0x0164, 0x0193, 0x01D8, 0x00A3, 0x011E, 0x0055,
@@ -103,10 +103,10 @@ void MISTY1::encrypt_n(byte* input, byte* output, size_t blocks) const
 {
 	for(size_t i = 0; i != blocks; ++i)
 	{
-		ushort B0 = load_be<ushort>(input, 0);
-		ushort B1 = load_be<ushort>(input, 1);
-		ushort B2 = load_be<ushort>(input, 2);
-		ushort B3 = load_be<ushort>(input, 3);
+		ushort B0 = load_be!ushort(input, 0);
+		ushort B1 = load_be!ushort(input, 1);
+		ushort B2 = load_be!ushort(input, 2);
+		ushort B3 = load_be!ushort(input, 3);
 
 		for(size_t j = 0; j != 12; j += 3)
 		{
@@ -139,7 +139,7 @@ void MISTY1::encrypt_n(byte* input, byte* output, size_t blocks) const
 		B3 ^= B2 & EK[98];
 		B2 ^= B3 | EK[99];
 
-		store_be(out, B2, B3, B0, B1);
+		store_be(output, B2, B3, B0, B1);
 
 		input += BLOCK_SIZE;
 		output += BLOCK_SIZE;
@@ -153,10 +153,10 @@ void MISTY1::decrypt_n(byte* input, byte* output, size_t blocks) const
 {
 	for(size_t i = 0; i != blocks; ++i)
 	{
-		ushort B0 = load_be<ushort>(input, 2);
-		ushort B1 = load_be<ushort>(input, 3);
-		ushort B2 = load_be<ushort>(input, 0);
-		ushort B3 = load_be<ushort>(input, 1);
+		ushort B0 = load_be!ushort(input, 2);
+		ushort B1 = load_be!ushort(input, 3);
+		ushort B2 = load_be!ushort(input, 0);
+		ushort B3 = load_be!ushort(input, 1);
 
 		for(size_t j = 0; j != 12; j += 3)
 		{
@@ -189,7 +189,7 @@ void MISTY1::decrypt_n(byte* input, byte* output, size_t blocks) const
 		B0 ^= B1 | DK[98];
 		B1 ^= B0 & DK[99];
 
-		store_be(out, B0, B1, B2, B3);
+		store_be(output, B0, B1, B2, B3);
 
 		input += BLOCK_SIZE;
 		output += BLOCK_SIZE;
@@ -203,7 +203,7 @@ void MISTY1::key_schedule(in byte* key)
 {
 	secure_vector<ushort> KS(32);
 	for(size_t i = 0; i != length / 2; ++i)
-		KS[i] = load_be<ushort>(key, i);
+		KS[i] = load_be!ushort(key, i);
 
 	for(size_t i = 0; i != 8; ++i)
 	{
@@ -216,7 +216,7 @@ void MISTY1::key_schedule(in byte* key)
 	* Precomputed indexes for the orderings of the subkeys (MISTY1 reuses
 	* values)
 	*/
-	static const byte EK_ORDER[100] = {
+	immutable byte[100] EK_ORDER = {
 		0x00, 0x0E, 0x0A, 0x04, 0x00, 0x15, 0x1D, 0x02, 0x11, 0x19, 0x07, 0x13,
 		0x1B, 0x04, 0x01, 0x16, 0x1E, 0x03, 0x12, 0x1A, 0x00, 0x14, 0x1C, 0x05,
 		0x01, 0x0F, 0x0B, 0x05, 0x02, 0x17, 0x1F, 0x04, 0x13, 0x1B, 0x01, 0x15,
@@ -227,7 +227,7 @@ void MISTY1::key_schedule(in byte* key)
 		0x19, 0x02, 0x07, 0x14, 0x1C, 0x01, 0x10, 0x18, 0x06, 0x12, 0x1A, 0x03,
 		0x04, 0x0A, 0x0E, 0x00 };
 
-	static const byte DK_ORDER[100] = {
+	immutable byte[100] DK_ORDER = {
 		0x00, 0x0E, 0x0A, 0x04, 0x07, 0x14, 0x1C, 0x01, 0x10, 0x18, 0x06, 0x12,
 		0x1A, 0x03, 0x06, 0x13, 0x1B, 0x00, 0x17, 0x1F, 0x05, 0x11, 0x19, 0x02,
 		0x07, 0x0D, 0x09, 0x03, 0x05, 0x12, 0x1A, 0x07, 0x16, 0x1E, 0x04, 0x10,

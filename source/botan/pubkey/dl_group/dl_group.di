@@ -149,7 +149,7 @@ class DL_Group
 		/**
 		* Return PEM representation of named DL group
 		*/
-		static const char* PEM_for_named_group(in string name);
+		static string PEM_for_named_group(in string name);
 	private:
 		static BigInt make_dsa_generator(in BigInt, const BigInt&);
 

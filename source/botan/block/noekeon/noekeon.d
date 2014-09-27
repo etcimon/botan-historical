@@ -13,7 +13,7 @@ namespace {
 /*
 * Noekeon's Theta Operation
 */
- void theta(ref uint A0, ref uint A1,
+void theta(ref uint A0, ref uint A1,
 						ref uint A2, ref uint A3,
 						const uint EK[4])
 {
@@ -36,7 +36,7 @@ namespace {
 /*
 * Theta With Null Key
 */
- void theta(ref uint A0, ref uint A1,
+void theta(ref uint A0, ref uint A1,
 						ref uint A2, ref uint A3)
 {
 	uint T = A0 ^ A2;
@@ -53,7 +53,7 @@ namespace {
 /*
 * Noekeon's Gamma S-Box Layer
 */
- void gamma(ref uint A0, ref uint A1, ref uint A2, ref uint A3)
+void gamma(ref uint A0, ref uint A1, ref uint A2, ref uint A3)
 {
 	A1 ^= ~A3 & ~A2;
 	A0 ^= A2 & A1;
@@ -73,7 +73,7 @@ namespace {
 /*
 * Noekeon Round Constants
 */
-const byte[] Noekeon::RC = {
+immutable byte[] Noekeon::RC = {
 	0x80, 0x1B, 0x36, 0x6C, 0xD8, 0xAB, 0x4D, 0x9A,
 	0x2F, 0x5E, 0xBC, 0x63, 0xC6, 0x97, 0x35, 0x6A,
 	0xD4 };
@@ -109,7 +109,7 @@ void Noekeon::encrypt_n(byte* input, byte* output, size_t blocks) const
 		A0 ^= RC[16];
 		theta(A0, A1, A2, A3, &EK[0]);
 
-		store_be(out, A0, A1, A2, A3);
+		store_be(output, A0, A1, A2, A3);
 
 		input += BLOCK_SIZE;
 		output += BLOCK_SIZE;
@@ -147,7 +147,7 @@ void Noekeon::decrypt_n(byte* input, byte* output, size_t blocks) const
 		theta(A0, A1, A2, A3, &DK[0]);
 		A0 ^= RC[0];
 
-		store_be(out, A0, A1, A2, A3);
+		store_be(output, A0, A1, A2, A3);
 
 		input += BLOCK_SIZE;
 		output += BLOCK_SIZE;

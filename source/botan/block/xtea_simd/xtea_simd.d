@@ -47,7 +47,7 @@ void xtea_encrypt_8(const byte[64] input, byte[64] output, const uint[64] EK)
 	R1.store_be(output + 48);
 }
 
-void xtea_decrypt_8(const byte[64] input, byte[64] out, const uint[64] EK)
+void xtea_decrypt_8(const byte[64] input, byte[64] output, const uint[64] EK)
 {
 	SIMD_32 L0 = SIMD_32::load_be(input	  );
 	SIMD_32 R0 = SIMD_32::load_be(input + 16);

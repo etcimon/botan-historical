@@ -166,6 +166,6 @@ struct Self_Test_Failure : public Internal_Error
 */
 struct Memory_Exhaustion : public std::bad_alloc
 {
-	const char* what() const noexcept
+	string what() const noexcept
 	{ return "Ran out of memory, allocation failed"; }
 };

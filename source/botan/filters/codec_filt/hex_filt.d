@@ -14,7 +14,7 @@
 /**
 * Size used for internal buffer in hex encoder/decoder
 */
-const size_t HEX_CODEC_BUFFER_SIZE = 256;
+immutable size_t HEX_CODEC_BUFFER_SIZE = 256;
 
 /*
 * Hex_Encoder Constructor
@@ -22,8 +22,8 @@ const size_t HEX_CODEC_BUFFER_SIZE = 256;
 Hex_Encoder::Hex_Encoder(bool breaks, size_t length, Case c) :
 	casing(c), line_length(breaks ? length : 0)
 {
-	in.resize(HEX_CODEC_BUFFER_SIZE);
-	out.resize(2*in.size());
+	input.resize(HEX_CODEC_BUFFER_SIZE);
+	output.resize(2*input.size());
 	counter = position = 0;
 }
 
@@ -32,8 +32,8 @@ Hex_Encoder::Hex_Encoder(bool breaks, size_t length, Case c) :
 */
 Hex_Encoder::Hex_Encoder(Case c) : casing(c), line_length(0)
 {
-	in.resize(HEX_CODEC_BUFFER_SIZE);
-	out.resize(2*in.size());
+	input.resize(HEX_CODEC_BUFFER_SIZE);
+	output.resize(2*input.size());
 	counter = position = 0;
 }
 
@@ -47,7 +47,7 @@ void Hex_Encoder::encode_and_send(in byte* block, size_t length)
 				  casing == Uppercase);
 
 	if(line_length == 0)
-		send(out, 2*length);
+		send(output, 2*length);
 	else
 	{
 		size_t remaining = 2*length, offset = 0;
@@ -73,16 +73,16 @@ void Hex_Encoder::encode_and_send(in byte* block, size_t length)
 void Hex_Encoder::write(in byte* input, size_t length)
 {
 	buffer_insert(input, position, input, length);
-	if(position + length >= in.size())
+	if(position + length >= input.size())
 	{
-		encode_and_send(&input[0], in.size());
-		input += (in.size() - position);
-		length -= (in.size() - position);
-		while(length >= in.size())
+		encode_and_send(&input[0], input.size());
+		input += (input.size() - position);
+		length -= (input.size() - position);
+		while(length >= input.size())
 		{
-			encode_and_send(input, in.size());
-			input += in.size();
-			length -= in.size();
+			encode_and_send(input, input.size());
+			input += input.size();
+			length -= input.size();
 		}
 		copy_mem(&input[0], input, length);
 		position = 0;
@@ -106,8 +106,8 @@ void Hex_Encoder::end_msg()
 */
 Hex_Decoder::Hex_Decoder(Decoder_Checking c) : checking(c)
 {
-	in.resize(HEX_CODEC_BUFFER_SIZE);
-	out.resize(in.size() / 2);
+	input.resize(HEX_CODEC_BUFFER_SIZE);
+	output.resize(input.size() / 2);
 	position = 0;
 }
 
@@ -118,18 +118,18 @@ void Hex_Decoder::write(in byte* input, size_t length)
 {
 	while(length)
 	{
-		size_t to_copy = std::min<size_t>(length, in.size() - position);
+		size_t to_copy = std::min<size_t>(length, input.size() - position);
 		copy_mem(&input[position], input, to_copy);
 		position += to_copy;
 
 		size_t consumed = 0;
 		size_t written = hex_decode(&output[0],
-											 cast(in char*)(input[0]),
+											 cast(string)(input[0]),
 											 position,
 											 consumed,
 											 checking != FULL_CHECK);
 
-		send(out, written);
+		send(output, written);
 
 		if(consumed != position)
 		{
@@ -151,12 +151,12 @@ void Hex_Decoder::end_msg()
 {
 	size_t consumed = 0;
 	size_t written = hex_decode(&output[0],
-										 cast(in char*)(input[0]),
+										 cast(string)(input[0]),
 										 position,
 										 consumed,
 										 checking != FULL_CHECK);
 
-	send(out, written);
+	send(output, written);
 
 	const bool not_full_bytes = consumed != position;
 

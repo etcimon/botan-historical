@@ -61,7 +61,7 @@ size_t DataSource_Memory::peek(byte* output,
 	if(peek_offset >= bytes_left) return 0;
 
 	size_t got = std::min(bytes_left - peek_offset, length);
-	copy_mem(out, &source[offset + peek_offset], got);
+	copy_mem(output, &source[offset + peek_offset], got);
 	return got;
 }
 
@@ -77,8 +77,8 @@ bool DataSource_Memory::end_of_data() const
 * DataSource_Memory Constructor
 */
 DataSource_Memory::DataSource_Memory(in string input) :
-	source(cast(const byte*)(in.data()),
-			 cast(const byte*)(in.data()) + in.length()),
+	source(cast(const byte*)(input.data()),
+			 cast(const byte*)(input.data()) + input.length()),
 	offset(0)
 {
 	offset = 0;
@@ -172,7 +172,7 @@ DataSource_Stream::DataSource_Stream(in string path,
 /*
 * DataSource_Stream Constructor
 */
-DataSource_Stream::DataSource_Stream(std::istream& in,
+DataSource_Stream::DataSource_Stream(std::istream& input,
 												 in string name) :
 	identifier(name),
 	source_p(null),

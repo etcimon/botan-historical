@@ -89,14 +89,14 @@ void EAC1_1_ADO::decode_info(DataSource& source,
 	res_sig = decode_concatenation(concat_sig);
 }
 
-void EAC1_1_ADO::encode(Pipe& out, X509_Encoding encoding) const
+void EAC1_1_ADO::encode(Pipe output, X509_Encoding encoding) const
 {
 	if(encoding == PEM)
 		throw new Invalid_Argument("EAC1_1_ADO::encode() cannot PEM encode an EAC object");
 
 	auto concat_sig = EAC1_1_obj<EAC1_1_ADO>::m_sig.get_concatenation();
 
-	out.write(DER_Encoder()
+	output.write(DER_Encoder()
 				 .start_cons(ASN1_Tag(7), APPLICATION)
 					  .raw_bytes(tbs_bits)
 					  .encode(concat_sig, OCTET_STRING, ASN1_Tag(55), APPLICATION)

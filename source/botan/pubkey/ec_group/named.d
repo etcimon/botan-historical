@@ -6,7 +6,7 @@
 */
 
 #include <botan/ec_group.h>
-const char* EC_Group::PEM_for_named_group(in string name)
+string EC_Group::PEM_for_named_group(in string name)
 {
 	if(name == "secp112r1")
 		return

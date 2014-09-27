@@ -42,7 +42,7 @@ Vector!( byte ) put_in_sequence(in Vector!byte contents)
 */
 string to_string(in BER_Object obj)
 {
-	return string(cast(in char*)(obj.value[0]),
+	return string(cast(string)(obj.value[0]),
 							 obj.value.size());
 }
 

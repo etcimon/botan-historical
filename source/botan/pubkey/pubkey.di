@@ -39,7 +39,7 @@ class PK_Encryptor
 		* @param rng the random number source to use
 		* @return encrypted message
 		*/
-		Vector!( byte ) encrypt(in byte* in, size_t length,
+		Vector!( byte ) encrypt(in byte* input, size_t length,
 											RandomNumberGenerator& rng) const
 		{
 			return enc(input, length, rng);
@@ -51,10 +51,10 @@ class PK_Encryptor
 		* @param rng the random number source to use
 		* @return encrypted message
 		*/
-		Vector!( byte ) encrypt(Alloc)(in Vector!( byte, Alloc ) in,
+		Vector!( byte ) encrypt(Alloc)(in Vector!( byte, Alloc ) input,
 										  RandomNumberGenerator& rng) const
 		{
-			return enc(&input[0], in.size(), rng);
+			return enc(&input[0], input.size(), rng);
 		}
 
 		/**
@@ -71,7 +71,7 @@ class PK_Encryptor
 		PK_Encryptor& operator=(in PK_Encryptor);
 
 	private:
-		abstract Vector!( byte ) enc(const byte[], size_t,
+		abstract Vector!( byte ) enc(in byte*, size_t,
 												 RandomNumberGenerator&) const;
 };
 
@@ -99,7 +99,7 @@ class PK_Decryptor
 		*/
 		SafeVector!byte decrypt(Alloc)(in Vector!( byte, Alloc ) input) const
 		{
-			return dec(&input[0], in.size());
+			return dec(&input[0], input.size());
 		}
 
 		PK_Decryptor() {}
@@ -109,7 +109,7 @@ class PK_Decryptor
 		PK_Decryptor& operator=(in PK_Decryptor);
 
 	private:
-		abstract SafeVector!byte dec(const byte[], size_t) const;
+		abstract SafeVector!byte dec(in byte*, size_t) const;
 };
 
 /**
@@ -127,7 +127,7 @@ class PK_Signer
 		* @param rng the rng to use
 		* @return signature
 		*/
-		Vector!( byte ) sign_message(in byte* in, size_t length,
+		Vector!( byte ) sign_message(in byte* input, size_t length,
 												  RandomNumberGenerator& rng);
 
 		/**
@@ -136,19 +136,19 @@ class PK_Signer
 		* @param rng the rng to use
 		* @return signature
 		*/
-		Vector!( byte ) sign_message(in Vector!byte in,
+		Vector!( byte ) sign_message(in Vector!byte input,
 												 RandomNumberGenerator& rng)
-		{ return sign_message(&input[0], in.size(), rng); }
+		{ return sign_message(&input[0], input.size(), rng); }
 
-		Vector!( byte ) sign_message(in SafeVector!byte in,
+		Vector!( byte ) sign_message(in SafeVector!byte input,
 												 RandomNumberGenerator& rng)
-		{ return sign_message(&input[0], in.size(), rng); }
+		{ return sign_message(&input[0], input.size(), rng); }
 
 		/**
 		* Add a message part (single byte).
 		* @param in the byte to add
 		*/
-		void update(byte input) { update(&in, 1); }
+		void update(byte input) { update(&input, 1); }
 
 		/**
 		* Add a message part.
@@ -161,7 +161,7 @@ class PK_Signer
 		* Add a message part.
 		* @param in the message part to add
 		*/
-		void update(in Vector!byte input) { update(&input[0], in.size()); }
+		void update(in Vector!byte input) { update(&input[0], input.size()); }
 
 		/**
 		* Get the signature of the so far processed message (provided by the
@@ -327,11 +327,11 @@ class PK_Key_Agreement
 		* @param params_len the length of params in bytes
 		*/
 		SymmetricKey derive_key(size_t key_len,
-										in Vector!byte in,
+										in Vector!byte input,
 										in byte* params,
 										size_t params_len) const
 		{
-			return derive_key(key_len, &input[0], in.size(),
+			return derive_key(key_len, &input[0], input.size(),
 									params, params_len);
 		}
 
@@ -343,10 +343,10 @@ class PK_Key_Agreement
 		* @param params extra derivation params
 		*/
 		SymmetricKey derive_key(size_t key_len,
-										in byte* in, size_t in_len,
+										in byte* input, size_t in_len,
 										in string params = "") const
 		{
-			return derive_key(key_len, in, in_len,
+			return derive_key(key_len, input, in_len,
 									cast(const byte*)(params.data()),
 									params.length());
 		}
@@ -358,10 +358,10 @@ class PK_Key_Agreement
 		* @param params extra derivation params
 		*/
 		SymmetricKey derive_key(size_t key_len,
-										in Vector!byte in,
+										in Vector!byte input,
 										in string params = "") const
 		{
-			return derive_key(key_len, &input[0], in.size(),
+			return derive_key(key_len, &input[0], input.size(),
 									cast(const byte*)(params.data()),
 									params.length());
 		}
@@ -394,7 +394,7 @@ class PK_Encryptor_EME : public PK_Encryptor
 		PK_Encryptor_EME(in Public_Key key,
 							  in string eme);
 	private:
-		Vector!( byte ) enc(const byte[], size_t,
+		Vector!( byte ) enc(in byte*, size_t,
 									  RandomNumberGenerator& rng) const;
 
 		std::unique_ptr<PK_Ops::Encryption> m_op;

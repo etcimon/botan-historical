@@ -25,7 +25,7 @@ DLIES_Encryptor::DLIES_Encryptor(in PK_Key_Agreement_Key key,
 /*
 * DLIES Encryption
 */
-Vector!( byte ) DLIES_Encryptor::enc(in byte* in, size_t length,
+Vector!( byte ) DLIES_Encryptor::enc(in byte* input, size_t length,
 													RandomNumberGenerator&) const
 {
 	if(length > maximum_input_size())
@@ -33,9 +33,9 @@ Vector!( byte ) DLIES_Encryptor::enc(in byte* in, size_t length,
 	if(other_key.empty())
 		throw new Invalid_State("DLIES: The other key was never set");
 
-	SafeVector!byte out(my_key.size() + length + mac->output_length());
-	buffer_insert(out, 0, my_key);
-	buffer_insert(out, my_key.size(), in, length);
+	SafeVector!byte output(my_key.size() + length + mac->output_length());
+	buffer_insert(output, 0, my_key);
+	buffer_insert(output, my_key.size(), input, length);
 
 	SafeVector!byte vz(my_key.begin(), my_key.end());
 	vz += ka.derive_key(0, other_key).bits_of();
@@ -56,7 +56,7 @@ Vector!( byte ) DLIES_Encryptor::enc(in byte* in, size_t length,
 
 	mac->flushInto(C + length);
 
-	return unlock(out);
+	return unlock(output);
 }
 
 /*

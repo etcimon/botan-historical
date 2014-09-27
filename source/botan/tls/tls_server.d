@@ -180,7 +180,7 @@ std::map<string, Vector!( X509_Certificate ) >
 get_server_certs(in string hostname,
 					  Credentials_Manager& creds)
 {
-	const char* cert_types[] = { "RSA", "DSA", "ECDSA", null };
+	string cert_types[] = { "RSA", "DSA", "ECDSA", null };
 
 	std::map<string, Vector!( X509_Certificate ) > cert_chains;
 

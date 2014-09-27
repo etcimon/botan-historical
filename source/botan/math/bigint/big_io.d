@@ -28,7 +28,7 @@ std::ostream& operator<<(std::ostream& stream, const BigInt& n)
 		size_t skip = 0;
 		while(skip < buffer.size() && buffer[skip] == '0')
 			++skip;
-		stream.write(cast(in char*)(buffer[0]) + skip,
+		stream.write(cast(string)(buffer[0]) + skip,
 						 buffer.size() - skip);
 	}
 	if(!stream.good())

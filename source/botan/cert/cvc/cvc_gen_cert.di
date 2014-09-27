@@ -130,7 +130,7 @@ template<typename Derived> Vector!( byte ) EAC1_1_gen_CVC<Derived>::tbs_data() c
 	return build_cert_body(EAC1_1_obj<Derived>::tbs_bits);
 }
 
-template<typename Derived> void EAC1_1_gen_CVC<Derived>::encode(Pipe out, X509_Encoding encoding) const
+template<typename Derived> void EAC1_1_gen_CVC<Derived>::encode(Pipe output, X509_Encoding encoding) const
 {
 	Vector!( byte ) concat_sig(EAC1_1_obj<Derived>::m_sig.get_concatenation());
 	Vector!( byte ) der = DER_Encoder()
@@ -145,7 +145,7 @@ template<typename Derived> void EAC1_1_gen_CVC<Derived>::encode(Pipe out, X509_E
 	if (encoding == PEM)
 		throw new Invalid_Argument("EAC1_1_gen_CVC::encode() cannot PEM encode an EAC object");
 	else
-		out.write(der);
+		output.write(der);
 }
 
 template<typename Derived>

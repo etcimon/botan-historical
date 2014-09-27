@@ -16,8 +16,8 @@
 Base64_Encoder::Base64_Encoder(bool breaks, size_t length, bool t_n) :
 	line_length(breaks ? length : 0),
 	trailing_newline(t_n && breaks),
-	in(48),
-	out(64),
+	input(48),
+	output(64),
 	position(0),
 	out_position(0)
 {
@@ -31,7 +31,7 @@ void Base64_Encoder::encode_and_send(in byte* input, size_t length,
 {
 	while(length)
 	{
-		const size_t proc = std::min(length, in.size());
+		const size_t proc = std::min(length, input.size());
 
 		size_t consumed = 0;
 		size_t produced = base64_encode(cast(char*)(&output[0]), input,
@@ -77,16 +77,16 @@ void Base64_Encoder::do_output(in byte* input, size_t length)
 void Base64_Encoder::write(in byte* input, size_t length)
 {
 	buffer_insert(input, position, input, length);
-	if(position + length >= in.size())
+	if(position + length >= input.size())
 	{
-		encode_and_send(&input[0], in.size());
-		input += (in.size() - position);
-		length -= (in.size() - position);
-		while(length >= in.size())
+		encode_and_send(&input[0], input.size());
+		input += (input.size() - position);
+		length -= (input.size() - position);
+		while(length >= input.size())
 		{
-			encode_and_send(input, in.size());
-			input += in.size();
-			length -= in.size();
+			encode_and_send(input, input.size());
+			input += input.size();
+			length -= input.size();
 		}
 		copy_mem(&input[0], input, length);
 		position = 0;
@@ -111,7 +111,7 @@ void Base64_Encoder::end_msg()
 * Base64_Decoder Constructor
 */
 Base64_Decoder::Base64_Decoder(Decoder_Checking c) :
-	checking(c), in(64), out(48), position(0)
+	checking(c), input(64), output(48), position(0)
 {
 }
 
@@ -122,19 +122,19 @@ void Base64_Decoder::write(in byte* input, size_t length)
 {
 	while(length)
 	{
-		size_t to_copy = std::min<size_t>(length, in.size() - position);
+		size_t to_copy = std::min<size_t>(length, input.size() - position);
 		copy_mem(&input[position], input, to_copy);
 		position += to_copy;
 
 		size_t consumed = 0;
 		size_t written = base64_decode(&output[0],
-												 cast(in char*)(input[0]),
+												 cast(string)(input[0]),
 												 position,
 												 consumed,
 												 false,
 												 checking != FULL_CHECK);
 
-		send(out, written);
+		send(output, written);
 
 		if(consumed != position)
 		{
@@ -156,13 +156,13 @@ void Base64_Decoder::end_msg()
 {
 	size_t consumed = 0;
 	size_t written = base64_decode(&output[0],
-											 cast(in char*)(input[0]),
+											 cast(string)(input[0]),
 											 position,
 											 consumed,
 											 true,
 											 checking != FULL_CHECK);
 
-	send(out, written);
+	send(output, written);
 
 	const bool not_full_bytes = consumed != position;
 

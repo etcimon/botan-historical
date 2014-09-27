@@ -56,7 +56,7 @@ string hex_encode(Alloc)(in Vector!( byte, Alloc ) input,
 * @return number of bytes written to output
 */
 size_t hex_decode(byte* output,
-					 const char* input,
+					 string input,
 					 size_t input_length,
 					 size_t& input_consumed,
 					 bool ignore_ws = true);
@@ -71,7 +71,7 @@ size_t hex_decode(byte* output,
 * @return number of bytes written to output
 */
 size_t hex_decode(byte* output,
-					 const char* input,
+					 string input,
 					 size_t input_length,
 					 bool ignore_ws = true);
 
@@ -96,7 +96,7 @@ size_t hex_decode(byte* output,
 * @return decoded hex output
 */
 Vector!( byte )
-hex_decode(const char* input,
+hex_decode(string input,
 			  size_t input_length,
 			  bool ignore_ws = true);
 
@@ -120,7 +120,7 @@ hex_decode(in string input,
 * @return decoded hex output
 */
 SafeVector!byte
-hex_decode_locked(const char* input,
+hex_decode_locked(string input,
 					size_t input_length,
 					bool ignore_ws = true);
 

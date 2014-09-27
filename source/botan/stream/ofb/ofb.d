@@ -38,14 +38,14 @@ void OFB::cipher(in byte* input, byte* output)
 {
 	while(length >= m_buffer.size() - m_buf_pos)
 	{
-		xor_buf(out, in, &m_buffer[m_buf_pos], m_buffer.size() - m_buf_pos);
+		xor_buf(output, input, &m_buffer[m_buf_pos], m_buffer.size() - m_buf_pos);
 		length -= (m_buffer.size() - m_buf_pos);
-		in += (m_buffer.size() - m_buf_pos);
-		out += (m_buffer.size() - m_buf_pos);
+		input += (m_buffer.size() - m_buf_pos);
+		output += (m_buffer.size() - m_buf_pos);
 		m_cipher->encrypt(m_buffer);
 		m_buf_pos = 0;
 	}
-	xor_buf(out, in, &m_buffer[m_buf_pos], length);
+	xor_buf(output, input, &m_buffer[m_buf_pos], length);
 	m_buf_pos += length;
 }
 

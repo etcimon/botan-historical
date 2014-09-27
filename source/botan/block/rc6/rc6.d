@@ -50,7 +50,7 @@ void RC6::encrypt_n(byte* input, byte* output, size_t blocks) const
 
 		A += S[42]; C += S[43];
 
-		store_le(out, A, B, C, D);
+		store_le(output, A, B, C, D);
 
 		input += BLOCK_SIZE;
 		output += BLOCK_SIZE;
@@ -98,7 +98,7 @@ void RC6::decrypt_n(byte* input, byte* output, size_t blocks) const
 
 		D -= S[1]; B -= S[0];
 
-		store_le(out, A, B, C, D);
+		store_le(output, A, B, C, D);
 
 		input += BLOCK_SIZE;
 		output += BLOCK_SIZE;

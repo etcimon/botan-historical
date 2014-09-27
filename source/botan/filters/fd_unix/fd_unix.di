@@ -12,7 +12,7 @@
 * @param out file descriptor for an open output stream
 * @param pipe the pipe
 */
-int operator<<(int out, Pipe& pipe);
+int operator<<(int output, Pipe& pipe);
 
 /**
 * File descriptor input operator; dumps the remaining bytes of input
@@ -20,4 +20,4 @@ int operator<<(int out, Pipe& pipe);
 * @param in file descriptor for an open input stream
 * @param pipe the pipe
 */
-int operator>>(int in, Pipe& pipe);
+int operator>>(int input, Pipe& pipe);

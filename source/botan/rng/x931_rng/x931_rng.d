@@ -26,8 +26,8 @@ void ANSI_X931_RNG::randomize(byte* output)
 
 		const size_t copied = std::min<size_t>(length, m_R.size() - m_R_pos);
 
-		copy_mem(out, &m_R[m_R_pos], copied);
-		out += copied;
+		copy_mem(output, &m_R[m_R_pos], copied);
+		output += copied;
 		length -= copied;
 		m_R_pos += copied;
 	}

@@ -37,7 +37,7 @@ void Intel_Rdrand::poll(Entropy_Accumulator& accum)
 
 	for(size_t i = 0; i != RDRAND_POLLS; ++i)
 	{
-		unsigned int r = 0;
+		uint r = 0;
 
 #if BOTAN_USE_GCC_INLINE_ASM
 		int cf = 0;

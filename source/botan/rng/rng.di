@@ -52,9 +52,9 @@ class RandomNumberGenerator
 		*/
 		byte next_byte()
 		{
-			byte out;
-			this->randomize(&out, 1);
-			return out;
+			byte output;
+			this->randomize(&output, 1);
+			return output;
 		}
 
 		/**
@@ -124,7 +124,7 @@ class Serialized_RNG : public RandomNumberGenerator
 		{
 			size_t len = output.length;
 			std::lock_guard<std::mutex> lock(m_mutex);
-			m_rng->randomize(out, len);
+			m_rng->randomize(output, len);
 		}
 
 		bool is_seeded() const

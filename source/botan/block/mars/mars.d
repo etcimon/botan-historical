@@ -13,7 +13,7 @@ namespace {
 /**
 * The MARS sbox
 */
-const uint SBOX[512] = {
+immutable uint[512] SBOX = {
 	0x09D0C479, 0x28C8FFE0, 0x84AA6C39, 0x9DAD7287, 0x7DFF9BE3, 0xD4268361,
 	0xC96DA1D4, 0x7974CC93, 0x85D0582E, 0x2A4B5705, 0x1CA16A62, 0xC3BD279D,
 	0x0F1F25E5, 0x5160372F, 0xC695C1FB, 0x4D7FF1E4, 0xAE5F6BF4, 0x0D72EE46,
@@ -262,7 +262,7 @@ void MARS::encrypt_n(byte* input, byte* output, size_t blocks) const
 
 		A -= EK[36]; B -= EK[37]; C -= EK[38]; D -= EK[39];
 
-		store_le(out, A, B, C, D);
+		store_le(output, A, B, C, D);
 
 		input += BLOCK_SIZE;
 		output += BLOCK_SIZE;
@@ -305,7 +305,7 @@ void MARS::decrypt_n(byte* input, byte* output, size_t blocks) const
 
 		A -= EK[3]; B -= EK[2]; C -= EK[1]; D -= EK[0];
 
-		store_le(out, D, C, B, A);
+		store_le(output, D, C, B, A);
 
 		input += BLOCK_SIZE;
 		output += BLOCK_SIZE;

@@ -64,14 +64,14 @@ class Pipe : public DataSource
 		* @param in the secure_vector containing the data to write
 		*/
 		void write(in SafeVector!byte input)
-		{ write(&input[0], in.size()); }
+		{ write(&input[0], input.size()); }
 
 		/**
 		* Write input to the pipe, i.e. to its first filter.
 		* @param in the std::vector containing the data to write
 		*/
 		void write(in Vector!byte input)
-		{ write(&input[0], in.size()); }
+		{ write(&input[0], input.size()); }
 
 		/**
 		* Write input to the pipe, i.e. to its first filter.
@@ -314,7 +314,7 @@ class Pipe : public DataSource
 * @param out an output stream
 * @param pipe the pipe
 */
-std::ostream& operator<<(std::ostream& out, Pipe& pipe);
+std::ostream& operator<<(std::ostream& output, Pipe& pipe);
 
 /**
 * Stream input operator; dumps the remaining bytes of input
@@ -322,7 +322,7 @@ std::ostream& operator<<(std::ostream& out, Pipe& pipe);
 * @param in the input stream
 * @param pipe the pipe
 */
-std::istream& operator>>(std::istream& in, Pipe& pipe);
+std::istream& operator>>(std::istream& input, Pipe& pipe);
 
 }
 

@@ -73,7 +73,7 @@ std::ostream& operator<<(std::ostream& o, const Response& resp)
 	for(auto h : resp.headers())
 		o << "Header '" << h.first << "' = '" << h.second << "'";
 	o << "Body " << std::to_string(resp.body().size()) << " bytes:";
-	o.write(cast(in char*)(resp.body()[0]), resp.body().size());
+	o.write(cast(string)(resp.body()[0]), resp.body().size());
 	return o;
 }
 
@@ -120,7 +120,7 @@ Response http_sync(http_exch_fn http_transact,
 	if(content_type != "")
 		outbuf << "Content-Type: " << content_type << "\r";
 	outbuf << "Connection: close\r\r";
-	outbuf.write(cast(in char*)(body[0]), body.size());
+	outbuf.write(cast(string)(body[0]), body.size());
 
 	std::istringstream io(http_transact(hostname, outbuf.str()));
 
@@ -131,7 +131,7 @@ Response http_sync(http_exch_fn http_transact,
 
 	stringstream response_stream(line1);
 	string http_version;
-	unsigned int status_code;
+	uint status_code;
 	string status_message;
 
 	response_stream >> http_version >> status_code;

@@ -12,9 +12,9 @@
 /*
 * Write to a stream
 */
-void DataSink_Stream::write(in byte* out, size_t length)
+void DataSink_Stream::write(in byte* output, size_t length)
 {
-	sink.write(cast(const char*)(out), length);
+	sink.write(cast(string)(output), length);
 	if(!sink.good())
 		throw new Stream_IO_Error("DataSink_Stream: Failure writing to " +
 									 identifier);
@@ -23,11 +23,11 @@ void DataSink_Stream::write(in byte* out, size_t length)
 /*
 * DataSink_Stream Constructor
 */
-DataSink_Stream::DataSink_Stream(std::ostream& out,
+DataSink_Stream::DataSink_Stream(std::ostream& output,
 											in string name) :
 	identifier(name),
 	sink_p(null),
-	sink(out)
+	sink(output)
 {
 }
 

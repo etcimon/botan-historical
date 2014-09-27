@@ -84,11 +84,11 @@ namespace {
 void do_exec(in Vector!( string ) args)
 {
 	// cleaner way to do this?
-	const char* arg0 = (args.size() > 0) ? args[0].c_str() : null;
-	const char* arg1 = (args.size() > 1) ? args[1].c_str() : null;
-	const char* arg2 = (args.size() > 2) ? args[2].c_str() : null;
-	const char* arg3 = (args.size() > 3) ? args[3].c_str() : null;
-	const char* arg4 = (args.size() > 4) ? args[4].c_str() : null;
+	string arg0 = (args.size() > 0) ? args[0].c_str() : null;
+	string arg1 = (args.size() > 1) ? args[1].c_str() : null;
+	string arg2 = (args.size() > 2) ? args[2].c_str() : null;
+	string arg3 = (args.size() > 3) ? args[3].c_str() : null;
+	string arg4 = (args.size() > 4) ? args[4].c_str() : null;
 
 	::execl(arg0, arg0, arg1, arg2, arg3, arg4, NULL);
 }

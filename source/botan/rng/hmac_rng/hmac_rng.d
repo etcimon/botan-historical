@@ -102,8 +102,8 @@ void HMAC_RNG::randomize(byte* output)
 
 		const size_t copied = std::min<size_t>(length, max_per_prf_iter);
 
-		copy_mem(out, &m_K[0], copied);
-		out += copied;
+		copy_mem(output, &m_K[0], copied);
+		output += copied;
 		length -= copied;
 
 		m_output_since_reseed += copied;

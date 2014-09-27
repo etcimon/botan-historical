@@ -109,12 +109,12 @@ BigInt BigInt::decode(in byte* buf, size_t length, Base base)
 
 			binary = hex_decode_locked(buf0_with_leading_0, 2);
 
-			binary += hex_decode_locked(cast(in char*)(buf[1]),
+			binary += hex_decode_locked(cast(string)(buf[1]),
 												 length - 1,
 												 false);
 		}
 		else
-			binary = hex_decode_locked(cast(const char*)(buf),
+			binary = hex_decode_locked(cast(string)(buf),
 												length, false);
 
 		r.binary_decode(&binary[0], binary.size());

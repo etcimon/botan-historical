@@ -28,7 +28,7 @@ class Zlib_Alloc_Info
 /*
 * Allocation Function for Zlib
 */
-void* zlib_malloc(void* info_ptr, unsigned int n, unsigned int size)
+void* zlib_malloc(void* info_ptr, uint n, uint size)
 {
 	Zlib_Alloc_Info* info = cast(Zlib_Alloc_Info*)(info_ptr);
 

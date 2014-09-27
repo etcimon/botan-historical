@@ -25,7 +25,7 @@ void TEA::encrypt_n(byte* input, byte* output, size_t blocks) const
 			R += ((L << 4) + K[2]) ^ (L + S) ^ ((L >> 5) + K[3]);
 		}
 
-		store_be(out, L, R);
+		store_be(output, L, R);
 
 		input += BLOCK_SIZE;
 		output += BLOCK_SIZE;
@@ -50,7 +50,7 @@ void TEA::decrypt_n(byte* input, byte* output, size_t blocks) const
 			S -= 0x9E3779B9;
 		}
 
-		store_be(out, L, R);
+		store_be(output, L, R);
 
 		input += BLOCK_SIZE;
 		output += BLOCK_SIZE;

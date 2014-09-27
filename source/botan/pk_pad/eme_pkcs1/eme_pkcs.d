@@ -9,7 +9,7 @@
 /*
 * PKCS1 Pad Operation
 */
-SafeVector!byte EME_PKCS1v15::pad(in byte* in, size_t inlen,
+SafeVector!byte EME_PKCS1v15::pad(in byte* input, size_t inlen,
 												 size_t olen,
 												 RandomNumberGenerator& rng) const
 {
@@ -20,21 +20,21 @@ SafeVector!byte EME_PKCS1v15::pad(in byte* in, size_t inlen,
 	if(inlen > olen - 10)
 		throw new Encoding_Error("PKCS1: Input is too large");
 
-	SafeVector!byte out(olen);
+	SafeVector!byte output(olen);
 
 	output[0] = 0x02;
 	for(size_t j = 1; j != olen - inlen - 1; ++j)
 		while(output[j] == 0)
 			output[j] = rng.next_byte();
-	buffer_insert(out, olen - inlen, in, inlen);
+	buffer_insert(output, olen - inlen, input, inlen);
 
-	return out;
+	return output;
 }
 
 /*
 * PKCS1 Unpad Operation
 */
-SafeVector!byte EME_PKCS1v15::unpad(in byte* in, size_t inlen,
+SafeVector!byte EME_PKCS1v15::unpad(in byte* input, size_t inlen,
 													size_t key_len) const
 {
 	if(inlen != key_len / 8 || inlen < 10 || input[0] != 0x02)

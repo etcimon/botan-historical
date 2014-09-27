@@ -6,7 +6,7 @@
 */
 
 #include <botan/dl_group.h>
-const char* DL_Group::PEM_for_named_group(in string name)
+string DL_Group::PEM_for_named_group(in string name)
 {
 	if(name == "modp/ietf/1024")
 		return

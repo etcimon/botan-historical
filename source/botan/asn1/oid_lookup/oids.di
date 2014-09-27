@@ -18,7 +18,7 @@ void add_oid(in OID oid, in string name);
 void add_oid2str(in OID oid, in string name);
 void add_str2oid(in OID oid, in string name);
 
-void add_oidstr(const char* oidstr, const char* name);
+void add_oidstr(string oidstr, string name);
 
 /**
 * See if an OID exists in the internal table.

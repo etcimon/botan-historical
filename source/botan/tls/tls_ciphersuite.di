@@ -102,14 +102,14 @@ class Ciphersuite
 	private:
 
 		Ciphersuite(ushort ciphersuite_code,
-						const char* sig_algo,
-						const char* kex_algo,
-						const char* cipher_algo,
+						string sig_algo,
+						string kex_algo,
+						string cipher_algo,
 						size_t cipher_keylen,
 						size_t cipher_ivlen,
-						const char* mac_algo,
+						string mac_algo,
 						size_t mac_keylen,
-						const char* prf_algo = "");
+						string prf_algo = "");
 
 		ushort m_ciphersuite_code = 0;
 

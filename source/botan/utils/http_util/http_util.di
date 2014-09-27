@@ -18,7 +18,7 @@ struct Response
 	public:
 		Response() : m_status_code(0), m_status_message("Uninitialized") {}
 
-		Response(unsigned int status_code, in string status_message,
+		Response(uint status_code, in string status_message,
 					in Vector!byte body,
 					const HashMap!(string, string)& headers) :
 			m_status_code(status_code),
@@ -26,7 +26,7 @@ struct Response
 			m_body(body),
 			m_headers(headers) {}
 
-		unsigned int status_code() const { return m_status_code; }
+		uint status_code() const { return m_status_code; }
 
 		in Vector!byte body() const { return m_body; }
 
@@ -41,7 +41,7 @@ struct Response
 		}
 
 	private:
-		unsigned int m_status_code;
+		uint m_status_code;
 		string m_status_message;
 		Vector!( byte ) m_body;
 		HashMap!(string, string) m_headers;

@@ -116,7 +116,7 @@ string Pipe::read_all_as_string(message_id msg)
 		size_t got = read(&buffer[0], buffer.size(), msg);
 		if(got == 0)
 			break;
-		str.append(cast(in char*)(buffer[0]), got);
+		str.append(cast(string)(buffer[0]), got);
 	}
 
 	return str;

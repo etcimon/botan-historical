@@ -80,7 +80,7 @@ class OctetString
 		* Create a new OctetString
 		* @param in a bytestring
 		*/
-		OctetString(in Vector!byte input) : bits(&input[0], &input[in.size()]) {}
+		OctetString(in Vector!byte input) : bits(&input[0], &input[input.size()]) {}
 	private:
 		SafeVector!byte bits;
 };

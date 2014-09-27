@@ -61,7 +61,7 @@ string base64_encode(Alloc)(in Vector!( byte, Alloc ) input)
 * @return number of bytes written to output
 */
 size_t base64_decode(byte* output,
-					 in char* input,
+					 string input,
 					 size_t input_length,
 					 ref size_t input_consumed,
 					 bool final_inputs,
@@ -77,7 +77,7 @@ size_t base64_decode(byte* output,
 * @return number of bytes written to output
 */
 size_t base64_decode(byte* output,
-					 const char* input,
+					 string input,
 					 size_t input_length,
 					 bool ignore_ws = true);
 
@@ -101,7 +101,7 @@ size_t base64_decode(byte* output,
 						 exception if whitespace is encountered
 * @return decoded base64 output
 */
-SafeVector!byte base64_decode(const char* input,
+SafeVector!byte base64_decode(string input,
 							 size_t input_length,
 							 bool ignore_ws = true);
 

@@ -13,7 +13,7 @@
 */
 struct BitBucket : public Filter
 {
-	void write(const byte[], size_t) {}
+	void write(in byte*, size_t) {}
 
 	string name() const { return "BitBucket"; }
 };

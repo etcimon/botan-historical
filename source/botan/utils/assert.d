@@ -7,10 +7,10 @@
 
 #include <botan/exceptn.h>
 #include <sstream>
-void assertion_failure(const char* expr_str,
-							  const char* assertion_made,
-							  const char* func,
-							  const char* file,
+void assertion_failure(string expr_str,
+							  string assertion_made,
+							  string func,
+							  string file,
 							  int line)
 {
 	std::ostringstream format;

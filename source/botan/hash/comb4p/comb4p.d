@@ -10,8 +10,8 @@
 #include <stdexcept>
 namespace {
 
-void comb4p_round(SafeVector!byte out,
-						in SafeVector!byte in,
+void comb4p_round(SafeVector!byte output,
+						in SafeVector!byte input,
 						byte round_no,
 						HashFunction& h1,
 						HashFunction& h2)
@@ -19,14 +19,14 @@ void comb4p_round(SafeVector!byte out,
 	h1.update(round_no);
 	h2.update(round_no);
 
-	h1.update(&input[0], in.size());
-	h2.update(&input[0], in.size());
+	h1.update(&input[0], input.size());
+	h2.update(&input[0], input.size());
 
 	SafeVector!byte h_buf = h1.flush();
-	xor_buf(&output[0], &h_buf[0], std::min(out.size(), h_buf.size()));
+	xor_buf(&output[0], &h_buf[0], std::min(output.size(), h_buf.size()));
 
 	h_buf = h2.flush();
-	xor_buf(&output[0], &h_buf[0], std::min(out.size(), h_buf.size()));
+	xor_buf(&output[0], &h_buf[0], std::min(output.size(), h_buf.size()));
 }
 
 }
@@ -87,8 +87,8 @@ void Comb4P::final_result(byte* output)
 	// Third round
 	comb4p_round(h1, h2, 2, *m_hash1, *m_hash2);
 
-	copy_mem(out				, &h1[0], h1.size());
-	copy_mem(out + h1.size(), &h2[0], h2.size());
+	copy_mem(output				, &h1[0], h1.size());
+	copy_mem(output + h1.size(), &h2[0], h2.size());
 
 	// Prep for processing next message, if any
 	m_hash1->update(0);

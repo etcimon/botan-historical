@@ -123,10 +123,10 @@ void Threefish_512::encrypt_n(byte* input, byte* output, size_t blocks) const
 		THREEFISH_ENC_8_ROUNDS(15,16);
 		THREEFISH_ENC_8_ROUNDS(17,18);
 
-		store_le(out, X0, X1, X2, X3, X4, X5, X6, X7);
+		store_le(output, X0, X1, X2, X3, X4, X5, X6, X7);
 
-		in += 64;
-		out += 64;
+		input += 64;
+		output += 64;
 	}
 }
 
@@ -205,10 +205,10 @@ void Threefish_512::decrypt_n(byte* input, byte* output, size_t blocks) const
 		THREEFISH_DEC_8_ROUNDS(3,2);
 		THREEFISH_DEC_8_ROUNDS(1,0);
 
-		store_le(out, X0, X1, X2, X3, X4, X5, X6, X7);
+		store_le(output, X0, X1, X2, X3, X4, X5, X6, X7);
 
-		in += 64;
-		out += 64;
+		input += 64;
+		output += 64;
 	}
 
 #undef THREEFISH_DEC_8_ROUNDS

@@ -26,11 +26,11 @@ namespace {
 */
 Vector!( string ) lookup_oids(in Vector!( string ) input)
 {
-	Vector!( string ) out;
+	Vector!( string ) output;
 
-	for(auto i = in.begin(); i != in.end(); ++i)
-		out.push_back(OIDS::lookup(OID(*i)));
-	return out;
+	for(auto i = input.begin(); i != input.end(); ++i)
+		output.push_back(OIDS::lookup(OID(*i)));
+	return output;
 }
 
 }
@@ -433,7 +433,7 @@ bool operator!=(in X509_Certificate cert1, const X509_Certificate& cert2)
 
 string X509_Certificate::to_string() const
 {
-	const char* dn_fields[] = { "Name",
+	string[] dn_fields = { "Name",
 										 "Email",
 										 "Organization",
 										 "Organizational Unit",
@@ -446,7 +446,7 @@ string X509_Certificate::to_string() const
 										 "PKIX.XMPPAddr",
 										 null };
 
-	std::ostringstream out;
+	std::ostringstream output;
 
 	for(size_t i = 0; dn_fields[i]; ++i)
 	{
@@ -455,10 +455,10 @@ string X509_Certificate::to_string() const
 		if(vals.empty())
 			continue;
 
-		out << "Subject " << dn_fields[i] << ":";
+		output << "Subject " << dn_fields[i] << ":";
 		for(size_t j = 0; j != vals.size(); ++j)
-			out << " " << vals[j];
-		out << "";
+			output << " " << vals[j];
+		output << "";
 	}
 
 	for(size_t i = 0; dn_fields[i]; ++i)
@@ -468,75 +468,75 @@ string X509_Certificate::to_string() const
 		if(vals.empty())
 			continue;
 
-		out << "Issuer " << dn_fields[i] << ":";
+		output << "Issuer " << dn_fields[i] << ":";
 		for(size_t j = 0; j != vals.size(); ++j)
-			out << " " << vals[j];
-		out << "";
+			output << " " << vals[j];
+		output << "";
 	}
 
-	out << "Version: " << this->x509_version() << "";
+	output << "Version: " << this->x509_version() << "";
 
-	out << "Not valid before: " << this->start_time() << "";
-	out << "Not valid after: " << this->end_time() << "";
+	output << "Not valid before: " << this->start_time() << "";
+	output << "Not valid after: " << this->end_time() << "";
 
-	out << "Constraints:";
+	output << "Constraints:";
 	Key_Constraints constraints = this->constraints();
 	if(constraints == NO_CONSTRAINTS)
-		out << " None";
+		output << " None";
 	else
 	{
 		if(constraints & DIGITAL_SIGNATURE)
-			out << "	Digital Signature";
+			output << "	Digital Signature";
 		if(constraints & NON_REPUDIATION)
-			out << "	Non-Repuidation";
+			output << "	Non-Repuidation";
 		if(constraints & KEY_ENCIPHERMENT)
-			out << "	Key Encipherment";
+			output << "	Key Encipherment";
 		if(constraints & DATA_ENCIPHERMENT)
-			out << "	Data Encipherment";
+			output << "	Data Encipherment";
 		if(constraints & KEY_AGREEMENT)
-			out << "	Key Agreement";
+			output << "	Key Agreement";
 		if(constraints & KEY_CERT_SIGN)
-			out << "	Cert Sign";
+			output << "	Cert Sign";
 		if(constraints & CRL_SIGN)
-			out << "	CRL Sign";
+			output << "	CRL Sign";
 	}
 
 	Vector!( string ) policies = this->policies();
 	if(!policies.empty())
 	{
-		out << "Policies: " << "";
+		output << "Policies: " << "";
 		for(size_t i = 0; i != policies.size(); i++)
-			out << "	" << policies[i] << "";
+			output << "	" << policies[i] << "";
 	}
 
 	Vector!( string ) ex_constraints = this->ex_constraints();
 	if(!ex_constraints.empty())
 	{
-		out << "Extended Constraints:";
+		output << "Extended Constraints:";
 		for(size_t i = 0; i != ex_constraints.size(); i++)
-			out << "	" << ex_constraints[i] << "";
+			output << "	" << ex_constraints[i] << "";
 	}
 
 	if(ocsp_responder() != "")
-		out << "OCSP responder " << ocsp_responder() << "";
+		output << "OCSP responder " << ocsp_responder() << "";
 	if(crl_distribution_point() != "")
-		out << "CRL " << crl_distribution_point() << "";
+		output << "CRL " << crl_distribution_point() << "";
 
-	out << "Signature algorithm: " <<
+	output << "Signature algorithm: " <<
 		OIDS::lookup(this->signature_algorithm().oid) << "";
 
-	out << "Serial number: " << hex_encode(this->serial_number()) << "";
+	output << "Serial number: " << hex_encode(this->serial_number()) << "";
 
 	if(this->authority_key_id().size())
-	  out << "Authority keyid: " << hex_encode(this->authority_key_id()) << "";
+	  output << "Authority keyid: " << hex_encode(this->authority_key_id()) << "";
 
 	if(this->subject_key_id().size())
-	  out << "Subject keyid: " << hex_encode(this->subject_key_id()) << "";
+	  output << "Subject keyid: " << hex_encode(this->subject_key_id()) << "";
 
 	std::unique_ptr<X509_PublicKey> pubkey(this->subject_public_key());
-	out << "Public Key:" << X509::PEM_encode(*pubkey);
+	output << "Public Key:" << X509::PEM_encode(*pubkey);
 
-	return out.str();
+	return output.str();
 }
 
 /*

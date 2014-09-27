@@ -15,13 +15,13 @@ void RC4::cipher(in byte* input, byte* output)
 {
 	while(length >= buffer.size() - position)
 	{
-		xor_buf(out, in, &buffer[position], buffer.size() - position);
+		xor_buf(output, input, &buffer[position], buffer.size() - position);
 		length -= (buffer.size() - position);
-		in += (buffer.size() - position);
-		out += (buffer.size() - position);
+		input += (buffer.size() - position);
+		output += (buffer.size() - position);
 		generate();
 	}
-	xor_buf(out, in, &buffer[position], length);
+	xor_buf(output, input, &buffer[position], length);
 	position += length;
 }
 

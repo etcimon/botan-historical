@@ -13,7 +13,7 @@
 class PK_Encryptor_Filter : public Filter
 {
 	public:
-		void write(const byte[], size_t);
+		void write(in byte*, size_t);
 		void end_msg();
 		PK_Encryptor_Filter(PK_Encryptor* c,
 								  RandomNumberGenerator& rng_ref) :
@@ -31,7 +31,7 @@ class PK_Encryptor_Filter : public Filter
 class PK_Decryptor_Filter : public Filter
 {
 	public:
-		void write(const byte[], size_t);
+		void write(in byte*, size_t);
 		void end_msg();
 		PK_Decryptor_Filter(PK_Decryptor* c) : cipher(c) {}
 		~PK_Decryptor_Filter() { delete cipher; }
@@ -46,7 +46,7 @@ class PK_Decryptor_Filter : public Filter
 class PK_Signer_Filter : public Filter
 {
 	public:
-		void write(const byte[], size_t);
+		void write(in byte*, size_t);
 		void end_msg();
 
 		PK_Signer_Filter(PK_Signer* s,
@@ -65,14 +65,14 @@ class PK_Signer_Filter : public Filter
 class PK_Verifier_Filter : public Filter
 {
 	public:
-		void write(const byte[], size_t);
+		void write(in byte*, size_t);
 		void end_msg();
 
-		void set_signature(const byte[], size_t);
+		void set_signature(in byte*, size_t);
 		void set_signature(in SafeVector!byte);
 
 		PK_Verifier_Filter(PK_Verifier* v) : verifier(v) {}
-		PK_Verifier_Filter(PK_Verifier*, const byte[], size_t);
+		PK_Verifier_Filter(PK_Verifier*, in byte*, size_t);
 		PK_Verifier_Filter(PK_Verifier*, in SafeVector!byte);
 		~PK_Verifier_Filter() { delete verifier; }
 	private:

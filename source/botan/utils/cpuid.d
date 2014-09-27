@@ -31,23 +31,23 @@
 
 #include <intrin.h>
 
-#define X86_CPUID(type, out) do { __cpuid((int*)out, type); } while(0)
-#define X86_CPUID_SUBLEVEL(type, level, out) do { __cpuidex((int*)out, type, level); } while(0)
+#define X86_CPUID(type, output) do { __cpuid((int*)output, type); } while(0)
+#define X86_CPUID_SUBLEVEL(type, level, output) do { __cpuidex((int*)output, type, level); } while(0)
 
 #elif defined(BOTAN_BUILD_COMPILER_IS_INTEL)
 
 #include <ia32intrin.h>
 
-#define X86_CPUID(type, out) do { __cpuid(out, type); } while(0)
-#define X86_CPUID_SUBLEVEL(type, level, out) do { __cpuidex((int*)out, type, level); } while(0)
+#define X86_CPUID(type, output) do { __cpuid(output, type); } while(0)
+#define X86_CPUID_SUBLEVEL(type, level, output) do { __cpuidex((int*)output, type, level); } while(0)
 
 #elif defined(BOTAN_TARGET_ARCH_IS_X86_64) && BOTAN_USE_GCC_INLINE_ASM
 
-#define X86_CPUID(type, out)																	 \
+#define X86_CPUID(type, output)																	 \
 	asm("cpuid\t" : "=a" (output[0]), "=b" (output[1]), "=c" (output[2]), "=d" (output[3]) \
 		 : "0" (type))
 
-#define X86_CPUID_SUBLEVEL(type, level, out)												\
+#define X86_CPUID_SUBLEVEL(type, level, output)												\
 	asm("cpuid\t" : "=a" (output[0]), "=b" (output[1]), "=c" (output[2]), "=d" (output[3]) \
 		 : "0" (type), "2" (level))
 
@@ -55,17 +55,17 @@
 
 #include <cpuid.h>
 
-#define X86_CPUID(type, out) do { __get_cpuid(type, out, out+1, out+2, out+3); } while(0)
+#define X86_CPUID(type, output) do { __get_cpuid(type, output, output+1, output+2, output+3); } while(0)
 
-#define X86_CPUID_SUBLEVEL(type, level, out) \
+#define X86_CPUID_SUBLEVEL(type, level, output) \
 	do { __cpuid_count(type, level, output[0], output[1], output[2], output[3]); } while(0)
 
 #else
 
 #warning "No way of calling cpuid for this compiler"
 
-#define X86_CPUID(type, out) do { clear_mem(out, 4); } while(0)
-#define X86_CPUID_SUBLEVEL(type, level, out) do { clear_mem(out, 4); } while(0)
+#define X86_CPUID(type, output) do { clear_mem(output, 4); } while(0)
+#define X86_CPUID_SUBLEVEL(type, level, output) do { clear_mem(output, 4); } while(0)
 
 #endif
 

@@ -140,7 +140,7 @@ void Datagram_Handshake_IO::add_record(in Vector!byte record,
 
 		const byte msg_type = record_bits[0];
 		const size_t msg_len = load_be24(&record_bits[1]);
-		const ushort message_seq = load_be<ushort>(&record_bits[4], 0);
+		const ushort message_seq = load_be!ushort(&record_bits[4], 0);
 		const size_t fragment_offset = load_be24(&record_bits[6]);
 		const size_t fragment_length = load_be24(&record_bits[9]);
 

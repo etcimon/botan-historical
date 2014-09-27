@@ -74,9 +74,9 @@ class Blocking_Client
 
 		bool handshake_cb(in Session);
 
-		void data_cb(in byte* data);
+		void data_cb(in byte[] data);
 
-		void alert_cb(const Alert alert, in byte* data, size_t data_len);
+		void alert_cb(in Alert alert, in byte[]);
 
 		size_t delegate(ref byte[]) m_read_fn;
 		TLS::Client m_channel;

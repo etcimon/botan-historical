@@ -61,10 +61,10 @@ void idea_op(byte* input, byte* output, size_t blocks)
 
 	for(size_t i = 0; i != blocks; ++i)
 	{
-		ushort X1 = load_be<ushort>(input, 0);
-		ushort X2 = load_be<ushort>(input, 1);
-		ushort X3 = load_be<ushort>(input, 2);
-		ushort X4 = load_be<ushort>(input, 3);
+		ushort X1 = load_be!ushort(input, 0);
+		ushort X2 = load_be!ushort(input, 1);
+		ushort X3 = load_be!ushort(input, 2);
+		ushort X4 = load_be!ushort(input, 3);
 
 		for(size_t j = 0; j != 8; ++j)
 		{
@@ -125,7 +125,7 @@ void IDEA::key_schedule(in byte* key, size_t)
 	DK.resize(52);
 
 	for(size_t i = 0; i != 8; ++i)
-		EK[i] = load_be<ushort>(key, i);
+		EK[i] = load_be!ushort(key, i);
 
 	for(size_t i = 1, j = 8, offset = 0; j != 52; i %= 8, ++i, ++j)
 	{

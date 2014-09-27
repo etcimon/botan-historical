@@ -52,7 +52,7 @@ class Channel
 		/**
 		* Inject plaintext intended for counterparty
 		*/
-		void send(Alloc)(in Vector!( unsigned char, Alloc ) val)
+		void send(Alloc)(in Vector!( char, Alloc ) val)
 		{
 			send(&val[0], val.size());
 		}

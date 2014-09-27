@@ -59,7 +59,7 @@ class EAC1_1_ADO : public EAC1_1_obj<EAC1_1_ADO>
 		* @param out the pipe to encode this object into
 		* @param encoding the encoding type to use, must be DER
 		*/
-		void encode(Pipe& out, X509_Encoding encoding) const;
+		void encode(Pipe output, X509_Encoding encoding) const;
 
 		bool operator==(EAC1_1_ADO const& rhs) const;
 

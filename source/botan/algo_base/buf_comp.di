@@ -33,7 +33,7 @@ class Buffered_Computation
 		*/
 		void update(in SafeVector!byte input)
 		{
-			add_data(&input[0], in.size());
+			add_data(&input[0], input.size());
 		}
 
 		/**
@@ -42,7 +42,7 @@ class Buffered_Computation
 		*/
 		void update(in Vector!byte input)
 		{
-			add_data(&input[0], in.size());
+			add_data(&input[0], input.size());
 		}
 
 		/**

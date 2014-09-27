@@ -113,7 +113,7 @@ bool check_passhash9(in string pass, in string hash)
 
 	byte alg_id = binput[0];
 
-	const size_t work_factor = load_be<ushort>(&binput[ALGID_BYTES], 0);
+	const size_t work_factor = load_be!ushort(&binput[ALGID_BYTES], 0);
 
 	// Bug in the format, bad states shouldn't be representable, but are...
 	if(work_factor == 0)

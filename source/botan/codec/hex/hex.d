@@ -13,11 +13,11 @@ void hex_encode(char* output,
 					 size_t input_length,
 					 bool uppercase)
 {
-	static const byte BIN_TO_HEX_UPPER[16] = {
+	static immutable byte[16] BIN_TO_HEX_UPPER = {
 		'0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
 		'A', 'B', 'C', 'D', 'E', 'F' };
 
-	static const byte BIN_TO_HEX_LOWER[16] = {
+	static immutable byte[16] BIN_TO_HEX_LOWER = {
 		'0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
 		'a', 'b', 'c', 'd', 'e', 'f' };
 
@@ -44,9 +44,9 @@ string hex_encode(in byte* input,
 }
 
 size_t hex_decode(byte* output,
-						const char* input,
+						string input,
 						size_t input_length,
-						size_t& input_consumed,
+						ref size_t input_consumed,
 						bool ignore_ws)
 {
 	/*
@@ -58,7 +58,7 @@ size_t hex_decode(byte* output,
 	* Warning: this table assumes ASCII character encodings
 	*/
 
-	static const byte HEX_TO_BIN[256] = {
+	static immutable byte[256] HEX_TO_BIN = {
 		0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0x80,
 		0x80, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
 		0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
@@ -135,7 +135,7 @@ size_t hex_decode(byte* output,
 }
 
 size_t hex_decode(byte* output,
-						const char* input,
+						string input,
 						size_t input_length,
 						bool ignore_ws)
 {
@@ -156,7 +156,7 @@ size_t hex_decode(byte* output,
 	return hex_decode(output, &input[0], input.length(), ignore_ws);
 }
 
-SafeVector!byte hex_decode_locked(const char* input,
+SafeVector!byte hex_decode_locked(string input,
 												  size_t input_length,
 												  bool ignore_ws)
 {
@@ -177,7 +177,7 @@ SafeVector!byte hex_decode_locked(in string input,
 	return hex_decode_locked(&input[0], input.size(), ignore_ws);
 }
 
-Vector!( byte ) hex_decode(const char* input,
+Vector!( byte ) hex_decode(string input,
 									  size_t input_length,
 									  bool ignore_ws)
 {

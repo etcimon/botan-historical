@@ -11,7 +11,7 @@ namespace TLS {
 using namespace std::placeholders;
 
 Blocking_Client::Blocking_Client(size_t delegate(ref byte[]) read_fn,
-											void delegate(in byte*) write_fn,
+											void delegate(in byte[]) write_fn,
 											Session_Manager session_manager,
 											Credentials_Manager creds,
 											in Policy policy,

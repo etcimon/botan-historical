@@ -36,7 +36,7 @@ void RC5::encrypt_n(byte* input, byte* output, size_t blocks) const
 			B = rotate_left(B ^ A, A % 32) + S[2*j+9];
 		}
 
-		store_le(out, A, B);
+		store_le(output, A, B);
 
 		input += BLOCK_SIZE;
 		output += BLOCK_SIZE;
@@ -69,7 +69,7 @@ void RC5::decrypt_n(byte* input, byte* output, size_t blocks) const
 		}
 		B -= S[1]; A -= S[0];
 
-		store_le(out, A, B);
+		store_le(output, A, B);
 
 		input += BLOCK_SIZE;
 		output += BLOCK_SIZE;

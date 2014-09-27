@@ -69,7 +69,7 @@ string Data_Store::get1(in string key) const
 }
 
 string Data_Store::get1(in string key,
-									  in string default_value) const
+						in string default_value) const
 {
 	Vector!( string ) vals = get(key);
 
@@ -151,8 +151,8 @@ void Data_Store::add(in string key, in Vector!byte val)
 */
 void Data_Store::add(in std::multimap<string, string> input)
 {
-	std::multimap<string, string>::const_iterator i = in.begin();
-	while(i != in.end())
+	std::multimap<string, string>::const_iterator i = input.begin();
+	while(i != input.end())
 	{
 		contents.insert(*i);
 		++i;

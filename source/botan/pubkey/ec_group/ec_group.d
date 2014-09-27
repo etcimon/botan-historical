@@ -15,7 +15,7 @@
 #include <botan/pem.h>
 EC_Group::EC_Group(in OID domain_oid)
 {
-	const char* pem = PEM_for_named_group(OIDS::lookup(domain_oid));
+	string pem = PEM_for_named_group(OIDS::lookup(domain_oid));
 
 	if(!pem)
 		throw new Lookup_Error("No ECC domain data for " + domain_oid.as_string());

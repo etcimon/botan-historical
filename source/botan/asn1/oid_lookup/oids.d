@@ -90,7 +90,7 @@ void add_oid(in OID oid, in string name)
 	global_oid_map().add_oid(oid, name);
 }
 
-void add_oidstr(const char* oidstr, const char* name)
+void add_oidstr(string oidstr, string name)
 {
 	add_oid(OID(oidstr), name);
 }

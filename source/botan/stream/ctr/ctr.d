@@ -40,13 +40,13 @@ void CTR_BE::cipher(in byte* input, byte* output)
 {
 	while(length >= m_pad.size() - m_pad_pos)
 	{
-		xor_buf(out, in, &m_pad[m_pad_pos], m_pad.size() - m_pad_pos);
+		xor_buf(output, input, &m_pad[m_pad_pos], m_pad.size() - m_pad_pos);
 		length -= (m_pad.size() - m_pad_pos);
-		in += (m_pad.size() - m_pad_pos);
-		out += (m_pad.size() - m_pad_pos);
+		input += (m_pad.size() - m_pad_pos);
+		output += (m_pad.size() - m_pad_pos);
 		increment_counter();
 	}
-	xor_buf(out, in, &m_pad[m_pad_pos], length);
+	xor_buf(output, input, &m_pad[m_pad_pos], length);
 	m_pad_pos += length;
 }
 

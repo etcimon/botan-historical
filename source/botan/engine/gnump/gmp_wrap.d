@@ -22,8 +22,8 @@
 GMP_MPZ::GMP_MPZ(in BigInt input)
 {
 	mpz_init(value);
-	if(in != 0)
-		mpz_import(value, in.sig_words(), -1, sizeof(word), 0, 0, in.data());
+	if(input != 0)
+		mpz_import(value, input.sig_words(), -1, sizeof(word), 0, 0, input.data());
 }
 
 /*

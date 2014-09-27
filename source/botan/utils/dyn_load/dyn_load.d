@@ -17,7 +17,7 @@
 namespace {
 
 void raise_runtime_loader_exception(in string lib_name,
-												const char* msg)
+												string msg)
 {
 	throw new Exception("Failed to load " + lib_name + ": " +
 									 (msg ? msg : "Unknown error"));

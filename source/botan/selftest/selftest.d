@@ -50,7 +50,7 @@ algorithm_kat_detailed(in SCAN_Name algo_name,
 							  const HashMap!(string, string)& vars,
 							  Algorithm_Factory& af)
 {
-	in string algo = algo_name.algo_name_and_args();
+	const string algo = algo_name.algo_name_and_args();
 
 	Vector!( string ) providers = af.providers_of(algo);
 	HashMap!(string, string) all_results;
@@ -172,25 +172,25 @@ void verify_results(in string algo,
 
 void hash_test(Algorithm_Factory& af,
 					in string name,
-					in string in,
-					in string out)
+					in string input,
+					in string output)
 {
 	HashMap!(string, string) vars;
-	vars["input"] = in;
-	vars["output"] = out;
+	vars["input"] = input;
+	vars["output"] = output;
 
 	verify_results(name, algorithm_kat_detailed(name, vars, af));
 }
 
 void mac_test(Algorithm_Factory& af,
 				  in string name,
-				  in string in,
-				  in string out,
+				  in string input,
+				  in string output,
 				  in string key)
 {
 	HashMap!(string, string) vars;
-	vars["input"] = in;
-	vars["output"] = out;
+	vars["input"] = input;
+	vars["output"] = output;
 	vars["key"] = key;
 
 	verify_results(name, algorithm_kat_detailed(name, vars, af));
@@ -199,11 +199,11 @@ void mac_test(Algorithm_Factory& af,
 /*
 * Perform a KAT for a cipher
 */
-void cipher_kat(Algorithm_Factory& af,
+void cipher_kat(Algorithm_Factory af,
 					 in string algo,
 					 in string key_str,
 					 in string iv_str,
-					 in string in,
+					 in string input,
 					 in string ecb_out,
 					 in string cbc_out,
 					 in string cfb_out,
@@ -216,7 +216,7 @@ void cipher_kat(Algorithm_Factory& af,
 	HashMap!(string, string) vars;
 	vars["key"] = key_str;
 	vars["iv"] = iv_str;
-	vars["input"] = in;
+	vars["input"] = input;
 
 	std::map<string, bool> results;
 
@@ -242,7 +242,7 @@ void cipher_kat(Algorithm_Factory& af,
 /*
 * Perform Self Tests
 */
-bool passes_self_tests(Algorithm_Factory& af)
+bool passes_self_tests(Algorithm_Factory af)
 {
 	try
 	{

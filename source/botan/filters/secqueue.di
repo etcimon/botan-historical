@@ -16,7 +16,7 @@ class SecureQueue : public Fanout_Filter, public DataSource
 	public:
 		string name() const { return "Queue"; }
 
-		void write(const byte[], size_t);
+		void write(in byte*, size_t);
 
 		size_t read(byte[], size_t);
 		size_t peek(byte[], size_t, size_t = 0) const;

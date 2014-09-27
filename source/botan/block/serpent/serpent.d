@@ -91,7 +91,7 @@ void Serpent::encrypt_n(byte* input, byte* output, size_t blocks) const
 		key_xor(30,B0,B1,B2,B3); SBoxE7(B0,B1,B2,B3); transform(B0,B1,B2,B3);
 		key_xor(31,B0,B1,B2,B3); SBoxE8(B0,B1,B2,B3); key_xor(32,B0,B1,B2,B3);
 
-		store_le(out, B0, B1, B2, B3);
+		store_le(output, B0, B1, B2, B3);
 
 		input += BLOCK_SIZE;
 		output += BLOCK_SIZE;
@@ -143,7 +143,7 @@ void Serpent::decrypt_n(byte* input, byte* output, size_t blocks) const
 		i_transform(B0,B1,B2,B3); SBoxD2(B0,B1,B2,B3); key_xor( 1,B0,B1,B2,B3);
 		i_transform(B0,B1,B2,B3); SBoxD1(B0,B1,B2,B3); key_xor( 0,B0,B1,B2,B3);
 
-		store_le(out, B0, B1, B2, B3);
+		store_le(output, B0, B1, B2, B3);
 
 		input += BLOCK_SIZE;
 		output += BLOCK_SIZE;

@@ -108,7 +108,7 @@ class Path_Validation_Result
 		*/
 		string result_string() const;
 
-		static const char* status_string(Certificate_Status_Code code);
+		static string status_string(Certificate_Status_Code code);
 
 		Path_Validation_Result(Vector!( std::set<Certificate_Status_Code )> status,
 									  Vector!( X509_Certificate )&& cert_chainput);

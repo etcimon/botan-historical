@@ -7,7 +7,7 @@
 
 #include <botan/types.h>
 /**
-* Power of 2 test. T should be an unsigned integer type
+* Power of 2 test. T should be an uinteger type
 * @param arg an integer value
 * @return true iff arg is 2^n for some n > 0
 */
@@ -18,7 +18,7 @@ bool is_power_of_2(T)(T arg)
 
 /**
 * Return the index of the highest set bit
-* T is an unsigned integer type
+* T is an uinteger type
 * @param n an integer value
 * @return index of the highest set bit in n
 */
@@ -32,7 +32,7 @@ size_t high_bit(T)(T n)
 
 /**
 * Return the index of the lowest set bit
-* T is an unsigned integer type
+* T is an uinteger type
 * @param n an integer value
 * @return index of the lowest set bit in n
 */

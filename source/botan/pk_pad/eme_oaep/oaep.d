@@ -11,7 +11,7 @@
 /*
 * OAEP Pad Operation
 */
-SafeVector!byte OAEP::pad(in byte* in, size_t in_length,
+SafeVector!byte OAEP::pad(in byte* input, size_t in_length,
 									  size_t key_length,
 									  RandomNumberGenerator& rng) const
 {
@@ -20,29 +20,29 @@ SafeVector!byte OAEP::pad(in byte* in, size_t in_length,
 	if(key_length < in_length + 2*m_Phash.size() + 1)
 		throw new Invalid_Argument("OAEP: Input is too large");
 
-	SafeVector!byte out(key_length);
+	SafeVector!byte output(key_length);
 
 	rng.randomize(&output[0], m_Phash.size());
 
-	buffer_insert(out, m_Phash.size(), &m_Phash[0], m_Phash.size());
-	output[out.size() - in_length - 1] = 0x01;
-	buffer_insert(out, out.size() - in_length, in, in_length);
+	buffer_insert(output, m_Phash.size(), &m_Phash[0], m_Phash.size());
+	output[output.size() - in_length - 1] = 0x01;
+	buffer_insert(output, output.size() - in_length, input, in_length);
 
 	mgf1_mask(*m_hash,
 				 &output[0], m_Phash.size(),
-				 &output[m_Phash.size()], out.size() - m_Phash.size());
+				 &output[m_Phash.size()], output.size() - m_Phash.size());
 
 	mgf1_mask(*m_hash,
-				 &output[m_Phash.size()], out.size() - m_Phash.size(),
+				 &output[m_Phash.size()], output.size() - m_Phash.size(),
 				 &output[0], m_Phash.size());
 
-	return out;
+	return output;
 }
 
 /*
 * OAEP Unpad Operation
 */
-SafeVector!byte OAEP::unpad(in byte* in, size_t in_length,
+SafeVector!byte OAEP::unpad(in byte* input, size_t in_length,
 										 size_t key_length) const
 {
 	/*
@@ -64,7 +64,7 @@ SafeVector!byte OAEP::unpad(in byte* in, size_t in_length,
 		in_length = 0;
 
 	SafeVector!byte input(key_length);
-	buffer_insert(input, key_length - in_length, in, in_length);
+	buffer_insert(input, key_length - in_length, input, in_length);
 
 	mgf1_mask(*m_hash,
 				 &input[m_Phash.size()], input.size() - m_Phash.size(),
