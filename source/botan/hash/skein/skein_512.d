@@ -5,12 +5,12 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/skein_512.h>
-#include <botan/loadstor.h>
-#include <botan/parsing.h>
-#include <botan/exceptn.h>
-#include <botan/internal/xor_buf.h>
-#include <algorithm>
+import botan.skein_512;
+import botan.loadstor;
+import botan.parsing;
+import botan.exceptn;
+import botan.internal.xor_buf;
+import algorithm;
 Skein_512::Skein_512(size_t arg_output_bits,
 							in string arg_personalization) :
 	personalization(arg_personalization),
@@ -56,12 +56,12 @@ void Skein_512::reset_tweak(type_code type, bool final)
 
 void Skein_512::initial_block()
 {
-	const byte zeros[64] = { 0 };
+	const byte[64] zeros = { 0 };
 
 	m_threefish->set_key(zeros, sizeof(zeros));
 
 	// ASCII("SHA3") followed by version (0x0001) code
-	byte config_str[32] = { 0x53, 0x48, 0x41, 0x33, 0x01, 0x00, 0 };
+	byte[32] config_str = { 0x53, 0x48, 0x41, 0x33, 0x01, 0x00, 0 };
 	store_le(uint(output_bits), config_str + 8);
 
 	reset_tweak(SKEIN_CONFIG, true);
@@ -87,7 +87,7 @@ void Skein_512::initial_block()
 
 void Skein_512::ubi_512(in byte* msg, size_t msg_len)
 {
-	secure_vector<ulong> M(8);
+	secure_vector!ulong M(8);
 
 	do
 	{
@@ -150,7 +150,7 @@ void Skein_512::final_result(byte* output)
 
 	ubi_512(&buffer[0], buf_pos);
 
-	const byte counter[8] = { 0 };
+	const byte[8] counter = { 0 };
 
 	reset_tweak(SKEIN_OUTPUT, true);
 	ubi_512(counter, sizeof(counter));

@@ -5,7 +5,7 @@
 * Distributed under the terms of the botan license.
 */
 
-#include <botan/block_cipher.h>
+import botan.block_cipher;
 /**
 * Block Cipher Cascade
 */

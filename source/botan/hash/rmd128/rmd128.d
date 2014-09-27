@@ -5,9 +5,9 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/rmd128.h>
-#include <botan/loadstor.h>
-#include <botan/rotate.h>
+import botan.rmd128;
+import botan.loadstor;
+import botan.rotate;
 namespace RIPEMD_128_F {
 
 /*

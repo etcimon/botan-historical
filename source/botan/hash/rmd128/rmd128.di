@@ -5,7 +5,7 @@
 * Distributed under the terms of the botan license.
 */
 
-#include <botan/mdx_hash.h>
+import botan.mdx_hash;
 /**
 * RIPEMD-128
 */
@@ -24,5 +24,5 @@ class RIPEMD_128 : public MDx_HashFunction
 		void compress_n(const byte*, size_t blocks);
 		void copy_out(byte*);
 
-		secure_vector<uint> M, digest;
+		secure_vector!uint M, digest;
 };

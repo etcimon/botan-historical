@@ -5,9 +5,9 @@
 * Distributed under the terms of the botan license.
 */
 
-#include <botan/entropy_src.h>
-#include <vector>
-#include <string>
+import botan.entropy_src;
+import vector;
+import string;
 /**
 * Entropy source reading from kernel devices like /dev/random
 */

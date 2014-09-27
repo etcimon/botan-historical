@@ -5,28 +5,28 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/internal/core_engine.h>
-#include <botan/scan_name.h>
-#include <botan/algo_factory.h>
+import botan.internal.core_engine;
+import botan.scan_name;
+import botan.algo_factory;
 
 #if defined(BOTAN_HAS_OFB)
-  #include <botan/ofb.h>
+  import botan.ofb;
 #endif
 
 #if defined(BOTAN_HAS_CTR_BE)
-  #include <botan/ctr.h>
+  import botan.ctr;
 #endif
 
 #if defined(BOTAN_HAS_RC4)
-  #include <botan/rc4.h>
+  import botan.rc4;
 #endif
 
 #if defined(BOTAN_HAS_CHACHA)
-  #include <botan/chacha.h>
+  import botan.chacha;
 #endif
 
 #if defined(BOTAN_HAS_SALSA20)
-  #include <botan/salsa20.h>
+  import botan.salsa20;
 #endif
 /*
 * Look for an algorithm with this name

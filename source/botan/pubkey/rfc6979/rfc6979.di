@@ -5,8 +5,8 @@
 * Distributed under the terms of the botan license.
 */
 
-#include <botan/bigint.h>
-#include <string>
+import botan.bigint;
+import string;
 /**
 * @param x the secret (EC)DSA key
 * @param q the group order

@@ -5,7 +5,7 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/eme_pkcs.h>
+import botan.eme_pkcs;
 /*
 * PKCS1 Pad Operation
 */

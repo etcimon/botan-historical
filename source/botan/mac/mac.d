@@ -5,8 +5,8 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/mac.h>
-#include <botan/mem_ops.h>
+import botan.mac;
+import botan.mem_ops;
 /*
 * Default (deterministic) MAC verification operation
 */

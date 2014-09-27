@@ -5,8 +5,8 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/emsa_x931.h>
-#include <botan/hash_id.h>
+import botan.emsa_x931;
+import botan.hash_id;
 namespace {
 
 SafeVector!byte emsa2_encoding(in SafeVector!byte msg,

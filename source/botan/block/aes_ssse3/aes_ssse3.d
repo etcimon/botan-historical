@@ -10,35 +10,35 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/aes_ssse3.h>
-#include <tmmintrin.h>
+import botan.aes_ssse3;
+import tmmintrin.h;
 namespace {
 
-const __m128i low_nibs = _mm_set1_epi8(0x0F);
+immutable __m128i low_nibs = _mm_set1_epi8(0x0F);
 
-const __m128i k_ipt1 = _mm_set_epi32(
+immutable __m128i k_ipt1 = _mm_set_epi32(
 	0xCABAE090, 0x52227808, 0xC2B2E898, 0x5A2A7000);
-const __m128i k_ipt2 = _mm_set_epi32(
+immutable __m128i k_ipt2 = _mm_set_epi32(
 	0xCD80B1FC, 0xB0FDCC81, 0x4C01307D, 0x317C4D00);
 
-const __m128i k_inv1 = _mm_set_epi32(
+immutable __m128i k_inv1 = _mm_set_epi32(
 	0x04070309, 0x0A0B0C02, 0x0E05060F, 0x0D080180);
-const __m128i k_inv2 = _mm_set_epi32(
+immutable __m128i k_inv2 = _mm_set_epi32(
 	0x030D0E0C, 0x02050809, 0x01040A06, 0x0F0B0780);
 
-const __m128i sb1u = _mm_set_epi32(
+immutable __m128i sb1u = _mm_set_epi32(
 	0xA5DF7A6E, 0x142AF544, 0xB19BE18F, 0xCB503E00);
-const __m128i sb1t = _mm_set_epi32(
+immutable __m128i sb1t = _mm_set_epi32(
 	0x3BF7CCC1, 0x0D2ED9EF, 0x3618D415, 0xFAE22300);
 
-const __m128i mc_forward[4] = {
+immutable __m128i[4] mc_forward = {
 	_mm_set_epi32(0x0C0F0E0D, 0x080B0A09, 0x04070605, 0x00030201),
 	_mm_set_epi32(0x00030201, 0x0C0F0E0D, 0x080B0A09, 0x04070605),
 	_mm_set_epi32(0x04070605, 0x00030201, 0x0C0F0E0D, 0x080B0A09),
 	_mm_set_epi32(0x080B0A09, 0x04070605, 0x00030201, 0x0C0F0E0D)
 };
 
-const __m128i sr[4] = {
+immutable __m128i[4] sr = {
 	_mm_set_epi32(0x0F0E0D0C, 0x0B0A0908, 0x07060504, 0x03020100),
 	_mm_set_epi32(0x0B06010C, 0x07020D08, 0x030E0904, 0x0F0A0500),
 	_mm_set_epi32(0x070E050C, 0x030A0108, 0x0F060D04, 0x0B020900),
@@ -180,7 +180,7 @@ __m128i aes_ssse3_encrypt(__m128i B, const __m128i* keys, size_t rounds)
 	const __m128i sbot = _mm_set_epi32(
 		0x8E1E90D1, 0x412B35FA, 0xCFE474A5, 0x5FBB6A00);
 
-	const __m128i mc_backward[4] = {
+	immutable __m128i[4] mc_backward = {
 		_mm_set_epi32(0x0E0D0C0F, 0x0A09080B, 0x06050407, 0x02010003),
 		_mm_set_epi32(0x0A09080B, 0x06050407, 0x02010003, 0x0E0D0C0F),
 		_mm_set_epi32(0x06050407, 0x02010003, 0x0E0D0C0F, 0x0A09080B),

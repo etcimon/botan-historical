@@ -8,17 +8,17 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/internal/unix_procs.h>
-#include <botan/parsing.h>
-#include <algorithm>
+import botan.internal.unix_procs;
+import botan.parsing;
+import algorithm;
 
-#include <sys/time.h>
-#include <sys/stat.h>
-#include <sys/wait.h>
-#include <sys/resource.h>
-#include <unistd.h>
-#include <signal.h>
-#include <stdlib.h>
+import sys.time;
+import sys.stat;
+import sys.wait;
+import sys.resource;
+import unistd.h;
+import signal.h;
+import stdlib.h;
 namespace {
 
 string find_full_path_if_exists(in Vector!( string ) trusted_path,

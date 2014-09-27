@@ -5,12 +5,12 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/prf_x942.h>
-#include <botan/der_enc.h>
-#include <botan/oids.h>
-#include <botan/sha160.h>
-#include <botan/loadstor.h>
-#include <algorithm>
+import botan.prf_x942;
+import botan.der_enc;
+import botan.oids;
+import botan.sha160;
+import botan.loadstor;
+import algorithm;
 namespace {
 
 /*
@@ -18,7 +18,7 @@ namespace {
 */
 Vector!( byte ) encode_x942_int(uint n)
 {
-	byte n_buf[4] = { 0 };
+	byte[4] n_buf = { 0 };
 	store_be(n, n_buf);
 	return DER_Encoder().encode(n_buf, 4, OCTET_STRING).get_contents_unlocked();
 }

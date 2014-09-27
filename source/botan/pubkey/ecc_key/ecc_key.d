@@ -7,13 +7,13 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/ecc_key.h>
-#include <botan/x509_key.h>
-#include <botan/numthry.h>
-#include <botan/der_enc.h>
-#include <botan/ber_dec.h>
-#include <botan/secmem.h>
-#include <botan/point_gfp.h>
+import botan.ecc_key;
+import botan.x509_key;
+import botan.numthry;
+import botan.der_enc;
+import botan.ber_dec;
+import botan.secmem;
+import botan.point_gfp;
 size_t EC_PublicKey::estimated_strength() const
 {
 	return domain().get_curve().get_p().bits() / 2;

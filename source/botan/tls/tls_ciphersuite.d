@@ -5,11 +5,11 @@
 * Released under the terms of the Botan license
 */
 
-#include <botan/tls_ciphersuite.h>
-#include <botan/libstate.h>
-#include <botan/parsing.h>
-#include <sstream>
-#include <stdexcept>
+import botan.tls_ciphersuite;
+import botan.libstate;
+import botan.parsing;
+import sstream;
+import stdexcept;
 namespace TLS {
 
 namespace {

@@ -7,12 +7,12 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/ec_group.h>
-#include <botan/ber_dec.h>
-#include <botan/der_enc.h>
-#include <botan/libstate.h>
-#include <botan/oids.h>
-#include <botan/pem.h>
+import botan.ec_group;
+import botan.ber_dec;
+import botan.der_enc;
+import botan.libstate;
+import botan.oids;
+import botan.pem;
 EC_Group::EC_Group(in OID domain_oid)
 {
 	string pem = PEM_for_named_group(OIDS::lookup(domain_oid));

@@ -5,7 +5,7 @@
 * Distributed under the terms of the botan license.
 */
 
-#include <botan/ber_dec.h>
+import botan.ber_dec;
 /**
 * X.509v3 Key Constraints.
 */

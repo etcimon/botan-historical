@@ -5,12 +5,12 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/x509self.h>
-#include <botan/x509_ext.h>
-#include <botan/x509_ca.h>
-#include <botan/der_enc.h>
-#include <botan/oids.h>
-#include <botan/pipe.h>
+import botan.x509self;
+import botan.x509_ext;
+import botan.x509_ca;
+import botan.der_enc;
+import botan.oids;
+import botan.pipe;
 namespace {
 
 /*

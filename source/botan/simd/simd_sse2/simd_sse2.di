@@ -7,14 +7,14 @@
 
 #if defined(BOTAN_TARGET_SUPPORTS_SSE2)
 
-#include <botan/cpuid.h>
-#include <emmintrin.h>
+import botan.cpuid;
+import emmintrin.h;
 class SIMD_SSE2
 {
 	public:
 		static bool enabled() { return CPUID::has_sse2(); }
 
-		SIMD_SSE2(const uint B[4])
+		SIMD_SSE2(const uint[4] B)
 		{
 			reg = _mm_loadu_si128(cast(const __m128i*)(B));
 		}
@@ -34,19 +34,19 @@ class SIMD_SSE2
 			return _mm_loadu_si128(cast(const __m128i*)(input));
 		}
 
-		static SIMD_SSE2 load_be(const void* input)
+		static SIMD_SSE2 load_be(in void* input)
 		{
 			return load_le(input).bswap();
 		}
 
 		void store_le(byte* output) const
 		{
-			_mm_storeu_si128(CAST__m128i*)(out), reg);
+			_mm_storeu_si128(cast(__m128i*)(output), reg);
 		}
 
 		void store_be(byte* output) const
 		{
-			bswap().store_le(out);
+			bswap().store_le(output);
 		}
 
 		void rotate_left(size_t rot)

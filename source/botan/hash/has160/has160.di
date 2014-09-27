@@ -5,7 +5,7 @@
 * Distributed under the terms of the botan license.
 */
 
-#include <botan/mdx_hash.h>
+import botan.mdx_hash;
 /**
 * HAS-160, a Korean hash function standardized in
 * TTAS.KO-12.0011/R1. Used in conjuction with KCDSA
@@ -25,5 +25,5 @@ class HAS_160 : public MDx_HashFunction
 		void compress_n(const byte[], size_t blocks);
 		void copy_out(byte[]);
 
-		secure_vector<uint> X, digest;
+		secure_vector!uint X, digest;
 };

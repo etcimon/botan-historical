@@ -5,37 +5,37 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/libstate.h>
-#include <botan/charset.h>
-#include <botan/engine.h>
-#include <botan/cpuid.h>
-#include <botan/oids.h>
-#include <botan/internal/core_engine.h>
-#include <botan/internal/stl_util.h>
-#include <algorithm>
+import botan.libstate;
+import botan.charset;
+import botan.engine;
+import botan.cpuid;
+import botan.oids;
+import botan.internal.core_engine;
+import botan.internal.stl_util;
+import algorithm;
 
 #if defined(BOTAN_HAS_SELFTESTS)
-  #include <botan/selftest.h>
+  import botan.selftest;
 #endif
 
 #if defined(BOTAN_HAS_ENGINE_ASSEMBLER)
-  #include <botan/internal/asm_engine.h>
+  import botan.internal.asm_engine;
 #endif
 
 #if defined(BOTAN_HAS_ENGINE_AES_ISA)
-  #include <botan/internal/aes_isa_engine.h>
+  import botan.internal.aes_isa_engine;
 #endif
 
 #if defined(BOTAN_HAS_ENGINE_SIMD)
-  #include <botan/internal/simd_engine.h>
+  import botan.internal.simd_engine;
 #endif
 
 #if defined(BOTAN_HAS_ENGINE_GNU_MP)
-  #include <botan/internal/gnump_engine.h>
+  import botan.internal.gnump_engine;
 #endif
 
 #if defined(BOTAN_HAS_ENGINE_OPENSSL)
-  #include <botan/internal/openssl_engine.h>
+  import botan.internal.openssl_engine;
 #endif
 /*
 * Return a reference to the Algorithm_Factory

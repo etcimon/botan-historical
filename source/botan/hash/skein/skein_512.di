@@ -5,10 +5,10 @@
 * Distributed under the terms of the botan license.
 */
 
-#include <botan/hash.h>
-#include <botan/threefish.h>
-#include <string>
-#include <memory>
+import botan.hash;
+import botan.threefish;
+import string;
+import memory;
 /**
 * Skein-512, a SHA-3 candidate
 */
@@ -53,7 +53,7 @@ class Skein_512 : public HashFunction
 		size_t output_bits;
 
 		std::unique_ptr<Threefish_512> m_threefish;
-		secure_vector<ulong> T;
+		secure_vector!ulong T;
 		SafeVector!byte buffer;
 		size_t buf_pos;
 };

@@ -5,7 +5,7 @@
 * Distributed under the terms of the botan license.
 */
 
-#include <botan/types.h>
+import botan.types;
 #if defined(__SIZEOF_INT128__)
 	#define BOTAN_TARGET_HAS_NATIVE_UINT128
 	typedef unsigned __int128 uint128_t;
@@ -28,7 +28,7 @@
 
 #elif defined(BOTAN_BUILD_COMPILER_IS_MSVC) && defined(BOTAN_TARGET_CPU_HAS_NATIVE_64BIT)
 
-#include <intrin.h>
+import intrin.h;
 #pragma intrinsic(_umul128)
 
 #define BOTAN_FAST_64X64_MUL(a,b,lo,hi) \

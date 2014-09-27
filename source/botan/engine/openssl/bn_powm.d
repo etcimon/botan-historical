@@ -5,8 +5,8 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/internal/openssl_engine.h>
-#include <botan/internal/bn_wrap.h>
+import botan.internal.openssl_engine;
+import botan.internal.bn_wrap;
 namespace {
 
 /*

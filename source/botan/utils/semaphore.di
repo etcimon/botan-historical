@@ -7,8 +7,8 @@
 
 #define BOTAN_SEMAPHORE_H__
 
-#include <mutex>
-#include <condition_variable>
+import mutex;
+import condition_variable;
 class Semaphore
 {
 	public:

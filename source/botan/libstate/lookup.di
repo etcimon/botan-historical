@@ -5,14 +5,14 @@
 * Distributed under the terms of the botan license.
 */
 
-#include <botan/libstate.h>
-#include <botan/engine.h>
-#include <botan/filters.h>
-#include <botan/mode_pad.h>
-#include <botan/kdf.h>
-#include <botan/eme.h>
-#include <botan/emsa.h>
-#include <botan/pbkdf.h>
+import botan.libstate;
+import botan.engine;
+import botan.filters;
+import botan.mode_pad;
+import botan.kdf;
+import botan.eme;
+import botan.emsa;
+import botan.pbkdf;
 /**
 * Retrieve an object prototype from the global factory
 * @param algo_spec an algorithm name

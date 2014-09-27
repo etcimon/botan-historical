@@ -5,8 +5,8 @@
 * Distributed under the terms of the botan license.
 */
 
-#include <botan/emsa.h>
-#include <botan/hash.h>
+import botan.emsa;
+import botan.hash;
 /**
 * PKCS #1 v1.5 signature padding
 * aka PKCS #1 block type 1

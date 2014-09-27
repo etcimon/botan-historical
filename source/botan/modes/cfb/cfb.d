@@ -5,9 +5,9 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/cfb.h>
-#include <botan/parsing.h>
-#include <botan/internal/xor_buf.h>
+import botan.cfb;
+import botan.parsing;
+import botan.internal.xor_buf;
 CFB_Mode::CFB_Mode(BlockCipher* cipher, size_t feedback_bits) :
 	m_cipher(cipher),
 	m_feedback_bytes(feedback_bits ? feedback_bits / 8 : cipher->block_size())

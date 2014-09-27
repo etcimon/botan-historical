@@ -5,9 +5,9 @@
 * Distributed under the terms of the botan license.
 */
 
-#include <botan/types.h>
-#include <string>
-#include <vector>
+import botan.types;
+import string;
+import vector;
 /**
 * Forward declarations (don't need full definitions here)
 */

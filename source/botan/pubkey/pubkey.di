@@ -5,13 +5,13 @@
 * Distributed under the terms of the botan license.
 */
 
-#include <botan/pk_keys.h>
-#include <botan/pk_ops.h>
-#include <botan/symkey.h>
-#include <botan/rng.h>
-#include <botan/eme.h>
-#include <botan/emsa.h>
-#include <botan/kdf.h>
+import botan.pk_keys;
+import botan.pk_ops;
+import botan.symkey;
+import botan.rng;
+import botan.eme;
+import botan.emsa;
+import botan.kdf;
 /**
 * The two types of signature format supported by Botan.
 */

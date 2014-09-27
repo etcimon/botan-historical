@@ -5,8 +5,8 @@
 * Distributed under the terms of the botan license.
 */
 
-#include <botan/hash.h>
-#include <vector>
+import botan.hash;
+import vector;
 /**
 * Parallel Hashes
 */

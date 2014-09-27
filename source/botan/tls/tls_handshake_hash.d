@@ -5,10 +5,10 @@
 * Released under the terms of the Botan license
 */
 
-#include <botan/internal/tls_handshake_hash.h>
-#include <botan/tls_exceptn.h>
-#include <botan/libstate.h>
-#include <botan/hash.h>
+import botan.internal.tls_handshake_hash;
+import botan.tls_exceptn;
+import botan.libstate;
+import botan.hash;
 namespace TLS {
 
 /**

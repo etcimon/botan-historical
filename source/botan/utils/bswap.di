@@ -6,11 +6,11 @@
 * Distributed under the terms of the botan license.
 */
 
-#include <botan/types.h>
-#include <botan/rotate.h>
+import botan.types;
+import botan.rotate;
 
 #if defined(BOTAN_TARGET_CPU_HAS_SSE2) && !defined(BOTAN_NO_SSE_INTRINSICS)
-  #include <emmintrin.h>
+  import emmintrin.h;
 #endif
 /**
 * Swap a 16 bit integer
@@ -125,4 +125,4 @@ template<>
 
 	T =  _mm_or_si128(_mm_srli_epi16(T, 8), _mm_slli_epi16(T, 8));
 
-	_mm_storeu_si128(CAST__m128i*)(x.ptr), T);
+	_mm_storeu_si128(cast(__m128i*)(x.ptr), T);

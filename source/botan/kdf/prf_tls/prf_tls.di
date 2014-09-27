@@ -5,8 +5,8 @@
 * Distributed under the terms of the botan license.
 */
 
-#include <botan/kdf.h>
-#include <botan/mac.h>
+import botan.kdf;
+import botan.mac;
 /**
 * PRF used in TLS 1.0/1.1
 */

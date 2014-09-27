@@ -5,8 +5,8 @@
 * Released under the terms of the Botan license
 */
 
-#include <botan/tls_alert.h>
-#include <botan/exceptn.h>
+import botan.tls_alert;
+import botan.exceptn;
 namespace TLS {
 
 Alert::Alert(in SafeVector!byte buf)

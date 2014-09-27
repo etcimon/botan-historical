@@ -7,8 +7,8 @@
 * Distributed under the terms of the botan license.
 */
 
-#include <botan/curve_gfp.h>
-#include <vector>
+import botan.curve_gfp;
+import vector;
 /**
 * Exception thrown if you try to convert a zero point to an affine
 * coordinate
@@ -239,7 +239,7 @@ class PointGFp
 
 		CurveGFp curve;
 		BigInt coord_x, coord_y, coord_z;
-		mutable secure_vector<word> ws; // workspace for Montgomery
+		mutable secure_vector!word ws; // workspace for Montgomery
 };
 
 // relational operators

@@ -5,9 +5,9 @@
 * Released under the terms of the botan license.
 */
 
-#include <botan/secmem.h>
-#include <botan/tls_version.h>
-#include <botan/tls_magic.h>
+import botan.secmem;
+import botan.tls_version;
+import botan.tls_magic;
 namespace TLS {
 
 using namespace Botan;

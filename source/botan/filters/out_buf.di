@@ -6,9 +6,9 @@
 * Distributed under the terms of the botan license.
 */
 
-#include <botan/types.h>
-#include <botan/pipe.h>
-#include <deque>
+import botan.types;
+import botan.pipe;
+import deque;
 /**
 * Container of output buffers for Pipe
 */

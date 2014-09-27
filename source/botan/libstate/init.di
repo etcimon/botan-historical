@@ -5,8 +5,8 @@
 * Distributed under the terms of the botan license.
 */
 
-#include <botan/build.h>
-#include <string>
+import botan.build;
+import string;
 /**
 * This class represents the Library Initialization/Shutdown Object. It
 * has to exceed the lifetime of any Botan object used in an

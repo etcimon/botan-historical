@@ -5,12 +5,12 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/siv.h>
-#include <botan/cmac.h>
-#include <botan/ctr.h>
-#include <botan/parsing.h>
-#include <botan/internal/xor_buf.h>
-#include <algorithm>
+import botan.siv;
+import botan.cmac;
+import botan.ctr;
+import botan.parsing;
+import botan.internal.xor_buf;
+import algorithm;
 SIV_Mode::SIV_Mode(BlockCipher* cipher) :
 	m_name(cipher->name() + "/SIV"),
 	m_ctr(new CTR_BE(cipher->clone())),
@@ -95,7 +95,7 @@ void SIV_Mode::update(SafeVector!byte buffer, size_t offset)
 
 SafeVector!byte SIV_Mode::S2V(const byte* text, size_t text_len)
 {
-	const byte zero[16] = { 0 };
+	const byte[16] zero = { 0 };
 
 	SafeVector!byte V = cmac().process(zero, 16);
 

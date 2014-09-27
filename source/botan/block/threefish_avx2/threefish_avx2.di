@@ -5,7 +5,7 @@
 * Distributed under the terms of the botan license.
 */
 
-#include <botan/threefish.h>
+import botan.threefish;
 /**
 * Threefish-512
 */

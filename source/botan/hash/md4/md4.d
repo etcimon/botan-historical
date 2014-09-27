@@ -5,9 +5,9 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/md4.h>
-#include <botan/loadstor.h>
-#include <botan/rotate.h>
+import botan.md4;
+import botan.loadstor;
+import botan.rotate;
 namespace {
 
 /*

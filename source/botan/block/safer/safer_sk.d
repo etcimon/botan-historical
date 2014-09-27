@@ -5,10 +5,10 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/safer_sk.h>
-#include <botan/rotate.h>
-#include <botan/parsing.h>
-#include <botan/rotate.h>
+import botan.safer_sk;
+import botan.rotate;
+import botan.parsing;
+import botan.rotate;
 namespace {
 
 const byte[256] EXP = {

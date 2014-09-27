@@ -5,12 +5,12 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/eax.h>
-#include <botan/cmac.h>
-#include <botan/ctr.h>
-#include <botan/parsing.h>
-#include <botan/internal/xor_buf.h>
-#include <algorithm>
+import botan.eax;
+import botan.cmac;
+import botan.ctr;
+import botan.parsing;
+import botan.internal.xor_buf;
+import algorithm;
 namespace {
 
 /*

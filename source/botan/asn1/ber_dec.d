@@ -5,10 +5,9 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/ber_dec.h>
-#include <botan/bigint.h>
-#include <botan/get_byte.h>
-namespace {
+import botan.ber_dec;
+import botan.bigint;
+import botan.get_byte;
 
 /*
 * BER decode an ASN.1 type tag

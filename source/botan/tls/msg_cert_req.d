@@ -5,13 +5,13 @@
 * Released under the terms of the Botan license
 */
 
-#include <botan/internal/tls_messages.h>
-#include <botan/internal/tls_reader.h>
-#include <botan/internal/tls_extensions.h>
-#include <botan/internal/tls_handshake_io.h>
-#include <botan/der_enc.h>
-#include <botan/ber_dec.h>
-#include <botan/loadstor.h>
+import botan.internal.tls_messages;
+import botan.internal.tls_reader;
+import botan.internal.tls_extensions;
+import botan.internal.tls_handshake_io;
+import botan.der_enc;
+import botan.ber_dec;
+import botan.loadstor;
 namespace TLS {
 
 namespace {

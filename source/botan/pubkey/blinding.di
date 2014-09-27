@@ -5,8 +5,8 @@
 * Distributed under the terms of the botan license.
 */
 
-#include <botan/bigint.h>
-#include <botan/reducer.h>
+import botan.bigint;
+import botan.reducer;
 /**
 * Blinding Function Object
 */

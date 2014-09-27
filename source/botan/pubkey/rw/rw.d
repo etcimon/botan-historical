@@ -5,12 +5,12 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/rw.h>
-#include <botan/numthry.h>
-#include <botan/keypair.h>
-#include <botan/parsing.h>
-#include <algorithm>
-#include <future>
+import botan.rw;
+import botan.numthry;
+import botan.keypair;
+import botan.parsing;
+import algorithm;
+import future;
 /*
 * Create a Rabin-Williams private key
 */

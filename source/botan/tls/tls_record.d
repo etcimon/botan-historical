@@ -5,15 +5,15 @@
 * Released under the terms of the Botan license
 */
 
-#include <botan/internal/tls_record.h>
-#include <botan/tls_ciphersuite.h>
-#include <botan/tls_exceptn.h>
-#include <botan/libstate.h>
-#include <botan/loadstor.h>
-#include <botan/internal/tls_seq_numbers.h>
-#include <botan/internal/tls_session_key.h>
-#include <botan/internal/rounding.h>
-#include <botan/internal/xor_buf.h>
+import botan.internal.tls_record;
+import botan.tls_ciphersuite;
+import botan.tls_exceptn;
+import botan.libstate;
+import botan.loadstor;
+import botan.internal.tls_seq_numbers;
+import botan.internal.tls_session_key;
+import botan.internal.rounding;
+import botan.internal.xor_buf;
 namespace TLS {
 
 Connection_Cipher_State::Connection_Cipher_State(Protocol_Version _version,

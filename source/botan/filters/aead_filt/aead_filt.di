@@ -5,8 +5,8 @@
 * Distributed under the terms of the botan license.
 */
 
-#include <botan/transform_filter.h>
-#include <botan/aead.h>
+import botan.transform_filter;
+import botan.aead;
 /**
 * Filter interface for AEAD Modes
 */

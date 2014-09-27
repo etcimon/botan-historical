@@ -5,8 +5,8 @@
 * Distributed under the terms of the botan license.
 */
 
-#include <botan/stream_cipher.h>
-#include <botan/types.h>
+import botan.stream_cipher;
+import botan.types;
 /**
 * RC4 stream cipher
 */

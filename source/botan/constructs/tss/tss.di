@@ -5,10 +5,10 @@
 * Distributed under the terms of the botan license.
 */
 
-#include <botan/secmem.h>
-#include <botan/hash.h>
-#include <botan/rng.h>
-#include <vector>
+import botan.secmem;
+import botan.hash;
+import botan.rng;
+import vector;
 /**
 * A split secret, using the format from draft-mcgrew-tss-03
 */

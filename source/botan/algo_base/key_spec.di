@@ -5,7 +5,7 @@
 * Distributed under the terms of the botan license.
 */
 
-#include <botan/types.h>
+import botan.types;
 /**
 * Represents the length requirements on an algorithm key
 */

@@ -5,8 +5,8 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/tea.h>
-#include <botan/loadstor.h>
+import botan.tea;
+import botan.loadstor;
 /*
 * TEA Encryption
 */

@@ -5,8 +5,8 @@
 * Distributed under the terms of the botan license.
 */
 
-#include <botan/secmem.h>
-#include <botan/exceptn.h>
+import botan.secmem;
+import botan.exceptn;
 /**
 * ASN.1 Type and Class Tags
 */

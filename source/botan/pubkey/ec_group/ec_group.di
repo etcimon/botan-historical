@@ -7,9 +7,9 @@
 * Distributed under the terms of the botan license.
 */
 
-#include <botan/point_gfp.h>
-#include <botan/curve_gfp.h>
-#include <botan/asn1_oid.h>
+import botan.point_gfp;
+import botan.curve_gfp;
+import botan.asn1_oid;
 /**
 * This class represents elliptic curce domain parameters
 */

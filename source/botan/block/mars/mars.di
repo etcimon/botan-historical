@@ -5,7 +5,7 @@
 * Distributed under the terms of the botan license.
 */
 
-#include <botan/block_cipher.h>
+import botan.block_cipher;
 /**
 * MARS, IBM's candidate for AES
 */
@@ -21,5 +21,5 @@ class MARS : public Block_Cipher_Fixed_Params<16, 16, 32, 4>
 	private:
 		void key_schedule(in byte*, size_t);
 
-		secure_vector<uint> EK;
+		secure_vector!uint EK;
 };

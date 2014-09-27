@@ -5,8 +5,8 @@
 * Distributed under the terms of the botan license.
 */
 
-#include <botan/cert_status.h>
-#include <botan/ocsp_types.h>
+import botan.cert_status;
+import botan.ocsp_types;
 class Certificate_Store;
 
 namespace OCSP {

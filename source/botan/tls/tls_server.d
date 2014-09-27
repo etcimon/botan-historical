@@ -5,10 +5,10 @@
 * Released under the terms of the Botan license
 */
 
-#include <botan/tls_server.h>
-#include <botan/internal/tls_handshake_state.h>
-#include <botan/internal/tls_messages.h>
-#include <botan/internal/stl_util.h>
+import botan.tls_server;
+import botan.internal.tls_handshake_state;
+import botan.internal.tls_messages;
+import botan.internal.stl_util;
 namespace TLS {
 
 namespace {
@@ -180,7 +180,7 @@ std::map<string, Vector!( X509_Certificate ) >
 get_server_certs(in string hostname,
 					  Credentials_Manager& creds)
 {
-	string cert_types[] = { "RSA", "DSA", "ECDSA", null };
+	string[] cert_types = { "RSA", "DSA", "ECDSA", null };
 
 	std::map<string, Vector!( X509_Certificate ) > cert_chains;
 

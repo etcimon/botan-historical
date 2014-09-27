@@ -5,15 +5,15 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/benchmark.h>
-#include <botan/buf_comp.h>
-#include <botan/block_cipher.h>
-#include <botan/stream_cipher.h>
-#include <botan/aead.h>
-#include <botan/hash.h>
-#include <botan/mac.h>
-#include <vector>
-#include <chrono>
+import botan.benchmark;
+import botan.buf_comp;
+import botan.block_cipher;
+import botan.stream_cipher;
+import botan.aead;
+import botan.hash;
+import botan.mac;
+import vector;
+import chrono;
 double time_op(std::chrono::nanoseconds runtime, void delegate() op)
 {
 	std::chrono::nanoseconds time_used(0);

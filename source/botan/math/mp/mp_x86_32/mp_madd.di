@@ -6,7 +6,7 @@
 * Distributed under the terms of the botan license.
 */
 
-#include <botan/mp_types.h>
+import botan.mp_types;
 
 #if (BOTAN_MP_WORD_BITS != 32)
 	#error The mp_x86_32 module requires that BOTAN_MP_WORD_BITS == 32

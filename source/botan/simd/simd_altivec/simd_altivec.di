@@ -7,10 +7,10 @@
 
 #if defined(BOTAN_TARGET_SUPPORTS_ALTIVEC)
 
-#include <botan/loadstor.h>
-#include <botan/cpuid.h>
+import botan.loadstor;
+import botan.cpuid;
 
-#include <altivec.h>
+import altivec.h;
 #undef vector
 #undef bool
 class SIMD_Altivec

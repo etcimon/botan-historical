@@ -5,16 +5,16 @@
 * Distributed under the terms of the botan license.
 */
 
-#include <botan/init.h>
-#include <botan/lookup.h>
-#include <botan/libstate.h>
-#include <botan/version.h>
-#include <botan/parsing.h>
+import botan.init;
+import botan.lookup;
+import botan.libstate;
+import botan.version;
+import botan.parsing;
 
-#include <botan/rng.h>
+import botan.rng;
 
 #if defined(BOTAN_HAS_AUTO_SEEDING_RNG)
-  #include <botan/auto_rng.h>
+  import botan.auto_rng;
 #endif
 
 #endif

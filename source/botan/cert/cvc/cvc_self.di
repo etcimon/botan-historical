@@ -6,12 +6,12 @@
 * Distributed under the terms of the botan license.
 */
 
-#include <botan/pkcs8.h>
-#include <botan/cvc_cert.h>
-#include <botan/ecdsa.h>
-#include <botan/asn1_obj.h>
-#include <botan/cvc_req.h>
-#include <botan/cvc_ado.h>
+import botan.pkcs8;
+import botan.cvc_cert;
+import botan.ecdsa;
+import botan.asn1_obj;
+import botan.cvc_req;
+import botan.cvc_ado;
 /**
 * This class represents a set of options used for the creation of CVC certificates
 */

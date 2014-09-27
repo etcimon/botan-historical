@@ -5,10 +5,10 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/numthry.h>
-#include <botan/internal/mp_core.h>
-#include <botan/internal/rounding.h>
-#include <algorithm>
+import botan.numthry;
+import botan.internal.mp_core;
+import botan.internal.rounding;
+import algorithm;
 /*
 * Square a BigInt
 */
@@ -17,7 +17,7 @@ BigInt square(in BigInt x)
 	const size_t x_sw = x.sig_words();
 
 	BigInt z(BigInt::Positive, round_up<size_t>(2*x_sw, 16));
-	secure_vector<word> workspace(z.size());
+	secure_vector!word workspace(z.size());
 
 	bigint_sqr(z.mutable_data(), z.size(),
 				  &workspace[0],
@@ -42,7 +42,7 @@ BigInt mul_add(in BigInt a, ref const BigInt b, ref const BigInt c)
 	const size_t c_sw = c.sig_words();
 
 	BigInt r(sign, std::max(a.size() + b.size(), c_sw) + 1);
-	secure_vector<word> workspace(r.size());
+	secure_vector!word workspace(r.size());
 
 	bigint_mul(r.mutable_data(), r.size(),
 				  &workspace[0],

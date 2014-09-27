@@ -5,7 +5,7 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/internal/bn_wrap.h>
+import botan.internal.bn_wrap;
 /*
 * OSSL_BN Constructor
 */
@@ -73,9 +73,9 @@ size_t OSSL_BN::bytes() const
 */
 BigInt OSSL_BN::to_bigint() const
 {
-	SafeVector!byte out(bytes());
+	SafeVector!byte output(bytes());
 	BN_bn2bin(m_bn, &output[0]);
-	return BigInt::decode(out);
+	return BigInt::decode(output);
 }
 
 /*

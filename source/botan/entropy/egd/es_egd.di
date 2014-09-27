@@ -5,9 +5,9 @@
 * Distributed under the terms of the botan license.
 */
 
-#include <botan/entropy_src.h>
-#include <string>
-#include <vector>
+import botan.entropy_src;
+import string;
+import vector;
 /**
 * EGD Entropy Source
 */

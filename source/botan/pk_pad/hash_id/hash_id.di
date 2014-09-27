@@ -5,8 +5,8 @@
 * Distributed under the terms of the botan license.
 */
 
-#include <botan/secmem.h>
-#include <string>
+import botan.secmem;
+import string;
 /**
 * Return the PKCS #1 hash identifier
 * @see RFC 3447 section 9.2

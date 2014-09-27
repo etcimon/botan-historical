@@ -5,7 +5,7 @@
 * Distributed under the terms of the botan license.
 */
 
-#include <botan/block_cipher.h>
+import botan.block_cipher;
 /**
 * Twofish, an AES finalist
 */
@@ -33,5 +33,5 @@ class Twofish : public Block_Cipher_Fixed_Params<16, 16, 32, 8>
 		static const byte EXP_TO_POLY[255];
 		static const byte POLY_TO_EXP[255];
 
-		secure_vector<uint> SB, RK;
+		secure_vector!uint SB, RK;
 };

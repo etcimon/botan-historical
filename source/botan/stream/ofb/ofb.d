@@ -5,8 +5,8 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/ofb.h>
-#include <botan/internal/xor_buf.h>
+import botan.ofb;
+import botan.internal.xor_buf;
 OFB::OFB(BlockCipher* cipher) :
 	m_cipher(cipher),
 	m_buffer(m_cipher->block_size()),

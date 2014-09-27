@@ -8,13 +8,13 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/lzma.h>
-#include <botan/exceptn.h>
+import botan.lzma;
+import botan.exceptn;
 
-#include <cstring>
-#include <cstdlib>
-#include <map>
-#include <lzma.h>
+import cstring;
+import cstdlib;
+import map;
+import lzma.h;
 namespace {
 
 /*

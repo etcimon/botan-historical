@@ -5,9 +5,9 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/rmd160.h>
-#include <botan/loadstor.h>
-#include <botan/rotate.h>
+import botan.rmd160;
+import botan.loadstor;
+import botan.rotate;
 namespace {
 
 /*

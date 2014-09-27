@@ -5,9 +5,9 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/has160.h>
-#include <botan/loadstor.h>
-#include <botan/rotate.h>
+import botan.has160;
+import botan.loadstor;
+import botan.rotate;
 namespace HAS_160_F {
 
 /*

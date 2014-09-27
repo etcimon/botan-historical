@@ -5,8 +5,8 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/md2.h>
-#include <botan/internal/xor_buf.h>
+import botan.md2;
+import botan.internal.xor_buf;
 /**
 * MD2 Compression Function
 */

@@ -5,8 +5,8 @@
 * Released under the terms of the botan license.
 */
 
-#include <botan/types.h>
-#include <stdexcept>
+import botan.types;
+import stdexcept;
 namespace TLS {
 
 class Connection_Sequence_Numbers

@@ -5,10 +5,10 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/chacha.h>
-#include <botan/loadstor.h>
-#include <botan/rotate.h>
-#include <botan/internal/xor_buf.h>
+import botan.chacha;
+import botan.loadstor;
+import botan.rotate;
+import botan.internal.xor_buf;
 void ChaCha::chacha(byte output[64], const uint input[16])
 {
 	uint x00 = input[ 0], x01 = input[ 1], x02 = input[ 2], x03 = input[ 3],

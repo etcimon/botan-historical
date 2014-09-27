@@ -5,7 +5,7 @@
 * Distributed under the terms of the botan license.
 */
 
-#include <string>
+import string;
 /**
 * Represents a DLL or shared object
 */

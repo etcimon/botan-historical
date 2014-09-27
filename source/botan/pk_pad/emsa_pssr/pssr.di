@@ -5,8 +5,8 @@
 * Distributed under the terms of the botan license.
 */
 
-#include <botan/emsa.h>
-#include <botan/hash.h>
+import botan.emsa;
+import botan.hash;
 /**
 * PSSR (called EMSA4 in IEEE 1363 and in old versions of the library)
 */

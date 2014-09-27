@@ -5,11 +5,11 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/numthry.h>
-#include <botan/algo_factory.h>
-#include <botan/hash.h>
-#include <botan/parsing.h>
-#include <algorithm>
+import botan.numthry;
+import botan.algo_factory;
+import botan.hash;
+import botan.parsing;
+import algorithm;
 namespace {
 
 /*

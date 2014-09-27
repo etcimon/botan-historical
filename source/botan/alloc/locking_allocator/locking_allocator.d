@@ -5,13 +5,13 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/locking_allocator.h>
-#include <botan/mem_ops.h>
-#include <algorithm>
-#include <string>
+import botan.locking_allocator;
+import botan.mem_ops;
+import algorithm;
+import string;
 
-#include <sys/mman.h>
-#include <sys/resource.h>
+import sys.mman;
+import sys.resource;
 
 /**
 * Requests for objects of sizeof(T) will be aligned at

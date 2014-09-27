@@ -5,9 +5,9 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/divide.h>
-#include <botan/internal/mp_core.h>
-#include <botan/internal/mp_madd.h>
+import botan.divide;
+import botan.internal.mp_core;
+import botan.internal.mp_madd;
 namespace {
 
 /*

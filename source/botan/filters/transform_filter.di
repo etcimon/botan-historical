@@ -5,9 +5,9 @@
 * Distributed under the terms of the botan license.
 */
 
-#include <botan/transform.h>
-#include <botan/key_filt.h>
-#include <botan/buf_filt.h>
+import botan.transform;
+import botan.key_filt;
+import botan.buf_filt;
 /**
 * Filter interface for Transformations
 */

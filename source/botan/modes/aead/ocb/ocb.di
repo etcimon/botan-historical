@@ -5,9 +5,9 @@
 * Distributed under the terms of the botan license.
 */
 
-#include <botan/aead.h>
-#include <botan/block_cipher.h>
-#include <botan/buf_filt.h>
+import botan.aead;
+import botan.block_cipher;
+import botan.buf_filt;
 class L_computer;
 
 /**

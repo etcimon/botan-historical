@@ -5,10 +5,10 @@
 * Distributed under the terms of the botan license.
 */
 
-#include <botan/secmem.h>
-#include <botan/asn1_oid.h>
-#include <botan/alg_id.h>
-#include <botan/rng.h>
+import botan.secmem;
+import botan.asn1_oid;
+import botan.alg_id;
+import botan.rng;
 /**
 * Public Key Base Class.
 */

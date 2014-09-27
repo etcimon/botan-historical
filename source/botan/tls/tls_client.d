@@ -5,10 +5,10 @@
 * Released under the terms of the Botan license
 */
 
-#include <botan/tls_client.h>
-#include <botan/internal/tls_handshake_state.h>
-#include <botan/internal/tls_messages.h>
-#include <botan/internal/stl_util.h>
+import botan.tls_client;
+import botan.internal.tls_handshake_state;
+import botan.internal.tls_messages;
+import botan.internal.stl_util;
 namespace TLS {
 
 namespace {

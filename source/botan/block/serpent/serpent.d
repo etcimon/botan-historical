@@ -5,10 +5,10 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/serpent.h>
-#include <botan/internal/serpent_sbox.h>
-#include <botan/loadstor.h>
-#include <botan/rotate.h>
+import botan.serpent;
+import botan.internal.serpent_sbox;
+import botan.loadstor;
+import botan.rotate;
 namespace {
 
 /*
@@ -161,7 +161,7 @@ void Serpent::key_schedule(in byte* key)
 {
 	const uint PHI = 0x9E3779B9;
 
-	secure_vector<uint> W(140);
+	secure_vector!uint W(140);
 	for (size_t i = 0; i != length / 4; ++i)
 		W[i] = load_le!uint(key, i);
 

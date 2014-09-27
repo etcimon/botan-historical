@@ -6,9 +6,9 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/sha2_32.h>
-#include <botan/loadstor.h>
-#include <botan/rotate.h>
+import botan.sha2_32;
+import botan.loadstor;
+import botan.rotate;
 namespace {
 
 namespace SHA2_32 {
@@ -47,7 +47,7 @@ namespace SHA2_32 {
 /*
 * SHA-224 / SHA-256 compression function
 */
-void compress(secure_vector<uint>& digest,
+void compress(secure_vector!uint& digest,
 				  in byte* input, size_t blocks)
 {
 	uint A = digest[0], B = digest[1], C = digest[2],

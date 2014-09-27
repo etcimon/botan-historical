@@ -5,9 +5,9 @@
 * Distributed under the terms of the botan license.
 */
 
-#include <botan/entropy_src.h>
-#include <vector>
-#include <sys/types.h>
+import botan.entropy_src;
+import vector;
+import sys.types;
 /**
 * Entropy source for generic Unix. Runs various programs trying to
 * gather data hard for a remote attacker to guess. Probably not too

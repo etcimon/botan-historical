@@ -5,18 +5,18 @@
 * Distributed under the terms of the botan license.
 */
 
-#include <botan/types.h>
+import botan.types;
 
 #if defined(BOTAN_HAS_SIMD_SSE2)
-  #include <botan/internal/simd_sse2.h>
+  import botan.internal.simd_sse2;
    typedef SIMD_SSE2 SIMD_32; }
 
 #elif defined(BOTAN_HAS_SIMD_ALTIVEC)
-  #include <botan/internal/simd_altivec.h>
+  import botan.internal.simd_altivec;
    typedef SIMD_Altivec SIMD_32; }
 
 #elif defined(BOTAN_HAS_SIMD_SCALAR)
-  #include <botan/internal/simd_scalar.h>
+  import botan.internal.simd_scalar;
    typedef SIMD_Scalar<uint,4> SIMD_32; }
 
 #else

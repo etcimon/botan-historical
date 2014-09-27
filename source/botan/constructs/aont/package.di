@@ -5,8 +5,8 @@
 * Distributed under the terms of the botan license.
 */
 
-#include <botan/block_cipher.h>
-#include <botan/rng.h>
+import botan.block_cipher;
+import botan.rng;
 /**
 * Rivest's Package Tranform
 * @param rng the random number generator to use

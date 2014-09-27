@@ -5,7 +5,7 @@
 * Distributed under the terms of the botan license.
 */
 
-#include <botan/noekeon.h>
+import botan.noekeon;
 /**
 * Noekeon implementation using SIMD operations
 */

@@ -5,7 +5,7 @@
 * Distributed under the terms of the botan license.
 */
 
-#include <botan/block_cipher.h>
+import botan.block_cipher;
 /**
 * SEED, a Korean block cipher
 */
@@ -29,5 +29,5 @@ class SEED : public Block_Cipher_Fixed_Params<16, 16>
 				static const uint S0[256], S1[256], S2[256], S3[256];
 		};
 
-		secure_vector<uint> K;
+		secure_vector!uint K;
 };

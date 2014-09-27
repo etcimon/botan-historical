@@ -5,8 +5,8 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/bigint.h>
-#include <botan/parsing.h>
+import botan.bigint;
+import botan.parsing;
 /*
 * Randomize this number
 */

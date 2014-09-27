@@ -5,9 +5,9 @@
 * Distributed under the terms of the botan license.
 */
 
-#include <botan/bigint.h>
-#include <botan/x509_key.h>
-#include <botan/pkcs8.h>
+import botan.bigint;
+import botan.x509_key;
+import botan.pkcs8;
 /**
 * This class represents public keys
 * of integer factorization based (IF) public key schemes.

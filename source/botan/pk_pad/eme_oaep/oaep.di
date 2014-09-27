@@ -5,9 +5,9 @@
 * Distributed under the terms of the botan license.
 */
 
-#include <botan/eme.h>
-#include <botan/kdf.h>
-#include <botan/hash.h>
+import botan.eme;
+import botan.kdf;
+import botan.hash;
 /**
 * OAEP (called EME1 in IEEE 1363 and in earlier versions of the library)
 */

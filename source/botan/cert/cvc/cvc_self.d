@@ -5,11 +5,11 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/cvc_self.h>
-#include <botan/ecc_key.h>
-#include <botan/point_gfp.h>
-#include <botan/oids.h>
-#include <sstream>
+import botan.cvc_self;
+import botan.ecc_key;
+import botan.point_gfp;
+import botan.oids;
+import sstream;
 namespace {
 
 /*

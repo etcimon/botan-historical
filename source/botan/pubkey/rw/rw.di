@@ -5,10 +5,10 @@
 * Distributed under the terms of the botan license.
 */
 
-#include <botan/if_algo.h>
-#include <botan/pk_ops.h>
-#include <botan/reducer.h>
-#include <botan/blinding.h>
+import botan.if_algo;
+import botan.pk_ops;
+import botan.reducer;
+import botan.blinding;
 /**
 * Rabin-Williams Public Key
 */

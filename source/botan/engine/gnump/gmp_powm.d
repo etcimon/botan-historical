@@ -5,8 +5,8 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/internal/gnump_engine.h>
-#include <botan/internal/gmp_wrap.h>
+import botan.internal.gnump_engine;
+import botan.internal.gmp_wrap;
 namespace {
 
 /*

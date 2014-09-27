@@ -5,7 +5,7 @@
 * Distributed under the terms of the botan license.
 */
 
-#include <botan/sym_algo.h>
+import botan.sym_algo;
 /**
 * Base class for all stream ciphers
 */
@@ -28,14 +28,14 @@ class StreamCipher : public SymmetricAlgorithm
 		void cipher1(byte buf[], size_t len)
 		{ cipher(buf, buf, len); }
 
-		void encipher(Alloc)(Vector!( byte, Alloc )& inout)
-		{ cipher(&inoutput[0], &inoutput[0], inout.size()); }
+		void encipher(Alloc)(Vector!( byte, Alloc )& inoutput)
+		{ cipher(&inoutput[0], &inoutput[0], inoutput.size()); }
 
-		void encrypt(Alloc)(Vector!( byte, Alloc )& inout)
-		{ cipher(&inoutput[0], &inoutput[0], inout.size()); }
+		void encrypt(Alloc)(Vector!( byte, Alloc )& inoutput)
+		{ cipher(&inoutput[0], &inoutput[0], inoutput.size()); }
 
-		void decrypt(Alloc)(Vector!( byte, Alloc )& inout)
-		{ cipher(&inoutput[0], &inoutput[0], inout.size()); }
+		void decrypt(Alloc)(Vector!( byte, Alloc )& inoutput)
+		{ cipher(&inoutput[0], &inoutput[0], inoutput.size()); }
 
 		/**
 		* Resync the cipher using the IV

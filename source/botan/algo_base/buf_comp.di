@@ -5,9 +5,9 @@
 * Distributed under the terms of the botan license.
 */
 
-#include <botan/secmem.h>
-#include <botan/get_byte.h>
-#include <string>
+import botan.secmem;
+import botan.get_byte;
+import string;
 /**
 * This class represents any kind of computation which uses an internal
 * state, such as hash functions or MACs

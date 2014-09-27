@@ -5,7 +5,7 @@
 * Distributed under the terms of the botan license.
 */
 
-#include <botan/block_cipher.h>
+import botan.block_cipher;
 /**
 * RC5
 */
@@ -28,5 +28,5 @@ class RC5 : public Block_Cipher_Fixed_Params<8, 1, 32>
 		void key_schedule(in byte*, size_t);
 
 		size_t rounds;
-		secure_vector<uint> S;
+		secure_vector!uint S;
 };

@@ -5,11 +5,11 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/internal/es_beos.h>
+import botan.internal.es_beos;
 
-#include <kernel/OS.h>
-#include <kernel/image.h>
-#include <interface/InterfaceDefs.h>
+import kernel.OS;
+import kernel.image;
+import interface.InterfaceDefs;
 /**
 * BeOS entropy poll
 */

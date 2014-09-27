@@ -5,7 +5,7 @@
 * Distributed under the terms of the botan license.
 */
 
-#include <botan/transform.h>
+import botan.transform;
 /**
 * Interface for cipher modes
 */

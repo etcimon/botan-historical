@@ -6,7 +6,7 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/ecdsa_sig.h>
+import botan.ecdsa_sig;
 ECDSA_Signature::ECDSA_Signature(in Vector!byte ber)
 {
 	BER_Decoder(ber)

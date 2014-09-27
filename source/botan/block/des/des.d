@@ -8,17 +8,17 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/des.h>
-#include <botan/loadstor.h>
-#include <botan/rotate.h>
+import botan.des;
+import botan.loadstor;
+import botan.rotate;
 namespace {
 
 /*
 * DES Key Schedule
 */
-void des_key_schedule(uint round_key[32], const byte key[8])
+void des_key_schedule(uint[32] round_key, in byte[8] key)
 {
-	static const byte ROT[16] = { 1, 1, 2, 2, 2, 2, 2, 2,
+	immutable byte[16] ROT = { 1, 1, 2, 2, 2, 2, 2, 2,
 											1, 2, 2, 2, 2, 2, 2, 1 };
 
 	uint C = ((key[7] & 0x80) << 20) | ((key[6] & 0x80) << 19) |
@@ -83,7 +83,7 @@ void des_key_schedule(uint round_key[32], const byte key[8])
 * DES Encryption
 */
 void des_encrypt(ref uint L, ref uint R,
-					  const uint round_key[32])
+					  in uint[32] round_key)
 {
 	for (size_t i = 0; i != 16; i += 2)
 	{
@@ -111,7 +111,7 @@ void des_encrypt(ref uint L, ref uint R,
 * DES Decryption
 */
 void des_decrypt(ref uint L, ref uint R,
-					  const uint round_key[32])
+					  in uint[32] round_key)
 {
 	for (size_t i = 16; i != 0; i -= 2)
 	{
@@ -160,7 +160,7 @@ void DES::encrypt_n(byte* input, byte* output, size_t blocks) const
 			 (DES_FPTAB1[get_byte(2, R)]	  ) | (DES_FPTAB2[get_byte(3, R)]	  );
 		T = rotate_left(T, 32);
 
-		store_be(T, out);
+		store_be(T, output);
 
 		input += BLOCK_SIZE;
 		output += BLOCK_SIZE;
@@ -191,7 +191,7 @@ void DES::decrypt_n(byte* input, byte* output, size_t blocks) const
 
 		T = rotate_left(T, 32);
 
-		store_be(T, out);
+		store_be(T, output);
 
 		input += BLOCK_SIZE;
 		output += BLOCK_SIZE;
@@ -238,7 +238,7 @@ void TripleDES::encrypt_n(byte* input, byte* output, size_t blocks) const
 
 		T = rotate_left(T, 32);
 
-		store_be(T, out);
+		store_be(T, output);
 
 		input += BLOCK_SIZE;
 		output += BLOCK_SIZE;
@@ -271,7 +271,7 @@ void TripleDES::decrypt_n(byte* input, byte* output, size_t blocks) const
 
 		T = rotate_left(T, 32);
 
-		store_be(T, out);
+		store_be(T, output);
 
 		input += BLOCK_SIZE;
 		output += BLOCK_SIZE;

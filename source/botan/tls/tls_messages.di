@@ -5,17 +5,17 @@
 * Released under the terms of the botan license.
 */
 
-#include <botan/internal/tls_handshake_state.h>
-#include <botan/internal/tls_extensions.h>
-#include <botan/tls_handshake_msg.h>
-#include <botan/tls_session.h>
-#include <botan/tls_policy.h>
-#include <botan/tls_ciphersuite.h>
-#include <botan/bigint.h>
-#include <botan/pkcs8.h>
-#include <botan/x509cert.h>
-#include <vector>
-#include <string>
+import botan.internal.tls_handshake_state;
+import botan.internal.tls_extensions;
+import botan.tls_handshake_msg;
+import botan.tls_session;
+import botan.tls_policy;
+import botan.tls_ciphersuite;
+import botan.bigint;
+import botan.pkcs8;
+import botan.x509cert;
+import vector;
+import string;
 class Credentials_Manager;
 class SRP6_Server_Session;
 

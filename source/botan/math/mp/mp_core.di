@@ -6,7 +6,7 @@
 * Distributed under the terms of the botan license.
 */
 
-#include <botan/mp_types.h>
+import botan.mp_types;
 /*
 * The size of the word type, in bits
 */

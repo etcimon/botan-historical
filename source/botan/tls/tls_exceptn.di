@@ -5,8 +5,8 @@
 * Released under the terms of the botan license.
 */
 
-#include <botan/exceptn.h>
-#include <botan/tls_alert.h>
+import botan.exceptn;
+import botan.tls_alert;
 namespace TLS {
 
 /**

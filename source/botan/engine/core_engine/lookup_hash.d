@@ -5,84 +5,84 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/internal/core_engine.h>
-#include <botan/scan_name.h>
-#include <botan/algo_factory.h>
+import botan.internal.core_engine;
+import botan.scan_name;
+import botan.algo_factory;
 
 #if defined(BOTAN_HAS_ADLER32)
-  #include <botan/adler32.h>
+  import botan.adler32;
 #endif
 
 #if defined(BOTAN_HAS_CRC24)
-  #include <botan/crc24.h>
+  import botan.crc24;
 #endif
 
 #if defined(BOTAN_HAS_CRC32)
-  #include <botan/crc32.h>
+  import botan.crc32;
 #endif
 
 #if defined(BOTAN_HAS_GOST_34_11)
-  #include <botan/gost_3411.h>
+  import botan.gost_3411;
 #endif
 
 #if defined(BOTAN_HAS_HAS_160)
-  #include <botan/has160.h>
+  import botan.has160;
 #endif
 
 #if defined(BOTAN_HAS_KECCAK)
-  #include <botan/keccak.h>
+  import botan.keccak;
 #endif
 
 #if defined(BOTAN_HAS_MD2)
-  #include <botan/md2.h>
+  import botan.md2;
 #endif
 
 #if defined(BOTAN_HAS_MD4)
-  #include <botan/md4.h>
+  import botan.md4;
 #endif
 
 #if defined(BOTAN_HAS_MD5)
-  #include <botan/md5.h>
+  import botan.md5;
 #endif
 
 #if defined(BOTAN_HAS_RIPEMD_128)
-  #include <botan/rmd128.h>
+  import botan.rmd128;
 #endif
 
 #if defined(BOTAN_HAS_RIPEMD_160)
-  #include <botan/rmd160.h>
+  import botan.rmd160;
 #endif
 
 #if defined(BOTAN_HAS_SHA1)
-  #include <botan/sha160.h>
+  import botan.sha160;
 #endif
 
 #if defined(BOTAN_HAS_SHA2_32)
-  #include <botan/sha2_32.h>
+  import botan.sha2_32;
 #endif
 
 #if defined(BOTAN_HAS_SHA2_64)
-  #include <botan/sha2_64.h>
+  import botan.sha2_64;
 #endif
 
 #if defined(BOTAN_HAS_SKEIN_512)
-  #include <botan/skein_512.h>
+  import botan.skein_512;
 #endif
 
 #if defined(BOTAN_HAS_TIGER)
-  #include <botan/tiger.h>
+  import botan.tiger;
 #endif
 
 #if defined(BOTAN_HAS_WHIRLPOOL)
-  #include <botan/whrlpool.h>
+  import botan.whrlpool;
 #endif
 
 #if defined(BOTAN_HAS_PARALLEL_HASH)
-  #include <botan/par_hash.h>
+  import botan.par_hash;
 #endif
 
 #if defined(BOTAN_HAS_COMB4P)
-  #include <botan/comb4p.h>
+  import botan.comb4p;
 #endif
 /*
 * Look for an algorithm with this name

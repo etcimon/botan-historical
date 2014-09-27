@@ -5,14 +5,14 @@
 * Released under the terms of the botan license.
 */
 
-#include <botan/tls_policy.h>
-#include <botan/tls_session.h>
-#include <botan/tls_alert.h>
-#include <botan/tls_session_manager.h>
-#include <botan/x509cert.h>
-#include <vector>
-#include <string>
-#include <map>
+import botan.tls_policy;
+import botan.tls_session;
+import botan.tls_alert;
+import botan.tls_session_manager;
+import botan.x509cert;
+import vector;
+import string;
+import map;
 namespace TLS {
 
 class Connection_Cipher_State;

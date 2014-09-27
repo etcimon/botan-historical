@@ -5,8 +5,8 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/transform_filter.h>
-#include <botan/internal/rounding.h>
+import botan.transform_filter;
+import botan.internal.rounding;
 namespace {
 
 size_t choose_update_size(size_t update_granularity)

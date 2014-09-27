@@ -5,8 +5,8 @@
 * Distributed under the terms of the botan license.
 */
 
-#include <botan/x509cert.h>
-#include <botan/x509_crl.h>
+import botan.x509cert;
+import botan.x509_crl;
 /**
 * Certificate Store Interface
 */

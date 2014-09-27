@@ -5,11 +5,11 @@
 * Distributed under the terms of the botan license.
 */
 
-#include <botan/types.h>
-#include <botan/parsing.h>
-#include <exception>
-#include <stdexcept>
-#include <string>
+import botan.types;
+import botan.parsing;
+import exception;
+import stdexcept;
+import string;
 typedef Exception Exception;
 typedef std::invalid_argument Invalid_Argument;
 

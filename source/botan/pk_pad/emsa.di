@@ -5,8 +5,8 @@
 * Distributed under the terms of the botan license.
 */
 
-#include <botan/secmem.h>
-#include <botan/rng.h>
+import botan.secmem;
+import botan.rng;
 /**
 * Encoding Method for Signatures, Appendix
 */

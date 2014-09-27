@@ -5,9 +5,9 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/oaep.h>
-#include <botan/mgf1.h>
-#include <botan/mem_ops.h>
+import botan.oaep;
+import botan.mgf1;
+import botan.mem_ops;
 /*
 * OAEP Pad Operation
 */

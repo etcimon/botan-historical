@@ -7,7 +7,7 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/ecdh.h>
+import botan.ecdh;
 ECDH_KA_Operation::ECDH_KA_Operation(in ECDH_PrivateKey key) :
 	curve(key.domain().get_curve()),
 	cofactor(key.domain().get_cofactor())

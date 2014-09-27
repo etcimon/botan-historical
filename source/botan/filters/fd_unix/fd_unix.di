@@ -5,7 +5,7 @@
 * Distributed under the terms of the botan license.
 */
 
-#include <botan/pipe.h>
+import botan.pipe;
 /**
 * Stream output operator; dumps the results from pipe's default
 * message to the output stream.

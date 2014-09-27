@@ -5,7 +5,7 @@
 * Distributed under the terms of the botan license.
 */
 
-#include <botan/filter.h>
+import botan.filter;
 /**
 * Converts arbitrary binary data to hex strings, optionally with
 * newlines inserted

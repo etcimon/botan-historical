@@ -5,11 +5,11 @@
 * Released under the terms of the Botan license
 */
 
-#include <botan/internal/tls_messages.h>
-#include <botan/internal/tls_extensions.h>
-#include <botan/internal/tls_reader.h>
-#include <botan/internal/tls_handshake_io.h>
-#include <botan/loadstor.h>
+import botan.internal.tls_messages;
+import botan.internal.tls_extensions;
+import botan.internal.tls_reader;
+import botan.internal.tls_handshake_io;
+import botan.loadstor;
 namespace TLS {
 
 New_Session_Ticket::New_Session_Ticket(Handshake_IO& io,

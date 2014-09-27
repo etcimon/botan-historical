@@ -5,11 +5,11 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/asn1_oid.h>
-#include <botan/der_enc.h>
-#include <botan/ber_dec.h>
-#include <botan/internal/bit_ops.h>
-#include <botan/parsing.h>
+import botan.asn1_oid;
+import botan.der_enc;
+import botan.ber_dec;
+import botan.internal.bit_ops;
+import botan.parsing;
 /*
 * ASN.1 OID Constructor
 */

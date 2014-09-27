@@ -5,9 +5,9 @@
 * Distributed under the terms of the botan license.
 */
 
-#include <botan/x509_key.h>
-#include <functional>
-#include <chrono>
+import botan.x509_key;
+import functional;
+import chrono;
 /**
 * PKCS #8 General Exception
 */

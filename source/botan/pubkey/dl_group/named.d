@@ -5,7 +5,7 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/dl_group.h>
+import botan.dl_group;
 string DL_Group::PEM_for_named_group(in string name)
 {
 	if (name == "modp/ietf/1024")

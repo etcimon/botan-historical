@@ -5,9 +5,9 @@
 * Distributed under the terms of the botan license.
 */
 
-#include <botan/mac.h>
-#include <botan/rng.h>
-#include <vector>
+import botan.mac;
+import botan.rng;
+import vector;
 /**
 * HMAC_RNG - based on the design described in "On Extract-then-Expand
 * Key Derivation Functions and an HMAC-based KDF" by Hugo Krawczyk

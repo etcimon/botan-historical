@@ -5,9 +5,9 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/xtea_simd.h>
-#include <botan/loadstor.h>
-#include <botan/internal/simd_32.h>
+import botan.xtea_simd;
+import botan.loadstor;
+import botan.internal.simd_32;
 namespace {
 
 void xtea_encrypt_8(const byte[64] input, byte[64] output, const uint[64] EK)

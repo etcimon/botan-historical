@@ -5,7 +5,7 @@
 * Distributed under the terms of the botan license.
 */
 
-#include <botan/build.h>
+import botan.build;
 /*
 * Forward declare to avoid recursive dependency between this header
 * and libstate.h

@@ -5,10 +5,10 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/srp6.h>
-#include <botan/dl_group.h>
-#include <botan/libstate.h>
-#include <botan/numthry.h>
+import botan.srp6;
+import botan.dl_group;
+import botan.libstate;
+import botan.numthry;
 namespace {
 
 BigInt hash_seq(in string hash_id,

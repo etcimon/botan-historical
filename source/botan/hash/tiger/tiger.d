@@ -5,16 +5,16 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/tiger.h>
-#include <botan/exceptn.h>
-#include <botan/loadstor.h>
-#include <botan/parsing.h>
+import botan.tiger;
+import botan.exceptn;
+import botan.loadstor;
+import botan.parsing;
 namespace {
 
 /*
 * Tiger Mixing Function
 */
- void mix(secure_vector<ulong>& X)
+ void mix(secure_vector!ulong& X)
 {
 	X[0] -= X[7] ^ 0xA5A5A5A5A5A5A5A5;
 	X[1] ^= X[0];
@@ -80,7 +80,7 @@ void Tiger::copy_out(byte* output)
 * Tiger Pass
 */
 void Tiger::pass(ref ulong A, ref ulong B, ref ulong C,
-					  const secure_vector<ulong>& X,
+					  const secure_vector!ulong& X,
 					  byte mul)
 {
 	C ^= X[0];

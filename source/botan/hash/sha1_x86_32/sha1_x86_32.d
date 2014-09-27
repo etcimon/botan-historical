@@ -5,7 +5,7 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/sha1_x86_32.h>
+import botan.sha1_x86_32;
 namespace {
 
 extern "C"

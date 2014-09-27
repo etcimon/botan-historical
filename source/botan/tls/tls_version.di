@@ -5,8 +5,8 @@
 * Released under the terms of the botan license.
 */
 
-#include <botan/get_byte.h>
-#include <string>
+import botan.get_byte;
+import string;
 namespace TLS {
 
 /**

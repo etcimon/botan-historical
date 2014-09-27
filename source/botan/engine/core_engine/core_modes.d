@@ -5,55 +5,55 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/internal/core_engine.h>
-#include <botan/parsing.h>
-#include <botan/filters.h>
-#include <botan/algo_factory.h>
-#include <botan/mode_pad.h>
-#include <botan/transform_filter.h>
+import botan.internal.core_engine;
+import botan.parsing;
+import botan.filters;
+import botan.algo_factory;
+import botan.mode_pad;
+import botan.transform_filter;
 
 #if defined(BOTAN_HAS_MODE_CFB)
-  #include <botan/cfb.h>
+  import botan.cfb;
 #endif
 
 #if defined(BOTAN_HAS_MODE_ECB)
-  #include <botan/ecb.h>
+  import botan.ecb;
 #endif
 
 #if defined(BOTAN_HAS_MODE_CBC)
-  #include <botan/cbc.h>
+  import botan.cbc;
 #endif
 
 #if defined(BOTAN_HAS_MODE_XTS)
-  #include <botan/xts.h>
+  import botan.xts;
 #endif
 
 #if defined(BOTAN_HAS_OFB)
-  #include <botan/ofb.h>
+  import botan.ofb;
 #endif
 
 #if defined(BOTAN_HAS_CTR_BE)
-  #include <botan/ctr.h>
+  import botan.ctr;
 #endif
 
 #if defined(BOTAN_HAS_AEAD_FILTER)
 
-#include <botan/aead_filt.h>
+import botan.aead_filt;
 
 #if defined(BOTAN_HAS_AEAD_CCM)
-  #include <botan/ccm.h>
+  import botan.ccm;
 #endif
 
 #if defined(BOTAN_HAS_AEAD_EAX)
-  #include <botan/eax.h>
+  import botan.eax;
 #endif
 
 #if defined(BOTAN_HAS_AEAD_OCB)
-  #include <botan/ocb.h>
+  import botan.ocb;
 #endif
 
 #if defined(BOTAN_HAS_AEAD_GCM)
-  #include <botan/gcm.h>
+  import botan.gcm;
 #endif
 
 #endif

@@ -5,11 +5,11 @@
 * Distributed under the terms of the botan license.
 */
 
-#include <botan/dl_algo.h>
-#include <botan/numthry.h>
-#include <botan/reducer.h>
-#include <botan/blinding.h>
-#include <botan/pk_ops.h>
+import botan.dl_algo;
+import botan.numthry;
+import botan.reducer;
+import botan.blinding;
+import botan.pk_ops;
 /**
 * ElGamal Public Key
 */

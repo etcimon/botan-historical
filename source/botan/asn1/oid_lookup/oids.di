@@ -5,7 +5,7 @@
 * Distributed under the terms of the botan license.
 */
 
-#include <botan/asn1_oid.h>
+import botan.asn1_oid;
 namespace OIDS {
 
 /**

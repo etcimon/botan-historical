@@ -5,10 +5,10 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/bigint.h>
-#include <botan/internal/mp_core.h>
-#include <botan/internal/bit_ops.h>
-#include <algorithm>
+import botan.bigint;
+import botan.internal.mp_core;
+import botan.internal.bit_ops;
+import algorithm;
 /*
 * Addition Operator
 */
@@ -27,7 +27,7 @@ ref BigInt BigInt::operator+=(in BigInt y)
 
 		if (relative_size < 0)
 		{
-			secure_vector<word> z(reg_size - 1);
+			secure_vector!word z(reg_size - 1);
 			bigint_sub3(&z[0], y.data(), reg_size - 1, data(), x_sw);
 			std::swap(m_reg, z);
 			set_sign(y.sign());
@@ -113,8 +113,8 @@ ref BigInt BigInt::operator*=(in BigInt y)
 	{
 		grow_to(size() + y.size());
 
-		secure_vector<word> z(data(), data() + x_sw);
-		secure_vector<word> workspace(size());
+		secure_vector!word z(data(), data() + x_sw);
+		secure_vector!word workspace(size());
 
 		bigint_mul(mutable_data(), size(), &workspace[0],
 					  &z[0], z.size(), x_sw,

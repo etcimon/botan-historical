@@ -5,11 +5,11 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/numthry.h>
-#include <botan/reducer.h>
-#include <botan/internal/bit_ops.h>
-#include <botan/internal/mp_core.h>
-#include <algorithm>
+import botan.numthry;
+import botan.reducer;
+import botan.internal.bit_ops;
+import botan.internal.mp_core;
+import algorithm;
 /*
 * Return the number of 0 bits at the end of n
 */

@@ -5,18 +5,18 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/x509path.h>
-#include <botan/ocsp.h>
-#include <botan/http_util.h>
-#include <botan/parsing.h>
-#include <botan/pubkey.h>
-#include <botan/oids.h>
-#include <algorithm>
-#include <chrono>
-#include <vector>
-#include <set>
+import botan.x509path;
+import botan.ocsp;
+import botan.http_util;
+import botan.parsing;
+import botan.pubkey;
+import botan.oids;
+import algorithm;
+import chrono;
+import vector;
+import set;
 
-#include <iostream>
+import iostream;
 namespace {
 
 const X509_Certificate*

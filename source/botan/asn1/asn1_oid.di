@@ -5,9 +5,9 @@
 * Distributed under the terms of the botan license.
 */
 
-#include <botan/asn1_obj.h>
-#include <string>
-#include <vector>
+import botan.asn1_obj;
+import string;
+import vector;
 /**
 * This class represents ASN.1 object identifiers.
 */

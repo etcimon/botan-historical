@@ -5,8 +5,8 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/parsing.h>
-#include <ctype.h>
+import botan.parsing;
+import ctype.h;
 void lex_cfg(std::istream& is,
 				void delegate(string) cb)
 {

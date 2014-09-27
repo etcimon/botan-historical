@@ -5,10 +5,10 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/bigint.h>
-#include <botan/divide.h>
-#include <botan/charset.h>
-#include <botan/hex.h>
+import botan.bigint;
+import botan.divide;
+import botan.charset;
+import botan.hex;
 /*
 * Encode a BigInt
 */

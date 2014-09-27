@@ -5,7 +5,7 @@
 * Released under the terms of the Botan license
 */
 
-#include <botan/tls_blocking.h>
+import botan.tls_blocking;
 namespace TLS {
 
 using namespace std::placeholders;

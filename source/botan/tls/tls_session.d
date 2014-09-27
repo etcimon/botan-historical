@@ -5,12 +5,12 @@
 * Released under the terms of the Botan license
 */
 
-#include <botan/tls_session.h>
-#include <botan/der_enc.h>
-#include <botan/ber_dec.h>
-#include <botan/asn1_str.h>
-#include <botan/pem.h>
-#include <botan/cryptobox_psk.h>
+import botan.tls_session;
+import botan.der_enc;
+import botan.ber_dec;
+import botan.asn1_str;
+import botan.pem;
+import botan.cryptobox_psk;
 namespace TLS {
 
 Session::Session(in Vector!byte session_identifier,

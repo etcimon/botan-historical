@@ -5,9 +5,9 @@
 * Released under the terms of the botan license.
 */
 
-#include <botan/types.h>
-#include <string>
-#include <vector>
+import botan.types;
+import string;
+import vector;
 namespace TLS {
 
 /**

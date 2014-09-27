@@ -5,12 +5,12 @@
 * Released under the terms of the Botan license
 */
 
-#include <botan/tls_session_manager_sqlite.h>
-#include <botan/internal/sqlite3.h>
-#include <botan/lookup.h>
-#include <botan/hex.h>
-#include <botan/loadstor.h>
-#include <chrono>
+import botan.tls_session_manager_sqlite;
+import botan.internal.sqlite3;
+import botan.lookup;
+import botan.hex;
+import botan.loadstor;
+import chrono;
 namespace TLS {
 
 namespace {

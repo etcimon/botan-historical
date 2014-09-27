@@ -5,8 +5,8 @@
 * Distributed under the terms of the botan license.
 */
 
-#include <botan/mac.h>
-#include <botan/block_cipher.h>
+import botan.mac;
+import botan.block_cipher;
 /**
 * CMAC, also known as OMAC1
 */

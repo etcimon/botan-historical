@@ -5,9 +5,9 @@
 * Released under the terms of the Botan license
 */
 
-#include <botan/tls_version.h>
-#include <botan/tls_exceptn.h>
-#include <botan/parsing.h>
+import botan.tls_version;
+import botan.tls_exceptn;
+import botan.parsing;
 namespace TLS {
 
 string Protocol_Version::to_string() const

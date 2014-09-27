@@ -5,41 +5,41 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/emsa.h>
-#include <botan/eme.h>
-#include <botan/libstate.h>
-#include <botan/scan_name.h>
+import botan.emsa;
+import botan.eme;
+import botan.libstate;
+import botan.scan_name;
 
 #if defined(BOTAN_HAS_EMSA1)
-  #include <botan/emsa1.h>
+  import botan.emsa1;
 #endif
 
 #if defined(BOTAN_HAS_EMSA1_BSI)
-  #include <botan/emsa1_bsi.h>
+  import botan.emsa1_bsi;
 #endif
 
 #if defined(BOTAN_HAS_EMSA_X931)
-  #include <botan/emsa_x931.h>
+  import botan.emsa_x931;
 #endif
 
 #if defined(BOTAN_HAS_EMSA_PKCS1)
-  #include <botan/emsa_pkcs1.h>
+  import botan.emsa_pkcs1;
 #endif
 
 #if defined(BOTAN_HAS_EMSA_PSSR)
-  #include <botan/pssr.h>
+  import botan.pssr;
 #endif
 
 #if defined(BOTAN_HAS_EMSA_RAW)
-  #include <botan/emsa_raw.h>
+  import botan.emsa_raw;
 #endif
 
 #if defined(BOTAN_HAS_EME_OAEP)
-  #include <botan/oaep.h>
+  import botan.oaep;
 #endif
 
 #if defined(BOTAN_HAS_EME_PKCS1v15)
-  #include <botan/eme_pkcs.h>
+  import botan.eme_pkcs;
 #endif
 /*
 * Get an EMSA by name

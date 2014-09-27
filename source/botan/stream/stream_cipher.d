@@ -5,7 +5,7 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/stream_cipher.h>
+import botan.stream_cipher;
 void StreamCipher::set_iv(const byte[], size_t iv_len)
 {
 	if (iv_len)

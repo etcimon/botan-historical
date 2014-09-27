@@ -7,10 +7,10 @@
 * Distributed under the terms of the botan license.
 */
 
-#include <botan/ec_group.h>
-#include <botan/pk_keys.h>
-#include <botan/x509_key.h>
-#include <botan/pkcs8.h>
+import botan.ec_group;
+import botan.pk_keys;
+import botan.x509_key;
+import botan.pkcs8;
 /**
 * This class represents abstract ECC public keys. When encoding a key
 * via an encoder that can be accessed via the corresponding member

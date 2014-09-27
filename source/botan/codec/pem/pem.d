@@ -5,9 +5,9 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/pem.h>
-#include <botan/filters.h>
-#include <botan/parsing.h>
+import botan.pem;
+import botan.filters;
+import botan.parsing;
 namespace PEM_Code {
 
 /*

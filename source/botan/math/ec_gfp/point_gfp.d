@@ -7,10 +7,10 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/point_gfp.h>
-#include <botan/numthry.h>
-#include <botan/reducer.h>
-#include <botan/internal/mp_core.h>
+import botan.point_gfp;
+import botan.numthry;
+import botan.reducer;
+import botan.internal.mp_core;
 PointGFp::PointGFp(in CurveGFp curve) :
 	curve(curve), ws(2 * (curve.get_p_words() + 2))
 {

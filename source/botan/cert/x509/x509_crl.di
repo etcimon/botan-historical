@@ -5,9 +5,9 @@
 * Distributed under the terms of the botan license.
 */
 
-#include <botan/x509_obj.h>
-#include <botan/crl_ent.h>
-#include <vector>
+import botan.x509_obj;
+import botan.crl_ent;
+import vector;
 class X509_Certificate;
 
 /**

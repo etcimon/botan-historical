@@ -5,11 +5,11 @@
 * Distributed under the terms of the botan license.
 */
 
-#include <botan/bigint.h>
-#include <botan/hash.h>
-#include <botan/rng.h>
-#include <botan/symkey.h>
-#include <string>
+import botan.bigint;
+import botan.hash;
+import botan.rng;
+import botan.symkey;
+import string;
 /**
 * SRP6a Client side
 * @param username the username we are attempting login for

@@ -5,9 +5,9 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/cmac.h>
-#include <botan/loadstor.h>
-#include <botan/internal/xor_buf.h>
+import botan.cmac;
+import botan.loadstor;
+import botan.internal.xor_buf;
 /*
 * Perform CMAC's multiplication in GF(2^n)
 */

@@ -6,8 +6,8 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/secqueue.h>
-#include <algorithm>
+import botan.secqueue;
+import algorithm;
 /**
 * A node in a SecureQueue
 */

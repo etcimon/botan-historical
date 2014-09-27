@@ -5,9 +5,9 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/cvc_req.h>
-#include <botan/cvc_cert.h>
-#include <botan/ber_dec.h>
+import botan.cvc_req;
+import botan.cvc_cert;
+import botan.ber_dec;
 bool EAC1_1_Req::operator==(EAC1_1_Req const& rhs) const
 {
 	return (this->tbs_data() == rhs.tbs_data() &&

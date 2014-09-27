@@ -5,7 +5,7 @@
 * Distributed under the terms of the botan license.
 */
 
-#include <botan/bigint.h>
+import botan.bigint;
 /**
 * BigInt Division
 * @param x an integer

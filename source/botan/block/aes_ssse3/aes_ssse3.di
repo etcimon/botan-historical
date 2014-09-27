@@ -5,7 +5,7 @@
 * Distributed under the terms of the botan license.
 */
 
-#include <botan/block_cipher.h>
+import botan.block_cipher;
 /**
 * AES-128 using SSSE3
 */
@@ -21,7 +21,7 @@ class AES_128_SSSE3 : public Block_Cipher_Fixed_Params<16, 16>
 	private:
 		void key_schedule(in byte*, size_t);
 
-		secure_vector<uint> EK, DK;
+		secure_vector!uint EK, DK;
 };
 
 /**
@@ -39,7 +39,7 @@ class AES_192_SSSE3 : public Block_Cipher_Fixed_Params<16, 24>
 	private:
 		void key_schedule(in byte*, size_t);
 
-		secure_vector<uint> EK, DK;
+		secure_vector!uint EK, DK;
 };
 
 /**
@@ -57,5 +57,5 @@ class AES_256_SSSE3 : public Block_Cipher_Fixed_Params<16, 32>
 	private:
 		void key_schedule(in byte*, size_t);
 
-		secure_vector<uint> EK, DK;
+		secure_vector!uint EK, DK;
 };

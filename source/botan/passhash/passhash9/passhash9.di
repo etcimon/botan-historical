@@ -5,7 +5,7 @@
 * Distributed under the terms of the botan license.
 */
 
-#include <botan/rng.h>
+import botan.rng;
 /**
 * Create a password hash using PBKDF2
 * @param password the password

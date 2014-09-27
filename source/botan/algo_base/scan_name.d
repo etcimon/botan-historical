@@ -5,10 +5,10 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/scan_name.h>
-#include <botan/parsing.h>
-#include <botan/exceptn.h>
-#include <stdexcept>
+import botan.scan_name;
+import botan.parsing;
+import botan.exceptn;
+import stdexcept;
 
 string make_arg(
 	const Vector!( Pair!(size_t, string)  )& name, size_t start)

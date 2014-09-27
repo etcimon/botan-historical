@@ -5,10 +5,10 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/internal/mp_core.h>
-#include <botan/internal/mp_madd.h>
-#include <botan/internal/mp_asmi.h>
-#include <botan/mem_ops.h>
+import botan.internal.mp_core;
+import botan.internal.mp_madd;
+import botan.internal.mp_asmi;
+import botan.mem_ops;
 extern "C" {
 
 /*

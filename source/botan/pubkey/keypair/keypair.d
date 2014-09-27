@@ -5,8 +5,8 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/keypair.h>
-#include <botan/pubkey.h>
+import botan.keypair;
+import botan.pubkey;
 namespace KeyPair {
 
 /*

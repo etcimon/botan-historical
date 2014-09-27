@@ -5,14 +5,14 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/http_util.h>
-#include <botan/parsing.h>
-#include <botan/hex.h>
-#include <botan/internal/stl_util.h>
-#include <sstream>
+import botan.http_util;
+import botan.parsing;
+import botan.hex;
+import botan.internal.stl_util;
+import sstream;
 
 #if defined(BOTAN_HAS_BOOST_ASIO)
-#include <boost/asio.hpp>
+import boost/asio.hpp;
 #endif
 namespace HTTP {
 

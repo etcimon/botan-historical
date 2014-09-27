@@ -5,12 +5,12 @@
 * Released under the terms of the botan license.
 */
 
-#include <botan/exceptn.h>
-#include <botan/secmem.h>
-#include <botan/loadstor.h>
-#include <string>
-#include <vector>
-#include <stdexcept>
+import botan.exceptn;
+import botan.secmem;
+import botan.loadstor;
+import string;
+import vector;
+import stdexcept;
 namespace TLS {
 
 /**

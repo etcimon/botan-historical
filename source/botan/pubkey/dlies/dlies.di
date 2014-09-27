@@ -5,9 +5,9 @@
 * Distributed under the terms of the botan license.
 */
 
-#include <botan/pubkey.h>
-#include <botan/mac.h>
-#include <botan/kdf.h>
+import botan.pubkey;
+import botan.mac;
+import botan.kdf;
 /**
 * DLIES Encryption
 */

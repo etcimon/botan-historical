@@ -5,11 +5,11 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/ocb.h>
-#include <botan/cmac.h>
-#include <botan/internal/xor_buf.h>
-#include <botan/internal/bit_ops.h>
-#include <algorithm>
+import botan.ocb;
+import botan.cmac;
+import botan.internal.xor_buf;
+import botan.internal.bit_ops;
+import algorithm;
 namespace {
 
 const size_t BS = 16; // intrinsic to OCB definition

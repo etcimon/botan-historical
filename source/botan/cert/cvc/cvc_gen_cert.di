@@ -6,10 +6,10 @@
 * Distributed under the terms of the botan license.
 */
 
-#include <botan/eac_obj.h>
-#include <botan/eac_asn_obj.h>
-#include <botan/ecdsa.h>
-#include <botan/pubkey.h>
+import botan.eac_obj;
+import botan.eac_asn_obj;
+import botan.ecdsa;
+import botan.pubkey;
 /**
 *  This class represents TR03110 (EAC) v1.1 generalized CV Certificates
 */

@@ -5,9 +5,9 @@
 * Distributed under the terms of the botan license.
 */
 
-#include <botan/pow_mod.h>
-#include <botan/reducer.h>
-#include <vector>
+import botan.pow_mod;
+import botan.reducer;
+import vector;
 /**
 * Fixed Window Exponentiator
 */

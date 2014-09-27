@@ -5,7 +5,7 @@
 * Distributed under the terms of the botan license.
 */
 
-#include <botan/types.h>
+import botan.types;
 /**
 * Byte extraction
 * @param byte_num which byte to extract, 0 == highest byte

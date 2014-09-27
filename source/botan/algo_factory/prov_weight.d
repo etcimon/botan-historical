@@ -5,7 +5,7 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/internal/algo_cache.h>
+import botan.internal.algo_cache;
 /**
 * Return a static provider weighing
 */

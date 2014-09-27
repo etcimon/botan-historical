@@ -6,9 +6,9 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/data_snk.h>
-#include <botan/exceptn.h>
-#include <fstream>
+import botan.data_snk;
+import botan.exceptn;
+import fstream;
 /*
 * Write to a stream
 */

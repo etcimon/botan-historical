@@ -5,102 +5,102 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/internal/core_engine.h>
-#include <botan/scan_name.h>
-#include <botan/algo_factory.h>
+import botan.internal.core_engine;
+import botan.scan_name;
+import botan.algo_factory;
 
 #if defined(BOTAN_HAS_AES)
-  #include <botan/aes.h>
+  import botan.aes;
 #endif
 
 #if defined(BOTAN_HAS_BLOWFISH)
-  #include <botan/blowfish.h>
+  import botan.blowfish;
 #endif
 
 #if defined(BOTAN_HAS_CAMELLIA)
-  #include <botan/camellia.h>
+  import botan.camellia;
 #endif
 
 #if defined(BOTAN_HAS_CAST)
-  #include <botan/cast128.h>
-  #include <botan/cast256.h>
+  import botan.cast128;
+  import botan.cast256;
 #endif
 
 #if defined(BOTAN_HAS_CASCADE)
-  #include <botan/cascade.h>
+  import botan.cascade;
 #endif
 
 #if defined(BOTAN_HAS_DES)
-  #include <botan/des.h>
-  #include <botan/desx.h>
+  import botan.des;
+  import botan.desx;
 #endif
 
 #if defined(BOTAN_HAS_GOST_28147_89)
-  #include <botan/gost_28147.h>
+  import botan.gost_28147;
 #endif
 
 #if defined(BOTAN_HAS_IDEA)
-  #include <botan/idea.h>
+  import botan.idea;
 #endif
 
 #if defined(BOTAN_HAS_KASUMI)
-  #include <botan/kasumi.h>
+  import botan.kasumi;
 #endif
 
 #if defined(BOTAN_HAS_LION)
-  #include <botan/lion.h>
+  import botan.lion;
 #endif
 
 #if defined(BOTAN_HAS_MARS)
-  #include <botan/mars.h>
+  import botan.mars;
 #endif
 
 #if defined(BOTAN_HAS_MISTY1)
-  #include <botan/misty1.h>
+  import botan.misty1;
 #endif
 
 #if defined(BOTAN_HAS_NOEKEON)
-  #include <botan/noekeon.h>
+  import botan.noekeon;
 #endif
 
 #if defined(BOTAN_HAS_RC2)
-  #include <botan/rc2.h>
+  import botan.rc2;
 #endif
 
 #if defined(BOTAN_HAS_RC5)
-  #include <botan/rc5.h>
+  import botan.rc5;
 #endif
 
 #if defined(BOTAN_HAS_RC6)
-  #include <botan/rc6.h>
+  import botan.rc6;
 #endif
 
 #if defined(BOTAN_HAS_SAFER)
-  #include <botan/safer_sk.h>
+  import botan.safer_sk;
 #endif
 
 #if defined(BOTAN_HAS_SEED)
-  #include <botan/seed.h>
+  import botan.seed;
 #endif
 
 #if defined(BOTAN_HAS_SERPENT)
-  #include <botan/serpent.h>
+  import botan.serpent;
 #endif
 
 #if defined(BOTAN_HAS_TEA)
-  #include <botan/tea.h>
+  import botan.tea;
 #endif
 
 #if defined(BOTAN_HAS_TWOFISH)
-  #include <botan/twofish.h>
+  import botan.twofish;
 #endif
 
 #if defined(BOTAN_HAS_THREEFISH_512)
-  #include <botan/threefish.h>
+  import botan.threefish;
 #endif
 
 #if defined(BOTAN_HAS_XTEA)
-  #include <botan/xtea.h>
+  import botan.xtea;
 #endif
 /*
 * Look for an algorithm with this name

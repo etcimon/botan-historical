@@ -5,8 +5,8 @@
 * Distributed under the terms of the botan license.
 */
 
-#include <botan/kdf.h>
-#include <botan/hash.h>
+import botan.kdf;
+import botan.hash;
 /**
 * MGF1 from PKCS #1 v2.0
 */

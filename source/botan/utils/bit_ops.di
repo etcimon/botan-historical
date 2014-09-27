@@ -5,7 +5,7 @@
 * Distributed under the terms of the botan license.
 */
 
-#include <botan/types.h>
+import botan.types;
 /**
 * Power of 2 test. T should be an uinteger type
 * @param arg an integer value

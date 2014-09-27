@@ -5,8 +5,8 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/pipe.h>
-#include <iostream>
+import botan.pipe;
+import iostream;
 /*
 * Write data from a pipe into an ostream
 */

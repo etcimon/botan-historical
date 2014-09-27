@@ -5,14 +5,14 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/pkcs10.h>
-#include <botan/x509_ext.h>
-#include <botan/x509cert.h>
-#include <botan/der_enc.h>
-#include <botan/ber_dec.h>
-#include <botan/parsing.h>
-#include <botan/oids.h>
-#include <botan/pem.h>
+import botan.pkcs10;
+import botan.x509_ext;
+import botan.x509cert;
+import botan.der_enc;
+import botan.ber_dec;
+import botan.parsing;
+import botan.oids;
+import botan.pem;
 /*
 * PKCS10_Request Constructor
 */

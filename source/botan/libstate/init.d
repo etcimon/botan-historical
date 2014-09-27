@@ -5,9 +5,9 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/init.h>
-#include <botan/libstate.h>
-#include <botan/global_state.h>
+import botan.init;
+import botan.libstate;
+import botan.global_state;
 /*
 * Library Initialization
 */

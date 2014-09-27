@@ -5,11 +5,11 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/internal/aes_isa_engine.h>
-#include <botan/cpuid.h>
+import botan.internal.aes_isa_engine;
+import botan.cpuid;
 
 #if defined(BOTAN_HAS_AES_NI)
-  #include <botan/aes_ni.h>
+  import botan.aes_ni;
 #endif
 BlockCipher*
 AES_ISA_Engine::find_block_cipher(in SCAN_Name request,

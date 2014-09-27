@@ -5,15 +5,15 @@
 * Released under the terms of the Botan license
 */
 
-#include <botan/tls_channel.h>
-#include <botan/internal/tls_handshake_state.h>
-#include <botan/internal/tls_messages.h>
-#include <botan/internal/tls_heartbeats.h>
-#include <botan/internal/tls_record.h>
-#include <botan/internal/tls_seq_numbers.h>
-#include <botan/internal/rounding.h>
-#include <botan/internal/stl_util.h>
-#include <botan/loadstor.h>
+import botan.tls_channel;
+import botan.internal.tls_handshake_state;
+import botan.internal.tls_messages;
+import botan.internal.tls_heartbeats;
+import botan.internal.tls_record;
+import botan.internal.tls_seq_numbers;
+import botan.internal.rounding;
+import botan.internal.stl_util;
+import botan.loadstor;
 namespace TLS {
 
 Channel::Channel(void delegate(in byte[]) output_fn,

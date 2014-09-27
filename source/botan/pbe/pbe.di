@@ -5,10 +5,10 @@
 * Distributed under the terms of the botan license.
 */
 
-#include <botan/asn1_oid.h>
-#include <botan/data_src.h>
-#include <botan/filter.h>
-#include <botan/rng.h>
+import botan.asn1_oid;
+import botan.data_src;
+import botan.filter;
+import botan.rng;
 /**
 * Password Based Encryption (PBE) Filter.
 */

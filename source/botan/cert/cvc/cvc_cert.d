@@ -5,8 +5,8 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/cvc_cert.h>
-#include <botan/oids.h>
+import botan.cvc_cert;
+import botan.oids;
 ASN1_Car EAC1_1_CVC::get_car() const
 {
 	return m_car;

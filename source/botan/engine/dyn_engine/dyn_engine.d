@@ -5,8 +5,8 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/dyn_engine.h>
-#include <botan/internal/dyn_load.h>
+import botan.dyn_engine;
+import botan.internal.dyn_load;
 namespace {
 
 extern "C" {

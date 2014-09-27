@@ -5,9 +5,9 @@
 * Distributed under the terms of the botan license.
 */
 
-#include <botan/x509cert.h>
-#include <botan/asn1_time.h>
-#include <botan/bigint.h>
+import botan.x509cert;
+import botan.asn1_time;
+import botan.bigint;
 namespace OCSP {
 
 class CertID : public ASN1_Object

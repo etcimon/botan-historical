@@ -5,8 +5,8 @@
 * Distributed under the terms of the botan license.
 */
 
-#include <botan/signed_obj.h>
-#include <botan/ecdsa_sig.h>
+import botan.signed_obj;
+import botan.ecdsa_sig;
 /**
 * TR03110 v1.1 EAC CV Certificate
 */

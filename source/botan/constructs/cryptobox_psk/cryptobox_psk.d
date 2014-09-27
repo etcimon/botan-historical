@@ -5,10 +5,10 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/cryptobox_psk.h>
-#include <botan/pipe.h>
-#include <botan/lookup.h>
-#include <botan/loadstor.h>
+import botan.cryptobox_psk;
+import botan.pipe;
+import botan.lookup;
+import botan.loadstor;
 namespace CryptoBox {
 
 namespace {
@@ -58,17 +58,17 @@ Vector!( byte ) encrypt(in byte* input, size_t input_len,
 	pipe.process_msg(input, input_len);
 	SafeVector!byte ctext = pipe.read_all(0);
 
-	Vector!( byte ) out(MAGIC_LENGTH);
+	Vector!( byte ) output(MAGIC_LENGTH);
 	store_be(CRYPTOBOX_MAGIC, &output[0]);
-	out += cipher_key_salt;
-	out += mac_key_salt;
-	out += cipher_iv.bits_of();
-	out += ctext;
+	output += cipher_key_salt;
+	output += mac_key_salt;
+	output += cipher_iv.bits_of();
+	output += ctext;
 
-	mac->update(out);
+	mac->update(output);
 
-	out += mac->flush();
-	return out;
+	output += mac->flush();
+	return output;
 }
 
 SafeVector!byte decrypt(in byte* input, size_t input_len,

@@ -5,15 +5,15 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/x509_obj.h>
-#include <botan/x509_key.h>
-#include <botan/pubkey.h>
-#include <botan/oids.h>
-#include <botan/der_enc.h>
-#include <botan/ber_dec.h>
-#include <botan/parsing.h>
-#include <botan/pem.h>
-#include <algorithm>
+import botan.x509_obj;
+import botan.x509_key;
+import botan.pubkey;
+import botan.oids;
+import botan.der_enc;
+import botan.ber_dec;
+import botan.parsing;
+import botan.pem;
+import algorithm;
 /*
 * Create a generic X.509 object
 */

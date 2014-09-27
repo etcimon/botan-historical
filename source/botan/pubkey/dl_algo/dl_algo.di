@@ -5,9 +5,9 @@
 * Distributed under the terms of the botan license.
 */
 
-#include <botan/dl_group.h>
-#include <botan/x509_key.h>
-#include <botan/pkcs8.h>
+import botan.dl_group;
+import botan.x509_key;
+import botan.pkcs8;
 /**
 * This class represents discrete logarithm (DL) public keys.
 */

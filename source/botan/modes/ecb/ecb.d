@@ -5,10 +5,10 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/ecb.h>
-#include <botan/loadstor.h>
-#include <botan/internal/xor_buf.h>
-#include <botan/internal/rounding.h>
+import botan.ecb;
+import botan.loadstor;
+import botan.internal.xor_buf;
+import botan.internal.rounding;
 ECB_Mode::ECB_Mode(BlockCipher* cipher, BlockCipherModePaddingMethod* padding) :
 	m_cipher(cipher),
 	m_padding(padding)

@@ -5,8 +5,8 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/pbkdf1.h>
-#include <botan/exceptn.h>
+import botan.pbkdf1;
+import botan.exceptn;
 /*
 * Return a PKCS#5 PBKDF1 derived key
 */

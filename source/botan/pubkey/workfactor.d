@@ -5,9 +5,9 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/workfactor.h>
-#include <algorithm>
-#include <cmath>
+import botan.workfactor;
+import algorithm;
+import cmath;
 size_t dl_work_factor(size_t bits)
 {
 	/*

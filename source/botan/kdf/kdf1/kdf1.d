@@ -5,7 +5,7 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/kdf1.h>
+import botan.kdf1;
 /*
 * KDF1 Key Derivation Mechanism
 */

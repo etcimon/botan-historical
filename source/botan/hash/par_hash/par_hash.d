@@ -5,8 +5,8 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/par_hash.h>
-#include <botan/parsing.h>
+import botan.par_hash;
+import botan.parsing;
 /*
 * Update the hash
 */

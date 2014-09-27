@@ -5,10 +5,10 @@
 * Distributed under the terms of the botan license.
 */
 
-#include <botan/algo_factory.h>
-#include <botan/scan_name.h>
-#include <map>
-#include <string>
+import botan.algo_factory;
+import botan.scan_name;
+import map;
+import string;
 /**
 * Run a set of self tests on some basic algorithms like AES and SHA-1
 * @param af an algorithm factory

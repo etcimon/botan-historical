@@ -5,10 +5,10 @@
 * Distributed under the terms of the botan license.
 */
 
-#include <botan/entropy_src.h>
-#include <botan/exceptn.h>
-#include <string>
-#include <mutex>
+import botan.entropy_src;
+import botan.exceptn;
+import string;
+import mutex;
 /**
 * This class represents a random number (RNG) generator object.
 */

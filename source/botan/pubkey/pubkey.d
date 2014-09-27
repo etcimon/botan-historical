@@ -5,14 +5,14 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/pubkey.h>
-#include <botan/der_enc.h>
-#include <botan/ber_dec.h>
-#include <botan/bigint.h>
-#include <botan/parsing.h>
-#include <botan/libstate.h>
-#include <botan/engine.h>
-#include <botan/internal/bit_ops.h>
+import botan.pubkey;
+import botan.der_enc;
+import botan.ber_dec;
+import botan.bigint;
+import botan.parsing;
+import botan.libstate;
+import botan.engine;
+import botan.internal.bit_ops;
 /*
 * PK_Encryptor_EME Constructor
 */

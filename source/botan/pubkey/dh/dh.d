@@ -5,9 +5,9 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/dh.h>
-#include <botan/numthry.h>
-#include <botan/workfactor.h>
+import botan.dh;
+import botan.numthry;
+import botan.workfactor;
 /*
 * DH_PublicKey Constructor
 */

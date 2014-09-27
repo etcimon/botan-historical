@@ -5,10 +5,10 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/internal/es_capi.h>
-#include <botan/parsing.h>
-#include <windows.h>
-#include <wincrypt.h>
+import botan.internal.es_capi;
+import botan.parsing;
+import windows.h;
+import wincrypt.h;
 #undef min
 #undef max
 namespace {
@@ -34,7 +34,7 @@ class CSP_Handle
 
 		size_t gen_random(byte* output) const
 		{
-			if (is_valid() && CryptGenRandom(handle, cast(DWORD)(output.length), out))
+			if (is_valid() && CryptGenRandom(handle, cast(DWORD)(output.length), output))
 				return output.length;
 			return 0;
 		}

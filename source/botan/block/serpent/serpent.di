@@ -5,7 +5,7 @@
 * Distributed under the terms of the botan license.
 */
 
-#include <botan/block_cipher.h>
+import botan.block_cipher;
 /**
 * Serpent, an AES finalist
 */
@@ -23,7 +23,7 @@ class Serpent : public Block_Cipher_Fixed_Params<16, 16, 32, 8>
 		* For use by subclasses using SIMD, asm, etc
 		* @return const reference to the key schedule
 		*/
-		const secure_vector<uint>& get_round_keys() const
+		const secure_vector!uint& get_round_keys() const
 		{ return round_key; }
 
 		/**
@@ -37,5 +37,5 @@ class Serpent : public Block_Cipher_Fixed_Params<16, 16, 32, 8>
 
 	private:
 		void key_schedule(in byte* key);
-		secure_vector<uint> round_key;
+		secure_vector!uint round_key;
 };

@@ -5,8 +5,8 @@
 * Distributed under the terms of the botan license.
 */
 
-#include <botan/asn1_oid.h>
-#include <botan/data_src.h>
+import botan.asn1_oid;
+import botan.data_src;
 /**
 * BER Decoding Object
 */

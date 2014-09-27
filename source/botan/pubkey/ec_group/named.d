@@ -5,7 +5,7 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/ec_group.h>
+import botan.ec_group;
 string EC_Group::PEM_for_named_group(in string name)
 {
 	if (name == "secp112r1")

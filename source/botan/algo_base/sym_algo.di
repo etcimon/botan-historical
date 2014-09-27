@@ -5,10 +5,10 @@
 * Distributed under the terms of the botan license.
 */
 
-#include <botan/key_spec.h>
-#include <botan/exceptn.h>
-#include <botan/symkey.h>
-#include <botan/types.h>
+import botan.key_spec;
+import botan.exceptn;
+import botan.symkey;
+import botan.types;
 /**
 * This class represents a symmetric algorithm object.
 */

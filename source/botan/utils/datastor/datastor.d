@@ -5,11 +5,11 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/datastor.h>
-#include <botan/exceptn.h>
-#include <botan/parsing.h>
-#include <botan/hex.h>
-#include <botan/internal/stl_util.h>
+import botan.datastor;
+import botan.exceptn;
+import botan.parsing;
+import botan.hex;
+import botan.internal.stl_util;
 /*
 * Data_Store Equality Comparison
 */

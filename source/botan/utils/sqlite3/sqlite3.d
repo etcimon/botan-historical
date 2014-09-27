@@ -5,9 +5,9 @@
 * Released under the terms of the Botan license
 */
 
-#include <botan/internal/sqlite3.h>
-#include <stdexcept>
-#include <sqlite3.h>
+import botan.internal.sqlite3;
+import stdexcept;
+import sqlite3.h;
 sqlite3_database::sqlite3_database(in string db_filename)
 {
 	int rc = ::sqlite3_open(db_filename.c_str(), &m_db);

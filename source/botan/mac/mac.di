@@ -5,9 +5,9 @@
 * Distributed under the terms of the botan license.
 */
 
-#include <botan/buf_comp.h>
-#include <botan/sym_algo.h>
-#include <string>
+import botan.buf_comp;
+import botan.sym_algo;
+import string;
 /**
 * This class represents Message Authentication Code (MAC) objects.
 */

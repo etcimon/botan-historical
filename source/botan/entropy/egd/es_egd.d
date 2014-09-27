@@ -5,19 +5,19 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/internal/es_egd.h>
-#include <botan/parsing.h>
-#include <botan/exceptn.h>
-#include <cstring>
-#include <stdexcept>
+import botan.internal.es_egd;
+import botan.parsing;
+import botan.exceptn;
+import cstring;
+import stdexcept;
 
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <fcntl.h>
-#include <unistd.h>
+import sys.types;
+import sys.stat;
+import fcntl.h;
+import unistd.h;
 
-#include <sys/socket.h>
-#include <sys/un.h>
+import sys.socket;
+import sys.un;
 
   #define PF_LOCAL PF_UNIX
 #endif
@@ -75,7 +75,7 @@ size_t EGD_EntropySource::EGD_Socket::read(ref byte[] outbuf)
 	try
 	{
 		// 1 == EGD command for non-blocking read
-		byte egd_read_command[2] = {
+		byte[2] egd_read_command = {
 			1, cast(byte)(std::min<size_t>(length, 255)) };
 
 		if (::write(m_fd, egd_read_command, 2) != 2)

@@ -5,7 +5,7 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/emsa1.h>
+import botan.emsa1;
 namespace {
 
 SafeVector!byte emsa1_encoding(in SafeVector!byte msg,

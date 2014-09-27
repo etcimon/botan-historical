@@ -5,9 +5,9 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/lookup.h>
-#include <botan/libstate.h>
-#include <botan/engine.h>
+import botan.lookup;
+import botan.libstate;
+import botan.engine;
 /*
 * Get a PBKDF algorithm by name
 */

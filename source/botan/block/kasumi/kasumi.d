@@ -5,9 +5,9 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/kasumi.h>
-#include <botan/loadstor.h>
-#include <botan/rotate.h>
+import botan.kasumi;
+import botan.loadstor;
+import botan.rotate;
 namespace {
 
 /*
@@ -198,10 +198,10 @@ void KASUMI::decrypt_n(byte* input, byte* output, size_t blocks) const
 */
 void KASUMI::key_schedule(in byte* key, size_t)
 {
-	static const ushort RC[] = { 0x0123, 0x4567, 0x89AB, 0xCDEF,
+	immutable ushort[] RC = { 0x0123, 0x4567, 0x89AB, 0xCDEF,
 										  0xFEDC, 0xBA98, 0x7654, 0x3210 };
 
-	secure_vector<ushort> K(16);
+	secure_vector!ushort K(16);
 	for (size_t i = 0; i != 8; ++i)
 	{
 		K[i] = load_be!ushort(key, i);

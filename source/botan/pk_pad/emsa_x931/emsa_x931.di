@@ -5,8 +5,8 @@
 * Distributed under the terms of the botan license.
 */
 
-#include <botan/emsa.h>
-#include <botan/hash.h>
+import botan.emsa;
+import botan.hash;
 /**
 * EMSA from X9.31 (EMSA2 in IEEE 1363)
 * Useful for Rabin-Williams, also sometimes used with RSA in

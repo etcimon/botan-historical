@@ -5,12 +5,12 @@
 * Distributed under the terms of the botan license.
 */
 
-#include <botan/types.h>
-#include <future>
-#include <vector>
-#include <map>
-#include <chrono>
-#include <string>
+import botan.types;
+import future;
+import vector;
+import map;
+import chrono;
+import string;
 namespace HTTP {
 
 struct Response

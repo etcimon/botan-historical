@@ -5,11 +5,11 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/bigint.h>
-#include <botan/internal/mp_core.h>
-#include <botan/get_byte.h>
-#include <botan/parsing.h>
-#include <botan/internal/rounding.h>
+import botan.bigint;
+import botan.internal.mp_core;
+import botan.get_byte;
+import botan.parsing;
+import botan.internal.rounding;
 /*
 * Construct a BigInt from a regular number
 */

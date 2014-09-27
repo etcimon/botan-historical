@@ -5,9 +5,9 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/x919_mac.h>
-#include <botan/internal/xor_buf.h>
-#include <algorithm>
+import botan.x919_mac;
+import botan.internal.xor_buf;
+import algorithm;
 /*
 * Update an ANSI X9.19 MAC Calculation
 */

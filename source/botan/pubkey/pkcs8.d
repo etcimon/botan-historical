@@ -5,14 +5,14 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/pkcs8.h>
-#include <botan/get_pbe.h>
-#include <botan/der_enc.h>
-#include <botan/ber_dec.h>
-#include <botan/alg_id.h>
-#include <botan/oids.h>
-#include <botan/pem.h>
-#include <botan/internal/pk_algs.h>
+import botan.pkcs8;
+import botan.get_pbe;
+import botan.der_enc;
+import botan.ber_dec;
+import botan.alg_id;
+import botan.oids;
+import botan.pem;
+import botan.internal.pk_algs;
 namespace PKCS8 {
 
 namespace {

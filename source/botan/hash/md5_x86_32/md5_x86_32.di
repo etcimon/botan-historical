@@ -5,7 +5,7 @@
 * Distributed under the terms of the botan license.
 */
 
-#include <botan/md5.h>
+import botan.md5;
 /**
 * MD5 in x86 assembly
 */

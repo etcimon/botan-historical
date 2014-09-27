@@ -5,7 +5,7 @@
 * Distributed under the terms of the botan license.
 */
 
-#include <botan/block_cipher.h>
+import botan.block_cipher;
 /**
 * CAST-128
 */
@@ -22,9 +22,9 @@ class CAST_128 : public Block_Cipher_Fixed_Params<8, 11, 16>
 	private:
 		void key_schedule(in byte*, size_t);
 
-		static void cast_ks(secure_vector<uint>& ks,
-								  secure_vector<uint>& user_key);
+		static void cast_ks(secure_vector!uint& ks,
+								  secure_vector!uint& user_key);
 
-		secure_vector<uint> MK;
+		secure_vector!uint MK;
 		SafeVector!byte RK;
 };

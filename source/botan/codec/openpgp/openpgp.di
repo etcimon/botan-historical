@@ -5,9 +5,9 @@
 * Distributed under the terms of the botan license.
 */
 
-#include <botan/data_src.h>
-#include <string>
-#include <map>
+import botan.data_src;
+import string;
+import map;
 /**
 * @param input the input data
 * @param length length of input in bytes

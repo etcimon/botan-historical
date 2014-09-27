@@ -5,7 +5,7 @@
 * Distributed under the terms of the botan license.
 */
 
-#include <botan/sha160.h>
+import botan.sha160;
 /**
 * SHA-160 using SSE2 for the message expansion
 */

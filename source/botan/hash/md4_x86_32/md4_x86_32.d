@@ -5,7 +5,7 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/md4_x86_32.h>
+import botan.md4_x86_32;
 /**
 * MD4 compression function in x86-32 asm
 * @param digest the current digest

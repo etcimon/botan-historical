@@ -5,8 +5,8 @@
 * Released under the terms of the Botan license
 */
 
-#include <botan/internal/tls_messages.h>
-#include <botan/internal/tls_handshake_io.h>
+import botan.internal.tls_messages;
+import botan.internal.tls_handshake_io;
 namespace TLS {
 
 namespace {

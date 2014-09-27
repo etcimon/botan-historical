@@ -5,7 +5,7 @@
 * Distributed under the terms of the botan license.
 */
 
-#include <botan/symkey.h>
+import botan.symkey;
 class Algorithm_Factory;
 
 /**

@@ -5,8 +5,8 @@
 * Distributed under the terms of the botan license.
 */
 
-#include <botan/stream_cipher.h>
-#include <botan/block_cipher.h>
+import botan.stream_cipher;
+import botan.block_cipher;
 /**
 * Output Feedback Mode
 */

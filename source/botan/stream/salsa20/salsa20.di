@@ -5,7 +5,7 @@
 * Distributed under the terms of the botan license.
 */
 
-#include <botan/stream_cipher.h>
+import botan.stream_cipher;
 /**
 * DJB's Salsa20 (and XSalsa20)
 */
@@ -30,7 +30,7 @@ class Salsa20 : public StreamCipher
 	private:
 		void key_schedule(in byte* key, size_t length);
 
-		secure_vector<uint> m_state;
+		secure_vector!uint m_state;
 		SafeVector!byte m_buffer;
 		size_t m_position;
 };

@@ -5,8 +5,8 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/blowfish.h>
-#include <botan/loadstor.h>
+import botan.blowfish;
+import botan.loadstor;
 /*
 * Blowfish Encryption
 */
@@ -135,7 +135,7 @@ void Blowfish::eks_key_schedule(in byte* key, size_t length,
 
 	key_expansion(key, length, salt);
 
-	const byte null_salt[16] = { 0 };
+	const byte[16] null_salt = { 0 };
 	const size_t rounds = 1 << workfactor;
 
 	for (size_t r = 0; r != rounds; ++r)
@@ -148,7 +148,7 @@ void Blowfish::eks_key_schedule(in byte* key, size_t length,
 /*
 * Generate one of the Sboxes
 */
-void Blowfish::generate_sbox(secure_vector<uint>& box,
+void Blowfish::generate_sbox(secure_vector!uint& box,
 									  ref uint L, ref uint R,
 									  in byte[16] salt,
 									  size_t salt_off) const

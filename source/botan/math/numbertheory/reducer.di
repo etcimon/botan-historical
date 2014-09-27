@@ -5,7 +5,7 @@
 * Distributed under the terms of the botan license.
 */
 
-#include <botan/numthry.h>
+import botan.numthry;
 /**
 * Modular Reducer (using Barrett's technique)
 */

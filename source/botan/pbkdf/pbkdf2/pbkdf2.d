@@ -5,10 +5,10 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/pbkdf2.h>
-#include <botan/get_byte.h>
-#include <botan/internal/xor_buf.h>
-#include <botan/internal/rounding.h>
+import botan.pbkdf2;
+import botan.get_byte;
+import botan.internal.xor_buf;
+import botan.internal.rounding;
 /*
 * Return a PKCS #5 PBKDF2 derived key
 */

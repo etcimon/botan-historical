@@ -5,8 +5,8 @@
 * Distributed under the terms of the botan license.
 */
 
-#include <botan/mac.h>
-#include <botan/hash.h>
+import botan.mac;
+import botan.hash;
 /**
 * HKDF, see @rfc 5869 for details
 */

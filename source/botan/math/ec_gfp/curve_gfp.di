@@ -7,7 +7,7 @@
 * Distributed under the terms of the botan license.
 */
 
-#include <botan/numthry.h>
+import botan.numthry;
 /**
 * This class represents an elliptic curve over GF(p)
 */

@@ -5,10 +5,10 @@
 * Distributed under the terms of the botan license.
 */
 
-#include <botan/aead.h>
-#include <botan/block_cipher.h>
-#include <botan/stream_cipher.h>
-#include <botan/mac.h>
+import botan.aead;
+import botan.block_cipher;
+import botan.stream_cipher;
+import botan.mac;
 /**
 * EAX base class
 */

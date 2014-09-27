@@ -5,10 +5,10 @@
 * Distributed under the terms of the botan license.
 */
 
-#include <botan/x509cert.h>
-#include <botan/pkcs8.h>
-#include <botan/pkcs10.h>
-#include <botan/asn1_time.h>
+import botan.x509cert;
+import botan.pkcs8;
+import botan.pkcs10;
+import botan.asn1_time;
 /**
 * Options for X.509 certificates.
 */

@@ -6,8 +6,8 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/numthry.h>
-#include <botan/reducer.h>
+import botan.numthry;
+import botan.reducer;
 /*
 * Shanks-Tonnelli algorithm
 */

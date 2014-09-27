@@ -5,9 +5,9 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/internal/gnump_engine.h>
-#include <botan/internal/gmp_wrap.h>
-#include <gmp.h>
+import botan.internal.gnump_engine;
+import botan.internal.gmp_wrap;
+import gmp.h;
 
 /* GnuMP 5.0 and later have a side-channel resistent powm */
 #if defined(HAVE_MPZ_POWM_SEC)
@@ -16,15 +16,15 @@
 #endif
 
 #if defined(BOTAN_HAS_RSA)
-  #include <botan/rsa.h>
+  import botan.rsa;
 #endif
 
 #if defined(BOTAN_HAS_DSA)
-  #include <botan/dsa.h>
+  import botan.dsa;
 #endif
 
 #if defined(BOTAN_HAS_DIFFIE_HELLMAN)
-  #include <botan/dh.h>
+  import botan.dh;
 #endif
 namespace {
 

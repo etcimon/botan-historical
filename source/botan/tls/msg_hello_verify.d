@@ -5,8 +5,8 @@
 * Released under the terms of the Botan license
 */
 
-#include <botan/internal/tls_messages.h>
-#include <botan/lookup.h>
+import botan.internal.tls_messages;
+import botan.lookup;
 namespace TLS {
 
 Hello_Verify_Request::Hello_Verify_Request(in Vector!byte buf)

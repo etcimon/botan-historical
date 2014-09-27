@@ -5,10 +5,10 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/charset.h>
-#include <botan/parsing.h>
-#include <botan/exceptn.h>
-#include <cctype>
+import botan.charset;
+import botan.parsing;
+import botan.exceptn;
+import cctype;
 namespace Charset {
 
 namespace {

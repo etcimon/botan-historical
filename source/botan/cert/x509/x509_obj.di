@@ -5,11 +5,11 @@
 * Distributed under the terms of the botan license.
 */
 
-#include <botan/asn1_obj.h>
-#include <botan/pipe.h>
-#include <botan/x509_key.h>
-#include <botan/rng.h>
-#include <vector>
+import botan.asn1_obj;
+import botan.pipe;
+import botan.x509_key;
+import botan.rng;
+import vector;
 /**
 * This class represents abstract X.509 signed objects as
 * in the X.500 SIGNED macro

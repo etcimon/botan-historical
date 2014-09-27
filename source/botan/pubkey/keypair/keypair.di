@@ -5,7 +5,7 @@
 * Distributed under the terms of the botan license.
 */
 
-#include <botan/pk_keys.h>
+import botan.pk_keys;
 namespace KeyPair {
 
 /**

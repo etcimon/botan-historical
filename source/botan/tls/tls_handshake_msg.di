@@ -5,9 +5,9 @@
 * Released under the terms of the botan license.
 */
 
-#include <botan/tls_magic.h>
-#include <vector>
-#include <string>
+import botan.tls_magic;
+import vector;
+import string;
 namespace TLS {
 
 /**

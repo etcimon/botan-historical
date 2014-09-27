@@ -5,12 +5,12 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/selftest.h>
-#include <botan/filters.h>
-#include <botan/aead_filt.h>
-#include <botan/hex.h>
-#include <botan/internal/core_engine.h>
-#include <botan/internal/stl_util.h>
+import botan.selftest;
+import botan.filters;
+import botan.aead_filt;
+import botan.hex;
+import botan.internal.core_engine;
+import botan.internal.stl_util;
 namespace {
 
 /*

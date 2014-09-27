@@ -5,16 +5,16 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/ocsp.h>
-#include <botan/certstor.h>
-#include <botan/der_enc.h>
-#include <botan/ber_dec.h>
-#include <botan/x509_ext.h>
-#include <botan/oids.h>
-#include <botan/base64.h>
-#include <botan/pubkey.h>
-#include <botan/x509path.h>
-#include <botan/http_util.h>
+import botan.ocsp;
+import botan.certstor;
+import botan.der_enc;
+import botan.ber_dec;
+import botan.x509_ext;
+import botan.oids;
+import botan.base64;
+import botan.pubkey;
+import botan.x509path;
+import botan.http_util;
 namespace OCSP {
 
 namespace {

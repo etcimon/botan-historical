@@ -5,15 +5,15 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/internal/dev_random.h>
-#include <botan/internal/rounding.h>
+import botan.internal.dev_random;
+import botan.internal.rounding;
 
-#include <sys/types.h>
-#include <sys/select.h>
-#include <sys/stat.h>
-#include <unistd.h>
-#include <fcntl.h>
-#include <string.h>
+import sys.types;
+import sys.select;
+import sys.stat;
+import unistd.h;
+import fcntl.h;
+import string.h;
 /**
 Device_EntropySource constructor
 Open a file descriptor to each (available) device in fsnames

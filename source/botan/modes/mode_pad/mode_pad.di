@@ -5,8 +5,8 @@
 * Distributed under the terms of the botan license.
 */
 
-#include <botan/secmem.h>
-#include <string>
+import botan.secmem;
+import string;
 /**
 * Block Cipher Mode Padding Method
 * This class is pretty limited, it cannot deal well with

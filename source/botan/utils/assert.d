@@ -5,8 +5,8 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/exceptn.h>
-#include <sstream>
+import botan.exceptn;
+import sstream;
 void assertion_failure(string expr_str,
 							  string assertion_made,
 							  string func,

@@ -5,7 +5,7 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/numthry.h>
+import botan.numthry;
 /*
 * Calculate the Jacobi symbol
 */

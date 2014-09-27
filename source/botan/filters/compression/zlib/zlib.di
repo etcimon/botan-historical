@@ -6,7 +6,7 @@
 * Distributed under the terms of the botan license.
 */
 
-#include <botan/filter.h>
+import botan.filter;
 /**
 * Zlib Compression Filter
 */

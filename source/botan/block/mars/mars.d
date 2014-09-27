@@ -5,9 +5,9 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/mars.h>
-#include <botan/loadstor.h>
-#include <botan/rotate.h>
+import botan.mars;
+import botan.loadstor;
+import botan.rotate;
 namespace {
 
 /**
@@ -317,7 +317,7 @@ void MARS::decrypt_n(byte* input, byte* output, size_t blocks) const
 */
 void MARS::key_schedule(in byte* key)
 {
-	secure_vector<uint> T(15);
+	secure_vector!uint T(15);
 	for (size_t i = 0; i != length / 4; ++i)
 		T[i] = load_le!uint(key, i);
 

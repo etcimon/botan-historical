@@ -5,8 +5,8 @@
 * Released under the terms of the botan license.
 */
 
-#include <botan/tls_session_manager.h>
-#include <botan/rng.h>
+import botan.tls_session_manager;
+import botan.rng;
 class sqlite3_database;
 
 namespace TLS {

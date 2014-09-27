@@ -6,11 +6,11 @@
 * Distributed under the terms of the botan license.
 */
 
-#include <botan/data_src.h>
-#include <botan/filter.h>
-#include <botan/exceptn.h>
-#include <initializer_list>
-#include <iosfwd>
+import botan.data_src;
+import botan.filter;
+import botan.exceptn;
+import initializer_list;
+import iosfwd;
 /**
 * This class represents pipe objects.
 * A set of filters can be placed into a pipe, and information flows
@@ -327,7 +327,7 @@ std::istream& operator>>(std::istream& input, Pipe& pipe);
 }
 
 #if defined(BOTAN_HAS_PIPE_UNIXFD_IO)
-  #include <botan/fd_unix.h>
+  import botan.fd_unix;
 #endif
 
 #endif

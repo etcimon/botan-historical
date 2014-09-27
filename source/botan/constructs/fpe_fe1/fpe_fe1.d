@@ -5,11 +5,11 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/fpe_fe1.h>
-#include <botan/numthry.h>
-#include <botan/hmac.h>
-#include <botan/sha2_32.h>
-#include <stdexcept>
+import botan.fpe_fe1;
+import botan.numthry;
+import botan.hmac;
+import botan.sha2_32;
+import stdexcept;
 namespace FPE {
 
 namespace {

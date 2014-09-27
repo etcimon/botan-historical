@@ -5,10 +5,10 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/pipe.h>
-#include <botan/internal/out_buf.h>
-#include <botan/secqueue.h>
-#include <botan/parsing.h>
+import botan.pipe;
+import botan.internal.out_buf;
+import botan.secqueue;
+import botan.parsing;
 namespace {
 
 /*

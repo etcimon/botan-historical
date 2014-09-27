@@ -6,8 +6,8 @@
 * Distributed under the terms of the botan license.
 */
 
-#include <botan/filter.h>
-#include <thread>
+import botan.filter;
+import thread;
 /**
 * BitBucket is a filter which simply discards all inputs
 */

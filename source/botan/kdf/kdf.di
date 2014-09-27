@@ -5,9 +5,9 @@
 * Distributed under the terms of the botan license.
 */
 
-#include <botan/secmem.h>
-#include <botan/types.h>
-#include <string>
+import botan.secmem;
+import botan.types;
+import string;
 /**
 * Key Derivation Function
 */

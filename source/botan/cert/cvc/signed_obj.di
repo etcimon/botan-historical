@@ -6,11 +6,11 @@
 * Distributed under the terms of the botan license.
 */
 
-#include <botan/asn1_obj.h>
-#include <botan/key_constraint.h>
-#include <botan/x509_key.h>
-#include <botan/pipe.h>
-#include <vector>
+import botan.asn1_obj;
+import botan.key_constraint;
+import botan.x509_key;
+import botan.pipe;
+import vector;
 /**
 * This class represents abstract signed EAC object
 */

@@ -7,9 +7,9 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/aes.h>
-#include <botan/loadstor.h>
-#include <botan/rotate.h>
+import botan.aes;
+import botan.loadstor;
+import botan.rotate;
 namespace {
 
 immutable byte[256] SE = {
@@ -411,7 +411,7 @@ immutable uint[1024] TD = {
 */
 void aes_encrypt_n(byte* input, byte* output,
 						 size_t blocks,
-						 const secure_vector<uint>& EK,
+						 const secure_vector!uint& EK,
 						 in SafeVector!byte ME)
 {
 	BOTAN_ASSERT(EK.size() && ME.size() == 16, "Key was set");
@@ -524,7 +524,7 @@ void aes_encrypt_n(byte* input, byte* output,
 * AES Decryption
 */
 void aes_decrypt_n(byte* input, byte* output, size_t blocks,
-						 const secure_vector<uint>& DK,
+						 const secure_vector!uint& DK,
 						 in SafeVector!byte MD)
 {
 	BOTAN_ASSERT(DK.size() && MD.size() == 16, "Key was set");
@@ -607,18 +607,18 @@ void aes_decrypt_n(byte* input, byte* output, size_t blocks,
 }
 
 void aes_key_schedule(in byte* key, size_t length,
-							 secure_vector<uint>& EK,
-							 secure_vector<uint>& DK,
+							 secure_vector!uint& EK,
+							 secure_vector!uint& DK,
 							 SafeVector!byte ME,
 							 SafeVector!byte MD)
 {
-	static const uint RC[10] = {
+	immutable uint[10] RC = {
 		0x01000000, 0x02000000, 0x04000000, 0x08000000, 0x10000000,
 		0x20000000, 0x40000000, 0x80000000, 0x1B000000, 0x36000000 };
 
 	const size_t rounds = (length / 4) + 6;
 
-	secure_vector<uint> XEK(length + 32), XDK(length + 32);
+	secure_vector!uint XEK(length + 32), XDK(length + 32);
 
 	const size_t X = length / 4;
 	for (size_t i = 0; i != X; ++i)

@@ -5,14 +5,14 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/gcm.h>
-#include <botan/ctr.h>
-#include <botan/internal/xor_buf.h>
-#include <botan/loadstor.h>
+import botan.gcm;
+import botan.ctr;
+import botan.internal.xor_buf;
+import botan.loadstor;
 
 #if defined(BOTAN_HAS_GCM_CLMUL)
-  #include <botan/internal/clmul.h>
-  #include <botan/cpuid.h>
+  import botan.internal.clmul;
+  import botan.cpuid;
 #endif
 void GHASH::gcm_multiply(SafeVector!byte x) const
 {
@@ -23,12 +23,12 @@ void GHASH::gcm_multiply(SafeVector!byte x) const
 
 	static const ulong R = 0xE100000000000000;
 
-	ulong H[2] = {
+	ulong[2] H = {
 		load_be!ulong(&m_H[0], 0),
 		load_be!ulong(&m_H[0], 1)
 };
 
-	ulong Z[2] = { 0, 0 };
+	ulong[2] Z = { 0, 0 };
 
 	// SSE2 might be useful here
 

@@ -6,10 +6,10 @@
 * Distributed under the terms of the botan license.
 */
 
-#include <botan/asn1_obj.h>
-#include <botan/asn1_str.h>
-#include <botan/asn1_oid.h>
-#include <map>
+import botan.asn1_obj;
+import botan.asn1_str;
+import botan.asn1_oid;
+import map;
 /**
 * Alternative Name
 */

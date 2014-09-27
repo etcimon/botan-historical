@@ -5,14 +5,14 @@
 * Released under the terms of the botan license.
 */
 
-#include <botan/tls_magic.h>
-#include <botan/tls_version.h>
-#include <botan/aead.h>
-#include <botan/block_cipher.h>
-#include <botan/stream_cipher.h>
-#include <botan/mac.h>
-#include <vector>
-#include <chrono>
+import botan.tls_magic;
+import botan.tls_version;
+import botan.aead;
+import botan.block_cipher;
+import botan.stream_cipher;
+import botan.mac;
+import vector;
+import chrono;
 namespace TLS {
 
 class Ciphersuite;

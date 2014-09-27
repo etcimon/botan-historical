@@ -8,9 +8,9 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/twofish.h>
-#include <botan/loadstor.h>
-#include <botan/rotate.h>
+import botan.twofish;
+import botan.loadstor;
+import botan.rotate;
 /*
 * Twofish Encryption
 */

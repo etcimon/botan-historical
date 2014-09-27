@@ -5,7 +5,7 @@
 * Distributed under the terms of the botan license.
 */
 
-#include <botan/xtea.h>
+import botan.xtea;
 /**
 * XTEA implemented using SIMD operations
 */

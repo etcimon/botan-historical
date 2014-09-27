@@ -5,9 +5,9 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/sha2_64.h>
-#include <botan/loadstor.h>
-#include <botan/rotate.h>
+import botan.sha2_64;
+import botan.loadstor;
+import botan.rotate;
 namespace {
 
 namespace SHA2_64 {
@@ -46,7 +46,7 @@ namespace SHA2_64 {
 /*
 * SHA-{384,512} Compression Function
 */
-void compress(secure_vector<ulong>& digest,
+void compress(secure_vector!ulong& digest,
 				  in byte* input, size_t blocks)
 {
 	ulong A = digest[0], B = digest[1], C = digest[2],

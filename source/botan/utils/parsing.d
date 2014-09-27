@@ -5,11 +5,11 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/parsing.h>
-#include <botan/exceptn.h>
-#include <botan/charset.h>
-#include <botan/get_byte.h>
-#include <set>
+import botan.parsing;
+import botan.exceptn;
+import botan.charset;
+import botan.get_byte;
+import set;
 uint to_uint(in string str)
 {
 	return std::stoul(str, null);

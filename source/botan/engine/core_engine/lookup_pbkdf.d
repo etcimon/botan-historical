@@ -5,16 +5,16 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/internal/core_engine.h>
-#include <botan/scan_name.h>
-#include <botan/algo_factory.h>
+import botan.internal.core_engine;
+import botan.scan_name;
+import botan.algo_factory;
 
 #if defined(BOTAN_HAS_PBKDF1)
-  #include <botan/pbkdf1.h>
+  import botan.pbkdf1;
 #endif
 
 #if defined(BOTAN_HAS_PBKDF2)
-  #include <botan/pbkdf2.h>
+  import botan.pbkdf2;
 #endif
 PBKDF* Core_Engine::find_pbkdf(in SCAN_Name algo_spec,
 										 Algorithm_Factory& af) const

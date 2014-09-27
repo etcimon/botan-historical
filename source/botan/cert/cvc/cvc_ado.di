@@ -5,10 +5,10 @@
 * Distributed under the terms of the botan license.
 */
 
-#include <botan/eac_obj.h>
-#include <botan/eac_asn_obj.h>
-#include <botan/cvc_req.h>
-#include <string>
+import botan.eac_obj;
+import botan.eac_asn_obj;
+import botan.cvc_req;
+import string;
 /**
 * This class represents a TR03110 (EAC) v1.1 CVC ADO request
 */

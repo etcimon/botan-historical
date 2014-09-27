@@ -5,9 +5,9 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/sha160.h>
-#include <botan/loadstor.h>
-#include <botan/rotate.h>
+import botan.sha160;
+import botan.loadstor;
+import botan.rotate;
 namespace SHA1_F {
 
 namespace {

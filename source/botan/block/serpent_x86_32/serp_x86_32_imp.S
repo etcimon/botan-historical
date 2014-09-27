@@ -5,7 +5,7 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/internal/asm_x86_32.h>
+import botan.internal.asm_x86_32;
 
 START_LISTING(serp_x86_32.S)
 

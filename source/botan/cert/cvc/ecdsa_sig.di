@@ -6,9 +6,9 @@
 * Distributed under the terms of the botan license.
 */
 
-#include <botan/bigint.h>
-#include <botan/der_enc.h>
-#include <botan/ber_dec.h>
+import botan.bigint;
+import botan.der_enc;
+import botan.ber_dec;
 /**
 * Class representing an ECDSA signature
 */

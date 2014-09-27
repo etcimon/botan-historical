@@ -5,26 +5,26 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/internal/asm_engine.h>
+import botan.internal.asm_engine;
 
 #if defined(BOTAN_HAS_SERPENT_X86_32)
-  #include <botan/serp_x86_32.h>
+  import botan.serp_x86_32;
 #endif
 
 #if defined(BOTAN_HAS_MD4_X86_32)
-  #include <botan/md4_x86_32.h>
+  import botan.md4_x86_32;
 #endif
 
 #if defined(BOTAN_HAS_MD5_X86_32)
-  #include <botan/md5_x86_32.h>
+  import botan.md5_x86_32;
 #endif
 
 #if defined(BOTAN_HAS_SHA1_X86_64)
-  #include <botan/sha1_x86_64.h>
+  import botan.sha1_x86_64;
 #endif
 
 #if defined(BOTAN_HAS_SHA1_X86_32)
-  #include <botan/sha1_x86_32.h>
+  import botan.sha1_x86_32;
 #endif
 BlockCipher*
 Assembler_Engine::find_block_cipher(in SCAN_Name request,

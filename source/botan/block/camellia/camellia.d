@@ -5,9 +5,9 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/camellia.h>
-#include <botan/internal/camellia_sbox.h>
-#include <botan/loadstor.h>
+import botan.camellia;
+import botan.internal.camellia_sbox;
+import botan.loadstor;
 namespace Camellia_F {
 
 namespace {
@@ -18,7 +18,7 @@ namespace {
 */
 ulong F_SLOW(ulong v, ulong K)
 {
-	static const byte SBOX[256] = {
+	immutable byte[256] SBOX = {
 		0x70, 0x82, 0x2C, 0xEC, 0xB3, 0x27, 0xC0, 0xE5, 0xE4, 0x85, 0x57,
 		0x35, 0xEA, 0x0C, 0xAE, 0x41, 0x23, 0xEF, 0x6B, 0x93, 0x45, 0x19,
 		0xA5, 0x21, 0xED, 0x0E, 0x4F, 0x4E, 0x1D, 0x65, 0x92, 0xBD, 0x86,
@@ -113,7 +113,7 @@ ulong F_SLOW(ulong v, ulong K)
 * Camellia Encryption
 */
 void encrypt(byte* input, byte* output, size_t blocks,
-				 const secure_vector<ulong>& SK, const size_t rounds)
+				 const secure_vector!ulong& SK, const size_t rounds)
 {
 	size_t blocks = input.length;
 	for (size_t i = 0; i != blocks; ++i)
@@ -158,7 +158,7 @@ void encrypt(byte* input, byte* output, size_t blocks,
 * Camellia Decryption
 */
 void decrypt(byte* input, byte* output, size_t blocks,
-				 const secure_vector<ulong>& SK, const size_t rounds)
+				 const secure_vector!ulong& SK, const size_t rounds)
 {
 	size_t blocks = input.length;
 	for (size_t i = 0; i != blocks; ++i)
@@ -212,7 +212,7 @@ ulong left_rot_lo(ulong h, ulong l, size_t shift)
 /*
 * Camellia Key Schedule
 */
-void key_schedule(secure_vector<ulong>& SK, in byte* key)
+void key_schedule(secure_vector!ulong& SK, in byte* key)
 {
 	const ulong Sigma1 = 0xA09E667F3BCC908B;
 	const ulong Sigma2 = 0xB67AE8584CAA73B2;

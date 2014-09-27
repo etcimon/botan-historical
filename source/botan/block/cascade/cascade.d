@@ -5,7 +5,7 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/cascade.h>
+import botan.cascade;
 void Cascade_Cipher::encrypt_n(byte* input, byte* output, size_t blocks,
 										 size_t blocks) const
 {

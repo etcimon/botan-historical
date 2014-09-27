@@ -5,9 +5,9 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/internal/def_powm.h>
-#include <botan/numthry.h>
-#include <vector>
+import botan.internal.def_powm;
+import botan.numthry;
+import vector;
 /*
 * Set the exponent
 */

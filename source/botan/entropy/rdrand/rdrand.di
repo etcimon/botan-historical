@@ -5,7 +5,7 @@
 * Distributed under the terms of the botan license.
 */
 
-#include <botan/entropy_src.h>
+import botan.entropy_src;
 /**
 * Entropy source using the rdrand instruction first introduced on
 * Intel's Ivy Bridge architecture.

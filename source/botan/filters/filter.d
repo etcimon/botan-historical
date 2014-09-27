@@ -5,9 +5,9 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/filter.h>
-#include <botan/secqueue.h>
-#include <botan/exceptn.h>
+import botan.filter;
+import botan.secqueue;
+import botan.exceptn;
 /*
 * Filter Constructor
 */

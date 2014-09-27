@@ -5,12 +5,12 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/hex_filt.h>
-#include <botan/hex.h>
-#include <botan/parsing.h>
-#include <botan/charset.h>
-#include <botan/exceptn.h>
-#include <algorithm>
+import botan.hex_filt;
+import botan.hex;
+import botan.parsing;
+import botan.charset;
+import botan.exceptn;
+import algorithm;
 /**
 * Size used for internal buffer in hex encoder/decoder
 */

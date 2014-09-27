@@ -5,10 +5,10 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/salsa20.h>
-#include <botan/loadstor.h>
-#include <botan/rotate.h>
-#include <botan/internal/xor_buf.h>
+import botan.salsa20;
+import botan.loadstor;
+import botan.rotate;
+import botan.internal.xor_buf;
 namespace {
 
 #define SALSA20_QUARTER_ROUND(x1, x2, x3, x4)	 \
@@ -157,7 +157,7 @@ void Salsa20::key_schedule(in byte* key, size_t length)
 
 	m_position = 0;
 
-	const byte ZERO[8] = { 0 };
+	const byte[8] ZERO = { 0 };
 	set_iv(ZERO, sizeof(ZERO));
 }
 
@@ -183,7 +183,7 @@ void Salsa20::set_iv(in byte* iv, size_t length)
 		m_state[8] = load_le!uint(iv, 2);
 		m_state[9] = load_le!uint(iv, 3);
 
-		secure_vector<uint> hsalsa(8);
+		secure_vector!uint hsalsa(8);
 		hsalsa20(&hsalsa[0], &m_state[0]);
 
 		m_state[ 1] = hsalsa[0];

@@ -5,7 +5,7 @@
 * Distributed under the terms of the botan license.
 */
 
-#include <botan/block_cipher.h>
+import botan.block_cipher;
 /**
 * Blowfish
 */
@@ -31,7 +31,7 @@ class Blowfish : public Block_Cipher_Fixed_Params<8, 1, 56>
 								 size_t key_length,
 								 const byte salt[16]);
 
-		void generate_sbox(secure_vector<uint>& box,
+		void generate_sbox(secure_vector!uint& box,
 								 ref uint L, ref uint R,
 								 const byte salt[16],
 								 size_t salt_off) const;
@@ -39,5 +39,5 @@ class Blowfish : public Block_Cipher_Fixed_Params<8, 1, 56>
 		static const uint P_INIT[18];
 		static const uint S_INIT[1024];
 
-		secure_vector<uint> S, P;
+		secure_vector!uint S, P;
 };

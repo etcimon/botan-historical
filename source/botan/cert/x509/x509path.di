@@ -5,10 +5,10 @@
 * Distributed under the terms of the botan license.
 */
 
-#include <botan/cert_status.h>
-#include <botan/x509cert.h>
-#include <botan/certstor.h>
-#include <set>
+import botan.cert_status;
+import botan.x509cert;
+import botan.certstor;
+import set;
 /**
 * Specifies restrictions on the PKIX path validation
 */

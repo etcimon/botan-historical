@@ -5,9 +5,9 @@
 * Distributed under the terms of the botan license.
 */
 
-#include <botan/types.h>
-#include <vector>
-#include <mutex>
+import botan.types;
+import vector;
+import mutex;
 class mlock_allocator
 {
 	public:

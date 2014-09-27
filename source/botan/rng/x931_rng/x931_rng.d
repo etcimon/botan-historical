@@ -5,9 +5,9 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/x931_rng.h>
-#include <botan/internal/xor_buf.h>
-#include <algorithm>
+import botan.x931_rng;
+import botan.internal.xor_buf;
+import algorithm;
 void ANSI_X931_RNG::randomize(byte* output)
 {
 	size_t length = output.length;

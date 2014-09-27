@@ -5,9 +5,9 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/internal/es_win32.h>
-#include <windows.h>
-#include <tlhelp32.h>
+import botan.internal.es_win32;
+import windows.h;
+import tlhelp32.h;
 /**
 * Win32 poll using stats functions including Tooltip32
 */

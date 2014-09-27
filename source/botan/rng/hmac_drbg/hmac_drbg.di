@@ -5,8 +5,8 @@
 * Distributed under the terms of the botan license.
 */
 
-#include <botan/rng.h>
-#include <botan/mac.h>
+import botan.rng;
+import botan.mac;
 /**
 * HMAC_DRBG (SP800-90A)
 */

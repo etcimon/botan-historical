@@ -5,8 +5,8 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/internal/mp_core.h>
-#include <botan/mem_ops.h>
+import botan.internal.mp_core;
+import botan.mem_ops;
 extern "C" {
 
 /*

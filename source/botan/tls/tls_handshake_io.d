@@ -5,11 +5,11 @@
 * Released under the terms of the Botan license
 */
 
-#include <botan/internal/tls_handshake_io.h>
-#include <botan/internal/tls_messages.h>
-#include <botan/internal/tls_record.h>
-#include <botan/internal/tls_seq_numbers.h>
-#include <botan/exceptn.h>
+import botan.internal.tls_handshake_io;
+import botan.internal.tls_messages;
+import botan.internal.tls_record;
+import botan.internal.tls_seq_numbers;
+import botan.exceptn;
 namespace TLS {
 
 namespace {

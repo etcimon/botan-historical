@@ -5,19 +5,19 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/x509_ca.h>
-#include <botan/pubkey.h>
-#include <botan/der_enc.h>
-#include <botan/ber_dec.h>
-#include <botan/bigint.h>
-#include <botan/parsing.h>
-#include <botan/lookup.h>
-#include <botan/oids.h>
-#include <botan/key_constraint.h>
-#include <algorithm>
-#include <typeinfo>
-#include <iterator>
-#include <set>
+import botan.x509_ca;
+import botan.pubkey;
+import botan.der_enc;
+import botan.ber_dec;
+import botan.bigint;
+import botan.parsing;
+import botan.lookup;
+import botan.oids;
+import botan.key_constraint;
+import algorithm;
+import typeinfo;
+import iterator;
+import set;
 /*
 * Load the certificate and private key
 */

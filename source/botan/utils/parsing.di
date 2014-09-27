@@ -5,14 +5,14 @@
 * Distributed under the terms of the botan license.
 */
 
-#include <botan/types.h>
-#include <string>
-#include <vector>
-#include <set>
+import botan.types;
+import string;
+import vector;
+import set;
 
-#include <istream>
-#include <functional>
-#include <map>
+import istream;
+import functional;
+import map;
 /**
 * Parse a SCAN-style algorithm name
 * @param scan_name the name

@@ -5,8 +5,8 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/desx.h>
-#include <botan/internal/xor_buf.h>
+import botan.desx;
+import botan.internal.xor_buf;
 /*
 * DESX Encryption
 */

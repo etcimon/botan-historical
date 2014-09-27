@@ -5,8 +5,8 @@
 * Distributed under the terms of the botan license.
 */
 
-#include <botan/bigint.h>
-#include <gmp.h>
+import botan.bigint;
+import gmp.h;
 /**
 * Lightweight GMP mpz_t wrapper. For internal use only.
 */

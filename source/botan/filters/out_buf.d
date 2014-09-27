@@ -6,8 +6,8 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/internal/out_buf.h>
-#include <botan/secqueue.h>
+import botan.internal.out_buf;
+import botan.secqueue;
 /*
 * Read data from a message
 */

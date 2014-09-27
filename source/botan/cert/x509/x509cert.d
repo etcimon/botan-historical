@@ -5,20 +5,20 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/x509cert.h>
-#include <botan/x509_ext.h>
-#include <botan/der_enc.h>
-#include <botan/ber_dec.h>
-#include <botan/internal/stl_util.h>
-#include <botan/parsing.h>
-#include <botan/bigint.h>
-#include <botan/lookup.h>
-#include <botan/oids.h>
-#include <botan/pem.h>
-#include <botan/hex.h>
-#include <algorithm>
-#include <iterator>
-#include <sstream>
+import botan.x509cert;
+import botan.x509_ext;
+import botan.der_enc;
+import botan.ber_dec;
+import botan.internal.stl_util;
+import botan.parsing;
+import botan.bigint;
+import botan.lookup;
+import botan.oids;
+import botan.pem;
+import botan.hex;
+import algorithm;
+import iterator;
+import sstream;
 namespace {
 
 /*

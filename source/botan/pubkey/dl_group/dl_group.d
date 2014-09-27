@@ -5,15 +5,15 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/dl_group.h>
-#include <botan/libstate.h>
-#include <botan/parsing.h>
-#include <botan/numthry.h>
-#include <botan/der_enc.h>
-#include <botan/ber_dec.h>
-#include <botan/pipe.h>
-#include <botan/pem.h>
-#include <botan/workfactor.h>
+import botan.dl_group;
+import botan.libstate;
+import botan.parsing;
+import botan.numthry;
+import botan.der_enc;
+import botan.ber_dec;
+import botan.pipe;
+import botan.pem;
+import botan.workfactor;
 /*
 * DL_Group Constructor
 */

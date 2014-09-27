@@ -5,9 +5,9 @@
 * Distributed under the terms of the botan license.
 */
 
-#include <botan/bigint.h>
-#include <botan/pow_mod.h>
-#include <botan/rng.h>
+import botan.bigint;
+import botan.pow_mod;
+import botan.rng;
 /**
 * Fused multiply-add
 * @param a an integer

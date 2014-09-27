@@ -5,8 +5,8 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/adler32.h>
-#include <botan/loadstor.h>
+import botan.adler32;
+import botan.loadstor;
 namespace {
 
 void adler32_update(in byte* input, size_t length,

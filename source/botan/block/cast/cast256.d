@@ -5,10 +5,10 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/cast256.h>
-#include <botan/internal/cast_sboxes.h>
-#include <botan/loadstor.h>
-#include <botan/rotate.h>
+import botan.cast256;
+import botan.internal.cast_sboxes;
+import botan.loadstor;
+import botan.rotate;
 namespace {
 
 /*
@@ -181,7 +181,7 @@ void CAST_256::key_schedule(in byte* key)
 	MK.resize(48);
 	RK.resize(48);
 
-	secure_vector<uint> K(8);
+	secure_vector!uint K(8);
 	for (size_t i = 0; i != length; ++i)
 		K[i/4] = (K[i/4] << 8) + key[i];
 

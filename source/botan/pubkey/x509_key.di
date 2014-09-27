@@ -5,10 +5,10 @@
 * Distributed under the terms of the botan license.
 */
 
-#include <botan/pk_keys.h>
-#include <botan/alg_id.h>
-#include <botan/pipe.h>
-#include <string>
+import botan.pk_keys;
+import botan.alg_id;
+import botan.pipe;
+import string;
 /**
 * The two types of X509 encoding supported by Botan.
 */

@@ -7,8 +7,8 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/ecdsa.h>
-#include <botan/keypair.h>
+import botan.ecdsa;
+import botan.keypair;
 bool ECDSA_PrivateKey::check_key(RandomNumberGenerator& rng,
 											bool strong) const
 {

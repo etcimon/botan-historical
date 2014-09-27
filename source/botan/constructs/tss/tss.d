@@ -5,12 +5,12 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/tss.h>
-#include <botan/loadstor.h>
-#include <botan/pipe.h>
-#include <botan/hex.h>
-#include <botan/sha2_32.h>
-#include <botan/sha160.h>
+import botan.tss;
+import botan.loadstor;
+import botan.pipe;
+import botan.hex;
+import botan.sha2_32;
+import botan.sha160;
 namespace {
 
 /**

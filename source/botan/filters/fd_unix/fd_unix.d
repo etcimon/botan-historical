@@ -5,9 +5,9 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/pipe.h>
-#include <botan/exceptn.h>
-#include <unistd.h>
+import botan.pipe;
+import botan.exceptn;
+import unistd.h;
 /*
 * Write data from a pipe into a Unix fd
 */

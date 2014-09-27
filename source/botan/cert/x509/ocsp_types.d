@@ -5,13 +5,13 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/ocsp_types.h>
-#include <botan/der_enc.h>
-#include <botan/ber_dec.h>
-#include <botan/x509_ext.h>
-#include <botan/lookup.h>
-#include <botan/hash.h>
-#include <botan/oids.h>
+import botan.ocsp_types;
+import botan.der_enc;
+import botan.ber_dec;
+import botan.x509_ext;
+import botan.lookup;
+import botan.hash;
+import botan.oids;
 namespace OCSP {
 
 CertID::CertID(in X509_Certificate issuer,

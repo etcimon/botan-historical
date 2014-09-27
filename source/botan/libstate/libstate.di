@@ -5,13 +5,13 @@
 * Distributed under the terms of the botan license.
 */
 
-#include <botan/global_state.h>
-#include <botan/algo_factory.h>
-#include <botan/rng.h>
-#include <mutex>
-#include <string>
-#include <vector>
-#include <map>
+import botan.global_state;
+import botan.algo_factory;
+import botan.rng;
+import mutex;
+import string;
+import vector;
+import map;
 /**
 * Global Library State
 */

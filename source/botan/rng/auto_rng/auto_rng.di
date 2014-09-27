@@ -5,8 +5,8 @@
 * Distributed under the terms of the botan license.
 */
 
-#include <botan/rng.h>
-#include <string>
+import botan.rng;
+import string;
 class AutoSeeded_RNG : public RandomNumberGenerator
 {
 	public:

@@ -5,8 +5,8 @@
 * Distributed under the terms of the botan license.
 */
 
-#include <botan/block_cipher.h>
-#include <botan/stream_cipher.h>
+import botan.block_cipher;
+import botan.stream_cipher;
 /**
 * CTR-BE (Counter mode, big-endian)
 */

@@ -5,11 +5,11 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/rsa.h>
-#include <botan/parsing.h>
-#include <botan/numthry.h>
-#include <botan/keypair.h>
-#include <future>
+import botan.rsa;
+import botan.parsing;
+import botan.numthry;
+import botan.keypair;
+import future;
 /*
 * Create a RSA private key
 */

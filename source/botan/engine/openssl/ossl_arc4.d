@@ -5,9 +5,9 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/internal/openssl_engine.h>
-#include <botan/parsing.h>
-#include <openssl/rc4.h>
+import botan.internal.openssl_engine;
+import botan.parsing;
+import openssl.rc4;
 namespace {
 
 /**

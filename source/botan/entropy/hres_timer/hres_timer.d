@@ -5,18 +5,18 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/internal/hres_timer.h>
-#include <botan/cpuid.h>
-#include <chrono>
+import botan.internal.hres_timer;
+import botan.cpuid;
+import chrono;
 
 #if defined(BOTAN_TARGET_OS_HAS_QUERY_PERF_COUNTER)
-  #include <windows.h>
+  import windows.h;
   #undef min
   #undef max
 #endif
 
 #if defined(BOTAN_TARGET_OS_HAS_CLOCK_GETTIME)
-  #include <time.h>
+  import time.h;
 #endif
 /*
 * Get the timestamp

@@ -6,9 +6,9 @@
 * Distributed under the terms of the botan license.
 */
 
-#include <botan/cvc_gen_cert.h>
-#include <botan/ecdsa.h>
-#include <string>
+import botan.cvc_gen_cert;
+import botan.ecdsa;
+import string;
 /**
 * This class represents TR03110 (EAC) v1.1 CV Certificates
 */

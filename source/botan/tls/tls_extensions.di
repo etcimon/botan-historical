@@ -5,12 +5,12 @@
 * Released under the terms of the botan license.
 */
 
-#include <botan/secmem.h>
-#include <botan/tls_magic.h>
-#include <vector>
-#include <string>
-#include <map>
-#include <set>
+import botan.secmem;
+import botan.tls_magic;
+import vector;
+import string;
+import map;
+import set;
 namespace TLS {
 
 class TLS_Data_Reader;

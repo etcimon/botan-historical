@@ -5,36 +5,36 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/internal/simd_engine.h>
-#include <botan/internal/simd_32.h>
-#include <botan/cpuid.h>
+import botan.internal.simd_engine;
+import botan.internal.simd_32;
+import botan.cpuid;
 
 #if defined(BOTAN_HAS_AES_SSSE3)
-  #include <botan/aes_ssse3.h>
+  import botan.aes_ssse3;
 #endif
 
 #if defined(BOTAN_HAS_SERPENT_SIMD)
-  #include <botan/serp_simd.h>
+  import botan.serp_simd;
 #endif
 
 #if defined(BOTAN_HAS_THREEFISH_512_AVX2)
-  #include <botan/threefish_avx2.h>
+  import botan.threefish_avx2;
 #endif
 
 #if defined(BOTAN_HAS_NOEKEON_SIMD)
-  #include <botan/noekeon_simd.h>
+  import botan.noekeon_simd;
 #endif
 
 #if defined(BOTAN_HAS_XTEA_SIMD)
-  #include <botan/xtea_simd.h>
+  import botan.xtea_simd;
 #endif
 
 #if defined(BOTAN_HAS_IDEA_SSE2)
-  #include <botan/idea_sse2.h>
+  import botan.idea_sse2;
 #endif
 
 #if defined(BOTAN_HAS_SHA1_SSE2)
-  #include <botan/sha1_sse2.h>
+  import botan.sha1_sse2;
 #endif
 BlockCipher*
 SIMD_Engine::find_block_cipher(in SCAN_Name request,

@@ -5,7 +5,7 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/hkdf.h>
+import botan.hkdf;
 string HKDF::name() const
 {
 	return "HKDF(" + m_prf->name() + ")";

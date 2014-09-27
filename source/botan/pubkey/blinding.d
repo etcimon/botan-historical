@@ -5,8 +5,8 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/blinding.h>
-#include <botan/numthry.h>
+import botan.blinding;
+import botan.numthry;
 /*
 * Blinder Constructor
 */

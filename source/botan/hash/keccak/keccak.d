@@ -5,12 +5,12 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/keccak.h>
-#include <botan/loadstor.h>
-#include <botan/parsing.h>
-#include <botan/exceptn.h>
-#include <botan/rotate.h>
-#include <botan/internal/xor_buf.h>
+import botan.keccak;
+import botan.loadstor;
+import botan.parsing;
+import botan.exceptn;
+import botan.rotate;
+import botan.internal.xor_buf;
 namespace {
 
 void keccak_f_1600(ulong[25] A)

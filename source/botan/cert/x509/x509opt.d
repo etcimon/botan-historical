@@ -5,10 +5,10 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/x509self.h>
-#include <botan/oids.h>
-#include <botan/parsing.h>
-#include <chrono>
+import botan.x509self;
+import botan.oids;
+import botan.parsing;
+import chrono;
 /*
 * Set when the certificate should become valid
 */

@@ -5,13 +5,13 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/x509_dn.h>
-#include <botan/der_enc.h>
-#include <botan/ber_dec.h>
-#include <botan/parsing.h>
-#include <botan/internal/stl_util.h>
-#include <botan/oids.h>
-#include <ostream>
+import botan.x509_dn;
+import botan.der_enc;
+import botan.ber_dec;
+import botan.parsing;
+import botan.internal.stl_util;
+import botan.oids;
+import ostream;
 /*
 * Create an empty X509_DN
 */

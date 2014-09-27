@@ -5,8 +5,8 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/reducer.h>
-#include <botan/internal/mp_core.h>
+import botan.reducer;
+import botan.internal.mp_core;
 /*
 * Modular_Reducer Constructor
 */

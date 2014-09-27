@@ -5,12 +5,12 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/symkey.h>
-#include <botan/internal/xor_buf.h>
-#include <botan/rng.h>
-#include <botan/pipe.h>
-#include <botan/hex.h>
-#include <algorithm>
+import botan.symkey;
+import botan.internal.xor_buf;
+import botan.rng;
+import botan.pipe;
+import botan.hex;
+import algorithm;
 /*
 * Create an OctetString from RNG output
 */
@@ -42,7 +42,7 @@ OctetString::OctetString(in byte* input, size_t len)
 */
 void OctetString::set_odd_parity()
 {
-	const byte ODD_PARITY[256] = {
+	immutable byte[256] ODD_PARITY = {
 		0x01, 0x01, 0x02, 0x02, 0x04, 0x04, 0x07, 0x07, 0x08, 0x08, 0x0B, 0x0B,
 		0x0D, 0x0D, 0x0E, 0x0E, 0x10, 0x10, 0x13, 0x13, 0x15, 0x15, 0x16, 0x16,
 		0x19, 0x19, 0x1A, 0x1A, 0x1C, 0x1C, 0x1F, 0x1F, 0x20, 0x20, 0x23, 0x23,

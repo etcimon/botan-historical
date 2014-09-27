@@ -5,8 +5,8 @@
 * Released under the terms of the botan license.
 */
 
-#include <botan/secmem.h>
-#include <string>
+import botan.secmem;
+import string;
 namespace TLS {
 
 /**

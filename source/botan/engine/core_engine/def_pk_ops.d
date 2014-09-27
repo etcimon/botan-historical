@@ -5,42 +5,42 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/internal/core_engine.h>
+import botan.internal.core_engine;
 
 #if defined(BOTAN_HAS_RSA)
-  #include <botan/rsa.h>
+  import botan.rsa;
 #endif
 
 #if defined(BOTAN_HAS_RW)
-  #include <botan/rw.h>
+  import botan.rw;
 #endif
 
 #if defined(BOTAN_HAS_DSA)
-  #include <botan/dsa.h>
+  import botan.dsa;
 #endif
 
 #if defined(BOTAN_HAS_ECDSA)
-  #include <botan/ecdsa.h>
+  import botan.ecdsa;
 #endif
 
 #if defined(BOTAN_HAS_ELGAMAL)
-  #include <botan/elgamal.h>
+  import botan.elgamal;
 #endif
 
 #if defined(BOTAN_HAS_GOST_34_10_2001)
-  #include <botan/gost_3410.h>
+  import botan.gost_3410;
 #endif
 
 #if defined(BOTAN_HAS_NYBERG_RUEPPEL)
-  #include <botan/nr.h>
+  import botan.nr;
 #endif
 
 #if defined(BOTAN_HAS_DIFFIE_HELLMAN)
-  #include <botan/dh.h>
+  import botan.dh;
 #endif
 
 #if defined(BOTAN_HAS_ECDH)
-  #include <botan/ecdh.h>
+  import botan.ecdh;
 #endif
 PK_Ops::Encryption*
 Core_Engine::get_encryption_op(in Public_Key key, RandomNumberGenerator&) const

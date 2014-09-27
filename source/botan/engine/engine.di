@@ -5,15 +5,15 @@
 * Distributed under the terms of the botan license.
 */
 
-#include <botan/scan_name.h>
-#include <botan/block_cipher.h>
-#include <botan/stream_cipher.h>
-#include <botan/hash.h>
-#include <botan/mac.h>
-#include <botan/pbkdf.h>
-#include <botan/pow_mod.h>
-#include <botan/pk_keys.h>
-#include <botan/pk_ops.h>
+import botan.scan_name;
+import botan.block_cipher;
+import botan.stream_cipher;
+import botan.hash;
+import botan.mac;
+import botan.pbkdf;
+import botan.pow_mod;
+import botan.pk_keys;
+import botan.pk_ops;
 class Algorithm_Factory;
 class Keyed_Filter;
 class RandomNumberGenerator;

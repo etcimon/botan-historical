@@ -5,9 +5,9 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/rng.h>
-#include <botan/hmac_rng.h>
-#include <botan/libstate.h>
+import botan.rng;
+import botan.hmac_rng;
+import botan.libstate;
 RandomNumberGenerator* RandomNumberGenerator::make_rng()
 {
 	return make_rng(global_state().algorithm_factory()).release();

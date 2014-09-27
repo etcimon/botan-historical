@@ -5,7 +5,7 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/engine.h>
+import botan.engine;
 BlockCipher*
 Engine::find_block_cipher(in SCAN_Name,
 								  Algorithm_Factory&) const

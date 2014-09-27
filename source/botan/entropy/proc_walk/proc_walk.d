@@ -7,19 +7,19 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/internal/proc_walk.h>
-#include <botan/secmem.h>
-#include <cstring>
-#include <deque>
+import botan.internal.proc_walk;
+import botan.secmem;
+import cstring;
+import deque;
 
   #define _POSIX_C_SOURCE 199309
 #endif
 
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <unistd.h>
-#include <dirent.h>
-#include <fcntl.h>
+import sys.types;
+import sys.stat;
+import unistd.h;
+import dirent.h;
+import fcntl.h;
 namespace {
 
 class Directory_Walker : public File_Descriptor_Source

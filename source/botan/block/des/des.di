@@ -5,7 +5,7 @@
 * Distributed under the terms of the botan license.
 */
 
-#include <botan/block_cipher.h>
+import botan.block_cipher;
 /**
 * DES
 */
@@ -21,7 +21,7 @@ class DES : public Block_Cipher_Fixed_Params<8, 8>
 	private:
 		void key_schedule(in byte*, size_t);
 
-		secure_vector<uint> round_key;
+		secure_vector!uint round_key;
 };
 
 /**
@@ -39,7 +39,7 @@ class TripleDES : public Block_Cipher_Fixed_Params<8, 16, 24, 8>
 	private:
 		void key_schedule(in byte*, size_t);
 
-		secure_vector<uint> round_key;
+		secure_vector!uint round_key;
 };
 
 /*

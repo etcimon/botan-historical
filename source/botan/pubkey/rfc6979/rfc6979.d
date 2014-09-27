@@ -5,9 +5,9 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/rfc6979.h>
-#include <botan/hmac_drbg.h>
-#include <botan/libstate.h>
+import botan.rfc6979;
+import botan.hmac_drbg;
+import botan.libstate;
 BigInt generate_rfc6979_nonce(in BigInt x,
 										ref const BigInt q,
 										ref const BigInt h,

@@ -5,7 +5,7 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/md5_x86_32.h>
+import botan.md5_x86_32;
 namespace {
 
 extern "C"

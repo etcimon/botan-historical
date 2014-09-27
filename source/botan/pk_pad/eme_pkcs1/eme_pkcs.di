@@ -5,7 +5,7 @@
 * Distributed under the terms of the botan license.
 */
 
-#include <botan/eme.h>
+import botan.eme;
 /**
 * EME from PKCS #1 v1.5
 */

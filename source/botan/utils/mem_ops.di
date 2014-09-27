@@ -5,8 +5,8 @@
 * Distributed under the terms of the botan license.
 */
 
-#include <botan/types.h>
-#include <cstring>
+import botan.types;
+import cstring;
 /**
 * Zeroize memory
 * @param ptr a pointer to memory to zero out

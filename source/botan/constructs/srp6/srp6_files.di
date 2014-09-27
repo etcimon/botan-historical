@@ -5,9 +5,9 @@
 * Distributed under the terms of the botan license.
 */
 
-#include <botan/bigint.h>
-#include <string>
-#include <map>
+import botan.bigint;
+import string;
+import map;
 /**
 * A GnuTLS compatible SRP6 authenticator file
 */

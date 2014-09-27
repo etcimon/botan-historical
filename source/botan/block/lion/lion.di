@@ -5,9 +5,9 @@
 * Distributed under the terms of the botan license.
 */
 
-#include <botan/block_cipher.h>
-#include <botan/stream_cipher.h>
-#include <botan/hash.h>
+import botan.block_cipher;
+import botan.stream_cipher;
+import botan.hash;
 /**
 * Lion is a block cipher construction designed by Ross Anderson and
 * Eli Biham, described in "Two Practical and Provably Secure Block

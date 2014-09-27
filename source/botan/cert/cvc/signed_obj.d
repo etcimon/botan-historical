@@ -6,9 +6,9 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/signed_obj.h>
-#include <botan/pubkey.h>
-#include <botan/oids.h>
+import botan.signed_obj;
+import botan.pubkey;
+import botan.oids;
 /*
 * Return a BER encoded X.509 object
 */

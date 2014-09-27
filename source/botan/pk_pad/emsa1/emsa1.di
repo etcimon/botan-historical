@@ -5,8 +5,8 @@
 * Distributed under the terms of the botan license.
 */
 
-#include <botan/emsa.h>
-#include <botan/hash.h>
+import botan.emsa;
+import botan.hash;
 /**
 * EMSA1 from IEEE 1363
 * Essentially, sign the hash directly

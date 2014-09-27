@@ -5,22 +5,22 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/cpuid.h>
-#include <botan/types.h>
-#include <botan/get_byte.h>
-#include <botan/mem_ops.h>
-#include <ostream>
+import botan.cpuid;
+import botan.types;
+import botan.get_byte;
+import botan.mem_ops;
+import ostream;
 
 #if defined(BOTAN_TARGET_CPU_IS_PPC_FAMILY)
 
 #if defined(BOTAN_TARGET_OS_IS_DARWinput)
-  #include <sys/sysctl.h>
+  import sys.sysctl;
 #endif
 
 #if defined(BOTAN_TARGET_OS_IS_OPENBSD)
-  #include <sys/param.h>
-  #include <sys/sysctl.h>
-  #include <machine/cpu.h>
+  import sys.param;
+  import sys.sysctl;
+  import machine.cpu;
 #endif
 
 #endif
@@ -29,14 +29,14 @@
 
 #if defined(BOTAN_BUILD_COMPILER_IS_MSVC)
 
-#include <intrin.h>
+import intrin.h;
 
 #define X86_CPUID(type, output) do { __cpuid((int*)output, type); } while(0)
 #define X86_CPUID_SUBLEVEL(type, level, output) do { __cpuidex((int*)output, type, level); } while(0)
 
 #elif defined(BOTAN_BUILD_COMPILER_IS_INTEL)
 
-#include <ia32intrin.h>
+import ia32intrin.h;
 
 #define X86_CPUID(type, output) do { __cpuid(output, type); } while(0)
 #define X86_CPUID_SUBLEVEL(type, level, output) do { __cpuidex((int*)output, type, level); } while(0)
@@ -53,7 +53,7 @@
 
 #elif defined(BOTAN_BUILD_COMPILER_IS_GCC)
 
-#include <cpuid.h>
+import cpuid.h;
 
 #define X86_CPUID(type, output) do { __get_cpuid(type, output, output+1, output+2, output+3); } while(0)
 
@@ -70,7 +70,7 @@
 #endif
 
 #endif
-ulong CPUID::m_x86_processor_flags[2] = { 0, 0 };
+ulong[2] CPUID::m_x86_processor_flags = { 0, 0 };
 size_t CPUID::m_cache_line_size = 0;
 bool CPUID::m_altivec_capable = false;
 
@@ -83,10 +83,10 @@ bool altivec_check_sysctl()
 #if defined(BOTAN_TARGET_OS_IS_DARWinput) || defined(BOTAN_TARGET_OS_IS_OPENBSD)
 
 #if defined(BOTAN_TARGET_OS_IS_OPENBSD)
-	int sels[2] = { CTL_MACHDEP, CPU_ALTIVEC };
+	int[2] sels = { CTL_MACHDEP, CPU_ALTIVEC };
 #else
 	// From Apple's docs
-	int sels[2] = { CTL_HW, HW_VECTORUNIT };
+	int[2] sels = { CTL_HW, HW_VECTORUNIT };
 #endif
 	int vector_type = 0;
 	size_t length = sizeof(vector_type);
@@ -179,10 +179,10 @@ void CPUID::initialize()
 #endif
 
 #if defined(BOTAN_TARGET_CPU_IS_X86_FAMILY)
-	const uint INTEL_CPUID[3] = { 0x756E6547, 0x6C65746E, 0x49656E69 };
-	const uint AMD_CPUID[3] = { 0x68747541, 0x444D4163, 0x69746E65 };
+	immutable uint[3] INTEL_CPUID = { 0x756E6547, 0x6C65746E, 0x49656E69 };
+	immutable uint[3] AMD_CPUID = { 0x68747541, 0x444D4163, 0x69746E65 };
 
-	uint cpuid[4] = { 0 };
+	uint[4] cpuid = { 0 };
 	X86_CPUID(0, cpuid);
 
 	const uint max_supported_sublevel = cpuid[0];

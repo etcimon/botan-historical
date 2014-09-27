@@ -5,11 +5,11 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/bigint.h>
-#include <botan/divide.h>
-#include <botan/internal/mp_core.h>
-#include <botan/internal/bit_ops.h>
-#include <algorithm>
+import botan.bigint;
+import botan.divide;
+import botan.internal.mp_core;
+import botan.internal.bit_ops;
+import algorithm;
 /*
 * Addition Operator
 */
@@ -89,7 +89,7 @@ BigInt operator*(in BigInt x, ref const BigInt y)
 		bigint_linmul3(z.mutable_data(), x.data(), x_sw, y.word_at(0));
 	else if (x_sw && y_sw)
 	{
-		secure_vector<word> workspace(z.size());
+		secure_vector!word workspace(z.size());
 		bigint_mul(z.mutable_data(), z.size(), &workspace[0],
 					  x.data(), x.size(), x_sw,
 					  y.data(), y.size(), y_sw);

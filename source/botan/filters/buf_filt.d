@@ -5,10 +5,10 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/buf_filt.h>
-#include <botan/mem_ops.h>
-#include <botan/internal/rounding.h>
-#include <stdexcept>
+import botan.buf_filt;
+import botan.mem_ops;
+import botan.internal.rounding;
+import stdexcept;
 /*
 * Buffered_Filter Constructor
 */

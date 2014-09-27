@@ -6,7 +6,7 @@
 * Distributed under the terms of the botan license.
 */
 
-#include <botan/emsa1.h>
+import botan.emsa1;
 /**
 * EMSA1_BSI is a variant of EMSA1 specified by the BSI. It accepts
 * only hash values which are less or equal than the maximum key

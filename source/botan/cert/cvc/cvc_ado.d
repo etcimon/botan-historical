@@ -6,8 +6,8 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/cvc_ado.h>
-#include <fstream>
+import botan.cvc_ado;
+import fstream;
 EAC1_1_ADO::EAC1_1_ADO(DataSource& input)
 {
 	init(input);

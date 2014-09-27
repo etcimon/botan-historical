@@ -5,8 +5,8 @@
 * Distributed under the terms of the botan license.
 */
 
-#include <botan/types.h>
-#include <iosfwd>
+import botan.types;
+import iosfwd;
 /**
 * A class handling runtime CPU feature detection
 */

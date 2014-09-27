@@ -5,9 +5,9 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/numthry.h>
-#include <botan/parsing.h>
-#include <algorithm>
+import botan.numthry;
+import botan.parsing;
+import algorithm;
 /*
 * Generate a random prime
 */
@@ -45,7 +45,7 @@ BigInt random_prime(RandomNumberGenerator& rng,
 			p += (modulo - p % modulo) + equiv;
 
 		const size_t sieve_size = std::min(bits / 2, PRIME_TABLE_SIZE);
-		secure_vector<ushort> sieve(sieve_size);
+		secure_vector!ushort sieve(sieve_size);
 
 		for (size_t j = 0; j != sieve.size(); ++j)
 			sieve[j] = p % PRIMES[j];

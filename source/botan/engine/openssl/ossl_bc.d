@@ -5,8 +5,8 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/internal/openssl_engine.h>
-#include <openssl/evp.h>
+import botan.internal.openssl_engine;
+import openssl.evp;
 namespace {
 
 /*

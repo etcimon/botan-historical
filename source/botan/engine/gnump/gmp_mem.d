@@ -5,10 +5,10 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/internal/gnump_engine.h>
-#include <cstring>
-#include <atomic>
-#include <gmp.h>
+import botan.internal.gnump_engine;
+import cstring;
+import atomic;
+import gmp.h;
 namespace {
 
 /*

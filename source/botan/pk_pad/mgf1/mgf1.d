@@ -5,10 +5,10 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/mgf1.h>
-#include <botan/exceptn.h>
-#include <botan/internal/xor_buf.h>
-#include <algorithm>
+import botan.mgf1;
+import botan.exceptn;
+import botan.internal.xor_buf;
+import algorithm;
 void mgf1_mask(HashFunction& hash,
 					in byte* input,
 					byte* output)

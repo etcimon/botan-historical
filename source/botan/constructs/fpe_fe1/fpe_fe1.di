@@ -5,8 +5,8 @@
 * Distributed under the terms of the botan license.
 */
 
-#include <botan/bigint.h>
-#include <botan/symkey.h>
+import botan.bigint;
+import botan.symkey;
 namespace FPE {
 
 /**

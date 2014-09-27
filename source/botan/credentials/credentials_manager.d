@@ -5,8 +5,8 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/credentials_manager.h>
-#include <botan/x509path.h>
+import botan.credentials_manager;
+import botan.x509path;
 string Credentials_Manager::psk_identity_hint(in string,
 																	in string)
 {

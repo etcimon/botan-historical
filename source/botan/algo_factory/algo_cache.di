@@ -5,12 +5,12 @@
 * Distributed under the terms of the botan license.
 */
 
-#include <botan/types.h>
-#include <botan/internal/stl_util.h>
-#include <mutex>
-#include <string>
-#include <vector>
-#include <map>
+import botan.types;
+import botan.internal.stl_util;
+import mutex;
+import string;
+import vector;
+import map;
 /**
 * @param prov_name a provider name
 * @return weight for this provider

@@ -5,7 +5,7 @@
 * Distributed under the terms of the botan license.
 */
 
-#include <botan/mdx_hash.h>
+import botan.mdx_hash;
 /**
 * MD4
 */
@@ -27,10 +27,10 @@ class MD4 : public MDx_HashFunction
 		/**
 		* The message buffer, exposed for use by subclasses (x86 asm)
 		*/
-		secure_vector<uint> M;
+		secure_vector!uint M;
 
 		/**
 		* The digest value, exposed for use by subclasses (x86 asm)
 		*/
-		secure_vector<uint> digest;
+		secure_vector!uint digest;
 };

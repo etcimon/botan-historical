@@ -5,8 +5,8 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/version.h>
-#include <botan/parsing.h>
+import botan.version;
+import botan.parsing;
 /*
   These are intentionally compiled rather than d, so an
   application running against a shared library can test the true

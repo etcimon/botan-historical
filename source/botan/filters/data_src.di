@@ -6,9 +6,9 @@
 * Distributed under the terms of the botan license.
 */
 
-#include <botan/secmem.h>
-#include <string>
-#include <iosfwd>
+import botan.secmem;
+import string;
+import iosfwd;
 /**
 * This class represents an abstract data source object.
 */

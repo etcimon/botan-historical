@@ -5,11 +5,11 @@
 * Distributed under the terms of the botan license.
 */
 
-#include <botan/pbe.h>
-#include <botan/block_cipher.h>
-#include <botan/mac.h>
-#include <botan/pipe.h>
-#include <chrono>
+import botan.pbe;
+import botan.block_cipher;
+import botan.mac;
+import botan.pipe;
+import chrono;
 /**
 * PKCS #5 v2.0 PBE
 */

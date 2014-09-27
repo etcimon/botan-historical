@@ -5,10 +5,10 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/srp6_files.h>
-#include <botan/parsing.h>
-#include <botan/base64.h>
-#include <fstream>
+import botan.srp6_files;
+import botan.parsing;
+import botan.base64;
+import fstream;
 SRP6_Authenticator_File::SRP6_Authenticator_File(in string filename)
 {
 	std::ifstream in(filename.c_str());

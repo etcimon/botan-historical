@@ -5,10 +5,10 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/certstor.h>
+import botan.certstor;
 
 #if defined(BOTAN_HAS_BOOST_FILESYSTEM)
-#include <boost/filesystem.hpp>
+import boost/filesystem.hpp;
 #endif
 const X509_CRL* Certificate_Store::find_crl_for(in X509_Certificate) const
 {

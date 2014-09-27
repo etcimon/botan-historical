@@ -5,8 +5,8 @@
 * Distributed under the terms of the botan license.
 */
 
-#include <botan/hash.h>
-#include <botan/gost_28147.h>
+import botan.hash;
+import botan.gost_28147;
 /**
 * GOST 34.11
 */

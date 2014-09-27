@@ -5,11 +5,11 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/prf_ssl3.h>
-#include <botan/symkey.h>
-#include <botan/exceptn.h>
-#include <botan/sha160.h>
-#include <botan/md5.h>
+import botan.prf_ssl3;
+import botan.symkey;
+import botan.exceptn;
+import botan.sha160;
+import botan.md5;
 namespace {
 
 /*

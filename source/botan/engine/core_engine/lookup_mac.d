@@ -5,28 +5,28 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/internal/core_engine.h>
-#include <botan/scan_name.h>
-#include <botan/algo_factory.h>
+import botan.internal.core_engine;
+import botan.scan_name;
+import botan.algo_factory;
 
 #if defined(BOTAN_HAS_CBC_MAC)
-  #include <botan/cbc_mac.h>
+  import botan.cbc_mac;
 #endif
 
 #if defined(BOTAN_HAS_CMAC)
-  #include <botan/cmac.h>
+  import botan.cmac;
 #endif
 
 #if defined(BOTAN_HAS_HMAC)
-  #include <botan/hmac.h>
+  import botan.hmac;
 #endif
 
 #if defined(BOTAN_HAS_SSL3_MAC)
-  #include <botan/ssl3_mac.h>
+  import botan.ssl3_mac;
 #endif
 
 #if defined(BOTAN_HAS_ANSI_X919_MAC)
-  #include <botan/x919_mac.h>
+  import botan.x919_mac;
 #endif
 /*
 * Look for an algorithm with this name

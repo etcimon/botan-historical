@@ -5,21 +5,21 @@
 * Distributed under the terms of the botan license.
 */
 
-#include <botan/block_cipher.h>
-#include <botan/stream_cipher.h>
-#include <botan/hash.h>
-#include <botan/mac.h>
+import botan.block_cipher;
+import botan.stream_cipher;
+import botan.hash;
+import botan.mac;
 
-#include <botan/pipe.h>
-#include <botan/basefilt.h>
-#include <botan/key_filt.h>
-#include <botan/data_snk.h>
+import botan.pipe;
+import botan.basefilt;
+import botan.key_filt;
+import botan.data_snk;
 
-#include <botan/scan_name.h>
+import botan.scan_name;
 
 #if defined(BOTAN_HAS_CODEC_FILTERS)
-  #include <botan/b64_filt.h>
-  #include <botan/hex_filt.h>
+  import botan.b64_filt;
+  import botan.hex_filt;
 #endif
 /**
 * Stream Cipher Filter

@@ -5,11 +5,11 @@
 * Distributed under the terms of the botan license.
 */
 
-#include <botan/build.h>
-#include <botan/assert.h>
-#include <cstddef>
-#include <stdint.h>
-#include <memory>
+import botan.build;
+import botan.assert;
+import cstddef;
+import stdint.h;
+import memory;
 
 /**
 * The primary namespace for the botan library

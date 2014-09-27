@@ -5,7 +5,7 @@
 * Distributed under the terms of the botan license.
 */
 
-#include <botan/hash.h>
+import botan.hash;
 /**
 * 32-bit cyclic redundancy check
 */

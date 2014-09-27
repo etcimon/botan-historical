@@ -5,9 +5,9 @@
 * Released under the terms of the botan license.
 */
 
-#include <botan/tls_channel.h>
-#include <botan/credentials_manager.h>
-#include <vector>
+import botan.tls_channel;
+import botan.credentials_manager;
+import vector;
 namespace TLS {
 
 /**

@@ -5,7 +5,7 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/emsa_raw.h>
+import botan.emsa_raw;
 /*
 * EMSA-Raw Encode Operation
 */

@@ -5,9 +5,9 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/lion.h>
-#include <botan/internal/xor_buf.h>
-#include <botan/parsing.h>
+import botan.lion;
+import botan.internal.xor_buf;
+import botan.parsing;
 /*
 * Lion Encryption
 */

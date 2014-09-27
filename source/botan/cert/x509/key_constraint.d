@@ -5,9 +5,9 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/key_constraint.h>
-#include <botan/x509_key.h>
-#include <botan/ber_dec.h>
+import botan.key_constraint;
+import botan.x509_key;
+import botan.ber_dec;
 namespace BER {
 
 /*

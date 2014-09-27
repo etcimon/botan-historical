@@ -5,7 +5,7 @@
 * Distributed under the terms of the botan license.
 */
 
-#include <botan/block_cipher.h>
+import botan.block_cipher;
 /**
 * Camellia-128
 */
@@ -21,7 +21,7 @@ class Camellia_128 : public Block_Cipher_Fixed_Params<16, 16>
 	private:
 		void key_schedule(in byte* key);
 
-		secure_vector<ulong> SK;
+		secure_vector!ulong SK;
 };
 
 /**
@@ -39,7 +39,7 @@ class Camellia_192 : public Block_Cipher_Fixed_Params<16, 24>
 	private:
 		void key_schedule(in byte* key);
 
-		secure_vector<ulong> SK;
+		secure_vector!ulong SK;
 };
 
 /**
@@ -57,5 +57,5 @@ class Camellia_256 : public Block_Cipher_Fixed_Params<16, 32>
 	private:
 		void key_schedule(in byte* key);
 
-		secure_vector<ulong> SK;
+		secure_vector!ulong SK;
 };

@@ -5,12 +5,12 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/x509_key.h>
-#include <botan/der_enc.h>
-#include <botan/ber_dec.h>
-#include <botan/pem.h>
-#include <botan/alg_id.h>
-#include <botan/internal/pk_algs.h>
+import botan.x509_key;
+import botan.der_enc;
+import botan.ber_dec;
+import botan.pem;
+import botan.alg_id;
+import botan.internal.pk_algs;
 namespace X509 {
 
 Vector!( byte ) BER_encode(in Public_Key key)

@@ -5,8 +5,8 @@
 * Distributed under the terms of the botan license.
 */
 
-#include <botan/secmem.h>
-#include <string>
+import botan.secmem;
+import string;
 /**
 * Perform hex encoding
 * @param output an array of at least input_length*2 bytes

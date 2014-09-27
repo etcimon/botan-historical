@@ -5,7 +5,7 @@
 * Distributed under the terms of the botan license.
 */
 
-#include <botan/block_cipher.h>
+import botan.block_cipher;
 /**
 * The GOST 28147-89 block cipher uses a set of 4 bit Sboxes, however
 * the standard does not actually define these Sboxes; they are
@@ -70,5 +70,5 @@ class GOST_28147_89 : public Block_Cipher_Fixed_Params<8, 32>
 		*/
 		Vector!( uint ) SBOX;
 
-		secure_vector<uint> EK;
+		secure_vector!uint EK;
 };

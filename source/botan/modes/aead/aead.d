@@ -5,28 +5,28 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/aead.h>
-#include <botan/block_cipher.h>
-#include <botan/libstate.h>
+import botan.aead;
+import botan.block_cipher;
+import botan.libstate;
 
 #if defined(BOTAN_HAS_AEAD_CCM)
-  #include <botan/ccm.h>
+  import botan.ccm;
 #endif
 
 #if defined(BOTAN_HAS_AEAD_EAX)
-  #include <botan/eax.h>
+  import botan.eax;
 #endif
 
 #if defined(BOTAN_HAS_AEAD_GCM)
-  #include <botan/gcm.h>
+  import botan.gcm;
 #endif
 
 #if defined(BOTAN_HAS_AEAD_SIV)
-  #include <botan/siv.h>
+  import botan.siv;
 #endif
 
 #if defined(BOTAN_HAS_AEAD_OCB)
-  #include <botan/ocb.h>
+  import botan.ocb;
 #endif
 AEAD_Mode* get_aead(in string algo_spec, Cipher_Dir direction)
 {

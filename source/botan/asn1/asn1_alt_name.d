@@ -6,14 +6,14 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/asn1_alt_name.h>
-#include <botan/der_enc.h>
-#include <botan/ber_dec.h>
-#include <botan/oids.h>
-#include <botan/internal/stl_util.h>
-#include <botan/charset.h>
-#include <botan/parsing.h>
-#include <botan/loadstor.h>
+import botan.asn1_alt_name;
+import botan.der_enc;
+import botan.ber_dec;
+import botan.oids;
+import botan.internal.stl_util;
+import botan.charset;
+import botan.parsing;
+import botan.loadstor;
 
 /*
 * Check if type is a known ASN.1 string type
@@ -131,7 +131,7 @@ void encode_entries(DER_Encoder encoder,
 		else if (type == "IP")
 		{
 			const uint ip = string_to_ipv4(i->second);
-			byte ip_buf[4] = { 0 };
+			byte[4] ip_buf = { 0 };
 			store_be(ip, ip_buf);
 			encoder.add_object(tagging, CONTEXT_SPECIFIC, ip_buf, 4);
 		}

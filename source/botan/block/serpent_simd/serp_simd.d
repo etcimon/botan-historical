@@ -5,10 +5,10 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/serp_simd.h>
-#include <botan/internal/serpent_sbox.h>
-#include <botan/internal/simd_32.h>
-#include <botan/loadstor.h>
+import botan.serp_simd;
+import botan.internal.serpent_sbox;
+import botan.internal.simd_32;
+import botan.loadstor;
 namespace {
 
 #define key_xor(round, B0, B1, B2, B3)									  \

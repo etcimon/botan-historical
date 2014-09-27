@@ -5,8 +5,8 @@
 * Distributed under the terms of the botan license.
 */
 
-#include <botan/hash.h>
-#include <botan/mac.h>
+import botan.hash;
+import botan.mac;
 /**
 * A MAC only used in SSLv3. Do not use elsewhere! Use HMAC instead.
 */

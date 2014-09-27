@@ -5,9 +5,9 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/mdx_hash.h>
-#include <botan/exceptn.h>
-#include <botan/loadstor.h>
+import botan.mdx_hash;
+import botan.exceptn;
+import botan.loadstor;
 /*
 * MDx_HashFunction Constructor
 */

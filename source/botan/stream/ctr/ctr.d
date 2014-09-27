@@ -5,8 +5,8 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/ctr.h>
-#include <botan/internal/xor_buf.h>
+import botan.ctr;
+import botan.internal.xor_buf;
 CTR_BE::CTR_BE(BlockCipher* ciph) :
 	m_cipher(ciph),
 	m_counter(256 * m_cipher->block_size()),

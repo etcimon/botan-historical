@@ -5,12 +5,12 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/asn1_time.h>
-#include <botan/der_enc.h>
-#include <botan/ber_dec.h>
-#include <botan/charset.h>
-#include <botan/parsing.h>
-#include <botan/calendar.h>
+import botan.asn1_time;
+import botan.der_enc;
+import botan.ber_dec;
+import botan.charset;
+import botan.parsing;
+import botan.calendar;
 /*
 * Create an X509_Time
 */

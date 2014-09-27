@@ -5,11 +5,11 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/openpgp.h>
-#include <botan/filters.h>
-#include <botan/basefilt.h>
-#include <botan/charset.h>
-#include <botan/crc24.h>
+import botan.openpgp;
+import botan.filters;
+import botan.basefilt;
+import botan.charset;
+import botan.crc24;
 /*
 * OpenPGP Base64 encoding
 */

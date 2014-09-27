@@ -5,16 +5,16 @@
 * Released under the terms of the botan license.
 */
 
-#include <botan/tls_magic.h>
-#include <botan/tls_version.h>
-#include <botan/loadstor.h>
-#include <functional>
-#include <vector>
-#include <deque>
-#include <map>
-#include <set>
-#include <utility>
-#include <tuple>
+import botan.tls_magic;
+import botan.tls_version;
+import botan.loadstor;
+import functional;
+import vector;
+import deque;
+import map;
+import set;
+import utility;
+import tuple;
 namespace TLS {
 
 class Handshake_Message;

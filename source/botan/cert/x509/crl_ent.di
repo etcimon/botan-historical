@@ -5,8 +5,8 @@
 * Distributed under the terms of the botan license.
 */
 
-#include <botan/x509cert.h>
-#include <botan/asn1_time.h>
+import botan.x509cert;
+import botan.asn1_time;
 /**
 * X.509v2 CRL Reason Code.
 */

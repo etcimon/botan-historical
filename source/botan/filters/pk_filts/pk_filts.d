@@ -5,7 +5,7 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/pk_filts.h>
+import botan.pk_filts;
 /*
 * Append to the buffer
 */

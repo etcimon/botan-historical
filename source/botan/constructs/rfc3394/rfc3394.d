@@ -5,12 +5,12 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/rfc3394.h>
-#include <botan/algo_factory.h>
-#include <botan/block_cipher.h>
-#include <botan/loadstor.h>
-#include <botan/exceptn.h>
-#include <botan/internal/xor_buf.h>
+import botan.rfc3394;
+import botan.algo_factory;
+import botan.block_cipher;
+import botan.loadstor;
+import botan.exceptn;
+import botan.internal.xor_buf;
 namespace {
 
 BlockCipher* make_aes(size_t keylength,
@@ -59,7 +59,7 @@ SafeVector!byte rfc3394_keywrap(in SafeVector!byte key,
 			aes->encrypt(&A[0]);
 			copy_mem(&R[8*i], &A[8], 8);
 
-			byte t_buf[4] = { 0 };
+			byte[4] t_buf = { 0 };
 			store_be(t, t_buf);
 			xor_buf(&A[4], &t_buf[0], 4);
 		}
@@ -96,7 +96,7 @@ SafeVector!byte rfc3394_keyunwrap(in SafeVector!byte key,
 		{
 			const uint t = (5 - j) * n + i;
 
-			byte t_buf[4] = { 0 };
+			byte[4] t_buf = { 0 };
 			store_be(t, t_buf);
 
 			xor_buf(&A[4], &t_buf[0], 4);

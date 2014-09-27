@@ -5,7 +5,7 @@
 * Distributed under the terms of the botan license.
 */
 
-#include <botan/mdx_hash.h>
+import botan.mdx_hash;
 /**
 * NIST's SHA-160
 */
@@ -41,10 +41,10 @@ class SHA_160 : public MDx_HashFunction
 		/**
 		* The digest value, exposed for use by subclasses (asm, SSE2)
 		*/
-		secure_vector<uint> digest;
+		secure_vector!uint digest;
 
 		/**
 		* The message buffer, exposed for use by subclasses (asm, SSE2)
 		*/
-		secure_vector<uint> W;
+		secure_vector!uint W;
 };

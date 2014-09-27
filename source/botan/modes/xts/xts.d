@@ -5,10 +5,10 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/xts.h>
-#include <botan/loadstor.h>
-#include <botan/internal/xor_buf.h>
-#include <botan/internal/rounding.h>
+import botan.xts;
+import botan.loadstor;
+import botan.internal.xor_buf;
+import botan.internal.rounding;
 namespace {
 
 void poly_double_128(byte* output, in byte* input)

@@ -5,7 +5,7 @@
 * Distributed under the terms of the botan license.
 */
 
-#include <botan/stream_cipher.h>
+import botan.stream_cipher;
 /**
 * DJB's ChaCha (http://cr.yp.to/chacha.html)
 */
@@ -33,7 +33,7 @@ class ChaCha : public StreamCipher
 	private:
 		void key_schedule(in byte* key, size_t length);
 
-		secure_vector<uint> m_state;
+		secure_vector!uint m_state;
 		SafeVector!byte m_buffer;
 		size_t m_position = 0;
 };

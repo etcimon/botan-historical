@@ -7,13 +7,13 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/zlib.h>
-#include <botan/exceptn.h>
+import botan.zlib;
+import botan.exceptn;
 
-#include <cstring>
-#include <cstdlib>
-#include <map>
-#include <zlib.h>
+import cstring;
+import cstdlib;
+import map;
+import zlib.h;
 namespace {
 
 /*

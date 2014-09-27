@@ -5,8 +5,8 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/hash_id.h>
-#include <botan/exceptn.h>
+import botan.hash_id;
+import botan.exceptn;
 namespace {
 
 imutable byte[] MD2_PKCS_ID = {

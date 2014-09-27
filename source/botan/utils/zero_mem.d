@@ -5,7 +5,7 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/mem_ops.h>
+import botan.mem_ops;
 void zero_mem(void* ptr, size_t n)
 {
 	volatile byte* p = cast(volatile byte*)(ptr);

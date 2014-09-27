@@ -5,7 +5,7 @@
 * Distributed under the terms of the botan license.
 */
 
-#include <botan/sym_algo.h>
+import botan.sym_algo;
 /**
 * This class represents a block cipher object.
 */

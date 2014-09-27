@@ -5,10 +5,10 @@
 * Distributed under the terms of the botan license.
 */
 
-#include <botan/x509cert.h>
-#include <botan/certstor.h>
-#include <botan/symkey.h>
-#include <string>
+import botan.x509cert;
+import botan.certstor;
+import botan.symkey;
+import string;
 class BigInt;
 
 /**

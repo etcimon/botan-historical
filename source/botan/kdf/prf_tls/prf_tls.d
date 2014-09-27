@@ -5,11 +5,11 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/prf_tls.h>
-#include <botan/internal/xor_buf.h>
-#include <botan/hmac.h>
-#include <botan/md5.h>
-#include <botan/sha160.h>
+import botan.prf_tls;
+import botan.internal.xor_buf;
+import botan.hmac;
+import botan.md5;
+import botan.sha160;
 namespace {
 
 /*

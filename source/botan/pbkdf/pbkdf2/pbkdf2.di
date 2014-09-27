@@ -5,8 +5,8 @@
 * Distributed under the terms of the botan license.
 */
 
-#include <botan/pbkdf.h>
-#include <botan/mac.h>
+import botan.pbkdf;
+import botan.mac;
 /**
 * PKCS #5 PBKDF2
 */

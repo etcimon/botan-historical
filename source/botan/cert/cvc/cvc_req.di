@@ -6,7 +6,7 @@
 * Distributed under the terms of the botan license.
 */
 
-#include <botan/cvc_gen_cert.h>
+import botan.cvc_gen_cert;
 /**
 * This class represents TR03110 v1.1 EAC CV Certificate Requests.
 */

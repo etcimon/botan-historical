@@ -5,7 +5,7 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/internal/asm_x86_64.h>
+import botan.internal.asm_x86_64;
 
 START_LISTING(sha1_x86_64_imp.S)
 

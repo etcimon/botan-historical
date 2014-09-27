@@ -5,17 +5,17 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/pbes2.h>
-#include <botan/pbkdf2.h>
-#include <botan/algo_factory.h>
-#include <botan/libstate.h>
-#include <botan/der_enc.h>
-#include <botan/ber_dec.h>
-#include <botan/parsing.h>
-#include <botan/alg_id.h>
-#include <botan/oids.h>
-#include <botan/lookup.h>
-#include <algorithm>
+import botan.pbes2;
+import botan.pbkdf2;
+import botan.algo_factory;
+import botan.libstate;
+import botan.der_enc;
+import botan.ber_dec;
+import botan.parsing;
+import botan.alg_id;
+import botan.oids;
+import botan.lookup;
+import algorithm;
 /*
 * Encrypt some bytes using PBES2
 */

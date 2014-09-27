@@ -5,8 +5,8 @@
 * Distributed under the terms of the botan license.
 */
 
-#include <botan/buf_comp.h>
-#include <string>
+import botan.buf_comp;
+import string;
 /**
 * This class represents hash function (message digest) objects
 */

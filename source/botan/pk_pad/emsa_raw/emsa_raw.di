@@ -5,7 +5,7 @@
 * Distributed under the terms of the botan license.
 */
 
-#include <botan/emsa.h>
+import botan.emsa;
 /**
 * EMSA-Raw - sign inputs directly
 * Don't use this unless you know what you are doing.

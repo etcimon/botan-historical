@@ -5,7 +5,7 @@
 * Distributed under the terms of the botan license.
 */
 
-#include <botan/cipher_mode.h>
+import botan.cipher_mode;
 /**
 * Interface for AEAD (Authenticated Encryption with Associated Data)
 * modes. These modes provide both encryption and message

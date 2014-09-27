@@ -5,9 +5,9 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/misty1.h>
-#include <botan/loadstor.h>
-#include <botan/parsing.h>
+import botan.misty1;
+import botan.loadstor;
+import botan.parsing;
 namespace {
 
 immutable byte[128] MISTY1_SBOX_S7 = {
@@ -201,7 +201,7 @@ void MISTY1::decrypt_n(byte* input, byte* output, size_t blocks) const
 */
 void MISTY1::key_schedule(in byte* key)
 {
-	secure_vector<ushort> KS(32);
+	secure_vector!ushort KS(32);
 	for (size_t i = 0; i != length / 2; ++i)
 		KS[i] = load_be!ushort(key, i);
 

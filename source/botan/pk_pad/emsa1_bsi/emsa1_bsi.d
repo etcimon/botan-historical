@@ -6,7 +6,7 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/emsa1_bsi.h>
+import botan.emsa1_bsi;
 /*
 * EMSA1 BSI Encode Operation
 */

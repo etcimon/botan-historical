@@ -6,10 +6,10 @@
 * Distributed under the terms of the botan license.
 */
 
-#include <botan/types.h>
-#include <botan/bswap.h>
-#include <botan/get_byte.h>
-#include <cstring>
+import botan.types;
+import botan.bswap;
+import botan.get_byte;
+import cstring;
 
 #if BOTAN_TARGET_UNALIGNED_MEMORY_ACCESS_OK
 

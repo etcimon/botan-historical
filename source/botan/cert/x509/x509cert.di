@@ -5,13 +5,13 @@
 * Distributed under the terms of the botan license.
 */
 
-#include <botan/x509_obj.h>
-#include <botan/x509_dn.h>
-#include <botan/x509_key.h>
-#include <botan/asn1_alt_name.h>
-#include <botan/datastor.h>
-#include <botan/key_constraint.h>
-#include <map>
+import botan.x509_obj;
+import botan.x509_dn;
+import botan.x509_key;
+import botan.asn1_alt_name;
+import botan.datastor;
+import botan.key_constraint;
+import map;
 /**
 * This class represents X.509 Certificate
 */

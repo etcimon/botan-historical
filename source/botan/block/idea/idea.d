@@ -5,8 +5,8 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/idea.h>
-#include <botan/loadstor.h>
+import botan.idea;
+import botan.loadstor;
 namespace {
 
 /*

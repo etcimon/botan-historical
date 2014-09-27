@@ -6,8 +6,8 @@
 * Distributed under the terms of the botan license.
 */
 
-#include <botan/asn1_obj.h>
-#include <chrono>
+import botan.asn1_obj;
+import chrono;
 /**
 * This class represents CVC EAC Time objects.
 * It only models year, month and day. Only limited sanity checks of

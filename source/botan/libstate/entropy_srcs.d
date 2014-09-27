@@ -5,42 +5,42 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/libstate.h>
+import botan.libstate;
 
 #if defined(BOTAN_HAS_ENTROPY_SRC_HIGH_RESOLUTION_TIMER)
-  #include <botan/internal/hres_timer.h>
+  import botan.internal.hres_timer;
 #endif
 
 #if defined(BOTAN_HAS_ENTROPY_SRC_RDRAND)
-  #include <botan/internal/rdrand.h>
+  import botan.internal.rdrand;
 #endif
 
 #if defined(BOTAN_HAS_ENTROPY_SRC_DEV_RANDOM)
-  #include <botan/internal/dev_random.h>
+  import botan.internal.dev_random;
 #endif
 
 #if defined(BOTAN_HAS_ENTROPY_SRC_EGD)
-  #include <botan/internal/es_egd.h>
+  import botan.internal.es_egd;
 #endif
 
 #if defined(BOTAN_HAS_ENTROPY_SRC_UNIX_PROCESS_RUNNER)
-  #include <botan/internal/unix_procs.h>
+  import botan.internal.unix_procs;
 #endif
 
 #if defined(BOTAN_HAS_ENTROPY_SRC_BEOS)
-  #include <botan/internal/es_beos.h>
+  import botan.internal.es_beos;
 #endif
 
 #if defined(BOTAN_HAS_ENTROPY_SRC_CAPI)
-  #include <botan/internal/es_capi.h>
+  import botan.internal.es_capi;
 #endif
 
 #if defined(BOTAN_HAS_ENTROPY_SRC_WIN32)
-  #include <botan/internal/es_win32.h>
+  import botan.internal.es_win32;
 #endif
 
 #if defined(BOTAN_HAS_ENTROPY_SRC_PROC_WALKER)
-  #include <botan/internal/proc_walk.h>
+  import botan.internal.proc_walk;
 #endif
 Vector!( std::unique_ptr<EntropySource )> Library_State::entropy_sources()
 {

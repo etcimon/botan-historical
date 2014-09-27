@@ -5,9 +5,9 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/internal/def_powm.h>
-#include <botan/numthry.h>
-#include <botan/internal/mp_core.h>
+import botan.internal.def_powm;
+import botan.numthry;
+import botan.internal.mp_core;
 /*
 * Set the exponent
 */
@@ -27,7 +27,7 @@ void Montgomery_Exponentiator::set_base(in BigInt base)
 	m_g.resize((1 << m_window_bits));
 
 	BigInt z(BigInt::Positive, 2 * (m_mod_words + 1));
-	secure_vector<word> workspace(z.size());
+	secure_vector!word workspace(z.size());
 
 	m_g[0] = 1;
 
@@ -79,7 +79,7 @@ BigInt Montgomery_Exponentiator::execute() const
 	const size_t z_size = 2*(m_mod_words + 1);
 
 	BigInt z(BigInt::Positive, z_size);
-	secure_vector<word> workspace(z_size);
+	secure_vector!word workspace(z_size);
 
 	for (size_t i = exp_nibbles; i > 0; --i)
 	{

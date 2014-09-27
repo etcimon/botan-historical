@@ -5,7 +5,7 @@
 * Distributed under the terms of the botan license.
 */
 
-#include <botan/engine.h>
+import botan.engine;
 /**
 * Engine for implementations that use some kind of SIMD
 */

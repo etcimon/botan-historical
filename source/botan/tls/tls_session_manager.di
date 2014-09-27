@@ -5,10 +5,10 @@
 * Released under the terms of the botan license.
 */
 
-#include <botan/tls_session.h>
-#include <mutex>
-#include <chrono>
-#include <map>
+import botan.tls_session;
+import mutex;
+import chrono;
+import map;
 namespace TLS {
 
 /**

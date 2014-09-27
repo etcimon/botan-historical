@@ -5,9 +5,9 @@
 * Distributed under the terms of the botan license.
 */
 
-#include <string>
-#include <botan/rng.h>
-#include <botan/symkey.h>
+import string;
+import botan.rng;
+import botan.symkey;
 /**
 * This namespace holds various high-level crypto functions
 */

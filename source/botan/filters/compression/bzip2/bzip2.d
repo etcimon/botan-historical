@@ -7,14 +7,14 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/bzip2.h>
-#include <botan/exceptn.h>
+import botan.bzip2;
+import botan.exceptn;
 
-#include <map>
-#include <cstring>
-#include <cstdlib>
+import map;
+import cstring;
+import cstdlib;
 #define BZ_NO_STDIO
-#include <bzlib.h>
+import bzlib.h;
 namespace {
 
 /*

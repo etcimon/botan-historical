@@ -5,7 +5,7 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/ssl3_mac.h>
+import botan.ssl3_mac;
 /*
 * Update a SSL3-MAC Calculation
 */

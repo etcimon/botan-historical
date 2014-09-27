@@ -6,8 +6,8 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/basefilt.h>
-#include <botan/internal/semaphore.h>
+import botan.basefilt;
+import botan.internal.semaphore;
 struct Threaded_Fork_Data
 {
 	/*
@@ -41,14 +41,14 @@ Threaded_Fork::Threaded_Fork(Filter* f1, Filter* f2, Filter* f3, Filter* f4) :
 	Fork(null, cast(size_t)(0)),
 	m_thread_data(new Threaded_Fork_Data)
 {
-	Filter* filters[4] = { f1, f2, f3, f4 };
+	Filter*[4] filters = { f1, f2, f3, f4 };
 	set_next(filters, 4);
 }
 
 /*
 * Threaded_Fork constructor
 */
-Threaded_Fork::Threaded_Fork(Filter* filters[], size_t count) :
+Threaded_Fork::Threaded_Fork(Filter** filters, size_t count) :
 	Fork(null, cast(size_t)(0)),
 	m_thread_data(new Threaded_Fork_Data)
 {
@@ -71,7 +71,7 @@ string Threaded_Fork::name() const
 	return "Threaded Fork";
 }
 
-void Threaded_Fork::set_next(Filter* f[], size_t n)
+void Threaded_Fork::set_next(Filter** f, size_t n)
 {
 	Fork::set_next(f, n);
 	n = next.size();

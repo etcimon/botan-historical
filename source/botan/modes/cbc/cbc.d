@@ -5,10 +5,10 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/cbc.h>
-#include <botan/loadstor.h>
-#include <botan/internal/xor_buf.h>
-#include <botan/internal/rounding.h>
+import botan.cbc;
+import botan.loadstor;
+import botan.internal.xor_buf;
+import botan.internal.rounding;
 CBC_Mode::CBC_Mode(BlockCipher* cipher, BlockCipherModePaddingMethod* padding) :
 	m_cipher(cipher),
 	m_padding(padding),

@@ -5,8 +5,8 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/mode_pad.h>
-#include <botan/exceptn.h>
+import botan.mode_pad;
+import botan.exceptn;
 /*
 * Pad with PKCS #7 Method
 */

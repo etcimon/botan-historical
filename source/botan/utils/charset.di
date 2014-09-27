@@ -5,8 +5,8 @@
 * Distributed under the terms of the botan license.
 */
 
-#include <botan/types.h>
-#include <string>
+import botan.types;
+import string;
 /**
 * The different charsets (nominally) supported by Botan.
 */

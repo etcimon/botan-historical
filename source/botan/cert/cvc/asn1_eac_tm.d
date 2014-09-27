@@ -6,13 +6,13 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/eac_asn_obj.h>
-#include <botan/der_enc.h>
-#include <botan/ber_dec.h>
-#include <botan/charset.h>
-#include <botan/parsing.h>
-#include <botan/internal/rounding.h>
-#include <botan/calendar.h>
+import botan.eac_asn_obj;
+import botan.der_enc;
+import botan.ber_dec;
+import botan.charset;
+import botan.parsing;
+import botan.internal.rounding;
+import botan.calendar;
 namespace {
 
 Vector!( byte ) enc_two_digit(uint input)

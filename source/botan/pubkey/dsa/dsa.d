@@ -5,10 +5,10 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/dsa.h>
-#include <botan/numthry.h>
-#include <botan/keypair.h>
-#include <future>/*
+import botan.dsa;
+import botan.numthry;
+import botan.keypair;
+import future;/*
 * DSA_PublicKey Constructor
 */
 DSA_PublicKey::DSA_PublicKey(in DL_Group grp, ref const BigInt y1)

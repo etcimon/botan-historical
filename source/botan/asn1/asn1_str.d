@@ -5,11 +5,11 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/asn1_str.h>
-#include <botan/der_enc.h>
-#include <botan/ber_dec.h>
-#include <botan/charset.h>
-#include <botan/parsing.h>
+import botan.asn1_str;
+import botan.der_enc;
+import botan.ber_dec;
+import botan.charset;
+import botan.parsing;
 namespace {
 
 /*
@@ -18,7 +18,7 @@ namespace {
 ASN1_Tag choose_encoding(in string str,
 								 in string type)
 {
-	static const byte IS_PRINTABLE[256] = {
+	immutable byte[256] IS_PRINTABLE = {
 		0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 		0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 		0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00,

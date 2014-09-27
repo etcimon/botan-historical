@@ -5,7 +5,7 @@
 * Distributed under the terms of the botan license.
 */
 
-#include <botan/cpuid.h>
+import botan.cpuid;
 void prefetch_readonly(T)(const T* addr, size_t length)
 {
 #if defined(__GNUG__)

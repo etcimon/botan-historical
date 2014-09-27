@@ -5,8 +5,8 @@
 * Distributed under the terms of the botan license.
 */
 
-#include <botan/bigint.h>
-#include <openssl/bn.h>
+import botan.bigint;
+import openssl.bn;
 /**
 * Lightweight OpenSSL BN wrapper. For internal use only.
 */

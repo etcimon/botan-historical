@@ -5,9 +5,9 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/rc4.h>
-#include <botan/internal/xor_buf.h>
-#include <botan/internal/rounding.h>
+import botan.rc4;
+import botan.internal.xor_buf;
+import botan.internal.rounding;
 /*
 * Combine cipher stream with message
 */

@@ -5,12 +5,12 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/crl_ent.h>
-#include <botan/x509_ext.h>
-#include <botan/der_enc.h>
-#include <botan/ber_dec.h>
-#include <botan/bigint.h>
-#include <botan/oids.h>
+import botan.crl_ent;
+import botan.x509_ext;
+import botan.der_enc;
+import botan.ber_dec;
+import botan.bigint;
+import botan.oids;
 /*
 * Create a CRL_Entry
 */

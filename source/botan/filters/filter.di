@@ -6,9 +6,9 @@
 * Distributed under the terms of the botan license.
 */
 
-#include <botan/secmem.h>
-#include <vector>
-#include <string>
+import botan.secmem;
+import vector;
+import string;
 /**
 * This class represents general abstract filter objects.
 */

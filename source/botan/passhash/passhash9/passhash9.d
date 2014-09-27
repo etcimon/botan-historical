@@ -5,12 +5,12 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/passhash9.h>
-#include <botan/loadstor.h>
-#include <botan/libstate.h>
-#include <botan/pbkdf2.h>
-#include <botan/b64_filt.h>
-#include <botan/pipe.h>
+import botan.passhash9;
+import botan.loadstor;
+import botan.libstate;
+import botan.pbkdf2;
+import botan.b64_filt;
+import botan.pipe;
 namespace {
 
 const string MAGIC_PREFIX = "$9$";

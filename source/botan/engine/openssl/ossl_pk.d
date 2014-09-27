@@ -5,24 +5,24 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/internal/openssl_engine.h>
-#include <botan/internal/bn_wrap.h>
+import botan.internal.openssl_engine;
+import botan.internal.bn_wrap;
 
 #if defined(BOTAN_HAS_RSA)
-  #include <botan/rsa.h>
+  import botan.rsa;
 #endif
 
 #if defined(BOTAN_HAS_DSA)
-  #include <botan/dsa.h>
+  import botan.dsa;
 #endif
 
 #if defined(BOTAN_HAS_ECDSA)
-  #include <botan/ecdsa.h>
-  #include <openssl/ecdsa.h>
+  import botan.ecdsa;
+  import openssl.ecdsa;
 #endif
 
 #if defined(BOTAN_HAS_DIFFIE_HELLMAN)
-  #include <botan/dh.h>
+  import botan.dh;
 #endif
 namespace {
 

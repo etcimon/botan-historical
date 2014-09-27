@@ -5,8 +5,8 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/idea_sse2.h>
-#include <emmintrin.h>
+import botan.idea_sse2;
+import emmintrin.h;
 namespace {
 
  __m128i mul(__m128i X, ushort K_16)

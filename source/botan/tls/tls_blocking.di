@@ -5,9 +5,9 @@
 * Released under the terms of the botan license.
 */
 
-#include <botan/tls_client.h>
-#include <botan/tls_server.h>
-#include <deque>
+import botan.tls_client;
+import botan.tls_server;
+import deque;
 alias secure_deque(T) = Vector!( T, secure_allocator<T>);
 
 namespace TLS {

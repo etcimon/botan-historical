@@ -5,7 +5,7 @@
 * Distributed under the terms of the botan license.
 */
 
-#include <botan/idea.h>
+import botan.idea;
 /**
 * IDEA in SSE2
 */

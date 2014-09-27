@@ -5,7 +5,7 @@
 * Distributed under the terms of the botan license.
 */
 
-#include <botan/mdx_hash.h>
+import botan.mdx_hash;
 /**
 * Tiger
 */
@@ -32,7 +32,7 @@ class Tiger : public MDx_HashFunction
 		void copy_out(byte[]);
 
 		static void pass(ref ulong A, ref ulong B, ref ulong C,
-							  const secure_vector<ulong>& M,
+							  const secure_vector!ulong& M,
 							  byte mul);
 
 		static const ulong SBOX1[256];
@@ -40,6 +40,6 @@ class Tiger : public MDx_HashFunction
 		static const ulong SBOX3[256];
 		static const ulong SBOX4[256];
 
-		secure_vector<ulong> X, digest;
+		secure_vector!ulong X, digest;
 		const size_t hash_len, passes;
 };

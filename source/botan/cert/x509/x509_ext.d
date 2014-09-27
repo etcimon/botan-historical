@@ -5,14 +5,14 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/x509_ext.h>
-#include <botan/sha160.h>
-#include <botan/der_enc.h>
-#include <botan/ber_dec.h>
-#include <botan/oids.h>
-#include <botan/charset.h>
-#include <botan/internal/bit_ops.h>
-#include <algorithm>
+import botan.x509_ext;
+import botan.sha160;
+import botan.der_enc;
+import botan.ber_dec;
+import botan.oids;
+import botan.charset;
+import botan.internal.bit_ops;
+import algorithm;
 /*
 * List of X.509 Certificate Extensions
 */

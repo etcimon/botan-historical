@@ -5,8 +5,8 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/oids.h>
-#include <mutex>
+import botan.oids;
+import mutex;
 namespace OIDS {
 
 namespace {

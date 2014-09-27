@@ -5,13 +5,13 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/hmac_rng.h>
-#include <botan/libstate.h>
-#include <botan/get_byte.h>
-#include <botan/entropy_src.h>
-#include <botan/internal/xor_buf.h>
-#include <algorithm>
-#include <chrono>
+import botan.hmac_rng;
+import botan.libstate;
+import botan.get_byte;
+import botan.entropy_src;
+import botan.internal.xor_buf;
+import algorithm;
+import chrono;
 namespace {
 
 void hmac_prf(MessageAuthenticationCode& prf,

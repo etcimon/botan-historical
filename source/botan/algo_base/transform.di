@@ -5,12 +5,12 @@
 * Distributed under the terms of the botan license.
 */
 
-#include <botan/secmem.h>
-#include <botan/key_spec.h>
-#include <botan/exceptn.h>
-#include <botan/symkey.h>
-#include <string>
-#include <vector>
+import botan.secmem;
+import botan.key_spec;
+import botan.exceptn;
+import botan.symkey;
+import string;
+import vector;
 /**
 * Interface for general transformations on data
 */

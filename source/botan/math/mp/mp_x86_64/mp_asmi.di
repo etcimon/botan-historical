@@ -6,7 +6,7 @@
 * Distributed under the terms of the botan license.
 */
 
-#include <botan/internal/mp_madd.h>
+import botan.internal.mp_madd;
 extern "C" {
 
 /*

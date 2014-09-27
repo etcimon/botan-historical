@@ -5,8 +5,8 @@
 * Distributed under the terms of the botan license.
 */
 
-#include <botan/asn1_obj.h>
-#include <chrono>
+import botan.asn1_obj;
+import chrono;
 /**
 * X.509 Time
 */

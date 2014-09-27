@@ -5,8 +5,8 @@
 * Distributed under the terms of the botan license.
 */
 
-#include <botan/pbkdf.h>
-#include <botan/hash.h>
+import botan.pbkdf;
+import botan.hash;
 /**
 * PKCS #5 v1 PBKDF, aka PBKDF1
 * Can only generate a key up to the size of the hash output.

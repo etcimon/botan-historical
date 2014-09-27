@@ -5,11 +5,11 @@
 * Distributed under the terms of the botan license.
 */
 
-#include <botan/types.h>
-#include <string>
-#include <vector>
-#include <mutex>
-#include <map>
+import botan.types;
+import string;
+import vector;
+import mutex;
+import map;
 /**
 A class encapsulating a SCAN name (similar to JCE conventions)
 http://www.users.zetnet.co.uk/hopwood/crypto/scan/

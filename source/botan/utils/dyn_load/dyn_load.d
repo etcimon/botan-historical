@@ -5,14 +5,14 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/internal/dyn_load.h>
-#include <botan/build.h>
-#include <stdexcept>
+import botan.internal.dyn_load;
+import botan.build;
+import stdexcept;
 
 #if defined(BOTAN_TARGET_OS_HAS_DLOPEN)
-  #include <dlfcn.h>
+  import dlfcn.h;
 #elif defined(BOTAN_TARGET_OS_HAS_LOADLIBRARY)
-  #include <windows.h>
+  import windows.h;
 #endif
 namespace {
 

@@ -6,10 +6,10 @@
 * Distributed under the terms of the botan license.
 */
 
-#include <botan/rng.h>
-#include <botan/secmem.h>
-#include <botan/mp_types.h>
-#include <iosfwd>
+import botan.rng;
+import botan.secmem;
+import botan.mp_types;
+import iosfwd;
 /**
 * Arbitrary precision integer
 */
@@ -511,7 +511,7 @@ class BigInt
 	static SafeVector!byte encode_1363(in BigInt n, size_t bytes);
 
 	private:
-		secure_vector<word> m_reg;
+		secure_vector!word m_reg;
 		Sign m_signedness = Positive;
 };
 

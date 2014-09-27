@@ -5,8 +5,8 @@
 * Distributed under the terms of the botan license.
 */
 
-#include <botan/types.h>
-#include <vector>
+import botan.types;
+import vector;
 /**
 * XOR arrays. Postcondition output[i] = input[i] ^ output[i] forall i = 0...length
 * @param out the input/output buffer

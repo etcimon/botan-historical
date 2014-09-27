@@ -5,9 +5,9 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/hex.h>
-#include <botan/mem_ops.h>
-#include <stdexcept>
+import botan.hex;
+import botan.mem_ops;
+import stdexcept;
 void hex_encode(char* output,
 					 in byte* input,
 					 size_t input_length,

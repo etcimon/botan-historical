@@ -5,7 +5,7 @@
 * Distributed under the terms of the botan license.
 */
 
-#include <botan/data_src.h>
+import botan.data_src;
 namespace PEM_Code {
 
 /**

@@ -5,10 +5,10 @@
 * Distributed under the terms of the botan license.
 */
 
-#include <botan/asn1_obj.h>
-#include <botan/asn1_oid.h>
-#include <botan/datastor.h>
-#include <botan/crl_ent.h>
+import botan.asn1_obj;
+import botan.asn1_oid;
+import botan.datastor;
+import botan.crl_ent;
 /**
 * X.509 Certificate Extension
 */

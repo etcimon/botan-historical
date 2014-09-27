@@ -5,10 +5,10 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/base64.h>
-#include <botan/mem_ops.h>
-#include <botan/internal/rounding.h>
-#include <stdexcept>
+import botan.base64;
+import botan.mem_ops;
+import botan.internal.rounding;
+import stdexcept;
 namespace {
 
 static const byte[64] BIN_TO_BASE64 = {

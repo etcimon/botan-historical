@@ -5,8 +5,8 @@
 * Distributed under the terms of the botan license.
 */
 
-#include <botan/asn1_obj.h>
-#include <vector>
+import botan.asn1_obj;
+import vector;
 class BigInt;
 class ASN1_Object;
 

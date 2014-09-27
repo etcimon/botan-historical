@@ -5,13 +5,13 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/x509_crl.h>
-#include <botan/x509_ext.h>
-#include <botan/x509cert.h>
-#include <botan/ber_dec.h>
-#include <botan/parsing.h>
-#include <botan/bigint.h>
-#include <botan/oids.h>
+import botan.x509_crl;
+import botan.x509_ext;
+import botan.x509cert;
+import botan.ber_dec;
+import botan.parsing;
+import botan.bigint;
+import botan.oids;
 /*
 * Load a X.509 CRL
 */

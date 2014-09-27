@@ -5,7 +5,7 @@
 * Distributed under the terms of the botan license.
 */
 
-#include <botan/md4.h>
+import botan.md4;
 /**
 * MD4 using x86 assembly
 */

@@ -5,11 +5,11 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/if_algo.h>
-#include <botan/numthry.h>
-#include <botan/workfactor.h>
-#include <botan/der_enc.h>
-#include <botan/ber_dec.h>
+import botan.if_algo;
+import botan.numthry;
+import botan.workfactor;
+import botan.der_enc;
+import botan.ber_dec;
 size_t IF_Scheme_PublicKey::estimated_strength() const
 {
 	return dl_work_factor(n.bits());

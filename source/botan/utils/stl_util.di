@@ -5,9 +5,9 @@
 * Distributed under the terms of the botan license.
 */
 
-#include <vector>
-#include <string>
-#include <map>
+import vector;
+import string;
+import map;
  Vector!( byte ) to_byte_vector(in string s)
 {
 	return Vector!( byte )(cast(in byte*)(s[0]),

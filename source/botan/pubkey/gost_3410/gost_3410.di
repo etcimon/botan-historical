@@ -7,8 +7,8 @@
 * Distributed under the terms of the botan license.
 */
 
-#include <botan/ecc_key.h>
-#include <botan/pk_ops.h>
+import botan.ecc_key;
+import botan.pk_ops;
 /**
 * GOST-34.10 Public Key
 */

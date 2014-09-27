@@ -5,14 +5,14 @@
 * Released under the terms of the botan license.
 */
 
-#include <botan/x509cert.h>
-#include <botan/tls_version.h>
-#include <botan/tls_ciphersuite.h>
-#include <botan/tls_magic.h>
-#include <botan/tls_server_info.h>
-#include <botan/secmem.h>
-#include <botan/symkey.h>
-#include <chrono>
+import botan.x509cert;
+import botan.tls_version;
+import botan.tls_ciphersuite;
+import botan.tls_magic;
+import botan.tls_server_info;
+import botan.secmem;
+import botan.symkey;
+import chrono;
 namespace TLS {
 
 /**

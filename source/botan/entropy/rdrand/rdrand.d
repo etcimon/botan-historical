@@ -5,11 +5,11 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/internal/rdrand.h>
-#include <botan/cpuid.h>
+import botan.internal.rdrand;
+import botan.cpuid;
 
 #if !defined(BOTAN_USE_GCC_INLINE_ASM)
-  #include <immintrin.h>
+  import immintrin.h;
 #endif
 /*
 * Get the timestamp

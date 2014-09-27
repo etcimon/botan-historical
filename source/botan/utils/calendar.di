@@ -5,8 +5,8 @@
 * Distributed under the terms of the botan license.
 */
 
-#include <botan/types.h>
-#include <chrono>
+import botan.types;
+import chrono;
 /**
 * Struct representing a particular date and time
 */

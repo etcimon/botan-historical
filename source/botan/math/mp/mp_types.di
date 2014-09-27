@@ -5,8 +5,8 @@
 * Distributed under the terms of the botan license.
 */
 
-#include <botan/types.h>
-#include <botan/mul128.h>
+import botan.types;
+import botan.mul128;
 #if (BOTAN_MP_WORD_BITS == 8)
   typedef byte word;
   typedef ushort dword;

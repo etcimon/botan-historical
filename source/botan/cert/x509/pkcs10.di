@@ -5,14 +5,14 @@
 * Distributed under the terms of the botan license.
 */
 
-#include <botan/x509_obj.h>
-#include <botan/x509_dn.h>
-#include <botan/pkcs8.h>
-#include <botan/datastor.h>
-#include <botan/key_constraint.h>
-#include <botan/asn1_attribute.h>
-#include <botan/asn1_alt_name.h>
-#include <vector>
+import botan.x509_obj;
+import botan.x509_dn;
+import botan.pkcs8;
+import botan.datastor;
+import botan.key_constraint;
+import botan.asn1_attribute;
+import botan.asn1_alt_name;
+import vector;
 /**
 * PKCS #10 Certificate Request.
 */

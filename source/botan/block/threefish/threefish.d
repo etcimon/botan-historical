@@ -5,9 +5,9 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/threefish.h>
-#include <botan/rotate.h>
-#include <botan/loadstor.h>
+import botan.threefish;
+import botan.rotate;
+import botan.loadstor;
 #define THREEFISH_ROUND(X0,X1,X2,X3,X4,X5,X6,X7,ROT1,ROT2,ROT3,ROT4) \
 	do {																				  \
 		X0 += X4;																		\
@@ -51,8 +51,8 @@
 		THREEFISH_INJECT_KEY(R2);										 \
 } while(0)
 
-void Threefish_512::skein_feedfwd(in secure_vector<ulong> M,
-											 const secure_vector<ulong>& T)
+void Threefish_512::skein_feedfwd(in secure_vector!ulong M,
+											 const secure_vector!ulong& T)
 {
 	BOTAN_ASSERT(m_K.size() == 9, "Key was set");
 	BOTAN_ASSERT(M.size() == 8, "Single block");

@@ -5,9 +5,9 @@
 * Distributed under the terms of the botan license.
 */
 
-#include <botan/cipher_mode.h>
-#include <botan/block_cipher.h>
-#include <botan/mode_pad.h>
+import botan.cipher_mode;
+import botan.block_cipher;
+import botan.mode_pad;
 /**
 * CFB Mode
 */

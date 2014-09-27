@@ -5,11 +5,11 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/b64_filt.h>
-#include <botan/base64.h>
-#include <botan/charset.h>
-#include <botan/exceptn.h>
-#include <algorithm>
+import botan.b64_filt;
+import botan.base64;
+import botan.charset;
+import botan.exceptn;
+import algorithm;
 /*
 * Base64_Encoder Constructor
 */

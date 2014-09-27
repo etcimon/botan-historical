@@ -6,10 +6,10 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/data_src.h>
-#include <botan/exceptn.h>
-#include <fstream>
-#include <algorithm>
+import botan.data_src;
+import botan.exceptn;
+import fstream;
+import algorithm;
 /*
 * Read a single byte from the DataSource
 */
@@ -121,7 +121,7 @@ size_t DataSource_Stream::peek(byte* output, size_t offset) const
 
 	if (got == offset)
 	{
-		source.read(cast(char*)(out), length);
+		source.read(cast(char*)(output), length);
 		if (source.bad())
 			throw new Stream_IO_Error("DataSource_Stream::peek: Source failure");
 		got = source.gcount();

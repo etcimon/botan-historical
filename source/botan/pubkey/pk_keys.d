@@ -5,9 +5,9 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/pk_keys.h>
-#include <botan/der_enc.h>
-#include <botan/oids.h>
+import botan.pk_keys;
+import botan.der_enc;
+import botan.oids;
 /*
 * Default OID access
 */

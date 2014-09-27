@@ -5,9 +5,9 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/aes_ni.h>
-#include <botan/loadstor.h>
-#include <wmmintrin.h>
+import botan.aes_ni;
+import botan.loadstor;
+import wmmintrin.h;
 
 __m128i aes_128_key_expansion(__m128i key, __m128i key_with_rcon)
 {

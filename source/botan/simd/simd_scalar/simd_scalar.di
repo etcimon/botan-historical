@@ -5,8 +5,8 @@
 * Distributed under the terms of the botan license.
 */
 
-#include <botan/loadstor.h>
-#include <botan/bswap.h>
+import botan.loadstor;
+import botan.bswap;
 /**
 * Fake SIMD, using plain scalar operations
 * Often still faster than iterative on superscalar machines

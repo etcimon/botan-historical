@@ -5,28 +5,28 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/kdf.h>
-#include <botan/libstate.h>
-#include <botan/scan_name.h>
+import botan.kdf;
+import botan.libstate;
+import botan.scan_name;
 
 #if defined(BOTAN_HAS_KDF1)
-  #include <botan/kdf1.h>
+  import botan.kdf1;
 #endif
 
 #if defined(BOTAN_HAS_KDF2)
-  #include <botan/kdf2.h>
+  import botan.kdf2;
 #endif
 
 #if defined(BOTAN_HAS_X942_PRF)
-  #include <botan/prf_x942.h>
+  import botan.prf_x942;
 #endif
 
 #if defined(BOTAN_HAS_SSL_V3_PRF)
-  #include <botan/prf_ssl3.h>
+  import botan.prf_ssl3;
 #endif
 
 #if defined(BOTAN_HAS_TLS_V10_PRF)
-  #include <botan/prf_tls.h>
+  import botan.prf_tls;
 #endif
 KDF* get_kdf(in string algo_spec)
 {

@@ -6,11 +6,11 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/package.h>
-#include <botan/filters.h>
-#include <botan/ctr.h>
-#include <botan/get_byte.h>
-#include <botan/internal/xor_buf.h>
+import botan.package;
+import botan.filters;
+import botan.ctr;
+import botan.get_byte;
+import botan.internal.xor_buf;
 void aont_package(RandomNumberGenerator& rng,
 						BlockCipher* cipher,
 						in byte* input, size_t input_len,

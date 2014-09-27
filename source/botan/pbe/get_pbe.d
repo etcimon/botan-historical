@@ -5,15 +5,15 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/get_pbe.h>
-#include <botan/oids.h>
-#include <botan/scan_name.h>
-#include <botan/parsing.h>
-#include <botan/libstate.h>
+import botan.get_pbe;
+import botan.oids;
+import botan.scan_name;
+import botan.parsing;
+import botan.libstate;
 
 #if defined(BOTAN_HAS_PBE_PKCS_V20)
-  #include <botan/pbes2.h>
-  #include <botan/hmac.h>
+  import botan.pbes2;
+  import botan.hmac;
 #endif
 /*
 * Get an encryption PBE, set new parameters

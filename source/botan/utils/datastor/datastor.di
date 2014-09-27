@@ -5,12 +5,12 @@
 * Distributed under the terms of the botan license.
 */
 
-#include <botan/secmem.h>
-#include <functional>
-#include <utility>
-#include <string>
-#include <vector>
-#include <map>
+import botan.secmem;
+import functional;
+import utility;
+import string;
+import vector;
+import map;
 /**
 * Data Store
 */

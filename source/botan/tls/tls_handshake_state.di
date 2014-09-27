@@ -5,15 +5,15 @@
 * Released under the terms of the botan license.
 */
 
-#include <botan/internal/tls_handshake_hash.h>
-#include <botan/internal/tls_handshake_io.h>
-#include <botan/internal/tls_session_key.h>
-#include <botan/tls_ciphersuite.h>
-#include <botan/tls_exceptn.h>
-#include <botan/tls_handshake_msg.h>
-#include <botan/pk_keys.h>
-#include <botan/pubkey.h>
-#include <functional>
+import botan.internal.tls_handshake_hash;
+import botan.internal.tls_handshake_io;
+import botan.internal.tls_session_key;
+import botan.tls_ciphersuite;
+import botan.tls_exceptn;
+import botan.tls_handshake_msg;
+import botan.pk_keys;
+import botan.pubkey;
+import functional;
 class KDF;
 
 namespace TLS {

@@ -5,8 +5,8 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/pbkdf.h>
-#include <stdexcept>
+import botan.pbkdf;
+import stdexcept;
 OctetString PBKDF::derive_key(size_t output_len,
 										in string passphrase,
 										in byte* salt, size_t salt_len,

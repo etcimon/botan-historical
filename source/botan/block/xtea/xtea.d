@@ -5,8 +5,8 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/xtea.h>
-#include <botan/loadstor.h>
+import botan.xtea;
+import botan.loadstor;
 namespace {
 
 void xtea_encrypt_4(const byte[32] input, byte[32] output, const uint[64] EK)
@@ -122,7 +122,7 @@ void XTEA::key_schedule(in byte* key, size_t)
 {
 	EK.resize(64);
 
-	secure_vector<uint> UK(4);
+	secure_vector!uint UK(4);
 	for (size_t i = 0; i != 4; ++i)
 		UK[i] = load_be!uint(key, i);
 

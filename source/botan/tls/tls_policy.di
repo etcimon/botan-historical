@@ -5,11 +5,11 @@
 * Released under the terms of the botan license.
 */
 
-#include <botan/tls_version.h>
-#include <botan/tls_ciphersuite.h>
-#include <botan/x509cert.h>
-#include <botan/dl_group.h>
-#include <vector>
+import botan.tls_version;
+import botan.tls_ciphersuite;
+import botan.x509cert;
+import botan.dl_group;
+import vector;
 namespace TLS {
 
 /**

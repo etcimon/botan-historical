@@ -8,7 +8,7 @@
 * Released under the terms of the Botan license
 */
 
-#include <botan/tls_ciphersuite.h>
+import botan.tls_ciphersuite;
 namespace TLS {
 
 Ciphersuite Ciphersuite::by_id(ushort suite)

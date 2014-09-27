@@ -5,8 +5,8 @@
 * Distributed under the terms of the botan license.
 */
 
-#include <botan/bigint.h>
-#include <botan/data_src.h>
+import botan.bigint;
+import botan.data_src;
 /**
 * This class represents discrete logarithm groups. It holds a prime p,
 * a prime q = (p-1)/2 and g = x^((p-1)/q) mod p.

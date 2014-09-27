@@ -5,8 +5,8 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/bigint.h>
-#include <iostream>
+import botan.bigint;
+import iostream;
 /*
 * Write the BigInt into a stream
 */

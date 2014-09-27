@@ -5,9 +5,9 @@
 * Distributed under the terms of the botan license.
 */
 
-#include <botan/secmem.h>
-#include <string>
-#include <functional>
+import botan.secmem;
+import string;
+import functional;
 /**
 * Class used to accumulate the poll results of EntropySources
 */

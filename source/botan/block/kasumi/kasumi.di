@@ -5,7 +5,7 @@
 * Distributed under the terms of the botan license.
 */
 
-#include <botan/block_cipher.h>
+import botan.block_cipher;
 /**
 * KASUMI, the block cipher used in 3G telephony
 */
@@ -21,5 +21,5 @@ class KASUMI : public Block_Cipher_Fixed_Params<8, 16>
 	private:
 		void key_schedule(in byte*, size_t);
 
-		secure_vector<ushort> EK;
+		secure_vector!ushort EK;
 };

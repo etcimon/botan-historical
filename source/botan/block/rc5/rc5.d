@@ -5,11 +5,11 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/rc5.h>
-#include <botan/loadstor.h>
-#include <botan/rotate.h>
-#include <botan/parsing.h>
-#include <algorithm>
+import botan.rc5;
+import botan.loadstor;
+import botan.rotate;
+import botan.parsing;
+import algorithm;
 /*
 * RC5 Encryption
 */
@@ -90,7 +90,7 @@ void RC5::key_schedule(in byte* key)
 	for (size_t i = 1; i != S.size(); ++i)
 		S[i] = S[i-1] + 0x9E3779B9;
 
-	secure_vector<uint> K(8);
+	secure_vector!uint K(8);
 
 	for (s32bit i = length-1; i >= 0; --i)
 		K[i/4] = (K[i/4] << 8) + key[i];

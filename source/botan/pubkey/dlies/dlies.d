@@ -5,8 +5,8 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/dlies.h>
-#include <botan/internal/xor_buf.h>
+import botan.dlies;
+import botan.internal.xor_buf;
 /*
 * DLIES_Encryptor Constructor
 */

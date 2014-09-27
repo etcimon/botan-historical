@@ -5,8 +5,8 @@
 * Distributed under the terms of the botan license.
 */
 
-#include <botan/filter.h>
-#include <iosfwd>
+import botan.filter;
+import iosfwd;
 /**
 * This class represents abstract data sink objects.
 */

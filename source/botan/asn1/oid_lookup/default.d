@@ -5,7 +5,7 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/oids.h>
+import botan.oids;
 namespace OIDS {
 
 /*

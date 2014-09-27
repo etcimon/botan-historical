@@ -5,7 +5,7 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/eme.h>
+import botan.eme;
 /*
 * Encode a message
 */

@@ -5,9 +5,9 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/calendar.h>
-#include <botan/exceptn.h>
-#include <ctime>
+import botan.calendar;
+import botan.exceptn;
+import ctime;
 namespace {
 
 std::tm do_gmtime(std::time_t time_val)

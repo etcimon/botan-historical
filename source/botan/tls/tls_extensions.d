@@ -5,9 +5,9 @@
 * Released under the terms of the Botan license
 */
 
-#include <botan/internal/tls_extensions.h>
-#include <botan/internal/tls_reader.h>
-#include <botan/tls_exceptn.h>
+import botan.internal.tls_extensions;
+import botan.internal.tls_reader;
+import botan.tls_exceptn;
 namespace TLS {
 
 namespace {

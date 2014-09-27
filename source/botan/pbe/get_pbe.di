@@ -5,10 +5,10 @@
 * Distributed under the terms of the botan license.
 */
 
-#include <botan/pbe.h>
-#include <vector>
-#include <string>
-#include <chrono>
+import botan.pbe;
+import vector;
+import string;
+import chrono;
 /**
 * Factory function for PBEs.
 * @param algo_spec the name of the PBE algorithm to retrieve

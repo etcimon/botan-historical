@@ -5,8 +5,8 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/whrlpool.h>
-#include <botan/loadstor.h>
+import botan.whrlpool;
+import botan.loadstor;
 /*
 * Whirlpool Compression Function
 */

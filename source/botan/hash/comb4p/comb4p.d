@@ -5,9 +5,9 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/comb4p.h>
-#include <botan/internal/xor_buf.h>
-#include <stdexcept>
+import botan.comb4p;
+import botan.internal.xor_buf;
+import stdexcept;
 namespace {
 
 void comb4p_round(SafeVector!byte output,

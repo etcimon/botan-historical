@@ -8,9 +8,9 @@
 *	 (http://arctic.org/~dean/crypto/sha1.html)
 */
 
-#include <botan/sha1_sse2.h>
-#include <botan/rotate.h>
-#include <emmintrin.h>
+import botan.sha1_sse2;
+import botan.rotate;
+import emmintrin.h;
 namespace SHA1_SSE2_F {
 
 namespace {

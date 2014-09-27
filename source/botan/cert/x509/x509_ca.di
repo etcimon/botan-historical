@@ -5,12 +5,12 @@
 * Distributed under the terms of the botan license.
 */
 
-#include <botan/x509cert.h>
-#include <botan/x509_crl.h>
-#include <botan/x509_ext.h>
-#include <botan/pkcs8.h>
-#include <botan/pkcs10.h>
-#include <botan/pubkey.h>
+import botan.x509cert;
+import botan.x509_crl;
+import botan.x509_ext;
+import botan.pkcs8;
+import botan.pkcs10;
+import botan.pubkey;
 /**
 * This class represents X.509 Certificate Authorities (CAs).
 */

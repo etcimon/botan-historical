@@ -5,8 +5,8 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/global_state.h>
-#include <botan/libstate.h>
+import botan.global_state;
+import botan.libstate;
 /*
 * @todo There should probably be a lock to avoid racy manipulation
 * of the state among different threads

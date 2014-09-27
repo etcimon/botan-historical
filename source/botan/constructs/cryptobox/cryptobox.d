@@ -5,16 +5,16 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/cryptobox.h>
-#include <botan/filters.h>
-#include <botan/pipe.h>
-#include <botan/lookup.h>
-#include <botan/sha2_64.h>
-#include <botan/hmac.h>
-#include <botan/pbkdf2.h>
-#include <botan/pem.h>
-#include <botan/get_byte.h>
-#include <botan/mem_ops.h>
+import botan.cryptobox;
+import botan.filters;
+import botan.pipe;
+import botan.lookup;
+import botan.sha2_64;
+import botan.hmac;
+import botan.pbkdf2;
+import botan.pem;
+import botan.get_byte;
+import botan.mem_ops;
 namespace CryptoBox {
 
 namespace {

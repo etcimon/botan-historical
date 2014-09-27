@@ -5,7 +5,7 @@
 * Distributed under the terms of the botan license.
 */
 
-#include <botan/build.h>
+import botan.build;
 /**
 * Called when an assertion fails
 */

@@ -5,10 +5,10 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/pssr.h>
-#include <botan/mgf1.h>
-#include <botan/internal/bit_ops.h>
-#include <botan/internal/xor_buf.h>
+import botan.pssr;
+import botan.mgf1;
+import botan.internal.bit_ops;
+import botan.internal.xor_buf;
 /*
 * PSSR Update Operation
 */

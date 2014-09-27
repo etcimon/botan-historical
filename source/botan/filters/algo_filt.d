@@ -5,9 +5,9 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/filters.h>
-#include <botan/libstate.h>
-#include <algorithm>
+import botan.filters;
+import botan.libstate;
+import algorithm;
 /*
 * StreamCipher_Filter Constructor
 */

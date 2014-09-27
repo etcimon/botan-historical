@@ -5,11 +5,11 @@
 * Distributed under the terms of the botan license.
 */
 
-#include <botan/algo_factory.h>
-#include <botan/rng.h>
-#include <map>
-#include <string>
-#include <chrono>
+import botan.algo_factory;
+import botan.rng;
+import map;
+import string;
+import chrono;
 /**
 * Time aspects of an algorithm/provider
 * @param name the name of the algorithm to test

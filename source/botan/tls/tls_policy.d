@@ -5,11 +5,11 @@
 * Released under the terms of the Botan license
 */
 
-#include <botan/tls_policy.h>
-#include <botan/tls_ciphersuite.h>
-#include <botan/tls_magic.h>
-#include <botan/tls_exceptn.h>
-#include <botan/internal/stl_util.h>
+import botan.tls_policy;
+import botan.tls_ciphersuite;
+import botan.tls_magic;
+import botan.tls_exceptn;
+import botan.internal.stl_util;
 namespace TLS {
 
 Vector!( string ) Policy::allowed_ciphers() const

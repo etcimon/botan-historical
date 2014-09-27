@@ -5,8 +5,8 @@
 * Distributed under the terms of the botan license.
 */
 
-#include <botan/rng.h>
-#include <botan/block_cipher.h>
+import botan.rng;
+import botan.block_cipher;
 /**
 * ANSI X9.31 RNG
 */

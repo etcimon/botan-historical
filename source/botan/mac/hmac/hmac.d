@@ -6,8 +6,8 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/hmac.h>
-#include <botan/internal/xor_buf.h>
+import botan.hmac;
+import botan.internal.xor_buf;
 /*
 * Update a HMAC Calculation
 */

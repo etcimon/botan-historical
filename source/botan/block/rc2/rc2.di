@@ -5,7 +5,7 @@
 * Distributed under the terms of the botan license.
 */
 
-#include <botan/block_cipher.h>
+import botan.block_cipher;
 /**
 * RC2
 */
@@ -28,5 +28,5 @@ class RC2 : public Block_Cipher_Fixed_Params<8, 1, 32>
 	private:
 		void key_schedule(in byte*, size_t);
 
-		secure_vector<ushort> K;
+		secure_vector!ushort K;
 };

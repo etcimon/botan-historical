@@ -5,7 +5,7 @@
 * Distributed under the terms of the botan license.
 */
 
-#include <botan/mdx_hash.h>
+import botan.mdx_hash;
 /**
 * Whirlpool
 */
@@ -33,5 +33,5 @@ class Whirlpool : public MDx_HashFunction
 		static const ulong[256] C6;
 		static const ulong[256] C7;
 
-		secure_vector<ulong> M, digest;
+		secure_vector!ulong M, digest;
 };

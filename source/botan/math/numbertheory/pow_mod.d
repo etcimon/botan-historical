@@ -5,9 +5,9 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/pow_mod.h>
-#include <botan/libstate.h>
-#include <botan/engine.h>
+import botan.pow_mod;
+import botan.libstate;
+import botan.engine;
 /*
 * Power_Mod Constructor
 */
@@ -114,7 +114,7 @@ BigInt Power_Mod::execute() const
 size_t Power_Mod::window_bits(size_t exp_bits, size_t,
 										Power_Mod::Usage_Hints hints)
 {
-	static const size_t wsize[][2] = {
+	immutable size_t[][2] wsize = {
 	{ 1434, 7 },
 	{  539, 6 },
 	{  197, 4 },

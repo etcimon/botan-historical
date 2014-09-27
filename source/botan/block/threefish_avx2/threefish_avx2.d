@@ -5,8 +5,8 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/threefish_avx2.h>
-#include <immintrin.h>
+import botan.threefish_avx2;
+import immintrin.h;
 namespace {
 
  void interleave_epi64(__m256i& X0, __m256i& X1)

@@ -5,7 +5,7 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/internal/gmp_wrap.h>
+import botan.internal.gmp_wrap;
 
 #define GNU_MP_VERSION_CODE_FOR(a,b,c) ((a << 16) | (b << 8) | (c))
 
@@ -83,17 +83,17 @@ size_t GMP_MPZ::bytes() const
 */
 BigInt GMP_MPZ::to_bigint() const
 {
-	BigInt out(BigInt::Positive, (bytes() + sizeof(word) - 1) / sizeof(word));
+	BigInt output(BigInt::Positive, (bytes() + sizeof(word) - 1) / sizeof(word));
 	size_t dummy = 0;
 
-	word* reg = out.mutable_data();
+	word* reg = output.mutable_data();
 
 	mpz_export(reg, &dummy, -1, sizeof(word), 0, 0, value);
 
 	if (mpz_sgn(value) < 0)
-		out.flip_sign();
+		output.flip_sign();
 
-	return out;
+	return output;
 }
 
 }

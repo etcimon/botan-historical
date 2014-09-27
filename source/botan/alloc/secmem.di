@@ -5,12 +5,12 @@
 * Distributed under the terms of the botan license.
 */
 
-#include <botan/mem_ops.h>
-#include <algorithm>
-#include <vector>
+import botan.mem_ops;
+import algorithm;
+import vector;
 
 #if defined(BOTAN_HAS_LOCKING_ALLOCATOR)
-  #include <botan/locking_allocator.h>
+  import botan.locking_allocator;
 #endif
 
 class secure_allocator(T)
@@ -86,7 +86,7 @@ operator!=(in secure_allocator<T>, const secure_allocator<T>&)
 template<typename T> using secure_vector = Vector!( T, secure_allocator<T )>;
 
 template<typename T>
-Vector!( T ) unlock(in secure_vector<T> input)
+Vector!( T ) unlock(in secure_vector!T input)
 {
 	Vector!( T ) output(input.size());
 	copy_mem(&output[0], &input[0], input.size());

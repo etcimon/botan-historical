@@ -5,10 +5,10 @@
 * Distributed under the terms of the botan license.
 */
 
-#include <botan/dl_algo.h>
-#include <botan/pk_ops.h>
-#include <botan/reducer.h>
-#include <botan/pow_mod.h>
+import botan.dl_algo;
+import botan.pk_ops;
+import botan.reducer;
+import botan.pow_mod;
 /**
 * DSA Public Key
 */

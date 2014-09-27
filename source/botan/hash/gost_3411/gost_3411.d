@@ -5,10 +5,10 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/gost_3411.h>
-#include <botan/loadstor.h>
-#include <botan/rotate.h>
-#include <botan/internal/xor_buf.h>
+import botan.gost_3411;
+import botan.loadstor;
+import botan.rotate;
+import botan.internal.xor_buf;
 /**
 * GOST 34.11 Constructor
 */
@@ -75,15 +75,15 @@ void GOST_34_11::compress_n(in byte* input, size_t blocks)
 			sum[j] = get_byte(1, s);
 		}
 
-		byte S[32] = { 0 };
+		byte[32] S = { 0 };
 
-		ulong U[4], V[4];
+		ulong[4] U, V;
 		load_be(U, &hash[0], 4);
 		load_be(V, input + 32*i, 4);
 
 		for (size_t j = 0; j != 4; ++j)
 		{
-			byte key[32] = { 0 };
+			byte[32] key = { 0 };
 
 			// P transformation
 			for (size_t k = 0; k != 4; ++k)
@@ -120,7 +120,7 @@ void GOST_34_11::compress_n(in byte* input, size_t blocks)
 			V[3] = AA_V_2;
 		}
 
-		byte S2[32] = { 0 };
+		byte[32] S2 = { 0 };
 
 		// 12 rounds of psi
 		S2[ 0] = S[24];

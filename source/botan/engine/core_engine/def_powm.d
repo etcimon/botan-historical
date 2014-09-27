@@ -5,8 +5,8 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/internal/core_engine.h>
-#include <botan/internal/def_powm.h>
+import botan.internal.core_engine;
+import botan.internal.def_powm;
 /*
 * Choose a modular exponentation algorithm
 */

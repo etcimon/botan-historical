@@ -5,7 +5,7 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/internal/unix_procs.h>
+import botan.internal.unix_procs;
 /**
 * Default Commands for Entropy Gathering
 */

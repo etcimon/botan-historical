@@ -5,19 +5,19 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/algo_factory.h>
-#include <botan/internal/algo_cache.h>
-#include <botan/internal/stl_util.h>
-#include <botan/engine.h>
-#include <botan/exceptn.h>
+import botan.algo_factory;
+import botan.internal.algo_cache;
+import botan.internal.stl_util;
+import botan.engine;
+import botan.exceptn;
 
-#include <botan/block_cipher.h>
-#include <botan/stream_cipher.h>
-#include <botan/hash.h>
-#include <botan/mac.h>
-#include <botan/pbkdf.h>
+import botan.block_cipher;
+import botan.stream_cipher;
+import botan.hash;
+import botan.mac;
+import botan.pbkdf;
 
-#include <algorithm>
+import algorithm;
 
 /*
 * Template functions for the factory prototype/search algorithm

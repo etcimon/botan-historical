@@ -5,11 +5,11 @@
 * Distributed under the terms of the botan license.
 */
 
-#include <botan/asn1_obj.h>
-#include <botan/asn1_oid.h>
-#include <botan/asn1_str.h>
-#include <map>
-#include <iosfwd>
+import botan.asn1_obj;
+import botan.asn1_oid;
+import botan.asn1_str;
+import map;
+import iosfwd;
 /**
 * Distinguished Name
 */

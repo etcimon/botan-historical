@@ -5,9 +5,9 @@
 * Released under the terms of the Botan license
 */
 
-#include <botan/tls_session_manager.h>
-#include <botan/hex.h>
-#include <chrono>
+import botan.tls_session_manager;
+import botan.hex;
+import chrono;
 namespace TLS {
 
 Session_Manager_In_Memory::Session_Manager_In_Memory(

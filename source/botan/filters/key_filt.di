@@ -5,8 +5,8 @@
 * Distributed under the terms of the botan license.
 */
 
-#include <botan/filter.h>
-#include <botan/sym_algo.h>
+import botan.filter;
+import botan.sym_algo;
 /**
 * This class represents keyed filters, i.e. filters that have to be
 * fed with a key in order to function.

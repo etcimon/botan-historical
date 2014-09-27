@@ -5,10 +5,10 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/nr.h>
-#include <botan/numthry.h>
-#include <botan/keypair.h>
-#include <future>
+import botan.nr;
+import botan.numthry;
+import botan.keypair;
+import future;
 NR_PublicKey::NR_PublicKey(in AlgorithmIdentifier alg_id,
 									in SafeVector!byte key_bits) :
 	DL_Scheme_PublicKey(alg_id, key_bits, DL_Group::ANSI_X9_57)

@@ -5,13 +5,13 @@
 * Distributed under the terms of the Botan license
 */
 
-#include <botan/der_enc.h>
-#include <botan/asn1_obj.h>
-#include <botan/bigint.h>
-#include <botan/get_byte.h>
-#include <botan/parsing.h>
-#include <botan/internal/bit_ops.h>
-#include <algorithm>
+import botan.der_enc;
+import botan.asn1_obj;
+import botan.bigint;
+import botan.get_byte;
+import botan.parsing;
+import botan.internal.bit_ops;
+import algorithm;
 namespace {
 
 /*

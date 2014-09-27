@@ -5,18 +5,18 @@
 * Released under the terms of the Botan license
 */
 
-#include <botan/internal/tls_messages.h>
-#include <botan/internal/tls_reader.h>
-#include <botan/internal/tls_extensions.h>
-#include <botan/internal/tls_handshake_io.h>
-#include <botan/credentials_manager.h>
-#include <botan/pubkey.h>
-#include <botan/dh.h>
-#include <botan/ecdh.h>
-#include <botan/rsa.h>
-#include <botan/srp6.h>
-#include <botan/rng.h>
-#include <botan/loadstor.h>
+import botan.internal.tls_messages;
+import botan.internal.tls_reader;
+import botan.internal.tls_extensions;
+import botan.internal.tls_handshake_io;
+import botan.credentials_manager;
+import botan.pubkey;
+import botan.dh;
+import botan.ecdh;
+import botan.rsa;
+import botan.srp6;
+import botan.rng;
+import botan.loadstor;
 namespace TLS {
 
 namespace {

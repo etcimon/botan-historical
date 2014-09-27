@@ -5,8 +5,8 @@
 * Distributed under the terms of the botan license.
 */
 
-#include <botan/filter.h>
-#include <botan/pubkey.h>
+import botan.filter;
+import botan.pubkey;
 /**
 * PK_Encryptor Filter
 */
