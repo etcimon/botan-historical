@@ -12,7 +12,7 @@ import botan.ber_dec;
 import botan.bigint;
 import botan.parsing;
 import botan.lookup;
-import botan.oids;
+import botan.asn1.oid_lookup.oids;
 import botan.key_constraint;
 import algorithm;
 import typeinfo;
@@ -98,7 +98,7 @@ X509_Certificate X509_CA::make_cert(PK_Signer* signer,
 
 	BigInt serial_no(rng, SERIAL_BITS);
 
-	const Vector!( byte ) cert = X509_Object::make_signed(
+	const Vector!byte cert = X509_Object::make_signed(
 		signer, rng, sig_algo,
 		DER_Encoder().start_cons(SEQUENCE)
 			.start_explicit(0)
@@ -176,7 +176,7 @@ X509_CRL X509_CA::make_crl(in Vector!( CRL_Entry ) revoked,
 		new Cert_Extension::Authority_Key_ID(cert.subject_key_id()));
 	extensions.add(new Cert_Extension::CRL_Number(crl_number));
 
-	const Vector!( byte ) crl = X509_Object::make_signed(
+	const Vector!byte crl = X509_Object::make_signed(
 		signer, rng, ca_sig_algo,
 		DER_Encoder().start_cons(SEQUENCE)
 			.encode(X509_CRL_VERSION-1)
@@ -241,7 +241,7 @@ PK_Signer* choose_sig_format(in Private_Key key,
 
 	padding = padding + '(' + proto_hash.name() + ')';
 
-	sig_algo.oid = OIDS::lookup(algo_name + "/" + padding);
+	sig_algo.oid = oids.lookup(algo_name + "/" + padding);
 	sig_algo.parameters = key.algorithm_identifier().parameters;
 
 	return new PK_Signer(key, padding, format);

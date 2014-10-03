@@ -13,7 +13,7 @@ import botan.internal.stl_util;
 import botan.parsing;
 import botan.bigint;
 import botan.lookup;
-import botan.oids;
+import botan.asn1.oid_lookup.oids;
 import botan.pem;
 import botan.hex;
 import algorithm;
@@ -29,7 +29,7 @@ Vector!string lookup_oids(in Vector!string input)
 	Vector!string output;
 
 	for (auto i = input.begin(); i != input.end(); ++i)
-		output.push_back(OIDS::lookup(OID(*i)));
+		output.push_back(oids.lookup(OID(*i)));
 	return output;
 }
 
@@ -108,7 +108,7 @@ void X509_Certificate::force_decode()
 		throw new BER_Bad_Tag("X509_Certificate: Unexpected tag for public key",
 								public_key.type_tag, public_key.class_tag);
 
-	Vector!( byte ) v2_issuer_key_id, v2_subject_key_id;
+	Vector!byte v2_issuer_key_id, v2_subject_key_id;
 
 	tbs_cert.decode_optional_string(v2_issuer_key_id, BIT_STRING, 1);
 	tbs_cert.decode_optional_string(v2_subject_key_id, BIT_STRING, 2);
@@ -208,7 +208,7 @@ Public_Key* X509_Certificate::subject_public_key() const
 		ASN1::put_in_sequence(this.subject_public_key_bits()));
 }
 
-Vector!( byte ) X509_Certificate::subject_public_key_bits() const
+Vector!byte X509_Certificate::subject_public_key_bits() const
 {
 	return hex_decode(subject.get1("X509.Certificate.public_key"));
 }
@@ -286,7 +286,7 @@ string X509_Certificate::crl_distribution_point() const
 /*
 * Return the authority key id
 */
-Vector!( byte ) X509_Certificate::authority_key_id() const
+Vector!byte X509_Certificate::authority_key_id() const
 {
 	return issuer.get1_memvec("X509v3.AuthorityKeyIdentifier");
 }
@@ -294,7 +294,7 @@ Vector!( byte ) X509_Certificate::authority_key_id() const
 /*
 * Return the subject key id
 */
-Vector!( byte ) X509_Certificate::subject_key_id() const
+Vector!byte X509_Certificate::subject_key_id() const
 {
 	return subject.get1_memvec("X509v3.SubjectKeyIdentifier");
 }
@@ -302,7 +302,7 @@ Vector!( byte ) X509_Certificate::subject_key_id() const
 /*
 * Return the certificate serial number
 */
-Vector!( byte ) X509_Certificate::serial_number() const
+Vector!byte X509_Certificate::serial_number() const
 {
 	return subject.get1_memvec("X509.Certificate.serial");
 }
@@ -315,7 +315,7 @@ X509_DN X509_Certificate::issuer_dn() const
 	return create_dn(issuer);
 }
 
-Vector!( byte ) X509_Certificate::raw_issuer_dn() const
+Vector!byte X509_Certificate::raw_issuer_dn() const
 {
 	return issuer.get1_memvec("X509.Certificate.dn_bits");
 }
@@ -328,7 +328,7 @@ X509_DN X509_Certificate::subject_dn() const
 	return create_dn(subject);
 }
 
-Vector!( byte ) X509_Certificate::raw_subject_dn() const
+Vector!byte X509_Certificate::raw_subject_dn() const
 {
 	return subject.get1_memvec("X509.Certificate.dn_bits");
 }
@@ -523,7 +523,7 @@ string X509_Certificate::to_string() const
 		output << "CRL " << crl_distribution_point() << "";
 
 	output << "Signature algorithm: " <<
-		OIDS::lookup(this.signature_algorithm().oid) << "";
+		oids.lookup(this.signature_algorithm().oid) << "";
 
 	output << "Serial number: " << hex_encode(this.serial_number()) << "";
 

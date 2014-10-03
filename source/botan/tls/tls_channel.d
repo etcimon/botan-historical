@@ -600,23 +600,23 @@ void Channel::secure_renegotiation_check(const Server_Hello* server_hello)
 	}
 }
 
-Vector!( byte ) Channel::secure_renegotiation_data_for_client_hello() const
+Vector!byte Channel::secure_renegotiation_data_for_client_hello() const
 {
 	if (auto active = active_state())
 		return active.client_finished().verify_data();
-	return Vector!( byte )();
+	return Vector!byte();
 }
 
-Vector!( byte ) Channel::secure_renegotiation_data_for_server_hello() const
+Vector!byte Channel::secure_renegotiation_data_for_server_hello() const
 {
 	if (auto active = active_state())
 	{
-		Vector!( byte ) buf = active.client_finished().verify_data();
+		Vector!byte buf = active.client_finished().verify_data();
 		buf += active.server_finished().verify_data();
 		return buf;
 	}
 
-	return Vector!( byte )();
+	return Vector!byte();
 }
 
 bool Channel::secure_renegotiation_supported() const
@@ -642,7 +642,7 @@ SymmetricKey Channel::key_material_export(in string label,
 		in SafeVector!byte master_secret =
 			active.session_keys().master_secret();
 
-		Vector!( byte ) salt;
+		Vector!byte salt;
 		salt += to_byte_vector(label);
 		salt += active.client_hello().random();
 		salt += active.server_hello().random();

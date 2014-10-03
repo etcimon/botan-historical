@@ -7,7 +7,7 @@
 */
 
 import botan.rng;
-import botan.secmem;
+import botan.alloc.secmem;
 import botan.mp_types;
 import iosfwd;
 /**
@@ -448,7 +448,7 @@ class BigInt
 	* @param base number-base of resulting byte array representation
 	* @result secure_vector of bytes containing the integer with given base
 	*/
-	static Vector!( byte ) encode(in BigInt n, Base base = Binary);
+	static Vector!byte encode(in BigInt n, Base base = Binary);
 
 	/**
 	* Encode the integer value from a BigInt to a secure_vector of bytes

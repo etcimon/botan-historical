@@ -7,7 +7,7 @@
 
 import botan.pk_keys;
 import botan.der_enc;
-import botan.oids;
+import botan.asn1.oid_lookup.oids;
 /*
 * Default OID access
 */

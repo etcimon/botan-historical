@@ -58,7 +58,7 @@ Session::Session(in byte* ber, size_t ber_len)
 
 	byte major_version = 0, minor_version = 0;
 
-	Vector!( byte ) peer_cert_bits;
+	Vector!byte peer_cert_bits;
 
 	size_t start_time = 0;
 
@@ -105,7 +105,7 @@ Session::Session(in byte* ber, size_t ber_len)
 
 SafeVector!byte Session::DER_encode() const
 {
-	Vector!( byte ) peer_cert_bits;
+	Vector!byte peer_cert_bits;
 	for (size_t i = 0; i != m_peer_certs.size(); ++i)
 		peer_cert_bits += m_peer_certs[i].BER_encode();
 
@@ -142,7 +142,7 @@ std::chrono::seconds Session::session_age() const
 		std::chrono::system_clock::now() - m_start_time);
 }
 
-Vector!( byte )
+Vector!byte
 Session::encrypt(in SymmetricKey master_key,
 					  RandomNumberGenerator rng) const
 {

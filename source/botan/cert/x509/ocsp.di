@@ -20,7 +20,7 @@ class Request
 			m_subject(subject_cert)
 		{}
 
-		Vector!( byte ) BER_encode() const;
+		Vector!byte BER_encode() const;
 
 		string base64_encode() const;
 

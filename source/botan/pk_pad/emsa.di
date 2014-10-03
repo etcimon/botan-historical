@@ -5,7 +5,7 @@
 * Distributed under the terms of the botan license.
 */
 
-import botan.secmem;
+import botan.alloc.secmem;
 import botan.rng;
 /**
 * Encoding Method for Signatures, Appendix

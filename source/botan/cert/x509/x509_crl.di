@@ -46,7 +46,7 @@ class X509_CRL : public X509_Object
 		* Get the AuthorityKeyIdentifier of this CRL.
 		* @return this CRLs AuthorityKeyIdentifier
 		*/
-		Vector!( byte ) authority_key_id() const;
+		Vector!byte authority_key_id() const;
 
 		/**
 		* Get the serial number of this CRL.

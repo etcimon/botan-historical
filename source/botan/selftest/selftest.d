@@ -121,7 +121,7 @@ algorithm_kat_detailed(in SCAN_Name algo_name,
 			else if (!dec.valid_iv_length(0))
 				throw new Invalid_IV_Length(algo, iv.length());
 
-			const Vector!( byte ) ad = hex_decode(search_map(vars, string("ad")));
+			const Vector!byte ad = hex_decode(search_map(vars, string("ad")));
 
 			if (!ad.empty())
 			{

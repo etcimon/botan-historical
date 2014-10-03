@@ -175,7 +175,7 @@ void Keccak_1600::add_data(in byte* input, size_t length)
 
 void Keccak_1600::final_result(byte* output)
 {
-	Vector!( byte ) padding(bitrate / 8 - S_pos);
+	Vector!byte padding(bitrate / 8 - S_pos);
 
 	padding[0] = 0x01;
 	padding[padding.size()-1] |= 0x80;

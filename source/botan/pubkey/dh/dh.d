@@ -20,7 +20,7 @@ DH_PublicKey::DH_PublicKey(in DL_Group grp, ref const BigInt y1)
 /*
 * Return the public value for key agreement
 */
-Vector!( byte ) DH_PublicKey::public_value() const
+Vector!byte DH_PublicKey::public_value() const
 {
 	return unlock(BigInt::encode_1363(y, group_p().bytes()));
 }
@@ -67,7 +67,7 @@ DH_PrivateKey::DH_PrivateKey(in AlgorithmIdentifier alg_id,
 /*
 * Return the public value for key agreement
 */
-Vector!( byte ) DH_PrivateKey::public_value() const
+Vector!byte DH_PrivateKey::public_value() const
 {
 	return DH_PublicKey::public_value();
 }

@@ -5,7 +5,7 @@
 * Distributed under the terms of the botan license.
 */
 
-import botan.secmem;
+import botan.alloc.secmem;
 import functional;
 import utility;
 import string;
@@ -32,7 +32,7 @@ class Data_Store
 		string get1(in string key,
 							  in string default_value) const;
 
-		Vector!( byte ) get1_memvec(in string) const;
+		Vector!byte get1_memvec(in string) const;
 		uint get1_uint(in string, uint = 0) const;
 
 		bool has_value(in string) const;

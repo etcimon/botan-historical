@@ -28,7 +28,7 @@ SRP6_Authenticator_File::SRP6_Authenticator_File(in string filename)
 
 		string username = parts[0];
 		BigInt v = BigInt::decode(base64_decode(parts[1]));
-		Vector!( byte ) salt = unlock(base64_decode(parts[2]));
+		Vector!byte salt = unlock(base64_decode(parts[2]));
 		BigInt group_id_idx = BigInt::decode(base64_decode(parts[3]));
 
 		string group_id;
@@ -48,7 +48,7 @@ SRP6_Authenticator_File::SRP6_Authenticator_File(in string filename)
 
 bool SRP6_Authenticator_File::lookup_user(in string username,
 														ref BigInt v,
-														Vector!( byte )& salt,
+														Vector!byte& salt,
 														string& group_id) const
 {
 	HashMap<string, SRP6_Data>::const_iterator i = entries.find(username);

@@ -21,12 +21,12 @@ class DLIES_Encryptor : public PK_Encryptor
 
 		void set_other_key(in Vector!byte);
 	private:
-		Vector!( byte ) enc(const byte[], size_t,
+		Vector!byte enc(const byte[], size_t,
 									 RandomNumberGenerator) const;
 
 		size_t maximum_input_size() const;
 
-		Vector!( byte ) other_key, my_key;
+		Vector!byte other_key, my_key;
 
 		PK_Key_Agreement ka;
 		Unique!KDF kdf;
@@ -48,7 +48,7 @@ class DLIES_Decryptor : public PK_Decryptor
 	private:
 		SafeVector!byte dec(const byte[], size_t) const;
 
-		Vector!( byte ) my_key;
+		Vector!byte my_key;
 
 		PK_Key_Agreement ka;
 		Unique!KDF kdf;

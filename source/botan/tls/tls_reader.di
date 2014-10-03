@@ -6,7 +6,7 @@
 */
 
 import botan.exceptn;
-import botan.secmem;
+import botan.alloc.secmem;
 import botan.loadstor;
 import string;
 import vector;
@@ -84,7 +84,7 @@ class TLS_Data_Reader
 			return result;
 		}
 
-		Vector!( T ) get_range(T)(size_t len_bytes,
+		Vector!T get_range(T)(size_t len_bytes,
 								  size_t min_elems,
 								  size_t max_elems)
 		{
@@ -94,7 +94,7 @@ class TLS_Data_Reader
 			return get_elem!(T, Vector!T)(num_elems);
 		}
 
-		Vector!( T ) get_range_vector(T)(size_t len_bytes,
+		Vector!T get_range_vector(T)(size_t len_bytes,
 										  size_t min_elems,
 										  size_t max_elems)
 		{
@@ -108,13 +108,13 @@ class TLS_Data_Reader
 									  size_t min_bytes,
 									  size_t max_bytes)
 		{
-			Vector!( byte ) v =
+			Vector!byte v =
 				get_range_vector!byte(len_bytes, min_bytes, max_bytes);
 
 			return string(cast(char*)(&v[0]), v.size());
 		}
 
-		Vector!( T ) get_fixed(T)(size_t size)
+		Vector!T get_fixed(T)(size_t size)
 		{
 			return get_elem!(T, Vector!T)(size);
 		}

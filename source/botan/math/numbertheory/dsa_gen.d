@@ -60,7 +60,7 @@ bool generate_dsa_primes(RandomNumberGenerator rng,
 		public:
 			Seed(in Vector!byte s) : seed(s) {}
 
-			operator Vector!( byte )& () { return seed; }
+			operator Vector!byte& () { return seed; }
 
 			Seed& operator++()
 			{
@@ -70,7 +70,7 @@ bool generate_dsa_primes(RandomNumberGenerator rng,
 				return (*this);
 			}
 		private:
-			Vector!( byte ) seed;
+			Vector!byte seed;
 	};
 
 	Seed seed(seed_c);
@@ -86,7 +86,7 @@ bool generate_dsa_primes(RandomNumberGenerator rng,
 					 b = (pbits-1) % (HASH_SIZE * 8);
 
 	BigInt X;
-	Vector!( byte ) V(HASH_SIZE * (n+1));
+	Vector!byte V(HASH_SIZE * (n+1));
 
 	for (size_t j = 0; j != 4096; ++j)
 	{
@@ -112,14 +112,14 @@ bool generate_dsa_primes(RandomNumberGenerator rng,
 /*
 * Generate DSA Primes
 */
-Vector!( byte ) generate_dsa_primes(RandomNumberGenerator rng,
+Vector!byte generate_dsa_primes(RandomNumberGenerator rng,
 												  ref Algorithm_Factory af,
 												  ref BigInt p, ref BigInt q,
 												  size_t pbits, size_t qbits)
 {
 	while(true)
 	{
-		Vector!( byte ) seed(qbits / 8);
+		Vector!byte seed(qbits / 8);
 		rng.randomize(&seed[0], seed.size());
 
 		if (generate_dsa_primes(rng, af, p, q, pbits, qbits, seed))

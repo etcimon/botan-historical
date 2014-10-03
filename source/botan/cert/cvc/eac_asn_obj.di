@@ -93,7 +93,7 @@ class EAC_Time : public ASN1_Object
 
 		~this() {}
 	private:
-		Vector!( byte ) encoded_eac_time() const;
+		Vector!byte encoded_eac_time() const;
 		bool passes_sanity_check() const;
 		uint year, month, day;
 		ASN1_Tag tag;

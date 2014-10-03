@@ -67,7 +67,7 @@ Stream_Handshake_IO::get_next_record(bool)
 		{
 			Handshake_Type type = cast(Handshake_Type)(m_queue[0]);
 
-			Vector!( byte ) contents(m_queue.begin() + 4,
+			Vector!byte contents(m_queue.begin() + 4,
 												m_queue.begin() + 4 + length);
 
 			m_queue.erase(m_queue.begin(), m_queue.begin() + 4 + length);
@@ -76,14 +76,14 @@ Stream_Handshake_IO::get_next_record(bool)
 		}
 	}
 
-	return Pair(HANDSHAKE_NONE, Vector!( byte )());
+	return Pair(HANDSHAKE_NONE, Vector!byte());
 }
 
-Vector!( byte )
+Vector!byte
 Stream_Handshake_IO::format(in Vector!byte msg,
 							Handshake_Type type) const
 {
-	Vector!( byte ) send_buf(4 + msg.size());
+	Vector!byte send_buf(4 + msg.size());
 
 	const size_t buf_size = msg.size();
 
@@ -96,17 +96,17 @@ Stream_Handshake_IO::format(in Vector!byte msg,
 	return send_buf;
 }
 
-Vector!( byte ) Stream_Handshake_IO::send(in Handshake_Message msg)
+Vector!byte Stream_Handshake_IO::send(in Handshake_Message msg)
 {
-	const Vector!( byte ) msg_bits = msg.serialize();
+	const Vector!byte msg_bits = msg.serialize();
 
 	if (msg.type() == HANDSHAKE_CCS)
 	{
 		m_send_hs(CHANGE_CIPHER_SPEC, msg_bits);
-		return Vector!( byte )(); // not included in handshake hashes
+		return Vector!byte(); // not included in handshake hashes
 	}
 
-	const Vector!( byte ) buf = format(msg_bits, msg.type());
+	const Vector!byte buf = format(msg_bits, msg.type());
 	m_send_hs(HANDSHAKE, buf);
 	return buf;
 }
@@ -177,16 +177,16 @@ Datagram_Handshake_IO::get_next_record(bool expecting_ccs)
 			const ushort current_epoch = m_messages.begin().second.epoch();
 
 			if (m_ccs_epochs.count(current_epoch))
-				return Pair(HANDSHAKE_CCS, Vector!( byte )());
+				return Pair(HANDSHAKE_CCS, Vector!byte());
 		}
 
-		return Pair(HANDSHAKE_NONE, Vector!( byte )());
+		return Pair(HANDSHAKE_NONE, Vector!byte());
 	}
 
 	auto i = m_messages.find(m_in_message_seq);
 
 	if (i == m_messages.end() || !i.second.complete())
-		return Pair(HANDSHAKE_NONE, Vector!( byte )());
+		return Pair(HANDSHAKE_NONE, Vector!byte());
 
 	m_in_message_seq += 1;
 
@@ -262,7 +262,7 @@ Datagram_Handshake_IO::Handshake_Reassembly::message() const
 	return Pair(cast(Handshake_Type)(m_msg_type), m_message);
 }
 
-Vector!( byte )
+Vector!byte
 Datagram_Handshake_IO::format_fragment(in byte* fragment,
 													size_t frag_len,
 													ushort frag_offset,
@@ -270,7 +270,7 @@ Datagram_Handshake_IO::format_fragment(in byte* fragment,
 													Handshake_Type type,
 													ushort msg_sequence) const
 {
-	Vector!( byte ) send_buf(12 + frag_len);
+	Vector!byte send_buf(12 + frag_len);
 
 	send_buf[0] = type;
 
@@ -286,7 +286,7 @@ Datagram_Handshake_IO::format_fragment(in byte* fragment,
 	return send_buf;
 }
 
-Vector!( byte )
+Vector!byte
 Datagram_Handshake_IO::format_w_seq(in Vector!byte msg,
 												Handshake_Type type,
 												ushort msg_sequence) const
@@ -294,7 +294,7 @@ Datagram_Handshake_IO::format_w_seq(in Vector!byte msg,
 	return format_fragment(&msg[0], msg.size(), 0, msg.size(), type, msg_sequence);
 }
 
-Vector!( byte )
+Vector!byte
 Datagram_Handshake_IO::format(in Vector!byte msg,
 										Handshake_Type type) const
 {
@@ -317,22 +317,22 @@ size_t split_for_mtu(size_t mtu, size_t msg_size)
 
 }
 
-Vector!( byte )
+Vector!byte
 Datagram_Handshake_IO::send(in Handshake_Message msg)
 {
-	const Vector!( byte ) msg_bits = msg.serialize();
+	const Vector!byte msg_bits = msg.serialize();
 	const ushort epoch = m_seqs.current_write_epoch();
 	const Handshake_Type msg_type = msg.type();
 
-	std::tuple<ushort, byte, Vector!( byte )> msg_info(epoch, msg_type, msg_bits);
+	std::tuple<ushort, byte, Vector!byte> msg_info(epoch, msg_type, msg_bits);
 
 	if (msg_type == HANDSHAKE_CCS)
 	{
 		m_send_hs(epoch, CHANGE_CIPHER_SPEC, msg_bits);
-		return Vector!( byte )(); // not included in handshake hashes
+		return Vector!byte(); // not included in handshake hashes
 	}
 
-	const Vector!( byte ) no_fragment =
+	const Vector!byte no_fragment =
 		format_w_seq(msg_bits, msg_type, m_out_message_seq);
 
 	if (no_fragment.size() + DTLS_HEADER_SIZE <= m_mtu)

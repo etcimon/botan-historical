@@ -11,7 +11,7 @@ import botan.ber_dec;
 import botan.x509_ext;
 import botan.lookup;
 import botan.hash;
-import botan.oids;
+import botan.asn1.oid_lookup.oids;
 namespace OCSP {
 
 CertID::CertID(in X509_Certificate issuer,
@@ -29,12 +29,12 @@ CertID::CertID(in X509_Certificate issuer,
 	m_subject_serial = BigInt::decode(subject.serial_number());
 }
 
-Vector!( byte ) CertID::extract_key_bitstr(in X509_Certificate cert) const
+Vector!byte CertID::extract_key_bitstr(in X509_Certificate cert) const
 {
 	const auto key_bits = cert.subject_public_key_bits();
 
 	AlgorithmIdentifier public_key_algid;
-	Vector!( byte ) public_key_bitstr;
+	Vector!byte public_key_bitstr;
 
 	BER_Decoder(key_bits)
 		.decode(public_key_algid)
@@ -51,7 +51,7 @@ bool CertID::is_id_for(in X509_Certificate issuer,
 		if (BigInt::decode(subject.serial_number()) != m_subject_serial)
 			return false;
 
-		Unique!HashFunction hash(get_hash(OIDS::lookup(m_hash_id.oid)));
+		Unique!HashFunction hash(get_hash(oids.lookup(m_hash_id.oid)));
 
 		if (m_issuer_dn_hash != unlock(hash.process(subject.raw_issuer_dn())))
 			return false;

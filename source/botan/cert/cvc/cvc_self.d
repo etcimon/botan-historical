@@ -8,7 +8,7 @@
 import botan.cvc_self;
 import botan.ecc_key;
 import botan.point_gfp;
-import botan.oids;
+import botan.asn1.oid_lookup.oids;
 import sstream;
 namespace {
 
@@ -30,7 +30,7 @@ void encode_eac_bigint(DER_Encoder& der, ref const BigInt x, ASN1_Tag tag)
 	der.encode(BigInt::encode_1363(x, x.bytes()), OCTET_STRING, tag);
 }
 
-Vector!( byte ) eac_1_1_encoding(const EC_PublicKey* key,
+Vector!byte eac_1_1_encoding(const EC_PublicKey* key,
 												const OID& sig_algo)
 {
 	if (key.domain_format() == EC_DOMPAR_ENC_OID)
@@ -69,7 +69,7 @@ Vector!( byte ) eac_1_1_encoding(const EC_PublicKey* key,
 
 string padding_and_hash_from_oid(OID const& oid)
 {
-	string padding_and_hash = OIDS::lookup(oid); // use the hash
+	string padding_and_hash = oids.lookup(oid); // use the hash
 
 	if (padding_and_hash.substr(0,6) != "ECDSA/")
 		throw new Invalid_State("CVC: Can only use ECDSA, not " + padding_and_hash);
@@ -97,12 +97,12 @@ EAC1_1_CVC create_self_signed_cert(Private_Key const& key,
 
 	AlgorithmIdentifier sig_algo;
 	string padding_and_hash("EMSA1_BSI(" + opt.hash_alg + ")");
-	sig_algo.oid = OIDS::lookup(priv_key.algo_name() + "/" + padding_and_hash);
+	sig_algo.oid = oids.lookup(priv_key.algo_name() + "/" + padding_and_hash);
 	sig_algo = AlgorithmIdentifier(sig_algo.oid, AlgorithmIdentifier::USE_NULL_PARAM);
 
 	PK_Signer signer(*priv_key, padding_and_hash);
 
-	Vector!( byte ) enc_public_key = eac_1_1_encoding(priv_key, sig_algo.oid);
+	Vector!byte enc_public_key = eac_1_1_encoding(priv_key, sig_algo.oid);
 
 	return make_cvc_cert(signer,
 								enc_public_key,
@@ -124,22 +124,22 @@ EAC1_1_Req create_cvc_req(Private_Key const& key,
 	}
 	AlgorithmIdentifier sig_algo;
 	string padding_and_hash("EMSA1_BSI(" + hash_alg + ")");
-	sig_algo.oid = OIDS::lookup(priv_key.algo_name() + "/" + padding_and_hash);
+	sig_algo.oid = oids.lookup(priv_key.algo_name() + "/" + padding_and_hash);
 	sig_algo = AlgorithmIdentifier(sig_algo.oid, AlgorithmIdentifier::USE_NULL_PARAM);
 
 	PK_Signer signer(*priv_key, padding_and_hash);
 
-	Vector!( byte ) enc_public_key = eac_1_1_encoding(priv_key, sig_algo.oid);
+	Vector!byte enc_public_key = eac_1_1_encoding(priv_key, sig_algo.oid);
 
-	Vector!( byte ) enc_cpi;
+	Vector!byte enc_cpi;
 	enc_cpi.push_back(0x00);
-	Vector!( byte ) tbs = DER_Encoder()
+	Vector!byte tbs = DER_Encoder()
 		.encode(enc_cpi, OCTET_STRING, ASN1_Tag(41), APPLICATION)
 		.raw_bytes(enc_public_key)
 		.encode(chr)
 		.get_contents_unlocked();
 
-	Vector!( byte ) signed_cert =
+	Vector!byte signed_cert =
 		EAC1_1_gen_CVC<EAC1_1_Req>::make_signed(signer,
 															 EAC1_1_gen_CVC<EAC1_1_Req>::build_cert_body(tbs),
 															 rng);
@@ -162,10 +162,10 @@ EAC1_1_ADO create_ado_req(Private_Key const& key,
 
 	string padding_and_hash = padding_and_hash_from_oid(req.signature_algorithm().oid);
 	PK_Signer signer(*priv_key, padding_and_hash);
-	Vector!( byte ) tbs_bits = req.BER_encode();
+	Vector!byte tbs_bits = req.BER_encode();
 	tbs_bits += DER_Encoder().encode(car).get_contents();
 
-	Vector!( byte ) signed_cert =
+	Vector!byte signed_cert =
 		EAC1_1_ADO::make_signed(signer, tbs_bits, rng);
 
 	DataSource_Memory source(signed_cert);
@@ -228,7 +228,7 @@ EAC1_1_CVC link_cvca(EAC1_1_CVC const& signer,
 	ECDSA_PublicKey* subj_pk = cast(ECDSA_PublicKey*)(pk.get());
 	subj_pk.set_parameter_encoding(EC_DOMPAR_ENC_EXPLICIT);
 
-	Vector!( byte ) enc_public_key = eac_1_1_encoding(priv_key, sig_algo.oid);
+	Vector!byte enc_public_key = eac_1_1_encoding(priv_key, sig_algo.oid);
 
 	return make_cvc_cert(pk_signer, enc_public_key,
 								signer.get_car(),
@@ -302,7 +302,7 @@ EAC1_1_CVC sign_request(EAC1_1_CVC const& signer_cert,
 		// (IS cannot sign certificates)
 	}
 
-	Vector!( byte ) enc_public_key = eac_1_1_encoding(priv_key, sig_algo.oid);
+	Vector!byte enc_public_key = eac_1_1_encoding(priv_key, sig_algo.oid);
 
 	return make_cvc_cert(pk_signer, enc_public_key,
 								ASN1_Car(signer_cert.get_chr().iso_8859()),

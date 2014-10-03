@@ -28,9 +28,9 @@ Next_Protocol::Next_Protocol(in Vector!byte buf)
 	reader.get_range_vector!byte(1, 0, 255); // padding, ignored
 }
 
-Vector!( byte ) Next_Protocol::serialize() const
+Vector!byte Next_Protocol::serialize() const
 {
-	Vector!( byte ) buf;
+	Vector!byte buf;
 
 	append_tls_length_value(buf,
 									cast(const byte*)(m_protocol.data()),

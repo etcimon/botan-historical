@@ -60,13 +60,13 @@ Certificate::Certificate(in Vector!byte buf)
 /**
 * Serialize a Certificate message
 */
-Vector!( byte ) Certificate::serialize() const
+Vector!byte Certificate::serialize() const
 {
-	Vector!( byte ) buf(3);
+	Vector!byte buf(3);
 
 	for (size_t i = 0; i != m_certs.size(); ++i)
 	{
-		Vector!( byte ) raw_cert = m_certs[i].BER_encode();
+		Vector!byte raw_cert = m_certs[i].BER_encode();
 		const size_t cert_size = raw_cert.size();
 		for (size_t i = 0; i != 3; ++i)
 			buf.push_back(get_byte<uint>(i+1, cert_size));

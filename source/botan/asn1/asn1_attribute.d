@@ -8,7 +8,7 @@
 import botan.asn1_attribute;
 import botan.der_enc;
 import botan.ber_dec;
-import botan.oids;
+import botan.asn1.oid_lookup.oids;
 /*
 * Create an Attribute
 */
@@ -24,7 +24,7 @@ Attribute::Attribute(in OID attr_oid, in Vector!byte attr_value)
 Attribute::Attribute(in string attr_oid,
 							in Vector!byte attr_value)
 {
-	oid = OIDS::lookup(attr_oid);
+	oid = oids.lookup(attr_oid);
 	parameters = attr_value;
 }
 

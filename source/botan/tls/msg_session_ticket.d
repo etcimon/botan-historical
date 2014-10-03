@@ -39,9 +39,9 @@ New_Session_Ticket::New_Session_Ticket(in Vector!byte buf)
 	m_ticket = reader.get_range!byte(2, 0, 65535);
 }
 
-Vector!( byte ) New_Session_Ticket::serialize() const
+Vector!byte New_Session_Ticket::serialize() const
 {
-	Vector!( byte ) buf(4);
+	Vector!byte buf(4);
 	store_be(m_ticket_lifetime_hint, &buf[0]);
 	append_tls_length_value(buf, m_ticket, 2);
 	return buf;

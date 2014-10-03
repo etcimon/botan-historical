@@ -46,10 +46,10 @@ class Transformation_Filter : public Keyed_Filter,
 				Nonce_State(bool allow_null_nonce) : m_fresh_nonce(allow_null_nonce) {}
 
 				void update(in InitializationVector iv);
-				Vector!( byte ) get();
+				Vector!byte get();
 			private:
 				bool m_fresh_nonce;
-				Vector!( byte ) m_nonce;
+				Vector!byte m_nonce;
 		};
 
 		Nonce_State m_nonce;

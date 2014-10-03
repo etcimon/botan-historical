@@ -245,7 +245,7 @@ string Handshake_State::srp_identifier() const
 	return "";
 }
 
-Vector!( byte ) Handshake_State::session_ticket() const
+Vector!byte Handshake_State::session_ticket() const
 {
 	if (new_session_ticket() && !new_session_ticket().ticket().empty())
 		return new_session_ticket().ticket();

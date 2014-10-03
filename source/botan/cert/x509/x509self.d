@@ -9,7 +9,7 @@ import botan.x509self;
 import botan.x509_ext;
 import botan.x509_ca;
 import botan.der_enc;
-import botan.oids;
+import botan.asn1.oid_lookup.oids;
 import botan.pipe;
 namespace {
 
@@ -27,7 +27,7 @@ void load_info(in X509_Cert_Options opts, X509_DN& subject_dn,
 	subject_dn.add_attribute("X520.OrganizationalUnit", opts.org_unit);
 	subject_dn.add_attribute("X520.SerialNumber", opts.serial_number);
 	subject_alt = AlternativeName(opts.email, opts.uri, opts.dns, opts.ip);
-	subject_alt.add_othername(OIDS::lookup("PKIX.XMPPAddr"),
+	subject_alt.add_othername(oids.lookup("PKIX.XMPPAddr"),
 									  opts.xmpp, UTF8_STRING);
 }
 
@@ -49,7 +49,7 @@ X509_Certificate create_self_signed_cert(in X509_Cert_Options opts,
 
 	opts.sanity_check();
 
-	Vector!( byte ) pub_key = X509::BER_encode(key);
+	Vector!byte pub_key = X509::BER_encode(key);
 	Unique!PK_Signer signer(choose_sig_format(key, hash_fn, sig_algo));
 	load_info(opts, subject_dn, subject_alt);
 
@@ -95,7 +95,7 @@ PKCS10_Request create_cert_req(in X509_Cert_Options opts,
 
 	opts.sanity_check();
 
-	Vector!( byte ) pub_key = X509::BER_encode(key);
+	Vector!byte pub_key = X509::BER_encode(key);
 	Unique!PK_Signer signer(choose_sig_format(key, hash_fn, sig_algo));
 	load_info(opts, subject_dn, subject_alt);
 
@@ -147,7 +147,7 @@ PKCS10_Request create_cert_req(in X509_Cert_Options opts,
 		.end_explicit()
 		.end_cons();
 
-	const Vector!( byte ) req =
+	const Vector!byte req =
 		X509_Object::make_signed(signer.get(), rng, sig_algo,
 										 tbs_req.get_contents());
 

@@ -78,9 +78,9 @@ void Extensions::deserialize(TLS_Data_Reader& reader)
 	}
 }
 
-Vector!( byte ) Extensions::serialize() const
+Vector!byte Extensions::serialize() const
 {
-	Vector!( byte ) buf(2); // 2 bytes for length field
+	Vector!byte buf(2); // 2 bytes for length field
 
 	foreach (ref extn; extensions)
 	{
@@ -89,7 +89,7 @@ Vector!( byte ) Extensions::serialize() const
 
 		const ushort extn_code = extn.second.type();
 
-		Vector!( byte ) extn_val = extn.second.serialize();
+		Vector!byte extn_val = extn.second.serialize();
 
 		buf.push_back(get_byte(0, extn_code));
 		buf.push_back(get_byte(1, extn_code));
@@ -107,7 +107,7 @@ Vector!( byte ) Extensions::serialize() const
 
 	// avoid sending a completely empty extensions block
 	if (buf.size() == 2)
-		return Vector!( byte )();
+		return Vector!byte();
 
 	return buf;
 }
@@ -152,9 +152,9 @@ Server_Name_Indicator::Server_Name_Indicator(TLS_Data_Reader& reader,
 	}
 }
 
-Vector!( byte ) Server_Name_Indicator::serialize() const
+Vector!byte Server_Name_Indicator::serialize() const
 {
-	Vector!( byte ) buf;
+	Vector!byte buf;
 
 	size_t name_len = sni_host_name.size();
 
@@ -181,9 +181,9 @@ SRP_Identifier::SRP_Identifier(TLS_Data_Reader& reader,
 		throw new Decoding_Error("Bad encoding for SRP identifier extension");
 }
 
-Vector!( byte ) SRP_Identifier::serialize() const
+Vector!byte SRP_Identifier::serialize() const
 {
-	Vector!( byte ) buf;
+	Vector!byte buf;
 
 	const byte* srp_bytes =
 		cast(const byte*)(srp_identifier.data());
@@ -202,14 +202,14 @@ Renegotiation_Extension::Renegotiation_Extension(TLS_Data_Reader& reader,
 		throw new Decoding_Error("Bad encoding for secure renegotiation extn");
 }
 
-Vector!( byte ) Renegotiation_Extension::serialize() const
+Vector!byte Renegotiation_Extension::serialize() const
 {
-	Vector!( byte ) buf;
+	Vector!byte buf;
 	append_tls_length_value(buf, reneg_data, 1);
 	return buf;
 }
 
-Vector!( byte ) Maximum_Fragment_Length::serialize() const
+Vector!byte Maximum_Fragment_Length::serialize() const
 {
 	const HashMap<size_t, byte> fragment_to_code = { {  512, 1 },
 																	  { 1024, 2 },
@@ -223,7 +223,7 @@ Vector!( byte ) Maximum_Fragment_Length::serialize() const
 											 std::to_string(m_max_fragment) +
 											 " for maximum fragment size");
 
-	return Vector!( byte )(1, i.second);
+	return Vector!byte(1, i.second);
 }
 
 Maximum_Fragment_Length::Maximum_Fragment_Length(TLS_Data_Reader& reader,
@@ -268,9 +268,9 @@ Next_Protocol_Notification::Next_Protocol_Notification(TLS_Data_Reader& reader,
 	}
 }
 
-Vector!( byte ) Next_Protocol_Notification::serialize() const
+Vector!byte Next_Protocol_Notification::serialize() const
 {
-	Vector!( byte ) buf;
+	Vector!byte buf;
 
 	for (size_t i = 0; i != m_protocols.size(); ++i)
 	{
@@ -357,9 +357,9 @@ ushort Supported_Elliptic_Curves::name_to_curve_id(in string name)
 	throw new Invalid_Argument("name_to_curve_id unknown name " + name);
 }
 
-Vector!( byte ) Supported_Elliptic_Curves::serialize() const
+Vector!byte Supported_Elliptic_Curves::serialize() const
 {
-	Vector!( byte ) buf(2);
+	Vector!byte buf(2);
 
 	for (size_t i = 0; i != m_curves.size(); ++i)
 	{
@@ -472,9 +472,9 @@ byte Signature_Algorithms::sig_algo_code(in string name)
 	throw new Internal_Error("Unknown sig ID " + name + " for signature_algorithms");
 }
 
-Vector!( byte ) Signature_Algorithms::serialize() const
+Vector!byte Signature_Algorithms::serialize() const
 {
-	Vector!( byte ) buf(2);
+	Vector!byte buf(2);
 
 	for (size_t i = 0; i != m_supported_algos.size(); ++i)
 	{

@@ -27,9 +27,9 @@ class Handshake_IO
 	public:
 		abstract Protocol_Version initial_record_version() const;
 
-		abstract Vector!( byte ) send(in Handshake_Message msg);
+		abstract Vector!byte send(in Handshake_Message msg);
 
-		abstract Vector!( byte ) format(
+		abstract Vector!byte format(
 			in Vector!byte handshake_msg,
 			Handshake_Type handshake_type) const;
 
@@ -63,9 +63,9 @@ class Stream_Handshake_IO : public Handshake_IO
 
 		Protocol_Version initial_record_version() const override;
 
-		Vector!( byte ) send(in Handshake_Message msg) override;
+		Vector!byte send(in Handshake_Message msg) override;
 
-		Vector!( byte ) format(
+		Vector!byte format(
 			in Vector!byte handshake_msg,
 			Handshake_Type handshake_type) const override;
 
@@ -92,9 +92,9 @@ class Datagram_Handshake_IO : public Handshake_IO
 
 		Protocol_Version initial_record_version() const override;
 
-		Vector!( byte ) send(in Handshake_Message msg) override;
+		Vector!byte send(in Handshake_Message msg) override;
 
-		Vector!( byte ) format(
+		Vector!byte format(
 			in Vector!byte handshake_msg,
 			Handshake_Type handshake_type) const override;
 
@@ -105,7 +105,7 @@ class Datagram_Handshake_IO : public Handshake_IO
 		Pair!(Handshake_Type, Vector!( byte) )
 			get_next_record(bool expecting_ccs) override;
 	private:
-		Vector!( byte ) format_fragment(
+		Vector!byte format_fragment(
 			in byte* fragment,
 			size_t fragment_len,
 			ushort frag_offset,
@@ -113,7 +113,7 @@ class Datagram_Handshake_IO : public Handshake_IO
 			Handshake_Type type,
 			ushort msg_sequence) const;
 
-		Vector!( byte ) format_w_seq(
+		Vector!byte format_w_seq(
 			in Vector!byte handshake_msg,
 			Handshake_Type handshake_type,
 			ushort msg_sequence) const;
@@ -139,14 +139,14 @@ class Datagram_Handshake_IO : public Handshake_IO
 				ushort m_epoch = 0;
 
 				HashMap<size_t, byte> m_fragments;
-				Vector!( byte ) m_message;
+				Vector!byte m_message;
 		};
 
 		class Connection_Sequence_Numbers& m_seqs;
 		HashMap<ushort, Handshake_Reassembly> m_messages;
 		std::set<ushort> m_ccs_epochs;
 		Vector!( std::vector<ushort )> m_flights;
-		HashMap<ushort, std::tuple<ushort, byte, Vector!( byte )>> m_flight_data;
+		HashMap<ushort, std::tuple<ushort, byte, Vector!byte>> m_flight_data;
 
 		// default MTU is IPv6 min MTU minus UDP/IP headers
 		ushort m_mtu = 1280 - 40 - 8;

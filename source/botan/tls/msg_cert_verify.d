@@ -65,9 +65,9 @@ Certificate_Verify::Certificate_Verify(in Vector!byte buf,
 /*
 * Serialize a Certificate Verify message
 */
-Vector!( byte ) Certificate_Verify::serialize() const
+Vector!byte Certificate_Verify::serialize() const
 {
-	Vector!( byte ) buf;
+	Vector!byte buf;
 
 	if (m_hash_algo != "" && m_sig_algo != "")
 	{

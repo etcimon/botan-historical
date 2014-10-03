@@ -23,7 +23,7 @@ namespace TLS {
 
 class Handshake_IO;
 
-Vector!( byte ) make_hello_random(RandomNumberGenerator rng);
+Vector!byte make_hello_random(RandomNumberGenerator rng);
 
 /**
 * DTLS Hello Verify Request
@@ -31,10 +31,10 @@ Vector!( byte ) make_hello_random(RandomNumberGenerator rng);
 class Hello_Verify_Request : public Handshake_Message
 {
 	public:
-		Vector!( byte ) serialize() const override;
+		Vector!byte serialize() const override;
 		Handshake_Type type() const override { return HELLO_VERIFY_REQUEST; }
 
-		Vector!( byte ) cookie() const { return m_cookie; }
+		Vector!byte cookie() const { return m_cookie; }
 
 		Hello_Verify_Request(in Vector!byte buf);
 
@@ -42,7 +42,7 @@ class Hello_Verify_Request : public Handshake_Message
 									in string client_identity,
 									const SymmetricKey& secret_key);
 	private:
-		Vector!( byte ) m_cookie;
+		Vector!byte m_cookie;
 };
 
 /**
@@ -61,7 +61,7 @@ class Client_Hello : public Handshake_Message
 
 		Vector!( ushort ) ciphersuites() const { return m_suites; }
 
-		Vector!( byte ) compression_methods() const { return m_comp_methods; }
+		Vector!byte compression_methods() const { return m_comp_methods; }
 
 		bool offered_suite(ushort ciphersuite) const;
 
@@ -98,11 +98,11 @@ class Client_Hello : public Handshake_Message
 			return m_extensions.get<Renegotiation_Extension>();
 		}
 
-		Vector!( byte ) renegotiation_info() const
+		Vector!byte renegotiation_info() const
 		{
 			if (Renegotiation_Extension* reneg = m_extensions.get<Renegotiation_Extension>())
 				return reneg.renegotiation_info();
-			return Vector!( byte )();
+			return Vector!byte();
 		}
 
 		bool next_protocol_notification() const
@@ -122,11 +122,11 @@ class Client_Hello : public Handshake_Message
 			return m_extensions.get<Session_Ticket>();
 		}
 
-		Vector!( byte ) session_ticket() const
+		Vector!byte session_ticket() const
 		{
 			if (Session_Ticket* ticket = m_extensions.get<Session_Ticket>())
 				return ticket.contents();
-			return Vector!( byte )();
+			return Vector!byte();
 		}
 
 		bool supports_heartbeats() const
@@ -168,16 +168,16 @@ class Client_Hello : public Handshake_Message
 						 Handshake_Type type);
 
 	private:
-		Vector!( byte ) serialize() const override;
+		Vector!byte serialize() const override;
 		void deserialize(in Vector!byte buf);
 		void deserialize_sslv2(in Vector!byte buf);
 
 		Protocol_Version m_version;
-		Vector!( byte ) m_session_id;
-		Vector!( byte ) m_random;
+		Vector!byte m_session_id;
+		Vector!byte m_random;
 		Vector!( ushort ) m_suites;
-		Vector!( byte ) m_comp_methods;
-		Vector!( byte ) m_hello_cookie; // DTLS only
+		Vector!byte m_comp_methods;
+		Vector!byte m_hello_cookie; // DTLS only
 
 		Extensions m_extensions;
 };
@@ -205,11 +205,11 @@ class Server_Hello : public Handshake_Message
 			return m_extensions.get<Renegotiation_Extension>();
 		}
 
-		Vector!( byte ) renegotiation_info() const
+		Vector!byte renegotiation_info() const
 		{
 			if (Renegotiation_Extension* reneg = m_extensions.get<Renegotiation_Extension>())
 				return reneg.renegotiation_info();
-			return Vector!( byte )();
+			return Vector!byte();
 		}
 
 		bool next_protocol_notification() const
@@ -269,10 +269,10 @@ class Server_Hello : public Handshake_Message
 
 		Server_Hello(in Vector!byte buf);
 	private:
-		Vector!( byte ) serialize() const override;
+		Vector!byte serialize() const override;
 
 		Protocol_Version m_version;
-		Vector!( byte ) m_session_id, m_random;
+		Vector!byte m_session_id, m_random;
 		ushort m_ciphersuite;
 		byte m_comp_method;
 
@@ -306,10 +306,10 @@ class Client_Key_Exchange : public Handshake_Message
 								  RandomNumberGenerator rng);
 
 	private:
-		Vector!( byte ) serialize() const override
+		Vector!byte serialize() const override
 		{ return m_key_material; }
 
-		Vector!( byte ) m_key_material;
+		Vector!byte m_key_material;
 		SafeVector!byte m_pre_master;
 };
 
@@ -331,7 +331,7 @@ class Certificate : public Handshake_Message
 
 		Certificate(in Vector!byte buf);
 	private:
-		Vector!( byte ) serialize() const override;
+		Vector!byte serialize() const override;
 
 		Vector!( X509_Certificate ) m_certs;
 };
@@ -361,7 +361,7 @@ class Certificate_Req : public Handshake_Message
 		Certificate_Req(in Vector!byte buf,
 							 Protocol_Version _version);
 	private:
-		Vector!( byte ) serialize() const override;
+		Vector!byte serialize() const override;
 
 		Vector!( X509_DN ) m_names;
 		Vector!string m_cert_key_types;
@@ -394,11 +394,11 @@ class Certificate_Verify : public Handshake_Message
 		Certificate_Verify(in Vector!byte buf,
 								 Protocol_Version _version);
 	private:
-		Vector!( byte ) serialize() const override;
+		Vector!byte serialize() const override;
 
 		string m_sig_algo; // sig algo used to create signature
 		string m_hash_algo; // hash used to create signature
-		Vector!( byte ) m_signature;
+		Vector!byte m_signature;
 };
 
 /**
@@ -409,7 +409,7 @@ class Finished : public Handshake_Message
 	public:
 		Handshake_Type type() const override { return FINISHED; }
 
-		Vector!( byte ) verify_data() const
+		Vector!byte verify_data() const
 		{ return m_verification_data; }
 
 		bool verify(in Handshake_State state,
@@ -421,9 +421,9 @@ class Finished : public Handshake_Message
 
 		Finished(in Vector!byte buf);
 	private:
-		Vector!( byte ) serialize() const override;
+		Vector!byte serialize() const override;
 
-		Vector!( byte ) m_verification_data;
+		Vector!byte m_verification_data;
 };
 
 /**
@@ -437,7 +437,7 @@ class Hello_Request : public Handshake_Message
 		Hello_Request(Handshake_IO io);
 		Hello_Request(in Vector!byte buf);
 	private:
-		Vector!( byte ) serialize() const override;
+		Vector!byte serialize() const override;
 };
 
 /**
@@ -473,16 +473,16 @@ class Server_Key_Exchange : public Handshake_Message
 
 		~this();
 	private:
-		Vector!( byte ) serialize() const override;
+		Vector!byte serialize() const override;
 
 		Unique!Private_Key m_kex_key;
 		Unique!SRP6_Server_Session m_srp_params;
 
-		Vector!( byte ) m_params;
+		Vector!byte m_params;
 
 		string m_sig_algo; // sig algo used to create signature
 		string m_hash_algo; // hash used to create signature
-		Vector!( byte ) m_signature;
+		Vector!byte m_signature;
 };
 
 /**
@@ -496,7 +496,7 @@ class Server_Hello_Done : public Handshake_Message
 		Server_Hello_Done(Handshake_IO io, Handshake_Hash& hash);
 		Server_Hello_Done(in Vector!byte buf);
 	private:
-		Vector!( byte ) serialize() const override;
+		Vector!byte serialize() const override;
 };
 
 /**
@@ -515,7 +515,7 @@ class Next_Protocol : public Handshake_Message
 
 		Next_Protocol(in Vector!byte buf);
 	private:
-		Vector!( byte ) serialize() const override;
+		Vector!byte serialize() const override;
 
 		string m_protocol;
 };
@@ -541,10 +541,10 @@ class New_Session_Ticket : public Handshake_Message
 
 		New_Session_Ticket(in Vector!byte buf);
 	private:
-		Vector!( byte ) serialize() const override;
+		Vector!byte serialize() const override;
 
 		uint m_ticket_lifetime_hint = 0;
-		Vector!( byte ) m_ticket;
+		Vector!byte m_ticket;
 };
 
 /**
@@ -555,8 +555,8 @@ class Change_Cipher_Spec : public Handshake_Message
 	public:
 		Handshake_Type type() const override { return HANDSHAKE_CCS; }
 
-		Vector!( byte ) serialize() const override
-		{ return Vector!( byte )(1, 1); }
+		Vector!byte serialize() const override
+		{ return Vector!byte(1, 1); }
 };
 
 }

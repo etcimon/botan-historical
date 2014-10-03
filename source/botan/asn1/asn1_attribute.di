@@ -18,7 +18,7 @@ class Attribute : public ASN1_Object
 		void decode_from(class BER_Decoder from);
 
 		OID oid;
-		Vector!( byte ) parameters;
+		Vector!byte parameters;
 
 		Attribute() {}
 		Attribute(in OID, in Vector!byte);

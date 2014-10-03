@@ -9,7 +9,7 @@
 import botan.asn1_alt_name;
 import botan.der_enc;
 import botan.ber_dec;
-import botan.oids;
+import botan.asn1.oid_lookup.oids;
 import botan.internal.stl_util;
 import botan.charset;
 import botan.parsing;
@@ -98,7 +98,7 @@ std::multimap<string, string> AlternativeName::contents() const
 		multimap_insert(names, i.first, i.second);
 
 	for (auto i = othernames.begin(); i != othernames.end(); ++i)
-		multimap_insert(names, OIDS::lookup(i.first), i.second.value());
+		multimap_insert(names, oids.lookup(i.first), i.second.value());
 
 	return names;
 }

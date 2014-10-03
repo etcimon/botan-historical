@@ -47,7 +47,7 @@ string PEM_encode(in Private_Key key);
 			default will be chosen.
 * @return encrypted key in binary BER form
 */
-Vector!( byte )
+Vector!byte
 BER_encode(in Private_Key key,
 			  RandomNumberGenerator rng,
 			  in string pass,

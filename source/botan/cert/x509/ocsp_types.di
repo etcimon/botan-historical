@@ -25,11 +25,11 @@ class CertID : public ASN1_Object
 
 		void decode_from(class BER_Decoder& from) override;
 	private:
-		Vector!( byte ) extract_key_bitstr(in X509_Certificate cert) const;
+		Vector!byte extract_key_bitstr(in X509_Certificate cert) const;
 
 		AlgorithmIdentifier m_hash_id;
-		Vector!( byte ) m_issuer_dn_hash;
-		Vector!( byte ) m_issuer_key_hash;
+		Vector!byte m_issuer_dn_hash;
+		Vector!byte m_issuer_key_hash;
 		BigInt m_subject_serial;
 };
 

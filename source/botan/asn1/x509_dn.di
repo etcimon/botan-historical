@@ -29,14 +29,14 @@ class X509_DN : public ASN1_Object
 
 		static string deref_info_field(in string);
 
-		Vector!( byte ) get_bits() const;
+		Vector!byte get_bits() const;
 
 		X509_DN();
 		X509_DN(in std::multimap<OID, string>);
 		X509_DN(in std::multimap<string, string>);
 	private:
 		std::multimap<OID, ASN1_String> dn_info;
-		Vector!( byte ) dn_bits;
+		Vector!byte dn_bits;
 };
 
 bool operator==(in X509_DN, const X509_DN&);

@@ -44,7 +44,7 @@ class Certificate_Extension
 	package:
 		friend class Extensions;
 		abstract bool should_encode() const { return true; }
-		abstract Vector!( byte ) encode_inner() const;
+		abstract Vector!byte encode_inner() const;
 		abstract void decode_inner(in Vector!byte);
 };
 
@@ -94,7 +94,7 @@ class Basic_Constraints : public Certificate_Extension
 	private:
 		string oid_name() const { return "X509v3.BasicConstraints"; }
 
-		Vector!( byte ) encode_inner() const;
+		Vector!byte encode_inner() const;
 		void decode_inner(in Vector!byte);
 		void contents_to(Data_Store&, Data_Store&) const;
 
@@ -117,7 +117,7 @@ class Key_Usage : public Certificate_Extension
 		string oid_name() const { return "X509v3.KeyUsage"; }
 
 		bool should_encode() const { return (constraints != NO_CONSTRAINTS); }
-		Vector!( byte ) encode_inner() const;
+		Vector!byte encode_inner() const;
 		void decode_inner(in Vector!byte);
 		void contents_to(Data_Store&, Data_Store&) const;
 
@@ -135,16 +135,16 @@ class Subject_Key_ID : public Certificate_Extension
 		Subject_Key_ID() {}
 		Subject_Key_ID(in Vector!byte);
 
-		Vector!( byte ) get_key_id() const { return key_id; }
+		Vector!byte get_key_id() const { return key_id; }
 	private:
 		string oid_name() const { return "X509v3.SubjectKeyIdentifier"; }
 
 		bool should_encode() const { return (key_id.size() > 0); }
-		Vector!( byte ) encode_inner() const;
+		Vector!byte encode_inner() const;
 		void decode_inner(in Vector!byte);
 		void contents_to(Data_Store&, Data_Store&) const;
 
-		Vector!( byte ) key_id;
+		Vector!byte key_id;
 };
 
 /**
@@ -158,16 +158,16 @@ class Authority_Key_ID : public Certificate_Extension
 		Authority_Key_ID() {}
 		Authority_Key_ID(in Vector!byte k) : key_id(k) {}
 
-		Vector!( byte ) get_key_id() const { return key_id; }
+		Vector!byte get_key_id() const { return key_id; }
 	private:
 		string oid_name() const { return "X509v3.AuthorityKeyIdentifier"; }
 
 		bool should_encode() const { return (key_id.size() > 0); }
-		Vector!( byte ) encode_inner() const;
+		Vector!byte encode_inner() const;
 		void decode_inner(in Vector!byte);
 		void contents_to(Data_Store&, Data_Store&) const;
 
-		Vector!( byte ) key_id;
+		Vector!byte key_id;
 };
 
 /**
@@ -186,7 +186,7 @@ class Alternative_Name : public Certificate_Extension
 		string oid_name() const { return oid_name_str; }
 
 		bool should_encode() const { return alt_name.has_items(); }
-		Vector!( byte ) encode_inner() const;
+		Vector!byte encode_inner() const;
 		void decode_inner(in Vector!byte);
 		void contents_to(Data_Store&, Data_Store&) const;
 
@@ -234,7 +234,7 @@ class Extended_Key_Usage : public Certificate_Extension
 		string oid_name() const { return "X509v3.ExtendedKeyUsage"; }
 
 		bool should_encode() const { return (oids.size() > 0); }
-		Vector!( byte ) encode_inner() const;
+		Vector!byte encode_inner() const;
 		void decode_inner(in Vector!byte);
 		void contents_to(Data_Store&, Data_Store&) const;
 
@@ -258,7 +258,7 @@ class Certificate_Policies : public Certificate_Extension
 		string oid_name() const { return "X509v3.CertificatePolicies"; }
 
 		bool should_encode() const { return (oids.size() > 0); }
-		Vector!( byte ) encode_inner() const;
+		Vector!byte encode_inner() const;
 		void decode_inner(in Vector!byte);
 		void contents_to(Data_Store&, Data_Store&) const;
 
@@ -281,7 +281,7 @@ class Authority_Information_Access : public Certificate_Extension
 
 		bool should_encode() const { return (m_ocsp_responder != ""); }
 
-		Vector!( byte ) encode_inner() const;
+		Vector!byte encode_inner() const;
 		void decode_inner(in Vector!byte);
 
 		void contents_to(Data_Store&, Data_Store&) const;
@@ -305,7 +305,7 @@ class CRL_Number : public Certificate_Extension
 		string oid_name() const { return "X509v3.CRLNumber"; }
 
 		bool should_encode() const { return has_value; }
-		Vector!( byte ) encode_inner() const;
+		Vector!byte encode_inner() const;
 		void decode_inner(in Vector!byte);
 		void contents_to(Data_Store&, Data_Store&) const;
 
@@ -328,7 +328,7 @@ class CRL_ReasonCode : public Certificate_Extension
 		string oid_name() const { return "X509v3.ReasonCode"; }
 
 		bool should_encode() const { return (reason != UNSPECIFIED); }
-		Vector!( byte ) encode_inner() const;
+		Vector!byte encode_inner() const;
 		void decode_inner(in Vector!byte);
 		void contents_to(Data_Store&, Data_Store&) const;
 
@@ -368,7 +368,7 @@ class CRL_Distribution_Points : public Certificate_Extension
 
 		bool should_encode() const { return !m_distribution_points.empty(); }
 
-		Vector!( byte ) encode_inner() const;
+		Vector!byte encode_inner() const;
 		void decode_inner(in Vector!byte);
 		void contents_to(Data_Store&, Data_Store&) const;
 

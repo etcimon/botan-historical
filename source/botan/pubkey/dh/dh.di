@@ -17,7 +17,7 @@ class DH_PublicKey : public abstract DL_Scheme_PublicKey
 	public:
 		string algo_name() const { return "DH"; }
 
-		Vector!( byte ) public_value() const;
+		Vector!byte public_value() const;
 		size_t max_input_bits() const { return group_p().bits(); }
 
 		DL_Group::Format group_format() const { return DL_Group::ANSI_X9_42; }
@@ -44,7 +44,7 @@ class DH_PrivateKey : public DH_PublicKey,
 										  public abstract DL_Scheme_PrivateKey
 {
 	public:
-		Vector!( byte ) public_value() const;
+		Vector!byte public_value() const;
 
 		/**
 		* Load a DH private key

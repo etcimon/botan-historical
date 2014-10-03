@@ -29,7 +29,7 @@ class PKCS10_Request : public X509_Object
 		* Get the raw DER encoded public key.
 		* @return raw DER encoded public key
 		*/
-		Vector!( byte ) raw_public_key() const;
+		Vector!byte raw_public_key() const;
 
 		/**
 		* Get the subject DN.

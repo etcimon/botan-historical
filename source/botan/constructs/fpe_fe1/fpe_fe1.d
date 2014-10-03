@@ -84,7 +84,7 @@ class FPE_Encryptor
 
 	private:
 		Unique!MessageAuthenticationCode mac;
-		Vector!( byte ) mac_n_t;
+		Vector!byte mac_n_t;
 };
 
 FPE_Encryptor::FPE_Encryptor(in SymmetricKey key,
@@ -94,7 +94,7 @@ FPE_Encryptor::FPE_Encryptor(in SymmetricKey key,
 	mac.reset(new HMAC(new SHA_256));
 	mac.set_key(key);
 
-	Vector!( byte ) n_bin = BigInt::encode(n);
+	Vector!byte n_bin = BigInt::encode(n);
 
 	if (n_bin.size() > MAX_N_BYTES)
 		throw new Exception("N is too large for FPE encryption");

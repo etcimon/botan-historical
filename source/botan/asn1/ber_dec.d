@@ -176,7 +176,7 @@ BER_Decoder BER_Decoder::raw_bytes(SafeVector!byte output)
 	return this;
 }
 
-BER_Decoder BER_Decoder::raw_bytes(Vector!( byte )& output)
+BER_Decoder BER_Decoder::raw_bytes(Vector!byte& output)
 {
 	output.clear();
 	byte buf;
@@ -391,9 +391,9 @@ BER_Decoder BER_Decoder::decode_octet_string_bigint(ref BigInt output)
 	return this;
 }
 
-Vector!( byte ) BER_Decoder::get_next_octet_string()
+Vector!byte BER_Decoder::get_next_octet_string()
 {
-	Vector!( byte ) out_vec;
+	Vector!byte out_vec;
 	decode(out_vec, OCTET_STRING);
 	return out_vec;
 }
@@ -500,7 +500,7 @@ BER_Decoder BER_Decoder::decode(SafeVector!byte output, ASN1_Tag real_type)
 /*
 * BER decode a BIT STRING or OCTET STRING
 */
-BER_Decoder BER_Decoder::decode(Vector!( byte )& output, ASN1_Tag real_type)
+BER_Decoder BER_Decoder::decode(Vector!byte& output, ASN1_Tag real_type)
 {
 	return decode(output, real_type, real_type, UNIVERSAL);
 }
@@ -531,7 +531,7 @@ BER_Decoder BER_Decoder::decode(SafeVector!byte buffer,
 	return this;
 }
 
-BER_Decoder BER_Decoder::decode(Vector!( byte )& buffer,
+BER_Decoder BER_Decoder::decode(Vector!byte& buffer,
 											ASN1_Tag real_type,
 											ASN1_Tag type_tag, ASN1_Tag class_tag)
 {

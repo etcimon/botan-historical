@@ -39,7 +39,7 @@ class GOST_3410_PublicKey : public abstract EC_PublicKey
 
 		AlgorithmIdentifier algorithm_identifier() const;
 
-		Vector!( byte ) x509_subject_public_key() const;
+		Vector!byte x509_subject_public_key() const;
 
 		/**
 		* Get the maximum number of bits allowed to be fed to this key.

@@ -48,9 +48,9 @@ void BigInt::encode(byte* output, ref const BigInt n, Base base)
 /*
 * Encode a BigInt
 */
-Vector!( byte ) BigInt::encode(in BigInt n, Base base)
+Vector!byte BigInt::encode(in BigInt n, Base base)
 {
-	Vector!( byte ) output(n.encoded_size(base));
+	Vector!byte output(n.encoded_size(base));
 	encode(&output[0], n, base);
 	if (base != Binary)
 		for (size_t j = 0; j != output.size(); ++j)

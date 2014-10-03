@@ -6,7 +6,7 @@
 */
 
 import botan.hash;
-import botan.secmem;
+import botan.alloc.secmem;
 import string;
 /**
 * Keccak[1600], a SHA-3 candidate

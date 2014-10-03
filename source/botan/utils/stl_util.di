@@ -8,9 +8,9 @@
 import vector;
 import string;
 import map;
- Vector!( byte ) to_byte_vector(in string s)
+ Vector!byte to_byte_vector(in string s)
 {
-	return Vector!( byte )(cast(in byte*)(s[0]),
+	return Vector!byte(cast(in byte*)(s[0]),
 									 cast(in byte*)(s[s.size()]));
 }
 
@@ -61,7 +61,7 @@ void multimap_insert(std::multimap<K, V>& multimap,
 * Existence check for values
 */
 template<typename T>
-bool value_exists(in Vector!( T ) vec,
+bool value_exists(in Vector!T vec,
 						const T& val)
 {
 	for (size_t i = 0; i != vec.size(); ++i)

@@ -72,7 +72,7 @@ class DL_Group
 		* @param format the encoding format
 		* @return string holding the DER encoded group
 		*/
-		Vector!( byte ) DER_encode(Format format) const;
+		Vector!byte DER_encode(Format format) const;
 
 		/**
 		* Decode a DER/BER encoded group into this instance.

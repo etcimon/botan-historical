@@ -10,7 +10,7 @@ import botan.ocsp;
 import botan.http_util;
 import botan.parsing;
 import botan.pubkey;
-import botan.oids;
+import botan.asn1.oid_lookup.oids;
 import algorithm;
 import chrono;
 import vector;
@@ -25,7 +25,7 @@ find_issuing_cert(in X509_Certificate cert,
 						const Vector!( Certificate_Store* )& certstores)
 {
 	const X509_DN issuer_dn = cert.issuer_dn();
-	const Vector!( byte ) auth_key_id = cert.authority_key_id();
+	const Vector!byte auth_key_id = cert.authority_key_id();
 
 	if (const X509_Certificate* cert = end_certs.find_cert(issuer_dn, auth_key_id))
 		return cert;

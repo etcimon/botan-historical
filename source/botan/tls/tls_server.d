@@ -166,7 +166,7 @@ ushort choose_ciphersuite(
 byte choose_compression(in Policy policy,
 								in Vector!byte c_comp)
 {
-	Vector!( byte ) s_comp = policy.compression();
+	Vector!byte s_comp = policy.compression();
 
 	for (size_t i = 0; i != s_comp.size(); ++i)
 		for (size_t j = 0; j != c_comp.size(); ++j)
@@ -664,7 +664,7 @@ void Server::process_handshake_msg(const Handshake_State* active_state,
 				SERVER,
 				state.server_hello().fragment_size(),
 				get_peer_cert_chain(state),
-				Vector!( byte )(),
+				Vector!byte(),
 				Server_Information(state.client_hello().sni_hostname()),
 				state.srp_identifier()
 				);

@@ -452,7 +452,7 @@ void decrypt_record(SafeVector!byte output,
 
 		cipherstate.mac().update(plaintext_block, plaintext_length);
 
-		Vector!( byte ) mac_buf(mac_size);
+		Vector!byte mac_buf(mac_size);
 		cipherstate.mac().flushInto(&mac_buf[0]);
 
 		const size_t mac_offset = record_len - (mac_size + pad_size);

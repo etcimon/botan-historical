@@ -132,7 +132,7 @@ class Session_Manager_In_Memory : public Session_Manager
 		RandomNumberGenerator m_rng;
 		SymmetricKey m_session_key;
 
-		HashMap<string, Vector!( byte )> m_sessions; // hex(session_id) . session
+		HashMap<string, Vector!byte> m_sessions; // hex(session_id) . session
 		HashMap<Server_Information, string> m_info_sessions;
 };
 

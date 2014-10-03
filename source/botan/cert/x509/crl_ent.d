@@ -10,7 +10,7 @@ import botan.x509_ext;
 import botan.der_enc;
 import botan.ber_dec;
 import botan.bigint;
-import botan.oids;
+import botan.asn1.oid_lookup.oids;
 /*
 * Create a CRL_Entry
 */

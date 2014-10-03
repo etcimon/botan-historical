@@ -20,7 +20,7 @@ namespace CryptoBox {
 * @param key the key used to encrypt the message
 * @param rng a ref to a random number generator, such as AutoSeeded_RNG
 */
-Vector!( byte ) encrypt(in byte* input, size_t input_len,
+Vector!byte encrypt(in byte* input, size_t input_len,
 												const SymmetricKey& key,
 												RandomNumberGenerator rng);
 

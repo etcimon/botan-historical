@@ -197,7 +197,7 @@ ref const BigInt DL_Group::get_q() const
 /*
 * DER encode the parameters
 */
-Vector!( byte ) DL_Group::DER_encode(Format format) const
+Vector!byte DL_Group::DER_encode(Format format) const
 {
 	init_check();
 
@@ -242,7 +242,7 @@ Vector!( byte ) DL_Group::DER_encode(Format format) const
 */
 string DL_Group::PEM_encode(Format format) const
 {
-	const Vector!( byte ) encoding = DER_encode(format);
+	const Vector!byte encoding = DER_encode(format);
 
 	if (format == PKCS_3)
 		return PEM_Code::encode(encoding, "DH PARAMETERS");

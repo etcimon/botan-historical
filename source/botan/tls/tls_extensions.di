@@ -5,7 +5,7 @@
 * Released under the terms of the botan license.
 */
 
-import botan.secmem;
+import botan.alloc.secmem;
 import botan.tls_magic;
 import vector;
 import string;
@@ -50,7 +50,7 @@ class Extension
 		/**
 		* @return serialized binary for the extension
 		*/
-		abstract Vector!( byte ) serialize() const;
+		abstract Vector!byte serialize() const;
 
 		/**
 		* @return if we should encode this extension or not
@@ -79,7 +79,7 @@ class Server_Name_Indicator : public Extension
 
 		string host_name() const { return sni_host_name; }
 
-		Vector!( byte ) serialize() const;
+		Vector!byte serialize() const;
 
 		bool empty() const { return sni_host_name == ""; }
 	private:
@@ -105,7 +105,7 @@ class SRP_Identifier : public Extension
 
 		string identifier() const { return srp_identifier; }
 
-		Vector!( byte ) serialize() const;
+		Vector!byte serialize() const;
 
 		bool empty() const { return srp_identifier == ""; }
 	private:
@@ -134,11 +134,11 @@ class Renegotiation_Extension : public Extension
 		in Vector!byte renegotiation_info() const
 		{ return reneg_data; }
 
-		Vector!( byte ) serialize() const;
+		Vector!byte serialize() const;
 
 		bool empty() const { return false; } // always send this
 	private:
-		Vector!( byte ) reneg_data;
+		Vector!byte reneg_data;
 }
 
 /**
@@ -156,7 +156,7 @@ class Maximum_Fragment_Length : public Extension
 
 		size_t fragment_size() const { return m_max_fragment; }
 
-		Vector!( byte ) serialize() const;
+		Vector!byte serialize() const;
 
 		/**
 		* @param max_fragment specifies what maximum fragment size to
@@ -206,7 +206,7 @@ class Next_Protocol_Notification : public Extension
 		Next_Protocol_Notification(TLS_Data_Reader& reader,
 											ushort extension_size);
 
-		Vector!( byte ) serialize() const;
+		Vector!byte serialize() const;
 
 		bool empty() const { return false; }
 	private:
@@ -245,11 +245,11 @@ class Session_Ticket : public Extension
 		*/
 		Session_Ticket(TLS_Data_Reader& reader, ushort extension_size);
 
-		Vector!( byte ) serialize() const { return m_ticket; }
+		Vector!byte serialize() const { return m_ticket; }
 
 		bool empty() const { return false; }
 	private:
-		Vector!( byte ) m_ticket;
+		Vector!byte m_ticket;
 }
 
 /**
@@ -268,7 +268,7 @@ class Supported_Elliptic_Curves : public Extension
 
 		const Vector!string& curves() const { return m_curves; }
 
-		Vector!( byte ) serialize() const;
+		Vector!byte serialize() const;
 
 		Supported_Elliptic_Curves(in Vector!string curves) :
 			m_curves(curves) {}
@@ -304,7 +304,7 @@ class Signature_Algorithms : public Extension
 			return m_supported_algos;
 		}
 
-		Vector!( byte ) serialize() const;
+		Vector!byte serialize() const;
 
 		bool empty() const { return false; }
 
@@ -333,7 +333,7 @@ class Heartbeat_Support_Indicator : public Extension
 
 		bool peer_allowed_to_send() const { return m_peer_allowed_to_send; }
 
-		Vector!( byte ) serialize() const;
+		Vector!byte serialize() const;
 
 		bool empty() const { return false; }
 
@@ -370,7 +370,7 @@ class Extensions
 			extensions[extn.type()].reset(extn);
 		}
 
-		Vector!( byte ) serialize() const;
+		Vector!byte serialize() const;
 
 		void deserialize(TLS_Data_Reader& reader);
 

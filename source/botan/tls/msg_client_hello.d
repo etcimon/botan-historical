@@ -17,9 +17,9 @@ enum {
 	TLS_EMPTY_RENEGOTIATION_INFO_SCSV		  = 0x00FF
 };
 
-Vector!( byte ) make_hello_random(RandomNumberGenerator rng)
+Vector!byte make_hello_random(RandomNumberGenerator rng)
 {
-	Vector!( byte ) buf(32);
+	Vector!byte buf(32);
 
 	const uint time32 = cast(uint)(
 		std::chrono::system_clock::to_time_t(std::chrono::system_clock::now()));
@@ -49,9 +49,9 @@ Hello_Request::Hello_Request(in Vector!byte buf)
 /*
 * Serialize a Hello Request message
 */
-Vector!( byte ) Hello_Request::serialize() const
+Vector!byte Hello_Request::serialize() const
 {
-	return Vector!( byte )();
+	return Vector!byte();
 }
 
 /*
@@ -156,9 +156,9 @@ void Client_Hello::update_hello_cookie(in Hello_Verify_Request hello_verify)
 /*
 * Serialize a Client Hello message
 */
-Vector!( byte ) Client_Hello::serialize() const
+Vector!byte Client_Hello::serialize() const
 {
-	Vector!( byte ) buf;
+	Vector!byte buf;
 
 	buf.push_back(m_version.major_version());
 	buf.push_back(m_version.minor_version());

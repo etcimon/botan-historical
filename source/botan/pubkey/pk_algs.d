@@ -6,7 +6,7 @@
 */
 
 import botan.internal.pk_algs;
-import botan.oids;
+import botan.asn1.oid_lookup.oids;
 
 #if defined(BOTAN_HAS_RSA)
   import botan.rsa;
@@ -46,7 +46,7 @@ import botan.oids;
 Public_Key* make_public_key(in AlgorithmIdentifier alg_id,
 									 in SafeVector!byte key_bits)
 {
-	const string alg_name = OIDS::lookup(alg_id.oid);
+	const string alg_name = oids.lookup(alg_id.oid);
 	if (alg_name == "")
 		throw new Decoding_Error("Unknown algorithm OID: " + alg_id.oid.as_string());
 
@@ -102,7 +102,7 @@ Private_Key* make_Private_Key(in AlgorithmIdentifier alg_id,
 										in SafeVector!byte key_bits,
 										RandomNumberGenerator rng)
 {
-	const string alg_name = OIDS::lookup(alg_id.oid);
+	const string alg_name = oids.lookup(alg_id.oid);
 	if (alg_name == "")
 		throw new Decoding_Error("Unknown algorithm OID: " + alg_id.oid.as_string());
 

@@ -8,11 +8,11 @@
 
 import botan.signed_obj;
 import botan.pubkey;
-import botan.oids;
+import botan.asn1.oid_lookup.oids;
 /*
 * Return a BER encoded X.509 object
 */
-Vector!( byte ) EAC_Signed_Object::BER_encode() const
+Vector!byte EAC_Signed_Object::BER_encode() const
 {
 	Pipe ber;
 	ber.start_msg();
@@ -47,7 +47,7 @@ bool EAC_Signed_Object::check_signature(Public_Key& pub_key,
 	try
 	{
 		Vector!string sig_info =
-			split_on(OIDS::lookup(sig_algo.oid), '/');
+			split_on(oids.lookup(sig_algo.oid), '/');
 
 		if (sig_info.size() != 2 || sig_info[0] != pub_key.algo_name())
 		{
@@ -58,7 +58,7 @@ bool EAC_Signed_Object::check_signature(Public_Key& pub_key,
 		Signature_Format format =
 			(pub_key.message_parts() >= 2) ? DER_SEQUENCE : IEEE_1363;
 
-		Vector!( byte ) to_sign = tbs_data();
+		Vector!byte to_sign = tbs_data();
 
 		PK_Verifier verifier(pub_key, padding, format);
 		return verifier.verify_message(to_sign, sig);

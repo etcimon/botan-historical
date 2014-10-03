@@ -26,14 +26,14 @@ bool encryption_consistency_check(RandomNumberGenerator rng,
 	if (encryptor.maximum_input_size() == 0)
 		return true;
 
-	Vector!( byte ) plaintext =
+	Vector!byte plaintext =
 		unlock(rng.random_vec(encryptor.maximum_input_size() - 1));
 
-	Vector!( byte ) ciphertext = encryptor.encrypt(plaintext, rng);
+	Vector!byte ciphertext = encryptor.encrypt(plaintext, rng);
 	if (ciphertext == plaintext)
 		return false;
 
-	Vector!( byte ) decrypted = unlock(decryptor.decrypt(ciphertext));
+	Vector!byte decrypted = unlock(decryptor.decrypt(ciphertext));
 
 	return (plaintext == decrypted);
 }
@@ -48,9 +48,9 @@ bool signature_consistency_check(RandomNumberGenerator rng,
 	PK_Signer signer(key, padding);
 	PK_Verifier verifier(key, padding);
 
-	Vector!( byte ) message = unlock(rng.random_vec(16));
+	Vector!byte message = unlock(rng.random_vec(16));
 
-	Vector!( byte ) signature;
+	Vector!byte signature;
 
 	try
 	{

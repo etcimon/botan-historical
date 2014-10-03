@@ -8,7 +8,7 @@
 */
 
 import botan.internal.proc_walk;
-import botan.secmem;
+import botan.alloc.secmem;
 import cstring;
 import deque;
 

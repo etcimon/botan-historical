@@ -88,9 +88,9 @@ Server_Hello::Server_Hello(in Vector!byte buf)
 /*
 * Serialize a Server Hello message
 */
-Vector!( byte ) Server_Hello::serialize() const
+Vector!byte Server_Hello::serialize() const
 {
-	Vector!( byte ) buf;
+	Vector!byte buf;
 
 	buf.push_back(m_version.major_version());
 	buf.push_back(m_version.minor_version());
@@ -129,9 +129,9 @@ Server_Hello_Done::Server_Hello_Done(in Vector!byte buf)
 /*
 * Serialize a Server Hello Done message
 */
-Vector!( byte ) Server_Hello_Done::serialize() const
+Vector!byte Server_Hello_Done::serialize() const
 {
-	return Vector!( byte )();
+	return Vector!byte();
 }
 
 }

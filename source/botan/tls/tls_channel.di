@@ -181,8 +181,8 @@ class Channel
 		void secure_renegotiation_check(const class Client_Hello* client_hello);
 		void secure_renegotiation_check(const class Server_Hello* server_hello);
 
-		Vector!( byte ) secure_renegotiation_data_for_client_hello() const;
-		Vector!( byte ) secure_renegotiation_data_for_server_hello() const;
+		Vector!byte secure_renegotiation_data_for_client_hello() const;
+		Vector!byte secure_renegotiation_data_for_server_hello() const;
 
 		RandomNumberGenerator rng() { return m_rng; }
 

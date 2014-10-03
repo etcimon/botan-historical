@@ -22,7 +22,7 @@ class SRP6_Authenticator_File
 
 		bool lookup_user(in string username,
 							  ref BigInt v,
-							  Vector!( byte )& salt,
+							  Vector!byte& salt,
 							  string& group_id) const;
 	private:
 		struct SRP6_Data
@@ -35,7 +35,7 @@ class SRP6_Authenticator_File
 				v(v), salt(salt), group_id(group_id) {}
 
 			BigInt v;
-			Vector!( byte ) salt;
+			Vector!byte salt;
 			string group_id;
 		};
 

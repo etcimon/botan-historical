@@ -28,7 +28,7 @@ namespace ASN1 {
 /*
 * Put some arbitrary bytes into a SEQUENCE
 */
-Vector!( byte ) put_in_sequence(in Vector!byte contents)
+Vector!byte put_in_sequence(in Vector!byte contents)
 {
 	return DER_Encoder()
 		.start_cons(SEQUENCE)

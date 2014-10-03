@@ -76,7 +76,7 @@ string encrypt(in byte* input, size_t input_len,
 	*/
 	const size_t ciphertext_len = pipe.remaining(0);
 
-	Vector!( byte ) out_buf(VERSION_CODE_LEN +
+	Vector!byte out_buf(VERSION_CODE_LEN +
 									  PBKDF_SALT_LEN +
 									  MAC_OUTPUT_LEN +
 									  ciphertext_len);

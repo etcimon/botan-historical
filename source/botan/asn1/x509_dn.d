@@ -10,7 +10,7 @@ import botan.der_enc;
 import botan.ber_dec;
 import botan.parsing;
 import botan.internal.stl_util;
-import botan.oids;
+import botan.asn1.oid_lookup.oids;
 import ostream;
 /*
 * Create an empty X509_DN
@@ -34,7 +34,7 @@ X509_DN::X509_DN(in std::multimap<OID, string> args)
 X509_DN::X509_DN(in std::multimap<string, string> args)
 {
 	for (auto i = args.begin(); i != args.end(); ++i)
-		add_attribute(OIDS::lookup(i.first), i.second);
+		add_attribute(oids.lookup(i.first), i.second);
 }
 
 /*
@@ -43,7 +43,7 @@ X509_DN::X509_DN(in std::multimap<string, string> args)
 void X509_DN::add_attribute(in string type,
 									 in string str)
 {
-	OID oid = OIDS::lookup(type);
+	OID oid = oids.lookup(type);
 	add_attribute(oid, str);
 }
 
@@ -82,7 +82,7 @@ std::multimap<string, string> X509_DN::contents() const
 {
 	std::multimap<string, string> retval;
 	for (auto i = dn_info.begin(); i != dn_info.end(); ++i)
-		multimap_insert(retval, OIDS::lookup(i.first), i.second.value());
+		multimap_insert(retval, oids.lookup(i.first), i.second.value());
 	return retval;
 }
 
@@ -91,7 +91,7 @@ std::multimap<string, string> X509_DN::contents() const
 */
 Vector!string X509_DN::get_attribute(in string attr) const
 {
-	const OID oid = OIDS::lookup(deref_info_field(attr));
+	const OID oid = oids.lookup(deref_info_field(attr));
 
 	auto range = dn_info.equal_range(oid);
 
@@ -104,7 +104,7 @@ Vector!string X509_DN::get_attribute(in string attr) const
 /*
 * Return the BER encoded data, if any
 */
-Vector!( byte ) X509_DN::get_bits() const
+Vector!byte X509_DN::get_bits() const
 {
 	return dn_bits;
 }
@@ -193,7 +193,7 @@ void do_ava(DER_Encoder encoder,
 				ASN1_Tag string_type, in string oid_str,
 				bool must_exist = false)
 {
-	const OID oid = OIDS::lookup(oid_str);
+	const OID oid = oids.lookup(oid_str);
 	const bool exists = (dn_info.find(oid) != dn_info.end());
 
 	if (!exists && must_exist)
@@ -245,7 +245,7 @@ void X509_DN::encode_into(DER_Encoder der) const
 */
 void X509_DN::decode_from(BER_Decoder source)
 {
-	Vector!( byte ) bits;
+	Vector!byte bits;
 
 	source.start_cons(SEQUENCE)
 		.raw_bytes(bits)

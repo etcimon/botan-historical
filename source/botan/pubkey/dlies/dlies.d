@@ -25,7 +25,7 @@ DLIES_Encryptor::DLIES_Encryptor(in PK_Key_Agreement_Key key,
 /*
 * DLIES Encryption
 */
-Vector!( byte ) DLIES_Encryptor::enc(in byte* input, size_t length,
+Vector!byte DLIES_Encryptor::enc(in byte* input, size_t length,
 													RandomNumberGenerator) const
 {
 	if (length > maximum_input_size())
@@ -100,7 +100,7 @@ SafeVector!byte DLIES_Decryptor::dec(in byte* msg, size_t length) const
 
 	const size_t CIPHER_LEN = length - my_key.size() - mac.output_length();
 
-	Vector!( byte ) v(msg, msg + my_key.size());
+	Vector!byte v(msg, msg + my_key.size());
 
 	SafeVector!byte C(msg + my_key.size(), msg + my_key.size() + CIPHER_LEN);
 

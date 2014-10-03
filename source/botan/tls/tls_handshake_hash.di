@@ -5,7 +5,7 @@
 * Released under the terms of the botan license.
 */
 
-import botan.secmem;
+import botan.alloc.secmem;
 import botan.tls_version;
 import botan.tls_magic;
 namespace TLS {
@@ -34,7 +34,7 @@ class Handshake_Hash
 
 		void reset() { data.clear(); }
 	private:
-		Vector!( byte ) data;
+		Vector!byte data;
 };
 
 }

@@ -25,9 +25,9 @@ Alert::Alert(in SafeVector!byte buf)
 	m_type_code = cast(Type)(dc);
 }
 
-Vector!( byte ) Alert::serialize() const
+Vector!byte Alert::serialize() const
 {
-	return Vector!( byte )({
+	return Vector!byte({
 		cast(byte)(is_fatal() ? 2 : 1),
 		cast(byte)(type())
 	});

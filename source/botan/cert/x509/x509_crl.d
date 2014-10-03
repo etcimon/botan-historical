@@ -11,7 +11,7 @@ import botan.x509cert;
 import botan.ber_dec;
 import botan.parsing;
 import botan.bigint;
-import botan.oids;
+import botan.asn1.oid_lookup.oids;
 /*
 * Load a X.509 CRL
 */
@@ -48,14 +48,14 @@ bool X509_CRL::is_revoked(in X509_Certificate cert) const
 	if (cert.issuer_dn() != issuer_dn())
 		return false;
 
-	Vector!( byte ) crl_akid = authority_key_id();
-	Vector!( byte ) cert_akid = cert.authority_key_id();
+	Vector!byte crl_akid = authority_key_id();
+	Vector!byte cert_akid = cert.authority_key_id();
 
 	if (!crl_akid.empty() && !cert_akid.empty())
 		if (crl_akid != cert_akid)
 			return false;
 
-	Vector!( byte ) cert_serial = cert.serial_number();
+	Vector!byte cert_serial = cert.serial_number();
 
 	bool is_revoked = false;
 
@@ -156,7 +156,7 @@ X509_DN X509_CRL::issuer_dn() const
 /*
 * Return the key identifier of the issuer
 */
-Vector!( byte ) X509_CRL::authority_key_id() const
+Vector!byte X509_CRL::authority_key_id() const
 {
 	return info.get1_memvec("X509v3.AuthorityKeyIdentifier");
 }

@@ -15,9 +15,9 @@ import botan.internal.rounding;
 import botan.calendar;
 namespace {
 
-Vector!( byte ) enc_two_digit(uint input)
+Vector!byte enc_two_digit(uint input)
 {
-	Vector!( byte ) result;
+	Vector!byte result;
 	in %= 100;
 	if (in < 10)
 		result.push_back(0x00);
@@ -275,9 +275,9 @@ void EAC_Time::decode_from(BER_Decoder& source)
 /*
 * make the value an octet string for encoding
 */
-Vector!( byte ) EAC_Time::encoded_eac_time() const
+Vector!byte EAC_Time::encoded_eac_time() const
 {
-	Vector!( byte ) result;
+	Vector!byte result;
 	result += enc_two_digit(year);
 	result += enc_two_digit(month);
 	result += enc_two_digit(day);

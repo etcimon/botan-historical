@@ -190,7 +190,7 @@ void GCM_Mode::key_schedule(in byte* key, size_t length)
 {
 	m_ctr.set_key(key, keylen);
 
-	const Vector!( byte ) zeros(BS);
+	const Vector!byte zeros(BS);
 	m_ctr.set_iv(&zeros[0], zeros.size());
 
 	SafeVector!byte H(BS);

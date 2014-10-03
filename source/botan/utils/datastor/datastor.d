@@ -85,13 +85,13 @@ string Data_Store::get1(in string key,
 /*
 * Get a single std::vector atom
 */
-Vector!( byte )
+Vector!byte
 Data_Store::get1_memvec(in string key) const
 {
 	Vector!string vals = get(key);
 
 	if (vals.empty())
-		return Vector!( byte )();
+		return Vector!byte();
 
 	if (vals.size() > 1)
 		throw new Invalid_State("Data_Store::get1_memvec: Multiple values for " +

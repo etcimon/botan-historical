@@ -27,7 +27,7 @@ const size_t MAC_OUTPUT_LENGTH = 32;
 
 }
 
-Vector!( byte ) encrypt(in byte* input, size_t input_len,
+Vector!byte encrypt(in byte* input, size_t input_len,
 								  const SymmetricKey& master_key,
 								  RandomNumberGenerator rng)
 {
@@ -58,7 +58,7 @@ Vector!( byte ) encrypt(in byte* input, size_t input_len,
 	pipe.process_msg(input, input_len);
 	SafeVector!byte ctext = pipe.read_all(0);
 
-	Vector!( byte ) output(MAGIC_LENGTH);
+	Vector!byte output(MAGIC_LENGTH);
 	store_be(CRYPTOBOX_MAGIC, &output[0]);
 	output += cipher_key_salt;
 	output += mac_key_salt;

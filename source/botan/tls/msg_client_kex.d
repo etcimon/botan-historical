@@ -72,7 +72,7 @@ Client_Key_Exchange::Client_Key_Exchange(Handshake_IO& io,
 
 		SymmetricKey psk = creds.psk("tls-client", hostname, psk_identity);
 
-		Vector!( byte ) zeros(psk.length());
+		Vector!byte zeros(psk.length());
 
 		append_tls_length_value(m_pre_master, zeros, 2);
 		append_tls_length_value(m_pre_master, psk.bits_of(), 2);
@@ -164,7 +164,7 @@ Client_Key_Exchange::Client_Key_Exchange(Handshake_IO& io,
 
 			EC_Group group(name);
 
-			Vector!( byte ) ecdh_key = reader.get_range!byte(1, 1, 255);
+			Vector!byte ecdh_key = reader.get_range!byte(1, 1, 255);
 
 			ECDH_PublicKey counterparty_key(group, OS2ECP(ecdh_key, group.get_curve()));
 
@@ -189,7 +189,7 @@ Client_Key_Exchange::Client_Key_Exchange(Handshake_IO& io,
 		{
 			const BigInt N = BigInt::decode(reader.get_range!byte(2, 1, 65535));
 			const BigInt g = BigInt::decode(reader.get_range!byte(2, 1, 65535));
-			Vector!( byte ) salt = reader.get_range!byte(1, 1, 255);
+			Vector!byte salt = reader.get_range!byte(1, 1, 255);
 			const BigInt B = BigInt::decode(reader.get_range!byte(2, 1, 65535));
 
 			const string srp_group = srp6_group_identifier(N, g);
@@ -240,7 +240,7 @@ Client_Key_Exchange::Client_Key_Exchange(Handshake_IO& io,
 
 			PK_Encryptor_EME encryptor(*rsa_pub, "PKCS1v15");
 
-			Vector!( byte ) encrypted_key = encryptor.encrypt(m_pre_master, rng);
+			Vector!byte encrypted_key = encryptor.encrypt(m_pre_master, rng);
 
 			if (state._version() == Protocol_Version::SSL_V3)
 				m_key_material = encrypted_key; // no length field
@@ -348,7 +348,7 @@ Client_Key_Exchange::Client_Key_Exchange(in Vector!byte contents,
 
 		if (kex_algo == "PSK")
 		{
-			Vector!( byte ) zeros(psk.length());
+			Vector!byte zeros(psk.length());
 			append_tls_length_value(m_pre_master, zeros, 2);
 			append_tls_length_value(m_pre_master, psk.bits_of(), 2);
 		}
@@ -374,7 +374,7 @@ Client_Key_Exchange::Client_Key_Exchange(in Vector!byte contents,
 			{
 				PK_Key_Agreement ka(*ka_key, "Raw");
 
-				Vector!( byte ) client_pubkey;
+				Vector!byte client_pubkey;
 
 				if (ka_key.algo_name() == "DH")
 					client_pubkey = reader.get_range!byte(2, 0, 65535);

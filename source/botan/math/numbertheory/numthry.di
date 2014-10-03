@@ -171,7 +171,7 @@ class Algorithm_Factory;
 * @param qbits how long q will be in bits
 * @return random seed used to generate this parameter set
 */
-Vector!( byte )
+Vector!byte
 generate_dsa_primes(RandomNumberGenerator rng,
 						  ref Algorithm_Factory af,
 						  ref BigInt p_out, ref BigInt q_out,

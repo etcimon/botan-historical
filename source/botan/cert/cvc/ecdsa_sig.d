@@ -17,7 +17,7 @@ ECDSA_Signature::ECDSA_Signature(in Vector!byte ber)
 		.verify_end();
 }
 
-Vector!( byte ) ECDSA_Signature::DER_encode() const
+Vector!byte ECDSA_Signature::DER_encode() const
 {
 	return DER_Encoder()
 		.start_cons(SEQUENCE)
@@ -27,7 +27,7 @@ Vector!( byte ) ECDSA_Signature::DER_encode() const
 		.get_contents_unlocked();
 }
 
-Vector!( byte ) ECDSA_Signature::get_concatenation() const
+Vector!byte ECDSA_Signature::get_concatenation() const
 {
 	// use the larger
 	const size_t enc_len = m_r > m_s ? m_r.bytes() : m_s.bytes();

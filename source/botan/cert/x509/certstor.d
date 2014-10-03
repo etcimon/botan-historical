@@ -45,7 +45,7 @@ cert_search(in X509_DN subject_dn, in Vector!byte key_id,
 		// Only compare key ids if set in both call and in the cert
 		if (key_id.size())
 		{
-			Vector!( byte ) skid = certs[i].subject_key_id();
+			Vector!byte skid = certs[i].subject_key_id();
 
 			if (skid.size() && skid != key_id) // no match
 				continue;
@@ -95,7 +95,7 @@ const X509_CRL* Certificate_Store_In_Memory::find_crl_for(in X509_Certificate su
 		// Only compare key ids if set in both call and in the CRL
 		if (key_id.size())
 		{
-			Vector!( byte ) akid = m_crls[i].authority_key_id();
+			Vector!byte akid = m_crls[i].authority_key_id();
 
 			if (akid.size() && akid != key_id) // no match
 				continue;

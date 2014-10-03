@@ -164,8 +164,8 @@ Response http_sync(http_exch_fn http_transact,
 		return GET_sync(headers["Location"], allowable_redirects - 1);
 	}
 
-	Vector!( byte ) resp_body;
-	Vector!( byte ) buf(4096);
+	Vector!byte resp_body;
+	Vector!byte buf(4096);
 	while(io.good())
 	{
 		io.read(cast(char*)(&buf[0]), buf.size());
@@ -205,7 +205,7 @@ Response http_sync(in string verb,
 
 Response GET_sync(in string url, size_t allowable_redirects)
 {
-	return http_sync("GET", url, "", Vector!( byte )(), allowable_redirects);
+	return http_sync("GET", url, "", Vector!byte(), allowable_redirects);
 }
 
 Response POST_sync(in string url,

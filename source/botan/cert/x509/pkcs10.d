@@ -11,7 +11,7 @@ import botan.x509cert;
 import botan.der_enc;
 import botan.ber_dec;
 import botan.parsing;
-import botan.oids;
+import botan.asn1.oid_lookup.oids;
 import botan.pem;
 /*
 * PKCS10_Request Constructor
@@ -101,19 +101,19 @@ void PKCS10_Request::handle_attribute(in Attribute attr)
 {
 	BER_Decoder value(attr.parameters);
 
-	if (attr.oid == OIDS::lookup("PKCS9.EmailAddress"))
+	if (attr.oid == oids.lookup("PKCS9.EmailAddress"))
 	{
 		ASN1_String email;
 		value.decode(email);
 		info.add("RFC822", email.value());
 	}
-	else if (attr.oid == OIDS::lookup("PKCS9.ChallengePassword"))
+	else if (attr.oid == oids.lookup("PKCS9.ChallengePassword"))
 	{
 		ASN1_String challenge_password;
 		value.decode(challenge_password);
 		info.add("PKCS9.ChallengePassword", challenge_password.value());
 	}
-	else if (attr.oid == OIDS::lookup("PKCS9.ExtensionRequest"))
+	else if (attr.oid == oids.lookup("PKCS9.ExtensionRequest"))
 	{
 		Extensions extensions;
 		value.decode(extensions).verify_end();
@@ -142,7 +142,7 @@ X509_DN PKCS10_Request::subject_dn() const
 /*
 * Return the public key of the requestor
 */
-Vector!( byte ) PKCS10_Request::raw_public_key() const
+Vector!byte PKCS10_Request::raw_public_key() const
 {
 	DataSource_Memory source(info.get1("X509.Certificate.public_key"));
 	return unlock(PEM_Code::decode_check_label(source, "PUBLIC KEY"));

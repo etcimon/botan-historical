@@ -11,11 +11,11 @@ import botan.ec_group;
 import botan.ber_dec;
 import botan.der_enc;
 import botan.libstate;
-import botan.oids;
+import botan.asn1.oid_lookup.oids;
 import botan.pem;
 EC_Group::EC_Group(in OID domain_oid)
 {
-	string pem = PEM_for_named_group(OIDS::lookup(domain_oid));
+	string pem = PEM_for_named_group(oids.lookup(domain_oid));
 
 	if (!pem)
 		throw new Lookup_Error("No ECC domain data for " + domain_oid.as_string());
@@ -31,14 +31,14 @@ EC_Group::EC_Group(in string str)
 
 	try
 	{
-		Vector!( byte ) ber =
+		Vector!byte ber =
 			unlock(PEM_Code::decode_check_label(str, "EC PARAMETERS"));
 
 		*this = EC_Group(ber);
 	}
 	catch(Decoding_Error) // hmm, not PEM?
 	{
-		*this = EC_Group(OIDS::lookup(str));
+		*this = EC_Group(oids.lookup(str));
 	}
 }
 
@@ -58,7 +58,7 @@ EC_Group::EC_Group(in Vector!byte ber_data)
 	else if (obj.type_tag == SEQUENCE)
 	{
 		BigInt p, a, b;
-		Vector!( byte ) sv_base_point;
+		Vector!byte sv_base_point;
 
 		BER_Decoder(ber_data)
 			.start_cons(SEQUENCE)
@@ -85,7 +85,7 @@ EC_Group::EC_Group(in Vector!byte ber_data)
 		throw new Decoding_Error("Unexpected tag while decoding ECC domain params");
 }
 
-Vector!( byte )
+Vector!byte
 EC_Group::DER_encode(EC_Group_Encoding form) const
 {
 	if (form == EC_DOMPAR_ENC_EXPLICIT)
@@ -124,7 +124,7 @@ EC_Group::DER_encode(EC_Group_Encoding form) const
 
 string EC_Group::PEM_encode() const
 {
-	const Vector!( byte ) der = DER_encode(EC_DOMPAR_ENC_EXPLICIT);
+	const Vector!byte der = DER_encode(EC_DOMPAR_ENC_EXPLICIT);
 	return PEM_Code::encode(der, "EC PARAMETERS");
 }
 

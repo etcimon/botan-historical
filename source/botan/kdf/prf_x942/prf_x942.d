@@ -7,7 +7,7 @@
 
 import botan.prf_x942;
 import botan.der_enc;
-import botan.oids;
+import botan.asn1.oid_lookup.oids;
 import botan.sha160;
 import botan.loadstor;
 import algorithm;
@@ -16,7 +16,7 @@ namespace {
 /*
 * Encode an integer as an OCTET STRING
 */
-Vector!( byte ) encode_x942_int(uint n)
+Vector!byte encode_x942_int(uint n)
 {
 	byte[4] n_buf = { 0 };
 	store_be(n, n_buf);
@@ -79,8 +79,8 @@ SafeVector!byte X942_PRF::derive(size_t key_len,
 */
 X942_PRF::X942_PRF(in string oid)
 {
-	if (OIDS::have_oid(oid))
-		key_wrap_oid = OIDS::lookup(oid).as_string();
+	if (oids.have_oid(oid))
+		key_wrap_oid = oids.lookup(oid).as_string();
 	else
 		key_wrap_oid = oid;
 }

@@ -6,7 +6,7 @@
 */
 
 import botan.get_pbe;
-import botan.oids;
+import botan.asn1.oid_lookup.oids;
 import botan.algo_base.scan_name;
 import botan.parsing;
 import botan.libstate;
@@ -71,7 +71,7 @@ PBE* get_pbe(in OID pbe_oid,
 				 in Vector!byte params,
 				 in string passphrase)
 {
-	SCAN_Name request(OIDS::lookup(pbe_oid));
+	SCAN_Name request(oids.lookup(pbe_oid));
 
 	const string pbe = request.algo_name();
 

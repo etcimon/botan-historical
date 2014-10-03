@@ -36,9 +36,9 @@ Heartbeat_Message::Heartbeat_Message(Type type,
 {
 }
 
-Vector!( byte ) Heartbeat_Message::contents() const
+Vector!byte Heartbeat_Message::contents() const
 {
-	Vector!( byte ) send_buf(3 + m_payload.size() + 16);
+	Vector!byte send_buf(3 + m_payload.size() + 16);
 	send_buf[0] = m_type;
 	send_buf[1] = get_byte<ushort>(0, m_payload.size());
 	send_buf[2] = get_byte<ushort>(1, m_payload.size());
@@ -48,9 +48,9 @@ Vector!( byte ) Heartbeat_Message::contents() const
 	return send_buf;
 }
 
-Vector!( byte ) Heartbeat_Support_Indicator::serialize() const
+Vector!byte Heartbeat_Support_Indicator::serialize() const
 {
-	Vector!( byte ) heartbeat(1);
+	Vector!byte heartbeat(1);
 	heartbeat[0] = (m_peer_allowed_to_send ? 1 : 2);
 	return heartbeat;
 }

@@ -12,8 +12,8 @@ import botan.libstate;
 import botan.der_enc;
 import botan.ber_dec;
 import botan.parsing;
-import botan.alg_id;
-import botan.oids;
+import botan.asn1.alg_id;
+import botan.asn1.oid_lookup.oids;
 import botan.lookup;
 import algorithm;
 /*
@@ -67,7 +67,7 @@ void PBE_PKCS5v20::flush_pipe(bool safe_to_skip)
 /*
 * Encode PKCS#5 PBES2 parameters
 */
-Vector!( byte ) PBE_PKCS5v20::encode_params() const
+Vector!byte PBE_PKCS5v20::encode_params() const
 {
 	return DER_Encoder()
 		.start_cons(SEQUENCE)
@@ -100,7 +100,7 @@ Vector!( byte ) PBE_PKCS5v20::encode_params() const
 */
 OID PBE_PKCS5v20::get_oid() const
 {
-	return OIDS::lookup("PBE-PKCS5v20");
+	return oids.lookup("PBE-PKCS5v20");
 }
 
 string PBE_PKCS5v20::name() const
@@ -152,7 +152,7 @@ PBE_PKCS5v20::PBE_PKCS5v20(in Vector!byte params,
 
 	AlgorithmIdentifier prf_algo;
 
-	if (kdf_algo.oid != OIDS::lookup("PKCS5.PBKDF2"))
+	if (kdf_algo.oid != oids.lookup("PKCS5.PBKDF2"))
 		throw new Decoding_Error("PBE-PKCS5 v2.0: Unknown KDF algorithm " +
 									kdf_algo.oid.as_string());
 
@@ -169,7 +169,7 @@ PBE_PKCS5v20::PBE_PKCS5v20(in Vector!byte params,
 
 	Algorithm_Factory af = global_state().algorithm_factory();
 
-	string cipher = OIDS::lookup(enc_algo.oid);
+	string cipher = oids.lookup(enc_algo.oid);
 	Vector!string cipher_spec = split_on(cipher, '/');
 	if (cipher_spec.size() != 2)
 		throw new Decoding_Error("PBE-PKCS5 v2.0: Invalid cipher spec " + cipher);
@@ -181,7 +181,7 @@ PBE_PKCS5v20::PBE_PKCS5v20(in Vector!byte params,
 	BER_Decoder(enc_algo.parameters).decode(iv, OCTET_STRING).verify_end();
 
 	block_cipher = af.make_block_cipher(cipher_spec[0]);
-	m_prf = af.make_mac(OIDS::lookup(prf_algo.oid));
+	m_prf = af.make_mac(oids.lookup(prf_algo.oid));
 
 	if (key_length == 0)
 		key_length = block_cipher.maximum_keylength();

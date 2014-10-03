@@ -9,7 +9,7 @@ import botan.x509_ext;
 import botan.sha160;
 import botan.der_enc;
 import botan.ber_dec;
-import botan.oids;
+import botan.asn1.oid_lookup.oids;
 import botan.charset;
 import botan.internal.bit_ops;
 import algorithm;
@@ -19,7 +19,7 @@ import algorithm;
 Certificate_Extension* Extensions::get_extension(in OID oid)
 {
 #define X509_EXTENSION(NAME, TYPE) \
-	if (OIDS::name_of(oid, NAME))	 \
+	if (oids.name_of(oid, NAME))	 \
 		return new Cert_Extension::TYPE();
 
 	X509_EXTENSION("X509v3.KeyUsage", Key_Usage);
@@ -68,7 +68,7 @@ Extensions& Extensions::operator=(in Extensions other)
 */
 OID Certificate_Extension::oid_of() const
 {
-	return OIDS::lookup(oid_name());
+	return oids.lookup(oid_name());
 }
 
 void Extensions::add(Certificate_Extension* extn, bool critical)
@@ -113,7 +113,7 @@ void Extensions::decode_from(BER_Decoder& from_source)
 	while(sequence.more_items())
 	{
 		OID oid;
-		Vector!( byte ) value;
+		Vector!byte value;
 		bool critical;
 
 		sequence.start_cons(SEQUENCE)
@@ -182,7 +182,7 @@ size_t Basic_Constraints::get_path_limit() const
 /*
 * Encode the extension
 */
-Vector!( byte ) Basic_Constraints::encode_inner() const
+Vector!byte Basic_Constraints::encode_inner() const
 {
 	return DER_Encoder()
 		.start_cons(SEQUENCE)
@@ -223,14 +223,14 @@ void Basic_Constraints::contents_to(Data_Store& subject, Data_Store&) const
 /*
 * Encode the extension
 */
-Vector!( byte ) Key_Usage::encode_inner() const
+Vector!byte Key_Usage::encode_inner() const
 {
 	if (constraints == NO_CONSTRAINTS)
 		throw new Encoding_Error("Cannot encode zero usage constraints");
 
 	const size_t unused_bits = low_bit(constraints) - 1;
 
-	Vector!( byte ) der;
+	Vector!byte der;
 	der.push_back(BIT_STRING);
 	der.push_back(2 + ((unused_bits < 8) ? 1 : 0));
 	der.push_back(unused_bits % 8);
@@ -280,7 +280,7 @@ void Key_Usage::contents_to(Data_Store& subject, Data_Store&) const
 /*
 * Encode the extension
 */
-Vector!( byte ) Subject_Key_ID::encode_inner() const
+Vector!byte Subject_Key_ID::encode_inner() const
 {
 	return DER_Encoder().encode(key_id, OCTET_STRING).get_contents_unlocked();
 }
@@ -313,7 +313,7 @@ Subject_Key_ID::Subject_Key_ID(in Vector!byte pub_key)
 /*
 * Encode the extension
 */
-Vector!( byte ) Authority_Key_ID::encode_inner() const
+Vector!byte Authority_Key_ID::encode_inner() const
 {
 	return DER_Encoder()
 			.start_cons(SEQUENCE)
@@ -344,7 +344,7 @@ void Authority_Key_ID::contents_to(Data_Store&, Data_Store& issuer) const
 /*
 * Encode the extension
 */
-Vector!( byte ) Alternative_Name::encode_inner() const
+Vector!byte Alternative_Name::encode_inner() const
 {
 	return DER_Encoder().encode(alt_name).get_contents_unlocked();
 }
@@ -405,7 +405,7 @@ Issuer_Alternative_Name::Issuer_Alternative_Name(in AlternativeName name) :
 /*
 * Encode the extension
 */
-Vector!( byte ) Extended_Key_Usage::encode_inner() const
+Vector!byte Extended_Key_Usage::encode_inner() const
 {
 	return DER_Encoder()
 		.start_cons(SEQUENCE)
@@ -465,7 +465,7 @@ class Policy_Information : public ASN1_Object
 /*
 * Encode the extension
 */
-Vector!( byte ) Certificate_Policies::encode_inner() const
+Vector!byte Certificate_Policies::encode_inner() const
 {
 	Vector!( Policy_Information ) policies;
 
@@ -502,14 +502,14 @@ void Certificate_Policies::contents_to(Data_Store& info, Data_Store&) const
 		info.add("X509v3.CertificatePolicies", oids[i].as_string());
 }
 
-Vector!( byte ) Authority_Information_Access::encode_inner() const
+Vector!byte Authority_Information_Access::encode_inner() const
 {
 	ASN1_String url(m_ocsp_responder, IA5_STRING);
 
 	return DER_Encoder()
 		.start_cons(SEQUENCE)
 		.start_cons(SEQUENCE)
-		.encode(OIDS::lookup("PKIX.OCSP"))
+		.encode(oids.lookup("PKIX.OCSP"))
 		.add_object(ASN1_Tag(6), CONTEXT_SPECIFIC, url.iso_8859())
 		.end_cons()
 		.end_cons().get_contents_unlocked();
@@ -527,7 +527,7 @@ void Authority_Information_Access::decode_inner(in Vector!byte input)
 
 		info.decode(oid);
 
-		if (oid == OIDS::lookup("PKIX.OCSP"))
+		if (oid == oids.lookup("PKIX.OCSP"))
 		{
 			BER_Object name = info.get_next_object();
 
@@ -571,7 +571,7 @@ CRL_Number* CRL_Number::copy() const
 /*
 * Encode the extension
 */
-Vector!( byte ) CRL_Number::encode_inner() const
+Vector!byte CRL_Number::encode_inner() const
 {
 	return DER_Encoder().encode(crl_number).get_contents_unlocked();
 }
@@ -595,7 +595,7 @@ void CRL_Number::contents_to(Data_Store& info, Data_Store&) const
 /*
 * Encode the extension
 */
-Vector!( byte ) CRL_ReasonCode::encode_inner() const
+Vector!byte CRL_ReasonCode::encode_inner() const
 {
 	return DER_Encoder()
 		.encode(cast(size_t)(reason), ENUMERATED, UNIVERSAL)
@@ -620,7 +620,7 @@ void CRL_ReasonCode::contents_to(Data_Store& info, Data_Store&) const
 	info.add("X509v3.CRLReasonCode", reason);
 }
 
-Vector!( byte ) CRL_Distribution_Points::encode_inner() const
+Vector!byte CRL_Distribution_Points::encode_inner() const
 {
 	throw new Exception("CRL_Distribution_Points encoding not implemented");
 }

@@ -6,7 +6,7 @@
 */
 
 import botan.x509self;
-import botan.oids;
+import botan.asn1.oid_lookup.oids;
 import botan.parsing;
 import chrono;
 /*
@@ -46,7 +46,7 @@ void X509_Cert_Options::add_ex_constraint(in OID oid)
 */
 void X509_Cert_Options::add_ex_constraint(in string oid_str)
 {
-	ex_constraints.push_back(OIDS::lookup(oid_str));
+	ex_constraints.push_back(oids.lookup(oid_str));
 }
 
 /*

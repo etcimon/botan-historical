@@ -5,7 +5,7 @@
 * Released under the terms of the botan license.
 */
 
-import botan.secmem;
+import botan.alloc.secmem;
 namespace TLS {
 
 /**
@@ -16,7 +16,7 @@ class Heartbeat_Message
 	public:
 		enum Type { REQUEST = 1, RESPONSE = 2 };
 
-		Vector!( byte ) contents() const;
+		Vector!byte contents() const;
 
 		in Vector!byte payload() const { return m_payload; }
 
@@ -27,7 +27,7 @@ class Heartbeat_Message
 		Heartbeat_Message(Type type, in byte* payload, size_t payload_len);
 	private:
 		Type m_type;
-		Vector!( byte ) m_payload;
+		Vector!byte m_payload;
 };
 
 }

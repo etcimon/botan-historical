@@ -10,7 +10,7 @@
 import botan.gost_3410;
 import botan.der_enc;
 import botan.ber_dec;
-Vector!( byte ) GOST_3410_PublicKey::x509_subject_public_key() const
+Vector!byte GOST_3410_PublicKey::x509_subject_public_key() const
 {
 	// Trust CryptoPro to come up with something obnoxious
 	const BigInt x = public_point().get_affine_x();
@@ -18,7 +18,7 @@ Vector!( byte ) GOST_3410_PublicKey::x509_subject_public_key() const
 
 	size_t part_size = std.algorithm.max(x.bytes(), y.bytes());
 
-	Vector!( byte ) bits(2*part_size);
+	Vector!byte bits(2*part_size);
 
 	x.binary_encode(&bits[part_size - x.bytes()]);
 	y.binary_encode(&bits[2*part_size - y.bytes()]);
@@ -35,7 +35,7 @@ Vector!( byte ) GOST_3410_PublicKey::x509_subject_public_key() const
 
 AlgorithmIdentifier GOST_3410_PublicKey::algorithm_identifier() const
 {
-	Vector!( byte ) params =
+	Vector!byte params =
 		DER_Encoder().start_cons(SEQUENCE)
 			.encode(OID(domain().get_oid()))
 			.end_cons()

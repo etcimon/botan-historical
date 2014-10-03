@@ -485,7 +485,7 @@ void Client::process_handshake_msg(const Handshake_State* active_state,
 				);
 		}
 
-		Vector!( byte ) session_id = state.server_hello().session_id();
+		Vector!byte session_id = state.server_hello().session_id();
 
 		in Vector!byte session_ticket = state.session_ticket();
 

@@ -14,7 +14,7 @@ namespace {
 /*
 * Compute the verify_data
 */
-Vector!( byte ) finished_compute_verify(in Handshake_State state,
+Vector!byte finished_compute_verify(in Handshake_State state,
 														Connection_Side side)
 {
 	if (state._version() == Protocol_Version::SSL_V3)
@@ -24,7 +24,7 @@ Vector!( byte ) finished_compute_verify(in Handshake_State state,
 
 		Handshake_Hash hash = state.hash(); // don't modify state
 
-		Vector!( byte ) ssl3_finished;
+		Vector!byte ssl3_finished;
 
 		if (side == CLIENT)
 			hash.update(SSL_CLIENT_LABEL, sizeof(SSL_CLIENT_LABEL));
@@ -45,7 +45,7 @@ Vector!( byte ) finished_compute_verify(in Handshake_State state,
 
 		Unique!KDF prf(state.protocol_specific_prf());
 
-		Vector!( byte ) input;
+		Vector!byte input;
 		if (side == CLIENT)
 			input += Pair(TLS_CLIENT_LABEL, sizeof(TLS_CLIENT_LABEL));
 		else
@@ -73,7 +73,7 @@ Finished::Finished(Handshake_IO& io,
 /*
 * Serialize a Finished message
 */
-Vector!( byte ) Finished::serialize() const
+Vector!byte Finished::serialize() const
 {
 	return m_verification_data;
 }

@@ -9,7 +9,7 @@ import botan.libstate;
 import botan.charset;
 import botan.engine;
 import botan.cpuid;
-import botan.oids;
+import botan.asn1.oid_lookup.oids;
 import botan.internal.core_engine;
 import botan.internal.stl_util;
 import algorithm;
@@ -63,7 +63,7 @@ void Library_State::initialize()
 	CPUID::initialize();
 
 	SCAN_Name::set_default_aliases();
-	OIDS::set_defaults();
+	oids.set_defaults();
 
 	m_algorithm_factory.reset(new Algorithm_Factory());
 

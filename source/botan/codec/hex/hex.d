@@ -177,11 +177,11 @@ SafeVector!byte hex_decode_locked(in string input,
 	return hex_decode_locked(&input[0], input.size(), ignore_ws);
 }
 
-Vector!( byte ) hex_decode(string input,
+Vector!byte hex_decode(string input,
 									  size_t input_length,
 									  bool ignore_ws)
 {
-	Vector!( byte ) bin(1 + input_length / 2);
+	Vector!byte bin(1 + input_length / 2);
 
 	size_t written = hex_decode(&binput[0],
 										 input,
@@ -192,7 +192,7 @@ Vector!( byte ) hex_decode(string input,
 	return bin;
 }
 
-Vector!( byte ) hex_decode(in string input,
+Vector!byte hex_decode(in string input,
 									  bool ignore_ws)
 {
 	return hex_decode(&input[0], input.size(), ignore_ws);

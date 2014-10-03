@@ -18,7 +18,7 @@ class EAC1_1_obj(Derived) : public EAC_Signed_Object!Derived
 		* Return the signature as a concatenation of the encoded parts.
 		* @result the concatenated signature
 		*/
-		Vector!( byte ) get_concat_sig() const
+		Vector!byte get_concat_sig() const
 		{ return m_sig.get_concatenation(); }
 
 		bool check_signature(class Public_Key& key) const

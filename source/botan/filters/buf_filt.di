@@ -5,7 +5,7 @@
 * Distributed under the terms of the botan license.
 */
 
-import botan.secmem;
+import botan.alloc.secmem;
 /**
 * Filter mixin that breaks input into blocks, useful for
 * cipher modes

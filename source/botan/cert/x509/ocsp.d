@@ -10,7 +10,7 @@ import botan.certstor;
 import botan.der_enc;
 import botan.ber_dec;
 import botan.x509_ext;
-import botan.oids;
+import botan.asn1.oid_lookup.oids;
 import botan.base64;
 import botan.pubkey;
 import botan.x509path;
@@ -49,7 +49,7 @@ void check_signature(in Vector!byte tbs_response,
 	Unique!Public_Key pub_key(cert.subject_public_key());
 
 	const Vector!string sig_info =
-		split_on(OIDS::lookup(sig_algo.oid), '/');
+		split_on(oids.lookup(sig_algo.oid), '/');
 
 	if (sig_info.size() != 2 || sig_info[0] != pub_key.algo_name())
 		throw new Exception("Information in OCSP response does not match cert");
@@ -96,7 +96,7 @@ void check_signature(in Vector!byte tbs_response,
 
 }
 
-Vector!( byte ) Request::BER_encode() const
+Vector!byte Request::BER_encode() const
 {
 	CertID certid(m_issuer, m_subject);
 
@@ -142,9 +142,9 @@ Response::Response(in Certificate_Store trusted_roots,
 		BER_Decoder basicresponse =
 			BER_Decoder(response_bytes.get_next_octet_string()).start_cons(SEQUENCE);
 
-		Vector!( byte ) tbs_bits;
+		Vector!byte tbs_bits;
 		AlgorithmIdentifier sig_algo;
-		Vector!( byte ) signature;
+		Vector!byte signature;
 		Vector!( X509_Certificate ) certs;
 
 		basicresponse.start_cons(SEQUENCE)
@@ -156,7 +156,7 @@ Response::Response(in Certificate_Store trusted_roots,
 
 		size_t responsedata_version = 0;
 		X509_DN name;
-		Vector!( byte ) key_hash;
+		Vector!byte key_hash;
 		X509_Time produced_at;
 		Extensions extensions;
 
@@ -179,7 +179,7 @@ Response::Response(in Certificate_Store trusted_roots,
 
 		if (certs.empty())
 		{
-			if (auto cert = trusted_roots.find_cert(name, Vector!( byte )()))
+			if (auto cert = trusted_roots.find_cert(name, Vector!byte()))
 				certs.push_back(*cert);
 			else
 				throw new Exception("Could not find certificate that signed OCSP response");

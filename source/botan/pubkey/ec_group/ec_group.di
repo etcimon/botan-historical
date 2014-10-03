@@ -68,7 +68,7 @@ class EC_Group
 		* @param form of encoding to use
 		* @returns bytes encododed as DER
 		*/
-		Vector!( byte ) DER_encode(EC_Group_Encoding form) const;
+		Vector!byte DER_encode(EC_Group_Encoding form) const;
 
 		/**
 		* Return the PEM encoding (always in explicit form)

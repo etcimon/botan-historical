@@ -151,7 +151,7 @@ RTSS_Share::split(byte M, byte N,
 
 	for (size_t i = 0; i != secret.size(); ++i)
 	{
-		Vector!( byte ) coefficients(M-1);
+		Vector!byte coefficients(M-1);
 		rng.randomize(&coefficients[0], coefficients.size());
 
 		for (byte j = 0; j != N; ++j)
@@ -206,7 +206,7 @@ RTSS_Share::reconstruct(in Vector!( RTSS_Share ) shares)
 	if (shares[0].size() != secret_len + hash.output_length() + RTSS_HEADER_SIZE + 1)
 		throw new Decoding_Error("Bad RTSS length field in header");
 
-	Vector!( byte ) V(shares.size());
+	Vector!byte V(shares.size());
 	SafeVector!byte secret;
 
 	for (size_t i = RTSS_HEADER_SIZE + 1; i != shares[0].size(); ++i)

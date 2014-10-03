@@ -6,7 +6,7 @@
 */
 
 import botan.cvc_cert;
-import botan.oids;
+import botan.asn1.oid_lookup.oids;
 ASN1_Car EAC1_1_CVC::get_car() const
 {
 	return m_car;
@@ -30,8 +30,8 @@ uint EAC1_1_CVC::get_chat_value() const
 */
 void EAC1_1_CVC::force_decode()
 {
-	Vector!( byte ) enc_pk;
-	Vector!( byte ) enc_chat_val;
+	Vector!byte enc_pk;
+	Vector!byte enc_chat_val;
 	size_t cpi;
 	BER_Decoder tbs_cert(tbs_bits);
 	tbs_cert.decode(cpi, ASN1_Tag(41), APPLICATION)
@@ -101,13 +101,13 @@ EAC1_1_CVC make_cvc_cert(PK_Signer& signer,
 								 ASN1_Cex cex,
 								 RandomNumberGenerator rng)
 {
-	OID chat_oid(OIDS::lookup("CertificateHolderAuthorizationTemplate"));
-	Vector!( byte ) enc_chat_val;
+	OID chat_oid(oids.lookup("CertificateHolderAuthorizationTemplate"));
+	Vector!byte enc_chat_val;
 	enc_chat_val.push_back(holder_auth_templ);
 
-	Vector!( byte ) enc_cpi;
+	Vector!byte enc_cpi;
 	enc_cpi.push_back(0x00);
-	Vector!( byte ) tbs = DER_Encoder()
+	Vector!byte tbs = DER_Encoder()
 		.encode(enc_cpi, OCTET_STRING, ASN1_Tag(41), APPLICATION) // cpi
 		.encode(car)
 		.raw_bytes(public_key)
@@ -120,7 +120,7 @@ EAC1_1_CVC make_cvc_cert(PK_Signer& signer,
 		.encode(cex)
 		.get_contents_unlocked();
 
-	Vector!( byte ) signed_cert =
+	Vector!byte signed_cert =
 		EAC1_1_CVC::make_signed(signer,
 										EAC1_1_CVC::build_cert_body(tbs),
 										rng);

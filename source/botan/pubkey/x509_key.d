@@ -9,11 +9,11 @@ import botan.x509_key;
 import botan.der_enc;
 import botan.ber_dec;
 import botan.pem;
-import botan.alg_id;
+import botan.asn1.alg_id;
 import botan.internal.pk_algs;
 namespace X509 {
 
-Vector!( byte ) BER_encode(in Public_Key key)
+Vector!byte BER_encode(in Public_Key key)
 {
 	return DER_Encoder()
 			.start_cons(SEQUENCE)

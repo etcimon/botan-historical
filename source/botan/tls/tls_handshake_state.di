@@ -71,7 +71,7 @@ class Handshake_State
 		Pair!(Handshake_Type, Vector!( byte) )
 			get_next_handshake_msg();
 
-		Vector!( byte ) session_ticket() const;
+		Vector!byte session_ticket() const;
 
 		Pair!(string, Signature_Format)
 			understand_sig_format(in Public_Key key,

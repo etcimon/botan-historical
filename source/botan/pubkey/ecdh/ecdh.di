@@ -46,7 +46,7 @@ class ECDH_PublicKey : public abstract EC_PublicKey
 		/**
 		* @return public point value
 		*/
-		Vector!( byte ) public_value() const
+		Vector!byte public_value() const
 		{ return unlock(EC2OSP(public_point(), PointGFp::UNCOMPRESSED)); }
 
 	package:
@@ -77,7 +77,7 @@ class ECDH_PrivateKey : public ECDH_PublicKey,
 							 ref const BigInt x = 0) :
 			EC_PrivateKey(rng, domain, x) {}
 
-		Vector!( byte ) public_value() const
+		Vector!byte public_value() const
 		{ return ECDH_PublicKey::public_value(); }
 };
 

@@ -39,7 +39,7 @@ class PK_Encryptor
 		* @param rng the random number source to use
 		* @return encrypted message
 		*/
-		Vector!( byte ) encrypt(in byte* input, size_t length,
+		Vector!byte encrypt(in byte* input, size_t length,
 											RandomNumberGenerator rng) const
 		{
 			return enc(input, length, rng);
@@ -51,7 +51,7 @@ class PK_Encryptor
 		* @param rng the random number source to use
 		* @return encrypted message
 		*/
-		Vector!( byte ) encrypt(Alloc)(in Vector!( byte, Alloc ) input,
+		Vector!byte encrypt(Alloc)(in Vector!( byte, Alloc ) input,
 										  RandomNumberGenerator rng) const
 		{
 			return enc(&input[0], input.size(), rng);
@@ -71,7 +71,7 @@ class PK_Encryptor
 		PK_Encryptor& operator=(in PK_Encryptor);
 
 	private:
-		abstract Vector!( byte ) enc(in byte*, size_t,
+		abstract Vector!byte enc(in byte*, size_t,
 												 RandomNumberGenerator) const;
 };
 
@@ -127,7 +127,7 @@ class PK_Signer
 		* @param rng the rng to use
 		* @return signature
 		*/
-		Vector!( byte ) sign_message(in byte* input, size_t length,
+		Vector!byte sign_message(in byte* input, size_t length,
 												  RandomNumberGenerator rng);
 
 		/**
@@ -136,11 +136,11 @@ class PK_Signer
 		* @param rng the rng to use
 		* @return signature
 		*/
-		Vector!( byte ) sign_message(in Vector!byte input,
+		Vector!byte sign_message(in Vector!byte input,
 												 RandomNumberGenerator rng)
 		{ return sign_message(&input[0], input.size(), rng); }
 
-		Vector!( byte ) sign_message(in SafeVector!byte input,
+		Vector!byte sign_message(in SafeVector!byte input,
 												 RandomNumberGenerator rng)
 		{ return sign_message(&input[0], input.size(), rng); }
 
@@ -169,7 +169,7 @@ class PK_Signer
 		* @param rng the rng to use
 		* @return signature of the total message
 		*/
-		Vector!( byte ) signature(RandomNumberGenerator rng);
+		Vector!byte signature(RandomNumberGenerator rng);
 
 		/**
 		* Set the output format of the signature.
@@ -394,7 +394,7 @@ class PK_Encryptor_EME : public PK_Encryptor
 		PK_Encryptor_EME(in Public_Key key,
 							  in string eme);
 	private:
-		Vector!( byte ) enc(in byte*, size_t,
+		Vector!byte enc(in byte*, size_t,
 									  RandomNumberGenerator rng) const;
 
 		Unique!PK_Ops::Encryption m_op;

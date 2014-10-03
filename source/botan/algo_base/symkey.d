@@ -11,7 +11,7 @@ import botan.rng;
 import botan.pipe;
 import botan.hex;
 import algorithm;
-import botan.secmem;
+import botan.alloc.secmem;
 import string;
 
 /**

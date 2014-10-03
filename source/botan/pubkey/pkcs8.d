@@ -9,8 +9,8 @@ import botan.pkcs8;
 import botan.get_pbe;
 import botan.der_enc;
 import botan.ber_dec;
-import botan.alg_id;
-import botan.oids;
+import botan.asn1.alg_id;
+import botan.asn1.oid_lookup.oids;
 import botan.pem;
 import botan.internal.pk_algs;
 namespace PKCS8 {
@@ -147,7 +147,7 @@ string PEM_encode(in Private_Key key)
 /*
 * BER encode a PKCS #8 private key, encrypted
 */
-Vector!( byte ) BER_encode(in Private_Key key,
+Vector!byte BER_encode(in Private_Key key,
 									  RandomNumberGenerator rng,
 									  in string pass,
 									  std::chrono::milliseconds msec,
@@ -200,7 +200,7 @@ Private_Key* load_key(DataSource& source,
 	AlgorithmIdentifier alg_id;
 	SafeVector!byte pkcs8_key = PKCS8_decode(source, get_pass, alg_id);
 
-	const string alg_name = OIDS::lookup(alg_id.oid);
+	const string alg_name = oids.lookup(alg_id.oid);
 	if (alg_name == "" || alg_name == alg_id.oid.as_string())
 		throw new PKCS8_Exception("Unknown algorithm OID: " +
 									 alg_id.oid.as_string());

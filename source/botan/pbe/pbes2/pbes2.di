@@ -18,7 +18,7 @@ class PBE_PKCS5v20 : public PBE
 	public:
 		OID get_oid() const;
 
-		Vector!( byte ) encode_params() const;
+		Vector!byte encode_params() const;
 
 		string name() const;
 

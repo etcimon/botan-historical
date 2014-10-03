@@ -18,7 +18,7 @@ class DL_Scheme_PublicKey : public abstract Public_Key
 
 		AlgorithmIdentifier algorithm_identifier() const;
 
-		Vector!( byte ) x509_subject_public_key() const;
+		Vector!byte x509_subject_public_key() const;
 
 		/**
 		* Get the DL domain parameters of this key.

@@ -28,7 +28,7 @@ class X509_Certificate : public X509_Object
 		* Get the public key associated with this certificate.
 		* @return subject public key of this certificate
 		*/
-		Vector!( byte ) subject_public_key_bits() const;
+		Vector!byte subject_public_key_bits() const;
 
 		/**
 		* Get the issuer certificate DN.
@@ -67,12 +67,12 @@ class X509_Certificate : public X509_Object
 		/**
 		* Raw subject DN
 		*/
-		Vector!( byte ) raw_issuer_dn() const;
+		Vector!byte raw_issuer_dn() const;
 
 		/**
 		* Raw issuer DN
 		*/
-		Vector!( byte ) raw_subject_dn() const;
+		Vector!byte raw_subject_dn() const;
 
 		/**
 		* Get the notBefore of the certificate.
@@ -96,19 +96,19 @@ class X509_Certificate : public X509_Object
 		* Get the serial number of this certificate.
 		* @return certificates serial number
 		*/
-		Vector!( byte ) serial_number() const;
+		Vector!byte serial_number() const;
 
 		/**
 		* Get the DER encoded AuthorityKeyIdentifier of this certificate.
 		* @return DER encoded AuthorityKeyIdentifier
 		*/
-		Vector!( byte ) authority_key_id() const;
+		Vector!byte authority_key_id() const;
 
 		/**
 		* Get the DER encoded SubjectKeyIdentifier of this certificate.
 		* @return DER encoded SubjectKeyIdentifier
 		*/
-		Vector!( byte ) subject_key_id() const;
+		Vector!byte subject_key_id() const;
 
 		/**
 		* Check whether this certificate is self signed.

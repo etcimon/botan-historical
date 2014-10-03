@@ -38,7 +38,7 @@ PK_Encryptor_EME::PK_Encryptor_EME(in Public_Key key,
 /*
 * Encrypt a message
 */
-Vector!( byte )
+Vector!byte
 PK_Encryptor_EME::enc(in byte* in,
 							 size_t length,
 							 RandomNumberGenerator rng) const
@@ -150,7 +150,7 @@ PK_Signer::PK_Signer(in Private_Key key,
 /*
 * Sign a message
 */
-Vector!( byte ) PK_Signer::sign_message(in byte* msg, size_t length,
+Vector!byte PK_Signer::sign_message(in byte* msg, size_t length,
 														 RandomNumberGenerator rng)
 {
 	update(msg, length);
@@ -176,7 +176,7 @@ bool PK_Signer::self_test_signature(in Vector!byte msg,
 
 	if (m_verify_op.with_recovery())
 	{
-		Vector!( byte ) recovered =
+		Vector!byte recovered =
 			unlock(m_verify_op.verify_mr(&sig[0], sig.size()));
 
 		if (msg.size() > recovered.size())
@@ -200,13 +200,13 @@ bool PK_Signer::self_test_signature(in Vector!byte msg,
 /*
 * Create a signature
 */
-Vector!( byte ) PK_Signer::signature(RandomNumberGenerator rng)
+Vector!byte PK_Signer::signature(RandomNumberGenerator rng)
 {
-	Vector!( byte ) encoded = unlock(m_emsa.encoding_of(m_emsa.raw_data(),
+	Vector!byte encoded = unlock(m_emsa.encoding_of(m_emsa.raw_data(),
 																 m_op.max_input_bits(),
 																		  rng));
 
-	Vector!( byte ) plain_sig = unlock(m_op.sign(&encoded[0], encoded.size(), rng));
+	Vector!byte plain_sig = unlock(m_op.sign(&encoded[0], encoded.size(), rng));
 
 	BOTAN_ASSERT(self_test_signature(encoded, plain_sig), "Signature was consistent");
 
@@ -300,7 +300,7 @@ bool PK_Verifier::check_signature(in byte* sig, size_t length)
 			BER_Decoder ber_sig = decoder.start_cons(SEQUENCE);
 
 			size_t count = 0;
-			Vector!( byte ) real_sig;
+			Vector!byte real_sig;
 			while(ber_sig.more_items())
 			{
 				BigInt sig_part;

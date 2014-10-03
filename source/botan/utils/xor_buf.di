@@ -114,8 +114,8 @@ void xor_buf(Alloc, Alloc2)(Vector!( byte, Alloc ) output,
 }
 
 template<typename T, typename Alloc, typename Alloc2>
-Vector!( T, Alloc )
-operator^=(Vector!( T, Alloc ) output,
+Vector!(T, Alloc)
+operator^=(Vector!(T, Alloc) output,
 			  in Vector!( T, Alloc2 ) input)
 {
 	if (output.size() < input.size())

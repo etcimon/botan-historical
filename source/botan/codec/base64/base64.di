@@ -5,7 +5,7 @@
 * Distributed under the terms of the botan license.
 */
 
-import botan.secmem;
+import botan.alloc.secmem;
 import string;
 /**
 * Perform base64 encoding

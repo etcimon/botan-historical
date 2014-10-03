@@ -5,7 +5,7 @@
 * Distributed under the terms of the botan license.
 */
 
-import botan.secmem;
+import botan.alloc.secmem;
 import string;
 /**
 * Return the PKCS #1 hash identifier
@@ -14,7 +14,7 @@ import string;
 * @return byte sequence identifying the hash
 * @throw new Invalid_Argument if the hash has no known PKCS #1 hash id
 */
-Vector!( byte ) pkcs_hash_id(in string hash_name);
+Vector!byte pkcs_hash_id(in string hash_name);
 
 /**
 * Return the IEEE 1363 hash identifier

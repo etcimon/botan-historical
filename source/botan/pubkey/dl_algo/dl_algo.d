@@ -21,7 +21,7 @@ AlgorithmIdentifier DL_Scheme_PublicKey::algorithm_identifier() const
 										group.DER_encode(group_format()));
 }
 
-Vector!( byte ) DL_Scheme_PublicKey::x509_subject_public_key() const
+Vector!byte DL_Scheme_PublicKey::x509_subject_public_key() const
 {
 	return DER_Encoder().encode(y).get_contents_unlocked();
 }

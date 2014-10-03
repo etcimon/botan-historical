@@ -19,7 +19,7 @@ class PBE : public Filter
 		* DER encode the params (the number of iterations and the salt value)
 		* @return encoded params
 		*/
-		abstract Vector!( byte ) encode_params() const;
+		abstract Vector!byte encode_params() const;
 
 		/**
 		* Get this PBE's OID.

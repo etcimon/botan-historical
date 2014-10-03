@@ -31,7 +31,7 @@ class EMSA_PKCS1v15 : public EMSA
 						size_t);
 	private:
 		Unique!HashFunction m_hash;
-		Vector!( byte ) m_hash_id;
+		Vector!byte m_hash_id;
 };
 
 /**

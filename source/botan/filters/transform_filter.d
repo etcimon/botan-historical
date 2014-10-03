@@ -41,7 +41,7 @@ void Transformation_Filter::Nonce_State::update(in InitializationVector iv)
 	m_fresh_nonce = true;
 }
 
-Vector!( byte ) Transformation_Filter::Nonce_State::get()
+Vector!byte Transformation_Filter::Nonce_State::get()
 {
 	BOTAN_ASSERT(m_fresh_nonce, "The nonce is fresh for this message");
 

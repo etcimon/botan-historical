@@ -16,7 +16,7 @@ import botan.dh;
 import botan.ecdh;
 import botan.rsa;
 import botan.srp6;
-import botan.oids;
+import botan.asn1.oid_lookup.oids;
 namespace TLS {
 
 /**
@@ -68,7 +68,7 @@ Server_Key_Exchange::Server_Key_Exchange(Handshake_IO& io,
 		Unique!ECDH_PrivateKey ecdh(new ECDH_PrivateKey(rng, ec_group));
 
 		const string ecdh_domain_oid = ecdh.domain().get_oid();
-		const string domain = OIDS::lookup(OID(ecdh_domain_oid));
+		const string domain = oids.lookup(OID(ecdh_domain_oid));
 
 		if (domain == "")
 			throw new Internal_Error("Could not find name of ECDH domain " + ecdh_domain_oid);
@@ -89,7 +89,7 @@ Server_Key_Exchange::Server_Key_Exchange(Handshake_IO& io,
 
 		string group_id;
 		BigInt v;
-		Vector!( byte ) salt;
+		Vector!byte salt;
 
 		const bool found = creds.srp_verifier("tls-server", hostname,
 														  srp_identifier,
@@ -180,7 +180,7 @@ Server_Key_Exchange::Server_Key_Exchange(in Vector!byte buf,
 
 		const string name = Supported_Elliptic_Curves::curve_id_to_name(curve_id);
 
-		Vector!( byte ) ecdh_key = reader.get_range!byte(1, 1, 255);
+		Vector!byte ecdh_key = reader.get_range!byte(1, 1, 255);
 
 		if (name == "")
 			throw new Decoding_Error("Server_Key_Exchange: Server sent unknown named curve " +
@@ -197,7 +197,7 @@ Server_Key_Exchange::Server_Key_Exchange(in Vector!byte buf,
 
 		const BigInt N = BigInt::decode(reader.get_range!byte(2, 1, 65535));
 		const BigInt g = BigInt::decode(reader.get_range!byte(2, 1, 65535));
-		Vector!( byte ) salt = reader.get_range!byte(1, 1, 255);
+		Vector!byte salt = reader.get_range!byte(1, 1, 255);
 		const BigInt B = BigInt::decode(reader.get_range!byte(2, 1, 65535));
 
 		append_tls_length_value(m_params, BigInt::encode(N), 2);
@@ -227,9 +227,9 @@ Server_Key_Exchange::~this() {}
 /**
 * Serialize a Server Key Exchange message
 */
-Vector!( byte ) Server_Key_Exchange::serialize() const
+Vector!byte Server_Key_Exchange::serialize() const
 {
-	Vector!( byte ) buf = params();
+	Vector!byte buf = params();
 
 	if (m_signature.size())
 	{

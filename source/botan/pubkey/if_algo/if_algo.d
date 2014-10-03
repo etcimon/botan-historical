@@ -21,7 +21,7 @@ AlgorithmIdentifier IF_Scheme_PublicKey::algorithm_identifier() const
 										AlgorithmIdentifier::USE_NULL_PARAM);
 }
 
-Vector!( byte ) IF_Scheme_PublicKey::x509_subject_public_key() const
+Vector!byte IF_Scheme_PublicKey::x509_subject_public_key() const
 {
 	return DER_Encoder()
 		.start_cons(SEQUENCE)

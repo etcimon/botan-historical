@@ -23,7 +23,7 @@ EAC1_1_ADO::EAC1_1_ADO(in string input)
 
 void EAC1_1_ADO::force_decode()
 {
-	Vector!( byte ) inner_cert;
+	Vector!byte inner_cert;
 	BER_Decoder(tbs_bits)
 		.start_cons(ASN1_Tag(33))
 		.raw_bytes(inner_cert)
@@ -31,7 +31,7 @@ void EAC1_1_ADO::force_decode()
 		.decode(m_car)
 		.verify_end();
 
-	Vector!( byte ) req_bits = DER_Encoder()
+	Vector!byte req_bits = DER_Encoder()
 		.start_cons(ASN1_Tag(33), APPLICATION)
 		.raw_bytes(inner_cert)
 		.end_cons()
@@ -42,11 +42,11 @@ void EAC1_1_ADO::force_decode()
 	sig_algo = m_req.sig_algo;
 }
 
-Vector!( byte ) EAC1_1_ADO::make_signed(PK_Signer& signer,
+Vector!byte EAC1_1_ADO::make_signed(PK_Signer& signer,
 														 in Vector!byte tbs_bits,
 														 RandomNumberGenerator rng)
 {
-	const Vector!( byte ) concat_sig = signer.sign_message(tbs_bits, rng);
+	const Vector!byte concat_sig = signer.sign_message(tbs_bits, rng);
 
 	return DER_Encoder()
 		.start_cons(ASN1_Tag(7), APPLICATION)
@@ -62,11 +62,11 @@ ASN1_Car EAC1_1_ADO::get_car() const
 }
 
 void EAC1_1_ADO::decode_info(DataSource& source,
-									  Vector!( byte ) & res_tbs_bits,
+									  Vector!byte & res_tbs_bits,
 									  ECDSA_Signature & res_sig)
 {
-	Vector!( byte ) concat_sig;
-	Vector!( byte ) cert_inner_bits;
+	Vector!byte concat_sig;
+	Vector!byte cert_inner_bits;
 	ASN1_Car car;
 
 	BER_Decoder(source)
@@ -78,7 +78,7 @@ void EAC1_1_ADO::decode_info(DataSource& source,
 		.decode(concat_sig, OCTET_STRING, ASN1_Tag(55), APPLICATION)
 		.end_cons();
 
-	Vector!( byte ) enc_cert = DER_Encoder()
+	Vector!byte enc_cert = DER_Encoder()
 		.start_cons(ASN1_Tag(33), APPLICATION)
 		.raw_bytes(cert_inner_bits)
 		.end_cons()
@@ -104,7 +104,7 @@ void EAC1_1_ADO::encode(Pipe output, X509_Encoding encoding) const
 				 .get_contents());
 }
 
-Vector!( byte ) EAC1_1_ADO::tbs_data() const
+Vector!byte EAC1_1_ADO::tbs_data() const
 {
 	return tbs_bits;
 }

@@ -29,9 +29,9 @@ class ECDSA_Signature
 		/**
 		* return the r||s
 		*/
-		Vector!( byte ) get_concatenation() const;
+		Vector!byte get_concatenation() const;
 
-		Vector!( byte ) DER_encode() const;
+		Vector!byte DER_encode() const;
 
 		bool operator==(in ECDSA_Signature other) const
 		{

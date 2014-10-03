@@ -8,7 +8,7 @@
 import botan.x509_obj;
 import botan.x509_key;
 import botan.pubkey;
-import botan.oids;
+import botan.asn1.oid_lookup.oids;
 import botan.der_enc;
 import botan.ber_dec;
 import botan.parsing;
@@ -104,7 +104,7 @@ void X509_Object::decode_from(BER_Decoder& from)
 /*
 * Return a BER encoded X.509 object
 */
-Vector!( byte ) X509_Object::BER_encode() const
+Vector!byte X509_Object::BER_encode() const
 {
 	DER_Encoder der;
 	encode_into(der);
@@ -122,7 +122,7 @@ string X509_Object::PEM_encode() const
 /*
 * Return the TBS data
 */
-Vector!( byte ) X509_Object::tbs_data() const
+Vector!byte X509_Object::tbs_data() const
 {
 	return ASN1::put_in_sequence(tbs_bits);
 }
@@ -130,7 +130,7 @@ Vector!( byte ) X509_Object::tbs_data() const
 /*
 * Return the signature of this object
 */
-Vector!( byte ) X509_Object::signature() const
+Vector!byte X509_Object::signature() const
 {
 	return sig;
 }
@@ -149,7 +149,7 @@ AlgorithmIdentifier X509_Object::signature_algorithm() const
 string X509_Object::hash_used_for_signature() const
 {
 	Vector!string sig_info =
-		split_on(OIDS::lookup(sig_algo.oid), '/');
+		split_on(oids.lookup(sig_algo.oid), '/');
 
 	if (sig_info.size() != 2)
 		throw new Internal_Error("Invalid name format found for " +
@@ -180,7 +180,7 @@ bool X509_Object::check_signature(in Public_Key pub_key) const
 {
 	try {
 		Vector!string sig_info =
-			split_on(OIDS::lookup(sig_algo.oid), '/');
+			split_on(oids.lookup(sig_algo.oid), '/');
 
 		if (sig_info.size() != 2 || sig_info[0] != pub_key.algo_name())
 			return false;
@@ -202,7 +202,7 @@ bool X509_Object::check_signature(in Public_Key pub_key) const
 /*
 * Apply the X.509 SIGNED macro
 */
-Vector!( byte ) X509_Object::make_signed(PK_Signer* signer,
+Vector!byte X509_Object::make_signed(PK_Signer* signer,
 														  RandomNumberGenerator rng,
 														  const AlgorithmIdentifier& algo,
 														  in SafeVector!byte tbs_bits)

@@ -5,7 +5,7 @@
 * Released under the terms of the botan license.
 */
 
-import botan.secmem;
+import botan.alloc.secmem;
 import string;
 namespace TLS {
 
@@ -78,7 +78,7 @@ class Alert
 		/**
 		* Serialize an alert
 		*/
-		Vector!( byte ) serialize() const;
+		Vector!byte serialize() const;
 
 		/**
 		* Deserialize an Alert message

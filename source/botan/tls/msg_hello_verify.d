@@ -43,7 +43,7 @@ Hello_Verify_Request::Hello_Verify_Request(in Vector!byte client_hello_bits,
 	m_cookie = unlock(hmac.flush());
 }
 
-Vector!( byte ) Hello_Verify_Request::serialize() const
+Vector!byte Hello_Verify_Request::serialize() const
 {
 	/* DTLS 1.2 server implementations SHOULD use DTLS version 1.0
 		regardless of the version of TLS that is expected to be
@@ -52,7 +52,7 @@ Vector!( byte ) Hello_Verify_Request::serialize() const
 
 	Protocol_Version format_version(Protocol_Version::DTLS_V10);
 
-	Vector!( byte ) bits;
+	Vector!byte bits;
 	bits.push_back(format_version.major_version());
 	bits.push_back(format_version.minor_version());
 	bits.push_back(cast(byte)(m_cookie.size()));

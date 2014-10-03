@@ -43,7 +43,7 @@ struct Response
 	private:
 		uint m_status_code;
 		string m_status_message;
-		Vector!( byte ) m_body;
+		Vector!byte m_body;
 		HashMap!(string, string) m_headers;
 };
 

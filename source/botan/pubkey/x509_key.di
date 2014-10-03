@@ -6,7 +6,7 @@
 */
 
 import botan.pk_keys;
-import botan.alg_id;
+import botan.asn1.alg_id;
 import botan.pipe;
 import string;
 /**
@@ -24,7 +24,7 @@ namespace X509 {
 * @param key the public key to encode
 * @return BER encoding of this key
 */
-Vector!( byte ) BER_encode(in Public_Key key);
+Vector!byte BER_encode(in Public_Key key);
 
 /**
 * PEM encode a public key into a string.

@@ -10,7 +10,7 @@ import botan.tls_version;
 import botan.tls_ciphersuite;
 import botan.tls_magic;
 import botan.tls_server_info;
-import botan.secmem;
+import botan.alloc.secmem;
 import botan.algo_base.symkey;
 import chrono;
 namespace TLS {
@@ -69,7 +69,7 @@ class Session
 		/**
 		* Encrypt a session (useful for serialization or session tickets)
 		*/
-		Vector!( byte ) encrypt(in SymmetricKey key,
+		Vector!byte encrypt(in SymmetricKey key,
 										  RandomNumberGenerator rng) const;		/**
 		* Decrypt a session created by encrypt
 		* @param ctext the ciphertext returned by encrypt
@@ -174,8 +174,8 @@ class Session
 
 		SysTime m_start_time;
 
-		Vector!( byte ) m_identifier;
-		Vector!( byte ) m_session_ticket; // only used by client side
+		Vector!byte m_identifier;
+		Vector!byte m_session_ticket; // only used by client side
 		SafeVector!byte m_master_secret;
 
 		Protocol_Version m_version;

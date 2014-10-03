@@ -5,9 +5,9 @@
 * Distributed under the terms of the botan license.
 */
 
-import botan.secmem;
+import botan.alloc.secmem;
 import botan.asn1_oid;
-import botan.alg_id;
+import botan.asn1.alg_id;
 import botan.rng;
 /**
 * Public Key Base Class.
@@ -74,7 +74,7 @@ class Public_Key
 		/**
 		* @return X.509 subject key encoding for this key object
 		*/
-		abstract Vector!( byte ) x509_subject_public_key() const;
+		abstract Vector!byte x509_subject_public_key() const;
 
 		~this() {}
 	package:
@@ -126,7 +126,7 @@ class PK_Key_Agreement_Key : public abstract Private_Key
 		/*
 		* @return public component of this key
 		*/
-		abstract Vector!( byte ) public_value() const;
+		abstract Vector!byte public_value() const;
 
 		~this() {}
 };

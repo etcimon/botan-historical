@@ -126,9 +126,9 @@ size_t Policy::minimum_dh_group_size() const
 /*
 * Return allowed compression algorithms
 */
-Vector!( byte ) Policy::compression() const
+Vector!byte Policy::compression() const
 {
-	return Vector!( byte ){ NO_COMPRESSION };
+	return Vector!byte{ NO_COMPRESSION };
 }
 
 uint Policy::session_ticket_lifetime() const

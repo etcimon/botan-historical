@@ -5,7 +5,7 @@
 * Distributed under the terms of the botan license.
 */
 
-import botan.secmem;
+import botan.alloc.secmem;
 import string;
 /**
 * Perform hex encoding
@@ -95,7 +95,7 @@ size_t hex_decode(byte* output,
 						 exception if whitespace is encountered
 * @return decoded hex output
 */
-Vector!( byte )
+Vector!byte
 hex_decode(string input,
 			  size_t input_length,
 			  bool ignore_ws = true);
@@ -107,7 +107,7 @@ hex_decode(string input,
 						 exception if whitespace is encountered
 * @return decoded hex output
 */
-Vector!( byte )
+Vector!byte
 hex_decode(in string input,
 			bool ignore_ws = true);
 			

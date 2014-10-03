@@ -40,7 +40,7 @@ class EC_PublicKey : public abstract Public_Key
 
 		AlgorithmIdentifier algorithm_identifier() const;
 
-		Vector!( byte ) x509_subject_public_key() const;
+		Vector!byte x509_subject_public_key() const;
 
 		bool check_key(RandomNumberGenerator rng,
 							bool strong) const;
@@ -63,7 +63,7 @@ class EC_PublicKey : public abstract Public_Key
 		* Return the DER encoding of this keys domain in whatever format
 		* is preset for this particular key
 		*/
-		Vector!( byte ) DER_domain() const
+		Vector!byte DER_domain() const
 		{ return domain().DER_encode(domain_format()); }
 
 		/**

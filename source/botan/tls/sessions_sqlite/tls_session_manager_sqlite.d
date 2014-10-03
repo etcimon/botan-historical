@@ -95,7 +95,7 @@ Session_Manager_SQLite::Session_Manager_SQLite(in string passphrase,
 
 		// new database case
 
-		Vector!( byte ) salt = unlock(rng.random_vec(16));
+		Vector!byte salt = unlock(rng.random_vec(16));
 		const size_t iterations = 256 * 1024;
 		size_t check_val = 0;
 

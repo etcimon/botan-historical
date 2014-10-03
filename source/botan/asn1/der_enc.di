@@ -18,7 +18,7 @@ class DER_Encoder
 	public:
 		SafeVector!byte get_contents();
 
-		Vector!( byte ) get_contents_unlocked()
+		Vector!byte get_contents_unlocked()
 		{ return unlock(get_contents()); }
 
 		DER_Encoder start_cons(ASN1_Tag type_tag,
@@ -74,7 +74,7 @@ class DER_Encoder
 			return this;
 		}
 
-		DER_Encoder encode_list(T)(in Vector!( T ) values)
+		DER_Encoder encode_list(T)(in Vector!T values)
 		{
 			for (size_t i = 0; i != values.size(); ++i)
 				encode(values[i]);

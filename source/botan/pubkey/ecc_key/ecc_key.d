@@ -12,7 +12,7 @@ import botan.x509_key;
 import botan.numthry;
 import botan.der_enc;
 import botan.ber_dec;
-import botan.secmem;
+import botan.alloc.secmem;
 import botan.point_gfp;
 size_t EC_PublicKey::estimated_strength() const
 {
@@ -48,7 +48,7 @@ AlgorithmIdentifier EC_PublicKey::algorithm_identifier() const
 	return AlgorithmIdentifier(get_oid(), DER_domain());
 }
 
-Vector!( byte ) EC_PublicKey::x509_subject_public_key() const
+Vector!byte EC_PublicKey::x509_subject_public_key() const
 {
 	return unlock(EC2OSP(public_point(), PointGFp::COMPRESSED));
 }
