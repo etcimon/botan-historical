@@ -60,7 +60,7 @@ class Client : public Channel
 				 Session_Manager& session_manager,
 				 Credentials_Manager& creds,
 				 const Policy& policy,
-				 RandomNumberGenerator& rng,
+				 RandomNumberGenerator rng,
 				 const Server_Information& server_info = Server_Information(),
 				 const Protocol_Version offer_version = Protocol_Version::latest_tls_version(),
 				 string delegate(string[]) next_protocol = null,
@@ -77,8 +77,8 @@ class Client : public Channel
 									  bool force_full_renegotiation,
 									  Protocol_Version _version,
 									  in string srp_identifier = "",
-									  std::function<string (Vector!( string ))> next_protocol =
-										  std::function<string (Vector!( string ))>());
+									  std::function<string (Vector!string)> next_protocol =
+										  std::function<string (Vector!string)>());
 
 		void process_handshake_msg(const Handshake_State active_state,
 											Handshake_State pending_state,

@@ -58,8 +58,8 @@ Certificate_Req::Certificate_Req(Handshake_IO& io,
 {
 	if (_version.supports_negotiable_signature_algorithms())
 	{
-		Vector!( string ) hashes = policy.allowed_signature_hashes();
-		Vector!( string ) sigs = policy.allowed_signature_methods();
+		Vector!string hashes = policy.allowed_signature_hashes();
+		Vector!string sigs = policy.allowed_signature_methods();
 
 		for (size_t i = 0; i != hashes.size(); ++i)
 			for (size_t j = 0; j != sigs.size(); ++j)

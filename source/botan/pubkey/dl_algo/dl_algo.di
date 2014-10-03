@@ -14,7 +14,7 @@ import botan.pkcs8;
 class DL_Scheme_PublicKey : public abstract Public_Key
 {
 	public:
-		bool check_key(RandomNumberGenerator& rng, bool) const;
+		bool check_key(RandomNumberGenerator rng, bool) const;
 
 		AlgorithmIdentifier algorithm_identifier() const;
 
@@ -61,7 +61,7 @@ class DL_Scheme_PublicKey : public abstract Public_Key
 								  in SafeVector!byte key_bits,
 								  DL_Group::Format group_format);
 
-	protected:
+	package:
 		DL_Scheme_PublicKey() {}
 
 		/**
@@ -82,7 +82,7 @@ class DL_Scheme_PrivateKey : public abstract DL_Scheme_PublicKey,
 													public abstract Private_Key
 {
 	public:
-		bool check_key(RandomNumberGenerator& rng, bool) const;
+		bool check_key(RandomNumberGenerator rng, bool) const;
 
 		/**
 		* Get the secret key x.
@@ -96,7 +96,7 @@ class DL_Scheme_PrivateKey : public abstract DL_Scheme_PublicKey,
 									in SafeVector!byte key_bits,
 									DL_Group::Format group_format);
 
-	protected:
+	package:
 		DL_Scheme_PrivateKey() {}
 
 		/**

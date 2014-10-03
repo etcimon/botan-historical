@@ -26,7 +26,7 @@ class ANSI_X931_RNG : public RandomNumberGenerator
 		* @param rng the underlying PRNG for generating inputs
 		* (eg, an HMAC_RNG)
 		*/
-		ANSI_X931_RNG(BlockCipher* cipher,
+		ANSI_X931_RNG(BlockCipher cipher,
 						  RandomNumberGenerator* rng);
 
 	private:

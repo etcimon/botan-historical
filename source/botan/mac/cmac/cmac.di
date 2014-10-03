@@ -14,14 +14,14 @@ class CMAC : public MessageAuthenticationCode
 {
 	public:
 		string name() const;
-		size_t output_length() const { return m_cipher->block_size(); }
-		MessageAuthenticationCode* clone() const;
+		size_t output_length() const { return m_cipher.block_size(); }
+		MessageAuthenticationCode clone() const;
 
 		void clear();
 
 		Key_Length_Specification key_spec() const
 		{
-			return m_cipher->key_spec();
+			return m_cipher.key_spec();
 		}
 
 		/**
@@ -34,7 +34,7 @@ class CMAC : public MessageAuthenticationCode
 		/**
 		* @param cipher the underlying block cipher to use
 		*/
-		CMAC(BlockCipher* cipher);
+		CMAC(BlockCipher cipher);
 
 		CMAC(in CMAC);
 		CMAC& operator=(in CMAC);

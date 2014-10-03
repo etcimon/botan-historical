@@ -32,7 +32,7 @@ string Skein_512::name() const
 	return "Skein-512(" + std::to_string(output_bits) + ")";
 }
 
-HashFunction* Skein_512::clone() const
+HashFunction Skein_512::clone() const
 {
 	return new Skein_512(output_bits, personalization);
 }
@@ -58,7 +58,7 @@ void Skein_512::initial_block()
 {
 	const byte[64] zeros = { 0 };
 
-	m_threefish->set_key(zeros, sizeof(zeros));
+	m_threefish.set_key(zeros, sizeof(zeros));
 
 	// ASCII("SHA3") followed by version (0x0001) code
 	byte[32] config_str = { 0x53, 0x48, 0x41, 0x33, 0x01, 0x00, 0 };
@@ -91,7 +91,7 @@ void Skein_512::ubi_512(in byte* msg, size_t msg_len)
 
 	do
 	{
-		const size_t to_proc = std::min<size_t>(msg_len, 64);
+		const size_t to_proc = std.algorithm.min<size_t>(msg_len, 64);
 		T[0] += to_proc;
 
 		load_le(&M[0], msg, to_proc / 8);
@@ -102,7 +102,7 @@ void Skein_512::ubi_512(in byte* msg, size_t msg_len)
 			  M[to_proc/8] |= cast(ulong)(msg[8*(to_proc/8)+j]) << (8*j);
 		}
 
-		m_threefish->skein_feedfwd(M, T);
+		m_threefish.skein_feedfwd(M, T);
 
 		// clear first flag if set
 		T[1] &= ~(cast(ulong)(1) << 62);
@@ -158,7 +158,7 @@ void Skein_512::final_result(byte* output)
 	const size_t out_bytes = output_bits / 8;
 
 	for (size_t i = 0; i != out_bytes; ++i)
-		output[i] = get_byte(7-i%8, m_threefish->m_K[i/8]);
+		output[i] = get_byte(7-i%8, m_threefish.m_K[i/8]);
 
 	buf_pos = 0;
 	initial_block();

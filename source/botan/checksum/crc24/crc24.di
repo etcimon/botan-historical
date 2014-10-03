@@ -14,7 +14,7 @@ class CRC24 : public HashFunction
 	public:
 		string name() const { return "CRC24"; }
 		size_t output_length() const { return 3; }
-		HashFunction* clone() const { return new CRC24; }
+		HashFunction clone() const { return new CRC24; }
 
 		void clear() { crc = 0xB704CE; }
 

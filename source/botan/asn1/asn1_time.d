@@ -56,7 +56,7 @@ void X509_Time::set_to(in string time_str)
 		return;
 	}
 
-	Vector!( string ) params;
+	Vector!string params;
 	string current;
 
 	for (size_t j = 0; j != time_str.size(); ++j)
@@ -114,7 +114,7 @@ void X509_Time::set_to(in string t_spec, ASN1_Tag spec_tag)
 
 	const size_t YEAR_SIZE = (spec_tag == UTC_TIME) ? 2 : 4;
 
-	Vector!( string ) params;
+	Vector!string params;
 	string current;
 
 	for (size_t j = 0; j != YEAR_SIZE; ++j)

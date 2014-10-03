@@ -15,7 +15,7 @@ import botan.basefilt;
 import botan.key_filt;
 import botan.data_snk;
 
-import botan.scan_name;
+import botan.algo_base.scan_name;
 
 #if defined(BOTAN_HAS_CODEC_FILTERS)
   import botan.b64_filt;
@@ -28,7 +28,7 @@ class StreamCipher_Filter : public Keyed_Filter
 {
 	public:
 
-		string name() const { return cipher->name(); }
+		string name() const { return cipher.name(); }
 
 		/**
 		* Write input data
@@ -38,7 +38,7 @@ class StreamCipher_Filter : public Keyed_Filter
 		void write(in byte* input, size_t input_len);
 
 		bool valid_iv_length(size_t iv_len) const
-		{ return cipher->valid_iv_length(iv_len); }
+		{ return cipher.valid_iv_length(iv_len); }
 
 		/**
 		* Set the initialization vector for this filter.
@@ -50,22 +50,22 @@ class StreamCipher_Filter : public Keyed_Filter
 		* Set the key of this filter.
 		* @param key the key to set
 		*/
-		void set_key(in SymmetricKey key) { cipher->set_key(key); }
+		void set_key(in SymmetricKey key) { cipher.set_key(key); }
 
-		Key_Length_Specification key_spec() const override { return cipher->key_spec(); }
+		Key_Length_Specification key_spec() const override { return cipher.key_spec(); }
 
 		/**
 		* Construct a stream cipher filter.
 		* @param cipher_obj a cipher object to use
 		*/
-		StreamCipher_Filter(StreamCipher* cipher_obj);
+		StreamCipher_Filter(StreamCipher cipher_obj);
 
 		/**
 		* Construct a stream cipher filter.
 		* @param cipher_obj a cipher object to use
 		* @param key the key to use inside this filter
 		*/
-		StreamCipher_Filter(StreamCipher* cipher_obj, const SymmetricKey& key);
+		StreamCipher_Filter(StreamCipher cipher_obj, const SymmetricKey& key);
 
 		/**
 		* Construct a stream cipher filter.
@@ -83,7 +83,7 @@ class StreamCipher_Filter : public Keyed_Filter
 		~this() { delete cipher; }
 	private:
 		SafeVector!byte buffer;
-		StreamCipher* cipher;
+		StreamCipher cipher;
 };
 
 /**
@@ -92,10 +92,10 @@ class StreamCipher_Filter : public Keyed_Filter
 class Hash_Filter : public Filter
 {
 	public:
-		void write(in byte* input, size_t len) { hash->update(input, len); }
+		void write(in byte* input, size_t len) { hash.update(input, len); }
 		void end_msg();
 
-		string name() const { return hash->name(); }
+		string name() const { return hash.name(); }
 
 		/**
 		* Construct a hash filter.
@@ -105,7 +105,7 @@ class Hash_Filter : public Filter
 		* hash. Otherwise, specify a smaller value here so that the
 		* output of the hash algorithm will be cut off.
 		*/
-		Hash_Filter(HashFunction* hash_fun, size_t len = 0) :
+		Hash_Filter(HashFunction hash_fun, size_t len = 0) :
 			OUTPUT_LENGTH(len), hash(hash_fun) {}
 
 		/**
@@ -121,7 +121,7 @@ class Hash_Filter : public Filter
 		~this() { delete hash; }
 	private:
 		const size_t OUTPUT_LENGTH;
-		HashFunction* hash;
+		HashFunction hash;
 };
 
 /**
@@ -130,18 +130,18 @@ class Hash_Filter : public Filter
 class MAC_Filter : public Keyed_Filter
 {
 	public:
-		void write(in byte* input, size_t len) { mac->update(input, len); }
+		void write(in byte* input, size_t len) { mac.update(input, len); }
 		void end_msg();
 
-		string name() const { return mac->name(); }
+		string name() const { return mac.name(); }
 
 		/**
 		* Set the key of this filter.
 		* @param key the key to set
 		*/
-		void set_key(in SymmetricKey key) { mac->set_key(key); }
+		void set_key(in SymmetricKey key) { mac.set_key(key); }
 
-		Key_Length_Specification key_spec() const override { return mac->key_spec(); }
+		Key_Length_Specification key_spec() const override { return mac.key_spec(); }
 
 		/**
 		* Construct a MAC filter. The MAC key will be left empty.
@@ -151,7 +151,7 @@ class MAC_Filter : public Keyed_Filter
 		* MAC. Otherwise, specify a smaller value here so that the
 		* output of the MAC will be cut off.
 		*/
-		MAC_Filter(MessageAuthenticationCode* mac_obj,
+		MAC_Filter(MessageAuthenticationCode mac_obj,
 					  size_t out_len = 0) : OUTPUT_LENGTH(out_len)
 		{
 			mac = mac_obj;
@@ -166,12 +166,12 @@ class MAC_Filter : public Keyed_Filter
 		* MAC. Otherwise, specify a smaller value here so that the
 		* output of the MAC will be cut off.
 		*/
-		MAC_Filter(MessageAuthenticationCode* mac_obj,
+		MAC_Filter(MessageAuthenticationCode mac_obj,
 					  const SymmetricKey& key,
 					  size_t out_len = 0) : OUTPUT_LENGTH(out_len)
 		{
 			mac = mac_obj;
-			mac->set_key(key);
+			mac.set_key(key);
 		}
 
 		/**
@@ -199,5 +199,5 @@ class MAC_Filter : public Keyed_Filter
 		~this() { delete mac; }
 	private:
 		const size_t OUTPUT_LENGTH;
-		MessageAuthenticationCode* mac;
+		MessageAuthenticationCode mac;
 };

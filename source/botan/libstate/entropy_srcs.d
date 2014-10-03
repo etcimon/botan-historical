@@ -99,7 +99,7 @@ Vector!( Unique!EntropySource ) Library_State::entropy_sources()
 
 void Library_State::poll_available_sources(class Entropy_Accumulator& accum)
 {
-	std::lock_guard<std::mutex> lock(m_entropy_src_mutex);
+	m_entropy_src_mutex.lock(); scope(exit) m_entropy_src_mutex.unlock();
 
 	if (m_sources.empty())
 		throw new Exception("No entropy sources enabled at build time, poll failed");
@@ -109,7 +109,7 @@ void Library_State::poll_available_sources(class Entropy_Accumulator& accum)
 	while(!accum.polling_goal_achieved() && poll_attempt < 16)
 	{
 		const size_t src_idx = poll_attempt % m_sources.size();
-		m_sources[src_idx]->poll(accum);
+		m_sources[src_idx].poll(accum);
 		++poll_attempt;
 	}
 }

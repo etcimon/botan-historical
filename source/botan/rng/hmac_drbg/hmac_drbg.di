@@ -26,7 +26,7 @@ class HMAC_DRBG : public RandomNumberGenerator
 		* @param mac the underlying mac function (eg HMAC(SHA-512))
 		* @param underlying_rng RNG used generating inputs (eg HMAC_RNG)
 		*/
-		HMAC_DRBG(MessageAuthenticationCode* mac,
+		HMAC_DRBG(MessageAuthenticationCode mac,
 					 RandomNumberGenerator* underlying_rng);
 
 	private:

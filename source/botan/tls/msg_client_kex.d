@@ -48,7 +48,7 @@ Client_Key_Exchange::Client_Key_Exchange(Handshake_IO& io,
 													  Credentials_Manager& creds,
 													  const Public_Key* server_public_key,
 													  in string hostname,
-													  RandomNumberGenerator& rng)
+													  RandomNumberGenerator rng)
 {
 	const string kex_algo = state.ciphersuite().kex_algo();
 
@@ -58,11 +58,11 @@ Client_Key_Exchange::Client_Key_Exchange(Handshake_IO& io,
 
 		if (state.server_kex())
 		{
-			TLS_Data_Reader reader("ClientKeyExchange", state.server_kex()->params());
+			TLS_Data_Reader reader("ClientKeyExchange", state.server_kex().params());
 			identity_hint = reader.get_string(2, 0, 65535);
 		}
 
-		const string hostname = state.client_hello()->sni_hostname();
+		const string hostname = state.client_hello().sni_hostname();
 
 		const string psk_identity = creds.psk_identity("tls-client",
 																			 hostname,
@@ -79,7 +79,7 @@ Client_Key_Exchange::Client_Key_Exchange(Handshake_IO& io,
 	}
 	else if (state.server_kex())
 	{
-		TLS_Data_Reader reader("ClientKeyExchange", state.server_kex()->params());
+		TLS_Data_Reader reader("ClientKeyExchange", state.server_kex().params());
 
 		SymmetricKey psk;
 
@@ -87,7 +87,7 @@ Client_Key_Exchange::Client_Key_Exchange(Handshake_IO& io,
 		{
 			string identity_hint = reader.get_string(2, 0, 65535);
 
-			const string hostname = state.client_hello()->sni_hostname();
+			const string hostname = state.client_hello().sni_hostname();
 
 			const string psk_identity = creds.psk_identity("tls-client",
 																				 hostname,
@@ -232,7 +232,7 @@ Client_Key_Exchange::Client_Key_Exchange(Handshake_IO& io,
 
 		if (auto rsa_pub = cast(const RSA_PublicKey*)(server_public_key))
 		{
-			const Protocol_Version offered_version = state.client_hello()->_version();
+			const Protocol_Version offered_version = state.client_hello()._version();
 
 			m_pre_master = rng.random_vec(48);
 			m_pre_master[0] = offered_version.major_version();
@@ -250,7 +250,7 @@ Client_Key_Exchange::Client_Key_Exchange(Handshake_IO& io,
 		else
 			throw new TLS_Exception(Alert::HANDSHAKE_FAILURE,
 									  "Expected a RSA key in server cert but got " +
-									  server_public_key->algo_name());
+									  server_public_key.algo_name());
 	}
 
 	state.hash().update(io.send(*this));
@@ -264,24 +264,24 @@ Client_Key_Exchange::Client_Key_Exchange(in Vector!byte contents,
 													  const Private_Key* server_rsa_kex_key,
 													  Credentials_Manager& creds,
 													  const Policy& policy,
-													  RandomNumberGenerator& rng)
+													  RandomNumberGenerator rng)
 {
 	const string kex_algo = state.ciphersuite().kex_algo();
 
 	if (kex_algo == "RSA")
 	{
-		BOTAN_ASSERT(state.server_certs() && !state.server_certs()->cert_chain().empty(),
+		BOTAN_ASSERT(state.server_certs() && !state.server_certs().cert_chain().empty(),
 						 "RSA key exchange negotiated so server sent a certificate");
 
 		if (!server_rsa_kex_key)
 			throw new Internal_Error("Expected RSA kex but no server kex key set");
 
 		if (!cast(const RSA_PrivateKey*)(server_rsa_kex_key))
-			throw new Internal_Error("Expected RSA key but got " + server_rsa_kex_key->algo_name());
+			throw new Internal_Error("Expected RSA key but got " + server_rsa_kex_key.algo_name());
 
 		PK_Decryptor_EME decryptor(*server_rsa_kex_key, "PKCS1v15");
 
-		Protocol_Version client_version = state.client_hello()->_version();
+		Protocol_Version client_version = state.client_hello()._version();
 
 		/*
 		* This is used as the pre-master if RSA decryption fails.
@@ -333,7 +333,7 @@ Client_Key_Exchange::Client_Key_Exchange(in Vector!byte contents,
 			const string psk_identity = reader.get_string(2, 0, 65535);
 
 			psk = creds.psk("tls-server",
-								 state.client_hello()->sni_hostname(),
+								 state.client_hello().sni_hostname(),
 								 psk_identity);
 
 			if (psk.length() == 0)
@@ -354,14 +354,14 @@ Client_Key_Exchange::Client_Key_Exchange(in Vector!byte contents,
 		}
 		else if (kex_algo == "SRP_SHA")
 		{
-			SRP6_Server_Session& srp = state.server_kex()->server_srp_params();
+			SRP6_Server_Session& srp = state.server_kex().server_srp_params();
 
 			m_pre_master = srp.step2(BigInt::decode(reader.get_range!byte(2, 0, 65535))).bits_of();
 		}
 		else if (kex_algo == "DH" || kex_algo == "DHE_PSK" ||
 				  kex_algo == "ECDH" || kex_algo == "ECDHE_PSK")
 		{
-			in Private_Key Private_Key = state.server_kex()->server_kex_key();
+			in Private_Key Private_Key = state.server_kex().server_kex_key();
 
 			const PK_Key_Agreement_Key* ka_key =
 				cast(in PK_Key_Agreement_Key*)(Private_Key);
@@ -376,14 +376,14 @@ Client_Key_Exchange::Client_Key_Exchange(in Vector!byte contents,
 
 				Vector!( byte ) client_pubkey;
 
-				if (ka_key->algo_name() == "DH")
+				if (ka_key.algo_name() == "DH")
 					client_pubkey = reader.get_range!byte(2, 0, 65535);
 				else
 					client_pubkey = reader.get_range!byte(1, 0, 255);
 
 				SafeVector!byte shared_secret = ka.derive_key(0, client_pubkey).bits_of();
 
-				if (ka_key->algo_name() == "DH")
+				if (ka_key.algo_name() == "DH")
 					shared_secret = strip_leading_zeros(shared_secret);
 
 				if (kex_algo == "DHE_PSK" || kex_algo == "ECDHE_PSK")
@@ -402,7 +402,7 @@ Client_Key_Exchange::Client_Key_Exchange(in Vector!byte contents,
 				* on, allowing the protocol to fail later in the finished
 				* checks.
 				*/
-				m_pre_master = rng.random_vec(ka_key->public_value().size());
+				m_pre_master = rng.random_vec(ka_key.public_value().size());
 			}
 		}
 		else

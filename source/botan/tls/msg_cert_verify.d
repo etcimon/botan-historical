@@ -32,7 +32,7 @@ Certificate_Verify::Certificate_Verify(Handshake_IO& io,
 		SafeVector!byte md5_sha = state.hash().final_ssl3(
 			state.session_keys().master_secret());
 
-		if (priv_key->algo_name() == "DSA")
+		if (priv_key.algo_name() == "DSA")
 			m_signature = signer.sign_message(&md5_sha[16], md5_sha.size()-16, rng);
 		else
 			m_signature = signer.sign_message(md5_sha, rng);

@@ -39,7 +39,7 @@ class Modular_Reducer
 		* @return (x * x * x) % p
 		*/
 		BigInt cube(in BigInt x) const
-		{ return multiply(x, this->square(x)); }
+		{ return multiply(x, this.square(x)); }
 
 		bool initialized() const { return (mod_words != 0); }
 

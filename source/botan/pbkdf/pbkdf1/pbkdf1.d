@@ -17,12 +17,12 @@ PKCS5_PBKDF1::key_derivation(size_t key_len,
 									  size_t iterations,
 									  std::chrono::milliseconds msec) const
 {
-	if (key_len > hash->output_length())
+	if (key_len > hash.output_length())
 		throw new Invalid_Argument("PKCS5_PBKDF1: Requested output length too long");
 
-	hash->update(passphrase);
-	hash->update(salt, salt_len);
-	SafeVector!byte key = hash->flush();
+	hash.update(passphrase);
+	hash.update(salt, salt_len);
+	SafeVector!byte key = hash.flush();
 
 	const auto start = std::chrono::high_resolution_clock::now();
 	size_t iterations_performed = 1;
@@ -42,14 +42,14 @@ PKCS5_PBKDF1::key_derivation(size_t key_len,
 		else if (iterations_performed == iterations)
 			break;
 
-		hash->update(key);
-		hash->flushInto(&key[0]);
+		hash.update(key);
+		hash.flushInto(&key[0]);
 
 		++iterations_performed;
 	}
 
 	return Pair(iterations_performed,
-								 OctetString(&key[0], std::min(key_len, key.size())));
+								 OctetString(&key[0], std.algorithm.min(key_len, key.size())));
 }
 
 }

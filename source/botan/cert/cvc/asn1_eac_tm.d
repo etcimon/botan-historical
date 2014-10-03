@@ -85,7 +85,7 @@ void EAC_Time::set_to(in string time_str)
 		return;
 	}
 
-	Vector!( string ) params;
+	Vector!string params;
 	string current;
 
 	for (uint j = 0; j != time_str.size(); ++j)
@@ -248,7 +248,7 @@ void EAC_Time::decode_from(BER_Decoder& source)
 {
 	BER_Object obj = source.get_next_object();
 
-	if (obj.type_tag != this->tag)
+	if (obj.type_tag != this.tag)
 		throw new BER_Decoding_Error("Tag mismatch when decoding");
 
 	if (obj.value.size() != 6)

@@ -26,7 +26,7 @@ class Salsa20 : public StreamCipher
 
 		void clear();
 		string name() const;
-		StreamCipher* clone() const { return new Salsa20; }
+		StreamCipher clone() const { return new Salsa20; }
 	private:
 		void key_schedule(in byte* key, size_t length);
 

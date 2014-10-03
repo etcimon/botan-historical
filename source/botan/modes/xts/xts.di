@@ -28,8 +28,8 @@ class XTS_Mode : public Cipher_Mode
 		bool valid_nonce_length(size_t n) const override;
 
 		void clear() override;
-	protected:
-		XTS_Mode(BlockCipher* cipher);
+	package:
+		XTS_Mode(BlockCipher cipher);
 
 		const byte* tweak() const { return &m_tweak[0]; }
 
@@ -50,7 +50,7 @@ class XTS_Mode : public Cipher_Mode
 class XTS_Encryption : public XTS_Mode
 {
 	public:
-		XTS_Encryption(BlockCipher* cipher) : XTS_Mode(cipher) {}
+		XTS_Encryption(BlockCipher cipher) : XTS_Mode(cipher) {}
 
 		void update(SafeVector!byte blocks, size_t offset = 0) override;
 
@@ -65,7 +65,7 @@ class XTS_Encryption : public XTS_Mode
 class XTS_Decryption : public XTS_Mode
 {
 	public:
-		XTS_Decryption(BlockCipher* cipher) : XTS_Mode(cipher) {}
+		XTS_Decryption(BlockCipher cipher) : XTS_Mode(cipher) {}
 
 		void update(SafeVector!byte blocks, size_t offset = 0) override;
 

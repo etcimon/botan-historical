@@ -17,8 +17,8 @@ class Serpent : public Block_Cipher_Fixed_Params!(16, 16, 32, 8)
 
 		void clear();
 		string name() const { return "Serpent"; }
-		BlockCipher* clone() const { return new Serpent; }
-	protected:
+		BlockCipher clone() const { return new Serpent; }
+	package:
 		/**
 		* For use by subclasses using SIMD, asm, etc
 		* @return const reference to the key schedule

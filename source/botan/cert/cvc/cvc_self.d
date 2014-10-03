@@ -33,10 +33,10 @@ void encode_eac_bigint(DER_Encoder& der, ref const BigInt x, ASN1_Tag tag)
 Vector!( byte ) eac_1_1_encoding(const EC_PublicKey* key,
 												const OID& sig_algo)
 {
-	if (key->domain_format() == EC_DOMPAR_ENC_OID)
+	if (key.domain_format() == EC_DOMPAR_ENC_OID)
 		throw new Encoding_Error("CVC encoder: cannot encode parameters by OID");
 
-	const EC_Group& domain = key->domain();
+	const EC_Group& domain = key.domain();
 
 	// This is why we can't have nice things
 
@@ -44,7 +44,7 @@ Vector!( byte ) eac_1_1_encoding(const EC_PublicKey* key,
 	enc.start_cons(ASN1_Tag(73), APPLICATION)
 		.encode(sig_algo);
 
-	if (key->domain_format() == EC_DOMPAR_ENC_EXPLICIT)
+	if (key.domain_format() == EC_DOMPAR_ENC_EXPLICIT)
 	{
 		encode_eac_bigint(enc, domain.get_curve().get_p(), ASN1_Tag(1));
 		encode_eac_bigint(enc, domain.get_curve().get_a(), ASN1_Tag(2));
@@ -56,10 +56,10 @@ Vector!( byte ) eac_1_1_encoding(const EC_PublicKey* key,
 		encode_eac_bigint(enc, domain.get_order(), ASN1_Tag(4));
 	}
 
-	enc.encode(EC2OSP(key->public_point(), PointGFp::UNCOMPRESSED),
+	enc.encode(EC2OSP(key.public_point(), PointGFp::UNCOMPRESSED),
 				  OCTET_STRING, ASN1_Tag(6));
 
-	if (key->domain_format() == EC_DOMPAR_ENC_EXPLICIT)
+	if (key.domain_format() == EC_DOMPAR_ENC_EXPLICIT)
 		encode_eac_bigint(enc, domain.get_cofactor(), ASN1_Tag(7));
 
 	enc.end_cons();
@@ -84,7 +84,7 @@ namespace CVC_EAC {
 
 EAC1_1_CVC create_self_signed_cert(Private_Key const& key,
 											  EAC1_1_CVC_Options const& opt,
-											  RandomNumberGenerator& rng)
+											  RandomNumberGenerator rng)
 {
 	// NOTE: we ignore the value of opt.chr
 
@@ -97,7 +97,7 @@ EAC1_1_CVC create_self_signed_cert(Private_Key const& key,
 
 	AlgorithmIdentifier sig_algo;
 	string padding_and_hash("EMSA1_BSI(" + opt.hash_alg + ")");
-	sig_algo.oid = OIDS::lookup(priv_key->algo_name() + "/" + padding_and_hash);
+	sig_algo.oid = OIDS::lookup(priv_key.algo_name() + "/" + padding_and_hash);
 	sig_algo = AlgorithmIdentifier(sig_algo.oid, AlgorithmIdentifier::USE_NULL_PARAM);
 
 	PK_Signer signer(*priv_key, padding_and_hash);
@@ -114,7 +114,7 @@ EAC1_1_CVC create_self_signed_cert(Private_Key const& key,
 EAC1_1_Req create_cvc_req(Private_Key const& key,
 								  ASN1_Chr const& chr,
 								  string const& hash_alg,
-								  RandomNumberGenerator& rng)
+								  RandomNumberGenerator rng)
 {
 
 	ECDSA_PrivateKey const* priv_key = cast(ECDSA_PrivateKey const*)(&key);
@@ -124,7 +124,7 @@ EAC1_1_Req create_cvc_req(Private_Key const& key,
 	}
 	AlgorithmIdentifier sig_algo;
 	string padding_and_hash("EMSA1_BSI(" + hash_alg + ")");
-	sig_algo.oid = OIDS::lookup(priv_key->algo_name() + "/" + padding_and_hash);
+	sig_algo.oid = OIDS::lookup(priv_key.algo_name() + "/" + padding_and_hash);
 	sig_algo = AlgorithmIdentifier(sig_algo.oid, AlgorithmIdentifier::USE_NULL_PARAM);
 
 	PK_Signer signer(*priv_key, padding_and_hash);
@@ -151,7 +151,7 @@ EAC1_1_Req create_cvc_req(Private_Key const& key,
 EAC1_1_ADO create_ado_req(Private_Key const& key,
 								  EAC1_1_Req const& req,
 								  ASN1_Car const& car,
-								  RandomNumberGenerator& rng)
+								  RandomNumberGenerator rng)
 {
 
 	ECDSA_PrivateKey const* priv_key = cast(ECDSA_PrivateKey const*)(&key);
@@ -180,7 +180,7 @@ EAC1_1_CVC create_cvca(Private_Key const& key,
 							  string const& hash,
 							  ASN1_Car const& car, bool iris, bool fingerpr,
 							  uint cvca_validity_months,
-							  RandomNumberGenerator& rng)
+							  RandomNumberGenerator rng)
 {
 	ECDSA_PrivateKey const* priv_key = cast(ECDSA_PrivateKey const*)(&key);
 	if (priv_key == 0)
@@ -200,7 +200,7 @@ EAC1_1_CVC create_cvca(Private_Key const& key,
 EAC1_1_CVC link_cvca(EAC1_1_CVC const& signer,
 							Private_Key const& key,
 							EAC1_1_CVC const& signee,
-							RandomNumberGenerator& rng)
+							RandomNumberGenerator rng)
 {
 	const ECDSA_PrivateKey* priv_key = cast(ECDSA_PrivateKey const*)(&key);
 
@@ -226,7 +226,7 @@ EAC1_1_CVC link_cvca(EAC1_1_CVC const& signer,
 	PK_Signer pk_signer(*priv_key, padding_and_hash);
 	Unique!Public_Key pk(signee.subject_public_key());
 	ECDSA_PublicKey* subj_pk = cast(ECDSA_PublicKey*)(pk.get());
-	subj_pk->set_parameter_encoding(EC_DOMPAR_ENC_EXPLICIT);
+	subj_pk.set_parameter_encoding(EC_DOMPAR_ENC_EXPLICIT);
 
 	Vector!( byte ) enc_public_key = eac_1_1_encoding(priv_key, sig_algo.oid);
 
@@ -246,7 +246,7 @@ EAC1_1_CVC sign_request(EAC1_1_CVC const& signer_cert,
 								bool domestic,
 								uint dvca_validity_months,
 								uint ca_is_validity_months,
-								RandomNumberGenerator& rng)
+								RandomNumberGenerator rng)
 {
 	ECDSA_PrivateKey const* priv_key = cast(ECDSA_PrivateKey const*)(&key);
 	if (priv_key == 0)
@@ -270,9 +270,9 @@ EAC1_1_CVC sign_request(EAC1_1_CVC const& signer_cert,
 
 	// for the case that the domain parameters are not set...
 	// (we use those from the signer because they must fit)
-	//subj_pk->set_domain_parameters(priv_key->domain_parameters());
+	//subj_pk.set_domain_parameters(priv_key.domain_parameters());
 
-	subj_pk->set_parameter_encoding(EC_DOMPAR_ENC_IMPLICITCA);
+	subj_pk.set_parameter_encoding(EC_DOMPAR_ENC_IMPLICITCA);
 
 	AlgorithmIdentifier sig_algo(signer_cert.signature_algorithm());
 
@@ -316,7 +316,7 @@ EAC1_1_CVC sign_request(EAC1_1_CVC const& signer_cert,
 EAC1_1_Req create_cvc_req(Private_Key const& prkey,
 								  ASN1_Chr const& chr,
 								  string const& hash_alg,
-								  RandomNumberGenerator& rng)
+								  RandomNumberGenerator rng)
 {
 	ECDSA_PrivateKey const* priv_key = cast(ECDSA_PrivateKey const*)(&prkey);
 	if (priv_key == 0)

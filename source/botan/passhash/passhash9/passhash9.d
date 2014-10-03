@@ -22,9 +22,9 @@ const size_t PASSHASH9_PBKDF_OUTPUT_LEN = 24; // 192 bits output
 
 const size_t WORK_FACTOR_SCALE = 10000;
 
-MessageAuthenticationCode* get_pbkdf_prf(byte alg_id)
+MessageAuthenticationCode get_pbkdf_prf(byte alg_id)
 {
-	Algorithm_Factory& af = global_state().algorithm_factory();
+	Algorithm_Factory af = global_state().algorithm_factory();
 
 	try
 	{
@@ -47,11 +47,11 @@ MessageAuthenticationCode* get_pbkdf_prf(byte alg_id)
 }
 
 string generate_passhash9(in string pass,
-										 RandomNumberGenerator& rng,
+										 RandomNumberGenerator rng,
 										 ushort work_factor,
 										 byte alg_id)
 {
-	MessageAuthenticationCode* prf = get_pbkdf_prf(alg_id);
+	MessageAuthenticationCode prf = get_pbkdf_prf(alg_id);
 
 	if (!prf)
 		throw new Invalid_Argument("Passhash9: Algorithm id " +
@@ -125,7 +125,7 @@ bool check_passhash9(in string pass, in string hash)
 
 	const size_t kdf_iterations = WORK_FACTOR_SCALE * work_factor;
 
-	MessageAuthenticationCode* pbkdf_prf = get_pbkdf_prf(alg_id);
+	MessageAuthenticationCode pbkdf_prf = get_pbkdf_prf(alg_id);
 
 	if (!pbkdf_prf)
 		return false; // unknown algorithm, reject

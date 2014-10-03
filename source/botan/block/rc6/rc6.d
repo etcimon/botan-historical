@@ -113,7 +113,7 @@ void RC6::key_schedule(in byte* key)
 	S.resize(44);
 
 	const size_t WORD_KEYLENGTH = (((length - 1) / 4) + 1);
-	const size_t MIX_ROUNDS	  = 3 * std::max(WORD_KEYLENGTH, S.size());
+	const size_t MIX_ROUNDS	  = 3 * std.algorithm.max(WORD_KEYLENGTH, S.size());
 
 	S[0] = 0xB7E15163;
 	for (size_t i = 1; i != S.size(); ++i)

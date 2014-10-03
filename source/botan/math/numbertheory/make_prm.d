@@ -11,7 +11,7 @@ import algorithm;
 /*
 * Generate a random prime
 */
-BigInt random_prime(RandomNumberGenerator& rng,
+BigInt random_prime(RandomNumberGenerator rng,
 						  size_t bits, ref const BigInt coprime,
 						  size_t equiv, size_t modulo)
 {
@@ -44,7 +44,7 @@ BigInt random_prime(RandomNumberGenerator& rng,
 		if (p % modulo != equiv)
 			p += (modulo - p % modulo) + equiv;
 
-		const size_t sieve_size = std::min(bits / 2, PRIME_TABLE_SIZE);
+		const size_t sieve_size = std.algorithm.min(bits / 2, PRIME_TABLE_SIZE);
 		secure_vector!ushort sieve(sieve_size);
 
 		for (size_t j = 0; j != sieve.size(); ++j)
@@ -81,7 +81,7 @@ BigInt random_prime(RandomNumberGenerator& rng,
 /*
 * Generate a random safe prime
 */
-BigInt random_safe_prime(RandomNumberGenerator& rng, size_t bits)
+BigInt random_safe_prime(RandomNumberGenerator rng, size_t bits)
 {
 	if (bits <= 64)
 		throw new Invalid_Argument("random_safe_prime: Can't make a prime of " +

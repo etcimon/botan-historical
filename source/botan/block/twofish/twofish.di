@@ -17,7 +17,7 @@ class Twofish : public Block_Cipher_Fixed_Params!(16, 16, 32, 8)
 
 		void clear();
 		string name() const { return "Twofish"; }
-		BlockCipher* clone() const { return new Twofish; }
+		BlockCipher clone() const { return new Twofish; }
 	private:
 		void key_schedule(in byte*, size_t);
 

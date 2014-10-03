@@ -35,11 +35,11 @@ double time_op(std::chrono::nanoseconds runtime, void delegate() op)
 	return reps / seconds_used; // ie, return ops per second
 }
 
-std::map<string, double>
+HashMap!(string, double)
 time_algorithm_ops(in string name,
-						 Algorithm_Factory& af,
+						 ref Algorithm_Factory af,
 						 in string provider,
-						 RandomNumberGenerator& rng,
+						 RandomNumberGenerator rng,
 						 std::chrono::nanoseconds runtime,
 						 size_t buf_size)
 {
@@ -50,46 +50,46 @@ time_algorithm_ops(in string name,
 
 	const double mb_mult = buffer.size() / cast(double)(Mebibyte);
 
-	if (const BlockCipher* proto = af.prototype_block_cipher(name, provider))
+	if (const BlockCipher proto = af.prototype_block_cipher(name, provider))
 	{
-		Unique!BlockCipher bc(proto->clone());
+		Unique!BlockCipher bc(proto.clone());
 
-		const SymmetricKey key(rng, bc->maximum_keylength());
+		const SymmetricKey key(rng, bc.maximum_keylength());
 
-		return std::map<string, double>({
-			{ "key schedule", time_op(runtime / 8, [&]() { bc->set_key(key); }) },
-			{ "encrypt", mb_mult * time_op(runtime / 2, [&]() { bc->encrypt(buffer); }) },
-			{ "decrypt", mb_mult * time_op(runtime / 2, [&]() { bc->decrypt(buffer); }) },
+		return HashMap!(string, double)({
+			{ "key schedule", time_op(runtime / 8, [&]() { bc.set_key(key); }) },
+			{ "encrypt", mb_mult * time_op(runtime / 2, [&]() { bc.encrypt(buffer); }) },
+			{ "decrypt", mb_mult * time_op(runtime / 2, [&]() { bc.decrypt(buffer); }) },
 		});
 	}
-	else if (const StreamCipher* proto = af.prototype_stream_cipher(name, provider))
+	else if (const StreamCipher proto = af.prototype_stream_cipher(name, provider))
 	{
-		Unique!StreamCipher sc(proto->clone());
+		Unique!StreamCipher sc(proto.clone());
 
-		const SymmetricKey key(rng, sc->maximum_keylength());
+		const SymmetricKey key(rng, sc.maximum_keylength());
 
-		return std::map<string, double>({
-			{ "key schedule", time_op(runtime / 8, [&]() { sc->set_key(key); }) },
-			{ "", mb_mult * time_op(runtime, [&]() { sc->encipher(buffer); }) },
+		return HashMap!(string, double)({
+			{ "key schedule", time_op(runtime / 8, [&]() { sc.set_key(key); }) },
+			{ "", mb_mult * time_op(runtime, [&]() { sc.encipher(buffer); }) },
 		});
 	}
-	else if (const HashFunction* proto = af.prototype_hash_function(name, provider))
+	else if (const HashFunction proto = af.prototype_hash_function(name, provider))
 	{
-		Unique!HashFunction h(proto->clone());
+		Unique!HashFunction h(proto.clone());
 
-		return std::map<string, double>({
-			{ "", mb_mult * time_op(runtime, [&]() { h->update(buffer); }) },
+		return HashMap!(string, double)({
+			{ "", mb_mult * time_op(runtime, [&]() { h.update(buffer); }) },
 		});
 	}
-	else if (const MessageAuthenticationCode* proto = af.prototype_mac(name, provider))
+	else if (const MessageAuthenticationCode proto = af.prototype_mac(name, provider))
 	{
-		Unique!MessageAuthenticationCode mac(proto->clone());
+		Unique!MessageAuthenticationCode mac(proto.clone());
 
-		const SymmetricKey key(rng, mac->maximum_keylength());
+		const SymmetricKey key(rng, mac.maximum_keylength());
 
-		return std::map<string, double>({
-			{ "key schedule", time_op(runtime / 8, [&]() { mac->set_key(key); }) },
-			{ "", mb_mult * time_op(runtime, [&]() { mac->update(buffer); }) },
+		return HashMap!(string, double)({
+			{ "key schedule", time_op(runtime / 8, [&]() { mac.set_key(key); }) },
+			{ "", mb_mult * time_op(runtime, [&]() { mac.update(buffer); }) },
 		});
 	}
 	else
@@ -99,29 +99,29 @@ time_algorithm_ops(in string name,
 
 		if (enc && dec)
 		{
-			const SymmetricKey key(rng, enc->key_spec().maximum_keylength());
+			const SymmetricKey key(rng, enc.key_spec().maximum_keylength());
 
-			return std::map<string, double>({
-				{ "key schedule", time_op(runtime / 4, [&]() { enc->set_key(key); dec->set_key(key); }) / 2 },
-				{ "encrypt", mb_mult * time_op(runtime / 2, [&]() { enc->update(buffer, 0); buffer.resize(buf_size*1024); }) },
-				{ "decrypt", mb_mult * time_op(runtime / 2, [&]() { dec->update(buffer, 0); buffer.resize(buf_size*1024); }) },
+			return HashMap!(string, double)({
+				{ "key schedule", time_op(runtime / 4, [&]() { enc.set_key(key); dec.set_key(key); }) / 2 },
+				{ "encrypt", mb_mult * time_op(runtime / 2, [&]() { enc.update(buffer, 0); buffer.resize(buf_size*1024); }) },
+				{ "decrypt", mb_mult * time_op(runtime / 2, [&]() { dec.update(buffer, 0); buffer.resize(buf_size*1024); }) },
 			});
 		}
 	}
 
-	return std::map<string, double>();
+	return HashMap!(string, double)();
 }
 
 namespace {
 
-double find_first_in(in std::map<string, double> m,
-							const Vector!( string )& keys)
+double find_first_in(in HashMap!(string, double) m,
+							const Vector!string& keys)
 {
 	foreach (key; keys)
 	{
 		auto i = m.find(key);
 		if (i != m.end())
-			return i->second;
+			return i.second;
 	}
 
 	throw new Exception("algorithm_factory no usable keys found in result");
@@ -129,16 +129,16 @@ double find_first_in(in std::map<string, double> m,
 
 }
 
-std::map<string, double>
+HashMap!(string, double)
 algorithm_benchmark(in string name,
-						  Algorithm_Factory& af,
-						  RandomNumberGenerator& rng,
+						  ref Algorithm_Factory af,
+						  RandomNumberGenerator rng,
 						  std::chrono::milliseconds milliseconds,
 						  size_t buf_size)
 {
-	const Vector!( string ) providers = af.providers_of(name);
+	const Vector!string providers = af.providers_of(name);
 
-	std::map<string, double> all_results; // provider -> ops/sec
+	HashMap!(string, double) all_results; // provider . ops/sec
 
 	if (!providers.empty())
 	{

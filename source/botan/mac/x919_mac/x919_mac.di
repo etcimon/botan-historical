@@ -17,7 +17,7 @@ class ANSI_X919_MAC : public MessageAuthenticationCode
 		string name() const;
 		size_t output_length() const { return 8; }
 
-		MessageAuthenticationCode* clone() const;
+		MessageAuthenticationCode clone() const;
 
 		Key_Length_Specification key_spec() const
 		{
@@ -27,7 +27,7 @@ class ANSI_X919_MAC : public MessageAuthenticationCode
 		/**
 		* @param cipher the underlying block cipher to use
 		*/
-		ANSI_X919_MAC(BlockCipher* cipher);
+		ANSI_X919_MAC(BlockCipher cipher);
 
 		ANSI_X919_MAC(in ANSI_X919_MAC);
 		ANSI_X919_MAC& operator=(in ANSI_X919_MAC);

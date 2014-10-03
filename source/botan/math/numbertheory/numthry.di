@@ -125,17 +125,17 @@ size_t low_zero_bits(in BigInt x);
 * @return true if all primality tests passed, otherwise false
 */
 bool is_prime(in BigInt n,
-								RandomNumberGenerator& rng,
+								RandomNumberGenerator rng,
 								size_t prob = 56,
 								bool is_random = false);
 
- bool quick_check_prime(in BigInt n, RandomNumberGenerator& rng)
+ bool quick_check_prime(in BigInt n, RandomNumberGenerator rng)
 { return is_prime(n, rng, 32); }
 
- bool check_prime(in BigInt n, RandomNumberGenerator& rng)
+ bool check_prime(in BigInt n, RandomNumberGenerator rng)
 { return is_prime(n, rng, 56); }
 
- bool verify_prime(in BigInt n, RandomNumberGenerator& rng)
+ bool verify_prime(in BigInt n, RandomNumberGenerator rng)
 { return is_prime(n, rng, 80); }/**
 * Randomly generate a prime
 * @param rng a random number generator
@@ -146,7 +146,7 @@ bool is_prime(in BigInt n,
 * @param equiv_mod the modulus equiv should be checked against
 * @return random prime with the specified criteria
 */
-BigInt random_prime(RandomNumberGenerator& rng,
+BigInt random_prime(RandomNumberGenerator rng,
 										size_t bits, ref const BigInt coprime = 1,
 										size_t equiv = 1, size_t equiv_mod = 2);
 
@@ -156,7 +156,7 @@ BigInt random_prime(RandomNumberGenerator& rng,
 * @param bits is how long the resulting prime should be
 * @return prime randomly chosen from safe primes of length bits
 */
-BigInt random_safe_prime(RandomNumberGenerator& rng,
+BigInt random_safe_prime(RandomNumberGenerator rng,
 											  size_t bits);
 
 class Algorithm_Factory;
@@ -172,8 +172,8 @@ class Algorithm_Factory;
 * @return random seed used to generate this parameter set
 */
 Vector!( byte )
-generate_dsa_primes(RandomNumberGenerator& rng,
-						  Algorithm_Factory& af,
+generate_dsa_primes(RandomNumberGenerator rng,
+						  ref Algorithm_Factory af,
 						  ref BigInt p_out, ref BigInt q_out,
 						  size_t pbits, size_t qbits);
 
@@ -190,8 +190,8 @@ generate_dsa_primes(RandomNumberGenerator& rng,
 			 false. p_out and q_out are only valid if true was returned.
 */
 bool
-generate_dsa_primes(RandomNumberGenerator& rng,
-						  Algorithm_Factory& af,
+generate_dsa_primes(RandomNumberGenerator rng,
+						  ref Algorithm_Factory af,
 						  ref BigInt p_out, ref BigInt q_out,
 						  size_t pbits, size_t qbits,
 						  in Vector!byte seed);

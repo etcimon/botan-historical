@@ -33,7 +33,7 @@ void Pipe::write(in byte* input, size_t length)
 {
 	if (!inside_msg)
 		throw new Invalid_State("Cannot write to a Pipe while it is not processing");
-	pipe->write(input, length);
+	pipe.write(input, length);
 }
 
 /*
@@ -70,7 +70,7 @@ void Pipe::write(DataSource& source)
 */
 size_t Pipe::read(byte* output, size_t length, message_id msg)
 {
-	return outputs->read(output, length, get_message_no("read", msg));
+	return outputs.read(output, length, get_message_no("read", msg));
 }
 
 /*
@@ -127,7 +127,7 @@ string Pipe::read_all_as_string(message_id msg)
 */
 size_t Pipe::remaining(message_id msg) const
 {
-	return outputs->remaining(get_message_no("remaining", msg));
+	return outputs.remaining(get_message_no("remaining", msg));
 }
 
 /*
@@ -136,7 +136,7 @@ size_t Pipe::remaining(message_id msg) const
 size_t Pipe::peek(byte* output, size_t length,
 						size_t offset, message_id msg) const
 {
-	return outputs->peek(output, length, offset, get_message_no("peek", msg));
+	return outputs.peek(output, length, offset, get_message_no("peek", msg));
 }
 
 /*
@@ -157,12 +157,12 @@ size_t Pipe::peek(ref byte output, size_t offset, message_id msg) const
 
 size_t Pipe::get_bytes_read() const
 {
-	return outputs->get_bytes_read(DEFAULT_MESSAGE);
+	return outputs.get_bytes_read(DEFAULT_MESSAGE);
 }
 
 size_t Pipe::get_bytes_read(message_id msg) const
 {
-	return outputs->get_bytes_read(msg);
+	return outputs.get_bytes_read(msg);
 }
 
 }

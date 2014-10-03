@@ -17,8 +17,8 @@ class XTEA : public Block_Cipher_Fixed_Params!(8, 16)
 
 		void clear();
 		string name() const { return "XTEA"; }
-		BlockCipher* clone() const { return new XTEA; }
-	protected:
+		BlockCipher clone() const { return new XTEA; }
+	package:
 		/**
 		* @return const reference to the key schedule
 		*/

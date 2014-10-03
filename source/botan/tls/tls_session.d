@@ -133,7 +133,7 @@ SafeVector!byte Session::DER_encode() const
 
 string Session::PEM_encode() const
 {
-	return PEM_Code::encode(this->DER_encode(), "SSL SESSION");
+	return PEM_Code::encode(this.DER_encode(), "SSL SESSION");
 }
 
 std::chrono::seconds Session::session_age() const
@@ -144,9 +144,9 @@ std::chrono::seconds Session::session_age() const
 
 Vector!( byte )
 Session::encrypt(in SymmetricKey master_key,
-					  RandomNumberGenerator& rng) const
+					  RandomNumberGenerator rng) const
 {
-	const auto der = this->DER_encode();
+	const auto der = this.DER_encode();
 
 	return CryptoBox::encrypt(&der[0], der.size(), master_key, rng);
 }

@@ -120,7 +120,7 @@ string make_bcrypt(in string pass,
 }
 
 string generate_bcrypt(in string pass,
-									 RandomNumberGenerator& rng,
+									 RandomNumberGenerator rng,
 									 ushort work_factor)
 {
 	return make_bcrypt(pass, unlock(rng.random_vec(16)), work_factor);

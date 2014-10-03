@@ -35,7 +35,7 @@ void Buffered_Filter::write(in byte* input, size_t input_size)
 
 	if (buffer_pos + input_size >= main_block_mod + final_minimum)
 	{
-		size_t to_copy = std::min<size_t>(buffer.size() - buffer_pos, input_size);
+		size_t to_copy = std.algorithm.min<size_t>(buffer.size() - buffer_pos, input_size);
 
 		copy_mem(&buffer[buffer_pos], input, to_copy);
 		buffer_pos += to_copy;
@@ -44,7 +44,7 @@ void Buffered_Filter::write(in byte* input, size_t input_size)
 		input_size -= to_copy;
 
 		size_t total_to_consume =
-			round_down(std::min(buffer_pos,
+			round_down(std.algorithm.min(buffer_pos,
 									  buffer_pos + input_size - final_minimum),
 						  main_block_mod);
 

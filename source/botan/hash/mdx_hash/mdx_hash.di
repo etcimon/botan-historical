@@ -24,7 +24,7 @@ class MDx_HashFunction : public HashFunction
 							  size_t counter_size = 8);
 
 		size_t hash_block_size() const { return buffer.size(); }
-	protected:
+	package:
 		void add_data(in byte* input, size_t length);
 		void final_result(byte* output);
 

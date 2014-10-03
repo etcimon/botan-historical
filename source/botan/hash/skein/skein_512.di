@@ -26,7 +26,7 @@ class Skein_512 : public HashFunction
 		size_t hash_block_size() const { return 64; }
 		size_t output_length() const { return output_bits / 8; }
 
-		HashFunction* clone() const;
+		HashFunction clone() const;
 		string name() const;
 		void clear();
 	private:

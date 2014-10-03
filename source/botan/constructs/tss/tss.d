@@ -88,7 +88,7 @@ byte rtss_hash_id(in string hash_name)
 		throw new Invalid_Argument("RTSS only supports SHA-1 and SHA-256");
 }
 
-HashFunction* get_rtss_hash_by_id(byte id)
+HashFunction get_rtss_hash_by_id(byte id)
 {
 	if (id == 1)
 		return new SHA_160;
@@ -122,7 +122,7 @@ Vector!( RTSS_Share )
 RTSS_Share::split(byte M, byte N,
 						in byte* S, ushort S_len,
 						const byte identifier[16],
-						RandomNumberGenerator& rng)
+						RandomNumberGenerator rng)
 {
 	if (M == 0 || N == 0 || M > N)
 		throw new Encoding_Error("RTSS_Share::split: M == 0 or N == 0 or M > N");
@@ -203,7 +203,7 @@ RTSS_Share::reconstruct(in Vector!( RTSS_Share ) shares)
 
 	Unique!HashFunction hash(get_rtss_hash_by_id(hash_id));
 
-	if (shares[0].size() != secret_len + hash->output_length() + RTSS_HEADER_SIZE + 1)
+	if (shares[0].size() != secret_len + hash.output_length() + RTSS_HEADER_SIZE + 1)
 		throw new Decoding_Error("Bad RTSS length field in header");
 
 	Vector!( byte ) V(shares.size());
@@ -242,14 +242,14 @@ RTSS_Share::reconstruct(in Vector!( RTSS_Share ) shares)
 		secret.push_back(r);
 	}
 
-	if (secret.size() != secret_len + hash->output_length())
+	if (secret.size() != secret_len + hash.output_length())
 		throw new Decoding_Error("Bad length in RTSS output");
 
-	hash->update(&secret[0], secret_len);
-	SafeVector!byte hash_check = hash->flush();
+	hash.update(&secret[0], secret_len);
+	SafeVector!byte hash_check = hash.flush();
 
 	if (!same_mem(&hash_check[0],
-					 &secret[secret_len], hash->output_length()))
+					 &secret[secret_len], hash.output_length()))
 		throw new Decoding_Error("RTSS hash check failed");
 
 	return SafeVector!byte(&secret[0], &secret[secret_len]);

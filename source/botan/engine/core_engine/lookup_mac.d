@@ -6,7 +6,7 @@
 */
 
 import botan.internal.core_engine;
-import botan.scan_name;
+import botan.algo_base.scan_name;
 import botan.algo_factory;
 
 #if defined(BOTAN_HAS_CBC_MAC)
@@ -31,9 +31,9 @@ import botan.algo_factory;
 /*
 * Look for an algorithm with this name
 */
-MessageAuthenticationCode*
+MessageAuthenticationCode
 Core_Engine::find_mac(in SCAN_Name request,
-							 Algorithm_Factory& af) const
+							 ref Algorithm_Factory af) const
 {
 
 #if defined(BOTAN_HAS_CBC_MAC)

@@ -58,13 +58,13 @@ void CMAC::add_data(in byte* input, size_t length)
 	if (m_position + length > output_length())
 	{
 		xor_buf(m_state, m_buffer, output_length());
-		m_cipher->encrypt(m_state);
+		m_cipher.encrypt(m_state);
 		input += (output_length() - m_position);
 		length -= (output_length() - m_position);
 		while(length > output_length())
 		{
 			xor_buf(m_state, input, output_length());
-			m_cipher->encrypt(m_state);
+			m_cipher.encrypt(m_state);
 			input += output_length();
 			length -= output_length();
 		}
@@ -91,7 +91,7 @@ void CMAC::final_result(byte mac[])
 		xor_buf(m_state, m_P, output_length());
 	}
 
-	m_cipher->encrypt(m_state);
+	m_cipher.encrypt(m_state);
 
 	for (size_t i = 0; i != output_length(); ++i)
 		mac[i] = m_state[i];
@@ -107,8 +107,8 @@ void CMAC::final_result(byte mac[])
 void CMAC::key_schedule(in byte* key, size_t length)
 {
 	clear();
-	m_cipher->set_key(key, length);
-	m_cipher->encrypt(m_B);
+	m_cipher.set_key(key, length);
+	m_cipher.encrypt(m_B);
 	m_B = poly_double(m_B);
 	m_P = poly_double(m_B);
 }
@@ -118,7 +118,7 @@ void CMAC::key_schedule(in byte* key, size_t length)
 */
 void CMAC::clear()
 {
-	m_cipher->clear();
+	m_cipher.clear();
 	zeroise(m_state);
 	zeroise(m_buffer);
 	zeroise(m_B);
@@ -131,28 +131,28 @@ void CMAC::clear()
 */
 string CMAC::name() const
 {
-	return "CMAC(" + m_cipher->name() + ")";
+	return "CMAC(" + m_cipher.name() + ")";
 }
 
 /*
 * Return a clone of this object
 */
-MessageAuthenticationCode* CMAC::clone() const
+MessageAuthenticationCode CMAC::clone() const
 {
-	return new CMAC(m_cipher->clone());
+	return new CMAC(m_cipher.clone());
 }
 
 /*
 * CMAC Constructor
 */
-CMAC::CMAC(BlockCipher* cipher) : m_cipher(cipher)
+CMAC::CMAC(BlockCipher cipher) : m_cipher(cipher)
 {
-	if (m_cipher->block_size() !=  8 && m_cipher->block_size() != 16 &&
-		m_cipher->block_size() != 32 && m_cipher->block_size() != 64)
+	if (m_cipher.block_size() !=  8 && m_cipher.block_size() != 16 &&
+		m_cipher.block_size() != 32 && m_cipher.block_size() != 64)
 	{
 		throw new Invalid_Argument("CMAC cannot use the " +
-									  std::to_string(m_cipher->block_size() * 8) +
-									  " bit cipher " + m_cipher->name());
+									  std::to_string(m_cipher.block_size() * 8) +
+									  " bit cipher " + m_cipher.name());
 	}
 
 	m_state.resize(output_length());

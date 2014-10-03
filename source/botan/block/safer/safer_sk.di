@@ -17,7 +17,7 @@ class SAFER_SK : public Block_Cipher_Fixed_Params!(8, 16)
 
 		void clear();
 		string name() const;
-		BlockCipher* clone() const;
+		BlockCipher clone() const;
 
 		/**
 		* @param rounds the number of rounds to use - must be between 1

@@ -15,7 +15,7 @@ import botan.get_byte;
 size_t decode_tag(DataSource* ber, ASN1_Tag& type_tag, ASN1_Tag& class_tag)
 {
 	byte b;
-	if (!ber->read_byte(b))
+	if (!ber.read_byte(b))
 	{
 		class_tag = type_tag = NO_OBJECT;
 		return 0;
@@ -34,7 +34,7 @@ size_t decode_tag(DataSource* ber, ASN1_Tag& type_tag, ASN1_Tag& class_tag)
 	size_t tag_buf = 0;
 	while(true)
 	{
-		if (!ber->read_byte(b))
+		if (!ber.read_byte(b))
 			throw new BER_Decoding_Error("Long-form tag truncated");
 		if (tag_buf & 0xFF000000)
 			throw new BER_Decoding_Error("Long-form tag overflowed 32 bits");
@@ -57,7 +57,7 @@ size_t find_eoc(DataSource*);
 size_t decode_length(DataSource* ber, size_t& field_size)
 {
 	byte b;
-	if (!ber->read_byte(b))
+	if (!ber.read_byte(b))
 		throw new BER_Decoding_Error("Length field not found");
 	field_size = 1;
 	if ((b & 0x80) == 0)
@@ -74,7 +74,7 @@ size_t decode_length(DataSource* ber, size_t& field_size)
 	{
 		if (get_byte(0, length) != 0)
 			throw new BER_Decoding_Error("Field length overflow");
-		if (!ber->read_byte(b))
+		if (!ber.read_byte(b))
 			throw new BER_Decoding_Error("Corrupted length field");
 		length = (length << 8) | b;
 	}
@@ -99,7 +99,7 @@ size_t find_eoc(DataSource* ber)
 
 	while(true)
 	{
-		const size_t got = ber->peek(&buffer[0], buffer.size(), data.size());
+		const size_t got = ber.peek(&buffer[0], buffer.size(), data.size());
 		if (got == 0)
 			break;
 
@@ -136,10 +136,10 @@ size_t find_eoc(DataSource* ber)
 */
 void BER_Object::assert_is_a(ASN1_Tag type_tag, ASN1_Tag class_tag)
 {
-	if (this->type_tag != type_tag || this->class_tag != class_tag)
+	if (this.type_tag != type_tag || this.class_tag != class_tag)
 		throw new BER_Decoding_Error("Tag mismatch when decoding got " +
-										 std::to_string(this->type_tag) + "/" +
-										 std::to_string(this->class_tag) + " expected " +
+										 std::to_string(this.type_tag) + "/" +
+										 std::to_string(this.class_tag) + " expected " +
 										 std::to_string(type_tag) + "/" +
 										 std::to_string(class_tag));
 }
@@ -149,7 +149,7 @@ void BER_Object::assert_is_a(ASN1_Tag type_tag, ASN1_Tag class_tag)
 */
 bool BER_Decoder::more_items() const
 {
-	if (source->end_of_data() && (pushed.type_tag == NO_OBJECT))
+	if (source.end_of_data() && (pushed.type_tag == NO_OBJECT))
 		return false;
 	return true;
 }
@@ -159,7 +159,7 @@ bool BER_Decoder::more_items() const
 */
 BER_Decoder BER_Decoder::verify_end()
 {
-	if (!source->end_of_data() || (pushed.type_tag != NO_OBJECT))
+	if (!source.end_of_data() || (pushed.type_tag != NO_OBJECT))
 		throw new Invalid_State("BER_Decoder::verify_end called, but data remains");
 	return this;
 }
@@ -171,7 +171,7 @@ BER_Decoder BER_Decoder::raw_bytes(SafeVector!byte output)
 {
 	output.clear();
 	byte buf;
-	while(source->read_byte(buf))
+	while(source.read_byte(buf))
 		output.push_back(buf);
 	return this;
 }
@@ -180,7 +180,7 @@ BER_Decoder BER_Decoder::raw_bytes(Vector!( byte )& output)
 {
 	output.clear();
 	byte buf;
-	while(source->read_byte(buf))
+	while(source.read_byte(buf))
 		output.push_back(buf);
 	return this;
 }
@@ -191,7 +191,7 @@ BER_Decoder BER_Decoder::raw_bytes(Vector!( byte )& output)
 BER_Decoder BER_Decoder::discard_remaining()
 {
 	byte buf;
-	while(source->read_byte(buf))
+	while(source.read_byte(buf))
 		continue;
 	return this;
 }
@@ -216,7 +216,7 @@ BER_Object BER_Decoder::get_next_object()
 
 	size_t length = decode_length(source);
 	next.value.resize(length);
-	if (source->read(&next.value[0], length) != length)
+	if (source.read(&next.value[0], length) != length)
 		throw new BER_Decoding_Error("Value truncated");
 
 	if (next.type_tag == EOC && next.class_tag == UNIVERSAL)
@@ -262,7 +262,7 @@ BER_Decoder BER_Decoder::end_cons()
 {
 	if (!parent)
 		throw new Invalid_State("BER_Decoder::end_cons called with NULL parent");
-	if (!source->end_of_data())
+	if (!source.end_of_data())
 		throw new Decoding_Error("BER_Decoder::end_cons called with data left");
 	return (*parent);
 }

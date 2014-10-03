@@ -99,7 +99,7 @@ EAC1_1_CVC make_cvc_cert(PK_Signer& signer,
 								 byte holder_auth_templ,
 								 ASN1_Ced ced,
 								 ASN1_Cex cex,
-								 RandomNumberGenerator& rng)
+								 RandomNumberGenerator rng)
 {
 	OID chat_oid(OIDS::lookup("CertificateHolderAuthorizationTemplate"));
 	Vector!( byte ) enc_chat_val;

@@ -16,7 +16,7 @@ class GOST_34_11 : public HashFunction
 		string name() const { return "GOST-R-34.11-94" ; }
 		size_t output_length() const { return 32; }
 		size_t hash_block_size() const { return 32; }
-		HashFunction* clone() const { return new GOST_34_11; }
+		HashFunction clone() const { return new GOST_34_11; }
 
 		void clear();
 

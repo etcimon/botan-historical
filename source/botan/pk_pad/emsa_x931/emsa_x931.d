@@ -41,12 +41,12 @@ SafeVector!byte emsa2_encoding(in SafeVector!byte msg,
 
 void EMSA_X931::update(in byte* input, size_t length)
 {
-	m_hash->update(input, length);
+	m_hash.update(input, length);
 }
 
 SafeVector!byte EMSA_X931::raw_data()
 {
-	return m_hash->flush();
+	return m_hash.flush();
 }
 
 /*
@@ -54,7 +54,7 @@ SafeVector!byte EMSA_X931::raw_data()
 */
 SafeVector!byte EMSA_X931::encoding_of(in SafeVector!byte msg,
 												  size_t output_bits,
-												  RandomNumberGenerator&)
+												  RandomNumberGenerator)
 {
 	return emsa2_encoding(msg, output_bits, m_empty_hash, m_hash_id);
 }
@@ -80,14 +80,14 @@ bool EMSA_X931::verify(in SafeVector!byte coded,
 /*
 * EMSA_X931 Constructor
 */
-EMSA_X931::EMSA_X931(HashFunction* hash) : m_hash(hash)
+EMSA_X931::EMSA_X931(HashFunction hash) : m_hash(hash)
 {
-	m_empty_hash = m_hash->flush();
+	m_empty_hash = m_hash.flush();
 
-	m_hash_id = ieee1363_hash_id(hash->name());
+	m_hash_id = ieee1363_hash_id(hash.name());
 
 	if (!m_hash_id)
-		throw new Encoding_Error("EMSA_X931 no hash identifier for " + hash->name());
+		throw new Encoding_Error("EMSA_X931 no hash identifier for " + hash.name());
 }
 
 }

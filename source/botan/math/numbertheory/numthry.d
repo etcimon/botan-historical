@@ -47,7 +47,7 @@ BigInt gcd(in BigInt a, ref const BigInt b)
 	BigInt x = a, y = b;
 	x.set_sign(BigInt::Positive);
 	y.set_sign(BigInt::Positive);
-	size_t shift = std::min(low_zero_bits(x), low_zero_bits(y));
+	size_t shift = std.algorithm.min(low_zero_bits(x), low_zero_bits(y));
 
 	x >>= shift;
 	y >>= shift;
@@ -281,7 +281,7 @@ size_t mr_test_iterations(size_t n_bits, size_t prob, bool random)
 /*
 * Test for primaility using Miller-Rabin
 */
-bool is_prime(in BigInt n, RandomNumberGenerator& rng,
+bool is_prime(in BigInt n, RandomNumberGenerator rng,
 				  size_t prob, bool is_random)
 {
 	if (n == 2)

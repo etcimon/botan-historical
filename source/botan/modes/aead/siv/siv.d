@@ -11,9 +11,9 @@ import botan.ctr;
 import botan.parsing;
 import botan.internal.xor_buf;
 import algorithm;
-SIV_Mode::SIV_Mode(BlockCipher* cipher) :
-	m_name(cipher->name() + "/SIV"),
-	m_ctr(new CTR_BE(cipher->clone())),
+SIV_Mode::SIV_Mode(BlockCipher cipher) :
+	m_name(cipher.name() + "/SIV"),
+	m_ctr(new CTR_BE(cipher.clone())),
 	m_cmac(new CMAC(cipher))
 {
 }
@@ -49,14 +49,14 @@ size_t SIV_Mode::update_granularity() const
 
 Key_Length_Specification SIV_Mode::key_spec() const
 {
-	return m_cmac->key_spec().multiple(2);
+	return m_cmac.key_spec().multiple(2);
 }
 
 void SIV_Mode::key_schedule(in byte* key, size_t length)
 {
 	const size_t keylen = length / 2;
-	m_cmac->set_key(key, keylen);
-	m_ctr->set_key(key + keylen, keylen);
+	m_cmac.set_key(key, keylen);
+	m_ctr.set_key(key + keylen, keylen);
 	m_ad_macs.clear();
 }
 
@@ -65,7 +65,7 @@ void SIV_Mode::set_associated_data_n(size_t n, in byte* ad, size_t length)
 	if (n >= m_ad_macs.size())
 		m_ad_macs.resize(n+1);
 
-	m_ad_macs[n] = m_cmac->process(ad, length);
+	m_ad_macs[n] = m_cmac.process(ad, length);
 }
 
 SafeVector!byte SIV_Mode::start(in byte* nonce, size_t nonce_len)
@@ -74,7 +74,7 @@ SafeVector!byte SIV_Mode::start(in byte* nonce, size_t nonce_len)
 		throw new Invalid_IV_Length(name(), nonce_len);
 
 	if (nonce_len)
-		m_nonce = m_cmac->process(nonce, nonce_len);
+		m_nonce = m_cmac.process(nonce, nonce_len);
 	else
 		m_nonce.clear();
 

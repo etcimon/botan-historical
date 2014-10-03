@@ -34,7 +34,7 @@ class Session_Manager_SQLite : public Session_Manager
 		*		  seconds have elapsed from initial handshake.
 		*/
 		Session_Manager_SQLite(in string passphrase,
-									  RandomNumberGenerator& rng,
+									  RandomNumberGenerator rng,
 									  in string db_filename,
 									  size_t max_sessions = 1000,
 									  std::chrono::seconds session_lifetime = std::chrono::seconds(7200));
@@ -61,7 +61,7 @@ class Session_Manager_SQLite : public Session_Manager
 		void prune_session_cache();
 
 		SymmetricKey m_session_key;
-		RandomNumberGenerator& m_rng;
+		RandomNumberGenerator m_rng;
 		size_t m_max_sessions;
 		std::chrono::seconds m_session_lifetime;
 		sqlite3_database* m_db;

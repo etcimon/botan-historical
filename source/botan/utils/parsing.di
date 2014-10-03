@@ -18,7 +18,7 @@ import map;
 * @param scan_name the name
 * @return the name components
 */
-Vector!( string )
+Vector!string
 parse_algorithm_name(in string scan_name);
 
 /**
@@ -27,14 +27,14 @@ parse_algorithm_name(in string scan_name);
 * @param delim the delimitor
 * @return string split by delim
 */
-Vector!( string ) split_on(
+Vector!string split_on(
 	in string str, char delim);
 
 /**
 * Split a string on a character predicate
 * @param str the input string
 */
-Vector!( string )
+Vector!string
 split_on_pred(in string str,
 				  bool delegate(char) pred);
 
@@ -71,7 +71,7 @@ string replace_chars(in string str,
 * @param delim the delimitor
 * @return string joined by delim
 */
-string string_join(in Vector!( string ) strs,
+string string_join(in Vector!string strs,
 											 char delim);
 
 /**
@@ -125,6 +125,6 @@ void lex_cfg_w_headers(std::istream& is,
 							void delegate(string) cb,
 							void delegate(string) header_cb);
 
-std::map<string, HashMap!(string, string)>
+HashMap<string, HashMap!(string, string)>
 BOTAN_DLL
 parse_cfg(std::istream& is);

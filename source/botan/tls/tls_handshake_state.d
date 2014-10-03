@@ -85,7 +85,7 @@ Handshake_State::Handshake_State(Handshake_IO* io,
 											void delegate(const Handshake_Message) msg_callback) :
 	m_msg_callback(msg_callback),
 	m_handshake_io(io),
-	m_version(m_handshake_io->initial_record_version())
+	m_version(m_handshake_io.initial_record_version())
 {
 }
 
@@ -95,7 +95,7 @@ void Handshake_State::hello_verify_request(const Hello_Verify_Request hello_veri
 {
 	note_message(hello_verify);
 
-	m_client_hello->update_hello_cookie(hello_verify);
+	m_client_hello.update_hello_cookie(hello_verify);
 	hash().reset();
 	hash().update(handshake_io().send(*m_client_hello));
 	note_message(*m_client_hello);
@@ -110,7 +110,7 @@ void Handshake_State::client_hello(Client_Hello* client_hello)
 void Handshake_State::server_hello(Server_Hello* server_hello)
 {
 	m_server_hello.reset(server_hello);
-	m_ciphersuite = Ciphersuite::by_id(m_server_hello->ciphersuite());
+	m_ciphersuite = Ciphersuite::by_id(m_server_hello.ciphersuite());
 	note_message(*m_server_hello);
 }
 
@@ -187,7 +187,7 @@ void Handshake_State::set_version(in Protocol_Version _version)
 
 void Handshake_State::compute_session_keys()
 {
-	m_session_keys = Session_Keys(this, client_kex()->pre_master_secret(), false);
+	m_session_keys = Session_Keys(this, client_kex().pre_master_secret(), false);
 }
 
 void Handshake_State::compute_session_keys(in SafeVector!byte resume_master_secret)
@@ -234,23 +234,23 @@ Handshake_State::get_next_handshake_msg()
 	const bool expecting_ccs =
 		(bitmask_for_handshake_type(HANDSHAKE_CCS) & m_hand_expecting_mask);
 
-	return m_handshake_io->get_next_record(expecting_ccs);
+	return m_handshake_io.get_next_record(expecting_ccs);
 }
 
 string Handshake_State::srp_identifier() const
 {
 	if (ciphersuite().valid() && ciphersuite().kex_algo() == "SRP_SHA")
-		return client_hello()->srp_identifier();
+		return client_hello().srp_identifier();
 
 	return "";
 }
 
 Vector!( byte ) Handshake_State::session_ticket() const
 {
-	if (new_session_ticket() && !new_session_ticket()->ticket().empty())
-		return new_session_ticket()->ticket();
+	if (new_session_ticket() && !new_session_ticket().ticket().empty())
+		return new_session_ticket().ticket();
 
-	return client_hello()->session_ticket();
+	return client_hello().session_ticket();
 }
 
 KDF* Handshake_State::protocol_specific_prf() const
@@ -304,8 +304,8 @@ string choose_hash(in string sig_algo,
 	}
 
 	const auto supported_algos = for_client_auth ?
-		cert_req->supported_algos() :
-		client_hello->supported_algos();
+		cert_req.supported_algos() :
+		client_hello.supported_algos();
 
 	if (!supported_algos.empty())
 	{
@@ -342,13 +342,13 @@ Handshake_State::choose_sig_format(in Private_Key key,
 
 	const string hash_algo =
 		choose_hash(sig_algo,
-						this->_version(),
+						this._version(),
 						policy,
 						for_client_auth,
 						client_hello(),
 						cert_req());
 
-	if (this->_version().supports_negotiable_signature_algorithms())
+	if (this._version().supports_negotiable_signature_algorithms())
 	{
 		hash_algo_out = hash_algo;
 		sig_algo_out = sig_algo;
@@ -386,7 +386,7 @@ Handshake_State::understand_sig_format(const Public_Key key,
 	Or not?
 	*/
 
-	if (this->_version().supports_negotiable_signature_algorithms())
+	if (this._version().supports_negotiable_signature_algorithms())
 	{
 		if (hash_algo == "")
 			throw new Decoding_Error("Counterparty did not send hash/sig IDS");
@@ -402,11 +402,11 @@ Handshake_State::understand_sig_format(const Public_Key key,
 
 	if (algo_name == "RSA")
 	{
-		if (for_client_auth && this->_version() == Protocol_Version::SSL_V3)
+		if (for_client_auth && this._version() == Protocol_Version::SSL_V3)
 		{
 			hash_algo = "Raw";
 		}
-		else if (!this->_version().supports_negotiable_signature_algorithms())
+		else if (!this._version().supports_negotiable_signature_algorithms())
 		{
 			hash_algo = "Parallel(MD5,SHA-160)";
 		}
@@ -416,11 +416,11 @@ Handshake_State::understand_sig_format(const Public_Key key,
 	}
 	else if (algo_name == "DSA" || algo_name == "ECDSA")
 	{
-		if (algo_name == "DSA" && for_client_auth && this->_version() == Protocol_Version::SSL_V3)
+		if (algo_name == "DSA" && for_client_auth && this._version() == Protocol_Version::SSL_V3)
 		{
 			hash_algo = "Raw";
 		}
-		else if (!this->_version().supports_negotiable_signature_algorithms())
+		else if (!this._version().supports_negotiable_signature_algorithms())
 		{
 			hash_algo = "SHA-1";
 		}

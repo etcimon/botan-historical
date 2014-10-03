@@ -45,7 +45,7 @@ IF_Scheme_PublicKey::IF_Scheme_PublicKey(in AlgorithmIdentifier,
 /*
 * Check IF Scheme Public Parameters
 */
-bool IF_Scheme_PublicKey::check_key(RandomNumberGenerator&, bool) const
+bool IF_Scheme_PublicKey::check_key(RandomNumberGenerator, bool) const
 {
 	if (n < 35 || n.is_even() || e < 2)
 		return false;
@@ -69,7 +69,7 @@ SafeVector!byte IF_Scheme_PrivateKey::pkcs8_Private_Key() const
 	.get_contents();
 }
 
-IF_Scheme_PrivateKey::IF_Scheme_PrivateKey(RandomNumberGenerator& rng,
+IF_Scheme_PrivateKey::IF_Scheme_PrivateKey(RandomNumberGenerator rng,
 														 const AlgorithmIdentifier&,
 														 in SafeVector!byte key_bits)
 {
@@ -89,7 +89,7 @@ IF_Scheme_PrivateKey::IF_Scheme_PrivateKey(RandomNumberGenerator& rng,
 	load_check(rng);
 }
 
-IF_Scheme_PrivateKey::IF_Scheme_PrivateKey(RandomNumberGenerator& rng,
+IF_Scheme_PrivateKey::IF_Scheme_PrivateKey(RandomNumberGenerator rng,
 														 ref const BigInt prime1,
 														 ref const BigInt prime2,
 														 ref const BigInt exp,
@@ -121,7 +121,7 @@ IF_Scheme_PrivateKey::IF_Scheme_PrivateKey(RandomNumberGenerator& rng,
 /*
 * Check IF Scheme Private Parameters
 */
-bool IF_Scheme_PrivateKey::check_key(RandomNumberGenerator& rng,
+bool IF_Scheme_PrivateKey::check_key(RandomNumberGenerator rng,
 												 bool strong) const
 {
 	if (n < 35 || n.is_even() || e < 2 || d < 2 || p < 3 || q < 3 || p*q != n)

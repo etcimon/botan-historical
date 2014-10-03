@@ -27,7 +27,7 @@ NR_PublicKey::NR_PublicKey(in DL_Group grp, ref const BigInt y1)
 /*
 * Create a NR private key
 */
-NR_PrivateKey::NR_PrivateKey(RandomNumberGenerator& rng,
+NR_PrivateKey::NR_PrivateKey(RandomNumberGenerator rng,
 									  const DL_Group& grp,
 									  ref const BigInt x_arg)
 {
@@ -47,7 +47,7 @@ NR_PrivateKey::NR_PrivateKey(RandomNumberGenerator& rng,
 
 NR_PrivateKey::NR_PrivateKey(in AlgorithmIdentifier alg_id,
 									  in SafeVector!byte key_bits,
-									  RandomNumberGenerator& rng) :
+									  RandomNumberGenerator rng) :
 	DL_Scheme_PrivateKey(alg_id, key_bits, DL_Group::ANSI_X9_57)
 {
 	y = power_mod(group_g(), x, group_p());
@@ -58,7 +58,7 @@ NR_PrivateKey::NR_PrivateKey(in AlgorithmIdentifier alg_id,
 /*
 * Check Private Nyberg-Rueppel Parameters
 */
-bool NR_PrivateKey::check_key(RandomNumberGenerator& rng, bool strong) const
+bool NR_PrivateKey::check_key(RandomNumberGenerator rng, bool strong) const
 {
 	if (!DL_Scheme_PrivateKey::check_key(rng, strong) || x >= group_q())
 		return false;
@@ -79,7 +79,7 @@ NR_Signature_Operation::NR_Signature_Operation(in NR_PrivateKey nr) :
 
 SafeVector!byte
 NR_Signature_Operation::sign(in byte* msg, size_t msg_len,
-									  RandomNumberGenerator& rng)
+									  RandomNumberGenerator rng)
 {
 	rng.add_entropy(msg, msg_len);
 

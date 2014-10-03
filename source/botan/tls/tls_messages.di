@@ -23,7 +23,7 @@ namespace TLS {
 
 class Handshake_IO;
 
-Vector!( byte ) make_hello_random(RandomNumberGenerator& rng);
+Vector!( byte ) make_hello_random(RandomNumberGenerator rng);
 
 /**
 * DTLS Hello Verify Request
@@ -68,28 +68,28 @@ class Client_Hello : public Handshake_Message
 		Vector!( Pair!(string, string) ) supported_algos() const
 		{
 			if (Signature_Algorithms* sigs = m_extensions.get<Signature_Algorithms>())
-				return sigs->supported_signature_algorthms();
+				return sigs.supported_signature_algorthms();
 			return Vector!( Pair!(string, string) )();
 		}
 
-		Vector!( string ) supported_ecc_curves() const
+		Vector!string supported_ecc_curves() const
 		{
 			if (Supported_Elliptic_Curves* ecc = m_extensions.get<Supported_Elliptic_Curves>())
-				return ecc->curves();
-			return Vector!( string )();
+				return ecc.curves();
+			return Vector!string();
 		}
 
 		string sni_hostname() const
 		{
 			if (Server_Name_Indicator* sni = m_extensions.get<Server_Name_Indicator>())
-				return sni->host_name();
+				return sni.host_name();
 			return "";
 		}
 
 		string srp_identifier() const
 		{
 			if (SRP_Identifier* srp = m_extensions.get<SRP_Identifier>())
-				return srp->identifier();
+				return srp.identifier();
 			return "";
 		}
 
@@ -101,7 +101,7 @@ class Client_Hello : public Handshake_Message
 		Vector!( byte ) renegotiation_info() const
 		{
 			if (Renegotiation_Extension* reneg = m_extensions.get<Renegotiation_Extension>())
-				return reneg->renegotiation_info();
+				return reneg.renegotiation_info();
 			return Vector!( byte )();
 		}
 
@@ -113,7 +113,7 @@ class Client_Hello : public Handshake_Message
 		size_t fragment_size() const
 		{
 			if (Maximum_Fragment_Length* frag = m_extensions.get<Maximum_Fragment_Length>())
-				return frag->fragment_size();
+				return frag.fragment_size();
 			return 0;
 		}
 
@@ -125,7 +125,7 @@ class Client_Hello : public Handshake_Message
 		Vector!( byte ) session_ticket() const
 		{
 			if (Session_Ticket* ticket = m_extensions.get<Session_Ticket>())
-				return ticket->contents();
+				return ticket.contents();
 			return Vector!( byte )();
 		}
 
@@ -137,7 +137,7 @@ class Client_Hello : public Handshake_Message
 		bool peer_can_send_heartbeats() const
 		{
 			if (Heartbeat_Support_Indicator hb = m_extensions.get<Heartbeat_Support_Indicator>())
-				return hb->peer_allowed_to_send();
+				return hb.peer_allowed_to_send();
 			return false;
 		}
 
@@ -208,7 +208,7 @@ class Server_Hello : public Handshake_Message
 		Vector!( byte ) renegotiation_info() const
 		{
 			if (Renegotiation_Extension* reneg = m_extensions.get<Renegotiation_Extension>())
-				return reneg->renegotiation_info();
+				return reneg.renegotiation_info();
 			return Vector!( byte )();
 		}
 
@@ -217,17 +217,17 @@ class Server_Hello : public Handshake_Message
 			return m_extensions.get<Next_Protocol_Notification>();
 		}
 
-		Vector!( string ) next_protocols() const
+		Vector!string next_protocols() const
 		{
 			if (Next_Protocol_Notification* npn = m_extensions.get<Next_Protocol_Notification>())
-				return npn->protocols();
-			return Vector!( string )();
+				return npn.protocols();
+			return Vector!string();
 		}
 
 		size_t fragment_size() const
 		{
 			if (Maximum_Fragment_Length* frag = m_extensions.get<Maximum_Fragment_Length>())
-				return frag->fragment_size();
+				return frag.fragment_size();
 			return 0;
 		}
 
@@ -244,7 +244,7 @@ class Server_Hello : public Handshake_Message
 		bool peer_can_send_heartbeats() const
 		{
 			if (Heartbeat_Support_Indicator* hb = m_extensions.get<Heartbeat_Support_Indicator>())
-				return hb->peer_allowed_to_send();
+				return hb.peer_allowed_to_send();
 			return false;
 		}
 
@@ -263,7 +263,7 @@ class Server_Hello : public Handshake_Message
 						 in Vector!byte reneg_info,
 						 bool offer_session_ticket,
 						 bool client_has_npn,
-						 in Vector!( string ) next_protocols,
+						 in Vector!string next_protocols,
 						 bool client_has_heartbeat,
 						 RandomNumberGenerator rng);
 
@@ -344,7 +344,7 @@ class Certificate_Req : public Handshake_Message
 	public:
 		Handshake_Type type() const override { return CERTIFICATE_REQUEST; }
 
-		const Vector!( string )& acceptable_cert_types() const
+		const Vector!string& acceptable_cert_types() const
 		{ return m_cert_key_types; }
 
 		Vector!( X509_DN ) acceptable_CAs() const { return m_names; }
@@ -364,7 +364,7 @@ class Certificate_Req : public Handshake_Message
 		Vector!( byte ) serialize() const override;
 
 		Vector!( X509_DN ) m_names;
-		Vector!( string ) m_cert_key_types;
+		Vector!string m_cert_key_types;
 
 		Vector!( Pair!(string, string)  ) m_supported_algos;
 };

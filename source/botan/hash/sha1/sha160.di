@@ -14,7 +14,7 @@ class SHA_160 : public MDx_HashFunction
 	public:
 		string name() const { return "SHA-160"; }
 		size_t output_length() const { return 20; }
-		HashFunction* clone() const { return new SHA_160; }
+		HashFunction clone() const { return new SHA_160; }
 
 		void clear();
 
@@ -22,7 +22,7 @@ class SHA_160 : public MDx_HashFunction
 		{
 			clear();
 		}
-	protected:
+	package:
 		/**
 		* Set a custom size for the W array. Normally 80, but some
 		* subclasses need slightly more for best performance/internal

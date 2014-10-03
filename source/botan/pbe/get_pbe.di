@@ -20,7 +20,7 @@ import chrono;
 PBE* get_pbe(in string algo_spec,
 							  in string passphrase,
 							  std::chrono::milliseconds msec,
-							  RandomNumberGenerator& rng);
+							  RandomNumberGenerator rng);
 
 /**
 * Factory function for PBEs.

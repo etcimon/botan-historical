@@ -7,9 +7,9 @@
 
 import botan.ctr;
 import botan.internal.xor_buf;
-CTR_BE::CTR_BE(BlockCipher* ciph) :
+CTR_BE::CTR_BE(BlockCipher ciph) :
 	m_cipher(ciph),
-	m_counter(256 * m_cipher->block_size()),
+	m_counter(256 * m_cipher.block_size()),
 	m_pad(m_counter.size()),
 	m_pad_pos(0)
 {
@@ -17,7 +17,7 @@ CTR_BE::CTR_BE(BlockCipher* ciph) :
 
 void CTR_BE::clear()
 {
-	m_cipher->clear();
+	m_cipher.clear();
 	zeroise(m_pad);
 	zeroise(m_counter);
 	m_pad_pos = 0;
@@ -25,7 +25,7 @@ void CTR_BE::clear()
 
 void CTR_BE::key_schedule(in byte* key, size_t length)
 {
-	m_cipher->set_key(key, key_len);
+	m_cipher.set_key(key, key_len);
 
 	// Set a default all-zeros IV
 	set_iv(null, 0);
@@ -33,7 +33,7 @@ void CTR_BE::key_schedule(in byte* key, size_t length)
 
 string CTR_BE::name() const
 {
-	return ("CTR-BE(" + m_cipher->name() + ")");
+	return ("CTR-BE(" + m_cipher.name() + ")");
 }
 
 void CTR_BE::cipher(in byte* input, byte* output)
@@ -55,7 +55,7 @@ void CTR_BE::set_iv(in byte* iv, size_t iv_len)
 	if (!valid_iv_length(iv_len))
 		throw new Invalid_IV_Length(name(), iv_len);
 
-	const size_t bs = m_cipher->block_size();
+	const size_t bs = m_cipher.block_size();
 
 	zeroise(m_counter);
 
@@ -71,7 +71,7 @@ void CTR_BE::set_iv(in byte* iv, size_t iv_len)
 				break;
 	}
 
-	m_cipher->encrypt_n(&m_counter[0], &m_pad[0], 256);
+	m_cipher.encrypt_n(&m_counter[0], &m_pad[0], 256);
 	m_pad_pos = 0;
 }
 
@@ -80,7 +80,7 @@ void CTR_BE::set_iv(in byte* iv, size_t iv_len)
 */
 void CTR_BE::increment_counter()
 {
-	const size_t bs = m_cipher->block_size();
+	const size_t bs = m_cipher.block_size();
 
 	/*
 	* Each counter value always needs to be incremented by 256,
@@ -94,7 +94,7 @@ void CTR_BE::increment_counter()
 				break;
 	}
 
-	m_cipher->encrypt_n(&m_counter[0], &m_pad[0], 256);
+	m_cipher.encrypt_n(&m_counter[0], &m_pad[0], 256);
 	m_pad_pos = 0;
 }
 

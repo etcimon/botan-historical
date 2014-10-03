@@ -22,7 +22,7 @@ namespace {
 class Zlib_Alloc_Info
 {
 	public:
-		std::map<void*, size_t> current_allocs;
+		HashMap<void*, size_t> current_allocs;
 };
 
 /*
@@ -35,7 +35,7 @@ void* zlib_malloc(void* info_ptr, uint n, uint size)
 	const size_t total_sz = n * size;
 
 	void* ptr = std::malloc(total_sz);
-	info->current_allocs[ptr] = total_sz;
+	info.current_allocs[ptr] = total_sz;
 	return ptr;
 }
 
@@ -45,11 +45,11 @@ void* zlib_malloc(void* info_ptr, uint n, uint size)
 void zlib_free(void* info_ptr, void* ptr)
 {
 	Zlib_Alloc_Info* info = cast(Zlib_Alloc_Info*)(info_ptr);
-	auto i = info->current_allocs.find(ptr);
-	if (i == info->current_allocs.end())
+	auto i = info.current_allocs.find(ptr);
+	if (i == info.current_allocs.end())
 		throw new Invalid_Argument("zlib_free: Got pointer not allocated by us");
 
-	std::memset(ptr, 0, i->second);
+	std::memset(ptr, 0, i.second);
 	std::free(ptr);
 }
 
@@ -107,7 +107,7 @@ void Zlib_Compression::start_msg()
 	clear();
 	zlib = new Zlib_Stream;
 
-	int res = deflateInit2(&(zlib->stream),
+	int res = deflateInit2(&(zlib.stream),
 								  level,
 								  Z_DEFLATED,
 								  (raw_deflate ? -15 : 15),
@@ -125,15 +125,15 @@ void Zlib_Compression::start_msg()
 */
 void Zlib_Compression::write(in byte* input, size_t length)
 {
-	zlib->stream.next_in = cast(Bytef*)(const_cast(<byte*>)(input));
-	zlib->stream.avail_in = length;
+	zlib.stream.next_in = cast(Bytef*)(const_cast(<byte*>)(input));
+	zlib.stream.avail_in = length;
 
-	while(zlib->stream.avail_in != 0)
+	while(zlib.stream.avail_in != 0)
 	{
-		zlib->stream.next_out = cast(Bytef*)(&buffer[0]);
-		zlib->stream.avail_out = buffer.size();
-		deflate(&(zlib->stream), Z_NO_FLUSH);
-		send(&buffer[0], buffer.size() - zlib->stream.avail_out);
+		zlib.stream.next_out = cast(Bytef*)(&buffer[0]);
+		zlib.stream.avail_out = buffer.size();
+		deflate(&(zlib.stream), Z_NO_FLUSH);
+		send(&buffer[0], buffer.size() - zlib.stream.avail_out);
 	}
 }
 
@@ -142,17 +142,17 @@ void Zlib_Compression::write(in byte* input, size_t length)
 */
 void Zlib_Compression::end_msg()
 {
-	zlib->stream.next_in = 0;
-	zlib->stream.avail_in = 0;
+	zlib.stream.next_in = 0;
+	zlib.stream.avail_in = 0;
 
 	int rc = Z_OK;
 	while(rc != Z_STREAM_END)
 	{
-		zlib->stream.next_out = cast(Bytef*)(&buffer[0]);
-		zlib->stream.avail_out = buffer.size();
+		zlib.stream.next_out = cast(Bytef*)(&buffer[0]);
+		zlib.stream.avail_out = buffer.size();
 
-		rc = deflate(&(zlib->stream), Z_FINISH);
-		send(&buffer[0], buffer.size() - zlib->stream.avail_out);
+		rc = deflate(&(zlib.stream), Z_FINISH);
+		send(&buffer[0], buffer.size() - zlib.stream.avail_out);
 	}
 
 	clear();
@@ -163,18 +163,18 @@ void Zlib_Compression::end_msg()
 */
 void Zlib_Compression::flush()
 {
-	zlib->stream.next_in = 0;
-	zlib->stream.avail_in = 0;
+	zlib.stream.next_in = 0;
+	zlib.stream.avail_in = 0;
 
 	while(true)
 	{
-		zlib->stream.avail_out = buffer.size();
-		zlib->stream.next_out = cast(Bytef*)(&buffer[0]);
+		zlib.stream.avail_out = buffer.size();
+		zlib.stream.next_out = cast(Bytef*)(&buffer[0]);
 
-		deflate(&(zlib->stream), Z_FULL_FLUSH);
-		send(&buffer[0], buffer.size() - zlib->stream.avail_out);
+		deflate(&(zlib.stream), Z_FULL_FLUSH);
+		send(&buffer[0], buffer.size() - zlib.stream.avail_out);
 
-		if (zlib->stream.avail_out == buffer.size())
+		if (zlib.stream.avail_out == buffer.size())
 		  break;
 	}
 }
@@ -188,7 +188,7 @@ void Zlib_Compression::clear()
 
 	if (zlib)
 	{
-		deflateEnd(&(zlib->stream));
+		deflateEnd(&(zlib.stream));
 		delete zlib;
 		zlib = 0;
 	}
@@ -213,7 +213,7 @@ void Zlib_Decompression::start_msg()
 	clear();
 	zlib = new Zlib_Stream;
 
-	if (inflateInit2(&(zlib->stream), (raw_deflate ? -15 : 15)) != Z_OK)
+	if (inflateInit2(&(zlib.stream), (raw_deflate ? -15 : 15)) != Z_OK)
 		throw new Memory_Exhaustion();
 }
 
@@ -227,15 +227,15 @@ void Zlib_Decompression::write(in byte* input_arr, size_t length)
 	// non-const needed by zlib api :(
 	Bytef* input = cast(Bytef*)(const_cast(<byte*>)(input_arr));
 
-	zlib->stream.next_in = input;
-	zlib->stream.avail_in = length;
+	zlib.stream.next_in = input;
+	zlib.stream.avail_in = length;
 
-	while(zlib->stream.avail_in != 0)
+	while(zlib.stream.avail_in != 0)
 	{
-		zlib->stream.next_out = cast(Bytef*)(&buffer[0]);
-		zlib->stream.avail_out = buffer.size();
+		zlib.stream.next_out = cast(Bytef*)(&buffer[0]);
+		zlib.stream.avail_out = buffer.size();
 
-		int rc = inflate(&(zlib->stream), Z_SYNC_FLUSH);
+		int rc = inflate(&(zlib.stream), Z_SYNC_FLUSH);
 
 		if (rc != Z_OK && rc != Z_STREAM_END)
 		{
@@ -250,15 +250,15 @@ void Zlib_Decompression::write(in byte* input_arr, size_t length)
 				throw new Exception("Zlib decompression: Unknown error");
 		}
 
-		send(&buffer[0], buffer.size() - zlib->stream.avail_out);
+		send(&buffer[0], buffer.size() - zlib.stream.avail_out);
 
 		if (rc == Z_STREAM_END)
 		{
-			size_t read_from_block = length - zlib->stream.avail_in;
+			size_t read_from_block = length - zlib.stream.avail_in;
 			start_msg();
 
-			zlib->stream.next_in = input + read_from_block;
-			zlib->stream.avail_in = length - read_from_block;
+			zlib.stream.next_in = input + read_from_block;
+			zlib.stream.avail_in = length - read_from_block;
 
 			input += read_from_block;
 			length -= read_from_block;
@@ -272,16 +272,16 @@ void Zlib_Decompression::write(in byte* input_arr, size_t length)
 void Zlib_Decompression::end_msg()
 {
 	if (no_writes) return;
-	zlib->stream.next_in = 0;
-	zlib->stream.avail_in = 0;
+	zlib.stream.next_in = 0;
+	zlib.stream.avail_in = 0;
 
 	int rc = Z_OK;
 
 	while(rc != Z_STREAM_END)
 	{
-		zlib->stream.next_out = cast(Bytef*)(&buffer[0]);
-		zlib->stream.avail_out = buffer.size();
-		rc = inflate(&(zlib->stream), Z_SYNC_FLUSH);
+		zlib.stream.next_out = cast(Bytef*)(&buffer[0]);
+		zlib.stream.avail_out = buffer.size();
+		rc = inflate(&(zlib.stream), Z_SYNC_FLUSH);
 
 		if (rc != Z_OK && rc != Z_STREAM_END)
 		{
@@ -289,7 +289,7 @@ void Zlib_Decompression::end_msg()
 			throw new Decoding_Error("Zlib_Decompression: Error finalizing");
 		}
 
-		send(&buffer[0], buffer.size() - zlib->stream.avail_out);
+		send(&buffer[0], buffer.size() - zlib.stream.avail_out);
 	}
 
 	clear();
@@ -306,7 +306,7 @@ void Zlib_Decompression::clear()
 
 	if (zlib)
 	{
-		inflateEnd(&(zlib->stream));
+		inflateEnd(&(zlib.stream));
 		delete zlib;
 		zlib = 0;
 	}

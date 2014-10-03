@@ -35,8 +35,8 @@ std::multimap<string, string> Data_Store::search_for(
 	std::multimap<string, string> out;
 
 	for (auto i = contents.begin(); i != contents.end(); ++i)
-		if (predicate(i->first, i->second))
-			out.insert(Pair(i->first, i->second));
+		if (predicate(i.first, i.second))
+			out.insert(Pair(i.first, i.second));
 
 	return out;
 }
@@ -44,12 +44,12 @@ std::multimap<string, string> Data_Store::search_for(
 /*
 * Search based on key equality
 */
-Vector!( string ) Data_Store::get(in string looking_for) const
+Vector!string Data_Store::get(in string looking_for) const
 {
-	Vector!( string ) out;
+	Vector!string out;
 	auto range = contents.equal_range(looking_for);
 	for (auto i = range.first; i != range.second; ++i)
-		out.push_back(i->second);
+		out.push_back(i.second);
 	return out;
 }
 
@@ -58,7 +58,7 @@ Vector!( string ) Data_Store::get(in string looking_for) const
 */
 string Data_Store::get1(in string key) const
 {
-	Vector!( string ) vals = get(key);
+	Vector!string vals = get(key);
 
 	if (vals.empty())
 		throw new Invalid_State("Data_Store::get1: No values set for " + key);
@@ -71,7 +71,7 @@ string Data_Store::get1(in string key) const
 string Data_Store::get1(in string key,
 						in string default_value) const
 {
-	Vector!( string ) vals = get(key);
+	Vector!string vals = get(key);
 
 	if (vals.size() > 1)
 		throw new Invalid_State("Data_Store::get1: More than one value for " + key);
@@ -88,7 +88,7 @@ string Data_Store::get1(in string key,
 Vector!( byte )
 Data_Store::get1_memvec(in string key) const
 {
-	Vector!( string ) vals = get(key);
+	Vector!string vals = get(key);
 
 	if (vals.empty())
 		return Vector!( byte )();
@@ -106,7 +106,7 @@ Data_Store::get1_memvec(in string key) const
 uint Data_Store::get1_uint(in string key,
 										 uint default_val) const
 {
-	Vector!( string ) vals = get(key);
+	Vector!string vals = get(key);
 
 	if (vals.empty())
 		return default_val;

@@ -83,7 +83,7 @@ BigInt::BigInt(in byte* input, size_t length, Base base)
 /*
 * Construct a BigInt from an encoded BigInt
 */
-BigInt::BigInt(RandomNumberGenerator& rng, size_t bits)
+BigInt::BigInt(RandomNumberGenerator rng, size_t bits)
 {
 	randomize(rng, bits);
 }
@@ -104,18 +104,18 @@ s32bit BigInt::cmp(in BigInt other, bool check_signs) const
 {
 	if (check_signs)
 	{
-		if (other.is_positive() && this->is_negative())
+		if (other.is_positive() && this.is_negative())
 			return -1;
 
-		if (other.is_negative() && this->is_positive())
+		if (other.is_negative() && this.is_positive())
 			return 1;
 
-		if (other.is_negative() && this->is_negative())
-			return (-bigint_cmp(this->data(), this->sig_words(),
+		if (other.is_negative() && this.is_negative())
+			return (-bigint_cmp(this.data(), this.sig_words(),
 									  other.data(), other.sig_words()));
 	}
 
-	return bigint_cmp(this->data(), this->sig_words(),
+	return bigint_cmp(this.data(), this.sig_words(),
 							other.data(), other.sig_words());
 }
 

@@ -20,11 +20,11 @@ import chrono;
 * @param buf_size size of buffer to benchmark against, in KiB
 * @return results a map from op type to operations per second
 */
-std::map<string, double>
+HashMap!(string, double)
 time_algorithm_ops(in string name,
-									  Algorithm_Factory& af,
+									  ref Algorithm_Factory af,
 									  in string provider,
-									  RandomNumberGenerator& rng,
+									  RandomNumberGenerator rng,
 									  std::chrono::nanoseconds runtime,
 									  size_t buf_size);
 
@@ -37,10 +37,10 @@ time_algorithm_ops(in string name,
 * @param buf_size size of buffer to benchmark against, in KiB
 * @return results a map from provider to speed in mebibytes per second
 */
-std::map<string, double>
+HashMap!(string, double)
 algorithm_benchmark(in string name,
-										Algorithm_Factory& af,
-										RandomNumberGenerator& rng,
+										ref Algorithm_Factory af,
+										RandomNumberGenerator rng,
 										std::chrono::milliseconds milliseconds,
 										size_t buf_size);
 

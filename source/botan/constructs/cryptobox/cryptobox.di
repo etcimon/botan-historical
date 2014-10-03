@@ -7,7 +7,7 @@
 
 import string;
 import botan.rng;
-import botan.symkey;
+import botan.algo_base.symkey;
 /**
 * This namespace holds various high-level crypto functions
 */
@@ -22,7 +22,7 @@ namespace CryptoBox {
 */
 string encrypt(in byte* input, size_t input_len,
 										in string passphrase,
-										RandomNumberGenerator& rng);/**
+										RandomNumberGenerator rng);/**
 * Decrypt a message encrypted with CryptoBox::encrypt
 * @param input the input data
 * @param input_len the length of input in bytes

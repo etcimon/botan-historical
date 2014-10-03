@@ -5,7 +5,7 @@
 * Distributed under the terms of the botan license.
 */
 
-import botan.sym_algo;
+import botan.algo_base.sym_algo;
 /**
 * Base class for all stream ciphers
 */
@@ -53,5 +53,5 @@ class StreamCipher : public SymmetricAlgorithm
 		/**
 		* Get a new object representing the same algorithm as *this
 		*/
-		abstract StreamCipher* clone() const;
+		abstract StreamCipher clone() const;
 };

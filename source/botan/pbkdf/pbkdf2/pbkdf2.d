@@ -24,7 +24,7 @@ PKCS5_PBKDF2::key_derivation(size_t key_len,
 
 	try
 	{
-		mac->set_key(cast(const byte*)(passphrase.data()),
+		mac.set_key(cast(const byte*)(passphrase.data()),
 						 passphrase.length());
 	}
 	catch(Invalid_Key_Length)
@@ -37,9 +37,9 @@ PKCS5_PBKDF2::key_derivation(size_t key_len,
 
 	byte* T = &key[0];
 
-	SafeVector!byte U(mac->output_length());
+	SafeVector!byte U(mac.output_length());
 
-	const size_t blocks_needed = round_up(key_len, mac->output_length()) / mac->output_length();
+	const size_t blocks_needed = round_up(key_len, mac.output_length()) / mac.output_length();
 
 	std::chrono::microseconds usec_per_block =
 		std::chrono::duration_cast(<std::chrono::microseconds>)(msec) / blocks_needed;
@@ -47,11 +47,11 @@ PKCS5_PBKDF2::key_derivation(size_t key_len,
 	uint counter = 1;
 	while(key_len)
 	{
-		size_t T_size = std::min<size_t>(mac->output_length(), key_len);
+		size_t T_size = std.algorithm.min<size_t>(mac.output_length(), key_len);
 
-		mac->update(salt, salt_len);
-		mac->update_be(counter);
-		mac->flushInto(&U[0]);
+		mac.update(salt, salt_len);
+		mac.update_be(counter);
+		mac.flushInto(&U[0]);
 
 		xor_buf(T, &U[0], T_size);
 
@@ -68,8 +68,8 @@ PKCS5_PBKDF2::key_derivation(size_t key_len,
 
 			while(true)
 			{
-				mac->update(U);
-				mac->flushInto(&U[0]);
+				mac.update(U);
+				mac.flushInto(&U[0]);
 				xor_buf(T, &U[0], T_size);
 				iterations++;
 
@@ -91,8 +91,8 @@ PKCS5_PBKDF2::key_derivation(size_t key_len,
 		{
 			for (size_t i = 1; i != iterations; ++i)
 			{
-				mac->update(U);
-				mac->flushInto(&U[0]);
+				mac.update(U);
+				mac.flushInto(&U[0]);
 				xor_buf(T, &U[0], T_size);
 			}
 		}

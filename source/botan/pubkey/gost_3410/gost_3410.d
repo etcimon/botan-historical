@@ -16,7 +16,7 @@ Vector!( byte ) GOST_3410_PublicKey::x509_subject_public_key() const
 	const BigInt x = public_point().get_affine_x();
 	const BigInt y = public_point().get_affine_y();
 
-	size_t part_size = std::max(x.bytes(), y.bytes());
+	size_t part_size = std.algorithm.max(x.bytes(), y.bytes());
 
 	Vector!( byte ) bits(2*part_size);
 
@@ -100,7 +100,7 @@ GOST_3410_Signature_Operation::GOST_3410_Signature_Operation(
 
 SafeVector!byte
 GOST_3410_Signature_Operation::sign(in byte* msg, size_t msg_len,
-												RandomNumberGenerator& rng)
+												RandomNumberGenerator rng)
 {
 	BigInt k;
 	do

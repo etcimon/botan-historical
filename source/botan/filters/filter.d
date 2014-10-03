@@ -32,8 +32,8 @@ void Filter::send(in byte* input, size_t length)
 		if (next[j])
 		{
 			if (write_queue.size())
-				next[j]->write(&write_queue[0], write_queue.size());
-			next[j]->write(input, length);
+				next[j].write(&write_queue[0], write_queue.size());
+			next[j].write(input, length);
 			nothing_attached = false;
 		}
 
@@ -51,7 +51,7 @@ void Filter::new_msg()
 	start_msg();
 	for (size_t j = 0; j != total_ports(); ++j)
 		if (next[j])
-			next[j]->new_msg();
+			next[j].new_msg();
 }
 
 /*
@@ -62,7 +62,7 @@ void Filter::finish_msg()
 	end_msg();
 	for (size_t j = 0; j != total_ports(); ++j)
 		if (next[j])
-			next[j]->finish_msg();
+			next[j].finish_msg();
 }
 
 /*
@@ -73,9 +73,9 @@ void Filter::attach(Filter* new_filter)
 	if (new_filter)
 	{
 		Filter* last = this;
-		while(last->get_next())
-			last = last->get_next();
-		last->next[last->current_port()] = new_filter;
+		while(last.get_next())
+			last = last.get_next();
+		last.next[last.current_port()] = new_filter;
 	}
 }
 

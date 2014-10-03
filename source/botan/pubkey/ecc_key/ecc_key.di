@@ -42,7 +42,7 @@ class EC_PublicKey : public abstract Public_Key
 
 		Vector!( byte ) x509_subject_public_key() const;
 
-		bool check_key(RandomNumberGenerator& rng,
+		bool check_key(RandomNumberGenerator rng,
 							bool strong) const;
 
 		/**
@@ -75,7 +75,7 @@ class EC_PublicKey : public abstract Public_Key
 
 		size_t estimated_strength() const override;
 
-	protected:
+	package:
 		EC_PublicKey() : domain_encoding(EC_DOMPAR_ENC_EXPLICIT) {}
 
 		EC_Group domain_params;
@@ -90,7 +90,7 @@ class EC_PrivateKey : public abstract EC_PublicKey,
 										  public abstract Private_Key
 {
 	public:
-	  EC_PrivateKey(RandomNumberGenerator& rng,
+	  EC_PrivateKey(RandomNumberGenerator rng,
 						 const EC_Group& domain,
 						 ref const BigInt Private_Key);
 
@@ -104,7 +104,7 @@ class EC_PrivateKey : public abstract EC_PublicKey,
 		* @result the private key value of this key object
 		*/
 		ref const BigInt private_value() const;
-	protected:
+	package:
 		EC_PrivateKey() {}
 
 		BigInt Private_Key;

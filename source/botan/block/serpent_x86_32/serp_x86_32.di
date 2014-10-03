@@ -15,7 +15,7 @@ class Serpent_X86_32 : public Serpent
 		void encrypt_n(byte* input, byte* output, size_t blocks) const;
 		void decrypt_n(byte* input, byte* output, size_t blocks) const;
 
-		BlockCipher* clone() const { return new Serpent_X86_32; }
+		BlockCipher clone() const { return new Serpent_X86_32; }
 	private:
 		void key_schedule(in byte*, size_t);
 };

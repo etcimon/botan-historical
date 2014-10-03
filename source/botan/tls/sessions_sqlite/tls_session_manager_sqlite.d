@@ -23,7 +23,7 @@ SymmetricKey derive_key(in string passphrase,
 {
 	Unique!PBKDF pbkdf(get_pbkdf("PBKDF2(SHA-512)"));
 
-	SafeVector!byte x = pbkdf->derive_key(32 + 2,
+	SafeVector!byte x = pbkdf.derive_key(32 + 2,
 															passphrase,
 															salt, salt_len,
 															iterations).bits_of();
@@ -35,7 +35,7 @@ SymmetricKey derive_key(in string passphrase,
 }
 
 Session_Manager_SQLite::Session_Manager_SQLite(in string passphrase,
-															  RandomNumberGenerator& rng,
+															  RandomNumberGenerator rng,
 															  in string db_filename,
 															  size_t max_sessions,
 															  std::chrono::seconds session_lifetime) :
@@ -45,7 +45,7 @@ Session_Manager_SQLite::Session_Manager_SQLite(in string passphrase,
 {
 	m_db = new sqlite3_database(db_filename);
 
-	m_db->create_table(
+	m_db.create_table(
 		"create table if not exists tls_sessions "
 		"("
 		"session_id TEXT PRIMARY KEY, "
@@ -55,7 +55,7 @@ Session_Manager_SQLite::Session_Manager_SQLite(in string passphrase,
 		"session BLOB"
 		")");
 
-	m_db->create_table(
+	m_db.create_table(
 		"create table if not exists tls_sessions_metadata "
 		"("
 		"passphrase_salt BLOB, "
@@ -63,7 +63,7 @@ Session_Manager_SQLite::Session_Manager_SQLite(in string passphrase,
 		"passphrase_check INTEGER "
 		")");
 
-	const size_t salts = m_db->row_count("tls_sessions_metadata");
+	const size_t salts = m_db.row_count("tls_sessions_metadata");
 
 	if (salts == 1)
 	{
@@ -202,7 +202,7 @@ void Session_Manager_SQLite::prune_session_cache()
 
 	remove_expired.spin();
 
-	const size_t sessions = m_db->row_count("tls_sessions");
+	const size_t sessions = m_db.row_count("tls_sessions");
 
 	if (sessions > m_max_sessions)
 	{

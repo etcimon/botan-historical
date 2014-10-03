@@ -39,7 +39,7 @@ const size_t PBKDF_OUTPUT_LEN = CIPHER_KEY_LEN + CIPHER_IV_LEN + MAC_KEY_LEN;
 
 string encrypt(in byte* input, size_t input_len,
 						  in string passphrase,
-						  RandomNumberGenerator& rng)
+						  RandomNumberGenerator rng)
 {
 	SafeVector!byte pbkdf_salt(PBKDF_SALT_LEN);
 	rng.randomize(&pbkdf_salt[0], pbkdf_salt.size());

@@ -54,7 +54,7 @@ class GOST_3410_PublicKey : public abstract EC_PublicKey
 		size_t message_part_size() const
 		{ return domain().get_order().bytes(); }
 
-	protected:
+	package:
 		GOST_3410_PublicKey() {}
 };
 
@@ -76,7 +76,7 @@ class GOST_3410_PrivateKey : public GOST_3410_PublicKey,
 		* @param domain parameters to used for this key
 		* @param x the private key; if zero, a new random key is generated
 		*/
-		GOST_3410_PrivateKey(RandomNumberGenerator& rng,
+		GOST_3410_PrivateKey(RandomNumberGenerator rng,
 									const EC_Group& domain,
 									ref const BigInt x = 0) :
 			EC_PrivateKey(rng, domain, x) {}
@@ -98,7 +98,7 @@ class GOST_3410_Signature_Operation : public PK_Ops::Signature
 		size_t max_input_bits() const { return order.bits(); }
 
 		SafeVector!byte sign(in byte* msg, size_t msg_len,
-										RandomNumberGenerator& rng);
+										RandomNumberGenerator rng);
 
 	private:
 		const PointGFp& base_point;

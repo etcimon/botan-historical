@@ -6,7 +6,7 @@
 */
 
 import botan.oids;
-import mutex;
+import core.sync.mutex;
 namespace OIDS {
 
 namespace {
@@ -22,7 +22,7 @@ class OID_Map
 
 		void add_str2oid(in OID oid, in string str)
 		{
-			std::lock_guard<std::mutex> lock(m_mutex);
+			m_mutex.lock(); scope(exit) m_mutex.unlock();
 			auto i = m_str2oid.find(str);
 			if (i == m_str2oid.end())
 				m_str2oid.insert(Pair(str, oid));
@@ -30,7 +30,7 @@ class OID_Map
 
 		void add_oid2str(in OID oid, in string str)
 		{
-			std::lock_guard<std::mutex> lock(m_mutex);
+			m_mutex.lock(); scope(exit) m_mutex.unlock();
 			auto i = m_oid2str.find(oid);
 			if (i == m_oid2str.end())
 				m_oid2str.insert(Pair(oid, str));
@@ -38,22 +38,22 @@ class OID_Map
 
 		string lookup(in OID oid)
 		{
-			std::lock_guard<std::mutex> lock(m_mutex);
+			m_mutex.lock(); scope(exit) m_mutex.unlock();
 
 			auto i = m_oid2str.find(oid);
 			if (i != m_oid2str.end())
-				return i->second;
+				return i.second;
 
 			return "";
 		}
 
 		OID lookup(in string str)
 		{
-			std::lock_guard<std::mutex> lock(m_mutex);
+			m_mutex.lock(); scope(exit) m_mutex.unlock();
 
 			auto i = m_str2oid.find(str);
 			if (i != m_str2oid.end())
-				return i->second;
+				return i.second;
 
 			// Try to parse as plain OID
 			try
@@ -67,14 +67,14 @@ class OID_Map
 
 		bool have_oid(in string str)
 		{
-			std::lock_guard<std::mutex> lock(m_mutex);
+			m_mutex.lock(); scope(exit) m_mutex.unlock();
 			return m_str2oid.find(str) != m_str2oid.end();
 		}
 
 	private:
-		std::mutex m_mutex;
-		std::map<string, OID> m_str2oid;
-		std::map<OID, string> m_oid2str;
+		Mutex m_mutex;
+		HashMap<string, OID> m_str2oid;
+		HashMap<OID, string> m_oid2str;
 };
 
 OID_Map& global_oid_map()

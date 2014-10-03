@@ -62,7 +62,7 @@ import botan.internal.simd_32;
 */
 void Noekeon_SIMD::encrypt_n(byte* input, byte* output, size_t blocks) const
 {
-	const secure_vector!uint& EK = this->get_EK();
+	const secure_vector!uint& EK = this.get_EK();
 
 	SIMD_32 K0 = SIMD_32(EK[0]);
 	SIMD_32 K1 = SIMD_32(EK[1]);
@@ -119,7 +119,7 @@ void Noekeon_SIMD::encrypt_n(byte* input, byte* output, size_t blocks) const
 */
 void Noekeon_SIMD::decrypt_n(byte* input, byte* output, size_t blocks) const
 {
-	const secure_vector!uint& DK = this->get_DK();
+	const secure_vector!uint& DK = this.get_DK();
 
 	SIMD_32 K0 = SIMD_32(DK[0]);
 	SIMD_32 K1 = SIMD_32(DK[1]);

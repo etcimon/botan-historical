@@ -53,7 +53,7 @@ Vector!( byte ) finished_compute_verify(in Handshake_State state,
 
 		input += state.hash().flushInto(state._version(), state.ciphersuite().prf_algo());
 
-		return unlock(prf->derive_key(12, state.session_keys().master_secret(), input));
+		return unlock(prf.derive_key(12, state.session_keys().master_secret(), input));
 	}
 }
 

@@ -96,7 +96,7 @@ class Threaded_Fork : public Fork
 
 		~this();
 
-	protected:
+	package:
 		void set_next(Filter* f[], size_t n);
 		void send(in byte* input, size_t length);
 

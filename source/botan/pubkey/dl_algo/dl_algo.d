@@ -52,7 +52,7 @@ DL_Scheme_PrivateKey::DL_Scheme_PrivateKey(in AlgorithmIdentifier alg_id,
 /*
 * Check Public DL Parameters
 */
-bool DL_Scheme_PublicKey::check_key(RandomNumberGenerator& rng,
+bool DL_Scheme_PublicKey::check_key(RandomNumberGenerator rng,
 												bool strong) const
 {
 	if (y < 2 || y >= group_p())
@@ -65,7 +65,7 @@ bool DL_Scheme_PublicKey::check_key(RandomNumberGenerator& rng,
 /*
 * Check DL Scheme Private Parameters
 */
-bool DL_Scheme_PrivateKey::check_key(RandomNumberGenerator& rng,
+bool DL_Scheme_PrivateKey::check_key(RandomNumberGenerator rng,
 												 bool strong) const
 {
 	ref const BigInt p = group_p();

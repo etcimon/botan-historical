@@ -17,8 +17,8 @@ class Noekeon : public Block_Cipher_Fixed_Params!(16, 16)
 
 		void clear();
 		string name() const { return "Noekeon"; }
-		BlockCipher* clone() const { return new Noekeon; }
-	protected:
+		BlockCipher clone() const { return new Noekeon; }
+	package:
 		/**
 		* The Noekeon round constants
 		*/

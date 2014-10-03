@@ -17,7 +17,7 @@ enum {
 	TLS_EMPTY_RENEGOTIATION_INFO_SCSV		  = 0x00FF
 };
 
-Vector!( byte ) make_hello_random(RandomNumberGenerator& rng)
+Vector!( byte ) make_hello_random(RandomNumberGenerator rng)
 {
 	Vector!( byte ) buf(32);
 
@@ -61,7 +61,7 @@ Client_Hello::Client_Hello(Handshake_IO& io,
 									Handshake_Hash& hash,
 									Protocol_Version _version,
 									const Policy& policy,
-									RandomNumberGenerator& rng,
+									RandomNumberGenerator rng,
 									in Vector!byte reneg_info,
 									bool next_protocol,
 									in string hostname,
@@ -96,7 +96,7 @@ Client_Hello::Client_Hello(Handshake_IO& io,
 Client_Hello::Client_Hello(Handshake_IO& io,
 									Handshake_Hash& hash,
 									const Policy& policy,
-									RandomNumberGenerator& rng,
+									RandomNumberGenerator rng,
 									in Vector!byte reneg_info,
 									const Session& session,
 									bool next_protocol) :
@@ -256,7 +256,7 @@ void Client_Hello::deserialize(in Vector!byte buf)
 	{
 		if (Renegotiation_Extension* reneg = m_extensions.get<Renegotiation_Extension>())
 		{
-			if (!reneg->renegotiation_info().empty())
+			if (!reneg.renegotiation_info().empty())
 				throw new TLS_Exception(Alert::HANDSHAKE_FAILURE,
 										  "Client send renegotiation SCSV and non-empty extension");
 		}

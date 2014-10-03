@@ -33,13 +33,13 @@ SafeVector!byte eax_prf(byte tag, size_t block_size,
 /*
 * EAX_Mode Constructor
 */
-EAX_Mode::EAX_Mode(BlockCipher* cipher, size_t tag_size) :
-	m_tag_size(tag_size ? tag_size : cipher->block_size()),
+EAX_Mode::EAX_Mode(BlockCipher cipher, size_t tag_size) :
+	m_tag_size(tag_size ? tag_size : cipher.block_size()),
 	m_cipher(cipher),
-	m_ctr(new CTR_BE(m_cipher->clone())),
-	m_cmac(new CMAC(m_cipher->clone()))
+	m_ctr(new CTR_BE(m_cipher.clone())),
+	m_cmac(new CMAC(m_cipher.clone()))
 {
-	if (m_tag_size < 8 || m_tag_size > m_cmac->output_length())
+	if (m_tag_size < 8 || m_tag_size > m_cmac.output_length())
 		throw new Invalid_Argument(name() + ": Bad tag size " + std::to_string(tag_size));
 }
 
@@ -54,17 +54,17 @@ void EAX_Mode::clear()
 
 string EAX_Mode::name() const
 {
-	return (m_cipher->name() + "/EAX");
+	return (m_cipher.name() + "/EAX");
 }
 
 size_t EAX_Mode::update_granularity() const
 {
-	return 8 * m_cipher->parallel_bytes();
+	return 8 * m_cipher.parallel_bytes();
 }
 
 Key_Length_Specification EAX_Mode::key_spec() const
 {
-	return m_cipher->key_spec();
+	return m_cipher.key_spec();
 }
 
 /*
@@ -76,8 +76,8 @@ void EAX_Mode::key_schedule(in byte* key, size_t length)
 	* These could share the key schedule, which is one nice part of EAX,
 	* but it's much easier to ignore that here...
 	*/
-	m_ctr->set_key(key, length);
-	m_cmac->set_key(key, length);
+	m_ctr.set_key(key, length);
+	m_cmac.set_key(key, length);
 
 	m_ad_mac = eax_prf(1, block_size(), *m_cmac, null, 0);
 }
@@ -97,11 +97,11 @@ SafeVector!byte EAX_Mode::start(in byte* nonce, size_t nonce_len)
 
 	m_nonce_mac = eax_prf(0, block_size(), *m_cmac, nonce, nonce_len);
 
-	m_ctr->set_iv(&m_nonce_mac[0], m_nonce_mac.size());
+	m_ctr.set_iv(&m_nonce_mac[0], m_nonce_mac.size());
 
 	for (size_t i = 0; i != block_size() - 1; ++i)
-		m_cmac->update(0);
-	m_cmac->update(2);
+		m_cmac.update(0);
+	m_cmac.update(2);
 
 	return SafeVector!byte();
 }
@@ -112,15 +112,15 @@ void EAX_Encryption::update(SafeVector!byte buffer, size_t offset)
 	const size_t sz = buffer.size() - offset;
 	byte* buf = &buffer[offset];
 
-	m_ctr->cipher(buf, buf, sz);
-	m_cmac->update(buf, sz);
+	m_ctr.cipher(buf, buf, sz);
+	m_cmac.update(buf, sz);
 }
 
 void EAX_Encryption::finish(SafeVector!byte buffer, size_t offset)
 {
 	update(buffer, offset);
 
-	SafeVector!byte data_mac = m_cmac->flush();
+	SafeVector!byte data_mac = m_cmac.flush();
 	xor_buf(data_mac, m_nonce_mac, data_mac.size());
 	xor_buf(data_mac, m_ad_mac, data_mac.size());
 
@@ -133,8 +133,8 @@ void EAX_Decryption::update(SafeVector!byte buffer, size_t offset)
 	const size_t sz = buffer.size() - offset;
 	byte* buf = &buffer[offset];
 
-	m_cmac->update(buf, sz);
-	m_ctr->cipher(buf, buf, sz);
+	m_cmac.update(buf, sz);
+	m_ctr.cipher(buf, buf, sz);
 }
 
 void EAX_Decryption::finish(SafeVector!byte buffer, size_t offset)
@@ -149,13 +149,13 @@ void EAX_Decryption::finish(SafeVector!byte buffer, size_t offset)
 
 	if (remaining)
 	{
-		m_cmac->update(buf, remaining);
-		m_ctr->cipher(buf, buf, remaining);
+		m_cmac.update(buf, remaining);
+		m_ctr.cipher(buf, buf, remaining);
 	}
 
 	const byte* included_tag = &buf[remaining];
 
-	SafeVector!byte mac = m_cmac->flush();
+	SafeVector!byte mac = m_cmac.flush();
 	mac ^= m_nonce_mac;
 	mac ^= m_ad_mac;
 

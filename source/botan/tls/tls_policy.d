@@ -12,9 +12,9 @@ import botan.tls_exceptn;
 import botan.internal.stl_util;
 namespace TLS {
 
-Vector!( string ) Policy::allowed_ciphers() const
+Vector!string Policy::allowed_ciphers() const
 {
-	return Vector!( string )({
+	return Vector!string({
 		"AES-256/GCM",
 		"AES-128/GCM",
 		"AES-256/CCM",
@@ -33,9 +33,9 @@ Vector!( string ) Policy::allowed_ciphers() const
 	});
 }
 
-Vector!( string ) Policy::allowed_signature_hashes() const
+Vector!string Policy::allowed_signature_hashes() const
 {
-	return Vector!( string )({
+	return Vector!string({
 		"SHA-512",
 		"SHA-384",
 		"SHA-256",
@@ -45,9 +45,9 @@ Vector!( string ) Policy::allowed_signature_hashes() const
 	});
 }
 
-Vector!( string ) Policy::allowed_macs() const
+Vector!string Policy::allowed_macs() const
 {
-	return Vector!( string )({
+	return Vector!string({
 		"AEAD",
 		"SHA-384",
 		"SHA-256",
@@ -56,9 +56,9 @@ Vector!( string ) Policy::allowed_macs() const
 	});
 }
 
-Vector!( string ) Policy::allowed_key_exchange_methods() const
+Vector!string Policy::allowed_key_exchange_methods() const
 {
-	return Vector!( string )({
+	return Vector!string({
 		"SRP_SHA",
 		//"ECDHE_PSK",
 		//"DHE_PSK",
@@ -69,9 +69,9 @@ Vector!( string ) Policy::allowed_key_exchange_methods() const
 	});
 }
 
-Vector!( string ) Policy::allowed_signature_methods() const
+Vector!string Policy::allowed_signature_methods() const
 {
-	return Vector!( string )({
+	return Vector!string({
 		"ECDSA",
 		"RSA",
 		"DSA",
@@ -79,9 +79,9 @@ Vector!( string ) Policy::allowed_signature_methods() const
 	});
 }
 
-Vector!( string ) Policy::allowed_ecc_curves() const
+Vector!string Policy::allowed_ecc_curves() const
 {
-	return Vector!( string )({
+	return Vector!string({
 		"brainpool512r1",
 		"brainpool384r1",
 		"brainpool256r1",
@@ -102,9 +102,9 @@ Vector!( string ) Policy::allowed_ecc_curves() const
 /*
 * Choose an ECC curve to use
 */
-string Policy::choose_curve(in Vector!( string ) curve_names) const
+string Policy::choose_curve(in Vector!string curve_names) const
 {
-	const Vector!( string ) our_curves = allowed_ecc_curves();
+	const Vector!string our_curves = allowed_ecc_curves();
 
 	for (size_t i = 0; i != our_curves.size(); ++i)
 		if (value_exists(curve_names, our_curves[i]))
@@ -165,10 +165,10 @@ namespace {
 class Ciphersuite_Preference_Ordering
 {
 	public:
-		Ciphersuite_Preference_Ordering(in Vector!( string ) ciphers,
-												  const Vector!( string )& macs,
-												  const Vector!( string )& kex,
-												  const Vector!( string )& sigs) :
+		Ciphersuite_Preference_Ordering(in Vector!string ciphers,
+												  const Vector!string& macs,
+												  const Vector!string& kex,
+												  const Vector!string& sigs) :
 			m_ciphers(ciphers), m_macs(macs), m_kex(kex), m_sigs(sigs) {}
 
 		bool operator()(in Ciphersuite a, const Ciphersuite& b) const
@@ -228,7 +228,7 @@ class Ciphersuite_Preference_Ordering
 			return false; // equal (?!?)
 		}
 	private:
-		Vector!( string ) m_ciphers, m_macs, m_kex, m_sigs;
+		Vector!string m_ciphers, m_macs, m_kex, m_sigs;
 };
 
 }
@@ -236,10 +236,10 @@ class Ciphersuite_Preference_Ordering
 Vector!( ushort ) Policy::ciphersuite_list(Protocol_Version _version,
 															bool have_srp) const
 {
-	const Vector!( string ) ciphers = allowed_ciphers();
-	const Vector!( string ) macs = allowed_macs();
-	const Vector!( string ) kex = allowed_key_exchange_methods();
-	const Vector!( string ) sigs = allowed_signature_methods();
+	const Vector!string ciphers = allowed_ciphers();
+	const Vector!string macs = allowed_macs();
+	const Vector!string kex = allowed_key_exchange_methods();
+	const Vector!string sigs = allowed_signature_methods();
 
 	Ciphersuite_Preference_Ordering order(ciphers, macs, kex, sigs);
 

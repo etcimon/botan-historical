@@ -43,7 +43,7 @@ namespace CVC_EAC {
 
 EAC1_1_CVC create_self_signed_cert(Private_Key const& key,
 															EAC1_1_CVC_Options const& opts,
-															RandomNumberGenerator& rng);
+															RandomNumberGenerator rng);
 /**
 * Create a CVC request. The key encoding will be according to the provided private key.
 * @param priv_key the private key associated with the requesting entity
@@ -57,7 +57,7 @@ EAC1_1_CVC create_self_signed_cert(Private_Key const& key,
 EAC1_1_Req create_cvc_req(Private_Key const& priv_key,
 												ASN1_Chr const& chr,
 												string const& hash_alg,
-												RandomNumberGenerator& rng);
+												RandomNumberGenerator rng);
 
 /**
 * Create an ADO from a request object.
@@ -70,7 +70,7 @@ EAC1_1_Req create_cvc_req(Private_Key const& priv_key,
 EAC1_1_ADO create_ado_req(Private_Key const& priv_key,
 												EAC1_1_Req const& req,
 												ASN1_Car const& car,
-												RandomNumberGenerator& rng);
+												RandomNumberGenerator rng);
 }
 /**
 * This namespace represents EAC 1.1 CVC convenience functions
@@ -100,7 +100,7 @@ EAC1_1_CVC create_cvca(Private_Key const& priv_key,
 											bool iris,
 											bool fingerpr,
 											uint cvca_validity_months,
-											RandomNumberGenerator& rng);
+											RandomNumberGenerator rng);
 
 /**
 * Create a link certificate between two CVCA certificates. The key
@@ -115,7 +115,7 @@ EAC1_1_CVC create_cvca(Private_Key const& priv_key,
 EAC1_1_CVC link_cvca(EAC1_1_CVC const& signer,
 										 Private_Key const& priv_key,
 										 EAC1_1_CVC const& to_be_signed,
-										 RandomNumberGenerator& rng);
+										 RandomNumberGenerator rng);
 
 /**
 * Create a CVC request. The key encoding will be implicitCA.
@@ -130,7 +130,7 @@ EAC1_1_CVC link_cvca(EAC1_1_CVC const& signer,
 EAC1_1_Req create_cvc_req(Private_Key const& priv_key,
 												ASN1_Chr const& chr,
 												string const& hash_alg,
-												RandomNumberGenerator& rng);
+												RandomNumberGenerator rng);
 
 /**
 * Sign a CVC request.
@@ -156,5 +156,5 @@ EAC1_1_CVC sign_request(EAC1_1_CVC const& signer_cert,
 											 bool domestic,
 											 uint dvca_validity_months,
 											 uint ca_is_validity_months,
-											 RandomNumberGenerator& rng);
+											 RandomNumberGenerator rng);
 }

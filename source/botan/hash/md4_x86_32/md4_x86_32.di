@@ -12,7 +12,7 @@ import botan.md4;
 class MD4_X86_32 : public MD4
 {
 	public:
-		HashFunction* clone() const { return new MD4_X86_32; }
+		HashFunction clone() const { return new MD4_X86_32; }
 	private:
 		void compress_n(const byte[], size_t blocks);
 };

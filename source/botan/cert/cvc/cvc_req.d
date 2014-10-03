@@ -10,8 +10,8 @@ import botan.cvc_cert;
 import botan.ber_dec;
 bool EAC1_1_Req::operator==(EAC1_1_Req const& rhs) const
 {
-	return (this->tbs_data() == rhs.tbs_data() &&
-			  this->get_concat_sig() == rhs.get_concat_sig());
+	return (this.tbs_data() == rhs.tbs_data() &&
+			  this.get_concat_sig() == rhs.get_concat_sig());
 }
 
 void EAC1_1_Req::force_decode()

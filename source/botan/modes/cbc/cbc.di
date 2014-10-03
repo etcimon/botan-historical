@@ -27,8 +27,8 @@ class CBC_Mode : public Cipher_Mode
 		bool valid_nonce_length(size_t n) const override;
 
 		void clear() override;
-	protected:
-		CBC_Mode(BlockCipher* cipher, BlockCipherModePaddingMethod* padding);
+	package:
+		CBC_Mode(BlockCipher cipher, BlockCipherModePaddingMethod* padding);
 
 		const BlockCipher& cipher() const { return *m_cipher; }
 
@@ -56,7 +56,7 @@ class CBC_Mode : public Cipher_Mode
 class CBC_Encryption : public CBC_Mode
 {
 	public:
-		CBC_Encryption(BlockCipher* cipher, BlockCipherModePaddingMethod* padding) :
+		CBC_Encryption(BlockCipher cipher, BlockCipherModePaddingMethod* padding) :
 			CBC_Mode(cipher, padding) {}
 
 		void update(SafeVector!byte blocks, size_t offset = 0) override;
@@ -74,7 +74,7 @@ class CBC_Encryption : public CBC_Mode
 class CTS_Encryption : public CBC_Encryption
 {
 	public:
-		CTS_Encryption(BlockCipher* cipher) : CBC_Encryption(cipher, null) {}
+		CTS_Encryption(BlockCipher cipher) : CBC_Encryption(cipher, null) {}
 
 		size_t output_length(size_t input_length) const override;
 
@@ -91,7 +91,7 @@ class CTS_Encryption : public CBC_Encryption
 class CBC_Decryption : public CBC_Mode
 {
 	public:
-		CBC_Decryption(BlockCipher* cipher, BlockCipherModePaddingMethod* padding) :
+		CBC_Decryption(BlockCipher cipher, BlockCipherModePaddingMethod* padding) :
 			CBC_Mode(cipher, padding), m_tempbuf(update_granularity()) {}
 
 		void update(SafeVector!byte blocks, size_t offset = 0) override;
@@ -111,7 +111,7 @@ class CBC_Decryption : public CBC_Mode
 class CTS_Decryption : public CBC_Decryption
 {
 	public:
-		CTS_Decryption(BlockCipher* cipher) : CBC_Decryption(cipher, null) {}
+		CTS_Decryption(BlockCipher cipher) : CBC_Decryption(cipher, null) {}
 
 		void finish(SafeVector!byte final_block, size_t offset = 0) override;
 

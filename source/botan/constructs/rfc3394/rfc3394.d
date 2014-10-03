@@ -13,8 +13,8 @@ import botan.exceptn;
 import botan.internal.xor_buf;
 namespace {
 
-BlockCipher* make_aes(size_t keylength,
-							 Algorithm_Factory& af)
+BlockCipher make_aes(size_t keylength,
+							 ref Algorithm_Factory af)
 {
 	if (keylength == 16)
 		return af.make_block_cipher("AES-128");
@@ -30,13 +30,13 @@ BlockCipher* make_aes(size_t keylength,
 
 SafeVector!byte rfc3394_keywrap(in SafeVector!byte key,
 												const SymmetricKey& kek,
-												Algorithm_Factory& af)
+												ref Algorithm_Factory af)
 {
 	if (key.size() % 8 != 0)
 		throw new std::invalid_argument("Bad input key size for NIST key wrap");
 
 	Unique!BlockCipher aes(make_aes(kek.length(), af));
-	aes->set_key(kek);
+	aes.set_key(kek);
 
 	const size_t n = key.size() / 8;
 
@@ -56,7 +56,7 @@ SafeVector!byte rfc3394_keywrap(in SafeVector!byte key,
 
 			copy_mem(&A[8], &R[8*i], 8);
 
-			aes->encrypt(&A[0]);
+			aes.encrypt(&A[0]);
 			copy_mem(&R[8*i], &A[8], 8);
 
 			byte[4] t_buf = { 0 };
@@ -72,13 +72,13 @@ SafeVector!byte rfc3394_keywrap(in SafeVector!byte key,
 
 SafeVector!byte rfc3394_keyunwrap(in SafeVector!byte key,
 												 const SymmetricKey& kek,
-												 Algorithm_Factory& af)
+												 ref Algorithm_Factory af)
 {
 	if (key.size() < 16 || key.size() % 8 != 0)
 		throw new std::invalid_argument("Bad input key size for NIST key unwrap");
 
 	Unique!BlockCipher aes(make_aes(kek.length(), af));
-	aes->set_key(kek);
+	aes.set_key(kek);
 
 	const size_t n = (key.size() - 8) / 8;
 
@@ -103,7 +103,7 @@ SafeVector!byte rfc3394_keyunwrap(in SafeVector!byte key,
 
 			copy_mem(&A[8], &R[8*(i-1)], 8);
 
-			aes->decrypt(&A[0]);
+			aes.decrypt(&A[0]);
 
 			copy_mem(&R[8*(i-1)], &A[8], 8);
 		}

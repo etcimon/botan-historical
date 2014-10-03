@@ -25,13 +25,13 @@ string PGP_encode(
 	string pgp_encoded = PGP_HEADER;
 
 	if (headers.find("Version") != headers.end())
-		pgp_encoded += "Version: " + headers.find("Version")->second + '';
+		pgp_encoded += "Version: " + headers.find("Version").second + '';
 
 	HashMap!(string, string)::const_iterator i = headers.begin();
 	while(i != headers.end())
 	{
-		if (i->first != "Version")
-			pgp_encoded += i->first + ": " + i->second + '';
+		if (i.first != "Version")
+			pgp_encoded += i.first + ": " + i.second + '';
 		++i;
 	}
 	pgp_encoded += '';

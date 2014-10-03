@@ -16,5 +16,5 @@ class XTEA_SIMD : public XTEA
 
 		void encrypt_n(byte* input, byte* output, size_t blocks) const;
 		void decrypt_n(byte* input, byte* output, size_t blocks) const;
-		BlockCipher* clone() const { return new XTEA_SIMD; }
+		BlockCipher clone() const { return new XTEA_SIMD; }
 };

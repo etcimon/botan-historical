@@ -36,12 +36,12 @@ Blocking_Client::Blocking_Client(size_t delegate(ref byte[]) read_fn,
 
 bool Blocking_Client::handshake_cb(in Session session)
 {
-	return this->handshake_complete(session);
+	return this.handshake_complete(session);
 }
 
 void Blocking_Client::alert_cb(const Alert alert, const byte[], size_t)
 {
-	this->alert_notification(alert);
+	this.alert_notification(alert);
 }
 
 void Blocking_Client::data_cb(in byte* data, size_t data_len)
@@ -70,7 +70,7 @@ size_t Blocking_Client::read(byte buf[], size_t buf_len)
 		m_channel.received_data(&readbuf[0], from_socket);
 	}
 
-	const size_t returned = std::min(buf_len, m_plaintext.size());
+	const size_t returned = std.algorithm.min(buf_len, m_plaintext.size());
 
 	for (size_t i = 0; i != returned; ++i)
 		buf[i] = m_plaintext[i];

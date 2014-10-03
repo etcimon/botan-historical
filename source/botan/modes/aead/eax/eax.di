@@ -31,16 +31,16 @@ class EAX_Mode : public AEAD_Mode
 		size_t tag_size() const override { return m_tag_size; }
 
 		void clear() override;
-	protected:
+	package:
 		void key_schedule(in byte* key, size_t length) override;
 
 		/**
 		* @param cipher the cipher to use
 		* @param tag_size is how big the auth tag will be
 		*/
-		EAX_Mode(BlockCipher* cipher, size_t tag_size);
+		EAX_Mode(BlockCipher cipher, size_t tag_size);
 
-		size_t block_size() const { return m_cipher->block_size(); }
+		size_t block_size() const { return m_cipher.block_size(); }
 
 		size_t m_tag_size;
 
@@ -63,7 +63,7 @@ class EAX_Encryption : public EAX_Mode
 		* @param cipher a 128-bit block cipher
 		* @param tag_size is how big the auth tag will be
 		*/
-		EAX_Encryption(BlockCipher* cipher, size_t tag_size = 0) :
+		EAX_Encryption(BlockCipher cipher, size_t tag_size = 0) :
 			EAX_Mode(cipher, tag_size) {}
 
 		size_t output_length(size_t input_length) const override
@@ -86,7 +86,7 @@ class EAX_Decryption : public EAX_Mode
 		* @param cipher a 128-bit block cipher
 		* @param tag_size is how big the auth tag will be
 		*/
-		EAX_Decryption(BlockCipher* cipher, size_t tag_size = 0) :
+		EAX_Decryption(BlockCipher cipher, size_t tag_size = 0) :
 			EAX_Mode(cipher, tag_size) {}
 
 		size_t output_length(size_t input_length) const override

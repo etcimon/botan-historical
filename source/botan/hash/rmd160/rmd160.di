@@ -14,7 +14,7 @@ class RIPEMD_160 : public MDx_HashFunction
 	public:
 		string name() const { return "RIPEMD-160"; }
 		size_t output_length() const { return 20; }
-		HashFunction* clone() const { return new RIPEMD_160; }
+		HashFunction clone() const { return new RIPEMD_160; }
 
 		void clear();
 

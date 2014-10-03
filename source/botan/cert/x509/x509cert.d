@@ -24,9 +24,9 @@ namespace {
 /*
 * Lookup each OID in the vector
 */
-Vector!( string ) lookup_oids(in Vector!( string ) input)
+Vector!string lookup_oids(in Vector!string input)
 {
-	Vector!( string ) output;
+	Vector!string output;
 
 	for (auto i = input.begin(); i != input.end(); ++i)
 		output.push_back(OIDS::lookup(OID(*i)));
@@ -184,7 +184,7 @@ string X509_Certificate::end_time() const
 /*
 * Return information about the subject
 */
-Vector!( string )
+Vector!string
 X509_Certificate::subject_info(in string what) const
 {
 	return subject.get(X509_DN::deref_info_field(what));
@@ -193,7 +193,7 @@ X509_Certificate::subject_info(in string what) const
 /*
 * Return information about the issuer
 */
-Vector!( string )
+Vector!string
 X509_Certificate::issuer_info(in string what) const
 {
 	return issuer.get(X509_DN::deref_info_field(what));
@@ -205,7 +205,7 @@ X509_Certificate::issuer_info(in string what) const
 Public_Key* X509_Certificate::subject_public_key() const
 {
 	return X509::load_key(
-		ASN1::put_in_sequence(this->subject_public_key_bits()));
+		ASN1::put_in_sequence(this.subject_public_key_bits()));
 }
 
 Vector!( byte ) X509_Certificate::subject_public_key_bits() const
@@ -260,7 +260,7 @@ Key_Constraints X509_Certificate::constraints() const
 /*
 * Return the list of extended key usage OIDs
 */
-Vector!( string ) X509_Certificate::ex_constraints() const
+Vector!string X509_Certificate::ex_constraints() const
 {
 	return lookup_oids(subject.get("X509v3.ExtendedKeyUsage"));
 }
@@ -268,7 +268,7 @@ Vector!( string ) X509_Certificate::ex_constraints() const
 /*
 * Return the list of certificate policies
 */
-Vector!( string ) X509_Certificate::policies() const
+Vector!string X509_Certificate::policies() const
 {
 	return lookup_oids(subject.get("X509v3.CertificatePolicies"));
 }
@@ -336,7 +336,7 @@ Vector!( byte ) X509_Certificate::raw_subject_dn() const
 namespace {
 
 bool cert_subject_dns_match(in string name,
-									 const Vector!( string )& cert_names)
+									 const Vector!string& cert_names)
 {
 	for (size_t i = 0; i != cert_names.size(); ++i)
 	{
@@ -366,8 +366,8 @@ bool cert_subject_dns_match(in string name,
 string X509_Certificate::fingerprint(in string hash_name) const
 {
 	Unique!HashFunction hash(get_hash(hash_name));
-	hash->update(this->BER_encode());
-	const auto hex_print = hex_encode(hash->flush());
+	hash.update(this.BER_encode());
+	const auto hex_print = hex_encode(hash.flush());
 
 	string formatted_print;
 
@@ -450,7 +450,7 @@ string X509_Certificate::to_string() const
 
 	for (size_t i = 0; dn_fields[i]; ++i)
 	{
-		const Vector!( string ) vals = this->subject_info(dn_fields[i]);
+		const Vector!string vals = this.subject_info(dn_fields[i]);
 
 		if (vals.empty())
 			continue;
@@ -463,7 +463,7 @@ string X509_Certificate::to_string() const
 
 	for (size_t i = 0; dn_fields[i]; ++i)
 	{
-		const Vector!( string ) vals = this->issuer_info(dn_fields[i]);
+		const Vector!string vals = this.issuer_info(dn_fields[i]);
 
 		if (vals.empty())
 			continue;
@@ -474,13 +474,13 @@ string X509_Certificate::to_string() const
 		output << "";
 	}
 
-	output << "Version: " << this->x509_version() << "";
+	output << "Version: " << this.x509_version() << "";
 
-	output << "Not valid before: " << this->start_time() << "";
-	output << "Not valid after: " << this->end_time() << "";
+	output << "Not valid before: " << this.start_time() << "";
+	output << "Not valid after: " << this.end_time() << "";
 
 	output << "Constraints:";
-	Key_Constraints constraints = this->constraints();
+	Key_Constraints constraints = this.constraints();
 	if (constraints == NO_CONSTRAINTS)
 		output << " None";
 	else
@@ -501,7 +501,7 @@ string X509_Certificate::to_string() const
 			output << "	CRL Sign";
 	}
 
-	Vector!( string ) policies = this->policies();
+	Vector!string policies = this.policies();
 	if (!policies.empty())
 	{
 		output << "Policies: " << "";
@@ -509,7 +509,7 @@ string X509_Certificate::to_string() const
 			output << "	" << policies[i] << "";
 	}
 
-	Vector!( string ) ex_constraints = this->ex_constraints();
+	Vector!string ex_constraints = this.ex_constraints();
 	if (!ex_constraints.empty())
 	{
 		output << "Extended Constraints:";
@@ -523,17 +523,17 @@ string X509_Certificate::to_string() const
 		output << "CRL " << crl_distribution_point() << "";
 
 	output << "Signature algorithm: " <<
-		OIDS::lookup(this->signature_algorithm().oid) << "";
+		OIDS::lookup(this.signature_algorithm().oid) << "";
 
-	output << "Serial number: " << hex_encode(this->serial_number()) << "";
+	output << "Serial number: " << hex_encode(this.serial_number()) << "";
 
-	if (this->authority_key_id().size())
-	  output << "Authority keyid: " << hex_encode(this->authority_key_id()) << "";
+	if (this.authority_key_id().size())
+	  output << "Authority keyid: " << hex_encode(this.authority_key_id()) << "";
 
-	if (this->subject_key_id().size())
-	  output << "Subject keyid: " << hex_encode(this->subject_key_id()) << "";
+	if (this.subject_key_id().size())
+	  output << "Subject keyid: " << hex_encode(this.subject_key_id()) << "";
 
-	Unique!X509_PublicKey pubkey(this->subject_public_key());
+	Unique!X509_PublicKey pubkey(this.subject_public_key());
 	output << "Public Key:" << X509::PEM_encode(*pubkey);
 
 	return output.str();
@@ -553,7 +553,7 @@ X509_DN create_dn(in Data_Store info)
 	X509_DN dn;
 
 	for (auto i = names.begin(); i != names.end(); ++i)
-		dn.add_attribute(i->first, i->second);
+		dn.add_attribute(i.first, i.second);
 
 	return dn;
 }
@@ -575,7 +575,7 @@ AlternativeName create_alt_name(in Data_Store info)
 	AlternativeName alt_name;
 
 	for (auto i = names.begin(); i != names.end(); ++i)
-		alt_name.add_attribute(i->first, i->second);
+		alt_name.add_attribute(i.first, i.second);
 
 	return alt_name;
 }

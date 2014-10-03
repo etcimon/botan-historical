@@ -37,18 +37,18 @@ void hmac_prf(MessageAuthenticationCode& prf,
 /*
 * HMAC_RNG Constructor
 */
-HMAC_RNG::HMAC_RNG(MessageAuthenticationCode* extractor,
-						 MessageAuthenticationCode* prf) :
+HMAC_RNG::HMAC_RNG(MessageAuthenticationCode extractor,
+						 MessageAuthenticationCode prf) :
 	m_extractor(extractor), m_prf(prf)
 {
-	if (!m_prf->valid_keylength(m_extractor->output_length()) ||
-		!m_extractor->valid_keylength(m_prf->output_length()))
+	if (!m_prf.valid_keylength(m_extractor.output_length()) ||
+		!m_extractor.valid_keylength(m_prf.output_length()))
 		throw new Invalid_Argument("HMAC_RNG: Bad algo combination " +
-									  m_extractor->name() + " and " +
-									  m_prf->name());
+									  m_extractor.name() + " and " +
+									  m_prf.name());
 
 	// First PRF inputs are all zero, as specified in section 2
-	m_K.resize(m_prf->output_length());
+	m_K.resize(m_prf.output_length());
 
 	/*
 	Normally we want to feedback PRF outputs to the extractor function
@@ -63,8 +63,8 @@ HMAC_RNG::HMAC_RNG(MessageAuthenticationCode* extractor,
 	The PRF key will not be used to generate outputs until after reseed
 	sets m_seeded to true.
 	*/
-	SafeVector!byte prf_key(m_extractor->output_length());
-	m_prf->set_key(prf_key);
+	SafeVector!byte prf_key(m_extractor.output_length());
+	m_prf.set_key(prf_key);
 
 	/*
 	Use PRF("Botan HMAC_RNG XTS") as the intitial XTS key.
@@ -75,7 +75,7 @@ HMAC_RNG::HMAC_RNG(MessageAuthenticationCode* extractor,
 	If I understand the E-t-E paper correctly (specifically Section 4),
 	using this fixed extractor key is safe to do.
 	*/
-	m_extractor->set_key(prf->process("Botan HMAC_RNG XTS"));
+	m_extractor.set_key(prf.process("Botan HMAC_RNG XTS"));
 }
 
 /*
@@ -91,7 +91,7 @@ void HMAC_RNG::randomize(byte* output)
 			throw new PRNG_Unseeded(name());
 	}
 
-	const size_t max_per_prf_iter = m_prf->output_length() / 2;
+	const size_t max_per_prf_iter = m_prf.output_length() / 2;
 
 	/*
 	 HMAC KDF as described in E-t-E, using a CTXinfo of "rng"
@@ -100,7 +100,7 @@ void HMAC_RNG::randomize(byte* output)
 	{
 		hmac_prf(*m_prf, m_K, m_counter, "rng");
 
-		const size_t copied = std::min<size_t>(length, max_per_prf_iter);
+		const size_t copied = std.algorithm.min<size_t>(length, max_per_prf_iter);
 
 		copy_mem(output, &m_K[0], copied);
 		output += copied;
@@ -130,7 +130,7 @@ void HMAC_RNG::reseed(size_t poll_bits)
 
 	Entropy_Accumulator accum((in byte* input, size_t in_len)
 		{
-			m_extractor->update(input, in_len);
+			m_extractor.update(input, in_len);
 			bits_collected += entropy_estimate;
 			return (bits_collected >= poll_bits);
 		}
@@ -150,26 +150,26 @@ void HMAC_RNG::reseed(size_t poll_bits)
 	* to the extractor function.
 	*/
 	hmac_prf(*m_prf, m_K, m_counter, "rng");
-	m_extractor->update(m_K); // K is the CTXinfo=rng PRF output
+	m_extractor.update(m_K); // K is the CTXinfo=rng PRF output
 
 	hmac_prf(*m_prf, m_K, m_counter, "reseed");
-	m_extractor->update(m_K); // K is the CTXinfo=reseed PRF output
+	m_extractor.update(m_K); // K is the CTXinfo=reseed PRF output
 
 	/* Now derive the new PRK using everything that has been fed into
 		the extractor, and set the PRF key to that */
-	m_prf->set_key(m_extractor->flush());
+	m_prf.set_key(m_extractor.flush());
 
 	// Now generate a new PRF output to use as the XTS extractor salt
 	hmac_prf(*m_prf, m_K, m_counter, "xts");
-	m_extractor->set_key(m_K);
+	m_extractor.set_key(m_K);
 
 	// Reset state
 	zeroise(m_K);
 	m_counter = 0;
 
 	m_collected_entropy_estimate =
-		std::min<size_t>(m_collected_entropy_estimate + bits_collected,
-							  m_extractor->output_length() * 8);
+		std.algorithm.min<size_t>(m_collected_entropy_estimate + bits_collected,
+							  m_extractor.output_length() * 8);
 
 	m_output_since_reseed = 0;
 }
@@ -184,7 +184,7 @@ bool HMAC_RNG::is_seeded() const
 */
 void HMAC_RNG::add_entropy(in byte* input, size_t length)
 {
-	m_extractor->update(input, length);
+	m_extractor.update(input, length);
 	reseed(BOTAN_RNG_RESEED_POLL_BITS);
 }
 
@@ -194,8 +194,8 @@ void HMAC_RNG::add_entropy(in byte* input, size_t length)
 void HMAC_RNG::clear()
 {
 	m_collected_entropy_estimate = 0;
-	m_extractor->clear();
-	m_prf->clear();
+	m_extractor.clear();
+	m_prf.clear();
 	zeroise(m_K);
 	m_counter = 0;
 }
@@ -205,7 +205,7 @@ void HMAC_RNG::clear()
 */
 string HMAC_RNG::name() const
 {
-	return "HMAC_RNG(" + m_extractor->name() + "," + m_prf->name() + ")";
+	return "HMAC_RNG(" + m_extractor.name() + "," + m_prf.name() + ")";
 }
 
 }

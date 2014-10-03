@@ -175,7 +175,7 @@ X509_Certificate
 create_self_signed_cert(in X509_Cert_Options opts,
 								in Private_Key key,
 								in string hash_fn,
-								RandomNumberGenerator& rng);
+								RandomNumberGenerator rng);
 
 /**
 * Create a PKCS#10 certificate request.
@@ -188,6 +188,6 @@ create_self_signed_cert(in X509_Cert_Options opts,
 PKCS10_Request create_cert_req(in X509_Cert_Options opts,
 													  in Private_Key key,
 													  in string hash_fn,
-													  RandomNumberGenerator& rng);
+													  RandomNumberGenerator rng);
 
 }

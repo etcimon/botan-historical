@@ -11,7 +11,7 @@ import botan.tls_ciphersuite;
 import botan.tls_magic;
 import botan.tls_server_info;
 import botan.secmem;
-import botan.symkey;
+import botan.algo_base.symkey;
 import chrono;
 namespace TLS {
 
@@ -70,7 +70,7 @@ class Session
 		* Encrypt a session (useful for serialization or session tickets)
 		*/
 		Vector!( byte ) encrypt(in SymmetricKey key,
-										  RandomNumberGenerator& rng) const;		/**
+										  RandomNumberGenerator rng) const;		/**
 		* Decrypt a session created by encrypt
 		* @param ctext the ciphertext returned by encrypt
 		* @param ctext_size the size of ctext in bytes

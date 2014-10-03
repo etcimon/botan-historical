@@ -52,7 +52,7 @@ class GOST_28147_89 : public Block_Cipher_Fixed_Params!(8, 32)
 		void clear();
 
 		string name() const;
-		BlockCipher* clone() const { return new GOST_28147_89(SBOX); }
+		BlockCipher clone() const { return new GOST_28147_89(SBOX); }
 
 		/**
 		* @param params the sbox parameters to use

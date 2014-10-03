@@ -19,7 +19,7 @@ class RC4_OpenSSL : public StreamCipher
 		void clear() { clear_mem(&state, 1); }
 
 		string name() const;
-		StreamCipher* clone() const { return new RC4_OpenSSL(SKIP); }
+		StreamCipher clone() const { return new RC4_OpenSSL(SKIP); }
 
 		Key_Length_Specification key_spec() const
 		{
@@ -68,9 +68,9 @@ void RC4_OpenSSL::cipher(in byte* input, byte* output, size_t length)
 /**
 * Look for an OpenSSL-supported stream cipher (RC4)
 */
-StreamCipher*
+StreamCipher
 OpenSSL_Engine::find_stream_cipher(in SCAN_Name request,
-											  Algorithm_Factory&) const
+											  ref Algorithm_Factory) const
 {
 	if (request.algo_name() == "RC4")
 		return new RC4_OpenSSL(request.arg_as_integer(0, 0));

@@ -6,7 +6,7 @@
 */
 
 import botan.algo_base.buf_comp;
-import botan.sym_algo;
+import botan.algo_base.sym_algo;
 import string;
 /**
 * This class represents Message Authentication Code (MAC) objects.
@@ -26,7 +26,7 @@ class MessageAuthenticationCode : public Buffered_Computation,
 		/**
 		* Get a new object representing the same algorithm as *this
 		*/
-		abstract MessageAuthenticationCode* clone() const;
+		abstract MessageAuthenticationCode clone() const;
 
 		/**
 		* Get the name of this algorithm.

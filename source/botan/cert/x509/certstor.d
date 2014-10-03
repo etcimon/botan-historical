@@ -119,7 +119,7 @@ Certificate_Store_In_Memory::Certificate_Store_In_Memory(in string dir)
 
 	while(i != end)
 	{
-		auto path = i->path();
+		auto path = i.path();
 		++i;
 
 		try

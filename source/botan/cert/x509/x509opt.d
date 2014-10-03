@@ -89,7 +89,7 @@ X509_Cert_Options::X509_Cert_Options(in string initial_opts,
 	if (initial_opts == "")
 		return;
 
-	Vector!( string ) parsed = split_on(initial_opts, '/');
+	Vector!string parsed = split_on(initial_opts, '/');
 
 	if (parsed.size() > 4)
 		throw new Invalid_Argument("X.509 cert options: Too many names: "

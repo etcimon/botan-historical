@@ -27,7 +27,7 @@ class X509_CA
 		* @return resulting certificate
 		*/
 		X509_Certificate sign_request(in PKCS10_Request req,
-												RandomNumberGenerator& rng,
+												RandomNumberGenerator rng,
 												const X509_Time& not_before,
 												const X509_Time& not_after);
 
@@ -44,7 +44,7 @@ class X509_CA
 		* as the offset from the current time
 		* @return new CRL
 		*/
-		X509_CRL new_crl(RandomNumberGenerator& rng,
+		X509_CRL new_crl(RandomNumberGenerator rng,
 							  uint next_update = 0) const;
 
 		/**
@@ -57,7 +57,7 @@ class X509_CA
 		*/
 		X509_CRL update_crl(in X509_CRL last_crl,
 								  const Vector!( CRL_Entry )& new_entries,
-								  RandomNumberGenerator& rng,
+								  RandomNumberGenerator rng,
 								  uint next_update = 0) const;
 
 		/**
@@ -74,7 +74,7 @@ class X509_CA
 		* @returns newly minted certificate
 		*/
 		static X509_Certificate make_cert(PK_Signer* signer,
-													 RandomNumberGenerator& rng,
+													 RandomNumberGenerator rng,
 													 const AlgorithmIdentifier& sig_algo,
 													 in Vector!byte pub_key,
 													 const X509_Time& not_before,
@@ -100,7 +100,7 @@ class X509_CA
 	private:
 		X509_CRL make_crl(in Vector!( CRL_Entry ) entries,
 								uint crl_number, uint next_update,
-								RandomNumberGenerator& rng) const;
+								RandomNumberGenerator rng) const;
 
 		AlgorithmIdentifier ca_sig_algo;
 		X509_Certificate cert;

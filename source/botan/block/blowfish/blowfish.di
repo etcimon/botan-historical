@@ -23,7 +23,7 @@ class Blowfish : public Block_Cipher_Fixed_Params!(8, 1, 56)
 
 		void clear();
 		string name() const { return "Blowfish"; }
-		BlockCipher* clone() const { return new Blowfish; }
+		BlockCipher clone() const { return new Blowfish; }
 	private:
 		void key_schedule(in byte* key);
 

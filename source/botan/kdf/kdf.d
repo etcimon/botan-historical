@@ -7,7 +7,7 @@
 
 import botan.kdf;
 import botan.libstate;
-import botan.scan_name;
+import botan.algo_base.scan_name;
 
 #if defined(BOTAN_HAS_KDF1)
   import botan.kdf1;
@@ -32,7 +32,7 @@ KDF* get_kdf(in string algo_spec)
 {
 	SCAN_Name request(algo_spec);
 
-	Algorithm_Factory& af = global_state().algorithm_factory();
+	Algorithm_Factory af = global_state().algorithm_factory();
 
 	if (request.algo_name() == "Raw")
 		return null; // No KDF

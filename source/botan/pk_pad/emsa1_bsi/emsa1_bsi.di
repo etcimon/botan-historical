@@ -18,8 +18,8 @@ class EMSA1_BSI : public EMSA1
 		/**
 		* @param hash the hash object to use
 		*/
-		EMSA1_BSI(HashFunction* hash) : EMSA1(hash) {}
+		EMSA1_BSI(HashFunction hash) : EMSA1(hash) {}
 	private:
 		SafeVector!byte encoding_of(in SafeVector!byte, size_t,
-												 RandomNumberGenerator& rng);
+												 RandomNumberGenerator rng);
 };

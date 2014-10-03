@@ -31,7 +31,7 @@ class RSA_PublicKey : public abstract IF_Scheme_PublicKey
 			IF_Scheme_PublicKey(n, e)
 		{}
 
-	protected:
+	package:
 		RSA_PublicKey() {}
 };
 
@@ -42,11 +42,11 @@ class RSA_PrivateKey : public RSA_PublicKey,
 											public IF_Scheme_PrivateKey
 {
 	public:
-		bool check_key(RandomNumberGenerator& rng, bool) const;
+		bool check_key(RandomNumberGenerator rng, bool) const;
 
 		RSA_PrivateKey(in AlgorithmIdentifier alg_id,
 							in SafeVector!byte key_bits,
-							RandomNumberGenerator& rng) :
+							RandomNumberGenerator rng) :
 			IF_Scheme_PrivateKey(rng, alg_id, key_bits) {}
 
 		/**
@@ -61,7 +61,7 @@ class RSA_PrivateKey : public RSA_PublicKey,
 		* @param n if specified, this must be n = p * q. Leave it as 0
 		* if you wish to the constructor to calculate it.
 		*/
-		RSA_PrivateKey(RandomNumberGenerator& rng,
+		RSA_PrivateKey(RandomNumberGenerator rng,
 							ref const BigInt p, ref const BigInt q,
 							ref const BigInt e, ref const BigInt d = 0,
 							ref const BigInt n = 0) :
@@ -73,7 +73,7 @@ class RSA_PrivateKey : public RSA_PublicKey,
 		* @param bits the desired bit length of the private key
 		* @param exp the public exponent to be used
 		*/
-		RSA_PrivateKey(RandomNumberGenerator& rng,
+		RSA_PrivateKey(RandomNumberGenerator rng,
 							size_t bits, size_t exp = 65537);
 };
 
@@ -85,12 +85,12 @@ class RSA_Private_Operation : public PK_Ops::Signature,
 {
 	public:
 		RSA_Private_Operation(in RSA_PrivateKey rsa,
-									 RandomNumberGenerator& rng);
+									 RandomNumberGenerator rng);
 
 		size_t max_input_bits() const { return (n.bits() - 1); }
 
 		SafeVector!byte sign(in byte* msg, size_t msg_len,
-										RandomNumberGenerator& rng);
+										RandomNumberGenerator rng);
 
 		SafeVector!byte decrypt(in byte* msg, size_t msg_len);
 
@@ -120,7 +120,7 @@ class RSA_Public_Operation : public PK_Ops::Verification,
 		bool with_recovery() const { return true; }
 
 		SafeVector!byte encrypt(in byte* msg, size_t msg_len,
-											RandomNumberGenerator&)
+											RandomNumberGenerator)
 		{
 			BigInt m(msg, msg_len);
 			return BigInt::encode_1363(public_op(m), n.bytes());

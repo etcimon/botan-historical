@@ -43,7 +43,7 @@ import botan.internal.core_engine;
   import botan.ecdh;
 #endif
 PK_Ops::Encryption*
-Core_Engine::get_encryption_op(in Public_Key key, RandomNumberGenerator&) const
+Core_Engine::get_encryption_op(in Public_Key key, RandomNumberGenerator) const
 {
 #if defined(BOTAN_HAS_RSA)
 	if (in RSA_PublicKey* s = cast(const RSA_PublicKey*)(key))
@@ -59,7 +59,7 @@ Core_Engine::get_encryption_op(in Public_Key key, RandomNumberGenerator&) const
 }
 
 PK_Ops::Decryption*
-Core_Engine::get_decryption_op(in Private_Key key, RandomNumberGenerator& rng) const
+Core_Engine::get_decryption_op(in Private_Key key, RandomNumberGenerator rng) const
 {
 #if defined(BOTAN_HAS_RSA)
 	if (in RSA_PrivateKey* s = cast(const RSA_PrivateKey*)(key))
@@ -75,7 +75,7 @@ Core_Engine::get_decryption_op(in Private_Key key, RandomNumberGenerator& rng) c
 }
 
 PK_Ops::Key_Agreement*
-Core_Engine::get_key_agreement_op(in Private_Key key, RandomNumberGenerator& rng) const
+Core_Engine::get_key_agreement_op(in Private_Key key, RandomNumberGenerator rng) const
 {
 #if defined(BOTAN_HAS_DIFFIE_HELLMAN)
 	if (in DH_PrivateKey* dh = cast(const DH_PrivateKey*)(key))
@@ -91,7 +91,7 @@ Core_Engine::get_key_agreement_op(in Private_Key key, RandomNumberGenerator& rng
 }
 
 PK_Ops::Signature*
-Core_Engine::get_signature_op(in Private_Key key, RandomNumberGenerator& rng) const
+Core_Engine::get_signature_op(in Private_Key key, RandomNumberGenerator rng) const
 {
 #if defined(BOTAN_HAS_RSA)
 	if (in RSA_PrivateKey* s = cast(const RSA_PrivateKey*)(key))
@@ -128,7 +128,7 @@ Core_Engine::get_signature_op(in Private_Key key, RandomNumberGenerator& rng) co
 }
 
 PK_Ops::Verification*
-Core_Engine::get_verify_op(in Public_Key key, RandomNumberGenerator&) const
+Core_Engine::get_verify_op(in Public_Key key, RandomNumberGenerator) const
 {
 #if defined(BOTAN_HAS_RSA)
 	if (in RSA_PublicKey* s = cast(const RSA_PublicKey*)(key))

@@ -65,7 +65,7 @@ SafeVector!byte X942_PRF::derive(size_t key_len,
 			);
 
 		SafeVector!byte digest = hash.flush();
-		const size_t needed = std::min(digest.size(), key_len - key.size());
+		const size_t needed = std.algorithm.min(digest.size(), key_len - key.size());
 		key += Pair(&digest[0], needed);
 
 		++counter;

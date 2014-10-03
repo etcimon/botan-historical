@@ -15,7 +15,7 @@ class HAS_160 : public MDx_HashFunction
 	public:
 		string name() const { return "HAS-160"; }
 		size_t output_length() const { return 20; }
-		HashFunction* clone() const { return new HAS_160; }
+		HashFunction clone() const { return new HAS_160; }
 
 		void clear();
 

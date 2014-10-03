@@ -17,7 +17,7 @@ class RC6 : public Block_Cipher_Fixed_Params!(16, 1, 32)
 
 		void clear();
 		string name() const { return "RC6"; }
-		BlockCipher* clone() const { return new RC6; }
+		BlockCipher clone() const { return new RC6; }
 	private:
 		void key_schedule(in byte*, size_t);
 

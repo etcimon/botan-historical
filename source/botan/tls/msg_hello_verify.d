@@ -33,14 +33,14 @@ Hello_Verify_Request::Hello_Verify_Request(in Vector!byte client_hello_bits,
 														 const SymmetricKey& secret_key)
 {
 	Unique!MessageAuthenticationCode hmac(get_mac("HMAC(SHA-256)"));
-	hmac->set_key(secret_key);
+	hmac.set_key(secret_key);
 
-	hmac->update_be(client_hello_bits.size());
-	hmac->update(client_hello_bits);
-	hmac->update_be(client_identity.size());
-	hmac->update(client_identity);
+	hmac.update_be(client_hello_bits.size());
+	hmac.update(client_hello_bits);
+	hmac.update_be(client_identity.size());
+	hmac.update(client_identity);
 
-	m_cookie = unlock(hmac->flush());
+	m_cookie = unlock(hmac.flush());
 }
 
 Vector!( byte ) Hello_Verify_Request::serialize() const

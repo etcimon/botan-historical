@@ -179,7 +179,7 @@ class ASN1_EAC_String: public ASN1_Object
 		ASN1_EAC_String(in string str, ASN1_Tag the_tag);
 
 		~this() {}
-	protected:
+	package:
 		bool sanity_check() const;
 	private:
 		string iso_8859_str;

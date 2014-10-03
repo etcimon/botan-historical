@@ -18,14 +18,14 @@ class EMSA_PKCS1v15 : public EMSA
 		/**
 		* @param hash the hash object to use
 		*/
-		EMSA_PKCS1v15(HashFunction* hash);
+		EMSA_PKCS1v15(HashFunction hash);
 
 		void update(const byte[], size_t);
 
 		SafeVector!byte raw_data();
 
 		SafeVector!byte encoding_of(in SafeVector!byte, size_t,
-												 RandomNumberGenerator& rng);
+												 RandomNumberGenerator rng);
 
 		bool verify(in SafeVector!byte, in SafeVector!byte,
 						size_t);
@@ -47,7 +47,7 @@ class EMSA_PKCS1v15_Raw : public EMSA
 		SafeVector!byte raw_data();
 
 		SafeVector!byte encoding_of(in SafeVector!byte, size_t,
-												 RandomNumberGenerator& rng);
+												 RandomNumberGenerator rng);
 
 		bool verify(in SafeVector!byte, in SafeVector!byte,
 						size_t);

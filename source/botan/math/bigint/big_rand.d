@@ -10,7 +10,7 @@ import botan.parsing;
 /*
 * Randomize this number
 */
-void BigInt::randomize(RandomNumberGenerator& rng,
+void BigInt::randomize(RandomNumberGenerator rng,
 							  size_t bitsize)
 {
 	set_sign(Positive);
@@ -31,7 +31,7 @@ void BigInt::randomize(RandomNumberGenerator& rng,
 /*
 * Generate a random integer within given range
 */
-BigInt BigInt::random_integer(RandomNumberGenerator& rng,
+BigInt BigInt::random_integer(RandomNumberGenerator rng,
 										ref const BigInt min, ref const BigInt max)
 {
 	BigInt range = max - min;

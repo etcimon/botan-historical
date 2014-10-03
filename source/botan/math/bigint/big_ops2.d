@@ -16,7 +16,7 @@ ref BigInt BigInt::operator+=(in BigInt y)
 {
 	const size_t x_sw = sig_words(), y_sw = y.sig_words();
 
-	const size_t reg_size = std::max(x_sw, y_sw) + 1;
+	const size_t reg_size = std.algorithm.max(x_sw, y_sw) + 1;
 	grow_to(reg_size);
 
 	if (sign() == y.sign())
@@ -53,7 +53,7 @@ ref BigInt BigInt::operator-=(in BigInt y)
 
 	s32bit relative_size = bigint_cmp(data(), x_sw, y.data(), y_sw);
 
-	const size_t reg_size = std::max(x_sw, y_sw) + 1;
+	const size_t reg_size = std.algorithm.max(x_sw, y_sw) + 1;
 	grow_to(reg_size);
 
 	if (relative_size < 0)

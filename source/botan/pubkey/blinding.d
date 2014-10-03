@@ -16,8 +16,8 @@ Blinder::Blinder(in BigInt e, ref const BigInt d, ref const BigInt n)
 		throw new Invalid_Argument("Blinder: Arguments too small");
 
 	reducer = Modular_Reducer(n);
-	this->e = e;
-	this->d = d;
+	this.e = e;
+	this.d = d;
 }
 
 /*

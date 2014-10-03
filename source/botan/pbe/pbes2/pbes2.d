@@ -30,7 +30,7 @@ void PBE_PKCS5v20::write(in byte* input, size_t length)
 */
 void PBE_PKCS5v20::start_msg()
 {
-	pipe.append(get_cipher(block_cipher->name() + "/CBC/PKCS7",
+	pipe.append(get_cipher(block_cipher.name() + "/CBC/PKCS7",
 								  key, iv, direction));
 
 	pipe.start_msg();
@@ -79,15 +79,15 @@ Vector!( byte ) PBE_PKCS5v20::encode_params() const
 						.encode(iterations)
 						.encode(key_length)
 						.encode_if (
-							m_prf->name() != "HMAC(SHA-160)",
-							AlgorithmIdentifier(m_prf->name(),
+							m_prf.name() != "HMAC(SHA-160)",
+							AlgorithmIdentifier(m_prf.name(),
 													  AlgorithmIdentifier::USE_NULL_PARAM))
 					.end_cons()
 				.get_contents_unlocked()
 				)
 			)
 		.encode(
-			AlgorithmIdentifier(block_cipher->name() + "/CBC",
+			AlgorithmIdentifier(block_cipher.name() + "/CBC",
 				DER_Encoder().encode(iv, OCTET_STRING).get_contents_unlocked()
 				)
 			)
@@ -105,27 +105,27 @@ OID PBE_PKCS5v20::get_oid() const
 
 string PBE_PKCS5v20::name() const
 {
-	return "PBE-PKCS5v20(" + block_cipher->name() + "," +
-									 m_prf->name() + ")";
+	return "PBE-PKCS5v20(" + block_cipher.name() + "," +
+									 m_prf.name() + ")";
 }
 
 /*
 * PKCS#5 v2.0 PBE Constructor
 */
-PBE_PKCS5v20::PBE_PKCS5v20(BlockCipher* cipher,
-									MessageAuthenticationCode* mac,
+PBE_PKCS5v20::PBE_PKCS5v20(BlockCipher cipher,
+									MessageAuthenticationCode mac,
 									in string passphrase,
 									std::chrono::milliseconds msec,
-									RandomNumberGenerator& rng) :
+									RandomNumberGenerator rng) :
 	direction(ENCRYPTION),
 	block_cipher(cipher),
 	m_prf(mac),
 	salt(rng.random_vec(12)),
-	iv(rng.random_vec(block_cipher->block_size())),
+	iv(rng.random_vec(block_cipher.block_size())),
 	iterations(0),
-	key_length(block_cipher->maximum_keylength())
+	key_length(block_cipher.maximum_keylength())
 {
-	PKCS5_PBKDF2 pbkdf(m_prf->clone());
+	PKCS5_PBKDF2 pbkdf(m_prf.clone());
 
 	key = pbkdf.derive_key(key_length, passphrase,
 								  &salt[0], salt.size(),
@@ -167,10 +167,10 @@ PBE_PKCS5v20::PBE_PKCS5v20(in Vector!byte params,
 		.verify_end()
 		.end_cons();
 
-	Algorithm_Factory& af = global_state().algorithm_factory();
+	Algorithm_Factory af = global_state().algorithm_factory();
 
 	string cipher = OIDS::lookup(enc_algo.oid);
-	Vector!( string ) cipher_spec = split_on(cipher, '/');
+	Vector!string cipher_spec = split_on(cipher, '/');
 	if (cipher_spec.size() != 2)
 		throw new Decoding_Error("PBE-PKCS5 v2.0: Invalid cipher spec " + cipher);
 
@@ -184,12 +184,12 @@ PBE_PKCS5v20::PBE_PKCS5v20(in Vector!byte params,
 	m_prf = af.make_mac(OIDS::lookup(prf_algo.oid));
 
 	if (key_length == 0)
-		key_length = block_cipher->maximum_keylength();
+		key_length = block_cipher.maximum_keylength();
 
 	if (salt.size() < 8)
 		throw new Decoding_Error("PBE-PKCS5 v2.0: Encoded salt is too small");
 
-	PKCS5_PBKDF2 pbkdf(m_prf->clone());
+	PKCS5_PBKDF2 pbkdf(m_prf.clone());
 
 	key = pbkdf.derive_key(key_length, passphrase,
 								  &salt[0], salt.size(),

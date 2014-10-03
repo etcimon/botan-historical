@@ -15,7 +15,7 @@ import botan.rng;
 * @see http://www.usenix.org/events/usenix99/provos/provos_html/
 */
 string generate_bcrypt(in string password,
-												  RandomNumberGenerator& rng,
+												  RandomNumberGenerator rng,
 												  ushort work_factor = 10);
 
 /**

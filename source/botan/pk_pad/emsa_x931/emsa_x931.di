@@ -18,13 +18,13 @@ class EMSA_X931 : public EMSA
 		/**
 		* @param hash the hash object to use
 		*/
-		EMSA_X931(HashFunction* hash);
+		EMSA_X931(HashFunction hash);
 	private:
 		void update(const byte[], size_t);
 		SafeVector!byte raw_data();
 
 		SafeVector!byte encoding_of(in SafeVector!byte, size_t,
-												 RandomNumberGenerator& rng);
+												 RandomNumberGenerator rng);
 
 		bool verify(in SafeVector!byte, in SafeVector!byte,
 						size_t);

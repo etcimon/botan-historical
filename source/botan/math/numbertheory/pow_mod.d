@@ -24,7 +24,7 @@ Power_Mod::Power_Mod(in Power_Mod other)
 {
 	core = null;
 	if (other.core)
-		core = other.core->copy();
+		core = other.core.copy();
 }
 
 /*
@@ -35,7 +35,7 @@ Power_Mod& Power_Mod::operator=(in Power_Mod other)
 	delete core;
 	core = null;
 	if (other.core)
-		core = other.core->copy();
+		core = other.core.copy();
 	return (*this);
 }
 
@@ -57,11 +57,11 @@ void Power_Mod::set_modulus(in BigInt n, Usage_Hints hints) const
 
 	if (n != 0)
 	{
-		Algorithm_Factory::Engine_Iterator i(global_state().algorithm_factory());
+		Algorithm_Factory.Engine_Iterator i(global_state().algorithm_factory());
 
-		while(const Engine* engine = i.next())
+		while(const Engine engine = i.next())
 		{
-			core = engine->mod_exp(n, hints);
+			core = engine.mod_exp(n, hints);
 
 			if (core)
 				break;
@@ -82,7 +82,7 @@ void Power_Mod::set_base(in BigInt b) const
 
 	if (!core)
 		throw new Internal_Error("Power_Mod::set_base: core was NULL");
-	core->set_base(b);
+	core.set_base(b);
 }
 
 /*
@@ -95,7 +95,7 @@ void Power_Mod::set_exponent(in BigInt e) const
 
 	if (!core)
 		throw new Internal_Error("Power_Mod::set_exponent: core was NULL");
-	core->set_exponent(e);
+	core.set_exponent(e);
 }
 
 /*
@@ -105,7 +105,7 @@ BigInt Power_Mod::execute() const
 {
 	if (!core)
 		throw new Internal_Error("Power_Mod::execute: core was NULL");
-	return core->execute();
+	return core.execute();
 }
 
 /*

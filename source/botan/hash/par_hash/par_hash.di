@@ -15,17 +15,17 @@ class Parallel : public HashFunction
 	public:
 		void clear();
 		string name() const;
-		HashFunction* clone() const;
+		HashFunction clone() const;
 
 		size_t output_length() const;
 
 		/**
 		* @param hashes a set of hashes to compute in parallel
 		*/
-		Parallel(in Vector!( HashFunction* ) hashes);
+		Parallel(in Vector!( HashFunction ) hashes);
 		~this();
 	private:
 		void add_data(const byte[], size_t);
 		void final_result(byte[]);
-		Vector!( HashFunction* ) hashes;
+		Vector!( HashFunction ) hashes;
 };

@@ -6,7 +6,7 @@
 */
 
 import botan.prf_ssl3;
-import botan.symkey;
+import botan.algo_base.symkey;
 import botan.exceptn;
 import botan.sha160;
 import botan.md5;
@@ -58,7 +58,7 @@ SafeVector!byte SSL3_PRF::derive(size_t key_len,
 	int counter = 0;
 	while(key_len)
 	{
-		const size_t produce = std::min<size_t>(key_len, md5.output_length());
+		const size_t produce = std.algorithm.min<size_t>(key_len, md5.output_length());
 
 		output = output + next_hash(counter++, produce, md5, sha1,
 											 secret, secret_len, seed, seed_len);

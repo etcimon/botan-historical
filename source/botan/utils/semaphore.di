@@ -7,7 +7,7 @@
 
 #define BOTAN_SEMAPHORE_H__
 
-import mutex;
+import core.sync.mutex;
 import condition_variable;
 class Semaphore
 {
@@ -21,6 +21,6 @@ class Semaphore
 	private:
 		int m_value;
 		int m_wakeups;
-		std::mutex m_mutex;
+		Mutex m_mutex;
 		std::condition_variable m_cond;
 };

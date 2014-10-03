@@ -24,7 +24,7 @@ class Keccak_1600 : public HashFunction
 		size_t hash_block_size() const { return bitrate / 8; }
 		size_t output_length() const { return output_bits / 8; }
 
-		HashFunction* clone() const;
+		HashFunction clone() const;
 		string name() const;
 		void clear();
 	private:

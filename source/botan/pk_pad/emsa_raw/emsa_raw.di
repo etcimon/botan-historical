@@ -17,7 +17,7 @@ class EMSA_Raw : public EMSA
 		SafeVector!byte raw_data();
 
 		SafeVector!byte encoding_of(in SafeVector!byte, size_t,
-												 RandomNumberGenerator&);
+												 RandomNumberGenerator);
 		bool verify(in SafeVector!byte, in SafeVector!byte,
 						size_t);
 

@@ -26,25 +26,25 @@ class Lion : public BlockCipher
 
 		Key_Length_Specification key_spec() const override
 		{
-			return Key_Length_Specification(2, 2*m_hash->output_length(), 2);
+			return Key_Length_Specification(2, 2*m_hash.output_length(), 2);
 		}
 
 		void clear() override;
 		string name() const override;
-		BlockCipher* clone() const override;
+		BlockCipher clone() const override;
 
 		/**
 		* @param hash the hash to use internally
 		* @param cipher the stream cipher to use internally
 		* @param block_size the size of the block to use
 		*/
-		Lion(HashFunction* hash,
-			  StreamCipher* cipher,
+		Lion(HashFunction hash,
+			  StreamCipher cipher,
 			  size_t block_size);
 	private:
 		void key_schedule(in byte*, size_t);
 
-		size_t left_size() const { return m_hash->output_length(); }
+		size_t left_size() const { return m_hash.output_length(); }
 		size_t right_size() const { return m_block_size - left_size(); }
 
 		const size_t m_block_size;

@@ -26,9 +26,9 @@ import botan.internal.asm_engine;
 #if defined(BOTAN_HAS_SHA1_X86_32)
   import botan.sha1_x86_32;
 #endif
-BlockCipher*
+BlockCipher
 Assembler_Engine::find_block_cipher(in SCAN_Name request,
-												Algorithm_Factory&) const
+												ref Algorithm_Factory) const
 {
 	if (request.algo_name() == "Serpent")
 	{
@@ -40,9 +40,9 @@ Assembler_Engine::find_block_cipher(in SCAN_Name request,
 	return null;
 }
 
-HashFunction*
+HashFunction
 Assembler_Engine::find_hash(in SCAN_Name request,
-									 Algorithm_Factory&) const
+									 ref Algorithm_Factory) const
 {
 #if defined(BOTAN_HAS_MD4_X86_32)
 	if (request.algo_name() == "MD4")

@@ -14,7 +14,7 @@ import botan.internal.xor_buf;
 */
 void PSSR::update(in byte* input, size_t length)
 {
-	hash->update(input, length);
+	hash.update(input, length);
 }
 
 /*
@@ -22,7 +22,7 @@ void PSSR::update(in byte* input, size_t length)
 */
 SafeVector!byte PSSR::raw_data()
 {
-	return hash->flush();
+	return hash.flush();
 }
 
 /*
@@ -30,9 +30,9 @@ SafeVector!byte PSSR::raw_data()
 */
 SafeVector!byte PSSR::encoding_of(in SafeVector!byte msg,
 												  size_t output_bits,
-												  RandomNumberGenerator& rng)
+												  RandomNumberGenerator rng)
 {
-	const size_t HASH_SIZE = hash->output_length();
+	const size_t HASH_SIZE = hash.output_length();
 
 	if (msg.size() != HASH_SIZE)
 		throw new Encoding_Error("PSSR::encoding_of: Bad input length");
@@ -44,10 +44,10 @@ SafeVector!byte PSSR::encoding_of(in SafeVector!byte msg,
 	SafeVector!byte salt = rng.random_vec(SALT_SIZE);
 
 	for (size_t j = 0; j != 8; ++j)
-		hash->update(0);
-	hash->update(msg);
-	hash->update(salt);
-	SafeVector!byte H = hash->flush();
+		hash.update(0);
+	hash.update(msg);
+	hash.update(salt);
+	SafeVector!byte H = hash.flush();
 
 	SafeVector!byte EM(output_length);
 
@@ -67,7 +67,7 @@ SafeVector!byte PSSR::encoding_of(in SafeVector!byte msg,
 bool PSSR::verify(in SafeVector!byte const_coded,
 						 in SafeVector!byte raw, size_t key_bits)
 {
-	const size_t HASH_SIZE = hash->output_length();
+	const size_t HASH_SIZE = hash.output_length();
 	const size_t KEY_BYTES = (key_bits + 7) / 8;
 
 	if (key_bits < 8*HASH_SIZE + 9)
@@ -115,20 +115,20 @@ bool PSSR::verify(in SafeVector!byte const_coded,
 		return false;
 
 	for (size_t j = 0; j != 8; ++j)
-		hash->update(0);
-	hash->update(raw);
-	hash->update(&DB[salt_offset], DB_size - salt_offset);
-	SafeVector!byte H2 = hash->flush();
+		hash.update(0);
+	hash.update(raw);
+	hash.update(&DB[salt_offset], DB_size - salt_offset);
+	SafeVector!byte H2 = hash.flush();
 
 	return same_mem(&H[0], &H2[0], HASH_SIZE);
 }
 
-PSSR::PSSR(HashFunction* h) :
-	SALT_SIZE(h->output_length()), hash(h)
+PSSR::PSSR(HashFunction h) :
+	SALT_SIZE(h.output_length()), hash(h)
 {
 }
 
-PSSR::PSSR(HashFunction* h, size_t salt_size) :
+PSSR::PSSR(HashFunction h, size_t salt_size) :
 	SALT_SIZE(salt_size), hash(h)
 {
 }

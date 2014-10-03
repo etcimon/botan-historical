@@ -14,13 +14,13 @@ class MD4 : public MDx_HashFunction
 	public:
 		string name() const { return "MD4"; }
 		size_t output_length() const { return 16; }
-		HashFunction* clone() const { return new MD4; }
+		HashFunction clone() const { return new MD4; }
 
 		void clear();
 
 		MD4() : MDx_HashFunction(64, false, true), M(16), digest(4)
 		{ clear(); }
-	protected:
+	package:
 		void compress_n(in byte* input, size_t blocks);
 		void copy_out(byte[]);
 

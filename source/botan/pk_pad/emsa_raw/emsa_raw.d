@@ -29,7 +29,7 @@ SafeVector!byte EMSA_Raw::raw_data()
 */
 SafeVector!byte EMSA_Raw::encoding_of(in SafeVector!byte msg,
 													  size_t,
-													  RandomNumberGenerator&)
+													  RandomNumberGenerator)
 {
 	return msg;
 }

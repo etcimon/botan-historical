@@ -39,17 +39,17 @@ SafeVector!byte emsa1_encoding(in SafeVector!byte msg,
 
 void EMSA1::update(in byte* input, size_t length)
 {
-	m_hash->update(input, length);
+	m_hash.update(input, length);
 }
 
 SafeVector!byte EMSA1::raw_data()
 {
-	return m_hash->flush();
+	return m_hash.flush();
 }
 
 SafeVector!byte EMSA1::encoding_of(in SafeVector!byte msg,
 													size_t output_bits,
-													RandomNumberGenerator&)
+													RandomNumberGenerator)
 {
 	if (msg.size() != hash_output_length())
 		throw new Encoding_Error("EMSA1::encoding_of: Invalid size for input");
@@ -60,7 +60,7 @@ bool EMSA1::verify(in SafeVector!byte coded,
 						 in SafeVector!byte raw, size_t key_bits)
 {
 	try {
-		if (raw.size() != m_hash->output_length())
+		if (raw.size() != m_hash.output_length())
 			throw new Encoding_Error("EMSA1::encoding_of: Invalid size for input");
 
 		SafeVector!byte our_coding = emsa1_encoding(raw, key_bits);

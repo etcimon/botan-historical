@@ -33,8 +33,8 @@ class HMAC_RNG : public RandomNumberGenerator
 		* @param extractor a MAC used for extracting the entropy
 		* @param prf a MAC used as a PRF using HKDF construction
 		*/
-		HMAC_RNG(MessageAuthenticationCode* extractor,
-					MessageAuthenticationCode* prf);
+		HMAC_RNG(MessageAuthenticationCode extractor,
+					MessageAuthenticationCode prf);
 	private:
 		Unique!MessageAuthenticationCode m_extractor;
 		Unique!MessageAuthenticationCode m_prf;

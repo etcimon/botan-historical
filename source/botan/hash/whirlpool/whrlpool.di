@@ -14,7 +14,7 @@ class Whirlpool : public MDx_HashFunction
 	public:
 		string name() const { return "Whirlpool"; }
 		size_t output_length() const { return 64; }
-		HashFunction* clone() const { return new Whirlpool; }
+		HashFunction clone() const { return new Whirlpool; }
 
 		void clear();
 

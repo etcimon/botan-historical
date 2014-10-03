@@ -11,7 +11,7 @@ import botan.eme;
 */
 SafeVector!byte EME::encode(in byte* msg, size_t msg_len,
 										 size_t key_bits,
-										 RandomNumberGenerator& rng) const
+										 RandomNumberGenerator rng) const
 {
 	return pad(msg, msg_len, key_bits, rng);
 }
@@ -21,7 +21,7 @@ SafeVector!byte EME::encode(in byte* msg, size_t msg_len,
 */
 SafeVector!byte EME::encode(in SafeVector!byte msg,
 										 size_t key_bits,
-										 RandomNumberGenerator& rng) const
+										 RandomNumberGenerator rng) const
 {
 	return pad(&msg[0], msg.size(), key_bits, rng);
 }

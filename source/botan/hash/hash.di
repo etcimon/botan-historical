@@ -16,7 +16,7 @@ class HashFunction : public Buffered_Computation
 		/**
 		* @return new object representing the same algorithm as *this
 		*/
-		abstract HashFunction* clone() const;
+		abstract HashFunction clone() const;
 
 		abstract void clear();
 

@@ -38,8 +38,8 @@ class SIV_Mode : public AEAD_Mode
 
 		size_t tag_size() const override { return 16; }
 
-	protected:
-		SIV_Mode(BlockCipher* cipher);
+	package:
+		SIV_Mode(BlockCipher cipher);
 
 		StreamCipher& ctr() { return *m_ctr; }
 
@@ -70,7 +70,7 @@ class SIV_Encryption : public SIV_Mode
 		/**
 		* @param cipher a block cipher
 		*/
-		SIV_Encryption(BlockCipher* cipher) : SIV_Mode(cipher) {}
+		SIV_Encryption(BlockCipher cipher) : SIV_Mode(cipher) {}
 
 		void finish(SafeVector!byte final_block, size_t offset = 0) override;
 
@@ -89,7 +89,7 @@ class SIV_Decryption : public SIV_Mode
 		/**
 		* @param cipher a 128-bit block cipher
 		*/
-		SIV_Decryption(BlockCipher* cipher) : SIV_Mode(cipher) {}
+		SIV_Decryption(BlockCipher cipher) : SIV_Mode(cipher) {}
 
 		void finish(SafeVector!byte final_block, size_t offset = 0) override;
 

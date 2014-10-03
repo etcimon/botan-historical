@@ -11,9 +11,9 @@ import botan.cpuid;
 #if defined(BOTAN_HAS_AES_NI)
   import botan.aes_ni;
 #endif
-BlockCipher*
+BlockCipher
 AES_ISA_Engine::find_block_cipher(in SCAN_Name request,
-											 Algorithm_Factory&) const
+											 ref Algorithm_Factory) const
 {
 #if defined(BOTAN_HAS_AES_NI)
 	if (CPUID::has_aes_ni())

@@ -41,19 +41,19 @@ class PBE_PKCS5v20 : public PBE
 		* @param msec how many milliseconds to run the PBKDF
 		* @param rng a random number generator
 		*/
-		PBE_PKCS5v20(BlockCipher* cipher,
-						 MessageAuthenticationCode* mac,
+		PBE_PKCS5v20(BlockCipher cipher,
+						 MessageAuthenticationCode mac,
 						 in string passphrase,
 						 std::chrono::milliseconds msec,
-						 RandomNumberGenerator& rng);
+						 RandomNumberGenerator rng);
 
 		~this();
 	private:
 		void flush_pipe(bool);
 
 		Cipher_Dir direction;
-		BlockCipher* block_cipher;
-		MessageAuthenticationCode* m_prf;
+		BlockCipher block_cipher;
+		MessageAuthenticationCode m_prf;
 		SafeVector!byte salt, key, iv;
 		size_t iterations, key_length;
 		Pipe pipe;

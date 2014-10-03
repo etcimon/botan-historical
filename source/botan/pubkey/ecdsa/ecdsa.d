@@ -9,7 +9,7 @@
 
 import botan.ecdsa;
 import botan.keypair;
-bool ECDSA_PrivateKey::check_key(RandomNumberGenerator& rng,
+bool ECDSA_PrivateKey::check_key(RandomNumberGenerator rng,
 											bool strong) const
 {
 	if (!public_point().on_the_curve())
@@ -31,7 +31,7 @@ ECDSA_Signature_Operation::ECDSA_Signature_Operation(in ECDSA_PrivateKey ecdsa) 
 
 SafeVector!byte
 ECDSA_Signature_Operation::sign(in byte* msg, size_t msg_len,
-										  RandomNumberGenerator& rng)
+										  RandomNumberGenerator rng)
 {
 	rng.add_entropy(msg, msg_len);
 

@@ -4,8 +4,10 @@
 *
 * Distributed under the terms of the Botan license
 */
+module botan.algo_factory.prov_weight;
 
-import botan.internal.algo_cache;
+import botan.algo_factory.algo_cache;
+
 /**
 * Return a static provider weighing
 */
@@ -26,6 +28,4 @@ size_t static_provider_weight(in string prov_name)
 	if (prov_name == "gmp") return 1;
 
 	return 0; // other/unknown
-}
-
 }

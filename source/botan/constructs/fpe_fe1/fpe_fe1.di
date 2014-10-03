@@ -6,7 +6,7 @@
 */
 
 import botan.bigint;
-import botan.symkey;
+import botan.algo_base.symkey;
 namespace FPE {
 
 /**

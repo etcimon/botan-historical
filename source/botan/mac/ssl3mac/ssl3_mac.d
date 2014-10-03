@@ -11,7 +11,7 @@ import botan.ssl3_mac;
 */
 void SSL3_MAC::add_data(in byte* input, size_t length)
 {
-	m_hash->update(input, length);
+	m_hash.update(input, length);
 }
 
 /*
@@ -19,11 +19,11 @@ void SSL3_MAC::add_data(in byte* input, size_t length)
 */
 void SSL3_MAC::final_result(byte mac[])
 {
-	m_hash->flushInto(mac);
-	m_hash->update(m_okey);
-	m_hash->update(mac, output_length());
-	m_hash->flushInto(mac);
-	m_hash->update(m_ikey);
+	m_hash.flushInto(mac);
+	m_hash.update(m_okey);
+	m_hash.update(mac, output_length());
+	m_hash.flushInto(mac);
+	m_hash.update(m_ikey);
 }
 
 /*
@@ -31,11 +31,11 @@ void SSL3_MAC::final_result(byte mac[])
 */
 void SSL3_MAC::key_schedule(in byte* key, size_t length)
 {
-	m_hash->clear();
+	m_hash.clear();
 
 	// Quirk to deal with specification bug
 	const size_t inner_hash_length =
-		(m_hash->name() == "SHA-160") ? 60 : m_hash->hash_block_size();
+		(m_hash.name() == "SHA-160") ? 60 : m_hash.hash_block_size();
 
 	m_ikey.resize(inner_hash_length);
 	m_okey.resize(inner_hash_length);
@@ -46,7 +46,7 @@ void SSL3_MAC::key_schedule(in byte* key, size_t length)
 	copy_mem(&m_ikey[0], key, length);
 	copy_mem(&m_okey[0], key, length);
 
-	m_hash->update(m_ikey);
+	m_hash.update(m_ikey);
 }
 
 /*
@@ -54,7 +54,7 @@ void SSL3_MAC::key_schedule(in byte* key, size_t length)
 */
 void SSL3_MAC::clear()
 {
-	m_hash->clear();
+	m_hash.clear();
 	zap(m_ikey);
 	zap(m_okey);
 }
@@ -64,24 +64,24 @@ void SSL3_MAC::clear()
 */
 string SSL3_MAC::name() const
 {
-	return "SSL3-MAC(" + m_hash->name() + ")";
+	return "SSL3-MAC(" + m_hash.name() + ")";
 }
 
 /*
 * Return a clone of this object
 */
-MessageAuthenticationCode* SSL3_MAC::clone() const
+MessageAuthenticationCode SSL3_MAC::clone() const
 {
-	return new SSL3_MAC(m_hash->clone());
+	return new SSL3_MAC(m_hash.clone());
 }
 
 /*
 * SSL3-MAC Constructor
 */
-SSL3_MAC::SSL3_MAC(HashFunction* hash) : m_hash(hash)
+SSL3_MAC::SSL3_MAC(HashFunction hash) : m_hash(hash)
 {
-	if (m_hash->hash_block_size() == 0)
-		throw new Invalid_Argument("SSL3-MAC cannot be used with " + m_hash->name());
+	if (m_hash.hash_block_size() == 0)
+		throw new Invalid_Argument("SSL3-MAC cannot be used with " + m_hash.name());
 }
 
 }

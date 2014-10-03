@@ -13,7 +13,7 @@ BigInt generate_rfc6979_nonce(in BigInt x,
 										ref const BigInt h,
 										in string hash)
 {
-	Algorithm_Factory& af = global_state().algorithm_factory();
+	Algorithm_Factory af = global_state().algorithm_factory();
 
 	HMAC_DRBG rng(af.make_mac("HMAC(" + hash + ")"), null);
 

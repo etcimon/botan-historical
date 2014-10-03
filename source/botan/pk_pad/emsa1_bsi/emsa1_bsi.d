@@ -12,7 +12,7 @@ import botan.emsa1_bsi;
 */
 SafeVector!byte EMSA1_BSI::encoding_of(in SafeVector!byte msg,
 														size_t output_bits,
-														RandomNumberGenerator&)
+														RandomNumberGenerator)
 {
 	if (msg.size() != hash_output_length())
 		throw new Encoding_Error("EMSA1_BSI::encoding_of: Invalid size for input");

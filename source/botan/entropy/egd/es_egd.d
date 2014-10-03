@@ -76,7 +76,7 @@ size_t EGD_EntropySource::EGD_Socket::read(ref byte[] outbuf)
 	{
 		// 1 == EGD command for non-blocking read
 		byte[2] egd_read_command = {
-			1, cast(byte)(std::min<size_t>(length, 255)) };
+			1, cast(byte)(std.algorithm.min<size_t>(length, 255)) };
 
 		if (::write(m_fd, egd_read_command, 2) != 2)
 			throw new Exception("Writing entropy read command to EGD failed");
@@ -97,7 +97,7 @@ size_t EGD_EntropySource::EGD_Socket::read(ref byte[] outbuf)
 	}
 	catch(std::exception)
 	{
-		this->close();
+		this.close();
 		// Will attempt to reopen next poll
 	}
 
@@ -116,7 +116,7 @@ void EGD_EntropySource::EGD_Socket::close()
 /**
 * EGD_EntropySource constructor
 */
-EGD_EntropySource::EGD_EntropySource(in Vector!( string ) paths)
+EGD_EntropySource::EGD_EntropySource(in Vector!string paths)
 {
 	for (size_t i = 0; i != paths.size(); ++i)
 		sockets.push_back(EGD_Socket(paths[i]));

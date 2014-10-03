@@ -92,33 +92,33 @@ FPE_Encryptor::FPE_Encryptor(in SymmetricKey key,
 									  in Vector!byte tweak)
 {
 	mac.reset(new HMAC(new SHA_256));
-	mac->set_key(key);
+	mac.set_key(key);
 
 	Vector!( byte ) n_bin = BigInt::encode(n);
 
 	if (n_bin.size() > MAX_N_BYTES)
 		throw new Exception("N is too large for FPE encryption");
 
-	mac->update_be(cast(uint)(n_bin.size()));
-	mac->update(&n_binput[0], n_bin.size());
+	mac.update_be(cast(uint)(n_bin.size()));
+	mac.update(&n_binput[0], n_bin.size());
 
-	mac->update_be(cast(uint)(tweak.size()));
-	mac->update(&tweak[0], tweak.size());
+	mac.update_be(cast(uint)(tweak.size()));
+	mac.update(&tweak[0], tweak.size());
 
-	mac_n_t = unlock(mac->flush());
+	mac_n_t = unlock(mac.flush());
 }
 
 BigInt FPE_Encryptor::operator()(size_t round_no, ref const BigInt R)
 {
 	SafeVector!byte r_bin = BigInt::encode_locked(R);
 
-	mac->update(mac_n_t);
-	mac->update_be(cast(uint)(round_no));
+	mac.update(mac_n_t);
+	mac.update_be(cast(uint)(round_no));
 
-	mac->update_be(cast(uint)(r_bin.size()));
-	mac->update(&r_binput[0], r_bin.size());
+	mac.update_be(cast(uint)(r_bin.size()));
+	mac.update(&r_binput[0], r_bin.size());
 
-	SafeVector!byte X = mac->flush();
+	SafeVector!byte X = mac.flush();
 	return BigInt(&X[0], X.size());
 }
 

@@ -17,8 +17,8 @@ class IDEA : public Block_Cipher_Fixed_Params!(8, 16)
 
 		void clear();
 		string name() const { return "IDEA"; }
-		BlockCipher* clone() const { return new IDEA; }
-	protected:
+		BlockCipher clone() const { return new IDEA; }
+	package:
 		/**
 		* @return const reference to encryption subkeys
 		*/

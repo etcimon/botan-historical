@@ -62,7 +62,7 @@ class PointGFp
 		*/
 		PointGFp(PointGFp&& other)
 		{
-			this->swap(other);
+			this.swap(other);
 		}
 
 		/**
@@ -76,7 +76,7 @@ class PointGFp
 		PointGFp& operator=(PointGFp&& other)
 		{
 			if (this != &other)
-				this->swap(other);
+				this.swap(other);
 			return (*this);
 		}
 

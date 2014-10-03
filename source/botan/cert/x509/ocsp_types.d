@@ -23,9 +23,9 @@ CertID::CertID(in X509_Certificate issuer,
 	*/
 	Unique!HashFunction hash(get_hash("SHA-160"));
 
-	m_hash_id = AlgorithmIdentifier(hash->name(), AlgorithmIdentifier::USE_NULL_PARAM);
-	m_issuer_key_hash = unlock(hash->process(extract_key_bitstr(issuer)));
-	m_issuer_dn_hash = unlock(hash->process(subject.raw_issuer_dn()));
+	m_hash_id = AlgorithmIdentifier(hash.name(), AlgorithmIdentifier::USE_NULL_PARAM);
+	m_issuer_key_hash = unlock(hash.process(extract_key_bitstr(issuer)));
+	m_issuer_dn_hash = unlock(hash.process(subject.raw_issuer_dn()));
 	m_subject_serial = BigInt::decode(subject.serial_number());
 }
 
@@ -53,10 +53,10 @@ bool CertID::is_id_for(in X509_Certificate issuer,
 
 		Unique!HashFunction hash(get_hash(OIDS::lookup(m_hash_id.oid)));
 
-		if (m_issuer_dn_hash != unlock(hash->process(subject.raw_issuer_dn())))
+		if (m_issuer_dn_hash != unlock(hash.process(subject.raw_issuer_dn())))
 			return false;
 
-		if (m_issuer_key_hash != unlock(hash->process(extract_key_bitstr(issuer))))
+		if (m_issuer_key_hash != unlock(hash.process(extract_key_bitstr(issuer))))
 			return false;
 	}
 	catch(...)

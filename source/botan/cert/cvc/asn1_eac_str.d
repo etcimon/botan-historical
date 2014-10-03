@@ -64,14 +64,14 @@ void ASN1_EAC_String::decode_from(BER_Decoder& source)
 {
 	BER_Object obj = source.get_next_object();
 
-	if (obj.type_tag != this->tag)
+	if (obj.type_tag != this.tag)
 	{
 		stringstream ss;
 
 		ss << "ASN1_EAC_String tag mismatch, tag was "
 			<< std::hex << obj.type_tag
 			<< " expected "
-			<< std::hex << this->tag;
+			<< std::hex << this.tag;
 
 		throw new Decoding_Error(ss.str());
 	}

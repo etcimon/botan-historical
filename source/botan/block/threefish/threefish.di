@@ -19,11 +19,11 @@ class Threefish_512 : public Block_Cipher_Fixed_Params!(64, 64)
 
 		void clear() override;
 		string name() const override { return "Threefish-512"; }
-		BlockCipher* clone() const override { return new Threefish_512; }
+		BlockCipher clone() const override { return new Threefish_512; }
 
 		Threefish_512() : m_T(3) {}
 
-	protected:
+	package:
 		const secure_vector!ulong& get_T() const { return m_T; }
 		const secure_vector!ulong& get_K() const { return m_K; }
 	private:

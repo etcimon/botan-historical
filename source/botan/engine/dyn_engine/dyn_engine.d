@@ -10,7 +10,7 @@ import botan.internal.dyn_load;
 namespace {
 
 extern "C" {
-	typedef Engine* (*creator_func)(void);
+	typedef Engine (*creator_func)(void);
 	typedef uint (*module_version_func)(void);
 }
 
@@ -25,7 +25,7 @@ Dynamically_Loaded_Engine::Dynamically_Loaded_Engine(
 	try
 	{
 		module_version_func get_version =
-			lib->resolve<module_version_func>("module_version");
+			lib.resolve<module_version_func>("module_version");
 
 		const uint mod_version = get_version();
 
@@ -35,7 +35,7 @@ Dynamically_Loaded_Engine::Dynamically_Loaded_Engine(
 											 std::to_string(mod_version));
 
 		creator_func creator =
-			lib->resolve<creator_func>("create_engine");
+			lib.resolve<creator_func>("create_engine");
 
 		engine = creator();
 

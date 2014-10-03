@@ -11,7 +11,7 @@ import chrono;
 namespace TLS {
 
 Session_Manager_In_Memory::Session_Manager_In_Memory(
-	RandomNumberGenerator& rng,
+	RandomNumberGenerator rng,
 	size_t max_sessions,
 	std::chrono::seconds session_lifetime) :
 	m_max_sessions(max_sessions),
@@ -32,7 +32,7 @@ bool Session_Manager_In_Memory::load_from_session_str(
 
 	try
 	{
-		session = Session::decrypt(i->second, m_session_key);
+		session = Session::decrypt(i.second, m_session_key);
 	}
 	catch(...)
 	{
@@ -54,7 +54,7 @@ bool Session_Manager_In_Memory::load_from_session_str(
 bool Session_Manager_In_Memory::load_from_session_id(
 	in Vector!byte session_id, Session& session)
 {
-	std::lock_guard<std::mutex> lock(m_mutex);
+	m_mutex.lock(); scope(exit) m_mutex.unlock();
 
 	return load_from_session_str(hex_encode(session_id), session);
 }
@@ -62,14 +62,14 @@ bool Session_Manager_In_Memory::load_from_session_id(
 bool Session_Manager_In_Memory::load_from_server_info(
 	const Server_Information& info, Session& session)
 {
-	std::lock_guard<std::mutex> lock(m_mutex);
+	m_mutex.lock(); scope(exit) m_mutex.unlock();
 
 	auto i = m_info_sessions.find(info);
 
 	if (i == m_info_sessions.end())
 		return false;
 
-	if (load_from_session_str(i->second, session))
+	if (load_from_session_str(i.second, session))
 		return true;
 
 	/*
@@ -84,7 +84,7 @@ bool Session_Manager_In_Memory::load_from_server_info(
 void Session_Manager_In_Memory::remove_entry(
 	in Vector!byte session_id)
 {
-	std::lock_guard<std::mutex> lock(m_mutex);
+	m_mutex.lock(); scope(exit) m_mutex.unlock();
 
 	auto i = m_sessions.find(hex_encode(session_id));
 
@@ -94,7 +94,7 @@ void Session_Manager_In_Memory::remove_entry(
 
 void Session_Manager_In_Memory::save(in Session session)
 {
-	std::lock_guard<std::mutex> lock(m_mutex);
+	m_mutex.lock(); scope(exit) m_mutex.unlock();
 
 	if (m_max_sessions != 0)
 	{

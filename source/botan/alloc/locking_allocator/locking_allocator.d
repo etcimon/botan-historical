@@ -4,14 +4,42 @@
 *
 * Distributed under the terms of the Botan license
 */
+module botan.alloc.locking_allocator;
+import botan.types;
+import vector;
+import core.sync.mutex;
 
-import botan.locking_allocator;
 import botan.mem_ops;
 import algorithm;
 import string;
 
 import sys.mman;
 import sys.resource;
+
+class mlock_allocator
+{
+public:
+	static mlock_allocator& instance();
+	
+	void* allocate(size_t num_elems, size_t elem_size);
+	
+	bool deallocate(void* p, size_t num_elems, size_t elem_size);
+	
+	mlock_allocator(in mlock_allocator);
+	
+	mlock_allocator& operator=(in mlock_allocator);
+	
+private:
+	mlock_allocator();
+	
+	~this();
+	
+	const size_t m_poolsize;
+	
+	Mutex m_mutex;
+	Vector!( Pair!(size_t, size_t) ) m_freelist;
+	byte* m_pool;
+};
 
 /**
 * Requests for objects of sizeof(T) will be aligned at
@@ -42,7 +70,7 @@ size_t mlock_limit()
 		::getrlimit(RLIMIT_MEMLOCK, &limits);
 	}
 
-	return std::min<size_t>(limits.rlim_cur, MLOCK_UPPER_BOUND);
+	return std.algorithm.min<size_t>(limits.rlim_cur, MLOCK_UPPER_BOUND);
 }
 
 bool ptr_in_pool(const void* pool_ptr, size_t poolsize,
@@ -84,16 +112,16 @@ void* mlock_allocator::allocate(size_t num_elems, size_t elem_size)
 	if (n > m_poolsize || n > BOTAN_MLOCK_ALLOCATOR_MAX_ALLOCATION)
 		return null;
 
-	std::lock_guard<std::mutex> lock(m_mutex);
+	m_mutex.lock(); scope(exit) m_mutex.unlock();
 
 	auto best_fit = m_freelist.end();
 
 	for (auto i = m_freelist.begin(); i != m_freelist.end(); ++i)
 	{
 		// If we have a perfect fit, use it immediately
-		if (i->second == n && (i->first % alignment) == 0)
+		if (i.second == n && (i.first % alignment) == 0)
 		{
-			const size_t offset = i->first;
+			const size_t offset = i.first;
 			m_freelist.erase(i);
 			clear_mem(m_pool + offset, n);
 
@@ -103,8 +131,8 @@ void* mlock_allocator::allocate(size_t num_elems, size_t elem_size)
 			return m_pool + offset;
 		}
 
-		if ((i->second >= (n + padding_for_alignment(i->first, alignment)) &&
-			 ((best_fit == m_freelist.end()) || (best_fit->second > i->second))))
+		if ((i.second >= (n + padding_for_alignment(i.first, alignment)) &&
+			 ((best_fit == m_freelist.end()) || (best_fit.second > i.second))))
 		{
 			best_fit = i;
 		}
@@ -112,12 +140,12 @@ void* mlock_allocator::allocate(size_t num_elems, size_t elem_size)
 
 	if (best_fit != m_freelist.end())
 	{
-		const size_t offset = best_fit->first;
+		const size_t offset = best_fit.first;
 
 		const size_t alignment_padding = padding_for_alignment(offset, alignment);
 
-		best_fit->first += n + alignment_padding;
-		best_fit->second -= n + alignment_padding;
+		best_fit.first += n + alignment_padding;
+		best_fit.second -= n + alignment_padding;
 
 		// Need to realign, split the block
 		if (alignment_padding)
@@ -129,10 +157,10 @@ void* mlock_allocator::allocate(size_t num_elems, size_t elem_size)
 			deleting the empty range and inserting the new one in the
 			same location.
 			*/
-			if (best_fit->second == 0)
+			if (best_fit.second == 0)
 			{
-				best_fit->first = offset;
-				best_fit->second = alignment_padding;
+				best_fit.first = offset;
+				best_fit.second = alignment_padding;
 			}
 			else
 				m_freelist.insert(best_fit, Pair(offset, alignment_padding));
@@ -166,7 +194,7 @@ bool mlock_allocator::deallocate(void* p, size_t num_elems, size_t elem_size)
 	if (!ptr_in_pool(m_pool, m_poolsize, p, n))
 		return false;
 
-	std::lock_guard<std::mutex> lock(m_mutex);
+	m_mutex.lock(); scope(exit) m_mutex.unlock();
 
 	const size_t start = cast(byte*)(p) - m_pool;
 
@@ -176,10 +204,10 @@ bool mlock_allocator::deallocate(void* p, size_t num_elems, size_t elem_size)
 									  Pair(start, 0), comp);
 
 	// try to merge with later block
-	if (i != m_freelist.end() && start + n == i->first)
+	if (i != m_freelist.end() && start + n == i.first)
 	{
-		i->first = start;
-		i->second += n;
+		i.first = start;
+		i.second += n;
 		n = 0;
 	}
 
@@ -188,17 +216,17 @@ bool mlock_allocator::deallocate(void* p, size_t num_elems, size_t elem_size)
 	{
 		auto prev = std::prev(i);
 
-		if (prev->first + prev->second == start)
+		if (prev.first + prev.second == start)
 		{
 			if (n)
 			{
-				prev->second += n;
+				prev.second += n;
 				n = 0;
 			}
 			else
 			{
 				// merge adjoining
-				prev->second += i->second;
+				prev.second += i.second;
 				m_freelist.erase(i);
 			}
 		}

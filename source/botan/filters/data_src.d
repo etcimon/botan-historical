@@ -44,7 +44,7 @@ size_t DataSource::discard_next(size_t n)
 size_t DataSource_Memory::read(byte* output)
 {
 	size_t length = output.length;
-	size_t got = std::min<size_t>(source.size() - offset, length);
+	size_t got = std.algorithm.min<size_t>(source.size() - offset, length);
 	copy_mem(out, &source[offset], got);
 	offset += got;
 	return got;
@@ -60,7 +60,7 @@ size_t DataSource_Memory::peek(byte* output,
 	const size_t bytes_left = source.size() - offset;
 	if (peek_offset >= bytes_left) return 0;
 
-	size_t got = std::min(bytes_left - peek_offset, length);
+	size_t got = std.algorithm.min(bytes_left - peek_offset, length);
 	copy_mem(output, &source[offset + peek_offset], got);
 	return got;
 }

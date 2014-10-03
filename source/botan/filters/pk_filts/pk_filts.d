@@ -19,7 +19,7 @@ void PK_Encryptor_Filter::write(in byte* input, size_t length)
 */
 void PK_Encryptor_Filter::end_msg()
 {
-	send(cipher->encrypt(buffer, rng));
+	send(cipher.encrypt(buffer, rng));
 	buffer.clear();
 }
 
@@ -36,7 +36,7 @@ void PK_Decryptor_Filter::write(in byte* input, size_t length)
 */
 void PK_Decryptor_Filter::end_msg()
 {
-	send(cipher->decrypt(buffer));
+	send(cipher.decrypt(buffer));
 	buffer.clear();
 }
 
@@ -45,7 +45,7 @@ void PK_Decryptor_Filter::end_msg()
 */
 void PK_Signer_Filter::write(in byte* input, size_t length)
 {
-	signer->update(input, length);
+	signer.update(input, length);
 }
 
 /*
@@ -53,7 +53,7 @@ void PK_Signer_Filter::write(in byte* input, size_t length)
 */
 void PK_Signer_Filter::end_msg()
 {
-	send(signer->signature(rng));
+	send(signer.signature(rng));
 }
 
 /*
@@ -61,7 +61,7 @@ void PK_Signer_Filter::end_msg()
 */
 void PK_Verifier_Filter::write(in byte* input, size_t length)
 {
-	verifier->update(input, length);
+	verifier.update(input, length);
 }
 
 /*
@@ -71,7 +71,7 @@ void PK_Verifier_Filter::end_msg()
 {
 	if (signature.empty())
 		throw new Invalid_State("PK_Verifier_Filter: No signature to check against");
-	bool is_valid = verifier->check_signature(signature);
+	bool is_valid = verifier.check_signature(signature);
 	send((is_valid ? 1 : 0));
 }
 

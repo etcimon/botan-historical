@@ -21,7 +21,7 @@ import signal.h;
 import stdlib.h;
 namespace {
 
-string find_full_path_if_exists(in Vector!( string ) trusted_path,
+string find_full_path_if_exists(in Vector!string trusted_path,
 												 in string proc)
 {
 	foreach (dir; trusted_path)
@@ -55,7 +55,7 @@ size_t concurrent_processes(size_t user_request)
 /**
 * Unix_EntropySource Constructor
 */
-Unix_EntropySource::Unix_EntropySource(in Vector!( string ) trusted_path,
+Unix_EntropySource::Unix_EntropySource(in Vector!string trusted_path,
 													size_t proc_cnt) :
 	m_trusted_paths(trusted_path),
 	m_concurrent(concurrent_processes(proc_cnt))
@@ -81,7 +81,7 @@ void UnixProcessInfo_EntropySource::poll(Entropy_Accumulator& accum)
 
 namespace {
 
-void do_exec(in Vector!( string ) args)
+void do_exec(in Vector!string args)
 {
 	// cleaner way to do this?
 	string arg0 = (args.size() > 0) ? args[0].c_str() : null;
@@ -95,7 +95,7 @@ void do_exec(in Vector!( string ) args)
 
 }
 
-void Unix_EntropySource::Unix_Process::spawn(in Vector!( string ) args)
+void Unix_EntropySource::Unix_Process::spawn(in Vector!string args)
 {
 	shutdown();
 
@@ -167,7 +167,7 @@ void Unix_EntropySource::Unix_Process::shutdown()
 	m_pid = -1;
 }
 
-const Vector!( string )& Unix_EntropySource::next_source()
+const Vector!string& Unix_EntropySource::next_source()
 {
 	const auto& src = m_sources.at(m_sources_idx);
 	m_sources_idx = (m_sources_idx + 1) % m_sources.size();
@@ -227,7 +227,7 @@ void Unix_EntropySource::poll(Entropy_Accumulator& accum)
 		if (fds.empty())
 			break;
 
-		const int max_fd = *std::max_element(fds.begin(), fds.end());
+		const int max_fd = *std.algorithm.max_element(fds.begin(), fds.end());
 
 		struct ::timeval timeout;
 		timeout.tv_sec = (MS_WAIT_TIME / 1000);

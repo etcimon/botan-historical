@@ -29,7 +29,7 @@ const size_t MAC_OUTPUT_LENGTH = 32;
 
 Vector!( byte ) encrypt(in byte* input, size_t input_len,
 								  const SymmetricKey& master_key,
-								  RandomNumberGenerator& rng)
+								  RandomNumberGenerator rng)
 {
 	Unique!KDF kdf(get_kdf(CRYPTOBOX_KDF));
 
@@ -40,19 +40,19 @@ Vector!( byte ) encrypt(in byte* input, size_t input_len,
 		rng.random_vec(KEY_KDF_SALT_LENGTH);
 
 	SymmetricKey cipher_key =
-		kdf->derive_key(CIPHER_KEY_LENGTH,
+		kdf.derive_key(CIPHER_KEY_LENGTH,
 							 master_key.bits_of(),
 							 cipher_key_salt);
 
 	SymmetricKey mac_key =
-		kdf->derive_key(MAC_KEY_LENGTH,
+		kdf.derive_key(MAC_KEY_LENGTH,
 							 master_key.bits_of(),
 							 mac_key_salt);
 
 	InitializationVector cipher_iv(rng, 16);
 
 	Unique!MessageAuthenticationCode mac(get_mac(CRYPTOBOX_MAC));
-	mac->set_key(mac_key);
+	mac.set_key(mac_key);
 
 	Pipe pipe(get_cipher(CRYPTOBOX_CIPHER, cipher_key, cipher_iv, ENCRYPTION));
 	pipe.process_msg(input, input_len);
@@ -65,9 +65,9 @@ Vector!( byte ) encrypt(in byte* input, size_t input_len,
 	output += cipher_iv.bits_of();
 	output += ctext;
 
-	mac->update(output);
+	mac.update(output);
 
-	output += mac->flush();
+	output += mac.flush();
 	return output;
 }
 
@@ -95,22 +95,22 @@ SafeVector!byte decrypt(in byte* input, size_t input_len,
 
 	const byte* mac_key_salt = &input[MAGIC_LENGTH + KEY_KDF_SALT_LENGTH];
 
-	SymmetricKey mac_key = kdf->derive_key(MAC_KEY_LENGTH,
+	SymmetricKey mac_key = kdf.derive_key(MAC_KEY_LENGTH,
 														master_key.bits_of(),
 														mac_key_salt,
 														KEY_KDF_SALT_LENGTH);
 
 	Unique!MessageAuthenticationCode mac(get_mac(CRYPTOBOX_MAC));
-	mac->set_key(mac_key);
+	mac.set_key(mac_key);
 
-	mac->update(&input[0], input_len - MAC_OUTPUT_LENGTH);
-	SafeVector!byte computed_mac = mac->flush();
+	mac.update(&input[0], input_len - MAC_OUTPUT_LENGTH);
+	SafeVector!byte computed_mac = mac.flush();
 
 	if (!same_mem(&input[input_len - MAC_OUTPUT_LENGTH], &computed_mac[0], computed_mac.size()))
 		throw new Decoding_Error("MAC verification failed");
 
 	SymmetricKey cipher_key =
-		kdf->derive_key(CIPHER_KEY_LENGTH,
+		kdf.derive_key(CIPHER_KEY_LENGTH,
 							 master_key.bits_of(),
 							 cipher_key_salt, KEY_KDF_SALT_LENGTH);
 

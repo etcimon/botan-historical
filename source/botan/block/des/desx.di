@@ -17,7 +17,7 @@ class DESX : public Block_Cipher_Fixed_Params!(8, 24)
 
 		void clear();
 		string name() const { return "DESX"; }
-		BlockCipher* clone() const { return new DESX; }
+		BlockCipher clone() const { return new DESX; }
 	private:
 		void key_schedule(in byte*, size_t);
 		SafeVector!byte K1, K2;

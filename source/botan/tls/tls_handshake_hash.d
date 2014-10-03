@@ -17,7 +17,7 @@ namespace TLS {
 SafeVector!byte Handshake_Hash::flushInto(Protocol_Version _version,
 														in string mac_algo) const
 {
-	Algorithm_Factory& af = global_state().algorithm_factory();
+	Algorithm_Factory af = global_state().algorithm_factory();
 
 	Unique!HashFunction hash;
 
@@ -31,8 +31,8 @@ SafeVector!byte Handshake_Hash::flushInto(Protocol_Version _version,
 	else
 		hash.reset(af.make_hash_function("Parallel(MD5,SHA-160)"));
 
-	hash->update(data);
-	return hash->flush();
+	hash.update(data);
+	return hash.flush();
 }
 
 /**
@@ -42,38 +42,38 @@ SafeVector!byte Handshake_Hash::final_ssl3(in SafeVector!byte secret) const
 {
 	const byte PAD_INNER = 0x36, PAD_OUTER = 0x5C;
 
-	Algorithm_Factory& af = global_state().algorithm_factory();
+	Algorithm_Factory af = global_state().algorithm_factory();
 
 	Unique!HashFunction md5(af.make_hash_function("MD5"));
 	Unique!HashFunction sha1(af.make_hash_function("SHA-1"));
 
-	md5->update(data);
-	sha1->update(data);
+	md5.update(data);
+	sha1.update(data);
 
-	md5->update(secret);
-	sha1->update(secret);
-
-	for (size_t i = 0; i != 48; ++i)
-		md5->update(PAD_INNER);
-	for (size_t i = 0; i != 40; ++i)
-		sha1->update(PAD_INNER);
-
-	SafeVector!byte inner_md5 = md5->flush(), inner_sha1 = sha1->flush();
-
-	md5->update(secret);
-	sha1->update(secret);
+	md5.update(secret);
+	sha1.update(secret);
 
 	for (size_t i = 0; i != 48; ++i)
-		md5->update(PAD_OUTER);
+		md5.update(PAD_INNER);
 	for (size_t i = 0; i != 40; ++i)
-		sha1->update(PAD_OUTER);
+		sha1.update(PAD_INNER);
 
-	md5->update(inner_md5);
-	sha1->update(inner_sha1);
+	SafeVector!byte inner_md5 = md5.flush(), inner_sha1 = sha1.flush();
+
+	md5.update(secret);
+	sha1.update(secret);
+
+	for (size_t i = 0; i != 48; ++i)
+		md5.update(PAD_OUTER);
+	for (size_t i = 0; i != 40; ++i)
+		sha1.update(PAD_OUTER);
+
+	md5.update(inner_md5);
+	sha1.update(inner_sha1);
 
 	SafeVector!byte output;
-	output += md5->flush();
-	output += sha1->flush();
+	output += md5.flush();
+	output += sha1.flush();
 	return output;
 }
 

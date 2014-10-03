@@ -16,13 +16,13 @@ size_t dl_work_factor(size_t bits)
 	world' runtimes, but I don't remember where now.
 
 	Sample return values:
-		|512|  -> 64
-		|1024| -> 86
-		|1536| -> 102
-		|2048| -> 116
-		|3072| -> 138
-		|4096| -> 155
-		|8192| -> 206
+		|512|  . 64
+		|1024| . 86
+		|1536| . 102
+		|2048| . 116
+		|3072| . 138
+		|4096| . 155
+		|8192| . 206
 
 	For DL algos, we use an exponent of twice the size of the result;
 	the assumption is that an arbitrary discrete log on a group of size
@@ -41,7 +41,7 @@ size_t dl_work_factor(size_t bits)
 	const double strength =
 		2.76 * std::pow(log_p, 1.0/3.0) * std::pow(std::log(log_p), 2.0/3.0);
 
-	return std::max(cast(size_t)(strength), MIN_WORKFACTOR);
+	return std.algorithm.max(cast(size_t)(strength), MIN_WORKFACTOR);
 }
 
 }

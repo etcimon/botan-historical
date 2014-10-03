@@ -17,7 +17,7 @@ class RC5 : public Block_Cipher_Fixed_Params!(8, 1, 32)
 
 		void clear();
 		string name() const;
-		BlockCipher* clone() const { return new RC5(rounds); }
+		BlockCipher clone() const { return new RC5(rounds); }
 
 		/**
 		* @param rounds the number of RC5 rounds to run. Must be between

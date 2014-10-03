@@ -43,7 +43,7 @@ X509_CA::~this()
 * Sign a PKCS #10 certificate request
 */
 X509_Certificate X509_CA::sign_request(in PKCS10_Request req,
-													RandomNumberGenerator& rng,
+													RandomNumberGenerator rng,
 													const X509_Time& not_before,
 													const X509_Time& not_after)
 {
@@ -84,7 +84,7 @@ X509_Certificate X509_CA::sign_request(in PKCS10_Request req,
 * Create a new certificate
 */
 X509_Certificate X509_CA::make_cert(PK_Signer* signer,
-												RandomNumberGenerator& rng,
+												RandomNumberGenerator rng,
 												const AlgorithmIdentifier& sig_algo,
 												in Vector!byte pub_key,
 												const X509_Time& not_before,
@@ -132,7 +132,7 @@ X509_Certificate X509_CA::make_cert(PK_Signer* signer,
 /*
 * Create a new, empty CRL
 */
-X509_CRL X509_CA::new_crl(RandomNumberGenerator& rng,
+X509_CRL X509_CA::new_crl(RandomNumberGenerator rng,
 								  uint next_update) const
 {
 	Vector!( CRL_Entry ) empty;
@@ -144,7 +144,7 @@ X509_CRL X509_CA::new_crl(RandomNumberGenerator& rng,
 */
 X509_CRL X509_CA::update_crl(in X509_CRL crl,
 									  const Vector!( CRL_Entry )& new_revoked,
-									  RandomNumberGenerator& rng,
+									  RandomNumberGenerator rng,
 									  uint next_update) const
 {
 	Vector!( CRL_Entry ) revoked = crl.get_revoked();
@@ -160,7 +160,7 @@ X509_CRL X509_CA::update_crl(in X509_CRL crl,
 */
 X509_CRL X509_CA::make_crl(in Vector!( CRL_Entry ) revoked,
 									uint crl_number, uint next_update,
-									RandomNumberGenerator& rng) const
+									RandomNumberGenerator rng) const
 {
 	const size_t X509_CRL_VERSION = 2;
 
@@ -220,11 +220,11 @@ PK_Signer* choose_sig_format(in Private_Key key,
 
 	const string algo_name = key.algo_name();
 
-	const HashFunction* proto_hash = retrieve_hash(hash_fn);
+	const HashFunction proto_hash = retrieve_hash(hash_fn);
 	if (!proto_hash)
 		throw new Algorithm_Not_Found(hash_fn);
 
-	if (key.max_input_bits() < proto_hash->output_length()*8)
+	if (key.max_input_bits() < proto_hash.output_length()*8)
 		throw new Invalid_Argument("Key is too small for chosen hash function");
 
 	if (algo_name == "RSA")
@@ -239,7 +239,7 @@ PK_Signer* choose_sig_format(in Private_Key key,
 	Signature_Format format =
 		(key.message_parts() > 1) ? DER_SEQUENCE : IEEE_1363;
 
-	padding = padding + '(' + proto_hash->name() + ')';
+	padding = padding + '(' + proto_hash.name() + ')';
 
 	sig_algo.oid = OIDS::lookup(algo_name + "/" + padding);
 	sig_algo.parameters = key.algorithm_identifier().parameters;

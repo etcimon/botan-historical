@@ -8,7 +8,7 @@
 import botan.entropy_src;
 import botan.exceptn;
 import string;
-import mutex;
+import core.sync.mutex;
 /**
 * This class represents a random number (RNG) generator object.
 */
@@ -25,7 +25,7 @@ class RandomNumberGenerator
 		* Create a seeded and active RNG object for general application use
 		* Added in 1.11.5
 		*/
-		static Unique!RandomNumberGenerator make_rng(class Algorithm_Factory& af);
+		static Unique!RandomNumberGenerator make_rng(class ref Algorithm_Factory af);
 
 		/**
 		* Randomize a byte array.
@@ -53,7 +53,7 @@ class RandomNumberGenerator
 		byte next_byte()
 		{
 			byte output;
-			this->randomize(&output, 1);
+			this.randomize(&output, 1);
 			return output;
 		}
 
@@ -91,7 +91,7 @@ class RandomNumberGenerator
 		* Never copy a RNG, create a new one
 		*/
 		RandomNumberGenerator(in RandomNumberGenerator rng);
-		RandomNumberGenerator& operator=(in RandomNumberGenerator rng);
+		RandomNumberGenerator operator=(in RandomNumberGenerator rng);
 
 		RandomNumberGenerator() {}
 		~this() {}
@@ -123,42 +123,42 @@ class Serialized_RNG : public RandomNumberGenerator
 		void randomize(byte* output)
 		{
 			size_t len = output.length;
-			std::lock_guard<std::mutex> lock(m_mutex);
-			m_rng->randomize(output, len);
+			m_mutex.lock(); scope(exit) m_mutex.unlock();
+			m_rng.randomize(output, len);
 		}
 
 		bool is_seeded() const
 		{
-			std::lock_guard<std::mutex> lock(m_mutex);
-			return m_rng->is_seeded();
+			m_mutex.lock(); scope(exit) m_mutex.unlock();
+			return m_rng.is_seeded();
 		}
 
 		void clear()
 		{
-			std::lock_guard<std::mutex> lock(m_mutex);
-			m_rng->clear();
+			m_mutex.lock(); scope(exit) m_mutex.unlock();
+			m_rng.clear();
 		}
 
 		string name() const
 		{
-			std::lock_guard<std::mutex> lock(m_mutex);
-			return m_rng->name();
+			m_mutex.lock(); scope(exit) m_mutex.unlock();
+			return m_rng.name();
 		}
 
 		void reseed(size_t poll_bits)
 		{
-			std::lock_guard<std::mutex> lock(m_mutex);
-			m_rng->reseed(poll_bits);
+			m_mutex.lock(); scope(exit) m_mutex.unlock();
+			m_rng.reseed(poll_bits);
 		}
 
 		void add_entropy(in byte* input, size_t len)
 		{
-			std::lock_guard<std::mutex> lock(m_mutex);
-			m_rng->add_entropy(input, len);
+			m_mutex.lock(); scope(exit) m_mutex.unlock();
+			m_rng.add_entropy(input, len);
 		}
 
 		Serialized_RNG() : m_rng(RandomNumberGenerator::make_rng()) {}
 	private:
-		mutable std::mutex m_mutex;
+		mutable Mutex m_mutex;
 		Unique!RandomNumberGenerator m_rng;
 };

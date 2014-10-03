@@ -117,7 +117,7 @@ string Keccak_1600::name() const
 	return "Keccak-1600(" + std::to_string(output_bits) + ")";
 }
 
-HashFunction* Keccak_1600::clone() const
+HashFunction Keccak_1600::clone() const
 {
 	return new Keccak_1600(output_bits);
 }
@@ -135,7 +135,7 @@ void Keccak_1600::add_data(in byte* input, size_t length)
 
 	while(length)
 	{
-		size_t to_take = std::min(length, bitrate / 8 - S_pos);
+		size_t to_take = std.algorithm.min(length, bitrate / 8 - S_pos);
 
 		length -= to_take;
 

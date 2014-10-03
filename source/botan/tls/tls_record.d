@@ -46,7 +46,7 @@ Connection_Cipher_State::Connection_Cipher_State(Protocol_Version _version,
 	if (AEAD_Mode* aead = get_aead(cipher_algo, our_side ? ENCRYPTION : DECRYPTION))
 	{
 		m_aead.reset(aead);
-		m_aead->set_key(cipher_key + mac_key);
+		m_aead.set_key(cipher_key + mac_key);
 
 		BOTAN_ASSERT(iv.length() == 4, "Using 4/8 partial implicit nonce");
 		m_nonce = iv.bits_of();
@@ -54,22 +54,22 @@ Connection_Cipher_State::Connection_Cipher_State(Protocol_Version _version,
 		return;
 	}
 
-	Algorithm_Factory& af = global_state().algorithm_factory();
+	Algorithm_Factory af = global_state().algorithm_factory();
 
-	if (const BlockCipher* bc = af.prototype_block_cipher(cipher_algo))
+	if (const BlockCipher bc = af.prototype_block_cipher(cipher_algo))
 	{
-		m_block_cipher.reset(bc->clone());
-		m_block_cipher->set_key(cipher_key);
+		m_block_cipher.reset(bc.clone());
+		m_block_cipher.set_key(cipher_key);
 		m_block_cipher_cbc_state = iv.bits_of();
-		m_block_size = bc->block_size();
+		m_block_size = bc.block_size();
 
 		if (_version.supports_explicit_cbc_ivs())
 			m_iv_size = m_block_size;
 	}
-	else if (const StreamCipher* sc = af.prototype_stream_cipher(cipher_algo))
+	else if (const StreamCipher sc = af.prototype_stream_cipher(cipher_algo))
 	{
-		m_stream_cipher.reset(sc->clone());
-		m_stream_cipher->set_key(cipher_key);
+		m_stream_cipher.reset(sc.clone());
+		m_stream_cipher.set_key(cipher_key);
 	}
 	else
 		throw new Invalid_Argument("Unknown TLS cipher " + cipher_algo);
@@ -79,7 +79,7 @@ Connection_Cipher_State::Connection_Cipher_State(Protocol_Version _version,
 	else
 		m_mac.reset(af.make_mac("HMAC(" + mac_algo + ")"));
 
-	m_mac->set_key(mac_key);
+	m_mac.set_key(mac_key);
 }
 
 in SafeVector!byte Connection_Cipher_State::aead_nonce(ulong seq)
@@ -129,7 +129,7 @@ void write_record(SafeVector!byte output,
 						Protocol_Version _version,
 						ulong msg_sequence,
 						Connection_Cipher_State* cipherstate,
-						RandomNumberGenerator& rng)
+						RandomNumberGenerator rng)
 {
 	output.clear();
 
@@ -153,11 +153,11 @@ void write_record(SafeVector!byte output,
 		return;
 	}
 
-	if (AEAD_Mode* aead = cipherstate->aead())
+	if (AEAD_Mode* aead = cipherstate.aead())
 	{
-		const size_t ctext_size = aead->output_length(msg_length);
+		const size_t ctext_size = aead.output_length(msg_length);
 
-		auto nonce = cipherstate->aead_nonce(msg_sequence);
+		auto nonce = cipherstate.aead_nonce(msg_sequence);
 		const size_t implicit_nonce_bytes = 4; // FIXME, take from ciphersuite
 		const size_t explicit_nonce_bytes = 8;
 
@@ -172,16 +172,16 @@ void write_record(SafeVector!byte output,
 		output.push_back(get_byte<ushort>(0, rec_size));
 		output.push_back(get_byte<ushort>(1, rec_size));
 
-		aead->set_associated_data_vec(
-			cipherstate->format_ad(msg_sequence, msg_type, _version, msg_length)
+		aead.set_associated_data_vec(
+			cipherstate.format_ad(msg_sequence, msg_type, _version, msg_length)
 			);
 
 		output += Pair(&nonce[implicit_nonce_bytes], explicit_nonce_bytes);
-		output += aead->start_vec(nonce);
+		output += aead.start_vec(nonce);
 
 		const size_t offset = output.size();
 		output += Pair(&msg[0], msg_length);
-		aead->finish(output, offset);
+		aead.finish(output, offset);
 
 		BOTAN_ASSERT(output.size() == offset + ctext_size, "Expected size");
 
@@ -190,15 +190,15 @@ void write_record(SafeVector!byte output,
 		return;
 	}
 
-	cipherstate->mac()->update(
-		cipherstate->format_ad(msg_sequence, msg_type, _version, msg_length)
+	cipherstate.mac().update(
+		cipherstate.format_ad(msg_sequence, msg_type, _version, msg_length)
 		);
 
-	cipherstate->mac()->update(msg, msg_length);
+	cipherstate.mac().update(msg, msg_length);
 
-	const size_t block_size = cipherstate->block_size();
-	const size_t iv_size = cipherstate->iv_size();
-	const size_t mac_size = cipherstate->mac_size();
+	const size_t block_size = cipherstate.block_size();
+	const size_t iv_size = cipherstate.iv_size();
+	const size_t mac_size = cipherstate.mac_size();
 
 	const size_t buf_size = round_up(
 		iv_size + msg_length + mac_size + (block_size ? 1 : 0),
@@ -221,7 +221,7 @@ void write_record(SafeVector!byte output,
 	output.insert(output.end(), &msg[0], &msg[msg_length]);
 
 	output.resize(output.size() + mac_size);
-	cipherstate->mac()->flushInto(&output[output.size() - mac_size]);
+	cipherstate.mac().flushInto(&output[output.size() - mac_size]);
 
 	if (block_size)
 	{
@@ -238,13 +238,13 @@ void write_record(SafeVector!byte output,
 	BOTAN_ASSERT(buf_size + header_size == output.size(),
 					 "Output buffer is sized properly");
 
-	if (StreamCipher* sc = cipherstate->stream_cipher())
+	if (StreamCipher sc = cipherstate.stream_cipher())
 	{
-		sc->cipher1(&output[header_size], buf_size);
+		sc.cipher1(&output[header_size], buf_size);
 	}
-	else if (BlockCipher* bc = cipherstate->block_cipher())
+	else if (BlockCipher bc = cipherstate.block_cipher())
 	{
-		SafeVector!byte cbc_state = cipherstate->cbc_state();
+		SafeVector!byte cbc_state = cipherstate.cbc_state();
 
 		BOTAN_ASSERT(buf_size % block_size == 0,
 						 "Buffer is an even multiple of block size");
@@ -254,12 +254,12 @@ void write_record(SafeVector!byte output,
 		const size_t blocks = buf_size / block_size;
 
 		xor_buf(&buf[0], &cbc_state[0], block_size);
-		bc->encrypt(&buf[0]);
+		bc.encrypt(&buf[0]);
 
 		for (size_t i = 1; i < blocks; ++i)
 		{
 			xor_buf(&buf[block_size*i], &buf[block_size*(i-1)], block_size);
-			bc->encrypt(&buf[block_size*i]);
+			bc.encrypt(&buf[block_size*i]);
 		}
 
 		cbc_state.assign(&buf[block_size*(blocks-1)],
@@ -280,7 +280,7 @@ size_t fill_buffer_to(SafeVector!byte readbuf,
 	if (readbuf.size() >= desired)
 		return 0; // already have it
 
-	const size_t taken = std::min(input_size, desired - readbuf.size());
+	const size_t taken = std.algorithm.min(input_size, desired - readbuf.size());
 
 	readbuf.insert(readbuf.end(), &input[0], &input[taken]);
 	input_consumed += taken;
@@ -394,17 +394,17 @@ void decrypt_record(SafeVector!byte output,
 		const byte* msg = &record_contents[nonce_length];
 		const size_t msg_length = record_len - nonce_length;
 
-		const size_t ptext_size = aead->output_length(msg_length);
+		const size_t ptext_size = aead.output_length(msg_length);
 
-		aead->set_associated_data_vec(
+		aead.set_associated_data_vec(
 			cipherstate.format_ad(record_sequence, record_type, record_version, ptext_size)
 			);
 
-		output += aead->start_vec(nonce);
+		output += aead.start_vec(nonce);
 
 		const size_t offset = output.size();
 		output += Pair(&msg[0], msg_length);
-		aead->finish(output, offset);
+		aead.finish(output, offset);
 
 		BOTAN_ASSERT(output.size() == ptext_size + offset, "Produced expected size");
 	}
@@ -417,7 +417,7 @@ void decrypt_record(SafeVector!byte output,
 
 		if (StreamCipher sc = cipherstate.stream_cipher())
 		{
-			sc->cipher1(record_contents, record_len);
+			sc.cipher1(record_contents, record_len);
 			// no padding to check or remove
 		}
 		else if (BlockCipher bc = cipherstate.block_cipher())
@@ -446,14 +446,14 @@ void decrypt_record(SafeVector!byte output,
 		const byte* plaintext_block = &record_contents[iv_size];
 		const ushort plaintext_length = record_len - mac_pad_iv_size;
 
-		cipherstate.mac()->update(
+		cipherstate.mac().update(
 			cipherstate.format_ad(record_sequence, record_type, record_version, plaintext_length)
 			);
 
-		cipherstate.mac()->update(plaintext_block, plaintext_length);
+		cipherstate.mac().update(plaintext_block, plaintext_length);
 
 		Vector!( byte ) mac_buf(mac_size);
-		cipherstate.mac()->flushInto(&mac_buf[0]);
+		cipherstate.mac().flushInto(&mac_buf[0]);
 
 		const size_t mac_offset = record_len - (mac_size + pad_size);
 
@@ -530,7 +530,7 @@ size_t read_record(SafeVector!byte readbuf,
 
 	*record_version = Protocol_Version(readbuf[1], readbuf[2]);
 
-	const bool is_dtls = record_version->is_datagram_protocol();
+	const bool is_dtls = record_version.is_datagram_protocol();
 
 	if (is_dtls && readbuf.size() < DTLS_HEADER_SIZE)
 	{
@@ -572,8 +572,8 @@ size_t read_record(SafeVector!byte readbuf,
 	}
 	else if (sequence_numbers)
 	{
-		*record_sequence = sequence_numbers->next_read_sequence();
-		epoch = sequence_numbers->current_read_epoch();
+		*record_sequence = sequence_numbers.next_read_sequence();
+		epoch = sequence_numbers.current_read_epoch();
 	}
 	else
 	{
@@ -582,7 +582,7 @@ size_t read_record(SafeVector!byte readbuf,
 		epoch = 0;
 	}
 
-	if (sequence_numbers && sequence_numbers->already_seen(*record_sequence))
+	if (sequence_numbers && sequence_numbers.already_seen(*record_sequence))
 		return 0;
 
 	byte* record_contents = &readbuf[header_size];
@@ -610,7 +610,7 @@ size_t read_record(SafeVector!byte readbuf,
 						*cipherstate);
 
 	if (sequence_numbers)
-		sequence_numbers->read_accept(*record_sequence);
+		sequence_numbers.read_accept(*record_sequence);
 
 	readbuf.clear();
 	return 0;

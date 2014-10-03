@@ -73,14 +73,14 @@ class EAC_Signed_Object
 		string PEM_encode() const;
 
 		~this() {}
-	protected:
+	package:
 		void do_decode();
 		EAC_Signed_Object() {}
 
 		AlgorithmIdentifier sig_algo;
 		Vector!( byte ) tbs_bits;
 		string PEM_label_pref;
-		Vector!( string ) PEM_labels_allowed;
+		Vector!string PEM_labels_allowed;
 	private:
 		abstract void force_decode();
 };

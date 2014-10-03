@@ -36,9 +36,9 @@ import botan.cpuid;
 #if defined(BOTAN_HAS_SHA1_SSE2)
   import botan.sha1_sse2;
 #endif
-BlockCipher*
+BlockCipher
 SIMD_Engine::find_block_cipher(in SCAN_Name request,
-										 Algorithm_Factory&) const
+										 ref Algorithm_Factory) const
 {
 #if defined(BOTAN_HAS_AES_SSSE3)
 	if (request.algo_name() == "AES-128" && CPUID::has_ssse3())
@@ -77,9 +77,9 @@ SIMD_Engine::find_block_cipher(in SCAN_Name request,
 	return null;
 }
 
-HashFunction*
+HashFunction
 SIMD_Engine::find_hash(in SCAN_Name request,
-							  Algorithm_Factory&) const
+							  ref Algorithm_Factory) const
 {
 #if defined(BOTAN_HAS_SHA1_SSE2)
 	if (request.algo_name() == "SHA-160" && CPUID::has_sse2())

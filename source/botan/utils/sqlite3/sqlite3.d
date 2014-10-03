@@ -53,7 +53,7 @@ void sqlite3_database::create_table(in string table_schema)
 	}
 }sqlite3_statement::sqlite3_statement(sqlite3_database* db, in string base_sql)
 {
-	int rc = ::sqlite3_prepare_v2(db->m_db, base_sql.c_str(), -1, &m_stmt, null);
+	int rc = ::sqlite3_prepare_v2(db.m_db, base_sql.c_str(), -1, &m_stmt, null);
 
 	if (rc != SQLITE_OK)
 		throw new Exception("sqlite3_prepare failed " + base_sql +

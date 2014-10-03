@@ -44,7 +44,7 @@ void EAC1_1_ADO::force_decode()
 
 Vector!( byte ) EAC1_1_ADO::make_signed(PK_Signer& signer,
 														 in Vector!byte tbs_bits,
-														 RandomNumberGenerator& rng)
+														 RandomNumberGenerator rng)
 {
 	const Vector!( byte ) concat_sig = signer.sign_message(tbs_bits, rng);
 
@@ -111,9 +111,9 @@ Vector!( byte ) EAC1_1_ADO::tbs_data() const
 
 bool EAC1_1_ADO::operator==(EAC1_1_ADO const& rhs) const
 {
-	return (this->get_concat_sig() == rhs.get_concat_sig()
-			  && this->tbs_data() == rhs.tbs_data()
-			  && this->get_car() ==  rhs.get_car());
+	return (this.get_concat_sig() == rhs.get_concat_sig()
+			  && this.tbs_data() == rhs.tbs_data()
+			  && this.get_car() ==  rhs.get_car());
 }
 
 EAC1_1_Req EAC1_1_ADO::get_request() const

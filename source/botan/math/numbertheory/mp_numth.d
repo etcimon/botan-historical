@@ -41,7 +41,7 @@ BigInt mul_add(in BigInt a, ref const BigInt b, ref const BigInt c)
 	const size_t b_sw = b.sig_words();
 	const size_t c_sw = c.sig_words();
 
-	BigInt r(sign, std::max(a.size() + b.size(), c_sw) + 1);
+	BigInt r(sign, std.algorithm.max(a.size() + b.size(), c_sw) + 1);
 	secure_vector!word workspace(r.size());
 
 	bigint_mul(r.mutable_data(), r.size(),
@@ -49,7 +49,7 @@ BigInt mul_add(in BigInt a, ref const BigInt b, ref const BigInt c)
 				  a.data(), a.size(), a_sw,
 				  b.data(), b.size(), b_sw);
 
-	const size_t r_size = std::max(r.sig_words(), c_sw);
+	const size_t r_size = std.algorithm.max(r.sig_words(), c_sw);
 	bigint_add2(r.mutable_data(), r_size, c.data(), c_sw);
 	return r;
 }

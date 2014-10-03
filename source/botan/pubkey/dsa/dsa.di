@@ -29,7 +29,7 @@ class DSA_PublicKey : public abstract DL_Scheme_PublicKey
 		}
 
 		DSA_PublicKey(in DL_Group group, ref const BigInt y);
-	protected:
+	package:
 		DSA_PublicKey() {}
 };
 
@@ -42,13 +42,13 @@ class DSA_PrivateKey : public DSA_PublicKey,
 	public:
 		DSA_PrivateKey(in AlgorithmIdentifier alg_id,
 							in SafeVector!byte key_bits,
-							RandomNumberGenerator& rng);
+							RandomNumberGenerator rng);
 
-		DSA_PrivateKey(RandomNumberGenerator& rng,
+		DSA_PrivateKey(RandomNumberGenerator rng,
 							const DL_Group& group,
 							ref const BigInt Private_Key = 0);
 
-		bool check_key(RandomNumberGenerator& rng, bool strong) const;
+		bool check_key(RandomNumberGenerator rng, bool strong) const;
 };
 
 /**
@@ -64,7 +64,7 @@ class DSA_Signature_Operation : public PK_Ops::Signature
 		size_t max_input_bits() const { return q.bits(); }
 
 		SafeVector!byte sign(in byte* msg, size_t msg_len,
-										RandomNumberGenerator& rng);
+										RandomNumberGenerator rng);
 	private:
 		ref const BigInt q;
 		ref const BigInt x;

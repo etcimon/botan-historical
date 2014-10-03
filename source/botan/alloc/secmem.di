@@ -72,7 +72,7 @@ class secure_allocator(T)
 			::new(cast(void*)(p)) U(std::forward<Args>(args)...);
 		}
 
-		template<typename U> void destroy(U* p) { p->~this(); }
+		template<typename U> void destroy(U* p) { p.~this(); }
 };
 
 template<typename T>  bool
@@ -99,7 +99,7 @@ size_t buffer_insert(T, Alloc)(Vector!( T, Alloc ) buf,
 							in T* input,
 							size_t input_length)
 {
-	const size_t to_copy = std::min(input_length, buf.size() - buf_offset);
+	const size_t to_copy = std.algorithm.min(input_length, buf.size() - buf_offset);
 	copy_mem(&buf[buf_offset], input, to_copy);
 	return to_copy;
 }
@@ -108,7 +108,7 @@ size_t buffer_insert(T, Alloc, Alloc2)(Vector!( T, Alloc )& buf,
 							size_t buf_offset,
 							const Vector!( T, Alloc2 )& input)
 {
-	const size_t to_copy = std::min(input.size(), buf.size() - buf_offset);
+	const size_t to_copy = std.algorithm.min(input.size(), buf.size() - buf_offset);
 	copy_mem(&buf[buf_offset], &input[0], to_copy);
 	return to_copy;
 }

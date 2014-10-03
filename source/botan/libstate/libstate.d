@@ -40,17 +40,17 @@ import algorithm;
 /*
 * Return a reference to the Algorithm_Factory
 */
-Algorithm_Factory& Library_State::algorithm_factory() const
+ref Algorithm_Factory Library_State::algorithm_factory() const
 {
 	if (!m_algorithm_factory)
 		throw new Invalid_State("Uninitialized in Library_State::algorithm_factory");
-	return *m_algorithm_factory;
+	return m_algorithm_factory;
 }
 
 /*
 * Return a reference to the global PRNG
 */
-RandomNumberGenerator& Library_State::global_rng()
+RandomNumberGenerator Library_State::global_rng()
 {
 	return *m_global_prng;
 }

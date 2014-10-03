@@ -260,7 +260,7 @@ PointGFp multi_exponentiate(in PointGFp p1, ref const BigInt z1,
 	const PointGFp p3 = p1 + p2;
 
 	PointGFp H(p1.curve); // create as zero
-	size_t bits_left = std::max(z1.bits(), z2.bits());
+	size_t bits_left = std.algorithm.max(z1.bits(), z2.bits());
 
 	Vector!( BigInt ) ws(9);
 

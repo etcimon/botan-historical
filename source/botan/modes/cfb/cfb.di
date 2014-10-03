@@ -31,8 +31,8 @@ class CFB_Mode : public Cipher_Mode
 		bool valid_nonce_length(size_t n) const override;
 
 		void clear() override;
-	protected:
-		CFB_Mode(BlockCipher* cipher, size_t feedback_bits);
+	package:
+		CFB_Mode(BlockCipher cipher, size_t feedback_bits);
 
 		const BlockCipher& cipher() const { return *m_cipher; }
 
@@ -57,7 +57,7 @@ class CFB_Mode : public Cipher_Mode
 class CFB_Encryption : public CFB_Mode
 {
 	public:
-		CFB_Encryption(BlockCipher* cipher, size_t feedback_bits) :
+		CFB_Encryption(BlockCipher cipher, size_t feedback_bits) :
 			CFB_Mode(cipher, feedback_bits) {}
 
 		void update(SafeVector!byte blocks, size_t offset = 0) override;
@@ -71,7 +71,7 @@ class CFB_Encryption : public CFB_Mode
 class CFB_Decryption : public CFB_Mode
 {
 	public:
-		CFB_Decryption(BlockCipher* cipher, size_t feedback_bits) :
+		CFB_Decryption(BlockCipher cipher, size_t feedback_bits) :
 			CFB_Mode(cipher, feedback_bits) {}
 
 		void update(SafeVector!byte blocks, size_t offset = 0) override;

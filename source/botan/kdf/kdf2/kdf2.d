@@ -18,13 +18,13 @@ SafeVector!byte KDF2::derive(size_t out_len,
 
 	while(out_len && counter)
 	{
-		hash->update(secret, secret_len);
-		hash->update_be(counter);
-		hash->update(P, P_len);
+		hash.update(secret, secret_len);
+		hash.update_be(counter);
+		hash.update(P, P_len);
 
-		SafeVector!byte hash_result = hash->flush();
+		SafeVector!byte hash_result = hash.flush();
 
-		size_t added = std::min(hash_result.size(), out_len);
+		size_t added = std.algorithm.min(hash_result.size(), out_len);
 		output += Pair(&hash_result[0], added);
 		out_len -= added;
 

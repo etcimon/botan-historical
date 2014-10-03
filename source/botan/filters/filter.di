@@ -46,7 +46,7 @@ class Filter
 		abstract bool attachable() { return true; }
 
 		~this() {}
-	protected:
+	package:
 		/**
 		* @param in some input for the filter
 		* @param length the length of in
@@ -136,7 +136,7 @@ class Filter
 		Vector!( Filter* ) next;
 		size_t port_num, filter_owns;
 
-		// true if filter belongs to a pipe --> prohibit filter sharing!
+		// true if filter belongs to a pipe -. prohibit filter sharing!
 		bool owned;
 };
 
@@ -145,7 +145,7 @@ class Filter
 **/
 class Fanout_Filter : public Filter
 {
-	protected:
+	package:
 		/**
 		* Increment the number of filters past us that we own
 		*/

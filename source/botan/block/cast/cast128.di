@@ -17,7 +17,7 @@ class CAST_128 : public Block_Cipher_Fixed_Params!(8, 11, 16)
 
 		void clear();
 		string name() const { return "CAST-128"; }
-		BlockCipher* clone() const { return new CAST_128; }
+		BlockCipher clone() const { return new CAST_128; }
 
 	private:
 		void key_schedule(in byte*, size_t);

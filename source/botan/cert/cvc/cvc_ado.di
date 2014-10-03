@@ -40,7 +40,7 @@ class EAC1_1_ADO : public EAC1_1_obj!EAC1_1_ADO
 		static Vector!( byte ) make_signed(
 			PK_Signer& signer,
 			in Vector!byte tbs_bits,
-			RandomNumberGenerator& rng);
+			RandomNumberGenerator rng);
 
 		/**
 		* Get the CAR of this CVC ADO request

@@ -25,7 +25,7 @@ class Data_Store
 		std::multimap<string, string> search_for(
 			bool delegate(string, string) predicate) const;
 
-		Vector!( string ) get(in string) const;
+		Vector!string get(in string) const;
 
 		string get1(in string key) const;
 

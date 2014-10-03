@@ -195,7 +195,7 @@ void idea_op_8(in byte[64] input, ref byte[64] output, in ushort[52] EK)
 */
 void IDEA_SSE2::encrypt_n(byte* input, byte* output, size_t blocks) const
 {
-	const ushort* KS = &this->get_EK()[0];
+	const ushort* KS = &this.get_EK()[0];
 
 	while(blocks >= 8)
 	{
@@ -214,7 +214,7 @@ void IDEA_SSE2::encrypt_n(byte* input, byte* output, size_t blocks) const
 */
 void IDEA_SSE2::decrypt_n(byte* input, byte* output, size_t blocks) const
 {
-	const ushort* KS = &this->get_DK()[0];
+	const ushort* KS = &this.get_DK()[0];
 
 	while(blocks >= 8)
 	{

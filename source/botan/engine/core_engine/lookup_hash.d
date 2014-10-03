@@ -6,7 +6,7 @@
 */
 
 import botan.internal.core_engine;
-import botan.scan_name;
+import botan.algo_base.scan_name;
 import botan.algo_factory;
 
 #if defined(BOTAN_HAS_ADLER32)
@@ -87,8 +87,8 @@ import botan.algo_factory;
 /*
 * Look for an algorithm with this name
 */
-HashFunction* Core_Engine::find_hash(in SCAN_Name request,
-												 Algorithm_Factory& af) const
+HashFunction Core_Engine::find_hash(in SCAN_Name request,
+												 ref Algorithm_Factory af) const
 {
 #if defined(BOTAN_HAS_ADLER32)
 	if (request.algo_name() == "Adler32")
@@ -184,11 +184,11 @@ HashFunction* Core_Engine::find_hash(in SCAN_Name request,
 #if defined(BOTAN_HAS_COMB4P)
 	if (request.algo_name() == "Comb4P" && request.arg_count() == 2)
 	{
-		const HashFunction* h1 = af.prototype_hash_function(request.arg(0));
-		const HashFunction* h2 = af.prototype_hash_function(request.arg(1));
+		const HashFunction h1 = af.prototype_hash_function(request.arg(0));
+		const HashFunction h2 = af.prototype_hash_function(request.arg(1));
 
 		if (h1 && h2)
-			return new Comb4P(h1->clone(), h2->clone());
+			return new Comb4P(h1.clone(), h2.clone());
 	}
 #endif
 
@@ -196,23 +196,23 @@ HashFunction* Core_Engine::find_hash(in SCAN_Name request,
 
 	if (request.algo_name() == "Parallel")
 	{
-		Vector!( const HashFunction* ) hash_prototypes;
+		Vector!( const HashFunction ) hash_prototypes;
 
 		/* First pass, just get the prototypes (no memory allocation). Then
 			if all were found, replace each prototype with a newly created clone
 		*/
 		for (size_t i = 0; i != request.arg_count(); ++i)
 		{
-			const HashFunction* hash = af.prototype_hash_function(request.arg(i));
+			const HashFunction hash = af.prototype_hash_function(request.arg(i));
 			if (!hash)
 				return null;
 
 			hash_prototypes.push_back(hash);
 		}
 
-		Vector!( HashFunction* ) hashes;
+		Vector!( HashFunction ) hashes;
 		for (size_t i = 0; i != hash_prototypes.size(); ++i)
-			hashes.push_back(hash_prototypes[i]->clone());
+			hashes.push_back(hash_prototypes[i].clone());
 
 		return new Parallel(hashes);
 	

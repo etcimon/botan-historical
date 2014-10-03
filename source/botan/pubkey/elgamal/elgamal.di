@@ -27,7 +27,7 @@ class ElGamal_PublicKey : public abstract DL_Scheme_PublicKey
 		{}
 
 		ElGamal_PublicKey(in DL_Group group, ref const BigInt y);
-	protected:
+	package:
 		ElGamal_PublicKey() {}
 };
 
@@ -38,13 +38,13 @@ class ElGamal_PrivateKey : public ElGamal_PublicKey,
 												 public abstract DL_Scheme_PrivateKey
 {
 	public:
-		bool check_key(RandomNumberGenerator& rng, bool) const;
+		bool check_key(RandomNumberGenerator rng, bool) const;
 
 		ElGamal_PrivateKey(in AlgorithmIdentifier alg_id,
 								 in SafeVector!byte key_bits,
-								 RandomNumberGenerator& rng);
+								 RandomNumberGenerator rng);
 
-		ElGamal_PrivateKey(RandomNumberGenerator& rng,
+		ElGamal_PrivateKey(RandomNumberGenerator rng,
 								 const DL_Group& group,
 								 ref const BigInt priv_key = 0);
 };
@@ -60,7 +60,7 @@ class ElGamal_Encryption_Operation : public PK_Ops::Encryption
 		ElGamal_Encryption_Operation(in ElGamal_PublicKey key);
 
 		SafeVector!byte encrypt(in byte* msg, size_t msg_len,
-											RandomNumberGenerator& rng);
+											RandomNumberGenerator rng);
 
 	private:
 		Fixed_Base_Power_Mod powermod_g_p, powermod_y_p;
@@ -76,7 +76,7 @@ class ElGamal_Decryption_Operation : public PK_Ops::Decryption
 		size_t max_input_bits() const { return mod_p.get_modulus().bits() - 1; }
 
 		ElGamal_Decryption_Operation(in ElGamal_PrivateKey key,
-											  RandomNumberGenerator& rng);
+											  RandomNumberGenerator rng);
 
 		SafeVector!byte decrypt(in byte* msg, size_t msg_len);
 	private:

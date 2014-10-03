@@ -148,14 +148,14 @@ AlgorithmIdentifier X509_Object::signature_algorithm() const
 */
 string X509_Object::hash_used_for_signature() const
 {
-	Vector!( string ) sig_info =
+	Vector!string sig_info =
 		split_on(OIDS::lookup(sig_algo.oid), '/');
 
 	if (sig_info.size() != 2)
 		throw new Internal_Error("Invalid name format found for " +
 									sig_algo.oid.as_string());
 
-	Vector!( string ) pad_and_hash =
+	Vector!string pad_and_hash =
 		parse_algorithm_name(sig_info[1]);
 
 	if (pad_and_hash.size() != 2)
@@ -179,7 +179,7 @@ bool X509_Object::check_signature(const Public_Key* pub_key) const
 bool X509_Object::check_signature(in Public_Key pub_key) const
 {
 	try {
-		Vector!( string ) sig_info =
+		Vector!string sig_info =
 			split_on(OIDS::lookup(sig_algo.oid), '/');
 
 		if (sig_info.size() != 2 || sig_info[0] != pub_key.algo_name())
@@ -203,7 +203,7 @@ bool X509_Object::check_signature(in Public_Key pub_key) const
 * Apply the X.509 SIGNED macro
 */
 Vector!( byte ) X509_Object::make_signed(PK_Signer* signer,
-														  RandomNumberGenerator& rng,
+														  RandomNumberGenerator rng,
 														  const AlgorithmIdentifier& algo,
 														  in SafeVector!byte tbs_bits)
 {
@@ -211,7 +211,7 @@ Vector!( byte ) X509_Object::make_signed(PK_Signer* signer,
 		.start_cons(SEQUENCE)
 			.raw_bytes(tbs_bits)
 			.encode(algo)
-			.encode(signer->sign_message(tbs_bits, rng), BIT_STRING)
+			.encode(signer.sign_message(tbs_bits, rng), BIT_STRING)
 		.end_cons()
 	.get_contents_unlocked();
 }

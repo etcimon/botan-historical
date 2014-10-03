@@ -7,7 +7,7 @@
 
 import botan.x509cert;
 import botan.certstor;
-import botan.symkey;
+import botan.algo_base.symkey;
 import string;
 class BigInt;
 
@@ -72,7 +72,7 @@ class Credentials_Manager
 		* @param context specifies a context relative to type.
 		*/
 		abstract Vector!( X509_Certificate ) cert_chain(
-			const Vector!( string )& cert_key_types,
+			const Vector!string& cert_key_types,
 			in string type,
 			in string context);
 

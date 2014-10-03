@@ -16,10 +16,10 @@ class KDF2 : public KDF
 		SafeVector!byte derive(size_t, const byte[], size_t,
 										  const byte[], size_t) const;
 
-		string name() const { return "KDF2(" + hash->name() + ")"; }
-		KDF* clone() const { return new KDF2(hash->clone()); }
+		string name() const { return "KDF2(" + hash.name() + ")"; }
+		KDF* clone() const { return new KDF2(hash.clone()); }
 
-		KDF2(HashFunction* h) : hash(h) {}
+		KDF2(HashFunction h) : hash(h) {}
 	private:
 		Unique!HashFunction hash;
 };

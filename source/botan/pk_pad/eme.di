@@ -31,7 +31,7 @@ class EME
 		SafeVector!byte encode(in byte* in,
 										  size_t in_length,
 										  size_t key_length,
-										  RandomNumberGenerator& rng) const;
+										  RandomNumberGenerator rng) const;
 
 		/**
 		* Encode an input
@@ -42,7 +42,7 @@ class EME
 		*/
 		SafeVector!byte encode(in SafeVector!byte in,
 										  size_t key_length,
-										  RandomNumberGenerator& rng) const;
+										  RandomNumberGenerator rng) const;
 
 		/**
 		* Decode an input
@@ -77,7 +77,7 @@ class EME
 		abstract SafeVector!byte pad(in byte* in,
 												 size_t in_length,
 												 size_t key_length,
-												 RandomNumberGenerator& rng) const;
+												 RandomNumberGenerator rng) const;
 
 		/**
 		* Decode an input

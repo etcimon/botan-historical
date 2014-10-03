@@ -47,19 +47,19 @@ void poly_double(byte* output, in byte* input)
 
 }
 
-XTS_Mode::XTS_Mode(BlockCipher* cipher) : m_cipher(cipher)
+XTS_Mode::XTS_Mode(BlockCipher cipher) : m_cipher(cipher)
 {
-	if (m_cipher->block_size() != 8 && m_cipher->block_size() != 16)
-		throw new std::invalid_argument("Bad cipher for XTS: " + cipher->name());
+	if (m_cipher.block_size() != 8 && m_cipher.block_size() != 16)
+		throw new std::invalid_argument("Bad cipher for XTS: " + cipher.name());
 
-	m_tweak_cipher.reset(m_cipher->clone());
+	m_tweak_cipher.reset(m_cipher.clone());
 	m_tweak.resize(update_granularity());
 }
 
 void XTS_Mode::clear()
 {
-	m_cipher->clear();
-	m_tweak_cipher->clear();
+	m_cipher.clear();
+	m_tweak_cipher.clear();
 	zeroise(m_tweak);
 }
 
@@ -97,11 +97,11 @@ void XTS_Mode::key_schedule(in byte* key, size_t length)
 {
 	const size_t key_half = length / 2;
 
-	if (length % 2 == 1 || !m_cipher->valid_keylength(key_half))
+	if (length % 2 == 1 || !m_cipher.valid_keylength(key_half))
 		throw new Invalid_Key_Length(name(), length);
 
-	m_cipher->set_key(&key[0], key_half);
-	m_tweak_cipher->set_key(&key[key_half], key_half);
+	m_cipher.set_key(&key[0], key_half);
+	m_tweak_cipher.set_key(&key[key_half], key_half);
 }
 
 SafeVector!byte XTS_Mode::start(in byte* nonce, size_t nonce_len)
@@ -110,7 +110,7 @@ SafeVector!byte XTS_Mode::start(in byte* nonce, size_t nonce_len)
 		throw new Invalid_IV_Length(name(), nonce_len);
 
 	copy_mem(&m_tweak[0], nonce, nonce_len);
-	m_tweak_cipher->encrypt(&m_tweak[0]);
+	m_tweak_cipher.encrypt(&m_tweak[0]);
 
 	update_tweak(0);
 
@@ -119,7 +119,7 @@ SafeVector!byte XTS_Mode::start(in byte* nonce, size_t nonce_len)
 
 void XTS_Mode::update_tweak(size_t which)
 {
-	const size_t BS = m_tweak_cipher->block_size();
+	const size_t BS = m_tweak_cipher.block_size();
 
 	if (which > 0)
 		poly_double(&m_tweak[0], &m_tweak[(which-1)*BS], BS);
@@ -150,7 +150,7 @@ void XTS_Encryption::update(SafeVector!byte buffer, size_t offset)
 
 	while(blocks)
 	{
-		const size_t to_proc = std::min(blocks, blocks_in_tweak);
+		const size_t to_proc = std.algorithm.min(blocks, blocks_in_tweak);
 		const size_t to_proc_bytes = to_proc * BS;
 
 		xor_buf(buf, tweak(), to_proc_bytes);
@@ -229,7 +229,7 @@ void XTS_Decryption::update(SafeVector!byte buffer, size_t offset)
 
 	while(blocks)
 	{
-		const size_t to_proc = std::min(blocks, blocks_in_tweak);
+		const size_t to_proc = std.algorithm.min(blocks, blocks_in_tweak);
 		const size_t to_proc_bytes = to_proc * BS;
 
 		xor_buf(buf, tweak(), to_proc_bytes);

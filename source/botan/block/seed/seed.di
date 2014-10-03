@@ -17,7 +17,7 @@ class SEED : public Block_Cipher_Fixed_Params!(16, 16)
 
 		void clear();
 		string name() const { return "SEED"; }
-		BlockCipher* clone() const { return new SEED; }
+		BlockCipher clone() const { return new SEED; }
 	private:
 		void key_schedule(in byte*, size_t);
 

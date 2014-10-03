@@ -5,7 +5,7 @@
 * Distributed under the terms of the botan license.
 */
 
-import botan.scan_name;
+import botan.algo_base.scan_name;
 import botan.block_cipher;
 import botan.stream_cipher;
 import botan.hash;
@@ -39,44 +39,44 @@ class Engine
 		* @param af an algorithm factory object
 		* @return newly allocated object, or NULL
 		*/
-		abstract BlockCipher*
+		abstract BlockCipher
 			find_block_cipher(in SCAN_Name algo_spec,
-									Algorithm_Factory& af) const;
+									ref Algorithm_Factory af) const;
 
 		/**
 		* @param algo_spec the algorithm name/specification
 		* @param af an algorithm factory object
 		* @return newly allocated object, or NULL
 		*/
-		abstract StreamCipher*
+		abstract StreamCipher
 			find_stream_cipher(in SCAN_Name algo_spec,
-									 Algorithm_Factory& af) const;
+									 ref Algorithm_Factory af) const;
 
 		/**
 		* @param algo_spec the algorithm name/specification
 		* @param af an algorithm factory object
 		* @return newly allocated object, or NULL
 		*/
-		abstract HashFunction*
+		abstract HashFunction
 			find_hash(in SCAN_Name algo_spec,
-						 Algorithm_Factory& af) const;
+						 ref Algorithm_Factory af) const;
 
 		/**
 		* @param algo_spec the algorithm name/specification
 		* @param af an algorithm factory object
 		* @return newly allocated object, or NULL
 		*/
-		abstract MessageAuthenticationCode*
+		abstract MessageAuthenticationCode
 			find_mac(in SCAN_Name algo_spec,
-						Algorithm_Factory& af) const;
+						ref Algorithm_Factory af) const;
 
 		/**
 		* @param algo_spec the algorithm name/specification
 		* @param af an algorithm factory object
 		* @return newly allocated object, or NULL
 		*/
-		abstract PBKDF* find_pbkdf(in SCAN_Name algo_spec,
-										  Algorithm_Factory& af) const;
+		abstract PBKDF find_pbkdf(in SCAN_Name algo_spec,
+										  ref Algorithm_Factory af) const;
 
 		/**
 		* @param n the modulus
@@ -96,7 +96,7 @@ class Engine
 		*/
 		abstract Keyed_Filter* get_cipher(in string algo_spec,
 													Cipher_Dir dir,
-													Algorithm_Factory& af);
+													ref Algorithm_Factory af);
 
 		/**
 		* Return a new operator object for this key, if possible
@@ -104,7 +104,7 @@ class Engine
 		* @return newly allocated operator object, or NULL
 		*/
 		abstract PK_Ops::Key_Agreement*
-			get_key_agreement_op(in Private_Key key, RandomNumberGenerator& rng) const;
+			get_key_agreement_op(in Private_Key key, RandomNumberGenerator rng) const;
 
 		/**
 		* Return a new operator object for this key, if possible
@@ -112,7 +112,7 @@ class Engine
 		* @return newly allocated operator object, or NULL
 		*/
 		abstract PK_Ops::Signature*
-			get_signature_op(in Private_Key key, RandomNumberGenerator& rng) const;
+			get_signature_op(in Private_Key key, RandomNumberGenerator rng) const;
 
 		/**
 		* Return a new operator object for this key, if possible
@@ -120,7 +120,7 @@ class Engine
 		* @return newly allocated operator object, or NULL
 		*/
 		abstract PK_Ops::Verification*
-			get_verify_op(in Public_Key key, RandomNumberGenerator& rng) const;
+			get_verify_op(in Public_Key key, RandomNumberGenerator rng) const;
 
 		/**
 		* Return a new operator object for this key, if possible
@@ -128,7 +128,7 @@ class Engine
 		* @return newly allocated operator object, or NULL
 		*/
 		abstract PK_Ops::Encryption*
-			get_encryption_op(in Public_Key key, RandomNumberGenerator& rng) const;
+			get_encryption_op(in Public_Key key, RandomNumberGenerator rng) const;
 
 		/**
 		* Return a new operator object for this key, if possible
@@ -136,5 +136,5 @@ class Engine
 		* @return newly allocated operator object, or NULL
 		*/
 		abstract PK_Ops::Decryption*
-			get_decryption_op(in Private_Key key, RandomNumberGenerator& rng) const;
+			get_decryption_op(in Private_Key key, RandomNumberGenerator rng) const;
 };

@@ -19,16 +19,16 @@ class PKCS5_PBKDF1 : public PBKDF
 		* Create a PKCS #5 instance using the specified hash function.
 		* @param hash_in pointer to a hash function object to use
 		*/
-		PKCS5_PBKDF1(HashFunction* hash_input) : hash(hash_input) {}
+		PKCS5_PBKDF1(HashFunction hash_input) : hash(hash_input) {}
 
 		string name() const
 		{
-			return "PBKDF1(" + hash->name() + ")";
+			return "PBKDF1(" + hash.name() + ")";
 		}
 
-		PBKDF* clone() const
+		PBKDF clone() const
 		{
-			return new PKCS5_PBKDF1(hash->clone());
+			return new PKCS5_PBKDF1(hash.clone());
 		}
 
 		Pair!(size_t, OctetString)

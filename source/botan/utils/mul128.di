@@ -1,5 +1,5 @@
 /*
-* 64x64->128 bit multiply operation
+* 64x64.128 bit multiply operation
 * (C) 2013 Jack Lloyd
 *
 * Distributed under the terms of the botan license.
@@ -67,7 +67,7 @@ import intrin.h;
 
 #endif
 /**
-* Perform a 64x64->128 bit multiplication
+* Perform a 64x64.128 bit multiplication
 */
  void mul64x64_128(ulong a, ulong b, ulong* lo, ulong* hi)
 {
@@ -76,9 +76,9 @@ import intrin.h;
 #else
 
 	/*
-	* Do a 64x64->128 multiply using four 32x32->64 multiplies plus
+	* Do a 64x64.128 multiply using four 32x32.64 multiplies plus
 	* some adds and shifts. Last resort for CPUs like UltraSPARC (with
-	* 64-bit registers/ALU, but no 64x64->128 multiply) or 32-bit CPUs.
+	* 64-bit registers/ALU, but no 64x64.128 multiply) or 32-bit CPUs.
 	*/
 	const size_t HWORD_BITS = 32;
 	const uint HWORD_MASK = 0xFFFFFFFF;

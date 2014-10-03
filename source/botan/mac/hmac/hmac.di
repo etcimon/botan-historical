@@ -15,9 +15,9 @@ class HMAC : public MessageAuthenticationCode
 	public:
 		void clear();
 		string name() const;
-		MessageAuthenticationCode* clone() const;
+		MessageAuthenticationCode clone() const;
 
-		size_t output_length() const { return m_hash->output_length(); }
+		size_t output_length() const { return m_hash.output_length(); }
 
 		Key_Length_Specification key_spec() const
 		{
@@ -28,7 +28,7 @@ class HMAC : public MessageAuthenticationCode
 		/**
 		* @param hash the hash to use for HMACing
 		*/
-		HMAC(HashFunction* hash);
+		HMAC(HashFunction hash);
 
 		HMAC(in HMAC);
 		HMAC& operator=(in HMAC);

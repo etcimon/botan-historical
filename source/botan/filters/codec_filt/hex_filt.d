@@ -53,7 +53,7 @@ void Hex_Encoder::encode_and_send(in byte* block, size_t length)
 		size_t remaining = 2*length, offset = 0;
 		while(remaining)
 		{
-			size_t sent = std::min(line_length - counter, remaining);
+			size_t sent = std.algorithm.min(line_length - counter, remaining);
 			send(&output[offset], sent);
 			counter += sent;
 			remaining -= sent;
@@ -118,7 +118,7 @@ void Hex_Decoder::write(in byte* input, size_t length)
 {
 	while(length)
 	{
-		size_t to_copy = std::min<size_t>(length, input.size() - position);
+		size_t to_copy = std.algorithm.min<size_t>(length, input.size() - position);
 		copy_mem(&input[position], input, to_copy);
 		position += to_copy;
 

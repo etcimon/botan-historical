@@ -27,7 +27,7 @@ class Unix_EntropySource : public EntropySource
 		*		  an executable to one of these directories then we will
 		*		  run arbitrary code.
 		*/
-		Unix_EntropySource(in Vector!( string ) trusted_paths,
+		Unix_EntropySource(in Vector!string trusted_paths,
 								 size_t concurrent_processes = 0);
 	private:
 		static Vector!( std::vector<string )> get_default_sources();
@@ -37,12 +37,12 @@ class Unix_EntropySource : public EntropySource
 			public:
 				int fd() const { return m_fd; }
 
-				void spawn(in Vector!( string ) args);
+				void spawn(in Vector!string args);
 				void shutdown();
 
 				Unix_Process() {}
 
-				Unix_Process(in Vector!( string ) args) { spawn(args); }
+				Unix_Process(in Vector!string args) { spawn(args); }
 
 				~this() { shutdown(); }
 
@@ -59,9 +59,9 @@ class Unix_EntropySource : public EntropySource
 				pid_t m_pid = -1;
 		};
 
-		const Vector!( string )& next_source();
+		const Vector!string& next_source();
 
-		const Vector!( string ) m_trusted_paths;
+		const Vector!string m_trusted_paths;
 		const size_t m_concurrent;
 
 		Vector!( std::vector<string )> m_sources;

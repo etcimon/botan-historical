@@ -34,7 +34,7 @@ class Client_Handshake_State : public Handshake_State
 		Unique!Public_Key server_public_key;
 
 		// Used by client using NPN
-		std::function<string (Vector!( string ))> client_npn_cb;
+		std::function<string (Vector!string)> client_npn_cb;
 };
 
 }
@@ -74,7 +74,7 @@ Vector!( X509_Certificate )
 Client::get_peer_cert_chain(in Handshake_State state) const
 {
 	if (state.server_certs())
-		return state.server_certs()->cert_chain();
+		return state.server_certs().cert_chain();
 	return Vector!( X509_Certificate )();
 }
 
@@ -169,7 +169,7 @@ void Client::process_handshake_msg(const Handshake_State* active_state,
 			return;
 		}
 
-		this->initiate_handshake(state, false);
+		this.initiate_handshake(state, false);
 
 		return;
 	}
@@ -192,21 +192,21 @@ void Client::process_handshake_msg(const Handshake_State* active_state,
 	{
 		state.server_hello(new Server_Hello(contents));
 
-		if (!state.client_hello()->offered_suite(state.server_hello()->ciphersuite()))
+		if (!state.client_hello().offered_suite(state.server_hello().ciphersuite()))
 		{
 			throw new TLS_Exception(Alert::HANDSHAKE_FAILURE,
 									  "Server replied with ciphersuite we didn't send");
 		}
 
-		if (!value_exists(state.client_hello()->compression_methods(),
-							  state.server_hello()->compression_method()))
+		if (!value_exists(state.client_hello().compression_methods(),
+							  state.server_hello().compression_method()))
 		{
 			throw new TLS_Exception(Alert::HANDSHAKE_FAILURE,
 									  "Server replied with compression method we didn't send");
 		}
 
-		auto client_extn = state.client_hello()->extension_types();
-		auto server_extn = state.server_hello()->extension_types();
+		auto client_extn = state.client_hello().extension_types();
+		auto server_extn = state.server_hello().extension_types();
 
 		Vector!( Handshake_Extension_Type ) diff;
 
@@ -221,13 +221,13 @@ void Client::process_handshake_msg(const Handshake_State* active_state,
 									  " but we did not request it");
 		}
 
-		state.set_version(state.server_hello()->_version());
+		state.set_version(state.server_hello()._version());
 
 		secure_renegotiation_check(state.server_hello());
 
 		const bool server_returned_same_session_id =
-			!state.server_hello()->session_id().empty() &&
-			(state.server_hello()->session_id() == state.client_hello()->session_id());
+			!state.server_hello().session_id().empty() &&
+			(state.server_hello().session_id() == state.client_hello().session_id());
 
 		if (server_returned_same_session_id)
 		{
@@ -237,13 +237,13 @@ void Client::process_handshake_msg(const Handshake_State* active_state,
 			* In this case, we offered the version used in the original
 			* session, and the server must resume with the same version.
 			*/
-			if (state.server_hello()->_version() != state.client_hello()->_version())
+			if (state.server_hello()._version() != state.client_hello()._version())
 				throw new TLS_Exception(Alert::HANDSHAKE_FAILURE,
 										  "Server resumed session but with wrong version");
 
 			state.compute_session_keys(state.resume_master_secret);
 
-			if (state.server_hello()->supports_session_ticket())
+			if (state.server_hello().supports_session_ticket())
 				state.set_expected_next(NEW_SESSION_TICKET);
 			else
 				state.set_expected_next(HANDSHAKE_CCS);
@@ -252,14 +252,14 @@ void Client::process_handshake_msg(const Handshake_State* active_state,
 		{
 			// new session
 
-			if (state.client_hello()->_version().is_datagram_protocol() !=
-				state.server_hello()->_version().is_datagram_protocol())
+			if (state.client_hello()._version().is_datagram_protocol() !=
+				state.server_hello()._version().is_datagram_protocol())
 			{
 				throw new TLS_Exception(Alert::PROTOCOL_VERSION,
 										  "Server replied with different protocol type than we offered");
 			}
 
-			if (state._version() > state.client_hello()->_version())
+			if (state._version() > state.client_hello()._version())
 			{
 				throw new TLS_Exception(Alert::HANDSHAKE_FAILURE,
 										  "Server replied with later version than in hello");
@@ -314,7 +314,7 @@ void Client::process_handshake_msg(const Handshake_State* active_state,
 		state.server_certs(new Certificate(contents));
 
 		const Vector!( X509_Certificate )& server_certs =
-			state.server_certs()->cert_chain();
+			state.server_certs().cert_chain();
 
 		if (server_certs.empty())
 			throw new TLS_Exception(Alert::HANDSHAKE_FAILURE,
@@ -331,7 +331,7 @@ void Client::process_handshake_msg(const Handshake_State* active_state,
 
 		Unique!Public_Key peer_key(server_certs[0].subject_public_key());
 
-		if (peer_key->algo_name() != state.ciphersuite().sig_algo())
+		if (peer_key.algo_name() != state.ciphersuite().sig_algo())
 			throw new TLS_Exception(Alert::ILLEGAL_PARAMETER,
 									  "Certificate key type did not match ciphersuite");
 
@@ -353,7 +353,7 @@ void Client::process_handshake_msg(const Handshake_State* active_state,
 		{
 			const Public_Key& server_key = state.get_server_public_Key();
 
-			if (!state.server_kex()->verify(server_key, state))
+			if (!state.server_kex().verify(server_key, state))
 			{
 				throw new TLS_Exception(Alert::DECRYPT_ERROR,
 										  "Bad signature on server key exchange");
@@ -375,8 +375,8 @@ void Client::process_handshake_msg(const Handshake_State* active_state,
 
 		if (state.received_handshake_msg(CERTIFICATE_REQUEST))
 		{
-			const Vector!( string )& types =
-				state.cert_req()->acceptable_cert_types();
+			const Vector!string& types =
+				state.cert_req().acceptable_cert_types();
 
 			Vector!( X509_Certificate ) client_certs =
 				m_creds.cert_chain(types,
@@ -403,10 +403,10 @@ void Client::process_handshake_msg(const Handshake_State* active_state,
 		state.compute_session_keys();
 
 		if (state.received_handshake_msg(CERTIFICATE_REQUEST) &&
-			!state.client_certs()->empty())
+			!state.client_certs().empty())
 		{
 			Private_Key* Private_Key =
-				m_creds.Private_Key_for(state.client_certs()->cert_chain()[0],
+				m_creds.Private_Key_for(state.client_certs().cert_chain()[0],
 												"tls-client",
 												m_info.hostname());
 
@@ -423,10 +423,10 @@ void Client::process_handshake_msg(const Handshake_State* active_state,
 
 		change_cipher_spec_writer(CLIENT);
 
-		if (state.server_hello()->next_protocol_notification())
+		if (state.server_hello().next_protocol_notification())
 		{
 			const string protocol = state.client_npn_cb(
-				state.server_hello()->next_protocols());
+				state.server_hello().next_protocols());
 
 			state.next_protocol(
 				new Next_Protocol(state.handshake_io(), state.hash(), protocol)
@@ -437,7 +437,7 @@ void Client::process_handshake_msg(const Handshake_State* active_state,
 			new Finished(state.handshake_io(), state, CLIENT)
 			);
 
-		if (state.server_hello()->supports_session_ticket())
+		if (state.server_hello().supports_session_ticket())
 			state.set_expected_next(NEW_SESSION_TICKET);
 		else
 			state.set_expected_next(HANDSHAKE_CCS);
@@ -458,7 +458,7 @@ void Client::process_handshake_msg(const Handshake_State* active_state,
 	{
 		state.server_finished(new Finished(contents));
 
-		if (!state.server_finished()->verify(state, SERVER))
+		if (!state.server_finished().verify(state, SERVER))
 			throw new TLS_Exception(Alert::DECRYPT_ERROR,
 									  "Finished message didn't verify");
 
@@ -470,10 +470,10 @@ void Client::process_handshake_msg(const Handshake_State* active_state,
 
 			change_cipher_spec_writer(CLIENT);
 
-			if (state.server_hello()->next_protocol_notification())
+			if (state.server_hello().next_protocol_notification())
 			{
 				const string protocol = state.client_npn_cb(
-						state.server_hello()->next_protocols());
+						state.server_hello().next_protocols());
 
 				state.next_protocol(
 					new Next_Protocol(state.handshake_io(), state.hash(), protocol)
@@ -485,7 +485,7 @@ void Client::process_handshake_msg(const Handshake_State* active_state,
 				);
 		}
 
-		Vector!( byte ) session_id = state.server_hello()->session_id();
+		Vector!( byte ) session_id = state.server_hello().session_id();
 
 		in Vector!byte session_ticket = state.session_ticket();
 
@@ -495,11 +495,11 @@ void Client::process_handshake_msg(const Handshake_State* active_state,
 		Session session_info(
 			session_id,
 			state.session_keys().master_secret(),
-			state.server_hello()->_version(),
-			state.server_hello()->ciphersuite(),
-			state.server_hello()->compression_method(),
+			state.server_hello()._version(),
+			state.server_hello().ciphersuite(),
+			state.server_hello().compression_method(),
 			CLIENT,
-			state.server_hello()->fragment_size(),
+			state.server_hello().fragment_size(),
 			get_peer_cert_chain(state),
 			session_ticket,
 			m_info,

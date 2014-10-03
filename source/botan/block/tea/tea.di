@@ -17,7 +17,7 @@ class TEA : public Block_Cipher_Fixed_Params!(8, 16)
 
 		void clear();
 		string name() const { return "TEA"; }
-		BlockCipher* clone() const { return new TEA; }
+		BlockCipher clone() const { return new TEA; }
 	private:
 		void key_schedule(in byte*, size_t);
 		secure_vector!uint K;

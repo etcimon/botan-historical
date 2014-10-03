@@ -26,7 +26,7 @@ class RW_PublicKey : public abstract IF_Scheme_PublicKey
 			IF_Scheme_PublicKey(mod, exponent)
 		{}
 
-	protected:
+	package:
 		RW_PublicKey() {}
 };
 
@@ -39,18 +39,18 @@ class RW_PrivateKey : public RW_PublicKey,
 	public:
 		RW_PrivateKey(in AlgorithmIdentifier alg_id,
 						  in SafeVector!byte key_bits,
-						  RandomNumberGenerator& rng) :
+						  RandomNumberGenerator rng) :
 			IF_Scheme_PrivateKey(rng, alg_id, key_bits) {}
 
-		RW_PrivateKey(RandomNumberGenerator& rng,
+		RW_PrivateKey(RandomNumberGenerator rng,
 						  ref const BigInt p, ref const BigInt q,
 						  ref const BigInt e, ref const BigInt d = 0,
 						  ref const BigInt n = 0) :
 			IF_Scheme_PrivateKey(rng, p, q, e, d, n) {}
 
-		RW_PrivateKey(RandomNumberGenerator& rng, size_t bits, size_t = 2);
+		RW_PrivateKey(RandomNumberGenerator rng, size_t bits, size_t = 2);
 
-		bool check_key(RandomNumberGenerator& rng, bool) const;
+		bool check_key(RandomNumberGenerator rng, bool) const;
 };
 
 /**
@@ -64,7 +64,7 @@ class RW_Signature_Operation : public PK_Ops::Signature
 		size_t max_input_bits() const { return (n.bits() - 1); }
 
 		SafeVector!byte sign(in byte* msg, size_t msg_len,
-										RandomNumberGenerator& rng);
+										RandomNumberGenerator rng);
 	private:
 		ref const BigInt n;
 		ref const BigInt e;

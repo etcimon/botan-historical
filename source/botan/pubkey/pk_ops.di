@@ -18,7 +18,7 @@ class Encryption
 		abstract size_t max_input_bits() const;
 
 		abstract SafeVector!byte encrypt(in byte* msg, size_t msg_len,
-													  RandomNumberGenerator& rng);
+													  RandomNumberGenerator rng);
 
 		~this() {}
 };
@@ -68,7 +68,7 @@ class Signature
 		* @param rng a random number generator
 		*/
 		abstract SafeVector!byte sign(in byte* msg, size_t msg_len,
-												  RandomNumberGenerator& rng);
+												  RandomNumberGenerator rng);
 
 		~this() {}
 };

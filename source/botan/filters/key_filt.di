@@ -6,7 +6,7 @@
 */
 
 import botan.filter;
-import botan.sym_algo;
+import botan.algo_base.sym_algo;
 /**
 * This class represents keyed filters, i.e. filters that have to be
 * fed with a key in order to function.

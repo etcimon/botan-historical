@@ -26,7 +26,7 @@ class EAC1_1_obj(Derived) : public EAC_Signed_Object!Derived
 			return EAC_Signed_Object::check_signature(key, m_sig.DER_encode());
 		}
 
-	protected:
+	package:
 		ECDSA_Signature m_sig;
 
 		void init(DataSource& input)

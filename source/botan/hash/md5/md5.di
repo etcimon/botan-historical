@@ -14,13 +14,13 @@ class MD5 : public MDx_HashFunction
 	public:
 		string name() const { return "MD5"; }
 		size_t output_length() const { return 16; }
-		HashFunction* clone() const { return new MD5; }
+		HashFunction clone() const { return new MD5; }
 
 		void clear();
 
 		MD5() : MDx_HashFunction(64, false, true), M(16), digest(4)
 		{ clear(); }
-	protected:
+	package:
 		void compress_n(const byte[], size_t blocks);
 		void copy_out(byte[]);
 

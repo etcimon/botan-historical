@@ -57,7 +57,7 @@ Extensions& Extensions::operator=(in Extensions other)
 
 	for (size_t i = 0; i != other.extensions.size(); ++i)
 		extensions.push_back(
-			Pair(other.extensions[i].first->copy(),
+			Pair(other.extensions[i].first.copy(),
 								other.extensions[i].second));
 
 	return (*this);
@@ -86,14 +86,14 @@ void Extensions::encode_into(DER_Encoder& to_object) const
 		const Certificate_Extension* ext = extensions[i].first;
 		const bool is_critical = extensions[i].second;
 
-		const bool should_encode = ext->should_encode();
+		const bool should_encode = ext.should_encode();
 
 		if (should_encode)
 		{
 			to_object.start_cons(SEQUENCE)
-					.encode(ext->oid_of())
+					.encode(ext.oid_of())
 					.encode_optional(is_critical, false)
-					.encode(ext->encode_inner(), OCTET_STRING)
+					.encode(ext.encode_inner(), OCTET_STRING)
 				.end_cons();
 		}
 	}
@@ -133,7 +133,7 @@ void Extensions::decode_from(BER_Decoder& from_source)
 		{
 			try
 			{
-				ext->decode_inner(value);
+				ext.decode_inner(value);
 			}
 			catch(std::exception& e)
 			{
@@ -155,7 +155,7 @@ void Extensions::contents_to(Data_Store& subject_info,
 									  Data_Store& issuer_info) const
 {
 	for (size_t i = 0; i != extensions.size(); ++i)
-		extensions[i].first->contents_to(subject_info, issuer_info);
+		extensions[i].first.contents_to(subject_info, issuer_info);
 }
 
 /*
@@ -381,8 +381,8 @@ void Alternative_Name::contents_to(Data_Store& subject_info,
 Alternative_Name::Alternative_Name(in AlternativeName alt_name,
 											  in string oid_name_str)
 {
-	this->alt_name = alt_name;
-	this->oid_name_str = oid_name_str;
+	this.alt_name = alt_name;
+	this.oid_name_str = oid_name_str;
 }
 
 /*
@@ -639,7 +639,7 @@ void CRL_Distribution_Points::contents_to(Data_Store& info, Data_Store&) const
 		auto uris = point.equal_range("URI");
 
 		for (auto uri = uris.first; uri != uris.second; ++uri)
-			info.add("CRL.DistributionPoint", uri->second);
+			info.add("CRL.DistributionPoint", uri.second);
 	}
 }
 

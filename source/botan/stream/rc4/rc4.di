@@ -18,7 +18,7 @@ class RC4 : public StreamCipher
 		void clear();
 		string name() const;
 
-		StreamCipher* clone() const { return new RC4(SKIP); }
+		StreamCipher clone() const { return new RC4(SKIP); }
 
 		Key_Length_Specification key_spec() const
 		{

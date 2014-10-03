@@ -54,7 +54,7 @@ class X509_Certificate : public X509_Object
 		* "X509.Certificate.serial".
 		* @return value(s) of the specified parameter
 		*/
-		Vector!( string ) subject_info(in string name) const;
+		Vector!string subject_info(in string name) const;
 
 		/**
 		* Get a value for a specific subject_info parameter name.
@@ -62,7 +62,7 @@ class X509_Certificate : public X509_Object
 		* "X509.Certificate.v2.key_id" or "X509v3.AuthorityKeyIdentifier".
 		* @return value(s) of the specified parameter
 		*/
-		Vector!( string ) issuer_info(in string name) const;
+		Vector!string issuer_info(in string name) const;
 
 		/**
 		* Raw subject DN
@@ -151,14 +151,14 @@ class X509_Certificate : public X509_Object
 		* certificate.
 		* @return key constraints
 		*/
-		Vector!( string ) ex_constraints() const;
+		Vector!string ex_constraints() const;
 
 		/**
 		* Get the policies as defined in the CertificatePolicies extension
 		* of this certificate.
 		* @return certificate policies
 		*/
-		Vector!( string ) policies() const;
+		Vector!string policies() const;
 
 		/**
 		* Return the listed address of an OCSP responder, or empty if not set

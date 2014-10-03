@@ -38,7 +38,7 @@ DL_Group::DL_Group(in string name)
 /*
 * DL_Group Constructor
 */
-DL_Group::DL_Group(RandomNumberGenerator& rng,
+DL_Group::DL_Group(RandomNumberGenerator rng,
 						 PrimeType type, size_t pbits, size_t qbits)
 {
 	if (pbits < 512)
@@ -84,7 +84,7 @@ DL_Group::DL_Group(RandomNumberGenerator& rng,
 /*
 * DL_Group Constructor
 */
-DL_Group::DL_Group(RandomNumberGenerator& rng,
+DL_Group::DL_Group(RandomNumberGenerator rng,
 						 in Vector!byte seed,
 						 size_t pbits, size_t qbits)
 {
@@ -146,7 +146,7 @@ void DL_Group::init_check() const
 /*
 * Verify the parameters
 */
-bool DL_Group::verify_group(RandomNumberGenerator& rng,
+bool DL_Group::verify_group(RandomNumberGenerator rng,
 									 bool strong) const
 {
 	init_check();

@@ -19,7 +19,7 @@ class AES_128_NI : public Block_Cipher_Fixed_Params!(16, 16)
 
 		void clear();
 		string name() const { return "AES-128"; }
-		BlockCipher* clone() const { return new AES_128_NI; }
+		BlockCipher clone() const { return new AES_128_NI; }
 	private:
 		void key_schedule(in byte*, size_t);
 
@@ -39,7 +39,7 @@ class AES_192_NI : public Block_Cipher_Fixed_Params!(16, 24)
 
 		void clear();
 		string name() const { return "AES-192"; }
-		BlockCipher* clone() const { return new AES_192_NI; }
+		BlockCipher clone() const { return new AES_192_NI; }
 	private:
 		void key_schedule(in byte*, size_t);
 
@@ -59,7 +59,7 @@ class AES_256_NI : public Block_Cipher_Fixed_Params!(16, 32)
 
 		void clear();
 		string name() const { return "AES-256"; }
-		BlockCipher* clone() const { return new AES_256_NI; }
+		BlockCipher clone() const { return new AES_256_NI; }
 	private:
 		void key_schedule(in byte*, size_t);
 

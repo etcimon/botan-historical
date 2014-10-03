@@ -32,7 +32,7 @@ find_issuing_cert(in X509_Certificate cert,
 
 	for (size_t i = 0; i != certstores.size(); ++i)
 	{
-		if (const X509_Certificate* cert = certstores[i]->find_cert(issuer_dn, auth_key_id))
+		if (const X509_Certificate* cert = certstores[i].find_cert(issuer_dn, auth_key_id))
 			return cert;
 	}
 
@@ -44,7 +44,7 @@ const X509_CRL* find_crls_for(in X509_Certificate cert,
 {
 	for (size_t i = 0; i != certstores.size(); ++i)
 	{
-		if (const X509_CRL* crl = certstores[i]->find_crl_for(cert))
+		if (const X509_CRL* crl = certstores[i].find_crl_for(cert))
 			return crl;
 	}
 
@@ -122,7 +122,7 @@ check_chain(in Vector!( X509_Certificate ) cert_path,
 		if (subject.check_signature(*issuer_key) == false)
 			status.insert(Certificate_Status_Code::SIGNATURE_ERROR);
 
-		if (issuer_key->estimated_strength() < restrictions.minimum_key_strength())
+		if (issuer_key.estimated_strength() < restrictions.minimum_key_strength())
 			status.insert(Certificate_Status_Code::SIGNATURE_METHOD_TOO_WEAK);
 
 		// Allow untrusted hashes on self-signed roots

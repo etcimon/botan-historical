@@ -20,10 +20,10 @@ class OAEP : public EME
 		* @param hash object to use for hashing (takes ownership)
 		* @param P an optional label. Normally empty.
 		*/
-		OAEP(HashFunction* hash, in string P = "");
+		OAEP(HashFunction hash, in string P = "");
 	private:
 		SafeVector!byte pad(const byte[], size_t, size_t,
-									  RandomNumberGenerator&) const;
+									  RandomNumberGenerator) const;
 		SafeVector!byte unpad(const byte[], size_t, size_t) const;
 
 		SafeVector!byte m_Phash;

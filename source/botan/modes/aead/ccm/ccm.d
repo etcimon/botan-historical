@@ -12,13 +12,13 @@ import algorithm;
 /*
 * CCM_Mode Constructor
 */
-CCM_Mode::CCM_Mode(BlockCipher* cipher, size_t tag_size, size_t L) :
+CCM_Mode::CCM_Mode(BlockCipher cipher, size_t tag_size, size_t L) :
 	m_tag_size(tag_size),
 	m_L(L),
 	m_cipher(cipher)
 {
-	if (m_cipher->block_size() != BS)
-		throw new std::invalid_argument(m_cipher->name() + " cannot be used with CCM mode");
+	if (m_cipher.block_size() != BS)
+		throw new std::invalid_argument(m_cipher.name() + " cannot be used with CCM mode");
 
 	if (L < 2 || L > 8)
 		throw new std::invalid_argument("Invalid CCM L value " + std::to_string(L));
@@ -36,7 +36,7 @@ void CCM_Mode::clear()
 
 string CCM_Mode::name() const
 {
-	return (m_cipher->name() + "/CCM(" + std::to_string(tag_size()) + "," + std::to_string(L())) + ")";
+	return (m_cipher.name() + "/CCM(" + std::to_string(tag_size()) + "," + std::to_string(L())) + ")";
 }
 
 bool CCM_Mode::valid_nonce_length(size_t n) const
@@ -57,17 +57,17 @@ size_t CCM_Mode::update_granularity() const
 	Transformation_Filter creates update_granularity() byte buffers, use a
 	somewhat large size to avoid bouncing on a tiny buffer.
 	*/
-	return m_cipher->parallel_bytes();
+	return m_cipher.parallel_bytes();
 }
 
 Key_Length_Specification CCM_Mode::key_spec() const
 {
-	return m_cipher->key_spec();
+	return m_cipher.key_spec();
 }
 
 void CCM_Mode::key_schedule(in byte* key, size_t length)
 {
-	m_cipher->set_key(key, length);
+	m_cipher.set_key(key, length);
 }
 
 void CCM_Mode::set_associated_data(in byte* ad, size_t length)
@@ -186,7 +186,7 @@ void CCM_Encryption::finish(SafeVector!byte buffer, size_t offset)
 
 	while(buf != buf_end)
 	{
-		const size_t to_proc = std::min<size_t>(BS, buf_end - buf);
+		const size_t to_proc = std.algorithm.min<size_t>(BS, buf_end - buf);
 
 		xor_buf(&T[0], buf, to_proc);
 		E.encrypt(T);
@@ -240,7 +240,7 @@ void CCM_Decryption::finish(SafeVector!byte buffer, size_t offset)
 
 	while(buf != buf_end)
 	{
-		const size_t to_proc = std::min<size_t>(BS, buf_end - buf);
+		const size_t to_proc = std.algorithm.min<size_t>(BS, buf_end - buf);
 
 		E.encrypt(C, X);
 		xor_buf(buf, &X[0], to_proc);

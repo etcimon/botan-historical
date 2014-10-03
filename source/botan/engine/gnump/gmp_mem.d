@@ -47,7 +47,7 @@ void gmp_free(void* ptr, size_t n)
 void* gmp_realloc(void* ptr, size_t old_n, size_t new_n)
 {
 	void* new_buf = gmp_malloc(new_n);
-	std::memcpy(new_buf, ptr, std::min(old_n, new_n));
+	std::memcpy(new_buf, ptr, std.algorithm.min(old_n, new_n));
 	gmp_free(ptr, old_n);
 	return new_buf;
 }

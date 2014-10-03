@@ -65,7 +65,7 @@ std::shared_ptr<Connection_Cipher_State> Channel::read_cipher_state_epoch(ushort
 	BOTAN_ASSERT(i != m_read_cipher_states.end(),
 					 "Have a cipher state for the specified epoch");
 
-	return i->second;
+	return i.second;
 }
 
 std::shared_ptr<Connection_Cipher_State> Channel::write_cipher_state_epoch(ushort epoch) const
@@ -75,7 +75,7 @@ std::shared_ptr<Connection_Cipher_State> Channel::write_cipher_state_epoch(ushor
 	BOTAN_ASSERT(i != m_write_cipher_states.end(),
 					 "Have a cipher state for the specified epoch");
 
-	return i->second;
+	return i.second;
 }
 
 Vector!( X509_Certificate ) Channel::peer_cert_chain() const
@@ -92,7 +92,7 @@ Handshake_State& Channel::create_handshake_state(Protocol_Version _version)
 
 	if (auto active = active_state())
 	{
-		Protocol_Version active_version = active->_version();
+		Protocol_Version active_version = active._version();
 
 		if (active_version.is_datagram_protocol() != _version.is_datagram_protocol())
 			throw new Exception("Active state using version " +
@@ -127,7 +127,7 @@ Handshake_State& Channel::create_handshake_state(Protocol_Version _version)
 	m_pending_state.reset(new_handshake_state(io.release()));
 
 	if (auto active = active_state())
-		m_pending_state->set_version(active->_version());
+		m_pending_state.set_version(active._version());
 
 	return *m_pending_state.get();
 }
@@ -138,7 +138,7 @@ void Channel::renegotiate(bool force_full_renegotiation)
 		return;
 
 	if (auto active = active_state())
-		initiate_handshake(create_handshake_state(active->_version()),
+		initiate_handshake(create_handshake_state(active._version()),
 								 force_full_renegotiation);
 	else
 		throw new Exception("Cannot renegotiate on inactive connection");
@@ -149,12 +149,12 @@ size_t Channel::maximum_fragment_size() const
 	// should we be caching this value?
 
 	if (auto pending = pending_state())
-		if (auto server_hello = pending->server_hello())
-			if (size_t frag = server_hello->fragment_size())
+		if (auto server_hello = pending.server_hello())
+			if (size_t frag = server_hello.fragment_size())
 				return frag;
 
 	if (auto active = active_state())
-		if (size_t frag = active->server_hello()->fragment_size())
+		if (size_t frag = active.server_hello().fragment_size())
 			return frag;
 
 	return MAX_PLAINTEXT_SIZE;
@@ -164,10 +164,10 @@ void Channel::change_cipher_spec_reader(Connection_Side side)
 {
 	auto pending = pending_state();
 
-	BOTAN_ASSERT(pending && pending->server_hello(),
+	BOTAN_ASSERT(pending && pending.server_hello(),
 					 "Have received server hello");
 
-	if (pending->server_hello()->compression_method() != NO_COMPRESSION)
+	if (pending.server_hello().compression_method() != NO_COMPRESSION)
 		throw new Internal_Error("Negotiated unknown compression algorithm");
 
 	sequence_numbers().new_read_cipher_state();
@@ -179,11 +179,11 @@ void Channel::change_cipher_spec_reader(Connection_Side side)
 
 	// flip side as we are reading
 	std::shared_ptr<Connection_Cipher_State> read_state(
-		new Connection_Cipher_State(pending->_version(),
+		new Connection_Cipher_State(pending._version(),
 											 (side == CLIENT) ? SERVER : CLIENT,
 											 false,
-											 pending->ciphersuite(),
-											 pending->session_keys()));
+											 pending.ciphersuite(),
+											 pending.session_keys()));
 
 	m_read_cipher_states[epoch] = read_state;
 }
@@ -192,10 +192,10 @@ void Channel::change_cipher_spec_writer(Connection_Side side)
 {
 	auto pending = pending_state();
 
-	BOTAN_ASSERT(pending && pending->server_hello(),
+	BOTAN_ASSERT(pending && pending.server_hello(),
 					 "Have received server hello");
 
-	if (pending->server_hello()->compression_method() != NO_COMPRESSION)
+	if (pending.server_hello().compression_method() != NO_COMPRESSION)
 		throw new Internal_Error("Negotiated unknown compression algorithm");
 
 	sequence_numbers().new_write_cipher_state();
@@ -206,11 +206,11 @@ void Channel::change_cipher_spec_writer(Connection_Side side)
 					 "No write cipher state currently set for next epoch");
 
 	std::shared_ptr<Connection_Cipher_State> write_state(
-		new Connection_Cipher_State(pending->_version(),
+		new Connection_Cipher_State(pending._version(),
 											 side,
 											 true,
-											 pending->ciphersuite(),
-											 pending->session_keys()));
+											 pending.ciphersuite(),
+											 pending.session_keys()));
 
 	m_write_cipher_states[epoch] = write_state;
 }
@@ -239,7 +239,7 @@ void Channel::activate_session()
 	std::swap(m_active_state, m_pending_state);
 	m_pending_state.reset();
 
-	if (m_active_state->_version().is_datagram_protocol())
+	if (m_active_state._version().is_datagram_protocol())
 	{
 		// FIXME, remove old states when we are sure not needed anymore
 	}
@@ -259,26 +259,26 @@ void Channel::activate_session()
 bool Channel::peer_supports_heartbeats() const
 {
 	if (auto active = active_state())
-		return active->server_hello()->supports_heartbeats();
+		return active.server_hello().supports_heartbeats();
 	return false;
 }
 
 bool Channel::heartbeat_sending_allowed() const
 {
 	if (auto active = active_state())
-		return active->server_hello()->peer_can_send_heartbeats();
+		return active.server_hello().peer_can_send_heartbeats();
 	return false;
 }
 
 size_t Channel::received_data(in Vector!byte buf)
 {
-	return this->received_data(&buf[0], buf.size());
+	return this.received_data(&buf[0], buf.size());
 }
 
 size_t Channel::received_data(in byte* input, size_t input_size)
 {
 	const auto get_cipherstate = [this](ushort epoch)
-	{ return this->read_cipher_state_epoch(epoch).get(); };
+	{ return this.read_cipher_state_epoch(epoch).get(); };
 
 	const size_t max_fragment_size = maximum_fragment_size();
 
@@ -330,13 +330,13 @@ size_t Channel::received_data(in byte* input, size_t input_size)
 						sequence_numbers().read_accept(record_sequence);
 				}
 
-				m_pending_state->handshake_io().add_record(unlock(record),
+				m_pending_state.handshake_io().add_record(unlock(record),
 																		 record_type,
 																		 record_sequence);
 
 				while(auto pending = m_pending_state.get())
 				{
-					auto msg = pending->get_next_handshake_msg();
+					auto msg = pending.get_next_handshake_msg();
 
 					if (msg.first == HANDSHAKE_NONE) // no full handshake yet
 						break;
@@ -394,7 +394,7 @@ size_t Channel::received_data(in byte* input, size_t input_size)
 				if (alert_msg.is_fatal())
 				{
 					if (auto active = active_state())
-						m_session_manager.remove_entry(active->server_hello()->session_id());
+						m_session_manager.remove_entry(active.server_hello().session_id());
 				}
 
 				if (alert_msg.type() == Alert::CLOSE_NOTIFY)
@@ -454,7 +454,7 @@ void Channel::write_record(Connection_Cipher_State* cipher_state,
 					 "Some connection state exists");
 
 	Protocol_Version record_version =
-		(m_pending_state) ? (m_pending_state->_version()) : (m_active_state->_version());
+		(m_pending_state) ? (m_pending_state._version()) : (m_active_state._version());
 
 	TLS::write_record(m_writebuf,
 							record_type,
@@ -487,7 +487,7 @@ void Channel::send_record_array(ushort epoch, byte type, in byte* input, size_t 
 
 	auto cipher_state = write_cipher_state_epoch(epoch);
 
-	if (type == APPLICATION_DATA && cipher_state->cbc_without_explicit_iv())
+	if (type == APPLICATION_DATA && cipher_state.cbc_without_explicit_iv())
 	{
 		write_record(cipher_state.get(), type, &input[0], 1);
 		input += 1;
@@ -498,7 +498,7 @@ void Channel::send_record_array(ushort epoch, byte type, in byte* input, size_t 
 
 	while(length)
 	{
-		const size_t sending = std::min(length, max_fragment_size);
+		const size_t sending = std.algorithm.min(length, max_fragment_size);
 		write_record(cipher_state.get(), type, &input[0], sending);
 
 		input += sending;
@@ -529,7 +529,7 @@ void Channel::send(in byte* buf, size_t buf_size)
 
 void Channel::send(in string string)
 {
-	this->send(cast(const byte*)(string.c_str()), string.size());
+	this.send(cast(const byte*)(string.c_str()), string.size());
 }
 
 void Channel::send_alert(in Alert alert)
@@ -548,7 +548,7 @@ void Channel::send_alert(in Alert alert)
 
 	if (alert.is_fatal())
 		if (auto active = active_state())
-			m_session_manager.remove_entry(active->server_hello()->session_id());
+			m_session_manager.remove_entry(active.server_hello().session_id());
 
 	if (alert.type() == Alert::CLOSE_NOTIFY || alert.is_fatal())
 		reset_state();
@@ -556,11 +556,11 @@ void Channel::send_alert(in Alert alert)
 
 void Channel::secure_renegotiation_check(const Client_Hello* client_hello)
 {
-	const bool secure_renegotiation = client_hello->secure_renegotiation();
+	const bool secure_renegotiation = client_hello.secure_renegotiation();
 
 	if (auto active = active_state())
 	{
-		const bool active_sr = active->client_hello()->secure_renegotiation();
+		const bool active_sr = active.client_hello().secure_renegotiation();
 
 		if (active_sr != secure_renegotiation)
 			throw new TLS_Exception(Alert::HANDSHAKE_FAILURE,
@@ -569,7 +569,7 @@ void Channel::secure_renegotiation_check(const Client_Hello* client_hello)
 
 	if (secure_renegotiation)
 	{
-		in Vector!byte data = client_hello->renegotiation_info();
+		in Vector!byte data = client_hello.renegotiation_info();
 
 		if (data != secure_renegotiation_data_for_client_hello())
 			throw new TLS_Exception(Alert::HANDSHAKE_FAILURE,
@@ -579,11 +579,11 @@ void Channel::secure_renegotiation_check(const Client_Hello* client_hello)
 
 void Channel::secure_renegotiation_check(const Server_Hello* server_hello)
 {
-	const bool secure_renegotiation = server_hello->secure_renegotiation();
+	const bool secure_renegotiation = server_hello.secure_renegotiation();
 
 	if (auto active = active_state())
 	{
-		const bool active_sr = active->client_hello()->secure_renegotiation();
+		const bool active_sr = active.client_hello().secure_renegotiation();
 
 		if (active_sr != secure_renegotiation)
 			throw new TLS_Exception(Alert::HANDSHAKE_FAILURE,
@@ -592,7 +592,7 @@ void Channel::secure_renegotiation_check(const Server_Hello* server_hello)
 
 	if (secure_renegotiation)
 	{
-		in Vector!byte data = server_hello->renegotiation_info();
+		in Vector!byte data = server_hello.renegotiation_info();
 
 		if (data != secure_renegotiation_data_for_server_hello())
 			throw new TLS_Exception(Alert::HANDSHAKE_FAILURE,
@@ -603,7 +603,7 @@ void Channel::secure_renegotiation_check(const Server_Hello* server_hello)
 Vector!( byte ) Channel::secure_renegotiation_data_for_client_hello() const
 {
 	if (auto active = active_state())
-		return active->client_finished()->verify_data();
+		return active.client_finished().verify_data();
 	return Vector!( byte )();
 }
 
@@ -611,8 +611,8 @@ Vector!( byte ) Channel::secure_renegotiation_data_for_server_hello() const
 {
 	if (auto active = active_state())
 	{
-		Vector!( byte ) buf = active->client_finished()->verify_data();
-		buf += active->server_finished()->verify_data();
+		Vector!( byte ) buf = active.client_finished().verify_data();
+		buf += active.server_finished().verify_data();
 		return buf;
 	}
 
@@ -622,11 +622,11 @@ Vector!( byte ) Channel::secure_renegotiation_data_for_server_hello() const
 bool Channel::secure_renegotiation_supported() const
 {
 	if (auto active = active_state())
-		return active->server_hello()->secure_renegotiation();
+		return active.server_hello().secure_renegotiation();
 
 	if (auto pending = pending_state())
-		if (auto hello = pending->server_hello())
-			return hello->secure_renegotiation();
+		if (auto hello = pending.server_hello())
+			return hello.secure_renegotiation();
 
 	return false;
 }
@@ -637,15 +637,15 @@ SymmetricKey Channel::key_material_export(in string label,
 {
 	if (auto active = active_state())
 	{
-		Unique!KDF prf(active->protocol_specific_prf());
+		Unique!KDF prf(active.protocol_specific_prf());
 
 		in SafeVector!byte master_secret =
-			active->session_keys().master_secret();
+			active.session_keys().master_secret();
 
 		Vector!( byte ) salt;
 		salt += to_byte_vector(label);
-		salt += active->client_hello()->random();
-		salt += active->server_hello()->random();
+		salt += active.client_hello().random();
+		salt += active.server_hello().random();
 
 		if (context != "")
 		{
@@ -657,7 +657,7 @@ SymmetricKey Channel::key_material_export(in string label,
 			salt += to_byte_vector(context);
 		}
 
-		return prf->derive_key(length, master_secret, salt);
+		return prf.derive_key(length, master_secret, salt);
 	}
 	else
 		throw new Exception("Channel::key_material_export connection not active");

@@ -33,20 +33,20 @@ SafeVector!byte emsa3_encoding(in SafeVector!byte msg,
 
 void EMSA_PKCS1v15::update(in byte* input, size_t length)
 {
-	m_hash->update(input, length);
+	m_hash.update(input, length);
 }
 
 SafeVector!byte EMSA_PKCS1v15::raw_data()
 {
-	return m_hash->flush();
+	return m_hash.flush();
 }
 
 SafeVector!byte
 EMSA_PKCS1v15::encoding_of(in SafeVector!byte msg,
 									size_t output_bits,
-									RandomNumberGenerator&)
+									RandomNumberGenerator)
 {
-	if (msg.size() != m_hash->output_length())
+	if (msg.size() != m_hash.output_length())
 		throw new Encoding_Error("EMSA_PKCS1v15::encoding_of: Bad input length");
 
 	return emsa3_encoding(msg, output_bits,
@@ -57,7 +57,7 @@ bool EMSA_PKCS1v15::verify(in SafeVector!byte coded,
 									in SafeVector!byte raw,
 									size_t key_bits)
 {
-	if (raw.size() != m_hash->output_length())
+	if (raw.size() != m_hash.output_length())
 		return false;
 
 	try
@@ -71,9 +71,9 @@ bool EMSA_PKCS1v15::verify(in SafeVector!byte coded,
 	}
 }
 
-EMSA_PKCS1v15::EMSA_PKCS1v15(HashFunction* hash) : m_hash(hash)
+EMSA_PKCS1v15::EMSA_PKCS1v15(HashFunction hash) : m_hash(hash)
 {
-	m_hash_id = pkcs_hash_id(m_hash->name());
+	m_hash_id = pkcs_hash_id(m_hash.name());
 }
 
 void EMSA_PKCS1v15_Raw::update(in byte* input, size_t length)
@@ -91,7 +91,7 @@ SafeVector!byte EMSA_PKCS1v15_Raw::raw_data()
 SafeVector!byte
 EMSA_PKCS1v15_Raw::encoding_of(in SafeVector!byte msg,
 										 size_t output_bits,
-										 RandomNumberGenerator&)
+										 RandomNumberGenerator)
 {
 	return emsa3_encoding(msg, output_bits, null, 0);
 }

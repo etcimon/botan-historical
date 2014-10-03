@@ -8,7 +8,7 @@
 import botan.bigint;
 import botan.hash;
 import botan.rng;
-import botan.symkey;
+import botan.algo_base.symkey;
 import string;
 /**
 * SRP6a Client side
@@ -29,7 +29,7 @@ srp6_client_agree(in string username,
 									 in string hash_id,
 									 in Vector!byte salt,
 									 ref const BigInt B,
-									 RandomNumberGenerator& rng);
+									 RandomNumberGenerator rng);
 
 /**
 * Generate a new SRP-6 verifier
@@ -71,7 +71,7 @@ class SRP6_Server_Session
 		BigInt step1(in BigInt v,
 						 in string group_id,
 						 in string hash_id,
-						 RandomNumberGenerator& rng);
+						 RandomNumberGenerator rng);
 
 		/**
 		* Server side step 2

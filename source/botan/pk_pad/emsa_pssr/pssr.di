@@ -17,13 +17,13 @@ class PSSR : public EMSA
 		/**
 		* @param hash the hash object to use
 		*/
-		PSSR(HashFunction* hash);
+		PSSR(HashFunction hash);
 
 		/**
 		* @param hash the hash object to use
 		* @param salt_size the size of the salt to use in bytes
 		*/
-		PSSR(HashFunction* hash, size_t salt_size);
+		PSSR(HashFunction hash, size_t salt_size);
 	private:
 		void update(in byte* input, size_t length);
 
@@ -31,7 +31,7 @@ class PSSR : public EMSA
 
 		SafeVector!byte encoding_of(in SafeVector!byte msg,
 												  size_t output_bits,
-												  RandomNumberGenerator& rng);
+												  RandomNumberGenerator rng);
 
 		bool verify(in SafeVector!byte coded,
 						in SafeVector!byte raw,

@@ -8,7 +8,7 @@
 import botan.emsa;
 import botan.eme;
 import botan.libstate;
-import botan.scan_name;
+import botan.algo_base.scan_name;
 
 #if defined(BOTAN_HAS_EMSA1)
   import botan.emsa1;
@@ -48,7 +48,7 @@ EMSA* get_emsa(in string algo_spec)
 {
 	SCAN_Name request(algo_spec);
 
-	Algorithm_Factory& af = global_state().algorithm_factory();
+	Algorithm_Factory af = global_state().algorithm_factory();
 
 #if defined(BOTAN_HAS_EMSA_RAW)
 	if (request.algo_name() == "Raw" && request.arg_count() == 0)
@@ -121,7 +121,7 @@ EME* get_eme(in string algo_spec)
 #endif
 
 #if defined(BOTAN_HAS_EME_OAEP)
-	Algorithm_Factory& af = global_state().algorithm_factory();
+	Algorithm_Factory af = global_state().algorithm_factory();
 
 	if (request.algo_name() == "OAEP" && request.arg_count_between(1, 2))
 	{

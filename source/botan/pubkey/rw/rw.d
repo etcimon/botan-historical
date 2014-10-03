@@ -14,7 +14,7 @@ import future;
 /*
 * Create a Rabin-Williams private key
 */
-RW_PrivateKey::RW_PrivateKey(RandomNumberGenerator& rng,
+RW_PrivateKey::RW_PrivateKey(RandomNumberGenerator rng,
 									  size_t bits, size_t exp)
 {
 	if (bits < 1024)
@@ -43,7 +43,7 @@ RW_PrivateKey::RW_PrivateKey(RandomNumberGenerator& rng,
 /*
 * Check Private Rabin-Williams Parameters
 */
-bool RW_PrivateKey::check_key(RandomNumberGenerator& rng, bool strong) const
+bool RW_PrivateKey::check_key(RandomNumberGenerator rng, bool strong) const
 {
 	if (!IF_Scheme_PrivateKey::check_key(rng, strong))
 		return false;
@@ -70,13 +70,13 @@ RW_Signature_Operation::RW_Signature_Operation(in RW_PrivateKey rw) :
 
 SafeVector!byte
 RW_Signature_Operation::sign(in byte* msg, size_t msg_len,
-									  RandomNumberGenerator& rng)
+									  RandomNumberGenerator rng)
 {
 	rng.add_entropy(msg, msg_len);
 
 	if (!blinder.initialized())
 	{
-		BigInt k(rng, std::min<size_t>(160, n.bits() - 1));
+		BigInt k(rng, std.algorithm.min<size_t>(160, n.bits() - 1));
 		blinder = Blinder(power_mod(k, e, n), inverse_mod(k, n), n);
 	}
 
@@ -98,7 +98,7 @@ RW_Signature_Operation::sign(in byte* msg, size_t msg_len,
 
 	const BigInt r = blinder.unblind(mul_add(j1, q, j2));
 
-	return BigInt::encode_1363(std::min(r, n - r), n.bytes());
+	return BigInt::encode_1363(std.algorithm.min(r, n - r), n.bytes());
 }
 
 SafeVector!byte

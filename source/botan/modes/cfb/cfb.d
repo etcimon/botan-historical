@@ -8,18 +8,18 @@
 import botan.cfb;
 import botan.parsing;
 import botan.internal.xor_buf;
-CFB_Mode::CFB_Mode(BlockCipher* cipher, size_t feedback_bits) :
+CFB_Mode::CFB_Mode(BlockCipher cipher, size_t feedback_bits) :
 	m_cipher(cipher),
-	m_feedback_bytes(feedback_bits ? feedback_bits / 8 : cipher->block_size())
+	m_feedback_bytes(feedback_bits ? feedback_bits / 8 : cipher.block_size())
 {
-	if (feedback_bits % 8 || feedback() > cipher->block_size())
+	if (feedback_bits % 8 || feedback() > cipher.block_size())
 		throw new std::invalid_argument(name() + ": feedback bits " +
 											 std::to_string(feedback_bits) + " not supported");
 }
 
 void CFB_Mode::clear()
 {
-	m_cipher->clear();
+	m_cipher.clear();
 	m_shift_register.clear();
 }
 
@@ -63,7 +63,7 @@ bool CFB_Mode::valid_nonce_length(size_t n) const
 
 void CFB_Mode::key_schedule(in byte* key, size_t length)
 {
-	m_cipher->set_key(key, length);
+	m_cipher.set_key(key, length);
 }
 
 SafeVector!byte CFB_Mode::start(in byte* nonce, size_t nonce_len)
@@ -91,7 +91,7 @@ void CFB_Encryption::update(SafeVector!byte buffer, size_t offset)
 
 	while(sz)
 	{
-		const size_t took = std::min(shift, sz);
+		const size_t took = std.algorithm.min(shift, sz);
 		xor_buf(&buf[0], &keystream_buf()[0], took);
 
 		// Assumes feedback-sized block except for last input
@@ -122,7 +122,7 @@ void CFB_Decryption::update(SafeVector!byte buffer, size_t offset)
 
 	while(sz)
 	{
-		const size_t took = std::min(shift, sz);
+		const size_t took = std.algorithm.min(shift, sz);
 
 		// first update shift register with ciphertext
 		copy_mem(&state[0], &state[shift], BS - shift);

@@ -113,7 +113,7 @@ void Blowfish::eks_key_schedule(in byte* key, size_t length,
 										  in byte[16] salt, size_t workfactor)
 {
 	// Truncate longer passwords to the 56 byte limit Blowfish enforces
-	length = std::min<size_t>(length, 55);
+	length = std.algorithm.min<size_t>(length, 55);
 
 	if (workfactor == 0)
 		throw new std::invalid_argument("Bcrypt work factor must be at least 1");

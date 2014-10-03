@@ -167,14 +167,14 @@ void Datagram_Handshake_IO::add_record(in Vector!byte record,
 Pair!(Handshake_Type, Vector!( byte) )
 Datagram_Handshake_IO::get_next_record(bool expecting_ccs)
 {
-	if (!m_flights.rbegin()->empty())
+	if (!m_flights.rbegin().empty())
 		m_flights.push_back(Vector!( ushort )());
 
 	if (expecting_ccs)
 	{
 		if (!m_messages.empty())
 		{
-			const ushort current_epoch = m_messages.begin()->second.epoch();
+			const ushort current_epoch = m_messages.begin().second.epoch();
 
 			if (m_ccs_epochs.count(current_epoch))
 				return Pair(HANDSHAKE_CCS, Vector!( byte )());
@@ -185,12 +185,12 @@ Datagram_Handshake_IO::get_next_record(bool expecting_ccs)
 
 	auto i = m_messages.find(m_in_message_seq);
 
-	if (i == m_messages.end() || !i->second.complete())
+	if (i == m_messages.end() || !i.second.complete())
 		return Pair(HANDSHAKE_NONE, Vector!( byte )());
 
 	m_in_message_seq += 1;
 
-	return i->second.message();
+	return i.second.message();
 }
 
 void Datagram_Handshake_IO::Handshake_Reassembly::add_fragment(
@@ -348,7 +348,7 @@ Datagram_Handshake_IO::send(in Handshake_Message msg)
 		while(frag_offset != msg_bits.size())
 		{
 			const size_t frag_len =
-				std::min<size_t>(msg_bits.size() - frag_offset,
+				std.algorithm.min<size_t>(msg_bits.size() - frag_offset,
 									  parts_size);
 
 			m_send_hs(epoch,
@@ -365,7 +365,7 @@ Datagram_Handshake_IO::send(in Handshake_Message msg)
 	}
 
 	// Note: not saving CCS, instead we know it was there due to change in epoch
-	m_flights.rbegin()->push_back(m_out_message_seq);
+	m_flights.rbegin().push_back(m_out_message_seq);
 	m_flight_data[m_out_message_seq] = msg_info;
 
 	m_out_message_seq += 1;

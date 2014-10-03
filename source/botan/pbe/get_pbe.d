@@ -7,7 +7,7 @@
 
 import botan.get_pbe;
 import botan.oids;
-import botan.scan_name;
+import botan.algo_base.scan_name;
 import botan.parsing;
 import botan.libstate;
 
@@ -21,7 +21,7 @@ import botan.libstate;
 PBE* get_pbe(in string algo_spec,
 				 in string passphrase,
 				 std::chrono::milliseconds msec,
-				 RandomNumberGenerator& rng)
+				 RandomNumberGenerator rng)
 {
 	SCAN_Name request(algo_spec);
 
@@ -29,7 +29,7 @@ PBE* get_pbe(in string algo_spec,
 	string digest_name = request.arg(0);
 	const string cipher = request.arg(1);
 
-	Vector!( string ) cipher_spec = split_on(cipher, '/');
+	Vector!string cipher_spec = split_on(cipher, '/');
 	if (cipher_spec.size() != 2)
 		throw new Invalid_Argument("PBE: Invalid cipher spec " + cipher);
 
@@ -39,13 +39,13 @@ PBE* get_pbe(in string algo_spec,
 	if (cipher_mode != "CBC")
 		throw new Invalid_Argument("PBE: Invalid cipher mode " + cipher);
 
-	Algorithm_Factory& af = global_state().algorithm_factory();
+	Algorithm_Factory af = global_state().algorithm_factory();
 
-	const BlockCipher* block_cipher = af.prototype_block_cipher(cipher_algo);
+	const BlockCipher block_cipher = af.prototype_block_cipher(cipher_algo);
 	if (!block_cipher)
 		throw new Algorithm_Not_Found(cipher_algo);
 
-	const HashFunction* hash_function = af.prototype_hash_function(digest_name);
+	const HashFunction hash_function = af.prototype_hash_function(digest_name);
 	if (!hash_function)
 		throw new Algorithm_Not_Found(digest_name);
 
@@ -54,8 +54,8 @@ PBE* get_pbe(in string algo_spec,
 
 #if defined(BOTAN_HAS_PBE_PKCS_V20)
 	if (pbe == "PBE-PKCS5v20")
-		return new PBE_PKCS5v20(block_cipher->clone(),
-										new HMAC(hash_function->clone()),
+		return new PBE_PKCS5v20(block_cipher.clone(),
+										new HMAC(hash_function.clone()),
 										passphrase,
 										msec,
 										rng);

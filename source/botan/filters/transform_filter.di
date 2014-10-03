@@ -5,7 +5,7 @@
 * Distributed under the terms of the botan license.
 */
 
-import botan.transform;
+import botan.algo_base.transform;
 import botan.key_filt;
 import botan.buf_filt;
 /**
@@ -27,7 +27,7 @@ class Transformation_Filter : public Keyed_Filter,
 
 		string name() const override;
 
-	protected:
+	package:
 		const Transformation& get_transform() const { return *m_transform; }
 
 		Transformation& get_transform() { return *m_transform; }

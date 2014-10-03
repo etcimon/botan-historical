@@ -85,8 +85,8 @@ void Pipe::destruct(Filter* to_kill)
 {
 	if (!to_kill || cast(SecureQueue*)(to_kill))
 		return;
-	for (size_t j = 0; j != to_kill->total_ports(); ++j)
-		destruct(to_kill->next[j]);
+	for (size_t j = 0; j != to_kill.total_ports(); ++j)
+		destruct(to_kill.next[j]);
 	delete to_kill;
 }
 
@@ -159,7 +159,7 @@ void Pipe::start_msg()
 	if (pipe == null)
 		pipe = new Null_Filter;
 	find_endpoints(pipe);
-	pipe->new_msg();
+	pipe.new_msg();
 	inside_msg = true;
 }
 
@@ -170,7 +170,7 @@ void Pipe::end_msg()
 {
 	if (!inside_msg)
 		throw new Invalid_State("Pipe::end_msg: Message was already ended");
-	pipe->finish_msg();
+	pipe.finish_msg();
 	clear_endpoints(pipe);
 	if (cast(Null_Filter*)(pipe))
 	{
@@ -179,7 +179,7 @@ void Pipe::end_msg()
 	}
 	inside_msg = false;
 
-	outputs->retire();
+	outputs.retire();
 }
 
 /*
@@ -187,14 +187,14 @@ void Pipe::end_msg()
 */
 void Pipe::find_endpoints(Filter* f)
 {
-	for (size_t j = 0; j != f->total_ports(); ++j)
-		if (f->next[j] && !cast(SecureQueue*)(f->next[j]))
-			find_endpoints(f->next[j]);
+	for (size_t j = 0; j != f.total_ports(); ++j)
+		if (f.next[j] && !cast(SecureQueue*)(f.next[j]))
+			find_endpoints(f.next[j]);
 		else
 		{
 			SecureQueue* q = new SecureQueue;
-			f->next[j] = q;
-			outputs->add(q);
+			f.next[j] = q;
+			outputs.add(q);
 		}
 }
 
@@ -204,11 +204,11 @@ void Pipe::find_endpoints(Filter* f)
 void Pipe::clear_endpoints(Filter* f)
 {
 	if (!f) return;
-	for (size_t j = 0; j != f->total_ports(); ++j)
+	for (size_t j = 0; j != f.total_ports(); ++j)
 	{
-		if (f->next[j] && cast(SecureQueue*)(f->next[j]))
-			f->next[j] = null;
-		clear_endpoints(f->next[j]);
+		if (f.next[j] && cast(SecureQueue*)(f.next[j]))
+			f.next[j] = null;
+		clear_endpoints(f.next[j]);
 	}
 }
 
@@ -223,13 +223,13 @@ void Pipe::append(Filter* filter)
 		return;
 	if (cast(SecureQueue*)(filter))
 		throw new Invalid_Argument("Pipe::append: SecureQueue cannot be used");
-	if (filter->owned)
+	if (filter.owned)
 		throw new Invalid_Argument("Filters cannot be shared among multiple Pipes");
 
-	filter->owned = true;
+	filter.owned = true;
 
 	if (!pipe) pipe = filter;
-	else		pipe->attach(filter);
+	else		pipe.attach(filter);
 }
 
 /*
@@ -243,12 +243,12 @@ void Pipe::prepend(Filter* filter)
 		return;
 	if (cast(SecureQueue*)(filter))
 		throw new Invalid_Argument("Pipe::prepend: SecureQueue cannot be used");
-	if (filter->owned)
+	if (filter.owned)
 		throw new Invalid_Argument("Filters cannot be shared among multiple Pipes");
 
-	filter->owned = true;
+	filter.owned = true;
 
-	if (pipe) filter->attach(pipe);
+	if (pipe) filter.attach(pipe);
 	pipe = filter;
 }
 
@@ -263,18 +263,18 @@ void Pipe::pop()
 	if (!pipe)
 		return;
 
-	if (pipe->total_ports() > 1)
+	if (pipe.total_ports() > 1)
 		throw new Invalid_State("Cannot pop off a Filter with multiple ports");
 
 	Filter* f = pipe;
-	size_t owns = f->owns();
-	pipe = pipe->next[0];
+	size_t owns = f.owns();
+	pipe = pipe.next[0];
 	delete f;
 
 	while(owns--)
 	{
 		f = pipe;
-		pipe = pipe->next[0];
+		pipe = pipe.next[0];
 		delete f;
 	}
 }
@@ -284,7 +284,7 @@ void Pipe::pop()
 */
 Pipe::message_id Pipe::message_count() const
 {
-	return outputs->message_count();
+	return outputs.message_count();
 }
 
 /*

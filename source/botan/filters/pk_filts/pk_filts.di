@@ -16,12 +16,12 @@ class PK_Encryptor_Filter : public Filter
 		void write(in byte*, size_t);
 		void end_msg();
 		PK_Encryptor_Filter(PK_Encryptor* c,
-								  RandomNumberGenerator& rng_ref) :
+								  RandomNumberGenerator rng_ref) :
 			cipher(c), rng(rng_ref) {}
 		~this() { delete cipher; }
 	private:
 		PK_Encryptor* cipher;
-		RandomNumberGenerator& rng;
+		RandomNumberGenerator rng;
 		SafeVector!byte buffer;
 };
 
@@ -50,13 +50,13 @@ class PK_Signer_Filter : public Filter
 		void end_msg();
 
 		PK_Signer_Filter(PK_Signer* s,
-							  RandomNumberGenerator& rng_ref) :
+							  RandomNumberGenerator rng_ref) :
 			signer(s), rng(rng_ref) {}
 
 		~this() { delete signer; }
 	private:
 		PK_Signer* signer;
-		RandomNumberGenerator& rng;
+		RandomNumberGenerator rng;
 };
 
 /**

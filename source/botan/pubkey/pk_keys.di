@@ -45,7 +45,7 @@ class Public_Key
 		* of the test
 		* @return true if the test is passed
 		*/
-		abstract bool check_key(RandomNumberGenerator& rng,
+		abstract bool check_key(RandomNumberGenerator rng,
 									  bool strong) const;
 
 		/**
@@ -77,12 +77,12 @@ class Public_Key
 		abstract Vector!( byte ) x509_subject_public_key() const;
 
 		~this() {}
-	protected:
+	package:
 		/**
 		* Self-test after loading a key
 		* @param rng a random number generator
 		*/
-		abstract void load_check(RandomNumberGenerator& rng) const;
+		abstract void load_check(RandomNumberGenerator rng) const;
 };
 
 /**
@@ -103,18 +103,18 @@ class Private_Key : public abstract Public_Key
 		abstract AlgorithmIdentifier pkcs8_algorithm_identifier() const
 		{ return algorithm_identifier(); }
 
-	protected:
+	package:
 		/**
 		* Self-test after loading a key
 		* @param rng a random number generator
 		*/
-		void load_check(RandomNumberGenerator& rng) const;
+		void load_check(RandomNumberGenerator rng) const;
 
 		/**
 		* Self-test after generating a key
 		* @param rng a random number generator
 		*/
-		void gen_check(RandomNumberGenerator& rng) const;
+		void gen_check(RandomNumberGenerator rng) const;
 };
 
 /**

@@ -32,7 +32,7 @@ class DH_PublicKey : public abstract DL_Scheme_PublicKey
 		* @param y the public value y
 		*/
 		DH_PublicKey(in DL_Group grp, ref const BigInt y);
-	protected:
+	package:
 		DH_PublicKey() {}
 };
 
@@ -54,7 +54,7 @@ class DH_PrivateKey : public DH_PublicKey,
 		*/
 		DH_PrivateKey(in AlgorithmIdentifier alg_id,
 						  in SafeVector!byte key_bits,
-						  RandomNumberGenerator& rng);
+						  RandomNumberGenerator rng);
 
 		/**
 		* Construct a private key with predetermined value.
@@ -62,7 +62,7 @@ class DH_PrivateKey : public DH_PublicKey,
 		* @param grp the group to be used in the key
 		* @param x the key's secret value (or if zero, generate a new key)
 		*/
-		DH_PrivateKey(RandomNumberGenerator& rng, const DL_Group& grp,
+		DH_PrivateKey(RandomNumberGenerator rng, const DL_Group& grp,
 						  ref const BigInt x = 0);
 };
 
@@ -73,7 +73,7 @@ class DH_KA_Operation : public PK_Ops::Key_Agreement
 {
 	public:
 		DH_KA_Operation(in DH_PrivateKey key,
-							 RandomNumberGenerator& rng);
+							 RandomNumberGenerator rng);
 
 		SafeVector!byte agree(in byte* w, size_t w_len);
 	private:

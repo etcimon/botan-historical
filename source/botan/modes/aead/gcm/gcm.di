@@ -32,10 +32,10 @@ class GCM_Mode : public AEAD_Mode
 		size_t tag_size() const override { return m_tag_size; }
 
 		void clear() override;
-	protected:
+	package:
 		void key_schedule(in byte* key, size_t length) override;
 
-		GCM_Mode(BlockCipher* cipher, size_t tag_size);
+		GCM_Mode(BlockCipher cipher, size_t tag_size);
 
 		const size_t BS = 16;
 
@@ -56,7 +56,7 @@ class GCM_Encryption : public GCM_Mode
 		* @param cipher the 128 bit block cipher to use
 		* @param tag_size is how big the auth tag will be
 		*/
-		GCM_Encryption(BlockCipher* cipher, size_t tag_size = 16) :
+		GCM_Encryption(BlockCipher cipher, size_t tag_size = 16) :
 			GCM_Mode(cipher, tag_size) {}
 
 		size_t output_length(size_t input_length) const override
@@ -79,7 +79,7 @@ class GCM_Decryption : public GCM_Mode
 		* @param cipher the 128 bit block cipher to use
 		* @param tag_size is how big the auth tag will be
 		*/
-		GCM_Decryption(BlockCipher* cipher, size_t tag_size = 16) :
+		GCM_Decryption(BlockCipher cipher, size_t tag_size = 16) :
 			GCM_Mode(cipher, tag_size) {}
 
 		size_t output_length(size_t input_length) const override

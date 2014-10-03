@@ -17,7 +17,7 @@ class KASUMI : public Block_Cipher_Fixed_Params!(8, 16)
 
 		void clear();
 		string name() const { return "KASUMI"; }
-		BlockCipher* clone() const { return new KASUMI; }
+		BlockCipher clone() const { return new KASUMI; }
 	private:
 		void key_schedule(in byte*, size_t);
 

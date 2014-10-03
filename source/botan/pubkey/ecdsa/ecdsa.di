@@ -48,7 +48,7 @@ class ECDSA_PublicKey : public abstract EC_PublicKey
 		size_t message_part_size() const
 		{ return domain().get_order().bytes(); }
 
-	protected:
+	package:
 		ECDSA_PublicKey() {}
 };
 
@@ -75,12 +75,12 @@ class ECDSA_PrivateKey : public ECDSA_PublicKey,
 		* @param domain parameters to used for this key
 		* @param x the private key (if zero, generate a ney random key)
 		*/
-		ECDSA_PrivateKey(RandomNumberGenerator& rng,
+		ECDSA_PrivateKey(RandomNumberGenerator rng,
 							  const EC_Group& domain,
 							  ref const BigInt x = 0) :
 			EC_PrivateKey(rng, domain, x) {}
 
-		bool check_key(RandomNumberGenerator& rng, bool) const;
+		bool check_key(RandomNumberGenerator rng, bool) const;
 };
 
 /**
@@ -92,7 +92,7 @@ class ECDSA_Signature_Operation : public PK_Ops::Signature
 		ECDSA_Signature_Operation(in ECDSA_PrivateKey ecdsa);
 
 		SafeVector!byte sign(in byte* msg, size_t msg_len,
-										RandomNumberGenerator& rng);
+										RandomNumberGenerator rng);
 
 		size_t message_parts() const { return 2; }
 		size_t message_part_size() const { return order.bytes(); }

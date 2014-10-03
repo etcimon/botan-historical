@@ -27,8 +27,8 @@ class ECB_Mode : public Cipher_Mode
 		bool valid_nonce_length(size_t n) const override;
 
 		void clear() override;
-	protected:
-		ECB_Mode(BlockCipher* cipher, BlockCipherModePaddingMethod* padding);
+	package:
+		ECB_Mode(BlockCipher cipher, BlockCipherModePaddingMethod* padding);
 
 		const BlockCipher& cipher() const { return *m_cipher; }
 
@@ -47,7 +47,7 @@ class ECB_Mode : public Cipher_Mode
 class ECB_Encryption : public ECB_Mode
 {
 	public:
-		ECB_Encryption(BlockCipher* cipher, BlockCipherModePaddingMethod* padding) :
+		ECB_Encryption(BlockCipher cipher, BlockCipherModePaddingMethod* padding) :
 			ECB_Mode(cipher, padding) {}
 
 		void update(SafeVector!byte blocks, size_t offset = 0) override;
@@ -65,7 +65,7 @@ class ECB_Encryption : public ECB_Mode
 class ECB_Decryption : public ECB_Mode
 {
 	public:
-		ECB_Decryption(BlockCipher* cipher, BlockCipherModePaddingMethod* padding) :
+		ECB_Decryption(BlockCipher cipher, BlockCipherModePaddingMethod* padding) :
 			ECB_Mode(cipher, padding) {}
 
 		void update(SafeVector!byte blocks, size_t offset = 0) override;

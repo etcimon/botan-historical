@@ -47,7 +47,7 @@ class X509_Object : public ASN1_Object
 		* @return signed X509 object
 		*/
 		static Vector!( byte ) make_signed(class PK_Signer* signer,
-														 RandomNumberGenerator& rng,
+														 RandomNumberGenerator rng,
 														 const AlgorithmIdentifier& alg_id,
 														 in SafeVector!byte tbs);
 
@@ -81,7 +81,7 @@ class X509_Object : public ASN1_Object
 		string PEM_encode() const;
 
 		~this() {}
-	protected:
+	package:
 		X509_Object(DataSource& src, in string pem_labels);
 		X509_Object(in string file, in string pem_labels);
 		X509_Object(in Vector!byte vec, in string labels);
@@ -94,6 +94,6 @@ class X509_Object : public ASN1_Object
 		abstract void force_decode();
 		void init(DataSource&, in string);
 
-		Vector!( string ) PEM_labels_allowed;
+		Vector!string PEM_labels_allowed;
 		string PEM_label_pref;
 };

@@ -116,16 +116,16 @@ SafeVector!byte ocb_hash(in L_computer L,
 
 }
 
-OCB_Mode::OCB_Mode(BlockCipher* cipher, size_t tag_size) :
+OCB_Mode::OCB_Mode(BlockCipher cipher, size_t tag_size) :
 	m_cipher(cipher),
-	m_checksum(m_cipher->parallel_bytes()),
+	m_checksum(m_cipher.parallel_bytes()),
 	m_offset(BS),
 	m_ad_hash(BS),
 	m_tag_size(tag_size)
 {
-	if (m_cipher->block_size() != BS)
+	if (m_cipher.block_size() != BS)
 		throw new std::invalid_argument("OCB requires a 128 bit cipher so cannot be used with " +
-											 m_cipher->name());
+											 m_cipher.name());
 
 	if (m_tag_size != 8 && m_tag_size != 12 && m_tag_size != 16)
 		throw new std::invalid_argument("OCB cannot produce a " + std::to_string(m_tag_size) +
@@ -152,22 +152,22 @@ bool OCB_Mode::valid_nonce_length(size_t length) const
 
 string OCB_Mode::name() const
 {
-	return m_cipher->name() + "/OCB"; // include tag size
+	return m_cipher.name() + "/OCB"; // include tag size
 }
 
 size_t OCB_Mode::update_granularity() const
 {
-	return m_cipher->parallel_bytes();
+	return m_cipher.parallel_bytes();
 }
 
 Key_Length_Specification OCB_Mode::key_spec() const
 {
-	return m_cipher->key_spec();
+	return m_cipher.key_spec();
 }
 
 void OCB_Mode::key_schedule(in byte* key, size_t length)
 {
-	m_cipher->set_key(key, length);
+	m_cipher.set_key(key, length);
 	m_L.reset(new L_computer(*m_cipher));
 }
 
@@ -197,7 +197,7 @@ OCB_Mode::update_nonce(in byte* nonce, size_t nonce_len)
 	{
 		m_last_nonce = nonce_buf;
 
-		m_cipher->encrypt(nonce_buf);
+		m_cipher.encrypt(nonce_buf);
 
 		for (size_t i = 0; i != 8; ++i)
 			nonce_buf.push_back(nonce_buf[i] ^ nonce_buf[i+1]);
@@ -242,7 +242,7 @@ void OCB_Encryption::encrypt(byte buffer[], size_t blocks)
 
 	while(blocks)
 	{
-		const size_t proc_blocks = std::min(blocks, par_blocks);
+		const size_t proc_blocks = std.algorithm.min(blocks, par_blocks);
 		const size_t proc_bytes = proc_blocks * BS;
 
 		const auto& offsets = L.compute_offsets(m_offset, m_block_index, proc_blocks);
@@ -250,7 +250,7 @@ void OCB_Encryption::encrypt(byte buffer[], size_t blocks)
 		xor_buf(&m_checksum[0], &buffer[0], proc_bytes);
 
 		xor_buf(&buffer[0], &offsets[0], proc_bytes);
-		m_cipher->encrypt_n(&buffer[0], &buffer[0], proc_blocks);
+		m_cipher.encrypt_n(&buffer[0], &buffer[0], proc_blocks);
 		xor_buf(&buffer[0], &offsets[0], proc_bytes);
 
 		buffer += proc_bytes;
@@ -291,10 +291,10 @@ void OCB_Encryption::finish(SafeVector!byte buffer, size_t offset)
 			xor_buf(&m_checksum[0], &remainder[0], remainder_bytes);
 			m_checksum[remainder_bytes] ^= 0x80;
 
-			m_offset ^= m_L->star(); // Offset_*
+			m_offset ^= m_L.star(); // Offset_*
 
 			SafeVector!byte buf(BS);
-			m_cipher->encrypt(m_offset, buf);
+			m_cipher.encrypt(m_offset, buf);
 			xor_buf(&remainder[0], &buf[0], remainder_bytes);
 		}
 	}
@@ -308,9 +308,9 @@ void OCB_Encryption::finish(SafeVector!byte buffer, size_t offset)
 	// now compute the tag
 	SafeVector!byte mac = m_offset;
 	mac ^= checksum;
-	mac ^= m_L->dollar();
+	mac ^= m_L.dollar();
 
-	m_cipher->encrypt(mac);
+	m_cipher.encrypt(mac);
 
 	mac ^= m_ad_hash;
 
@@ -325,7 +325,7 @@ void OCB_Decryption::decrypt(byte buffer[], size_t blocks)
 {
 	const L_computer& L = *m_L; // convenient name
 
-	const size_t par_bytes = m_cipher->parallel_bytes();
+	const size_t par_bytes = m_cipher.parallel_bytes();
 
 	BOTAN_ASSERT(par_bytes % BS == 0, "Cipher is parallel in full blocks");
 
@@ -333,13 +333,13 @@ void OCB_Decryption::decrypt(byte buffer[], size_t blocks)
 
 	while(blocks)
 	{
-		const size_t proc_blocks = std::min(blocks, par_blocks);
+		const size_t proc_blocks = std.algorithm.min(blocks, par_blocks);
 		const size_t proc_bytes = proc_blocks * BS;
 
 		const auto& offsets = L.compute_offsets(m_offset, m_block_index, proc_blocks);
 
 		xor_buf(&buffer[0], &offsets[0], proc_bytes);
-		m_cipher->decrypt_n(&buffer[0], &buffer[0], proc_blocks);
+		m_cipher.decrypt_n(&buffer[0], &buffer[0], proc_blocks);
 		xor_buf(&buffer[0], &offsets[0], proc_bytes);
 
 		xor_buf(&m_checksum[0], &buffer[0], proc_bytes);
@@ -384,10 +384,10 @@ void OCB_Decryption::finish(SafeVector!byte buffer, size_t offset)
 
 			byte* remainder = &buf[remaining - final_bytes];
 
-			m_offset ^= m_L->star(); // Offset_*
+			m_offset ^= m_L.star(); // Offset_*
 
 			SafeVector!byte pad(BS);
-			m_cipher->encrypt(m_offset, pad); // P_*
+			m_cipher.encrypt(m_offset, pad); // P_*
 
 			xor_buf(&remainder[0], &pad[0], final_bytes);
 
@@ -405,9 +405,9 @@ void OCB_Decryption::finish(SafeVector!byte buffer, size_t offset)
 	// compute the mac
 	SafeVector!byte mac = m_offset;
 	mac ^= checksum;
-	mac ^= m_L->dollar();
+	mac ^= m_L.dollar();
 
-	m_cipher->encrypt(mac);
+	m_cipher.encrypt(mac);
 
 	mac ^= m_ad_hash;
 

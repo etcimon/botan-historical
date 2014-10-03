@@ -148,7 +148,7 @@ string PEM_encode(in Private_Key key)
 * BER encode a PKCS #8 private key, encrypted
 */
 Vector!( byte ) BER_encode(in Private_Key key,
-									  RandomNumberGenerator& rng,
+									  RandomNumberGenerator rng,
 									  in string pass,
 									  std::chrono::milliseconds msec,
 									  in string pbe_algo)
@@ -161,7 +161,7 @@ Vector!( byte ) BER_encode(in Private_Key key,
 				  msec,
 				  rng));
 
-	AlgorithmIdentifier pbe_algid(pbe->get_oid(), pbe->encode_params());
+	AlgorithmIdentifier pbe_algid(pbe.get_oid(), pbe.encode_params());
 
 	Pipe key_encrytor(pbe.release());
 	key_encrytor.process_msg(PKCS8::BER_encode(key));
@@ -178,7 +178,7 @@ Vector!( byte ) BER_encode(in Private_Key key,
 * PEM encode a PKCS #8 private key, encrypted
 */
 string PEM_encode(in Private_Key key,
-							  RandomNumberGenerator& rng,
+							  RandomNumberGenerator rng,
 							  in string pass,
 							  std::chrono::milliseconds msec,
 							  in string pbe_algo)
@@ -194,7 +194,7 @@ string PEM_encode(in Private_Key key,
 * Extract a private key and return it
 */
 Private_Key* load_key(DataSource& source,
-							 RandomNumberGenerator& rng,
+							 RandomNumberGenerator rng,
 							 Tuple!(bool, string) delegate() get_pass)
 {
 	AlgorithmIdentifier alg_id;
@@ -212,7 +212,7 @@ Private_Key* load_key(DataSource& source,
 * Extract a private key and return it
 */
 Private_Key* load_key(in string fsname,
-							 RandomNumberGenerator& rng,
+							 RandomNumberGenerator rng,
 							 Tuple!(bool, string) delegate() get_pass)
 {
 	DataSource_Stream source(fsname, true);
@@ -249,7 +249,7 @@ class Single_Shot_Passphrase
 * Extract a private key and return it
 */
 Private_Key* load_key(DataSource& source,
-							 RandomNumberGenerator& rng,
+							 RandomNumberGenerator rng,
 							 in string pass)
 {
 	return PKCS8::load_key(source, rng, Single_Shot_Passphrase(pass));
@@ -259,7 +259,7 @@ Private_Key* load_key(DataSource& source,
 * Extract a private key and return it
 */
 Private_Key* load_key(in string fsname,
-							 RandomNumberGenerator& rng,
+							 RandomNumberGenerator rng,
 							 in string pass)
 {
 	return PKCS8::load_key(fsname, rng, Single_Shot_Passphrase(pass));
@@ -269,7 +269,7 @@ Private_Key* load_key(in string fsname,
 * Make a copy of this private key
 */
 Private_Key* copy_key(in Private_Key key,
-							 RandomNumberGenerator& rng)
+							 RandomNumberGenerator rng)
 {
 	DataSource_Memory source(PEM_encode(key));
 	return PKCS8::load_key(source, rng);

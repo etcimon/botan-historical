@@ -12,7 +12,7 @@ namespace KeyPair {
 /*
 * Check an encryption key pair for consistency
 */
-bool encryption_consistency_check(RandomNumberGenerator& rng,
+bool encryption_consistency_check(RandomNumberGenerator rng,
 											 in Private_Key key,
 											 in string padding)
 {
@@ -41,7 +41,7 @@ bool encryption_consistency_check(RandomNumberGenerator& rng,
 /*
 * Check a signature key pair for consistency
 */
-bool signature_consistency_check(RandomNumberGenerator& rng,
+bool signature_consistency_check(RandomNumberGenerator rng,
 											in Private_Key key,
 											in string padding)
 {

@@ -177,7 +177,7 @@ void serpent_decrypt_4(const byte[64] input,
 */
 void Serpent_SIMD::encrypt_n(byte* input, byte* output, size_t blocks) const
 {
-	const uint* KS = &(this->get_round_keys()[0]);
+	const uint* KS = &(this.get_round_keys()[0]);
 
 	while(blocks >= 4)
 	{
@@ -196,7 +196,7 @@ void Serpent_SIMD::encrypt_n(byte* input, byte* output, size_t blocks) const
 */
 void Serpent_SIMD::decrypt_n(byte* input, byte* output, size_t blocks) const
 {
-	const uint* KS = &(this->get_round_keys()[0]);
+	const uint* KS = &(this.get_round_keys()[0]);
 
 	while(blocks >= 4)
 	{

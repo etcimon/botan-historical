@@ -39,5 +39,5 @@ class SRP6_Authenticator_File
 			string group_id;
 		};
 
-		std::map<string, SRP6_Data> entries;
+		HashMap<string, SRP6_Data> entries;
 };

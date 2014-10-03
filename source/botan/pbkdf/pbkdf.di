@@ -5,7 +5,7 @@
 * Distributed under the terms of the botan license.
 */
 
-import botan.symkey;
+import botan.algo_base.symkey;
 import chrono;
 /**
 * Base class for PBKDF (password based key derivation function)
@@ -21,7 +21,7 @@ class PBKDF
 		/**
 		* @return new instance of this same algorithm
 		*/
-		abstract PBKDF* clone() const;
+		abstract PBKDF clone() const;
 
 		abstract string name() const;
 

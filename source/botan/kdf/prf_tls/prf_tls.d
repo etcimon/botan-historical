@@ -38,7 +38,7 @@ void P_hash(SafeVector!byte output,
 	while(offset != output.size())
 	{
 		const size_t this_block_len =
-			std::min<size_t>(mac.output_length(), output.size() - offset);
+			std.algorithm.min<size_t>(mac.output_length(), output.size() - offset);
 
 		A = mac.process(A);
 
@@ -85,7 +85,7 @@ SafeVector!byte TLS_PRF::derive(size_t key_len,
 /*
 * TLS v1.2 PRF Constructor and Destructor
 */
-TLS_12_PRF::TLS_12_PRF(MessageAuthenticationCode* mac) : hmac(mac)
+TLS_12_PRF::TLS_12_PRF(MessageAuthenticationCode mac) : hmac(mac)
 {
 }
 

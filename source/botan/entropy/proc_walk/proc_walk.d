@@ -83,7 +83,7 @@ int Directory_Walker::next_fd()
 		if (!entry.first)
 			break; // no more dirs
 
-		const string filename = entry.first->d_name;
+		const string filename = entry.first.d_name;
 
 		if (filename == "." || filename == "..")
 			continue;
@@ -124,7 +124,7 @@ void ProcWalking_EntropySource::poll(Entropy_Accumulator& accum)
 
 	for (size_t i = 0; i != MAX_FILES_READ_PER_POLL; ++i)
 	{
-		int fd = m_dir->next_fd();
+		int fd = m_dir.next_fd();
 
 		// If we've exhaused this walk of the directory, halt the poll
 		if (fd == -1)

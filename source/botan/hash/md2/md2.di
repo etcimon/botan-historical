@@ -15,7 +15,7 @@ class MD2 : public HashFunction
 		string name() const { return "MD2"; }
 		size_t output_length() const { return 16; }
 		size_t hash_block_size() const { return 16; }
-		HashFunction* clone() const { return new MD2; }
+		HashFunction clone() const { return new MD2; }
 
 		void clear();
 

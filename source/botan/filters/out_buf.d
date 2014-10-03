@@ -16,7 +16,7 @@ size_t Output_Buffers::read(byte* output, size_t length,
 {
 	SecureQueue* q = get(msg);
 	if (q)
-		return q->read(output, length);
+		return q.read(output, length);
 	return 0;
 }
 
@@ -29,7 +29,7 @@ size_t Output_Buffers::peek(byte* output, size_t length,
 {
 	SecureQueue* q = get(msg);
 	if (q)
-		return q->peek(output, length, stream_offset);
+		return q.peek(output, length, stream_offset);
 	return 0;
 }
 
@@ -40,7 +40,7 @@ size_t Output_Buffers::remaining(Pipe::message_id msg) const
 {
 	SecureQueue* q = get(msg);
 	if (q)
-		return q->size();
+		return q.size();
 	return 0;
 }
 
@@ -51,7 +51,7 @@ size_t Output_Buffers::get_bytes_read(Pipe::message_id msg) const
 {
 	SecureQueue* q = get(msg);
 	if (q)
-		return q->get_bytes_read();
+		return q.get_bytes_read();
 	return 0;
 }
 
@@ -74,7 +74,7 @@ void Output_Buffers::add(SecureQueue* queue)
 void Output_Buffers::retire()
 {
 	for (size_t i = 0; i != buffers.size(); ++i)
-		if (buffers[i] && buffers[i]->size() == 0)
+		if (buffers[i] && buffers[i].size() == 0)
 		{
 			delete buffers[i];
 			buffers[i] = null;

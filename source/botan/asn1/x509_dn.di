@@ -20,7 +20,7 @@ class X509_DN : public ASN1_Object
 		void decode_from(class BER_Decoder);
 
 		std::multimap<OID, string> get_attributes() const;
-		Vector!( string ) get_attribute(in string) const;
+		Vector!string get_attribute(in string) const;
 
 		std::multimap<string, string> contents() const;
 

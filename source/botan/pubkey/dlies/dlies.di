@@ -16,13 +16,13 @@ class DLIES_Encryptor : public PK_Encryptor
 	public:
 		DLIES_Encryptor(in PK_Key_Agreement_Key,
 							 KDF* kdf,
-							 MessageAuthenticationCode* mac,
+							 MessageAuthenticationCode mac,
 							 size_t mac_key_len = 20);
 
 		void set_other_key(in Vector!byte);
 	private:
 		Vector!( byte ) enc(const byte[], size_t,
-									 RandomNumberGenerator&) const;
+									 RandomNumberGenerator) const;
 
 		size_t maximum_input_size() const;
 
@@ -42,7 +42,7 @@ class DLIES_Decryptor : public PK_Decryptor
 	public:
 		DLIES_Decryptor(in PK_Key_Agreement_Key,
 							 KDF* kdf,
-							 MessageAuthenticationCode* mac,
+							 MessageAuthenticationCode mac,
 							 size_t mac_key_len = 20);
 
 	private:

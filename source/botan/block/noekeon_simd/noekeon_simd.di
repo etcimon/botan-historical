@@ -17,5 +17,5 @@ class Noekeon_SIMD : public Noekeon
 		void encrypt_n(byte* input, byte* output, size_t blocks) const;
 		void decrypt_n(byte* input, byte* output, size_t blocks) const;
 
-		BlockCipher* clone() const { return new Noekeon_SIMD; }
+		BlockCipher clone() const { return new Noekeon_SIMD; }
 };

@@ -49,14 +49,14 @@ uint timespec_to_uint(in string timespec)
 /*
 * Parse a SCAN-style algorithm name
 */
-Vector!( string ) parse_algorithm_name(in string namex)
+Vector!string parse_algorithm_name(in string namex)
 {
 	if (namex.find('(') == string::npos &&
 		namex.find(')') == string::npos)
-		return Vector!( string )(1, namex);
+		return Vector!string(1, namex);
 
 	string name = namex, substring;
-	Vector!( string ) elems;
+	Vector!string elems;
 	size_t level = 0;
 
 	elems.push_back(name.substr(0, name.find('(')));
@@ -102,15 +102,15 @@ Vector!( string ) parse_algorithm_name(in string namex)
 	return elems;
 }
 
-Vector!( string ) split_on(in string str, char delim)
+Vector!string split_on(in string str, char delim)
 {
 	return split_on_pred(str, [delim](char c) { return c == delim; });
 }
 
-Vector!( string ) split_on_pred(in string str,
+Vector!string split_on_pred(in string str,
 									bool delegate(char) pred)
 {
-	Vector!( string ) elems;
+	Vector!string elems;
 	if (str == "") return elems;
 
 	string substr;
@@ -136,7 +136,7 @@ Vector!( string ) split_on_pred(in string str,
 /*
 * Join a string
 */
-string string_join(in Vector!( string ) strs, char delim)
+string string_join(in Vector!string strs, char delim)
 {
 	string out = "";
 
@@ -227,7 +227,7 @@ bool x500_name_cmp(in string name1, in string name2)
 */
 uint string_to_ipv4(in string str)
 {
-	Vector!( string ) parts = split_on(str, '.');
+	Vector!string parts = split_on(str, '.');
 
 	if (parts.size() != 4)
 		throw new Decoding_Error("Invalid IP string " + str);

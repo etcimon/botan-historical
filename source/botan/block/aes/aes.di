@@ -18,7 +18,7 @@ class AES_128 : public Block_Cipher_Fixed_Params!(16, 16)
 		void clear();
 
 		string name() const { return "AES-128"; }
-		BlockCipher* clone() const { return new AES_128; }
+		BlockCipher clone() const { return new AES_128; }
 	private:
 		void key_schedule(in byte* key);
 
@@ -38,7 +38,7 @@ class AES_192 : public Block_Cipher_Fixed_Params!(16, 24)
 		void clear();
 
 		string name() const { return "AES-192"; }
-		BlockCipher* clone() const { return new AES_192; }
+		BlockCipher clone() const { return new AES_192; }
 	private:
 		void key_schedule(in byte* key);
 
@@ -58,7 +58,7 @@ class AES_256 : public Block_Cipher_Fixed_Params!(16, 32)
 		void clear();
 
 		string name() const { return "AES-256"; }
-		BlockCipher* clone() const { return new AES_256; }
+		BlockCipher clone() const { return new AES_256; }
 	private:
 		void key_schedule(in byte* key);
 

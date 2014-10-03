@@ -189,7 +189,7 @@ class Next_Protocol_Notification : public Extension
 
 		Handshake_Extension_Type type() const { return static_type(); }
 
-		const Vector!( string )& protocols() const
+		const Vector!string& protocols() const
 		{ return m_protocols; }
 
 		/**
@@ -200,7 +200,7 @@ class Next_Protocol_Notification : public Extension
 		/**
 		* List of protocols, used by server
 		*/
-		Next_Protocol_Notification(in Vector!( string ) protocols) :
+		Next_Protocol_Notification(in Vector!string protocols) :
 			m_protocols(protocols) {}
 
 		Next_Protocol_Notification(TLS_Data_Reader& reader,
@@ -210,7 +210,7 @@ class Next_Protocol_Notification : public Extension
 
 		bool empty() const { return false; }
 	private:
-		Vector!( string ) m_protocols;
+		Vector!string m_protocols;
 }
 
 /**
@@ -266,11 +266,11 @@ class Supported_Elliptic_Curves : public Extension
 		static string curve_id_to_name(ushort id);
 		static ushort name_to_curve_id(in string name);
 
-		const Vector!( string )& curves() const { return m_curves; }
+		const Vector!string& curves() const { return m_curves; }
 
 		Vector!( byte ) serialize() const;
 
-		Supported_Elliptic_Curves(in Vector!( string ) curves) :
+		Supported_Elliptic_Curves(in Vector!string curves) :
 			m_curves(curves) {}
 
 		Supported_Elliptic_Curves(TLS_Data_Reader& reader,
@@ -278,7 +278,7 @@ class Supported_Elliptic_Curves : public Extension
 
 		bool empty() const { return m_curves.empty(); }
 	private:
-		Vector!( string ) m_curves;
+		Vector!string m_curves;
 }
 
 /**
@@ -308,8 +308,8 @@ class Signature_Algorithms : public Extension
 
 		bool empty() const { return false; }
 
-		Signature_Algorithms(in Vector!( string ) hashes,
-									const Vector!( string )& sig_algos);
+		Signature_Algorithms(in Vector!string hashes,
+									const Vector!string& sig_algos);
 
 		Signature_Algorithms(in Vector!( Pair!(string, string)  ) algos) :
 			m_supported_algos(algos) {}
@@ -361,13 +361,13 @@ class Extensions
 			auto i = extensions.find(type);
 
 			if (i != extensions.end())
-				return cast(T*)(i->second.get());
+				return cast(T*)(i.second.get());
 			return null;
 		}
 
 		void add(Extension* extn)
 		{
-			extensions[extn->type()].reset(extn);
+			extensions[extn.type()].reset(extn);
 		}
 
 		Vector!( byte ) serialize() const;
@@ -382,7 +382,7 @@ class Extensions
 		Extensions(in Extensions) {}
 		Extensions& operator=(in Extensions) { return (*this); }
 
-		std::map<Handshake_Extension_Type, Unique!Extension> extensions;
+		HashMap<Handshake_Extension_Type, Unique!Extension> extensions;
 }
 
 }

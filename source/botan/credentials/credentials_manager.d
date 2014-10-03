@@ -58,7 +58,7 @@ bool Credentials_Manager::srp_verifier(in string,
 }
 
 Vector!( X509_Certificate ) Credentials_Manager::cert_chain(
-	const Vector!( string )&,
+	const Vector!string&,
 	in string,
 	in string)
 {
@@ -70,7 +70,7 @@ Vector!( X509_Certificate ) Credentials_Manager::cert_chain_single_type(
 	in string type,
 	in string context)
 {
-	Vector!( string ) cert_types;
+	Vector!string cert_types;
 	cert_types.push_back(cert_key_type);
 	return cert_chain(cert_types, type, context);
 }
@@ -96,7 +96,7 @@ bool cert_in_some_store(in Vector!( Certificate_Store* ) trusted_CAs,
 								const X509_Certificate& trust_root)
 {
 	foreach (CAs; trusted_CAs)
-		if (CAs->certificate_known(trust_root))
+		if (CAs.certificate_known(trust_root))
 			return true;
 	return false;
 }

@@ -90,7 +90,7 @@ void PKCS10_Request::force_decode()
 
 	cert_req_info.verify_end();
 
-	if (!this->check_signature(subject_public_key()))
+	if (!this.check_signature(subject_public_key()))
 		throw new Decoding_Error("PKCS #10 request: Bad signature detected");
 }
 
@@ -178,7 +178,7 @@ Key_Constraints PKCS10_Request::constraints() const
 */
 Vector!( OID ) PKCS10_Request::ex_constraints() const
 {
-	Vector!( string ) oids = info.get("X509v3.ExtendedKeyUsage");
+	Vector!string oids = info.get("X509v3.ExtendedKeyUsage");
 
 	Vector!( OID ) result;
 	for (size_t i = 0; i != oids.size(); ++i)

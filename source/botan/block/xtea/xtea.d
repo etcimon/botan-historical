@@ -60,7 +60,7 @@ void XTEA::encrypt_n(byte* input, byte* output, size_t blocks) const
 {
 	while(blocks >= 4)
 	{
-		xtea_encrypt_4(input, output, &(this->EK[0]));
+		xtea_encrypt_4(input, output, &(this.EK[0]));
 		input += 4 * BLOCK_SIZE;
 		output += 4 * BLOCK_SIZE;
 		blocks -= 4;
@@ -91,7 +91,7 @@ void XTEA::decrypt_n(byte* input, byte* output, size_t blocks) const
 {
 	while(blocks >= 4)
 	{
-		xtea_decrypt_4(input, output, &(this->EK[0]));
+		xtea_decrypt_4(input, output, &(this.EK[0]));
 		input += 4 * BLOCK_SIZE;
 		output += 4 * BLOCK_SIZE;
 		blocks -= 4;

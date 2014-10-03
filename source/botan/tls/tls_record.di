@@ -45,7 +45,7 @@ class Connection_Cipher_State
 														 Protocol_Version _version,
 														 ushort ptext_length);
 
-		BlockCipher* block_cipher() { return m_block_cipher.get(); }
+		BlockCipher block_cipher() { return m_block_cipher.get(); }
 
 		StreamCipher stream_cipher() { return m_stream_cipher.get(); }
 
@@ -55,7 +55,7 @@ class Connection_Cipher_State
 
 		size_t block_size() const { return m_block_size; }
 
-		size_t mac_size() const { return m_mac->output_length(); }
+		size_t mac_size() const { return m_mac.output_length(); }
 
 		size_t iv_size() const { return m_iv_size; }
 

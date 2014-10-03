@@ -36,10 +36,10 @@ class CCM_Mode : public AEAD_Mode
 
 		size_t tag_size() const { return m_tag_size; }
 
-	protected:
+	package:
 		const size_t BS = 16; // intrinsic to CCM definition
 
-		CCM_Mode(BlockCipher* cipher, size_t tag_size, size_t L);
+		CCM_Mode(BlockCipher cipher, size_t tag_size, size_t L);
 
 		size_t L() const { return m_L; }
 
@@ -78,7 +78,7 @@ class CCM_Encryption : public CCM_Mode
 		* @param L length of L parameter. The total message length
 		*			  must be less than 2**L bytes, and the nonce is 15-L bytes.
 		*/
-		CCM_Encryption(BlockCipher* cipher, size_t tag_size = 16, size_t L = 3) :
+		CCM_Encryption(BlockCipher cipher, size_t tag_size = 16, size_t L = 3) :
 			CCM_Mode(cipher, tag_size, L) {}
 
 		void finish(SafeVector!byte final_block, size_t offset = 0) override;
@@ -102,7 +102,7 @@ class CCM_Decryption : public CCM_Mode
 		* @param L length of L parameter. The total message length
 		*			  must be less than 2**L bytes, and the nonce is 15-L bytes.
 		*/
-		CCM_Decryption(BlockCipher* cipher, size_t tag_size = 16, size_t L = 3) :
+		CCM_Decryption(BlockCipher cipher, size_t tag_size = 16, size_t L = 3) :
 			CCM_Mode(cipher, tag_size, L) {}
 
 		void finish(SafeVector!byte final_block, size_t offset = 0) override;

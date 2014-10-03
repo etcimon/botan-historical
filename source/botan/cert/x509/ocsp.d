@@ -48,15 +48,15 @@ void check_signature(in Vector!byte tbs_response,
 {
 	Unique!Public_Key pub_key(cert.subject_public_key());
 
-	const Vector!( string ) sig_info =
+	const Vector!string sig_info =
 		split_on(OIDS::lookup(sig_algo.oid), '/');
 
-	if (sig_info.size() != 2 || sig_info[0] != pub_key->algo_name())
+	if (sig_info.size() != 2 || sig_info[0] != pub_key.algo_name())
 		throw new Exception("Information in OCSP response does not match cert");
 
 	string padding = sig_info[1];
 	Signature_Format format =
-		(pub_key->message_parts() >= 2) ? DER_SEQUENCE : IEEE_1363;
+		(pub_key.message_parts() >= 2) ? DER_SEQUENCE : IEEE_1363;
 
 	PK_Verifier verifier(*pub_key, padding, format);
 

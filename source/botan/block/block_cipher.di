@@ -5,7 +5,7 @@
 * Distributed under the terms of the botan license.
 */
 
-import botan.sym_algo;
+import botan.algo_base.sym_algo;
 /**
 * This class represents a block cipher object.
 */
@@ -128,7 +128,7 @@ class BlockCipher : public SymmetricAlgorithm
 		/**
 		* @return new object representing the same algorithm as *this
 		*/
-		abstract BlockCipher* clone() const;
+		abstract BlockCipher clone() const;
 };
 
 /**

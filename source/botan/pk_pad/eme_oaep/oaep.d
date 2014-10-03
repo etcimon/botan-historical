@@ -13,7 +13,7 @@ import botan.mem_ops;
 */
 SafeVector!byte OAEP::pad(in byte* input, size_t in_length,
 									  size_t key_length,
-									  RandomNumberGenerator& rng) const
+									  RandomNumberGenerator rng) const
 {
 	key_length /= 8;
 
@@ -122,9 +122,9 @@ size_t OAEP::maximum_input_size(size_t keybits) const
 /*
 * OAEP Constructor
 */
-OAEP::OAEP(HashFunction* hash, in string P) : m_hash(hash)
+OAEP::OAEP(HashFunction hash, in string P) : m_hash(hash)
 {
-	m_Phash = m_hash->process(P);
+	m_Phash = m_hash.process(P);
 }
 
 }

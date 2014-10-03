@@ -21,7 +21,7 @@ class IF_Scheme_PublicKey : public abstract Public_Key
 		IF_Scheme_PublicKey(in BigInt n, ref const BigInt e) :
 			n(n), e(e) {}
 
-		bool check_key(RandomNumberGenerator& rng, bool) const;
+		bool check_key(RandomNumberGenerator rng, bool) const;
 
 		AlgorithmIdentifier algorithm_identifier() const;
 
@@ -41,7 +41,7 @@ class IF_Scheme_PublicKey : public abstract Public_Key
 
 		size_t estimated_strength() const override;
 
-	protected:
+	package:
 		IF_Scheme_PublicKey() {}
 
 		BigInt n, e;
@@ -56,16 +56,16 @@ class IF_Scheme_PrivateKey : public abstract IF_Scheme_PublicKey,
 {
 	public:
 
-		IF_Scheme_PrivateKey(RandomNumberGenerator& rng,
+		IF_Scheme_PrivateKey(RandomNumberGenerator rng,
 									ref const BigInt prime1, ref const BigInt prime2,
 									ref const BigInt exp, ref const BigInt d_exp,
 									ref const BigInt mod);
 
-		IF_Scheme_PrivateKey(RandomNumberGenerator& rng,
+		IF_Scheme_PrivateKey(RandomNumberGenerator rng,
 									const AlgorithmIdentifier& alg_id,
 									in SafeVector!byte key_bits);
 
-		bool check_key(RandomNumberGenerator& rng, bool) const;
+		bool check_key(RandomNumberGenerator rng, bool) const;
 
 		/**
 		* Get the first prime p.
@@ -91,7 +91,7 @@ class IF_Scheme_PrivateKey : public abstract IF_Scheme_PublicKey,
 
 		SafeVector!byte pkcs8_Private_Key() const;
 
-	protected:
+	package:
 		IF_Scheme_PrivateKey() {}
 
 		BigInt d, p, q, d1, d2, c;

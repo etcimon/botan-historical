@@ -153,7 +153,7 @@ class Channel
 		Channel& operator=(in Channel);
 
 		~this();
-	protected:
+	package:
 
 		abstract void process_handshake_msg(const Handshake_State* active_state,
 													  Handshake_State& pending_state,
@@ -184,7 +184,7 @@ class Channel
 		Vector!( byte ) secure_renegotiation_data_for_client_hello() const;
 		Vector!( byte ) secure_renegotiation_data_for_server_hello() const;
 
-		RandomNumberGenerator& rng() { return m_rng; }
+		RandomNumberGenerator rng() { return m_rng; }
 
 		Session_Manager& session_manager() { return m_session_manager; }
 
@@ -234,8 +234,8 @@ class Channel
 		Unique!Handshake_State m_pending_state;
 
 		/* cipher states for each epoch */
-		std::map<ushort, std::shared_ptr<Connection_Cipher_State>> m_write_cipher_states;
-		std::map<ushort, std::shared_ptr<Connection_Cipher_State>> m_read_cipher_states;
+		HashMap<ushort, std::shared_ptr<Connection_Cipher_State>> m_write_cipher_states;
+		HashMap<ushort, std::shared_ptr<Connection_Cipher_State>> m_read_cipher_states;
 
 		/* I/O buffers */
 		SafeVector!byte m_writebuf;

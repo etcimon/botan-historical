@@ -77,7 +77,7 @@ class EAC1_1_gen_CVC(Derived) : public EAC1_1_obj!Derived // CRTP continuation f
 		~this()
 		{ delete m_pk; }
 
-	protected:
+	package:
 		ECDSA_PublicKey* m_pk;
 		ASN1_Chr m_chr;
 		bool self_signed;

@@ -34,8 +34,8 @@ bool fips186_3_valid_size(size_t pbits, size_t qbits)
 /*
 * Attempt DSA prime generation with given seed
 */
-bool generate_dsa_primes(RandomNumberGenerator& rng,
-								 Algorithm_Factory& af,
+bool generate_dsa_primes(RandomNumberGenerator rng,
+								 ref Algorithm_Factory af,
 								 ref BigInt p, ref BigInt q,
 								 size_t pbits, size_t qbits,
 								 in Vector!byte seed_c)
@@ -53,7 +53,7 @@ bool generate_dsa_primes(RandomNumberGenerator& rng,
 	Unique!HashFunction hash(
 		af.make_hash_function("SHA-" + std::to_string(qbits)));
 
-	const size_t HASH_SIZE = hash->output_length();
+	const size_t HASH_SIZE = hash.output_length();
 
 	class Seed
 	{
@@ -75,7 +75,7 @@ bool generate_dsa_primes(RandomNumberGenerator& rng,
 
 	Seed seed(seed_c);
 
-	q.binary_decode(hash->process(seed));
+	q.binary_decode(hash.process(seed));
 	q.set_bit(qbits-1);
 	q.set_bit(0);
 
@@ -93,8 +93,8 @@ bool generate_dsa_primes(RandomNumberGenerator& rng,
 		for (size_t k = 0; k <= n; ++k)
 		{
 			++seed;
-			hash->update(seed);
-			hash->flushInto(&V[HASH_SIZE * (n-k)]);
+			hash.update(seed);
+			hash.flushInto(&V[HASH_SIZE * (n-k)]);
 		}
 
 		X.binary_decode(&V[HASH_SIZE - 1 - b/8],
@@ -112,8 +112,8 @@ bool generate_dsa_primes(RandomNumberGenerator& rng,
 /*
 * Generate DSA Primes
 */
-Vector!( byte ) generate_dsa_primes(RandomNumberGenerator& rng,
-												  Algorithm_Factory& af,
+Vector!( byte ) generate_dsa_primes(RandomNumberGenerator rng,
+												  ref Algorithm_Factory af,
 												  ref BigInt p, ref BigInt q,
 												  size_t pbits, size_t qbits)
 {

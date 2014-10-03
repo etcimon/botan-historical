@@ -17,7 +17,7 @@ class Camellia_128 : public Block_Cipher_Fixed_Params!(16, 16)
 
 		void clear();
 		string name() const { return "Camellia-128"; }
-		BlockCipher* clone() const { return new Camellia_128; }
+		BlockCipher clone() const { return new Camellia_128; }
 	private:
 		void key_schedule(in byte* key);
 
@@ -35,7 +35,7 @@ class Camellia_192 : public Block_Cipher_Fixed_Params!(16, 24)
 
 		void clear();
 		string name() const { return "Camellia-192"; }
-		BlockCipher* clone() const { return new Camellia_192; }
+		BlockCipher clone() const { return new Camellia_192; }
 	private:
 		void key_schedule(in byte* key);
 
@@ -53,7 +53,7 @@ class Camellia_256 : public Block_Cipher_Fixed_Params!(16, 32)
 
 		void clear();
 		string name() const { return "Camellia-256"; }
-		BlockCipher* clone() const { return new Camellia_256; }
+		BlockCipher clone() const { return new Camellia_256; }
 	private:
 		void key_schedule(in byte* key);
 

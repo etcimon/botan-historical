@@ -17,7 +17,7 @@ class EVP_HashFunction : public HashFunction
 	public:
 		void clear();
 		string name() const { return algo_name; }
-		HashFunction* clone() const;
+		HashFunction clone() const;
 
 		size_t output_length() const
 		{
@@ -69,7 +69,7 @@ void EVP_HashFunction::clear()
 /*
 * Return a clone of this object
 */
-HashFunction* EVP_HashFunction::clone() const
+HashFunction EVP_HashFunction::clone() const
 {
 	const EVP_MD* algo = EVP_MD_CTX_md(&md);
 	return new EVP_HashFunction(algo, name());
@@ -99,8 +99,8 @@ EVP_HashFunction::~this()
 /*
 * Look for an algorithm with this name
 */
-HashFunction* OpenSSL_Engine::find_hash(in SCAN_Name request,
-													 Algorithm_Factory&) const
+HashFunction OpenSSL_Engine::find_hash(in SCAN_Name request,
+													 ref Algorithm_Factory) const
 {
 #if !defined(OPENSSL_NO_SHA)
 	if (request.algo_name() == "SHA-160")

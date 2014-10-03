@@ -8,7 +8,7 @@
 import botan.global_state;
 import botan.algo_factory;
 import botan.rng;
-import mutex;
+import core.sync.mutex;
 import string;
 import vector;
 import map;
@@ -33,7 +33,7 @@ class Library_State
 		/**
 		* @return global RandomNumberGenerator
 		*/
-		RandomNumberGenerator& global_rng();
+		RandomNumberGenerator global_rng();
 
 		void poll_available_sources(class Entropy_Accumulator& accum);
 
@@ -42,7 +42,7 @@ class Library_State
 
 		Unique!Serialized_RNG m_global_prng;
 
-		std::mutex m_entropy_src_mutex;
+		Mutex m_entropy_src_mutex;
 		Vector!( Unique!EntropySource ) m_sources;
 
 		Unique!Algorithm_Factory m_algorithm_factory;

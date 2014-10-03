@@ -39,12 +39,12 @@ class OCB_Mode : public AEAD_Mode
 		void clear() override;
 
 		~this();
-	protected:
+	package:
 		/**
 		* @param cipher the 128-bit block cipher to use
 		* @param tag_size is how big the auth tag will be
 		*/
-		OCB_Mode(BlockCipher* cipher, size_t tag_size);
+		OCB_Mode(BlockCipher cipher, size_t tag_size);
 
 		void key_schedule(in byte* key, size_t length) override;
 
@@ -72,7 +72,7 @@ class OCB_Encryption : public OCB_Mode
 		* @param cipher the 128-bit block cipher to use
 		* @param tag_size is how big the auth tag will be
 		*/
-		OCB_Encryption(BlockCipher* cipher, size_t tag_size = 16) :
+		OCB_Encryption(BlockCipher cipher, size_t tag_size = 16) :
 			OCB_Mode(cipher, tag_size) {}
 
 		size_t output_length(size_t input_length) const override
@@ -94,7 +94,7 @@ class OCB_Decryption : public OCB_Mode
 		* @param cipher the 128-bit block cipher to use
 		* @param tag_size is how big the auth tag will be
 		*/
-		OCB_Decryption(BlockCipher* cipher, size_t tag_size = 16) :
+		OCB_Decryption(BlockCipher cipher, size_t tag_size = 16) :
 			OCB_Mode(cipher, tag_size) {}
 
 		size_t output_length(size_t input_length) const override

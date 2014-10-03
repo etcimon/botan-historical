@@ -17,7 +17,7 @@ class EVP_BlockCipher : public BlockCipher
 	public:
 		void clear();
 		string name() const { return cipher_name; }
-		BlockCipher* clone() const;
+		BlockCipher clone() const;
 
 		size_t block_size() const { return block_sz; }
 
@@ -145,7 +145,7 @@ void EVP_BlockCipher::key_schedule(in byte* key, size_t length)
 /*
 * Return a clone of this object
 */
-BlockCipher* EVP_BlockCipher::clone() const
+BlockCipher EVP_BlockCipher::clone() const
 {
 	return new EVP_BlockCipher(EVP_CIPHER_CTX_cipher(&encrypt),
 										cipher_name,
@@ -176,9 +176,9 @@ void EVP_BlockCipher::clear()
 /*
 * Look for an algorithm with this name
 */
-BlockCipher*
+BlockCipher
 OpenSSL_Engine::find_block_cipher(in SCAN_Name request,
-											 Algorithm_Factory&) const
+											 ref Algorithm_Factory) const
 {
 #define HANDLE_EVP_CIPHER(NAME, EVP)									 \
 	if (request.algo_name() == NAME && request.arg_count() == 0)  \

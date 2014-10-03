@@ -24,7 +24,7 @@ namespace {
 void interleave_epi64(ref __m256i X0, ref __m256i X1)
 {
 	// interleave X0 and X1 qwords
-	// (X0,X1,X2,X3),(X4,X5,X6,X7) -> (X0,X2,X4,X6),(X1,X3,X5,X7)
+	// (X0,X1,X2,X3),(X4,X5,X6,X7) . (X0,X2,X4,X6),(X1,X3,X5,X7)
 
 	const __m256i T0 = _mm256_unpacklo_epi64(X0, X1);
 	const __m256i T1 = _mm256_unpackhi_epi64(X0, X1);

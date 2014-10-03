@@ -20,7 +20,7 @@ DSA_PublicKey::DSA_PublicKey(in DL_Group grp, ref const BigInt y1)
 /*
 * Create a DSA private key
 */
-DSA_PrivateKey::DSA_PrivateKey(RandomNumberGenerator& rng,
+DSA_PrivateKey::DSA_PrivateKey(RandomNumberGenerator rng,
 										 const DL_Group& grp,
 										 ref const BigInt x_arg)
 {
@@ -40,7 +40,7 @@ DSA_PrivateKey::DSA_PrivateKey(RandomNumberGenerator& rng,
 
 DSA_PrivateKey::DSA_PrivateKey(in AlgorithmIdentifier alg_id,
 										 in SafeVector!byte key_bits,
-										 RandomNumberGenerator& rng) :
+										 RandomNumberGenerator rng) :
 	DL_Scheme_PrivateKey(alg_id, key_bits, DL_Group::ANSI_X9_57)
 {
 	y = power_mod(group_g(), x, group_p());
@@ -51,7 +51,7 @@ DSA_PrivateKey::DSA_PrivateKey(in AlgorithmIdentifier alg_id,
 /*
 * Check Private DSA Parameters
 */
-bool DSA_PrivateKey::check_key(RandomNumberGenerator& rng, bool strong) const
+bool DSA_PrivateKey::check_key(RandomNumberGenerator rng, bool strong) const
 {
 	if (!DL_Scheme_PrivateKey::check_key(rng, strong) || x >= group_q())
 		return false;
@@ -72,7 +72,7 @@ DSA_Signature_Operation::DSA_Signature_Operation(in DSA_PrivateKey dsa) :
 
 SafeVector!byte
 DSA_Signature_Operation::sign(in byte* msg, size_t msg_len,
-										RandomNumberGenerator& rng)
+										RandomNumberGenerator rng)
 {
 	rng.add_entropy(msg, msg_len);
 

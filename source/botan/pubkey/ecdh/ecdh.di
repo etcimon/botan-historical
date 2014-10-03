@@ -49,7 +49,7 @@ class ECDH_PublicKey : public abstract EC_PublicKey
 		Vector!( byte ) public_value() const
 		{ return unlock(EC2OSP(public_point(), PointGFp::UNCOMPRESSED)); }
 
-	protected:
+	package:
 		ECDH_PublicKey() {}
 };
 
@@ -72,7 +72,7 @@ class ECDH_PrivateKey : public ECDH_PublicKey,
 		* @param domain parameters to used for this key
 		* @param x the private key; if zero, a new random key is generated
 		*/
-		ECDH_PrivateKey(RandomNumberGenerator& rng,
+		ECDH_PrivateKey(RandomNumberGenerator rng,
 							 const EC_Group& domain,
 							 ref const BigInt x = 0) :
 			EC_PrivateKey(rng, domain, x) {}

@@ -21,7 +21,7 @@ ElGamal_PublicKey::ElGamal_PublicKey(in DL_Group grp, ref const BigInt y1)
 /*
 * ElGamal_PrivateKey Constructor
 */
-ElGamal_PrivateKey::ElGamal_PrivateKey(RandomNumberGenerator& rng,
+ElGamal_PrivateKey::ElGamal_PrivateKey(RandomNumberGenerator rng,
 													const DL_Group& grp,
 													ref const BigInt x_arg)
 {
@@ -41,7 +41,7 @@ ElGamal_PrivateKey::ElGamal_PrivateKey(RandomNumberGenerator& rng,
 
 ElGamal_PrivateKey::ElGamal_PrivateKey(in AlgorithmIdentifier alg_id,
 													in SafeVector!byte key_bits,
-													RandomNumberGenerator& rng) :
+													RandomNumberGenerator rng) :
 	DL_Scheme_PrivateKey(alg_id, key_bits, DL_Group::ANSI_X9_42)
 {
 	y = power_mod(group_g(), x, group_p());
@@ -51,7 +51,7 @@ ElGamal_PrivateKey::ElGamal_PrivateKey(in AlgorithmIdentifier alg_id,
 /*
 * Check Private ElGamal Parameters
 */
-bool ElGamal_PrivateKey::check_key(RandomNumberGenerator& rng,
+bool ElGamal_PrivateKey::check_key(RandomNumberGenerator rng,
 											  bool strong) const
 {
 	if (!DL_Scheme_PrivateKey::check_key(rng, strong))
@@ -74,7 +74,7 @@ ElGamal_Encryption_Operation::ElGamal_Encryption_Operation(in ElGamal_PublicKey 
 
 SafeVector!byte
 ElGamal_Encryption_Operation::encrypt(in byte* msg, size_t msg_len,
-												  RandomNumberGenerator& rng)
+												  RandomNumberGenerator rng)
 {
 	ref const BigInt p = mod_p.get_modulus();
 
@@ -95,7 +95,7 @@ ElGamal_Encryption_Operation::encrypt(in byte* msg, size_t msg_len,
 }
 
 ElGamal_Decryption_Operation::ElGamal_Decryption_Operation(in ElGamal_PrivateKey key,
-																			  RandomNumberGenerator& rng)
+																			  RandomNumberGenerator rng)
 {
 	ref const BigInt p = key.group_p();
 

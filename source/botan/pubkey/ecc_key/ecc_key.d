@@ -37,7 +37,7 @@ EC_PublicKey::EC_PublicKey(in AlgorithmIdentifier alg_id,
 	public_key = OS2ECP(key_bits, domain().get_curve());
 }
 
-bool EC_PublicKey::check_key(RandomNumberGenerator&,
+bool EC_PublicKey::check_key(RandomNumberGenerator,
 									  bool) const
 {
 	return public_point().on_the_curve();
@@ -79,7 +79,7 @@ ref const BigInt EC_PrivateKey::private_value() const
 /**
 * EC_PrivateKey constructor
 */
-EC_PrivateKey::EC_PrivateKey(RandomNumberGenerator& rng,
+EC_PrivateKey::EC_PrivateKey(RandomNumberGenerator rng,
 									  const EC_Group& ec_group,
 									  ref const BigInt x)
 {

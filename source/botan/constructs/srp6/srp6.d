@@ -19,10 +19,10 @@ BigInt hash_seq(in string hash_id,
 	Unique!HashFunction hash_fn(
 		global_state().algorithm_factory().make_hash_function(hash_id));
 
-	hash_fn->update(BigInt::encode_1363(in1, pad_to));
-	hash_fn->update(BigInt::encode_1363(in2, pad_to));
+	hash_fn.update(BigInt::encode_1363(in1, pad_to));
+	hash_fn.update(BigInt::encode_1363(in2, pad_to));
 
-	return BigInt::decode(hash_fn->flush());
+	return BigInt::decode(hash_fn.flush());
 }
 
 BigInt compute_x(in string hash_id,
@@ -33,16 +33,16 @@ BigInt compute_x(in string hash_id,
 	Unique!HashFunction hash_fn(
 		global_state().algorithm_factory().make_hash_function(hash_id));
 
-	hash_fn->update(identifier);
-	hash_fn->update(":");
-	hash_fn->update(password);
+	hash_fn.update(identifier);
+	hash_fn.update(":");
+	hash_fn.update(password);
 
-	SafeVector!byte inner_h = hash_fn->flush();
+	SafeVector!byte inner_h = hash_fn.flush();
 
-	hash_fn->update(salt);
-	hash_fn->update(inner_h);
+	hash_fn.update(salt);
+	hash_fn.update(inner_h);
 
-	SafeVector!byte outer_h = hash_fn->flush();
+	SafeVector!byte outer_h = hash_fn.flush();
 
 	return BigInt::decode(outer_h);
 }
@@ -79,7 +79,7 @@ srp6_client_agree(in string identifier,
 						in string hash_id,
 						in Vector!byte salt,
 						ref const BigInt B,
-						RandomNumberGenerator& rng)
+						RandomNumberGenerator rng)
 {
 	DL_Group group(group_id);
 	ref const BigInt g = group.get_g();
@@ -122,7 +122,7 @@ BigInt generate_srp6_verifier(in string identifier,
 BigInt SRP6_Server_Session::step1(in BigInt v,
 											 in string group_id,
 											 in string hash_id,
-											 RandomNumberGenerator& rng)
+											 RandomNumberGenerator rng)
 {
 	DL_Group group(group_id);
 	ref const BigInt g = group.get_g();
@@ -136,10 +136,10 @@ BigInt SRP6_Server_Session::step1(in BigInt v,
 
 	B = (v*k + power_mod(g, b, p)) % p;
 
-	this->v = v;
-	this->b = b;
-	this->p = p;
-	this->hash_id = hash_id;
+	this.v = v;
+	this.b = b;
+	this.p = p;
+	this.hash_id = hash_id;
 
 	return B;
 }

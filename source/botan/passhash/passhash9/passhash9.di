@@ -20,7 +20,7 @@ import botan.rng;
 *		  all other values are currently undefined
 */
 string generate_passhash9(in string password,
-													  RandomNumberGenerator& rng,
+													  RandomNumberGenerator rng,
 													  ushort work_factor = 10,
 													  byte alg_id = 1);
 

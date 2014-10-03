@@ -9,20 +9,20 @@ import botan.cbc;
 import botan.loadstor;
 import botan.internal.xor_buf;
 import botan.internal.rounding;
-CBC_Mode::CBC_Mode(BlockCipher* cipher, BlockCipherModePaddingMethod* padding) :
+CBC_Mode::CBC_Mode(BlockCipher cipher, BlockCipherModePaddingMethod* padding) :
 	m_cipher(cipher),
 	m_padding(padding),
-	m_state(m_cipher->block_size())
+	m_state(m_cipher.block_size())
 {
-	if (m_padding && !m_padding->valid_blocksize(cipher->block_size()))
-		throw new std::invalid_argument("Padding " + m_padding->name() +
+	if (m_padding && !m_padding.valid_blocksize(cipher.block_size()))
+		throw new std::invalid_argument("Padding " + m_padding.name() +
 											 " cannot be used with " +
-											 cipher->name() + "/CBC");
+											 cipher.name() + "/CBC");
 }
 
 void CBC_Mode::clear()
 {
-	m_cipher->clear();
+	m_cipher.clear();
 	m_state.clear();
 }
 
@@ -56,7 +56,7 @@ bool CBC_Mode::valid_nonce_length(size_t n) const
 
 void CBC_Mode::key_schedule(in byte* key, size_t length)
 {
-	m_cipher->set_key(key, length);
+	m_cipher.set_key(key, length);
 }
 
 SafeVector!byte CBC_Mode::start(in byte* nonce, size_t nonce_len)
@@ -209,7 +209,7 @@ void CBC_Decryption::update(SafeVector!byte buffer, size_t offset)
 
 	while(blocks)
 	{
-		const size_t to_proc = std::min(BS * blocks, m_tempbuf.size());
+		const size_t to_proc = std.algorithm.min(BS * blocks, m_tempbuf.size());
 
 		cipher().decrypt_n(buf, &m_tempbuf[0], to_proc / BS);
 

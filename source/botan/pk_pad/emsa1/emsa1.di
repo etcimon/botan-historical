@@ -17,17 +17,17 @@ class EMSA1 : public EMSA
 		/**
 		* @param hash the hash function to use
 		*/
-		EMSA1(HashFunction* hash) : m_hash(hash) {}
+		EMSA1(HashFunction hash) : m_hash(hash) {}
 
-	protected:
-		size_t hash_output_length() const { return m_hash->output_length(); }
+	package:
+		size_t hash_output_length() const { return m_hash.output_length(); }
 	private:
 		void update(const byte[], size_t);
 		SafeVector!byte raw_data();
 
 		SafeVector!byte encoding_of(in SafeVector!byte msg,
 												  size_t output_bits,
-												  RandomNumberGenerator& rng);
+												  RandomNumberGenerator rng);
 
 		bool verify(in SafeVector!byte coded,
 						in SafeVector!byte raw,

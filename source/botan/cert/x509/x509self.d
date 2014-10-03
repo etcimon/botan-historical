@@ -41,7 +41,7 @@ namespace X509 {
 X509_Certificate create_self_signed_cert(in X509_Cert_Options opts,
 													  in Private_Key key,
 													  in string hash_fn,
-													  RandomNumberGenerator& rng)
+													  RandomNumberGenerator rng)
 {
 	AlgorithmIdentifier sig_algo;
 	X509_DN subject_dn;
@@ -87,7 +87,7 @@ X509_Certificate create_self_signed_cert(in X509_Cert_Options opts,
 PKCS10_Request create_cert_req(in X509_Cert_Options opts,
 										 in Private_Key key,
 										 in string hash_fn,
-										 RandomNumberGenerator& rng)
+										 RandomNumberGenerator rng)
 {
 	AlgorithmIdentifier sig_algo;
 	X509_DN subject_dn;

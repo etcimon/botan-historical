@@ -5,7 +5,7 @@
 * Released under the terms of the botan license.
 */
 
-import botan.symkey;
+import botan.algo_base.symkey;
 namespace TLS {
 
 /**

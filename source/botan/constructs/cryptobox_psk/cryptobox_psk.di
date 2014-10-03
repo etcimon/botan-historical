@@ -7,7 +7,7 @@
 
 import string;
 import botan.rng;
-import botan.symkey;
+import botan.algo_base.symkey;
 /**
 * This namespace holds various high-level crypto functions
 */
@@ -22,7 +22,7 @@ namespace CryptoBox {
 */
 Vector!( byte ) encrypt(in byte* input, size_t input_len,
 												const SymmetricKey& key,
-												RandomNumberGenerator& rng);
+												RandomNumberGenerator rng);
 
 /**
 * Encrypt a message using a shared secret key

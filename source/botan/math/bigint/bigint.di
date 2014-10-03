@@ -71,7 +71,7 @@ class BigInt
 	* @param rng random number generator
 	* @param bits size in bits
 	*/
-	BigInt(RandomNumberGenerator& rng, size_t bits);
+	BigInt(RandomNumberGenerator rng, size_t bits);
 
 	/**
 	* Create BigInt of specified size, all zeros
@@ -85,7 +85,7 @@ class BigInt
 	*/
 	BigInt(ref BigInt other)
 		{
-		this->swap(other);
+		this.swap(other);
 		}
 
 	/**
@@ -94,7 +94,7 @@ class BigInt
 	BigInt operator=(ref BigInt other)
 		{
 		if (this != &other)
-			this->swap(other);
+			this.swap(other);
 
 		return (*this);
 		}
@@ -390,7 +390,7 @@ class BigInt
 	* @param rng the random number generator to use
 	* @param bitsize number of bits the created random value should have
 	*/
-	void randomize(RandomNumberGenerator& rng, size_t bitsize = 0);
+	void randomize(RandomNumberGenerator rng, size_t bitsize = 0);
 
 	/**
 	* Store BigInt-value in a given byte array
@@ -426,7 +426,7 @@ class BigInt
 	* @param max the maximum value
 	* @return random integer in [min,max)
 	*/
-	static BigInt random_integer(RandomNumberGenerator& rng,
+	static BigInt random_integer(RandomNumberGenerator rng,
 											 const BigInt min,
 											 const BigInt max);
 

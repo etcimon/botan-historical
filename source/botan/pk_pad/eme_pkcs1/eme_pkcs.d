@@ -11,7 +11,7 @@ import botan.eme_pkcs;
 */
 SafeVector!byte EME_PKCS1v15::pad(in byte* input, size_t inlen,
 												 size_t olen,
-												 RandomNumberGenerator& rng) const
+												 RandomNumberGenerator rng) const
 {
 	olen /= 8;
 

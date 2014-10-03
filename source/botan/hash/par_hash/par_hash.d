@@ -13,7 +13,7 @@ import botan.parsing;
 void Parallel::add_data(in byte* input, size_t length)
 {
 	foreach (hash; hashes)
-		 hash->update(input, length);
+		 hash.update(input, length);
 }
 
 /*
@@ -25,8 +25,8 @@ void Parallel::final_result(byte* output)
 
 	foreach (hash; hashes)
 	{
-		hash->flushInto(out + offset);
-		offset += hash->output_length();
+		hash.flushInto(out + offset);
+		offset += hash.output_length();
 	}
 }
 
@@ -38,7 +38,7 @@ size_t Parallel::output_length() const
 	size_t sum = 0;
 
 	foreach (hash; hashes)
-		sum += hash->output_length();
+		sum += hash.output_length();
 	return sum;
 }
 
@@ -47,10 +47,10 @@ size_t Parallel::output_length() const
 */
 string Parallel::name() const
 {
-	Vector!( string ) names;
+	Vector!string names;
 
 	foreach (hash; hashes)
-		names.push_back(hash->name());
+		names.push_back(hash.name());
 
 	return "Parallel(" + string_join(names, ',') + ")";
 }
@@ -58,12 +58,12 @@ string Parallel::name() const
 /*
 * Return a clone of this object
 */
-HashFunction* Parallel::clone() const
+HashFunction Parallel::clone() const
 {
-	Vector!( HashFunction* ) hash_copies;
+	Vector!( HashFunction ) hash_copies;
 
 	foreach (hash; hashes)
-		hash_copies.push_back(hash->clone());
+		hash_copies.push_back(hash.clone());
 
 	return new Parallel(hash_copies);
 }
@@ -74,13 +74,13 @@ HashFunction* Parallel::clone() const
 void Parallel::clear()
 {
 	foreach (hash; hashes)
-		hash->clear();
+		hash.clear();
 }
 
 /*
 * Parallel Constructor
 */
-Parallel::Parallel(in Vector!( HashFunction* ) hash_input) :
+Parallel::Parallel(in Vector!( HashFunction ) hash_input) :
 	hashes(hash_input)
 {
 }

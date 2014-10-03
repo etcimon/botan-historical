@@ -12,7 +12,7 @@ import botan.sha160;
 class SHA_160_X86_64 : public SHA_160
 {
 	public:
-		HashFunction* clone() const { return new SHA_160_X86_64; }
+		HashFunction clone() const { return new SHA_160_X86_64; }
 	private:
 		void compress_n(const byte[], size_t blocks);
 };

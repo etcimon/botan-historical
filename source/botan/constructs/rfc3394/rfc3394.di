@@ -5,7 +5,7 @@
 * Distributed under the terms of the botan license.
 */
 
-import botan.symkey;
+import botan.algo_base.symkey;
 class Algorithm_Factory;
 
 /**
@@ -19,7 +19,7 @@ class Algorithm_Factory;
 */
 SafeVector!byte rfc3394_keywrap(in SafeVector!byte key,
 															const SymmetricKey& kek,
-															Algorithm_Factory& af);
+															ref Algorithm_Factory af);
 
 /**
 * Decrypt a key under a key encryption key using the algorithm
@@ -32,4 +32,4 @@ SafeVector!byte rfc3394_keywrap(in SafeVector!byte key,
 */
 SafeVector!byte rfc3394_keyunwrap(in SafeVector!byte key,
 															  const SymmetricKey& kek,
-															  Algorithm_Factory& af);
+															  ref Algorithm_Factory af);

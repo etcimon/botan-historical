@@ -75,7 +75,7 @@ void Win32_CAPI_EntropySource::poll(Entropy_Accumulator& accum)
 */
 Win32_CAPI_EntropySource::Win32_CAPI_EntropySource(in string provs)
 {
-	Vector!( string ) capi_provs = split_on(provs, ':');
+	Vector!string capi_provs = split_on(provs, ':');
 
 	for (size_t i = 0; i != capi_provs.size(); ++i)
 	{

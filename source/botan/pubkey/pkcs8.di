@@ -49,7 +49,7 @@ string PEM_encode(in Private_Key key);
 */
 Vector!( byte )
 BER_encode(in Private_Key key,
-			  RandomNumberGenerator& rng,
+			  RandomNumberGenerator rng,
 			  in string pass,
 			  std::chrono::milliseconds msec = std::chrono::milliseconds(300),
 			  in string pbe_algo = "");
@@ -82,7 +82,7 @@ PEM_encode(in Private_Key key,
 */
 Private_Key* load_key(
   DataSource& source,
-  RandomNumberGenerator& rng,
+  RandomNumberGenerator rng,
   Tuple!(bool, string) delegate() get_passphrase);
 
 /** Load a key from a data source.
@@ -93,7 +93,7 @@ Private_Key* load_key(
 * @return loaded private key object
 */
 Private_Key* load_key(DataSource& source,
-										  RandomNumberGenerator& rng,
+										  RandomNumberGenerator rng,
 										  in string pass = "");
 
 /**
@@ -105,7 +105,7 @@ Private_Key* load_key(DataSource& source,
 */
 Private_Key* load_key(
   in string filename,
-  RandomNumberGenerator& rng,
+  RandomNumberGenerator rng,
   Tuple!(bool, string) delegate() get_passphrase);
 
 /** Load a key from a file.
@@ -116,7 +116,7 @@ Private_Key* load_key(
 * @return loaded private key object
 */
 Private_Key* load_key(in string filename,
-										  RandomNumberGenerator& rng,
+										  RandomNumberGenerator rng,
 										  in string pass = "");
 
 /**
@@ -126,6 +126,6 @@ Private_Key* load_key(in string filename,
 * @return new copy of the key
 */
 Private_Key* copy_key(in Private_Key key,
-										  RandomNumberGenerator& rng);
+										  RandomNumberGenerator rng);
 
 }

@@ -28,9 +28,9 @@ Server_Hello::Server_Hello(Handshake_IO& io,
 									in Vector!byte reneg_info,
 									bool offer_session_ticket,
 									bool client_has_npn,
-									const Vector!( string )& next_protocols,
+									const Vector!string& next_protocols,
 									bool client_has_heartbeat,
-									RandomNumberGenerator& rng) :
+									RandomNumberGenerator rng) :
 	m_version(ver),
 	m_session_id(session_id),
 	m_random(make_hello_random(rng)),

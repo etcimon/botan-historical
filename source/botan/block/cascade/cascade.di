@@ -19,20 +19,20 @@ class Cascade_Cipher : public BlockCipher
 
 		Key_Length_Specification key_spec() const
 		{
-			return Key_Length_Specification(m_cipher1->maximum_keylength() +
-													  m_cipher2->maximum_keylength());
+			return Key_Length_Specification(m_cipher1.maximum_keylength() +
+													  m_cipher2.maximum_keylength());
 		}
 
 		void clear();
 		string name() const;
-		BlockCipher* clone() const;
+		BlockCipher clone() const;
 
 		/**
 		* Create a cascade of two block ciphers
 		* @param cipher1 the first cipher
 		* @param cipher2 the second cipher
 		*/
-		Cascade_Cipher(BlockCipher* cipher1, BlockCipher* cipher2);
+		Cascade_Cipher(BlockCipher cipher1, BlockCipher cipher2);
 
 		Cascade_Cipher(in Cascade_Cipher);
 		Cascade_Cipher& operator=(in Cascade_Cipher);

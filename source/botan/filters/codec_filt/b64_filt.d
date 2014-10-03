@@ -31,7 +31,7 @@ void Base64_Encoder::encode_and_send(in byte* input, size_t length,
 {
 	while(length)
 	{
-		const size_t proc = std::min(length, input.size());
+		const size_t proc = std.algorithm.min(length, input.size());
 
 		size_t consumed = 0;
 		size_t produced = base64_encode(cast(char*)(&output[0]), input,
@@ -57,7 +57,7 @@ void Base64_Encoder::do_output(in byte* input, size_t length)
 		size_t remaining = length, offset = 0;
 		while(remaining)
 		{
-			size_t sent = std::min(line_length - out_position, remaining);
+			size_t sent = std.algorithm.min(line_length - out_position, remaining);
 			send(input + offset, sent);
 			out_position += sent;
 			remaining -= sent;
@@ -122,7 +122,7 @@ void Base64_Decoder::write(in byte* input, size_t length)
 {
 	while(length)
 	{
-		size_t to_copy = std::min<size_t>(length, input.size() - position);
+		size_t to_copy = std.algorithm.min<size_t>(length, input.size() - position);
 		copy_mem(&input[position], input, to_copy);
 		position += to_copy;
 

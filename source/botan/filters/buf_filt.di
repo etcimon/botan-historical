@@ -43,7 +43,7 @@ class Buffered_Filter
 		Buffered_Filter(size_t block_size, size_t final_minimum);
 
 		~this() {}
-	protected:
+	package:
 		/**
 		* The block processor, implemented by subclasses
 		* @param input some input bytes

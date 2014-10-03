@@ -13,7 +13,7 @@ import future;
 /*
 * Create a RSA private key
 */
-RSA_PrivateKey::RSA_PrivateKey(RandomNumberGenerator& rng,
+RSA_PrivateKey::RSA_PrivateKey(RandomNumberGenerator rng,
 										 size_t bits, size_t exp)
 {
 	if (bits < 1024)
@@ -42,7 +42,7 @@ RSA_PrivateKey::RSA_PrivateKey(RandomNumberGenerator& rng,
 /*
 * Check Private RSA Parameters
 */
-bool RSA_PrivateKey::check_key(RandomNumberGenerator& rng, bool strong) const
+bool RSA_PrivateKey::check_key(RandomNumberGenerator rng, bool strong) const
 {
 	if (!IF_Scheme_PrivateKey::check_key(rng, strong))
 		return false;
@@ -57,7 +57,7 @@ bool RSA_PrivateKey::check_key(RandomNumberGenerator& rng, bool strong) const
 }
 
 RSA_Private_Operation::RSA_Private_Operation(in RSA_PrivateKey rsa,
-															RandomNumberGenerator& rng) :
+															RandomNumberGenerator rng) :
 	n(rsa.get_n()),
 	q(rsa.get_q()),
 	c(rsa.get_c()),
@@ -86,7 +86,7 @@ BigInt RSA_Private_Operation::private_op(in BigInt m) const
 
 SafeVector!byte
 RSA_Private_Operation::sign(in byte* msg, size_t msg_len,
-									 RandomNumberGenerator& rng)
+									 RandomNumberGenerator rng)
 {
 	rng.add_entropy(msg, msg_len);
 

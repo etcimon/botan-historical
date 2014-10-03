@@ -6,7 +6,7 @@
 */
 
 import botan.internal.core_engine;
-import botan.scan_name;
+import botan.algo_base.scan_name;
 import botan.algo_factory;
 
 #if defined(BOTAN_HAS_AES)
@@ -105,8 +105,8 @@ import botan.algo_factory;
 /*
 * Look for an algorithm with this name
 */
-BlockCipher* Core_Engine::find_block_cipher(in SCAN_Name request,
-														  Algorithm_Factory& af) const
+BlockCipher Core_Engine::find_block_cipher(in SCAN_Name request,
+														  ref Algorithm_Factory af) const
 {
 
 #if defined(BOTAN_HAS_AES)
@@ -231,11 +231,11 @@ BlockCipher* Core_Engine::find_block_cipher(in SCAN_Name request,
 #if defined(BOTAN_HAS_CASCADE)
 	if (request.algo_name() == "Cascade" && request.arg_count() == 2)
 	{
-		const BlockCipher* c1 = af.prototype_block_cipher(request.arg(0));
-		const BlockCipher* c2 = af.prototype_block_cipher(request.arg(1));
+		const BlockCipher c1 = af.prototype_block_cipher(request.arg(0));
+		const BlockCipher c2 = af.prototype_block_cipher(request.arg(1));
 
 		if (c1 && c2)
-			return new Cascade_Cipher(c1->clone(), c2->clone());
+			return new Cascade_Cipher(c1.clone(), c2.clone());
 	}
 #endif
 
@@ -244,16 +244,16 @@ BlockCipher* Core_Engine::find_block_cipher(in SCAN_Name request,
 	{
 		const size_t block_size = request.arg_as_integer(2, 1024);
 
-		const HashFunction* hash =
+		const HashFunction hash =
 			af.prototype_hash_function(request.arg(0));
 
-		const StreamCipher* stream_cipher =
+		const StreamCipher stream_cipher =
 			af.prototype_stream_cipher(request.arg(1));
 
 		if (!hash || !stream_cipher)
 			return null;
 
-		return new Lion(hash->clone(), stream_cipher->clone(), block_size);
+		return new Lion(hash.clone(), stream_cipher.clone(), block_size);
 	}
 #endif
 

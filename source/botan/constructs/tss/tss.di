@@ -27,7 +27,7 @@ class RTSS_Share
 			split(byte M, byte N,
 					in byte* secret, ushort secret_len,
 					const byte identifier[16],
-					RandomNumberGenerator& rng);
+					RandomNumberGenerator rng);
 
 		/**
 		* @param shares the list of shares

@@ -71,7 +71,7 @@ void Extensions::deserialize(TLS_Data_Reader& reader)
 														extension_size);
 
 			if (extn)
-				this->add(extn);
+				this.add(extn);
 			else // unknown/unhandled extension
 				reader.discard_next(extension_size);
 		}
@@ -84,12 +84,12 @@ Vector!( byte ) Extensions::serialize() const
 
 	foreach (ref extn; extensions)
 	{
-		if (extn.second->empty())
+		if (extn.second.empty())
 			continue;
 
-		const ushort extn_code = extn.second->type();
+		const ushort extn_code = extn.second.type();
 
-		Vector!( byte ) extn_val = extn.second->serialize();
+		Vector!( byte ) extn_val = extn.second.serialize();
 
 		buf.push_back(get_byte(0, extn_code));
 		buf.push_back(get_byte(1, extn_code));
@@ -116,7 +116,7 @@ std::set<Handshake_Extension_Type> Extensions::extension_types() const
 {
 	std::set<Handshake_Extension_Type> offers;
 	for (auto i = extensions.begin(); i != extensions.end(); ++i)
-		offers.insert(i->first);
+		offers.insert(i.first);
 	return offers;
 }
 
@@ -211,7 +211,7 @@ Vector!( byte ) Renegotiation_Extension::serialize() const
 
 Vector!( byte ) Maximum_Fragment_Length::serialize() const
 {
-	const std::map<size_t, byte> fragment_to_code = { {  512, 1 },
+	const HashMap<size_t, byte> fragment_to_code = { {  512, 1 },
 																	  { 1024, 2 },
 																	  { 2048, 3 },
 																	  { 4096, 4 } };
@@ -223,7 +223,7 @@ Vector!( byte ) Maximum_Fragment_Length::serialize() const
 											 std::to_string(m_max_fragment) +
 											 " for maximum fragment size");
 
-	return Vector!( byte )(1, i->second);
+	return Vector!( byte )(1, i.second);
 }
 
 Maximum_Fragment_Length::Maximum_Fragment_Length(TLS_Data_Reader& reader,
@@ -233,7 +233,7 @@ Maximum_Fragment_Length::Maximum_Fragment_Length(TLS_Data_Reader& reader,
 		throw new Decoding_Error("Bad size for maximum fragment extension");
 	byte val = reader.get_byte();
 
-	const std::map<byte, size_t> code_to_fragment = { { 1,  512 },
+	const HashMap<byte, size_t> code_to_fragment = { { 1,  512 },
 																	  { 2, 1024 },
 																	  { 3, 2048 },
 																	  { 4, 4096 } };
@@ -244,7 +244,7 @@ Maximum_Fragment_Length::Maximum_Fragment_Length(TLS_Data_Reader& reader,
 		throw new TLS_Exception(Alert::ILLEGAL_PARAMETER,
 								  "Bad value in maximum fragment extension");
 
-	m_max_fragment = i->second;
+	m_max_fragment = i.second;
 }
 
 Next_Protocol_Notification::Next_Protocol_Notification(TLS_Data_Reader& reader,
@@ -496,8 +496,8 @@ Vector!( byte ) Signature_Algorithms::serialize() const
 	return buf;
 }
 
-Signature_Algorithms::Signature_Algorithms(in Vector!( string ) hashes,
-														 const Vector!( string )& sigs)
+Signature_Algorithms::Signature_Algorithms(in Vector!string hashes,
+														 const Vector!string& sigs)
 {
 	for (size_t i = 0; i != hashes.size(); ++i)
 		for (size_t j = 0; j != sigs.size(); ++j)

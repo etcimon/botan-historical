@@ -14,7 +14,7 @@ class SHA_384 : public MDx_HashFunction
 	public:
 		string name() const { return "SHA-384"; }
 		size_t output_length() const { return 48; }
-		HashFunction* clone() const { return new SHA_384; }
+		HashFunction clone() const { return new SHA_384; }
 
 		void clear();
 
@@ -35,7 +35,7 @@ class SHA_512 : public MDx_HashFunction
 	public:
 		string name() const { return "SHA-512"; }
 		size_t output_length() const { return 64; }
-		HashFunction* clone() const { return new SHA_512; }
+		HashFunction clone() const { return new SHA_512; }
 
 		void clear();
 

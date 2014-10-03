@@ -17,7 +17,7 @@ class DES : public Block_Cipher_Fixed_Params!(8, 8)
 
 		void clear();
 		string name() const { return "DES"; }
-		BlockCipher* clone() const { return new DES; }
+		BlockCipher clone() const { return new DES; }
 	private:
 		void key_schedule(in byte*, size_t);
 
@@ -35,7 +35,7 @@ class TripleDES : public Block_Cipher_Fixed_Params!(8, 16, 24, 8)
 
 		void clear();
 		string name() const { return "TripleDES"; }
-		BlockCipher* clone() const { return new TripleDES; }
+		BlockCipher clone() const { return new TripleDES; }
 	private:
 		void key_schedule(in byte*, size_t);
 

@@ -54,7 +54,7 @@ class Server : public Channel
 		const Policy& m_policy;
 		Credentials_Manager& m_creds;
 
-		Vector!( string ) m_possible_protocols;
+		Vector!string m_possible_protocols;
 		string m_next_protocol;
 };
 

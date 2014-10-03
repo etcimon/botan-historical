@@ -18,7 +18,7 @@ import string.h;
 Device_EntropySource constructor
 Open a file descriptor to each (available) device in fsnames
 */
-Device_EntropySource::Device_EntropySource(in Vector!( string ) fsnames)
+Device_EntropySource::Device_EntropySource(in Vector!string fsnames)
 {
   #define O_NONBLOCK 0
 #endif
@@ -66,7 +66,7 @@ void Device_EntropySource::poll(Entropy_Accumulator& accum)
 	for (size_t i = 0; i != m_devices.size(); ++i)
 	{
 		FD_SET(m_devices[i], &read_set);
-		max_fd = std::max(m_devices[i], max_fd);
+		max_fd = std.algorithm.max(m_devices[i], max_fd);
 	}
 
 	struct ::timeval timeout;

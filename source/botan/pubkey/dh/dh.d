@@ -28,7 +28,7 @@ Vector!( byte ) DH_PublicKey::public_value() const
 /*
 * Create a DH private key
 */
-DH_PrivateKey::DH_PrivateKey(RandomNumberGenerator& rng,
+DH_PrivateKey::DH_PrivateKey(RandomNumberGenerator rng,
 									  const DL_Group& grp,
 									  ref const BigInt x_arg)
 {
@@ -55,7 +55,7 @@ DH_PrivateKey::DH_PrivateKey(RandomNumberGenerator& rng,
 */
 DH_PrivateKey::DH_PrivateKey(in AlgorithmIdentifier alg_id,
 									  in SafeVector!byte key_bits,
-									  RandomNumberGenerator& rng) :
+									  RandomNumberGenerator rng) :
 	DL_Scheme_PrivateKey(alg_id, key_bits, DL_Group::ANSI_X9_42)
 {
 	if (y == 0)
@@ -73,7 +73,7 @@ Vector!( byte ) DH_PrivateKey::public_value() const
 }
 
 DH_KA_Operation::DH_KA_Operation(in DH_PrivateKey dh,
-											RandomNumberGenerator& rng) :
+											RandomNumberGenerator rng) :
 	p(dh.group_p()), powermod_x_p(dh.get_x(), p)
 {
 	BigInt k(rng, p.bits() - 1);

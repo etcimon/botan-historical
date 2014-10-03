@@ -26,10 +26,10 @@ Server_Key_Exchange::Server_Key_Exchange(Handshake_IO& io,
 													  Handshake_State& state,
 													  const Policy& policy,
 													  Credentials_Manager& creds,
-													  RandomNumberGenerator& rng,
+													  RandomNumberGenerator rng,
 													  const Private_Key* signing_key)
 {
-	const string hostname = state.client_hello()->sni_hostname();
+	const string hostname = state.client_hello().sni_hostname();
 	const string kex_algo = state.ciphersuite().kex_algo();
 
 	if (kex_algo == "PSK" || kex_algo == "DHE_PSK" || kex_algo == "ECDHE_PSK")
@@ -44,15 +44,15 @@ Server_Key_Exchange::Server_Key_Exchange(Handshake_IO& io,
 	{
 		Unique!DH_PrivateKey dh(new DH_PrivateKey(rng, policy.dh_group()));
 
-		append_tls_length_value(m_params, BigInt::encode(dh->get_domain().get_p()), 2);
-		append_tls_length_value(m_params, BigInt::encode(dh->get_domain().get_g()), 2);
-		append_tls_length_value(m_params, dh->public_value(), 2);
+		append_tls_length_value(m_params, BigInt::encode(dh.get_domain().get_p()), 2);
+		append_tls_length_value(m_params, BigInt::encode(dh.get_domain().get_g()), 2);
+		append_tls_length_value(m_params, dh.public_value(), 2);
 		m_kex_key.reset(dh.release());
 	}
 	else if (kex_algo == "ECDH" || kex_algo == "ECDHE_PSK")
 	{
-		const Vector!( string )& curves =
-			state.client_hello()->supported_ecc_curves();
+		const Vector!string& curves =
+			state.client_hello().supported_ecc_curves();
 
 		if (curves.empty())
 			throw new Internal_Error("Client sent no ECC extension but we negotiated ECDH");
@@ -67,7 +67,7 @@ Server_Key_Exchange::Server_Key_Exchange(Handshake_IO& io,
 
 		Unique!ECDH_PrivateKey ecdh(new ECDH_PrivateKey(rng, ec_group));
 
-		const string ecdh_domain_oid = ecdh->domain().get_oid();
+		const string ecdh_domain_oid = ecdh.domain().get_oid();
 		const string domain = OIDS::lookup(OID(ecdh_domain_oid));
 
 		if (domain == "")
@@ -79,13 +79,13 @@ Server_Key_Exchange::Server_Key_Exchange(Handshake_IO& io,
 		m_params.push_back(get_byte(0, named_curve_id));
 		m_params.push_back(get_byte(1, named_curve_id));
 
-		append_tls_length_value(m_params, ecdh->public_value(), 1);
+		append_tls_length_value(m_params, ecdh.public_value(), 1);
 
 		m_kex_key.reset(ecdh.release());
 	}
 	else if (kex_algo == "SRP_SHA")
 	{
-		const string srp_identifier = state.client_hello()->srp_identifier();
+		const string srp_identifier = state.client_hello().srp_identifier();
 
 		string group_id;
 		BigInt v;
@@ -102,7 +102,7 @@ Server_Key_Exchange::Server_Key_Exchange(Handshake_IO& io,
 
 		m_srp_params.reset(new SRP6_Server_Session);
 
-		BigInt B = m_srp_params->step1(v, group_id,
+		BigInt B = m_srp_params.step1(v, group_id,
 												 "SHA-1", rng);
 
 		DL_Group group(group_id);
@@ -124,8 +124,8 @@ Server_Key_Exchange::Server_Key_Exchange(Handshake_IO& io,
 
 		PK_Signer signer(*signing_key, format.first, format.second);
 
-		signer.update(state.client_hello()->random());
-		signer.update(state.server_hello()->random());
+		signer.update(state.client_hello().random());
+		signer.update(state.server_hello().random());
 		signer.update(params());
 		m_signature = signer.signature(rng);
 	}
@@ -257,8 +257,8 @@ bool Server_Key_Exchange::verify(in Public_Key server_key,
 
 	PK_Verifier verifier(server_key, format.first, format.second);
 
-	verifier.update(state.client_hello()->random());
-	verifier.update(state.server_hello()->random());
+	verifier.update(state.client_hello().random());
+	verifier.update(state.server_hello().random());
 	verifier.update(params());
 
 	return verifier.check_signature(m_signature);

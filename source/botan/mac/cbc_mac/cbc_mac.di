@@ -14,19 +14,19 @@ class CBC_MAC : public MessageAuthenticationCode
 {
 	public:
 		string name() const;
-		MessageAuthenticationCode* clone() const;
-		size_t output_length() const { return m_cipher->block_size(); }
+		MessageAuthenticationCode clone() const;
+		size_t output_length() const { return m_cipher.block_size(); }
 		void clear();
 
 		Key_Length_Specification key_spec() const
 		{
-			return m_cipher->key_spec();
+			return m_cipher.key_spec();
 		}
 
 		/**
 		* @param cipher the underlying block cipher to use
 		*/
-		CBC_MAC(BlockCipher* cipher);
+		CBC_MAC(BlockCipher cipher);
 
 	private:
 		void add_data(const byte[], size_t);

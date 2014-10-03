@@ -65,7 +65,7 @@ void GHASH::ghash_update(SafeVector!byte ghash,
 	*/
 	while(length)
 	{
-		const size_t to_proc = std::min(length, BS);
+		const size_t to_proc = std.algorithm.min(length, BS);
 
 		xor_buf(&ghash[0], &input[0], to_proc);
 
@@ -149,13 +149,13 @@ void GHASH::clear()
 /*
 * GCM_Mode Constructor
 */
-GCM_Mode::GCM_Mode(BlockCipher* cipher, size_t tag_size) :
+GCM_Mode::GCM_Mode(BlockCipher cipher, size_t tag_size) :
 	m_tag_size(tag_size),
-	m_cipher_name(cipher->name())
+	m_cipher_name(cipher.name())
 {
-	if (cipher->block_size() != BS)
+	if (cipher.block_size() != BS)
 		throw new std::invalid_argument("GCM requires a 128 bit cipher so cannot be used with " +
-											 cipher->name());
+											 cipher.name());
 
 	m_ghash.reset(new GHASH);
 
@@ -167,8 +167,8 @@ GCM_Mode::GCM_Mode(BlockCipher* cipher, size_t tag_size) :
 
 void GCM_Mode::clear()
 {
-	m_ctr->clear();
-	m_ghash->clear();
+	m_ctr.clear();
+	m_ghash.clear();
 }
 
 string GCM_Mode::name() const
@@ -183,24 +183,24 @@ size_t GCM_Mode::update_granularity() const
 
 Key_Length_Specification GCM_Mode::key_spec() const
 {
-	return m_ctr->key_spec();
+	return m_ctr.key_spec();
 }
 
 void GCM_Mode::key_schedule(in byte* key, size_t length)
 {
-	m_ctr->set_key(key, keylen);
+	m_ctr.set_key(key, keylen);
 
 	const Vector!( byte ) zeros(BS);
-	m_ctr->set_iv(&zeros[0], zeros.size());
+	m_ctr.set_iv(&zeros[0], zeros.size());
 
 	SafeVector!byte H(BS);
-	m_ctr->encipher(H);
-	m_ghash->set_key(H);
+	m_ctr.encipher(H);
+	m_ghash.set_key(H);
 }
 
 void GCM_Mode::set_associated_data(in byte* ad, size_t ad_len)
 {
-	m_ghash->set_associated_data(ad, ad_len);
+	m_ghash.set_associated_data(ad, ad_len);
 }
 
 SafeVector!byte GCM_Mode::start(in byte* nonce, size_t nonce_len)
@@ -217,15 +217,15 @@ SafeVector!byte GCM_Mode::start(in byte* nonce, size_t nonce_len)
 	}
 	else
 	{
-		y0 = m_ghash->nonce_hash(nonce, nonce_len);
+		y0 = m_ghash.nonce_hash(nonce, nonce_len);
 	}
 
-	m_ctr->set_iv(&y0[0], y0.size());
+	m_ctr.set_iv(&y0[0], y0.size());
 
 	SafeVector!byte m_enc_y0(BS);
-	m_ctr->encipher(m_enc_y0);
+	m_ctr.encipher(m_enc_y0);
 
-	m_ghash->start(&m_enc_y0[0], m_enc_y0.size());
+	m_ghash.start(&m_enc_y0[0], m_enc_y0.size());
 
 	return SafeVector!byte();
 }
@@ -236,14 +236,14 @@ void GCM_Encryption::update(SafeVector!byte buffer, size_t offset)
 	const size_t sz = buffer.size() - offset;
 	byte* buf = &buffer[offset];
 
-	m_ctr->cipher(buf, buf, sz);
-	m_ghash->update(buf, sz);
+	m_ctr.cipher(buf, buf, sz);
+	m_ghash.update(buf, sz);
 }
 
 void GCM_Encryption::finish(SafeVector!byte buffer, size_t offset)
 {
 	update(buffer, offset);
-	auto mac = m_ghash->flush();
+	auto mac = m_ghash.flush();
 	buffer += Pair(&mac[0], tag_size());
 }
 
@@ -253,8 +253,8 @@ void GCM_Decryption::update(SafeVector!byte buffer, size_t offset)
 	const size_t sz = buffer.size() - offset;
 	byte* buf = &buffer[offset];
 
-	m_ghash->update(buf, sz);
-	m_ctr->cipher(buf, buf, sz);
+	m_ghash.update(buf, sz);
+	m_ctr.cipher(buf, buf, sz);
 }
 
 void GCM_Decryption::finish(SafeVector!byte buffer, size_t offset)
@@ -270,11 +270,11 @@ void GCM_Decryption::finish(SafeVector!byte buffer, size_t offset)
 	// handle any final input before the tag
 	if (remaining)
 	{
-		m_ghash->update(buf, remaining);
-		m_ctr->cipher(buf, buf, remaining);
+		m_ghash.update(buf, remaining);
+		m_ctr.cipher(buf, buf, remaining);
 	}
 
-	auto mac = m_ghash->flush();
+	auto mac = m_ghash.flush();
 
 	const byte* included_tag = &buffer[remaining];
 

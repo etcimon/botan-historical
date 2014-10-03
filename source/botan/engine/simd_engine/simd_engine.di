@@ -14,9 +14,9 @@ class SIMD_Engine : public Engine
 	public:
 		string provider_name() const { return "simd"; }
 
-		BlockCipher* find_block_cipher(in SCAN_Name,
-												 Algorithm_Factory&) const;
+		BlockCipher find_block_cipher(in SCAN_Name,
+												 ref Algorithm_Factory) const;
 
-		HashFunction* find_hash(in SCAN_Name request,
-										Algorithm_Factory&) const;
+		HashFunction find_hash(in SCAN_Name request,
+										ref Algorithm_Factory) const;
 };

@@ -6,7 +6,7 @@
 */
 
 import botan.internal.core_engine;
-import botan.scan_name;
+import botan.algo_base.scan_name;
 import botan.algo_factory;
 
 #if defined(BOTAN_HAS_OFB)
@@ -31,15 +31,15 @@ import botan.algo_factory;
 /*
 * Look for an algorithm with this name
 */
-StreamCipher*
+StreamCipher
 Core_Engine::find_stream_cipher(in SCAN_Name request,
-										  Algorithm_Factory& af) const
+										  ref Algorithm_Factory af) const
 {
 #if defined(BOTAN_HAS_OFB)
 	if (request.algo_name() == "OFB" && request.arg_count() == 1)
 	{
 		if (auto proto = af.prototype_block_cipher(request.arg(0)))
-			return new OFB(proto->clone());
+			return new OFB(proto.clone());
 	}
 #endif
 
@@ -47,7 +47,7 @@ Core_Engine::find_stream_cipher(in SCAN_Name request,
 	if (request.algo_name() == "CTR-BE" && request.arg_count() == 1)
 	{
 		if (auto proto = af.prototype_block_cipher(request.arg(0)))
-			return new CTR_BE(proto->clone());
+			return new CTR_BE(proto.clone());
 	}
 #endif
 

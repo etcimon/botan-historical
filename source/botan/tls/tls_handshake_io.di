@@ -138,15 +138,15 @@ class Datagram_Handshake_IO : public Handshake_IO
 				size_t m_msg_length = 0;
 				ushort m_epoch = 0;
 
-				std::map<size_t, byte> m_fragments;
+				HashMap<size_t, byte> m_fragments;
 				Vector!( byte ) m_message;
 		};
 
 		class Connection_Sequence_Numbers& m_seqs;
-		std::map<ushort, Handshake_Reassembly> m_messages;
+		HashMap<ushort, Handshake_Reassembly> m_messages;
 		std::set<ushort> m_ccs_epochs;
 		Vector!( std::vector<ushort )> m_flights;
-		std::map<ushort, std::tuple<ushort, byte, Vector!( byte )>> m_flight_data;
+		HashMap<ushort, std::tuple<ushort, byte, Vector!( byte )>> m_flight_data;
 
 		// default MTU is IPv6 min MTU minus UDP/IP headers
 		ushort m_mtu = 1280 - 40 - 8;

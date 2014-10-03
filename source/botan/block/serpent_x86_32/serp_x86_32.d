@@ -43,7 +43,7 @@ void botan_serpent_x86_32_key_schedule(uint[140] ks);
 */
 void Serpent_X86_32::encrypt_n(byte* input, byte* output, size_t blocks) const
 {
-	auto keys = this->get_round_keys();
+	auto keys = this.get_round_keys();
 
 	for (size_t i = 0; i != blocks; ++i)
 	{
@@ -58,7 +58,7 @@ void Serpent_X86_32::encrypt_n(byte* input, byte* output, size_t blocks) const
 */
 void Serpent_X86_32::decrypt_n(byte* input, byte* output, size_t blocks) const
 {
-	auto keys = this->get_round_keys();
+	auto keys = this.get_round_keys();
 
 	for (size_t i = 0; i != blocks; ++i)
 	{
@@ -79,7 +79,7 @@ void Serpent_X86_32::key_schedule(in byte* key)
 	W[length / 4] |= uint(1) << ((length%4)*8);
 
 	botan_serpent_x86_32_key_schedule(&W[0]);
-	this->set_round_keys(&W[8]);
+	this.set_round_keys(&W[8]);
 }
 
 }

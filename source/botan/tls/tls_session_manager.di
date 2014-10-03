@@ -6,7 +6,7 @@
 */
 
 import botan.tls_session;
-import mutex;
+import core.sync.mutex;
 import chrono;
 import map;
 namespace TLS {
@@ -101,7 +101,7 @@ class Session_Manager_In_Memory : public Session_Manager
 		* @param session_lifetime sessions are expired after this many
 		*		  seconds have elapsed from initial handshake.
 		*/
-		Session_Manager_In_Memory(RandomNumberGenerator& rng,
+		Session_Manager_In_Memory(RandomNumberGenerator rng,
 										  size_t max_sessions = 1000,
 										  std::chrono::seconds session_lifetime =
 											  std::chrono::seconds(7200));
@@ -123,17 +123,17 @@ class Session_Manager_In_Memory : public Session_Manager
 		bool load_from_session_str(in string session_str,
 											Session& session);
 
-		std::mutex m_mutex;
+		Mutex m_mutex;
 
 		size_t m_max_sessions;
 
 		std::chrono::seconds m_session_lifetime;
 
-		RandomNumberGenerator& m_rng;
+		RandomNumberGenerator m_rng;
 		SymmetricKey m_session_key;
 
-		std::map<string, Vector!( byte )> m_sessions; // hex(session_id) -> session
-		std::map<Server_Information, string> m_info_sessions;
+		HashMap<string, Vector!( byte )> m_sessions; // hex(session_id) . session
+		HashMap<Server_Information, string> m_info_sessions;
 };
 
 }

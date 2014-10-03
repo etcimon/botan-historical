@@ -59,7 +59,7 @@ Fixed_Window_Exponentiator::Fixed_Window_Exponentiator(in BigInt n,
 																		 Power_Mod::Usage_Hints hints)
 {
 	reducer = Modular_Reducer(n);
-	this->hints = hints;
+	this.hints = hints;
 	window_bits = 0;
 }
 

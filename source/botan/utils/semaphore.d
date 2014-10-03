@@ -10,7 +10,7 @@ void Semaphore::release(size_t n)
 {
 	for (size_t i = 0; i != n; ++i)
 	{
-		std::lock_guard<std::mutex> lock(m_mutex);
+		m_mutex.lock(); scope(exit) m_mutex.unlock();
 
 		++m_value;
 
@@ -24,7 +24,7 @@ void Semaphore::release(size_t n)
 
 void Semaphore::acquire()
 {
-	std::unique_lock<std::mutex> lock(m_mutex);
+	std::unique_lock<Mutex> lock(m_mutex);
 	--m_value;
 	if (m_value < 0)
 	{

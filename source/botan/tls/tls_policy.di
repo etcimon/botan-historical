@@ -24,36 +24,36 @@ class Policy
 		* Returns a list of ciphers we are willing to negotiate, in
 		* order of preference.
 		*/
-		abstract Vector!( string ) allowed_ciphers() const;
+		abstract Vector!string allowed_ciphers() const;
 
 		/**
 		* Returns a list of hash algorithms we are willing to use for
 		* signatures, in order of preference.
 		*/
-		abstract Vector!( string ) allowed_signature_hashes() const;
+		abstract Vector!string allowed_signature_hashes() const;
 
 		/**
 		* Returns a list of MAC algorithms we are willing to use.
 		*/
-		abstract Vector!( string ) allowed_macs() const;
+		abstract Vector!string allowed_macs() const;
 
 		/**
 		* Returns a list of key exchange algorithms we are willing to
 		* use, in order of preference. Allowed values: DH, empty string
 		* (representing RSA using server certificate key)
 		*/
-		abstract Vector!( string ) allowed_key_exchange_methods() const;
+		abstract Vector!string allowed_key_exchange_methods() const;
 
 		/**
 		* Returns a list of signature algorithms we are willing to
 		* use, in order of preference. Allowed values RSA and DSA.
 		*/
-		abstract Vector!( string ) allowed_signature_methods() const;
+		abstract Vector!string allowed_signature_methods() const;
 
 		/**
 		* Return list of ECC curves we are willing to use in order of preference
 		*/
-		abstract Vector!( string ) allowed_ecc_curves() const;
+		abstract Vector!string allowed_ecc_curves() const;
 
 		/**
 		* Returns a list of compression algorithms we are willing to use,
@@ -67,7 +67,7 @@ class Policy
 		/**
 		* Choose an elliptic curve to use
 		*/
-		abstract string choose_curve(in Vector!( string ) curve_names) const;
+		abstract string choose_curve(in Vector!string curve_names) const;
 
 		/**
 		* Attempt to negotiate the use of the heartbeat extension
@@ -146,23 +146,23 @@ class Policy
 class NSA_Suite_B_128 : public Policy
 {
 	public:
-		Vector!( string ) allowed_ciphers() const override
-		{ return Vector!( string )({"AES-128/GCM"}); }
+		Vector!string allowed_ciphers() const override
+		{ return Vector!string({"AES-128/GCM"}); }
 
-		Vector!( string ) allowed_signature_hashes() const override
-		{ return Vector!( string )({"SHA-256"}); }
+		Vector!string allowed_signature_hashes() const override
+		{ return Vector!string({"SHA-256"}); }
 
-		Vector!( string ) allowed_macs() const override
-		{ return Vector!( string )({"AEAD"}); }
+		Vector!string allowed_macs() const override
+		{ return Vector!string({"AEAD"}); }
 
-		Vector!( string ) allowed_key_exchange_methods() const override
-		{ return Vector!( string )({"ECDH"}); }
+		Vector!string allowed_key_exchange_methods() const override
+		{ return Vector!string({"ECDH"}); }
 
-		Vector!( string ) allowed_signature_methods() const override
-		{ return Vector!( string )({"ECDSA"}); }
+		Vector!string allowed_signature_methods() const override
+		{ return Vector!string({"ECDSA"}); }
 
-		Vector!( string ) allowed_ecc_curves() const override
-		{ return Vector!( string )({"secp256r1"}); }
+		Vector!string allowed_ecc_curves() const override
+		{ return Vector!string({"secp256r1"}); }
 
 		bool acceptable_protocol_version(Protocol_Version _version) const override
 		{ return _version == Protocol_Version::TLS_V12; }
@@ -174,8 +174,8 @@ class NSA_Suite_B_128 : public Policy
 class Datagram_Policy : public Policy
 {
 	public:
-		Vector!( string ) allowed_macs() const override
-		{ return Vector!( string )({"AEAD"}); }
+		Vector!string allowed_macs() const override
+		{ return Vector!string({"AEAD"}); }
 
 		bool acceptable_protocol_version(Protocol_Version _version) const override
 		{ return _version == Protocol_Version::DTLS_V12; }

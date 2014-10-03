@@ -41,7 +41,7 @@ class Certificate_Extension
 		abstract string oid_name() const;
 
 		~this() {}
-	protected:
+	package:
 		friend class Extensions;
 		abstract bool should_encode() const { return true; }
 		abstract Vector!( byte ) encode_inner() const;
@@ -178,7 +178,7 @@ class Alternative_Name : public Certificate_Extension
 	public:
 		AlternativeName get_alt_name() const { return alt_name; }
 
-	protected:
+	package:
 		Alternative_Name(in AlternativeName, in string oid_name);
 
 		Alternative_Name(in string, in string);

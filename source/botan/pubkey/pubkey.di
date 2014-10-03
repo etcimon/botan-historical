@@ -7,7 +7,7 @@
 
 import botan.pk_keys;
 import botan.pk_ops;
-import botan.symkey;
+import botan.algo_base.symkey;
 import botan.rng;
 import botan.eme;
 import botan.emsa;
@@ -40,7 +40,7 @@ class PK_Encryptor
 		* @return encrypted message
 		*/
 		Vector!( byte ) encrypt(in byte* input, size_t length,
-											RandomNumberGenerator& rng) const
+											RandomNumberGenerator rng) const
 		{
 			return enc(input, length, rng);
 		}
@@ -52,7 +52,7 @@ class PK_Encryptor
 		* @return encrypted message
 		*/
 		Vector!( byte ) encrypt(Alloc)(in Vector!( byte, Alloc ) input,
-										  RandomNumberGenerator& rng) const
+										  RandomNumberGenerator rng) const
 		{
 			return enc(&input[0], input.size(), rng);
 		}
@@ -72,7 +72,7 @@ class PK_Encryptor
 
 	private:
 		abstract Vector!( byte ) enc(in byte*, size_t,
-												 RandomNumberGenerator&) const;
+												 RandomNumberGenerator) const;
 };
 
 /**
@@ -128,7 +128,7 @@ class PK_Signer
 		* @return signature
 		*/
 		Vector!( byte ) sign_message(in byte* input, size_t length,
-												  RandomNumberGenerator& rng);
+												  RandomNumberGenerator rng);
 
 		/**
 		* Sign a message.
@@ -137,11 +137,11 @@ class PK_Signer
 		* @return signature
 		*/
 		Vector!( byte ) sign_message(in Vector!byte input,
-												 RandomNumberGenerator& rng)
+												 RandomNumberGenerator rng)
 		{ return sign_message(&input[0], input.size(), rng); }
 
 		Vector!( byte ) sign_message(in SafeVector!byte input,
-												 RandomNumberGenerator& rng)
+												 RandomNumberGenerator rng)
 		{ return sign_message(&input[0], input.size(), rng); }
 
 		/**
@@ -169,7 +169,7 @@ class PK_Signer
 		* @param rng the rng to use
 		* @return signature of the total message
 		*/
-		Vector!( byte ) signature(RandomNumberGenerator& rng);
+		Vector!( byte ) signature(RandomNumberGenerator rng);
 
 		/**
 		* Set the output format of the signature.
@@ -395,7 +395,7 @@ class PK_Encryptor_EME : public PK_Encryptor
 							  in string eme);
 	private:
 		Vector!( byte ) enc(in byte*, size_t,
-									  RandomNumberGenerator& rng) const;
+									  RandomNumberGenerator rng) const;
 
 		Unique!PK_Ops::Encryption m_op;
 		Unique!EME m_eme;

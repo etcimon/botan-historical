@@ -48,11 +48,11 @@ string test_filter_kat(Filter* filter,
 HashMap!(string, string)
 algorithm_kat_detailed(in SCAN_Name algo_name,
 							  const HashMap!(string, string)& vars,
-							  Algorithm_Factory& af)
+							  ref Algorithm_Factory af)
 {
 	const string algo = algo_name.algo_name_and_args();
 
-	Vector!( string ) providers = af.providers_of(algo);
+	Vector!string providers = af.providers_of(algo);
 	HashMap!(string, string) all_results;
 
 	if (providers.empty()) // no providers, nothing to do
@@ -68,28 +68,28 @@ algorithm_kat_detailed(in SCAN_Name algo_name,
 	{
 		const string provider = providers[i];
 
-		if (const HashFunction* proto =
+		if (const HashFunction proto =
 				af.prototype_hash_function(algo, provider))
 		{
-			Filter* filt = new Hash_Filter(proto->clone());
+			Filter* filt = new Hash_Filter(proto.clone());
 			all_results[provider] = test_filter_kat(filt, input, output);
 		}
-		else if (const MessageAuthenticationCode* proto =
+		else if (const MessageAuthenticationCode proto =
 					  af.prototype_mac(algo, provider))
 		{
-			Keyed_Filter* filt = new MAC_Filter(proto->clone(), key);
+			Keyed_Filter* filt = new MAC_Filter(proto.clone(), key);
 			all_results[provider] = test_filter_kat(filt, input, output);
 		}
-		else if (const StreamCipher* proto =
+		else if (const StreamCipher proto =
 					  af.prototype_stream_cipher(algo, provider))
 		{
-			Keyed_Filter* filt = new StreamCipher_Filter(proto->clone());
-			filt->set_key(key);
-			filt->set_iv(iv);
+			Keyed_Filter* filt = new StreamCipher_Filter(proto.clone());
+			filt.set_key(key);
+			filt.set_iv(iv);
 
 			all_results[provider] = test_filter_kat(filt, input, output);
 		}
-		else if (const BlockCipher* proto =
+		else if (const BlockCipher proto =
 					  af.prototype_block_cipher(algo, provider))
 		{
 			Keyed_Filter* enc = get_cipher_mode(proto, ENCRYPTION,
@@ -107,18 +107,18 @@ algorithm_kat_detailed(in SCAN_Name algo_name,
 				continue;
 			}
 
-			enc->set_key(key);
+			enc.set_key(key);
 
-			if (enc->valid_iv_length(iv.length()))
-				enc->set_iv(iv);
-			else if (!enc->valid_iv_length(0))
+			if (enc.valid_iv_length(iv.length()))
+				enc.set_iv(iv);
+			else if (!enc.valid_iv_length(0))
 				throw new Invalid_IV_Length(algo, iv.length());
 
-			dec->set_key(key);
+			dec.set_key(key);
 
-			if (dec->valid_iv_length(iv.length()))
-				dec->set_iv(iv);
-			else if (!dec->valid_iv_length(0))
+			if (dec.valid_iv_length(iv.length()))
+				dec.set_iv(iv);
+			else if (!dec.valid_iv_length(0))
 				throw new Invalid_IV_Length(algo, iv.length());
 
 			const Vector!( byte ) ad = hex_decode(search_map(vars, string("ad")));
@@ -127,10 +127,10 @@ algorithm_kat_detailed(in SCAN_Name algo_name,
 			{
 				if (AEAD_Filter* enc_aead = cast(AEAD_Filter*)(enc))
 				{
-					enc_aead->set_associated_data(&ad[0], ad.size());
+					enc_aead.set_associated_data(&ad[0], ad.size());
 
 					if (AEAD_Filter* dec_aead = cast(AEAD_Filter*)(dec))
-						dec_aead->set_associated_data(&ad[0], ad.size());
+						dec_aead.set_associated_data(&ad[0], ad.size());
 				}
 			}
 
@@ -142,14 +142,14 @@ algorithm_kat_detailed(in SCAN_Name algo_name,
 	return all_results;
 }
 
-std::map<string, bool>
+HashMap<string, bool>
 algorithm_kat(in SCAN_Name algo_name,
 				  const HashMap!(string, string)& vars,
-				  Algorithm_Factory& af)
+				  ref Algorithm_Factory af)
 {
 	const auto result = algorithm_kat_detailed(algo_name, vars, af);
 
-	std::map<string, bool> pass_or_fail;
+	HashMap<string, bool> pass_or_fail;
 
 	foreach (i; result)
 		pass_or_fail[i.first] = (i.second == "passed");
@@ -164,13 +164,13 @@ void verify_results(in string algo,
 {
 	for (auto i = results.begin(); i != results.end(); ++i)
 	{
-		if (i->second != "passed")
-			throw new Self_Test_Failure(algo + " self-test failed (" + i->second + ")" +
-											" with provider " + i->first);
+		if (i.second != "passed")
+			throw new Self_Test_Failure(algo + " self-test failed (" + i.second + ")" +
+											" with provider " + i.first);
 	}
 }
 
-void hash_test(Algorithm_Factory& af,
+void hash_test(ref Algorithm_Factory af,
 					in string name,
 					in string input,
 					in string output)
@@ -182,7 +182,7 @@ void hash_test(Algorithm_Factory& af,
 	verify_results(name, algorithm_kat_detailed(name, vars, af));
 }
 
-void mac_test(Algorithm_Factory& af,
+void mac_test(ref Algorithm_Factory af,
 				  in string name,
 				  in string input,
 				  in string output,
@@ -218,7 +218,7 @@ void cipher_kat(Algorithm_Factory af,
 	vars["iv"] = iv_str;
 	vars["input"] = input;
 
-	std::map<string, bool> results;
+	HashMap<string, bool> results;
 
 	vars["output"] = ecb_out;
 	verify_results(algo + "/ECB", algorithm_kat_detailed(algo + "/ECB", vars, af));
@@ -259,7 +259,7 @@ bool passes_self_tests(Algorithm_Factory af)
 /*
 * Perform Self Tests
 */
-void confirm_startup_self_tests(Algorithm_Factory& af)
+void confirm_startup_self_tests(ref Algorithm_Factory af)
   {
   cipher_kat(af, "DES",
 				 "0123456789ABCDEF", "1234567890ABCDEF",

@@ -13,12 +13,12 @@ import botan.hash;
 class HKDF
 {
 	public:
-		HKDF(MessageAuthenticationCode* extractor,
-			  MessageAuthenticationCode* prf) :
+		HKDF(MessageAuthenticationCode extractor,
+			  MessageAuthenticationCode prf) :
 			m_extractor(extractor), m_prf(prf) {}
 
-		HKDF(MessageAuthenticationCode* prf) :
-			m_extractor(prf), m_prf(m_extractor->clone()) {}
+		HKDF(MessageAuthenticationCode prf) :
+			m_extractor(prf), m_prf(m_extractor.clone()) {}
 
 		void start_extract(in byte* salt, size_t salt_len);
 		void extract(in byte* input, size_t input_len);

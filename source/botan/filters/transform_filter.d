@@ -22,17 +22,17 @@ size_t choose_update_size(size_t update_granularity)
 }
 
 Transformation_Filter::Transformation_Filter(Transformation* transform) :
-	Buffered_Filter(choose_update_size(transform->update_granularity()),
-						 transform->minimum_final_size()),
-	m_nonce(transform->default_nonce_length() == 0),
+	Buffered_Filter(choose_update_size(transform.update_granularity()),
+						 transform.minimum_final_size()),
+	m_nonce(transform.default_nonce_length() == 0),
 	m_transform(transform),
-	m_buffer(m_transform->update_granularity())
+	m_buffer(m_transform.update_granularity())
 {
 }
 
 string Transformation_Filter::name() const
 {
-	return m_transform->name();
+	return m_transform.name();
 }
 
 void Transformation_Filter::Nonce_State::update(in InitializationVector iv)
@@ -58,7 +58,7 @@ void Transformation_Filter::set_iv(in InitializationVector iv)
 void Transformation_Filter::set_key(in SymmetricKey key)
 {
 	if (Keyed_Transform* keyed = cast(Keyed_Transform*)(m_transform.get()))
-		keyed->set_key(key);
+		keyed.set_key(key);
 	else if (key.length() != 0)
 		throw new Exception("Transformation " + name() + " does not accept keys");
 }
@@ -66,13 +66,13 @@ void Transformation_Filter::set_key(in SymmetricKey key)
 Key_Length_Specification Transformation_Filter::key_spec() const
 {
 	if (Keyed_Transform* keyed = cast(Keyed_Transform*)(m_transform.get()))
-		return keyed->key_spec();
+		return keyed.key_spec();
 	return Key_Length_Specification(0);
 }
 
 bool Transformation_Filter::valid_iv_length(size_t length) const
 {
-	return m_transform->valid_nonce_length(length);
+	return m_transform.valid_nonce_length(length);
 }
 
 void Transformation_Filter::write(in byte* input, size_t input_length)
@@ -87,17 +87,17 @@ void Transformation_Filter::end_msg()
 
 void Transformation_Filter::start_msg()
 {
-	send(m_transform->start_vec(m_nonce.get()));
+	send(m_transform.start_vec(m_nonce.get()));
 }
 
 void Transformation_Filter::buffered_block(in byte* input, size_t input_length)
 {
 	while(input_length)
 	{
-		const size_t take = std::min(m_transform->update_granularity(), input_length);
+		const size_t take = std.algorithm.min(m_transform.update_granularity(), input_length);
 
 		m_buffer.assign(input, input + take);
-		m_transform->update(m_buffer);
+		m_transform.update(m_buffer);
 
 		send(m_buffer);
 
@@ -109,7 +109,7 @@ void Transformation_Filter::buffered_block(in byte* input, size_t input_length)
 void Transformation_Filter::buffered_final(in byte* input, size_t input_length)
 {
 	SafeVector!byte buf(input, input + input_length);
-	m_transform->finish(buf);
+	m_transform.finish(buf);
 	send(buf);
 }
 

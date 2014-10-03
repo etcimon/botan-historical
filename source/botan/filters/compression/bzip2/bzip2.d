@@ -23,7 +23,7 @@ namespace {
 class Bzip_Alloc_Info
 {
 	public:
-		std::map<void*, size_t> current_allocs;
+		HashMap<void*, size_t> current_allocs;
 };
 
 /*
@@ -36,7 +36,7 @@ void* bzip_malloc(void* info_ptr, int n, int size)
 	const size_t total_sz = n * size;
 
 	void* ptr = std::malloc(total_sz);
-	info->current_allocs[ptr] = total_sz;
+	info.current_allocs[ptr] = total_sz;
 	return ptr;
 }
 
@@ -46,11 +46,11 @@ void* bzip_malloc(void* info_ptr, int n, int size)
 void bzip_free(void* info_ptr, void* ptr)
 {
 	Bzip_Alloc_Info* info = cast(Bzip_Alloc_Info*)(info_ptr);
-	auto i = info->current_allocs.find(ptr);
-	if (i == info->current_allocs.end())
+	auto i = info.current_allocs.find(ptr);
+	if (i == info.current_allocs.end())
 		throw new Invalid_Argument("bzip_free: Got pointer not allocated by us");
 
-	std::memset(ptr, 0, i->second);
+	std::memset(ptr, 0, i.second);
 	std::free(ptr);
 }
 
@@ -105,7 +105,7 @@ void Bzip_Compression::start_msg()
 {
 	clear();
 	bz = new Bzip_Stream;
-	if (BZ2_bzCompressInit(&(bz->stream), level, 0, 0) != BZ_OK)
+	if (BZ2_bzCompressInit(&(bz.stream), level, 0, 0) != BZ_OK)
 		throw new Memory_Exhaustion();
 }
 
@@ -114,15 +114,15 @@ void Bzip_Compression::start_msg()
 */
 void Bzip_Compression::write(in byte* input, size_t length)
 {
-	bz->stream.next_in = cast(char*)(const_cast(<byte*>)(input));
-	bz->stream.avail_in = length;
+	bz.stream.next_in = cast(char*)(const_cast(<byte*>)(input));
+	bz.stream.avail_in = length;
 
-	while(bz->stream.avail_in != 0)
+	while(bz.stream.avail_in != 0)
 	{
-		bz->stream.next_out = cast(char*)(&buffer[0]);
-		bz->stream.avail_out = buffer.size();
-		BZ2_bzCompress(&(bz->stream), BZ_RUN);
-		send(buffer, buffer.size() - bz->stream.avail_out);
+		bz.stream.next_out = cast(char*)(&buffer[0]);
+		bz.stream.avail_out = buffer.size();
+		BZ2_bzCompress(&(bz.stream), BZ_RUN);
+		send(buffer, buffer.size() - bz.stream.avail_out);
 	}
 }
 
@@ -131,16 +131,16 @@ void Bzip_Compression::write(in byte* input, size_t length)
 */
 void Bzip_Compression::end_msg()
 {
-	bz->stream.next_in = 0;
-	bz->stream.avail_in = 0;
+	bz.stream.next_in = 0;
+	bz.stream.avail_in = 0;
 
 	int rc = BZ_OK;
 	while(rc != BZ_STREAM_END)
 	{
-		bz->stream.next_out = cast(char*)(&buffer[0]);
-		bz->stream.avail_out = buffer.size();
-		rc = BZ2_bzCompress(&(bz->stream), BZ_FINISH);
-		send(buffer, buffer.size() - bz->stream.avail_out);
+		bz.stream.next_out = cast(char*)(&buffer[0]);
+		bz.stream.avail_out = buffer.size();
+		rc = BZ2_bzCompress(&(bz.stream), BZ_FINISH);
+		send(buffer, buffer.size() - bz.stream.avail_out);
 	}
 	clear();
 }
@@ -150,16 +150,16 @@ void Bzip_Compression::end_msg()
 */
 void Bzip_Compression::flush()
 {
-	bz->stream.next_in = 0;
-	bz->stream.avail_in = 0;
+	bz.stream.next_in = 0;
+	bz.stream.avail_in = 0;
 
 	int rc = BZ_OK;
 	while(rc != BZ_RUN_OK)
 	{
-		bz->stream.next_out = cast(char*)(&buffer[0]);
-		bz->stream.avail_out = buffer.size();
-		rc = BZ2_bzCompress(&(bz->stream), BZ_FLUSH);
-		send(buffer, buffer.size() - bz->stream.avail_out);
+		bz.stream.next_out = cast(char*)(&buffer[0]);
+		bz.stream.avail_out = buffer.size();
+		rc = BZ2_bzCompress(&(bz.stream), BZ_FLUSH);
+		send(buffer, buffer.size() - bz.stream.avail_out);
 	}
 }
 
@@ -172,7 +172,7 @@ void Bzip_Compression::clear()
 
 	if (bz)
 	{
-		BZ2_bzCompressEnd(&(bz->stream));
+		BZ2_bzCompressEnd(&(bz.stream));
 		delete bz;
 		bz = 0;
 	}
@@ -197,15 +197,15 @@ void Bzip_Decompression::write(in byte* input_arr, size_t length)
 
 	char* input = cast(char*)(const_cast(<byte*>)(input_arr));
 
-	bz->stream.next_in = input;
-	bz->stream.avail_in = length;
+	bz.stream.next_in = input;
+	bz.stream.avail_in = length;
 
-	while(bz->stream.avail_in != 0)
+	while(bz.stream.avail_in != 0)
 	{
-		bz->stream.next_out = cast(char*)(&buffer[0]);
-		bz->stream.avail_out = buffer.size();
+		bz.stream.next_out = cast(char*)(&buffer[0]);
+		bz.stream.avail_out = buffer.size();
 
-		int rc = BZ2_bzDecompress(&(bz->stream));
+		int rc = BZ2_bzDecompress(&(bz.stream));
 
 		if (rc != BZ_OK && rc != BZ_STREAM_END)
 		{
@@ -221,14 +221,14 @@ void Bzip_Decompression::write(in byte* input_arr, size_t length)
 				throw new Exception("Bzip2 decompression: Unknown error");
 		}
 
-		send(buffer, buffer.size() - bz->stream.avail_out);
+		send(buffer, buffer.size() - bz.stream.avail_out);
 
 		if (rc == BZ_STREAM_END)
 		{
-			size_t read_from_block = length - bz->stream.avail_in;
+			size_t read_from_block = length - bz.stream.avail_in;
 			start_msg();
-			bz->stream.next_in = input + read_from_block;
-			bz->stream.avail_in = length - read_from_block;
+			bz.stream.next_in = input + read_from_block;
+			bz.stream.avail_in = length - read_from_block;
 			input += read_from_block;
 			length -= read_from_block;
 		}
@@ -243,7 +243,7 @@ void Bzip_Decompression::start_msg()
 	clear();
 	bz = new Bzip_Stream;
 
-	if (BZ2_bzDecompressInit(&(bz->stream), 0, small_mem) != BZ_OK)
+	if (BZ2_bzDecompressInit(&(bz.stream), 0, small_mem) != BZ_OK)
 		throw new Memory_Exhaustion();
 
 	no_writes = true;
@@ -255,15 +255,15 @@ void Bzip_Decompression::start_msg()
 void Bzip_Decompression::end_msg()
 {
 	if (no_writes) return;
-	bz->stream.next_in = 0;
-	bz->stream.avail_in = 0;
+	bz.stream.next_in = 0;
+	bz.stream.avail_in = 0;
 
 	int rc = BZ_OK;
 	while(rc != BZ_STREAM_END)
 	{
-		bz->stream.next_out = cast(char*)(&buffer[0]);
-		bz->stream.avail_out = buffer.size();
-		rc = BZ2_bzDecompress(&(bz->stream));
+		bz.stream.next_out = cast(char*)(&buffer[0]);
+		bz.stream.avail_out = buffer.size();
+		rc = BZ2_bzDecompress(&(bz.stream));
 
 		if (rc != BZ_OK && rc != BZ_STREAM_END)
 		{
@@ -271,7 +271,7 @@ void Bzip_Decompression::end_msg()
 			throw new Decoding_Error("Bzip_Decompression: Error finalizing");
 		}
 
-		send(buffer, buffer.size() - bz->stream.avail_out);
+		send(buffer, buffer.size() - bz.stream.avail_out);
 	}
 
 	clear();
@@ -286,7 +286,7 @@ void Bzip_Decompression::clear()
 
 	if (bz)
 	{
-		BZ2_bzDecompressEnd(&(bz->stream));
+		BZ2_bzDecompressEnd(&(bz.stream));
 		delete bz;
 		bz = 0;
 	}

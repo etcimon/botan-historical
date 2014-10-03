@@ -59,7 +59,7 @@ class Blocking_Client
 
 		~this() {}
 
-	protected:
+	package:
 		/**
 		* Can override to get the handshake complete notification
 		*/

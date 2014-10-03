@@ -34,7 +34,7 @@ class EMSA
 		*/
 		abstract SafeVector!byte encoding_of(in SafeVector!byte msg,
 															size_t output_bits,
-															RandomNumberGenerator& rng);
+															RandomNumberGenerator rng);
 
 		/**
 		* Verify the encoding

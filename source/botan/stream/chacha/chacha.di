@@ -27,8 +27,8 @@ class ChaCha : public StreamCipher
 		void clear();
 		string name() const;
 
-		StreamCipher* clone() const { return new ChaCha; }
-	protected:
+		StreamCipher clone() const { return new ChaCha; }
+	package:
 		abstract void chacha(byte output[64], const uint input[16]);
 	private:
 		void key_schedule(in byte* key, size_t length);

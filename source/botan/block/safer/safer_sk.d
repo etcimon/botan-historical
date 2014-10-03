@@ -236,7 +236,7 @@ string SAFER_SK::name() const
 /*
 * Return a clone of this object
 */
-BlockCipher* SAFER_SK::clone() const
+BlockCipher SAFER_SK::clone() const
 {
 	return new SAFER_SK(rounds);
 }

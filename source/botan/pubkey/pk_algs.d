@@ -100,7 +100,7 @@ Public_Key* make_public_key(in AlgorithmIdentifier alg_id,
 
 Private_Key* make_Private_Key(in AlgorithmIdentifier alg_id,
 										in SafeVector!byte key_bits,
-										RandomNumberGenerator& rng)
+										RandomNumberGenerator rng)
 {
 	const string alg_name = OIDS::lookup(alg_id.oid);
 	if (alg_name == "")

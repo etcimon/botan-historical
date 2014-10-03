@@ -15,25 +15,25 @@ import map;
 }
 
 /*
-* Searching through a std::map
+* Searching through a HashMap
 * @param mapping the map to search
 * @param key is what to look for
 * @param null_result is the value to return if key is not in mapping
 * @return mapping[key] or null_result
 */
 template<typename K, typename V>
- V search_map(in std::map<K, V> mapping,
+ V search_map(in HashMap<K, V> mapping,
 						  const K& key,
 						  const V& null_result = V())
 {
 	auto i = mapping.find(key);
 	if (i == mapping.end())
 		return null_result;
-	return i->second;
+	return i.second;
 }
 
 template<typename K, typename V, typename R>
- R search_map(in std::map<K, V> mapping, const K& key,
+ R search_map(in HashMap<K, V> mapping, const K& key,
 						  const R& null_result, const R& found_result)
 {
 	auto i = mapping.find(key);
@@ -76,7 +76,7 @@ void map_remove_if (Pred pred, T& assoc)
 	auto i = assoc.begin();
 	while(i != assoc.end())
 	{
-		if (pred(i->first))
+		if (pred(i.first))
 			assoc.erase(i++);
 		else
 			i++;

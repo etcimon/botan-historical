@@ -15,7 +15,7 @@ class Tiger : public MDx_HashFunction
 		string name() const;
 		size_t output_length() const { return hash_len; }
 
-		HashFunction* clone() const
+		HashFunction clone() const
 		{
 			return new Tiger(output_length(), passes);
 		}

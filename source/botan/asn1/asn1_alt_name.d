@@ -54,7 +54,7 @@ void AlternativeName::add_attribute(in string type,
 
 	auto range = alt_info.equal_range(type);
 	for (auto j = range.first; j != range.second; ++j)
-		if (j->second == str)
+		if (j.second == str)
 			return;
 
 	multimap_insert(alt_info, type, str);
@@ -95,10 +95,10 @@ std::multimap<string, string> AlternativeName::contents() const
 	std::multimap<string, string> names;
 
 	for (auto i = alt_info.begin(); i != alt_info.end(); ++i)
-		multimap_insert(names, i->first, i->second);
+		multimap_insert(names, i.first, i.second);
 
 	for (auto i = othernames.begin(); i != othernames.end(); ++i)
-		multimap_insert(names, OIDS::lookup(i->first), i->second.value());
+		multimap_insert(names, OIDS::lookup(i.first), i.second.value());
 
 	return names;
 }
@@ -125,12 +125,12 @@ void encode_entries(DER_Encoder encoder,
 	{
 		if (type == "RFC822" || type == "DNS" || type == "URI")
 		{
-			ASN1_String asn1_string(i->second, IA5_STRING);
+			ASN1_String asn1_string(i.second, IA5_STRING);
 			encoder.add_object(tagging, CONTEXT_SPECIFIC, asn1_string.iso_8859());
 		}
 		else if (type == "IP")
 		{
-			const uint ip = string_to_ipv4(i->second);
+			const uint ip = string_to_ipv4(i.second);
 			byte[4] ip_buf = { 0 };
 			store_be(ip, ip_buf);
 			encoder.add_object(tagging, CONTEXT_SPECIFIC, ip_buf, 4);
@@ -155,9 +155,9 @@ void AlternativeName::encode_into(DER_Encoder der) const
 	for (auto i = othernames.begin(); i != othernames.end(); ++i)
 	{
 		der.start_explicit(0)
-			.encode(i->first)
+			.encode(i.first)
 			.start_explicit(0)
-				.encode(i->second)
+				.encode(i.second)
 			.end_explicit()
 		.end_explicit();
 	}

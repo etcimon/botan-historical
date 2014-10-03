@@ -15,12 +15,12 @@ class PKCS5_PBKDF2 : public PBKDF
 	public:
 		string name() const override
 		{
-			return "PBKDF2(" + mac->name() + ")";
+			return "PBKDF2(" + mac.name() + ")";
 		}
 
-		PBKDF* clone() const override
+		PBKDF clone() const override
 		{
-			return new PKCS5_PBKDF2(mac->clone());
+			return new PKCS5_PBKDF2(mac.clone());
 		}
 
 		Pair!(size_t, OctetString)
@@ -34,7 +34,7 @@ class PKCS5_PBKDF2 : public PBKDF
 		* Create a PKCS #5 instance using the specified message auth code
 		* @param mac_fn the MAC object to use as PRF
 		*/
-		PKCS5_PBKDF2(MessageAuthenticationCode* mac_fn) : mac(mac_fn) {}
+		PKCS5_PBKDF2(MessageAuthenticationCode mac_fn) : mac(mac_fn) {}
 	private:
 		Unique!MessageAuthenticationCode mac;
 };

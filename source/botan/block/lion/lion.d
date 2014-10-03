@@ -22,16 +22,16 @@ void Lion::encrypt_n(byte* input, byte* output, size_t blocks) const
 	for (size_t i = 0; i != blocks; ++i)
 	{
 		xor_buf(buffer, input, &m_key1[0], LEFT_SIZE);
-		m_cipher->set_key(buffer, LEFT_SIZE);
-		m_cipher->cipher(input + LEFT_SIZE, output + LEFT_SIZE, RIGHT_SIZE);
+		m_cipher.set_key(buffer, LEFT_SIZE);
+		m_cipher.cipher(input + LEFT_SIZE, output + LEFT_SIZE, RIGHT_SIZE);
 
-		m_hash->update(output + LEFT_SIZE, RIGHT_SIZE);
-		m_hash->flushInto(buffer);
+		m_hash.update(output + LEFT_SIZE, RIGHT_SIZE);
+		m_hash.flushInto(buffer);
 		xor_buf(output, input, buffer, LEFT_SIZE);
 
 		xor_buf(buffer, output, &m_key2[0], LEFT_SIZE);
-		m_cipher->set_key(buffer, LEFT_SIZE);
-		m_cipher->cipher1(output + LEFT_SIZE, RIGHT_SIZE);
+		m_cipher.set_key(buffer, LEFT_SIZE);
+		m_cipher.cipher1(output + LEFT_SIZE, RIGHT_SIZE);
 
 		input += m_block_size;
 		output += m_block_size;
@@ -52,16 +52,16 @@ void Lion::decrypt_n(byte* input, byte* output, size_t blocks) const
 	for (size_t i = 0; i != blocks; ++i)
 	{
 		xor_buf(buffer, input, &m_key2[0], LEFT_SIZE);
-		m_cipher->set_key(buffer, LEFT_SIZE);
-		m_cipher->cipher(input + LEFT_SIZE, output + LEFT_SIZE, RIGHT_SIZE);
+		m_cipher.set_key(buffer, LEFT_SIZE);
+		m_cipher.cipher(input + LEFT_SIZE, output + LEFT_SIZE, RIGHT_SIZE);
 
-		m_hash->update(output + LEFT_SIZE, RIGHT_SIZE);
-		m_hash->flushInto(buffer);
+		m_hash.update(output + LEFT_SIZE, RIGHT_SIZE);
+		m_hash.flushInto(buffer);
 		xor_buf(output, input, buffer, LEFT_SIZE);
 
 		xor_buf(buffer, output, &m_key1[0], LEFT_SIZE);
-		m_cipher->set_key(buffer, LEFT_SIZE);
-		m_cipher->cipher1(output + LEFT_SIZE, RIGHT_SIZE);
+		m_cipher.set_key(buffer, LEFT_SIZE);
+		m_cipher.cipher1(output + LEFT_SIZE, RIGHT_SIZE);
 
 		input += m_block_size;
 		output += m_block_size;
@@ -85,17 +85,17 @@ void Lion::key_schedule(in byte* key)
 */
 string Lion::name() const
 {
-	return "Lion(" + m_hash->name() + "," +
-						  m_cipher->name() + "," +
+	return "Lion(" + m_hash.name() + "," +
+						  m_cipher.name() + "," +
 						  std::to_string(block_size()) + ")";
 }
 
 /*
 * Return a clone of this object
 */
-BlockCipher* Lion::clone() const
+BlockCipher Lion::clone() const
 {
-	return new Lion(m_hash->clone(), m_cipher->clone(), block_size());
+	return new Lion(m_hash.clone(), m_cipher.clone(), block_size());
 }
 
 /*
@@ -105,22 +105,22 @@ void Lion::clear()
 {
 	zeroise(m_key1);
 	zeroise(m_key2);
-	m_hash->clear();
-	m_cipher->clear();
+	m_hash.clear();
+	m_cipher.clear();
 }
 
 /*
 * Lion Constructor
 */
-Lion::Lion(HashFunction* hash, StreamCipher* cipher, size_t block_size) :
-	m_block_size(std::max<size_t>(2*hash->output_length() + 1, block_size)),
+Lion::Lion(HashFunction hash, StreamCipher cipher, size_t block_size) :
+	m_block_size(std.algorithm.max<size_t>(2*hash.output_length() + 1, block_size)),
 	m_hash(hash),
 	m_cipher(cipher)
 {
 	if (2*left_size() + 1 > m_block_size)
 		throw new Invalid_Argument(name() + ": Chosen block size is too small");
 
-	if (!m_cipher->valid_keylength(left_size()))
+	if (!m_cipher.valid_keylength(left_size()))
 		throw new Invalid_Argument(name() + ": This stream/hash combo is invalid");
 
 	m_key1.resize(left_size());

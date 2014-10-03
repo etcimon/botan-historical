@@ -9,19 +9,19 @@ import botan.ecb;
 import botan.loadstor;
 import botan.internal.xor_buf;
 import botan.internal.rounding;
-ECB_Mode::ECB_Mode(BlockCipher* cipher, BlockCipherModePaddingMethod* padding) :
+ECB_Mode::ECB_Mode(BlockCipher cipher, BlockCipherModePaddingMethod* padding) :
 	m_cipher(cipher),
 	m_padding(padding)
 {
-	if (!m_padding->valid_blocksize(cipher->block_size()))
-		throw new std::invalid_argument("Padding " + m_padding->name() +
+	if (!m_padding.valid_blocksize(cipher.block_size()))
+		throw new std::invalid_argument("Padding " + m_padding.name() +
 											 " cannot be used with " +
-											 cipher->name() + "/ECB");
+											 cipher.name() + "/ECB");
 }
 
 void ECB_Mode::clear()
 {
-	m_cipher->clear();
+	m_cipher.clear();
 }
 
 string ECB_Mode::name() const
@@ -51,7 +51,7 @@ bool ECB_Mode::valid_nonce_length(size_t n) const
 
 void ECB_Mode::key_schedule(in byte* key, size_t length)
 {
-	m_cipher->set_key(key, length);
+	m_cipher.set_key(key, length);
 }
 
 SafeVector!byte ECB_Mode::start(const byte[], size_t nonce_len)

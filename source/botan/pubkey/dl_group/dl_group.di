@@ -58,7 +58,7 @@ class DL_Group
 		* @param strong whether to perform stronger by lengthier tests
 		* @return true if the object is consistent, false otherwise
 		*/
-		bool verify_group(RandomNumberGenerator& rng, bool strong) const;
+		bool verify_group(RandomNumberGenerator rng, bool strong) const;
 
 		/**
 		* Encode this group into a string using PEM encoding.
@@ -117,7 +117,7 @@ class DL_Group
 		* @param qbits the number of bits of q. Leave it as 0 to have
 		* the value determined according to pbits.
 		*/
-		DL_Group(RandomNumberGenerator& rng, PrimeType type,
+		DL_Group(RandomNumberGenerator rng, PrimeType type,
 					size_t pbits, size_t qbits = 0);
 
 		/**
@@ -127,7 +127,7 @@ class DL_Group
 		* @param pbits the desired bit size of the prime p
 		* @param qbits the desired bit size of the prime q.
 		*/
-		DL_Group(RandomNumberGenerator& rng,
+		DL_Group(RandomNumberGenerator rng,
 					in Vector!byte seed,
 					size_t pbits = 1024, size_t qbits = 0);
 

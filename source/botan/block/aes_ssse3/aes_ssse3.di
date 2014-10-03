@@ -17,7 +17,7 @@ class AES_128_SSSE3 : public Block_Cipher_Fixed_Params!(16, 16)
 
 		void clear();
 		string name() const { return "AES-128"; }
-		BlockCipher* clone() const { return new AES_128_SSSE3; }
+		BlockCipher clone() const { return new AES_128_SSSE3; }
 	private:
 		void key_schedule(in byte*, size_t);
 
@@ -35,7 +35,7 @@ class AES_192_SSSE3 : public Block_Cipher_Fixed_Params!(16, 24)
 
 		void clear();
 		string name() const { return "AES-192"; }
-		BlockCipher* clone() const { return new AES_192_SSSE3; }
+		BlockCipher clone() const { return new AES_192_SSSE3; }
 	private:
 		void key_schedule(in byte*, size_t);
 
@@ -53,7 +53,7 @@ class AES_256_SSSE3 : public Block_Cipher_Fixed_Params!(16, 32)
 
 		void clear();
 		string name() const { return "AES-256"; }
-		BlockCipher* clone() const { return new AES_256_SSSE3; }
+		BlockCipher clone() const { return new AES_256_SSSE3; }
 	private:
 		void key_schedule(in byte*, size_t);
 

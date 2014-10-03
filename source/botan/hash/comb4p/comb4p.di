@@ -17,23 +17,23 @@ class Comb4P : public HashFunction
 		* @param h1 the first hash
 		* @param h2 the second hash
 		*/
-		Comb4P(HashFunction* h1, HashFunction* h2);
+		Comb4P(HashFunction h1, HashFunction h2);
 
 		size_t hash_block_size() const;
 
 		size_t output_length() const
 		{
-			return m_hash1->output_length() + m_hash2->output_length();
+			return m_hash1.output_length() + m_hash2.output_length();
 		}
 
-		HashFunction* clone() const
+		HashFunction clone() const
 		{
-			return new Comb4P(m_hash1->clone(), m_hash2->clone());
+			return new Comb4P(m_hash1.clone(), m_hash2.clone());
 		}
 
 		string name() const
 		{
-			return "Comb4P(" + m_hash1->name() + "," + m_hash2->name() + ")";
+			return "Comb4P(" + m_hash1.name() + "," + m_hash2.name() + ")";
 		}
 
 		void clear();
