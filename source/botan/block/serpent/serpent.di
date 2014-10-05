@@ -12,8 +12,8 @@ import botan.block_cipher;
 class Serpent : public Block_Cipher_Fixed_Params!(16, 16, 32, 8)
 {
 	public:
-		void encrypt_n(byte* input, byte* output, size_t blocks) const;
-		void decrypt_n(byte* input, byte* output, size_t blocks) const;
+		void encrypt_n(ubyte* input, ubyte* output, size_t blocks) const;
+		void decrypt_n(ubyte* input, ubyte* output, size_t blocks) const;
 
 		void clear();
 		string name() const { return "Serpent"; }
@@ -36,6 +36,6 @@ class Serpent : public Block_Cipher_Fixed_Params!(16, 16, 32, 8)
 		}
 
 	private:
-		void key_schedule(in byte* key);
+		void key_schedule(in ubyte* key);
 		secure_vector!uint round_key;
 };

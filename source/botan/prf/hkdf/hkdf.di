@@ -20,16 +20,16 @@ class HKDF
 		HKDF(MessageAuthenticationCode prf) :
 			m_extractor(prf), m_prf(m_extractor.clone()) {}
 
-		void start_extract(in byte* salt, size_t salt_len);
-		void extract(in byte* input, size_t input_len);
+		void start_extract(in ubyte* salt, size_t salt_len);
+		void extract(in ubyte* input, size_t input_len);
 		void finish_extract();
 
 		/**
 		* Only call after extract
 		* @param output_len must be less than 256*hashlen
 		*/
-		void expand(byte* output, size_t output_len,
-						in byte* info, size_t info_len);
+		void expand(ubyte* output, size_t output_len,
+						in ubyte* info, size_t info_len);
 
 		string name() const;
 

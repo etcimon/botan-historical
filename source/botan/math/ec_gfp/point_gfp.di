@@ -272,12 +272,12 @@ class PointGFp
 }
 
 // encoding and decoding
-SafeVector!byte EC2OSP(in PointGFp point, byte format);
+SafeVector!ubyte EC2OSP(in PointGFp point, ubyte format);
 
-PointGFp OS2ECP(in byte* data, size_t data_len,
+PointGFp OS2ECP(in ubyte* data, size_t data_len,
 								  const CurveGFp& curve);
 
-PointGFp OS2ECP(Alloc)(in Vector!( byte, Alloc ) data, const CurveGFp& curve)
+PointGFp OS2ECP(Alloc)(in Vector!( ubyte, Alloc ) data, const CurveGFp& curve)
 { return OS2ECP(&data[0], data.size(), curve); }
 
 }

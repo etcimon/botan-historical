@@ -7,8 +7,8 @@
 
 import botan.pk_keys;
 Public_Key* make_public_key(in AlgorithmIdentifier alg_id,
-									 in SafeVector!byte key_bits);
+									 in SafeVector!ubyte key_bits);
 
 Private_Key* make_Private_Key(in AlgorithmIdentifier alg_id,
-										in SafeVector!byte key_bits,
+										in SafeVector!ubyte key_bits,
 										RandomNumberGenerator rng);

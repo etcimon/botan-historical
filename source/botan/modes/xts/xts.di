@@ -15,7 +15,7 @@ class XTS_Mode : public Cipher_Mode
 	public:
 		string name() const override;
 
-		SafeVector!byte start(in byte* nonce, size_t nonce_len) override;
+		SafeVector!ubyte start(in ubyte* nonce, size_t nonce_len) override;
 
 		size_t update_granularity() const override;
 
@@ -31,17 +31,17 @@ class XTS_Mode : public Cipher_Mode
 	package:
 		XTS_Mode(BlockCipher cipher);
 
-		const byte* tweak() const { return &m_tweak[0]; }
+		const ubyte* tweak() const { return &m_tweak[0]; }
 
 		const BlockCipher& cipher() const { return *m_cipher; }
 
 		void update_tweak(size_t last_used);
 
 	private:
-		void key_schedule(in byte* key, size_t length) override;
+		void key_schedule(in ubyte* key, size_t length) override;
 
 		Unique!BlockCipher m_cipher, m_tweak_cipher;
-		SafeVector!byte m_tweak;
+		SafeVector!ubyte m_tweak;
 };
 
 /**
@@ -52,9 +52,9 @@ class XTS_Encryption : public XTS_Mode
 	public:
 		XTS_Encryption(BlockCipher cipher) : XTS_Mode(cipher) {}
 
-		void update(SafeVector!byte blocks, size_t offset = 0) override;
+		void update(SafeVector!ubyte blocks, size_t offset = 0) override;
 
-		void finish(SafeVector!byte final_block, size_t offset = 0) override;
+		void finish(SafeVector!ubyte final_block, size_t offset = 0) override;
 
 		size_t output_length(size_t input_length) const override;
 };
@@ -67,9 +67,9 @@ class XTS_Decryption : public XTS_Mode
 	public:
 		XTS_Decryption(BlockCipher cipher) : XTS_Mode(cipher) {}
 
-		void update(SafeVector!byte blocks, size_t offset = 0) override;
+		void update(SafeVector!ubyte blocks, size_t offset = 0) override;
 
-		void finish(SafeVector!byte final_block, size_t offset = 0) override;
+		void finish(SafeVector!ubyte final_block, size_t offset = 0) override;
 
 		size_t output_length(size_t input_length) const override;
 };

@@ -9,7 +9,7 @@ import botan.eme;
 /*
 * Encode a message
 */
-SafeVector!byte EME::encode(in byte* msg, size_t msg_len,
+SafeVector!ubyte EME::encode(in ubyte* msg, size_t msg_len,
 										 size_t key_bits,
 										 RandomNumberGenerator rng) const
 {
@@ -19,7 +19,7 @@ SafeVector!byte EME::encode(in byte* msg, size_t msg_len,
 /*
 * Encode a message
 */
-SafeVector!byte EME::encode(in SafeVector!byte msg,
+SafeVector!ubyte EME::encode(in SafeVector!ubyte msg,
 										 size_t key_bits,
 										 RandomNumberGenerator rng) const
 {
@@ -29,7 +29,7 @@ SafeVector!byte EME::encode(in SafeVector!byte msg,
 /*
 * Decode a message
 */
-SafeVector!byte EME::decode(in byte* msg, size_t msg_len,
+SafeVector!ubyte EME::decode(in ubyte* msg, size_t msg_len,
 										 size_t key_bits) const
 {
 	return unpad(msg, msg_len, key_bits);
@@ -38,7 +38,7 @@ SafeVector!byte EME::decode(in byte* msg, size_t msg_len,
 /*
 * Decode a message
 */
-SafeVector!byte EME::decode(in SafeVector!byte msg,
+SafeVector!ubyte EME::decode(in SafeVector!ubyte msg,
 										 size_t key_bits) const
 {
 	return unpad(&msg[0], msg.size(), key_bits);

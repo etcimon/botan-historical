@@ -8,13 +8,13 @@
 import botan.types;
 /**
 * Byte extraction
-* @param byte_num which byte to extract, 0 == highest byte
+* @param byte_num which ubyte to extract, 0 == highest ubyte
 * @param input the value to extract from
-* @return byte byte_num of input
+* @return ubyte byte_num of input
 */
-template<typename T>  byte get_byte(size_t byte_num, T input)
+template<typename T>  ubyte get_byte(size_t byte_num, T input)
 {
-	return cast(byte)(
+	return cast(ubyte)(
 		input >> ((sizeof(T)-1-(byte_num&(sizeof(T)-1))) << 3)
 		);
 }

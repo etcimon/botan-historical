@@ -13,8 +13,8 @@ import botan.hash;
 class KDF2 : public KDF
 {
 	public:
-		SafeVector!byte derive(size_t, const byte[], size_t,
-										  const byte[], size_t) const;
+		SafeVector!ubyte derive(size_t, const ubyte[], size_t,
+										  const ubyte[], size_t) const;
 
 		string name() const { return "KDF2(" ~ hash.name() ~ ")"; }
 		KDF* clone() const { return new KDF2(hash.clone()); }

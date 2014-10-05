@@ -15,7 +15,7 @@ class Bzip_Compression : public Filter
 	public:
 		string name() const { return "Bzip_Compression"; }
 
-		void write(in byte* input, size_t length);
+		void write(in ubyte* input, size_t length);
 		void start_msg();
 		void end_msg();
 
@@ -27,7 +27,7 @@ class Bzip_Compression : public Filter
 		void clear();
 
 		const size_t level;
-		SafeVector!byte buffer;
+		SafeVector!ubyte buffer;
 		class Bzip_Stream* bz;
 };
 
@@ -39,7 +39,7 @@ class Bzip_Decompression : public Filter
 	public:
 		string name() const { return "Bzip_Decompression"; }
 
-		void write(in byte* input, size_t length);
+		void write(in ubyte* input, size_t length);
 		void start_msg();
 		void end_msg();
 
@@ -49,7 +49,7 @@ class Bzip_Decompression : public Filter
 		void clear();
 
 		const bool small_mem;
-		SafeVector!byte buffer;
+		SafeVector!ubyte buffer;
 		class Bzip_Stream* bz;
 		bool no_writes;
 };

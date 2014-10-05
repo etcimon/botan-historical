@@ -10,8 +10,8 @@ import botan.exceptn;
 import botan.internal.xor_buf;
 import algorithm;
 void mgf1_mask(HashFunction& hash,
-					in byte* input,
-					byte* output)
+					in ubyte* input,
+					ubyte* output)
 {
 	size_t in_len = input.length;
 	size_t out_len = output.length;
@@ -21,7 +21,7 @@ void mgf1_mask(HashFunction& hash,
 	{
 		hash.update(input, in_len);
 		hash.update_be(counter);
-		SafeVector!byte buffer = hash.flush();
+		SafeVector!ubyte buffer = hash.flush();
 
 		size_t xored = std.algorithm.min<size_t>(buffer.size(), out_len);
 		xor_buf(output, &buffer[0], xored);

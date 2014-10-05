@@ -21,7 +21,7 @@ namespace TLS {
 
 namespace {
 
-SafeVector!byte strip_leading_zeros(in SafeVector!byte input)
+SafeVector!ubyte strip_leading_zeros(in SafeVector!ubyte input)
 {
 	size_t leading_zeros = 0;
 
@@ -32,7 +32,7 @@ SafeVector!byte strip_leading_zeros(in SafeVector!byte input)
 		++leading_zeros;
 	}
 
-	SafeVector!byte output(&input[leading_zeros],
+	SafeVector!ubyte output(&input[leading_zeros],
 										&input[input.size()]);
 	return output;
 }
@@ -72,7 +72,7 @@ Client_Key_Exchange::Client_Key_Exchange(Handshake_IO& io,
 
 		SymmetricKey psk = creds.psk("tls-client", hostname, psk_identity);
 
-		Vector!byte zeros(psk.length());
+		Vector!ubyte zeros(psk.length());
 
 		append_tls_length_value(m_pre_master, zeros, 2);
 		append_tls_length_value(m_pre_master, psk.bits_of(), 2);
@@ -100,9 +100,9 @@ Client_Key_Exchange::Client_Key_Exchange(Handshake_IO& io,
 
 		if (kex_algo == "DH" || kex_algo == "DHE_PSK")
 		{
-			BigInt p = BigInt::decode(reader.get_range!byte(2, 1, 65535));
-			BigInt g = BigInt::decode(reader.get_range!byte(2, 1, 65535));
-			BigInt Y = BigInt::decode(reader.get_range!byte(2, 1, 65535));
+			BigInt p = BigInt::decode(reader.get_range!ubyte(2, 1, 65535));
+			BigInt g = BigInt::decode(reader.get_range!ubyte(2, 1, 65535));
+			BigInt Y = BigInt::decode(reader.get_range!ubyte(2, 1, 65535));
 
 			if (reader.remaining_bytes())
 				throw new Decoding_Error("Bad params size for DH key exchange");
@@ -135,7 +135,7 @@ Client_Key_Exchange::Client_Key_Exchange(Handshake_IO& io,
 
 			PK_Key_Agreement ka(priv_key, "Raw");
 
-			SafeVector!byte dh_secret = strip_leading_zeros(
+			SafeVector!ubyte dh_secret = strip_leading_zeros(
 				ka.derive_key(0, counterparty_key.public_value()).bits_of());
 
 			if (kex_algo == "DH")
@@ -150,7 +150,7 @@ Client_Key_Exchange::Client_Key_Exchange(Handshake_IO& io,
 		}
 		else if (kex_algo == "ECDH" || kex_algo == "ECDHE_PSK")
 		{
-			const byte curve_type = reader.get_byte();
+			const ubyte curve_type = reader.get_byte();
 
 			if (curve_type != 3)
 				throw new Decoding_Error("Server sent non-named ECC curve");
@@ -164,7 +164,7 @@ Client_Key_Exchange::Client_Key_Exchange(Handshake_IO& io,
 
 			EC_Group group(name);
 
-			Vector!byte ecdh_key = reader.get_range!byte(1, 1, 255);
+			Vector!ubyte ecdh_key = reader.get_range!ubyte(1, 1, 255);
 
 			ECDH_PublicKey counterparty_key(group, OS2ECP(ecdh_key, group.get_curve()));
 
@@ -172,7 +172,7 @@ Client_Key_Exchange::Client_Key_Exchange(Handshake_IO& io,
 
 			PK_Key_Agreement ka(priv_key, "Raw");
 
-			SafeVector!byte ecdh_secret =
+			SafeVector!ubyte ecdh_secret =
 				ka.derive_key(0, counterparty_key.public_value()).bits_of();
 
 			if (kex_algo == "ECDH")
@@ -187,10 +187,10 @@ Client_Key_Exchange::Client_Key_Exchange(Handshake_IO& io,
 		}
 		else if (kex_algo == "SRP_SHA")
 		{
-			const BigInt N = BigInt::decode(reader.get_range!byte(2, 1, 65535));
-			const BigInt g = BigInt::decode(reader.get_range!byte(2, 1, 65535));
-			Vector!byte salt = reader.get_range!byte(1, 1, 255);
-			const BigInt B = BigInt::decode(reader.get_range!byte(2, 1, 65535));
+			const BigInt N = BigInt::decode(reader.get_range!ubyte(2, 1, 65535));
+			const BigInt g = BigInt::decode(reader.get_range!ubyte(2, 1, 65535));
+			Vector!ubyte salt = reader.get_range!ubyte(1, 1, 255);
+			const BigInt B = BigInt::decode(reader.get_range!ubyte(2, 1, 65535));
 
 			const string srp_group = srp6_group_identifier(N, g);
 
@@ -240,7 +240,7 @@ Client_Key_Exchange::Client_Key_Exchange(Handshake_IO& io,
 
 			PK_Encryptor_EME encryptor(*rsa_pub, "PKCS1v15");
 
-			Vector!byte encrypted_key = encryptor.encrypt(m_pre_master, rng);
+			Vector!ubyte encrypted_key = encryptor.encrypt(m_pre_master, rng);
 
 			if (state._version() == Protocol_Version::SSL_V3)
 				m_key_material = encrypted_key; // no length field
@@ -259,7 +259,7 @@ Client_Key_Exchange::Client_Key_Exchange(Handshake_IO& io,
 /*
 * Read a Client Key Exchange message
 */
-Client_Key_Exchange::Client_Key_Exchange(in Vector!byte contents,
+Client_Key_Exchange::Client_Key_Exchange(in Vector!ubyte contents,
 													  const Handshake_State& state,
 													  const Private_Key* server_rsa_kex_key,
 													  Credentials_Manager& creds,
@@ -294,7 +294,7 @@ Client_Key_Exchange::Client_Key_Exchange(in Vector!byte contents,
 		* Some timing channel likely remains due to exception handling
 		* and the like.
 		*/
-		SafeVector!byte fake_pre_master = rng.random_vec(48);
+		SafeVector!ubyte fake_pre_master = rng.random_vec(48);
 		fake_pre_master[0] = client_version.major_version();
 		fake_pre_master[1] = client_version.minor_version();
 
@@ -307,7 +307,7 @@ Client_Key_Exchange::Client_Key_Exchange(in Vector!byte contents,
 			else
 			{
 				TLS_Data_Reader reader("ClientKeyExchange", contents);
-				m_pre_master = decryptor.decrypt(reader.get_range!byte(2, 0, 65535));
+				m_pre_master = decryptor.decrypt(reader.get_range!ubyte(2, 0, 65535));
 			}
 
 			if (m_pre_master.size() != 48 ||
@@ -348,7 +348,7 @@ Client_Key_Exchange::Client_Key_Exchange(in Vector!byte contents,
 
 		if (kex_algo == "PSK")
 		{
-			Vector!byte zeros(psk.length());
+			Vector!ubyte zeros(psk.length());
 			append_tls_length_value(m_pre_master, zeros, 2);
 			append_tls_length_value(m_pre_master, psk.bits_of(), 2);
 		}
@@ -356,7 +356,7 @@ Client_Key_Exchange::Client_Key_Exchange(in Vector!byte contents,
 		{
 			SRP6_Server_Session& srp = state.server_kex().server_srp_params();
 
-			m_pre_master = srp.step2(BigInt::decode(reader.get_range!byte(2, 0, 65535))).bits_of();
+			m_pre_master = srp.step2(BigInt::decode(reader.get_range!ubyte(2, 0, 65535))).bits_of();
 		}
 		else if (kex_algo == "DH" || kex_algo == "DHE_PSK" ||
 				  kex_algo == "ECDH" || kex_algo == "ECDHE_PSK")
@@ -374,14 +374,14 @@ Client_Key_Exchange::Client_Key_Exchange(in Vector!byte contents,
 			{
 				PK_Key_Agreement ka(*ka_key, "Raw");
 
-				Vector!byte client_pubkey;
+				Vector!ubyte client_pubkey;
 
 				if (ka_key.algo_name() == "DH")
-					client_pubkey = reader.get_range!byte(2, 0, 65535);
+					client_pubkey = reader.get_range!ubyte(2, 0, 65535);
 				else
-					client_pubkey = reader.get_range!byte(1, 0, 255);
+					client_pubkey = reader.get_range!ubyte(1, 0, 255);
 
-				SafeVector!byte shared_secret = ka.derive_key(0, client_pubkey).bits_of();
+				SafeVector!ubyte shared_secret = ka.derive_key(0, client_pubkey).bits_of();
 
 				if (ka_key.algo_name() == "DH")
 					shared_secret = strip_leading_zeros(shared_secret);

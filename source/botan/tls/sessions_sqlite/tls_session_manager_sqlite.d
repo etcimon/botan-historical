@@ -16,14 +16,14 @@ namespace TLS {
 namespace {
 
 SymmetricKey derive_key(in string passphrase,
-								in byte* salt,
+								in ubyte* salt,
 								size_t salt_len,
 								size_t iterations,
 								size_t& check_val)
 {
 	Unique!PBKDF pbkdf(get_pbkdf("PBKDF2(SHA-512)"));
 
-	SafeVector!byte x = pbkdf.derive_key(32 + 2,
+	SafeVector!ubyte x = pbkdf.derive_key(32 + 2,
 															passphrase,
 															salt, salt_len,
 															iterations).bits_of();
@@ -72,7 +72,7 @@ Session_Manager_SQLite::Session_Manager_SQLite(in string passphrase,
 
 		if (stmt.step())
 		{
-			Pair!(const byte*, size_t) salt = stmt.get_blob(0);
+			Pair!(const ubyte*, size_t) salt = stmt.get_blob(0);
 			const size_t iterations = stmt.get_size_t(1);
 			const size_t check_val_db = stmt.get_size_t(2);
 
@@ -95,7 +95,7 @@ Session_Manager_SQLite::Session_Manager_SQLite(in string passphrase,
 
 		// new database case
 
-		Vector!byte salt = unlock(rng.random_vec(16));
+		Vector!ubyte salt = unlock(rng.random_vec(16));
 		const size_t iterations = 256 * 1024;
 		size_t check_val = 0;
 
@@ -118,7 +118,7 @@ Session_Manager_SQLite::~this()
 	delete m_db;
 }
 
-bool Session_Manager_SQLite::load_from_session_id(in Vector!byte session_id,
+bool Session_Manager_SQLite::load_from_session_id(in Vector!ubyte session_id,
 																  Session& session)
 {
 	sqlite3_statement stmt(m_db, "select session from tls_sessions where session_id = ?1");
@@ -127,7 +127,7 @@ bool Session_Manager_SQLite::load_from_session_id(in Vector!byte session_id,
 
 	while(stmt.step())
 	{
-		Pair!(const byte*, size_t) blob = stmt.get_blob(0);
+		Pair!(const ubyte*, size_t) blob = stmt.get_blob(0);
 
 		try
 		{
@@ -154,7 +154,7 @@ bool Session_Manager_SQLite::load_from_server_info(in Server_Information server,
 
 	while(stmt.step())
 	{
-		Pair!(const byte*, size_t) blob = stmt.get_blob(0);
+		Pair!(const ubyte*, size_t) blob = stmt.get_blob(0);
 
 		try
 		{
@@ -169,7 +169,7 @@ bool Session_Manager_SQLite::load_from_server_info(in Server_Information server,
 	return false;
 }
 
-void Session_Manager_SQLite::remove_entry(in Vector!byte session_id)
+void Session_Manager_SQLite::remove_entry(in Vector!ubyte session_id)
 {
 	sqlite3_statement stmt(m_db, "delete from tls_sessions where session_id = ?1");
 

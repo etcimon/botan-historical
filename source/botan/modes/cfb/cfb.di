@@ -14,7 +14,7 @@ import botan.mode_pad;
 class CFB_Mode : public Cipher_Mode
 {
 	public:
-		SafeVector!byte start(in byte* nonce, size_t nonce_len) override;
+		SafeVector!ubyte start(in ubyte* nonce, size_t nonce_len) override;
 
 		string name() const override;
 
@@ -38,16 +38,16 @@ class CFB_Mode : public Cipher_Mode
 
 		size_t feedback() const { return m_feedback_bytes; }
 
-		SafeVector!byte shift_register() { return m_shift_register; }
+		SafeVector!ubyte shift_register() { return m_shift_register; }
 
-		SafeVector!byte keystream_buf() { return m_keystream_buf; }
+		SafeVector!ubyte keystream_buf() { return m_keystream_buf; }
 
 	private:
-		void key_schedule(in byte* key, size_t length) override;
+		void key_schedule(in ubyte* key, size_t length) override;
 
 		Unique!BlockCipher m_cipher;
-		SafeVector!byte m_shift_register;
-		SafeVector!byte m_keystream_buf;
+		SafeVector!ubyte m_shift_register;
+		SafeVector!ubyte m_keystream_buf;
 		size_t m_feedback_bytes;
 };
 
@@ -60,9 +60,9 @@ class CFB_Encryption : public CFB_Mode
 		CFB_Encryption(BlockCipher cipher, size_t feedback_bits) :
 			CFB_Mode(cipher, feedback_bits) {}
 
-		void update(SafeVector!byte blocks, size_t offset = 0) override;
+		void update(SafeVector!ubyte blocks, size_t offset = 0) override;
 
-		void finish(SafeVector!byte final_block, size_t offset = 0) override;
+		void finish(SafeVector!ubyte final_block, size_t offset = 0) override;
 };
 
 /**
@@ -74,7 +74,7 @@ class CFB_Decryption : public CFB_Mode
 		CFB_Decryption(BlockCipher cipher, size_t feedback_bits) :
 			CFB_Mode(cipher, feedback_bits) {}
 
-		void update(SafeVector!byte blocks, size_t offset = 0) override;
+		void update(SafeVector!ubyte blocks, size_t offset = 0) override;
 
-		void finish(SafeVector!byte final_block, size_t offset = 0) override;
+		void finish(SafeVector!ubyte final_block, size_t offset = 0) override;
 };

@@ -22,7 +22,7 @@ Filter::Filter()
 /*
 * Send data to all ports
 */
-void Filter::send(in byte* input, size_t length)
+void Filter::send(in ubyte* input, size_t length)
 {
 	if (!length)
 		return;

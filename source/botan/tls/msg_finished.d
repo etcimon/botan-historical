@@ -14,17 +14,17 @@ namespace {
 /*
 * Compute the verify_data
 */
-Vector!byte finished_compute_verify(in Handshake_State state,
+Vector!ubyte finished_compute_verify(in Handshake_State state,
 														Connection_Side side)
 {
 	if (state._version() == Protocol_Version::SSL_V3)
 	{
-		const(byte)[] SSL_CLIENT_LABEL = { 0x43, 0x4C, 0x4E, 0x54 };
-		const(byte)[] SSL_SERVER_LABEL = { 0x53, 0x52, 0x56, 0x52 };
+		const(ubyte)[] SSL_CLIENT_LABEL = { 0x43, 0x4C, 0x4E, 0x54 };
+		const(ubyte)[] SSL_SERVER_LABEL = { 0x53, 0x52, 0x56, 0x52 };
 
 		Handshake_Hash hash = state.hash(); // don't modify state
 
-		Vector!byte ssl3_finished;
+		Vector!ubyte ssl3_finished;
 
 		if (side == CLIENT)
 			hash.update(SSL_CLIENT_LABEL, sizeof(SSL_CLIENT_LABEL));
@@ -35,17 +35,17 @@ Vector!byte finished_compute_verify(in Handshake_State state,
 	}
 	else
 	{
-		const(byte)[] TLS_CLIENT_LABEL = {
+		const(ubyte)[] TLS_CLIENT_LABEL = {
 			0x63, 0x6C, 0x69, 0x65, 0x6E, 0x74, 0x20, 0x66, 0x69, 0x6E, 0x69,
 			0x73, 0x68, 0x65, 0x64 };
 
-		const(byte)[] TLS_SERVER_LABEL = {
+		const(ubyte)[] TLS_SERVER_LABEL = {
 			0x73, 0x65, 0x72, 0x76, 0x65, 0x72, 0x20, 0x66, 0x69, 0x6E, 0x69,
 			0x73, 0x68, 0x65, 0x64 };
 
 		Unique!KDF prf(state.protocol_specific_prf());
 
-		Vector!byte input;
+		Vector!ubyte input;
 		if (side == CLIENT)
 			input += Pair(TLS_CLIENT_LABEL, sizeof(TLS_CLIENT_LABEL));
 		else
@@ -73,7 +73,7 @@ Finished::Finished(Handshake_IO& io,
 /*
 * Serialize a Finished message
 */
-Vector!byte Finished::serialize() const
+Vector!ubyte Finished::serialize() const
 {
 	return m_verification_data;
 }
@@ -81,7 +81,7 @@ Vector!byte Finished::serialize() const
 /*
 * Deserialize a Finished message
 */
-Finished::Finished(in Vector!byte buf)
+Finished::Finished(in Vector!ubyte buf)
 {
 	m_verification_data = buf;
 }

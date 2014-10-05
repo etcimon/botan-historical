@@ -20,16 +20,16 @@ class EMSA_X931 : public EMSA
 		*/
 		EMSA_X931(HashFunction hash);
 	private:
-		void update(const byte[], size_t);
-		SafeVector!byte raw_data();
+		void update(const ubyte[], size_t);
+		SafeVector!ubyte raw_data();
 
-		SafeVector!byte encoding_of(in SafeVector!byte, size_t,
+		SafeVector!ubyte encoding_of(in SafeVector!ubyte, size_t,
 												 RandomNumberGenerator rng);
 
-		bool verify(in SafeVector!byte, in SafeVector!byte,
+		bool verify(in SafeVector!ubyte, in SafeVector!ubyte,
 						size_t);
 
-		SafeVector!byte m_empty_hash;
+		SafeVector!ubyte m_empty_hash;
 		Unique!HashFunction m_hash;
-		byte m_hash_id;
+		ubyte m_hash_id;
 };

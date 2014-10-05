@@ -12,7 +12,7 @@ import botan.internal.xor_buf;
 /*
 * PSSR Update Operation
 */
-void PSSR::update(in byte* input, size_t length)
+void PSSR::update(in ubyte* input, size_t length)
 {
 	hash.update(input, length);
 }
@@ -20,7 +20,7 @@ void PSSR::update(in byte* input, size_t length)
 /*
 * Return the raw (unencoded) data
 */
-SafeVector!byte PSSR::raw_data()
+SafeVector!ubyte PSSR::raw_data()
 {
 	return hash.flush();
 }
@@ -28,7 +28,7 @@ SafeVector!byte PSSR::raw_data()
 /*
 * PSSR Encode Operation
 */
-SafeVector!byte PSSR::encoding_of(in SafeVector!byte msg,
+SafeVector!ubyte PSSR::encoding_of(in SafeVector!ubyte msg,
 												  size_t output_bits,
 												  RandomNumberGenerator rng)
 {
@@ -41,15 +41,15 @@ SafeVector!byte PSSR::encoding_of(in SafeVector!byte msg,
 
 	const size_t output_length = (output_bits + 7) / 8;
 
-	SafeVector!byte salt = rng.random_vec(SALT_SIZE);
+	SafeVector!ubyte salt = rng.random_vec(SALT_SIZE);
 
 	for (size_t j = 0; j != 8; ++j)
 		hash.update(0);
 	hash.update(msg);
 	hash.update(salt);
-	SafeVector!byte H = hash.flush();
+	SafeVector!ubyte H = hash.flush();
 
-	SafeVector!byte EM(output_length);
+	SafeVector!ubyte EM(output_length);
 
 	EM[output_length - HASH_SIZE - SALT_SIZE - 2] = 0x01;
 	buffer_insert(EM, output_length - 1 - HASH_SIZE - SALT_SIZE, salt);
@@ -64,8 +64,8 @@ SafeVector!byte PSSR::encoding_of(in SafeVector!byte msg,
 /*
 * PSSR Decode/Verify Operation
 */
-bool PSSR::verify(in SafeVector!byte const_coded,
-						 in SafeVector!byte raw, size_t key_bits)
+bool PSSR::verify(in SafeVector!ubyte const_coded,
+						 in SafeVector!ubyte raw, size_t key_bits)
 {
 	const size_t HASH_SIZE = hash.output_length();
 	const size_t KEY_BYTES = (key_bits + 7) / 8;
@@ -82,10 +82,10 @@ bool PSSR::verify(in SafeVector!byte const_coded,
 	if (const_coded[const_coded.size()-1] != 0xBC)
 		return false;
 
-	SafeVector!byte coded = const_coded;
+	SafeVector!ubyte coded = const_coded;
 	if (coded.size() < KEY_BYTES)
 	{
-		SafeVector!byte temp(KEY_BYTES);
+		SafeVector!ubyte temp(KEY_BYTES);
 		buffer_insert(temp, KEY_BYTES - coded.size(), coded);
 		coded = temp;
 	}
@@ -94,10 +94,10 @@ bool PSSR::verify(in SafeVector!byte const_coded,
 	if (TOP_BITS > 8 - high_bit(coded[0]))
 		return false;
 
-	byte* DB = &coded[0];
+	ubyte* DB = &coded[0];
 	const size_t DB_size = coded.size() - HASH_SIZE - 1;
 
-	const byte* H = &coded[DB_size];
+	const ubyte* H = &coded[DB_size];
 	const size_t H_size = HASH_SIZE;
 
 	mgf1_mask(*hash, &H[0], H_size, &DB[0], DB_size);
@@ -118,7 +118,7 @@ bool PSSR::verify(in SafeVector!byte const_coded,
 		hash.update(0);
 	hash.update(raw);
 	hash.update(&DB[salt_offset], DB_size - salt_offset);
-	SafeVector!byte H2 = hash.flush();
+	SafeVector!ubyte H2 = hash.flush();
 
 	return same_mem(&H[0], &H2[0], HASH_SIZE);
 }

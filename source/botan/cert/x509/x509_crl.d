@@ -30,7 +30,7 @@ X509_CRL::X509_CRL(in string in, bool touc) :
 	do_decode();
 }
 
-X509_CRL::X509_CRL(in Vector!byte in, bool touc) :
+X509_CRL::X509_CRL(in Vector!ubyte in, bool touc) :
 	X509_Object(input, "CRL/X509 CRL"), throw_on_unknown_critical(touc)
 {
 	do_decode();
@@ -48,14 +48,14 @@ bool X509_CRL::is_revoked(in X509_Certificate cert) const
 	if (cert.issuer_dn() != issuer_dn())
 		return false;
 
-	Vector!byte crl_akid = authority_key_id();
-	Vector!byte cert_akid = cert.authority_key_id();
+	Vector!ubyte crl_akid = authority_key_id();
+	Vector!ubyte cert_akid = cert.authority_key_id();
 
 	if (!crl_akid.empty() && !cert_akid.empty())
 		if (crl_akid != cert_akid)
 			return false;
 
-	Vector!byte cert_serial = cert.serial_number();
+	Vector!ubyte cert_serial = cert.serial_number();
 
 	bool is_revoked = false;
 
@@ -81,7 +81,7 @@ void X509_CRL::force_decode()
 	BER_Decoder tbs_crl(tbs_bits);
 
 	size_t _version;
-	tbs_crl.decode_optional(_version, INTEGER, UNIVERSAL);
+	tbs_crl.decode_optional(_version, INTEGER, ASN1_Tag.UNIVERSAL);
 
 	if (_version != 0 && _version != 1)
 		throw new X509_CRL_Error("Unknown X.509 CRL version " ~
@@ -104,7 +104,7 @@ void X509_CRL::force_decode()
 
 	BER_Object next = tbs_crl.get_next_object();
 
-	if (next.type_tag == SEQUENCE && next.class_tag == CONSTRUCTED)
+	if (next.type_tag == ASN1_Tag.SEQUENCE && next.class_tag == CONSTRUCTED)
 	{
 		BER_Decoder cert_list(next.value);
 
@@ -118,7 +118,7 @@ void X509_CRL::force_decode()
 	}
 
 	if (next.type_tag == 0 &&
-		next.class_tag == ASN1_Tag(CONSTRUCTED | CONTEXT_SPECIFIC))
+		next.class_tag == ASN1_Tag(CONSTRUCTED | ASN1_Tag.CONTEXT_SPECIFIC))
 	{
 		BER_Decoder crl_options(next.value);
 
@@ -131,7 +131,7 @@ void X509_CRL::force_decode()
 		next = tbs_crl.get_next_object();
 	}
 
-	if (next.type_tag != NO_OBJECT)
+	if (next.type_tag != ASN1_Tag.NO_OBJECT)
 		throw new X509_CRL_Error("Unknown tag in CRL");
 
 	tbs_crl.verify_end();
@@ -156,7 +156,7 @@ X509_DN X509_CRL::issuer_dn() const
 /*
 * Return the key identifier of the issuer
 */
-Vector!byte X509_CRL::authority_key_id() const
+Vector!ubyte X509_CRL::authority_key_id() const
 {
 	return info.get1_memvec("X509v3.AuthorityKeyIdentifier");
 }

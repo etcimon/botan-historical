@@ -20,7 +20,7 @@ class Hex_Encoder : public Filter
 
 		string name() const { return "Hex_Encoder"; }
 
-		void write(in byte* input, size_t length);
+		void write(in ubyte* input, size_t length);
 		void end_msg();
 
 		/**
@@ -39,11 +39,11 @@ class Hex_Encoder : public Filter
 						size_t line_length = 72,
 						Case the_case = Uppercase);
 	private:
-		void encode_and_send(in byte*, size_t);
+		void encode_and_send(in ubyte*, size_t);
 
 		const Case casing;
 		const size_t line_length;
-		Vector!byte input, output;
+		Vector!ubyte input, output;
 		size_t position, counter;
 };
 
@@ -55,7 +55,7 @@ class Hex_Decoder : public Filter
 	public:
 		string name() const { return "Hex_Decoder"; }
 
-		void write(in byte*, size_t);
+		void write(in ubyte*, size_t);
 		void end_msg();
 
 		/**
@@ -66,6 +66,6 @@ class Hex_Decoder : public Filter
 		Hex_Decoder(Decoder_Checking checking = NONE);
 	private:
 		const Decoder_Checking checking;
-		Vector!byte input, output;
+		Vector!ubyte input, output;
 		size_t position;
 };

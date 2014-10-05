@@ -28,7 +28,7 @@ BlockCipher make_aes(size_t keylength,
 
 }
 
-SafeVector!byte rfc3394_keywrap(in SafeVector!byte key,
+SafeVector!ubyte rfc3394_keywrap(in SafeVector!ubyte key,
 												const SymmetricKey& kek,
 												ref Algorithm_Factory af)
 {
@@ -40,8 +40,8 @@ SafeVector!byte rfc3394_keywrap(in SafeVector!byte key,
 
 	const size_t n = key.size() / 8;
 
-	SafeVector!byte R((n + 1) * 8);
-	SafeVector!byte A(16);
+	SafeVector!ubyte R((n + 1) * 8);
+	SafeVector!ubyte A(16);
 
 	for (size_t i = 0; i != 8; ++i)
 		A[i] = 0xA6;
@@ -59,7 +59,7 @@ SafeVector!byte rfc3394_keywrap(in SafeVector!byte key,
 			aes.encrypt(&A[0]);
 			copy_mem(&R[8*i], &A[8], 8);
 
-			byte[4] t_buf = { 0 };
+			ubyte[4] t_buf = { 0 };
 			store_be(t, t_buf);
 			xor_buf(&A[4], &t_buf[0], 4);
 		}
@@ -70,7 +70,7 @@ SafeVector!byte rfc3394_keywrap(in SafeVector!byte key,
 	return R;
 }
 
-SafeVector!byte rfc3394_keyunwrap(in SafeVector!byte key,
+SafeVector!ubyte rfc3394_keyunwrap(in SafeVector!ubyte key,
 												 const SymmetricKey& kek,
 												 ref Algorithm_Factory af)
 {
@@ -82,8 +82,8 @@ SafeVector!byte rfc3394_keyunwrap(in SafeVector!byte key,
 
 	const size_t n = (key.size() - 8) / 8;
 
-	SafeVector!byte R(n * 8);
-	SafeVector!byte A(16);
+	SafeVector!ubyte R(n * 8);
+	SafeVector!ubyte A(16);
 
 	for (size_t i = 0; i != 8; ++i)
 		A[i] = key[i];
@@ -96,7 +96,7 @@ SafeVector!byte rfc3394_keyunwrap(in SafeVector!byte key,
 		{
 			const uint t = (5 - j) * n + i;
 
-			byte[4] t_buf = { 0 };
+			ubyte[4] t_buf = { 0 };
 			store_be(t, t_buf);
 
 			xor_buf(&A[4], &t_buf[0], 4);

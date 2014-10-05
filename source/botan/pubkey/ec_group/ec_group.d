@@ -9,7 +9,7 @@
 
 import botan.ec_group;
 import botan.asn1.ber_dec;
-import botan.der_enc;
+import botan.asn1.der_enc;
 import botan.libstate;
 import botan.asn1.oid_lookup.oids;
 import botan.pem;
@@ -31,7 +31,7 @@ EC_Group::EC_Group(in string str)
 
 	try
 	{
-		Vector!byte ber =
+		Vector!ubyte ber =
 			unlock(PEM_Code::decode_check_label(str, "EC PARAMETERS"));
 
 		*this = EC_Group(ber);
@@ -42,37 +42,37 @@ EC_Group::EC_Group(in string str)
 	}
 }
 
-EC_Group::EC_Group(in Vector!byte ber_data)
+EC_Group::EC_Group(in Vector!ubyte ber_data)
 {
 	BER_Decoder ber(ber_data);
 	BER_Object obj = ber.get_next_object();
 
-	if (obj.type_tag == NULL_TAG)
+	if (obj.type_tag == ASN1_Tag.NULL_TAG)
 		throw new Decoding_Error("Cannot handle ImplicitCA ECDSA parameters");
-	else if (obj.type_tag == OBJECT_ID)
+	else if (obj.type_tag == ASN1_Tag.OBJECT_ID)
 	{
 		OID dom_par_oid;
 		BER_Decoder(ber_data).decode(dom_par_oid);
 		*this = EC_Group(dom_par_oid);
 	}
-	else if (obj.type_tag == SEQUENCE)
+	else if (obj.type_tag == ASN1_Tag.SEQUENCE)
 	{
 		BigInt p, a, b;
-		Vector!byte sv_base_point;
+		Vector!ubyte sv_base_point;
 
 		BER_Decoder(ber_data)
-			.start_cons(SEQUENCE)
+			.start_cons(ASN1_Tag.SEQUENCE)
 			  .decode_and_check<size_t>(1, "Unknown ECC param version code")
-			  .start_cons(SEQUENCE)
+			  .start_cons(ASN1_Tag.SEQUENCE)
 				.decode_and_check(OID("1.2.840.10045.1.1"),
 										"Only prime ECC fields supported")
 				 .decode(p)
 			  .end_cons()
-			  .start_cons(SEQUENCE)
+			  .start_cons(ASN1_Tag.SEQUENCE)
 				 .decode_octet_string_bigint(a)
 				 .decode_octet_string_bigint(b)
 			  .end_cons()
-			  .decode(sv_base_point, OCTET_STRING)
+			  .decode(sv_base_point, ASN1_Tag.OCTET_STRING)
 			  .decode(order)
 			  .decode(cofactor)
 			.end_cons()
@@ -85,7 +85,7 @@ EC_Group::EC_Group(in Vector!byte ber_data)
 		throw new Decoding_Error("Unexpected tag while decoding ECC domain params");
 }
 
-Vector!byte
+Vector!ubyte
 EC_Group::DER_encode(EC_Group_Encoding form) const
 {
 	if (form == EC_DOMPAR_ENC_EXPLICIT)
@@ -96,19 +96,19 @@ EC_Group::DER_encode(EC_Group_Encoding form) const
 		const size_t p_bytes = curve.get_p().bytes();
 
 		return DER_Encoder()
-			.start_cons(SEQUENCE)
+			.start_cons(ASN1_Tag.SEQUENCE)
 				.encode(ecpVers1)
-				.start_cons(SEQUENCE)
+				.start_cons(ASN1_Tag.SEQUENCE)
 					.encode(curve_type)
 					.encode(curve.get_p())
 				.end_cons()
-				.start_cons(SEQUENCE)
+				.start_cons(ASN1_Tag.SEQUENCE)
 					.encode(BigInt::encode_1363(curve.get_a(), p_bytes),
-							  OCTET_STRING)
+							  ASN1_Tag.OCTET_STRING)
 					.encode(BigInt::encode_1363(curve.get_b(), p_bytes),
-							  OCTET_STRING)
+							  ASN1_Tag.OCTET_STRING)
 				.end_cons()
-				.encode(EC2OSP(base_point, PointGFp::UNCOMPRESSED), OCTET_STRING)
+				.encode(EC2OSP(base_point, PointGFp::UNCOMPRESSED), ASN1_Tag.OCTET_STRING)
 				.encode(order)
 				.encode(cofactor)
 			.end_cons()
@@ -124,7 +124,7 @@ EC_Group::DER_encode(EC_Group_Encoding form) const
 
 string EC_Group::PEM_encode() const
 {
-	const Vector!byte der = DER_encode(EC_DOMPAR_ENC_EXPLICIT);
+	const Vector!ubyte der = DER_encode(EC_DOMPAR_ENC_EXPLICIT);
 	return PEM_Code::encode(der, "EC PARAMETERS");
 }
 

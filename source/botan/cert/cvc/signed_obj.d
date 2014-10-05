@@ -12,7 +12,7 @@ import botan.asn1.oid_lookup.oids;
 /*
 * Return a BER encoded X.509 object
 */
-Vector!byte EAC_Signed_Object::BER_encode() const
+Vector!ubyte EAC_Signed_Object::BER_encode() const
 {
 	Pipe ber;
 	ber.start_msg();
@@ -42,7 +42,7 @@ AlgorithmIdentifier EAC_Signed_Object::signature_algorithm() const
 }
 
 bool EAC_Signed_Object::check_signature(Public_Key& pub_key,
-													 in Vector!byte sig) const
+													 in Vector!ubyte sig) const
 {
 	try
 	{
@@ -58,7 +58,7 @@ bool EAC_Signed_Object::check_signature(Public_Key& pub_key,
 		Signature_Format format =
 			(pub_key.message_parts() >= 2) ? DER_SEQUENCE : IEEE_1363;
 
-		Vector!byte to_sign = tbs_data();
+		Vector!ubyte to_sign = tbs_data();
 
 		PK_Verifier verifier(pub_key, padding, format);
 		return verifier.verify_message(to_sign, sig);

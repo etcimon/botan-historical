@@ -9,7 +9,7 @@ import botan.pbes2;
 import botan.pbkdf2;
 import botan.algo_factory;
 import botan.libstate;
-import botan.der_enc;
+import botan.asn1.der_enc;
 import botan.asn1.ber_dec;
 import botan.parsing;
 import botan.asn1.alg_id;
@@ -19,7 +19,7 @@ import algorithm;
 /*
 * Encrypt some bytes using PBES2
 */
-void PBE_PKCS5v20::write(in byte* input, size_t length)
+void PBE_PKCS5v20::write(in ubyte* input, size_t length)
 {
 	pipe.write(input, length);
 	flush_pipe(true);
@@ -56,7 +56,7 @@ void PBE_PKCS5v20::flush_pipe(bool safe_to_skip)
 	if (safe_to_skip && pipe.remaining() < 64)
 		return;
 
-	SafeVector!byte buffer(DEFAULT_BUFFERSIZE);
+	SafeVector!ubyte buffer(DEFAULT_BUFFERSIZE);
 	while(pipe.remaining())
 	{
 		const size_t got = pipe.read(&buffer[0], buffer.size());
@@ -67,28 +67,28 @@ void PBE_PKCS5v20::flush_pipe(bool safe_to_skip)
 /*
 * Encode PKCS#5 PBES2 parameters
 */
-Vector!byte PBE_PKCS5v20::encode_params() const
+Vector!ubyte PBE_PKCS5v20::encode_params() const
 {
 	return DER_Encoder()
-		.start_cons(SEQUENCE)
+		.start_cons(ASN1_Tag.SEQUENCE)
 		.encode(
 			AlgorithmIdentifier("PKCS5.PBKDF2",
 				DER_Encoder()
-					.start_cons(SEQUENCE)
-						.encode(salt, OCTET_STRING)
+					.start_cons(ASN1_Tag.SEQUENCE)
+						.encode(salt, ASN1_Tag.OCTET_STRING)
 						.encode(iterations)
 						.encode(key_length)
 						.encode_if (
 							m_prf.name() != "HMAC(SHA-160)",
 							AlgorithmIdentifier(m_prf.name(),
-													  AlgorithmIdentifier::USE_NULL_PARAM))
+													  AlgorithmIdentifier.Encoding_Option.USE_NULL_PARAM))
 					.end_cons()
 				.get_contents_unlocked()
 				)
 			)
 		.encode(
 			AlgorithmIdentifier(block_cipher.name() ~ "/CBC",
-				DER_Encoder().encode(iv, OCTET_STRING).get_contents_unlocked()
+				DER_Encoder().encode(iv, ASN1_Tag.OCTET_STRING).get_contents_unlocked()
 				)
 			)
 		.end_cons()
@@ -135,7 +135,7 @@ PBE_PKCS5v20::PBE_PKCS5v20(BlockCipher cipher,
 /*
 * PKCS#5 v2.0 PBE Constructor
 */
-PBE_PKCS5v20::PBE_PKCS5v20(in Vector!byte params,
+PBE_PKCS5v20::PBE_PKCS5v20(in Vector!ubyte params,
 									in string passphrase) :
 	direction(DECRYPTION),
 	block_cipher(null),
@@ -144,7 +144,7 @@ PBE_PKCS5v20::PBE_PKCS5v20(in Vector!byte params,
 	AlgorithmIdentifier kdf_algo, enc_algo;
 
 	BER_Decoder(params)
-		.start_cons(SEQUENCE)
+		.start_cons(ASN1_Tag.SEQUENCE)
 			.decode(kdf_algo)
 			.decode(enc_algo)
 			.verify_end()
@@ -157,13 +157,13 @@ PBE_PKCS5v20::PBE_PKCS5v20(in Vector!byte params,
 									kdf_algo.oid.as_string());
 
 	BER_Decoder(kdf_algo.parameters)
-		.start_cons(SEQUENCE)
-			.decode(salt, OCTET_STRING)
+		.start_cons(ASN1_Tag.SEQUENCE)
+			.decode(salt, ASN1_Tag.OCTET_STRING)
 			.decode(iterations)
-			.decode_optional(key_length, INTEGER, UNIVERSAL)
-			.decode_optional(prf_algo, SEQUENCE, CONSTRUCTED,
+			.decode_optional(key_length, INTEGER, ASN1_Tag.UNIVERSAL)
+			.decode_optional(prf_algo, ASN1_Tag.SEQUENCE, CONSTRUCTED,
 								  AlgorithmIdentifier("HMAC(SHA-160)",
-															 AlgorithmIdentifier::USE_NULL_PARAM))
+															 AlgorithmIdentifier.Encoding_Option.USE_NULL_PARAM))
 		.verify_end()
 		.end_cons();
 
@@ -178,7 +178,7 @@ PBE_PKCS5v20::PBE_PKCS5v20(in Vector!byte params,
 		throw new Decoding_Error("PBE-PKCS5 v2.0: Don't know param format for " ~
 									cipher);
 
-	BER_Decoder(enc_algo.parameters).decode(iv, OCTET_STRING).verify_end();
+	BER_Decoder(enc_algo.parameters).decode(iv, ASN1_Tag.OCTET_STRING).verify_end();
 
 	block_cipher = af.make_block_cipher(cipher_spec[0]);
 	m_prf = af.make_mac(oids.lookup(prf_algo.oid));

@@ -9,7 +9,7 @@ import botan.asn1.asn1_obj;
 import chrono;
 
 import botan.asn1_time;
-import botan.der_enc;
+import botan.asn1.der_enc;
 import botan.asn1.ber_dec;
 import botan.charset;
 import botan.parsing;
@@ -29,10 +29,10 @@ public:
 	*/
 	void encode_into(DER_Encoder der) const
 	{
-		if (tag != GENERALIZED_TIME && tag != UTC_TIME)
+		if (tag != ASN1_Tag.GENERALIZED_TIME && tag != ASN1_Tag.UTC_TIME)
 			throw new Invalid_Argument("X509_Time: Bad encoding tag");
 		
-		der.add_object(tag, UNIVERSAL,
+		der.add_object(tag, ASN1_Tag.UNIVERSAL,
 		               Charset.transcode(as_string(),
 		                  LOCAL_CHARSET,
 		                  LATIN1_CHARSET));
@@ -61,7 +61,7 @@ public:
 		
 		uint full_year = year;
 		
-		if (tag == UTC_TIME)
+		if (tag == ASN1_Tag.UTC_TIME)
 		{
 			if (year < 1950 || year >= 2050)
 				throw new Encoding_Error("X509_Time: The time " ~ readable_string() +
@@ -77,7 +77,7 @@ public:
 		                                 minute*100 +
 		                                 second) ~ "Z";
 		
-		uint desired_size = (tag == UTC_TIME) ? 13 : 15;
+		uint desired_size = (tag == ASN1_Tag.UTC_TIME) ? 13 : 15;
 		
 		while(repr.size() < desired_size)
 			repr = "0" ~ repr;
@@ -118,12 +118,12 @@ public:
 	/*
 	* Compare this time against another
 	*/
-	s32bit cmp(in X509_Time other) const
+	int cmp(in X509_Time other) const
 	{
 		if (time_is_set() == false)
 			throw new Invalid_State("cmp: No time set");
 		
-		const s32bit EARLIER = -1, LATER = 1, SAME_TIME = 0;
+		const int EARLIER = -1, LATER = 1, SAME_TIME = 0;
 		
 		if (year < other.year)	  return EARLIER;
 		if (year > other.year)	  return LATER;
@@ -149,7 +149,7 @@ public:
 		if (time_str == "")
 		{
 			year = month = day = hour = minute = second = 0;
-			tag = NO_OBJECT;
+			tag = ASN1_Tag.NO_OBJECT;
 			return;
 		}
 		
@@ -180,7 +180,7 @@ public:
 		minute = (params.size() >= 5) ? to_uint(params[4]) : 0;
 		second = (params.size() == 6) ? to_uint(params[5]) : 0;
 		
-		tag = (year >= 2050) ? GENERALIZED_TIME : UTC_TIME;
+		tag = (year >= 2050) ? ASN1_Tag.GENERALIZED_TIME : ASN1_Tag.UTC_TIME;
 		
 		if (!passes_sanity_check())
 			throw new Invalid_Argument("Invalid time specification " ~ time_str);
@@ -192,12 +192,12 @@ public:
 	*/
 	void set_to(in string t_spec, ASN1_Tag spec_tag)
 	{
-		if (spec_tag == GENERALIZED_TIME)
+		if (spec_tag == ASN1_Tag.GENERALIZED_TIME)
 		{
 			if (t_spec.size() != 13 && t_spec.size() != 15)
 				throw new Invalid_Argument("Invalid GeneralizedTime: " ~ t_spec);
 		}
-		else if (spec_tag == UTC_TIME)
+		else if (spec_tag == ASN1_Tag.UTC_TIME)
 		{
 			if (t_spec.size() != 11 && t_spec.size() != 13)
 				throw new Invalid_Argument("Invalid UTCTime: " ~ t_spec);
@@ -210,7 +210,7 @@ public:
 		if (t_spec[t_spec.size()-1] != 'Z')
 			throw new Invalid_Argument("Invalid time encoding: " ~ t_spec);
 		
-		const size_t YEAR_SIZE = (spec_tag == UTC_TIME) ? 2 : 4;
+		const size_t YEAR_SIZE = (spec_tag == ASN1_Tag.UTC_TIME) ? 2 : 4;
 		
 		Vector!string params;
 		string current;
@@ -238,7 +238,7 @@ public:
 		second = (params.size() == 6) ? to_uint(params[5]) : 0;
 		tag	 = spec_tag;
 		
-		if (spec_tag == UTC_TIME)
+		if (spec_tag == ASN1_Tag.UTC_TIME)
 		{
 			if (year >= 50) year += 1900;
 			else			  year += 2000;
@@ -262,7 +262,7 @@ public:
 		minute = cal.minutes;
 		second = cal.seconds;
 		
-		tag = (year >= 2050) ? GENERALIZED_TIME : UTC_TIME;
+		tag = (year >= 2050) ? ASN1_Tag.GENERALIZED_TIME : ASN1_Tag.UTC_TIME;
 	}
 	
 	/*

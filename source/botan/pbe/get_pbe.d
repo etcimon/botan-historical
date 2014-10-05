@@ -68,7 +68,7 @@ PBE* get_pbe(in string algo_spec,
 * Get a decryption PBE, decode parameters
 */
 PBE* get_pbe(in OID pbe_oid,
-				 in Vector!byte params,
+				 in Vector!ubyte params,
 				 in string passphrase)
 {
 	SCAN_Name request(oids.lookup(pbe_oid));

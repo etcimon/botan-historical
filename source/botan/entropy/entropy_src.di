@@ -18,7 +18,7 @@ class Entropy_Accumulator
 		* Initialize an Entropy_Accumulator
 		* @param goal is how many bits we would like to collect
 		*/
-		Entropy_Accumulator(bool delegate(in byte*, size_t len, double) accum) :
+		Entropy_Accumulator(bool delegate(in ubyte*, size_t len, double) accum) :
 			m_accum_fn(accum), m_done(false) {}
 
 		~this() {}
@@ -30,7 +30,7 @@ class Entropy_Accumulator
 		* @param size requested size for the I/O buffer
 		* @return cached I/O buffer for repeated polls
 		*/
-		SafeVector!byte get_io_buffer(size_t size)
+		SafeVector!ubyte get_io_buffer(size_t size)
 		{
 			m_io_buffer.clear();
 			m_io_buffer.resize(size);
@@ -47,11 +47,11 @@ class Entropy_Accumulator
 		* @param bytes the input bytes
 		* @param length specifies how many bytes the input is
 		* @param entropy_bits_per_byte is a best guess at how much
-		* entropy per byte is in this input
+		* entropy per ubyte is in this input
 		*/
 		void add(const void* bytes, size_t length, double entropy_bits_per_byte)
 		{
-			m_done = m_accum_fn(cast(const byte*)(bytes),
+			m_done = m_accum_fn(cast(const ubyte*)(bytes),
 									  length, entropy_bits_per_byte * length);
 		}
 
@@ -59,16 +59,16 @@ class Entropy_Accumulator
 		* Add entropy to the accumulator
 		* @param v is some value
 		* @param entropy_bits_per_byte is a best guess at how much
-		* entropy per byte is in this input
+		* entropy per ubyte is in this input
 		*/
 		void add(T)(in T v, double entropy_bits_per_byte)
 		{
 			add(&v, sizeof(T), entropy_bits_per_byte);
 		}
 	private:
-		bool delegate(in byte*, size_t, double) m_accum_fn;
+		bool delegate(in ubyte*, size_t, double) m_accum_fn;
 		bool m_done;
-		SafeVector!byte m_io_buffer;
+		SafeVector!ubyte m_io_buffer;
 };
 
 /**

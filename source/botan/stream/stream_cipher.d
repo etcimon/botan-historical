@@ -6,7 +6,7 @@
 */
 
 import botan.stream_cipher;
-void StreamCipher::set_iv(const byte[], size_t iv_len)
+void StreamCipher::set_iv(const ubyte[], size_t iv_len)
 {
 	if (iv_len)
 		throw new Invalid_Argument("The stream cipher " ~ name() +

@@ -12,8 +12,8 @@ import botan.block_cipher;
 class Noekeon : public Block_Cipher_Fixed_Params!(16, 16)
 {
 	public:
-		void encrypt_n(byte* input, byte* output, size_t blocks) const;
-		void decrypt_n(byte* input, byte* output, size_t blocks) const;
+		void encrypt_n(ubyte* input, ubyte* output, size_t blocks) const;
+		void decrypt_n(ubyte* input, ubyte* output, size_t blocks) const;
 
 		void clear();
 		string name() const { return "Noekeon"; }
@@ -22,7 +22,7 @@ class Noekeon : public Block_Cipher_Fixed_Params!(16, 16)
 		/**
 		* The Noekeon round constants
 		*/
-		static const byte RC[17];
+		static const ubyte RC[17];
 
 		/**
 		* @return const reference to encryption subkeys
@@ -35,6 +35,6 @@ class Noekeon : public Block_Cipher_Fixed_Params!(16, 16)
 		const secure_vector!uint& get_DK() const { return DK; }
 
 	private:
-		void key_schedule(in byte*, size_t);
+		void key_schedule(in ubyte*, size_t);
 		secure_vector!uint EK, DK;
 };

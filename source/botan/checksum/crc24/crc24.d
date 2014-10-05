@@ -10,7 +10,7 @@ import botan.get_byte;
 /*
 * Update a CRC24 Checksum
 */
-void CRC24::add_data(in byte* input, size_t length)
+void CRC24::add_data(in ubyte* input, size_t length)
 {
 	immutable uint[256] TABLE = {
 		0x00000000, 0x00864CFB, 0x008AD50D, 0x000C99F6, 0x0093E6E1, 0x0015AA1A,
@@ -89,7 +89,7 @@ void CRC24::add_data(in byte* input, size_t length)
 /*
 * Finalize a CRC24 Checksum
 */
-void CRC24::final_result(byte* output)
+void CRC24::final_result(ubyte* output)
 {
 	for (size_t i = 0; i != 3; ++i)
 		output[i] = get_byte(i+1, crc);

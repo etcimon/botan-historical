@@ -11,10 +11,10 @@ import botan.blowfish;
 import botan.base64;
 namespace {
 
-string bcrypt_base64_encode(in byte* input, size_t length)
+string bcrypt_base64_encode(in ubyte* input, size_t length)
 {
 	// Bcrypt uses a non-standard base64 alphabet
-	immutable byte[256] OPENBSD_BASE64_SUB = {
+	immutable ubyte[256] OPENBSD_BASE64_SUB = {
 		0x00, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80,
 		0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80,
 		0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80,
@@ -45,14 +45,14 @@ string bcrypt_base64_encode(in byte* input, size_t length)
 		b64 = b64.substr(0, b64.size() - 1);
 
 	for (size_t i = 0; i != b64.size(); ++i)
-		b64[i] = OPENBSD_BASE64_SUB[cast(byte)(b64[i])];
+		b64[i] = OPENBSD_BASE64_SUB[cast(ubyte)(b64[i])];
 
 	return b64;
 }
 
-Vector!byte bcrypt_base64_decode(string input)
+Vector!ubyte bcrypt_base64_decode(string input)
 {
-	immutable byte[256] OPENBSD_BASE64_SUB = {
+	immutable ubyte[256] OPENBSD_BASE64_SUB = {
 		0x00, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80,
 		0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80,
 		0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80,
@@ -78,27 +78,27 @@ Vector!byte bcrypt_base64_decode(string input)
 };
 
 	for (size_t i = 0; i != input.size(); ++i)
-		input[i] = OPENBSD_BASE64_SUB[cast(byte)(input[i])];
+		input[i] = OPENBSD_BASE64_SUB[cast(ubyte)(input[i])];
 
 	return unlock(base64_decode(input));
 }
 
 string make_bcrypt(in string pass,
-								in Vector!byte salt,
+								in Vector!ubyte salt,
 								ushort work_factor)
 {
-	immutable byte[24] magic = {
+	immutable ubyte[24] magic = {
 		0x4F, 0x72, 0x70, 0x68, 0x65, 0x61, 0x6E, 0x42,
 		0x65, 0x68, 0x6F, 0x6C, 0x64, 0x65, 0x72, 0x53,
 		0x63, 0x72, 0x79, 0x44, 0x6F, 0x75, 0x62, 0x74
 };
 
-	Vector!byte ctext(magic, magic + sizeof(magic));
+	Vector!ubyte ctext(magic, magic + sizeof(magic));
 
 	Blowfish blowfish;
 
-	// Include the trailing NULL byte
-	blowfish.eks_key_schedule(cast(const byte*)(pass.c_str()),
+	// Include the trailing NULL ubyte
+	blowfish.eks_key_schedule(cast(const ubyte*)(pass.c_str()),
 									  pass.length() + 1,
 									  &salt[0],
 									  work_factor);
@@ -137,7 +137,7 @@ bool check_bcrypt(in string pass, in string hash)
 
 	const ushort workfactor = to_uint(hash.substr(4, 2));
 
-	Vector!byte salt = bcrypt_base64_decode(hash.substr(7, 22));
+	Vector!ubyte salt = bcrypt_base64_decode(hash.substr(7, 22));
 
 	const string compare = make_bcrypt(pass, salt, workfactor);
 

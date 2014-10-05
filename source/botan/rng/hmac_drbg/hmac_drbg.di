@@ -13,14 +13,14 @@ import botan.mac;
 class HMAC_DRBG : public RandomNumberGenerator
 {
 	public:
-		void randomize(byte buf[], size_t buf_len);
+		void randomize(ubyte buf[], size_t buf_len);
 		bool is_seeded() const;
 		void clear();
 		string name() const;
 
 		void reseed(size_t poll_bits);
 
-		void add_entropy(in byte* input, size_t input_len);
+		void add_entropy(in ubyte* input, size_t input_len);
 
 		/**
 		* @param mac the underlying mac function (eg HMAC(SHA-512))
@@ -30,11 +30,11 @@ class HMAC_DRBG : public RandomNumberGenerator
 					 RandomNumberGenerator* underlying_rng);
 
 	private:
-		void update(in byte* input, size_t input_len);
+		void update(in ubyte* input, size_t input_len);
 
 		Unique!MessageAuthenticationCode m_mac;
 		Unique!RandomNumberGenerator m_prng;
 
-		SafeVector!byte m_V;
+		SafeVector!ubyte m_V;
 		size_t m_reseed_counter;
 };

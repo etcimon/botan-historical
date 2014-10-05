@@ -41,7 +41,7 @@ size_t SIV_Mode::update_granularity() const
 	/*
 	This value does not particularly matter as regardless SIV_Mode::update
 	buffers all input, so in theory this could be 1. However as for instance
-	Transformation_Filter creates update_granularity() byte buffers, use a
+	Transformation_Filter creates update_granularity() ubyte buffers, use a
 	somewhat large size to avoid bouncing on a tiny buffer.
 	*/
 	return 128;
@@ -52,7 +52,7 @@ Key_Length_Specification SIV_Mode::key_spec() const
 	return m_cmac.key_spec().multiple(2);
 }
 
-void SIV_Mode::key_schedule(in byte* key, size_t length)
+void SIV_Mode::key_schedule(in ubyte* key, size_t length)
 {
 	const size_t keylen = length / 2;
 	m_cmac.set_key(key, keylen);
@@ -60,7 +60,7 @@ void SIV_Mode::key_schedule(in byte* key, size_t length)
 	m_ad_macs.clear();
 }
 
-void SIV_Mode::set_associated_data_n(size_t n, in byte* ad, size_t length)
+void SIV_Mode::set_associated_data_n(size_t n, in ubyte* ad, size_t length)
 {
 	if (n >= m_ad_macs.size())
 		m_ad_macs.resize(n+1);
@@ -68,7 +68,7 @@ void SIV_Mode::set_associated_data_n(size_t n, in byte* ad, size_t length)
 	m_ad_macs[n] = m_cmac.process(ad, length);
 }
 
-SafeVector!byte SIV_Mode::start(in byte* nonce, size_t nonce_len)
+SafeVector!ubyte SIV_Mode::start(in ubyte* nonce, size_t nonce_len)
 {
 	if (!valid_nonce_length(nonce_len))
 		throw new Invalid_IV_Length(name(), nonce_len);
@@ -80,24 +80,24 @@ SafeVector!byte SIV_Mode::start(in byte* nonce, size_t nonce_len)
 
 	m_msg_buf.clear();
 
-	return SafeVector!byte();
+	return SafeVector!ubyte();
 }
 
-void SIV_Mode::update(SafeVector!byte buffer, size_t offset)
+void SIV_Mode::update(SafeVector!ubyte buffer, size_t offset)
 {
 	BOTAN_ASSERT(buffer.size() >= offset, "Offset is sane");
 	const size_t sz = buffer.size() - offset;
-	byte* buf = &buffer[offset];
+	ubyte* buf = &buffer[offset];
 
 	m_msg_buf.insert(m_msg_buf.end(), buf, buf + sz);
 	buffer.resize(offset); // truncate msg
 }
 
-SafeVector!byte SIV_Mode::S2V(const byte* text, size_t text_len)
+SafeVector!ubyte SIV_Mode::S2V(const ubyte* text, size_t text_len)
 {
-	const byte[16] zero = { 0 };
+	const ubyte[16] zero = { 0 };
 
-	SafeVector!byte V = cmac().process(zero, 16);
+	SafeVector!ubyte V = cmac().process(zero, 16);
 
 	for (size_t i = 0; i != m_ad_macs.size(); ++i)
 	{
@@ -126,7 +126,7 @@ SafeVector!byte SIV_Mode::S2V(const byte* text, size_t text_len)
 	return cmac().flush();
 }
 
-void SIV_Mode::set_ctr_iv(SafeVector!byte V)
+void SIV_Mode::set_ctr_iv(SafeVector!ubyte V)
 {
 	V[8] &= 0x7F;
 	V[12] &= 0x7F;
@@ -134,13 +134,13 @@ void SIV_Mode::set_ctr_iv(SafeVector!byte V)
 	ctr().set_iv(&V[0], V.size());
 }
 
-void SIV_Encryption::finish(SafeVector!byte buffer, size_t offset)
+void SIV_Encryption::finish(SafeVector!ubyte buffer, size_t offset)
 {
 	BOTAN_ASSERT(buffer.size() >= offset, "Offset is sane");
 
 	buffer.insert(buffer.begin() + offset, msg_buf().begin(), msg_buf().end());
 
-	SafeVector!byte V = S2V(&buffer[offset], buffer.size() - offset);
+	SafeVector!ubyte V = S2V(&buffer[offset], buffer.size() - offset);
 
 	buffer.insert(buffer.begin() + offset, V.begin(), V.end());
 
@@ -148,7 +148,7 @@ void SIV_Encryption::finish(SafeVector!byte buffer, size_t offset)
 	ctr().cipher1(&buffer[offset + V.size()], buffer.size() - offset - V.size());
 }
 
-void SIV_Decryption::finish(SafeVector!byte buffer, size_t offset)
+void SIV_Decryption::finish(SafeVector!ubyte buffer, size_t offset)
 {
 	BOTAN_ASSERT(buffer.size() >= offset, "Offset is sane");
 
@@ -158,7 +158,7 @@ void SIV_Decryption::finish(SafeVector!byte buffer, size_t offset)
 
 	BOTAN_ASSERT(sz >= tag_size(), "We have the tag");
 
-	SafeVector!byte V(&buffer[offset], &buffer[offset + 16]);
+	SafeVector!ubyte V(&buffer[offset], &buffer[offset + 16]);
 
 	set_ctr_iv(V);
 
@@ -166,7 +166,7 @@ void SIV_Decryption::finish(SafeVector!byte buffer, size_t offset)
 					 &buffer[offset],
 					 buffer.size() - offset - V.size());
 
-	SafeVector!byte T = S2V(&buffer[offset], buffer.size() - offset - V.size());
+	SafeVector!ubyte T = S2V(&buffer[offset], buffer.size() - offset - V.size());
 
 	if (T != V)
 		throw new Integrity_Failure("SIV tag check failed");

@@ -119,7 +119,7 @@ void Lzma_Compression::start_msg()
 /*
 * Compress Input with Lzma
 */
-void Lzma_Compression::write(in byte* input, size_t length)
+void Lzma_Compression::write(in ubyte* input, size_t length)
 {
 	lzma.stream.next_in = cast(const uint8_t*)(input);
 	lzma.stream.avail_in = length;
@@ -232,7 +232,7 @@ void Lzma_Decompression::start_msg()
 /*
 * Decompress Input with Lzma
 */
-void Lzma_Decompression::write(in byte* input_arr, size_t length)
+void Lzma_Decompression::write(in ubyte* input_arr, size_t length)
 {
 	if (length) no_writes = false;
 

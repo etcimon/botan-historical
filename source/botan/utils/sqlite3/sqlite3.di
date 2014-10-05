@@ -40,9 +40,9 @@ class sqlite3_statement
 
 		void bind(int column, SysTime time);
 
-		void bind(int column, in Vector!byte val);
+		void bind(int column, in Vector!ubyte val);
 
-		Pair!(const byte*, size_t) get_blob(int column);
+		Pair!(const ubyte*, size_t) get_blob(int column);
 
 		size_t get_size_t(int column);
 

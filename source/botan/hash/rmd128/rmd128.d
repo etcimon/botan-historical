@@ -55,7 +55,7 @@ void F3(ref uint A, uint B, uint C, uint D,
 /*
 * RIPEMD-128 Compression Function
 */
-void RIPEMD_128::compress_n(in byte* input, size_t blocks)
+void RIPEMD_128::compress_n(in ubyte* input, size_t blocks)
 {
 	using namespace RIPEMD_128_F;
 
@@ -151,7 +151,7 @@ void RIPEMD_128::compress_n(in byte* input, size_t blocks)
 /*
 * Copy out the digest
 */
-void RIPEMD_128::copy_out(byte* output)
+void RIPEMD_128::copy_out(ubyte* output)
 {
 	for (size_t i = 0; i != output_length(); i += 4)
 		store_le(digest[i/4], output + i);

@@ -68,10 +68,10 @@ class Handshake_State
 		*/
 		void set_expected_next(Handshake_Type msg_type);
 
-		Pair!(Handshake_Type, Vector!( byte) )
+		Pair!(Handshake_Type, Vector!( ubyte) )
 			get_next_handshake_msg();
 
-		Vector!byte session_ticket() const;
+		Vector!ubyte session_ticket() const;
 
 		Pair!(string, Signature_Format)
 			understand_sig_format(in Public_Key key,
@@ -155,7 +155,7 @@ class Handshake_State
 
 		void compute_session_keys();
 
-		void compute_session_keys(in SafeVector!byte resume_master_secret);
+		void compute_session_keys(in SafeVector!ubyte resume_master_secret);
 
 		Handshake_Hash hash() { return m_handshake_hash; }
 

@@ -13,7 +13,7 @@ import thread;
 */
 struct BitBucket : public Filter
 {
-	void write(in byte*, size_t) {}
+	void write(in ubyte*, size_t) {}
 
 	string name() const { return "BitBucket"; }
 };
@@ -27,7 +27,7 @@ struct BitBucket : public Filter
 class Chain : public Fanout_Filter
 {
 	public:
-		void write(in byte* input, size_t length) { send(input, length); }
+		void write(in ubyte* input, size_t length) { send(input, length); }
 
 		string name() const;
 
@@ -54,7 +54,7 @@ class Chain : public Fanout_Filter
 class Fork : public Fanout_Filter
 {
 	public:
-		void write(in byte* input, size_t length) { send(input, length); }
+		void write(in ubyte* input, size_t length) { send(input, length); }
 		void set_port(size_t n) { Fanout_Filter::set_port(n); }
 
 		string name() const;
@@ -98,10 +98,10 @@ class Threaded_Fork : public Fork
 
 	package:
 		void set_next(Filter* f[], size_t n);
-		void send(in byte* input, size_t length);
+		void send(in ubyte* input, size_t length);
 
 	private:
-		void thread_delegate_work(in byte* input, size_t length);
+		void thread_delegate_work(in ubyte* input, size_t length);
 		void thread_entry(Filter* filter);
 
 		Vector!( std::shared_ptr<std::thread )> m_threads;

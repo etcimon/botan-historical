@@ -8,7 +8,7 @@
 import botan.types;
 import botan.mul128;
 #if (BOTAN_MP_WORD_BITS == 8)
-  typedef byte word;
+  typedef ubyte word;
   typedef ushort dword;
   #define BOTAN_HAS_MP_DWORD
 #elif (BOTAN_MP_WORD_BITS == 16)

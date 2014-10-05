@@ -23,7 +23,7 @@ void CTR_BE::clear()
 	m_pad_pos = 0;
 }
 
-void CTR_BE::key_schedule(in byte* key, size_t length)
+void CTR_BE::key_schedule(in ubyte* key, size_t length)
 {
 	m_cipher.set_key(key, key_len);
 
@@ -36,7 +36,7 @@ string CTR_BE::name() const
 	return ("CTR-BE(" ~ m_cipher.name() ~ ")");
 }
 
-void CTR_BE::cipher(in byte* input, byte* output)
+void CTR_BE::cipher(in ubyte* input, ubyte* output)
 {
 	while(length >= m_pad.size() - m_pad_pos)
 	{
@@ -50,7 +50,7 @@ void CTR_BE::cipher(in byte* input, byte* output)
 	m_pad_pos += length;
 }
 
-void CTR_BE::set_iv(in byte* iv, size_t iv_len)
+void CTR_BE::set_iv(in ubyte* iv, size_t iv_len)
 {
 	if (!valid_iv_length(iv_len))
 		throw new Invalid_IV_Length(name(), iv_len);
@@ -84,8 +84,8 @@ void CTR_BE::increment_counter()
 
 	/*
 	* Each counter value always needs to be incremented by 256,
-	* so we don't touch the lowest byte and instead treat it as
-	* an increment of one starting with the next byte.
+	* so we don't touch the lowest ubyte and instead treat it as
+	* an increment of one starting with the next ubyte.
 	*/
 	for (size_t i = 0; i != 256; ++i)
 	{

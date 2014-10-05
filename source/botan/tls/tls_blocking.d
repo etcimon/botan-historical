@@ -10,8 +10,8 @@ namespace TLS {
 
 using namespace std::placeholders;
 
-Blocking_Client::Blocking_Client(size_t delegate(ref byte[]) read_fn,
-											void delegate(in byte[]) write_fn,
+Blocking_Client::Blocking_Client(size_t delegate(ref ubyte[]) read_fn,
+											void delegate(in ubyte[]) write_fn,
 											Session_Manager session_manager,
 											Credentials_Manager creds,
 											in Policy policy,
@@ -39,19 +39,19 @@ bool Blocking_Client::handshake_cb(in Session session)
 	return this.handshake_complete(session);
 }
 
-void Blocking_Client::alert_cb(const Alert alert, const byte[], size_t)
+void Blocking_Client::alert_cb(const Alert alert, const ubyte[], size_t)
 {
 	this.alert_notification(alert);
 }
 
-void Blocking_Client::data_cb(in byte* data, size_t data_len)
+void Blocking_Client::data_cb(in ubyte* data, size_t data_len)
 {
 	m_plaintext.insert(m_plaintext.end(), data, data + data_len);
 }
 
 void Blocking_Client::do_handshake()
 {
-	Vector!byte readbuf(4096);
+	Vector!ubyte readbuf(4096);
 
 	while(!m_channel.is_closed() && !m_channel.is_active())
 	{
@@ -60,9 +60,9 @@ void Blocking_Client::do_handshake()
 	}
 }
 
-size_t Blocking_Client::read(byte buf[], size_t buf_len)
+size_t Blocking_Client::read(ubyte buf[], size_t buf_len)
 {
-	Vector!byte readbuf(4096);
+	Vector!ubyte readbuf(4096);
 
 	while(m_plaintext.empty() && !m_channel.is_closed())
 	{

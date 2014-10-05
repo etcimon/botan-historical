@@ -74,7 +74,7 @@ class Public_Key
 		/**
 		* @return X.509 subject key encoding for this key object
 		*/
-		abstract Vector!byte x509_subject_public_key() const;
+		abstract Vector!ubyte x509_subject_public_key() const;
 
 		~this() {}
 	package:
@@ -94,7 +94,7 @@ class Private_Key : public abstract Public_Key
 		/**
 		* @return PKCS #8 private key encoding for this key object
 		*/
-		abstract SafeVector!byte pkcs8_Private_Key() const;
+		abstract SafeVector!ubyte pkcs8_Private_Key() const;
 
 		/**
 		* @return PKCS #8 AlgorithmIdentifier for this key
@@ -126,7 +126,7 @@ class PK_Key_Agreement_Key : public abstract Private_Key
 		/*
 		* @return public component of this key
 		*/
-		abstract Vector!byte public_value() const;
+		abstract Vector!ubyte public_value() const;
 
 		~this() {}
 };

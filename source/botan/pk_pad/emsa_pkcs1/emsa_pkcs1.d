@@ -9,16 +9,16 @@ import botan.emsa_pkcs1;
 import botan.hash_id;
 namespace {
 
-SafeVector!byte emsa3_encoding(in SafeVector!byte msg,
+SafeVector!ubyte emsa3_encoding(in SafeVector!ubyte msg,
 											  size_t output_bits,
-											  in byte* hash_id,
+											  in ubyte* hash_id,
 											  size_t hash_id_length)
 {
 	size_t output_length = output_bits / 8;
 	if (output_length < hash_id_length + msg.size() + 10)
 		throw new Encoding_Error("emsa3_encoding: Output length is too small");
 
-	SafeVector!byte T(output_length);
+	SafeVector!ubyte T(output_length);
 	const size_t P_LENGTH = output_length - msg.size() - hash_id_length - 2;
 
 	T[0] = 0x01;
@@ -31,18 +31,18 @@ SafeVector!byte emsa3_encoding(in SafeVector!byte msg,
 
 }
 
-void EMSA_PKCS1v15::update(in byte* input, size_t length)
+void EMSA_PKCS1v15::update(in ubyte* input, size_t length)
 {
 	m_hash.update(input, length);
 }
 
-SafeVector!byte EMSA_PKCS1v15::raw_data()
+SafeVector!ubyte EMSA_PKCS1v15::raw_data()
 {
 	return m_hash.flush();
 }
 
-SafeVector!byte
-EMSA_PKCS1v15::encoding_of(in SafeVector!byte msg,
+SafeVector!ubyte
+EMSA_PKCS1v15::encoding_of(in SafeVector!ubyte msg,
 									size_t output_bits,
 									RandomNumberGenerator)
 {
@@ -53,8 +53,8 @@ EMSA_PKCS1v15::encoding_of(in SafeVector!byte msg,
 								 &m_hash_id[0], m_hash_id.size());
 }
 
-bool EMSA_PKCS1v15::verify(in SafeVector!byte coded,
-									in SafeVector!byte raw,
+bool EMSA_PKCS1v15::verify(in SafeVector!ubyte coded,
+									in SafeVector!ubyte raw,
 									size_t key_bits)
 {
 	if (raw.size() != m_hash.output_length())
@@ -76,28 +76,28 @@ EMSA_PKCS1v15::EMSA_PKCS1v15(HashFunction hash) : m_hash(hash)
 	m_hash_id = pkcs_hash_id(m_hash.name());
 }
 
-void EMSA_PKCS1v15_Raw::update(in byte* input, size_t length)
+void EMSA_PKCS1v15_Raw::update(in ubyte* input, size_t length)
 {
 	message += Pair(input, length);
 }
 
-SafeVector!byte EMSA_PKCS1v15_Raw::raw_data()
+SafeVector!ubyte EMSA_PKCS1v15_Raw::raw_data()
 {
-	SafeVector!byte ret;
+	SafeVector!ubyte ret;
 	std::swap(ret, message);
 	return ret;
 }
 
-SafeVector!byte
-EMSA_PKCS1v15_Raw::encoding_of(in SafeVector!byte msg,
+SafeVector!ubyte
+EMSA_PKCS1v15_Raw::encoding_of(in SafeVector!ubyte msg,
 										 size_t output_bits,
 										 RandomNumberGenerator)
 {
 	return emsa3_encoding(msg, output_bits, null, 0);
 }
 
-bool EMSA_PKCS1v15_Raw::verify(in SafeVector!byte coded,
-										 in SafeVector!byte raw,
+bool EMSA_PKCS1v15_Raw::verify(in SafeVector!ubyte coded,
+										 in SafeVector!ubyte raw,
 										 size_t key_bits)
 {
 	try

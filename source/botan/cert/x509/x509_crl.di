@@ -46,7 +46,7 @@ class X509_CRL : public X509_Object
 		* Get the AuthorityKeyIdentifier of this CRL.
 		* @return this CRLs AuthorityKeyIdentifier
 		*/
-		Vector!byte authority_key_id() const;
+		Vector!ubyte authority_key_id() const;
 
 		/**
 		* Get the serial number of this CRL.
@@ -89,7 +89,7 @@ class X509_CRL : public X509_Object
 		* @param throw_on_unknown_critical should we throw new an exception
 		* if an unknown CRL extension marked as critical is encountered.
 		*/
-		X509_CRL(in Vector!byte vec,
+		X509_CRL(in Vector!ubyte vec,
 					bool throw_on_unknown_critical = false);
 
 	private:

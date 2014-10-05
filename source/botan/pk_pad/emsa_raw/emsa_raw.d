@@ -9,7 +9,7 @@ import botan.emsa_raw;
 /*
 * EMSA-Raw Encode Operation
 */
-void EMSA_Raw::update(in byte* input, size_t length)
+void EMSA_Raw::update(in ubyte* input, size_t length)
 {
 	message += Pair(input, length);
 }
@@ -17,9 +17,9 @@ void EMSA_Raw::update(in byte* input, size_t length)
 /*
 * Return the raw (unencoded) data
 */
-SafeVector!byte EMSA_Raw::raw_data()
+SafeVector!ubyte EMSA_Raw::raw_data()
 {
-	SafeVector!byte output;
+	SafeVector!ubyte output;
 	std::swap(message, output);
 	return output;
 }
@@ -27,7 +27,7 @@ SafeVector!byte EMSA_Raw::raw_data()
 /*
 * EMSA-Raw Encode Operation
 */
-SafeVector!byte EMSA_Raw::encoding_of(in SafeVector!byte msg,
+SafeVector!ubyte EMSA_Raw::encoding_of(in SafeVector!ubyte msg,
 													  size_t,
 													  RandomNumberGenerator)
 {
@@ -37,8 +37,8 @@ SafeVector!byte EMSA_Raw::encoding_of(in SafeVector!byte msg,
 /*
 * EMSA-Raw Verify Operation
 */
-bool EMSA_Raw::verify(in SafeVector!byte coded,
-							 in SafeVector!byte raw,
+bool EMSA_Raw::verify(in SafeVector!ubyte coded,
+							 in SafeVector!ubyte raw,
 							 size_t)
 {
 	if (coded.size() == raw.size())

@@ -49,17 +49,17 @@ bool ECB_Mode::valid_nonce_length(size_t n) const
 	return (n == 0);
 }
 
-void ECB_Mode::key_schedule(in byte* key, size_t length)
+void ECB_Mode::key_schedule(in ubyte* key, size_t length)
 {
 	m_cipher.set_key(key, length);
 }
 
-SafeVector!byte ECB_Mode::start(const byte[], size_t nonce_len)
+SafeVector!ubyte ECB_Mode::start(const ubyte[], size_t nonce_len)
 {
 	if (!valid_nonce_length(nonce_len))
 		throw new Invalid_IV_Length(name(), nonce_len);
 
-	return SafeVector!byte();
+	return SafeVector!ubyte();
 }
 
 size_t ECB_Encryption::minimum_final_size() const
@@ -72,11 +72,11 @@ size_t ECB_Encryption::output_length(size_t input_length) const
 	return round_up(input_length, cipher().block_size());
 }
 
-void ECB_Encryption::update(SafeVector!byte buffer, size_t offset)
+void ECB_Encryption::update(SafeVector!ubyte buffer, size_t offset)
 {
 	BOTAN_ASSERT(buffer.size() >= offset, "Offset is sane");
 	const size_t sz = buffer.size() - offset;
-	byte* buf = &buffer[offset];
+	ubyte* buf = &buffer[offset];
 
 	const size_t BS = cipher().block_size();
 
@@ -86,7 +86,7 @@ void ECB_Encryption::update(SafeVector!byte buffer, size_t offset)
 	cipher().encrypt_n(&buf[0], &buf[0], blocks);
 }
 
-void ECB_Encryption::finish(SafeVector!byte buffer, size_t offset)
+void ECB_Encryption::finish(SafeVector!ubyte buffer, size_t offset)
 {
 	BOTAN_ASSERT(buffer.size() >= offset, "Offset is sane");
 	const size_t sz = buffer.size() - offset;
@@ -113,11 +113,11 @@ size_t ECB_Decryption::minimum_final_size() const
 	return cipher().block_size();
 }
 
-void ECB_Decryption::update(SafeVector!byte buffer, size_t offset)
+void ECB_Decryption::update(SafeVector!ubyte buffer, size_t offset)
 {
 	BOTAN_ASSERT(buffer.size() >= offset, "Offset is sane");
 	const size_t sz = buffer.size() - offset;
-	byte* buf = &buffer[offset];
+	ubyte* buf = &buffer[offset];
 
 	const size_t BS = cipher().block_size();
 
@@ -127,7 +127,7 @@ void ECB_Decryption::update(SafeVector!byte buffer, size_t offset)
 	cipher().decrypt_n(&buf[0], &buf[0], blocks);
 }
 
-void ECB_Decryption::finish(SafeVector!byte buffer, size_t offset)
+void ECB_Decryption::finish(SafeVector!ubyte buffer, size_t offset)
 {
 	BOTAN_ASSERT(buffer.size() >= offset, "Offset is sane");
 	const size_t sz = buffer.size() - offset;

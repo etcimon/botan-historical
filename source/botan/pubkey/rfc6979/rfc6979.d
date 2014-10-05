@@ -20,7 +20,7 @@ BigInt generate_rfc6979_nonce(in BigInt x,
 	const size_t qlen = q.bits();
 	const size_t rlen = qlen / 8 + (qlen % 8 ? 1 : 0);
 
-	SafeVector!byte input = BigInt::encode_1363(x, rlen);
+	SafeVector!ubyte input = BigInt::encode_1363(x, rlen);
 
 	input += BigInt::encode_1363(h, rlen);
 
@@ -28,7 +28,7 @@ BigInt generate_rfc6979_nonce(in BigInt x,
 
 	BigInt k;
 
-	SafeVector!byte kbits(rlen);
+	SafeVector!ubyte kbits(rlen);
 
 	while(k == 0 || k >= q)
 	{

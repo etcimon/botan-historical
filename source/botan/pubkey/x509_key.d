@@ -6,19 +6,19 @@
 */
 
 import botan.x509_key;
-import botan.der_enc;
+import botan.asn1.der_enc;
 import botan.asn1.ber_dec;
 import botan.pem;
 import botan.asn1.alg_id;
 import botan.internal.pk_algs;
 namespace X509 {
 
-Vector!byte BER_encode(in Public_Key key)
+Vector!ubyte BER_encode(in Public_Key key)
 {
 	return DER_Encoder()
-			.start_cons(SEQUENCE)
+			.start_cons(ASN1_Tag.SEQUENCE)
 				.encode(key.algorithm_identifier())
-				.encode(key.x509_subject_public_key(), BIT_STRING)
+				.encode(key.x509_subject_public_key(), ASN1_Tag.BIT_STRING)
 			.end_cons()
 		.get_contents_unlocked();
 }
@@ -39,14 +39,14 @@ Public_Key* load_key(DataSource& source)
 {
 	try {
 		AlgorithmIdentifier alg_id;
-		SafeVector!byte key_bits;
+		SafeVector!ubyte key_bits;
 
 		if (ASN1::maybe_BER(source) && !PEM_Code::matches(source))
 		{
 			BER_Decoder(source)
-				.start_cons(SEQUENCE)
+				.start_cons(ASN1_Tag.SEQUENCE)
 				.decode(alg_id)
-				.decode(key_bits, BIT_STRING)
+						.decode(key_bits, ASN1_Tag.BIT_STRING)
 				.verify_end()
 			.end_cons();
 		}
@@ -57,9 +57,9 @@ Public_Key* load_key(DataSource& source)
 				);
 
 			BER_Decoder(ber)
-				.start_cons(SEQUENCE)
+				.start_cons(ASN1_Tag.SEQUENCE)
 				.decode(alg_id)
-				.decode(key_bits, BIT_STRING)
+						.decode(key_bits, ASN1_Tag.BIT_STRING)
 				.verify_end()
 			.end_cons();
 		}
@@ -87,7 +87,7 @@ Public_Key* load_key(in string fsname)
 /*
 * Extract a public key and return it
 */
-Public_Key* load_key(in Vector!byte mem)
+Public_Key* load_key(in Vector!ubyte mem)
 {
 	DataSource_Memory source(mem);
 	return X509::load_key(source);

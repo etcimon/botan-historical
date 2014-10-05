@@ -30,19 +30,19 @@ class Channel
 		* @return a hint as the how many more bytes we need to process the
 		*			current record (this may be 0 if on a record boundary)
 		*/
-		size_t received_data(in byte* buf, size_t buf_size);
+		size_t received_data(in ubyte* buf, size_t buf_size);
 
 		/**
 		* Inject TLS traffic received from counterparty
 		* @return a hint as the how many more bytes we need to process the
 		*			current record (this may be 0 if on a record boundary)
 		*/
-		size_t received_data(in Vector!byte buf);
+		size_t received_data(in Vector!ubyte buf);
 
 		/**
 		* Inject plaintext intended for counterparty
 		*/
-		void send(in byte* buf, size_t buf_size);
+		void send(in ubyte* buf, size_t buf_size);
 
 		/**
 		* Inject plaintext intended for counterparty
@@ -117,7 +117,7 @@ class Channel
 		* @param payload will be echoed back
 		* @param payload_size size of payload in bytes
 		*/
-		void heartbeat(in byte* payload, size_t payload_size);
+		void heartbeat(in ubyte* payload, size_t payload_size);
 
 		/**
 		* Attempt to send a heartbeat message (if negotiated with counterparty)
@@ -140,9 +140,9 @@ class Channel
 													in string context,
 													size_t length) const;
 
-		Channel(void delegate(in byte[]) socket_output_fn,
-				  void delegate(in byte[]) data_cb,
-				  void delegate(Alert, in byte[]) alert_cb,
+		Channel(void delegate(in ubyte[]) socket_output_fn,
+				  void delegate(in ubyte[]) data_cb,
+				  void delegate(Alert, in ubyte[]) alert_cb,
 				  bool delegate(const Session) handshake_cb,
 				  Session_Manager session_manager,
 				  RandomNumberGenerator rng,
@@ -158,7 +158,7 @@ class Channel
 		abstract void process_handshake_msg(const Handshake_State* active_state,
 													  Handshake_State& pending_state,
 													  Handshake_Type type,
-													  in Vector!byte contents);
+													  in Vector!ubyte contents);
 
 		abstract void initiate_handshake(Handshake_State& state,
 												  bool force_full_renegotiation);
@@ -181,8 +181,8 @@ class Channel
 		void secure_renegotiation_check(const class Client_Hello* client_hello);
 		void secure_renegotiation_check(const class Server_Hello* server_hello);
 
-		Vector!byte secure_renegotiation_data_for_client_hello() const;
-		Vector!byte secure_renegotiation_data_for_server_hello() const;
+		Vector!ubyte secure_renegotiation_data_for_client_hello() const;
+		Vector!ubyte secure_renegotiation_data_for_server_hello() const;
 
 		RandomNumberGenerator rng() { return m_rng; }
 
@@ -193,16 +193,16 @@ class Channel
 	private:
 		size_t maximum_fragment_size() const;
 
-		void send_record(byte record_type, in Vector!byte record);
+		void send_record(ubyte record_type, in Vector!ubyte record);
 
-		void send_record_under_epoch(ushort epoch, byte record_type,
-											  in Vector!byte record);
+		void send_record_under_epoch(ushort epoch, ubyte record_type,
+											  in Vector!ubyte record);
 
-		void send_record_array(ushort epoch, byte record_type,
-									  in byte* input, size_t length);
+		void send_record_array(ushort epoch, ubyte record_type,
+									  in ubyte* input, size_t length);
 
 		void write_record(Connection_Cipher_State* cipher_state,
-								byte type, in byte* input, size_t length);
+								ubyte type, in ubyte* input, size_t length);
 
 		Connection_Sequence_Numbers& sequence_numbers() const;
 
@@ -218,9 +218,9 @@ class Channel
 
 		/* callbacks */
 		bool delegate(const Session) m_handshake_cb;
-		void delegate(in byte[]) m_data_cb;
-		void delegate(Alert, in byte[]) m_alert_cb;
-		void delegate(in byte[]) m_output_fn;
+		void delegate(in ubyte[]) m_data_cb;
+		void delegate(Alert, in ubyte[]) m_alert_cb;
+		void delegate(in ubyte[]) m_output_fn;
 
 		/* external state */
 		RandomNumberGenerator m_rng;
@@ -238,8 +238,8 @@ class Channel
 		HashMap<ushort, std::shared_ptr<Connection_Cipher_State>> m_read_cipher_states;
 
 		/* I/O buffers */
-		SafeVector!byte m_writebuf;
-		SafeVector!byte m_readbuf;
+		SafeVector!ubyte m_writebuf;
+		SafeVector!ubyte m_readbuf;
 };
 
 }

@@ -32,7 +32,7 @@ class CSP_Handle
 				CryptReleaseContext(handle, 0);
 		}
 
-		size_t gen_random(byte* output) const
+		size_t gen_random(ubyte* output) const
 		{
 			if (is_valid() && CryptGenRandom(handle, cast(DWORD)(output.length), output))
 				return output.length;
@@ -54,7 +54,7 @@ class CSP_Handle
 */
 void Win32_CAPI_EntropySource::poll(Entropy_Accumulator& accum)
 {
-	SafeVector!byte io_buffer = accum.get_io_buffer(32);
+	SafeVector!ubyte io_buffer = accum.get_io_buffer(32);
 
 	for (size_t i = 0; i != prov_types.size(); ++i)
 	{

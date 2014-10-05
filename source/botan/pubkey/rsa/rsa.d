@@ -84,8 +84,8 @@ BigInt RSA_Private_Operation::private_op(in BigInt m) const
 	return mul_add(j1, q, j2);
 }
 
-SafeVector!byte
-RSA_Private_Operation::sign(in byte* msg, size_t msg_len,
+SafeVector!ubyte
+RSA_Private_Operation::sign(in ubyte* msg, size_t msg_len,
 									 RandomNumberGenerator rng)
 {
 	rng.add_entropy(msg, msg_len);
@@ -103,8 +103,8 @@ RSA_Private_Operation::sign(in byte* msg, size_t msg_len,
 /*
 * RSA Decryption Operation
 */
-SafeVector!byte
-RSA_Private_Operation::decrypt(in byte* msg, size_t msg_len)
+SafeVector!ubyte
+RSA_Private_Operation::decrypt(in ubyte* msg, size_t msg_len)
 {
 	const BigInt m(msg, msg_len);
 	const BigInt x = blinder.unblind(private_op(blinder.blind(m)));

@@ -39,9 +39,9 @@ void copy_mem(T)(T* output, const T* input)
 * Set memory to a fixed value
 * @param ptr a pointer to an array
 * @param n the number of Ts pointed to by ptr
-* @param val the value to set each byte to
+* @param val the value to set each ubyte to
 */
-void set_mem(T)(T* ptr, size_t n, byte val)
+void set_mem(T)(T* ptr, size_t n, ubyte val)
 {
 	std::memset(ptr, val, sizeof(T)*n);
 }

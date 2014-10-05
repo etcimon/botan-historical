@@ -14,10 +14,10 @@ HMAC_DRBG::HMAC_DRBG(MessageAuthenticationCode mac,
 	m_V(m_mac.output_length(), 0x01),
 	m_reseed_counter(0)
 {
-	m_mac.set_key(SafeVector!byte(m_mac.output_length(), 0x00));
+	m_mac.set_key(SafeVector!ubyte(m_mac.output_length(), 0x00));
 }
 
-void HMAC_DRBG::randomize(byte* output)
+void HMAC_DRBG::randomize(ubyte* output)
 {
 	size_t length = output.length;
 	if (!is_seeded() || m_reseed_counter > BOTAN_RNG_MAX_OUTPUT_BEFORE_RESEED)
@@ -44,7 +44,7 @@ void HMAC_DRBG::randomize(byte* output)
 /*
 * Reset V and the mac key with new values
 */
-void HMAC_DRBG::update(in byte* input, size_t input_len)
+void HMAC_DRBG::update(in ubyte* input, size_t input_len)
 {
 	m_mac.update(m_V);
 	m_mac.update(0x00);
@@ -72,14 +72,14 @@ void HMAC_DRBG::reseed(size_t poll_bits)
 
 		if (m_prng.is_seeded())
 		{
-			SafeVector!byte input = m_prng.random_vec(m_mac.output_length());
+			SafeVector!ubyte input = m_prng.random_vec(m_mac.output_length());
 			update(&input[0], input.size());
 			m_reseed_counter = 1;
 		}
 	}
 }
 
-void HMAC_DRBG::add_entropy(in byte* input, size_t length)
+void HMAC_DRBG::add_entropy(in ubyte* input, size_t length)
 {
 	update(input, length);
 	m_reseed_counter = 1;

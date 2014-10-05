@@ -7,7 +7,7 @@
 
 import botan.x509cert;
 import botan.x509_ext;
-import botan.der_enc;
+import botan.asn1.der_enc;
 import botan.asn1.ber_dec;
 import botan.internal.stl_util;
 import botan.parsing;
@@ -58,7 +58,7 @@ X509_Certificate::X509_Certificate(in string input) :
 /*
 * X509_Certificate Constructor
 */
-X509_Certificate::X509_Certificate(in Vector!byte input) :
+X509_Certificate::X509_Certificate(in Vector!ubyte input) :
 	X509_Object(input, "CERTIFICATE/X509 CERTIFICATE")
 {
 	self_signed = false;
@@ -79,11 +79,11 @@ void X509_Certificate::force_decode()
 	BER_Decoder tbs_cert(tbs_bits);
 
 	tbs_cert.decode_optional(_version, ASN1_Tag(0),
-									 ASN1_Tag(CONSTRUCTED | CONTEXT_SPECIFIC))
+									 ASN1_Tag(CONSTRUCTED | ASN1_Tag.CONTEXT_SPECIFIC))
 		.decode(serial_bn)
 		.decode(sig_algo_inner)
 		.decode(dn_issuer)
-		.start_cons(SEQUENCE)
+		.start_cons(ASN1_Tag.SEQUENCE)
 			.decode(start)
 			.decode(end)
 			.verify_end()
@@ -104,18 +104,18 @@ void X509_Certificate::force_decode()
 	issuer.add("X509.Certificate.dn_bits", ASN1::put_in_sequence(dn_issuer.get_bits()));
 
 	BER_Object public_key = tbs_cert.get_next_object();
-	if (public_key.type_tag != SEQUENCE || public_key.class_tag != CONSTRUCTED)
+	if (public_key.type_tag != ASN1_Tag.SEQUENCE || public_key.class_tag != CONSTRUCTED)
 		throw new BER_Bad_Tag("X509_Certificate: Unexpected tag for public key",
 								public_key.type_tag, public_key.class_tag);
 
-	Vector!byte v2_issuer_key_id, v2_subject_key_id;
+	Vector!ubyte v2_issuer_key_id, v2_subject_key_id;
 
-	tbs_cert.decode_optional_string(v2_issuer_key_id, BIT_STRING, 1);
-	tbs_cert.decode_optional_string(v2_subject_key_id, BIT_STRING, 2);
+	tbs_cert.decode_optional_string(v2_issuer_key_id, ASN1_Tag.BIT_STRING, 1);
+	tbs_cert.decode_optional_string(v2_subject_key_id, ASN1_Tag.BIT_STRING, 2);
 
 	BER_Object v3_exts_data = tbs_cert.get_next_object();
 	if (v3_exts_data.type_tag == 3 &&
-		v3_exts_data.class_tag == ASN1_Tag(CONSTRUCTED | CONTEXT_SPECIFIC))
+		v3_exts_data.class_tag == ASN1_Tag(CONSTRUCTED | ASN1_Tag.CONTEXT_SPECIFIC))
 	{
 		Extensions extensions;
 
@@ -123,7 +123,7 @@ void X509_Certificate::force_decode()
 
 		extensions.contents_to(subject, issuer);
 	}
-	else if (v3_exts_data.type_tag != NO_OBJECT)
+	else if (v3_exts_data.type_tag != ASN1_Tag.NO_OBJECT)
 		throw new BER_Bad_Tag("Unknown tag in X.509 cert",
 								v3_exts_data.type_tag, v3_exts_data.class_tag);
 
@@ -187,7 +187,7 @@ string X509_Certificate::end_time() const
 Vector!string
 X509_Certificate::subject_info(in string what) const
 {
-	return subject.get(X509_DN::deref_info_field(what));
+	return subject.get(X509_DN.deref_info_field(what));
 }
 
 /*
@@ -196,7 +196,7 @@ X509_Certificate::subject_info(in string what) const
 Vector!string
 X509_Certificate::issuer_info(in string what) const
 {
-	return issuer.get(X509_DN::deref_info_field(what));
+	return issuer.get(X509_DN.deref_info_field(what));
 }
 
 /*
@@ -208,7 +208,7 @@ Public_Key* X509_Certificate::subject_public_key() const
 		ASN1::put_in_sequence(this.subject_public_key_bits()));
 }
 
-Vector!byte X509_Certificate::subject_public_key_bits() const
+Vector!ubyte X509_Certificate::subject_public_key_bits() const
 {
 	return hex_decode(subject.get1("X509.Certificate.public_key"));
 }
@@ -286,7 +286,7 @@ string X509_Certificate::crl_distribution_point() const
 /*
 * Return the authority key id
 */
-Vector!byte X509_Certificate::authority_key_id() const
+Vector!ubyte X509_Certificate::authority_key_id() const
 {
 	return issuer.get1_memvec("X509v3.AuthorityKeyIdentifier");
 }
@@ -294,7 +294,7 @@ Vector!byte X509_Certificate::authority_key_id() const
 /*
 * Return the subject key id
 */
-Vector!byte X509_Certificate::subject_key_id() const
+Vector!ubyte X509_Certificate::subject_key_id() const
 {
 	return subject.get1_memvec("X509v3.SubjectKeyIdentifier");
 }
@@ -302,7 +302,7 @@ Vector!byte X509_Certificate::subject_key_id() const
 /*
 * Return the certificate serial number
 */
-Vector!byte X509_Certificate::serial_number() const
+Vector!ubyte X509_Certificate::serial_number() const
 {
 	return subject.get1_memvec("X509.Certificate.serial");
 }
@@ -315,7 +315,7 @@ X509_DN X509_Certificate::issuer_dn() const
 	return create_dn(issuer);
 }
 
-Vector!byte X509_Certificate::raw_issuer_dn() const
+Vector!ubyte X509_Certificate::raw_issuer_dn() const
 {
 	return issuer.get1_memvec("X509.Certificate.dn_bits");
 }
@@ -328,7 +328,7 @@ X509_DN X509_Certificate::subject_dn() const
 	return create_dn(subject);
 }
 
-Vector!byte X509_Certificate::raw_subject_dn() const
+Vector!ubyte X509_Certificate::raw_subject_dn() const
 {
 	return subject.get1_memvec("X509.Certificate.dn_bits");
 }

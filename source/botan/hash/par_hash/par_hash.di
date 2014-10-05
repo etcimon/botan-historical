@@ -25,7 +25,7 @@ class Parallel : public HashFunction
 		Parallel(in Vector!( HashFunction ) hashes);
 		~this();
 	private:
-		void add_data(const byte[], size_t);
-		void final_result(byte[]);
+		void add_data(const ubyte[], size_t);
+		void final_result(ubyte[]);
 		Vector!( HashFunction ) hashes;
 };

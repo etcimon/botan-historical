@@ -18,12 +18,12 @@ class EMSA
 		* @param input some data
 		* @param length length of input in bytes
 		*/
-		abstract void update(in byte* input, size_t length);
+		abstract void update(in ubyte* input, size_t length);
 
 		/**
 		* @return raw hash
 		*/
-		abstract SafeVector!byte raw_data();
+		abstract SafeVector!ubyte raw_data();
 
 		/**
 		* Return the encoding of a message
@@ -32,7 +32,7 @@ class EMSA
 		* @param rng a random number generator
 		* @return encoded signature
 		*/
-		abstract SafeVector!byte encoding_of(in SafeVector!byte msg,
+		abstract SafeVector!ubyte encoding_of(in SafeVector!ubyte msg,
 															size_t output_bits,
 															RandomNumberGenerator rng);
 
@@ -43,8 +43,8 @@ class EMSA
 		* @param key_bits the size of the key in bits
 		* @return true if coded is a valid encoding of raw, otherwise false
 		*/
-		abstract bool verify(in SafeVector!byte coded,
-								  in SafeVector!byte raw,
+		abstract bool verify(in SafeVector!ubyte coded,
+								  in SafeVector!ubyte raw,
 								  size_t key_bits);
 		~this() {}
 };

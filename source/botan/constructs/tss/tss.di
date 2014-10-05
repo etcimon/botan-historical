@@ -20,19 +20,19 @@ class RTSS_Share
 		* @param N the number of shares generated
 		* @param secret the secret to split
 		* @param secret_len the length of the secret
-		* @param identifier the 16 byte share identifier
+		* @param identifier the 16 ubyte share identifier
 		* @param rng the random number generator to use
 		*/
 		static Vector!( RTSS_Share )
-			split(byte M, byte N,
-					in byte* secret, ushort secret_len,
-					const byte identifier[16],
+			split(ubyte M, ubyte N,
+					in ubyte* secret, ushort secret_len,
+					const ubyte identifier[16],
 					RandomNumberGenerator rng);
 
 		/**
 		* @param shares the list of shares
 		*/
-		static SafeVector!byte
+		static SafeVector!ubyte
 		  reconstruct(in Vector!( RTSS_Share ) shares);
 
 		RTSS_Share() {}
@@ -50,7 +50,7 @@ class RTSS_Share
 		/**
 		* @return share identifier
 		*/
-		byte share_id() const;
+		ubyte share_id() const;
 
 		/**
 		* @return size of this share in bytes
@@ -62,5 +62,5 @@ class RTSS_Share
 		*/
 		bool initialized() const { return (contents.size() > 0); }
 	private:
-		SafeVector!byte contents;
+		SafeVector!ubyte contents;
 };

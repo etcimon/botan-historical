@@ -20,7 +20,7 @@ DH_PublicKey::DH_PublicKey(in DL_Group grp, ref const BigInt y1)
 /*
 * Return the public value for key agreement
 */
-Vector!byte DH_PublicKey::public_value() const
+Vector!ubyte DH_PublicKey::public_value() const
 {
 	return unlock(BigInt::encode_1363(y, group_p().bytes()));
 }
@@ -54,7 +54,7 @@ DH_PrivateKey::DH_PrivateKey(RandomNumberGenerator rng,
 * Load a DH private key
 */
 DH_PrivateKey::DH_PrivateKey(in AlgorithmIdentifier alg_id,
-									  in SafeVector!byte key_bits,
+									  in SafeVector!ubyte key_bits,
 									  RandomNumberGenerator rng) :
 	DL_Scheme_PrivateKey(alg_id, key_bits, DL_Group::ANSI_X9_42)
 {
@@ -67,7 +67,7 @@ DH_PrivateKey::DH_PrivateKey(in AlgorithmIdentifier alg_id,
 /*
 * Return the public value for key agreement
 */
-Vector!byte DH_PrivateKey::public_value() const
+Vector!ubyte DH_PrivateKey::public_value() const
 {
 	return DH_PublicKey::public_value();
 }
@@ -80,7 +80,7 @@ DH_KA_Operation::DH_KA_Operation(in DH_PrivateKey dh,
 	blinder = Blinder(k, powermod_x_p(inverse_mod(k, p)), p);
 }
 
-SafeVector!byte DH_KA_Operation::agree(in byte* w, size_t w_len)
+SafeVector!ubyte DH_KA_Operation::agree(in ubyte* w, size_t w_len)
 {
 	BigInt input = BigInt::decode(w, w_len);
 

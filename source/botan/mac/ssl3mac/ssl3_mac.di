@@ -29,10 +29,10 @@ class SSL3_MAC : public MessageAuthenticationCode
 		*/
 		SSL3_MAC(HashFunction hash);
 	private:
-		void add_data(const byte[], size_t);
-		void final_result(byte[]);
-		void key_schedule(const byte[], size_t);
+		void add_data(const ubyte[], size_t);
+		void final_result(ubyte[]);
+		void key_schedule(const ubyte[], size_t);
 
 		Unique!HashFunction m_hash;
-		SafeVector!byte m_ikey, m_okey;
+		SafeVector!ubyte m_ikey, m_okey;
 };

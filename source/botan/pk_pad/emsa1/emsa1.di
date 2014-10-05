@@ -22,15 +22,15 @@ class EMSA1 : public EMSA
 	package:
 		size_t hash_output_length() const { return m_hash.output_length(); }
 	private:
-		void update(const byte[], size_t);
-		SafeVector!byte raw_data();
+		void update(const ubyte[], size_t);
+		SafeVector!ubyte raw_data();
 
-		SafeVector!byte encoding_of(in SafeVector!byte msg,
+		SafeVector!ubyte encoding_of(in SafeVector!ubyte msg,
 												  size_t output_bits,
 												  RandomNumberGenerator rng);
 
-		bool verify(in SafeVector!byte coded,
-						in SafeVector!byte raw,
+		bool verify(in SafeVector!ubyte coded,
+						in SafeVector!ubyte raw,
 						size_t key_bits);
 
 		Unique!HashFunction m_hash;

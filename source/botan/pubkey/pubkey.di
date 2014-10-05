@@ -34,12 +34,12 @@ class PK_Encryptor
 
 		/**
 		* Encrypt a message.
-		* @param in the message as a byte array
-		* @param length the length of the above byte array
+		* @param in the message as a ubyte array
+		* @param length the length of the above ubyte array
 		* @param rng the random number source to use
 		* @return encrypted message
 		*/
-		Vector!byte encrypt(in byte* input, size_t length,
+		Vector!ubyte encrypt(in ubyte* input, size_t length,
 											RandomNumberGenerator rng) const
 		{
 			return enc(input, length, rng);
@@ -51,7 +51,7 @@ class PK_Encryptor
 		* @param rng the random number source to use
 		* @return encrypted message
 		*/
-		Vector!byte encrypt(Alloc)(in Vector!( byte, Alloc ) input,
+		Vector!ubyte encrypt(Alloc)(in Vector!( ubyte, Alloc ) input,
 										  RandomNumberGenerator rng) const
 		{
 			return enc(&input[0], input.size(), rng);
@@ -71,7 +71,7 @@ class PK_Encryptor
 		PK_Encryptor& operator=(in PK_Encryptor);
 
 	private:
-		abstract Vector!byte enc(in byte*, size_t,
+		abstract Vector!ubyte enc(in ubyte*, size_t,
 												 RandomNumberGenerator) const;
 };
 
@@ -83,11 +83,11 @@ class PK_Decryptor
 	public:
 		/**
 		* Decrypt a ciphertext.
-		* @param in the ciphertext as a byte array
-		* @param length the length of the above byte array
+		* @param in the ciphertext as a ubyte array
+		* @param length the length of the above ubyte array
 		* @return decrypted message
 		*/
-		SafeVector!byte decrypt(in byte* input, size_t length) const
+		SafeVector!ubyte decrypt(in ubyte* input, size_t length) const
 		{
 			return dec(input, length);
 		}
@@ -97,7 +97,7 @@ class PK_Decryptor
 		* @param in the ciphertext
 		* @return decrypted message
 		*/
-		SafeVector!byte decrypt(Alloc)(in Vector!( byte, Alloc ) input) const
+		SafeVector!ubyte decrypt(Alloc)(in Vector!( ubyte, Alloc ) input) const
 		{
 			return dec(&input[0], input.size());
 		}
@@ -109,7 +109,7 @@ class PK_Decryptor
 		PK_Decryptor& operator=(in PK_Decryptor);
 
 	private:
-		abstract SafeVector!byte dec(in byte*, size_t) const;
+		abstract SafeVector!ubyte dec(in ubyte*, size_t) const;
 };
 
 /**
@@ -122,12 +122,12 @@ class PK_Signer
 	public:
 		/**
 		* Sign a message.
-		* @param in the message to sign as a byte array
-		* @param length the length of the above byte array
+		* @param in the message to sign as a ubyte array
+		* @param length the length of the above ubyte array
 		* @param rng the rng to use
 		* @return signature
 		*/
-		Vector!byte sign_message(in byte* input, size_t length,
+		Vector!ubyte sign_message(in ubyte* input, size_t length,
 												  RandomNumberGenerator rng);
 
 		/**
@@ -136,32 +136,32 @@ class PK_Signer
 		* @param rng the rng to use
 		* @return signature
 		*/
-		Vector!byte sign_message(in Vector!byte input,
+		Vector!ubyte sign_message(in Vector!ubyte input,
 												 RandomNumberGenerator rng)
 		{ return sign_message(&input[0], input.size(), rng); }
 
-		Vector!byte sign_message(in SafeVector!byte input,
+		Vector!ubyte sign_message(in SafeVector!ubyte input,
 												 RandomNumberGenerator rng)
 		{ return sign_message(&input[0], input.size(), rng); }
 
 		/**
-		* Add a message part (single byte).
-		* @param in the byte to add
+		* Add a message part (single ubyte).
+		* @param in the ubyte to add
 		*/
-		void update(byte input) { update(&input, 1); }
+		void update(ubyte input) { update(&input, 1); }
 
 		/**
 		* Add a message part.
-		* @param in the message part to add as a byte array
-		* @param length the length of the above byte array
+		* @param in the message part to add as a ubyte array
+		* @param length the length of the above ubyte array
 		*/
-		void update(in byte* input, size_t length);
+		void update(in ubyte* input, size_t length);
 
 		/**
 		* Add a message part.
 		* @param in the message part to add
 		*/
-		void update(in Vector!byte input) { update(&input[0], input.size()); }
+		void update(in Vector!ubyte input) { update(&input[0], input.size()); }
 
 		/**
 		* Get the signature of the so far processed message (provided by the
@@ -169,7 +169,7 @@ class PK_Signer
 		* @param rng the rng to use
 		* @return signature of the total message
 		*/
-		Vector!byte signature(RandomNumberGenerator rng);
+		Vector!ubyte signature(RandomNumberGenerator rng);
 
 		/**
 		* Set the output format of the signature.
@@ -190,8 +190,8 @@ class PK_Signer
 					 Signature_Format format = IEEE_1363,
 					 Fault_Protection prot = ENABLE_FAULT_PROTECTION);
 	private:
-		bool self_test_signature(in Vector!byte msg,
-										 in Vector!byte sig) const;
+		bool self_test_signature(in Vector!ubyte msg,
+										 in Vector!ubyte sig) const;
 
 		Unique!PK_Ops::Signature m_op;
 		Unique!PK_Ops::Verification m_verify_op;
@@ -209,58 +209,58 @@ class PK_Verifier
 	public:
 		/**
 		* Verify a signature.
-		* @param msg the message that the signature belongs to, as a byte array
-		* @param msg_length the length of the above byte array msg
-		* @param sig the signature as a byte array
-		* @param sig_length the length of the above byte array sig
+		* @param msg the message that the signature belongs to, as a ubyte array
+		* @param msg_length the length of the above ubyte array msg
+		* @param sig the signature as a ubyte array
+		* @param sig_length the length of the above ubyte array sig
 		* @return true if the signature is valid
 		*/
-		bool verify_message(in byte* msg, size_t msg_length,
-								  in byte* sig, size_t sig_length);
+		bool verify_message(in ubyte* msg, size_t msg_length,
+								  in ubyte* sig, size_t sig_length);
 		/**
 		* Verify a signature.
 		* @param msg the message that the signature belongs to
 		* @param sig the signature
 		* @return true if the signature is valid
 		*/
-		bool verify_message(Alloc, Alloc2)(in Vector!( byte, Alloc ) msg,
-								  const Vector!( byte, Alloc2 )& sig)
+		bool verify_message(Alloc, Alloc2)(in Vector!( ubyte, Alloc ) msg,
+								  const Vector!( ubyte, Alloc2 )& sig)
 		{
 			return verify_message(&msg[0], msg.size(),
 										 &sig[0], sig.size());
 		}
 
 		/**
-		* Add a message part (single byte) of the message corresponding to the
+		* Add a message part (single ubyte) of the message corresponding to the
 		* signature to be verified.
-		* @param in the byte to add
+		* @param in the ubyte to add
 		*/
-		void update(byte input) { update(&in, 1); }
+		void update(ubyte input) { update(&in, 1); }
 
 		/**
 		* Add a message part of the message corresponding to the
 		* signature to be verified.
-		* @param msg_part the new message part as a byte array
-		* @param length the length of the above byte array
+		* @param msg_part the new message part as a ubyte array
+		* @param length the length of the above ubyte array
 		*/
-		void update(in byte* msg_part, size_t length);
+		void update(in ubyte* msg_part, size_t length);
 
 		/**
 		* Add a message part of the message corresponding to the
 		* signature to be verified.
 		* @param in the new message part
 		*/
-		void update(in Vector!byte input)
+		void update(in Vector!ubyte input)
 		{ update(&input[0], in.size()); }
 
 		/**
 		* Check the signature of the buffered message, i.e. the one build
 		* by successive calls to update.
-		* @param sig the signature to be verified as a byte array
-		* @param length the length of the above byte array
+		* @param sig the signature to be verified as a ubyte array
+		* @param length the length of the above ubyte array
 		* @return true if the signature is valid, false otherwise
 		*/
-		bool check_signature(in byte* sig, size_t length);
+		bool check_signature(in ubyte* sig, size_t length);
 
 		/**
 		* Check the signature of the buffered message, i.e. the one build
@@ -268,7 +268,7 @@ class PK_Verifier
 		* @param sig the signature to be verified
 		* @return true if the signature is valid, false otherwise
 		*/
-		bool check_signature(Alloc)(in Vector!( byte, Alloc ) sig)
+		bool check_signature(Alloc)(in Vector!( ubyte, Alloc ) sig)
 		{
 			return check_signature(&sig[0], sig.size());
 		}
@@ -289,8 +289,8 @@ class PK_Verifier
 						in string emsa,
 						Signature_Format format = IEEE_1363);
 	private:
-		bool validate_signature(in SafeVector!byte msg,
-										in byte* sig, size_t sig_len);
+		bool validate_signature(in SafeVector!ubyte msg,
+										in ubyte* sig, size_t sig_len);
 
 		Unique!PK_Ops::Verification m_op;
 		Unique!EMSA m_emsa;
@@ -313,9 +313,9 @@ class PK_Key_Agreement
 		* @param params_len the length of params in bytes
 		*/
 		SymmetricKey derive_key(size_t key_len,
-										in byte* in,
+										in ubyte* in,
 										size_t in_len,
-										in byte* params,
+										in ubyte* params,
 										size_t params_len) const;
 
 		/*
@@ -327,8 +327,8 @@ class PK_Key_Agreement
 		* @param params_len the length of params in bytes
 		*/
 		SymmetricKey derive_key(size_t key_len,
-										in Vector!byte input,
-										in byte* params,
+										in Vector!ubyte input,
+										in ubyte* params,
 										size_t params_len) const
 		{
 			return derive_key(key_len, &input[0], input.size(),
@@ -343,11 +343,11 @@ class PK_Key_Agreement
 		* @param params extra derivation params
 		*/
 		SymmetricKey derive_key(size_t key_len,
-										in byte* input, size_t in_len,
+										in ubyte* input, size_t in_len,
 										in string params = "") const
 		{
 			return derive_key(key_len, input, in_len,
-									cast(const byte*)(params.data()),
+									cast(const ubyte*)(params.data()),
 									params.length());
 		}
 
@@ -358,11 +358,11 @@ class PK_Key_Agreement
 		* @param params extra derivation params
 		*/
 		SymmetricKey derive_key(size_t key_len,
-										in Vector!byte input,
+										in Vector!ubyte input,
 										in string params = "") const
 		{
 			return derive_key(key_len, &input[0], input.size(),
-									cast(const byte*)(params.data()),
+									cast(const ubyte*)(params.data()),
 									params.length());
 		}
 
@@ -394,7 +394,7 @@ class PK_Encryptor_EME : public PK_Encryptor
 		PK_Encryptor_EME(in Public_Key key,
 							  in string eme);
 	private:
-		Vector!byte enc(in byte*, size_t,
+		Vector!ubyte enc(in ubyte*, size_t,
 									  RandomNumberGenerator rng) const;
 
 		Unique!PK_Ops::Encryption m_op;
@@ -415,7 +415,7 @@ class PK_Decryptor_EME : public PK_Decryptor
 		PK_Decryptor_EME(in Private_Key key,
 							  in string eme);
 	private:
-		SafeVector!byte dec(const byte[], size_t) const;
+		SafeVector!ubyte dec(const ubyte[], size_t) const;
 
 		Unique!PK_Ops::Decryption m_op;
 		Unique!EME m_eme;

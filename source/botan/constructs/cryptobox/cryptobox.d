@@ -37,11 +37,11 @@ const size_t PBKDF_OUTPUT_LEN = CIPHER_KEY_LEN + CIPHER_IV_LEN + MAC_KEY_LEN;
 
 }
 
-string encrypt(in byte* input, size_t input_len,
+string encrypt(in ubyte* input, size_t input_len,
 						  in string passphrase,
 						  RandomNumberGenerator rng)
 {
-	SafeVector!byte pbkdf_salt(PBKDF_SALT_LEN);
+	SafeVector!ubyte pbkdf_salt(PBKDF_SALT_LEN);
 	rng.randomize(&pbkdf_salt[0], pbkdf_salt.size());
 
 	PKCS5_PBKDF2 pbkdf(new HMAC(new SHA_512));
@@ -53,7 +53,7 @@ string encrypt(in byte* input, size_t input_len,
 		pbkdf_salt.size(),
 		PBKDF_ITERATIONS);
 
-	const byte* mk = master_key.begin();
+	const ubyte* mk = master_key.begin();
 
 	SymmetricKey cipher_key(&mk[0], CIPHER_KEY_LEN);
 	SymmetricKey mac_key(&mk[CIPHER_KEY_LEN], MAC_KEY_LEN);
@@ -76,7 +76,7 @@ string encrypt(in byte* input, size_t input_len,
 	*/
 	const size_t ciphertext_len = pipe.remaining(0);
 
-	Vector!byte out_buf(VERSION_CODE_LEN +
+	Vector!ubyte out_buf(VERSION_CODE_LEN +
 									  PBKDF_SALT_LEN +
 									  MAC_OUTPUT_LEN +
 									  ciphertext_len);
@@ -93,11 +93,11 @@ string encrypt(in byte* input, size_t input_len,
 	return PEM_Code::encode(out_buf, "BOTAN CRYPTOBOX MESSAGE");
 }
 
-string decrypt(in byte* input, size_t input_len,
+string decrypt(in ubyte* input, size_t input_len,
 						  in string passphrase)
 {
 	DataSource_Memory input_src(input, input_len);
-	SafeVector!byte ciphertext =
+	SafeVector!ubyte ciphertext =
 		PEM_Code::decode_check_label(input_src,
 											  "BOTAN CRYPTOBOX MESSAGE");
 
@@ -108,7 +108,7 @@ string decrypt(in byte* input, size_t input_len,
 		if (ciphertext[i] != get_byte(i, CRYPTOBOX_VERSION_CODE))
 			throw new Decoding_Error("Bad CryptoBox version");
 
-	const byte* pbkdf_salt = &ciphertext[VERSION_CODE_LEN];
+	const ubyte* pbkdf_salt = &ciphertext[VERSION_CODE_LEN];
 
 	PKCS5_PBKDF2 pbkdf(new HMAC(new SHA_512));
 
@@ -119,7 +119,7 @@ string decrypt(in byte* input, size_t input_len,
 		PBKDF_SALT_LEN,
 		PBKDF_ITERATIONS);
 
-	const byte* mk = master_key.begin();
+	const ubyte* mk = master_key.begin();
 
 	SymmetricKey cipher_key(&mk[0], CIPHER_KEY_LEN);
 	SymmetricKey mac_key(&mk[CIPHER_KEY_LEN], MAC_KEY_LEN);
@@ -136,7 +136,7 @@ string decrypt(in byte* input, size_t input_len,
 	pipe.process_msg(&ciphertext[ciphertext_offset],
 						  ciphertext.size() - ciphertext_offset);
 
-	byte computed_mac[MAC_OUTPUT_LEN];
+	ubyte computed_mac[MAC_OUTPUT_LEN];
 	pipe.read(computed_mac, MAC_OUTPUT_LEN, 1);
 
 	if (!same_mem(computed_mac,
@@ -150,7 +150,7 @@ string decrypt(in byte* input, size_t input_len,
 string decrypt(in string input,
 						  in string passphrase)
 {
-	return decrypt(cast(in byte*)(input[0]),
+	return decrypt(cast(in ubyte*)(input[0]),
 						input.size(),
 						passphrase);
 }

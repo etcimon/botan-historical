@@ -17,5 +17,5 @@ class SHA_160_X86_32 : public SHA_160
 		// Note 81 instead of normal 80: x86-32 asm needs an extra temp
 		SHA_160_X86_32() : SHA_160(81) {}
 	private:
-		void compress_n(const byte[], size_t blocks);
+		void compress_n(const ubyte[], size_t blocks);
 };

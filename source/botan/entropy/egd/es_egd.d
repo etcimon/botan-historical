@@ -59,7 +59,7 @@ int EGD_EntropySource::EGD_Socket::open_socket(in string path)
 /**
 * Attempt to read entropy from EGD
 */
-size_t EGD_EntropySource::EGD_Socket::read(ref byte[] outbuf)
+size_t EGD_EntropySource::EGD_Socket::read(ref ubyte[] outbuf)
 {
 	size_t length = outbuf.length;
 	if (length == 0)
@@ -75,13 +75,13 @@ size_t EGD_EntropySource::EGD_Socket::read(ref byte[] outbuf)
 	try
 	{
 		// 1 == EGD command for non-blocking read
-		byte[2] egd_read_command = {
-			1, cast(byte)(std.algorithm.min<size_t>(length, 255)) };
+		ubyte[2] egd_read_command = {
+			1, cast(ubyte)(std.algorithm.min<size_t>(length, 255)) };
 
 		if (::write(m_fd, egd_read_command, 2) != 2)
 			throw new Exception("Writing entropy read command to EGD failed");
 
-		byte out_len = 0;
+		ubyte out_len = 0;
 		if (::read(m_fd, &out_len, 1) != 1)
 			throw new Exception("Reading response length from EGD failed");
 
@@ -136,7 +136,7 @@ void EGD_EntropySource::poll(Entropy_Accumulator& accum)
 {
 	const size_t READ_ATTEMPT = 32;
 
-	SafeVector!byte io_buffer = accum.get_io_buffer(READ_ATTEMPT);
+	SafeVector!ubyte io_buffer = accum.get_io_buffer(READ_ATTEMPT);
 
 	for (size_t i = 0; i != sockets.size(); ++i)
 	{

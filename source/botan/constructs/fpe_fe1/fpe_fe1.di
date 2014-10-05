@@ -22,7 +22,7 @@ namespace FPE {
 */
 BigInt fe1_encrypt(in BigInt n, ref const BigInt X,
 									  const SymmetricKey& key,
-									  in Vector!byte tweak);
+									  in Vector!ubyte tweak);
 
 /**
 * Decrypt X from and onto the group Z_n using key and tweak
@@ -33,6 +33,6 @@ BigInt fe1_encrypt(in BigInt n, ref const BigInt X,
 */
 BigInt fe1_decrypt(in BigInt n, ref const BigInt X,
 									  const SymmetricKey& key,
-									  in Vector!byte tweak);
+									  in Vector!ubyte tweak);
 
 }

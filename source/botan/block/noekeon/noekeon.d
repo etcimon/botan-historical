@@ -73,7 +73,7 @@ void gamma(ref uint A0, ref uint A1, ref uint A2, ref uint A3)
 /*
 * Noekeon Round Constants
 */
-immutable byte[] Noekeon::RC = {
+immutable ubyte[] Noekeon::RC = {
 	0x80, 0x1B, 0x36, 0x6C, 0xD8, 0xAB, 0x4D, 0x9A,
 	0x2F, 0x5E, 0xBC, 0x63, 0xC6, 0x97, 0x35, 0x6A,
 	0xD4 };
@@ -81,7 +81,7 @@ immutable byte[] Noekeon::RC = {
 /*
 * Noekeon Encryption
 */
-void Noekeon::encrypt_n(byte* input, byte* output, size_t blocks) const
+void Noekeon::encrypt_n(ubyte* input, ubyte* output, size_t blocks) const
 {
 	for (size_t i = 0; i != blocks; ++i)
 	{
@@ -119,7 +119,7 @@ void Noekeon::encrypt_n(byte* input, byte* output, size_t blocks) const
 /*
 * Noekeon Encryption
 */
-void Noekeon::decrypt_n(byte* input, byte* output, size_t blocks) const
+void Noekeon::decrypt_n(ubyte* input, ubyte* output, size_t blocks) const
 {
 	for (size_t i = 0; i != blocks; ++i)
 	{
@@ -157,7 +157,7 @@ void Noekeon::decrypt_n(byte* input, byte* output, size_t blocks) const
 /*
 * Noekeon Key Schedule
 */
-void Noekeon::key_schedule(in byte* key, size_t)
+void Noekeon::key_schedule(in ubyte* key, size_t)
 {
 	uint A0 = load_be!uint(key, 0);
 	uint A1 = load_be!uint(key, 1);

@@ -47,7 +47,7 @@ namespace SHA2_64 {
 * SHA-{384,512} Compression Function
 */
 void compress(secure_vector!ulong& digest,
-				  in byte* input, size_t blocks)
+				  in ubyte* input, size_t blocks)
 {
 	ulong A = digest[0], B = digest[1], C = digest[2],
 			 D = digest[3], E = digest[4], F = digest[5],
@@ -173,7 +173,7 @@ void compress(secure_vector!ulong& digest,
 /*
 * SHA-384 compression function
 */
-void SHA_384::compress_n(in byte* input, size_t blocks)
+void SHA_384::compress_n(in ubyte* input, size_t blocks)
 {
 	SHA2_64::compress(digest, input, blocks);
 }
@@ -181,7 +181,7 @@ void SHA_384::compress_n(in byte* input, size_t blocks)
 /*
 * Copy out the digest
 */
-void SHA_384::copy_out(byte* output)
+void SHA_384::copy_out(ubyte* output)
 {
 	for (size_t i = 0; i != output_length(); i += 8)
 		store_be(digest[i/8], output + i);
@@ -206,7 +206,7 @@ void SHA_384::clear()
 /*
 * SHA-512 compression function
 */
-void SHA_512::compress_n(in byte* input, size_t blocks)
+void SHA_512::compress_n(in ubyte* input, size_t blocks)
 {
 	SHA2_64::compress(digest, input, blocks);
 }
@@ -214,7 +214,7 @@ void SHA_512::compress_n(in byte* input, size_t blocks)
 /*
 * Copy out the digest
 */
-void SHA_512::copy_out(byte* output)
+void SHA_512::copy_out(ubyte* output)
 {
 	for (size_t i = 0; i != output_length(); i += 8)
 		store_be(digest[i/8], output + i);

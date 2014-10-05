@@ -10,7 +10,7 @@ import botan.emsa1_bsi;
 /*
 * EMSA1 BSI Encode Operation
 */
-SafeVector!byte EMSA1_BSI::encoding_of(in SafeVector!byte msg,
+SafeVector!ubyte EMSA1_BSI::encoding_of(in SafeVector!ubyte msg,
 														size_t output_bits,
 														RandomNumberGenerator)
 {

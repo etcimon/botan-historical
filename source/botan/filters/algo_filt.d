@@ -61,7 +61,7 @@ void StreamCipher_Filter::set_iv(in InitializationVector iv)
 /*
 * Write data into a StreamCipher_Filter
 */
-void StreamCipher_Filter::write(in byte* input, size_t length)
+void StreamCipher_Filter::write(in ubyte* input, size_t length)
 {
 	while(length)
 	{
@@ -89,7 +89,7 @@ Hash_Filter::Hash_Filter(in string algo_spec,
 */
 void Hash_Filter::end_msg()
 {
-	SafeVector!byte output = hash.flush();
+	SafeVector!ubyte output = hash.flush();
 	if (OUTPUT_LENGTH)
 		send(output, std.algorithm.min<size_t>(OUTPUT_LENGTH, output.size()));
 	else
@@ -122,7 +122,7 @@ MAC_Filter::MAC_Filter(in string mac_name, const SymmetricKey& key,
 */
 void MAC_Filter::end_msg()
 {
-	SafeVector!byte output = mac.flush();
+	SafeVector!ubyte output = mac.flush();
 	if (OUTPUT_LENGTH)
 		send(output, std.algorithm.min<size_t>(OUTPUT_LENGTH, output.size()));
 	else

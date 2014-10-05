@@ -18,7 +18,7 @@ class Handshake_Message
 	public:
 		abstract Handshake_Type type() const;
 
-		abstract Vector!byte serialize() const;
+		abstract Vector!ubyte serialize() const;
 
 		~this() {}
 };

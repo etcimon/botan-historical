@@ -10,7 +10,7 @@ import botan.loadstor;
 /*
 * Whirlpool Compression Function
 */
-void Whirlpool::compress_n(in byte* input, size_t blocks)
+void Whirlpool::compress_n(in ubyte* input, size_t blocks)
 {
 	static immutable ulong[10] RC = {
 		0x1823C6E887B8014F, 0x36A6D2F5796F9152,
@@ -124,7 +124,7 @@ void Whirlpool::compress_n(in byte* input, size_t blocks)
 /*
 * Copy out the digest
 */
-void Whirlpool::copy_out(byte* output)
+void Whirlpool::copy_out(ubyte* output)
 {
 	for (size_t i = 0; i != output_length(); i += 8)
 		store_be(digest[i/8], output + i);

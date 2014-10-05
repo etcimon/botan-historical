@@ -30,7 +30,7 @@ void* gmp_malloc(size_t n)
 	else if (n % 2 == 0)
 		return secure_allocator<ushort>().allocate(n / 2);
 
-	return secure_allocator<byte>().allocate(n);
+	return secure_allocator<ubyte>().allocate(n);
 }
 
 /*
@@ -38,7 +38,7 @@ void* gmp_malloc(size_t n)
 */
 void gmp_free(void* ptr, size_t n)
 {
-	secure_allocator<byte>().deallocate(cast(byte*)(ptr), n);
+	secure_allocator<ubyte>().deallocate(cast(ubyte*)(ptr), n);
 }
 
 /*

@@ -32,11 +32,11 @@ class ANSI_X919_MAC : public MessageAuthenticationCode
 		ANSI_X919_MAC(in ANSI_X919_MAC);
 		ANSI_X919_MAC& operator=(in ANSI_X919_MAC);
 	private:
-		void add_data(const byte[], size_t);
-		void final_result(byte[]);
-		void key_schedule(const byte[], size_t);
+		void add_data(const ubyte[], size_t);
+		void final_result(ubyte[]);
+		void key_schedule(const ubyte[], size_t);
 
 		Unique!BlockCipher m_des1, m_des2;
-		SafeVector!byte m_state;
+		SafeVector!ubyte m_state;
 		size_t m_position;
 };

@@ -19,7 +19,7 @@ struct Response
 		Response() : m_status_code(0), m_status_message("Uninitialized") {}
 
 		Response(uint status_code, in string status_message,
-					in Vector!byte body,
+					in Vector!ubyte body,
 					const HashMap!(string, string)& headers) :
 			m_status_code(status_code),
 			m_status_message(status_message),
@@ -28,7 +28,7 @@ struct Response
 
 		uint status_code() const { return m_status_code; }
 
-		in Vector!byte body() const { return m_body; }
+		in Vector!ubyte body() const { return m_body; }
 
 		const HashMap!(string, string)& headers() const { return m_headers; }
 
@@ -43,7 +43,7 @@ struct Response
 	private:
 		uint m_status_code;
 		string m_status_message;
-		Vector!byte m_body;
+		Vector!ubyte m_body;
 		HashMap!(string, string) m_headers;
 };
 
@@ -63,13 +63,13 @@ Response http_sync(http_exch_fn fn,
 					  in string verb,
 					  in string url,
 					  in string content_type,
-					  in Vector!byte body,
+					  in Vector!ubyte body,
 					  size_t allowable_redirects);
 
 Response http_sync(in string verb,
 					  in string url,
 					  in string content_type,
-					  in Vector!byte body,
+					  in Vector!ubyte body,
 					  size_t allowable_redirects);
 
 Response GET_sync(in string url,
@@ -77,7 +77,7 @@ Response GET_sync(in string url,
 
 Response POST_sync(in string url,
 					  in string content_type,
-					  in Vector!byte body,
+					  in Vector!ubyte body,
 					  size_t allowable_redirects = 1);
 
 std::future<Response> GET_async(in string url,

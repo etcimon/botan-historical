@@ -9,43 +9,43 @@ import botan.hash_id;
 import botan.exceptn;
 namespace {
 
-immutable byte[] MD2_PKCS_ID = {
+immutable ubyte[] MD2_PKCS_ID = {
 0x30, 0x20, 0x30, 0x0C, 0x06, 0x08, 0x2A, 0x86, 0x48, 0x86,
 0xF7, 0x0D, 0x02, 0x02, 0x05, 0x00, 0x04, 0x10 };
 
-immutable byte[] MD5_PKCS_ID = {
+immutable ubyte[] MD5_PKCS_ID = {
 0x30, 0x20, 0x30, 0x0C, 0x06, 0x08, 0x2A, 0x86, 0x48, 0x86,
 0xF7, 0x0D, 0x02, 0x05, 0x05, 0x00, 0x04, 0x10 };
 
-immutable byte[] RIPEMD_128_PKCS_ID = {
+immutable ubyte[] RIPEMD_128_PKCS_ID = {
 0x30, 0x21, 0x30, 0x09, 0x06, 0x05, 0x2B, 0x24, 0x03, 0x02,
 0x02, 0x05, 0x00, 0x04, 0x14 };
 
-immutable byte[] RIPEMD_160_PKCS_ID = {
+immutable ubyte[] RIPEMD_160_PKCS_ID = {
 0x30, 0x21, 0x30, 0x09, 0x06, 0x05, 0x2B, 0x24, 0x03, 0x02,
 0x01, 0x05, 0x00, 0x04, 0x14 };
 
-immutable byte[] SHA_160_PKCS_ID = {
+immutable ubyte[] SHA_160_PKCS_ID = {
 0x30, 0x21, 0x30, 0x09, 0x06, 0x05, 0x2B, 0x0E, 0x03, 0x02,
 0x1A, 0x05, 0x00, 0x04, 0x14 };
 
-immutable byte[] SHA_224_PKCS_ID = {
+immutable ubyte[] SHA_224_PKCS_ID = {
 0x30, 0x2D, 0x30, 0x0D, 0x06, 0x09, 0x60, 0x86, 0x48, 0x01,
 0x65, 0x03, 0x04, 0x02, 0x04, 0x05, 0x00, 0x04, 0x1C };
 
-immutable byte[] SHA_256_PKCS_ID = {
+immutable ubyte[] SHA_256_PKCS_ID = {
 0x30, 0x31, 0x30, 0x0D, 0x06, 0x09, 0x60, 0x86, 0x48, 0x01,
 0x65, 0x03, 0x04, 0x02, 0x01, 0x05, 0x00, 0x04, 0x20 };
 
-immutable byte[] SHA_384_PKCS_ID = {
+immutable ubyte[] SHA_384_PKCS_ID = {
 0x30, 0x41, 0x30, 0x0D, 0x06, 0x09, 0x60, 0x86, 0x48, 0x01,
 0x65, 0x03, 0x04, 0x02, 0x02, 0x05, 0x00, 0x04, 0x30 };
 
-immutable byte[] SHA_512_PKCS_ID = {
+immutable ubyte[] SHA_512_PKCS_ID = {
 0x30, 0x51, 0x30, 0x0D, 0x06, 0x09, 0x60, 0x86, 0x48, 0x01,
 0x65, 0x03, 0x04, 0x02, 0x03, 0x05, 0x00, 0x04, 0x40 };
 
-immutable byte[] TIGER_PKCS_ID = {
+immutable ubyte[] TIGER_PKCS_ID = {
 0x30, 0x29, 0x30, 0x0D, 0x06, 0x09, 0x2B, 0x06, 0x01, 0x04,
 0x01, 0xDA, 0x47, 0x0C, 0x02, 0x05, 0x00, 0x04, 0x18 };
 
@@ -54,50 +54,50 @@ immutable byte[] TIGER_PKCS_ID = {
 /*
 * HashID as specified by PKCS
 */
-Vector!byte pkcs_hash_id(in string name)
+Vector!ubyte pkcs_hash_id(in string name)
 {
 	// Special case for SSL/TLS RSA signatures
 	if (name == "Parallel(MD5,SHA-160)")
-		return Vector!byte();
+		return Vector!ubyte();
 
 	if (name == "MD2")
-		return Vector!byte(MD2_PKCS_ID,
+		return Vector!ubyte(MD2_PKCS_ID,
 										 MD2_PKCS_ID + sizeof(MD2_PKCS_ID));
 
 	if (name == "MD5")
-		return Vector!byte(MD5_PKCS_ID,
+		return Vector!ubyte(MD5_PKCS_ID,
 										 MD5_PKCS_ID + sizeof(MD5_PKCS_ID));
 
 	if (name == "RIPEMD-128")
-		return Vector!byte(RIPEMD_128_PKCS_ID,
+		return Vector!ubyte(RIPEMD_128_PKCS_ID,
 										 RIPEMD_128_PKCS_ID + sizeof(RIPEMD_128_PKCS_ID));
 
 	if (name == "RIPEMD-160")
-		return Vector!byte(RIPEMD_160_PKCS_ID,
+		return Vector!ubyte(RIPEMD_160_PKCS_ID,
 										 RIPEMD_160_PKCS_ID + sizeof(RIPEMD_160_PKCS_ID));
 
 	if (name == "SHA-160")
-		return Vector!byte(SHA_160_PKCS_ID,
+		return Vector!ubyte(SHA_160_PKCS_ID,
 										 SHA_160_PKCS_ID + sizeof(SHA_160_PKCS_ID));
 
 	if (name == "SHA-224")
-		return Vector!byte(SHA_224_PKCS_ID,
+		return Vector!ubyte(SHA_224_PKCS_ID,
 										 SHA_224_PKCS_ID + sizeof(SHA_224_PKCS_ID));
 
 	if (name == "SHA-256")
-		return Vector!byte(SHA_256_PKCS_ID,
+		return Vector!ubyte(SHA_256_PKCS_ID,
 										 SHA_256_PKCS_ID + sizeof(SHA_256_PKCS_ID));
 
 	if (name == "SHA-384")
-		return Vector!byte(SHA_384_PKCS_ID,
+		return Vector!ubyte(SHA_384_PKCS_ID,
 										 SHA_384_PKCS_ID + sizeof(SHA_384_PKCS_ID));
 
 	if (name == "SHA-512")
-		return Vector!byte(SHA_512_PKCS_ID,
+		return Vector!ubyte(SHA_512_PKCS_ID,
 										 SHA_512_PKCS_ID + sizeof(SHA_512_PKCS_ID));
 
 	if (name == "Tiger(24,3)")
-		return Vector!byte(TIGER_PKCS_ID,
+		return Vector!ubyte(TIGER_PKCS_ID,
 										 TIGER_PKCS_ID + sizeof(TIGER_PKCS_ID));
 
 	throw new Invalid_Argument("No PKCS #1 identifier for " ~ name);
@@ -106,7 +106,7 @@ Vector!byte pkcs_hash_id(in string name)
 /*
 * HashID as specified by IEEE 1363/X9.31
 */
-byte ieee1363_hash_id(in string name)
+ubyte ieee1363_hash_id(in string name)
 {
 	if (name == "SHA-160")	 return 0x33;
 

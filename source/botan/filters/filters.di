@@ -35,7 +35,7 @@ class StreamCipher_Filter : public Keyed_Filter
 		* @param input data
 		* @param input_len length of input in bytes
 		*/
-		void write(in byte* input, size_t input_len);
+		void write(in ubyte* input, size_t input_len);
 
 		bool valid_iv_length(size_t iv_len) const
 		{ return cipher.valid_iv_length(iv_len); }
@@ -82,7 +82,7 @@ class StreamCipher_Filter : public Keyed_Filter
 
 		~this() { delete cipher; }
 	private:
-		SafeVector!byte buffer;
+		SafeVector!ubyte buffer;
 		StreamCipher cipher;
 };
 
@@ -92,7 +92,7 @@ class StreamCipher_Filter : public Keyed_Filter
 class Hash_Filter : public Filter
 {
 	public:
-		void write(in byte* input, size_t len) { hash.update(input, len); }
+		void write(in ubyte* input, size_t len) { hash.update(input, len); }
 		void end_msg();
 
 		string name() const { return hash.name(); }
@@ -130,7 +130,7 @@ class Hash_Filter : public Filter
 class MAC_Filter : public Keyed_Filter
 {
 	public:
-		void write(in byte* input, size_t len) { mac.update(input, len); }
+		void write(in ubyte* input, size_t len) { mac.update(input, len); }
 		void end_msg();
 
 		string name() const { return mac.name(); }

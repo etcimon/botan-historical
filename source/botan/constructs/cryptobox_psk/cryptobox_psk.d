@@ -27,16 +27,16 @@ const size_t MAC_OUTPUT_LENGTH = 32;
 
 }
 
-Vector!byte encrypt(in byte* input, size_t input_len,
+Vector!ubyte encrypt(in ubyte* input, size_t input_len,
 								  const SymmetricKey& master_key,
 								  RandomNumberGenerator rng)
 {
 	Unique!KDF kdf(get_kdf(CRYPTOBOX_KDF));
 
-	const SafeVector!byte cipher_key_salt =
+	const SafeVector!ubyte cipher_key_salt =
 		rng.random_vec(KEY_KDF_SALT_LENGTH);
 
-	const SafeVector!byte mac_key_salt =
+	const SafeVector!ubyte mac_key_salt =
 		rng.random_vec(KEY_KDF_SALT_LENGTH);
 
 	SymmetricKey cipher_key =
@@ -56,9 +56,9 @@ Vector!byte encrypt(in byte* input, size_t input_len,
 
 	Pipe pipe(get_cipher(CRYPTOBOX_CIPHER, cipher_key, cipher_iv, ENCRYPTION));
 	pipe.process_msg(input, input_len);
-	SafeVector!byte ctext = pipe.read_all(0);
+	SafeVector!ubyte ctext = pipe.read_all(0);
 
-	Vector!byte output(MAGIC_LENGTH);
+	Vector!ubyte output(MAGIC_LENGTH);
 	store_be(CRYPTOBOX_MAGIC, &output[0]);
 	output += cipher_key_salt;
 	output += mac_key_salt;
@@ -71,7 +71,7 @@ Vector!byte encrypt(in byte* input, size_t input_len,
 	return output;
 }
 
-SafeVector!byte decrypt(in byte* input, size_t input_len,
+SafeVector!ubyte decrypt(in ubyte* input, size_t input_len,
 									 const SymmetricKey& master_key)
 {
 	const size_t MIN_CTEXT_SIZE = 16; // due to using CBC with padding
@@ -91,9 +91,9 @@ SafeVector!byte decrypt(in byte* input, size_t input_len,
 
 	Unique!KDF kdf(get_kdf(CRYPTOBOX_KDF));
 
-	const byte* cipher_key_salt = &input[MAGIC_LENGTH];
+	const ubyte* cipher_key_salt = &input[MAGIC_LENGTH];
 
-	const byte* mac_key_salt = &input[MAGIC_LENGTH + KEY_KDF_SALT_LENGTH];
+	const ubyte* mac_key_salt = &input[MAGIC_LENGTH + KEY_KDF_SALT_LENGTH];
 
 	SymmetricKey mac_key = kdf.derive_key(MAC_KEY_LENGTH,
 														master_key.bits_of(),
@@ -104,7 +104,7 @@ SafeVector!byte decrypt(in byte* input, size_t input_len,
 	mac.set_key(mac_key);
 
 	mac.update(&input[0], input_len - MAC_OUTPUT_LENGTH);
-	SafeVector!byte computed_mac = mac.flush();
+	SafeVector!ubyte computed_mac = mac.flush();
 
 	if (!same_mem(&input[input_len - MAC_OUTPUT_LENGTH], &computed_mac[0], computed_mac.size()))
 		throw new Decoding_Error("MAC verification failed");

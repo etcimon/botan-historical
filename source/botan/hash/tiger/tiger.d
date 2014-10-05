@@ -40,7 +40,7 @@ namespace {
 /*
 * Tiger Compression Function
 */
-void Tiger::compress_n(in byte* input, size_t blocks)
+void Tiger::compress_n(in ubyte* input, size_t blocks)
 {
 	ulong A = digest[0], B = digest[1], C = digest[2];
 
@@ -70,7 +70,7 @@ void Tiger::compress_n(in byte* input, size_t blocks)
 /*
 * Copy out the digest
 */
-void Tiger::copy_out(byte* output)
+void Tiger::copy_out(ubyte* output)
 {
 	for (size_t i = 0; i != output_length(); ++i)
 		output[i] = get_byte(7 - (i % 8), digest[i/8]);
@@ -81,7 +81,7 @@ void Tiger::copy_out(byte* output)
 */
 void Tiger::pass(ref ulong A, ref ulong B, ref ulong C,
 					  const secure_vector!ulong& X,
-					  byte mul)
+					  ubyte mul)
 {
 	C ^= X[0];
 	A -= SBOX1[get_byte(7, C)] ^ SBOX2[get_byte(5, C)] ^

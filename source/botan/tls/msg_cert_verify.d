@@ -29,7 +29,7 @@ Certificate_Verify::Certificate_Verify(Handshake_IO& io,
 
 	if (state._version() == Protocol_Version::SSL_V3)
 	{
-		SafeVector!byte md5_sha = state.hash().final_ssl3(
+		SafeVector!ubyte md5_sha = state.hash().final_ssl3(
 			state.session_keys().master_secret());
 
 		if (priv_key.algo_name() == "DSA")
@@ -48,7 +48,7 @@ Certificate_Verify::Certificate_Verify(Handshake_IO& io,
 /*
 * Deserialize a Certificate Verify message
 */
-Certificate_Verify::Certificate_Verify(in Vector!byte buf,
+Certificate_Verify::Certificate_Verify(in Vector!ubyte buf,
 													Protocol_Version _version)
 {
 	TLS_Data_Reader reader("CertificateVerify", buf);
@@ -59,15 +59,15 @@ Certificate_Verify::Certificate_Verify(in Vector!byte buf,
 		m_sig_algo = Signature_Algorithms::sig_algo_name(reader.get_byte());
 	}
 
-	m_signature = reader.get_range!byte(2, 0, 65535);
+	m_signature = reader.get_range!ubyte(2, 0, 65535);
 }
 
 /*
 * Serialize a Certificate Verify message
 */
-Vector!byte Certificate_Verify::serialize() const
+Vector!ubyte Certificate_Verify::serialize() const
 {
-	Vector!byte buf;
+	Vector!ubyte buf;
 
 	if (m_hash_algo != "" && m_sig_algo != "")
 	{
@@ -98,7 +98,7 @@ bool Certificate_Verify::verify(const X509_Certificate cert,
 
 	if (state._version() == Protocol_Version::SSL_V3)
 	{
-		SafeVector!byte md5_sha = state.hash().final_ssl3(
+		SafeVector!ubyte md5_sha = state.hash().final_ssl3(
 			state.session_keys().master_secret());
 
 		return verifier.verify_message(&md5_sha[16], md5_sha.size()-16,

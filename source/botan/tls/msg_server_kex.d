@@ -89,7 +89,7 @@ Server_Key_Exchange::Server_Key_Exchange(Handshake_IO& io,
 
 		string group_id;
 		BigInt v;
-		Vector!byte salt;
+		Vector!ubyte salt;
 
 		const bool found = creds.srp_verifier("tls-server", hostname,
 														  srp_identifier,
@@ -136,7 +136,7 @@ Server_Key_Exchange::Server_Key_Exchange(Handshake_IO& io,
 /**
 * Deserialize a Server Key Exchange message
 */
-Server_Key_Exchange::Server_Key_Exchange(in Vector!byte buf,
+Server_Key_Exchange::Server_Key_Exchange(in Vector!ubyte buf,
 													  in string kex_algo,
 													  in string sig_algo,
 													  Protocol_Version _version) :
@@ -165,13 +165,13 @@ Server_Key_Exchange::Server_Key_Exchange(in Vector!byte buf,
 
 		for (size_t i = 0; i != 3; ++i)
 		{
-			BigInt v = BigInt::decode(reader.get_range!byte(2, 1, 65535));
+			BigInt v = BigInt::decode(reader.get_range!ubyte(2, 1, 65535));
 			append_tls_length_value(m_params, BigInt::encode(v), 2);
 		}
 	}
 	else if (kex_algo == "ECDH" || kex_algo == "ECDHE_PSK")
 	{
-		const byte curve_type = reader.get_byte();
+		const ubyte curve_type = reader.get_byte();
 
 		if (curve_type != 3)
 			throw new Decoding_Error("Server_Key_Exchange: Server sent non-named ECC curve");
@@ -180,7 +180,7 @@ Server_Key_Exchange::Server_Key_Exchange(in Vector!byte buf,
 
 		const string name = Supported_Elliptic_Curves::curve_id_to_name(curve_id);
 
-		Vector!byte ecdh_key = reader.get_range!byte(1, 1, 255);
+		Vector!ubyte ecdh_key = reader.get_range!ubyte(1, 1, 255);
 
 		if (name == "")
 			throw new Decoding_Error("Server_Key_Exchange: Server sent unknown named curve " ~
@@ -195,10 +195,10 @@ Server_Key_Exchange::Server_Key_Exchange(in Vector!byte buf,
 	{
 		// 2 bigints (N,g) then salt, then server B
 
-		const BigInt N = BigInt::decode(reader.get_range!byte(2, 1, 65535));
-		const BigInt g = BigInt::decode(reader.get_range!byte(2, 1, 65535));
-		Vector!byte salt = reader.get_range!byte(1, 1, 255);
-		const BigInt B = BigInt::decode(reader.get_range!byte(2, 1, 65535));
+		const BigInt N = BigInt::decode(reader.get_range!ubyte(2, 1, 65535));
+		const BigInt g = BigInt::decode(reader.get_range!ubyte(2, 1, 65535));
+		Vector!ubyte salt = reader.get_range!ubyte(1, 1, 255);
+		const BigInt B = BigInt::decode(reader.get_range!ubyte(2, 1, 65535));
 
 		append_tls_length_value(m_params, BigInt::encode(N), 2);
 		append_tls_length_value(m_params, BigInt::encode(g), 2);
@@ -216,7 +216,7 @@ Server_Key_Exchange::Server_Key_Exchange(in Vector!byte buf,
 			m_sig_algo = Signature_Algorithms::sig_algo_name(reader.get_byte());
 		}
 
-		m_signature = reader.get_range!byte(2, 0, 65535);
+		m_signature = reader.get_range!ubyte(2, 0, 65535);
 	}
 
 	reader.assert_done();
@@ -227,9 +227,9 @@ Server_Key_Exchange::~this() {}
 /**
 * Serialize a Server Key Exchange message
 */
-Vector!byte Server_Key_Exchange::serialize() const
+Vector!ubyte Server_Key_Exchange::serialize() const
 {
-	Vector!byte buf = params();
+	Vector!ubyte buf = params();
 
 	if (m_signature.size())
 	{

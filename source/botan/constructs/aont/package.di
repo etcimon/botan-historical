@@ -18,8 +18,8 @@ import botan.rng;
 */
 void aont_package(RandomNumberGenerator rng,
 									 BlockCipher cipher,
-									 in byte* input, size_t input_len,
-									 byte* output);
+									 in ubyte* input, size_t input_len,
+									 ubyte* output);
 
 /**
 * Rivest's Package Tranform (Inversion)
@@ -30,5 +30,5 @@ void aont_package(RandomNumberGenerator rng,
 *		  input_len - cipher.BLOCK_SIZE bytes long)
 */
 void aont_unpackage(BlockCipher cipher,
-										in byte* input, size_t input_len,
-										byte* output);
+										in ubyte* input, size_t input_len,
+										ubyte* output);

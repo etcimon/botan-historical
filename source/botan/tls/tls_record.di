@@ -37,11 +37,11 @@ class Connection_Cipher_State
 
 		AEAD_Mode aead() { return m_aead.get(); }
 
-		const SafeVector!byte aead_nonce(ulong seq);
+		const SafeVector!ubyte aead_nonce(ulong seq);
 
-		const SafeVector!byte aead_nonce(in byte* record);
+		const SafeVector!ubyte aead_nonce(in ubyte* record);
 
-		const SafeVector!byte format_ad(ulong seq, byte type,
+		const SafeVector!ubyte format_ad(ulong seq, ubyte type,
 														 Protocol_Version _version,
 														 ushort ptext_length);
 
@@ -51,7 +51,7 @@ class Connection_Cipher_State
 
 		MessageAuthenticationCode mac() { return m_mac.get(); }
 
-		SafeVector!byte cbc_state() { return m_block_cipher_cbc_state; }
+		SafeVector!ubyte cbc_state() { return m_block_cipher_cbc_state; }
 
 		size_t block_size() const { return m_block_size; }
 
@@ -75,12 +75,12 @@ class Connection_Cipher_State
 	private:
 		SysTime m_start_time;
 		Unique!BlockCipher m_block_cipher;
-		SafeVector!byte m_block_cipher_cbc_state;
+		SafeVector!ubyte m_block_cipher_cbc_state;
 		Unique!StreamCipher m_stream_cipher;
 		Unique!MessageAuthenticationCode m_mac;
 
 		Unique!AEAD_Mode m_aead;
-		SafeVector!byte m_nonce, m_ad;
+		SafeVector!ubyte m_nonce, m_ad;
 
 		size_t m_block_size = 0;
 		size_t m_iv_size = 0;
@@ -99,8 +99,8 @@ class Connection_Cipher_State
 * @param rng is a random number generator
 * @return number of bytes written to write_buffer
 */
-void write_record(SafeVector!byte write_buffer,
-						byte msg_type, in byte* msg, size_t msg_length,
+void write_record(SafeVector!ubyte write_buffer,
+						ubyte msg_type, in ubyte* msg, size_t msg_length,
 						Protocol_Version _version,
 						ulong msg_sequence,
 						Connection_Cipher_State cipherstate,
@@ -110,10 +110,10 @@ void write_record(SafeVector!byte write_buffer,
 * Decode a TLS record
 * @return zero if full message, else number of bytes still needed
 */
-size_t read_record(SafeVector!byte read_buffer,
-						 in byte* input,
+size_t read_record(SafeVector!ubyte read_buffer,
+						 in ubyte* input,
 						 ref size_t input_consumed,
-						 SafeVector!byte record,
+						 SafeVector!ubyte record,
 						 ref ulong record_sequence,
 						 Protocol_Version record_version,
 						 Record_Type record_type,

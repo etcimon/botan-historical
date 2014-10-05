@@ -11,7 +11,7 @@ import botan.internal.rounding;
 /*
 * Combine cipher stream with message
 */
-void RC4::cipher(in byte* input, byte* output)
+void RC4::cipher(in ubyte* input, ubyte* output)
 {
 	while(length >= buffer.size() - position)
 	{
@@ -30,7 +30,7 @@ void RC4::cipher(in byte* input, byte* output)
 */
 void RC4::generate()
 {
-	byte SX, SY;
+	ubyte SX, SY;
 	for (size_t i = 0; i != buffer.size(); i += 4)
 	{
 		SX = state[X+1]; Y = (Y + SX) % 256; SY = state[Y];
@@ -56,7 +56,7 @@ void RC4::generate()
 /*
 * RC4 Key Schedule
 */
-void RC4::key_schedule(in byte* key, size_t length)
+void RC4::key_schedule(in ubyte* key, size_t length)
 {
 	state.resize(256);
 	buffer.resize(round_up<size_t>(DEFAULT_BUFFERSIZE, 4));
@@ -64,7 +64,7 @@ void RC4::key_schedule(in byte* key, size_t length)
 	position = X = Y = 0;
 
 	for (size_t i = 0; i != 256; ++i)
-		state[i] = cast(byte)(i);
+		state[i] = cast(ubyte)(i);
 
 	for (size_t i = 0, state_index = 0; i != 256; ++i)
 	{

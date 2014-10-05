@@ -15,7 +15,7 @@ import map;
 * @param headers a set of key/value pairs included in the header
 */
 string PGP_encode(
-	in byte* input,
+	in ubyte* input,
 	size_t length,
 	in string label,
 	in HashMap!(string, string) headers);
@@ -26,7 +26,7 @@ string PGP_encode(
 * @param label the human-readable label
 */
 string PGP_encode(
-	in byte* input,
+	in ubyte* input,
 	size_t length,
 	in string label);
 
@@ -36,7 +36,7 @@ string PGP_encode(
 * @param headers is set to any headers
 * @return decoded output as raw binary
 */
-SafeVector!byte PGP_decode(
+SafeVector!ubyte PGP_decode(
 	DataSource& source,
 	string& label,
 	HashMap!(string, string)& headers);
@@ -46,6 +46,6 @@ SafeVector!byte PGP_decode(
 * @param label is set to the human-readable label
 * @return decoded output as raw binary
 */
-SafeVector!byte PGP_decode(
+SafeVector!ubyte PGP_decode(
 	DataSource& source,
 	string& label);

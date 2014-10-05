@@ -17,7 +17,7 @@ namespace {
 class Null_Filter : public Filter
 {
 	public:
-		void write(in byte* input, size_t length)
+		void write(in ubyte* input, size_t length)
 		{ send(input, length); }
 
 		string name() const { return "Null"; }
@@ -111,7 +111,7 @@ void Pipe::set_default_msg(message_id msg)
 /*
 * Process a full message at once
 */
-void Pipe::process_msg(in byte* input, size_t length)
+void Pipe::process_msg(in ubyte* input, size_t length)
 {
 	start_msg();
 	write(input, length);
@@ -121,12 +121,12 @@ void Pipe::process_msg(in byte* input, size_t length)
 /*
 * Process a full message at once
 */
-void Pipe::process_msg(in SafeVector!byte input)
+void Pipe::process_msg(in SafeVector!ubyte input)
 {
 	process_msg(&input[0], input.size());
 }
 
-void Pipe::process_msg(in Vector!byte input)
+void Pipe::process_msg(in Vector!ubyte input)
 {
 	process_msg(&input[0], input.size());
 }
@@ -136,7 +136,7 @@ void Pipe::process_msg(in Vector!byte input)
 */
 void Pipe::process_msg(in string input)
 {
-	process_msg(cast(const byte*)(input.data()), input.length());
+	process_msg(cast(const ubyte*)(input.data()), input.length());
 }
 
 /*

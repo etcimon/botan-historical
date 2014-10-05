@@ -12,8 +12,8 @@ import botan.kdf;
 class SSL3_PRF : public KDF
 {
 	public:
-		SafeVector!byte derive(size_t, const byte[], size_t,
-										  const byte[], size_t) const;
+		SafeVector!ubyte derive(size_t, const ubyte[], size_t,
+										  const ubyte[], size_t) const;
 
 		string name() const { return "SSL3-PRF"; }
 		KDF* clone() const { return new SSL3_PRF; }

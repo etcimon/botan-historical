@@ -12,14 +12,14 @@ import botan.block_cipher;
 class RC6 : public Block_Cipher_Fixed_Params!(16, 1, 32)
 {
 	public:
-		void encrypt_n(byte* input, byte* output, size_t blocks) const;
-		void decrypt_n(byte* input, byte* output, size_t blocks) const;
+		void encrypt_n(ubyte* input, ubyte* output, size_t blocks) const;
+		void decrypt_n(ubyte* input, ubyte* output, size_t blocks) const;
 
 		void clear();
 		string name() const { return "RC6"; }
 		BlockCipher clone() const { return new RC6; }
 	private:
-		void key_schedule(in byte*, size_t);
+		void key_schedule(in ubyte*, size_t);
 
 		secure_vector!uint S;
 };

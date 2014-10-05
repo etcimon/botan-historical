@@ -55,17 +55,17 @@ public:
 		set_key(key.begin(), key.length());
 	}
 	
-	void set_key(Alloc)(in Vector!( byte, Alloc ) key)
+	void set_key(Alloc)(in Vector!( ubyte, Alloc ) key)
 	{
 		set_key(&key[0], key.size());
 	}
 	
 	/**
 		* Set the symmetric key of this object.
-		* @param key the to be set as a byte array.
+		* @param key the to be set as a ubyte array.
 		* @param length in bytes of key param
 		*/
-	void set_key(in byte* key, size_t length)
+	void set_key(in ubyte* key, size_t length)
 	{
 		if (!valid_keylength(length))
 			throw new Invalid_Key_Length(name(), length);
@@ -80,6 +80,6 @@ private:
 		* @param key the key
 		* @param length of key
 		*/
-	abstract void key_schedule(in byte* key, size_t length);
+	abstract void key_schedule(in ubyte* key, size_t length);
 };
 

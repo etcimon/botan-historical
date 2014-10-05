@@ -8,7 +8,7 @@
 import botan.dl_algo;
 import botan.numthry;
 import botan.workfactor;
-import botan.der_enc;
+import botan.asn1.der_enc;
 import botan.asn1.ber_dec;
 size_t DL_Scheme_PublicKey::estimated_strength() const
 {
@@ -21,13 +21,13 @@ AlgorithmIdentifier DL_Scheme_PublicKey::algorithm_identifier() const
 										group.DER_encode(group_format()));
 }
 
-Vector!byte DL_Scheme_PublicKey::x509_subject_public_key() const
+Vector!ubyte DL_Scheme_PublicKey::x509_subject_public_key() const
 {
 	return DER_Encoder().encode(y).get_contents_unlocked();
 }
 
 DL_Scheme_PublicKey::DL_Scheme_PublicKey(in AlgorithmIdentifier alg_id,
-													  in SafeVector!byte key_bits,
+													  in SafeVector!ubyte key_bits,
 													  DL_Group::Format format)
 {
 	group.BER_decode(alg_id.parameters, format);
@@ -35,13 +35,13 @@ DL_Scheme_PublicKey::DL_Scheme_PublicKey(in AlgorithmIdentifier alg_id,
 	BER_Decoder(key_bits).decode(y);
 }
 
-SafeVector!byte DL_Scheme_PrivateKey::pkcs8_Private_Key() const
+SafeVector!ubyte DL_Scheme_PrivateKey::pkcs8_Private_Key() const
 {
 	return DER_Encoder().encode(x).get_contents();
 }
 
 DL_Scheme_PrivateKey::DL_Scheme_PrivateKey(in AlgorithmIdentifier alg_id,
-														 in SafeVector!byte key_bits,
+														 in SafeVector!ubyte key_bits,
 														 DL_Group::Format format)
 {
 	group.BER_decode(alg_id.parameters, format);

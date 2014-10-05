@@ -11,7 +11,7 @@ import botan.internal.xor_buf;
 import botan.internal.rounding;
 namespace {
 
-void poly_double_128(byte* output, in byte* input)
+void poly_double_128(ubyte* output, in ubyte* input)
 {
 	ulong X0 = load_le!ulong(input, 0);
 	ulong X1 = load_le!ulong(input, 1);
@@ -27,7 +27,7 @@ void poly_double_128(byte* output, in byte* input)
 	store_le(output, X0, X1);
 }
 
-void poly_double_64(byte* output, in byte* input)
+void poly_double_64(ubyte* output, in ubyte* input)
 {
 	ulong X = load_le!ulong(input, 0);
 	const bool carry = (X >> 63);
@@ -37,7 +37,7 @@ void poly_double_64(byte* output, in byte* input)
 	store_le(X, output);
 }
 
-void poly_double(byte* output, in byte* input)
+void poly_double(ubyte* output, in ubyte* input)
 {
 	if (size == 8)
 		poly_double_64(output, input);
@@ -93,7 +93,7 @@ bool XTS_Mode::valid_nonce_length(size_t n) const
 	return cipher().block_size() == n;
 }
 
-void XTS_Mode::key_schedule(in byte* key, size_t length)
+void XTS_Mode::key_schedule(in ubyte* key, size_t length)
 {
 	const size_t key_half = length / 2;
 
@@ -104,7 +104,7 @@ void XTS_Mode::key_schedule(in byte* key, size_t length)
 	m_tweak_cipher.set_key(&key[key_half], key_half);
 }
 
-SafeVector!byte XTS_Mode::start(in byte* nonce, size_t nonce_len)
+SafeVector!ubyte XTS_Mode::start(in ubyte* nonce, size_t nonce_len)
 {
 	if (!valid_nonce_length(nonce_len))
 		throw new Invalid_IV_Length(name(), nonce_len);
@@ -114,7 +114,7 @@ SafeVector!byte XTS_Mode::start(in byte* nonce, size_t nonce_len)
 
 	update_tweak(0);
 
-	return SafeVector!byte();
+	return SafeVector!ubyte();
 }
 
 void XTS_Mode::update_tweak(size_t which)
@@ -135,11 +135,11 @@ size_t XTS_Encryption::output_length(size_t input_length) const
 	return round_up(input_length, cipher().block_size());
 }
 
-void XTS_Encryption::update(SafeVector!byte buffer, size_t offset)
+void XTS_Encryption::update(SafeVector!ubyte buffer, size_t offset)
 {
 	BOTAN_ASSERT(buffer.size() >= offset, "Offset is sane");
 	const size_t sz = buffer.size() - offset;
-	byte* buf = &buffer[offset];
+	ubyte* buf = &buffer[offset];
 
 	const size_t BS = cipher().block_size();
 
@@ -164,11 +164,11 @@ void XTS_Encryption::update(SafeVector!byte buffer, size_t offset)
 	}
 }
 
-void XTS_Encryption::finish(SafeVector!byte buffer, size_t offset)
+void XTS_Encryption::finish(SafeVector!ubyte buffer, size_t offset)
 {
 	BOTAN_ASSERT(buffer.size() >= offset, "Offset is sane");
 	const size_t sz = buffer.size() - offset;
-	byte* buf = &buffer[offset];
+	ubyte* buf = &buffer[offset];
 
 	BOTAN_ASSERT(sz >= minimum_final_size(), "Have sufficient final input");
 
@@ -185,7 +185,7 @@ void XTS_Encryption::finish(SafeVector!byte buffer, size_t offset)
 		const size_t final_bytes = sz - full_blocks;
 		BOTAN_ASSERT(final_bytes > BS && final_bytes < 2*BS, "Left over size in expected range");
 
-		SafeVector!byte last(buf + full_blocks, buf + full_blocks + final_bytes);
+		SafeVector!ubyte last(buf + full_blocks, buf + full_blocks + final_bytes);
 		buffer.resize(full_blocks + offset);
 		update(buffer, offset);
 
@@ -214,11 +214,11 @@ size_t XTS_Decryption::output_length(size_t input_length) const
 	return input_length;
 }
 
-void XTS_Decryption::update(SafeVector!byte buffer, size_t offset)
+void XTS_Decryption::update(SafeVector!ubyte buffer, size_t offset)
 {
 	BOTAN_ASSERT(buffer.size() >= offset, "Offset is sane");
 	const size_t sz = buffer.size() - offset;
-	byte* buf = &buffer[offset];
+	ubyte* buf = &buffer[offset];
 
 	const size_t BS = cipher().block_size();
 
@@ -243,11 +243,11 @@ void XTS_Decryption::update(SafeVector!byte buffer, size_t offset)
 	}
 }
 
-void XTS_Decryption::finish(SafeVector!byte buffer, size_t offset)
+void XTS_Decryption::finish(SafeVector!ubyte buffer, size_t offset)
 {
 	BOTAN_ASSERT(buffer.size() >= offset, "Offset is sane");
 	const size_t sz = buffer.size() - offset;
-	byte* buf = &buffer[offset];
+	ubyte* buf = &buffer[offset];
 
 	BOTAN_ASSERT(sz >= minimum_final_size(), "Have sufficient final input");
 
@@ -264,7 +264,7 @@ void XTS_Decryption::finish(SafeVector!byte buffer, size_t offset)
 		const size_t final_bytes = sz - full_blocks;
 		BOTAN_ASSERT(final_bytes > BS && final_bytes < 2*BS, "Left over size in expected range");
 
-		SafeVector!byte last(buf + full_blocks, buf + full_blocks + final_bytes);
+		SafeVector!ubyte last(buf + full_blocks, buf + full_blocks + final_bytes);
 		buffer.resize(full_blocks + offset);
 		update(buffer, offset);
 

@@ -19,7 +19,7 @@ class Certificate_Store
 		* Subject DN and (optionally) key identifier
 		*/
 		abstract const X509_Certificate*
-			find_cert(in X509_DN subject_dn, in Vector!byte key_id) const;
+			find_cert(in X509_DN subject_dn, in Vector!ubyte key_id) const;
 
 		abstract const X509_CRL* find_crl_for(in X509_Certificate subject) const;
 
@@ -54,7 +54,7 @@ class Certificate_Store_In_Memory : public Certificate_Store
 
 		const X509_Certificate* find_cert(
 			const X509_DN& subject_dn,
-			in Vector!byte key_id) const override;
+			in Vector!ubyte key_id) const override;
 
 		const X509_CRL* find_crl_for(in X509_Certificate subject) const override;
 	private:
@@ -73,7 +73,7 @@ class Certificate_Store_Overlay : public Certificate_Store
 
 		const X509_Certificate* find_cert(
 			const X509_DN& subject_dn,
-			in Vector!byte key_id) const override;
+			in Vector!ubyte key_id) const override;
 	private:
 		const Vector!( X509_Certificate )& m_certs;
 };

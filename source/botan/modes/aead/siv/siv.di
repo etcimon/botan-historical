@@ -15,13 +15,13 @@ import botan.mac;
 class SIV_Mode : public AEAD_Mode
 {
 	public:
-		SafeVector!byte start(in byte* nonce, size_t nonce_len) override;
+		SafeVector!ubyte start(in ubyte* nonce, size_t nonce_len) override;
 
-		void update(SafeVector!byte blocks, size_t offset = 0) override;
+		void update(SafeVector!ubyte blocks, size_t offset = 0) override;
 
-		void set_associated_data_n(size_t n, in byte* ad, size_t ad_len);
+		void set_associated_data_n(size_t n, in ubyte* ad, size_t ad_len);
 
-		void set_associated_data(in byte* ad, size_t ad_len) override
+		void set_associated_data(in ubyte* ad, size_t ad_len) override
 		{
 			set_associated_data_n(0, ad, ad_len);
 		}
@@ -43,22 +43,22 @@ class SIV_Mode : public AEAD_Mode
 
 		StreamCipher& ctr() { return *m_ctr; }
 
-		void set_ctr_iv(SafeVector!byte V);
+		void set_ctr_iv(SafeVector!ubyte V);
 
-		SafeVector!byte msg_buf() { return m_msg_buf; }
+		SafeVector!ubyte msg_buf() { return m_msg_buf; }
 
-		SafeVector!byte S2V(in byte* text, size_t text_len);
+		SafeVector!ubyte S2V(in ubyte* text, size_t text_len);
 	private:
 		MessageAuthenticationCode& cmac() { return *m_cmac; }
 
-		void key_schedule(in byte* key, size_t length) override;
+		void key_schedule(in ubyte* key, size_t length) override;
 
 		const string m_name;
 
 		Unique!StreamCipher m_ctr;
 		Unique!MessageAuthenticationCode m_cmac;
-		SafeVector!byte m_nonce, m_msg_buf;
-		Vector!( SafeVector!byte ) m_ad_macs;
+		SafeVector!ubyte m_nonce, m_msg_buf;
+		Vector!( SafeVector!ubyte ) m_ad_macs;
 };
 
 /**
@@ -72,7 +72,7 @@ class SIV_Encryption : public SIV_Mode
 		*/
 		SIV_Encryption(BlockCipher cipher) : SIV_Mode(cipher) {}
 
-		void finish(SafeVector!byte final_block, size_t offset = 0) override;
+		void finish(SafeVector!ubyte final_block, size_t offset = 0) override;
 
 		size_t output_length(size_t input_length) const override
 		{ return input_length + tag_size(); }
@@ -91,7 +91,7 @@ class SIV_Decryption : public SIV_Mode
 		*/
 		SIV_Decryption(BlockCipher cipher) : SIV_Mode(cipher) {}
 
-		void finish(SafeVector!byte final_block, size_t offset = 0) override;
+		void finish(SafeVector!ubyte final_block, size_t offset = 0) override;
 
 		size_t output_length(size_t input_length) const override
 		{

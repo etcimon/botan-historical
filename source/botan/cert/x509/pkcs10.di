@@ -6,7 +6,7 @@
 */
 
 import botan.x509_obj;
-import botan.x509_dn;
+import botan.asn1.x509_dn;
 import botan.pkcs8;
 import botan.datastor;
 import botan.key_constraint;
@@ -29,7 +29,7 @@ class PKCS10_Request : public X509_Object
 		* Get the raw DER encoded public key.
 		* @return raw DER encoded public key
 		*/
-		Vector!byte raw_public_key() const;
+		Vector!ubyte raw_public_key() const;
 
 		/**
 		* Get the subject DN.
@@ -92,7 +92,7 @@ class PKCS10_Request : public X509_Object
 		* Create a PKCS#10 Request from binary data.
 		* @param vec a std::vector containing the DER value
 		*/
-		PKCS10_Request(in Vector!byte vec);
+		PKCS10_Request(in Vector!ubyte vec);
 	private:
 		void force_decode();
 		void handle_attribute(in Attribute);

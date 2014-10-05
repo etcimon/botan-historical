@@ -12,7 +12,7 @@ import botan.hex;
 /*
 * Encode a BigInt
 */
-void BigInt::encode(byte* output, ref const BigInt n, Base base)
+void BigInt::encode(ubyte* output, ref const BigInt n, Base base)
 {
 	if (base == Binary)
 	{
@@ -20,7 +20,7 @@ void BigInt::encode(byte* output, ref const BigInt n, Base base)
 	}
 	else if (base == Hexadecimal)
 	{
-		SafeVector!byte binary(n.encoded_size(Binary));
+		SafeVector!ubyte binary(n.encoded_size(Binary));
 		n.binary_encode(&binary[0]);
 
 		hex_encode(cast(char*)(output),
@@ -36,7 +36,7 @@ void BigInt::encode(byte* output, ref const BigInt n, Base base)
 		{
 			divide(copy, 10, copy, remainder);
 			output[output_size - 1 - j] =
-				Charset.digit2char(cast(byte)(remainder.word_at(0)));
+				Charset.digit2char(cast(ubyte)(remainder.word_at(0)));
 			if (copy.is_zero())
 				break;
 		}
@@ -48,9 +48,9 @@ void BigInt::encode(byte* output, ref const BigInt n, Base base)
 /*
 * Encode a BigInt
 */
-Vector!byte BigInt::encode(in BigInt n, Base base)
+Vector!ubyte BigInt::encode(in BigInt n, Base base)
 {
-	Vector!byte output(n.encoded_size(base));
+	Vector!ubyte output(n.encoded_size(base));
 	encode(&output[0], n, base);
 	if (base != Binary)
 		for (size_t j = 0; j != output.size(); ++j)
@@ -62,9 +62,9 @@ Vector!byte BigInt::encode(in BigInt n, Base base)
 /*
 * Encode a BigInt
 */
-SafeVector!byte BigInt::encode_locked(in BigInt n, Base base)
+SafeVector!ubyte BigInt::encode_locked(in BigInt n, Base base)
 {
-	SafeVector!byte output(n.encoded_size(base));
+	SafeVector!ubyte output(n.encoded_size(base));
 	encode(&output[0], n, base);
 	if (base != Binary)
 		for (size_t j = 0; j != output.size(); ++j)
@@ -76,7 +76,7 @@ SafeVector!byte BigInt::encode_locked(in BigInt n, Base base)
 /*
 * Encode a BigInt, with leading 0s if needed
 */
-SafeVector!byte BigInt::encode_1363(in BigInt n, size_t bytes)
+SafeVector!ubyte BigInt::encode_1363(in BigInt n, size_t bytes)
 {
 	const size_t n_bytes = n.bytes();
 	if (n_bytes > bytes)
@@ -84,7 +84,7 @@ SafeVector!byte BigInt::encode_1363(in BigInt n, size_t bytes)
 
 	const size_t leading_0s = bytes - n_bytes;
 
-	SafeVector!byte output(bytes);
+	SafeVector!ubyte output(bytes);
 	encode(&output[leading_0s], n, Binary);
 	return output;
 }
@@ -92,14 +92,14 @@ SafeVector!byte BigInt::encode_1363(in BigInt n, size_t bytes)
 /*
 * Decode a BigInt
 */
-BigInt BigInt::decode(in byte* buf, size_t length, Base base)
+BigInt BigInt::decode(in ubyte* buf, size_t length, Base base)
 {
 	BigInt r;
 	if (base == Binary)
 		r.binary_decode(buf, length);
 	else if (base == Hexadecimal)
 	{
-		SafeVector!byte binary;
+		SafeVector!ubyte binary;
 
 		if (length % 2)
 		{
@@ -130,7 +130,7 @@ BigInt BigInt::decode(in byte* buf, size_t length, Base base)
 				throw new Invalid_Argument("BigInt::decode: "
 											  "Invalid character in decimal input");
 
-			const byte x = Charset.char2digit(buf[i]);
+			const ubyte x = Charset.char2digit(buf[i]);
 
 			if (x >= 10)
 				throw new Invalid_Argument("BigInt: Invalid decimal string");

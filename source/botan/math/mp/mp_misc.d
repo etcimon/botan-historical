@@ -12,7 +12,7 @@ extern "C" {
 /*
 * Compare two MP integers
 */
-s32bit bigint_cmp(const word x[], size_t x_size,
+int bigint_cmp(const word x[], size_t x_size,
 						const word y[], size_t y_size)
 {
 	if (x_size < y_size) { return (-bigint_cmp(y, y_size, x, x_size)); }

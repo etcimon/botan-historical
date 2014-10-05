@@ -12,8 +12,8 @@ import botan.block_cipher;
 class XTEA : public Block_Cipher_Fixed_Params!(8, 16)
 {
 	public:
-		void encrypt_n(byte* input, byte* output, size_t blocks) const;
-		void decrypt_n(byte* input, byte* output, size_t blocks) const;
+		void encrypt_n(ubyte* input, ubyte* output, size_t blocks) const;
+		void decrypt_n(ubyte* input, ubyte* output, size_t blocks) const;
 
 		void clear();
 		string name() const { return "XTEA"; }
@@ -25,6 +25,6 @@ class XTEA : public Block_Cipher_Fixed_Params!(8, 16)
 		const secure_vector!uint& get_EK() const { return EK; }
 
 	private:
-		void key_schedule(in byte*, size_t);
+		void key_schedule(in ubyte*, size_t);
 		secure_vector!uint EK;
 };

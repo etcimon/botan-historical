@@ -229,7 +229,7 @@ uint gen_mask(uint input)
 /*
 * MARS Encryption
 */
-void MARS::encrypt_n(byte* input, byte* output, size_t blocks) const
+void MARS::encrypt_n(ubyte* input, ubyte* output, size_t blocks) const
 {
 	for (size_t i = 0; i != blocks; ++i)
 	{
@@ -272,7 +272,7 @@ void MARS::encrypt_n(byte* input, byte* output, size_t blocks) const
 /*
 * MARS Decryption
 */
-void MARS::decrypt_n(byte* input, byte* output, size_t blocks) const
+void MARS::decrypt_n(ubyte* input, ubyte* output, size_t blocks) const
 {
 	for (size_t i = 0; i != blocks; ++i)
 	{
@@ -315,7 +315,7 @@ void MARS::decrypt_n(byte* input, byte* output, size_t blocks) const
 /*
 * MARS Key Schedule
 */
-void MARS::key_schedule(in byte* key)
+void MARS::key_schedule(in ubyte* key)
 {
 	secure_vector!uint T(15);
 	for (size_t i = 0; i != length / 4; ++i)

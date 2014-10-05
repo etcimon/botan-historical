@@ -28,31 +28,31 @@ class RandomNumberGenerator
 		static Unique!RandomNumberGenerator make_rng(class ref Algorithm_Factory af);
 
 		/**
-		* Randomize a byte array.
-		* @param output the byte array to hold the random output.
-		* @param length the length of the byte array output.
+		* Randomize a ubyte array.
+		* @param output the ubyte array to hold the random output.
+		* @param length the length of the ubyte array output.
 		*/
-		abstract void randomize(byte* output, size_t length);
+		abstract void randomize(ubyte* output, size_t length);
 
 		/**
 		* Return a random vector
 		* @param bytes number of bytes in the result
 		* @return randomized vector of length bytes
 		*/
-		abstract SafeVector!byte random_vec(size_t bytes)
+		abstract SafeVector!ubyte random_vec(size_t bytes)
 		{
-			SafeVector!byte output(bytes);
+			SafeVector!ubyte output(bytes);
 			randomize(&output[0], output.size());
 			return output;
 		}
 
 		/**
-		* Return a random byte
-		* @return random byte
+		* Return a random ubyte
+		* @return random ubyte
 		*/
-		byte next_byte()
+		ubyte next_byte()
 		{
-			byte output;
+			ubyte output;
 			this.randomize(&output, 1);
 			return output;
 		}
@@ -82,10 +82,10 @@ class RandomNumberGenerator
 
 		/**
 		* Add entropy to this RNG.
-		* @param in a byte array containg the entropy to be added
-		* @param length the length of the byte array in
+		* @param in a ubyte array containg the entropy to be added
+		* @param length the length of the ubyte array in
 		*/
-		abstract void add_entropy(in byte* input, size_t length);
+		abstract void add_entropy(in ubyte* input, size_t length);
 
 		/*
 		* Never copy a RNG, create a new one
@@ -103,7 +103,7 @@ class RandomNumberGenerator
 class Null_RNG : public RandomNumberGenerator
 {
 	public:
-		void randomize(byte[], size_t) override { throw new PRNG_Unseeded("Null_RNG"); }
+		void randomize(ubyte[], size_t) override { throw new PRNG_Unseeded("Null_RNG"); }
 
 		void clear() override {}
 
@@ -111,7 +111,7 @@ class Null_RNG : public RandomNumberGenerator
 
 		void reseed(size_t) override {}
 		bool is_seeded() const override { return false; }
-		void add_entropy(const byte[], size_t) override {}
+		void add_entropy(const ubyte[], size_t) override {}
 };
 
 /**
@@ -120,7 +120,7 @@ class Null_RNG : public RandomNumberGenerator
 class Serialized_RNG : public RandomNumberGenerator
 {
 	public:
-		void randomize(byte* output)
+		void randomize(ubyte* output)
 		{
 			size_t len = output.length;
 			m_mutex.lock(); scope(exit) m_mutex.unlock();
@@ -151,7 +151,7 @@ class Serialized_RNG : public RandomNumberGenerator
 			m_rng.reseed(poll_bits);
 		}
 
-		void add_entropy(in byte* input, size_t len)
+		void add_entropy(in ubyte* input, size_t len)
 		{
 			m_mutex.lock(); scope(exit) m_mutex.unlock();
 			m_rng.add_entropy(input, len);

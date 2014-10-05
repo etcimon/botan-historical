@@ -15,7 +15,7 @@ class Zlib_Compression : public Filter
 	public:
 		string name() const { return "Zlib_Compression"; }
 
-		void write(in byte* input, size_t length);
+		void write(in ubyte* input, size_t length);
 		void start_msg();
 		void end_msg();
 
@@ -39,7 +39,7 @@ class Zlib_Compression : public Filter
 		const size_t level;
 		const bool raw_deflate;
 
-		SafeVector!byte buffer;
+		SafeVector!ubyte buffer;
 		class Zlib_Stream* zlib;
 };
 
@@ -51,7 +51,7 @@ class Zlib_Decompression : public Filter
 	public:
 		string name() const { return "Zlib_Decompression"; }
 
-		void write(in byte* input, size_t length);
+		void write(in ubyte* input, size_t length);
 		void start_msg();
 		void end_msg();
 
@@ -62,7 +62,7 @@ class Zlib_Decompression : public Filter
 
 		const bool raw_deflate;
 
-		SafeVector!byte buffer;
+		SafeVector!ubyte buffer;
 		class Zlib_Stream* zlib;
 		bool no_writes;
 };

@@ -19,8 +19,8 @@ import botan.hash;
 class Lion : public BlockCipher
 {
 	public:
-		void encrypt_n(byte* input, byte* output, size_t blocks) const override;
-		void decrypt_n(byte* input, byte* output, size_t blocks) const override;
+		void encrypt_n(ubyte* input, ubyte* output, size_t blocks) const override;
+		void decrypt_n(ubyte* input, ubyte* output, size_t blocks) const override;
 
 		size_t block_size() const override { return m_block_size; }
 
@@ -42,7 +42,7 @@ class Lion : public BlockCipher
 			  StreamCipher cipher,
 			  size_t block_size);
 	private:
-		void key_schedule(in byte*, size_t);
+		void key_schedule(in ubyte*, size_t);
 
 		size_t left_size() const { return m_hash.output_length(); }
 		size_t right_size() const { return m_block_size - left_size(); }
@@ -50,5 +50,5 @@ class Lion : public BlockCipher
 		const size_t m_block_size;
 		Unique!HashFunction m_hash;
 		Unique!StreamCipher m_cipher;
-		SafeVector!byte m_key1, m_key2;
+		SafeVector!ubyte m_key1, m_key2;
 };

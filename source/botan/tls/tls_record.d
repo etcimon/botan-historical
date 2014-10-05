@@ -82,7 +82,7 @@ Connection_Cipher_State::Connection_Cipher_State(Protocol_Version _version,
 	m_mac.set_key(mac_key);
 }
 
-in SafeVector!byte Connection_Cipher_State::aead_nonce(ulong seq)
+in SafeVector!ubyte Connection_Cipher_State::aead_nonce(ulong seq)
 {
 	BOTAN_ASSERT(m_aead, "Using AEAD mode");
 	BOTAN_ASSERT(m_nonce.size() == 12, "Expected nonce size");
@@ -90,8 +90,8 @@ in SafeVector!byte Connection_Cipher_State::aead_nonce(ulong seq)
 	return m_nonce;
 }
 
-in SafeVector!byte
-Connection_Cipher_State::aead_nonce(in byte* record)
+in SafeVector!ubyte
+Connection_Cipher_State::aead_nonce(in ubyte* record)
 {
 	size_t record_len = record.length;
 	BOTAN_ASSERT(m_aead, "Using AEAD mode");
@@ -101,9 +101,9 @@ Connection_Cipher_State::aead_nonce(in byte* record)
 	return m_nonce;
 }
 
-in SafeVector!byte
+in SafeVector!ubyte
 Connection_Cipher_State::format_ad(ulong msg_sequence,
-											  byte msg_type,
+											  ubyte msg_type,
 											  Protocol_Version _version,
 											  ushort msg_length)
 {
@@ -124,8 +124,8 @@ Connection_Cipher_State::format_ad(ulong msg_sequence,
 	return m_ad;
 }
 
-void write_record(SafeVector!byte output,
-						byte msg_type, in byte* msg, size_t msg_length,
+void write_record(SafeVector!ubyte output,
+						ubyte msg_type, in ubyte* msg, size_t msg_length,
 						Protocol_Version _version,
 						ulong msg_sequence,
 						Connection_Cipher_State* cipherstate,
@@ -244,12 +244,12 @@ void write_record(SafeVector!byte output,
 	}
 	else if (BlockCipher bc = cipherstate.block_cipher())
 	{
-		SafeVector!byte cbc_state = cipherstate.cbc_state();
+		SafeVector!ubyte cbc_state = cipherstate.cbc_state();
 
 		BOTAN_ASSERT(buf_size % block_size == 0,
 						 "Buffer is an even multiple of block size");
 
-		byte* buf = &output[header_size];
+		ubyte* buf = &output[header_size];
 
 		const size_t blocks = buf_size / block_size;
 
@@ -271,8 +271,8 @@ void write_record(SafeVector!byte output,
 
 namespace {
 
-size_t fill_buffer_to(SafeVector!byte readbuf,
-							 const byte*& input,
+size_t fill_buffer_to(SafeVector!ubyte readbuf,
+							 const ubyte*& input,
 							 size_t& input_size,
 							 size_t& input_consumed,
 							 size_t desired)
@@ -293,7 +293,7 @@ size_t fill_buffer_to(SafeVector!byte readbuf,
 /*
 * Checks the TLS padding. Returns 0 if the padding is invalid (we
 * count the padding_length field as part of the padding size so a
-* valid padding will always be at least one byte long), or the length
+* valid padding will always be at least one ubyte long), or the length
 * of the padding otherwise. This is actually padding_length + 1
 * because both the padding and padding_length fields are padding from
 * our perspective.
@@ -308,7 +308,7 @@ size_t fill_buffer_to(SafeVector!byte readbuf,
 */
 size_t tls_padding_check(bool sslv3_padding,
 								 size_t block_size,
-								 in byte* record)
+								 in ubyte* record)
 {
 	size_t record_len = record.length;
 	const size_t padding_length = record[(record_len-1)];
@@ -342,7 +342,7 @@ size_t tls_padding_check(bool sslv3_padding,
 	return cmp ? 0 : padding_length + 1;
 }
 
-void cbc_decrypt_record(byte[] record_contents,
+void cbc_decrypt_record(ubyte[] record_contents,
 								Connection_Cipher_State cipherstate,
 								const BlockCipher& bc)
 {
@@ -356,15 +356,15 @@ void cbc_decrypt_record(byte[] record_contents,
 
 	BOTAN_ASSERT(blocks >= 1, "At least one ciphertext block");
 
-	byte* buf = record_contents.ptr;
+	ubyte* buf = record_contents.ptr;
 
-	SafeVector!byte last_ciphertext(block_size);
+	SafeVector!ubyte last_ciphertext(block_size);
 	copy_mem(&last_ciphertext[0], &buf[0], block_size);
 
 	bc.decrypt(&buf[0]);
 	xor_buf(&buf[0], &cipherstate.cbc_state()[0], block_size);
 
-	SafeVector!byte last_ciphertext2;
+	SafeVector!ubyte last_ciphertext2;
 
 	for (size_t i = 1; i < blocks; ++i)
 	{
@@ -377,8 +377,8 @@ void cbc_decrypt_record(byte[] record_contents,
 	cipherstate.cbc_state() = last_ciphertext;
 }
 
-void decrypt_record(SafeVector!byte output,
-						  in byte* record_contents,
+void decrypt_record(SafeVector!ubyte output,
+						  in ubyte* record_contents,
 						  ulong record_sequence,
 						  Protocol_Version record_version,
 						  Record_Type record_type,
@@ -391,7 +391,7 @@ void decrypt_record(SafeVector!byte output,
 		const size_t nonce_length = 8; // fixme, take from ciphersuite
 
 		BOTAN_ASSERT(record_len > nonce_length, "Have data past the nonce");
-		const byte* msg = &record_contents[nonce_length];
+		const ubyte* msg = &record_contents[nonce_length];
 		const size_t msg_length = record_len - nonce_length;
 
 		const size_t ptext_size = aead.output_length(msg_length);
@@ -443,7 +443,7 @@ void decrypt_record(SafeVector!byte output,
 		if (record_len < mac_pad_iv_size)
 			throw new Decoding_Error("Record sent with invalid length");
 
-		const byte* plaintext_block = &record_contents[iv_size];
+		const ubyte* plaintext_block = &record_contents[iv_size];
 		const ushort plaintext_length = record_len - mac_pad_iv_size;
 
 		cipherstate.mac().update(
@@ -452,7 +452,7 @@ void decrypt_record(SafeVector!byte output,
 
 		cipherstate.mac().update(plaintext_block, plaintext_length);
 
-		Vector!byte mac_buf(mac_size);
+		Vector!ubyte mac_buf(mac_size);
 		cipherstate.mac().flushInto(&mac_buf[0]);
 
 		const size_t mac_offset = record_len - (mac_size + pad_size);
@@ -468,10 +468,10 @@ void decrypt_record(SafeVector!byte output,
 
 }
 
-size_t read_record(SafeVector!byte readbuf,
-						 in byte* input,
+size_t read_record(SafeVector!ubyte readbuf,
+						 in ubyte* input,
 						 ref size_t consumed,
-						 SafeVector!byte record,
+						 SafeVector!ubyte record,
 						 ref ulong record_sequence,
 						 Protocol_Version record_version,
 						 Record_Type record_type,
@@ -585,7 +585,7 @@ size_t read_record(SafeVector!byte readbuf,
 	if (sequence_numbers && sequence_numbers.already_seen(*record_sequence))
 		return 0;
 
-	byte* record_contents = &readbuf[header_size];
+	ubyte* record_contents = &readbuf[header_size];
 
 	if (epoch == 0) // Unencrypted initial handshake
 	{

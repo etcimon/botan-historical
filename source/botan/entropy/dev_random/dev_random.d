@@ -77,7 +77,7 @@ void Device_EntropySource::poll(Entropy_Accumulator& accum)
 	if (::select(max_fd + 1, &read_set, null, null, &timeout) < 0)
 		return;
 
-	SafeVector!byte io_buffer = accum.get_io_buffer(READ_ATTEMPT);
+	SafeVector!ubyte io_buffer = accum.get_io_buffer(READ_ATTEMPT);
 
 	for (size_t i = 0; i != m_devices.size(); ++i)
 	{

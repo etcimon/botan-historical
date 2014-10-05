@@ -14,7 +14,7 @@ import botan.crc24;
 * OpenPGP Base64 encoding
 */
 string PGP_encode(
-	in byte* input, size_t length,
+	in ubyte* input, size_t length,
 	in string label,
 	const HashMap!(string, string)& headers)
 {
@@ -54,7 +54,7 @@ string PGP_encode(
 /*
 * OpenPGP Base64 encoding
 */
-string PGP_encode(in byte* input, size_t length,
+string PGP_encode(in ubyte* input, size_t length,
 							  in string type)
 {
 	HashMap!(string, string) empty;
@@ -64,7 +64,7 @@ string PGP_encode(in byte* input, size_t length,
 /*
 * OpenPGP Base64 decoding
 */
-SafeVector!byte PGP_decode(DataSource& source,
+SafeVector!ubyte PGP_decode(DataSource& source,
 										string& label,
 										HashMap!(string, string)& headers)
 {
@@ -76,7 +76,7 @@ SafeVector!byte PGP_decode(DataSource& source,
 
 	while(position != PGP_HEADER1.length())
 	{
-		byte b;
+		ubyte b;
 		if (!source.read_byte(b))
 			throw new Decoding_Error("PGP: No PGP header found");
 		if (b == PGP_HEADER1[position])
@@ -89,7 +89,7 @@ SafeVector!byte PGP_decode(DataSource& source,
 	position = 0;
 	while(position != PGP_HEADER2.length())
 	{
-		byte b;
+		ubyte b;
 		if (!source.read_byte(b))
 			throw new Decoding_Error("PGP: No PGP header found");
 		if (b == PGP_HEADER2[position])
@@ -106,7 +106,7 @@ SafeVector!byte PGP_decode(DataSource& source,
 	while(!end_of_headers)
 	{
 		string this_header;
-		byte b = 0;
+		ubyte b = 0;
 		while(b != '')
 		{
 			if (!source.read_byte(b))
@@ -146,7 +146,7 @@ SafeVector!byte PGP_decode(DataSource& source,
 	string crc;
 	while(position != PGP_TRAILER.length())
 	{
-		byte b;
+		ubyte b;
 		if (!source.read_byte(b))
 			throw new Decoding_Error("PGP: No PGP trailer found");
 		if (b == PGP_TRAILER[position])
@@ -183,7 +183,7 @@ SafeVector!byte PGP_decode(DataSource& source,
 /*
 * OpenPGP Base64 decoding
 */
-SafeVector!byte PGP_decode(DataSource& source, string& label)
+SafeVector!ubyte PGP_decode(DataSource& source, string& label)
 {
 	HashMap!(string, string) ignored;
 	return PGP_decode(source, label, ignored);

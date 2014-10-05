@@ -29,8 +29,8 @@ ECDSA_Signature_Operation::ECDSA_Signature_Operation(in ECDSA_PrivateKey ecdsa) 
 {
 }
 
-SafeVector!byte
-ECDSA_Signature_Operation::sign(in byte* msg, size_t msg_len,
+SafeVector!ubyte
+ECDSA_Signature_Operation::sign(in ubyte* msg, size_t msg_len,
 										  RandomNumberGenerator rng)
 {
 	rng.add_entropy(msg, msg_len);
@@ -53,7 +53,7 @@ ECDSA_Signature_Operation::sign(in byte* msg, size_t msg_len,
 		s = mod_order.multiply(inverse_mod(k, order), mul_add(x, r, m));
 	}
 
-	SafeVector!byte output(2*order.bytes());
+	SafeVector!ubyte output(2*order.bytes());
 	r.binary_encode(&output[output.size() / 2 - r.bytes()]);
 	s.binary_encode(&output[output.size() - s.bytes()]);
 	return output;
@@ -66,8 +66,8 @@ ECDSA_Verification_Operation::ECDSA_Verification_Operation(in ECDSA_PublicKey ec
 {
 }
 
-bool ECDSA_Verification_Operation::verify(in byte* msg, size_t msg_len,
-														in byte* sig, size_t sig_len)
+bool ECDSA_Verification_Operation::verify(in ubyte* msg, size_t msg_len,
+														in ubyte* sig, size_t sig_len)
 {
 	if (sig_len != order.bytes()*2)
 		return false;

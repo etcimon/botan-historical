@@ -65,7 +65,7 @@ BigInt::BigInt(in string str)
 		base = Hexadecimal;
 	}
 
-	*this = decode(cast(const byte*)(str.data()) + markers,
+	*this = decode(cast(const ubyte*)(str.data()) + markers,
 						str.length() - markers, base);
 
 	if (negative) set_sign(Negative);
@@ -75,7 +75,7 @@ BigInt::BigInt(in string str)
 /*
 * Construct a BigInt from an encoded BigInt
 */
-BigInt::BigInt(in byte* input, size_t length, Base base)
+BigInt::BigInt(in ubyte* input, size_t length, Base base)
 {
 	*this = decode(input, length, base);
 }
@@ -100,7 +100,7 @@ void BigInt::grow_to(size_t n)
 /*
 * Comparison Function
 */
-s32bit BigInt::cmp(in BigInt other, bool check_signs) const
+int BigInt::cmp(in BigInt other, bool check_signs) const
 {
 	if (check_signs)
 	{
@@ -120,9 +120,9 @@ s32bit BigInt::cmp(in BigInt other, bool check_signs) const
 }
 
 /*
-* Return byte n of this number
+* Return ubyte n of this number
 */
-byte BigInt::byte_at(size_t n) const
+ubyte BigInt::byte_at(size_t n) const
 {
 	const size_t WORD_BYTES = sizeof(word);
 	size_t word_num = n / WORD_BYTES, byte_num = n % WORD_BYTES;
@@ -151,7 +151,7 @@ uint BigInt::get_substring(size_t offset, size_t length) const
 	ulong piece = 0;
 	for (size_t i = 0; i != 8; ++i)
 	{
-		const byte part = byte_at((offset / 8) + (7-i));
+		const ubyte part = byte_at((offset / 8) + (7-i));
 		piece = (piece << 8) | part;
 	}
 
@@ -312,7 +312,7 @@ BigInt BigInt::abs() const
 /*
 * Encode this number into bytes
 */
-void BigInt::binary_encode(byte* output) const
+void BigInt::binary_encode(ubyte* output) const
 {
 	const size_t sig_bytes = bytes();
 	for (size_t i = 0; i != sig_bytes; ++i)
@@ -322,7 +322,7 @@ void BigInt::binary_encode(byte* output) const
 /*
 * Set this number to the value in buf
 */
-void BigInt::binary_decode(in byte* buf, size_t length)
+void BigInt::binary_decode(in ubyte* buf, size_t length)
 {
 	const size_t WORD_BYTES = sizeof(word);
 

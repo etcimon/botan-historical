@@ -8,7 +8,7 @@
 import botan.internal.clmul;
 import immintrin.h;
 import wmmintrin.h;
-void gcm_multiply_clmul(byte[16] x, in byte[16] H)
+void gcm_multiply_clmul(ubyte[16] x, in ubyte[16] H)
 {
 	/*
 	* Algorithms 1 and 5 from Intel's CLMUL guide

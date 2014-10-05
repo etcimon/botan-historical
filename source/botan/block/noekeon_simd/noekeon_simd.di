@@ -14,8 +14,8 @@ class Noekeon_SIMD : public Noekeon
 	public:
 		size_t parallelism() const { return 4; }
 
-		void encrypt_n(byte* input, byte* output, size_t blocks) const;
-		void decrypt_n(byte* input, byte* output, size_t blocks) const;
+		void encrypt_n(ubyte* input, ubyte* output, size_t blocks) const;
+		void decrypt_n(ubyte* input, ubyte* output, size_t blocks) const;
 
 		BlockCipher clone() const { return new Noekeon_SIMD; }
 };

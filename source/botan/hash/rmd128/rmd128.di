@@ -21,8 +21,8 @@ class RIPEMD_128 : public MDx_HashFunction
 		RIPEMD_128() : MDx_HashFunction(64, false, true), M(16), digest(4)
 		{ clear(); }
 	private:
-		void compress_n(const byte*, size_t blocks);
-		void copy_out(byte*);
+		void compress_n(const ubyte*, size_t blocks);
+		void copy_out(ubyte*);
 
 		secure_vector!uint M, digest;
 };

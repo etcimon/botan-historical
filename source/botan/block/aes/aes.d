@@ -12,7 +12,7 @@ import botan.loadstor;
 import botan.rotate;
 namespace {
 
-immutable byte[256] SE = {
+immutable ubyte[256] SE = {
 	0x63, 0x7C, 0x77, 0x7B, 0xF2, 0x6B, 0x6F, 0xC5, 0x30, 0x01, 0x67, 0x2B,
 	0xFE, 0xD7, 0xAB, 0x76, 0xCA, 0x82, 0xC9, 0x7D, 0xFA, 0x59, 0x47, 0xF0,
 	0xAD, 0xD4, 0xA2, 0xAF, 0x9C, 0xA4, 0x72, 0xC0, 0xB7, 0xFD, 0x93, 0x26,
@@ -36,7 +36,7 @@ immutable byte[256] SE = {
 	0x8C, 0xA1, 0x89, 0x0D, 0xBF, 0xE6, 0x42, 0x68, 0x41, 0x99, 0x2D, 0x0F,
 	0xB0, 0x54, 0xBB, 0x16 };
 
-immutable byte[256] SD = {
+immutable ubyte[256] SD = {
 	0x52, 0x09, 0x6A, 0xD5, 0x30, 0x36, 0xA5, 0x38, 0xBF, 0x40, 0xA3, 0x9E,
 	0x81, 0xF3, 0xD7, 0xFB, 0x7C, 0xE3, 0x39, 0x82, 0x9B, 0x2F, 0xFF, 0x87,
 	0x34, 0x8E, 0x43, 0x44, 0xC4, 0xDE, 0xE9, 0xCB, 0x54, 0x7B, 0x94, 0x32,
@@ -409,10 +409,10 @@ immutable uint[1024] TD = {
 /*
 * AES Encryption
 */
-void aes_encrypt_n(byte* input, byte* output,
+void aes_encrypt_n(ubyte* input, ubyte* output,
 						 size_t blocks,
 						 const secure_vector!uint& EK,
-						 in SafeVector!byte ME)
+						 in SafeVector!ubyte ME)
 {
 	BOTAN_ASSERT(EK.size() && ME.size() == 16, "Key was set");
 
@@ -433,7 +433,7 @@ void aes_encrypt_n(byte* input, byte* output,
 		/* Use only the first 256 entries of the TE table and do the
 		* rotations directly in the code. This reduces the number of
 		* cache lines potentially used in the first round from 64 to 16
-		* (assuming a typical 64 byte cache line), which makes timing
+		* (assuming a typical 64 ubyte cache line), which makes timing
 		* attacks a little harder; the first round is particularly
 		* vulnerable.
 		*/
@@ -486,7 +486,7 @@ void aes_encrypt_n(byte* input, byte* output,
 
 		http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.88.4753
 
-		They recommend using a byte-wide table, which still allows an attack
+		They recommend using a ubyte-wide table, which still allows an attack
 		but increases the samples required from 2**13 to 2**25:
 
 		"""In addition to OpenSSL v. 0.9.8.(a), which was used in our
@@ -494,7 +494,7 @@ void aes_encrypt_n(byte* input, byte* output,
 		LibTomCrypt 1.09 use the original Rijndael C implementation with
 		very few changes and are highly vulnerable. The AES implementations
 		in libgcrypt v. 1.2.2 and Botan v. 1.4.2 are also vulnerable, but
-		use a smaller byte-wide final table which lessens the effectiveness
+		use a smaller ubyte-wide final table which lessens the effectiveness
 		of the attacks."""
 		*/
 
@@ -523,9 +523,9 @@ void aes_encrypt_n(byte* input, byte* output,
 /*
 * AES Decryption
 */
-void aes_decrypt_n(byte* input, byte* output, size_t blocks,
+void aes_decrypt_n(ubyte* input, ubyte* output, size_t blocks,
 						 const secure_vector!uint& DK,
-						 in SafeVector!byte MD)
+						 in SafeVector!ubyte MD)
 {
 	BOTAN_ASSERT(DK.size() && MD.size() == 16, "Key was set");
 
@@ -606,11 +606,11 @@ void aes_decrypt_n(byte* input, byte* output, size_t blocks,
 	}
 }
 
-void aes_key_schedule(in byte* key, size_t length,
+void aes_key_schedule(in ubyte* key, size_t length,
 							 secure_vector!uint& EK,
 							 secure_vector!uint& DK,
-							 SafeVector!byte ME,
-							 SafeVector!byte MD)
+							 SafeVector!ubyte ME,
+							 SafeVector!ubyte MD)
 {
 	immutable uint[10] RC = {
 		0x01000000, 0x02000000, 0x04000000, 0x08000000, 0x10000000,
@@ -677,17 +677,17 @@ void aes_key_schedule(in byte* key, size_t length,
 
 }
 
-void AES_128::encrypt_n(byte* input, byte* output, size_t blocks) const
+void AES_128::encrypt_n(ubyte* input, ubyte* output, size_t blocks) const
 {
 	aes_encrypt_n(input, output, blocks, EK, ME);
 }
 
-void AES_128::decrypt_n(byte* input, byte* output, size_t blocks) const
+void AES_128::decrypt_n(ubyte* input, ubyte* output, size_t blocks) const
 {
 	aes_decrypt_n(input, output, blocks, DK, MD);
 }
 
-void AES_128::key_schedule(in byte* key)
+void AES_128::key_schedule(in ubyte* key)
 {
 	aes_key_schedule(key, length, EK, DK, ME, MD);
 }
@@ -700,17 +700,17 @@ void AES_128::clear()
 	zap(MD);
 }
 
-void AES_192::encrypt_n(byte* input, byte* output, size_t blocks) const
+void AES_192::encrypt_n(ubyte* input, ubyte* output, size_t blocks) const
 {
 	aes_encrypt_n(input, output, blocks, EK, ME);
 }
 
-void AES_192::decrypt_n(byte* input, byte* output, size_t blocks) const
+void AES_192::decrypt_n(ubyte* input, ubyte* output, size_t blocks) const
 {
 	aes_decrypt_n(input, output, blocks, DK, MD);
 }
 
-void AES_192::key_schedule(in byte* key)
+void AES_192::key_schedule(in ubyte* key)
 {
 	aes_key_schedule(key, length, EK, DK, ME, MD);
 }
@@ -723,17 +723,17 @@ void AES_192::clear()
 	zap(MD);
 }
 
-void AES_256::encrypt_n(byte* input, byte* output, size_t blocks) const
+void AES_256::encrypt_n(ubyte* input, ubyte* output, size_t blocks) const
 {
 	aes_encrypt_n(input, output, blocks, EK, ME);
 }
 
-void AES_256::decrypt_n(byte* input, byte* output, size_t blocks) const
+void AES_256::decrypt_n(ubyte* input, ubyte* output, size_t blocks) const
 {
 	aes_decrypt_n(input, output, blocks, DK, MD);
 }
 
-void AES_256::key_schedule(in byte* key)
+void AES_256::key_schedule(in ubyte* key)
 {
 	aes_key_schedule(key, length, EK, DK, ME, MD);
 }

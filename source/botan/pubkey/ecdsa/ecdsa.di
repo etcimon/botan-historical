@@ -27,7 +27,7 @@ class ECDSA_PublicKey : public abstract EC_PublicKey
 			EC_PublicKey(dom_par, public_point) {}
 
 		ECDSA_PublicKey(in AlgorithmIdentifier alg_id,
-							 in SafeVector!byte key_bits) :
+							 in SafeVector!ubyte key_bits) :
 			EC_PublicKey(alg_id, key_bits) {}
 
 		/**
@@ -66,7 +66,7 @@ class ECDSA_PrivateKey : public ECDSA_PublicKey,
 		* @param key_bits PKCS #8 structure
 		*/
 		ECDSA_PrivateKey(in AlgorithmIdentifier alg_id,
-							  in SafeVector!byte key_bits) :
+							  in SafeVector!ubyte key_bits) :
 			EC_PrivateKey(alg_id, key_bits) {}
 
 		/**
@@ -91,7 +91,7 @@ class ECDSA_Signature_Operation : public PK_Ops::Signature
 	public:
 		ECDSA_Signature_Operation(in ECDSA_PrivateKey ecdsa);
 
-		SafeVector!byte sign(in byte* msg, size_t msg_len,
+		SafeVector!ubyte sign(in ubyte* msg, size_t msg_len,
 										RandomNumberGenerator rng);
 
 		size_t message_parts() const { return 2; }
@@ -119,8 +119,8 @@ class ECDSA_Verification_Operation : public PK_Ops::Verification
 
 		bool with_recovery() const { return false; }
 
-		bool verify(in byte* msg, size_t msg_len,
-						in byte* sig, size_t sig_len);
+		bool verify(in ubyte* msg, size_t msg_len,
+						in ubyte* sig, size_t sig_len);
 	private:
 		const PointGFp& base_point;
 		const PointGFp& public_point;

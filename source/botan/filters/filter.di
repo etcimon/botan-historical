@@ -22,10 +22,10 @@ class Filter
 
 		/**
 		* Write a portion of a message to this filter.
-		* @param input the input as a byte array
-		* @param length the length of the byte array input
+		* @param input the input as a ubyte array
+		* @param length the length of the ubyte array input
 		*/
-		abstract void write(in byte* input, size_t length);
+		abstract void write(in ubyte* input, size_t length);
 
 		/**
 		* Start a new message. Must be closed by end_msg() before another
@@ -51,28 +51,28 @@ class Filter
 		* @param in some input for the filter
 		* @param length the length of in
 		*/
-		abstract void send(in byte* input, size_t length);
+		abstract void send(in ubyte* input, size_t length);
 
 		/**
 		* @param in some input for the filter
 		*/
-		void send(byte input) { send(&input, 1); }
+		void send(ubyte input) { send(&input, 1); }
 
 		/**
 		* @param in some input for the filter
 		*/
-		void send(in SafeVector!byte input) { send(&input[0], input.size()); }
+		void send(in SafeVector!ubyte input) { send(&input[0], input.size()); }
 
 		/**
 		* @param in some input for the filter
 		*/
-		void send(in Vector!byte input) { send(&input[0], input.size()); }
+		void send(in Vector!ubyte input) { send(&input[0], input.size()); }
 
 		/**
 		* @param in some input for the filter
 		* @param length the number of bytes of in to send
 		*/
-		void send(in SafeVector!byte input)
+		void send(in SafeVector!ubyte input)
 		{
 			send(&input[0], length);
 		}
@@ -81,7 +81,7 @@ class Filter
 		* @param in some input for the filter
 		* @param length the number of bytes of in to send
 		*/
-		void send(in Vector!byte input)
+		void send(in Vector!ubyte input)
 		{
 			send(&input[0], length);
 		}
@@ -132,7 +132,7 @@ class Filter
 		void set_next(Filter* filters[], size_t count);
 		Filter* get_next() const;
 
-		SafeVector!byte write_queue;
+		SafeVector!ubyte write_queue;
 		Vector!( Filter* ) next;
 		size_t port_num, filter_owns;
 

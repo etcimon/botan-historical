@@ -10,9 +10,9 @@ import botan.internal.xor_buf;
 import stdexcept;
 namespace {
 
-void comb4p_round(SafeVector!byte output,
-						in SafeVector!byte input,
-						byte round_no,
+void comb4p_round(SafeVector!ubyte output,
+						in SafeVector!ubyte input,
+						ubyte round_no,
 						HashFunction& h1,
 						HashFunction& h2)
 {
@@ -22,7 +22,7 @@ void comb4p_round(SafeVector!byte output,
 	h1.update(&input[0], input.size());
 	h2.update(&input[0], input.size());
 
-	SafeVector!byte h_buf = h1.flush();
+	SafeVector!ubyte h_buf = h1.flush();
 	xor_buf(&output[0], &h_buf[0], std.algorithm.min(output.size(), h_buf.size()));
 
 	h_buf = h2.flush();
@@ -67,16 +67,16 @@ void Comb4P::clear()
 	m_hash2.update(0);
 }
 
-void Comb4P::add_data(in byte* input, size_t length)
+void Comb4P::add_data(in ubyte* input, size_t length)
 {
 	m_hash1.update(input, length);
 	m_hash2.update(input, length);
 }
 
-void Comb4P::final_result(byte* output)
+void Comb4P::final_result(ubyte* output)
 {
-	SafeVector!byte h1 = m_hash1.flush();
-	SafeVector!byte h2 = m_hash2.flush();
+	SafeVector!ubyte h1 = m_hash1.flush();
+	SafeVector!ubyte h2 = m_hash2.flush();
 
 	// First round
 	xor_buf(&h1[0], &h2[0], std.algorithm.min(h1.size(), h2.size()));

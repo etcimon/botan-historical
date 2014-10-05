@@ -9,7 +9,7 @@ import botan.eme_pkcs;
 /*
 * PKCS1 Pad Operation
 */
-SafeVector!byte EME_PKCS1v15::pad(in byte* input, size_t inlen,
+SafeVector!ubyte EME_PKCS1v15::pad(in ubyte* input, size_t inlen,
 												 size_t olen,
 												 RandomNumberGenerator rng) const
 {
@@ -20,7 +20,7 @@ SafeVector!byte EME_PKCS1v15::pad(in byte* input, size_t inlen,
 	if (inlen > olen - 10)
 		throw new Encoding_Error("PKCS1: Input is too large");
 
-	SafeVector!byte output(olen);
+	SafeVector!ubyte output(olen);
 
 	output[0] = 0x02;
 	for (size_t j = 1; j != olen - inlen - 1; ++j)
@@ -34,7 +34,7 @@ SafeVector!byte EME_PKCS1v15::pad(in byte* input, size_t inlen,
 /*
 * PKCS1 Unpad Operation
 */
-SafeVector!byte EME_PKCS1v15::unpad(in byte* input, size_t inlen,
+SafeVector!ubyte EME_PKCS1v15::unpad(in ubyte* input, size_t inlen,
 													size_t key_len) const
 {
 	if (inlen != key_len / 8 || inlen < 10 || input[0] != 0x02)
@@ -50,7 +50,7 @@ SafeVector!byte EME_PKCS1v15::unpad(in byte* input, size_t inlen,
 	if (seperator < 9)
 		throw new Decoding_Error("PKCS1::unpad");
 
-	return SafeVector!byte(&input[seperator + 1], &input[inlen]);
+	return SafeVector!ubyte(&input[seperator + 1], &input[inlen]);
 }
 
 /*

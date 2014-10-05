@@ -11,7 +11,7 @@ import botan.rotate;
 /*
 * RC2 Encryption
 */
-void RC2::encrypt_n(byte* input, byte* output, size_t blocks) const
+void RC2::encrypt_n(ubyte* input, ubyte* output, size_t blocks) const
 {
 	for (size_t i = 0; i != blocks; ++i)
 	{
@@ -53,7 +53,7 @@ void RC2::encrypt_n(byte* input, byte* output, size_t blocks) const
 /*
 * RC2 Decryption
 */
-void RC2::decrypt_n(byte* input, byte* output, size_t blocks) const
+void RC2::decrypt_n(ubyte* input, ubyte* output, size_t blocks) const
 {
 	for (size_t i = 0; i != blocks; ++i)
 	{
@@ -95,9 +95,9 @@ void RC2::decrypt_n(byte* input, byte* output, size_t blocks) const
 /*
 * RC2 Key Schedule
 */
-void RC2::key_schedule(in byte* key)
+void RC2::key_schedule(in ubyte* key)
 {
-	immutable byte[256] TABLE = {
+	immutable ubyte[256] TABLE = {
 		0xD9, 0x78, 0xF9, 0xC4, 0x19, 0xDD, 0xB5, 0xED, 0x28, 0xE9, 0xFD, 0x79,
 		0x4A, 0xA0, 0xD8, 0x9D, 0xC6, 0x7E, 0x37, 0x83, 0x2B, 0x76, 0x53, 0x8E,
 		0x62, 0x4C, 0x64, 0x88, 0x44, 0x8B, 0xFB, 0xA2, 0x17, 0x9A, 0x59, 0xF5,
@@ -121,7 +121,7 @@ void RC2::key_schedule(in byte* key)
 		0xC5, 0xF3, 0xDB, 0x47, 0xE5, 0xA5, 0x9C, 0x77, 0x0A, 0xA6, 0x20, 0x68,
 		0xFE, 0x7F, 0xC1, 0xAD };
 
-	SafeVector!byte L(128);
+	SafeVector!ubyte L(128);
 	copy_mem(&L[0], key, length);
 
 	for (size_t i = length; i != 128; ++i)
@@ -129,7 +129,7 @@ void RC2::key_schedule(in byte* key)
 
 	L[128-length] = TABLE[L[128-length]];
 
-	for (s32bit i = 127-length; i >= 0; --i)
+	for (int i = 127-length; i >= 0; --i)
 		L[i] = TABLE[L[i+1] ^ L[i+length]];
 
 	K.resize(64);
@@ -144,9 +144,9 @@ void RC2::clear()
 /*
 * Return the code of the effective key bits
 */
-byte RC2::EKB_code(size_t ekb)
+ubyte RC2::EKB_code(size_t ekb)
 {
-	immutable byte[256] EKB = {
+	immutable ubyte[256] EKB = {
 		0xBD, 0x56, 0xEA, 0xF2, 0xA2, 0xF1, 0xAC, 0x2A, 0xB0, 0x93, 0xD1, 0x9C,
 		0x1B, 0x33, 0xFD, 0xD0, 0x30, 0x04, 0xB6, 0xDC, 0x7D, 0xDF, 0x32, 0x4B,
 		0xF7, 0xCB, 0x45, 0x9B, 0x31, 0xBB, 0x21, 0x5A, 0x41, 0x9F, 0xE1, 0xD9,

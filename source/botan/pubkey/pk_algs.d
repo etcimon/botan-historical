@@ -44,7 +44,7 @@ import botan.asn1.oid_lookup.oids;
   import botan.ecdh;
 #endif
 Public_Key* make_public_key(in AlgorithmIdentifier alg_id,
-									 in SafeVector!byte key_bits)
+									 in SafeVector!ubyte key_bits)
 {
 	const string alg_name = oids.lookup(alg_id.oid);
 	if (alg_name == "")
@@ -99,7 +99,7 @@ Public_Key* make_public_key(in AlgorithmIdentifier alg_id,
 }
 
 Private_Key* make_Private_Key(in AlgorithmIdentifier alg_id,
-										in SafeVector!byte key_bits,
+										in SafeVector!ubyte key_bits,
 										RandomNumberGenerator rng)
 {
 	const string alg_name = oids.lookup(alg_id.oid);

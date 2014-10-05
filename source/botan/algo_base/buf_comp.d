@@ -24,16 +24,16 @@ public:
 
 	/**
 	* Add new input to process.
-	* @param in the input to process as a byte array
+	* @param in the input to process as a ubyte array
 	* @param length of param in in bytes
 	*/
-	void update(in byte* input, size_t length) { add_data(input, length); }
+	void update(in ubyte* input, size_t length) { add_data(input, length); }
 
 	/**
 	* Add new input to process.
 	* @param in the input to process as a secure_vector
 	*/
-	void update(in SafeVector!byte input)
+	void update(in SafeVector!ubyte input)
 	{
 		add_data(&input[0], input.size());
 	}
@@ -42,7 +42,7 @@ public:
 	* Add new input to process.
 	* @param in the input to process as a Vector
 	*/
-	void update(in Vector!byte input)
+	void update(in Vector!ubyte input)
 	{
 		add_data(&input[0], input.size());
 	}
@@ -55,7 +55,7 @@ public:
 	{
 		for (size_t i = 0; i != sizeof(T); ++i)
 		{
-			byte b = get_byte(i, input);
+			ubyte b = get_byte(i, input);
 			add_data(&b, 1);
 		}
 	}
@@ -63,7 +63,7 @@ public:
 	/**
 	* Add new input to process.
 	* @param str the input to process as a string. Will be interpreted
-	* as a byte array based on
+	* as a ubyte array based on
 	* the strings encoding.
 	*/
 	void update(in string str)
@@ -72,27 +72,27 @@ public:
 	}
 
 	/**
-	* Process a single byte.
-	* @param in the byte to process
+	* Process a single ubyte.
+	* @param in the ubyte to process
 	*/
-	void update(byte input) { add_data(&input, 1); }
+	void update(ubyte input) { add_data(&input, 1); }
 
 	/**
 	* Complete the computation and retrieve the
 	* final result.
-	* @param out The byte array to be filled with the result.
+	* @param out The ubyte array to be filled with the result.
 	* Must be of length output_length()
 	*/
-	void flushInto(byte* output) { final_result(output); }
+	void flushInto(ubyte* output) { final_result(output); }
 
 	/**
 	* Complete the computation and retrieve the
 	* final result.
 	* @return secure_vector holding the result
 	*/
-	SafeVector!byte flush()
+	SafeVector!ubyte flush()
 	{
-		SafeVector!byte output(output_length());
+		SafeVector!ubyte output(output_length());
 		final_result(&output[0]);
 		return output;
 	}
@@ -100,11 +100,11 @@ public:
 	/**
 	* Update and finalize computation. Does the same as calling update()
 	* and flush() consecutively.
-	* @param in the input to process as a byte array
-	* @param length the length of the byte array
+	* @param in the input to process as a ubyte array
+	* @param length the length of the ubyte array
 	* @result the result of the call to flush()
 	*/
-	SafeVector!byte process(in byte* input, size_t length)
+	SafeVector!ubyte process(in ubyte* input, size_t length)
 	{
 		add_data(input, length);
 		return flush();
@@ -116,7 +116,7 @@ public:
 	* @param in the input to process
 	* @result the result of the call to flush()
 	*/
-	SafeVector!byte process(in SafeVector!byte input)
+	SafeVector!ubyte process(in SafeVector!ubyte input)
 	{
 		add_data(input[]);
 		return flush();
@@ -128,7 +128,7 @@ public:
 	* @param in the input to process
 	* @result the result of the call to flush()
 	*/
-	SafeVector!byte process(in Vector!byte input)
+	SafeVector!ubyte process(in Vector!ubyte input)
 	{
 		add_data(input[]);
 		return flush();
@@ -140,7 +140,7 @@ public:
 	* @param in the input to process as a string
 	* @result the result of the call to flush()
 	*/
-	SafeVector!byte process(in string input)
+	SafeVector!ubyte process(in string input)
 	{
 		update(input);
 		return flush();
@@ -153,11 +153,11 @@ private:
 	* @param input is an input buffer
 	* @param length is the length of input in bytes
 	*/
-	abstract void add_data(in byte* input, size_t length);
+	abstract void add_data(in ubyte* input, size_t length);
 
 	/**
 	* Write the final output to out
 	* @param out is an output buffer of output_length()
 	*/
-	abstract void final_result(byte* output);
+	abstract void final_result(ubyte* output);
 }

@@ -16,10 +16,10 @@ class SecureQueue : public Fanout_Filter, public DataSource
 	public:
 		string name() const { return "Queue"; }
 
-		void write(in byte*, size_t);
+		void write(in ubyte*, size_t);
 
-		size_t read(byte[], size_t);
-		size_t peek(byte[], size_t, size_t = 0) const;
+		size_t read(ubyte[], size_t);
+		size_t peek(ubyte[], size_t, size_t = 0) const;
 		size_t get_bytes_read() const;
 
 		bool end_of_data() const;

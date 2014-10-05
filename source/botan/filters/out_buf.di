@@ -15,8 +15,8 @@ import deque;
 class Output_Buffers
 {
 	public:
-		size_t read(byte[], size_t, Pipe::message_id);
-		size_t peek(byte[], size_t, size_t, Pipe::message_id) const;
+		size_t read(ubyte[], size_t, Pipe::message_id);
+		size_t peek(ubyte[], size_t, size_t, Pipe::message_id) const;
 		size_t get_bytes_read(Pipe::message_id) const;
 		size_t remaining(Pipe::message_id) const;
 

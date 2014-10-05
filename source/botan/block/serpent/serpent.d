@@ -49,7 +49,7 @@ namespace {
 /*
 * Serpent Encryption
 */
-void Serpent::encrypt_n(byte* input, byte* output, size_t blocks) const
+void Serpent::encrypt_n(ubyte* input, ubyte* output, size_t blocks) const
 {
 	for (size_t i = 0; i != blocks; ++i)
 	{
@@ -101,7 +101,7 @@ void Serpent::encrypt_n(byte* input, byte* output, size_t blocks) const
 /*
 * Serpent Decryption
 */
-void Serpent::decrypt_n(byte* input, byte* output, size_t blocks) const
+void Serpent::decrypt_n(ubyte* input, ubyte* output, size_t blocks) const
 {
 	for (size_t i = 0; i != blocks; ++i)
 	{
@@ -157,7 +157,7 @@ void Serpent::decrypt_n(byte* input, byte* output, size_t blocks) const
 /*
 * Serpent Key Schedule
 */
-void Serpent::key_schedule(in byte* key)
+void Serpent::key_schedule(in ubyte* key)
 {
 	const uint PHI = 0x9E3779B9;
 

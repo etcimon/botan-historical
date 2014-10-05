@@ -9,14 +9,14 @@ import botan.internal.tls_messages;
 import botan.internal.tls_reader;
 import botan.internal.tls_extensions;
 import botan.internal.tls_handshake_io;
-import botan.der_enc;
+import botan.asn1.der_enc;
 import botan.asn1.ber_dec;
 import botan.loadstor;
 namespace TLS {
 
 namespace {
 
-string cert_type_code_to_name(byte code)
+string cert_type_code_to_name(ubyte code)
 {
 	switch(code)
 	{
@@ -31,7 +31,7 @@ string cert_type_code_to_name(byte code)
 	}
 }
 
-byte cert_type_name_to_code(in string name)
+ubyte cert_type_name_to_code(in string name)
 {
 	if (name == "RSA")
 		return 1;
@@ -72,7 +72,7 @@ Certificate_Req::Certificate_Req(Handshake_IO& io,
 /**
 * Deserialize a Certificate Request message
 */
-Certificate_Req::Certificate_Req(in Vector!byte buf,
+Certificate_Req::Certificate_Req(in Vector!ubyte buf,
 											Protocol_Version _version)
 {
 	if (buf.size() < 4)
@@ -80,7 +80,7 @@ Certificate_Req::Certificate_Req(in Vector!byte buf,
 
 	TLS_Data_Reader reader("CertificateRequest", buf);
 
-	Vector!byte cert_type_codes = reader.get_range_vector!byte(1, 1, 255);
+	Vector!ubyte cert_type_codes = reader.get_range_vector!ubyte(1, 1, 255);
 
 	for (size_t i = 0; i != cert_type_codes.size(); ++i)
 	{
@@ -94,7 +94,7 @@ Certificate_Req::Certificate_Req(in Vector!byte buf,
 
 	if (_version.supports_negotiable_signature_algorithms())
 	{
-		Vector!byte sig_hash_algs = reader.get_range_vector!byte(2, 2, 65534);
+		Vector!ubyte sig_hash_algs = reader.get_range_vector!ubyte(2, 2, 65534);
 
 		if (sig_hash_algs.size() % 2 != 0)
 			throw new Decoding_Error("Bad length for signature IDs in certificate request");
@@ -114,7 +114,7 @@ Certificate_Req::Certificate_Req(in Vector!byte buf,
 
 	while(reader.has_remaining())
 	{
-		Vector!byte name_bits = reader.get_range_vector!byte(2, 0, 65535);
+		Vector!ubyte name_bits = reader.get_range_vector!ubyte(2, 0, 65535);
 
 		BER_Decoder decoder(&name_bits[0], name_bits.size());
 		X509_DN name;
@@ -126,11 +126,11 @@ Certificate_Req::Certificate_Req(in Vector!byte buf,
 /**
 * Serialize a Certificate Request message
 */
-Vector!byte Certificate_Req::serialize() const
+Vector!ubyte Certificate_Req::serialize() const
 {
-	Vector!byte buf;
+	Vector!ubyte buf;
 
-	Vector!byte cert_types;
+	Vector!ubyte cert_types;
 
 	for (size_t i = 0; i != m_cert_key_types.size(); ++i)
 		cert_types.push_back(cert_type_name_to_code(m_cert_key_types[i]));
@@ -140,7 +140,7 @@ Vector!byte Certificate_Req::serialize() const
 	if (!m_supported_algos.empty())
 		buf += Signature_Algorithms(m_supported_algos).serialize();
 
-	Vector!byte encoded_names;
+	Vector!ubyte encoded_names;
 
 	for (size_t i = 0; i != m_names.size(); ++i)
 	{

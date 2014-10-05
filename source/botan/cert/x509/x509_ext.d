@@ -7,7 +7,7 @@
 
 import botan.x509_ext;
 import botan.sha160;
-import botan.der_enc;
+import botan.asn1.der_enc;
 import botan.asn1.ber_dec;
 import botan.asn1.oid_lookup.oids;
 import botan.charset;
@@ -90,10 +90,10 @@ void Extensions::encode_into(DER_Encoder& to_object) const
 
 		if (should_encode)
 		{
-			to_object.start_cons(SEQUENCE)
+			to_object.start_cons(ASN1_Tag.SEQUENCE)
 					.encode(ext.oid_of())
 					.encode_optional(is_critical, false)
-					.encode(ext.encode_inner(), OCTET_STRING)
+					.encode(ext.encode_inner(), ASN1_Tag.OCTET_STRING)
 				.end_cons();
 		}
 	}
@@ -108,18 +108,18 @@ void Extensions::decode_from(BER_Decoder& from_source)
 		delete extensions[i].first;
 	extensions.clear();
 
-	BER_Decoder sequence = from_source.start_cons(SEQUENCE);
+	BER_Decoder sequence = from_source.start_cons(ASN1_Tag.SEQUENCE);
 
 	while(sequence.more_items())
 	{
 		OID oid;
-		Vector!byte value;
+		Vector!ubyte value;
 		bool critical;
 
-		sequence.start_cons(SEQUENCE)
+		sequence.start_cons(ASN1_Tag.SEQUENCE)
 				.decode(oid)
-				.decode_optional(critical, BOOLEAN, UNIVERSAL, false)
-				.decode(value, OCTET_STRING)
+				.decode_optional(critical, BOOLEAN, ASN1_Tag.UNIVERSAL, false)
+				.decode(value, ASN1_Tag.OCTET_STRING)
 				.verify_end()
 			.end_cons();
 
@@ -182,10 +182,10 @@ size_t Basic_Constraints::get_path_limit() const
 /*
 * Encode the extension
 */
-Vector!byte Basic_Constraints::encode_inner() const
+Vector!ubyte Basic_Constraints::encode_inner() const
 {
 	return DER_Encoder()
-		.start_cons(SEQUENCE)
+		.start_cons(ASN1_Tag.SEQUENCE)
 		.encode_if (is_ca,
 					  DER_Encoder()
 						  .encode(is_ca)
@@ -198,12 +198,12 @@ Vector!byte Basic_Constraints::encode_inner() const
 /*
 * Decode the extension
 */
-void Basic_Constraints::decode_inner(in Vector!byte input)
+void Basic_Constraints::decode_inner(in Vector!ubyte input)
 {
 	BER_Decoder(input)
-		.start_cons(SEQUENCE)
-			.decode_optional(is_ca, BOOLEAN, UNIVERSAL, false)
-			.decode_optional(path_limit, INTEGER, UNIVERSAL, NO_CERT_PATH_LIMIT)
+		.start_cons(ASN1_Tag.SEQUENCE)
+			.decode_optional(is_ca, BOOLEAN, ASN1_Tag.UNIVERSAL, false)
+			.decode_optional(path_limit, INTEGER, ASN1_Tag.UNIVERSAL, NO_CERT_PATH_LIMIT)
 			.verify_end()
 		.end_cons();
 
@@ -223,15 +223,15 @@ void Basic_Constraints::contents_to(Data_Store& subject, Data_Store&) const
 /*
 * Encode the extension
 */
-Vector!byte Key_Usage::encode_inner() const
+Vector!ubyte Key_Usage::encode_inner() const
 {
 	if (constraints == NO_CONSTRAINTS)
 		throw new Encoding_Error("Cannot encode zero usage constraints");
 
 	const size_t unused_bits = low_bit(constraints) - 1;
 
-	Vector!byte der;
-	der.push_back(BIT_STRING);
+	Vector!ubyte der;
+		der.push_back(ASN1_Tag.BIT_STRING);
 	der.push_back(2 + ((unused_bits < 8) ? 1 : 0));
 	der.push_back(unused_bits % 8);
 	der.push_back((constraints >> 8) & 0xFF);
@@ -244,13 +244,13 @@ Vector!byte Key_Usage::encode_inner() const
 /*
 * Decode the extension
 */
-void Key_Usage::decode_inner(in Vector!byte input)
+void Key_Usage::decode_inner(in Vector!ubyte input)
 {
 	BER_Decoder ber(input);
 
 	BER_Object obj = ber.get_next_object();
 
-	if (obj.type_tag != BIT_STRING || obj.class_tag != UNIVERSAL)
+		if (obj.type_tag != ASN1_Tag.BIT_STRING || obj.class_tag != ASN1_Tag.UNIVERSAL)
 		throw new BER_Bad_Tag("Bad tag for usage constraint",
 								obj.type_tag, obj.class_tag);
 
@@ -280,17 +280,17 @@ void Key_Usage::contents_to(Data_Store& subject, Data_Store&) const
 /*
 * Encode the extension
 */
-Vector!byte Subject_Key_ID::encode_inner() const
+Vector!ubyte Subject_Key_ID::encode_inner() const
 {
-	return DER_Encoder().encode(key_id, OCTET_STRING).get_contents_unlocked();
+	return DER_Encoder().encode(key_id, ASN1_Tag.OCTET_STRING).get_contents_unlocked();
 }
 
 /*
 * Decode the extension
 */
-void Subject_Key_ID::decode_inner(in Vector!byte input)
+void Subject_Key_ID::decode_inner(in Vector!ubyte input)
 {
-	BER_Decoder(input).decode(key_id, OCTET_STRING).verify_end();
+	BER_Decoder(input).decode(key_id, ASN1_Tag.OCTET_STRING).verify_end();
 }
 
 /*
@@ -304,7 +304,7 @@ void Subject_Key_ID::contents_to(Data_Store& subject, Data_Store&) const
 /*
 * Subject_Key_ID Constructor
 */
-Subject_Key_ID::Subject_Key_ID(in Vector!byte pub_key)
+Subject_Key_ID::Subject_Key_ID(in Vector!ubyte pub_key)
 {
 	SHA_160 hash;
 	key_id = unlock(hash.process(pub_key));
@@ -313,11 +313,11 @@ Subject_Key_ID::Subject_Key_ID(in Vector!byte pub_key)
 /*
 * Encode the extension
 */
-Vector!byte Authority_Key_ID::encode_inner() const
+Vector!ubyte Authority_Key_ID::encode_inner() const
 {
 	return DER_Encoder()
-			.start_cons(SEQUENCE)
-				.encode(key_id, OCTET_STRING, ASN1_Tag(0), CONTEXT_SPECIFIC)
+			.start_cons(ASN1_Tag.SEQUENCE)
+				.encode(key_id, ASN1_Tag.OCTET_STRING, ASN1_Tag(0), ASN1_Tag.CONTEXT_SPECIFIC)
 			.end_cons()
 		.get_contents_unlocked();
 }
@@ -325,11 +325,11 @@ Vector!byte Authority_Key_ID::encode_inner() const
 /*
 * Decode the extension
 */
-void Authority_Key_ID::decode_inner(in Vector!byte input)
+void Authority_Key_ID::decode_inner(in Vector!ubyte input)
 {
 	BER_Decoder(input)
-		.start_cons(SEQUENCE)
-		.decode_optional_string(key_id, OCTET_STRING, 0);
+		.start_cons(ASN1_Tag.SEQUENCE)
+		.decode_optional_string(key_id, ASN1_Tag.OCTET_STRING, 0);
 }
 
 /*
@@ -344,7 +344,7 @@ void Authority_Key_ID::contents_to(Data_Store&, Data_Store& issuer) const
 /*
 * Encode the extension
 */
-Vector!byte Alternative_Name::encode_inner() const
+Vector!ubyte Alternative_Name::encode_inner() const
 {
 	return DER_Encoder().encode(alt_name).get_contents_unlocked();
 }
@@ -352,7 +352,7 @@ Vector!byte Alternative_Name::encode_inner() const
 /*
 * Decode the extension
 */
-void Alternative_Name::decode_inner(in Vector!byte input)
+void Alternative_Name::decode_inner(in Vector!ubyte input)
 {
 	BER_Decoder(input).decode(alt_name);
 }
@@ -405,10 +405,10 @@ Issuer_Alternative_Name::Issuer_Alternative_Name(in AlternativeName name) :
 /*
 * Encode the extension
 */
-Vector!byte Extended_Key_Usage::encode_inner() const
+Vector!ubyte Extended_Key_Usage::encode_inner() const
 {
 	return DER_Encoder()
-		.start_cons(SEQUENCE)
+		.start_cons(ASN1_Tag.SEQUENCE)
 			.encode_list(oids)
 		.end_cons()
 	.get_contents_unlocked();
@@ -417,7 +417,7 @@ Vector!byte Extended_Key_Usage::encode_inner() const
 /*
 * Decode the extension
 */
-void Extended_Key_Usage::decode_inner(in Vector!byte input)
+void Extended_Key_Usage::decode_inner(in Vector!ubyte input)
 {
 	BER_Decoder(input).decode_list(oids);
 }
@@ -446,14 +446,14 @@ class Policy_Information : public ASN1_Object
 
 		void encode_into(DER_Encoder& codec) const
 		{
-			codec.start_cons(SEQUENCE)
+			codec.start_cons(ASN1_Tag.SEQUENCE)
 				.encode(oid)
 				.end_cons();
 		}
 
 		void decode_from(BER_Decoder& codec)
 		{
-			codec.start_cons(SEQUENCE)
+			codec.start_cons(ASN1_Tag.SEQUENCE)
 				.decode(oid)
 				.discard_remaining()
 				.end_cons();
@@ -465,7 +465,7 @@ class Policy_Information : public ASN1_Object
 /*
 * Encode the extension
 */
-Vector!byte Certificate_Policies::encode_inner() const
+Vector!ubyte Certificate_Policies::encode_inner() const
 {
 	Vector!( Policy_Information ) policies;
 
@@ -473,7 +473,7 @@ Vector!byte Certificate_Policies::encode_inner() const
 		policies.push_back(oids[i]);
 
 	return DER_Encoder()
-		.start_cons(SEQUENCE)
+		.start_cons(ASN1_Tag.SEQUENCE)
 			.encode_list(policies)
 		.end_cons()
 	.get_contents_unlocked();
@@ -482,7 +482,7 @@ Vector!byte Certificate_Policies::encode_inner() const
 /*
 * Decode the extension
 */
-void Certificate_Policies::decode_inner(in Vector!byte input)
+void Certificate_Policies::decode_inner(in Vector!ubyte input)
 {
 	Vector!( Policy_Information ) policies;
 
@@ -502,28 +502,28 @@ void Certificate_Policies::contents_to(Data_Store& info, Data_Store&) const
 		info.add("X509v3.CertificatePolicies", oids[i].as_string());
 }
 
-Vector!byte Authority_Information_Access::encode_inner() const
+Vector!ubyte Authority_Information_Access::encode_inner() const
 {
 	ASN1_String url(m_ocsp_responder, IA5_STRING);
 
 	return DER_Encoder()
-		.start_cons(SEQUENCE)
-		.start_cons(SEQUENCE)
+		.start_cons(ASN1_Tag.SEQUENCE)
+		.start_cons(ASN1_Tag.SEQUENCE)
 		.encode(oids.lookup("PKIX.OCSP"))
-		.add_object(ASN1_Tag(6), CONTEXT_SPECIFIC, url.iso_8859())
+		.add_object(ASN1_Tag(6), ASN1_Tag.CONTEXT_SPECIFIC, url.iso_8859())
 		.end_cons()
 		.end_cons().get_contents_unlocked();
 }
 
-void Authority_Information_Access::decode_inner(in Vector!byte input)
+void Authority_Information_Access::decode_inner(in Vector!ubyte input)
 {
-	BER_Decoder ber = BER_Decoder(input).start_cons(SEQUENCE);
+	BER_Decoder ber = BER_Decoder(input).start_cons(ASN1_Tag.SEQUENCE);
 
 	while(ber.more_items())
 	{
 		OID oid;
 
-		BER_Decoder info = ber.start_cons(SEQUENCE);
+		BER_Decoder info = ber.start_cons(ASN1_Tag.SEQUENCE);
 
 		info.decode(oid);
 
@@ -531,7 +531,7 @@ void Authority_Information_Access::decode_inner(in Vector!byte input)
 		{
 			BER_Object name = info.get_next_object();
 
-			if (name.type_tag == 6 && name.class_tag == CONTEXT_SPECIFIC)
+			if (name.type_tag == 6 && name.class_tag == ASN1_Tag.CONTEXT_SPECIFIC)
 			{
 				m_ocsp_responder = Charset.transcode(asn1.to_string(name),
 																  LATIN1_CHARSET,
@@ -571,7 +571,7 @@ CRL_Number* CRL_Number::copy() const
 /*
 * Encode the extension
 */
-Vector!byte CRL_Number::encode_inner() const
+Vector!ubyte CRL_Number::encode_inner() const
 {
 	return DER_Encoder().encode(crl_number).get_contents_unlocked();
 }
@@ -579,7 +579,7 @@ Vector!byte CRL_Number::encode_inner() const
 /*
 * Decode the extension
 */
-void CRL_Number::decode_inner(in Vector!byte input)
+void CRL_Number::decode_inner(in Vector!ubyte input)
 {
 	BER_Decoder(input).decode(crl_number);
 }
@@ -595,20 +595,20 @@ void CRL_Number::contents_to(Data_Store& info, Data_Store&) const
 /*
 * Encode the extension
 */
-Vector!byte CRL_ReasonCode::encode_inner() const
+Vector!ubyte CRL_ReasonCode::encode_inner() const
 {
 	return DER_Encoder()
-		.encode(cast(size_t)(reason), ENUMERATED, UNIVERSAL)
+			.encode(cast(size_t)(reason), ASN1_Tag.ENUMERATED, ASN1_Tag.UNIVERSAL)
 	.get_contents_unlocked();
 }
 
 /*
 * Decode the extension
 */
-void CRL_ReasonCode::decode_inner(in Vector!byte input)
+void CRL_ReasonCode::decode_inner(in Vector!ubyte input)
 {
 	size_t reason_code = 0;
-	BER_Decoder(input).decode(reason_code, ENUMERATED, UNIVERSAL);
+		BER_Decoder(input).decode(reason_code, ASN1_Tag.ENUMERATED, ASN1_Tag.UNIVERSAL);
 	reason = cast(CRL_Code)(reason_code);
 }
 
@@ -620,12 +620,12 @@ void CRL_ReasonCode::contents_to(Data_Store& info, Data_Store&) const
 	info.add("X509v3.CRLReasonCode", reason);
 }
 
-Vector!byte CRL_Distribution_Points::encode_inner() const
+Vector!ubyte CRL_Distribution_Points::encode_inner() const
 {
 	throw new Exception("CRL_Distribution_Points encoding not implemented");
 }
 
-void CRL_Distribution_Points::decode_inner(in Vector!byte buf)
+void CRL_Distribution_Points::decode_inner(in Vector!ubyte buf)
 {
 	BER_Decoder(buf).decode_list(m_distribution_points).verify_end();
 }
@@ -650,11 +650,11 @@ void CRL_Distribution_Points::Distribution_Point::encode_into(class DER_Encoder&
 
 void CRL_Distribution_Points::Distribution_Point::decode_from(class BER_Decoder& ber)
 {
-	ber.start_cons(SEQUENCE)
-		.start_cons(ASN1_Tag(0), CONTEXT_SPECIFIC)
+	ber.start_cons(ASN1_Tag.SEQUENCE)
+		.start_cons(ASN1_Tag(0), ASN1_Tag.CONTEXT_SPECIFIC)
 		  .decode_optional_implicit(m_point, ASN1_Tag(0),
-											 ASN1_Tag(CONTEXT_SPECIFIC | CONSTRUCTED),
-											 SEQUENCE, CONSTRUCTED)
+											 ASN1_Tag(ASN1_Tag.CONTEXT_SPECIFIC | CONSTRUCTED),
+											 ASN1_Tag.SEQUENCE, CONSTRUCTED)
 		.end_cons().end_cons();
 }
 

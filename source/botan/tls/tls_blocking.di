@@ -19,8 +19,8 @@ class Blocking_Client
 {
 	public:
 
-		Blocking_Client(size_t delegate(ref byte[]) read_fn,
-							 void delegate(in byte[])> write_fn,
+		Blocking_Client(size_t delegate(ref ubyte[]) read_fn,
+							 void delegate(in ubyte[])> write_fn,
 							 Session_Manager session_manager,
 							 Credentials_Manager creds,
 							 in Policy policy,
@@ -41,11 +41,11 @@ class Blocking_Client
 		size_t pending() const { return m_plaintext.size(); }
 
 		/**
-		* Blocking read, will return at least 1 byte or 0 on connection close
+		* Blocking read, will return at least 1 ubyte or 0 on connection close
 		*/
-		size_t read(ref byte[] buf);
+		size_t read(ref ubyte[] buf);
 
-		void write(in byte* buf) { m_channel.send(buf); }
+		void write(in ubyte* buf) { m_channel.send(buf); }
 
 		TLS::Channel underlying_channel() const { return m_channel; }
 		TLS::Channel underlying_channel() { return m_channel; }
@@ -74,13 +74,13 @@ class Blocking_Client
 
 		bool handshake_cb(in Session);
 
-		void data_cb(in byte[] data);
+		void data_cb(in ubyte[] data);
 
-		void alert_cb(in Alert alert, in byte[]);
+		void alert_cb(in Alert alert, in ubyte[]);
 
-		size_t delegate(ref byte[]) m_read_fn;
+		size_t delegate(ref ubyte[]) m_read_fn;
 		TLS::Client m_channel;
-		secure_deque<byte> m_plaintext;
+		secure_deque<ubyte> m_plaintext;
 };
 
 }

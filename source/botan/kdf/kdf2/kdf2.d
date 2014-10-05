@@ -9,11 +9,11 @@ import botan.kdf2;
 /*
 * KDF2 Key Derivation Mechanism
 */
-SafeVector!byte KDF2::derive(size_t out_len,
-										  in byte* secret, size_t secret_len,
-										  in byte* P, size_t P_len) const
+SafeVector!ubyte KDF2::derive(size_t out_len,
+										  in ubyte* secret, size_t secret_len,
+										  in ubyte* P, size_t P_len) const
 {
-	SafeVector!byte output;
+	SafeVector!ubyte output;
 	uint counter = 1;
 
 	while(out_len && counter)
@@ -22,7 +22,7 @@ SafeVector!byte KDF2::derive(size_t out_len,
 		hash.update_be(counter);
 		hash.update(P, P_len);
 
-		SafeVector!byte hash_result = hash.flush();
+		SafeVector!ubyte hash_result = hash.flush();
 
 		size_t added = std.algorithm.min(hash_result.size(), out_len);
 		output += Pair(&hash_result[0], added);

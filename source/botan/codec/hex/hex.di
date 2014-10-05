@@ -15,7 +15,7 @@ import string;
 * @param uppercase should output be upper or lower case?
 */
 void hex_encode(char* output,
-								  in byte* input,
+								  in ubyte* input,
 								  size_t input_length,
 								  bool uppercase = true);
 
@@ -26,7 +26,7 @@ void hex_encode(char* output,
 * @param uppercase should output be upper or lower case?
 * @return hexadecimal representation of input
 */
-string hex_encode(in byte* input,
+string hex_encode(in ubyte* input,
 					size_t input_length,
 					bool uppercase = true);
 
@@ -36,7 +36,7 @@ string hex_encode(in byte* input,
 * @param uppercase should output be upper or lower case?
 * @return hexadecimal representation of input
 */
-string hex_encode(Alloc)(in Vector!( byte, Alloc ) input,
+string hex_encode(Alloc)(in Vector!( ubyte, Alloc ) input,
 							bool uppercase = true)
 {
 	return hex_encode(&input[0], input.size(), uppercase);
@@ -55,7 +55,7 @@ string hex_encode(Alloc)(in Vector!( byte, Alloc ) input,
 						 exception if whitespace is encountered
 * @return number of bytes written to output
 */
-size_t hex_decode(byte* output,
+size_t hex_decode(ubyte* output,
 					 string input,
 					 size_t input_length,
 					 size_t& input_consumed,
@@ -70,7 +70,7 @@ size_t hex_decode(byte* output,
 						 exception if whitespace is encountered
 * @return number of bytes written to output
 */
-size_t hex_decode(byte* output,
+size_t hex_decode(ubyte* output,
 					 string input,
 					 size_t input_length,
 					 bool ignore_ws = true);
@@ -83,7 +83,7 @@ size_t hex_decode(byte* output,
 						 exception if whitespace is encountered
 * @return number of bytes written to output
 */
-size_t hex_decode(byte* output,
+size_t hex_decode(ubyte* output,
 					 in string input,
 					 bool ignore_ws = true);
 
@@ -95,7 +95,7 @@ size_t hex_decode(byte* output,
 						 exception if whitespace is encountered
 * @return decoded hex output
 */
-Vector!byte
+Vector!ubyte
 hex_decode(string input,
 			  size_t input_length,
 			  bool ignore_ws = true);
@@ -107,7 +107,7 @@ hex_decode(string input,
 						 exception if whitespace is encountered
 * @return decoded hex output
 */
-Vector!byte
+Vector!ubyte
 hex_decode(in string input,
 			bool ignore_ws = true);
 			
@@ -119,7 +119,7 @@ hex_decode(in string input,
 						 exception if whitespace is encountered
 * @return decoded hex output
 */
-SafeVector!byte
+SafeVector!ubyte
 hex_decode_locked(string input,
 					size_t input_length,
 					bool ignore_ws = true);
@@ -131,6 +131,6 @@ hex_decode_locked(string input,
 						 exception if whitespace is encountered
 * @return decoded hex output
 */
-SafeVector!byte
+SafeVector!ubyte
 hex_decode_locked(in string input,
 					bool ignore_ws = true);

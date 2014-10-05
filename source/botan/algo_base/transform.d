@@ -24,7 +24,7 @@ public:
 	* @param nonce the per message nonce
 	*/
 	
-	SafeVector!byte start_vec(Alloc)(in Vector!( byte, Alloc ) nonce)
+	SafeVector!ubyte start_vec(Alloc)(in Vector!( ubyte, Alloc ) nonce)
 	{
 		return start(&nonce[0], nonce.size());
 	}
@@ -34,14 +34,14 @@ public:
 	* @param nonce the per message nonce
 	* @param nonce_len length of nonce
 	*/
-	abstract SafeVector!byte start(in byte* nonce, size_t nonce_len);
+	abstract SafeVector!ubyte start(in ubyte* nonce, size_t nonce_len);
 
 	/**
-	* Process some data. Input must be in size update_granularity() byte blocks.
+	* Process some data. Input must be in size update_granularity() ubyte blocks.
 	* @param blocks in/out paramter which will possibly be resized
 	* @param offset an offset into blocks to begin processing
 	*/
-	abstract void update(SafeVector!byte blocks, size_t offset = 0);
+	abstract void update(SafeVector!ubyte blocks, size_t offset = 0);
 
 	/**
 	* Complete processing of a message.
@@ -50,7 +50,7 @@ public:
 	*		  minimum_final_size() bytes, and will be set to any final output
 	* @param offset an offset into final_block to begin processing
 	*/
-	abstract void finish(SafeVector!byte final_block, size_t offset = 0);
+	abstract void finish(SafeVector!ubyte final_block, size_t offset = 0);
 
 	/**
 	* Returns the size of the output if this transform is used to process a
@@ -113,7 +113,7 @@ public:
 		return key_spec().valid_keylength(length);
 	}
 
-	void set_key(Alloc)(in Vector!( byte, Alloc ) key)
+	void set_key(Alloc)(in Vector!( ubyte, Alloc ) key)
 	{
 		set_key(&key[0], key.size());
 	}
@@ -128,7 +128,7 @@ public:
 	* @param key contains the key material
 	* @param length in bytes of key param
 	*/
-	void set_key(in byte* key, size_t length)
+	void set_key(in ubyte* key, size_t length)
 	{
 		if (!valid_keylength(length))
 			throw new Invalid_Key_Length(name(), length);
@@ -136,5 +136,5 @@ public:
 	}
 
 private:
-	abstract void key_schedule(in byte* key, size_t length);
+	abstract void key_schedule(in ubyte* key, size_t length);
 };

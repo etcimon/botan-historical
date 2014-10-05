@@ -202,7 +202,7 @@ void Unix_EntropySource::poll(Entropy_Accumulator& accum)
 	const size_t MS_WAIT_TIME = 32;
 	const double ENTROPY_ESTIMATE = 1.0 / 1024;
 
-	SafeVector!byte io_buffer = accum.get_io_buffer(4*1024); // page
+	SafeVector!ubyte io_buffer = accum.get_io_buffer(4*1024); // page
 
 	while(!accum.polling_goal_achieved())
 	{

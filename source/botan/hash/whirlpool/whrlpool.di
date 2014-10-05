@@ -21,8 +21,8 @@ class Whirlpool : public MDx_HashFunction
 		Whirlpool() : MDx_HashFunction(64, true, true, 32), M(8), digest(8)
 		{ clear(); }
 	private:
-		void compress_n(in byte*, size_t blocks);
-		void copy_out(byte*);
+		void compress_n(in ubyte*, size_t blocks);
+		void copy_out(ubyte*);
 
 		static const ulong[256] C0;
 		static const ulong[256] C1;

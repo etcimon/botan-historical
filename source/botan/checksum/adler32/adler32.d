@@ -9,7 +9,7 @@ import botan.adler32;
 import botan.loadstor;
 namespace {
 
-void adler32_update(in byte* input, size_t length,
+void adler32_update(in ubyte* input, size_t length,
 						  ushort& S1, ushort& S2)
 {
 	uint S1x = S1;
@@ -52,7 +52,7 @@ void adler32_update(in byte* input, size_t length,
 /*
 * Update an Adler32 Checksum
 */
-void Adler32::add_data(in byte* input, size_t length)
+void Adler32::add_data(in ubyte* input, size_t length)
 {
 	const size_t PROCESS_AMOUNT = 5552;
 
@@ -69,7 +69,7 @@ void Adler32::add_data(in byte* input, size_t length)
 /*
 * Finalize an Adler32 Checksum
 */
-void Adler32::final_result(byte* output)
+void Adler32::final_result(ubyte* output)
 {
 	store_be(output, S2, S1);
 	clear();

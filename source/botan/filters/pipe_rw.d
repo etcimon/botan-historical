@@ -29,7 +29,7 @@ Pipe::message_id Pipe::get_message_no(in string func_name,
 /*
 * Write into a Pipe
 */
-void Pipe::write(in byte* input, size_t length)
+void Pipe::write(in ubyte* input, size_t length)
 {
 	if (!inside_msg)
 		throw new Invalid_State("Cannot write to a Pipe while it is not processing");
@@ -41,13 +41,13 @@ void Pipe::write(in byte* input, size_t length)
 */
 void Pipe::write(in string str)
 {
-	write(cast(const byte*)(str.data()), str.size());
+	write(cast(const ubyte*)(str.data()), str.size());
 }
 
 /*
-* Write a single byte into a Pipe
+* Write a single ubyte into a Pipe
 */
-void Pipe::write(byte input)
+void Pipe::write(ubyte input)
 {
 	write(&input, 1);
 }
@@ -57,7 +57,7 @@ void Pipe::write(byte input)
 */
 void Pipe::write(DataSource& source)
 {
-	SafeVector!byte buffer(DEFAULT_BUFFERSIZE);
+	SafeVector!ubyte buffer(DEFAULT_BUFFERSIZE);
 	while(!source.end_of_data())
 	{
 		size_t got = source.read(&buffer[0], buffer.size());
@@ -68,7 +68,7 @@ void Pipe::write(DataSource& source)
 /*
 * Read some data from the pipe
 */
-size_t Pipe::read(byte* output, size_t length, message_id msg)
+size_t Pipe::read(ubyte* output, size_t length, message_id msg)
 {
 	return outputs.read(output, length, get_message_no("read", msg));
 }
@@ -76,15 +76,15 @@ size_t Pipe::read(byte* output, size_t length, message_id msg)
 /*
 * Read some data from the pipe
 */
-size_t Pipe::read(byte* output, size_t length)
+size_t Pipe::read(ubyte* output, size_t length)
 {
 	return read(output, length, DEFAULT_MESSAGE);
 }
 
 /*
-* Read a single byte from the pipe
+* Read a single ubyte from the pipe
 */
-size_t Pipe::read(ref byte output, message_id msg)
+size_t Pipe::read(ref ubyte output, message_id msg)
 {
 	return read(&output, 1, msg);
 }
@@ -92,10 +92,10 @@ size_t Pipe::read(ref byte output, message_id msg)
 /*
 * Return all data in the pipe
 */
-SafeVector!byte Pipe::read_all(message_id msg)
+SafeVector!ubyte Pipe::read_all(message_id msg)
 {
 	msg = ((msg != DEFAULT_MESSAGE) ? msg : default_msg());
-	SafeVector!byte buffer(remaining(msg));
+	SafeVector!ubyte buffer(remaining(msg));
 	size_t got = read(&buffer[0], buffer.size(), msg);
 	buffer.resize(got);
 	return buffer;
@@ -107,7 +107,7 @@ SafeVector!byte Pipe::read_all(message_id msg)
 string Pipe::read_all_as_string(message_id msg)
 {
 	msg = ((msg != DEFAULT_MESSAGE) ? msg : default_msg());
-	SafeVector!byte buffer(DEFAULT_BUFFERSIZE);
+	SafeVector!ubyte buffer(DEFAULT_BUFFERSIZE);
 	string str;
 	str.reserve(remaining(msg));
 
@@ -133,7 +133,7 @@ size_t Pipe::remaining(message_id msg) const
 /*
 * Peek at some data in the pipe
 */
-size_t Pipe::peek(byte* output, size_t length,
+size_t Pipe::peek(ubyte* output, size_t length,
 						size_t offset, message_id msg) const
 {
 	return outputs.peek(output, length, offset, get_message_no("peek", msg));
@@ -142,15 +142,15 @@ size_t Pipe::peek(byte* output, size_t length,
 /*
 * Peek at some data in the pipe
 */
-size_t Pipe::peek(byte* output, size_t length, size_t offset) const
+size_t Pipe::peek(ubyte* output, size_t length, size_t offset) const
 {
 	return peek(output, length, offset, DEFAULT_MESSAGE);
 }
 
 /*
-* Peek at a byte in the pipe
+* Peek at a ubyte in the pipe
 */
-size_t Pipe::peek(ref byte output, size_t offset, message_id msg) const
+size_t Pipe::peek(ref ubyte output, size_t offset, message_id msg) const
 {
 	return peek(&output, 1, offset, msg);
 }

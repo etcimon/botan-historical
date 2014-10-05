@@ -6,7 +6,7 @@
 */
 
 import botan.cascade;
-void Cascade_Cipher::encrypt_n(byte* input, byte* output, size_t blocks,
+void Cascade_Cipher::encrypt_n(ubyte* input, ubyte* output, size_t blocks,
 										 size_t blocks) const
 {
 	size_t c1_blocks = blocks * (block_size() / m_cipher1.block_size());
@@ -16,7 +16,7 @@ void Cascade_Cipher::encrypt_n(byte* input, byte* output, size_t blocks,
 	m_cipher2.encrypt_n(output, output, c2_blocks);
 }
 
-void Cascade_Cipher::decrypt_n(byte* input, byte* output, size_t blocks,
+void Cascade_Cipher::decrypt_n(ubyte* input, ubyte* output, size_t blocks,
 										 size_t blocks) const
 {
 	size_t c1_blocks = blocks * (block_size() / m_cipher1.block_size());
@@ -26,9 +26,9 @@ void Cascade_Cipher::decrypt_n(byte* input, byte* output, size_t blocks,
 	m_cipher1.decrypt_n(output, output, c1_blocks);
 }
 
-void Cascade_Cipher::key_schedule(in byte* key, size_t)
+void Cascade_Cipher::key_schedule(in ubyte* key, size_t)
 {
-	const byte* key2 = key + m_cipher1.maximum_keylength();
+	const ubyte* key2 = key + m_cipher1.maximum_keylength();
 
 	m_cipher1.set_key(key , m_cipher1.maximum_keylength());
 	m_cipher2.set_key(key2, m_cipher2.maximum_keylength());

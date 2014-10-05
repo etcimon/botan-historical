@@ -21,12 +21,12 @@ class X509_Object : public ASN1_Object
 		* The underlying data that is to be or was signed
 		* @return data that is or was signed
 		*/
-		Vector!byte tbs_data() const;
+		Vector!ubyte tbs_data() const;
 
 		/**
 		* @return signature on tbs_data()
 		*/
-		Vector!byte signature() const;
+		Vector!ubyte signature() const;
 
 		/**
 		* @return signature algorithm that was used to generate signature
@@ -46,10 +46,10 @@ class X509_Object : public ASN1_Object
 		* @param tbs the tbs bits to be signed
 		* @return signed X509 object
 		*/
-		static Vector!byte make_signed(class PK_Signer* signer,
+		static Vector!ubyte make_signed(class PK_Signer* signer,
 														 RandomNumberGenerator rng,
 														 const AlgorithmIdentifier& alg_id,
-														 in SafeVector!byte tbs);
+														 in SafeVector!ubyte tbs);
 
 		/**
 		* Check the signature on this data
@@ -73,7 +73,7 @@ class X509_Object : public ASN1_Object
 		/**
 		* @return BER encoding of this
 		*/
-		Vector!byte BER_encode() const;
+		Vector!ubyte BER_encode() const;
 
 		/**
 		* @return PEM encoding of this
@@ -84,12 +84,12 @@ class X509_Object : public ASN1_Object
 	package:
 		X509_Object(DataSource& src, in string pem_labels);
 		X509_Object(in string file, in string pem_labels);
-		X509_Object(in Vector!byte vec, in string labels);
+		X509_Object(in Vector!ubyte vec, in string labels);
 
 		void do_decode();
 		X509_Object() {}
 		AlgorithmIdentifier sig_algo;
-		Vector!byte tbs_bits, sig;
+		Vector!ubyte tbs_bits, sig;
 	private:
 		abstract void force_decode();
 		void init(DataSource&, in string);

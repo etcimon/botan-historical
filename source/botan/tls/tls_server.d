@@ -36,8 +36,8 @@ bool check_for_resume(Session& session_info,
 							 const Client_Hello* client_hello,
 							 std::chrono::seconds session_ticket_lifetime)
 {
-	in Vector!byte client_session_id = client_hello.session_id();
-	in Vector!byte session_ticket = client_hello.session_ticket();
+	in Vector!ubyte client_session_id = client_hello.session_id();
+	in Vector!ubyte session_ticket = client_hello.session_ticket();
 
 	if (session_ticket.empty())
 	{
@@ -163,10 +163,10 @@ ushort choose_ciphersuite(
 }/*
 * Choose which compression algorithm to use
 */
-byte choose_compression(in Policy policy,
-								in Vector!byte c_comp)
+ubyte choose_compression(in Policy policy,
+								in Vector!ubyte c_comp)
 {
-	Vector!byte s_comp = policy.compression();
+	Vector!ubyte s_comp = policy.compression();
 
 	for (size_t i = 0; i != s_comp.size(); ++i)
 		for (size_t j = 0; j != c_comp.size(); ++j)
@@ -201,9 +201,9 @@ get_server_certs(in string hostname,
 /*
 * TLS Server Constructor
 */
-Server::Server(void delegate(in byte*) output_fn,
-					void delegate(in byte*) data_cb,
-					void delegate(Alert, in byte*) alert_cb,
+Server::Server(void delegate(in ubyte*) output_fn,
+					void delegate(in ubyte*) data_cb,
+					void delegate(Alert, in ubyte*) alert_cb,
 					bool delegate(const Session) handshake_cb,
 					Session_Manager session_manager,
 					Credentials_Manager creds,
@@ -251,7 +251,7 @@ void Server::initiate_handshake(Handshake_State& state,
 void Server::process_handshake_msg(const Handshake_State* active_state,
 											  Handshake_State& state_base,
 											  Handshake_Type type,
-											  in Vector!byte contents)
+											  in Vector!ubyte contents)
 {
 	Server_Handshake_State& state = cast(Server_Handshake_State&)(state_base);
 
@@ -664,7 +664,7 @@ void Server::process_handshake_msg(const Handshake_State* active_state,
 				SERVER,
 				state.server_hello().fragment_size(),
 				get_peer_cert_chain(state),
-				Vector!byte(),
+				Vector!ubyte(),
 				Server_Information(state.client_hello().sni_hostname()),
 				state.srp_identifier()
 				);

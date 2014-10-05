@@ -6,4 +6,4 @@
 */
 
 import botan.types;
-void gcm_multiply_clmul(byte x[16], const byte H[16]);
+void gcm_multiply_clmul(ubyte x[16], const ubyte H[16]);

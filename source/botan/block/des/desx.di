@@ -12,14 +12,14 @@ import botan.des;
 class DESX : public Block_Cipher_Fixed_Params!(8, 24)
 {
 	public:
-		void encrypt_n(byte* input, byte* output, size_t blocks) const;
-		void decrypt_n(byte* input, byte* output, size_t blocks) const;
+		void encrypt_n(ubyte* input, ubyte* output, size_t blocks) const;
+		void decrypt_n(ubyte* input, ubyte* output, size_t blocks) const;
 
 		void clear();
 		string name() const { return "DESX"; }
 		BlockCipher clone() const { return new DESX; }
 	private:
-		void key_schedule(in byte*, size_t);
-		SafeVector!byte K1, K2;
+		void key_schedule(in ubyte*, size_t);
+		SafeVector!ubyte K1, K2;
 		DES des;
 };

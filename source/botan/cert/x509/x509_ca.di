@@ -76,7 +76,7 @@ class X509_CA
 		static X509_Certificate make_cert(PK_Signer* signer,
 													 RandomNumberGenerator rng,
 													 const AlgorithmIdentifier& sig_algo,
-													 in Vector!byte pub_key,
+													 in Vector!ubyte pub_key,
 													 const X509_Time& not_before,
 													 const X509_Time& not_after,
 													 const X509_DN& issuer_dn,

@@ -68,8 +68,8 @@ RW_Signature_Operation::RW_Signature_Operation(in RW_PrivateKey rw) :
 {
 }
 
-SafeVector!byte
-RW_Signature_Operation::sign(in byte* msg, size_t msg_len,
+SafeVector!ubyte
+RW_Signature_Operation::sign(in ubyte* msg, size_t msg_len,
 									  RandomNumberGenerator rng)
 {
 	rng.add_entropy(msg, msg_len);
@@ -101,8 +101,8 @@ RW_Signature_Operation::sign(in byte* msg, size_t msg_len,
 	return BigInt::encode_1363(std.algorithm.min(r, n - r), n.bytes());
 }
 
-SafeVector!byte
-RW_Verification_Operation::verify_mr(in byte* msg, size_t msg_len)
+SafeVector!ubyte
+RW_Verification_Operation::verify_mr(in ubyte* msg, size_t msg_len)
 {
 	BigInt m(msg, msg_len);
 

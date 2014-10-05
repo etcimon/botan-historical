@@ -55,7 +55,7 @@ void hsalsa20(uint[8] output, const uint[16] input)
 /*
 * Generate Salsa20 cipher stream
 */
-void salsa20(byte[64] output, const uint[16] input)
+void salsa20(ubyte[64] output, const uint[16] input)
 {
 	uint x00 = input[ 0], x01 = input[ 1], x02 = input[ 2], x03 = input[ 3],
 			 x04 = input[ 4], x05 = input[ 5], x06 = input[ 6], x07 = input[ 7],
@@ -100,7 +100,7 @@ void salsa20(byte[64] output, const uint[16] input)
 /*
 * Combine cipher stream with message
 */
-void Salsa20::cipher(in byte* input, byte* output)
+void Salsa20::cipher(in ubyte* input, ubyte* output)
 {
 	while(length >= m_buffer.size() - m_position)
 	{
@@ -124,7 +124,7 @@ void Salsa20::cipher(in byte* input, byte* output)
 /*
 * Salsa20 Key Schedule
 */
-void Salsa20::key_schedule(in byte* key, size_t length)
+void Salsa20::key_schedule(in ubyte* key, size_t length)
 {
 	immutable uint[] TAU =
 	{ 0x61707865, 0x3120646e, 0x79622d36, 0x6b206574 };
@@ -157,14 +157,14 @@ void Salsa20::key_schedule(in byte* key, size_t length)
 
 	m_position = 0;
 
-	const byte[8] ZERO = { 0 };
+	const ubyte[8] ZERO = { 0 };
 	set_iv(ZERO, sizeof(ZERO));
 }
 
 /*
 * Return the name of this type
 */
-void Salsa20::set_iv(in byte* iv, size_t length)
+void Salsa20::set_iv(in ubyte* iv, size_t length)
 {
 	if (!valid_iv_length(length))
 		throw new Invalid_IV_Length(name(), length);

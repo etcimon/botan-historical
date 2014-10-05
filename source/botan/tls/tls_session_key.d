@@ -14,7 +14,7 @@ namespace TLS {
 * Session_Keys Constructor
 */
 Session_Keys::Session_Keys(const Handshake_State* state,
-									in SafeVector!byte pre_master_secret,
+									in SafeVector!ubyte pre_master_secret,
 									bool resuming)
 {
 	const size_t cipher_keylen = state.ciphersuite().cipher_keylen();
@@ -23,10 +23,10 @@ Session_Keys::Session_Keys(const Handshake_State* state,
 
 	const size_t prf_gen = 2 * (mac_keylen + cipher_keylen + cipher_ivlen);
 
-	const(byte)[] MASTER_SECRET_MAGIC = {
+	const(ubyte)[] MASTER_SECRET_MAGIC = {
 		0x6D, 0x61, 0x73, 0x74, 0x65, 0x72, 0x20, 0x73, 0x65, 0x63, 0x72, 0x65, 0x74 };
 
-	const(byte)[] KEY_GEN_MAGIC = {
+	const(ubyte)[] KEY_GEN_MAGIC = {
 		0x6B, 0x65, 0x79, 0x20, 0x65, 0x78, 0x70, 0x61, 0x6E, 0x73, 0x69, 0x6F, 0x6E };
 
 	Unique!KDF prf(state.protocol_specific_prf());
@@ -37,7 +37,7 @@ Session_Keys::Session_Keys(const Handshake_State* state,
 	}
 	else
 	{
-		SafeVector!byte salt;
+		SafeVector!ubyte salt;
 
 		if (state.version() != Protocol_Version::SSL_V3)
 			salt += Pair(MASTER_SECRET_MAGIC, sizeof(MASTER_SECRET_MAGIC));
@@ -48,7 +48,7 @@ Session_Keys::Session_Keys(const Handshake_State* state,
 		master_sec = prf.derive_key(48, pre_master_secret, salt);
 	}
 
-	SafeVector!byte salt;
+	SafeVector!ubyte salt;
 	if (state.version() != Protocol_Version::SSL_V3)
 		salt += Pair(KEY_GEN_MAGIC, sizeof(KEY_GEN_MAGIC));
 	salt += state.server_hello().random();
@@ -56,7 +56,7 @@ Session_Keys::Session_Keys(const Handshake_State* state,
 
 	SymmetricKey keyblock = prf.derive_key(prf_gen, master_sec, salt);
 
-	const byte* key_data = keyblock.begin();
+	const ubyte* key_data = keyblock.begin();
 
 	c_mac = SymmetricKey(key_data, mac_keylen);
 	key_data += mac_keylen;

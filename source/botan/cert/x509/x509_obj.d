@@ -9,7 +9,7 @@ import botan.x509_obj;
 import botan.x509_key;
 import botan.pubkey;
 import botan.asn1.oid_lookup.oids;
-import botan.der_enc;
+import botan.asn1.der_enc;
 import botan.asn1.ber_dec;
 import botan.parsing;
 import botan.pem;
@@ -34,7 +34,7 @@ X509_Object::X509_Object(in string file, in string labels)
 /*
 * Create a generic X.509 object
 */
-X509_Object::X509_Object(in Vector!byte vec, in string labels)
+X509_Object::X509_Object(in Vector!ubyte vec, in string labels)
 {
 	DataSource_Memory stream(&vec[0], vec.size());
 	init(stream, labels);
@@ -77,12 +77,12 @@ void X509_Object::init(DataSource& in, in string labels)
 	}
 }void X509_Object::encode_into(DER_Encoder& to) const
 {
-	to.start_cons(SEQUENCE)
-			.start_cons(SEQUENCE)
+	to.start_cons(ASN1_Tag.SEQUENCE)
+			.start_cons(ASN1_Tag.SEQUENCE)
 				.raw_bytes(tbs_bits)
 			.end_cons()
 			.encode(sig_algo)
-			.encode(sig, BIT_STRING)
+			.encode(sig, ASN1_Tag.BIT_STRING)
 		.end_cons();
 }
 
@@ -91,12 +91,12 @@ void X509_Object::init(DataSource& in, in string labels)
 */
 void X509_Object::decode_from(BER_Decoder& from)
 {
-	from.start_cons(SEQUENCE)
-			.start_cons(SEQUENCE)
+	from.start_cons(ASN1_Tag.SEQUENCE)
+			.start_cons(ASN1_Tag.SEQUENCE)
 				.raw_bytes(tbs_bits)
 			.end_cons()
 			.decode(sig_algo)
-			.decode(sig, BIT_STRING)
+			.decode(sig, ASN1_Tag.BIT_STRING)
 			.verify_end()
 		.end_cons();
 }
@@ -104,7 +104,7 @@ void X509_Object::decode_from(BER_Decoder& from)
 /*
 * Return a BER encoded X.509 object
 */
-Vector!byte X509_Object::BER_encode() const
+Vector!ubyte X509_Object::BER_encode() const
 {
 	DER_Encoder der;
 	encode_into(der);
@@ -122,7 +122,7 @@ string X509_Object::PEM_encode() const
 /*
 * Return the TBS data
 */
-Vector!byte X509_Object::tbs_data() const
+Vector!ubyte X509_Object::tbs_data() const
 {
 	return ASN1::put_in_sequence(tbs_bits);
 }
@@ -130,7 +130,7 @@ Vector!byte X509_Object::tbs_data() const
 /*
 * Return the signature of this object
 */
-Vector!byte X509_Object::signature() const
+Vector!ubyte X509_Object::signature() const
 {
 	return sig;
 }
@@ -202,16 +202,16 @@ bool X509_Object::check_signature(in Public_Key pub_key) const
 /*
 * Apply the X.509 SIGNED macro
 */
-Vector!byte X509_Object::make_signed(PK_Signer* signer,
+Vector!ubyte X509_Object::make_signed(PK_Signer* signer,
 														  RandomNumberGenerator rng,
 														  const AlgorithmIdentifier& algo,
-														  in SafeVector!byte tbs_bits)
+														  in SafeVector!ubyte tbs_bits)
 {
 	return DER_Encoder()
-		.start_cons(SEQUENCE)
+		.start_cons(ASN1_Tag.SEQUENCE)
 			.raw_bytes(tbs_bits)
 			.encode(algo)
-			.encode(signer.sign_message(tbs_bits, rng), BIT_STRING)
+			.encode(signer.sign_message(tbs_bits, rng), ASN1_Tag.BIT_STRING)
 		.end_cons()
 	.get_contents_unlocked();
 }

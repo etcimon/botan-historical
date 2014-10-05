@@ -27,7 +27,7 @@ namespace PKCS8 {
 * @param key the private key to encode
 * @return BER encoded key
 */
-SafeVector!byte BER_encode(in Private_Key key);
+SafeVector!ubyte BER_encode(in Private_Key key);
 
 /**
 * Get a string containing a PEM encoded private key.
@@ -47,7 +47,7 @@ string PEM_encode(in Private_Key key);
 			default will be chosen.
 * @return encrypted key in binary BER form
 */
-Vector!byte
+Vector!ubyte
 BER_encode(in Private_Key key,
 			  RandomNumberGenerator rng,
 			  in string pass,

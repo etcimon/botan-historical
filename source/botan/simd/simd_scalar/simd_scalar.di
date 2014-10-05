@@ -35,7 +35,7 @@ class SIMD_Scalar(T, size_t N)
 		static SIMD_Scalar!(T, N) load_le(const void* input)
 		{
 			SIMD_Scalar!(T, N) output;
-			const byte* in_b = cast(const byte*)(input);
+			const ubyte* in_b = cast(const ubyte*)(input);
 
 			for (size_t i = 0; i != size(); ++i)
 				output.m_v[i] = Botan::load_le<T>(in_b, i);
@@ -46,7 +46,7 @@ class SIMD_Scalar(T, size_t N)
 		static SIMD_Scalar!(T, N) load_be(const void* input)
 		{
 			SIMD_Scalar!(T, N) output;
-			const byte* in_b = cast(const byte*)(input);
+			const ubyte* in_b = cast(const ubyte*)(input);
 
 			for (size_t i = 0; i != size(); ++i)
 				output.m_v[i] = Botan::load_be!T(in_b, i);
@@ -54,13 +54,13 @@ class SIMD_Scalar(T, size_t N)
 			return output;
 		}
 
-		void store_le(byte* output) const
+		void store_le(ubyte* output) const
 		{
 			for (size_t i = 0; i != size(); ++i)
 				Botan::store_le(m_v[i], output + i*sizeof(T));
 		}
 
-		void store_be(byte* output) const
+		void store_be(ubyte* output) const
 		{
 			for (size_t i = 0; i != size(); ++i)
 				Botan::store_be(m_v[i], output + i*sizeof(T));

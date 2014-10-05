@@ -12,13 +12,13 @@ import botan.block_cipher;
 class TEA : public Block_Cipher_Fixed_Params!(8, 16)
 {
 	public:
-		void encrypt_n(byte* input, byte* output, size_t blocks) const;
-		void decrypt_n(byte* input, byte* output, size_t blocks) const;
+		void encrypt_n(ubyte* input, ubyte* output, size_t blocks) const;
+		void decrypt_n(ubyte* input, ubyte* output, size_t blocks) const;
 
 		void clear();
 		string name() const { return "TEA"; }
 		BlockCipher clone() const { return new TEA; }
 	private:
-		void key_schedule(in byte*, size_t);
+		void key_schedule(in ubyte*, size_t);
 		secure_vector!uint K;
 };

@@ -25,8 +25,8 @@ string ucs2_to_latin1(in string ucs2)
 
 	for (size_t i = 0; i != ucs2.size(); i += 2)
 	{
-		const byte c1 = ucs2[i];
-		const byte c2 = ucs2[i+1];
+		const ubyte c1 = ucs2[i];
+		const ubyte c2 = ucs2[i+1];
 
 		if (c1 != 0)
 			throw new Decoding_Error("UCS-2 has non-Latin1 characters");
@@ -47,7 +47,7 @@ string utf8_to_latin1(in string utf8)
 	size_t position = 0;
 	while(position != utf8.size())
 	{
-		const byte c1 = cast(byte)(utf8[position++]);
+		const ubyte c1 = cast(ubyte)(utf8[position++]);
 
 		if (c1 <= 0x7F)
 			iso8859 += cast(char)(c1);
@@ -56,8 +56,8 @@ string utf8_to_latin1(in string utf8)
 			if (position == utf8.size())
 				throw new Decoding_Error("UTF-8: sequence truncated");
 
-			const byte c2 = cast(byte)(utf8[position++]);
-			const byte iso_char = ((c1 & 0x07) << 6) | (c2 & 0x3F);
+			const ubyte c2 = cast(ubyte)(utf8[position++]);
+			const ubyte iso_char = ((c1 & 0x07) << 6) | (c2 & 0x3F);
 
 			if (iso_char <= 0x7F)
 				throw new Decoding_Error("UTF-8: sequence longer than needed");
@@ -79,7 +79,7 @@ string latin1_to_utf8(in string iso8859)
 	string utf8;
 	for (size_t i = 0; i != iso8859.size(); ++i)
 	{
-		const byte c = cast(byte)(iso8859[i]);
+		const ubyte c = cast(ubyte)(iso8859[i]);
 
 		if (c <= 0x7F)
 			utf8 += cast(char)(c);
@@ -143,7 +143,7 @@ bool is_space(char c)
 /*
 * Convert a character to a digit
 */
-byte char2digit(char c)
+ubyte char2digit(char c)
 {
 	switch(c)
 	{
@@ -165,7 +165,7 @@ byte char2digit(char c)
 /*
 * Convert a digit to a character
 */
-char digit2char(byte b)
+char digit2char(ubyte b)
 {
 	switch(b)
 	{

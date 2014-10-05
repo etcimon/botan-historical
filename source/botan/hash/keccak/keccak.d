@@ -128,7 +128,7 @@ void Keccak_1600::clear()
 	S_pos = 0;
 }
 
-void Keccak_1600::add_data(in byte* input, size_t length)
+void Keccak_1600::add_data(in ubyte* input, size_t length)
 {
 	if (length == 0)
 		return;
@@ -173,9 +173,9 @@ void Keccak_1600::add_data(in byte* input, size_t length)
 	}
 }
 
-void Keccak_1600::final_result(byte* output)
+void Keccak_1600::final_result(ubyte* output)
 {
-	Vector!byte padding(bitrate / 8 - S_pos);
+	Vector!ubyte padding(bitrate / 8 - S_pos);
 
 	padding[0] = 0x01;
 	padding[padding.size()-1] |= 0x80;

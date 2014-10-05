@@ -13,13 +13,13 @@ import botan.emsa;
 class EMSA_Raw : public EMSA
 {
 	private:
-		void update(const byte[], size_t);
-		SafeVector!byte raw_data();
+		void update(const ubyte[], size_t);
+		SafeVector!ubyte raw_data();
 
-		SafeVector!byte encoding_of(in SafeVector!byte, size_t,
+		SafeVector!ubyte encoding_of(in SafeVector!ubyte, size_t,
 												 RandomNumberGenerator);
-		bool verify(in SafeVector!byte, in SafeVector!byte,
+		bool verify(in SafeVector!ubyte, in SafeVector!ubyte,
 						size_t);
 
-		SafeVector!byte message;
+		SafeVector!ubyte message;
 };

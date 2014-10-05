@@ -13,7 +13,7 @@ import botan.exceptn;
 Pair!(size_t, OctetString)
 PKCS5_PBKDF1::key_derivation(size_t key_len,
 									  in string passphrase,
-									  in byte* salt, size_t salt_len,
+									  in ubyte* salt, size_t salt_len,
 									  size_t iterations,
 									  std::chrono::milliseconds msec) const
 {
@@ -22,7 +22,7 @@ PKCS5_PBKDF1::key_derivation(size_t key_len,
 
 	hash.update(passphrase);
 	hash.update(salt, salt_len);
-	SafeVector!byte key = hash.flush();
+	SafeVector!ubyte key = hash.flush();
 
 	const auto start = std::chrono::high_resolution_clock::now();
 	size_t iterations_performed = 1;

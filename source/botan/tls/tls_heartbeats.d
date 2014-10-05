@@ -11,11 +11,11 @@ import botan.internal.tls_reader;
 import botan.tls_exceptn;
 namespace TLS {
 
-Heartbeat_Message::Heartbeat_Message(in Vector!byte buf)
+Heartbeat_Message::Heartbeat_Message(in Vector!ubyte buf)
 {
 	TLS_Data_Reader reader("Heartbeat", buf);
 
-	const byte type = reader.get_byte();
+	const ubyte type = reader.get_byte();
 
 	if (type != 1 && type != 2)
 		throw new TLS_Exception(Alert::ILLEGAL_PARAMETER,
@@ -23,22 +23,22 @@ Heartbeat_Message::Heartbeat_Message(in Vector!byte buf)
 
 	m_type = cast(Type)(type);
 
-	m_payload = reader.get_range!byte(2, 0, 16*1024);
+	m_payload = reader.get_range!ubyte(2, 0, 16*1024);
 
 	// padding follows and is ignored
 }
 
 Heartbeat_Message::Heartbeat_Message(Type type,
-												 in byte* payload,
+												 in ubyte* payload,
 												 size_t payload_len) :
 	m_type(type),
 	m_payload(payload, payload + payload_len)
 {
 }
 
-Vector!byte Heartbeat_Message::contents() const
+Vector!ubyte Heartbeat_Message::contents() const
 {
-	Vector!byte send_buf(3 + m_payload.size() + 16);
+	Vector!ubyte send_buf(3 + m_payload.size() + 16);
 	send_buf[0] = m_type;
 	send_buf[1] = get_byte<ushort>(0, m_payload.size());
 	send_buf[2] = get_byte<ushort>(1, m_payload.size());
@@ -48,9 +48,9 @@ Vector!byte Heartbeat_Message::contents() const
 	return send_buf;
 }
 
-Vector!byte Heartbeat_Support_Indicator::serialize() const
+Vector!ubyte Heartbeat_Support_Indicator::serialize() const
 {
-	Vector!byte heartbeat(1);
+	Vector!ubyte heartbeat(1);
 	heartbeat[0] = (m_peer_allowed_to_send ? 1 : 2);
 	return heartbeat;
 }
@@ -61,7 +61,7 @@ Heartbeat_Support_Indicator::Heartbeat_Support_Indicator(TLS_Data_Reader& reader
 	if (extension_size != 1)
 		throw new Decoding_Error("Strange size for heartbeat extension");
 
-	const byte code = reader.get_byte();
+	const ubyte code = reader.get_byte();
 
 	if (code != 1 && code != 2)
 		throw new TLS_Exception(Alert::ILLEGAL_PARAMETER,

@@ -28,7 +28,7 @@ class EC_PublicKey : public abstract Public_Key
 						 const PointGFp& pub_point);
 
 		EC_PublicKey(in AlgorithmIdentifier alg_id,
-						 in SafeVector!byte key_bits);
+						 in SafeVector!ubyte key_bits);
 
 		/**
 		* Get the public point of this key.
@@ -40,7 +40,7 @@ class EC_PublicKey : public abstract Public_Key
 
 		AlgorithmIdentifier algorithm_identifier() const;
 
-		Vector!byte x509_subject_public_key() const;
+		Vector!ubyte x509_subject_public_key() const;
 
 		bool check_key(RandomNumberGenerator rng,
 							bool strong) const;
@@ -63,7 +63,7 @@ class EC_PublicKey : public abstract Public_Key
 		* Return the DER encoding of this keys domain in whatever format
 		* is preset for this particular key
 		*/
-		Vector!byte DER_domain() const
+		Vector!ubyte DER_domain() const
 		{ return domain().DER_encode(domain_format()); }
 
 		/**
@@ -95,9 +95,9 @@ class EC_PrivateKey : public abstract EC_PublicKey,
 						 ref const BigInt Private_Key);
 
 		EC_PrivateKey(in AlgorithmIdentifier alg_id,
-						  in SafeVector!byte key_bits);
+						  in SafeVector!ubyte key_bits);
 
-		SafeVector!byte pkcs8_Private_Key() const;
+		SafeVector!ubyte pkcs8_Private_Key() const;
 
 		/**
 		* Get the private key value of this key object.

@@ -26,7 +26,7 @@ struct Threaded_Fork_Data
 	* are NOT running (i.e. before notifying the work condition, after
 	* the input_complete_semaphore is completely reset.)
 	*/
-	const byte* m_input = null;
+	const ubyte* m_input = null;
 
 	/*
 	* The length of the work that needs to be done.
@@ -91,7 +91,7 @@ void Threaded_Fork::set_next(Filter** f, size_t n)
 	}
 }
 
-void Threaded_Fork::send(in byte* input, size_t length)
+void Threaded_Fork::send(in ubyte* input, size_t length)
 {
 	if (write_queue.size())
 		thread_delegate_work(&write_queue[0], write_queue.size());
@@ -108,7 +108,7 @@ void Threaded_Fork::send(in byte* input, size_t length)
 		write_queue.clear();
 }
 
-void Threaded_Fork::thread_delegate_work(in byte* input, size_t length)
+void Threaded_Fork::thread_delegate_work(in ubyte* input, size_t length)
 {
 	//Set the data to do.
 	m_thread_data.m_input = input;

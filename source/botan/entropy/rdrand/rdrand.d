@@ -43,7 +43,7 @@ void Intel_Rdrand::poll(Entropy_Accumulator& accum)
 		int cf = 0;
 
 		// Encoding of rdrand %eax
-		asm(".byte 0x0F, 0xC7, 0xF0; adcl $0,%1" :
+		asm(".ubyte 0x0F, 0xC7, 0xF0; adcl $0,%1" :
 			 "=a" (r), "=r" (cf) : "0" (r), "1" (cf) : "cc");
 #else
 		int cf = _rdrand32_step(&r);

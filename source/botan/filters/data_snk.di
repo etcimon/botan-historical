@@ -29,7 +29,7 @@ class DataSink_Stream : public DataSink
 	public:
 		string name() const { return identifier; }
 
-		void write(in byte*, size_t);
+		void write(in ubyte*, size_t);
 
 		/**
 		* Construct a DataSink_Stream from a stream.

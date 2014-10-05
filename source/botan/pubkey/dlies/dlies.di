@@ -19,14 +19,14 @@ class DLIES_Encryptor : public PK_Encryptor
 							 MessageAuthenticationCode mac,
 							 size_t mac_key_len = 20);
 
-		void set_other_key(in Vector!byte);
+		void set_other_key(in Vector!ubyte);
 	private:
-		Vector!byte enc(const byte[], size_t,
+		Vector!ubyte enc(const ubyte[], size_t,
 									 RandomNumberGenerator) const;
 
 		size_t maximum_input_size() const;
 
-		Vector!byte other_key, my_key;
+		Vector!ubyte other_key, my_key;
 
 		PK_Key_Agreement ka;
 		Unique!KDF kdf;
@@ -46,9 +46,9 @@ class DLIES_Decryptor : public PK_Decryptor
 							 size_t mac_key_len = 20);
 
 	private:
-		SafeVector!byte dec(const byte[], size_t) const;
+		SafeVector!ubyte dec(const ubyte[], size_t) const;
 
-		Vector!byte my_key;
+		Vector!ubyte my_key;
 
 		PK_Key_Agreement ka;
 		Unique!KDF kdf;

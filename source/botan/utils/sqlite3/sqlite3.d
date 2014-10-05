@@ -80,14 +80,14 @@ void sqlite3_statement::bind(int column, SysTime time)
 	bind(column, timeval);
 }
 
-void sqlite3_statement::bind(int column, in Vector!byte val)
+void sqlite3_statement::bind(int column, in Vector!ubyte val)
 {
 	int rc = ::sqlite3_bind_blob(m_stmt, column, &val[0], val.size(), SQLITE_TRANSIENT);
 	if (rc != SQLITE_OK)
 		throw new Exception("sqlite3_bind_text failed, code " ~ std.conv.to!string(rc));
 }
 
-Pair!(const byte*, size_t) sqlite3_statement::get_blob(int column)
+Pair!(const ubyte*, size_t) sqlite3_statement::get_blob(int column)
 {
 	BOTAN_ASSERT(::sqlite3_column_type(m_stmt, 0) == SQLITE_BLOB,
 					 "Return value is a blob");
@@ -97,7 +97,7 @@ Pair!(const byte*, size_t) sqlite3_statement::get_blob(int column)
 
 	BOTAN_ASSERT(session_blob_size >= 0, "Blob size is non-negative");
 
-	return Pair(cast(const byte*)(session_blob),
+	return Pair(cast(const ubyte*)(session_blob),
 								 cast(size_t)(session_blob_size));
 }
 

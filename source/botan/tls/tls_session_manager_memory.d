@@ -52,7 +52,7 @@ bool Session_Manager_In_Memory::load_from_session_str(
 }
 
 bool Session_Manager_In_Memory::load_from_session_id(
-	in Vector!byte session_id, Session& session)
+	in Vector!ubyte session_id, Session& session)
 {
 	m_mutex.lock(); scope(exit) m_mutex.unlock();
 
@@ -82,7 +82,7 @@ bool Session_Manager_In_Memory::load_from_server_info(
 }
 
 void Session_Manager_In_Memory::remove_entry(
-	in Vector!byte session_id)
+	in Vector!ubyte session_id)
 {
 	m_mutex.lock(); scope(exit) m_mutex.unlock();
 

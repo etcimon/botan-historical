@@ -28,7 +28,7 @@ class EME
 		* @param rng a random number generator
 		* @return encoded plaintext
 		*/
-		SafeVector!byte encode(in byte* in,
+		SafeVector!ubyte encode(in ubyte* in,
 										  size_t in_length,
 										  size_t key_length,
 										  RandomNumberGenerator rng) const;
@@ -40,7 +40,7 @@ class EME
 		* @param rng a random number generator
 		* @return encoded plaintext
 		*/
-		SafeVector!byte encode(in SafeVector!byte in,
+		SafeVector!ubyte encode(in SafeVector!ubyte in,
 										  size_t key_length,
 										  RandomNumberGenerator rng) const;
 
@@ -51,7 +51,7 @@ class EME
 		* @param key_length length of the key in bits
 		* @return plaintext
 		*/
-		SafeVector!byte decode(in byte* in,
+		SafeVector!ubyte decode(in ubyte* in,
 										  size_t in_length,
 										  size_t key_length) const;
 
@@ -61,7 +61,7 @@ class EME
 		* @param key_length length of the key in bits
 		* @return plaintext
 		*/
-		SafeVector!byte decode(in SafeVector!byte in,
+		SafeVector!ubyte decode(in SafeVector!ubyte in,
 										  size_t key_length) const;
 
 		~this() {}
@@ -74,7 +74,7 @@ class EME
 		* @param rng a random number generator
 		* @return encoded plaintext
 		*/
-		abstract SafeVector!byte pad(in byte* in,
+		abstract SafeVector!ubyte pad(in ubyte* in,
 												 size_t in_length,
 												 size_t key_length,
 												 RandomNumberGenerator rng) const;
@@ -86,7 +86,7 @@ class EME
 		* @param key_length length of the key in bits
 		* @return plaintext
 		*/
-		abstract SafeVector!byte unpad(in byte* in,
+		abstract SafeVector!ubyte unpad(in ubyte* in,
 													size_t in_length,
 													size_t key_length) const;
 };

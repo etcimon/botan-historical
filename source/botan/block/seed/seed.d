@@ -19,7 +19,7 @@ uint SEED::G_FUNC::operator()(uint X) const
 /*
 * SEED Encryption
 */
-void SEED::encrypt_n(byte* input, byte* output, size_t blocks) const
+void SEED::encrypt_n(ubyte* input, ubyte* output, size_t blocks) const
 {
 	for (size_t i = 0; i != blocks; ++i)
 	{
@@ -59,7 +59,7 @@ void SEED::encrypt_n(byte* input, byte* output, size_t blocks) const
 /*
 * SEED Decryption
 */
-void SEED::decrypt_n(byte* input, byte* output, size_t blocks) const
+void SEED::decrypt_n(ubyte* input, ubyte* output, size_t blocks) const
 {
 	for (size_t i = 0; i != blocks; ++i)
 	{
@@ -99,7 +99,7 @@ void SEED::decrypt_n(byte* input, byte* output, size_t blocks) const
 /*
 * SEED Key Schedule
 */
-void SEED::key_schedule(in byte* key, size_t)
+void SEED::key_schedule(in ubyte* key, size_t)
 {
 	immutable uint[16] RC = {
 		0x9E3779B9, 0x3C6EF373, 0x78DDE6E6, 0xF1BBCDCC,
@@ -122,7 +122,7 @@ void SEED::key_schedule(in byte* key, size_t)
 		K[2*i  ] = G(WK[0] + WK[2] - RC[i]);
 		K[2*i+1] = G(WK[1] - WK[3] + RC[i]) ^ K[2*i];
 
-		byte T = get_byte(3, WK[0]);
+		ubyte T = get_byte(3, WK[0]);
 		WK[0] = (WK[0] >> 8) | (get_byte(3, WK[1]) << 24);
 		WK[1] = (WK[1] >> 8) | (T << 24);
 

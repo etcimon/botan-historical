@@ -10,7 +10,7 @@ import botan.loadstor;
 import botan.internal.simd_32;
 namespace {
 
-void xtea_encrypt_8(const byte[64] input, byte[64] output, const uint[64] EK)
+void xtea_encrypt_8(const ubyte[64] input, ubyte[64] output, const uint[64] EK)
 {
 	SIMD_32 L0 = SIMD_32::load_be(input	  );
 	SIMD_32 R0 = SIMD_32::load_be(input + 16);
@@ -47,7 +47,7 @@ void xtea_encrypt_8(const byte[64] input, byte[64] output, const uint[64] EK)
 	R1.store_be(output + 48);
 }
 
-void xtea_decrypt_8(const byte[64] input, byte[64] output, const uint[64] EK)
+void xtea_decrypt_8(const ubyte[64] input, ubyte[64] output, const uint[64] EK)
 {
 	SIMD_32 L0 = SIMD_32::load_be(input	  );
 	SIMD_32 R0 = SIMD_32::load_be(input + 16);
@@ -89,7 +89,7 @@ void xtea_decrypt_8(const byte[64] input, byte[64] output, const uint[64] EK)
 /*
 * XTEA Encryption
 */
-void XTEA_SIMD::encrypt_n(byte* input, byte* output, size_t blocks) const
+void XTEA_SIMD::encrypt_n(ubyte* input, ubyte* output, size_t blocks) const
 {
 	const uint* KS = &(this.get_EK()[0]);
 
@@ -108,7 +108,7 @@ void XTEA_SIMD::encrypt_n(byte* input, byte* output, size_t blocks) const
 /*
 * XTEA Decryption
 */
-void XTEA_SIMD::decrypt_n(byte* input, byte* output, size_t blocks) const
+void XTEA_SIMD::decrypt_n(ubyte* input, ubyte* output, size_t blocks) const
 {
 	const uint* KS = &(this.get_EK()[0]);
 

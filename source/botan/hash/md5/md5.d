@@ -14,7 +14,7 @@ namespace {
 * MD5 FF Function
 */
  void FF(ref uint A, uint B, uint C, uint D, uint msg,
-					byte S, uint magic)
+					ubyte S, uint magic)
 {
 	A += (D ^ (B & (C ^ D))) + msg + magic;
 	A  = rotate_left(A, S) + B;
@@ -24,7 +24,7 @@ namespace {
 * MD5 GG Function
 */
  void GG(ref uint A, uint B, uint C, uint D, uint msg,
-					byte S, uint magic)
+					ubyte S, uint magic)
 {
 	A += (C ^ (D & (B ^ C))) + msg + magic;
 	A  = rotate_left(A, S) + B;
@@ -34,7 +34,7 @@ namespace {
 * MD5 HH Function
 */
  void HH(ref uint A, uint B, uint C, uint D, uint msg,
-					byte S, uint magic)
+					ubyte S, uint magic)
 {
 	A += (B ^ C ^ D) + msg + magic;
 	A  = rotate_left(A, S) + B;
@@ -44,7 +44,7 @@ namespace {
 * MD5 II Function
 */
  void II(ref uint A, uint B, uint C, uint D, uint msg,
-					byte S, uint magic)
+					ubyte S, uint magic)
 {
 	A += (C ^ (B | ~D)) + msg + magic;
 	A  = rotate_left(A, S) + B;
@@ -55,7 +55,7 @@ namespace {
 /*
 * MD5 Compression Function
 */
-void MD5::compress_n(in byte* input, size_t blocks)
+void MD5::compress_n(in ubyte* input, size_t blocks)
 {
 	uint A = digest[0], B = digest[1], C = digest[2], D = digest[3];
 
@@ -111,7 +111,7 @@ void MD5::compress_n(in byte* input, size_t blocks)
 /*
 * Copy out the digest
 */
-void MD5::copy_out(byte* output)
+void MD5::copy_out(ubyte* output)
 {
 	for (size_t i = 0; i != output_length(); i += 4)
 		store_le(digest[i/4], output + i);

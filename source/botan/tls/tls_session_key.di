@@ -23,16 +23,16 @@ class Session_Keys
 		InitializationVector client_iv() const { return c_iv; }
 		InitializationVector server_iv() const { return s_iv; }
 
-		in SafeVector!byte master_secret() const { return master_sec; }
+		in SafeVector!ubyte master_secret() const { return master_sec; }
 
 		Session_Keys() {}
 
 		Session_Keys(const class Handshake_State* state,
-						 in SafeVector!byte pre_master,
+						 in SafeVector!ubyte pre_master,
 						 bool resuming);
 
 	private:
-		SafeVector!byte master_sec;
+		SafeVector!ubyte master_sec;
 		SymmetricKey c_cipher, s_cipher, c_mac, s_mac;
 		InitializationVector c_iv, s_iv;
 };

@@ -13,7 +13,7 @@ import botan.types;
 class RC4 : public StreamCipher
 {
 	public:
-		void cipher(in byte* input, byte* output);
+		void cipher(in ubyte* input, ubyte* output);
 
 		void clear();
 		string name() const;
@@ -32,14 +32,14 @@ class RC4 : public StreamCipher
 
 		~this() { clear(); }
 	private:
-		void key_schedule(const byte[], size_t);
+		void key_schedule(const ubyte[], size_t);
 		void generate();
 
 		const size_t SKIP;
 
-		byte X, Y;
-		SafeVector!byte state;
+		ubyte X, Y;
+		SafeVector!ubyte state;
 
-		SafeVector!byte buffer;
+		SafeVector!ubyte buffer;
 		size_t position;
 };

@@ -12,9 +12,9 @@ import botan.stream_cipher;
 class ChaCha : public StreamCipher
 {
 	public:
-		void cipher(in byte* input, byte* output);
+		void cipher(in ubyte* input, ubyte* output);
 
-		void set_iv(in byte* iv, size_t iv_len);
+		void set_iv(in ubyte* iv, size_t iv_len);
 
 		bool valid_iv_length(size_t iv_len) const
 		{ return (iv_len == 8); }
@@ -29,11 +29,11 @@ class ChaCha : public StreamCipher
 
 		StreamCipher clone() const { return new ChaCha; }
 	package:
-		abstract void chacha(byte output[64], const uint input[16]);
+		abstract void chacha(ubyte output[64], const uint input[16]);
 	private:
-		void key_schedule(in byte* key, size_t length);
+		void key_schedule(in ubyte* key, size_t length);
 
 		secure_vector!uint m_state;
-		SafeVector!byte m_buffer;
+		SafeVector!ubyte m_buffer;
 		size_t m_position = 0;
 };

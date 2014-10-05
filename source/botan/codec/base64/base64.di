@@ -21,7 +21,7 @@ import string;
 * @return number of bytes written to output
 */
 size_t base64_encode(char* output,
-					 in byte* input,
+					 in ubyte* input,
 					 size_t input_length,
 					 size_t& input_consumed,
 					 bool final_inputs);
@@ -32,7 +32,7 @@ size_t base64_encode(char* output,
 * @param input_length length of input in bytes
 * @return base64adecimal representation of input
 */
-string base64_encode(in byte* input,
+string base64_encode(in ubyte* input,
 					size_t input_length);
 
 /**
@@ -40,7 +40,7 @@ string base64_encode(in byte* input,
 * @param input some input
 * @return base64adecimal representation of input
 */
-string base64_encode(Alloc)(in Vector!( byte, Alloc ) input)
+string base64_encode(Alloc)(in Vector!( ubyte, Alloc ) input)
 {
 	return base64_encode(&input[0], input.size());
 }
@@ -60,7 +60,7 @@ string base64_encode(Alloc)(in Vector!( byte, Alloc ) input)
 						 exception if whitespace is encountered
 * @return number of bytes written to output
 */
-size_t base64_decode(byte* output,
+size_t base64_decode(ubyte* output,
 					 string input,
 					 size_t input_length,
 					 ref size_t input_consumed,
@@ -76,7 +76,7 @@ size_t base64_decode(byte* output,
 						 exception if whitespace is encountered
 * @return number of bytes written to output
 */
-size_t base64_decode(byte* output,
+size_t base64_decode(ubyte* output,
 					 string input,
 					 size_t input_length,
 					 bool ignore_ws = true);
@@ -89,7 +89,7 @@ size_t base64_decode(byte* output,
 						 exception if whitespace is encountered
 * @return number of bytes written to output
 */
-size_t base64_decode(byte* output,
+size_t base64_decode(ubyte* output,
 					 in string input,
 					 bool ignore_ws = true);
 
@@ -101,7 +101,7 @@ size_t base64_decode(byte* output,
 						 exception if whitespace is encountered
 * @return decoded base64 output
 */
-SafeVector!byte base64_decode(string input,
+SafeVector!ubyte base64_decode(string input,
 							 size_t input_length,
 							 bool ignore_ws = true);
 
@@ -112,5 +112,5 @@ SafeVector!byte base64_decode(string input,
 						 exception if whitespace is encountered
 * @return decoded base64 output
 */
-SafeVector!byte base64_decode(in string input,
+SafeVector!ubyte base64_decode(in string input,
 							 bool ignore_ws = true);

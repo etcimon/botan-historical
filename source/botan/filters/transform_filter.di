@@ -33,12 +33,12 @@ class Transformation_Filter : public Keyed_Filter,
 		Transformation& get_transform() { return *m_transform; }
 
 	private:
-		void write(in byte* input, size_t input_length) override;
+		void write(in ubyte* input, size_t input_length) override;
 		void start_msg() override;
 		void end_msg() override;
 
-		void buffered_block(in byte* input, size_t input_length) override;
-		void buffered_final(in byte* input, size_t input_length) override;
+		void buffered_block(in ubyte* input, size_t input_length) override;
+		void buffered_final(in ubyte* input, size_t input_length) override;
 
 		class Nonce_State
 		{
@@ -46,13 +46,13 @@ class Transformation_Filter : public Keyed_Filter,
 				Nonce_State(bool allow_null_nonce) : m_fresh_nonce(allow_null_nonce) {}
 
 				void update(in InitializationVector iv);
-				Vector!byte get();
+				Vector!ubyte get();
 			private:
 				bool m_fresh_nonce;
-				Vector!byte m_nonce;
+				Vector!ubyte m_nonce;
 		};
 
 		Nonce_State m_nonce;
 		Unique!Transformation m_transform;
-		SafeVector!byte m_buffer;
+		SafeVector!ubyte m_buffer;
 };

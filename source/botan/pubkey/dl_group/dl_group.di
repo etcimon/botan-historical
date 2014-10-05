@@ -72,14 +72,14 @@ class DL_Group
 		* @param format the encoding format
 		* @return string holding the DER encoded group
 		*/
-		Vector!byte DER_encode(Format format) const;
+		Vector!ubyte DER_encode(Format format) const;
 
 		/**
 		* Decode a DER/BER encoded group into this instance.
 		* @param ber a vector containing the DER/BER encoded group
 		* @param format the format of the encoded group
 		*/
-		void BER_decode(in Vector!byte ber,
+		void BER_decode(in Vector!ubyte ber,
 							 Format format);
 
 		/**
@@ -128,7 +128,7 @@ class DL_Group
 		* @param qbits the desired bit size of the prime q.
 		*/
 		DL_Group(RandomNumberGenerator rng,
-					in Vector!byte seed,
+					in Vector!ubyte seed,
 					size_t pbits = 1024, size_t qbits = 0);
 
 		/**

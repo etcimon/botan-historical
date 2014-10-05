@@ -27,7 +27,7 @@ srp6_client_agree(in string username,
 									 in string password,
 									 in string group_id,
 									 in string hash_id,
-									 in Vector!byte salt,
+									 in Vector!ubyte salt,
 									 ref const BigInt B,
 									 RandomNumberGenerator rng);
 
@@ -41,7 +41,7 @@ srp6_client_agree(in string username,
 */
 BigInt generate_srp6_verifier(in string identifier,
 													 in string password,
-													 in Vector!byte salt,
+													 in Vector!ubyte salt,
 													 in string group_id,
 													 in string hash_id);
 

@@ -13,12 +13,12 @@ namespace Camellia_F {
 namespace {
 
 /*
-* We use the slow byte-wise version of F in the first and last rounds
+* We use the slow ubyte-wise version of F in the first and last rounds
 * to help protect against timing attacks
 */
 ulong F_SLOW(ulong v, ulong K)
 {
-	immutable byte[256] SBOX = {
+	immutable ubyte[256] SBOX = {
 		0x70, 0x82, 0x2C, 0xEC, 0xB3, 0x27, 0xC0, 0xE5, 0xE4, 0x85, 0x57,
 		0x35, 0xEA, 0x0C, 0xAE, 0x41, 0x23, 0xEF, 0x6B, 0x93, 0x45, 0x19,
 		0xA5, 0x21, 0xED, 0x0E, 0x4F, 0x4E, 0x1D, 0x65, 0x92, 0xBD, 0x86,
@@ -46,23 +46,23 @@ ulong F_SLOW(ulong v, ulong K)
 
 	const ulong x = v ^ K;
 
-	const byte t1 = SBOX[get_byte(0, x)];
-	const byte t2 = rotate_left(SBOX[get_byte(1, x)], 1);
-	const byte t3 = rotate_left(SBOX[get_byte(2, x)], 7);
-	const byte t4 = SBOX[rotate_left(get_byte(3, x), 1)];
-	const byte t5 = rotate_left(SBOX[get_byte(4, x)], 1);
-	const byte t6 = rotate_left(SBOX[get_byte(5, x)], 7);
-	const byte t7 = SBOX[rotate_left(get_byte(6, x), 1)];
-	const byte t8 = SBOX[get_byte(7, x)];
+	const ubyte t1 = SBOX[get_byte(0, x)];
+	const ubyte t2 = rotate_left(SBOX[get_byte(1, x)], 1);
+	const ubyte t3 = rotate_left(SBOX[get_byte(2, x)], 7);
+	const ubyte t4 = SBOX[rotate_left(get_byte(3, x), 1)];
+	const ubyte t5 = rotate_left(SBOX[get_byte(4, x)], 1);
+	const ubyte t6 = rotate_left(SBOX[get_byte(5, x)], 7);
+	const ubyte t7 = SBOX[rotate_left(get_byte(6, x), 1)];
+	const ubyte t8 = SBOX[get_byte(7, x)];
 
-	const byte y1 = t1 ^ t3 ^ t4 ^ t6 ^ t7 ^ t8;
-	const byte y2 = t1 ^ t2 ^ t4 ^ t5 ^ t7 ^ t8;
-	const byte y3 = t1 ^ t2 ^ t3 ^ t5 ^ t6 ^ t8;
-	const byte y4 = t2 ^ t3 ^ t4 ^ t5 ^ t6 ^ t7;
-	const byte y5 = t1 ^ t2 ^ t6 ^ t7 ^ t8;
-	const byte y6 = t2 ^ t3 ^ t5 ^ t7 ^ t8;
-	const byte y7 = t3 ^ t4 ^ t5 ^ t6 ^ t8;
-	const byte y8 = t1 ^ t4 ^ t5 ^ t6 ^ t7;
+	const ubyte y1 = t1 ^ t3 ^ t4 ^ t6 ^ t7 ^ t8;
+	const ubyte y2 = t1 ^ t2 ^ t4 ^ t5 ^ t7 ^ t8;
+	const ubyte y3 = t1 ^ t2 ^ t3 ^ t5 ^ t6 ^ t8;
+	const ubyte y4 = t2 ^ t3 ^ t4 ^ t5 ^ t6 ^ t7;
+	const ubyte y5 = t1 ^ t2 ^ t6 ^ t7 ^ t8;
+	const ubyte y6 = t2 ^ t3 ^ t5 ^ t7 ^ t8;
+	const ubyte y7 = t3 ^ t4 ^ t5 ^ t6 ^ t8;
+	const ubyte y8 = t1 ^ t4 ^ t5 ^ t6 ^ t7;
 
 	return make_ulong(y1, y2, y3, y4, y5, y6, y7, y8);
 }
@@ -112,7 +112,7 @@ ulong F_SLOW(ulong v, ulong K)
 /*
 * Camellia Encryption
 */
-void encrypt(byte* input, byte* output, size_t blocks,
+void encrypt(ubyte* input, ubyte* output, size_t blocks,
 				 const secure_vector!ulong& SK, const size_t rounds)
 {
 	size_t blocks = input.length;
@@ -157,7 +157,7 @@ void encrypt(byte* input, byte* output, size_t blocks,
 /*
 * Camellia Decryption
 */
-void decrypt(byte* input, byte* output, size_t blocks,
+void decrypt(ubyte* input, ubyte* output, size_t blocks,
 				 const secure_vector!ulong& SK, const size_t rounds)
 {
 	size_t blocks = input.length;
@@ -212,7 +212,7 @@ ulong left_rot_lo(ulong h, ulong l, size_t shift)
 /*
 * Camellia Key Schedule
 */
-void key_schedule(secure_vector!ulong& SK, in byte* key)
+void key_schedule(secure_vector!ulong& SK, in ubyte* key)
 {
 	const ulong Sigma1 = 0xA09E667F3BCC908B;
 	const ulong Sigma2 = 0xB67AE8584CAA73B2;
@@ -330,47 +330,47 @@ void key_schedule(secure_vector!ulong& SK, in byte* key)
 
 }
 
-void Camellia_128::encrypt_n(byte* input, byte* output, size_t blocks) const
+void Camellia_128::encrypt_n(ubyte* input, ubyte* output, size_t blocks) const
 {
 	Camellia_F::encrypt(input, output, blocks, SK, 9);
 }
 
-void Camellia_192::encrypt_n(byte* input, byte* output, size_t blocks) const
+void Camellia_192::encrypt_n(ubyte* input, ubyte* output, size_t blocks) const
 {
 	Camellia_F::encrypt(input, output, blocks, SK, 12);
 }
 
-void Camellia_256::encrypt_n(byte* input, byte* output, size_t blocks) const
+void Camellia_256::encrypt_n(ubyte* input, ubyte* output, size_t blocks) const
 {
 	Camellia_F::encrypt(input, output, blocks, SK, 12);
 }
 
-void Camellia_128::decrypt_n(byte* input, byte* output, size_t blocks) const
+void Camellia_128::decrypt_n(ubyte* input, ubyte* output, size_t blocks) const
 {
 	Camellia_F::decrypt(input, output, blocks, SK, 9);
 }
 
-void Camellia_192::decrypt_n(byte* input, byte* output, size_t blocks) const
+void Camellia_192::decrypt_n(ubyte* input, ubyte* output, size_t blocks) const
 {
 	Camellia_F::decrypt(input, output, blocks, SK, 12);
 }
 
-void Camellia_256::decrypt_n(byte* input, byte* output, size_t blocks) const
+void Camellia_256::decrypt_n(ubyte* input, ubyte* output, size_t blocks) const
 {
 	Camellia_F::decrypt(input, output, blocks, SK, 12);
 }
 
-void Camellia_128::key_schedule(in byte* key)
+void Camellia_128::key_schedule(in ubyte* key)
 {
 	Camellia_F::key_schedule(SK, key, length);
 }
 
-void Camellia_192::key_schedule(in byte* key)
+void Camellia_192::key_schedule(in ubyte* key)
 {
 	Camellia_F::key_schedule(SK, key, length);
 }
 
-void Camellia_256::key_schedule(in byte* key)
+void Camellia_256::key_schedule(in ubyte* key)
 {
 	Camellia_F::key_schedule(SK, key, length);
 }

@@ -11,13 +11,13 @@ import botan.parsing;
 /*
 * Lion Encryption
 */
-void Lion::encrypt_n(byte* input, byte* output, size_t blocks) const
+void Lion::encrypt_n(ubyte* input, ubyte* output, size_t blocks) const
 {
 	const size_t LEFT_SIZE = left_size();
 	const size_t RIGHT_SIZE = right_size();
 
-	SafeVector!byte buffer_vec(LEFT_SIZE);
-	byte* buffer = &buffer_vec[0];
+	SafeVector!ubyte buffer_vec(LEFT_SIZE);
+	ubyte* buffer = &buffer_vec[0];
 
 	for (size_t i = 0; i != blocks; ++i)
 	{
@@ -41,13 +41,13 @@ void Lion::encrypt_n(byte* input, byte* output, size_t blocks) const
 /*
 * Lion Decryption
 */
-void Lion::decrypt_n(byte* input, byte* output, size_t blocks) const
+void Lion::decrypt_n(ubyte* input, ubyte* output, size_t blocks) const
 {
 	const size_t LEFT_SIZE = left_size();
 	const size_t RIGHT_SIZE = right_size();
 
-	SafeVector!byte buffer_vec(LEFT_SIZE);
-	byte* buffer = &buffer_vec[0];
+	SafeVector!ubyte buffer_vec(LEFT_SIZE);
+	ubyte* buffer = &buffer_vec[0];
 
 	for (size_t i = 0; i != blocks; ++i)
 	{
@@ -71,7 +71,7 @@ void Lion::decrypt_n(byte* input, byte* output, size_t blocks) const
 /*
 * Lion Key Schedule
 */
-void Lion::key_schedule(in byte* key)
+void Lion::key_schedule(in ubyte* key)
 {
 	clear();
 

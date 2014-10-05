@@ -13,9 +13,9 @@ import botan.hash;
 class KDF1 : public KDF
 {
 	public:
-		SafeVector!byte derive(size_t,
-										  in byte* secret, size_t secret_len,
-										  in byte* P, size_t P_len) const;
+		SafeVector!ubyte derive(size_t,
+										  in ubyte* secret, size_t secret_len,
+										  in ubyte* P, size_t P_len) const;
 
 		string name() const { return "KDF1(" ~ hash.name() ~ ")"; }
 		KDF* clone() const { return new KDF1(hash.clone()); }

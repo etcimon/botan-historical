@@ -20,7 +20,7 @@ class Request
 			m_subject(subject_cert)
 		{}
 
-		Vector!byte BER_encode() const;
+		Vector!ubyte BER_encode() const;
 
 		string base64_encode() const;
 
@@ -37,7 +37,7 @@ class Response
 		Response() {}
 
 		Response(in Certificate_Store trusted_roots,
-					in Vector!byte response);
+					in Vector!ubyte response);
 
 		Certificate_Status_Code status_for(in X509_Certificate issuer,
 															  const X509_Certificate& subject) const;

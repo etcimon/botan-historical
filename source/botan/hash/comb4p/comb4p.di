@@ -38,8 +38,8 @@ class Comb4P : public HashFunction
 
 		void clear();
 	private:
-		void add_data(in byte* input, size_t length);
-		void final_result(byte* output);
+		void add_data(in ubyte* input, size_t length);
+		void final_result(ubyte* output);
 
 		Unique!HashFunction m_hash1, m_hash2;
 };

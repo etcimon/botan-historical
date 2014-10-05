@@ -7,7 +7,7 @@
 
 import botan.crl_ent;
 import botan.x509_ext;
-import botan.der_enc;
+import botan.asn1.der_enc;
 import botan.asn1.ber_dec;
 import botan.bigint;
 import botan.asn1.oid_lookup.oids;
@@ -62,10 +62,10 @@ void CRL_Entry::encode_into(DER_Encoder& der) const
 
 	extensions.add(new Cert_Extension::CRL_ReasonCode(reason));
 
-	der.start_cons(SEQUENCE)
+	der.start_cons(ASN1_Tag.SEQUENCE)
 		.encode(BigInt::decode(serial))
 			.encode(time)
-			.start_cons(SEQUENCE)
+			.start_cons(ASN1_Tag.SEQUENCE)
 				.encode(extensions)
 			 .end_cons()
 		.end_cons();
@@ -79,7 +79,7 @@ void CRL_Entry::decode_from(BER_Decoder& source)
 	BigInt serial_number_bn;
 	reason = UNSPECIFIED;
 
-	BER_Decoder entry = source.start_cons(SEQUENCE);
+	BER_Decoder entry = source.start_cons(ASN1_Tag.SEQUENCE);
 
 	entry.decode(serial_number_bn).decode(time);
 

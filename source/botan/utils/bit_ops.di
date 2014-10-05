@@ -64,7 +64,7 @@ size_t significant_bytes(T)(T n)
 */
 size_t hamming_weight(T)(T n)
 {
-	immutable byte[] NIBBLE_WEIGHTS = {
+	immutable ubyte[] NIBBLE_WEIGHTS = {
 		0, 1, 1, 2, 1, 2, 2, 3, 1, 2, 2, 3, 2, 3, 3, 4 };
 
 	size_t weight = 0;

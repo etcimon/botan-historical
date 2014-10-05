@@ -18,23 +18,23 @@ using namespace Botan;
 class Handshake_Hash
 {
 	public:
-		void update(in byte* input, size_t length)
+		void update(in ubyte* input, size_t length)
 		{ data += Pair(input, length); }
 
-		void update(in Vector!byte input)
+		void update(in Vector!ubyte input)
 		{ data += input; }
 
-		SafeVector!byte flushInto(Protocol_Version _version,
+		SafeVector!ubyte flushInto(Protocol_Version _version,
 										  in string mac_algo) const;
 
-		SafeVector!byte final_ssl3(in SafeVector!byte master_secret) const;
+		SafeVector!ubyte final_ssl3(in SafeVector!ubyte master_secret) const;
 
-		in Vector!byte get_contents() const
+		in Vector!ubyte get_contents() const
 		{ return data; }
 
 		void reset() { data.clear(); }
 	private:
-		Vector!byte data;
+		Vector!ubyte data;
 };
 
 }

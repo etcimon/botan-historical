@@ -22,10 +22,10 @@ class OAEP : public EME
 		*/
 		OAEP(HashFunction hash, in string P = "");
 	private:
-		SafeVector!byte pad(const byte[], size_t, size_t,
+		SafeVector!ubyte pad(const ubyte[], size_t, size_t,
 									  RandomNumberGenerator) const;
-		SafeVector!byte unpad(const byte[], size_t, size_t) const;
+		SafeVector!ubyte unpad(const ubyte[], size_t, size_t) const;
 
-		SafeVector!byte m_Phash;
+		SafeVector!ubyte m_Phash;
 		Unique!HashFunction m_hash;
 };

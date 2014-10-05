@@ -17,7 +17,7 @@ class ECDH_PublicKey : public abstract EC_PublicKey
 	public:
 
 		ECDH_PublicKey(in AlgorithmIdentifier alg_id,
-							in SafeVector!byte key_bits) :
+							in SafeVector!ubyte key_bits) :
 			EC_PublicKey(alg_id, key_bits) {}
 
 		/**
@@ -46,7 +46,7 @@ class ECDH_PublicKey : public abstract EC_PublicKey
 		/**
 		* @return public point value
 		*/
-		Vector!byte public_value() const
+		Vector!ubyte public_value() const
 		{ return unlock(EC2OSP(public_point(), PointGFp::UNCOMPRESSED)); }
 
 	package:
@@ -63,7 +63,7 @@ class ECDH_PrivateKey : public ECDH_PublicKey,
 	public:
 
 		ECDH_PrivateKey(in AlgorithmIdentifier alg_id,
-							 in SafeVector!byte key_bits) :
+							 in SafeVector!ubyte key_bits) :
 			EC_PrivateKey(alg_id, key_bits) {}
 
 		/**
@@ -77,7 +77,7 @@ class ECDH_PrivateKey : public ECDH_PublicKey,
 							 ref const BigInt x = 0) :
 			EC_PrivateKey(rng, domain, x) {}
 
-		Vector!byte public_value() const
+		Vector!ubyte public_value() const
 		{ return ECDH_PublicKey::public_value(); }
 };
 
@@ -89,7 +89,7 @@ class ECDH_KA_Operation : public PK_Ops::Key_Agreement
 	public:
 		ECDH_KA_Operation(in ECDH_PrivateKey key);
 
-		SafeVector!byte agree(in byte* w, size_t w_len);
+		SafeVector!ubyte agree(in ubyte* w, size_t w_len);
 	private:
 		const CurveGFp& curve;
 		ref const BigInt cofactor;

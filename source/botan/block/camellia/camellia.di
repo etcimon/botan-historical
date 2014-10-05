@@ -12,14 +12,14 @@ import botan.block_cipher;
 class Camellia_128 : public Block_Cipher_Fixed_Params!(16, 16)
 {
 	public:
-		void encrypt_n(byte* input, byte* output, size_t blocks) const;
-		void decrypt_n(byte* input, byte* output, size_t blocks) const;
+		void encrypt_n(ubyte* input, ubyte* output, size_t blocks) const;
+		void decrypt_n(ubyte* input, ubyte* output, size_t blocks) const;
 
 		void clear();
 		string name() const { return "Camellia-128"; }
 		BlockCipher clone() const { return new Camellia_128; }
 	private:
-		void key_schedule(in byte* key);
+		void key_schedule(in ubyte* key);
 
 		secure_vector!ulong SK;
 };
@@ -30,14 +30,14 @@ class Camellia_128 : public Block_Cipher_Fixed_Params!(16, 16)
 class Camellia_192 : public Block_Cipher_Fixed_Params!(16, 24)
 {
 	public:
-		void encrypt_n(byte* input, byte* output, size_t blocks) const;
-		void decrypt_n(byte* input, byte* output, size_t blocks) const;
+		void encrypt_n(ubyte* input, ubyte* output, size_t blocks) const;
+		void decrypt_n(ubyte* input, ubyte* output, size_t blocks) const;
 
 		void clear();
 		string name() const { return "Camellia-192"; }
 		BlockCipher clone() const { return new Camellia_192; }
 	private:
-		void key_schedule(in byte* key);
+		void key_schedule(in ubyte* key);
 
 		secure_vector!ulong SK;
 };
@@ -48,14 +48,14 @@ class Camellia_192 : public Block_Cipher_Fixed_Params!(16, 24)
 class Camellia_256 : public Block_Cipher_Fixed_Params!(16, 32)
 {
 	public:
-		void encrypt_n(byte* input, byte* output, size_t blocks) const;
-		void decrypt_n(byte* input, byte* output, size_t blocks) const;
+		void encrypt_n(ubyte* input, ubyte* output, size_t blocks) const;
+		void decrypt_n(ubyte* input, ubyte* output, size_t blocks) const;
 
 		void clear();
 		string name() const { return "Camellia-256"; }
 		BlockCipher clone() const { return new Camellia_256; }
 	private:
-		void key_schedule(in byte* key);
+		void key_schedule(in ubyte* key);
 
 		secure_vector!ulong SK;
 };

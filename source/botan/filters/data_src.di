@@ -19,25 +19,25 @@ class DataSource
 		* Read from the source. Moves the internal offset so that every
 		* call to read will return a new portion of the source.
 		*
-		* @param out the byte array to write the result to
-		* @param length the length of the byte array out
+		* @param out the ubyte array to write the result to
+		* @param length the length of the ubyte array out
 		* @return length in bytes that was actually read and put
 		* into out
 		*/
-		abstract size_t read(byte* output);
+		abstract size_t read(ubyte* output);
 
 		/**
 		* Read from the source but do not modify the internal
 		* offset. Consecutive calls to peek() will return portions of
 		* the source starting at the same position.
 		*
-		* @param out the byte array to write the output to
-		* @param length the length of the byte array out
+		* @param out the ubyte array to write the output to
+		* @param length the length of the ubyte array out
 		* @param peek_offset the offset into the stream to read at
 		* @return length in bytes that was actually read and put
 		* into out
 		*/
-		abstract size_t peek(byte* output,
+		abstract size_t peek(ubyte* output,
 								  size_t peek_offset) const;
 
 		/**
@@ -52,20 +52,20 @@ class DataSource
 		abstract string id() const { return ""; }
 
 		/**
-		* Read one byte.
-		* @param out the byte to read to
+		* Read one ubyte.
+		* @param out the ubyte to read to
 		* @return length in bytes that was actually read and put
 		* into out
 		*/
-		size_t read_byte(ref byte output);
+		size_t read_byte(ref ubyte output);
 
 		/**
-		* Peek at one byte.
-		* @param out an output byte
+		* Peek at one ubyte.
+		* @param out an output ubyte
 		* @return length in bytes that was actually read and put
 		* into out
 		*/
-		size_t peek_byte(ref byte output) const;
+		size_t peek_byte(ref ubyte output) const;
 
 		/**
 		* Discard the next N bytes of the data
@@ -91,8 +91,8 @@ class DataSource
 class DataSource_Memory : public DataSource
 {
 	public:
-		size_t read(byte[], size_t);
-		size_t peek(byte[], size_t, size_t) const;
+		size_t read(ubyte[], size_t);
+		size_t peek(ubyte[], size_t, size_t) const;
 		bool end_of_data() const;
 
 		/**
@@ -102,30 +102,30 @@ class DataSource_Memory : public DataSource
 		DataSource_Memory(in string input);
 
 		/**
-		* Construct a memory source that reads from a byte array
-		* @param in the byte array to read from
-		* @param length the length of the byte array
+		* Construct a memory source that reads from a ubyte array
+		* @param in the ubyte array to read from
+		* @param length the length of the ubyte array
 		*/
-		DataSource_Memory(in byte* input, size_t length) :
+		DataSource_Memory(in ubyte* input, size_t length) :
 			source(input, in + length), offset(0) {}
 
 		/**
 		* Construct a memory source that reads from a secure_vector
 		* @param in the MemoryRegion to read from
 		*/
-		DataSource_Memory(in SafeVector!byte input) :
+		DataSource_Memory(in SafeVector!ubyte input) :
 			source(input), offset(0) {}
 
 		/**
 		* Construct a memory source that reads from a std::vector
 		* @param in the MemoryRegion to read from
 		*/
-		DataSource_Memory(in Vector!byte input) :
+		DataSource_Memory(in Vector!ubyte input) :
 			source(&input[0], &input[in.size()]), offset(0) {}
 
 		abstract size_t get_bytes_read() const { return offset; }
 	private:
-		SafeVector!byte source;
+		SafeVector!ubyte source;
 		size_t offset;
 };
 
@@ -135,8 +135,8 @@ class DataSource_Memory : public DataSource
 class DataSource_Stream : public DataSource
 {
 	public:
-		size_t read(byte[], size_t);
-		size_t peek(byte[], size_t, size_t) const;
+		size_t read(ubyte[], size_t);
+		size_t peek(ubyte[], size_t, size_t) const;
 		bool end_of_data() const;
 		string id() const;
 

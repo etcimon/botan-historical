@@ -61,7 +61,7 @@ __m128i aes_schedule_transform(__m128i input,
 		_mm_shuffle_epi8(table_2, i_2));
 }
 
-__m128i aes_schedule_mangle(__m128i k, byte round_no)
+__m128i aes_schedule_mangle(__m128i k, ubyte round_no)
 {
 	__m128i t = _mm_shuffle_epi8(_mm_xor_si128(k, _mm_set1_epi8(0x5B)),
 										  mc_forward[0]);
@@ -82,7 +82,7 @@ __m128i aes_schedule_192_smear(__m128i x, __m128i y)
 						_mm_shuffle_epi32(y, 0x80));
 }
 
-__m128i aes_schedule_mangle_dec(__m128i k, byte round_no)
+__m128i aes_schedule_mangle_dec(__m128i k, ubyte round_no)
 {
 	const __m128i dsk[8] = {
 		_mm_set_epi32(0x4AED9334, 0x82255BFC, 0xB6116FC8, 0x7ED9A700),
@@ -110,7 +110,7 @@ __m128i aes_schedule_mangle_dec(__m128i k, byte round_no)
 	return _mm_shuffle_epi8(output, sr[round_no % 4]);
 }
 
-__m128i aes_schedule_mangle_last(__m128i k, byte round_no)
+__m128i aes_schedule_mangle_last(__m128i k, ubyte round_no)
 {
 	const __m128i out_tr1 = _mm_set_epi32(
 		0xF7974121, 0xDEBE6808, 0xFF9F4929, 0xD6B66000);
@@ -334,7 +334,7 @@ __m128i aes_ssse3_decrypt(__m128i B, const __m128i* keys, size_t rounds)
 /*
 * AES-128 Encryption
 */
-void AES_128_SSSE3::encrypt_n(byte* input, byte* output, size_t blocks) const
+void AES_128_SSSE3::encrypt_n(ubyte* input, ubyte* output, size_t blocks) const
 {
 	const __m128i* in_mm = cast(const __m128i*)(input);
 	__m128i* out_mm = cast(__m128i*)(output);
@@ -351,7 +351,7 @@ void AES_128_SSSE3::encrypt_n(byte* input, byte* output, size_t blocks) const
 /*
 * AES-128 Decryption
 */
-void AES_128_SSSE3::decrypt_n(byte* input, byte* output, size_t blocks) const
+void AES_128_SSSE3::decrypt_n(ubyte* input, ubyte* output, size_t blocks) const
 {
 	const __m128i* in_mm = cast(const __m128i*)(input);
 	__m128i* out_mm = cast(__m128i*)(output);
@@ -368,7 +368,7 @@ void AES_128_SSSE3::decrypt_n(byte* input, byte* output, size_t blocks) const
 /*
 * AES-128 Key Schedule
 */
-void AES_128_SSSE3::key_schedule(in byte* keyb, size_t)
+void AES_128_SSSE3::key_schedule(in ubyte* keyb, size_t)
 {
 	__m128i rcon = _mm_set_epi32(0x702A9808, 0x4D7C7D81,
 										  0x1F8391B9, 0xAF9DEEB6);
@@ -412,7 +412,7 @@ void AES_128_SSSE3::clear()
 /*
 * AES-192 Encryption
 */
-void AES_192_SSSE3::encrypt_n(byte* input, byte* output, size_t blocks) const
+void AES_192_SSSE3::encrypt_n(ubyte* input, ubyte* output, size_t blocks) const
 {
 	const __m128i* in_mm = cast(const __m128i*)(input);
 	__m128i* out_mm = cast(__m128i*)(output);
@@ -429,7 +429,7 @@ void AES_192_SSSE3::encrypt_n(byte* input, byte* output, size_t blocks) const
 /*
 * AES-192 Decryption
 */
-void AES_192_SSSE3::decrypt_n(byte* input, byte* output, size_t blocks) const
+void AES_192_SSSE3::decrypt_n(ubyte* input, ubyte* output, size_t blocks) const
 {
 	const __m128i* in_mm = cast(const __m128i*)(input);
 	__m128i* out_mm = cast(__m128i*)(output);
@@ -446,7 +446,7 @@ void AES_192_SSSE3::decrypt_n(byte* input, byte* output, size_t blocks) const
 /*
 * AES-192 Key Schedule
 */
-void AES_192_SSSE3::key_schedule(in byte* keyb, size_t)
+void AES_192_SSSE3::key_schedule(in ubyte* keyb, size_t)
 {
 	__m128i rcon = _mm_set_epi32(0x702A9808, 0x4D7C7D81,
 										  0x1F8391B9, 0xAF9DEEB6);
@@ -519,7 +519,7 @@ void AES_192_SSSE3::clear()
 /*
 * AES-256 Encryption
 */
-void AES_256_SSSE3::encrypt_n(byte* input, byte* output, size_t blocks) const
+void AES_256_SSSE3::encrypt_n(ubyte* input, ubyte* output, size_t blocks) const
 {
 	const __m128i* in_mm = cast(const __m128i*)(input);
 	__m128i* out_mm = cast(__m128i*)(output);
@@ -536,7 +536,7 @@ void AES_256_SSSE3::encrypt_n(byte* input, byte* output, size_t blocks) const
 /*
 * AES-256 Decryption
 */
-void AES_256_SSSE3::decrypt_n(byte* input, byte* output, size_t blocks) const
+void AES_256_SSSE3::decrypt_n(ubyte* input, ubyte* output, size_t blocks) const
 {
 	const __m128i* in_mm = cast(const __m128i*)(input);
 	__m128i* out_mm = cast(__m128i*)(output);
@@ -553,7 +553,7 @@ void AES_256_SSSE3::decrypt_n(byte* input, byte* output, size_t blocks) const
 /*
 * AES-256 Key Schedule
 */
-void AES_256_SSSE3::key_schedule(in byte* keyb, size_t)
+void AES_256_SSSE3::key_schedule(in ubyte* keyb, size_t)
 {
 	__m128i rcon = _mm_set_epi32(0x702A9808, 0x4D7C7D81,
 										  0x1F8391B9, 0xAF9DEEB6);

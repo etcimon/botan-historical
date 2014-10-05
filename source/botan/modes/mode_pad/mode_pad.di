@@ -19,7 +19,7 @@ import string;
 class BlockCipherModePaddingMethod
 {
 	public:
-		abstract void add_padding(SafeVector!byte buffer,
+		abstract void add_padding(SafeVector!ubyte buffer,
 										 size_t final_block_bytes,
 										 size_t block_size) const;
 
@@ -27,7 +27,7 @@ class BlockCipherModePaddingMethod
 		* @param block the last block
 		* @param size the of the block
 		*/
-		abstract size_t unpad(in byte* block,
+		abstract size_t unpad(in ubyte* block,
 									size_t size) const;
 
 		/**
@@ -53,11 +53,11 @@ class BlockCipherModePaddingMethod
 class PKCS7_Padding : public BlockCipherModePaddingMethod
 {
 	public:
-		void add_padding(SafeVector!byte buffer,
+		void add_padding(SafeVector!ubyte buffer,
 							  size_t final_block_bytes,
 							  size_t block_size) const override;
 
-		size_t unpad(const byte[], size_t) const;
+		size_t unpad(const ubyte[], size_t) const;
 
 		bool valid_blocksize(size_t bs) const { return (bs > 0 && bs < 256); }
 
@@ -70,11 +70,11 @@ class PKCS7_Padding : public BlockCipherModePaddingMethod
 class ANSI_X923_Padding : public BlockCipherModePaddingMethod
 {
 	public:
-		void add_padding(SafeVector!byte buffer,
+		void add_padding(SafeVector!ubyte buffer,
 							  size_t final_block_bytes,
 							  size_t block_size) const override;
 
-		size_t unpad(const byte[], size_t) const;
+		size_t unpad(const ubyte[], size_t) const;
 
 		bool valid_blocksize(size_t bs) const { return (bs > 0 && bs < 256); }
 
@@ -87,11 +87,11 @@ class ANSI_X923_Padding : public BlockCipherModePaddingMethod
 class OneAndZeros_Padding : public BlockCipherModePaddingMethod
 {
 	public:
-		void add_padding(SafeVector!byte buffer,
+		void add_padding(SafeVector!ubyte buffer,
 							  size_t final_block_bytes,
 							  size_t block_size) const override;
 
-		size_t unpad(const byte[], size_t) const;
+		size_t unpad(const ubyte[], size_t) const;
 
 		bool valid_blocksize(size_t bs) const { return (bs > 0); }
 
@@ -104,9 +104,9 @@ class OneAndZeros_Padding : public BlockCipherModePaddingMethod
 class Null_Padding : public BlockCipherModePaddingMethod
 {
 	public:
-		void add_padding(SafeVector!byte, size_t, size_t) const override {}
+		void add_padding(SafeVector!ubyte, size_t, size_t) const override {}
 
-		size_t unpad(const byte[], size_t size) const { return size; }
+		size_t unpad(const ubyte[], size_t size) const { return size; }
 
 		bool valid_blocksize(size_t) const { return true; }
 

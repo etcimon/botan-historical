@@ -48,7 +48,7 @@ class EC_Group
 		* Decode a BER encoded ECC domain parameter set
 		* @param ber_encoding the bytes of the BER encoding
 		*/
-		EC_Group(in Vector!byte ber_encoding);
+		EC_Group(in Vector!ubyte ber_encoding);
 
 		/**
 		* Create an EC domain by OID (or throw new if unknown)
@@ -68,7 +68,7 @@ class EC_Group
 		* @param form of encoding to use
 		* @returns bytes encododed as DER
 		*/
-		Vector!byte DER_encode(EC_Group_Encoding form) const;
+		Vector!ubyte DER_encode(EC_Group_Encoding form) const;
 
 		/**
 		* Return the PEM encoding (always in explicit form)

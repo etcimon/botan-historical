@@ -24,7 +24,7 @@ namespace X509 {
 * @param key the public key to encode
 * @return BER encoding of this key
 */
-Vector!byte BER_encode(in Public_Key key);
+Vector!ubyte BER_encode(in Public_Key key);
 
 /**
 * PEM encode a public key into a string.
@@ -52,7 +52,7 @@ Public_Key* load_key(in string filename);
 * @param enc the memory region containing the DER or PEM encoded key
 * @return new public key object
 */
-Public_Key* load_key(in Vector!byte enc);
+Public_Key* load_key(in Vector!ubyte enc);
 
 /**
 * Copy a key.

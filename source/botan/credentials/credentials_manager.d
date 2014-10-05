@@ -51,7 +51,7 @@ bool Credentials_Manager::srp_verifier(in string,
 													in string,
 													string&,
 													ref BigInt,
-													Vector!byte&,
+													Vector!ubyte&,
 													bool)
 {
 	return false;

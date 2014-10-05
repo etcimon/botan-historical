@@ -22,10 +22,10 @@ class MD2 : public HashFunction
 		MD2() : X(48), checksum(16), buffer(16)
 		{ clear(); }
 	private:
-		void add_data(const byte[], size_t);
-		void hash(const byte[]);
-		void final_result(byte[]);
+		void add_data(const ubyte[], size_t);
+		void hash(const ubyte[]);
+		void final_result(ubyte[]);
 
-		SafeVector!byte X, checksum, buffer;
+		SafeVector!ubyte X, checksum, buffer;
 		size_t position;
 };

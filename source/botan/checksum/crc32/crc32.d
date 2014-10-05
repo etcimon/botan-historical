@@ -10,7 +10,7 @@ import botan.loadstor;
 /*
 * Update a CRC32 Checksum
 */
-void CRC32::add_data(in byte* input, size_t length)
+void CRC32::add_data(in ubyte* input, size_t length)
 {
 	immutable uint[256] TABLE = {
 		0x00000000, 0x77073096, 0xEE0E612C, 0x990951BA, 0x076DC419, 0x706AF48F,
@@ -89,7 +89,7 @@ void CRC32::add_data(in byte* input, size_t length)
 /*
 * Finalize a CRC32 Checksum
 */
-void CRC32::final_result(byte* output)
+void CRC32::final_result(ubyte* output)
 {
 	crc ^= 0xFFFFFFFF;
 	store_be(crc, output);

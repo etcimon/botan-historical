@@ -8,9 +8,9 @@
 import botan.gost_28147;
 import botan.loadstor;
 import botan.rotate;
-byte GOST_28147_89_Params::sbox_entry(size_t row, size_t col) const
+ubyte GOST_28147_89_Params::sbox_entry(size_t row, size_t col) const
 {
-	byte x = sboxes[4 * col + (row / 2)];
+	ubyte x = sboxes[4 * col + (row / 2)];
 
 	return (row % 2 == 0) ? (x >> 4) : (x & 0x0F);
 }
@@ -20,7 +20,7 @@ GOST_28147_89_Params::GOST_28147_89_Params(in string n) : name(n)
 	// Encoded in the packed fromat from RFC 4357
 
 	// GostR3411_94_TestParamSet (OID 1.2.643.2.2.31.0)
-	immutable byte[64] GOST_R_3411_TEST_PARAMS = {
+	immutable ubyte[64] GOST_R_3411_TEST_PARAMS = {
 		0x4E, 0x57, 0x64, 0xD1, 0xAB, 0x8D, 0xCB, 0xBF, 0x94, 0x1A, 0x7A,
 		0x4D, 0x2C, 0xD1, 0x10, 0x10, 0xD6, 0xA0, 0x57, 0x35, 0x8D, 0x38,
 		0xF2, 0xF7, 0x0F, 0x49, 0xD1, 0x5A, 0xEA, 0x2F, 0x8D, 0x94, 0x62,
@@ -29,7 +29,7 @@ GOST_28147_89_Params::GOST_28147_89_Params(in string n) : name(n)
 		0x8B, 0x55, 0x95, 0xBF, 0x28, 0x39, 0xB3, 0x2E, 0xCC };
 
 	// GostR3411-94-CryptoProParamSet (OID 1.2.643.2.2.31.1)
-	immutable byte[64] GOST_R_3411_CRYPTOPRO_PARAMS = {
+	immutable ubyte[64] GOST_R_3411_CRYPTOPRO_PARAMS = {
 		0xA5, 0x74, 0x77, 0xD1, 0x4F, 0xFA, 0x66, 0xE3, 0x54, 0xC7, 0x42,
 		0x4A, 0x60, 0xEC, 0xB4, 0x19, 0x82, 0x90, 0x9D, 0x75, 0x1D, 0x4F,
 		0xC9, 0x0B, 0x3B, 0x12, 0x2F, 0x54, 0x79, 0x08, 0xA0, 0xAF, 0xD1,
@@ -100,7 +100,7 @@ string GOST_28147_89::name() const
 /*
 * GOST Encryption
 */
-void GOST_28147_89::encrypt_n(byte* input, byte* output, size_t blocks) const
+void GOST_28147_89::encrypt_n(ubyte* input, ubyte* output, size_t blocks) const
 {
 	for (size_t i = 0; i != blocks; ++i)
 	{
@@ -130,7 +130,7 @@ void GOST_28147_89::encrypt_n(byte* input, byte* output, size_t blocks) const
 /*
 * GOST Decryption
 */
-void GOST_28147_89::decrypt_n(byte* input, byte* output, size_t blocks) const
+void GOST_28147_89::decrypt_n(ubyte* input, ubyte* output, size_t blocks) const
 {
 	for (size_t i = 0; i != blocks; ++i)
 	{
@@ -159,7 +159,7 @@ void GOST_28147_89::decrypt_n(byte* input, byte* output, size_t blocks) const
 /*
 * GOST Key Schedule
 */
-void GOST_28147_89::key_schedule(in byte* key, size_t)
+void GOST_28147_89::key_schedule(in ubyte* key, size_t)
 {
 	EK.resize(8);
 	for (size_t i = 0; i != 8; ++i)

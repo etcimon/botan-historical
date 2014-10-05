@@ -9,10 +9,10 @@ import botan.emsa_x931;
 import botan.hash_id;
 namespace {
 
-SafeVector!byte emsa2_encoding(in SafeVector!byte msg,
+SafeVector!ubyte emsa2_encoding(in SafeVector!ubyte msg,
 											  size_t output_bits,
-											  in SafeVector!byte empty_hash,
-											  byte hash_id)
+											  in SafeVector!ubyte empty_hash,
+											  ubyte hash_id)
 {
 	const size_t HASH_SIZE = empty_hash.size();
 
@@ -25,7 +25,7 @@ SafeVector!byte emsa2_encoding(in SafeVector!byte msg,
 
 	const bool empty_input = (msg == empty_hash);
 
-	SafeVector!byte output(output_length);
+	SafeVector!ubyte output(output_length);
 
 	output[0] = (empty_input ? 0x4B : 0x6B);
 	output[output_length - 3 - HASH_SIZE] = 0xBA;
@@ -39,12 +39,12 @@ SafeVector!byte emsa2_encoding(in SafeVector!byte msg,
 
 }
 
-void EMSA_X931::update(in byte* input, size_t length)
+void EMSA_X931::update(in ubyte* input, size_t length)
 {
 	m_hash.update(input, length);
 }
 
-SafeVector!byte EMSA_X931::raw_data()
+SafeVector!ubyte EMSA_X931::raw_data()
 {
 	return m_hash.flush();
 }
@@ -52,7 +52,7 @@ SafeVector!byte EMSA_X931::raw_data()
 /*
 * EMSA_X931 Encode Operation
 */
-SafeVector!byte EMSA_X931::encoding_of(in SafeVector!byte msg,
+SafeVector!ubyte EMSA_X931::encoding_of(in SafeVector!ubyte msg,
 												  size_t output_bits,
 												  RandomNumberGenerator)
 {
@@ -62,8 +62,8 @@ SafeVector!byte EMSA_X931::encoding_of(in SafeVector!byte msg,
 /*
 * EMSA_X931 Verify Operation
 */
-bool EMSA_X931::verify(in SafeVector!byte coded,
-						 in SafeVector!byte raw,
+bool EMSA_X931::verify(in SafeVector!ubyte coded,
+						 in SafeVector!ubyte raw,
 						 size_t key_bits)
 {
 	try

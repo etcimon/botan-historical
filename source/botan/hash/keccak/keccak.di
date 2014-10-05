@@ -28,8 +28,8 @@ class Keccak_1600 : public HashFunction
 		string name() const;
 		void clear();
 	private:
-		void add_data(in byte* input, size_t length);
-		void final_result(byte* output);
+		void add_data(in ubyte* input, size_t length);
+		void final_result(ubyte* output);
 
 		size_t output_bits, bitrate;
 		secure_vector!ulong S;

@@ -14,7 +14,7 @@ class EME_PKCS1v15 : public EME
 	public:
 		size_t maximum_input_size(size_t) const;
 	private:
-		SafeVector!byte pad(const byte[], size_t, size_t,
+		SafeVector!ubyte pad(const ubyte[], size_t, size_t,
 									  RandomNumberGenerator) const;
-		SafeVector!byte unpad(const byte[], size_t, size_t) const;
+		SafeVector!ubyte unpad(const ubyte[], size_t, size_t) const;
 };

@@ -21,8 +21,8 @@ class SHA_384 : public MDx_HashFunction
 		SHA_384() : MDx_HashFunction(128, true, true, 16), digest(8)
 		{ clear(); }
 	private:
-		void compress_n(const byte[], size_t blocks);
-		void copy_out(byte[]);
+		void compress_n(const ubyte[], size_t blocks);
+		void copy_out(ubyte[]);
 
 		secure_vector!ulong digest;
 };
@@ -42,8 +42,8 @@ class SHA_512 : public MDx_HashFunction
 		SHA_512() : MDx_HashFunction(128, true, true, 16), digest(8)
 		{ clear(); }
 	private:
-		void compress_n(const byte[], size_t blocks);
-		void copy_out(byte[]);
+		void compress_n(const ubyte[], size_t blocks);
+		void copy_out(ubyte[]);
 
 		secure_vector!ulong digest;
 };

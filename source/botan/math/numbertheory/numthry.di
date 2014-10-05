@@ -77,7 +77,7 @@ BigInt inverse_mod(in BigInt x,
 * @param n is an odd integer > 1
 * @return (n / m)
 */
-s32bit jacobi(in BigInt a,
+int jacobi(in BigInt a,
 								ref const BigInt n);
 
 /**
@@ -171,7 +171,7 @@ class Algorithm_Factory;
 * @param qbits how long q will be in bits
 * @return random seed used to generate this parameter set
 */
-Vector!byte
+Vector!ubyte
 generate_dsa_primes(RandomNumberGenerator rng,
 						  ref Algorithm_Factory af,
 						  ref BigInt p_out, ref BigInt q_out,
@@ -194,7 +194,7 @@ generate_dsa_primes(RandomNumberGenerator rng,
 						  ref Algorithm_Factory af,
 						  ref BigInt p_out, ref BigInt q_out,
 						  size_t pbits, size_t qbits,
-						  in Vector!byte seed);
+						  in Vector!ubyte seed);
 
 /**
 * The size of the PRIMES[] array

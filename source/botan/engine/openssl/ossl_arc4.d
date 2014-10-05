@@ -27,8 +27,8 @@ class RC4_OpenSSL : public StreamCipher
 		}		RC4_OpenSSL(size_t s = 0) : SKIP(s) { clear(); }
 		~this() { clear(); }
 	private:
-		void cipher(const byte[], byte[], size_t);
-		void key_schedule(const byte[], size_t);
+		void cipher(const ubyte[], ubyte[], size_t);
+		void key_schedule(const ubyte[], size_t);
 
 		const size_t SKIP;
 		RC4_KEY state;
@@ -47,10 +47,10 @@ string RC4_OpenSSL::name() const
 /*
 * RC4 Key Schedule
 */
-void RC4_OpenSSL::key_schedule(in byte* key, size_t length)
+void RC4_OpenSSL::key_schedule(in ubyte* key, size_t length)
 {
 	RC4_set_key(&state, length, key);
-	byte dummy = 0;
+	ubyte dummy = 0;
 	for (size_t i = 0; i != SKIP; ++i)
 		RC4(&state, 1, &dummy, &dummy);
 }
@@ -58,7 +58,7 @@ void RC4_OpenSSL::key_schedule(in byte* key, size_t length)
 /*
 * RC4 Encryption
 */
-void RC4_OpenSSL::cipher(in byte* input, byte* output, size_t length)
+void RC4_OpenSSL::cipher(in ubyte* input, ubyte* output, size_t length)
 {
 	RC4(&state, length, input, output);
 }

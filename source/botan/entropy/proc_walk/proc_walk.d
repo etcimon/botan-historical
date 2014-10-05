@@ -120,7 +120,7 @@ void ProcWalking_EntropySource::poll(Entropy_Accumulator& accum)
 	if (!m_dir)
 		m_dir.reset(new Directory_Walker(m_path));
 
-	SafeVector!byte io_buffer = accum.get_io_buffer(4096);
+	SafeVector!ubyte io_buffer = accum.get_io_buffer(4096);
 
 	for (size_t i = 0; i != MAX_FILES_READ_PER_POLL; ++i)
 	{

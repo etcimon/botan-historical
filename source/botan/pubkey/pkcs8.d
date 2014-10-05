@@ -7,7 +7,7 @@
 
 import botan.pkcs8;
 import botan.get_pbe;
-import botan.der_enc;
+import botan.asn1.der_enc;
 import botan.asn1.ber_dec;
 import botan.asn1.alg_id;
 import botan.asn1.oid_lookup.oids;
@@ -20,15 +20,15 @@ namespace {
 /*
 * Get info from an EncryptedPrivateKeyInfo
 */
-SafeVector!byte PKCS8_extract(DataSource& source,
+SafeVector!ubyte PKCS8_extract(DataSource& source,
 											 AlgorithmIdentifier& pbe_alg_id)
 {
-	SafeVector!byte key_data;
+	SafeVector!ubyte key_data;
 
 	BER_Decoder(source)
-		.start_cons(SEQUENCE)
+		.start_cons(ASN1_Tag.SEQUENCE)
 			.decode(pbe_alg_id)
-			.decode(key_data, OCTET_STRING)
+			.decode(key_data, ASN1_Tag.OCTET_STRING)
 		.verify_end();
 
 	return key_data;
@@ -37,13 +37,13 @@ SafeVector!byte PKCS8_extract(DataSource& source,
 /*
 * PEM decode and/or decrypt a private key
 */
-SafeVector!byte PKCS8_decode(
+SafeVector!ubyte PKCS8_decode(
 	DataSource& source,
 	std::function<std::pair<bool,string> ()> get_passphrase,
 	AlgorithmIdentifier& pk_alg_id)
 {
 	AlgorithmIdentifier pbe_alg_id;
-	SafeVector!byte key_data, key;
+	SafeVector!ubyte key_data, key;
 	bool is_encrypted = true;
 
 	try {
@@ -98,10 +98,10 @@ SafeVector!byte PKCS8_decode(
 			}
 
 			BER_Decoder(key)
-				.start_cons(SEQUENCE)
+				.start_cons(ASN1_Tag.SEQUENCE)
 					.decode_and_check<size_t>(0, "Unknown PKCS #8 version number")
 					.decode(pk_alg_id)
-					.decode(key, OCTET_STRING)
+					.decode(key, ASN1_Tag.OCTET_STRING)
 					.discard_remaining()
 				.end_cons();
 
@@ -123,15 +123,15 @@ SafeVector!byte PKCS8_decode(
 /*
 * BER encode a PKCS #8 private key, unencrypted
 */
-SafeVector!byte BER_encode(in Private_Key key)
+SafeVector!ubyte BER_encode(in Private_Key key)
 {
 	const size_t PKCS8_VERSION = 0;
 
 	return DER_Encoder()
-			.start_cons(SEQUENCE)
+			.start_cons(ASN1_Tag.SEQUENCE)
 				.encode(PKCS8_VERSION)
 				.encode(key.pkcs8_algorithm_identifier())
-				.encode(key.pkcs8_Private_Key(), OCTET_STRING)
+				.encode(key.pkcs8_Private_Key(), ASN1_Tag.OCTET_STRING)
 			.end_cons()
 		.get_contents();
 }
@@ -147,7 +147,7 @@ string PEM_encode(in Private_Key key)
 /*
 * BER encode a PKCS #8 private key, encrypted
 */
-Vector!byte BER_encode(in Private_Key key,
+Vector!ubyte BER_encode(in Private_Key key,
 									  RandomNumberGenerator rng,
 									  in string pass,
 									  std::chrono::milliseconds msec,
@@ -167,9 +167,9 @@ Vector!byte BER_encode(in Private_Key key,
 	key_encrytor.process_msg(PKCS8::BER_encode(key));
 
 	return DER_Encoder()
-			.start_cons(SEQUENCE)
+			.start_cons(ASN1_Tag.SEQUENCE)
 				.encode(pbe_algid)
-				.encode(key_encrytor.read_all(), OCTET_STRING)
+				.encode(key_encrytor.read_all(), ASN1_Tag.OCTET_STRING)
 			.end_cons()
 		.get_contents_unlocked();
 }
@@ -198,7 +198,7 @@ Private_Key* load_key(DataSource& source,
 							 Tuple!(bool, string) delegate() get_pass)
 {
 	AlgorithmIdentifier alg_id;
-	SafeVector!byte pkcs8_key = PKCS8_decode(source, get_pass, alg_id);
+	SafeVector!ubyte pkcs8_key = PKCS8_decode(source, get_pass, alg_id);
 
 	const string alg_name = oids.lookup(alg_id.oid);
 	if (alg_name == "" || alg_name == alg_id.oid.as_string())

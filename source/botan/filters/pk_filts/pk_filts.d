@@ -9,7 +9,7 @@ import botan.pk_filts;
 /*
 * Append to the buffer
 */
-void PK_Encryptor_Filter::write(in byte* input, size_t length)
+void PK_Encryptor_Filter::write(in ubyte* input, size_t length)
 {
 	buffer += Pair(input, length);
 }
@@ -26,7 +26,7 @@ void PK_Encryptor_Filter::end_msg()
 /*
 * Append to the buffer
 */
-void PK_Decryptor_Filter::write(in byte* input, size_t length)
+void PK_Decryptor_Filter::write(in ubyte* input, size_t length)
 {
 	buffer += Pair(input, length);
 }
@@ -43,7 +43,7 @@ void PK_Decryptor_Filter::end_msg()
 /*
 * Add more data
 */
-void PK_Signer_Filter::write(in byte* input, size_t length)
+void PK_Signer_Filter::write(in ubyte* input, size_t length)
 {
 	signer.update(input, length);
 }
@@ -59,7 +59,7 @@ void PK_Signer_Filter::end_msg()
 /*
 * Add more data
 */
-void PK_Verifier_Filter::write(in byte* input, size_t length)
+void PK_Verifier_Filter::write(in ubyte* input, size_t length)
 {
 	verifier.update(input, length);
 }
@@ -78,7 +78,7 @@ void PK_Verifier_Filter::end_msg()
 /*
 * Set the signature to check
 */
-void PK_Verifier_Filter::set_signature(in byte* sig, size_t length)
+void PK_Verifier_Filter::set_signature(in ubyte* sig, size_t length)
 {
 	signature.assign(sig, sig + length);
 }
@@ -86,7 +86,7 @@ void PK_Verifier_Filter::set_signature(in byte* sig, size_t length)
 /*
 * Set the signature to check
 */
-void PK_Verifier_Filter::set_signature(in SafeVector!byte sig)
+void PK_Verifier_Filter::set_signature(in SafeVector!ubyte sig)
 {
 	signature = sig;
 }
@@ -94,7 +94,7 @@ void PK_Verifier_Filter::set_signature(in SafeVector!byte sig)
 /*
 * PK_Verifier_Filter Constructor
 */
-PK_Verifier_Filter::PK_Verifier_Filter(PK_Verifier* v, in byte* sig,
+PK_Verifier_Filter::PK_Verifier_Filter(PK_Verifier* v, in ubyte* sig,
 													size_t length) :
 	verifier(v), signature(sig, sig + length)
 {
@@ -104,7 +104,7 @@ PK_Verifier_Filter::PK_Verifier_Filter(PK_Verifier* v, in byte* sig,
 * PK_Verifier_Filter Constructor
 */
 PK_Verifier_Filter::PK_Verifier_Filter(PK_Verifier* v,
-													in SafeVector!byte sig) :
+													in SafeVector!ubyte sig) :
 	verifier(v), signature(sig)
 {
 }

@@ -124,7 +124,7 @@ void transpose_out(ref __m128i B0, ref __m128i B1, ref __m128i B2, ref __m128i B
 /*
 * IDEA encryption/decryption in SSE2
 */
-void idea_op_8(in byte[64] input, ref byte[64] output, in ushort[52] EK)
+void idea_op_8(in ubyte[64] input, ref ubyte[64] output, in ushort[52] EK)
 {
 	const __m128i* in_mm = cast(const __m128i*)(input.ptr);
 
@@ -135,7 +135,7 @@ void idea_op_8(in byte[64] input, ref byte[64] output, in ushort[52] EK)
 
 	transpose_in(B0, B1, B2, B3);
 
-	// byte swap
+	// ubyte swap
 	B0 = _mm_or_si128(_mm_slli_epi16(B0, 8), _mm_srli_epi16(B0, 8));
 	B1 = _mm_or_si128(_mm_slli_epi16(B1, 8), _mm_srli_epi16(B1, 8));
 	B2 = _mm_or_si128(_mm_slli_epi16(B2, 8), _mm_srli_epi16(B2, 8));
@@ -172,7 +172,7 @@ void idea_op_8(in byte[64] input, ref byte[64] output, in ushort[52] EK)
 	B2 = _mm_add_epi16(B2, _mm_set1_epi16(EK[49]));
 	B3 = mul(B3, EK[51]);
 
-	// byte swap
+	// ubyte swap
 	B0 = _mm_or_si128(_mm_slli_epi16(B0, 8), _mm_srli_epi16(B0, 8));
 	B1 = _mm_or_si128(_mm_slli_epi16(B1, 8), _mm_srli_epi16(B1, 8));
 	B2 = _mm_or_si128(_mm_slli_epi16(B2, 8), _mm_srli_epi16(B2, 8));
@@ -193,7 +193,7 @@ void idea_op_8(in byte[64] input, ref byte[64] output, in ushort[52] EK)
 /*
 * IDEA Encryption
 */
-void IDEA_SSE2::encrypt_n(byte* input, byte* output, size_t blocks) const
+void IDEA_SSE2::encrypt_n(ubyte* input, ubyte* output, size_t blocks) const
 {
 	const ushort* KS = &this.get_EK()[0];
 
@@ -212,7 +212,7 @@ void IDEA_SSE2::encrypt_n(byte* input, byte* output, size_t blocks) const
 /*
 * IDEA Decryption
 */
-void IDEA_SSE2::decrypt_n(byte* input, byte* output, size_t blocks) const
+void IDEA_SSE2::decrypt_n(ubyte* input, ubyte* output, size_t blocks) const
 {
 	const ushort* KS = &this.get_DK()[0];
 

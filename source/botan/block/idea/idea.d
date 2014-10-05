@@ -55,7 +55,7 @@ ushort mul_inv(ushort x)
 /**
 * IDEA is involutional, depending only on the key schedule
 */
-void idea_op(byte* input, byte* output, size_t blocks)
+void idea_op(ubyte* input, ubyte* output, size_t blocks)
 {
 	const size_t BLOCK_SIZE = 8;
 
@@ -103,7 +103,7 @@ void idea_op(byte* input, byte* output, size_t blocks)
 /*
 * IDEA Encryption
 */
-void IDEA::encrypt_n(byte* input, byte* output, size_t blocks) const
+void IDEA::encrypt_n(ubyte* input, ubyte* output, size_t blocks) const
 {
 	idea_op(input, output, blocks, &EK[0]);
 }
@@ -111,7 +111,7 @@ void IDEA::encrypt_n(byte* input, byte* output, size_t blocks) const
 /*
 * IDEA Decryption
 */
-void IDEA::decrypt_n(byte* input, byte* output, size_t blocks) const
+void IDEA::decrypt_n(ubyte* input, ubyte* output, size_t blocks) const
 {
 	idea_op(input, out, blocks, &DK[0]);
 }
@@ -119,7 +119,7 @@ void IDEA::decrypt_n(byte* input, byte* output, size_t blocks) const
 /*
 * IDEA Key Schedule
 */
-void IDEA::key_schedule(in byte* key, size_t)
+void IDEA::key_schedule(in ubyte* key, size_t)
 {
 	EK.resize(52);
 	DK.resize(52);

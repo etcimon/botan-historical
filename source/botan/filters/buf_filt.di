@@ -19,9 +19,9 @@ class Buffered_Filter
 		* @param in the input bytes
 		* @param length of input in bytes
 		*/
-		void write(in byte* input, size_t length);
+		void write(in ubyte* input, size_t length);
 
-		void write(in Vector!( byte, Alloc ) input)
+		void write(in Vector!( ubyte, Alloc ) input)
 		{
 			write(&input[0], input.size());
 		}
@@ -50,7 +50,7 @@ class Buffered_Filter
 		* @param length the size of input, guaranteed to be a multiple
 		*		  of block_size
 		*/
-		abstract void buffered_block(in byte* input, size_t length);
+		abstract void buffered_block(in ubyte* input, size_t length);
 
 		/**
 		* The final block, implemented by subclasses
@@ -58,7 +58,7 @@ class Buffered_Filter
 		* @param length the size of input, guaranteed to be at least
 		*		  final_minimum bytes
 		*/
-		abstract void buffered_final(in byte* input, size_t length);
+		abstract void buffered_final(in ubyte* input, size_t length);
 
 		/**
 		* @return block size of inputs
@@ -77,6 +77,6 @@ class Buffered_Filter
 	private:
 		size_t main_block_mod, final_minimum;
 
-		SafeVector!byte buffer;
+		SafeVector!ubyte buffer;
 		size_t buffer_pos;
 };

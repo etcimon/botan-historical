@@ -54,7 +54,7 @@ size_t CCM_Mode::update_granularity() const
 	/*
 	This value does not particularly matter as regardless CCM_Mode::update
 	buffers all input, so in theory this could be 1. However as for instance
-	Transformation_Filter creates update_granularity() byte buffers, use a
+	Transformation_Filter creates update_granularity() ubyte buffers, use a
 	somewhat large size to avoid bouncing on a tiny buffer.
 	*/
 	return m_cipher.parallel_bytes();
@@ -65,12 +65,12 @@ Key_Length_Specification CCM_Mode::key_spec() const
 	return m_cipher.key_spec();
 }
 
-void CCM_Mode::key_schedule(in byte* key, size_t length)
+void CCM_Mode::key_schedule(in ubyte* key, size_t length)
 {
 	m_cipher.set_key(key, length);
 }
 
-void CCM_Mode::set_associated_data(in byte* ad, size_t length)
+void CCM_Mode::set_associated_data(in ubyte* ad, size_t length)
 {
 	m_ad_buf.clear();
 
@@ -87,7 +87,7 @@ void CCM_Mode::set_associated_data(in byte* ad, size_t length)
 	}
 }
 
-SafeVector!byte CCM_Mode::start(in byte* nonce, size_t nonce_len)
+SafeVector!ubyte CCM_Mode::start(in ubyte* nonce, size_t nonce_len)
 {
 	if (!valid_nonce_length(nonce_len))
 		throw new Invalid_IV_Length(name(), nonce_len);
@@ -95,20 +95,20 @@ SafeVector!byte CCM_Mode::start(in byte* nonce, size_t nonce_len)
 	m_nonce.assign(nonce, nonce + nonce_len);
 	m_msg_buf.clear();
 
-	return SafeVector!byte();
+	return SafeVector!ubyte();
 }
 
-void CCM_Mode::update(SafeVector!byte buffer, size_t offset)
+void CCM_Mode::update(SafeVector!ubyte buffer, size_t offset)
 {
 	BOTAN_ASSERT(buffer.size() >= offset, "Offset is sane");
 	const size_t sz = buffer.size() - offset;
-	byte* buf = &buffer[offset];
+	ubyte* buf = &buffer[offset];
 
 	m_msg_buf.insert(m_msg_buf.end(), buf, buf + sz);
 	buffer.resize(offset); // truncate msg
 }
 
-void CCM_Mode::encode_length(size_t len, byte* output)
+void CCM_Mode::encode_length(size_t len, ubyte* output)
 {
 	const size_t len_bytes = L();
 
@@ -120,18 +120,18 @@ void CCM_Mode::encode_length(size_t len, byte* output)
 	BOTAN_ASSERT((len >> (len_bytes*8)) == 0, "Message length fits in field");
 }
 
-void CCM_Mode::inc(SafeVector!byte C)
+void CCM_Mode::inc(SafeVector!ubyte C)
 {
 	for (size_t i = 0; i != C.size(); ++i)
 		if (++C[C.size()-i-1])
 			break;
 }
 
-SafeVector!byte CCM_Mode::format_b0(size_t sz)
+SafeVector!ubyte CCM_Mode::format_b0(size_t sz)
 {
-	SafeVector!byte B0(BS);
+	SafeVector!ubyte B0(BS);
 
-	const byte b_flags = (m_ad_buf.size() ? 64 : 0) + (((tag_size()/2)-1) << 3) + (L()-1);
+	const ubyte b_flags = (m_ad_buf.size() ? 64 : 0) + (((tag_size()/2)-1) << 3) + (L()-1);
 
 	B0[0] = b_flags;
 	copy_mem(&B0[1], &m_nonce[0], m_nonce.size());
@@ -140,11 +140,11 @@ SafeVector!byte CCM_Mode::format_b0(size_t sz)
 	return B0;
 }
 
-SafeVector!byte CCM_Mode::format_c0()
+SafeVector!ubyte CCM_Mode::format_c0()
 {
-	SafeVector!byte C(BS);
+	SafeVector!ubyte C(BS);
 
-	const byte a_flags = L()-1;
+	const ubyte a_flags = L()-1;
 
 	C[0] = a_flags;
 	copy_mem(&C[1], &m_nonce[0], m_nonce.size());
@@ -152,21 +152,21 @@ SafeVector!byte CCM_Mode::format_c0()
 	return C;
 }
 
-void CCM_Encryption::finish(SafeVector!byte buffer, size_t offset)
+void CCM_Encryption::finish(SafeVector!ubyte buffer, size_t offset)
 {
 	BOTAN_ASSERT(buffer.size() >= offset, "Offset is sane");
 
 	buffer.insert(buffer.begin() + offset, msg_buf().begin(), msg_buf().end());
 
 	const size_t sz = buffer.size() - offset;
-	byte* buf = &buffer[offset];
+	ubyte* buf = &buffer[offset];
 
-	in SafeVector!byte ad = ad_buf();
+	in SafeVector!ubyte ad = ad_buf();
 	BOTAN_ASSERT(ad.size() % BS == 0, "AD is block size multiple");
 
 	const BlockCipher& E = cipher();
 
-	SafeVector!byte T(BS);
+	SafeVector!ubyte T(BS);
 	E.encrypt(format_b0(sz), T);
 
 	for (size_t i = 0; i != ad.size(); i += BS)
@@ -175,14 +175,14 @@ void CCM_Encryption::finish(SafeVector!byte buffer, size_t offset)
 		E.encrypt(T);
 	}
 
-	SafeVector!byte C = format_c0();
-	SafeVector!byte S0(BS);
+	SafeVector!ubyte C = format_c0();
+	SafeVector!ubyte S0(BS);
 	E.encrypt(C, S0);
 	inc(C);
 
-	SafeVector!byte X(BS);
+	SafeVector!ubyte X(BS);
 
-	const byte* buf_end = &buf[sz];
+	const ubyte* buf_end = &buf[sz];
 
 	while(buf != buf_end)
 	{
@@ -203,23 +203,23 @@ void CCM_Encryption::finish(SafeVector!byte buffer, size_t offset)
 	buffer += Pair(&T[0], tag_size());
 }
 
-void CCM_Decryption::finish(SafeVector!byte buffer, size_t offset)
+void CCM_Decryption::finish(SafeVector!ubyte buffer, size_t offset)
 {
 	BOTAN_ASSERT(buffer.size() >= offset, "Offset is sane");
 
 	buffer.insert(buffer.begin() + offset, msg_buf().begin(), msg_buf().end());
 
 	const size_t sz = buffer.size() - offset;
-	byte* buf = &buffer[offset];
+	ubyte* buf = &buffer[offset];
 
 	BOTAN_ASSERT(sz >= tag_size(), "We have the tag");
 
-	in SafeVector!byte ad = ad_buf();
+	in SafeVector!ubyte ad = ad_buf();
 	BOTAN_ASSERT(ad.size() % BS == 0, "AD is block size multiple");
 
 	const BlockCipher& E = cipher();
 
-	SafeVector!byte T(BS);
+	SafeVector!ubyte T(BS);
 	E.encrypt(format_b0(sz - tag_size()), T);
 
 	for (size_t i = 0; i != ad.size(); i += BS)
@@ -228,15 +228,15 @@ void CCM_Decryption::finish(SafeVector!byte buffer, size_t offset)
 		E.encrypt(T);
 	}
 
-	SafeVector!byte C = format_c0();
+	SafeVector!ubyte C = format_c0();
 
-	SafeVector!byte S0(BS);
+	SafeVector!ubyte S0(BS);
 	E.encrypt(C, S0);
 	inc(C);
 
-	SafeVector!byte X(BS);
+	SafeVector!ubyte X(BS);
 
-	const byte* buf_end = &buf[sz - tag_size()];
+	const ubyte* buf_end = &buf[sz - tag_size()];
 
 	while(buf != buf_end)
 	{

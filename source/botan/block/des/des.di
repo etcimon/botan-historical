@@ -12,14 +12,14 @@ import botan.block_cipher;
 class DES : public Block_Cipher_Fixed_Params!(8, 8)
 {
 	public:
-		void encrypt_n(byte* input, byte* output, size_t blocks) const;
-		void decrypt_n(byte* input, byte* output, size_t blocks) const;
+		void encrypt_n(ubyte* input, ubyte* output, size_t blocks) const;
+		void decrypt_n(ubyte* input, ubyte* output, size_t blocks) const;
 
 		void clear();
 		string name() const { return "DES"; }
 		BlockCipher clone() const { return new DES; }
 	private:
-		void key_schedule(in byte*, size_t);
+		void key_schedule(in ubyte*, size_t);
 
 		secure_vector!uint round_key;
 };
@@ -30,14 +30,14 @@ class DES : public Block_Cipher_Fixed_Params!(8, 8)
 class TripleDES : public Block_Cipher_Fixed_Params!(8, 16, 24, 8)
 {
 	public:
-		void encrypt_n(byte* input, byte* output, size_t blocks) const;
-		void decrypt_n(byte* input, byte* output, size_t blocks) const;
+		void encrypt_n(ubyte* input, ubyte* output, size_t blocks) const;
+		void decrypt_n(ubyte* input, ubyte* output, size_t blocks) const;
 
 		void clear();
 		string name() const { return "TripleDES"; }
 		BlockCipher clone() const { return new TripleDES; }
 	private:
-		void key_schedule(in byte*, size_t);
+		void key_schedule(in ubyte*, size_t);
 
 		secure_vector!uint round_key;
 };

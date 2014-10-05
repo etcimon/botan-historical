@@ -12,8 +12,8 @@ import botan.block_cipher;
 class MISTY1 : public Block_Cipher_Fixed_Params!(8, 16)
 {
 	public:
-		void encrypt_n(byte* input, byte* output, size_t blocks) const;
-		void decrypt_n(byte* input, byte* output, size_t blocks) const;
+		void encrypt_n(ubyte* input, ubyte* output, size_t blocks) const;
+		void decrypt_n(ubyte* input, ubyte* output, size_t blocks) const;
 
 		void clear();
 		string name() const { return "MISTY1"; }
@@ -25,7 +25,7 @@ class MISTY1 : public Block_Cipher_Fixed_Params!(8, 16)
 		*/
 		MISTY1(size_t rounds = 8);
 	private:
-		void key_schedule(in byte*, size_t);
+		void key_schedule(in ubyte*, size_t);
 
 		secure_vector!ushort EK, DK;
 };

@@ -28,7 +28,7 @@ BigInt hash_seq(in string hash_id,
 BigInt compute_x(in string hash_id,
 					  in string identifier,
 					  in string password,
-					  in Vector!byte salt)
+					  in Vector!ubyte salt)
 {
 	Unique!HashFunction hash_fn(
 		global_state().algorithm_factory().make_hash_function(hash_id));
@@ -37,12 +37,12 @@ BigInt compute_x(in string hash_id,
 	hash_fn.update(":");
 	hash_fn.update(password);
 
-	SafeVector!byte inner_h = hash_fn.flush();
+	SafeVector!ubyte inner_h = hash_fn.flush();
 
 	hash_fn.update(salt);
 	hash_fn.update(inner_h);
 
-	SafeVector!byte outer_h = hash_fn.flush();
+	SafeVector!ubyte outer_h = hash_fn.flush();
 
 	return BigInt::decode(outer_h);
 }
@@ -77,7 +77,7 @@ srp6_client_agree(in string identifier,
 						in string password,
 						in string group_id,
 						in string hash_id,
-						in Vector!byte salt,
+						in Vector!ubyte salt,
 						ref const BigInt B,
 						RandomNumberGenerator rng)
 {
@@ -109,7 +109,7 @@ srp6_client_agree(in string identifier,
 
 BigInt generate_srp6_verifier(in string identifier,
 										in string password,
-										in Vector!byte salt,
+										in Vector!ubyte salt,
 										in string group_id,
 										in string hash_id)
 {

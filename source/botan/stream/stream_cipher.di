@@ -15,26 +15,26 @@ class StreamCipher : public SymmetricAlgorithm
 		/**
 		* Encrypt or decrypt a message
 		* @param in the plaintext
-		* @param out the byte array to hold the output, i.e. the ciphertext
+		* @param out the ubyte array to hold the output, i.e. the ciphertext
 		* @param len the length of both in and out in bytes
 		*/
-		abstract void cipher(in byte* input, byte* output);
+		abstract void cipher(in ubyte* input, ubyte* output);
 
 		/**
 		* Encrypt or decrypt a message
 		* @param buf the plaintext / ciphertext
 		* @param len the length of buf in bytes
 		*/
-		void cipher1(byte buf[], size_t len)
+		void cipher1(ubyte buf[], size_t len)
 		{ cipher(buf, buf, len); }
 
-		void encipher(Alloc)(Vector!( byte, Alloc )& inoutput)
+		void encipher(Alloc)(Vector!( ubyte, Alloc )& inoutput)
 		{ cipher(&inoutput[0], &inoutput[0], inoutput.size()); }
 
-		void encrypt(Alloc)(Vector!( byte, Alloc )& inoutput)
+		void encrypt(Alloc)(Vector!( ubyte, Alloc )& inoutput)
 		{ cipher(&inoutput[0], &inoutput[0], inoutput.size()); }
 
-		void decrypt(Alloc)(Vector!( byte, Alloc )& inoutput)
+		void decrypt(Alloc)(Vector!( ubyte, Alloc )& inoutput)
 		{ cipher(&inoutput[0], &inoutput[0], inoutput.size()); }
 
 		/**
@@ -42,7 +42,7 @@ class StreamCipher : public SymmetricAlgorithm
 		* @param iv the initialization vector
 		* @param iv_len the length of the IV in bytes
 		*/
-		abstract void set_iv(in byte* iv, size_t iv_len);
+		abstract void set_iv(in ubyte* iv, size_t iv_len);
 
 		/**
 		* @param iv_len the length of the IV in bytes

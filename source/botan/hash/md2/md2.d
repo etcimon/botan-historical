@@ -10,9 +10,9 @@ import botan.internal.xor_buf;
 /**
 * MD2 Compression Function
 */
-void MD2::hash(in byte* input)
+void MD2::hash(in ubyte* input)
 {
-	static immutable byte[256] SBOX = {
+	static immutable ubyte[256] SBOX = {
 		0x29, 0x2E, 0x43, 0xC9, 0xA2, 0xD8, 0x7C, 0x01, 0x3D, 0x36, 0x54, 0xA1,
 		0xEC, 0xF0, 0x06, 0x13, 0x62, 0xA7, 0x05, 0xF3, 0xC0, 0xC7, 0x73, 0x8C,
 		0x98, 0x93, 0x2B, 0xD9, 0xBC, 0x4C, 0x82, 0xCA, 0x1E, 0x9B, 0x57, 0x3C,
@@ -38,7 +38,7 @@ void MD2::hash(in byte* input)
 
 	buffer_insert(X, 16, input, hash_block_size());
 	xor_buf(&X[32], &X[0], &X[16], hash_block_size());
-	byte T = 0;
+	ubyte T = 0;
 
 	for (size_t i = 0; i != 18; ++i)
 	{
@@ -50,7 +50,7 @@ void MD2::hash(in byte* input)
 			T = X[k+6] ^= SBOX[T]; T = X[k+7] ^= SBOX[T];
 		}
 
-		T += cast(byte)(i);
+		T += cast(ubyte)(i);
 	}
 
 	T = checksum[15];
@@ -61,7 +61,7 @@ void MD2::hash(in byte* input)
 /**
 * Update the hash
 */
-void MD2::add_data(in byte* input, size_t length)
+void MD2::add_data(in ubyte* input, size_t length)
 {
 	buffer_insert(buffer, position, input, length);
 
@@ -85,10 +85,10 @@ void MD2::add_data(in byte* input, size_t length)
 /**
 * Finalize a MD2 Hash
 */
-void MD2::final_result(byte* output)
+void MD2::final_result(ubyte* output)
 {
 	for (size_t i = position; i != hash_block_size(); ++i)
-		buffer[i] = cast(byte)(hash_block_size() - position);
+		buffer[i] = cast(ubyte)(hash_block_size() - position);
 
 	hash(&buffer[0]);
 	hash(&checksum[0]);

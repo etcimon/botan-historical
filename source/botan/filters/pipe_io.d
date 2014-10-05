@@ -12,7 +12,7 @@ import iostream;
 */
 std::ostream& operator<<(std::ostream& stream, Pipe& pipe)
 {
-	SafeVector!byte buffer(DEFAULT_BUFFERSIZE);
+	SafeVector!ubyte buffer(DEFAULT_BUFFERSIZE);
 	while(stream.good() && pipe.remaining())
 	{
 		size_t got = pipe.read(&buffer[0], buffer.size());
@@ -28,7 +28,7 @@ std::ostream& operator<<(std::ostream& stream, Pipe& pipe)
 */
 std::istream& operator>>(std::istream& stream, Pipe& pipe)
 {
-	SafeVector!byte buffer(DEFAULT_BUFFERSIZE);
+	SafeVector!ubyte buffer(DEFAULT_BUFFERSIZE);
 	while(stream.good())
 	{
 		stream.read(cast(char*)(&buffer[0]), buffer.size());

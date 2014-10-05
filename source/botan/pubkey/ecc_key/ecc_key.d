@@ -10,7 +10,7 @@
 import botan.ecc_key;
 import botan.x509_key;
 import botan.numthry;
-import botan.der_enc;
+import botan.asn1.der_enc;
 import botan.asn1.ber_dec;
 import botan.alloc.secmem;
 import botan.point_gfp;
@@ -29,7 +29,7 @@ EC_PublicKey::EC_PublicKey(in EC_Group dom_par,
 }
 
 EC_PublicKey::EC_PublicKey(in AlgorithmIdentifier alg_id,
-									in SafeVector!byte key_bits)
+									in SafeVector!ubyte key_bits)
 {
 	domain_params = EC_Group(alg_id.parameters);
 	domain_encoding = EC_DOMPAR_ENC_EXPLICIT;
@@ -48,7 +48,7 @@ AlgorithmIdentifier EC_PublicKey::algorithm_identifier() const
 	return AlgorithmIdentifier(get_oid(), DER_domain());
 }
 
-Vector!byte EC_PublicKey::x509_subject_public_key() const
+Vector!ubyte EC_PublicKey::x509_subject_public_key() const
 {
 	return unlock(EC2OSP(public_point(), PointGFp::COMPRESSED));
 }
@@ -97,32 +97,32 @@ EC_PrivateKey::EC_PrivateKey(RandomNumberGenerator rng,
 					 "Generated public key point was on the curve");
 }
 
-SafeVector!byte EC_PrivateKey::pkcs8_Private_Key() const
+SafeVector!ubyte EC_PrivateKey::pkcs8_Private_Key() const
 {
 	return DER_Encoder()
-		.start_cons(SEQUENCE)
+		.start_cons(ASN1_Tag.SEQUENCE)
 			.encode(cast(size_t)(1))
 			.encode(BigInt::encode_1363(Private_Key, Private_Key.bytes()),
-					  OCTET_STRING)
+					  ASN1_Tag.OCTET_STRING)
 		.end_cons()
 		.get_contents();
 }
 
 EC_PrivateKey::EC_PrivateKey(in AlgorithmIdentifier alg_id,
-									  in SafeVector!byte key_bits)
+									  in SafeVector!ubyte key_bits)
 {
 	domain_params = EC_Group(alg_id.parameters);
 	domain_encoding = EC_DOMPAR_ENC_EXPLICIT;
 
 	OID key_parameters;
-	SafeVector!byte public_key_bits;
+	SafeVector!ubyte public_key_bits;
 
 	BER_Decoder(key_bits)
-		.start_cons(SEQUENCE)
+		.start_cons(ASN1_Tag.SEQUENCE)
 			.decode_and_check<size_t>(1, "Unknown version code for ECC key")
 			.decode_octet_string_bigint(Private_Key)
 			.decode_optional(key_parameters, ASN1_Tag(0), PRIVATE)
-			.decode_optional_string(public_key_bits, BIT_STRING, 1, PRIVATE)
+			.decode_optional_string(public_key_bits, ASN1_Tag.BIT_STRING, 1, PRIVATE)
 		.end_cons();
 
 	if (!key_parameters.empty() && key_parameters != alg_id.oid)

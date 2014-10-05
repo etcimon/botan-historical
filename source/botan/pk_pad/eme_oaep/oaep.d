@@ -11,7 +11,7 @@ import botan.mem_ops;
 /*
 * OAEP Pad Operation
 */
-SafeVector!byte OAEP::pad(in byte* input, size_t in_length,
+SafeVector!ubyte OAEP::pad(in ubyte* input, size_t in_length,
 									  size_t key_length,
 									  RandomNumberGenerator rng) const
 {
@@ -20,7 +20,7 @@ SafeVector!byte OAEP::pad(in byte* input, size_t in_length,
 	if (key_length < in_length + 2*m_Phash.size() + 1)
 		throw new Invalid_Argument("OAEP: Input is too large");
 
-	SafeVector!byte output(key_length);
+	SafeVector!ubyte output(key_length);
 
 	rng.randomize(&output[0], m_Phash.size());
 
@@ -42,7 +42,7 @@ SafeVector!byte OAEP::pad(in byte* input, size_t in_length,
 /*
 * OAEP Unpad Operation
 */
-SafeVector!byte OAEP::unpad(in byte* input, size_t in_length,
+SafeVector!ubyte OAEP::unpad(in ubyte* input, size_t in_length,
 										 size_t key_length) const
 {
 	/*
@@ -63,7 +63,7 @@ SafeVector!byte OAEP::unpad(in byte* input, size_t in_length,
 	if (in_length > key_length)
 		in_length = 0;
 
-	SafeVector!byte input(key_length);
+	SafeVector!ubyte input(key_length);
 	buffer_insert(input, key_length - in_length, input, in_length);
 
 	mgf1_mask(*m_hash,
@@ -97,7 +97,7 @@ SafeVector!byte OAEP::unpad(in byte* input, size_t in_length,
 		waiting_for_delim &= zero_p;
 	}
 
-	// If we never saw any non-zero byte, then it's not valid input
+	// If we never saw any non-zero ubyte, then it's not valid input
 	bad_input |= waiting_for_delim;
 
 	bad_input |= !same_mem(&input[m_Phash.size()], &m_Phash[0], m_Phash.size());
@@ -105,7 +105,7 @@ SafeVector!byte OAEP::unpad(in byte* input, size_t in_length,
 	if (bad_input)
 		throw new Decoding_Error("Invalid OAEP encoding");
 
-	return SafeVector!byte(&input[delim_idx + 1], &input[input.size()]);
+	return SafeVector!ubyte(&input[delim_idx + 1], &input[input.size()]);
 }
 
 /*

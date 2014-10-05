@@ -70,7 +70,7 @@ namespace {
 /*
 * RIPEMD-160 Compression Function
 */
-void RIPEMD_160::compress_n(in byte* input, size_t blocks)
+void RIPEMD_160::compress_n(in ubyte* input, size_t blocks)
 {
 	const uint MAGIC2 = 0x5A827999, MAGIC3 = 0x6ED9EBA1,
 					 MAGIC4 = 0x8F1BBCDC, MAGIC5 = 0xA953FD4E,
@@ -184,7 +184,7 @@ void RIPEMD_160::compress_n(in byte* input, size_t blocks)
 /*
 * Copy out the digest
 */
-void RIPEMD_160::copy_out(byte* output)
+void RIPEMD_160::copy_out(ubyte* output)
 {
 	for (size_t i = 0; i != output_length(); i += 4)
 		store_le(digest[i/4], output + i);

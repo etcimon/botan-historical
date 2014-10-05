@@ -19,13 +19,13 @@ namespace TLS {
 Server_Hello::Server_Hello(Handshake_IO& io,
 									Handshake_Hash& hash,
 									const Policy& policy,
-									in Vector!byte session_id,
+									in Vector!ubyte session_id,
 									Protocol_Version ver,
 									ushort ciphersuite,
-									byte compression,
+									ubyte compression,
 									size_t max_fragment_size,
 									bool client_has_secure_renegotiation,
-									in Vector!byte reneg_info,
+									in Vector!ubyte reneg_info,
 									bool offer_session_ticket,
 									bool client_has_npn,
 									const Vector!string& next_protocols,
@@ -62,21 +62,21 @@ Server_Hello::Server_Hello(Handshake_IO& io,
 /*
 * Deserialize a Server Hello message
 */
-Server_Hello::Server_Hello(in Vector!byte buf)
+Server_Hello::Server_Hello(in Vector!ubyte buf)
 {
 	if (buf.size() < 38)
 		throw new Decoding_Error("Server_Hello: Packet corrupted");
 
 	TLS_Data_Reader reader("ServerHello", buf);
 
-	const byte major_version = reader.get_byte();
-	const byte minor_version = reader.get_byte();
+	const ubyte major_version = reader.get_byte();
+	const ubyte minor_version = reader.get_byte();
 
 	m_version = Protocol_Version(major_version, minor_version);
 
-	m_random = reader.get_fixed<byte>(32);
+	m_random = reader.get_fixed<ubyte>(32);
 
-	m_session_id = reader.get_range!byte(1, 0, 32);
+	m_session_id = reader.get_range!ubyte(1, 0, 32);
 
 	m_ciphersuite = reader.get_ushort();
 
@@ -88,9 +88,9 @@ Server_Hello::Server_Hello(in Vector!byte buf)
 /*
 * Serialize a Server Hello message
 */
-Vector!byte Server_Hello::serialize() const
+Vector!ubyte Server_Hello::serialize() const
 {
-	Vector!byte buf;
+	Vector!ubyte buf;
 
 	buf.push_back(m_version.major_version());
 	buf.push_back(m_version.minor_version());
@@ -120,7 +120,7 @@ Server_Hello_Done::Server_Hello_Done(Handshake_IO& io,
 /*
 * Deserialize a Server Hello Done message
 */
-Server_Hello_Done::Server_Hello_Done(in Vector!byte buf)
+Server_Hello_Done::Server_Hello_Done(in Vector!ubyte buf)
 {
 	if (buf.size())
 		throw new Decoding_Error("Server_Hello_Done: Must be empty, and is not");
@@ -129,9 +129,9 @@ Server_Hello_Done::Server_Hello_Done(in Vector!byte buf)
 /*
 * Serialize a Server Hello Done message
 */
-Vector!byte Server_Hello_Done::serialize() const
+Vector!ubyte Server_Hello_Done::serialize() const
 {
-	return Vector!byte();
+	return Vector!ubyte();
 }
 
 }

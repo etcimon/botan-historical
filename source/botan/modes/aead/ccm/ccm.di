@@ -16,11 +16,11 @@ import botan.mac;
 class CCM_Mode : public AEAD_Mode
 {
 	public:
-		SafeVector!byte start(in byte* nonce, size_t nonce_len) override;
+		SafeVector!ubyte start(in ubyte* nonce, size_t nonce_len) override;
 
-		void update(SafeVector!byte blocks, size_t offset = 0) override;
+		void update(SafeVector!ubyte blocks, size_t offset = 0) override;
 
-		void set_associated_data(in byte* ad, size_t ad_len) override;
+		void set_associated_data(in ubyte* ad, size_t ad_len) override;
 
 		string name() const override;
 
@@ -45,24 +45,24 @@ class CCM_Mode : public AEAD_Mode
 
 		const BlockCipher& cipher() const { return *m_cipher; }
 
-		void encode_length(size_t len, byte* output);
+		void encode_length(size_t len, ubyte* output);
 
-		void inc(SafeVector!byte C);
+		void inc(SafeVector!ubyte C);
 
-		in SafeVector!byte ad_buf() const { return m_ad_buf; }
+		in SafeVector!ubyte ad_buf() const { return m_ad_buf; }
 
-		SafeVector!byte msg_buf() { return m_msg_buf; }
+		SafeVector!ubyte msg_buf() { return m_msg_buf; }
 
-		SafeVector!byte format_b0(size_t msg_size);
-		SafeVector!byte format_c0();
+		SafeVector!ubyte format_b0(size_t msg_size);
+		SafeVector!ubyte format_c0();
 	private:
-		void key_schedule(in byte* key, size_t length) override;
+		void key_schedule(in ubyte* key, size_t length) override;
 
 		const size_t m_tag_size;
 		const size_t m_L;
 
 		Unique!BlockCipher m_cipher;
-		SafeVector!byte m_nonce, m_msg_buf, m_ad_buf;
+		SafeVector!ubyte m_nonce, m_msg_buf, m_ad_buf;
 };
 
 /**
@@ -81,7 +81,7 @@ class CCM_Encryption : public CCM_Mode
 		CCM_Encryption(BlockCipher cipher, size_t tag_size = 16, size_t L = 3) :
 			CCM_Mode(cipher, tag_size, L) {}
 
-		void finish(SafeVector!byte final_block, size_t offset = 0) override;
+		void finish(SafeVector!ubyte final_block, size_t offset = 0) override;
 
 		size_t output_length(size_t input_length) const override
 		{ return input_length + tag_size(); }
@@ -105,7 +105,7 @@ class CCM_Decryption : public CCM_Mode
 		CCM_Decryption(BlockCipher cipher, size_t tag_size = 16, size_t L = 3) :
 			CCM_Mode(cipher, tag_size, L) {}
 
-		void finish(SafeVector!byte final_block, size_t offset = 0) override;
+		void finish(SafeVector!ubyte final_block, size_t offset = 0) override;
 
 		size_t output_length(size_t input_length) const override
 		{

@@ -14,7 +14,7 @@ namespace {
 /*
 * CAST-128 Round Type 1
 */
- void R1(ref uint L, uint R, uint MK, byte RK)
+ void R1(ref uint L, uint R, uint MK, ubyte RK)
 {
 	uint T = rotate_left(MK + R, RK);
 	L ^= (CAST_SBOX1[get_byte(0, T)] ^ CAST_SBOX2[get_byte(1, T)]) -
@@ -24,7 +24,7 @@ namespace {
 /*
 * CAST-128 Round Type 2
 */
- void R2(ref uint L, uint R, uint MK, byte RK)
+ void R2(ref uint L, uint R, uint MK, ubyte RK)
 {
 	uint T = rotate_left(MK ^ R, RK);
 	L ^= (CAST_SBOX1[get_byte(0, T)]  - CAST_SBOX2[get_byte(1, T)] +
@@ -34,7 +34,7 @@ namespace {
 /*
 * CAST-128 Round Type 3
 */
- void R3(ref uint L, uint R, uint MK, byte RK)
+ void R3(ref uint L, uint R, uint MK, ubyte RK)
 {
 	uint T = rotate_left(MK - R, RK);
 	L ^= ((CAST_SBOX1[get_byte(0, T)]  + CAST_SBOX2[get_byte(1, T)]) ^
@@ -46,7 +46,7 @@ namespace {
 /*
 * CAST-128 Encryption
 */
-void CAST_128::encrypt_n(byte* input, byte* output, size_t blocks) const
+void CAST_128::encrypt_n(ubyte* input, ubyte* output, size_t blocks) const
 {
 	for (size_t i = 0; i != blocks; ++i)
 	{
@@ -80,7 +80,7 @@ void CAST_128::encrypt_n(byte* input, byte* output, size_t blocks) const
 /*
 * CAST-128 Decryption
 */
-void CAST_128::decrypt_n(byte* input, byte* output, size_t blocks) const
+void CAST_128::decrypt_n(ubyte* input, ubyte* output, size_t blocks) const
 {
 	for (size_t i = 0; i != blocks; ++i)
 	{
@@ -114,7 +114,7 @@ void CAST_128::decrypt_n(byte* input, byte* output, size_t blocks) const
 /*
 * CAST-128 Key Schedule
 */
-void CAST_128::key_schedule(in byte* key)
+void CAST_128::key_schedule(in ubyte* key)
 {
 	MK.resize(48);
 	RK.resize(48);
@@ -327,7 +327,7 @@ void CAST_128::cast_ks(secure_vector!uint& K,
 	class ByteReader
 	{
 		public:
-			byte operator()(size_t i) { return (X[i/4] >> (8*(3 - (i%4)))); }
+			ubyte operator()(size_t i) { return (X[i/4] >> (8*(3 - (i%4)))); }
 			ByteReader(const uint* x) : X(x) {}
 		private:
 			const uint* X;

@@ -37,7 +37,7 @@ Vector!( X509_DN ) Certificate_Store_In_Memory::all_subjects() const
 namespace {
 
 const X509_Certificate*
-cert_search(in X509_DN subject_dn, in Vector!byte key_id,
+cert_search(in X509_DN subject_dn, in Vector!ubyte key_id,
 				const Vector!( X509_Certificate )& certs)
 {
 	for (size_t i = 0; i != certs.size(); ++i)
@@ -45,7 +45,7 @@ cert_search(in X509_DN subject_dn, in Vector!byte key_id,
 		// Only compare key ids if set in both call and in the cert
 		if (key_id.size())
 		{
-			Vector!byte skid = certs[i].subject_key_id();
+			Vector!ubyte skid = certs[i].subject_key_id();
 
 			if (skid.size() && skid != key_id) // no match
 				continue;
@@ -62,7 +62,7 @@ cert_search(in X509_DN subject_dn, in Vector!byte key_id,
 
 const X509_Certificate*
 Certificate_Store_In_Memory::find_cert(in X509_DN subject_dn,
-													in Vector!byte key_id) const
+													in Vector!ubyte key_id) const
 {
 	return cert_search(subject_dn, key_id, m_certs);
 }
@@ -88,14 +88,14 @@ void Certificate_Store_In_Memory::add_crl(in X509_CRL crl)
 
 const X509_CRL* Certificate_Store_In_Memory::find_crl_for(in X509_Certificate subject) const
 {
-	in Vector!byte key_id = subject.authority_key_id();
+	in Vector!ubyte key_id = subject.authority_key_id();
 
 	for (size_t i = 0; i != m_crls.size(); ++i)
 	{
 		// Only compare key ids if set in both call and in the CRL
 		if (key_id.size())
 		{
-			Vector!byte akid = m_crls[i].authority_key_id();
+			Vector!ubyte akid = m_crls[i].authority_key_id();
 
 			if (akid.size() && akid != key_id) // no match
 				continue;
@@ -136,7 +136,7 @@ Certificate_Store_In_Memory::Certificate_Store_In_Memory(in string dir)
 
 const X509_Certificate*
 Certificate_Store_Overlay::find_cert(in X509_DN subject_dn,
-												 in Vector!byte key_id) const
+												 in Vector!ubyte key_id) const
 {
 	return cert_search(subject_dn, key_id, m_certs);
 }

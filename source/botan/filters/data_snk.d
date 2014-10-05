@@ -12,7 +12,7 @@ import fstream;
 /*
 * Write to a stream
 */
-void DataSink_Stream::write(in byte* output, size_t length)
+void DataSink_Stream::write(in ubyte* output, size_t length)
 {
 	sink.write(cast(string)(output), length);
 	if (!sink.good())

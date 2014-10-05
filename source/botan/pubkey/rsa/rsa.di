@@ -18,7 +18,7 @@ class RSA_PublicKey : public abstract IF_Scheme_PublicKey
 		string algo_name() const { return "RSA"; }
 
 		RSA_PublicKey(in AlgorithmIdentifier alg_id,
-						  in SafeVector!byte key_bits) :
+						  in SafeVector!ubyte key_bits) :
 			IF_Scheme_PublicKey(alg_id, key_bits)
 		{}
 
@@ -45,7 +45,7 @@ class RSA_PrivateKey : public RSA_PublicKey,
 		bool check_key(RandomNumberGenerator rng, bool) const;
 
 		RSA_PrivateKey(in AlgorithmIdentifier alg_id,
-							in SafeVector!byte key_bits,
+							in SafeVector!ubyte key_bits,
 							RandomNumberGenerator rng) :
 			IF_Scheme_PrivateKey(rng, alg_id, key_bits) {}
 
@@ -89,10 +89,10 @@ class RSA_Private_Operation : public PK_Ops::Signature,
 
 		size_t max_input_bits() const { return (n.bits() - 1); }
 
-		SafeVector!byte sign(in byte* msg, size_t msg_len,
+		SafeVector!ubyte sign(in ubyte* msg, size_t msg_len,
 										RandomNumberGenerator rng);
 
-		SafeVector!byte decrypt(in byte* msg, size_t msg_len);
+		SafeVector!ubyte decrypt(in ubyte* msg, size_t msg_len);
 
 	private:
 		BigInt private_op(in BigInt m) const;
@@ -119,14 +119,14 @@ class RSA_Public_Operation : public PK_Ops::Verification,
 		size_t max_input_bits() const { return (n.bits() - 1); }
 		bool with_recovery() const { return true; }
 
-		SafeVector!byte encrypt(in byte* msg, size_t msg_len,
+		SafeVector!ubyte encrypt(in ubyte* msg, size_t msg_len,
 											RandomNumberGenerator)
 		{
 			BigInt m(msg, msg_len);
 			return BigInt::encode_1363(public_op(m), n.bytes());
 		}
 
-		SafeVector!byte verify_mr(in byte* msg, size_t msg_len)
+		SafeVector!ubyte verify_mr(in ubyte* msg, size_t msg_len)
 		{
 			BigInt m(msg, msg_len);
 			return BigInt::encode_locked(public_op(m));

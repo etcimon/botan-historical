@@ -24,7 +24,7 @@ class NR_PublicKey : public abstract DL_Scheme_PublicKey
 		size_t max_input_bits() const { return (group_q().bits() - 1); }
 
 		NR_PublicKey(in AlgorithmIdentifier alg_id,
-						 in SafeVector!byte key_bits);
+						 in SafeVector!ubyte key_bits);
 
 		NR_PublicKey(in DL_Group group, ref const BigInt pub_key);
 	package:
@@ -41,7 +41,7 @@ class NR_PrivateKey : public NR_PublicKey,
 		bool check_key(RandomNumberGenerator rng, bool strong) const;
 
 		NR_PrivateKey(in AlgorithmIdentifier alg_id,
-						  in SafeVector!byte key_bits,
+						  in SafeVector!ubyte key_bits,
 						  RandomNumberGenerator rng);
 
 		NR_PrivateKey(RandomNumberGenerator rng,
@@ -61,7 +61,7 @@ class NR_Signature_Operation : public PK_Ops::Signature
 		size_t message_part_size() const { return q.bytes(); }
 		size_t max_input_bits() const { return (q.bits() - 1); }
 
-		SafeVector!byte sign(in byte* msg, size_t msg_len,
+		SafeVector!ubyte sign(in ubyte* msg, size_t msg_len,
 										RandomNumberGenerator rng);
 	private:
 		ref const BigInt q;
@@ -84,7 +84,7 @@ class NR_Verification_Operation : public PK_Ops::Verification
 
 		bool with_recovery() const { return true; }
 
-		SafeVector!byte verify_mr(in byte* msg, size_t msg_len);
+		SafeVector!ubyte verify_mr(in ubyte* msg, size_t msg_len);
 	private:
 		ref const BigInt q;
 		ref const BigInt y;

@@ -16,9 +16,9 @@ namespace {
 /*
 * EAX MAC-based PRF
 */
-SafeVector!byte eax_prf(byte tag, size_t block_size,
+SafeVector!ubyte eax_prf(ubyte tag, size_t block_size,
 						MessageAuthenticationCode mac,
-						in byte* input,
+						in ubyte* input,
 						size_t length)
 {
 	for (size_t i = 0; i != block_size - 1; ++i)
@@ -70,7 +70,7 @@ Key_Length_Specification EAX_Mode::key_spec() const
 /*
 * Set the EAX key
 */
-void EAX_Mode::key_schedule(in byte* key, size_t length)
+void EAX_Mode::key_schedule(in ubyte* key, size_t length)
 {
 	/*
 	* These could share the key schedule, which is one nice part of EAX,
@@ -85,12 +85,12 @@ void EAX_Mode::key_schedule(in byte* key, size_t length)
 /*
 * Set the EAX associated data
 */
-void EAX_Mode::set_associated_data(in byte* ad, size_t length)
+void EAX_Mode::set_associated_data(in ubyte* ad, size_t length)
 {
 	m_ad_mac = eax_prf(1, block_size(), *m_cmac, ad, length);
 }
 
-SafeVector!byte EAX_Mode::start(in byte* nonce, size_t nonce_len)
+SafeVector!ubyte EAX_Mode::start(in ubyte* nonce, size_t nonce_len)
 {
 	if (!valid_nonce_length(nonce_len))
 		throw new Invalid_IV_Length(name(), nonce_len);
@@ -103,45 +103,45 @@ SafeVector!byte EAX_Mode::start(in byte* nonce, size_t nonce_len)
 		m_cmac.update(0);
 	m_cmac.update(2);
 
-	return SafeVector!byte();
+	return SafeVector!ubyte();
 }
 
-void EAX_Encryption::update(SafeVector!byte buffer, size_t offset)
+void EAX_Encryption::update(SafeVector!ubyte buffer, size_t offset)
 {
 	BOTAN_ASSERT(buffer.size() >= offset, "Offset is sane");
 	const size_t sz = buffer.size() - offset;
-	byte* buf = &buffer[offset];
+	ubyte* buf = &buffer[offset];
 
 	m_ctr.cipher(buf, buf, sz);
 	m_cmac.update(buf, sz);
 }
 
-void EAX_Encryption::finish(SafeVector!byte buffer, size_t offset)
+void EAX_Encryption::finish(SafeVector!ubyte buffer, size_t offset)
 {
 	update(buffer, offset);
 
-	SafeVector!byte data_mac = m_cmac.flush();
+	SafeVector!ubyte data_mac = m_cmac.flush();
 	xor_buf(data_mac, m_nonce_mac, data_mac.size());
 	xor_buf(data_mac, m_ad_mac, data_mac.size());
 
 	buffer += Pair(&data_mac[0], tag_size());
 }
 
-void EAX_Decryption::update(SafeVector!byte buffer, size_t offset)
+void EAX_Decryption::update(SafeVector!ubyte buffer, size_t offset)
 {
 	BOTAN_ASSERT(buffer.size() >= offset, "Offset is sane");
 	const size_t sz = buffer.size() - offset;
-	byte* buf = &buffer[offset];
+	ubyte* buf = &buffer[offset];
 
 	m_cmac.update(buf, sz);
 	m_ctr.cipher(buf, buf, sz);
 }
 
-void EAX_Decryption::finish(SafeVector!byte buffer, size_t offset)
+void EAX_Decryption::finish(SafeVector!ubyte buffer, size_t offset)
 {
 	BOTAN_ASSERT(buffer.size() >= offset, "Offset is sane");
 	const size_t sz = buffer.size() - offset;
-	byte* buf = &buffer[offset];
+	ubyte* buf = &buffer[offset];
 
 	BOTAN_ASSERT(sz >= tag_size(), "Have the tag as part of final input");
 
@@ -153,9 +153,9 @@ void EAX_Decryption::finish(SafeVector!byte buffer, size_t offset)
 		m_ctr.cipher(buf, buf, remaining);
 	}
 
-	const byte* included_tag = &buf[remaining];
+	const ubyte* included_tag = &buf[remaining];
 
-	SafeVector!byte mac = m_cmac.flush();
+	SafeVector!ubyte mac = m_cmac.flush();
 	mac ^= m_nonce_mac;
 	mac ^= m_ad_mac;
 

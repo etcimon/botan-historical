@@ -17,12 +17,12 @@ void HKDF::clear()
 	m_prf.clear();
 }
 
-void HKDF::start_extract(in byte* salt, size_t salt_len)
+void HKDF::start_extract(in ubyte* salt, size_t salt_len)
 {
 	m_extractor.set_key(salt, salt_len);
 }
 
-void HKDF::extract(in byte* input, size_t input_len)
+void HKDF::extract(in ubyte* input, size_t input_len)
 {
 	m_extractor.update(input, input_len);
 }
@@ -32,15 +32,15 @@ void HKDF::finish_extract()
 	m_prf.set_key(m_extractor.flush());
 }
 
-void HKDF::expand(byte* output, size_t output_len,
-						in byte* info, size_t info_len)
+void HKDF::expand(ubyte* output, size_t output_len,
+						in ubyte* info, size_t info_len)
 {
 	if (output_len > m_prf.output_length() * 255)
 		throw new std::invalid_argument("HKDF requested output too large");
 
-	byte counter = 1;
+	ubyte counter = 1;
 
-	SafeVector!byte T;
+	SafeVector!ubyte T;
 
 	while(output_len)
 	{

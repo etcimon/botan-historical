@@ -18,7 +18,7 @@ class DL_Scheme_PublicKey : public abstract Public_Key
 
 		AlgorithmIdentifier algorithm_identifier() const;
 
-		Vector!byte x509_subject_public_key() const;
+		Vector!ubyte x509_subject_public_key() const;
 
 		/**
 		* Get the DL domain parameters of this key.
@@ -58,7 +58,7 @@ class DL_Scheme_PublicKey : public abstract Public_Key
 		size_t estimated_strength() const override;
 
 		DL_Scheme_PublicKey(in AlgorithmIdentifier alg_id,
-								  in SafeVector!byte key_bits,
+								  in SafeVector!ubyte key_bits,
 								  DL_Group::Format group_format);
 
 	package:
@@ -90,10 +90,10 @@ class DL_Scheme_PrivateKey : public abstract DL_Scheme_PublicKey,
 		*/
 		ref const BigInt get_x() const { return x; }
 
-		SafeVector!byte pkcs8_Private_Key() const;
+		SafeVector!ubyte pkcs8_Private_Key() const;
 
 		DL_Scheme_PrivateKey(in AlgorithmIdentifier alg_id,
-									in SafeVector!byte key_bits,
+									in SafeVector!ubyte key_bits,
 									DL_Group::Format group_format);
 
 	package:

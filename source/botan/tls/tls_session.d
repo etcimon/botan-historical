@@ -6,22 +6,22 @@
 */
 
 import botan.tls_session;
-import botan.der_enc;
+import botan.asn1.der_enc;
 import botan.asn1.ber_dec;
-import botan.asn1_str;
+import botan.asn1.asn1_str;
 import botan.pem;
 import botan.cryptobox_psk;
 namespace TLS {
 
-Session::Session(in Vector!byte session_identifier,
-					  in SafeVector!byte master_secret,
+Session::Session(in Vector!ubyte session_identifier,
+					  in SafeVector!ubyte master_secret,
 					  Protocol_Version _version,
 					  ushort ciphersuite,
-					  byte compression_method,
+					  ubyte compression_method,
 					  Connection_Side side,
 					  size_t fragment_size,
 					  const Vector!( X509_Certificate )& certs,
-					  in Vector!byte ticket,
+					  in Vector!ubyte ticket,
 					  const Server_Information& server_info,
 					  in string srp_identifier) :
 	m_start_time(std::chrono::system_clock::now()),
@@ -41,14 +41,14 @@ Session::Session(in Vector!byte session_identifier,
 
 Session::Session(in string pem)
 {
-	SafeVector!byte der = PEM_Code::decode_check_label(pem, "SSL SESSION");
+	SafeVector!ubyte der = PEM_Code::decode_check_label(pem, "SSL SESSION");
 
 	*this = Session(&der[0], der.size());
 }
 
-Session::Session(in byte* ber, size_t ber_len)
+Session::Session(in ubyte* ber, size_t ber_len)
 {
-	byte side_code = 0;
+	ubyte side_code = 0;
 
 	ASN1_String server_hostname;
 	ASN1_String server_service;
@@ -56,27 +56,27 @@ Session::Session(in byte* ber, size_t ber_len)
 
 	ASN1_String srp_identifier_str;
 
-	byte major_version = 0, minor_version = 0;
+	ubyte major_version = 0, minor_version = 0;
 
-	Vector!byte peer_cert_bits;
+	Vector!ubyte peer_cert_bits;
 
 	size_t start_time = 0;
 
 	BER_Decoder(ber, ber_len)
-		.start_cons(SEQUENCE)
+		.start_cons(ASN1_Tag.SEQUENCE)
 		  .decode_and_check(cast(size_t)(TLS_SESSION_PARAM_STRUCT_VERSION),
 								  "Unknown version in session structure")
 		  .decode_integer_type(start_time)
 		  .decode_integer_type(major_version)
 		  .decode_integer_type(minor_version)
-		  .decode(m_identifier, OCTET_STRING)
-		  .decode(m_session_ticket, OCTET_STRING)
+				.decode(m_identifier, ASN1_Tag.OCTET_STRING)
+				.decode(m_session_ticket, ASN1_Tag.OCTET_STRING)
 		  .decode_integer_type(m_ciphersuite)
 		  .decode_integer_type(m_compression_method)
 		  .decode_integer_type(side_code)
 		  .decode_integer_type(m_fragment_size)
-		  .decode(m_master_secret, OCTET_STRING)
-		  .decode(peer_cert_bits, OCTET_STRING)
+				.decode(m_master_secret, ASN1_Tag.OCTET_STRING)
+				.decode(peer_cert_bits, ASN1_Tag.OCTET_STRING)
 		  .decode(server_hostname)
 		  .decode(server_service)
 		  .decode(server_port)
@@ -103,30 +103,30 @@ Session::Session(in byte* ber, size_t ber_len)
 	}
 }
 
-SafeVector!byte Session::DER_encode() const
+SafeVector!ubyte Session::DER_encode() const
 {
-	Vector!byte peer_cert_bits;
+	Vector!ubyte peer_cert_bits;
 	for (size_t i = 0; i != m_peer_certs.size(); ++i)
 		peer_cert_bits += m_peer_certs[i].BER_encode();
 
 	return DER_Encoder()
-		.start_cons(SEQUENCE)
+		.start_cons(ASN1_Tag.SEQUENCE)
 			.encode(cast(size_t)(TLS_SESSION_PARAM_STRUCT_VERSION))
 			.encode(cast(size_t)(std::chrono::system_clock::to_time_t(m_start_time)))
 			.encode(cast(size_t)(m_version.major_version()))
 			.encode(cast(size_t)(m_version.minor_version()))
-			.encode(m_identifier, OCTET_STRING)
-			.encode(m_session_ticket, OCTET_STRING)
+				.encode(m_identifier, ASN1_Tag.OCTET_STRING)
+				.encode(m_session_ticket, ASN1_Tag.OCTET_STRING)
 			.encode(cast(size_t)(m_ciphersuite))
 			.encode(cast(size_t)(m_compression_method))
 			.encode(cast(size_t)(m_connection_side))
 			.encode(cast(size_t)(m_fragment_size))
-			.encode(m_master_secret, OCTET_STRING)
-			.encode(peer_cert_bits, OCTET_STRING)
-			.encode(ASN1_String(m_server_info.hostname(), UTF8_STRING))
-			.encode(ASN1_String(m_server_info.service(), UTF8_STRING))
+				.encode(m_master_secret, ASN1_Tag.OCTET_STRING)
+				.encode(peer_cert_bits, ASN1_Tag.OCTET_STRING)
+				.encode(ASN1_String(m_server_info.hostname(), ASN1_Tag.UTF8_STRING))
+				.encode(ASN1_String(m_server_info.service(), ASN1_Tag.UTF8_STRING))
 			.encode(cast(size_t)(m_server_info.port()))
-			.encode(ASN1_String(m_srp_identifier, UTF8_STRING))
+				.encode(ASN1_String(m_srp_identifier, ASN1_Tag.UTF8_STRING))
 		.end_cons()
 	.get_contents();
 }
@@ -142,7 +142,7 @@ std::chrono::seconds Session::session_age() const
 		std::chrono::system_clock::now() - m_start_time);
 }
 
-Vector!byte
+Vector!ubyte
 Session::encrypt(in SymmetricKey master_key,
 					  RandomNumberGenerator rng) const
 {
@@ -151,7 +151,7 @@ Session::encrypt(in SymmetricKey master_key,
 	return CryptoBox::encrypt(&der[0], der.size(), master_key, rng);
 }
 
-Session Session::decrypt(in byte* buf, size_t buf_len,
+Session Session::decrypt(in ubyte* buf, size_t buf_len,
 								 const SymmetricKey& master_key)
 {
 	try

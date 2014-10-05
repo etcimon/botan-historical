@@ -53,8 +53,8 @@ namespace {
 /*
 * SIMD Serpent Encryption of 4 blocks in parallel
 */
-void serpent_encrypt_4(const byte[64] input,
-							  byte[64] output,
+void serpent_encrypt_4(const ubyte[64] input,
+							  ubyte[64] output,
 							  const uint keys[132])
 {
 	SIMD_32 B0 = SIMD_32::load_le(input);
@@ -111,8 +111,8 @@ void serpent_encrypt_4(const byte[64] input,
 /*
 * SIMD Serpent Decryption of 4 blocks in parallel
 */
-void serpent_decrypt_4(const byte[64] input,
-							  byte[64] output,
+void serpent_decrypt_4(const ubyte[64] input,
+							  ubyte[64] output,
 							  const uint keys[132])
 {
 	SIMD_32 B0 = SIMD_32::load_le(input);
@@ -175,7 +175,7 @@ void serpent_decrypt_4(const byte[64] input,
 /*
 * Serpent Encryption
 */
-void Serpent_SIMD::encrypt_n(byte* input, byte* output, size_t blocks) const
+void Serpent_SIMD::encrypt_n(ubyte* input, ubyte* output, size_t blocks) const
 {
 	const uint* KS = &(this.get_round_keys()[0]);
 
@@ -194,7 +194,7 @@ void Serpent_SIMD::encrypt_n(byte* input, byte* output, size_t blocks) const
 /*
 * Serpent Decryption
 */
-void Serpent_SIMD::decrypt_n(byte* input, byte* output, size_t blocks) const
+void Serpent_SIMD::decrypt_n(ubyte* input, ubyte* output, size_t blocks) const
 {
 	const uint* KS = &(this.get_round_keys()[0]);
 

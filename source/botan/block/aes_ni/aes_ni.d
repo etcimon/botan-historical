@@ -99,7 +99,7 @@ __m128i aes_256_key_expansion(__m128i key, __m128i key2)
 /*
 * AES-128 Encryption
 */
-void AES_128_NI::encrypt_n(byte* input, byte* output, size_t blocks) const
+void AES_128_NI::encrypt_n(ubyte* input, ubyte* output, size_t blocks) const
 {
 	const __m128i* in_mm = cast(const __m128i*)(input);
 	__m128i* out_mm = cast(__m128i*)(output);
@@ -175,7 +175,7 @@ void AES_128_NI::encrypt_n(byte* input, byte* output, size_t blocks) const
 /*
 * AES-128 Decryption
 */
-void AES_128_NI::decrypt_n(byte* input, byte* output, size_t blocks) const
+void AES_128_NI::decrypt_n(ubyte* input, ubyte* output, size_t blocks) const
 {
 	const __m128i* in_mm = cast(const __m128i*)(input);
 	__m128i* out_mm = cast(__m128i*)(output);
@@ -251,7 +251,7 @@ void AES_128_NI::decrypt_n(byte* input, byte* output, size_t blocks) const
 /*
 * AES-128 Key Schedule
 */
-void AES_128_NI::key_schedule(in byte* key, size_t)
+void AES_128_NI::key_schedule(in ubyte* key, size_t)
 {
 	EK.resize(44);
 	DK.resize(44);
@@ -312,7 +312,7 @@ void AES_128_NI::clear()
 /*
 * AES-192 Encryption
 */
-void AES_192_NI::encrypt_n(byte* input, byte* output, size_t blocks) const
+void AES_192_NI::encrypt_n(ubyte* input, ubyte* output, size_t blocks) const
 {
 	const __m128i* in_mm = cast(const __m128i*)(input);
 	__m128i* out_mm = cast(__m128i*)(output);
@@ -394,7 +394,7 @@ void AES_192_NI::encrypt_n(byte* input, byte* output, size_t blocks) const
 /*
 * AES-192 Decryption
 */
-void AES_192_NI::decrypt_n(byte* input, byte* output, size_t blocks) const
+void AES_192_NI::decrypt_n(ubyte* input, ubyte* output, size_t blocks) const
 {
 	const __m128i* in_mm = cast(const __m128i*)(input);
 	__m128i* out_mm = cast(__m128i*)(output);
@@ -476,7 +476,7 @@ void AES_192_NI::decrypt_n(byte* input, byte* output, size_t blocks) const
 /*
 * AES-192 Key Schedule
 */
-void AES_192_NI::key_schedule(in byte* key, size_t)
+void AES_192_NI::key_schedule(in ubyte* key, size_t)
 {
 	EK.resize(52);
 	DK.resize(52);
@@ -534,7 +534,7 @@ void AES_192_NI::clear()
 /*
 * AES-256 Encryption
 */
-void AES_256_NI::encrypt_n(byte* input, byte* output, size_t blocks) const
+void AES_256_NI::encrypt_n(ubyte* input, ubyte* output, size_t blocks) const
 {
 	const __m128i* in_mm = cast(const __m128i*)(input);
 	__m128i* out_mm = cast(__m128i*)(output);
@@ -622,7 +622,7 @@ void AES_256_NI::encrypt_n(byte* input, byte* output, size_t blocks) const
 /*
 * AES-256 Decryption
 */
-void AES_256_NI::decrypt_n(byte* input, byte* output, size_t blocks) const
+void AES_256_NI::decrypt_n(ubyte* input, ubyte* output, size_t blocks) const
 {
 	const __m128i* in_mm = cast(const __m128i*)(input);
 	__m128i* out_mm = cast(__m128i*)(output);
@@ -710,7 +710,7 @@ void AES_256_NI::decrypt_n(byte* input, byte* output, size_t blocks) const
 /*
 * AES-256 Key Schedule
 */
-void AES_256_NI::key_schedule(in byte* key, size_t)
+void AES_256_NI::key_schedule(in ubyte* key, size_t)
 {
 	EK.resize(60);
 	DK.resize(60);

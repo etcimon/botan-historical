@@ -12,8 +12,8 @@ namespace TLS {
 
 string Protocol_Version::to_string() const
 {
-	const byte maj = major_version();
-	const byte min = minor_version();
+	const ubyte maj = major_version();
+	const ubyte min = minor_version();
 
 	if (maj == 3 && min == 0)
 		return "SSL v3";

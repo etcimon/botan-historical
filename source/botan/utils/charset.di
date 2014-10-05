@@ -30,7 +30,7 @@ bool is_digit(char c);
 bool is_space(char c);
 bool caseless_cmp(char x, char y);
 
-byte char2digit(char c);
-char digit2char(byte b);
+ubyte char2digit(char c);
+char digit2char(ubyte b);
 
 }

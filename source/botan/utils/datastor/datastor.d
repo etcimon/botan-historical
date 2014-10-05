@@ -85,13 +85,13 @@ string Data_Store::get1(in string key,
 /*
 * Get a single std::vector atom
 */
-Vector!byte
+Vector!ubyte
 Data_Store::get1_memvec(in string key) const
 {
 	Vector!string vals = get(key);
 
 	if (vals.empty())
-		return Vector!byte();
+		return Vector!ubyte();
 
 	if (vals.size() > 1)
 		throw new Invalid_State("Data_Store::get1_memvec: Multiple values for " ~
@@ -136,12 +136,12 @@ void Data_Store::add(in string key, uint val)
 /*
 * Insert a single key and value
 */
-void Data_Store::add(in string key, in SafeVector!byte val)
+void Data_Store::add(in string key, in SafeVector!ubyte val)
 {
 	add(key, hex_encode(&val[0], val.size()));
 }
 
-void Data_Store::add(in string key, in Vector!byte val)
+void Data_Store::add(in string key, in Vector!ubyte val)
 {
 	add(key, hex_encode(&val[0], val.size()));
 }

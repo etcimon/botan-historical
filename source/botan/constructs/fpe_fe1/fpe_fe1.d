@@ -78,23 +78,23 @@ class FPE_Encryptor
 	public:
 		FPE_Encryptor(in SymmetricKey key,
 						  ref const BigInt n,
-						  in Vector!byte tweak);
+						  in Vector!ubyte tweak);
 
 		BigInt operator()(size_t i, ref const BigInt R);
 
 	private:
 		Unique!MessageAuthenticationCode mac;
-		Vector!byte mac_n_t;
+		Vector!ubyte mac_n_t;
 };
 
 FPE_Encryptor::FPE_Encryptor(in SymmetricKey key,
 									  ref const BigInt n,
-									  in Vector!byte tweak)
+									  in Vector!ubyte tweak)
 {
 	mac.reset(new HMAC(new SHA_256));
 	mac.set_key(key);
 
-	Vector!byte n_bin = BigInt::encode(n);
+	Vector!ubyte n_bin = BigInt::encode(n);
 
 	if (n_bin.size() > MAX_N_BYTES)
 		throw new Exception("N is too large for FPE encryption");
@@ -110,7 +110,7 @@ FPE_Encryptor::FPE_Encryptor(in SymmetricKey key,
 
 BigInt FPE_Encryptor::operator()(size_t round_no, ref const BigInt R)
 {
-	SafeVector!byte r_bin = BigInt::encode_locked(R);
+	SafeVector!ubyte r_bin = BigInt::encode_locked(R);
 
 	mac.update(mac_n_t);
 	mac.update_be(cast(uint)(round_no));
@@ -118,7 +118,7 @@ BigInt FPE_Encryptor::operator()(size_t round_no, ref const BigInt R)
 	mac.update_be(cast(uint)(r_bin.size()));
 	mac.update(&r_binput[0], r_bin.size());
 
-	SafeVector!byte X = mac.flush();
+	SafeVector!ubyte X = mac.flush();
 	return BigInt(&X[0], X.size());
 }
 
@@ -129,7 +129,7 @@ BigInt FPE_Encryptor::operator()(size_t round_no, ref const BigInt R)
 */
 BigInt fe1_encrypt(in BigInt n, ref const BigInt X0,
 						 const SymmetricKey& key,
-						 in Vector!byte tweak)
+						 in Vector!ubyte tweak)
 {
 	FPE_Encryptor F(key, n, tweak);
 
@@ -157,7 +157,7 @@ BigInt fe1_encrypt(in BigInt n, ref const BigInt X0,
 */
 BigInt fe1_decrypt(in BigInt n, ref const BigInt X0,
 						 const SymmetricKey& key,
-						 in Vector!byte tweak)
+						 in Vector!ubyte tweak)
 {
 	FPE_Encryptor F(key, n, tweak);
 

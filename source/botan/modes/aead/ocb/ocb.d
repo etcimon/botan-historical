@@ -28,13 +28,13 @@ class L_computer
 			m_L.push_back(poly_double(dollar()));
 		}
 
-		in SafeVector!byte star() const { return m_L_star; }
+		in SafeVector!ubyte star() const { return m_L_star; }
 
-		in SafeVector!byte dollar() const { return m_L_dollar; }
+		in SafeVector!ubyte dollar() const { return m_L_dollar; }
 
-		in SafeVector!byte operator()(size_t i) const { return get(i); }
+		in SafeVector!ubyte operator()(size_t i) const { return get(i); }
 
-		in SafeVector!byte compute_offsets(SafeVector!byte offset,
+		in SafeVector!ubyte compute_offsets(SafeVector!ubyte offset,
 																 size_t block_index,
 																 size_t blocks) const
 		{
@@ -50,7 +50,7 @@ class L_computer
 		}
 
 	private:
-		in SafeVector!byte get(size_t i) const
+		in SafeVector!ubyte get(size_t i) const
 		{
 			while(m_L.size() <= i)
 				m_L.push_back(poly_double(m_L.back()));
@@ -58,14 +58,14 @@ class L_computer
 			return m_L.at(i);
 		}
 
-		SafeVector!byte poly_double(in SafeVector!byte input) const
+		SafeVector!ubyte poly_double(in SafeVector!ubyte input) const
 		{
 			return CMAC::poly_double(input);
 		}
 
-		SafeVector!byte m_L_dollar, m_L_star;
-		mutable Vector!( SafeVector!byte ) m_L;
-		mutable SafeVector!byte m_offset_buf;
+		SafeVector!ubyte m_L_dollar, m_L_star;
+		mutable Vector!( SafeVector!ubyte ) m_L;
+		mutable SafeVector!ubyte m_offset_buf;
 };
 
 namespace {
@@ -73,14 +73,14 @@ namespace {
 /*
 * OCB's HASH
 */
-SafeVector!byte ocb_hash(in L_computer L,
+SafeVector!ubyte ocb_hash(in L_computer L,
 									  const BlockCipher& cipher,
-									  in byte* ad, size_t ad_len)
+									  in ubyte* ad, size_t ad_len)
 {
-	SafeVector!byte sum(BS);
-	SafeVector!byte offset(BS);
+	SafeVector!ubyte sum(BS);
+	SafeVector!ubyte offset(BS);
 
-	SafeVector!byte buf(BS);
+	SafeVector!ubyte buf(BS);
 
 	const size_t ad_blocks = (ad_len / BS);
 	const size_t ad_remainder = (ad_len % BS);
@@ -129,7 +129,7 @@ OCB_Mode::OCB_Mode(BlockCipher cipher, size_t tag_size) :
 
 	if (m_tag_size != 8 && m_tag_size != 12 && m_tag_size != 16)
 		throw new std::invalid_argument("OCB cannot produce a " ~ std.conv.to!string(m_tag_size) +
-											 " byte tag");
+											 " ubyte tag");
 
 }
 
@@ -165,30 +165,30 @@ Key_Length_Specification OCB_Mode::key_spec() const
 	return m_cipher.key_spec();
 }
 
-void OCB_Mode::key_schedule(in byte* key, size_t length)
+void OCB_Mode::key_schedule(in ubyte* key, size_t length)
 {
 	m_cipher.set_key(key, length);
 	m_L.reset(new L_computer(*m_cipher));
 }
 
-void OCB_Mode::set_associated_data(in byte* ad, size_t ad_len)
+void OCB_Mode::set_associated_data(in ubyte* ad, size_t ad_len)
 {
 	BOTAN_ASSERT(m_L, "A key was set");
 	m_ad_hash = ocb_hash(*m_L, *m_cipher, &ad[0], ad_len);
 }
 
-SafeVector!byte
-OCB_Mode::update_nonce(in byte* nonce, size_t nonce_len)
+SafeVector!ubyte
+OCB_Mode::update_nonce(in ubyte* nonce, size_t nonce_len)
 {
 	BOTAN_ASSERT(nonce_len < BS, "Nonce is less than 128 bits");
 
-	SafeVector!byte nonce_buf(BS);
+	SafeVector!ubyte nonce_buf(BS);
 
 	copy_mem(&nonce_buf[BS - nonce_len], nonce, nonce_len);
 	nonce_buf[0] = ((tag_size() * 8) % 128) << 1;
 	nonce_buf[BS - nonce_len - 1] = 1;
 
-	const byte bottom = nonce_buf[15] & 0x3F;
+	const ubyte bottom = nonce_buf[15] & 0x3F;
 	nonce_buf[15] &= 0xC0;
 
 	const bool need_new_stretch = (m_last_nonce != nonce_buf);
@@ -210,7 +210,7 @@ OCB_Mode::update_nonce(in byte* nonce, size_t nonce_len)
 	const size_t shift_bytes = bottom / 8;
 	const size_t shift_bits  = bottom % 8;
 
-	SafeVector!byte offset(BS);
+	SafeVector!ubyte offset(BS);
 	for (size_t i = 0; i != BS; ++i)
 	{
 		offset[i]  = (m_stretch[i+shift_bytes] << shift_bits);
@@ -220,7 +220,7 @@ OCB_Mode::update_nonce(in byte* nonce, size_t nonce_len)
 	return offset;
 }
 
-SafeVector!byte OCB_Mode::start(in byte* nonce, size_t nonce_len)
+SafeVector!ubyte OCB_Mode::start(in ubyte* nonce, size_t nonce_len)
 {
 	if (!valid_nonce_length(nonce_len))
 		throw new Invalid_IV_Length(name(), nonce_len);
@@ -231,10 +231,10 @@ SafeVector!byte OCB_Mode::start(in byte* nonce, size_t nonce_len)
 	zeroise(m_checksum);
 	m_block_index = 0;
 
-	return SafeVector!byte();
+	return SafeVector!ubyte();
 }
 
-void OCB_Encryption::encrypt(byte buffer[], size_t blocks)
+void OCB_Encryption::encrypt(ubyte buffer[], size_t blocks)
 {
 	const L_computer& L = *m_L; // convenient name
 
@@ -259,22 +259,22 @@ void OCB_Encryption::encrypt(byte buffer[], size_t blocks)
 	}
 }
 
-void OCB_Encryption::update(SafeVector!byte buffer, size_t offset)
+void OCB_Encryption::update(SafeVector!ubyte buffer, size_t offset)
 {
 	BOTAN_ASSERT(buffer.size() >= offset, "Offset is sane");
 	const size_t sz = buffer.size() - offset;
-	byte* buf = &buffer[offset];
+	ubyte* buf = &buffer[offset];
 
 	BOTAN_ASSERT(sz % BS == 0, "Input length is an even number of blocks");
 
 	encrypt(buf, sz / BS);
 }
 
-void OCB_Encryption::finish(SafeVector!byte buffer, size_t offset)
+void OCB_Encryption::finish(SafeVector!ubyte buffer, size_t offset)
 {
 	BOTAN_ASSERT(buffer.size() >= offset, "Offset is sane");
 	const size_t sz = buffer.size() - offset;
-	byte* buf = &buffer[offset];
+	ubyte* buf = &buffer[offset];
 
 	if (sz)
 	{
@@ -286,27 +286,27 @@ void OCB_Encryption::finish(SafeVector!byte buffer, size_t offset)
 		if (remainder_bytes)
 		{
 			BOTAN_ASSERT(remainder_bytes < BS, "Only a partial block left");
-			byte* remainder = &buf[sz - remainder_bytes];
+			ubyte* remainder = &buf[sz - remainder_bytes];
 
 			xor_buf(&m_checksum[0], &remainder[0], remainder_bytes);
 			m_checksum[remainder_bytes] ^= 0x80;
 
 			m_offset ^= m_L.star(); // Offset_*
 
-			SafeVector!byte buf(BS);
+			SafeVector!ubyte buf(BS);
 			m_cipher.encrypt(m_offset, buf);
 			xor_buf(&remainder[0], &buf[0], remainder_bytes);
 		}
 	}
 
-	SafeVector!byte checksum(BS);
+	SafeVector!ubyte checksum(BS);
 
 	// fold checksum
 	for (size_t i = 0; i != m_checksum.size(); ++i)
 		checksum[i % checksum.size()] ^= m_checksum[i];
 
 	// now compute the tag
-	SafeVector!byte mac = m_offset;
+	SafeVector!ubyte mac = m_offset;
 	mac ^= checksum;
 	mac ^= m_L.dollar();
 
@@ -321,7 +321,7 @@ void OCB_Encryption::finish(SafeVector!byte buffer, size_t offset)
 	m_block_index = 0;
 }
 
-void OCB_Decryption::decrypt(byte buffer[], size_t blocks)
+void OCB_Decryption::decrypt(ubyte buffer[], size_t blocks)
 {
 	const L_computer& L = *m_L; // convenient name
 
@@ -350,22 +350,22 @@ void OCB_Decryption::decrypt(byte buffer[], size_t blocks)
 	}
 }
 
-void OCB_Decryption::update(SafeVector!byte buffer, size_t offset)
+void OCB_Decryption::update(SafeVector!ubyte buffer, size_t offset)
 {
 	BOTAN_ASSERT(buffer.size() >= offset, "Offset is sane");
 	const size_t sz = buffer.size() - offset;
-	byte* buf = &buffer[offset];
+	ubyte* buf = &buffer[offset];
 
 	BOTAN_ASSERT(sz % BS == 0, "Input length is an even number of blocks");
 
 	decrypt(buf, sz / BS);
 }
 
-void OCB_Decryption::finish(SafeVector!byte buffer, size_t offset)
+void OCB_Decryption::finish(SafeVector!ubyte buffer, size_t offset)
 {
 	BOTAN_ASSERT(buffer.size() >= offset, "Offset is sane");
 	const size_t sz = buffer.size() - offset;
-	byte* buf = &buffer[offset];
+	ubyte* buf = &buffer[offset];
 
 	BOTAN_ASSERT(sz >= tag_size(), "We have the tag");
 
@@ -382,11 +382,11 @@ void OCB_Decryption::finish(SafeVector!byte buffer, size_t offset)
 		{
 			BOTAN_ASSERT(final_bytes < BS, "Only a partial block left");
 
-			byte* remainder = &buf[remaining - final_bytes];
+			ubyte* remainder = &buf[remaining - final_bytes];
 
 			m_offset ^= m_L.star(); // Offset_*
 
-			SafeVector!byte pad(BS);
+			SafeVector!ubyte pad(BS);
 			m_cipher.encrypt(m_offset, pad); // P_*
 
 			xor_buf(&remainder[0], &pad[0], final_bytes);
@@ -396,14 +396,14 @@ void OCB_Decryption::finish(SafeVector!byte buffer, size_t offset)
 		}
 	}
 
-	SafeVector!byte checksum(BS);
+	SafeVector!ubyte checksum(BS);
 
 	// fold checksum
 	for (size_t i = 0; i != m_checksum.size(); ++i)
 		checksum[i % checksum.size()] ^= m_checksum[i];
 
 	// compute the mac
-	SafeVector!byte mac = m_offset;
+	SafeVector!ubyte mac = m_offset;
 	mac ^= checksum;
 	mac ^= m_L.dollar();
 
@@ -417,7 +417,7 @@ void OCB_Decryption::finish(SafeVector!byte buffer, size_t offset)
 	m_block_index = 0;
 
 	// compare mac
-	const byte* included_tag = &buf[remaining];
+	const ubyte* included_tag = &buf[remaining];
 
 	if (!same_mem(&mac[0], included_tag, tag_size()))
 		throw new Integrity_Failure("OCB tag check failed");

@@ -32,7 +32,7 @@ class Data_Store
 		string get1(in string key,
 							  in string default_value) const;
 
-		Vector!byte get1_memvec(in string) const;
+		Vector!ubyte get1_memvec(in string) const;
 		uint get1_uint(in string, uint = 0) const;
 
 		bool has_value(in string) const;
@@ -40,8 +40,8 @@ class Data_Store
 		void add(in MultiMap!(string, string));
 		void add(in string, in string);
 		void add(in string, uint);
-		void add(in string, in SafeVector!byte);
-		void add(in string, in Vector!byte);
+		void add(in string, in SafeVector!ubyte);
+		void add(in string, in Vector!ubyte);
 	private:
 		MultiMap!(string, string) contents;
 };

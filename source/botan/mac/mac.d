@@ -10,9 +10,9 @@ import botan.mem_ops;
 /*
 * Default (deterministic) MAC verification operation
 */
-bool MessageAuthenticationCode::verify_mac(in byte* mac, size_t length)
+bool MessageAuthenticationCode::verify_mac(in ubyte* mac, size_t length)
 {
-	SafeVector!byte our_mac = flush();
+	SafeVector!ubyte our_mac = flush();
 
 	if (our_mac.size() != length)
 		return false;

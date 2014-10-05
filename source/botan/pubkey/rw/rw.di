@@ -18,7 +18,7 @@ class RW_PublicKey : public abstract IF_Scheme_PublicKey
 		string algo_name() const { return "RW"; }
 
 		RW_PublicKey(in AlgorithmIdentifier alg_id,
-						 in SafeVector!byte key_bits) :
+						 in SafeVector!ubyte key_bits) :
 			IF_Scheme_PublicKey(alg_id, key_bits)
 		{}
 
@@ -38,7 +38,7 @@ class RW_PrivateKey : public RW_PublicKey,
 {
 	public:
 		RW_PrivateKey(in AlgorithmIdentifier alg_id,
-						  in SafeVector!byte key_bits,
+						  in SafeVector!ubyte key_bits,
 						  RandomNumberGenerator rng) :
 			IF_Scheme_PrivateKey(rng, alg_id, key_bits) {}
 
@@ -63,7 +63,7 @@ class RW_Signature_Operation : public PK_Ops::Signature
 
 		size_t max_input_bits() const { return (n.bits() - 1); }
 
-		SafeVector!byte sign(in byte* msg, size_t msg_len,
+		SafeVector!ubyte sign(in ubyte* msg, size_t msg_len,
 										RandomNumberGenerator rng);
 	private:
 		ref const BigInt n;
@@ -89,7 +89,7 @@ class RW_Verification_Operation : public PK_Ops::Verification
 		size_t max_input_bits() const { return (n.bits() - 1); }
 		bool with_recovery() const { return true; }
 
-		SafeVector!byte verify_mr(in byte* msg, size_t msg_len);
+		SafeVector!ubyte verify_mr(in ubyte* msg, size_t msg_len);
 
 	private:
 		ref const BigInt n;

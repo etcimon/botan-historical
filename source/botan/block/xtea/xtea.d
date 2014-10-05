@@ -9,7 +9,7 @@ import botan.xtea;
 import botan.loadstor;
 namespace {
 
-void xtea_encrypt_4(const byte[32] input, byte[32] output, const uint[64] EK)
+void xtea_encrypt_4(const ubyte[32] input, ubyte[32] output, const uint[64] EK)
 {
 	uint L0, R0, L1, R1, L2, R2, L3, R3;
 	load_be(input, L0, R0, L1, R1, L2, R2, L3, R3);
@@ -30,7 +30,7 @@ void xtea_encrypt_4(const byte[32] input, byte[32] output, const uint[64] EK)
 	store_be(output, L0, R0, L1, R1, L2, R2, L3, R3);
 }
 
-void xtea_decrypt_4(const byte[32] input, byte[32] output, const uint[64] EK)
+void xtea_decrypt_4(const ubyte[32] input, ubyte[32] output, const uint[64] EK)
 {
 	uint L0, R0, L1, R1, L2, R2, L3, R3;
 	load_be(input, L0, R0, L1, R1, L2, R2, L3, R3);
@@ -56,7 +56,7 @@ void xtea_decrypt_4(const byte[32] input, byte[32] output, const uint[64] EK)
 /*
 * XTEA Encryption
 */
-void XTEA::encrypt_n(byte* input, byte* output, size_t blocks) const
+void XTEA::encrypt_n(ubyte* input, ubyte* output, size_t blocks) const
 {
 	while(blocks >= 4)
 	{
@@ -87,7 +87,7 @@ void XTEA::encrypt_n(byte* input, byte* output, size_t blocks) const
 /*
 * XTEA Decryption
 */
-void XTEA::decrypt_n(byte* input, byte* output, size_t blocks) const
+void XTEA::decrypt_n(ubyte* input, ubyte* output, size_t blocks) const
 {
 	while(blocks >= 4)
 	{
@@ -118,7 +118,7 @@ void XTEA::decrypt_n(byte* input, byte* output, size_t blocks) const
 /*
 * XTEA Key Schedule
 */
-void XTEA::key_schedule(in byte* key, size_t)
+void XTEA::key_schedule(in ubyte* key, size_t)
 {
 	EK.resize(64);
 

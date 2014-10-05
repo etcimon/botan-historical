@@ -29,7 +29,7 @@ class Client_Handshake_State : public Handshake_State
 		}
 
 		// Used during session resumption
-		SafeVector!byte resume_master_secret;
+		SafeVector!ubyte resume_master_secret;
 
 		Unique!Public_Key server_public_key;
 
@@ -42,9 +42,9 @@ class Client_Handshake_State : public Handshake_State
 /*
 * TLS Client Constructor
 */
-Client::Client(void delegate(in byte[]) output_fn,
-					void delegate(in byte[]) proc_cb,
-					void delegate(Alert, in byte[]) alert_cb,
+Client::Client(void delegate(in ubyte[]) output_fn,
+					void delegate(in ubyte[]) proc_cb,
+					void delegate(Alert, in ubyte[]) alert_cb,
 					bool delegate(const Session) handshake_cb,
 					Session_Manager session_manager,
 					Credentials_Manager creds,
@@ -149,7 +149,7 @@ void Client::send_client_hello(Handshake_State state_base,
 void Client::process_handshake_msg(const Handshake_State* active_state,
 											  Handshake_State& state_base,
 											  Handshake_Type type,
-											  in Vector!byte contents)
+											  in Vector!ubyte contents)
 {
 	Client_Handshake_State& state = cast(Client_Handshake_State&)(state_base);
 
@@ -485,9 +485,9 @@ void Client::process_handshake_msg(const Handshake_State* active_state,
 				);
 		}
 
-		Vector!byte session_id = state.server_hello().session_id();
+		Vector!ubyte session_id = state.server_hello().session_id();
 
-		in Vector!byte session_ticket = state.session_ticket();
+		in Vector!ubyte session_ticket = state.session_ticket();
 
 		if (session_id.empty() && !session_ticket.empty())
 			session_id = make_hello_random(rng());

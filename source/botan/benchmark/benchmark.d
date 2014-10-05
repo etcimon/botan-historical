@@ -45,7 +45,7 @@ time_algorithm_ops(in string name,
 {
 	const size_t Mebibyte = 1024*1024;
 
-	SafeVector!byte buffer(buf_size * 1024);
+	SafeVector!ubyte buffer(buf_size * 1024);
 	rng.randomize(&buffer[0], buffer.size());
 
 	const double mb_mult = buffer.size() / cast(double)(Mebibyte);

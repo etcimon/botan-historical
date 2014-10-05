@@ -47,7 +47,7 @@ class Protocol_Version
 		* @param major the major version
 		* @param minor the minor version
 		*/
-		Protocol_Version(byte major, byte minor) :
+		Protocol_Version(ubyte major, ubyte minor) :
 			m_version((cast(ushort)(major) << 8) | minor) {}
 
 		/**
@@ -63,12 +63,12 @@ class Protocol_Version
 		/**
 		* @return major version of the protocol version
 		*/
-		byte major_version() const { return get_byte(0, m_version); }
+		ubyte major_version() const { return get_byte(0, m_version); }
 
 		/**
 		* @return minor version of the protocol version
 		*/
-		byte minor_version() const { return get_byte(1, m_version); }
+		ubyte minor_version() const { return get_byte(1, m_version); }
 
 		/**
 		* @return human-readable description of this version

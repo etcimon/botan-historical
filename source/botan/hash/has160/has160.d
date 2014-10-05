@@ -55,7 +55,7 @@ namespace HAS_160_F {
 /*
 * HAS-160 Compression Function
 */
-void HAS_160::compress_n(in byte* input, size_t blocks)
+void HAS_160::compress_n(in ubyte* input, size_t blocks)
 {
 	using namespace HAS_160_F;
 
@@ -139,7 +139,7 @@ void HAS_160::compress_n(in byte* input, size_t blocks)
 /*
 * Copy out the digest
 */
-void HAS_160::copy_out(byte* output)
+void HAS_160::copy_out(ubyte* output)
 {
 	for (size_t i = 0; i != output_length(); i += 4)
 		store_le(digest[i/4], output + i);

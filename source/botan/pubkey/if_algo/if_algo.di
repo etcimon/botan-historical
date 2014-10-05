@@ -16,7 +16,7 @@ class IF_Scheme_PublicKey : public abstract Public_Key
 {
 	public:
 		IF_Scheme_PublicKey(in AlgorithmIdentifier alg_id,
-								  in SafeVector!byte key_bits);
+								  in SafeVector!ubyte key_bits);
 
 		IF_Scheme_PublicKey(in BigInt n, ref const BigInt e) :
 			n(n), e(e) {}
@@ -25,7 +25,7 @@ class IF_Scheme_PublicKey : public abstract Public_Key
 
 		AlgorithmIdentifier algorithm_identifier() const;
 
-		Vector!byte x509_subject_public_key() const;
+		Vector!ubyte x509_subject_public_key() const;
 
 		/**
 		* @return public modulus
@@ -63,7 +63,7 @@ class IF_Scheme_PrivateKey : public abstract IF_Scheme_PublicKey,
 
 		IF_Scheme_PrivateKey(RandomNumberGenerator rng,
 									const AlgorithmIdentifier& alg_id,
-									in SafeVector!byte key_bits);
+									in SafeVector!ubyte key_bits);
 
 		bool check_key(RandomNumberGenerator rng, bool) const;
 
@@ -89,7 +89,7 @@ class IF_Scheme_PrivateKey : public abstract IF_Scheme_PublicKey,
 		ref const BigInt get_d1() const { return d1; }
 		ref const BigInt get_d2() const { return d2; }
 
-		SafeVector!byte pkcs8_Private_Key() const;
+		SafeVector!ubyte pkcs8_Private_Key() const;
 
 	package:
 		IF_Scheme_PrivateKey() {}

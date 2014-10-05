@@ -14,7 +14,7 @@ import botan.mode_pad;
 class CBC_Mode : public Cipher_Mode
 {
 	public:
-		SafeVector!byte start(in byte* nonce, size_t nonce_len) override;
+		SafeVector!ubyte start(in ubyte* nonce, size_t nonce_len) override;
 
 		string name() const override;
 
@@ -38,16 +38,16 @@ class CBC_Mode : public Cipher_Mode
 			return *m_padding;
 		}
 
-		SafeVector!byte state() { return m_state; }
+		SafeVector!ubyte state() { return m_state; }
 
-		byte* state_ptr() { return &m_state[0]; }
+		ubyte* state_ptr() { return &m_state[0]; }
 
 	private:
-		void key_schedule(in byte* key, size_t length) override;
+		void key_schedule(in ubyte* key, size_t length) override;
 
 		Unique!BlockCipher m_cipher;
 		Unique!BlockCipherModePaddingMethod m_padding;
-		SafeVector!byte m_state;
+		SafeVector!ubyte m_state;
 };
 
 /**
@@ -59,9 +59,9 @@ class CBC_Encryption : public CBC_Mode
 		CBC_Encryption(BlockCipher cipher, BlockCipherModePaddingMethod* padding) :
 			CBC_Mode(cipher, padding) {}
 
-		void update(SafeVector!byte blocks, size_t offset = 0) override;
+		void update(SafeVector!ubyte blocks, size_t offset = 0) override;
 
-		void finish(SafeVector!byte final_block, size_t offset = 0) override;
+		void finish(SafeVector!ubyte final_block, size_t offset = 0) override;
 
 		size_t output_length(size_t input_length) const override;
 
@@ -78,7 +78,7 @@ class CTS_Encryption : public CBC_Encryption
 
 		size_t output_length(size_t input_length) const override;
 
-		void finish(SafeVector!byte final_block, size_t offset = 0) override;
+		void finish(SafeVector!ubyte final_block, size_t offset = 0) override;
 
 		size_t minimum_final_size() const override;
 
@@ -94,15 +94,15 @@ class CBC_Decryption : public CBC_Mode
 		CBC_Decryption(BlockCipher cipher, BlockCipherModePaddingMethod* padding) :
 			CBC_Mode(cipher, padding), m_tempbuf(update_granularity()) {}
 
-		void update(SafeVector!byte blocks, size_t offset = 0) override;
+		void update(SafeVector!ubyte blocks, size_t offset = 0) override;
 
-		void finish(SafeVector!byte final_block, size_t offset = 0) override;
+		void finish(SafeVector!ubyte final_block, size_t offset = 0) override;
 
 		size_t output_length(size_t input_length) const override;
 
 		size_t minimum_final_size() const override;
 	private:
-		SafeVector!byte m_tempbuf;
+		SafeVector!ubyte m_tempbuf;
 };
 
 /**
@@ -113,7 +113,7 @@ class CTS_Decryption : public CBC_Decryption
 	public:
 		CTS_Decryption(BlockCipher cipher) : CBC_Decryption(cipher, null) {}
 
-		void finish(SafeVector!byte final_block, size_t offset = 0) override;
+		void finish(SafeVector!ubyte final_block, size_t offset = 0) override;
 
 		size_t minimum_final_size() const override;
 

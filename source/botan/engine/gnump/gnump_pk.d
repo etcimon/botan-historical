@@ -35,7 +35,7 @@ class GMP_DH_KA_Operation : public PK_Ops::Key_Agreement
 		GMP_DH_KA_Operation(in DH_PrivateKey dh) :
 			x(dh.get_x()), p(dh.group_p()) {}
 
-		SafeVector!byte agree(in byte* w, size_t w_len)
+		SafeVector!ubyte agree(in ubyte* w, size_t w_len)
 		{
 			GMP_MPZ z(w, w_len);
 			mpz_powm(z.value, z.value, x.value, p.value);
@@ -63,15 +63,15 @@ class GMP_DSA_Signature_Operation : public PK_Ops::Signature
 		size_t message_part_size() const { return (q_bits + 7) / 8; }
 		size_t max_input_bits() const { return q_bits; }
 
-		SafeVector!byte sign(in byte* msg, size_t msg_len,
+		SafeVector!ubyte sign(in ubyte* msg, size_t msg_len,
 										RandomNumberGenerator rng);
 	private:
 		const GMP_MPZ x, p, q, g;
 		size_t q_bits;
 };
 
-SafeVector!byte
-GMP_DSA_Signature_Operation::sign(in byte* msg, size_t msg_len,
+SafeVector!ubyte
+GMP_DSA_Signature_Operation::sign(in ubyte* msg, size_t msg_len,
 											 RandomNumberGenerator rng)
 {
 	const size_t q_bytes = (q_bits + 7) / 8;
@@ -101,7 +101,7 @@ GMP_DSA_Signature_Operation::sign(in byte* msg, size_t msg_len,
 	if (mpz_cmp_ui(r.value, 0) == 0 || mpz_cmp_ui(s.value, 0) == 0)
 		throw new Internal_Error("GMP_DSA_Op::sign: r or s was zero");
 
-	SafeVector!byte output(2*q_bytes);
+	SafeVector!ubyte output(2*q_bytes);
 	r.encode(&output[0], q_bytes);
 	s.encode(&output[q_bytes], q_bytes);
 	return output;
@@ -123,15 +123,15 @@ class GMP_DSA_Verification_Operation : public PK_Ops::Verification
 
 		bool with_recovery() const { return false; }
 
-		bool verify(in byte* msg, size_t msg_len,
-						in byte* sig, size_t sig_len);
+		bool verify(in ubyte* msg, size_t msg_len,
+						in ubyte* sig, size_t sig_len);
 	private:
 		const GMP_MPZ y, p, q, g;
 		size_t q_bits;
 };
 
-bool GMP_DSA_Verification_Operation::verify(in byte* msg, size_t msg_len,
-														  in byte* sig, size_t sig_len)
+bool GMP_DSA_Verification_Operation::verify(in ubyte* msg, size_t msg_len,
+														  in ubyte* sig, size_t sig_len)
 {
 	const size_t q_bytes = q.bytes();
 
@@ -184,7 +184,7 @@ class GMP_RSA_Private_Operation : public PK_Ops::Signature,
 
 		size_t max_input_bits() const { return (n_bits - 1); }
 
-		SafeVector!byte sign(in byte* msg, size_t msg_len,
+		SafeVector!ubyte sign(in ubyte* msg, size_t msg_len,
 										RandomNumberGenerator)
 		{
 			BigInt m(msg, msg_len);
@@ -192,7 +192,7 @@ class GMP_RSA_Private_Operation : public PK_Ops::Signature,
 			return BigInt::encode_1363(x, (n_bits + 7) / 8);
 		}
 
-		SafeVector!byte decrypt(in byte* msg, size_t msg_len)
+		SafeVector!ubyte decrypt(in ubyte* msg, size_t msg_len)
 		{
 			BigInt m(msg, msg_len);
 			return BigInt::encode_locked(private_op(m));
@@ -230,14 +230,14 @@ class GMP_RSA_Public_Operation : public PK_Ops::Verification,
 		size_t max_input_bits() const { return (n.bits() - 1); }
 		bool with_recovery() const { return true; }
 
-		SafeVector!byte encrypt(in byte* msg, size_t msg_len,
+		SafeVector!ubyte encrypt(in ubyte* msg, size_t msg_len,
 											RandomNumberGenerator)
 		{
 			BigInt m(msg, msg_len);
 			return BigInt::encode_1363(public_op(m), n.bytes());
 		}
 
-		SafeVector!byte verify_mr(in byte* msg, size_t msg_len)
+		SafeVector!ubyte verify_mr(in ubyte* msg, size_t msg_len)
 		{
 			BigInt m(msg, msg_len);
 			return BigInt::encode_locked(public_op(m));

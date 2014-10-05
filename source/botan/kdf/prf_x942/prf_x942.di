@@ -12,8 +12,8 @@ import botan.kdf;
 class X942_PRF : public KDF
 {
 	public:
-		SafeVector!byte derive(size_t, const byte[], size_t,
-										  const byte[], size_t) const;
+		SafeVector!ubyte derive(size_t, const ubyte[], size_t,
+										  const ubyte[], size_t) const;
 
 		string name() const { return "X942_PRF(" ~ key_wrap_oid ~ ")"; }
 		KDF* clone() const { return new X942_PRF(key_wrap_oid); }

@@ -38,7 +38,7 @@ private:
 	
 	Mutex m_mutex;
 	Vector!( Pair!(size_t, size_t) ) m_freelist;
-	byte* m_pool;
+	ubyte* m_pool;
 };
 
 /**
@@ -196,7 +196,7 @@ bool mlock_allocator::deallocate(void* p, size_t num_elems, size_t elem_size)
 
 	m_mutex.lock(); scope(exit) m_mutex.unlock();
 
-	const size_t start = cast(byte*)(p) - m_pool;
+	const size_t start = cast(ubyte*)(p) - m_pool;
 
 	auto comp = [](Pair!(size_t, size_t) x, Pair!(size_t, size_t) y){ return x.first < y.first; };
 
@@ -252,14 +252,14 @@ mlock_allocator::mlock_allocator() :
 
 	if (m_poolsize)
 	{
-		m_pool = cast(byte*)(
+		m_pool = cast(ubyte*)(
 			::mmap(
 				null, m_poolsize,
 				PROT_READ | PROT_WRITE,
 				MAP_ANONYMOUS | MAP_SHARED | MAP_NOCORE,
 				-1, 0));
 
-		if (m_pool == cast(byte*)(MAP_FAILED))
+		if (m_pool == cast(ubyte*)(MAP_FAILED))
 		{
 			m_pool = null;
 			throw new Exception("Failed to mmap locking_allocator pool");

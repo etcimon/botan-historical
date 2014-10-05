@@ -22,7 +22,7 @@ const size_t PASSHASH9_PBKDF_OUTPUT_LEN = 24; // 192 bits output
 
 const size_t WORK_FACTOR_SCALE = 10000;
 
-MessageAuthenticationCode get_pbkdf_prf(byte alg_id)
+MessageAuthenticationCode get_pbkdf_prf(ubyte alg_id)
 {
 	Algorithm_Factory af = global_state().algorithm_factory();
 
@@ -49,7 +49,7 @@ MessageAuthenticationCode get_pbkdf_prf(byte alg_id)
 string generate_passhash9(in string pass,
 										 RandomNumberGenerator rng,
 										 ushort work_factor,
-										 byte alg_id)
+										 ubyte alg_id)
 {
 	MessageAuthenticationCode prf = get_pbkdf_prf(alg_id);
 
@@ -60,12 +60,12 @@ string generate_passhash9(in string pass,
 
 	PKCS5_PBKDF2 kdf(prf); // takes ownership of pointer
 
-	SafeVector!byte salt(SALT_BYTES);
+	SafeVector!ubyte salt(SALT_BYTES);
 	rng.randomize(&salt[0], salt.size());
 
 	const size_t kdf_iterations = WORK_FACTOR_SCALE * work_factor;
 
-	SafeVector!byte pbkdf2_output =
+	SafeVector!ubyte pbkdf2_output =
 		kdf.derive_key(PASSHASH9_PBKDF_OUTPUT_LEN,
 							pass,
 							&salt[0], salt.size(),
@@ -106,12 +106,12 @@ bool check_passhash9(in string pass, in string hash)
 	pipe.write(hash.c_str() + MAGIC_PREFIX.size());
 	pipe.end_msg();
 
-	SafeVector!byte bin = pipe.read_all();
+	SafeVector!ubyte bin = pipe.read_all();
 
 	if (bin.size() != BINARY_LENGTH)
 		return false;
 
-	byte alg_id = binput[0];
+	ubyte alg_id = binput[0];
 
 	const size_t work_factor = load_be!ushort(&binput[ALGID_BYTES], 0);
 
@@ -132,7 +132,7 @@ bool check_passhash9(in string pass, in string hash)
 
 	PKCS5_PBKDF2 kdf(pbkdf_prf); // takes ownership of pointer
 
-	SafeVector!byte cmp = kdf.derive_key(
+	SafeVector!ubyte cmp = kdf.derive_key(
 		PASSHASH9_PBKDF_OUTPUT_LEN,
 		pass,
 		&binput[ALGID_BYTES + WORKFACTOR_BYTES], SALT_BYTES,

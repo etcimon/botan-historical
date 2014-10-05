@@ -7,7 +7,7 @@
 module botan.asn1.asn1_oid;
 
 import botan.asn1.asn1_obj;
-import botan.der_enc;
+import botan.asn1.der_enc;
 import botan.asn1.ber_dec;
 import botan.internal.bit_ops;
 import botan.parsing;
@@ -32,7 +32,7 @@ public:
 		if (id.size() < 2)
 			throw new Invalid_Argument("encode_into: OID is invalid");
 		
-		Vector!byte encoding;
+		Vector!ubyte encoding;
 		encoding.push_back(40 * id[0] + id[1]);
 		
 		for (size_t i = 2; i != id.size(); ++i)
@@ -49,7 +49,7 @@ public:
 				encoding.push_back(id[i] & 0x7F);
 			}
 		}
-		der.add_object(OBJECT_ID, UNIVERSAL, encoding);
+		der.add_object(ASN1_Tag.OBJECT_ID, ASN1_Tag.UNIVERSAL, encoding);
 	}
 
 
@@ -59,7 +59,7 @@ public:
 	void decode_from(BER_Decoder decoder)
 	{
 		BER_Object obj = decoder.get_next_object();
-		if (obj.type_tag != OBJECT_ID || obj.class_tag != UNIVERSAL)
+		if (obj.type_tag != ASN1_Tag.OBJECT_ID || obj.class_tag != ASN1_Tag.UNIVERSAL)
 			throw new BER_Bad_Tag("Error decoding OID, unknown tag",
 			                      obj.type_tag, obj.class_tag);
 		if (obj.value.size() < 2)

@@ -15,7 +15,7 @@ import botan.internal.rounding;
 Pair!(size_t, OctetString)
 PKCS5_PBKDF2::key_derivation(size_t key_len,
 									  in string passphrase,
-									  in byte* salt, size_t salt_len,
+									  in ubyte* salt, size_t salt_len,
 									  size_t iterations,
 									  std::chrono::milliseconds msec) const
 {
@@ -24,7 +24,7 @@ PKCS5_PBKDF2::key_derivation(size_t key_len,
 
 	try
 	{
-		mac.set_key(cast(const byte*)(passphrase.data()),
+		mac.set_key(cast(const ubyte*)(passphrase.data()),
 						 passphrase.length());
 	}
 	catch(Invalid_Key_Length)
@@ -33,11 +33,11 @@ PKCS5_PBKDF2::key_derivation(size_t key_len,
 							 std.conv.to!string(passphrase.length()));
 	}
 
-	SafeVector!byte key(key_len);
+	SafeVector!ubyte key(key_len);
 
-	byte* T = &key[0];
+	ubyte* T = &key[0];
 
-	SafeVector!byte U(mac.output_length());
+	SafeVector!ubyte U(mac.output_length());
 
 	const size_t blocks_needed = round_up(key_len, mac.output_length()) / mac.output_length();
 

@@ -12,8 +12,8 @@ import botan.block_cipher;
 class RC5 : public Block_Cipher_Fixed_Params!(8, 1, 32)
 {
 	public:
-		void encrypt_n(byte* input, byte* output, size_t blocks) const;
-		void decrypt_n(byte* input, byte* output, size_t blocks) const;
+		void encrypt_n(ubyte* input, ubyte* output, size_t blocks) const;
+		void decrypt_n(ubyte* input, ubyte* output, size_t blocks) const;
 
 		void clear();
 		string name() const;
@@ -25,7 +25,7 @@ class RC5 : public Block_Cipher_Fixed_Params!(8, 1, 32)
 		*/
 		RC5(size_t rounds);
 	private:
-		void key_schedule(in byte*, size_t);
+		void key_schedule(in ubyte*, size_t);
 
 		size_t rounds;
 		secure_vector!uint S;

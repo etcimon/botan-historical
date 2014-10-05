@@ -13,8 +13,8 @@ import botan.get_byte;
 import botan.internal.xor_buf;
 void aont_package(RandomNumberGenerator rng,
 						BlockCipher cipher,
-						in byte* input, size_t input_len,
-						byte* output)
+						in ubyte* input, size_t input_len,
+						ubyte* output)
 {
 	const size_t BLOCK_SIZE = cipher.block_size();
 
@@ -34,12 +34,12 @@ void aont_package(RandomNumberGenerator rng,
 	// Set K0 (the all zero key)
 	cipher.set_key(SymmetricKey(all_zeros));
 
-	SafeVector!byte buf(BLOCK_SIZE);
+	SafeVector!ubyte buf(BLOCK_SIZE);
 
 	const size_t blocks =
 		(input_len + BLOCK_SIZE - 1) / BLOCK_SIZE;
 
-	byte* final_block = output + input_len;
+	ubyte* final_block = output + input_len;
 	clear_mem(final_block, BLOCK_SIZE);
 
 	// XOR the hash blocks into the final block
@@ -64,8 +64,8 @@ void aont_package(RandomNumberGenerator rng,
 }
 
 void aont_unpackage(BlockCipher cipher,
-						  in byte* input, size_t input_len,
-						  byte* output)
+						  in ubyte* input, size_t input_len,
+						  ubyte* output)
 {
 	const size_t BLOCK_SIZE = cipher.block_size();
 
@@ -80,8 +80,8 @@ void aont_unpackage(BlockCipher cipher,
 
 	cipher.set_key(SymmetricKey(all_zeros));
 
-	SafeVector!byte package_key(BLOCK_SIZE);
-	SafeVector!byte buf(BLOCK_SIZE);
+	SafeVector!ubyte package_key(BLOCK_SIZE);
+	SafeVector!ubyte buf(BLOCK_SIZE);
 
 	// Copy the package key (masked with the block hashes)
 	copy_mem(&package_key[0],

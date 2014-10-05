@@ -27,7 +27,7 @@ class EGD_EntropySource : public EntropySource
 				EGD_Socket(in string path);
 
 				void close();
-				size_t read(byte outbuf[], size_t length);
+				size_t read(ubyte outbuf[], size_t length);
 			private:
 				static int open_socket(in string path);
 

@@ -12,7 +12,7 @@ import botan.internal.bn_wrap;
 OSSL_BN::OSSL_BN(in BigInt input)
 {
 	m_bn = BN_new();
-	SafeVector!byte encoding = BigInt::encode_locked(input);
+	SafeVector!ubyte encoding = BigInt::encode_locked(input);
 	if (in != 0)
 		BN_bin2bn(&encoding[0], encoding.size(), m_bn);
 }
@@ -20,7 +20,7 @@ OSSL_BN::OSSL_BN(in BigInt input)
 /*
 * OSSL_BN Constructor
 */
-OSSL_BN::OSSL_BN(in byte* input, size_t length)
+OSSL_BN::OSSL_BN(in ubyte* input, size_t length)
 {
 	m_bn = BN_new();
 	BN_bin2bn(input, length, m_bn);
@@ -54,7 +54,7 @@ OSSL_BN& OSSL_BN::operator=(in OSSL_BN other)
 /*
 * Export the BIGNUM as a bytestring
 */
-void OSSL_BN::encode(byte* output) const
+void OSSL_BN::encode(ubyte* output) const
 {
 	size_t length = output.length;
 	BN_bn2bin(m_bn, output.ptr + (length - bytes()));
@@ -73,7 +73,7 @@ size_t OSSL_BN::bytes() const
 */
 BigInt OSSL_BN::to_bigint() const
 {
-	SafeVector!byte output(bytes());
+	SafeVector!ubyte output(bytes());
 	BN_bn2bin(m_bn, &output[0]);
 	return BigInt::decode(output);
 }

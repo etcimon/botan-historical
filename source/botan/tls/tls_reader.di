@@ -19,7 +19,7 @@ namespace TLS {
 class TLS_Data_Reader
 {
 	public:
-		TLS_Data_Reader(string type, in Vector!byte buf_input) :
+		TLS_Data_Reader(string type, in Vector!ubyte buf_input) :
 			m_typename(type), m_buf(buf_input), m_offset(0) {}
 
 		void assert_done() const
@@ -61,10 +61,10 @@ class TLS_Data_Reader
 			return result;
 		}
 
-		byte get_byte()
+		ubyte get_byte()
 		{
 			assert_at_least(1);
-			byte result = m_buf[m_offset];
+			ubyte result = m_buf[m_offset];
 			m_offset += 1;
 			return result;
 		}
@@ -108,8 +108,8 @@ class TLS_Data_Reader
 									  size_t min_bytes,
 									  size_t max_bytes)
 		{
-			Vector!byte v =
-				get_range_vector!byte(len_bytes, min_bytes, max_bytes);
+			Vector!ubyte v =
+				get_range_vector!ubyte(len_bytes, min_bytes, max_bytes);
 
 			return string(cast(char*)(&v[0]), v.size());
 		}
@@ -165,14 +165,14 @@ class TLS_Data_Reader
 		}
 
 		string m_typename;
-		in Vector!byte m_buf;
+		in Vector!ubyte m_buf;
 		size_t m_offset;
 };
 
 /**
 * Helper function for encoding length-tagged vectors
 */
-void append_tls_length_value(T, Alloc)(Vector!( byte, Alloc )& buf,
+void append_tls_length_value(T, Alloc)(Vector!( ubyte, Alloc )& buf,
 										  const T* vals,
 										  size_t vals_size,
 										  size_t tag_size)
@@ -195,19 +195,19 @@ void append_tls_length_value(T, Alloc)(Vector!( byte, Alloc )& buf,
 			buf.push_back(get_byte(j, vals[i]));
 }
 
-void append_tls_length_value(T, Alloc, Alloc2)(Vector!( byte, Alloc )& buf,
+void append_tls_length_value(T, Alloc, Alloc2)(Vector!( ubyte, Alloc )& buf,
 												  const Vector!( T, Alloc2 )& vals,
 												  size_t tag_size)
 {
 	append_tls_length_value(buf, &vals[0], vals.size(), tag_size);
 }
 
-void append_tls_length_value(Alloc)(Vector!( byte, Alloc )& buf,
+void append_tls_length_value(Alloc)(Vector!( ubyte, Alloc )& buf,
 									  in string str,
 									  size_t tag_size)
 {
 	append_tls_length_value(buf,
-							cast(in byte*)(str[0]),
+							cast(in ubyte*)(str[0]),
 							str.size(),
 							tag_size);
 }

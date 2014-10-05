@@ -11,7 +11,7 @@ namespace PEM_Code {
 /**
 * Encode some binary data in PEM format
 */
-string encode(in byte* data,
+string encode(in ubyte* data,
 									  size_t data_len,
 									  in string label,
 									  size_t line_width = 64);
@@ -19,7 +19,7 @@ string encode(in byte* data,
 /**
 * Encode some binary data in PEM format
 */
- string encode(in Vector!byte data,
+ string encode(in Vector!ubyte data,
 								  in string label,
 								  size_t line_width = 64)
 {
@@ -29,7 +29,7 @@ string encode(in byte* data,
 /**
 * Encode some binary data in PEM format
 */
- string encode(in SafeVector!byte data,
+ string encode(in SafeVector!ubyte data,
 								  in string label,
 								  size_t line_width = 64)
 {
@@ -41,7 +41,7 @@ string encode(in byte* data,
 * @param pem a datasource containing PEM encoded data
 * @param label is set to the PEM label found for later inspection
 */
-SafeVector!byte decode(DataSource& pem,
+SafeVector!ubyte decode(DataSource& pem,
 												 string& label);
 
 /**
@@ -49,7 +49,7 @@ SafeVector!byte decode(DataSource& pem,
 * @param pem a string containing PEM encoded data
 * @param label is set to the PEM label found for later inspection
 */
-SafeVector!byte decode(in string pem,
+SafeVector!ubyte decode(in string pem,
 												 string& label);
 
 /**
@@ -57,7 +57,7 @@ SafeVector!byte decode(in string pem,
 * @param pem a datasource containing PEM encoded data
 * @param label is what we expect the label to be
 */
-SafeVector!byte decode_check_label(
+SafeVector!ubyte decode_check_label(
 	DataSource& pem,
 	in string label);
 
@@ -66,7 +66,7 @@ SafeVector!byte decode_check_label(
 * @param pem a string containing PEM encoded data
 * @param label is what we expect the label to be
 */
-SafeVector!byte decode_check_label(
+SafeVector!ubyte decode_check_label(
 	in string pem,
 	in string label);
 

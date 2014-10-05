@@ -15,9 +15,9 @@ import botan.mac;
 class EAX_Mode : public AEAD_Mode
 {
 	public:
-		SafeVector!byte start(in byte* nonce, size_t nonce_len) override;
+		SafeVector!ubyte start(in ubyte* nonce, size_t nonce_len) override;
 
-		void set_associated_data(in byte* ad, size_t ad_len) override;
+		void set_associated_data(in ubyte* ad, size_t ad_len) override;
 
 		string name() const override;
 
@@ -32,7 +32,7 @@ class EAX_Mode : public AEAD_Mode
 
 		void clear() override;
 	package:
-		void key_schedule(in byte* key, size_t length) override;
+		void key_schedule(in ubyte* key, size_t length) override;
 
 		/**
 		* @param cipher the cipher to use
@@ -48,9 +48,9 @@ class EAX_Mode : public AEAD_Mode
 		Unique!StreamCipher m_ctr;
 		Unique!MessageAuthenticationCode m_cmac;
 
-		SafeVector!byte m_ad_mac;
+		SafeVector!ubyte m_ad_mac;
 
-		SafeVector!byte m_nonce_mac;
+		SafeVector!ubyte m_nonce_mac;
 };
 
 /**
@@ -71,9 +71,9 @@ class EAX_Encryption : public EAX_Mode
 
 		size_t minimum_final_size() const override { return 0; }
 
-		void update(SafeVector!byte blocks, size_t offset = 0) override;
+		void update(SafeVector!ubyte blocks, size_t offset = 0) override;
 
-		void finish(SafeVector!byte final_block, size_t offset = 0) override;
+		void finish(SafeVector!ubyte final_block, size_t offset = 0) override;
 };
 
 /**
@@ -97,7 +97,7 @@ class EAX_Decryption : public EAX_Mode
 
 		size_t minimum_final_size() const override { return tag_size(); }
 
-		void update(SafeVector!byte blocks, size_t offset = 0) override;
+		void update(SafeVector!ubyte blocks, size_t offset = 0) override;
 
-		void finish(SafeVector!byte final_block, size_t offset = 0) override;
+		void finish(SafeVector!ubyte final_block, size_t offset = 0) override;
 };

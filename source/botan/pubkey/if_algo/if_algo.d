@@ -8,7 +8,7 @@
 import botan.if_algo;
 import botan.numthry;
 import botan.workfactor;
-import botan.der_enc;
+import botan.asn1.der_enc;
 import botan.asn1.ber_dec;
 size_t IF_Scheme_PublicKey::estimated_strength() const
 {
@@ -18,13 +18,13 @@ size_t IF_Scheme_PublicKey::estimated_strength() const
 AlgorithmIdentifier IF_Scheme_PublicKey::algorithm_identifier() const
 {
 	return AlgorithmIdentifier(get_oid(),
-										AlgorithmIdentifier::USE_NULL_PARAM);
+										AlgorithmIdentifier.Encoding_Option.USE_NULL_PARAM);
 }
 
-Vector!byte IF_Scheme_PublicKey::x509_subject_public_key() const
+Vector!ubyte IF_Scheme_PublicKey::x509_subject_public_key() const
 {
 	return DER_Encoder()
-		.start_cons(SEQUENCE)
+		.start_cons(ASN1_Tag.SEQUENCE)
 			.encode(n)
 			.encode(e)
 		.end_cons()
@@ -32,10 +32,10 @@ Vector!byte IF_Scheme_PublicKey::x509_subject_public_key() const
 }
 
 IF_Scheme_PublicKey::IF_Scheme_PublicKey(in AlgorithmIdentifier,
-													  in SafeVector!byte key_bits)
+													  in SafeVector!ubyte key_bits)
 {
 	BER_Decoder(key_bits)
-		.start_cons(SEQUENCE)
+		.start_cons(ASN1_Tag.SEQUENCE)
 		  .decode(n)
 		  .decode(e)
 		.verify_end()
@@ -52,10 +52,10 @@ bool IF_Scheme_PublicKey::check_key(RandomNumberGenerator, bool) const
 	return true;
 }
 
-SafeVector!byte IF_Scheme_PrivateKey::pkcs8_Private_Key() const
+SafeVector!ubyte IF_Scheme_PrivateKey::pkcs8_Private_Key() const
 {
 	return DER_Encoder()
-		.start_cons(SEQUENCE)
+		.start_cons(ASN1_Tag.SEQUENCE)
 			.encode(cast(size_t)(0))
 			.encode(n)
 			.encode(e)
@@ -71,10 +71,10 @@ SafeVector!byte IF_Scheme_PrivateKey::pkcs8_Private_Key() const
 
 IF_Scheme_PrivateKey::IF_Scheme_PrivateKey(RandomNumberGenerator rng,
 														 const AlgorithmIdentifier&,
-														 in SafeVector!byte key_bits)
+														 in SafeVector!ubyte key_bits)
 {
 	BER_Decoder(key_bits)
-		.start_cons(SEQUENCE)
+		.start_cons(ASN1_Tag.SEQUENCE)
 			.decode_and_check<size_t>(0, "Unknown PKCS #1 key format version")
 			.decode(n)
 			.decode(e)

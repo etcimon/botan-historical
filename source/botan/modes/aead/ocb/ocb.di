@@ -22,9 +22,9 @@ class L_computer;
 class OCB_Mode : public AEAD_Mode
 {
 	public:
-		SafeVector!byte start(in byte* nonce, size_t nonce_len) override;
+		SafeVector!ubyte start(in ubyte* nonce, size_t nonce_len) override;
 
-		void set_associated_data(in byte* ad, size_t ad_len) override;
+		void set_associated_data(in ubyte* ad, size_t ad_len) override;
 
 		string name() const override;
 
@@ -46,7 +46,7 @@ class OCB_Mode : public AEAD_Mode
 		*/
 		OCB_Mode(BlockCipher cipher, size_t tag_size);
 
-		void key_schedule(in byte* key, size_t length) override;
+		void key_schedule(in ubyte* key, size_t length) override;
 
 		// fixme make these private
 		Unique!BlockCipher m_cipher;
@@ -54,15 +54,15 @@ class OCB_Mode : public AEAD_Mode
 
 		size_t m_block_index = 0;
 
-		SafeVector!byte m_checksum;
-		SafeVector!byte m_offset;
-		SafeVector!byte m_ad_hash;
+		SafeVector!ubyte m_checksum;
+		SafeVector!ubyte m_offset;
+		SafeVector!ubyte m_ad_hash;
 	private:
-		SafeVector!byte update_nonce(in byte* nonce, size_t nonce_len);
+		SafeVector!ubyte update_nonce(in ubyte* nonce, size_t nonce_len);
 
 		size_t m_tag_size = 0;
-		SafeVector!byte m_last_nonce;
-		SafeVector!byte m_stretch;
+		SafeVector!ubyte m_last_nonce;
+		SafeVector!ubyte m_stretch;
 };
 
 class OCB_Encryption : public OCB_Mode
@@ -80,11 +80,11 @@ class OCB_Encryption : public OCB_Mode
 
 		size_t minimum_final_size() const override { return 0; }
 
-		void update(SafeVector!byte blocks, size_t offset = 0) override;
+		void update(SafeVector!ubyte blocks, size_t offset = 0) override;
 
-		void finish(SafeVector!byte final_block, size_t offset = 0) override;
+		void finish(SafeVector!ubyte final_block, size_t offset = 0) override;
 	private:
-		void encrypt(byte* input, size_t blocks);
+		void encrypt(ubyte* input, size_t blocks);
 };
 
 class OCB_Decryption : public OCB_Mode
@@ -105,9 +105,9 @@ class OCB_Decryption : public OCB_Mode
 
 		size_t minimum_final_size() const override { return tag_size(); }
 
-		void update(SafeVector!byte blocks, size_t offset = 0) override;
+		void update(SafeVector!ubyte blocks, size_t offset = 0) override;
 
-		void finish(SafeVector!byte final_block, size_t offset = 0) override;
+		void finish(SafeVector!ubyte final_block, size_t offset = 0) override;
 	private:
-		void decrypt(byte* input, size_t blocks);
+		void decrypt(ubyte* input, size_t blocks);
 };

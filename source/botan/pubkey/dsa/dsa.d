@@ -39,7 +39,7 @@ DSA_PrivateKey::DSA_PrivateKey(RandomNumberGenerator rng,
 }
 
 DSA_PrivateKey::DSA_PrivateKey(in AlgorithmIdentifier alg_id,
-										 in SafeVector!byte key_bits,
+										 in SafeVector!ubyte key_bits,
 										 RandomNumberGenerator rng) :
 	DL_Scheme_PrivateKey(alg_id, key_bits, DL_Group::ANSI_X9_57)
 {
@@ -70,8 +70,8 @@ DSA_Signature_Operation::DSA_Signature_Operation(in DSA_PrivateKey dsa) :
 {
 }
 
-SafeVector!byte
-DSA_Signature_Operation::sign(in byte* msg, size_t msg_len,
+SafeVector!ubyte
+DSA_Signature_Operation::sign(in ubyte* msg, size_t msg_len,
 										RandomNumberGenerator rng)
 {
 	rng.add_entropy(msg, msg_len);
@@ -94,7 +94,7 @@ DSA_Signature_Operation::sign(in byte* msg, size_t msg_len,
 		s = mod_q.multiply(s, mul_add(x, r, i));
 	}
 
-	SafeVector!byte output(2*q.bytes());
+	SafeVector!ubyte output(2*q.bytes());
 	r.binary_encode(&output[output.size() / 2 - r.bytes()]);
 	s.binary_encode(&output[output.size() - s.bytes()]);
 	return output;
@@ -109,8 +109,8 @@ DSA_Verification_Operation::DSA_Verification_Operation(in DSA_PublicKey dsa) :
 	mod_q = Modular_Reducer(dsa.group_q());
 }
 
-bool DSA_Verification_Operation::verify(in byte* msg, size_t msg_len,
-													 in byte* sig, size_t sig_len)
+bool DSA_Verification_Operation::verify(in ubyte* msg, size_t msg_len,
+													 in ubyte* sig, size_t sig_len)
 {
 	ref const BigInt q = mod_q.get_modulus();
 

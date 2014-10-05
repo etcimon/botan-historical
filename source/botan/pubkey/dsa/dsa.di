@@ -23,7 +23,7 @@ class DSA_PublicKey : public abstract DL_Scheme_PublicKey
 		size_t max_input_bits() const { return group_q().bits(); }
 
 		DSA_PublicKey(in AlgorithmIdentifier alg_id,
-						  in SafeVector!byte key_bits) :
+						  in SafeVector!ubyte key_bits) :
 			DL_Scheme_PublicKey(alg_id, key_bits, DL_Group::ANSI_X9_57)
 		{
 		}
@@ -41,7 +41,7 @@ class DSA_PrivateKey : public DSA_PublicKey,
 {
 	public:
 		DSA_PrivateKey(in AlgorithmIdentifier alg_id,
-							in SafeVector!byte key_bits,
+							in SafeVector!ubyte key_bits,
 							RandomNumberGenerator rng);
 
 		DSA_PrivateKey(RandomNumberGenerator rng,
@@ -63,7 +63,7 @@ class DSA_Signature_Operation : public PK_Ops::Signature
 		size_t message_part_size() const { return q.bytes(); }
 		size_t max_input_bits() const { return q.bits(); }
 
-		SafeVector!byte sign(in byte* msg, size_t msg_len,
+		SafeVector!ubyte sign(in ubyte* msg, size_t msg_len,
 										RandomNumberGenerator rng);
 	private:
 		ref const BigInt q;
@@ -86,8 +86,8 @@ class DSA_Verification_Operation : public PK_Ops::Verification
 
 		bool with_recovery() const { return false; }
 
-		bool verify(in byte* msg, size_t msg_len,
-						in byte* sig, size_t sig_len);
+		bool verify(in ubyte* msg, size_t msg_len,
+						in ubyte* sig, size_t sig_len);
 	private:
 		ref const BigInt q;
 		ref const BigInt y;

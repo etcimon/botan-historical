@@ -39,12 +39,12 @@ class SIMD_SSE2
 			return load_le(input).bswap();
 		}
 
-		void store_le(byte* output) const
+		void store_le(ubyte* output) const
 		{
 			_mm_storeu_si128(cast(__m128i*)(output), reg);
 		}
 
-		void store_be(byte* output) const
+		void store_be(ubyte* output) const
 		{
 			bswap().store_le(output);
 		}

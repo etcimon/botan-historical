@@ -8,7 +8,7 @@
 import botan.x509self;
 import botan.x509_ext;
 import botan.x509_ca;
-import botan.der_enc;
+import botan.asn1.der_enc;
 import botan.asn1.oid_lookup.oids;
 import botan.pipe;
 namespace {
@@ -16,8 +16,8 @@ namespace {
 /*
 * Load information from the X509_Cert_Options
 */
-void load_info(in X509_Cert_Options opts, X509_DN& subject_dn,
-					AlternativeName& subject_alt)
+void load_info(in X509_Cert_Options opts, ref X509_DN subject_dn,
+					ref AlternativeName subject_alt)
 {
 	subject_dn.add_attribute("X520.CommonName", opts.common_name);
 	subject_dn.add_attribute("X520.Country", opts.country);
@@ -28,7 +28,7 @@ void load_info(in X509_Cert_Options opts, X509_DN& subject_dn,
 	subject_dn.add_attribute("X520.SerialNumber", opts.serial_number);
 	subject_alt = AlternativeName(opts.email, opts.uri, opts.dns, opts.ip);
 	subject_alt.add_othername(oids.lookup("PKIX.XMPPAddr"),
-									  opts.xmpp, UTF8_STRING);
+		                          opts.xmpp, ASN1_Tag.UTF8_STRING);
 }
 
 }
@@ -49,7 +49,7 @@ X509_Certificate create_self_signed_cert(in X509_Cert_Options opts,
 
 	opts.sanity_check();
 
-	Vector!byte pub_key = X509::BER_encode(key);
+	Vector!ubyte pub_key = X509::BER_encode(key);
 	Unique!PK_Signer signer(choose_sig_format(key, hash_fn, sig_algo));
 	load_info(opts, subject_dn, subject_alt);
 
@@ -95,7 +95,7 @@ PKCS10_Request create_cert_req(in X509_Cert_Options opts,
 
 	opts.sanity_check();
 
-	Vector!byte pub_key = X509::BER_encode(key);
+	Vector!ubyte pub_key = X509::BER_encode(key);
 	Unique!PK_Signer signer(choose_sig_format(key, hash_fn, sig_algo));
 	load_info(opts, subject_dn, subject_alt);
 
@@ -118,7 +118,7 @@ PKCS10_Request create_cert_req(in X509_Cert_Options opts,
 
 	DER_Encoder tbs_req;
 
-	tbs_req.start_cons(SEQUENCE)
+	tbs_req.start_cons(ASN1_Tag.SEQUENCE)
 		.encode(PKCS10_VERSION)
 		.encode(subject_dn)
 		.raw_bytes(pub_key)
@@ -126,7 +126,7 @@ PKCS10_Request create_cert_req(in X509_Cert_Options opts,
 
 	if (opts.challenge != "")
 	{
-		ASN1_String challenge(opts.challenge, DIRECTORY_STRING);
+		ASN1_String challenge(opts.challenge, ASN1_Tag.DIRECTORY_STRING);
 
 		tbs_req.encode(
 			Attribute("PKCS9.ChallengePassword",
@@ -138,7 +138,7 @@ PKCS10_Request create_cert_req(in X509_Cert_Options opts,
 	tbs_req.encode(
 		Attribute("PKCS9.ExtensionRequest",
 					 DER_Encoder()
-						 .start_cons(SEQUENCE)
+						 .start_cons(ASN1_Tag.SEQUENCE)
 							 .encode(extensions)
 						 .end_cons()
 					.get_contents_unlocked()
@@ -147,7 +147,7 @@ PKCS10_Request create_cert_req(in X509_Cert_Options opts,
 		.end_explicit()
 		.end_cons();
 
-	const Vector!byte req =
+	const Vector!ubyte req =
 		X509_Object::make_signed(signer.get(), rng, sig_algo,
 										 tbs_req.get_contents());
 

@@ -16,21 +16,21 @@ struct calendar_point
 	uint year;
 
 	/** The month, 1 through 12 for Jan to Dec */
-	byte month;
+	ubyte month;
 
 	/** The day of the month, 1 through 31 (or 28 or 30 based on month */
-	byte day;
+	ubyte day;
 
 	/** Hour in 24-hour form, 0 to 23 */
-	byte hour;
+	ubyte hour;
 
 	/** Minutes in the hour, 0 to 60 */
-	byte minutes;
+	ubyte minutes;
 
 	/** Seconds in the minute, 0 to 60, but might be slightly
 		 larger to deal with leap seconds on some systems
 	*/
-	byte seconds;
+	ubyte seconds;
 
 	/**
 	* Initialize a calendar_point
@@ -41,7 +41,7 @@ struct calendar_point
 	* @param min the minute
 	* @param sec the second
 	*/
-	calendar_point(uint y, byte mon, byte d, byte h, byte min, byte sec) :
+	calendar_point(uint y, ubyte mon, ubyte d, ubyte h, ubyte min, ubyte sec) :
 		year(y), month(mon), day(d), hour(h), minutes(minput), seconds(sec) {}
 };
 

@@ -17,11 +17,11 @@ class MessageAuthenticationCode : public Buffered_Computation,
 	public:
 		/**
 		* Verify a MAC.
-		* @param in the MAC to verify as a byte array
+		* @param in the MAC to verify as a ubyte array
 		* @param length the length of param in
 		* @return true if the MAC is valid, false otherwise
 		*/
-		abstract bool verify_mac(in byte* input, size_t length);
+		abstract bool verify_mac(in ubyte* input, size_t length);
 
 		/**
 		* Get a new object representing the same algorithm as *this

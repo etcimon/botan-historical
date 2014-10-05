@@ -8,7 +8,7 @@ module botan.asn1.alg_id;
 
 import botan.asn1.asn1_obj;
 import botan.asn1.asn1_oid;
-import botan.der_enc;
+import botan.asn1.der_enc;
 import botan.asn1.ber_dec;
 import botan.asn1.oid_lookup.oids;
 
@@ -30,7 +30,7 @@ public:
 	*/
 	void encode_into(DER_Encoder) const
 	{
-		codec.start_cons(SEQUENCE)
+		codec.start_cons(ASN1_Tag.SEQUENCE)
 			.encode(oid)
 				.raw_bytes(parameters)
 				.end_cons();
@@ -41,7 +41,7 @@ public:
 	*/
 	void decode_from(BER_Decoder codec)
 	{
-		codec.start_cons(SEQUENCE)
+		codec.start_cons(ASN1_Tag.SEQUENCE)
 			.decode(oid)
 				.raw_bytes(parameters)
 				.end_cons();
@@ -53,30 +53,30 @@ public:
 	* Create an AlgorithmIdentifier
 	*/
 	this(in OID, Encoding_Option) {
-		immutable byte[] DER_NULL = [ 0x05, 0x00 ];
+		immutable ubyte[] DER_NULL = [ 0x05, 0x00 ];
 		
 		oid = alg_id;
 		
-		if (option == USE_NULL_PARAM)
-			parameters += Pair!(const byte*, size_t)(DER_NULL, sizeof(DER_NULL));
+		if (option == Encoding_Option.USE_NULL_PARAM)
+			parameters += Pair!(const ubyte*, size_t)(DER_NULL, sizeof(DER_NULL));
 	}
 
 	/*
 	* Create an AlgorithmIdentifier
 	*/
 	this(in string, Encoding_Option) {
-		immutable byte[] DER_NULL = [ 0x05, 0x00 ];
+		immutable ubyte[] DER_NULL = [ 0x05, 0x00 ];
 		
 		oid = oids.lookup(alg_id);
 		
-		if (option == USE_NULL_PARAM)
-			parameters += Pair!(const byte*, size_t)(DER_NULL, sizeof(DER_NULL));
+		if (option == Encoding_Option.USE_NULL_PARAM)
+			parameters += Pair!(const ubyte*, size_t)(DER_NULL, sizeof(DER_NULL));
 	}
 	
 	/*
 	* Create an AlgorithmIdentifier
 	*/
-	this(in OID alg_id, in Vector!byte param)
+	this(in OID alg_id, in Vector!ubyte param)
 	{
 		oid = alg_id;
 		parameters = param;
@@ -85,7 +85,7 @@ public:
 	/*
 	* Create an AlgorithmIdentifier
 	*/
-	this(in string, in Vector!byte) {
+	this(in string, in Vector!ubyte) {
 		oid = oids.lookup(alg_id);
 		parameters = param;
 	}
@@ -111,5 +111,5 @@ public:
 	}
 
 	OID oid;
-	Vector!byte parameters;
+	Vector!ubyte parameters;
 };

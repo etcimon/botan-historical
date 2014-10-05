@@ -13,7 +13,7 @@ namespace PEM_Code {
 /*
 * PEM encode BER/DER-encoded objects
 */
-string encode(in byte* der, size_t length, in string label,
+string encode(in ubyte* der, size_t length, in string label,
 						 size_t width)
 {
 	const string PEM_HEADER = "-----BEGIN " ~ label ~ "-----";
@@ -27,11 +27,11 @@ string encode(in byte* der, size_t length, in string label,
 /*
 * Decode PEM down to raw BER/DER
 */
-SafeVector!byte decode_check_label(DataSource& source,
+SafeVector!ubyte decode_check_label(DataSource& source,
 												  in string label_want)
 {
 	string label_got;
-	SafeVector!byte ber = decode(source, label_got);
+	SafeVector!ubyte ber = decode(source, label_got);
 	if (label_got != label_want)
 		throw new Decoding_Error("PEM: Label mismatch, wanted " ~ label_want +
 									", got " ~ label_got);
@@ -41,7 +41,7 @@ SafeVector!byte decode_check_label(DataSource& source,
 /*
 * Decode PEM down to raw BER/DER
 */
-SafeVector!byte decode(DataSource& source, string& label)
+SafeVector!ubyte decode(DataSource& source, string& label)
 {
 	const size_t RANDOM_CHAR_LIMIT = 8;
 
@@ -51,7 +51,7 @@ SafeVector!byte decode(DataSource& source, string& label)
 
 	while(position != PEM_HEADER1.length())
 	{
-		byte b;
+		ubyte b;
 		if (!source.read_byte(b))
 			throw new Decoding_Error("PEM: No PEM header found");
 		if (b == PEM_HEADER1[position])
@@ -64,7 +64,7 @@ SafeVector!byte decode(DataSource& source, string& label)
 	position = 0;
 	while(position != PEM_HEADER2.length())
 	{
-		byte b;
+		ubyte b;
 		if (!source.read_byte(b))
 			throw new Decoding_Error("PEM: No PEM header found");
 		if (b == PEM_HEADER2[position])
@@ -83,7 +83,7 @@ SafeVector!byte decode(DataSource& source, string& label)
 	position = 0;
 	while(position != PEM_TRAILER.length())
 	{
-		byte b;
+		ubyte b;
 		if (!source.read_byte(b))
 			throw new Decoding_Error("PEM: No PEM trailer found");
 		if (b == PEM_TRAILER[position])
@@ -98,14 +98,14 @@ SafeVector!byte decode(DataSource& source, string& label)
 	return base64.read_all();
 }
 
-SafeVector!byte decode_check_label(in string pem,
+SafeVector!ubyte decode_check_label(in string pem,
 												  in string label_want)
 {
 	DataSource_Memory src(pem);
 	return decode_check_label(src, label_want);
 }
 
-SafeVector!byte decode(in string pem, string& label)
+SafeVector!ubyte decode(in string pem, string& label)
 {
 	DataSource_Memory src(pem);
 	return decode(src, label);
@@ -119,7 +119,7 @@ bool matches(DataSource& source, in string extra,
 {
 	const string PEM_HEADER = "-----BEGIN " ~ extra;
 
-	SafeVector!byte search_buf(search_range);
+	SafeVector!ubyte search_buf(search_range);
 	size_t got = source.peek(&search_buf[0], search_buf.size(), 0);
 
 	if (got < PEM_HEADER.length())

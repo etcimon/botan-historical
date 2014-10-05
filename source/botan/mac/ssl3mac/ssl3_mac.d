@@ -9,7 +9,7 @@ import botan.ssl3_mac;
 /*
 * Update a SSL3-MAC Calculation
 */
-void SSL3_MAC::add_data(in byte* input, size_t length)
+void SSL3_MAC::add_data(in ubyte* input, size_t length)
 {
 	m_hash.update(input, length);
 }
@@ -17,7 +17,7 @@ void SSL3_MAC::add_data(in byte* input, size_t length)
 /*
 * Finalize a SSL3-MAC Calculation
 */
-void SSL3_MAC::final_result(byte mac[])
+void SSL3_MAC::final_result(ubyte mac[])
 {
 	m_hash.flushInto(mac);
 	m_hash.update(m_okey);
@@ -29,7 +29,7 @@ void SSL3_MAC::final_result(byte mac[])
 /*
 * SSL3-MAC Key Schedule
 */
-void SSL3_MAC::key_schedule(in byte* key, size_t length)
+void SSL3_MAC::key_schedule(in ubyte* key, size_t length)
 {
 	m_hash.clear();
 

@@ -7,7 +7,7 @@
 
 module botan.asn1.asn1_obj;
 
-import botan.der_enc;
+import botan.asn1.der_enc;
 import botan.asn1.ber_dec;
 import botan.data_src;
 import botan.parsing;
@@ -24,7 +24,7 @@ enum ASN1_Tag {
 	
 	CONSTRUCTED			= 0x20,
 
-	PRIVATE				= CONSTRUCTED | CONTEXT_SPECIFIC,
+	PRIVATE				= CONSTRUCTED | ASN1_Tag.CONTEXT_SPECIFIC,
 
 	EOC					= 0x00,
 	BOOLEAN				= 0x01,
@@ -96,7 +96,7 @@ public:
 	}
 
 	ASN1_Tag type_tag, class_tag;
-	SafeVector!byte value;
+	SafeVector!ubyte value;
 }
 
 /*
@@ -136,9 +136,9 @@ class BER_Bad_Tag : public BER_Decoding_Error
 };
 	
 /*
-* Put some arbitrary bytes into a SEQUENCE
+* Put some arbitrary bytes into a ASN1_Tag.SEQUENCE
 */
-Vector!byte put_in_sequence(in Vector!byte contents)
+Vector!ubyte put_in_sequence(in Vector!ubyte contents)
 {
 	return DER_Encoder()
 		.start_cons(ASN1_Tag.SEQUENCE)
@@ -161,7 +161,7 @@ string to_string(in BER_Object obj)
 */
 bool maybe_BER(ref DataSource source)
 {
-	byte first_byte;
+	ubyte first_byte;
 	if (!source.peek_byte(first_byte))
 		throw new Stream_IO_Error("ASN1::maybe_BER: Source was empty");
 	

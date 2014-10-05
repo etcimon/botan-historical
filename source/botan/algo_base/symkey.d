@@ -26,19 +26,19 @@ public:
 	size_t length() const { return bits.size(); }
 	
 	/**
-		* @return this object as a SafeVector!byte
+		* @return this object as a SafeVector!ubyte
 		*/
-	SafeVector!byte bits_of() const { return bits; }
+	SafeVector!ubyte bits_of() const { return bits; }
 	
 	/**
 		* @return start of this string
 		*/
-	const byte* begin() const { return &bits[0]; }
+	const ubyte* begin() const { return &bits[0]; }
 	
 	/**
 		* @return end of this string
 		*/
-	const byte* end() const{ return begin() + bits.size(); }
+	const ubyte* end() const{ return begin() + bits.size(); }
 	
 	/**
 		* @return this encoded as hex
@@ -66,7 +66,7 @@ public:
 		*/
 	void set_odd_parity()
 	{
-		immutable byte[256] ODD_PARITY = {
+		immutable ubyte[256] ODD_PARITY = {
 			0x01, 0x01, 0x02, 0x02, 0x04, 0x04, 0x07, 0x07, 0x08, 0x08, 0x0B, 0x0B,
 				0x0D, 0x0D, 0x0E, 0x0E, 0x10, 0x10, 0x13, 0x13, 0x15, 0x15, 0x16, 0x16,
 				0x19, 0x19, 0x1A, 0x1A, 0x1C, 0x1C, 0x1F, 0x1F, 0x20, 0x20, 0x23, 0x23,
@@ -119,7 +119,7 @@ public:
 		* @param in is an array
 		* @param len is the length of in in bytes
 		*/
-	this(in byte* input, size_t len)
+	this(in ubyte* input, size_t len)
 	{
 		bits.assign(input, len);
 	}
@@ -128,13 +128,13 @@ public:
 		* Create a new OctetString
 		* @param in a bytestring
 		*/
-	this(in SafeVector!byte input) { bits = input; }
+	this(in SafeVector!ubyte input) { bits = input; }
 	
 	/**
 		* Create a new OctetString
 		* @param in a bytestring
 		*/
-	this(in Vector!byte input) {  bits = SafeVector!byte(&input[0], &input[input.size()]); }
+	this(in Vector!ubyte input) {  bits = SafeVector!ubyte(&input[0], &input[input.size()]); }
 
 
 		/**
@@ -167,7 +167,7 @@ public:
 	*/
 	OctetString opBinary(op)(ref const OctetString other)
 	if (op == "+") {
-		SafeVector!byte output;
+		SafeVector!ubyte output;
 		output += bits_of();
 		output += other.bits_of();
 		return OctetString(output);
@@ -181,7 +181,7 @@ public:
 	*/
 	OctetString opBinary(op)(ref const OctetString other)
 	if (op == "^") {
-		SafeVector!byte ret = SafeVector!byte(std.algorithm.max(length(), other.length()));
+		SafeVector!ubyte ret = SafeVector!ubyte(std.algorithm.max(length(), other.length()));
 		
 		copy_mem(&ret[0], k1.begin(), k1.length());
 		xor_buf(&ret[0], k2.begin(), k2.length());
@@ -189,7 +189,7 @@ public:
 	}
 
 private:
-	SafeVector!byte bits;
+	SafeVector!ubyte bits;
 }
 
 /**

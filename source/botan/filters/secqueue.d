@@ -19,7 +19,7 @@ class SecureQueueNode
 
 		~this() { next = null; start = end = 0; }
 
-		size_t write(in byte* input, size_t length)
+		size_t write(in ubyte* input, size_t length)
 		{
 			size_t copied = std.algorithm.min<size_t>(length, buffer.size() - end);
 			copy_mem(&buffer[end], input, copied);
@@ -27,7 +27,7 @@ class SecureQueueNode
 			return copied;
 		}
 
-		size_t read(byte* output, size_t length)
+		size_t read(ubyte* output, size_t length)
 		{
 			size_t copied = std.algorithm.min(length, end - start);
 			copy_mem(output, &buffer[start], copied);
@@ -35,7 +35,7 @@ class SecureQueueNode
 			return copied;
 		}
 
-		size_t peek(byte* output, size_t length, size_t offset = 0)
+		size_t peek(ubyte* output, size_t length, size_t offset = 0)
 		{
 			const size_t left = end - start;
 			if (offset >= left) return 0;
@@ -48,7 +48,7 @@ class SecureQueueNode
 	private:
 		friend class SecureQueue;
 		SecureQueueNode* next;
-		SafeVector!byte buffer;
+		SafeVector!ubyte buffer;
 		size_t start, end;
 };
 
@@ -114,7 +114,7 @@ SecureQueue& SecureQueue::operator=(in SecureQueue input)
 /*
 * Add some bytes to the queue
 */
-void SecureQueue::write(in byte* input, size_t length)
+void SecureQueue::write(in ubyte* input, size_t length)
 {
 	if (!head)
 		head = tail = new SecureQueueNode;
@@ -134,7 +134,7 @@ void SecureQueue::write(in byte* input, size_t length)
 /*
 * Read some bytes from the queue
 */
-size_t SecureQueue::read(byte* output, size_t length)
+size_t SecureQueue::read(ubyte* output, size_t length)
 {
 	size_t got = 0;
 	while(length && head)
@@ -157,7 +157,7 @@ size_t SecureQueue::read(byte* output, size_t length)
 /*
 * Read data, but do not remove it from queue
 */
-size_t SecureQueue::peek(byte* output, size_t length, size_t offset) const
+size_t SecureQueue::peek(ubyte* output, size_t length, size_t offset) const
 {
 	SecureQueueNode* current = head;
 

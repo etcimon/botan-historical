@@ -28,12 +28,12 @@ class Tiger : public MDx_HashFunction
 		*/
 		Tiger(size_t out_size = 24, size_t passes = 3);
 	private:
-		void compress_n(const byte[], size_t block);
-		void copy_out(byte[]);
+		void compress_n(const ubyte[], size_t block);
+		void copy_out(ubyte[]);
 
 		static void pass(ref ulong A, ref ulong B, ref ulong C,
 							  const secure_vector!ulong& M,
-							  byte mul);
+							  ubyte mul);
 
 		static const ulong SBOX1[256];
 		static const ulong SBOX2[256];

@@ -26,7 +26,7 @@ class PKCS5_PBKDF2 : public PBKDF
 		Pair!(size_t, OctetString)
 			key_derivation(size_t output_len,
 								in string passphrase,
-								in byte* salt, size_t salt_len,
+								in ubyte* salt, size_t salt_len,
 								size_t iterations,
 								std::chrono::milliseconds msec) const override;
 

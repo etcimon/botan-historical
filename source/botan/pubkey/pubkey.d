@@ -6,7 +6,7 @@
 */
 
 import botan.pubkey;
-import botan.der_enc;
+import botan.asn1.der_enc;
 import botan.asn1.ber_dec;
 import botan.bigint;
 import botan.parsing;
@@ -38,14 +38,14 @@ PK_Encryptor_EME::PK_Encryptor_EME(in Public_Key key,
 /*
 * Encrypt a message
 */
-Vector!byte
-PK_Encryptor_EME::enc(in byte* in,
+Vector!ubyte
+PK_Encryptor_EME::enc(in ubyte* in,
 							 size_t length,
 							 RandomNumberGenerator rng) const
 {
 	if (m_eme)
 	{
-		SafeVector!byte encoded =
+		SafeVector!ubyte encoded =
 			m_eme.encode(input, length, m_op.max_input_bits(), rng);
 
 		if (8*(encoded.size() - 1) + high_bit(encoded[0]) > m_op.max_input_bits())
@@ -98,11 +98,11 @@ PK_Decryptor_EME::PK_Decryptor_EME(in Private_Key key,
 /*
 * Decrypt a message
 */
-SafeVector!byte PK_Decryptor_EME::dec(in byte* msg,
+SafeVector!ubyte PK_Decryptor_EME::dec(in ubyte* msg,
 														size_t length) const
 {
 	try {
-		SafeVector!byte decrypted = m_op.decrypt(msg, length);
+		SafeVector!ubyte decrypted = m_op.decrypt(msg, length);
 		if (m_eme)
 			return m_eme.decode(decrypted, m_op.max_input_bits());
 		else
@@ -150,7 +150,7 @@ PK_Signer::PK_Signer(in Private_Key key,
 /*
 * Sign a message
 */
-Vector!byte PK_Signer::sign_message(in byte* msg, size_t length,
+Vector!ubyte PK_Signer::sign_message(in ubyte* msg, size_t length,
 														 RandomNumberGenerator rng)
 {
 	update(msg, length);
@@ -160,7 +160,7 @@ Vector!byte PK_Signer::sign_message(in byte* msg, size_t length,
 /*
 * Add more to the message to be signed
 */
-void PK_Signer::update(in byte* input, size_t length)
+void PK_Signer::update(in ubyte* input, size_t length)
 {
 	m_emsa.update(input, length);
 }
@@ -168,15 +168,15 @@ void PK_Signer::update(in byte* input, size_t length)
 /*
 * Check the signature we just created, to help prevent fault attacks
 */
-bool PK_Signer::self_test_signature(in Vector!byte msg,
-												in Vector!byte sig) const
+bool PK_Signer::self_test_signature(in Vector!ubyte msg,
+												in Vector!ubyte sig) const
 {
 	if (!m_verify_op)
 		return true; // checking disabled, assume ok
 
 	if (m_verify_op.with_recovery())
 	{
-		Vector!byte recovered =
+		Vector!ubyte recovered =
 			unlock(m_verify_op.verify_mr(&sig[0], sig.size()));
 
 		if (msg.size() > recovered.size())
@@ -200,13 +200,13 @@ bool PK_Signer::self_test_signature(in Vector!byte msg,
 /*
 * Create a signature
 */
-Vector!byte PK_Signer::signature(RandomNumberGenerator rng)
+Vector!ubyte PK_Signer::signature(RandomNumberGenerator rng)
 {
-	Vector!byte encoded = unlock(m_emsa.encoding_of(m_emsa.raw_data(),
+	Vector!ubyte encoded = unlock(m_emsa.encoding_of(m_emsa.raw_data(),
 																 m_op.max_input_bits(),
 																		  rng));
 
-	Vector!byte plain_sig = unlock(m_op.sign(&encoded[0], encoded.size(), rng));
+	Vector!ubyte plain_sig = unlock(m_op.sign(&encoded[0], encoded.size(), rng));
 
 	BOTAN_ASSERT(self_test_signature(encoded, plain_sig), "Signature was consistent");
 
@@ -224,7 +224,7 @@ Vector!byte PK_Signer::signature(RandomNumberGenerator rng)
 			sig_parts[j].binary_decode(&plain_sig[SIZE_OF_PART*j], SIZE_OF_PART);
 
 		return DER_Encoder()
-			.start_cons(SEQUENCE)
+			.start_cons(ASN1_Tag.SEQUENCE)
 				.encode_list(sig_parts)
 			.end_cons()
 		.get_contents_unlocked();
@@ -271,8 +271,8 @@ void PK_Verifier::set_input_format(Signature_Format format)
 /*
 * Verify a message
 */
-bool PK_Verifier::verify_message(in byte* msg, size_t msg_length,
-											in byte* sig, size_t sig_length)
+bool PK_Verifier::verify_message(in ubyte* msg, size_t msg_length,
+											in ubyte* sig, size_t sig_length)
 {
 	update(msg, msg_length);
 	return check_signature(sig, sig_length);
@@ -281,7 +281,7 @@ bool PK_Verifier::verify_message(in byte* msg, size_t msg_length,
 /*
 * Append to the message
 */
-void PK_Verifier::update(in byte* input, size_t length)
+void PK_Verifier::update(in ubyte* input, size_t length)
 {
 	m_emsa.update(input, length);
 }
@@ -289,7 +289,7 @@ void PK_Verifier::update(in byte* input, size_t length)
 /*
 * Check a signature
 */
-bool PK_Verifier::check_signature(in byte* sig, size_t length)
+bool PK_Verifier::check_signature(in ubyte* sig, size_t length)
 {
 	try {
 		if (m_sig_format == IEEE_1363)
@@ -297,10 +297,10 @@ bool PK_Verifier::check_signature(in byte* sig, size_t length)
 		else if (m_sig_format == DER_SEQUENCE)
 		{
 			BER_Decoder decoder(sig, length);
-			BER_Decoder ber_sig = decoder.start_cons(SEQUENCE);
+			BER_Decoder ber_sig = decoder.start_cons(ASN1_Tag.SEQUENCE);
 
 			size_t count = 0;
-			Vector!byte real_sig;
+			Vector!ubyte real_sig;
 			while(ber_sig.more_items())
 			{
 				BigInt sig_part;
@@ -325,19 +325,19 @@ bool PK_Verifier::check_signature(in byte* sig, size_t length)
 /*
 * Verify a signature
 */
-bool PK_Verifier::validate_signature(in SafeVector!byte msg,
-												 in byte* sig, size_t sig_len)
+bool PK_Verifier::validate_signature(in SafeVector!ubyte msg,
+												 in ubyte* sig, size_t sig_len)
 {
 	if (m_op.with_recovery())
 	{
-		SafeVector!byte output_of_key = m_op.verify_mr(sig, sig_len);
+		SafeVector!ubyte output_of_key = m_op.verify_mr(sig, sig_len);
 		return m_emsa.verify(output_of_key, msg, m_op.max_input_bits());
 	}
 	else
 	{
 		RandomNumberGenerator rng = global_state().global_rng();
 
-		SafeVector!byte encoded =
+		SafeVector!ubyte encoded =
 			m_emsa.encoding_of(msg, m_op.max_input_bits(), rng);
 
 		return m_op.verify(&encoded[0], encoded.size(), sig, sig_len);
@@ -366,11 +366,11 @@ PK_Key_Agreement::PK_Key_Agreement(in PK_Key_Agreement_Key key,
 	m_kdf.reset(get_kdf(kdf_name));
 }
 
-SymmetricKey PK_Key_Agreement::derive_key(size_t key_len, in byte* in,
-														size_t in_len, in byte* params,
+SymmetricKey PK_Key_Agreement::derive_key(size_t key_len, in ubyte* in,
+														size_t in_len, in ubyte* params,
 														size_t params_len) const
 {
-	SafeVector!byte z = m_op.agree(input, in_len);
+	SafeVector!ubyte z = m_op.agree(input, in_len);
 
 	if (!m_kdf)
 		return z;

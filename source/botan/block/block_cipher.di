@@ -33,22 +33,22 @@ class BlockCipher : public SymmetricAlgorithm
 
 		/**
 		* Encrypt a block.
-		* @param in The plaintext block to be encrypted as a byte array.
+		* @param in The plaintext block to be encrypted as a ubyte array.
 		* Must be of length block_size().
-		* @param output The byte array designated to hold the encrypted block.
+		* @param output The ubyte array designated to hold the encrypted block.
 		* Must be of length block_size().
 		*/
-		void encrypt(byte* input, byte* output) const
+		void encrypt(ubyte* input, ubyte* output) const
 		{ encrypt_n(input, output, 1); }
 
 		/**
 		* Decrypt a block.
-		* @param in The ciphertext block to be decypted as a byte array.
+		* @param in The ciphertext block to be decypted as a ubyte array.
 		* Must be of length block_size().
-		* @param output The byte array designated to hold the decrypted block.
+		* @param output The ubyte array designated to hold the decrypted block.
 		* Must be of length block_size().
 		*/
-		void decrypt(byte* input, byte* output) const
+		void decrypt(ubyte* input, ubyte* output) const
 		{ decrypt_n(input, output, 1); }
 
 		/**
@@ -57,7 +57,7 @@ class BlockCipher : public SymmetricAlgorithm
 		* Must be of length block_size(). Will hold the result when the function
 		* has finished.
 		*/
-		void encrypt(byte* block) const { encrypt_n(block, block, 1); }
+		void encrypt(ubyte* block) const { encrypt_n(block, block, 1); }
 
 		/**
 		* Decrypt a block.
@@ -65,13 +65,13 @@ class BlockCipher : public SymmetricAlgorithm
 		* Must be of length block_size(). Will hold the result when the function
 		* has finished.
 		*/
-		void decrypt(byte* block) const { decrypt_n(block, block, 1); }
+		void decrypt(ubyte* block) const { decrypt_n(block, block, 1); }
 
 		/**
 		* Encrypt one or more blocks
 		* @param block the input/output buffer (multiple of block_size())
 		*/
-		void encrypt(Alloc)(Vector!( byte, Alloc ) block) const
+		void encrypt(Alloc)(Vector!( ubyte, Alloc ) block) const
 		{
 			return encrypt_n(&block[0], &block[0], block.size() / block_size());
 		}
@@ -80,7 +80,7 @@ class BlockCipher : public SymmetricAlgorithm
 		* Decrypt one or more blocks
 		* @param block the input/output buffer (multiple of block_size())
 		*/
-		void decrypt(Alloc)(Vector!( byte, Alloc )& block) const
+		void decrypt(Alloc)(Vector!( ubyte, Alloc )& block) const
 		{
 			return decrypt_n(&block[0], &block[0], block.size() / block_size());
 		}
@@ -90,8 +90,8 @@ class BlockCipher : public SymmetricAlgorithm
 		* @param in the input buffer (multiple of block_size())
 		* @param out the output buffer (same size as input)
 		*/
-		void encrypt(Alloc, Alloc2)(in Vector!( byte, Alloc ) input,
-									Vector!( byte, Alloc2 ) output) const
+		void encrypt(Alloc, Alloc2)(in Vector!( ubyte, Alloc ) input,
+									Vector!( ubyte, Alloc2 ) output) const
 		{
 			return encrypt_n(&input[0], &output[0], input.size() / block_size());
 		}
@@ -101,8 +101,8 @@ class BlockCipher : public SymmetricAlgorithm
 		* @param in the input buffer (multiple of block_size())
 		* @param output the output buffer (same size as input)
 		*/
-		void decrypt(Alloc, Alloc2)(in Vector!( byte, Alloc ) input,
-									Vector!( byte, Alloc2 ) output) const
+		void decrypt(Alloc, Alloc2)(in Vector!( ubyte, Alloc ) input,
+									Vector!( ubyte, Alloc2 ) output) const
 		{
 			return decrypt_n(&input[0], &output[0], input.size() / block_size());
 		}
@@ -113,7 +113,7 @@ class BlockCipher : public SymmetricAlgorithm
 		* @param out the output buffer (same size as input)
 		* @param blocks the number of blocks to process
 		*/
-		abstract void encrypt_n(byte* input, byte* output,
+		abstract void encrypt_n(ubyte* input, ubyte* output,
 								size_t blocks) const;
 
 		/**
@@ -122,7 +122,7 @@ class BlockCipher : public SymmetricAlgorithm
 		* @param out the output buffer (same size as input)
 		* @param blocks the number of blocks to process
 		*/
-		abstract void decrypt_n(byte* input, byte* output,
+		abstract void decrypt_n(ubyte* input, ubyte* output,
 								size_t blocks) const;
 
 		/**

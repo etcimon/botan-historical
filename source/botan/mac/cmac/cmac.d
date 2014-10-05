@@ -11,16 +11,16 @@ import botan.internal.xor_buf;
 /*
 * Perform CMAC's multiplication in GF(2^n)
 */
-SafeVector!byte CMAC::poly_double(in SafeVector!byte input)
+SafeVector!ubyte CMAC::poly_double(in SafeVector!ubyte input)
 {
 	const bool top_carry = (input[0] & 0x80);
 
-	SafeVector!byte output = input;
+	SafeVector!ubyte output = input;
 
-	byte carry = 0;
+	ubyte carry = 0;
 	for (size_t i = output.size(); i != 0; --i)
 	{
-		byte temp = output[i-1];
+		ubyte temp = output[i-1];
 		output[i-1] = (temp << 1) | carry;
 		carry = (temp >> 7);
 	}
@@ -52,7 +52,7 @@ SafeVector!byte CMAC::poly_double(in SafeVector!byte input)
 /*
 * Update an CMAC Calculation
 */
-void CMAC::add_data(in byte* input, size_t length)
+void CMAC::add_data(in ubyte* input, size_t length)
 {
 	buffer_insert(m_buffer, m_position, input, length);
 	if (m_position + length > output_length())
@@ -77,7 +77,7 @@ void CMAC::add_data(in byte* input, size_t length)
 /*
 * Finalize an CMAC Calculation
 */
-void CMAC::final_result(byte mac[])
+void CMAC::final_result(ubyte mac[])
 {
 	xor_buf(m_state, m_buffer, m_position);
 
@@ -104,7 +104,7 @@ void CMAC::final_result(byte mac[])
 /*
 * CMAC Key Schedule
 */
-void CMAC::key_schedule(in byte* key, size_t length)
+void CMAC::key_schedule(in ubyte* key, size_t length)
 {
 	clear();
 	m_cipher.set_key(key, length);

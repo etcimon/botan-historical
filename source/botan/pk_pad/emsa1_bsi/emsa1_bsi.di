@@ -20,6 +20,6 @@ class EMSA1_BSI : public EMSA1
 		*/
 		EMSA1_BSI(HashFunction hash) : EMSA1(hash) {}
 	private:
-		SafeVector!byte encoding_of(in SafeVector!byte, size_t,
+		SafeVector!ubyte encoding_of(in SafeVector!ubyte, size_t,
 												 RandomNumberGenerator rng);
 };

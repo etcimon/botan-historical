@@ -11,7 +11,7 @@ import botan.internal.xor_buf;
 /*
 * Update a HMAC Calculation
 */
-void HMAC::add_data(in byte* input, size_t length)
+void HMAC::add_data(in ubyte* input, size_t length)
 {
 	m_hash.update(input, length);
 }
@@ -19,7 +19,7 @@ void HMAC::add_data(in byte* input, size_t length)
 /*
 * Finalize a HMAC Calculation
 */
-void HMAC::final_result(byte mac[])
+void HMAC::final_result(ubyte mac[])
 {
 	m_hash.flushInto(mac);
 	m_hash.update(m_okey);
@@ -31,7 +31,7 @@ void HMAC::final_result(byte mac[])
 /*
 * HMAC Key Schedule
 */
-void HMAC::key_schedule(in byte* key, size_t length)
+void HMAC::key_schedule(in ubyte* key, size_t length)
 {
 	m_hash.clear();
 
@@ -43,7 +43,7 @@ void HMAC::key_schedule(in byte* key, size_t length)
 
 	if (length > m_hash.hash_block_size())
 	{
-		SafeVector!byte hmac_key = m_hash.process(key, length);
+		SafeVector!ubyte hmac_key = m_hash.process(key, length);
 		xor_buf(m_ikey, hmac_key, hmac_key.size());
 		xor_buf(m_okey, hmac_key, hmac_key.size());
 	}

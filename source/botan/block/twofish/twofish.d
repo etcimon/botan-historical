@@ -14,7 +14,7 @@ import botan.rotate;
 /*
 * Twofish Encryption
 */
-void Twofish::encrypt_n(byte* input, byte* output, size_t blocks) const
+void Twofish::encrypt_n(ubyte* input, ubyte* output, size_t blocks) const
 {
 	for (size_t i = 0; i != blocks; ++i)
 	{
@@ -65,7 +65,7 @@ void Twofish::encrypt_n(byte* input, byte* output, size_t blocks) const
 /*
 * Twofish Decryption
 */
-void Twofish::decrypt_n(byte* input, byte* output, size_t blocks) const
+void Twofish::decrypt_n(ubyte* input, ubyte* output, size_t blocks) const
 {
 	for (size_t i = 0; i != blocks; ++i)
 	{
@@ -116,12 +116,12 @@ void Twofish::decrypt_n(byte* input, byte* output, size_t blocks) const
 /*
 * Twofish Key Schedule
 */
-void Twofish::key_schedule(in byte* key)
+void Twofish::key_schedule(in ubyte* key)
 {
 	SB.resize(1024);
 	RK.resize(40);
 
-	SafeVector!byte S(16);
+	SafeVector!ubyte S(16);
 
 	for (size_t i = 0; i != length; ++i)
 		rs_mul(&S[4*(i/8)], key[i], i);
@@ -212,16 +212,16 @@ void Twofish::key_schedule(in byte* key)
 /*
 * Do one column of the RS matrix multiplcation
 */
-void Twofish::rs_mul(byte S[4], byte key, size_t offset)
+void Twofish::rs_mul(ubyte S[4], ubyte key, size_t offset)
 {
 	if (key)
 	{
-		byte X = POLY_TO_EXP[key - 1];
+		ubyte X = POLY_TO_EXP[key - 1];
 
-		byte RS1 = RS[(4*offset  ) % 32];
-		byte RS2 = RS[(4*offset+1) % 32];
-		byte RS3 = RS[(4*offset+2) % 32];
-		byte RS4 = RS[(4*offset+3) % 32];
+		ubyte RS1 = RS[(4*offset  ) % 32];
+		ubyte RS2 = RS[(4*offset+1) % 32];
+		ubyte RS3 = RS[(4*offset+2) % 32];
+		ubyte RS4 = RS[(4*offset+3) % 32];
 
 		S[0] ^= EXP_TO_POLY[(X + POLY_TO_EXP[RS1 - 1]) % 255];
 		S[1] ^= EXP_TO_POLY[(X + POLY_TO_EXP[RS2 - 1]) % 255];

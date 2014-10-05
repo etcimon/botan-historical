@@ -30,9 +30,9 @@ class AEAD_Mode : public Cipher_Mode
 		* @param ad the associated data
 		* @param ad_len length of add in bytes
 		*/
-		abstract void set_associated_data(in byte* ad, size_t ad_len);
+		abstract void set_associated_data(in ubyte* ad, size_t ad_len);
 
-		void set_associated_data_vec(Alloc)(in Vector!( byte, Alloc ) ad)
+		void set_associated_data_vec(Alloc)(in Vector!( ubyte, Alloc ) ad)
 		{
 			set_associated_data(&ad[0], ad.size());
 		}

@@ -13,13 +13,13 @@ import botan.md4_x86_32;
 * @param M the message buffer
 */
 extern "C" void botan_md4_x86_32_compress(uint digest[4],
-													 const byte input[64],
+													 const ubyte input[64],
 													 uint M[16]);
 
 /*
 * MD4 Compression Function
 */
-void MD4_X86_32::compress_n(in byte* input, size_t blocks)
+void MD4_X86_32::compress_n(in ubyte* input, size_t blocks)
 {
 	for (size_t i = 0; i != blocks; ++i)
 	{

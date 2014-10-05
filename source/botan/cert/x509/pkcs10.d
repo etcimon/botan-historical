@@ -8,7 +8,7 @@
 import botan.pkcs10;
 import botan.x509_ext;
 import botan.x509cert;
-import botan.der_enc;
+import botan.asn1.der_enc;
 import botan.asn1.ber_dec;
 import botan.parsing;
 import botan.asn1.oid_lookup.oids;
@@ -34,7 +34,7 @@ PKCS10_Request::PKCS10_Request(in string input) :
 /*
 * PKCS10_Request Constructor
 */
-PKCS10_Request::PKCS10_Request(in Vector!byte input) :
+PKCS10_Request::PKCS10_Request(in Vector!ubyte input) :
 	X509_Object(input, "CERTIFICATE REQUEST/NEW CERTIFICATE REQUEST")
 {
 	do_decode();
@@ -59,7 +59,7 @@ void PKCS10_Request::force_decode()
 	info.add(dn_subject.contents());
 
 	BER_Object public_key = cert_req_info.get_next_object();
-	if (public_key.type_tag != SEQUENCE || public_key.class_tag != CONSTRUCTED)
+	if (public_key.type_tag != ASN1_Tag.SEQUENCE || public_key.class_tag != CONSTRUCTED)
 		throw new BER_Bad_Tag("PKCS10_Request: Unexpected tag for public key",
 								public_key.type_tag, public_key.class_tag);
 
@@ -73,7 +73,7 @@ void PKCS10_Request::force_decode()
 	BER_Object attr_bits = cert_req_info.get_next_object();
 
 	if (attr_bits.type_tag == 0 &&
-		attr_bits.class_tag == ASN1_Tag(CONSTRUCTED | CONTEXT_SPECIFIC))
+		attr_bits.class_tag == ASN1_Tag(CONSTRUCTED | ASN1_Tag.CONTEXT_SPECIFIC))
 	{
 		BER_Decoder attributes(attr_bits.value);
 		while(attributes.more_items())
@@ -84,7 +84,7 @@ void PKCS10_Request::force_decode()
 		}
 		attributes.verify_end();
 	}
-	else if (attr_bits.type_tag != NO_OBJECT)
+	else if (attr_bits.type_tag != ASN1_Tag.NO_OBJECT)
 		throw new BER_Bad_Tag("PKCS10_Request: Unexpected tag for attributes",
 								attr_bits.type_tag, attr_bits.class_tag);
 
@@ -142,7 +142,7 @@ X509_DN PKCS10_Request::subject_dn() const
 /*
 * Return the public key of the requestor
 */
-Vector!byte PKCS10_Request::raw_public_key() const
+Vector!ubyte PKCS10_Request::raw_public_key() const
 {
 	DataSource_Memory source(info.get1("X509.Certificate.public_key"));
 	return unlock(PEM_Code::decode_check_label(source, "PUBLIC KEY"));

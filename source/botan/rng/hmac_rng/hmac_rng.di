@@ -21,13 +21,13 @@ import vector;
 class HMAC_RNG : public RandomNumberGenerator
 {
 	public:
-		void randomize(byte buf[], size_t len);
+		void randomize(ubyte buf[], size_t len);
 		bool is_seeded() const;
 		void clear();
 		string name() const;
 
 		void reseed(size_t poll_bits);
-		void add_entropy(const byte[], size_t);
+		void add_entropy(const ubyte[], size_t);
 
 		/**
 		* @param extractor a MAC used for extracting the entropy
@@ -42,6 +42,6 @@ class HMAC_RNG : public RandomNumberGenerator
 		size_t m_collected_entropy_estimate = 0;
 		size_t m_output_since_reseed = 0;
 
-		SafeVector!byte m_K;
+		SafeVector!ubyte m_K;
 		uint m_counter = 0;
 };

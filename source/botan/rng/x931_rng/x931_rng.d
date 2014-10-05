@@ -8,7 +8,7 @@
 import botan.x931_rng;
 import botan.internal.xor_buf;
 import algorithm;
-void ANSI_X931_RNG::randomize(byte* output)
+void ANSI_X931_RNG::randomize(ubyte* output)
 {
 	size_t length = output.length;
 	if (!is_seeded())
@@ -40,7 +40,7 @@ void ANSI_X931_RNG::update_buffer()
 {
 	const size_t BLOCK_SIZE = m_cipher.block_size();
 
-	SafeVector!byte DT = m_prng.random_vec(BLOCK_SIZE);
+	SafeVector!ubyte DT = m_prng.random_vec(BLOCK_SIZE);
 	m_cipher.encrypt(DT);
 
 	xor_buf(&m_R[0], &m_V[0], &DT[0], BLOCK_SIZE);
@@ -77,7 +77,7 @@ void ANSI_X931_RNG::reseed(size_t poll_bits)
 	rekey();
 }
 
-void ANSI_X931_RNG::add_entropy(in byte* input, size_t length)
+void ANSI_X931_RNG::add_entropy(in ubyte* input, size_t length)
 {
 	m_prng.add_entropy(input, length);
 	rekey();

@@ -34,7 +34,7 @@ void GOST_34_11::clear()
 /**
 * Hash additional inputs
 */
-void GOST_34_11::add_data(in byte* input, size_t length)
+void GOST_34_11::add_data(in ubyte* input, size_t length)
 {
 	count += length;
 
@@ -64,7 +64,7 @@ void GOST_34_11::add_data(in byte* input, size_t length)
 /**
 * The GOST 34.11 compression function
 */
-void GOST_34_11::compress_n(in byte* input, size_t blocks)
+void GOST_34_11::compress_n(in ubyte* input, size_t blocks)
 {
 	for (size_t i = 0; i != blocks; ++i)
 	{
@@ -75,7 +75,7 @@ void GOST_34_11::compress_n(in byte* input, size_t blocks)
 			sum[j] = get_byte(1, s);
 		}
 
-		byte[32] S = { 0 };
+		ubyte[32] S = { 0 };
 
 		ulong[4] U, V;
 		load_be(U, &hash[0], 4);
@@ -83,7 +83,7 @@ void GOST_34_11::compress_n(in byte* input, size_t blocks)
 
 		for (size_t j = 0; j != 4; ++j)
 		{
-			byte[32] key = { 0 };
+			ubyte[32] key = { 0 };
 
 			// P transformation
 			for (size_t k = 0; k != 4; ++k)
@@ -120,7 +120,7 @@ void GOST_34_11::compress_n(in byte* input, size_t blocks)
 			V[3] = AA_V_2;
 		}
 
-		byte[32] S2 = { 0 };
+		ubyte[32] S2 = { 0 };
 
 		// 12 rounds of psi
 		S2[ 0] = S[24];
@@ -214,7 +214,7 @@ void GOST_34_11::compress_n(in byte* input, size_t blocks)
 /**
 * Produce the final GOST 34.11 output
 */
-void GOST_34_11::final_result(byte* output)
+void GOST_34_11::final_result(ubyte* output)
 {
 	if (position)
 	{
@@ -222,11 +222,11 @@ void GOST_34_11::final_result(byte* output)
 		compress_n(&buffer[0], 1);
 	}
 
-	SafeVector!byte length_buf(32);
+	SafeVector!ubyte length_buf(32);
 	const ulong bit_count = count * 8;
 	store_le(bit_count, &length_buf[0]);
 
-	SafeVector!byte sum_buf = sum;
+	SafeVector!ubyte sum_buf = sum;
 
 	compress_n(&length_buf[0], 1);
 	compress_n(&sum_buf[0], 1);

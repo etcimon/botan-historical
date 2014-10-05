@@ -21,8 +21,8 @@ class MD5 : public MDx_HashFunction
 		MD5() : MDx_HashFunction(64, false, true), M(16), digest(4)
 		{ clear(); }
 	package:
-		void compress_n(const byte[], size_t blocks);
-		void copy_out(byte[]);
+		void compress_n(const ubyte[], size_t blocks);
+		void copy_out(ubyte[]);
 
 		/**
 		* The message buffer, exposed for use by subclasses (x86 asm)

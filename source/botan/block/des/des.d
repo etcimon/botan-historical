@@ -16,9 +16,9 @@ namespace {
 /*
 * DES Key Schedule
 */
-void des_key_schedule(uint[32] round_key, in byte[8] key)
+void des_key_schedule(uint[32] round_key, in ubyte[8] key)
 {
-	immutable byte[16] ROT = { 1, 1, 2, 2, 2, 2, 2, 2,
+	immutable ubyte[16] ROT = { 1, 1, 2, 2, 2, 2, 2, 2,
 											1, 2, 2, 2, 2, 2, 2, 1 };
 
 	uint C = ((key[7] & 0x80) << 20) | ((key[6] & 0x80) << 19) |
@@ -140,7 +140,7 @@ void des_decrypt(ref uint L, ref uint R,
 /*
 * DES Encryption
 */
-void DES::encrypt_n(byte* input, byte* output, size_t blocks) const
+void DES::encrypt_n(ubyte* input, ubyte* output, size_t blocks) const
 {
 	for (size_t i = 0; i != blocks; ++i)
 	{
@@ -170,7 +170,7 @@ void DES::encrypt_n(byte* input, byte* output, size_t blocks) const
 /*
 * DES Decryption
 */
-void DES::decrypt_n(byte* input, byte* output, size_t blocks) const
+void DES::decrypt_n(ubyte* input, ubyte* output, size_t blocks) const
 {
 	for (size_t i = 0; i != blocks; ++i)
 	{
@@ -201,7 +201,7 @@ void DES::decrypt_n(byte* input, byte* output, size_t blocks) const
 /*
 * DES Key Schedule
 */
-void DES::key_schedule(in byte* key, size_t)
+void DES::key_schedule(in ubyte* key, size_t)
 {
 	round_key.resize(32);
 	des_key_schedule(&round_key[0], key);
@@ -215,7 +215,7 @@ void DES::clear()
 /*
 * TripleDES Encryption
 */
-void TripleDES::encrypt_n(byte* input, byte* output, size_t blocks) const
+void TripleDES::encrypt_n(ubyte* input, ubyte* output, size_t blocks) const
 {
 	for (size_t i = 0; i != blocks; ++i)
 	{
@@ -248,7 +248,7 @@ void TripleDES::encrypt_n(byte* input, byte* output, size_t blocks) const
 /*
 * TripleDES Decryption
 */
-void TripleDES::decrypt_n(byte* input, byte* output, size_t blocks) const
+void TripleDES::decrypt_n(ubyte* input, ubyte* output, size_t blocks) const
 {
 	for (size_t i = 0; i != blocks; ++i)
 	{
@@ -281,7 +281,7 @@ void TripleDES::decrypt_n(byte* input, byte* output, size_t blocks) const
 /*
 * TripleDES Key Schedule
 */
-void TripleDES::key_schedule(in byte* key)
+void TripleDES::key_schedule(in ubyte* key)
 {
 	round_key.resize(3*32);
 	des_key_schedule(&round_key[0], key);

@@ -30,9 +30,9 @@ class EVP_BlockCipher : public BlockCipher
 
 		~this();
 	private:
-		void encrypt_n(in byte* input, byte* output, size_t blocks) const;
-		void decrypt_n(in byte* input, byte* output, size_t blocks) const;
-		void key_schedule(const byte[], size_t);
+		void encrypt_n(in ubyte* input, ubyte* output, size_t blocks) const;
+		void decrypt_n(in ubyte* input, ubyte* output, size_t blocks) const;
+		void key_schedule(const ubyte[], size_t);
 
 		size_t block_sz;
 		Key_Length_Specification cipher_key_spec;
@@ -98,7 +98,7 @@ EVP_BlockCipher::~this()
 /*
 * Encrypt a block
 */
-void EVP_BlockCipher::encrypt_n(in byte* input, byte* output,
+void EVP_BlockCipher::encrypt_n(in ubyte* input, ubyte* output,
 										  size_t blocks) const
 {
 	int out_len = 0;
@@ -108,7 +108,7 @@ void EVP_BlockCipher::encrypt_n(in byte* input, byte* output,
 /*
 * Decrypt a block
 */
-void EVP_BlockCipher::decrypt_n(in byte* input, byte* output,
+void EVP_BlockCipher::decrypt_n(in ubyte* input, ubyte* output,
 										  size_t blocks) const
 {
 	int out_len = 0;
@@ -118,9 +118,9 @@ void EVP_BlockCipher::decrypt_n(in byte* input, byte* output,
 /*
 * Set the key
 */
-void EVP_BlockCipher::key_schedule(in byte* key, size_t length)
+void EVP_BlockCipher::key_schedule(in ubyte* key, size_t length)
 {
-	SafeVector!byte full_key(key, key + length);
+	SafeVector!ubyte full_key(key, key + length);
 
 	if (cipher_name == "TripleDES" && length == 16)
 	{

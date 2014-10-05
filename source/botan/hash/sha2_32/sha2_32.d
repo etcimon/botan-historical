@@ -48,7 +48,7 @@ namespace SHA2_32 {
 * SHA-224 / SHA-256 compression function
 */
 void compress(secure_vector!uint& digest,
-				  in byte* input, size_t blocks)
+				  in ubyte* input, size_t blocks)
 {
 	uint A = digest[0], B = digest[1], C = digest[2],
 			 D = digest[3], E = digest[4], F = digest[5],
@@ -158,7 +158,7 @@ void compress(secure_vector!uint& digest,
 /*
 * SHA-224 compression function
 */
-void SHA_224::compress_n(in byte* input, size_t blocks)
+void SHA_224::compress_n(in ubyte* input, size_t blocks)
 {
 	SHA2_32::compress(digest, input, blocks);
 }
@@ -166,7 +166,7 @@ void SHA_224::compress_n(in byte* input, size_t blocks)
 /*
 * Copy out the digest
 */
-void SHA_224::copy_out(byte* output)
+void SHA_224::copy_out(ubyte* output)
 {
 	for (size_t i = 0; i != output_length(); i += 4)
 		store_be(digest[i/4], output + i);
@@ -191,7 +191,7 @@ void SHA_224::clear()
 /*
 * SHA-256 compression function
 */
-void SHA_256::compress_n(in byte* input, size_t blocks)
+void SHA_256::compress_n(in ubyte* input, size_t blocks)
 {
 	SHA2_32::compress(digest, input, blocks);
 }
@@ -199,7 +199,7 @@ void SHA_256::compress_n(in byte* input, size_t blocks)
 /*
 * Copy out the digest
 */
-void SHA_256::copy_out(byte* output)
+void SHA_256::copy_out(ubyte* output)
 {
 	for (size_t i = 0; i != output_length(); i += 4)
 		store_be(digest[i/4], output + i);

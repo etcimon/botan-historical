@@ -41,10 +41,10 @@ class Skein_512 : public HashFunction
 			SKEIN_OUTPUT = 63
 	};
 
-		void add_data(in byte* input, size_t length);
-		void final_result(byte* output);
+		void add_data(in ubyte* input, size_t length);
+		void final_result(ubyte* output);
 
-		void ubi_512(in byte* msg, size_t msg_len);
+		void ubi_512(in ubyte* msg, size_t msg_len);
 
 		void initial_block();
 		void reset_tweak(type_code type, bool final);
@@ -54,6 +54,6 @@ class Skein_512 : public HashFunction
 
 		Unique!Threefish_512 m_threefish;
 		secure_vector!ulong T;
-		SafeVector!byte buffer;
+		SafeVector!ubyte buffer;
 		size_t buf_pos;
 };

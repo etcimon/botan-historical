@@ -10,7 +10,7 @@ import botan.parsing;
 /*
 * Update the hash
 */
-void Parallel::add_data(in byte* input, size_t length)
+void Parallel::add_data(in ubyte* input, size_t length)
 {
 	foreach (hash; hashes)
 		 hash.update(input, length);
@@ -19,7 +19,7 @@ void Parallel::add_data(in byte* input, size_t length)
 /*
 * Finalize the hash
 */
-void Parallel::final_result(byte* output)
+void Parallel::final_result(ubyte* output)
 {
 	uint offset = 0;
 

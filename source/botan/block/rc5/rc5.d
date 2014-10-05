@@ -13,7 +13,7 @@ import algorithm;
 /*
 * RC5 Encryption
 */
-void RC5::encrypt_n(byte* input, byte* output, size_t blocks) const
+void RC5::encrypt_n(ubyte* input, ubyte* output, size_t blocks) const
 {
 	for (size_t i = 0; i != blocks; ++i)
 	{
@@ -46,7 +46,7 @@ void RC5::encrypt_n(byte* input, byte* output, size_t blocks) const
 /*
 * RC5 Decryption
 */
-void RC5::decrypt_n(byte* input, byte* output, size_t blocks) const
+void RC5::decrypt_n(ubyte* input, ubyte* output, size_t blocks) const
 {
 	for (size_t i = 0; i != blocks; ++i)
 	{
@@ -79,7 +79,7 @@ void RC5::decrypt_n(byte* input, byte* output, size_t blocks) const
 /*
 * RC5 Key Schedule
 */
-void RC5::key_schedule(in byte* key)
+void RC5::key_schedule(in ubyte* key)
 {
 	S.resize(2*rounds + 2);
 
@@ -92,7 +92,7 @@ void RC5::key_schedule(in byte* key)
 
 	secure_vector!uint K(8);
 
-	for (s32bit i = length-1; i >= 0; --i)
+	for (int i = length-1; i >= 0; --i)
 		K[i/4] = (K[i/4] << 8) + key[i];
 
 	uint A = 0, B = 0;

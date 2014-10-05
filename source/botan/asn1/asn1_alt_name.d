@@ -8,10 +8,10 @@
 module botan.asn1.asn1_alt_name;
 
 import botan.asn1.asn1_obj;
-import botan.asn1_str;
+import botan.asn1.asn1_str;
 import botan.asn1.asn1_oid;
 import botan.asn1.asn1_alt_name;
-import botan.der_enc;
+import botan.asn1.der_enc;
 import botan.asn1.ber_dec;
 import botan.asn1.oid_lookup.oids;
 import botan.internal.stl_util;
@@ -33,7 +33,7 @@ public:
 	*/
 	void encode_into(DER_Encoder der) const
 	{
-		der.start_cons(SEQUENCE);
+		der.start_cons(ASN1_Tag.SEQUENCE);
 		
 		encode_entries(der, alt_info, "RFC822", ASN1_Tag(1));
 		encode_entries(der, alt_info, "DNS", ASN1_Tag(2));
@@ -58,13 +58,13 @@ public:
 	*/
 	void decode_from(BER_Decoder source)
 	{
-		BER_Decoder names = source.start_cons(SEQUENCE);
+		BER_Decoder names = source.start_cons(ASN1_Tag.SEQUENCE);
 		
 		while(names.more_items())
 		{
 			BER_Object obj = names.get_next_object();
-			if ((obj.class_tag != CONTEXT_SPECIFIC) &&
-			    (obj.class_tag != (CONTEXT_SPECIFIC | CONSTRUCTED)))
+			if ((obj.class_tag != ASN1_Tag.CONTEXT_SPECIFIC) &&
+			    (obj.class_tag != (ASN1_Tag.CONTEXT_SPECIFIC | CONSTRUCTED)))
 				continue;
 			
 			const ASN1_Tag tag = obj.type_tag;
@@ -82,7 +82,7 @@ public:
 					
 					if (othername_value_outer.type_tag != ASN1_Tag(0) ||
 					    othername_value_outer.class_tag !=
-					    (CONTEXT_SPECIFIC | CONSTRUCTED)
+					    (ASN1_Tag.CONTEXT_SPECIFIC | CONSTRUCTED)
 					    )
 						throw new Decoding_Error("Invalid tags on otherName value");
 					
@@ -93,7 +93,7 @@ public:
 					
 					const ASN1_Tag value_type = value.type_tag;
 					
-					if (is_string_type(value_type) && value.class_tag == UNIVERSAL)
+					if (is_string_type(value_type) && value.class_tag == ASN1_Tag.UNIVERSAL)
 						add_othername(oid, asn1.to_string(value), value_type);
 				}
 			}
@@ -214,13 +214,13 @@ private:
 */
 bool is_string_type(ASN1_Tag tag)
 {
-	return (tag == NUMERIC_STRING ||
-	        tag == PRINTABLE_STRING ||
-	        tag == VISIBLE_STRING ||
-	        tag == T61_STRING ||
-	        tag == IA5_STRING ||
-	        tag == UTF8_STRING ||
-	        tag == BMP_STRING);
+	return (tag == ASN1_Tag.NUMERIC_STRING ||
+	        tag == ASN1_Tag.PRINTABLE_STRING ||
+	        tag == ASN1_Tag.VISIBLE_STRING ||
+	        tag == ASN1_Tag.T61_STRING ||
+	        tag == ASN1_Tag.IA5_STRING ||
+	        tag == ASN1_Tag.UTF8_STRING ||
+	        tag == ASN1_Tag.BMP_STRING);
 }
 
 
@@ -238,14 +238,14 @@ void encode_entries(DER_Encoder encoder,
 		if (type == "RFC822" || type == "DNS" || type == "URI")
 		{
 			ASN1_String asn1_string(i.second, IA5_STRING);
-			encoder.add_object(tagging, CONTEXT_SPECIFIC, asn1_string.iso_8859());
+			encoder.add_object(tagging, ASN1_Tag.CONTEXT_SPECIFIC, asn1_string.iso_8859());
 		}
 		else if (type == "IP")
 		{
 			const uint ip = string_to_ipv4(i.second);
-			byte[4] ip_buf = { 0 };
+			ubyte[4] ip_buf = { 0 };
 			store_be(ip, ip_buf);
-			encoder.add_object(tagging, CONTEXT_SPECIFIC, ip_buf, 4);
+			encoder.add_object(tagging, ASN1_Tag.CONTEXT_SPECIFIC, ip_buf, 4);
 		}
 	}
 }

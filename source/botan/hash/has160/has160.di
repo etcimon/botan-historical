@@ -22,8 +22,8 @@ class HAS_160 : public MDx_HashFunction
 		HAS_160() : MDx_HashFunction(64, false, true), X(20), digest(5)
 		{ clear(); }
 	private:
-		void compress_n(const byte[], size_t blocks);
-		void copy_out(byte[]);
+		void compress_n(const ubyte[], size_t blocks);
+		void copy_out(ubyte[]);
 
 		secure_vector!uint X, digest;
 };

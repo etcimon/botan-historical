@@ -11,7 +11,7 @@ import botan.parsing;
 import botan.rotate;
 namespace {
 
-const byte[256] EXP = {
+const ubyte[256] EXP = {
 	0x01, 0x2D, 0xE2, 0x93, 0xBE, 0x45, 0x15, 0xAE, 0x78, 0x03, 0x87, 0xA4,
 	0xB8, 0x38, 0xCF, 0x3F, 0x08, 0x67, 0x09, 0x94, 0xEB, 0x26, 0xA8, 0x6B,
 	0xBD, 0x18, 0x34, 0x1B, 0xBB, 0xBF, 0x72, 0xF7, 0x40, 0x35, 0x48, 0x9C,
@@ -35,7 +35,7 @@ const byte[256] EXP = {
 	0xE1, 0x66, 0xDD, 0xB3, 0x58, 0x69, 0x63, 0x56, 0x0F, 0xA1, 0x31, 0x95,
 	0x17, 0x07, 0x3A, 0x28 };
 
-const byte[512] LOG = {
+const ubyte[512] LOG = {
 	0x80, 0x00, 0xB0, 0x09, 0x60, 0xEF, 0xB9, 0xFD, 0x10, 0x12, 0x9F, 0xE4,
 	0x69, 0xBA, 0xAD, 0xF8, 0xC0, 0x38, 0xC2, 0x65, 0x4F, 0x06, 0x94, 0xFC,
 	0x19, 0xDE, 0x6A, 0x1B, 0x5D, 0x4E, 0xA8, 0x82, 0x70, 0xED, 0xE8, 0xEC,
@@ -85,11 +85,11 @@ const byte[512] LOG = {
 /*
 * SAFER-SK Encryption
 */
-void SAFER_SK::encrypt_n(byte* input, byte* output, size_t blocks) const
+void SAFER_SK::encrypt_n(ubyte* input, ubyte* output, size_t blocks) const
 {
 	for (size_t i = 0; i != blocks; ++i)
 	{
-		byte A = input[0], B = input[1], C = input[2], D = input[3],
+		ubyte A = input[0], B = input[1], C = input[2], D = input[3],
 			  E = input[4], F = input[5], G = input[6], H = input[7], X, Y;
 
 		for (size_t j = 0; j != 16*rounds; j += 16)
@@ -121,20 +121,20 @@ void SAFER_SK::encrypt_n(byte* input, byte* output, size_t blocks) const
 /*
 * SAFER-SK Decryption
 */
-void SAFER_SK::decrypt_n(byte* input, byte* output, size_t blocks) const
+void SAFER_SK::decrypt_n(ubyte* input, ubyte* output, size_t blocks) const
 {
 	for (size_t i = 0; i != blocks; ++i)
 	{
-		byte A = input[0], B = input[1], C = input[2], D = input[3],
+		ubyte A = input[0], B = input[1], C = input[2], D = input[3],
 			  E = input[4], F = input[5], G = input[6], H = input[7];
 
 		A ^= EK[16*rounds+0]; B -= EK[16*rounds+1]; C -= EK[16*rounds+2];
 		D ^= EK[16*rounds+3]; E ^= EK[16*rounds+4]; F -= EK[16*rounds+5];
 		G -= EK[16*rounds+6]; H ^= EK[16*rounds+7];
 
-		for (s32bit j = 16*(rounds-1); j >= 0; j -= 16)
+		for (int j = 16*(rounds-1); j >= 0; j -= 16)
 		{
-			byte T = E; E = B; B = C; C = T; T = F; F = D; D = G; G = T;
+			ubyte T = E; E = B; B = C; C = T; T = F; F = D; D = G; G = T;
 			A -= E; B -= F; C -= G; D -= H; E -= A; F -= B; G -= C; H -= D;
 			A -= C; E -= G; B -= D; F -= H; C -= A; G -= E; D -= B; H -= F;
 			A -= B; C -= D; E -= F; G -= H; B -= A; D -= C; F -= E; H -= G;
@@ -159,9 +159,9 @@ void SAFER_SK::decrypt_n(byte* input, byte* output, size_t blocks) const
 /*
 * SAFER-SK Key Schedule
 */
-void SAFER_SK::key_schedule(in byte* key, size_t)
+void SAFER_SK::key_schedule(in ubyte* key, size_t)
 {
-	const byte[208] BIAS = {
+	const ubyte[208] BIAS = {
 		0x16, 0x73, 0x3B, 0x1E, 0x8E, 0x70, 0xBD, 0x86, 0x47, 0x7E, 0x24, 0x56,
 		0xF1, 0x77, 0x88, 0x46, 0xB1, 0xBA, 0xA3, 0xB7, 0x10, 0x0A, 0xC5, 0x37,
 		0xC9, 0x5A, 0x28, 0xAC, 0x64, 0xA5, 0xEC, 0xAB, 0xC6, 0x67, 0x95, 0x58,
@@ -181,7 +181,7 @@ void SAFER_SK::key_schedule(in byte* key, size_t)
 		0x4E, 0x9C, 0x35, 0x79, 0x45, 0x4D, 0x54, 0xE5, 0x3C, 0x0C, 0x4A, 0x8B,
 		0x3F, 0xCC, 0xA7, 0xDB };
 
-	const byte[208] KEY_INDEX = {
+	const ubyte[208] KEY_INDEX = {
 		0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x0B, 0x0C, 0x0D, 0x0E,
 		0x0F, 0x10, 0x11, 0x09, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x00, 0x01,
 		0x0D, 0x0E, 0x0F, 0x10, 0x11, 0x09, 0x0A, 0x0B, 0x05, 0x06, 0x07, 0x08,
@@ -203,7 +203,7 @@ void SAFER_SK::key_schedule(in byte* key, size_t)
 
 	EK.resize(16 * rounds + 8);
 
-	SafeVector!byte KB(18);
+	SafeVector!ubyte KB(18);
 
 	for (size_t i = 0; i != 8; ++i)
 	{

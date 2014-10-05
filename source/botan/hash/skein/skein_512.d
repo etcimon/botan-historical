@@ -56,12 +56,12 @@ void Skein_512::reset_tweak(type_code type, bool final)
 
 void Skein_512::initial_block()
 {
-	const byte[64] zeros = { 0 };
+	const ubyte[64] zeros = { 0 };
 
 	m_threefish.set_key(zeros, sizeof(zeros));
 
 	// ASCII("SHA3") followed by version (0x0001) code
-	byte[32] config_str = { 0x53, 0x48, 0x41, 0x33, 0x01, 0x00, 0 };
+	ubyte[32] config_str = { 0x53, 0x48, 0x41, 0x33, 0x01, 0x00, 0 };
 	store_le(uint(output_bits), config_str + 8);
 
 	reset_tweak(SKEIN_CONFIG, true);
@@ -77,7 +77,7 @@ void Skein_512::initial_block()
 		if (personalization.length() > 64)
 			throw new Invalid_Argument("Skein personalization must be less than 64 bytes");
 
-		const byte* bits = cast(const byte*)(personalization.data());
+		const ubyte* bits = cast(const ubyte*)(personalization.data());
 		reset_tweak(SKEIN_PERSONALIZATION, true);
 		ubi_512(bits, personalization.length());
 	}
@@ -85,7 +85,7 @@ void Skein_512::initial_block()
 	reset_tweak(SKEIN_MSG, false);
 }
 
-void Skein_512::ubi_512(in byte* msg, size_t msg_len)
+void Skein_512::ubi_512(in ubyte* msg, size_t msg_len)
 {
 	secure_vector!ulong M(8);
 
@@ -112,7 +112,7 @@ void Skein_512::ubi_512(in byte* msg, size_t msg_len)
 	} while(msg_len);
 }
 
-void Skein_512::add_data(in byte* input, size_t length)
+void Skein_512::add_data(in ubyte* input, size_t length)
 {
 	if (length == 0)
 		return;
@@ -141,7 +141,7 @@ void Skein_512::add_data(in byte* input, size_t length)
 	buf_pos += length;
 }
 
-void Skein_512::final_result(byte* output)
+void Skein_512::final_result(ubyte* output)
 {
 	T[1] |= (cast(ulong)(1) << 63); // final block flag
 
@@ -150,7 +150,7 @@ void Skein_512::final_result(byte* output)
 
 	ubi_512(&buffer[0], buf_pos);
 
-	const byte[8] counter = { 0 };
+	const ubyte[8] counter = { 0 };
 
 	reset_tweak(SKEIN_OUTPUT, true);
 	ubi_512(counter, sizeof(counter));

@@ -9,29 +9,29 @@ import botan.hex;
 import botan.mem_ops;
 import stdexcept;
 void hex_encode(char* output,
-					 in byte* input,
+					 in ubyte* input,
 					 size_t input_length,
 					 bool uppercase)
 {
-	static immutable byte[16] BIN_TO_HEX_UPPER = {
+	static immutable ubyte[16] BIN_TO_HEX_UPPER = {
 		'0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
 		'A', 'B', 'C', 'D', 'E', 'F' };
 
-	static immutable byte[16] BIN_TO_HEX_LOWER = {
+	static immutable ubyte[16] BIN_TO_HEX_LOWER = {
 		'0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
 		'a', 'b', 'c', 'd', 'e', 'f' };
 
-	const byte* tbl = uppercase ? BIN_TO_HEX_UPPER : BIN_TO_HEX_LOWER;
+	const ubyte* tbl = uppercase ? BIN_TO_HEX_UPPER : BIN_TO_HEX_LOWER;
 
 	for (size_t i = 0; i != input_length; ++i)
 	{
-		byte x = input[i];
+		ubyte x = input[i];
 		output[2*i  ] = tbl[(x >> 4) & 0x0F];
 		output[2*i+1] = tbl[(x	  ) & 0x0F];
 	}
 }
 
-string hex_encode(in byte* input,
+string hex_encode(in ubyte* input,
 							  size_t input_length,
 							  bool uppercase)
 {
@@ -43,7 +43,7 @@ string hex_encode(in byte* input,
 	return output;
 }
 
-size_t hex_decode(byte* output,
+size_t hex_decode(ubyte* output,
 						string input,
 						size_t input_length,
 						ref size_t input_consumed,
@@ -58,7 +58,7 @@ size_t hex_decode(byte* output,
 	* Warning: this table assumes ASCII character encodings
 	*/
 
-	static immutable byte[256] HEX_TO_BIN = {
+	static immutable ubyte[256] HEX_TO_BIN = {
 		0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0x80,
 		0x80, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
 		0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
@@ -86,14 +86,14 @@ size_t hex_decode(byte* output,
 		0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
 		0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF };
 
-	byte* out_ptr = output;
+	ubyte* out_ptr = output;
 	bool top_nibble = true;
 
 	clear_mem(output, input_length / 2);
 
 	for (size_t i = 0; i != input_length; ++i)
 	{
-		const byte bin = HEX_TO_BIN[cast(byte)(input[i])];
+		const ubyte bin = HEX_TO_BIN[cast(ubyte)(input[i])];
 
 		if (bin >= 0x10)
 		{
@@ -122,7 +122,7 @@ size_t hex_decode(byte* output,
 	size_t written = (out_ptr - output);
 
 	/*
-	* We only got half of a byte at the end; zap the half-written
+	* We only got half of a ubyte at the end; zap the half-written
 	* output and mark it as unread
 	*/
 	if (!top_nibble)
@@ -134,7 +134,7 @@ size_t hex_decode(byte* output,
 	return written;
 }
 
-size_t hex_decode(byte* output,
+size_t hex_decode(ubyte* output,
 						string input,
 						size_t input_length,
 						bool ignore_ws)
@@ -149,18 +149,18 @@ size_t hex_decode(byte* output,
 	return written;
 }
 
-size_t hex_decode(byte* output,
+size_t hex_decode(ubyte* output,
 						in string input,
 						bool ignore_ws)
 {
 	return hex_decode(output, &input[0], input.length(), ignore_ws);
 }
 
-SafeVector!byte hex_decode_locked(string input,
+SafeVector!ubyte hex_decode_locked(string input,
 												  size_t input_length,
 												  bool ignore_ws)
 {
-	SafeVector!byte bin(1 + input_length / 2);
+	SafeVector!ubyte bin(1 + input_length / 2);
 
 	size_t written = hex_decode(&binput[0],
 										 input,
@@ -171,17 +171,17 @@ SafeVector!byte hex_decode_locked(string input,
 	return bin;
 }
 
-SafeVector!byte hex_decode_locked(in string input,
+SafeVector!ubyte hex_decode_locked(in string input,
 												  bool ignore_ws)
 {
 	return hex_decode_locked(&input[0], input.size(), ignore_ws);
 }
 
-Vector!byte hex_decode(string input,
+Vector!ubyte hex_decode(string input,
 									  size_t input_length,
 									  bool ignore_ws)
 {
-	Vector!byte bin(1 + input_length / 2);
+	Vector!ubyte bin(1 + input_length / 2);
 
 	size_t written = hex_decode(&binput[0],
 										 input,
@@ -192,7 +192,7 @@ Vector!byte hex_decode(string input,
 	return bin;
 }
 
-Vector!byte hex_decode(in string input,
+Vector!ubyte hex_decode(in string input,
 									  bool ignore_ws)
 {
 	return hex_decode(&input[0], input.size(), ignore_ws);

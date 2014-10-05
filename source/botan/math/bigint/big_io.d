@@ -24,7 +24,7 @@ std::ostream& operator<<(std::ostream& stream, ref const BigInt n)
 	{
 		if (n < 0)
 			stream.write("-", 1);
-		const Vector!byte buffer = BigInt::encode(n, base);
+		const Vector!ubyte buffer = BigInt::encode(n, base);
 		size_t skip = 0;
 		while(skip < buffer.size() && buffer[skip] == '0')
 			++skip;

@@ -9,7 +9,7 @@ import botan.internal.tls_messages;
 import botan.internal.tls_reader;
 import botan.internal.tls_extensions;
 import botan.internal.tls_handshake_io;
-import botan.der_enc;
+import botan.asn1.der_enc;
 import botan.asn1.ber_dec;
 import botan.loadstor;
 namespace TLS {
@@ -28,7 +28,7 @@ Certificate::Certificate(Handshake_IO& io,
 /**
 * Deserialize a Certificate message
 */
-Certificate::Certificate(in Vector!byte buf)
+Certificate::Certificate(in Vector!ubyte buf)
 {
 	if (buf.size() < 3)
 		throw new Decoding_Error("Certificate: Message malformed");
@@ -38,7 +38,7 @@ Certificate::Certificate(in Vector!byte buf)
 	if (total_size != buf.size() - 3)
 		throw new Decoding_Error("Certificate: Message malformed");
 
-	const byte* certs = &buf[3];
+	const ubyte* certs = &buf[3];
 
 	while(size_t remaining_bytes = &buf[buf.size()] - certs)
 	{
@@ -60,13 +60,13 @@ Certificate::Certificate(in Vector!byte buf)
 /**
 * Serialize a Certificate message
 */
-Vector!byte Certificate::serialize() const
+Vector!ubyte Certificate::serialize() const
 {
-	Vector!byte buf(3);
+	Vector!ubyte buf(3);
 
 	for (size_t i = 0; i != m_certs.size(); ++i)
 	{
-		Vector!byte raw_cert = m_certs[i].BER_encode();
+		Vector!ubyte raw_cert = m_certs[i].BER_encode();
 		const size_t cert_size = raw_cert.size();
 		for (size_t i = 0; i != 3; ++i)
 			buf.push_back(get_byte<uint>(i+1, cert_size));

@@ -9,7 +9,7 @@ import botan.dl_group;
 import botan.libstate;
 import botan.parsing;
 import botan.numthry;
-import botan.der_enc;
+import botan.asn1.der_enc;
 import botan.asn1.ber_dec;
 import botan.pipe;
 import botan.pem;
@@ -85,7 +85,7 @@ DL_Group::DL_Group(RandomNumberGenerator rng,
 * DL_Group Constructor
 */
 DL_Group::DL_Group(RandomNumberGenerator rng,
-						 in Vector!byte seed,
+						 in Vector!ubyte seed,
 						 size_t pbits, size_t qbits)
 {
 	if (!generate_dsa_primes(rng,
@@ -197,7 +197,7 @@ ref const BigInt DL_Group::get_q() const
 /*
 * DER encode the parameters
 */
-Vector!byte DL_Group::DER_encode(Format format) const
+Vector!ubyte DL_Group::DER_encode(Format format) const
 {
 	init_check();
 
@@ -207,7 +207,7 @@ Vector!byte DL_Group::DER_encode(Format format) const
 	if (format == ANSI_X9_57)
 	{
 		return DER_Encoder()
-			.start_cons(SEQUENCE)
+			.start_cons(ASN1_Tag.SEQUENCE)
 				.encode(p)
 				.encode(q)
 				.encode(g)
@@ -217,7 +217,7 @@ Vector!byte DL_Group::DER_encode(Format format) const
 	else if (format == ANSI_X9_42)
 	{
 		return DER_Encoder()
-			.start_cons(SEQUENCE)
+			.start_cons(ASN1_Tag.SEQUENCE)
 				.encode(p)
 				.encode(g)
 				.encode(q)
@@ -227,7 +227,7 @@ Vector!byte DL_Group::DER_encode(Format format) const
 	else if (format == PKCS_3)
 	{
 		return DER_Encoder()
-			.start_cons(SEQUENCE)
+			.start_cons(ASN1_Tag.SEQUENCE)
 				.encode(p)
 				.encode(g)
 			.end_cons()
@@ -242,7 +242,7 @@ Vector!byte DL_Group::DER_encode(Format format) const
 */
 string DL_Group::PEM_encode(Format format) const
 {
-	const Vector!byte encoding = DER_encode(format);
+	const Vector!ubyte encoding = DER_encode(format);
 
 	if (format == PKCS_3)
 		return PEM_Code::encode(encoding, "DH PARAMETERS");
@@ -257,13 +257,13 @@ string DL_Group::PEM_encode(Format format) const
 /*
 * Decode BER encoded parameters
 */
-void DL_Group::BER_decode(in Vector!byte data,
+void DL_Group::BER_decode(in Vector!ubyte data,
 								  Format format)
 {
 	BigInt new_p, new_q, new_g;
 
 	BER_Decoder decoder(data);
-	BER_Decoder ber = decoder.start_cons(SEQUENCE);
+	BER_Decoder ber = decoder.start_cons(ASN1_Tag.SEQUENCE);
 
 	if (format == ANSI_X9_57)
 	{

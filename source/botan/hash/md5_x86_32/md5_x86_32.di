@@ -14,5 +14,5 @@ class MD5_X86_32 : public MD5
 	public:
 		HashFunction clone() const { return new MD5_X86_32; }
 	private:
-		void compress_n(const byte[], size_t blocks);
+		void compress_n(const ubyte[], size_t blocks);
 };

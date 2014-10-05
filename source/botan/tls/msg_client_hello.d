@@ -17,9 +17,9 @@ enum {
 	TLS_EMPTY_RENEGOTIATION_INFO_SCSV		  = 0x00FF
 };
 
-Vector!byte make_hello_random(RandomNumberGenerator rng)
+Vector!ubyte make_hello_random(RandomNumberGenerator rng)
 {
-	Vector!byte buf(32);
+	Vector!ubyte buf(32);
 
 	const uint time32 = cast(uint)(
 		std::chrono::system_clock::to_time_t(std::chrono::system_clock::now()));
@@ -40,7 +40,7 @@ Hello_Request::Hello_Request(Handshake_IO& io)
 /*
 * Deserialize a Hello Request message
 */
-Hello_Request::Hello_Request(in Vector!byte buf)
+Hello_Request::Hello_Request(in Vector!ubyte buf)
 {
 	if (buf.size())
 		throw new Decoding_Error("Bad Hello_Request, has non-zero size");
@@ -49,9 +49,9 @@ Hello_Request::Hello_Request(in Vector!byte buf)
 /*
 * Serialize a Hello Request message
 */
-Vector!byte Hello_Request::serialize() const
+Vector!ubyte Hello_Request::serialize() const
 {
-	return Vector!byte();
+	return Vector!ubyte();
 }
 
 /*
@@ -62,7 +62,7 @@ Client_Hello::Client_Hello(Handshake_IO& io,
 									Protocol_Version _version,
 									const Policy& policy,
 									RandomNumberGenerator rng,
-									in Vector!byte reneg_info,
+									in Vector!ubyte reneg_info,
 									bool next_protocol,
 									in string hostname,
 									in string srp_identifier) :
@@ -97,7 +97,7 @@ Client_Hello::Client_Hello(Handshake_IO& io,
 									Handshake_Hash& hash,
 									const Policy& policy,
 									RandomNumberGenerator rng,
-									in Vector!byte reneg_info,
+									in Vector!ubyte reneg_info,
 									const Session& session,
 									bool next_protocol) :
 	m_version(session._version()),
@@ -137,7 +137,7 @@ Client_Hello::Client_Hello(Handshake_IO& io,
 /*
 * Read a counterparty client hello
 */
-Client_Hello::Client_Hello(in Vector!byte buf, Handshake_Type type)
+Client_Hello::Client_Hello(in Vector!ubyte buf, Handshake_Type type)
 {
 	if (type == CLIENT_HELLO)
 		deserialize(buf);
@@ -156,9 +156,9 @@ void Client_Hello::update_hello_cookie(in Hello_Verify_Request hello_verify)
 /*
 * Serialize a Client Hello message
 */
-Vector!byte Client_Hello::serialize() const
+Vector!ubyte Client_Hello::serialize() const
 {
-	Vector!byte buf;
+	Vector!ubyte buf;
 
 	buf.push_back(m_version.major_version());
 	buf.push_back(m_version.minor_version());
@@ -183,7 +183,7 @@ Vector!byte Client_Hello::serialize() const
 	return buf;
 }
 
-void Client_Hello::deserialize_sslv2(in Vector!byte buf)
+void Client_Hello::deserialize_sslv2(in Vector!ubyte buf)
 {
 	if (buf.size() < 12 || buf[0] != 1)
 		throw new Decoding_Error("Client_Hello: SSLv2 hello corrupted");
@@ -224,7 +224,7 @@ void Client_Hello::deserialize_sslv2(in Vector!byte buf)
 /*
 * Deserialize a Client Hello message
 */
-void Client_Hello::deserialize(in Vector!byte buf)
+void Client_Hello::deserialize(in Vector!ubyte buf)
 {
 	if (buf.size() == 0)
 		throw new Decoding_Error("Client_Hello: Packet corrupted");
@@ -234,21 +234,21 @@ void Client_Hello::deserialize(in Vector!byte buf)
 
 	TLS_Data_Reader reader("ClientHello", buf);
 
-	const byte major_version = reader.get_byte();
-	const byte minor_version = reader.get_byte();
+	const ubyte major_version = reader.get_byte();
+	const ubyte minor_version = reader.get_byte();
 
 	m_version = Protocol_Version(major_version, minor_version);
 
-	m_random = reader.get_fixed<byte>(32);
+	m_random = reader.get_fixed<ubyte>(32);
 
 	if (m_version.is_datagram_protocol())
-		m_hello_cookie = reader.get_range!byte(1, 0, 255);
+		m_hello_cookie = reader.get_range!ubyte(1, 0, 255);
 
-	m_session_id = reader.get_range!byte(1, 0, 32);
+	m_session_id = reader.get_range!ubyte(1, 0, 32);
 
 	m_suites = reader.get_range_vector!ushort(2, 1, 32767);
 
-	m_comp_methods = reader.get_range_vector!byte(1, 1, 255);
+	m_comp_methods = reader.get_range_vector!ubyte(1, 1, 255);
 
 	m_extensions.deserialize(reader);
 

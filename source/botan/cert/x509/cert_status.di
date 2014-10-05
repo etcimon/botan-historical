@@ -4,7 +4,7 @@
 *
 * Distributed under the terms of the botan license.
 */
-enum class Certificate_Status_Code {
+enum Certificate_Status_Code {
 	VERIFIED = 0x00000000,
 	OCSP_RESPONSE_GOOD,
 	NO_REVOCATION_DATA,

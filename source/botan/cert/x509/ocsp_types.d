@@ -6,7 +6,7 @@
 */
 
 import botan.ocsp_types;
-import botan.der_enc;
+import botan.asn1.der_enc;
 import botan.asn1.ber_dec;
 import botan.x509_ext;
 import botan.lookup;
@@ -23,22 +23,22 @@ CertID::CertID(in X509_Certificate issuer,
 	*/
 	Unique!HashFunction hash(get_hash("SHA-160"));
 
-	m_hash_id = AlgorithmIdentifier(hash.name(), AlgorithmIdentifier::USE_NULL_PARAM);
+	m_hash_id = AlgorithmIdentifier(hash.name(), AlgorithmIdentifier.Encoding_Option.USE_NULL_PARAM);
 	m_issuer_key_hash = unlock(hash.process(extract_key_bitstr(issuer)));
 	m_issuer_dn_hash = unlock(hash.process(subject.raw_issuer_dn()));
 	m_subject_serial = BigInt::decode(subject.serial_number());
 }
 
-Vector!byte CertID::extract_key_bitstr(in X509_Certificate cert) const
+Vector!ubyte CertID::extract_key_bitstr(in X509_Certificate cert) const
 {
 	const auto key_bits = cert.subject_public_key_bits();
 
 	AlgorithmIdentifier public_key_algid;
-	Vector!byte public_key_bitstr;
+	Vector!ubyte public_key_bitstr;
 
 	BER_Decoder(key_bits)
 		.decode(public_key_algid)
-		.decode(public_key_bitstr, BIT_STRING);
+				.decode(public_key_bitstr, ASN1_Tag.BIT_STRING);
 
 	return public_key_bitstr;
 }
@@ -69,20 +69,20 @@ bool CertID::is_id_for(in X509_Certificate issuer,
 
 void CertID::encode_into(class DER_Encoder& to) const
 {
-	to.start_cons(SEQUENCE)
+	to.start_cons(ASN1_Tag.SEQUENCE)
 		.encode(m_hash_id)
-		.encode(m_issuer_dn_hash, OCTET_STRING)
-		.encode(m_issuer_key_hash, OCTET_STRING)
+		.encode(m_issuer_dn_hash, ASN1_Tag.OCTET_STRING)
+		.encode(m_issuer_key_hash, ASN1_Tag.OCTET_STRING)
 		.encode(m_subject_serial)
 		.end_cons();
 }
 
 void CertID::decode_from(class BER_Decoder& from)
 {
-	from.start_cons(SEQUENCE)
+	from.start_cons(ASN1_Tag.SEQUENCE)
 		.decode(m_hash_id)
-		.decode(m_issuer_dn_hash, OCTET_STRING)
-		.decode(m_issuer_key_hash, OCTET_STRING)
+		.decode(m_issuer_dn_hash, ASN1_Tag.OCTET_STRING)
+		.decode(m_issuer_key_hash, ASN1_Tag.OCTET_STRING)
 		.decode(m_subject_serial)
 		.end_cons();
 
@@ -98,15 +98,15 @@ void SingleResponse::decode_from(class BER_Decoder& from)
 	BER_Object cert_status;
 	Extensions extensions;
 
-	from.start_cons(SEQUENCE)
+	from.start_cons(ASN1_Tag.SEQUENCE)
 		.decode(m_certid)
 		.get_next(cert_status)
 		.decode(m_thisupdate)
 		.decode_optional(m_nextupdate, ASN1_Tag(0),
-							  ASN1_Tag(CONTEXT_SPECIFIC | CONSTRUCTED))
+							  ASN1_Tag(ASN1_Tag.CONTEXT_SPECIFIC | CONSTRUCTED))
 		.decode_optional(extensions,
 							  ASN1_Tag(1),
-							  ASN1_Tag(CONTEXT_SPECIFIC | CONSTRUCTED))
+							  ASN1_Tag(ASN1_Tag.CONTEXT_SPECIFIC | CONSTRUCTED))
 		.end_cons();
 
 	m_cert_status = cert_status.type_tag;

@@ -61,12 +61,12 @@ bool CFB_Mode::valid_nonce_length(size_t n) const
 	return (n == cipher().block_size());
 }
 
-void CFB_Mode::key_schedule(in byte* key, size_t length)
+void CFB_Mode::key_schedule(in ubyte* key, size_t length)
 {
 	m_cipher.set_key(key, length);
 }
 
-SafeVector!byte CFB_Mode::start(in byte* nonce, size_t nonce_len)
+SafeVector!ubyte CFB_Mode::start(in ubyte* nonce, size_t nonce_len)
 {
 	if (!valid_nonce_length(nonce_len))
 		throw new Invalid_IV_Length(name(), nonce_len);
@@ -75,18 +75,18 @@ SafeVector!byte CFB_Mode::start(in byte* nonce, size_t nonce_len)
 	m_keystream_buf.resize(m_shift_register.size());
 	cipher().encrypt(m_shift_register, m_keystream_buf);
 
-	return SafeVector!byte();
+	return SafeVector!ubyte();
 }
 
-void CFB_Encryption::update(SafeVector!byte buffer, size_t offset)
+void CFB_Encryption::update(SafeVector!ubyte buffer, size_t offset)
 {
 	BOTAN_ASSERT(buffer.size() >= offset, "Offset is sane");
 	size_t sz = buffer.size() - offset;
-	byte* buf = &buffer[offset];
+	ubyte* buf = &buffer[offset];
 
 	const size_t BS = cipher().block_size();
 
-	SafeVector!byte state = shift_register();
+	SafeVector!ubyte state = shift_register();
 	const size_t shift = feedback();
 
 	while(sz)
@@ -104,20 +104,20 @@ void CFB_Encryption::update(SafeVector!byte buffer, size_t offset)
 	}
 }
 
-void CFB_Encryption::finish(SafeVector!byte buffer, size_t offset)
+void CFB_Encryption::finish(SafeVector!ubyte buffer, size_t offset)
 {
 	update(buffer, offset);
 }
 
-void CFB_Decryption::update(SafeVector!byte buffer, size_t offset)
+void CFB_Decryption::update(SafeVector!ubyte buffer, size_t offset)
 {
 	BOTAN_ASSERT(buffer.size() >= offset, "Offset is sane");
 	size_t sz = buffer.size() - offset;
-	byte* buf = &buffer[offset];
+	ubyte* buf = &buffer[offset];
 
 	const size_t BS = cipher().block_size();
 
-	SafeVector!byte state = shift_register();
+	SafeVector!ubyte state = shift_register();
 	const size_t shift = feedback();
 
 	while(sz)
@@ -139,7 +139,7 @@ void CFB_Decryption::update(SafeVector!byte buffer, size_t offset)
 	}
 }
 
-void CFB_Decryption::finish(SafeVector!byte buffer, size_t offset)
+void CFB_Decryption::finish(SafeVector!ubyte buffer, size_t offset)
 {
 	update(buffer, offset);
 }

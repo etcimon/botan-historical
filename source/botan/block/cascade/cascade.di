@@ -12,8 +12,8 @@ import botan.block_cipher;
 class Cascade_Cipher : public BlockCipher
 {
 	public:
-		void encrypt_n(byte* input, byte* output, size_t blocks) const;
-		void decrypt_n(byte* input, byte* output, size_t blocks) const;
+		void encrypt_n(ubyte* input, ubyte* output, size_t blocks) const;
+		void decrypt_n(ubyte* input, ubyte* output, size_t blocks) const;
 
 		size_t block_size() const { return m_block; }
 
@@ -37,7 +37,7 @@ class Cascade_Cipher : public BlockCipher
 		Cascade_Cipher(in Cascade_Cipher);
 		Cascade_Cipher& operator=(in Cascade_Cipher);
 	private:
-		void key_schedule(in byte*, size_t);
+		void key_schedule(in ubyte*, size_t);
 
 		size_t m_block;
 		Unique!BlockCipher m_cipher1, m_cipher2;

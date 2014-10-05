@@ -16,9 +16,9 @@ import botan.internal.stl_util;
 import botan.loadstor;
 namespace TLS {
 
-Channel::Channel(void delegate(in byte[]) output_fn,
-					  void delegate(in byte[]) data_cb,
-					  void delegate(Alert, in byte[]) alert_cb,
+Channel::Channel(void delegate(in ubyte[]) output_fn,
+					  void delegate(in ubyte[]) data_cb,
+					  void delegate(Alert, in ubyte[]) alert_cb,
 					  bool delegate(in Session) handshake_cb,
 					  Session_Manager session_manager,
 					  RandomNumberGenerator rng,
@@ -270,12 +270,12 @@ bool Channel::heartbeat_sending_allowed() const
 	return false;
 }
 
-size_t Channel::received_data(in Vector!byte buf)
+size_t Channel::received_data(in Vector!ubyte buf)
 {
 	return this.received_data(&buf[0], buf.size());
 }
 
-size_t Channel::received_data(in byte* input, size_t input_size)
+size_t Channel::received_data(in ubyte* input, size_t input_size)
 {
 	const auto get_cipherstate = [this](ushort epoch)
 	{ return this.read_cipher_state_epoch(epoch).get(); };
@@ -286,7 +286,7 @@ size_t Channel::received_data(in byte* input, size_t input_size)
 	{
 		while(!is_closed() && input_size)
 		{
-			SafeVector!byte record;
+			SafeVector!ubyte record;
 			ulong record_sequence = 0;
 			Record_Type record_type = NO_RECORD;
 			Protocol_Version record_version;
@@ -352,7 +352,7 @@ size_t Channel::received_data(in byte* input, size_t input_size)
 
 				Heartbeat_Message heartbeat(unlock(record));
 
-				in Vector!byte payload = heartbeat.payload();
+				in Vector!ubyte payload = heartbeat.payload();
 
 				if (heartbeat.is_request())
 				{
@@ -436,7 +436,7 @@ size_t Channel::received_data(in byte* input, size_t input_size)
 	}
 }
 
-void Channel::heartbeat(in byte* payload, size_t payload_size)
+void Channel::heartbeat(in ubyte* payload, size_t payload_size)
 {
 	if (heartbeat_sending_allowed())
 	{
@@ -448,7 +448,7 @@ void Channel::heartbeat(in byte* payload, size_t payload_size)
 }
 
 void Channel::write_record(Connection_Cipher_State* cipher_state,
-									byte record_type, in byte* input, size_t length)
+									ubyte record_type, in ubyte* input, size_t length)
 {
 	BOTAN_ASSERT(m_pending_state || m_active_state,
 					 "Some connection state exists");
@@ -468,14 +468,14 @@ void Channel::write_record(Connection_Cipher_State* cipher_state,
 	m_output_fn(&m_writebuf[0], m_writebuf.size());
 }
 
-void Channel::send_record_array(ushort epoch, byte type, in byte* input, size_t length)
+void Channel::send_record_array(ushort epoch, ubyte type, in ubyte* input, size_t length)
 {
 	if (length == 0)
 		return;
 
 	/*
 	* If using CBC mode without an explicit IV (SSL v3 or TLS v1.0),
-	* send a single byte of plaintext to randomize the (implicit) IV of
+	* send a single ubyte of plaintext to randomize the (implicit) IV of
 	* the following main block. If using a stream cipher, or TLS v1.1
 	* or higher, this isn't necessary.
 	*
@@ -506,19 +506,19 @@ void Channel::send_record_array(ushort epoch, byte type, in byte* input, size_t 
 	}
 }
 
-void Channel::send_record(byte record_type, in Vector!byte record)
+void Channel::send_record(ubyte record_type, in Vector!ubyte record)
 {
 	send_record_array(sequence_numbers().current_write_epoch(),
 							record_type, &record[0], record.size());
 }
 
-void Channel::send_record_under_epoch(ushort epoch, byte record_type,
-												  in Vector!byte record)
+void Channel::send_record_under_epoch(ushort epoch, ubyte record_type,
+												  in Vector!ubyte record)
 {
 	send_record_array(epoch, record_type, &record[0], record.size());
 }
 
-void Channel::send(in byte* buf, size_t buf_size)
+void Channel::send(in ubyte* buf, size_t buf_size)
 {
 	if (!is_active())
 		throw new Exception("Data cannot be sent on inactive TLS connection");
@@ -529,7 +529,7 @@ void Channel::send(in byte* buf, size_t buf_size)
 
 void Channel::send(in string string)
 {
-	this.send(cast(const byte*)(string.c_str()), string.size());
+	this.send(cast(const ubyte*)(string.c_str()), string.size());
 }
 
 void Channel::send_alert(in Alert alert)
@@ -569,7 +569,7 @@ void Channel::secure_renegotiation_check(const Client_Hello* client_hello)
 
 	if (secure_renegotiation)
 	{
-		in Vector!byte data = client_hello.renegotiation_info();
+		in Vector!ubyte data = client_hello.renegotiation_info();
 
 		if (data != secure_renegotiation_data_for_client_hello())
 			throw new TLS_Exception(Alert::HANDSHAKE_FAILURE,
@@ -592,7 +592,7 @@ void Channel::secure_renegotiation_check(const Server_Hello* server_hello)
 
 	if (secure_renegotiation)
 	{
-		in Vector!byte data = server_hello.renegotiation_info();
+		in Vector!ubyte data = server_hello.renegotiation_info();
 
 		if (data != secure_renegotiation_data_for_server_hello())
 			throw new TLS_Exception(Alert::HANDSHAKE_FAILURE,
@@ -600,23 +600,23 @@ void Channel::secure_renegotiation_check(const Server_Hello* server_hello)
 	}
 }
 
-Vector!byte Channel::secure_renegotiation_data_for_client_hello() const
+Vector!ubyte Channel::secure_renegotiation_data_for_client_hello() const
 {
 	if (auto active = active_state())
 		return active.client_finished().verify_data();
-	return Vector!byte();
+	return Vector!ubyte();
 }
 
-Vector!byte Channel::secure_renegotiation_data_for_server_hello() const
+Vector!ubyte Channel::secure_renegotiation_data_for_server_hello() const
 {
 	if (auto active = active_state())
 	{
-		Vector!byte buf = active.client_finished().verify_data();
+		Vector!ubyte buf = active.client_finished().verify_data();
 		buf += active.server_finished().verify_data();
 		return buf;
 	}
 
-	return Vector!byte();
+	return Vector!ubyte();
 }
 
 bool Channel::secure_renegotiation_supported() const
@@ -639,10 +639,10 @@ SymmetricKey Channel::key_material_export(in string label,
 	{
 		Unique!KDF prf(active.protocol_specific_prf());
 
-		in SafeVector!byte master_secret =
+		in SafeVector!ubyte master_secret =
 			active.session_keys().master_secret();
 
-		Vector!byte salt;
+		Vector!ubyte salt;
 		salt += to_byte_vector(label);
 		salt += active.client_hello().random();
 		salt += active.server_hello().random();

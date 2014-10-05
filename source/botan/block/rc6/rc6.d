@@ -12,7 +12,7 @@ import algorithm;
 /*
 * RC6 Encryption
 */
-void RC6::encrypt_n(byte* input, byte* output, size_t blocks) const
+void RC6::encrypt_n(ubyte* input, ubyte* output, size_t blocks) const
 {
 	for (size_t i = 0; i != blocks; ++i)
 	{
@@ -60,7 +60,7 @@ void RC6::encrypt_n(byte* input, byte* output, size_t blocks) const
 /*
 * RC6 Decryption
 */
-void RC6::decrypt_n(byte* input, byte* output, size_t blocks) const
+void RC6::decrypt_n(ubyte* input, ubyte* output, size_t blocks) const
 {
 	for (size_t i = 0; i != blocks; ++i)
 	{
@@ -108,7 +108,7 @@ void RC6::decrypt_n(byte* input, byte* output, size_t blocks) const
 /*
 * RC6 Key Schedule
 */
-void RC6::key_schedule(in byte* key)
+void RC6::key_schedule(in ubyte* key)
 {
 	S.resize(44);
 
@@ -121,7 +121,7 @@ void RC6::key_schedule(in byte* key)
 
 	secure_vector!uint K(8);
 
-	for (s32bit i = length-1; i >= 0; --i)
+	for (int i = length-1; i >= 0; --i)
 		K[i/4] = (K[i/4] << 8) + key[i];
 
 	uint A = 0, B = 0;

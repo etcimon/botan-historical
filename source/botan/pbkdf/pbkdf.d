@@ -9,7 +9,7 @@ import botan.pbkdf;
 import stdexcept;
 OctetString PBKDF::derive_key(size_t output_len,
 										in string passphrase,
-										in byte* salt, size_t salt_len,
+										in ubyte* salt, size_t salt_len,
 										size_t iterations) const
 {
 	if (iterations == 0)
@@ -27,7 +27,7 @@ OctetString PBKDF::derive_key(size_t output_len,
 
 OctetString PBKDF::derive_key(size_t output_len,
 										in string passphrase,
-										in byte* salt, size_t salt_len,
+										in ubyte* salt, size_t salt_len,
 										std::chrono::milliseconds ms,
 										size_t& iterations) const
 {

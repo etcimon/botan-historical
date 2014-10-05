@@ -20,7 +20,7 @@ class GOST_28147_89_Params
 		* @param col the column
 		* @return sbox entry at this row/column
 		*/
-		byte sbox_entry(size_t row, size_t col) const;
+		ubyte sbox_entry(size_t row, size_t col) const;
 
 		/**
 		* @return name of this parameter set
@@ -36,7 +36,7 @@ class GOST_28147_89_Params
 		*/
 		GOST_28147_89_Params(in string name = "R3411_94_TestParam");
 	private:
-		const byte* sboxes;
+		const ubyte* sboxes;
 		string name;
 };
 
@@ -46,8 +46,8 @@ class GOST_28147_89_Params
 class GOST_28147_89 : public Block_Cipher_Fixed_Params!(8, 32)
 {
 	public:
-		void encrypt_n(byte* input, byte* output, size_t blocks) const;
-		void decrypt_n(byte* input, byte* output, size_t blocks) const;
+		void encrypt_n(ubyte* input, ubyte* output, size_t blocks) const;
+		void decrypt_n(ubyte* input, ubyte* output, size_t blocks) const;
 
 		void clear();
 
@@ -62,7 +62,7 @@ class GOST_28147_89 : public Block_Cipher_Fixed_Params!(8, 32)
 		GOST_28147_89(in Vector!uint other_SBOX) :
 			SBOX(other_SBOX), EK(8) {}
 
-		void key_schedule(in byte*, size_t);
+		void key_schedule(in ubyte*, size_t);
 
 		/*
 		* The sbox is not secret, this is just a larger expansion of it

@@ -23,7 +23,7 @@ BigInt operator+(in BigInt x, ref const BigInt y)
 		bigint_add3(z.mutable_data(), x.data(), x_sw, y.data(), y_sw);
 	else
 	{
-		s32bit relative_size = bigint_cmp(x.data(), x_sw, y.data(), y_sw);
+		int relative_size = bigint_cmp(x.data(), x_sw, y.data(), y_sw);
 
 		if (relative_size < 0)
 		{
@@ -46,7 +46,7 @@ BigInt operator-(in BigInt x, ref const BigInt y)
 {
 	const size_t x_sw = x.sig_words(), y_sw = y.sig_words();
 
-	s32bit relative_size = bigint_cmp(x.data(), x_sw, y.data(), y_sw);
+	int relative_size = bigint_cmp(x.data(), x_sw, y.data(), y_sw);
 
 	BigInt z(BigInt::Positive, std.algorithm.max(x_sw, y_sw) + 1);
 

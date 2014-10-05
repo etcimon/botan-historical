@@ -55,7 +55,7 @@ namespace {
 /*
 * SHA-160 Compression Function
 */
-void SHA_160::compress_n(in byte* input, size_t blocks)
+void SHA_160::compress_n(in ubyte* input, size_t blocks)
 {
 	using namespace SHA1_F;
 
@@ -135,7 +135,7 @@ void SHA_160::compress_n(in byte* input, size_t blocks)
 /*
 * Copy out the digest
 */
-void SHA_160::copy_out(byte* output)
+void SHA_160::copy_out(ubyte* output)
 {
 	for (size_t i = 0; i != output_length(); i += 4)
 		store_be(digest[i/4], output + i);

@@ -298,7 +298,7 @@ PointGFp operator*(in BigInt scalar, const PointGFp& point)
 
 	if (scalar.abs() <= 2) // special cases for small values
 	{
-		byte value = scalar.abs().byte_at(0);
+		ubyte value = scalar.abs().byte_at(0);
 
 		PointGFp result = point;
 
@@ -479,22 +479,22 @@ bool PointGFp::operator==(in PointGFp other) const
 }
 
 // encoding and decoding
-SafeVector!byte EC2OSP(in PointGFp point, byte format)
+SafeVector!ubyte EC2OSP(in PointGFp point, ubyte format)
 {
 	if (point.is_zero())
-		return SafeVector!byte(1); // single 0 byte
+		return SafeVector!ubyte(1); // single 0 ubyte
 
 	const size_t p_bytes = point.get_curve().get_p().bytes();
 
 	BigInt x = point.get_affine_x();
 	BigInt y = point.get_affine_y();
 
-	SafeVector!byte bX = BigInt::encode_1363(x, p_bytes);
-	SafeVector!byte bY = BigInt::encode_1363(y, p_bytes);
+	SafeVector!ubyte bX = BigInt::encode_1363(x, p_bytes);
+	SafeVector!ubyte bY = BigInt::encode_1363(y, p_bytes);
 
 	if (format == PointGFp::UNCOMPRESSED)
 	{
-		SafeVector!byte result;
+		SafeVector!ubyte result;
 		result.push_back(0x04);
 
 		result += bX;
@@ -504,8 +504,8 @@ SafeVector!byte EC2OSP(in PointGFp point, byte format)
 	}
 	else if (format == PointGFp::COMPRESSED)
 	{
-		SafeVector!byte result;
-		result.push_back(0x02 | cast(byte)(y.get_bit(0)));
+		SafeVector!ubyte result;
+		result.push_back(0x02 | cast(ubyte)(y.get_bit(0)));
 
 		result += bX;
 
@@ -513,8 +513,8 @@ SafeVector!byte EC2OSP(in PointGFp point, byte format)
 	}
 	else if (format == PointGFp::HYBRID)
 	{
-		SafeVector!byte result;
-		result.push_back(0x06 | cast(byte)(y.get_bit(0)));
+		SafeVector!ubyte result;
+		result.push_back(0x06 | cast(ubyte)(y.get_bit(0)));
 
 		result += bX;
 		result += bY;
@@ -551,13 +551,13 @@ BigInt decompress_point(bool yMod2,
 
 }
 
-PointGFp OS2ECP(in byte* data, size_t data_len,
+PointGFp OS2ECP(in ubyte* data, size_t data_len,
 					 const CurveGFp& curve)
 {
 	if (data_len <= 1)
 		return PointGFp(curve); // return zero
 
-	const byte pc = data[0];
+	const ubyte pc = data[0];
 
 	BigInt x, y;
 

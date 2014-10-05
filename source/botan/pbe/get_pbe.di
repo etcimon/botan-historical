@@ -30,5 +30,5 @@ PBE* get_pbe(in string algo_spec,
 * @return pointer to the PBE with the specified parameters
 */
 PBE* get_pbe(in OID pbe_oid,
-							  in Vector!byte params,
+							  in Vector!ubyte params,
 							  in string passphrase);

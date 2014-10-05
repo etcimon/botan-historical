@@ -63,7 +63,7 @@ class SIMD_Altivec
 			return SIMD_Altivec(R0);
 		}
 
-		void store_le(byte* output) const
+		void store_le(ubyte* output) const
 		{
 			__vector char perm = vec_lvsl(0, (uint*)0);
 
@@ -79,7 +79,7 @@ class SIMD_Altivec
 			Botan::store_be(output, vec.R[0], vec.R[1], vec.R[2], vec.R[3]);
 		}
 
-		void store_be(byte* output) const
+		void store_be(ubyte* output) const
 		{
 			union {
 				__vector uint V;

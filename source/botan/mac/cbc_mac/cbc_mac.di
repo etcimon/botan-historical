@@ -29,11 +29,11 @@ class CBC_MAC : public MessageAuthenticationCode
 		CBC_MAC(BlockCipher cipher);
 
 	private:
-		void add_data(const byte[], size_t);
-		void final_result(byte[]);
-		void key_schedule(const byte[], size_t);
+		void add_data(const ubyte[], size_t);
+		void final_result(ubyte[]);
+		void key_schedule(const ubyte[], size_t);
 
 		Unique!BlockCipher m_cipher;
-		SafeVector!byte m_state;
+		SafeVector!ubyte m_state;
 		size_t m_position = 0;
 };

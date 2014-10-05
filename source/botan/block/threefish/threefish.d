@@ -95,7 +95,7 @@ void Threefish_512::skein_feedfwd(in secure_vector!ulong M,
 				m_K[4] ^ m_K[5] ^ m_K[6] ^ m_K[7] ^ 0x1BD11BDAA9FC1A22;
 }
 
-void Threefish_512::encrypt_n(byte* input, byte* output, size_t blocks) const
+void Threefish_512::encrypt_n(ubyte* input, ubyte* output, size_t blocks) const
 {
 	BOTAN_ASSERT(m_K.size() == 9, "Key was set");
 	BOTAN_ASSERT(m_T.size() == 3, "Tweak was set");
@@ -134,7 +134,7 @@ void Threefish_512::encrypt_n(byte* input, byte* output, size_t blocks) const
 #undef THREEFISH_INJECT_KEY
 #undef THREEFISH_ROUND
 
-void Threefish_512::decrypt_n(byte* input, byte* output, size_t blocks) const
+void Threefish_512::decrypt_n(ubyte* input, ubyte* output, size_t blocks) const
 {
 	BOTAN_ASSERT(m_K.size() == 9, "Key was set");
 	BOTAN_ASSERT(m_T.size() == 3, "Tweak was set");
@@ -216,7 +216,7 @@ void Threefish_512::decrypt_n(byte* input, byte* output, size_t blocks) const
 #undef THREEFISH_ROUND
 }
 
-void Threefish_512::set_tweak(in byte* tweak, size_t len)
+void Threefish_512::set_tweak(in ubyte* tweak, size_t len)
 {
 	if (len != 16)
 		throw new Exception("Unsupported twofish tweak length");
@@ -225,7 +225,7 @@ void Threefish_512::set_tweak(in byte* tweak, size_t len)
 	m_T[2] = m_T[0] ^ m_T[1];
 }
 
-void Threefish_512::key_schedule(in byte* key, size_t)
+void Threefish_512::key_schedule(in ubyte* key, size_t)
 {
 	// todo: define key schedule for smaller keys
 	m_K.resize(9);

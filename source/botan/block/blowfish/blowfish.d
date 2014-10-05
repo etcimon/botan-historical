@@ -10,7 +10,7 @@ import botan.loadstor;
 /*
 * Blowfish Encryption
 */
-void Blowfish::encrypt_n(byte* input, byte* output, size_t blocks) const
+void Blowfish::encrypt_n(ubyte* input, ubyte* output, size_t blocks) const
 {
 	const uint* S1 = &S[0];
 	const uint* S2 = &S[256];
@@ -45,7 +45,7 @@ void Blowfish::encrypt_n(byte* input, byte* output, size_t blocks) const
 /*
 * Blowfish Decryption
 */
-void Blowfish::decrypt_n(byte* input, byte* output, size_t blocks) const
+void Blowfish::decrypt_n(ubyte* input, ubyte* output, size_t blocks) const
 {
 	const uint* S1 = &S[0];
 	const uint* S2 = &S[256];
@@ -80,7 +80,7 @@ void Blowfish::decrypt_n(byte* input, byte* output, size_t blocks) const
 /*
 * Blowfish Key Schedule
 */
-void Blowfish::key_schedule(in byte* key)
+void Blowfish::key_schedule(in ubyte* key)
 {
 	P.resize(18);
 	std::copy(P_INIT, P_INIT + 18, P.begin());
@@ -88,14 +88,14 @@ void Blowfish::key_schedule(in byte* key)
 	S.resize(1024);
 	std::copy(S_INIT, S_INIT + 1024, S.begin());
 
-	immutable byte[16] null_salt = { 0 };
+	immutable ubyte[16] null_salt = { 0 };
 
 	key_expansion(key, length, null_salt);
 }
 
-void Blowfish::key_expansion(in byte* key,
+void Blowfish::key_expansion(in ubyte* key,
 									  size_t length,
-									  in byte[16] salt)
+									  in ubyte[16] salt)
 {
 	for (size_t i = 0, j = 0; i != 18; ++i, j += 4)
 		P[i] ^= make_uint(key[(j  ) % length], key[(j+1) % length],
@@ -109,10 +109,10 @@ void Blowfish::key_expansion(in byte* key,
 /*
 * Modified key schedule used for bcrypt password hashing
 */
-void Blowfish::eks_key_schedule(in byte* key, size_t length,
-										  in byte[16] salt, size_t workfactor)
+void Blowfish::eks_key_schedule(in ubyte* key, size_t length,
+										  in ubyte[16] salt, size_t workfactor)
 {
-	// Truncate longer passwords to the 56 byte limit Blowfish enforces
+	// Truncate longer passwords to the 56 ubyte limit Blowfish enforces
 	length = std.algorithm.min<size_t>(length, 55);
 
 	if (workfactor == 0)
@@ -135,7 +135,7 @@ void Blowfish::eks_key_schedule(in byte* key, size_t length,
 
 	key_expansion(key, length, salt);
 
-	const byte[16] null_salt = { 0 };
+	const ubyte[16] null_salt = { 0 };
 	const size_t rounds = 1 << workfactor;
 
 	for (size_t r = 0; r != rounds; ++r)
@@ -150,7 +150,7 @@ void Blowfish::eks_key_schedule(in byte* key, size_t length,
 */
 void Blowfish::generate_sbox(secure_vector!uint& box,
 									  ref uint L, ref uint R,
-									  in byte[16] salt,
+									  in ubyte[16] salt,
 									  size_t salt_off) const
 {
 	const uint* S1 = &S[0];

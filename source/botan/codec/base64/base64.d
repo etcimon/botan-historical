@@ -11,7 +11,7 @@ import botan.internal.rounding;
 import stdexcept;
 namespace {
 
-static const byte[64] BIN_TO_BASE64 = {
+static const ubyte[64] BIN_TO_BASE64 = {
 	'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M',
 	'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z',
 	'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm',
@@ -19,7 +19,7 @@ static const byte[64] BIN_TO_BASE64 = {
 	'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '+', '/'
 };
 
-void do_base64_encode(char[4] output, const byte[3] input)
+void do_base64_encode(char[4] output, const ubyte[3] input)
 {
 	output[0] = BIN_TO_BASE64[((input[0] & 0xFC) >> 2)];
 	output[1] = BIN_TO_BASE64[((input[0] & 0x03) << 4) | (input[1] >> 4)];
@@ -30,7 +30,7 @@ void do_base64_encode(char[4] output, const byte[3] input)
 }
 
 size_t base64_encode(char* output,
-						in byte* input,
+						in ubyte* input,
 						size_t input_length,
 						ref size_t input_consumed,
 						bool final_inputs)
@@ -51,7 +51,7 @@ size_t base64_encode(char* output,
 
 	if (final_inputs && input_remaining)
 	{
-		byte[3] remainder = { 0 };
+		ubyte[3] remainder = { 0 };
 		for (size_t i = 0; i != input_remaining; ++i)
 			remainder[i] = input[input_consumed + i];
 
@@ -72,7 +72,7 @@ size_t base64_encode(char* output,
 	return output_produced;
 }
 
-string base64_encode(in byte* input,
+string base64_encode(in ubyte* input,
 								  size_t input_length)
 {
 	string output((round_up<size_t>(input_length, 3) / 3) * 4, 0);
@@ -88,7 +88,7 @@ string base64_encode(in byte* input,
 	return output;
 }
 
-size_t base64_decode(byte* output,
+size_t base64_decode(ubyte* output,
 							string input,
 							size_t input_length,
 							size_t& input_consumed,
@@ -99,7 +99,7 @@ size_t base64_decode(byte* output,
 	* Base64 Decoder Lookup Table
 	* Warning: assumes ASCII encodings
 	*/
-	static const byte[256] BASE64_TO_BIN = {
+	static const ubyte[256] BASE64_TO_BIN = {
 		0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0x80,
 		0x80, 0xFF, 0xFF, 0x80, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
 		0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
@@ -127,8 +127,8 @@ size_t base64_decode(byte* output,
 		0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
 		0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF };
 
-	byte* out_ptr = output;
-	byte[4] decode_buf;
+	ubyte* out_ptr = output;
+	ubyte[4] decode_buf;
 	size_t decode_buf_pos = 0;
 	size_t final_truncate = 0;
 
@@ -136,7 +136,7 @@ size_t base64_decode(byte* output,
 
 	for (size_t i = 0; i != input_length; ++i)
 	{
-		const byte bin = BASE64_TO_BIN[cast(byte)(input[i])];
+		const ubyte bin = BASE64_TO_BIN[cast(ubyte)(input[i])];
 
 		if (bin <= 0x3F)
 		{
@@ -185,7 +185,7 @@ size_t base64_decode(byte* output,
 	}
 
 	while(input_consumed < input_length &&
-			BASE64_TO_BIN[cast(byte)(input[input_consumed])] == 0x80)
+			BASE64_TO_BIN[cast(ubyte)(input[input_consumed])] == 0x80)
 	{
 		++input_consumed;
 	}
@@ -195,7 +195,7 @@ size_t base64_decode(byte* output,
 	return written;
 }
 
-size_t base64_decode(byte* output,
+size_t base64_decode(ubyte* output,
 							string input,
 							size_t input_length,
 							bool ignore_ws)
@@ -210,18 +210,18 @@ size_t base64_decode(byte* output,
 	return written;
 }
 
-size_t base64_decode(byte* output,
+size_t base64_decode(ubyte* output,
 							in string input,
 							bool ignore_ws)
 {
 	return base64_decode(output, &input[0], input.length(), ignore_ws);
 }
 
-SafeVector!byte base64_decode(string input,
+SafeVector!ubyte base64_decode(string input,
 											size_t input_length,
 											bool ignore_ws)
 {
-	SafeVector!byte bin((round_up<size_t>(input_length, 4) * 3) / 4);
+	SafeVector!ubyte bin((round_up<size_t>(input_length, 4) * 3) / 4);
 
 	size_t written = base64_decode(&binput[0],
 											 input,
@@ -232,7 +232,7 @@ SafeVector!byte base64_decode(string input,
 	return bin;
 }
 
-SafeVector!byte base64_decode(in string input,
+SafeVector!ubyte base64_decode(in string input,
 											bool ignore_ws)
 {
 	return base64_decode(&input[0], input.size(), ignore_ws);

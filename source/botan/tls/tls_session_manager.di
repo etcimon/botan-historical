@@ -30,7 +30,7 @@ class Session_Manager
 					or not modified if not found
 		* @return true if session was modified
 		*/
-		abstract bool load_from_session_id(in Vector!byte session_id,
+		abstract bool load_from_session_id(in Vector!ubyte session_id,
 													 Session& session);
 
 		/**
@@ -46,7 +46,7 @@ class Session_Manager
 		/**
 		* Remove this session id from the cache, if it exists
 		*/
-		abstract void remove_entry(in Vector!byte session_id);
+		abstract void remove_entry(in Vector!ubyte session_id);
 
 		/**
 		* Save a session on a best effort basis; the manager may not in
@@ -75,13 +75,13 @@ class Session_Manager
 class Session_Manager_Noop : public Session_Manager
 {
 	public:
-		bool load_from_session_id(in Vector!byte, Session&) override
+		bool load_from_session_id(in Vector!ubyte, Session&) override
 		{ return false; }
 
 		bool load_from_server_info(in Server_Information, Session&) override
 		{ return false; }
 
-		void remove_entry(in Vector!byte) override {}
+		void remove_entry(in Vector!ubyte) override {}
 
 		void save(in Session) override {}
 
@@ -106,13 +106,13 @@ class Session_Manager_In_Memory : public Session_Manager
 										  std::chrono::seconds session_lifetime =
 											  std::chrono::seconds(7200));
 
-		bool load_from_session_id(in Vector!byte session_id,
+		bool load_from_session_id(in Vector!ubyte session_id,
 										  Session& session) override;
 
 		bool load_from_server_info(in Server_Information info,
 											Session& session) override;
 
-		void remove_entry(in Vector!byte session_id) override;
+		void remove_entry(in Vector!ubyte session_id) override;
 
 		void save(in Session session_data) override;
 
@@ -132,7 +132,7 @@ class Session_Manager_In_Memory : public Session_Manager
 		RandomNumberGenerator m_rng;
 		SymmetricKey m_session_key;
 
-		HashMap<string, Vector!byte> m_sessions; // hex(session_id) . session
+		HashMap<string, Vector!ubyte> m_sessions; // hex(session_id) . session
 		HashMap<Server_Information, string> m_info_sessions;
 };
 

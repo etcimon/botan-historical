@@ -21,7 +21,7 @@ class CRC32 : public HashFunction
 		CRC32() { clear(); }
 		~this() { clear(); }
 	private:
-		void add_data(const byte[], size_t);
-		void final_result(byte[]);
+		void add_data(const ubyte[], size_t);
+		void final_result(ubyte[]);
 		uint crc;
 };

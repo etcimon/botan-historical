@@ -12,8 +12,8 @@ import botan.threefish;
 class Threefish_512_AVX2 : public Threefish_512
 {
 private:
-	override void encrypt_n(byte* input, byte* output, size_t blocks) const;
-	override void decrypt_n(byte* input, byte* output, size_t blocks) const;
+	override void encrypt_n(ubyte* input, ubyte* output, size_t blocks) const;
+	override void decrypt_n(ubyte* input, ubyte* output, size_t blocks) const;
 	override BlockCipher clone() const { return new Threefish_512_AVX2; }
 };
 
@@ -44,7 +44,7 @@ void deinterleave_epi64(__m256i& X0, __m256i& X1)
 
 }
 
-void Threefish_512_AVX2::encrypt_n(byte* input, byte* output, size_t blocks) const
+void Threefish_512_AVX2::encrypt_n(ubyte* input, ubyte* output, size_t blocks) const
 {
 	const ulong* K = &get_K()[0];
 	const ulong* T_64 = &get_T()[0];
@@ -239,7 +239,7 @@ void Threefish_512_AVX2::encrypt_n(byte* input, byte* output, size_t blocks) con
 #undef THREEFISH_INJECT_KEY_2
 }
 
-void Threefish_512_AVX2::decrypt_n(byte* input, byte* output, size_t blocks) const
+void Threefish_512_AVX2::decrypt_n(ubyte* input, ubyte* output, size_t blocks) const
 {
 	const ulong* K = &get_K()[0];
 	const ulong* T_64 = &get_T()[0];

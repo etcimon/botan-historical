@@ -78,9 +78,9 @@ void Extensions::deserialize(TLS_Data_Reader& reader)
 	}
 }
 
-Vector!byte Extensions::serialize() const
+Vector!ubyte Extensions::serialize() const
 {
-	Vector!byte buf(2); // 2 bytes for length field
+	Vector!ubyte buf(2); // 2 bytes for length field
 
 	foreach (ref extn; extensions)
 	{
@@ -89,7 +89,7 @@ Vector!byte Extensions::serialize() const
 
 		const ushort extn_code = extn.second.type();
 
-		Vector!byte extn_val = extn.second.serialize();
+		Vector!ubyte extn_val = extn.second.serialize();
 
 		buf.push_back(get_byte(0, extn_code));
 		buf.push_back(get_byte(1, extn_code));
@@ -107,7 +107,7 @@ Vector!byte Extensions::serialize() const
 
 	// avoid sending a completely empty extensions block
 	if (buf.size() == 2)
-		return Vector!byte();
+		return Vector!ubyte();
 
 	return buf;
 }
@@ -136,7 +136,7 @@ Server_Name_Indicator::Server_Name_Indicator(TLS_Data_Reader& reader,
 
 	while(name_bytes)
 	{
-		byte name_type = reader.get_byte();
+		ubyte name_type = reader.get_byte();
 		name_bytes--;
 
 		if (name_type == 0) // DNS
@@ -152,9 +152,9 @@ Server_Name_Indicator::Server_Name_Indicator(TLS_Data_Reader& reader,
 	}
 }
 
-Vector!byte Server_Name_Indicator::serialize() const
+Vector!ubyte Server_Name_Indicator::serialize() const
 {
-	Vector!byte buf;
+	Vector!ubyte buf;
 
 	size_t name_len = sni_host_name.size();
 
@@ -166,7 +166,7 @@ Vector!byte Server_Name_Indicator::serialize() const
 	buf.push_back(get_byte<ushort>(1, name_len));
 
 	buf += Pair(
-		cast(const byte*)(sni_host_name.data()),
+		cast(const ubyte*)(sni_host_name.data()),
 		sni_host_name.size());
 
 	return buf;
@@ -181,12 +181,12 @@ SRP_Identifier::SRP_Identifier(TLS_Data_Reader& reader,
 		throw new Decoding_Error("Bad encoding for SRP identifier extension");
 }
 
-Vector!byte SRP_Identifier::serialize() const
+Vector!ubyte SRP_Identifier::serialize() const
 {
-	Vector!byte buf;
+	Vector!ubyte buf;
 
-	const byte* srp_bytes =
-		cast(const byte*)(srp_identifier.data());
+	const ubyte* srp_bytes =
+		cast(const ubyte*)(srp_identifier.data());
 
 	append_tls_length_value(buf, srp_bytes, srp_identifier.size(), 1);
 
@@ -196,22 +196,22 @@ Vector!byte SRP_Identifier::serialize() const
 Renegotiation_Extension::Renegotiation_Extension(TLS_Data_Reader& reader,
 																 ushort extension_size)
 {
-	reneg_data = reader.get_range!byte(1, 0, 255);
+	reneg_data = reader.get_range!ubyte(1, 0, 255);
 
 	if (reneg_data.size() + 1 != extension_size)
 		throw new Decoding_Error("Bad encoding for secure renegotiation extn");
 }
 
-Vector!byte Renegotiation_Extension::serialize() const
+Vector!ubyte Renegotiation_Extension::serialize() const
 {
-	Vector!byte buf;
+	Vector!ubyte buf;
 	append_tls_length_value(buf, reneg_data, 1);
 	return buf;
 }
 
-Vector!byte Maximum_Fragment_Length::serialize() const
+Vector!ubyte Maximum_Fragment_Length::serialize() const
 {
-	const HashMap<size_t, byte> fragment_to_code = { {  512, 1 },
+	const HashMap<size_t, ubyte> fragment_to_code = { {  512, 1 },
 																	  { 1024, 2 },
 																	  { 2048, 3 },
 																	  { 4096, 4 } };
@@ -223,7 +223,7 @@ Vector!byte Maximum_Fragment_Length::serialize() const
 											 std.conv.to!string(m_max_fragment) +
 											 " for maximum fragment size");
 
-	return Vector!byte(1, i.second);
+	return Vector!ubyte(1, i.second);
 }
 
 Maximum_Fragment_Length::Maximum_Fragment_Length(TLS_Data_Reader& reader,
@@ -231,9 +231,9 @@ Maximum_Fragment_Length::Maximum_Fragment_Length(TLS_Data_Reader& reader,
 {
 	if (extension_size != 1)
 		throw new Decoding_Error("Bad size for maximum fragment extension");
-	byte val = reader.get_byte();
+	ubyte val = reader.get_byte();
 
-	const HashMap<byte, size_t> code_to_fragment = { { 1,  512 },
+	const HashMap<ubyte, size_t> code_to_fragment = { { 1,  512 },
 																	  { 2, 1024 },
 																	  { 3, 2048 },
 																	  { 4, 4096 } };
@@ -268,9 +268,9 @@ Next_Protocol_Notification::Next_Protocol_Notification(TLS_Data_Reader& reader,
 	}
 }
 
-Vector!byte Next_Protocol_Notification::serialize() const
+Vector!ubyte Next_Protocol_Notification::serialize() const
 {
-	Vector!byte buf;
+	Vector!ubyte buf;
 
 	for (size_t i = 0; i != m_protocols.size(); ++i)
 	{
@@ -278,7 +278,7 @@ Vector!byte Next_Protocol_Notification::serialize() const
 
 		if (p != "")
 			append_tls_length_value(buf,
-											cast(const byte*)(p.data()),
+											cast(const ubyte*)(p.data()),
 											p.size(),
 											1);
 	}
@@ -357,9 +357,9 @@ ushort Supported_Elliptic_Curves::name_to_curve_id(in string name)
 	throw new Invalid_Argument("name_to_curve_id unknown name " ~ name);
 }
 
-Vector!byte Supported_Elliptic_Curves::serialize() const
+Vector!ubyte Supported_Elliptic_Curves::serialize() const
 {
-	Vector!byte buf(2);
+	Vector!ubyte buf(2);
 
 	for (size_t i = 0; i != m_curves.size(); ++i)
 	{
@@ -397,7 +397,7 @@ Supported_Elliptic_Curves::Supported_Elliptic_Curves(TLS_Data_Reader& reader,
 	}
 }
 
-string Signature_Algorithms::hash_algo_name(byte code)
+string Signature_Algorithms::hash_algo_name(ubyte code)
 {
 	switch(code)
 	{
@@ -420,7 +420,7 @@ string Signature_Algorithms::hash_algo_name(byte code)
 	}
 }
 
-byte Signature_Algorithms::hash_algo_code(in string name)
+ubyte Signature_Algorithms::hash_algo_code(in string name)
 {
 	if (name == "MD5")
 		return 1;
@@ -443,7 +443,7 @@ byte Signature_Algorithms::hash_algo_code(in string name)
 	throw new Internal_Error("Unknown hash ID " ~ name ~ " for signature_algorithms");
 }
 
-string Signature_Algorithms::sig_algo_name(byte code)
+string Signature_Algorithms::sig_algo_name(ubyte code)
 {
 	switch(code)
 	{
@@ -458,7 +458,7 @@ string Signature_Algorithms::sig_algo_name(byte code)
 	}
 }
 
-byte Signature_Algorithms::sig_algo_code(in string name)
+ubyte Signature_Algorithms::sig_algo_code(in string name)
 {
 	if (name == "RSA")
 		return 1;
@@ -472,16 +472,16 @@ byte Signature_Algorithms::sig_algo_code(in string name)
 	throw new Internal_Error("Unknown sig ID " ~ name ~ " for signature_algorithms");
 }
 
-Vector!byte Signature_Algorithms::serialize() const
+Vector!ubyte Signature_Algorithms::serialize() const
 {
-	Vector!byte buf(2);
+	Vector!ubyte buf(2);
 
 	for (size_t i = 0; i != m_supported_algos.size(); ++i)
 	{
 		try
 		{
-			const byte hash_code = hash_algo_code(m_supported_algos[i].first);
-			const byte sig_code = sig_algo_code(m_supported_algos[i].second);
+			const ubyte hash_code = hash_algo_code(m_supported_algos[i].first);
+			const ubyte sig_code = sig_algo_code(m_supported_algos[i].second);
 
 			buf.push_back(hash_code);
 			buf.push_back(sig_code);
@@ -530,7 +530,7 @@ Signature_Algorithms::Signature_Algorithms(TLS_Data_Reader& reader,
 Session_Ticket::Session_Ticket(TLS_Data_Reader& reader,
 										 ushort extension_size)
 {
-	m_ticket = reader.get_elem!(byte, Vector!byte)(extension_size);
+	m_ticket = reader.get_elem!(ubyte, Vector!ubyte)(extension_size);
 }
 
 }

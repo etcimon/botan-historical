@@ -15,10 +15,10 @@ namespace {
 /*
 * TLS PRF P_hash function
 */
-void P_hash(SafeVector!byte output,
+void P_hash(SafeVector!ubyte output,
 				MessageAuthenticationCode& mac,
-				in byte* secret, size_t secret_len,
-				in byte* seed, size_t seed_len)
+				in ubyte* secret, size_t secret_len,
+				in ubyte* seed, size_t seed_len)
 {
 	try
 	{
@@ -31,7 +31,7 @@ void P_hash(SafeVector!byte output,
 									" bytes is too long for the PRF");
 	}
 
-	SafeVector!byte A(seed, seed + seed_len);
+	SafeVector!ubyte A(seed, seed + seed_len);
 
 	size_t offset = 0;
 
@@ -44,7 +44,7 @@ void P_hash(SafeVector!byte output,
 
 		mac.update(A);
 		mac.update(seed, seed_len);
-		SafeVector!byte block = mac.flush();
+		SafeVector!ubyte block = mac.flush();
 
 		xor_buf(&output[offset], &block[0], this_block_len);
 		offset += this_block_len;
@@ -65,16 +65,16 @@ TLS_PRF::TLS_PRF()
 /*
 * TLS PRF
 */
-SafeVector!byte TLS_PRF::derive(size_t key_len,
-											  in byte* secret, size_t secret_len,
-											  in byte* seed, size_t seed_len) const
+SafeVector!ubyte TLS_PRF::derive(size_t key_len,
+											  in ubyte* secret, size_t secret_len,
+											  in ubyte* seed, size_t seed_len) const
 {
-	SafeVector!byte output(key_len);
+	SafeVector!ubyte output(key_len);
 
 	size_t S1_len = (secret_len + 1) / 2,
 			 S2_len = (secret_len + 1) / 2;
-	const byte* S1 = secret;
-	const byte* S2 = secret + (secret_len - S2_len);
+	const ubyte* S1 = secret;
+	const ubyte* S2 = secret + (secret_len - S2_len);
 
 	P_hash(output, *hmac_md5,  S1, S1_len, seed, seed_len);
 	P_hash(output, *hmac_sha1, S2, S2_len, seed, seed_len);
@@ -89,11 +89,11 @@ TLS_12_PRF::TLS_12_PRF(MessageAuthenticationCode mac) : hmac(mac)
 {
 }
 
-SafeVector!byte TLS_12_PRF::derive(size_t key_len,
-												  in byte* secret, size_t secret_len,
-												  in byte* seed, size_t seed_len) const
+SafeVector!ubyte TLS_12_PRF::derive(size_t key_len,
+												  in ubyte* secret, size_t secret_len,
+												  in ubyte* seed, size_t seed_len) const
 {
-	SafeVector!byte output(key_len);
+	SafeVector!ubyte output(key_len);
 
 	P_hash(output, *hmac, secret, secret_len, seed, seed_len);
 

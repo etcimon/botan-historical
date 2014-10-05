@@ -10,7 +10,7 @@ import botan.numthry;
 import botan.keypair;
 import future;
 NR_PublicKey::NR_PublicKey(in AlgorithmIdentifier alg_id,
-									in SafeVector!byte key_bits) :
+									in SafeVector!ubyte key_bits) :
 	DL_Scheme_PublicKey(alg_id, key_bits, DL_Group::ANSI_X9_57)
 {
 }
@@ -46,7 +46,7 @@ NR_PrivateKey::NR_PrivateKey(RandomNumberGenerator rng,
 }
 
 NR_PrivateKey::NR_PrivateKey(in AlgorithmIdentifier alg_id,
-									  in SafeVector!byte key_bits,
+									  in SafeVector!ubyte key_bits,
 									  RandomNumberGenerator rng) :
 	DL_Scheme_PrivateKey(alg_id, key_bits, DL_Group::ANSI_X9_57)
 {
@@ -77,8 +77,8 @@ NR_Signature_Operation::NR_Signature_Operation(in NR_PrivateKey nr) :
 {
 }
 
-SafeVector!byte
-NR_Signature_Operation::sign(in byte* msg, size_t msg_len,
+SafeVector!ubyte
+NR_Signature_Operation::sign(in ubyte* msg, size_t msg_len,
 									  RandomNumberGenerator rng)
 {
 	rng.add_entropy(msg, msg_len);
@@ -101,7 +101,7 @@ NR_Signature_Operation::sign(in byte* msg, size_t msg_len,
 		d = mod_q.reduce(k - x * c);
 	}
 
-	SafeVector!byte output(2*q.bytes());
+	SafeVector!ubyte output(2*q.bytes());
 	c.binary_encode(&output[output.size() / 2 - c.bytes()]);
 	d.binary_encode(&output[output.size() - d.bytes()]);
 	return output;
@@ -116,8 +116,8 @@ NR_Verification_Operation::NR_Verification_Operation(in NR_PublicKey nr) :
 	mod_q = Modular_Reducer(nr.group_q());
 }
 
-SafeVector!byte
-NR_Verification_Operation::verify_mr(in byte* msg, size_t msg_len)
+SafeVector!ubyte
+NR_Verification_Operation::verify_mr(in ubyte* msg, size_t msg_len)
 {
 	ref const BigInt q = mod_q.get_modulus();
 	size_t msg_len = msg.length;

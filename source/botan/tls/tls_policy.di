@@ -62,7 +62,7 @@ class Policy
 		*
 		* @note Compression is not currently supported
 		*/
-		abstract Vector!byte compression() const;
+		abstract Vector!ubyte compression() const;
 
 		/**
 		* Choose an elliptic curve to use

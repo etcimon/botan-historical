@@ -9,7 +9,7 @@ import botan.numthry;
 /*
 * Calculate the Jacobi symbol
 */
-s32bit jacobi(in BigInt a, ref const BigInt n)
+int jacobi(in BigInt a, ref const BigInt n)
 {
 	if (a.is_negative())
 		throw new Invalid_Argument("jacobi: first argument must be non-negative");
@@ -17,7 +17,7 @@ s32bit jacobi(in BigInt a, ref const BigInt n)
 		throw new Invalid_Argument("jacobi: second argument must be odd and > 1");
 
 	BigInt x = a, y = n;
-	s32bit J = 1;
+	int J = 1;
 
 	while(y > 1)
 	{

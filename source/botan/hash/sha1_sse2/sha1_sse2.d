@@ -16,7 +16,7 @@ namespace SHA1_SSE2_F {
 namespace {
 
 /*
-* First 16 bytes just need byte swapping. Preparing just means
+* First 16 bytes just need ubyte swapping. Preparing just means
 * adding in the round constants.
 */
 
@@ -78,7 +78,7 @@ W0 = W[t]..W[t+3]
 	do {																					  \
 		__m128i r0, r1, r2, r3;														 \
 																								\
-		/* load W[t-4] 16-byte aligned, and shift */							 \
+		/* load W[t-4] 16-ubyte aligned, and shift */							 \
 		r3 = _mm_srli_si128((XW3), 4);												\
 		r0 = (XW0);																		 \
 		/* get high 64-bits of XW0 into low 64-bits */						  \
@@ -150,7 +150,7 @@ W0 = W[t]..W[t+3]
 /*
 * SHA-160 Compression Function using SSE for message expansion
 */
-void SHA_160_SSE2::compress_n(in byte* input_bytes, size_t blocks)
+void SHA_160_SSE2::compress_n(in ubyte* input_bytes, size_t blocks)
 {
 	using namespace SHA1_SSE2_F;
 

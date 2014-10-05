@@ -22,7 +22,7 @@ import botan.rng;
 string generate_passhash9(in string password,
 													  RandomNumberGenerator rng,
 													  ushort work_factor = 10,
-													  byte alg_id = 1);
+													  ubyte alg_id = 1);
 
 /**
 * Check a previously created password hash

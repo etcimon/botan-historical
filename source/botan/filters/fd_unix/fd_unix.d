@@ -13,7 +13,7 @@ import unistd.h;
 */
 int operator<<(int fd, Pipe& pipe)
 {
-	SafeVector!byte buffer(DEFAULT_BUFFERSIZE);
+	SafeVector!ubyte buffer(DEFAULT_BUFFERSIZE);
 	while(pipe.remaining())
 	{
 		size_t got = pipe.read(&buffer[0], buffer.size());
@@ -35,7 +35,7 @@ int operator<<(int fd, Pipe& pipe)
 */
 int operator>>(int fd, Pipe& pipe)
 {
-	SafeVector!byte buffer(DEFAULT_BUFFERSIZE);
+	SafeVector!ubyte buffer(DEFAULT_BUFFERSIZE);
 	while(true)
 	{
 		ssize_t ret = read(fd, &buffer[0], buffer.size());

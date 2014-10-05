@@ -10,7 +10,7 @@ import botan.loadstor;
 /*
 * TEA Encryption
 */
-void TEA::encrypt_n(byte* input, byte* output, size_t blocks) const
+void TEA::encrypt_n(ubyte* input, ubyte* output, size_t blocks) const
 {
 	for (size_t i = 0; i != blocks; ++i)
 	{
@@ -35,7 +35,7 @@ void TEA::encrypt_n(byte* input, byte* output, size_t blocks) const
 /*
 * TEA Decryption
 */
-void TEA::decrypt_n(byte* input, byte* output, size_t blocks) const
+void TEA::decrypt_n(ubyte* input, ubyte* output, size_t blocks) const
 {
 	for (size_t i = 0; i != blocks; ++i)
 	{
@@ -60,7 +60,7 @@ void TEA::decrypt_n(byte* input, byte* output, size_t blocks) const
 /*
 * TEA Key Schedule
 */
-void TEA::key_schedule(in byte* key, size_t)
+void TEA::key_schedule(in ubyte* key, size_t)
 {
 	K.resize(4);
 	for (size_t i = 0; i != 4; ++i)

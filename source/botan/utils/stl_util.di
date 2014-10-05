@@ -8,10 +8,10 @@
 import vector;
 import string;
 import map;
- Vector!byte to_byte_vector(in string s)
+ Vector!ubyte to_byte_vector(in string s)
 {
-	return Vector!byte(cast(in byte*)(s[0]),
-									 cast(in byte*)(s[s.size()]));
+	return Vector!ubyte(cast(in ubyte*)(s[0]),
+									 cast(in ubyte*)(s[s.size()]));
 }
 
 /*

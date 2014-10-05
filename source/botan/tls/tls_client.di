@@ -53,9 +53,9 @@ class Client : public Channel
 		*		  be preallocated for the read and write buffers. Smaller
 		*		  values just mean reallocations and copies are more likely.
 		*/
-		Client(void delegate(in byte[]) socket_output_fn,
-				 void delegate(in byte[]) data_cb,
-				 void delegate(Alert, in byte[]) alert_cb,
+		Client(void delegate(in ubyte[]) socket_output_fn,
+				 void delegate(in ubyte[]) data_cb,
+				 void delegate(Alert, in ubyte[]) alert_cb,
 				 bool delegate(const Session) handshake_cb,
 				 Session_Manager& session_manager,
 				 Credentials_Manager& creds,
@@ -83,7 +83,7 @@ class Client : public Channel
 		void process_handshake_msg(const Handshake_State active_state,
 											Handshake_State pending_state,
 											Handshake_Type type,
-											in Vector!byte contents) override;
+											in Vector!ubyte contents) override;
 
 		Handshake_State new_handshake_state(Handshake_IO io) override;
 

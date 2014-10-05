@@ -14,17 +14,17 @@ class OSSL_BN
 {
 	public:
 		BigInt to_bigint() const;
-		void encode(byte[], size_t) const;
+		void encode(ubyte[], size_t) const;
 		size_t bytes() const;
 
-		SafeVector!byte to_bytes() const
+		SafeVector!ubyte to_bytes() const
 		{ return BigInt::encode_locked(to_bigint()); }
 
 		OSSL_BN& operator=(in OSSL_BN);
 
 		OSSL_BN(in OSSL_BN);
 		OSSL_BN(in BigInt = 0);
-		OSSL_BN(const byte[], size_t);
+		OSSL_BN(const ubyte[], size_t);
 		~this();
 
 		BIGNUM* ptr() const { return m_bn; }

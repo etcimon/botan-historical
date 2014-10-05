@@ -61,7 +61,7 @@ string url_encode(in string input)
 		else if (c == '-' || c == '_' || c == '.' || c == '~')
 			out << c;
 		else
-			out << '%' << hex_encode(cast(byte*)(&c), 1);
+			out << '%' << hex_encode(cast(ubyte*)(&c), 1);
 	}
 
 	return out.str();
@@ -81,7 +81,7 @@ Response http_sync(http_exch_fn http_transact,
 						 in string verb,
 						 in string url,
 						 in string content_type,
-						 in Vector!byte body,
+						 in Vector!ubyte body,
 						 size_t allowable_redirects)
 {
 	const auto protocol_host_sep = url.find("://");
@@ -164,8 +164,8 @@ Response http_sync(http_exch_fn http_transact,
 		return GET_sync(headers["Location"], allowable_redirects - 1);
 	}
 
-	Vector!byte resp_body;
-	Vector!byte buf(4096);
+	Vector!ubyte resp_body;
+	Vector!ubyte buf(4096);
 	while(io.good())
 	{
 		io.read(cast(char*)(&buf[0]), buf.size());
@@ -187,7 +187,7 @@ Response http_sync(http_exch_fn http_transact,
 Response http_sync(in string verb,
 						 in string url,
 						 in string content_type,
-						 in Vector!byte body,
+						 in Vector!ubyte body,
 						 size_t allowable_redirects)
 {
 	return http_sync(
@@ -205,12 +205,12 @@ Response http_sync(in string verb,
 
 Response GET_sync(in string url, size_t allowable_redirects)
 {
-	return http_sync("GET", url, "", Vector!byte(), allowable_redirects);
+	return http_sync("GET", url, "", Vector!ubyte(), allowable_redirects);
 }
 
 Response POST_sync(in string url,
 						 in string content_type,
-						 in Vector!byte body,
+						 in Vector!ubyte body,
 						 size_t allowable_redirects)
 {
 	return http_sync("POST", url, content_type, body, allowable_redirects);

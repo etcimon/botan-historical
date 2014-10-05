@@ -13,13 +13,13 @@ import botan.block_cipher;
 class ANSI_X931_RNG : public RandomNumberGenerator
 {
 	public:
-		void randomize(byte[], size_t);
+		void randomize(ubyte[], size_t);
 		bool is_seeded() const;
 		void clear();
 		string name() const;
 
 		void reseed(size_t poll_bits);
-		void add_entropy(const byte[], size_t);
+		void add_entropy(const ubyte[], size_t);
 
 		/**
 		* @param cipher the block cipher to use in this PRNG
@@ -35,6 +35,6 @@ class ANSI_X931_RNG : public RandomNumberGenerator
 
 		Unique!BlockCipher m_cipher;
 		Unique!RandomNumberGenerator m_prng;
-		SafeVector!byte m_V, m_R;
+		SafeVector!ubyte m_V, m_R;
 		size_t m_R_pos;
 };

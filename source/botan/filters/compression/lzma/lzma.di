@@ -16,7 +16,7 @@ class Lzma_Compression : public Filter
 	public:
 		string name() const { return "Lzma_Compression"; }
 
-		void write(in byte* input, size_t length);
+		void write(in ubyte* input, size_t length);
 		void start_msg();
 		void end_msg();
 
@@ -37,7 +37,7 @@ class Lzma_Compression : public Filter
 		void clear();
 		const size_t level;
 
-		SafeVector!byte buffer;
+		SafeVector!ubyte buffer;
 		class Lzma_Stream* lzma;
 };
 
@@ -49,7 +49,7 @@ class Lzma_Decompression : public Filter
 	public:
 		string name() const { return "Lzma_Decompression"; }
 
-		void write(in byte* input, size_t length);
+		void write(in ubyte* input, size_t length);
 		void start_msg();
 		void end_msg();
 
@@ -58,7 +58,7 @@ class Lzma_Decompression : public Filter
 	private:
 		void clear();
 
-		SafeVector!byte buffer;
+		SafeVector!ubyte buffer;
 		class Lzma_Stream* lzma;
 		bool no_writes;
 };

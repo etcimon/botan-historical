@@ -25,16 +25,16 @@ class PSSR : public EMSA
 		*/
 		PSSR(HashFunction hash, size_t salt_size);
 	private:
-		void update(in byte* input, size_t length);
+		void update(in ubyte* input, size_t length);
 
-		SafeVector!byte raw_data();
+		SafeVector!ubyte raw_data();
 
-		SafeVector!byte encoding_of(in SafeVector!byte msg,
+		SafeVector!ubyte encoding_of(in SafeVector!ubyte msg,
 												  size_t output_bits,
 												  RandomNumberGenerator rng);
 
-		bool verify(in SafeVector!byte coded,
-						in SafeVector!byte raw,
+		bool verify(in SafeVector!ubyte coded,
+						in SafeVector!ubyte raw,
 						size_t key_bits);
 
 		size_t SALT_SIZE;

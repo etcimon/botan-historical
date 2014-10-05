@@ -59,12 +59,12 @@ class BigInt
 	BigInt(in string str);
 
 	/**
-	* Create a BigInt from an integer in a byte array
-	* @param buf the byte array holding the value
+	* Create a BigInt from an integer in a ubyte array
+	* @param buf the ubyte array holding the value
 	* @param length size of buf
 	* @param base is the number base of the integer in buf
 	*/
-	BigInt(in byte* buf, size_t length, Base base = Binary);
+	BigInt(in ubyte* buf, size_t length, Base base = Binary);
 
 	/**
 	* Create a random BigInt of the specified size
@@ -207,7 +207,7 @@ class BigInt
 	* @result if (this<n) return -1, if (this>n) return 1, if both
 	* values are identical return 0 [like Perl's <=> operator]
 	*/
-	s32bit cmp(in BigInt n, bool check_signs = true) const;
+	int cmp(in BigInt n, bool check_signs = true) const;
 
 	/**
 	* Test if the integer has an even value
@@ -283,10 +283,10 @@ class BigInt
 	uint to_uint() const;
 
 	/**
-	* @param n the offset to get a byte from
-	* @result byte at offset n
+	* @param n the offset to get a ubyte from
+	* @result ubyte at offset n
 	*/
-	byte byte_at(size_t n) const;
+	ubyte byte_at(size_t n) const;
 
 	/**
 	* Return the word at a specified position of the internal register
@@ -356,8 +356,8 @@ class BigInt
 		}
 
 	/**
-	* Give byte length of the integer
-	* @result byte length of the represented integer value
+	* Give ubyte length of the integer
+	* @result ubyte length of the represented integer value
 	*/
 	size_t bytes() const;
 
@@ -393,23 +393,23 @@ class BigInt
 	void randomize(RandomNumberGenerator rng, size_t bitsize = 0);
 
 	/**
-	* Store BigInt-value in a given byte array
-	* @param buf destination byte array for the integer value
+	* Store BigInt-value in a given ubyte array
+	* @param buf destination ubyte array for the integer value
 	*/
-	void binary_encode(byte buf[]) const;
+	void binary_encode(ubyte buf[]) const;
 
 	/**
-	* Read integer value from a byte array with given size
-	* @param buf byte array buffer containing the integer
+	* Read integer value from a ubyte array with given size
+	* @param buf ubyte array buffer containing the integer
 	* @param length size of buf
 	*/
-	void binary_decode(in byte* buf, size_t length);
+	void binary_decode(in ubyte* buf, size_t length);
 
 	/**
-	* Read integer value from a byte array (SafeVector!byte)
+	* Read integer value from a ubyte array (SafeVector!ubyte)
 	* @param buf the array to load from
 	*/
-	void binary_decode(in SafeVector!byte buf)
+	void binary_decode(in SafeVector!ubyte buf)
 		{
 		binary_decode(&buf[0], buf.size());
 		}
@@ -445,70 +445,70 @@ class BigInt
 	/**
 	* Encode the integer value from a BigInt to a std::vector of bytes
 	* @param n the BigInt to use as integer source
-	* @param base number-base of resulting byte array representation
+	* @param base number-base of resulting ubyte array representation
 	* @result secure_vector of bytes containing the integer with given base
 	*/
-	static Vector!byte encode(in BigInt n, Base base = Binary);
+	static Vector!ubyte encode(in BigInt n, Base base = Binary);
 
 	/**
 	* Encode the integer value from a BigInt to a secure_vector of bytes
 	* @param n the BigInt to use as integer source
-	* @param base number-base of resulting byte array representation
+	* @param base number-base of resulting ubyte array representation
 	* @result secure_vector of bytes containing the integer with given base
 	*/
-	static SafeVector!byte encode_locked(in BigInt n,
+	static SafeVector!ubyte encode_locked(in BigInt n,
 															 Base base = Binary);
 
 	/**
-	* Encode the integer value from a BigInt to a byte array
-	* @param buf destination byte array for the encoded integer
+	* Encode the integer value from a BigInt to a ubyte array
+	* @param buf destination ubyte array for the encoded integer
 	* value with given base
 	* @param n the BigInt to use as integer source
-	* @param base number-base of resulting byte array representation
+	* @param base number-base of resulting ubyte array representation
 	*/
-	staticvoid encode(byte buf[], const BigInt n, Base base = Binary);
+	staticvoid encode(ubyte buf[], const BigInt n, Base base = Binary);
 
 	/**
-	* Create a BigInt from an integer in a byte array
+	* Create a BigInt from an integer in a ubyte array
 	* @param buf the binary value to load
 	* @param length size of buf
 	* @param base number-base of the integer in buf
-	* @result BigInt representing the integer in the byte array
+	* @result BigInt representing the integer in the ubyte array
 	*/
-	static BigInt decode(in byte* buf, size_t length,
+	static BigInt decode(in ubyte* buf, size_t length,
 								Base base = Binary);
 
 	/**
-	* Create a BigInt from an integer in a byte array
+	* Create a BigInt from an integer in a ubyte array
 	* @param buf the binary value to load
 	* @param base number-base of the integer in buf
-	* @result BigInt representing the integer in the byte array
+	* @result BigInt representing the integer in the ubyte array
 	*/
-	static BigInt decode(in SafeVector!byte buf,
+	static BigInt decode(in SafeVector!ubyte buf,
 								Base base = Binary)
 		{
 		return BigInt::decode(&buf[0], buf.size(), base);
 		}
 
 	/**
-	* Create a BigInt from an integer in a byte array
+	* Create a BigInt from an integer in a ubyte array
 	* @param buf the binary value to load
 	* @param base number-base of the integer in buf
-	* @result BigInt representing the integer in the byte array
+	* @result BigInt representing the integer in the ubyte array
 	*/
-	static BigInt decode(in Vector!byte buf,
+	static BigInt decode(in Vector!ubyte buf,
 								Base base = Binary)
 		{
 		return BigInt::decode(&buf[0], buf.size(), base);
 		}
 
 	/**
-	* Encode a BigInt to a byte array according to IEEE 1363
+	* Encode a BigInt to a ubyte array according to IEEE 1363
 	* @param n the BigInt to encode
-	* @param bytes the length of the resulting SafeVector!byte
-	* @result a SafeVector!byte containing the encoded BigInt
+	* @param bytes the length of the resulting SafeVector!ubyte
+	* @result a SafeVector!ubyte containing the encoded BigInt
 	*/
-	static SafeVector!byte encode_1363(in BigInt n, size_t bytes);
+	static SafeVector!ubyte encode_1363(in BigInt n, size_t bytes);
 
 	private:
 		secure_vector!word m_reg;

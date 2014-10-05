@@ -19,7 +19,7 @@ void BigInt::randomize(RandomNumberGenerator rng,
 		clear();
 	else
 	{
-		SafeVector!byte array = rng.random_vec((bitsize + 7) / 8);
+		SafeVector!ubyte array = rng.random_vec((bitsize + 7) / 8);
 
 		if (bitsize % 8)
 			array[0] &= 0xFF >> (8 - (bitsize % 8));

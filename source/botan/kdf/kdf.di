@@ -24,12 +24,12 @@ class KDF
 		* @param secret the secret input
 		* @param salt a diversifier
 		*/
-		SafeVector!byte derive_key(size_t key_len,
-									in SafeVector!byte secret,
+		SafeVector!ubyte derive_key(size_t key_len,
+									in SafeVector!ubyte secret,
 									in string salt = "") const
 		{
 			return derive_key(key_len, &secret[0], secret.size(),
-									cast(const byte*)(salt.data()),
+									cast(const ubyte*)(salt.data()),
 									salt.length());
 		}
 
@@ -40,9 +40,9 @@ class KDF
 		* @param salt a diversifier
 		*/
 		
-		SafeVector!byte derive_key(Alloc, Alloc2)(size_t key_len,
-													 in Vector!( byte, Alloc ) secret,
-													 in Vector!( byte, Alloc2 ) salt) const
+		SafeVector!ubyte derive_key(Alloc, Alloc2)(size_t key_len,
+													 in Vector!( ubyte, Alloc ) secret,
+													 in Vector!( ubyte, Alloc2 ) salt) const
 		{
 			return derive_key(key_len,
 									&secret[0], secret.size(),
@@ -56,9 +56,9 @@ class KDF
 		* @param salt a diversifier
 		* @param salt_len size of salt in bytes
 		*/
-		SafeVector!byte derive_key(size_t key_len,
-									in SafeVector!byte secret,
-									in byte* salt,
+		SafeVector!ubyte derive_key(size_t key_len,
+									in SafeVector!ubyte secret,
+									in ubyte* salt,
 									size_t salt_len) const
 		{
 			return derive_key(key_len,
@@ -73,13 +73,13 @@ class KDF
 		* @param secret_len size of secret in bytes
 		* @param salt a diversifier
 		*/
-		SafeVector!byte derive_key(size_t key_len,
-									in byte* secret,
+		SafeVector!ubyte derive_key(size_t key_len,
+									in ubyte* secret,
 									size_t secret_len,
 									in string salt = "") const
 		{
 			return derive_key(key_len, secret, secret_len,
-									cast(const byte*)(salt.data()),
+									cast(const ubyte*)(salt.data()),
 									salt.length());
 		}
 
@@ -91,10 +91,10 @@ class KDF
 		* @param salt a diversifier
 		* @param salt_len size of salt in bytes
 		*/
-		SafeVector!byte derive_key(size_t key_len,
-									in byte* secret,
+		SafeVector!ubyte derive_key(size_t key_len,
+									in ubyte* secret,
 									size_t secret_len,
-									in byte* salt,
+									in ubyte* salt,
 									size_t salt_len) const
 		{
 			return derive(key_len, secret, secret_len, salt, salt_len);
@@ -102,10 +102,10 @@ class KDF
 
 		abstract KDF* clone() const;
 	private:
-		abstract SafeVector!byte
+		abstract SafeVector!ubyte
 			derive(size_t key_len,
-					 in byte* secret, size_t secret_len,
-					 in byte* salt, size_t salt_len) const;
+					 in ubyte* secret, size_t secret_len,
+					 in ubyte* salt, size_t salt_len) const;
 };
 
 /**

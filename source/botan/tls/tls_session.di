@@ -37,22 +37,22 @@ class Session
 		/**
 		* New session (sets session start time)
 		*/
-		Session(in Vector!byte session_id,
-				  in SafeVector!byte master_secret,
+		Session(in Vector!ubyte session_id,
+				  in SafeVector!ubyte master_secret,
 				  Protocol_Version _version,
 				  ushort ciphersuite,
-				  byte compression_method,
+				  ubyte compression_method,
 				  Connection_Side side,
 				  size_t fragment_size,
 				  const Vector!( X509_Certificate )& peer_certs,
-				  in Vector!byte session_ticket,
+				  in Vector!ubyte session_ticket,
 				  const Server_Information& server_info,
 				  in string srp_identifier);
 
 		/**
 		* Load a session from DER representation (created by DER_encode)
 		*/
-		Session(in byte* ber, size_t ber_len);
+		Session(in ubyte* ber, size_t ber_len);
 
 		/**
 		* Load a session from PEM representation (created by PEM_encode)
@@ -64,19 +64,19 @@ class Session
 		* @warning if the master secret is compromised so is the
 		* session traffic
 		*/
-		SafeVector!byte DER_encode() const;
+		SafeVector!ubyte DER_encode() const;
 
 		/**
 		* Encrypt a session (useful for serialization or session tickets)
 		*/
-		Vector!byte encrypt(in SymmetricKey key,
+		Vector!ubyte encrypt(in SymmetricKey key,
 										  RandomNumberGenerator rng) const;		/**
 		* Decrypt a session created by encrypt
 		* @param ctext the ciphertext returned by encrypt
 		* @param ctext_size the size of ctext in bytes
 		* @param key the same key used by the encrypting side
 		*/
-		static Session decrypt(in byte* ctext,
+		static Session decrypt(in ubyte* ctext,
 									  size_t ctext_size,
 									  const SymmetricKey& key);
 
@@ -85,7 +85,7 @@ class Session
 		* @param ctext the ciphertext returned by encrypt
 		* @param key the same key used by the encrypting side
 		*/
-		static  Session decrypt(in Vector!byte ctext,
+		static  Session decrypt(in Vector!ubyte ctext,
 												const SymmetricKey& key)
 		{
 			return Session::decrypt(&ctext[0], ctext.size(), key);
@@ -116,7 +116,7 @@ class Session
 		/**
 		* Get the compression method used in the saved session
 		*/
-		byte compression_method() const { return m_compression_method; }
+		ubyte compression_method() const { return m_compression_method; }
 
 		/**
 		* Get which side of the connection the resumed session we are/were
@@ -132,13 +132,13 @@ class Session
 		/**
 		* Get the saved master secret
 		*/
-		in SafeVector!byte master_secret() const
+		in SafeVector!ubyte master_secret() const
 		{ return m_master_secret; }
 
 		/**
 		* Get the session identifier
 		*/
-		in Vector!byte session_id() const
+		in Vector!ubyte session_id() const
 		{ return m_identifier; }
 
 		/**
@@ -165,7 +165,7 @@ class Session
 		/**
 		* Return the session ticket the server gave us
 		*/
-		in Vector!byte session_ticket() const { return m_session_ticket; }
+		in Vector!ubyte session_ticket() const { return m_session_ticket; }
 
 		Server_Information server_info() const { return m_server_info; }
 
@@ -174,13 +174,13 @@ class Session
 
 		SysTime m_start_time;
 
-		Vector!byte m_identifier;
-		Vector!byte m_session_ticket; // only used by client side
-		SafeVector!byte m_master_secret;
+		Vector!ubyte m_identifier;
+		Vector!ubyte m_session_ticket; // only used by client side
+		SafeVector!ubyte m_master_secret;
 
 		Protocol_Version m_version;
 		ushort m_ciphersuite;
-		byte m_compression_method;
+		ubyte m_compression_method;
 		Connection_Side m_connection_side;
 
 		size_t m_fragment_size;

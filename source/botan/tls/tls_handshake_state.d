@@ -190,7 +190,7 @@ void Handshake_State::compute_session_keys()
 	m_session_keys = Session_Keys(this, client_kex().pre_master_secret(), false);
 }
 
-void Handshake_State::compute_session_keys(in SafeVector!byte resume_master_secret)
+void Handshake_State::compute_session_keys(in SafeVector!ubyte resume_master_secret)
 {
 	m_session_keys = Session_Keys(this, resume_master_secret, true);
 }
@@ -228,7 +228,7 @@ bool Handshake_State::received_handshake_msg(Handshake_Type handshake_msg) const
 	return (m_hand_received_mask & mask);
 }
 
-Pair!(Handshake_Type, Vector!( byte) )
+Pair!(Handshake_Type, Vector!( ubyte) )
 Handshake_State::get_next_handshake_msg()
 {
 	const bool expecting_ccs =
@@ -245,7 +245,7 @@ string Handshake_State::srp_identifier() const
 	return "";
 }
 
-Vector!byte Handshake_State::session_ticket() const
+Vector!ubyte Handshake_State::session_ticket() const
 {
 	if (new_session_ticket() && !new_session_ticket().ticket().empty())
 		return new_session_ticket().ticket();

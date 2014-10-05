@@ -12,14 +12,14 @@ import botan.block_cipher;
 class MARS : public Block_Cipher_Fixed_Params!(16, 16, 32, 4)
 {
 	public:
-		void encrypt_n(byte* input, byte* output, size_t blocks) const;
-		void decrypt_n(byte* input, byte* output, size_t blocks) const;
+		void encrypt_n(ubyte* input, ubyte* output, size_t blocks) const;
+		void decrypt_n(ubyte* input, ubyte* output, size_t blocks) const;
 
 		void clear();
 		string name() const { return "MARS"; }
 		BlockCipher clone() const { return new MARS; }
 	private:
-		void key_schedule(in byte*, size_t);
+		void key_schedule(in ubyte*, size_t);
 
 		secure_vector!uint EK;
 };

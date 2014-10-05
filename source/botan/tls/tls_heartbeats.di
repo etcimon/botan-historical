@@ -16,18 +16,18 @@ class Heartbeat_Message
 	public:
 		enum Type { REQUEST = 1, RESPONSE = 2 };
 
-		Vector!byte contents() const;
+		Vector!ubyte contents() const;
 
-		in Vector!byte payload() const { return m_payload; }
+		in Vector!ubyte payload() const { return m_payload; }
 
 		bool is_request() const { return m_type == REQUEST; }
 
-		Heartbeat_Message(in Vector!byte buf);
+		Heartbeat_Message(in Vector!ubyte buf);
 
-		Heartbeat_Message(Type type, in byte* payload, size_t payload_len);
+		Heartbeat_Message(Type type, in ubyte* payload, size_t payload_len);
 	private:
 		Type m_type;
-		Vector!byte m_payload;
+		Vector!ubyte m_payload;
 };
 
 }

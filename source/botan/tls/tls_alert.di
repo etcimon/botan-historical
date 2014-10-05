@@ -78,13 +78,13 @@ class Alert
 		/**
 		* Serialize an alert
 		*/
-		Vector!byte serialize() const;
+		Vector!ubyte serialize() const;
 
 		/**
 		* Deserialize an Alert message
 		* @param buf the serialized alert
 		*/
-		Alert(in SafeVector!byte buf);
+		Alert(in SafeVector!ubyte buf);
 
 		/**
 		* Create a new Alert

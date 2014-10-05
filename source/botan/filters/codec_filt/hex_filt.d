@@ -40,7 +40,7 @@ Hex_Encoder::Hex_Encoder(Case c) : casing(c), line_length(0)
 /*
 * Encode and send a block
 */
-void Hex_Encoder::encode_and_send(in byte* block, size_t length)
+void Hex_Encoder::encode_and_send(in ubyte* block, size_t length)
 {
 	hex_encode(cast(char*)(&output[0]),
 				  block, length,
@@ -70,7 +70,7 @@ void Hex_Encoder::encode_and_send(in byte* block, size_t length)
 /*
 * Convert some data into hex format
 */
-void Hex_Encoder::write(in byte* input, size_t length)
+void Hex_Encoder::write(in ubyte* input, size_t length)
 {
 	buffer_insert(input, position, input, length);
 	if (position + length >= input.size())
@@ -114,7 +114,7 @@ Hex_Decoder::Hex_Decoder(Decoder_Checking c) : checking(c)
 /*
 * Convert some data from hex format
 */
-void Hex_Decoder::write(in byte* input, size_t length)
+void Hex_Decoder::write(in ubyte* input, size_t length)
 {
 	while(length)
 	{

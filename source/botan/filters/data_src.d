@@ -11,17 +11,17 @@ import botan.exceptn;
 import fstream;
 import algorithm;
 /*
-* Read a single byte from the DataSource
+* Read a single ubyte from the DataSource
 */
-size_t DataSource::read_byte(ref byte output)
+size_t DataSource::read_byte(ref ubyte output)
 {
 	return read(output.ptr[0..1]);
 }
 
 /*
-* Peek a single byte from the DataSource
+* Peek a single ubyte from the DataSource
 */
-size_t DataSource::peek_byte(ref byte output) const
+size_t DataSource::peek_byte(ref ubyte output) const
 {
 	return peek(output.ptr[0..1]);
 }
@@ -32,7 +32,7 @@ size_t DataSource::peek_byte(ref byte output) const
 size_t DataSource::discard_next(size_t n)
 {
 	size_t discarded = 0;
-	byte dummy;
+	ubyte dummy;
 	for (size_t j = 0; j != n; ++j)
 		discarded += read_byte(dummy);
 	return discarded;
@@ -41,7 +41,7 @@ size_t DataSource::discard_next(size_t n)
 /*
 * Read from a memory buffer
 */
-size_t DataSource_Memory::read(byte* output)
+size_t DataSource_Memory::read(ubyte* output)
 {
 	size_t length = output.length;
 	size_t got = std.algorithm.min<size_t>(source.size() - offset, length);
@@ -53,7 +53,7 @@ size_t DataSource_Memory::read(byte* output)
 /*
 * Peek into a memory buffer
 */
-size_t DataSource_Memory::peek(byte* output,
+size_t DataSource_Memory::peek(ubyte* output,
 										 size_t peek_offset) const
 {
 	size_t length = output.length;
@@ -77,8 +77,8 @@ bool DataSource_Memory::end_of_data() const
 * DataSource_Memory Constructor
 */
 DataSource_Memory::DataSource_Memory(in string input) :
-	source(cast(const byte*)(input.data()),
-			 cast(const byte*)(input.data()) + input.length()),
+	source(cast(const ubyte*)(input.data()),
+			 cast(const ubyte*)(input.data()) + input.length()),
 	offset(0)
 {
 	offset = 0;
@@ -87,7 +87,7 @@ DataSource_Memory::DataSource_Memory(in string input) :
 /*
 * Read from a stream
 */
-size_t DataSource_Stream::read(byte* output)
+size_t DataSource_Stream::read(ubyte* output)
 {
 	size_t length = output.length;
 	source.read(cast(char*)(output), length);
@@ -102,7 +102,7 @@ size_t DataSource_Stream::read(byte* output)
 /*
 * Peek into a stream
 */
-size_t DataSource_Stream::peek(byte* output, size_t offset) const
+size_t DataSource_Stream::peek(ubyte* output, size_t offset) const
 {
 	size_t length = output.length;
 	if (end_of_data())
@@ -112,7 +112,7 @@ size_t DataSource_Stream::peek(byte* output, size_t offset) const
 
 	if (offset)
 	{
-		SafeVector!byte buf(offset);
+		SafeVector!ubyte buf(offset);
 		source.read(cast(char*)(&buf[0]), buf.size());
 		if (source.bad())
 			throw new Stream_IO_Error("DataSource_Stream::peek: Source failure");

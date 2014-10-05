@@ -13,7 +13,7 @@ namespace {
 /*
 * KASUMI S-Boxes
 */
-immutable byte[128] KASUMI_SBOX_S7 = {
+immutable ubyte[128] KASUMI_SBOX_S7 = {
 	0x36, 0x32, 0x3E, 0x38, 0x16, 0x22, 0x5E, 0x60, 0x26, 0x06, 0x3F, 0x5D,
 	0x02, 0x12, 0x7B, 0x21, 0x37, 0x71, 0x27, 0x72, 0x15, 0x43, 0x41, 0x0C,
 	0x2F, 0x49, 0x2E, 0x1B, 0x19, 0x6F, 0x7C, 0x51, 0x35, 0x09, 0x79, 0x4F,
@@ -91,7 +91,7 @@ immutable ushort[512] KASUMI_SBOX_S9 = {
 ushort FI(ushort I, ushort K)
 {
 	ushort D9 = (I >> 7);
-	byte D7 = (I & 0x7F);
+	ubyte D7 = (I & 0x7F);
 	D9 = KASUMI_SBOX_S9[D9] ^ D7;
 	D7 = KASUMI_SBOX_S7[D7] ^ (D9 & 0x7F);
 
@@ -106,7 +106,7 @@ ushort FI(ushort I, ushort K)
 /*
 * KASUMI Encryption
 */
-void KASUMI::encrypt_n(byte* input, byte* output, size_t blocks) const
+void KASUMI::encrypt_n(ubyte* input, ubyte* output, size_t blocks) const
 {
 	for (size_t i = 0; i != blocks; ++i)
 	{
@@ -150,7 +150,7 @@ void KASUMI::encrypt_n(byte* input, byte* output, size_t blocks) const
 /*
 * KASUMI Decryption
 */
-void KASUMI::decrypt_n(byte* input, byte* output, size_t blocks) const
+void KASUMI::decrypt_n(ubyte* input, ubyte* output, size_t blocks) const
 {
 	for (size_t i = 0; i != blocks; ++i)
 	{
@@ -196,7 +196,7 @@ void KASUMI::decrypt_n(byte* input, byte* output, size_t blocks) const
 /*
 * KASUMI Key Schedule
 */
-void KASUMI::key_schedule(in byte* key, size_t)
+void KASUMI::key_schedule(in ubyte* key, size_t)
 {
 	immutable ushort[] RC = { 0x0123, 0x4567, 0x89AB, 0xCDEF,
 										  0xFEDC, 0xBA98, 0x7654, 0x3210 };

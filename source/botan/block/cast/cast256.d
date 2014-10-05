@@ -46,7 +46,7 @@ void round3(ref uint output, uint input, uint mask, uint rot)
 /*
 * CAST-256 Encryption
 */
-void CAST_256::encrypt_n(byte* input, byte* output, size_t blocks) const
+void CAST_256::encrypt_n(ubyte* input, ubyte* output, size_t blocks) const
 {
 	for (size_t i = 0; i != blocks; ++i)
 	{
@@ -90,9 +90,9 @@ void CAST_256::encrypt_n(byte* input, byte* output, size_t blocks) const
 /*
 * CAST-256 Decryption
 */
-void CAST_256::decrypt_n(byte* input, byte* output, size_t blocks) const
+void CAST_256::decrypt_n(ubyte* input, ubyte* output, size_t blocks) const
 {
-	in byte* cached = output;
+	in ubyte* cached = output;
 	scope(exit) output = cached;
 	for (size_t i = 0; i != blocks; ++i)
 	{
@@ -136,7 +136,7 @@ void CAST_256::decrypt_n(byte* input, byte* output, size_t blocks) const
 /*
 * CAST-256 Key Schedule
 */
-void CAST_256::key_schedule(in byte* key)
+void CAST_256::key_schedule(in ubyte* key)
 {
 	static const uint[192] KEY_MASK = {
 		0x5A827999, 0xC95C653A, 0x383650DB, 0xA7103C7C, 0x15EA281D, 0x84C413BE,
@@ -172,7 +172,7 @@ void CAST_256::key_schedule(in byte* key)
 		0x4BBC26CD, 0xBA96126E, 0x296FFE0F, 0x9849E9B0, 0x0723D551, 0x75FDC0F2,
 		0xE4D7AC93, 0x53B19834, 0xC28B83D5, 0x31656F76, 0xA03F5B17, 0x0F1946B8 };
 
-	static const byte[32] KEY_ROT = {
+	static const ubyte[32] KEY_ROT = {
 		0x13, 0x04, 0x15, 0x06, 0x17, 0x08, 0x19, 0x0A, 0x1B, 0x0C,
 		0x1D, 0x0E, 0x1F, 0x10, 0x01, 0x12, 0x03, 0x14, 0x05, 0x16,
 		0x07, 0x18, 0x09, 0x1A, 0x0B, 0x1C, 0x0D, 0x1E, 0x0F, 0x00,

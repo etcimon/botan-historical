@@ -35,7 +35,7 @@ void MDx_HashFunction::clear()
 /*
 * Update the hash
 */
-void MDx_HashFunction::add_data(in byte* input, size_t length)
+void MDx_HashFunction::add_data(in ubyte* input, size_t length)
 {
 	count += length;
 
@@ -65,7 +65,7 @@ void MDx_HashFunction::add_data(in byte* input, size_t length)
 /*
 * Finalize a hash
 */
-void MDx_HashFunction::final_result(byte* output)
+void MDx_HashFunction::final_result(ubyte* output)
 {
 	buffer[position] = (BIG_BIT_ENDIAN ? 0x80 : 0x01);
 	for (size_t i = position+1; i != buffer.size(); ++i)
@@ -87,7 +87,7 @@ void MDx_HashFunction::final_result(byte* output)
 /*
 * Write the count bits to the buffer
 */
-void MDx_HashFunction::write_count(byte* output)
+void MDx_HashFunction::write_count(ubyte* output)
 {
 	if (COUNT_SIZE < 8)
 		throw new Invalid_State("MDx_HashFunction::write_count: COUNT_SIZE < 8");

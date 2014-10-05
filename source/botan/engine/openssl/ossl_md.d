@@ -32,8 +32,8 @@ class EVP_HashFunction : public HashFunction
 		EVP_HashFunction(const EVP_MD*, in string);
 		~this();
 	private:
-		void add_data(const byte[], size_t);
-		void final_result(byte[]);
+		void add_data(const ubyte[], size_t);
+		void final_result(ubyte[]);
 
 		string algo_name;
 		EVP_MD_CTX md;
@@ -42,7 +42,7 @@ class EVP_HashFunction : public HashFunction
 /*
 * Update an EVP Hash Calculation
 */
-void EVP_HashFunction::add_data(in byte* input, size_t length)
+void EVP_HashFunction::add_data(in ubyte* input, size_t length)
 {
 	EVP_DigestUpdate(&md, input, length);
 }
@@ -50,7 +50,7 @@ void EVP_HashFunction::add_data(in byte* input, size_t length)
 /*
 * Finalize an EVP Hash Calculation
 */
-void EVP_HashFunction::final_result(byte* output)
+void EVP_HashFunction::final_result(ubyte* output)
 {
 	EVP_DigestFinal_ex(&md, output, 0);
 	const EVP_MD* algo = EVP_MD_CTX_md(&md);

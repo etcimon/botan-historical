@@ -12,10 +12,10 @@ import botan.block_cipher;
 class Threefish_512 : public Block_Cipher_Fixed_Params!(64, 64)
 {
 	public:
-		void encrypt_n(byte* input, byte* output, size_t blocks) const override;
-		void decrypt_n(byte* input, byte* output, size_t blocks) const override;
+		void encrypt_n(ubyte* input, ubyte* output, size_t blocks) const override;
+		void decrypt_n(ubyte* input, ubyte* output, size_t blocks) const override;
 
-		void set_tweak(in byte* tweak, size_t len);
+		void set_tweak(in ubyte* tweak, size_t len);
 
 		void clear() override;
 		string name() const override { return "Threefish-512"; }
@@ -27,7 +27,7 @@ class Threefish_512 : public Block_Cipher_Fixed_Params!(64, 64)
 		const secure_vector!ulong& get_T() const { return m_T; }
 		const secure_vector!ulong& get_K() const { return m_K; }
 	private:
-		void key_schedule(in byte* key) override;
+		void key_schedule(in ubyte* key) override;
 
 		// Interface for Skein
 		friend class Skein_512;

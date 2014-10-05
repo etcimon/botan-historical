@@ -61,7 +61,7 @@ void xor_buf(T)(T* output,
 
 #if BOTAN_TARGET_UNALIGNED_MEMORY_ACCESS_OK
 
- void xor_buf(byte* output, in byte* input, size_t length)
+ void xor_buf(ubyte* output, in ubyte* input, size_t length)
 {
 	while(length >= 8)
 	{
@@ -73,9 +73,9 @@ void xor_buf(T)(T* output,
 		output[i] ^= input[i];
 }
 
- void xor_buf(byte* output,
-			  in byte* input,
-			  in byte* input2,
+ void xor_buf(ubyte* output,
+			  in ubyte* input,
+			  in ubyte* input2,
 			  size_t length)
 {
 	while(length >= 8)
@@ -91,23 +91,23 @@ void xor_buf(T)(T* output,
 		output[i] = input[i] ^ input2[i];
 }
 
-void xor_buf(Alloc, Alloc2)(Vector!( byte, Alloc ) output,
-			 in Vector!( byte, Alloc2 ) input,
+void xor_buf(Alloc, Alloc2)(Vector!( ubyte, Alloc ) output,
+			 in Vector!( ubyte, Alloc2 ) input,
 			 size_t n)
 {
 	xor_buf(&output[0], &input[0], n);
 }
 
-void xor_buf(Alloc)(Vector!( byte, Alloc )& output,
-				 in byte* input,
+void xor_buf(Alloc)(Vector!( ubyte, Alloc )& output,
+				 in ubyte* input,
 				 size_t n)
 {
 	xor_buf(&output[0], input, n);
 }
 
-void xor_buf(Alloc, Alloc2)(Vector!( byte, Alloc ) output,
-							 in byte* input,
-							 in Vector!( byte, Alloc2 )& input2,
+void xor_buf(Alloc, Alloc2)(Vector!( ubyte, Alloc ) output,
+							 in ubyte* input,
+							 in Vector!( ubyte, Alloc2 )& input2,
 							 size_t n)
 {
 	xor_buf(&output[0], &input[0], &input2[0], n);

@@ -41,13 +41,13 @@ class Session_Manager_SQLite : public Session_Manager
 
 		~this();
 
-		bool load_from_session_id(in Vector!byte session_id,
+		bool load_from_session_id(in Vector!ubyte session_id,
 										  Session& session) override;
 
 		bool load_from_server_info(in Server_Information info,
 											Session& session) override;
 
-		void remove_entry(in Vector!byte session_id) override;
+		void remove_entry(in Vector!ubyte session_id) override;
 
 		void save(in Session session_data) override;
 

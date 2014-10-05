@@ -16,10 +16,10 @@ class Base64_Encoder : public Filter
 
 		/**
 		* Input a part of a message to the encoder.
-		* @param input the message to input as a byte array
-		* @param length the length of the byte array input
+		* @param input the message to input as a ubyte array
+		* @param length the length of the ubyte array input
 		*/
-		void write(in byte* input, size_t length);
+		void write(in ubyte* input, size_t length);
 
 		/**
 		* Inform the Encoder that the current message shall be closed.
@@ -35,13 +35,13 @@ class Base64_Encoder : public Filter
 		Base64_Encoder(bool breaks = false, size_t length = 72,
 							bool t_n = false);
 	private:
-		void encode_and_send(in byte* input, size_t length,
+		void encode_and_send(in ubyte* input, size_t length,
 									bool final_inputs = false);
-		void do_output(in byte* output);
+		void do_output(in ubyte* output);
 
 		const size_t line_length;
 		const bool trailing_newline;
-		Vector!byte input, output;
+		Vector!ubyte input, output;
 		size_t position, out_position;
 };
 
@@ -55,10 +55,10 @@ class Base64_Decoder : public Filter
 
 		/**
 		* Input a part of a message to the decoder.
-		* @param input the message to input as a byte array
-		* @param length the length of the byte array input
+		* @param input the message to input as a ubyte array
+		* @param length the length of the ubyte array input
 		*/
-		void write(in byte* input, size_t length);
+		void write(in ubyte* input, size_t length);
 
 		/**
 		* Finish up the current message
@@ -73,6 +73,6 @@ class Base64_Decoder : public Filter
 		Base64_Decoder(Decoder_Checking checking = NONE);
 	private:
 		const Decoder_Checking checking;
-		Vector!byte input, output;
+		Vector!ubyte input, output;
 		size_t position;
 };

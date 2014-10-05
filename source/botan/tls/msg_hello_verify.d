@@ -9,7 +9,7 @@ import botan.internal.tls_messages;
 import botan.lookup;
 namespace TLS {
 
-Hello_Verify_Request::Hello_Verify_Request(in Vector!byte buf)
+Hello_Verify_Request::Hello_Verify_Request(in Vector!ubyte buf)
 {
 	if (buf.size() < 3)
 		throw new Decoding_Error("Hello verify request too small");
@@ -28,7 +28,7 @@ Hello_Verify_Request::Hello_Verify_Request(in Vector!byte buf)
 	m_cookie.assign(&buf[3], &buf[buf.size()]);
 }
 
-Hello_Verify_Request::Hello_Verify_Request(in Vector!byte client_hello_bits,
+Hello_Verify_Request::Hello_Verify_Request(in Vector!ubyte client_hello_bits,
 														 in string client_identity,
 														 const SymmetricKey& secret_key)
 {
@@ -43,7 +43,7 @@ Hello_Verify_Request::Hello_Verify_Request(in Vector!byte client_hello_bits,
 	m_cookie = unlock(hmac.flush());
 }
 
-Vector!byte Hello_Verify_Request::serialize() const
+Vector!ubyte Hello_Verify_Request::serialize() const
 {
 	/* DTLS 1.2 server implementations SHOULD use DTLS version 1.0
 		regardless of the version of TLS that is expected to be
@@ -52,10 +52,10 @@ Vector!byte Hello_Verify_Request::serialize() const
 
 	Protocol_Version format_version(Protocol_Version::DTLS_V10);
 
-	Vector!byte bits;
+	Vector!ubyte bits;
 	bits.push_back(format_version.major_version());
 	bits.push_back(format_version.minor_version());
-	bits.push_back(cast(byte)(m_cookie.size()));
+	bits.push_back(cast(ubyte)(m_cookie.size()));
 	bits += m_cookie;
 	return bits;
 }
