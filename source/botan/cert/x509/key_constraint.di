@@ -5,7 +5,7 @@
 * Distributed under the terms of the botan license.
 */
 
-import botan.ber_dec;
+import botan.asn1.ber_dec;
 /**
 * X.509v3 Key Constraints.
 */

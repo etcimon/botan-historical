@@ -12,7 +12,7 @@ import botan.parsing;
 import botan.internal.xor_buf;
 import algorithm;
 SIV_Mode::SIV_Mode(BlockCipher cipher) :
-	m_name(cipher.name() + "/SIV"),
+	m_name(cipher.name() ~ "/SIV"),
 	m_ctr(new CTR_BE(cipher.clone())),
 	m_cmac(new CMAC(cipher))
 {

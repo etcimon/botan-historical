@@ -72,12 +72,12 @@ Connection_Cipher_State::Connection_Cipher_State(Protocol_Version _version,
 		m_stream_cipher.set_key(cipher_key);
 	}
 	else
-		throw new Invalid_Argument("Unknown TLS cipher " + cipher_algo);
+		throw new Invalid_Argument("Unknown TLS cipher " ~ cipher_algo);
 
 	if (_version == Protocol_Version::SSL_V3)
-		m_mac.reset(af.make_mac("SSL3-MAC(" + mac_algo + ")"));
+		m_mac.reset(af.make_mac("SSL3-MAC(" ~ mac_algo ~ ")"));
 	else
-		m_mac.reset(af.make_mac("HMAC(" + mac_algo + ")"));
+		m_mac.reset(af.make_mac("HMAC(" ~ mac_algo ~ ")"));
 
 	m_mac.set_key(mac_key);
 }

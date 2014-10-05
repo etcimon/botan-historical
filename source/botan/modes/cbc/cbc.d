@@ -15,9 +15,9 @@ CBC_Mode::CBC_Mode(BlockCipher cipher, BlockCipherModePaddingMethod* padding) :
 	m_state(m_cipher.block_size())
 {
 	if (m_padding && !m_padding.valid_blocksize(cipher.block_size()))
-		throw new std::invalid_argument("Padding " + m_padding.name() +
-											 " cannot be used with " +
-											 cipher.name() + "/CBC");
+		throw new std::invalid_argument("Padding " ~ m_padding.name() +
+											 " cannot be used with " ~
+											 cipher.name() ~ "/CBC");
 }
 
 void CBC_Mode::clear()
@@ -29,9 +29,9 @@ void CBC_Mode::clear()
 string CBC_Mode::name() const
 {
 	if (m_padding)
-		return cipher().name() + "/CBC/" + padding().name();
+		return cipher().name() ~ "/CBC/" ~ padding().name();
 	else
-		return cipher().name() + "/CBC/CTS";
+		return cipher().name() ~ "/CBC/CTS";
 }
 
 size_t CBC_Mode::update_granularity() const
@@ -122,7 +122,7 @@ void CBC_Encryption::finish(SafeVector!byte buffer, size_t offset)
 	padding().add_padding(buffer, bytes_in_final_block, BS);
 
 	if ((buffer.size()-offset) % BS)
-		throw new Exception("Did not pad to full block size in " + name());
+		throw new Exception("Did not pad to full block size in " ~ name());
 
 	update(buffer, offset);
 }
@@ -151,7 +151,7 @@ void CTS_Encryption::finish(SafeVector!byte buffer, size_t offset)
 	const size_t BS = cipher().block_size();
 
 	if (sz < BS + 1)
-		throw new Encoding_Error(name() + ": insufficient data to encrypt");
+		throw new Encoding_Error(name() ~ ": insufficient data to encrypt");
 
 	if (sz % BS == 0)
 	{
@@ -232,7 +232,7 @@ void CBC_Decryption::finish(SafeVector!byte buffer, size_t offset)
 	const size_t BS = cipher().block_size();
 
 	if (sz == 0 || sz % BS)
-		throw new Decoding_Error(name() + ": Ciphertext not a multiple of block size");
+		throw new Decoding_Error(name() ~ ": Ciphertext not a multiple of block size");
 
 	update(buffer, offset);
 
@@ -259,7 +259,7 @@ void CTS_Decryption::finish(SafeVector!byte buffer, size_t offset)
 	const size_t BS = cipher().block_size();
 
 	if (sz < BS + 1)
-		throw new Encoding_Error(name() + ": insufficient data to decrypt");
+		throw new Encoding_Error(name() ~ ": insufficient data to decrypt");
 
 	if (sz % BS == 0)
 	{

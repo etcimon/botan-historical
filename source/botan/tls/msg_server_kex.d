@@ -71,7 +71,7 @@ Server_Key_Exchange::Server_Key_Exchange(Handshake_IO& io,
 		const string domain = oids.lookup(OID(ecdh_domain_oid));
 
 		if (domain == "")
-			throw new Internal_Error("Could not find name of ECDH domain " + ecdh_domain_oid);
+			throw new Internal_Error("Could not find name of ECDH domain " ~ ecdh_domain_oid);
 
 		const ushort named_curve_id = Supported_Elliptic_Curves::name_to_curve_id(domainput);
 
@@ -98,7 +98,7 @@ Server_Key_Exchange::Server_Key_Exchange(Handshake_IO& io,
 
 		if (!found)
 			throw new TLS_Exception(Alert::UNKNOWN_PSK_IDENTITY,
-									  "Unknown SRP user " + srp_identifier);
+									  "Unknown SRP user " ~ srp_identifier);
 
 		m_srp_params.reset(new SRP6_Server_Session);
 
@@ -113,7 +113,7 @@ Server_Key_Exchange::Server_Key_Exchange(Handshake_IO& io,
 		append_tls_length_value(m_params, BigInt::encode(B), 2);
 	}
 	else if (kex_algo != "PSK")
-		throw new Internal_Error("Server_Key_Exchange: Unknown kex type " + kex_algo);
+		throw new Internal_Error("Server_Key_Exchange: Unknown kex type " ~ kex_algo);
 
 	if (state.ciphersuite().sig_algo() != "")
 	{
@@ -183,8 +183,8 @@ Server_Key_Exchange::Server_Key_Exchange(in Vector!byte buf,
 		Vector!byte ecdh_key = reader.get_range!byte(1, 1, 255);
 
 		if (name == "")
-			throw new Decoding_Error("Server_Key_Exchange: Server sent unknown named curve " +
-										std::to_string(curve_id));
+			throw new Decoding_Error("Server_Key_Exchange: Server sent unknown named curve " ~
+										std.conv.to!string(curve_id));
 
 		m_params.push_back(curve_type);
 		m_params.push_back(get_byte(0, curve_id));
@@ -206,7 +206,7 @@ Server_Key_Exchange::Server_Key_Exchange(in Vector!byte buf,
 		append_tls_length_value(m_params, BigInt::encode(B), 2);
 	}
 	else if (kex_algo != "PSK")
-		throw new Decoding_Error("Server_Key_Exchange: Unsupported kex type " + kex_algo);
+		throw new Decoding_Error("Server_Key_Exchange: Unsupported kex type " ~ kex_algo);
 
 	if (sig_algo != "")
 	{

@@ -9,7 +9,7 @@
 import botan.pkcs8;
 import botan.cvc_cert;
 import botan.ecdsa;
-import botan.asn1_obj;
+import botan.asn1.asn1_obj;
 import botan.cvc_req;
 import botan.cvc_ado;
 /**

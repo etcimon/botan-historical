@@ -10,7 +10,7 @@ import botan.x509_key;
 import botan.pubkey;
 import botan.asn1.oid_lookup.oids;
 import botan.der_enc;
-import botan.ber_dec;
+import botan.asn1.ber_dec;
 import botan.parsing;
 import botan.pem;
 import algorithm;
@@ -65,7 +65,7 @@ void X509_Object::init(DataSource& in, in string labels)
 
 			if (!std::binary_search(PEM_labels_allowed.begin(),
 										  PEM_labels_allowed.end(), got_label))
-				throw new Decoding_Error("Invalid PEM label: " + got_label);
+				throw new Decoding_Error("Invalid PEM label: " ~ got_label);
 
 			BER_Decoder dec(ber);
 			decode_from(dec);
@@ -73,7 +73,7 @@ void X509_Object::init(DataSource& in, in string labels)
 	}
 	catch(Decoding_Error& e)
 	{
-		throw new Decoding_Error(PEM_label_pref + " decoding failed: " + e.what());
+		throw new Decoding_Error(PEM_label_pref ~ " decoding failed: " ~ e.what());
 	}
 }void X509_Object::encode_into(DER_Encoder& to) const
 {
@@ -152,14 +152,14 @@ string X509_Object::hash_used_for_signature() const
 		split_on(oids.lookup(sig_algo.oid), '/');
 
 	if (sig_info.size() != 2)
-		throw new Internal_Error("Invalid name format found for " +
+		throw new Internal_Error("Invalid name format found for " ~
 									sig_algo.oid.as_string());
 
 	Vector!string pad_and_hash =
 		parse_algorithm_name(sig_info[1]);
 
 	if (pad_and_hash.size() != 2)
-		throw new Internal_Error("Invalid name format " + sig_info[1]);
+		throw new Internal_Error("Invalid name format " ~ sig_info[1]);
 
 	return pad_and_hash[1];
 }
@@ -226,13 +226,13 @@ void X509_Object::do_decode()
 	}
 	catch(Decoding_Error& e)
 	{
-		throw new Decoding_Error(PEM_label_pref + " decoding failed (" +
-									e.what() + ")");
+		throw new Decoding_Error(PEM_label_pref ~ " decoding failed (" ~
+									e.what() ~ ")");
 	}
 	catch(Invalid_Argument& e)
 	{
-		throw new Decoding_Error(PEM_label_pref + " decoding failed (" +
-									e.what() + ")");
+		throw new Decoding_Error(PEM_label_pref ~ " decoding failed (" ~
+									e.what() ~ ")");
 	}
 }
 

@@ -271,7 +271,7 @@ mlock_allocator::mlock_allocator() :
 		{
 			::munmap(m_pool, m_poolsize);
 			m_pool = null;
-			throw new Exception("Could not mlock " + std::to_string(m_poolsize) + " bytes");
+			throw new Exception("Could not mlock " ~ std.conv.to!string(m_poolsize) ~ " bytes");
 		}
 
 #if defined(MADV_DONTDUMP)

@@ -7,7 +7,7 @@
 module botan.asn1.oid_lookup.oids;
 
 public import botan.asn1.oid_lookup.deflt;
-import botan.asn1_oid;
+import botan.asn1.asn1_oid;
 import core.sync.mutex;
 
 /**
@@ -127,9 +127,9 @@ public:
 		{
 			return OID(str);
 		}
-		catch(...) {}
+		catch {}
 		
-		throw new Lookup_Error("No object identifier found for " + str);
+		throw new Lookup_Error("No object identifier found for " ~ str);
 	}
 	
 	bool have_oid(in string str)

@@ -8,7 +8,7 @@
 import botan.ocsp;
 import botan.certstor;
 import botan.der_enc;
-import botan.ber_dec;
+import botan.asn1.ber_dec;
 import botan.x509_ext;
 import botan.asn1.oid_lookup.oids;
 import botan.base64;
@@ -84,7 +84,7 @@ void check_signature(in Vector!byte tbs_response,
 	auto result = x509_path_validate(certs, Path_Validation_Restrictions(), trusted_roots);
 
 	if (!result.successful_validation())
-		throw new Exception("Certificate validation failure: " + result.result_string());
+		throw new Exception("Certificate validation failure: " ~ result.result_string());
 
 	if (!trusted_roots.certificate_known(result.trust_root())) // not needed anymore?
 		throw new Exception("Certificate chain roots in unknown/untrusted CA");
@@ -129,7 +129,7 @@ Response::Response(in Certificate_Store trusted_roots,
 	response_outer.decode(resp_status, ENUMERATED, UNIVERSAL);
 
 	if (resp_status != 0)
-		throw new Exception("OCSP response status " + std::to_string(resp_status));
+		throw new Exception("OCSP response status " ~ std.conv.to!string(resp_status));
 
 	if (response_outer.more_items())
 	{

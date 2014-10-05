@@ -31,7 +31,7 @@ void OFB::key_schedule(in byte* key, size_t length)
 
 string OFB::name() const
 {
-	return "OFB(" + m_cipher.name() + ")";
+	return "OFB(" ~ m_cipher.name() ~ ")";
 }
 
 void OFB::cipher(in byte* input, byte* output)

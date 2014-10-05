@@ -42,16 +42,16 @@ bool generate_dsa_primes(RandomNumberGenerator rng,
 {
 	if (!fips186_3_valid_size(pbits, qbits))
 		throw new Invalid_Argument(
-			"FIPS 186-3 does not allow DSA domain parameters of " +
-			std::to_string(pbits) + "/" + std::to_string(qbits) + " bits long");
+			"FIPS 186-3 does not allow DSA domain parameters of " ~
+			std.conv.to!string(pbits) ~ "/" ~ std.conv.to!string(qbits) ~ " bits long");
 
 	if (seed_c.size() * 8 < qbits)
 		throw new Invalid_Argument(
-			"Generating a DSA parameter set with a " + std::to_string(qbits) +
+			"Generating a DSA parameter set with a " ~ std.conv.to!string(qbits) +
 			"long q requires a seed at least as many bits long");
 
 	Unique!HashFunction hash(
-		af.make_hash_function("SHA-" + std::to_string(qbits)));
+		af.make_hash_function("SHA-" ~ std.conv.to!string(qbits)));
 
 	const size_t HASH_SIZE = hash.output_length();
 

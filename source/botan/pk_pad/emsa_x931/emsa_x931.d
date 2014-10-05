@@ -71,7 +71,7 @@ bool EMSA_X931::verify(in SafeVector!byte coded,
 		return (coded == emsa2_encoding(raw, key_bits,
 												  m_empty_hash, m_hash_id));
 	}
-	catch(...)
+	catch
 	{
 		return false;
 	}
@@ -87,7 +87,7 @@ EMSA_X931::EMSA_X931(HashFunction hash) : m_hash(hash)
 	m_hash_id = ieee1363_hash_id(hash.name());
 
 	if (!m_hash_id)
-		throw new Encoding_Error("EMSA_X931 no hash identifier for " + hash.name());
+		throw new Encoding_Error("EMSA_X931 no hash identifier for " ~ hash.name());
 }
 
 }

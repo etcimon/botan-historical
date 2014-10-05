@@ -14,9 +14,9 @@ ECB_Mode::ECB_Mode(BlockCipher cipher, BlockCipherModePaddingMethod* padding) :
 	m_padding(padding)
 {
 	if (!m_padding.valid_blocksize(cipher.block_size()))
-		throw new std::invalid_argument("Padding " + m_padding.name() +
-											 " cannot be used with " +
-											 cipher.name() + "/ECB");
+		throw new std::invalid_argument("Padding " ~ m_padding.name() +
+											 " cannot be used with " ~
+											 cipher.name() ~ "/ECB");
 }
 
 void ECB_Mode::clear()
@@ -26,7 +26,7 @@ void ECB_Mode::clear()
 
 string ECB_Mode::name() const
 {
-	return cipher().name() + "/ECB/" + padding().name();
+	return cipher().name() ~ "/ECB/" ~ padding().name();
 }
 
 size_t ECB_Mode::update_granularity() const
@@ -98,7 +98,7 @@ void ECB_Encryption::finish(SafeVector!byte buffer, size_t offset)
 	padding().add_padding(buffer, bytes_in_final_block, BS);
 
 	if (buffer.size() % BS)
-		throw new Exception("Did not pad to full block size in " + name());
+		throw new Exception("Did not pad to full block size in " ~ name());
 
 	update(buffer, offset);
 }
@@ -135,7 +135,7 @@ void ECB_Decryption::finish(SafeVector!byte buffer, size_t offset)
 	const size_t BS = cipher().block_size();
 
 	if (sz == 0 || sz % BS)
-		throw new Decoding_Error(name() + ": Ciphertext not a multiple of block size");
+		throw new Decoding_Error(name() ~ ": Ciphertext not a multiple of block size");
 
 	update(buffer, offset);
 

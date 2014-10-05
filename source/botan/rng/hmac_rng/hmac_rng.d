@@ -43,8 +43,8 @@ HMAC_RNG::HMAC_RNG(MessageAuthenticationCode extractor,
 {
 	if (!m_prf.valid_keylength(m_extractor.output_length()) ||
 		!m_extractor.valid_keylength(m_prf.output_length()))
-		throw new Invalid_Argument("HMAC_RNG: Bad algo combination " +
-									  m_extractor.name() + " and " +
+		throw new Invalid_Argument("HMAC_RNG: Bad algo combination " ~
+									  m_extractor.name() ~ " and " ~
 									  m_prf.name());
 
 	// First PRF inputs are all zero, as specified in section 2
@@ -205,7 +205,7 @@ void HMAC_RNG::clear()
 */
 string HMAC_RNG::name() const
 {
-	return "HMAC_RNG(" + m_extractor.name() + "," + m_prf.name() + ")";
+	return "HMAC_RNG(" ~ m_extractor.name() ~ "," ~ m_prf.name() ~ ")";
 }
 
 }

@@ -71,7 +71,7 @@ void CBC_MAC::clear()
 */
 string CBC_MAC::name() const
 {
-	return "CBC-MAC(" + m_cipher.name() + ")";
+	return "CBC-MAC(" ~ m_cipher.name() ~ ")";
 }
 
 /*

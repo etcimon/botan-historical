@@ -8,7 +8,7 @@
 import botan.x509_ext;
 import botan.sha160;
 import botan.der_enc;
-import botan.ber_dec;
+import botan.asn1.ber_dec;
 import botan.asn1.oid_lookup.oids;
 import botan.charset;
 import botan.internal.bit_ops;
@@ -127,7 +127,7 @@ void Extensions::decode_from(BER_Decoder& from_source)
 
 		if (!ext && critical && m_throw_on_unknown_critical)
 			throw new Decoding_Error("Encountered unknown X.509 extension marked "
-										"as critical; OID = " + oid.as_string());
+										"as critical; OID = " ~ oid.as_string());
 
 		if (ext)
 		{
@@ -137,8 +137,8 @@ void Extensions::decode_from(BER_Decoder& from_source)
 			}
 			catch(std::exception& e)
 			{
-				throw new Decoding_Error("Exception while decoding extension " +
-											oid.as_string() + ": " + e.what());
+				throw new Decoding_Error("Exception while decoding extension " ~
+											oid.as_string() ~ ": " ~ e.what());
 			}
 
 			extensions.push_back(Pair(ext, critical));
@@ -363,7 +363,7 @@ void Alternative_Name::decode_inner(in Vector!byte input)
 void Alternative_Name::contents_to(Data_Store& subject_info,
 											  Data_Store& issuer_info) const
 {
-	std::multimap<string, string> contents =
+	MultiMap!(string, string) contents =
 		get_alt_name().contents();
 
 	if (oid_name_str == "X509v3.SubjectAlternativeName")
@@ -371,7 +371,7 @@ void Alternative_Name::contents_to(Data_Store& subject_info,
 	else if (oid_name_str == "X509v3.IssuerAlternativeName")
 		issuer_info.add(contents);
 	else
-		throw new Internal_Error("In Alternative_Name, unknown type " +
+		throw new Internal_Error("In Alternative_Name, unknown type " ~
 									oid_name_str);
 }
 
@@ -533,7 +533,7 @@ void Authority_Information_Access::decode_inner(in Vector!byte input)
 
 			if (name.type_tag == 6 && name.class_tag == CONTEXT_SPECIFIC)
 			{
-				m_ocsp_responder = Charset::transcode(ASN1::to_string(name),
+				m_ocsp_responder = Charset.transcode(asn1.to_string(name),
 																  LATIN1_CHARSET,
 																  LOCAL_CHARSET);
 			}

@@ -26,7 +26,7 @@ void LibraryInitializer::initialize(in string)
 
 		global_state().initialize();
 	}
-	catch(...)
+	catch
 	{
 		deinitialize();
 		throw;

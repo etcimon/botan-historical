@@ -129,7 +129,7 @@ void EVP_BlockCipher::key_schedule(in byte* key, size_t length)
 	else
 		if (EVP_CIPHER_CTX_set_key_length(&encrypt, length) == 0 ||
 			EVP_CIPHER_CTX_set_key_length(&decrypt, length) == 0)
-			throw new Invalid_Argument("EVP_BlockCipher: Bad key length for " +
+			throw new Invalid_Argument("EVP_BlockCipher: Bad key length for " ~
 										  cipher_name);
 
 	if (cipher_name == "RC2")

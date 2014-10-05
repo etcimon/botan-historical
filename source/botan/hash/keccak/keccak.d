@@ -108,13 +108,13 @@ Keccak_1600::Keccak_1600(size_t output_bits) :
 
 	if (output_bits != 224 && output_bits != 256 &&
 		output_bits != 384 && output_bits != 512)
-		throw new Invalid_Argument("Keccak_1600: Invalid output length " +
-									  std::to_string(output_bits));
+		throw new Invalid_Argument("Keccak_1600: Invalid output length " ~
+									  std.conv.to!string(output_bits));
 }
 
 string Keccak_1600::name() const
 {
-	return "Keccak-1600(" + std::to_string(output_bits) + ")";
+	return "Keccak-1600(" ~ std.conv.to!string(output_bits) ~ ")";
 }
 
 HashFunction Keccak_1600::clone() const

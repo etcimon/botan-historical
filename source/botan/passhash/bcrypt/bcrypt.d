@@ -108,12 +108,12 @@ string make_bcrypt(in string pass,
 
 	string salt_b64 = bcrypt_base64_encode(&salt[0], salt.size());
 
-	string work_factor_str = std::to_string(work_factor);
+	string work_factor_str = std.conv.to!string(work_factor);
 	if (work_factor_str.length() == 1)
-		work_factor_str = "0" + work_factor_str;
+		work_factor_str = "0" ~ work_factor_str;
 
-	return "$2a$" + work_factor_str +
-			 "$" + salt_b64.substr(0, 22) +
+	return "$2a$" ~ work_factor_str +
+			 "$" ~ salt_b64.substr(0, 22) +
 			 bcrypt_base64_encode(&ctext[0], ctext.size() - 1);
 }
 

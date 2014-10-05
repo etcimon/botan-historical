@@ -18,7 +18,7 @@ OID Public_Key::get_oid() const
 	}
 	catch(Lookup_Error)
 	{
-		throw new Lookup_Error("PK algo " + algo_name() + " has no defined OIDs");
+		throw new Lookup_Error("PK algo " ~ algo_name() ~ " has no defined OIDs");
 	}
 }
 
@@ -28,7 +28,7 @@ OID Public_Key::get_oid() const
 void Public_Key::load_check(RandomNumberGenerator rng) const
 {
 	if (!check_key(rng, BOTAN_PUBLIC_KEY_STRONG_CHECKS_ON_LOAD))
-		throw new Invalid_Argument(algo_name() + ": Invalid public key");
+		throw new Invalid_Argument(algo_name() ~ ": Invalid public key");
 }
 
 /*
@@ -37,7 +37,7 @@ void Public_Key::load_check(RandomNumberGenerator rng) const
 void Private_Key::load_check(RandomNumberGenerator rng) const
 {
 	if (!check_key(rng, BOTAN_Private_Key_STRONG_CHECKS_ON_LOAD))
-		throw new Invalid_Argument(algo_name() + ": Invalid private key");
+		throw new Invalid_Argument(algo_name() ~ ": Invalid private key");
 }
 
 /*
@@ -46,7 +46,7 @@ void Private_Key::load_check(RandomNumberGenerator rng) const
 void Private_Key::gen_check(RandomNumberGenerator rng) const
 {
 	if (!check_key(rng, BOTAN_Private_Key_STRONG_CHECKS_ON_GENERATE))
-		throw new Self_Test_Failure(algo_name() + " private key generation failed");
+		throw new Self_Test_Failure(algo_name() ~ " private key generation failed");
 }
 
 }

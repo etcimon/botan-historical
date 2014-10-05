@@ -7,7 +7,7 @@
 
 import botan.key_constraint;
 import botan.x509_key;
-import botan.ber_dec;
+import botan.asn1.ber_dec;
 namespace BER {
 
 /*

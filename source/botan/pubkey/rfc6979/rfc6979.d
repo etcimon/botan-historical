@@ -15,7 +15,7 @@ BigInt generate_rfc6979_nonce(in BigInt x,
 {
 	Algorithm_Factory af = global_state().algorithm_factory();
 
-	HMAC_DRBG rng(af.make_mac("HMAC(" + hash + ")"), null);
+	HMAC_DRBG rng(af.make_mac("HMAC(" ~ hash ~ ")"), null);
 
 	const size_t qlen = q.bits();
 	const size_t rlen = qlen / 8 + (qlen % 8 ? 1 : 0);

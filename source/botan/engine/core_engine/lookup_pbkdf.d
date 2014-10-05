@@ -30,7 +30,7 @@ PBKDF Core_Engine::find_pbkdf(in SCAN_Name algo_spec,
 		if (const MessageAuthenticationCode mac_proto = af.prototype_mac(algo_spec.arg(0)))
 			return new PKCS5_PBKDF2(mac_proto.clone());
 
-		return new PKCS5_PBKDF2(af.make_mac("HMAC(" + algo_spec.arg(0) + ")"));
+		return new PKCS5_PBKDF2(af.make_mac("HMAC(" ~ algo_spec.arg(0) ~ ")"));
 	}
 #endif
 

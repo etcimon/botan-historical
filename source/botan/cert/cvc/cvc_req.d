@@ -7,7 +7,7 @@
 
 import botan.cvc_req;
 import botan.cvc_cert;
-import botan.ber_dec;
+import botan.asn1.ber_dec;
 bool EAC1_1_Req::operator==(EAC1_1_Req const& rhs) const
 {
 	return (this.tbs_data() == rhs.tbs_data() &&

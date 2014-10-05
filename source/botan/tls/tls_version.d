@@ -19,13 +19,13 @@ string Protocol_Version::to_string() const
 		return "SSL v3";
 
 	if (maj == 3 && min >= 1) // TLS v1.x
-		return "TLS v1." + std::to_string(min-1);
+		return "TLS v1." ~ std.conv.to!string(min-1);
 
 	if (maj == 254) // DTLS 1.x
-		return "DTLS v1." + std::to_string(255 - minput);
+		return "DTLS v1." ~ std.conv.to!string(255 - minput);
 
 	// Some very new or very old protocol (or bogus data)
-	return "Unknown " + std::to_string(maj) + "." + std::to_string(minput);
+	return "Unknown " ~ std.conv.to!string(maj) ~ "." ~ std.conv.to!string(minput);
 }
 
 bool Protocol_Version::is_datagram_protocol() const
@@ -37,8 +37,8 @@ bool Protocol_Version::operator>(in Protocol_Version other) const
 {
 	if (this.is_datagram_protocol() != other.is_datagram_protocol())
 		throw new TLS_Exception(Alert::PROTOCOL_VERSION,
-								  "Version comparing " + to_string() +
-								  " with " + other.to_string());
+								  "Version comparing " ~ to_string() +
+								  " with " ~ other.to_string());
 
 	if (this.is_datagram_protocol())
 		return m_version < other.m_version; // goes backwards

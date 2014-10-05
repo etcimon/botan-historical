@@ -63,7 +63,7 @@ bool EAC_Signed_Object::check_signature(Public_Key& pub_key,
 		PK_Verifier verifier(pub_key, padding, format);
 		return verifier.verify_message(to_sign, sig);
 	}
-	catch(...)
+	catch
 	{
 		return false;
 	}
@@ -80,12 +80,12 @@ void EAC_Signed_Object::do_decode()
 	catch(Decoding_Error& e)
 	{
 		const string what = e.what();
-		throw new Decoding_Error(PEM_label_pref + " decoding failed (" + what + ")");
+		throw new Decoding_Error(PEM_label_pref ~ " decoding failed (" ~ what ~ ")");
 	}
 	catch(Invalid_Argument& e)
 	{
 		const string what = e.what();
-		throw new Decoding_Error(PEM_label_pref + " decoding failed (" + what + ")");
+		throw new Decoding_Error(PEM_label_pref ~ " decoding failed (" ~ what ~ ")");
 	}
 }
 

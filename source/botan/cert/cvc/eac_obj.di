@@ -37,7 +37,7 @@ class EAC1_1_obj(Derived) : public EAC_Signed_Object!Derived
 			}
 			catch(Decoding_Error)
 			{
-				throw new Decoding_Error(PEM_label_pref + " decoding failed");
+				throw new Decoding_Error(PEM_label_pref ~ " decoding failed");
 			}
 		}
 

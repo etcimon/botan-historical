@@ -8,7 +8,7 @@
 import botan.pkcs8;
 import botan.get_pbe;
 import botan.der_enc;
-import botan.ber_dec;
+import botan.asn1.ber_dec;
 import botan.asn1.alg_id;
 import botan.asn1.oid_lookup.oids;
 import botan.pem;
@@ -61,7 +61,7 @@ SafeVector!byte PKCS8_decode(
 				key_data = PKCS8_extract(key_source, pbe_alg_id);
 			}
 			else
-				throw new PKCS8_Exception("Unknown PEM label " + label);
+				throw new PKCS8_Exception("Unknown PEM label " ~ label);
 		}
 
 		if (key_data.empty())
@@ -69,7 +69,7 @@ SafeVector!byte PKCS8_decode(
 	}
 	catch(Decoding_Error& e)
 	{
-		throw new Decoding_Error("PKCS #8 private key decoding failed: " + string(e.what()));
+		throw new Decoding_Error("PKCS #8 private key decoding failed: " ~ string(e.what()));
 	}
 
 	if (!is_encrypted)
@@ -202,7 +202,7 @@ Private_Key* load_key(DataSource& source,
 
 	const string alg_name = oids.lookup(alg_id.oid);
 	if (alg_name == "" || alg_name == alg_id.oid.as_string())
-		throw new PKCS8_Exception("Unknown algorithm OID: " +
+		throw new PKCS8_Exception("Unknown algorithm OID: " ~
 									 alg_id.oid.as_string());
 
 	return make_Private_Key(alg_id, pkcs8_key, rng);

@@ -7,7 +7,7 @@
 
 import botan.x509_dn;
 import botan.der_enc;
-import botan.ber_dec;
+import botan.asn1.ber_dec;
 import botan.parsing;
 import botan.internal.stl_util;
 import botan.asn1.oid_lookup.oids;
@@ -31,7 +31,7 @@ X509_DN::X509_DN(in std::multimap<OID, string> args)
 /*
 * Create an X509_DN
 */
-X509_DN::X509_DN(in std::multimap<string, string> args)
+X509_DN::X509_DN(in MultiMap!(string, string) args)
 {
 	for (auto i = args.begin(); i != args.end(); ++i)
 		add_attribute(oids.lookup(i.first), i.second);
@@ -78,9 +78,9 @@ std::multimap<OID, string> X509_DN::get_attributes() const
 /*
 * Get the contents of this X.500 Name
 */
-std::multimap<string, string> X509_DN::contents() const
+MultiMap!(string, string) X509_DN::contents() const
 {
-	std::multimap<string, string> retval;
+	MultiMap!(string, string) retval;
 	for (auto i = dn_info.begin(); i != dn_info.end(); ++i)
 		multimap_insert(retval, oids.lookup(i.first), i.second.value());
 	return retval;
@@ -197,7 +197,7 @@ void do_ava(DER_Encoder encoder,
 	const bool exists = (dn_info.find(oid) != dn_info.end());
 
 	if (!exists && must_exist)
-		throw new Encoding_Error("X509_DN: No entry for " + oid_str);
+		throw new Encoding_Error("X509_DN: No entry for " ~ oid_str);
 	if (!exists) return;
 
 	auto range = dn_info.equal_range(oid);
@@ -295,9 +295,9 @@ string to_short_form(in string long_id)
 
 std::ostream& operator<<(std::ostream& output, const X509_DN& dn)
 {
-	std::multimap<string, string> contents = dn.contents();
+	MultiMap!(string, string) contents = dn.contents();
 
-	for(std::multimap<string, string>::const_iterator i = contents.begin();
+	for(MultiMap!(string, string)::const_iterator i = contents.begin();
 		 i != contents.end(); ++i)
 	{
 		output << to_short_form(i.first) << "=" << i.second << ' ';

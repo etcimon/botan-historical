@@ -42,7 +42,7 @@ GOST_28147_89_Params::GOST_28147_89_Params(in string n) : name(n)
 	else if (name == "R3411_CryptoPro")
 		sboxes = GOST_R_3411_CRYPTOPRO_PARAMS;
 	else
-		throw new Invalid_Argument("GOST_28147_89_Params: Unknown " + name);
+		throw new Invalid_Argument("GOST_28147_89_Params: Unknown " ~ name);
 }
 
 /*
@@ -76,7 +76,7 @@ string GOST_28147_89::name() const
 	else
 		throw new Internal_Error("GOST-28147 unrecognized sbox value");
 
-	return "GOST-28147-89(" + sbox_name + ")";
+	return "GOST-28147-89(" ~ sbox_name ~ ")";
 }
 
 /*

@@ -34,7 +34,7 @@ bool Session_Manager_In_Memory::load_from_session_str(
 	{
 		session = Session::decrypt(i.second, m_session_key);
 	}
-	catch(...)
+	catch
 	{
 		return false;
 	}

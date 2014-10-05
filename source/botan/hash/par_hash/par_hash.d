@@ -52,7 +52,7 @@ string Parallel::name() const
 	foreach (hash; hashes)
 		names.push_back(hash.name());
 
-	return "Parallel(" + string_join(names, ',') + ")";
+	return "Parallel(" ~ string_join(names, ',') ~ ")";
 }
 
 /*

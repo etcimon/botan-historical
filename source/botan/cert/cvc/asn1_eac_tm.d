@@ -8,7 +8,7 @@
 
 import botan.eac_asn_obj;
 import botan.der_enc;
-import botan.ber_dec;
+import botan.asn1.ber_dec;
 import botan.charset;
 import botan.parsing;
 import botan.internal.rounding;
@@ -90,7 +90,7 @@ void EAC_Time::set_to(in string time_str)
 
 	for (uint j = 0; j != time_str.size(); ++j)
 	{
-		if (Charset::is_digit(time_str[j]))
+		if (Charset.is_digit(time_str[j]))
 			current += time_str[j];
 		else
 		{
@@ -103,14 +103,14 @@ void EAC_Time::set_to(in string time_str)
 		params.push_back(current);
 
 	if (params.size() != 3)
-		throw new Invalid_Argument("Invalid time specification " + time_str);
+		throw new Invalid_Argument("Invalid time specification " ~ time_str);
 
 	year	= to_uint(params[0]);
 	month  = to_uint(params[1]);
 	day	 = to_uint(params[2]);
 
 	if (!passes_sanity_check())
-		throw new Invalid_Argument("Invalid time specification " + time_str);
+		throw new Invalid_Argument("Invalid time specification " ~ time_str);
 }/*
 * DER encode a EAC_Time
 */
@@ -128,7 +128,7 @@ string EAC_Time::as_string() const
 	if (time_is_set() == false)
 		throw new Invalid_State("EAC_Time::as_string: No time set");
 
-	return std::to_string(year * 10000 + month * 100 + day);
+	return std.conv.to!string(year * 10000 + month * 100 + day);
 }
 
 /*

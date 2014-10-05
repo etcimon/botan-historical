@@ -100,7 +100,7 @@ void ANSI_X931_RNG::clear()
 
 string ANSI_X931_RNG::name() const
 {
-	return "X9.31(" + m_cipher.name() + ")";
+	return "X9.31(" ~ m_cipher.name() ~ ")";
 }
 
 ANSI_X931_RNG::ANSI_X931_RNG(BlockCipher cipher,

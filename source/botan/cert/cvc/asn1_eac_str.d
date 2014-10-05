@@ -8,7 +8,7 @@
 
 import botan.eac_asn_obj;
 import botan.der_enc;
-import botan.ber_dec;
+import botan.asn1.ber_dec;
 import botan.charset;
 import botan.parsing;
 import sstream;
@@ -18,7 +18,7 @@ import ios;
 */
 ASN1_EAC_String::ASN1_EAC_String(in string str, ASN1_Tag t) : tag(t)
 {
-	iso_8859_str = Charset::transcode(str, LOCAL_CHARSET, LATIN1_CHARSET);
+	iso_8859_str = Charset.transcode(str, LOCAL_CHARSET, LATIN1_CHARSET);
 
 	if (!sanity_check())
 		throw new Invalid_Argument("ASN1_EAC_String contains illegal characters");
@@ -37,7 +37,7 @@ string ASN1_EAC_String::iso_8859() const
 */
 string ASN1_EAC_String::value() const
 {
-	return Charset::transcode(iso_8859_str, LATIN1_CHARSET, LOCAL_CHARSET);
+	return Charset.transcode(iso_8859_str, LATIN1_CHARSET, LOCAL_CHARSET);
 }
 
 /*
@@ -82,7 +82,7 @@ void ASN1_EAC_String::decode_from(BER_Decoder& source)
 	try
 	{
 		*this = ASN1_EAC_String(
-			Charset::transcode(ASN1::to_string(obj), charset_is, LOCAL_CHARSET),
+			Charset.transcode(asn1.to_string(obj), charset_is, LOCAL_CHARSET),
 			obj.type_tag);
 	}
 	catch(Invalid_Argument& inv_arg)

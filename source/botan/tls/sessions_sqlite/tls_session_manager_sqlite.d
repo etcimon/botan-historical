@@ -134,7 +134,7 @@ bool Session_Manager_SQLite::load_from_session_id(in Vector!byte session_id,
 			session = Session::decrypt(blob.first, blob.second, m_session_key);
 			return true;
 		}
-		catch(...)
+		catch
 		{
 		}
 	}
@@ -161,7 +161,7 @@ bool Session_Manager_SQLite::load_from_server_info(in Server_Information server,
 			session = Session::decrypt(blob.first, blob.second, m_session_key);
 			return true;
 		}
-		catch(...)
+		catch
 		{
 		}
 	}

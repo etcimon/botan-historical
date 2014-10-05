@@ -22,7 +22,7 @@ class X509_CRL : public X509_Object
 		struct X509_CRL_Error : public Exception
 		{
 			X509_CRL_Error(in string error) :
-				Exception("X509_CRL: " + error) {}
+				Exception("X509_CRL: " ~ error) {}
 		};
 
 		/**

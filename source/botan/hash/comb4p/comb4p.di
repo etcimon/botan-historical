@@ -33,7 +33,7 @@ class Comb4P : public HashFunction
 
 		string name() const
 		{
-			return "Comb4P(" + m_hash1.name() + "," + m_hash2.name() + ")";
+			return "Comb4P(" ~ m_hash1.name() ~ "," ~ m_hash2.name() ~ ")";
 		}
 
 		void clear();

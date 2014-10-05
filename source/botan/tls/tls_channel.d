@@ -95,9 +95,9 @@ Handshake_State& Channel::create_handshake_state(Protocol_Version _version)
 		Protocol_Version active_version = active._version();
 
 		if (active_version.is_datagram_protocol() != _version.is_datagram_protocol())
-			throw new Exception("Active state using version " +
+			throw new Exception("Active state using version " ~
 											 active_version.to_string() +
-											 " cannot change to " +
+											 " cannot change to " ~
 											 _version.to_string() +
 											 " in pending");
 	}
@@ -407,8 +407,8 @@ size_t Channel::received_data(in byte* input, size_t input_size)
 				}
 			}
 			else
-				throw new Unexpected_Message("Unexpected record type " +
-												 std::to_string(record_type) +
+				throw new Unexpected_Message("Unexpected record type " ~
+												 std.conv.to!string(record_type) +
 												 " from counterparty");
 		}
 
@@ -429,7 +429,7 @@ size_t Channel::received_data(in byte* input, size_t input_size)
 		send_fatal_alert(Alert::DECODE_ERROR);
 		throw;
 	}
-	catch(...)
+	catch
 	{
 		send_fatal_alert(Alert::INTERNAL_ERROR);
 		throw;
@@ -540,7 +540,7 @@ void Channel::send_alert(in Alert alert)
 		{
 			send_record(ALERT, alert.serialize());
 		}
-		catch(...) { /* swallow it */ }
+		catch { /* swallow it */ }
 	}
 
 	if (alert.type() == Alert::NO_RENEGOTIATION)

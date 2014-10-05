@@ -15,7 +15,7 @@ class X942_PRF : public KDF
 		SafeVector!byte derive(size_t, const byte[], size_t,
 										  const byte[], size_t) const;
 
-		string name() const { return "X942_PRF(" + key_wrap_oid + ")"; }
+		string name() const { return "X942_PRF(" ~ key_wrap_oid ~ ")"; }
 		KDF* clone() const { return new X942_PRF(key_wrap_oid); }
 
 		X942_PRF(in string oid);

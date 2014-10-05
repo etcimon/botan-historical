@@ -7,7 +7,7 @@
 
 import botan.ocsp_types;
 import botan.der_enc;
-import botan.ber_dec;
+import botan.asn1.ber_dec;
 import botan.x509_ext;
 import botan.lookup;
 import botan.hash;
@@ -59,7 +59,7 @@ bool CertID::is_id_for(in X509_Certificate issuer,
 		if (m_issuer_key_hash != unlock(hash.process(extract_key_bitstr(issuer))))
 			return false;
 	}
-	catch(...)
+	catch
 	{
 		return false;
 	}

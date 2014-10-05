@@ -247,7 +247,7 @@ Keyed_Filter* Core_Engine::get_cipher(in string algo_spec,
 		return null; // 4 part mode, not something we know about
 
 	if (algo_parts.size() < 2)
-		throw new Lookup_Error("Cipher specification '" + algo_spec +
+		throw new Lookup_Error("Cipher specification '" ~ algo_spec +
 								 "' is missing mode identifier");
 
 	string mode = algo_parts[1];
@@ -268,9 +268,9 @@ Keyed_Filter* Core_Engine::get_cipher(in string algo_spec,
 		return filt;
 
 	if (padding != "NoPadding")
-		throw new Algorithm_Not_Found(cipher_name + "/" + mode + "/" + padding);
+		throw new Algorithm_Not_Found(cipher_name ~ "/" ~ mode ~ "/" ~ padding);
 	else
-		throw new Algorithm_Not_Found(cipher_name + "/" + mode);
+		throw new Algorithm_Not_Found(cipher_name ~ "/" ~ mode);
 }
 
 }

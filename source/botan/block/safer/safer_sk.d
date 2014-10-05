@@ -230,7 +230,7 @@ void SAFER_SK::clear()
 */
 string SAFER_SK::name() const
 {
-	return "SAFER-SK(" + std::to_string(rounds) + ")";
+	return "SAFER-SK(" ~ std.conv.to!string(rounds) ~ ")";
 }
 
 /*
@@ -247,7 +247,7 @@ BlockCipher SAFER_SK::clone() const
 SAFER_SK::SAFER_SK(size_t r) : rounds(r)
 {
 	if (rounds > 13 || rounds == 0)
-		throw new Invalid_Argument(name() + ": Invalid number of rounds");
+		throw new Invalid_Argument(name() ~ ": Invalid number of rounds");
 }
 
 }

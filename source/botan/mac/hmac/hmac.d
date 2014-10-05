@@ -71,7 +71,7 @@ void HMAC::clear()
 */
 string HMAC::name() const
 {
-	return "HMAC(" + m_hash.name() + ")";
+	return "HMAC(" ~ m_hash.name() ~ ")";
 }
 
 /*
@@ -88,7 +88,7 @@ MessageAuthenticationCode HMAC::clone() const
 HMAC::HMAC(HashFunction hash) : m_hash(hash)
 {
 	if (m_hash.hash_block_size() == 0)
-		throw new Invalid_Argument("HMAC cannot be used with " + m_hash.name());
+		throw new Invalid_Argument("HMAC cannot be used with " ~ m_hash.name());
 }
 
 }

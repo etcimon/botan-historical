@@ -85,9 +85,9 @@ void Lion::key_schedule(in byte* key)
 */
 string Lion::name() const
 {
-	return "Lion(" + m_hash.name() + "," +
-						  m_cipher.name() + "," +
-						  std::to_string(block_size()) + ")";
+	return "Lion(" ~ m_hash.name() ~ "," ~
+						  m_cipher.name() ~ "," ~
+						  std.conv.to!string(block_size()) ~ ")";
 }
 
 /*
@@ -118,10 +118,10 @@ Lion::Lion(HashFunction hash, StreamCipher cipher, size_t block_size) :
 	m_cipher(cipher)
 {
 	if (2*left_size() + 1 > m_block_size)
-		throw new Invalid_Argument(name() + ": Chosen block size is too small");
+		throw new Invalid_Argument(name() ~ ": Chosen block size is too small");
 
 	if (!m_cipher.valid_keylength(left_size()))
-		throw new Invalid_Argument(name() + ": This stream/hash combo is invalid");
+		throw new Invalid_Argument(name() ~ ": This stream/hash combo is invalid");
 
 	m_key1.resize(left_size());
 	m_key2.resize(left_size());

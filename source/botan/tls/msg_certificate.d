@@ -10,7 +10,7 @@ import botan.internal.tls_reader;
 import botan.internal.tls_extensions;
 import botan.internal.tls_handshake_io;
 import botan.der_enc;
-import botan.ber_dec;
+import botan.asn1.ber_dec;
 import botan.loadstor;
 namespace TLS {
 

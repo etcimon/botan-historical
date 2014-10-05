@@ -18,20 +18,20 @@ string PGP_encode(
 	in string label,
 	const HashMap!(string, string)& headers)
 {
-	const string PGP_HEADER = "-----BEGIN PGP " + label + "-----";
-	const string PGP_TRAILER = "-----END PGP " + label + "-----";
+	const string PGP_HEADER = "-----BEGIN PGP " ~ label ~ "-----";
+	const string PGP_TRAILER = "-----END PGP " ~ label ~ "-----";
 	const size_t PGP_WIDTH = 64;
 
 	string pgp_encoded = PGP_HEADER;
 
 	if (headers.find("Version") != headers.end())
-		pgp_encoded += "Version: " + headers.find("Version").second + '';
+		pgp_encoded += "Version: " ~ headers.find("Version").second + '';
 
 	HashMap!(string, string)::const_iterator i = headers.begin();
 	while(i != headers.end())
 	{
 		if (i.first != "Version")
-			pgp_encoded += i.first + ": " + i.second + '';
+			pgp_encoded += i.first ~ ": " ~ i.second + '';
 		++i;
 	}
 	pgp_encoded += '';
@@ -117,7 +117,7 @@ SafeVector!byte PGP_decode(DataSource& source,
 
 		end_of_headers = true;
 		for (size_t j = 0; j != this_header.length(); ++j)
-			if (!Charset::is_space(this_header[j]))
+			if (!Charset.is_space(this_header[j]))
 				end_of_headers = false;
 
 		if (!end_of_headers)
@@ -140,7 +140,7 @@ SafeVector!byte PGP_decode(DataSource& source,
 		);
 	base64.start_msg();
 
-	const string PGP_TRAILER = "-----END PGP " + label + "-----";
+	const string PGP_TRAILER = "-----END PGP " ~ label ~ "-----";
 	position = 0;
 	bool newline_seen = 0;
 	string crc;

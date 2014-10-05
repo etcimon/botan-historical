@@ -40,7 +40,7 @@ EAX_Mode::EAX_Mode(BlockCipher cipher, size_t tag_size) :
 	m_cmac(new CMAC(m_cipher.clone()))
 {
 	if (m_tag_size < 8 || m_tag_size > m_cmac.output_length())
-		throw new Invalid_Argument(name() + ": Bad tag size " + std::to_string(tag_size));
+		throw new Invalid_Argument(name() ~ ": Bad tag size " ~ std.conv.to!string(tag_size));
 }
 
 void EAX_Mode::clear()
@@ -54,7 +54,7 @@ void EAX_Mode::clear()
 
 string EAX_Mode::name() const
 {
-	return (m_cipher.name() + "/EAX");
+	return (m_cipher.name() ~ "/EAX");
 }
 
 size_t EAX_Mode::update_granularity() const

@@ -50,7 +50,7 @@ void poly_double(byte* output, in byte* input)
 XTS_Mode::XTS_Mode(BlockCipher cipher) : m_cipher(cipher)
 {
 	if (m_cipher.block_size() != 8 && m_cipher.block_size() != 16)
-		throw new std::invalid_argument("Bad cipher for XTS: " + cipher.name());
+		throw new std::invalid_argument("Bad cipher for XTS: " ~ cipher.name());
 
 	m_tweak_cipher.reset(m_cipher.clone());
 	m_tweak.resize(update_granularity());
@@ -65,7 +65,7 @@ void XTS_Mode::clear()
 
 string XTS_Mode::name() const
 {
-	return cipher().name() + "/XTS";
+	return cipher().name() ~ "/XTS";
 }
 
 size_t XTS_Mode::update_granularity() const

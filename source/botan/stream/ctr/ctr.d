@@ -33,7 +33,7 @@ void CTR_BE::key_schedule(in byte* key, size_t length)
 
 string CTR_BE::name() const
 {
-	return ("CTR-BE(" + m_cipher.name() + ")");
+	return ("CTR-BE(" ~ m_cipher.name() ~ ")");
 }
 
 void CTR_BE::cipher(in byte* input, byte* output)

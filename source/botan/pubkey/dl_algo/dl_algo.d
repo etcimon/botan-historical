@@ -9,7 +9,7 @@ import botan.dl_algo;
 import botan.numthry;
 import botan.workfactor;
 import botan.der_enc;
-import botan.ber_dec;
+import botan.asn1.ber_dec;
 size_t DL_Scheme_PublicKey::estimated_strength() const
 {
 	return dl_work_factor(group.get_p().bits());

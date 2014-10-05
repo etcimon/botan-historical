@@ -10,7 +10,7 @@ import botan.internal.tls_reader;
 import botan.internal.tls_extensions;
 import botan.internal.tls_handshake_io;
 import botan.der_enc;
-import botan.ber_dec;
+import botan.asn1.ber_dec;
 import botan.loadstor;
 namespace TLS {
 
@@ -40,7 +40,7 @@ byte cert_type_name_to_code(in string name)
 	if (name == "ECDSA")
 		return 64;
 
-	throw new Invalid_Argument("Unknown cert type " + name);
+	throw new Invalid_Argument("Unknown cert type " ~ name);
 }
 
 }

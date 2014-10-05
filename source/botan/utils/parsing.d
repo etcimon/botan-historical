@@ -28,7 +28,7 @@ uint timespec_to_uint(in string timespec)
 
 	uint scale = 1;
 
-	if (Charset::is_digit(suffix))
+	if (Charset.is_digit(suffix))
 		value += suffix;
 	else if (suffix == 's')
 		scale = 1;
@@ -41,7 +41,7 @@ uint timespec_to_uint(in string timespec)
 	else if (suffix == 'y')
 		scale = 365 * 24 * 60 * 60;
 	else
-		throw new Decoding_Error("timespec_to_uint: Bad input " + timespec);
+		throw new Decoding_Error("timespec_to_uint: Bad input " ~ timespec);
 
 	return scale * to_uint(value);
 }
@@ -127,7 +127,7 @@ Vector!string split_on_pred(in string str,
 	}
 
 	if (substr == "")
-		throw new Invalid_Argument("Unable to split string: " + str);
+		throw new Invalid_Argument("Unable to split string: " ~ str);
 	elems.push_back(substr);
 
 	return elems;
@@ -153,10 +153,10 @@ string string_join(in Vector!string strs, char delim)
 /*
 * Parse an ASN.1 OID string
 */
-Vector!( uint ) parse_asn1_oid(in string oid)
+Vector!uint parse_asn1_oid(in string oid)
 {
 	string substring;
-	Vector!( uint ) oid_elems;
+	Vector!uint oid_elems;
 
 	for (auto i = oid.begin(); i != oid.end(); ++i)
 	{
@@ -191,31 +191,31 @@ bool x500_name_cmp(in string name1, in string name2)
 	auto p1 = name1.begin();
 	auto p2 = name2.begin();
 
-	while((p1 != name1.end()) && Charset::is_space(*p1)) ++p1;
-	while((p2 != name2.end()) && Charset::is_space(*p2)) ++p2;
+	while((p1 != name1.end()) && Charset.is_space(*p1)) ++p1;
+	while((p2 != name2.end()) && Charset.is_space(*p2)) ++p2;
 
 	while(p1 != name1.end() && p2 != name2.end())
 	{
-		if (Charset::is_space(*p1))
+		if (Charset.is_space(*p1))
 		{
-			if (!Charset::is_space(*p2))
+			if (!Charset.is_space(*p2))
 				return false;
 
-			while((p1 != name1.end()) && Charset::is_space(*p1)) ++p1;
-			while((p2 != name2.end()) && Charset::is_space(*p2)) ++p2;
+			while((p1 != name1.end()) && Charset.is_space(*p1)) ++p1;
+			while((p2 != name2.end()) && Charset.is_space(*p2)) ++p2;
 
 			if (p1 == name1.end() && p2 == name2.end())
 				return true;
 		}
 
-		if (!Charset::caseless_cmp(*p1, *p2))
+		if (!Charset.caseless_cmp(*p1, *p2))
 			return false;
 		++p1;
 		++p2;
 	}
 
-	while((p1 != name1.end()) && Charset::is_space(*p1)) ++p1;
-	while((p2 != name2.end()) && Charset::is_space(*p2)) ++p2;
+	while((p1 != name1.end()) && Charset.is_space(*p1)) ++p1;
+	while((p2 != name2.end()) && Charset.is_space(*p2)) ++p2;
 
 	if ((p1 != name1.end()) || (p2 != name2.end()))
 		return false;
@@ -230,7 +230,7 @@ uint string_to_ipv4(in string str)
 	Vector!string parts = split_on(str, '.');
 
 	if (parts.size() != 4)
-		throw new Decoding_Error("Invalid IP string " + str);
+		throw new Decoding_Error("Invalid IP string " ~ str);
 
 	uint ip = 0;
 
@@ -239,7 +239,7 @@ uint string_to_ipv4(in string str)
 		uint octet = to_uint(*part);
 
 		if (octet > 255)
-			throw new Decoding_Error("Invalid IP string " + str);
+			throw new Decoding_Error("Invalid IP string " ~ str);
 
 		ip = (ip << 8) | (octet & 0xFF);
 	}
@@ -258,7 +258,7 @@ string ipv4_to_string(uint ip)
 	{
 		if (i)
 			str += ".";
-		str += std::to_string(get_byte(i, ip));
+		str += std.conv.to!string(get_byte(i, ip));
 	}
 
 	return str;

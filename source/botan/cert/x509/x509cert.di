@@ -8,7 +8,7 @@
 import botan.x509_obj;
 import botan.x509_dn;
 import botan.x509_key;
-import botan.asn1_alt_name;
+import botan.asn1.asn1_alt_name;
 import botan.datastor;
 import botan.key_constraint;
 import map;

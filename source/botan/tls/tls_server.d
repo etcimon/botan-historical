@@ -61,7 +61,7 @@ bool check_for_resume(Session& session_info,
 				session_info.session_age() > session_ticket_lifetime)
 				return false; // ticket has expired
 		}
-		catch(...)
+		catch
 		{
 			return false;
 		}
@@ -312,9 +312,9 @@ void Server::process_handshake_msg(const Handshake_State* active_state,
 			if (active_state._version() > client_version)
 			{
 				throw new TLS_Exception(Alert::PROTOCOL_VERSION,
-										  "Client negotiated " +
+										  "Client negotiated " ~
 										  active_state._version().to_string() +
-										  " then renegotiated with " +
+										  " then renegotiated with " ~
 										  client_version.to_string());
 			}
 			else
@@ -359,7 +359,7 @@ void Server::process_handshake_msg(const Handshake_State* active_state,
 			have_session_ticket_key =
 				m_creds.psk("tls-server", "session-ticket", "").length() > 0;
 		}
-		catch(...) {}
+		catch {}
 
 		if (resuming)
 		{
@@ -419,7 +419,7 @@ void Server::process_handshake_msg(const Handshake_State* active_state,
 													  m_policy.session_ticket_lifetime())
 						);
 				}
-				catch(...) {}
+				catch {}
 
 				if (!state.new_session_ticket())
 				{
@@ -684,7 +684,7 @@ void Server::process_handshake_msg(const Handshake_State* active_state,
 														  m_policy.session_ticket_lifetime())
 							);
 					}
-					catch(...) {}
+					catch {}
 				}
 				else
 					session_manager().save(session_info);

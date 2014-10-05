@@ -23,7 +23,7 @@ class PKCS5_PBKDF1 : public PBKDF
 
 		string name() const
 		{
-			return "PBKDF1(" + hash.name() + ")";
+			return "PBKDF1(" ~ hash.name() ~ ")";
 		}
 
 		PBKDF clone() const

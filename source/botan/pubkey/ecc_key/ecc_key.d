@@ -11,7 +11,7 @@ import botan.ecc_key;
 import botan.x509_key;
 import botan.numthry;
 import botan.der_enc;
-import botan.ber_dec;
+import botan.asn1.ber_dec;
 import botan.alloc.secmem;
 import botan.point_gfp;
 size_t EC_PublicKey::estimated_strength() const

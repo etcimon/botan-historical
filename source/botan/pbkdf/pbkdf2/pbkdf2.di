@@ -15,7 +15,7 @@ class PKCS5_PBKDF2 : public PBKDF
 	public:
 		string name() const override
 		{
-			return "PBKDF2(" + mac.name() + ")";
+			return "PBKDF2(" ~ mac.name() ~ ")";
 		}
 
 		PBKDF clone() const override

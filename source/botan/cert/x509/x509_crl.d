@@ -8,7 +8,7 @@
 import botan.x509_crl;
 import botan.x509_ext;
 import botan.x509cert;
-import botan.ber_dec;
+import botan.asn1.ber_dec;
 import botan.parsing;
 import botan.bigint;
 import botan.asn1.oid_lookup.oids;
@@ -84,8 +84,8 @@ void X509_CRL::force_decode()
 	tbs_crl.decode_optional(_version, INTEGER, UNIVERSAL);
 
 	if (_version != 0 && _version != 1)
-		throw new X509_CRL_Error("Unknown X.509 CRL version " +
-									std::to_string(_version+1));
+		throw new X509_CRL_Error("Unknown X.509 CRL version " ~
+									std.conv.to!string(_version+1));
 
 	AlgorithmIdentifier sig_algo_inner;
 	tbs_crl.decode(sig_algo_inner);

@@ -155,7 +155,7 @@ size_t base64_decode(byte* output,
 
 			throw new std::invalid_argument(
 			  string("base64_decode: invalid base64 character '") +
-			  bad_char + "'");
+			  bad_char ~ "'");
 		}
 
 		/*

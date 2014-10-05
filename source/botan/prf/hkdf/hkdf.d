@@ -8,7 +8,7 @@
 import botan.hkdf;
 string HKDF::name() const
 {
-	return "HKDF(" + m_prf.name() + ")";
+	return "HKDF(" ~ m_prf.name() ~ ")";
 }
 
 void HKDF::clear()

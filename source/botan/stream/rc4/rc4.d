@@ -85,7 +85,7 @@ string RC4::name() const
 {
 	if (SKIP == 0)	return "RC4";
 	if (SKIP == 256) return "MARK-4";
-	else				return "RC4_skip(" + std::to_string(SKIP) + ")";
+	else				return "RC4_skip(" ~ std.conv.to!string(SKIP) ~ ")";
 }
 
 /*

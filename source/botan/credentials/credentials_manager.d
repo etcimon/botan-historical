@@ -24,7 +24,7 @@ SymmetricKey Credentials_Manager::psk(in string,
 												  in string,
 												  in string identity)
 {
-	throw new Internal_Error("No PSK set for identity " + identity);
+	throw new Internal_Error("No PSK set for identity " ~ identity);
 }
 
 bool Credentials_Manager::attempt_srp(in string,
@@ -120,7 +120,7 @@ void Credentials_Manager::verify_certificate_chain(
 												trusted_CAs);
 
 	if (!result.successful_validation())
-		throw new Exception("Certificate validation failure: " + result.result_string());
+		throw new Exception("Certificate validation failure: " ~ result.result_string());
 
 	if (!cert_in_some_store(trusted_CAs, result.trust_root()))
 		throw new Exception("Certificate chain roots in unknown/untrusted CA");

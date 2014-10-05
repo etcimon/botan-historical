@@ -109,10 +109,10 @@ Client_Key_Exchange::Client_Key_Exchange(Handshake_IO& io,
 
 			if (p.bits() < policy.minimum_dh_group_size())
 				throw new TLS_Exception(Alert::INSUFFICIENT_SECURITY,
-										  "Server sent DH group of " +
-										  std::to_string(p.bits()) +
-										  " bits, policy requires at least " +
-										  std::to_string(policy.minimum_dh_group_size()));
+										  "Server sent DH group of " ~
+										  std.conv.to!string(p.bits()) +
+										  " bits, policy requires at least " ~
+										  std.conv.to!string(policy.minimum_dh_group_size()));
 
 			/*
 			* A basic check for key validity. As we do not know q here we
@@ -160,7 +160,7 @@ Client_Key_Exchange::Client_Key_Exchange(Handshake_IO& io,
 			const string name = Supported_Elliptic_Curves::curve_id_to_name(curve_id);
 
 			if (name == "")
-				throw new Decoding_Error("Server sent unknown named curve " + std::to_string(curve_id));
+				throw new Decoding_Error("Server sent unknown named curve " ~ std.conv.to!string(curve_id));
 
 			EC_Group group(name);
 
@@ -214,7 +214,7 @@ Client_Key_Exchange::Client_Key_Exchange(Handshake_IO& io,
 		}
 		else
 		{
-			throw new Internal_Error("Client_Key_Exchange: Unknown kex " +
+			throw new Internal_Error("Client_Key_Exchange: Unknown kex " ~
 										kex_algo);
 		}
 
@@ -225,7 +225,7 @@ Client_Key_Exchange::Client_Key_Exchange(Handshake_IO& io,
 		// No server key exchange msg better mean RSA kex + RSA key in cert
 
 		if (kex_algo != "RSA")
-			throw new Unexpected_Message("No server kex but negotiated kex " + kex_algo);
+			throw new Unexpected_Message("No server kex but negotiated kex " ~ kex_algo);
 
 		if (!server_public_key)
 			throw new Internal_Error("No server public key for RSA exchange");
@@ -249,7 +249,7 @@ Client_Key_Exchange::Client_Key_Exchange(Handshake_IO& io,
 		}
 		else
 			throw new TLS_Exception(Alert::HANDSHAKE_FAILURE,
-									  "Expected a RSA key in server cert but got " +
+									  "Expected a RSA key in server cert but got " ~
 									  server_public_key.algo_name());
 	}
 
@@ -277,7 +277,7 @@ Client_Key_Exchange::Client_Key_Exchange(in Vector!byte contents,
 			throw new Internal_Error("Expected RSA kex but no server kex key set");
 
 		if (!cast(const RSA_PrivateKey*)(server_rsa_kex_key))
-			throw new Internal_Error("Expected RSA key but got " + server_rsa_kex_key.algo_name());
+			throw new Internal_Error("Expected RSA key but got " ~ server_rsa_kex_key.algo_name());
 
 		PK_Decryptor_EME decryptor(*server_rsa_kex_key, "PKCS1v15");
 
@@ -317,7 +317,7 @@ Client_Key_Exchange::Client_Key_Exchange(in Vector!byte contents,
 				throw new Decoding_Error("Client_Key_Exchange: Secret corrupted");
 			}
 		}
-		catch(...)
+		catch
 		{
 			m_pre_master = fake_pre_master;
 		}
@@ -342,7 +342,7 @@ Client_Key_Exchange::Client_Key_Exchange(in Vector!byte contents,
 					psk = SymmetricKey(rng, 16);
 				else
 					throw new TLS_Exception(Alert::UNKNOWN_PSK_IDENTITY,
-											  "No PSK for identifier " + psk_identity);
+											  "No PSK for identifier " ~ psk_identity);
 			}
 		}
 
@@ -367,7 +367,7 @@ Client_Key_Exchange::Client_Key_Exchange(in Vector!byte contents,
 				cast(in PK_Key_Agreement_Key*)(Private_Key);
 
 			if (!ka_key)
-				throw new Internal_Error("Expected key agreement key type but got " +
+				throw new Internal_Error("Expected key agreement key type but got " ~
 											Private_Key.algo_name());
 
 			try
@@ -406,7 +406,7 @@ Client_Key_Exchange::Client_Key_Exchange(in Vector!byte contents,
 			}
 		}
 		else
-			throw new Internal_Error("Client_Key_Exchange: Unknown kex type " + kex_algo);
+			throw new Internal_Error("Client_Key_Exchange: Unknown kex type " ~ kex_algo);
 	}
 }
 

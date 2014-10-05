@@ -115,8 +115,8 @@ string transcode(in string str,
 	if (from == UCS2_CHARSET && to == LATIN1_CHARSET)
 		return ucs2_to_latin1(str);
 
-	throw new Invalid_Argument("Unknown transcoding operation from " +
-								  std::to_string(from) + " to " + std::to_string(to));
+	throw new Invalid_Argument("Unknown transcoding operation from " ~
+								  std.conv.to!string(from) ~ " to " ~ std.conv.to!string(to));
 }
 
 /*

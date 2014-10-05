@@ -26,8 +26,8 @@ void P_hash(SafeVector!byte output,
 	}
 	catch(Invalid_Key_Length)
 	{
-		throw new Internal_Error("The premaster secret of " +
-									std::to_string(secret_len) +
+		throw new Internal_Error("The premaster secret of " ~
+									std.conv.to!string(secret_len) +
 									" bytes is too long for the PRF");
 	}
 

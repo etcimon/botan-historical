@@ -217,7 +217,7 @@ void Client::process_handshake_msg(const Handshake_State* active_state,
 		foreach (i; diff)
 		{
 			throw new TLS_Exception(Alert::HANDSHAKE_FAILURE,
-									  "Server sent extension " + std::to_string(i) +
+									  "Server sent extension " ~ std.conv.to!string(i) +
 									  " but we did not request it");
 		}
 

@@ -37,8 +37,8 @@ class Pipe : public DataSource
 			* @param msg the invalid message id that was used
 			*/
 			Invalid_Message_Number(in string where, message_id msg) :
-				Invalid_Argument("Pipe::" + where + ": Invalid message number " +
-									  std::to_string(msg))
+				Invalid_Argument("Pipe::" ~ where ~ ": Invalid message number " ~
+									  std.conv.to!string(msg))
 			{}
 		};
 

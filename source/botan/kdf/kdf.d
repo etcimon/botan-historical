@@ -69,7 +69,7 @@ KDF* get_kdf(in string algo_spec)
 
 #if defined(BOTAN_HAS_TLS_V12_PRF)
 	if (request.algo_name() == "TLS-12-PRF" && request.arg_count() == 1)
-		return new TLS_12_PRF(af.make_mac("HMAC(" + request.arg(0) + ")"));
+		return new TLS_12_PRF(af.make_mac("HMAC(" ~ request.arg(0) ~ ")"));
 #endif
 
 	throw new Algorithm_Not_Found(algo_spec);

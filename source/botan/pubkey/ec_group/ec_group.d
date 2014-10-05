@@ -8,7 +8,7 @@
 */
 
 import botan.ec_group;
-import botan.ber_dec;
+import botan.asn1.ber_dec;
 import botan.der_enc;
 import botan.libstate;
 import botan.asn1.oid_lookup.oids;
@@ -18,7 +18,7 @@ EC_Group::EC_Group(in OID domain_oid)
 	string pem = PEM_for_named_group(oids.lookup(domain_oid));
 
 	if (!pem)
-		throw new Lookup_Error("No ECC domain data for " + domain_oid.as_string());
+		throw new Lookup_Error("No ECC domain data for " ~ domain_oid.as_string());
 
 	*this = EC_Group(pem);
 	oid = domain_oid.as_string();

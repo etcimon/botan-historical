@@ -154,7 +154,7 @@ GCM_Mode::GCM_Mode(BlockCipher cipher, size_t tag_size) :
 	m_cipher_name(cipher.name())
 {
 	if (cipher.block_size() != BS)
-		throw new std::invalid_argument("GCM requires a 128 bit cipher so cannot be used with " +
+		throw new std::invalid_argument("GCM requires a 128 bit cipher so cannot be used with " ~
 											 cipher.name());
 
 	m_ghash.reset(new GHASH);
@@ -162,7 +162,7 @@ GCM_Mode::GCM_Mode(BlockCipher cipher, size_t tag_size) :
 	m_ctr.reset(new CTR_BE(cipher)); // CTR_BE takes ownership of cipher
 
 	if (m_tag_size != 8 && m_tag_size != 16)
-		throw new Invalid_Argument(name() + ": Bad tag size " + std::to_string(m_tag_size));
+		throw new Invalid_Argument(name() ~ ": Bad tag size " ~ std.conv.to!string(m_tag_size));
 }
 
 void GCM_Mode::clear()
@@ -173,7 +173,7 @@ void GCM_Mode::clear()
 
 string GCM_Mode::name() const
 {
-	return (m_cipher_name + "/GCM");
+	return (m_cipher_name ~ "/GCM");
 }
 
 size_t GCM_Mode::update_granularity() const

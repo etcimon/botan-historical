@@ -5,8 +5,8 @@
 * Distributed under the terms of the botan license.
 */
 
-import botan.asn1_obj;
-import botan.asn1_oid;
+import botan.asn1.asn1_obj;
+import botan.asn1.asn1_oid;
 import botan.datastor;
 import botan.crl_ent;
 /**

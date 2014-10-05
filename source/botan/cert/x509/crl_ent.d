@@ -8,7 +8,7 @@
 import botan.crl_ent;
 import botan.x509_ext;
 import botan.der_enc;
-import botan.ber_dec;
+import botan.asn1.ber_dec;
 import botan.bigint;
 import botan.asn1.oid_lookup.oids;
 /*

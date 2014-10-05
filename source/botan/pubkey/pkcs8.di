@@ -14,7 +14,7 @@ import chrono;
 struct PKCS8_Exception : public Decoding_Error
 {
 	PKCS8_Exception(in string error) :
-		Decoding_Error("PKCS #8: " + error) {}
+		Decoding_Error("PKCS #8: " ~ error) {}
 };
 
 /**

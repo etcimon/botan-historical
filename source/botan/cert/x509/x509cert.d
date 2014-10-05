@@ -8,7 +8,7 @@
 import botan.x509cert;
 import botan.x509_ext;
 import botan.der_enc;
-import botan.ber_dec;
+import botan.asn1.ber_dec;
 import botan.internal.stl_util;
 import botan.parsing;
 import botan.bigint;
@@ -91,7 +91,7 @@ void X509_Certificate::force_decode()
 		.decode(dn_subject);
 
 	if (_version > 2)
-		throw new Decoding_Error("Unknown X.509 cert version " + std::to_string(_version));
+		throw new Decoding_Error("Unknown X.509 cert version " ~ std.conv.to!string(_version));
 	if (sig_algo != sig_algo_inner)
 		throw new Decoding_Error("Algorithm identifier mismatch");
 

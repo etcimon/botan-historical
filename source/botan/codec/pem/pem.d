@@ -16,8 +16,8 @@ namespace PEM_Code {
 string encode(in byte* der, size_t length, in string label,
 						 size_t width)
 {
-	const string PEM_HEADER = "-----BEGIN " + label + "-----";
-	const string PEM_TRAILER = "-----END " + label + "-----";
+	const string PEM_HEADER = "-----BEGIN " ~ label ~ "-----";
+	const string PEM_TRAILER = "-----END " ~ label ~ "-----";
 
 	Pipe pipe(new Base64_Encoder(true, width));
 	pipe.process_msg(der, length);
@@ -33,8 +33,8 @@ SafeVector!byte decode_check_label(DataSource& source,
 	string label_got;
 	SafeVector!byte ber = decode(source, label_got);
 	if (label_got != label_want)
-		throw new Decoding_Error("PEM: Label mismatch, wanted " + label_want +
-									", got " + label_got);
+		throw new Decoding_Error("PEM: Label mismatch, wanted " ~ label_want +
+									", got " ~ label_got);
 	return ber;
 }
 
@@ -79,7 +79,7 @@ SafeVector!byte decode(DataSource& source, string& label)
 	Pipe base64(new Base64_Decoder);
 	base64.start_msg();
 
-	const string PEM_TRAILER = "-----END " + label + "-----";
+	const string PEM_TRAILER = "-----END " ~ label ~ "-----";
 	position = 0;
 	while(position != PEM_TRAILER.length())
 	{
@@ -117,7 +117,7 @@ SafeVector!byte decode(in string pem, string& label)
 bool matches(DataSource& source, in string extra,
 				 size_t search_range)
 {
-	const string PEM_HEADER = "-----BEGIN " + extra;
+	const string PEM_HEADER = "-----BEGIN " ~ extra;
 
 	SafeVector!byte search_buf(search_range);
 	size_t got = source.peek(&search_buf[0], search_buf.size(), 0);

@@ -19,7 +19,7 @@ namespace {
 void raise_runtime_loader_exception(in string lib_name,
 												string msg)
 {
-	throw new Exception("Failed to load " + lib_name + ": " +
+	throw new Exception("Failed to load " ~ lib_name ~ ": " ~
 									 (msg ? msg : "Unknown error"));
 }
 
@@ -67,8 +67,8 @@ void* Dynamically_Loaded_Library::resolve_symbol(in string symbol)
 #endif
 
 	if (!addr)
-		throw new Exception("Failed to resolve symbol " + symbol +
-										 " in " + lib_name);
+		throw new Exception("Failed to resolve symbol " ~ symbol +
+										 " in " ~ lib_name);
 
 	return addr;
 }

@@ -42,7 +42,7 @@ void Cascade_Cipher::clear()
 
 string Cascade_Cipher::name() const
 {
-	return "Cascade(" + m_cipher1.name() + "," + m_cipher2.name() + ")";
+	return "Cascade(" ~ m_cipher1.name() ~ "," ~ m_cipher2.name() ~ ")";
 }
 
 BlockCipher Cascade_Cipher::clone() const
@@ -83,7 +83,7 @@ Cascade_Cipher::Cascade_Cipher(BlockCipher c1, BlockCipher c2) :
 	m_block = block_size_for_cascade(c1.block_size(), c2.block_size());
 
 	if (block_size() % c1.block_size() || block_size() % c2.block_size())
-		throw new Internal_Error("Failure in " + name() + " constructor");
+		throw new Internal_Error("Failure in " ~ name() ~ " constructor");
 }
 
 }

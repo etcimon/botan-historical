@@ -6,7 +6,7 @@
 * Distributed under the terms of the botan license.
 */
 
-import botan.asn1_obj;
+import botan.asn1.asn1_obj;
 import chrono;
 /**
 * This class represents CVC EAC Time objects.

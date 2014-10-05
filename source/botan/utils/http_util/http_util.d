@@ -27,7 +27,7 @@ string http_transact_asio(in string hostname,
 	tcp.connect(hostname, "http");
 
 	if (!tcp)
-		throw new Exception("HTTP connection to " + hostname + " failed");
+		throw new Exception("HTTP connection to " ~ hostname ~ " failed");
 
 	tcp << message;
 	tcp.flush();
@@ -42,7 +42,7 @@ string http_transact_asio(in string hostname,
 string http_transact_fail(in string hostname,
 										 in string)
 {
-	throw new Exception("Cannot connect to " + hostname +
+	throw new Exception("Cannot connect to " ~ hostname +
 									 ": network code disabled in build");
 }
 
@@ -72,7 +72,7 @@ std::ostream& operator<<(std::ostream& o, const Response& resp)
 	o << "HTTP " << resp.status_code() << " " << resp.status_message() << "";
 	foreach (h; resp.headers())
 		o << "Header '" << h.first << "' = '" << h.second << "'";
-	o << "Body " << std::to_string(resp.body().size()) << " bytes:";
+	o << "Body " << std.conv.to!string(resp.body().size()) << " bytes:";
 	o.write(cast(string)(resp.body()[0]), resp.body().size());
 	return o;
 }
@@ -86,7 +86,7 @@ Response http_sync(http_exch_fn http_transact,
 {
 	const auto protocol_host_sep = url.find("://");
 	if (protocol_host_sep == string::npos)
-		throw new Exception("Invalid URL " + url);
+		throw new Exception("Invalid URL " ~ url);
 	const string protocol = url.substr(0, protocol_host_sep);
 
 	const auto host_loc_sep = url.find('/', protocol_host_sep + 3);
@@ -147,7 +147,7 @@ Response http_sync(http_exch_fn http_transact,
 	{
 		auto sep = header_line.find(": ");
 		if (sep == string::npos || sep > header_line.size() - 2)
-			throw new Exception("Invalid HTTP header " + header_line);
+			throw new Exception("Invalid HTTP header " ~ header_line);
 		const string key = header_line.substr(0, sep);
 
 		if (sep + 2 < header_line.size() - 1)
@@ -177,8 +177,8 @@ Response http_sync(http_exch_fn http_transact,
 	if (header_size != "")
 	{
 		if (resp_body.size() != to_uint(header_size))
-			throw new Exception("Content-Length disagreement, header says " +
-											 header_size + " got " + std::to_string(resp_body.size()));
+			throw new Exception("Content-Length disagreement, header says " ~
+											 header_size ~ " got " ~ std.conv.to!string(resp_body.size()));
 	}
 
 	return Response(status_code, status_message, resp_body, headers);

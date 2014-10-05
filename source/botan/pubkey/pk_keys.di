@@ -6,7 +6,7 @@
 */
 
 import botan.alloc.secmem;
-import botan.asn1_oid;
+import botan.asn1.asn1_oid;
 import botan.asn1.alg_id;
 import botan.rng;
 /**

@@ -8,7 +8,7 @@
 import botan.x509_ca;
 import botan.pubkey;
 import botan.der_enc;
-import botan.ber_dec;
+import botan.asn1.ber_dec;
 import botan.bigint;
 import botan.parsing;
 import botan.lookup;
@@ -234,14 +234,14 @@ PK_Signer* choose_sig_format(in Private_Key key,
 	else if (algo_name == "ECDSA")
 		padding = "EMSA1_BSI";
 	else
-		throw new Invalid_Argument("Unknown X.509 signing key type: " + algo_name);
+		throw new Invalid_Argument("Unknown X.509 signing key type: " ~ algo_name);
 
 	Signature_Format format =
 		(key.message_parts() > 1) ? DER_SEQUENCE : IEEE_1363;
 
 	padding = padding + '(' + proto_hash.name() + ')';
 
-	sig_algo.oid = oids.lookup(algo_name + "/" + padding);
+	sig_algo.oid = oids.lookup(algo_name ~ "/" ~ padding);
 	sig_algo.parameters = key.algorithm_identifier().parameters;
 
 	return new PK_Signer(key, padding, format);

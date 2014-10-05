@@ -10,7 +10,7 @@ import botan.pbkdf2;
 import botan.algo_factory;
 import botan.libstate;
 import botan.der_enc;
-import botan.ber_dec;
+import botan.asn1.ber_dec;
 import botan.parsing;
 import botan.asn1.alg_id;
 import botan.asn1.oid_lookup.oids;
@@ -30,7 +30,7 @@ void PBE_PKCS5v20::write(in byte* input, size_t length)
 */
 void PBE_PKCS5v20::start_msg()
 {
-	pipe.append(get_cipher(block_cipher.name() + "/CBC/PKCS7",
+	pipe.append(get_cipher(block_cipher.name() ~ "/CBC/PKCS7",
 								  key, iv, direction));
 
 	pipe.start_msg();
@@ -87,7 +87,7 @@ Vector!byte PBE_PKCS5v20::encode_params() const
 				)
 			)
 		.encode(
-			AlgorithmIdentifier(block_cipher.name() + "/CBC",
+			AlgorithmIdentifier(block_cipher.name() ~ "/CBC",
 				DER_Encoder().encode(iv, OCTET_STRING).get_contents_unlocked()
 				)
 			)
@@ -105,8 +105,8 @@ OID PBE_PKCS5v20::get_oid() const
 
 string PBE_PKCS5v20::name() const
 {
-	return "PBE-PKCS5v20(" + block_cipher.name() + "," +
-									 m_prf.name() + ")";
+	return "PBE-PKCS5v20(" ~ block_cipher.name() ~ "," ~
+									 m_prf.name() ~ ")";
 }
 
 /*
@@ -153,7 +153,7 @@ PBE_PKCS5v20::PBE_PKCS5v20(in Vector!byte params,
 	AlgorithmIdentifier prf_algo;
 
 	if (kdf_algo.oid != oids.lookup("PKCS5.PBKDF2"))
-		throw new Decoding_Error("PBE-PKCS5 v2.0: Unknown KDF algorithm " +
+		throw new Decoding_Error("PBE-PKCS5 v2.0: Unknown KDF algorithm " ~
 									kdf_algo.oid.as_string());
 
 	BER_Decoder(kdf_algo.parameters)
@@ -172,10 +172,10 @@ PBE_PKCS5v20::PBE_PKCS5v20(in Vector!byte params,
 	string cipher = oids.lookup(enc_algo.oid);
 	Vector!string cipher_spec = split_on(cipher, '/');
 	if (cipher_spec.size() != 2)
-		throw new Decoding_Error("PBE-PKCS5 v2.0: Invalid cipher spec " + cipher);
+		throw new Decoding_Error("PBE-PKCS5 v2.0: Invalid cipher spec " ~ cipher);
 
 	if (cipher_spec[1] != "CBC")
-		throw new Decoding_Error("PBE-PKCS5 v2.0: Don't know param format for " +
+		throw new Decoding_Error("PBE-PKCS5 v2.0: Don't know param format for " ~
 									cipher);
 
 	BER_Decoder(enc_algo.parameters).decode(iv, OCTET_STRING).verify_end();

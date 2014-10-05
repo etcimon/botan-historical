@@ -60,7 +60,7 @@ void Transformation_Filter::set_key(in SymmetricKey key)
 	if (Keyed_Transform* keyed = cast(Keyed_Transform*)(m_transform.get()))
 		keyed.set_key(key);
 	else if (key.length() != 0)
-		throw new Exception("Transformation " + name() + " does not accept keys");
+		throw new Exception("Transformation " ~ name() ~ " does not accept keys");
 }
 
 Key_Length_Specification Transformation_Filter::key_spec() const

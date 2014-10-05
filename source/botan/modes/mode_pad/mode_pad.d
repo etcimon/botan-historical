@@ -28,11 +28,11 @@ size_t PKCS7_Padding::unpad(in byte* block, size_t size) const
 	size_t position = block[size-1];
 
 	if (position > size)
-		throw new Decoding_Error("Bad padding in " + name());
+		throw new Decoding_Error("Bad padding in " ~ name());
 
 	for (size_t j = size-position; j != size-1; ++j)
 		if (block[j] != position)
-			throw new Decoding_Error("Bad padding in " + name());
+			throw new Decoding_Error("Bad padding in " ~ name());
 
 	return (size-position);
 }

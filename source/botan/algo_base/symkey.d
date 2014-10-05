@@ -154,7 +154,8 @@ public:
 	* @param y an octet string
 	* @return if x is not equal to y
 	*/
-	bool opCmp(ref const OctetString other){
+	bool opCmp(ref const OctetString other)
+	{
 		return !(this == other);
 	}
 

@@ -73,7 +73,7 @@ uint bitmask_for_handshake_type(Handshake_Type type)
 			return 0;
 	}
 
-	throw new Internal_Error("Unknown handshake type " + std::to_string(type));
+	throw new Internal_Error("Unknown handshake type " ~ std.conv.to!string(type));
 }
 
 }
@@ -204,10 +204,10 @@ void Handshake_State::confirm_transition_to(Handshake_Type handshake_msg)
 	const bool ok = (m_hand_expecting_mask & mask); // overlap?
 
 	if (!ok)
-		throw new Unexpected_Message("Unexpected state transition in handshake, got " +
-										 std::to_string(handshake_msg) +
-										 " expected " + std::to_string(m_hand_expecting_mask) +
-										 " received " + std::to_string(m_hand_received_mask));
+		throw new Unexpected_Message("Unexpected state transition in handshake, got " ~
+										 std.conv.to!string(handshake_msg) +
+										 " expected " ~ std.conv.to!string(m_hand_expecting_mask) +
+										 " received " ~ std.conv.to!string(m_hand_received_mask));
 
 	/* We don't know what to expect next, so force a call to
 		set_expected_next; if it doesn't happen, the next transition
@@ -266,7 +266,7 @@ KDF* Handshake_State::protocol_specific_prf() const
 		if (prf_algo == "MD5" || prf_algo == "SHA-1")
 			return get_kdf("TLS-12-PRF(SHA-256)");
 
-		return get_kdf("TLS-12-PRF(" + prf_algo + ")");
+		return get_kdf("TLS-12-PRF(" ~ prf_algo ~ ")");
 	}
 	else
 	{
@@ -274,7 +274,7 @@ KDF* Handshake_State::protocol_specific_prf() const
 		return get_kdf("TLS-PRF");
 	}
 
-	throw new Internal_Error("Unknown version code " + _version().to_string());
+	throw new Internal_Error("Unknown version code " ~ _version().to_string());
 }
 
 namespace {
@@ -300,7 +300,7 @@ string choose_hash(in string sig_algo,
 		if (sig_algo == "ECDSA")
 			return "SHA-1";
 
-		throw new Internal_Error("Unknown TLS signature algo " + sig_algo);
+		throw new Internal_Error("Unknown TLS signature algo " ~ sig_algo);
 	}
 
 	const auto supported_algos = for_client_auth ?
@@ -356,18 +356,18 @@ Handshake_State::choose_sig_format(in Private_Key key,
 
 	if (sig_algo == "RSA")
 	{
-		const string padding = "EMSA3(" + hash_algo + ")";
+		const string padding = "EMSA3(" ~ hash_algo ~ ")";
 
 		return Pair(padding, IEEE_1363);
 	}
 	else if (sig_algo == "DSA" || sig_algo == "ECDSA")
 	{
-		const string padding = "EMSA1(" + hash_algo + ")";
+		const string padding = "EMSA1(" ~ hash_algo ~ ")";
 
 		return Pair(padding, DER_SEQUENCE);
 	}
 
-	throw new Invalid_Argument(sig_algo + " is invalid/unknown for TLS signatures");
+	throw new Invalid_Argument(sig_algo ~ " is invalid/unknown for TLS signatures");
 }
 
 Pair!(string, Signature_Format)
@@ -411,7 +411,7 @@ Handshake_State::understand_sig_format(const Public_Key key,
 			hash_algo = "Parallel(MD5,SHA-160)";
 		}
 
-		const string padding = "EMSA3(" + hash_algo + ")";
+		const string padding = "EMSA3(" ~ hash_algo ~ ")";
 		return Pair(padding, IEEE_1363);
 	}
 	else if (algo_name == "DSA" || algo_name == "ECDSA")
@@ -425,12 +425,12 @@ Handshake_State::understand_sig_format(const Public_Key key,
 			hash_algo = "SHA-1";
 		}
 
-		const string padding = "EMSA1(" + hash_algo + ")";
+		const string padding = "EMSA1(" ~ hash_algo ~ ")";
 
 		return Pair(padding, DER_SEQUENCE);
 	}
 
-	throw new Invalid_Argument(algo_name + " is invalid/unknown for TLS signatures");
+	throw new Invalid_Argument(algo_name ~ " is invalid/unknown for TLS signatures");
 }
 
 }

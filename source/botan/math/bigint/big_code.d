@@ -36,7 +36,7 @@ void BigInt::encode(byte* output, ref const BigInt n, Base base)
 		{
 			divide(copy, 10, copy, remainder);
 			output[output_size - 1 - j] =
-				Charset::digit2char(cast(byte)(remainder.word_at(0)));
+				Charset.digit2char(cast(byte)(remainder.word_at(0)));
 			if (copy.is_zero())
 				break;
 		}
@@ -123,14 +123,14 @@ BigInt BigInt::decode(in byte* buf, size_t length, Base base)
 	{
 		for (size_t i = 0; i != length; ++i)
 		{
-			if (Charset::is_space(buf[i]))
+			if (Charset.is_space(buf[i]))
 				continue;
 
-			if (!Charset::is_digit(buf[i]))
+			if (!Charset.is_digit(buf[i]))
 				throw new Invalid_Argument("BigInt::decode: "
 											  "Invalid character in decimal input");
 
-			const byte x = Charset::char2digit(buf[i]);
+			const byte x = Charset.char2digit(buf[i]);
 
 			if (x >= 10)
 				throw new Invalid_Argument("BigInt: Invalid decimal string");

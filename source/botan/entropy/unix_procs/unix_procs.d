@@ -26,7 +26,7 @@ string find_full_path_if_exists(in Vector!string trusted_path,
 {
 	foreach (dir; trusted_path)
 	{
-		const string full_path = dir + "/" + proc;
+		const string full_path = dir ~ "/" ~ proc;
 		if (::access(full_path.c_str(), X_OK) == 0)
 			return full_path;
 	}

@@ -66,7 +66,7 @@ void X509_Cert_Options::sanity_check() const
 	if (common_name == "" || country == "")
 		throw new Encoding_Error("X.509 certificate: name and country MUST be set");
 	if (country.size() != 2)
-		throw new Encoding_Error("Invalid ISO country code: " + country);
+		throw new Encoding_Error("Invalid ISO country code: " ~ country);
 	if (start >= end)
 		throw new Encoding_Error("X509_Cert_Options: invalid time constraints");
 }

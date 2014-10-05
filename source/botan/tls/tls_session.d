@@ -7,7 +7,7 @@
 
 import botan.tls_session;
 import botan.der_enc;
-import botan.ber_dec;
+import botan.asn1.ber_dec;
 import botan.asn1_str;
 import botan.pem;
 import botan.cryptobox_psk;
@@ -162,7 +162,7 @@ Session Session::decrypt(in byte* buf, size_t buf_len,
 	}
 	catch(std::exception& e)
 	{
-		throw new Decoding_Error("Failed to decrypt encrypted session -" +
+		throw new Decoding_Error("Failed to decrypt encrypted session -" ~
 									string(e.what()));
 	}
 }

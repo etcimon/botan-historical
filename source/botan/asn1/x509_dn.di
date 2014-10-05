@@ -5,8 +5,8 @@
 * Distributed under the terms of the botan license.
 */
 
-import botan.asn1_obj;
-import botan.asn1_oid;
+import botan.asn1.asn1_obj;
+import botan.asn1.asn1_oid;
 import botan.asn1_str;
 import map;
 import iosfwd;
@@ -22,7 +22,7 @@ class X509_DN : public ASN1_Object
 		std::multimap<OID, string> get_attributes() const;
 		Vector!string get_attribute(in string) const;
 
-		std::multimap<string, string> contents() const;
+		MultiMap!(string, string) contents() const;
 
 		void add_attribute(in string, in string);
 		void add_attribute(in OID, in string);
@@ -33,7 +33,7 @@ class X509_DN : public ASN1_Object
 
 		X509_DN();
 		X509_DN(in std::multimap<OID, string>);
-		X509_DN(in std::multimap<string, string>);
+		X509_DN(in MultiMap!(string, string));
 	private:
 		std::multimap<OID, ASN1_String> dn_info;
 		Vector!byte dn_bits;

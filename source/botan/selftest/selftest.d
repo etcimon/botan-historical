@@ -32,7 +32,7 @@ string test_filter_kat(Filter* filter,
 		if (same)
 			return "passed";
 		else
-			return (string("got ") + got + " expected " + expected);
+			return (string("got ") + got ~ " expected " ~ expected);
 	}
 	catch(std::exception& e)
 	{
@@ -134,8 +134,8 @@ algorithm_kat_detailed(in SCAN_Name algo_name,
 				}
 			}
 
-			all_results[provider + " (encrypt)"] = test_filter_kat(enc, input, output);
-			all_results[provider + " (decrypt)"] = test_filter_kat(dec, output, input);
+			all_results[provider ~ " (encrypt)"] = test_filter_kat(enc, input, output);
+			all_results[provider ~ " (decrypt)"] = test_filter_kat(dec, output, input);
 		}
 	}
 
@@ -165,8 +165,8 @@ void verify_results(in string algo,
 	for (auto i = results.begin(); i != results.end(); ++i)
 	{
 		if (i.second != "passed")
-			throw new Self_Test_Failure(algo + " self-test failed (" + i.second + ")" +
-											" with provider " + i.first);
+			throw new Self_Test_Failure(algo ~ " self-test failed (" ~ i.second ~ ")" ~
+											" with provider " ~ i.first);
 	}
 }
 
@@ -221,20 +221,20 @@ void cipher_kat(Algorithm_Factory af,
 	HashMap<string, bool> results;
 
 	vars["output"] = ecb_out;
-	verify_results(algo + "/ECB", algorithm_kat_detailed(algo + "/ECB", vars, af));
+	verify_results(algo ~ "/ECB", algorithm_kat_detailed(algo ~ "/ECB", vars, af));
 
 	vars["output"] = cbc_out;
-	verify_results(algo + "/CBC",
-						algorithm_kat_detailed(algo + "/CBC/NoPadding", vars, af));
+	verify_results(algo ~ "/CBC",
+						algorithm_kat_detailed(algo ~ "/CBC/NoPadding", vars, af));
 
 	vars["output"] = cfb_out;
-	verify_results(algo + "/CFB", algorithm_kat_detailed(algo + "/CFB", vars, af));
+	verify_results(algo ~ "/CFB", algorithm_kat_detailed(algo ~ "/CFB", vars, af));
 
 	vars["output"] = ofb_out;
-	verify_results(algo + "/OFB", algorithm_kat_detailed(algo + "/OFB", vars, af));
+	verify_results(algo ~ "/OFB", algorithm_kat_detailed(algo ~ "/OFB", vars, af));
 
 	vars["output"] = ctr_out;
-	verify_results(algo + "/CTR", algorithm_kat_detailed(algo + "/CTR-BE", vars, af));
+	verify_results(algo ~ "/CTR", algorithm_kat_detailed(algo ~ "/CTR-BE", vars, af));
 }
 
 }

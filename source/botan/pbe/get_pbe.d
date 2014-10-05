@@ -31,13 +31,13 @@ PBE* get_pbe(in string algo_spec,
 
 	Vector!string cipher_spec = split_on(cipher, '/');
 	if (cipher_spec.size() != 2)
-		throw new Invalid_Argument("PBE: Invalid cipher spec " + cipher);
+		throw new Invalid_Argument("PBE: Invalid cipher spec " ~ cipher);
 
 	const string cipher_algo = SCAN_Name::deref_alias(cipher_spec[0]);
 	const string cipher_mode = cipher_spec[1];
 
 	if (cipher_mode != "CBC")
-		throw new Invalid_Argument("PBE: Invalid cipher mode " + cipher);
+		throw new Invalid_Argument("PBE: Invalid cipher mode " ~ cipher);
 
 	Algorithm_Factory af = global_state().algorithm_factory();
 

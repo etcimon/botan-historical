@@ -7,7 +7,7 @@
 
 import botan.pubkey;
 import botan.der_enc;
-import botan.ber_dec;
+import botan.asn1.ber_dec;
 import botan.bigint;
 import botan.parsing;
 import botan.libstate;
@@ -30,7 +30,7 @@ PK_Encryptor_EME::PK_Encryptor_EME(in Public_Key key,
 	}
 
 	if (!m_op)
-		throw new Lookup_Error("Encryption with " + key.algo_name() + " not supported");
+		throw new Lookup_Error("Encryption with " ~ key.algo_name() ~ " not supported");
 
 	m_eme.reset(get_eme(eme_name));
 }
@@ -90,7 +90,7 @@ PK_Decryptor_EME::PK_Decryptor_EME(in Private_Key key,
 	}
 
 	if (!m_op)
-		throw new Lookup_Error("Decryption with " + key.algo_name() + " not supported");
+		throw new Lookup_Error("Decryption with " ~ key.algo_name() ~ " not supported");
 
 	m_eme.reset(get_eme(eme_name));
 }
@@ -141,7 +141,7 @@ PK_Signer::PK_Signer(in Private_Key key,
 	}
 
 	if (!m_op || (!m_verify_op && prot == ENABLE_FAULT_PROTECTION))
-		throw new Lookup_Error("Signing with " + key.algo_name() + " not supported");
+		throw new Lookup_Error("Signing with " ~ key.algo_name() ~ " not supported");
 
 	m_emsa.reset(get_emsa(emsa_name));
 	m_sig_format = format;
@@ -230,8 +230,8 @@ Vector!byte PK_Signer::signature(RandomNumberGenerator rng)
 		.get_contents_unlocked();
 	}
 	else
-		throw new Encoding_Error("PK_Signer: Unknown signature format " +
-									std::to_string(m_sig_format));
+		throw new Encoding_Error("PK_Signer: Unknown signature format " ~
+									std.conv.to!string(m_sig_format));
 }
 
 /*
@@ -252,7 +252,7 @@ PK_Verifier::PK_Verifier(in Public_Key key,
 	}
 
 	if (!m_op)
-		throw new Lookup_Error("Verification with " + key.algo_name() + " not supported");
+		throw new Lookup_Error("Verification with " ~ key.algo_name() ~ " not supported");
 
 	m_emsa.reset(get_emsa(emsa_name));
 	m_sig_format = format;
@@ -316,8 +316,8 @@ bool PK_Verifier::check_signature(in byte* sig, size_t length)
 											  &real_sig[0], real_sig.size());
 		}
 		else
-			throw new Decoding_Error("PK_Verifier: Unknown signature format " +
-										std::to_string(m_sig_format));
+			throw new Decoding_Error("PK_Verifier: Unknown signature format " ~
+										std.conv.to!string(m_sig_format));
 	}
 	catch(Invalid_Argument) { return false; }
 }
@@ -361,7 +361,7 @@ PK_Key_Agreement::PK_Key_Agreement(in PK_Key_Agreement_Key key,
 	}
 
 	if (!m_op)
-		throw new Lookup_Error("Key agreement with " + key.algo_name() + " not supported");
+		throw new Lookup_Error("Key agreement with " ~ key.algo_name() ~ " not supported");
 
 	m_kdf.reset(get_kdf(kdf_name));
 }

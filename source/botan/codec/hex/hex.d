@@ -108,7 +108,7 @@ size_t hex_decode(byte* output,
 
 			throw new std::invalid_argument(
 			  string("hex_decode: invalid hex character '") +
-			  bad_char + "'");
+			  bad_char ~ "'");
 		}
 
 		*out_ptr |= bin << (top_nibble*4);

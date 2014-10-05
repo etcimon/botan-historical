@@ -17,10 +17,10 @@ RSA_PrivateKey::RSA_PrivateKey(RandomNumberGenerator rng,
 										 size_t bits, size_t exp)
 {
 	if (bits < 1024)
-		throw new Invalid_Argument(algo_name() + ": Can't make a key that is only " +
-									  std::to_string(bits) + " bits long");
+		throw new Invalid_Argument(algo_name() ~ ": Can't make a key that is only " ~
+									  std.conv.to!string(bits) ~ " bits long");
 	if (exp < 3 || exp % 2 == 0)
-		throw new Invalid_Argument(algo_name() + ": Invalid encryption exponent");
+		throw new Invalid_Argument(algo_name() ~ ": Invalid encryption exponent");
 
 	e = exp;
 

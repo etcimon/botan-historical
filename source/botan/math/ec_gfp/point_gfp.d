@@ -591,7 +591,7 @@ PointGFp OS2ECP(in byte* data, size_t data_len,
 			throw new Illegal_Point("OS2ECP: Decoding error in hybrid format");
 	}
 	else
-		throw new Invalid_Argument("OS2ECP: Unknown format type " + std::to_string(pc));
+		throw new Invalid_Argument("OS2ECP: Unknown format type " ~ std.conv.to!string(pc));
 
 	PointGFp result(curve, x, y);
 

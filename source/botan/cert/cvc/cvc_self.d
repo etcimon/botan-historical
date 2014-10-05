@@ -31,7 +31,7 @@ void encode_eac_bigint(DER_Encoder& der, ref const BigInt x, ASN1_Tag tag)
 }
 
 Vector!byte eac_1_1_encoding(const EC_PublicKey* key,
-												const OID& sig_algo)
+												ref const OID sig_algo)
 {
 	if (key.domain_format() == EC_DOMPAR_ENC_OID)
 		throw new Encoding_Error("CVC encoder: cannot encode parameters by OID");
@@ -72,7 +72,7 @@ string padding_and_hash_from_oid(OID const& oid)
 	string padding_and_hash = oids.lookup(oid); // use the hash
 
 	if (padding_and_hash.substr(0,6) != "ECDSA/")
-		throw new Invalid_State("CVC: Can only use ECDSA, not " + padding_and_hash);
+		throw new Invalid_State("CVC: Can only use ECDSA, not " ~ padding_and_hash);
 
 	padding_and_hash.erase(0, padding_and_hash.find("/") + 1);
 	return padding_and_hash;
@@ -96,8 +96,8 @@ EAC1_1_CVC create_self_signed_cert(Private_Key const& key,
 	ASN1_Chr chr(opt.car.value());
 
 	AlgorithmIdentifier sig_algo;
-	string padding_and_hash("EMSA1_BSI(" + opt.hash_alg + ")");
-	sig_algo.oid = oids.lookup(priv_key.algo_name() + "/" + padding_and_hash);
+	string padding_and_hash("EMSA1_BSI(" ~ opt.hash_alg ~ ")");
+	sig_algo.oid = oids.lookup(priv_key.algo_name() ~ "/" ~ padding_and_hash);
 	sig_algo = AlgorithmIdentifier(sig_algo.oid, AlgorithmIdentifier::USE_NULL_PARAM);
 
 	PK_Signer signer(*priv_key, padding_and_hash);
@@ -123,8 +123,8 @@ EAC1_1_Req create_cvc_req(Private_Key const& key,
 		throw new Invalid_Argument("CVC_EAC::create_self_signed_cert(): unsupported key type");
 	}
 	AlgorithmIdentifier sig_algo;
-	string padding_and_hash("EMSA1_BSI(" + hash_alg + ")");
-	sig_algo.oid = oids.lookup(priv_key.algo_name() + "/" + padding_and_hash);
+	string padding_and_hash("EMSA1_BSI(" ~ hash_alg ~ ")");
+	sig_algo.oid = oids.lookup(priv_key.algo_name() ~ "/" ~ padding_and_hash);
 	sig_algo = AlgorithmIdentifier(sig_algo.oid, AlgorithmIdentifier::USE_NULL_PARAM);
 
 	PK_Signer signer(*priv_key, padding_and_hash);
@@ -255,7 +255,7 @@ EAC1_1_CVC sign_request(EAC1_1_CVC const& signer_cert,
 	}
 	string chr_str = signee.get_chr().value();
 
-	string seqnr_string = std::to_string(seqnr);
+	string seqnr_string = std.conv.to!string(seqnr);
 
 	while(seqnr_string.size() < seqnr_len)
 		seqnr_string = '0' + seqnr_string;

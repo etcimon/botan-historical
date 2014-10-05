@@ -127,7 +127,7 @@ Certificate_Store_In_Memory::Certificate_Store_In_Memory(in string dir)
 			if (boost::filesystem::is_regular_file(path))
 				m_certs.push_back(X509_Certificate(path.native()));
 		}
-		catch(...) {}
+		catch {}
 	}
 #else
 	throw new Exception("Certificate_Store_In_Memory: FS access disabled");

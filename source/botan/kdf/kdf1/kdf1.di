@@ -17,7 +17,7 @@ class KDF1 : public KDF
 										  in byte* secret, size_t secret_len,
 										  in byte* P, size_t P_len) const;
 
-		string name() const { return "KDF1(" + hash.name() + ")"; }
+		string name() const { return "KDF1(" ~ hash.name() ~ ")"; }
 		KDF* clone() const { return new KDF1(hash.clone()); }
 
 		KDF1(HashFunction h) : hash(h) {}

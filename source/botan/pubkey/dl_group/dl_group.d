@@ -10,7 +10,7 @@ import botan.libstate;
 import botan.parsing;
 import botan.numthry;
 import botan.der_enc;
-import botan.ber_dec;
+import botan.asn1.ber_dec;
 import botan.pipe;
 import botan.pem;
 import botan.workfactor;
@@ -30,7 +30,7 @@ DL_Group::DL_Group(in string name)
 	string pem = PEM_for_named_group(name);
 
 	if (!pem)
-		throw new Invalid_Argument("DL_Group: Unknown group " + name);
+		throw new Invalid_Argument("DL_Group: Unknown group " ~ name);
 
 	PEM_decode(pem);
 }
@@ -42,7 +42,7 @@ DL_Group::DL_Group(RandomNumberGenerator rng,
 						 PrimeType type, size_t pbits, size_t qbits)
 {
 	if (pbits < 512)
-		throw new Invalid_Argument("DL_Group: prime size " + std::to_string(pbits) +
+		throw new Invalid_Argument("DL_Group: prime size " ~ std.conv.to!string(pbits) +
 									  " is too small");
 
 	if (type == Strong)
@@ -234,7 +234,7 @@ Vector!byte DL_Group::DER_encode(Format format) const
 		.get_contents_unlocked();
 	}
 
-	throw new Invalid_Argument("Unknown DL_Group encoding " + std::to_string(format));
+	throw new Invalid_Argument("Unknown DL_Group encoding " ~ std.conv.to!string(format));
 }
 
 /*
@@ -251,7 +251,7 @@ string DL_Group::PEM_encode(Format format) const
 	else if (format == ANSI_X9_42)
 		return PEM_Code::encode(encoding, "X942 DH PARAMETERS");
 	else
-		throw new Invalid_Argument("Unknown DL_Group encoding " + std::to_string(format));
+		throw new Invalid_Argument("Unknown DL_Group encoding " ~ std.conv.to!string(format));
 }
 
 /*
@@ -286,7 +286,7 @@ void DL_Group::BER_decode(in Vector!byte data,
 			.discard_remaining();
 	}
 	else
-		throw new Invalid_Argument("Unknown DL_Group encoding " + std::to_string(format));
+		throw new Invalid_Argument("Unknown DL_Group encoding " ~ std.conv.to!string(format));
 
 	initialize(new_p, new_q, new_g);
 }
@@ -307,7 +307,7 @@ void DL_Group::PEM_decode(in string pem)
 	else if (label == "X942 DH PARAMETERS")
 		BER_decode(ber, ANSI_X9_42);
 	else
-		throw new Decoding_Error("DL_Group: Invalid PEM label " + label);
+		throw new Decoding_Error("DL_Group: Invalid PEM label " ~ label);
 }
 
 /*

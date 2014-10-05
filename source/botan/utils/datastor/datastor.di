@@ -22,7 +22,7 @@ class Data_Store
 		*/
 		bool operator==(in Data_Store) const;
 
-		std::multimap<string, string> search_for(
+		MultiMap!(string, string) search_for(
 			bool delegate(string, string) predicate) const;
 
 		Vector!string get(in string) const;
@@ -37,11 +37,11 @@ class Data_Store
 
 		bool has_value(in string) const;
 
-		void add(in std::multimap<string, string>);
+		void add(in MultiMap!(string, string));
 		void add(in string, in string);
 		void add(in string, uint);
 		void add(in string, in SafeVector!byte);
 		void add(in string, in Vector!byte);
 	private:
-		std::multimap<string, string> contents;
+		MultiMap!(string, string) contents;
 };

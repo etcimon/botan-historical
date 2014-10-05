@@ -27,9 +27,9 @@ Skein_512::Skein_512(size_t arg_output_bits,
 string Skein_512::name() const
 {
 	if (personalization != "")
-		return "Skein-512(" + std::to_string(output_bits) + "," +
-									 personalization + ")";
-	return "Skein-512(" + std::to_string(output_bits) + ")";
+		return "Skein-512(" ~ std.conv.to!string(output_bits) ~ "," ~
+									 personalization ~ ")";
+	return "Skein-512(" ~ std.conv.to!string(output_bits) ~ ")";
 }
 
 HashFunction Skein_512::clone() const

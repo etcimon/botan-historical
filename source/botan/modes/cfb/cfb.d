@@ -13,8 +13,8 @@ CFB_Mode::CFB_Mode(BlockCipher cipher, size_t feedback_bits) :
 	m_feedback_bytes(feedback_bits ? feedback_bits / 8 : cipher.block_size())
 {
 	if (feedback_bits % 8 || feedback() > cipher.block_size())
-		throw new std::invalid_argument(name() + ": feedback bits " +
-											 std::to_string(feedback_bits) + " not supported");
+		throw new std::invalid_argument(name() ~ ": feedback bits " ~
+											 std.conv.to!string(feedback_bits) ~ " not supported");
 }
 
 void CFB_Mode::clear()
@@ -26,9 +26,9 @@ void CFB_Mode::clear()
 string CFB_Mode::name() const
 {
 	if (feedback() == cipher().block_size())
-		return cipher().name() + "/CFB";
+		return cipher().name() ~ "/CFB";
 	else
-		return cipher().name() + "/CFB(" + std::to_string(feedback()*8) + ")";
+		return cipher().name() ~ "/CFB(" ~ std.conv.to!string(feedback()*8) ~ ")";
 }
 
 size_t CFB_Mode::output_length(size_t input_length) const

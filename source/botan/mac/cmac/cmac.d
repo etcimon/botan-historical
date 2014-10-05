@@ -131,7 +131,7 @@ void CMAC::clear()
 */
 string CMAC::name() const
 {
-	return "CMAC(" + m_cipher.name() + ")";
+	return "CMAC(" ~ m_cipher.name() ~ ")";
 }
 
 /*
@@ -150,9 +150,9 @@ CMAC::CMAC(BlockCipher cipher) : m_cipher(cipher)
 	if (m_cipher.block_size() !=  8 && m_cipher.block_size() != 16 &&
 		m_cipher.block_size() != 32 && m_cipher.block_size() != 64)
 	{
-		throw new Invalid_Argument("CMAC cannot use the " +
-									  std::to_string(m_cipher.block_size() * 8) +
-									  " bit cipher " + m_cipher.name());
+		throw new Invalid_Argument("CMAC cannot use the " ~
+									  std.conv.to!string(m_cipher.block_size() * 8) +
+									  " bit cipher " ~ m_cipher.name());
 	}
 
 	m_state.resize(output_length());

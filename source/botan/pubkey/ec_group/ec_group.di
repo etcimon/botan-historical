@@ -9,7 +9,7 @@
 
 import botan.point_gfp;
 import botan.curve_gfp;
-import botan.asn1_oid;
+import botan.asn1.asn1_oid;
 /**
 * This class represents elliptic curce domain parameters
 */

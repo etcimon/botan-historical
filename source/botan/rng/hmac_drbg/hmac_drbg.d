@@ -102,7 +102,7 @@ void HMAC_DRBG::clear()
 
 string HMAC_DRBG::name() const
 {
-	return "HMAC_DRBG(" + m_mac.name() + ")";
+	return "HMAC_DRBG(" ~ m_mac.name() ~ ")";
 }
 
 }

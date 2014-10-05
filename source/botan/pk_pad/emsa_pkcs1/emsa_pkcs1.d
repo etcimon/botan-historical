@@ -65,7 +65,7 @@ bool EMSA_PKCS1v15::verify(in SafeVector!byte coded,
 		return (coded == emsa3_encoding(raw, key_bits,
 												  &m_hash_id[0], m_hash_id.size()));
 	}
-	catch(...)
+	catch
 	{
 		return false;
 	}
@@ -104,7 +104,7 @@ bool EMSA_PKCS1v15_Raw::verify(in SafeVector!byte coded,
 	{
 		return (coded == emsa3_encoding(raw, key_bits, null, 0));
 	}
-	catch(...)
+	catch
 	{
 		return false;
 	}

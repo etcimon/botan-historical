@@ -165,7 +165,7 @@ DataSource_Stream::DataSource_Stream(in string path,
 	if (!source.good())
 	{
 		delete source_p;
-		throw new Stream_IO_Error("DataSource: Failure opening file " + path);
+		throw new Stream_IO_Error("DataSource: Failure opening file " ~ path);
 	}
 }
 

@@ -153,15 +153,15 @@ class TLS_Data_Reader
 		void assert_at_least(size_t n) const
 		{
 			if (m_buf.size() - m_offset < n)
-				throw new decode_error("Expected " + std::to_string(n) +
-										 " bytes remaining, only " +
-										 std::to_string(m_buf.size()-m_offset) +
+				throw new decode_error("Expected " ~ std.conv.to!string(n) +
+										 " bytes remaining, only " ~
+										 std.conv.to!string(m_buf.size()-m_offset) +
 										 " left");
 		}
 
 		Decoding_Error decode_error(in string why) const
 		{
-			return Decoding_Error("Invalid " + string(m_typename) + ": " + why);
+			return Decoding_Error("Invalid " ~ string(m_typename) ~ ": " ~ why);
 		}
 
 		string m_typename;

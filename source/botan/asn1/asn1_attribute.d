@@ -1,57 +1,78 @@
 /*
-* Attribute
-* (C) 1999-2007 Jack Lloyd
+* ASN.1 Attribute
+* (C) 1999-2007,2012 Jack Lloyd
 *
-* Distributed under the terms of the Botan license
+* Distributed under the terms of the botan license.
 */
 
-import botan.asn1_attribute;
+module botan.asn1.asn1_attribute;
+
 import botan.der_enc;
-import botan.ber_dec;
+import botan.asn1.ber_dec;
 import botan.asn1.oid_lookup.oids;
-/*
-* Create an Attribute
-*/
-Attribute::Attribute(in OID attr_oid, in Vector!byte attr_value)
-{
-	oid = attr_oid;
-	parameters = attr_value;
-}
+import botan.asn1.asn1_obj;
+import botan.asn1.asn1_oid;
+import vector;
 
-/*
-* Create an Attribute
-*/
-Attribute::Attribute(in string attr_oid,
-							in Vector!byte attr_value)
-{
-	oid = oids.lookup(attr_oid);
-	parameters = attr_value;
-}
+class DER_Encoder;
+class BER_Decoder;
 
-/*
-* DER encode a Attribute
+/**
+* Attribute
 */
-void Attribute::encode_into(DER_Encoder codec) const
+class Attribute : public ASN1_Object
 {
-	codec.start_cons(SEQUENCE)
-		.encode(oid)
-		.start_cons(SET)
-			.raw_bytes(parameters)
-		.end_cons()
-	.end_cons();
-}
+public:
 
-/*
-* Decode a BER encoded Attribute
-*/
-void Attribute::decode_from(BER_Decoder codec)
-{
-	codec.start_cons(SEQUENCE)
-		.decode(oid)
-		.start_cons(SET)
-			.raw_bytes(parameters)
-		.end_cons()
-	.end_cons();
-}
+	/*
+	* Create an Attribute
+	*/
+	this(in OID attr_oid, in Vector!byte attr_value)
+	{
+		oid = attr_oid;
+		parameters = attr_value;
+	}
+	
+	/*
+	* Create an Attribute
+	*/
+	this(in string attr_oid,
+	     in Vector!byte attr_value)
+	{
+		oid = oids.lookup(attr_oid);
+		parameters = attr_value;
+	}
+	
+	/*
+	* DER encode a Attribute
+	*/
+	void encode_into(DER_Encoder codec) const
+	{
+		codec.start_cons(SEQUENCE)
+			.encode(oid)
+				.start_cons(SET)
+				.raw_bytes(parameters)
+				.end_cons()
+				.end_cons();
+	}
+	
+	/*
+	* Decode a BER encoded Attribute
+	*/
+	void decode_from(BER_Decoder codec)
+	{
+		codec.start_cons(SEQUENCE)
+			.decode(oid)
+				.start_cons(SET)
+				.raw_bytes(parameters)
+				.end_cons()
+				.end_cons();
+	}
 
-}
+	OID oid;
+	Vector!byte parameters;
+
+	this() {}
+};
+
+

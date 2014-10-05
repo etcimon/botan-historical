@@ -79,7 +79,7 @@ string string_join(in Vector!string strs,
 * @param oid the OID in string form
 * @return OID components
 */
-Vector!( uint ) parse_asn1_oid(in string oid);
+Vector!uint parse_asn1_oid(in string oid);
 
 /**
 * Compare two names using the X.509 comparison algorithm

@@ -39,7 +39,7 @@ struct Lookup_Error : public Exception
 struct Internal_Error : public Exception
 {
 	Internal_Error(in string err) :
-		Exception("Internal error: " + err)
+		Exception("Internal error: " ~ err)
 	{}
 };
 
@@ -49,8 +49,8 @@ struct Internal_Error : public Exception
 struct Invalid_Key_Length : public Invalid_Argument
 {
 	Invalid_Key_Length(in string name, size_t length) :
-		Invalid_Argument(name + " cannot accept a key of length " +
-							  std::to_string(length))
+		Invalid_Argument(name ~ " cannot accept a key of length " ~
+							  std.conv.to!string(length))
 	{}
 };
 
@@ -60,8 +60,8 @@ struct Invalid_Key_Length : public Invalid_Argument
 struct Invalid_IV_Length : public Invalid_Argument
 {
 	Invalid_IV_Length(in string mode, size_t bad_len) :
-		Invalid_Argument("IV length " + std::to_string(bad_len) +
-							  " is invalid for " + mode)
+		Invalid_Argument("IV length " ~ std.conv.to!string(bad_len) +
+							  " is invalid for " ~ mode)
 	{}
 };
 
@@ -71,7 +71,7 @@ struct Invalid_IV_Length : public Invalid_Argument
 struct PRNG_Unseeded : public Invalid_State
 {
 	PRNG_Unseeded(in string algo) :
-		Invalid_State("PRNG not seeded: " + algo)
+		Invalid_State("PRNG not seeded: " ~ algo)
 	{}
 };
 
@@ -81,7 +81,7 @@ struct PRNG_Unseeded : public Invalid_State
 struct Policy_Violation : public Invalid_State
 {
 	Policy_Violation(in string err) :
-		Invalid_State("Policy violation: " + err)
+		Invalid_State("Policy violation: " ~ err)
 	{}
 };
 
@@ -91,7 +91,7 @@ struct Policy_Violation : public Invalid_State
 struct Algorithm_Not_Found : public Lookup_Error
 {
 	Algorithm_Not_Found(in string name) :
-		Lookup_Error("Could not find any algorithm named \"" + name + "\"")
+		Lookup_Error("Could not find any algorithm named \"" ~ name ~ "\"")
 	{}
 };
 
@@ -101,7 +101,7 @@ struct Algorithm_Not_Found : public Lookup_Error
 struct Invalid_Algorithm_Name : public Invalid_Argument
 {
 	Invalid_Algorithm_Name(in string name):
-		Invalid_Argument("Invalid algorithm name: " + name)
+		Invalid_Argument("Invalid algorithm name: " ~ name)
 	{}
 };
 
@@ -111,7 +111,7 @@ struct Invalid_Algorithm_Name : public Invalid_Argument
 struct Encoding_Error : public Invalid_Argument
 {
 	Encoding_Error(in string name) :
-		Invalid_Argument("Encoding error: " + name) {}
+		Invalid_Argument("Encoding error: " ~ name) {}
 };
 
 /**
@@ -120,7 +120,7 @@ struct Encoding_Error : public Invalid_Argument
 struct Decoding_Error : public Invalid_Argument
 {
 	Decoding_Error(in string name) :
-		Invalid_Argument("Decoding error: " + name) {}
+		Invalid_Argument("Decoding error: " ~ name) {}
 };
 
 /**
@@ -129,7 +129,7 @@ struct Decoding_Error : public Invalid_Argument
 struct Integrity_Failure : public Exception
 {
 	Integrity_Failure(in string msg) :
-		Exception("Integrity failure: " + msg) {}
+		Exception("Integrity failure: " ~ msg) {}
 };
 
 /**
@@ -138,7 +138,7 @@ struct Integrity_Failure : public Exception
 struct Invalid_OID : public Decoding_Error
 {
 	Invalid_OID(in string oid) :
-		Decoding_Error("Invalid ASN.1 OID: " + oid) {}
+		Decoding_Error("Invalid ASN.1 OID: " ~ oid) {}
 };
 
 /**
@@ -147,7 +147,7 @@ struct Invalid_OID : public Decoding_Error
 struct Stream_IO_Error : public Exception
 {
 	Stream_IO_Error(in string err) :
-		Exception("I/O error: " + err)
+		Exception("I/O error: " ~ err)
 	{}
 };
 
@@ -157,7 +157,7 @@ struct Stream_IO_Error : public Exception
 struct Self_Test_Failure : public Internal_Error
 {
 	Self_Test_Failure(in string err) :
-		Internal_Error("Self test failed: " + err)
+		Internal_Error("Self test failed: " ~ err)
 	{}
 };
 

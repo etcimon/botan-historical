@@ -57,7 +57,7 @@ string srp6_group_identifier(in BigInt N, ref const BigInt g)
 	*/
 	try
 	{
-		const string group_name = "modp/srp/" + std::to_string(N.bits());
+		const string group_name = "modp/srp/" ~ std.conv.to!string(N.bits());
 
 		DL_Group group(group_name);
 
@@ -66,7 +66,7 @@ string srp6_group_identifier(in BigInt N, ref const BigInt g)
 
 		throw new Exception("Unknown SRP params");
 	}
-	catch(...)
+	catch
 	{
 		throw new Invalid_Argument("Bad SRP group parameters");
 	}

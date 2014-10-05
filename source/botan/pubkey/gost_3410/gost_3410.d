@@ -9,7 +9,7 @@
 
 import botan.gost_3410;
 import botan.der_enc;
-import botan.ber_dec;
+import botan.asn1.ber_dec;
 Vector!byte GOST_3410_PublicKey::x509_subject_public_key() const
 {
 	// Trust CryptoPro to come up with something obnoxious

@@ -219,8 +219,8 @@ Vector!byte Maximum_Fragment_Length::serialize() const
 	auto i = fragment_to_code.find(m_max_fragment);
 
 	if (i == fragment_to_code.end())
-		throw new std::invalid_argument("Bad setting " +
-											 std::to_string(m_max_fragment) +
+		throw new std::invalid_argument("Bad setting " ~
+											 std.conv.to!string(m_max_fragment) +
 											 " for maximum fragment size");
 
 	return Vector!byte(1, i.second);
@@ -354,7 +354,7 @@ ushort Supported_Elliptic_Curves::name_to_curve_id(in string name)
 	if (name == "brainpool512r1")
 		return 28;
 
-	throw new Invalid_Argument("name_to_curve_id unknown name " + name);
+	throw new Invalid_Argument("name_to_curve_id unknown name " ~ name);
 }
 
 Vector!byte Supported_Elliptic_Curves::serialize() const
@@ -440,7 +440,7 @@ byte Signature_Algorithms::hash_algo_code(in string name)
 	if (name == "SHA-512")
 		return 6;
 
-	throw new Internal_Error("Unknown hash ID " + name + " for signature_algorithms");
+	throw new Internal_Error("Unknown hash ID " ~ name ~ " for signature_algorithms");
 }
 
 string Signature_Algorithms::sig_algo_name(byte code)
@@ -469,7 +469,7 @@ byte Signature_Algorithms::sig_algo_code(in string name)
 	if (name == "ECDSA")
 		return 3;
 
-	throw new Internal_Error("Unknown sig ID " + name + " for signature_algorithms");
+	throw new Internal_Error("Unknown sig ID " ~ name ~ " for signature_algorithms");
 }
 
 Vector!byte Signature_Algorithms::serialize() const
@@ -486,7 +486,7 @@ Vector!byte Signature_Algorithms::serialize() const
 			buf.push_back(hash_code);
 			buf.push_back(sig_code);
 		}
-		catch(...)
+		catch
 		{}
 	}
 

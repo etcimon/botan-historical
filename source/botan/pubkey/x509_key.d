@@ -7,7 +7,7 @@
 
 import botan.x509_key;
 import botan.der_enc;
-import botan.ber_dec;
+import botan.asn1.ber_dec;
 import botan.pem;
 import botan.asn1.alg_id;
 import botan.internal.pk_algs;

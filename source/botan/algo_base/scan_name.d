@@ -33,7 +33,7 @@ public:
 		size_t level = 0;
 		Pair!(size_t, string) accum = Pair(level, "");
 		
-		string decoding_error = "Bad SCAN name '" + algo_spec + "': ";
+		string decoding_error = "Bad SCAN name '" ~ algo_spec ~ "': ";
 		
 		algo_spec = deref_alias(algo_spec);
 		
@@ -48,7 +48,7 @@ public:
 				else if (c == ')')
 				{
 					if (level == 0)
-						throw new Decoding_Error(decoding_error + "Mismatched parens");
+						throw new Decoding_Error(decoding_error ~ "Mismatched parens");
 					--level;
 				}
 				
@@ -69,10 +69,10 @@ public:
 			name.push_back(deref_aliases(accum));
 		
 		if (level != 0)
-			throw new Decoding_Error(decoding_error + "Missing close paren");
+			throw new Decoding_Error(decoding_error ~ "Missing close paren");
 		
 		if (name.size() == 0)
-			throw new Decoding_Error(decoding_error + "Empty name");
+			throw new Decoding_Error(decoding_error ~ "Empty name");
 		
 		alg_name = name[0].second;
 		
@@ -274,7 +274,7 @@ string make_arg(in Vector!(Pair!(size_t, string)) name, size_t start)
 		}
 		else if (name[i].first < level)
 		{
-			output += ")," + name[i].second;
+			output += ")," ~ name[i].second;
 			--paren_depth;
 		}
 		else
@@ -312,7 +312,7 @@ string make_arg(
 		}
 		else if (name[i].first < level)
 		{
-			output += ")," + name[i].second;
+			output += ")," ~ name[i].second;
 			--paren_depth;
 		}
 		else
