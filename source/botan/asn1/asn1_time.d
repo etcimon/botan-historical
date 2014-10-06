@@ -287,26 +287,26 @@ public:
 	/*
 	* Compare two X509_Times for in various ways
 	*/
-	bool opEquals(ref const X509_Time t2)
+	bool opEquals(const X509_Time t2)
 	{ return (cmp(t2) == 0); }
 
-	bool opCmp(string op)(ref const X509_Time t2)
+	bool opCmp(string op)(const X509_Time t2)
 		if (op == "!=")
 	{ return (t1.cmp(t2) != 0); }
 	
-	bool opCmp(string op)(ref const X509_Time t2)
+	bool opCmp(string op)(const X509_Time t2)
 		if (op == "<=")
 	{ return (t1.cmp(t2) <= 0); }
 
-	bool opCmp(string op)(ref const X509_Time t2)
+	bool opCmp(string op)(const X509_Time t2)
 		if (op == ">=")
 	{ return (t1.cmp(t2) >= 0); }
 	
-	bool opCmp(string op)(ref const X509_Time t2)
+	bool opCmp(string op)(const X509_Time t2)
 		if (op == "<")
 	{ return (t1.cmp(t2) < 0); }
 
-	bool opCmp(string op)(ref const X509_Time t2)
+	bool opCmp(string op)(const X509_Time t2)
 		if (op == ">")
 	{ return (t1.cmp(t2) > 0); }
 

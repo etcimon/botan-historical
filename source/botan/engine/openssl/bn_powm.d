@@ -18,7 +18,7 @@ class OpenSSL_Modular_Exponentiator : Modular_Exponentiator
 		void set_base(in BigInt b) { base = b; }
 		void set_exponent(in BigInt e) { exp = e; }
 		BigInt execute() const;
-		Modular_Exponentiator* copy() const
+		Modular_Exponentiator copy() const
 		{ return new OpenSSL_Modular_Exponentiator(*this); }
 
 		OpenSSL_Modular_Exponentiator(in BigInt n) : mod(n) {}
@@ -42,7 +42,7 @@ BigInt OpenSSL_Modular_Exponentiator::execute() const
 /*
 * Return the OpenSSL-based modular exponentiator
 */
-Modular_Exponentiator* OpenSSL_Engine::mod_exp(in BigInt n,
+Modular_Exponentiator OpenSSL_Engine::mod_exp(in BigInt n,
 															  Power_Mod::Usage_Hints) const
 {
 	return new OpenSSL_Modular_Exponentiator(n);

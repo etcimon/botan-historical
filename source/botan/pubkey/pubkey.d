@@ -19,7 +19,7 @@ import botan.internal.bit_ops;
 PK_Encryptor_EME::PK_Encryptor_EME(in Public_Key key,
 											  in string eme_name)
 {
-	Algorithm_Factory.Engine_Iterator i(global_state().algorithm_factory());
+	Algorithm_Factory.Engine_Iterator i = Algorithm_Factory.Engine_Iterator(global_state().algorithm_factory());
 	RandomNumberGenerator rng = global_state().global_rng();
 
 	while(const Engine engine = i.next())
@@ -79,7 +79,7 @@ size_t PK_Encryptor_EME::maximum_input_size() const
 PK_Decryptor_EME::PK_Decryptor_EME(in Private_Key key,
 											  in string eme_name)
 {
-	Algorithm_Factory.Engine_Iterator i(global_state().algorithm_factory());
+	Algorithm_Factory.Engine_Iterator i = Algorithm_Factory.Engine_Iterator(global_state().algorithm_factory());
 	RandomNumberGenerator rng = global_state().global_rng();
 
 	while(const Engine engine = i.next())
@@ -122,7 +122,7 @@ PK_Signer::PK_Signer(in Private_Key key,
 							Signature_Format format,
 							Fault_Protection prot)
 {
-	Algorithm_Factory.Engine_Iterator i(global_state().algorithm_factory());
+	Algorithm_Factory.Engine_Iterator i = Algorithm_Factory.Engine_Iterator(global_state().algorithm_factory());
 	RandomNumberGenerator rng = global_state().global_rng();
 
 	m_op = null;
@@ -241,7 +241,7 @@ PK_Verifier::PK_Verifier(in Public_Key key,
 								 in string emsa_name,
 								 Signature_Format format)
 {
-	Algorithm_Factory.Engine_Iterator i(global_state().algorithm_factory());
+	Algorithm_Factory.Engine_Iterator i = Algorithm_Factory.Engine_Iterator(global_state().algorithm_factory());
 	RandomNumberGenerator rng = global_state().global_rng();
 
 	while(const Engine engine = i.next())
@@ -350,7 +350,7 @@ bool PK_Verifier::validate_signature(in SafeVector!ubyte msg,
 PK_Key_Agreement::PK_Key_Agreement(in PK_Key_Agreement_Key key,
 											  in string kdf_name)
 {
-	Algorithm_Factory.Engine_Iterator i(global_state().algorithm_factory());
+	Algorithm_Factory.Engine_Iterator i = Algorithm_Factory.Engine_Iterator(global_state().algorithm_factory());
 	RandomNumberGenerator rng = global_state().global_rng();
 
 	while(const Engine engine = i.next())

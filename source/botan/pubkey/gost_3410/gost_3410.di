@@ -8,7 +8,7 @@
 */
 
 import botan.ecc_key;
-import botan.pk_ops;
+import botan.pubkey.pk_ops;
 /**
 * GOST-34.10 Public Key
 */
@@ -88,7 +88,7 @@ class GOST_3410_PrivateKey : GOST_3410_PublicKey,
 /**
 * GOST-34.10 signature operation
 */
-class GOST_3410_Signature_Operation : PK_Ops::Signature
+class GOST_3410_Signature_Operation : pk_ops.Signature
 {
 	public:
 		GOST_3410_Signature_Operation(in GOST_3410_PrivateKey gost_3410);
@@ -109,7 +109,7 @@ class GOST_3410_Signature_Operation : PK_Ops::Signature
 /**
 * GOST-34.10 verification operation
 */
-class GOST_3410_Verification_Operation : PK_Ops::Verification
+class GOST_3410_Verification_Operation : pk_ops.Verification
 {
 	public:
 		GOST_3410_Verification_Operation(in GOST_3410_PublicKey gost);

@@ -15,7 +15,7 @@ import botan.asn1.oid_lookup.oids;
 /*
 * Load a X.509 CRL
 */
-X509_CRL::X509_CRL(DataSource& in, bool touc) :
+X509_CRL::X509_CRL(DataSource in, bool touc) :
 	X509_Object(input, "X509 CRL/CRL"), throw_on_unknown_critical(touc)
 {
 	do_decode();

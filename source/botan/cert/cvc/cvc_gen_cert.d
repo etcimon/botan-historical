@@ -23,7 +23,7 @@ public:
 	* Get this certificates public key.
 	* @result this certificates public key
 	*/
-	Public_Key* subject_public_key() const
+	Public_Key subject_public_key() const
 	{
 		return new ECDSA_PublicKey(m_pk);
 	}
@@ -54,7 +54,7 @@ public:
 	*/
 	void encode(Pipe output, X509_Encoding encoding) const
 	{
-		Vector!ubyte concat_sig(EAC1_1_obj!Derived.m_sig.get_concatenation());
+		Vector!ubyte concat_sig = EAC1_1_obj!Derived.m_sig.get_concatenation();
 		Vector!ubyte der = DER_Encoder()
 			.start_cons(ASN1_Tag(33), ASN1_Tag.APPLICATION)
 				.start_cons(ASN1_Tag(78), ASN1_Tag.APPLICATION)
@@ -115,13 +115,13 @@ public:
 				.get_contents_unlocked();
 	}
 
-	EAC1_1_gen_CVC() { m_pk = 0; }
+	this() { m_pk = 0; }
 
 	~this()
 	{ delete m_pk; }
 
 package:
-	ECDSA_PublicKey* m_pk;
+	ECDSA_PublicKey m_pk;
 	ASN1_Chr m_chr;
 	bool self_signed;
 

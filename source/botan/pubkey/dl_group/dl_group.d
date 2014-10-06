@@ -12,7 +12,7 @@ import botan.numthry;
 import botan.asn1.der_enc;
 import botan.asn1.ber_dec;
 import botan.pipe;
-import botan.pem;
+import botan.codec.pem.pem;
 import botan.workfactor;
 /*
 * DL_Group Constructor
@@ -245,11 +245,11 @@ string DL_Group::PEM_encode(Format format) const
 	const Vector!ubyte encoding = DER_encode(format);
 
 	if (format == PKCS_3)
-		return PEM_Code::encode(encoding, "DH PARAMETERS");
+		return pem.encode(encoding, "DH PARAMETERS");
 	else if (format == ANSI_X9_57)
-		return PEM_Code::encode(encoding, "DSA PARAMETERS");
+		return pem.encode(encoding, "DSA PARAMETERS");
 	else if (format == ANSI_X9_42)
-		return PEM_Code::encode(encoding, "X942 DH PARAMETERS");
+		return pem.encode(encoding, "X942 DH PARAMETERS");
 	else
 		throw new Invalid_Argument("Unknown DL_Group encoding " ~ std.conv.to!string(format));
 }
@@ -298,7 +298,7 @@ void DL_Group::PEM_decode(in string pem)
 {
 	string label;
 
-	auto ber = unlock(PEM_Code::decode(pem, label));
+	auto ber = unlock(pem.decode(pem, label));
 
 	if (label == "DH PARAMETERS")
 		BER_decode(ber, PKCS_3);

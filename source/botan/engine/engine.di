@@ -13,7 +13,7 @@ import botan.mac;
 import botan.pbkdf;
 import botan.pow_mod;
 import botan.pk_keys;
-import botan.pk_ops;
+import botan.pubkey.pk_ops;
 class Algorithm_Factory;
 class Keyed_Filter;
 class RandomNumberGenerator;
@@ -41,7 +41,7 @@ class Engine
 		*/
 		abstract BlockCipher
 			find_block_cipher(in SCAN_Name algo_spec,
-									ref Algorithm_Factory af) const;
+									Algorithm_Factory af) const;
 
 		/**
 		* @param algo_spec the algorithm name/specification
@@ -50,7 +50,7 @@ class Engine
 		*/
 		abstract StreamCipher
 			find_stream_cipher(in SCAN_Name algo_spec,
-									 ref Algorithm_Factory af) const;
+									 Algorithm_Factory af) const;
 
 		/**
 		* @param algo_spec the algorithm name/specification
@@ -59,7 +59,7 @@ class Engine
 		*/
 		abstract HashFunction
 			find_hash(in SCAN_Name algo_spec,
-						 ref Algorithm_Factory af) const;
+						 Algorithm_Factory af) const;
 
 		/**
 		* @param algo_spec the algorithm name/specification
@@ -68,7 +68,7 @@ class Engine
 		*/
 		abstract MessageAuthenticationCode
 			find_mac(in SCAN_Name algo_spec,
-						ref Algorithm_Factory af) const;
+						Algorithm_Factory af) const;
 
 		/**
 		* @param algo_spec the algorithm name/specification
@@ -76,14 +76,14 @@ class Engine
 		* @return newly allocated object, or NULL
 		*/
 		abstract PBKDF find_pbkdf(in SCAN_Name algo_spec,
-										  ref Algorithm_Factory af) const;
+										  Algorithm_Factory af) const;
 
 		/**
 		* @param n the modulus
 		* @param hints any use hints
 		* @return newly allocated object, or NULL
 		*/
-		abstract Modular_Exponentiator*
+		abstract Modular_Exponentiator
 			mod_exp(in BigInt n,
 					  Power_Mod::Usage_Hints hints) const;
 
@@ -94,16 +94,16 @@ class Engine
 		* @param af an algorithm factory object
 		* @return newly allocated object, or NULL
 		*/
-		abstract Keyed_Filter* get_cipher(in string algo_spec,
+		abstract Keyed_Filter get_cipher(in string algo_spec,
 													Cipher_Dir dir,
-													ref Algorithm_Factory af);
+													Algorithm_Factory af);
 
 		/**
 		* Return a new operator object for this key, if possible
 		* @param key the key we want an operator for
 		* @return newly allocated operator object, or NULL
 		*/
-		abstract PK_Ops::Key_Agreement*
+		abstract pk_ops.Key_Agreement
 			get_key_agreement_op(in Private_Key key, RandomNumberGenerator rng) const;
 
 		/**
@@ -111,7 +111,7 @@ class Engine
 		* @param key the key we want an operator for
 		* @return newly allocated operator object, or NULL
 		*/
-		abstract PK_Ops::Signature*
+		abstract pk_ops.Signature
 			get_signature_op(in Private_Key key, RandomNumberGenerator rng) const;
 
 		/**
@@ -119,7 +119,7 @@ class Engine
 		* @param key the key we want an operator for
 		* @return newly allocated operator object, or NULL
 		*/
-		abstract PK_Ops::Verification*
+		abstract pk_ops.Verification
 			get_verify_op(in Public_Key key, RandomNumberGenerator rng) const;
 
 		/**
@@ -127,7 +127,7 @@ class Engine
 		* @param key the key we want an operator for
 		* @return newly allocated operator object, or NULL
 		*/
-		abstract PK_Ops::Encryption*
+		abstract pk_ops.Encryption
 			get_encryption_op(in Public_Key key, RandomNumberGenerator rng) const;
 
 		/**
@@ -135,6 +135,6 @@ class Engine
 		* @param key the key we want an operator for
 		* @return newly allocated operator object, or NULL
 		*/
-		abstract PK_Ops::Decryption*
+		abstract pk_ops.Decryption
 			get_decryption_op(in Private_Key key, RandomNumberGenerator rng) const;
 };

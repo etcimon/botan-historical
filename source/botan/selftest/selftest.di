@@ -14,14 +14,14 @@ import string;
 * @param af an algorithm factory
 * @throws Self_Test_Error if a failure occured
 */
-void confirm_startup_self_tests(ref Algorithm_Factory af);
+void confirm_startup_self_tests(Algorithm_Factory af);
 
 /**
 * Run a set of self tests on some basic algorithms like AES and SHA-1
 * @param af an algorithm factory
 * @returns false if a failure occured, otherwise true
 */
-bool passes_self_tests(ref Algorithm_Factory af);
+bool passes_self_tests(Algorithm_Factory af);
 
 /**
 * Run a set of algorithm KATs (known answer tests)
@@ -34,7 +34,7 @@ bool passes_self_tests(ref Algorithm_Factory af);
 HashMap<string, bool>
 algorithm_kat(in SCAN_Name algo_name,
 				  const HashMap!(string, string)& vars,
-				  ref Algorithm_Factory af);
+				  Algorithm_Factory af);
 
 /**
 * Run a set of algorithm KATs (known answer tests)
@@ -47,4 +47,4 @@ algorithm_kat(in SCAN_Name algo_name,
 HashMap!(string, string)
 algorithm_kat_detailed(in SCAN_Name algo_name,
 							  const HashMap!(string, string)& vars,
-							  ref Algorithm_Factory af);
+							  Algorithm_Factory af);

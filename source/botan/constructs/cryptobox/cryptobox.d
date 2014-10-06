@@ -12,7 +12,7 @@ import botan.lookup;
 import botan.sha2_64;
 import botan.hmac;
 import botan.pbkdf2;
-import botan.pem;
+import botan.codec.pem.pem;
 import botan.get_byte;
 import botan.mem_ops;
 namespace CryptoBox {
@@ -90,7 +90,7 @@ string encrypt(in ubyte* input, size_t input_len,
 	pipe.read(&out_buf[VERSION_CODE_LEN + PBKDF_SALT_LEN + MAC_OUTPUT_LEN],
 				 ciphertext_len, 0);
 
-	return PEM_Code::encode(out_buf, "BOTAN CRYPTOBOX MESSAGE");
+	return pem.encode(out_buf, "BOTAN CRYPTOBOX MESSAGE");
 }
 
 string decrypt(in ubyte* input, size_t input_len,
@@ -98,7 +98,7 @@ string decrypt(in ubyte* input, size_t input_len,
 {
 	DataSource_Memory input_src(input, input_len);
 	SafeVector!ubyte ciphertext =
-		PEM_Code::decode_check_label(input_src,
+		pem.decode_check_label(input_src,
 											  "BOTAN CRYPTOBOX MESSAGE");
 
 	if (ciphertext.size() < (VERSION_CODE_LEN + PBKDF_SALT_LEN + MAC_OUTPUT_LEN))

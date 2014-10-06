@@ -42,7 +42,7 @@ import botan.internal.core_engine;
 #if defined(BOTAN_HAS_ECDH)
   import botan.ecdh;
 #endif
-PK_Ops::Encryption*
+pk_ops.Encryption
 Core_Engine::get_encryption_op(in Public_Key key, RandomNumberGenerator) const
 {
 #if defined(BOTAN_HAS_RSA)
@@ -58,7 +58,7 @@ Core_Engine::get_encryption_op(in Public_Key key, RandomNumberGenerator) const
 	return null;
 }
 
-PK_Ops::Decryption*
+pk_ops.Decryption
 Core_Engine::get_decryption_op(in Private_Key key, RandomNumberGenerator rng) const
 {
 #if defined(BOTAN_HAS_RSA)
@@ -74,7 +74,7 @@ Core_Engine::get_decryption_op(in Private_Key key, RandomNumberGenerator rng) co
 	return null;
 }
 
-PK_Ops::Key_Agreement*
+pk_ops.Key_Agreement
 Core_Engine::get_key_agreement_op(in Private_Key key, RandomNumberGenerator rng) const
 {
 #if defined(BOTAN_HAS_DIFFIE_HELLMAN)
@@ -90,7 +90,7 @@ Core_Engine::get_key_agreement_op(in Private_Key key, RandomNumberGenerator rng)
 	return null;
 }
 
-PK_Ops::Signature*
+pk_ops.Signature
 Core_Engine::get_signature_op(in Private_Key key, RandomNumberGenerator rng) const
 {
 #if defined(BOTAN_HAS_RSA)
@@ -127,7 +127,7 @@ Core_Engine::get_signature_op(in Private_Key key, RandomNumberGenerator rng) con
 	return null;
 }
 
-PK_Ops::Verification*
+pk_ops.Verification
 Core_Engine::get_verify_op(in Public_Key key, RandomNumberGenerator) const
 {
 #if defined(BOTAN_HAS_RSA)
@@ -146,7 +146,7 @@ Core_Engine::get_verify_op(in Public_Key key, RandomNumberGenerator) const
 #endif
 
 #if defined(BOTAN_HAS_ECDSA)
-	if (in ECDSA_PublicKey* s = cast(const ECDSA_PublicKey*)(key))
+	if (in ECDSA_PublicKey s = cast(const ECDSA_PublicKey)(key))
 		return new ECDSA_Verification_Operation(*s);
 #endif
 

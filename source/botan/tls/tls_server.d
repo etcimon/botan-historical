@@ -21,7 +21,7 @@ class Server_Handshake_State : Handshake_State
 		Server_Handshake_State(Handshake_IO* io) : Handshake_State(io) {}
 
 		// Used by the server only, in case of RSA key exchange. Not owned
-		Private_Key* server_rsa_kex_key = null;
+		Private_Key server_rsa_kex_key = null;
 
 		/*
 		* Used by the server to know if resumption should be allowed on
@@ -502,7 +502,7 @@ void Server::process_handshake_msg(const Handshake_State* active_state,
 					);
 			}
 
-			Private_Key* Private_Key = null;
+			Private_Key Private_Key = null;
 
 			if (kex_algo == "RSA" || sig_algo != "")
 			{

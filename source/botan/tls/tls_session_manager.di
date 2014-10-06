@@ -74,19 +74,19 @@ class Session_Manager
 */
 class Session_Manager_Noop : Session_Manager
 {
-	public:
-		override bool load_from_session_id(in Vector!ubyte, Session&)
-		{ return false; }
+public:
+	override bool load_from_session_id(in Vector!ubyte, Session&)
+	{ return false; }
 
-		override bool load_from_server_info(in Server_Information, Session&)
-		{ return false; }
+	override bool load_from_server_info(in Server_Information, Session&)
+	{ return false; }
 
-		override void remove_entry(in Vector!ubyte) {}
+	override void remove_entry(in Vector!ubyte) {}
 
-		override void save(in Session) {}
+	override void save(in Session) {}
 
-		override Duration session_lifetime() const
-		{ return Duration.init; }
+	override Duration session_lifetime() const
+	{ return Duration.init; }
 };
 
 /**
@@ -94,46 +94,46 @@ class Session_Manager_Noop : Session_Manager
 */
 class Session_Manager_In_Memory : Session_Manager
 {
-	public:
-		/**
-		* @param max_sessions a hint on the maximum number of sessions
-		*		  to keep in memory at any one time. (If zero, don't cap)
-		* @param session_lifetime sessions are expired after this many
-		*		  seconds have elapsed from initial handshake.
-		*/
-		Session_Manager_In_Memory(RandomNumberGenerator rng,
-										  size_t max_sessions = 1000,
-										  Duration session_lifetime =
-											  TickDuration.from!"seconds"(7200).to!Duration);
+public:
+	/**
+	* @param max_sessions a hint on the maximum number of sessions
+	*		  to keep in memory at any one time. (If zero, don't cap)
+	* @param session_lifetime sessions are expired after this many
+	*		  seconds have elapsed from initial handshake.
+	*/
+	Session_Manager_In_Memory(RandomNumberGenerator rng,
+									  size_t max_sessions = 1000,
+									  Duration session_lifetime =
+										  TickDuration.from!"seconds"(7200).to!Duration);
 
-		bool load_from_session_id(in Vector!ubyte session_id,
-										  override Session& session);
+	override bool load_from_session_id(in Vector!ubyte session_id,
+									   Session& session);
 
-		bool load_from_server_info(in Server_Information info,
-											override Session& session);
+	override bool load_from_server_info(in Server_Information info,
+										Session& session);
 
-		override void remove_entry(in Vector!ubyte session_id);
+	override void remove_entry(in Vector!ubyte session_id);
 
-		override void save(in Session session_data);
+	override void save(in Session session_data);
 
-		override Duration session_lifetime() const
-		{ return m_session_lifetime; }
+	override Duration session_lifetime() const
+	{ return m_session_lifetime; }
 
-	private:
-		bool load_from_session_str(in string session_str,
-											Session& session);
+private:
+	bool load_from_session_str(in string session_str,
+										Session& session);
 
-		Mutex m_mutex;
+	Mutex m_mutex;
 
-		size_t m_max_sessions;
+	size_t m_max_sessions;
 
-		Duration m_session_lifetime;
+	Duration m_session_lifetime;
 
-		RandomNumberGenerator m_rng;
-		SymmetricKey m_session_key;
+	RandomNumberGenerator m_rng;
+	SymmetricKey m_session_key;
 
-		HashMap<string, Vector!ubyte> m_sessions; // hex(session_id) . session
-		HashMap<Server_Information, string> m_info_sessions;
+	HashMap<string, Vector!ubyte> m_sessions; // hex(session_id) . session
+	HashMap<Server_Information, string> m_info_sessions;
 };
 
 }

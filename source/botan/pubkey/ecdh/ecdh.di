@@ -8,7 +8,7 @@
 */
 
 import botan.ecc_key;
-import botan.pk_ops;
+import botan.pubkey.pk_ops;
 /**
 * This class represents ECDH Public Keys.
 */
@@ -84,7 +84,7 @@ class ECDH_PrivateKey : ECDH_PublicKey,
 /**
 * ECDH operation
 */
-class ECDH_KA_Operation : PK_Ops::Key_Agreement
+class ECDH_KA_Operation : pk_ops.Key_Agreement
 {
 	public:
 		ECDH_KA_Operation(in ECDH_PrivateKey key);

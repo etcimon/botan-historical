@@ -6,7 +6,7 @@
 */
 
 import botan.pk_keys;
-import botan.pk_ops;
+import botan.pubkey.pk_ops;
 import botan.algo_base.symkey;
 import botan.rng;
 import botan.eme;
@@ -193,8 +193,8 @@ class PK_Signer
 		bool self_test_signature(in Vector!ubyte msg,
 										 in Vector!ubyte sig) const;
 
-		Unique!PK_Ops::Signature m_op;
-		Unique!PK_Ops::Verification m_verify_op;
+		Unique!pk_ops.Signature m_op;
+		Unique!pk_ops.Verification m_verify_op;
 		Unique!EMSA m_emsa;
 		Signature_Format m_sig_format;
 };
@@ -292,7 +292,7 @@ class PK_Verifier
 		bool validate_signature(in SafeVector!ubyte msg,
 										in ubyte* sig, size_t sig_len);
 
-		Unique!PK_Ops::Verification m_op;
+		Unique!pk_ops.Verification m_op;
 		Unique!EMSA m_emsa;
 		Signature_Format m_sig_format;
 };
@@ -374,7 +374,7 @@ class PK_Key_Agreement
 		PK_Key_Agreement(in PK_Key_Agreement_Key key,
 							  in string kdf);
 	private:
-		Unique!PK_Ops::Key_Agreement m_op;
+		Unique!pk_ops.Key_Agreement m_op;
 		Unique!KDF m_kdf;
 };
 
@@ -397,7 +397,7 @@ class PK_Encryptor_EME : PK_Encryptor
 		Vector!ubyte enc(in ubyte*, size_t,
 									  RandomNumberGenerator rng) const;
 
-		Unique!PK_Ops::Encryption m_op;
+		Unique!pk_ops.Encryption m_op;
 		Unique!EME m_eme;
 };
 
@@ -417,6 +417,6 @@ class PK_Decryptor_EME : PK_Decryptor
 	private:
 		SafeVector!ubyte dec(const ubyte[], size_t) const;
 
-		Unique!PK_Ops::Decryption m_op;
+		Unique!pk_ops.Decryption m_op;
 		Unique!EME m_eme;
 };

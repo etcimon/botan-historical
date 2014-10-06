@@ -14,29 +14,29 @@ import botan.hash;
 */
 class PKCS5_PBKDF1 : PBKDF
 {
-	public:
-		/**
-		* Create a PKCS #5 instance using the specified hash function.
-		* @param hash_in pointer to a hash function object to use
-		*/
-		PKCS5_PBKDF1(HashFunction hash_input) : hash(hash_input) {}
+public:
+	/**
+	* Create a PKCS #5 instance using the specified hash function.
+	* @param hash_in pointer to a hash function object to use
+	*/
+	PKCS5_PBKDF1(HashFunction hash_input) : hash(hash_input) {}
 
-		string name() const
-		{
-			return "PBKDF1(" ~ hash.name() ~ ")";
-		}
+	string name() const
+	{
+		return "PBKDF1(" ~ hash.name() ~ ")";
+	}
 
-		PBKDF clone() const
-		{
-			return new PKCS5_PBKDF1(hash.clone());
-		}
+	PBKDF clone() const
+	{
+		return new PKCS5_PBKDF1(hash.clone());
+	}
 
-		Pair!(size_t, OctetString)
-			key_derivation(size_t output_len,
-								in string passphrase,
-								in ubyte* salt, size_t salt_len,
-								size_t iterations,
-								override std::chrono::milliseconds msec) const;
-	private:
-		Unique!HashFunction hash;
+	override Pair!(size_t, OctetString)
+		key_derivation(size_t output_len,
+							in string passphrase,
+							in ubyte* salt, size_t salt_len,
+							size_t iterations,
+							 std::chrono::milliseconds msec) const;
+private:
+	Unique!HashFunction hash;
 };

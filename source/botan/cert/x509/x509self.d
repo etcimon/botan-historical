@@ -7,7 +7,7 @@
 
 import botan.x509self;
 import botan.x509_ext;
-import botan.x509_ca;
+import botan.cert.x509.x509_ca;
 import botan.asn1.der_enc;
 import botan.asn1.oid_lookup.oids;
 import botan.pipe;
@@ -49,7 +49,7 @@ X509_Certificate create_self_signed_cert(in X509_Cert_Options opts,
 
 	opts.sanity_check();
 
-	Vector!ubyte pub_key = X509::BER_encode(key);
+	Vector!ubyte pub_key = x509_key.BER_encode(key);
 	Unique!PK_Signer signer = choose_sig_format(key, hash_fn, sig_algo);
 	load_info(opts, subject_dn, subject_alt);
 
@@ -95,7 +95,7 @@ PKCS10_Request create_cert_req(in X509_Cert_Options opts,
 
 	opts.sanity_check();
 
-	Vector!ubyte pub_key = X509::BER_encode(key);
+	Vector!ubyte pub_key = x509_key.BER_encode(key);
 	Unique!PK_Signer signer = choose_sig_format(key, hash_fn, sig_algo);
 	load_info(opts, subject_dn, subject_alt);
 

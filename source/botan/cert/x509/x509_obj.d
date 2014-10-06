@@ -12,12 +12,12 @@ import botan.asn1.oid_lookup.oids;
 import botan.asn1.der_enc;
 import botan.asn1.ber_dec;
 import botan.parsing;
-import botan.pem;
+import botan.codec.pem.pem;
 import algorithm;
 /*
 * Create a generic X.509 object
 */
-X509_Object::X509_Object(DataSource& stream, in string labels)
+X509_Object::X509_Object(DataSource stream, in string labels)
 {
 	init(stream, labels);
 }
@@ -27,7 +27,8 @@ X509_Object::X509_Object(DataSource& stream, in string labels)
 */
 X509_Object::X509_Object(in string file, in string labels)
 {
-	DataSource_Stream stream(file, true);
+	DataSource_Stream stream = new DataSource_Stream(file, true);
+	scope(exit) delete stream;
 	init(stream, labels);
 }
 
@@ -36,14 +37,15 @@ X509_Object::X509_Object(in string file, in string labels)
 */
 X509_Object::X509_Object(in Vector!ubyte vec, in string labels)
 {
-	DataSource_Memory stream(&vec[0], vec.size());
+	DataSource_Memory stream = new DataSource_Memory(&vec[0], vec.size());
+	scope(exit) delete stream;
 	init(stream, labels);
 }
 
 /*
 * Read a PEM or BER X.509 object
 */
-void X509_Object::init(DataSource& in, in string labels)
+void X509_Object::init(DataSource in, in string labels)
 {
 	PEM_labels_allowed = split_on(labels, '/');
 	if (PEM_labels_allowed.size() < 1)
@@ -53,7 +55,7 @@ void X509_Object::init(DataSource& in, in string labels)
 	std::sort(PEM_labels_allowed.begin(), PEM_labels_allowed.end());
 
 	try {
-		if (asn1_obj.maybe_BER(input) && !PEM_Code::matches(input))
+		if (asn1_obj.maybe_BER(input) && !pem.matches(input))
 		{
 			BER_Decoder dec(input);
 			decode_from(dec);
@@ -61,7 +63,7 @@ void X509_Object::init(DataSource& in, in string labels)
 		else
 		{
 			string got_label;
-			DataSource_Memory ber(PEM_Code::decode(input, got_label));
+			DataSource_Memory ber(pem.decode(input, got_label));
 
 			if (!std::binary_search(PEM_labels_allowed.begin(),
 										  PEM_labels_allowed.end(), got_label))
@@ -116,7 +118,7 @@ Vector!ubyte X509_Object::BER_encode() const
 */
 string X509_Object::PEM_encode() const
 {
-	return PEM_Code::encode(BER_encode(), PEM_label_pref);
+	return pem.encode(BER_encode(), PEM_label_pref);
 }
 
 /*
@@ -167,7 +169,7 @@ string X509_Object::hash_used_for_signature() const
 /*
 * Check the signature on an object
 */
-bool X509_Object::check_signature(const Public_Key* pub_key) const
+bool X509_Object::check_signature(const Public_Key pub_key) const
 {
 	Unique!const Public_Key key = pub_key;
 	return check_signature(*key);
@@ -202,9 +204,9 @@ bool X509_Object::check_signature(in Public_Key pub_key) const
 /*
 * Apply the X.509 SIGNED macro
 */
-Vector!ubyte X509_Object::make_signed(PK_Signer* signer,
+Vector!ubyte X509_Object::make_signed(PK_Signer signer,
 														  RandomNumberGenerator rng,
-														  const AlgorithmIdentifier& algo,
+														  const AlgorithmIdentifier algo,
 														  in SafeVector!ubyte tbs_bits)
 {
 	return DER_Encoder()

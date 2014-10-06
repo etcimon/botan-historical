@@ -81,7 +81,7 @@ class DataSource
 
 		DataSource() {}
 		~this() {}
-		DataSource& operator=(in DataSource);
+		DataSource operator=(in DataSource);
 		DataSource(in DataSource);
 };
 

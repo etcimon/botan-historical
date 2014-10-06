@@ -114,7 +114,8 @@ EAC1_1_Req create_cvc_req(ref const Private_Key key,
 		                                        EAC1_1_gen_CVC!EAC1_1_Req.build_cert_body(tbs),
 		                                        rng);
 	
-	DataSource_Memory source = DataSource_Memory(signed_cert);
+	DataSource_Memory source = new DataSource_Memory(signed_cert);
+	scope(exit) delete source;
 	return EAC1_1_Req(source);
 }
 
@@ -127,7 +128,7 @@ EAC1_1_Req create_cvc_req(ref const Private_Key key,
 * @param rng the rng to use
 */
 EAC1_1_ADO create_ado_req(ref const Private_Key key,
-                          ref const EAC1_1_Req req,
+                          in EAC1_1_Req req,
                           ref const ASN1_Car car,
                           RandomNumberGenerator rng)
 {
@@ -146,7 +147,8 @@ EAC1_1_ADO create_ado_req(ref const Private_Key key,
 	Vector!ubyte signed_cert =
 		EAC1_1_ADO.make_signed(signer, tbs_bits, rng);
 	
-	DataSource_Memory source(signed_cert);
+	DataSource_Memory source = new DataSource_Memory(signed_cert);
+	scope(exit) delete source;
 	return EAC1_1_ADO(source);
 }
 
@@ -227,7 +229,7 @@ EAC1_1_CVC link_cvca(ref const EAC1_1_CVC signer,
 	string padding_and_hash = padding_and_hash_from_oid(sig_algo.oid);
 	PK_Signer pk_signer = PK_Signer(*priv_key, padding_and_hash);
 	Unique!Public_Key pk = signee.subject_public_key();
-	ECDSA_PublicKey* subj_pk = cast(ECDSA_PublicKey*)(pk.get());
+	ECDSA_PublicKey subj_pk = cast(ECDSA_PublicKey)(pk.get());
 	subj_pk.set_parameter_encoding(EC_DOMPAR_ENC_EXPLICIT);
 	
 	Vector!ubyte enc_public_key = eac_1_1_encoding(priv_key, sig_algo.oid);
@@ -284,7 +286,7 @@ EAC1_1_Req create_cvc_req_implicitca(ref const Private_Key prkey,
 
 EAC1_1_CVC sign_request(ref const EAC1_1_CVC signer_cert,
                         ref const Private_Key key,
-                        ref const EAC1_1_Req signee,
+                        in EAC1_1_Req signee,
                         uint seqnr,
                         uint seqnr_len,
                         bool domestic,
@@ -309,7 +311,7 @@ EAC1_1_CVC sign_request(ref const EAC1_1_CVC signer_cert,
 	string padding_and_hash = padding_and_hash_from_oid(signee.signature_algorithm().oid);
 	PK_Signer pk_signer = PK_Signer(*priv_key, padding_and_hash);
 	Unique!Public_Key pk(signee.subject_public_key());
-	ECDSA_PublicKey*  subj_pk = cast(ECDSA_PublicKey*)(pk.get());
+	ECDSA_PublicKey  subj_pk = cast(ECDSA_PublicKey)(pk.get());
 	Unique!Public_Key signer_pk = signer_cert.subject_public_key();
 	
 	// for the case that the domain parameters are not set...

@@ -680,8 +680,9 @@ size_t find_eoc(DataSource ber)
 		
 		data += Pair(&buffer[0], got);
 	}
-	
-	DataSource_Memory source(data);
+
+	DataSource_Memory source = new DataSource_Memory(data);
+	scope(exit) delete data;
 	data.clear();
 	
 	size_t length = 0;

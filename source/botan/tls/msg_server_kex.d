@@ -27,7 +27,7 @@ Server_Key_Exchange::Server_Key_Exchange(Handshake_IO& io,
 													  const Policy& policy,
 													  Credentials_Manager& creds,
 													  RandomNumberGenerator rng,
-													  const Private_Key* signing_key)
+													  const Private_Key signing_key)
 {
 	const string hostname = state.client_hello().sni_hostname();
 	const string kex_algo = state.ciphersuite().kex_algo();

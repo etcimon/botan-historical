@@ -173,7 +173,7 @@ class Algorithm_Factory;
 */
 Vector!ubyte
 generate_dsa_primes(RandomNumberGenerator rng,
-						  ref Algorithm_Factory af,
+						  Algorithm_Factory af,
 						  ref BigInt p_out, ref BigInt q_out,
 						  size_t pbits, size_t qbits);
 
@@ -191,7 +191,7 @@ generate_dsa_primes(RandomNumberGenerator rng,
 */
 bool
 generate_dsa_primes(RandomNumberGenerator rng,
-						  ref Algorithm_Factory af,
+						  Algorithm_Factory af,
 						  ref BigInt p_out, ref BigInt q_out,
 						  size_t pbits, size_t qbits,
 						  in Vector!ubyte seed);

@@ -50,7 +50,8 @@ Certificate::Certificate(in Vector!ubyte buf)
 		if (remaining_bytes < (3 + cert_size))
 			throw new Decoding_Error("Certificate: Message malformed");
 
-		DataSource_Memory cert_buf(&certs[3], cert_size);
+		DataSource_Memory cert_buf = new DataSource_Memory(&certs[3], cert_size);
+			scope(exit) delete cert_buf;
 		m_certs.push_back(X509_Certificate(cert_buf));
 
 		certs += cert_size + 3;

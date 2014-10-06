@@ -142,7 +142,7 @@ void Pipe::process_msg(in string input)
 /*
 * Process a full message at once
 */
-void Pipe::process_msg(DataSource& input)
+void Pipe::process_msg(DataSource input)
 {
 	start_msg();
 	write(input);

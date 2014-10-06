@@ -72,7 +72,7 @@ class X509_CRL : X509_Object
 		* @param throw_on_unknown_critical should we throw new an exception
 		* if an unknown CRL extension marked as critical is encountered.
 		*/
-		X509_CRL(DataSource& source, bool throw_on_unknown_critical = false);
+		X509_CRL(DataSource source, bool throw_on_unknown_critical = false);
 
 		/**
 		* Construct a CRL from a file containing the DER or PEM encoded CRL.

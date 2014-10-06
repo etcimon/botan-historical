@@ -405,7 +405,7 @@ void Client::process_handshake_msg(const Handshake_State* active_state,
 		if (state.received_handshake_msg(CERTIFICATE_REQUEST) &&
 			!state.client_certs().empty())
 		{
-			Private_Key* Private_Key =
+			Private_Key Private_Key =
 				m_creds.Private_Key_for(state.client_certs().cert_chain()[0],
 												"tls-client",
 												m_info.hostname());

@@ -48,7 +48,7 @@ string test_filter_kat(Filter* filter,
 HashMap!(string, string)
 algorithm_kat_detailed(in SCAN_Name algo_name,
 							  const HashMap!(string, string)& vars,
-							  ref Algorithm_Factory af)
+							  Algorithm_Factory af)
 {
 	const string algo = algo_name.algo_name_and_args();
 
@@ -77,13 +77,13 @@ algorithm_kat_detailed(in SCAN_Name algo_name,
 		else if (const MessageAuthenticationCode proto =
 					  af.prototype_mac(algo, provider))
 		{
-			Keyed_Filter* filt = new MAC_Filter(proto.clone(), key);
+			Keyed_Filter filt = new MAC_Filter(proto.clone(), key);
 			all_results[provider] = test_filter_kat(filt, input, output);
 		}
 		else if (const StreamCipher proto =
 					  af.prototype_stream_cipher(algo, provider))
 		{
-			Keyed_Filter* filt = new StreamCipher_Filter(proto.clone());
+			Keyed_Filter filt = new StreamCipher_Filter(proto.clone());
 			filt.set_key(key);
 			filt.set_iv(iv);
 
@@ -92,11 +92,11 @@ algorithm_kat_detailed(in SCAN_Name algo_name,
 		else if (const BlockCipher proto =
 					  af.prototype_block_cipher(algo, provider))
 		{
-			Keyed_Filter* enc = get_cipher_mode(proto, ENCRYPTION,
+			Keyed_Filter enc = get_cipher_mode(proto, ENCRYPTION,
 															algo_name.cipher_mode(),
 															algo_name.cipher_mode_pad());
 
-			Keyed_Filter* dec = get_cipher_mode(proto, DECRYPTION,
+			Keyed_Filter dec = get_cipher_mode(proto, DECRYPTION,
 															algo_name.cipher_mode(),
 															algo_name.cipher_mode_pad());
 
@@ -145,7 +145,7 @@ algorithm_kat_detailed(in SCAN_Name algo_name,
 HashMap<string, bool>
 algorithm_kat(in SCAN_Name algo_name,
 				  const HashMap!(string, string)& vars,
-				  ref Algorithm_Factory af)
+				  Algorithm_Factory af)
 {
 	const auto result = algorithm_kat_detailed(algo_name, vars, af);
 
@@ -170,7 +170,7 @@ void verify_results(in string algo,
 	}
 }
 
-void hash_test(ref Algorithm_Factory af,
+void hash_test(Algorithm_Factory af,
 					in string name,
 					in string input,
 					in string output)
@@ -182,7 +182,7 @@ void hash_test(ref Algorithm_Factory af,
 	verify_results(name, algorithm_kat_detailed(name, vars, af));
 }
 
-void mac_test(ref Algorithm_Factory af,
+void mac_test(Algorithm_Factory af,
 				  in string name,
 				  in string input,
 				  in string output,
@@ -259,7 +259,7 @@ bool passes_self_tests(Algorithm_Factory af)
 /*
 * Perform Self Tests
 */
-void confirm_startup_self_tests(ref Algorithm_Factory af)
+void confirm_startup_self_tests(Algorithm_Factory af)
   {
   cipher_kat(af, "DES",
 				 "0123456789ABCDEF", "1234567890ABCDEF",

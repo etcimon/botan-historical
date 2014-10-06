@@ -101,7 +101,7 @@ class Credentials_Manager
 		* @note this object should retain ownership of the returned key;
 		*		 it should not be deleted by the caller.
 		*/
-		abstract Private_Key* Private_Key_for(in X509_Certificate cert,
+		abstract Private_Key Private_Key_for(in X509_Certificate cert,
 														 in string type,
 														 in string context);
 

@@ -70,7 +70,7 @@ void RC4_OpenSSL::cipher(in ubyte* input, ubyte* output, size_t length)
 */
 StreamCipher
 OpenSSL_Engine::find_stream_cipher(in SCAN_Name request,
-											  ref Algorithm_Factory) const
+											  Algorithm_Factory) const
 {
 	if (request.algo_name() == "RC4")
 		return new RC4_OpenSSL(request.arg_as_integer(0, 0));

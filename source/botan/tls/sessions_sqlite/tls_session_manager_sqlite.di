@@ -9,7 +9,6 @@ import botan.tls_session_manager;
 import botan.rng;
 class sqlite3_database;
 
-namespace TLS {
 
 /**
 * An implementation of Session_Manager that saves values in a SQLite3
@@ -21,50 +20,48 @@ namespace TLS {
 */
 class Session_Manager_SQLite : Session_Manager
 {
-	public:
-		/**
-		* @param passphrase used to encrypt the session data
-		* @param rng a random number generator
-		* @param db_filename filename of the SQLite database file.
-					The table names tls_sessions and tls_sessions_metadata
-					will be used
-		* @param max_sessions a hint on the maximum number of sessions
-		*		  to keep in memory at any one time. (If zero, don't cap)
-		* @param session_lifetime sessions are expired after this many
-		*		  seconds have elapsed from initial handshake.
-		*/
-		Session_Manager_SQLite(in string passphrase,
-									  RandomNumberGenerator rng,
-									  in string db_filename,
-									  size_t max_sessions = 1000,
-									  Duration session_lifetime = Duration(7200));
+public:
+	/**
+	* @param passphrase used to encrypt the session data
+	* @param rng a random number generator
+	* @param db_filename filename of the SQLite database file.
+				The table names tls_sessions and tls_sessions_metadata
+				will be used
+	* @param max_sessions a hint on the maximum number of sessions
+	*		  to keep in memory at any one time. (If zero, don't cap)
+	* @param session_lifetime sessions are expired after this many
+	*		  seconds have elapsed from initial handshake.
+	*/
+	Session_Manager_SQLite(in string passphrase,
+								  RandomNumberGenerator rng,
+								  in string db_filename,
+								  size_t max_sessions = 1000,
+								  Duration session_lifetime = Duration(7200));
 
-		~this();
+	~this();
 
-		bool load_from_session_id(in Vector!ubyte session_id,
-										  override Session& session);
+	override bool load_from_session_id(in Vector!ubyte session_id,
+									   Session& session);
 
-		bool load_from_server_info(in Server_Information info,
-											override Session& session);
+	override bool load_from_server_info(in Server_Information info,
+										 Session& session);
 
-		override void remove_entry(in Vector!ubyte session_id);
+	override void remove_entry(in Vector!ubyte session_id);
 
-		override void save(in Session session_data);
+	override void save(in Session session_data);
 
-		override Duration session_lifetime() const
-		{ return m_session_lifetime; }
+	override Duration session_lifetime() const
+	{ return m_session_lifetime; }
 
-	private:
-		Session_Manager_SQLite(in Session_Manager_SQLite);
-		Session_Manager_SQLite& operator=(in Session_Manager_SQLite);
+private:
+	Session_Manager_SQLite(in Session_Manager_SQLite);
+	Session_Manager_SQLite& operator=(in Session_Manager_SQLite);
 
-		void prune_session_cache();
+	void prune_session_cache();
 
-		SymmetricKey m_session_key;
-		RandomNumberGenerator m_rng;
-		size_t m_max_sessions;
-		Duration m_session_lifetime;
-		sqlite3_database* m_db;
+	SymmetricKey m_session_key;
+	RandomNumberGenerator m_rng;
+	size_t m_max_sessions;
+	Duration m_session_lifetime;
+	sqlite3_database* m_db;
 };
-
-}

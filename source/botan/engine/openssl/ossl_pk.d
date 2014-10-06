@@ -27,7 +27,7 @@ import botan.internal.bn_wrap;
 namespace {
 
 #if defined(BOTAN_HAS_DIFFIE_HELLMAN)
-class OSSL_DH_KA_Operation : PK_Ops::Key_Agreement
+class OSSL_DH_KA_Operation : pk_ops.Key_Agreement
 {
 	public:
 		OSSL_DH_KA_Operation(in DH_PrivateKey dh) :
@@ -48,7 +48,7 @@ class OSSL_DH_KA_Operation : PK_Ops::Key_Agreement
 
 #if defined(BOTAN_HAS_DSA)
 
-class OSSL_DSA_Signature_Operation : PK_Ops::Signature
+class OSSL_DSA_Signature_Operation : pk_ops.Signature
 {
 	public:
 		OSSL_DSA_Signature_Operation(in DSA_PrivateKey dsa) :
@@ -106,7 +106,7 @@ OSSL_DSA_Signature_Operation::sign(in ubyte* msg, size_t msg_len,
 	return output;
 }
 
-class OSSL_DSA_Verification_Operation : PK_Ops::Verification
+class OSSL_DSA_Verification_Operation : pk_ops.Verification
 {
 	public:
 		OSSL_DSA_Verification_Operation(in DSA_PublicKey dsa) :
@@ -167,8 +167,8 @@ bool OSSL_DSA_Verification_Operation::verify(in ubyte* msg, size_t msg_len,
 
 	return false;#if defined(BOTAN_HAS_RSA)
 
-class OSSL_RSA_Private_Operation : PK_Ops::Signature,
-											  public PK_Ops::Decryption
+class OSSL_RSA_Private_Operation : pk_ops.Signature,
+											  public pk_ops.Decryption
 {
 	public:
 		OSSL_RSA_Private_Operation(in RSA_PrivateKey rsa) :
@@ -218,8 +218,8 @@ BigInt OSSL_RSA_Private_Operation::private_op(in BigInt m) const
 	return h.to_bigint();
 }
 
-class OSSL_RSA_Public_Operation : PK_Ops::Verification,
-											 public PK_Ops::Encryption
+class OSSL_RSA_Public_Operation : pk_ops.Verification,
+											 public pk_ops.Encryption
 {
 	public:
 		OSSL_RSA_Public_Operation(in RSA_PublicKey rsa) :
@@ -262,7 +262,7 @@ class OSSL_RSA_Public_Operation : PK_Ops::Verification,
 
 }
 
-PK_Ops::Key_Agreement*
+pk_ops.Key_Agreement
 OpenSSL_Engine::get_key_agreement_op(in Private_Key key, RandomNumberGenerator) const
 {
 #if defined(BOTAN_HAS_DIFFIE_HELLMAN)
@@ -273,7 +273,7 @@ OpenSSL_Engine::get_key_agreement_op(in Private_Key key, RandomNumberGenerator) 
 	return 0;
 }
 
-PK_Ops::Signature*
+pk_ops.Signature
 OpenSSL_Engine::get_signature_op(in Private_Key key, RandomNumberGenerator) const
 {
 #if defined(BOTAN_HAS_RSA)
@@ -289,7 +289,7 @@ OpenSSL_Engine::get_signature_op(in Private_Key key, RandomNumberGenerator) cons
 	return 0;
 }
 
-PK_Ops::Verification*
+pk_ops.Verification
 OpenSSL_Engine::get_verify_op(in Public_Key key, RandomNumberGenerator) const
 {
 #if defined(BOTAN_HAS_RSA)
@@ -305,7 +305,7 @@ OpenSSL_Engine::get_verify_op(in Public_Key key, RandomNumberGenerator) const
 	return 0;
 }
 
-PK_Ops::Encryption*
+pk_ops.Encryption
 OpenSSL_Engine::get_encryption_op(in Public_Key key, RandomNumberGenerator) const
 {
 #if defined(BOTAN_HAS_RSA)
@@ -316,7 +316,7 @@ OpenSSL_Engine::get_encryption_op(in Public_Key key, RandomNumberGenerator) cons
 	return 0;
 }
 
-PK_Ops::Decryption*
+pk_ops.Decryption
 OpenSSL_Engine::get_decryption_op(in Private_Key key, RandomNumberGenerator) const
 {
 #if defined(BOTAN_HAS_RSA)

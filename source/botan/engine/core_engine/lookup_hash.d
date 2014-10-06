@@ -88,7 +88,7 @@ import botan.algo_factory;
 * Look for an algorithm with this name
 */
 HashFunction Core_Engine::find_hash(in SCAN_Name request,
-												 ref Algorithm_Factory af) const
+												 Algorithm_Factory af) const
 {
 #if defined(BOTAN_HAS_ADLER32)
 	if (request.algo_name() == "Adler32")

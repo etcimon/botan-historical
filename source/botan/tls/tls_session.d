@@ -9,7 +9,7 @@ import botan.tls_session;
 import botan.asn1.der_enc;
 import botan.asn1.ber_dec;
 import botan.asn1.asn1_str;
-import botan.pem;
+import botan.codec.pem.pem;
 import botan.cryptobox_psk;
 namespace TLS {
 
@@ -41,7 +41,7 @@ Session::Session(in Vector!ubyte session_identifier,
 
 Session::Session(in string pem)
 {
-	SafeVector!ubyte der = PEM_Code::decode_check_label(pem, "SSL SESSION");
+	SafeVector!ubyte der = pem.decode_check_label(pem, "SSL SESSION");
 
 	*this = Session(&der[0], der.size());
 }
@@ -96,8 +96,8 @@ Session::Session(in ubyte* ber, size_t ber_len)
 
 	if (!peer_cert_bits.empty())
 	{
-		DataSource_Memory certs(&peer_cert_bits[0], peer_cert_bits.size());
-
+		DataSource_Memory certs = new DataSource_Memory(&peer_cert_bits[0], peer_cert_bits.size());
+			scope(exit) delete certs;
 		while(!certs.end_of_data())
 			m_peer_certs.push_back(X509_Certificate(certs));
 	}
@@ -133,7 +133,7 @@ SafeVector!ubyte Session::DER_encode() const
 
 string Session::PEM_encode() const
 {
-	return PEM_Code::encode(this.DER_encode(), "SSL SESSION");
+	return pem.encode(this.DER_encode(), "SSL SESSION");
 }
 
 Duration Session::session_age() const

@@ -62,7 +62,7 @@ class IF_Scheme_PrivateKey : IF_Scheme_PublicKey,
 									ref const BigInt mod);
 
 		IF_Scheme_PrivateKey(RandomNumberGenerator rng,
-									const AlgorithmIdentifier& alg_id,
+									const AlgorithmIdentifier alg_id,
 									in SafeVector!ubyte key_bits);
 
 		bool check_key(RandomNumberGenerator rng, bool) const;

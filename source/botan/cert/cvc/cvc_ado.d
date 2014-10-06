@@ -8,7 +8,7 @@ module botan.cert.cvc.cvc_ado;
 import botan.cert.cvc.eac_obj;
 import botan.cert.cvc.eac_asn_obj;
 import botan.cert.cvc.cvc_req;
-import fstream;
+// import fstream;
 import string;
 
 /**
@@ -16,7 +16,7 @@ import string;
 */
 
  // CRTP continuation from EAC1_1_obj
-class EAC1_1_ADO : EAC1_1_obj!EAC1_1_ADO
+class EAC1_1_ADO : public EAC1_1_obj!EAC1_1_ADO
 {
 public:
 	/**
@@ -25,7 +25,8 @@ public:
 	*/
 	this(in string input)
 	{
-		DataSource_Stream stream = DataSource_Stream(input, true);
+		DataSource_Stream stream = new DataSource_Stream(input, true);
+		scope(exit) delete stream;
 		init(stream);
 		do_decode();
 	}
@@ -142,7 +143,8 @@ private:
 				.end_cons()
 				.get_contents_unlocked();
 		
-		DataSource_Memory req_source(req_bits);
+		DataSource_Memory req_source = new DataSource_Memory(req_bits);
+		scope(exit) delete req_source;
 		m_req = EAC1_1_Req(req_source);
 		sig_algo = m_req.sig_algo;
 	}

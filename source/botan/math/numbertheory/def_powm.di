@@ -18,7 +18,7 @@ class Fixed_Window_Exponentiator : Modular_Exponentiator
 		void set_base(in BigInt);
 		BigInt execute() const;
 
-		Modular_Exponentiator* copy() const
+		Modular_Exponentiator copy() const
 		{ return new Fixed_Window_Exponentiator(*this); }
 
 		Fixed_Window_Exponentiator(in BigInt, Power_Mod::Usage_Hints);
@@ -40,7 +40,7 @@ class Montgomery_Exponentiator : Modular_Exponentiator
 		void set_base(in BigInt);
 		BigInt execute() const;
 
-		Modular_Exponentiator* copy() const
+		Modular_Exponentiator copy() const
 		{ return new Montgomery_Exponentiator(*this); }
 
 		Montgomery_Exponentiator(in BigInt, Power_Mod::Usage_Hints);

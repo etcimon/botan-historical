@@ -22,7 +22,7 @@ class X509_Certificate : X509_Object
 		* Get the public key associated with this certificate.
 		* @return subject public key of this certificate
 		*/
-		Public_Key* subject_public_key() const;
+		Public_Key subject_public_key() const;
 
 		/**
 		* Get the public key associated with this certificate.
@@ -203,7 +203,7 @@ class X509_Certificate : X509_Object
 		* PEM encoded certificate.
 		* @param source the data source
 		*/
-		X509_Certificate(DataSource& source);
+		X509_Certificate(DataSource source);
 
 		/**
 		* Create a certificate from a file containing the DER or PEM

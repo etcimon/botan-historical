@@ -6,7 +6,7 @@
 */
 
 import botan.if_algo;
-import botan.pk_ops;
+import botan.pubkey.pk_ops;
 import botan.reducer;
 import botan.blinding;
 /**
@@ -56,7 +56,7 @@ class RW_PrivateKey : RW_PublicKey,
 /**
 * Rabin-Williams Signature Operation
 */
-class RW_Signature_Operation : PK_Ops::Signature
+class RW_Signature_Operation : pk_ops.Signature
 {
 	public:
 		RW_Signature_Operation(in RW_PrivateKey rw);
@@ -79,7 +79,7 @@ class RW_Signature_Operation : PK_Ops::Signature
 /**
 * Rabin-Williams Verification Operation
 */
-class RW_Verification_Operation : PK_Ops::Verification
+class RW_Verification_Operation : pk_ops.Verification
 {
 	public:
 		RW_Verification_Operation(in RW_PublicKey rw) :

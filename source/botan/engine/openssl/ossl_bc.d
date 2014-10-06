@@ -178,7 +178,7 @@ void EVP_BlockCipher::clear()
 */
 BlockCipher
 OpenSSL_Engine::find_block_cipher(in SCAN_Name request,
-											 ref Algorithm_Factory) const
+											 Algorithm_Factory) const
 {
 #define HANDLE_EVP_CIPHER(NAME, EVP)									 \
 	if (request.algo_name() == NAME && request.arg_count() == 0)  \

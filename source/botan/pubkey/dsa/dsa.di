@@ -6,7 +6,7 @@
 */
 
 import botan.dl_algo;
-import botan.pk_ops;
+import botan.pubkey.pk_ops;
 import botan.reducer;
 import botan.pow_mod;
 /**
@@ -54,7 +54,7 @@ class DSA_PrivateKey : DSA_PublicKey,
 /**
 * Object that can create a DSA signature
 */
-class DSA_Signature_Operation : PK_Ops::Signature
+class DSA_Signature_Operation : pk_ops.Signature
 {
 	public:
 		DSA_Signature_Operation(in DSA_PrivateKey dsa);
@@ -75,7 +75,7 @@ class DSA_Signature_Operation : PK_Ops::Signature
 /**
 * Object that can verify a DSA signature
 */
-class DSA_Verification_Operation : PK_Ops::Verification
+class DSA_Verification_Operation : pk_ops.Verification
 {
 	public:
 		DSA_Verification_Operation(in DSA_PublicKey dsa);

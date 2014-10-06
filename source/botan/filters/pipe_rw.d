@@ -55,7 +55,7 @@ void Pipe::write(ubyte input)
 /*
 * Write the contents of a DataSource into a Pipe
 */
-void Pipe::write(DataSource& source)
+void Pipe::write(DataSource source)
 {
 	SafeVector!ubyte buffer(DEFAULT_BUFFERSIZE);
 	while(!source.end_of_data())

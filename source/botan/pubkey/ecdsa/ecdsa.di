@@ -9,7 +9,7 @@
 
 import botan.ecc_key;
 import botan.reducer;
-import botan.pk_ops;
+import botan.pubkey.pk_ops;
 /**
 * This class represents ECDSA Public Keys.
 */
@@ -86,7 +86,7 @@ class ECDSA_PrivateKey : ECDSA_PublicKey,
 /**
 * ECDSA signature operation
 */
-class ECDSA_Signature_Operation : PK_Ops::Signature
+class ECDSA_Signature_Operation : pk_ops.Signature
 {
 	public:
 		ECDSA_Signature_Operation(in ECDSA_PrivateKey ecdsa);
@@ -108,7 +108,7 @@ class ECDSA_Signature_Operation : PK_Ops::Signature
 /**
 * ECDSA verification operation
 */
-class ECDSA_Verification_Operation : PK_Ops::Verification
+class ECDSA_Verification_Operation : pk_ops.Verification
 {
 	public:
 		ECDSA_Verification_Operation(in ECDSA_PublicKey ecdsa);

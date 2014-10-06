@@ -29,7 +29,7 @@ import gmp.h;
 namespace {
 
 #if defined(BOTAN_HAS_DIFFIE_HELLMAN)
-class GMP_DH_KA_Operation : PK_Ops::Key_Agreement
+class GMP_DH_KA_Operation : pk_ops.Key_Agreement
 {
 	public:
 		GMP_DH_KA_Operation(in DH_PrivateKey dh) :
@@ -49,7 +49,7 @@ class GMP_DH_KA_Operation : PK_Ops::Key_Agreement
 
 #if defined(BOTAN_HAS_DSA)
 
-class GMP_DSA_Signature_Operation : PK_Ops::Signature
+class GMP_DSA_Signature_Operation : pk_ops.Signature
 {
 	public:
 		GMP_DSA_Signature_Operation(in DSA_PrivateKey dsa) :
@@ -107,7 +107,7 @@ GMP_DSA_Signature_Operation::sign(in ubyte* msg, size_t msg_len,
 	return output;
 }
 
-class GMP_DSA_Verification_Operation : PK_Ops::Verification
+class GMP_DSA_Verification_Operation : pk_ops.Verification
 {
 	public:
 		GMP_DSA_Verification_Operation(in DSA_PublicKey dsa) :
@@ -168,8 +168,8 @@ bool GMP_DSA_Verification_Operation::verify(in ubyte* msg, size_t msg_len,
 		return true;
 	return false;#if defined(BOTAN_HAS_RSA)
 
-class GMP_RSA_Private_Operation : PK_Ops::Signature,
-											 public PK_Ops::Decryption
+class GMP_RSA_Private_Operation : pk_ops.Signature,
+											 public pk_ops.Decryption
 {
 	public:
 		GMP_RSA_Private_Operation(in RSA_PrivateKey rsa) :
@@ -219,8 +219,8 @@ BigInt GMP_RSA_Private_Operation::private_op(in BigInt m) const
 	return h.to_bigint();
 }
 
-class GMP_RSA_Public_Operation : PK_Ops::Verification,
-											public PK_Ops::Encryption
+class GMP_RSA_Public_Operation : pk_ops.Verification,
+											public pk_ops.Encryption
 {
 	public:
 		GMP_RSA_Public_Operation(in RSA_PublicKey rsa) :
@@ -262,7 +262,7 @@ class GMP_RSA_Public_Operation : PK_Ops::Verification,
 
 }
 
-PK_Ops::Key_Agreement*
+pk_ops.Key_Agreement
 GMP_Engine::get_key_agreement_op(in Private_Key key, RandomNumberGenerator) const
 {
 #if defined(BOTAN_HAS_DIFFIE_HELLMAN)
@@ -273,7 +273,7 @@ GMP_Engine::get_key_agreement_op(in Private_Key key, RandomNumberGenerator) cons
 	return null;
 }
 
-PK_Ops::Signature*
+pk_ops.Signature
 GMP_Engine::get_signature_op(in Private_Key key, RandomNumberGenerator) const
 {
 #if defined(BOTAN_HAS_RSA)
@@ -289,7 +289,7 @@ GMP_Engine::get_signature_op(in Private_Key key, RandomNumberGenerator) const
 	return null;
 }
 
-PK_Ops::Verification*
+pk_ops.Verification
 GMP_Engine::get_verify_op(in Public_Key key, RandomNumberGenerator) const
 {
 #if defined(BOTAN_HAS_RSA)
@@ -305,7 +305,7 @@ GMP_Engine::get_verify_op(in Public_Key key, RandomNumberGenerator) const
 	return null;
 }
 
-PK_Ops::Encryption*
+pk_ops.Encryption
 GMP_Engine::get_encryption_op(in Public_Key key, RandomNumberGenerator) const
 {
 #if defined(BOTAN_HAS_RSA)
@@ -316,7 +316,7 @@ GMP_Engine::get_encryption_op(in Public_Key key, RandomNumberGenerator) const
 	return null;
 }
 
-PK_Ops::Decryption*
+pk_ops.Decryption
 GMP_Engine::get_decryption_op(in Private_Key key, RandomNumberGenerator) const
 {
 #if defined(BOTAN_HAS_RSA)

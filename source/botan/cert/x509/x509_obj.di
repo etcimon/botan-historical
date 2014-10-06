@@ -46,9 +46,9 @@ class X509_Object : ASN1_Object
 		* @param tbs the tbs bits to be signed
 		* @return signed X509 object
 		*/
-		static Vector!ubyte make_signed(class PK_Signer* signer,
+		static Vector!ubyte make_signed(class PK_Signer signer,
 														 RandomNumberGenerator rng,
-														 const AlgorithmIdentifier& alg_id,
+														 const AlgorithmIdentifier alg_id,
 														 in SafeVector!ubyte tbs);
 
 		/**
@@ -64,7 +64,7 @@ class X509_Object : ASN1_Object
 		*		  the pointer will be deleted after use
 		* @return true if the signature is valid, otherwise false
 		*/
-		bool check_signature(const Public_Key* key) const;
+		bool check_signature(const Public_Key key) const;
 
 		override void encode_into(class DER_Encoder& to) const;
 
@@ -82,7 +82,7 @@ class X509_Object : ASN1_Object
 
 		~this() {}
 	package:
-		X509_Object(DataSource& src, in string pem_labels);
+		X509_Object(DataSource src, in string pem_labels);
 		X509_Object(in string file, in string pem_labels);
 		X509_Object(in Vector!ubyte vec, in string labels);
 
@@ -92,7 +92,7 @@ class X509_Object : ASN1_Object
 		Vector!ubyte tbs_bits, sig;
 	private:
 		abstract void force_decode();
-		void init(DataSource&, in string);
+		void init(DataSource, in string);
 
 		Vector!string PEM_labels_allowed;
 		string PEM_label_pref;

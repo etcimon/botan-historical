@@ -11,7 +11,7 @@ import botan.asn1.der_enc;
 import botan.asn1.ber_dec;
 import botan.asn1.alg_id;
 import botan.asn1.oid_lookup.oids;
-import botan.pem;
+import botan.codec.pem.pem;
 import botan.internal.pk_algs;
 namespace PKCS8 {
 
@@ -20,8 +20,8 @@ namespace {
 /*
 * Get info from an EncryptedPrivateKeyInfo
 */
-SafeVector!ubyte PKCS8_extract(DataSource& source,
-											 AlgorithmIdentifier& pbe_alg_id)
+SafeVector!ubyte PKCS8_extract(DataSource source,
+											 AlgorithmIdentifier pbe_alg_id)
 {
 	SafeVector!ubyte key_data;
 
@@ -38,26 +38,27 @@ SafeVector!ubyte PKCS8_extract(DataSource& source,
 * PEM decode and/or decrypt a private key
 */
 SafeVector!ubyte PKCS8_decode(
-	DataSource& source,
+	DataSource source,
 	std::function<std::pair<bool,string> ()> get_passphrase,
-	AlgorithmIdentifier& pk_alg_id)
+	AlgorithmIdentifier pk_alg_id)
 {
 	AlgorithmIdentifier pbe_alg_id;
 	SafeVector!ubyte key_data, key;
 	bool is_encrypted = true;
 
 	try {
-		if (asn1_obj.maybe_BER(source) && !PEM_Code::matches(source))
+		if (asn1_obj.maybe_BER(source) && !pem.matches(source))
 			key_data = PKCS8_extract(source, pbe_alg_id);
 		else
 		{
 			string label;
-			key_data = PEM_Code::decode(source, label);
+			key_data = pem.decode(source, label);
 			if (label == "PRIVATE KEY")
 				is_encrypted = false;
 			else if (label == "ENCRYPTED PRIVATE KEY")
 			{
-				DataSource_Memory key_source(key_data);
+				DataSource_Memory key_source = new DataSource_Memory(key_data);
+						scope(exit) delete key_source;
 				key_data = PKCS8_extract(key_source, pbe_alg_id);
 			}
 			else
@@ -141,7 +142,7 @@ SafeVector!ubyte BER_encode(in Private_Key key)
 */
 string PEM_encode(in Private_Key key)
 {
-	return PEM_Code::encode(PKCS8::BER_encode(key), "PRIVATE KEY");
+	return pem.encode(PKCS8::BER_encode(key), "PRIVATE KEY");
 }
 
 /*
@@ -186,14 +187,14 @@ string PEM_encode(in Private_Key key,
 	if (pass == "")
 		return PEM_encode(key);
 
-	return PEM_Code::encode(PKCS8::BER_encode(key, rng, pass, msec, pbe_algo),
+	return pem.encode(PKCS8::BER_encode(key, rng, pass, msec, pbe_algo),
 									"ENCRYPTED PRIVATE KEY");
 }
 
 /*
 * Extract a private key and return it
 */
-Private_Key* load_key(DataSource& source,
+Private_Key load_key(DataSource source,
 							 RandomNumberGenerator rng,
 							 Tuple!(bool, string) delegate() get_pass)
 {
@@ -211,11 +212,12 @@ Private_Key* load_key(DataSource& source,
 /*
 * Extract a private key and return it
 */
-Private_Key* load_key(in string fsname,
+Private_Key load_key(in string fsname,
 							 RandomNumberGenerator rng,
 							 Tuple!(bool, string) delegate() get_pass)
 {
-	DataSource_Stream source(fsname, true);
+	DataSource_Stream source = new DataSource_Stream(fsname, true);
+		scope(exit) delete source;
 	return PKCS8::load_key(source, rng, get_pass);
 }
 
@@ -248,7 +250,7 @@ class Single_Shot_Passphrase
 /*
 * Extract a private key and return it
 */
-Private_Key* load_key(DataSource& source,
+Private_Key load_key(DataSource source,
 							 RandomNumberGenerator rng,
 							 in string pass)
 {
@@ -258,7 +260,7 @@ Private_Key* load_key(DataSource& source,
 /*
 * Extract a private key and return it
 */
-Private_Key* load_key(in string fsname,
+Private_Key load_key(in string fsname,
 							 RandomNumberGenerator rng,
 							 in string pass)
 {
@@ -268,10 +270,11 @@ Private_Key* load_key(in string fsname,
 /*
 * Make a copy of this private key
 */
-Private_Key* copy_key(in Private_Key key,
+Private_Key copy_key(in Private_Key key,
 							 RandomNumberGenerator rng)
 {
-	DataSource_Memory source(PEM_encode(key));
+	DataSource_Memory source = new DataSource_Memory(PEM_encode(key));
+		scope(exit) delete source;
 	return PKCS8::load_key(source, rng);
 }
 

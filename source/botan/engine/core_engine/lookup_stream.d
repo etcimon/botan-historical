@@ -33,7 +33,7 @@ import botan.algo_factory;
 */
 StreamCipher
 Core_Engine::find_stream_cipher(in SCAN_Name request,
-										  ref Algorithm_Factory af) const
+										  Algorithm_Factory af) const
 {
 #if defined(BOTAN_HAS_OFB)
 	if (request.algo_name() == "OFB" && request.arg_count() == 1)

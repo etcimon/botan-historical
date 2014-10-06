@@ -25,7 +25,7 @@ class RandomNumberGenerator
 		* Create a seeded and active RNG object for general application use
 		* Added in 1.11.5
 		*/
-		static Unique!RandomNumberGenerator make_rng(class ref Algorithm_Factory af);
+		static Unique!RandomNumberGenerator make_rng(class Algorithm_Factory af);
 
 		/**
 		* Randomize a ubyte array.

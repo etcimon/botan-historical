@@ -64,7 +64,7 @@ string PGP_encode(in ubyte* input, size_t length,
 /*
 * OpenPGP Base64 decoding
 */
-SafeVector!ubyte PGP_decode(DataSource& source,
+SafeVector!ubyte PGP_decode(DataSource source,
 										string& label,
 										HashMap!(string, string)& headers)
 {
@@ -183,7 +183,7 @@ SafeVector!ubyte PGP_decode(DataSource& source,
 /*
 * OpenPGP Base64 decoding
 */
-SafeVector!ubyte PGP_decode(DataSource& source, string& label)
+SafeVector!ubyte PGP_decode(DataSource source, string& label)
 {
 	HashMap!(string, string) ignored;
 	return PGP_decode(source, label, ignored);

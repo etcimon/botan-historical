@@ -40,7 +40,7 @@ import algorithm;
 /*
 * Return a reference to the Algorithm_Factory
 */
-ref Algorithm_Factory Library_State::algorithm_factory() const
+Algorithm_Factory Library_State::algorithm_factory() const
 {
 	if (!m_algorithm_factory)
 		throw new Invalid_State("Uninitialized in Library_State::algorithm_factory");
@@ -57,7 +57,7 @@ RandomNumberGenerator Library_State::global_rng()
 
 void Library_State::initialize()
 {
-	if (m_algorithm_factory.get())
+	if (m_algorithm_factory.release())
 		throw new Invalid_State("Library_State has already been initialized");
 
 	CPUID::initialize();
@@ -65,7 +65,7 @@ void Library_State::initialize()
 	SCAN_Name::set_default_aliases();
 	oids.set_defaults();
 
-	m_algorithm_factory.reset(new Algorithm_Factory());
+	m_algorithm_factory = new Algorithm_Factory();
 
 #if defined(BOTAN_HAS_ENGINE_GNU_MP)
 	algorithm_factory().add_engine(new GMP_Engine);

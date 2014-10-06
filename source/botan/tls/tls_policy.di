@@ -117,7 +117,7 @@ class Policy
 
 		/**
 		* @return true if and only if we are willing to accept this version
-		override * Default accepts only TLS, so if you want to enable DTLS
+		* Default accepts only TLS, so if you want to enable DTLS override
 		* in your application.
 		*/
 		abstract bool acceptable_protocol_version(Protocol_Version _version) const;

@@ -16,7 +16,7 @@ RandomNumberGenerator* RandomNumberGenerator::make_rng()
 /*
 * Create and seed a new RNG object
 */
-Unique!RandomNumberGenerator RandomNumberGenerator::make_rng(ref Algorithm_Factory af)
+Unique!RandomNumberGenerator RandomNumberGenerator::make_rng(Algorithm_Factory af)
 {
 	Unique!RandomNumberGenerator rng =
 		new HMAC_RNG(af.make_mac("HMAC(SHA-512)"),

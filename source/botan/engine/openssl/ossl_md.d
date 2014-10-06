@@ -100,7 +100,7 @@ EVP_HashFunction::~this()
 * Look for an algorithm with this name
 */
 HashFunction OpenSSL_Engine::find_hash(in SCAN_Name request,
-													 ref Algorithm_Factory) const
+													 Algorithm_Factory) const
 {
 #if !defined(OPENSSL_NO_SHA)
 	if (request.algo_name() == "SHA-160")

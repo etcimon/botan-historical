@@ -8,7 +8,7 @@
 import botan.dl_algo;
 import botan.pow_mod;
 import botan.blinding;
-import botan.pk_ops;
+import botan.pubkey.pk_ops;
 /**
 * This class represents Diffie-Hellman public keys.
 */
@@ -69,7 +69,7 @@ class DH_PrivateKey : DH_PublicKey,
 /**
 * DH operation
 */
-class DH_KA_Operation : PK_Ops::Key_Agreement
+class DH_KA_Operation : pk_ops.Key_Agreement
 {
 	public:
 		DH_KA_Operation(in DH_PrivateKey key,

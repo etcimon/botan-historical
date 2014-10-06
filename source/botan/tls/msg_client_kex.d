@@ -46,7 +46,7 @@ Client_Key_Exchange::Client_Key_Exchange(Handshake_IO& io,
 													  Handshake_State& state,
 													  const Policy& policy,
 													  Credentials_Manager& creds,
-													  const Public_Key* server_public_key,
+													  const Public_Key server_public_key,
 													  in string hostname,
 													  RandomNumberGenerator rng)
 {
@@ -261,7 +261,7 @@ Client_Key_Exchange::Client_Key_Exchange(Handshake_IO& io,
 */
 Client_Key_Exchange::Client_Key_Exchange(in Vector!ubyte contents,
 													  const Handshake_State& state,
-													  const Private_Key* server_rsa_kex_key,
+													  const Private_Key server_rsa_kex_key,
 													  Credentials_Manager& creds,
 													  const Policy& policy,
 													  RandomNumberGenerator rng)

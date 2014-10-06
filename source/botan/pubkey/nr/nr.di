@@ -6,7 +6,7 @@
 */
 
 import botan.dl_algo;
-import botan.pk_ops;
+import botan.pubkey.pk_ops;
 import botan.numthry;
 import botan.reducer;
 /**
@@ -52,7 +52,7 @@ class NR_PrivateKey : NR_PublicKey,
 /**
 * Nyberg-Rueppel signature operation
 */
-class NR_Signature_Operation : PK_Ops::Signature
+class NR_Signature_Operation : pk_ops.Signature
 {
 	public:
 		NR_Signature_Operation(in NR_PrivateKey nr);
@@ -73,7 +73,7 @@ class NR_Signature_Operation : PK_Ops::Signature
 /**
 * Nyberg-Rueppel verification operation
 */
-class NR_Verification_Operation : PK_Ops::Verification
+class NR_Verification_Operation : pk_ops.Verification
 {
 	public:
 		NR_Verification_Operation(in NR_PublicKey nr);

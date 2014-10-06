@@ -6,7 +6,7 @@
 */
 
 import botan.if_algo;
-import botan.pk_ops;
+import botan.pubkey.pk_ops;
 import botan.reducer;
 import botan.blinding;
 /**
@@ -80,8 +80,8 @@ class RSA_PrivateKey : RSA_PublicKey,
 /**
 * RSA private (decrypt/sign) operation
 */
-class RSA_Private_Operation : PK_Ops::Signature,
-													 public PK_Ops::Decryption
+class RSA_Private_Operation : pk_ops.Signature,
+													 public pk_ops.Decryption
 {
 	public:
 		RSA_Private_Operation(in RSA_PrivateKey rsa,
@@ -108,8 +108,8 @@ class RSA_Private_Operation : PK_Ops::Signature,
 /**
 * RSA public (encrypt/verify) operation
 */
-class RSA_Public_Operation : PK_Ops::Verification,
-													public PK_Ops::Encryption
+class RSA_Public_Operation : pk_ops.Verification,
+													public pk_ops.Encryption
 {
 	public:
 		RSA_Public_Operation(in RSA_PublicKey rsa) :

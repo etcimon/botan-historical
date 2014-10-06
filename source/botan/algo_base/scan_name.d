@@ -19,7 +19,7 @@ import map;
 A class encapsulating a SCAN name (similar to JCE conventions)
 http://www.users.zetnet.co.uk/hopwood/crypto/scan/
 */
-class SCAN_Name
+struct SCAN_Name
 {
 public:
 	/**
@@ -290,10 +290,12 @@ string make_arg(in Vector!(Pair!(size_t, string)) name, size_t start)
 	foreach (i; 0 .. paren_depth)
 		output += ')';
 	
-return output;
+	return output;
 }
+
+
 string make_arg(
-	const Vector!(ref Pair!(size_t, string)  ) name, size_t start)
+	const Vector!(Pair!(size_t, string)) name, size_t start)
 {
 	string output = name[start].second;
 	size_t level = name[start].first;

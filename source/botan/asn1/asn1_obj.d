@@ -163,7 +163,7 @@ string to_string(in BER_Object obj)
 * Heuristics tests; is this object possibly BER?
 * @param src a data source that will be peeked at but not modified
 */
-bool maybe_BER(ref DataSource source)
+bool maybe_BER(DataSource source)
 {
 	ubyte first_byte;
 	if (!source.peek_byte(first_byte))

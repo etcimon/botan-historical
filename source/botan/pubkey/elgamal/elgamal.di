@@ -9,7 +9,7 @@ import botan.dl_algo;
 import botan.numthry;
 import botan.reducer;
 import botan.blinding;
-import botan.pk_ops;
+import botan.pubkey.pk_ops;
 /**
 * ElGamal Public Key
 */
@@ -52,7 +52,7 @@ class ElGamal_PrivateKey : ElGamal_PublicKey,
 /**
 * ElGamal encryption operation
 */
-class ElGamal_Encryption_Operation : PK_Ops::Encryption
+class ElGamal_Encryption_Operation : pk_ops.Encryption
 {
 	public:
 		size_t max_input_bits() const { return mod_p.get_modulus().bits() - 1; }
@@ -70,7 +70,7 @@ class ElGamal_Encryption_Operation : PK_Ops::Encryption
 /**
 * ElGamal decryption operation
 */
-class ElGamal_Decryption_Operation : PK_Ops::Decryption
+class ElGamal_Decryption_Operation : pk_ops.Decryption
 {
 	public:
 		size_t max_input_bits() const { return mod_p.get_modulus().bits() - 1; }

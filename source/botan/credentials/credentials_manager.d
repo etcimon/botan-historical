@@ -75,7 +75,7 @@ Vector!( X509_Certificate ) Credentials_Manager::cert_chain_single_type(
 	return cert_chain(cert_types, type, context);
 }
 
-Private_Key* Credentials_Manager::Private_Key_for(in X509_Certificate,
+Private_Key Credentials_Manager::Private_Key_for(in X509_Certificate,
 																  in string,
 																  in string)
 {

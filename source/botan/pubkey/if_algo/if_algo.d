@@ -70,7 +70,7 @@ SafeVector!ubyte IF_Scheme_PrivateKey::pkcs8_Private_Key() const
 }
 
 IF_Scheme_PrivateKey::IF_Scheme_PrivateKey(RandomNumberGenerator rng,
-														 const AlgorithmIdentifier&,
+														 const AlgorithmIdentifier,
 														 in SafeVector!ubyte key_bits)
 {
 	BER_Decoder(key_bits)

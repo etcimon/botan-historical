@@ -14,7 +14,7 @@ import botan.parsing;
 import botan.bigint;
 import botan.lookup;
 import botan.asn1.oid_lookup.oids;
-import botan.pem;
+import botan.codec.pem.pem;
 import botan.hex;
 import algorithm;
 import iterator;
@@ -38,7 +38,7 @@ Vector!string lookup_oids(in Vector!string input)
 /*
 * X509_Certificate Constructor
 */
-X509_Certificate::X509_Certificate(DataSource& input) :
+X509_Certificate::X509_Certificate(DataSource input) :
 	X509_Object(input, "CERTIFICATE/X509 CERTIFICATE")
 {
 	self_signed = false;
@@ -202,9 +202,9 @@ X509_Certificate::issuer_info(in string what) const
 /*
 * Return the public key in this certificate
 */
-Public_Key* X509_Certificate::subject_public_key() const
+Public_Key X509_Certificate::subject_public_key() const
 {
-	return X509::load_key(
+	return x509_key.load_key(
 		asn1_obj.put_in_sequence(this.subject_public_key_bits()));
 }
 
@@ -534,7 +534,7 @@ string X509_Certificate::to_string() const
 	  output << "Subject keyid: " << hex_encode(this.subject_key_id()) << "";
 
 	Unique!X509_PublicKey pubkey = this.subject_public_key();
-	output << "Public Key:" << X509::PEM_encode(*pubkey);
+	output << "Public Key:" << x509_key.PEM_encode(*pubkey);
 
 	return output.str();
 }

@@ -19,7 +19,7 @@ class Algorithm_Factory;
 */
 SafeVector!ubyte rfc3394_keywrap(in SafeVector!ubyte key,
 															const SymmetricKey& kek,
-															ref Algorithm_Factory af);
+															Algorithm_Factory af);
 
 /**
 * Decrypt a key under a key encryption key using the algorithm
@@ -32,4 +32,4 @@ SafeVector!ubyte rfc3394_keywrap(in SafeVector!ubyte key,
 */
 SafeVector!ubyte rfc3394_keyunwrap(in SafeVector!ubyte key,
 															  const SymmetricKey& kek,
-															  ref Algorithm_Factory af);
+															  Algorithm_Factory af);

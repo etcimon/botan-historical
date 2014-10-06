@@ -80,8 +80,8 @@ PEM_encode(in Private_Key key,
 * @param get_passphrase a function that returns passphrases
 * @return loaded private key object
 */
-Private_Key* load_key(
-  DataSource& source,
+Private_Key load_key(
+  DataSource source,
   RandomNumberGenerator rng,
   Tuple!(bool, string) delegate() get_passphrase);
 
@@ -92,7 +92,7 @@ Private_Key* load_key(
 * string if the key is not encrypted
 * @return loaded private key object
 */
-Private_Key* load_key(DataSource& source,
+Private_Key load_key(DataSource source,
 										  RandomNumberGenerator rng,
 										  in string pass = "");
 
@@ -103,7 +103,7 @@ Private_Key* load_key(DataSource& source,
 * @param get_passphrase a function that returns passphrases
 * @return loaded private key object
 */
-Private_Key* load_key(
+Private_Key load_key(
   in string filename,
   RandomNumberGenerator rng,
   Tuple!(bool, string) delegate() get_passphrase);
@@ -115,7 +115,7 @@ Private_Key* load_key(
 * string if the key is not encrypted
 * @return loaded private key object
 */
-Private_Key* load_key(in string filename,
+Private_Key load_key(in string filename,
 										  RandomNumberGenerator rng,
 										  in string pass = "");
 
@@ -125,7 +125,7 @@ Private_Key* load_key(in string filename,
 * @param rng the rng to use
 * @return new copy of the key
 */
-Private_Key* copy_key(in Private_Key key,
+Private_Key copy_key(in Private_Key key,
 										  RandomNumberGenerator rng);
 
 }

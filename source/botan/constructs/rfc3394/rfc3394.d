@@ -14,7 +14,7 @@ import botan.internal.xor_buf;
 namespace {
 
 BlockCipher make_aes(size_t keylength,
-							 ref Algorithm_Factory af)
+							 Algorithm_Factory af)
 {
 	if (keylength == 16)
 		return af.make_block_cipher("AES-128");
@@ -30,7 +30,7 @@ BlockCipher make_aes(size_t keylength,
 
 SafeVector!ubyte rfc3394_keywrap(in SafeVector!ubyte key,
 												const SymmetricKey& kek,
-												ref Algorithm_Factory af)
+												Algorithm_Factory af)
 {
 	if (key.size() % 8 != 0)
 		throw new std::invalid_argument("Bad input key size for NIST key wrap");
@@ -72,7 +72,7 @@ SafeVector!ubyte rfc3394_keywrap(in SafeVector!ubyte key,
 
 SafeVector!ubyte rfc3394_keyunwrap(in SafeVector!ubyte key,
 												 const SymmetricKey& kek,
-												 ref Algorithm_Factory af)
+												 Algorithm_Factory af)
 {
 	if (key.size() < 16 || key.size() % 8 != 0)
 		throw new std::invalid_argument("Bad input key size for NIST key unwrap");

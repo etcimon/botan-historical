@@ -52,16 +52,16 @@ class BlockCipherModePaddingMethod
 */
 class PKCS7_Padding : BlockCipherModePaddingMethod
 {
-	public:
-		void add_padding(SafeVector!ubyte buffer,
-							  size_t final_block_bytes,
-							  override size_t block_size) const;
+public:
+	override void add_padding(SafeVector!ubyte buffer,
+						  size_t final_block_bytes,
+						   size_t block_size) const;
 
-		size_t unpad(const ubyte[], size_t) const;
+	size_t unpad(const ubyte[], size_t) const;
 
-		bool valid_blocksize(size_t bs) const { return (bs > 0 && bs < 256); }
+	bool valid_blocksize(size_t bs) const { return (bs > 0 && bs < 256); }
 
-		string name() const { return "PKCS7"; }
+	string name() const { return "PKCS7"; }
 };
 
 /**
@@ -69,16 +69,16 @@ class PKCS7_Padding : BlockCipherModePaddingMethod
 */
 class ANSI_X923_Padding : BlockCipherModePaddingMethod
 {
-	public:
-		void add_padding(SafeVector!ubyte buffer,
-							  size_t final_block_bytes,
-							  override size_t block_size) const;
+public:
+	override void add_padding(SafeVector!ubyte buffer,
+						  size_t final_block_bytes,
+						   size_t block_size) const;
 
-		size_t unpad(const ubyte[], size_t) const;
+	size_t unpad(const ubyte[], size_t) const;
 
-		bool valid_blocksize(size_t bs) const { return (bs > 0 && bs < 256); }
+	bool valid_blocksize(size_t bs) const { return (bs > 0 && bs < 256); }
 
-		string name() const { return "X9.23"; }
+	string name() const { return "X9.23"; }
 };
 
 /**
@@ -86,16 +86,16 @@ class ANSI_X923_Padding : BlockCipherModePaddingMethod
 */
 class OneAndZeros_Padding : BlockCipherModePaddingMethod
 {
-	public:
-		void add_padding(SafeVector!ubyte buffer,
-							  size_t final_block_bytes,
-							  override size_t block_size) const;
+public:
+	override void add_padding(SafeVector!ubyte buffer,
+						  size_t final_block_bytes,
+						   size_t block_size) const;
 
-		size_t unpad(const ubyte[], size_t) const;
+	size_t unpad(const ubyte[], size_t) const;
 
-		bool valid_blocksize(size_t bs) const { return (bs > 0); }
+	bool valid_blocksize(size_t bs) const { return (bs > 0); }
 
-		string name() const { return "OneAndZeros"; }
+	string name() const { return "OneAndZeros"; }
 };
 
 /**
@@ -103,12 +103,12 @@ class OneAndZeros_Padding : BlockCipherModePaddingMethod
 */
 class Null_Padding : BlockCipherModePaddingMethod
 {
-	public:
-		override void add_padding(SafeVector!ubyte, size_t, size_t) const {}
+public:
+	override void add_padding(SafeVector!ubyte, size_t, size_t) const {}
 
-		size_t unpad(const ubyte[], size_t size) const { return size; }
+	size_t unpad(const ubyte[], size_t size) const { return size; }
 
-		bool valid_blocksize(size_t) const { return true; }
+	bool valid_blocksize(size_t) const { return true; }
 
-		string name() const { return "NoPadding"; }
+	string name() const { return "NoPadding"; }
 };

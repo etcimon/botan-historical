@@ -85,7 +85,8 @@ public:
 	*/
 	this(in string input)
 	{
-		DataSource_Stream stream = DataSource_Stream(input, true);
+		DataSource_Stream stream = new DataSource_Stream(input, true);
+		scope(exit) delete stream;
 		init(stream);
 		self_signed = false;
 		do_decode();
@@ -187,7 +188,8 @@ EAC1_1_CVC make_cvc_cert(PK_Signer signer,
 		            build_cert_body(tbs),
 		            rng);
 	
-	DataSource_Memory source = DataSource_Memory(signed_cert);
+	DataSource_Memory source = new DataSource_Memory(signed_cert);
+	scope(exit) delete source;
 	return EAC1_1_CVC(source);
 }
 
@@ -197,7 +199,7 @@ EAC1_1_CVC make_cvc_cert(PK_Signer signer,
 * Decode an EAC encoding ECDSA key
 */
 
-ECDSA_PublicKey* decode_eac1_1_key(in Vector!ubyte,
+ECDSA_PublicKey decode_eac1_1_key(in Vector!ubyte,
                                    ref AlgorithmIdentifier)
 {
 	throw new Internal_Error("decode_eac1_1_key: Unimplemented");

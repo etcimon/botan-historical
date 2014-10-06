@@ -338,7 +338,7 @@ public:
 		/**
 		* @param a an algorithm factory
 		*/
-		this(ref Algorithm_Factory a) { af = a; n = 0; }
+		this(Algorithm_Factory a) { af = a; n = 0; }
 	private:
 		const Algorithm_Factory af;
 		size_t n;
@@ -369,32 +369,32 @@ private:
 */
 T engine_get_algo(T)(Engine,
 					 ref const SCAN_Name,
-					 ref Algorithm_Factory)
+					 Algorithm_Factory)
 { static assert(false, "Invalid engine"); }
 
 BlockCipher engine_get_algo(T : BlockCipher)(Engine engine,
 							  ref const SCAN_Name request,
-							  ref Algorithm_Factory af)
+							  Algorithm_Factory af)
 { return engine.find_block_cipher(request, af); }
 
 StreamCipher engine_get_algo(T : StreamCipher)(Engine engine,
 										ref const SCAN_Name request,
-										ref Algorithm_Factory af)
+										Algorithm_Factory af)
 { return engine.find_stream_cipher(request, af); }
 
 HashFunction engine_get_algo(T : HashFunction)(Engine engine,
 										ref const SCAN_Name request,
-										ref Algorithm_Factory af)
+										Algorithm_Factory af)
 { return engine.find_hash(request, af); }
 
 MessageAuthenticationCode engine_get_algo(T : MessageAuthenticationCode)(Engine engine,
 														 ref const SCAN_Name request,
-														 ref Algorithm_Factory af)
+														 Algorithm_Factory af)
 { return engine.find_mac(request, af); }
 
 PBKDF engine_get_algo(T : PBKDF)(Engine engine,
 							  ref const SCAN_Name request,
-							  ref Algorithm_Factory af)
+							  Algorithm_Factory af)
 { return engine.find_pbkdf(request, af); }
 
 const T factory_prototype(T)(in string algo_spec,

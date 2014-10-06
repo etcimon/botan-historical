@@ -13,7 +13,7 @@ import botan.cpuid;
 #endif
 BlockCipher
 AES_ISA_Engine::find_block_cipher(in SCAN_Name request,
-											 ref Algorithm_Factory) const
+											 Algorithm_Factory) const
 {
 #if defined(BOTAN_HAS_AES_NI)
 	if (CPUID::has_aes_ni())

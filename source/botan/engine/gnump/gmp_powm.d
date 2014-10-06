@@ -18,7 +18,7 @@ class GMP_Modular_Exponentiator : Modular_Exponentiator
 		void set_base(in BigInt b) { base = b; }
 		void set_exponent(in BigInt e) { exp = e; }
 		BigInt execute() const;
-		Modular_Exponentiator* copy() const
+		Modular_Exponentiator copy() const
 		{ return new GMP_Modular_Exponentiator(*this); }
 
 		GMP_Modular_Exponentiator(in BigInt n) : mod(n) {}
@@ -41,7 +41,7 @@ BigInt GMP_Modular_Exponentiator::execute() const
 /*
 * Return the GMP-based modular exponentiator
 */
-Modular_Exponentiator* GMP_Engine::mod_exp(in BigInt n,
+Modular_Exponentiator GMP_Engine::mod_exp(in BigInt n,
 														 Power_Mod::Usage_Hints) const
 {
 	return new GMP_Modular_Exponentiator(n);

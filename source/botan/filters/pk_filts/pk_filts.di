@@ -49,13 +49,13 @@ class PK_Signer_Filter : Filter
 		void write(in ubyte*, size_t);
 		void end_msg();
 
-		PK_Signer_Filter(PK_Signer* s,
+		PK_Signer_Filter(PK_Signer s,
 							  RandomNumberGenerator rng_ref) :
 			signer(s), rng(rng_ref) {}
 
 		~this() { delete signer; }
 	private:
-		PK_Signer* signer;
+		PK_Signer signer;
 		RandomNumberGenerator rng;
 };
 

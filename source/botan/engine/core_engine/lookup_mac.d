@@ -33,7 +33,7 @@ import botan.algo_factory;
 */
 MessageAuthenticationCode
 Core_Engine::find_mac(in SCAN_Name request,
-							 ref Algorithm_Factory af) const
+							 Algorithm_Factory af) const
 {
 
 #if defined(BOTAN_HAS_CBC_MAC)

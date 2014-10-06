@@ -37,7 +37,7 @@ string PGP_encode(
 * @return decoded output as raw binary
 */
 SafeVector!ubyte PGP_decode(
-	DataSource& source,
+	DataSource source,
 	string& label,
 	HashMap!(string, string)& headers);
 
@@ -47,5 +47,5 @@ SafeVector!ubyte PGP_decode(
 * @return decoded output as raw binary
 */
 SafeVector!ubyte PGP_decode(
-	DataSource& source,
+	DataSource source,
 	string& label);

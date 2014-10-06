@@ -106,7 +106,7 @@ import botan.algo_factory;
 * Look for an algorithm with this name
 */
 BlockCipher Core_Engine::find_block_cipher(in SCAN_Name request,
-														  ref Algorithm_Factory af) const
+														  Algorithm_Factory af) const
 {
 
 #if defined(BOTAN_HAS_AES)

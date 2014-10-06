@@ -32,7 +32,7 @@ double time_op(Duration runtime, void delegate() op)
 
 HashMap!(string, double)
 time_algorithm_ops(in string name,
-						 ref Algorithm_Factory af,
+						 Algorithm_Factory af,
 						 in string provider,
 						 RandomNumberGenerator rng,
 						 std::chrono::nanoseconds runtime,
@@ -126,7 +126,7 @@ double find_first_in(in HashMap!(string, double) m,
 
 HashMap!(string, double)
 algorithm_benchmark(in string name,
-						  ref Algorithm_Factory af,
+						  Algorithm_Factory af,
 						  RandomNumberGenerator rng,
 						  std::chrono::milliseconds milliseconds,
 						  size_t buf_size)

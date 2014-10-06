@@ -11,41 +11,41 @@ import botan.engine;
 */
 class Core_Engine : Engine
 {
-	public:
-		override string provider_name() const { return "core"; }
+public:
+	override string provider_name() const { return "core"; }
 
-		PK_Ops::Key_Agreement*
-			override get_key_agreement_op(in Private_Key key, RandomNumberGenerator rng) const;
+	override pk_ops.Key_Agreement*
+		 get_key_agreement_op(in Private_Key key, RandomNumberGenerator rng) const;
 
-		PK_Ops::Signature*
-			override get_signature_op(in Private_Key key, RandomNumberGenerator rng) const;
+	override pk_ops.Signature*
+		 get_signature_op(in Private_Key key, RandomNumberGenerator rng) const;
 
-		override PK_Ops::Verification* get_verify_op(in Public_Key key, RandomNumberGenerator rng) const;
+	override pk_ops.Verification* get_verify_op(in Public_Key key, RandomNumberGenerator rng) const;
 
-		override PK_Ops::Encryption* get_encryption_op(in Public_Key key, RandomNumberGenerator rng) const;
+	override pk_ops.Encryption* get_encryption_op(in Public_Key key, RandomNumberGenerator rng) const;
 
-		override PK_Ops::Decryption* get_decryption_op(in Private_Key key, RandomNumberGenerator rng) const;
+	override pk_ops.Decryption* get_decryption_op(in Private_Key key, RandomNumberGenerator rng) const;
 
-		Modular_Exponentiator* mod_exp(in BigInt n,
-												 override Power_Mod::Usage_Hints) const;
+	override Modular_Exponentiator* mod_exp(in BigInt n,
+											  Power_Mod::Usage_Hints) const;
 
-		Keyed_Filter* get_cipher(in string, Cipher_Dir,
-										 ref Algorithm_Factory);
+	override Keyed_Filter* get_cipher(in string, Cipher_Dir,
+									 Algorithm_Factory);
 
-		BlockCipher find_block_cipher(in SCAN_Name,
-												 override ref Algorithm_Factory) const;
+	override BlockCipher find_block_cipher(in SCAN_Name,
+											  Algorithm_Factory) const;
 
-		StreamCipher find_stream_cipher(in SCAN_Name,
-													override ref Algorithm_Factory) const;
+	override StreamCipher find_stream_cipher(in SCAN_Name,
+												 Algorithm_Factory) const;
 
-		HashFunction find_hash(in SCAN_Name request,
-										override ref Algorithm_Factory) const;
+	override HashFunction find_hash(in SCAN_Name request,
+									 Algorithm_Factory) const;
 
-		MessageAuthenticationCode find_mac(in SCAN_Name request,
-														override ref Algorithm_Factory) const;
+	override MessageAuthenticationCode find_mac(in SCAN_Name request,
+													 Algorithm_Factory) const;
 
-		PBKDF find_pbkdf(in SCAN_Name algo_spec,
-								override ref Algorithm_Factory af) const;
+	override PBKDF find_pbkdf(in SCAN_Name algo_spec,
+							 Algorithm_Factory af) const;
 };
 
 /**

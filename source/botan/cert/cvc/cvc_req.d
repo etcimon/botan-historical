@@ -22,13 +22,13 @@ public:
 	* Compare for equality with other
 	* @param other compare for equality with this object
 	*/
-	bool opEquals(ref const EAC1_1_Req rhs) const
+	bool opEquals(in EAC1_1_Req rhs) const
 	{
 		return (this.tbs_data() == rhs.tbs_data() &&
 		        this.get_concat_sig() == rhs.get_concat_sig());
 	}
 
-	bool opCmp(string op)(ref const EAC1_1_Req rhs)
+	bool opCmp(string op)(in EAC1_1_Req rhs)
 		if (op == "!=")
 	{
 		return !(this == rhs);
@@ -51,7 +51,8 @@ public:
 	*/
 	this(in string str)
 	{
-		DataSource_Stream stream(input, true);
+		DataSource_Stream stream = new DataSource_Stream(input, true);
+		scope(exit) delete stream;
 		init(stream);
 		self_signed = true;
 		do_decode();

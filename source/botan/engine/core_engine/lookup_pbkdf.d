@@ -17,7 +17,7 @@ import botan.algo_factory;
   import botan.pbkdf2;
 #endif
 PBKDF Core_Engine::find_pbkdf(in SCAN_Name algo_spec,
-										 ref Algorithm_Factory af) const
+										 Algorithm_Factory af) const
 {
 #if defined(BOTAN_HAS_PBKDF1)
 	if (algo_spec.algo_name() == "PBKDF1" && algo_spec.arg_count() == 1)

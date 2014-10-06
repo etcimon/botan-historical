@@ -12,7 +12,7 @@ import botan.asn1.ber_dec;
 import botan.asn1.der_enc;
 import botan.libstate;
 import botan.asn1.oid_lookup.oids;
-import botan.pem;
+import botan.codec.pem.pem;
 EC_Group::EC_Group(in OID domain_oid)
 {
 	string pem = PEM_for_named_group(oids.lookup(domain_oid));
@@ -32,7 +32,7 @@ EC_Group::EC_Group(in string str)
 	try
 	{
 		Vector!ubyte ber =
-			unlock(PEM_Code::decode_check_label(str, "EC PARAMETERS"));
+			unlock(pem.decode_check_label(str, "EC PARAMETERS"));
 
 		*this = EC_Group(ber);
 	}
@@ -125,7 +125,7 @@ EC_Group::DER_encode(EC_Group_Encoding form) const
 string EC_Group::PEM_encode() const
 {
 	const Vector!ubyte der = DER_encode(EC_DOMPAR_ENC_EXPLICIT);
-	return PEM_Code::encode(der, "EC PARAMETERS");
+	return pem.encode(der, "EC PARAMETERS");
 }
 
 }

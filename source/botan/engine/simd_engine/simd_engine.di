@@ -15,8 +15,8 @@ class SIMD_Engine : Engine
 		string provider_name() const { return "simd"; }
 
 		BlockCipher find_block_cipher(in SCAN_Name,
-												 ref Algorithm_Factory) const;
+												 Algorithm_Factory) const;
 
 		HashFunction find_hash(in SCAN_Name request,
-										ref Algorithm_Factory) const;
+										Algorithm_Factory) const;
 };

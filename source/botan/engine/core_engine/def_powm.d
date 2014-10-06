@@ -10,7 +10,7 @@ import botan.internal.def_powm;
 /*
 * Choose a modular exponentation algorithm
 */
-Modular_Exponentiator*
+Modular_Exponentiator
 Core_Engine::mod_exp(in BigInt n, Power_Mod::Usage_Hints hints) const
 {
 	if (n.is_odd())

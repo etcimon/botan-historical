@@ -74,7 +74,7 @@ size_t output_length_of(in string name)
 /*
 * Get a cipher object
 */
-Keyed_Filter* get_cipher(in string algo_spec,
+Keyed_Filter get_cipher(in string algo_spec,
 								 Cipher_Dir direction)
 {
 	Algorithm_Factory af = global_state().algorithm_factory();
@@ -83,7 +83,7 @@ Keyed_Filter* get_cipher(in string algo_spec,
 
 	while(Engine engine = i.next())
 	{
-		if (Keyed_Filter* algo = engine.get_cipher(algo_spec, direction, af))
+		if (Keyed_Filter algo = engine.get_cipher(algo_spec, direction, af))
 			return algo;
 	}
 
@@ -93,12 +93,12 @@ Keyed_Filter* get_cipher(in string algo_spec,
 /*
 * Get a cipher object
 */
-Keyed_Filter* get_cipher(in string algo_spec,
+Keyed_Filter get_cipher(in string algo_spec,
 								 const SymmetricKey& key,
 								 const InitializationVector& iv,
 								 Cipher_Dir direction)
 {
-	Keyed_Filter* cipher = get_cipher(algo_spec, direction);
+	Keyed_Filter cipher = get_cipher(algo_spec, direction);
 	cipher.set_key(key);
 
 	if (iv.length())
@@ -110,7 +110,7 @@ Keyed_Filter* get_cipher(in string algo_spec,
 /*
 * Get a cipher object
 */
-Keyed_Filter* get_cipher(in string algo_spec,
+Keyed_Filter get_cipher(in string algo_spec,
 								 const SymmetricKey& key,
 								 Cipher_Dir direction)
 {

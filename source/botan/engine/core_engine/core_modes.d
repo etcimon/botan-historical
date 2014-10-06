@@ -85,7 +85,7 @@ BlockCipherModePaddingMethod* get_bc_pad(in string algo_spec,
 
 }
 
-Keyed_Filter* get_cipher_mode(const BlockCipher block_cipher,
+Keyed_Filter get_cipher_mode(const BlockCipher block_cipher,
 										Cipher_Dir direction,
 										in string mode,
 										in string padding)
@@ -224,9 +224,9 @@ Keyed_Filter* get_cipher_mode(const BlockCipher block_cipher,
 /*
 * Get a cipher object
 */
-Keyed_Filter* Core_Engine::get_cipher(in string algo_spec,
+Keyed_Filter Core_Engine::get_cipher(in string algo_spec,
 												  Cipher_Dir direction,
-												  ref Algorithm_Factory af)
+												  Algorithm_Factory af)
 {
 	Vector!string algo_parts = split_on(algo_spec, '/');
 	if (algo_parts.empty())
@@ -263,7 +263,7 @@ Keyed_Filter* Core_Engine::get_cipher(in string algo_spec,
 	else if ((mode != "CBC" && mode != "ECB") && padding != "NoPadding")
 		throw new Invalid_Algorithm_Name(algo_spec);
 
-	Keyed_Filter* filt = get_cipher_mode(block_cipher, direction, mode, padding);
+	Keyed_Filter filt = get_cipher_mode(block_cipher, direction, mode, padding);
 	if (filt)
 		return filt;
 

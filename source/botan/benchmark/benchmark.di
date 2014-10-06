@@ -22,7 +22,7 @@ import std.datetime;
 */
 HashMap!(string, double)
 time_algorithm_ops(in string name,
-									  ref Algorithm_Factory af,
+									  Algorithm_Factory af,
 									  in string provider,
 									  RandomNumberGenerator rng,
 									  std::chrono::nanoseconds runtime,
@@ -39,7 +39,7 @@ time_algorithm_ops(in string name,
 */
 HashMap!(string, double)
 algorithm_benchmark(in string name,
-										ref Algorithm_Factory af,
+										Algorithm_Factory af,
 										RandomNumberGenerator rng,
 										std::chrono::milliseconds milliseconds,
 										size_t buf_size);

@@ -4,10 +4,10 @@
 *
 * Distributed under the terms of the botan license.
 */
+module botan.pubkey.pk_ops;
 
 import botan.alloc.secmem;
 import botan.rng;
-namespace PK_Ops {
 
 /**
 * Public key encryption interface
@@ -149,5 +149,3 @@ class Key_Agreement
 
 		~this() {}
 };
-
-}
