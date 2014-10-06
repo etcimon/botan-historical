@@ -195,7 +195,7 @@ bool X509_Object::check_signature(in Public_Key pub_key) const
 
 		return verifier.verify_message(tbs_data(), signature());
 	}
-	catch(std::exception& e)
+	catch(Exception e)
 	{
 		return false;
 	}

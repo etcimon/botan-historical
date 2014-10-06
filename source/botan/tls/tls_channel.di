@@ -67,12 +67,12 @@ class Channel
 		/**
 		* Send a warning alert
 		*/
-		void send_warning_alert(Alert::Type type) { send_alert(Alert(type, false)); }
+		void send_warning_alert(Alert.Type type) { send_alert(Alert(type, false)); }
 
 		/**
 		* Send a fatal alert
 		*/
-		void send_fatal_alert(Alert::Type type) { send_alert(Alert(type, true)); }
+		void send_fatal_alert(Alert.Type type) { send_alert(Alert(type, true)); }
 
 		/**
 		* Send a close notification alert

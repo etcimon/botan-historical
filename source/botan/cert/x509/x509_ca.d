@@ -7,8 +7,8 @@
 module botan.cert.x509.x509_ca;
 
 import botan.x509cert;
-import botan.x509_crl;
-import botan.x509_ext;
+import botan.cert.x509.x509_crl;
+import botan.cert.x509.x509_ext;
 import botan.pkcs8;
 import botan.cert.x509.pkcs10;
 import botan.pubkey;
@@ -20,6 +20,7 @@ import botan.parsing;
 import botan.lookup;
 import botan.asn1.oid_lookup.oids;
 import botan.cert.x509.key_constraint;
+import std.datetime;
 import algorithm;
 import typeinfo;
 import iterator;
@@ -39,9 +40,6 @@ public:
 	* @param not_after the expiration time for the certificate
 	* @return resulting certificate
 	*/
-	/*
-* Sign a PKCS #10 certificate request
-*/
 	X509_Certificate sign_request(in PKCS10_Request req,
 	                              RandomNumberGenerator rng,
 	                              const X509_Time not_before,
@@ -79,14 +77,15 @@ public:
 		                 cert.subject_dn(), req.subject_dn(),
 		                 extensions);
 	}
-	
-
 
 	/**
 	* Get the certificate of this CA.
 	* @return CA certificate
 	*/
-	X509_Certificate ca_certificate() const;
+	X509_Certificate ca_certificate() const
+	{
+		return cert;
+	}
 
 	/**
 	* Create a new and empty CRL for this CA.
@@ -96,7 +95,11 @@ public:
 	* @return new CRL
 	*/
 	X509_CRL new_crl(RandomNumberGenerator rng,
-						  uint next_update = 0) const;
+	                 Duration next_update = 0.seconds) const
+	{
+		Vector!( CRL_Entry ) empty;
+		return make_crl(empty, 1, next_update, rng);
+	}
 
 	/**
 	* Create a new CRL by with additional entries.
@@ -106,10 +109,19 @@ public:
 	* @param next_update the time to set in next update in seconds
 	* as the offset from the current time
 	*/
-	X509_CRL update_crl(in X509_CRL last_crl,
-							  const Vector!( CRL_Entry )& new_entries,
-							  RandomNumberGenerator rng,
-							  uint next_update = 0) const;
+	X509_CRL update_crl(in X509_CRL crl,
+	                    ref const Vector!( CRL_Entry ) new_revoked,
+	                    RandomNumberGenerator rng,
+	                    Duration next_update = 0.seconds) const
+	{
+		Vector!( CRL_Entry ) revoked = crl.get_revoked();
+		
+		std::copy(new_revoked.begin(), new_revoked.end(),
+		          std::back_inserter(revoked));
+		
+		return make_crl(revoked, crl.crl_number() + 1, next_update, rng);
+	}
+
 
 	/**
 	* Interface for creating new certificates
@@ -124,9 +136,6 @@ public:
 	* @param extensions an optional list of certificate extensions
 	* @returns newly minted certificate
 	*/
-	/*
-* Create a new certificate
-*/
 	X509_Certificate make_cert(PK_Signer signer,
 	                           RandomNumberGenerator rng,
 	                           const AlgorithmIdentifier sig_algo,
@@ -202,9 +211,52 @@ public:
 		delete signer;
 	}
 private:
-	X509_CRL make_crl(in Vector!( CRL_Entry ) entries,
-							uint crl_number, uint next_update,
-							RandomNumberGenerator rng) const;
+	/*
+	* Create a CRL
+	*/
+	X509_CRL make_crl(in Vector!( CRL_Entry ) revoked,
+	                  uint crl_number, Duration next_update,
+	                  RandomNumberGenerator rng) const
+	{
+		const size_t X509_CRL_VERSION = 2;
+		
+		if (next_update == 0.seconds)
+			next_update = 7.days;
+		
+		// Totally stupid: ties encoding logic to the return of std::time!!
+		auto current_time = Clock.currTime();
+		auto expire_time = current_time + next_update;
+		
+		Extensions extensions;
+		extensions.add(
+			new x509_ext.Authority_Key_ID(cert.subject_key_id()));
+		extensions.add(new x509_ext.CRL_Number(crl_number));
+		
+		const Vector!ubyte crl = x509_obj.make_signed(
+			signer, rng, ca_sig_algo,
+			DER_Encoder().start_cons(ASN1_Tag.SEQUENCE)
+			.encode(X509_CRL_VERSION-1)
+			.encode(ca_sig_algo)
+			.encode(cert.issuer_dn())
+			.encode(X509_Time(current_time))
+			.encode(X509_Time(expire_time))
+			.encode_if (revoked.size() > 0,
+		            DER_Encoder()
+		            .start_cons(ASN1_Tag.SEQUENCE)
+		            .encode_list(revoked)
+		            .end_cons()
+		            )
+			.start_explicit(0)
+			.start_cons(ASN1_Tag.SEQUENCE)
+			.encode(extensions)
+			.end_cons()
+			.end_explicit()
+			.end_cons()
+			.get_contents());
+		
+		return X509_CRL(crl);
+	}	
+
 
 	AlgorithmIdentifier ca_sig_algo;
 	X509_Certificate cert;
@@ -257,88 +309,3 @@ PK_Signer choose_sig_format(in Private_Key key,
 	return new PK_Signer(key, padding, format);
 }
 
-
-
-
-
-
-
-/*
-* Create a new, empty CRL
-*/
-X509_CRL new_crl(RandomNumberGenerator rng,
-                          uint next_update) const
-{
-	Vector!( CRL_Entry ) empty;
-	return make_crl(empty, 1, TickDuration.from!"seconds"(next_update).to!Duration, rng);
-}
-
-/*
-* Update a CRL with new entries
-*/
-X509_CRL update_crl(in X509_CRL crl,
-                             const Vector!( CRL_Entry )& new_revoked,
-                             RandomNumberGenerator rng,
-                             uint next_update) const
-{
-	Vector!( CRL_Entry ) revoked = crl.get_revoked();
-	
-std::copy(new_revoked.begin(), new_revoked.end(),
-	          std::back_inserter(revoked));
-	
-	return make_crl(revoked, crl.crl_number() + 1, next_update, rng);
-}
-
-/*
-* Create a CRL
-*/
-X509_CRL make_crl(in Vector!( CRL_Entry ) revoked,
-                           uint crl_number, Duration next_update,
-                           RandomNumberGenerator rng) const
-{
-	const size_t X509_CRL_VERSION = 2;
-	
-	if (next_update.seconds == 0)
-		next_update = TickDuration.from!"days"(7).to!Duration;
-	
-	// Totally stupid: ties encoding logic to the return of std::time!!
-	auto current_time = Clock.currTime();
-	auto expire_time = current_time + next_update;
-	
-	Extensions extensions;
-	extensions.add(
-		new x509_ext.Authority_Key_ID(cert.subject_key_id()));
-	extensions.add(new x509_ext.CRL_Number(crl_number));
-	
-	const Vector!ubyte crl = x509_obj.make_signed(
-		signer, rng, ca_sig_algo,
-		DER_Encoder().start_cons(ASN1_Tag.SEQUENCE)
-		.encode(X509_CRL_VERSION-1)
-		.encode(ca_sig_algo)
-		.encode(cert.issuer_dn())
-		.encode(X509_Time(current_time))
-		.encode(X509_Time(expire_time))
-		.encode_if (revoked.size() > 0,
-	            DER_Encoder()
-	            .start_cons(ASN1_Tag.SEQUENCE)
-	            .encode_list(revoked)
-	            .end_cons()
-	            )
-		.start_explicit(0)
-		.start_cons(ASN1_Tag.SEQUENCE)
-		.encode(extensions)
-		.end_cons()
-		.end_explicit()
-		.end_cons()
-		.get_contents());
-	
-	return X509_CRL(crl);
-}
-
-/*
-* Return the CA's certificate
-*/
-X509_Certificate ca_certificate() const
-{
-	return cert;
-}

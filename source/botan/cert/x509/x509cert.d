@@ -6,7 +6,7 @@
 */
 
 import botan.x509cert;
-import botan.x509_ext;
+import botan.cert.x509.x509_ext;
 import botan.asn1.der_enc;
 import botan.asn1.ber_dec;
 import botan.internal.stl_util;
@@ -226,7 +226,7 @@ bool X509_Certificate::is_CA_cert() const
 
 bool X509_Certificate::allowed_usage(Key_Constraints usage) const
 {
-	if (constraints() == NO_CONSTRAINTS)
+	if (constraints() == Key_Constraints.NO_CONSTRAINTS)
 		return true;
 	return (constraints() & usage);
 }
@@ -254,7 +254,7 @@ uint X509_Certificate::path_limit() const
 Key_Constraints X509_Certificate::constraints() const
 {
 	return Key_Constraints(subject.get1_uint("X509v3.KeyUsage",
-															 NO_CONSTRAINTS));
+	                                         Key_Constraints.NO_CONSTRAINTS));
 }
 
 /*
@@ -481,7 +481,7 @@ string X509_Certificate::to_string() const
 
 	output << "Constraints:";
 	Key_Constraints constraints = this.constraints();
-	if (constraints == NO_CONSTRAINTS)
+	if (constraints == Key_Constraints.NO_CONSTRAINTS)
 		output << " None";
 	else
 	{

@@ -34,7 +34,7 @@ string test_filter_kat(Filter* filter,
 		else
 			return (string("got ") + got ~ " expected " ~ expected);
 	}
-	catch(std::exception& e)
+	catch(Exception e)
 	{
 		return string("exception ") + e.what();
 	}

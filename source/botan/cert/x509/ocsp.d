@@ -11,7 +11,7 @@ import botan.cert.x509.ocsp_types;
 import botan.cert.x509.certstor;
 import botan.asn1.der_enc;
 import botan.asn1.ber_dec;
-import botan.x509_ext;
+import botan.cert.x509.x509_ext;
 import botan.asn1.oid_lookup.oids;
 import botan.base64;
 import botan.pubkey;

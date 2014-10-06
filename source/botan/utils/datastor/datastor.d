@@ -2,161 +2,190 @@
 * Data Store
 * (C) 1999-2007 Jack Lloyd
 *
-* Distributed under the terms of the Botan license
+* Distributed under the terms of the botan license.
 */
+module botan.utils.datastor.datastor;
 
-import botan.datastor;
+import botan.alloc.secmem;
+import functional;
+import utility;
+import string;
+import vector;
+import map;
+/**
+* Data Store
+*/
+struct Data_Store
+{
+public:
+	/*
+	* Data_Store Equality Comparison
+	*/
+	bool opEquals(in Data_Store other) const
+	{
+		return (contents == other.contents);
+	}
+
+	/*
+	* Search based on an arbitrary predicate
+	*/
+	MultiMap!(string, string) search_for(
+		bool delegate(string, string) predicate) const
+	{
+		MultiMap!(string, string) output;
+
+		foreach (el; contents)
+			if (predicate(el.first, el.second))
+				output.insert(Pair(i.first, i.second));
+		
+		return output;
+	}
+
+	/*
+	* Search based on key equality
+	*/
+	Vector!string get(in string looking_for) const
+	{
+		Vector!string output;
+		foreach (el; contents)
+			if (looking_for == el.first)
+				output.push_back(el.second);
+		return output;
+	}
+
+
+	/*
+	* Get a single atom
+	*/
+	string get1(in string key) const
+	{
+		Vector!string vals = get(key);
+		
+		if (vals.empty())
+			throw new Invalid_State("get1: No values set for " ~ key);
+		if (vals.size() > 1)
+			throw new Invalid_State("get1: More than one value for " ~ key);
+		
+		return vals[0];
+	}
+
+	string get1(in string key,
+	            in string default_value) const
+	{
+		Vector!string vals = get(key);
+		
+		if (vals.size() > 1)
+			throw new Invalid_State("get1: More than one value for " ~ key);
+		
+		if (vals.empty())
+			return default_value;
+		
+		return vals[0];
+	}
+
+	/*
+	* Get a single std::vector atom
+	*/
+	Vector!ubyte
+		get1_memvec(in string key) const
+	{
+		Vector!string vals = get(key);
+		
+		if (vals.empty())
+			return Vector!ubyte();
+		
+		if (vals.size() > 1)
+			throw new Invalid_State("get1_memvec: Multiple values for " ~
+			                        key);
+		
+		return hex_decode(vals[0]);
+	}
+
+	/*
+	* Get a single uint atom
+	*/
+	uint get1_uint(in string key,
+	               uint default_val) const
+	{
+		Vector!string vals = get(key);
+		
+		if (vals.empty())
+			return default_val;
+		else if (vals.size() > 1)
+			throw new Invalid_State("get1_uint: Multiple values for " ~
+			                        key);
+		
+		return to_uint(vals[0]);
+	}
+
+	/*
+	* Check if this key has at least one value
+	*/
+	bool has_value(in string key) const
+	{
+		return (contents.lower_bound(key) != contents.end());
+	}
+
+
+	
+	/*
+	* Insert a single key and value
+	*/
+	void add(in string key, in string val)
+	{
+		multimap_insert(contents, key, val);
+	}
+	
+	/*
+	* Insert a single key and value
+	*/
+	void add(in string key, uint val)
+	{
+		add(key, std.conv.to!string(val));
+	}
+	
+	/*
+	* Insert a single key and value
+	*/
+	void add(in string key, in SafeVector!ubyte val)
+	{
+		add(key, hex_encode(&val[0], val.size()));
+	}
+	
+	void add(in string key, in Vector!ubyte val)
+	{
+		add(key, hex_encode(&val[0], val.size()));
+	}
+	
+	/*
+	* Insert a mapping of key/value pairs
+	*/
+	void add(in MultiMap!(string, string) input)
+	{
+		foreach (el; input)
+			contents.insert(el);
+	}
+
+private:
+	MultiMap!(string, string) contents;
+};
+
+
+
+import botan.utils.datastor.datastor;
 import botan.exceptn;
 import botan.parsing;
 import botan.hex;
 import botan.internal.stl_util;
-/*
-* Data_Store Equality Comparison
-*/
-bool Data_Store::operator==(in Data_Store other) const
-{
-	return (contents == other.contents);
-}
 
-/*
-* Check if this key has at least one value
-*/
-bool Data_Store::has_value(in string key) const
-{
-	return (contents.lower_bound(key) != contents.end());
-}
 
-/*
-* Search based on an arbitrary predicate
-*/
-MultiMap!(string, string) Data_Store::search_for(
-	bool delegate(string, string) predicate) const
-{
-	MultiMap!(string, string) out;
 
-	for (auto i = contents.begin(); i != contents.end(); ++i)
-		if (predicate(i.first, i.second))
-			out.insert(Pair(i.first, i.second));
 
-	return out;
-}
 
-/*
-* Search based on key equality
-*/
-Vector!string Data_Store::get(in string looking_for) const
-{
-	Vector!string out;
-	auto range = contents.equal_range(looking_for);
-	for (auto i = range.first; i != range.second; ++i)
-		out.push_back(i.second);
-	return out;
-}
 
-/*
-* Get a single atom
-*/
-string Data_Store::get1(in string key) const
-{
-	Vector!string vals = get(key);
 
-	if (vals.empty())
-		throw new Invalid_State("Data_Store::get1: No values set for " ~ key);
-	if (vals.size() > 1)
-		throw new Invalid_State("Data_Store::get1: More than one value for " ~ key);
 
-	return vals[0];
-}
 
-string Data_Store::get1(in string key,
-						in string default_value) const
-{
-	Vector!string vals = get(key);
 
-	if (vals.size() > 1)
-		throw new Invalid_State("Data_Store::get1: More than one value for " ~ key);
 
-	if (vals.empty())
-		return default_value;
 
-	return vals[0];
-}
-
-/*
-* Get a single std::vector atom
-*/
-Vector!ubyte
-Data_Store::get1_memvec(in string key) const
-{
-	Vector!string vals = get(key);
-
-	if (vals.empty())
-		return Vector!ubyte();
-
-	if (vals.size() > 1)
-		throw new Invalid_State("Data_Store::get1_memvec: Multiple values for " ~
-								  key);
-
-	return hex_decode(vals[0]);
-}
-
-/*
-* Get a single uint atom
-*/
-uint Data_Store::get1_uint(in string key,
-										 uint default_val) const
-{
-	Vector!string vals = get(key);
-
-	if (vals.empty())
-		return default_val;
-	else if (vals.size() > 1)
-		throw new Invalid_State("Data_Store::get1_uint: Multiple values for " ~
-								  key);
-
-	return to_uint(vals[0]);
-}
-
-/*
-* Insert a single key and value
-*/
-void Data_Store::add(in string key, in string val)
-{
-	multimap_insert(contents, key, val);
-}
-
-/*
-* Insert a single key and value
-*/
-void Data_Store::add(in string key, uint val)
-{
-	add(key, std.conv.to!string(val));
-}
-
-/*
-* Insert a single key and value
-*/
-void Data_Store::add(in string key, in SafeVector!ubyte val)
-{
-	add(key, hex_encode(&val[0], val.size()));
-}
-
-void Data_Store::add(in string key, in Vector!ubyte val)
-{
-	add(key, hex_encode(&val[0], val.size()));
-}
-
-/*
-* Insert a mapping of key/value pairs
-*/
-void Data_Store::add(in MultiMap!(string, string) input)
-{
-	MultiMap!(string, string)::const_iterator i = input.begin();
-	while(i != input.end())
-	{
-		contents.insert(*i);
-		++i;
-	}
-}
-
-}

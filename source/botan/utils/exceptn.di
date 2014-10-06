@@ -11,161 +11,166 @@ import exception;
 import stdexcept;
 import string;
 typedef Exception Exception;
-typedef std::invalid_argument Invalid_Argument;
+
+/**
+* Invalid_Argument Exception
+*/
+class Invalid_Argument : Exception
+{
+	this(in string err)
+	{ super("Invalid argument: " ~ err); }
+};
 
 /**
 * Invalid_State Exception
 */
-struct Invalid_State : Exception
+class Invalid_State : Exception
 {
-	Invalid_State(in string err) :
-		Exception(err)
-	{}
+	this(in string err)
+	{ super(err); }
 };
 
 /**
 * Lookup_Error Exception
 */
-struct Lookup_Error : Exception
+class Lookup_Error : Exception
 {
-	Lookup_Error(in string err) :
-		Exception(err)
-	{}
+	this(in string err)
+	{ super(err); }
 };
 
 /**
 * Internal_Error Exception
 */
-struct Internal_Error : Exception
+class Internal_Error : Exception
 {
-	Internal_Error(in string err) :
-		Exception("Internal error: " ~ err)
-	{}
+	this(in string err) 
+	{ super("Internal error: " ~ err); }
 };
 
 /**
 * Invalid_Key_Length Exception
 */
-struct Invalid_Key_Length : Invalid_Argument
+class Invalid_Key_Length : Invalid_Argument
 {
-	Invalid_Key_Length(in string name, size_t length) :
-		Invalid_Argument(name ~ " cannot accept a key of length " ~
-							  std.conv.to!string(length))
-	{}
+	this(in string name, size_t length) {
+		super(name ~ " cannot accept a key of length " ~
+		      std.conv.to!string(length));
+	}
 };
 
 /**
 * Invalid_IV_Length Exception
 */
-struct Invalid_IV_Length : Invalid_Argument
+class Invalid_IV_Length : Invalid_Argument
 {
-	Invalid_IV_Length(in string mode, size_t bad_len) :
-		Invalid_Argument("IV length " ~ std.conv.to!string(bad_len) +
-							  " is invalid for " ~ mode)
-	{}
+	this(in string mode, size_t bad_len) {
+		super("IV length " ~ std.conv.to!string(bad_len) ~ " is invalid for " ~ mode);
+	}
 };
 
 /**
 * PRNG_Unseeded Exception
 */
-struct PRNG_Unseeded : Invalid_State
+class PRNG_Unseeded : Invalid_State
 {
-	PRNG_Unseeded(in string algo) :
-		Invalid_State("PRNG not seeded: " ~ algo)
-	{}
+	this(in string algo) {
+		super("PRNG not seeded: " ~ algo);
+	}
 };
 
 /**
 * Policy_Violation Exception
 */
-struct Policy_Violation : Invalid_State
+class Policy_Violation : Invalid_State
 {
-	Policy_Violation(in string err) :
-		Invalid_State("Policy violation: " ~ err)
-	{}
+	this(in string err) {
+		super("Policy violation: " ~ err)
+	}
 };
 
 /**
 * Algorithm_Not_Found Exception
 */
-struct Algorithm_Not_Found : Lookup_Error
+class Algorithm_Not_Found : Lookup_Error
 {
-	Algorithm_Not_Found(in string name) :
-		Lookup_Error("Could not find any algorithm named \"" ~ name ~ "\"")
-	{}
+	this(in string name) {
+		super("Could not find any algorithm named \"" ~ name ~ "\"")
+	}
 };
 
 /**
 * Invalid_Algorithm_Name Exception
 */
-struct Invalid_Algorithm_Name : Invalid_Argument
+class Invalid_Algorithm_Name : Invalid_Argument
 {
-	Invalid_Algorithm_Name(in string name):
-		Invalid_Argument("Invalid algorithm name: " ~ name)
-	{}
+	this(in string name) {
+		super("Invalid algorithm name: " ~ name)
+	}
 };
 
 /**
 * Encoding_Error Exception
 */
-struct Encoding_Error : Invalid_Argument
+class Encoding_Error : Invalid_Argument
 {
-	Encoding_Error(in string name) :
-		Invalid_Argument("Encoding error: " ~ name) {}
+	this(in string name) {
+		super("Encoding error: " ~ name) 
+	}
 };
 
 /**
 * Decoding_Error Exception
 */
-struct Decoding_Error : Invalid_Argument
+class Decoding_Error : Invalid_Argument
 {
-	Decoding_Error(in string name) :
-		Invalid_Argument("Decoding error: " ~ name) {}
+	this(in string name) {
+		super("Decoding error: " ~ name) }
 };
 
 /**
 * Integrity_Failure Exception
 */
-struct Integrity_Failure : Exception
+class Integrity_Failure : Exception
 {
-	Integrity_Failure(in string msg) :
-		Exception("Integrity failure: " ~ msg) {}
+	this(in string msg) {
+		super("Integrity failure: " ~ msg) }
 };
 
 /**
 * Invalid_OID Exception
 */
-struct Invalid_OID : Decoding_Error
+class Invalid_OID : Decoding_Error
 {
-	Invalid_OID(in string oid) :
-		Decoding_Error("Invalid ASN.1 OID: " ~ oid) {}
+	this(in string oid) {
+		super("Invalid ASN.1 OID: " ~ oid) }
 };
 
 /**
 * Stream_IO_Error Exception
 */
-struct Stream_IO_Error : Exception
+class Stream_IO_Error : Exception
 {
-	Stream_IO_Error(in string err) :
-		Exception("I/O error: " ~ err)
-	{}
+	this(in string err) {
+		super("I/O error: " ~ err)
+	}
 };
 
 /**
 * Self Test Failure Exception
 */
-struct Self_Test_Failure : Internal_Error
+class Self_Test_Failure : Internal_Error
 {
-	Self_Test_Failure(in string err) :
-		Internal_Error("Self test failed: " ~ err)
-	{}
+	this(in string err) {
+		super("Self test failed: " ~ err)
+	}
 };
 
 /**
 * Memory Allocation Exception
 */
-struct Memory_Exhaustion : std::bad_alloc
+class Memory_Exhaustion : Exception
 {
-	string what() const noexcept
+	string what() const nothrow
 	{ return "Ran out of memory, allocation failed"; }
 };

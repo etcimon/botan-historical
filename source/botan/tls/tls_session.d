@@ -159,7 +159,7 @@ Session Session::decrypt(in ubyte* buf, size_t buf_len,
 
 		return Session(&ber[0], ber.size());
 	}
-	catch(std::exception& e)
+	catch(Exception e)
 	{
 		throw new Decoding_Error("Failed to decrypt encrypted session -" ~
 									string(e.what()));

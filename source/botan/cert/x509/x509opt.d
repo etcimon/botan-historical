@@ -80,7 +80,7 @@ X509_Cert_Options::X509_Cert_Options(in string initial_opts,
 {
 	is_CA = false;
 	path_limit = 0;
-	constraints = NO_CONSTRAINTS;
+	constraints = Key_Constraints.NO_CONSTRAINTS;
 
 	auto now = Clock.currTime();
 

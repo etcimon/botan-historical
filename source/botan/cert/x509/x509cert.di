@@ -9,7 +9,7 @@ import botan.x509_obj;
 import botan.asn1.x509_dn;
 import botan.x509_key;
 import botan.asn1.asn1_alt_name;
-import botan.datastor;
+import botan.utils.datastor.datastor;
 import botan.cert.x509.key_constraint;
 import map;
 /**

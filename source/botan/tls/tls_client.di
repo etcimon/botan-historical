@@ -55,12 +55,12 @@ public:
 			 void delegate(in ubyte[]) data_cb,
 			 void delegate(Alert, in ubyte[]) alert_cb,
 			 bool delegate(const Session) handshake_cb,
-			 Session_Manager& session_manager,
-			 Credentials_Manager& creds,
-			 const Policy& policy,
+			 Session_Manager session_manager,
+			 Credentials_Manager creds,
+			 const Policy policy,
 			 RandomNumberGenerator rng,
-			 const Server_Information& server_info = Server_Information(),
-			 const Protocol_Version offer_version = Protocol_Version::latest_tls_version(),
+			 const Server_Information server_info = Server_Information(),
+			 const Protocol_Version offer_version = Protocol_Version.latest_tls_version(),
 			 string delegate(string[]) next_protocol = null,
 			 size_t reserved_io_buffer_size = 16*1024
 		);

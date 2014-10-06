@@ -1,11 +1,15 @@
 /*
 * X.509 Certificate Extensions
-* (C) 1999-2010,2012 Jack Lloyd
+* (C) 1999-2007,2012 Jack Lloyd
 *
-* Distributed under the terms of the Botan license
+* Distributed under the terms of the botan license.
 */
+module botan.cert.x509.x509_ext;
 
-import botan.x509_ext;
+import botan.asn1.asn1_obj;
+import botan.asn1.asn1_oid;
+import botan.utils.datastor.datastor;
+import botan.cert.x509.crl_ent;
 import botan.sha160;
 import botan.asn1.der_enc;
 import botan.asn1.ber_dec;
@@ -13,423 +17,833 @@ import botan.asn1.oid_lookup.oids;
 import botan.charset;
 import botan.internal.bit_ops;
 import algorithm;
-/*
-* List of X.509 Certificate Extensions
+
+/**
+* X.509 Certificate Extension
 */
-Certificate_Extension* Extensions::get_extension(in OID oid)
+class Certificate_Extension
 {
-#define X509_EXTENSION(NAME, TYPE) \
-	if (oids.name_of(oid, NAME))	 \
-		return new x509_ext.TYPE();
-
-	X509_EXTENSION("X509v3.KeyUsage", Key_Usage);
-	X509_EXTENSION("X509v3.BasicConstraints", Basic_Constraints);
-	X509_EXTENSION("X509v3.SubjectKeyIdentifier", Subject_Key_ID);
-	X509_EXTENSION("X509v3.AuthorityKeyIdentifier", Authority_Key_ID);
-	X509_EXTENSION("X509v3.ExtendedKeyUsage", Extended_Key_Usage);
-	X509_EXTENSION("X509v3.IssuerAlternativeName", Issuer_Alternative_Name);
-	X509_EXTENSION("X509v3.SubjectAlternativeName", Subject_Alternative_Name);
-	X509_EXTENSION("X509v3.CertificatePolicies", Certificate_Policies);
-	X509_EXTENSION("X509v3.CRLDistributionPoints", CRL_Distribution_Points);
-	X509_EXTENSION("PKIX.AuthorityInformationAccess", Authority_Information_Access);
-	X509_EXTENSION("X509v3.CRLNumber", CRL_Number);
-	X509_EXTENSION("X509v3.ReasonCode", CRL_ReasonCode);
-
-	return null;
-}
-
-/*
-* Extensions Copy Constructor
-*/
-Extensions::Extensions(in Extensions extensions) : ASN1_Object()
-{
-	*this = extensions;
-}
-
-/*
-* Extensions Assignment Operator
-*/
-Extensions& Extensions::operator=(in Extensions other)
-{
-	for (size_t i = 0; i != extensions.size(); ++i)
-		delete extensions[i].first;
-	extensions.clear();
-
-	for (size_t i = 0; i != other.extensions.size(); ++i)
-		extensions.push_back(
-			Pair(other.extensions[i].first.copy(),
-								other.extensions[i].second));
-
-	return (*this);
-}
-
-/*
-* Return the OID of this extension
-*/
-OID Certificate_Extension::oid_of() const
-{
-	return oids.lookup(oid_name());
-}
-
-void Extensions::add(Certificate_Extension* extn, bool critical)
-{
-	extensions.push_back(Pair(extn, critical));
-}
-
-/*
-* Encode an Extensions list
-*/
-void Extensions::encode_into(DER_Encoder& to) const
-{
-	for (size_t i = 0; i != extensions.size(); ++i)
+public:
+	/**
+	* @return OID representing this extension
+	*/
+	OID oid_of() const
 	{
-		const Certificate_Extension* ext = extensions[i].first;
-		const bool is_critical = extensions[i].second;
+		return oids.lookup(oid_name());
+	}
 
-		const bool should_encode = ext.should_encode();
+	/**
+	* Make a copy of this extension
+	* @return copy of this
+	*/
+	abstract Certificate_Extension copy() const;
 
-		if (should_encode)
+	/*
+	* Add the contents of this extension into the information
+	* for the subject and/or issuer, as necessary.
+	* @param subject the subject info
+	* @param issuer the issuer info
+	*/
+	abstract void contents_to(ref Data_Store subject,
+							  ref Data_Store issuer) const;
+
+	/*
+	* @return specific OID name
+	*/
+	abstract string oid_name() const;
+
+	~this() {}
+package:
+	abstract bool should_encode() const { return true; }
+	abstract Vector!ubyte encode_inner() const;
+	abstract void decode_inner(in Vector!ubyte);
+};
+
+/**
+* X.509 Certificate Extension List
+*/
+class Extensions : ASN1_Object
+{
+public:
+	import botan.utils.mixins;
+	mixin USE_STRUCT_INIT!();
+
+	void encode_into(DER_Encoder to) const
+	{
+		for (size_t i = 0; i != extensions.size(); ++i)
 		{
-			to_object.start_cons(ASN1_Tag.SEQUENCE)
+			const Certificate_Extension ext = extensions[i].first;
+			const bool is_critical = extensions[i].second;
+			
+			const bool should_encode = ext.should_encode();
+			
+			if (should_encode)
+			{
+				to_object.start_cons(ASN1_Tag.SEQUENCE)
 					.encode(ext.oid_of())
-					.encode_optional(is_critical, false)
-					.encode(ext.encode_inner(), ASN1_Tag.OCTET_STRING)
-				.end_cons();
+						.encode_optional(is_critical, false)
+						.encode(ext.encode_inner(), ASN1_Tag.OCTET_STRING)
+						.end_cons();
+			}
 		}
 	}
-}
 
-/*
-* Decode a list of Extensions
-*/
-void Extensions::decode_from(BER_Decoder& from_source)
-{
-	for (size_t i = 0; i != extensions.size(); ++i)
-		delete extensions[i].first;
-	extensions.clear();
-
-	BER_Decoder sequence = from_source.start_cons(ASN1_Tag.SEQUENCE);
-
-	while(sequence.more_items())
+	void decode_from(BER_Decoder from_source)
 	{
-		OID oid;
-		Vector!ubyte value;
-		bool critical;
-
-		sequence.start_cons(ASN1_Tag.SEQUENCE)
-				.decode(oid)
-				.decode_optional(critical, BOOLEAN, ASN1_Tag.UNIVERSAL, false)
-				.decode(value, ASN1_Tag.OCTET_STRING)
-				.verify_end()
-			.end_cons();
-
-		Certificate_Extension* ext = get_extension(oid);
-
-		if (!ext && critical && m_throw_on_unknown_critical)
-			throw new Decoding_Error("Encountered unknown X.509 extension marked "
-										"as critical; OID = " ~ oid.as_string());
-
-		if (ext)
+		for (size_t i = 0; i != extensions.size(); ++i)
+			delete extensions[i].first;
+		extensions.clear();
+		
+		BER_Decoder sequence = from_source.start_cons(ASN1_Tag.SEQUENCE);
+		
+		while(sequence.more_items())
 		{
-			try
+			OID oid;
+			Vector!ubyte value;
+			bool critical;
+			
+			sequence.start_cons(ASN1_Tag.SEQUENCE)
+				.decode(oid)
+					.decode_optional(critical, BOOLEAN, ASN1_Tag.UNIVERSAL, false)
+					.decode(value, ASN1_Tag.OCTET_STRING)
+					.verify_end()
+					.end_cons();
+			
+			Certificate_Extension ext = get_extension(oid);
+			
+			if (!ext && critical && m_throw_on_unknown_critical)
+				throw new Decoding_Error("Encountered unknown X.509 extension marked "
+				                         "as critical; OID = " ~ oid.as_string());
+			
+			if (ext)
 			{
-				ext.decode_inner(value);
+				try
+				{
+					ext.decode_inner(value);
+				}
+				catch(Exception e)
+				{
+					throw new Decoding_Error("Exception while decoding extension " ~
+					                         oid.as_string() ~ ": " ~ e.what());
+				}
+				
+				extensions.push_back(Pair(ext, critical));
 			}
-			catch(std::exception& e)
-			{
-				throw new Decoding_Error("Exception while decoding extension " ~
-											oid.as_string() ~ ": " ~ e.what());
-			}
-
-			extensions.push_back(Pair(ext, critical));
 		}
+		
+		sequence.verify_end();
 	}
 
-	sequence.verify_end();
-}
+	void contents_to(ref Data_Store subject_info,
+	                 ref Data_Store issuer_info) const
+	{
+		for (size_t i = 0; i != extensions.size(); ++i)
+			extensions[i].first.contents_to(subject_info, issuer_info);
+	}
 
-/*
-* Write the extensions to an info store
+	void add(Certificate_Extension extn, bool critical)
+	{
+		extensions.push_back(Pair(extn, critical));
+	}
+
+	Extensions opAssign(in Extensions other)
+	{
+		for (size_t i = 0; i != extensions.size(); ++i)
+			delete extensions[i].first;
+		extensions.clear();
+		
+		for (size_t i = 0; i != other.extensions.size(); ++i)
+			extensions.push_back(
+				Pair(other.extensions[i].first.copy(),
+			other.extensions[i].second));
+		
+		return this;
+	}
+
+	this(in Extensions ext) {
+		this = ext;
+	}
+
+	this(bool st = true) { m_throw_on_unknown_critical = st; }
+	~this()
+	{
+		for (size_t i = 0; i != extensions.size(); ++i)
+			delete extensions[i].first;
+	}
+
+private:
+
+	/*
+	* List of X.509 Certificate Extensions
+	*/
+	Certificate_Extension get_extension(in OID oid)
+	{
+		string X509_EXTENSION(T)(string NAME, T t) {
+			return "if (oids.name_of(oid, " ~ NAME ~ ")) return new x509_ext. ~ " ~ T.stringof ~ "();";
+		}
+		
+		mixin( X509_EXTENSION("X509v3.KeyUsage", Key_Usage) );
+		mixin( X509_EXTENSION("X509v3.BasicConstraints", Basic_Constraints) );
+		mixin( X509_EXTENSION("X509v3.SubjectKeyIdentifier", Subject_Key_ID) );
+		mixin( X509_EXTENSION("X509v3.AuthorityKeyIdentifier", Authority_Key_ID) );
+		mixin( X509_EXTENSION("X509v3.ExtendedKeyUsage", Extended_Key_Usage) );
+		mixin( X509_EXTENSION("X509v3.IssuerAlternativeName", Issuer_Alternative_Name) );
+		mixin( X509_EXTENSION("X509v3.SubjectAlternativeName", Subject_Alternative_Name) );
+		mixin( X509_EXTENSION("X509v3.CertificatePolicies", Certificate_Policies) );
+		mixin( X509_EXTENSION("X509v3.CRLDistributionPoints", CRL_Distribution_Points) );
+		mixin( X509_EXTENSION("PKIX.AuthorityInformationAccess", Authority_Information_Access) );
+		mixin( X509_EXTENSION("X509v3.CRLNumber", CRL_Number) );
+		mixin( X509_EXTENSION("X509v3.ReasonCode", CRL_ReasonCode) );
+		
+		return null;
+	}
+
+
+	Vector!( Pair!(Certificate_Extension, bool)  ) extensions;
+	bool m_throw_on_unknown_critical;
+};
+
+static const size_t NO_CERT_PATH_LIMIT = 0xFFFFFFF0;
+
+/**
+* Basic Constraints Extension
 */
-void Extensions::contents_to(Data_Store& subject_info,
-									  Data_Store& issuer_info) const
+class Basic_Constraints : Certificate_Extension
 {
-	for (size_t i = 0; i != extensions.size(); ++i)
-		extensions[i].first.contents_to(subject_info, issuer_info);
-}
+public:
+	Basic_Constraints copy() const
+	{ return new Basic_Constraints(is_ca, path_limit); }
 
-/*
-* Delete an Extensions list
+	this(bool ca = false, size_t limit = 0)
+	{
+		is_ca = ca;
+		path_limit = limit; 
+	}
+
+	bool get_is_ca() const { return is_ca; }
+	/*
+	* Checked accessor for the path_limit member
+	*/
+	size_t get_path_limit() const
+	{
+		if (!is_ca)
+			throw new Invalid_State("Basic_Constraints::get_path_limit: Not a CA");
+		return path_limit;
+	}
+
+private:
+	string oid_name() const { return "X509v3.BasicConstraints"; }
+
+	/*
+	* Encode the extension
+	*/
+	Vector!ubyte encode_inner() const
+	{
+		return DER_Encoder()
+			.start_cons(ASN1_Tag.SEQUENCE)
+				.encode_if (is_ca,
+				            DER_Encoder()
+				            .encode(is_ca)
+				            .encode_optional(path_limit, NO_CERT_PATH_LIMIT)
+				            )
+				.end_cons()
+				.get_contents_unlocked();
+	}
+
+	/*
+	* Decode the extension
+	*/
+	void decode_inner(in Vector!ubyte input)
+	{
+		BER_Decoder(input)
+			.start_cons(ASN1_Tag.SEQUENCE)
+				.decode_optional(is_ca, BOOLEAN, ASN1_Tag.UNIVERSAL, false)
+				.decode_optional(path_limit, INTEGER, ASN1_Tag.UNIVERSAL, NO_CERT_PATH_LIMIT)
+				.verify_end()
+				.end_cons();
+		
+		if (is_ca == false)
+			path_limit = 0;
+	}
+
+	/*
+	* Return a textual representation
+	*/
+	void contents_to(ref Data_Store subject, ref Data_Store) const
+	{
+		subject.add("X509v3.BasicConstraints.is_ca", (is_ca ? 1 : 0));
+		subject.add("X509v3.BasicConstraints.path_constraint", path_limit);
+	}
+
+	bool is_ca;
+	size_t path_limit;
+};
+
+/**
+* Key Usage Constraints Extension
 */
-Extensions::~this()
+class Key_Usage : Certificate_Extension
 {
-	for (size_t i = 0; i != extensions.size(); ++i)
-		delete extensions[i].first;
-}
+public:
+	Key_Usage copy() const { return new Key_Usage(constraints); }
 
-namespace Cert_Extension {
+	this(Key_Constraints c = Key_Constraints.NO_CONSTRAINTS) { constraints = c; }
 
-/*
-* Checked accessor for the path_limit member
-*/
-size_t Basic_Constraints::get_path_limit() const
-{
-	if (!is_ca)
-		throw new Invalid_State("Basic_Constraints::get_path_limit: Not a CA");
-	return path_limit;
-}
+	Key_Constraints get_constraints() const { return constraints; }
+private:
+	string oid_name() const { return "X509v3.KeyUsage"; }
 
-/*
-* Encode the extension
-*/
-Vector!ubyte Basic_Constraints::encode_inner() const
-{
-	return DER_Encoder()
-		.start_cons(ASN1_Tag.SEQUENCE)
-		.encode_if (is_ca,
-					  DER_Encoder()
-						  .encode(is_ca)
-						  .encode_optional(path_limit, NO_CERT_PATH_LIMIT)
-			)
-		.end_cons()
-	.get_contents_unlocked();
-}
+	bool should_encode() const { return (constraints != Key_Constraints.NO_CONSTRAINTS); }
 
-/*
-* Decode the extension
-*/
-void Basic_Constraints::decode_inner(in Vector!ubyte input)
-{
-	BER_Decoder(input)
-		.start_cons(ASN1_Tag.SEQUENCE)
-			.decode_optional(is_ca, BOOLEAN, ASN1_Tag.UNIVERSAL, false)
-			.decode_optional(path_limit, INTEGER, ASN1_Tag.UNIVERSAL, NO_CERT_PATH_LIMIT)
-			.verify_end()
-		.end_cons();
-
-	if (is_ca == false)
-		path_limit = 0;
-}
-
-/*
-* Return a textual representation
-*/
-void Basic_Constraints::contents_to(Data_Store& subject, Data_Store&) const
-{
-	subject.add("X509v3.BasicConstraints.is_ca", (is_ca ? 1 : 0));
-	subject.add("X509v3.BasicConstraints.path_constraint", path_limit);
-}
-
-/*
-* Encode the extension
-*/
-Vector!ubyte Key_Usage::encode_inner() const
-{
-	if (constraints == NO_CONSTRAINTS)
-		throw new Encoding_Error("Cannot encode zero usage constraints");
-
-	const size_t unused_bits = low_bit(constraints) - 1;
-
-	Vector!ubyte der;
+	/*
+	* Encode the extension
+	*/
+	Vector!ubyte encode_inner() const
+	{
+		if (constraints == Key_Constraints.NO_CONSTRAINTS)
+			throw new Encoding_Error("Cannot encode zero usage constraints");
+		
+		const size_t unused_bits = low_bit(constraints) - 1;
+		
+		Vector!ubyte der;
 		der.push_back(ASN1_Tag.BIT_STRING);
-	der.push_back(2 + ((unused_bits < 8) ? 1 : 0));
-	der.push_back(unused_bits % 8);
-	der.push_back((constraints >> 8) & 0xFF);
-	if (constraints & 0xFF)
-		der.push_back(constraints & 0xFF);
+		der.push_back(2 + ((unused_bits < 8) ? 1 : 0));
+		der.push_back(unused_bits % 8);
+		der.push_back((constraints >> 8) & 0xFF);
+		if (constraints & 0xFF)
+			der.push_back(constraints & 0xFF);
+		
+		return der;
+	}
 
-	return der;
-}
-
-/*
-* Decode the extension
-*/
-void Key_Usage::decode_inner(in Vector!ubyte input)
-{
-	BER_Decoder ber(input);
-
-	BER_Object obj = ber.get_next_object();
-
+	/*
+	* Decode the extension
+	*/
+	void decode_inner(in Vector!ubyte input)
+	{
+		BER_Decoder ber(input);
+		
+		BER_Object obj = ber.get_next_object();
+		
 		if (obj.type_tag != ASN1_Tag.BIT_STRING || obj.class_tag != ASN1_Tag.UNIVERSAL)
-		throw new BER_Bad_Tag("Bad tag for usage constraint",
-								obj.type_tag, obj.class_tag);
+			throw new BER_Bad_Tag("Bad tag for usage constraint",
+			                      obj.type_tag, obj.class_tag);
+		
+		if (obj.value.size() != 2 && obj.value.size() != 3)
+			throw new BER_Decoding_Error("Bad size for BITSTRING in usage constraint");
+		
+		if (obj.value[0] >= 8)
+			throw new BER_Decoding_Error("Invalid unused bits in usage constraint");
+		
+		obj.value[obj.value.size()-1] &= (0xFF << obj.value[0]);
+		
+		ushort usage = 0;
+		for (size_t i = 1; i != obj.value.size(); ++i)
+			usage = (obj.value[i] << 8) | usage;
+		
+		constraints = Key_Constraints(usage);
+	}
 
-	if (obj.value.size() != 2 && obj.value.size() != 3)
-		throw new BER_Decoding_Error("Bad size for BITSTRING in usage constraint");
+	/*
+	* Return a textual representation
+	*/
+	void contents_to(ref Data_Store subject, ref Data_Store) const
+	{
+		subject.add("X509v3.KeyUsage", constraints);
+	}
 
-	if (obj.value[0] >= 8)
-		throw new BER_Decoding_Error("Invalid unused bits in usage constraint");
+	Key_Constraints constraints;
+};
 
-	obj.value[obj.value.size()-1] &= (0xFF << obj.value[0]);
-
-	ushort usage = 0;
-	for (size_t i = 1; i != obj.value.size(); ++i)
-		usage = (obj.value[i] << 8) | usage;
-
-	constraints = Key_Constraints(usage);
-}
-
-/*
-* Return a textual representation
+/**
+* Subject Key Identifier Extension
 */
-void Key_Usage::contents_to(Data_Store& subject, Data_Store&) const
+class Subject_Key_ID : Certificate_Extension
 {
-	subject.add("X509v3.KeyUsage", constraints);
-}
+public:
+	Subject_Key_ID copy() const { return new Subject_Key_ID(key_id); }
 
-/*
-* Encode the extension
-*/
-Vector!ubyte Subject_Key_ID::encode_inner() const
-{
-	return DER_Encoder().encode(key_id, ASN1_Tag.OCTET_STRING).get_contents_unlocked();
-}
+	this() {}
+	this(in Vector!ubyte pub_key)
+	{
+		SHA_160 hash;
+		key_id = unlock(hash.process(pub_key));
+	}
 
-/*
-* Decode the extension
-*/
-void Subject_Key_ID::decode_inner(in Vector!ubyte input)
-{
-	BER_Decoder(input).decode(key_id, ASN1_Tag.OCTET_STRING).verify_end();
-}
 
-/*
-* Return a textual representation
-*/
-void Subject_Key_ID::contents_to(Data_Store& subject, Data_Store&) const
-{
-	subject.add("X509v3.SubjectKeyIdentifier", key_id);
-}
+	Vector!ubyte get_key_id() const { return key_id; }
+private:
+	string oid_name() const { return "X509v3.SubjectKeyIdentifier"; }
 
-/*
-* Subject_Key_ID Constructor
-*/
-Subject_Key_ID::Subject_Key_ID(in Vector!ubyte pub_key)
-{
-	SHA_160 hash;
-	key_id = unlock(hash.process(pub_key));
-}
+	bool should_encode() const { return (key_id.size() > 0); }
 
-/*
-* Encode the extension
+	/*
+	* Encode the extension
+	*/
+	Vector!ubyte encode_inner() const
+	{
+		return DER_Encoder().encode(key_id, ASN1_Tag.OCTET_STRING).get_contents_unlocked();
+	}
+
+	/*
+	* Decode the extension
+	*/
+	void decode_inner(in Vector!ubyte input)
+	{
+		BER_Decoder(input).decode(key_id, ASN1_Tag.OCTET_STRING).verify_end();
+	}
+
+	/*
+	* Return a textual representation
+	*/
+	void contents_to(ref Data_Store subject, ref Data_Store) const
+	{
+		subject.add("X509v3.SubjectKeyIdentifier", key_id);
+	}
+
+	Vector!ubyte key_id;
+};
+
+/**
+* Authority Key Identifier Extension
 */
-Vector!ubyte Authority_Key_ID::encode_inner() const
+class Authority_Key_ID : Certificate_Extension
 {
-	return DER_Encoder()
+public:
+	Authority_Key_ID* copy() const { return new Authority_Key_ID(key_id); }
+
+	this() {}
+	this(in Vector!ubyte k) { key_id = k; }
+
+	Vector!ubyte get_key_id() const { return key_id; }
+private:
+	string oid_name() const { return "X509v3.AuthorityKeyIdentifier"; }
+
+	bool should_encode() const { return (key_id.size() > 0); }
+
+	/*
+	* Encode the extension
+	*/
+	Vector!ubyte encode_inner() const
+	{
+		return DER_Encoder()
 			.start_cons(ASN1_Tag.SEQUENCE)
 				.encode(key_id, ASN1_Tag.OCTET_STRING, ASN1_Tag(0), ASN1_Tag.CONTEXT_SPECIFIC)
-			.end_cons()
-		.get_contents_unlocked();
-}
+				.end_cons()
+				.get_contents_unlocked();
+	}
 
-/*
-* Decode the extension
+	/*
+	* Decode the extension
+	*/
+	void decode_inner(in Vector!ubyte input)
+	{
+		BER_Decoder(input)
+			.start_cons(ASN1_Tag.SEQUENCE)
+				.decode_optional_string(key_id, ASN1_Tag.OCTET_STRING, 0);
+	}
+
+	/*
+	* Return a textual representation
+	*/
+	void contents_to(ref Data_Store, ref Data_Store issuer) const
+	{
+		if (key_id.size())
+			issuer.add("X509v3.AuthorityKeyIdentifier", key_id);
+	}
+
+
+	Vector!ubyte key_id;
+};
+
+/**
+* Alternative Name Extension Base Class
 */
-void Authority_Key_ID::decode_inner(in Vector!ubyte input)
+class Alternative_Name : Certificate_Extension
 {
-	BER_Decoder(input)
-		.start_cons(ASN1_Tag.SEQUENCE)
-		.decode_optional_string(key_id, ASN1_Tag.OCTET_STRING, 0);
-}
+public:
+	AlternativeName get_alt_name() const { return alt_name; }
 
-/*
-* Return a textual representation
+package:
+
+	this(in AlternativeName alt_name,
+	     in string oid_name_str)
+	{
+		this.alt_name = alt_name;
+		this.oid_name_str = oid_name_str;
+	}
+
+private:
+	string oid_name() const { return oid_name_str; }
+
+	bool should_encode() const { return alt_name.has_items(); }
+
+	/*
+	* Encode the extension
+	*/
+	Vector!ubyte encode_inner() const
+	{
+		return DER_Encoder().encode(alt_name).get_contents_unlocked();
+	}
+
+	/*
+	* Decode the extension
+	*/
+	void decode_inner(in Vector!ubyte input)
+	{
+		BER_Decoder(input).decode(alt_name);
+	}
+
+	/*
+	* Return a textual representation
+	*/
+	void contents_to(ref Data_Store subject_info,
+	                 ref Data_Store issuer_info) const
+	{
+		MultiMap!(string, string) contents =
+			get_alt_name().contents();
+		
+		if (oid_name_str == "X509v3.SubjectAlternativeName")
+			subject_info.add(contents);
+		else if (oid_name_str == "X509v3.IssuerAlternativeName")
+			issuer_info.add(contents);
+		else
+			throw new Internal_Error("In Alternative_Name, unknown type " ~
+			                         oid_name_str);
+	}
+
+	string oid_name_str;
+	AlternativeName alt_name;
+};
+
+
+
+
+/**
+* Subject Alternative Name Extension
 */
-void Authority_Key_ID::contents_to(Data_Store&, Data_Store& issuer) const
+class Subject_Alternative_Name : Alternative_Name
 {
-	if (key_id.size())
-		issuer.add("X509v3.AuthorityKeyIdentifier", key_id);
-}
+public:
+	Subject_Alternative_Name copy() const
+	{ return new Subject_Alternative_Name(get_alt_name()); }
 
-/*
+	this(in AlternativeName name = AlternativeName()) {
+		super(name, "X509v3.SubjectAlternativeName");
+	}
+};
+
+/**
+* Issuer Alternative Name Extension
+*/
+class Issuer_Alternative_Name : Alternative_Name
+{
+public:
+	Issuer_Alternative_Name copy() const
+	{ return new Issuer_Alternative_Name(get_alt_name()); }
+
+	this(in AlternativeName name = AlternativeName()) {
+		super(name, "X509v3.IssuerAlternativeName");
+	}
+};
+
+/**
+* Extended Key Usage Extension
+*/
+class Extended_Key_Usage : Certificate_Extension
+{
+public:
+	Extended_Key_Usage copy() const { return new Extended_Key_Usage(oids); }
+
+	this() {}
+	this(in Vector!( OID ) o) : oids(o) {}
+
+	Vector!( OID ) get_oids() const { return oids; }
+private:
+	string oid_name() const { return "X509v3.ExtendedKeyUsage"; }
+
+	bool should_encode() const { return (oids.size() > 0); }
+	/*
 * Encode the extension
 */
-Vector!ubyte Alternative_Name::encode_inner() const
-{
-	return DER_Encoder().encode(alt_name).get_contents_unlocked();
-}
+	Vector!ubyte encode_inner() const
+	{
+		return DER_Encoder()
+			.start_cons(ASN1_Tag.SEQUENCE)
+				.encode_list(oids)
+				.end_cons()
+				.get_contents_unlocked();
+	}
 
-/*
-* Decode the extension
+	/*
+	* Decode the extension
+	*/
+	void decode_inner(in Vector!ubyte input)
+	{
+		BER_Decoder(input).decode_list(oids);
+	}
+
+	/*
+	* Return a textual representation
+	*/
+	void contents_to(ref Data_Store subject, ref Data_Store) const
+	{
+		for (size_t i = 0; i != oids.size(); ++i)
+			subject.add("X509v3.ExtendedKeyUsage", oids[i].as_string());
+	}
+
+	Vector!( OID ) oids;
+};
+
+/**
+* Certificate Policies Extension
 */
-void Alternative_Name::decode_inner(in Vector!ubyte input)
+class Certificate_Policies : Certificate_Extension
 {
-	BER_Decoder(input).decode(alt_name);
-}
+public:
+	Certificate_Policies copy() const
+	{ return new Certificate_Policies(oids); }
 
-/*
-* Return a textual representation
+	Certificate_Policies() {}
+	Certificate_Policies(in Vector!( OID ) o) : oids(o) {}
+
+	Vector!( OID ) get_oids() const { return oids; }
+private:
+	string oid_name() const { return "X509v3.CertificatePolicies"; }
+
+	bool should_encode() const { return (oids.size() > 0); }
+	Vector!ubyte encode_inner() const;
+	void decode_inner(in Vector!ubyte);
+	void contents_to(ref Data_Store, ref Data_Store) const;
+
+	Vector!( OID ) oids;
+};
+
+class Authority_Information_Access : Certificate_Extension
+{
+public:
+	Authority_Information_Access copy() const
+	{ return new Authority_Information_Access(m_ocsp_responder); }
+
+	this() {}
+
+	this(in string ocsp) :
+		m_ocsp_responder(ocsp) {}
+
+private:
+	string oid_name() const { return "PKIX.AuthorityInformationAccess"; }
+
+	bool should_encode() const { return (m_ocsp_responder != ""); }
+
+	Vector!ubyte encode_inner() const
+	{
+		ASN1_String url(m_ocsp_responder, IA5_STRING);
+		
+		return DER_Encoder()
+			.start_cons(ASN1_Tag.SEQUENCE)
+				.start_cons(ASN1_Tag.SEQUENCE)
+				.encode(oids.lookup("PKIX.OCSP"))
+				.add_object(ASN1_Tag(6), ASN1_Tag.CONTEXT_SPECIFIC, url.iso_8859())
+				.end_cons()
+				.end_cons().get_contents_unlocked();
+	}
+
+	void decode_inner(in Vector!ubyte input)
+	{
+		BER_Decoder ber = BER_Decoder(input).start_cons(ASN1_Tag.SEQUENCE);
+		
+		while(ber.more_items())
+		{
+			OID oid;
+			
+			BER_Decoder info = ber.start_cons(ASN1_Tag.SEQUENCE);
+			
+			info.decode(oid);
+			
+			if (oid == oids.lookup("PKIX.OCSP"))
+			{
+				BER_Object name = info.get_next_object();
+				
+				if (name.type_tag == 6 && name.class_tag == ASN1_Tag.CONTEXT_SPECIFIC)
+				{
+					m_ocsp_responder = Charset.transcode(asn1.to_string(name),
+					                                     LATIN1_CHARSET,
+					                                     LOCAL_CHARSET);
+				}
+				
+			}
+		}
+	}
+
+
+
+	void contents_to(ref Data_Store subject, ref Data_Store) const
+	{
+		if (m_ocsp_responder != "")
+			subject.add("OCSP.responder", m_ocsp_responder);
+	}
+
+	string m_ocsp_responder;
+};
+
+
+/**
+* CRL Number Extension
 */
-void Alternative_Name::contents_to(Data_Store& subject_info,
-											  Data_Store& issuer_info) const
+class CRL_Number : Certificate_Extension
 {
-	MultiMap!(string, string) contents =
-		get_alt_name().contents();
+public:
+	/*
+	* Copy a CRL_Number extension
+	*/
+	CRL_Number* copy() const
+	{
+		if (!has_value)
+			throw new Invalid_State("CRL_Number::copy: Not set");
+		return new CRL_Number(crl_number);
+	}
 
-	if (oid_name_str == "X509v3.SubjectAlternativeName")
-		subject_info.add(contents);
-	else if (oid_name_str == "X509v3.IssuerAlternativeName")
-		issuer_info.add(contents);
-	else
-		throw new Internal_Error("In Alternative_Name, unknown type " ~
-									oid_name_str);
-}
 
-/*
-* Alternative_Name Constructor
+	this() { has_value = false; crl_number = 0; }
+	CRL_Number(size_t n) { has_value = true; crl_number = n; }
+
+	/*
+	* Checked accessor for the crl_number member
+	*/
+	size_t get_crl_number() const
+	{
+		if (!has_value)
+			throw new Invalid_State("CRL_Number::get_crl_number: Not set");
+		return crl_number;
+	}
+
+private:
+	string oid_name() const { return "X509v3.CRLNumber"; }
+
+	bool should_encode() const { return has_value; }
+	/*
+	* Encode the extension
+	*/
+	Vector!ubyte encode_inner() const
+	{
+		return DER_Encoder().encode(crl_number).get_contents_unlocked();
+	}
+	/*
+	* Decode the extension
+	*/
+	void decode_inner(in Vector!ubyte input)
+	{
+		BER_Decoder(input).decode(crl_number);
+	}
+
+	/*
+	* Return a textual representation
+	*/
+	void contents_to(ref Data_Store info, ref Data_Store) const
+	{
+		info.add("X509v3.CRLNumber", crl_number);
+	}
+
+	bool has_value;
+	size_t crl_number;
+};
+
+/**
+* CRL Entry Reason Code Extension
 */
-Alternative_Name::Alternative_Name(in AlternativeName alt_name,
-											  in string oid_name_str)
+class CRL_ReasonCode : Certificate_Extension
 {
-	this.alt_name = alt_name;
-	this.oid_name_str = oid_name_str;
-}
+public:
+	CRL_ReasonCode* copy() const { return new CRL_ReasonCode(reason); }
+
+	this(CRL_Code r = CRL_Code.UNSPECIFIED) { reason = r; }
+
+	CRL_Code get_reason() const { return reason; }
+private:
+	string oid_name() const { return "X509v3.ReasonCode"; }
+
+	bool should_encode() const { return (reason != CRL_Code.UNSPECIFIED); }
+	/*
+	* Encode the extension
+	*/
+	Vector!ubyte encode_inner() const
+	{
+		return DER_Encoder()
+			.encode(cast(size_t)(reason), ASN1_Tag.ENUMERATED, ASN1_Tag.UNIVERSAL)
+				.get_contents_unlocked();
+	}
+
+	/*
+	* Decode the extension
+	*/
+	void decode_inner(in Vector!ubyte input)
+	{
+		size_t reason_code = 0;
+		BER_Decoder(input).decode(reason_code, ASN1_Tag.ENUMERATED, ASN1_Tag.UNIVERSAL);
+		reason = cast(CRL_Code)(reason_code);
+	}
+
+	/*
+	* Return a textual representation
+	*/
+	void contents_to(ref Data_Store info, ref Data_Store) const
+	{
+		info.add("X509v3.CRLReasonCode", reason);
+	}
+
+	CRL_Code reason;
+};
+
+
+/**
+* CRL Distribution Points Extension
+*/
+class CRL_Distribution_Points : Certificate_Extension
+{
+public:
+	class Distribution_Point : ASN1_Object
+	{
+		public:
+			void encode_into(class DER_Encoder&) const;
+			void decode_from(class BER_Decoder&);
+
+			const AlternativeName& point() const { return m_point; }
+		private:
+			AlternativeName m_point;
+	};
+
+	CRL_Distribution_Points* copy() const
+	{ return new CRL_Distribution_Points(m_distribution_points); }
+
+	CRL_Distribution_Points() {}
+
+	CRL_Distribution_Points(in Vector!( Distribution_Point ) points) :
+		m_distribution_points(points) {}
+
+	Vector!( Distribution_Point ) distribution_points() const
+	{ return m_distribution_points; }
+
+private:
+	string oid_name() const { return "X509v3.CRLDistributionPoints"; }
+
+	bool should_encode() const { return !m_distribution_points.empty(); }
+
+	Vector!ubyte encode_inner() const;
+	void decode_inner(in Vector!ubyte);
+	void contents_to(ref Data_Store, ref Data_Store) const;
+
+	Vector!( Distribution_Point ) m_distribution_points;
+};
 
 /*
 * Subject_Alternative_Name Constructor
 */
 Subject_Alternative_Name::Subject_Alternative_Name(
-  const AlternativeName& name) :
-	Alternative_Name(name, "X509v3.SubjectAlternativeName")
+	const AlternativeName& name) :
+Alternative_Name(name, "X509v3.SubjectAlternativeName")
 {
 }
 
-/*
-* Issuer_Alternative_Name Constructor
-*/
-Issuer_Alternative_Name::Issuer_Alternative_Name(in AlternativeName name) :
-	Alternative_Name(name, "X509v3.IssuerAlternativeName")
-{
-}
-
-/*
-* Encode the extension
-*/
-Vector!ubyte Extended_Key_Usage::encode_inner() const
-{
-	return DER_Encoder()
-		.start_cons(ASN1_Tag.SEQUENCE)
-			.encode_list(oids)
-		.end_cons()
-	.get_contents_unlocked();
-}
-
-/*
-* Decode the extension
-*/
-void Extended_Key_Usage::decode_inner(in Vector!ubyte input)
-{
-	BER_Decoder(input).decode_list(oids);
-}
-
-/*
-* Return a textual representation
-*/
-void Extended_Key_Usage::contents_to(Data_Store& subject, Data_Store&) const
-{
-	for (size_t i = 0; i != oids.size(); ++i)
-		subject.add("X509v3.ExtendedKeyUsage", oids[i].as_string());
-}
 
 /*
 * A policy specifier
@@ -438,23 +852,23 @@ class Policy_Information : ASN1_Object
 {
 public:
 	OID oid;
-
+	
 	Policy_Information() {}
 	Policy_Information(in OID oid) : oid(oid) {}
-
+	
 	void encode_into(DER_Encoder codec = DER_Encoder()) const
 	{
 		codec.start_cons(ASN1_Tag.SEQUENCE)
 			.encode(oid)
-			.end_cons();
+				.end_cons();
 	}
-
+	
 	void decode_from(BER_Decoder codec = BER_Decoder())
 	{
 		codec.start_cons(ASN1_Tag.SEQUENCE)
 			.decode(oid)
-			.discard_remaining()
-			.end_cons();
+				.discard_remaining()
+				.end_cons();
 	}
 };
 /*
@@ -463,15 +877,15 @@ public:
 Vector!ubyte Certificate_Policies::encode_inner() const
 {
 	Vector!( Policy_Information ) policies;
-
+	
 	for (size_t i = 0; i != oids.size(); ++i)
 		policies.push_back(oids[i]);
-
+	
 	return DER_Encoder()
 		.start_cons(ASN1_Tag.SEQUENCE)
 			.encode_list(policies)
-		.end_cons()
-	.get_contents_unlocked();
+			.end_cons()
+			.get_contents_unlocked();
 }
 
 /*
@@ -480,9 +894,9 @@ Vector!ubyte Certificate_Policies::encode_inner() const
 void Certificate_Policies::decode_inner(in Vector!ubyte input)
 {
 	Vector!( Policy_Information ) policies;
-
+	
 	BER_Decoder(input).decode_list(policies);
-
+	
 	oids.clear();
 	for (size_t i = 0; i != policies.size(); ++i)
 		oids.push_back(policies[i].oid);
@@ -491,129 +905,13 @@ void Certificate_Policies::decode_inner(in Vector!ubyte input)
 /*
 * Return a textual representation
 */
-void Certificate_Policies::contents_to(Data_Store& info, Data_Store&) const
+void Certificate_Policies::contents_to(ref Data_Store info, ref Data_Store) const
 {
 	for (size_t i = 0; i != oids.size(); ++i)
 		info.add("X509v3.CertificatePolicies", oids[i].as_string());
 }
 
-Vector!ubyte Authority_Information_Access::encode_inner() const
-{
-	ASN1_String url(m_ocsp_responder, IA5_STRING);
 
-	return DER_Encoder()
-		.start_cons(ASN1_Tag.SEQUENCE)
-		.start_cons(ASN1_Tag.SEQUENCE)
-		.encode(oids.lookup("PKIX.OCSP"))
-		.add_object(ASN1_Tag(6), ASN1_Tag.CONTEXT_SPECIFIC, url.iso_8859())
-		.end_cons()
-		.end_cons().get_contents_unlocked();
-}
-
-void Authority_Information_Access::decode_inner(in Vector!ubyte input)
-{
-	BER_Decoder ber = BER_Decoder(input).start_cons(ASN1_Tag.SEQUENCE);
-
-	while(ber.more_items())
-	{
-		OID oid;
-
-		BER_Decoder info = ber.start_cons(ASN1_Tag.SEQUENCE);
-
-		info.decode(oid);
-
-		if (oid == oids.lookup("PKIX.OCSP"))
-		{
-			BER_Object name = info.get_next_object();
-
-			if (name.type_tag == 6 && name.class_tag == ASN1_Tag.CONTEXT_SPECIFIC)
-			{
-				m_ocsp_responder = Charset.transcode(asn1.to_string(name),
-																  LATIN1_CHARSET,
-																  LOCAL_CHARSET);
-			}
-
-		}
-	}
-}
-
-void Authority_Information_Access::contents_to(Data_Store& subject, Data_Store&) const
-{
-	if (m_ocsp_responder != "")
-		subject.add("OCSP.responder", m_ocsp_responder);
-}
-
-/*
-* Checked accessor for the crl_number member
-*/
-size_t CRL_Number::get_crl_number() const
-{
-	if (!has_value)
-		throw new Invalid_State("CRL_Number::get_crl_number: Not set");
-	return crl_number;
-}
-
-/*
-* Copy a CRL_Number extension
-*/
-CRL_Number* CRL_Number::copy() const
-{
-	if (!has_value)
-		throw new Invalid_State("CRL_Number::copy: Not set");
-	return new CRL_Number(crl_number);
-}
-
-/*
-* Encode the extension
-*/
-Vector!ubyte CRL_Number::encode_inner() const
-{
-	return DER_Encoder().encode(crl_number).get_contents_unlocked();
-}
-
-/*
-* Decode the extension
-*/
-void CRL_Number::decode_inner(in Vector!ubyte input)
-{
-	BER_Decoder(input).decode(crl_number);
-}
-
-/*
-* Return a textual representation
-*/
-void CRL_Number::contents_to(Data_Store& info, Data_Store&) const
-{
-	info.add("X509v3.CRLNumber", crl_number);
-}
-
-/*
-* Encode the extension
-*/
-Vector!ubyte CRL_ReasonCode::encode_inner() const
-{
-	return DER_Encoder()
-			.encode(cast(size_t)(reason), ASN1_Tag.ENUMERATED, ASN1_Tag.UNIVERSAL)
-	.get_contents_unlocked();
-}
-
-/*
-* Decode the extension
-*/
-void CRL_ReasonCode::decode_inner(in Vector!ubyte input)
-{
-	size_t reason_code = 0;
-		BER_Decoder(input).decode(reason_code, ASN1_Tag.ENUMERATED, ASN1_Tag.UNIVERSAL);
-	reason = cast(CRL_Code)(reason_code);
-}
-
-/*
-* Return a textual representation
-*/
-void CRL_ReasonCode::contents_to(Data_Store& info, Data_Store&) const
-{
-	info.add("X509v3.CRLReasonCode", reason);
-}
 
 Vector!ubyte CRL_Distribution_Points::encode_inner() const
 {
@@ -625,14 +923,14 @@ void CRL_Distribution_Points::decode_inner(in Vector!ubyte buf)
 	BER_Decoder(buf).decode_list(m_distribution_points).verify_end();
 }
 
-void CRL_Distribution_Points::contents_to(Data_Store& info, Data_Store&) const
+void CRL_Distribution_Points::contents_to(ref Data_Store info, ref Data_Store) const
 {
 	for (size_t i = 0; i != m_distribution_points.size(); ++i)
 	{
 		auto point = m_distribution_points[i].point().contents();
-
+		
 		auto uris = point.equal_range("URI");
-
+		
 		for (auto uri = uris.first; uri != uris.second; ++uri)
 			info.add("CRL.DistributionPoint", uri.second);
 	}
@@ -647,12 +945,8 @@ void CRL_Distribution_Points::Distribution_Point::decode_from(class BER_Decoder&
 {
 	ber.start_cons(ASN1_Tag.SEQUENCE)
 		.start_cons(ASN1_Tag(0), ASN1_Tag.CONTEXT_SPECIFIC)
-		  .decode_optional_implicit(m_point, ASN1_Tag(0),
-											 ASN1_Tag(ASN1_Tag.CONTEXT_SPECIFIC | CONSTRUCTED),
-											 ASN1_Tag.SEQUENCE, CONSTRUCTED)
-		.end_cons().end_cons();
-}
-
-}
-
+			.decode_optional_implicit(m_point, ASN1_Tag(0),
+			                          ASN1_Tag(ASN1_Tag.CONTEXT_SPECIFIC | CONSTRUCTED),
+			                          ASN1_Tag.SEQUENCE, CONSTRUCTED)
+			.end_cons().end_cons();
 }

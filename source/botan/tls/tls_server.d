@@ -614,7 +614,7 @@ void Server::process_handshake_msg(const Handshake_State* active_state,
 		{
 			m_creds.verify_certificate_chain("tls-server", "", client_certs);
 		}
-		catch(std::exception& e)
+		catch(Exception e)
 		{
 			throw new TLS_Exception(Alert::BAD_CERTIFICATE, e.what());
 		}

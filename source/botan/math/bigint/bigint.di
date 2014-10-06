@@ -15,7 +15,7 @@ import iosfwd;
 */
 class BigInt
 {
-	public:
+public:
 	/**
 	* Base enumerator for encoding and decoding
 	*/
@@ -29,8 +29,12 @@ class BigInt
 	/**
 	* DivideByZero Exception
 	*/
-	struct DivideByZero : Exception
-		{ DivideByZero() : Exception("BigInt divide by zero") {} };
+	class DivideByZero : Exception
+	{ 
+		this() {
+			super("BigInt divide by zero");
+		}
+	};
 
 	/**
 	* Create empty BigInt
@@ -84,20 +88,20 @@ class BigInt
 	* Move constructor
 	*/
 	BigInt(ref BigInt other)
-		{
-		this.swap(other);
-		}
+	{
+	this.swap(other);
+	}
 
 	/**
 	* Move assignment
 	*/
 	BigInt operator=(ref BigInt other)
-		{
-		if (this != &other)
-			this.swap(other);
+	{
+	if (this != &other)
+		this.swap(other);
 
-		return (*this);
-		}
+	return (*this);
+	}
 
 	/**
 	* Copy assignment
@@ -109,10 +113,10 @@ class BigInt
 	* @param other BigInt to swap values with
 	*/
 	void swap(BigInt other)
-		{
-		m_reg.swap(other.m_reg);
-		std.algorithm.swap(m_signedness, other.m_signedness);
-		}
+	{
+	m_reg.swap(other.m_reg);
+	std.algorithm.swap(m_signedness, other.m_signedness);
+	}
 
 	/**
 	* += operator
@@ -232,14 +236,14 @@ class BigInt
 	* @result true if the integer is zero, false otherwise
 	*/
 	bool is_zero() const
-		{
-		const size_t sw = sig_words();
+	{
+	const size_t sw = sig_words();
 
-		for (size_t i = 0; i != sw; ++i)
-			if (m_reg[i])
-				return false;
-		return true;
-		}
+	for (size_t i = 0; i != sw; ++i)
+		if (m_reg[i])
+			return false;
+	return true;
+	}
 
 	/**
 	* Set bit at specified position
@@ -294,7 +298,7 @@ class BigInt
 	* @return value at position n
 	*/
 	word word_at(size_t n) const
-		{ return ((n < size()) ? m_reg[n] : 0); }
+	{ return ((n < size()) ? m_reg[n] : 0); }
 
 	/**
 	* Tests if the sign of the integer is negative
@@ -346,14 +350,14 @@ class BigInt
 	* @result significant words of the represented integer value
 	*/
 	size_t sig_words() const
-		{
-		const word* x = &m_reg[0];
-		size_t sig = m_reg.size();
+	{
+	const word* x = &m_reg[0];
+	size_t sig = m_reg.size();
 
-		while(sig && (x[sig-1] == 0))
-			sig--;
-		return sig;
-		}
+	while(sig && (x[sig-1] == 0))
+		sig--;
+	return sig;
+	}
 
 	/**
 	* Give ubyte length of the integer
@@ -410,9 +414,9 @@ class BigInt
 	* @param buf the array to load from
 	*/
 	void binary_decode(in SafeVector!ubyte buf)
-		{
-		binary_decode(&buf[0], buf.size());
-		}
+	{
+	binary_decode(&buf[0], buf.size());
+	}
 
 	/**
 	* @param base the base to measure the size for
@@ -427,8 +431,8 @@ class BigInt
 	* @return random integer in [min,max)
 	*/
 	static BigInt random_integer(RandomNumberGenerator rng,
-											 const BigInt min,
-											 const BigInt max);
+										 const BigInt min,
+										 const BigInt max);
 
 	/**
 	* Create a power of two
@@ -437,9 +441,9 @@ class BigInt
 	*/
 	static BigInt power_of_2(size_t n)
 	{
-		BigInt b;
-		b.set_bit(n);
-		return b;
+	BigInt b;
+	b.set_bit(n);
+	return b;
 	}
 
 	/**
@@ -457,7 +461,7 @@ class BigInt
 	* @result secure_vector of bytes containing the integer with given base
 	*/
 	static SafeVector!ubyte encode_locked(in BigInt n,
-															 Base base = Binary);
+														 Base base = Binary);
 
 	/**
 	* Encode the integer value from a BigInt to a ubyte array
@@ -476,7 +480,7 @@ class BigInt
 	* @result BigInt representing the integer in the ubyte array
 	*/
 	static BigInt decode(in ubyte* buf, size_t length,
-								Base base = Binary);
+							Base base = Binary);
 
 	/**
 	* Create a BigInt from an integer in a ubyte array
@@ -485,10 +489,10 @@ class BigInt
 	* @result BigInt representing the integer in the ubyte array
 	*/
 	static BigInt decode(in SafeVector!ubyte buf,
-								Base base = Binary)
-		{
-		return BigInt::decode(&buf[0], buf.size(), base);
-		}
+							Base base = Binary)
+	{
+	return BigInt::decode(&buf[0], buf.size(), base);
+	}
 
 	/**
 	* Create a BigInt from an integer in a ubyte array
@@ -497,10 +501,10 @@ class BigInt
 	* @result BigInt representing the integer in the ubyte array
 	*/
 	static BigInt decode(in Vector!ubyte buf,
-								Base base = Binary)
-		{
-		return BigInt::decode(&buf[0], buf.size(), base);
-		}
+							Base base = Binary)
+	{
+	return BigInt::decode(&buf[0], buf.size(), base);
+	}
 
 	/**
 	* Encode a BigInt to a ubyte array according to IEEE 1363
@@ -510,9 +514,9 @@ class BigInt
 	*/
 	static SafeVector!ubyte encode_1363(in BigInt n, size_t bytes);
 
-	private:
-		secure_vector!word m_reg;
-		Sign m_signedness = Positive;
+private:
+	secure_vector!word m_reg;
+	Sign m_signedness = Positive;
 };
 
 /*

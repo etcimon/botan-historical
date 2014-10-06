@@ -8,7 +8,7 @@ module botan.cert.x509.crl_ent;
 
 import botan.x509cert;
 import botan.asn1.asn1_time;
-import botan.x509_ext;
+import botan.cert.x509.x509_ext;
 import botan.asn1.der_enc;
 import botan.asn1.ber_dec;
 import botan.bigint;
@@ -43,6 +43,8 @@ enum CRL_Code {
 class CRL_Entry : ASN1_Object
 {
 public:
+	import botan.utils.mixins;
+	mixin USE_STRUCT_INIT!();
 	/*
 	* DER encode a CRL_Entry
 	*/
@@ -76,7 +78,7 @@ public:
 		
 		if (entry.more_items())
 		{
-			Extensions extensions(throw_on_unknown_critical);
+			Extensions extensions = Extensions(throw_on_unknown_critical);
 			entry.decode(extensions);
 			Data_Store info;
 			extensions.contents_to(info, info);

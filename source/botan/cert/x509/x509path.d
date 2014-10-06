@@ -158,7 +158,7 @@ check_chain(in Vector!( X509_Certificate ) cert_path,
 				else if (ocsp_status == Certificate_Status_Code.OCSP_RESPONSE_GOOD)
 					continue;
 			}
-			catch(std::exception& e)
+			catch(Exception e)
 			{
 				//std::cout << "OCSP error: " << e.what() << "";
 			}

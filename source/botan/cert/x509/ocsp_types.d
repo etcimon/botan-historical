@@ -11,7 +11,7 @@ import botan.asn1.asn1_time;
 import botan.bigint;
 import botan.asn1.der_enc;
 import botan.asn1.ber_dec;
-import botan.x509_ext;
+import botan.cert.x509.x509_ext;
 import botan.lookup;
 import botan.hash;
 import botan.asn1.oid_lookup.oids;

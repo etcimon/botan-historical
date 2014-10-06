@@ -15,14 +15,15 @@ namespace TLS {
 class TLS_Exception : Exception
 {
 	public:
-		Alert::Type type() const noexcept { return alert_type; }
+		Alert.Type type() const noexcept { return alert_type; }
 
-		TLS_Exception(Alert::Type type,
-						  in string err_msg = "Unknown error") :
-			Exception(err_msg), alert_type(type) {}
+		this(Alert.Type type, in string err_msg = "Unknown error") {
+			alert_type = type;
+			super(err_msg);
+		}
 
 	private:
-		Alert::Type alert_type;
+		Alert.Type alert_type;
 };
 
 /**
