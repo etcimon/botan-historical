@@ -13,7 +13,7 @@ namespace TLS {
 
 namespace {
 
-class Server_Handshake_State : public Handshake_State
+class Server_Handshake_State : Handshake_State
 {
 	public:
 		// using Handshake_State::Handshake_State;
@@ -34,7 +34,7 @@ bool check_for_resume(Session& session_info,
 							 Session_Manager& session_manager,
 							 Credentials_Manager& credentials,
 							 const Client_Hello* client_hello,
-							 std::chrono::seconds session_ticket_lifetime)
+							 Duration session_ticket_lifetime)
 {
 	in Vector!ubyte client_session_id = client_hello.session_id();
 	in Vector!ubyte session_ticket = client_hello.session_ticket();
@@ -57,7 +57,7 @@ bool check_for_resume(Session& session_info,
 				session_ticket,
 				credentials.psk("tls-server", "session-ticket", ""));
 
-			if (session_ticket_lifetime != std::chrono::seconds(0) &&
+			if (session_ticket_lifetime != Duration.init &&
 				session_info.session_age() > session_ticket_lifetime)
 				return false; // ticket has expired
 		}
@@ -128,7 +128,7 @@ ushort choose_ciphersuite(
 	Vector!( ushort ) other_list = client_suites;
 
 	if (!our_choice)
-		std::swap(pref_list, other_list);
+		std.algorithm.swap(pref_list, other_list);
 
 	foreach (suite_id; pref_list)
 	{
@@ -220,7 +220,7 @@ Server::Server(void delegate(in ubyte*) output_fn,
 
 Handshake_State* Server::new_handshake_state(Handshake_IO* io)
 {
-	Unique!Handshake_State state(new Server_Handshake_State(io));
+	Unique!Handshake_State state = new Server_Handshake_State(io);
 	state.set_expected_next(CLIENT_HELLO);
 	return state.release();
 }
@@ -350,7 +350,7 @@ void Server::process_handshake_msg(const Handshake_State* active_state,
 								  session_manager(),
 								  m_creds,
 								  state.client_hello(),
-								  std::chrono::seconds(m_policy.session_ticket_lifetime()));
+								  TickDuration.from!"seconds"(m_policy.session_ticket_lifetime()).to!Duration);
 
 		bool have_session_ticket_key = false;
 

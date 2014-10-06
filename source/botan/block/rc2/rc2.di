@@ -9,7 +9,7 @@ import botan.block_cipher;
 /**
 * RC2
 */
-class RC2 : public Block_Cipher_Fixed_Params!(8, 1, 32)
+class RC2 : Block_Cipher_Fixed_Params!(8, 1, 32)
 {
 	public:
 		void encrypt_n(ubyte* input, ubyte* output, size_t blocks) const;

@@ -20,7 +20,7 @@ Certificate_Extension* Extensions::get_extension(in OID oid)
 {
 #define X509_EXTENSION(NAME, TYPE) \
 	if (oids.name_of(oid, NAME))	 \
-		return new Cert_Extension::TYPE();
+		return new x509_ext.TYPE();
 
 	X509_EXTENSION("X509v3.KeyUsage", Key_Usage);
 	X509_EXTENSION("X509v3.BasicConstraints", Basic_Constraints);
@@ -79,7 +79,7 @@ void Extensions::add(Certificate_Extension* extn, bool critical)
 /*
 * Encode an Extensions list
 */
-void Extensions::encode_into(DER_Encoder& to_object) const
+void Extensions::encode_into(DER_Encoder& to) const
 {
 	for (size_t i = 0; i != extensions.size(); ++i)
 	{
@@ -431,37 +431,32 @@ void Extended_Key_Usage::contents_to(Data_Store& subject, Data_Store&) const
 		subject.add("X509v3.ExtendedKeyUsage", oids[i].as_string());
 }
 
-namespace {
-
 /*
 * A policy specifier
 */
-class Policy_Information : public ASN1_Object
+class Policy_Information : ASN1_Object
 {
-	public:
-		OID oid;
+public:
+	OID oid;
 
-		Policy_Information() {}
-		Policy_Information(in OID oid) : oid(oid) {}
+	Policy_Information() {}
+	Policy_Information(in OID oid) : oid(oid) {}
 
-		void encode_into(DER_Encoder& codec) const
-		{
-			codec.start_cons(ASN1_Tag.SEQUENCE)
-				.encode(oid)
-				.end_cons();
-		}
+	void encode_into(DER_Encoder codec = DER_Encoder()) const
+	{
+		codec.start_cons(ASN1_Tag.SEQUENCE)
+			.encode(oid)
+			.end_cons();
+	}
 
-		void decode_from(BER_Decoder& codec)
-		{
-			codec.start_cons(ASN1_Tag.SEQUENCE)
-				.decode(oid)
-				.discard_remaining()
-				.end_cons();
-		}
+	void decode_from(BER_Decoder codec = BER_Decoder())
+	{
+		codec.start_cons(ASN1_Tag.SEQUENCE)
+			.decode(oid)
+			.discard_remaining()
+			.end_cons();
+	}
 };
-
-}
-
 /*
 * Encode the extension
 */

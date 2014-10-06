@@ -12,7 +12,7 @@ import botan.blinding;
 /**
 * RSA Public Key
 */
-class RSA_PublicKey : public abstract IF_Scheme_PublicKey
+class RSA_PublicKey : IF_Scheme_PublicKey
 {
 	public:
 		string algo_name() const { return "RSA"; }
@@ -38,7 +38,7 @@ class RSA_PublicKey : public abstract IF_Scheme_PublicKey
 /**
 * RSA Private Key
 */
-class RSA_PrivateKey : public RSA_PublicKey,
+class RSA_PrivateKey : RSA_PublicKey,
 											public IF_Scheme_PrivateKey
 {
 	public:
@@ -80,7 +80,7 @@ class RSA_PrivateKey : public RSA_PublicKey,
 /**
 * RSA private (decrypt/sign) operation
 */
-class RSA_Private_Operation : public PK_Ops::Signature,
+class RSA_Private_Operation : PK_Ops::Signature,
 													 public PK_Ops::Decryption
 {
 	public:
@@ -108,7 +108,7 @@ class RSA_Private_Operation : public PK_Ops::Signature,
 /**
 * RSA public (encrypt/verify) operation
 */
-class RSA_Public_Operation : public PK_Ops::Verification,
+class RSA_Public_Operation : PK_Ops::Verification,
 													public PK_Ops::Encryption
 {
 	public:

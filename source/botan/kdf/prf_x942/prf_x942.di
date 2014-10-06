@@ -9,7 +9,7 @@ import botan.kdf;
 /**
 * PRF from ANSI X9.42
 */
-class X942_PRF : public KDF
+class X942_PRF : KDF
 {
 	public:
 		SafeVector!ubyte derive(size_t, const ubyte[], size_t,

@@ -14,7 +14,7 @@ import string;
 /**
 * This class represents TR03110 (EAC) v1.1 CV Certificates
 */
-class EAC1_1_CVC : public EAC1_1_gen_CVC!EAC1_1_CVC//Signed_Object
+class EAC1_1_CVC : EAC1_1_gen_CVC!EAC1_1_CVC//Signed_Object
 {
 public:
 	/**
@@ -163,7 +163,7 @@ EAC1_1_CVC make_cvc_cert(PK_Signer signer,
                          ASN1_Cex cex,
                          RandomNumberGenerator rng)
 {
-	OID chat_oid(oids.lookup("CertificateHolderAuthorizationTemplate"));
+	OID chat_oid = OID(oids.lookup("CertificateHolderAuthorizationTemplate"));
 	Vector!ubyte enc_chat_val;
 	enc_chat_val.push_back(holder_auth_templ);
 	

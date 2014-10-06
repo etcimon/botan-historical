@@ -117,7 +117,7 @@ class Policy
 
 		/**
 		* @return true if and only if we are willing to accept this version
-		* Default accepts only TLS, so override if you want to enable DTLS
+		override * Default accepts only TLS, so if you want to enable DTLS
 		* in your application.
 		*/
 		abstract bool acceptable_protocol_version(Protocol_Version _version) const;
@@ -143,41 +143,41 @@ class Policy
 /**
 * NSA Suite B 128-bit security level (see @rfc 6460)
 */
-class NSA_Suite_B_128 : public Policy
+class NSA_Suite_B_128 : Policy
 {
 	public:
-		Vector!string allowed_ciphers() const override
+		override Vector!string allowed_ciphers() const
 		{ return Vector!string({"AES-128/GCM"}); }
 
-		Vector!string allowed_signature_hashes() const override
+		override Vector!string allowed_signature_hashes() const
 		{ return Vector!string({"SHA-256"}); }
 
-		Vector!string allowed_macs() const override
+		override Vector!string allowed_macs() const
 		{ return Vector!string({"AEAD"}); }
 
-		Vector!string allowed_key_exchange_methods() const override
+		override Vector!string allowed_key_exchange_methods() const
 		{ return Vector!string({"ECDH"}); }
 
-		Vector!string allowed_signature_methods() const override
+		override Vector!string allowed_signature_methods() const
 		{ return Vector!string({"ECDSA"}); }
 
-		Vector!string allowed_ecc_curves() const override
+		override Vector!string allowed_ecc_curves() const
 		{ return Vector!string({"secp256r1"}); }
 
-		bool acceptable_protocol_version(Protocol_Version _version) const override
+		override bool acceptable_protocol_version(Protocol_Version _version) const
 		{ return _version == Protocol_Version::TLS_V12; }
 };
 
 /**
 * Policy for DTLS. We require DTLS v1.2 and an AEAD mode
 */
-class Datagram_Policy : public Policy
+class Datagram_Policy : Policy
 {
 	public:
-		Vector!string allowed_macs() const override
+		override Vector!string allowed_macs() const
 		{ return Vector!string({"AEAD"}); }
 
-		bool acceptable_protocol_version(Protocol_Version _version) const override
+		override bool acceptable_protocol_version(Protocol_Version _version) const
 		{ return _version == Protocol_Version::DTLS_V12; }
 };
 

@@ -27,7 +27,7 @@ import botan.internal.bn_wrap;
 namespace {
 
 #if defined(BOTAN_HAS_DIFFIE_HELLMAN)
-class OSSL_DH_KA_Operation : public PK_Ops::Key_Agreement
+class OSSL_DH_KA_Operation : PK_Ops::Key_Agreement
 {
 	public:
 		OSSL_DH_KA_Operation(in DH_PrivateKey dh) :
@@ -48,7 +48,7 @@ class OSSL_DH_KA_Operation : public PK_Ops::Key_Agreement
 
 #if defined(BOTAN_HAS_DSA)
 
-class OSSL_DSA_Signature_Operation : public PK_Ops::Signature
+class OSSL_DSA_Signature_Operation : PK_Ops::Signature
 {
 	public:
 		OSSL_DSA_Signature_Operation(in DSA_PrivateKey dsa) :
@@ -106,7 +106,7 @@ OSSL_DSA_Signature_Operation::sign(in ubyte* msg, size_t msg_len,
 	return output;
 }
 
-class OSSL_DSA_Verification_Operation : public PK_Ops::Verification
+class OSSL_DSA_Verification_Operation : PK_Ops::Verification
 {
 	public:
 		OSSL_DSA_Verification_Operation(in DSA_PublicKey dsa) :
@@ -167,7 +167,7 @@ bool OSSL_DSA_Verification_Operation::verify(in ubyte* msg, size_t msg_len,
 
 	return false;#if defined(BOTAN_HAS_RSA)
 
-class OSSL_RSA_Private_Operation : public PK_Ops::Signature,
+class OSSL_RSA_Private_Operation : PK_Ops::Signature,
 											  public PK_Ops::Decryption
 {
 	public:
@@ -218,7 +218,7 @@ BigInt OSSL_RSA_Private_Operation::private_op(in BigInt m) const
 	return h.to_bigint();
 }
 
-class OSSL_RSA_Public_Operation : public PK_Ops::Verification,
+class OSSL_RSA_Public_Operation : PK_Ops::Verification,
 											 public PK_Ops::Encryption
 {
 	public:

@@ -11,7 +11,7 @@ import vector;
 /**
 * EGD Entropy Source
 */
-class EGD_EntropySource : public EntropySource
+class EGD_EntropySource : EntropySource
 {
 	public:
 		string name() const { return "EGD/PRNGD"; }

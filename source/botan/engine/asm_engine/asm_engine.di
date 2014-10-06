@@ -9,7 +9,7 @@ import botan.engine;
 /**
 * Engine for x86-32 specific implementations
 */
-class Assembler_Engine : public Engine
+class Assembler_Engine : Engine
 {
 	public:
 		string provider_name() const { return "asm"; }

@@ -12,7 +12,7 @@ import botan.pk_ops;
 /**
 * This class represents ECDH Public Keys.
 */
-class ECDH_PublicKey : public abstract EC_PublicKey
+class ECDH_PublicKey : EC_PublicKey
 {
 	public:
 
@@ -56,7 +56,7 @@ class ECDH_PublicKey : public abstract EC_PublicKey
 /**
 * This class represents ECDH Private Keys.
 */
-class ECDH_PrivateKey : public ECDH_PublicKey,
+class ECDH_PrivateKey : ECDH_PublicKey,
 											 public EC_PrivateKey,
 											 public PK_Key_Agreement_Key
 {
@@ -84,7 +84,7 @@ class ECDH_PrivateKey : public ECDH_PublicKey,
 /**
 * ECDH operation
 */
-class ECDH_KA_Operation : public PK_Ops::Key_Agreement
+class ECDH_KA_Operation : PK_Ops::Key_Agreement
 {
 	public:
 		ECDH_KA_Operation(in ECDH_PrivateKey key);

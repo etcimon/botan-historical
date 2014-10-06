@@ -26,8 +26,8 @@ Vector!ubyte GOST_3410_PublicKey::x509_subject_public_key() const
 	// Keys are stored in little endian format (WTF)
 	for (size_t i = 0; i != part_size / 2; ++i)
 	{
-		std::swap(bits[i], bits[part_size-1-i]);
-		std::swap(bits[part_size+i], bits[2*part_size-1-i]);
+		std.algorithm.swap(bits[i], bits[part_size-1-i]);
+		std.algorithm.swap(bits[part_size+i], bits[2*part_size-1-i]);
 	}
 
 	return DER_Encoder().encode(bits, ASN1_Tag.OCTET_STRING).get_contents_unlocked();
@@ -62,8 +62,8 @@ GOST_3410_PublicKey::GOST_3410_PublicKey(in AlgorithmIdentifier alg_id,
 	// Keys are stored in little endian format (WTF)
 	for (size_t i = 0; i != part_size / 2; ++i)
 	{
-		std::swap(bits[i], bits[part_size-1-i]);
-		std::swap(bits[part_size+i], bits[2*part_size-1-i]);
+		std.algorithm.swap(bits[i], bits[part_size-1-i]);
+		std.algorithm.swap(bits[part_size+i], bits[2*part_size-1-i]);
 	}
 
 	BigInt x(&bits[0], part_size);
@@ -82,7 +82,7 @@ BigInt decode_le(in ubyte* msg, size_t msg_len)
 	SafeVector!ubyte msg_le(msg, msg + msg_len);
 
 	for (size_t i = 0; i != msg_le.size() / 2; ++i)
-		std::swap(msg_le[i], msg_le[msg_le.size()-1-i]);
+		std.algorithm.swap(msg_le[i], msg_le[msg_le.size()-1-i]);
 
 	return BigInt(&msg_le[0], msg_le.size());
 }

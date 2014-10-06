@@ -7,8 +7,8 @@
 
 import botan.x509cert;
 import botan.pkcs8;
-import botan.pkcs10;
-import botan.asn1_time;
+import botan.cert.x509.pkcs10;
+import botan.asn1.asn1_time;
 /**
 * Options for X.509 certificates.
 */

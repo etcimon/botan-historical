@@ -20,9 +20,11 @@ class BER_Decoder;
 /**
 * Attribute
 */
-class Attribute : public ASN1_Object
+class Attribute : ASN1_Object
 {
 public:
+	import botan.utils.mixins;
+	mixin USE_STRUCT_INIT!();
 
 	/*
 	* Create an Attribute

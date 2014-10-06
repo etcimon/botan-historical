@@ -9,7 +9,7 @@ import botan.x509cert;
 import botan.x509_crl;
 import botan.x509_ext;
 import botan.pkcs8;
-import botan.pkcs10;
+import botan.cert.x509.pkcs10;
 import botan.pubkey;
 /**
 * This class represents X.509 Certificate Authorities (CAs).

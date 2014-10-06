@@ -95,7 +95,7 @@ public:
 	~this() {}
 };
 
-class Keyed_Transform : public Transformation
+class Keyed_Transform : Transformation
 {
 public:
 	/**

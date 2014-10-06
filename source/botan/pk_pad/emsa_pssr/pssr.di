@@ -10,7 +10,7 @@ import botan.hash;
 /**
 * PSSR (called EMSA4 in IEEE 1363 and in old versions of the library)
 */
-class PSSR : public EMSA
+class PSSR : EMSA
 {
 	public:
 

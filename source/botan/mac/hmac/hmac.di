@@ -10,7 +10,7 @@ import botan.hash;
 /**
 * HMAC
 */
-class HMAC : public MessageAuthenticationCode
+class HMAC : MessageAuthenticationCode
 {
 	public:
 		void clear();

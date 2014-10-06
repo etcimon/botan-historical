@@ -44,8 +44,8 @@ SafeVector!ubyte Handshake_Hash::final_ssl3(in SafeVector!ubyte secret) const
 
 	Algorithm_Factory af = global_state().algorithm_factory();
 
-	Unique!HashFunction md5(af.make_hash_function("MD5"));
-	Unique!HashFunction sha1(af.make_hash_function("SHA-1"));
+	Unique!HashFunction md5 = af.make_hash_function("MD5");
+	Unique!HashFunction sha1 = af.make_hash_function("SHA-1");
 
 	md5.update(data);
 	sha1.update(data);

@@ -6,20 +6,20 @@
 */
 
 import botan.x509_obj;
-import botan.crl_ent;
+import botan.cert.x509.crl_ent;
 import vector;
 class X509_Certificate;
 
 /**
 * This class represents X.509 Certificate Revocation Lists (CRLs).
 */
-class X509_CRL : public X509_Object
+class X509_CRL : X509_Object
 {
 	public:
 		/**
 		* This class represents CRL related errors.
 		*/
-		struct X509_CRL_Error : public Exception
+		struct X509_CRL_Error : Exception
 		{
 			X509_CRL_Error(in string error) :
 				Exception("X509_CRL: " ~ error) {}

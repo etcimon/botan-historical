@@ -62,7 +62,7 @@ PKCS5_PBKDF2::key_derivation(size_t key_len,
 			on how long hashing takes on whatever machine we're running on.
 			*/
 
-			const auto start = std::chrono::high_resolution_clock::now();
+			const auto start = Clock.currTime();
 
 			iterations = 1; // the first iteration we did above
 
@@ -80,7 +80,7 @@ PKCS5_PBKDF2::key_derivation(size_t key_len,
 				*/
 				if (iterations % 10000 == 0)
 				{
-					auto time_taken = std::chrono::high_resolution_clock::now() - start;
+					auto time_taken = Clock.currTime() - start;
 					auto usec_taken = std::chrono::duration_cast(<std::chrono::microseconds>)(time_taken);
 					if (usec_taken > usec_per_block)
 						break;

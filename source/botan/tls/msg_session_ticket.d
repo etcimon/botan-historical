@@ -15,7 +15,7 @@ namespace TLS {
 New_Session_Ticket::New_Session_Ticket(Handshake_IO& io,
 													Handshake_Hash& hash,
 													in Vector!ubyte ticket,
-													uint lifetime) :
+													Duration lifetime) :
 	m_ticket_lifetime_hint(lifetime),
 	m_ticket(ticket)
 {
@@ -42,7 +42,7 @@ New_Session_Ticket::New_Session_Ticket(in Vector!ubyte buf)
 Vector!ubyte New_Session_Ticket::serialize() const
 {
 	Vector!ubyte buf(4);
-	store_be(m_ticket_lifetime_hint, &buf[0]);
+	store_be(m_ticket_lifetime_hint.seconds, &buf[0]);
 	append_tls_length_value(buf, m_ticket, 2);
 	return buf;
 }

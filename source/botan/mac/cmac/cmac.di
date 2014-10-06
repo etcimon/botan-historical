@@ -10,7 +10,7 @@ import botan.block_cipher;
 /**
 * CMAC, also known as OMAC1
 */
-class CMAC : public MessageAuthenticationCode
+class CMAC : MessageAuthenticationCode
 {
 	public:
 		string name() const;

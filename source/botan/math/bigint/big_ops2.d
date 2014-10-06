@@ -29,7 +29,7 @@ ref BigInt BigInt::operator+=(in BigInt y)
 		{
 			secure_vector!word z(reg_size - 1);
 			bigint_sub3(&z[0], y.data(), reg_size - 1, data(), x_sw);
-			std::swap(m_reg, z);
+			std.algorithm.swap(m_reg, z);
 			set_sign(y.sign());
 		}
 		else if (relative_size == 0)

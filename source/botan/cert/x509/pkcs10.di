@@ -4,19 +4,20 @@
 *
 * Distributed under the terms of the botan license.
 */
+module botan.cert.x509.pkcs10;
 
 import botan.x509_obj;
 import botan.asn1.x509_dn;
 import botan.pkcs8;
 import botan.datastor;
-import botan.key_constraint;
+import botan.cert.x509.key_constraint;
 import botan.asn1.asn1_attribute;
 import botan.asn1.asn1_alt_name;
 import vector;
 /**
 * PKCS #10 Certificate Request.
 */
-class PKCS10_Request : public X509_Object
+class PKCS10_Request : X509_Object
 {
 	public:
 		/**

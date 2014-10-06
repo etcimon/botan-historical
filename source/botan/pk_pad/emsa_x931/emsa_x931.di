@@ -12,7 +12,7 @@ import botan.hash;
 * Useful for Rabin-Williams, also sometimes used with RSA in
 * odd protocols.
 */
-class EMSA_X931 : public EMSA
+class EMSA_X931 : EMSA
 {
 	public:
 		/**

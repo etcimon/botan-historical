@@ -13,7 +13,7 @@ namespace TLS {
 
 namespace {
 
-class Client_Handshake_State : public Handshake_State
+class Client_Handshake_State : Handshake_State
 {
 	public:
 		// using Handshake_State::Handshake_State;
@@ -329,7 +329,7 @@ void Client::process_handshake_msg(const Handshake_State* active_state,
 			throw new TLS_Exception(Alert::BAD_CERTIFICATE, e.what());
 		}
 
-		Unique!Public_Key peer_key(server_certs[0].subject_public_key());
+		Unique!Public_Key peer_key = server_certs[0].subject_public_key();
 
 		if (peer_key.algo_name() != state.ciphersuite().sig_algo())
 			throw new TLS_Exception(Alert::ILLEGAL_PARAMETER,

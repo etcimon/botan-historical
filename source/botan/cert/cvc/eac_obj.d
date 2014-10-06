@@ -5,13 +5,13 @@
 * Distributed under the terms of the botan license.
 */
 module botan.cert.cvc.eac_obj;
-import botan.signed_obj;
+import botan.cert.cvc.signed_obj;
 import botan.cert.cvc.ecdsa_sig;
 /**
 * TR03110 v1.1 EAC CV Certificate
 */
 // CRTP is used enable the call sequence:
-class EAC1_1_obj(Derived) : public EAC_Signed_Object!Derived
+class EAC1_1_obj(Derived) : EAC_Signed_Object!Derived
 {
 public:
 	/**

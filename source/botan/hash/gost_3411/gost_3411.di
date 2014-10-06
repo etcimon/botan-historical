@@ -10,7 +10,7 @@ import botan.gost_28147;
 /**
 * GOST 34.11
 */
-class GOST_34_11 : public HashFunction
+class GOST_34_11 : HashFunction
 {
 	public:
 		string name() const { return "GOST-R-34.11-94" ; }

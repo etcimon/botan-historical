@@ -7,7 +7,7 @@
 
 import botan.types;
 import string;
-import chrono;
+import std.datetime;
 import vector;
 
 class sqlite3;

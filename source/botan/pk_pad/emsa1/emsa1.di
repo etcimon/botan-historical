@@ -11,7 +11,7 @@ import botan.hash;
 * EMSA1 from IEEE 1363
 * Essentially, sign the hash directly
 */
-class EMSA1 : public EMSA
+class EMSA1 : EMSA
 {
 	public:
 		/**

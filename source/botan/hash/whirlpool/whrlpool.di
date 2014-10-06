@@ -9,7 +9,7 @@ import botan.mdx_hash;
 /**
 * Whirlpool
 */
-class Whirlpool : public MDx_HashFunction
+class Whirlpool : MDx_HashFunction
 {
 	public:
 		string name() const { return "Whirlpool"; }

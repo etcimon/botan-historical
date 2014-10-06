@@ -41,7 +41,7 @@ Public_Key* load_key(DataSource& source)
 		AlgorithmIdentifier alg_id;
 		SafeVector!ubyte key_bits;
 
-		if (ASN1::maybe_BER(source) && !PEM_Code::matches(source))
+		if (asn1_obj.maybe_BER(source) && !PEM_Code::matches(source))
 		{
 			BER_Decoder(source)
 				.start_cons(ASN1_Tag.SEQUENCE)

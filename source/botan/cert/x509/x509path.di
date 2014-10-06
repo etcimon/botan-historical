@@ -5,9 +5,9 @@
 * Distributed under the terms of the botan license.
 */
 
-import botan.cert_status;
+import botan.cert.x509.cert_status;
 import botan.x509cert;
-import botan.certstor;
+import botan.cert.x509.certstor;
 import set;
 /**
 * Specifies restrictions on the PKIX path validation

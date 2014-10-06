@@ -12,7 +12,7 @@ import botan.pk_ops;
 /**
 * GOST-34.10 Public Key
 */
-class GOST_3410_PublicKey : public abstract EC_PublicKey
+class GOST_3410_PublicKey : EC_PublicKey
 {
 	public:
 
@@ -61,7 +61,7 @@ class GOST_3410_PublicKey : public abstract EC_PublicKey
 /**
 * GOST-34.10 Private Key
 */
-class GOST_3410_PrivateKey : public GOST_3410_PublicKey,
+class GOST_3410_PrivateKey : GOST_3410_PublicKey,
 													public EC_PrivateKey
 {
 	public:
@@ -88,7 +88,7 @@ class GOST_3410_PrivateKey : public GOST_3410_PublicKey,
 /**
 * GOST-34.10 signature operation
 */
-class GOST_3410_Signature_Operation : public PK_Ops::Signature
+class GOST_3410_Signature_Operation : PK_Ops::Signature
 {
 	public:
 		GOST_3410_Signature_Operation(in GOST_3410_PrivateKey gost_3410);
@@ -109,7 +109,7 @@ class GOST_3410_Signature_Operation : public PK_Ops::Signature
 /**
 * GOST-34.10 verification operation
 */
-class GOST_3410_Verification_Operation : public PK_Ops::Verification
+class GOST_3410_Verification_Operation : PK_Ops::Verification
 {
 	public:
 		GOST_3410_Verification_Operation(in GOST_3410_PublicKey gost);

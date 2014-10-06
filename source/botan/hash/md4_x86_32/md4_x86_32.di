@@ -9,7 +9,7 @@ import botan.md4;
 /**
 * MD4 using x86 assembly
 */
-class MD4_X86_32 : public MD4
+class MD4_X86_32 : MD4
 {
 	public:
 		HashFunction clone() const { return new MD4_X86_32; }

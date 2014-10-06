@@ -12,7 +12,7 @@ namespace TLS {
 /**
 * Exception Base Class
 */
-class TLS_Exception : public Exception
+class TLS_Exception : Exception
 {
 	public:
 		Alert::Type type() const noexcept { return alert_type; }
@@ -28,7 +28,7 @@ class TLS_Exception : public Exception
 /**
 * Unexpected_Message Exception
 */
-struct Unexpected_Message : public TLS_Exception
+struct Unexpected_Message : TLS_Exception
 {
 	Unexpected_Message(in string err) :
 		TLS_Exception(Alert::UNEXPECTED_MESSAGE, err) {}

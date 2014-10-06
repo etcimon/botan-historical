@@ -9,7 +9,7 @@ import botan.filter;
 /**
 * This class represents a Base64 encoder.
 */
-class Base64_Encoder : public Filter
+class Base64_Encoder : Filter
 {
 	public:
 		string name() const { return "Base64_Encoder"; }
@@ -48,7 +48,7 @@ class Base64_Encoder : public Filter
 /**
 * This object represents a Base64 decoder.
 */
-class Base64_Decoder : public Filter
+class Base64_Decoder : Filter
 {
 	public:
 		string name() const { return "Base64_Decoder"; }

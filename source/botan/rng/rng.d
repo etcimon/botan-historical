@@ -18,10 +18,10 @@ RandomNumberGenerator* RandomNumberGenerator::make_rng()
 */
 Unique!RandomNumberGenerator RandomNumberGenerator::make_rng(ref Algorithm_Factory af)
 {
-	Unique!RandomNumberGenerator rng(
+	Unique!RandomNumberGenerator rng =
 		new HMAC_RNG(af.make_mac("HMAC(SHA-512)"),
 						 af.make_mac("HMAC(SHA-256)"))
-		);
+		;
 
 	rng.reseed(256);
 

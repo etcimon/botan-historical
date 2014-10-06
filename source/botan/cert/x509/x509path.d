@@ -6,13 +6,13 @@
 */
 
 import botan.x509path;
-import botan.ocsp;
+import botan.cert.x509.ocsp;
 import botan.http_util;
 import botan.parsing;
 import botan.pubkey;
 import botan.asn1.oid_lookup.oids;
 import algorithm;
-import chrono;
+import std.datetime;
 import vector;
 import set;
 
@@ -60,7 +60,7 @@ const X509_CRL* find_crls_for(in X509_Certificate cert,
 		http.throw_unless_ok();
 		// check the mime type
 
-		Unique!X509_CRL crl(new X509_CRL(http.body()));
+		Unique!X509_CRL crl = new X509_CRL(http.body());
 
 		return crl.release();
 	}
@@ -78,9 +78,9 @@ check_chain(in Vector!( X509_Certificate ) cert_path,
 
 	const bool self_signed_ee_cert = (cert_path.size() == 1);
 
-	X509_Time current_time(std::chrono::system_clock::now());
+	X509_Time current_time(Clock.currTime());
 
-	Vector!( std::future<OCSP::Response )> ocsp_responses;
+	Vector!( std::future<ocsp.Response )> ocsp_responses;
 
 	Vector!( std::set<Certificate_Status_Code )> cert_status(cert_path.size());
 
@@ -99,7 +99,7 @@ check_chain(in Vector!( X509_Certificate ) cert_path,
 		if (i == 0 || restrictions.ocsp_all_intermediates())
 			ocsp_responses.push_back(
 				std::async(std::launch::async,
-							  OCSP::online_check, issuer, subject, trusted));
+							  ocsp.online_check, issuer, subject, trusted));
 
 		// Check all certs for valid time range
 		if (current_time < X509_Time(subject.start_time()))
@@ -117,7 +117,7 @@ check_chain(in Vector!( X509_Certificate ) cert_path,
 		if (issuer.path_limit() < i)
 			status.insert(Certificate_Status_Code.CERT_CHAIN_TOO_LONG);
 
-		Unique!Public_Key issuer_key(issuer.subject_public_key());
+		Unique!Public_Key issuer_key = issuer.subject_public_key();
 
 		if (subject.check_signature(*issuer_key) == false)
 			status.insert(Certificate_Status_Code.SIGNATURE_ERROR);
@@ -144,7 +144,7 @@ check_chain(in Vector!( X509_Certificate ) cert_path,
 		{
 			try
 			{
-				OCSP::Response ocsp = ocsp_responses[i].get();
+				ocsp.Response ocsp = ocsp_responses[i].get();
 
 				auto ocsp_status = ocsp.status_for(ca, subject);
 

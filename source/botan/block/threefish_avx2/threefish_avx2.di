@@ -9,10 +9,10 @@ import botan.threefish;
 /**
 * Threefish-512
 */
-class Threefish_512_AVX2 : public Threefish_512
+class Threefish_512_AVX2 : Threefish_512
 {
 	private:
-		void encrypt_n(ubyte* input, ubyte* output, size_t blocks) const override;
-		void decrypt_n(ubyte* input, ubyte* output, size_t blocks) const override;
-		BlockCipher clone() const override { return new Threefish_512_AVX2; }
+		override void encrypt_n(ubyte* input, ubyte* output, size_t blocks) const;
+		override void decrypt_n(ubyte* input, ubyte* output, size_t blocks) const;
+		override BlockCipher clone() const { return new Threefish_512_AVX2; }
 };

@@ -236,7 +236,7 @@ bool Channel::is_closed() const
 
 void Channel::activate_session()
 {
-	std::swap(m_active_state, m_pending_state);
+	std.algorithm.swap(m_active_state, m_pending_state);
 	m_pending_state.reset();
 
 	if (m_active_state._version().is_datagram_protocol())
@@ -424,7 +424,7 @@ size_t Channel::received_data(in ubyte* input, size_t input_size)
 		send_fatal_alert(Alert::BAD_RECORD_MAC);
 		throw;
 	}
-	catch(Decoding_Error& e)
+	catch(Decoding_Error e)
 	{
 		send_fatal_alert(Alert::DECODE_ERROR);
 		throw;
@@ -637,7 +637,7 @@ SymmetricKey Channel::key_material_export(in string label,
 {
 	if (auto active = active_state())
 	{
-		Unique!KDF prf(active.protocol_specific_prf());
+		Unique!KDF prf = active.protocol_specific_prf();
 
 		in SafeVector!ubyte master_secret =
 			active.session_keys().master_secret();

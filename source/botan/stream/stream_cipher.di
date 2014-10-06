@@ -9,7 +9,7 @@ import botan.algo_base.sym_algo;
 /**
 * Base class for all stream ciphers
 */
-class StreamCipher : public SymmetricAlgorithm
+class StreamCipher : SymmetricAlgorithm
 {
 	public:
 		/**

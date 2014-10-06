@@ -21,7 +21,7 @@ import botan.pkcs8;
 * cannot be used for verification until its domain parameters are set
 * by calling the corresponding member function.
 */
-class EC_PublicKey : public abstract Public_Key
+class EC_PublicKey : Public_Key
 {
 	public:
 		EC_PublicKey(in EC_Group dom_par,
@@ -73,7 +73,7 @@ class EC_PublicKey : public abstract Public_Key
 		EC_Group_Encoding domain_format() const
 		{ return domain_encoding; }
 
-		size_t estimated_strength() const override;
+		override size_t estimated_strength() const;
 
 	package:
 		EC_PublicKey() : domain_encoding(EC_DOMPAR_ENC_EXPLICIT) {}
@@ -86,7 +86,7 @@ class EC_PublicKey : public abstract Public_Key
 /**
 * This abstract class represents ECC private keys
 */
-class EC_PrivateKey : public abstract EC_PublicKey,
+class EC_PrivateKey : EC_PublicKey,
 										  public abstract Private_Key
 {
 	public:

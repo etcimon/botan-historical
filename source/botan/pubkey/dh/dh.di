@@ -12,7 +12,7 @@ import botan.pk_ops;
 /**
 * This class represents Diffie-Hellman public keys.
 */
-class DH_PublicKey : public abstract DL_Scheme_PublicKey
+class DH_PublicKey : DL_Scheme_PublicKey
 {
 	public:
 		string algo_name() const { return "DH"; }
@@ -39,7 +39,7 @@ class DH_PublicKey : public abstract DL_Scheme_PublicKey
 /**
 * This class represents Diffie-Hellman private keys.
 */
-class DH_PrivateKey : public DH_PublicKey,
+class DH_PrivateKey : DH_PublicKey,
 										  public PK_Key_Agreement_Key,
 										  public abstract DL_Scheme_PrivateKey
 {
@@ -69,7 +69,7 @@ class DH_PrivateKey : public DH_PublicKey,
 /**
 * DH operation
 */
-class DH_KA_Operation : public PK_Ops::Key_Agreement
+class DH_KA_Operation : PK_Ops::Key_Agreement
 {
 	public:
 		DH_KA_Operation(in DH_PrivateKey key,

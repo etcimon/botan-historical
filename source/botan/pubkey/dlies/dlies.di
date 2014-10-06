@@ -11,7 +11,7 @@ import botan.kdf;
 /**
 * DLIES Encryption
 */
-class DLIES_Encryptor : public PK_Encryptor
+class DLIES_Encryptor : PK_Encryptor
 {
 	public:
 		DLIES_Encryptor(in PK_Key_Agreement_Key,
@@ -37,7 +37,7 @@ class DLIES_Encryptor : public PK_Encryptor
 /**
 * DLIES Decryption
 */
-class DLIES_Decryptor : public PK_Decryptor
+class DLIES_Decryptor : PK_Decryptor
 {
 	public:
 		DLIES_Decryptor(in PK_Key_Agreement_Key,

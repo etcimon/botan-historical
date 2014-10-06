@@ -9,7 +9,7 @@ import botan.eme;
 /**
 * EME from PKCS #1 v1.5
 */
-class EME_PKCS1v15 : public EME
+class EME_PKCS1v15 : EME
 {
 	public:
 		size_t maximum_input_size(size_t) const;

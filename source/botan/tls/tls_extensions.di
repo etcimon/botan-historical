@@ -63,7 +63,7 @@ class Extension
 /**
 * Server Name Indicator extension (RFC 3546)
 */
-class Server_Name_Indicator : public Extension
+class Server_Name_Indicator : Extension
 {
 	public:
 		static Handshake_Extension_Type static_type()
@@ -89,7 +89,7 @@ class Server_Name_Indicator : public Extension
 /**
 * SRP identifier extension (RFC 5054)
 */
-class SRP_Identifier : public Extension
+class SRP_Identifier : Extension
 {
 	public:
 		static Handshake_Extension_Type static_type()
@@ -115,7 +115,7 @@ class SRP_Identifier : public Extension
 /**
 * Renegotiation Indication Extension (RFC 5746)
 */
-class Renegotiation_Extension : public Extension
+class Renegotiation_Extension : Extension
 {
 	public:
 		static Handshake_Extension_Type static_type()
@@ -144,7 +144,7 @@ class Renegotiation_Extension : public Extension
 /**
 * Maximum Fragment Length Negotiation Extension (RFC 4366 sec 3.2)
 */
-class Maximum_Fragment_Length : public Extension
+class Maximum_Fragment_Length : Extension
 {
 	public:
 		static Handshake_Extension_Type static_type()
@@ -181,7 +181,7 @@ class Maximum_Fragment_Length : public Extension
 * spec (implemented in Chromium); the internet draft leaves the format
 * unspecified.
 */
-class Next_Protocol_Notification : public Extension
+class Next_Protocol_Notification : Extension
 {
 	public:
 		static Handshake_Extension_Type static_type()
@@ -216,7 +216,7 @@ class Next_Protocol_Notification : public Extension
 /**
 * Session Ticket Extension (RFC 5077)
 */
-class Session_Ticket : public Extension
+class Session_Ticket : Extension
 {
 	public:
 		static Handshake_Extension_Type static_type()
@@ -255,7 +255,7 @@ class Session_Ticket : public Extension
 /**
 * Supported Elliptic Curves Extension (RFC 4492)
 */
-class Supported_Elliptic_Curves : public Extension
+class Supported_Elliptic_Curves : Extension
 {
 	public:
 		static Handshake_Extension_Type static_type()
@@ -284,7 +284,7 @@ class Supported_Elliptic_Curves : public Extension
 /**
 * Signature Algorithms Extension for TLS 1.2 (RFC 5246)
 */
-class Signature_Algorithms : public Extension
+class Signature_Algorithms : Extension
 {
 	public:
 		static Handshake_Extension_Type static_type()
@@ -323,7 +323,7 @@ class Signature_Algorithms : public Extension
 /**
 * Heartbeat Extension (RFC 6520)
 */
-class Heartbeat_Support_Indicator : public Extension
+class Heartbeat_Support_Indicator : Extension
 {
 	public:
 		static Handshake_Extension_Type static_type()

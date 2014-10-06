@@ -12,7 +12,7 @@ import botan.blinding;
 /**
 * Rabin-Williams Public Key
 */
-class RW_PublicKey : public abstract IF_Scheme_PublicKey
+class RW_PublicKey : IF_Scheme_PublicKey
 {
 	public:
 		string algo_name() const { return "RW"; }
@@ -33,7 +33,7 @@ class RW_PublicKey : public abstract IF_Scheme_PublicKey
 /**
 * Rabin-Williams Private Key
 */
-class RW_PrivateKey : public RW_PublicKey,
+class RW_PrivateKey : RW_PublicKey,
 										  public IF_Scheme_PrivateKey
 {
 	public:
@@ -56,7 +56,7 @@ class RW_PrivateKey : public RW_PublicKey,
 /**
 * Rabin-Williams Signature Operation
 */
-class RW_Signature_Operation : public PK_Ops::Signature
+class RW_Signature_Operation : PK_Ops::Signature
 {
 	public:
 		RW_Signature_Operation(in RW_PrivateKey rw);
@@ -79,7 +79,7 @@ class RW_Signature_Operation : public PK_Ops::Signature
 /**
 * Rabin-Williams Verification Operation
 */
-class RW_Verification_Operation : public PK_Ops::Verification
+class RW_Verification_Operation : PK_Ops::Verification
 {
 	public:
 		RW_Verification_Operation(in RW_PublicKey rw) :

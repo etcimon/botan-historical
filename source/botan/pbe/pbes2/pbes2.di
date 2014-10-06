@@ -9,11 +9,11 @@ import botan.pbe;
 import botan.block_cipher;
 import botan.mac;
 import botan.pipe;
-import chrono;
+import std.datetime;
 /**
 * PKCS #5 v2.0 PBE
 */
-class PBE_PKCS5v20 : public PBE
+class PBE_PKCS5v20 : PBE
 {
 	public:
 		OID get_oid() const;

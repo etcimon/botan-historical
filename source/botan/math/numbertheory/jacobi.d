@@ -42,7 +42,7 @@ int jacobi(in BigInt a, ref const BigInt n)
 
 		if (x % 4 == 3 && y % 4 == 3)
 			J = -J;
-		std::swap(x, y);
+		std.algorithm.swap(x, y);
 	}
 	return J;
 }

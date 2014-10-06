@@ -9,7 +9,7 @@ import botan.kdf;
 /**
 * PRF used in SSLv3
 */
-class SSL3_PRF : public KDF
+class SSL3_PRF : KDF
 {
 	public:
 		SafeVector!ubyte derive(size_t, const ubyte[], size_t,

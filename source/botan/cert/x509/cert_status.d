@@ -4,6 +4,8 @@
 *
 * Distributed under the terms of the botan license.
 */
+module botan.cert.x509.cert_status;
+
 enum Certificate_Status_Code {
 	VERIFIED = 0x00000000,
 	OCSP_RESPONSE_GOOD,

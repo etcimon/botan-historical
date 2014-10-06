@@ -10,7 +10,7 @@ import botan.engine;
 * Engine for implementations that hook into CPU-specific
 * AES implementations (eg AES-NI, VIA C7, or AMD Geode)
 */
-class AES_ISA_Engine : public Engine
+class AES_ISA_Engine : Engine
 {
 	public:
 		string provider_name() const { return "aes_isa"; }

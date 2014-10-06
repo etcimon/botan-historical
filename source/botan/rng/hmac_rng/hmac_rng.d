@@ -11,7 +11,7 @@ import botan.get_byte;
 import botan.entropy_src;
 import botan.internal.xor_buf;
 import algorithm;
-import chrono;
+import std.datetime;
 namespace {
 
 void hmac_prf(MessageAuthenticationCode& prf,

@@ -13,7 +13,7 @@ import botan.pk_ops;
 /**
 * ElGamal Public Key
 */
-class ElGamal_PublicKey : public abstract DL_Scheme_PublicKey
+class ElGamal_PublicKey : DL_Scheme_PublicKey
 {
 	public:
 		string algo_name() const { return "ElGamal"; }
@@ -34,7 +34,7 @@ class ElGamal_PublicKey : public abstract DL_Scheme_PublicKey
 /**
 * ElGamal Private Key
 */
-class ElGamal_PrivateKey : public ElGamal_PublicKey,
+class ElGamal_PrivateKey : ElGamal_PublicKey,
 												 public abstract DL_Scheme_PrivateKey
 {
 	public:
@@ -52,7 +52,7 @@ class ElGamal_PrivateKey : public ElGamal_PublicKey,
 /**
 * ElGamal encryption operation
 */
-class ElGamal_Encryption_Operation : public PK_Ops::Encryption
+class ElGamal_Encryption_Operation : PK_Ops::Encryption
 {
 	public:
 		size_t max_input_bits() const { return mod_p.get_modulus().bits() - 1; }
@@ -70,7 +70,7 @@ class ElGamal_Encryption_Operation : public PK_Ops::Encryption
 /**
 * ElGamal decryption operation
 */
-class ElGamal_Decryption_Operation : public PK_Ops::Decryption
+class ElGamal_Decryption_Operation : PK_Ops::Decryption
 {
 	public:
 		size_t max_input_bits() const { return mod_p.get_modulus().bits() - 1; }

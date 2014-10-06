@@ -28,11 +28,11 @@ Vector!ubyte make_hello_random(RandomNumberGenerator rng);
 /**
 * DTLS Hello Verify Request
 */
-class Hello_Verify_Request : public Handshake_Message
+class Hello_Verify_Request : Handshake_Message
 {
 	public:
-		Vector!ubyte serialize() const override;
-		Handshake_Type type() const override { return HELLO_VERIFY_REQUEST; }
+		override Vector!ubyte serialize() const;
+		override Handshake_Type type() const { return HELLO_VERIFY_REQUEST; }
 
 		Vector!ubyte cookie() const { return m_cookie; }
 
@@ -48,10 +48,10 @@ class Hello_Verify_Request : public Handshake_Message
 /**
 * Client Hello Message
 */
-class Client_Hello : public Handshake_Message
+class Client_Hello : Handshake_Message
 {
 	public:
-		Handshake_Type type() const override { return CLIENT_HELLO; }
+		override Handshake_Type type() const { return CLIENT_HELLO; }
 
 		Protocol_Version _version() const { return m_version; }
 
@@ -168,7 +168,7 @@ class Client_Hello : public Handshake_Message
 						 Handshake_Type type);
 
 	private:
-		Vector!ubyte serialize() const override;
+		override Vector!ubyte serialize() const;
 		void deserialize(in Vector!ubyte buf);
 		void deserialize_sslv2(in Vector!ubyte buf);
 
@@ -185,10 +185,10 @@ class Client_Hello : public Handshake_Message
 /**
 * Server Hello Message
 */
-class Server_Hello : public Handshake_Message
+class Server_Hello : Handshake_Message
 {
 	public:
-		Handshake_Type type() const override { return SERVER_HELLO; }
+		override Handshake_Type type() const { return SERVER_HELLO; }
 
 		Protocol_Version _version() const { return m_version; }
 
@@ -269,7 +269,7 @@ class Server_Hello : public Handshake_Message
 
 		Server_Hello(in Vector!ubyte buf);
 	private:
-		Vector!ubyte serialize() const override;
+		override Vector!ubyte serialize() const;
 
 		Protocol_Version m_version;
 		Vector!ubyte m_session_id, m_random;
@@ -282,10 +282,10 @@ class Server_Hello : public Handshake_Message
 /**
 * Client Key Exchange Message
 */
-class Client_Key_Exchange : public Handshake_Message
+class Client_Key_Exchange : Handshake_Message
 {
 	public:
-		Handshake_Type type() const override { return CLIENT_KEX; }
+		override Handshake_Type type() const { return CLIENT_KEX; }
 
 		in SafeVector!ubyte pre_master_secret() const
 		{ return m_pre_master; }
@@ -306,7 +306,7 @@ class Client_Key_Exchange : public Handshake_Message
 								  RandomNumberGenerator rng);
 
 	private:
-		Vector!ubyte serialize() const override
+		override Vector!ubyte serialize() const
 		{ return m_key_material; }
 
 		Vector!ubyte m_key_material;
@@ -316,10 +316,10 @@ class Client_Key_Exchange : public Handshake_Message
 /**
 * Certificate Message
 */
-class Certificate : public Handshake_Message
+class Certificate : Handshake_Message
 {
 	public:
-		Handshake_Type type() const override { return CERTIFICATE; }
+		override Handshake_Type type() const { return CERTIFICATE; }
 		const Vector!( X509_Certificate )& cert_chain() const { return m_certs; }
 
 		size_t count() const { return m_certs.size(); }
@@ -331,7 +331,7 @@ class Certificate : public Handshake_Message
 
 		Certificate(in Vector!ubyte buf);
 	private:
-		Vector!ubyte serialize() const override;
+		override Vector!ubyte serialize() const;
 
 		Vector!( X509_Certificate ) m_certs;
 };
@@ -339,10 +339,10 @@ class Certificate : public Handshake_Message
 /**
 * Certificate Request Message
 */
-class Certificate_Req : public Handshake_Message
+class Certificate_Req : Handshake_Message
 {
 	public:
-		Handshake_Type type() const override { return CERTIFICATE_REQUEST; }
+		override Handshake_Type type() const { return CERTIFICATE_REQUEST; }
 
 		const Vector!string& acceptable_cert_types() const
 		{ return m_cert_key_types; }
@@ -361,7 +361,7 @@ class Certificate_Req : public Handshake_Message
 		Certificate_Req(in Vector!ubyte buf,
 							 Protocol_Version _version);
 	private:
-		Vector!ubyte serialize() const override;
+		override Vector!ubyte serialize() const;
 
 		Vector!( X509_DN ) m_names;
 		Vector!string m_cert_key_types;
@@ -372,10 +372,10 @@ class Certificate_Req : public Handshake_Message
 /**
 * Certificate Verify Message
 */
-class Certificate_Verify : public Handshake_Message
+class Certificate_Verify : Handshake_Message
 {
 	public:
-		Handshake_Type type() const override { return CERTIFICATE_VERIFY; }
+		override Handshake_Type type() const { return CERTIFICATE_VERIFY; }
 
 		/**
 		* Check the signature on a certificate verify message
@@ -394,7 +394,7 @@ class Certificate_Verify : public Handshake_Message
 		Certificate_Verify(in Vector!ubyte buf,
 								 Protocol_Version _version);
 	private:
-		Vector!ubyte serialize() const override;
+		override Vector!ubyte serialize() const;
 
 		string m_sig_algo; // sig algo used to create signature
 		string m_hash_algo; // hash used to create signature
@@ -404,10 +404,10 @@ class Certificate_Verify : public Handshake_Message
 /**
 * Finished Message
 */
-class Finished : public Handshake_Message
+class Finished : Handshake_Message
 {
 	public:
-		Handshake_Type type() const override { return FINISHED; }
+		override Handshake_Type type() const { return FINISHED; }
 
 		Vector!ubyte verify_data() const
 		{ return m_verification_data; }
@@ -421,7 +421,7 @@ class Finished : public Handshake_Message
 
 		Finished(in Vector!ubyte buf);
 	private:
-		Vector!ubyte serialize() const override;
+		override Vector!ubyte serialize() const;
 
 		Vector!ubyte m_verification_data;
 };
@@ -429,24 +429,24 @@ class Finished : public Handshake_Message
 /**
 * Hello Request Message
 */
-class Hello_Request : public Handshake_Message
+class Hello_Request : Handshake_Message
 {
 	public:
-		Handshake_Type type() const override { return HELLO_REQUEST; }
+		override Handshake_Type type() const { return HELLO_REQUEST; }
 
 		Hello_Request(Handshake_IO io);
 		Hello_Request(in Vector!ubyte buf);
 	private:
-		Vector!ubyte serialize() const override;
+		override Vector!ubyte serialize() const;
 };
 
 /**
 * Server Key Exchange Message
 */
-class Server_Key_Exchange : public Handshake_Message
+class Server_Key_Exchange : Handshake_Message
 {
 	public:
-		Handshake_Type type() const override { return SERVER_KEX; }
+		override Handshake_Type type() const { return SERVER_KEX; }
 
 		in Vector!ubyte params() const { return m_params; }
 
@@ -473,7 +473,7 @@ class Server_Key_Exchange : public Handshake_Message
 
 		~this();
 	private:
-		Vector!ubyte serialize() const override;
+		override Vector!ubyte serialize() const;
 
 		Unique!Private_Key m_kex_key;
 		Unique!SRP6_Server_Session m_srp_params;
@@ -488,24 +488,24 @@ class Server_Key_Exchange : public Handshake_Message
 /**
 * Server Hello Done Message
 */
-class Server_Hello_Done : public Handshake_Message
+class Server_Hello_Done : Handshake_Message
 {
 	public:
-		Handshake_Type type() const override { return SERVER_HELLO_DONE; }
+		override Handshake_Type type() const { return SERVER_HELLO_DONE; }
 
 		Server_Hello_Done(Handshake_IO io, Handshake_Hash& hash);
 		Server_Hello_Done(in Vector!ubyte buf);
 	private:
-		Vector!ubyte serialize() const override;
+		override Vector!ubyte serialize() const;
 };
 
 /**
 * Next Protocol Message
 */
-class Next_Protocol : public Handshake_Message
+class Next_Protocol : Handshake_Message
 {
 	public:
-		Handshake_Type type() const override { return NEXT_PROTOCOL; }
+		override Handshake_Type type() const { return NEXT_PROTOCOL; }
 
 		string protocol() const { return m_protocol; }
 
@@ -515,7 +515,7 @@ class Next_Protocol : public Handshake_Message
 
 		Next_Protocol(in Vector!ubyte buf);
 	private:
-		Vector!ubyte serialize() const override;
+		override Vector!ubyte serialize() const;
 
 		string m_protocol;
 };
@@ -523,10 +523,10 @@ class Next_Protocol : public Handshake_Message
 /**
 * New Session Ticket Message
 */
-class New_Session_Ticket : public Handshake_Message
+class New_Session_Ticket : Handshake_Message
 {
 	public:
-		Handshake_Type type() const override { return NEW_SESSION_TICKET; }
+		override Handshake_Type type() const { return NEW_SESSION_TICKET; }
 
 		uint ticket_lifetime_hint() const { return m_ticket_lifetime_hint; }
 		in Vector!ubyte ticket() const { return m_ticket; }
@@ -534,28 +534,28 @@ class New_Session_Ticket : public Handshake_Message
 		New_Session_Ticket(Handshake_IO io,
 								 Handshake_Hash hash,
 								 in Vector!ubyte ticket,
-								 uint lifetime);
+								 Duration lifetime);
 
 		New_Session_Ticket(Handshake_IO io,
 								 Handshake_Hash hash);
 
 		New_Session_Ticket(in Vector!ubyte buf);
 	private:
-		Vector!ubyte serialize() const override;
+		override Vector!ubyte serialize() const;
 
-		uint m_ticket_lifetime_hint = 0;
+		Duration m_ticket_lifetime_hint;
 		Vector!ubyte m_ticket;
 };
 
 /**
 * Change Cipher Spec
 */
-class Change_Cipher_Spec : public Handshake_Message
+class Change_Cipher_Spec : Handshake_Message
 {
 	public:
-		Handshake_Type type() const override { return HANDSHAKE_CCS; }
+		override Handshake_Type type() const { return HANDSHAKE_CCS; }
 
-		Vector!ubyte serialize() const override
+		override Vector!ubyte serialize() const
 		{ return Vector!ubyte(1, 1); }
 };
 

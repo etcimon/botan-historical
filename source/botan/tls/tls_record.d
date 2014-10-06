@@ -21,7 +21,7 @@ Connection_Cipher_State::Connection_Cipher_State(Protocol_Version _version,
 																 bool our_side,
 																 const Ciphersuite& suite,
 																 const Session_Keys& keys) :
-	m_start_time(std::chrono::system_clock::now()),
+	m_start_time(Clock.currTime()),
 	m_is_ssl3(_version == Protocol_Version::SSL_V3)
 {
 	SymmetricKey mac_key, cipher_key;
@@ -371,7 +371,7 @@ void cbc_decrypt_record(ubyte[] record_contents,
 		last_ciphertext2.assign(&buf[block_size*i], &buf[block_size*(i+1)]);
 		bc.decrypt(&buf[block_size*i]);
 		xor_buf(&buf[block_size*i], &last_ciphertext[0], block_size);
-		std::swap(last_ciphertext, last_ciphertext2);
+		std.algorithm.swap(last_ciphertext, last_ciphertext2);
 	}
 
 	cipherstate.cbc_state() = last_ciphertext;

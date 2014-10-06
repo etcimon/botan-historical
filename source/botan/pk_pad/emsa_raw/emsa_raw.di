@@ -10,7 +10,7 @@ import botan.emsa;
 * EMSA-Raw - sign inputs directly
 * Don't use this unless you know what you are doing.
 */
-class EMSA_Raw : public EMSA
+class EMSA_Raw : EMSA
 {
 	private:
 		void update(const ubyte[], size_t);

@@ -9,7 +9,7 @@ import botan.idea;
 /**
 * IDEA in SSE2
 */
-class IDEA_SSE2 : public IDEA
+class IDEA_SSE2 : IDEA
 {
 	public:
 		size_t parallelism() const { return 8; }

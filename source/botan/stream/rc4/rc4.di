@@ -10,7 +10,7 @@ import botan.types;
 /**
 * RC4 stream cipher
 */
-class RC4 : public StreamCipher
+class RC4 : StreamCipher
 {
 	public:
 		void cipher(in ubyte* input, ubyte* output);

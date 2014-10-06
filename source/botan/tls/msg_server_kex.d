@@ -42,7 +42,7 @@ Server_Key_Exchange::Server_Key_Exchange(Handshake_IO& io,
 
 	if (kex_algo == "DH" || kex_algo == "DHE_PSK")
 	{
-		Unique!DH_PrivateKey dh(new DH_PrivateKey(rng, policy.dh_group()));
+		Unique!DH_PrivateKey dh = new DH_PrivateKey(rng, policy.dh_group());
 
 		append_tls_length_value(m_params, BigInt::encode(dh.get_domain().get_p()), 2);
 		append_tls_length_value(m_params, BigInt::encode(dh.get_domain().get_g()), 2);
@@ -65,7 +65,7 @@ Server_Key_Exchange::Server_Key_Exchange(Handshake_IO& io,
 
 		EC_Group ec_group(curve_name);
 
-		Unique!ECDH_PrivateKey ecdh(new ECDH_PrivateKey(rng, ec_group));
+		Unique!ECDH_PrivateKey ecdh = new ECDH_PrivateKey(rng, ec_group);
 
 		const string ecdh_domain_oid = ecdh.domain().get_oid();
 		const string domain = oids.lookup(OID(ecdh_domain_oid));

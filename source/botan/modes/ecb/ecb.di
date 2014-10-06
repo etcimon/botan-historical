@@ -11,22 +11,22 @@ import botan.mode_pad;
 /**
 * ECB mode
 */
-class ECB_Mode : public Cipher_Mode
+class ECB_Mode : Cipher_Mode
 {
 	public:
-		SafeVector!ubyte start(in ubyte* nonce, size_t nonce_len) override;
+		override SafeVector!ubyte start(in ubyte* nonce, size_t nonce_len);
 
-		string name() const override;
+		override string name() const;
 
-		size_t update_granularity() const override;
+		override size_t update_granularity() const;
 
-		Key_Length_Specification key_spec() const override;
+		override Key_Length_Specification key_spec() const;
 
-		size_t default_nonce_length() const override;
+		override size_t default_nonce_length() const;
 
-		bool valid_nonce_length(size_t n) const override;
+		override bool valid_nonce_length(size_t n) const;
 
-		void clear() override;
+		override void clear();
 	package:
 		ECB_Mode(BlockCipher cipher, BlockCipherModePaddingMethod* padding);
 
@@ -35,7 +35,7 @@ class ECB_Mode : public Cipher_Mode
 		const BlockCipherModePaddingMethod& padding() const { return *m_padding; }
 
 	private:
-		void key_schedule(in ubyte* key, size_t length) override;
+		override void key_schedule(in ubyte* key, size_t length);
 
 		Unique!BlockCipher m_cipher;
 		Unique!BlockCipherModePaddingMethod m_padding;
@@ -44,35 +44,35 @@ class ECB_Mode : public Cipher_Mode
 /**
 * ECB Encryption
 */
-class ECB_Encryption : public ECB_Mode
+class ECB_Encryption : ECB_Mode
 {
 	public:
 		ECB_Encryption(BlockCipher cipher, BlockCipherModePaddingMethod* padding) :
 			ECB_Mode(cipher, padding) {}
 
-		void update(SafeVector!ubyte blocks, size_t offset = 0) override;
+		override void update(SafeVector!ubyte blocks, size_t offset = 0);
 
-		void finish(SafeVector!ubyte final_block, size_t offset = 0) override;
+		override void finish(SafeVector!ubyte final_block, size_t offset = 0);
 
-		size_t output_length(size_t input_length) const override;
+		override size_t output_length(size_t input_length) const;
 
-		size_t minimum_final_size() const override;
+		override size_t minimum_final_size() const;
 };
 
 /**
 * ECB Decryption
 */
-class ECB_Decryption : public ECB_Mode
+class ECB_Decryption : ECB_Mode
 {
 	public:
 		ECB_Decryption(BlockCipher cipher, BlockCipherModePaddingMethod* padding) :
 			ECB_Mode(cipher, padding) {}
 
-		void update(SafeVector!ubyte blocks, size_t offset = 0) override;
+		override void update(SafeVector!ubyte blocks, size_t offset = 0);
 
-		void finish(SafeVector!ubyte final_block, size_t offset = 0) override;
+		override void finish(SafeVector!ubyte final_block, size_t offset = 0);
 
-		size_t output_length(size_t input_length) const override;
+		override size_t output_length(size_t input_length) const;
 
-		size_t minimum_final_size() const override;
+		override size_t minimum_final_size() const;
 };

@@ -47,7 +47,7 @@ SafeVector!ubyte PKCS8_decode(
 	bool is_encrypted = true;
 
 	try {
-		if (ASN1::maybe_BER(source) && !PEM_Code::matches(source))
+		if (asn1_obj.maybe_BER(source) && !PEM_Code::matches(source))
 			key_data = PKCS8_extract(source, pbe_alg_id);
 		else
 		{
@@ -67,7 +67,7 @@ SafeVector!ubyte PKCS8_decode(
 		if (key_data.empty())
 			throw new PKCS8_Exception("No key data found");
 	}
-	catch(Decoding_Error& e)
+	catch(Decoding_Error e)
 	{
 		throw new Decoding_Error("PKCS #8 private key decoding failed: " ~ string(e.what()));
 	}
@@ -155,11 +155,11 @@ Vector!ubyte BER_encode(in Private_Key key,
 {
 	const string DEFAULT_PBE = "PBE-PKCS5v20(SHA-1,AES-256/CBC)";
 
-	Unique!PBE pbe(
+	Unique!PBE pbe =
 		get_pbe(((pbe_algo != "") ? pbe_algo : DEFAULT_PBE),
 				  pass,
 				  msec,
-				  rng));
+				  rng);
 
 	AlgorithmIdentifier pbe_algid(pbe.get_oid(), pbe.encode_params());
 

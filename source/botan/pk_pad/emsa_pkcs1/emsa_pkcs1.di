@@ -12,7 +12,7 @@ import botan.hash;
 * aka PKCS #1 block type 1
 * aka EMSA3 from IEEE 1363
 */
-class EMSA_PKCS1v15 : public EMSA
+class EMSA_PKCS1v15 : EMSA
 {
 	public:
 		/**
@@ -39,7 +39,7 @@ class EMSA_PKCS1v15 : public EMSA
 * (which according to QCA docs is "identical to PKCS#11's CKM_RSA_PKCS
 * mechanism", something I have not confirmed)
 */
-class EMSA_PKCS1v15_Raw : public EMSA
+class EMSA_PKCS1v15_Raw : EMSA
 {
 	public:
 		void update(const ubyte[], size_t);

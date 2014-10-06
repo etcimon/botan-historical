@@ -18,6 +18,9 @@ import botan.get_byte;
 class BER_Decoder
 {
 public:
+	import botan.utils.mixins;
+	mixin USE_STRUCT_INIT!();
+
 	/*
 	* Return the BER encoding of the next object
 	*/
@@ -98,7 +101,6 @@ public:
 		return this;
 	}
 
-	
 	/*
 	* Begin decoding a CONSTRUCTED type
 	*/

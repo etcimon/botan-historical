@@ -12,7 +12,7 @@ import botan.block_cipher;
 import botan.stream_cipher;
 import botan.mac;
 import vector;
-import chrono;
+import std.datetime;
 namespace TLS {
 
 class Ciphersuite;
@@ -66,10 +66,9 @@ class Connection_Cipher_State
 		bool cbc_without_explicit_iv() const
 		{ return (m_block_size > 0) && (m_iv_size == 0); }
 
-		std::chrono::seconds age() const
+		Duration age() const
 		{
-			return std::chrono::duration_cast(<std::chrono::seconds>)(
-				std::chrono::system_clock::now() - m_start_time);
+			return Clock.currTime() - m_start_time;
 		}
 
 	private:

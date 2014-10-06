@@ -12,7 +12,7 @@ import botan.rng;
 /**
 * Password Based Encryption (PBE) Filter.
 */
-class PBE : public Filter
+class PBE : Filter
 {
 	public:
 		/**

@@ -18,7 +18,7 @@ import vector;
 * Krawczyk's paper), for instance one could use HMAC(SHA-512) as the
 * extractor and CMAC(AES-256) as the PRF.
 */
-class HMAC_RNG : public RandomNumberGenerator
+class HMAC_RNG : RandomNumberGenerator
 {
 	public:
 		void randomize(ubyte buf[], size_t len);

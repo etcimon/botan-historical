@@ -12,7 +12,7 @@ import botan.hash;
 * Can only generate a key up to the size of the hash output.
 * Unless needed for backwards compatability, use PKCS5_PBKDF2
 */
-class PKCS5_PBKDF1 : public PBKDF
+class PKCS5_PBKDF1 : PBKDF
 {
 	public:
 		/**
@@ -36,7 +36,7 @@ class PKCS5_PBKDF1 : public PBKDF
 								in string passphrase,
 								in ubyte* salt, size_t salt_len,
 								size_t iterations,
-								std::chrono::milliseconds msec) const override;
+								override std::chrono::milliseconds msec) const;
 	private:
 		Unique!HashFunction hash;
 };

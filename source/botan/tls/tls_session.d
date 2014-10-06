@@ -24,7 +24,7 @@ Session::Session(in Vector!ubyte session_identifier,
 					  in Vector!ubyte ticket,
 					  const Server_Information& server_info,
 					  in string srp_identifier) :
-	m_start_time(std::chrono::system_clock::now()),
+	m_start_time(Clock.currTime()),
 	m_identifier(session_identifier),
 	m_session_ticket(ticket),
 	m_master_secret(master_secret),
@@ -136,10 +136,9 @@ string Session::PEM_encode() const
 	return PEM_Code::encode(this.DER_encode(), "SSL SESSION");
 }
 
-std::chrono::seconds Session::session_age() const
+Duration Session::session_age() const
 {
-	return std::chrono::duration_cast(<std::chrono::seconds>)(
-		std::chrono::system_clock::now() - m_start_time);
+	return Clock.currTime() - m_start_time;
 }
 
 Vector!ubyte

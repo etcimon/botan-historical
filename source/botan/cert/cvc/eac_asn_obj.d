@@ -14,14 +14,14 @@ import botan.internal.rounding;
 import botan.calendar;
 import botan.charset;
 import botan.parsing;
-import chrono;
+import std.datetime;
 
 /**
 * This class represents CVC EAC Time objects.
 * It only models year, month and day. Only limited sanity checks of
 * the inputted date value are performed.
 */
-class EAC_Time : public ASN1_Object
+class EAC_Time : ASN1_Object
 {
 public:
 
@@ -37,7 +37,7 @@ public:
 	/*
 	* Decode a BER encoded EAC_Time
 	*/
-	void decode_from(BER_Decoder source)
+	void decode_from(BER_Decoder source = BER_Decoder())
 	{
 		BER_Object obj = source.get_next_object();
 		
@@ -320,7 +320,7 @@ private:
 * This class represents CVC CEDs. Only limited sanity checks of
 * the inputted date value are performed.
 */
-class ASN1_Ced : public EAC_Time
+class ASN1_Ced : EAC_Time
 {
 public:
 	/**
@@ -354,7 +354,7 @@ public:
 * This class represents CVC CEXs. Only limited sanity checks of
 * the inputted date value are performed.
 */
-class ASN1_Cex : public EAC_Time
+class ASN1_Cex : EAC_Time
 {
 public:
 	/**
@@ -382,13 +382,13 @@ public:
 /**
 * Base class for car/chr of cv certificates.
 */
-class ASN1_EAC_String : public ASN1_Object
+class ASN1_EAC_String : ASN1_Object
 {
 public:
 	/*
 	* DER encode an ASN1_EAC_String
 	*/
-	void encode_into(DER_Encoder encoder) const
+	void encode_into(DER_Encoder encoder = DER_Encoder()) const
 	{
 		string value = iso_8859();
 		encoder.add_object(tagging(), ASN1_Tag.APPLICATION, value);
@@ -397,7 +397,7 @@ public:
 	/*
 	* Decode a BER encoded ASN1_EAC_String
 	*/
-	void decode_from(BER_Decoder source)
+	void decode_from(BER_Decoder source = BER_Decoder())
 	{
 		BER_Object obj = source.get_next_object();
 		
@@ -505,7 +505,7 @@ private:
 /**
 * This class represents CARs of CVCs. (String tagged with 2)
 */
-class ASN1_Car : public ASN1_EAC_String
+class ASN1_Car : ASN1_EAC_String
 {
 public:
 	/**
@@ -523,7 +523,7 @@ public:
 /**
 * This class represents CHRs of CVCs (tag 32)
 */
-class ASN1_Chr : public ASN1_EAC_String
+class ASN1_Chr : ASN1_EAC_String
 {
 public:
 	/**

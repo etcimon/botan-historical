@@ -61,12 +61,12 @@ class Blocking_Client
 
 	package:
 		/**
-		* Can override to get the handshake complete notification
+		override * Can to get the handshake complete notification
 		*/
 		abstract bool handshake_complete(in Session) { return true; }
 
 		/**
-		* Can override to get notification of alerts
+		override * Can to get notification of alerts
 		*/
 		abstract void alert_notification(in Alert) {}
 

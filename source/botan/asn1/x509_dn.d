@@ -22,9 +22,11 @@ import iosfwd;
 /**
 * Distinguished Name
 */
-class X509_DN : public ASN1_Object
+class X509_DN : ASN1_Object
 {
 public:
+	import botan.utils.mixins;
+	mixin USE_STRUCT_INIT!();
 	/*
 	* DER encode a DistinguishedName
 	*/
@@ -53,7 +55,7 @@ public:
 	/*
 	* Decode a BER encoded DistinguishedName
 	*/
-	void decode_from(BER_Decoder source)
+	void decode_from(BER_Decoder source = BER_Decoder())
 	{
 		Vector!ubyte bits;
 		
@@ -281,7 +283,7 @@ private:
 /*
 * DER encode a RelativeDistinguishedName
 */
-void do_ava(DER_Encoder encoder,
+void do_ava(DER_Encoder encoder = DER_Encoder(),
             ref const MultiMap!(OID, string) dn_info,
             ASN1_Tag string_type, in string oid_str,
             bool must_exist = false)

@@ -10,7 +10,7 @@ import botan.mac;
 /**
 * A MAC only used in SSLv3. Do not use elsewhere! Use HMAC instead.
 */
-class SSL3_MAC : public MessageAuthenticationCode
+class SSL3_MAC : MessageAuthenticationCode
 {
 	public:
 		string name() const;

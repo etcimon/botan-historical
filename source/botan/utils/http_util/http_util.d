@@ -72,8 +72,8 @@ std::ostream& operator<<(std::ostream& o, const Response& resp)
 	o << "HTTP " << resp.status_code() << " " << resp.status_message() << "";
 	foreach (h; resp.headers())
 		o << "Header '" << h.first << "' = '" << h.second << "'";
-	o << "Body " << std.conv.to!string(resp.body().size()) << " bytes:";
-	o.write(cast(string)(resp.body()[0]), resp.body().size());
+	o << "Body " << std.conv.to!string(resp._body().size()) << " bytes:";
+	o.write(cast(string)(resp._body()[0]), resp._body().size());
 	return o;
 }
 

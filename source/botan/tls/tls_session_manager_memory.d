@@ -7,13 +7,13 @@
 
 import botan.tls_session_manager;
 import botan.hex;
-import chrono;
+import std.datetime;
 namespace TLS {
 
 Session_Manager_In_Memory::Session_Manager_In_Memory(
 	RandomNumberGenerator rng,
 	size_t max_sessions,
-	std::chrono::seconds session_lifetime) :
+	Duration session_lifetime) :
 	m_max_sessions(max_sessions),
 	m_session_lifetime(session_lifetime),
 	m_rng(rng),
@@ -40,7 +40,7 @@ bool Session_Manager_In_Memory::load_from_session_str(
 	}
 
 	// if session has expired, remove it
-	const auto now = std::chrono::system_clock::now();
+	const auto now = Clock.currTime();
 
 	if (session.start_time() + session_lifetime() < now)
 	{

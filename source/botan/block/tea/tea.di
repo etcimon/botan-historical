@@ -9,7 +9,7 @@ import botan.block_cipher;
 /**
 * TEA
 */
-class TEA : public Block_Cipher_Fixed_Params!(8, 16)
+class TEA : Block_Cipher_Fixed_Params!(8, 16)
 {
 	public:
 		void encrypt_n(ubyte* input, ubyte* output, size_t blocks) const;

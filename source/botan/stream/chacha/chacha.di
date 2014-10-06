@@ -9,7 +9,7 @@ import botan.stream_cipher;
 /**
 * DJB's ChaCha (http://cr.yp.to/chacha.html)
 */
-class ChaCha : public StreamCipher
+class ChaCha : StreamCipher
 {
 	public:
 		void cipher(in ubyte* input, ubyte* output);

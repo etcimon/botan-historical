@@ -143,7 +143,7 @@ class Filter
 /**
 * This is the abstract Fanout_Filter base class.
 **/
-class Fanout_Filter : public Filter
+class Fanout_Filter : Filter
 {
 	package:
 		/**

@@ -100,24 +100,24 @@ class RandomNumberGenerator
 /**
 * Null/stub RNG - fails if you try to use it for anything
 */
-class Null_RNG : public RandomNumberGenerator
+class Null_RNG : RandomNumberGenerator
 {
 	public:
-		void randomize(ubyte[], size_t) override { throw new PRNG_Unseeded("Null_RNG"); }
+		override void randomize(ubyte[], size_t) { throw new PRNG_Unseeded("Null_RNG"); }
 
-		void clear() override {}
+		override void clear() {}
 
-		string name() const override { return "Null_RNG"; }
+		override string name() const { return "Null_RNG"; }
 
-		void reseed(size_t) override {}
-		bool is_seeded() const override { return false; }
-		void add_entropy(const ubyte[], size_t) override {}
+		override void reseed(size_t) {}
+		override bool is_seeded() const { return false; }
+		override void add_entropy(const ubyte[], size_t) {}
 };
 
 /**
 * Wraps access to a RNG in a mutex
 */
-class Serialized_RNG : public RandomNumberGenerator
+class Serialized_RNG : RandomNumberGenerator
 {
 	public:
 		void randomize(ubyte* output)

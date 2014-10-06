@@ -9,7 +9,7 @@ import botan.algo_base.transform;
 /**
 * Interface for cipher modes
 */
-class Cipher_Mode : public Keyed_Transform
+class Cipher_Mode : Keyed_Transform
 {
 	public:
 		/**

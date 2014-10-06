@@ -10,7 +10,7 @@ import botan.hash;
 * Combines two hash functions using a Feistel scheme. Described in
 * "On the Security of Hash Function Combiners", Anja Lehmann
 */
-class Comb4P : public HashFunction
+class Comb4P : HashFunction
 {
 	public:
 		/**

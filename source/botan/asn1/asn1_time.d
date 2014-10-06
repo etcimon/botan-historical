@@ -5,10 +5,10 @@
 * Distributed under the terms of the botan license.
 */
 
-import botan.asn1.asn1_obj;
-import chrono;
+import botan.asn1.asn1_time;
 
-import botan.asn1_time;
+import std.datetime;
+import botan.utils.mixins;
 import botan.asn1.der_enc;
 import botan.asn1.ber_dec;
 import botan.charset;
@@ -21,9 +21,11 @@ class BER_Decoder;
 /**
 * X.509 Time
 */
-class X509_Time : public ASN1_Object
+class X509_Time : ASN1_Object
 {
 public:
+	import botan.utils.mixins;
+	mixin USE_STRUCT_INIT!();
 	/*
 	* DER encode a X509_Time
 	*/
@@ -41,7 +43,7 @@ public:
 	/*
 	* Decode a BER encoded X509_Time
 	*/
-	void decode_from(BER_Decoder source)
+	void decode_from(BER_Decoder source = BER_Decoder())
 	{
 		BER_Object ber_time = source.get_next_object();
 		

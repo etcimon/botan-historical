@@ -14,12 +14,12 @@ import sys.types;
 * effective against local attackers as they can sample from the same
 * distribution.
 */
-class Unix_EntropySource : public EntropySource
+class Unix_EntropySource : EntropySource
 {
 	public:
 		string name() const { return "Unix Process Runner"; }
 
-		void poll(Entropy_Accumulator& accum) override;
+		override void poll(Entropy_Accumulator& accum);
 
 		/**
 		* @param trusted_paths is a list of directories that are assumed
@@ -48,8 +48,8 @@ class Unix_EntropySource : public EntropySource
 
 				Unix_Process(Unix_Process&& other)
 				{
-					std::swap(m_fd, other.m_fd);
-					std::swap(m_pid, other.m_pid);
+					std.algorithm.swap(m_fd, other.m_fd);
+					std.algorithm.swap(m_pid, other.m_pid);
 				}
 
 				Unix_Process(in Unix_Process);
@@ -70,7 +70,7 @@ class Unix_EntropySource : public EntropySource
 		Vector!( Unix_Process ) m_procs;
 };
 
-class UnixProcessInfo_EntropySource : public EntropySource
+class UnixProcessInfo_EntropySource : EntropySource
 {
 	public:
 		string name() const { return "Unix Process Info"; }

@@ -10,7 +10,7 @@ import botan.filter;
 /**
 * Bzip Compression Filter
 */
-class Bzip_Compression : public Filter
+class Bzip_Compression : Filter
 {
 	public:
 		string name() const { return "Bzip_Compression"; }
@@ -34,7 +34,7 @@ class Bzip_Compression : public Filter
 /**
 * Bzip Decompression Filter
 */
-class Bzip_Decompression : public Filter
+class Bzip_Decompression : Filter
 {
 	public:
 		string name() const { return "Bzip_Decompression"; }

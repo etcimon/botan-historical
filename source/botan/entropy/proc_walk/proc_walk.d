@@ -22,7 +22,7 @@ import dirent.h;
 import fcntl.h;
 namespace {
 
-class Directory_Walker : public File_Descriptor_Source
+class Directory_Walker : File_Descriptor_Source
 {
 	public:
 		Directory_Walker(in string root) :

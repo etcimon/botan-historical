@@ -89,7 +89,7 @@ Vector!ubyte Certificate_Verify::serialize() const
 bool Certificate_Verify::verify(const X509_Certificate cert,
 										  const Handshake_State state) const
 {
-	Unique!Public_Key key(cert.subject_public_key());
+	Unique!Public_Key key = cert.subject_public_key();
 
 	Pair!(string, Signature_Format) format =
 		state.understand_sig_format(*key.get(), m_hash_algo, m_sig_algo, true);

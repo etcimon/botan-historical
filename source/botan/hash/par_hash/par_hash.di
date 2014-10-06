@@ -10,7 +10,7 @@ import vector;
 /**
 * Parallel Hashes
 */
-class Parallel : public HashFunction
+class Parallel : HashFunction
 {
 	public:
 		void clear();

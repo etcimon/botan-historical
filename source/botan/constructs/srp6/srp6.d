@@ -16,8 +16,8 @@ BigInt hash_seq(in string hash_id,
 					 ref const BigInt in1,
 					 ref const BigInt in2)
 {
-	Unique!HashFunction hash_fn(
-		global_state().algorithm_factory().make_hash_function(hash_id));
+	Unique!HashFunction hash_fn =
+		global_state().algorithm_factory().make_hash_function(hash_id);
 
 	hash_fn.update(BigInt::encode_1363(in1, pad_to));
 	hash_fn.update(BigInt::encode_1363(in2, pad_to));

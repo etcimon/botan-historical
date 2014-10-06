@@ -11,7 +11,7 @@ import botan.hash;
 /**
 * OAEP (called EME1 in IEEE 1363 and in earlier versions of the library)
 */
-class OAEP : public EME
+class OAEP : EME
 {
 	public:
 		size_t maximum_input_size(size_t) const;

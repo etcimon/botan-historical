@@ -13,7 +13,7 @@ import botan.pk_ops;
 /**
 * This class represents ECDSA Public Keys.
 */
-class ECDSA_PublicKey : public abstract EC_PublicKey
+class ECDSA_PublicKey : EC_PublicKey
 {
 	public:
 
@@ -55,7 +55,7 @@ class ECDSA_PublicKey : public abstract EC_PublicKey
 /**
 * This class represents ECDSA Private Keys
 */
-class ECDSA_PrivateKey : public ECDSA_PublicKey,
+class ECDSA_PrivateKey : ECDSA_PublicKey,
 											  public EC_PrivateKey
 {
 	public:
@@ -86,7 +86,7 @@ class ECDSA_PrivateKey : public ECDSA_PublicKey,
 /**
 * ECDSA signature operation
 */
-class ECDSA_Signature_Operation : public PK_Ops::Signature
+class ECDSA_Signature_Operation : PK_Ops::Signature
 {
 	public:
 		ECDSA_Signature_Operation(in ECDSA_PrivateKey ecdsa);
@@ -108,7 +108,7 @@ class ECDSA_Signature_Operation : public PK_Ops::Signature
 /**
 * ECDSA verification operation
 */
-class ECDSA_Verification_Operation : public PK_Ops::Verification
+class ECDSA_Verification_Operation : PK_Ops::Verification
 {
 	public:
 		ECDSA_Verification_Operation(in ECDSA_PublicKey ecdsa);

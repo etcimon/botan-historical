@@ -10,7 +10,7 @@ import botan.block_cipher;
 /**
 * DES/3DES-based MAC from ANSI X9.19
 */
-class ANSI_X919_MAC : public MessageAuthenticationCode
+class ANSI_X919_MAC : MessageAuthenticationCode
 {
 	public:
 		void clear();

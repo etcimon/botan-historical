@@ -9,43 +9,43 @@ import botan.engine;
 /**
 * Core Engine
 */
-class Core_Engine : public Engine
+class Core_Engine : Engine
 {
 	public:
-		string provider_name() const override { return "core"; }
+		override string provider_name() const { return "core"; }
 
 		PK_Ops::Key_Agreement*
-			get_key_agreement_op(in Private_Key key, RandomNumberGenerator rng) const override;
+			override get_key_agreement_op(in Private_Key key, RandomNumberGenerator rng) const;
 
 		PK_Ops::Signature*
-			get_signature_op(in Private_Key key, RandomNumberGenerator rng) const override;
+			override get_signature_op(in Private_Key key, RandomNumberGenerator rng) const;
 
-		PK_Ops::Verification* get_verify_op(in Public_Key key, RandomNumberGenerator rng) const override;
+		override PK_Ops::Verification* get_verify_op(in Public_Key key, RandomNumberGenerator rng) const;
 
-		PK_Ops::Encryption* get_encryption_op(in Public_Key key, RandomNumberGenerator rng) const override;
+		override PK_Ops::Encryption* get_encryption_op(in Public_Key key, RandomNumberGenerator rng) const;
 
-		PK_Ops::Decryption* get_decryption_op(in Private_Key key, RandomNumberGenerator rng) const override;
+		override PK_Ops::Decryption* get_decryption_op(in Private_Key key, RandomNumberGenerator rng) const;
 
 		Modular_Exponentiator* mod_exp(in BigInt n,
-												 Power_Mod::Usage_Hints) const override;
+												 override Power_Mod::Usage_Hints) const;
 
 		Keyed_Filter* get_cipher(in string, Cipher_Dir,
 										 ref Algorithm_Factory);
 
 		BlockCipher find_block_cipher(in SCAN_Name,
-												 ref Algorithm_Factory) const override;
+												 override ref Algorithm_Factory) const;
 
 		StreamCipher find_stream_cipher(in SCAN_Name,
-													ref Algorithm_Factory) const override;
+													override ref Algorithm_Factory) const;
 
 		HashFunction find_hash(in SCAN_Name request,
-										ref Algorithm_Factory) const override;
+										override ref Algorithm_Factory) const;
 
 		MessageAuthenticationCode find_mac(in SCAN_Name request,
-														ref Algorithm_Factory) const override;
+														override ref Algorithm_Factory) const;
 
 		PBKDF find_pbkdf(in SCAN_Name algo_spec,
-								ref Algorithm_Factory af) const override;
+								override ref Algorithm_Factory af) const;
 };
 
 /**

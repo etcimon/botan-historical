@@ -21,9 +21,12 @@ class BER_Decoder;
 /**
 * This class represents ASN.1 object identifiers.
 */
-class OID : public ASN1_Object
+class OID : ASN1_Object
 {
 public:
+	import botan.utils.mixins;
+	mixin USE_STRUCT_INIT!();
+
 	/*
 	* DER encode an OBJECT IDENTIFIER
 	*/

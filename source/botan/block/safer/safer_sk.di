@@ -9,7 +9,7 @@ import botan.block_cipher;
 /**
 * SAFER-SK
 */
-class SAFER_SK : public Block_Cipher_Fixed_Params!(8, 16)
+class SAFER_SK : Block_Cipher_Fixed_Params!(8, 16)
 {
 	public:
 		void encrypt_n(ubyte* input, ubyte* output, size_t blocks) const;

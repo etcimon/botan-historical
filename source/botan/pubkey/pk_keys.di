@@ -88,7 +88,7 @@ class Public_Key
 /**
 * Private Key Base Class
 */
-class Private_Key : public abstract Public_Key
+class Private_Key : Public_Key
 {
 	public:
 		/**
@@ -120,7 +120,7 @@ class Private_Key : public abstract Public_Key
 /**
 * PK Secret Value Derivation Key
 */
-class PK_Key_Agreement_Key : public abstract Private_Key
+class PK_Key_Agreement_Key : Private_Key
 {
 	public:
 		/*

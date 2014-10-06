@@ -19,24 +19,24 @@ class L_computer;
 * @see Free Licenses http://www.cs.ucdavis.edu/~rogaway/ocb/license.htm
 * @see OCB home page http://www.cs.ucdavis.edu/~rogaway/ocb
 */
-class OCB_Mode : public AEAD_Mode
+class OCB_Mode : AEAD_Mode
 {
 	public:
-		SafeVector!ubyte start(in ubyte* nonce, size_t nonce_len) override;
+		override SafeVector!ubyte start(in ubyte* nonce, size_t nonce_len);
 
-		void set_associated_data(in ubyte* ad, size_t ad_len) override;
+		override void set_associated_data(in ubyte* ad, size_t ad_len);
 
-		string name() const override;
+		override string name() const;
 
-		size_t update_granularity() const override;
+		override size_t update_granularity() const;
 
-		Key_Length_Specification key_spec() const override;
+		override Key_Length_Specification key_spec() const;
 
-		bool valid_nonce_length(size_t) const override;
+		override bool valid_nonce_length(size_t) const;
 
-		size_t tag_size() const override { return m_tag_size; }
+		override size_t tag_size() const { return m_tag_size; }
 
-		void clear() override;
+		override void clear();
 
 		~this();
 	package:
@@ -46,7 +46,7 @@ class OCB_Mode : public AEAD_Mode
 		*/
 		OCB_Mode(BlockCipher cipher, size_t tag_size);
 
-		void key_schedule(in ubyte* key, size_t length) override;
+		override void key_schedule(in ubyte* key, size_t length);
 
 		// fixme make these private
 		Unique!BlockCipher m_cipher;
@@ -65,7 +65,7 @@ class OCB_Mode : public AEAD_Mode
 		SafeVector!ubyte m_stretch;
 };
 
-class OCB_Encryption : public OCB_Mode
+class OCB_Encryption : OCB_Mode
 {
 	public:
 		/**
@@ -75,19 +75,19 @@ class OCB_Encryption : public OCB_Mode
 		OCB_Encryption(BlockCipher cipher, size_t tag_size = 16) :
 			OCB_Mode(cipher, tag_size) {}
 
-		size_t output_length(size_t input_length) const override
+		override size_t output_length(size_t input_length) const
 		{ return input_length + tag_size(); }
 
-		size_t minimum_final_size() const override { return 0; }
+		override size_t minimum_final_size() const { return 0; }
 
-		void update(SafeVector!ubyte blocks, size_t offset = 0) override;
+		override void update(SafeVector!ubyte blocks, size_t offset = 0);
 
-		void finish(SafeVector!ubyte final_block, size_t offset = 0) override;
+		override void finish(SafeVector!ubyte final_block, size_t offset = 0);
 	private:
 		void encrypt(ubyte* input, size_t blocks);
 };
 
-class OCB_Decryption : public OCB_Mode
+class OCB_Decryption : OCB_Mode
 {
 	public:
 		/**
@@ -97,17 +97,17 @@ class OCB_Decryption : public OCB_Mode
 		OCB_Decryption(BlockCipher cipher, size_t tag_size = 16) :
 			OCB_Mode(cipher, tag_size) {}
 
-		size_t output_length(size_t input_length) const override
+		override size_t output_length(size_t input_length) const
 		{
 			BOTAN_ASSERT(input_length > tag_size(), "Sufficient input");
 			return input_length - tag_size();
 		}
 
-		size_t minimum_final_size() const override { return tag_size(); }
+		override size_t minimum_final_size() const { return tag_size(); }
 
-		void update(SafeVector!ubyte blocks, size_t offset = 0) override;
+		override void update(SafeVector!ubyte blocks, size_t offset = 0);
 
-		void finish(SafeVector!ubyte final_block, size_t offset = 0) override;
+		override void finish(SafeVector!ubyte final_block, size_t offset = 0);
 	private:
 		void decrypt(ubyte* input, size_t blocks);
 };

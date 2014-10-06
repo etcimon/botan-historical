@@ -9,7 +9,7 @@ import botan.mdx_hash;
 /**
 * NIST's SHA-160
 */
-class SHA_160 : public MDx_HashFunction
+class SHA_160 : MDx_HashFunction
 {
 	public:
 		string name() const { return "SHA-160"; }

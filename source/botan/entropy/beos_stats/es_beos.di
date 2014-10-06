@@ -9,7 +9,7 @@ import botan.entropy_src;
 /**
 * BeOS Entropy Source
 */
-class BeOS_EntropySource : public EntropySource
+class BeOS_EntropySource : EntropySource
 {
 	private:
 		string name() const { return "BeOS Statistics"; }

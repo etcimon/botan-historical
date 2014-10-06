@@ -9,7 +9,7 @@ import botan.sha160;
 /**
 * SHA-160 in x86 assembly
 */
-class SHA_160_X86_32 : public SHA_160
+class SHA_160_X86_32 : SHA_160
 {
 	public:
 		HashFunction clone() const { return new SHA_160_X86_32; }

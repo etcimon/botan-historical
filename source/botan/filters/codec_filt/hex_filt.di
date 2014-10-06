@@ -10,7 +10,7 @@ import botan.filter;
 * Converts arbitrary binary data to hex strings, optionally with
 * newlines inserted
 */
-class Hex_Encoder : public Filter
+class Hex_Encoder : Filter
 {
 	public:
 		/**
@@ -50,7 +50,7 @@ class Hex_Encoder : public Filter
 /**
 * Converts hex strings to bytes
 */
-class Hex_Decoder : public Filter
+class Hex_Decoder : Filter
 {
 	public:
 		string name() const { return "Hex_Decoder"; }

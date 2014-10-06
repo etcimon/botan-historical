@@ -144,7 +144,7 @@ Vector!ubyte Certificate_Req::serialize() const
 
 	for (size_t i = 0; i != m_names.size(); ++i)
 	{
-		DER_Encoder encoder;
+		DER_Encoder encoder = DER_Encoder();
 		encoder.encode(m_names[i]);
 
 		append_tls_length_value(encoded_names, encoder.get_contents(), 2);

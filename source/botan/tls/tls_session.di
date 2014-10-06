@@ -12,7 +12,7 @@ import botan.tls_magic;
 import botan.tls_server_info;
 import botan.alloc.secmem;
 import botan.algo_base.symkey;
-import chrono;
+import std.datetime;
 namespace TLS {
 
 /**
@@ -160,7 +160,7 @@ class Session
 		/**
 		* Return how long this session has existed (in seconds)
 		*/
-		std::chrono::seconds session_age() const;
+		Duration session_age() const;
 
 		/**
 		* Return the session ticket the server gave us

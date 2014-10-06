@@ -9,7 +9,7 @@ import botan.mdx_hash;
 /**
 * RIPEMD-128
 */
-class RIPEMD_128 : public MDx_HashFunction
+class RIPEMD_128 : MDx_HashFunction
 {
 	public:
 		string name() const { return "RIPEMD-128"; }

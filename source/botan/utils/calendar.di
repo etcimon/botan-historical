@@ -6,7 +6,7 @@
 */
 
 import botan.types;
-import chrono;
+import std.datetime;
 /**
 * Struct representing a particular date and time
 */

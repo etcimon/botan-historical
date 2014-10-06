@@ -9,7 +9,7 @@ import botan.serpent;
 /**
 * Serpent implementation using SIMD
 */
-class Serpent_SIMD : public Serpent
+class Serpent_SIMD : Serpent
 {
 	public:
 		size_t parallelism() const { return 4; }

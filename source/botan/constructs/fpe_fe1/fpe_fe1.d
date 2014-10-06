@@ -42,16 +42,16 @@ void factor(BigInt n, ref BigInt a, ref BigInt b)
 		{
 			a *= PRIMES[i];
 			if (a > b)
-				std::swap(a, b);
+				std.algorithm.swap(a, b);
 			n /= PRIMES[i];
 		}
 	}
 
 	if (a > b)
-		std::swap(a, b);
+		std.algorithm.swap(a, b);
 	a *= n;
 	if (a < b)
-		std::swap(a, b);
+		std.algorithm.swap(a, b);
 
 	if (a <= 1 || b <= 1)
 		throw new Exception("Could not factor n for use in FPE");

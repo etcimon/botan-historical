@@ -9,7 +9,7 @@ import botan.noekeon;
 /**
 * Noekeon implementation using SIMD operations
 */
-class Noekeon_SIMD : public Noekeon
+class Noekeon_SIMD : Noekeon
 {
 	public:
 		size_t parallelism() const { return 4; }

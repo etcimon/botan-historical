@@ -7,7 +7,7 @@
 
 import botan.internal.hres_timer;
 import botan.cpuid;
-import chrono;
+import std.datetime;
 
 #if defined(BOTAN_TARGET_OS_HAS_QUERY_PERF_COUNTER)
   import windows.h;

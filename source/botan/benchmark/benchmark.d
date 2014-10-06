@@ -12,27 +12,22 @@ import botan.stream_cipher;
 import botan.aead;
 import botan.hash;
 import botan.mac;
+import std.datetime;
+import std.conv;
 import vector;
-import chrono;
-double time_op(std::chrono::nanoseconds runtime, void delegate() op)
+import std.datetime;
+double time_op(Duration runtime, void delegate() op)
 {
-	std::chrono::nanoseconds time_used(0);
-	size_t reps = 0;
-
-	auto start = std::chrono::high_resolution_clock::now();
-
-	while(time_used < runtime)
+	StopWatch sw;
+	sw.start();
+	int reps = 0;
+	while(sw.peek().to!Duration < runtime)
 	{
 		op();
 		++reps;
-		time_used = std::chrono::high_resolution_clock::now() - start;
 	}
-
-	const ulong nsec_used = std::chrono::duration_cast(<std::chrono::nanoseconds>)(time_used).count();
-
-	const double seconds_used = cast(double)(nsec_used) / 1000000000;
-
-	return reps / seconds_used; // ie, return ops per second
+	sw.stop();
+	return reps.to!double / sw.peek().seconds.to!double; // ie, return ops per second
 }
 
 HashMap!(string, double)
@@ -52,7 +47,7 @@ time_algorithm_ops(in string name,
 
 	if (const BlockCipher proto = af.prototype_block_cipher(name, provider))
 	{
-		Unique!BlockCipher bc(proto.clone());
+		Unique!BlockCipher bc = proto.clone();
 
 		const SymmetricKey key(rng, bc.maximum_keylength());
 
@@ -64,7 +59,7 @@ time_algorithm_ops(in string name,
 	}
 	else if (const StreamCipher proto = af.prototype_stream_cipher(name, provider))
 	{
-		Unique!StreamCipher sc(proto.clone());
+		Unique!StreamCipher sc = proto.clone();
 
 		const SymmetricKey key(rng, sc.maximum_keylength());
 
@@ -75,7 +70,7 @@ time_algorithm_ops(in string name,
 	}
 	else if (const HashFunction proto = af.prototype_hash_function(name, provider))
 	{
-		Unique!HashFunction h(proto.clone());
+		Unique!HashFunction h = proto.clone();
 
 		return HashMap!(string, double)({
 			{ "", mb_mult * time_op(runtime, [&]() { h.update(buffer); }) },
@@ -83,7 +78,7 @@ time_algorithm_ops(in string name,
 	}
 	else if (const MessageAuthenticationCode proto = af.prototype_mac(name, provider))
 	{
-		Unique!MessageAuthenticationCode mac(proto.clone());
+		Unique!MessageAuthenticationCode mac = proto.clone();
 
 		const SymmetricKey key(rng, mac.maximum_keylength());
 
@@ -94,8 +89,8 @@ time_algorithm_ops(in string name,
 	}
 	else
 	{
-		Unique!AEAD_Mode enc(get_aead(name, ENCRYPTION));
-		Unique!AEAD_Mode dec(get_aead(name, DECRYPTION));
+		Unique!AEAD_Mode enc = get_aead(name, ENCRYPTION);
+		Unique!AEAD_Mode dec = get_aead(name, DECRYPTION);
 
 		if (enc && dec)
 		{

@@ -60,6 +60,10 @@ class BER_Decoder;
 */
 class ASN1_Object
 {
+
+	import botan.utils.mixins;
+	mixin USE_STRUCT_INIT!();
+
 public:
 	/**
 	* Encode whatever this object is into to
@@ -107,7 +111,7 @@ class DataSource;
 /**
 * General BER Decoding Error Exception
 */
-class BER_Decoding_Error : public Decoding_Error
+class BER_Decoding_Error : Decoding_Error
 {
 	this(in string str) {
 		super("BER: " ~ str);
@@ -117,7 +121,7 @@ class BER_Decoding_Error : public Decoding_Error
 /**
 * Exception For Incorrect BER Taggings
 */
-class BER_Bad_Tag : public BER_Decoding_Error
+class BER_Bad_Tag : BER_Decoding_Error
 {
 
 	/*
@@ -163,7 +167,7 @@ bool maybe_BER(ref DataSource source)
 {
 	ubyte first_byte;
 	if (!source.peek_byte(first_byte))
-		throw new Stream_IO_Error("ASN1::maybe_BER: Source was empty");
+		throw new Stream_IO_Error("asn1_obj.maybe_BER: Source was empty");
 	
 	if (first_byte == (ASN1_Tag.SEQUENCE | ASN1_Tag.CONSTRUCTED))
 		return true;

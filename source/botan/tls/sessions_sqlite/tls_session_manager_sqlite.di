@@ -19,7 +19,7 @@ namespace TLS {
 * sessions are stored in the database in plaintext. This may be a
 * serious privacy risk in some situations.
 */
-class Session_Manager_SQLite : public Session_Manager
+class Session_Manager_SQLite : Session_Manager
 {
 	public:
 		/**
@@ -37,21 +37,21 @@ class Session_Manager_SQLite : public Session_Manager
 									  RandomNumberGenerator rng,
 									  in string db_filename,
 									  size_t max_sessions = 1000,
-									  std::chrono::seconds session_lifetime = std::chrono::seconds(7200));
+									  Duration session_lifetime = Duration(7200));
 
 		~this();
 
 		bool load_from_session_id(in Vector!ubyte session_id,
-										  Session& session) override;
+										  override Session& session);
 
 		bool load_from_server_info(in Server_Information info,
-											Session& session) override;
+											override Session& session);
 
-		void remove_entry(in Vector!ubyte session_id) override;
+		override void remove_entry(in Vector!ubyte session_id);
 
-		void save(in Session session_data) override;
+		override void save(in Session session_data);
 
-		std::chrono::seconds session_lifetime() const override
+		override Duration session_lifetime() const
 		{ return m_session_lifetime; }
 
 	private:
@@ -63,7 +63,7 @@ class Session_Manager_SQLite : public Session_Manager
 		SymmetricKey m_session_key;
 		RandomNumberGenerator m_rng;
 		size_t m_max_sessions;
-		std::chrono::seconds m_session_lifetime;
+		Duration m_session_lifetime;
 		sqlite3_database* m_db;
 };
 

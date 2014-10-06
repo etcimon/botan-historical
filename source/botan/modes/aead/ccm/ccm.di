@@ -13,26 +13,26 @@ import botan.mac;
 * Base class for CCM encryption and decryption
 * @see RFC 3610
 */
-class CCM_Mode : public AEAD_Mode
+class CCM_Mode : AEAD_Mode
 {
 	public:
-		SafeVector!ubyte start(in ubyte* nonce, size_t nonce_len) override;
+		override SafeVector!ubyte start(in ubyte* nonce, size_t nonce_len);
 
-		void update(SafeVector!ubyte blocks, size_t offset = 0) override;
+		override void update(SafeVector!ubyte blocks, size_t offset = 0);
 
-		void set_associated_data(in ubyte* ad, size_t ad_len) override;
+		override void set_associated_data(in ubyte* ad, size_t ad_len);
 
-		string name() const override;
+		override string name() const;
 
 		size_t update_granularity() const;
 
-		Key_Length_Specification key_spec() const override;
+		override Key_Length_Specification key_spec() const;
 
-		bool valid_nonce_length(size_t) const override;
+		override bool valid_nonce_length(size_t) const;
 
-		size_t default_nonce_length() const override;
+		override size_t default_nonce_length() const;
 
-		void clear() override;
+		override void clear();
 
 		size_t tag_size() const { return m_tag_size; }
 
@@ -56,7 +56,7 @@ class CCM_Mode : public AEAD_Mode
 		SafeVector!ubyte format_b0(size_t msg_size);
 		SafeVector!ubyte format_c0();
 	private:
-		void key_schedule(in ubyte* key, size_t length) override;
+		override void key_schedule(in ubyte* key, size_t length);
 
 		const size_t m_tag_size;
 		const size_t m_L;
@@ -68,7 +68,7 @@ class CCM_Mode : public AEAD_Mode
 /**
 * CCM Encryption
 */
-class CCM_Encryption : public CCM_Mode
+class CCM_Encryption : CCM_Mode
 {
 	public:
 		/**
@@ -81,18 +81,18 @@ class CCM_Encryption : public CCM_Mode
 		CCM_Encryption(BlockCipher cipher, size_t tag_size = 16, size_t L = 3) :
 			CCM_Mode(cipher, tag_size, L) {}
 
-		void finish(SafeVector!ubyte final_block, size_t offset = 0) override;
+		override void finish(SafeVector!ubyte final_block, size_t offset = 0);
 
-		size_t output_length(size_t input_length) const override
+		override size_t output_length(size_t input_length) const
 		{ return input_length + tag_size(); }
 
-		size_t minimum_final_size() const override { return 0; }
+		override size_t minimum_final_size() const { return 0; }
 };
 
 /**
 * CCM Decryption
 */
-class CCM_Decryption : public CCM_Mode
+class CCM_Decryption : CCM_Mode
 {
 	public:
 		/**
@@ -105,13 +105,13 @@ class CCM_Decryption : public CCM_Mode
 		CCM_Decryption(BlockCipher cipher, size_t tag_size = 16, size_t L = 3) :
 			CCM_Mode(cipher, tag_size, L) {}
 
-		void finish(SafeVector!ubyte final_block, size_t offset = 0) override;
+		override void finish(SafeVector!ubyte final_block, size_t offset = 0);
 
-		size_t output_length(size_t input_length) const override
+		override size_t output_length(size_t input_length) const
 		{
 			BOTAN_ASSERT(input_length > tag_size(), "Sufficient input");
 			return input_length - tag_size();
 		}
 
-		size_t minimum_final_size() const override { return tag_size(); }
+		override size_t minimum_final_size() const { return tag_size(); }
 };

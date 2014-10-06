@@ -11,7 +11,7 @@ import botan.filter;
 /**
 * Lzma Compression Filter
 */
-class Lzma_Compression : public Filter
+class Lzma_Compression : Filter
 {
 	public:
 		string name() const { return "Lzma_Compression"; }
@@ -44,7 +44,7 @@ class Lzma_Compression : public Filter
 /**
 * Lzma Decompression Filter
 */
-class Lzma_Decompression : public Filter
+class Lzma_Decompression : Filter
 {
 	public:
 		string name() const { return "Lzma_Decompression"; }

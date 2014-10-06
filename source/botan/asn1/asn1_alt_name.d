@@ -25,9 +25,11 @@ class BER_Decoder;
 /**
 * Alternative Name
 */
-class AlternativeName : public ASN1_Object
+class AlternativeName : ASN1_Object
 {
 public:
+	import botan.utils.mixins;
+	mixin USE_STRUCT_INIT!();
 	/*
 	* DER encode an AlternativeName extension
 	*/
@@ -56,7 +58,7 @@ public:
 	/*
 	* Decode a BER encoded AlternativeName
 	*/
-	void decode_from(BER_Decoder source)
+	void decode_from(BER_Decoder source = BER_Decoder())
 	{
 		BER_Decoder names = source.start_cons(ASN1_Tag.SEQUENCE);
 		
@@ -227,7 +229,7 @@ bool is_string_type(ASN1_Tag tag)
 /*
 * DER encode an AlternativeName entry
 */
-void encode_entries(DER_Encoder encoder,
+void encode_entries(DER_Encoder encoder = DER_Encoder(),
                     ref const MultiMap!(string, string) attr,
                     in string type, ASN1_Tag tagging)
 {

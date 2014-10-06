@@ -12,7 +12,7 @@ import memory;
 /**
 * Skein-512, a SHA-3 candidate
 */
-class Skein_512 : public HashFunction
+class Skein_512 : HashFunction
 {
 	public:
 		/**

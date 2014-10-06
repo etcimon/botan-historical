@@ -16,7 +16,7 @@ typedef std::invalid_argument Invalid_Argument;
 /**
 * Invalid_State Exception
 */
-struct Invalid_State : public Exception
+struct Invalid_State : Exception
 {
 	Invalid_State(in string err) :
 		Exception(err)
@@ -26,7 +26,7 @@ struct Invalid_State : public Exception
 /**
 * Lookup_Error Exception
 */
-struct Lookup_Error : public Exception
+struct Lookup_Error : Exception
 {
 	Lookup_Error(in string err) :
 		Exception(err)
@@ -36,7 +36,7 @@ struct Lookup_Error : public Exception
 /**
 * Internal_Error Exception
 */
-struct Internal_Error : public Exception
+struct Internal_Error : Exception
 {
 	Internal_Error(in string err) :
 		Exception("Internal error: " ~ err)
@@ -46,7 +46,7 @@ struct Internal_Error : public Exception
 /**
 * Invalid_Key_Length Exception
 */
-struct Invalid_Key_Length : public Invalid_Argument
+struct Invalid_Key_Length : Invalid_Argument
 {
 	Invalid_Key_Length(in string name, size_t length) :
 		Invalid_Argument(name ~ " cannot accept a key of length " ~
@@ -57,7 +57,7 @@ struct Invalid_Key_Length : public Invalid_Argument
 /**
 * Invalid_IV_Length Exception
 */
-struct Invalid_IV_Length : public Invalid_Argument
+struct Invalid_IV_Length : Invalid_Argument
 {
 	Invalid_IV_Length(in string mode, size_t bad_len) :
 		Invalid_Argument("IV length " ~ std.conv.to!string(bad_len) +
@@ -68,7 +68,7 @@ struct Invalid_IV_Length : public Invalid_Argument
 /**
 * PRNG_Unseeded Exception
 */
-struct PRNG_Unseeded : public Invalid_State
+struct PRNG_Unseeded : Invalid_State
 {
 	PRNG_Unseeded(in string algo) :
 		Invalid_State("PRNG not seeded: " ~ algo)
@@ -78,7 +78,7 @@ struct PRNG_Unseeded : public Invalid_State
 /**
 * Policy_Violation Exception
 */
-struct Policy_Violation : public Invalid_State
+struct Policy_Violation : Invalid_State
 {
 	Policy_Violation(in string err) :
 		Invalid_State("Policy violation: " ~ err)
@@ -88,7 +88,7 @@ struct Policy_Violation : public Invalid_State
 /**
 * Algorithm_Not_Found Exception
 */
-struct Algorithm_Not_Found : public Lookup_Error
+struct Algorithm_Not_Found : Lookup_Error
 {
 	Algorithm_Not_Found(in string name) :
 		Lookup_Error("Could not find any algorithm named \"" ~ name ~ "\"")
@@ -98,7 +98,7 @@ struct Algorithm_Not_Found : public Lookup_Error
 /**
 * Invalid_Algorithm_Name Exception
 */
-struct Invalid_Algorithm_Name : public Invalid_Argument
+struct Invalid_Algorithm_Name : Invalid_Argument
 {
 	Invalid_Algorithm_Name(in string name):
 		Invalid_Argument("Invalid algorithm name: " ~ name)
@@ -108,7 +108,7 @@ struct Invalid_Algorithm_Name : public Invalid_Argument
 /**
 * Encoding_Error Exception
 */
-struct Encoding_Error : public Invalid_Argument
+struct Encoding_Error : Invalid_Argument
 {
 	Encoding_Error(in string name) :
 		Invalid_Argument("Encoding error: " ~ name) {}
@@ -117,7 +117,7 @@ struct Encoding_Error : public Invalid_Argument
 /**
 * Decoding_Error Exception
 */
-struct Decoding_Error : public Invalid_Argument
+struct Decoding_Error : Invalid_Argument
 {
 	Decoding_Error(in string name) :
 		Invalid_Argument("Decoding error: " ~ name) {}
@@ -126,7 +126,7 @@ struct Decoding_Error : public Invalid_Argument
 /**
 * Integrity_Failure Exception
 */
-struct Integrity_Failure : public Exception
+struct Integrity_Failure : Exception
 {
 	Integrity_Failure(in string msg) :
 		Exception("Integrity failure: " ~ msg) {}
@@ -135,7 +135,7 @@ struct Integrity_Failure : public Exception
 /**
 * Invalid_OID Exception
 */
-struct Invalid_OID : public Decoding_Error
+struct Invalid_OID : Decoding_Error
 {
 	Invalid_OID(in string oid) :
 		Decoding_Error("Invalid ASN.1 OID: " ~ oid) {}
@@ -144,7 +144,7 @@ struct Invalid_OID : public Decoding_Error
 /**
 * Stream_IO_Error Exception
 */
-struct Stream_IO_Error : public Exception
+struct Stream_IO_Error : Exception
 {
 	Stream_IO_Error(in string err) :
 		Exception("I/O error: " ~ err)
@@ -154,7 +154,7 @@ struct Stream_IO_Error : public Exception
 /**
 * Self Test Failure Exception
 */
-struct Self_Test_Failure : public Internal_Error
+struct Self_Test_Failure : Internal_Error
 {
 	Self_Test_Failure(in string err) :
 		Internal_Error("Self test failed: " ~ err)
@@ -164,7 +164,7 @@ struct Self_Test_Failure : public Internal_Error
 /**
 * Memory Allocation Exception
 */
-struct Memory_Exhaustion : public std::bad_alloc
+struct Memory_Exhaustion : std::bad_alloc
 {
 	string what() const noexcept
 	{ return "Ran out of memory, allocation failed"; }

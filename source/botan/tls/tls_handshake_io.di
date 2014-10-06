@@ -55,26 +55,26 @@ class Handshake_IO
 /**
 * Handshake IO for stream-based handshakes
 */
-class Stream_Handshake_IO : public Handshake_IO
+class Stream_Handshake_IO : Handshake_IO
 {
 	public:
 		Stream_Handshake_IO(void delegate(ubyte, in Vector!ubyte) writer) :
 			m_send_hs(writer) {}
 
-		Protocol_Version initial_record_version() const override;
+		override Protocol_Version initial_record_version() const;
 
-		Vector!ubyte send(in Handshake_Message msg) override;
+		override Vector!ubyte send(in Handshake_Message msg);
 
 		Vector!ubyte format(
 			in Vector!ubyte handshake_msg,
-			Handshake_Type handshake_type) const override;
+			override Handshake_Type handshake_type) const;
 
 		void add_record(in Vector!ubyte record,
 							 Record_Type type,
-							 ulong sequence_number) override;
+							 override ulong sequence_number);
 
 		Pair!(Handshake_Type, Vector!( ubyte) )
-			get_next_record(bool expecting_ccs) override;
+			override get_next_record(bool expecting_ccs);
 	private:
 		std::deque<ubyte> m_queue;
 		void delegate(ubyte, in Vector!ubyte) m_send_hs;
@@ -83,27 +83,27 @@ class Stream_Handshake_IO : public Handshake_IO
 /**
 * Handshake IO for datagram-based handshakes
 */
-class Datagram_Handshake_IO : public Handshake_IO
+class Datagram_Handshake_IO : Handshake_IO
 {
 	public:
 		Datagram_Handshake_IO(class Connection_Sequence_Numbers& seq,
 									 void delegate(ushort, ubyte, in Vector!ubyte) writer) :
 			m_seqs(seq), m_flights(1), m_send_hs(writer) {}
 
-		Protocol_Version initial_record_version() const override;
+		override Protocol_Version initial_record_version() const;
 
-		Vector!ubyte send(in Handshake_Message msg) override;
+		override Vector!ubyte send(in Handshake_Message msg);
 
 		Vector!ubyte format(
 			in Vector!ubyte handshake_msg,
-			Handshake_Type handshake_type) const override;
+			override Handshake_Type handshake_type) const;
 
 		void add_record(in Vector!ubyte record,
 							 Record_Type type,
-							 ulong sequence_number) override;
+							 override ulong sequence_number);
 
 		Pair!(Handshake_Type, Vector!( ubyte) )
-			get_next_record(bool expecting_ccs) override;
+			override get_next_record(bool expecting_ccs);
 	private:
 		Vector!ubyte format_fragment(
 			in ubyte* fragment,

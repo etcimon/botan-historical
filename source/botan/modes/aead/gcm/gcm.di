@@ -13,27 +13,27 @@ class GHASH;
 /**
 * GCM Mode
 */
-class GCM_Mode : public AEAD_Mode
+class GCM_Mode : AEAD_Mode
 {
 	public:
-		SafeVector!ubyte start(in ubyte* nonce, size_t nonce_len) override;
+		override SafeVector!ubyte start(in ubyte* nonce, size_t nonce_len);
 
-		void set_associated_data(in ubyte* ad, size_t ad_len) override;
+		override void set_associated_data(in ubyte* ad, size_t ad_len);
 
-		string name() const override;
+		override string name() const;
 
 		size_t update_granularity() const;
 
-		Key_Length_Specification key_spec() const override;
+		override Key_Length_Specification key_spec() const;
 
 		// GCM supports arbitrary nonce lengths
-		bool valid_nonce_length(size_t) const override { return true; }
+		override bool valid_nonce_length(size_t) const { return true; }
 
-		size_t tag_size() const override { return m_tag_size; }
+		override size_t tag_size() const { return m_tag_size; }
 
-		void clear() override;
+		override void clear();
 	package:
-		void key_schedule(in ubyte* key, size_t length) override;
+		override void key_schedule(in ubyte* key, size_t length);
 
 		GCM_Mode(BlockCipher cipher, size_t tag_size);
 
@@ -49,7 +49,7 @@ class GCM_Mode : public AEAD_Mode
 /**
 * GCM Encryption
 */
-class GCM_Encryption : public GCM_Mode
+class GCM_Encryption : GCM_Mode
 {
 	public:
 		/**
@@ -59,20 +59,20 @@ class GCM_Encryption : public GCM_Mode
 		GCM_Encryption(BlockCipher cipher, size_t tag_size = 16) :
 			GCM_Mode(cipher, tag_size) {}
 
-		size_t output_length(size_t input_length) const override
+		override size_t output_length(size_t input_length) const
 		{ return input_length + tag_size(); }
 
-		size_t minimum_final_size() const override { return 0; }
+		override size_t minimum_final_size() const { return 0; }
 
-		void update(SafeVector!ubyte blocks, size_t offset = 0) override;
+		override void update(SafeVector!ubyte blocks, size_t offset = 0);
 
-		void finish(SafeVector!ubyte final_block, size_t offset = 0) override;
+		override void finish(SafeVector!ubyte final_block, size_t offset = 0);
 };
 
 /**
 * GCM Decryption
 */
-class GCM_Decryption : public GCM_Mode
+class GCM_Decryption : GCM_Mode
 {
 	public:
 		/**
@@ -82,24 +82,24 @@ class GCM_Decryption : public GCM_Mode
 		GCM_Decryption(BlockCipher cipher, size_t tag_size = 16) :
 			GCM_Mode(cipher, tag_size) {}
 
-		size_t output_length(size_t input_length) const override
+		override size_t output_length(size_t input_length) const
 		{
 			BOTAN_ASSERT(input_length > tag_size(), "Sufficient input");
 			return input_length - tag_size();
 		}
 
-		size_t minimum_final_size() const override { return tag_size(); }
+		override size_t minimum_final_size() const { return tag_size(); }
 
-		void update(SafeVector!ubyte blocks, size_t offset = 0) override;
+		override void update(SafeVector!ubyte blocks, size_t offset = 0);
 
-		void finish(SafeVector!ubyte final_block, size_t offset = 0) override;
+		override void finish(SafeVector!ubyte final_block, size_t offset = 0);
 };
 
 /**
 * GCM's GHASH
 * Maybe a Transform?
 */
-class GHASH : public SymmetricAlgorithm
+class GHASH : SymmetricAlgorithm
 {
 	public:
 		void set_associated_data(in ubyte* ad, size_t ad_len);
@@ -117,11 +117,11 @@ class GHASH : public SymmetricAlgorithm
 
 		Key_Length_Specification key_spec() const { return Key_Length_Specification(16); }
 
-		void clear() override;
+		override void clear();
 
 		string name() const { return "GHASH"; }
 	private:
-		void key_schedule(in ubyte* key, size_t length) override;
+		override void key_schedule(in ubyte* key, size_t length);
 
 		void gcm_multiply(SafeVector!ubyte x) const;
 

@@ -12,7 +12,7 @@ import botan.pow_mod;
 /**
 * DSA Public Key
 */
-class DSA_PublicKey : public abstract DL_Scheme_PublicKey
+class DSA_PublicKey : DL_Scheme_PublicKey
 {
 	public:
 		string algo_name() const { return "DSA"; }
@@ -36,7 +36,7 @@ class DSA_PublicKey : public abstract DL_Scheme_PublicKey
 /**
 * DSA Private Key
 */
-class DSA_PrivateKey : public DSA_PublicKey,
+class DSA_PrivateKey : DSA_PublicKey,
 											public abstract DL_Scheme_PrivateKey
 {
 	public:
@@ -54,7 +54,7 @@ class DSA_PrivateKey : public DSA_PublicKey,
 /**
 * Object that can create a DSA signature
 */
-class DSA_Signature_Operation : public PK_Ops::Signature
+class DSA_Signature_Operation : PK_Ops::Signature
 {
 	public:
 		DSA_Signature_Operation(in DSA_PrivateKey dsa);
@@ -75,7 +75,7 @@ class DSA_Signature_Operation : public PK_Ops::Signature
 /**
 * Object that can verify a DSA signature
 */
-class DSA_Verification_Operation : public PK_Ops::Verification
+class DSA_Verification_Operation : PK_Ops::Verification
 {
 	public:
 		DSA_Verification_Operation(in DSA_PublicKey dsa);

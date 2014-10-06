@@ -13,7 +13,7 @@ import vector;
 * Exception thrown if you try to convert a zero point to an affine
 * coordinate
 */
-struct Illegal_Transformation : public Exception
+struct Illegal_Transformation : Exception
 {
 	Illegal_Transformation(in string err =
 								  "Requested transformation is not possible") :
@@ -23,7 +23,7 @@ struct Illegal_Transformation : public Exception
 /**
 * Exception thrown if some form of illegal point is decoded
 */
-struct Illegal_Point : public Exception
+struct Illegal_Point : Exception
 {
 	Illegal_Point(in string err = "Malformed ECP point detected") :
 		Exception(err) {}

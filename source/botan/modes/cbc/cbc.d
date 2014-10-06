@@ -159,7 +159,7 @@ void CTS_Encryption::finish(SafeVector!ubyte buffer, size_t offset)
 
 		// swap last two blocks
 		for (size_t i = 0; i != BS; ++i)
-			std::swap(buffer[buffer.size()-BS+i], buffer[buffer.size()-2*BS+i]);
+			std.algorithm.swap(buffer[buffer.size()-BS+i], buffer[buffer.size()-2*BS+i]);
 	}
 	else
 	{
@@ -266,7 +266,7 @@ void CTS_Decryption::finish(SafeVector!ubyte buffer, size_t offset)
 		// swap last two blocks
 
 		for (size_t i = 0; i != BS; ++i)
-			std::swap(buffer[buffer.size()-BS+i], buffer[buffer.size()-2*BS+i]);
+			std.algorithm.swap(buffer[buffer.size()-BS+i], buffer[buffer.size()-2*BS+i]);
 
 		update(buffer, offset);
 	}
@@ -285,7 +285,7 @@ void CTS_Decryption::finish(SafeVector!ubyte buffer, size_t offset)
 		xor_buf(&last[0], &last[BS], final_bytes - BS);
 
 		for (size_t i = 0; i != final_bytes - BS; ++i)
-			std::swap(last[i], last[i + BS]);
+			std.algorithm.swap(last[i], last[i + BS]);
 
 		cipher().decrypt(&last[0]);
 		xor_buf(&last[0], state_ptr(), BS);

@@ -9,7 +9,7 @@ import botan.stream_cipher;
 /**
 * DJB's Salsa20 (and XSalsa20)
 */
-class Salsa20 : public StreamCipher
+class Salsa20 : StreamCipher
 {
 	public:
 		void cipher(in ubyte* input, ubyte* output);

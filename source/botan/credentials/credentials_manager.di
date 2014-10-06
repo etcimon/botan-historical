@@ -6,7 +6,7 @@
 */
 
 import botan.x509cert;
-import botan.certstor;
+import botan.cert.x509.certstor;
 import botan.algo_base.symkey;
 import string;
 class BigInt;

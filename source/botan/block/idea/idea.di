@@ -9,7 +9,7 @@ import botan.block_cipher;
 /**
 * IDEA
 */
-class IDEA : public Block_Cipher_Fixed_Params!(8, 16)
+class IDEA : Block_Cipher_Fixed_Params!(8, 16)
 {
 	public:
 		void encrypt_n(ubyte* input, ubyte* output, size_t blocks) const;

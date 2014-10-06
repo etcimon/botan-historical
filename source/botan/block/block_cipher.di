@@ -9,7 +9,7 @@ import botan.algo_base.sym_algo;
 /**
 * This class represents a block cipher object.
 */
-class BlockCipher : public SymmetricAlgorithm
+class BlockCipher : SymmetricAlgorithm
 {
 	public:
 
@@ -134,7 +134,7 @@ class BlockCipher : public SymmetricAlgorithm
 /**
 * Represents a block cipher with a single fixed block size
 */
-class Block_Cipher_Fixed_Params(size_t BS, size_t KMIN, size_t KMAX = 0, size_t KMOD = 1) : public BlockCipher
+class Block_Cipher_Fixed_Params(size_t BS, size_t KMIN, size_t KMAX = 0, size_t KMOD = 1) : BlockCipher
 {
 	public:
 		enum { BLOCK_SIZE = BS };

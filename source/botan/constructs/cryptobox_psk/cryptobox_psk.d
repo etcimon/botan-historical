@@ -31,7 +31,7 @@ Vector!ubyte encrypt(in ubyte* input, size_t input_len,
 								  const SymmetricKey& master_key,
 								  RandomNumberGenerator rng)
 {
-	Unique!KDF kdf(get_kdf(CRYPTOBOX_KDF));
+	Unique!KDF kdf = get_kdf(CRYPTOBOX_KDF);
 
 	const SafeVector!ubyte cipher_key_salt =
 		rng.random_vec(KEY_KDF_SALT_LENGTH);
@@ -51,7 +51,7 @@ Vector!ubyte encrypt(in ubyte* input, size_t input_len,
 
 	InitializationVector cipher_iv(rng, 16);
 
-	Unique!MessageAuthenticationCode mac(get_mac(CRYPTOBOX_MAC));
+	Unique!MessageAuthenticationCode mac = get_mac(CRYPTOBOX_MAC);
 	mac.set_key(mac_key);
 
 	Pipe pipe(get_cipher(CRYPTOBOX_CIPHER, cipher_key, cipher_iv, ENCRYPTION));
@@ -89,7 +89,7 @@ SafeVector!ubyte decrypt(in ubyte* input, size_t input_len,
 	if (load_be!uint(input, 0) != CRYPTOBOX_MAGIC)
 		throw new Decoding_Error("Unknown header value in cryptobox");
 
-	Unique!KDF kdf(get_kdf(CRYPTOBOX_KDF));
+	Unique!KDF kdf = get_kdf(CRYPTOBOX_KDF);
 
 	const ubyte* cipher_key_salt = &input[MAGIC_LENGTH];
 
@@ -100,7 +100,7 @@ SafeVector!ubyte decrypt(in ubyte* input, size_t input_len,
 														mac_key_salt,
 														KEY_KDF_SALT_LENGTH);
 
-	Unique!MessageAuthenticationCode mac(get_mac(CRYPTOBOX_MAC));
+	Unique!MessageAuthenticationCode mac = get_mac(CRYPTOBOX_MAC);
 	mac.set_key(mac_key);
 
 	mac.update(&input[0], input_len - MAC_OUTPUT_LENGTH);

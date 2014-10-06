@@ -9,7 +9,7 @@ import botan.block_cipher;
 /**
 * AES-128
 */
-class AES_128 : public Block_Cipher_Fixed_Params!(16, 16)
+class AES_128 : Block_Cipher_Fixed_Params!(16, 16)
 {
 	public:
 		void encrypt_n(ubyte* input, ubyte* output, size_t blocks) const;
@@ -29,7 +29,7 @@ class AES_128 : public Block_Cipher_Fixed_Params!(16, 16)
 /**
 * AES-192
 */
-class AES_192 : public Block_Cipher_Fixed_Params!(16, 24)
+class AES_192 : Block_Cipher_Fixed_Params!(16, 24)
 {
 	public:
 		void encrypt_n(ubyte* input, ubyte* output, size_t blocks) const;
@@ -49,7 +49,7 @@ class AES_192 : public Block_Cipher_Fixed_Params!(16, 24)
 /**
 * AES-256
 */
-class AES_256 : public Block_Cipher_Fixed_Params!(16, 32)
+class AES_256 : Block_Cipher_Fixed_Params!(16, 32)
 {
 	public:
 		void encrypt_n(ubyte* input, ubyte* output, size_t blocks) const;

@@ -12,7 +12,7 @@ namespace {
 /*
 * OpenSSL Modular Exponentiator
 */
-class OpenSSL_Modular_Exponentiator : public Modular_Exponentiator
+class OpenSSL_Modular_Exponentiator : Modular_Exponentiator
 {
 	public:
 		void set_base(in BigInt b) { base = b; }

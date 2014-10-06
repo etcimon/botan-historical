@@ -6,7 +6,7 @@
 */
 
 import botan.algo_base.symkey;
-import chrono;
+import std.datetime;
 /**
 * Base class for PBKDF (password based key derivation function)
 * implementations. Converts a password into a key using a salt

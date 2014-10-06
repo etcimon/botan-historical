@@ -5,7 +5,7 @@
 * Distributed under the terms of the Botan license
 */
 
-import botan.pkcs10;
+import botan.cert.x509.pkcs10;
 import botan.x509_ext;
 import botan.x509cert;
 import botan.asn1.der_enc;
@@ -65,7 +65,7 @@ void PKCS10_Request::force_decode()
 
 	info.add("X509.Certificate.public_key",
 				PEM_Code::encode(
-					ASN1::put_in_sequence(unlock(public_key.value)),
+					asn1_obj.put_in_sequence(unlock(public_key.value)),
 					"PUBLIC KEY"
 					)
 		);

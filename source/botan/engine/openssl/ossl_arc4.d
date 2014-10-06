@@ -13,7 +13,7 @@ namespace {
 /**
 * RC4 as implemented by OpenSSL
 */
-class RC4_OpenSSL : public StreamCipher
+class RC4_OpenSSL : StreamCipher
 {
 	public:
 		void clear() { clear_mem(&state, 1); }

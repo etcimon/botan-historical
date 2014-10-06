@@ -10,7 +10,7 @@ import botan.internal.tls_reader;
 import botan.internal.tls_session_key;
 import botan.internal.tls_handshake_io;
 import botan.internal.stl_util;
-import chrono;
+import std.datetime;
 namespace TLS {
 
 enum {
@@ -22,7 +22,7 @@ Vector!ubyte make_hello_random(RandomNumberGenerator rng)
 	Vector!ubyte buf(32);
 
 	const uint time32 = cast(uint)(
-		std::chrono::system_clock::to_time_t(std::chrono::system_clock::now()));
+		std::chrono::system_clock::to_time_t(Clock.currTime()));
 
 	store_be(time32, &buf[0]);
 	rng.randomize(&buf[4], buf.size() - 4);

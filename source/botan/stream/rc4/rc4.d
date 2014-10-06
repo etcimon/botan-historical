@@ -69,7 +69,7 @@ void RC4::key_schedule(in ubyte* key, size_t length)
 	for (size_t i = 0, state_index = 0; i != 256; ++i)
 	{
 		state_index = (state_index + key[i % length] + state[i]) % 256;
-		std::swap(state[i], state[state_index]);
+		std.algorithm.swap(state[i], state[state_index]);
 	}
 
 	for (size_t i = 0; i <= SKIP; i += buffer.size())

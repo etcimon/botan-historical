@@ -9,7 +9,7 @@ import botan.xtea;
 /**
 * XTEA implemented using SIMD operations
 */
-class XTEA_SIMD : public XTEA
+class XTEA_SIMD : XTEA
 {
 	public:
 		size_t parallelism() const { return 8; }

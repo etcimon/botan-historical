@@ -63,7 +63,7 @@ class Power_Mod
 /**
 * Fixed Exponent Modular Exponentiator Proxy
 */
-class Fixed_Exponent_Power_Mod : public Power_Mod
+class Fixed_Exponent_Power_Mod : Power_Mod
 {
 	public:
 		BigInt operator()(in BigInt b) const
@@ -79,7 +79,7 @@ class Fixed_Exponent_Power_Mod : public Power_Mod
 /**
 * Fixed Base Modular Exponentiator Proxy
 */
-class Fixed_Base_Power_Mod : public Power_Mod
+class Fixed_Base_Power_Mod : Power_Mod
 {
 	public:
 		BigInt operator()(in BigInt e) const

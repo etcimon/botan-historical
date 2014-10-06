@@ -88,7 +88,7 @@ class DataSource
 /**
 * This class represents a Memory-Based DataSource
 */
-class DataSource_Memory : public DataSource
+class DataSource_Memory : DataSource
 {
 	public:
 		size_t read(ubyte[], size_t);
@@ -132,7 +132,7 @@ class DataSource_Memory : public DataSource
 /**
 * This class represents a Stream-Based DataSource.
 */
-class DataSource_Stream : public DataSource
+class DataSource_Stream : DataSource
 {
 	public:
 		size_t read(ubyte[], size_t);

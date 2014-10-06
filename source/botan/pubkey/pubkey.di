@@ -381,7 +381,7 @@ class PK_Key_Agreement
 /**
 * Encryption with an MR algorithm and an EME.
 */
-class PK_Encryptor_EME : public PK_Encryptor
+class PK_Encryptor_EME : PK_Encryptor
 {
 	public:
 		size_t maximum_input_size() const;
@@ -404,7 +404,7 @@ class PK_Encryptor_EME : public PK_Encryptor
 /**
 * Decryption with an MR algorithm and an EME.
 */
-class PK_Decryptor_EME : public PK_Decryptor
+class PK_Decryptor_EME : PK_Decryptor
 {
 	public:
 	  /**

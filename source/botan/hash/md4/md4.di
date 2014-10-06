@@ -9,7 +9,7 @@ import botan.mdx_hash;
 /**
 * MD4
 */
-class MD4 : public MDx_HashFunction
+class MD4 : MDx_HashFunction
 {
 	public:
 		string name() const { return "MD4"; }

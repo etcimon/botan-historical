@@ -12,31 +12,31 @@ import botan.mac;
 /**
 * Base class for SIV encryption and decryption (@see RFC 5297)
 */
-class SIV_Mode : public AEAD_Mode
+class SIV_Mode : AEAD_Mode
 {
 	public:
-		SafeVector!ubyte start(in ubyte* nonce, size_t nonce_len) override;
+		override SafeVector!ubyte start(in ubyte* nonce, size_t nonce_len);
 
-		void update(SafeVector!ubyte blocks, size_t offset = 0) override;
+		override void update(SafeVector!ubyte blocks, size_t offset = 0);
 
 		void set_associated_data_n(size_t n, in ubyte* ad, size_t ad_len);
 
-		void set_associated_data(in ubyte* ad, size_t ad_len) override
+		override void set_associated_data(in ubyte* ad, size_t ad_len)
 		{
 			set_associated_data_n(0, ad, ad_len);
 		}
 
-		string name() const override;
+		override string name() const;
 
-		size_t update_granularity() const override;
+		override size_t update_granularity() const;
 
-		Key_Length_Specification key_spec() const override;
+		override Key_Length_Specification key_spec() const;
 
-		bool valid_nonce_length(size_t) const override;
+		override bool valid_nonce_length(size_t) const;
 
-		void clear() override;
+		override void clear();
 
-		size_t tag_size() const override { return 16; }
+		override size_t tag_size() const { return 16; }
 
 	package:
 		SIV_Mode(BlockCipher cipher);
@@ -51,7 +51,7 @@ class SIV_Mode : public AEAD_Mode
 	private:
 		MessageAuthenticationCode& cmac() { return *m_cmac; }
 
-		void key_schedule(in ubyte* key, size_t length) override;
+		override void key_schedule(in ubyte* key, size_t length);
 
 		const string m_name;
 
@@ -64,7 +64,7 @@ class SIV_Mode : public AEAD_Mode
 /**
 * SIV Encryption
 */
-class SIV_Encryption : public SIV_Mode
+class SIV_Encryption : SIV_Mode
 {
 	public:
 		/**
@@ -72,18 +72,18 @@ class SIV_Encryption : public SIV_Mode
 		*/
 		SIV_Encryption(BlockCipher cipher) : SIV_Mode(cipher) {}
 
-		void finish(SafeVector!ubyte final_block, size_t offset = 0) override;
+		override void finish(SafeVector!ubyte final_block, size_t offset = 0);
 
-		size_t output_length(size_t input_length) const override
+		override size_t output_length(size_t input_length) const
 		{ return input_length + tag_size(); }
 
-		size_t minimum_final_size() const override { return 0; }
+		override size_t minimum_final_size() const { return 0; }
 };
 
 /**
 * SIV Decryption
 */
-class SIV_Decryption : public SIV_Mode
+class SIV_Decryption : SIV_Mode
 {
 	public:
 		/**
@@ -91,13 +91,13 @@ class SIV_Decryption : public SIV_Mode
 		*/
 		SIV_Decryption(BlockCipher cipher) : SIV_Mode(cipher) {}
 
-		void finish(SafeVector!ubyte final_block, size_t offset = 0) override;
+		override void finish(SafeVector!ubyte final_block, size_t offset = 0);
 
-		size_t output_length(size_t input_length) const override
+		override size_t output_length(size_t input_length) const
 		{
 			BOTAN_ASSERT(input_length > tag_size(), "Sufficient input");
 			return input_length - tag_size();
 		}
 
-		size_t minimum_final_size() const override { return tag_size(); }
+		override size_t minimum_final_size() const { return tag_size(); }
 };

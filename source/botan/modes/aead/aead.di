@@ -13,10 +13,10 @@ import botan.cipher_mode;
 * which is not included in the ciphertext (for instance a sequence
 * number).
 */
-class AEAD_Mode : public Cipher_Mode
+class AEAD_Mode : Cipher_Mode
 {
 	public:
-		bool authenticated() const override { return true; }
+		override bool authenticated() const { return true; }
 
 		/**
 		* Set associated data that is not included in the ciphertext but
@@ -41,7 +41,7 @@ class AEAD_Mode : public Cipher_Mode
 		* Default AEAD nonce size (a commonly supported value among AEAD
 		* modes, and large enough that random collisions are unlikely).
 		*/
-		size_t default_nonce_length() const override { return 12; }
+		override size_t default_nonce_length() const { return 12; }
 
 		/**
 		* Return the size of the authentication tag used (in bytes)

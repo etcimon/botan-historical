@@ -20,7 +20,7 @@ void EMSA_Raw::update(in ubyte* input, size_t length)
 SafeVector!ubyte EMSA_Raw::raw_data()
 {
 	SafeVector!ubyte output;
-	std::swap(message, output);
+	std.algorithm.swap(message, output);
 	return output;
 }
 

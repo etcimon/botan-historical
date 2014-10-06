@@ -12,7 +12,7 @@ namespace {
 /*
 * EVP Hash Function
 */
-class EVP_HashFunction : public HashFunction
+class EVP_HashFunction : HashFunction
 {
 	public:
 		void clear();

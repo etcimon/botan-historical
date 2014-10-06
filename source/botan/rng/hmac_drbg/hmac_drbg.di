@@ -10,7 +10,7 @@ import botan.mac;
 /**
 * HMAC_DRBG (SP800-90A)
 */
-class HMAC_DRBG : public RandomNumberGenerator
+class HMAC_DRBG : RandomNumberGenerator
 {
 	public:
 		void randomize(ubyte buf[], size_t buf_len);

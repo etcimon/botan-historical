@@ -10,7 +10,7 @@ import botan.engine;
 * Dynamically_Loaded_Engine just proxies the requests to the underlying
 * Engine object, and handles load/unload details
 */
-class Dynamically_Loaded_Engine : public Engine
+class Dynamically_Loaded_Engine : Engine
 {
 	public:
 		/**
@@ -24,40 +24,40 @@ class Dynamically_Loaded_Engine : public Engine
 
 		~this();
 
-		string provider_name() const override { return engine.provider_name(); }
+		override string provider_name() const { return engine.provider_name(); }
 
 		BlockCipher find_block_cipher(in SCAN_Name algo_spec,
-												 ref Algorithm_Factory af) const override
+												 override ref Algorithm_Factory af) const
 		{
 			return engine.find_block_cipher(algo_spec, af);
 		}
 
 		StreamCipher find_stream_cipher(in SCAN_Name algo_spec,
-													ref Algorithm_Factory af) const override
+													override ref Algorithm_Factory af) const
 		{
 			return engine.find_stream_cipher(algo_spec, af);
 		}
 
 		HashFunction find_hash(in SCAN_Name algo_spec,
-										ref Algorithm_Factory af) const override
+										override ref Algorithm_Factory af) const
 		{
 			return engine.find_hash(algo_spec, af);
 		}
 
 		MessageAuthenticationCode find_mac(in SCAN_Name algo_spec,
-														ref Algorithm_Factory af) const override
+														override ref Algorithm_Factory af) const
 		{
 			return engine.find_mac(algo_spec, af);
 		}
 
 		PBKDF find_pbkdf(in SCAN_Name algo_spec,
-								ref Algorithm_Factory af) const override
+								override ref Algorithm_Factory af) const
 		{
 			return engine.find_pbkdf(algo_spec, af);
 		}
 
 		Modular_Exponentiator* mod_exp(in BigInt n,
-												 Power_Mod::Usage_Hints hints) const override
+												 override Power_Mod::Usage_Hints hints) const
 		{
 			return engine.mod_exp(n, hints);
 		}
@@ -70,31 +70,31 @@ class Dynamically_Loaded_Engine : public Engine
 		}
 
 		PK_Ops::Key_Agreement*
-			get_key_agreement_op(in Private_Key key, RandomNumberGenerator rng) const override
+			override get_key_agreement_op(in Private_Key key, RandomNumberGenerator rng) const
 		{
 			return engine.get_key_agreement_op(key, rng);
 		}
 
 		PK_Ops::Signature*
-			get_signature_op(in Private_Key key, RandomNumberGenerator rng) const override
+			override get_signature_op(in Private_Key key, RandomNumberGenerator rng) const
 		{
 			return engine.get_signature_op(key, rng);
 		}
 
 		PK_Ops::Verification*
-			get_verify_op(in Public_Key key, RandomNumberGenerator rng) const override
+			override get_verify_op(in Public_Key key, RandomNumberGenerator rng) const
 		{
 			return engine.get_verify_op(key, rng);
 		}
 
 		PK_Ops::Encryption*
-			get_encryption_op(in Public_Key key, RandomNumberGenerator rng) const override
+			override get_encryption_op(in Public_Key key, RandomNumberGenerator rng) const
 		{
 			return engine.get_encryption_op(key, rng);
 		}
 
 		PK_Ops::Decryption*
-			get_decryption_op(in Private_Key key, RandomNumberGenerator rng) const override
+			override get_decryption_op(in Private_Key key, RandomNumberGenerator rng) const
 		{
 			return engine.get_decryption_op(key, rng);
 		}

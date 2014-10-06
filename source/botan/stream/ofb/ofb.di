@@ -10,7 +10,7 @@ import botan.block_cipher;
 /**
 * Output Feedback Mode
 */
-class OFB : public StreamCipher
+class OFB : StreamCipher
 {
 	public:
 		void cipher(in ubyte* input, ubyte* output);

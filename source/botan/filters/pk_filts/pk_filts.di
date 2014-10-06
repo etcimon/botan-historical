@@ -10,7 +10,7 @@ import botan.pubkey;
 /**
 * PK_Encryptor Filter
 */
-class PK_Encryptor_Filter : public Filter
+class PK_Encryptor_Filter : Filter
 {
 	public:
 		void write(in ubyte*, size_t);
@@ -28,7 +28,7 @@ class PK_Encryptor_Filter : public Filter
 /**
 * PK_Decryptor Filter
 */
-class PK_Decryptor_Filter : public Filter
+class PK_Decryptor_Filter : Filter
 {
 	public:
 		void write(in ubyte*, size_t);
@@ -43,7 +43,7 @@ class PK_Decryptor_Filter : public Filter
 /**
 * PK_Signer Filter
 */
-class PK_Signer_Filter : public Filter
+class PK_Signer_Filter : Filter
 {
 	public:
 		void write(in ubyte*, size_t);
@@ -62,7 +62,7 @@ class PK_Signer_Filter : public Filter
 /**
 * PK_Verifier Filter
 */
-class PK_Verifier_Filter : public Filter
+class PK_Verifier_Filter : Filter
 {
 	public:
 		void write(in ubyte*, size_t);

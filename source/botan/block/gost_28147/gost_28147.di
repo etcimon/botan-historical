@@ -43,7 +43,7 @@ class GOST_28147_89_Params
 /**
 * GOST 28147-89
 */
-class GOST_28147_89 : public Block_Cipher_Fixed_Params!(8, 32)
+class GOST_28147_89 : Block_Cipher_Fixed_Params!(8, 32)
 {
 	public:
 		void encrypt_n(ubyte* input, ubyte* output, size_t blocks) const;

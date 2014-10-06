@@ -9,7 +9,7 @@ import botan.block_cipher;
 /**
 * SEED, a Korean block cipher
 */
-class SEED : public Block_Cipher_Fixed_Params!(16, 16)
+class SEED : Block_Cipher_Fixed_Params!(16, 16)
 {
 	public:
 		void encrypt_n(ubyte* input, ubyte* output, size_t blocks) const;

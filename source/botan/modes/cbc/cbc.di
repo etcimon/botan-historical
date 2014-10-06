@@ -11,22 +11,22 @@ import botan.mode_pad;
 /**
 * CBC Mode
 */
-class CBC_Mode : public Cipher_Mode
+class CBC_Mode : Cipher_Mode
 {
 	public:
-		SafeVector!ubyte start(in ubyte* nonce, size_t nonce_len) override;
+		override SafeVector!ubyte start(in ubyte* nonce, size_t nonce_len);
 
-		string name() const override;
+		override string name() const;
 
-		size_t update_granularity() const override;
+		override size_t update_granularity() const;
 
-		Key_Length_Specification key_spec() const override;
+		override Key_Length_Specification key_spec() const;
 
-		size_t default_nonce_length() const override;
+		override size_t default_nonce_length() const;
 
-		bool valid_nonce_length(size_t n) const override;
+		override bool valid_nonce_length(size_t n) const;
 
-		void clear() override;
+		override void clear();
 	package:
 		CBC_Mode(BlockCipher cipher, BlockCipherModePaddingMethod* padding);
 
@@ -43,7 +43,7 @@ class CBC_Mode : public Cipher_Mode
 		ubyte* state_ptr() { return &m_state[0]; }
 
 	private:
-		void key_schedule(in ubyte* key, size_t length) override;
+		override void key_schedule(in ubyte* key, size_t length);
 
 		Unique!BlockCipher m_cipher;
 		Unique!BlockCipherModePaddingMethod m_padding;
@@ -53,34 +53,34 @@ class CBC_Mode : public Cipher_Mode
 /**
 * CBC Encryption
 */
-class CBC_Encryption : public CBC_Mode
+class CBC_Encryption : CBC_Mode
 {
 	public:
 		CBC_Encryption(BlockCipher cipher, BlockCipherModePaddingMethod* padding) :
 			CBC_Mode(cipher, padding) {}
 
-		void update(SafeVector!ubyte blocks, size_t offset = 0) override;
+		override void update(SafeVector!ubyte blocks, size_t offset = 0);
 
-		void finish(SafeVector!ubyte final_block, size_t offset = 0) override;
+		override void finish(SafeVector!ubyte final_block, size_t offset = 0);
 
-		size_t output_length(size_t input_length) const override;
+		override size_t output_length(size_t input_length) const;
 
-		size_t minimum_final_size() const override;
+		override size_t minimum_final_size() const;
 };
 
 /**
 * CBC Encryption with ciphertext stealing (CBC-CS3 variant)
 */
-class CTS_Encryption : public CBC_Encryption
+class CTS_Encryption : CBC_Encryption
 {
 	public:
 		CTS_Encryption(BlockCipher cipher) : CBC_Encryption(cipher, null) {}
 
-		size_t output_length(size_t input_length) const override;
+		override size_t output_length(size_t input_length) const;
 
-		void finish(SafeVector!ubyte final_block, size_t offset = 0) override;
+		override void finish(SafeVector!ubyte final_block, size_t offset = 0);
 
-		size_t minimum_final_size() const override;
+		override size_t minimum_final_size() const;
 
 		bool valid_nonce_length(size_t n) const;
 };
@@ -88,19 +88,19 @@ class CTS_Encryption : public CBC_Encryption
 /**
 * CBC Decryption
 */
-class CBC_Decryption : public CBC_Mode
+class CBC_Decryption : CBC_Mode
 {
 	public:
 		CBC_Decryption(BlockCipher cipher, BlockCipherModePaddingMethod* padding) :
 			CBC_Mode(cipher, padding), m_tempbuf(update_granularity()) {}
 
-		void update(SafeVector!ubyte blocks, size_t offset = 0) override;
+		override void update(SafeVector!ubyte blocks, size_t offset = 0);
 
-		void finish(SafeVector!ubyte final_block, size_t offset = 0) override;
+		override void finish(SafeVector!ubyte final_block, size_t offset = 0);
 
-		size_t output_length(size_t input_length) const override;
+		override size_t output_length(size_t input_length) const;
 
-		size_t minimum_final_size() const override;
+		override size_t minimum_final_size() const;
 	private:
 		SafeVector!ubyte m_tempbuf;
 };
@@ -108,14 +108,14 @@ class CBC_Decryption : public CBC_Mode
 /**
 * CBC Decryption with ciphertext stealing (CBC-CS3 variant)
 */
-class CTS_Decryption : public CBC_Decryption
+class CTS_Decryption : CBC_Decryption
 {
 	public:
 		CTS_Decryption(BlockCipher cipher) : CBC_Decryption(cipher, null) {}
 
-		void finish(SafeVector!ubyte final_block, size_t offset = 0) override;
+		override void finish(SafeVector!ubyte final_block, size_t offset = 0);
 
-		size_t minimum_final_size() const override;
+		override size_t minimum_final_size() const;
 
 		bool valid_nonce_length(size_t n) const;
 };

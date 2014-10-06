@@ -50,7 +50,7 @@ X509_Certificate create_self_signed_cert(in X509_Cert_Options opts,
 	opts.sanity_check();
 
 	Vector!ubyte pub_key = X509::BER_encode(key);
-	Unique!PK_Signer signer(choose_sig_format(key, hash_fn, sig_algo));
+	Unique!PK_Signer signer = choose_sig_format(key, hash_fn, sig_algo);
 	load_info(opts, subject_dn, subject_alt);
 
 	Key_Constraints constraints;
@@ -62,18 +62,18 @@ X509_Certificate create_self_signed_cert(in X509_Cert_Options opts,
 	Extensions extensions;
 
 	extensions.add(
-		new Cert_Extension::Basic_Constraints(opts.is_CA, opts.path_limit),
+		new x509_ext.Basic_Constraints(opts.is_CA, opts.path_limit),
 		true);
 
-	extensions.add(new Cert_Extension::Key_Usage(constraints), true);
+	extensions.add(new x509_ext.Key_Usage(constraints), true);
 
-	extensions.add(new Cert_Extension::Subject_Key_ID(pub_key));
-
-	extensions.add(
-		new Cert_Extension::Subject_Alternative_Name(subject_alt));
+	extensions.add(new x509_ext.Subject_Key_ID(pub_key));
 
 	extensions.add(
-		new Cert_Extension::Extended_Key_Usage(opts.ex_constraints));
+		new x509_ext.Subject_Alternative_Name(subject_alt));
+
+	extensions.add(
+		new x509_ext.Extended_Key_Usage(opts.ex_constraints));
 
 	return X509_CA::make_cert(signer.get(), rng, sig_algo, pub_key,
 									  opts.start, opts.end,
@@ -96,7 +96,7 @@ PKCS10_Request create_cert_req(in X509_Cert_Options opts,
 	opts.sanity_check();
 
 	Vector!ubyte pub_key = X509::BER_encode(key);
-	Unique!PK_Signer signer(choose_sig_format(key, hash_fn, sig_algo));
+	Unique!PK_Signer signer = choose_sig_format(key, hash_fn, sig_algo);
 	load_info(opts, subject_dn, subject_alt);
 
 	const size_t PKCS10_VERSION = 0;
@@ -104,17 +104,17 @@ PKCS10_Request create_cert_req(in X509_Cert_Options opts,
 	Extensions extensions;
 
 	extensions.add(
-		new Cert_Extension::Basic_Constraints(opts.is_CA, opts.path_limit));
+		new x509_ext.Basic_Constraints(opts.is_CA, opts.path_limit));
 	extensions.add(
-		new Cert_Extension::Key_Usage(
+		new x509_ext.Key_Usage(
 			opts.is_CA ? Key_Constraints(KEY_CERT_SIGN | CRL_SIGN) :
 							 find_constraints(key, opts.constraints)
 			)
 		);
 	extensions.add(
-		new Cert_Extension::Extended_Key_Usage(opts.ex_constraints));
+		new x509_ext.Extended_Key_Usage(opts.ex_constraints));
 	extensions.add(
-		new Cert_Extension::Subject_Alternative_Name(subject_alt));
+		new x509_ext.Subject_Alternative_Name(subject_alt));
 
 	DER_Encoder tbs_req;
 

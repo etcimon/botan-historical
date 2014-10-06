@@ -10,7 +10,7 @@ import botan.aead;
 /**
 * Filter interface for AEAD Modes
 */
-class AEAD_Filter : public Transformation_Filter
+class AEAD_Filter : Transformation_Filter
 {
 	public:
 		AEAD_Filter(AEAD_Mode* aead) : Transformation_Filter(aead) {}

@@ -12,7 +12,7 @@ import botan.reducer;
 /**
 * Nyberg-Rueppel Public Key
 */
-class NR_PublicKey : public abstract DL_Scheme_PublicKey
+class NR_PublicKey : DL_Scheme_PublicKey
 {
 	public:
 		string algo_name() const { return "NR"; }
@@ -34,7 +34,7 @@ class NR_PublicKey : public abstract DL_Scheme_PublicKey
 /**
 * Nyberg-Rueppel Private Key
 */
-class NR_PrivateKey : public NR_PublicKey,
+class NR_PrivateKey : NR_PublicKey,
 										  public abstract DL_Scheme_PrivateKey
 {
 	public:
@@ -52,7 +52,7 @@ class NR_PrivateKey : public NR_PublicKey,
 /**
 * Nyberg-Rueppel signature operation
 */
-class NR_Signature_Operation : public PK_Ops::Signature
+class NR_Signature_Operation : PK_Ops::Signature
 {
 	public:
 		NR_Signature_Operation(in NR_PrivateKey nr);
@@ -73,7 +73,7 @@ class NR_Signature_Operation : public PK_Ops::Signature
 /**
 * Nyberg-Rueppel verification operation
 */
-class NR_Verification_Operation : public PK_Ops::Verification
+class NR_Verification_Operation : PK_Ops::Verification
 {
 	public:
 		NR_Verification_Operation(in NR_PublicKey nr);

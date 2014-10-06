@@ -10,7 +10,7 @@ import string;
 /**
 * This class represents hash function (message digest) objects
 */
-class HashFunction : public Buffered_Computation
+class HashFunction : Buffered_Computation
 {
 	public:
 		/**

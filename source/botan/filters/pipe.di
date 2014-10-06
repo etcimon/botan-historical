@@ -18,7 +18,7 @@ import iosfwd;
 * collected for retrieval.  If you're familiar with the Unix shell
 * environment, this design will sound quite familiar.
 */
-class Pipe : public DataSource
+class Pipe : DataSource
 {
 	public:
 		/**
@@ -30,7 +30,7 @@ class Pipe : public DataSource
 		* Exception if you use an invalid message as an argument to
 		* read, remaining, etc
 		*/
-		struct Invalid_Message_Number : public Invalid_Argument
+		struct Invalid_Message_Number : Invalid_Argument
 		{
 			/**
 			* @param where the error occured

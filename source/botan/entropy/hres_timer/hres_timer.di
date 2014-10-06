@@ -12,7 +12,7 @@ import botan.entropy_src;
 * @note Any results from timers are marked as not contributing entropy
 * to the poll, as a local attacker could observe them directly.
 */
-class High_Resolution_Timestamp : public EntropySource
+class High_Resolution_Timestamp : EntropySource
 {
 	public:
 		string name() const { return "High Resolution Timestamp"; }

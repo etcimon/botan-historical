@@ -14,7 +14,7 @@ import vector;
 * This class represents abstract X.509 signed objects as
 * in the X.500 SIGNED macro
 */
-class X509_Object : public ASN1_Object
+class X509_Object : ASN1_Object
 {
 	public:
 		/**
@@ -66,9 +66,9 @@ class X509_Object : public ASN1_Object
 		*/
 		bool check_signature(const Public_Key* key) const;
 
-		void encode_into(class DER_Encoder& to) const override;
+		override void encode_into(class DER_Encoder& to) const;
 
-		void decode_from(class BER_Decoder& from) override;
+		override void decode_from(class BER_Decoder& from);
 
 		/**
 		* @return BER encoding of this

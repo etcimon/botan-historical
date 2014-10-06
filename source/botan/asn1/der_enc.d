@@ -23,6 +23,9 @@ class DER_Encoder
 {
 public:
 
+	import botan.utils.mixins;
+	mixin USE_STRUCT_INIT!();
+
 	Vector!ubyte get_contents_unlocked()
 	{ return unlock(get_contents()); }
 
@@ -36,7 +39,7 @@ public:
 			throw new Invalid_State("DER_Encoder: Sequence hasn't been marked done");
 		
 		SafeVector!ubyte output;
-		std::swap(output, contents);
+		std.algorithm.swap(output, contents);
 		return output;
 	}
 	

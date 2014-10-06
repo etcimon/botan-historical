@@ -9,7 +9,7 @@ import botan.mdx_hash;
 /**
 * RIPEMD-160
 */
-class RIPEMD_160 : public MDx_HashFunction
+class RIPEMD_160 : MDx_HashFunction
 {
 	public:
 		string name() const { return "RIPEMD-160"; }

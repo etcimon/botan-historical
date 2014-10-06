@@ -10,7 +10,7 @@ import botan.stream_cipher;
 /**
 * CTR-BE (Counter mode, big-endian)
 */
-class CTR_BE : public StreamCipher
+class CTR_BE : StreamCipher
 {
 	public:
 		void cipher(in ubyte* input, ubyte* output);

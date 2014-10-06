@@ -14,7 +14,7 @@ namespace {
 /*
 * A Filter that does nothing
 */
-class Null_Filter : public Filter
+class Null_Filter : Filter
 {
 	public:
 		void write(in ubyte* input, size_t length)

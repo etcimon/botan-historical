@@ -9,7 +9,7 @@ import botan.types;
 import future;
 import vector;
 import map;
-import chrono;
+import std.datetime;
 import string;
 namespace HTTP {
 
@@ -28,7 +28,7 @@ struct Response
 
 		uint status_code() const { return m_status_code; }
 
-		in Vector!ubyte body() const { return m_body; }
+		in Vector!ubyte _body() const { return m_body; }
 
 		const HashMap!(string, string)& headers() const { return m_headers; }
 

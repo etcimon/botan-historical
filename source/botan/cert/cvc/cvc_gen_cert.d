@@ -15,7 +15,7 @@ import botan.pubkey;
 /**
 *  This class represents TR03110 (EAC) v1.1 generalized CV Certificates
 */
-class EAC1_1_gen_CVC(Derived) : public EAC1_1_obj!Derived // CRTP continuation from EAC1_1_obj
+class EAC1_1_gen_CVC(Derived) : EAC1_1_obj!Derived // CRTP continuation from EAC1_1_obj
 {
 public:
 

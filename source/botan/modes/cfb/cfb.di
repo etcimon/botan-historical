@@ -11,26 +11,26 @@ import botan.mode_pad;
 /**
 * CFB Mode
 */
-class CFB_Mode : public Cipher_Mode
+class CFB_Mode : Cipher_Mode
 {
 	public:
-		SafeVector!ubyte start(in ubyte* nonce, size_t nonce_len) override;
+		override SafeVector!ubyte start(in ubyte* nonce, size_t nonce_len);
 
-		string name() const override;
+		override string name() const;
 
-		size_t update_granularity() const override;
+		override size_t update_granularity() const;
 
-		size_t minimum_final_size() const override;
+		override size_t minimum_final_size() const;
 
-		Key_Length_Specification key_spec() const override;
+		override Key_Length_Specification key_spec() const;
 
-		size_t output_length(size_t input_length) const override;
+		override size_t output_length(size_t input_length) const;
 
-		size_t default_nonce_length() const override;
+		override size_t default_nonce_length() const;
 
-		bool valid_nonce_length(size_t n) const override;
+		override bool valid_nonce_length(size_t n) const;
 
-		void clear() override;
+		override void clear();
 	package:
 		CFB_Mode(BlockCipher cipher, size_t feedback_bits);
 
@@ -43,7 +43,7 @@ class CFB_Mode : public Cipher_Mode
 		SafeVector!ubyte keystream_buf() { return m_keystream_buf; }
 
 	private:
-		void key_schedule(in ubyte* key, size_t length) override;
+		override void key_schedule(in ubyte* key, size_t length);
 
 		Unique!BlockCipher m_cipher;
 		SafeVector!ubyte m_shift_register;
@@ -54,27 +54,27 @@ class CFB_Mode : public Cipher_Mode
 /**
 * CFB Encryption
 */
-class CFB_Encryption : public CFB_Mode
+class CFB_Encryption : CFB_Mode
 {
 	public:
 		CFB_Encryption(BlockCipher cipher, size_t feedback_bits) :
 			CFB_Mode(cipher, feedback_bits) {}
 
-		void update(SafeVector!ubyte blocks, size_t offset = 0) override;
+		override void update(SafeVector!ubyte blocks, size_t offset = 0);
 
-		void finish(SafeVector!ubyte final_block, size_t offset = 0) override;
+		override void finish(SafeVector!ubyte final_block, size_t offset = 0);
 };
 
 /**
 * CFB Decryption
 */
-class CFB_Decryption : public CFB_Mode
+class CFB_Decryption : CFB_Mode
 {
 	public:
 		CFB_Decryption(BlockCipher cipher, size_t feedback_bits) :
 			CFB_Mode(cipher, feedback_bits) {}
 
-		void update(SafeVector!ubyte blocks, size_t offset = 0) override;
+		override void update(SafeVector!ubyte blocks, size_t offset = 0);
 
-		void finish(SafeVector!ubyte final_block, size_t offset = 0) override;
+		override void finish(SafeVector!ubyte final_block, size_t offset = 0);
 };

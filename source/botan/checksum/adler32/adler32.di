@@ -9,7 +9,7 @@ import botan.hash;
 /**
 * The Adler32 checksum, used in zlib
 */
-class Adler32 : public HashFunction
+class Adler32 : HashFunction
 {
 	public:
 		string name() const { return "Adler32"; }

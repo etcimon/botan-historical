@@ -11,7 +11,7 @@ import string;
 /**
 * Entropy source reading from kernel devices like /dev/random
 */
-class Device_EntropySource : public EntropySource
+class Device_EntropySource : EntropySource
 {
 	public:
 		string name() const { return "RNG Device Reader"; }

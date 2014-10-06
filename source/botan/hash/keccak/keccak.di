@@ -11,7 +11,7 @@ import string;
 /**
 * Keccak[1600], a SHA-3 candidate
 */
-class Keccak_1600 : public HashFunction
+class Keccak_1600 : HashFunction
 {
 	public:
 

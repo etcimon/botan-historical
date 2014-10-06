@@ -16,7 +16,7 @@ class File_Descriptor_Source
 /**
 * File Tree Walking Entropy Source
 */
-class ProcWalking_EntropySource : public EntropySource
+class ProcWalking_EntropySource : EntropySource
 {
 	public:
 		string name() const { return "Proc Walker"; }

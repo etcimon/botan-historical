@@ -131,9 +131,9 @@ Vector!ubyte Policy::compression() const
 	return Vector!ubyte{ NO_COMPRESSION };
 }
 
-uint Policy::session_ticket_lifetime() const
+Duration Policy::session_ticket_lifetime() const
 {
-	return 86400; // 1 day
+	return TickDuration.from!"seconds"(86400).to!Duration; // 1 day
 }
 
 bool Policy::acceptable_protocol_version(Protocol_Version _version) const

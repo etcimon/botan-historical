@@ -9,7 +9,7 @@ import botan.block_cipher;
 /**
 * DES
 */
-class DES : public Block_Cipher_Fixed_Params!(8, 8)
+class DES : Block_Cipher_Fixed_Params!(8, 8)
 {
 	public:
 		void encrypt_n(ubyte* input, ubyte* output, size_t blocks) const;
@@ -27,7 +27,7 @@ class DES : public Block_Cipher_Fixed_Params!(8, 8)
 /**
 * Triple DES
 */
-class TripleDES : public Block_Cipher_Fixed_Params!(8, 16, 24, 8)
+class TripleDES : Block_Cipher_Fixed_Params!(8, 16, 24, 8)
 {
 	public:
 		void encrypt_n(ubyte* input, ubyte* output, size_t blocks) const;

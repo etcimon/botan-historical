@@ -9,7 +9,7 @@ import botan.engine;
 /**
 * Engine for implementations that use some kind of SIMD
 */
-class SIMD_Engine : public Engine
+class SIMD_Engine : Engine
 {
 	public:
 		string provider_name() const { return "simd"; }

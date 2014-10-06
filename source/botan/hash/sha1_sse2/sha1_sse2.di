@@ -9,7 +9,7 @@ import botan.sha160;
 /**
 * SHA-160 using SSE2 for the message expansion
 */
-class SHA_160_SSE2 : public SHA_160
+class SHA_160_SSE2 : SHA_160
 {
 	public:
 		HashFunction clone() const { return new SHA_160_SSE2; }

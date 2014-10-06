@@ -9,7 +9,7 @@ import botan.block_cipher;
 /**
 * CAST-128
 */
-class CAST_128 : public Block_Cipher_Fixed_Params!(8, 11, 16)
+class CAST_128 : Block_Cipher_Fixed_Params!(8, 11, 16)
 {
 	public:
 		void encrypt_n(ubyte* input, ubyte* output, size_t blocks) const;

@@ -91,18 +91,18 @@ class CurveGFp
 		*/
 		void swap(CurveGFp other)
 		{
-			std::swap(m_p, other.m_p);
+			std.algorithm.swap(m_p, other.m_p);
 
-			std::swap(m_a, other.m_a);
-			std::swap(m_b, other.m_b);
+			std.algorithm.swap(m_a, other.m_a);
+			std.algorithm.swap(m_b, other.m_b);
 
-			std::swap(m_a_r, other.m_a_r);
-			std::swap(m_b_r, other.m_b_r);
+			std.algorithm.swap(m_a_r, other.m_a_r);
+			std.algorithm.swap(m_b_r, other.m_b_r);
 
-			std::swap(m_p_words, other.m_p_words);
+			std.algorithm.swap(m_p_words, other.m_p_words);
 
-			std::swap(m_r2, other.m_r2);
-			std::swap(m_p_dash, other.m_p_dash);
+			std.algorithm.swap(m_r2, other.m_r2);
+			std.algorithm.swap(m_p_dash, other.m_p_dash);
 		}
 
 		/**

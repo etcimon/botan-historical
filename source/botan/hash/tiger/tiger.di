@@ -9,7 +9,7 @@ import botan.mdx_hash;
 /**
 * Tiger
 */
-class Tiger : public MDx_HashFunction
+class Tiger : MDx_HashFunction
 {
 	public:
 		string name() const;

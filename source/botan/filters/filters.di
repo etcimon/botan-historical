@@ -24,7 +24,7 @@ import botan.algo_base.scan_name;
 /**
 * Stream Cipher Filter
 */
-class StreamCipher_Filter : public Keyed_Filter
+class StreamCipher_Filter : Keyed_Filter
 {
 	public:
 
@@ -52,7 +52,7 @@ class StreamCipher_Filter : public Keyed_Filter
 		*/
 		void set_key(in SymmetricKey key) { cipher.set_key(key); }
 
-		Key_Length_Specification key_spec() const override { return cipher.key_spec(); }
+		override Key_Length_Specification key_spec() const { return cipher.key_spec(); }
 
 		/**
 		* Construct a stream cipher filter.
@@ -89,7 +89,7 @@ class StreamCipher_Filter : public Keyed_Filter
 /**
 * Hash Filter.
 */
-class Hash_Filter : public Filter
+class Hash_Filter : Filter
 {
 	public:
 		void write(in ubyte* input, size_t len) { hash.update(input, len); }
@@ -127,7 +127,7 @@ class Hash_Filter : public Filter
 /**
 * MessageAuthenticationCode Filter.
 */
-class MAC_Filter : public Keyed_Filter
+class MAC_Filter : Keyed_Filter
 {
 	public:
 		void write(in ubyte* input, size_t len) { mac.update(input, len); }
@@ -141,7 +141,7 @@ class MAC_Filter : public Keyed_Filter
 		*/
 		void set_key(in SymmetricKey key) { mac.set_key(key); }
 
-		Key_Length_Specification key_spec() const override { return mac.key_spec(); }
+		override Key_Length_Specification key_spec() const { return mac.key_spec(); }
 
 		/**
 		* Construct a MAC filter. The MAC key will be left empty.

@@ -11,7 +11,7 @@ import botan.filter;
 /**
 * A queue that knows how to zeroize itself
 */
-class SecureQueue : public Fanout_Filter, public DataSource
+class SecureQueue : Fanout_Filter, public DataSource
 {
 	public:
 		string name() const { return "Queue"; }

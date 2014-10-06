@@ -10,7 +10,7 @@ import botan.hash;
 /**
 * KDF2, from IEEE 1363
 */
-class KDF2 : public KDF
+class KDF2 : KDF
 {
 	public:
 		SafeVector!ubyte derive(size_t, const ubyte[], size_t,

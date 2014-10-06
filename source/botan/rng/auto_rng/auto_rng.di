@@ -7,7 +7,7 @@
 
 import botan.rng;
 import string;
-class AutoSeeded_RNG : public RandomNumberGenerator
+class AutoSeeded_RNG : RandomNumberGenerator
 {
 	public:
 		void randomize(ubyte* output, size_t len)

@@ -11,21 +11,21 @@ import botan.buf_filt;
 /**
 * Filter interface for Transformations
 */
-class Transformation_Filter : public Keyed_Filter,
+class Transformation_Filter : Keyed_Filter,
 													 private Buffered_Filter
 {
 	public:
 		Transformation_Filter(Transformation* t);
 
-		void set_iv(in InitializationVector iv) override;
+		override void set_iv(in InitializationVector iv);
 
-		void set_key(in SymmetricKey key) override;
+		override void set_key(in SymmetricKey key);
 
-		Key_Length_Specification key_spec() const override;
+		override Key_Length_Specification key_spec() const;
 
-		bool valid_iv_length(size_t length) const override;
+		override bool valid_iv_length(size_t length) const;
 
-		string name() const override;
+		override string name() const;
 
 	package:
 		const Transformation& get_transform() const { return *m_transform; }
@@ -33,12 +33,12 @@ class Transformation_Filter : public Keyed_Filter,
 		Transformation& get_transform() { return *m_transform; }
 
 	private:
-		void write(in ubyte* input, size_t input_length) override;
-		void start_msg() override;
-		void end_msg() override;
+		override void write(in ubyte* input, size_t input_length);
+		override void start_msg();
+		override void end_msg();
 
-		void buffered_block(in ubyte* input, size_t input_length) override;
-		void buffered_final(in ubyte* input, size_t input_length) override;
+		override void buffered_block(in ubyte* input, size_t input_length);
+		override void buffered_final(in ubyte* input, size_t input_length);
 
 		class Nonce_State
 		{

@@ -9,7 +9,7 @@ import botan.block_cipher;
 /**
 * KASUMI, the block cipher used in 3G telephony
 */
-class KASUMI : public Block_Cipher_Fixed_Params!(8, 16)
+class KASUMI : Block_Cipher_Fixed_Params!(8, 16)
 {
 	public:
 		void encrypt_n(ubyte* input, ubyte* output, size_t blocks) const;

@@ -11,7 +11,7 @@ import thread;
 /**
 * BitBucket is a filter which simply discards all inputs
 */
-struct BitBucket : public Filter
+struct BitBucket : Filter
 {
 	void write(in ubyte*, size_t) {}
 
@@ -24,7 +24,7 @@ struct BitBucket : public Filter
 * through all the Filters contained in the Chain.
 */
 
-class Chain : public Fanout_Filter
+class Chain : Fanout_Filter
 {
 	public:
 		void write(in ubyte* input, size_t length) { send(input, length); }
@@ -51,7 +51,7 @@ class Chain : public Fanout_Filter
 * flow of data. It causes an input message to result in n messages at
 * the end of the filter, where n is the number of forks.
 */
-class Fork : public Fanout_Filter
+class Fork : Fanout_Filter
 {
 	public:
 		void write(in ubyte* input, size_t length) { send(input, length); }
@@ -77,7 +77,7 @@ class Fork : public Fanout_Filter
 * threads, the class itself is NOT thread-safe. This is meant as a drop-
 * in replacement for Fork where performance gains are possible.
 */
-class Threaded_Fork : public Fork
+class Threaded_Fork : Fork
 {
 	public:
 		string name() const;

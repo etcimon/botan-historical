@@ -10,24 +10,24 @@ import botan.block_cipher;
 /**
 * IEEE P1619 XTS Mode
 */
-class XTS_Mode : public Cipher_Mode
+class XTS_Mode : Cipher_Mode
 {
 	public:
-		string name() const override;
+		override string name() const;
 
-		SafeVector!ubyte start(in ubyte* nonce, size_t nonce_len) override;
+		override SafeVector!ubyte start(in ubyte* nonce, size_t nonce_len);
 
-		size_t update_granularity() const override;
+		override size_t update_granularity() const;
 
-		size_t minimum_final_size() const override;
+		override size_t minimum_final_size() const;
 
-		Key_Length_Specification key_spec() const override;
+		override Key_Length_Specification key_spec() const;
 
-		size_t default_nonce_length() const override;
+		override size_t default_nonce_length() const;
 
-		bool valid_nonce_length(size_t n) const override;
+		override bool valid_nonce_length(size_t n) const;
 
-		void clear() override;
+		override void clear();
 	package:
 		XTS_Mode(BlockCipher cipher);
 
@@ -38,7 +38,7 @@ class XTS_Mode : public Cipher_Mode
 		void update_tweak(size_t last_used);
 
 	private:
-		void key_schedule(in ubyte* key, size_t length) override;
+		override void key_schedule(in ubyte* key, size_t length);
 
 		Unique!BlockCipher m_cipher, m_tweak_cipher;
 		SafeVector!ubyte m_tweak;
@@ -47,29 +47,29 @@ class XTS_Mode : public Cipher_Mode
 /**
 * IEEE P1619 XTS Encryption
 */
-class XTS_Encryption : public XTS_Mode
+class XTS_Encryption : XTS_Mode
 {
 	public:
 		XTS_Encryption(BlockCipher cipher) : XTS_Mode(cipher) {}
 
-		void update(SafeVector!ubyte blocks, size_t offset = 0) override;
+		override void update(SafeVector!ubyte blocks, size_t offset = 0);
 
-		void finish(SafeVector!ubyte final_block, size_t offset = 0) override;
+		override void finish(SafeVector!ubyte final_block, size_t offset = 0);
 
-		size_t output_length(size_t input_length) const override;
+		override size_t output_length(size_t input_length) const;
 };
 
 /**
 * IEEE P1619 XTS Decryption
 */
-class XTS_Decryption : public XTS_Mode
+class XTS_Decryption : XTS_Mode
 {
 	public:
 		XTS_Decryption(BlockCipher cipher) : XTS_Mode(cipher) {}
 
-		void update(SafeVector!ubyte blocks, size_t offset = 0) override;
+		override void update(SafeVector!ubyte blocks, size_t offset = 0);
 
-		void finish(SafeVector!ubyte final_block, size_t offset = 0) override;
+		override void finish(SafeVector!ubyte final_block, size_t offset = 0);
 
-		size_t output_length(size_t input_length) const override;
+		override size_t output_length(size_t input_length) const;
 };

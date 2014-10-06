@@ -12,7 +12,7 @@ namespace {
 /*
 * GMP Modular Exponentiator
 */
-class GMP_Modular_Exponentiator : public Modular_Exponentiator
+class GMP_Modular_Exponentiator : Modular_Exponentiator
 {
 	public:
 		void set_base(in BigInt b) { base = b; }

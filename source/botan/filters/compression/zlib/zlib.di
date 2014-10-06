@@ -10,7 +10,7 @@ import botan.filter;
 /**
 * Zlib Compression Filter
 */
-class Zlib_Compression : public Filter
+class Zlib_Compression : Filter
 {
 	public:
 		string name() const { return "Zlib_Compression"; }
@@ -46,7 +46,7 @@ class Zlib_Compression : public Filter
 /**
 * Zlib Decompression Filter
 */
-class Zlib_Decompression : public Filter
+class Zlib_Decompression : Filter
 {
 	public:
 		string name() const { return "Zlib_Decompression"; }

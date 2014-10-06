@@ -76,7 +76,7 @@ void sqlite3_statement::bind(int column, int val)
 
 void sqlite3_statement::bind(int column, SysTime time)
 {
-	const int timeval = std::chrono::duration_cast(<std::chrono::seconds>)(time.time_since_epoch()).count();
+	const int timeval = std::chrono::duration_cast(<Duration>)(time.time_since_epoch()).count();
 	bind(column, timeval);
 }
 

@@ -29,7 +29,7 @@ class BigInt
 	/**
 	* DivideByZero Exception
 	*/
-	struct DivideByZero : public Exception
+	struct DivideByZero : Exception
 		{ DivideByZero() : Exception("BigInt divide by zero") {} };
 
 	/**
@@ -111,7 +111,7 @@ class BigInt
 	void swap(BigInt other)
 		{
 		m_reg.swap(other.m_reg);
-		std::swap(m_signedness, other.m_signedness);
+		std.algorithm.swap(m_signedness, other.m_signedness);
 		}
 
 	/**

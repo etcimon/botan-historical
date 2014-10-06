@@ -10,15 +10,15 @@ import botan.mac;
 /**
 * PKCS #5 PBKDF2
 */
-class PKCS5_PBKDF2 : public PBKDF
+class PKCS5_PBKDF2 : PBKDF
 {
 	public:
-		string name() const override
+		override string name() const
 		{
 			return "PBKDF2(" ~ mac.name() ~ ")";
 		}
 
-		PBKDF clone() const override
+		override PBKDF clone() const
 		{
 			return new PKCS5_PBKDF2(mac.clone());
 		}
@@ -28,7 +28,7 @@ class PKCS5_PBKDF2 : public PBKDF
 								in string passphrase,
 								in ubyte* salt, size_t salt_len,
 								size_t iterations,
-								std::chrono::milliseconds msec) const override;
+								override std::chrono::milliseconds msec) const;
 
 		/**
 		* Create a PKCS #5 instance using the specified message auth code

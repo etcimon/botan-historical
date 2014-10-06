@@ -7,11 +7,11 @@
 
 import botan.x509_key;
 import functional;
-import chrono;
+import std.datetime;
 /**
 * PKCS #8 General Exception
 */
-struct PKCS8_Exception : public Decoding_Error
+struct PKCS8_Exception : Decoding_Error
 {
 	PKCS8_Exception(in string error) :
 		Decoding_Error("PKCS #8: " ~ error) {}
@@ -51,7 +51,7 @@ Vector!ubyte
 BER_encode(in Private_Key key,
 			  RandomNumberGenerator rng,
 			  in string pass,
-			  std::chrono::milliseconds msec = std::chrono::milliseconds(300),
+			  Duration msec = 300.msecs,
 			  in string pbe_algo = "");
 
 /**

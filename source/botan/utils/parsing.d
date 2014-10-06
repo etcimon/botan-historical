@@ -16,37 +16,6 @@ uint to_uint(in string str)
 }
 
 /*
-* Convert a string into a time duration
-*/
-uint timespec_to_uint(in string timespec)
-{
-	if (timespec == "")
-		return 0;
-
-	const char suffix = timespec[timespec.size()-1];
-	string value = timespec.substr(0, timespec.size()-1);
-
-	uint scale = 1;
-
-	if (Charset.is_digit(suffix))
-		value += suffix;
-	else if (suffix == 's')
-		scale = 1;
-	else if (suffix == 'm')
-		scale = 60;
-	else if (suffix == 'h')
-		scale = 60 * 60;
-	else if (suffix == 'd')
-		scale = 24 * 60 * 60;
-	else if (suffix == 'y')
-		scale = 365 * 24 * 60 * 60;
-	else
-		throw new Decoding_Error("timespec_to_uint: Bad input " ~ timespec);
-
-	return scale * to_uint(value);
-}
-
-/*
 * Parse a SCAN-style algorithm name
 */
 Vector!string parse_algorithm_name(in string namex)

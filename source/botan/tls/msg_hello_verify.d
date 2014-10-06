@@ -32,7 +32,7 @@ Hello_Verify_Request::Hello_Verify_Request(in Vector!ubyte client_hello_bits,
 														 in string client_identity,
 														 const SymmetricKey& secret_key)
 {
-	Unique!MessageAuthenticationCode hmac(get_mac("HMAC(SHA-256)"));
+	Unique!MessageAuthenticationCode hmac = get_mac("HMAC(SHA-256)");
 	hmac.set_key(secret_key);
 
 	hmac.update_be(client_hello_bits.size());

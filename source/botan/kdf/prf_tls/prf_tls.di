@@ -10,7 +10,7 @@ import botan.mac;
 /**
 * PRF used in TLS 1.0/1.1
 */
-class TLS_PRF : public KDF
+class TLS_PRF : KDF
 {
 	public:
 		SafeVector!ubyte derive(size_t key_len,
@@ -29,7 +29,7 @@ class TLS_PRF : public KDF
 /**
 * PRF used in TLS 1.2
 */
-class TLS_12_PRF : public KDF
+class TLS_12_PRF : KDF
 {
 	public:
 		SafeVector!ubyte derive(size_t key_len,

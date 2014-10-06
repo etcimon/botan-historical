@@ -7,7 +7,7 @@
 
 import botan.tls_session;
 import core.sync.mutex;
-import chrono;
+import std.datetime;
 import map;
 namespace TLS {
 
@@ -63,7 +63,7 @@ class Session_Manager
 		* sessions are not resumed. Returns 0 if unknown/no explicit
 		* expiration policy.
 		*/
-		abstract std::chrono::seconds session_lifetime() const;
+		abstract Duration session_lifetime() const;
 
 		~this() {}
 };
@@ -72,27 +72,27 @@ class Session_Manager
 * An implementation of Session_Manager that does not save sessions at
 * all, preventing session resumption.
 */
-class Session_Manager_Noop : public Session_Manager
+class Session_Manager_Noop : Session_Manager
 {
 	public:
-		bool load_from_session_id(in Vector!ubyte, Session&) override
+		override bool load_from_session_id(in Vector!ubyte, Session&)
 		{ return false; }
 
-		bool load_from_server_info(in Server_Information, Session&) override
+		override bool load_from_server_info(in Server_Information, Session&)
 		{ return false; }
 
-		void remove_entry(in Vector!ubyte) override {}
+		override void remove_entry(in Vector!ubyte) {}
 
-		void save(in Session) override {}
+		override void save(in Session) {}
 
-		std::chrono::seconds session_lifetime() const override
-		{ return std::chrono::seconds(0); }
+		override Duration session_lifetime() const
+		{ return Duration.init; }
 };
 
 /**
 * An implementation of Session_Manager that saves values in memory.
 */
-class Session_Manager_In_Memory : public Session_Manager
+class Session_Manager_In_Memory : Session_Manager
 {
 	public:
 		/**
@@ -103,20 +103,20 @@ class Session_Manager_In_Memory : public Session_Manager
 		*/
 		Session_Manager_In_Memory(RandomNumberGenerator rng,
 										  size_t max_sessions = 1000,
-										  std::chrono::seconds session_lifetime =
-											  std::chrono::seconds(7200));
+										  Duration session_lifetime =
+											  TickDuration.from!"seconds"(7200).to!Duration);
 
 		bool load_from_session_id(in Vector!ubyte session_id,
-										  Session& session) override;
+										  override Session& session);
 
 		bool load_from_server_info(in Server_Information info,
-											Session& session) override;
+											override Session& session);
 
-		void remove_entry(in Vector!ubyte session_id) override;
+		override void remove_entry(in Vector!ubyte session_id);
 
-		void save(in Session session_data) override;
+		override void save(in Session session_data);
 
-		std::chrono::seconds session_lifetime() const override
+		override Duration session_lifetime() const
 		{ return m_session_lifetime; }
 
 	private:
@@ -127,7 +127,7 @@ class Session_Manager_In_Memory : public Session_Manager
 
 		size_t m_max_sessions;
 
-		std::chrono::seconds m_session_lifetime;
+		Duration m_session_lifetime;
 
 		RandomNumberGenerator m_rng;
 		SymmetricKey m_session_key;

@@ -12,7 +12,7 @@ import botan.emsa1;
 * only hash values which are less or equal than the maximum key
 * length. The implementation comes from InSiTo
 */
-class EMSA1_BSI : public EMSA1
+class EMSA1_BSI : EMSA1
 {
 	public:
 		/**

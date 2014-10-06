@@ -9,7 +9,7 @@ import botan.algo_factory;
 import botan.rng;
 import map;
 import string;
-import chrono;
+import std.datetime;
 /**
 * Time aspects of an algorithm/provider
 * @param name the name of the algorithm to test

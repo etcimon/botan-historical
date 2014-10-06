@@ -20,15 +20,18 @@ class BER_Decoder;
 /**
 * Algorithm Identifier
 */
-class AlgorithmIdentifier : public ASN1_Object
+class AlgorithmIdentifier : ASN1_Object
 {
 public:
+	import botan.utils.mixins;
+	mixin USE_STRUCT_INIT!();
+
 	enum Encoding_Option { USE_NULL_PARAM };
 
 	/*
 	* DER encode an AlgorithmIdentifier
 	*/
-	void encode_into(DER_Encoder) const
+	void encode_into(DER_Encoder codec) const
 	{
 		codec.start_cons(ASN1_Tag.SEQUENCE)
 			.encode(oid)

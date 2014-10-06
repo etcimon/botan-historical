@@ -9,7 +9,7 @@ import botan.mdx_hash;
 /**
 * SHA-384
 */
-class SHA_384 : public MDx_HashFunction
+class SHA_384 : MDx_HashFunction
 {
 	public:
 		string name() const { return "SHA-384"; }
@@ -30,7 +30,7 @@ class SHA_384 : public MDx_HashFunction
 /**
 * SHA-512
 */
-class SHA_512 : public MDx_HashFunction
+class SHA_512 : MDx_HashFunction
 {
 	public:
 		string name() const { return "SHA-512"; }

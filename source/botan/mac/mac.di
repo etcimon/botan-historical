@@ -11,7 +11,7 @@ import string;
 /**
 * This class represents Message Authentication Code (MAC) objects.
 */
-class MessageAuthenticationCode : public Buffered_Computation,
+class MessageAuthenticationCode : Buffered_Computation,
 								  public SymmetricAlgorithm
 {
 	public:

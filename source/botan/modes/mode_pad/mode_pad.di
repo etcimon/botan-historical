@@ -50,12 +50,12 @@ class BlockCipherModePaddingMethod
 /**
 * PKCS#7 Padding
 */
-class PKCS7_Padding : public BlockCipherModePaddingMethod
+class PKCS7_Padding : BlockCipherModePaddingMethod
 {
 	public:
 		void add_padding(SafeVector!ubyte buffer,
 							  size_t final_block_bytes,
-							  size_t block_size) const override;
+							  override size_t block_size) const;
 
 		size_t unpad(const ubyte[], size_t) const;
 
@@ -67,12 +67,12 @@ class PKCS7_Padding : public BlockCipherModePaddingMethod
 /**
 * ANSI X9.23 Padding
 */
-class ANSI_X923_Padding : public BlockCipherModePaddingMethod
+class ANSI_X923_Padding : BlockCipherModePaddingMethod
 {
 	public:
 		void add_padding(SafeVector!ubyte buffer,
 							  size_t final_block_bytes,
-							  size_t block_size) const override;
+							  override size_t block_size) const;
 
 		size_t unpad(const ubyte[], size_t) const;
 
@@ -84,12 +84,12 @@ class ANSI_X923_Padding : public BlockCipherModePaddingMethod
 /**
 * One And Zeros Padding
 */
-class OneAndZeros_Padding : public BlockCipherModePaddingMethod
+class OneAndZeros_Padding : BlockCipherModePaddingMethod
 {
 	public:
 		void add_padding(SafeVector!ubyte buffer,
 							  size_t final_block_bytes,
-							  size_t block_size) const override;
+							  override size_t block_size) const;
 
 		size_t unpad(const ubyte[], size_t) const;
 
@@ -101,10 +101,10 @@ class OneAndZeros_Padding : public BlockCipherModePaddingMethod
 /**
 * Null Padding
 */
-class Null_Padding : public BlockCipherModePaddingMethod
+class Null_Padding : BlockCipherModePaddingMethod
 {
 	public:
-		void add_padding(SafeVector!ubyte, size_t, size_t) const override {}
+		override void add_padding(SafeVector!ubyte, size_t, size_t) const {}
 
 		size_t unpad(const ubyte[], size_t size) const { return size; }
 

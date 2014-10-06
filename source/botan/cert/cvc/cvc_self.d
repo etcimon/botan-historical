@@ -180,7 +180,7 @@ EAC1_1_CVC create_cvca(ref const Private_Key key,
 	EAC1_1_CVC_Options opts;
 	opts.car = car;
 	
-	opts.ced = ASN1_Ced(std::chrono::system_clock::now());
+	opts.ced = ASN1_Ced(Clock.currTime());
 	opts.cex = ASN1_Cex(opts.ced);
 	opts.cex.add_months(cvca_validity_months);
 	opts.holder_auth_templ = (CVCA | (iris * IRIS) | (fingerpr * FINGERPRINT));
@@ -209,7 +209,7 @@ EAC1_1_CVC link_cvca(ref const EAC1_1_CVC signer,
 	if (priv_key == 0)
 		throw new Invalid_Argument("link_cvca(): unsupported key type");
 	
-	ASN1_Ced ced(std::chrono::system_clock::now());
+	ASN1_Ced ced(Clock.currTime());
 	ASN1_Cex cex(signee.get_cex());
 	if (*cast(EAC_Time*)(&ced) > *cast(EAC_Time*)(&cex))
 	{
@@ -226,7 +226,7 @@ EAC1_1_CVC link_cvca(ref const EAC1_1_CVC signer,
 	AlgorithmIdentifier sig_algo = signer.signature_algorithm();
 	string padding_and_hash = padding_and_hash_from_oid(sig_algo.oid);
 	PK_Signer pk_signer = PK_Signer(*priv_key, padding_and_hash);
-	Unique!Public_Key pk(signee.subject_public_key());
+	Unique!Public_Key pk = signee.subject_public_key();
 	ECDSA_PublicKey* subj_pk = cast(ECDSA_PublicKey*)(pk.get());
 	subj_pk.set_parameter_encoding(EC_DOMPAR_ENC_EXPLICIT);
 	
@@ -310,7 +310,7 @@ EAC1_1_CVC sign_request(ref const EAC1_1_CVC signer_cert,
 	PK_Signer pk_signer = PK_Signer(*priv_key, padding_and_hash);
 	Unique!Public_Key pk(signee.subject_public_key());
 	ECDSA_PublicKey*  subj_pk = cast(ECDSA_PublicKey*)(pk.get());
-	Unique!Public_Key signer_pk(signer_cert.subject_public_key());
+	Unique!Public_Key signer_pk = signer_cert.subject_public_key();
 	
 	// for the case that the domain parameters are not set...
 	// (we use those from the signer because they must fit)
@@ -320,7 +320,7 @@ EAC1_1_CVC sign_request(ref const EAC1_1_CVC signer_cert,
 	
 	AlgorithmIdentifier sig_algo = AlgorithmIdentifier(signer_cert.signature_algorithm());
 	
-	ASN1_Ced ced(std::chrono::system_clock::now());
+	ASN1_Ced ced(Clock.currTime());
 	
 	uint chat_val;
 	uint chat_low = signer_cert.get_chat_value() & 0x3; // take the chat rights from signer

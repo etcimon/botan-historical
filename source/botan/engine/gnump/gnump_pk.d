@@ -29,7 +29,7 @@ import gmp.h;
 namespace {
 
 #if defined(BOTAN_HAS_DIFFIE_HELLMAN)
-class GMP_DH_KA_Operation : public PK_Ops::Key_Agreement
+class GMP_DH_KA_Operation : PK_Ops::Key_Agreement
 {
 	public:
 		GMP_DH_KA_Operation(in DH_PrivateKey dh) :
@@ -49,7 +49,7 @@ class GMP_DH_KA_Operation : public PK_Ops::Key_Agreement
 
 #if defined(BOTAN_HAS_DSA)
 
-class GMP_DSA_Signature_Operation : public PK_Ops::Signature
+class GMP_DSA_Signature_Operation : PK_Ops::Signature
 {
 	public:
 		GMP_DSA_Signature_Operation(in DSA_PrivateKey dsa) :
@@ -107,7 +107,7 @@ GMP_DSA_Signature_Operation::sign(in ubyte* msg, size_t msg_len,
 	return output;
 }
 
-class GMP_DSA_Verification_Operation : public PK_Ops::Verification
+class GMP_DSA_Verification_Operation : PK_Ops::Verification
 {
 	public:
 		GMP_DSA_Verification_Operation(in DSA_PublicKey dsa) :
@@ -168,7 +168,7 @@ bool GMP_DSA_Verification_Operation::verify(in ubyte* msg, size_t msg_len,
 		return true;
 	return false;#if defined(BOTAN_HAS_RSA)
 
-class GMP_RSA_Private_Operation : public PK_Ops::Signature,
+class GMP_RSA_Private_Operation : PK_Ops::Signature,
 											 public PK_Ops::Decryption
 {
 	public:
@@ -219,7 +219,7 @@ BigInt GMP_RSA_Private_Operation::private_op(in BigInt m) const
 	return h.to_bigint();
 }
 
-class GMP_RSA_Public_Operation : public PK_Ops::Verification,
+class GMP_RSA_Public_Operation : PK_Ops::Verification,
 											public PK_Ops::Encryption
 {
 	public:

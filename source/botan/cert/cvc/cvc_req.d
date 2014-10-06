@@ -14,7 +14,7 @@ import botan.asn1.ber_dec;
 /**
 * This class represents TR03110 v1.1 EAC CV Certificate Requests.
 */
-class EAC1_1_Req : public EAC1_1_gen_CVC!EAC1_1_Req
+class EAC1_1_Req : EAC1_1_gen_CVC!EAC1_1_Req
 {
 public:
 

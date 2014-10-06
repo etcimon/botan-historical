@@ -100,8 +100,8 @@ void X509_Certificate::force_decode()
 	subject.add(dn_subject.contents());
 	issuer.add(dn_issuer.contents());
 
-	subject.add("X509.Certificate.dn_bits", ASN1::put_in_sequence(dn_subject.get_bits()));
-	issuer.add("X509.Certificate.dn_bits", ASN1::put_in_sequence(dn_issuer.get_bits()));
+	subject.add("X509.Certificate.dn_bits", asn1_obj.put_in_sequence(dn_subject.get_bits()));
+	issuer.add("X509.Certificate.dn_bits", asn1_obj.put_in_sequence(dn_issuer.get_bits()));
 
 	BER_Object public_key = tbs_cert.get_next_object();
 	if (public_key.type_tag != ASN1_Tag.SEQUENCE || public_key.class_tag != CONSTRUCTED)
@@ -144,14 +144,14 @@ void X509_Certificate::force_decode()
 	if (self_signed && _version == 0)
 	{
 		subject.add("X509v3.BasicConstraints.is_ca", 1);
-		subject.add("X509v3.BasicConstraints.path_constraint", Cert_Extension::NO_CERT_PATH_LIMIT);
+		subject.add("X509v3.BasicConstraints.path_constraint", x509_ext.NO_CERT_PATH_LIMIT);
 	}
 
 	if (is_CA_cert() &&
 		!subject.has_value("X509v3.BasicConstraints.path_constraint"))
 	{
 		const size_t limit = (x509_version() < 3) ?
-		  Cert_Extension::NO_CERT_PATH_LIMIT : 0;
+		  x509_ext.NO_CERT_PATH_LIMIT : 0;
 
 		subject.add("X509v3.BasicConstraints.path_constraint", limit);
 	}
@@ -205,7 +205,7 @@ X509_Certificate::issuer_info(in string what) const
 Public_Key* X509_Certificate::subject_public_key() const
 {
 	return X509::load_key(
-		ASN1::put_in_sequence(this.subject_public_key_bits()));
+		asn1_obj.put_in_sequence(this.subject_public_key_bits()));
 }
 
 Vector!ubyte X509_Certificate::subject_public_key_bits() const
@@ -365,7 +365,7 @@ bool cert_subject_dns_match(in string name,
 
 string X509_Certificate::fingerprint(in string hash_name) const
 {
-	Unique!HashFunction hash(get_hash(hash_name));
+	Unique!HashFunction hash = get_hash(hash_name);
 	hash.update(this.BER_encode());
 	const auto hex_print = hex_encode(hash.flush());
 
@@ -533,7 +533,7 @@ string X509_Certificate::to_string() const
 	if (this.subject_key_id().size())
 	  output << "Subject keyid: " << hex_encode(this.subject_key_id()) << "";
 
-	Unique!X509_PublicKey pubkey(this.subject_public_key());
+	Unique!X509_PublicKey pubkey = this.subject_public_key();
 	output << "Public Key:" << X509::PEM_encode(*pubkey);
 
 	return output.str();

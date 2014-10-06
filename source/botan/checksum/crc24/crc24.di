@@ -9,7 +9,7 @@ import botan.hash;
 /**
 * 24-bit cyclic redundancy check
 */
-class CRC24 : public HashFunction
+class CRC24 : HashFunction
 {
 	public:
 		string name() const { return "CRC24"; }

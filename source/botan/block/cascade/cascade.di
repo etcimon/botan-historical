@@ -9,7 +9,7 @@ import botan.block_cipher;
 /**
 * Block Cipher Cascade
 */
-class Cascade_Cipher : public BlockCipher
+class Cascade_Cipher : BlockCipher
 {
 	public:
 		void encrypt_n(ubyte* input, ubyte* output, size_t blocks) const;

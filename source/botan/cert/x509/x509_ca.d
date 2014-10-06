@@ -13,7 +13,7 @@ import botan.bigint;
 import botan.parsing;
 import botan.lookup;
 import botan.asn1.oid_lookup.oids;
-import botan.key_constraint;
+import botan.cert.x509.key_constraint;
 import algorithm;
 import typeinfo;
 import iterator;
@@ -52,26 +52,26 @@ X509_Certificate X509_CA::sign_request(in PKCS10_Request req,
 		constraints = Key_Constraints(KEY_CERT_SIGN | CRL_SIGN);
 	else
 	{
-		Unique!Public_Key key(req.subject_public_key());
+		Unique!Public_Key key = req.subject_public_key();
 		constraints = find_constraints(*key, req.constraints());
 	}
 
 	Extensions extensions;
 
 	extensions.add(
-		new Cert_Extension::Basic_Constraints(req.is_CA(), req.path_limit()),
+		new x509_ext.Basic_Constraints(req.is_CA(), req.path_limit()),
 		true);
 
-	extensions.add(new Cert_Extension::Key_Usage(constraints), true);
+	extensions.add(new x509_ext.Key_Usage(constraints), true);
 
-	extensions.add(new Cert_Extension::Authority_Key_ID(cert.subject_key_id()));
-	extensions.add(new Cert_Extension::Subject_Key_ID(req.raw_public_key()));
-
-	extensions.add(
-		new Cert_Extension::Subject_Alternative_Name(req.subject_alt_name()));
+	extensions.add(new x509_ext.Authority_Key_ID(cert.subject_key_id()));
+	extensions.add(new x509_ext.Subject_Key_ID(req.raw_public_key()));
 
 	extensions.add(
-		new Cert_Extension::Extended_Key_Usage(req.ex_constraints()));
+		new x509_ext.Subject_Alternative_Name(req.subject_alt_name()));
+
+	extensions.add(
+		new x509_ext.Extended_Key_Usage(req.ex_constraints()));
 
 	return make_cert(signer, rng, ca_sig_algo,
 						  req.raw_public_key(),
@@ -136,7 +136,7 @@ X509_CRL X509_CA::new_crl(RandomNumberGenerator rng,
 								  uint next_update) const
 {
 	Vector!( CRL_Entry ) empty;
-	return make_crl(empty, 1, next_update, rng);
+	return make_crl(empty, 1, TickDuration.from!"seconds"(next_update).to!Duration, rng);
 }
 
 /*
@@ -159,22 +159,22 @@ X509_CRL X509_CA::update_crl(in X509_CRL crl,
 * Create a CRL
 */
 X509_CRL X509_CA::make_crl(in Vector!( CRL_Entry ) revoked,
-									uint crl_number, uint next_update,
+									uint crl_number, Duration next_update,
 									RandomNumberGenerator rng) const
 {
 	const size_t X509_CRL_VERSION = 2;
 
-	if (next_update == 0)
-		next_update = timespec_to_uint("7d");
+	if (next_update.seconds == 0)
+		next_update = TickDuration.from!"days"(7).to!Duration;
 
 	// Totally stupid: ties encoding logic to the return of std::time!!
-	auto current_time = std::chrono::system_clock::now();
-	auto expire_time = current_time + std::chrono::seconds(next_update);
+	auto current_time = Clock.currTime();
+	auto expire_time = current_time + next_update;
 
 	Extensions extensions;
 	extensions.add(
-		new Cert_Extension::Authority_Key_ID(cert.subject_key_id()));
-	extensions.add(new Cert_Extension::CRL_Number(crl_number));
+		new x509_ext.Authority_Key_ID(cert.subject_key_id()));
+	extensions.add(new x509_ext.CRL_Number(crl_number));
 
 	const Vector!ubyte crl = X509_Object::make_signed(
 		signer, rng, ca_sig_algo,

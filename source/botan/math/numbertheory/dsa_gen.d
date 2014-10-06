@@ -50,8 +50,8 @@ bool generate_dsa_primes(RandomNumberGenerator rng,
 			"Generating a DSA parameter set with a " ~ std.conv.to!string(qbits) +
 			"long q requires a seed at least as many bits long");
 
-	Unique!HashFunction hash(
-		af.make_hash_function("SHA-" ~ std.conv.to!string(qbits)));
+	Unique!HashFunction hash =
+		af.make_hash_function("SHA-" ~ std.conv.to!string(qbits));
 
 	const size_t HASH_SIZE = hash.output_length();
 

@@ -12,7 +12,7 @@ import botan.pkcs8;
 * This class represents public keys
 * of integer factorization based (IF) public key schemes.
 */
-class IF_Scheme_PublicKey : public abstract Public_Key
+class IF_Scheme_PublicKey : Public_Key
 {
 	public:
 		IF_Scheme_PublicKey(in AlgorithmIdentifier alg_id,
@@ -39,7 +39,7 @@ class IF_Scheme_PublicKey : public abstract Public_Key
 
 		size_t max_input_bits() const { return (n.bits() - 1); }
 
-		size_t estimated_strength() const override;
+		override size_t estimated_strength() const;
 
 	package:
 		IF_Scheme_PublicKey() {}
@@ -51,7 +51,7 @@ class IF_Scheme_PublicKey : public abstract Public_Key
 * This class represents public keys
 * of integer factorization based (IF) public key schemes.
 */
-class IF_Scheme_PrivateKey : public abstract IF_Scheme_PublicKey,
+class IF_Scheme_PrivateKey : IF_Scheme_PublicKey,
 													public abstract Private_Key
 {
 	public:

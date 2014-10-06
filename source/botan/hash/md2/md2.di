@@ -9,7 +9,7 @@ import botan.hash;
 /**
 * MD2
 */
-class MD2 : public HashFunction
+class MD2 : HashFunction
 {
 	public:
 		string name() const { return "MD2"; }

@@ -11,7 +11,7 @@ import botan.pkcs8;
 /**
 * This class represents discrete logarithm (DL) public keys.
 */
-class DL_Scheme_PublicKey : public abstract Public_Key
+class DL_Scheme_PublicKey : Public_Key
 {
 	public:
 		bool check_key(RandomNumberGenerator rng, bool) const;
@@ -55,7 +55,7 @@ class DL_Scheme_PublicKey : public abstract Public_Key
 		*/
 		abstract DL_Group::Format group_format() const;
 
-		size_t estimated_strength() const override;
+		override size_t estimated_strength() const;
 
 		DL_Scheme_PublicKey(in AlgorithmIdentifier alg_id,
 								  in SafeVector!ubyte key_bits,
@@ -78,7 +78,7 @@ class DL_Scheme_PublicKey : public abstract Public_Key
 /**
 * This class represents discrete logarithm (DL) private keys.
 */
-class DL_Scheme_PrivateKey : public abstract DL_Scheme_PublicKey,
+class DL_Scheme_PrivateKey : DL_Scheme_PublicKey,
 													public abstract Private_Key
 {
 	public:

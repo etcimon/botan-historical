@@ -8,7 +8,7 @@
 import botan.pbe;
 import vector;
 import string;
-import chrono;
+import std.datetime;
 /**
 * Factory function for PBEs.
 * @param algo_spec the name of the PBE algorithm to retrieve

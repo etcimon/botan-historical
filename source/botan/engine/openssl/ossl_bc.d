@@ -12,7 +12,7 @@ namespace {
 /*
 * EVP Block Cipher
 */
-class EVP_BlockCipher : public BlockCipher
+class EVP_BlockCipher : BlockCipher
 {
 	public:
 		void clear();

@@ -13,7 +13,7 @@ namespace TLS {
 /**
 * SSL/TLS Client
 */
-class Client : public Channel
+class Client : Channel
 {
 	public:
 		/**
@@ -68,10 +68,10 @@ class Client : public Channel
 			);
 	private:
 		X509_Certificate[]
-			get_peer_cert_chain(const Handshake_State state) const override;
+			override get_peer_cert_chain(const Handshake_State state) const;
 
 		void initiate_handshake(Handshake_State state,
-										bool force_full_renegotiation) override;
+										override bool force_full_renegotiation);
 
 		void send_client_hello(Handshake_State& state,
 									  bool force_full_renegotiation,
@@ -83,9 +83,9 @@ class Client : public Channel
 		void process_handshake_msg(const Handshake_State active_state,
 											Handshake_State pending_state,
 											Handshake_Type type,
-											in Vector!ubyte contents) override;
+											override in Vector!ubyte contents);
 
-		Handshake_State new_handshake_state(Handshake_IO io) override;
+		override Handshake_State new_handshake_state(Handshake_IO io);
 
 		const Policy m_policy;
 		Credentials_Manager m_creds;

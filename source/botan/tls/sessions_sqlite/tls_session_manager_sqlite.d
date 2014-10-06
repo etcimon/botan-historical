@@ -10,7 +10,7 @@ import botan.internal.sqlite3;
 import botan.lookup;
 import botan.hex;
 import botan.loadstor;
-import chrono;
+import std.datetime;
 namespace TLS {
 
 namespace {
@@ -21,12 +21,12 @@ SymmetricKey derive_key(in string passphrase,
 								size_t iterations,
 								size_t& check_val)
 {
-	Unique!PBKDF pbkdf(get_pbkdf("PBKDF2(SHA-512)"));
+	Unique!PBKDF pbkdf = get_pbkdf("PBKDF2(SHA-512)");
 
 	SafeVector!ubyte x = pbkdf.derive_key(32 + 2,
-															passphrase,
-															salt, salt_len,
-															iterations).bits_of();
+											passphrase,
+											salt, salt_len,
+											iterations).bits_of();
 
 	check_val = make_ushort(x[0], x[1]);
 	return SymmetricKey(&x[2], x.size() - 2);
@@ -38,7 +38,7 @@ Session_Manager_SQLite::Session_Manager_SQLite(in string passphrase,
 															  RandomNumberGenerator rng,
 															  in string db_filename,
 															  size_t max_sessions,
-															  std::chrono::seconds session_lifetime) :
+															  Duration session_lifetime) :
 	m_rng(rng),
 	m_max_sessions(max_sessions),
 	m_session_lifetime(session_lifetime)
@@ -198,7 +198,7 @@ void Session_Manager_SQLite::prune_session_cache()
 {
 	sqlite3_statement remove_expired(m_db, "delete from tls_sessions where session_start <= ?1");
 
-	remove_expired.bind(1, std::chrono::system_clock::now() - m_session_lifetime);
+	remove_expired.bind(1, Clock.currTime() - m_session_lifetime);
 
 	remove_expired.spin();
 

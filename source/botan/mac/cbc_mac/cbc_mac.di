@@ -10,7 +10,7 @@ import botan.block_cipher;
 /**
 * CBC-MAC
 */
-class CBC_MAC : public MessageAuthenticationCode
+class CBC_MAC : MessageAuthenticationCode
 {
 	public:
 		string name() const;

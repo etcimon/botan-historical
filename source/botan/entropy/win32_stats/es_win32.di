@@ -9,7 +9,7 @@ import botan.entropy_src;
 /**
 * Win32 Entropy Source
 */
-class Win32_EntropySource : public EntropySource
+class Win32_EntropySource : EntropySource
 {
 	public:
 		string name() const { return "Win32 Statistics"; }

@@ -84,7 +84,7 @@ void EMSA_PKCS1v15_Raw::update(in ubyte* input, size_t length)
 SafeVector!ubyte EMSA_PKCS1v15_Raw::raw_data()
 {
 	SafeVector!ubyte ret;
-	std::swap(ret, message);
+	std.algorithm.swap(ret, message);
 	return ret;
 }
 

@@ -10,7 +10,7 @@ import iosfwd;
 /**
 * This class represents abstract data sink objects.
 */
-class DataSink : public Filter
+class DataSink : Filter
 {
 	public:
 		bool attachable() { return false; }
@@ -24,7 +24,7 @@ class DataSink : public Filter
 /**
 * This class represents a data sink which writes its output to a stream.
 */
-class DataSink_Stream : public DataSink
+class DataSink_Stream : DataSink
 {
 	public:
 		string name() const { return identifier; }

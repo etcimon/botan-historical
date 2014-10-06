@@ -9,7 +9,7 @@ import botan.hash;
 /**
 * MDx Hash Function Base Class
 */
-class MDx_HashFunction : public HashFunction
+class MDx_HashFunction : HashFunction
 {
 	public:
 		/**

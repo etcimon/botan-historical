@@ -10,7 +10,7 @@ import botan.entropy_src;
 * Entropy source using the rdrand instruction first introduced on
 * Intel's Ivy Bridge architecture.
 */
-class Intel_Rdrand : public EntropySource
+class Intel_Rdrand : EntropySource
 {
 	public:
 		string name() const { return "Intel Rdrand"; }

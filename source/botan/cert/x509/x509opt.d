@@ -8,7 +8,8 @@
 import botan.x509self;
 import botan.asn1.oid_lookup.oids;
 import botan.parsing;
-import chrono;
+import std.datetime;
+import std.datetime;
 /*
 * Set when the certificate should become valid
 */
@@ -75,16 +76,16 @@ void X509_Cert_Options::sanity_check() const
 * Initialize the certificate options
 */
 X509_Cert_Options::X509_Cert_Options(in string initial_opts,
-												 uint expiration_time)
+												 Duration expiration_time)
 {
 	is_CA = false;
 	path_limit = 0;
 	constraints = NO_CONSTRAINTS;
 
-	auto now = std::chrono::system_clock::now();
+	auto now = Clock.currTime();
 
 	start = X509_Time(now);
-	end = X509_Time(now + std::chrono::seconds(expiration_time));
+	end = X509_Time(now + expiration_time);
 
 	if (initial_opts == "")
 		return;

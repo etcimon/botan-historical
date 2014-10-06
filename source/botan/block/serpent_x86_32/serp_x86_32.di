@@ -9,7 +9,7 @@ import botan.serpent;
 /**
 * Serpent implementation in x86-32 assembly
 */
-class Serpent_X86_32 : public Serpent
+class Serpent_X86_32 : Serpent
 {
 	public:
 		void encrypt_n(ubyte* input, ubyte* output, size_t blocks) const;

@@ -53,7 +53,7 @@ void X509_Object::init(DataSource& in, in string labels)
 	std::sort(PEM_labels_allowed.begin(), PEM_labels_allowed.end());
 
 	try {
-		if (ASN1::maybe_BER(input) && !PEM_Code::matches(input))
+		if (asn1_obj.maybe_BER(input) && !PEM_Code::matches(input))
 		{
 			BER_Decoder dec(input);
 			decode_from(dec);
@@ -71,7 +71,7 @@ void X509_Object::init(DataSource& in, in string labels)
 			decode_from(dec);
 		}
 	}
-	catch(Decoding_Error& e)
+	catch(Decoding_Error e)
 	{
 		throw new Decoding_Error(PEM_label_pref ~ " decoding failed: " ~ e.what());
 	}
@@ -124,7 +124,7 @@ string X509_Object::PEM_encode() const
 */
 Vector!ubyte X509_Object::tbs_data() const
 {
-	return ASN1::put_in_sequence(tbs_bits);
+	return asn1_obj.put_in_sequence(tbs_bits);
 }
 
 /*
@@ -169,7 +169,7 @@ string X509_Object::hash_used_for_signature() const
 */
 bool X509_Object::check_signature(const Public_Key* pub_key) const
 {
-	Unique!const Public_Key key(pub_key);
+	Unique!const Public_Key key = pub_key;
 	return check_signature(*key);
 }
 
@@ -224,7 +224,7 @@ void X509_Object::do_decode()
 	try {
 		force_decode();
 	}
-	catch(Decoding_Error& e)
+	catch(Decoding_Error e)
 	{
 		throw new Decoding_Error(PEM_label_pref ~ " decoding failed (" ~
 									e.what() ~ ")");

@@ -9,7 +9,7 @@ import botan.md5;
 /**
 * MD5 in x86 assembly
 */
-class MD5_X86_32 : public MD5
+class MD5_X86_32 : MD5
 {
 	public:
 		HashFunction clone() const { return new MD5_X86_32; }

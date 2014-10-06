@@ -10,7 +10,7 @@ import botan.block_cipher;
 /**
 * ANSI X9.31 RNG
 */
-class ANSI_X931_RNG : public RandomNumberGenerator
+class ANSI_X931_RNG : RandomNumberGenerator
 {
 	public:
 		void randomize(ubyte[], size_t);
