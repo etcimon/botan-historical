@@ -12,7 +12,7 @@ import botan.bigint;
 import botan.get_byte;
 import botan.parsing;
 import botan.internal.bit_ops;
-import algorithm;
+import std.algorithm;
 
 import vector;
 
@@ -368,7 +368,7 @@ private:
 			
 			if (type_tag == ASN1_Tag.SET)
 			{
-				std::sort(set_contents.begin(), set_contents.end());
+				std.algorithm.sort(set_contents.begin(), set_contents.end());
 				for (size_t i = 0; i != set_contents.size(); ++i)
 					contents += set_contents[i];
 				set_contents.clear();

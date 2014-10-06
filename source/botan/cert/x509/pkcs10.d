@@ -6,7 +6,7 @@
 */
 module botan.cert.x509.pkcs10;
 
-import botan.x509_obj;
+import botan.cert.x509.x509_obj;
 import botan.asn1.x509_dn;
 import botan.pkcs8;
 import botan.utils.datastor.datastor;
@@ -15,7 +15,7 @@ import botan.asn1.asn1_attribute;
 import botan.asn1.asn1_alt_name;
 import botan.cert.x509.pkcs10;
 import botan.cert.x509.x509_ext;
-import botan.x509cert;
+import botan.cert.x509.x509cert;
 import botan.asn1.der_enc;
 import botan.asn1.ber_dec;
 import botan.parsing;

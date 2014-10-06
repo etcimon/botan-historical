@@ -224,7 +224,7 @@ class PK_Verifier
 		* @return true if the signature is valid
 		*/
 		bool verify_message(Alloc, Alloc2)(in Vector!( ubyte, Alloc ) msg,
-								  const Vector!( ubyte, Alloc2 )& sig)
+								  const Vector!( ubyte, Alloc2 ) sig)
 		{
 			return verify_message(&msg[0], msg.size(),
 										 &sig[0], sig.size());
@@ -285,7 +285,7 @@ class PK_Verifier
 		* @param emsa the EMSA to use (eg "EMSA3(SHA-1)")
 		* @param format the signature format to use
 		*/
-		PK_Verifier(in Public_Key pub_key,
+		this(in Public_Key pub_key,
 						in string emsa,
 						Signature_Format format = IEEE_1363);
 	private:

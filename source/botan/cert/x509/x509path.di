@@ -6,7 +6,7 @@
 */
 
 import botan.cert.x509.cert_status;
-import botan.x509cert;
+import botan.cert.x509.x509cert;
 import botan.cert.x509.certstor;
 import set;
 /**

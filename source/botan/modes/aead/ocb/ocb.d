@@ -9,7 +9,7 @@ import botan.ocb;
 import botan.cmac;
 import botan.internal.xor_buf;
 import botan.internal.bit_ops;
-import algorithm;
+import std.algorithm;
 namespace {
 
 const size_t BS = 16; // intrinsic to OCB definition

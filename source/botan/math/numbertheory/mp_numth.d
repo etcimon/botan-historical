@@ -8,7 +8,7 @@
 import botan.numthry;
 import botan.internal.mp_core;
 import botan.internal.rounding;
-import algorithm;
+import std.algorithm;
 /*
 * Square a BigInt
 */

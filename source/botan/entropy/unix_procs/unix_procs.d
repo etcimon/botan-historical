@@ -10,7 +10,7 @@
 
 import botan.internal.unix_procs;
 import botan.parsing;
-import algorithm;
+import std.algorithm;
 
 import sys.time;
 import sys.stat;

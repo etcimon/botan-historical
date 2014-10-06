@@ -10,7 +10,7 @@ import botan.asn1.der_enc;
 import botan.asn1.oid_lookup.oids;
 import botan.sha160;
 import botan.loadstor;
-import algorithm;
+import std.algorithm;
 namespace {
 
 /*

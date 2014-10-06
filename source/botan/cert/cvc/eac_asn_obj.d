@@ -403,14 +403,15 @@ public:
 		
 		if (obj.type_tag != this.tag)
 		{
-			stringstream ss;
+			import std.array : Appender;
+			Appender!string ss;
 			
-			ss << "ASN1_EAC_String tag mismatch, tag was "
-				 << obj.type_tag
-					<< " expected "
-					 << this.tag;
+			ss ~= "ASN1_EAC_String tag mismatch, tag was "
+				 ~ obj.type_tag
+					~ " expected "
+					 ~ this.tag;
 			
-			throw new Decoding_Error(ss.str());
+			throw new Decoding_Error(ss.data);
 		}
 		
 		Character_Set charset_is;

@@ -46,8 +46,8 @@ bool signature_consistency_check(RandomNumberGenerator rng,
 											in string padding)
 {
 	PK_Signer signer(key, padding);
-	PK_Verifier verifier(key, padding);
-
+	PK_Verifier verifier = new PK_Verifier(key, padding);
+		scope(exit) delete verifier;
 	Vector!ubyte message = unlock(rng.random_vec(16));
 
 	Vector!ubyte signature;

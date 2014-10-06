@@ -9,7 +9,7 @@ import botan.numthry;
 import botan.algo_factory;
 import botan.hash;
 import botan.parsing;
-import algorithm;
+import std.algorithm;
 namespace {
 
 /*

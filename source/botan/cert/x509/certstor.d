@@ -6,7 +6,7 @@
 */
 module botan.cert.x509.certstor;
 
-import botan.x509cert;
+import botan.cert.x509.x509cert;
 import botan.cert.x509.x509_crl;
 import std.file;
 

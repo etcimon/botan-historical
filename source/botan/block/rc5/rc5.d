@@ -9,7 +9,7 @@ import botan.rc5;
 import botan.loadstor;
 import botan.rotate;
 import botan.parsing;
-import algorithm;
+import std.algorithm;
 /*
 * RC5 Encryption
 */

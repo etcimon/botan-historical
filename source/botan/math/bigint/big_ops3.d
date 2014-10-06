@@ -9,7 +9,7 @@ import botan.bigint;
 import botan.divide;
 import botan.internal.mp_core;
 import botan.internal.bit_ops;
-import algorithm;
+import std.algorithm;
 /*
 * Addition Operator
 */

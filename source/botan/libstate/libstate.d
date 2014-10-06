@@ -12,7 +12,7 @@ import botan.cpuid;
 import botan.asn1.oid_lookup.oids;
 import botan.internal.core_engine;
 import botan.internal.stl_util;
-import algorithm;
+import std.algorithm;
 
 #if defined(BOTAN_HAS_SELFTESTS)
   import botan.selftest;

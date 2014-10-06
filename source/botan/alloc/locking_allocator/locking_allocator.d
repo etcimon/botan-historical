@@ -10,7 +10,7 @@ import vector;
 import core.sync.mutex;
 
 import botan.mem_ops;
-import algorithm;
+import std.algorithm;
 import string;
 
 import sys.mman;

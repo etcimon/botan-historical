@@ -10,7 +10,7 @@ import botan.hex;
 import botan.parsing;
 import botan.charset;
 import botan.exceptn;
-import algorithm;
+import std.algorithm;
 /**
 * Size used for internal buffer in hex encoder/decoder
 */

@@ -10,7 +10,7 @@ import botan.cmac;
 import botan.ctr;
 import botan.parsing;
 import botan.internal.xor_buf;
-import algorithm;
+import std.algorithm;
 namespace {
 
 /*

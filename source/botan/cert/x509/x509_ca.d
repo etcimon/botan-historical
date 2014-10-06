@@ -6,7 +6,7 @@
 */
 module botan.cert.x509.x509_ca;
 
-import botan.x509cert;
+import botan.cert.x509.x509cert;
 import botan.cert.x509.x509_crl;
 import botan.cert.x509.x509_ext;
 import botan.pkcs8;
@@ -21,7 +21,7 @@ import botan.lookup;
 import botan.asn1.oid_lookup.oids;
 import botan.cert.x509.key_constraint;
 import std.datetime;
-import algorithm;
+import std.algorithm;
 import typeinfo;
 import iterator;
 import set;
@@ -136,7 +136,7 @@ public:
 	* @param extensions an optional list of certificate extensions
 	* @returns newly minted certificate
 	*/
-	X509_Certificate make_cert(PK_Signer signer,
+	static X509_Certificate make_cert(PK_Signer signer,
 	                           RandomNumberGenerator rng,
 	                           const AlgorithmIdentifier sig_algo,
 	                           in Vector!ubyte pub_key,
@@ -151,7 +151,7 @@ public:
 		
 		BigInt serial_no = BigInt(rng, SERIAL_BITS);
 		
-		const Vector!ubyte cert = x509_obj.make_signed(
+		const Vector!ubyte cert = X509_OBJ.make_signed(
 			signer, rng, sig_algo,
 			DER_Encoder().start_cons(ASN1_Tag.SEQUENCE)
 			.start_explicit(0)
@@ -198,10 +198,6 @@ public:
 		
 		signer = choose_sig_format(key, hash_fn, ca_sig_algo);
 	}
-
-	X509_CA(in X509_CA);
-	X509_CA& operator=(in X509_CA);
-
 
 	/*
 	* X509_CA Destructor

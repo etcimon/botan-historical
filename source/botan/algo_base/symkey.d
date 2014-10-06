@@ -10,7 +10,7 @@ import botan.internal.xor_buf;
 import botan.rng;
 import botan.pipe;
 import botan.hex;
-import algorithm;
+import std.algorithm;
 import botan.alloc.secmem;
 import string;
 

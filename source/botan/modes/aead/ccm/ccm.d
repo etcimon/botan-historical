@@ -8,7 +8,7 @@
 import botan.ccm;
 import botan.parsing;
 import botan.internal.xor_buf;
-import algorithm;
+import std.algorithm;
 /*
 * CCM_Mode Constructor
 */

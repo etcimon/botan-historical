@@ -13,7 +13,7 @@ import botan.tls_policy;
 import botan.tls_ciphersuite;
 import botan.bigint;
 import botan.pkcs8;
-import botan.x509cert;
+import botan.cert.x509.x509cert;
 import vector;
 import string;
 class Credentials_Manager;

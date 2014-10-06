@@ -174,57 +174,57 @@ string Ciphersuite::to_string() const
 {
 	if (m_cipher_keylen == 0)
 		throw new Exception("Ciphersuite::to_string - no value set");
+	import std.array : Appender;
+	Appender!string output;
 
-	std::ostringstream out;
-
-	out << "TLS_";
+	output ~= "TLS_";
 
 	if (kex_algo() != "RSA")
 	{
 		if (kex_algo() == "DH")
-			out << "DHE";
+			output ~= "DHE";
 		else if (kex_algo() == "ECDH")
-			out << "ECDHE";
+			output ~= "ECDHE";
 		else
-			out << kex_algo();
+			output ~= kex_algo();
 
-		out << '_';
+		output ~= '_';
 	}
 
 	if (sig_algo() == "DSA")
-		out << "DSS_";
+		output ~= "DSS_";
 	else if (sig_algo() != "")
-		out << sig_algo() << '_';
+		output ~= sig_algo() ~ '_';
 
-	out << "WITH_";
+	output ~= "WITH_";
 
 	if (cipher_algo() == "RC4")
 	{
-		out << "RC4_128_";
+		output ~= "RC4_128_";
 	}
 	else
 	{
 		if (cipher_algo() == "3DES")
-			out << "3DES_EDE";
+			output ~= "3DES_EDE";
 		else if (cipher_algo().find("Camellia") == 0)
-			out << "CAMELLIA_" << std.conv.to!string(8*cipher_keylen());
+			output ~= "CAMELLIA_" ~ std.conv.to!string(8*cipher_keylen());
 		else
-			out << replace_chars(cipher_algo(), {'-', '/'}, '_');
+			output ~= replace_chars(cipher_algo(), {'-', '/'}, '_');
 
 		if (cipher_algo().find("/") != string::npos)
-			out << "_"; // some explicit mode already included
+			output ~= "_"; // some explicit mode already included
 		else
-			out << "_CBC_";
+			output ~= "_CBC_";
 	}
 
 	if (mac_algo() == "SHA-1")
-		out << "SHA";
+		output ~= "SHA";
 	else if (mac_algo() == "AEAD")
-		out << erase_chars(prf_algo(), {'-'});
+		output ~= erase_chars(prf_algo(), {'-'});
 	else
-		out << erase_chars(mac_algo(), {'-'});
+		output ~= erase_chars(mac_algo(), {'-'});
 
-	return out.str();
+	return output.data;
 }
 
 }

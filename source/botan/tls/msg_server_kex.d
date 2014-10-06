@@ -255,8 +255,8 @@ bool Server_Key_Exchange::verify(in Public_Key server_key,
 	Pair!(string, Signature_Format) format =
 		state.understand_sig_format(server_key, m_hash_algo, m_sig_algo, false);
 
-	PK_Verifier verifier(server_key, format.first, format.second);
-
+	PK_Verifier verifier = new PK_Verifier(server_key, format.first, format.second);
+		scope(exit) delete verifier;
 	verifier.update(state.client_hello().random());
 	verifier.update(state.server_hello().random());
 	verifier.update(params());

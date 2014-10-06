@@ -7,7 +7,7 @@
 
 import botan.x931_rng;
 import botan.internal.xor_buf;
-import algorithm;
+import std.algorithm;
 void ANSI_X931_RNG::randomize(ubyte* output)
 {
 	size_t length = output.length;

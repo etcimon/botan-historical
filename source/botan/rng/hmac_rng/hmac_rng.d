@@ -10,7 +10,7 @@ import botan.libstate;
 import botan.get_byte;
 import botan.entropy_src;
 import botan.internal.xor_buf;
-import algorithm;
+import std.algorithm;
 import std.datetime;
 namespace {
 

@@ -6,7 +6,7 @@
 */
 module botan.cert.x509.ocsp_types;
 
-import botan.x509cert;
+import botan.cert.x509.x509cert;
 import botan.asn1.asn1_time;
 import botan.bigint;
 import botan.asn1.der_enc;

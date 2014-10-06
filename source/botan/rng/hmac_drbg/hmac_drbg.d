@@ -6,7 +6,7 @@
 */
 
 import botan.hmac_drbg;
-import algorithm;
+import std.algorithm;
 HMAC_DRBG::HMAC_DRBG(MessageAuthenticationCode mac,
 							RandomNumberGenerator* prng) :
 	m_mac(mac),

@@ -9,7 +9,7 @@ import botan.rw;
 import botan.numthry;
 import botan.keypair;
 import botan.parsing;
-import algorithm;
+import std.algorithm;
 import future;
 /*
 * Create a Rabin-Williams private key

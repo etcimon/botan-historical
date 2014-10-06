@@ -7,7 +7,7 @@
 
 import botan.filters;
 import botan.libstate;
-import algorithm;
+import std.algorithm;
 /*
 * StreamCipher_Filter Constructor
 */

@@ -6,7 +6,7 @@
 */
 module botan.cert.x509.crl_ent;
 
-import botan.x509cert;
+import botan.cert.x509.x509cert;
 import botan.asn1.asn1_time;
 import botan.cert.x509.x509_ext;
 import botan.asn1.der_enc;

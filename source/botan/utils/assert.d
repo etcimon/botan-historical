@@ -13,21 +13,22 @@ void assertion_failure(string expr_str,
 							  string file,
 							  int line)
 {
-	std::ostringstream format;
+	import std.array : Appender;
+	Appender!string format;
 
-	format << "False assertion ";
+	format ~= "False assertion ";
 
 	if (assertion_made && assertion_made[0] != 0)
-		format << "'" << assertion_made << "' (expression " << expr_str << ") ";
+		format ~= "'" ~ assertion_made ~ "' (expression " ~ expr_str ~ ") ";
 	else
-		format << expr_str << " ";
+		format ~= expr_str ~ " ";
 
 	if (func)
-		format << "in " << func << " ";
+		format ~= "in " ~ func ~ " ";
 
-	format << "@" << file << ":" << line;
+	format ~= "@" ~ file ~ ":" ~ line;
 
-	throw new Exception(format.str());
+	throw new Exception(format.data);
 }
 
 }

@@ -6,7 +6,7 @@
 */
 
 import botan.workfactor;
-import algorithm;
+import std.algorithm;
 import cmath;
 size_t dl_work_factor(size_t bits)
 {

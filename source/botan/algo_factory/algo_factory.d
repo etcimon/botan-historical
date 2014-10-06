@@ -17,7 +17,7 @@ import botan.hash;
 import botan.mac;
 import botan.pbkdf;
 
-import algorithm;
+import std.algorithm;
 
 import botan.types;
 import string;

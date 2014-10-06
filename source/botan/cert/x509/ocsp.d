@@ -213,8 +213,8 @@ void check_signature(in Vector!ubyte tbs_response,
 	Signature_Format format =
 		(pub_key.message_parts() >= 2) ? DER_SEQUENCE : IEEE_1363;
 	
-	PK_Verifier verifier = PK_Verifier(*pub_key, padding, format);
-	
+	PK_Verifier verifier = new PK_Verifier(*pub_key, padding, format);
+	scope(exit) delete verifier;
 	if (!verifier.verify_message(asn1_obj.put_in_sequence(tbs_response), signature))
 		throw new Exception("Signature on OCSP response does not verify");
 }

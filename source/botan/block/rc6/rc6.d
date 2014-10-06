@@ -8,7 +8,7 @@
 import botan.rc6;
 import botan.loadstor;
 import botan.rotate;
-import algorithm;
+import std.algorithm;
 /*
 * RC6 Encryption
 */

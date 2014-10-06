@@ -16,7 +16,7 @@ import botan.asn1.ber_dec;
 import botan.asn1.oid_lookup.oids;
 import botan.charset;
 import botan.internal.bit_ops;
-import algorithm;
+import std.algorithm;
 
 /**
 * X.509 Certificate Extension
@@ -528,6 +528,7 @@ public:
 	Subject_Alternative_Name copy() const
 	{ return new Subject_Alternative_Name(get_alt_name()); }
 
+	this() {}
 	this(in AlternativeName name = AlternativeName()) {
 		super(name, "X509v3.SubjectAlternativeName");
 	}
@@ -612,9 +613,45 @@ private:
 	string oid_name() const { return "X509v3.CertificatePolicies"; }
 
 	bool should_encode() const { return (oids.size() > 0); }
-	Vector!ubyte encode_inner() const;
-	void decode_inner(in Vector!ubyte);
-	void contents_to(ref Data_Store, ref Data_Store) const;
+
+	/*
+	* Encode the extension
+	*/
+	Vector!ubyte encode_inner() const
+	{
+		Vector!( Policy_Information ) policies;
+		
+		for (size_t i = 0; i != oids.size(); ++i)
+			policies.push_back(oids[i]);
+		
+		return DER_Encoder()
+			.start_cons(ASN1_Tag.SEQUENCE)
+				.encode_list(policies)
+				.end_cons()
+				.get_contents_unlocked();
+	}
+	/*
+	* Decode the extension
+	*/
+	void decode_inner(in Vector!ubyte input)
+	{
+		Vector!( Policy_Information ) policies;
+		
+		BER_Decoder(input).decode_list(policies);
+		
+		oids.clear();
+		for (size_t i = 0; i != policies.size(); ++i)
+			oids.push_back(policies[i].oid);
+	}
+
+	/*
+	* Return a textual representation
+	*/
+	void contents_to(ref Data_Store info, ref Data_Store) const
+	{
+		for (size_t i = 0; i != oids.size(); ++i)
+			info.add("X509v3.CertificatePolicies", oids[i].as_string());
+	}
 
 	Vector!( OID ) oids;
 };
@@ -803,22 +840,34 @@ class CRL_Distribution_Points : Certificate_Extension
 public:
 	class Distribution_Point : ASN1_Object
 	{
-		public:
-			void encode_into(class DER_Encoder&) const;
-			void decode_from(class BER_Decoder&);
+	public:
+		void encode_into(DER_Encoder) const
+		{
+			throw new Exception("CRL_Distribution_Points encoding not implemented");
+		}
 
-			const AlternativeName& point() const { return m_point; }
-		private:
-			AlternativeName m_point;
+		void decode_from(BER_Decoder ber)
+		{
+			ber.start_cons(ASN1_Tag.SEQUENCE)
+				.start_cons(ASN1_Tag(0), ASN1_Tag.CONTEXT_SPECIFIC)
+					.decode_optional_implicit(m_point, ASN1_Tag(0),
+					                          ASN1_Tag(ASN1_Tag.CONTEXT_SPECIFIC | CONSTRUCTED),
+					                          ASN1_Tag.SEQUENCE, CONSTRUCTED)
+					.end_cons().end_cons();
+		}
+
+
+		const AlternativeName point() const { return m_point; }
+	private:
+		AlternativeName m_point;
 	};
 
-	CRL_Distribution_Points* copy() const
+	CRL_Distribution_Points copy() const
 	{ return new CRL_Distribution_Points(m_distribution_points); }
 
-	CRL_Distribution_Points() {}
+	this() {}
 
-	CRL_Distribution_Points(in Vector!( Distribution_Point ) points) :
-		m_distribution_points(points) {}
+	this(in Vector!( Distribution_Point ) points) { m_distribution_points = points; }
 
 	Vector!( Distribution_Point ) distribution_points() const
 	{ return m_distribution_points; }
@@ -828,22 +877,32 @@ private:
 
 	bool should_encode() const { return !m_distribution_points.empty(); }
 
-	Vector!ubyte encode_inner() const;
-	void decode_inner(in Vector!ubyte);
-	void contents_to(ref Data_Store, ref Data_Store) const;
+	Vector!ubyte encode_inner() const
+	{
+		throw new Exception("CRL_Distribution_Points encoding not implemented");
+	}
+
+	void decode_inner(in Vector!ubyte buf)
+	{
+		BER_Decoder(buf).decode_list(m_distribution_points).verify_end();
+	}
+
+
+	void contents_to(ref Data_Store info, ref Data_Store) const
+	{
+		for (size_t i = 0; i != m_distribution_points.size(); ++i)
+		{
+			auto point = m_distribution_points[i].point().contents();
+			
+			auto uris = point.equal_range("URI");
+			
+			for (auto uri = uris.first; uri != uris.second; ++uri)
+				info.add("CRL.DistributionPoint", uri.second);
+		}
+	}
 
 	Vector!( Distribution_Point ) m_distribution_points;
 };
-
-/*
-* Subject_Alternative_Name Constructor
-*/
-Subject_Alternative_Name::Subject_Alternative_Name(
-	const AlternativeName& name) :
-Alternative_Name(name, "X509v3.SubjectAlternativeName")
-{
-}
-
 
 /*
 * A policy specifier
@@ -853,8 +912,8 @@ class Policy_Information : ASN1_Object
 public:
 	OID oid;
 	
-	Policy_Information() {}
-	Policy_Information(in OID oid) : oid(oid) {}
+	this() {}
+	this(in OID oid_) { oid = oid_; }
 	
 	void encode_into(DER_Encoder codec = DER_Encoder()) const
 	{
@@ -871,82 +930,3 @@ public:
 				.end_cons();
 	}
 };
-/*
-* Encode the extension
-*/
-Vector!ubyte Certificate_Policies::encode_inner() const
-{
-	Vector!( Policy_Information ) policies;
-	
-	for (size_t i = 0; i != oids.size(); ++i)
-		policies.push_back(oids[i]);
-	
-	return DER_Encoder()
-		.start_cons(ASN1_Tag.SEQUENCE)
-			.encode_list(policies)
-			.end_cons()
-			.get_contents_unlocked();
-}
-
-/*
-* Decode the extension
-*/
-void Certificate_Policies::decode_inner(in Vector!ubyte input)
-{
-	Vector!( Policy_Information ) policies;
-	
-	BER_Decoder(input).decode_list(policies);
-	
-	oids.clear();
-	for (size_t i = 0; i != policies.size(); ++i)
-		oids.push_back(policies[i].oid);
-}
-
-/*
-* Return a textual representation
-*/
-void Certificate_Policies::contents_to(ref Data_Store info, ref Data_Store) const
-{
-	for (size_t i = 0; i != oids.size(); ++i)
-		info.add("X509v3.CertificatePolicies", oids[i].as_string());
-}
-
-
-
-Vector!ubyte CRL_Distribution_Points::encode_inner() const
-{
-	throw new Exception("CRL_Distribution_Points encoding not implemented");
-}
-
-void CRL_Distribution_Points::decode_inner(in Vector!ubyte buf)
-{
-	BER_Decoder(buf).decode_list(m_distribution_points).verify_end();
-}
-
-void CRL_Distribution_Points::contents_to(ref Data_Store info, ref Data_Store) const
-{
-	for (size_t i = 0; i != m_distribution_points.size(); ++i)
-	{
-		auto point = m_distribution_points[i].point().contents();
-		
-		auto uris = point.equal_range("URI");
-		
-		for (auto uri = uris.first; uri != uris.second; ++uri)
-			info.add("CRL.DistributionPoint", uri.second);
-	}
-}
-
-void CRL_Distribution_Points::Distribution_Point::encode_into(class DER_Encoder&) const
-{
-	throw new Exception("CRL_Distribution_Points encoding not implemented");
-}
-
-void CRL_Distribution_Points::Distribution_Point::decode_from(class BER_Decoder& ber)
-{
-	ber.start_cons(ASN1_Tag.SEQUENCE)
-		.start_cons(ASN1_Tag(0), ASN1_Tag.CONTEXT_SPECIFIC)
-			.decode_optional_implicit(m_point, ASN1_Tag(0),
-			                          ASN1_Tag(ASN1_Tag.CONTEXT_SPECIFIC | CONSTRUCTED),
-			                          ASN1_Tag.SEQUENCE, CONSTRUCTED)
-			.end_cons().end_cons();
-}

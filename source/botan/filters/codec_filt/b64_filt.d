@@ -9,7 +9,7 @@ import botan.b64_filt;
 import botan.base64;
 import botan.charset;
 import botan.exceptn;
-import algorithm;
+import std.algorithm;
 /*
 * Base64_Encoder Constructor
 */

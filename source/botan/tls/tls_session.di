@@ -5,7 +5,7 @@
 * Released under the terms of the botan license.
 */
 
-import botan.x509cert;
+import botan.cert.x509.x509cert;
 import botan.tls_version;
 import botan.tls_ciphersuite;
 import botan.tls_magic;

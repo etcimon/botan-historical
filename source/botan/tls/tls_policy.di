@@ -7,7 +7,7 @@
 
 import botan.tls_version;
 import botan.tls_ciphersuite;
-import botan.x509cert;
+import botan.cert.x509.x509cert;
 import botan.dl_group;
 import vector;
 namespace TLS {

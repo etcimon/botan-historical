@@ -7,7 +7,7 @@
 module botan.alloc.secmem;
 
 import botan.mem_ops;
-import algorithm;
+import std.algorithm;
 import vector;
 
 version (BOTAN_HAS_LOCKING_ALLOCATOR)

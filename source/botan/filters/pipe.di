@@ -21,6 +21,7 @@ import iosfwd;
 class Pipe : DataSource
 {
 public:
+
 	/**
 	* An opaque type that identifies a message in this Pipe
 	*/

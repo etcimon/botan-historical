@@ -7,7 +7,7 @@
 
 import botan.x919_mac;
 import botan.internal.xor_buf;
-import algorithm;
+import std.algorithm;
 /*
 * Update an ANSI X9.19 MAC Calculation
 */

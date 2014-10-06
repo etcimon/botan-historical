@@ -7,7 +7,7 @@
 
 import botan.numthry;
 import botan.parsing;
-import algorithm;
+import std.algorithm;
 /*
 * Generate a random prime
 */

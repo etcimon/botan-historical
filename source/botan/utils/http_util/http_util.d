@@ -31,7 +31,7 @@ string http_transact_asio(in string hostname,
 
 	tcp << message;
 	tcp.flush();
-
+	
 	std::ostringstream oss;
 	oss << tcp.rdbuf();
 
@@ -48,23 +48,24 @@ string http_transact_fail(in string hostname,
 
 string url_encode(in string input)
 {
-	std::ostringstream out;
+		import std.array : Appender;
+		Appender!string output;
 
 	foreach (c; input)
 	{
 		if (c >= 'A' && c <= 'Z')
-			out << c;
+			output ~= c;
 		else if (c >= 'a' && c <= 'z')
-			out << c;
+			output ~= c;
 		else if (c >= '0' && c <= '9')
-			out << c;
+			output ~= c;
 		else if (c == '-' || c == '_' || c == '.' || c == '~')
-			out << c;
+			output ~= c;
 		else
-			out << '%' << hex_encode(cast(ubyte*)(&c), 1);
+			output ~= '%' ~ hex_encode(cast(ubyte*)(&c), 1);
 	}
 
-	return out.str();
+	return output.data;
 }
 
 std::ostream& operator<<(std::ostream& o, const Response& resp)
@@ -104,22 +105,23 @@ Response http_sync(http_exch_fn http_transact,
 		loc = url.substr(host_loc_sep, string::npos);
 	}
 
-	std::ostringstream outbuf;
+	import std.array : Appender;
+	Appender!string outbuf;
 
-	outbuf << verb << " " << loc << " HTTP/1.0\r";
-	outbuf << "Host: " << hostname << "\r";
+	outbuf ~= verb ~ " " ~ loc ~ " HTTP/1.0\r";
+	outbuf ~= "Host: " ~ hostname ~ "\r";
 
 	if (verb == "GET")
 	{
-		outbuf << "Accept: */*\r";
-		outbuf << "Cache-Control: no-cache\r";
+		outbuf ~= "Accept: */*\r";
+		outbuf ~= "Cache-Control: no-cache\r";
 	}
 	else if (verb == "POST")
-		outbuf << "Content-Length: " << body.size() << "\r";
+		outbuf ~= "Content-Length: " ~ body.size() ~ "\r";
 
 	if (content_type != "")
-		outbuf << "Content-Type: " << content_type << "\r";
-	outbuf << "Connection: close\r\r";
+		outbuf ~= "Content-Type: " ~ content_type ~ "\r";
+	outbuf ~= "Connection: close\r\r";
 	outbuf.write(cast(string)(body[0]), body.size());
 
 	std::istringstream io(http_transact(hostname, outbuf.str()));

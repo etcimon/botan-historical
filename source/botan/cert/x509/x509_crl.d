@@ -6,10 +6,10 @@
 */
 module botan.cert.x509.x509_crl;
 
-import botan.x509_obj;
+import botan.cert.x509.x509_obj;
 import botan.cert.x509.crl_ent;
 import botan.cert.x509.x509_ext;
-import botan.x509cert;
+import botan.cert.x509.x509cert;
 import botan.asn1.ber_dec;
 import botan.parsing;
 import botan.bigint;

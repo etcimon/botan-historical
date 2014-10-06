@@ -75,7 +75,8 @@ public:
 			
 			Vector!ubyte to_sign = tbs_data();
 			
-			PK_Verifier verifier = PK_Verifier(pub_key, padding, format);
+			PK_Verifier verifier = new PK_Verifier(pub_key, padding, format);
+			scope(exit) delete verifier;
 			return verifier.verify_message(to_sign, sig);
 		}
 		catch

@@ -11,7 +11,7 @@ import botan.http_util;
 import botan.parsing;
 import botan.pubkey;
 import botan.asn1.oid_lookup.oids;
-import algorithm;
+import std.algorithm;
 import std.datetime;
 import vector;
 import set;

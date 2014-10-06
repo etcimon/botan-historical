@@ -9,7 +9,7 @@ import botan.tls_policy;
 import botan.tls_session;
 import botan.tls_alert;
 import botan.tls_session_manager;
-import botan.x509cert;
+import botan.cert.x509.x509cert;
 import vector;
 import string;
 import map;

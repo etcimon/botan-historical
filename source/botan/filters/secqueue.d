@@ -7,7 +7,7 @@
 */
 
 import botan.secqueue;
-import algorithm;
+import std.algorithm;
 /**
 * A node in a SecureQueue
 */

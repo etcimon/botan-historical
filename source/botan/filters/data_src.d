@@ -9,7 +9,7 @@
 import botan.data_src;
 import botan.exceptn;
 import fstream;
-import algorithm;
+import std.algorithm;
 /*
 * Read a single ubyte from the DataSource
 */

@@ -7,7 +7,7 @@
 
 import botan.cbc_mac;
 import botan.internal.xor_buf;
-import algorithm;
+import std.algorithm;
 /*
 * Update an CBC-MAC Calculation
 */
