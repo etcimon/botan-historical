@@ -137,7 +137,7 @@ public:
 * Noekeon's Theta Operation
 */
 string NOK_SIMD_THETA() {
-	return `SIMD_32 T = A0 ^ A2;
+	return `{SIMD_32 T = A0 ^ A2;
 	SIMD_32 T_l8 = T;
 	SIMD_32 T_r8 = T;
 	T_l8.rotate_left(8);
@@ -158,19 +158,19 @@ string NOK_SIMD_THETA() {
 	T ^= T_l8;
 	T ^= T_r8;
 	A0 ^= T;			
-	A2 ^= T;`;			
+	A2 ^= T;}`;			
 } 
 
 /*
 * Noekeon's Gamma S-Box Layer
 */
 string NOK_SIMD_GAMMA() {
-	return `A1 ^= A3.andc(~A2);
+	return `{A1 ^= A3.andc(~A2);
 	A0 ^= A2 & A1;
 	SIMD_32 T = A3;
 	A3 = A0;
 	A0 = T;
 	A2 ^= A0 ^ A1 ^ A3;
 	A1 ^= A3.andc(~A2);
-	A0 ^= A2 & A1;`;
+	A0 ^= A2 & A1;}`;
 }

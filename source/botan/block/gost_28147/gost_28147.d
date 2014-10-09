@@ -217,11 +217,12 @@ package:
 /*
 * Two rounds of GOST
 */
-string GOST_2ROUND!(alias N1, alias N2, ubyte R1, ubyte R2)()
+string GOST_2ROUND(alias N1, alias N2, ubyte R1, ubyte R2)()
 {
 	const N1_ = __traits(identifier, N1).stringof;
 	const N2_ = __traits(identifier, N2).stringof;
-	return `uint T0 = ` ~ N1_ ~ ` + EK[` ~ R1.stringof ~ `];
+	return `{
+			uint T0 = ` ~ N1_ ~ ` + EK[` ~ R1.stringof ~ `];
 			N2 ^= SBOX[get_byte(3, T0)] |
 				SBOX[get_byte(2, T0)+256] | 
 				SBOX[get_byte(1, T0)+512] | 
@@ -232,5 +233,5 @@ string GOST_2ROUND!(alias N1, alias N2, ubyte R1, ubyte R2)()
 				SBOX[get_byte(2, T1)+256] |
 				SBOX[get_byte(1, T1)+512] |
 				SBOX[get_byte(0, T1)+768];
-		`;
+		}`;
 }

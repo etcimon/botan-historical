@@ -76,7 +76,7 @@ version(BOTAN_HAS_AES_SSSE3) {
 }
 
 version(BOTAN_HAS_SERPENT_SIMD) {
-	import botan.serp_simd;
+	import botan.block.serpent_simd.serp_simd;
 }
 
 version(BOTAN_HAS_THREEFISH_512_AVX2) {

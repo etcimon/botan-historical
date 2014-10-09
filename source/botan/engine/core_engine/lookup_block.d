@@ -80,11 +80,11 @@ import botan.algo_factory;
 #endif
 
 #if defined(BOTAN_HAS_SEED)
-  import botan.seed;
+  import botan.block.seed.seed;
 #endif
 
 #if defined(BOTAN_HAS_SERPENT)
-  import botan.serpent;
+  import botan.block.serpent.serpent;
 #endif
 
 #if defined(BOTAN_HAS_TEA)

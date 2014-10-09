@@ -5,7 +5,7 @@
 * Distributed under the terms of the botan license.
 */
 
-import botan.serpent;
+import botan.block.serpent.serpent;
 /**
 * Serpent implementation in x86-32 assembly
 */
