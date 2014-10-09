@@ -88,7 +88,7 @@ import botan.algo_factory;
 #endif
 
 #if defined(BOTAN_HAS_TEA)
-  import botan.tea;
+  import botan.block.tea.tea;
 #endif
 
 #if defined(BOTAN_HAS_TWOFISH)
@@ -96,7 +96,7 @@ import botan.algo_factory;
 #endif
 
 #if defined(BOTAN_HAS_THREEFISH_512)
-  import botan.threefish;
+  import botan.block.threefish.threefish;
 #endif
 
 #if defined(BOTAN_HAS_XTEA)
