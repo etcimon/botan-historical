@@ -21,7 +21,7 @@ class SecureQueueNode
 
 		size_t write(in ubyte* input, size_t length)
 		{
-			size_t copied = std.algorithm.min<size_t>(length, buffer.size() - end);
+			size_t copied = std.algorithm.min(length, buffer.size() - end);
 			copy_mem(&buffer[end], input, copied);
 			end += copied;
 			return copied;

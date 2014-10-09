@@ -24,7 +24,7 @@ void ANSI_X931_RNG::randomize(ubyte* output)
 		if (m_R_pos == m_R.size())
 			update_buffer();
 
-		const size_t copied = std.algorithm.min<size_t>(length, m_R.size() - m_R_pos);
+		const size_t copied = std.algorithm.min(length, m_R.size() - m_R_pos);
 
 		copy_mem(output, &m_R[m_R_pos], copied);
 		output += copied;

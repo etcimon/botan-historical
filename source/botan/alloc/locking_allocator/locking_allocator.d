@@ -70,7 +70,7 @@ size_t mlock_limit()
 		::getrlimit(RLIMIT_MEMLOCK, &limits);
 	}
 
-	return std.algorithm.min<size_t>(limits.rlim_cur, MLOCK_UPPER_BOUND);
+	return std.algorithm.min(limits.rlim_cur, MLOCK_UPPER_BOUND);
 }
 
 bool ptr_in_pool(const void* pool_ptr, size_t poolsize,

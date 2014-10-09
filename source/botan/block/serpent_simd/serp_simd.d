@@ -7,7 +7,7 @@
 
 import botan.serp_simd;
 import botan.internal.serpent_sbox;
-import botan.internal.simd_32;
+import botan.simd.simd_32;
 import botan.loadstor;
 namespace {
 
@@ -57,12 +57,12 @@ void serpent_encrypt_4(const ubyte[64] input,
 							  ubyte[64] output,
 							  const uint keys[132])
 {
-	SIMD_32 B0 = SIMD_32::load_le(input);
-	SIMD_32 B1 = SIMD_32::load_le(input + 16);
-	SIMD_32 B2 = SIMD_32::load_le(input + 32);
-	SIMD_32 B3 = SIMD_32::load_le(input + 48);
+	SIMD_32 B0 = SIMD_32.load_le(input);
+	SIMD_32 B1 = SIMD_32.load_le(input + 16);
+	SIMD_32 B2 = SIMD_32.load_le(input + 32);
+	SIMD_32 B3 = SIMD_32.load_le(input + 48);
 
-	SIMD_32::transpose(B0, B1, B2, B3);
+	SIMD_32.transpose(B0, B1, B2, B3);
 
 	key_xor( 0,B0,B1,B2,B3); SBoxE1(B0,B1,B2,B3); transform(B0,B1,B2,B3);
 	key_xor( 1,B0,B1,B2,B3); SBoxE2(B0,B1,B2,B3); transform(B0,B1,B2,B3);
@@ -100,7 +100,7 @@ void serpent_encrypt_4(const ubyte[64] input,
 	key_xor(30,B0,B1,B2,B3); SBoxE7(B0,B1,B2,B3); transform(B0,B1,B2,B3);
 	key_xor(31,B0,B1,B2,B3); SBoxE8(B0,B1,B2,B3); key_xor(32,B0,B1,B2,B3);
 
-	SIMD_32::transpose(B0, B1, B2, B3);
+	SIMD_32.transpose(B0, B1, B2, B3);
 
 	B0.store_le(output);
 	B1.store_le(output + 16);
@@ -115,12 +115,12 @@ void serpent_decrypt_4(const ubyte[64] input,
 							  ubyte[64] output,
 							  const uint keys[132])
 {
-	SIMD_32 B0 = SIMD_32::load_le(input);
-	SIMD_32 B1 = SIMD_32::load_le(input + 16);
-	SIMD_32 B2 = SIMD_32::load_le(input + 32);
-	SIMD_32 B3 = SIMD_32::load_le(input + 48);
+	SIMD_32 B0 = SIMD_32.load_le(input);
+	SIMD_32 B1 = SIMD_32.load_le(input + 16);
+	SIMD_32 B2 = SIMD_32.load_le(input + 32);
+	SIMD_32 B3 = SIMD_32.load_le(input + 48);
 
-	SIMD_32::transpose(B0, B1, B2, B3);
+	SIMD_32.transpose(B0, B1, B2, B3);
 
 	key_xor(32,B0,B1,B2,B3);  SBoxD8(B0,B1,B2,B3); key_xor(31,B0,B1,B2,B3);
 	i_transform(B0,B1,B2,B3); SBoxD7(B0,B1,B2,B3); key_xor(30,B0,B1,B2,B3);
@@ -158,7 +158,7 @@ void serpent_decrypt_4(const ubyte[64] input,
 	i_transform(B0,B1,B2,B3); SBoxD2(B0,B1,B2,B3); key_xor( 1,B0,B1,B2,B3);
 	i_transform(B0,B1,B2,B3); SBoxD1(B0,B1,B2,B3); key_xor( 0,B0,B1,B2,B3);
 
-	SIMD_32::transpose(B0, B1, B2, B3);
+	SIMD_32.transpose(B0, B1, B2, B3);
 
 	B0.store_le(output);
 	B1.store_le(output + 16);

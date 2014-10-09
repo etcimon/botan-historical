@@ -7,17 +7,17 @@
 
 import botan.xtea_simd;
 import botan.loadstor;
-import botan.internal.simd_32;
+import botan.simd.simd_32;
 namespace {
 
 void xtea_encrypt_8(const ubyte[64] input, ubyte[64] output, const uint[64] EK)
 {
-	SIMD_32 L0 = SIMD_32::load_be(input	  );
-	SIMD_32 R0 = SIMD_32::load_be(input + 16);
-	SIMD_32 L1 = SIMD_32::load_be(input + 32);
-	SIMD_32 R1 = SIMD_32::load_be(input + 48);
+	SIMD_32 L0 = SIMD_32.load_be(input	  );
+	SIMD_32 R0 = SIMD_32.load_be(input + 16);
+	SIMD_32 L1 = SIMD_32.load_be(input + 32);
+	SIMD_32 R1 = SIMD_32.load_be(input + 48);
 
-	SIMD_32::transpose(L0, R0, L1, R1);
+	SIMD_32.transpose(L0, R0, L1, R1);
 
 	for (size_t i = 0; i != 32; i += 2)
 	{
@@ -39,7 +39,7 @@ void xtea_encrypt_8(const ubyte[64] input, ubyte[64] output, const uint[64] EK)
 		R1 += (((L1 << 4) ^ (L1 >> 5)) + L1) ^ K3;
 	}
 
-	SIMD_32::transpose(L0, R0, L1, R1);
+	SIMD_32.transpose(L0, R0, L1, R1);
 
 	L0.store_be(output);
 	R0.store_be(output + 16);
@@ -49,12 +49,12 @@ void xtea_encrypt_8(const ubyte[64] input, ubyte[64] output, const uint[64] EK)
 
 void xtea_decrypt_8(const ubyte[64] input, ubyte[64] output, const uint[64] EK)
 {
-	SIMD_32 L0 = SIMD_32::load_be(input	  );
-	SIMD_32 R0 = SIMD_32::load_be(input + 16);
-	SIMD_32 L1 = SIMD_32::load_be(input + 32);
-	SIMD_32 R1 = SIMD_32::load_be(input + 48);
+	SIMD_32 L0 = SIMD_32.load_be(input	  );
+	SIMD_32 R0 = SIMD_32.load_be(input + 16);
+	SIMD_32 L1 = SIMD_32.load_be(input + 32);
+	SIMD_32 R1 = SIMD_32.load_be(input + 48);
 
-	SIMD_32::transpose(L0, R0, L1, R1);
+	SIMD_32.transpose(L0, R0, L1, R1);
 
 	for (size_t i = 0; i != 32; i += 2)
 	{
@@ -76,7 +76,7 @@ void xtea_decrypt_8(const ubyte[64] input, ubyte[64] output, const uint[64] EK)
 		L1 -= (((R1 << 4) ^ (R1 >> 5)) + R1) ^ K3;
 	}
 
-	SIMD_32::transpose(L0, R0, L1, R1);
+	SIMD_32.transpose(L0, R0, L1, R1);
 
 	L0.store_be(output);
 	R0.store_be(output + 16);

@@ -5,7 +5,7 @@
 * Distributed under the terms of the botan license.
 */
 
-import botan.engine;
+import botan.engine.engine;
 /**
 * Engine for implementations that hook into CPU-specific
 * AES implementations (eg AES-NI, VIA C7, or AMD Geode)

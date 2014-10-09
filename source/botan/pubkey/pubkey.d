@@ -11,7 +11,7 @@ import botan.asn1.ber_dec;
 import botan.bigint;
 import botan.parsing;
 import botan.libstate;
-import botan.engine;
+import botan.engine.engine;
 import botan.internal.bit_ops;
 /*
 * PK_Encryptor_EME Constructor

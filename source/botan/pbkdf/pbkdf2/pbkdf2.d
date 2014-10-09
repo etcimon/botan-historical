@@ -47,7 +47,7 @@ PKCS5_PBKDF2::key_derivation(size_t key_len,
 	uint counter = 1;
 	while(key_len)
 	{
-		size_t T_size = std.algorithm.min<size_t>(mac.output_length(), key_len);
+		size_t T_size = std.algorithm.min(mac.output_length(), key_len);
 
 		mac.update(salt, salt_len);
 		mac.update_be(counter);

@@ -58,7 +58,7 @@ SafeVector!ubyte SSL3_PRF::derive(size_t key_len,
 	int counter = 0;
 	while(key_len)
 	{
-		const size_t produce = std.algorithm.min<size_t>(key_len, md5.output_length());
+		const size_t produce = std.algorithm.min(key_len, md5.output_length());
 
 		output = output + next_hash(counter++, produce, md5, sha1,
 											 secret, secret_len, seed, seed_len);

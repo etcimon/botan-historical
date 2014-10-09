@@ -14,69 +14,69 @@ import botan.algo_factory;
 #endif
 
 #if defined(BOTAN_HAS_BLOWFISH)
-  import botan.blowfish;
+  import botan.block.blowfish.blowfish;
 #endif
 
 #if defined(BOTAN_HAS_CAMELLIA)
-  import botan.camellia;
+  import botan.block.camellia.camellia;
 #endif
 
 #if defined(BOTAN_HAS_CAST)
-  import botan.cast128;
-  import botan.cast256;
+  import botan.block.cast_.cast128;
+  import botan.block.cast_.cast256;
 #endif
 
 #if defined(BOTAN_HAS_CASCADE)
-  import botan.cascade;
+  import botan.block.cascade.cascade;
 #endif
 
 #if defined(BOTAN_HAS_DES)
-  import botan.des;
-  import botan.desx;
+  import botan.block.des.des;
+  import botan.block.des.desx;
 #endif
 
 #if defined(BOTAN_HAS_GOST_28147_89)
-  import botan.gost_28147;
+  import botan.block.gost_28147;
 #endif
 
 #if defined(BOTAN_HAS_IDEA)
-  import botan.idea;
+  import botan.block.idea.idea;
 #endif
 
 #if defined(BOTAN_HAS_KASUMI)
-  import botan.kasumi;
+  import botan.block.kasumi.kasumi;
 #endif
 
 #if defined(BOTAN_HAS_LION)
-  import botan.lion;
+  import botan.block.lion.lion;
 #endif
 
 #if defined(BOTAN_HAS_MARS)
-  import botan.mars;
+  import botan.block.mars.mars;
 #endif
 
 #if defined(BOTAN_HAS_MISTY1)
-  import botan.misty1;
+  import botan.block.misty1.misty1;
 #endif
 
 #if defined(BOTAN_HAS_NOEKEON)
-  import botan.noekeon;
+  import botan.block.noekeon.noekeon;
 #endif
 
 #if defined(BOTAN_HAS_RC2)
-  import botan.rc2;
+  import botan.block.rc2.rc2;
 #endif
 
 #if defined(BOTAN_HAS_RC5)
-  import botan.rc5;
+  import botan.block.rc5.rc5;
 #endif
 
 #if defined(BOTAN_HAS_RC6)
-  import botan.rc6;
+  import botan.block.rc6.rc6;
 #endif
 
 #if defined(BOTAN_HAS_SAFER)
-  import botan.safer_sk;
+  import botan.block.safer.safer_sk;
 #endif
 
 #if defined(BOTAN_HAS_SEED)

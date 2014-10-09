@@ -7,7 +7,7 @@
 
 import botan.pow_mod;
 import botan.libstate;
-import botan.engine;
+import botan.engine.engine;
 /*
 * Power_Mod Constructor
 */

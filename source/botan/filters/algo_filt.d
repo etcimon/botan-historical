@@ -65,7 +65,7 @@ void StreamCipher_Filter::write(in ubyte* input, size_t length)
 {
 	while(length)
 	{
-		size_t copied = std.algorithm.min<size_t>(length, buffer.size());
+		size_t copied = std.algorithm.min(length, buffer.size());
 		cipher.cipher(input, &buffer[0], copied);
 		send(buffer, copied);
 		input += copied;
@@ -91,7 +91,7 @@ void Hash_Filter::end_msg()
 {
 	SafeVector!ubyte output = hash.flush();
 	if (OUTPUT_LENGTH)
-		send(output, std.algorithm.min<size_t>(OUTPUT_LENGTH, output.size()));
+		send(output, std.algorithm.min(OUTPUT_LENGTH, output.size()));
 	else
 		send(output);
 }
@@ -124,7 +124,7 @@ void MAC_Filter::end_msg()
 {
 	SafeVector!ubyte output = mac.flush();
 	if (OUTPUT_LENGTH)
-		send(output, std.algorithm.min<size_t>(OUTPUT_LENGTH, output.size()));
+		send(output, std.algorithm.min(OUTPUT_LENGTH, output.size()));
 	else
 		send(output);
 }

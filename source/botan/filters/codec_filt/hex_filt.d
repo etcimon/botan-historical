@@ -118,7 +118,7 @@ void Hex_Decoder::write(in ubyte* input, size_t length)
 {
 	while(length)
 	{
-		size_t to_copy = std.algorithm.min<size_t>(length, input.size() - position);
+		size_t to_copy = std.algorithm.min(length, input.size() - position);
 		copy_mem(&input[position], input, to_copy);
 		position += to_copy;
 

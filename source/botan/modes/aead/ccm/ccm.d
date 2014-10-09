@@ -186,7 +186,7 @@ void CCM_Encryption::finish(SafeVector!ubyte buffer, size_t offset)
 
 	while(buf != buf_end)
 	{
-		const size_t to_proc = std.algorithm.min<size_t>(BS, buf_end - buf);
+		const size_t to_proc = std.algorithm.min(BS, buf_end - buf);
 
 		xor_buf(&T[0], buf, to_proc);
 		E.encrypt(T);
@@ -240,7 +240,7 @@ void CCM_Decryption::finish(SafeVector!ubyte buffer, size_t offset)
 
 	while(buf != buf_end)
 	{
-		const size_t to_proc = std.algorithm.min<size_t>(BS, buf_end - buf);
+		const size_t to_proc = std.algorithm.min(BS, buf_end - buf);
 
 		E.encrypt(C, X);
 		xor_buf(buf, &X[0], to_proc);

@@ -6,7 +6,7 @@
 */
 
 import botan.stream_cipher;
-import botan.block_cipher;
+import botan.block.block_cipher;
 /**
 * Output Feedback Mode
 */

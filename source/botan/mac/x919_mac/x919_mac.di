@@ -6,7 +6,7 @@
 */
 
 import botan.mac;
-import botan.block_cipher;
+import botan.block.block_cipher;
 /**
 * DES/3DES-based MAC from ANSI X9.19
 */

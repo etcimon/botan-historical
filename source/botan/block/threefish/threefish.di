@@ -5,7 +5,7 @@
 * Distributed under the terms of the botan license.
 */
 
-import botan.block_cipher;
+import botan.block.block_cipher;
 /**
 * Threefish-512
 */

@@ -6,7 +6,7 @@
 */
 
 import botan.aead;
-import botan.block_cipher;
+import botan.block.block_cipher;
 import botan.libstate;
 
 #if defined(BOTAN_HAS_AEAD_CCM)

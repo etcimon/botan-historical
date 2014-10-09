@@ -76,7 +76,7 @@ size_t EGD_EntropySource::EGD_Socket::read(ref ubyte[] outbuf)
 	{
 		// 1 == EGD command for non-blocking read
 		ubyte[2] egd_read_command = {
-			1, cast(ubyte)(std.algorithm.min<size_t>(length, 255)) };
+			1, cast(ubyte)(std.algorithm.min(length, 255)) };
 
 		if (::write(m_fd, egd_read_command, 2) != 2)
 			throw new Exception("Writing entropy read command to EGD failed");

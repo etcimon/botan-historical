@@ -38,7 +38,7 @@ void P_hash(SafeVector!ubyte output,
 	while(offset != output.size())
 	{
 		const size_t this_block_len =
-			std.algorithm.min<size_t>(mac.output_length(), output.size() - offset);
+			std.algorithm.min(mac.output_length(), output.size() - offset);
 
 		A = mac.process(A);
 

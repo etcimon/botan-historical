@@ -1,88 +1,171 @@
 /*
 * Engine
-* (C) 2010 Jack Lloyd
+* (C) 1999-2007 Jack Lloyd
 *
-* Distributed under the terms of the Botan license
+* Distributed under the terms of the botan license.
 */
+module botan.engine.engine;
 
-import botan.engine;
-BlockCipher
-Engine::find_block_cipher(in SCAN_Name,
-								  Algorithm_Factory) const
+import botan.engine.engine;
+import botan.algo_base.scan_name;
+import botan.block.block_cipher;
+import botan.stream_cipher;
+import botan.hash;
+import botan.mac;
+import botan.pbkdf;
+import botan.pow_mod;
+import botan.pk_keys;
+import botan.pubkey.pk_ops;
+class Algorithm_Factory;
+class Keyed_Filter;
+class RandomNumberGenerator;
+
+/**
+* Base class for all engines. All non-pure abstract functions simply
+* return NULL, indicating the algorithm in question is not
+* supported. Subclasses can reimplement whichever function(s)
+* they want to hook in a particular type.
+*/
+class Engine
 {
-	return null;
-}
+public:
+	~this() {}
 
-StreamCipher
-Engine::find_stream_cipher(in SCAN_Name,
-									Algorithm_Factory) const
-{
-	return null;
-}
+	/**
+	* @return name of this engine
+	*/
+	abstract string provider_name() const;
 
-HashFunction
-Engine::find_hash(in SCAN_Name,
-						Algorithm_Factory) const
-{
-	return null;
-}
+	/**
+	* @param algo_spec the algorithm name/specification
+	* @param af an algorithm factory object
+	* @return newly allocated object, or NULL
+	*/
+	abstract BlockCipher find_block_cipher(in SCAN_Name,
+	                                       Algorithm_Factory) const
+	{
+		return null;
+	}
 
-MessageAuthenticationCode
-Engine::find_mac(in SCAN_Name,
-					  Algorithm_Factory) const
-{
-	return null;
-}
 
-PBKDF
-Engine::find_pbkdf(in SCAN_Name,
-						 Algorithm_Factory) const
-{
-	return null;
-}
+	/**
+	* @param algo_spec the algorithm name/specification
+	* @param af an algorithm factory object
+	* @return newly allocated object, or NULL
+	*/
+	abstract StreamCipher find_stream_cipher(in SCAN_Name,
+	                                         Algorithm_Factory) const
+	{
+		return null;
+	}
 
-Modular_Exponentiator
-Engine::mod_exp(in BigInt,
-					 Power_Mod::Usage_Hints) const
-{
-	return null;
-}
+	/**
+	* @param algo_spec the algorithm name/specification
+	* @param af an algorithm factory object
+	* @return newly allocated object, or NULL
+	*/
+	abstract HashFunction find_hash(in SCAN_Name,
+	                                Algorithm_Factory) const
+	{
+		return null;
+	}
 
-Keyed_Filter Engine::get_cipher(in string,
-											Cipher_Dir,
-											Algorithm_Factory)
-{
-	return null;
-}
 
-pk_ops.Key_Agreement
-Engine::get_key_agreement_op(in Private_Key, RandomNumberGenerator) const
-{
-	return null;
-}
+	/**
+	* @param algo_spec the algorithm name/specification
+	* @param af an algorithm factory object
+	* @return newly allocated object, or NULL
+	*/
+	abstract MessageAuthenticationCode find_mac(in SCAN_Name,
+	                                            Algorithm_Factory) const
+	{
+		return null;
+	}
 
-pk_ops.Signature
-Engine::get_signature_op(in Private_Key, RandomNumberGenerator) const
-{
-	return null;
-}
+	/**
+	* @param algo_spec the algorithm name/specification
+	* @param af an algorithm factory object
+	* @return newly allocated object, or NULL
+	*/
+	abstract PBKDF find_pbkdf(in SCAN_Name,
+	                          Algorithm_Factory) const
+	{
+		return null;
+	}
 
-pk_ops.Verification
-Engine::get_verify_op(in Public_Key, RandomNumberGenerator) const
-{
-	return null;
-}
+	/**
+	* @param n the modulus
+	* @param hints any use hints
+	* @return newly allocated object, or NULL
+	*/
+	abstract Modular_Exponentiator mod_exp(in BigInt,
+	                                       Power_Mod.Usage_Hints) const
+	{
+		return null;
+	}
 
-pk_ops.Encryption
-Engine::get_encryption_op(in Public_Key, RandomNumberGenerator) const
-{
-	return null;
-}
 
-pk_ops.Decryption
-Engine::get_decryption_op(in Private_Key, RandomNumberGenerator) const
-{
-	return null;
-}
+	/**
+	* Return a new cipher object
+	* @param algo_spec the algorithm name/specification
+	* @param dir specifies if encryption or decryption is desired
+	* @param af an algorithm factory object
+	* @return newly allocated object, or NULL
+	*/
+	abstract Keyed_Filter get_cipher(in string,
+	                                 Cipher_Dir,
+	                                 Algorithm_Factory)
+	{
+		return null;
+	}
 
-}
+	/**
+	* Return a new operator object for this key, if possible
+	* @param key the key we want an operator for
+	* @return newly allocated operator object, or NULL
+	*/
+	abstract pk_ops.Key_Agreement get_key_agreement_op(in Private_Key, RandomNumberGenerator) const
+	{
+		return null;
+	}
+
+	/**
+	* Return a new operator object for this key, if possible
+	* @param key the key we want an operator for
+	* @return newly allocated operator object, or NULL
+	*/
+	abstract pk_ops.Signature get_signature_op(in Private_Key, RandomNumberGenerator) const
+	{
+		return null;
+	}
+
+	/**
+	* Return a new operator object for this key, if possible
+	* @param key the key we want an operator for
+	* @return newly allocated operator object, or NULL
+	*/
+	abstract pk_ops.Verification get_verify_op(in Public_Key, RandomNumberGenerator) const
+	{
+		return null;
+	}
+
+	/**
+	* Return a new operator object for this key, if possible
+	* @param key the key we want an operator for
+	* @return newly allocated operator object, or NULL
+	*/
+	abstract pk_ops.Encryption get_encryption_op(in Public_Key, RandomNumberGenerator) const
+	{
+		return null;
+	}
+
+	/**
+	* Return a new operator object for this key, if possible
+	* @param key the key we want an operator for
+	* @return newly allocated operator object, or NULL
+	*/
+	abstract pk_ops.Decryption get_decryption_op(in Private_Key, RandomNumberGenerator) const
+	{
+		return null;
+	}
+};

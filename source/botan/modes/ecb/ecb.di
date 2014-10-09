@@ -6,7 +6,7 @@
 */
 
 import botan.cipher_mode;
-import botan.block_cipher;
+import botan.block.block_cipher;
 import botan.mode_pad;
 /**
 * ECB mode

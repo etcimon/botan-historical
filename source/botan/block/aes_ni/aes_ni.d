@@ -6,7 +6,7 @@
 */
 module botan.block.aes_ni.aes_ni;
 
-import botan.block_cipher;
+import botan.block.block_cipher;
 import botan.loadstor;
 import botan.utils.simd.xmmintrin;
 

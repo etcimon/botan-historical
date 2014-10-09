@@ -7,7 +7,7 @@
 
 import botan.bcrypt;
 import botan.loadstor;
-import botan.blowfish;
+import botan.block.blowfish.blowfish;
 import botan.base64;
 namespace {
 

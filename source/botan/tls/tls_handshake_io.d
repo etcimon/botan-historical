@@ -348,7 +348,7 @@ Datagram_Handshake_IO::send(in Handshake_Message msg)
 		while(frag_offset != msg_bits.size())
 		{
 			const size_t frag_len =
-				std.algorithm.min<size_t>(msg_bits.size() - frag_offset,
+				std.algorithm.min(msg_bits.size() - frag_offset,
 									  parts_size);
 
 			m_send_hs(epoch,

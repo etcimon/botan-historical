@@ -5,7 +5,7 @@
 * Distributed under the terms of the botan license.
 */
 
-import botan.engine;
+import botan.engine.engine;
 /**
 * Core Engine
 */

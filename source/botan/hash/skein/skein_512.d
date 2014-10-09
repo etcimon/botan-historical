@@ -91,7 +91,7 @@ void Skein_512::ubi_512(in ubyte* msg, size_t msg_len)
 
 	do
 	{
-		const size_t to_proc = std.algorithm.min<size_t>(msg_len, 64);
+		const size_t to_proc = std.algorithm.min(msg_len, 64);
 		T[0] += to_proc;
 
 		load_le(&M[0], msg, to_proc / 8);

@@ -8,10 +8,10 @@ module botan.algo_factory.algo_factory;
 
 import botan.algo_factory.algo_cache;
 import botan.internal.stl_util;
-import botan.engine;
+import botan.engine.engine;
 import botan.exceptn;
 
-import botan.block_cipher;
+import botan.block.block_cipher;
 import botan.stream_cipher;
 import botan.hash;
 import botan.mac;

@@ -6,7 +6,7 @@
 */
 
 import botan.pbe;
-import botan.block_cipher;
+import botan.block.block_cipher;
 import botan.mac;
 import botan.pipe;
 import std.datetime;

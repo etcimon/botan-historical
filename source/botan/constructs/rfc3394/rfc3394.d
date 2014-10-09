@@ -7,7 +7,7 @@
 
 import botan.rfc3394;
 import botan.algo_factory;
-import botan.block_cipher;
+import botan.block.block_cipher;
 import botan.loadstor;
 import botan.exceptn;
 import botan.internal.xor_buf;

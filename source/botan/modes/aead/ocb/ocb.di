@@ -6,7 +6,7 @@
 */
 
 import botan.aead;
-import botan.block_cipher;
+import botan.block.block_cipher;
 import botan.buf_filt;
 class L_computer;
 

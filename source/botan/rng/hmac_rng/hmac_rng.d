@@ -100,7 +100,7 @@ void HMAC_RNG::randomize(ubyte* output)
 	{
 		hmac_prf(*m_prf, m_K, m_counter, "rng");
 
-		const size_t copied = std.algorithm.min<size_t>(length, max_per_prf_iter);
+		const size_t copied = std.algorithm.min(length, max_per_prf_iter);
 
 		copy_mem(output, &m_K[0], copied);
 		output += copied;
@@ -168,7 +168,7 @@ void HMAC_RNG::reseed(size_t poll_bits)
 	m_counter = 0;
 
 	m_collected_entropy_estimate =
-		std.algorithm.min<size_t>(m_collected_entropy_estimate + bits_collected,
+		std.algorithm.min(m_collected_entropy_estimate + bits_collected,
 							  m_extractor.output_length() * 8);
 
 	m_output_since_reseed = 0;

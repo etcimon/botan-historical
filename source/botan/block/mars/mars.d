@@ -1,19 +1,197 @@
 /*
 * MARS
-* (C) 1999-2009 Jack Lloyd
+* (C) 1999-2007 Jack Lloyd
 *
-* Distributed under the terms of the Botan license
+* Distributed under the terms of the botan license.
 */
+module botan.block.mars.mars;
 
-import botan.mars;
+import botan.block.block_cipher;
+
+import botan.block.mars.mars;
 import botan.loadstor;
 import botan.rotate;
-namespace {
+
+/**
+* MARS, IBM's candidate for AES
+*/
+class MARS : Block_Cipher_Fixed_Params!(16, 16, 32, 4)
+{
+public:
+	/*
+	* MARS Encryption
+	*/
+	void encrypt_n(ubyte* input, ubyte* output, size_t blocks) const
+	{
+		for (size_t i = 0; i != blocks; ++i)
+		{
+			uint A = load_le!uint(input, 0) + EK[0];
+			uint B = load_le!uint(input, 1) + EK[1];
+			uint C = load_le!uint(input, 2) + EK[2];
+			uint D = load_le!uint(input, 3) + EK[3];
+			
+			forward_mix(A, B, C, D);
+			
+			encrypt_round(A, B, C, D, EK[ 4], EK[ 5]);
+			encrypt_round(B, C, D, A, EK[ 6], EK[ 7]);
+			encrypt_round(C, D, A, B, EK[ 8], EK[ 9]);
+			encrypt_round(D, A, B, C, EK[10], EK[11]);
+			encrypt_round(A, B, C, D, EK[12], EK[13]);
+			encrypt_round(B, C, D, A, EK[14], EK[15]);
+			encrypt_round(C, D, A, B, EK[16], EK[17]);
+			encrypt_round(D, A, B, C, EK[18], EK[19]);
+			
+			encrypt_round(A, D, C, B, EK[20], EK[21]);
+			encrypt_round(B, A, D, C, EK[22], EK[23]);
+			encrypt_round(C, B, A, D, EK[24], EK[25]);
+			encrypt_round(D, C, B, A, EK[26], EK[27]);
+			encrypt_round(A, D, C, B, EK[28], EK[29]);
+			encrypt_round(B, A, D, C, EK[30], EK[31]);
+			encrypt_round(C, B, A, D, EK[32], EK[33]);
+			encrypt_round(D, C, B, A, EK[34], EK[35]);
+			
+			reverse_mix(A, B, C, D);
+			
+			A -= EK[36]; B -= EK[37]; C -= EK[38]; D -= EK[39];
+			
+			store_le(output, A, B, C, D);
+			
+			input += BLOCK_SIZE;
+			output += BLOCK_SIZE;
+		}
+	}
+
+	/*
+	* MARS Decryption
+	*/
+	void decrypt_n(ubyte* input, ubyte* output, size_t blocks) const
+	{
+		for (size_t i = 0; i != blocks; ++i)
+		{
+			uint A = load_le!uint(input, 3) + EK[39];
+			uint B = load_le!uint(input, 2) + EK[38];
+			uint C = load_le!uint(input, 1) + EK[37];
+			uint D = load_le!uint(input, 0) + EK[36];
+			
+			forward_mix(A, B, C, D);
+			
+			decrypt_round(A, B, C, D, EK[35], EK[34]);
+			decrypt_round(B, C, D, A, EK[33], EK[32]);
+			decrypt_round(C, D, A, B, EK[31], EK[30]);
+			decrypt_round(D, A, B, C, EK[29], EK[28]);
+			decrypt_round(A, B, C, D, EK[27], EK[26]);
+			decrypt_round(B, C, D, A, EK[25], EK[24]);
+			decrypt_round(C, D, A, B, EK[23], EK[22]);
+			decrypt_round(D, A, B, C, EK[21], EK[20]);
+			
+			decrypt_round(A, D, C, B, EK[19], EK[18]);
+			decrypt_round(B, A, D, C, EK[17], EK[16]);
+			decrypt_round(C, B, A, D, EK[15], EK[14]);
+			decrypt_round(D, C, B, A, EK[13], EK[12]);
+			decrypt_round(A, D, C, B, EK[11], EK[10]);
+			decrypt_round(B, A, D, C, EK[ 9], EK[ 8]);
+			decrypt_round(C, B, A, D, EK[ 7], EK[ 6]);
+			decrypt_round(D, C, B, A, EK[ 5], EK[ 4]);
+			
+			reverse_mix(A, B, C, D);
+			
+			A -= EK[3]; B -= EK[2]; C -= EK[1]; D -= EK[0];
+			
+			store_le(output, D, C, B, A);
+			
+			input += BLOCK_SIZE;
+			output += BLOCK_SIZE;
+		}
+	}
+
+	void clear()
+	{
+		zap(EK);
+	}
+
+	string name() const { return "MARS"; }
+	BlockCipher clone() const { return new MARS; }
+private:
+	/*
+	* MARS Key Schedule
+	*/
+	void key_schedule(in ubyte* key)
+	{
+		secure_vector!uint T = secure_vector!uint(15);
+		for (size_t i = 0; i != length / 4; ++i)
+			T[i] = load_le!uint(key, i);
+		
+		T[length / 4] = cast(uint)(length) / 4;
+		
+		EK.resize(40);
+		
+		for (uint i = 0; i != 4; ++i)
+		{
+			T[ 0] ^= rotate_left(T[ 8] ^ T[13], 3) ^ (i	  );
+			T[ 1] ^= rotate_left(T[ 9] ^ T[14], 3) ^ (i +  4);
+			T[ 2] ^= rotate_left(T[10] ^ T[ 0], 3) ^ (i +  8);
+			T[ 3] ^= rotate_left(T[11] ^ T[ 1], 3) ^ (i + 12);
+			T[ 4] ^= rotate_left(T[12] ^ T[ 2], 3) ^ (i + 16);
+			T[ 5] ^= rotate_left(T[13] ^ T[ 3], 3) ^ (i + 20);
+			T[ 6] ^= rotate_left(T[14] ^ T[ 4], 3) ^ (i + 24);
+			T[ 7] ^= rotate_left(T[ 0] ^ T[ 5], 3) ^ (i + 28);
+			T[ 8] ^= rotate_left(T[ 1] ^ T[ 6], 3) ^ (i + 32);
+			T[ 9] ^= rotate_left(T[ 2] ^ T[ 7], 3) ^ (i + 36);
+			T[10] ^= rotate_left(T[ 3] ^ T[ 8], 3) ^ (i + 40);
+			T[11] ^= rotate_left(T[ 4] ^ T[ 9], 3) ^ (i + 44);
+			T[12] ^= rotate_left(T[ 5] ^ T[10], 3) ^ (i + 48);
+			T[13] ^= rotate_left(T[ 6] ^ T[11], 3) ^ (i + 52);
+			T[14] ^= rotate_left(T[ 7] ^ T[12], 3) ^ (i + 56);
+			
+			for (size_t j = 0; j != 4; ++j)
+			{
+				T[ 0] = rotate_left(T[ 0] + SBOX[T[14] % 512], 9);
+				T[ 1] = rotate_left(T[ 1] + SBOX[T[ 0] % 512], 9);
+				T[ 2] = rotate_left(T[ 2] + SBOX[T[ 1] % 512], 9);
+				T[ 3] = rotate_left(T[ 3] + SBOX[T[ 2] % 512], 9);
+				T[ 4] = rotate_left(T[ 4] + SBOX[T[ 3] % 512], 9);
+				T[ 5] = rotate_left(T[ 5] + SBOX[T[ 4] % 512], 9);
+				T[ 6] = rotate_left(T[ 6] + SBOX[T[ 5] % 512], 9);
+				T[ 7] = rotate_left(T[ 7] + SBOX[T[ 6] % 512], 9);
+				T[ 8] = rotate_left(T[ 8] + SBOX[T[ 7] % 512], 9);
+				T[ 9] = rotate_left(T[ 9] + SBOX[T[ 8] % 512], 9);
+				T[10] = rotate_left(T[10] + SBOX[T[ 9] % 512], 9);
+				T[11] = rotate_left(T[11] + SBOX[T[10] % 512], 9);
+				T[12] = rotate_left(T[12] + SBOX[T[11] % 512], 9);
+				T[13] = rotate_left(T[13] + SBOX[T[12] % 512], 9);
+				T[14] = rotate_left(T[14] + SBOX[T[13] % 512], 9);
+			}
+			
+			EK[10*i + 0] = T[ 0];
+			EK[10*i + 1] = T[ 4];
+			EK[10*i + 2] = T[ 8];
+			EK[10*i + 3] = T[12];
+			EK[10*i + 4] = T[ 1];
+			EK[10*i + 5] = T[ 5];
+			EK[10*i + 6] = T[ 9];
+			EK[10*i + 7] = T[13];
+			EK[10*i + 8] = T[ 2];
+			EK[10*i + 9] = T[ 6];
+		}
+		
+		for (size_t i = 5; i != 37; i += 2)
+		{
+			const uint key3 = EK[i] & 3;
+			EK[i] |= 3;
+			EK[i] ^= rotate_left(SBOX[265 + key3], EK[i-1] % 32) & gen_mask(EK[i]);
+		}
+	}
+
+	secure_vector!uint EK;
+};
+
+
+package:
 
 /**
 * The MARS sbox
 */
-immutable uint[512] SBOX = {
+immutable uint[512] SBOX = [
 	0x09D0C479, 0x28C8FFE0, 0x84AA6C39, 0x9DAD7287, 0x7DFF9BE3, 0xD4268361,
 	0xC96DA1D4, 0x7974CC93, 0x85D0582E, 0x2A4B5705, 0x1CA16A62, 0xC3BD279D,
 	0x0F1F25E5, 0x5160372F, 0xC695C1FB, 0x4D7FF1E4, 0xAE5F6BF4, 0x0D72EE46,
@@ -99,19 +277,19 @@ immutable uint[512] SBOX = {
 	0x3AB871BD, 0xCFA4D76F, 0xE31BD782, 0x0DBEB469, 0xABB96061, 0x5370F85D,
 	0xFFB07E37, 0xDA30D0FB, 0xEBC977B6, 0x0B98B40F, 0x3A4D0FE6, 0xDF4FC26B,
 	0x159CF22A, 0xC298D6E2, 0x2B78EF6A, 0x61A94AC0, 0xAB561187, 0x14EEA0F0,
-	0xDF0D4164, 0x19AF70EE };
+	0xDF0D4164, 0x19AF70EE ];
 
 /*
 * MARS Encryption Round
 */
- void encrypt_round(ref uint A, ref uint B, ref uint C, ref uint D,
-								  uint EK1, uint EK2)
+void encrypt_round(ref uint A, ref uint B, ref uint C, ref uint D,
+                   uint EK1, uint EK2)
 {
 	const uint X = A + EK1;
 	A  = rotate_left(A, 13);
 	uint Y = A * EK2;
 	uint Z = SBOX[X % 512];
-
+	
 	Y  = rotate_left(Y, 5);
 	Z ^= Y;
 	C += rotate_left(X, Y % 32);
@@ -124,14 +302,14 @@ immutable uint[512] SBOX = {
 /*
 * MARS Decryption Round
 */
- void decrypt_round(ref uint A, ref uint B, ref uint C, ref uint D,
-								  uint EK1, uint EK2)
+void decrypt_round(ref uint A, ref uint B, ref uint C, ref uint D,
+                   uint EK1, uint EK2)
 {
 	uint Y = A * EK1;
 	A = rotate_right(A, 13);
 	const uint X = A + EK2;
 	uint Z = SBOX[X % 512];
-
+	
 	Y  = rotate_left(Y, 5);
 	Z ^= Y;
 	C -= rotate_left(X, Y % 32);
@@ -151,15 +329,15 @@ void forward_mix(ref uint A, ref uint B, ref uint C, ref uint D)
 		B ^= SBOX[get_byte(3, A)]; B += SBOX[get_byte(2, A) + 256];
 		C += SBOX[get_byte(1, A)]; D ^= SBOX[get_byte(0, A) + 256];
 		A = rotate_right(A, 24) + D;
-
+		
 		C ^= SBOX[get_byte(3, B)]; C += SBOX[get_byte(2, B) + 256];
 		D += SBOX[get_byte(1, B)]; A ^= SBOX[get_byte(0, B) + 256];
 		B = rotate_right(B, 24) + C;
-
+		
 		D ^= SBOX[get_byte(3, C)]; D += SBOX[get_byte(2, C) + 256];
 		A += SBOX[get_byte(1, C)]; B ^= SBOX[get_byte(0, C) + 256];
 		C = rotate_right(C, 24);
-
+		
 		A ^= SBOX[get_byte(3, D)]; A += SBOX[get_byte(2, D) + 256];
 		B += SBOX[get_byte(1, D)]; C ^= SBOX[get_byte(0, D) + 256];
 		D = rotate_right(D, 24);
@@ -176,16 +354,16 @@ void reverse_mix(ref uint A, ref uint B, ref uint C, ref uint D)
 		B ^= SBOX[get_byte(3, A) + 256]; C -= SBOX[get_byte(0, A)];
 		D -= SBOX[get_byte(1, A) + 256]; D ^= SBOX[get_byte(2, A)];
 		A = rotate_left(A, 24);
-
+		
 		C ^= SBOX[get_byte(3, B) + 256]; D -= SBOX[get_byte(0, B)];
 		A -= SBOX[get_byte(1, B) + 256]; A ^= SBOX[get_byte(2, B)];
 		C -= (B = rotate_left(B, 24));
-
+		
 		D ^= SBOX[get_byte(3, C) + 256]; A -= SBOX[get_byte(0, C)];
 		B -= SBOX[get_byte(1, C) + 256]; B ^= SBOX[get_byte(2, C)];
 		C = rotate_left(C, 24);
 		D -= A;
-
+		
 		A ^= SBOX[get_byte(3, D) + 256]; B -= SBOX[get_byte(0, D)];
 		C -= SBOX[get_byte(1, D) + 256]; C ^= SBOX[get_byte(2, D)];
 		D = rotate_left(D, 24);
@@ -198,20 +376,20 @@ void reverse_mix(ref uint A, ref uint B, ref uint C, ref uint D)
 uint gen_mask(uint input)
 {
 	uint mask = 0;
-
+	
 	for (uint j = 2; j != 31; ++j)
 	{
 		const uint region = (input >> (j-1)) & 0x07;
-
+		
 		if (region == 0x00 || region == 0x07)
 		{
 			const uint low = (j < 9) ? 0 : (j - 9);
 			const uint high = (j < 23) ? j : 23;
-
+			
 			for (uint k = low; k != high; ++k)
 			{
 				const uint value = (input >> k) & 0x3FF;
-
+				
 				if (value == 0 || value == 0x3FF)
 				{
 					mask |= 1 << j;
@@ -220,171 +398,6 @@ uint gen_mask(uint input)
 			}
 		}
 	}
-
+	
 	return mask;
-}
-
-}
-
-/*
-* MARS Encryption
-*/
-void MARS::encrypt_n(ubyte* input, ubyte* output, size_t blocks) const
-{
-	for (size_t i = 0; i != blocks; ++i)
-	{
-		uint A = load_le!uint(input, 0) + EK[0];
-		uint B = load_le!uint(input, 1) + EK[1];
-		uint C = load_le!uint(input, 2) + EK[2];
-		uint D = load_le!uint(input, 3) + EK[3];
-
-		forward_mix(A, B, C, D);
-
-		encrypt_round(A, B, C, D, EK[ 4], EK[ 5]);
-		encrypt_round(B, C, D, A, EK[ 6], EK[ 7]);
-		encrypt_round(C, D, A, B, EK[ 8], EK[ 9]);
-		encrypt_round(D, A, B, C, EK[10], EK[11]);
-		encrypt_round(A, B, C, D, EK[12], EK[13]);
-		encrypt_round(B, C, D, A, EK[14], EK[15]);
-		encrypt_round(C, D, A, B, EK[16], EK[17]);
-		encrypt_round(D, A, B, C, EK[18], EK[19]);
-
-		encrypt_round(A, D, C, B, EK[20], EK[21]);
-		encrypt_round(B, A, D, C, EK[22], EK[23]);
-		encrypt_round(C, B, A, D, EK[24], EK[25]);
-		encrypt_round(D, C, B, A, EK[26], EK[27]);
-		encrypt_round(A, D, C, B, EK[28], EK[29]);
-		encrypt_round(B, A, D, C, EK[30], EK[31]);
-		encrypt_round(C, B, A, D, EK[32], EK[33]);
-		encrypt_round(D, C, B, A, EK[34], EK[35]);
-
-		reverse_mix(A, B, C, D);
-
-		A -= EK[36]; B -= EK[37]; C -= EK[38]; D -= EK[39];
-
-		store_le(output, A, B, C, D);
-
-		input += BLOCK_SIZE;
-		output += BLOCK_SIZE;
-	}
-}
-
-/*
-* MARS Decryption
-*/
-void MARS::decrypt_n(ubyte* input, ubyte* output, size_t blocks) const
-{
-	for (size_t i = 0; i != blocks; ++i)
-	{
-		uint A = load_le!uint(input, 3) + EK[39];
-		uint B = load_le!uint(input, 2) + EK[38];
-		uint C = load_le!uint(input, 1) + EK[37];
-		uint D = load_le!uint(input, 0) + EK[36];
-
-		forward_mix(A, B, C, D);
-
-		decrypt_round(A, B, C, D, EK[35], EK[34]);
-		decrypt_round(B, C, D, A, EK[33], EK[32]);
-		decrypt_round(C, D, A, B, EK[31], EK[30]);
-		decrypt_round(D, A, B, C, EK[29], EK[28]);
-		decrypt_round(A, B, C, D, EK[27], EK[26]);
-		decrypt_round(B, C, D, A, EK[25], EK[24]);
-		decrypt_round(C, D, A, B, EK[23], EK[22]);
-		decrypt_round(D, A, B, C, EK[21], EK[20]);
-
-		decrypt_round(A, D, C, B, EK[19], EK[18]);
-		decrypt_round(B, A, D, C, EK[17], EK[16]);
-		decrypt_round(C, B, A, D, EK[15], EK[14]);
-		decrypt_round(D, C, B, A, EK[13], EK[12]);
-		decrypt_round(A, D, C, B, EK[11], EK[10]);
-		decrypt_round(B, A, D, C, EK[ 9], EK[ 8]);
-		decrypt_round(C, B, A, D, EK[ 7], EK[ 6]);
-		decrypt_round(D, C, B, A, EK[ 5], EK[ 4]);
-
-		reverse_mix(A, B, C, D);
-
-		A -= EK[3]; B -= EK[2]; C -= EK[1]; D -= EK[0];
-
-		store_le(output, D, C, B, A);
-
-		input += BLOCK_SIZE;
-		output += BLOCK_SIZE;
-	}
-}
-
-/*
-* MARS Key Schedule
-*/
-void MARS::key_schedule(in ubyte* key)
-{
-	secure_vector!uint T(15);
-	for (size_t i = 0; i != length / 4; ++i)
-		T[i] = load_le!uint(key, i);
-
-	T[length / 4] = cast(uint)(length) / 4;
-
-	EK.resize(40);
-
-	for (uint i = 0; i != 4; ++i)
-	{
-		T[ 0] ^= rotate_left(T[ 8] ^ T[13], 3) ^ (i	  );
-		T[ 1] ^= rotate_left(T[ 9] ^ T[14], 3) ^ (i +  4);
-		T[ 2] ^= rotate_left(T[10] ^ T[ 0], 3) ^ (i +  8);
-		T[ 3] ^= rotate_left(T[11] ^ T[ 1], 3) ^ (i + 12);
-		T[ 4] ^= rotate_left(T[12] ^ T[ 2], 3) ^ (i + 16);
-		T[ 5] ^= rotate_left(T[13] ^ T[ 3], 3) ^ (i + 20);
-		T[ 6] ^= rotate_left(T[14] ^ T[ 4], 3) ^ (i + 24);
-		T[ 7] ^= rotate_left(T[ 0] ^ T[ 5], 3) ^ (i + 28);
-		T[ 8] ^= rotate_left(T[ 1] ^ T[ 6], 3) ^ (i + 32);
-		T[ 9] ^= rotate_left(T[ 2] ^ T[ 7], 3) ^ (i + 36);
-		T[10] ^= rotate_left(T[ 3] ^ T[ 8], 3) ^ (i + 40);
-		T[11] ^= rotate_left(T[ 4] ^ T[ 9], 3) ^ (i + 44);
-		T[12] ^= rotate_left(T[ 5] ^ T[10], 3) ^ (i + 48);
-		T[13] ^= rotate_left(T[ 6] ^ T[11], 3) ^ (i + 52);
-		T[14] ^= rotate_left(T[ 7] ^ T[12], 3) ^ (i + 56);
-
-		for (size_t j = 0; j != 4; ++j)
-		{
-			T[ 0] = rotate_left(T[ 0] + SBOX[T[14] % 512], 9);
-			T[ 1] = rotate_left(T[ 1] + SBOX[T[ 0] % 512], 9);
-			T[ 2] = rotate_left(T[ 2] + SBOX[T[ 1] % 512], 9);
-			T[ 3] = rotate_left(T[ 3] + SBOX[T[ 2] % 512], 9);
-			T[ 4] = rotate_left(T[ 4] + SBOX[T[ 3] % 512], 9);
-			T[ 5] = rotate_left(T[ 5] + SBOX[T[ 4] % 512], 9);
-			T[ 6] = rotate_left(T[ 6] + SBOX[T[ 5] % 512], 9);
-			T[ 7] = rotate_left(T[ 7] + SBOX[T[ 6] % 512], 9);
-			T[ 8] = rotate_left(T[ 8] + SBOX[T[ 7] % 512], 9);
-			T[ 9] = rotate_left(T[ 9] + SBOX[T[ 8] % 512], 9);
-			T[10] = rotate_left(T[10] + SBOX[T[ 9] % 512], 9);
-			T[11] = rotate_left(T[11] + SBOX[T[10] % 512], 9);
-			T[12] = rotate_left(T[12] + SBOX[T[11] % 512], 9);
-			T[13] = rotate_left(T[13] + SBOX[T[12] % 512], 9);
-			T[14] = rotate_left(T[14] + SBOX[T[13] % 512], 9);
-		}
-
-		EK[10*i + 0] = T[ 0];
-		EK[10*i + 1] = T[ 4];
-		EK[10*i + 2] = T[ 8];
-		EK[10*i + 3] = T[12];
-		EK[10*i + 4] = T[ 1];
-		EK[10*i + 5] = T[ 5];
-		EK[10*i + 6] = T[ 9];
-		EK[10*i + 7] = T[13];
-		EK[10*i + 8] = T[ 2];
-		EK[10*i + 9] = T[ 6];
-	}
-
-	for (size_t i = 5; i != 37; i += 2)
-	{
-		const uint key3 = EK[i] & 3;
-		EK[i] |= 3;
-		EK[i] ^= rotate_left(SBOX[265 + key3], EK[i-1] % 32) & gen_mask(EK[i]);
-	}
-}
-
-void MARS::clear()
-{
-	zap(EK);
-}
-
 }

@@ -6,7 +6,7 @@
 */
 
 import botan.rng;
-import botan.block_cipher;
+import botan.block.block_cipher;
 /**
 * ANSI X9.31 RNG
 */

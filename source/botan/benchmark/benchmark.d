@@ -7,7 +7,7 @@
 module botan.benchmark.benchmark;
 import botan.algo_factory;
 import botan.algo_base.buf_comp;
-import botan.block_cipher;
+import botan.block.block_cipher;
 import botan.stream_cipher;
 import botan.aead;
 import botan.hash;

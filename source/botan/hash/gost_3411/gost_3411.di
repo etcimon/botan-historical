@@ -6,7 +6,7 @@
 */
 
 import botan.hash;
-import botan.gost_28147;
+import botan.block.gost_28147;
 /**
 * GOST 34.11
 */

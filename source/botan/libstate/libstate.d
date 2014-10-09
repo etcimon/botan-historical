@@ -7,7 +7,7 @@
 
 import botan.libstate;
 import botan.charset;
-import botan.engine;
+import botan.engine.engine;
 import botan.cpuid;
 import botan.asn1.oid_lookup.oids;
 import botan.internal.core_engine;
@@ -27,7 +27,7 @@ import std.algorithm;
 #endif
 
 #if defined(BOTAN_HAS_ENGINE_SIMD)
-  import botan.internal.simd_engine;
+  import botan.engine.simd_engine.simd_engine;
 #endif
 
 #if defined(BOTAN_HAS_ENGINE_GNU_MP)

@@ -5,7 +5,7 @@
 * Distributed under the terms of the botan license.
 */
 
-import botan.engine;
+import botan.engine.engine;
 /**
 * Dynamically_Loaded_Engine just proxies the requests to the underlying
 * Engine object, and handles load/unload details

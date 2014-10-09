@@ -7,7 +7,7 @@
 
 import botan.lookup;
 import botan.libstate;
-import botan.engine;
+import botan.engine.engine;
 /*
 * Get a PBKDF algorithm by name
 */

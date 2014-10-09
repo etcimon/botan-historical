@@ -4,8 +4,10 @@
 *
 * Distributed under the terms of the botan license.
 */
+module botan.block.block_cipher;
 
 import botan.algo_base.sym_algo;
+
 /**
 * This class represents a block cipher object.
 */
@@ -80,7 +82,7 @@ class BlockCipher : SymmetricAlgorithm
 		* Decrypt one or more blocks
 		* @param block the input/output buffer (multiple of block_size())
 		*/
-		void decrypt(Alloc)(Vector!( ubyte, Alloc )& block) const
+		void decrypt(Alloc)(ref Vector!( ubyte, Alloc ) block) const
 		{
 			return decrypt_n(&block[0], &block[0], block.size() / block_size());
 		}

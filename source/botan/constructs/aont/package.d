@@ -45,7 +45,7 @@ void aont_package(RandomNumberGenerator rng,
 	// XOR the hash blocks into the final block
 	for (size_t i = 0; i != blocks; ++i)
 	{
-		const size_t left = std.algorithm.min<size_t>(BLOCK_SIZE,
+		const size_t left = std.algorithm.min(BLOCK_SIZE,
 														 input_len - BLOCK_SIZE * i);
 
 		zeroise(buf);
@@ -93,7 +93,7 @@ void aont_unpackage(BlockCipher cipher,
 	// XOR the blocks into the package key bits
 	for (size_t i = 0; i != blocks; ++i)
 	{
-		const size_t left = std.algorithm.min<size_t>(BLOCK_SIZE,
+		const size_t left = std.algorithm.min(BLOCK_SIZE,
 														 input_len - BLOCK_SIZE * (i+1));
 
 		zeroise(buf);

@@ -44,7 +44,7 @@ size_t DataSource::discard_next(size_t n)
 size_t DataSource_Memory::read(ubyte* output)
 {
 	size_t length = output.length;
-	size_t got = std.algorithm.min<size_t>(source.size() - offset, length);
+	size_t got = std.algorithm.min(source.size() - offset, length);
 	copy_mem(out, &source[offset], got);
 	offset += got;
 	return got;
