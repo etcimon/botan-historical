@@ -40,7 +40,7 @@ class Hello_Verify_Request : Handshake_Message
 
 		Hello_Verify_Request(in Vector!ubyte client_hello_bits,
 									in string client_identity,
-									const SymmetricKey& secret_key);
+									ref const SymmetricKey secret_key);
 	private:
 		Vector!ubyte m_cookie;
 };
@@ -143,7 +143,7 @@ class Client_Hello : Handshake_Message
 
 		void update_hello_cookie(in Hello_Verify_Request hello_verify);
 
-		std::set<Handshake_Extension_Type> extension_types() const
+		Set<Handshake_Extension_Type> extension_types() const
 		{ return m_extensions.extension_types(); }
 
 		Client_Hello(Handshake_IO io,
@@ -248,7 +248,7 @@ class Server_Hello : Handshake_Message
 			return false;
 		}
 
-		std::set<Handshake_Extension_Type> extension_types() const
+		Set<Handshake_Extension_Type> extension_types() const
 		{ return m_extensions.extension_types(); }
 
 		Server_Hello(Handshake_IO io,

@@ -16,10 +16,10 @@ Buffered_Filter::Buffered_Filter(size_t b, size_t f) :
 	main_block_mod(b), final_minimum(f)
 {
 	if (main_block_mod == 0)
-		throw new std::invalid_argument("main_block_mod == 0");
+		throw new Invalid_Argument("main_block_mod == 0");
 
 	if (final_minimum > main_block_mod)
-		throw new std::invalid_argument("final_minimum > main_block_mod");
+		throw new Invalid_Argument("final_minimum > main_block_mod");
 
 	buffer.resize(2 * main_block_mod);
 	buffer_pos = 0;

@@ -144,7 +144,7 @@ private:
 
 	class Connection_Sequence_Numbers& m_seqs;
 	HashMap<ushort, Handshake_Reassembly> m_messages;
-	std::set<ushort> m_ccs_epochs;
+	Set<ushort> m_ccs_epochs;
 	Vector!( std::vector<ushort )> m_flights;
 	HashMap<ushort, std::tuple<ushort, ubyte, Vector!ubyte>> m_flight_data;
 

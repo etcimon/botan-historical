@@ -352,7 +352,7 @@ class Heartbeat_Support_Indicator : Extension
 class Extensions
 {
 	public:
-		std::set<Handshake_Extension_Type> extension_types() const;
+		Set<Handshake_Extension_Type> extension_types() const;
 
 		T* get(T)() const
 		{

@@ -364,7 +364,7 @@ Client_Key_Exchange::Client_Key_Exchange(in Vector!ubyte contents,
 			in Private_Key Private_Key = state.server_kex().server_kex_key();
 
 			const PK_Key_Agreement_Key* ka_key =
-				cast(in PK_Key_Agreement_Key*)(Private_Key);
+				cast(const PK_Key_Agreement_Key*)(Private_Key);
 
 			if (!ka_key)
 				throw new Internal_Error("Expected key agreement key type but got " ~

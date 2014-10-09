@@ -168,7 +168,7 @@ Keyed_Filter get_cipher_mode(const BlockCipher block_cipher,
 #endif
 
 		if (bits % 8 != 0)
-			throw new std::invalid_argument("AEAD interface does not support non-octet length tags");
+			throw new Invalid_Argument("AEAD interface does not support non-octet length tags");
 
 #if defined(BOTAN_HAS_AEAD_FILTER)
 

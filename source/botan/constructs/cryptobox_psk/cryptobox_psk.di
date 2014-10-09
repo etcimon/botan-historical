@@ -21,7 +21,7 @@ namespace CryptoBox {
 * @param rng a ref to a random number generator, such as AutoSeeded_RNG
 */
 Vector!ubyte encrypt(in ubyte* input, size_t input_len,
-												const SymmetricKey& key,
+												ref const SymmetricKey key,
 												RandomNumberGenerator rng);
 
 /**
@@ -32,6 +32,6 @@ Vector!ubyte encrypt(in ubyte* input, size_t input_len,
 * @param rng a ref to a random number generator, such as AutoSeeded_RNG
 */
 SafeVector!ubyte decrypt(in ubyte* input, size_t input_len,
-												  const SymmetricKey& key);
+												  ref const SymmetricKey key);
 
 }

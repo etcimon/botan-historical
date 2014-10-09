@@ -18,7 +18,7 @@ class Algorithm_Factory;
 * @return key encrypted under kek
 */
 SafeVector!ubyte rfc3394_keywrap(in SafeVector!ubyte key,
-															const SymmetricKey& kek,
+															ref const SymmetricKey kek,
 															Algorithm_Factory af);
 
 /**
@@ -31,5 +31,5 @@ SafeVector!ubyte rfc3394_keywrap(in SafeVector!ubyte key,
 * @return key decrypted under kek
 */
 SafeVector!ubyte rfc3394_keyunwrap(in SafeVector!ubyte key,
-															  const SymmetricKey& kek,
+															  ref const SymmetricKey kek,
 															  Algorithm_Factory af);

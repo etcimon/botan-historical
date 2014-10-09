@@ -155,7 +155,7 @@ PBKDF get_pbkdf(in string algo_spec);
 * @return pointer to newly allocated encryption or decryption filter
 */
 Keyed_Filter get_cipher(in string algo_spec,
-											  const SymmetricKey& key,
+											  ref const SymmetricKey key,
 											  const InitializationVector& iv,
 											  Cipher_Dir direction);
 
@@ -169,7 +169,7 @@ Keyed_Filter get_cipher(in string algo_spec,
 * @return pointer to the encryption or decryption filter
 */
 Keyed_Filter get_cipher(in string algo_spec,
-											  const SymmetricKey& key,
+											  ref const SymmetricKey key,
 											  Cipher_Dir direction);
 
 /**

@@ -18,13 +18,13 @@ CCM_Mode::CCM_Mode(BlockCipher cipher, size_t tag_size, size_t L) :
 	m_cipher(cipher)
 {
 	if (m_cipher.block_size() != BS)
-		throw new std::invalid_argument(m_cipher.name() ~ " cannot be used with CCM mode");
+		throw new Invalid_Argument(m_cipher.name() ~ " cannot be used with CCM mode");
 
 	if (L < 2 || L > 8)
-		throw new std::invalid_argument("Invalid CCM L value " ~ std.conv.to!string(L));
+		throw new Invalid_Argument("Invalid CCM L value " ~ std.conv.to!string(L));
 
 	if (tag_size < 4 || tag_size > 16 || tag_size % 2 != 0)
-		throw new std::invalid_argument("invalid CCM tag length " ~ std.conv.to!string(tag_size));
+		throw new Invalid_Argument("invalid CCM tag length " ~ std.conv.to!string(tag_size));
 }
 
 void CCM_Mode::clear()

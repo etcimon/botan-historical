@@ -124,11 +124,11 @@ OCB_Mode::OCB_Mode(BlockCipher cipher, size_t tag_size) :
 	m_tag_size(tag_size)
 {
 	if (m_cipher.block_size() != BS)
-		throw new std::invalid_argument("OCB requires a 128 bit cipher so cannot be used with " ~
+		throw new Invalid_Argument("OCB requires a 128 bit cipher so cannot be used with " ~
 											 m_cipher.name());
 
 	if (m_tag_size != 8 && m_tag_size != 12 && m_tag_size != 16)
-		throw new std::invalid_argument("OCB cannot produce a " ~ std.conv.to!string(m_tag_size) +
+		throw new Invalid_Argument("OCB cannot produce a " ~ std.conv.to!string(m_tag_size) +
 											 " ubyte tag");
 
 }

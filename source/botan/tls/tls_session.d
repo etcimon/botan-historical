@@ -151,7 +151,7 @@ Session::encrypt(in SymmetricKey master_key,
 }
 
 Session Session::decrypt(in ubyte* buf, size_t buf_len,
-								 const SymmetricKey& master_key)
+								 ref const SymmetricKey master_key)
 {
 	try
 	{

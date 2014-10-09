@@ -41,7 +41,7 @@ split_on_pred(in string str,
 /**
 * Erase characters from a string
 */
-string erase_chars(in string str, const std::set<char>& chars);
+string erase_chars(in string str, const Set<char>& chars);
 
 /**
 * Replace a character in a string
@@ -62,7 +62,7 @@ string replace_char(in string str,
 * @return str with all instances of from_chars replaced by to_char
 */
 string replace_chars(in string str,
-												const std::set<char>& from_chars,
+												const Set<char>& from_chars,
 												char to_char);
 
 /**

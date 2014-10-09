@@ -112,9 +112,9 @@ Vector!ubyte Extensions::serialize() const
 	return buf;
 }
 
-std::set<Handshake_Extension_Type> Extensions::extension_types() const
+Set<Handshake_Extension_Type> Extensions::extension_types() const
 {
-	std::set<Handshake_Extension_Type> offers;
+	Set<Handshake_Extension_Type> offers;
 	for (auto i = extensions.begin(); i != extensions.end(); ++i)
 		offers.insert(i.first);
 	return offers;
@@ -219,7 +219,7 @@ Vector!ubyte Maximum_Fragment_Length::serialize() const
 	auto i = fragment_to_code.find(m_max_fragment);
 
 	if (i == fragment_to_code.end())
-		throw new std::invalid_argument("Bad setting " ~
+		throw new Invalid_Argument("Bad setting " ~
 											 std.conv.to!string(m_max_fragment) +
 											 " for maximum fragment size");
 

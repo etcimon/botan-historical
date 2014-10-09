@@ -153,7 +153,7 @@ size_t base64_decode(ubyte* output,
 			else if (bad_char == "\r")
 			  bad_char = "\\r";
 
-			throw new std::invalid_argument(
+			throw new Invalid_Argument(
 			  string("base64_decode: invalid base64 character '") +
 			  bad_char ~ "'");
 		}
@@ -205,7 +205,7 @@ size_t base64_decode(ubyte* output,
 											 consumed, true, ignore_ws);
 
 	if (consumed != input_length)
-		throw new std::invalid_argument("base64_decode: input did not have full bytes");
+		throw new Invalid_Argument("base64_decode: input did not have full bytes");
 
 	return written;
 }

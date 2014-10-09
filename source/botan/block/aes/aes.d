@@ -2,17 +2,124 @@
 * AES
 * (C) 1999-2010 Jack Lloyd
 *
-* Based on the public domain reference implemenation
-*
-* Distributed under the terms of the Botan license
+* Distributed under the terms of the botan license.
 */
+module botan.block.aes.aes;
 
-import botan.aes;
+import botan.block_cipher;
 import botan.loadstor;
 import botan.rotate;
-namespace {
+/**
+* AES-128
+*/
+class AES_128 : Block_Cipher_Fixed_Params!(16, 16)
+{
+public:
+	void encrypt_n(ubyte* input, ubyte* output, size_t blocks) const
+	{
+		aes_encrypt_n(input, output, blocks, EK, ME);
+	}
+	
+	void decrypt_n(ubyte* input, ubyte* output, size_t blocks) const
+	{
+		aes_decrypt_n(input, output, blocks, DK, MD);
+	}
+	
+	void clear()
+	{
+		zap(EK);
+		zap(DK);
+		zap(ME);
+		zap(MD);
+	}
 
-immutable ubyte[256] SE = {
+	string name() const { return "AES-128"; }
+	BlockCipher clone() const { return new AES_128; }
+private:
+	void key_schedule(in ubyte* key)
+	{
+		aes_key_schedule(key, length, EK, DK, ME, MD);
+	}
+
+	secure_vector!uint EK, DK;
+	SafeVector!ubyte ME, MD;
+};
+
+/**
+* AES-192
+*/
+class AES_192 : Block_Cipher_Fixed_Params!(16, 24)
+{
+public:
+	void encrypt_n(ubyte* input, ubyte* output, size_t blocks) const
+	{
+		aes_encrypt_n(input, output, blocks, EK, ME);
+	}
+	
+	void decrypt_n(ubyte* input, ubyte* output, size_t blocks) const
+	{
+		aes_decrypt_n(input, output, blocks, DK, MD);
+	}
+	
+	void clear()
+	{
+		zap(EK);
+		zap(DK);
+		zap(ME);
+		zap(MD);
+	}
+
+	string name() const { return "AES-192"; }
+	BlockCipher clone() const { return new AES_192; }
+private:	
+	void key_schedule(in ubyte* key)
+	{
+		aes_key_schedule(key, length, EK, DK, ME, MD);
+	}
+
+	secure_vector!uint EK, DK;
+	SafeVector!ubyte ME, MD;
+};
+
+/**
+* AES-256
+*/
+class AES_256 : Block_Cipher_Fixed_Params!(16, 32)
+{
+public:
+	void encrypt_n(ubyte* input, ubyte* output, size_t blocks) const
+	{
+		aes_encrypt_n(input, output, blocks, EK, ME);
+	}
+	
+	void decrypt_n(ubyte* input, ubyte* output, size_t blocks) const
+	{
+		aes_decrypt_n(input, output, blocks, DK, MD);
+	}
+
+	void clear()
+	{
+		zap(EK);
+		zap(DK);
+		zap(ME);
+		zap(MD);
+	}
+
+	string name() const { return "AES-256"; }
+	BlockCipher clone() const { return new AES_256; }
+private:
+	void key_schedule(in ubyte* key)
+	{
+		aes_key_schedule(key, length, EK, DK, ME, MD);
+	}
+
+	secure_vector!uint EK, DK;
+	SafeVector!ubyte ME, MD;
+};
+
+package :
+
+immutable ubyte[256] SE = [
 	0x63, 0x7C, 0x77, 0x7B, 0xF2, 0x6B, 0x6F, 0xC5, 0x30, 0x01, 0x67, 0x2B,
 	0xFE, 0xD7, 0xAB, 0x76, 0xCA, 0x82, 0xC9, 0x7D, 0xFA, 0x59, 0x47, 0xF0,
 	0xAD, 0xD4, 0xA2, 0xAF, 0x9C, 0xA4, 0x72, 0xC0, 0xB7, 0xFD, 0x93, 0x26,
@@ -34,9 +141,9 @@ immutable ubyte[256] SE = {
 	0x61, 0x35, 0x57, 0xB9, 0x86, 0xC1, 0x1D, 0x9E, 0xE1, 0xF8, 0x98, 0x11,
 	0x69, 0xD9, 0x8E, 0x94, 0x9B, 0x1E, 0x87, 0xE9, 0xCE, 0x55, 0x28, 0xDF,
 	0x8C, 0xA1, 0x89, 0x0D, 0xBF, 0xE6, 0x42, 0x68, 0x41, 0x99, 0x2D, 0x0F,
-	0xB0, 0x54, 0xBB, 0x16 };
+	0xB0, 0x54, 0xBB, 0x16 ];
 
-immutable ubyte[256] SD = {
+immutable ubyte[256] SD = [
 	0x52, 0x09, 0x6A, 0xD5, 0x30, 0x36, 0xA5, 0x38, 0xBF, 0x40, 0xA3, 0x9E,
 	0x81, 0xF3, 0xD7, 0xFB, 0x7C, 0xE3, 0x39, 0x82, 0x9B, 0x2F, 0xFF, 0x87,
 	0x34, 0x8E, 0x43, 0x44, 0xC4, 0xDE, 0xE9, 0xCB, 0x54, 0x7B, 0x94, 0x32,
@@ -58,9 +165,9 @@ immutable ubyte[256] SD = {
 	0x2D, 0xE5, 0x7A, 0x9F, 0x93, 0xC9, 0x9C, 0xEF, 0xA0, 0xE0, 0x3B, 0x4D,
 	0xAE, 0x2A, 0xF5, 0xB0, 0xC8, 0xEB, 0xBB, 0x3C, 0x83, 0x53, 0x99, 0x61,
 	0x17, 0x2B, 0x04, 0x7E, 0xBA, 0x77, 0xD6, 0x26, 0xE1, 0x69, 0x14, 0x63,
-	0x55, 0x21, 0x0C, 0x7D };
+	0x55, 0x21, 0x0C, 0x7D ];
 
-immutable uint[1024] TE = {
+immutable uint[1024] TE = [
 	0xC66363A5, 0xF87C7C84, 0xEE777799, 0xF67B7B8D, 0xFFF2F20D, 0xD66B6BBD,
 	0xDE6F6FB1, 0x91C5C554, 0x60303050, 0x02010103, 0xCE6767A9, 0x562B2B7D,
 	0xE7FEFE19, 0xB5D7D762, 0x4DABABE6, 0xEC76769A, 0x8FCACA45, 0x1F82829D,
@@ -231,9 +338,9 @@ immutable uint[1024] TE = {
 	0x87879215, 0xE9E920C9, 0xCECE4987, 0x5555FFAA, 0x28287850, 0xDFDF7AA5,
 	0x8C8C8F03, 0xA1A1F859, 0x89898009, 0x0D0D171A, 0xBFBFDA65, 0xE6E631D7,
 	0x4242C684, 0x6868B8D0, 0x4141C382, 0x9999B029, 0x2D2D775A, 0x0F0F111E,
-	0xB0B0CB7B, 0x5454FCA8, 0xBBBBD66D, 0x16163A2C };
+	0xB0B0CB7B, 0x5454FCA8, 0xBBBBD66D, 0x16163A2C ];
 
-immutable uint[1024] TD = {
+immutable uint[1024] TD = [
 	0x51F4A750, 0x7E416553, 0x1A17A4C3, 0x3A275E96, 0x3BAB6BCB, 0x1F9D45F1,
 	0xACFA58AB, 0x4BE30393, 0x2030FA55, 0xAD766DF6, 0x88CC7691, 0xF5024C25,
 	0x4FE5D7FC, 0xC52ACBD7, 0x26354480, 0xB562A38F, 0xDEB15A49, 0x25BA1B67,
@@ -404,20 +511,20 @@ immutable uint[1024] TD = {
 	0x14CE7918, 0xC737BF73, 0xF7CDEA53, 0xFDAA5B5F, 0x3D6F14DF, 0x44DB8678,
 	0xAFF381CA, 0x68C43EB9, 0x24342C38, 0xA3405FC2, 0x1DC37216, 0xE2250CBC,
 	0x3C498B28, 0x0D9541FF, 0xA8017139, 0x0CB3DE08, 0xB4E49CD8, 0x56C19064,
-	0xCB84617B, 0x32B670D5, 0x6C5C7448, 0xB85742D0 };
+	0xCB84617B, 0x32B670D5, 0x6C5C7448, 0xB85742D0 ];
 
 /*
 * AES Encryption
 */
 void aes_encrypt_n(ubyte* input, ubyte* output,
-						 size_t blocks,
-						 const secure_vector!uint& EK,
-						 in SafeVector!ubyte ME)
+                   size_t blocks,
+                   ref const secure_vector!uint EK,
+                   in SafeVector!ubyte ME)
 {
 	BOTAN_ASSERT(EK.size() && ME.size() == 16, "Key was set");
-
+	
 	const size_t BLOCK_SIZE = 16;
-
+	
 	const uint* TE0 = TE;
 	const uint* TE1 = TE + 256;
 	const uint* TE2 = TE + 512;
@@ -429,7 +536,7 @@ void aes_encrypt_n(ubyte* input, ubyte* output,
 		uint T1 = load_be!uint(input, 1) ^ EK[1];
 		uint T2 = load_be!uint(input, 2) ^ EK[2];
 		uint T3 = load_be!uint(input, 3) ^ EK[3];
-
+		
 		/* Use only the first 256 entries of the TE table and do the
 		* rotations directly in the code. This reduces the number of
 		* cache lines potentially used in the first round from 64 to 16
@@ -437,48 +544,48 @@ void aes_encrypt_n(ubyte* input, ubyte* output,
 		* attacks a little harder; the first round is particularly
 		* vulnerable.
 		*/
-
+		
 		uint B0 = TE[get_byte(0, T0)] ^
-						rotate_right(TE[get_byte(1, T1)],  8) ^
-						rotate_right(TE[get_byte(2, T2)], 16) ^
-						rotate_right(TE[get_byte(3, T3)], 24) ^ EK[4];
-
+			rotate_right(TE[get_byte(1, T1)],  8) ^
+				rotate_right(TE[get_byte(2, T2)], 16) ^
+				rotate_right(TE[get_byte(3, T3)], 24) ^ EK[4];
+		
 		uint B1 = TE[get_byte(0, T1)] ^
-						rotate_right(TE[get_byte(1, T2)],  8) ^
-						rotate_right(TE[get_byte(2, T3)], 16) ^
-						rotate_right(TE[get_byte(3, T0)], 24) ^ EK[5];
-
+			rotate_right(TE[get_byte(1, T2)],  8) ^
+				rotate_right(TE[get_byte(2, T3)], 16) ^
+				rotate_right(TE[get_byte(3, T0)], 24) ^ EK[5];
+		
 		uint B2 = TE[get_byte(0, T2)] ^
-						rotate_right(TE[get_byte(1, T3)],  8) ^
-						rotate_right(TE[get_byte(2, T0)], 16) ^
-						rotate_right(TE[get_byte(3, T1)], 24) ^ EK[6];
-
+			rotate_right(TE[get_byte(1, T3)],  8) ^
+				rotate_right(TE[get_byte(2, T0)], 16) ^
+				rotate_right(TE[get_byte(3, T1)], 24) ^ EK[6];
+		
 		uint B3 = TE[get_byte(0, T3)] ^
-						rotate_right(TE[get_byte(1, T0)],  8) ^
-						rotate_right(TE[get_byte(2, T1)], 16) ^
-						rotate_right(TE[get_byte(3, T2)], 24) ^ EK[7];
-
+			rotate_right(TE[get_byte(1, T0)],  8) ^
+				rotate_right(TE[get_byte(2, T1)], 16) ^
+				rotate_right(TE[get_byte(3, T2)], 24) ^ EK[7];
+		
 		for (size_t r = 2*4; r < EK.size(); r += 2*4)
 		{
 			T0 = TE0[get_byte(0, B0)] ^ TE1[get_byte(1, B1)] ^
-				  TE2[get_byte(2, B2)] ^ TE3[get_byte(3, B3)] ^ EK[r];
+				TE2[get_byte(2, B2)] ^ TE3[get_byte(3, B3)] ^ EK[r];
 			T1 = TE0[get_byte(0, B1)] ^ TE1[get_byte(1, B2)] ^
-				  TE2[get_byte(2, B3)] ^ TE3[get_byte(3, B0)] ^ EK[r+1];
+				TE2[get_byte(2, B3)] ^ TE3[get_byte(3, B0)] ^ EK[r+1];
 			T2 = TE0[get_byte(0, B2)] ^ TE1[get_byte(1, B3)] ^
-				  TE2[get_byte(2, B0)] ^ TE3[get_byte(3, B1)] ^ EK[r+2];
+				TE2[get_byte(2, B0)] ^ TE3[get_byte(3, B1)] ^ EK[r+2];
 			T3 = TE0[get_byte(0, B3)] ^ TE1[get_byte(1, B0)] ^
-				  TE2[get_byte(2, B1)] ^ TE3[get_byte(3, B2)] ^ EK[r+3];
-
+				TE2[get_byte(2, B1)] ^ TE3[get_byte(3, B2)] ^ EK[r+3];
+			
 			B0 = TE0[get_byte(0, T0)] ^ TE1[get_byte(1, T1)] ^
-				  TE2[get_byte(2, T2)] ^ TE3[get_byte(3, T3)] ^ EK[r+4];
+				TE2[get_byte(2, T2)] ^ TE3[get_byte(3, T3)] ^ EK[r+4];
 			B1 = TE0[get_byte(0, T1)] ^ TE1[get_byte(1, T2)] ^
-				  TE2[get_byte(2, T3)] ^ TE3[get_byte(3, T0)] ^ EK[r+5];
+				TE2[get_byte(2, T3)] ^ TE3[get_byte(3, T0)] ^ EK[r+5];
 			B2 = TE0[get_byte(0, T2)] ^ TE1[get_byte(1, T3)] ^
-				  TE2[get_byte(2, T0)] ^ TE3[get_byte(3, T1)] ^ EK[r+6];
+				TE2[get_byte(2, T0)] ^ TE3[get_byte(3, T1)] ^ EK[r+6];
 			B3 = TE0[get_byte(0, T3)] ^ TE1[get_byte(1, T0)] ^
-				  TE2[get_byte(2, T1)] ^ TE3[get_byte(3, T2)] ^ EK[r+7];
+				TE2[get_byte(2, T1)] ^ TE3[get_byte(3, T2)] ^ EK[r+7];
 		}
-
+		
 		/*
 		Joseph Bonneau and Ilya Mironov's paper "Cache-Collision Timing
 		Attacks Against AES" describes an attack that can recover AES
@@ -497,7 +604,7 @@ void aes_encrypt_n(ubyte* input, ubyte* output,
 		use a smaller ubyte-wide final table which lessens the effectiveness
 		of the attacks."""
 		*/
-
+		
 		output[ 0] = SE[get_byte(0, B0)] ^ ME[0];
 		output[ 1] = SE[get_byte(1, B1)] ^ ME[1];
 		output[ 2] = SE[get_byte(2, B2)] ^ ME[2];
@@ -514,7 +621,7 @@ void aes_encrypt_n(ubyte* input, ubyte* output,
 		output[13] = SE[get_byte(1, B0)] ^ ME[13];
 		output[14] = SE[get_byte(2, B1)] ^ ME[14];
 		output[15] = SE[get_byte(3, B2)] ^ ME[15];
-
+		
 		input += BLOCK_SIZE;
 		output += BLOCK_SIZE;
 	}
@@ -524,13 +631,13 @@ void aes_encrypt_n(ubyte* input, ubyte* output,
 * AES Decryption
 */
 void aes_decrypt_n(ubyte* input, ubyte* output, size_t blocks,
-						 const secure_vector!uint& DK,
-						 in SafeVector!ubyte MD)
+                   ref const secure_vector!uint DK,
+                   in SafeVector!ubyte MD)
 {
 	BOTAN_ASSERT(DK.size() && MD.size() == 16, "Key was set");
-
+	
 	const size_t BLOCK_SIZE = 16;
-
+	
 	const uint* TD0 = TD;
 	const uint* TD1 = TD + 256;
 	const uint* TD2 = TD + 512;
@@ -542,48 +649,48 @@ void aes_decrypt_n(ubyte* input, ubyte* output, size_t blocks,
 		uint T1 = load_be!uint(input, 1) ^ DK[1];
 		uint T2 = load_be!uint(input, 2) ^ DK[2];
 		uint T3 = load_be!uint(input, 3) ^ DK[3];
-
+		
 		uint B0 = TD[get_byte(0, T0)] ^
-						rotate_right(TD[get_byte(1, T3)],  8) ^
-						rotate_right(TD[get_byte(2, T2)], 16) ^
-						rotate_right(TD[get_byte(3, T1)], 24) ^ DK[4];
-
+			rotate_right(TD[get_byte(1, T3)],  8) ^
+				rotate_right(TD[get_byte(2, T2)], 16) ^
+				rotate_right(TD[get_byte(3, T1)], 24) ^ DK[4];
+		
 		uint B1 = TD[get_byte(0, T1)] ^
-						rotate_right(TD[get_byte(1, T0)],  8) ^
-						rotate_right(TD[get_byte(2, T3)], 16) ^
-						rotate_right(TD[get_byte(3, T2)], 24) ^ DK[5];
-
+			rotate_right(TD[get_byte(1, T0)],  8) ^
+				rotate_right(TD[get_byte(2, T3)], 16) ^
+				rotate_right(TD[get_byte(3, T2)], 24) ^ DK[5];
+		
 		uint B2 = TD[get_byte(0, T2)] ^
-						rotate_right(TD[get_byte(1, T1)],  8) ^
-						rotate_right(TD[get_byte(2, T0)], 16) ^
-						rotate_right(TD[get_byte(3, T3)], 24) ^ DK[6];
-
+			rotate_right(TD[get_byte(1, T1)],  8) ^
+				rotate_right(TD[get_byte(2, T0)], 16) ^
+				rotate_right(TD[get_byte(3, T3)], 24) ^ DK[6];
+		
 		uint B3 = TD[get_byte(0, T3)] ^
-						rotate_right(TD[get_byte(1, T2)],  8) ^
-						rotate_right(TD[get_byte(2, T1)], 16) ^
-						rotate_right(TD[get_byte(3, T0)], 24) ^ DK[7];
-
+			rotate_right(TD[get_byte(1, T2)],  8) ^
+				rotate_right(TD[get_byte(2, T1)], 16) ^
+				rotate_right(TD[get_byte(3, T0)], 24) ^ DK[7];
+		
 		for (size_t r = 2*4; r < DK.size(); r += 2*4)
 		{
 			T0 = TD0[get_byte(0, B0)] ^ TD1[get_byte(1, B3)] ^
-				  TD2[get_byte(2, B2)] ^ TD3[get_byte(3, B1)] ^ DK[r];
+				TD2[get_byte(2, B2)] ^ TD3[get_byte(3, B1)] ^ DK[r];
 			T1 = TD0[get_byte(0, B1)] ^ TD1[get_byte(1, B0)] ^
-				  TD2[get_byte(2, B3)] ^ TD3[get_byte(3, B2)] ^ DK[r+1];
+				TD2[get_byte(2, B3)] ^ TD3[get_byte(3, B2)] ^ DK[r+1];
 			T2 = TD0[get_byte(0, B2)] ^ TD1[get_byte(1, B1)] ^
-				  TD2[get_byte(2, B0)] ^ TD3[get_byte(3, B3)] ^ DK[r+2];
+				TD2[get_byte(2, B0)] ^ TD3[get_byte(3, B3)] ^ DK[r+2];
 			T3 = TD0[get_byte(0, B3)] ^ TD1[get_byte(1, B2)] ^
-				  TD2[get_byte(2, B1)] ^ TD3[get_byte(3, B0)] ^ DK[r+3];
-
+				TD2[get_byte(2, B1)] ^ TD3[get_byte(3, B0)] ^ DK[r+3];
+			
 			B0 = TD0[get_byte(0, T0)] ^ TD1[get_byte(1, T3)] ^
-				  TD2[get_byte(2, T2)] ^ TD3[get_byte(3, T1)] ^ DK[r+4];
+				TD2[get_byte(2, T2)] ^ TD3[get_byte(3, T1)] ^ DK[r+4];
 			B1 = TD0[get_byte(0, T1)] ^ TD1[get_byte(1, T0)] ^
-				  TD2[get_byte(2, T3)] ^ TD3[get_byte(3, T2)] ^ DK[r+5];
+				TD2[get_byte(2, T3)] ^ TD3[get_byte(3, T2)] ^ DK[r+5];
 			B2 = TD0[get_byte(0, T2)] ^ TD1[get_byte(1, T1)] ^
-				  TD2[get_byte(2, T0)] ^ TD3[get_byte(3, T3)] ^ DK[r+6];
+				TD2[get_byte(2, T0)] ^ TD3[get_byte(3, T3)] ^ DK[r+6];
 			B3 = TD0[get_byte(0, T3)] ^ TD1[get_byte(1, T2)] ^
-				  TD2[get_byte(2, T1)] ^ TD3[get_byte(3, T0)] ^ DK[r+7];
+				TD2[get_byte(2, T1)] ^ TD3[get_byte(3, T0)] ^ DK[r+7];
 		}
-
+		
 		output[ 0] = SD[get_byte(0, B0)] ^ MD[0];
 		output[ 1] = SD[get_byte(1, B3)] ^ MD[1];
 		output[ 2] = SD[get_byte(2, B2)] ^ MD[2];
@@ -600,52 +707,52 @@ void aes_decrypt_n(ubyte* input, ubyte* output, size_t blocks,
 		output[13] = SD[get_byte(1, B2)] ^ MD[13];
 		output[14] = SD[get_byte(2, B1)] ^ MD[14];
 		output[15] = SD[get_byte(3, B0)] ^ MD[15];
-
+		
 		input += BLOCK_SIZE;
 		output += BLOCK_SIZE;
 	}
 }
 
 void aes_key_schedule(in ubyte* key, size_t length,
-							 secure_vector!uint& EK,
-							 secure_vector!uint& DK,
-							 SafeVector!ubyte ME,
-							 SafeVector!ubyte MD)
+                      ref secure_vector!uint EK,
+                      ref secure_vector!uint DK,
+                      SafeVector!ubyte ME,
+                      SafeVector!ubyte MD)
 {
-	immutable uint[10] RC = {
+	immutable uint[10] RC = [
 		0x01000000, 0x02000000, 0x04000000, 0x08000000, 0x10000000,
-		0x20000000, 0x40000000, 0x80000000, 0x1B000000, 0x36000000 };
-
+		0x20000000, 0x40000000, 0x80000000, 0x1B000000, 0x36000000 ];
+	
 	const size_t rounds = (length / 4) + 6;
-
+	
 	secure_vector!uint XEK(length + 32), XDK(length + 32);
-
+	
 	const size_t X = length / 4;
 	for (size_t i = 0; i != X; ++i)
 		XEK[i] = load_be!uint(key, i);
-
+	
 	for (size_t i = X; i < 4*(rounds+1); i += X)
 	{
 		XEK[i] = XEK[i-X] ^ RC[(i-X)/X] ^
-					make_uint(SE[get_byte(1, XEK[i-1])],
-									SE[get_byte(2, XEK[i-1])],
-									SE[get_byte(3, XEK[i-1])],
-									SE[get_byte(0, XEK[i-1])]);
-
+			make_uint(SE[get_byte(1, XEK[i-1])],
+			SE[get_byte(2, XEK[i-1])],
+			SE[get_byte(3, XEK[i-1])],
+			SE[get_byte(0, XEK[i-1])]);
+		
 		for (size_t j = 1; j != X; ++j)
 		{
 			XEK[i+j] = XEK[i+j-X];
-
+			
 			if (X == 8 && j == 4)
 				XEK[i+j] ^= make_uint(SE[get_byte(0, XEK[i+j-1])],
-												SE[get_byte(1, XEK[i+j-1])],
-												SE[get_byte(2, XEK[i+j-1])],
-												SE[get_byte(3, XEK[i+j-1])]);
+			SE[get_byte(1, XEK[i+j-1])],
+			SE[get_byte(2, XEK[i+j-1])],
+			SE[get_byte(3, XEK[i+j-1])]);
 			else
 				XEK[i+j] ^= XEK[i+j-1];
 		}
 	}
-
+	
 	for (size_t i = 0; i != 4*(rounds+1); i += 4)
 	{
 		XDK[i  ] = XEK[4*rounds-i  ];
@@ -653,97 +760,24 @@ void aes_key_schedule(in ubyte* key, size_t length,
 		XDK[i+2] = XEK[4*rounds-i+2];
 		XDK[i+3] = XEK[4*rounds-i+3];
 	}
-
+	
 	for (size_t i = 4; i != length + 24; ++i)
 		XDK[i] = TD[SE[get_byte(0, XDK[i])] +	0] ^
-					TD[SE[get_byte(1, XDK[i])] + 256] ^
-					TD[SE[get_byte(2, XDK[i])] + 512] ^
-					TD[SE[get_byte(3, XDK[i])] + 768];
-
+		TD[SE[get_byte(1, XDK[i])] + 256] ^
+		TD[SE[get_byte(2, XDK[i])] + 512] ^
+		TD[SE[get_byte(3, XDK[i])] + 768];
+	
 	ME.resize(16);
 	MD.resize(16);
-
+	
 	for (size_t i = 0; i != 4; ++i)
 	{
 		store_be(XEK[i+4*rounds], &ME[4*i]);
 		store_be(XEK[i], &MD[4*i]);
 	}
-
+	
 	EK.resize(length + 24);
 	DK.resize(length + 24);
 	copy_mem(&EK[0], &XEK[0], EK.size());
 	copy_mem(&DK[0], &XDK[0], DK.size());
-}
-
-}
-
-void AES_128::encrypt_n(ubyte* input, ubyte* output, size_t blocks) const
-{
-	aes_encrypt_n(input, output, blocks, EK, ME);
-}
-
-void AES_128::decrypt_n(ubyte* input, ubyte* output, size_t blocks) const
-{
-	aes_decrypt_n(input, output, blocks, DK, MD);
-}
-
-void AES_128::key_schedule(in ubyte* key)
-{
-	aes_key_schedule(key, length, EK, DK, ME, MD);
-}
-
-void AES_128::clear()
-{
-	zap(EK);
-	zap(DK);
-	zap(ME);
-	zap(MD);
-}
-
-void AES_192::encrypt_n(ubyte* input, ubyte* output, size_t blocks) const
-{
-	aes_encrypt_n(input, output, blocks, EK, ME);
-}
-
-void AES_192::decrypt_n(ubyte* input, ubyte* output, size_t blocks) const
-{
-	aes_decrypt_n(input, output, blocks, DK, MD);
-}
-
-void AES_192::key_schedule(in ubyte* key)
-{
-	aes_key_schedule(key, length, EK, DK, ME, MD);
-}
-
-void AES_192::clear()
-{
-	zap(EK);
-	zap(DK);
-	zap(ME);
-	zap(MD);
-}
-
-void AES_256::encrypt_n(ubyte* input, ubyte* output, size_t blocks) const
-{
-	aes_encrypt_n(input, output, blocks, EK, ME);
-}
-
-void AES_256::decrypt_n(ubyte* input, ubyte* output, size_t blocks) const
-{
-	aes_decrypt_n(input, output, blocks, DK, MD);
-}
-
-void AES_256::key_schedule(in ubyte* key)
-{
-	aes_key_schedule(key, length, EK, DK, ME, MD);
-}
-
-void AES_256::clear()
-{
-	zap(EK);
-	zap(DK);
-	zap(ME);
-	zap(MD);
-}
-
 }

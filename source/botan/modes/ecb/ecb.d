@@ -14,7 +14,7 @@ ECB_Mode::ECB_Mode(BlockCipher cipher, BlockCipherModePaddingMethod* padding) :
 	m_padding(padding)
 {
 	if (!m_padding.valid_blocksize(cipher.block_size()))
-		throw new std::invalid_argument("Padding " ~ m_padding.name() +
+		throw new Invalid_Argument("Padding " ~ m_padding.name() +
 											 " cannot be used with " ~
 											 cipher.name() ~ "/ECB");
 }

@@ -15,7 +15,7 @@ import botan.cert.x509.x509_ext;
 import botan.asn1.oid_lookup.oids;
 import botan.base64;
 import botan.pubkey;
-import botan.x509path;
+import botan.cert.x509.x509path;
 import botan.http_util;
 
 class Certificate_Store;
@@ -228,7 +228,7 @@ void check_signature(in Vector!ubyte tbs_response,
                      ref const Vector!( X509_Certificate ) certs)
 {
 	if (certs.size() < 1)
-		throw new std::invalid_argument("Short cert chain for check_signature");
+		throw new Invalid_Argument("Short cert chain for check_signature");
 	
 	if (trusted_roots.certificate_known(certs[0]))
 		return check_signature(tbs_response, sig_algo, signature, certs[0]);

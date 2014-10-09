@@ -65,7 +65,7 @@ class StreamCipher_Filter : Keyed_Filter
 		* @param cipher_obj a cipher object to use
 		* @param key the key to use inside this filter
 		*/
-		StreamCipher_Filter(StreamCipher cipher_obj, const SymmetricKey& key);
+		StreamCipher_Filter(StreamCipher cipher_obj, ref const SymmetricKey key);
 
 		/**
 		* Construct a stream cipher filter.
@@ -78,7 +78,7 @@ class StreamCipher_Filter : Keyed_Filter
 		* @param cipher the name of the desired cipher
 		* @param key the key to use inside this filter
 		*/
-		StreamCipher_Filter(in string cipher, const SymmetricKey& key);
+		StreamCipher_Filter(in string cipher, ref const SymmetricKey key);
 
 		~this() { delete cipher; }
 	private:
@@ -167,7 +167,7 @@ class MAC_Filter : Keyed_Filter
 		* output of the MAC will be cut off.
 		*/
 		MAC_Filter(MessageAuthenticationCode mac_obj,
-					  const SymmetricKey& key,
+					  ref const SymmetricKey key,
 					  size_t out_len = 0) : OUTPUT_LENGTH(out_len)
 		{
 			mac = mac_obj;
@@ -193,7 +193,7 @@ class MAC_Filter : Keyed_Filter
 		* MAC. Otherwise, specify a smaller value here so that the
 		* output of the MAC will be cut off.
 		*/
-		MAC_Filter(in string mac, const SymmetricKey& key,
+		MAC_Filter(in string mac, ref const SymmetricKey key,
 					  size_t len = 0);
 
 		~this() { delete mac; }

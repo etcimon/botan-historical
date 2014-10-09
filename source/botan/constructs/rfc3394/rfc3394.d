@@ -23,17 +23,17 @@ BlockCipher make_aes(size_t keylength,
 	else if (keylength == 32)
 		return af.make_block_cipher("AES-256");
 	else
-		throw new std::invalid_argument("Bad KEK length for NIST keywrap");
+		throw new Invalid_Argument("Bad KEK length for NIST keywrap");
 }
 
 }
 
 SafeVector!ubyte rfc3394_keywrap(in SafeVector!ubyte key,
-												const SymmetricKey& kek,
+												ref const SymmetricKey kek,
 												Algorithm_Factory af)
 {
 	if (key.size() % 8 != 0)
-		throw new std::invalid_argument("Bad input key size for NIST key wrap");
+		throw new Invalid_Argument("Bad input key size for NIST key wrap");
 
 	Unique!BlockCipher aes = make_aes(kek.length(), af);
 	aes.set_key(kek);
@@ -71,11 +71,11 @@ SafeVector!ubyte rfc3394_keywrap(in SafeVector!ubyte key,
 }
 
 SafeVector!ubyte rfc3394_keyunwrap(in SafeVector!ubyte key,
-												 const SymmetricKey& kek,
+												 ref const SymmetricKey kek,
 												 Algorithm_Factory af)
 {
 	if (key.size() < 16 || key.size() % 8 != 0)
-		throw new std::invalid_argument("Bad input key size for NIST key unwrap");
+		throw new Invalid_Argument("Bad input key size for NIST key unwrap");
 
 	Unique!BlockCipher aes(make_aes(kek.length(), af));
 	aes.set_key(kek);

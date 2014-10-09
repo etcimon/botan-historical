@@ -116,7 +116,7 @@ void Blowfish::eks_key_schedule(in ubyte* key, size_t length,
 	length = std.algorithm.min<size_t>(length, 55);
 
 	if (workfactor == 0)
-		throw new std::invalid_argument("Bcrypt work factor must be at least 1");
+		throw new Invalid_Argument("Bcrypt work factor must be at least 1");
 
 	/*
 	* On a 2.8 GHz Core-i7, workfactor == 18 takes about 25 seconds to
@@ -124,7 +124,7 @@ void Blowfish::eks_key_schedule(in ubyte* key, size_t length,
 	* time being.
 	*/
 	if (workfactor > 18)
-		throw new std::invalid_argument("Requested Bcrypt work factor " ~
+		throw new Invalid_Argument("Requested Bcrypt work factor " ~
 											 std.conv.to!string(workfactor) ~ " too large");
 
 	P.resize(18);

@@ -115,7 +115,7 @@ Core_Engine::get_signature_op(in Private_Key key, RandomNumberGenerator rng) con
 
 #if defined(BOTAN_HAS_GOST_34_10_2001)
 	if (const GOST_3410_PrivateKey* s =
-			cast(in GOST_3410_PrivateKey*)(key))
+			cast(const GOST_3410_PrivateKey*)(key))
 		return new GOST_3410_Signature_Operation(*s);
 #endif
 
@@ -152,7 +152,7 @@ Core_Engine::get_verify_op(in Public_Key key, RandomNumberGenerator) const
 
 #if defined(BOTAN_HAS_GOST_34_10_2001)
 	if (const GOST_3410_PublicKey* s =
-			cast(in GOST_3410_PublicKey*)(key))
+			cast(const GOST_3410_PublicKey*)(key))
 		return new GOST_3410_Verification_Operation(*s);
 #endif
 

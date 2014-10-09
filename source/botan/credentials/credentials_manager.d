@@ -6,7 +6,7 @@
 */
 
 import botan.credentials_manager;
-import botan.x509path;
+import botan.cert.x509.x509path;
 string Credentials_Manager::psk_identity_hint(in string,
 																	in string)
 {
@@ -109,7 +109,7 @@ void Credentials_Manager::verify_certificate_chain(
 	const Vector!( X509_Certificate )& cert_chainput)
 {
 	if (cert_chain.empty())
-		throw new std::invalid_argument("Certificate chain was empty");
+		throw new Invalid_Argument("Certificate chain was empty");
 
 	auto trusted_CAs = trusted_certificate_authorities(type, purported_hostname);
 

@@ -233,7 +233,7 @@ string ipv4_to_string(uint ip)
 	return str;
 }
 
-string erase_chars(in string str, const std::set<char>& chars)
+string erase_chars(in string str, const Set<char>& chars)
 {
 	string out;
 
@@ -245,7 +245,7 @@ string erase_chars(in string str, const std::set<char>& chars)
 }
 
 string replace_chars(in string str,
-								  const std::set<char>& chars,
+								  const Set<char>& chars,
 								  char to_char)
 {
 	string out = str;

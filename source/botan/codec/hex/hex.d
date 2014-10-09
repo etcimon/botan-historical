@@ -106,7 +106,7 @@ size_t hex_decode(ubyte* output,
 			else if (bad_char == "")
 			  bad_char = "\";
 
-			throw new std::invalid_argument(
+			throw new Invalid_Argument(
 			  string("hex_decode: invalid hex character '") +
 			  bad_char ~ "'");
 		}
@@ -144,7 +144,7 @@ size_t hex_decode(ubyte* output,
 										 consumed, ignore_ws);
 
 	if (consumed != input_length)
-		throw new std::invalid_argument("hex_decode: input did not have full bytes");
+		throw new Invalid_Argument("hex_decode: input did not have full bytes");
 
 	return written;
 }

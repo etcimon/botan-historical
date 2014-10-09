@@ -150,7 +150,7 @@ string decrypt(in ubyte* input, size_t input_len,
 string decrypt(in string input,
 						  in string passphrase)
 {
-	return decrypt(cast(in ubyte*)(input[0]),
+	return decrypt(cast(const ubyte*)(input[0]),
 						input.size(),
 						passphrase);
 }

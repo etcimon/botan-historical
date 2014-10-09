@@ -13,7 +13,7 @@ CFB_Mode::CFB_Mode(BlockCipher cipher, size_t feedback_bits) :
 	m_feedback_bytes(feedback_bits ? feedback_bits / 8 : cipher.block_size())
 {
 	if (feedback_bits % 8 || feedback() > cipher.block_size())
-		throw new std::invalid_argument(name() ~ ": feedback bits " ~
+		throw new Invalid_Argument(name() ~ ": feedback bits " ~
 											 std.conv.to!string(feedback_bits) ~ " not supported");
 }
 

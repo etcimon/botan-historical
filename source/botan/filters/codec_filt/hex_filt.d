@@ -163,7 +163,7 @@ void Hex_Decoder::end_msg()
 	position = 0;
 
 	if (not_full_bytes)
-		throw new std::invalid_argument("Hex_Decoder: Input not full bytes");
+		throw new Invalid_Argument("Hex_Decoder: Input not full bytes");
 }
 
 }

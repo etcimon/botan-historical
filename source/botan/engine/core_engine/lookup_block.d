@@ -10,7 +10,7 @@ import botan.algo_base.scan_name;
 import botan.algo_factory;
 
 #if defined(BOTAN_HAS_AES)
-  import botan.aes;
+  import botan.block.aes.aes;
 #endif
 
 #if defined(BOTAN_HAS_BLOWFISH)

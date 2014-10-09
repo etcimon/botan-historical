@@ -318,7 +318,7 @@ BigInt DL_Group::make_dsa_generator(in BigInt p, ref const BigInt q)
 	const BigInt e = (p - 1) / q;
 
 	if (e == 0 || (p - 1) % q > 0)
-		throw new std::invalid_argument("make_dsa_generator q does not divide p-1");
+		throw new Invalid_Argument("make_dsa_generator q does not divide p-1");
 
 	for (size_t i = 0; i != PRIME_TABLE_SIZE; ++i)
 	{

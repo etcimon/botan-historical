@@ -21,7 +21,7 @@ StreamCipher_Filter::StreamCipher_Filter(StreamCipher stream_cipher) :
 * StreamCipher_Filter Constructor
 */
 StreamCipher_Filter::StreamCipher_Filter(StreamCipher stream_cipher,
-													  const SymmetricKey& key) :
+													  ref const SymmetricKey key) :
 	buffer(DEFAULT_BUFFERSIZE)
 {
 	cipher = stream_cipher;
@@ -42,7 +42,7 @@ StreamCipher_Filter::StreamCipher_Filter(in string sc_name) :
 * StreamCipher_Filter Constructor
 */
 StreamCipher_Filter::StreamCipher_Filter(in string sc_name,
-													  const SymmetricKey& key) :
+													  ref const SymmetricKey key) :
 	buffer(DEFAULT_BUFFERSIZE)
 {
 	Algorithm_Factory af = global_state().algorithm_factory();
@@ -109,7 +109,7 @@ MAC_Filter::MAC_Filter(in string mac_name, size_t len) :
 /*
 * MAC_Filter Constructor
 */
-MAC_Filter::MAC_Filter(in string mac_name, const SymmetricKey& key,
+MAC_Filter::MAC_Filter(in string mac_name, ref const SymmetricKey key,
 							  size_t len) : OUTPUT_LENGTH(len)
 {
 	Algorithm_Factory af = global_state().algorithm_factory();

@@ -36,7 +36,7 @@ void HKDF::expand(ubyte* output, size_t output_len,
 						in ubyte* info, size_t info_len)
 {
 	if (output_len > m_prf.output_length() * 255)
-		throw new std::invalid_argument("HKDF requested output too large");
+		throw new Invalid_Argument("HKDF requested output too large");
 
 	ubyte counter = 1;
 

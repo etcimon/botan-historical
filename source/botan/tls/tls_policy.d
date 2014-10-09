@@ -243,7 +243,7 @@ Vector!( ushort ) Policy::ciphersuite_list(Protocol_Version _version,
 
 	Ciphersuite_Preference_Ordering order(ciphers, macs, kex, sigs);
 
-	std::set<Ciphersuite, Ciphersuite_Preference_Ordering> ciphersuites(order);
+	Set<Ciphersuite, Ciphersuite_Preference_Ordering> ciphersuites(order);
 
 	foreach (suite; Ciphersuite::all_known_ciphersuites())
 	{

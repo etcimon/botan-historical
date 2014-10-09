@@ -128,7 +128,7 @@ BigInt FPE_Encryptor::operator()(size_t round_no, ref const BigInt R)
 * Generic Z_n FPE encryption, FE1 scheme
 */
 BigInt fe1_encrypt(in BigInt n, ref const BigInt X0,
-						 const SymmetricKey& key,
+						 ref const SymmetricKey key,
 						 in Vector!ubyte tweak)
 {
 	FPE_Encryptor F(key, n, tweak);
@@ -156,7 +156,7 @@ BigInt fe1_encrypt(in BigInt n, ref const BigInt X0,
 * Generic Z_n FPE decryption, FD1 scheme
 */
 BigInt fe1_decrypt(in BigInt n, ref const BigInt X0,
-						 const SymmetricKey& key,
+						 ref const SymmetricKey key,
 						 in Vector!ubyte tweak)
 {
 	FPE_Encryptor F(key, n, tweak);

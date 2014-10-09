@@ -353,10 +353,6 @@ PKCS10_Request create_cert_req(in X509_Cert_Options opts,
 	return PKCS10_Request(req);
 }
 
-
-
-
-
 /*
 * Load information from the X509_Cert_Options
 */
@@ -374,4 +370,3 @@ private void load_info(in X509_Cert_Options opts, ref X509_DN subject_dn,
 	subject_alt.add_othername(oids.lookup("PKIX.XMPPAddr"),
 	                          opts.xmpp, ASN1_Tag.UTF8_STRING);
 }
-	

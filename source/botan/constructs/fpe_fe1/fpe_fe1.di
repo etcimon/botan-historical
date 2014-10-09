@@ -21,7 +21,7 @@ namespace FPE {
 * @param tweak will modify the ciphertext (think of as an IV)
 */
 BigInt fe1_encrypt(in BigInt n, ref const BigInt X,
-									  const SymmetricKey& key,
+									  ref const SymmetricKey key,
 									  in Vector!ubyte tweak);
 
 /**
@@ -32,7 +32,7 @@ BigInt fe1_encrypt(in BigInt n, ref const BigInt X,
 * @param tweak the same tweak used for encryption
 */
 BigInt fe1_decrypt(in BigInt n, ref const BigInt X,
-									  const SymmetricKey& key,
+									  ref const SymmetricKey key,
 									  in Vector!ubyte tweak);
 
 }

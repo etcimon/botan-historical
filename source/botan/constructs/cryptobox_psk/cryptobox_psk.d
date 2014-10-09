@@ -28,7 +28,7 @@ const size_t MAC_OUTPUT_LENGTH = 32;
 }
 
 Vector!ubyte encrypt(in ubyte* input, size_t input_len,
-								  const SymmetricKey& master_key,
+								  ref const SymmetricKey master_key,
 								  RandomNumberGenerator rng)
 {
 	Unique!KDF kdf = get_kdf(CRYPTOBOX_KDF);
@@ -72,7 +72,7 @@ Vector!ubyte encrypt(in ubyte* input, size_t input_len,
 }
 
 SafeVector!ubyte decrypt(in ubyte* input, size_t input_len,
-									 const SymmetricKey& master_key)
+									 ref const SymmetricKey master_key)
 {
 	const size_t MIN_CTEXT_SIZE = 16; // due to using CBC with padding
 

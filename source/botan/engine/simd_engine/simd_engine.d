@@ -10,7 +10,7 @@ import botan.internal.simd_32;
 import botan.cpuid;
 
 #if defined(BOTAN_HAS_AES_SSSE3)
-  import botan.aes_ssse3;
+  import botan.block.aes_ssse3.aes_ssse3;
 #endif
 
 #if defined(BOTAN_HAS_SERPENT_SIMD)

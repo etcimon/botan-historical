@@ -13,7 +13,7 @@ OctetString PBKDF::derive_key(size_t output_len,
 										size_t iterations) const
 {
 	if (iterations == 0)
-		throw new std::invalid_argument(name() ~ ": Invalid iteration count");
+		throw new Invalid_Argument(name() ~ ": Invalid iteration count");
 
 	auto derived = key_derivation(output_len, passphrase,
 											salt, salt_len, iterations,

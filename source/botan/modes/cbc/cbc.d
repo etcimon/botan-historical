@@ -15,7 +15,7 @@ CBC_Mode::CBC_Mode(BlockCipher cipher, BlockCipherModePaddingMethod* padding) :
 	m_state(m_cipher.block_size())
 {
 	if (m_padding && !m_padding.valid_blocksize(cipher.block_size()))
-		throw new std::invalid_argument("Padding " ~ m_padding.name() +
+		throw new Invalid_Argument("Padding " ~ m_padding.name() +
 											 " cannot be used with " ~
 											 cipher.name() ~ "/CBC");
 }

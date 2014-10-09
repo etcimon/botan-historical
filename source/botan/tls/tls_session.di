@@ -78,7 +78,7 @@ class Session
 		*/
 		static Session decrypt(in ubyte* ctext,
 									  size_t ctext_size,
-									  const SymmetricKey& key);
+									  ref const SymmetricKey key);
 
 		/**
 		* Decrypt a session created by encrypt
@@ -86,7 +86,7 @@ class Session
 		* @param key the same key used by the encrypting side
 		*/
 		static  Session decrypt(in Vector!ubyte ctext,
-												const SymmetricKey& key)
+												ref const SymmetricKey key)
 		{
 			return Session::decrypt(&ctext[0], ctext.size(), key);
 		}

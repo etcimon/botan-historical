@@ -94,7 +94,7 @@ Keyed_Filter get_cipher(in string algo_spec,
 * Get a cipher object
 */
 Keyed_Filter get_cipher(in string algo_spec,
-								 const SymmetricKey& key,
+								 ref const SymmetricKey key,
 								 const InitializationVector& iv,
 								 Cipher_Dir direction)
 {
@@ -111,7 +111,7 @@ Keyed_Filter get_cipher(in string algo_spec,
 * Get a cipher object
 */
 Keyed_Filter get_cipher(in string algo_spec,
-								 const SymmetricKey& key,
+								 ref const SymmetricKey key,
 								 Cipher_Dir direction)
 {
 	return get_cipher(algo_spec,
