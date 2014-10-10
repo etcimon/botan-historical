@@ -95,7 +95,7 @@ void SIV_Mode::update(SafeVector!ubyte buffer, size_t offset)
 
 SafeVector!ubyte SIV_Mode::S2V(const ubyte* text, size_t text_len)
 {
-	const ubyte[16] zero = { 0 };
+	const ubyte[16] zero;
 
 	SafeVector!ubyte V = cmac().process(zero, 16);
 

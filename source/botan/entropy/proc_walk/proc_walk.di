@@ -5,7 +5,7 @@
 * Distributed under the terms of the botan license.
 */
 
-import botan.entropy_src;
+import botan.entropy.entropy_src;
 class File_Descriptor_Source
 {
 	public:
@@ -21,7 +21,7 @@ class ProcWalking_EntropySource : EntropySource
 	public:
 		string name() const { return "Proc Walker"; }
 
-		void poll(Entropy_Accumulator& accum);
+		void poll(ref Entropy_Accumulator accum);
 
 		ProcWalking_EntropySource(in string root_dir) :
 			m_path(root_dir), m_dir(null) {}

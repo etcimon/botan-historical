@@ -13,7 +13,7 @@ import botan.libstate.libstate;
 * of the state among different threads
 */
 
-private Library_State* global_lib_state = null;
+private Library_State global_lib_state = null;
 
 /**
 * Access the global library state
@@ -70,9 +70,9 @@ bool set_global_state_unless_set(Library_State new_state)
 * @param new_state the new state object to use
 * @return previous state (or NULL if none)
 */
-Library_State* swap_global_state(Library_State* new_state)
+Library_State swap_global_state(Library_State new_state)
 {
-	Library_State* old_state = global_lib_state;
+	Library_State old_state = global_lib_state;
 	global_lib_state = new_state;
 	return old_state;
 }

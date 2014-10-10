@@ -52,7 +52,7 @@ class CSP_Handle
 /*
 * Gather Entropy from Win32 CAPI
 */
-void Win32_CAPI_EntropySource::poll(Entropy_Accumulator& accum)
+void Win32_CAPI_EntropySource::poll(ref Entropy_Accumulator accum)
 {
 	SafeVector!ubyte io_buffer = accum.get_io_buffer(32);
 

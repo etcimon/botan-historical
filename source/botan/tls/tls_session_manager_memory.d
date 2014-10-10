@@ -6,7 +6,7 @@
 */
 
 import botan.tls_session_manager;
-import botan.hex;
+import botan.codec.hex;
 import std.datetime;
 namespace TLS {
 

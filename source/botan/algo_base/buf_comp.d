@@ -8,7 +8,7 @@
 module botan.algo_base.buf_comp;
 
 import botan.secmem;
-import botan.get_byte;
+import botan.utils.get_byte;
 
 /**
 * This class represents any kind of computation which uses an internal

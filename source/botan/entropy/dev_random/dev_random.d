@@ -6,7 +6,7 @@
 */
 
 import botan.internal.dev_random;
-import botan.internal.rounding;
+import botan.utils.rounding;
 
 import sys.types;
 import sys.select;
@@ -51,7 +51,7 @@ Device_EntropySource::~this()
 /**
 * Gather entropy from a RNG device
 */
-void Device_EntropySource::poll(Entropy_Accumulator& accum)
+void Device_EntropySource::poll(ref Entropy_Accumulator accum)
 {
 	if (m_devices.empty())
 		return;

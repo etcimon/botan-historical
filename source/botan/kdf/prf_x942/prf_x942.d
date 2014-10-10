@@ -18,7 +18,7 @@ namespace {
 */
 Vector!ubyte encode_x942_int(uint n)
 {
-	ubyte[4] n_buf = { 0 };
+	ubyte[4] n_buf;
 	store_be(n, n_buf);
 	return DER_Encoder().encode(n_buf, 4, ASN1_Tag.OCTET_STRING).get_contents_unlocked();
 }

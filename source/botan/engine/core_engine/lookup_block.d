@@ -10,29 +10,29 @@ import botan.algo_base.scan_name;
 import botan.algo_factory;
 
 #if defined(BOTAN_HAS_AES)
-  import botan.block.aes.aes;
+  import botan.block.aes;
 #endif
 
 #if defined(BOTAN_HAS_BLOWFISH)
-  import botan.block.blowfish.blowfish;
+  import botan.block.blowfish;
 #endif
 
 #if defined(BOTAN_HAS_CAMELLIA)
-  import botan.block.camellia.camellia;
+  import botan.block.camellia;
 #endif
 
 #if defined(BOTAN_HAS_CAST)
-  import botan.block.cast_.cast128;
-  import botan.block.cast_.cast256;
+  import botan.block.cast128;
+  import botan.block.cast256;
 #endif
 
 #if defined(BOTAN_HAS_CASCADE)
-  import botan.block.cascade.cascade;
+  import botan.block.cascade;
 #endif
 
 #if defined(BOTAN_HAS_DES)
-  import botan.block.des.des;
-  import botan.block.des.desx;
+  import botan.block.des;
+  import botan.block.desx;
 #endif
 
 #if defined(BOTAN_HAS_GOST_28147_89)
@@ -40,67 +40,67 @@ import botan.algo_factory;
 #endif
 
 #if defined(BOTAN_HAS_IDEA)
-  import botan.block.idea.idea;
+  import botan.block.idea;
 #endif
 
 #if defined(BOTAN_HAS_KASUMI)
-  import botan.block.kasumi.kasumi;
+  import botan.block.kasumi;
 #endif
 
 #if defined(BOTAN_HAS_LION)
-  import botan.block.lion.lion;
+  import botan.block.lion;
 #endif
 
 #if defined(BOTAN_HAS_MARS)
-  import botan.block.mars.mars;
+  import botan.block.mars;
 #endif
 
 #if defined(BOTAN_HAS_MISTY1)
-  import botan.block.misty1.misty1;
+  import botan.block.misty1;
 #endif
 
 #if defined(BOTAN_HAS_NOEKEON)
-  import botan.block.noekeon.noekeon;
+  import botan.block.noekeon;
 #endif
 
 #if defined(BOTAN_HAS_RC2)
-  import botan.block.rc2.rc2;
+  import botan.block.rc2;
 #endif
 
 #if defined(BOTAN_HAS_RC5)
-  import botan.block.rc5.rc5;
+  import botan.block.rc5;
 #endif
 
 #if defined(BOTAN_HAS_RC6)
-  import botan.block.rc6.rc6;
+  import botan.block.rc6;
 #endif
 
 #if defined(BOTAN_HAS_SAFER)
-  import botan.block.safer.safer_sk;
+  import botan.block.safer_sk;
 #endif
 
 #if defined(BOTAN_HAS_SEED)
-  import botan.block.seed.seed;
+  import botan.block.seed;
 #endif
 
 #if defined(BOTAN_HAS_SERPENT)
-  import botan.block.serpent.serpent;
+  import botan.block.serpent;
 #endif
 
 #if defined(BOTAN_HAS_TEA)
-  import botan.block.tea.tea;
+  import botan.block.tea;
 #endif
 
 #if defined(BOTAN_HAS_TWOFISH)
-  import botan.block.twofish.twofish;
+  import botan.block.twofish;
 #endif
 
 #if defined(BOTAN_HAS_THREEFISH_512)
-  import botan.block.threefish.threefish;
+  import botan.block.threefish;
 #endif
 
 #if defined(BOTAN_HAS_XTEA)
-  import botan.block.xtea.xtea;
+  import botan.block.xtea;
 #endif
 /*
 * Look for an algorithm with this name

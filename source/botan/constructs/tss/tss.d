@@ -8,7 +8,7 @@
 import botan.tss;
 import botan.loadstor;
 import botan.pipe;
-import botan.hex;
+import botan.codec.hex;
 import botan.sha2_32;
 import botan.sha160;
 namespace {

@@ -448,7 +448,7 @@ Vector!( Set<Certificate_Status_Code )
 				
 				status.insert(ocsp_status);
 				
-				//std::cout << "OCSP status: " << status_string(ocsp_status) << "";
+				//std::cout << "OCSP status: " << status_string(ocsp_status) << "\n";
 				
 				// Either way we have a definitive answer, no need to check CRLs
 				if (ocsp_status == Certificate_Status_Code.CERT_IS_REVOKED)

@@ -5,7 +5,7 @@
 * Distributed under the terms of the botan license.
 */
 
-import botan.entropy_src;
+import botan.entropy.entropy_src;
 import vector;
 import sys.types;
 /**
@@ -19,7 +19,7 @@ class Unix_EntropySource : EntropySource
 public:
 	string name() const { return "Unix Process Runner"; }
 
-	override void poll(Entropy_Accumulator& accum);
+	override void poll(ref Entropy_Accumulator accum);
 
 	/**
 	* @param trusted_paths is a list of directories that are assumed
@@ -75,5 +75,5 @@ class UnixProcessInfo_EntropySource : EntropySource
 	public:
 		string name() const { return "Unix Process Info"; }
 
-		void poll(Entropy_Accumulator& accum);
+		void poll(ref Entropy_Accumulator accum);
 };

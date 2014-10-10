@@ -7,8 +7,8 @@
 
 import botan.hmac_rng;
 import botan.libstate.libstate;
-import botan.get_byte;
-import botan.entropy_src;
+import botan.utils.get_byte;
+import botan.entropy.entropy_src;
 import botan.internal.xor_buf;
 import std.algorithm;
 import std.datetime;

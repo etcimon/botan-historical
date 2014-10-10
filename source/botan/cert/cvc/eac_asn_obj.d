@@ -10,7 +10,7 @@ module botan.cert.cvc.eac_asn_obj;
 import botan.asn1.asn1_obj;
 import botan.asn1.der_enc;
 import botan.asn1.ber_dec;
-import botan.internal.rounding;
+import botan.utils.rounding;
 import botan.calendar;
 import botan.charset;
 import botan.parsing;

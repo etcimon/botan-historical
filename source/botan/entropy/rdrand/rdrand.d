@@ -14,7 +14,7 @@ import botan.utils.cpuid;
 /*
 * Get the timestamp
 */
-void Intel_Rdrand::poll(Entropy_Accumulator& accum)
+void Intel_Rdrand::poll(ref Entropy_Accumulator accum)
 {
 	if (!CPUID.has_rdrand())
 		return;

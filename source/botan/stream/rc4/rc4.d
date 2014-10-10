@@ -7,7 +7,7 @@
 
 import botan.rc4;
 import botan.internal.xor_buf;
-import botan.internal.rounding;
+import botan.utils.rounding;
 /*
 * Combine cipher stream with message
 */
@@ -59,7 +59,7 @@ void RC4::generate()
 void RC4::key_schedule(in ubyte* key, size_t length)
 {
 	state.resize(256);
-	buffer.resize(round_up<size_t>(DEFAULT_BUFFERSIZE, 4));
+	buffer.resize(round_up!size_t(DEFAULT_BUFFERSIZE, 4));
 
 	position = X = Y = 0;
 

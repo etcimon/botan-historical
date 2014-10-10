@@ -175,7 +175,7 @@ private:
 import botan.utils.datastor.datastor;
 import botan.exceptn;
 import botan.parsing;
-import botan.hex;
+import botan.codec.hex;
 import botan.internal.stl_util;
 
 

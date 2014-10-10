@@ -132,7 +132,7 @@ EGD_EntropySource::~this()
 /**
 * Gather Entropy from EGD
 */
-void EGD_EntropySource::poll(Entropy_Accumulator& accum)
+void EGD_EntropySource::poll(ref Entropy_Accumulator accum)
 {
 	const size_t READ_ATTEMPT = 32;
 

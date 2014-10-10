@@ -9,7 +9,7 @@ import botan.openpgp;
 import botan.filters;
 import botan.basefilt;
 import botan.charset;
-import botan.crc24;
+import botan.checksum.crc24;
 /*
 * OpenPGP Base64 encoding
 */

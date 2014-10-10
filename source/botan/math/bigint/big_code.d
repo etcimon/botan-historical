@@ -8,7 +8,7 @@
 import botan.bigint;
 import botan.divide;
 import botan.charset;
-import botan.hex;
+import botan.codec.hex;
 /*
 * Encode a BigInt
 */

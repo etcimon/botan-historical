@@ -8,7 +8,7 @@
 import botan.ecb;
 import botan.loadstor;
 import botan.internal.xor_buf;
-import botan.internal.rounding;
+import botan.utils.rounding;
 ECB_Mode::ECB_Mode(BlockCipher cipher, BlockCipherModePaddingMethod* padding) :
 	m_cipher(cipher),
 	m_padding(padding)

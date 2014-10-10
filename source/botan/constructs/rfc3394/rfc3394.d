@@ -59,7 +59,7 @@ SafeVector!ubyte rfc3394_keywrap(in SafeVector!ubyte key,
 			aes.encrypt(&A[0]);
 			copy_mem(&R[8*i], &A[8], 8);
 
-			ubyte[4] t_buf = { 0 };
+			ubyte[4] t_buf;
 			store_be(t, t_buf);
 			xor_buf(&A[4], &t_buf[0], 4);
 		}
@@ -96,7 +96,7 @@ SafeVector!ubyte rfc3394_keyunwrap(in SafeVector!ubyte key,
 		{
 			const uint t = (5 - j) * n + i;
 
-			ubyte[4] t_buf = { 0 };
+			ubyte[4] t_buf;
 			store_be(t, t_buf);
 
 			xor_buf(&A[4], &t_buf[0], 4);

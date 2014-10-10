@@ -7,7 +7,7 @@
 
 import botan.buf_filt;
 import botan.mem_ops;
-import botan.internal.rounding;
+import botan.utils.rounding;
 import stdexcept;
 /*
 * Buffered_Filter Constructor

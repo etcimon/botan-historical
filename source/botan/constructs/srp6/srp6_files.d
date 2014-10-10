@@ -7,7 +7,7 @@
 
 import botan.srp6_files;
 import botan.parsing;
-import botan.base64;
+import botan.codec.base64;
 import fstream;
 SRP6_Authenticator_File::SRP6_Authenticator_File(in string filename)
 {

@@ -5,7 +5,7 @@
 * Distributed under the terms of the botan license.
 */
 
-import botan.entropy_src;
+import botan.entropy.entropy_src;
 /**
 * Entropy source using the rdrand instruction first introduced on
 * Intel's Ivy Bridge architecture.
@@ -14,5 +14,5 @@ class Intel_Rdrand : EntropySource
 {
 	public:
 		string name() const { return "Intel Rdrand"; }
-		void poll(Entropy_Accumulator& accum);
+		void poll(ref Entropy_Accumulator accum);
 };

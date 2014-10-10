@@ -21,7 +21,7 @@ import std.datetime;
 /*
 * Get the timestamp
 */
-void High_Resolution_Timestamp::poll(Entropy_Accumulator& accum)
+void High_Resolution_Timestamp::poll(ref Entropy_Accumulator accum)
 {
 	// Don't count any timestamps as contributing any entropy
 	const double ESTIMATED_ENTROPY_PER_BYTE = 0.0;

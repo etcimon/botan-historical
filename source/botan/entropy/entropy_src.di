@@ -4,22 +4,27 @@
 *
 * Distributed under the terms of the botan license.
 */
+module botan.entropy.entropy_src;
 
 import botan.alloc.secmem;
 import string;
 import functional;
+
 /**
 * Class used to accumulate the poll results of EntropySources
 */
-class Entropy_Accumulator
+struct Entropy_Accumulator
 {
 public:
 	/**
 	* Initialize an Entropy_Accumulator
 	* @param goal is how many bits we would like to collect
 	*/
-	Entropy_Accumulator(bool delegate(in ubyte*, size_t len, double) accum) :
-		m_accum_fn(accum), m_done(false) {}
+	this(bool delegate(in ubyte*, size_t len, double) accum)
+	{
+		m_accum_fn = accum; 
+		m_done = false;
+	}
 
 	~this() {}
 
@@ -74,19 +79,17 @@ private:
 /**
 * Abstract interface to a source of entropy
 */
-class EntropySource
+interface EntropySource
 {
 public:
 	/**
 	* @return name identifying this entropy source
 	*/
-	abstract string name() const;
+	string name() const;
 
 	/**
 	* Perform an entropy gathering poll
 	* @param accum is an accumulator object that will be given entropy
 	*/
-	abstract void poll(Entropy_Accumulator& accum);
-
-	~this() {}
+	void poll(ref Entropy_Accumulator accum);
 };

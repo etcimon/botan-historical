@@ -8,7 +8,7 @@
 import botan.internal.asm_engine;
 
 #if defined(BOTAN_HAS_SERPENT_X86_32)
-  import botan.block.serpent_x86_32.serp_x86_32;
+  import botan.block.serp_x86_32;
 #endif
 
 #if defined(BOTAN_HAS_MD4_X86_32)

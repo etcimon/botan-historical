@@ -11,7 +11,7 @@ import botan.internal.tls_messages;
 import botan.internal.tls_heartbeats;
 import botan.internal.tls_record;
 import botan.internal.tls_seq_numbers;
-import botan.internal.rounding;
+import botan.utils.rounding;
 import botan.internal.stl_util;
 import botan.loadstor;
 namespace TLS {

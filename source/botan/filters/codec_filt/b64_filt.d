@@ -6,7 +6,7 @@
 */
 
 import botan.b64_filt;
-import botan.base64;
+import botan.codec.base64;
 import botan.charset;
 import botan.exceptn;
 import std.algorithm;

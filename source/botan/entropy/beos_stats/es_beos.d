@@ -13,7 +13,7 @@ import interface.InterfaceDefs;
 /**
 * BeOS entropy poll
 */
-void BeOS_EntropySource::poll(Entropy_Accumulator& accum)
+void BeOS_EntropySource::poll(ref Entropy_Accumulator accum)
 {
 	system_info info_sys;
 	get_system_info(&info_sys);

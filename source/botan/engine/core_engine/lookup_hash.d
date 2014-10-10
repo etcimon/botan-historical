@@ -10,15 +10,15 @@ import botan.algo_base.scan_name;
 import botan.algo_factory;
 
 #if defined(BOTAN_HAS_ADLER32)
-  import botan.adler32;
+  import botan.checksum.adler32;
 #endif
 
 #if defined(BOTAN_HAS_CRC24)
-  import botan.crc24;
+  import botan.checksum.crc24;
 #endif
 
 #if defined(BOTAN_HAS_CRC32)
-  import botan.crc32;
+  import botan.checksum.crc32;
 #endif
 
 #if defined(BOTAN_HAS_GOST_34_11)

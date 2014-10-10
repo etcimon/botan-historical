@@ -9,7 +9,7 @@ module botan.asn1.der_enc;
 import botan.asn1.asn1_obj;
 import botan.asn1.der_enc;
 import botan.bigint;
-import botan.get_byte;
+import botan.utils.get_byte;
 import botan.parsing;
 import botan.internal.bit_ops;
 import std.algorithm;

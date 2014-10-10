@@ -12,8 +12,8 @@ import botan.libstate.lookup;
 import botan.sha2_64;
 import botan.hmac;
 import botan.pbkdf2;
-import botan.codec.pem.pem;
-import botan.get_byte;
+import botan.codec.pem;
+import botan.utils.get_byte;
 import botan.mem_ops;
 namespace CryptoBox {
 

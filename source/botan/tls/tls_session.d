@@ -9,7 +9,7 @@ import botan.tls_session;
 import botan.asn1.der_enc;
 import botan.asn1.ber_dec;
 import botan.asn1.asn1_str;
-import botan.codec.pem.pem;
+import botan.codec.pem;
 import botan.cryptobox_psk;
 namespace TLS {
 

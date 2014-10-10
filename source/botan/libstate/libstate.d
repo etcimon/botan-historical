@@ -17,6 +17,7 @@ import botan.internal.core_engine;
 import botan.internal.stl_util;
 import std.algorithm;
 import core.sync.mutex;
+import std.typecons;
 import string;
 import vector;
 import map;
@@ -124,7 +125,7 @@ public:
 		return *m_global_prng;
 	}
 
-	void poll_available_sources(Entropy_Accumulator accum)
+	void poll_available_sources(ref Entropy_Accumulator accum)
 	{
 		m_entropy_src_mutex.lock(); scope(exit) m_entropy_src_mutex.unlock();
 		

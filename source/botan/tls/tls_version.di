@@ -5,7 +5,7 @@
 * Released under the terms of the botan license.
 */
 
-import botan.get_byte;
+import botan.utils.get_byte;
 import string;
 
 /**

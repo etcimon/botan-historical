@@ -11,7 +11,7 @@ import tlhelp32.h;
 /**
 * Win32 poll using stats functions including Tooltip32
 */
-void Win32_EntropySource::poll(Entropy_Accumulator& accum)
+void Win32_EntropySource::poll(ref Entropy_Accumulator accum)
 {
 	/*
 	First query a bunch of basic statistical stuff, though

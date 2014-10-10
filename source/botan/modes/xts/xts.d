@@ -8,7 +8,7 @@
 import botan.xts;
 import botan.loadstor;
 import botan.internal.xor_buf;
-import botan.internal.rounding;
+import botan.utils.rounding;
 namespace {
 
 void poly_double_128(ubyte* output, in ubyte* input)

@@ -9,7 +9,7 @@
 import botan.package;
 import botan.filters;
 import botan.ctr;
-import botan.get_byte;
+import botan.utils.get_byte;
 import botan.internal.xor_buf;
 void aont_package(RandomNumberGenerator rng,
 						BlockCipher cipher,

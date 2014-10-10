@@ -14,7 +14,7 @@ import botan.asn1.oid_lookup.oids;
 import botan.asn1.der_enc;
 import botan.asn1.ber_dec;
 import botan.parsing;
-import botan.codec.pem.pem;
+import botan.codec.pem;
 import std.algorithm;
 import vector;
 

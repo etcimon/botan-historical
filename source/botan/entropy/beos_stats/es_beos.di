@@ -5,7 +5,7 @@
 * Distributed under the terms of the botan license.
 */
 
-import botan.entropy_src;
+import botan.entropy.entropy_src;
 /**
 * BeOS Entropy Source
 */
@@ -14,5 +14,5 @@ class BeOS_EntropySource : EntropySource
 	private:
 		string name() const { return "BeOS Statistics"; }
 
-		void poll(Entropy_Accumulator& accum);
+		void poll(ref Entropy_Accumulator accum);
 };

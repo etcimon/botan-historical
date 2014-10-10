@@ -5,7 +5,7 @@
 * Distributed under the terms of the botan license.
 */
 
-import botan.entropy_src;
+import botan.entropy.entropy_src;
 import vector;
 import string;
 /**
@@ -16,7 +16,7 @@ class Device_EntropySource : EntropySource
 	public:
 		string name() const { return "RNG Device Reader"; }
 
-		void poll(Entropy_Accumulator& accum);
+		void poll(ref Entropy_Accumulator accum);
 
 		Device_EntropySource(in Vector!string fsnames);
 		~this();

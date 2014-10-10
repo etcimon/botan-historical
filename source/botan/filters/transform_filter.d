@@ -6,7 +6,7 @@
 */
 
 import botan.transform_filter;
-import botan.internal.rounding;
+import botan.utils.rounding;
 namespace {
 
 size_t choose_update_size(size_t update_granularity)

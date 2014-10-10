@@ -11,7 +11,7 @@ import botan.pipe;
 import botan.x509_key;
 import botan.asn1.der_enc;
 import botan.asn1.ber_dec;
-import botan.codec.pem.pem;
+import botan.codec.pem;
 import botan.asn1.alg_id;
 import botan.internal.pk_algs;
 

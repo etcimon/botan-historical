@@ -6,7 +6,7 @@
 */
 
 import botan.hash;
-import botan.block.threefish.threefish;
+import botan.block.threefish;
 import string;
 import memory;
 /**

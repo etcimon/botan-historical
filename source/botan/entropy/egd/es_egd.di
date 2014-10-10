@@ -5,7 +5,7 @@
 * Distributed under the terms of the botan license.
 */
 
-import botan.entropy_src;
+import botan.entropy.entropy_src;
 import string;
 import vector;
 /**
@@ -16,7 +16,7 @@ class EGD_EntropySource : EntropySource
 	public:
 		string name() const { return "EGD/PRNGD"; }
 
-		void poll(Entropy_Accumulator& accum);
+		void poll(ref Entropy_Accumulator accum);
 
 		EGD_EntropySource(in Vector!string);
 		~this();

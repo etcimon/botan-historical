@@ -72,27 +72,27 @@ public:
 };
 
 version(BOTAN_HAS_AES_SSSE3) {
-	import botan.block.aes_ssse3.aes_ssse3;
+	import botan.block.aes_ssse3;
 }
 
 version(BOTAN_HAS_SERPENT_SIMD) {
-	import botan.block.serpent_simd.serp_simd;
+	import botan.block.serp_simd;
 }
 
 version(BOTAN_HAS_THREEFISH_512_AVX2) {
-	import botan.block.threefish_avx2.threefish_avx2;
+	import botan.block.threefish_avx2;
 }
 
 version(BOTAN_HAS_NOEKEON_SIMD) {
-	import botan.block.noekeon_simd.noekeon_simd;
+	import botan.block.noekeon_simd;
 }
 
 version(BOTAN_HAS_XTEA_SIMD) {
-	import botan.block.xtea_simd.xtea_simd;
+	import botan.block.xtea_simd;
 }
 
 version(BOTAN_HAS_IDEA_SSE2) {
-	import botan.block.idea_sse2.idea_sse2;
+	import botan.block.idea_sse2;
 }
 
 version(BOTAN_HAS_SHA1_SSE2) {

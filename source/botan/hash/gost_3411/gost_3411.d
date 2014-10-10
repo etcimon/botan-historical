@@ -75,7 +75,7 @@ void GOST_34_11::compress_n(in ubyte* input, size_t blocks)
 			sum[j] = get_byte(1, s);
 		}
 
-		ubyte[32] S = { 0 };
+		ubyte[32] S;
 
 		ulong[4] U, V;
 		load_be(U, &hash[0], 4);
@@ -83,7 +83,7 @@ void GOST_34_11::compress_n(in ubyte* input, size_t blocks)
 
 		for (size_t j = 0; j != 4; ++j)
 		{
-			ubyte[32] key = { 0 };
+			ubyte[32] key;
 
 			// P transformation
 			for (size_t k = 0; k != 4; ++k)
@@ -120,7 +120,7 @@ void GOST_34_11::compress_n(in ubyte* input, size_t blocks)
 			V[3] = AA_V_2;
 		}
 
-		ubyte[32] S2 = { 0 };
+		ubyte[32] S2;
 
 		// 12 rounds of psi
 		S2[ 0] = S[24];

@@ -56,7 +56,7 @@ void Skein_512::reset_tweak(type_code type, bool final)
 
 void Skein_512::initial_block()
 {
-	const ubyte[64] zeros = { 0 };
+	const ubyte[64] zeros;
 
 	m_threefish.set_key(zeros, sizeof(zeros));
 
@@ -150,7 +150,7 @@ void Skein_512::final_result(ubyte* output)
 
 	ubi_512(&buffer[0], buf_pos);
 
-	const ubyte[8] counter = { 0 };
+	const ubyte[8] counter;
 
 	reset_tweak(SKEIN_OUTPUT, true);
 	ubi_512(counter, sizeof(counter));

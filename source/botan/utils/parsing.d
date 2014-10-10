@@ -8,7 +8,7 @@
 import botan.parsing;
 import botan.exceptn;
 import botan.charset;
-import botan.get_byte;
+import botan.utils.get_byte;
 import set;
 uint to_uint(in string str)
 {

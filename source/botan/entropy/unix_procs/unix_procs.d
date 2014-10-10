@@ -62,7 +62,7 @@ Unix_EntropySource::Unix_EntropySource(in Vector!string trusted_path,
 {
 }
 
-void UnixProcessInfo_EntropySource::poll(Entropy_Accumulator& accum)
+void UnixProcessInfo_EntropySource::poll(ref Entropy_Accumulator accum)
 {
 	accum.add(::getpid(),  0.0);
 	accum.add(::getppid(), 0.0);
@@ -174,7 +174,7 @@ const Vector!string& Unix_EntropySource::next_source()
 	return src;
 }
 
-void Unix_EntropySource::poll(Entropy_Accumulator& accum)
+void Unix_EntropySource::poll(ref Entropy_Accumulator accum)
 {
 	// refuse to run as root (maybe instead setuid to nobody before exec?)
 	// fixme: this should also check for setgid

@@ -7,7 +7,7 @@
 
 import botan.http_util;
 import botan.parsing;
-import botan.hex;
+import botan.codec.hex;
 import botan.internal.stl_util;
 import sstream;
 

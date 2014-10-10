@@ -7,8 +7,8 @@
 
 import botan.bcrypt;
 import botan.loadstor;
-import botan.block.blowfish.blowfish;
-import botan.base64;
+import botan.block.blowfish;
+import botan.codec.base64;
 namespace {
 
 string bcrypt_base64_encode(in ubyte* input, size_t length)

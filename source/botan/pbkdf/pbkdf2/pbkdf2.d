@@ -6,9 +6,9 @@
 */
 
 import botan.pbkdf2;
-import botan.get_byte;
+import botan.utils.get_byte;
 import botan.internal.xor_buf;
-import botan.internal.rounding;
+import botan.utils.rounding;
 /*
 * Return a PKCS #5 PBKDF2 derived key
 */

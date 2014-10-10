@@ -11,7 +11,7 @@ import botan.asn1.der_enc;
 import botan.asn1.ber_dec;
 import botan.asn1.alg_id;
 import botan.asn1.oid_lookup.oids;
-import botan.codec.pem.pem;
+import botan.codec.pem;
 import botan.internal.pk_algs;
 namespace PKCS8 {
 

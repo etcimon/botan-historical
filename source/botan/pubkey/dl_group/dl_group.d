@@ -12,7 +12,7 @@ import botan.numthry;
 import botan.asn1.der_enc;
 import botan.asn1.ber_dec;
 import botan.pipe;
-import botan.codec.pem.pem;
+import botan.codec.pem;
 import botan.workfactor;
 /*
 * DL_Group Constructor

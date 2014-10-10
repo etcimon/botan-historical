@@ -5,6 +5,7 @@
 * Distributed under the terms of the botan license.
 */
 module botan.libstate.init;
+
 import botan.build;
 import botan.libstate.libstate;
 import botan.libstate.global_state;

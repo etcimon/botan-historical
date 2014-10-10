@@ -245,7 +245,7 @@ void encode_entries(DER_Encoder encoder = DER_Encoder(),
 		else if (type == "IP")
 		{
 			const uint ip = string_to_ipv4(i.second);
-			ubyte[4] ip_buf = { 0 };
+			ubyte[4] ip_buf;
 			store_be(ip, ip_buf);
 			encoder.add_object(tagging, ASN1_Tag.CONTEXT_SPECIFIC, ip_buf, 4);
 		}

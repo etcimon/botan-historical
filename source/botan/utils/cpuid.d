@@ -5,12 +5,16 @@
 * Distributed under the terms of the botan license.
 */
 module botan.utils.cpuid;
+
+import core.cpuid;
 import botan.types;
 import iosfwd;
 import botan.types;
-import botan.get_byte;
+import botan.utils.get_byte;
 import botan.mem_ops;
 import ostream;
+
+
 /**
 * A class handling runtime CPU feature detection
 */
@@ -22,50 +26,32 @@ public:
 	*/
 	static this()
 	{
-		
-		version(PPC)	
-			if(altivec_check_sysctl() || altivec_check_pvr_emul())
-				m_altivec_capable = true;
-		
-		immutable uint[3] INTEL_CPUID = { 0x756E6547, 0x6C65746E, 0x49656E69 };
-		immutable uint[3] AMD_CPUID = { 0x68747541, 0x444D4163, 0x69746E65 };
-		
-		uint[4] cpuid = { 0 };
-		X86_CPUID(0, cpuid);
-		
-		const uint max_supported_sublevel = cpuid[0];
-		
-		if (max_supported_sublevel == 0)
+
+		if (max_cpuid == 0)
 			return;
-		
-		const bool is_intel = same_mem(cpuid + 1, INTEL_CPUID, 3);
-		const bool is_amd = same_mem(cpuid + 1, AMD_CPUID, 3);
-		
-		X86_CPUID(1, cpuid);
-		
-		m_x86_processor_flags[0] = (cast(ulong)(cpuid[2]) << 32) | cpuid[3];
+
+		version(PPC)	
+			if (altivec_check_sysctl() || altivec_check_pvr_emul())
+				m_altivec_capable = true;
+
+
+		m_x86_processor_flags[0] = (cast(ulong)(miscfeatures) << 32) | features;
 		
 		if (is_intel)
-			m_cache_line_size = 8 * get_byte(2, cpuid[1]);
+			m_cache_line_size = 8 * get_byte(2, brand);
 		
-		if (max_supported_sublevel >= 7)
-		{
-			clear_mem(cpuid, 4);
-			X86_CPUID_SUBLEVEL(7, 0, cpuid);
-			m_x86_processor_flags[1] = (cast(ulong)(cpuid[2]) << 32) | cpuid[1];
-		}
+		if (max_cpuid >= 7)
+			m_x86_processor_flags[1] = (cast(ulong)(extreserved) << 32) | extfeatures;
 		
 		if (is_amd)
 		{
-			X86_CPUID(0x80000005, cpuid);
-			m_cache_line_size = get_byte(3, cpuid[2]);
-			
+			m_cache_line_size = get_byte(3, l1cache);			
 			
 			version(X86_64) {
 				/*
-			* If we don't have access to CPUID, we can still safely assume that
-			* any x86-64 processor has SSE2 and RDTSC
-			*/
+				* If we don't have access to CPUID, we can still safely assume that
+				* any x86-64 processor has SSE2 and RDTSC
+				*/
 				if (m_x86_processor_flags[0] == 0)
 					m_x86_processor_flags[0] = (1 << CPUID_SSE2_BIT) | (1 << CPUID_RDTSC_BIT);
 			}
@@ -218,16 +204,164 @@ private:
 		return ((m_x86_processor_flags[bit/64] >> (bit % 64)) & 1);
 	}
 
-	static ulong[2] m_x86_processor_flags = { 0, 0 };
-	static size_t m_cache_line_size = 0;
-	static bool m_altivec_capable = false;
+	static ulong[2] m_x86_processor_flags;
+	static size_t m_cache_line_size;
+	static bool m_altivec_capable;
 };
 
 
 
 
 package:
+
+
+private __gshared {
+	bool is_intel; // true = _probably_ an Intel processor, might be faking
+	bool is_amd; // true = _probably_ an AMD processor
+
+	uint apic;
+	uint max_cpuid;
+	uint max_extended_cpuid; // 0
+	uint extfeatures;
+	uint extreserved;
+	uint miscfeatures;
+	uint amdmiscfeatures;
+	uint features;
+	uint amdfeatures; 
+	uint l1cache;
+}
+
+shared static this() {
 	
+	string processorName;
+	char[12] vendorID;
+
+	{
+		uint a, b, c, d, a2;
+		char * venptr = vendorID.ptr;
+		version(D_InlineAsm_X86)
+		{
+			asm {
+				mov EAX, 0;
+				cpuid;
+				mov a, EAX;
+				mov EAX, venptr;
+				mov [EAX], EBX;
+				mov [EAX + 4], EDX;
+				mov [EAX + 8], ECX;
+			}
+		}
+		else version(D_InlineAsm_X86_64)
+		{
+			asm {
+				mov EAX, 0;
+				cpuid;
+				mov a, EAX;
+				mov RAX, venptr;
+				mov [RAX], EBX;
+				mov [RAX + 4], EDX;
+				mov [RAX + 8], ECX;
+			}
+		}
+
+		asm {
+			mov EAX, 0x8000_0000;
+			cpuid;
+			mov a2, EAX;
+		}
+
+		max_cpuid = a;
+		max_extended_cpuid = a2;
+	
+	}
+
+	is_intel = vendorID == "GenuineIntel";
+	is_amd = vendorID == "AuthenticAMD";
+
+	{
+		uint a, b, c, d;
+
+		asm {
+			mov EAX, 1; // model, stepping
+			cpuid;
+			mov a, EAX;
+			mov b, EBX;
+			mov c, ECX;
+			mov d, EDX;
+		}
+		/// EAX(a) contains stepping, model, family, processor type, extended model,
+		/// extended family
+
+		apic = b;
+		miscfeatures = c;
+		features = d;
+	}
+
+	if (max_cpuid >= 7)
+	{
+		uint ext, reserved;
+		asm
+		{
+			mov EAX, 7; // Structured extended feature leaf.
+			mov ECX, 0; // Main leaf.
+			cpuid;
+			mov ext, EBX; // HLE, AVX2, RTM, etc.
+			mov reserved, ECX;
+		}
+		extreserved = reserved;
+		extfeatures = ext;
+	}
+	
+	/*if (miscfeatures & OSXSAVE_BIT)
+	{
+		uint a, d;
+
+		asm {
+			mov ECX, 0;
+			xgetbv;
+			mov d, EDX;
+			mov a, EAX;
+		}
+		xfeatures = cast(ulong)d << 32 | a;
+	}*/
+
+	if (max_extended_cpuid >= 0x8000_0001) {
+		uint c, d;
+
+		asm {
+			mov EAX, 0x8000_0001;
+			cpuid;
+			mov c, ECX;
+			mov d, EDX;
+		}
+
+		amdmiscfeatures = c;
+		amdfeatures = d;
+
+	}
+	if (max_extended_cpuid >= 0x8000_0005) {
+		uint c;
+		asm {
+			mov EAX, 0x8000_0005; // L1 cache
+			cpuid;
+			// EAX has L1_TLB_4M.
+			// EBX has L1_TLB_4K
+			// EDX has L1 instruction cache
+			mov c, ECX;
+		}
+
+		l1cache = c;
+
+	}
+	
+
+	// Try to detect fraudulent vendorIDs
+	if (amd3dnow) is_intel = false;
+
+
+}
+
+
 version (PPC) {
 	bool altivec_check_sysctl()
 	{
@@ -255,7 +389,7 @@ version (PPC) {
 		bool altivec_capable = false;
 		
 		version(linux) {
-
+			
 			
 			/*
 			On PowerPC, MSR 287 is PVR, the Processor Version Number
@@ -281,7 +415,7 @@ version (PPC) {
 			uint pvr = 0;
 			
 			mixin(`asm { mfspr [pvr], 287; }`); // not supported in DMD?
-						
+			
 			// Top 16 bit suffice to identify model
 			pvr >>= 16;
 			
@@ -294,11 +428,11 @@ version (PPC) {
 			altivec_capable |= (pvr == PVR_POWER6);
 			altivec_capable |= (pvr == PVR_POWER7);
 			altivec_capable |= (pvr == PVR_CELL_PPU);
-
+			
 		}
 		
 		return altivec_capable;
 		
 	}
-
+	
 }

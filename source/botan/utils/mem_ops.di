@@ -6,13 +6,15 @@
 */
 
 import botan.types;
-import cstring;
 /**
 * Zeroize memory
 * @param ptr a pointer to memory to zero out
 * @param n the number of bytes pointed to by ptr
 */
-void zero_mem(void* ptr, size_t n);
+void zero_mem(void* ptr, size_t n)
+{
+	ptr[0 .. n] = 0;
+}
 
 /**
 * Zeroize memory
@@ -32,7 +34,8 @@ void clear_mem(T)(T* ptr, size_t n)
 */
 void copy_mem(T)(T* output, const T* input)
 {
-	std::memmove(output, input, sizeof(T)*n);
+	import std.c.string : memmove;
+	memmove(output, input, sizeof(T)*n);
 }
 
 /**
@@ -43,7 +46,8 @@ void copy_mem(T)(T* output, const T* input)
 */
 void set_mem(T)(T* ptr, size_t n, ubyte val)
 {
-	std::memset(ptr, val, sizeof(T)*n);
+	import std.c.string : memset;
+	memset(ptr, val, sizeof(T)*n);
 }
 
 /**
@@ -55,10 +59,5 @@ void set_mem(T)(T* ptr, size_t n, ubyte val)
 */
 bool same_mem(T)(const T* p1, const T* p2, size_t n)
 {
-	volatile T difference = 0;
-
-	for (size_t i = 0; i != n; ++i)
-		difference |= (p1[i] ^ p2[i]);
-
-	return difference == 0;
+	return ((cast(ubyte*)p1)[0 .. n] is (cast(ubyte*)p2)[0 .. n]);
 }

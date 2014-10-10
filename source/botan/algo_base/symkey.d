@@ -9,7 +9,7 @@ module botan.algo_base.symkey;
 import botan.internal.xor_buf;
 import botan.rng;
 import botan.pipe;
-import botan.hex;
+import botan.codec.hex;
 import std.algorithm;
 import botan.alloc.secmem;
 import string;

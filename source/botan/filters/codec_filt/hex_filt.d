@@ -6,7 +6,7 @@
 */
 
 import botan.hex_filt;
-import botan.hex;
+import botan.codec.hex;
 import botan.parsing;
 import botan.charset;
 import botan.exceptn;

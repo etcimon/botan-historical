@@ -5,7 +5,7 @@
 * Distributed under the terms of the botan license.
 */
 
-import botan.entropy_src;
+import botan.entropy.entropy_src;
 /**
 * Win32 Entropy Source
 */
@@ -13,5 +13,5 @@ class Win32_EntropySource : EntropySource
 {
 	public:
 		string name() const { return "Win32 Statistics"; }
-		void poll(Entropy_Accumulator& accum);
+		void poll(ref Entropy_Accumulator accum);
 };

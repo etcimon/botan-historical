@@ -5,7 +5,7 @@
 * Distributed under the terms of the botan license.
 */
 
-import botan.entropy_src;
+import botan.entropy.entropy_src;
 /**
 * Entropy source using high resolution timers
 *
@@ -16,5 +16,5 @@ class High_Resolution_Timestamp : EntropySource
 {
 	public:
 		string name() const { return "High Resolution Timestamp"; }
-		void poll(Entropy_Accumulator& accum);
+		void poll(ref Entropy_Accumulator accum);
 };

@@ -12,7 +12,7 @@ import botan.libstate.libstate;
 import botan.loadstor;
 import botan.internal.tls_seq_numbers;
 import botan.internal.tls_session_key;
-import botan.internal.rounding;
+import botan.utils.rounding;
 import botan.internal.xor_buf;
 namespace TLS {
 

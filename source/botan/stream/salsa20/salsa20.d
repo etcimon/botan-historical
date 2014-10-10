@@ -157,7 +157,7 @@ void Salsa20::key_schedule(in ubyte* key, size_t length)
 
 	m_position = 0;
 
-	const ubyte[8] ZERO = { 0 };
+	const ubyte[8] ZERO;
 	set_iv(ZERO, sizeof(ZERO));
 }
 

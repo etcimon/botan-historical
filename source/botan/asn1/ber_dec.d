@@ -10,7 +10,7 @@ import botan.asn1.asn1_oid;
 import botan.data_src;
 import botan.ber_dec;
 import botan.bigint;
-import botan.get_byte;
+import botan.utils.get_byte;
 
 /**
 * BER Decoding Object

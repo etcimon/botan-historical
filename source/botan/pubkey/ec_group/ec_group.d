@@ -12,7 +12,7 @@ import botan.asn1.ber_dec;
 import botan.asn1.der_enc;
 import botan.libstate.libstate;
 import botan.asn1.oid_lookup.oids;
-import botan.codec.pem.pem;
+import botan.codec.pem;
 EC_Group::EC_Group(in OID domain_oid)
 {
 	string pem = PEM_for_named_group(oids.lookup(domain_oid));

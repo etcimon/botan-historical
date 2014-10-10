@@ -7,9 +7,9 @@
 
 import botan.bigint;
 import botan.internal.mp_core;
-import botan.get_byte;
+import botan.utils.get_byte;
 import botan.parsing;
-import botan.internal.rounding;
+import botan.utils.rounding;
 /*
 * Construct a BigInt from a regular number
 */
@@ -30,7 +30,7 @@ BigInt::BigInt(ulong n)
 */
 BigInt::BigInt(Sign s, size_t size)
 {
-	m_reg.resize(round_up<size_t>(size, 8));
+	m_reg.resize(round_up!size_t(size, 8));
 	m_signedness = s;
 }
 
@@ -94,7 +94,7 @@ BigInt::BigInt(RandomNumberGenerator rng, size_t bits)
 void BigInt::grow_to(size_t n)
 {
 	if (n > size())
-		m_reg.resize(round_up<size_t>(n, 8));
+		m_reg.resize(round_up!size_t(n, 8));
 }
 
 /*
@@ -327,7 +327,7 @@ void BigInt::binary_decode(in ubyte* buf, size_t length)
 	const size_t WORD_BYTES = sizeof(word);
 
 	clear();
-	m_reg.resize(round_up<size_t>((length / WORD_BYTES) + 1, 8));
+	m_reg.resize(round_up!size_t((length / WORD_BYTES) + 1, 8));
 
 	for (size_t i = 0; i != length / WORD_BYTES; ++i)
 	{
