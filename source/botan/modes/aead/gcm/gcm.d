@@ -12,12 +12,12 @@ import botan.loadstor;
 
 #if defined(BOTAN_HAS_GCM_CLMUL)
   import botan.internal.clmul;
-  import botan.cpuid;
+  import botan.utils.cpuid;
 #endif
 void GHASH::gcm_multiply(SafeVector!ubyte x) const
 {
 #if defined(BOTAN_HAS_GCM_CLMUL)
-	if (CPUID::has_clmul())
+	if (CPUID.has_clmul())
 		return gcm_multiply_clmul(&x[0], &m_H[0]);
 #endif
 

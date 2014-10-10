@@ -6,7 +6,7 @@
 */
 
 import botan.hmac_rng;
-import botan.libstate;
+import botan.libstate.libstate;
 import botan.get_byte;
 import botan.entropy_src;
 import botan.internal.xor_buf;

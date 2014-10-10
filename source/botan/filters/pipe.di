@@ -315,7 +315,7 @@ private:
 * @param out an output stream
 * @param pipe the pipe
 */
-std::ostream& operator<<(std::ostream& output, Pipe& pipe);
+ref std.ostream operator<<(ref std.ostream output, Pipe& pipe);
 
 /**
 * Stream input operator; dumps the remaining bytes of input

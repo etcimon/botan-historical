@@ -7,7 +7,7 @@
 
 import botan.rfc6979;
 import botan.hmac_drbg;
-import botan.libstate;
+import botan.libstate.libstate;
 BigInt generate_rfc6979_nonce(in BigInt x,
 										ref const BigInt q,
 										ref const BigInt h,

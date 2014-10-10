@@ -92,7 +92,7 @@ import botan.algo_factory;
 #endif
 
 #if defined(BOTAN_HAS_TWOFISH)
-  import botan.twofish;
+  import botan.block.twofish.twofish;
 #endif
 
 #if defined(BOTAN_HAS_THREEFISH_512)
@@ -100,7 +100,7 @@ import botan.algo_factory;
 #endif
 
 #if defined(BOTAN_HAS_XTEA)
-  import botan.xtea;
+  import botan.block.xtea.xtea;
 #endif
 /*
 * Look for an algorithm with this name

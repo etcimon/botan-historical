@@ -7,7 +7,7 @@
 
 import botan.rng;
 import botan.hmac_rng;
-import botan.libstate;
+import botan.libstate.libstate;
 RandomNumberGenerator* RandomNumberGenerator::make_rng()
 {
 	return make_rng(global_state().algorithm_factory()).release();

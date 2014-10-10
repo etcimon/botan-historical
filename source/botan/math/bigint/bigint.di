@@ -550,7 +550,7 @@ BigInt operator>>(in BigInt x, size_t n);
 /*
 * I/O Operators
 */
-std::ostream& operator<<(std::ostream&, const BigInt);
+ref std.ostream operator<<(ref std.ostream, const BigInt);
 std::istream& operator>>(std::istream&, BigInt);
 
 }

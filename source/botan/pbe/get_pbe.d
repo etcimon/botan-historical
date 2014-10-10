@@ -9,7 +9,7 @@ import botan.get_pbe;
 import botan.asn1.oid_lookup.oids;
 import botan.algo_base.scan_name;
 import botan.parsing;
-import botan.libstate;
+import botan.libstate.libstate;
 
 #if defined(BOTAN_HAS_PBE_PKCS_V20)
   import botan.pbes2;

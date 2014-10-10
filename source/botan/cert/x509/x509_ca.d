@@ -17,7 +17,7 @@ import botan.asn1.der_enc;
 import botan.asn1.ber_dec;
 import botan.bigint;
 import botan.parsing;
-import botan.lookup;
+import botan.libstate.lookup;
 import botan.asn1.oid_lookup.oids;
 import botan.cert.x509.key_constraint;
 import std.datetime;

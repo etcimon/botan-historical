@@ -10,7 +10,7 @@ import botan.asn1.der_enc;
 import botan.asn1.ber_dec;
 import botan.bigint;
 import botan.parsing;
-import botan.libstate;
+import botan.libstate.libstate;
 import botan.engine.engine;
 import botan.internal.bit_ops;
 /*

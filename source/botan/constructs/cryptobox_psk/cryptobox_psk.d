@@ -7,7 +7,7 @@
 
 import botan.cryptobox_psk;
 import botan.pipe;
-import botan.lookup;
+import botan.libstate.lookup;
 import botan.loadstor;
 namespace CryptoBox {
 

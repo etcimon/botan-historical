@@ -7,7 +7,7 @@
 
 import botan.emsa;
 import botan.eme;
-import botan.libstate;
+import botan.libstate.libstate;
 import botan.algo_base.scan_name;
 
 #if defined(BOTAN_HAS_EMSA1)

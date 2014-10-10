@@ -7,7 +7,7 @@
 module botan.engine.simd_engine.simd_engine;
 import botan.engine.engine;
 import botan.simd.simd_32;
-import botan.cpuid;
+import botan.utils.cpuid;
 
 /**
 * Engine for implementations that use some kind of SIMD
@@ -21,16 +21,16 @@ public:
 	                              Algorithm_Factory) const
 	{
 		version(BOTAN_HAS_AES_SSSE3) {
-			if (request.algo_name() == "AES-128" && CPUID::has_ssse3())
+			if (request.algo_name() == "AES-128" && CPUID.has_ssse3())
 				return new AES_128_SSSE3;
-			if (request.algo_name() == "AES-192" && CPUID::has_ssse3())
+			if (request.algo_name() == "AES-192" && CPUID.has_ssse3())
 				return new AES_192_SSSE3;
-			if (request.algo_name() == "AES-256" && CPUID::has_ssse3())
+			if (request.algo_name() == "AES-256" && CPUID.has_ssse3())
 				return new AES_256_SSSE3;
 		}
 		
 		version(BOTAN_HAS_IDEA_SSE2) {
-			if (request.algo_name() == "IDEA" && CPUID::has_sse2())
+			if (request.algo_name() == "IDEA" && CPUID.has_sse2())
 				return new IDEA_SSE2;
 		}
 		
@@ -40,7 +40,7 @@ public:
 		}
 		
 		version(BOTAN_HAS_THREEFISH_512_AVX2) {
-			if (request.algo_name() == "Threefish-512" && CPUID::has_avx2())
+			if (request.algo_name() == "Threefish-512" && CPUID.has_avx2())
 				return new Threefish_512_AVX2;
 		}
 		
@@ -61,7 +61,7 @@ public:
 	                       Algorithm_Factory) const
 	{
 		version(BOTAN_HAS_SHA1_SSE2) {
-			if (request.algo_name() == "SHA-160" && CPUID::has_sse2())
+			if (request.algo_name() == "SHA-160" && CPUID.has_sse2())
 				return new SHA_160_SSE2;
 		}
 		
@@ -80,7 +80,7 @@ version(BOTAN_HAS_SERPENT_SIMD) {
 }
 
 version(BOTAN_HAS_THREEFISH_512_AVX2) {
-	import botan.threefish_avx2;
+	import botan.block.threefish_avx2.threefish_avx2;
 }
 
 version(BOTAN_HAS_NOEKEON_SIMD) {
@@ -88,7 +88,7 @@ version(BOTAN_HAS_NOEKEON_SIMD) {
 }
 
 version(BOTAN_HAS_XTEA_SIMD) {
-	import botan.xtea_simd;
+	import botan.block.xtea_simd.xtea_simd;
 }
 
 version(BOTAN_HAS_IDEA_SSE2) {

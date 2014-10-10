@@ -7,7 +7,7 @@
 
 import botan.internal.tls_handshake_hash;
 import botan.tls_exceptn;
-import botan.libstate;
+import botan.libstate.libstate;
 import botan.hash;
 namespace TLS {
 

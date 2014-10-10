@@ -6,7 +6,7 @@
 */
 
 import botan.internal.tls_messages;
-import botan.lookup;
+import botan.libstate.lookup;
 namespace TLS {
 
 Hello_Verify_Request::Hello_Verify_Request(in Vector!ubyte buf)

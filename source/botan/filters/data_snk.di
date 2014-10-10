@@ -36,8 +36,8 @@ class DataSink_Stream : DataSink
 		* @param stream the stream to write to
 		* @param name identifier
 		*/
-		DataSink_Stream(std::ostream& stream,
-							 in string name = "<std::ostream>");
+		DataSink_Stream(ref std.ostream stream,
+							 in string name = "<std.ostream>");
 
 		/**
 		* Construct a DataSink_Stream from a stream.
@@ -52,6 +52,6 @@ class DataSink_Stream : DataSink
 	private:
 		const string identifier;
 
-		std::ostream* sink_p;
-		std::ostream& sink;
+		std.ostream* sink_p;
+		ref std.ostream sink;
 };

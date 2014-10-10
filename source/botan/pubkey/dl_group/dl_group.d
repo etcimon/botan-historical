@@ -6,7 +6,7 @@
 */
 
 import botan.dl_group;
-import botan.libstate;
+import botan.libstate.libstate;
 import botan.parsing;
 import botan.numthry;
 import botan.asn1.der_enc;

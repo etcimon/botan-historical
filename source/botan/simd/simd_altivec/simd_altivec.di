@@ -10,14 +10,14 @@ module botan.simd.simd_altivec.simd_altivec;
 // version(BOTAN_TARGET_SUPPORTS_ALTIVEC):
 
 import botan.loadstor;
-import botan.cpuid;
+import botan.utils.cpuid;
 
 import altivec.h;
 
 class SIMD_Altivec
 {
 public:
-	static bool enabled() { return true;/*CPUID::has_altivec();*/ }
+	static bool enabled() { return CPUID.has_altivec(); }
 
 	this(const uint B[4])
 	{

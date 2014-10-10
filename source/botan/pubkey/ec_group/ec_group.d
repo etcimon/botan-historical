@@ -10,7 +10,7 @@
 import botan.ec_group;
 import botan.asn1.ber_dec;
 import botan.asn1.der_enc;
-import botan.libstate;
+import botan.libstate.libstate;
 import botan.asn1.oid_lookup.oids;
 import botan.codec.pem.pem;
 EC_Group::EC_Group(in OID domain_oid)

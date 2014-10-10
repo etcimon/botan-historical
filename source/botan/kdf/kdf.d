@@ -6,7 +6,7 @@
 */
 
 import botan.kdf;
-import botan.libstate;
+import botan.libstate.libstate;
 import botan.algo_base.scan_name;
 
 #if defined(BOTAN_HAS_KDF1)

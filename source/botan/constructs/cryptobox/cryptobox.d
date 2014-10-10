@@ -8,7 +8,7 @@
 import botan.cryptobox;
 import botan.filters;
 import botan.pipe;
-import botan.lookup;
+import botan.libstate.lookup;
 import botan.sha2_64;
 import botan.hmac;
 import botan.pbkdf2;

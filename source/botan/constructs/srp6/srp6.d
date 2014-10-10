@@ -7,7 +7,7 @@
 
 import botan.srp6;
 import botan.dl_group;
-import botan.libstate;
+import botan.libstate.libstate;
 import botan.numthry;
 namespace {
 

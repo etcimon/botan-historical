@@ -7,13 +7,13 @@
 module botan.simd.simd_sse2.simd_sse2;
 //version(BOTAN_TARGET_SUPPORTS_SSE2):
 
-import botan.cpuid;
+import botan.utils.cpuid;
 import botan.utils.simd.emmintrin;
 
 class SIMD_SSE2
 {
 public:
-	static bool enabled() { return CPUID::has_sse2(); }
+	static bool enabled() { return CPUID.has_sse2(); }
 
 	this(const uint[4] B)
 	{

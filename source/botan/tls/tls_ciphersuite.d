@@ -6,7 +6,7 @@
 */
 
 import botan.tls_ciphersuite;
-import botan.libstate;
+import botan.libstate.libstate;
 import botan.parsing;
 import sstream;
 import stdexcept;

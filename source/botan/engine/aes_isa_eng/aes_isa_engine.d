@@ -6,7 +6,7 @@
 */
 
 import botan.internal.aes_isa_engine;
-import botan.cpuid;
+import botan.utils.cpuid;
 
 #if defined(BOTAN_HAS_AES_NI)
   import botan.block.aes_ni.aes_ni;
@@ -16,7 +16,7 @@ AES_ISA_Engine::find_block_cipher(in SCAN_Name request,
 											 Algorithm_Factory) const
 {
 #if defined(BOTAN_HAS_AES_NI)
-	if (CPUID::has_aes_ni())
+	if (CPUID.has_aes_ni())
 	{
 		if (request.algo_name() == "AES-128")
 			return new AES_128_NI;

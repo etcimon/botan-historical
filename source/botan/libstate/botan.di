@@ -5,9 +5,9 @@
 * Distributed under the terms of the botan license.
 */
 
-import botan.init;
-import botan.lookup;
-import botan.libstate;
+import botan.libstate.init;
+import botan.libstate.lookup;
+import botan.libstate.libstate;
 import botan.version;
 import botan.parsing;
 

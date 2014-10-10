@@ -7,7 +7,7 @@
 
 import botan.passhash9;
 import botan.loadstor;
-import botan.libstate;
+import botan.libstate.libstate;
 import botan.pbkdf2;
 import botan.b64_filt;
 import botan.pipe;

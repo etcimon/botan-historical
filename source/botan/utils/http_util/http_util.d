@@ -68,7 +68,7 @@ string url_encode(in string input)
 	return output.data;
 }
 
-std::ostream& operator<<(std::ostream& o, const Response& resp)
+ref std.ostream operator<<(ref std.ostream o, const Response& resp)
 {
 	o << "HTTP " << resp.status_code() << " " << resp.status_message() << "";
 	foreach (h; resp.headers())

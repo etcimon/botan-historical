@@ -6,7 +6,7 @@
 */
 
 import botan.internal.rdrand;
-import botan.cpuid;
+import botan.utils.cpuid;
 
 #if !defined(BOTAN_USE_GCC_INLINE_ASM)
   import immintrin.h;
@@ -16,7 +16,7 @@ import botan.cpuid;
 */
 void Intel_Rdrand::poll(Entropy_Accumulator& accum)
 {
-	if (!CPUID::has_rdrand())
+	if (!CPUID.has_rdrand())
 		return;
 
 	/*

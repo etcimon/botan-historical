@@ -8,13 +8,13 @@
 import botan.pbes2;
 import botan.pbkdf2;
 import botan.algo_factory;
-import botan.libstate;
+import botan.libstate.libstate;
 import botan.asn1.der_enc;
 import botan.asn1.ber_dec;
 import botan.parsing;
 import botan.asn1.alg_id;
 import botan.asn1.oid_lookup.oids;
-import botan.lookup;
+import botan.libstate.lookup;
 import std.algorithm;
 /*
 * Encrypt some bytes using PBES2

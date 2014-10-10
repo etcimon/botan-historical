@@ -47,7 +47,7 @@ struct Response
 		HashMap!(string, string) m_headers;
 };
 
-std::ostream& operator<<(std::ostream& o, const Response& resp);
+ref std.ostream operator<<(ref std.ostream o, const Response& resp);
 
 typedef string delegate(in string, in string) http_exch_fn;
 

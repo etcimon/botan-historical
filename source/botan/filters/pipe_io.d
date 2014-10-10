@@ -10,7 +10,7 @@ import iostream;
 /*
 * Write data from a pipe into an ostream
 */
-std::ostream& operator<<(std::ostream& stream, Pipe& pipe)
+ref std.ostream operator<<(ref std.ostream stream, Pipe& pipe)
 {
 	SafeVector!ubyte buffer(DEFAULT_BUFFERSIZE);
 	while(stream.good() && pipe.remaining())

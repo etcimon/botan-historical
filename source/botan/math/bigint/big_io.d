@@ -10,7 +10,7 @@ import iostream;
 /*
 * Write the BigInt into a stream
 */
-std::ostream& operator<<(std::ostream& stream, ref const BigInt n)
+ref std.ostream operator<<(ref std.ostream stream, ref const BigInt n)
 {
 	BigInt::Base base = BigInt::Decimal;
 	if (stream.flags() & std::ios::hex)

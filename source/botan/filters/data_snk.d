@@ -23,7 +23,7 @@ void DataSink_Stream::write(in ubyte* output, size_t length)
 /*
 * DataSink_Stream Constructor
 */
-DataSink_Stream::DataSink_Stream(std::ostream& output,
+DataSink_Stream::DataSink_Stream(ref std.ostream output,
 											in string name) :
 	identifier(name),
 	sink_p(null),
