@@ -5,7 +5,7 @@
 * Distributed under the terms of the Botan license
 */
 
-import botan.internal.asm_x86_64;
+import botan.utils.asm_x86_64.asm_x86_64;
 
 START_LISTING(sha1_x86_64_imp.S)
 
@@ -118,44 +118,44 @@ ALIGN;
 #define T2 %eax
 
 #define F1(A, B, C, D, E, F, N)		 \
-	ASSIGN(T2, ARRAY4(W, N))			; \
-	ASSIGN(A, F)							; \
-	ROTL_IMM(F, 5)						 ; \
-	ADD(F, E)								; \
-	ASSIGN(E, C)							; \
-	XOR(E, D)								; \
-	ADD3_IMM(F, T2, MAGIC1)			 ; \
-	AND(E, B)								; \
-	XOR(E, D)								; \
-	ROTR_IMM(B, 2)						 ; \
-	ADD(E, F)								;
+	ASSIGN(T2, ARRAY4(W, N))	; \
+	ASSIGN(A, F)	;
+	ROTL_IMM(F, 5);
+	ADD(F, E)		;
+	ASSIGN(E, C)	;
+	XOR(E, D)		;
+	ADD3_IMM(F, T2, MAGIC1)	;
+	AND(E, B)		;
+	XOR(E, D)		;
+	ROTR_IMM(B, 2);
+	ADD(E, F);
 
 #define F2_4(A, B, C, D, E, F, N, MAGIC) \
-	ASSIGN(T2, ARRAY4(W, N))			; \
-	ASSIGN(A, F)							; \
-	ROTL_IMM(F, 5)						 ; \
-	ADD(F, E)								; \
-	ASSIGN(E, B)							; \
-	XOR(E, C)								; \
-	ADD3_IMM(F, T2, MAGIC)			  ; \
-	XOR(E, D)								; \
-	ROTR_IMM(B, 2)						 ; \
-	ADD(E, F)								;
+	ASSIGN(T2, ARRAY4(W, N))	; \
+	ASSIGN(A, F)	;
+	ROTL_IMM(F, 5);
+	ADD(F, E)		;
+	ASSIGN(E, B)	;
+	XOR(E, C)		;
+	ADD3_IMM(F, T2, MAGIC)	;
+	XOR(E, D)		;
+	ROTR_IMM(B, 2);
+	ADD(E, F);
 
 #define F3(A, B, C, D, E, F, N)		 \
-	ASSIGN(T2, ARRAY4(W, N))			; \
-	ASSIGN(A, F)							; \
-	ROTL_IMM(F, 5)						 ; \
-	ADD(F, E)								; \
-	ASSIGN(E, B)							; \
-	OR(E, C)								 ; \
-	AND(E, D)								; \
-	ADD3_IMM(F, T2, MAGIC3)			 ; \
-	ASSIGN(T2, B)						  ; \
-	AND(T2, C)							  ; \
-	OR(E, T2)								; \
-	ROTR_IMM(B, 2)						 ; \
-	ADD(E, F)								;
+	ASSIGN(T2, ARRAY4(W, N))	; \
+	ASSIGN(A, F)	;
+	ROTL_IMM(F, 5);
+	ADD(F, E)		;
+	ASSIGN(E, B)	;
+	OR(E, C)		;
+	AND(E, D)		;
+	ADD3_IMM(F, T2, MAGIC3)	;
+	ASSIGN(T2, B);
+	AND(T2, C)	;
+	OR(E, T2)		;
+	ROTR_IMM(B, 2);
+	ADD(E, F);
 
 #define F2(A, B, C, D, E, F, W) \
 	F2_4(A, B, C, D, E, F, W, MAGIC2)

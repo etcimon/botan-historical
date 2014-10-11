@@ -5,7 +5,7 @@
 * Distributed under the terms of the Botan license
 */
 
-import botan.internal.asm_x86_32;
+import botan.utils.asm_x86_32.asm_x86_32;
 
 START_LISTING(md5_x86_32.S)
 
@@ -46,47 +46,47 @@ LOOP_UNTIL_EQ(ESI, 16, .LOAD_INPUT)
 #define T2 EBP
 
 #define FF(A, B, C, D, N, S, MAGIC)	\
-	ASSIGN(T1, ARRAY4(MSG, N))		 ; \
-	ASSIGN(T2, C)						  ; \
-	XOR(T2, D)							  ; \
-	AND(T2, B)							  ; \
-	XOR(T2, D)							  ; \
-	ADD3_IMM(A, T1, MAGIC)			  ; \
-	ADD(A, T2)							  ; \
-	ROTL_IMM(A, S)						 ; \
-	ADD(A, B)								;
+	ASSIGN(T1, ARRAY4(MSG, N));
+	ASSIGN(T2, C);
+	XOR(T2, D)	;
+	AND(T2, B)	;
+	XOR(T2, D)	;
+	ADD3_IMM(A, T1, MAGIC)	;
+	ADD(A, T2)	;
+	ROTL_IMM(A, S);
+	ADD(A, B);
 
 #define GG(A, B, C, D, N, S, MAGIC)	\
-	ASSIGN(T1, ARRAY4(MSG, N))		 ; \
-	ASSIGN(T2, B)						  ; \
-	XOR(T2, C)							  ; \
-	AND(T2, D)							  ; \
-	XOR(T2, C)							  ; \
-	ADD3_IMM(A, T1, MAGIC)			  ; \
-	ADD(A, T2)							  ; \
-	ROTL_IMM(A, S)						 ; \
-	ADD(A, B)								;
+	ASSIGN(T1, ARRAY4(MSG, N));
+	ASSIGN(T2, B);
+	XOR(T2, C)	;
+	AND(T2, D)	;
+	XOR(T2, C)	;
+	ADD3_IMM(A, T1, MAGIC)	;
+	ADD(A, T2)	;
+	ROTL_IMM(A, S);
+	ADD(A, B);
 
 #define HH(A, B, C, D, N, S, MAGIC)	\
-	ASSIGN(T1, ARRAY4(MSG, N))		 ; \
-	ASSIGN(T2, B)						  ; \
-	XOR(T2, C)							  ; \
-	XOR(T2, D)							  ; \
-	ADD3_IMM(A, T1, MAGIC)			  ; \
-	ADD(A, T2)							  ; \
-	ROTL_IMM(A, S)						 ; \
-	ADD(A, B)								;
+	ASSIGN(T1, ARRAY4(MSG, N));
+	ASSIGN(T2, B);
+	XOR(T2, C)	;
+	XOR(T2, D)	;
+	ADD3_IMM(A, T1, MAGIC)	;
+	ADD(A, T2)	;
+	ROTL_IMM(A, S);
+	ADD(A, B);
 
 #define II(A, B, C, D, N, S, MAGIC)	\
-	ASSIGN(T1, ARRAY4(MSG, N))		 ; \
-	ASSIGN(T2, D)						  ; \
-	NOT(T2)								  ; \
-	OR(T2, B)								; \
-	XOR(T2, C)							  ; \
-	ADD3_IMM(A, T1, MAGIC)			  ; \
-	ADD(A, T2)							  ; \
-	ROTL_IMM(A, S)						 ; \
-	ADD(A, B)								;
+	ASSIGN(T1, ARRAY4(MSG, N));
+	ASSIGN(T2, D);
+	NOT(T2);
+	OR(T2, B)		;
+	XOR(T2, C)	;
+	ADD3_IMM(A, T1, MAGIC)	;
+	ADD(A, T2)	;
+	ROTL_IMM(A, S);
+	ADD(A, B);
 
 	FF(EAX,EBX,ECX,EDX, 0, 7,0xD76AA478);
 	FF(EDX,EAX,EBX,ECX, 1,12,0xE8C7B756);
