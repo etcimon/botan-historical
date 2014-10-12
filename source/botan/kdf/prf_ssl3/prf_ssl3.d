@@ -7,7 +7,7 @@
 
 import botan.prf_ssl3;
 import botan.algo_base.symkey;
-import botan.exceptn;
+import botan.utils.exceptn;
 import botan.sha160;
 import botan.md5;
 namespace {

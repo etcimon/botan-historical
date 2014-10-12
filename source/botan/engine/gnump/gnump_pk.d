@@ -101,7 +101,7 @@ GMP_DSA_Signature_Operation::sign(in ubyte* msg, size_t msg_len,
 	if (mpz_cmp_ui(r.value, 0) == 0 || mpz_cmp_ui(s.value, 0) == 0)
 		throw new Internal_Error("GMP_DSA_Op::sign: r or s was zero");
 
-	SafeVector!ubyte output(2*q_bytes);
+	SafeVector!ubyte output = SafeVector(2*q_bytes);
 	r.encode(&output[0], q_bytes);
 	s.encode(&output[q_bytes], q_bytes);
 	return output;
@@ -189,13 +189,13 @@ class GMP_RSA_Private_Operation : pk_ops.Signature,
 		{
 			BigInt m(msg, msg_len);
 			BigInt x = private_op(m);
-			return BigInt::encode_1363(x, (n_bits + 7) / 8);
+			return BigInt.encode_1363(x, (n_bits + 7) / 8);
 		}
 
 		SafeVector!ubyte decrypt(in ubyte* msg, size_t msg_len)
 		{
 			BigInt m(msg, msg_len);
-			return BigInt::encode_locked(private_op(m));
+			return BigInt.encode_locked(private_op(m));
 		}
 
 	private:
@@ -234,13 +234,13 @@ class GMP_RSA_Public_Operation : pk_ops.Verification,
 											RandomNumberGenerator)
 		{
 			BigInt m(msg, msg_len);
-			return BigInt::encode_1363(public_op(m), n.bytes());
+			return BigInt.encode_1363(public_op(m), n.bytes());
 		}
 
 		SafeVector!ubyte verify_mr(in ubyte* msg, size_t msg_len)
 		{
 			BigInt m(msg, msg_len);
-			return BigInt::encode_locked(public_op(m));
+			return BigInt.encode_locked(public_op(m));
 		}
 
 	private:

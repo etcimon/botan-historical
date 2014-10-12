@@ -565,7 +565,7 @@ private:
 			throw new Decoding_Error("TBSCertificate has more items that expected");
 		
 		subject.add("X509.Certificate.version", _version);
-		subject.add("X509.Certificate.serial", BigInt::encode(serial_bn));
+		subject.add("X509.Certificate.serial", BigInt.encode(serial_bn));
 		subject.add("X509.Certificate.start", start.readable_string());
 		subject.add("X509.Certificate.end", end.readable_string());
 		

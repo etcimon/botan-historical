@@ -88,7 +88,7 @@ ElGamal_Encryption_Operation::encrypt(in ubyte* msg, size_t msg_len,
 	BigInt a = powermod_g_p(k);
 	BigInt b = mod_p.multiply(m, powermod_y_p(k));
 
-	SafeVector!ubyte output(2*p.bytes());
+	SafeVector!ubyte output = SafeVector!ubyte(2*p.bytes());
 	a.binary_encode(&output[p.bytes() - a.bytes()]);
 	b.binary_encode(&output[output.size() / 2 + (p.bytes() - b.bytes())]);
 	return output;
@@ -126,7 +126,7 @@ ElGamal_Decryption_Operation::decrypt(in ubyte* msg, size_t msg_len)
 
 	BigInt r = mod_p.multiply(b, inverse_mod(powermod_x_p(a), p));
 
-	return BigInt::encode_locked(blinder.unblind(r));
+	return BigInt.encode_locked(blinder.unblind(r));
 }
 
 }

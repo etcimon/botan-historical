@@ -83,7 +83,7 @@ size_t GMP_MPZ::bytes() const
 */
 BigInt GMP_MPZ::to_bigint() const
 {
-	BigInt output(BigInt::Positive, (bytes() + sizeof(word) - 1) / sizeof(word));
+	BigInt output = BigInt(BigInt.Positive, (bytes() + sizeof(word) - 1) / sizeof(word));
 	size_t dummy = 0;
 
 	word* reg = output.mutable_data();

@@ -98,7 +98,7 @@ RW_Signature_Operation::sign(in ubyte* msg, size_t msg_len,
 
 	const BigInt r = blinder.unblind(mul_add(j1, q, j2));
 
-	return BigInt::encode_1363(std.algorithm.min(r, n - r), n.bytes());
+	return BigInt.encode_1363(std.algorithm.min(r, n - r), n.bytes());
 }
 
 SafeVector!ubyte
@@ -111,15 +111,15 @@ RW_Verification_Operation::verify_mr(in ubyte* msg, size_t msg_len)
 
 	BigInt r = powermod_e_n(m);
 	if (r % 16 == 12)
-		return BigInt::encode_locked(r);
+		return BigInt.encode_locked(r);
 	if (r % 8 == 6)
-		return BigInt::encode_locked(2*r);
+		return BigInt.encode_locked(2*r);
 
 	r = n - r;
 	if (r % 16 == 12)
-		return BigInt::encode_locked(r);
+		return BigInt.encode_locked(r);
 	if (r % 8 == 6)
-		return BigInt::encode_locked(2*r);
+		return BigInt.encode_locked(2*r);
 
 	throw new Invalid_Argument("RW signature verification: Invalid signature");
 }

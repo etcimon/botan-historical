@@ -12,9 +12,9 @@ import iostream;
 */
 ref std.ostream operator<<(ref std.ostream stream, ref const BigInt n)
 {
-	BigInt::Base base = BigInt::Decimal;
+	BigInt.Base base = BigInt.Decimal;
 	if (stream.flags() & std::ios::hex)
-		base = BigInt::Hexadecimal;
+		base = BigInt.Hexadecimal;
 	else if (stream.flags() & std::ios::oct)
 		throw new Exception("Octal output of BigInt not supported");
 
@@ -24,7 +24,7 @@ ref std.ostream operator<<(ref std.ostream stream, ref const BigInt n)
 	{
 		if (n < 0)
 			stream.write("-", 1);
-		const Vector!ubyte buffer = BigInt::encode(n, base);
+		const Vector!ubyte buffer = BigInt.encode(n, base);
 		size_t skip = 0;
 		while(skip < buffer.size() && buffer[skip] == '0')
 			++skip;

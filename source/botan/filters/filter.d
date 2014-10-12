@@ -7,7 +7,7 @@
 
 import botan.filter;
 import botan.secqueue;
-import botan.exceptn;
+import botan.utils.exceptn;
 /*
 * Filter Constructor
 */

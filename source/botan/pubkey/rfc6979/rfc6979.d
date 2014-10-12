@@ -20,9 +20,9 @@ BigInt generate_rfc6979_nonce(in BigInt x,
 	const size_t qlen = q.bits();
 	const size_t rlen = qlen / 8 + (qlen % 8 ? 1 : 0);
 
-	SafeVector!ubyte input = BigInt::encode_1363(x, rlen);
+	SafeVector!ubyte input = BigInt.encode_1363(x, rlen);
 
-	input += BigInt::encode_1363(h, rlen);
+	input += BigInt.encode_1363(h, rlen);
 
 	rng.add_entropy(&input[0], input.size());
 
@@ -33,7 +33,7 @@ BigInt generate_rfc6979_nonce(in BigInt x,
 	while(k == 0 || k >= q)
 	{
 		rng.randomize(&kbits[0], kbits.size());
-		k = BigInt::decode(kbits) >> (8*rlen - qlen);
+		k = BigInt.decode(kbits) >> (8*rlen - qlen);
 	}
 
 	return k;

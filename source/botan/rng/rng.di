@@ -6,7 +6,7 @@
 */
 
 import botan.entropy.entropy_src;
-import botan.exceptn;
+import botan.utils.exceptn;
 import string;
 import core.sync.mutex;
 /**
@@ -41,7 +41,7 @@ class RandomNumberGenerator
 		*/
 		abstract SafeVector!ubyte random_vec(size_t bytes)
 		{
-			SafeVector!ubyte output(bytes);
+			SafeVector!ubyte output = SafeVector!ubyte(bytes);
 			randomize(&output[0], output.size());
 			return output;
 		}

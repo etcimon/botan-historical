@@ -35,7 +35,7 @@ NR_PrivateKey::NR_PrivateKey(RandomNumberGenerator rng,
 	x = x_arg;
 
 	if (x == 0)
-		x = BigInt::random_integer(rng, 2, group_q() - 1);
+		x = BigInt.random_integer(rng, 2, group_q() - 1);
 
 	y = power_mod(group_g(), x, group_p());
 
@@ -101,7 +101,7 @@ NR_Signature_Operation::sign(in ubyte* msg, size_t msg_len,
 		d = mod_q.reduce(k - x * c);
 	}
 
-	SafeVector!ubyte output(2*q.bytes());
+	SafeVector!ubyte output = SafeVector!ubyte(2*q.bytes());
 	c.binary_encode(&output[output.size() / 2 - c.bytes()]);
 	d.binary_encode(&output[output.size() - d.bytes()]);
 	return output;
@@ -134,7 +134,7 @@ NR_Verification_Operation::verify_mr(in ubyte* msg, size_t msg_len)
 	BigInt g_d = powermod_g_p(d);
 
 	BigInt i = mod_p.multiply(g_d, future_y_c.get());
-	return BigInt::encode_locked(mod_q.reduce(c - i));
+	return BigInt.encode_locked(mod_q.reduce(c - i));
 }
 
 }

@@ -305,7 +305,7 @@ bool PK_Verifier::check_signature(in ubyte* sig, size_t length)
 			{
 				BigInt sig_part;
 				ber_sig.decode(sig_part);
-				real_sig += BigInt::encode_1363(sig_part, m_op.message_part_size());
+				real_sig += BigInt.encode_1363(sig_part, m_op.message_part_size());
 				++count;
 			}
 

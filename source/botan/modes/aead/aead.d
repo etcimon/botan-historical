@@ -32,7 +32,7 @@ AEAD_Mode* get_aead(in string algo_spec, Cipher_Dir direction)
 {
 	Algorithm_Factory af = global_state().algorithm_factory();
 
-	const Vector!string algo_parts = split_on(algo_spec, '/');
+	const Vector!string algo_parts = std.algorithm.splitter(algo_spec, '/');
 	if (algo_parts.empty())
 		throw new Invalid_Algorithm_Name(algo_spec);
 

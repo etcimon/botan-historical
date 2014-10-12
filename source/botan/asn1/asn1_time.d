@@ -94,15 +94,10 @@ public:
 	{
 		if (time_is_set() == false)
 			throw new Invalid_State("readable_string: No time set");
+		import std.string : format;
 		
-		string output(24, 0);
-		
-		sprintf(&output[0], "%04d/%02d/%02d %02d:%02d:%02d UTC",
-		year, month, day, hour, minute, second);
-		
-		output.resize(23); // remove trailing null
-		
-		return output;
+		return format("%04d/%02d/%02d %02d:%02d:%02d UTC",
+							year, month, day, hour, minute, second);
 	}
 
 	/*

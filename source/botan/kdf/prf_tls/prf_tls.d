@@ -69,7 +69,7 @@ SafeVector!ubyte TLS_PRF::derive(size_t key_len,
 											  in ubyte* secret, size_t secret_len,
 											  in ubyte* seed, size_t seed_len) const
 {
-	SafeVector!ubyte output(key_len);
+	SafeVector!ubyte output = SafeVector!ubyte(key_len);
 
 	size_t S1_len = (secret_len + 1) / 2,
 			 S2_len = (secret_len + 1) / 2;
@@ -93,7 +93,7 @@ SafeVector!ubyte TLS_12_PRF::derive(size_t key_len,
 												  in ubyte* secret, size_t secret_len,
 												  in ubyte* seed, size_t seed_len) const
 {
-	SafeVector!ubyte output(key_len);
+	SafeVector!ubyte output = SafeVector!ubyte(key_len);
 
 	P_hash(output, *hmac, secret, secret_len, seed, seed_len);
 

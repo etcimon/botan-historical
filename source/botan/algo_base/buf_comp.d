@@ -92,7 +92,7 @@ public:
 	*/
 	SafeVector!ubyte flush()
 	{
-		SafeVector!ubyte output(output_length());
+		SafeVector!ubyte output = SafeVector!ubyte(output_length());
 		final_result(&output[0]);
 		return output;
 	}

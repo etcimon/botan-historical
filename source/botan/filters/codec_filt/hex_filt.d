@@ -9,7 +9,7 @@ import botan.hex_filt;
 import botan.codec.hex;
 import botan.parsing;
 import botan.charset;
-import botan.exceptn;
+import botan.utils.exceptn;
 import std.algorithm;
 /**
 * Size used for internal buffer in hex encoder/decoder
@@ -60,7 +60,7 @@ void Hex_Encoder::encode_and_send(in ubyte* block, size_t length)
 			offset += sent;
 			if (counter == line_length)
 			{
-				send('');
+				send('\n');
 				counter = 0;
 			}
 		}
@@ -97,7 +97,7 @@ void Hex_Encoder::end_msg()
 {
 	encode_and_send(&input[0], position);
 	if (counter && line_length)
-		send('');
+		send('\n');
 	counter = position = 0;
 }
 

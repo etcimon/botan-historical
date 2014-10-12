@@ -97,7 +97,7 @@ bool Ciphersuite::valid() const
 
 	if (mac_algo() == "AEAD")
 	{
-		auto cipher_and_mode = split_on(cipher_algo(), '/');
+		auto cipher_and_mode = std.algorithm.splitter(cipher_algo(), '/');
 		BOTAN_ASSERT(cipher_and_mode.size() == 2, "Expected format for AEAD algo");
 		if (!af.prototype_block_cipher(cipher_and_mode[0]))
 			return false;

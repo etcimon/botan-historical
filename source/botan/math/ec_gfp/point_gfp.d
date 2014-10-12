@@ -489,8 +489,8 @@ SafeVector!ubyte EC2OSP(in PointGFp point, ubyte format)
 	BigInt x = point.get_affine_x();
 	BigInt y = point.get_affine_y();
 
-	SafeVector!ubyte bX = BigInt::encode_1363(x, p_bytes);
-	SafeVector!ubyte bY = BigInt::encode_1363(y, p_bytes);
+	SafeVector!ubyte bX = BigInt.encode_1363(x, p_bytes);
+	SafeVector!ubyte bY = BigInt.encode_1363(y, p_bytes);
 
 	if (format == PointGFp::UNCOMPRESSED)
 	{
@@ -564,7 +564,7 @@ PointGFp OS2ECP(in ubyte* data, size_t data_len,
 	if (pc == 2 || pc == 3)
 	{
 		//compressed form
-		x = BigInt::decode(&data[1], data_len - 1);
+		x = BigInt.decode(&data[1], data_len - 1);
 
 		const bool y_mod_2 = ((pc & 0x01) == 1);
 		y = decompress_point(y_mod_2, x, curve);
@@ -574,16 +574,16 @@ PointGFp OS2ECP(in ubyte* data, size_t data_len,
 		const size_t l = (data_len - 1) / 2;
 
 		// uncompressed form
-		x = BigInt::decode(&data[1], l);
-		y = BigInt::decode(&data[l+1], l);
+		x = BigInt.decode(&data[1], l);
+		y = BigInt.decode(&data[l+1], l);
 	}
 	else if (pc == 6 || pc == 7)
 	{
 		const size_t l = (data_len - 1) / 2;
 
 		// hybrid form
-		x = BigInt::decode(&data[1], l);
-		y = BigInt::decode(&data[l+1], l);
+		x = BigInt.decode(&data[1], l);
+		y = BigInt.decode(&data[l+1], l);
 
 		const bool y_mod_2 = ((pc & 0x01) == 1);
 

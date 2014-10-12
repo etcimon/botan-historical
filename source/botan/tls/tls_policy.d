@@ -280,7 +280,7 @@ Vector!( ushort ) Policy::ciphersuite_list(Protocol_Version _version,
 	}
 
 	if (ciphersuites.empty())
-		throw new std::logic_error("Policy does not allow any available cipher suite");
+		throw new Logic_Error("Policy does not allow any available cipher suite");
 
 	Vector!( ushort ) ciphersuite_codes;
 	foreach (i; ciphersuites)

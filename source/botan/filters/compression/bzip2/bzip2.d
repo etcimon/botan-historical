@@ -8,7 +8,7 @@
 */
 
 import botan.bzip2;
-import botan.exceptn;
+import botan.utils.exceptn;
 
 import map;
 import cstring;

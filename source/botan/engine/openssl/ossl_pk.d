@@ -100,7 +100,7 @@ OSSL_DSA_Signature_Operation::sign(in ubyte* msg, size_t msg_len,
 	if (BN_is_zero(r.ptr()) || BN_is_zero(s.ptr()))
 		throw new Internal_Error("OpenSSL_DSA_Op::sign: r or s was zero");
 
-	SafeVector!ubyte output(2*q_bytes);
+	SafeVector!ubyte output = SafeVector!ubyte(2*q_bytes);
 	r.encode(&output[0], q_bytes);
 	s.encode(&output[q_bytes], q_bytes);
 	return output;
@@ -188,13 +188,13 @@ class OSSL_RSA_Private_Operation : pk_ops.Signature,
 		{
 			BigInt m(msg, msg_len);
 			BigInt x = private_op(m);
-			return BigInt::encode_1363(x, (n_bits + 7) / 8);
+			return BigInt.encode_1363(x, (n_bits + 7) / 8);
 		}
 
 		SafeVector!ubyte decrypt(in ubyte* msg, size_t msg_len)
 		{
 			BigInt m(msg, msg_len);
-			return BigInt::encode_locked(private_op(m));
+			return BigInt.encode_locked(private_op(m));
 		}
 
 	private:
@@ -233,13 +233,13 @@ class OSSL_RSA_Public_Operation : pk_ops.Verification,
 											RandomNumberGenerator)
 		{
 			BigInt m(msg, msg_len);
-			return BigInt::encode_1363(public_op(m), n.bytes());
+			return BigInt.encode_1363(public_op(m), n.bytes());
 		}
 
 		SafeVector!ubyte verify_mr(in ubyte* msg, size_t msg_len)
 		{
 			BigInt m(msg, msg_len);
-			return BigInt::encode_locked(public_op(m));
+			return BigInt.encode_locked(public_op(m));
 		}
 
 	private:

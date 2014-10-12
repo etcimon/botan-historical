@@ -6,7 +6,7 @@
 */
 
 import botan.hash_id;
-import botan.exceptn;
+import botan.utils.exceptn;
 namespace {
 
 immutable ubyte[] MD2_PKCS_ID = {

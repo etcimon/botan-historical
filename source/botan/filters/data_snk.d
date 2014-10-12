@@ -7,7 +7,7 @@
 */
 
 import botan.data_snk;
-import botan.exceptn;
+import botan.utils.exceptn;
 import fstream;
 /*
 * Write to a stream

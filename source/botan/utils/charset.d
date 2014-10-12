@@ -7,7 +7,7 @@
 
 import botan.charset;
 import botan.parsing;
-import botan.exceptn;
+import botan.utils.exceptn;
 import cctype;
 namespace Charset {
 
@@ -135,7 +135,7 @@ bool is_digit(char c)
 */
 bool is_space(char c)
 {
-	if (c == ' ' || c == '\t' || c == '' || c == '\r')
+	if (c == ' ' || c == '\t' || c == '\n' || c == '\r')
 		return true;
 	return false;
 }

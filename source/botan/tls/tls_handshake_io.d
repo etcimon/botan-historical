@@ -9,7 +9,7 @@ import botan.internal.tls_handshake_io;
 import botan.internal.tls_messages;
 import botan.internal.tls_record;
 import botan.internal.tls_seq_numbers;
-import botan.exceptn;
+import botan.utils.exceptn;
 namespace TLS {
 
 namespace {

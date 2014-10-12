@@ -8,7 +8,7 @@
 import botan.b64_filt;
 import botan.codec.base64;
 import botan.charset;
-import botan.exceptn;
+import botan.utils.exceptn;
 import std.algorithm;
 /*
 * Base64_Encoder Constructor
@@ -64,7 +64,7 @@ void Base64_Encoder::do_output(in ubyte* input, size_t length)
 			offset += sent;
 			if (out_position == line_length)
 			{
-				send('');
+				send('\n');
 				out_position = 0;
 			}
 		}
@@ -102,7 +102,7 @@ void Base64_Encoder::end_msg()
 	encode_and_send(&input[0], position, true);
 
 	if (trailing_newline || (out_position && line_length))
-		send('');
+		send('\n');
 
 	out_position = position = 0;
 }
@@ -111,7 +111,7 @@ void Base64_Encoder::end_msg()
 * Base64_Decoder Constructor
 */
 Base64_Decoder::Base64_Decoder(Decoder_Checking c) :
-	checking(c), input(64), output(48), position(0)
+line_length(breaks ?BigInt.48), position(0)
 {
 }
 

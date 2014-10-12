@@ -125,7 +125,7 @@ GOST_3410_Signature_Operation::sign(in ubyte* msg, size_t msg_len,
 	if (r == 0 || s == 0)
 		throw new Invalid_State("GOST 34.10: r == 0 || s == 0");
 
-	SafeVector!ubyte output(2*order.bytes());
+	SafeVector!ubyte output = SafeVector!ubyte(2*order.bytes());
 	s.binary_encode(&output[output.size() / 2 - s.bytes()]);
 	r.binary_encode(&output[output.size() - r.bytes()]);
 	return output;

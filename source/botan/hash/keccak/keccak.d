@@ -8,7 +8,7 @@
 import botan.keccak;
 import botan.loadstor;
 import botan.parsing;
-import botan.exceptn;
+import botan.utils.exceptn;
 import botan.rotate;
 import botan.internal.xor_buf;
 namespace {

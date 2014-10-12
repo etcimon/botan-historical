@@ -18,7 +18,7 @@ void lex_cfg(std::istream& is,
 
 		while(is.good() && s.back() == '\\')
 		{
-			while(s.size() && (s.back() == '\\' || s.back() == ''))
+			while(s.size() && (s.back() == '\\' || s.back() == '\n'))
 				s.resize(s.size()-1);
 
 			string x;

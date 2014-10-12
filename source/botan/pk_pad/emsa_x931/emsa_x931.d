@@ -25,7 +25,7 @@ SafeVector!ubyte emsa2_encoding(in SafeVector!ubyte msg,
 
 	const bool empty_input = (msg == empty_hash);
 
-	SafeVector!ubyte output(output_length);
+	SafeVector!ubyte output = SafeVector!ubyte(output_length);
 
 	output[0] = (empty_input ? 0x4B : 0x6B);
 	output[output_length - 3 - HASH_SIZE] = 0xBA;

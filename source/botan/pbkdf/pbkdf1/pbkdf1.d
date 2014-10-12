@@ -6,7 +6,7 @@
 */
 
 import botan.pbkdf1;
-import botan.exceptn;
+import botan.utils.exceptn;
 /*
 * Return a PKCS#5 PBKDF1 derived key
 */

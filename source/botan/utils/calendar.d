@@ -6,7 +6,7 @@
 */
 
 import botan.calendar;
-import botan.exceptn;
+import botan.utils.exceptn;
 import ctime;
 namespace {
 

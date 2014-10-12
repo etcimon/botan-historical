@@ -9,7 +9,7 @@
 import botan.internal.mp_core;
 import botan.internal.mp_asmi;
 import botan.internal.mp_core;
-import botan.exceptn;
+import botan.utils.exceptn;
 import botan.mem_ops;
 extern "C" {
 

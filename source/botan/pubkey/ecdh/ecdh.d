@@ -25,7 +25,7 @@ SafeVector!ubyte ECDH_KA_Operation::agree(in ubyte* w, size_t w_len)
 	BOTAN_ASSERT(S.on_the_curve(),
 					 "ECDH agreed value was on the curve");
 
-	return BigInt::encode_1363(S.get_affine_x(),
+	return BigInt.encode_1363(S.get_affine_x(),
 										curve.get_p().bytes());
 }
 

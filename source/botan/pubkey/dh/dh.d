@@ -22,7 +22,7 @@ DH_PublicKey::DH_PublicKey(in DL_Group grp, ref const BigInt y1)
 */
 Vector!ubyte DH_PublicKey::public_value() const
 {
-	return unlock(BigInt::encode_1363(y, group_p().bytes()));
+	return unlock(BigInt.encode_1363(y, group_p().bytes()));
 }
 
 /*
@@ -82,14 +82,14 @@ DH_KA_Operation::DH_KA_Operation(in DH_PrivateKey dh,
 
 SafeVector!ubyte DH_KA_Operation::agree(in ubyte* w, size_t w_len)
 {
-	BigInt input = BigInt::decode(w, w_len);
+	BigInt input = BigInt.decode(w, w_len);
 
 	if (input <= 1 || input >= p - 1)
 		throw new Invalid_Argument("DH agreement - invalid key provided");
 
 	BigInt r = blinder.unblind(powermod_x_p(blinder.blind(input)));
 
-	return BigInt::encode_1363(r, p.bytes());
+	return BigInt.encode_1363(r, p.bytes());
 }
 
 }

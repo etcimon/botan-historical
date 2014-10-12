@@ -33,7 +33,7 @@ Vector!ubyte DLIES_Encryptor::enc(in ubyte* input, size_t length,
 	if (other_key.empty())
 		throw new Invalid_State("DLIES: The other key was never set");
 
-	SafeVector!ubyte output(my_key.size() + length + mac.output_length());
+	SafeVector!ubyte output = SafeVector!ubyte(my_key.size() + length + mac.output_length());
 	buffer_insert(output, 0, my_key);
 	buffer_insert(output, my_key.size(), input, length);
 

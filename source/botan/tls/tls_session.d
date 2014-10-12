@@ -10,7 +10,7 @@ import botan.asn1.der_enc;
 import botan.asn1.ber_dec;
 import botan.asn1.asn1_str;
 import botan.codec.pem;
-import botan.cryptobox_psk;
+import botan.constructs.cryptobox_psk;
 namespace TLS {
 
 Session::Session(in Vector!ubyte session_identifier,
@@ -147,7 +147,7 @@ Session::encrypt(in SymmetricKey master_key,
 {
 	const auto der = this.DER_encode();
 
-	return CryptoBox::encrypt(&der[0], der.size(), master_key, rng);
+	return CryptoBox.encrypt(&der[0], der.size(), master_key, rng);
 }
 
 Session Session::decrypt(in ubyte* buf, size_t buf_len,
@@ -155,7 +155,7 @@ Session Session::decrypt(in ubyte* buf, size_t buf_len,
 {
 	try
 	{
-		const auto ber = CryptoBox::decrypt(buf, buf_len, master_key);
+		const auto ber = CryptoBox.decrypt(buf, buf_len, master_key);
 
 		return Session(&ber[0], ber.size());
 	}

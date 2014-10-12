@@ -71,7 +71,8 @@ public:
 		
 		SCAN_Name.set_default_aliases();
 		oids.set_defaults();
-		
+
+		if (m_algorithm_factory) delete m_algorithm_factory;
 		m_algorithm_factory = new Algorithm_Factory();
 		
 		version(BOTAN_HAS_ENGINE_GNU_MP)

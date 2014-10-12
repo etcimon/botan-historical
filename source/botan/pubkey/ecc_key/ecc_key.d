@@ -87,7 +87,7 @@ EC_PrivateKey::EC_PrivateKey(RandomNumberGenerator rng,
 	domain_encoding = EC_DOMPAR_ENC_EXPLICIT;
 
 	if (x == 0)
-		Private_Key = BigInt::random_integer(rng, 1, domain().get_order());
+		Private_Key = BigInt.random_integer(rng, 1, domain().get_order());
 	else
 		Private_Key = x;
 
@@ -102,7 +102,7 @@ SafeVector!ubyte EC_PrivateKey::pkcs8_Private_Key() const
 	return DER_Encoder()
 		.start_cons(ASN1_Tag.SEQUENCE)
 			.encode(cast(size_t)(1))
-			.encode(BigInt::encode_1363(Private_Key, Private_Key.bytes()),
+			.encode(BigInt.encode_1363(Private_Key, Private_Key.bytes()),
 					  ASN1_Tag.OCTET_STRING)
 		.end_cons()
 		.get_contents();

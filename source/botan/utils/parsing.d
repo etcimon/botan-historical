@@ -6,7 +6,7 @@
 */
 
 import botan.parsing;
-import botan.exceptn;
+import botan.utils.exceptn;
 import botan.charset;
 import botan.utils.get_byte;
 import set;
@@ -71,7 +71,7 @@ Vector!string parse_algorithm_name(in string namex)
 	return elems;
 }
 
-Vector!string split_on(in string str, char delim)
+Vector!string std.algorithm.splitter(in string str, char delim)
 {
 	return split_on_pred(str, [delim](char c) { return c == delim; });
 }
@@ -196,7 +196,7 @@ bool x500_name_cmp(in string name1, in string name2)
 */
 uint string_to_ipv4(in string str)
 {
-	Vector!string parts = split_on(str, '.');
+	Vector!string parts = std.algorithm.splitter(str, '.');
 
 	if (parts.size() != 4)
 		throw new Decoding_Error("Invalid IP string " ~ str);

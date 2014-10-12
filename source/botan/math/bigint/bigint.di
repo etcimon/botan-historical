@@ -491,7 +491,7 @@ public:
 	static BigInt decode(in SafeVector!ubyte buf,
 							Base base = Binary)
 	{
-	return BigInt::decode(&buf[0], buf.size(), base);
+	return BigInt.decode(&buf[0], buf.size(), base);
 	}
 
 	/**
@@ -503,7 +503,7 @@ public:
 	static BigInt decode(in Vector!ubyte buf,
 							Base base = Binary)
 	{
-	return BigInt::decode(&buf[0], buf.size(), base);
+	return BigInt.decode(&buf[0], buf.size(), base);
 	}
 
 	/**

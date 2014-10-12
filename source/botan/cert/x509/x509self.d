@@ -210,7 +210,7 @@ public:
 		if (initial_opts == "")
 			return;
 		
-		Vector!string parsed = split_on(initial_opts, '/');
+		Vector!string parsed = std.algorithm.splitter(initial_opts, '/');
 		
 		if (parsed.size() > 4)
 			throw new Invalid_Argument("X.509 cert options: Too many names: "

@@ -6,7 +6,7 @@
 */
 
 import botan.tiger;
-import botan.exceptn;
+import botan.utils.exceptn;
 import botan.loadstor;
 import botan.parsing;
 namespace {

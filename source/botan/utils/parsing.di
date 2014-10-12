@@ -27,7 +27,7 @@ parse_algorithm_name(in string scan_name);
 * @param delim the delimitor
 * @return string split by delim
 */
-Vector!string split_on(
+Vector!string std.algorithm.splitter(
 	in string str, char delim);
 
 /**

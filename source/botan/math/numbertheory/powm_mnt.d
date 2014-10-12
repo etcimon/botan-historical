@@ -26,7 +26,7 @@ void Montgomery_Exponentiator::set_base(in BigInt base)
 
 	m_g.resize((1 << m_window_bits));
 
-	BigInt z(BigInt::Positive, 2 * (m_mod_words + 1));
+	BigInt z(BigInt.Positive, 2 * (m_mod_words + 1));
 	secure_vector!word workspace(z.size());
 
 	m_g[0] = 1;
@@ -78,7 +78,7 @@ BigInt Montgomery_Exponentiator::execute() const
 
 	const size_t z_size = 2*(m_mod_words + 1);
 
-	BigInt z(BigInt::Positive, z_size);
+	BigInt z(BigInt.Positive, z_size);
 	secure_vector!word workspace(z_size);
 
 	for (size_t i = exp_nibbles; i > 0; --i)
@@ -131,7 +131,7 @@ Montgomery_Exponentiator::Montgomery_Exponentiator(in BigInt mod,
 
 	m_mod_prime = monty_inverse(mod.word_at(0));
 
-	const BigInt r = BigInt::power_of_2(m_mod_words * BOTAN_MP_WORD_BITS);
+	const BigInt r = BigInt.power_of_2(m_mod_words * BOTAN_MP_WORD_BITS);
 	m_R_mod = r % m_modulus;
 	m_R2_mod = (m_R_mod * m_R_mod) % m_modulus;
 }

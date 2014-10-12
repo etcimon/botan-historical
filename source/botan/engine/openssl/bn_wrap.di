@@ -18,7 +18,7 @@ class OSSL_BN
 		size_t bytes() const;
 
 		SafeVector!ubyte to_bytes() const
-		{ return BigInt::encode_locked(to_bigint()); }
+		{ return BigInt.encode_locked(to_bigint()); }
 
 		OSSL_BN& operator=(in OSSL_BN);
 

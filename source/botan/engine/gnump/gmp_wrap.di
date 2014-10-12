@@ -20,7 +20,7 @@ class GMP_MPZ
 		size_t bytes() const;
 
 		SafeVector!ubyte to_bytes() const
-		{ return BigInt::encode_locked(to_bigint()); }
+		{ return BigInt.encode_locked(to_bigint()); }
 
 		GMP_MPZ& operator=(in GMP_MPZ);
 

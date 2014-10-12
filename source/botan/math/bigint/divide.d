@@ -15,12 +15,12 @@ namespace {
 */
 void sign_fixup(in BigInt x, ref const BigInt y, ref BigInt q, ref BigInt r)
 {
-	if (x.sign() == BigInt::Negative)
+	if (x.sign() == BigInt.Negative)
 	{
 		q.flip_sign();
 		if (r.is_nonzero()) { --q; r = y.abs() - r; }
 	}
-	if (y.sign() == BigInt::Negative)
+	if (y.sign() == BigInt.Negative)
 		q.flip_sign();
 }
 
@@ -55,7 +55,7 @@ bool division_check(word q, word y2, word y1,
 void divide(in BigInt x, ref const BigInt y_arg, ref BigInt q, ref BigInt r)
 {
 	if (y_arg.is_zero())
-		throw new BigInt::DivideByZero();
+		throw new BigInt.DivideByZero();
 
 	BigInt y = y_arg;
 	const size_t y_words = y.sig_words();
@@ -63,8 +63,8 @@ void divide(in BigInt x, ref const BigInt y_arg, ref BigInt q, ref BigInt r)
 	r = x;
 	q = 0;
 
-	r.set_sign(BigInt::Positive);
-	y.set_sign(BigInt::Positive);
+	r.set_sign(BigInt.Positive);
+	y.set_sign(BigInt.Positive);
 
 	int compare = r.cmp(y);
 

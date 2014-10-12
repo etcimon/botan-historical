@@ -103,9 +103,9 @@ EC_Group::DER_encode(EC_Group_Encoding form) const
 					.encode(curve.get_p())
 				.end_cons()
 				.start_cons(ASN1_Tag.SEQUENCE)
-					.encode(BigInt::encode_1363(curve.get_a(), p_bytes),
+					.encode(BigInt.encode_1363(curve.get_a(), p_bytes),
 							  ASN1_Tag.OCTET_STRING)
-					.encode(BigInt::encode_1363(curve.get_b(), p_bytes),
+					.encode(BigInt.encode_1363(curve.get_b(), p_bytes),
 							  ASN1_Tag.OCTET_STRING)
 				.end_cons()
 				.encode(EC2OSP(base_point, PointGFp::UNCOMPRESSED), ASN1_Tag.OCTET_STRING)

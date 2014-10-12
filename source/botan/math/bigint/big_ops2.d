@@ -12,7 +12,7 @@ import std.algorithm;
 /*
 * Addition Operator
 */
-ref BigInt BigInt::operator+=(in BigInt y)
+ref BigInt BigInt.operator+=(in BigInt y)
 {
 	const size_t x_sw = sig_words(), y_sw = y.sig_words();
 
@@ -47,7 +47,7 @@ ref BigInt BigInt::operator+=(in BigInt y)
 /*
 * Subtraction Operator
 */
-ref BigInt BigInt::operator-=(in BigInt y)
+ref BigInt BigInt.operator-=(in BigInt y)
 {
 	const size_t x_sw = sig_words(), y_sw = y.sig_words();
 
@@ -89,7 +89,7 @@ ref BigInt BigInt::operator-=(in BigInt y)
 /*
 * Multiplication Operator
 */
-ref BigInt BigInt::operator*=(in BigInt y)
+ref BigInt BigInt.operator*=(in BigInt y)
 {
 	const size_t x_sw = sig_words(), y_sw = y.sig_words();
 	set_sign((sign() == y.sign()) ? Positive : Negative);
@@ -127,7 +127,7 @@ ref BigInt BigInt::operator*=(in BigInt y)
 /*
 * Division Operator
 */
-ref BigInt BigInt::operator/=(in BigInt y)
+ref BigInt BigInt.operator/=(in BigInt y)
 {
 	if (y.sig_words() == 1 && is_power_of_2(y.word_at(0)))
 		(*this) >>= (y.bits() - 1);
@@ -139,7 +139,7 @@ ref BigInt BigInt::operator/=(in BigInt y)
 /*
 * Modulo Operator
 */
-ref BigInt BigInt::operator%=(in BigInt mod)
+ref BigInt BigInt.operator%=(in BigInt mod)
 {
 	return (*this = (*this) % mod);
 }
@@ -147,10 +147,10 @@ ref BigInt BigInt::operator%=(in BigInt mod)
 /*
 * Modulo Operator
 */
-word BigInt::operator%=(word mod)
+word BigInt.operator%=(word mod)
 {
 	if (mod == 0)
-		throw new BigInt::DivideByZero();
+		throw new BigInt.DivideByZero();
 
 	if (is_power_of_2(mod))
 		 {
@@ -168,12 +168,12 @@ word BigInt::operator%=(word mod)
 	clear();
 	grow_to(2);
 
-	if (remainder && sign() == BigInt::Negative)
+	if (remainder && sign() == BigInt.Negative)
 		m_reg[0] = mod - remainder;
 	else
 		m_reg[0] = remainder;
 
-	set_sign(BigInt::Positive);
+	set_sign(BigInt.Positive);
 
 	return word_at(0);
 }
@@ -181,7 +181,7 @@ word BigInt::operator%=(word mod)
 /*
 * Left Shift Operator
 */
-ref BigInt BigInt::operator<<=(size_t shift)
+ref BigInt BigInt.operator<<=(size_t shift)
 {
 	if (shift)
 	{
@@ -199,7 +199,7 @@ ref BigInt BigInt::operator<<=(size_t shift)
 /*
 * Right Shift Operator
 */
-ref BigInt BigInt::operator>>=(size_t shift)
+ref BigInt BigInt.operator>>=(size_t shift)
 {
 	if (shift)
 	{

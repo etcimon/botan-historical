@@ -62,20 +62,75 @@ private:
 
 };
 
-
-extern(C):
-nothrow:
-@nogc:
-
 /**
 * Entry point for Serpent encryption in x86 asm
 * @param in the input block
 * @param out the output block
 * @param ks the key schedule
 */
-void botan_serpent_x86_32_encrypt(const ubyte[16] input,
-								  ubyte[16] output,
-								  const uint[132] ks);
+void botan_serpent_x86_32_encrypt(	const ubyte[16]* input,
+									ubyte[16]* output,
+									const uint[132]* ks )
+{
+
+	enum PUSHED = 4;
+	mixin(`asm {` ~	      
+	      ASSIGN(EBP, ARG(PUSHED, 1)) /* input block */ ~
+	      ASSIGN(EAX, ARRAY4(EBP, 0)) ~
+	      ASSIGN(EBX, ARRAY4(EBP, 1)) ~
+	      ASSIGN(ECX, ARRAY4(EBP, 2)) ~
+	      ASSIGN(EDX, ARRAY4(EBP, 3)) ~
+	      
+	      ASSIGN(EDI, ARG(PUSHED, 3))  ~ /* round keys */
+	      ZEROIZE(EBP) ~
+	      
+	      E_ROUND!SBOX_E1(EAX, EBX, ECX, EDX, EBP,  0 ) ~
+	      E_ROUND!SBOX_E2(EAX, EBX, ECX, EDX, EBP,  1 ) ~
+	      E_ROUND!SBOX_E3(EAX, EBX, ECX, EDX, EBP,  2 ) ~
+	      E_ROUND!SBOX_E4(EAX, EBX, ECX, EDX, EBP,  3 ) ~
+	      E_ROUND!SBOX_E5(EAX, EBX, ECX, EDX, EBP,  4 ) ~
+	      E_ROUND!SBOX_E6(EAX, EBX, ECX, EDX, EBP,  5 ) ~
+	      E_ROUND!SBOX_E7(EAX, EBX, ECX, EDX, EBP,  6 ) ~
+	      E_ROUND!SBOX_E8(EAX, EBX, ECX, EDX, EBP,  7 ) ~
+	      
+	      E_ROUND!SBOX_E1(EAX, EBX, ECX, EDX, EBP,  8 ) ~
+	      E_ROUND!SBOX_E2(EAX, EBX, ECX, EDX, EBP,  9 ) ~
+	      E_ROUND!SBOX_E3(EAX, EBX, ECX, EDX, EBP, 10 ) ~
+	      E_ROUND!SBOX_E4(EAX, EBX, ECX, EDX, EBP, 11 ) ~
+	      E_ROUND!SBOX_E5(EAX, EBX, ECX, EDX, EBP, 12 ) ~
+	      E_ROUND!SBOX_E6(EAX, EBX, ECX, EDX, EBP, 13 ) ~
+	      E_ROUND!SBOX_E7(EAX, EBX, ECX, EDX, EBP, 14 ) ~
+	      E_ROUND!SBOX_E8(EAX, EBX, ECX, EDX, EBP, 15 ) ~
+	      
+	      E_ROUND!SBOX_E1(EAX, EBX, ECX, EDX, EBP, 16 ) ~
+	      E_ROUND!SBOX_E2(EAX, EBX, ECX, EDX, EBP, 17 ) ~
+	      E_ROUND!SBOX_E3(EAX, EBX, ECX, EDX, EBP, 18 ) ~
+	      E_ROUND!SBOX_E4(EAX, EBX, ECX, EDX, EBP, 19 ) ~
+	      E_ROUND!SBOX_E5(EAX, EBX, ECX, EDX, EBP, 20 ) ~
+	      E_ROUND!SBOX_E6(EAX, EBX, ECX, EDX, EBP, 21 ) ~
+	      E_ROUND!SBOX_E7(EAX, EBX, ECX, EDX, EBP, 22 ) ~
+	      E_ROUND!SBOX_E8(EAX, EBX, ECX, EDX, EBP, 23 ) ~
+	      
+	      E_ROUND!SBOX_E1(EAX, EBX, ECX, EDX, EBP, 24 ) ~
+	      E_ROUND!SBOX_E2(EAX, EBX, ECX, EDX, EBP, 25 ) ~
+	      E_ROUND!SBOX_E3(EAX, EBX, ECX, EDX, EBP, 26 ) ~
+	      E_ROUND!SBOX_E4(EAX, EBX, ECX, EDX, EBP, 27 ) ~
+	      E_ROUND!SBOX_E5(EAX, EBX, ECX, EDX, EBP, 28 ) ~
+	      E_ROUND!SBOX_E6(EAX, EBX, ECX, EDX, EBP, 29 ) ~
+	      E_ROUND!SBOX_E7(EAX, EBX, ECX, EDX, EBP, 30 ) ~
+	      
+	      KEY_XOR(EAX, EBX, ECX, EDX, 31) ~
+	      SBOX_E8(EAX, EBX, ECX, EDX, EBP) ~
+	      KEY_XOR(EAX, EBX, ECX, EDX, 32) ~
+	      
+	      ASSIGN(EBP, ARG(PUSHED, 2)) /* output block */ ~
+	      ASSIGN(ARRAY4(EBP, 0), EAX) ~
+	      ASSIGN(ARRAY4(EBP, 1), EBX) ~
+	      ASSIGN(ARRAY4(EBP, 2), ECX) ~
+	      ASSIGN(ARRAY4(EBP, 3), EDX) ~
+	      ` } `
+	      );
+}
 
 /**
 * Entry point for Serpent decryption in x86 asm
@@ -83,29 +138,224 @@ void botan_serpent_x86_32_encrypt(const ubyte[16] input,
 * @param out the output block
 * @param ks the key schedule
 */
-void botan_serpent_x86_32_decrypt(const ubyte[16] input,
-								  ubyte[16] output,
-								  const uint[132] ks);
+
+void botan_serpent_x86_32_decrypt(	const ubyte[16]* input,
+									ubyte[16]* output,
+									const uint[132]* ks) 
+{
+
+	enum PUSHED = 4;
+	
+	mixin( `asm {` ~
+
+	      ASSIGN(EBP, ARG(PUSHED, 1)) ~ /* input block */
+	      ASSIGN(EAX, ARRAY4(EBP, 0)) ~
+	      ASSIGN(EBX, ARRAY4(EBP, 1)) ~ 
+	      ASSIGN(ECX, ARRAY4(EBP, 2)) ~
+	      ASSIGN(EDX, ARRAY4(EBP, 3)) ~
+	      
+	      ASSIGN(EDI, ARG(PUSHED, 3)) ~ /* round keys */
+	      
+	      ZEROIZE(EBP) ~
+	      
+	      KEY_XOR(EAX, EBX, ECX, EDX, 32) ~
+	      SBOX_D8(EAX, EBX, ECX, EDX, EBP) ~
+	      KEY_XOR(EAX, EBX, ECX, EDX, 31) ~
+	      
+	      D_ROUND!SBOX_D7(EAX, EBX, ECX, EDX, EBP, 30) ~
+	      D_ROUND!SBOX_D6(EAX, EBX, ECX, EDX, EBP, 29) ~
+	      D_ROUND!SBOX_D5(EAX, EBX, ECX, EDX, EBP, 28) ~
+	      D_ROUND!SBOX_D4(EAX, EBX, ECX, EDX, EBP, 27) ~
+	      D_ROUND!SBOX_D3(EAX, EBX, ECX, EDX, EBP, 26) ~
+	      D_ROUND!SBOX_D2(EAX, EBX, ECX, EDX, EBP, 25) ~
+	      D_ROUND!SBOX_D1(EAX, EBX, ECX, EDX, EBP, 24) ~
+	      
+	      D_ROUND!SBOX_D8(EAX, EBX, ECX, EDX, EBP, 23) ~
+	      D_ROUND!SBOX_D7(EAX, EBX, ECX, EDX, EBP, 22) ~
+	      D_ROUND!SBOX_D6(EAX, EBX, ECX, EDX, EBP, 21) ~
+	      D_ROUND!SBOX_D5(EAX, EBX, ECX, EDX, EBP, 20) ~
+	      D_ROUND!SBOX_D4(EAX, EBX, ECX, EDX, EBP, 19) ~
+	      D_ROUND!SBOX_D3(EAX, EBX, ECX, EDX, EBP, 18) ~
+	      D_ROUND!SBOX_D2(EAX, EBX, ECX, EDX, EBP, 17) ~
+	      D_ROUND!SBOX_D1(EAX, EBX, ECX, EDX, EBP, 16) ~
+	      
+	      D_ROUND!SBOX_D8(EAX, EBX, ECX, EDX, EBP, 15) ~
+	      D_ROUND!SBOX_D7(EAX, EBX, ECX, EDX, EBP, 14) ~
+	      D_ROUND!SBOX_D6(EAX, EBX, ECX, EDX, EBP, 13) ~
+	      D_ROUND!SBOX_D5(EAX, EBX, ECX, EDX, EBP, 12) ~
+	      D_ROUND!SBOX_D4(EAX, EBX, ECX, EDX, EBP, 11) ~
+	      D_ROUND!SBOX_D3(EAX, EBX, ECX, EDX, EBP, 10) ~
+	      D_ROUND!SBOX_D2(EAX, EBX, ECX, EDX, EBP,  9) ~
+	      D_ROUND!SBOX_D1(EAX, EBX, ECX, EDX, EBP,  8) ~
+	      
+	      D_ROUND!SBOX_D8(EAX, EBX, ECX, EDX, EBP,  7) ~
+	      D_ROUND!SBOX_D7(EAX, EBX, ECX, EDX, EBP,  6) ~
+	      D_ROUND!SBOX_D6(EAX, EBX, ECX, EDX, EBP,  5) ~
+	      D_ROUND!SBOX_D5(EAX, EBX, ECX, EDX, EBP,  4) ~
+	      D_ROUND!SBOX_D4(EAX, EBX, ECX, EDX, EBP,  3) ~
+	      D_ROUND!SBOX_D3(EAX, EBX, ECX, EDX, EBP,  2) ~
+	      D_ROUND!SBOX_D2(EAX, EBX, ECX, EDX, EBP,  1) ~
+	      D_ROUND!SBOX_D1(EAX, EBX, ECX, EDX, EBP,  0) ~
+	      
+	      ASSIGN(EBP, ARG(PUSHED, 2)) ~ /* output block */
+	      ASSIGN(ARRAY4(EBP, 0), EAX) ~
+	      ASSIGN(ARRAY4(EBP, 1), EBX) ~
+	      ASSIGN(ARRAY4(EBP, 2), ECX) ~
+	      ASSIGN(ARRAY4(EBP, 3), EDX) ~
+	      `}`);
+}
 
 /**
 * Entry point for Serpent key schedule in x86 asm
 * @param ks holds the initial working key (padded), and is set to the
 			final key schedule
 */
-void botan_serpent_x86_32_key_schedule(uint[140] ks);
 
+void botan_serpent_x86_32_key_schedule(uint[140]* ks) 
+{
+	string LOAD_AND_SBOX(alias SBOX)(ubyte MSG) {
+		return 	ASSIGN(EAX, ARRAY4(EDI, (4*MSG+ 8))) ~
+				ASSIGN(EBX, ARRAY4(EDI, (4*MSG+ 9))) ~
+				ASSIGN(ECX, ARRAY4(EDI, (4*MSG+10))) ~
+				ASSIGN(EDX, ARRAY4(EDI, (4*MSG+11))) ~
+				SBOX(EAX, EBX, ECX, EDX, EBP)        ~
+				ASSIGN(ARRAY4(EDI, (4*MSG+ 8)), EAX) ~
+				ASSIGN(ARRAY4(EDI, (4*MSG+ 9)), EBX) ~ 
+				ASSIGN(ARRAY4(EDI, (4*MSG+10)), ECX) ~ 
+				ASSIGN(ARRAY4(EDI, (4*MSG+11)), EDX);
+	}
+	enum PUSHED = 4;
+	mixin(	`asm { ` ~
+	      
+	      ASSIGN(EDI, ARG(PUSHED, 1)) ~ /* round keys */
+	      ASSIGN(ESI, IMM(8)) ~
+	      ADD_IMM(EDI, 32) ~
+	      
+	      START_LOOP(".L_SERP_EXPANSION") ~
+	      ASSIGN(EAX, ARRAY4(EDI, -1)) ~
+	      ASSIGN(EBX, ARRAY4(EDI, -3)) ~
+	      ASSIGN(ECX, ARRAY4(EDI, -5)) ~
+	      ASSIGN(EDX, ARRAY4(EDI, -8)) ~
+	      
+	      ASSIGN(EBP, ESI) ~
+	      SUB_IMM(EBP, 8) ~
+	      XOR(EBP, IMM(0x9E3779B9)) ~
+	      XOR(EAX, EBX) ~
+	      XOR(ECX, EDX) ~
+	      XOR(EAX, EBP) ~
+	      XOR(EAX, ECX) ~
+	      
+	      ROTL_IMM(EAX, 11) ~
+	      
+	      ASSIGN(ARRAY4(EDI, 0), EAX) ~
+	      
+	      ADD_IMM(ESI, 1) ~
+	      ADD_IMM(EDI, 4) ~
+	      LOOP_UNTIL_EQ(ESI, 140, ".L_SERP_EXPANSION") ~
+	      
+	      ASSIGN(EDI, ARG(PUSHED, 1)) ~ /* round keys */
+	      
+	      LOAD_AND_SBOX!SBOX_E4( 0 ) ~
+	      LOAD_AND_SBOX!SBOX_E3( 1 ) ~
+	      LOAD_AND_SBOX!SBOX_E2( 2 ) ~
+	      LOAD_AND_SBOX!SBOX_E1( 3 ) ~
+	      
+	      LOAD_AND_SBOX!SBOX_E8( 4 ) ~
+	      LOAD_AND_SBOX!SBOX_E7( 5 ) ~
+	      LOAD_AND_SBOX!SBOX_E6( 6 ) ~
+	      LOAD_AND_SBOX!SBOX_E5( 7 ) ~
+	      LOAD_AND_SBOX!SBOX_E4( 8 ) ~
+	      LOAD_AND_SBOX!SBOX_E3( 9 ) ~
+	      LOAD_AND_SBOX!SBOX_E2(10 ) ~
+	      LOAD_AND_SBOX!SBOX_E1(11 ) ~
+	      
+	      LOAD_AND_SBOX!SBOX_E8(12 ) ~
+	      LOAD_AND_SBOX!SBOX_E7(13 ) ~
+	      LOAD_AND_SBOX!SBOX_E6(14 ) ~
+	      LOAD_AND_SBOX!SBOX_E5(15 ) ~
+	      LOAD_AND_SBOX!SBOX_E4(16 ) ~
+	      LOAD_AND_SBOX!SBOX_E3(17 ) ~
+	      LOAD_AND_SBOX!SBOX_E2(18 ) ~
+	      LOAD_AND_SBOX!SBOX_E1(19 ) ~
+	      
+	      LOAD_AND_SBOX!SBOX_E8(20 ) ~
+	      LOAD_AND_SBOX!SBOX_E7(21 ) ~
+	      LOAD_AND_SBOX!SBOX_E6(22 ) ~
+	      LOAD_AND_SBOX!SBOX_E5(23 ) ~
+	      LOAD_AND_SBOX!SBOX_E4(24 ) ~
+	      LOAD_AND_SBOX!SBOX_E3(25 ) ~
+	      LOAD_AND_SBOX!SBOX_E2(26 ) ~
+	      LOAD_AND_SBOX!SBOX_E1(27 ) ~
+	      
+	      LOAD_AND_SBOX!SBOX_E8(28 ) ~
+	      LOAD_AND_SBOX!SBOX_E7(29 ) ~
+	      LOAD_AND_SBOX!SBOX_E6(30 ) ~
+	      LOAD_AND_SBOX!SBOX_E5(31 ) ~
+	      LOAD_AND_SBOX!SBOX_E4(32 ) ~
 
-/*
-* Serpent in x86-32 assembler
-* (C) 1999-2007 Jack Lloyd
-*
-* Distributed under the terms of the Botan license
-*/
+	      `}`);
+}
 
-import botan
+string E_ROUND(alias SBOX)(string A, string B, string C, string D, string T, ubyte N) 
+{
+	return 	KEY_XOR(A, B, C, D, N) ~
+			SBOX(A, B, C, D, T) 	~
+			TRANSFORM(A, B, C, D, T);
+}
 
-START_LISTING(serp_x86_32.S)
-	
+string D_ROUND(alias SBOX)(string A, string B, string C, string D, string T, ubyte N)
+{
+	return	I_TRANSFORM(A, B, C, D, T) ~
+			SBOX(A, B, C, D, T) ~
+			KEY_XOR(A, B, C, D, N);
+}
+
+string KEY_XOR(string A, string B, string C, string D, ubyte N) {
+	return 	XOR(A, ARRAY4(EDI, (4*N  )))  ~
+			XOR(B, ARRAY4(EDI, (4*N+1)))  ~
+			XOR(C, ARRAY4(EDI, (4*N+2)))  ~
+			XOR(D, ARRAY4(EDI, (4*N+3)));
+}
+
+string TRANSFORM(string A, string B, string C, string D, string T) {
+	return 	ROTL_IMM(A, 13)  ~
+			ROTL_IMM(C, 3)   ~
+			SHL2_3(T, A) ~
+			XOR(B, A)    ~
+			XOR(D, C)    ~
+			XOR(B, C)    ~
+			XOR(D, T)    ~
+			ROTL_IMM(B, 1)   ~
+			ROTL_IMM(D, 7)   ~
+			ASSIGN(T, B) ~
+			SHL_IMM(T, 7)~
+			XOR(A, B)    ~
+			XOR(C, D)    ~
+			XOR(A, D)    ~
+			XOR(C, T)    ~
+			ROTL_IMM(A, 5)   ~
+			ROTL_IMM(C, 22);
+}
+
+string I_TRANSFORM(string A, string B, string C, string D, string T) {
+	return 	ROTR_IMM(C, 22)  ~
+			ROTR_IMM(A, 5)   ~
+			ASSIGN(T, B) ~
+			SHL_IMM(T, 7)~
+			XOR(A, B)    ~
+			XOR(C, D)    ~
+			XOR(A, D)    ~
+			XOR(C, T)    ~
+			ROTR_IMM(D, 7)   ~
+			ROTR_IMM(B, 1)   ~
+			SHL2_3(T, A) ~
+			XOR(B, C)    ~
+			XOR(D, C)    ~
+			XOR(B, A)    ~
+			XOR(D, T)    ~
+			ROTR_IMM(C, 3)   ~
+			ROTR_IMM(A, 13);
+}
 string SBOX_E1(string A, string B, string C, string D, string T)
 {
 	return 	XOR(D, A)    ~
@@ -128,8 +378,7 @@ string SBOX_E1(string A, string B, string C, string D, string T)
 			XOR(T, D)    ~
 			ASSIGN(D, A) ~
 			ASSIGN(A, B) ~
-			ASSIGN(B, T)
-			;
+			ASSIGN(B, T);
 }
 string SBOX_E2(string A, string B, string C, string D, string T) 
 {
@@ -410,7 +659,7 @@ string SBOX_D4(string A, string B, string C, string D, string T) {
 
 }
 
-string SBOX_D5(A, B, C, D, T) {
+string SBOX_D5(string A, string B, string C, string D, string T) {
 	return 	ASSIGN(T, C) ~
 			AND(C, D)    ~
 			XOR(C, B)    ~
@@ -510,294 +759,3 @@ string SBOX_D8(string A, string B, string C, string D, string T) {
 			ASSIGN(A, D) ~
 			ASSIGN(D, T);
 }
-
-string TRANSFORM(string A, string B, string C, string D, string T) {
-	return 	ROTL_IMM(A, 13)  ~
-			ROTL_IMM(C, 3)   ~
-			SHL2_3(T, A) ~
-			XOR(B, A)    ~
-			XOR(D, C)    ~
-			XOR(B, C)    ~
-			XOR(D, T)    ~
-			ROTL_IMM(B, 1)   ~
-			ROTL_IMM(D, 7)   ~
-			ASSIGN(T, B) ~
-			SHL_IMM(T, 7)~
-			XOR(A, B)    ~
-			XOR(C, D)    ~
-			XOR(A, D)    ~
-			XOR(C, T)    ~
-			ROTL_IMM(A, 5)   ~
-			ROTL_IMM(C, 22);
-}
-
-string I_TRANSFORM(string A, string B, string C, string D, string T) {
-	return 	ROTR_IMM(C, 22)  ~
-			ROTR_IMM(A, 5)   ~
-			ASSIGN(T, B) ~
-			SHL_IMM(T, 7)~
-			XOR(A, B)    ~
-			XOR(C, D)    ~
-			XOR(A, D)    ~
-			XOR(C, T)    ~
-			ROTR_IMM(D, 7)   ~
-			ROTR_IMM(B, 1)   ~
-			SHL2_3(T, A) ~
-			XOR(B, C)    ~
-			XOR(D, C)    ~
-			XOR(B, A)    ~
-			XOR(D, T)    ~
-			ROTR_IMM(C, 3)   ~
-			ROTR_IMM(A, 13);
-}
-
-string KEY_XOR(string A, string B, string C, string D, ubyte N)() {
-	return 	XOR(A, ARRAY4(EDI, (4*N  )))  ~
-			XOR(B, ARRAY4(EDI, (4*N+1)))  ~
-			XOR(C, ARRAY4(EDI, (4*N+2)))  ~
-			XOR(D, ARRAY4(EDI, (4*N+3)));
-}
-	/*
-* Serpent Encryption
-*/
-void botan_serpent_x86_32_encrypt(	const ubyte[16] input,
-									ubyte[16] output,
-									const uint[132] ks )
-{
-	string E_ROUND(string A, string B, string C, string D, string T, ubyte N, alias SBOX)() 
-	{
-		return 	KEY_XOR(A, B, C, D, N) ~
-				SBOX(A, B, C, D, T) 	~
-				TRANSFORM(A, B, C, D, T);
-	}
-
-	mixin(`asm {` ~
-		 	SPILL_REGS() ~
-			//#define PUSHED 4
-			
-			ASSIGN(EBP, ARG(1)) /* input block */ ~
-			ASSIGN(EAX, ARRAY4(EBP, 0)) ~
-			ASSIGN(EBX, ARRAY4(EBP, 1)) ~
-			ASSIGN(ECX, ARRAY4(EBP, 2)) ~
-			ASSIGN(EDX, ARRAY4(EBP, 3)) ~
-			
-			ASSIGN(EDI, ARG(3))  ~ /* round keys */
-			ZEROIZE(EBP) ~
-
-			E_ROUND(EAX, EBX, ECX, EDX, EBP,  0, SBOX_E1) ~
-			E_ROUND(EAX, EBX, ECX, EDX, EBP,  1, SBOX_E2) ~
-			E_ROUND(EAX, EBX, ECX, EDX, EBP,  2, SBOX_E3) ~
-			E_ROUND(EAX, EBX, ECX, EDX, EBP,  3, SBOX_E4) ~
-			E_ROUND(EAX, EBX, ECX, EDX, EBP,  4, SBOX_E5) ~
-			E_ROUND(EAX, EBX, ECX, EDX, EBP,  5, SBOX_E6) ~
-			E_ROUND(EAX, EBX, ECX, EDX, EBP,  6, SBOX_E7) ~
-			E_ROUND(EAX, EBX, ECX, EDX, EBP,  7, SBOX_E8) ~
-			
-			E_ROUND(EAX, EBX, ECX, EDX, EBP,  8, SBOX_E1) ~
-			E_ROUND(EAX, EBX, ECX, EDX, EBP,  9, SBOX_E2) ~
-			E_ROUND(EAX, EBX, ECX, EDX, EBP, 10, SBOX_E3) ~
-			E_ROUND(EAX, EBX, ECX, EDX, EBP, 11, SBOX_E4) ~
-			E_ROUND(EAX, EBX, ECX, EDX, EBP, 12, SBOX_E5) ~
-			E_ROUND(EAX, EBX, ECX, EDX, EBP, 13, SBOX_E6) ~
-			E_ROUND(EAX, EBX, ECX, EDX, EBP, 14, SBOX_E7) ~
-			E_ROUND(EAX, EBX, ECX, EDX, EBP, 15, SBOX_E8) ~
-			
-			E_ROUND(EAX, EBX, ECX, EDX, EBP, 16, SBOX_E1) ~
-			E_ROUND(EAX, EBX, ECX, EDX, EBP, 17, SBOX_E2) ~
-			E_ROUND(EAX, EBX, ECX, EDX, EBP, 18, SBOX_E3) ~
-			E_ROUND(EAX, EBX, ECX, EDX, EBP, 19, SBOX_E4) ~
-			E_ROUND(EAX, EBX, ECX, EDX, EBP, 20, SBOX_E5) ~
-			E_ROUND(EAX, EBX, ECX, EDX, EBP, 21, SBOX_E6) ~
-			E_ROUND(EAX, EBX, ECX, EDX, EBP, 22, SBOX_E7) ~
-			E_ROUND(EAX, EBX, ECX, EDX, EBP, 23, SBOX_E8) ~
-			
-			E_ROUND(EAX, EBX, ECX, EDX, EBP, 24, SBOX_E1) ~
-			E_ROUND(EAX, EBX, ECX, EDX, EBP, 25, SBOX_E2) ~
-			E_ROUND(EAX, EBX, ECX, EDX, EBP, 26, SBOX_E3) ~
-			E_ROUND(EAX, EBX, ECX, EDX, EBP, 27, SBOX_E4) ~
-			E_ROUND(EAX, EBX, ECX, EDX, EBP, 28, SBOX_E5) ~
-			E_ROUND(EAX, EBX, ECX, EDX, EBP, 29, SBOX_E6) ~
-			E_ROUND(EAX, EBX, ECX, EDX, EBP, 30, SBOX_E7) ~
-			
-			KEY_XOR(EAX, EBX, ECX, EDX, 31) ~
-			SBOX_E8(EAX, EBX, ECX, EDX, EBP) ~
-			KEY_XOR(EAX, EBX, ECX, EDX, 32) ~
-			
-			ASSIGN(EBP, ARG(2)) /* output block */ ~
-			ASSIGN(ARRAY4(EBP, 0), EAX) ~
-			ASSIGN(ARRAY4(EBP, 1), EBX) ~
-			ASSIGN(ARRAY4(EBP, 2), ECX) ~
-			ASSIGN(ARRAY4(EBP, 3), EDX) ~
-			
-			RESTORE_REGS()~
-	      ` } `
-	      );
-}
-		
-	/*
-* Serpent Decryption
-*/
-void botan_serpent_x86_32_decrypt(	const ubyte[16] input,
-									ubyte[16] output,
-									const uint[132] ks) 
-{
-
-	string D_ROUND(string A, string B, string C, string D, string T, ubyte N, alias SBOX)()
-	{
-		return	I_TRANSFORM(A, B, C, D, T) ~
-				SBOX(A, B, C, D, T) ~
-				KEY_XOR(A, B, C, D, N);
-	}
-
-	mixin( `asm {` ~
-		SPILL_REGS() ~
-		//#define PUSHED 4
-		
-		ASSIGN(EBP, ARG(1)) ~ /* input block */
-		ASSIGN(EAX, ARRAY4(EBP, 0)) ~
-		ASSIGN(EBX, ARRAY4(EBP, 1)) ~ 
-		ASSIGN(ECX, ARRAY4(EBP, 2)) ~
-		ASSIGN(EDX, ARRAY4(EBP, 3)) ~
-		
-		ASSIGN(EDI, ARG(3)) ~ /* round keys */
-		
-		ZEROIZE(EBP) ~
-		
-		KEY_XOR(EAX, EBX, ECX, EDX, 32) ~
-		SBOX_D8(EAX, EBX, ECX, EDX, EBP) ~
-		KEY_XOR(EAX, EBX, ECX, EDX, 31) ~
-		
-		D_ROUND(EAX, EBX, ECX, EDX, EBP, 30, SBOX_D7) ~
-		D_ROUND(EAX, EBX, ECX, EDX, EBP, 29, SBOX_D6) ~
-		D_ROUND(EAX, EBX, ECX, EDX, EBP, 28, SBOX_D5) ~
-		D_ROUND(EAX, EBX, ECX, EDX, EBP, 27, SBOX_D4) ~
-		D_ROUND(EAX, EBX, ECX, EDX, EBP, 26, SBOX_D3) ~
-		D_ROUND(EAX, EBX, ECX, EDX, EBP, 25, SBOX_D2) ~
-		D_ROUND(EAX, EBX, ECX, EDX, EBP, 24, SBOX_D1) ~
-		
-		D_ROUND(EAX, EBX, ECX, EDX, EBP, 23, SBOX_D8) ~
-		D_ROUND(EAX, EBX, ECX, EDX, EBP, 22, SBOX_D7) ~
-		D_ROUND(EAX, EBX, ECX, EDX, EBP, 21, SBOX_D6) ~
-		D_ROUND(EAX, EBX, ECX, EDX, EBP, 20, SBOX_D5) ~
-		D_ROUND(EAX, EBX, ECX, EDX, EBP, 19, SBOX_D4) ~
-		D_ROUND(EAX, EBX, ECX, EDX, EBP, 18, SBOX_D3) ~
-		D_ROUND(EAX, EBX, ECX, EDX, EBP, 17, SBOX_D2) ~
-		D_ROUND(EAX, EBX, ECX, EDX, EBP, 16, SBOX_D1) ~
-		
-		D_ROUND(EAX, EBX, ECX, EDX, EBP, 15, SBOX_D8) ~
-		D_ROUND(EAX, EBX, ECX, EDX, EBP, 14, SBOX_D7) ~
-		D_ROUND(EAX, EBX, ECX, EDX, EBP, 13, SBOX_D6) ~
-		D_ROUND(EAX, EBX, ECX, EDX, EBP, 12, SBOX_D5) ~
-		D_ROUND(EAX, EBX, ECX, EDX, EBP, 11, SBOX_D4) ~
-		D_ROUND(EAX, EBX, ECX, EDX, EBP, 10, SBOX_D3) ~
-		D_ROUND(EAX, EBX, ECX, EDX, EBP,  9, SBOX_D2) ~
-		D_ROUND(EAX, EBX, ECX, EDX, EBP,  8, SBOX_D1) ~
-		
-		D_ROUND(EAX, EBX, ECX, EDX, EBP,  7, SBOX_D8) ~
-		D_ROUND(EAX, EBX, ECX, EDX, EBP,  6, SBOX_D7) ~
-		D_ROUND(EAX, EBX, ECX, EDX, EBP,  5, SBOX_D6) ~
-		D_ROUND(EAX, EBX, ECX, EDX, EBP,  4, SBOX_D5) ~
-		D_ROUND(EAX, EBX, ECX, EDX, EBP,  3, SBOX_D4) ~
-		D_ROUND(EAX, EBX, ECX, EDX, EBP,  2, SBOX_D3) ~
-		D_ROUND(EAX, EBX, ECX, EDX, EBP,  1, SBOX_D2) ~
-		D_ROUND(EAX, EBX, ECX, EDX, EBP,  0, SBOX_D1) ~
-		
-		ASSIGN(EBP, ARG(2)) ~ /* output block */
-		ASSIGN(ARRAY4(EBP, 0), EAX) ~
-		ASSIGN(ARRAY4(EBP, 1), EBX) ~
-		ASSIGN(ARRAY4(EBP, 2), ECX) ~
-		ASSIGN(ARRAY4(EBP, 3), EDX) ~
-		
-	    RESTORE_REGS()
-	  );
-//#undef PUSHED
-}
-		/*
-* Serpent Key Schedule
-*/
-void botan_serpent_x86_32_key_schedule(uint[140] ks) 
-{
-	string 	LOAD_AND_SBOX(ubyte MSG, alias SBOX)() {
-			return 	ASSIGN(EAX, ARRAY4(EDI, (4*MSG+ 8))) ~
-					ASSIGN(EBX, ARRAY4(EDI, (4*MSG+ 9))) ~
-					ASSIGN(ECX, ARRAY4(EDI, (4*MSG+10))) ~
-					ASSIGN(EDX, ARRAY4(EDI, (4*MSG+11))) ~
-					SBOX(EAX, EBX, ECX, EDX, EBP)        ~
-					ASSIGN(ARRAY4(EDI, (4*MSG+ 8)), EAX) ~
-					ASSIGN(ARRAY4(EDI, (4*MSG+ 9)), EBX) ~ 
-					ASSIGN(ARRAY4(EDI, (4*MSG+10)), ECX) ~ 
-					ASSIGN(ARRAY4(EDI, (4*MSG+11)), EDX);
-	}
-	mixin(	SPILL_REGS() ~
-			//#define PUSHED 4
-
-			ASSIGN(EDI, ARG(1)) ~ /* round keys */
-			ASSIGN(ESI, IMM(8)) ~
-			ADD_IMM(EDI, 32) ~
-
-			START_LOOP(".L_SERP_EXPANSION") ~
-			ASSIGN(EAX, ARRAY4(EDI, -1)) ~
-			ASSIGN(EBX, ARRAY4(EDI, -3)) ~
-			ASSIGN(ECX, ARRAY4(EDI, -5)) ~
-			ASSIGN(EDX, ARRAY4(EDI, -8)) ~
-
-			ASSIGN(EBP, ESI) ~
-			SUB_IMM(EBP, 8) ~
-			XOR(EBP, IMM(0x9E3779B9)) ~
-			XOR(EAX, EBX) ~
-			XOR(ECX, EDX) ~
-			XOR(EAX, EBP) ~
-			XOR(EAX, ECX) ~
-
-			ROTL_IMM(EAX, 11) ~
-
-			ASSIGN(ARRAY4(EDI, 0), EAX) ~
-
-			ADD_IMM(ESI, 1) ~
-			ADD_IMM(EDI, 4) ~
-			LOOP_UNTIL_EQ(ESI, 140, .L_SERP_EXPANSION) ~
-
-			ASSIGN(EDI, ARG(1)) ~ /* round keys */
-
-			LOAD_AND_SBOX( 0, SBOX_E4) ~
-			LOAD_AND_SBOX( 1, SBOX_E3) ~
-			LOAD_AND_SBOX( 2, SBOX_E2) ~
-			LOAD_AND_SBOX( 3, SBOX_E1) ~
-
-			LOAD_AND_SBOX( 4, SBOX_E8) ~
-			LOAD_AND_SBOX( 5, SBOX_E7) ~
-			LOAD_AND_SBOX( 6, SBOX_E6) ~
-			LOAD_AND_SBOX( 7, SBOX_E5) ~
-			LOAD_AND_SBOX( 8, SBOX_E4) ~
-			LOAD_AND_SBOX( 9, SBOX_E3) ~
-			LOAD_AND_SBOX(10, SBOX_E2) ~
-			LOAD_AND_SBOX(11, SBOX_E1) ~
-
-			LOAD_AND_SBOX(12, SBOX_E8) ~
-			LOAD_AND_SBOX(13, SBOX_E7) ~
-			LOAD_AND_SBOX(14, SBOX_E6) ~
-			LOAD_AND_SBOX(15, SBOX_E5) ~
-			LOAD_AND_SBOX(16, SBOX_E4) ~
-			LOAD_AND_SBOX(17, SBOX_E3) ~
-			LOAD_AND_SBOX(18, SBOX_E2) ~
-			LOAD_AND_SBOX(19, SBOX_E1) ~
-
-			LOAD_AND_SBOX(20, SBOX_E8) ~
-			LOAD_AND_SBOX(21, SBOX_E7) ~
-			LOAD_AND_SBOX(22, SBOX_E6) ~
-			LOAD_AND_SBOX(23, SBOX_E5) ~
-			LOAD_AND_SBOX(24, SBOX_E4) ~
-			LOAD_AND_SBOX(25, SBOX_E3) ~
-			LOAD_AND_SBOX(26, SBOX_E2) ~
-			LOAD_AND_SBOX(27, SBOX_E1) ~
-
-			LOAD_AND_SBOX(28, SBOX_E8) ~
-			LOAD_AND_SBOX(29, SBOX_E7) ~
-			LOAD_AND_SBOX(30, SBOX_E6) ~
-			LOAD_AND_SBOX(31, SBOX_E5) ~
-			LOAD_AND_SBOX(32, SBOX_E4) ~
-
-			RESTORE_REGS()
-	      );
-// #undef PUSHED
-	}

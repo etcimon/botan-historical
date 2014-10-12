@@ -4,6 +4,7 @@
 *
 * Distributed under the terms of the botan license.
 */
+module botan.utils.exceptn;
 
 import botan.types;
 import botan.parsing;
@@ -25,6 +26,15 @@ class Invalid_Argument : Exception
 * Invalid_State Exception
 */
 class Invalid_State : Exception
+{
+	this(in string err)
+	{ super(err); }
+};
+
+/**
+* Logic_Error Exception
+*/
+class Logic_Error : Exception
 {
 	this(in string err)
 	{ super(err); }

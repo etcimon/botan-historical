@@ -28,7 +28,7 @@ DSA_PrivateKey::DSA_PrivateKey(RandomNumberGenerator rng,
 	x = x_arg;
 
 	if (x == 0)
-		x = BigInt::random_integer(rng, 2, group_q() - 1);
+		x = BigInt.random_integer(rng, 2, group_q() - 1);
 
 	y = power_mod(group_g(), x, group_p());
 
@@ -94,7 +94,7 @@ DSA_Signature_Operation::sign(in ubyte* msg, size_t msg_len,
 		s = mod_q.multiply(s, mul_add(x, r, i));
 	}
 
-	SafeVector!ubyte output(2*q.bytes());
+	SafeVector!ubyte output = SafeVector!ubyte(2*q.bytes());
 	r.binary_encode(&output[output.size() / 2 - r.bytes()]);
 	s.binary_encode(&output[output.size() - s.bytes()]);
 	return output;

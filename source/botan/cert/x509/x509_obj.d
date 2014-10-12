@@ -56,7 +56,7 @@ public:
 	string hash_used_for_signature() const
 	{
 		Vector!string sig_info =
-			split_on(oids.lookup(sig_algo.oid), '/');
+			std.algorithm.splitter(oids.lookup(sig_algo.oid), '/');
 		
 		if (sig_info.size() != 2)
 			throw new Internal_Error("Invalid name format found for " ~
@@ -105,7 +105,7 @@ public:
 	{
 		try {
 			Vector!string sig_info =
-				split_on(oids.lookup(sig_algo.oid), '/');
+				std.algorithm.splitter(oids.lookup(sig_algo.oid), '/');
 			
 			if (sig_info.size() != 2 || sig_info[0] != pub_key.algo_name())
 				return false;
@@ -232,7 +232,7 @@ private:
 	*/
 	void init(DataSource input, in string labels)
 	{
-		PEM_labels_allowed = split_on(labels, '/');
+		PEM_labels_allowed = std.algorithm.splitter(labels, '/');
 		if (PEM_labels_allowed.size() < 1)
 			throw new Invalid_Argument("Bad labels argument to X509_Object");
 		

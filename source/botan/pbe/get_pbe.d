@@ -29,7 +29,7 @@ PBE* get_pbe(in string algo_spec,
 	string digest_name = request.arg(0);
 	const string cipher = request.arg(1);
 
-	Vector!string cipher_spec = split_on(cipher, '/');
+	Vector!string cipher_spec = std.algorithm.splitter(cipher, '/');
 	if (cipher_spec.size() != 2)
 		throw new Invalid_Argument("PBE: Invalid cipher spec " ~ cipher);
 

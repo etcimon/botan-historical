@@ -6,7 +6,7 @@
 */
 
 import botan.mode_pad;
-import botan.exceptn;
+import botan.utils.exceptn;
 /*
 * Pad with PKCS #7 Method
 */

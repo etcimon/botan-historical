@@ -12,7 +12,7 @@ import botan.codec.hex;
 /*
 * Encode a BigInt
 */
-void BigInt::encode(ubyte* output, ref const BigInt n, Base base)
+void BigInt.encode(ubyte* output, ref const BigInt n, Base base)
 {
 	if (base == Binary)
 	{
@@ -20,7 +20,7 @@ void BigInt::encode(ubyte* output, ref const BigInt n, Base base)
 	}
 	else if (base == Hexadecimal)
 	{
-		SafeVector!ubyte binary(n.encoded_size(Binary));
+		SafeVector!ubyte binary = SafeVector!ubyte(n.encoded_size(Binary));
 		n.binary_encode(&binary[0]);
 
 		hex_encode(cast(char*)(output),
@@ -48,9 +48,9 @@ void BigInt::encode(ubyte* output, ref const BigInt n, Base base)
 /*
 * Encode a BigInt
 */
-Vector!ubyte BigInt::encode(in BigInt n, Base base)
+Vector!ubyte BigInt.encode(in BigInt n, Base base)
 {
-	Vector!ubyte output(n.encoded_size(base));
+	Vector!ubyte output = Vector!ubyte(n.encoded_size(base));
 	encode(&output[0], n, base);
 	if (base != Binary)
 		for (size_t j = 0; j != output.size(); ++j)
@@ -62,9 +62,9 @@ Vector!ubyte BigInt::encode(in BigInt n, Base base)
 /*
 * Encode a BigInt
 */
-SafeVector!ubyte BigInt::encode_locked(in BigInt n, Base base)
+SafeVector!ubyte BigInt.encode_locked(in BigInt n, Base base)
 {
-	SafeVector!ubyte output(n.encoded_size(base));
+	SafeVector!ubyte output = SafeVector!ubyte(n.encoded_size(base));
 	encode(&output[0], n, base);
 	if (base != Binary)
 		for (size_t j = 0; j != output.size(); ++j)
@@ -76,7 +76,7 @@ SafeVector!ubyte BigInt::encode_locked(in BigInt n, Base base)
 /*
 * Encode a BigInt, with leading 0s if needed
 */
-SafeVector!ubyte BigInt::encode_1363(in BigInt n, size_t bytes)
+SafeVector!ubyte BigInt.encode_1363(in BigInt n, size_t bytes)
 {
 	const size_t n_bytes = n.bytes();
 	if (n_bytes > bytes)
@@ -84,7 +84,7 @@ SafeVector!ubyte BigInt::encode_1363(in BigInt n, size_t bytes)
 
 	const size_t leading_0s = bytes - n_bytes;
 
-	SafeVector!ubyte output(bytes);
+	SafeVector!ubyte output = SafeVector!ubyte(bytes);
 	encode(&output[leading_0s], n, Binary);
 	return output;
 }
@@ -92,7 +92,7 @@ SafeVector!ubyte BigInt::encode_1363(in BigInt n, size_t bytes)
 /*
 * Decode a BigInt
 */
-BigInt BigInt::decode(in ubyte* buf, size_t length, Base base)
+BigInt BigInt.decode(in ubyte* buf, size_t length, Base base)
 {
 	BigInt r;
 	if (base == Binary)
@@ -127,7 +127,7 @@ BigInt BigInt::decode(in ubyte* buf, size_t length, Base base)
 				continue;
 
 			if (!Charset.is_digit(buf[i]))
-				throw new Invalid_Argument("BigInt::decode: "
+				throw new Invalid_Argument("BigInt.decode: "
 											  "Invalid character in decimal input");
 
 			const ubyte x = Charset.char2digit(buf[i]);

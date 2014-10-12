@@ -5,7 +5,7 @@
 * Distributed under the terms of the Botan license
 */
 
-import botan.exceptn;
+import botan.utils.exceptn;
 import sstream;
 void assertion_failure(string expr_str,
 							  string assertion_made,

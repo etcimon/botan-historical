@@ -20,7 +20,7 @@ SafeVector!ubyte OAEP::pad(in ubyte* input, size_t in_length,
 	if (key_length < in_length + 2*m_Phash.size() + 1)
 		throw new Invalid_Argument("OAEP: Input is too large");
 
-	SafeVector!ubyte output(key_length);
+	SafeVector!ubyte output = SafeVector!ubyte(key_length);
 
 	rng.randomize(&output[0], m_Phash.size());
 

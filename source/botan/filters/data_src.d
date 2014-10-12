@@ -7,7 +7,7 @@
 */
 
 import botan.data_src;
-import botan.exceptn;
+import botan.utils.exceptn;
 import fstream;
 import std.algorithm;
 /*

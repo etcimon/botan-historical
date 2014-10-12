@@ -9,13 +9,13 @@ import botan.internal.tls_messages;
 import botan.internal.tls_reader;
 import botan.internal.tls_extensions;
 import botan.internal.tls_handshake_io;
-import botan.credentials_manager;
+import botan.credentials.credentials_manager;
 import botan.loadstor;
 import botan.pubkey;
 import botan.dh;
 import botan.ecdh;
 import botan.rsa;
-import botan.srp6;
+import botan.constructs.srp6;
 import botan.asn1.oid_lookup.oids;
 namespace TLS {
 
@@ -44,8 +44,8 @@ Server_Key_Exchange::Server_Key_Exchange(Handshake_IO& io,
 	{
 		Unique!DH_PrivateKey dh = new DH_PrivateKey(rng, policy.dh_group());
 
-		append_tls_length_value(m_params, BigInt::encode(dh.get_domain().get_p()), 2);
-		append_tls_length_value(m_params, BigInt::encode(dh.get_domain().get_g()), 2);
+		append_tls_length_value(m_params, BigInt.encode(dh.get_domain().get_p()), 2);
+		append_tls_length_value(m_params, BigInt.encode(dh.get_domain().get_g()), 2);
 		append_tls_length_value(m_params, dh.public_value(), 2);
 		m_kex_key.reset(dh.release());
 	}
@@ -107,10 +107,10 @@ Server_Key_Exchange::Server_Key_Exchange(Handshake_IO& io,
 
 		DL_Group group(group_id);
 
-		append_tls_length_value(m_params, BigInt::encode(group.get_p()), 2);
-		append_tls_length_value(m_params, BigInt::encode(group.get_g()), 2);
+		append_tls_length_value(m_params, BigInt.encode(group.get_p()), 2);
+		append_tls_length_value(m_params, BigInt.encode(group.get_g()), 2);
 		append_tls_length_value(m_params, salt, 1);
-		append_tls_length_value(m_params, BigInt::encode(B), 2);
+		append_tls_length_value(m_params, BigInt.encode(B), 2);
 	}
 	else if (kex_algo != "PSK")
 		throw new Internal_Error("Server_Key_Exchange: Unknown kex type " ~ kex_algo);
@@ -165,8 +165,8 @@ Server_Key_Exchange::Server_Key_Exchange(in Vector!ubyte buf,
 
 		for (size_t i = 0; i != 3; ++i)
 		{
-			BigInt v = BigInt::decode(reader.get_range!ubyte(2, 1, 65535));
-			append_tls_length_value(m_params, BigInt::encode(v), 2);
+			BigInt v = BigInt.decode(reader.get_range!ubyte(2, 1, 65535));
+			append_tls_length_value(m_params, BigInt.encode(v), 2);
 		}
 	}
 	else if (kex_algo == "ECDH" || kex_algo == "ECDHE_PSK")
@@ -195,15 +195,15 @@ Server_Key_Exchange::Server_Key_Exchange(in Vector!ubyte buf,
 	{
 		// 2 bigints (N,g) then salt, then server B
 
-		const BigInt N = BigInt::decode(reader.get_range!ubyte(2, 1, 65535));
-		const BigInt g = BigInt::decode(reader.get_range!ubyte(2, 1, 65535));
+		const BigInt N = BigInt.decode(reader.get_range!ubyte(2, 1, 65535));
+		const BigInt g = BigInt.decode(reader.get_range!ubyte(2, 1, 65535));
 		Vector!ubyte salt = reader.get_range!ubyte(1, 1, 255);
-		const BigInt B = BigInt::decode(reader.get_range!ubyte(2, 1, 65535));
+		const BigInt B = BigInt.decode(reader.get_range!ubyte(2, 1, 65535));
 
-		append_tls_length_value(m_params, BigInt::encode(N), 2);
-		append_tls_length_value(m_params, BigInt::encode(g), 2);
+		append_tls_length_value(m_params, BigInt.encode(N), 2);
+		append_tls_length_value(m_params, BigInt.encode(g), 2);
 		append_tls_length_value(m_params, salt, 1);
-		append_tls_length_value(m_params, BigInt::encode(B), 2);
+		append_tls_length_value(m_params, BigInt.encode(B), 2);
 	}
 	else if (kex_algo != "PSK")
 		throw new Decoding_Error("Server_Key_Exchange: Unsupported kex type " ~ kex_algo);

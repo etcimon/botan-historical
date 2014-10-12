@@ -45,8 +45,8 @@ BigInt gcd(in BigInt a, ref const BigInt b)
 	if (a == 1 || b == 1)			  return 1;
 
 	BigInt x = a, y = b;
-	x.set_sign(BigInt::Positive);
-	y.set_sign(BigInt::Positive);
+	x.set_sign(BigInt.Positive);
+	y.set_sign(BigInt.Positive);
 	size_t shift = std.algorithm.min(low_zero_bits(x), low_zero_bits(y));
 
 	x >>= shift;
@@ -125,7 +125,7 @@ BigInt inverse_mod_odd_modulus(in BigInt n, ref const BigInt mod)
 BigInt inverse_mod(in BigInt n, ref const BigInt mod)
 {
 	if (mod.is_zero())
-		throw new BigInt::DivideByZero();
+		throw new BigInt.DivideByZero();
 	if (mod.is_negative() || n.is_negative())
 		throw new Invalid_Argument("inverse_mod: arguments must be non-negative");
 
@@ -307,7 +307,7 @@ bool is_prime(in BigInt n, RandomNumberGenerator rng,
 
 	for (size_t i = 0; i != test_iterations; ++i)
 	{
-		const BigInt a = BigInt::random_integer(rng, 2, n_minus_1);
+		const BigInt a = BigInt.random_integer(rng, 2, n_minus_1);
 
 		BigInt y = pow_mod(a);
 

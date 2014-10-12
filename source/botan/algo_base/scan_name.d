@@ -7,7 +7,7 @@
 module botan.algo_base.scan_name;
 
 import botan.parsing;
-import botan.exceptn;
+import botan.utils.exceptn;
 import stdexcept;
 import botan.types;
 import string;

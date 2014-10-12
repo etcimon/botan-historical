@@ -9,7 +9,7 @@
 */
 
 import botan.lzma;
-import botan.exceptn;
+import botan.utils.exceptn;
 
 import cstring;
 import cstdlib;

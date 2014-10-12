@@ -79,8 +79,8 @@ Vector!ubyte get_concatenation() const
 	// use the larger
 	const size_t enc_len = m_r > m_s ? m_r.bytes() : m_s.bytes();
 	
-	const auto sv_r = BigInt::encode_1363(m_r, enc_len);
-	const auto sv_s = BigInt::encode_1363(m_s, enc_len);
+	const auto sv_r = BigInt.encode_1363(m_r, enc_len);
+	const auto sv_s = BigInt.encode_1363(m_s, enc_len);
 	
 	SafeVector!ubyte result(sv_r);
 	result += sv_s;
@@ -94,8 +94,8 @@ ECDSA_Signature decode_concatenation(in Vector!ubyte concat)
 	
 	const size_t rs_len = concat.size() / 2;
 	
-	BigInt r = BigInt::decode(&concat[0], rs_len);
-	BigInt s = BigInt::decode(&concat[rs_len], rs_len);
+	BigInt r = BigInt.decode(&concat[0], rs_len);
+	BigInt s = BigInt.decode(&concat[rs_len], rs_len);
 	
 	return ECDSA_Signature(r, s);
 }

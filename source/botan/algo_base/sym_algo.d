@@ -1,7 +1,7 @@
 ﻿module botan.algo_base.sym_algo;
 
 import botan.key_spec;
-import botan.exceptn;
+import botan.utils.exceptn;
 import botan.algo_base.symkey;
 import botan.types;
 

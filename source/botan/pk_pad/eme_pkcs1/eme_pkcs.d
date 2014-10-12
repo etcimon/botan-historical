@@ -20,7 +20,7 @@ SafeVector!ubyte EME_PKCS1v15::pad(in ubyte* input, size_t inlen,
 	if (inlen > olen - 10)
 		throw new Encoding_Error("PKCS1: Input is too large");
 
-	SafeVector!ubyte output(olen);
+	SafeVector!ubyte output = SafeVector!ubyte(olen);
 
 	output[0] = 0x02;
 	for (size_t j = 1; j != olen - inlen - 1; ++j)

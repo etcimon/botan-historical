@@ -87,11 +87,8 @@ public:
 		if (time_is_set() == false)
 			throw new Invalid_State("readable_string: No time set");
 		
-		string output(11, 0);
-		
-		sprintf(&output[0], "%04d/%02d/%02d", year, month, day);
-		
-		return output;
+		import std.string : format;
+		return format("%04d/%02d/%02d", year, month, day);
 	}
 
 	/**

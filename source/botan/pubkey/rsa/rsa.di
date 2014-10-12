@@ -123,13 +123,13 @@ class RSA_Public_Operation : pk_ops.Verification,
 											RandomNumberGenerator)
 		{
 			BigInt m(msg, msg_len);
-			return BigInt::encode_1363(public_op(m), n.bytes());
+			return BigInt.encode_1363(public_op(m), n.bytes());
 		}
 
 		SafeVector!ubyte verify_mr(in ubyte* msg, size_t msg_len)
 		{
 			BigInt m(msg, msg_len);
-			return BigInt::encode_locked(public_op(m));
+			return BigInt.encode_locked(public_op(m));
 		}
 
 	private:

@@ -6,7 +6,7 @@
 */
 
 import botan.mdx_hash;
-import botan.exceptn;
+import botan.utils.exceptn;
 import botan.loadstor;
 /*
 * MDx_HashFunction Constructor

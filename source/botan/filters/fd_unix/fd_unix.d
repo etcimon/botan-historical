@@ -6,7 +6,7 @@
 */
 
 import botan.pipe;
-import botan.exceptn;
+import botan.utils.exceptn;
 import unistd.h;
 /*
 * Write data from a pipe into a Unix fd

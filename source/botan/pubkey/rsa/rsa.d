@@ -97,7 +97,7 @@ RSA_Private_Operation::sign(in ubyte* msg, size_t msg_len,
 
 	const BigInt m(msg, msg_len);
 	const BigInt x = blinder.unblind(private_op(blinder.blind(m)));
-	return BigInt::encode_1363(x, n.bytes());
+	return BigInt.encode_1363(x, n.bytes());
 }
 
 /*
@@ -112,7 +112,7 @@ RSA_Private_Operation::decrypt(in ubyte* msg, size_t msg_len)
 	BOTAN_ASSERT(m == powermod_e_n(x),
 					 "RSA decrypt passed consistency check");
 
-	return BigInt::encode_locked(x);
+	return BigInt.encode_locked(x);
 }
 
 }

@@ -170,7 +170,7 @@ PBE_PKCS5v20::PBE_PKCS5v20(in Vector!ubyte params,
 	Algorithm_Factory af = global_state().algorithm_factory();
 
 	string cipher = oids.lookup(enc_algo.oid);
-	Vector!string cipher_spec = split_on(cipher, '/');
+	Vector!string cipher_spec = std.algorithm.splitter(cipher, '/');
 	if (cipher_spec.size() != 2)
 		throw new Decoding_Error("PBE-PKCS5 v2.0: Invalid cipher spec " ~ cipher);
 

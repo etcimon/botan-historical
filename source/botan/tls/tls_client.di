@@ -6,7 +6,7 @@
 */
 
 import botan.tls_channel;
-import botan.credentials_manager;
+import botan.credentials.credentials_manager;
 import vector;
 /**
 * SSL/TLS Client

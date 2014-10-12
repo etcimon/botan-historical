@@ -204,7 +204,7 @@ void check_signature(in Vector!ubyte tbs_response,
 	Unique!Public_Key pub_key = cert.subject_public_key();
 	
 	const Vector!string sig_info =
-		split_on(oids.lookup(sig_algo.oid), '/');
+		std.algorithm.splitter(oids.lookup(sig_algo.oid), '/');
 	
 	if (sig_info.size() != 2 || sig_info[0] != pub_key.algo_name())
 		throw new Exception("Information in OCSP response does not match cert");

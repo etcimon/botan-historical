@@ -9,12 +9,12 @@ import botan.internal.tls_messages;
 import botan.internal.tls_reader;
 import botan.internal.tls_extensions;
 import botan.internal.tls_handshake_io;
-import botan.credentials_manager;
+import botan.credentials.credentials_manager;
 import botan.pubkey;
 import botan.dh;
 import botan.ecdh;
 import botan.rsa;
-import botan.srp6;
+import botan.constructs.srp6;
 import botan.rng;
 import botan.loadstor;
 namespace TLS {
@@ -32,7 +32,7 @@ SafeVector!ubyte strip_leading_zeros(in SafeVector!ubyte input)
 		++leading_zeros;
 	}
 
-	SafeVector!ubyte output(&input[leading_zeros],
+	SafeVector!ubyte output = SafeVector!ubyte(&input[leading_zeros],
 										&input[input.size()]);
 	return output;
 }
@@ -100,9 +100,9 @@ Client_Key_Exchange::Client_Key_Exchange(Handshake_IO& io,
 
 		if (kex_algo == "DH" || kex_algo == "DHE_PSK")
 		{
-			BigInt p = BigInt::decode(reader.get_range!ubyte(2, 1, 65535));
-			BigInt g = BigInt::decode(reader.get_range!ubyte(2, 1, 65535));
-			BigInt Y = BigInt::decode(reader.get_range!ubyte(2, 1, 65535));
+			BigInt p = BigInt.decode(reader.get_range!ubyte(2, 1, 65535));
+			BigInt g = BigInt.decode(reader.get_range!ubyte(2, 1, 65535));
+			BigInt Y = BigInt.decode(reader.get_range!ubyte(2, 1, 65535));
 
 			if (reader.remaining_bytes())
 				throw new Decoding_Error("Bad params size for DH key exchange");
@@ -187,10 +187,10 @@ Client_Key_Exchange::Client_Key_Exchange(Handshake_IO& io,
 		}
 		else if (kex_algo == "SRP_SHA")
 		{
-			const BigInt N = BigInt::decode(reader.get_range!ubyte(2, 1, 65535));
-			const BigInt g = BigInt::decode(reader.get_range!ubyte(2, 1, 65535));
+			const BigInt N = BigInt.decode(reader.get_range!ubyte(2, 1, 65535));
+			const BigInt g = BigInt.decode(reader.get_range!ubyte(2, 1, 65535));
 			Vector!ubyte salt = reader.get_range!ubyte(1, 1, 255);
-			const BigInt B = BigInt::decode(reader.get_range!ubyte(2, 1, 65535));
+			const BigInt B = BigInt.decode(reader.get_range!ubyte(2, 1, 65535));
 
 			const string srp_group = srp6_group_identifier(N, g);
 
@@ -209,7 +209,7 @@ Client_Key_Exchange::Client_Key_Exchange(Handshake_IO& io,
 										B,
 										rng);
 
-			append_tls_length_value(m_key_material, BigInt::encode(srp_vals.first), 2);
+			append_tls_length_value(m_key_material, BigInt.encode(srp_vals.first), 2);
 			m_pre_master = srp_vals.second.bits_of();
 		}
 		else
@@ -356,7 +356,7 @@ Client_Key_Exchange::Client_Key_Exchange(in Vector!ubyte contents,
 		{
 			SRP6_Server_Session& srp = state.server_kex().server_srp_params();
 
-			m_pre_master = srp.step2(BigInt::decode(reader.get_range!ubyte(2, 0, 65535))).bits_of();
+			m_pre_master = srp.step2(BigInt.decode(reader.get_range!ubyte(2, 0, 65535))).bits_of();
 		}
 		else if (kex_algo == "DH" || kex_algo == "DHE_PSK" ||
 				  kex_algo == "ECDH" || kex_algo == "ECDHE_PSK")

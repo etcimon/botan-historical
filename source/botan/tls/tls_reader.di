@@ -5,7 +5,7 @@
 * Released under the terms of the botan license.
 */
 
-import botan.exceptn;
+import botan.utils.exceptn;
 import botan.alloc.secmem;
 import botan.loadstor;
 import string;

@@ -33,7 +33,7 @@ class CurveGFp
 			m_p_words(m_p.sig_words()),
 			m_p_dash(monty_inverse(m_p.word_at(0)))
 		{
-			const BigInt r = BigInt::power_of_2(m_p_words * BOTAN_MP_WORD_BITS);
+			const BigInt r = BigInt.power_of_2(m_p_words * BOTAN_MP_WORD_BITS);
 
 			m_r2  = (r * r) % p;
 			m_a_r = (a * r) % p;

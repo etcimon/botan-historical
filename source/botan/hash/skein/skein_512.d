@@ -8,7 +8,7 @@
 import botan.skein_512;
 import botan.loadstor;
 import botan.parsing;
-import botan.exceptn;
+import botan.utils.exceptn;
 import botan.internal.xor_buf;
 import std.algorithm;
 Skein_512::Skein_512(size_t arg_output_bits,

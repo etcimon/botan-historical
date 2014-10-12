@@ -9,7 +9,7 @@ module botan.algo_factory.algo_factory;
 import botan.algo_factory.algo_cache;
 import botan.internal.stl_util;
 import botan.engine.engine;
-import botan.exceptn;
+import botan.utils.exceptn;
 
 import botan.block.block_cipher;
 import botan.stream_cipher;
@@ -26,7 +26,7 @@ import vector;
 /**
 * Algorithm Factory
 */
-struct Algorithm_Factory
+class Algorithm_Factory
 {
 public:
 	/**
@@ -48,7 +48,7 @@ public:
 	~this()
 	{
 		/// All engines will be destroyed in Algorithm_Cache when
-		/// this struct goes out of scope in libstate...
+		/// this goes out of scope in libstate...
 
 	}
 	

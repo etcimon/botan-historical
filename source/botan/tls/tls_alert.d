@@ -6,7 +6,7 @@
 */
 
 import botan.tls_alert;
-import botan.exceptn;
+import botan.utils.exceptn;
 namespace TLS {
 
 Alert::Alert(in SafeVector!ubyte buf)

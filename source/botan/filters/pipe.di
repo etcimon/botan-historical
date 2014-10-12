@@ -8,7 +8,7 @@
 
 import botan.data_src;
 import botan.filter;
-import botan.exceptn;
+import botan.utils.exceptn;
 import initializer_list;
 import iosfwd;
 /**

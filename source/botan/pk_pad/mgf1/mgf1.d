@@ -6,7 +6,7 @@
 */
 
 import botan.mgf1;
-import botan.exceptn;
+import botan.utils.exceptn;
 import botan.internal.xor_buf;
 import std.algorithm;
 void mgf1_mask(HashFunction& hash,

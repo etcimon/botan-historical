@@ -7,7 +7,7 @@
 
 import botan.internal.es_egd;
 import botan.parsing;
-import botan.exceptn;
+import botan.utils.exceptn;
 import cstring;
 import stdexcept;
 

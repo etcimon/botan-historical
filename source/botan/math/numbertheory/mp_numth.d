@@ -16,7 +16,7 @@ BigInt square(in BigInt x)
 {
 	const size_t x_sw = x.sig_words();
 
-	BigInt z(BigInt::Positive, round_up!size_t(2*x_sw, 16));
+	BigInt z(BigInt.Positive, round_up!size_t(2*x_sw, 16));
 	secure_vector!word workspace(z.size());
 
 	bigint_sqr(z.mutable_data(), z.size(),
@@ -33,9 +33,9 @@ BigInt mul_add(in BigInt a, ref const BigInt b, ref const BigInt c)
 	if (c.is_negative() || c.is_zero())
 		throw new Invalid_Argument("mul_add: Third argument must be > 0");
 
-	BigInt::Sign sign = BigInt::Positive;
+	BigInt.Sign sign = BigInt.Positive;
 	if (a.sign() != b.sign())
-		sign = BigInt::Negative;
+		sign = BigInt.Negative;
 
 	const size_t a_sw = a.sig_words();
 	const size_t b_sw = b.sig_words();
