@@ -4,8 +4,11 @@
 *
 * Distributed under the terms of the botan license.
 */
+module botan.engine.dyn_engine;
 
 import botan.engine.engine;
+import botan.internal.dyn_load;
+
 /**
 * Dynamically_Loaded_Engine just proxies the requests to the underlying
 * Engine object, and handles load/unload details
@@ -16,84 +19,121 @@ public:
 	/**
 	* @param lib_path full pathname to DLL to load
 	*/
-	Dynamically_Loaded_Engine(in string lib_path);
+	this(in string library_path) 
+	{
+		engine = null;
+		lib = new Dynamically_Loaded_Library(library_path);
+		
+		try
+		{
+			module_version_func get_version =
+				lib.resolve!module_version_func("module_version");
+			
+			const uint mod_version = get_version();
+			
+			if (mod_version != 20101003)
+				throw new Exception("Incompatible version in " ~
+				                    library_path ~ " of " ~
+				                    std.conv.to!string(mod_version));
+			
+			creator_func creator =
+				lib.resolve!creator_func("create_engine");
+			
+			engine = creator();
+			
+			if (!engine)
+				throw new Exception("Creator function in " ~
+				                    library_path ~ " failed");
+		}
+		catch
+		{
+			delete lib;
+			lib = null;
+			throw new Exception();
+		}
+	}
 
-	Dynamically_Loaded_Engine(in Dynamically_Loaded_Engine);
 
-	Dynamically_Loaded_Engine& operator=(in Dynamically_Loaded_Engine);
+	this(in Dynamically_Loaded_Engine);
 
-	~this();
+	void opAssign(Dynamically_Loaded_Engine);
 
-	override string provider_name() const { return engine.provider_name(); }
+	~this()
+	{
+		delete engine;
+		delete lib;
+	}
 
-	override BlockCipher find_block_cipher(in SCAN_Name algo_spec,
+	string provider_name() const { return engine.provider_name(); }
+
+	BlockCipher find_block_cipher(in SCAN_Name algo_spec,
 											  Algorithm_Factory af) const
 	{
 		return engine.find_block_cipher(algo_spec, af);
 	}
 
-	override StreamCipher find_stream_cipher(in SCAN_Name algo_spec,
+	StreamCipher find_stream_cipher(in SCAN_Name algo_spec,
 												 Algorithm_Factory af) const
 	{
 		return engine.find_stream_cipher(algo_spec, af);
 	}
 
-	override HashFunction find_hash(in SCAN_Name algo_spec,
+	HashFunction find_hash(in SCAN_Name algo_spec,
 									 Algorithm_Factory af) const
 	{
 		return engine.find_hash(algo_spec, af);
 	}
 
-	override MessageAuthenticationCode find_mac(in SCAN_Name algo_spec,
+	MessageAuthenticationCode find_mac(in SCAN_Name algo_spec,
 													 Algorithm_Factory af) const
 	{
 		return engine.find_mac(algo_spec, af);
 	}
 
-	override PBKDF find_pbkdf(in SCAN_Name algo_spec,
+	PBKDF find_pbkdf(in SCAN_Name algo_spec,
 							 Algorithm_Factory af) const
 	{
 		return engine.find_pbkdf(algo_spec, af);
 	}
 
-	override Modular_Exponentiator mod_exp(in BigInt n,
+	Modular_Exponentiator mod_exp(in BigInt n,
 											  power_mod.Usage_Hints hints) const
 	{
 		return engine.mod_exp(n, hints);
 	}
 
-	override Keyed_Filter get_cipher(in string algo_spec,
+	Keyed_Filter get_cipher(in string algo_spec,
 									 Cipher_Dir dir,
 									 Algorithm_Factory af)
 	{
 		return engine.get_cipher(algo_spec, dir, af);
 	}
 
-	override pk_ops.Key_Agreement
+	pk_ops.Key_Agreement
 		 get_key_agreement_op(in Private_Key key, RandomNumberGenerator rng) const
 	{
 		return engine.get_key_agreement_op(key, rng);
 	}
 
-	override pk_ops.Signature
+	pk_ops.Signature
 		 get_signature_op(in Private_Key key, RandomNumberGenerator rng) const
 	{
 		return engine.get_signature_op(key, rng);
 	}
 
-	override pk_ops.Verification
+	pk_ops.Verification
 		 get_verify_op(in Public_Key key, RandomNumberGenerator rng) const
 	{
 		return engine.get_verify_op(key, rng);
 	}
 
-	override pk_ops.Encryption
+	pk_ops.Encryption
 			get_encryption_op(in Public_Key key, RandomNumberGenerator rng) const
 	{
 		return engine.get_encryption_op(key, rng);
 	}
 
-	override pk_ops.Decryption
+	pk_ops.Decryption
 		 get_decryption_op(in Private_Key key, RandomNumberGenerator rng) const
 	{
 		return engine.get_decryption_op(key, rng);
@@ -103,3 +143,9 @@ private:
 	Dynamically_Loaded_Library lib;
 	Engine engine;
 };
+
+private nothrow @nogc extern(C):
+
+typedef Engine function() creator_func;
+typedef uint function() module_version_func;
+

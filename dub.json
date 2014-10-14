@@ -6,6 +6,5 @@
 	"targetName": "botan",
 	"targetType": "staticLibrary",
 	"targetPath": "build",
-	"workingDirectory": "build",
-	"sourcePaths": ["source/botan"]
+	"workingDirectory": "build"
 }

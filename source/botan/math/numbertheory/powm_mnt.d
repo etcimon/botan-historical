@@ -119,7 +119,7 @@ BigInt Montgomery_Exponentiator::execute() const
 * Montgomery_Exponentiator Constructor
 */
 Montgomery_Exponentiator::Montgomery_Exponentiator(in BigInt mod,
-																	Power_Mod::Usage_Hints hints) :
+																	Power_Mod.Usage_Hints hints) :
 	m_modulus(mod),
 	m_mod_words(m_modulus.sig_words()),
 	m_window_bits(1),

@@ -43,7 +43,7 @@ class Power_Mod
 		* Try to choose a good window size
 		*/
 		static size_t window_bits(size_t exp_bits, size_t base_bits,
-										  Power_Mod::Usage_Hints hints);
+										  Power_Mod.Usage_Hints hints);
 
 		void set_modulus(in BigInt, Usage_Hints = NO_HINTS) const;
 		void set_base(in BigInt) const;

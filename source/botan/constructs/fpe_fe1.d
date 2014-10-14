@@ -13,6 +13,7 @@ import botan.hmac;
 import botan.sha2_32;
 import botan.utils.exceptn;
 import stdexcept;
+
 struct FPE {
 
 	/**

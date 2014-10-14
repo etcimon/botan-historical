@@ -112,7 +112,7 @@ BigInt Power_Mod::execute() const
 * Try to choose a good window size
 */
 size_t Power_Mod::window_bits(size_t exp_bits, size_t,
-										Power_Mod::Usage_Hints hints)
+										Power_Mod.Usage_Hints hints)
 {
 	immutable size_t[][2] wsize = {
 	{ 1434, 7 },
@@ -150,10 +150,10 @@ namespace {
 /*
 * Choose potentially useful hints
 */
-Power_Mod::Usage_Hints choose_base_hints(in BigInt b, ref const BigInt n)
+Power_Mod.Usage_Hints choose_base_hints(in BigInt b, ref const BigInt n)
 {
 	if (b == 2)
-		return Power_Mod::Usage_Hints(Power_Mod::BASE_IS_2 |
+		return Power_Mod.Usage_Hints(Power_Mod::BASE_IS_2 |
 												Power_Mod::BASE_IS_SMALL);
 
 	const size_t b_bits = b.bits();
@@ -170,7 +170,7 @@ Power_Mod::Usage_Hints choose_base_hints(in BigInt b, ref const BigInt n)
 /*
 * Choose potentially useful hints
 */
-Power_Mod::Usage_Hints choose_exp_hints(in BigInt e, ref const BigInt n)
+Power_Mod.Usage_Hints choose_exp_hints(in BigInt e, ref const BigInt n)
 {
 	const size_t e_bits = e.bits();
 	const size_t n_bits = n.bits();

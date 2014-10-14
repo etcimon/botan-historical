@@ -13,7 +13,7 @@ import botan.charset;
 import botan.engine.engine;
 import botan.utils.cpuid;
 import botan.asn1.oid_lookup.oids;
-import botan.internal.core_engine;
+import botan.engine.core_engine;
 import botan.internal.stl_util;
 import std.algorithm;
 import core.sync.mutex;
@@ -27,15 +27,15 @@ version(BOTAN_HAS_SELFTESTS)
 
 // Engines
 version(BOTAN_HAS_ENGINE_ASSEMBLER)
-	import botan.internal.asm_engine;
+	import botan.engine.asm_engine;
 version(BOTAN_HAS_ENGINE_AES_ISA)
-	import botan.internal.aes_isa_engine;
+	import botan.engine.aes_isa_engine;
 version(BOTAN_HAS_ENGINE_SIMD)
 	import botan.engine.simd_engine.simd_engine;
 version(BOTAN_HAS_ENGINE_GNU_MP)
 	import botan.internal.gnump_engine;
 version(BOTAN_HAS_ENGINE_OPENSSL)
-	import botan.internal.openssl_engine;
+	import botan.engine.openssl_engine;
 // Entropy sources
 version(BOTAN_HAS_ENTROPY_SRC_HIGH_RESOLUTION_TIMER)
 	import botan.internal.hres_timer;

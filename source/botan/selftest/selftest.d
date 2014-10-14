@@ -9,7 +9,7 @@ import botan.selftest;
 import botan.filters;
 import botan.aead_filt;
 import botan.codec.hex;
-import botan.internal.core_engine;
+import botan.engine.core_engine;
 import botan.internal.stl_util;
 namespace {
 

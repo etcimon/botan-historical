@@ -30,5 +30,5 @@ public:
 	override pk_ops.Decryption get_decryption_op(in Private_Key key, RandomNumberGenerator) const;
 
 	override Modular_Exponentiator mod_exp(in BigInt,
-											Power_Mod::Usage_Hints) const;
+											Power_Mod.Usage_Hints) const;
 };

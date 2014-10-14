@@ -42,7 +42,7 @@ BigInt GMP_Modular_Exponentiator::execute() const
 * Return the GMP-based modular exponentiator
 */
 Modular_Exponentiator GMP_Engine::mod_exp(in BigInt n,
-														 Power_Mod::Usage_Hints) const
+														 Power_Mod.Usage_Hints) const
 {
 	return new GMP_Modular_Exponentiator(n);
 }

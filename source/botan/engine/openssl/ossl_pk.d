@@ -5,7 +5,7 @@
 * Distributed under the terms of the Botan license
 */
 
-import botan.internal.openssl_engine;
+import botan.engine.openssl_engine;
 import botan.internal.bn_wrap;
 
 #if defined(BOTAN_HAS_RSA)

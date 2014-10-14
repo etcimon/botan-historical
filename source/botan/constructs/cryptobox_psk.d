@@ -68,7 +68,6 @@ struct CryptoBox {
 		return output;
 	}
 
-
 	/**
 	* Encrypt a message using a shared secret key
 	* @param input the input data
