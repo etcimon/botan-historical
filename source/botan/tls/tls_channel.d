@@ -529,7 +529,7 @@ void Channel::send(in ubyte* buf, size_t buf_size)
 
 void Channel::send(in string string)
 {
-	this.send(cast(const ubyte*)(string.c_str()), string.size());
+	this.send(cast(const ubyte*)(string.toStringz), string.size());
 }
 
 void Channel::send_alert(in Alert alert)

@@ -38,7 +38,7 @@ DataSink_Stream::DataSink_Stream(in string path,
 											bool use_binary) :
 	identifier(path),
 	sink_p(new std::ofstream(
-				 path.c_str(),
+				 path.toStringz,
 				 use_binary ? std::ios::binary : std::ios::out)),
 	sink(*sink_p)
 {

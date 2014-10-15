@@ -27,7 +27,7 @@ struct secure_allocator(T)
 
 	T* allocate(size_t n, const void* = 0)
 	{
-		version(BOTAN_HAS_LOCKING_ALLOCATOR) {
+		static if (BOTAN_HAS_LOCKING_ALLOCATOR) {
 			if (pointer p = cast(pointer)(mlock_allocator.instance().allocate(n, sizeof(T))))
 				return p;
 		}
@@ -40,7 +40,7 @@ struct secure_allocator(T)
 	{
 		clear_mem(p, n);
 
-		version(BOTAN_HAS_LOCKING_ALLOCATOR) {
+		static if (BOTAN_HAS_LOCKING_ALLOCATOR) {
 			if (mlock_allocator.instance().deallocate(p, n, sizeof(T)))
 				return;
 		}

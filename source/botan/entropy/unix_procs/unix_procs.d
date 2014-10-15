@@ -27,7 +27,7 @@ string find_full_path_if_exists(in Vector!string trusted_path,
 	foreach (dir; trusted_path)
 	{
 		const string full_path = dir ~ "/" ~ proc;
-		if (::access(full_path.c_str(), X_OK) == 0)
+		if (::access(full_path.toStringz, X_OK) == 0)
 			return full_path;
 	}
 
@@ -84,11 +84,11 @@ namespace {
 void do_exec(in Vector!string args)
 {
 	// cleaner way to do this?
-	string arg0 = (args.size() > 0) ? args[0].c_str() : null;
-	string arg1 = (args.size() > 1) ? args[1].c_str() : null;
-	string arg2 = (args.size() > 2) ? args[2].c_str() : null;
-	string arg3 = (args.size() > 3) ? args[3].c_str() : null;
-	string arg4 = (args.size() > 4) ? args[4].c_str() : null;
+	string arg0 = (args.size() > 0) ? args[0].toStringz : null;
+	string arg1 = (args.size() > 1) ? args[1].toStringz : null;
+	string arg2 = (args.size() > 2) ? args[2].toStringz : null;
+	string arg3 = (args.size() > 3) ? args[3].toStringz : null;
+	string arg4 = (args.size() > 4) ? args[4].toStringz : null;
 
 	::execl(arg0, arg0, arg1, arg2, arg3, arg4, NULL);
 }

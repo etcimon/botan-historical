@@ -16,96 +16,96 @@ import botan.internal.def_powm;
 import botan.algo_base.scan_name;
 import botan.algo_factory;
 
-version(BOTAN_HAS_MODE_CFB)			import botan.cfb;
-version(BOTAN_HAS_MODE_ECB)			import botan.ecb;
-version(BOTAN_HAS_MODE_CBC) 		import botan.cbc;
-version(BOTAN_HAS_MODE_XTS)	 		import botan.xts;
+static if (BOTAN_HAS_MODE_CFB)			import botan.cfb;
+static if (BOTAN_HAS_MODE_ECB)			import botan.ecb;
+static if (BOTAN_HAS_MODE_CBC) 		import botan.cbc;
+static if (BOTAN_HAS_MODE_XTS)	 		import botan.xts;
 
-version(BOTAN_HAS_OFB) 				import botan.ofb;
-version(BOTAN_HAS_CTR_BE)			import botan.ctr;
-version(BOTAN_HAS_AEAD_FILTER)		import botan.aead_filt;
-version(BOTAN_HAS_AEAD_CCM) 		import botan.ccm;
-version(BOTAN_HAS_AEAD_EAX) 		import botan.eax;	
-version(BOTAN_HAS_AEAD_OCB) 		import botan.ocb;
-version(BOTAN_HAS_AEAD_GCM) 		import botan.gcm;
-version(BOTAN_HAS_RSA) 				import botan.rsa;
-version(BOTAN_HAS_RW) 				import botan.rw;
-version(BOTAN_HAS_DSA) 				import botan.dsa;
-version(BOTAN_HAS_ECDSA) 			import botan.ecdsa;
-version(BOTAN_HAS_ELGAMAL) 			import botan.elgamal;
-version(BOTAN_HAS_GOST_34_10_2001) 	import botan.gost_3410;
-version(BOTAN_HAS_NYBERG_RUEPPEL) 	import botan.nr;
-version(BOTAN_HAS_DIFFIE_HELLMAN) 	import botan.dh;
-version(BOTAN_HAS_ECDH) 			import botan.ecdh;
+static if (BOTAN_HAS_OFB) 				import botan.ofb;
+static if (BOTAN_HAS_CTR_BE)			import botan.ctr;
+static if (BOTAN_HAS_AEAD_FILTER)		import botan.aead_filt;
+static if (BOTAN_HAS_AEAD_CCM) 		import botan.ccm;
+static if (BOTAN_HAS_AEAD_EAX) 		import botan.eax;	
+static if (BOTAN_HAS_AEAD_OCB) 		import botan.ocb;
+static if (BOTAN_HAS_AEAD_GCM) 		import botan.gcm;
+static if (BOTAN_HAS_RSA) 				import botan.rsa;
+static if (BOTAN_HAS_RW) 				import botan.rw;
+static if (BOTAN_HAS_DSA) 				import botan.dsa;
+static if (BOTAN_HAS_ECDSA) 			import botan.ecdsa;
+static if (BOTAN_HAS_ELGAMAL) 			import botan.elgamal;
+static if (BOTAN_HAS_GOST_34_10_2001) 	import botan.gost_3410;
+static if (BOTAN_HAS_NYBERG_RUEPPEL) 	import botan.nr;
+static if (BOTAN_HAS_DIFFIE_HELLMAN) 	import botan.dh;
+static if (BOTAN_HAS_ECDH) 			import botan.ecdh;
 /// Blocks
-version(BOTAN_HAS_AES) 				import botan.block.aes;
-version(BOTAN_HAS_BLOWFISH) 		import botan.block.blowfish;
-version(BOTAN_HAS_CAMELLIA) 		import botan.block.camellia;
-version(BOTAN_HAS_CAST) {
+static if (BOTAN_HAS_AES) 				import botan.block.aes;
+static if (BOTAN_HAS_BLOWFISH) 		import botan.block.blowfish;
+static if (BOTAN_HAS_CAMELLIA) 		import botan.block.camellia;
+static if (BOTAN_HAS_CAST) {
 									import botan.block.cast128;
 									import botan.block.cast256;
 }
-version(BOTAN_HAS_CASCADE)  		import botan.block.cascade;
-version(BOTAN_HAS_DES){
+static if (BOTAN_HAS_CASCADE)  		import botan.block.cascade;
+static if (BOTAN_HAS_DES){
 									import botan.block.des;
 									import botan.block.desx;
 }
-version(BOTAN_HAS_GOST_28147_89)	import botan.block.gost_28147;
-version(BOTAN_HAS_IDEA) 			import botan.block.idea;
-version(BOTAN_HAS_KASUMI) 			import botan.block.kasumi;
-version(BOTAN_HAS_LION) 			import botan.block.lion;
-version(BOTAN_HAS_MARS) 			import botan.block.mars;
-version(BOTAN_HAS_MISTY1) 			import botan.block.misty1;
-version(BOTAN_HAS_NOEKEON) 			import botan.block.noekeon;
-version(BOTAN_HAS_RC2) 				import botan.block.rc2;
-version(BOTAN_HAS_RC5) 				import botan.block.rc5;
-version(BOTAN_HAS_RC6) 				import botan.block.rc6;
-version(BOTAN_HAS_SAFER) 			import botan.block.safer_sk;
-version(BOTAN_HAS_SEED) 			import botan.block.seed;
-version(BOTAN_HAS_SERPENT) 			import botan.block.serpent;
-version(BOTAN_HAS_TEA) 				import botan.block.tea;
-version(BOTAN_HAS_TWOFISH) 			import botan.block.twofish;
-version(BOTAN_HAS_THREEFISH_512) 	import botan.block.threefish;
-version(BOTAN_HAS_XTEA) 			import botan.block.xtea;
+static if (BOTAN_HAS_GOST_28147_89)	import botan.block.gost_28147;
+static if (BOTAN_HAS_IDEA) 			import botan.block.idea;
+static if (BOTAN_HAS_KASUMI) 			import botan.block.kasumi;
+static if (BOTAN_HAS_LION) 			import botan.block.lion;
+static if (BOTAN_HAS_MARS) 			import botan.block.mars;
+static if (BOTAN_HAS_MISTY1) 			import botan.block.misty1;
+static if (BOTAN_HAS_NOEKEON) 			import botan.block.noekeon;
+static if (BOTAN_HAS_RC2) 				import botan.block.rc2;
+static if (BOTAN_HAS_RC5) 				import botan.block.rc5;
+static if (BOTAN_HAS_RC6) 				import botan.block.rc6;
+static if (BOTAN_HAS_SAFER) 			import botan.block.safer_sk;
+static if (BOTAN_HAS_SEED) 			import botan.block.seed;
+static if (BOTAN_HAS_SERPENT) 			import botan.block.serpent;
+static if (BOTAN_HAS_TEA) 				import botan.block.tea;
+static if (BOTAN_HAS_TWOFISH) 			import botan.block.twofish;
+static if (BOTAN_HAS_THREEFISH_512) 	import botan.block.threefish;
+static if (BOTAN_HAS_XTEA) 			import botan.block.xtea;
 
 //Hash
-version(BOTAN_HAS_ADLER32) 			import botan.checksum.adler32;
-version(BOTAN_HAS_CRC24) 			import botan.checksum.crc24;
-version(BOTAN_HAS_CRC32) 			import botan.checksum.crc32;
-version(BOTAN_HAS_GOST_34_11) 		import botan.gost_3411;
-version(BOTAN_HAS_HAS_160) 			import botan.has160;
-version(BOTAN_HAS_KECCAK) 			import botan.keccak;
-version(BOTAN_HAS_MD2) 				import botan.md2;
-version(BOTAN_HAS_MD4) 				import botan.md4;
-version(BOTAN_HAS_MD5) 				import botan.md5;
-version(BOTAN_HAS_RIPEMD_128) 		import botan.rmd128;
-version(BOTAN_HAS_RIPEMD_160) 		import botan.rmd160;
-version(BOTAN_HAS_SHA1) 			import botan.sha160;
-version(BOTAN_HAS_SHA2_32) 			import botan.sha2_32;
-version(BOTAN_HAS_SHA2_64) 			import botan.sha2_64;
-version(BOTAN_HAS_SKEIN_512) 		import botan.skein_512;
-version(BOTAN_HAS_TIGER) 			import botan.tiger;
-version(BOTAN_HAS_WHIRLPOOL) 		import botan.whrlpool;
-version(BOTAN_HAS_PARALLEL_HASH) 	import botan.par_hash;
-version(BOTAN_HAS_COMB4P) 			import botan.comb4p;
+static if (BOTAN_HAS_ADLER32) 			import botan.checksum.adler32;
+static if (BOTAN_HAS_CRC24) 			import botan.checksum.crc24;
+static if (BOTAN_HAS_CRC32) 			import botan.checksum.crc32;
+static if (BOTAN_HAS_GOST_34_11) 		import botan.gost_3411;
+static if (BOTAN_HAS_HAS_160) 			import botan.has160;
+static if (BOTAN_HAS_KECCAK) 			import botan.keccak;
+static if (BOTAN_HAS_MD2) 				import botan.md2;
+static if (BOTAN_HAS_MD4) 				import botan.md4;
+static if (BOTAN_HAS_MD5) 				import botan.md5;
+static if (BOTAN_HAS_RIPEMD_128) 		import botan.rmd128;
+static if (BOTAN_HAS_RIPEMD_160) 		import botan.rmd160;
+static if (BOTAN_HAS_SHA1) 			import botan.sha160;
+static if (BOTAN_HAS_SHA2_32) 			import botan.sha2_32;
+static if (BOTAN_HAS_SHA2_64) 			import botan.sha2_64;
+static if (BOTAN_HAS_SKEIN_512) 		import botan.skein_512;
+static if (BOTAN_HAS_TIGER) 			import botan.tiger;
+static if (BOTAN_HAS_WHIRLPOOL) 		import botan.whrlpool;
+static if (BOTAN_HAS_PARALLEL_HASH) 	import botan.par_hash;
+static if (BOTAN_HAS_COMB4P) 			import botan.comb4p;
 
 /// MAC
-version(BOTAN_HAS_CBC_MAC) 			import botan.cbc_mac;
-version(BOTAN_HAS_CMAC)  			import botan.cmac;
-version(BOTAN_HAS_HMAC)  			import botan.hmac;
-version(BOTAN_HAS_SSL3_MAC)  		import botan.ssl3_mac;
-version(BOTAN_HAS_ANSI_X919_MAC)  	import botan.x919_mac;
+static if (BOTAN_HAS_CBC_MAC) 			import botan.cbc_mac;
+static if (BOTAN_HAS_CMAC)  			import botan.cmac;
+static if (BOTAN_HAS_HMAC)  			import botan.hmac;
+static if (BOTAN_HAS_SSL3_MAC)  		import botan.ssl3_mac;
+static if (BOTAN_HAS_ANSI_X919_MAC)  	import botan.x919_mac;
 
 /// PBKDF
-version(BOTAN_HAS_PBKDF1) 			import botan.pbkdf1;
-version(BOTAN_HAS_PBKDF2)			import botan.pbkdf2;
+static if (BOTAN_HAS_PBKDF1) 			import botan.pbkdf1;
+static if (BOTAN_HAS_PBKDF2)			import botan.pbkdf2;
 
 /// STREAM
-version(BOTAN_HAS_OFB)  			import botan.ofb;
-version(BOTAN_HAS_CTR_BE)  			import botan.ctr;
-version(BOTAN_HAS_RC4)  			import botan.rc4;
-version(BOTAN_HAS_CHACHA)  			import botan.chacha;
-version(BOTAN_HAS_SALSA20)  		import botan.salsa20;
+static if (BOTAN_HAS_OFB)  			import botan.ofb;
+static if (BOTAN_HAS_CTR_BE)  			import botan.ctr;
+static if (BOTAN_HAS_RC4)  			import botan.rc4;
+static if (BOTAN_HAS_CHACHA)  			import botan.chacha;
+static if (BOTAN_HAS_SALSA20)  		import botan.salsa20;
 
 /**
 * Core Engine
@@ -117,12 +117,12 @@ public:
 
 	pk_ops.Key_Agreement get_key_agreement_op(in Private_Key key, RandomNumberGenerator rng) const
 	{
-		version(BOTAN_HAS_DIFFIE_HELLMAN) {
+		static if (BOTAN_HAS_DIFFIE_HELLMAN) {
 			if (const DH_PrivateKey* dh = cast(const DH_PrivateKey*)(key))
 				return new DH_KA_Operation(*dh, rng);
 		}
 		
-		version(BOTAN_HAS_ECDH) {
+		static if (BOTAN_HAS_ECDH) {
 			if (const ECDH_PrivateKey* ecdh = cast(const ECDH_PrivateKey*)(key))
 				return new ECDH_KA_Operation(*ecdh);
 		}
@@ -132,33 +132,33 @@ public:
 
 	pk_ops.Signature get_signature_op(in Private_Key key, RandomNumberGenerator rng) const
 	{
-		version(BOTAN_HAS_RSA) {
+		static if (BOTAN_HAS_RSA) {
 			if (const RSA_PrivateKey* s = cast(const RSA_PrivateKey*)(key))
 				return new RSA_Private_Operation(*s, rng);
 		}
 		
-		version(BOTAN_HAS_RW) {
+		static if (BOTAN_HAS_RW) {
 			if (const RW_PrivateKey* s = cast(const RW_PrivateKey*)(key))
 				return new RW_Signature_Operation(*s);
 		}
 		
-		version(BOTAN_HAS_DSA) {
+		static if (BOTAN_HAS_DSA) {
 			if (const DSA_PrivateKey* s = cast(const DSA_PrivateKey*)(key))
 				return new DSA_Signature_Operation(*s);
 		}
 		
-		version(BOTAN_HAS_ECDSA) {
+		static if (BOTAN_HAS_ECDSA) {
 			if (const ECDSA_PrivateKey* s = cast(const ECDSA_PrivateKey*)(key))
 				return new ECDSA_Signature_Operation(*s);
 		}
 		
-		version(BOTAN_HAS_GOST_34_10_2001) {
+		static if (BOTAN_HAS_GOST_34_10_2001) {
 			if (const GOST_3410_PrivateKey* s =
 			    cast(const GOST_3410_PrivateKey*)(key))
 				return new GOST_3410_Signature_Operation(*s);
 		}
 		
-		version(BOTAN_HAS_NYBERG_RUEPPEL) {
+		static if (BOTAN_HAS_NYBERG_RUEPPEL) {
 			if (const NR_PrivateKey* s = cast(const NR_PrivateKey*)(key))
 				return new NR_Signature_Operation(*s);
 		}
@@ -169,33 +169,33 @@ public:
 	pk_ops.Verification
 		get_verify_op(in Public_Key key, RandomNumberGenerator rng) const
 	{
-		version(BOTAN_HAS_RSA) {
+		static if (BOTAN_HAS_RSA) {
 			if (const RSA_PublicKey* s = cast(const RSA_PublicKey*)(key))
 				return new RSA_Public_Operation(*s);
 		}
 		
-		version(BOTAN_HAS_RW) {
+		static if (BOTAN_HAS_RW) {
 			if (const RW_PublicKey* s = cast(const RW_PublicKey*)(key))
 				return new RW_Verification_Operation(*s);
 		}
 		
-		version(BOTAN_HAS_DSA) {
+		static if (BOTAN_HAS_DSA) {
 			if (const DSA_PublicKey* s = cast(const DSA_PublicKey*)(key))
 				return new DSA_Verification_Operation(*s);
 		}
 		
-		version(BOTAN_HAS_ECDSA) {
+		static if (BOTAN_HAS_ECDSA) {
 			if (const ECDSA_PublicKey s = cast(const ECDSA_PublicKey)(key))
 				return new ECDSA_Verification_Operation(*s);
 		}
 		
-		version(BOTAN_HAS_GOST_34_10_2001) {
+		static if (BOTAN_HAS_GOST_34_10_2001) {
 			if (const GOST_3410_PublicKey* s =
 			    cast(const GOST_3410_PublicKey*)(key))
 				return new GOST_3410_Verification_Operation(*s);
 		}
 		
-		version(BOTAN_HAS_NYBERG_RUEPPEL) {
+		static if (BOTAN_HAS_NYBERG_RUEPPEL) {
 			if (const NR_PublicKey* s = cast(const NR_PublicKey*)(key))
 				return new NR_Verification_Operation(*s);
 		}
@@ -206,12 +206,12 @@ public:
 
 	pk_ops.Encryption get_encryption_op(in Public_Key key, RandomNumberGenerator) const
 	{
-		version(BOTAN_HAS_RSA) {
+		static if (BOTAN_HAS_RSA) {
 			if (const RSA_PublicKey* s = cast(const RSA_PublicKey*)(key))
 				return new RSA_Public_Operation(*s);
 		}
 		
-		version(BOTAN_HAS_ELGAMAL) {
+		static if (BOTAN_HAS_ELGAMAL) {
 			if (const ElGamal_PublicKey* s = cast(const ElGamal_PublicKey*)(key))
 				return new ElGamal_Encryption_Operation(*s);
 		}
@@ -221,12 +221,12 @@ public:
 
 	pk_ops.Decryption get_decryption_op(in Private_Key key, RandomNumberGenerator rng) const
 	{
-		version(BOTAN_HAS_RSA) {
+		static if (BOTAN_HAS_RSA) {
 			if (const RSA_PrivateKey* s = cast(const RSA_PrivateKey*)(key))
 				return new RSA_Private_Operation(*s, rng);
 		}
 		
-		version(BOTAN_HAS_ELGAMAL) {
+		static if (BOTAN_HAS_ELGAMAL) {
 			if (const ElGamal_PrivateKey* s = cast(const ElGamal_PrivateKey*)(key))
 				return new ElGamal_Decryption_Operation(*s, rng);
 		}
@@ -296,7 +296,7 @@ public:
                                       		Algorithm_Factory af) const
 	{
 		
-		version(BOTAN_HAS_AES) {
+		static if (BOTAN_HAS_AES) {
 			if (request.algo_name() == "AES-128")
 				return new AES_128;
 			if (request.algo_name() == "AES-192")
@@ -305,12 +305,12 @@ public:
 				return new AES_256;
 		}
 		
-		version(BOTAN_HAS_BLOWFISH) {
+		static if (BOTAN_HAS_BLOWFISH) {
 			if (request.algo_name() == "Blowfish")
 				return new Blowfish;
 		}
 		
-		version(BOTAN_HAS_CAMELLIA) {
+		static if (BOTAN_HAS_CAMELLIA) {
 			if (request.algo_name() == "Camellia-128")
 				return new Camellia_128;
 			if (request.algo_name() == "Camellia-192")
@@ -319,14 +319,14 @@ public:
 				return new Camellia_256;
 		}
 		
-		version(BOTAN_HAS_CAST) {
+		static if (BOTAN_HAS_CAST) {
 			if (request.algo_name() == "CAST-128")
 				return new CAST_128;
 			if (request.algo_name() == "CAST-256")
 				return new CAST_256;
 		}
 		
-		version(BOTAN_HAS_DES) {
+		static if (BOTAN_HAS_DES) {
 			if (request.algo_name() == "DES")
 				return new DES;
 			if (request.algo_name() == "DESX")
@@ -335,87 +335,87 @@ public:
 				return new TripleDES;
 		}
 		
-		version(BOTAN_HAS_GOST_28147_89) {
+		static if (BOTAN_HAS_GOST_28147_89) {
 			if (request.algo_name() == "GOST-28147-89")
 				return new GOST_28147_89(request.arg(0, "R3411_94_TestParam"));
 		}
 		
-		version(BOTAN_HAS_IDEA) {
+		static if (BOTAN_HAS_IDEA) {
 			if (request.algo_name() == "IDEA")
 				return new IDEA;
 		}
 		
-		version(BOTAN_HAS_KASUMI) {
+		static if (BOTAN_HAS_KASUMI) {
 			if (request.algo_name() == "KASUMI")
 				return new KASUMI;
 		}
 		
-		version(BOTAN_HAS_MARS) {
+		static if (BOTAN_HAS_MARS) {
 			if (request.algo_name() == "MARS")
 					return new MARS;
 		}
 		
-		version(BOTAN_HAS_MISTY1) {
+		static if (BOTAN_HAS_MISTY1) {
 			if (request.algo_name() == "MISTY1")
 				return new MISTY1(request.arg_as_integer(0, 8));
 		}
 		
-		version(BOTAN_HAS_NOEKEON) {
+		static if (BOTAN_HAS_NOEKEON) {
 			if (request.algo_name() == "Noekeon")
 				return new Noekeon;
 		}
 		
-		version(BOTAN_HAS_RC2) {
+		static if (BOTAN_HAS_RC2) {
 			if (request.algo_name() == "RC2")
 				return new RC2;
 		}
 		
-		version(BOTAN_HAS_RC5) {
+		static if (BOTAN_HAS_RC5) {
 			if (request.algo_name() == "RC5")
 				return new RC5(request.arg_as_integer(0, 12));
 		}
 		
-		version(BOTAN_HAS_RC6) {
+		static if (BOTAN_HAS_RC6) {
 			if (request.algo_name() == "RC6")
 				return new RC6;
 		}
 		
-		version(BOTAN_HAS_SAFER) {
+		static if (BOTAN_HAS_SAFER) {
 			if (request.algo_name() == "SAFER-SK")
 				return new SAFER_SK(request.arg_as_integer(0, 10));
 		}
 		
-		version(BOTAN_HAS_SEED) {
+		static if (BOTAN_HAS_SEED) {
 			if (request.algo_name() == "SEED")
 				return new SEED;
 		}
 		
-		version(BOTAN_HAS_SERPENT) {
+		static if (BOTAN_HAS_SERPENT) {
 			if (request.algo_name() == "Serpent")
 				return new Serpent;
 		}
 		
-		version(BOTAN_HAS_TEA) {
+		static if (BOTAN_HAS_TEA) {
 			if (request.algo_name() == "TEA")
 				return new TEA;
 		}
 		
-		version(BOTAN_HAS_TWOFISH) {
+		static if (BOTAN_HAS_TWOFISH) {
 			if (request.algo_name() == "Twofish")
 				return new Twofish;
 		}
 		
-		version(BOTAN_HAS_TWOFISH) {
+		static if (BOTAN_HAS_TWOFISH) {
 			if (request.algo_name() == "Threefish-512")
 				return new Threefish_512;
 		}
 		
-		version(BOTAN_HAS_XTEA) {
+		static if (BOTAN_HAS_XTEA) {
 			if (request.algo_name() == "XTEA")
 				return new XTEA;
 		}
 		
-		version(BOTAN_HAS_CASCADE) {
+		static if (BOTAN_HAS_CASCADE) {
 			if (request.algo_name() == "Cascade" && request.arg_count() == 2)
 			{
 				const BlockCipher c1 = af.prototype_block_cipher(request.arg(0));
@@ -426,7 +426,7 @@ public:
 			}
 		}
 		
-		version(BOTAN_HAS_LION) {
+		static if (BOTAN_HAS_LION) {
 			if (request.algo_name() == "Lion" && request.arg_count_between(2, 3))
 			{
 				const size_t block_size = request.arg_as_integer(2, 1024);
@@ -450,7 +450,7 @@ public:
 	StreamCipher find_stream_cipher(in SCAN_Name request,
 	                                         Algorithm_Factory af) const
 	{
-		version(BOTAN_HAS_OFB) {
+		static if (BOTAN_HAS_OFB) {
 			if (request.algo_name() == "OFB" && request.arg_count() == 1)
 			{
 				if (auto proto = af.prototype_block_cipher(request.arg(0)))
@@ -458,7 +458,7 @@ public:
 			}
 		}
 		
-		version(BOTAN_HAS_CTR_BE) {
+		static if (BOTAN_HAS_CTR_BE) {
 			if (request.algo_name() == "CTR-BE" && request.arg_count() == 1)
 			{
 				if (auto proto = af.prototype_block_cipher(request.arg(0)))
@@ -466,19 +466,19 @@ public:
 			}
 		}
 		
-		version(BOTAN_HAS_RC4) {
+		static if (BOTAN_HAS_RC4) {
 			if (request.algo_name() == "RC4")
 				return new RC4(request.arg_as_integer(0, 0));
 			if (request.algo_name() == "RC4_drop")
 				return new RC4(768);
 		}
 		
-		version(BOTAN_HAS_CHACHA) {
+		static if (BOTAN_HAS_CHACHA) {
 			if (request.algo_name() == "ChaCha")
 				return new ChaCha;
 		}
 		
-		version(BOTAN_HAS_SALSA20) {
+		static if (BOTAN_HAS_SALSA20) {
 			if (request.algo_name() == "Salsa20")
 				return new Salsa20;
 		}
@@ -489,98 +489,98 @@ public:
 	HashFunction find_hash(in SCAN_Name request,
 	                                Algorithm_Factory af) const
 	{
-		version(BOTAN_HAS_ADLER32) {
+		static if (BOTAN_HAS_ADLER32) {
 			if (request.algo_name() == "Adler32")
 				return new Adler32;
 		}
 		
-		version(BOTAN_HAS_CRC24) {
+		static if (BOTAN_HAS_CRC24) {
 			if (request.algo_name() == "CRC24")
 				return new CRC24;
 		}
 		
-		version(BOTAN_HAS_CRC32) {
+		static if (BOTAN_HAS_CRC32) {
 			if (request.algo_name() == "CRC32")
 				return new CRC32;
 		}
 		
-		version(BOTAN_HAS_GOST_34_11) {
+		static if (BOTAN_HAS_GOST_34_11) {
 			if (request.algo_name() == "GOST-R-34.11-94")
 				return new GOST_34_11;
 		}
 		
-		version(BOTAN_HAS_HAS_160) {
+		static if (BOTAN_HAS_HAS_160) {
 			if (request.algo_name() == "HAS-160")
 				return new HAS_160;
 		}
 		
-		version(BOTAN_HAS_KECCAK) {
+		static if (BOTAN_HAS_KECCAK) {
 			if (request.algo_name() == "Keccak-1600")
 				return new Keccak_1600(request.arg_as_integer(0, 512));
 		}
 		
-		version(BOTAN_HAS_MD2) {
+		static if (BOTAN_HAS_MD2) {
 			if (request.algo_name() == "MD2")
 				return new MD2;
 		}
 		
-		version(BOTAN_HAS_MD4) {
+		static if (BOTAN_HAS_MD4) {
 			if (request.algo_name() == "MD4")
 				return new MD4;
 		}
 		
-		version(BOTAN_HAS_MD5) {
+		static if (BOTAN_HAS_MD5) {
 			if (request.algo_name() == "MD5")
 				return new MD5;
 		}
 		
-		version(BOTAN_HAS_RIPEMD_128) {
+		static if (BOTAN_HAS_RIPEMD_128) {
 			if (request.algo_name() == "RIPEMD-128")
 				return new RIPEMD_128;
 		}
 		
-		version(BOTAN_HAS_RIPEMD_160) {
+		static if (BOTAN_HAS_RIPEMD_160) {
 			if (request.algo_name() == "RIPEMD-160")
 				return new RIPEMD_160;
 		}
 		
-		version(BOTAN_HAS_SHA1) {
+		static if (BOTAN_HAS_SHA1) {
 			if (request.algo_name() == "SHA-160")
 				return new SHA_160;
 		}
 		
-		version(BOTAN_HAS_SHA2_32) {
+		static if (BOTAN_HAS_SHA2_32) {
 			if (request.algo_name() == "SHA-224")
 				return new SHA_224;
 			if (request.algo_name() == "SHA-256")
 				return new SHA_256;
 		}
 		
-		version(BOTAN_HAS_SHA2_64) {
+		static if (BOTAN_HAS_SHA2_64) {
 			if (request.algo_name() == "SHA-384")
 				return new SHA_384;
 			if (request.algo_name() == "SHA-512")
 				return new SHA_512;
 		}
 		
-		version(BOTAN_HAS_TIGER) {
+		static if (BOTAN_HAS_TIGER) {
 			if (request.algo_name() == "Tiger")
 				return new Tiger(request.arg_as_integer(0, 24), // hash output
 				                 request.arg_as_integer(1, 3)); // # passes
 		}
 		
-		version(BOTAN_HAS_SKEIN_512) {
+		static if (BOTAN_HAS_SKEIN_512) {
 			if (request.algo_name() == "Skein-512")
 				return new Skein_512(request.arg_as_integer(0, 512),
 				                     request.arg(1, ""));
 		}
 		
-		version(BOTAN_HAS_WHIRLPOOL) {
+		static if (BOTAN_HAS_WHIRLPOOL) {
 			if (request.algo_name() == "Whirlpool")
 				return new Whirlpool;
 		}
 		
-		version(BOTAN_HAS_COMB4P) {
+		static if (BOTAN_HAS_COMB4P) {
 			if (request.algo_name() == "Comb4P" && request.arg_count() == 2)
 			{
 				const HashFunction h1 = af.prototype_hash_function(request.arg(0));
@@ -591,7 +591,7 @@ public:
 			}
 		}
 		
-		version(BOTAN_HAS_PARALLEL_HASH) {
+		static if (BOTAN_HAS_PARALLEL_HASH) {
 			
 			if (request.algo_name() == "Parallel")
 			{
@@ -625,27 +625,27 @@ public:
 	                                            Algorithm_Factory af) const
 	{
 		
-		version(BOTAN_HAS_CBC_MAC) {
+		static if (BOTAN_HAS_CBC_MAC) {
 			if (request.algo_name() == "CBC-MAC" && request.arg_count() == 1)
 				return new CBC_MAC(af.make_block_cipher(request.arg(0)));
 		}
 		
-		version(BOTAN_HAS_CMAC) {
+		static if (BOTAN_HAS_CMAC) {
 			if (request.algo_name() == "CMAC" && request.arg_count() == 1)
 				return new CMAC(af.make_block_cipher(request.arg(0)));
 		}
 		
-		version(BOTAN_HAS_HMAC) {
+		static if (BOTAN_HAS_HMAC) {
 			if (request.algo_name() == "HMAC" && request.arg_count() == 1)
 				return new HMAC(af.make_hash_function(request.arg(0)));
 		}
 		
-		version(BOTAN_HAS_SSL3_MAC) {
+		static if (BOTAN_HAS_SSL3_MAC) {
 			if (request.algo_name() == "SSL3-MAC" && request.arg_count() == 1)
 				return new SSL3_MAC(af.make_hash_function(request.arg(0)));
 		}
 		
-		version(BOTAN_HAS_ANSI_X919_MAC) {
+		static if (BOTAN_HAS_ANSI_X919_MAC) {
 			if (request.algo_name() == "X9.19-MAC" && request.arg_count() == 0)
 				return new ANSI_X919_MAC(af.make_block_cipher("DES"));
 		}
@@ -657,12 +657,12 @@ public:
 	PBKDF find_pbkdf(in SCAN_Name algo_spec,
 	                          Algorithm_Factory af) const
 	{
-		version(BOTAN_HAS_PBKDF1) {
+		static if (BOTAN_HAS_PBKDF1) {
 			if (algo_spec.algo_name() == "PBKDF1" && algo_spec.arg_count() == 1)
 				return new PKCS5_PBKDF1(af.make_hash_function(algo_spec.arg(0)));
 		}
 		
-		version(BOTAN_HAS_PBKDF2) {
+		static if (BOTAN_HAS_PBKDF2) {
 			if (algo_spec.algo_name() == "PBKDF2" && algo_spec.arg_count() == 1)
 			{
 				if (const MessageAuthenticationCode mac_proto = af.prototype_mac(algo_spec.arg(0)))
@@ -689,17 +689,17 @@ Keyed_Filter get_cipher_mode(const BlockCipher block_cipher,
                              in string mode,
                              in string padding)
 {
-	version(BOTAN_HAS_OFB) {
+	static if (BOTAN_HAS_OFB) {
 		if (mode == "OFB")
 			return new StreamCipher_Filter(new OFB(block_cipher.clone()));
 	}
 		
-	version(BOTAN_HAS_CTR_BE) {
+	static if (BOTAN_HAS_CTR_BE) {
 		if (mode == "CTR-BE")
 			return new StreamCipher_Filter(new CTR_BE(block_cipher.clone()));
 	}
 		
-	version(BOTAN_HAS_MODE_ECB) {
+	static if (BOTAN_HAS_MODE_ECB) {
 		if (mode == "ECB" || mode == "")
 		{
 			if (direction == ENCRYPTION)
@@ -713,7 +713,7 @@ Keyed_Filter get_cipher_mode(const BlockCipher block_cipher,
 	
 	if (mode == "CBC")
 	{
-		version(BOTAN_HAS_MODE_CBC) {
+		static if (BOTAN_HAS_MODE_CBC) {
 				if (padding == "CTS")
 				{
 					if (direction == ENCRYPTION)
@@ -733,7 +733,7 @@ Keyed_Filter get_cipher_mode(const BlockCipher block_cipher,
 		}
 	}
 	
-	version(BOTAN_HAS_MODE_XTS) {
+	static if (BOTAN_HAS_MODE_XTS) {
 		if (mode == "XTS")
 		{
 			if (direction == ENCRYPTION)
@@ -756,7 +756,7 @@ Keyed_Filter get_cipher_mode(const BlockCipher block_cipher,
 		if (algo_info.size() > 1)
 			bits = to_uint(algo_info[1]);
 		
-		version(BOTAN_HAS_MODE_CFB) {
+		static if (BOTAN_HAS_MODE_CFB) {
 				if (mode_name == "CFB")
 				{
 					if (direction == ENCRYPTION)
@@ -769,11 +769,11 @@ Keyed_Filter get_cipher_mode(const BlockCipher block_cipher,
 		if (bits % 8 != 0)
 			throw new Invalid_Argument("AEAD interface does not support non-octet length tags");
 		
-		version(BOTAN_HAS_AEAD_FILTER) {
+		static if (BOTAN_HAS_AEAD_FILTER) {
 		
 			const size_t tag_size = bits / 8;
 			
-			version(BOTAN_HAS_AEAD_CCM) {
+			static if (BOTAN_HAS_AEAD_CCM) {
 					if (mode_name == "CCM")
 					{
 						const size_t L = (algo_info.size() == 3) ? to_uint(algo_info[2]) : 3;
@@ -784,7 +784,7 @@ Keyed_Filter get_cipher_mode(const BlockCipher block_cipher,
 					}
 			}
 					
-			version(BOTAN_HAS_AEAD_EAX) {
+			static if (BOTAN_HAS_AEAD_EAX) {
 					if (mode_name == "EAX")
 					{
 						if (direction == ENCRYPTION)
@@ -794,7 +794,7 @@ Keyed_Filter get_cipher_mode(const BlockCipher block_cipher,
 					}
 			}
 					
-			version(BOTAN_HAS_AEAD_OCB) {
+			static if (BOTAN_HAS_AEAD_OCB) {
 					if (mode_name == "OCB")
 					{
 						if (direction == ENCRYPTION)
@@ -804,7 +804,7 @@ Keyed_Filter get_cipher_mode(const BlockCipher block_cipher,
 					}
 			}
 					
-			version(BOTAN_HAS_AEAD_GCM) {
+			static if (BOTAN_HAS_AEAD_GCM) {
 					if (mode_name == "GCM")
 					{
 						if (direction == ENCRYPTION)
@@ -828,7 +828,7 @@ private {
 	BlockCipherModePaddingMethod* get_bc_pad(in string algo_spec,
 	                                         in string def_if_empty)
 	{
-		version(BOTAN_HAS_CIPHER_MODE_PADDING) {
+		static if (BOTAN_HAS_CIPHER_MODE_PADDING) {
 			if (algo_spec == "NoPadding" || (algo_spec == "" && def_if_empty == "NoPadding"))
 				return new Null_Padding;
 			

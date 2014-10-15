@@ -98,7 +98,7 @@ string make_bcrypt(in string pass,
 	Blowfish blowfish;
 
 	// Include the trailing NULL ubyte
-	blowfish.eks_key_schedule(cast(const ubyte*)(pass.c_str()),
+	blowfish.eks_key_schedule(cast(const ubyte*)(pass.toStringz),
 									  pass.length() + 1,
 									  &salt[0],
 									  work_factor);

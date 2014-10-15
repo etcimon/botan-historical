@@ -103,7 +103,7 @@ bool check_passhash9(in string pass, in string hash)
 
 	Pipe pipe(new Base64_Decoder);
 	pipe.start_msg();
-	pipe.write(hash.c_str() + MAGIC_PREFIX.size());
+	pipe.write(hash.toStringz + MAGIC_PREFIX.size());
 	pipe.end_msg();
 
 	SafeVector!ubyte bin = pipe.read_all();

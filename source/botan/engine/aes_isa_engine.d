@@ -8,7 +8,7 @@ module botan.engine.aes_isa_engine;
 
 import botan.engine.engine;
 import botan.utils.cpuid;
-version(BOTAN_HAS_AES_NI) import botan.block.aes_ni;
+static if (BOTAN_HAS_AES_NI) import botan.block.aes_ni;
 
 /**
 * Engine for implementations that hook into CPU-specific
@@ -22,7 +22,7 @@ public:
 	BlockCipher find_block_cipher(in SCAN_Name request,
 	                              Algorithm_Factory af) const
 	{
-		version(BOTAN_HAS_AES_NI) {
+		static if (BOTAN_HAS_AES_NI) {
 			if (CPUID.has_aes_ni())
 			{
 				if (request.algo_name() == "AES-128")

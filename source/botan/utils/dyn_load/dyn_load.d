@@ -30,13 +30,13 @@ Dynamically_Loaded_Library::Dynamically_Loaded_Library(
 	lib_name(library), lib(null)
 {
 #if defined(BOTAN_TARGET_OS_HAS_DLOPEN)
-	lib = ::dlopen(lib_name.c_str(), RTLD_LAZY);
+	lib = ::dlopen(lib_name.toStringz, RTLD_LAZY);
 
 	if (!lib)
 		raise_runtime_loader_exception(lib_name, dlerror());
 
 #elif defined(BOTAN_TARGET_OS_HAS_LOADLIBRARY)
-	lib = ::LoadLibraryA(lib_name.c_str());
+	lib = ::LoadLibraryA(lib_name.toStringz);
 
 	if (!lib)
 		raise_runtime_loader_exception(lib_name, "LoadLibrary failed");
@@ -60,10 +60,10 @@ void* Dynamically_Loaded_Library::resolve_symbol(in string symbol)
 	void* addr = null;
 
 #if defined(BOTAN_TARGET_OS_HAS_DLOPEN)
-	addr = ::dlsym(lib, symbol.c_str());
+	addr = ::dlsym(lib, symbol.toStringz);
 #elif defined(BOTAN_TARGET_OS_HAS_LOADLIBRARY)
 	addr = cast(void*)(::GetProcAddress((HMODULE)lib,
-																	symbol.c_str()));
+																	symbol.toStringz));
 #endif
 
 	if (!addr)

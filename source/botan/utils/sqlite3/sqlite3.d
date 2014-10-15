@@ -10,7 +10,7 @@ import stdexcept;
 import sqlite3.h;
 sqlite3_database::sqlite3_database(in string db_filename)
 {
-	int rc = ::sqlite3_open(db_filename.c_str(), &m_db);
+	int rc = ::sqlite3_open(db_filename.toStringz, &m_db);
 
 	if (rc)
 	{
@@ -41,7 +41,7 @@ size_t sqlite3_database::row_count(in string table_name)
 void sqlite3_database::create_table(in string table_schema)
 {
 	char* errmsg = null;
-	int rc = ::sqlite3_exec(m_db, table_schema.c_str(), null, null, &errmsg);
+	int rc = ::sqlite3_exec(m_db, table_schema.toStringz, null, null, &errmsg);
 
 	if (rc != SQLITE_OK)
 	{
@@ -53,7 +53,7 @@ void sqlite3_database::create_table(in string table_schema)
 	}
 }sqlite3_statement::sqlite3_statement(sqlite3_database* db, in string base_sql)
 {
-	int rc = ::sqlite3_prepare_v2(db.m_db, base_sql.c_str(), -1, &m_stmt, null);
+	int rc = ::sqlite3_prepare_v2(db.m_db, base_sql.toStringz, -1, &m_stmt, null);
 
 	if (rc != SQLITE_OK)
 		throw new Exception("sqlite3_prepare failed " ~ base_sql +
@@ -62,7 +62,7 @@ void sqlite3_database::create_table(in string table_schema)
 
 void sqlite3_statement::bind(int column, in string val)
 {
-	int rc = ::sqlite3_bind_text(m_stmt, column, val.c_str(), -1, SQLITE_TRANSIENT);
+	int rc = ::sqlite3_bind_text(m_stmt, column, val.toStringz, -1, SQLITE_TRANSIENT);
 	if (rc != SQLITE_OK)
 		throw new Exception("sqlite3_bind_text failed, code " ~ std.conv.to!string(rc));
 }

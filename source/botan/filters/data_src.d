@@ -157,7 +157,7 @@ DataSource_Stream::DataSource_Stream(in string path,
 												 bool use_binary) :
 	identifier(path),
 	source_p(new std::ifstream(
-					path.c_str(),
+					path.toStringz,
 					use_binary ? std::ios::binary : std::ios::input)),
 	source(*source_p),
 	total_read(0)

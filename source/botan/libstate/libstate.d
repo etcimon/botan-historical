@@ -22,38 +22,38 @@ import string;
 import vector;
 import map;
 
-version(BOTAN_HAS_SELFTESTS)
+static if (BOTAN_HAS_SELFTESTS)
 	import botan.selftest;
 
 // Engines
-version(BOTAN_HAS_ENGINE_ASSEMBLER)
+static if (BOTAN_HAS_ENGINE_ASSEMBLER)
 	import botan.engine.asm_engine;
-version(BOTAN_HAS_ENGINE_AES_ISA)
+static if (BOTAN_HAS_ENGINE_AES_ISA)
 	import botan.engine.aes_isa_engine;
-version(BOTAN_HAS_ENGINE_SIMD)
+static if (BOTAN_HAS_ENGINE_SIMD)
 	import botan.engine.simd_engine.simd_engine;
-version(BOTAN_HAS_ENGINE_GNU_MP)
-	import botan.internal.gnump_engine;
-version(BOTAN_HAS_ENGINE_OPENSSL)
+static if (BOTAN_HAS_ENGINE_GNU_MP)
+	import botan.engine.gnump_engine;
+static if (BOTAN_HAS_ENGINE_OPENSSL)
 	import botan.engine.openssl_engine;
 // Entropy sources
-version(BOTAN_HAS_ENTROPY_SRC_HIGH_RESOLUTION_TIMER)
+static if (BOTAN_HAS_ENTROPY_SRC_HIGH_RESOLUTION_TIMER)
 	import botan.internal.hres_timer;
-version(BOTAN_HAS_ENTROPY_SRC_RDRAND)
+static if (BOTAN_HAS_ENTROPY_SRC_RDRAND)
 	import botan.internal.rdrand;
-version(BOTAN_HAS_ENTROPY_SRC_DEV_RANDOM)
-	import botan.internal.dev_random;
-version(BOTAN_HAS_ENTROPY_SRC_EGD)
-	import botan.internal.es_egd;
-version(BOTAN_HAS_ENTROPY_SRC_UNIX_PROCESS_RUNNER)
+static if (BOTAN_HAS_ENTROPY_SRC_DEV_RANDOM)
+	import botan.entropy.dev_random;
+static if (BOTAN_HAS_ENTROPY_SRC_EGD)
+	import botan.entropy.es_egd;
+static if (BOTAN_HAS_ENTROPY_SRC_UNIX_PROCESS_RUNNER)
 	import botan.internal.unix_procs;
-version(BOTAN_HAS_ENTROPY_SRC_BEOS)
+static if (BOTAN_HAS_ENTROPY_SRC_BEOS)
 	import botan.internal.es_beos;
-version(BOTAN_HAS_ENTROPY_SRC_CAPI)
-	import botan.internal.es_capi;
-version(BOTAN_HAS_ENTROPY_SRC_WIN32)
+static if (BOTAN_HAS_ENTROPY_SRC_CAPI)
+	import botan.entropy.es_capi;
+static if (BOTAN_HAS_ENTROPY_SRC_WIN32)
 	import botan.internal.es_win32;
-version(BOTAN_HAS_ENTROPY_SRC_PROC_WALKER)
+static if (BOTAN_HAS_ENTROPY_SRC_PROC_WALKER)
 	import botan.internal.proc_walk;
 
 /**
@@ -75,23 +75,23 @@ public:
 		if (m_algorithm_factory) delete m_algorithm_factory;
 		m_algorithm_factory = new Algorithm_Factory();
 		
-		version(BOTAN_HAS_ENGINE_GNU_MP)
+		static if (BOTAN_HAS_ENGINE_GNU_MP)
 			algorithm_factory().add_engine(new GMP_Engine);
 		
 		
-		version(BOTAN_HAS_ENGINE_OPENSSL)
+		static if (BOTAN_HAS_ENGINE_OPENSSL)
 			algorithm_factory().add_engine(new OpenSSL_Engine);
 		
 		
-		version(BOTAN_HAS_ENGINE_AES_ISA)
+		static if (BOTAN_HAS_ENGINE_AES_ISA)
 			algorithm_factory().add_engine(new AES_ISA_Engine);
 		
 		
-		version(BOTAN_HAS_ENGINE_SIMD)
+		static if (BOTAN_HAS_ENGINE_SIMD)
 			algorithm_factory().add_engine(new SIMD_Engine);
 		
 		
-		version(BOTAN_HAS_ENGINE_ASSEMBLER)
+		static if (BOTAN_HAS_ENGINE_ASSEMBLER)
 			algorithm_factory().add_engine(new Assembler_Engine);
 		
 		
@@ -101,7 +101,7 @@ public:
 		
 		m_global_prng.reset(new Serialized_RNG());
 		
-		version(BOTAN_HAS_SELFTESTS)
+		static if (BOTAN_HAS_SELFTESTS)
 			confirm_startup_self_tests(algorithm_factory());
 
 	}
@@ -150,55 +150,44 @@ private:
 	{
 		Vector!( Unique!EntropySource ) sources;
 		
-		version(BOTAN_HAS_ENTROPY_SRC_HIGH_RESOLUTION_TIMER)
+		static if (BOTAN_HAS_ENTROPY_SRC_HIGH_RESOLUTION_TIMER)
 			sources.push_back(Unique!EntropySource(new High_Resolution_Timestamp));
-		
-		
-		version(BOTAN_HAS_ENTROPY_SRC_RDRAND)
+				
+		static if (BOTAN_HAS_ENTROPY_SRC_RDRAND)
 			sources.push_back(Unique!EntropySource(new Intel_Rdrand));
-		
-		
-		version(BOTAN_HAS_ENTROPY_SRC_UNIX_PROCESS_RUNNER)
+				
+		static if (BOTAN_HAS_ENTROPY_SRC_UNIX_PROCESS_RUNNER)
 			sources.push_back(Unique!EntropySource(new UnixProcessInfo_EntropySource));
-		
-		
-		version(BOTAN_HAS_ENTROPY_SRC_DEV_RANDOM)
+				
+		static if (BOTAN_HAS_ENTROPY_SRC_DEV_RANDOM)
 			sources.push_back(Unique!EntropySource(new Device_EntropySource(
 				[ "/dev/random", "/dev/srandom", "/dev/urandom" ]
 			)));
-		
-		
-		version(BOTAN_HAS_ENTROPY_SRC_CAPI)
+				
+		static if (BOTAN_HAS_ENTROPY_SRC_CAPI)
 			sources.push_back(Unique!EntropySource(new Win32_CAPI_EntropySource));
-		
-		
-		version(BOTAN_HAS_ENTROPY_SRC_PROC_WALKER)
+				
+		static if (BOTAN_HAS_ENTROPY_SRC_PROC_WALKER)
 			sources.push_back(Unique!EntropySource(new ProcWalking_EntropySource("/proc")));
-		
-		
-		version(BOTAN_HAS_ENTROPY_SRC_WIN32)
+				
+		static if (BOTAN_HAS_ENTROPY_SRC_WIN32)
 			sources.push_back(Unique!EntropySource(new Win32_EntropySource));
-
-		
-		version(BOTAN_HAS_ENTROPY_SRC_BEOS)
+				
+		static if (BOTAN_HAS_ENTROPY_SRC_BEOS)
 			sources.push_back(Unique!EntropySource(new BeOS_EntropySource));
-		
 
-		version(BOTAN_HAS_ENTROPY_SRC_UNIX_PROCESS_RUNNER)
+		static if (BOTAN_HAS_ENTROPY_SRC_UNIX_PROCESS_RUNNER)
 			sources.push_back(Unique!EntropySource(
 				new Unix_EntropySource(	[ "/bin", "/sbin", "/usr/bin", "/usr/sbin" ] )
 			));
-		
-		
-		version(BOTAN_HAS_ENTROPY_SRC_EGD)
+				
+		static if (BOTAN_HAS_ENTROPY_SRC_EGD)
 			sources.push_back(Unique!EntropySource(
 				new EGD_EntropySource( [ "/var/run/egd-pool", "/dev/egd-pool" ] )
 				));
-		
-		
+				
 		return sources;
 	}
-
 
 	Unique!Serialized_RNG m_global_prng;
 

@@ -28,7 +28,7 @@ class Directory_Walker : File_Descriptor_Source
 		Directory_Walker(in string root) :
 			m_cur_dir(Pair<DIR*, string>(null, ""))
 		{
-			if (DIR* root_dir = ::opendir(root.c_str()))
+			if (DIR* root_dir = ::opendir(root.toStringz))
 				m_cur_dir = Pair(root_dir, root);
 		}
 
@@ -66,7 +66,7 @@ Pair!(struct dirent*, string) Directory_Walker::get_next_dirent()
 			const string next_dir_name = m_dirlist[0];
 			m_dirlist.pop_front();
 
-			if (DIR* next_dir = ::opendir(next_dir_name.c_str()))
+			if (DIR* next_dir = ::opendir(next_dir_name.toStringz))
 				m_cur_dir = Pair(next_dir, next_dir_name);
 		}
 	}
@@ -91,7 +91,7 @@ int Directory_Walker::next_fd()
 		const string full_path = entry.second + '/' + filename;
 
 		struct stat stat_buf;
-		if (::lstat(full_path.c_str(), &stat_buf) == -1)
+		if (::lstat(full_path.toStringz, &stat_buf) == -1)
 			continue;
 
 		if (S_ISDIR(stat_buf.st_mode))
@@ -100,7 +100,7 @@ int Directory_Walker::next_fd()
 		}
 		else if (S_ISREG(stat_buf.st_mode) && (stat_buf.st_mode & S_IROTH))
 		{
-			int fd = ::open(full_path.c_str(), O_RDONLY | O_NOCTTY);
+			int fd = ::open(full_path.toStringz, O_RDONLY | O_NOCTTY);
 
 			if (fd > 0)
 				return fd;
