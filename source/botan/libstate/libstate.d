@@ -38,23 +38,23 @@ static if (BOTAN_HAS_ENGINE_OPENSSL)
 	import botan.engine.openssl_engine;
 // Entropy sources
 static if (BOTAN_HAS_ENTROPY_SRC_HIGH_RESOLUTION_TIMER)
-	import botan.internal.hres_timer;
+	import botan.entropy.hres_timer;
 static if (BOTAN_HAS_ENTROPY_SRC_RDRAND)
-	import botan.internal.rdrand;
+	import botan.entropy.rdrand;
 static if (BOTAN_HAS_ENTROPY_SRC_DEV_RANDOM)
 	import botan.entropy.dev_random;
 static if (BOTAN_HAS_ENTROPY_SRC_EGD)
 	import botan.entropy.es_egd;
 static if (BOTAN_HAS_ENTROPY_SRC_UNIX_PROCESS_RUNNER)
-	import botan.internal.unix_procs;
+	import botan.entropy.unix_procs;
 static if (BOTAN_HAS_ENTROPY_SRC_BEOS)
-	import botan.internal.es_beos;
+	import botan.entropy.es_beos;
 static if (BOTAN_HAS_ENTROPY_SRC_CAPI)
 	import botan.entropy.es_capi;
 static if (BOTAN_HAS_ENTROPY_SRC_WIN32)
-	import botan.internal.es_win32;
+	import botan.entropy.es_win32;
 static if (BOTAN_HAS_ENTROPY_SRC_PROC_WALKER)
-	import botan.internal.proc_walk;
+	import botan.entropy.proc_walk;
 
 /**
 * Global Library State

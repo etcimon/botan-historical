@@ -7,7 +7,7 @@
 
 import botan.selftest;
 import botan.filters;
-import botan.aead_filt;
+import botan.filters.aead_filt;
 import botan.codec.hex;
 import botan.engine.core_engine;
 import botan.internal.stl_util;

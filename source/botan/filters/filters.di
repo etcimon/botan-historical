@@ -18,8 +18,8 @@ import botan.data_snk;
 import botan.algo_base.scan_name;
 
 #if defined(BOTAN_HAS_CODEC_FILTERS)
-  import botan.b64_filt;
-  import botan.hex_filt;
+  import botan.filters.b64_filt;
+  import botan.filters.hex_filt;
 #endif
 /**
 * Stream Cipher Filter

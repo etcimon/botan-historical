@@ -4,6 +4,7 @@
 *
 * Distributed under the terms of the botan license.
 */
+module botan.entropy.hres_timer;
 
 import botan.entropy.entropy_src;
 
@@ -35,15 +36,11 @@ public:
 	{
 		// Don't count any timestamps as contributing any entropy
 		const double ESTIMATED_ENTROPY_PER_BYTE = 0.0;
-		
-		void STD_CHRONO_POLL(clock)
+
 		{
 			auto timestamp = Clock.currStdTime();
 			accum.add(timestamp, ESTIMATED_ENTROPY_PER_BYTE);
 		}
-		
-		STD_CHRONO_POLL(std::chrono::high_resolution_clock);
-		STD_CHRONO_POLL(std::chrono::system_clock);
 		
 		static if (BOTAN_TARGET_OS_HAS_QUERY_PERF_COUNTER) {
 			{
