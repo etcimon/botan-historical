@@ -1,67 +1,281 @@
 /*
 * Basic Filters
 * (C) 1999-2007 Jack Lloyd
+* (C) 2013 Joel Low
 *
-* Distributed under the terms of the Botan license
+* Distributed under the terms of the botan license.
+*/
+module botan.filters.basefilt;
+
+import botan.filters.filter;
+import core.thread;
+import std.typecons : RefCounted;
+import botan.filters.key_filt;
+
+/**
+* BitBucket is a filter which simply discards all inputs
+*/
+class BitBucket : Filter
+{
+	void write(in ubyte*, size_t) {}
+
+	string name() const { return "BitBucket"; }
+};
+
+/**
+* This class represents Filter chains. A Filter chain is an ordered
+* concatenation of Filters, the input to a Chain sequentially passes
+* through all the Filters contained in the Chain.
 */
 
-import botan.basefilt;
-import botan.key_filt;
-void Keyed_Filter::set_iv(in InitializationVector iv)
+class Chain : Fanout_Filter
 {
-	if (iv.length() != 0)
-		throw new Invalid_IV_Length(name(), iv.length());
-}
+public:
+	void write(in ubyte* input, size_t length) { send(input, length); }
 
-/*
-* Chain Constructor
-*/
-Chain::Chain(Filter* f1, Filter* f2, Filter* f3, Filter* f4)
-{
-	if (f1) { attach(f1); incr_owns(); }
-	if (f2) { attach(f2); incr_owns(); }
-	if (f3) { attach(f3); incr_owns(); }
-	if (f4) { attach(f4); incr_owns(); }
-}
+	string name() const
+	{
+		return "Chain";
+	}
 
-/*
-* Chain Constructor
-*/
-Chain::Chain(Filter** filters, size_t count)
-{
-	for (size_t j = 0; j != count; ++j)
-		if (filters[j])
-		{
-			attach(filters[j]);
-			incr_owns();
+	/**
+	* Construct a chain of up to four filters. The filters are set
+	* up in the same order as the arguments.
+	*/
+	this(Filter* f1 = null, Filter* f2 = null,
+			Filter* f3 = null, Filter* f4 = null)
+	{
+		if (f1) { attach(f1); incr_owns(); }
+		if (f2) { attach(f2); incr_owns(); }
+		if (f3) { attach(f3); incr_owns(); }
+		if (f4) { attach(f4); incr_owns(); }
+	}
+
+	/**
+	* Construct a chain from range of filters
+	* @param filter_arr the list of filters
+	* @param length how many filters
+	*/
+	this(Filter** filter_arr, size_t length) {
+		for (size_t j = 0; j != length; ++j) {
+			if (filter_arr[j])
+			{
+				attach(filter_arr[j]);
+				incr_owns();
+			}
 		}
-}
+	}
 
-string Chain::name() const
+
+};
+
+/**
+* This class represents a fork filter, whose purpose is to fork the
+* flow of data. It causes an input message to result in n messages at
+* the end of the filter, where n is the number of forks.
+*/
+class Fork : Fanout_Filter
 {
-	return "Chain";
-}
+public:
+	void write(in ubyte* input, size_t length) { send(input, length); }
+	void set_port(size_t n) { super.set_port(n); }
+
+	string name() const
+	{
+		return "Fork";
+	}
+
+	/**
+	* Construct a Fork filter with up to four forks.
+	*/
+	this(Filter* f1, Filter* f2, Filter* f3 = null, Filter* f4 = null)
+	{
+		Filter*[4] filters = [ f1, f2, f3, f4 ];
+		set_next(filters, 4);
+	}
+
+	/**
+	* Construct a Fork from range of filters
+	* @param filter_arr the list of filters
+	* @param length how many filters
+	*/	
+	this(Filter** filter_arr, size_t length)
+	{
+		set_next(filter_arr, length);
+	}
+};
+
+/**
+* This class is a threaded version of the Fork filter. While this uses
+* threads, the class itself is NOT thread-safe. This is meant as a drop-
+* in replacement for Fork where performance gains are possible.
+*/
+class Threaded_Fork : Fork
+{
+public:
+	string name() const;
+
+	/**
+	* Construct a Threaded_Fork filter with up to four forks.
+	*/
+	this(Filter* f1, Filter* f2, Filter* f3 = null, Filter* f4 = null);
+
+	/**
+	* Construct a Threaded_Fork from range of filters
+	* @param filter_arr the list of filters
+	* @param length how many filters
+	*/
+	this(Filter** filter_arr, size_t length);
+
+	~this();
+
+package:
+	void set_next(Filter* f[], size_t n);
+	void send(in ubyte* input, size_t length);
+
+private:
+	void thread_delegate_work(in ubyte* input, size_t length);
+	void thread_entry(Filter* filter);
+
+	Vector!(RefCounted!Thread) m_threads;
+	Unique!Threaded_Fork_Data m_thread_data;
+};
+
+
+
+
+
+import botan.internal.semaphore;
+struct Threaded_Fork_Data
+{
+	/*
+	* Semaphore for indicating that there is work to be done (or to
+	* quit)
+	*/
+	Semaphore m_input_ready_semaphore;
+	
+	/*
+	* Ensures that all threads have completed processing data.
+	*/
+	Semaphore m_input_complete_semaphore;
+	
+	/*
+	* The work that needs to be done. This should be only when the threads
+	* are NOT running (i.e. before notifying the work condition, after
+	* the input_complete_semaphore is completely reset.)
+	*/
+	const ubyte* m_input = null;
+	
+	/*
+	* The length of the work that needs to be done.
+	*/
+	size_t m_input_length = 0;
+};
 
 /*
-* Fork Constructor
+* Threaded_Fork constructor
 */
-Fork::Fork(Filter* f1, Filter* f2, Filter* f3, Filter* f4)
+Threaded_Fork::Threaded_Fork(Filter* f1, Filter* f2, Filter* f3, Filter* f4) :
+Fork(null, cast(size_t)(0)),
+	m_thread_data(new Threaded_Fork_Data)
 {
 	Filter*[4] filters = { f1, f2, f3, f4 };
 	set_next(filters, 4);
 }
 
 /*
-* Fork Constructor
+* Threaded_Fork constructor
 */
-Fork::Fork(Filter** filters, size_t count)
+Threaded_Fork::Threaded_Fork(Filter** filters, size_t count) :
+Fork(null, cast(size_t)(0)),
+	m_thread_data(new Threaded_Fork_Data)
 {
 	set_next(filters, count);
 }
 
-string Fork::name() const
+Threaded_Fork::~this()
 {
-	return "Fork";
+	m_thread_data.m_input = null;
+	m_thread_data.m_input_length = 0;
+	
+	m_thread_data.m_input_ready_semaphore.release(m_threads.size());
+	
+	foreach (ref thread; m_threads)
+		thread.join();
+}
+
+string Threaded_Fork::name() const
+{
+	return "Threaded Fork";
+}
+
+void Threaded_Fork::set_next(Filter** f, size_t n)
+{
+Fork::set_next(f, n);
+	n = next.size();
+	
+	if (n < m_threads.size())
+		m_threads.resize(n);
+	else
+	{
+		m_threads.reserve(n);
+		for (size_t i = m_threads.size(); i != n; ++i)
+		{
+			m_threads.push_back(
+				std::shared_ptr<std::thread>(
+				new std::thread(
+				std::bind(&Threaded_Fork::thread_entry, this, next[i]))));
+		}
+	}
+}
+
+void Threaded_Fork::send(in ubyte* input, size_t length)
+{
+	if (write_queue.size())
+		thread_delegate_work(&write_queue[0], write_queue.size());
+	thread_delegate_work(input, length);
+	
+	bool nothing_attached = true;
+	for (size_t j = 0; j != total_ports(); ++j)
+		if (next[j])
+			nothing_attached = false;
+	
+	if (nothing_attached)
+		write_queue += Pair(input, length);
+	else
+		write_queue.clear();
+}
+
+void Threaded_Fork::thread_delegate_work(in ubyte* input, size_t length)
+{
+	//Set the data to do.
+	m_thread_data.m_input = input;
+	m_thread_data.m_input_length = length;
+	
+	//Let the workers start processing.
+	m_thread_data.m_input_ready_semaphore.release(total_ports());
+	
+	//Wait for all the filters to finish processing.
+	for (size_t i = 0; i != total_ports(); ++i)
+		m_thread_data.m_input_complete_semaphore.acquire();
+	
+	//Reset the thread data
+	m_thread_data.m_input = null;
+	m_thread_data.m_input_length = 0;
+}
+
+void Threaded_Fork::thread_entry(Filter* filter)
+{
+	while(true)
+	{
+		m_thread_data.m_input_ready_semaphore.acquire();
+		
+		if (!m_thread_data.m_input)
+			break;
+		
+		filter.write(m_thread_data.m_input, m_thread_data.m_input_length);
+		m_thread_data.m_input_complete_semaphore.release();
+	}
 }
 
 }

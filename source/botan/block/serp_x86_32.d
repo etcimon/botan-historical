@@ -64,8 +64,8 @@ private:
 
 /**
 * Entry point for Serpent encryption in x86 asm
-* @param in the input block
-* @param out the output block
+* @param input the input block
+* @param output the output block
 * @param ks the key schedule
 */
 void botan_serpent_x86_32_encrypt(	const ubyte[16]* input,
@@ -134,8 +134,8 @@ void botan_serpent_x86_32_encrypt(	const ubyte[16]* input,
 
 /**
 * Entry point for Serpent decryption in x86 asm
-* @param in the input block
-* @param out the output block
+* @param input the input block
+* @param output the output block
 * @param ks the key schedule
 */
 

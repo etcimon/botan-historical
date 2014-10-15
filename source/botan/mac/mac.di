@@ -17,7 +17,7 @@ class MessageAuthenticationCode : Buffered_Computation,
 	public:
 		/**
 		* Verify a MAC.
-		* @param in the MAC to verify as a ubyte array
+		* @param input the MAC to verify as a ubyte array
 		* @param length the length of param in
 		* @return true if the MAC is valid, false otherwise
 		*/

@@ -9,8 +9,8 @@ import botan.types;
 import vector;
 /**
 * XOR arrays. Postcondition output[i] = input[i] ^ output[i] forall i = 0...length
-* @param out the input/output buffer
-* @param in the read-only input buffer
+* @param output the input/output buffer
+* @param input the read-only input buffer
 * @param length the length of the buffers
 */
 void xor_buf(T)(T* output, in T* input, size_t length)
@@ -31,8 +31,8 @@ void xor_buf(T)(T* output, in T* input, size_t length)
 
 /**
 * XOR arrays. Postcondition output[i] = input[i] ^ in2[i] forall i = 0...length
-* @param out the output buffer
-* @param in the first input buffer
+* @param output the output buffer
+* @param input the first input buffer
 * @param in2 the second output buffer
 * @param length the length of the three buffers
 */

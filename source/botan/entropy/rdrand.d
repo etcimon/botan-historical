@@ -9,7 +9,7 @@ module botan.entropy.rdrand;
 import botan.entropy.entropy_src;
 import botan.utils.cpuid;
 
-static if(!BOTAN_USE_GCC_INLINE_ASM)
+static if (!BOTAN_USE_GCC_INLINE_ASM)
 	import botan.utils.simd.immintrin;
 
 /**
@@ -51,7 +51,7 @@ void poll(ref Entropy_Accumulator accum)
 	{
 		uint r = 0;
 		
-		static if(BOTAN_USE_GCC_INLINE_ASM) {
+		static if (BOTAN_USE_GCC_INLINE_ASM) {
 			int cf = 0;
 			
 			// Encoding of rdrand %eax

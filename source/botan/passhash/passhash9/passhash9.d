@@ -10,7 +10,7 @@ import botan.loadstor;
 import botan.libstate.libstate;
 import botan.pbkdf2;
 import botan.filters.b64_filt;
-import botan.pipe;
+import botan.filters.pipe;
 namespace {
 
 const string MAGIC_PREFIX = "$9$";

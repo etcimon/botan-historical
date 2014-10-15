@@ -8,7 +8,7 @@ module botan.engine.core_engine;
 
 import botan.engine.engine;
 import botan.parsing;
-import botan.filters;
+import botan.filters.filters;
 import botan.algo_factory;
 import botan.mode_pad;
 import botan.transform_filter;

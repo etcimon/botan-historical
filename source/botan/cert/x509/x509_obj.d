@@ -6,7 +6,7 @@
 */
 module botan.cert.x509.x509_obj;
 import botan.asn1.asn1_obj;
-import botan.pipe;
+import botan.filters.pipe;
 import botan.rng;
 import botan.x509_key;
 import botan.pubkey;

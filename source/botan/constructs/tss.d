@@ -10,7 +10,7 @@ import botan.alloc.secmem;
 import botan.hash;
 import botan.rng;
 import botan.loadstor;
-import botan.pipe;
+import botan.filters.pipe;
 import botan.codec.hex;
 import botan.sha2_32;
 import botan.sha160;

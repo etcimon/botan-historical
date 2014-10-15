@@ -10,7 +10,7 @@ module botan.cert.cvc.signed_obj;
 import botan.asn1.asn1_obj;
 import botan.cert.x509.key_constraint;
 import botan.x509_key;
-import botan.pipe;
+import botan.filters.pipe;
 import botan.pubkey;
 import botan.asn1.oid_lookup.oids;
 import vector;

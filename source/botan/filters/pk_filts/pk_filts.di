@@ -5,7 +5,7 @@
 * Distributed under the terms of the botan license.
 */
 
-import botan.filter;
+import botan.filters.filter;
 import botan.pubkey;
 /**
 * PK_Encryptor Filter

@@ -7,7 +7,7 @@
 */
 module botan.filters.compression.zlib;
 
-import botan.filter;
+import botan.filters.filter;
 import botan.utils.exceptn;
 
 import std.c.string;

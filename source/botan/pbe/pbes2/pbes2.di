@@ -8,7 +8,7 @@
 import botan.pbe;
 import botan.block.block_cipher;
 import botan.mac;
-import botan.pipe;
+import botan.filters.pipe;
 import std.datetime;
 /**
 * PKCS #5 v2.0 PBE

@@ -14,8 +14,8 @@ class StreamCipher : SymmetricAlgorithm
 	public:
 		/**
 		* Encrypt or decrypt a message
-		* @param in the plaintext
-		* @param out the ubyte array to hold the output, i.e. the ciphertext
+		* @param input the plaintext
+		* @param output the ubyte array to hold the output, i.e. the ciphertext
 		* @param len the length of both in and out in bytes
 		*/
 		abstract void cipher(in ubyte* input, ubyte* output);

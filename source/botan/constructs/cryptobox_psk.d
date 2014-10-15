@@ -9,7 +9,7 @@ module botan.constructs.cryptobox_psk;
 import string;
 import botan.rng;
 import botan.algo_base.symkey;
-import botan.pipe;
+import botan.filters.pipe;
 import botan.libstate.lookup;
 import botan.loadstor;
 /**

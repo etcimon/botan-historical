@@ -81,7 +81,7 @@ public:
 
 	/**
 	* Encode this object into a pipe. Only DER is supported.
-	* @param out the pipe to encode this object into
+	* @param output the pipe to encode this object into
 	* @param encoding the encoding type to use, must be DER
 	*/
 	void encode(Pipe output, X509_Encoding encoding) const

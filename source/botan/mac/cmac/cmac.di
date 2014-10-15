@@ -26,7 +26,7 @@ class CMAC : MessageAuthenticationCode
 
 		/**
 		* CMAC's polynomial doubling operation
-		* @param in the input
+		* @param input the input
 		* @param polynomial the ubyte value of the polynomial
 		*/
 		static SafeVector!ubyte poly_double(in SafeVector!ubyte input);

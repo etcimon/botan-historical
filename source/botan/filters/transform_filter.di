@@ -6,8 +6,8 @@
 */
 
 import botan.algo_base.transform;
-import botan.key_filt;
-import botan.buf_filt;
+import botan.filters.key_filt;
+import botan.filters.buf_filt;
 /**
 * Filter interface for Transformations
 */

@@ -34,7 +34,7 @@ class PK_Encryptor
 
 		/**
 		* Encrypt a message.
-		* @param in the message as a ubyte array
+		* @param input the message as a ubyte array
 		* @param length the length of the above ubyte array
 		* @param rng the random number source to use
 		* @return encrypted message
@@ -47,7 +47,7 @@ class PK_Encryptor
 
 		/**
 		* Encrypt a message.
-		* @param in the message
+		* @param input the message
 		* @param rng the random number source to use
 		* @return encrypted message
 		*/
@@ -83,7 +83,7 @@ class PK_Decryptor
 	public:
 		/**
 		* Decrypt a ciphertext.
-		* @param in the ciphertext as a ubyte array
+		* @param input the ciphertext as a ubyte array
 		* @param length the length of the above ubyte array
 		* @return decrypted message
 		*/
@@ -94,7 +94,7 @@ class PK_Decryptor
 
 		/**
 		* Decrypt a ciphertext.
-		* @param in the ciphertext
+		* @param input the ciphertext
 		* @return decrypted message
 		*/
 		SafeVector!ubyte decrypt(Alloc)(in Vector!( ubyte, Alloc ) input) const
@@ -122,7 +122,7 @@ class PK_Signer
 	public:
 		/**
 		* Sign a message.
-		* @param in the message to sign as a ubyte array
+		* @param input the message to sign as a ubyte array
 		* @param length the length of the above ubyte array
 		* @param rng the rng to use
 		* @return signature
@@ -132,7 +132,7 @@ class PK_Signer
 
 		/**
 		* Sign a message.
-		* @param in the message to sign
+		* @param input the message to sign
 		* @param rng the rng to use
 		* @return signature
 		*/
@@ -146,20 +146,20 @@ class PK_Signer
 
 		/**
 		* Add a message part (single ubyte).
-		* @param in the ubyte to add
+		* @param input the ubyte to add
 		*/
 		void update(ubyte input) { update(&input, 1); }
 
 		/**
 		* Add a message part.
-		* @param in the message part to add as a ubyte array
+		* @param input the message part to add as a ubyte array
 		* @param length the length of the above ubyte array
 		*/
 		void update(in ubyte* input, size_t length);
 
 		/**
 		* Add a message part.
-		* @param in the message part to add
+		* @param input the message part to add
 		*/
 		void update(in Vector!ubyte input) { update(&input[0], input.size()); }
 
@@ -233,7 +233,7 @@ class PK_Verifier
 		/**
 		* Add a message part (single ubyte) of the message corresponding to the
 		* signature to be verified.
-		* @param in the ubyte to add
+		* @param input the ubyte to add
 		*/
 		void update(ubyte input) { update(&in, 1); }
 
@@ -248,7 +248,7 @@ class PK_Verifier
 		/**
 		* Add a message part of the message corresponding to the
 		* signature to be verified.
-		* @param in the new message part
+		* @param input the new message part
 		*/
 		void update(in Vector!ubyte input)
 		{ update(&input[0], in.size()); }
@@ -307,7 +307,7 @@ class PK_Key_Agreement
 		/*
 		* Perform Key Agreement Operation
 		* @param key_len the desired key output size
-		* @param in the other parties key
+		* @param input the other parties key
 		* @param in_len the length of in in bytes
 		* @param params extra derivation params
 		* @param params_len the length of params in bytes
@@ -321,7 +321,7 @@ class PK_Key_Agreement
 		/*
 		* Perform Key Agreement Operation
 		* @param key_len the desired key output size
-		* @param in the other parties key
+		* @param input the other parties key
 		* @param in_len the length of in in bytes
 		* @param params extra derivation params
 		* @param params_len the length of params in bytes
@@ -338,7 +338,7 @@ class PK_Key_Agreement
 		/*
 		* Perform Key Agreement Operation
 		* @param key_len the desired key output size
-		* @param in the other parties key
+		* @param input the other parties key
 		* @param in_len the length of in in bytes
 		* @param params extra derivation params
 		*/
@@ -354,7 +354,7 @@ class PK_Key_Agreement
 		/*
 		* Perform Key Agreement Operation
 		* @param key_len the desired key output size
-		* @param in the other parties key
+		* @param input the other parties key
 		* @param params extra derivation params
 		*/
 		SymmetricKey derive_key(size_t key_len,

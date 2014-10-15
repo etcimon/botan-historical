@@ -82,7 +82,7 @@ class RandomNumberGenerator
 
 		/**
 		* Add entropy to this RNG.
-		* @param in a ubyte array containg the entropy to be added
+		* @param input a ubyte array containg the entropy to be added
 		* @param length the length of the ubyte array in
 		*/
 		abstract void add_entropy(in ubyte* input, size_t length);

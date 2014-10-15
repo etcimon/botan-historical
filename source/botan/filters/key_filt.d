@@ -4,8 +4,8 @@
 *
 * Distributed under the terms of the botan license.
 */
-
-import botan.filter;
+module botan.filters.key_filt;
+import botan.filters.filter;
 import botan.algo_base.sym_algo;
 /**
 * This class represents keyed filters, i.e. filters that have to be
@@ -25,7 +25,11 @@ public:
 	* call set_iv() only after you have called set_key()
 	* @param iv the initialization vector to use
 	*/
-	abstract void set_iv(in InitializationVector iv);
+	void set_iv(in InitializationVector iv)
+	{
+		if (iv.length() != 0)
+			throw new Invalid_IV_Length(name(), iv.length());
+	}
 
 	/**
 	* Check whether a key length is valid for this filter

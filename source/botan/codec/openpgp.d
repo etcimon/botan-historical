@@ -6,11 +6,11 @@
 */
 module botan.codec.openpgp;
 
-import botan.filters;
-import botan.basefilt;
+import botan.filters.filters;
+import botan.filters.basefilt;
 import botan.charset;
 import botan.checksum.crc24;
-import botan.data_src;
+import botan.filters.data_src;
 import std.array : Appender;
 import string;
 import map;

@@ -28,8 +28,8 @@ void clear_mem(T)(T* ptr, size_t n)
 
 /**
 * Copy memory
-* @param out the destination array
-* @param in the source array
+* @param output the destination array
+* @param input the source array
 * @param n the number of elements of in/out
 */
 void copy_mem(T)(T* output, const T* input)

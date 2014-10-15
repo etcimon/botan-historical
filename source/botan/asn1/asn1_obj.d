@@ -9,7 +9,7 @@ module botan.asn1.asn1_obj;
 
 import botan.asn1.der_enc;
 import botan.asn1.ber_dec;
-import botan.data_src;
+import botan.filters.data_src;
 import botan.parsing;
 import botan.alloc.secmem;
 import botan.utils.exceptn;

@@ -6,8 +6,8 @@
 * Distributed under the terms of the botan license.
 */
 
-import botan.data_src;
-import botan.filter;
+import botan.filters.data_src;
+import botan.filters.filter;
 /**
 * A queue that knows how to zeroize itself
 */

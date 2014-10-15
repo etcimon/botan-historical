@@ -8,7 +8,7 @@ module botan.algo_base.symkey;
 
 import botan.internal.xor_buf;
 import botan.rng;
-import botan.pipe;
+import botan.filters.pipe;
 import botan.codec.hex;
 import std.algorithm;
 import botan.alloc.secmem;
@@ -116,7 +116,7 @@ public:
 	
 	/**
 		* Create a new OctetString
-		* @param in is an array
+		* @param input is an array
 		* @param len is the length of in in bytes
 		*/
 	this(in ubyte* input, size_t len)
@@ -126,13 +126,13 @@ public:
 	
 	/**
 		* Create a new OctetString
-		* @param in a bytestring
+		* @param input a bytestring
 		*/
 	this(in SafeVector!ubyte input) { bits = input; }
 	
 	/**
 		* Create a new OctetString
-		* @param in a bytestring
+		* @param input a bytestring
 		*/
 	this(in Vector!ubyte input) {  bits = SafeVector!ubyte(&input[0], &input[input.size()]); }
 

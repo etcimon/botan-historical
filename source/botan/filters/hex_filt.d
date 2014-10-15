@@ -6,7 +6,7 @@
 */
 module botan.filters.hex_filt;
 
-import botan.filter;
+import botan.filters.filter;
 import botan.codec.hex;
 import botan.parsing;
 import botan.charset;

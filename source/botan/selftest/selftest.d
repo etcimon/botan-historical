@@ -6,7 +6,7 @@
 */
 
 import botan.selftest;
-import botan.filters;
+import botan.filters.filters;
 import botan.filters.aead_filt;
 import botan.codec.hex;
 import botan.engine.core_engine;

@@ -6,7 +6,7 @@
 */
 
 import botan.bigint;
-import botan.data_src;
+import botan.filters.data_src;
 /**
 * This class represents discrete logarithm groups. It holds a prime p,
 * a prime q = (p-1)/2 and g = x^((p-1)/q) mod p.

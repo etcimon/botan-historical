@@ -9,7 +9,7 @@ module botan.constructs.aont_package;
 import botan.block.block_cipher;
 import botan.rng;
 import botan.pkg;
-import botan.filters;
+import botan.filters.filters;
 import botan.ctr;
 import botan.utils.get_byte;
 import botan.internal.xor_buf;

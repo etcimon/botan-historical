@@ -2,14 +2,20 @@
 * Pipe I/O for Unix
 * (C) 1999-2007 Jack Lloyd
 *
-* Distributed under the terms of the Botan license
+* Distributed under the terms of the botan license.
 */
-
-import botan.pipe;
+module botan.filters.fd_unix;
+import botan.filters.pipe;
 import botan.utils.exceptn;
-import unistd.h;
-/*
-* Write data from a pipe into a Unix fd
+import core.sys.posix.unistd;
+
+version(none):
+
+/**
+* Stream output operator; dumps the results from pipe's default
+* message to the output stream.
+* @param output file descriptor for an open output stream
+* @param pipe the pipe
 */
 int operator<<(int fd, Pipe& pipe)
 {
@@ -30,10 +36,13 @@ int operator<<(int fd, Pipe& pipe)
 	return fd;
 }
 
-/*
-* Read data from a Unix fd into a pipe
+/**
+* File descriptor input operator; dumps the remaining bytes of input
+* to the (assumed open) pipe message.
+* @param input file descriptor for an open input stream
+* @param pipe the pipe
 */
-int operator>>(int fd, Pipe& pipe)
+int opBinary(string op)(int fd, ref Pipe pipe)
 {
 	SafeVector!ubyte buffer(DEFAULT_BUFFERSIZE);
 	while(true)
@@ -45,6 +54,4 @@ int operator>>(int fd, Pipe& pipe)
 		pipe.write(&buffer[0], ret);
 	}
 	return fd;
-}
-
 }

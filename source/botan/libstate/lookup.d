@@ -8,7 +8,7 @@ module botan.libstate.lookup;
 
 import botan.libstate.libstate;
 import botan.engine.engine;
-import botan.filters;
+import botan.filters.filters;
 import botan.mode_pad;
 import botan.kdf;
 import botan.eme;

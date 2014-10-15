@@ -35,7 +35,7 @@ class BlockCipher : SymmetricAlgorithm
 
 		/**
 		* Encrypt a block.
-		* @param in The plaintext block to be encrypted as a ubyte array.
+		* @param input The plaintext block to be encrypted as a ubyte array.
 		* Must be of length block_size().
 		* @param output The ubyte array designated to hold the encrypted block.
 		* Must be of length block_size().
@@ -45,7 +45,7 @@ class BlockCipher : SymmetricAlgorithm
 
 		/**
 		* Decrypt a block.
-		* @param in The ciphertext block to be decypted as a ubyte array.
+		* @param input The ciphertext block to be decypted as a ubyte array.
 		* Must be of length block_size().
 		* @param output The ubyte array designated to hold the decrypted block.
 		* Must be of length block_size().
@@ -89,8 +89,8 @@ class BlockCipher : SymmetricAlgorithm
 
 		/**
 		* Encrypt one or more blocks
-		* @param in the input buffer (multiple of block_size())
-		* @param out the output buffer (same size as input)
+		* @param input the input buffer (multiple of block_size())
+		* @param output the output buffer (same size as input)
 		*/
 		void encrypt(Alloc, Alloc2)(in Vector!( ubyte, Alloc ) input,
 									Vector!( ubyte, Alloc2 ) output) const
@@ -100,7 +100,7 @@ class BlockCipher : SymmetricAlgorithm
 
 		/**
 		* Decrypt one or more blocks
-		* @param in the input buffer (multiple of block_size())
+		* @param input the input buffer (multiple of block_size())
 		* @param output the output buffer (same size as input)
 		*/
 		void decrypt(Alloc, Alloc2)(in Vector!( ubyte, Alloc ) input,
@@ -111,8 +111,8 @@ class BlockCipher : SymmetricAlgorithm
 
 		/**
 		* Encrypt one or more blocks
-		* @param in the input buffer (multiple of block_size())
-		* @param out the output buffer (same size as input)
+		* @param input the input buffer (multiple of block_size())
+		* @param output the output buffer (same size as input)
 		* @param blocks the number of blocks to process
 		*/
 		abstract void encrypt_n(ubyte* input, ubyte* output,
@@ -120,8 +120,8 @@ class BlockCipher : SymmetricAlgorithm
 
 		/**
 		* Decrypt one or more blocks
-		* @param in the input buffer (multiple of block_size())
-		* @param out the output buffer (same size as input)
+		* @param input the input buffer (multiple of block_size())
+		* @param output the output buffer (same size as input)
 		* @param blocks the number of blocks to process
 		*/
 		abstract void decrypt_n(ubyte* input, ubyte* output,

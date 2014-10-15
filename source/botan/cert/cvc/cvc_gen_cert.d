@@ -49,7 +49,7 @@ public:
 	/**
 	* Put the DER encoded version of this object into a pipe. PEM
 	* is not supported.
-	* @param out the pipe to push the DER encoded version into
+	* @param output the pipe to push the DER encoded version into
 	* @param encoding the encoding to use. Must be DER.
 	*/
 	void encode(Pipe output, X509_Encoding encoding) const

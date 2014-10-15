@@ -7,7 +7,7 @@
 * Distributed under the terms of the botan license.
 */
 module botan.filters.compression.lzma;
-import botan.filter;
+import botan.filters.filter;
 
 import botan.lzma;
 import botan.utils.exceptn;
@@ -789,11 +789,11 @@ enum LZMA_VERSION = (LZMA_VERSION_MAJOR * 10000000U
                      + LZMA_VERSION_MINOR * 10000U
                      + LZMA_VERSION_PATCH * 10U
                      + LZMA_VERSION_STABILITY);
-static if(LZMA_VERSION_STABILITY == LZMA_VERSION_STABILITY_ALPHA)
+static if (LZMA_VERSION_STABILITY == LZMA_VERSION_STABILITY_ALPHA)
 	enum LZMA_VERSION_STABILITY_STRING = "alpha";
-else static if(LZMA_VERSION_STABILITY == LZMA_VERSION_STABILITY_BETA)
+else static if (LZMA_VERSION_STABILITY == LZMA_VERSION_STABILITY_BETA)
 	enum LZMA_VERSION_STABILITY_STRING = "beta";
-else static if(LZMA_VERSION_STABILITY == LZMA_VERSION_STABILITY_STABLE)
+else static if (LZMA_VERSION_STABILITY == LZMA_VERSION_STABILITY_STABLE)
 	enum LZMA_VERSION_STABILITY_STRING = "";
 else
 	static assert(false, "Incorrect LZMA_VERSION_STABILITY");

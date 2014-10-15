@@ -22,7 +22,7 @@ class EME
 
 		/**
 		* Encode an input
-		* @param in the plaintext
+		* @param input the plaintext
 		* @param in_length length of plaintext in bytes
 		* @param key_length length of the key in bits
 		* @param rng a random number generator
@@ -35,7 +35,7 @@ class EME
 
 		/**
 		* Encode an input
-		* @param in the plaintext
+		* @param input the plaintext
 		* @param key_length length of the key in bits
 		* @param rng a random number generator
 		* @return encoded plaintext
@@ -46,7 +46,7 @@ class EME
 
 		/**
 		* Decode an input
-		* @param in the encoded plaintext
+		* @param input the encoded plaintext
 		* @param in_length length of encoded plaintext in bytes
 		* @param key_length length of the key in bits
 		* @return plaintext
@@ -57,7 +57,7 @@ class EME
 
 		/**
 		* Decode an input
-		* @param in the encoded plaintext
+		* @param input the encoded plaintext
 		* @param key_length length of the key in bits
 		* @return plaintext
 		*/
@@ -68,7 +68,7 @@ class EME
 	private:
 		/**
 		* Encode an input
-		* @param in the plaintext
+		* @param input the plaintext
 		* @param in_length length of plaintext in bytes
 		* @param key_length length of the key in bits
 		* @param rng a random number generator
@@ -81,7 +81,7 @@ class EME
 
 		/**
 		* Decode an input
-		* @param in the encoded plaintext
+		* @param input the encoded plaintext
 		* @param in_length length of encoded plaintext in bytes
 		* @param key_length length of the key in bits
 		* @return plaintext

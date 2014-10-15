@@ -24,14 +24,14 @@ public:
 
 	/**
 	* Add new input to process.
-	* @param in the input to process as a ubyte array
+	* @param input the input to process as a ubyte array
 	* @param length of param in in bytes
 	*/
 	void update(in ubyte* input, size_t length) { add_data(input, length); }
 
 	/**
 	* Add new input to process.
-	* @param in the input to process as a secure_vector
+	* @param input the input to process as a secure_vector
 	*/
 	void update(in SafeVector!ubyte input)
 	{
@@ -40,7 +40,7 @@ public:
 
 	/**
 	* Add new input to process.
-	* @param in the input to process as a Vector
+	* @param input the input to process as a Vector
 	*/
 	void update(in Vector!ubyte input)
 	{
@@ -49,7 +49,7 @@ public:
 
 	/**
 	* Add an integer in big-endian order
-	* @param in the value
+	* @param input the value
 	*/
 	void update_be(T)(in T input)
 	{
@@ -73,14 +73,14 @@ public:
 
 	/**
 	* Process a single ubyte.
-	* @param in the ubyte to process
+	* @param input the ubyte to process
 	*/
 	void update(ubyte input) { add_data(&input, 1); }
 
 	/**
 	* Complete the computation and retrieve the
 	* final result.
-	* @param out The ubyte array to be filled with the result.
+	* @param output The ubyte array to be filled with the result.
 	* Must be of length output_length()
 	*/
 	void flushInto(ubyte* output) { final_result(output); }
@@ -100,7 +100,7 @@ public:
 	/**
 	* Update and finalize computation. Does the same as calling update()
 	* and flush() consecutively.
-	* @param in the input to process as a ubyte array
+	* @param input the input to process as a ubyte array
 	* @param length the length of the ubyte array
 	* @result the result of the call to flush()
 	*/
@@ -113,7 +113,7 @@ public:
 	/**
 	* Update and finalize computation. Does the same as calling update()
 	* and flush() consecutively.
-	* @param in the input to process
+	* @param input the input to process
 	* @result the result of the call to flush()
 	*/
 	SafeVector!ubyte process(in SafeVector!ubyte input)
@@ -125,7 +125,7 @@ public:
 	/**
 	* Update and finalize computation. Does the same as calling update()
 	* and flush() consecutively.
-	* @param in the input to process
+	* @param input the input to process
 	* @result the result of the call to flush()
 	*/
 	SafeVector!ubyte process(in Vector!ubyte input)
@@ -137,7 +137,7 @@ public:
 	/**
 	* Update and finalize computation. Does the same as calling update()
 	* and flush() consecutively.
-	* @param in the input to process as a string
+	* @param input the input to process as a string
 	* @result the result of the call to flush()
 	*/
 	SafeVector!ubyte process(in string input)
@@ -157,7 +157,7 @@ private:
 
 	/**
 	* Write the final output to out
-	* @param out is an output buffer of output_length()
+	* @param output is an output buffer of output_length()
 	*/
 	abstract void final_result(ubyte* output);
 }

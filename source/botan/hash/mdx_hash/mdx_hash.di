@@ -45,7 +45,7 @@ class MDx_HashFunction : HashFunction
 
 		/**
 		* Write the count, if used, to this spot
-		* @param out where to write the counter to
+		* @param output where to write the counter to
 		*/
 		abstract void write_count(ubyte* output);
 	private:

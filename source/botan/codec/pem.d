@@ -6,9 +6,9 @@
 */
 
 module botan.codec.pem;
-import botan.filters;
+import botan.filters.filters;
 import botan.parsing;
-import botan.data_src;
+import botan.filters.data_src;
 
 /**
 * Encode some binary data in PEM format
