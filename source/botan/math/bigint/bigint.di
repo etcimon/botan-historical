@@ -450,15 +450,15 @@ public:
 	* Encode the integer value from a BigInt to a std::vector of bytes
 	* @param n the BigInt to use as integer source
 	* @param base number-base of resulting ubyte array representation
-	* @result secure_vector of bytes containing the integer with given base
+	* @result SafeVector of bytes containing the integer with given base
 	*/
 	static Vector!ubyte encode(in BigInt n, Base base = Binary);
 
 	/**
-	* Encode the integer value from a BigInt to a secure_vector of bytes
+	* Encode the integer value from a BigInt to a SafeVector of bytes
 	* @param n the BigInt to use as integer source
 	* @param base number-base of resulting ubyte array representation
-	* @result secure_vector of bytes containing the integer with given base
+	* @result SafeVector of bytes containing the integer with given base
 	*/
 	static SafeVector!ubyte encode_locked(in BigInt n,
 														 Base base = Binary);
@@ -515,7 +515,7 @@ public:
 	static SafeVector!ubyte encode_1363(in BigInt n, size_t bytes);
 
 private:
-	secure_vector!word m_reg;
+	SafeVector!word m_reg;
 	Sign m_signedness = Positive;
 };
 

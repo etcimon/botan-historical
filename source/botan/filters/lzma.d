@@ -6,10 +6,9 @@
 *
 * Distributed under the terms of the botan license.
 */
-module botan.filters.compression.lzma;
+module botan.filters.lzma;
 import botan.filters.filter;
 
-import botan.lzma;
 import botan.utils.exceptn;
 
 import std.c.string;

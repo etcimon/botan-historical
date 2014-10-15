@@ -134,7 +134,7 @@ private:
 		for (size_t i = 1; i != S.size(); ++i)
 			S[i] = S[i-1] + 0x9E3779B9;
 		
-		secure_vector!uint K = secure_vector!uint(8);
+		SafeVector!uint K = SafeVector!uint(8);
 		
 		for (int i = length-1; i >= 0; --i)
 			K[i/4] = (K[i/4] << 8) + key[i];
@@ -149,7 +149,7 @@ private:
 		}
 	}
 
-	secure_vector!uint S;
+	SafeVector!uint S;
 };
 
 

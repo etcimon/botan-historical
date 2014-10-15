@@ -10,7 +10,7 @@ import botan.engine.engine;
 import botan.algo_base.scan_name;
 import botan.block.block_cipher;
 import botan.stream_cipher;
-import botan.hash;
+import botan.hash.hash;
 import botan.mac;
 import botan.pbkdf;
 import botan.pow_mod;

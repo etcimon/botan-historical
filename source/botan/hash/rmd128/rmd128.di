@@ -24,5 +24,5 @@ class RIPEMD_128 : MDx_HashFunction
 		void compress_n(const ubyte*, size_t blocks);
 		void copy_out(ubyte*);
 
-		secure_vector!uint M, digest;
+		SafeVector!uint M, digest;
 };

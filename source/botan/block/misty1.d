@@ -141,7 +141,7 @@ private:
 	*/
 	void key_schedule(in ubyte* key)
 	{
-		secure_vector!ushort KS = secure_vector!ushort(32);
+		SafeVector!ushort KS = SafeVector!ushort(32);
 		for (size_t i = 0; i != length / 2; ++i)
 			KS[i] = load_be!ushort(key, i);
 		
@@ -190,7 +190,7 @@ private:
 	
 
 
-	secure_vector!ushort EK, DK;
+	SafeVector!ushort EK, DK;
 };
 
 package:

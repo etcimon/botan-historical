@@ -207,7 +207,7 @@ private:
 	*/
 	Vector!uint SBOX;
 
-	secure_vector!uint EK;
+	SafeVector!uint EK;
 };
 
 package:

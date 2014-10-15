@@ -236,7 +236,7 @@ private:
 	}
 
 
-	secure_vector!uint EK, DK;
+	SafeVector!uint EK, DK;
 };
 
 /**
@@ -467,7 +467,7 @@ private:
 	}
 
 
-	secure_vector!uint EK, DK;
+	SafeVector!uint EK, DK;
 };
 
 /**
@@ -734,7 +734,7 @@ private:
 	}
 
 
-	secure_vector!uint EK, DK;
+	SafeVector!uint EK, DK;
 };
 
 __m128i aes_128_key_expansion(__m128i key, __m128i key_with_rcon)

@@ -104,13 +104,13 @@ private:
 		MK.resize(48);
 		RK.resize(48);
 		
-		secure_vector!uint X = secure_vector!uint(4);
+		SafeVector!uint X = SafeVector!uint(4);
 		for (size_t i = 0; i != length; ++i)
 			X[i/4] = (X[i/4] << 8) + key[i];
 		
 		cast_ks(MK, X);
 		
-		secure_vector!uint RK32 = secure_vector!uint(48);
+		SafeVector!uint RK32 = SafeVector!uint(48);
 		cast_ks(RK32, X);
 		
 		for (size_t i = 0; i != 16; ++i)
@@ -119,8 +119,8 @@ private:
 	/*
 	* S-Box Based Key Expansion
 	*/
-	static void cast_ks(ref secure_vector!uint K,
-	            		ref secure_vector!uint X)
+	static void cast_ks(ref SafeVector!uint K,
+	            		ref SafeVector!uint X)
 	{
 		immutable uint[256] S5 = [
 			0x7EC90C04, 0x2C6E74B9, 0x9B0E66DF, 0xA6337911, 0xB86A7FFF, 0x1DD358F5,
@@ -311,7 +311,7 @@ private:
 			const uint* X;
 		};
 		
-		secure_vector!uint Z = secure_vector!uint(4);
+		SafeVector!uint Z = SafeVector!uint(4);
 		ByteReader x = new ByteReader(&X[0]);
 		ByteReader z = new ByteReader(&Z[0]);
 		scope(exit) {
@@ -352,7 +352,7 @@ private:
 		K[15] = S5[x(14)] ^ S6[x(15)] ^ S7[x( 1)] ^ S8[x( 0)] ^ S8[x(13)];
 	}
 
-	secure_vector!uint MK;
+	SafeVector!uint MK;
 	SafeVector!ubyte RK;
 };
 

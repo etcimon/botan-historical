@@ -5,7 +5,7 @@
 *
 * Distributed under the terms of the botan license.
 */
-
+module botan.filters.bzip2;
 import botan.filters.filter;
 import botan.utils.exceptn;
 

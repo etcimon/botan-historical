@@ -7,7 +7,7 @@
 module botan.checksum.adler32;
 
 import botan.loadstor;
-import botan.hash;
+import botan.hash.hash;
 /**
 * The Adler32 checksum, used in zlib
 */

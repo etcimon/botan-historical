@@ -14,7 +14,7 @@ namespace {
 /*
 * Tiger Mixing Function
 */
- void mix(secure_vector!ulong& X)
+ void mix(SafeVector!ulong& X)
 {
 	X[0] -= X[7] ^ 0xA5A5A5A5A5A5A5A5;
 	X[1] ^= X[0];
@@ -80,7 +80,7 @@ void Tiger::copy_out(ubyte* output)
 * Tiger Pass
 */
 void Tiger::pass(ref ulong A, ref ulong B, ref ulong C,
-					  const secure_vector!ulong& X,
+					  const SafeVector!ulong& X,
 					  ubyte mul)
 {
 	C ^= X[0];

@@ -33,7 +33,7 @@ class ChaCha : StreamCipher
 	private:
 		void key_schedule(in ubyte* key, size_t length);
 
-		secure_vector!uint m_state;
+		SafeVector!uint m_state;
 		SafeVector!ubyte m_buffer;
 		size_t m_position = 0;
 };

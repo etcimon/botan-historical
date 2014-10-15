@@ -21,7 +21,7 @@ public:
 */
 	void encrypt_n(ubyte* input, ubyte* output, size_t blocks) const
 	{
-		const secure_vector!uint EK = this.get_EK();
+		const SafeVector!uint EK = this.get_EK();
 		
 		SIMD_32 K0 = SIMD_32(EK[0]);
 		SIMD_32 K1 = SIMD_32(EK[1]);
@@ -78,7 +78,7 @@ public:
 	*/
 	void decrypt_n(ubyte* input, ubyte* output, size_t blocks) const
 	{
-		const secure_vector!uint DK = this.get_DK();
+		const SafeVector!uint DK = this.get_DK();
 		
 		SIMD_32 K0 = SIMD_32(DK[0]);
 		SIMD_32 K1 = SIMD_32(DK[1]);

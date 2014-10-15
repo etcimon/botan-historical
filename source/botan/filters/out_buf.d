@@ -10,7 +10,7 @@ module botan.filters.out_buf;
 import botan.types;
 import botan.filters.pipe;
 import deque;
-import botan.secqueue;
+import botan.filters.secqueue;
 /**
 * Container of output buffers for Pipe
 */

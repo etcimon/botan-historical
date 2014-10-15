@@ -6,7 +6,7 @@
 */
 
 import botan.emsa;
-import botan.hash;
+import botan.hash.hash;
 /**
 * PKCS #1 v1.5 signature padding
 * aka PKCS #1 block type 1

@@ -115,7 +115,7 @@ private:
 	*/
 	void key_schedule(in ubyte* key)
 	{
-		secure_vector!uint T = secure_vector!uint(15);
+		SafeVector!uint T = SafeVector!uint(15);
 		for (size_t i = 0; i != length / 4; ++i)
 			T[i] = load_le!uint(key, i);
 		
@@ -180,7 +180,7 @@ private:
 		}
 	}
 
-	secure_vector!uint EK;
+	SafeVector!uint EK;
 };
 
 

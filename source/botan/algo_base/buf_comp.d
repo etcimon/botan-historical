@@ -31,7 +31,7 @@ public:
 
 	/**
 	* Add new input to process.
-	* @param input the input to process as a secure_vector
+	* @param input the input to process as a SafeVector
 	*/
 	void update(in SafeVector!ubyte input)
 	{
@@ -88,7 +88,7 @@ public:
 	/**
 	* Complete the computation and retrieve the
 	* final result.
-	* @return secure_vector holding the result
+	* @return SafeVector holding the result
 	*/
 	SafeVector!ubyte flush()
 	{

@@ -173,7 +173,7 @@ private:
 	/*
 	* Generate one of the Sboxes
 	*/
-	void generate_sbox(ref secure_vector!uint box,
+	void generate_sbox(ref SafeVector!uint box,
 	                   ref uint L, ref uint R,
 	                   in ubyte[16] salt,
 					   size_t salt_off) const
@@ -382,5 +382,5 @@ private:
 		0x01C36AE4, 0xD6EBE1F9, 0x90D4F869, 0xA65CDEA0, 0x3F09252D, 0xC208E69F,
 		0xB74E6132, 0xCE77E25B, 0x578FDFE3, 0x3AC372E6 ];
 
-	secure_vector!uint S, P;
+	SafeVector!uint S, P;
 };

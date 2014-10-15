@@ -109,8 +109,8 @@ public:
 	}
 
 package:
-	ref const secure_vector!ulong get_T() const { return m_T; }
-	ref const secure_vector!ulong get_K() const { return m_K; }
+	ref const SafeVector!ulong get_T() const { return m_T; }
+	ref const SafeVector!ulong get_K() const { return m_K; }
 private:
 	override void key_schedule(in ubyte* key, size_t)
 	{
@@ -125,8 +125,8 @@ private:
 	}
 
 
-	abstract void skein_feedfwd(in secure_vector!ulong M,
-	                   			ref const secure_vector!ulong T)
+	abstract void skein_feedfwd(in SafeVector!ulong M,
+	                   			ref const SafeVector!ulong T)
 	{
 		BOTAN_ASSERT(m_K.size() == 9, "Key was set");
 		BOTAN_ASSERT(M.size() == 8, "Single block");
@@ -170,8 +170,8 @@ private:
 	}
 
 	// Private data
-	secure_vector!ulong m_T;
-	secure_vector!ulong m_K;
+	SafeVector!ulong m_T;
+	SafeVector!ulong m_K;
 };
 
 

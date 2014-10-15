@@ -114,7 +114,7 @@ private:
 			0x779B99E3, 0xEF3733C6, 0xDE6E678D, 0xBCDCCF1B
 		];
 		
-		secure_vector!uint WK = secure_vector!uint(4);
+		SafeVector!uint WK = SafeVector!uint(4);
 		
 		for (size_t i = 0; i != 4; ++i)
 			WK[i] = load_be!uint(key, i);
@@ -335,5 +335,5 @@ private:
 
 	};
 
-	secure_vector!uint K;
+	SafeVector!uint K;
 };

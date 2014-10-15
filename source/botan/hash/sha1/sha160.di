@@ -41,10 +41,10 @@ class SHA_160 : MDx_HashFunction
 		/**
 		* The digest value, exposed for use by subclasses (asm, SSE2)
 		*/
-		secure_vector!uint digest;
+		SafeVector!uint digest;
 
 		/**
 		* The message buffer, exposed for use by subclasses (asm, SSE2)
 		*/
-		secure_vector!uint W;
+		SafeVector!uint W;
 };

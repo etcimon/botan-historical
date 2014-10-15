@@ -16,7 +16,7 @@ static if (BOTAN_HAS_PIPE_UNIXFD_IO && false)
 	import botan.fd_unix;
 
 import botan.filters.out_buf;
-import botan.secqueue;
+import botan.filters.secqueue;
 import botan.parsing;
 
 /**
@@ -75,7 +75,7 @@ public:
 
 	/**
 	* Write input to the pipe, i.e. to its first filter.
-	* @param input the secure_vector containing the data to write
+	* @param input the SafeVector containing the data to write
 	*/
 	void write(in SafeVector!ubyte input)
 	{ write(&input[0], input.size()); }
@@ -143,7 +143,7 @@ public:
 
 	/**
 	* Perform start_msg(), write() and end_msg() sequentially.
-	* @param input the secure_vector containing the data to write
+	* @param input the SafeVector containing the data to write
 	*/
 	void process_msg(in SafeVector!ubyte input)
 	{
@@ -152,7 +152,7 @@ public:
 
 	/**
 	* Perform start_msg(), write() and end_msg() sequentially.
-	* @param input the secure_vector containing the data to write
+	* @param input the SafeVector containing the data to write
 	*/
 	void process_msg(in Vector!ubyte input)
 	{
@@ -248,7 +248,7 @@ public:
 	/**
 	* Read the full contents of the pipe.
 	* @param msg the number identifying the message to read from
-	* @return secure_vector holding the contents of the pipe
+	* @return SafeVector holding the contents of the pipe
 	*/
 	SafeVector!ubyte read_all(message_id msg = DEFAULT_MESSAGE)
 	{
@@ -616,16 +616,3 @@ public:
 	
 	string name() const { return "Null"; }
 };
-
-
-
-
-
-
-
-
-
-
-
-
-

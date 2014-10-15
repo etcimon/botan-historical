@@ -6,7 +6,7 @@
 */
 
 import botan.pbkdf;
-import botan.hash;
+import botan.hash.hash;
 /**
 * PKCS #5 v1 PBKDF, aka PBKDF1
 * Can only generate a key up to the size of the hash output.

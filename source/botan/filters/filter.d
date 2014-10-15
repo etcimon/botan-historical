@@ -10,7 +10,7 @@ module botan.filters.filter;
 import botan.alloc.secmem;
 import vector;
 import string;
-import botan.secqueue;
+import botan.filters.secqueue;
 import botan.utils.exceptn;
 
 /**

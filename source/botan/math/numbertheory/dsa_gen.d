@@ -7,7 +7,7 @@
 
 import botan.numthry;
 import botan.algo_factory;
-import botan.hash;
+import botan.hash.hash;
 import botan.parsing;
 import std.algorithm;
 namespace {

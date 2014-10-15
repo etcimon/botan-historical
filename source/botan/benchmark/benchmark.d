@@ -10,7 +10,7 @@ import botan.algo_base.buf_comp;
 import botan.block.block_cipher;
 import botan.stream_cipher;
 import botan.aead;
-import botan.hash;
+import botan.hash.hash;
 import botan.mac;
 import std.datetime;
 import std.conv;

@@ -17,7 +17,7 @@ BigInt square(in BigInt x)
 	const size_t x_sw = x.sig_words();
 
 	BigInt z(BigInt.Positive, round_up!size_t(2*x_sw, 16));
-	secure_vector!word workspace(z.size());
+	SafeVector!word workspace(z.size());
 
 	bigint_sqr(z.mutable_data(), z.size(),
 				  &workspace[0],
@@ -42,7 +42,7 @@ BigInt mul_add(in BigInt a, ref const BigInt b, ref const BigInt c)
 	const size_t c_sw = c.sig_words();
 
 	BigInt r(sign, std.algorithm.max(a.size() + b.size(), c_sw) + 1);
-	secure_vector!word workspace(r.size());
+	SafeVector!word workspace(r.size());
 
 	bigint_mul(r.mutable_data(), r.size(),
 				  &workspace[0],

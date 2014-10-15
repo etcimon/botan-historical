@@ -89,7 +89,7 @@ BigInt operator*(in BigInt x, ref const BigInt y)
 		bigint_linmul3(z.mutable_data(), x.data(), x_sw, y.word_at(0));
 	else if (x_sw && y_sw)
 	{
-		secure_vector!word workspace(z.size());
+		SafeVector!word workspace(z.size());
 		bigint_mul(z.mutable_data(), z.size(), &workspace[0],
 					  x.data(), x.size(), x_sw,
 					  y.data(), y.size(), y_sw);

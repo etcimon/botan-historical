@@ -104,7 +104,7 @@ The standard format for serializing a private key is PKCS #8, the operations
 for which are defined in ``pkcs8.h``. It supports both unencrypted and
 encrypted storage.
 
-.. cpp:function:: secure_vector<byte> PKCS8::BER_encode(const Private_Key& key, \
+.. cpp:function:: SafeVector<byte> PKCS8::BER_encode(const Private_Key& key, \
    RandomNumberGenerator& rng, const std::string& password, const std::string& pbe_algo = "")
 
   Takes any private key object, serializes it, encrypts it using
@@ -135,7 +135,7 @@ Unencrypted serialization is also supported.
   security requirements, always use the versions that encrypt the key based on
   a passphrase, described above.
 
-.. cpp:function:: secure_vector<byte> PKCS8::BER_encode(const Private_Key& key)
+.. cpp:function:: SafeVector<byte> PKCS8::BER_encode(const Private_Key& key)
 
   Serializes the private key and returns the result.
 
@@ -221,7 +221,7 @@ To import and export public keys, use:
 
 .. cpp:function:: Public_Key* X509::load_key(DataSource& in)
 
-.. cpp:function:: Public_Key* X509::load_key(const secure_vector<byte>& buffer)
+.. cpp:function:: Public_Key* X509::load_key(const SafeVector<byte>& buffer)
 
 .. cpp:function:: Public_Key* X509::load_key(const std::string& filename)
 
@@ -275,7 +275,7 @@ You can generate a new random group using
 
 You can serialize a ``DL_Group`` using
 
-.. cpp:function:: secure_vector<byte> DL_Group::DER_Encode(Format format)
+.. cpp:function:: SafeVector<byte> DL_Group::DER_Encode(Format format)
 
 or
 
@@ -336,10 +336,10 @@ The primary interface for encryption is
 
 .. cpp:class:: PK_Encryptor
 
-   .. cpp:function:: secure_vector<byte> encrypt( \
+   .. cpp:function:: SafeVector<byte> encrypt( \
          const byte* in, size_t length, RandomNumberGenerator& rng) const
 
-   .. cpp:function:: secure_vector<byte> encrypt( \
+   .. cpp:function:: SafeVector<byte> encrypt( \
       const std::vector<byte>& in, RandomNumberGenerator& rng) const
 
       These encrypt a message, returning the ciphertext.
@@ -427,14 +427,14 @@ Signature generation is performed using
       computation. Typically, the input will be provided directly to a
       hash function.
 
-   .. cpp:function:: secure_vector<byte> signature(RandomNumberGenerator& rng)
+   .. cpp:function:: SafeVector<byte> signature(RandomNumberGenerator& rng)
 
       Creates the signature and returns it
 
-   .. cpp:function:: secure_vector<byte> sign_message( \
+   .. cpp:function:: SafeVector<byte> sign_message( \
       const byte* in, size_t length, RandomNumberGenerator& rng)
 
-   .. cpp:function:: secure_vector<byte> sign_message( \
+   .. cpp:function:: SafeVector<byte> sign_message( \
       const std::vector<byte>& in, RandomNumberGenerator& rng)
 
       These functions are equivalent to calling
@@ -506,7 +506,7 @@ other party, and then each of you runs a computation with the other's
 value and your key (this should return the same result to both
 parties). This computation can be called by using
 ``derive_key`` with either a byte array/length pair, or a
-``secure_vector<byte>`` than holds the public value of the other
+``SafeVector<byte>`` than holds the public value of the other
 party. The last argument to either call is a number that specifies how
 long a key you want.
 
@@ -521,7 +521,7 @@ symmetric algorithm.
 
 The public value that should be used can be obtained by calling
 ``public_data``, which exists for any key that is associated with a
-key agreement algorithm. It returns a ``secure_vector<byte>``.
+key agreement algorithm. It returns a ``SafeVector<byte>``.
 
 "KDF2(SHA-256)" is by far the preferred algorithm for key derivation
 in new applications. The X9.42 algorithm may be useful in some

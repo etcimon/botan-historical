@@ -47,7 +47,7 @@ namespace SHA2_32 {
 /*
 * SHA-224 / SHA-256 compression function
 */
-void compress(secure_vector!uint& digest,
+void compress(SafeVector!uint& digest,
 				  in ubyte* input, size_t blocks)
 {
 	uint A = digest[0], B = digest[1], C = digest[2],

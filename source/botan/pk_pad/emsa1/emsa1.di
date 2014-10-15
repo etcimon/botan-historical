@@ -6,7 +6,7 @@
 */
 
 import botan.emsa;
-import botan.hash;
+import botan.hash.hash;
 /**
 * EMSA1 from IEEE 1363
 * Essentially, sign the hash directly

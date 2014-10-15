@@ -87,7 +87,7 @@ void Skein_512::initial_block()
 
 void Skein_512::ubi_512(in ubyte* msg, size_t msg_len)
 {
-	secure_vector!ulong M(8);
+	SafeVector!ulong M(8);
 
 	do
 	{

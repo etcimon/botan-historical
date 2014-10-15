@@ -59,7 +59,7 @@ Here's code that uses one of them to encrypt a string with AES::
   pipe.process_msg("secrets");
   pipe.process_msg("more secrets");
 
-  secure_vector<byte> c1 = pipe.read_all(0);
+  SafeVector<byte> c1 = pipe.read_all(0);
 
   byte c2[4096] = { 0 };
   size_t got_out = pipe.read(c2, sizeof(c2), 1);
@@ -216,7 +216,7 @@ a case where that is useful::
 
    pipe.process_msg(ciphertext);
    std::string plaintext = pipe.read_all_as_string(0);
-   secure_vector<byte> mac = pipe.read_all(1);
+   SafeVector<byte> mac = pipe.read_all(1);
 
    if(mac != auth_code)
       error();
@@ -429,7 +429,7 @@ Functions in ``Pipe`` related to reading include:
   Acts exactly like `read`, except the data is not actually read; the
   next read will return the same data.
 
-.. cpp:function:: secure_vector<byte> Pipe::read_all()
+.. cpp:function:: SafeVector<byte> Pipe::read_all()
 
   Reads the entire message into a buffer and returns it
 

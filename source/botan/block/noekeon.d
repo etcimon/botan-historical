@@ -118,12 +118,12 @@ package:
 	/**
 	* @return const reference to encryption subkeys
 	*/
-	ref const secure_vector!uint get_EK() const { return EK; }
+	ref const SafeVector!uint get_EK() const { return EK; }
 
 	/**
 	* @return const reference to decryption subkeys
 	*/
-	ref const secure_vector!uint get_DK() const { return DK; }
+	ref const SafeVector!uint get_DK() const { return DK; }
 
 private:
 	/*
@@ -169,7 +169,7 @@ private:
 		EK[3] = A3;
 	}
 
-	secure_vector!uint EK, DK;
+	SafeVector!uint EK, DK;
 };
 
 package:

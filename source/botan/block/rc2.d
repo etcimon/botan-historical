@@ -188,7 +188,7 @@ private:
 		K.resize(64);
 		load_le!ushort(&K[0], &L[0], 64);
 	}
-	secure_vector!ushort K;
+	SafeVector!ushort K;
 };
 
 

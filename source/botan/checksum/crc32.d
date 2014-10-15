@@ -6,7 +6,7 @@
 */
 module botan.checksum.crc32;
 
-import botan.hash;
+import botan.hash.hash;
 import botan.loadstor;
 
 /**

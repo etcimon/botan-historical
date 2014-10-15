@@ -42,12 +42,12 @@ package:
 	/**
 	* @return const reference to encryption subkeys
 	*/
-	ref const secure_vector!ushort get_EK() const { return EK; }
+	ref const SafeVector!ushort get_EK() const { return EK; }
 
 	/**
 	* @return const reference to decryption subkeys
 	*/
-	ref const secure_vector!ushort get_DK() const { return DK; }
+	ref const SafeVector!ushort get_DK() const { return DK; }
 
 private:
 	/*
@@ -91,7 +91,7 @@ private:
 		DK[0] = mul_inv(EK[48]);
 	}
 
-	secure_vector!ushort EK, DK;
+	SafeVector!ushort EK, DK;
 };
 
 package {

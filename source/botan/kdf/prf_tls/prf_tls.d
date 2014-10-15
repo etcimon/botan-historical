@@ -8,7 +8,7 @@
 import botan.prf_tls;
 import botan.internal.xor_buf;
 import botan.hmac;
-import botan.md5;
+import botan.hash.md5;
 import botan.sha160;
 namespace {
 

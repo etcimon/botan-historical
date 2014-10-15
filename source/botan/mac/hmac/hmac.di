@@ -6,7 +6,7 @@
 */
 
 import botan.mac;
-import botan.hash;
+import botan.hash.hash;
 /**
 * HMAC
 */

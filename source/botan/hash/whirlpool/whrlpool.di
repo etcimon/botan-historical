@@ -33,5 +33,5 @@ class Whirlpool : MDx_HashFunction
 		static const ulong[256] C6;
 		static const ulong[256] C7;
 
-		secure_vector!ulong M, digest;
+		SafeVector!ulong M, digest;
 };

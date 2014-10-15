@@ -123,7 +123,7 @@ private:
 		immutable ushort[] RC = { 0x0123, 0x4567, 0x89AB, 0xCDEF,
 			0xFEDC, 0xBA98, 0x7654, 0x3210 };
 		
-		secure_vector!ushort K = secure_vector!ushort(16);
+		SafeVector!ushort K = SafeVector!ushort(16);
 		for (size_t i = 0; i != 8; ++i)
 		{
 			K[i] = load_be!ushort(key, i);
@@ -146,7 +146,7 @@ private:
 	}
 
 
-	secure_vector!ushort EK;
+	SafeVector!ushort EK;
 };
 
 

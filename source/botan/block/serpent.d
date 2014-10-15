@@ -131,7 +131,7 @@ package:
 	* For use by subclasses using SIMD, asm, etc
 	* @return const reference to the key schedule
 	*/
-	ref const secure_vector!uint get_round_keys() const
+	ref const SafeVector!uint get_round_keys() const
 	{ return round_key; }
 
 	/**
@@ -151,7 +151,7 @@ private:
 	{
 		const uint PHI = 0x9E3779B9;
 		
-		secure_vector!uint W = secure_vector!uint(140);
+		SafeVector!uint W = SafeVector!uint(140);
 		for (size_t i = 0; i != length / 4; ++i)
 			W[i] = load_le!uint(key, i);
 		
@@ -184,7 +184,7 @@ private:
 		round_key.assign(&W[8], &W[140]);
 	}
 
-	secure_vector!uint round_key;
+	SafeVector!uint round_key;
 };
 
 

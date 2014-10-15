@@ -164,7 +164,7 @@ public:
 	}
 
 	/**
-	* Construct a memory source that reads from a secure_vector
+	* Construct a memory source that reads from a SafeVector
 	* @param input the MemoryRegion to read from
 	*/
 	this(in SafeVector!ubyte input)

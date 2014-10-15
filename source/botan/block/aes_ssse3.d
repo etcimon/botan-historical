@@ -99,7 +99,7 @@ private:
 		_mm_storeu_si128(DK_mm, aes_schedule_mangle_last_dec(key));
 	}
 
-	secure_vector!uint EK, DK;
+	SafeVector!uint EK, DK;
 };
 
 /**
@@ -218,7 +218,7 @@ private:
 		}
 	}
 
-	secure_vector!uint EK, DK;
+	SafeVector!uint EK, DK;
 };
 
 /**
@@ -316,7 +316,7 @@ private:
 		_mm_storeu_si128(DK_mm + 0, aes_schedule_mangle_last_dec(key2));
 	}
 
-	secure_vector!uint EK, DK;
+	SafeVector!uint EK, DK;
 };
 	
 immutable __m128i low_nibs = _mm_set1_epi8(0x0F);

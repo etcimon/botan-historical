@@ -5,7 +5,7 @@
 * Distributed under the terms of the botan license.
 */
 
-import botan.hash;
+import botan.hash.hash;
 import botan.block.threefish;
 import string;
 import memory;
@@ -53,7 +53,7 @@ class Skein_512 : HashFunction
 		size_t output_bits;
 
 		Unique!Threefish_512 m_threefish;
-		secure_vector!ulong T;
+		SafeVector!ulong T;
 		SafeVector!ubyte buffer;
 		size_t buf_pos;
 };

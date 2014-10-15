@@ -32,7 +32,7 @@ class Tiger : MDx_HashFunction
 		void copy_out(ubyte[]);
 
 		static void pass(ref ulong A, ref ulong B, ref ulong C,
-							  const secure_vector!ulong& M,
+							  const SafeVector!ulong& M,
 							  ubyte mul);
 
 		static const ulong SBOX1[256];
@@ -40,6 +40,6 @@ class Tiger : MDx_HashFunction
 		static const ulong SBOX3[256];
 		static const ulong SBOX4[256];
 
-		secure_vector!ulong X, digest;
+		SafeVector!ulong X, digest;
 		const size_t hash_len, passes;
 };

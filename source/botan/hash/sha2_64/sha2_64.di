@@ -24,7 +24,7 @@ class SHA_384 : MDx_HashFunction
 		void compress_n(const ubyte[], size_t blocks);
 		void copy_out(ubyte[]);
 
-		secure_vector!ulong digest;
+		SafeVector!ulong digest;
 };
 
 /**
@@ -45,5 +45,5 @@ class SHA_512 : MDx_HashFunction
 		void compress_n(const ubyte[], size_t blocks);
 		void copy_out(ubyte[]);
 
-		secure_vector!ulong digest;
+		SafeVector!ulong digest;
 };

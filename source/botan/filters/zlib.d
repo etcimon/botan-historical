@@ -5,7 +5,7 @@
 *
 * Distributed under the terms of the botan license.
 */
-module botan.filters.compression.zlib;
+module botan.filters.zlib;
 
 import botan.filters.filter;
 import botan.utils.exceptn;

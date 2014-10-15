@@ -13,7 +13,7 @@ import botan.utils.exceptn;
 
 import botan.block.block_cipher;
 import botan.stream_cipher;
-import botan.hash;
+import botan.hash.hash;
 import botan.mac;
 import botan.pbkdf;
 

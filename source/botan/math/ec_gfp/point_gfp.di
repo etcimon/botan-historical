@@ -239,7 +239,7 @@ class PointGFp
 
 		CurveGFp curve;
 		BigInt coord_x, coord_y, coord_z;
-		mutable secure_vector!word ws; // workspace for Montgomery
+		mutable SafeVector!word ws; // workspace for Montgomery
 };
 
 // relational operators

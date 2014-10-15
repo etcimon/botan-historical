@@ -46,7 +46,7 @@ namespace SHA2_64 {
 /*
 * SHA-{384,512} Compression Function
 */
-void compress(secure_vector!ulong& digest,
+void compress(SafeVector!ulong& digest,
 				  in ubyte* input, size_t blocks)
 {
 	ulong A = digest[0], B = digest[1], C = digest[2],

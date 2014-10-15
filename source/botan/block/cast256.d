@@ -166,7 +166,7 @@ private:
 		MK.resize(48);
 		RK.resize(48);
 		
-		secure_vector!uint K = secure_vector!uint(8);
+		SafeVector!uint K = SafeVector!uint(8);
 		for (size_t i = 0; i != length; ++i)
 			K[i/4] = (K[i/4] << 8) + key[i];
 		
@@ -203,7 +203,7 @@ private:
 		}
 	}
 
-	secure_vector!uint MK;
+	SafeVector!uint MK;
 	SafeVector!ubyte RK;
 };
 

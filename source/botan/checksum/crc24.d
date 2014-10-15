@@ -7,7 +7,7 @@
 module botan.checksum.crc24;
 
 import botan.utils.get_byte;
-import botan.hash;
+import botan.hash.hash;
 /**
 * 24-bit cyclic redundancy check
 */

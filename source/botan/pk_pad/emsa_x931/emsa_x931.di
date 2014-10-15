@@ -6,7 +6,7 @@
 */
 
 import botan.emsa;
-import botan.hash;
+import botan.hash.hash;
 /**
 * EMSA from X9.31 (EMSA2 in IEEE 1363)
 * Useful for Rabin-Williams, also sometimes used with RSA in

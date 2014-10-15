@@ -35,14 +35,14 @@ AEAD modes currently available include GCM, OCB, and EAX. All three use a
        function more than once, even across multiple calls to :cpp:func:`start`
        and :cpp:func:`finish`.
 
-  .. cpp:function:: secure_vector<byte> start(const byte nonce[], size_t nonce_len)
+  .. cpp:function:: SafeVector<byte> start(const byte nonce[], size_t nonce_len)
 
        Start processing a message, using *nonce* as the unique per-message
        value.
 
        Returns any initial data that should be emitted (for instance a header).
 
-  .. cpp:function:: void update(secure_vector<byte>& buffer, size_t offset = 0)
+  .. cpp:function:: void update(SafeVector<byte>& buffer, size_t offset = 0)
 
        Continue processing a message. The *buffer* is an in/out parameter and
        may be resized. In particular, some modes require that all input be
@@ -56,7 +56,7 @@ AEAD modes currently available include GCM, OCB, and EAX. All three use a
        The first *offset* bytes of *buffer* will be ignored (this allows in
        place processing of a buffer that contains an initial plaintext header)
 
-  .. cpp:function:: void finish(secure_vector<byte>& buffer, size_t offset = 0)
+  .. cpp:function:: void finish(SafeVector<byte>& buffer, size_t offset = 0)
 
        Complete processing a message with a final input of *buffer*, which is
        treated the same as with :cpp:func:`update`. It must contain at least

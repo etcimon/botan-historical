@@ -96,7 +96,7 @@ private:
 		des_key_schedule(&round_key[0], key);
 	}
 
-	secure_vector!uint round_key;
+	SafeVector!uint round_key;
 };
 
 /**
@@ -194,7 +194,7 @@ private:
 	}
 
 
-	secure_vector!uint round_key;
+	SafeVector!uint round_key;
 };
 
 /*

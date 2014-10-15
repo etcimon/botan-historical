@@ -41,7 +41,7 @@ private:
 		aes_key_schedule(key, length, EK, DK, ME, MD);
 	}
 
-	secure_vector!uint EK, DK;
+	SafeVector!uint EK, DK;
 	SafeVector!ubyte ME, MD;
 };
 
@@ -77,7 +77,7 @@ private:
 		aes_key_schedule(key, length, EK, DK, ME, MD);
 	}
 
-	secure_vector!uint EK, DK;
+	SafeVector!uint EK, DK;
 	SafeVector!ubyte ME, MD;
 };
 
@@ -113,7 +113,7 @@ private:
 		aes_key_schedule(key, length, EK, DK, ME, MD);
 	}
 
-	secure_vector!uint EK, DK;
+	SafeVector!uint EK, DK;
 	SafeVector!ubyte ME, MD;
 };
 
@@ -518,7 +518,7 @@ immutable uint[1024] TD = [
 */
 void aes_encrypt_n(ubyte* input, ubyte* output,
                    size_t blocks,
-                   ref const secure_vector!uint EK,
+                   ref const SafeVector!uint EK,
                    in SafeVector!ubyte ME)
 {
 	BOTAN_ASSERT(EK.size() && ME.size() == 16, "Key was set");
@@ -631,7 +631,7 @@ void aes_encrypt_n(ubyte* input, ubyte* output,
 * AES Decryption
 */
 void aes_decrypt_n(ubyte* input, ubyte* output, size_t blocks,
-                   ref const secure_vector!uint DK,
+                   ref const SafeVector!uint DK,
                    in SafeVector!ubyte MD)
 {
 	BOTAN_ASSERT(DK.size() && MD.size() == 16, "Key was set");
@@ -714,8 +714,8 @@ void aes_decrypt_n(ubyte* input, ubyte* output, size_t blocks,
 }
 
 void aes_key_schedule(in ubyte* key, size_t length,
-                      ref secure_vector!uint EK,
-                      ref secure_vector!uint DK,
+                      ref SafeVector!uint EK,
+                      ref SafeVector!uint DK,
                       SafeVector!ubyte ME,
                       SafeVector!ubyte MD)
 {
@@ -725,7 +725,7 @@ void aes_key_schedule(in ubyte* key, size_t length,
 	
 	const size_t rounds = (length / 4) + 6;
 	
-	secure_vector!uint XEK(length + 32), XDK(length + 32);
+	SafeVector!uint XEK(length + 32), XDK(length + 32);
 	
 	const size_t X = length / 4;
 	for (size_t i = 0; i != X; ++i)

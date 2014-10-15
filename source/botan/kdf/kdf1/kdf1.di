@@ -6,7 +6,7 @@
 */
 
 import botan.kdf;
-import botan.hash;
+import botan.hash.hash;
 /**
 * KDF1, from IEEE 1363
 */

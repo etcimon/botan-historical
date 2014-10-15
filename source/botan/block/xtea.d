@@ -87,7 +87,7 @@ package:
 	/**
 	* @return const reference to the key schedule
 	*/
-	ref const secure_vector!uint get_EK() const { return EK; }
+	ref const SafeVector!uint get_EK() const { return EK; }
 
 private:
 	/*
@@ -97,7 +97,7 @@ private:
 	{
 		EK.resize(64);
 		
-		secure_vector!uint UK(4);
+		SafeVector!uint UK(4);
 		for (size_t i = 0; i != 4; ++i)
 			UK[i] = load_be!uint(key, i);
 		
@@ -110,7 +110,7 @@ private:
 		}
 	}
 
-	secure_vector!uint EK;
+	SafeVector!uint EK;
 };
 
 package:

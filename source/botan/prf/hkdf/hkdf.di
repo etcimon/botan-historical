@@ -6,7 +6,7 @@
 */
 
 import botan.mac;
-import botan.hash;
+import botan.hash.hash;
 /**
 * HKDF, see @rfc 5869 for details
 */

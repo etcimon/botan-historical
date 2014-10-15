@@ -5,11 +5,11 @@
 * Distributed under the terms of the botan license.
 */
 module botan.filters.fd_unix;
+version(none):
 import botan.filters.pipe;
 import botan.utils.exceptn;
 import core.sys.posix.unistd;
 
-version(none):
 
 /**
 * Stream output operator; dumps the results from pipe's default
@@ -17,7 +17,7 @@ version(none):
 * @param output file descriptor for an open output stream
 * @param pipe the pipe
 */
-int operator<<(int fd, Pipe& pipe)
+/*int operator<<(int fd, Pipe& pipe)
 {
 	SafeVector!ubyte buffer(DEFAULT_BUFFERSIZE);
 	while(pipe.remaining())
@@ -34,7 +34,7 @@ int operator<<(int fd, Pipe& pipe)
 		}
 	}
 	return fd;
-}
+}*/
 
 /**
 * File descriptor input operator; dumps the remaining bytes of input
@@ -42,7 +42,7 @@ int operator<<(int fd, Pipe& pipe)
 * @param input file descriptor for an open input stream
 * @param pipe the pipe
 */
-int opBinary(string op)(int fd, ref Pipe pipe)
+/*int opBinary(string op)(int fd, ref Pipe pipe)
 {
 	SafeVector!ubyte buffer(DEFAULT_BUFFERSIZE);
 	while(true)
@@ -55,3 +55,4 @@ int opBinary(string op)(int fd, ref Pipe pipe)
 	}
 	return fd;
 }
+*/

@@ -79,5 +79,5 @@ private:
 		for (size_t i = 0; i != 4; ++i)
 			K[i] = load_be!uint(key, i);
 	}
-	secure_vector!uint K;
+	SafeVector!uint K;
 };

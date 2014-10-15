@@ -5,7 +5,7 @@
 * Distributed under the terms of the botan license.
 */
 
-import botan.hash;
+import botan.hash.hash;
 /**
 * MDx Hash Function Base Class
 */

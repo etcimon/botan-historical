@@ -6,7 +6,7 @@
 */
 
 import botan.kdf;
-import botan.hash;
+import botan.hash.hash;
 /**
 * MGF1 from PKCS #1 v2.0
 */
