@@ -25,7 +25,10 @@ private:
 
 };
 
-void botan_md5_x86_32_compress(uint[4], const ubyte[64], uint[16]) {
+void botan_md5_x86_32_compress(uint[4]* digest,
+								const ubyte[64]* input,
+								uint[16]* M) 
+{
 	mixin(`asm { ` ~ 
 		ASSIGN(EBP, ARG(2)) ~ /* input block */
 		ASSIGN(EDI, ARG(3)) ~ /* expanded words */
@@ -137,7 +140,7 @@ enum MSG = EDI;
 enum T1 = ESI;
 enum T2 = EBP;
 
-string FF(A, B, C, D, N, S, MAGIC) {
+string FF(string A, string B, string C, string D, ubyte N, ubyte S, int MAGIC) {
 	return ASSIGN(T1, ARRAY4(MSG, N)) ~
 			ASSIGN(T2, C) ~
 			XOR(T2, D)	 ~
@@ -148,7 +151,8 @@ string FF(A, B, C, D, N, S, MAGIC) {
 			ROTL_IMM(A, S) ~
 			ADD(A, B);
 
-string GG(A, B, C, D, N, S, MAGIC) {
+string GG(string A, string B, string C, string D, ubyte N, ubyte S, int MAGIC)
+{
 	return ASSIGN(T1, ARRAY4(MSG, N)) ~
 			ASSIGN(T2, B) ~
 			XOR(T2, C)	 ~
@@ -159,7 +163,8 @@ string GG(A, B, C, D, N, S, MAGIC) {
 			ROTL_IMM(A, S) ~
 			ADD(A, B);
 
-string HH(A, B, C, D, N, S, MAGIC) {
+string HH(string A, string B, string C, string D, ubyte N, ubyte S, int MAGIC)
+{
 	return ASSIGN(T1, ARRAY4(MSG, N)) ~
 			ASSIGN(T2, B) ~
 			XOR(T2, C)	 ~
@@ -169,7 +174,8 @@ string HH(A, B, C, D, N, S, MAGIC) {
 			ROTL_IMM(A, S) ~
 			ADD(A, B);
 
-string II(A, B, C, D, N, S, MAGIC) {
+string II(string A, string B, string C, string D, ubyte N, ubyte S, int MAGIC) 
+{
 	return ASSIGN(T1, ARRAY4(MSG, N)) ~
 			ASSIGN(T2, D) ~
 			NOT(T2) ~

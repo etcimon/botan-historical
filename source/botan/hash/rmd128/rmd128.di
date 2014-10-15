@@ -5,7 +5,7 @@
 * Distributed under the terms of the botan license.
 */
 
-import botan.mdx_hash;
+import botan.hash.mdx_hash;
 /**
 * RIPEMD-128
 */

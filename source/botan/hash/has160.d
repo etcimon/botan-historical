@@ -6,7 +6,7 @@
 */
 module botan.hash.has160;
 
-import botan.mdx_hash;
+import botan.hash.mdx_hash;
 import botan.loadstor;
 import botan.rotate;
 /**
