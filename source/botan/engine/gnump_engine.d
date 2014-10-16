@@ -10,7 +10,7 @@ import botan.engine.engine;
 import cstring;
 import core.atomic;
 import std.c.string;
-import botan.bigint;
+import botan.math.bigint.bigint;
 import std.c.stdlib;
 import std.c.stdio;
 /* GnuMP 5.0 and later have a side-channel resistent powm */
@@ -162,7 +162,7 @@ public:
 	}
 	
 	Modular_Exponentiator copy() const
-	{ return new GMP_Modular_Exponentiator(*this); }
+	{ return new GMP_Modular_Exponentiator(this); }
 	
 	this(in BigInt n) { mod = n; }
 private:
@@ -219,10 +219,10 @@ public:
 	/*
 	* GMP_MPZ Assignment Operator
 	*/
-	void opAssign(in GMP_MPZ other)
+	GMP_MPZ opAssign(in GMP_MPZ other)
 	{
 		mpz_set(value, other.value);
-		return (*this);
+		return this;
 	}
 	
 	/*
@@ -495,7 +495,7 @@ static if (BOTAN_HAS_DSA) {
 				return m_gmp.to_bigint();
 			}
 			
-			ref const BigInt n;
+			const ref BigInt n;
 			const GMP_MPZ e, mod;
 		};
 		

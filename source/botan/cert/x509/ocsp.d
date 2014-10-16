@@ -24,7 +24,7 @@ class Request
 {
 public:
 	this(in X509_Certificate issuer_cert,
-		 ref const X509_Certificate subject_cert) 
+		 const ref X509_Certificate subject_cert) 
 		
 	{
 		m_issuer = issuer_cert;
@@ -54,9 +54,9 @@ public:
 		return Botan.base64_encode(BER_encode());
 	}
 
-	ref const X509_Certificate issuer() const { return m_issuer; }
+	const ref X509_Certificate issuer() const { return m_issuer; }
 
-	ref const X509_Certificate subject() const { return m_subject; }
+	const ref X509_Certificate subject() const { return m_subject; }
 private:
 	X509_Certificate m_issuer, m_subject;
 };
@@ -139,7 +139,7 @@ public:
 	}
 
 	Certificate_Status_Code status_for(in X509_Certificate issuer,
-	                                   ref const X509_Certificate subject) const
+	                                   const ref X509_Certificate subject) const
 	{
 		foreach (response; m_responses)
 		{
@@ -197,9 +197,9 @@ void decode_optional_list(BER_Decoder ber,
 /// Does not use trusted roots
 /// Throws if not trusted
 void check_signature(in Vector!ubyte tbs_response,
-                     ref const AlgorithmIdentifier sig_algo,
+                     const ref AlgorithmIdentifier sig_algo,
                      in Vector!ubyte signature,
-                     ref const X509_Certificate cert)
+                     const ref X509_Certificate cert)
 {
 	Unique!Public_Key pub_key = cert.subject_public_key();
 	
@@ -222,10 +222,10 @@ void check_signature(in Vector!ubyte tbs_response,
 /// Iterates over trusted roots certificate store
 /// throws if not trusted
 void check_signature(in Vector!ubyte tbs_response,
-                     ref const AlgorithmIdentifier sig_algo,
+                     const ref AlgorithmIdentifier sig_algo,
                      in Vector!ubyte signature,
-                     ref const Certificate_Store trusted_roots,
-                     ref const Vector!( X509_Certificate ) certs)
+                     const ref Certificate_Store trusted_roots,
+                     const ref Vector!( X509_Certificate ) certs)
 {
 	if (certs.size() < 1)
 		throw new Invalid_Argument("Short cert chain for check_signature");
@@ -253,7 +253,7 @@ void check_signature(in Vector!ubyte tbs_response,
 
 /// Checks the certificate online
 Response online_check(in X509_Certificate issuer,
-                      ref const X509_Certificate subject,
+                      const ref X509_Certificate subject,
                       const Certificate_Store* trusted_roots)
 {
 	const string responder_url = subject.ocsp_responder();

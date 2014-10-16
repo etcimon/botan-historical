@@ -24,7 +24,7 @@ import map;
 string PGP_encode(
 	in ubyte* input, size_t length,
 	in string label,
-	ref const HashMap!(string, string) headers)
+	const ref HashMap!(string, string) headers)
 {
 	const string PGP_HEADER = "-----BEGIN PGP " ~ label ~ "-----";
 	const string PGP_TRAILER = "-----END PGP " ~ label ~ "-----";

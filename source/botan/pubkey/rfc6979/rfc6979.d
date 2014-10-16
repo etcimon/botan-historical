@@ -9,8 +9,8 @@ import botan.rfc6979;
 import botan.hmac_drbg;
 import botan.libstate.libstate;
 BigInt generate_rfc6979_nonce(in BigInt x,
-										ref const BigInt q,
-										ref const BigInt h,
+										const ref BigInt q,
+										const ref BigInt h,
 										in string hash)
 {
 	Algorithm_Factory af = global_state().algorithm_factory();

@@ -64,7 +64,7 @@ public:
 	this(bool require_rev,
 		  size_t minimum_key_strength,
 		  bool ocsp_all_intermediates,
-		  ref const Set!string trusted_hashes) {
+		  const ref Set!string trusted_hashes) {
 		m_require_revocation_information = require_rev;
 		m_ocsp_all_intermediates = ocsp_all_intermediates;
 		m_trusted_hashes = trusted_hashes;
@@ -77,7 +77,7 @@ public:
 	bool ocsp_all_intermediates() const
 	{ return m_ocsp_all_intermediates; }
 
-	ref const Set!string trusted_hashes() const
+	const ref Set!string trusted_hashes() const
 	{ return m_trusted_hashes; }
 
 	size_t minimum_key_strength() const
@@ -113,7 +113,7 @@ public:
 	/**
 	* @return the trust root of the validation
 	*/
-	ref const X509_Certificate trust_root() const
+	const ref X509_Certificate trust_root() const
 	{
 		return m_cert_path[m_cert_path.size()-1];
 	}
@@ -121,7 +121,7 @@ public:
 	/**
 	* @return the full path from subject to trust root
 	*/
-	ref const Vector!( X509_Certificate ) cert_path() const { return m_cert_path; }
+	const ref Vector!( X509_Certificate ) cert_path() const { return m_cert_path; }
 
 	/**
 	* @return true iff the validation was succesful
@@ -245,9 +245,9 @@ private:
 * PKIX Path Validation
 */
 Path_Validation_Result x509_path_validate(
-	ref const Vector!( X509_Certificate ) end_certs,
-	ref const Path_Validation_Restrictions restrictions,
-	ref const Vector!( Certificate_Store* ) certstores)
+	const ref Vector!( X509_Certificate ) end_certs,
+	const ref Path_Validation_Restrictions restrictions,
+	const ref Vector!( Certificate_Store* ) certstores)
 {
 	if (end_certs.empty())
 		throw new Invalid_Argument("x509_path_validate called with no subjects");
@@ -268,7 +268,7 @@ Path_Validation_Result x509_path_validate(
 	}
 	
 	return Path_Validation_Result(check_chain(cert_path, restrictions, certstores),
-	                              std::move(cert_path));
+	                              std.algorithm.move(cert_path));
 }
 
 
@@ -276,9 +276,9 @@ Path_Validation_Result x509_path_validate(
 * PKIX Path Validation
 */
 Path_Validation_Result x509_path_validate(
-	ref const X509_Certificate end_cert,
-	ref const Path_Validation_Restrictions restrictions,
-	ref const Vector!( Certificate_Store* ) certstores)
+	const ref X509_Certificate end_cert,
+	const ref Path_Validation_Restrictions restrictions,
+	const ref Vector!( Certificate_Store* ) certstores)
 {
 	Vector!( X509_Certificate ) certs;
 	certs.push_back(end_cert);
@@ -290,9 +290,9 @@ Path_Validation_Result x509_path_validate(
 */
 
 Path_Validation_Result x509_path_validate(
-	ref const X509_Certificate end_cert,
-	ref const Path_Validation_Restrictions restrictions,
-	ref const Certificate_Store store)
+	const ref X509_Certificate end_cert,
+	const ref Path_Validation_Restrictions restrictions,
+	const ref Certificate_Store store)
 {
 	Vector!( X509_Certificate ) certs;
 	certs.push_back(end_cert);
@@ -306,9 +306,9 @@ Path_Validation_Result x509_path_validate(
 * PKIX Path Validation
 */
 Path_Validation_Result x509_path_validate(
-	ref const Vector!( X509_Certificate ) end_certs,
-	ref const Path_Validation_Restrictions restrictions,
-	ref const Certificate_Store store)
+	const ref Vector!( X509_Certificate ) end_certs,
+	const ref Path_Validation_Restrictions restrictions,
+	const ref Certificate_Store store)
 {
 	Vector!( Certificate_Store* ) certstores;
 	certstores.push_back(&store);
@@ -319,7 +319,7 @@ Path_Validation_Result x509_path_validate(
 const X509_Certificate*
 	find_issuing_cert(in X509_Certificate cert,
 	                  ref Certificate_Store end_certs,
-	                  ref const Vector!( Certificate_Store* ) certstores)
+	                  const ref Vector!( Certificate_Store* ) certstores)
 {
 	const X509_DN issuer_dn = cert.issuer_dn();
 	const Vector!ubyte auth_key_id = cert.authority_key_id();
@@ -337,7 +337,7 @@ const X509_Certificate*
 }
 
 const X509_CRL* find_crls_for(in X509_Certificate cert,
-                              ref const Vector!( Certificate_Store* ) certstores)
+                              const ref Vector!( Certificate_Store* ) certstores)
 {
 	for (size_t i = 0; i != certstores.size(); ++i)
 	{
@@ -368,10 +368,10 @@ const X509_CRL* find_crls_for(in X509_Certificate cert,
 
 Vector!( Set<Certificate_Status_Code )
 	check_chain(in Vector!( X509_Certificate ) cert_path,
-	            ref const Path_Validation_Restrictions restrictions,
-	            ref const Vector!( Certificate_Store* ) certstores)
+	            const ref Path_Validation_Restrictions restrictions,
+	            const ref Vector!( Certificate_Store* ) certstores)
 {
-	ref const Set!string trusted_hashes = restrictions.trusted_hashes();
+	const ref Set!string trusted_hashes = restrictions.trusted_hashes();
 	
 	const bool self_signed_ee_cert = (cert_path.size() == 1);
 	

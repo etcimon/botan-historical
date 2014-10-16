@@ -17,7 +17,7 @@ import botan.asn1.der_enc;
 import botan.asn1.ber_dec;
 import botan.internal.stl_util;
 import botan.parsing;
-import botan.bigint;
+import botan.math.bigint.bigint;
 import botan.libstate.lookup;
 import botan.asn1.oid_lookup.oids;
 import botan.codec.pem;

@@ -131,7 +131,7 @@ package:
 	* For use by subclasses using SIMD, asm, etc
 	* @return const reference to the key schedule
 	*/
-	ref const SafeVector!uint get_round_keys() const
+	const ref SafeVector!uint get_round_keys() const
 	{ return round_key; }
 
 	/**

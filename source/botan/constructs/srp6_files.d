@@ -6,7 +6,7 @@
 */
 module botan.constructs.srp6_files;
 
-import botan.bigint;
+import botan.math.bigint.bigint;
 import botan.srp6_files;
 import botan.parsing;
 import botan.codec.base64;

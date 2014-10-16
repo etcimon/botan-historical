@@ -7,7 +7,7 @@
 
 import botan.if_algo;
 import botan.pubkey.pk_ops;
-import botan.reducer;
+import botan.math.numbertheory.reducer;
 import botan.blinding;
 /**
 * RSA Public Key
@@ -27,7 +27,7 @@ class RSA_PublicKey : IF_Scheme_PublicKey
 		* @arg n the modulus
 		* @arg e the exponent
 		*/
-		RSA_PublicKey(in BigInt n, ref const BigInt e) :
+		RSA_PublicKey(in BigInt n, const ref BigInt e) :
 			IF_Scheme_PublicKey(n, e)
 		{}
 
@@ -62,9 +62,9 @@ class RSA_PrivateKey : RSA_PublicKey,
 		* if you wish to the constructor to calculate it.
 		*/
 		RSA_PrivateKey(RandomNumberGenerator rng,
-							ref const BigInt p, ref const BigInt q,
-							ref const BigInt e, ref const BigInt d = 0,
-							ref const BigInt n = 0) :
+							const ref BigInt p, const ref BigInt q,
+							const ref BigInt e, const ref BigInt d = 0,
+							const ref BigInt n = 0) :
 			IF_Scheme_PrivateKey(rng, p, q, e, d, n) {}
 
 		/**
@@ -97,9 +97,9 @@ class RSA_Private_Operation : pk_ops.Signature,
 	private:
 		BigInt private_op(in BigInt m) const;
 
-		ref const BigInt n;
-		ref const BigInt q;
-		ref const BigInt c;
+		const ref BigInt n;
+		const ref BigInt q;
+		const ref BigInt c;
 		Fixed_Exponent_Power_Mod powermod_e_n, powermod_d1_p, powermod_d2_q;
 		Modular_Reducer mod_p;
 		Blinder blinder;
@@ -140,6 +140,6 @@ class RSA_Public_Operation : pk_ops.Verification,
 			return powermod_e_n(m);
 		}
 
-		ref const BigInt n;
+		const ref BigInt n;
 		Fixed_Exponent_Power_Mod powermod_e_n;
 };

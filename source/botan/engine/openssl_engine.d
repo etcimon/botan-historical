@@ -8,7 +8,7 @@ module botan.engine.openssl_engine;
 
 import botan.engine.engine;
 import botan.internal.bn_wrap;
-import botan.bigint;
+import botan.math.bigint.bigint;
 import botan.parsing;
 import openssl.rc4;
 import openssl.evp;
@@ -293,9 +293,10 @@ public:
 		return BigInt.encode_locked(to_bigint()); 
 	}
 	
-	void opAssign(in OSSL_BN other)
+	OSSL_BN opAssign(in OSSL_BN other)
 	{
 		BN_copy(m_bn, other.m_bn);
+		return this;
 	}
 	
 	/*
@@ -348,9 +349,10 @@ private:
 class OSSL_BN_CTX
 {
 public:
-	void opAssign(in OSSL_BN_CTX)
+	OSSL_BN_CTX opAssign(in OSSL_BN_CTX)
 	{
 		m_ctx = BN_CTX_new();
+		return this;
 	}
 	
 	this()
@@ -906,7 +908,7 @@ static if (BOTAN_HAS_DSA) {
 				return r.to_bigint();
 			}
 			
-			ref const BigInt n;
+			const ref BigInt n;
 			const OSSL_BN e, mod;
 			const OSSL_BN_CTX ctx;
 		};

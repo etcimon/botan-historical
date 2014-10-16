@@ -7,8 +7,8 @@
 * Distributed under the terms of the botan license.
 */
 
-import botan.point_gfp;
-import botan.curve_gfp;
+import botan.math.ec_gfp.curve_gfp;
+import botan.math.ec_gfp.curve_gfp;
 import botan.asn1.asn1_oid;
 /**
 * This class represents elliptic curce domain parameters
@@ -33,10 +33,10 @@ class EC_Group
 		* @param order the order of the base point
 		* @param cofactor the cofactor
 		*/
-		EC_Group(in CurveGFp curve,
-					const PointGFp& base_point,
-					ref const BigInt order,
-					ref const BigInt cofactor) :
+		this(in CurveGFp curve,
+					const ref PointGFp base_point,
+					const ref BigInt order,
+					const ref BigInt cofactor) :
 			curve(curve),
 			base_point(base_point),
 			order(order),
@@ -86,19 +86,19 @@ class EC_Group
 		* Return domain parameter curve
 		* @result domain parameter curve
 		*/
-		const PointGFp& get_base_point() const { return base_point; }
+		const ref PointGFp get_base_point() const { return base_point; }
 
 		/**
 		* Return the order of the base point
 		* @result order of the base point
 		*/
-		ref const BigInt get_order() const { return order; }
+		const ref BigInt get_order() const { return order; }
 
 		/**
 		* Return the cofactor
 		* @result the cofactor
 		*/
-		ref const BigInt get_cofactor() const { return cofactor; }
+		const ref BigInt get_cofactor() const { return cofactor; }
 
 		bool initialized() const { return !base_point.is_zero(); }
 

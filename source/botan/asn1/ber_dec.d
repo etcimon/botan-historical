@@ -9,7 +9,7 @@ module botan.asn1.ber_dec;
 import botan.asn1.asn1_oid;
 import botan.filters.data_src;
 import botan.ber_dec;
-import botan.bigint;
+import botan.math.bigint.bigint;
 import botan.utils.get_byte;
 
 /**
@@ -174,7 +174,7 @@ public:
 	BER_Decoder decode(ref ASN1_Object obj,
 	                   ASN1_Tag, ASN1_Tag)
 	{
-		obj.decode_from(*this);
+		obj.decode_from(this);
 		return this;
 	}
 	
@@ -379,7 +379,7 @@ public:
 	BER_Decoder decode_optional(T)(ref T output,
 	                               ASN1_Tag type_tag,
 	                               ASN1_Tag class_tag,
-	                               ref const T default_value = T.init)
+	                               const ref T default_value = T.init)
 	{
 		BER_Object obj = get_next_object();
 		
@@ -411,7 +411,7 @@ public:
 		ASN1_Tag class_tag,
 		ASN1_Tag real_type,
 		ASN1_Tag real_class,
-		ref const T default_value = T.init)
+		const ref T default_value = T.init)
 	{
 		BER_Object obj = get_next_object();
 		

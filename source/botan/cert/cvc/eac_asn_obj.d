@@ -246,36 +246,36 @@ public:
 	/*
 * Compare two EAC_Times for in various ways
 */
-	bool opEquals(ref const EAC_Time t2)
+	bool opEquals(const ref EAC_Time t2)
 	{
 		return (cmp(t2) == 0);
 	}
 	
-	bool opCmp(string op)(ref const EAC_Time t2)
+	bool opCmp(string op)(const ref EAC_Time t2)
 		if (op == "!=")
 	{
 		return (cmp(t2) != 0);
 	}
 
-	bool opCmp(string op)(ref const EAC_Time t2)
+	bool opCmp(string op)(const ref EAC_Time t2)
 		if (op == "<=")
 	{
 		return (cmp(t2) <= 0);
 	}
 
-	bool opCmp(string op)(ref const EAC_Time t2)
+	bool opCmp(string op)(const ref EAC_Time t2)
 		if (op == ">=")
 	{
 		return (cmp(t2) >= 0);
 	}
 
-	bool opBinary(string op)(ref const EAC_Time t2)
+	bool opBinary(string op)(const ref EAC_Time t2)
 		if (op == ">")
 	{
 		return (cmp(t2) > 0);
 	}
 
-	bool opBinary(string op)(ref const EAC_Time t2)
+	bool opBinary(string op)(const ref EAC_Time t2)
 		if (op == "<")
 	{
 		return (cmp(t2) < 0);
@@ -466,12 +466,12 @@ public:
 			throw new Invalid_Argument("ASN1_EAC_String contains illegal characters");
 	}
 
-	bool opEquals(ref const ASN1_EAC_String rhs)
+	bool opEquals(const ref ASN1_EAC_String rhs)
 	{
 		return (iso_8859() == rhs.iso_8859());
 	}
 
-	bool opCmp(string op)(ref const ASN1_EAC_String rhs)
+	bool opCmp(string op)(const ref ASN1_EAC_String rhs)
 		if (op == "!=")
 	{
 		return !(lhs == rhs);
@@ -510,7 +510,7 @@ public:
 	* Create a CAR with the specified content.
 	* @param str the CAR value
 	*/
-	this(ref const string str)
+	this(const ref string str)
 	{
 		super(str, ASN1_Tag(2));
 
@@ -528,7 +528,7 @@ public:
 	* Create a CHR with the specified content.
 	* @param str the CHR value
 	*/
-	this(ref const string str)
+	this(const ref string str)
 	{
 		super(str, ASN1_Tag(32));
 	}

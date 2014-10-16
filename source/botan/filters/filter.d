@@ -188,7 +188,7 @@ private:
 	* @param filters the filters to set
 	* @param count number of items in filters
 	*/
-	void set_next(Filter* filters[], size_t size)
+	void set_next(Filter** filters, size_t size)
 	{
 		next.clear();
 		
@@ -234,7 +234,7 @@ package:
 
 	void set_port(size_t n) { set_port(n); }
 
-	void set_next(Filter* f[], size_t n) { set_next(f, n); }
+	void set_next(Filter** f, size_t n) { set_next(f, n); }
 
 	void attach(Filter* f) { attach(f); }
 

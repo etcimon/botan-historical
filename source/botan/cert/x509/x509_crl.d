@@ -12,7 +12,7 @@ import botan.cert.x509.x509_ext;
 import botan.cert.x509.x509cert;
 import botan.asn1.ber_dec;
 import botan.parsing;
-import botan.bigint;
+import botan.math.bigint.bigint;
 import botan.asn1.oid_lookup.oids;
 
 import vector;

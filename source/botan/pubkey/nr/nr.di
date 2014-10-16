@@ -7,8 +7,8 @@
 
 import botan.dl_algo;
 import botan.pubkey.pk_ops;
-import botan.numthry;
-import botan.reducer;
+import botan.math.numbertheory.numthry;
+import botan.math.numbertheory.reducer;
 /**
 * Nyberg-Rueppel Public Key
 */
@@ -26,7 +26,7 @@ class NR_PublicKey : DL_Scheme_PublicKey
 		NR_PublicKey(in AlgorithmIdentifier alg_id,
 						 in SafeVector!ubyte key_bits);
 
-		NR_PublicKey(in DL_Group group, ref const BigInt pub_key);
+		NR_PublicKey(in DL_Group group, const ref BigInt pub_key);
 	package:
 		NR_PublicKey() {}
 };
@@ -46,7 +46,7 @@ class NR_PrivateKey : NR_PublicKey,
 
 		NR_PrivateKey(RandomNumberGenerator rng,
 						  const DL_Group& group,
-						  ref const BigInt x = 0);
+						  const ref BigInt x = 0);
 };
 
 /**
@@ -64,8 +64,8 @@ class NR_Signature_Operation : pk_ops.Signature
 		SafeVector!ubyte sign(in ubyte* msg, size_t msg_len,
 										RandomNumberGenerator rng);
 	private:
-		ref const BigInt q;
-		ref const BigInt x;
+		const ref BigInt q;
+		const ref BigInt x;
 		Fixed_Base_Power_Mod powermod_g_p;
 		Modular_Reducer mod_q;
 };
@@ -86,8 +86,8 @@ class NR_Verification_Operation : pk_ops.Verification
 
 		SafeVector!ubyte verify_mr(in ubyte* msg, size_t msg_len);
 	private:
-		ref const BigInt q;
-		ref const BigInt y;
+		const ref BigInt q;
+		const ref BigInt y;
 
 		Fixed_Base_Power_Mod powermod_g_p, powermod_y_p;
 		Modular_Reducer mod_p, mod_q;

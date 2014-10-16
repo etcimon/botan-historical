@@ -5,8 +5,8 @@
 * Distributed under the terms of the botan license.
 */
 
-import botan.bigint;
-import botan.reducer;
+import botan.math.bigint.bigint;
+import botan.math.numbertheory.reducer;
 /**
 * Blinding Function Object
 */
@@ -27,8 +27,8 @@ class Blinder
 		* @param modulus of the group operations are performed in
 		*/
 		Blinder(in BigInt mask,
-				  ref const BigInt inverse_mask,
-				  ref const BigInt modulus);
+				  const ref BigInt inverse_mask,
+				  const ref BigInt modulus);
 
 	private:
 		Modular_Reducer reducer;

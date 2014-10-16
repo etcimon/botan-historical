@@ -7,7 +7,7 @@
 
 import botan.if_algo;
 import botan.pubkey.pk_ops;
-import botan.reducer;
+import botan.math.numbertheory.reducer;
 import botan.blinding;
 /**
 * Rabin-Williams Public Key
@@ -22,7 +22,7 @@ class RW_PublicKey : IF_Scheme_PublicKey
 			IF_Scheme_PublicKey(alg_id, key_bits)
 		{}
 
-		RW_PublicKey(in BigInt mod, ref const BigInt exponent) :
+		RW_PublicKey(in BigInt mod, const ref BigInt exponent) :
 			IF_Scheme_PublicKey(mod, exponent)
 		{}
 
@@ -43,9 +43,9 @@ class RW_PrivateKey : RW_PublicKey,
 			IF_Scheme_PrivateKey(rng, alg_id, key_bits) {}
 
 		RW_PrivateKey(RandomNumberGenerator rng,
-						  ref const BigInt p, ref const BigInt q,
-						  ref const BigInt e, ref const BigInt d = 0,
-						  ref const BigInt n = 0) :
+						  const ref BigInt p, const ref BigInt q,
+						  const ref BigInt e, const ref BigInt d = 0,
+						  const ref BigInt n = 0) :
 			IF_Scheme_PrivateKey(rng, p, q, e, d, n) {}
 
 		RW_PrivateKey(RandomNumberGenerator rng, size_t bits, size_t = 2);
@@ -66,10 +66,10 @@ class RW_Signature_Operation : pk_ops.Signature
 		SafeVector!ubyte sign(in ubyte* msg, size_t msg_len,
 										RandomNumberGenerator rng);
 	private:
-		ref const BigInt n;
-		ref const BigInt e;
-		ref const BigInt q;
-		ref const BigInt c;
+		const ref BigInt n;
+		const ref BigInt e;
+		const ref BigInt q;
+		const ref BigInt c;
 
 		Fixed_Exponent_Power_Mod powermod_d1_p, powermod_d2_q;
 		Modular_Reducer mod_p;
@@ -92,6 +92,6 @@ class RW_Verification_Operation : pk_ops.Verification
 		SafeVector!ubyte verify_mr(in ubyte* msg, size_t msg_len);
 
 	private:
-		ref const BigInt n;
+		const ref BigInt n;
 		Fixed_Exponent_Power_Mod powermod_e_n;
 };

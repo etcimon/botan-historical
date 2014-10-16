@@ -4,9 +4,14 @@
 *
 * Distributed under the terms of the Botan license
 */
+module botan.math.numbertheory.primes;
 
-import botan.numthry;
-immutable ushort[PRIME_TABLE_SIZE+1] PRIMES = {
+/**
+* The size of the PRIMES[] array
+*/
+immutable size_t PRIME_TABLE_SIZE = 6541;
+
+immutable ushort[PRIME_TABLE_SIZE+1] PRIMES = [
 	 3,	  5,	  7,	 11,	 13,	 17,	 19,	 23,	 29,	 31,	 37,
 	41,	 43,	 47,	 53,	 59,	 61,	 67,	 71,	 73,	 79,	 83,
 	89,	 97,	101,	103,	107,	109,	113,	127,	131,	137,	139,
@@ -601,6 +606,4 @@ immutable ushort[PRIME_TABLE_SIZE+1] PRIMES = {
 65099, 65101, 65111, 65119, 65123, 65129, 65141, 65147, 65167, 65171, 65173,
 65179, 65183, 65203, 65213, 65239, 65257, 65267, 65269, 65287, 65293, 65309,
 65323, 65327, 65353, 65357, 65371, 65381, 65393, 65407, 65413, 65419, 65423,
-65437, 65447, 65449, 65479, 65497, 65519, 65521, 0 };
-
-}
+65437, 65447, 65449, 65479, 65497, 65519, 65521, 0 ];

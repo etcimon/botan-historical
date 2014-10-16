@@ -22,7 +22,7 @@ class GOST_3410_PublicKey : EC_PublicKey
 		* @param public_point the public point defining this key
 		*/
 		GOST_3410_PublicKey(in EC_Group dom_par,
-								  const PointGFp& public_point) :
+								  const ref PointGFp public_point) :
 			EC_PublicKey(dom_par, public_point) {}
 
 		/**
@@ -78,7 +78,7 @@ class GOST_3410_PrivateKey : GOST_3410_PublicKey,
 		*/
 		GOST_3410_PrivateKey(RandomNumberGenerator rng,
 									const EC_Group& domain,
-									ref const BigInt x = 0) :
+									const ref BigInt x = 0) :
 			EC_PrivateKey(rng, domain, x) {}
 
 		AlgorithmIdentifier pkcs8_algorithm_identifier() const
@@ -101,9 +101,9 @@ class GOST_3410_Signature_Operation : pk_ops.Signature
 										RandomNumberGenerator rng);
 
 	private:
-		const PointGFp& base_point;
-		ref const BigInt order;
-		ref const BigInt x;
+		const ref PointGFp base_point;
+		const ref BigInt order;
+		const ref BigInt x;
 };
 
 /**
@@ -123,7 +123,7 @@ class GOST_3410_Verification_Operation : pk_ops.Verification
 		bool verify(in ubyte* msg, size_t msg_len,
 						in ubyte* sig, size_t sig_len);
 	private:
-		const PointGFp& base_point;
-		const PointGFp& public_point;
-		ref const BigInt order;
+		const ref PointGFp base_point;
+		const ref PointGFp public_point;
+		const ref BigInt order;
 };

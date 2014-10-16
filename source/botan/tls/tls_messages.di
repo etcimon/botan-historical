@@ -11,7 +11,7 @@ import botan.tls_handshake_msg;
 import botan.tls_session;
 import botan.tls_policy;
 import botan.tls_ciphersuite;
-import botan.bigint;
+import botan.math.bigint.bigint;
 import botan.pkcs8;
 import botan.cert.x509.x509cert;
 import vector;
@@ -40,7 +40,7 @@ class Hello_Verify_Request : Handshake_Message
 
 		Hello_Verify_Request(in Vector!ubyte client_hello_bits,
 									in string client_identity,
-									ref const SymmetricKey secret_key);
+									const ref SymmetricKey secret_key);
 	private:
 		Vector!ubyte m_cookie;
 };

@@ -6,12 +6,12 @@
 */
 
 import botan.dsa;
-import botan.numthry;
+import botan.math.numbertheory.numthry;
 import botan.keypair;
 import future;/*
 * DSA_PublicKey Constructor
 */
-DSA_PublicKey::DSA_PublicKey(in DL_Group grp, ref const BigInt y1)
+DSA_PublicKey::DSA_PublicKey(in DL_Group grp, const ref BigInt y1)
 {
 	group = grp;
 	y = y1;
@@ -22,7 +22,7 @@ DSA_PublicKey::DSA_PublicKey(in DL_Group grp, ref const BigInt y1)
 */
 DSA_PrivateKey::DSA_PrivateKey(RandomNumberGenerator rng,
 										 const DL_Group& grp,
-										 ref const BigInt x_arg)
+										 const ref BigInt x_arg)
 {
 	group = grp;
 	x = x_arg;
@@ -112,7 +112,7 @@ DSA_Verification_Operation::DSA_Verification_Operation(in DSA_PublicKey dsa) :
 bool DSA_Verification_Operation::verify(in ubyte* msg, size_t msg_len,
 													 in ubyte* sig, size_t sig_len)
 {
-	ref const BigInt q = mod_q.get_modulus();
+	const ref BigInt q = mod_q.get_modulus();
 
 	if (sig_len != 2*q.bytes() || msg_len > q.bytes())
 		return false;

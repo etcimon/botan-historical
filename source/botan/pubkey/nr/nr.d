@@ -6,7 +6,7 @@
 */
 
 import botan.nr;
-import botan.numthry;
+import botan.math.numbertheory.numthry;
 import botan.keypair;
 import future;
 NR_PublicKey::NR_PublicKey(in AlgorithmIdentifier alg_id,
@@ -18,7 +18,7 @@ NR_PublicKey::NR_PublicKey(in AlgorithmIdentifier alg_id,
 /*
 * NR_PublicKey Constructor
 */
-NR_PublicKey::NR_PublicKey(in DL_Group grp, ref const BigInt y1)
+NR_PublicKey::NR_PublicKey(in DL_Group grp, const ref BigInt y1)
 {
 	group = grp;
 	y = y1;
@@ -29,7 +29,7 @@ NR_PublicKey::NR_PublicKey(in DL_Group grp, ref const BigInt y1)
 */
 NR_PrivateKey::NR_PrivateKey(RandomNumberGenerator rng,
 									  const DL_Group& grp,
-									  ref const BigInt x_arg)
+									  const ref BigInt x_arg)
 {
 	group = grp;
 	x = x_arg;
@@ -119,7 +119,7 @@ NR_Verification_Operation::NR_Verification_Operation(in NR_PublicKey nr) :
 SafeVector!ubyte
 NR_Verification_Operation::verify_mr(in ubyte* msg, size_t msg_len)
 {
-	ref const BigInt q = mod_q.get_modulus();
+	const ref BigInt q = mod_q.get_modulus();
 	size_t msg_len = msg.length;
 	if (msg_len != 2*q.bytes())
 		throw new Invalid_Argument("NR verification: Invalid signature");

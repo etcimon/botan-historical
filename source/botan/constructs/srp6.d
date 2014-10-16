@@ -6,13 +6,13 @@
 */
 module botan.constructs.srp6;
 
-import botan.bigint;
+import botan.math.bigint.bigint;
 import botan.hash.hash;
 import botan.rng;
 import botan.algo_base.symkey;
 import botan.dl_group;
 import botan.libstate.libstate;
-import botan.numthry;
+import botan.math.numbertheory.numthry;
 import string;
 
 /**
@@ -33,12 +33,12 @@ Pair!(BigInt, SymmetricKey)
 	                  in string group_id,
 	                  in string hash_id,
 	                  in Vector!ubyte salt,
-	                  ref const BigInt B,
+	                  const ref BigInt B,
 	                  RandomNumberGenerator rng)
 {
 	DL_Group group = DL_Group(group_id);
-	ref const BigInt g = group.get_g();
-	ref const BigInt p = group.get_p();
+	const ref BigInt g = group.get_g();
+	const ref BigInt p = group.get_p();
 	
 	const size_t p_bytes = group.get_p().bytes();
 	
@@ -91,7 +91,7 @@ BigInt generate_srp6_verifier(in string identifier,
 * @param g the group generator
 * @return group identifier
 */
-string srp6_group_identifier(in BigInt N, ref const BigInt g)
+string srp6_group_identifier(in BigInt N, const ref BigInt g)
 {
 	/*
 	This function assumes that only one 'standard' SRP parameter set has
@@ -134,8 +134,8 @@ public:
 	             RandomNumberGenerator rng)
 	{
 		DL_Group group(group_id);
-		ref const BigInt g = group.get_g();
-		ref const BigInt p = group.get_p();
+		const ref BigInt g = group.get_g();
+		const ref BigInt p = group.get_p();
 		
 		p_bytes = p.bytes();
 		
@@ -180,8 +180,8 @@ private:
 	
 BigInt hash_seq(in string hash_id,
                 size_t pad_to,
-                ref const BigInt in1,
-                ref const BigInt in2)
+                const ref BigInt in1,
+                const ref BigInt in2)
 {
 	Unique!HashFunction hash_fn =
 		global_state().algorithm_factory().make_hash_function(hash_id);

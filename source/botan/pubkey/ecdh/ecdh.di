@@ -26,7 +26,7 @@ class ECDH_PublicKey : EC_PublicKey
 		* @param public_point the public point defining this key
 		*/
 		ECDH_PublicKey(in EC_Group dom_par,
-							const PointGFp& public_point) :
+							const ref PointGFp public_point) :
 			EC_PublicKey(dom_par, public_point) {}
 
 		/**
@@ -74,7 +74,7 @@ class ECDH_PrivateKey : ECDH_PublicKey,
 		*/
 		ECDH_PrivateKey(RandomNumberGenerator rng,
 							 const EC_Group& domain,
-							 ref const BigInt x = 0) :
+							 const ref BigInt x = 0) :
 			EC_PrivateKey(rng, domain, x) {}
 
 		Vector!ubyte public_value() const
@@ -92,6 +92,6 @@ class ECDH_KA_Operation : pk_ops.Key_Agreement
 		SafeVector!ubyte agree(in ubyte* w, size_t w_len);
 	private:
 		const CurveGFp& curve;
-		ref const BigInt cofactor;
+		const ref BigInt cofactor;
 		BigInt l_times_priv;
 };

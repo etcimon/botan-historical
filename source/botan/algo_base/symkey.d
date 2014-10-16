@@ -53,7 +53,7 @@ public:
 		* @param other octet string
 		* @return reference to this
 		*/
-	void opOpAssign(string op)(ref const OctetString k)
+	void opOpAssign(string op)(const ref OctetString k)
 		if (op == "^=")
 	{
 		if (&k == this) { zeroise(bits); return; }
@@ -143,7 +143,7 @@ public:
 	* @param y an octet string
 	* @return if x is equal to y
 	*/
-	bool opEquals(ref const OctetString other)
+	bool opEquals(const ref OctetString other)
 	{
 		return (bits_of() == other.bits_of());
 	}
@@ -154,7 +154,7 @@ public:
 	* @param y an octet string
 	* @return if x is not equal to y
 	*/
-	bool opCmp(ref const OctetString other)
+	bool opCmp(const ref OctetString other)
 	{
 		return !(this == other);
 	}
@@ -165,7 +165,7 @@ public:
 	* @param y an octet string
 	* @return x concatenated with y
 	*/
-	OctetString opBinary(op)(ref const OctetString other)
+	OctetString opBinary(op)(const ref OctetString other)
 	if (op == "+") {
 		SafeVector!ubyte output;
 		output += bits_of();
@@ -179,7 +179,7 @@ public:
 	* @param y an octet string
 	* @return x XORed with y
 	*/
-	OctetString opBinary(op)(ref const OctetString other)
+	OctetString opBinary(op)(const ref OctetString other)
 	if (op == "^") {
 		SafeVector!ubyte ret = SafeVector!ubyte(std.algorithm.max(length(), other.length()));
 		

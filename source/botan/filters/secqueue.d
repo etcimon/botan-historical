@@ -137,7 +137,7 @@ public:
 	* SecureQueue assignment
 	* @param other the queue to copy
 	*/
-	void opAssign(in SecureQueue input)
+	SecureQueue opAssign(in SecureQueue input)
 	{
 		destroy();
 		head = tail = new SecureQueueNode;
@@ -147,6 +147,7 @@ public:
 			write(&temp.buffer[temp.start], temp.end - temp.start);
 			temp = temp.next;
 		}
+		return this;
 	}
 
 

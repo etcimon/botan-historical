@@ -8,7 +8,7 @@ module botan.cert.x509.ocsp_types;
 
 import botan.cert.x509.x509cert;
 import botan.asn1.asn1_time;
-import botan.bigint;
+import botan.math.bigint.bigint;
 import botan.asn1.der_enc;
 import botan.asn1.ber_dec;
 import botan.cert.x509.x509_ext;
@@ -22,7 +22,7 @@ public:
 	this() {}
 
 	this(in X509_Certificate issuer,
-	     ref const X509_Certificate subject)
+	     const ref X509_Certificate subject)
 	{
 		/*
 		In practice it seems some responders, including, notably,
@@ -37,7 +37,7 @@ public:
 	}
 
 	bool is_id_for(in X509_Certificate issuer,
-	               ref const X509_Certificate subject) const
+	               const ref X509_Certificate subject) const
 	{
 		try
 		{
@@ -106,7 +106,7 @@ private:
 class SingleResponse : ASN1_Object
 {
 public:
-	ref const CertID certid() const { return m_certid; }
+	const ref CertID certid() const { return m_certid; }
 
 	size_t cert_status() const { return m_cert_status; }
 

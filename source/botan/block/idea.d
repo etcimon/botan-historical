@@ -42,12 +42,12 @@ package:
 	/**
 	* @return const reference to encryption subkeys
 	*/
-	ref const SafeVector!ushort get_EK() const { return EK; }
+	const ref SafeVector!ushort get_EK() const { return EK; }
 
 	/**
 	* @return const reference to decryption subkeys
 	*/
-	ref const SafeVector!ushort get_DK() const { return DK; }
+	const ref SafeVector!ushort get_DK() const { return DK; }
 
 private:
 	/*

@@ -6,7 +6,7 @@
 */
 
 import botan.dl_algo;
-import botan.pow_mod;
+import botan.math.numbertheory.pow_mod;
 import botan.blinding;
 import botan.pubkey.pk_ops;
 /**
@@ -31,7 +31,7 @@ class DH_PublicKey : DL_Scheme_PublicKey
 		* @param grp the DL group to use in the key
 		* @param y the public value y
 		*/
-		DH_PublicKey(in DL_Group grp, ref const BigInt y);
+		DH_PublicKey(in DL_Group grp, const ref BigInt y);
 	package:
 		DH_PublicKey() {}
 };
@@ -63,7 +63,7 @@ class DH_PrivateKey : DH_PublicKey,
 		* @param x the key's secret value (or if zero, generate a new key)
 		*/
 		DH_PrivateKey(RandomNumberGenerator rng, const DL_Group& grp,
-						  ref const BigInt x = 0);
+						  const ref BigInt x = 0);
 };
 
 /**
@@ -77,7 +77,7 @@ class DH_KA_Operation : pk_ops.Key_Agreement
 
 		SafeVector!ubyte agree(in ubyte* w, size_t w_len);
 	private:
-		ref const BigInt p;
+		const ref BigInt p;
 
 		Fixed_Exponent_Power_Mod powermod_x_p;
 		Blinder blinder;

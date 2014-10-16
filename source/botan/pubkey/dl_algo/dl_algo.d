@@ -6,7 +6,7 @@
 */
 
 import botan.dl_algo;
-import botan.numthry;
+import botan.math.numbertheory.numthry;
 import botan.workfactor;
 import botan.asn1.der_enc;
 import botan.asn1.ber_dec;
@@ -68,8 +68,8 @@ bool DL_Scheme_PublicKey::check_key(RandomNumberGenerator rng,
 bool DL_Scheme_PrivateKey::check_key(RandomNumberGenerator rng,
 												 bool strong) const
 {
-	ref const BigInt p = group_p();
-	ref const BigInt g = group_g();
+	const ref BigInt p = group_p();
+	const ref BigInt g = group_g();
 
 	if (y < 2 || y >= p || x < 2 || x >= p)
 		return false;

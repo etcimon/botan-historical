@@ -518,7 +518,7 @@ immutable uint[1024] TD = [
 */
 void aes_encrypt_n(ubyte* input, ubyte* output,
                    size_t blocks,
-                   ref const SafeVector!uint EK,
+                   const ref SafeVector!uint EK,
                    in SafeVector!ubyte ME)
 {
 	BOTAN_ASSERT(EK.size() && ME.size() == 16, "Key was set");
@@ -631,7 +631,7 @@ void aes_encrypt_n(ubyte* input, ubyte* output,
 * AES Decryption
 */
 void aes_decrypt_n(ubyte* input, ubyte* output, size_t blocks,
-                   ref const SafeVector!uint DK,
+                   const ref SafeVector!uint DK,
                    in SafeVector!ubyte MD)
 {
 	BOTAN_ASSERT(DK.size() && MD.size() == 16, "Key was set");

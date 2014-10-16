@@ -25,7 +25,7 @@ class Algorithm_Factory;
 * @return key encrypted under kek
 */
 SafeVector!ubyte rfc3394_keywrap(in SafeVector!ubyte key,
-                                 ref const SymmetricKey kek,
+                                 const ref SymmetricKey kek,
                                  Algorithm_Factory af)
 {
 	if (key.size() % 8 != 0)
@@ -76,7 +76,7 @@ SafeVector!ubyte rfc3394_keywrap(in SafeVector!ubyte key,
 * @return key decrypted under kek
 */
 SafeVector!ubyte rfc3394_keyunwrap(in SafeVector!ubyte key,
-                                   ref const SymmetricKey kek,
+                                   const ref SymmetricKey kek,
                                    Algorithm_Factory af)
 {
 	if (key.size() < 16 || key.size() % 8 != 0)

@@ -6,13 +6,13 @@
 */
 
 import botan.elgamal;
-import botan.numthry;
+import botan.math.numbertheory.numthry;
 import botan.keypair;
 import botan.workfactor;
 /*
 * ElGamal_PublicKey Constructor
 */
-ElGamal_PublicKey::ElGamal_PublicKey(in DL_Group grp, ref const BigInt y1)
+ElGamal_PublicKey::ElGamal_PublicKey(in DL_Group grp, const ref BigInt y1)
 {
 	group = grp;
 	y = y1;
@@ -23,7 +23,7 @@ ElGamal_PublicKey::ElGamal_PublicKey(in DL_Group grp, ref const BigInt y1)
 */
 ElGamal_PrivateKey::ElGamal_PrivateKey(RandomNumberGenerator rng,
 													const DL_Group& grp,
-													ref const BigInt x_arg)
+													const ref BigInt x_arg)
 {
 	group = grp;
 	x = x_arg;
@@ -65,7 +65,7 @@ bool ElGamal_PrivateKey::check_key(RandomNumberGenerator rng,
 
 ElGamal_Encryption_Operation::ElGamal_Encryption_Operation(in ElGamal_PublicKey key)
 {
-	ref const BigInt p = key.group_p();
+	const ref BigInt p = key.group_p();
 
 	powermod_g_p = Fixed_Base_Power_Mod(key.group_g(), p);
 	powermod_y_p = Fixed_Base_Power_Mod(key.get_y(), p);
@@ -76,7 +76,7 @@ SafeVector!ubyte
 ElGamal_Encryption_Operation::encrypt(in ubyte* msg, size_t msg_len,
 												  RandomNumberGenerator rng)
 {
-	ref const BigInt p = mod_p.get_modulus();
+	const ref BigInt p = mod_p.get_modulus();
 
 	BigInt m(msg, msg_len);
 
@@ -97,7 +97,7 @@ ElGamal_Encryption_Operation::encrypt(in ubyte* msg, size_t msg_len,
 ElGamal_Decryption_Operation::ElGamal_Decryption_Operation(in ElGamal_PrivateKey key,
 																			  RandomNumberGenerator rng)
 {
-	ref const BigInt p = key.group_p();
+	const ref BigInt p = key.group_p();
 
 	powermod_x_p = Fixed_Exponent_Power_Mod(key.get_x(), p);
 	mod_p = Modular_Reducer(p);
@@ -109,7 +109,7 @@ ElGamal_Decryption_Operation::ElGamal_Decryption_Operation(in ElGamal_PrivateKey
 SafeVector!ubyte
 ElGamal_Decryption_Operation::decrypt(in ubyte* msg, size_t msg_len)
 {
-	ref const BigInt p = mod_p.get_modulus();
+	const ref BigInt p = mod_p.get_modulus();
 
 	const size_t p_bytes = p.bytes();
 

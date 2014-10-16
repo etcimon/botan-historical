@@ -6,9 +6,9 @@
 */
 module botan.constructs.fpe_fe1;
 
-import botan.bigint;
+import botan.math.bigint.bigint;
 import botan.algo_base.symkey;
-import botan.numthry;
+import botan.math.numbertheory.numthry;
 import botan.mac.hmac;
 import botan.sha2_32;
 import botan.utils.exceptn;
@@ -27,8 +27,8 @@ struct FPE {
 	* @param key a random key
 	* @param tweak will modify the ciphertext (think of as an IV)
 	*/
-	static BigInt fe1_encrypt(in BigInt n, ref const BigInt X0,
-	                          ref const SymmetricKey key,
+	static BigInt fe1_encrypt(in BigInt n, const ref BigInt X0,
+	                          const ref SymmetricKey key,
 	                          in Vector!ubyte tweak)
 	{
 		FPE_Encryptor F = FPE_Encryptor(key, n, tweak);
@@ -60,8 +60,8 @@ struct FPE {
 	* @param key is the key used for encryption
 	* @param tweak the same tweak used for encryption
 	*/
-	static BigInt fe1_decrypt(in BigInt n, ref const BigInt X0,
-	                          ref const SymmetricKey key,
+	static BigInt fe1_decrypt(in BigInt n, const ref BigInt X0,
+	                          const ref SymmetricKey key,
 	                          in Vector!ubyte tweak)
 	{
 		FPE_Encryptor F = FPE_Encryptor(key, n, tweak);
@@ -139,7 +139,7 @@ void factor(BigInt n, ref BigInt a, ref BigInt b)
 * so 3 rounds is safe. The FPE factorization routine should always
 * return a >= b, so just confirm that and return 3.
 */
-size_t rounds(in BigInt a, ref const BigInt b)
+size_t rounds(in BigInt a, const ref BigInt b)
 {
 	if (a < b)
 		throw new Logic_Error("FPE rounds: a < b");
@@ -153,7 +153,7 @@ class FPE_Encryptor
 {
 public:
 	this(in SymmetricKey key,
-	     ref const BigInt n,
+	     const ref BigInt n,
 	     in Vector!ubyte tweak)
 	{
 		mac.reset(new HMAC(new SHA_256));
@@ -174,7 +174,7 @@ public:
 	}
 
 	
-	BigInt opCall(size_t round_no, ref const BigInt R)
+	BigInt opCall(size_t round_no, const ref BigInt R)
 	{
 		SafeVector!ubyte r_bin = BigInt.encode_locked(R);
 		

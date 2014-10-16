@@ -102,7 +102,7 @@ public:
 	* Get this OID as list (vector) of its components.
 	* @return vector representing this OID
 	*/
-	ref const Vector!uint get_id() const { return id; }
+	const ref Vector!uint get_id() const { return id; }
 
 	/**
 	* Get this OID as a string
@@ -161,7 +161,7 @@ public:
 	* @param b the second OID
 	* @return true if a is not equal to b
 	*/
-	bool opCmp(ref const OID b)
+	bool opCmp(const ref OID b)
 	{
 		return !(this == b);
 	}
@@ -172,7 +172,7 @@ public:
 	* @param b the second OID
 	* @return true if a is lexicographically smaller than b
 	*/
-	bool opBinary(string op)(ref const OID b)
+	bool opBinary(string op)(const ref OID b)
 		if (op == "<")
 	{
 		const Vector!uint oid1 = get_id();

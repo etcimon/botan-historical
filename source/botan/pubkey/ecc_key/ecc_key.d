@@ -9,18 +9,18 @@
 
 import botan.ecc_key;
 import botan.x509_key;
-import botan.numthry;
+import botan.math.numbertheory.numthry;
 import botan.asn1.der_enc;
 import botan.asn1.ber_dec;
 import botan.alloc.secmem;
-import botan.point_gfp;
+import botan.math.ec_gfp.curve_gfp;
 size_t EC_PublicKey::estimated_strength() const
 {
 	return domain().get_curve().get_p().bits() / 2;
 }
 
 EC_PublicKey::EC_PublicKey(in EC_Group dom_par,
-									const PointGFp& pub_point) :
+									const ref PointGFp pub_point) :
 	domain_params(dom_par), public_key(pub_point),
 	domain_encoding(EC_DOMPAR_ENC_EXPLICIT)
 {
@@ -68,7 +68,7 @@ void EC_PublicKey::set_parameter_encoding(EC_Group_Encoding form)
 	domain_encoding = form;
 }
 
-ref const BigInt EC_PrivateKey::private_value() const
+const ref BigInt EC_PrivateKey::private_value() const
 {
 	if (Private_Key == 0)
 		throw new Invalid_State("EC_PrivateKey::private_value - uninitialized");
@@ -81,7 +81,7 @@ ref const BigInt EC_PrivateKey::private_value() const
 */
 EC_PrivateKey::EC_PrivateKey(RandomNumberGenerator rng,
 									  const EC_Group& ec_group,
-									  ref const BigInt x)
+									  const ref BigInt x)
 {
 	domain_params = ec_group;
 	domain_encoding = EC_DOMPAR_ENC_EXPLICIT;

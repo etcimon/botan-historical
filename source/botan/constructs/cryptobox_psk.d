@@ -25,7 +25,7 @@ struct CryptoBox {
 	* @param rng a ref to a random number generator, such as AutoSeeded_RNG
 	*/
 	static Vector!ubyte encrypt(in ubyte* input, size_t input_len,
-	                            ref const SymmetricKey master_key,
+	                            const ref SymmetricKey master_key,
 	                            RandomNumberGenerator rng)
 	{
 		Unique!KDF kdf = get_kdf(CRYPTOBOX_KDF);
@@ -76,7 +76,7 @@ struct CryptoBox {
 	* @param rng a ref to a random number generator, such as AutoSeeded_RNG
 	*/
 	static SafeVector!ubyte decrypt(in ubyte* input, size_t input_len,
-	                                ref const SymmetricKey master_key)
+	                                const ref SymmetricKey master_key)
 	{
 		const size_t MIN_CTEXT_SIZE = 16; // due to using CBC with padding
 		

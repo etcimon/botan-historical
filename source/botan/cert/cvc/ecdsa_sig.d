@@ -6,7 +6,7 @@
 * Distributed under the terms of the botan license.
 */
 module botan.cert.cvc.ecdsa_sig;
-import botan.bigint;
+import botan.math.bigint.bigint;
 import botan.asn1.der_enc;
 import botan.asn1.ber_dec;
 /**
@@ -18,7 +18,7 @@ public:
 	friend class ECDSA_Signature_Decoder;
 
 	this() {}
-	this(in BigInt r, ref const BigInt s) {
+	this(in BigInt r, const ref BigInt s) {
 		m_r = r;
 		m_s = s;
 	}
@@ -33,8 +33,8 @@ public:
 				.verify_end();
 	}
 
-	ref const BigInt get_r() const { return m_r; }
-	ref const BigInt get_s() const { return m_s; }
+	const ref BigInt get_r() const { return m_r; }
+	const ref BigInt get_s() const { return m_s; }
 
 	/**
 	* return the r||s
@@ -57,7 +57,7 @@ public:
 		return (get_r() == other.get_r() && get_s() == other.get_s());
 	}
 
-	bool opCmp(string op)(ref const ECDSA_Signature rhs)
+	bool opCmp(string op)(const ref ECDSA_Signature rhs)
 		if (op == "!=")
 	{
 		return !(this == rhs);

@@ -15,7 +15,7 @@ import botan.pubkey;
 import botan.pubkey;
 import botan.asn1.der_enc;
 import botan.asn1.ber_dec;
-import botan.bigint;
+import botan.math.bigint.bigint;
 import botan.parsing;
 import botan.libstate.lookup;
 import botan.asn1.oid_lookup.oids;
@@ -110,7 +110,7 @@ public:
 	* as the offset from the current time
 	*/
 	X509_CRL update_crl(in X509_CRL crl,
-	                    ref const Vector!( CRL_Entry ) new_revoked,
+	                    const ref Vector!( CRL_Entry ) new_revoked,
 	                    RandomNumberGenerator rng,
 	                    Duration next_update = 0.seconds) const
 	{
@@ -144,7 +144,7 @@ public:
 	                           const X509_Time not_after,
 	                           const X509_DN issuer_dn,
 	                           const X509_DN subject_dn,
-	                           ref const Extensions extensions)
+	                           const ref Extensions extensions)
 	{
 		const size_t X509_CERT_VERSION = 3;
 		const size_t SERIAL_BITS = 128;

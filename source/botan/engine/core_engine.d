@@ -12,7 +12,7 @@ import botan.filters.filters;
 import botan.algo_factory;
 import botan.mode_pad;
 import botan.filters.transform_filter;
-import botan.internal.def_powm;
+import botan.math.numbertheory.def_powm;
 import botan.algo_base.scan_name;
 import botan.algo_factory;
 

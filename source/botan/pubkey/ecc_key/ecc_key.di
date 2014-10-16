@@ -25,7 +25,7 @@ class EC_PublicKey : Public_Key
 {
 	public:
 		EC_PublicKey(in EC_Group dom_par,
-						 const PointGFp& pub_point);
+						 const ref PointGFp pub_point);
 
 		EC_PublicKey(in AlgorithmIdentifier alg_id,
 						 in SafeVector!ubyte key_bits);
@@ -36,7 +36,7 @@ class EC_PublicKey : Public_Key
 		* domain parameters of this point are not set
 		* @result the public point of this key
 		*/
-		const PointGFp& public_point() const { return public_key; }
+		const ref PointGFp public_point() const { return public_key; }
 
 		AlgorithmIdentifier algorithm_identifier() const;
 
@@ -92,7 +92,7 @@ class EC_PrivateKey : EC_PublicKey,
 	public:
 	  EC_PrivateKey(RandomNumberGenerator rng,
 						 const EC_Group& domain,
-						 ref const BigInt Private_Key);
+						 const ref BigInt Private_Key);
 
 		EC_PrivateKey(in AlgorithmIdentifier alg_id,
 						  in SafeVector!ubyte key_bits);
@@ -103,7 +103,7 @@ class EC_PrivateKey : EC_PublicKey,
 		* Get the private key value of this key object.
 		* @result the private key value of this key object
 		*/
-		ref const BigInt private_value() const;
+		const ref BigInt private_value() const;
 	package:
 		EC_PrivateKey() {}
 

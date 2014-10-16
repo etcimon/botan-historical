@@ -8,7 +8,7 @@
 import botan.pubkey;
 import botan.asn1.der_enc;
 import botan.asn1.ber_dec;
-import botan.bigint;
+import botan.math.bigint.bigint;
 import botan.parsing;
 import botan.libstate.libstate;
 import botan.engine.engine;

@@ -7,7 +7,7 @@
 
 import botan.rsa;
 import botan.parsing;
-import botan.numthry;
+import botan.math.numbertheory.numthry;
 import botan.keypair;
 import future;
 /*

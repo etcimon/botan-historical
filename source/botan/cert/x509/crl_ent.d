@@ -11,7 +11,7 @@ import botan.asn1.asn1_time;
 import botan.cert.x509.x509_ext;
 import botan.asn1.der_enc;
 import botan.asn1.ber_dec;
-import botan.bigint;
+import botan.math.bigint.bigint;
 import botan.asn1.oid_lookup.oids;
 
 class BER_Decoder;
@@ -133,7 +133,7 @@ public:
 	/*
 	* Compare two CRL_Entrys for equality
 	*/
-	bool opEquals(ref const CRL_Entry a2)
+	bool opEquals(const ref CRL_Entry a2)
 	{
 		if (serial_number() != a2.serial_number())
 			return false;
@@ -147,7 +147,7 @@ public:
 	/*
 	* Compare two CRL_Entrys for inequality
 	*/
-	bool opCmp(string op)(ref const CRL_Entry a2)
+	bool opCmp(string op)(const ref CRL_Entry a2)
 		if (op == "!=")
 	{
 		return !(this == a2);

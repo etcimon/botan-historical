@@ -14,24 +14,24 @@ import botan.hash.hash;
 */
 class EMSA_PKCS1v15 : EMSA
 {
-	public:
-		/**
-		* @param hash the hash object to use
-		*/
-		EMSA_PKCS1v15(HashFunction hash);
+public:
+	/**
+	* @param hash the hash object to use
+	*/
+	EMSA_PKCS1v15(HashFunction hash);
 
-		void update(const ubyte[], size_t);
+	void update(const ubyte[], size_t);
 
-		SafeVector!ubyte raw_data();
+	SafeVector!ubyte raw_data();
 
-		SafeVector!ubyte encoding_of(in SafeVector!ubyte, size_t,
-												 RandomNumberGenerator rng);
+	SafeVector!ubyte encoding_of(in SafeVector!ubyte, size_t,
+											 RandomNumberGenerator rng);
 
-		bool verify(in SafeVector!ubyte, in SafeVector!ubyte,
-						size_t);
-	private:
-		Unique!HashFunction m_hash;
-		Vector!ubyte m_hash_id;
+	bool verify(in SafeVector!ubyte, in SafeVector!ubyte,
+					size_t);
+private:
+	Unique!HashFunction m_hash;
+	Vector!ubyte m_hash_id;
 };
 
 /**
@@ -41,17 +41,17 @@ class EMSA_PKCS1v15 : EMSA
 */
 class EMSA_PKCS1v15_Raw : EMSA
 {
-	public:
-		void update(const ubyte[], size_t);
+public:
+	void update(const ubyte[], size_t);
 
-		SafeVector!ubyte raw_data();
+	SafeVector!ubyte raw_data();
 
-		SafeVector!ubyte encoding_of(in SafeVector!ubyte, size_t,
-												 RandomNumberGenerator rng);
+	SafeVector!ubyte encoding_of(in SafeVector!ubyte, size_t,
+											 RandomNumberGenerator rng);
 
-		bool verify(in SafeVector!ubyte, in SafeVector!ubyte,
-						size_t);
+	bool verify(in SafeVector!ubyte, in SafeVector!ubyte,
+					size_t);
 
-	private:
-		SafeVector!ubyte message;
+private:
+	SafeVector!ubyte message;
 };

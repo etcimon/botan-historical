@@ -368,32 +368,32 @@ private:
 * Template functions for the factory prototype/search algorithm
 */
 T engine_get_algo(T)(Engine,
-					 ref const SCAN_Name,
+					 const ref SCAN_Name,
 					 Algorithm_Factory)
 { static assert(false, "Invalid engine"); }
 
 BlockCipher engine_get_algo(T : BlockCipher)(Engine engine,
-							  ref const SCAN_Name request,
+							  const ref SCAN_Name request,
 							  Algorithm_Factory af)
 { return engine.find_block_cipher(request, af); }
 
 StreamCipher engine_get_algo(T : StreamCipher)(Engine engine,
-										ref const SCAN_Name request,
+										const ref SCAN_Name request,
 										Algorithm_Factory af)
 { return engine.find_stream_cipher(request, af); }
 
 HashFunction engine_get_algo(T : HashFunction)(Engine engine,
-										ref const SCAN_Name request,
+										const ref SCAN_Name request,
 										Algorithm_Factory af)
 { return engine.find_hash(request, af); }
 
 MessageAuthenticationCode engine_get_algo(T : MessageAuthenticationCode)(Engine engine,
-														 ref const SCAN_Name request,
+														 const ref SCAN_Name request,
 														 Algorithm_Factory af)
 { return engine.find_mac(request, af); }
 
 PBKDF engine_get_algo(T : PBKDF)(Engine engine,
-							  ref const SCAN_Name request,
+							  const ref SCAN_Name request,
 							  Algorithm_Factory af)
 { return engine.find_pbkdf(request, af); }
 

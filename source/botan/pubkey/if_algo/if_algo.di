@@ -5,7 +5,7 @@
 * Distributed under the terms of the botan license.
 */
 
-import botan.bigint;
+import botan.math.bigint.bigint;
 import botan.x509_key;
 import botan.pkcs8;
 /**
@@ -18,7 +18,7 @@ class IF_Scheme_PublicKey : Public_Key
 		IF_Scheme_PublicKey(in AlgorithmIdentifier alg_id,
 								  in SafeVector!ubyte key_bits);
 
-		IF_Scheme_PublicKey(in BigInt n, ref const BigInt e) :
+		IF_Scheme_PublicKey(in BigInt n, const ref BigInt e) :
 			n(n), e(e) {}
 
 		bool check_key(RandomNumberGenerator rng, bool) const;
@@ -30,12 +30,12 @@ class IF_Scheme_PublicKey : Public_Key
 		/**
 		* @return public modulus
 		*/
-		ref const BigInt get_n() const { return n; }
+		const ref BigInt get_n() const { return n; }
 
 		/**
 		* @return public exponent
 		*/
-		ref const BigInt get_e() const { return e; }
+		const ref BigInt get_e() const { return e; }
 
 		size_t max_input_bits() const { return (n.bits() - 1); }
 
@@ -57,9 +57,9 @@ class IF_Scheme_PrivateKey : IF_Scheme_PublicKey,
 	public:
 
 		IF_Scheme_PrivateKey(RandomNumberGenerator rng,
-									ref const BigInt prime1, ref const BigInt prime2,
-									ref const BigInt exp, ref const BigInt d_exp,
-									ref const BigInt mod);
+									const ref BigInt prime1, const ref BigInt prime2,
+									const ref BigInt exp, const ref BigInt d_exp,
+									const ref BigInt mod);
 
 		IF_Scheme_PrivateKey(RandomNumberGenerator rng,
 									const AlgorithmIdentifier alg_id,
@@ -71,23 +71,23 @@ class IF_Scheme_PrivateKey : IF_Scheme_PublicKey,
 		* Get the first prime p.
 		* @return prime p
 		*/
-		ref const BigInt get_p() const { return p; }
+		const ref BigInt get_p() const { return p; }
 
 		/**
 		* Get the second prime q.
 		* @return prime q
 		*/
-		ref const BigInt get_q() const { return q; }
+		const ref BigInt get_q() const { return q; }
 
 		/**
 		* Get d with exp * d = 1 mod (p - 1, q - 1).
 		* @return d
 		*/
-		ref const BigInt get_d() const { return d; }
+		const ref BigInt get_d() const { return d; }
 
-		ref const BigInt get_c() const { return c; }
-		ref const BigInt get_d1() const { return d1; }
-		ref const BigInt get_d2() const { return d2; }
+		const ref BigInt get_c() const { return c; }
+		const ref BigInt get_d1() const { return d1; }
+		const ref BigInt get_d2() const { return d2; }
 
 		SafeVector!ubyte pkcs8_Private_Key() const;
 

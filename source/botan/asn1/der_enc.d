@@ -8,7 +8,7 @@ module botan.asn1.der_enc;
 
 import botan.asn1.asn1_obj;
 import botan.asn1.der_enc;
-import botan.bigint;
+import botan.math.bigint.bigint;
 import botan.utils.get_byte;
 import botan.parsing;
 import botan.internal.bit_ops;
@@ -266,7 +266,7 @@ public:
 	*/
 	DER_Encoder encode(in ASN1_Object obj)
 	{
-		obj.encode_into(*this);
+		obj.encode_into(this);
 		return this;
 	}
 
@@ -280,14 +280,14 @@ public:
 		return this;
 	}
 	
-	DER_Encoder encode_if (bool cond, ref const ASN1_Object obj)
+	DER_Encoder encode_if (bool cond, const ref ASN1_Object obj)
 	{
 		if (cond)
 			encode(obj);
 		return this;
 	}
 
-	DER_Encoder encode_optional(T)(in T value, ref const T default_value = T.init)
+	DER_Encoder encode_optional(T)(in T value, const ref T default_value = T.init)
 	{
 		if (value != default_value)
 			encode(value);

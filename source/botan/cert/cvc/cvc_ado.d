@@ -99,7 +99,7 @@ public:
 		             .get_contents());
 	}
 
-	bool opEquals(ref const EAC1_1_ADO rhs) const
+	bool opEquals(const ref EAC1_1_ADO rhs) const
 	{
 		return (get_concat_sig() == rhs.get_concat_sig()
 		        && tbs_data() == rhs.tbs_data()
@@ -116,7 +116,7 @@ public:
 	}
 
 
-	bool opCmp(string op)(ref const EAC1_1_ADO rhs)
+	bool opCmp(string op)(const ref EAC1_1_ADO rhs)
 		if (op == "!=")
 	{
 		return (!(this == rhs));

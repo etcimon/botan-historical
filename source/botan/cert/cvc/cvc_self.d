@@ -14,7 +14,7 @@ import botan.asn1.asn1_obj;
 import botan.cert.cvc.cvc_req;
 import botan.cert.cvc.cvc_ado;
 import botan.ecc_key;
-import botan.point_gfp;
+import botan.math.ec_gfp.curve_gfp;
 import botan.asn1.oid_lookup.oids;
 import sstream;
 
@@ -41,8 +41,8 @@ public:
 * car, holder_auth_templ, hash_alg, ced, cex and hash_alg
 * @result the self signed certificate
 */
-EAC1_1_CVC create_self_signed_cert(ref const Private_Key key,
-                                   ref const EAC1_1_CVC_Options opt,
+EAC1_1_CVC create_self_signed_cert(const ref Private_Key key,
+                                   const ref EAC1_1_CVC_Options opt,
                                    RandomNumberGenerator rng)
 {
 	// NOTE: we ignore the value of opt.chr
@@ -81,9 +81,9 @@ EAC1_1_CVC create_self_signed_cert(ref const Private_Key key,
 * @param rng the rng to use
 * @result the new request
 */
-EAC1_1_Req create_cvc_req(ref const Private_Key key,
-                          ref const ASN1_Chr chr,
-                          ref const string hash_alg,
+EAC1_1_Req create_cvc_req(const ref Private_Key key,
+                          const ref ASN1_Chr chr,
+                          const ref string hash_alg,
                           RandomNumberGenerator rng)
 {
 	
@@ -127,9 +127,9 @@ EAC1_1_Req create_cvc_req(ref const Private_Key key,
 * CHR of the entity associated with the provided private key
 * @param rng the rng to use
 */
-EAC1_1_ADO create_ado_req(ref const Private_Key key,
+EAC1_1_ADO create_ado_req(const ref Private_Key key,
                           in EAC1_1_Req req,
-                          ref const ASN1_Car car,
+                          const ref ASN1_Car car,
                           RandomNumberGenerator rng)
 {
 	
@@ -168,9 +168,9 @@ EAC1_1_ADO create_ado_req(ref const Private_Key key,
 * @param rng a random number generator
 * @result the CVCA certificate created
 */
-EAC1_1_CVC create_cvca(ref const Private_Key key,
-                       ref const string hash,
-                       ref const ASN1_Car car, bool iris, bool fingerpr,
+EAC1_1_CVC create_cvca(const ref Private_Key key,
+                       const ref string hash,
+                       const ref ASN1_Car car, bool iris, bool fingerpr,
                        uint cvca_validity_months,
                        RandomNumberGenerator rng)
 {
@@ -201,9 +201,9 @@ EAC1_1_CVC create_cvca(ref const Private_Key key,
 * the holder of the link certificate
 * @param rng a random number generator
 */
-EAC1_1_CVC link_cvca(ref const EAC1_1_CVC signer,
-                     ref const Private_Key key,
-                     ref const EAC1_1_CVC signee,
+EAC1_1_CVC link_cvca(const ref EAC1_1_CVC signer,
+                     const ref Private_Key key,
+                     const ref EAC1_1_CVC signee,
                      RandomNumberGenerator rng)
 {
 	const ECDSA_PrivateKey* priv_key = cast(const ECDSA_PrivateKey*)(&key);
@@ -252,9 +252,9 @@ EAC1_1_CVC link_cvca(ref const EAC1_1_CVC signer,
 * @param rng a random number generator
 * @result the new request
 */
-EAC1_1_Req create_cvc_req_implicitca(ref const Private_Key prkey,
-                          ref const ASN1_Chr chr,
-                          ref const string hash_alg,
+EAC1_1_Req create_cvc_req_implicitca(const ref Private_Key prkey,
+                          const ref ASN1_Chr chr,
+                          const ref string hash_alg,
                           RandomNumberGenerator rng)
 {
 	const ECDSA_PrivateKey* priv_key = cast(const ECDSA_PrivateKey*)(&prkey);
@@ -284,8 +284,8 @@ EAC1_1_Req create_cvc_req_implicitca(ref const Private_Key prkey,
 *
 **/
 
-EAC1_1_CVC sign_request(ref const EAC1_1_CVC signer_cert,
-                        ref const Private_Key key,
+EAC1_1_CVC sign_request(const ref EAC1_1_CVC signer_cert,
+                        const ref Private_Key key,
                         in EAC1_1_Req signee,
                         uint seqnr,
                         uint seqnr_len,
@@ -372,13 +372,13 @@ enum CHAT_values {
 	FINGERPRINT = 0x01
 };
 
-void encode_eac_bigint(ref DER_Encoder der, ref const BigInt x, ASN1_Tag tag)
+void encode_eac_bigint(ref DER_Encoder der, const ref BigInt x, ASN1_Tag tag)
 {
 	der.encode(BigInt.encode_1363(x, x.bytes()), ASN1_Tag.OCTET_STRING, tag);
 }
 
 Vector!ubyte eac_1_1_encoding(const EC_PublicKey* key,
-                              ref const OID sig_algo)
+                              const ref OID sig_algo)
 {
 	if (key.domain_format() == EC_DOMPAR_ENC_OID)
 		throw new Encoding_Error("CVC encoder: cannot encode parameters by OID");
@@ -414,7 +414,7 @@ Vector!ubyte eac_1_1_encoding(const EC_PublicKey* key,
 	return enc.get_contents_unlocked();
 }
 
-string padding_and_hash_from_oid(ref const OID oid)
+string padding_and_hash_from_oid(const ref OID oid)
 {
 	string padding_and_hash = oids.lookup(oid); // use the hash
 	

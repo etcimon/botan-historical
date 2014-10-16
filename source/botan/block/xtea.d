@@ -87,7 +87,7 @@ package:
 	/**
 	* @return const reference to the key schedule
 	*/
-	ref const SafeVector!uint get_EK() const { return EK; }
+	const ref SafeVector!uint get_EK() const { return EK; }
 
 private:
 	/*

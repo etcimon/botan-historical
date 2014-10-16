@@ -22,7 +22,7 @@ struct secure_allocator(T)
 	T* address(ref x) const nothrow
 	{ return &x; }
 
-	const T* address(ref const x) const nothrow
+	const T* address(const ref x) const nothrow
 	{ return &x; }
 
 	T* allocate(size_t n, const void* = 0)

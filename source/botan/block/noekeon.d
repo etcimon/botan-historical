@@ -118,12 +118,12 @@ package:
 	/**
 	* @return const reference to encryption subkeys
 	*/
-	ref const SafeVector!uint get_EK() const { return EK; }
+	const ref SafeVector!uint get_EK() const { return EK; }
 
 	/**
 	* @return const reference to decryption subkeys
 	*/
-	ref const SafeVector!uint get_DK() const { return DK; }
+	const ref SafeVector!uint get_DK() const { return DK; }
 
 private:
 	/*

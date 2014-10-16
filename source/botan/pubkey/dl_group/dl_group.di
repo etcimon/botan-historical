@@ -5,7 +5,7 @@
 * Distributed under the terms of the botan license.
 */
 
-import botan.bigint;
+import botan.math.bigint.bigint;
 import botan.filters.data_src;
 /**
 * This class represents discrete logarithm groups. It holds a prime p,
@@ -19,19 +19,19 @@ class DL_Group
 		* Get the prime p.
 		* @return prime p
 		*/
-		ref const BigInt get_p() const;
+		const ref BigInt get_p() const;
 
 		/**
 		* Get the prime q.
 		* @return prime q
 		*/
-		ref const BigInt get_q() const;
+		const ref BigInt get_q() const;
 
 		/**
 		* Get the base g.
 		* @return base g
 		*/
-		ref const BigInt get_g() const;
+		const ref BigInt get_g() const;
 
 		/**
 		* The DL group encoding format variants.
@@ -136,7 +136,7 @@ class DL_Group
 		* @param p the prime p
 		* @param g the base g
 		*/
-		DL_Group(in BigInt p, ref const BigInt g);
+		DL_Group(in BigInt p, const ref BigInt g);
 
 		/**
 		* Create a DL group.
@@ -144,17 +144,17 @@ class DL_Group
 		* @param q the prime q
 		* @param g the base g
 		*/
-		DL_Group(in BigInt p, ref const BigInt q, ref const BigInt g);
+		DL_Group(in BigInt p, const ref BigInt q, const ref BigInt g);
 
 		/**
 		* Return PEM representation of named DL group
 		*/
 		static string PEM_for_named_group(in string name);
 	private:
-		static BigInt make_dsa_generator(in BigInt, ref const BigInt);
+		static BigInt make_dsa_generator(in BigInt, const ref BigInt);
 
 		void init_check() const;
-		void initialize(in BigInt, ref const BigInt, ref const BigInt);
+		void initialize(in BigInt, const ref BigInt, const ref BigInt);
 		bool initialized;
 		BigInt p, q, g;
 };

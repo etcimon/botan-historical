@@ -6,11 +6,11 @@
 */
 
 import botan.blinding;
-import botan.numthry;
+import botan.math.numbertheory.numthry;
 /*
 * Blinder Constructor
 */
-Blinder::Blinder(in BigInt e, ref const BigInt d, ref const BigInt n)
+Blinder::Blinder(in BigInt e, const ref BigInt d, const ref BigInt n)
 {
 	if (e < 1 || d < 1 || n < 1)
 		throw new Invalid_Argument("Blinder: Arguments too small");

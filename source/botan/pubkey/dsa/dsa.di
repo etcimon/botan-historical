@@ -7,8 +7,8 @@
 
 import botan.dl_algo;
 import botan.pubkey.pk_ops;
-import botan.reducer;
-import botan.pow_mod;
+import botan.math.numbertheory.reducer;
+import botan.math.numbertheory.pow_mod;
 /**
 * DSA Public Key
 */
@@ -28,7 +28,7 @@ class DSA_PublicKey : DL_Scheme_PublicKey
 		{
 		}
 
-		DSA_PublicKey(in DL_Group group, ref const BigInt y);
+		DSA_PublicKey(in DL_Group group, const ref BigInt y);
 	package:
 		DSA_PublicKey() {}
 };
@@ -46,7 +46,7 @@ class DSA_PrivateKey : DSA_PublicKey,
 
 		DSA_PrivateKey(RandomNumberGenerator rng,
 							const DL_Group& group,
-							ref const BigInt Private_Key = 0);
+							const ref BigInt Private_Key = 0);
 
 		bool check_key(RandomNumberGenerator rng, bool strong) const;
 };
@@ -66,8 +66,8 @@ class DSA_Signature_Operation : pk_ops.Signature
 		SafeVector!ubyte sign(in ubyte* msg, size_t msg_len,
 										RandomNumberGenerator rng);
 	private:
-		ref const BigInt q;
-		ref const BigInt x;
+		const ref BigInt q;
+		const ref BigInt x;
 		Fixed_Base_Power_Mod powermod_g_p;
 		Modular_Reducer mod_q;
 };
@@ -89,8 +89,8 @@ class DSA_Verification_Operation : pk_ops.Verification
 		bool verify(in ubyte* msg, size_t msg_len,
 						in ubyte* sig, size_t sig_len);
 	private:
-		ref const BigInt q;
-		ref const BigInt y;
+		const ref BigInt q;
+		const ref BigInt y;
 
 		Fixed_Base_Power_Mod powermod_g_p, powermod_y_p;
 		Modular_Reducer mod_p, mod_q;

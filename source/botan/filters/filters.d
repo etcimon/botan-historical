@@ -88,7 +88,7 @@ public:
 	* @param key the key to use inside this filter
 	*/
 	this(StreamCipher stream_cipher,
-	     ref const SymmetricKey key)
+	     const ref SymmetricKey key)
 	{
 		buffer = DEFAULT_BUFFERSIZE;
 		cipher = stream_cipher;
@@ -113,7 +113,7 @@ public:
 	* @param key the key to use inside this filter
 	*/
 	this(in string sc_name,
-	     ref const SymmetricKey key)
+	     const ref SymmetricKey key)
 	{
 		buffer = DEFAULT_BUFFERSIZE);
 		Algorithm_Factory af = global_state().algorithm_factory();
@@ -239,7 +239,7 @@ public:
 	* output of the MAC will be cut off.
 	*/
 	this(MessageAuthenticationCode mac_obj,
-				  ref const SymmetricKey key,
+				  const ref SymmetricKey key,
 				  size_t out_len = 0)
 	{
 		OUTPUT_LENGTH = out_len;
@@ -271,7 +271,7 @@ public:
 	* MAC. Otherwise, specify a smaller value here so that the
 	* output of the MAC will be cut off.
 	*/
-	this(in string mac_name, ref const SymmetricKey key,
+	this(in string mac_name, const ref SymmetricKey key,
 	     size_t len = 0)
 	{
 		OUTPUT_LENGTH = len;

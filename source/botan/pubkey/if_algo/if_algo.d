@@ -6,7 +6,7 @@
 */
 
 import botan.if_algo;
-import botan.numthry;
+import botan.math.numbertheory.numthry;
 import botan.workfactor;
 import botan.asn1.der_enc;
 import botan.asn1.ber_dec;
@@ -90,11 +90,11 @@ IF_Scheme_PrivateKey::IF_Scheme_PrivateKey(RandomNumberGenerator rng,
 }
 
 IF_Scheme_PrivateKey::IF_Scheme_PrivateKey(RandomNumberGenerator rng,
-														 ref const BigInt prime1,
-														 ref const BigInt prime2,
-														 ref const BigInt exp,
-														 ref const BigInt d_exp,
-														 ref const BigInt mod)
+														 const ref BigInt prime1,
+														 const ref BigInt prime2,
+														 const ref BigInt exp,
+														 const ref BigInt d_exp,
+														 const ref BigInt mod)
 {
 	p = prime1;
 	q = prime2;

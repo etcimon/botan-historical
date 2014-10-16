@@ -62,7 +62,7 @@ public:
 	/*
 	* Comparison
 	*/
-	bool opCmp(string op)(ref const EAC1_1_CVC rhs)
+	bool opCmp(string op)(const ref EAC1_1_CVC rhs)
 		if (op == "!=")
 	{
 		return !(lhs == rhs);
@@ -157,8 +157,8 @@ private:
 
 EAC1_1_CVC make_cvc_cert(PK_Signer signer,
                          in Vector!ubyte public_key,
-                         ref const ASN1_Car car,
-                         ref const ASN1_Chr chr,
+                         const ref ASN1_Car car,
+                         const ref ASN1_Chr chr,
                          ubyte holder_auth_templ,
                          ASN1_Ced ced,
                          ASN1_Cex cex,

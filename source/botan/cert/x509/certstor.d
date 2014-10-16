@@ -164,7 +164,7 @@ private:
 
 const X509_Certificate*
 	cert_search(in X509_DN subject_dn, in Vector!ubyte key_id,
-	            ref const Vector!( X509_Certificate ) certs)
+	            const ref Vector!( X509_Certificate ) certs)
 {
 	for (size_t i = 0; i != certs.size(); ++i)
 	{

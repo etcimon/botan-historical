@@ -8,7 +8,7 @@
 import botan.dl_group;
 import botan.libstate.libstate;
 import botan.parsing;
-import botan.numthry;
+import botan.math.numbertheory.numthry;
 import botan.asn1.der_enc;
 import botan.asn1.ber_dec;
 import botan.filters.pipe;
@@ -102,7 +102,7 @@ DL_Group::DL_Group(RandomNumberGenerator rng,
 /*
 * DL_Group Constructor
 */
-DL_Group::DL_Group(in BigInt p1, ref const BigInt g1)
+DL_Group::DL_Group(in BigInt p1, const ref BigInt g1)
 {
 	initialize(p1, 0, g1);
 }
@@ -110,7 +110,7 @@ DL_Group::DL_Group(in BigInt p1, ref const BigInt g1)
 /*
 * DL_Group Constructor
 */
-DL_Group::DL_Group(in BigInt p1, ref const BigInt q1, ref const BigInt g1)
+DL_Group::DL_Group(in BigInt p1, const ref BigInt q1, const ref BigInt g1)
 {
 	initialize(p1, q1, g1);
 }
@@ -118,7 +118,7 @@ DL_Group::DL_Group(in BigInt p1, ref const BigInt q1, ref const BigInt g1)
 /*
 * DL_Group Initializer
 */
-void DL_Group::initialize(in BigInt p1, ref const BigInt q1, ref const BigInt g1)
+void DL_Group::initialize(in BigInt p1, const ref BigInt q1, const ref BigInt g1)
 {
 	if (p1 < 3)
 		throw new Invalid_Argument("DL_Group: Prime invalid");
@@ -168,7 +168,7 @@ bool DL_Group::verify_group(RandomNumberGenerator rng,
 /*
 * Return the prime
 */
-ref const BigInt DL_Group::get_p() const
+const ref BigInt DL_Group::get_p() const
 {
 	init_check();
 	return p;
@@ -177,7 +177,7 @@ ref const BigInt DL_Group::get_p() const
 /*
 * Return the generator
 */
-ref const BigInt DL_Group::get_g() const
+const ref BigInt DL_Group::get_g() const
 {
 	init_check();
 	return g;
@@ -186,7 +186,7 @@ ref const BigInt DL_Group::get_g() const
 /*
 * Return the subgroup
 */
-ref const BigInt DL_Group::get_q() const
+const ref BigInt DL_Group::get_q() const
 {
 	init_check();
 	if (q == 0)
@@ -313,7 +313,7 @@ void DL_Group::PEM_decode(in string pem)
 /*
 * Create generator of the q-sized subgroup (DSA style generator)
 */
-BigInt DL_Group::make_dsa_generator(in BigInt p, ref const BigInt q)
+BigInt DL_Group::make_dsa_generator(in BigInt p, const ref BigInt q)
 {
 	const BigInt e = (p - 1) / q;
 

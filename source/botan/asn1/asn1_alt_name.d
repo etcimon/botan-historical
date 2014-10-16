@@ -230,7 +230,7 @@ bool is_string_type(ASN1_Tag tag)
 * DER encode an AlternativeName entry
 */
 void encode_entries(DER_Encoder encoder = DER_Encoder(),
-                    ref const MultiMap!(string, string) attr,
+                    const ref MultiMap!(string, string) attr,
                     in string type, ASN1_Tag tagging)
 {
 	auto range = attr.equal_range(type);

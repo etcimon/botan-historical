@@ -6,12 +6,12 @@
 * Distributed under the terms of the Botan license
 */
 
-import botan.numthry;
-import botan.reducer;
+import botan.math.numbertheory.numthry;
+import botan.math.numbertheory.reducer;
 /*
 * Shanks-Tonnelli algorithm
 */
-BigInt ressol(in BigInt a, ref const BigInt p)
+BigInt ressol(in BigInt a, const ref BigInt p)
 {
 	if (a < 0)
 		throw new Invalid_Argument("ressol(): a to solve for must be positive");

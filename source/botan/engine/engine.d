@@ -13,7 +13,7 @@ import botan.stream_cipher;
 import botan.hash.hash;
 import botan.mac.mac;
 import botan.pbkdf;
-import botan.pow_mod;
+import botan.math.numbertheory.pow_mod;
 import botan.pk_keys;
 import botan.pubkey.pk_ops;
 class Algorithm_Factory;

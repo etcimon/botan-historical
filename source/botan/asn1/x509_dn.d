@@ -205,7 +205,7 @@ public:
 	/*
 	* Compare two X509_DNs for equality
 	*/
-	bool opEquals(ref const X509_DN dn2)
+	bool opEquals(const ref X509_DN dn2)
 	{
 		auto attr1 = dn1.get_attributes();
 		auto attr2 = dn2.get_attributes();
@@ -233,7 +233,7 @@ public:
 	/*
 	* Compare two X509_DNs for inequality
 	*/
-	bool opCmp(string op)(ref const X509_DN dn2)
+	bool opCmp(string op)(const ref X509_DN dn2)
 		if (op == "!=")
 	{
 		return !(this == dn2);
@@ -242,7 +242,7 @@ public:
 	/*
 	* Induce an arbitrary ordering on DNs
 	*/
-	bool opBinary(string op)(ref const X509_DN dn2)
+	bool opBinary(string op)(const ref X509_DN dn2)
 		if (op == "<")
 	{
 		auto attr1 = get_attributes();
@@ -284,7 +284,7 @@ private:
 * DER encode a RelativeDistinguishedName
 */
 void do_ava(DER_Encoder encoder = DER_Encoder(),
-            ref const MultiMap!(OID, string) dn_info,
+            const ref MultiMap!(OID, string) dn_info,
             ASN1_Tag string_type, in string oid_str,
             bool must_exist = false)
 {

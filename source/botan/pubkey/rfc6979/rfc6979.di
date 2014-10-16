@@ -5,7 +5,7 @@
 * Distributed under the terms of the botan license.
 */
 
-import botan.bigint;
+import botan.math.bigint.bigint;
 import string;
 /**
 * @param x the secret (EC)DSA key
@@ -14,6 +14,6 @@ import string;
 * @param hash the hash function used to generate h
 */
 BigInt generate_rfc6979_nonce(in BigInt x,
-													 ref const BigInt q,
-													 ref const BigInt h,
+													 const ref BigInt q,
+													 const ref BigInt h,
 													 in string hash);

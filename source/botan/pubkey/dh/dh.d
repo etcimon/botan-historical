@@ -6,12 +6,12 @@
 */
 
 import botan.dh;
-import botan.numthry;
+import botan.math.numbertheory.numthry;
 import botan.workfactor;
 /*
 * DH_PublicKey Constructor
 */
-DH_PublicKey::DH_PublicKey(in DL_Group grp, ref const BigInt y1)
+DH_PublicKey::DH_PublicKey(in DL_Group grp, const ref BigInt y1)
 {
 	group = grp;
 	y = y1;
@@ -30,14 +30,14 @@ Vector!ubyte DH_PublicKey::public_value() const
 */
 DH_PrivateKey::DH_PrivateKey(RandomNumberGenerator rng,
 									  const DL_Group& grp,
-									  ref const BigInt x_arg)
+									  const ref BigInt x_arg)
 {
 	group = grp;
 	x = x_arg;
 
 	if (x == 0)
 	{
-		ref const BigInt p = group_p();
+		const ref BigInt p = group_p();
 		x.randomize(rng, 2 * dl_work_factor(p.bits()));
 	}
 

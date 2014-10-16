@@ -165,7 +165,7 @@ double time_op(Duration runtime, void delegate() op)
 }
 
 package	double find_first_in(in HashMap!(string, double) m,
-	                     		ref const Vector!string keys)
+	                     		const ref Vector!string keys)
 {
 	foreach (key; keys)
 	{

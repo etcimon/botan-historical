@@ -111,7 +111,7 @@ private:
 	* Tiger Pass
 	*/
 	void pass(ref ulong A, ref ulong B, ref ulong C,
-	          ref const SafeVector!ulong X,
+	          const ref SafeVector!ulong X,
 	          ubyte mul)
 	{
 		C ^= X[0];

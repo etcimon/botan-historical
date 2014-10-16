@@ -6,7 +6,7 @@
 */
 
 import botan.rw;
-import botan.numthry;
+import botan.math.numbertheory.numthry;
 import botan.keypair;
 import botan.parsing;
 import std.algorithm;
