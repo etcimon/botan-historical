@@ -11,7 +11,7 @@ import botan.internal.xor_buf;
 * DLIES_Encryptor Constructor
 */
 DLIES_Encryptor::DLIES_Encryptor(in PK_Key_Agreement_Key key,
-											KDF* kdf_obj,
+											KDF kdf_obj,
 											MessageAuthenticationCode mac_obj,
 											size_t mac_kl) :
 	ka(key, "Raw"),
@@ -79,7 +79,7 @@ size_t DLIES_Encryptor::maximum_input_size() const
 * DLIES_Decryptor Constructor
 */
 DLIES_Decryptor::DLIES_Decryptor(in PK_Key_Agreement_Key key,
-											KDF* kdf_obj,
+											KDF kdf_obj,
 											MessageAuthenticationCode mac_obj,
 											size_t mac_kl) :
 	ka(key, "Raw"),

@@ -9,7 +9,7 @@ module botan.utils.asm_x86_64.asm_x86_64;
 * General/Global Macros
 */
 
-//#define ALIGN .p2align 4,,15
+enum ALIGN = ".p2align 4,,15";
 
 #define START_LISTING(FILENAME) \
 	.file #FILENAME;				 \

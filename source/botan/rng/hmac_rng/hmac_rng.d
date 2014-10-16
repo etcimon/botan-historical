@@ -14,7 +14,7 @@ import std.algorithm;
 import std.datetime;
 namespace {
 
-void hmac_prf(MessageAuthenticationCode& prf,
+void hmac_prf(MessageAuthenticationCode prf,
 				  SafeVector!ubyte K,
 				  ref uint counter,
 				  in string label)

@@ -13,7 +13,7 @@ import botan.loadstor;
 import botan.filters.pipe;
 import botan.codec.hex;
 import botan.sha2_32;
-import botan.sha160;
+import botan.hash.sha160;
 import vector;
 /**
 * A split secret, using the format from draft-mcgrew-tss-03

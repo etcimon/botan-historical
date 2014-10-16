@@ -8,7 +8,7 @@
 import botan.aead;
 import botan.block.block_cipher;
 import botan.stream_cipher;
-import botan.mac;
+import botan.mac.mac;
 /**
 * Base class for SIV encryption and decryption (@see RFC 5297)
 */
@@ -49,7 +49,7 @@ class SIV_Mode : AEAD_Mode
 
 		SafeVector!ubyte S2V(in ubyte* text, size_t text_len);
 	private:
-		MessageAuthenticationCode& cmac() { return *m_cmac; }
+		MessageAuthenticationCode cmac() { return *m_cmac; }
 
 		override void key_schedule(in ubyte* key, size_t length);
 

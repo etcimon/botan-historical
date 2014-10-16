@@ -10,7 +10,7 @@ import botan.asn1.asn1_obj;
 import botan.asn1.asn1_oid;
 import botan.utils.datastor.datastor;
 import botan.cert.x509.crl_ent;
-import botan.sha160;
+import botan.hash.sha160;
 import botan.asn1.der_enc;
 import botan.asn1.ber_dec;
 import botan.asn1.oid_lookup.oids;

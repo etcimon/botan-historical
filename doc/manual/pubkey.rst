@@ -374,7 +374,7 @@ these use the EME class:
    Available in the header ``dlies.h``
 
    .. cpp:function:: DLIES_Encryptor(const PK_Key_Agreement_Key& key, \
-         KDF* kdf, MessageAuthenticationCode* mac, size_t mac_key_len = 20)
+         KDF kdf, MessageAuthenticationCode* mac, size_t mac_key_len = 20)
 
       Where *kdf* is a key derivation function (see
       :ref:`key_derivation_function`) and *mac* is a

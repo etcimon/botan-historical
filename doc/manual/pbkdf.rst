@@ -43,7 +43,7 @@ iterations and a 16 byte salt is recommend for new applications.
 
 ::
 
-   PBKDF* pbkdf = get_pbkdf("PBKDF2(SHA-256)");
+   PBKDF pbkdf = get_pbkdf("PBKDF2(SHA-256)");
    AutoSeeded_RNG rng;
 
    SafeVector<byte> salt = rng.random_vec(16);

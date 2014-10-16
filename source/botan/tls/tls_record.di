@@ -10,7 +10,7 @@ import botan.tls_version;
 import botan.aead;
 import botan.block.block_cipher;
 import botan.stream_cipher;
-import botan.mac;
+import botan.mac.mac;
 import vector;
 import std.datetime;
 namespace TLS {

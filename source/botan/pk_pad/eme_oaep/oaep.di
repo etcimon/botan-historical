@@ -6,7 +6,7 @@
 */
 
 import botan.eme;
-import botan.kdf;
+import botan.kdf.kdf;
 import botan.hash.hash;
 /**
 * OAEP (called EME1 in IEEE 1363 and in earlier versions of the library)

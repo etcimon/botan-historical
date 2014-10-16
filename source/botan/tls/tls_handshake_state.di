@@ -88,7 +88,7 @@ class Handshake_State
 
 		string srp_identifier() const;
 
-		KDF* protocol_specific_prf() const;
+		KDF protocol_specific_prf() const;
 
 		Protocol_Version _version() const { return m_version; }
 

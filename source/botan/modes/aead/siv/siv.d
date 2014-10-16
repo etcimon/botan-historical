@@ -6,7 +6,7 @@
 */
 
 import botan.siv;
-import botan.cmac;
+import botan.cmac.cmac;
 import botan.ctr;
 import botan.parsing;
 import botan.internal.xor_buf;

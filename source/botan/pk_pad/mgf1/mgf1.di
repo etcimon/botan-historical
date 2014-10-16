@@ -5,11 +5,11 @@
 * Distributed under the terms of the botan license.
 */
 
-import botan.kdf;
+import botan.kdf.kdf;
 import botan.hash.hash;
 /**
 * MGF1 from PKCS #1 v2.0
 */
-void mgf1_mask(HashFunction& hash,
+void mgf1_mask(HashFunction hash,
 					in ubyte* in,
 					ubyte* output);

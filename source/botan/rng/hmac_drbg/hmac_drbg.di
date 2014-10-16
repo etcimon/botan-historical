@@ -6,7 +6,7 @@
 */
 
 import botan.rng;
-import botan.mac;
+import botan.mac.mac;
 /**
 * HMAC_DRBG (SP800-90A)
 */

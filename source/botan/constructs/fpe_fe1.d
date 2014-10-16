@@ -9,7 +9,7 @@ module botan.constructs.fpe_fe1;
 import botan.bigint;
 import botan.algo_base.symkey;
 import botan.numthry;
-import botan.hmac;
+import botan.mac.hmac;
 import botan.sha2_32;
 import botan.utils.exceptn;
 import stdexcept;

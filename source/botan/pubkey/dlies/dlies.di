@@ -6,8 +6,8 @@
 */
 
 import botan.pubkey;
-import botan.mac;
-import botan.kdf;
+import botan.mac.mac;
+import botan.kdf.kdf;
 /**
 * DLIES Encryption
 */
@@ -15,7 +15,7 @@ class DLIES_Encryptor : PK_Encryptor
 {
 	public:
 		DLIES_Encryptor(in PK_Key_Agreement_Key,
-							 KDF* kdf,
+							 KDF kdf,
 							 MessageAuthenticationCode mac,
 							 size_t mac_key_len = 20);
 
@@ -41,7 +41,7 @@ class DLIES_Decryptor : PK_Decryptor
 {
 	public:
 		DLIES_Decryptor(in PK_Key_Agreement_Key,
-							 KDF* kdf,
+							 KDF kdf,
 							 MessageAuthenticationCode mac,
 							 size_t mac_key_len = 20);
 

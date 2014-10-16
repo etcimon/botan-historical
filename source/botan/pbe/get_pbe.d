@@ -13,7 +13,7 @@ import botan.libstate.libstate;
 
 #if defined(BOTAN_HAS_PBE_PKCS_V20)
   import botan.pbes2;
-  import botan.hmac;
+  import botan.mac.hmac;
 #endif
 /*
 * Get an encryption PBE, set new parameters

@@ -11,8 +11,8 @@ import botan.engine.engine;
 static if (BOTAN_HAS_SERPENT_X86_32) 	import botan.block.serp_x86_32;
 static if (BOTAN_HAS_MD4_X86_32) 		import botan.hash.md4_x86_32;
 static if (BOTAN_HAS_MD5_X86_32) 		import botan.md5_x86_32;
-static if (BOTAN_HAS_SHA1_X86_64)		import botan.sha1_x86_64;
-static if (BOTAN_HAS_SHA1_X86_32)		import botan.sha1_x86_32;
+static if (BOTAN_HAS_SHA1_X86_64)		import botan.hash.sha1_x86_64;
+static if (BOTAN_HAS_SHA1_X86_32)		import botan.hash.sha1_x86_32;
 
 /**
 * Engine for x86-32 specific implementations

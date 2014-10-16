@@ -15,7 +15,7 @@ static if (BOTAN_HAS_THREEFISH_512_AVX2)import botan.block.threefish_avx2;
 static if (BOTAN_HAS_NOEKEON_SIMD) 	import botan.block.noekeon_simd;
 static if (BOTAN_HAS_XTEA_SIMD) 		import botan.block.xtea_simd;
 static if (BOTAN_HAS_IDEA_SSE2) 		import botan.block.idea_sse2;
-static if (BOTAN_HAS_SHA1_SSE2) 		import botan.sha1_sse2;
+static if (BOTAN_HAS_SHA1_SSE2) 		import botan.hash.sha1_sse2;
 
 /**
 * Engine for implementations that use some kind of SIMD

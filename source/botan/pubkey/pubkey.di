@@ -11,7 +11,7 @@ import botan.algo_base.symkey;
 import botan.rng;
 import botan.eme;
 import botan.emsa;
-import botan.kdf;
+import botan.kdf.kdf;
 /**
 * The two types of signature format supported by Botan.
 */

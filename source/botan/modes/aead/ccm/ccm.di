@@ -8,7 +8,7 @@
 import botan.aead;
 import botan.block.block_cipher;
 import botan.stream_cipher;
-import botan.mac;
+import botan.mac.mac;
 /**
 * Base class for CCM encryption and decryption
 * @see RFC 3610

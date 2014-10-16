@@ -253,7 +253,7 @@ Vector!ubyte Handshake_State::session_ticket() const
 	return client_hello().session_ticket();
 }
 
-KDF* Handshake_State::protocol_specific_prf() const
+KDF Handshake_State::protocol_specific_prf() const
 {
 	if (_version() == Protocol_Version::SSL_V3)
 	{

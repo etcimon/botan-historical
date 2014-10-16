@@ -78,23 +78,23 @@ static if (BOTAN_HAS_KECCAK) 		import botan.hash.keccak;
 static if (BOTAN_HAS_MD2) 			import botan.hash.md2;
 static if (BOTAN_HAS_MD4) 			import botan.hash.md4;
 static if (BOTAN_HAS_MD5) 			import botan.hash.md5;
-static if (BOTAN_HAS_RIPEMD_128) 	import botan.rmd128;
-static if (BOTAN_HAS_RIPEMD_160) 	import botan.rmd160;
-static if (BOTAN_HAS_SHA1) 			import botan.sha160;
+static if (BOTAN_HAS_RIPEMD_128) 	import botan.hash.rmd128;
+static if (BOTAN_HAS_RIPEMD_160) 	import botan.hash.rmd160;
+static if (BOTAN_HAS_SHA1) 			import botan.hash.sha160;
 static if (BOTAN_HAS_SHA2_32) 		import botan.sha2_32;
-static if (BOTAN_HAS_SHA2_64) 		import botan.sha2_64;
-static if (BOTAN_HAS_SKEIN_512) 	import botan.skein_512;
-static if (BOTAN_HAS_TIGER) 		import botan.tiger;
-static if (BOTAN_HAS_WHIRLPOOL) 	import botan.whrlpool;
-static if (BOTAN_HAS_PARALLEL_HASH) import botan.par_hash;
+static if (BOTAN_HAS_SHA2_64) 		import botan.hash.sha2_64;
+static if (BOTAN_HAS_SKEIN_512) 	import botan.hash.skein_512;
+static if (BOTAN_HAS_TIGER) 		import botan.hash.tiger;
+static if (BOTAN_HAS_WHIRLPOOL) 	import botan.hash.whrlpool;
+static if (BOTAN_HAS_PARALLEL_HASH) import botan.hash.par_hash;
 static if (BOTAN_HAS_COMB4P) 		import botan.hash.comb4p;
 
 /// MAC
-static if (BOTAN_HAS_CBC_MAC) 		import botan.cbc_mac;
-static if (BOTAN_HAS_CMAC)  		import botan.cmac;
-static if (BOTAN_HAS_HMAC)  		import botan.hmac;
-static if (BOTAN_HAS_SSL3_MAC)  	import botan.ssl3_mac;
-static if (BOTAN_HAS_ANSI_X919_MAC) import botan.x919_mac;
+static if (BOTAN_HAS_CBC_MAC) 		import botan.mac.cbc_mac;
+static if (BOTAN_HAS_CMAC)  		import botan.cmac.cmac;
+static if (BOTAN_HAS_HMAC)  		import botan.mac.hmac;
+static if (BOTAN_HAS_SSL3_MAC)  	import botan.mac.ssl3_mac;
+static if (BOTAN_HAS_ANSI_X919_MAC) import botan.mac.x919_mac;
 
 /// PBKDF
 static if (BOTAN_HAS_PBKDF1) 		import botan.pbkdf1;

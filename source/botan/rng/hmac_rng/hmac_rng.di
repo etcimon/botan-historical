@@ -5,7 +5,7 @@
 * Distributed under the terms of the botan license.
 */
 
-import botan.mac;
+import botan.mac.mac;
 import botan.rng;
 import vector;
 /**

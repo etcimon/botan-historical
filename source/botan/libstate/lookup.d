@@ -10,7 +10,7 @@ import botan.libstate.libstate;
 import botan.engine.engine;
 import botan.filters.filters;
 import botan.mode_pad;
-import botan.kdf;
+import botan.kdf.kdf;
 import botan.eme;
 import botan.emsa;
 import botan.pbkdf;

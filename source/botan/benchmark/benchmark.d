@@ -11,7 +11,7 @@ import botan.block.block_cipher;
 import botan.stream_cipher;
 import botan.aead;
 import botan.hash.hash;
-import botan.mac;
+import botan.mac.mac;
 import std.datetime;
 import std.conv;
 import vector;

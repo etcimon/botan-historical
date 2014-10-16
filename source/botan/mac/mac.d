@@ -1,23 +1,46 @@
 /*
-* Message Authentication Code base class
-* (C) 1999-2008 Jack Lloyd
+* Base class for message authentiction codes
+* (C) 1999-2007 Jack Lloyd
 *
-* Distributed under the terms of the Botan license
+* Distributed under the terms of the botan license.
 */
+module botan.mac.mac;
+import botan.algo_base.buf_comp;
+import botan.algo_base.sym_algo;
+import string;
 
-import botan.mac;
 import botan.mem_ops;
-/*
-* Default (deterministic) MAC verification operation
+
+/**
+* This class represents Message Authentication Code (MAC) objects.
 */
-bool MessageAuthenticationCode::verify_mac(in ubyte* mac, size_t length)
+class MessageAuthenticationCode : Buffered_Computation, SymmetricAlgorithm
 {
-	SafeVector!ubyte our_mac = flush();
+public:
+	/**
+	* Verify a MAC.
+	* @param input the MAC to verify as a ubyte array
+	* @param length the length of param in
+	* @return true if the MAC is valid, false otherwise
+	*/
+	bool verify_mac(in ubyte* mac, size_t length)
+	{
+		SafeVector!ubyte our_mac = flush();
+		
+		if (our_mac.size() != length)
+			return false;
+		
+		return same_mem(&our_mac[0], &mac[0], length);
+	}
 
-	if (our_mac.size() != length)
-		return false;
+	/**
+	* Get a new object representing the same algorithm as *this
+	*/
+	abstract MessageAuthenticationCode clone() const;
 
-	return same_mem(&our_mac[0], &mac[0], length);
-}
-
-}
+	/**
+	* Get the name of this algorithm.
+	* @return name of this algorithm
+	*/
+	abstract string name() const;
+};

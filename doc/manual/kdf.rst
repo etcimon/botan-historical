@@ -33,5 +33,5 @@ shared secret created using Diffie-Hellman key agreement.
 
 You can create a :cpp:class:`KDF` using
 
-.. cpp:function:: KDF* get_kdf(const std::string& algo_spec)
+.. cpp:function:: KDF get_kdf(const std::string& algo_spec)
 

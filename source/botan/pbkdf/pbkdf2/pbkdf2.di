@@ -6,7 +6,7 @@
 */
 
 import botan.pbkdf;
-import botan.mac;
+import botan.mac.mac;
 /**
 * PKCS #5 PBKDF2
 */

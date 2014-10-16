@@ -6,7 +6,7 @@
 */
 
 import botan.ocb;
-import botan.cmac;
+import botan.cmac.cmac;
 import botan.internal.xor_buf;
 import botan.internal.bit_ops;
 import std.algorithm;

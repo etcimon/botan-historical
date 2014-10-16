@@ -9,7 +9,7 @@ module botan.filters.filters;
 import botan.block.block_cipher;
 import botan.stream_cipher;
 import botan.hash.hash;
-import botan.mac;
+import botan.mac.mac;
 
 import botan.filters.pipe;
 import botan.filters.basefilt;

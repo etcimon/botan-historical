@@ -9,7 +9,7 @@ import botan.mgf1;
 import botan.utils.exceptn;
 import botan.internal.xor_buf;
 import std.algorithm;
-void mgf1_mask(HashFunction& hash,
+void mgf1_mask(HashFunction hash,
 					in ubyte* input,
 					ubyte* output)
 {
