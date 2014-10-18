@@ -7,7 +7,7 @@
 module botan.hash.sha2_64;
 
 import botan.hash.mdx_hash;
-import botan.loadstor;
+import botan.utils.loadstor;
 import botan.rotate;
 
 /**

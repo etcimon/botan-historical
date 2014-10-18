@@ -5,8 +5,8 @@
 *
 * Distributed under the terms of the botan license.
 */
-
-import botan.types;
+module botan.utils.loadstor;
+import botan.utils.types;
 import botan.bswap;
 import botan.utils.get_byte;
 import cstring;
@@ -90,7 +90,7 @@ ulong make_ulong(ubyte i0, ubyte i1, ubyte i2, ubyte i3,
 * @param off an offset into the array
 * @return off'th T of in, as a big-endian value
 */
- T load_be(T)(in ubyte* input, size_t off)
+T load_be(T)(in ubyte* input, size_t off)
 {
 	in += off * sizeof(T);
 	T out = 0;
@@ -105,7 +105,7 @@ ulong make_ulong(ubyte i0, ubyte i1, ubyte i2, ubyte i3,
 * @param off an offset into the array
 * @return off'th T of in, as a litte-endian value
 */
- T load_le(T)(in ubyte* input, size_t off)
+T load_le(T)(in ubyte* input, size_t off)
 {
 	in += off * sizeof(T);
 	T out = 0;
@@ -120,8 +120,7 @@ ulong make_ulong(ubyte i0, ubyte i1, ubyte i2, ubyte i3,
 * @param off an offset into the array
 * @return off'th ushort of in, as a big-endian value
 */
-template<>
- ushort load_be(T : ushort)(in ubyte* input, size_t off)
+ushort load_be(T : ushort)(in ubyte* input, size_t off)
 {
 #if BOTAN_TARGET_UNALIGNED_MEMORY_ACCESS_OK
 	return BOTAN_ENDIAN_N2B(*(cast(const ushort*)(input) + off));
@@ -137,8 +136,7 @@ template<>
 * @param off an offset into the array
 * @return off'th ushort of in, as a little-endian value
 */
-template<>
- ushort load_le(T : ushort)(in ubyte* input, size_t off)
+ushort load_le(T : ushort)(in ubyte* input, size_t off)
 {
 #if BOTAN_TARGET_UNALIGNED_MEMORY_ACCESS_OK
 	return BOTAN_ENDIAN_N2L(*(cast(const ushort*)(input) + off));
@@ -154,8 +152,7 @@ template<>
 * @param off an offset into the array
 * @return off'th uint of in, as a big-endian value
 */
-template<>
- uint load_be(T : uint)(in ubyte* input, size_t off)
+uint load_be(T : uint)(in ubyte* input, size_t off)
 {
 #if BOTAN_TARGET_UNALIGNED_MEMORY_ACCESS_OK
 	return BOTAN_ENDIAN_N2B(*(cast(const uint*)(input) + off));
@@ -171,8 +168,8 @@ template<>
 * @param off an offset into the array
 * @return off'th uint of in, as a little-endian value
 */
-template<>
- uint load_le(T : uint)(in ubyte* input, size_t off)
+
+uint load_le(T : uint)(in ubyte* input, size_t off)
 {
 #if BOTAN_TARGET_UNALIGNED_MEMORY_ACCESS_OK
 	return BOTAN_ENDIAN_N2L(*(cast(const uint*)(input) + off));

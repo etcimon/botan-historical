@@ -6,8 +6,8 @@
 */
 module botan.block.camellia;
 import botan.block.block_cipher;
-import botan.loadstor;
-import botan.types;
+import botan.utils.loadstor;
+import botan.utils.types;
 
 /**
 * Camellia-128

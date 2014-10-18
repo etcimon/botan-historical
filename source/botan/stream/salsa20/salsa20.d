@@ -6,7 +6,7 @@
 */
 
 import botan.salsa20;
-import botan.loadstor;
+import botan.utils.loadstor;
 import botan.rotate;
 import botan.internal.xor_buf;
 namespace {

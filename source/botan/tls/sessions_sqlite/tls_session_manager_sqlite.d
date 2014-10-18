@@ -9,7 +9,7 @@ import botan.tls_session_manager_sqlite;
 import botan.internal.sqlite3;
 import botan.libstate.lookup;
 import botan.codec.hex;
-import botan.loadstor;
+import botan.utils.loadstor;
 import std.datetime;
 namespace TLS {
 

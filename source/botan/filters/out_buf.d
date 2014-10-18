@@ -7,7 +7,7 @@
 */
 module botan.filters.out_buf;
 
-import botan.types;
+import botan.utils.types;
 import botan.filters.pipe;
 import deque;
 import botan.filters.secqueue;

@@ -8,7 +8,7 @@ module botan.filters.b64_filt;
 
 import botan.filters.filter;
 import botan.codec.base64;
-import botan.charset;
+import botan.utils.charset;
 import botan.utils.exceptn;
 import std.algorithm;
 

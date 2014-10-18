@@ -7,7 +7,7 @@
 module botan.block.xtea_simd;
 
 import botan.block.xtea;
-import botan.loadstor;
+import botan.utils.loadstor;
 import botan.simd.simd_32;
 
 /**

@@ -15,10 +15,10 @@ import botan.filters.pipe;
 import botan.libstate.lookup;
 import botan.hash.sha2_64;
 import botan.mac.hmac;
-import botan.pbkdf2;
+import botan.pbkdf.pbkdf2;
 import botan.codec.pem;
 import botan.utils.get_byte;
-import botan.mem_ops;
+import botan.utils.mem_ops;
 
 /**
 * This namespace holds various high-level crypto functions

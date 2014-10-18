@@ -6,7 +6,7 @@
 */
 
 import botan.chacha;
-import botan.loadstor;
+import botan.utils.loadstor;
 import botan.rotate;
 import botan.internal.xor_buf;
 void ChaCha::chacha(ubyte output[64], const uint input[16])

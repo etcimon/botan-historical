@@ -15,9 +15,9 @@ import botan.asn1.der_enc;
 import botan.asn1.ber_dec;
 import botan.asn1.oid_lookup.oids;
 import botan.internal.stl_util;
-import botan.charset;
+import botan.utils.charset;
 import botan.parsing;
-import botan.loadstor;
+import botan.utils.loadstor;
 import map;
 
 class DER_Encoder;

@@ -6,7 +6,7 @@
 */
 module botan.algo_base.key_spec;
 
-import botan.types;
+import botan.utils.types;
 /**
 * Represents the length requirements on an algorithm key
 */

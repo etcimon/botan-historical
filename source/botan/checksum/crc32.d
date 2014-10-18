@@ -7,7 +7,7 @@
 module botan.checksum.crc32;
 
 import botan.hash.hash;
-import botan.loadstor;
+import botan.utils.loadstor;
 
 /**
 * 32-bit cyclic redundancy check

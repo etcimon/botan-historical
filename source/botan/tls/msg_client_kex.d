@@ -16,7 +16,7 @@ import botan.ecdh;
 import botan.rsa;
 import botan.constructs.srp6;
 import botan.rng;
-import botan.loadstor;
+import botan.utils.loadstor;
 namespace TLS {
 
 namespace {

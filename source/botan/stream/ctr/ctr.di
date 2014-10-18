@@ -6,7 +6,7 @@
 */
 
 import botan.block.block_cipher;
-import botan.stream_cipher;
+import botan.stream.stream_cipher;
 /**
 * CTR-BE (Counter mode, big-endian)
 */

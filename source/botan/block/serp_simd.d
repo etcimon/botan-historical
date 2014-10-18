@@ -7,7 +7,7 @@
 module botan.block.serp_simd;
 
 import botan.simd.simd_32;
-import botan.loadstor;
+import botan.utils.loadstor;
 import botan.block.serpent;
 /**
 * Serpent implementation using SIMD

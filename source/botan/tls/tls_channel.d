@@ -13,7 +13,7 @@ import botan.internal.tls_record;
 import botan.internal.tls_seq_numbers;
 import botan.utils.rounding;
 import botan.internal.stl_util;
-import botan.loadstor;
+import botan.utils.loadstor;
 namespace TLS {
 
 Channel::Channel(void delegate(in ubyte[]) output_fn,

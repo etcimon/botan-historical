@@ -5,7 +5,7 @@
 * Released under the terms of the botan license.
 */
 
-import botan.types;
+import botan.utils.types;
 import stdexcept;
 namespace TLS {
 

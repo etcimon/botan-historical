@@ -5,8 +5,8 @@
 * Distributed under the terms of the botan license.
 */
 
-import botan.stream_cipher;
-import botan.types;
+import botan.stream.stream_cipher;
+import botan.utils.types;
 /**
 * RC4 stream cipher
 */

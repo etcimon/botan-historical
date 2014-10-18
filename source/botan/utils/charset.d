@@ -2,16 +2,27 @@
 * Character Set Handling
 * (C) 1999-2007 Jack Lloyd
 *
-* Distributed under the terms of the Botan license
+* Distributed under the terms of the botan license.
+*/
+module botan.utils.charset;
+
+import botan.utils.types;
+import string;
+/**
+* The different charsets (nominally) supported by Botan.
+*/
+typedef ubyte Character_set;
+enum : Character_Set {
+	LOCAL_CHARSET,
+	UCS2_CHARSET,
+	UTF8_CHARSET,
+	LATIN1_CHARSET
+};
+
+/*
+* Character Set Handling
 */
 
-import botan.charset;
-import botan.parsing;
-import botan.utils.exceptn;
-import cctype;
-namespace Charset {
-
-namespace {
 
 /*
 * Convert from UCS-2 to ISO 8859-1
@@ -20,20 +31,20 @@ string ucs2_to_latin1(in string ucs2)
 {
 	if (ucs2.size() % 2 == 1)
 		throw new Decoding_Error("UCS-2 string has an odd number of bytes");
-
+	
 	string latin1;
-
+	
 	for (size_t i = 0; i != ucs2.size(); i += 2)
 	{
 		const ubyte c1 = ucs2[i];
 		const ubyte c2 = ucs2[i+1];
-
+		
 		if (c1 != 0)
 			throw new Decoding_Error("UCS-2 has non-Latin1 characters");
-
+		
 		latin1 += cast(char)(c2);
 	}
-
+	
 	return latin1;
 }
 
@@ -43,31 +54,31 @@ string ucs2_to_latin1(in string ucs2)
 string utf8_to_latin1(in string utf8)
 {
 	string iso8859;
-
+	
 	size_t position = 0;
 	while(position != utf8.size())
 	{
 		const ubyte c1 = cast(ubyte)(utf8[position++]);
-
+		
 		if (c1 <= 0x7F)
 			iso8859 += cast(char)(c1);
 		else if (c1 >= 0xC0 && c1 <= 0xC7)
 		{
 			if (position == utf8.size())
 				throw new Decoding_Error("UTF-8: sequence truncated");
-
+			
 			const ubyte c2 = cast(ubyte)(utf8[position++]);
 			const ubyte iso_char = ((c1 & 0x07) << 6) | (c2 & 0x3F);
-
+			
 			if (iso_char <= 0x7F)
 				throw new Decoding_Error("UTF-8: sequence longer than needed");
-
+			
 			iso8859 += cast(char)(iso_char);
 		}
 		else
 			throw new Decoding_Error("UTF-8: Unicode chars not in Latin1 used");
 	}
-
+	
 	return iso8859;
 }
 
@@ -80,7 +91,7 @@ string latin1_to_utf8(in string iso8859)
 	for (size_t i = 0; i != iso8859.size(); ++i)
 	{
 		const ubyte c = cast(ubyte)(iso8859[i]);
-
+		
 		if (c <= 0x7F)
 			utf8 += cast(char)(c);
 		else
@@ -98,25 +109,25 @@ string latin1_to_utf8(in string iso8859)
 * Perform character set transcoding
 */
 string transcode(in string str,
-							 Character_Set to, Character_Set from)
+                 Character_Set to, Character_Set from)
 {
 	if (to == LOCAL_CHARSET)
 		to = LATIN1_CHARSET;
 	if (from == LOCAL_CHARSET)
 		from = LATIN1_CHARSET;
-
+	
 	if (to == from)
 		return str;
-
+	
 	if (from == LATIN1_CHARSET && to == UTF8_CHARSET)
 		return latin1_to_utf8(str);
 	if (from == UTF8_CHARSET && to == LATIN1_CHARSET)
 		return utf8_to_latin1(str);
 	if (from == UCS2_CHARSET && to == LATIN1_CHARSET)
 		return ucs2_to_latin1(str);
-
+	
 	throw new Invalid_Argument("Unknown transcoding operation from " ~
-								  std.conv.to!string(from) ~ " to " ~ std.conv.to!string(to));
+	                           std.conv.to!string(from) ~ " to " ~ std.conv.to!string(to));
 }
 
 /*
@@ -125,7 +136,7 @@ string transcode(in string str,
 bool is_digit(char c)
 {
 	if (c == '0' || c == '1' || c == '2' || c == '3' || c == '4' ||
-		c == '5' || c == '6' || c == '7' || c == '8' || c == '9')
+	    c == '5' || c == '6' || c == '7' || c == '8' || c == '9')
 		return true;
 	return false;
 }
@@ -158,7 +169,7 @@ ubyte char2digit(char c)
 		case '8': return 8;
 		case '9': return 9;
 	}
-
+	
 	throw new Invalid_Argument("char2digit: Input is not a digit character");
 }
 
@@ -180,7 +191,7 @@ char digit2char(ubyte b)
 		case 8: return '8';
 		case 9: return '9';
 	}
-
+	
 	throw new Invalid_Argument("digit2char: Input is not a digit");
 }
 
@@ -190,9 +201,5 @@ char digit2char(ubyte b)
 bool caseless_cmp(char a, char b)
 {
 	return (std::tolower(cast(char)(a)) ==
-			  std::tolower(cast(char)(b)));
-}
-
-}
-
+	        std::tolower(cast(char)(b)));
 }

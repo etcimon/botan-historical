@@ -6,7 +6,7 @@
 */
 module botan.alloc.secmem;
 
-import botan.mem_ops;
+import botan.utils.mem_ops;
 import std.algorithm;
 import vector;
 

@@ -8,7 +8,7 @@ module botan.hash.tiger;
 
 import botan.hash.mdx_hash;
 import botan.utils.exceptn;
-import botan.loadstor;
+import botan.utils.loadstor;
 import botan.parsing;
 /**
 * Tiger

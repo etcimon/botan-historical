@@ -10,7 +10,7 @@ import botan.kdf.kdf;
 import botan.asn1.der_enc;
 import botan.asn1.oid_lookup.oids;
 import botan.hash.sha160;
-import botan.loadstor;
+import botan.utils.loadstor;
 import std.algorithm;
 
 /**

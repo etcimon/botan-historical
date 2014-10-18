@@ -5,7 +5,7 @@
 * Distributed under the terms of the botan license.
 */
 
-import botan.types;
+import botan.utils.types;
 /**
 * Estimate work factor for discrete logarithm
 * @param prime_group_size size of the group in bits

@@ -6,7 +6,7 @@
 */
 module botan.block.rc5;
 
-import botan.loadstor;
+import botan.utils.loadstor;
 import botan.rotate;
 import botan.parsing;
 import std.algorithm;

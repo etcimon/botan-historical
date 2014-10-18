@@ -7,7 +7,7 @@
 
 import botan.tls_magic;
 import botan.tls_version;
-import botan.loadstor;
+import botan.utils.loadstor;
 import functional;
 import vector;
 import deque;

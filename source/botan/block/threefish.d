@@ -7,7 +7,7 @@
 module botan.block.threefish;
 
 import botan.rotate;
-import botan.loadstor;
+import botan.utils.loadstor;
 import botan.block.block_cipher;
 
 /**

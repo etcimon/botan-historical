@@ -9,7 +9,7 @@ module botan.modes.xts;
 import botan.modes.cipher_mode;
 import botan.block.block_cipher;
 import botan.modes.xts;
-import botan.loadstor;
+import botan.utils.loadstor;
 import botan.internal.xor_buf;
 import botan.utils.rounding;
 /**

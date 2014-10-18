@@ -8,7 +8,7 @@ module botan.cmac.cmac;
 
 import botan.mac.mac;
 import botan.block.block_cipher;
-import botan.loadstor;
+import botan.utils.loadstor;
 import botan.internal.xor_buf;
 /**
 * CMAC, also known as OMAC1

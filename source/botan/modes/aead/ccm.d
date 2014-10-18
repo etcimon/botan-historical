@@ -7,7 +7,7 @@
 module botan.modes.aead.ccm;
 import botan.modes.aead.aead;
 import botan.block.block_cipher;
-import botan.stream_cipher;
+import botan.stream.stream_cipher;
 import botan.mac.mac;
 import botan.parsing;
 import botan.internal.xor_buf;

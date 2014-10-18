@@ -10,7 +10,7 @@ import botan.hash.hash;
 import botan.block.threefish;
 import string;
 import memory;
-import botan.loadstor;
+import botan.utils.loadstor;
 import botan.parsing;
 import botan.utils.exceptn;
 import botan.internal.xor_buf;

@@ -6,7 +6,7 @@
 */
 module botan.block.cast_sboxes;
 
-import botan.types;
+import botan.utils.types;
 
 const uint[256] CAST_SBOX1 = [
 	0x30FB40D4, 0x9FA0FF0B, 0x6BECCD2F, 0x3F258C7A, 0x1E213F2F, 0x9C004DD3,

@@ -8,7 +8,7 @@ module botan.codec.hex;
 
 import botan.alloc.secmem;
 import botan.codec.hex;
-import botan.mem_ops;
+import botan.utils.mem_ops;
 import stdexcept;
 import string;
 

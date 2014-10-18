@@ -7,7 +7,7 @@
 module botan.hash.has160;
 
 import botan.hash.mdx_hash;
-import botan.loadstor;
+import botan.utils.loadstor;
 import botan.rotate;
 /**
 * HAS-160, a Korean hash function standardized in

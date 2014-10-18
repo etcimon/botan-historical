@@ -11,7 +11,7 @@ import std.datetime;
 import botan.utils.mixins;
 import botan.asn1.der_enc;
 import botan.asn1.ber_dec;
-import botan.charset;
+import botan.utils.charset;
 import botan.parsing;
 import botan.calendar;
 

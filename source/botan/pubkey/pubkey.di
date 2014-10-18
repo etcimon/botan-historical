@@ -9,7 +9,7 @@ import botan.pk_keys;
 import botan.pubkey.pk_ops;
 import botan.algo_base.symkey;
 import botan.rng;
-import botan.eme;
+import botan.pk_pad.eme;
 import botan.emsa;
 import botan.kdf.kdf;
 /**

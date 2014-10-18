@@ -9,7 +9,7 @@ import botan.algo_base.buf_comp;
 import botan.algo_base.sym_algo;
 import string;
 
-import botan.mem_ops;
+import botan.utils.mem_ops;
 
 /**
 * This class represents Message Authentication Code (MAC) objects.

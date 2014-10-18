@@ -7,7 +7,7 @@
 module botan.block.gost_28147;
 
 import botan.block.block_cipher;
-import botan.loadstor;
+import botan.utils.loadstor;
 import botan.rotate;
 
 /**

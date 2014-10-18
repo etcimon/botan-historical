@@ -12,7 +12,7 @@ import botan.filters.buf_filt;
 
 import botan.cmac.cmac;
 import botan.internal.xor_buf;
-import botan.internal.bit_ops;
+import botan.utils.bit_ops;
 import std.algorithm;
 
 class L_computer;

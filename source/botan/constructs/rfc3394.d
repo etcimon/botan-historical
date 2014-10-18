@@ -9,7 +9,7 @@ module botan.constructs.rfc3394;
 import botan.algo_base.symkey;
 import botan.algo_factory;
 import botan.block.block_cipher;
-import botan.loadstor;
+import botan.utils.loadstor;
 import botan.utils.exceptn;
 import botan.internal.xor_buf;
 

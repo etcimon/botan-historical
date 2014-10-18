@@ -9,7 +9,7 @@ import botan.internal.tls_messages;
 import botan.internal.tls_extensions;
 import botan.internal.tls_reader;
 import botan.internal.tls_handshake_io;
-import botan.loadstor;
+import botan.utils.loadstor;
 namespace TLS {
 
 New_Session_Ticket::New_Session_Ticket(Handshake_IO& io,

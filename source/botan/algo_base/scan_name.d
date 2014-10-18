@@ -9,7 +9,7 @@ module botan.algo_base.scan_name;
 import botan.parsing;
 import botan.utils.exceptn;
 import stdexcept;
-import botan.types;
+import botan.utils.types;
 import string;
 import vector;
 import core.sync.mutex;

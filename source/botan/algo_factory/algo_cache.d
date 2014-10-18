@@ -6,7 +6,7 @@
 */
 module botan.algo_factory.algo_cache;
 
-import botan.types;
+import botan.utils.types;
 import botan.internal.stl_util;
 import core.sync.mutex;
 import string;

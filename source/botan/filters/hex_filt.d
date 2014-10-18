@@ -9,7 +9,7 @@ module botan.filters.hex_filt;
 import botan.filters.filter;
 import botan.codec.hex;
 import botan.parsing;
-import botan.charset;
+import botan.utils.charset;
 import botan.utils.exceptn;
 import std.algorithm;
 

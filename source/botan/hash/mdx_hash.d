@@ -9,7 +9,7 @@ module botan.hash.mdx_hash;
 import botan.hash.hash;
 import botan.hash.mdx_hash;
 import botan.utils.exceptn;
-import botan.loadstor;
+import botan.utils.loadstor;
 
 /**
 * MDx Hash Function Base Class

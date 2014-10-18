@@ -7,11 +7,11 @@
 module botan.utils.cpuid;
 
 import core.cpuid;
-import botan.types;
+import botan.utils.types;
 import iosfwd;
-import botan.types;
+import botan.utils.types;
 import botan.utils.get_byte;
-import botan.mem_ops;
+import botan.utils.mem_ops;
 import ostream;
 
 

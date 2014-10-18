@@ -7,7 +7,7 @@
 
 import botan.utils.exceptn;
 import botan.alloc.secmem;
-import botan.loadstor;
+import botan.utils.loadstor;
 import string;
 import vector;
 import stdexcept;

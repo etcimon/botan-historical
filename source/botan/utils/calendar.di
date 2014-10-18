@@ -5,7 +5,7 @@
 * Distributed under the terms of the botan license.
 */
 
-import botan.types;
+import botan.utils.types;
 import std.datetime;
 /**
 * Struct representing a particular date and time

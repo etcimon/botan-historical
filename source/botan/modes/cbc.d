@@ -8,7 +8,7 @@ module botan.modes.cbc;
 import botan.modes.cipher_mode;
 import botan.block.block_cipher;
 import botan.modes.mode_pad;
-import botan.loadstor;
+import botan.utils.loadstor;
 import botan.internal.xor_buf;
 import botan.utils.rounding;
 

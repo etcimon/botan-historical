@@ -11,7 +11,7 @@ import botan.rng;
 import botan.algo_base.symkey;
 import botan.filters.pipe;
 import botan.libstate.lookup;
-import botan.loadstor;
+import botan.utils.loadstor;
 /**
 * This namespace holds various high-level crypto functions
 */

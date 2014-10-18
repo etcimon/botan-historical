@@ -5,7 +5,7 @@
 * Distributed under the terms of the botan license.
 */
 module botan.botan.math.mp.mp_types;
-import botan.types;
+import botan.utils.types;
 import botan.mul128;
 
 static if (BOTAN_MP_WORD_BITS == 8) {

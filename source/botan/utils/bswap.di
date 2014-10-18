@@ -6,7 +6,7 @@
 * Distributed under the terms of the botan license.
 */
 
-import botan.types;
+import botan.utils.types;
 import botan.rotate;
 
 #if defined(BOTAN_TARGET_CPU_HAS_SSE2) && !defined(BOTAN_NO_SSE_INTRINSICS)

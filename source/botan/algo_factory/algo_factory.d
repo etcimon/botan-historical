@@ -12,14 +12,14 @@ import botan.engine.engine;
 import botan.utils.exceptn;
 
 import botan.block.block_cipher;
-import botan.stream_cipher;
+import botan.stream.stream_cipher;
 import botan.hash.hash;
 import botan.mac.mac;
-import botan.pbkdf;
+import botan.pbkdf.pbkdf;
 
 import std.algorithm;
 
-import botan.types;
+import botan.utils.types;
 import string;
 import vector;
 

@@ -8,10 +8,10 @@ module botan.modes.aead.gcm;
 
 import botan.modes.aead.aead;
 import botan.block.block_cipher;
-import botan.stream_cipher;
+import botan.stream.stream_cipher;
 import botan.ctr;
 import botan.internal.xor_buf;
-import botan.loadstor;
+import botan.utils.loadstor;
 
 import botan.utils.simd.immintrin;
 import botan.utils.simd.wmmintrin;

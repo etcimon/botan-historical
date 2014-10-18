@@ -6,7 +6,7 @@
 */
 module botan.kdf.kdf;
 import botan.alloc.secmem;
-import botan.types;
+import botan.utils.types;
 import string;
 import botan.libstate.libstate;
 import botan.algo_base.scan_name;

@@ -5,7 +5,7 @@
 * Distributed under the terms of the botan license.
 */
 
-import botan.types;
+import botan.utils.types;
 /**
 * Bit rotation left
 * @param input the input word

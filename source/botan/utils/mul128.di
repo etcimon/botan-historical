@@ -5,7 +5,7 @@
 * Distributed under the terms of the botan license.
 */
 
-import botan.types;
+import botan.utils.types;
 #if defined(__SIZEOF_INT128__)
 	#define BOTAN_TARGET_HAS_NATIVE_UINT128
 	typedef unsigned __int128 uint128_t;

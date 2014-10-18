@@ -7,7 +7,7 @@
 module botan.block.serpent;
 
 import botan.block.block_cipher;
-import botan.loadstor;
+import botan.utils.loadstor;
 import botan.rotate;
 /**
 * Serpent, an AES finalist

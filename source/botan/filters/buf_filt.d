@@ -8,7 +8,7 @@ module botan.filters.buf_filt;
 
 import botan.alloc.secmem;
 
-import botan.mem_ops;
+import botan.utils.mem_ops;
 import botan.utils.rounding;
 import stdexcept;
 

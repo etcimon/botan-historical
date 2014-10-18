@@ -5,7 +5,7 @@
 * Distributed under the terms of the botan license.
 */
 module botan.simd.simd_32;
-import botan.types;
+import botan.utils.types;
 
 static if (BOTAN_HAS_SIMD_SSE2) {
 	import botan.simd.simd_sse2.simd_sse2;

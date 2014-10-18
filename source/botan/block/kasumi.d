@@ -7,7 +7,7 @@
 module botan.block.kasumi;
 
 import botan.block.block_cipher;
-import botan.loadstor;
+import botan.utils.loadstor;
 import botan.rotate;
 
 /**

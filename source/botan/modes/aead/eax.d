@@ -7,7 +7,7 @@
 module botan.modes.aead.eax;
 
 import botan.block.block_cipher;
-import botan.stream_cipher;
+import botan.stream.stream_cipher;
 import botan.mac.mac;
 import botan.cmac.cmac;
 import botan.ctr;

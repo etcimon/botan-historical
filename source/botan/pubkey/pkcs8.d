@@ -6,7 +6,7 @@
 */
 
 import botan.pkcs8;
-import botan.get_pbe;
+import botan.pbe.factory;
 import botan.asn1.der_enc;
 import botan.asn1.ber_dec;
 import botan.asn1.alg_id;
@@ -92,7 +92,7 @@ SafeVector!ubyte PKCS8_decode(
 				if (pass.first == false)
 					break;
 
-				Pipe decryptor(get_pbe(pbe_alg_id.oid, pbe_alg_id.parameters, pass.second));
+				Pipe decryptor = Pipe(get_pbe(pbe_alg_id.oid, pbe_alg_id.parameters, pass.second));
 
 				decryptor.process_msg(key_data);
 				key = decryptor.read_all();

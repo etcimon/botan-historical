@@ -6,7 +6,7 @@
 */
 module botan.simd.simd_scalar.simd_scalar;
 
-import botan.loadstor;
+import botan.utils.loadstor;
 import botan.bswap;
 
 /**

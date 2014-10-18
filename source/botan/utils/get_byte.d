@@ -6,7 +6,7 @@
 */
 module botan.utils.get_byte;
 
-import botan.types;
+import botan.utils.types;
 /**
 * Byte extraction
 * @param byte_num which ubyte to extract, 0 == highest ubyte

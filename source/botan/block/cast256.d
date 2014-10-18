@@ -9,7 +9,7 @@ module botan.block.cast256;
 
 import botan.block.block_cipher;
 import botan.block.cast_sboxes;
-import botan.loadstor;
+import botan.utils.loadstor;
 import botan.rotate;
 
 /**

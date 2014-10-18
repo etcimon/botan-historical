@@ -7,7 +7,7 @@
 module botan.codec.base64;
 import botan.alloc.secmem;
 import botan.codec.base64;
-import botan.mem_ops;
+import botan.utils.mem_ops;
 import botan.utils.rounding;
 import stdexcept;
 import string;

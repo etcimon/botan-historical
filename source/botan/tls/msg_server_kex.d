@@ -10,7 +10,7 @@ import botan.internal.tls_reader;
 import botan.internal.tls_extensions;
 import botan.internal.tls_handshake_io;
 import botan.credentials.credentials_manager;
-import botan.loadstor;
+import botan.utils.loadstor;
 import botan.pubkey;
 import botan.dh;
 import botan.ecdh;

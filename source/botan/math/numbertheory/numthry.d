@@ -14,7 +14,7 @@ import botan.hash.hash;
 import botan.parsing;
 import std.algorithm;
 import botan.math.numbertheory.reducer;
-import botan.internal.bit_ops;
+import botan.utils.bit_ops;
 import botan.math.mp.mp_core;
 import botan.math.numbertheory.primes;
 import std.algorithm;

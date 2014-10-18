@@ -5,11 +5,11 @@
 * Distributed under the terms of the Botan license
 */
 module botan.alloc.locking_allocator;
-import botan.types;
+import botan.utils.types;
 import vector;
 import core.sync.mutex;
 
-import botan.mem_ops;
+import botan.utils.mem_ops;
 import std.algorithm;
 import string;
 

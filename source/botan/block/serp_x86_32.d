@@ -7,7 +7,7 @@
 module botan.block.serp_x86_32;
 
 import botan.block.serpent;
-import botan.loadstor;
+import botan.utils.loadstor;
 /**
 * Serpent implementation in x86-32 assembly
 */

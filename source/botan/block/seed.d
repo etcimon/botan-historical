@@ -7,7 +7,7 @@
 module botan.block.seed;
 
 import botan.block.block_cipher;
-import botan.loadstor;
+import botan.utils.loadstor;
 /**
 * SEED, a Korean block cipher
 */

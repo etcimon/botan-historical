@@ -6,7 +6,7 @@
 */
 module botan.hash.whrlpool;
 import botan.hash.mdx_hash;
-import botan.loadstor;
+import botan.utils.loadstor;
 /**
 * Whirlpool
 */

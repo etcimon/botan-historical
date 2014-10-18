@@ -11,7 +11,7 @@ import botan.asn1.der_enc;
 import botan.math.bigint.bigint;
 import botan.utils.get_byte;
 import botan.parsing;
-import botan.internal.bit_ops;
+import botan.utils.bit_ops;
 import std.algorithm;
 
 import vector;

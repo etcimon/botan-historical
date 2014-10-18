@@ -97,8 +97,8 @@ static if (BOTAN_HAS_SSL3_MAC)  	import botan.mac.ssl3_mac;
 static if (BOTAN_HAS_ANSI_X919_MAC) import botan.mac.x919_mac;
 
 /// PBKDF
-static if (BOTAN_HAS_PBKDF1) 		import botan.pbkdf1;
-static if (BOTAN_HAS_PBKDF2)		import botan.pbkdf2;
+static if (BOTAN_HAS_PBKDF1) 		import botan.pbkdf.pbkdf1;
+static if (BOTAN_HAS_PBKDF2)		import botan.pbkdf.pbkdf2;
 
 /// STREAM
 static if (BOTAN_HAS_OFB)  			import botan.ofb;

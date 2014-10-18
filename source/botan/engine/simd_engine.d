@@ -72,9 +72,7 @@ public:
 			if (request.algo_name() == "SHA-160" && CPUID.has_sse2())
 				return new SHA_160_SSE2;
 		}
-		
-		BOTAN_UNUSED(request);
-		
+
 		return null;
 	}
 };

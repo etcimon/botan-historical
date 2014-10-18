@@ -5,7 +5,7 @@
 * Distributed under the terms of the botan license.
 */
 
-import botan.types;
+import botan.utils.types;
 import vector;
 /**
 * XOR arrays. Postcondition output[i] = input[i] ^ output[i] forall i = 0...length

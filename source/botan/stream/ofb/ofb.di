@@ -5,7 +5,7 @@
 * Distributed under the terms of the botan license.
 */
 
-import botan.stream_cipher;
+import botan.stream.stream_cipher;
 import botan.block.block_cipher;
 /**
 * Output Feedback Mode

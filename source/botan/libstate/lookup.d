@@ -11,9 +11,9 @@ import botan.engine.engine;
 import botan.filters.filters;
 import botan.modes.mode_pad;
 import botan.kdf.kdf;
-import botan.eme;
+import botan.pk_pad.eme;
 import botan.emsa;
-import botan.pbkdf;
+import botan.pbkdf.pbkdf;
 import botan.libstate.libstate;
 import botan.engine.engine;
 

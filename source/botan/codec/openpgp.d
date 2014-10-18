@@ -8,7 +8,7 @@ module botan.codec.openpgp;
 
 import botan.filters.filters;
 import botan.filters.basefilt;
-import botan.charset;
+import botan.utils.charset;
 import botan.checksum.crc24;
 import botan.filters.data_src;
 import std.array : Appender;

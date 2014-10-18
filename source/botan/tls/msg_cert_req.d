@@ -11,7 +11,7 @@ import botan.internal.tls_extensions;
 import botan.internal.tls_handshake_io;
 import botan.asn1.der_enc;
 import botan.asn1.ber_dec;
-import botan.loadstor;
+import botan.utils.loadstor;
 namespace TLS {
 
 namespace {

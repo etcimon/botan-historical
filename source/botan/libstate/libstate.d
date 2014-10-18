@@ -9,7 +9,7 @@ module botan.libstate.libstate;
 import botan.libstate.global_state;
 import botan.algo_factory;
 import botan.rng;
-import botan.charset;
+import botan.utils.charset;
 import botan.engine.engine;
 import botan.utils.cpuid;
 import botan.asn1.oid_lookup.oids;

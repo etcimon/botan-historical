@@ -7,7 +7,7 @@
 module botan.utils.version_;
 
 import botan.constants;
-import botan.types;
+import botan.utils.types;
 import string;
 import botan.parsing;
 /*

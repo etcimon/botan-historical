@@ -9,7 +9,7 @@ import botan.internal.tls_record;
 import botan.tls_ciphersuite;
 import botan.tls_exceptn;
 import botan.libstate.libstate;
-import botan.loadstor;
+import botan.utils.loadstor;
 import botan.internal.tls_seq_numbers;
 import botan.internal.tls_session_key;
 import botan.utils.rounding;

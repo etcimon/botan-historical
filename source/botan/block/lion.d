@@ -7,7 +7,7 @@
 module botan.block.lion;
 
 import botan.block.block_cipher;
-import botan.stream_cipher;
+import botan.stream.stream_cipher;
 import botan.hash.hash;
 import botan.internal.xor_buf;
 import botan.parsing;

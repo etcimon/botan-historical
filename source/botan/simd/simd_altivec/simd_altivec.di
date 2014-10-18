@@ -9,7 +9,7 @@ module botan.simd.simd_altivec.simd_altivec;
 
 // static if (BOTAN_TARGET_SUPPORTS_ALTIVEC):
 
-import botan.loadstor;
+import botan.utils.loadstor;
 import botan.utils.cpuid;
 
 import altivec.h;
