@@ -10,24 +10,24 @@ import botan.engine.engine;
 import botan.parsing;
 import botan.filters.filters;
 import botan.algo_factory;
-import botan.mode_pad;
+import botan.modes.mode_pad;
 import botan.filters.transform_filter;
 import botan.math.numbertheory.def_powm;
 import botan.algo_base.scan_name;
 import botan.algo_factory;
 
-static if (BOTAN_HAS_MODE_CFB)		import botan.cfb;
-static if (BOTAN_HAS_MODE_ECB)		import botan.ecb;
-static if (BOTAN_HAS_MODE_CBC) 		import botan.cbc;
-static if (BOTAN_HAS_MODE_XTS)	 	import botan.xts;
+static if (BOTAN_HAS_MODE_CFB)		import botan.modes.cfb;
+static if (BOTAN_HAS_MODE_ECB)		import botan.modes.ecb;
+static if (BOTAN_HAS_MODE_CBC) 		import botan.modes.cbc;
+static if (BOTAN_HAS_MODE_XTS)	 	import botan.modes.xts;
 
 static if (BOTAN_HAS_OFB) 			import botan.ofb;
 static if (BOTAN_HAS_CTR_BE)		import botan.ctr;
 static if (BOTAN_HAS_AEAD_FILTER)	import botan.filters.aead_filt;
-static if (BOTAN_HAS_AEAD_CCM) 		import botan.ccm;
-static if (BOTAN_HAS_AEAD_EAX) 		import botan.eax;	
-static if (BOTAN_HAS_AEAD_OCB) 		import botan.ocb;
-static if (BOTAN_HAS_AEAD_GCM) 		import botan.gcm;
+static if (BOTAN_HAS_AEAD_CCM) 		import botan.modes.aead.ccm;
+static if (BOTAN_HAS_AEAD_EAX) 		import botan.modes.aead.eax;	
+static if (BOTAN_HAS_AEAD_OCB) 		import botan.modes.aead.ocb;
+static if (BOTAN_HAS_AEAD_GCM) 		import botan.modes.aead.gcm;
 static if (BOTAN_HAS_RSA) 			import botan.rsa;
 static if (BOTAN_HAS_RW) 			import botan.rw;
 static if (BOTAN_HAS_DSA) 			import botan.dsa;
@@ -825,7 +825,7 @@ private {
 	/**
 	* Get a block cipher padding method by name
 	*/
-	BlockCipherModePaddingMethod* get_bc_pad(in string algo_spec,
+	BlockCipherModePaddingMethod get_bc_pad(in string algo_spec,
 	                                         in string def_if_empty)
 	{
 		static if (BOTAN_HAS_CIPHER_MODE_PADDING) {

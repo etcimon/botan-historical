@@ -7,7 +7,7 @@
 
 import botan.tls_magic;
 import botan.tls_version;
-import botan.aead;
+import botan.modes.aead.aead;
 import botan.block.block_cipher;
 import botan.stream_cipher;
 import botan.mac.mac;

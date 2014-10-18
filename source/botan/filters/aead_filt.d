@@ -7,7 +7,7 @@
 module botan.filters.aead_filt;
 
 import botan.filters.transform_filter;
-import botan.aead;
+import botan.modes.aead.aead;
 /**
 * Filter interface for AEAD Modes
 */

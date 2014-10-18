@@ -344,7 +344,7 @@ size_t tls_padding_check(bool sslv3_padding,
 
 void cbc_decrypt_record(ubyte[] record_contents,
 								Connection_Cipher_State cipherstate,
-								const BlockCipher& bc)
+								const BlockCipher bc)
 {
 	size_t record_len = record_contents.length;
 	const size_t block_size = cipherstate.block_size();
