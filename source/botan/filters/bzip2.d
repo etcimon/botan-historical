@@ -32,9 +32,9 @@ public:
 		while(bz.stream.avail_in != 0)
 		{
 			bz.stream.next_out = cast(char*)(&buffer[0]);
-			bz.stream.avail_out = buffer.size();
+			bz.stream.avail_out = buffer.length;
 			BZ2_bzCompress(&(bz.stream), BZ_RUN);
-			send(buffer, buffer.size() - bz.stream.avail_out);
+			send(buffer, buffer.length - bz.stream.avail_out);
 		}
 	}
 	/*
@@ -60,9 +60,9 @@ public:
 		while(rc != BZ_STREAM_END)
 		{
 			bz.stream.next_out = cast(char*)(&buffer[0]);
-			bz.stream.avail_out = buffer.size();
+			bz.stream.avail_out = buffer.length;
 			rc = BZ2_bzCompress(&(bz.stream), BZ_FINISH);
-			send(buffer, buffer.size() - bz.stream.avail_out);
+			send(buffer, buffer.length - bz.stream.avail_out);
 		}
 		clear();
 	}
@@ -79,9 +79,9 @@ public:
 		while(rc != BZ_RUN_OK)
 		{
 			bz.stream.next_out = cast(char*)(&buffer[0]);
-			bz.stream.avail_out = buffer.size();
+			bz.stream.avail_out = buffer.length;
 			rc = BZ2_bzCompress(&(bz.stream), BZ_FLUSH);
-			send(buffer, buffer.size() - bz.stream.avail_out);
+			send(buffer, buffer.length - bz.stream.avail_out);
 		}
 	}
 
@@ -136,7 +136,7 @@ public:
 		while(bz.stream.avail_in != 0)
 		{
 			bz.stream.next_out = cast(char*)(&buffer[0]);
-			bz.stream.avail_out = buffer.size();
+			bz.stream.avail_out = buffer.length;
 			
 			int rc = BZ2_bzDecompress(&(bz.stream));
 			
@@ -154,7 +154,7 @@ public:
 					throw new Exception("Bzip2 decompression: Unknown error");
 			}
 			
-			send(buffer, buffer.size() - bz.stream.avail_out);
+			send(buffer, buffer.length - bz.stream.avail_out);
 			
 			if (rc == BZ_STREAM_END)
 			{
@@ -195,7 +195,7 @@ public:
 		while(rc != BZ_STREAM_END)
 		{
 			bz.stream.next_out = cast(char*)(&buffer[0]);
-			bz.stream.avail_out = buffer.size();
+			bz.stream.avail_out = buffer.length;
 			rc = BZ2_bzDecompress(&(bz.stream));
 			
 			if (rc != BZ_OK && rc != BZ_STREAM_END)
@@ -204,7 +204,7 @@ public:
 				throw new Decoding_Error("Bzip_Decompression: Error finalizing");
 			}
 			
-			send(buffer, buffer.size() - bz.stream.avail_out);
+			send(buffer, buffer.length - bz.stream.avail_out);
 		}
 		
 		clear();

@@ -64,8 +64,8 @@ package:
 		for (size_t j = 0; j != total_ports(); ++j)
 			if (next[j])
 		{
-			if (write_queue.size())
-				next[j].write(&write_queue[0], write_queue.size());
+			if (write_queue.length)
+				next[j].write(&write_queue[0], write_queue.length);
 			next[j].write(input, length);
 			nothing_attached = false;
 		}
@@ -85,12 +85,12 @@ package:
 	/**
 	* @param input some input for the filter
 	*/
-	void send(in SafeVector!ubyte input) { send(&input[0], input.size()); }
+	void send(in SafeVector!ubyte input) { send(&input[0], input.length); }
 
 	/**
 	* @param input some input for the filter
 	*/
-	void send(in Vector!ubyte input) { send(&input[0], input.size()); }
+	void send(in Vector!ubyte input) { send(&input[0], input.length); }
 
 	/**
 	* @param input some input for the filter
@@ -151,7 +151,7 @@ private:
 	*/
 	size_t total_ports() const
 	{
-		return next.size();
+		return next.length;
 	}
 
 	size_t current_port() const { return port_num; }
@@ -208,7 +208,7 @@ private:
 	*/
 	Filter* get_next() const
 	{
-		if (port_num < next.size())
+		if (port_num < next.length)
 			return next[port_num];
 		return null;
 	}

@@ -11,8 +11,8 @@ namespace TLS {
 
 Alert::Alert(in SafeVector!ubyte buf)
 {
-	if (buf.size() != 2)
-		throw new Decoding_Error("Alert: Bad size " ~ std.conv.to!string(buf.size()) +
+	if (buf.length != 2)
+		throw new Decoding_Error("Alert: Bad size " ~ std.conv.to!string(buf.length) +
 									" for alert message");
 
 	if (buf[0] == 1)		m_fatal = false;

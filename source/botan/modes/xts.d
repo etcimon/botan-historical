@@ -124,8 +124,8 @@ public:
 
 	override void update(SafeVector!ubyte buffer, size_t offset = 0)
 	{
-		BOTAN_ASSERT(buffer.size() >= offset, "Offset is sane");
-		const size_t sz = buffer.size() - offset;
+		BOTAN_ASSERT(buffer.length >= offset, "Offset is sane");
+		const size_t sz = buffer.length - offset;
 		ubyte* buf = &buffer[offset];
 		
 		const size_t BS = cipher().block_size();
@@ -153,8 +153,8 @@ public:
 
 	override void finish(SafeVector!ubyte buffer, size_t offset = 0)
 	{
-		BOTAN_ASSERT(buffer.size() >= offset, "Offset is sane");
-		const size_t sz = buffer.size() - offset;
+		BOTAN_ASSERT(buffer.length >= offset, "Offset is sane");
+		const size_t sz = buffer.length - offset;
 		ubyte* buf = &buffer[offset];
 		
 		BOTAN_ASSERT(sz >= minimum_final_size(), "Have sufficient final input");
@@ -214,8 +214,8 @@ public:
 
 	override void update(SafeVector!ubyte buffer, size_t offset = 0)
 	{
-		BOTAN_ASSERT(buffer.size() >= offset, "Offset is sane");
-		const size_t sz = buffer.size() - offset;
+		BOTAN_ASSERT(buffer.length >= offset, "Offset is sane");
+		const size_t sz = buffer.length - offset;
 		ubyte* buf = &buffer[offset];
 		
 		const size_t BS = cipher().block_size();
@@ -243,8 +243,8 @@ public:
 
 	override void finish(SafeVector!ubyte buffer, size_t offset = 0)
 	{
-		BOTAN_ASSERT(buffer.size() >= offset, "Offset is sane");
-		const size_t sz = buffer.size() - offset;
+		BOTAN_ASSERT(buffer.length >= offset, "Offset is sane");
+		const size_t sz = buffer.length - offset;
 		ubyte* buf = &buffer[offset];
 		
 		BOTAN_ASSERT(sz >= minimum_final_size(), "Have sufficient final input");

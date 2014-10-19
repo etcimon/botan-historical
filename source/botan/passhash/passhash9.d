@@ -41,14 +41,14 @@ string generate_passhash9(in string pass,
 	PKCS5_PBKDF2 kdf(prf); // takes ownership of pointer
 	
 	SafeVector!ubyte salt(SALT_BYTES);
-	rng.randomize(&salt[0], salt.size());
+	rng.randomize(&salt[0], salt.length);
 	
 	const size_t kdf_iterations = WORK_FACTOR_SCALE * work_factor;
 	
 	SafeVector!ubyte pbkdf2_output =
 		kdf.derive_key(PASSHASH9_PBKDF_OUTPUT_LEN,
 		               pass,
-		               &salt[0], salt.size(),
+		               &salt[0], salt.length,
 		kdf_iterations).bits_of();
 	
 	Pipe pipe = Pipe(new Base64_Encoder);
@@ -78,23 +78,23 @@ bool check_passhash9(in string password, in string hash)
 			SALT_BYTES;
 	
 	const size_t BASE64_LENGTH =
-		MAGIC_PREFIX.size() + (BINARY_LENGTH * 8) / 6;
+		MAGIC_PREFIX.length + (BINARY_LENGTH * 8) / 6;
 	
-	if (hash.size() != BASE64_LENGTH)
+	if (hash.length != BASE64_LENGTH)
 		return false;
 	
-	for (size_t i = 0; i != MAGIC_PREFIX.size(); ++i)
+	for (size_t i = 0; i != MAGIC_PREFIX.length; ++i)
 		if (hash[i] != MAGIC_PREFIX[i])
 			return false;
 	
 	Pipe pipe = Pipe(new Base64_Decoder);
 	pipe.start_msg();
-	pipe.write(hash.toStringz + MAGIC_PREFIX.size());
+	pipe.write(hash.toStringz + MAGIC_PREFIX.length);
 	pipe.end_msg();
 	
 	SafeVector!ubyte bin = pipe.read_all();
 	
-	if (bin.size() != BINARY_LENGTH)
+	if (bin.length != BINARY_LENGTH)
 		return false;
 	
 	ubyte alg_id = binput[0];

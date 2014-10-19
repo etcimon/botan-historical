@@ -35,7 +35,7 @@ public:
 	*/
 	void update(in SafeVector!ubyte input)
 	{
-		add_data(&input[0], input.size());
+		add_data(&input[0], input.length);
 	}
 
 	/**
@@ -44,7 +44,7 @@ public:
 	*/
 	void update(in Vector!ubyte input)
 	{
-		add_data(&input[0], input.size());
+		add_data(&input[0], input.length);
 	}
 
 	/**

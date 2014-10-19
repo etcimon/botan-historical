@@ -7,7 +7,7 @@
 module botan.utils.exceptn;
 
 import botan.utils.types;
-import botan.parsing;
+import botan.utils.parsing;
 import exception;
 import stdexcept;
 import string;

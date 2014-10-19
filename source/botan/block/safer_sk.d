@@ -7,9 +7,9 @@
 module botan.block.safer_sk;
 
 import botan.block.block_cipher;
-import botan.rotate;
-import botan.parsing;
-import botan.rotate;
+import botan.utils.rotate;
+import botan.utils.parsing;
+import botan.utils.rotate;
 
 /**
 * SAFER-SK

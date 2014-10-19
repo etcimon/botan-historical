@@ -64,7 +64,7 @@ algorithm_kat_detailed(in SCAN_Name algo_name,
 	SymmetricKey key(search_map(vars, string("key")));
 	InitializationVector iv(search_map(vars, string("iv")));
 
-	for (size_t i = 0; i != providers.size(); ++i)
+	for (size_t i = 0; i != providers.length; ++i)
 	{
 		const string provider = providers[i];
 
@@ -127,10 +127,10 @@ algorithm_kat_detailed(in SCAN_Name algo_name,
 			{
 				if (AEAD_Filter* enc_aead = cast(AEAD_Filter*)(enc))
 				{
-					enc_aead.set_associated_data(&ad[0], ad.size());
+					enc_aead.set_associated_data(&ad[0], ad.length);
 
 					if (AEAD_Filter* dec_aead = cast(AEAD_Filter*)(dec))
-						dec_aead.set_associated_data(&ad[0], ad.size());
+						dec_aead.set_associated_data(&ad[0], ad.length);
 				}
 			}
 

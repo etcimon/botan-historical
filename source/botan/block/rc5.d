@@ -7,8 +7,8 @@
 module botan.block.rc5;
 
 import botan.utils.loadstor;
-import botan.rotate;
-import botan.parsing;
+import botan.utils.rotate;
+import botan.utils.parsing;
 import std.algorithm;
 import botan.block.block_cipher;
 
@@ -121,10 +121,10 @@ private:
 		S.resize(2*rounds + 2);
 		
 		const size_t WORD_KEYLENGTH = (((length - 1) / 4) + 1);
-		const size_t MIX_ROUNDS	  = 3 * std.algorithm.max(WORD_KEYLENGTH, S.size());
+		const size_t MIX_ROUNDS	  = 3 * std.algorithm.max(WORD_KEYLENGTH, S.length);
 		
 		S[0] = 0xB7E15163;
-		for (size_t i = 1; i != S.size(); ++i)
+		for (size_t i = 1; i != S.length; ++i)
 			S[i] = S[i-1] + 0x9E3779B9;
 		
 		SafeVector!uint K = SafeVector!uint(8);
@@ -136,9 +136,9 @@ private:
 		
 		for (size_t i = 0; i != MIX_ROUNDS; ++i)
 		{
-			A = rotate_left(S[i % S.size()] + A + B, 3);
+			A = rotate_left(S[i % S.length] + A + B, 3);
 			B = rotate_left(K[i % WORD_KEYLENGTH] + A + B, (A + B) % 32);
-			S[i % S.size()] = A;
+			S[i % S.length] = A;
 			K[i % WORD_KEYLENGTH] = B;
 		}
 	}

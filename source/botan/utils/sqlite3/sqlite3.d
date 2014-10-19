@@ -82,7 +82,7 @@ void sqlite3_statement::bind(int column, SysTime time)
 
 void sqlite3_statement::bind(int column, in Vector!ubyte val)
 {
-	int rc = ::sqlite3_bind_blob(m_stmt, column, &val[0], val.size(), SQLITE_TRANSIENT);
+	int rc = ::sqlite3_bind_blob(m_stmt, column, &val[0], val.length, SQLITE_TRANSIENT);
 	if (rc != SQLITE_OK)
 		throw new Exception("sqlite3_bind_text failed, code " ~ std.conv.to!string(rc));
 }

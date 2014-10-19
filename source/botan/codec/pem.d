@@ -7,7 +7,7 @@
 
 module botan.codec.pem;
 import botan.filters.filters;
-import botan.parsing;
+import botan.utils.parsing;
 import botan.filters.data_src;
 
 /**
@@ -34,7 +34,7 @@ string encode(in ubyte* der, size_t length, in string label,
 								  in string label,
 								  size_t line_width = 64)
 {
-	return encode(&data[0], data.size(), label, line_width);
+	return encode(&data[0], data.length, label, line_width);
 }
 
 /**
@@ -44,7 +44,7 @@ string encode(in ubyte* der, size_t length, in string label,
 								  in string label,
 								  size_t line_width = 64)
 {
-	return encode(&data[0], data.size(), label, line_width);
+	return encode(&data[0], data.length, label, line_width);
 }
 
 /**
@@ -162,7 +162,7 @@ bool matches(DataSource source, in string extra = "",
 	const string PEM_HEADER = "-----BEGIN " ~ extra;
 	
 	SafeVector!ubyte search_buf(search_range);
-	size_t got = source.peek(&search_buf[0], search_buf.size(), 0);
+	size_t got = source.peek(&search_buf[0], search_buf.length, 0);
 	
 	if (got < PEM_HEADER.length())
 		return false;
@@ -175,7 +175,7 @@ bool matches(DataSource source, in string extra = "",
 			++index;
 		else
 			index = 0;
-		if (index == PEM_HEADER.size())
+		if (index == PEM_HEADER.length)
 			return true;
 	}
 	return false;

@@ -32,7 +32,7 @@ string generate_bcrypt(in string password,
 */
 bool check_bcrypt(in string password, in string hash)
 {
-	if (hash.size() != 60 ||
+	if (hash.length != 60 ||
 	    hash[0] != '$' || hash[1] != '2' || hash[2] != 'a' ||
 	hash[3] != '$' || hash[6] != '$')
 	{
@@ -81,10 +81,10 @@ string bcrypt_base64_encode(in ubyte* input, size_t length)
 	
 	string b64 = base64_encode(input, length);
 	
-	while(b64.size() && b64[b64.size()-1] == '=')
-		b64 = b64.substr(0, b64.size() - 1);
+	while(b64.length && b64[b64.length-1] == '=')
+		b64 = b64.substr(0, b64.length - 1);
 	
-	for (size_t i = 0; i != b64.size(); ++i)
+	for (size_t i = 0; i != b64.length; ++i)
 		b64[i] = OPENBSD_BASE64_SUB[cast(ubyte)(b64[i])];
 	
 	return b64;
@@ -117,7 +117,7 @@ Vector!ubyte bcrypt_base64_decode(string input)
 		0x80, 0x80, 0x80, 0x80
 	];
 	
-	for (size_t i = 0; i != input.size(); ++i)
+	for (size_t i = 0; i != input.length; ++i)
 		input[i] = OPENBSD_BASE64_SUB[cast(ubyte)(input[i])];
 	
 	return unlock(base64_decode(input));
@@ -146,7 +146,7 @@ string make_bcrypt(in string pass,
 	for (size_t i = 0; i != 64; ++i)
 		blowfish.encrypt_n(&ctext[0], &ctext[0], 3);
 	
-	string salt_b64 = bcrypt_base64_encode(&salt[0], salt.size());
+	string salt_b64 = bcrypt_base64_encode(&salt[0], salt.length);
 	
 	string work_factor_str = std.conv.to!string(work_factor);
 	if (work_factor_str.length() == 1)
@@ -154,6 +154,6 @@ string make_bcrypt(in string pass,
 	
 	return "$2a$" ~ work_factor_str +
 		"$" ~ salt_b64.substr(0, 22) +
-			bcrypt_base64_encode(&ctext[0], ctext.size() - 1);
+			bcrypt_base64_encode(&ctext[0], ctext.length - 1);
 }
 

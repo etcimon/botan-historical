@@ -29,13 +29,13 @@ public:
 	{ cipher(buf, buf, len); }
 
 	void encipher(Alloc)(ref Vector!( ubyte, Alloc ) inoutput)
-	{ cipher(&inoutput[0], &inoutput[0], inoutput.size()); }
+	{ cipher(&inoutput[0], &inoutput[0], inoutput.length); }
 
 	void encrypt(Alloc)(ref Vector!( ubyte, Alloc ) inoutput)
-	{ cipher(&inoutput[0], &inoutput[0], inoutput.size()); }
+	{ cipher(&inoutput[0], &inoutput[0], inoutput.length); }
 
 	void decrypt(Alloc)(ref Vector!( ubyte, Alloc ) inoutput)
-	{ cipher(&inoutput[0], &inoutput[0], inoutput.size()); }
+	{ cipher(&inoutput[0], &inoutput[0], inoutput.length); }
 
 	/**
 	* Resync the cipher using the IV

@@ -16,7 +16,7 @@ import botan.pubkey;
 import botan.asn1.der_enc;
 import botan.asn1.ber_dec;
 import botan.math.bigint.bigint;
-import botan.parsing;
+import botan.utils.parsing;
 import botan.libstate.lookup;
 import botan.asn1.oid_lookup.oids;
 import botan.cert.x509.key_constraint;
@@ -236,7 +236,7 @@ private:
 			.encode(cert.issuer_dn())
 			.encode(X509_Time(current_time))
 			.encode(X509_Time(expire_time))
-			.encode_if (revoked.size() > 0,
+			.encode_if (revoked.length > 0,
 		            DER_Encoder()
 		            .start_cons(ASN1_Tag.SEQUENCE)
 		            .encode_list(revoked)

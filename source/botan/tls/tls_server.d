@@ -168,8 +168,8 @@ ubyte choose_compression(in Policy policy,
 {
 	Vector!ubyte s_comp = policy.compression();
 
-	for (size_t i = 0; i != s_comp.size(); ++i)
-		for (size_t j = 0; j != c_comp.size(); ++j)
+	for (size_t i = 0; i != s_comp.length; ++i)
+		for (size_t j = 0; j != c_comp.length; ++j)
 			if (s_comp[i] == c_comp[j])
 				return s_comp[i];
 

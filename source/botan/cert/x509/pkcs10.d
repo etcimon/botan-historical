@@ -18,7 +18,7 @@ import botan.cert.x509.x509_ext;
 import botan.cert.x509.x509cert;
 import botan.asn1.der_enc;
 import botan.asn1.ber_dec;
-import botan.parsing;
+import botan.utils.parsing;
 import botan.asn1.oid_lookup.oids;
 import botan.codec.pem;
 import vector;
@@ -88,7 +88,7 @@ public:
 		Vector!string oids = info.get("X509v3.ExtendedKeyUsage");
 		
 		Vector!( OID ) result;
-		for (size_t i = 0; i != oids.size(); ++i)
+		for (size_t i = 0; i != oids.length; ++i)
 			result.push_back(OID(oids[i]));
 		return result;
 	}

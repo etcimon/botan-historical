@@ -9,7 +9,7 @@ import botan.entropy.entropy_src;
 import string;
 import vector;
 
-import botan.parsing;
+import botan.utils.parsing;
 import botan.utils.exceptn;
 import cstring;
 import stdexcept;
@@ -43,9 +43,9 @@ public:
 		
 		SafeVector!ubyte io_buffer = accum.get_io_buffer(READ_ATTEMPT);
 		
-		for (size_t i = 0; i != sockets.size(); ++i)
+		for (size_t i = 0; i != sockets.length; ++i)
 		{
-			size_t got = sockets[i].read(&io_buffer[0], io_buffer.size());
+			size_t got = sockets[i].read(&io_buffer[0], io_buffer.length);
 			
 			if (got)
 			{
@@ -60,12 +60,12 @@ public:
 	*/
 	this(in Vector!string paths)
 	{
-		for (size_t i = 0; i != paths.size(); ++i)
+		for (size_t i = 0; i != paths.length; ++i)
 			sockets.push_back(EGD_Socket(paths[i]));
 	}
 	~this()
 	{
-		for (size_t i = 0; i != sockets.size(); ++i)
+		for (size_t i = 0; i != sockets.length; ++i)
 			sockets[i].close();
 		sockets.clear();
 	}

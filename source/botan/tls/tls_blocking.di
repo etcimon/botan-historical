@@ -38,7 +38,7 @@ class Blocking_Client
 		* Number of bytes pending read in the plaintext buffer (bytes
 		* readable without blocking)
 		*/
-		size_t pending() const { return m_plaintext.size(); }
+		size_t pending() const { return m_plaintext.length; }
 
 		/**
 		* Blocking read, will return at least 1 ubyte or 0 on connection close

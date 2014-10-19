@@ -7,7 +7,7 @@
 module botan.block.misty1;
 import botan.block.block_cipher;
 import botan.utils.loadstor;
-import botan.parsing;
+import botan.utils.parsing;
 
 /**
 * MISTY1

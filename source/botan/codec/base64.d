@@ -88,7 +88,7 @@ string base64_encode(in ubyte* input,
 									consumed, true);
 	
 	BOTAN_ASSERT_EQUAL(consumed, input_length, "Consumed the entire input");
-	BOTAN_ASSERT_EQUAL(produced, output.size(), "Produced expected size");
+	BOTAN_ASSERT_EQUAL(produced, output.length, "Produced expected size");
 	
 	return output;
 }
@@ -100,7 +100,7 @@ string base64_encode(in ubyte* input,
 */
 string base64_encode(Alloc)(in Vector!( ubyte, Alloc ) input)
 {
-	return base64_encode(&input[0], input.size());
+	return base64_encode(&input[0], input.length);
 }
 
 /**
@@ -299,7 +299,7 @@ SafeVector!ubyte base64_decode(string input,
 SafeVector!ubyte base64_decode(in string input,
                                bool ignore_ws = true)
 {
-	return base64_decode(&input[0], input.size(), ignore_ws);
+	return base64_decode(&input[0], input.length, ignore_ws);
 }
 
 

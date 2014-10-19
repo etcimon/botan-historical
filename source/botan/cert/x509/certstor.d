@@ -63,7 +63,7 @@ public:
 
 	void add_certificate(in X509_Certificate cert)
 	{
-		for (size_t i = 0; i != m_certs.size(); ++i)
+		for (size_t i = 0; i != m_certs.length; ++i)
 		{
 			if (m_certs[i] == cert)
 				return;
@@ -77,7 +77,7 @@ public:
 	Vector!( X509_DN ) all_subjects() const
 	{
 		Vector!( X509_DN ) subjects;
-		for (size_t i = 0; i != m_certs.size(); ++i)
+		for (size_t i = 0; i != m_certs.length; ++i)
 			subjects.push_back(m_certs[i].subject_dn());
 		return subjects;
 	}
@@ -93,7 +93,7 @@ public:
 	{
 		X509_DN crl_issuer = crl.issuer_dn();
 		
-		for (size_t i = 0; i != m_crls.size(); ++i)
+		for (size_t i = 0; i != m_crls.length; ++i)
 		{
 			// Found an update of a previously existing one; replace it
 			if (m_crls[i].issuer_dn() == crl_issuer)
@@ -112,14 +112,14 @@ public:
 	{
 		const Vector!ubyte key_id = subject.authority_key_id();
 		
-		for (size_t i = 0; i != m_crls.size(); ++i)
+		for (size_t i = 0; i != m_crls.length; ++i)
 		{
 			// Only compare key ids if set in both call and in the CRL
-			if (key_id.size())
+			if (key_id.length)
 			{
 				Vector!ubyte akid = m_crls[i].authority_key_id();
 				
-				if (akid.size() && akid != key_id) // no match
+				if (akid.length && akid != key_id) // no match
 					continue;
 			}
 			
@@ -147,7 +147,7 @@ public:
 	Vector!( X509_DN ) all_subjects() const
 	{
 		Vector!( X509_DN ) subjects;
-		for (size_t i = 0; i != m_certs.size(); ++i)
+		for (size_t i = 0; i != m_certs.length; ++i)
 			subjects.push_back(m_certs[i].subject_dn());
 		return subjects;
 	}
@@ -166,14 +166,14 @@ const X509_Certificate*
 	cert_search(in X509_DN subject_dn, in Vector!ubyte key_id,
 	            const ref Vector!( X509_Certificate ) certs)
 {
-	for (size_t i = 0; i != certs.size(); ++i)
+	for (size_t i = 0; i != certs.length; ++i)
 	{
 		// Only compare key ids if set in both call and in the cert
-		if (key_id.size())
+		if (key_id.length)
 		{
 			Vector!ubyte skid = certs[i].subject_key_id();
 			
-			if (skid.size() && skid != key_id) // no match
+			if (skid.length && skid != key_id) // no match
 				continue;
 		}
 		

@@ -75,7 +75,7 @@ class BlockCipher : SymmetricAlgorithm
 		*/
 		void encrypt(Alloc)(Vector!( ubyte, Alloc ) block) const
 		{
-			return encrypt_n(&block[0], &block[0], block.size() / block_size());
+			return encrypt_n(&block[0], &block[0], block.length / block_size());
 		}
 
 		/**
@@ -84,7 +84,7 @@ class BlockCipher : SymmetricAlgorithm
 		*/
 		void decrypt(Alloc)(ref Vector!( ubyte, Alloc ) block) const
 		{
-			return decrypt_n(&block[0], &block[0], block.size() / block_size());
+			return decrypt_n(&block[0], &block[0], block.length / block_size());
 		}
 
 		/**
@@ -95,7 +95,7 @@ class BlockCipher : SymmetricAlgorithm
 		void encrypt(Alloc, Alloc2)(in Vector!( ubyte, Alloc ) input,
 									Vector!( ubyte, Alloc2 ) output) const
 		{
-			return encrypt_n(&input[0], &output[0], input.size() / block_size());
+			return encrypt_n(&input[0], &output[0], input.length / block_size());
 		}
 
 		/**
@@ -106,7 +106,7 @@ class BlockCipher : SymmetricAlgorithm
 		void decrypt(Alloc, Alloc2)(in Vector!( ubyte, Alloc ) input,
 									Vector!( ubyte, Alloc2 ) output) const
 		{
-			return decrypt_n(&input[0], &output[0], input.size() / block_size());
+			return decrypt_n(&input[0], &output[0], input.length / block_size());
 		}
 
 		/**

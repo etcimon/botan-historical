@@ -9,7 +9,7 @@ import botan.pubkey;
 import botan.asn1.der_enc;
 import botan.asn1.ber_dec;
 import botan.math.bigint.bigint;
-import botan.parsing;
+import botan.utils.parsing;
 import botan.libstate.libstate;
 import botan.engine.engine;
 import botan.utils.bit_ops;
@@ -48,10 +48,10 @@ PK_Encryptor_EME::enc(in ubyte* in,
 		SafeVector!ubyte encoded =
 			m_eme.encode(input, length, m_op.max_input_bits(), rng);
 
-		if (8*(encoded.size() - 1) + high_bit(encoded[0]) > m_op.max_input_bits())
+		if (8*(encoded.length - 1) + high_bit(encoded[0]) > m_op.max_input_bits())
 			throw new Invalid_Argument("PK_Encryptor_EME: Input is too large");
 
-		return unlock(m_op.encrypt(&encoded[0], encoded.size(), rng));
+		return unlock(m_op.encrypt(&encoded[0], encoded.length, rng));
 	}
 	else
 	{
@@ -177,24 +177,24 @@ bool PK_Signer::self_test_signature(in Vector!ubyte msg,
 	if (m_verify_op.with_recovery())
 	{
 		Vector!ubyte recovered =
-			unlock(m_verify_op.verify_mr(&sig[0], sig.size()));
+			unlock(m_verify_op.verify_mr(&sig[0], sig.length));
 
-		if (msg.size() > recovered.size())
+		if (msg.length > recovered.length)
 		{
-			size_t extra_0s = msg.size() - recovered.size();
+			size_t extra_0s = msg.length - recovered.length;
 
 			for (size_t i = 0; i != extra_0s; ++i)
 				if (msg[i] != 0)
 					return false;
 
-			return same_mem(&msg[extra_0s], &recovered[0], recovered.size());
+			return same_mem(&msg[extra_0s], &recovered[0], recovered.length);
 		}
 
 		return (recovered == msg);
 	}
 	else
-		return m_verify_op.verify(&msg[0], msg.size(),
-										 &sig[0], sig.size());
+		return m_verify_op.verify(&msg[0], msg.length,
+										 &sig[0], sig.length);
 }
 
 /*
@@ -206,7 +206,7 @@ Vector!ubyte PK_Signer::signature(RandomNumberGenerator rng)
 																 m_op.max_input_bits(),
 																		  rng));
 
-	Vector!ubyte plain_sig = unlock(m_op.sign(&encoded[0], encoded.size(), rng));
+	Vector!ubyte plain_sig = unlock(m_op.sign(&encoded[0], encoded.length, rng));
 
 	BOTAN_ASSERT(self_test_signature(encoded, plain_sig), "Signature was consistent");
 
@@ -215,12 +215,12 @@ Vector!ubyte PK_Signer::signature(RandomNumberGenerator rng)
 
 	if (m_sig_format == DER_SEQUENCE)
 	{
-		if (plain_sig.size() % m_op.message_parts())
+		if (plain_sig.length % m_op.message_parts())
 			throw new Encoding_Error("PK_Signer: strange signature size found");
-		const size_t SIZE_OF_PART = plain_sig.size() / m_op.message_parts();
+		const size_t SIZE_OF_PART = plain_sig.length / m_op.message_parts();
 
 		Vector!( BigInt ) sig_parts(m_op.message_parts());
-		for (size_t j = 0; j != sig_parts.size(); ++j)
+		for (size_t j = 0; j != sig_parts.length; ++j)
 			sig_parts[j].binary_decode(&plain_sig[SIZE_OF_PART*j], SIZE_OF_PART);
 
 		return DER_Encoder()
@@ -313,7 +313,7 @@ bool PK_Verifier::check_signature(in ubyte* sig, size_t length)
 				throw new Decoding_Error("PK_Verifier: signature size invalid");
 
 			return validate_signature(m_emsa.raw_data(),
-											  &real_sig[0], real_sig.size());
+											  &real_sig[0], real_sig.length);
 		}
 		else
 			throw new Decoding_Error("PK_Verifier: Unknown signature format " ~
@@ -340,7 +340,7 @@ bool PK_Verifier::validate_signature(in SafeVector!ubyte msg,
 		SafeVector!ubyte encoded =
 			m_emsa.encoding_of(msg, m_op.max_input_bits(), rng);
 
-		return m_op.verify(&encoded[0], encoded.size(), sig, sig_len);
+		return m_op.verify(&encoded[0], encoded.length, sig, sig_len);
 	}
 }
 

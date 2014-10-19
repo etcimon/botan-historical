@@ -45,7 +45,7 @@ void Stream_Handshake_IO::add_record(in Vector!ubyte record,
 	}
 	else if (record_type == CHANGE_CIPHER_SPEC)
 	{
-		if (record.size() != 1 || record[0] != 1)
+		if (record.length != 1 || record[0] != 1)
 			throw new Decoding_Error("Invalid ChangeCipherSpec");
 
 		// Pretend it's a regular handshake message of zero length
@@ -59,11 +59,11 @@ void Stream_Handshake_IO::add_record(in Vector!ubyte record,
 Pair!(Handshake_Type, Vector!( ubyte) )
 Stream_Handshake_IO::get_next_record(bool)
 {
-	if (m_queue.size() >= 4)
+	if (m_queue.length >= 4)
 	{
 		const size_t length = make_uint(0, m_queue[1], m_queue[2], m_queue[3]);
 
-		if (m_queue.size() >= length + 4)
+		if (m_queue.length >= length + 4)
 		{
 			Handshake_Type type = cast(Handshake_Type)(m_queue[0]);
 
@@ -83,15 +83,15 @@ Vector!ubyte
 Stream_Handshake_IO::format(in Vector!ubyte msg,
 							Handshake_Type type) const
 {
-	Vector!ubyte send_buf(4 + msg.size());
+	Vector!ubyte send_buf(4 + msg.length);
 
-	const size_t buf_size = msg.size();
+	const size_t buf_size = msg.length;
 
 	send_buf[0] = type;
 
 	store_be24(&send_buf[1], buf_size);
 
-	copy_mem(&send_buf[4], &msg[0], msg.size());
+	copy_mem(&send_buf[4], &msg[0], msg.length);
 
 	return send_buf;
 }
@@ -131,7 +131,7 @@ void Datagram_Handshake_IO::add_record(in Vector!ubyte record,
 	const size_t DTLS_HANDSHAKE_HEADER_LEN = 12;
 
 	const ubyte* record_bits = &record[0];
-	size_t record_size = record.size();
+	size_t record_size = record.length;
 
 	while(record_size)
 	{
@@ -238,7 +238,7 @@ void Datagram_Handshake_IO::Handshake_Reassembly::add_fragment(
 		for (size_t i = 0; i != fragment_length; ++i)
 			m_fragments[fragment_offset+i] = fragment[i];
 
-		if (m_fragments.size() == m_msg_length)
+		if (m_fragments.length == m_msg_length)
 		{
 			m_message.resize(m_msg_length);
 			for (size_t i = 0; i != m_msg_length; ++i)
@@ -250,7 +250,7 @@ void Datagram_Handshake_IO::Handshake_Reassembly::add_fragment(
 
 bool Datagram_Handshake_IO::Handshake_Reassembly::complete() const
 {
-	return (m_msg_type != HANDSHAKE_NONE && m_message.size() == m_msg_length);
+	return (m_msg_type != HANDSHAKE_NONE && m_message.length == m_msg_length);
 }
 
 Pair!(Handshake_Type, Vector!( ubyte) )
@@ -291,7 +291,7 @@ Datagram_Handshake_IO::format_w_seq(in Vector!ubyte msg,
 												Handshake_Type type,
 												ushort msg_sequence) const
 {
-	return format_fragment(&msg[0], msg.size(), 0, msg.size(), type, msg_sequence);
+	return format_fragment(&msg[0], msg.length, 0, msg.length, type, msg_sequence);
 }
 
 Vector!ubyte
@@ -335,20 +335,20 @@ Datagram_Handshake_IO::send(in Handshake_Message msg)
 	const Vector!ubyte no_fragment =
 		format_w_seq(msg_bits, msg_type, m_out_message_seq);
 
-	if (no_fragment.size() + DTLS_HEADER_SIZE <= m_mtu)
+	if (no_fragment.length + DTLS_HEADER_SIZE <= m_mtu)
 		m_send_hs(epoch, HANDSHAKE, no_fragment);
 	else
 	{
-		const size_t parts = split_for_mtu(m_mtu, msg_bits.size());
+		const size_t parts = split_for_mtu(m_mtu, msg_bits.length);
 
-		const size_t parts_size = (msg_bits.size() + parts) / parts;
+		const size_t parts_size = (msg_bits.length + parts) / parts;
 
 		size_t frag_offset = 0;
 
-		while(frag_offset != msg_bits.size())
+		while(frag_offset != msg_bits.length)
 		{
 			const size_t frag_len =
-				std.algorithm.min(msg_bits.size() - frag_offset,
+				std.algorithm.min(msg_bits.length - frag_offset,
 									  parts_size);
 
 			m_send_hs(epoch,
@@ -356,7 +356,7 @@ Datagram_Handshake_IO::send(in Handshake_Message msg)
 						 format_fragment(&msg_bits[frag_offset],
 											  frag_len,
 											  frag_offset,
-											  msg_bits.size(),
+											  msg_bits.length,
 											  msg_type,
 											  m_out_message_seq));
 

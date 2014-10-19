@@ -11,7 +11,7 @@ import botan.block.threefish;
 import string;
 import memory;
 import botan.utils.loadstor;
-import botan.parsing;
+import botan.utils.parsing;
 import botan.utils.exceptn;
 import botan.internal.xor_buf;
 import std.algorithm;
@@ -89,7 +89,7 @@ private:
 			buffer_insert(buffer, buf_pos, input, length);
 			if (buf_pos + length > 64)
 			{
-				ubi_512(&buffer[0], buffer.size());
+				ubi_512(&buffer[0], buffer.length);
 				
 				input += (64 - buf_pos);
 				length -= (64 - buf_pos);
@@ -112,7 +112,7 @@ private:
 	{
 		T[1] |= (cast(ulong)(1) << 63); // final block flag
 		
-		for (size_t i = buf_pos; i != buffer.size(); ++i)
+		for (size_t i = buf_pos; i != buffer.length; ++i)
 			buffer[i] = 0;
 		
 		ubi_512(&buffer[0], buf_pos);

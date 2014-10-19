@@ -11,7 +11,7 @@ import map;
  Vector!ubyte to_byte_vector(in string s)
 {
 	return Vector!ubyte(cast(const ubyte*)(s[0]),
-									 cast(const ubyte*)(s[s.size()]));
+									 cast(const ubyte*)(s[s.length]));
 }
 
 /*
@@ -64,7 +64,7 @@ template<typename T>
 bool value_exists(in Vector!T vec,
 						const T& val)
 {
-	for (size_t i = 0; i != vec.size(); ++i)
+	for (size_t i = 0; i != vec.length; ++i)
 		if (vec[i] == val)
 			return true;
 	return false;

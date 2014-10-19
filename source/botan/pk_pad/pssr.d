@@ -59,7 +59,7 @@ private:
 	{
 		const size_t HASH_SIZE = hash.output_length();
 		
-		if (msg.size() != HASH_SIZE)
+		if (msg.length != HASH_SIZE)
 			throw new Encoding_Error("encoding_of: Bad input length");
 		if (output_bits < 8*HASH_SIZE + 8*SALT_SIZE + 9)
 			throw new Encoding_Error("encoding_of: Output length is too small");
@@ -98,20 +98,20 @@ private:
 		if (key_bits < 8*HASH_SIZE + 9)
 			return false;
 		
-		if (raw.size() != HASH_SIZE)
+		if (raw.length != HASH_SIZE)
 			return false;
 		
-		if (const_coded.size() > KEY_BYTES || const_coded.size() <= 1)
+		if (const_coded.length > KEY_BYTES || const_coded.length <= 1)
 			return false;
 		
-		if (const_coded[const_coded.size()-1] != 0xBC)
+		if (const_coded[const_coded.length-1] != 0xBC)
 			return false;
 		
 		SafeVector!ubyte coded = const_coded;
-		if (coded.size() < KEY_BYTES)
+		if (coded.length < KEY_BYTES)
 		{
 			SafeVector!ubyte temp(KEY_BYTES);
-			buffer_insert(temp, KEY_BYTES - coded.size(), coded);
+			buffer_insert(temp, KEY_BYTES - coded.length, coded);
 			coded = temp;
 		}
 		
@@ -120,7 +120,7 @@ private:
 			return false;
 		
 		ubyte* DB = &coded[0];
-		const size_t DB_size = coded.size() - HASH_SIZE - 1;
+		const size_t DB_size = coded.length - HASH_SIZE - 1;
 		
 		const ubyte* H = &coded[DB_size];
 		const size_t H_size = HASH_SIZE;

@@ -11,7 +11,7 @@ static if (BOTAN_HAS_ENTROPY_SRC_CAPI):
 
 import botan.entropy.entropy_src;
 import vector;
-import botan.parsing;
+import botan.utils.parsing;
 import windows.h;
 import wincrypt.h;
 
@@ -30,15 +30,15 @@ public:
 	{
 		SafeVector!ubyte io_buffer = accum.get_io_buffer(32);
 		
-		for (size_t i = 0; i != prov_types.size(); ++i)
+		for (size_t i = 0; i != prov_types.length; ++i)
 		{
 			CSP_Handle csp(prov_types[i]);
 			
-			size_t got = csp.gen_random(&io_buffer[0], io_buffer.size());
+			size_t got = csp.gen_random(&io_buffer[0], io_buffer.length);
 			
 			if (got)
 			{
-				accum.add(&io_buffer[0], io_buffer.size(), 6);
+				accum.add(&io_buffer[0], io_buffer.length, 6);
 				break;
 			}
 		}
@@ -50,9 +50,9 @@ public:
 	*/
 	this(in string provs = "")
 	{
-		Vector!string capi_provs = std.algorithm.splitter(provs, ':');
+		Vector!string capi_provs = splitter(provs, ':');
 		
-		for (size_t i = 0; i != capi_provs.size(); ++i)
+		for (size_t i = 0; i != capi_provs.length; ++i)
 		{
 			if (capi_provs[i] == "RSA_FULL")  prov_types.push_back(PROV_RSA_FULL);
 			if (capi_provs[i] == "INTEL_SEC") prov_types.push_back(PROV_INTEL_SEC);
@@ -60,7 +60,7 @@ public:
 			if (capi_provs[i] == "RNG")		 prov_types.push_back(PROV_RNG);
 		}
 		
-		if (prov_types.size() == 0)
+		if (prov_types.length == 0)
 			prov_types.push_back(PROV_RSA_FULL);
 	}
 

@@ -8,7 +8,7 @@ module botan.hash.has160;
 
 import botan.hash.mdx_hash;
 import botan.utils.loadstor;
-import botan.rotate;
+import botan.utils.rotate;
 /**
 * HAS-160, a Korean hash function standardized in
 * TTAS.KO-12.0011/R1. Used in conjuction with KCDSA

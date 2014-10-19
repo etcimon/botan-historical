@@ -11,7 +11,7 @@ import botan.pkcs8;
 import botan.cert.x509.pkcs10;
 import botan.asn1.asn1_time;
 import botan.asn1.oid_lookup.oids;
-import botan.parsing;
+import botan.utils.parsing;
 import std.datetime;
 import botan.cert.x509.x509_ext;
 import botan.cert.x509.x509_ca;
@@ -125,7 +125,7 @@ public:
 	{
 		if (common_name == "" || country == "")
 			throw new Encoding_Error("X.509 certificate: name and country MUST be set");
-		if (country.size() != 2)
+		if (country.length != 2)
 			throw new Encoding_Error("Invalid ISO country code: " ~ country);
 		if (start >= end)
 			throw new Encoding_Error("X509_Cert_Options: invalid time constraints");
@@ -210,16 +210,16 @@ public:
 		if (initial_opts == "")
 			return;
 		
-		Vector!string parsed = std.algorithm.splitter(initial_opts, '/');
+		Vector!string parsed = splitter(initial_opts, '/');
 		
-		if (parsed.size() > 4)
+		if (parsed.length > 4)
 			throw new Invalid_Argument("X.509 cert options: Too many names: "
 			                           + initial_opts);
 		
-		if (parsed.size() >= 1) common_name  = parsed[0];
-		if (parsed.size() >= 2) country		= parsed[1];
-		if (parsed.size() >= 3) organization = parsed[2];
-		if (parsed.size() == 4) org_unit	  = parsed[3];
+		if (parsed.length >= 1) common_name  = parsed[0];
+		if (parsed.length >= 2) country		= parsed[1];
+		if (parsed.length >= 3) organization = parsed[2];
+		if (parsed.length == 4) org_unit	  = parsed[3];
 	}
 };
 

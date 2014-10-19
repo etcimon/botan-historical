@@ -64,7 +64,7 @@ public:
 								  ref const Vector!( ubyte, Alloc ) salt,
 								  size_t iterations) const
 	{
-		return derive_key(output_len, passphrase, &salt[0], salt.size(), iterations);
+		return derive_key(output_len, passphrase, &salt[0], salt.length, iterations);
 	}
 
 	/**
@@ -103,7 +103,7 @@ public:
 	                              Duration loop_for,
 								  ref size_t iterations) const
 	{
-		return derive_key(output_len, passphrase, &salt[0], salt.size(), loop_for, iterations);
+		return derive_key(output_len, passphrase, &salt[0], salt.length, loop_for, iterations);
 	}
 
 	/**

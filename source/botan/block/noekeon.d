@@ -8,7 +8,7 @@ module botan.block.noekeon;
 
 import botan.block.block_cipher;
 import botan.utils.loadstor;
-import botan.rotate;
+import botan.utils.rotate;
 
 /**
 * Noekeon

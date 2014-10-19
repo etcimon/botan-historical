@@ -42,9 +42,9 @@ HashMap!(string, double)
 	const size_t Mebibyte = 1024*1024;
 	
 	SafeVector!ubyte buffer = SafeVector!ubyte(buf_size * 1024);
-	rng.randomize(&buffer[0], buffer.size());
+	rng.randomize(&buffer[0], buffer.length);
 	
-	const double mb_mult = buffer.size() / cast(double)(Mebibyte);
+	const double mb_mult = buffer.length / cast(double)(Mebibyte);
 	
 
 	{
@@ -137,7 +137,7 @@ HashMap!(string, double)
 	
 	if (!providers.empty())
 	{
-		const Duration ns_per_provider = milliseconds / providers.size();
+		const Duration ns_per_provider = milliseconds / providers.length;
 		
 		foreach (provider; providers)
 		{

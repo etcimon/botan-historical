@@ -9,7 +9,7 @@ module botan.block.cast128;
 import botan.block.block_cipher;
 import botan.block.cast_sboxes;
 import botan.utils.loadstor;
-import botan.rotate;
+import botan.utils.rotate;
 
 /**
 * CAST-128

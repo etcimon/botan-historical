@@ -88,7 +88,7 @@ class Session
 		static  Session decrypt(in Vector!ubyte ctext,
 												const ref SymmetricKey key)
 		{
-			return Session::decrypt(&ctext[0], ctext.size(), key);
+			return Session::decrypt(&ctext[0], ctext.length, key);
 		}
 
 		/**

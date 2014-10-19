@@ -59,10 +59,10 @@ public:
 		SafeVector!ubyte secret(S, S + S_len);
 		secret += hash.process(S, S_len);
 		
-		for (size_t i = 0; i != secret.size(); ++i)
+		for (size_t i = 0; i != secret.length; ++i)
 		{
 			Vector!ubyte coefficients(M-1);
-			rng.randomize(&coefficients[0], coefficients.size());
+			rng.randomize(&coefficients[0], coefficients.length);
 			
 			for (ubyte j = 0; j != N; ++j)
 			{
@@ -71,7 +71,7 @@ public:
 				ubyte sum = secret[i];
 				ubyte X_i = X;
 				
-				for (size_t k = 0; k != coefficients.size(); ++k)
+				for (size_t k = 0; k != coefficients.length; ++k)
 				{
 					sum ^= gfp_mul(X_i, coefficients[k]);
 					X_i  = gfp_mul(X_i, X);
@@ -93,13 +93,13 @@ public:
 	{
 		const size_t RTSS_HEADER_SIZE = 20;
 		
-		for (size_t i = 0; i != shares.size(); ++i)
+		for (size_t i = 0; i != shares.length; ++i)
 		{
-			if (shares[i].size() != shares[0].size())
+			if (shares[i].length != shares[0].length)
 				throw new Decoding_Error("Different sized RTSS shares detected");
 			if (shares[i].share_id() == 0)
 				throw new Decoding_Error("Invalid (id = 0) RTSS share detected");
-			if (shares[i].size() < RTSS_HEADER_SIZE)
+			if (shares[i].length < RTSS_HEADER_SIZE)
 				throw new Decoding_Error("Missing or malformed RTSS header");
 			
 			if (!same_mem(&shares[0].contents[0],
@@ -107,7 +107,7 @@ public:
 				throw new Decoding_Error("Different RTSS headers detected");
 		}
 		
-		if (shares.size() < shares[0].contents[17])
+		if (shares.length < shares[0].contents[17])
 			throw new Decoding_Error("Insufficient shares to do TSS reconstruction");
 		
 		ushort secret_len = make_ushort(shares[0].contents[18],
@@ -117,23 +117,23 @@ public:
 		
 		Unique!HashFunction hash = get_rtss_hash_by_id(hash_id);
 		
-		if (shares[0].size() != secret_len + hash.output_length() + RTSS_HEADER_SIZE + 1)
+		if (shares[0].length != secret_len + hash.output_length() + RTSS_HEADER_SIZE + 1)
 			throw new Decoding_Error("Bad RTSS length field in header");
 		
-		Vector!ubyte V(shares.size());
+		Vector!ubyte V(shares.length);
 		SafeVector!ubyte secret;
 		
-		for (size_t i = RTSS_HEADER_SIZE + 1; i != shares[0].size(); ++i)
+		for (size_t i = RTSS_HEADER_SIZE + 1; i != shares[0].length; ++i)
 		{
-			for (size_t j = 0; j != V.size(); ++j)
+			for (size_t j = 0; j != V.length; ++j)
 				V[j] = shares[j].contents[i];
 			
 			ubyte r = 0;
-			for (size_t k = 0; k != shares.size(); ++k)
+			for (size_t k = 0; k != shares.length; ++k)
 			{
 				// L_i function:
 				ubyte r2 = 1;
-				for (size_t l = 0; l != shares.size(); ++l)
+				for (size_t l = 0; l != shares.length; ++l)
 				{
 					if (k == l)
 						continue;
@@ -156,7 +156,7 @@ public:
 			secret.push_back(r);
 		}
 		
-		if (secret.size() != secret_len + hash.output_length())
+		if (secret.length != secret_len + hash.output_length())
 			throw new Decoding_Error("Bad length in RTSS output");
 		
 		hash.update(&secret[0], secret_len);
@@ -185,7 +185,7 @@ public:
 	*/
 	string to_string() const
 	{
-		return hex_encode(&contents[0], contents.size());
+		return hex_encode(&contents[0], contents.length);
 	}
 
 	/**
@@ -202,12 +202,12 @@ public:
 	/**
 	* @return size of this share in bytes
 	*/
-	size_t size() const { return contents.size(); }
+	size_t size() const { return contents.length; }
 
 	/**
 	* @return if this TSS share was initialized or not
 	*/
-	bool initialized() const { return (contents.size() > 0); }
+	bool initialized() const { return (contents.length > 0); }
 private:
 	SafeVector!ubyte contents;
 };

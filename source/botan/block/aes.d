@@ -8,7 +8,7 @@ module botan.block.aes;
 
 import botan.block.block_cipher;
 import botan.utils.loadstor;
-import botan.rotate;
+import botan.utils.rotate;
 /**
 * AES-128
 */
@@ -521,7 +521,7 @@ void aes_encrypt_n(ubyte* input, ubyte* output,
                    const ref SafeVector!uint EK,
                    in SafeVector!ubyte ME)
 {
-	BOTAN_ASSERT(EK.size() && ME.size() == 16, "Key was set");
+	BOTAN_ASSERT(EK.length && ME.length == 16, "Key was set");
 	
 	const size_t BLOCK_SIZE = 16;
 	
@@ -565,7 +565,7 @@ void aes_encrypt_n(ubyte* input, ubyte* output,
 				rotate_right(TE[get_byte(2, T1)], 16) ^
 				rotate_right(TE[get_byte(3, T2)], 24) ^ EK[7];
 		
-		for (size_t r = 2*4; r < EK.size(); r += 2*4)
+		for (size_t r = 2*4; r < EK.length; r += 2*4)
 		{
 			T0 = TE0[get_byte(0, B0)] ^ TE1[get_byte(1, B1)] ^
 				TE2[get_byte(2, B2)] ^ TE3[get_byte(3, B3)] ^ EK[r];
@@ -634,7 +634,7 @@ void aes_decrypt_n(ubyte* input, ubyte* output, size_t blocks,
                    const ref SafeVector!uint DK,
                    in SafeVector!ubyte MD)
 {
-	BOTAN_ASSERT(DK.size() && MD.size() == 16, "Key was set");
+	BOTAN_ASSERT(DK.length && MD.length == 16, "Key was set");
 	
 	const size_t BLOCK_SIZE = 16;
 	
@@ -670,7 +670,7 @@ void aes_decrypt_n(ubyte* input, ubyte* output, size_t blocks,
 				rotate_right(TD[get_byte(2, T1)], 16) ^
 				rotate_right(TD[get_byte(3, T0)], 24) ^ DK[7];
 		
-		for (size_t r = 2*4; r < DK.size(); r += 2*4)
+		for (size_t r = 2*4; r < DK.length; r += 2*4)
 		{
 			T0 = TD0[get_byte(0, B0)] ^ TD1[get_byte(1, B3)] ^
 				TD2[get_byte(2, B2)] ^ TD3[get_byte(3, B1)] ^ DK[r];
@@ -778,6 +778,6 @@ void aes_key_schedule(in ubyte* key, size_t length,
 	
 	EK.resize(length + 24);
 	DK.resize(length + 24);
-	copy_mem(&EK[0], &XEK[0], EK.size());
-	copy_mem(&DK[0], &XDK[0], DK.size());
+	copy_mem(&EK[0], &XEK[0], EK.length);
+	copy_mem(&DK[0], &XDK[0], DK.length);
 }

@@ -36,12 +36,12 @@ string OFB::name() const
 
 void OFB::cipher(in ubyte* input, ubyte* output)
 {
-	while(length >= m_buffer.size() - m_buf_pos)
+	while(length >= m_buffer.length - m_buf_pos)
 	{
-		xor_buf(output, input, &m_buffer[m_buf_pos], m_buffer.size() - m_buf_pos);
-		length -= (m_buffer.size() - m_buf_pos);
-		input += (m_buffer.size() - m_buf_pos);
-		output += (m_buffer.size() - m_buf_pos);
+		xor_buf(output, input, &m_buffer[m_buf_pos], m_buffer.length - m_buf_pos);
+		length -= (m_buffer.length - m_buf_pos);
+		input += (m_buffer.length - m_buf_pos);
+		output += (m_buffer.length - m_buf_pos);
 		m_cipher.encrypt(m_buffer);
 		m_buf_pos = 0;
 	}

@@ -27,7 +27,7 @@ public:
 	{
 		SafeVector!ubyte our_mac = flush();
 		
-		if (our_mac.size() != length)
+		if (our_mac.length != length)
 			return false;
 		
 		return same_mem(&our_mac[0], &mac[0], length);

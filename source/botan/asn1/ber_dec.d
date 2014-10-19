@@ -110,7 +110,7 @@ public:
 		BER_Object obj = get_next_object();
 		obj.assert_is_a(type_tag, ASN1_Tag(class_tag | ASN1_Tag.CONSTRUCTED));
 		
-		BER_Decoder result = new BER_Decoder(&obj.value[0], obj.value.size());
+		BER_Decoder result = new BER_Decoder(&obj.value[0], obj.value.length);
 		result.parent = this;
 		return result;
 	}
@@ -163,7 +163,7 @@ public:
 	{
 		BER_Object obj = get_next_object();
 		obj.assert_is_a(ASN1_Tag.NULL_TAG, ASN1_Tag.UNIVERSAL);
-		if (obj.value.size())
+		if (obj.value.length)
 			throw new BER_Decoding_Error("NULL object had nonzero size");
 		return this;
 	}
@@ -212,7 +212,7 @@ public:
 		BER_Object obj = get_next_object();
 		obj.assert_is_a(type_tag, class_tag);
 		
-		if (obj.value.size() != 1)
+		if (obj.value.length != 1)
 			throw new BER_Decoding_Error("BER boolean value had invalid size");
 		
 		output = (obj.value[0]) ? true : false;
@@ -254,14 +254,14 @@ public:
 			
 			if (negative)
 			{
-				for (size_t i = obj.value.size(); i > 0; --i)
+				for (size_t i = obj.value.length; i > 0; --i)
 					if (obj.value[i-1]--)
 						break;
-				for (size_t i = 0; i != obj.value.size(); ++i)
+				for (size_t i = 0; i != obj.value.length; ++i)
 					obj.value[i] = ~obj.value[i];
 			}
 			
-			output = BigInt(&obj.value[0], obj.value.size());
+			output = BigInt(&obj.value[0], obj.value.length);
 			
 			if (negative)
 				output.flip_sign();
@@ -306,8 +306,8 @@ public:
 			if (obj.value[0] >= 8)
 				throw new BER_Decoding_Error("Bad number of unused bits in BIT STRING");
 			
-			buffer.resize(obj.value.size() - 1);
-			copy_mem(&buffer[0], &obj.value[1], obj.value.size() - 1);
+			buffer.resize(obj.value.length - 1);
+			copy_mem(&buffer[0], &obj.value[1], obj.value.length - 1);
 		}
 		return this;
 	}
@@ -329,8 +329,8 @@ public:
 			if (obj.value[0] >= 8)
 				throw new BER_Decoding_Error("Bad number of unused bits in BIT STRING");
 			
-			buffer.resize(obj.value.size() - 1);
-			copy_mem(&buffer[0], &obj.value[1], obj.value.size() - 1);
+			buffer.resize(obj.value.length - 1);
+			copy_mem(&buffer[0], &obj.value[1], obj.value.length - 1);
 		}
 		return this;
 	}
@@ -503,7 +503,7 @@ public:
 	{
 		SafeVector!ubyte out_vec;
 		decode(out_vec, ASN1_Tag.OCTET_STRING);
-		output = BigInt.decode(&out_vec[0], out_vec.size());
+		output = BigInt.decode(&out_vec[0], out_vec.length);
 		return this;
 	}
 	
@@ -547,7 +547,7 @@ public:
 	*/
 	this(in Vector!ubyte data)
 	{
-		source = new DataSource_Memory(&data[0], data.size());
+		source = new DataSource_Memory(&data[0], data.length);
 		owns = true;
 		pushed.type_tag = pushed.class_tag = ASN1_Tag.NO_OBJECT;
 		parent = null;
@@ -674,7 +674,7 @@ size_t find_eoc(DataSource ber)
 	
 	while(true)
 	{
-		const size_t got = ber.peek(&buffer[0], buffer.size(), data.size());
+		const size_t got = ber.peek(&buffer[0], buffer.length, data.length);
 		if (got == 0)
 			break;
 		

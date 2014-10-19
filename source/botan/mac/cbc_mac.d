@@ -95,7 +95,7 @@ private:
 		if (m_position)
 			m_cipher.encrypt(m_state);
 		
-		copy_mem(mac, &m_state[0], m_state.size());
+		copy_mem(mac, &m_state[0], m_state.length);
 		zeroise(m_state);
 		m_position = 0;
 	}

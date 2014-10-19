@@ -57,7 +57,7 @@ public:
 	
 	void set_key(Alloc)(in Vector!( ubyte, Alloc ) key)
 	{
-		set_key(&key[0], key.size());
+		set_key(&key[0], key.length);
 	}
 	
 	/**

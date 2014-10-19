@@ -8,7 +8,7 @@ module botan.hash.md5;
 
 import botan.hash.mdx_hash;
 import botan.utils.loadstor;
-import botan.rotate;
+import botan.utils.rotate;
 
 /**
 * MD5
@@ -51,7 +51,7 @@ package:
 		
 		for (size_t i = 0; i != blocks; ++i)
 		{
-			load_le(&M[0], input, M.size());
+			load_le(&M[0], input, M.length);
 			
 			FF(A,B,C,D,M[ 0], 7,0xD76AA478);	FF(D,A,B,C,M[ 1],12,0xE8C7B756);
 			FF(C,D,A,B,M[ 2],17,0x242070DB);	FF(B,C,D,A,M[ 3],22,0xC1BDCEEE);

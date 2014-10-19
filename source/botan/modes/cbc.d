@@ -115,8 +115,8 @@ public:
 
 	override void update(SafeVector!ubyte buffer, size_t offset = 0)
 	{
-		BOTAN_ASSERT(buffer.size() >= offset, "Offset is sane");
-		const size_t sz = buffer.size() - offset;
+		BOTAN_ASSERT(buffer.length >= offset, "Offset is sane");
+		const size_t sz = buffer.length - offset;
 		ubyte* buf = &buffer[offset];
 		
 		const size_t BS = cipher().block_size();
@@ -142,15 +142,15 @@ public:
 
 	override void finish(SafeVector!ubyte buffer, size_t offset = 0)
 	{
-		BOTAN_ASSERT(buffer.size() >= offset, "Offset is sane");
+		BOTAN_ASSERT(buffer.length >= offset, "Offset is sane");
 		
 		const size_t BS = cipher().block_size();
 		
-		const size_t bytes_in_final_block = (buffer.size()-offset) % BS;
+		const size_t bytes_in_final_block = (buffer.length-offset) % BS;
 		
 		padding().add_padding(buffer, bytes_in_final_block, BS);
 		
-		if ((buffer.size()-offset) % BS)
+		if ((buffer.length-offset) % BS)
 			throw new Exception("Did not pad to full block size in " ~ name());
 		
 		update(buffer, offset);
@@ -185,9 +185,9 @@ public:
 
 	override void finish(SafeVector!ubyte buffer, size_t offset = 0)
 	{
-		BOTAN_ASSERT(buffer.size() >= offset, "Offset is sane");
+		BOTAN_ASSERT(buffer.length >= offset, "Offset is sane");
 		ubyte* buf = &buffer[offset];
-		const size_t sz = buffer.size() - offset;
+		const size_t sz = buffer.length - offset;
 		
 		const size_t BS = cipher().block_size();
 		
@@ -200,7 +200,7 @@ public:
 			
 			// swap last two blocks
 			for (size_t i = 0; i != BS; ++i)
-				std.algorithm.swap(buffer[buffer.size()-BS+i], buffer[buffer.size()-2*BS+i]);
+				std.algorithm.swap(buffer[buffer.length-BS+i], buffer[buffer.length-2*BS+i]);
 		}
 		else
 		{
@@ -253,8 +253,8 @@ public:
 
 	override void update(SafeVector!ubyte buffer, size_t offset)
 	{
-		BOTAN_ASSERT(buffer.size() >= offset, "Offset is sane");
-		const size_t sz = buffer.size() - offset;
+		BOTAN_ASSERT(buffer.length >= offset, "Offset is sane");
+		const size_t sz = buffer.length - offset;
 		ubyte* buf = &buffer[offset];
 		
 		const size_t BS = cipher().block_size();
@@ -264,7 +264,7 @@ public:
 		
 		while(blocks)
 		{
-			const size_t to_proc = std.algorithm.min(BS * blocks, m_tempbuf.size());
+			const size_t to_proc = std.algorithm.min(BS * blocks, m_tempbuf.length);
 			
 			cipher().decrypt_n(buf, &m_tempbuf[0], to_proc / BS);
 			
@@ -281,8 +281,8 @@ public:
 
 	override void finish(SafeVector!ubyte buffer, size_t offset = 0)
 	{
-		BOTAN_ASSERT(buffer.size() >= offset, "Offset is sane");
-		const size_t sz = buffer.size() - offset;
+		BOTAN_ASSERT(buffer.length >= offset, "Offset is sane");
+		const size_t sz = buffer.length - offset;
 		
 		const size_t BS = cipher().block_size();
 		
@@ -291,8 +291,8 @@ public:
 		
 		update(buffer, offset);
 		
-		const size_t pad_bytes = BS - padding().unpad(&buffer[buffer.size()-BS], BS);
-		buffer.resize(buffer.size() - pad_bytes); // remove padding
+		const size_t pad_bytes = BS - padding().unpad(&buffer[buffer.length-BS], BS);
+		buffer.resize(buffer.length - pad_bytes); // remove padding
 	}
 
 	override size_t output_length(size_t input_length) const
@@ -321,8 +321,8 @@ public:
 
 	override void finish(SafeVector!ubyte buffer, size_t offset = 0)
 	{
-		BOTAN_ASSERT(buffer.size() >= offset, "Offset is sane");
-		const size_t sz = buffer.size() - offset;
+		BOTAN_ASSERT(buffer.length >= offset, "Offset is sane");
+		const size_t sz = buffer.length - offset;
 		ubyte* buf = &buffer[offset];
 		
 		const size_t BS = cipher().block_size();
@@ -335,7 +335,7 @@ public:
 			// swap last two blocks
 			
 			for (size_t i = 0; i != BS; ++i)
-				std.algorithm.swap(buffer[buffer.size()-BS+i], buffer[buffer.size()-2*BS+i]);
+				std.algorithm.swap(buffer[buffer.length-BS+i], buffer[buffer.length-2*BS+i]);
 			
 			update(buffer, offset);
 		}

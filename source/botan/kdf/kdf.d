@@ -36,7 +36,7 @@ public:
 								in SafeVector!ubyte secret,
 								in string salt = "") const
 	{
-		return derive_key(key_len, &secret[0], secret.size(),
+		return derive_key(key_len, &secret[0], secret.length,
 								cast(const ubyte*)(salt.data()),
 								salt.length());
 	}
@@ -53,8 +53,8 @@ public:
 												 in Vector!( ubyte, Alloc2 ) salt) const
 	{
 		return derive_key(key_len,
-								&secret[0], secret.size(),
-								&salt[0], salt.size());
+								&secret[0], secret.length,
+								&salt[0], salt.length);
 	}
 
 	/**
@@ -70,7 +70,7 @@ public:
 								size_t salt_len) const
 	{
 		return derive_key(key_len,
-							&secret[0], secret.size(),
+							&secret[0], secret.length,
 							salt, salt_len);
 	}
 

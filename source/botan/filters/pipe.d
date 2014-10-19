@@ -17,7 +17,7 @@ static if (BOTAN_HAS_PIPE_UNIXFD_IO && false)
 
 import botan.filters.out_buf;
 import botan.filters.secqueue;
-import botan.parsing;
+import botan.utils.parsing;
 
 /**
 * This class represents pipe objects.
@@ -78,14 +78,14 @@ public:
 	* @param input the SafeVector containing the data to write
 	*/
 	void write(in SafeVector!ubyte input)
-	{ write(&input[0], input.size()); }
+	{ write(&input[0], input.length); }
 
 	/**
 	* Write input to the pipe, i.e. to its first filter.
 	* @param input the std::vector containing the data to write
 	*/
 	void write(in Vector!ubyte input)
-	{ write(&input[0], input.size()); }
+	{ write(&input[0], input.length); }
 
 	/**
 	* Write input to the pipe, i.e. to its first filter.
@@ -93,7 +93,7 @@ public:
 	*/
 	void write(in string input)
 	{
-		write(cast(const ubyte*)(input.data()), input.size());
+		write(cast(const ubyte*)(input.data()), input.length);
 	}
 
 
@@ -106,7 +106,7 @@ public:
 		SafeVector!ubyte buffer(DEFAULT_BUFFERSIZE);
 		while(!source.end_of_data())
 		{
-			size_t got = source.read(&buffer[0], buffer.size());
+			size_t got = source.read(&buffer[0], buffer.length);
 			write(&buffer[0], got);
 		}
 	}
@@ -147,7 +147,7 @@ public:
 	*/
 	void process_msg(in SafeVector!ubyte input)
 	{
-		process_msg(&input[0], input.size());
+		process_msg(&input[0], input.length);
 	}
 
 	/**
@@ -156,7 +156,7 @@ public:
 	*/
 	void process_msg(in Vector!ubyte input)
 	{
-		process_msg(&input[0], input.size());
+		process_msg(&input[0], input.length);
 	}
 
 	/**
@@ -254,7 +254,7 @@ public:
 	{
 		msg = ((msg != DEFAULT_MESSAGE) ? msg : default_msg());
 		SafeVector!ubyte buffer(remaining(msg));
-		size_t got = read(&buffer[0], buffer.size(), msg);
+		size_t got = read(&buffer[0], buffer.length, msg);
 		buffer.resize(got);
 		return buffer;
 	}
@@ -274,7 +274,7 @@ public:
 		
 		while(true)
 		{
-			size_t got = read(&buffer[0], buffer.size(), msg);
+			size_t got = read(&buffer[0], buffer.length, msg);
 			if (got == 0)
 				break;
 			str.append(cast(string)(buffer[0]), got);

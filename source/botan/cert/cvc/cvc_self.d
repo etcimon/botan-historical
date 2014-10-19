@@ -303,7 +303,7 @@ EAC1_1_CVC sign_request(const ref EAC1_1_CVC signer_cert,
 	
 	string seqnr_string = std.conv.to!string(seqnr);
 	
-	while(seqnr_string.size() < seqnr_len)
+	while(seqnr_string.length < seqnr_len)
 		seqnr_string = '0' + seqnr_string;
 	
 	chr_str += seqnr_string;

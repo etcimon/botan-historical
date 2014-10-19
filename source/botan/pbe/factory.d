@@ -12,7 +12,7 @@ import string;
 import std.datetime;
 import botan.asn1.oid_lookup.oids;
 import botan.algo_base.scan_name;
-import botan.parsing;
+import botan.utils.parsing;
 import botan.libstate.libstate;
 
 static if (BOTAN_HAS_PBE_PKCS_V20) {
@@ -39,8 +39,8 @@ PBE get_pbe(in string algo_spec,
 	string digest_name = request.arg(0);
 	const string cipher = request.arg(1);
 	
-	Vector!string cipher_spec = std.algorithm.splitter(cipher, '/');
-	if (cipher_spec.size() != 2)
+	Vector!string cipher_spec = splitter(cipher, '/');
+	if (cipher_spec.length != 2)
 		throw new Invalid_Argument("PBE: Invalid cipher spec " ~ cipher);
 	
 	const string cipher_algo = SCAN_Name::deref_alias(cipher_spec[0]);

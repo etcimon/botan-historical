@@ -12,7 +12,7 @@ import std.concurrency;
 import std.typecons : RefCounted;
 import botan.filters.key_filt;
 
-import botan.internal.semaphore;
+import botan.utils.semaphore;
 
 /**
 * BitBucket is a filter which simply discards all inputs
@@ -149,7 +149,7 @@ public:
 		m_thread_data.m_input = null;
 		m_thread_data.m_input_length = 0;
 		
-		m_thread_data.m_input_ready_semaphore.release(m_threads.size());
+		m_thread_data.m_input_ready_semaphore.release(m_threads.length);
 		
 		foreach (ref thread; m_threads)
 			thread.join();
@@ -159,14 +159,14 @@ package:
 	void set_next(Filter** f, size_t n)
 	{
 		super.set_next(f, n);
-		n = next.size();
+		n = next.length;
 		
-		if (n < m_threads.size())
+		if (n < m_threads.length)
 			m_threads.resize(n);
 		else
 		{
 			m_threads.reserve(n);
-			for (size_t i = m_threads.size(); i != n; ++i)
+			for (size_t i = m_threads.length; i != n; ++i)
 			{
 				m_threads.push_back(
 					RefCounted!Thread(
@@ -177,8 +177,8 @@ package:
 
 	void send(in ubyte* input, size_t length)
 	{
-		if (write_queue.size())
-			thread_delegate_work(&write_queue[0], write_queue.size());
+		if (write_queue.length)
+			thread_delegate_work(&write_queue[0], write_queue.length);
 		thread_delegate_work(input, length);
 		
 		bool nothing_attached = true;

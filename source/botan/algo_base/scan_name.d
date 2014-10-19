@@ -6,7 +6,7 @@
 */
 module botan.algo_base.scan_name;
 
-import botan.parsing;
+import botan.utils.parsing;
 import botan.utils.exceptn;
 import stdexcept;
 import botan.utils.types;
@@ -37,7 +37,7 @@ public:
 		
 		algo_spec = deref_alias(algo_spec);
 		
-		for (size_t i = 0; i != algo_spec.size(); ++i)
+		for (size_t i = 0; i != algo_spec.length; ++i)
 		{
 			char c = algo_spec[i];
 			
@@ -71,14 +71,14 @@ public:
 		if (level != 0)
 			throw new Decoding_Error(decoding_error ~ "Missing close paren");
 		
-		if (name.size() == 0)
+		if (name.length == 0)
 			throw new Decoding_Error(decoding_error ~ "Empty name");
 		
 		alg_name = name[0].second;
 		
 		bool in_modes = false;
 		
-		for (size_t i = 1; i != name.size(); ++i)
+		for (size_t i = 1; i != name.length; ++i)
 		{
 			if (name[i].first == 0)
 			{
@@ -128,7 +128,7 @@ public:
 	/**
 	* @return number of arguments
 	*/
-	size_t arg_count() const { return args.size(); }
+	size_t arg_count() const { return args.length; }
 	
 	/**
 	* @param lower is the lower bound
@@ -177,13 +177,13 @@ public:
 	* @return cipher mode (if any)
 	*/
 	string cipher_mode() const
-	{ return (mode_info.size() >= 1) ? mode_info[0] : ""; }
+	{ return (mode_info.length >= 1) ? mode_info[0] : ""; }
 	
 	/**
 	* @return cipher mode padding (if any)
 	*/
 	string cipher_mode_pad() const
-	{ return (mode_info.size() >= 2) ? mode_info[1] : ""; }
+	{ return (mode_info.length >= 2) ? mode_info[1] : ""; }
 	
 	static void add_alias(in string _alias, in string basename)
 	{
@@ -262,7 +262,7 @@ string make_arg(in Vector!(Pair!(size_t, string)) name, size_t start)
 	
 	size_t paren_depth = 0;
 	
-	foreach (i; start + 1 .. name.size())
+	foreach (i; start + 1 .. name.length)
 	{
 		if (name[i].first <= name[start].first)
 			break;
@@ -279,7 +279,7 @@ string make_arg(in Vector!(Pair!(size_t, string)) name, size_t start)
 		}
 		else
 		{
-			if (output[output.size() - 1] != '(')
+			if (output[output.length - 1] != '(')
 				output += ",";
 			output += name[i].second;
 		}
@@ -302,7 +302,7 @@ string make_arg(
 
 	size_t paren_depth = 0;
 
-	for (size_t i = start + 1; i != name.size(); ++i)
+	for (size_t i = start + 1; i != name.length; ++i)
 	{
 		if (name[i].first <= name[start].first)
 			break;
@@ -319,7 +319,7 @@ string make_arg(
 		}
 		else
 		{
-			if (output[output.size() - 1] != '(')
+			if (output[output.length - 1] != '(')
 				output += ",";
 			output += name[i].second;
 		}

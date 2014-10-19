@@ -8,7 +8,7 @@ module botan.block.gost_28147;
 
 import botan.block.block_cipher;
 import botan.utils.loadstor;
-import botan.rotate;
+import botan.utils.rotate;
 
 /**
 * The GOST 28147-89 block cipher uses a set of 4 bit Sboxes, however

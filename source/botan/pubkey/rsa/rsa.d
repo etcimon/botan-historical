@@ -6,7 +6,7 @@
 */
 
 import botan.rsa;
-import botan.parsing;
+import botan.utils.parsing;
 import botan.math.numbertheory.numthry;
 import botan.keypair;
 import future;

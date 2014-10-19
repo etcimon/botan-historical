@@ -62,9 +62,9 @@ public:
 		try
 		{
 			Vector!string sig_info =
-				std.algorithm.splitter(oids.lookup(sig_algo.oid), '/');
+				splitter(oids.lookup(sig_algo.oid), '/');
 			
-			if (sig_info.size() != 2 || sig_info[0] != pub_key.algo_name())
+			if (sig_info.length != 2 || sig_info[0] != pub_key.algo_name())
 			{
 				return false;
 			}

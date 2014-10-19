@@ -8,7 +8,7 @@ module botan.cert.x509.x509path;
 
 import botan.cert.x509.ocsp;
 import botan.http_util;
-import botan.parsing;
+import botan.utils.parsing;
 import botan.pubkey;
 import botan.asn1.oid_lookup.oids;
 import std.algorithm;
@@ -105,7 +105,7 @@ public:
 	Set!string trusted_hashes() const
 	{
 		Set!string hashes;
-		for (size_t i = 0; i != m_cert_path.size(); ++i)
+		for (size_t i = 0; i != m_cert_path.length; ++i)
 			hashes.insert(m_cert_path[i].hash_used_for_signature());
 		return hashes;
 	}
@@ -115,7 +115,7 @@ public:
 	*/
 	const ref X509_Certificate trust_root() const
 	{
-		return m_cert_path[m_cert_path.size()-1];
+		return m_cert_path[m_cert_path.length-1];
 	}
 
 	/**
@@ -327,7 +327,7 @@ const X509_Certificate*
 	if (const X509_Certificate* cert = end_certs.find_cert(issuer_dn, auth_key_id))
 		return cert;
 	
-	for (size_t i = 0; i != certstores.size(); ++i)
+	for (size_t i = 0; i != certstores.length; ++i)
 	{
 		if (const X509_Certificate* cert = certstores[i].find_cert(issuer_dn, auth_key_id))
 			return cert;
@@ -339,7 +339,7 @@ const X509_Certificate*
 const X509_CRL* find_crls_for(in X509_Certificate cert,
                               const ref Vector!( Certificate_Store* ) certstores)
 {
-	for (size_t i = 0; i != certstores.size(); ++i)
+	for (size_t i = 0; i != certstores.length; ++i)
 	{
 		if (const X509_CRL* crl = certstores[i].find_crl_for(cert))
 			return crl;
@@ -373,19 +373,19 @@ Vector!( Set<Certificate_Status_Code )
 {
 	const ref Set!string trusted_hashes = restrictions.trusted_hashes();
 	
-	const bool self_signed_ee_cert = (cert_path.size() == 1);
+	const bool self_signed_ee_cert = (cert_path.length == 1);
 	
 	X509_Time current_time(Clock.currTime());
 	
 	Vector!( std::future<ocsp.Response )> ocsp_responses;
 	
-	Vector!( Set<Certificate_Status_Code )> cert_status(cert_path.size());
+	Vector!( Set<Certificate_Status_Code )> cert_status(cert_path.length);
 	
-	for (size_t i = 0; i != cert_path.size(); ++i)
+	for (size_t i = 0; i != cert_path.length; ++i)
 	{
 		Set!Certificate_Status_Code status = cert_status.at(i);
 		
-		const bool at_self_signed_root = (i == cert_path.size() - 1);
+		const bool at_self_signed_root = (i == cert_path.length - 1);
 		
 		const X509_Certificate subject = cert_path[i];
 		
@@ -430,7 +430,7 @@ Vector!( Set<Certificate_Status_Code )
 		}
 	}
 	
-	for (size_t i = 0; i != cert_path.size() - 1; ++i)
+	for (size_t i = 0; i != cert_path.length - 1; ++i)
 	{
 
 		Set<Certificate_Status_Code>& status = cert_status.at(i);
@@ -438,7 +438,7 @@ Vector!( Set<Certificate_Status_Code )
 		const X509_Certificate& subject = cert_path.at(i);
 		const X509_Certificate& ca = cert_path.at(i+1);
 		
-		if (i < ocsp_responses.size())
+		if (i < ocsp_responses.length)
 		{
 			try
 			{

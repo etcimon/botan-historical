@@ -70,7 +70,7 @@ public:
 
 	void encode_into(DER_Encoder to) const
 	{
-		for (size_t i = 0; i != extensions.size(); ++i)
+		for (size_t i = 0; i != extensions.length; ++i)
 		{
 			const Certificate_Extension ext = extensions[i].first;
 			const bool is_critical = extensions[i].second;
@@ -90,7 +90,7 @@ public:
 
 	void decode_from(BER_Decoder from_source)
 	{
-		for (size_t i = 0; i != extensions.size(); ++i)
+		for (size_t i = 0; i != extensions.length; ++i)
 			delete extensions[i].first;
 		extensions.clear();
 		
@@ -137,7 +137,7 @@ public:
 	void contents_to(ref Data_Store subject_info,
 	                 ref Data_Store issuer_info) const
 	{
-		for (size_t i = 0; i != extensions.size(); ++i)
+		for (size_t i = 0; i != extensions.length; ++i)
 			extensions[i].first.contents_to(subject_info, issuer_info);
 	}
 
@@ -148,11 +148,11 @@ public:
 
 	Extensions opAssign(in Extensions other)
 	{
-		for (size_t i = 0; i != extensions.size(); ++i)
+		for (size_t i = 0; i != extensions.length; ++i)
 			delete extensions[i].first;
 		extensions.clear();
 		
-		for (size_t i = 0; i != other.extensions.size(); ++i)
+		for (size_t i = 0; i != other.extensions.length; ++i)
 			extensions.push_back(
 				Pair(other.extensions[i].first.copy(),
 			other.extensions[i].second));
@@ -167,7 +167,7 @@ public:
 	this(bool st = true) { m_throw_on_unknown_critical = st; }
 	~this()
 	{
-		for (size_t i = 0; i != extensions.size(); ++i)
+		for (size_t i = 0; i != extensions.length; ++i)
 			delete extensions[i].first;
 	}
 
@@ -329,16 +329,16 @@ private:
 			throw new BER_Bad_Tag("Bad tag for usage constraint",
 			                      obj.type_tag, obj.class_tag);
 		
-		if (obj.value.size() != 2 && obj.value.size() != 3)
+		if (obj.value.length != 2 && obj.value.length != 3)
 			throw new BER_Decoding_Error("Bad size for BITSTRING in usage constraint");
 		
 		if (obj.value[0] >= 8)
 			throw new BER_Decoding_Error("Invalid unused bits in usage constraint");
 		
-		obj.value[obj.value.size()-1] &= (0xFF << obj.value[0]);
+		obj.value[obj.value.length-1] &= (0xFF << obj.value[0]);
 		
 		ushort usage = 0;
-		for (size_t i = 1; i != obj.value.size(); ++i)
+		for (size_t i = 1; i != obj.value.length; ++i)
 			usage = (obj.value[i] << 8) | usage;
 		
 		constraints = Key_Constraints(usage);
@@ -375,7 +375,7 @@ public:
 private:
 	string oid_name() const { return "X509v3.SubjectKeyIdentifier"; }
 
-	bool should_encode() const { return (key_id.size() > 0); }
+	bool should_encode() const { return (key_id.length > 0); }
 
 	/*
 	* Encode the extension
@@ -419,7 +419,7 @@ public:
 private:
 	string oid_name() const { return "X509v3.AuthorityKeyIdentifier"; }
 
-	bool should_encode() const { return (key_id.size() > 0); }
+	bool should_encode() const { return (key_id.length > 0); }
 
 	/*
 	* Encode the extension
@@ -448,7 +448,7 @@ private:
 	*/
 	void contents_to(ref Data_Store, ref Data_Store issuer) const
 	{
-		if (key_id.size())
+		if (key_id.length)
 			issuer.add("X509v3.AuthorityKeyIdentifier", key_id);
 	}
 
@@ -563,7 +563,7 @@ public:
 private:
 	string oid_name() const { return "X509v3.ExtendedKeyUsage"; }
 
-	bool should_encode() const { return (oids.size() > 0); }
+	bool should_encode() const { return (oids.length > 0); }
 	/*
 * Encode the extension
 */
@@ -589,7 +589,7 @@ private:
 	*/
 	void contents_to(ref Data_Store subject, ref Data_Store) const
 	{
-		for (size_t i = 0; i != oids.size(); ++i)
+		for (size_t i = 0; i != oids.length; ++i)
 			subject.add("X509v3.ExtendedKeyUsage", oids[i].as_string());
 	}
 
@@ -612,7 +612,7 @@ public:
 private:
 	string oid_name() const { return "X509v3.CertificatePolicies"; }
 
-	bool should_encode() const { return (oids.size() > 0); }
+	bool should_encode() const { return (oids.length > 0); }
 
 	/*
 	* Encode the extension
@@ -621,7 +621,7 @@ private:
 	{
 		Vector!( Policy_Information ) policies;
 		
-		for (size_t i = 0; i != oids.size(); ++i)
+		for (size_t i = 0; i != oids.length; ++i)
 			policies.push_back(oids[i]);
 		
 		return DER_Encoder()
@@ -640,7 +640,7 @@ private:
 		BER_Decoder(input).decode_list(policies);
 		
 		oids.clear();
-		for (size_t i = 0; i != policies.size(); ++i)
+		for (size_t i = 0; i != policies.length; ++i)
 			oids.push_back(policies[i].oid);
 	}
 
@@ -649,7 +649,7 @@ private:
 	*/
 	void contents_to(ref Data_Store info, ref Data_Store) const
 	{
-		for (size_t i = 0; i != oids.size(); ++i)
+		for (size_t i = 0; i != oids.length; ++i)
 			info.add("X509v3.CertificatePolicies", oids[i].as_string());
 	}
 
@@ -703,7 +703,7 @@ private:
 				
 				if (name.type_tag == 6 && name.class_tag == ASN1_Tag.CONTEXT_SPECIFIC)
 				{
-					m_ocsp_responder = Charset.transcode(asn1.to_string(name),
+					m_ocsp_responder = transcode(asn1.to_string(name),
 					                                     LATIN1_CHARSET,
 					                                     LOCAL_CHARSET);
 				}
@@ -890,7 +890,7 @@ private:
 
 	void contents_to(ref Data_Store info, ref Data_Store) const
 	{
-		for (size_t i = 0; i != m_distribution_points.size(); ++i)
+		for (size_t i = 0; i != m_distribution_points.length; ++i)
 		{
 			auto point = m_distribution_points[i].point().contents();
 			

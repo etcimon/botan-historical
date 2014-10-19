@@ -40,7 +40,7 @@ private:
 	                             size_t output_bits,
 	                             RandomNumberGenerator)
 	{
-		if (msg.size() != hash_output_length())
+		if (msg.length != hash_output_length())
 			throw new Encoding_Error("encoding_of: Invalid size for input");
 		return emsa1_encoding(msg, output_bits);
 	}
@@ -49,22 +49,22 @@ private:
 	            in SafeVector!ubyte raw, size_t key_bits)
 	{
 		try {
-			if (raw.size() != m_hash.output_length())
+			if (raw.length != m_hash.output_length())
 				throw new Encoding_Error("encoding_of: Invalid size for input");
 			
 			SafeVector!ubyte our_coding = emsa1_encoding(raw, key_bits);
 			
 			if (our_coding == coded) return true;
 			if (our_coding.empty() || our_coding[0] != 0) return false;
-			if (our_coding.size() <= coded.size()) return false;
+			if (our_coding.length <= coded.length) return false;
 			
 			size_t offset = 0;
-			while(offset < our_coding.size() && our_coding[offset] == 0)
+			while(offset < our_coding.length && our_coding[offset] == 0)
 				++offset;
-			if (our_coding.size() - offset != coded.size())
+			if (our_coding.length - offset != coded.length)
 				return false;
 			
-			for (size_t j = 0; j != coded.size(); ++j)
+			for (size_t j = 0; j != coded.length; ++j)
 				if (coded[j] != our_coding[j+offset])
 					return false;
 			
@@ -84,21 +84,21 @@ private:
 SafeVector!ubyte emsa1_encoding(in SafeVector!ubyte msg,
                                 size_t output_bits)
 {
-	if (8*msg.size() <= output_bits)
+	if (8*msg.length <= output_bits)
 		return msg;
 	
-	size_t shift = 8*msg.size() - output_bits;
+	size_t shift = 8*msg.length - output_bits;
 	
 	size_t byte_shift = shift / 8, bit_shift = shift % 8;
-	SafeVector!ubyte digest(msg.size() - byte_shift);
+	SafeVector!ubyte digest(msg.length - byte_shift);
 	
-	for (size_t j = 0; j != msg.size() - byte_shift; ++j)
+	for (size_t j = 0; j != msg.length - byte_shift; ++j)
 		digest[j] = msg[j];
 	
 	if (bit_shift)
 	{
 		ubyte carry = 0;
-		for (size_t j = 0; j != digest.size(); ++j)
+		for (size_t j = 0; j != digest.length; ++j)
 		{
 			ubyte temp = digest[j];
 			digest[j] = (temp >> bit_shift) | carry;

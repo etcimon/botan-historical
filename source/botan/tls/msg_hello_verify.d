@@ -11,7 +11,7 @@ namespace TLS {
 
 Hello_Verify_Request::Hello_Verify_Request(in Vector!ubyte buf)
 {
-	if (buf.size() < 3)
+	if (buf.length < 3)
 		throw new Decoding_Error("Hello verify request too small");
 
 	Protocol_Version version(buf[0], buf[1]);
@@ -22,10 +22,10 @@ Hello_Verify_Request::Hello_Verify_Request(in Vector!ubyte buf)
 		throw new Decoding_Error("Unknown version from server in hello verify request");
 	}
 
-	if (cast(size_t)(buf[2]) + 3 != buf.size())
+	if (cast(size_t)(buf[2]) + 3 != buf.length)
 		throw new Decoding_Error("Bad length in hello verify request");
 
-	m_cookie.assign(&buf[3], &buf[buf.size()]);
+	m_cookie.assign(&buf[3], &buf[buf.length]);
 }
 
 Hello_Verify_Request::Hello_Verify_Request(in Vector!ubyte client_hello_bits,
@@ -35,9 +35,9 @@ Hello_Verify_Request::Hello_Verify_Request(in Vector!ubyte client_hello_bits,
 	Unique!MessageAuthenticationCode hmac = get_mac("HMAC(SHA-256)");
 	hmac.set_key(secret_key);
 
-	hmac.update_be(client_hello_bits.size());
+	hmac.update_be(client_hello_bits.length);
 	hmac.update(client_hello_bits);
-	hmac.update_be(client_identity.size());
+	hmac.update_be(client_identity.length);
 	hmac.update(client_identity);
 
 	m_cookie = unlock(hmac.flush());
@@ -55,7 +55,7 @@ Vector!ubyte Hello_Verify_Request::serialize() const
 	Vector!ubyte bits;
 	bits.push_back(format_version.major_version());
 	bits.push_back(format_version.minor_version());
-	bits.push_back(cast(ubyte)(m_cookie.size()));
+	bits.push_back(cast(ubyte)(m_cookie.length));
 	bits += m_cookie;
 	return bits;
 }

@@ -9,7 +9,7 @@ module botan.hash.tiger;
 import botan.hash.mdx_hash;
 import botan.utils.exceptn;
 import botan.utils.loadstor;
-import botan.parsing;
+import botan.utils.parsing;
 /**
 * Tiger
 */
@@ -75,7 +75,7 @@ private:
 		
 		for (size_t i = 0; i != blocks; ++i)
 		{
-			load_le(&X[0], input, X.size());
+			load_le(&X[0], input, X.length);
 			
 			pass(A, B, C, X, 5); mix(X);
 			pass(C, A, B, X, 7); mix(X);

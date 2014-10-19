@@ -11,7 +11,7 @@ import botan.stream.stream_cipher;
 import botan.mac.mac;
 import botan.cmac.cmac;
 import botan.ctr;
-import botan.parsing;
+import botan.utils.parsing;
 import botan.internal.xor_buf;
 import std.algorithm;
 
@@ -28,7 +28,7 @@ public:
 		
 		m_nonce_mac = eax_prf(0, block_size(), *m_cmac, nonce, nonce_len);
 		
-		m_ctr.set_iv(&m_nonce_mac[0], m_nonce_mac.size());
+		m_ctr.set_iv(&m_nonce_mac[0], m_nonce_mac.length);
 		
 		for (size_t i = 0; i != block_size() - 1; ++i)
 			m_cmac.update(0);
@@ -134,8 +134,8 @@ public:
 
 	override void update(SafeVector!ubyte buffer, size_t offset = 0)
 	{
-		BOTAN_ASSERT(buffer.size() >= offset, "Offset is sane");
-		const size_t sz = buffer.size() - offset;
+		BOTAN_ASSERT(buffer.length >= offset, "Offset is sane");
+		const size_t sz = buffer.length - offset;
 		ubyte* buf = &buffer[offset];
 		
 		m_ctr.cipher(buf, buf, sz);
@@ -147,8 +147,8 @@ public:
 		update(buffer, offset);
 		
 		SafeVector!ubyte data_mac = m_cmac.flush();
-		xor_buf(data_mac, m_nonce_mac, data_mac.size());
-		xor_buf(data_mac, m_ad_mac, data_mac.size());
+		xor_buf(data_mac, m_nonce_mac, data_mac.length);
+		xor_buf(data_mac, m_ad_mac, data_mac.length);
 		
 		buffer += Pair(&data_mac[0], tag_size());
 	}
@@ -179,8 +179,8 @@ public:
 
 	override void update(SafeVector!ubyte buffer, size_t offset = 0)
 	{
-		BOTAN_ASSERT(buffer.size() >= offset, "Offset is sane");
-		const size_t sz = buffer.size() - offset;
+		BOTAN_ASSERT(buffer.length >= offset, "Offset is sane");
+		const size_t sz = buffer.length - offset;
 		ubyte* buf = &buffer[offset];
 		
 		m_cmac.update(buf, sz);
@@ -189,8 +189,8 @@ public:
 
 	override void finish(SafeVector!ubyte buffer, size_t offset = 0)
 	{
-		BOTAN_ASSERT(buffer.size() >= offset, "Offset is sane");
-		const size_t sz = buffer.size() - offset;
+		BOTAN_ASSERT(buffer.length >= offset, "Offset is sane");
+		const size_t sz = buffer.length - offset;
 		ubyte* buf = &buffer[offset];
 		
 		BOTAN_ASSERT(sz >= tag_size(), "Have the tag as part of final input");

@@ -1549,15 +1549,15 @@ word word_madd2(word a, word b, word* c)
 	} else {
 		static_assert(BOTAN_MP_WORD_BITS == 64, "Unexpected word size");
 		
-		word hi = 0, lo = 0;
+		word[2] res;
 		
-		mul64x64_128(a, b, &lo, &hi);
+		mul64x64_128(a, b, &res);
 		
-		lo += *c;
-		hi += (lo < *c); // carry?
+		res[0] += *c;
+		res[1] += (res[0] < *c); // carry?
 		
-		*c = hi;
-		return lo;
+		*c = res[1];
+		return res[0];
 	}
 }
 
@@ -1573,18 +1573,18 @@ word word_madd3(word a, word b, word c, word* d)
 	} else {
 		static_assert(BOTAN_MP_WORD_BITS == 64, "Unexpected word size");
 		
-		word hi = 0, lo = 0;
+		word[2] res = 0;
 		
-		mul64x64_128(a, b, &lo, &hi);
+		mul64x64_128(a, b, &res);
 		
-		lo += c;
-		hi += (lo < c); // carry?
+		res[0] += c;
+		res[1] += (res[0] < c); // carry?
 		
-		lo += *d;
-		hi += (lo < *d); // carry?
+		res[0] += *d;
+		res[1] += (res[0] < *d); // carry?
 		
-		*d = hi;
-		return lo;
+		*d = res[1];
+		return res[0];
 	}
 }
 

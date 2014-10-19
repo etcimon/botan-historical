@@ -42,7 +42,7 @@ public:
 	{
 		while(length)
 		{
-			size_t copied = std.algorithm.min(length, buffer.size());
+			size_t copied = std.algorithm.min(length, buffer.length);
 			cipher.cipher(input, &buffer[0], copied);
 			send(buffer, copied);
 			input += copied;
@@ -142,7 +142,7 @@ public:
 	{
 		SafeVector!ubyte output = hash.flush();
 		if (OUTPUT_LENGTH)
-			send(output, std.algorithm.min(OUTPUT_LENGTH, output.size()));
+			send(output, std.algorithm.min(OUTPUT_LENGTH, output.length));
 		else
 			send(output);
 	}
@@ -200,7 +200,7 @@ public:
 	{
 		SafeVector!ubyte output = mac.flush();
 		if (OUTPUT_LENGTH)
-			send(output, std.algorithm.min(OUTPUT_LENGTH, output.size()));
+			send(output, std.algorithm.min(OUTPUT_LENGTH, output.length));
 		else
 			send(output);
 	}

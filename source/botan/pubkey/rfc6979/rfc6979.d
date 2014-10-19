@@ -24,7 +24,7 @@ BigInt generate_rfc6979_nonce(in BigInt x,
 
 	input += BigInt.encode_1363(h, rlen);
 
-	rng.add_entropy(&input[0], input.size());
+	rng.add_entropy(&input[0], input.length);
 
 	BigInt k;
 
@@ -32,7 +32,7 @@ BigInt generate_rfc6979_nonce(in BigInt x,
 
 	while(k == 0 || k >= q)
 	{
-		rng.randomize(&kbits[0], kbits.size());
+		rng.randomize(&kbits[0], kbits.length);
 		k = BigInt.decode(kbits) >> (8*rlen - qlen);
 	}
 

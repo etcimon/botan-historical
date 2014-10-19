@@ -8,7 +8,7 @@ module botan.hash.md4;
 
 import botan.hash.mdx_hash;
 import botan.utils.loadstor;
-import botan.rotate;
+import botan.utils.rotate;
 /**
 * MD4
 */
@@ -49,7 +49,7 @@ package:
 		
 		for (size_t i = 0; i != blocks; ++i)
 		{
-			load_le(&M[0], input, M.size());
+			load_le(&M[0], input, M.length);
 			
 			FF(A,B,C,D,M[ 0], 3);	FF(D,A,B,C,M[ 1], 7);
 			FF(C,D,A,B,M[ 2],11);	FF(B,C,D,A,M[ 3],19);

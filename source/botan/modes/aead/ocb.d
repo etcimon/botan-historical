@@ -187,8 +187,8 @@ public:
 
 	override void update(SafeVector!ubyte buffer, size_t offset = 0)
 	{
-		BOTAN_ASSERT(buffer.size() >= offset, "Offset is sane");
-		const size_t sz = buffer.size() - offset;
+		BOTAN_ASSERT(buffer.length >= offset, "Offset is sane");
+		const size_t sz = buffer.length - offset;
 		ubyte* buf = &buffer[offset];
 		
 		BOTAN_ASSERT(sz % BS == 0, "Input length is an even number of blocks");
@@ -199,8 +199,8 @@ public:
 
 	override void finish(SafeVector!ubyte buffer, size_t offset = 0)
 	{
-		BOTAN_ASSERT(buffer.size() >= offset, "Offset is sane");
-		const size_t sz = buffer.size() - offset;
+		BOTAN_ASSERT(buffer.length >= offset, "Offset is sane");
+		const size_t sz = buffer.length - offset;
 		ubyte* buf = &buffer[offset];
 		
 		if (sz)
@@ -229,8 +229,8 @@ public:
 		SafeVector!ubyte checksum(BS);
 		
 		// fold checksum
-		for (size_t i = 0; i != m_checksum.size(); ++i)
-			checksum[i % checksum.size()] ^= m_checksum[i];
+		for (size_t i = 0; i != m_checksum.length; ++i)
+			checksum[i % checksum.length] ^= m_checksum[i];
 		
 		// now compute the tag
 		SafeVector!ubyte mac = m_offset;
@@ -253,7 +253,7 @@ private:
 	{
 		const L_computer L = *m_L; // convenient name
 		
-		const size_t par_blocks = m_checksum.size() / BS;
+		const size_t par_blocks = m_checksum.length / BS;
 		
 		while(blocks)
 		{
@@ -297,8 +297,8 @@ public:
 
 	override void update(SafeVector!ubyte buffer, size_t offset)
 	{
-		BOTAN_ASSERT(buffer.size() >= offset, "Offset is sane");
-		const size_t sz = buffer.size() - offset;
+		BOTAN_ASSERT(buffer.length >= offset, "Offset is sane");
+		const size_t sz = buffer.length - offset;
 		ubyte* buf = &buffer[offset];
 		
 		BOTAN_ASSERT(sz % BS == 0, "Input length is an even number of blocks");
@@ -308,8 +308,8 @@ public:
 
 	override void finish(SafeVector!ubyte buffer, size_t offset = 0)
 	{
-		BOTAN_ASSERT(buffer.size() >= offset, "Offset is sane");
-		const size_t sz = buffer.size() - offset;
+		BOTAN_ASSERT(buffer.length >= offset, "Offset is sane");
+		const size_t sz = buffer.length - offset;
 		ubyte* buf = &buffer[offset];
 		
 		BOTAN_ASSERT(sz >= tag_size(), "We have the tag");
@@ -344,8 +344,8 @@ public:
 		SafeVector!ubyte checksum(BS);
 		
 		// fold checksum
-		for (size_t i = 0; i != m_checksum.size(); ++i)
-			checksum[i % checksum.size()] ^= m_checksum[i];
+		for (size_t i = 0; i != m_checksum.length; ++i)
+			checksum[i % checksum.length] ^= m_checksum[i];
 		
 		// compute the mac
 		SafeVector!ubyte mac = m_offset;
@@ -443,7 +443,7 @@ public:
 private:
 	const SafeVector!ubyte get(size_t i)
 	{
-		while(m_L.size() <= i)
+		while(m_L.length <= i)
 			m_L.push_back(poly_double(m_L.back()));
 		
 		return m_L.at(i);

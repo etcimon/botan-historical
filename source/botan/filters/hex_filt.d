@@ -8,7 +8,7 @@ module botan.filters.hex_filt;
 
 import botan.filters.filter;
 import botan.codec.hex;
-import botan.parsing;
+import botan.utils.parsing;
 import botan.utils.charset;
 import botan.utils.exceptn;
 import std.algorithm;
@@ -33,16 +33,16 @@ public:
 	void write(in ubyte* input, size_t length)
 	{
 		buffer_insert(input, position, input, length);
-		if (position + length >= input.size())
+		if (position + length >= input.length)
 		{
-			encode_and_send(&input[0], input.size());
-			input += (input.size() - position);
-			length -= (input.size() - position);
-			while(length >= input.size())
+			encode_and_send(&input[0], input.length);
+			input += (input.length - position);
+			length -= (input.length - position);
+			while(length >= input.length)
 			{
-				encode_and_send(input, input.size());
-				input += input.size();
-				length -= input.size();
+				encode_and_send(input, input.length);
+				input += input.length;
+				length -= input.length;
 			}
 			copy_mem(&input[0], input, length);
 			position = 0;
@@ -71,7 +71,7 @@ public:
 		casing = the_case;
 		line_length = 0;
 		input.resize(HEX_CODEC_BUFFER_SIZE);
-		output.resize(2*input.size());
+		output.resize(2*input.length);
 		counter = position = 0;
 	}
 
@@ -89,7 +89,7 @@ public:
 		casing = the_case;
 		line_length = newlines ? length : 0;
 		input.resize(HEX_CODEC_BUFFER_SIZE);
-		output.resize(2*input.size());
+		output.resize(2*input.length);
 		counter = position = 0;
 	}
 private:
@@ -145,7 +145,7 @@ public:
 	{
 		while(length)
 		{
-			size_t to_copy = std.algorithm.min(length, input.size() - position);
+			size_t to_copy = std.algorithm.min(length, input.length - position);
 			copy_mem(&input[position], input, to_copy);
 			position += to_copy;
 			
@@ -203,7 +203,7 @@ public:
 	{
 		checking = c;
 		input.resize(HEX_CODEC_BUFFER_SIZE);
-		output.resize(input.size() / 2);
+		output.resize(input.length / 2);
 		position = 0;
 	}
 private:

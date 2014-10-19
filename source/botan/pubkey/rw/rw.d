@@ -8,7 +8,7 @@
 import botan.rw;
 import botan.math.numbertheory.numthry;
 import botan.keypair;
-import botan.parsing;
+import botan.utils.parsing;
 import std.algorithm;
 import future;
 /*

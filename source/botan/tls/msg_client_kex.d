@@ -25,7 +25,7 @@ SafeVector!ubyte strip_leading_zeros(in SafeVector!ubyte input)
 {
 	size_t leading_zeros = 0;
 
-	for (size_t i = 0; i != input.size(); ++i)
+	for (size_t i = 0; i != input.length; ++i)
 	{
 		if (input[i] != 0)
 			break;
@@ -33,7 +33,7 @@ SafeVector!ubyte strip_leading_zeros(in SafeVector!ubyte input)
 	}
 
 	SafeVector!ubyte output = SafeVector!ubyte(&input[leading_zeros],
-										&input[input.size()]);
+										&input[input.length]);
 	return output;
 }
 
@@ -310,7 +310,7 @@ Client_Key_Exchange::Client_Key_Exchange(in Vector!ubyte contents,
 				m_pre_master = decryptor.decrypt(reader.get_range!ubyte(2, 0, 65535));
 			}
 
-			if (m_pre_master.size() != 48 ||
+			if (m_pre_master.length != 48 ||
 				client_version.major_version() != m_pre_master[0] ||
 				client_version.minor_version() != m_pre_master[1])
 			{
@@ -402,7 +402,7 @@ Client_Key_Exchange::Client_Key_Exchange(in Vector!ubyte contents,
 				* on, allowing the protocol to fail later in the finished
 				* checks.
 				*/
-				m_pre_master = rng.random_vec(ka_key.public_value().size());
+				m_pre_master = rng.random_vec(ka_key.public_value().length);
 			}
 		}
 		else

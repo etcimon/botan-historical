@@ -95,8 +95,8 @@ private:
 		if (length > m_hash.hash_block_size())
 		{
 			SafeVector!ubyte hmac_key = m_hash.process(key, length);
-			xor_buf(m_ikey, hmac_key, hmac_key.size());
-			xor_buf(m_okey, hmac_key, hmac_key.size());
+			xor_buf(m_ikey, hmac_key, hmac_key.length);
+			xor_buf(m_okey, hmac_key, hmac_key.length);
 		}
 		else
 		{

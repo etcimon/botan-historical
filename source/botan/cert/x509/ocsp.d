@@ -204,9 +204,9 @@ void check_signature(in Vector!ubyte tbs_response,
 	Unique!Public_Key pub_key = cert.subject_public_key();
 	
 	const Vector!string sig_info =
-		std.algorithm.splitter(oids.lookup(sig_algo.oid), '/');
+		splitter(oids.lookup(sig_algo.oid), '/');
 	
-	if (sig_info.size() != 2 || sig_info[0] != pub_key.algo_name())
+	if (sig_info.length != 2 || sig_info[0] != pub_key.algo_name())
 		throw new Exception("Information in OCSP response does not match cert");
 	
 	string padding = sig_info[1];
@@ -227,7 +227,7 @@ void check_signature(in Vector!ubyte tbs_response,
                      const ref Certificate_Store trusted_roots,
                      const ref Vector!( X509_Certificate ) certs)
 {
-	if (certs.size() < 1)
+	if (certs.length < 1)
 		throw new Invalid_Argument("Short cert chain for check_signature");
 	
 	if (trusted_roots.certificate_known(certs[0]))

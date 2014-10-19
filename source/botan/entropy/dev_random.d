@@ -43,7 +43,7 @@ public:
 		int max_fd = m_devices[0];
 		fd_set read_set;
 		FD_ZERO(&read_set);
-		for (size_t i = 0; i != m_devices.size(); ++i)
+		for (size_t i = 0; i != m_devices.length; ++i)
 		{
 			FD_SET(m_devices[i], &read_set);
 			max_fd = std.algorithm.max(m_devices[i], max_fd);
@@ -59,11 +59,11 @@ public:
 		
 		SafeVector!ubyte io_buffer = accum.get_io_buffer(READ_ATTEMPT);
 		
-		for (size_t i = 0; i != m_devices.size(); ++i)
+		for (size_t i = 0; i != m_devices.length; ++i)
 		{
 			if (FD_ISSET(m_devices[i], &read_set))
 			{
-				const ssize_t got = read(m_devices[i], &io_buffer[0], io_buffer.size());
+				const ssize_t got = read(m_devices[i], &io_buffer[0], io_buffer.length);
 				if (got > 0)
 					accum.add(&io_buffer[0], got, ENTROPY_BITS_PER_BYTE);
 			}
@@ -95,7 +95,7 @@ public:
 
 	~this()
 	{
-		for (size_t i = 0; i != m_devices.size(); ++i)
+		for (size_t i = 0; i != m_devices.length; ++i)
 			close(m_devices[i]);
 	}
 private:

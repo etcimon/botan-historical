@@ -21,10 +21,10 @@ void ANSI_X931_RNG::randomize(ubyte* output)
 
 	while(length)
 	{
-		if (m_R_pos == m_R.size())
+		if (m_R_pos == m_R.length)
 			update_buffer();
 
-		const size_t copied = std.algorithm.min(length, m_R.size() - m_R_pos);
+		const size_t copied = std.algorithm.min(length, m_R.length - m_R_pos);
 
 		copy_mem(output, &m_R[m_R_pos], copied);
 		output += copied;
@@ -63,9 +63,9 @@ void ANSI_X931_RNG::rekey()
 	{
 		m_cipher.set_key(m_prng.random_vec(m_cipher.maximum_keylength()));
 
-		if (m_V.size() != BLOCK_SIZE)
+		if (m_V.length != BLOCK_SIZE)
 			m_V.resize(BLOCK_SIZE);
-		m_prng.randomize(&m_V[0], m_V.size());
+		m_prng.randomize(&m_V[0], m_V.length);
 
 		update_buffer();
 	}
@@ -85,7 +85,7 @@ void ANSI_X931_RNG::add_entropy(in ubyte* input, size_t length)
 
 bool ANSI_X931_RNG::is_seeded() const
 {
-	return (m_V.size() > 0);
+	return (m_V.length > 0);
 }
 
 void ANSI_X931_RNG::clear()

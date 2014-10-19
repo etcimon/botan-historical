@@ -110,7 +110,7 @@ class DataSource_Memory : DataSource
 public:
 	size_t read(ubyte* output, size_t length)
 	{
-		size_t got = std.algorithm.min(source.size() - offset, length);
+		size_t got = std.algorithm.min(source.length - offset, length);
 		copy_mem(output, &source[offset], got);
 		offset += got;
 		return got;
@@ -123,7 +123,7 @@ public:
 	            size_t peek_offset) const
 	{
 		size_t length = output.length;
-		const size_t bytes_left = source.size() - offset;
+		const size_t bytes_left = source.length - offset;
 		if (peek_offset >= bytes_left) return 0;
 		
 		size_t got = std.algorithm.min(bytes_left - peek_offset, length);
@@ -136,7 +136,7 @@ public:
 	*/
 	bool end_of_data() const
 	{
-		return (offset == source.size());
+		return (offset == source.length);
 	}
 
 
@@ -178,7 +178,7 @@ public:
 	* @param input the MemoryRegion to read from
 	*/
 	this(in Vector!ubyte input) {
-		source = SafeVector!ubyte(&input[0], &input[input.size()]);
+		source = SafeVector!ubyte(&input[0], &input[input.length]);
 		offset = 0;
 	}
 

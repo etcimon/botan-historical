@@ -221,7 +221,7 @@ public:
 			Ps[0] = PointGFp(curve);
 			Ps[1] = point;
 			
-			for (size_t i = 2; i != Ps.size(); ++i)
+			for (size_t i = 2; i != Ps.length; ++i)
 			{
 				Ps[i] = Ps[i-1];
 				Ps[i].add(point, ws);
@@ -476,8 +476,8 @@ private:
 		z.clear();
 		
 		bigint_monty_mul(z.mutable_data(), output_size,
-		                 x.data(), x.size(), x.sig_words(),
-		                 y.data(), y.size(), y.sig_words(),
+		                 x.data(), x.length, x.sig_words(),
+		                 y.data(), y.length, y.sig_words(),
 		                 p.data(), p_size, p_dash,
 		                 &ws[0]);
 	}
@@ -519,7 +519,7 @@ private:
 		z.clear();
 		
 		bigint_monty_sqr(z.mutable_data(), output_size,
-		                 x.data(), x.size(), x.sig_words(),
+		                 x.data(), x.length, x.sig_words(),
 		                 p.data(), p_size, p_dash,
 		                 &ws[0]);
 	}
@@ -818,7 +818,7 @@ PointGFp OS2ECP(in ubyte* data, size_t data_len,
 }
 
 PointGFp OS2ECP(Alloc)(in Vector!( ubyte, Alloc ) data, const CurveGFp& curve)
-{ return OS2ECP(&data[0], data.size(), curve); }
+{ return OS2ECP(&data[0], data.length, curve); }
 
 void swap(ref PointGFp x, ref PointGFp y)
 { import std.algorithm : swap; x.swap(y); }

@@ -29,7 +29,7 @@ void mgf1_mask(HashFunction hash,
 		hash.update_be(counter);
 		SafeVector!ubyte buffer = hash.flush();
 		
-		size_t xored = std.algorithm.min(buffer.size(), out_len);
+		size_t xored = std.algorithm.min(buffer.length, out_len);
 		xor_buf(output, &buffer[0], xored);
 		output += xored;
 		out_len -= xored;

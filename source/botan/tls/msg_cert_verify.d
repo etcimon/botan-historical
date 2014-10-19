@@ -33,7 +33,7 @@ Certificate_Verify::Certificate_Verify(Handshake_IO& io,
 			state.session_keys().master_secret());
 
 		if (priv_key.algo_name() == "DSA")
-			m_signature = signer.sign_message(&md5_sha[16], md5_sha.size()-16, rng);
+			m_signature = signer.sign_message(&md5_sha[16], md5_sha.length-16, rng);
 		else
 			m_signature = signer.sign_message(md5_sha, rng);
 	}
@@ -75,7 +75,7 @@ Vector!ubyte Certificate_Verify::serialize() const
 		buf.push_back(Signature_Algorithms::sig_algo_code(m_sig_algo));
 	}
 
-	const ushort sig_len = m_signature.size();
+	const ushort sig_len = m_signature.length;
 	buf.push_back(get_byte(0, sig_len));
 	buf.push_back(get_byte(1, sig_len));
 	buf += m_signature;
@@ -101,8 +101,8 @@ bool Certificate_Verify::verify(const X509_Certificate cert,
 		SafeVector!ubyte md5_sha = state.hash().final_ssl3(
 			state.session_keys().master_secret());
 
-		return verifier.verify_message(&md5_sha[16], md5_sha.size()-16,
-												 &m_signature[0], m_signature.size());
+		return verifier.verify_message(&md5_sha[16], md5_sha.length-16,
+												 &m_signature[0], m_signature.length);
 	}
 
 	return verifier.verify_message(state.hash().get_contents(), m_signature);

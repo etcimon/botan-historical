@@ -1,271 +1,342 @@
 /*
 * Various string utils and parsing functions
-* (C) 1999-2007,2013,2014 Jack Lloyd
+* (C) 1999-2007,2013 Jack Lloyd
 *
-* Distributed under the terms of the Botan license
+* Distributed under the terms of the botan license.
 */
 
-import botan.parsing;
+import botan.utils.types;
+import string;
+import vector;
+import botan.utils.parsing;
 import botan.utils.exceptn;
 import botan.utils.charset;
 import botan.utils.get_byte;
-import set;
-uint to_uint(in string str)
-{
-	return std::stoul(str, null);
-}
-
+import istream;
+import functional;
+import map;
+/**
+* Parse a SCAN-style algorithm name
+* @param scan_name the name
+* @return the name components
+*/
 /*
 * Parse a SCAN-style algorithm name
 */
-Vector!string parse_algorithm_name(in string namex)
+Vector!string parse_algorithm_name(in string scan_name)
 {
-	if (namex.find('(') == string::npos &&
-		namex.find(')') == string::npos)
-		return Vector!string(1, namex);
-
-	string name = namex, substring;
+	import std.array : Appender;
+	if (scan_name.find('(') == -1 &&
+	    scan_name.find(')') == -1)
+		return Vector!string(1, scan_name);
+	
+	string name = scan_name;
+	Appender!string substring;
 	Vector!string elems;
 	size_t level = 0;
-
-	elems.push_back(name.substr(0, name.find('(')));
-	name = name.substr(name.find('('));
-
-	for (auto i = name.begin(); i != name.end(); ++i)
+	
+	elems.push_back(name[0 .. name.find('(')]);
+	name = name[name.find('(') .. $];
+	
+	foreach(size_t pos, const char c; name)
 	{
-		char c = *i;
-
+		
 		if (c == '(')
 			++level;
 		if (c == ')')
 		{
-			if (level == 1 && i == name.end() - 1)
+			if (level == 1 && pos == (name.length - 1))
 			{
-				if (elems.size() == 1)
-					elems.push_back(substring.substr(1));
+				if (elems.length == 1)
+					elems.push_back(substring.data[1 .. $]);
 				else
-					elems.push_back(substring);
+					elems.push_back(substring.data);
 				return elems;
 			}
-
-			if (level == 0 || (level == 1 && i != name.end() - 1))
-				throw new Invalid_Algorithm_Name(namex);
+			
+			if (level == 0 || (level == 1 && pos != (name.length - 1)))
+				throw new Invalid_Algorithm_Name(scan_name);
 			--level;
 		}
-
+		
 		if (c == ',' && level == 1)
 		{
-			if (elems.size() == 1)
-				elems.push_back(substring.substr(1));
+			if (elems.length == 1)
+				elems.push_back(substring.data[1 .. $]);
 			else
-				elems.push_back(substring);
+				elems.push_back(substring.data);
 			substring.clear();
 		}
 		else
-			substring += c;
+			substring ~= c;
 	}
-
-	if (substring != "")
-		throw new Invalid_Algorithm_Name(namex);
-
+	
+	if (substring.length > 0)
+		throw new Invalid_Algorithm_Name(scan_name);
+	
 	return elems;
 }
 
-Vector!string std.algorithm.splitter(in string str, char delim)
+/**
+* Split a string
+* @param str the input string
+* @param delim the delimitor
+* @return string split by delim
+*/
+Vector!string splitter(in string str, char delim)
 {
-	return split_on_pred(str, [delim](char c) { return c == delim; });
+	return split_on_pred(str, (char c) { return c == delim; });
 }
 
+/**
+* Split a string on a character predicate
+* @param str the input string
+*/
 Vector!string split_on_pred(in string str,
-									bool delegate(char) pred)
+                            bool delegate(char) pred)
 {
 	Vector!string elems;
 	if (str == "") return elems;
-
+	import std.array : Appender;
 	string substr;
-	for (auto i = str.begin(); i != str.end(); ++i)
+	foreach(const char c; str)
 	{
-		if (pred(*i))
+		if (pred(c))
 		{
-			if (substr != "")
-				elems.push_back(substr);
+			if (substr.length > 0)
+				elems.push_back(substr.data);
 			substr.clear();
 		}
 		else
-			substr += *i;
+			substr ~= c;
 	}
-
-	if (substr == "")
+	
+	if (substr.length > 0)
 		throw new Invalid_Argument("Unable to split string: " ~ str);
-	elems.push_back(substr);
-
+	elems.push_back(substr.data);
+	
 	return elems;
 }
 
-/*
+/**
+* Erase characters from a string
+*/
+string erase_chars(in string str, in char[] chars)
+{
+	import std.algorithm : canFind;
+	import std.array : Appender;
+	Appender!string output;
+	
+	foreach(const char c; str)
+		if (!chars.canFind(c))
+			output ~= c;
+	
+	return output.data;
+}
+
+/**
+* Replace a character in a string
+* @param str the input string
+* @param from_char the character to replace
+* @param to_char the character to replace it with
+* @return str with all instances of from_char replaced by to_char
+*/
+string replace_char(in string str, in char from_char, in char to_char)
+{
+	string output = str.dup;
+	
+	foreach (ref char c; output)
+		if (c == from_char)
+			c = to_char;
+	
+	return output;
+}
+
+/**
+* Replace a character in a string
+* @param str the input string
+* @param from_chars the characters to replace
+* @param to_char the character to replace it with
+* @return str with all instances of from_chars replaced by to_char
+*/
+
+string replace_chars(in string str,
+                     in char[] chars,
+					 in char to_char)
+{
+	import std.algorithm : canFind;
+	string output = str.dup;
+	
+	foreach (ref char c; output)
+		if (chars.canFind(c))
+			c = to_char;
+	
+	return output;
+}
+
+/**
 * Join a string
+* @param strs strings to join
+* @param delim the delimitor
+* @return string joined by delim
 */
 string string_join(in Vector!string strs, char delim)
 {
-	string out = "";
-
-	for (size_t i = 0; i != strs.size(); ++i)
+	import std.array : Appender;
+	Appender!string output;
+	bool first = true;
+	foreach (str; strs)
 	{
-		if (i != 0)
-			out += delim;
-		out += strs[i];
+		if (!first)
+			output ~= delim;
+		else first = false;
+		output ~= str;
 	}
-
-	return out;
+	
+	return output.data;
 }
 
-/*
-* Parse an ASN.1 OID string
+/**
+* Parse an ASN.1 OID
+* @param oid the OID in string form
+* @return OID components
 */
 Vector!uint parse_asn1_oid(in string oid)
 {
-	string substring;
+	import std.array : Appender;
+	Appender!string substring;
 	Vector!uint oid_elems;
-
-	for (auto i = oid.begin(); i != oid.end(); ++i)
+	
+	foreach (char c; oid)
 	{
-		char c = *i;
-
+		
 		if (c == '.')
 		{
-			if (substring == "")
+			if (substring.length == 0)
 				throw new Invalid_OID(oid);
-			oid_elems.push_back(to_uint(substring));
+			oid_elems.push_back(to_uint(substring.data));
 			substring.clear();
 		}
 		else
-			substring += c;
+			substring ~= c;
 	}
-
-	if (substring == "")
+	
+	if (substring.length == 0)
 		throw new Invalid_OID(oid);
-	oid_elems.push_back(to_uint(substring));
-
-	if (oid_elems.size() < 2)
+	oid_elems.push_back(to_uint(substring.data));
+	
+	if (oid_elems.length < 2)
 		throw new Invalid_OID(oid);
-
+	
 	return oid_elems;
 }
 
-/*
-* X.500 String Comparison
+/**
+* Compare two names using the X.509 comparison algorithm
+* @param name1 the first name
+* @param name2 the second name
+* @return true if name1 is the same as name2 by the X.509 comparison rules
 */
 bool x500_name_cmp(in string name1, in string name2)
 {
-	auto p1 = name1.begin();
-	auto p2 = name2.begin();
-
-	while((p1 != name1.end()) && Charset.is_space(*p1)) ++p1;
-	while((p2 != name2.end()) && Charset.is_space(*p2)) ++p2;
-
+	auto p1 = name1.ptr;
+	auto p2 = name2.ptr;
+	
+	while((p1 != name1.end()) && is_space(*p1)) ++p1;
+	while((p2 != name2.end()) && is_space(*p2)) ++p2;
+	
 	while(p1 != name1.end() && p2 != name2.end())
 	{
-		if (Charset.is_space(*p1))
+		if (is_space(*p1))
 		{
-			if (!Charset.is_space(*p2))
+			if (!is_space(*p2))
 				return false;
-
-			while((p1 != name1.end()) && Charset.is_space(*p1)) ++p1;
-			while((p2 != name2.end()) && Charset.is_space(*p2)) ++p2;
-
+			
+			while((p1 != name1.end()) && is_space(*p1)) ++p1;
+			while((p2 != name2.end()) && is_space(*p2)) ++p2;
+			
 			if (p1 == name1.end() && p2 == name2.end())
 				return true;
 		}
-
-		if (!Charset.caseless_cmp(*p1, *p2))
+		
+		if (!caseless_cmp(*p1, *p2))
 			return false;
 		++p1;
 		++p2;
 	}
-
-	while((p1 != name1.end()) && Charset.is_space(*p1)) ++p1;
-	while((p2 != name2.end()) && Charset.is_space(*p2)) ++p2;
-
+	
+	while((p1 != name1.end()) && is_space(*p1)) ++p1;
+	while((p2 != name2.end()) && is_space(*p2)) ++p2;
+	
 	if ((p1 != name1.end()) || (p2 != name2.end()))
 		return false;
 	return true;
 }
 
-/*
-* Convert a decimal-dotted string to binary IP
+/**
+* Convert a string to a number
+* @param str the string to convert
+* @return number value of the string
+*/
+uint to_uint(in string str)
+{
+	import std.conv : to;
+	str.to!uint;
+}
+
+/**
+* Convert a string representation of an IPv4 address to a number
+* @param ip_str the string representation
+* @return integer IPv4 address
 */
 uint string_to_ipv4(in string str)
 {
-	Vector!string parts = std.algorithm.splitter(str, '.');
-
-	if (parts.size() != 4)
+	Vector!string parts = splitter(str, '.');
+	
+	if (parts.length != 4)
 		throw new Decoding_Error("Invalid IP string " ~ str);
-
+	
 	uint ip = 0;
-
-	for (auto part = parts.begin(); part != parts.end(); ++part)
+	
+	foreach (const string part; parts)
 	{
-		uint octet = to_uint(*part);
-
+		uint octet = to_uint(part);
+		
 		if (octet > 255)
 			throw new Decoding_Error("Invalid IP string " ~ str);
-
+		
 		ip = (ip << 8) | (octet & 0xFF);
 	}
-
+	
 	return ip;
 }
 
-/*
-* Convert an IP address to decimal-dotted string
+/**
+* Convert an IPv4 address to a string
+* @param ip_addr the IPv4 address to convert
+* @return string representation of the IPv4 address
 */
 string ipv4_to_string(uint ip)
 {
-	string str;
-
+	import std.array : Appender;
+	Appender!string str;
 	for (size_t i = 0; i != sizeof(ip); ++i)
 	{
 		if (i)
-			str += ".";
-		str += std.conv.to!string(get_byte(i, ip));
+			str ~= ".";
+		str ~= std.conv.to!string(get_byte(i, ip));
 	}
-
-	return str;
+	
+	return str.data;
 }
 
-string erase_chars(in string str, const Set<char>& chars)
-{
-	string out;
+private:
 
-	for(auto c: str)
-		if (chars.count(c) == 0)
-			out += c;
-
-	return out;
+ptrdiff_t find(string str, char c) {
+	import std.algorithm : countUntil;
+	return countUntil(str, c);
 }
 
-string replace_chars(in string str,
-								  const Set<char>& chars,
-								  char to_char)
-{
-	string out = str;
-
-	for (size_t i = 0; i != out.size(); ++i)
-		if (chars.count(output[i]))
-			output[i] = to_char;
-
-	return out;
-}
-
-string replace_char(in string str, char from_char, char to_char)
-{
-	string out = str;
-
-	for (size_t i = 0; i != out.size(); ++i)
-		if (output[i] == from_char)
-			output[i] = to_char;
-
-	return out;
-}
-
+auto end(string str) {
+	return str.ptr + str.length;
 }

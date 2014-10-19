@@ -32,7 +32,7 @@ public:
 		
 		if (buffer_pos + input_size >= main_block_mod + final_minimum)
 		{
-			size_t to_copy = std.algorithm.min(buffer.size() - buffer_pos, input_size);
+			size_t to_copy = std.algorithm.min(buffer.length - buffer_pos, input_size);
 			
 			copy_mem(&buffer[buffer_pos], input, to_copy);
 			buffer_pos += to_copy;
@@ -72,7 +72,7 @@ public:
 
 	void write(in Vector!( ubyte, Alloc ) input)
 	{
-		write(&input[0], input.size());
+		write(&input[0], input.length);
 	}
 
 	/**

@@ -106,7 +106,7 @@ string Policy::choose_curve(in Vector!string curve_names) const
 {
 	const Vector!string our_curves = allowed_ecc_curves();
 
-	for (size_t i = 0; i != our_curves.size(); ++i)
+	for (size_t i = 0; i != our_curves.length; ++i)
 		if (value_exists(curve_names, our_curves[i]))
 			return our_curves[i];
 
@@ -175,7 +175,7 @@ class Ciphersuite_Preference_Ordering
 		{
 			if (a.kex_algo() != b.kex_algo())
 			{
-				for (size_t i = 0; i != m_kex.size(); ++i)
+				for (size_t i = 0; i != m_kex.length; ++i)
 				{
 					if (a.kex_algo() == m_kex[i])
 						return true;
@@ -186,7 +186,7 @@ class Ciphersuite_Preference_Ordering
 
 			if (a.cipher_algo() != b.cipher_algo())
 			{
-				for (size_t i = 0; i != m_ciphers.size(); ++i)
+				for (size_t i = 0; i != m_ciphers.length; ++i)
 				{
 					if (a.cipher_algo() == m_ciphers[i])
 						return true;
@@ -205,7 +205,7 @@ class Ciphersuite_Preference_Ordering
 
 			if (a.sig_algo() != b.sig_algo())
 			{
-				for (size_t i = 0; i != m_sigs.size(); ++i)
+				for (size_t i = 0; i != m_sigs.length; ++i)
 				{
 					if (a.sig_algo() == m_sigs[i])
 						return true;
@@ -216,7 +216,7 @@ class Ciphersuite_Preference_Ordering
 
 			if (a.mac_algo() != b.mac_algo())
 			{
-				for (size_t i = 0; i != m_macs.size(); ++i)
+				for (size_t i = 0; i != m_macs.length; ++i)
 				{
 					if (a.mac_algo() == m_macs[i])
 						return true;

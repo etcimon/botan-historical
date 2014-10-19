@@ -10,7 +10,7 @@ module botan.hash.sha2_32;
 import botan.hash.mdx_hash;
 import botan.sha2_32;
 import botan.utils.loadstor;
-import botan.rotate;
+import botan.utils.rotate;
 /**
 * SHA-224
 */

@@ -54,7 +54,7 @@ class PK_Encryptor
 		Vector!ubyte encrypt(Alloc)(in Vector!( ubyte, Alloc ) input,
 										  RandomNumberGenerator rng) const
 		{
-			return enc(&input[0], input.size(), rng);
+			return enc(&input[0], input.length, rng);
 		}
 
 		/**
@@ -99,7 +99,7 @@ class PK_Decryptor
 		*/
 		SafeVector!ubyte decrypt(Alloc)(in Vector!( ubyte, Alloc ) input) const
 		{
-			return dec(&input[0], input.size());
+			return dec(&input[0], input.length);
 		}
 
 		PK_Decryptor() {}
@@ -138,11 +138,11 @@ class PK_Signer
 		*/
 		Vector!ubyte sign_message(in Vector!ubyte input,
 												 RandomNumberGenerator rng)
-		{ return sign_message(&input[0], input.size(), rng); }
+		{ return sign_message(&input[0], input.length, rng); }
 
 		Vector!ubyte sign_message(in SafeVector!ubyte input,
 												 RandomNumberGenerator rng)
-		{ return sign_message(&input[0], input.size(), rng); }
+		{ return sign_message(&input[0], input.length, rng); }
 
 		/**
 		* Add a message part (single ubyte).
@@ -161,7 +161,7 @@ class PK_Signer
 		* Add a message part.
 		* @param input the message part to add
 		*/
-		void update(in Vector!ubyte input) { update(&input[0], input.size()); }
+		void update(in Vector!ubyte input) { update(&input[0], input.length); }
 
 		/**
 		* Get the signature of the so far processed message (provided by the
@@ -226,8 +226,8 @@ class PK_Verifier
 		bool verify_message(Alloc, Alloc2)(in Vector!( ubyte, Alloc ) msg,
 								  const Vector!( ubyte, Alloc2 ) sig)
 		{
-			return verify_message(&msg[0], msg.size(),
-										 &sig[0], sig.size());
+			return verify_message(&msg[0], msg.length,
+										 &sig[0], sig.length);
 		}
 
 		/**
@@ -251,7 +251,7 @@ class PK_Verifier
 		* @param input the new message part
 		*/
 		void update(in Vector!ubyte input)
-		{ update(&input[0], in.size()); }
+		{ update(&input[0], in.length); }
 
 		/**
 		* Check the signature of the buffered message, i.e. the one build
@@ -270,7 +270,7 @@ class PK_Verifier
 		*/
 		bool check_signature(Alloc)(in Vector!( ubyte, Alloc ) sig)
 		{
-			return check_signature(&sig[0], sig.size());
+			return check_signature(&sig[0], sig.length);
 		}
 
 		/**
@@ -331,7 +331,7 @@ class PK_Key_Agreement
 										in ubyte* params,
 										size_t params_len) const
 		{
-			return derive_key(key_len, &input[0], input.size(),
+			return derive_key(key_len, &input[0], input.length,
 									params, params_len);
 		}
 
@@ -361,7 +361,7 @@ class PK_Key_Agreement
 										in Vector!ubyte input,
 										in string params = "") const
 		{
-			return derive_key(key_len, &input[0], input.size(),
+			return derive_key(key_len, &input[0], input.length,
 									cast(const ubyte*)(params.data()),
 									params.length());
 		}

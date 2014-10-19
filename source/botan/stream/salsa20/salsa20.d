@@ -7,7 +7,7 @@
 
 import botan.salsa20;
 import botan.utils.loadstor;
-import botan.rotate;
+import botan.utils.rotate;
 import botan.internal.xor_buf;
 namespace {
 
@@ -102,12 +102,12 @@ void salsa20(ubyte[64] output, const uint[16] input)
 */
 void Salsa20::cipher(in ubyte* input, ubyte* output)
 {
-	while(length >= m_buffer.size() - m_position)
+	while(length >= m_buffer.length - m_position)
 	{
-		xor_buf(output, input, &m_buffer[m_position], m_buffer.size() - m_position);
-		length -= (m_buffer.size() - m_position);
-		input += (m_buffer.size() - m_position);
-		output += (m_buffer.size() - m_position);
+		xor_buf(output, input, &m_buffer[m_position], m_buffer.length - m_position);
+		length -= (m_buffer.length - m_position);
+		input += (m_buffer.length - m_position);
+		output += (m_buffer.length - m_position);
 		salsa20(&m_buffer[0], &m_state[0]);
 
 		++m_state[8];

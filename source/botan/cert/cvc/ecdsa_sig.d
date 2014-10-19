@@ -89,10 +89,10 @@ Vector!ubyte get_concatenation() const
 
 ECDSA_Signature decode_concatenation(in Vector!ubyte concat)
 {
-	if (concat.size() % 2 != 0)
+	if (concat.length % 2 != 0)
 		throw new Invalid_Argument("Erroneous length of signature");
 	
-	const size_t rs_len = concat.size() / 2;
+	const size_t rs_len = concat.length / 2;
 	
 	BigInt r = BigInt.decode(&concat[0], rs_len);
 	BigInt s = BigInt.decode(&concat[rs_len], rs_len);

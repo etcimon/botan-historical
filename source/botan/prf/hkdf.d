@@ -64,7 +64,7 @@ public:
 			m_prf.update(counter++);
 			T = m_prf.flush();
 			
-			const size_t to_write = std.algorithm.min(T.size(), output_len);
+			const size_t to_write = std.algorithm.min(T.length, output_len);
 			copy_mem(&output[0], &T[0], to_write);
 			output += to_write;
 			output_len -= to_write;

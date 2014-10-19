@@ -37,7 +37,7 @@ struct CryptoBox {
 	                      RandomNumberGenerator rng)
 	{
 		SafeVector!ubyte pbkdf_salt = SafeVector!ubyte(PBKDF_SALT_LEN);
-		rng.randomize(&pbkdf_salt[0], pbkdf_salt.size());
+		rng.randomize(&pbkdf_salt[0], pbkdf_salt.length);
 		
 		PKCS5_PBKDF2 pbkdf = PKCS5_PBKDF2(new HMAC(new SHA_512));
 		
@@ -45,7 +45,7 @@ struct CryptoBox {
 			PBKDF_OUTPUT_LEN,
 			passphrase,
 			&pbkdf_salt[0],
-		pbkdf_salt.size(),
+		pbkdf_salt.length,
 		PBKDF_ITERATIONS);
 		
 		const ubyte* mk = master_key.begin();
@@ -101,7 +101,7 @@ struct CryptoBox {
 			pem.decode_check_label(input_src,
 			                       "BOTAN CRYPTOBOX MESSAGE");
 		
-		if (ciphertext.size() < (VERSION_CODE_LEN + PBKDF_SALT_LEN + MAC_OUTPUT_LEN))
+		if (ciphertext.length < (VERSION_CODE_LEN + PBKDF_SALT_LEN + MAC_OUTPUT_LEN))
 			throw new Decoding_Error("Invalid CryptoBox input");
 		
 		for (size_t i = 0; i != VERSION_CODE_LEN; ++i)
@@ -134,7 +134,7 @@ struct CryptoBox {
 			VERSION_CODE_LEN + PBKDF_SALT_LEN + MAC_OUTPUT_LEN;
 		
 		pipe.process_msg(&ciphertext[ciphertext_offset],
-		ciphertext.size() - ciphertext_offset);
+		ciphertext.length - ciphertext_offset);
 		
 		ubyte computed_mac[MAC_OUTPUT_LEN];
 		pipe.read(computed_mac, MAC_OUTPUT_LEN, 1);
@@ -157,7 +157,7 @@ struct CryptoBox {
 	               in string passphrase)
 	{
 		return decrypt(cast(const ubyte*)(input[0]),
-		               input.size(),
+		               input.length,
 		               passphrase);
 	}
 

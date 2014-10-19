@@ -60,7 +60,7 @@ public:
 	{
 		SecureQueue* q = get(msg);
 		if (q)
-			return q.size();
+			return q.length;
 		return 0;
 	}
 
@@ -71,7 +71,7 @@ public:
 	{
 		BOTAN_ASSERT(queue, "queue was provided");
 		
-		BOTAN_ASSERT(buffers.size() < buffers.max_size(),
+		BOTAN_ASSERT(buffers.length < buffers.max_size(),
 		             "Room was available in container");
 		
 		buffers.push_back(queue);
@@ -82,14 +82,14 @@ public:
 	*/
 	void retire()
 	{
-		for (size_t i = 0; i != buffers.size(); ++i)
-			if (buffers[i] && buffers[i].size() == 0)
+		for (size_t i = 0; i != buffers.length; ++i)
+			if (buffers[i] && buffers[i].length == 0)
 		{
 			delete buffers[i];
 			buffers[i] = null;
 		}
 		
-		while(buffers.size() && !buffers[0])
+		while(buffers.length && !buffers[0])
 		{
 			buffers.pop_front();
 			offset = offset + Pipe.message_id(1);
@@ -101,13 +101,13 @@ public:
 	*/
 	Pipe.message_id message_count() const
 	{
-		return (offset + buffers.size());
+		return (offset + buffers.length);
 	}
 
 	this() { offset = 0; }
 	~this()
 	{
-		for (size_t j = 0; j != buffers.size(); ++j)
+		for (size_t j = 0; j != buffers.length; ++j)
 			delete buffers[j];
 	}
 private:

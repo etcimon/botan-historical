@@ -23,7 +23,7 @@ public:
 	/**
 		* @return size of this octet string in bytes
 		*/
-	size_t length() const { return bits.size(); }
+	size_t length() const { return bits.length; }
 	
 	/**
 		* @return this object as a SafeVector!ubyte
@@ -38,14 +38,14 @@ public:
 	/**
 		* @return end of this string
 		*/
-	const ubyte* end() const{ return begin() + bits.size(); }
+	const ubyte* end() const{ return begin() + bits.length; }
 	
 	/**
 		* @return this encoded as hex
 		*/
 	string as_string() const
 	{
-		return hex_encode(&bits[0], bits.size());
+		return hex_encode(&bits[0], bits.length);
 	}
 		
 	/**
@@ -90,7 +90,7 @@ public:
 				0xF1, 0xF1, 0xF2, 0xF2, 0xF4, 0xF4, 0xF7, 0xF7, 0xF8, 0xF8, 0xFB, 0xFB,
 			0xFD, 0xFD, 0xFE, 0xFE };
 		
-		foreach (j; 0 .. bits.size())
+		foreach (j; 0 .. bits.length)
 			bits[j] = ODD_PARITY[bits[j]];
 	}
 	
@@ -134,7 +134,7 @@ public:
 		* Create a new OctetString
 		* @param input a bytestring
 		*/
-	this(in Vector!ubyte input) {  bits = SafeVector!ubyte(&input[0], &input[input.size()]); }
+	this(in Vector!ubyte input) {  bits = SafeVector!ubyte(&input[0], &input[input.length]); }
 
 
 		/**

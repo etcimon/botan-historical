@@ -26,7 +26,7 @@ public:
 	
 	SafeVector!ubyte start_vec(Alloc)(in Vector!( ubyte, Alloc ) nonce)
 	{
-		return start(&nonce[0], nonce.size());
+		return start(&nonce[0], nonce.length);
 	}
 
 	/**
@@ -115,7 +115,7 @@ public:
 
 	void set_key(Alloc)(in Vector!( ubyte, Alloc ) key)
 	{
-		set_key(&key[0], key.size());
+		set_key(&key[0], key.length);
 	}
 
 	void set_key(in SymmetricKey key)

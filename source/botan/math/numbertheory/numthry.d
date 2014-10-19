@@ -11,7 +11,7 @@ import botan.math.numbertheory.pow_mod;
 import botan.rng;
 import botan.algo_factory;
 import botan.hash.hash;
-import botan.parsing;
+import botan.utils.parsing;
 import std.algorithm;
 import botan.math.numbertheory.reducer;
 import botan.utils.bit_ops;
@@ -41,13 +41,13 @@ BigInt mul_add(in BigInt a, const ref BigInt b, const ref BigInt c)
 	const size_t b_sw = b.sig_words();
 	const size_t c_sw = c.sig_words();
 	
-	BigInt r(sign, std.algorithm.max(a.size() + b.size(), c_sw) + 1);
-	SafeVector!word workspace(r.size());
+	BigInt r(sign, std.algorithm.max(a.length + b.length, c_sw) + 1);
+	SafeVector!word workspace(r.length);
 	
-	bigint_mul(r.mutable_data(), r.size(),
+	bigint_mul(r.mutable_data(), r.length,
 	           &workspace[0],
-	a.data(), a.size(), a_sw,
-	b.data(), b.size(), b_sw);
+	a.data(), a.length, a_sw,
+	b.data(), b.length, b_sw);
 	
 	const size_t r_size = std.algorithm.max(r.sig_words(), c_sw);
 	bigint_add2(r.mutable_data(), r_size, c.data(), c_sw);
@@ -131,11 +131,11 @@ BigInt square(in BigInt x)
 	const size_t x_sw = x.sig_words();
 	
 	BigInt z = BigInt(BigInt.Positive, round_up!size_t(2*x_sw, 16));
-	SafeVector!word workspace(z.size());
+	SafeVector!word workspace(z.length);
 	
-	bigint_sqr(z.mutable_data(), z.size(),
+	bigint_sqr(z.mutable_data(), z.length,
 	           &workspace[0],
-	x.data(), x.size(), x_sw);
+	x.data(), x.length, x_sw);
 	return z;
 }
 
@@ -396,7 +396,7 @@ size_t low_zero_bits(in BigInt n)
 	
 	if (n.is_positive() && n.is_nonzero())
 	{
-		for (size_t i = 0; i != n.size(); ++i)
+		for (size_t i = 0; i != n.length; ++i)
 		{
 			const word x = n.word_at(i);
 			
@@ -515,7 +515,7 @@ BigInt random_prime(RandomNumberGenerator rng,
 		const size_t sieve_size = std.algorithm.min(bits / 2, PRIME_TABLE_SIZE);
 		SafeVector!ushort sieve(sieve_size);
 		
-		for (size_t j = 0; j != sieve.size(); ++j)
+		for (size_t j = 0; j != sieve.length; ++j)
 			sieve[j] = p % PRIMES[j];
 		
 		size_t counter = 0;
@@ -531,7 +531,7 @@ BigInt random_prime(RandomNumberGenerator rng,
 			if (p.bits() > bits)
 				break;
 			
-			for (size_t j = 0; j != sieve.size(); ++j)
+			for (size_t j = 0; j != sieve.length; ++j)
 			{
 				sieve[j] = (sieve[j] + modulo) % PRIMES[j];
 				if (sieve[j] == 0)
@@ -589,7 +589,7 @@ Vector!ubyte generate_dsa_primes(RandomNumberGenerator rng,
 	while(true)
 	{
 		Vector!ubyte seed = Vector!ubyte(qbits / 8);
-		rng.randomize(&seed[0], seed.size());
+		rng.randomize(&seed[0], seed.length);
 		
 		if (generate_dsa_primes(rng, af, p, q, pbits, qbits, seed))
 			return seed;
@@ -620,7 +620,7 @@ bool generate_dsa_primes(RandomNumberGenerator rng,
 			"FIPS 186-3 does not allow DSA domain parameters of " ~
 			std.conv.to!string(pbits) ~ "/" ~ std.conv.to!string(qbits) ~ " bits long");
 	
-	if (seed_c.size() * 8 < qbits)
+	if (seed_c.length * 8 < qbits)
 		throw new Invalid_Argument(
 			"Generating a DSA parameter set with a " ~ std.conv.to!string(qbits) +
 			"long q requires a seed at least as many bits long");
@@ -642,7 +642,7 @@ bool generate_dsa_primes(RandomNumberGenerator rng,
 		ref Seed opUnary(string op)()
 			if (op == "++")
 		{
-			for (size_t j = seed.size(); j > 0; --j)
+			for (size_t j = seed.length; j > 0; --j)
 				if (++seed[j-1])
 					break;
 			return this;
@@ -676,7 +676,7 @@ bool generate_dsa_primes(RandomNumberGenerator rng,
 		}
 		
 		X.binary_decode(&V[HASH_SIZE - 1 - b/8],
-		V.size() - (HASH_SIZE - 1 - b/8));
+		V.length - (HASH_SIZE - 1 - b/8));
 		X.set_bit(pbits-1);
 		
 		p = X - (X % (2*q) - 1);

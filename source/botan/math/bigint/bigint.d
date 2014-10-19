@@ -15,11 +15,11 @@ import botan.utils.charset;
 import botan.codec.hex;
 import botan.math.mp.mp_core;
 import botan.utils.get_byte;
-import botan.parsing;
+import botan.utils.parsing;
 import botan.utils.rounding;
 import botan.math.mp.mp_core;
 import botan.utils.bit_ops;
-import botan.parsing;
+import botan.utils.parsing;
 import botan.math.bigint.bigint;
 import botan.math.mp.mp_core;
 import botan.utils.bit_ops;
@@ -301,14 +301,14 @@ public:
 		}
 		else
 		{
-			grow_to(size() + y.size());
+			grow_to(size() + y.length);
 			
 			SafeVector!word z(data(), data() + x_sw);
 			SafeVector!word workspace(size());
 			
 			bigint_mul(mutable_data(), size(), &workspace[0],
-			&z[0], z.size(), x_sw,
-			y.data(), y.size(), y_sw);
+			&z[0], z.length, x_sw,
+			y.data(), y.length, y_sw);
 		}
 		
 		return this;
@@ -702,7 +702,7 @@ public:
 	* Give size of internal register
 	* @result size of internal register in words
 	*/
-	size_t size() const { return m_reg.size(); }
+	size_t size() const { return m_reg.length; }
 
 	/**
 	* Return how many words we need to hold this value
@@ -711,7 +711,7 @@ public:
 	size_t sig_words() const
 	{
 		const word* x = &m_reg[0];
-		size_t sig = m_reg.size();
+		size_t sig = m_reg.length;
 
 		while(sig && (x[sig-1] == 0))
 			sig--;
@@ -788,7 +788,7 @@ public:
 			if (bitsize % 8)
 				array[0] &= 0xFF >> (8 - (bitsize % 8));
 			array[0] |= 0x80 >> ((bitsize % 8) ? (8 - bitsize % 8) : 0);
-			binary_decode(&array[0], array.size());
+			binary_decode(&array[0], array.length);
 		}
 	}
 
@@ -833,7 +833,7 @@ public:
 	*/
 	void binary_decode(in SafeVector!ubyte buf)
 	{
-		binary_decode(&buf[0], buf.size());
+		binary_decode(&buf[0], buf.length);
 	}
 
 	/**
@@ -894,7 +894,7 @@ public:
 		Vector!ubyte output = Vector!ubyte(n.encoded_size(base));
 		encode(&output[0], n, base);
 		if (base != Binary)
-			for (size_t j = 0; j != output.size(); ++j)
+			for (size_t j = 0; j != output.length; ++j)
 				if (output[j] == 0)
 					output[j] = '0';
 		return output;
@@ -911,7 +911,7 @@ public:
 		SafeVector!ubyte output = SafeVector!ubyte(n.encoded_size(base));
 		encode(&output[0], n, base);
 		if (base != Binary)
-			for (size_t j = 0; j != output.size(); ++j)
+			for (size_t j = 0; j != output.length; ++j)
 				if (output[j] == 0)
 					output[j] = '0';
 		return output;
@@ -936,7 +936,7 @@ public:
 			n.binary_encode(&binary[0]);
 			
 			hex_encode(cast(char*)(output),
-			           &binary[0], binary.size());
+			           &binary[0], binary.length);
 		}
 		else if (base == Decimal)
 		{
@@ -948,7 +948,7 @@ public:
 			{
 				divide(copy, 10, copy, remainder);
 				output[output_size - 1 - j] =
-					Charset.digit2char(cast(ubyte)(remainder.word_at(0)));
+					digit2char(cast(ubyte)(remainder.word_at(0)));
 				if (copy.is_zero())
 					break;
 			}
@@ -989,20 +989,20 @@ public:
 				binary = hex_decode_locked(cast(string)(buf),
 				                           length, false);
 			
-			r.binary_decode(&binary[0], binary.size());
+			r.binary_decode(&binary[0], binary.length);
 		}
 		else if (base == Decimal)
 		{
 			for (size_t i = 0; i != length; ++i)
 			{
-				if (Charset.is_space(buf[i]))
+				if (is_space(buf[i]))
 					continue;
 				
-				if (!Charset.is_digit(buf[i]))
+				if (!is_digit(buf[i]))
 					throw new Invalid_Argument("BigInt.decode: "
 					                           "Invalid character in decimal input");
 				
-				const ubyte x = Charset.char2digit(buf[i]);
+				const ubyte x = char2digit(buf[i]);
 				
 				if (x >= 10)
 					throw new Invalid_Argument("BigInt: Invalid decimal string");
@@ -1026,7 +1026,7 @@ public:
 	static ref BigInt decode(in SafeVector!ubyte buf,
 							Base base = Binary)
 	{
-		return BigInt.decode(&buf[0], buf.size(), base);
+		return BigInt.decode(&buf[0], buf.length, base);
 	}
 
 	/**
@@ -1038,7 +1038,7 @@ public:
 	static ref BigInt decode(in Vector!ubyte buf,
 							Base base = Binary)
 	{
-		return BigInt.decode(&buf[0], buf.size(), base);
+		return BigInt.decode(&buf[0], buf.length, base);
 	}
 
 	/**
@@ -1137,7 +1137,7 @@ public:
 		const BigInt x = this;
 		const size_t x_sw = x.sig_words(), y_sw = y.sig_words();
 		
-		BigInt z(BigInt.Positive, x.size() + y.size());
+		BigInt z(BigInt.Positive, x.length + y.length);
 		
 		if (x_sw == 1 && y_sw)
 			bigint_linmul3(z.mutable_data(), y.data(), y_sw, x.word_at(0));
@@ -1145,10 +1145,10 @@ public:
 			bigint_linmul3(z.mutable_data(), x.data(), x_sw, y.word_at(0));
 		else if (x_sw && y_sw)
 		{
-			SafeVector!word workspace(z.size());
-			bigint_mul(z.mutable_data(), z.size(), &workspace[0],
-			x.data(), x.size(), x_sw,
-			y.data(), y.size(), y_sw);
+			SafeVector!word workspace(z.length);
+			bigint_mul(z.mutable_data(), z.length, &workspace[0],
+			x.data(), x.length, x_sw,
+			y.data(), y.length, y_sw);
 		}
 		
 		if (x_sw && y_sw && x.sign() != y.sign())

@@ -10,9 +10,9 @@ import botan.hash.hash;
 import botan.alloc.secmem;
 import string;
 import botan.utils.loadstor;
-import botan.parsing;
+import botan.utils.parsing;
 import botan.utils.exceptn;
-import botan.rotate;
+import botan.utils.rotate;
 import botan.internal.xor_buf;
 
 /**
@@ -111,9 +111,9 @@ private:
 		Vector!ubyte padding(bitrate / 8 - S_pos);
 		
 		padding[0] = 0x01;
-		padding[padding.size()-1] |= 0x80;
+		padding[padding.length-1] |= 0x80;
 		
-		add_data(&padding[0], padding.size());
+		add_data(&padding[0], padding.length);
 		
 		/*
 		* We never have to run the permutation again because we only support

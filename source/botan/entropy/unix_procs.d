@@ -8,7 +8,7 @@ module botan.entropy.unix_procs;
 
 import botan.entropy.entropy_src;
 import vector;
-import botan.parsing;
+import botan.utils.parsing;
 import std.algorithm;
 import core.sys.posix.sys.types;
 import core.sys.posix.sys.stat;
@@ -62,7 +62,7 @@ public:
 		
 		while(!accum.polling_goal_achieved())
 		{
-			while(m_procs.size() < m_concurrent)
+			while(m_procs.length < m_concurrent)
 				m_procs.emplace_back(Unix_Process(next_source()));
 			
 			fd_set read_set;
@@ -98,7 +98,7 @@ public:
 				
 				if (FD_ISSET(fd, &read_set))
 				{
-					const ssize_t got = read(fd, &io_buffer[0], io_buffer.size());
+					const ssize_t got = read(fd, &io_buffer[0], io_buffer.length);
 					if (got > 0)
 						accum.add(&io_buffer[0], got, ENTROPY_ESTIMATE);
 					else
@@ -275,7 +275,7 @@ private:
 	const Vector!string next_source()
 	{
 		const src = m_sources.at(m_sources_idx);
-		m_sources_idx = (m_sources_idx + 1) % m_sources.size();
+		m_sources_idx = (m_sources_idx + 1) % m_sources.length;
 		return src;
 	}
 
@@ -349,11 +349,11 @@ size_t concurrent_processes(size_t user_request)
 void do_exec(in Vector!string args)
 {
 	// cleaner way to do this?
-	string arg0 = (args.size() > 0) ? args[0].toStringz : null;
-	string arg1 = (args.size() > 1) ? args[1].toStringz : null;
-	string arg2 = (args.size() > 2) ? args[2].toStringz : null;
-	string arg3 = (args.size() > 3) ? args[3].toStringz : null;
-	string arg4 = (args.size() > 4) ? args[4].toStringz : null;
+	string arg0 = (args.length > 0) ? args[0].toStringz : null;
+	string arg1 = (args.length > 1) ? args[1].toStringz : null;
+	string arg2 = (args.length > 2) ? args[2].toStringz : null;
+	string arg3 = (args.length > 3) ? args[3].toStringz : null;
+	string arg4 = (args.length > 4) ? args[4].toStringz : null;
 	
 	execl(arg0, arg0, arg1, arg2, arg3, arg4, NULL);
 }

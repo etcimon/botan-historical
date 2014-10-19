@@ -6,7 +6,7 @@
 */
 
 import botan.http_util;
-import botan.parsing;
+import botan.utils.parsing;
 import botan.codec.hex;
 import botan.internal.stl_util;
 import sstream;
@@ -73,8 +73,8 @@ ref std.ostream operator<<(ref std.ostream o, const Response& resp)
 	o << "HTTP " << resp.status_code() << " " << resp.status_message() << "";
 	foreach (h; resp.headers())
 		o << "Header '" << h.first << "' = '" << h.second << "'";
-	o << "Body " << std.conv.to!string(resp._body().size()) << " bytes:";
-	o.write(cast(string)(resp._body()[0]), resp._body().size());
+	o << "Body " << std.conv.to!string(resp._body().length) << " bytes:";
+	o.write(cast(string)(resp._body()[0]), resp._body().length);
 	return o;
 }
 
@@ -117,12 +117,12 @@ Response http_sync(http_exch_fn http_transact,
 		outbuf ~= "Cache-Control: no-cache\r";
 	}
 	else if (verb == "POST")
-		outbuf ~= "Content-Length: " ~ body.size() ~ "\r";
+		outbuf ~= "Content-Length: " ~ body.length ~ "\r";
 
 	if (content_type != "")
 		outbuf ~= "Content-Type: " ~ content_type ~ "\r";
 	outbuf ~= "Connection: close\r\r";
-	outbuf.write(cast(string)(body[0]), body.size());
+	outbuf.write(cast(string)(body[0]), body.length);
 
 	std::istringstream io(http_transact(hostname, outbuf.str()));
 
@@ -148,13 +148,13 @@ Response http_sync(http_exch_fn http_transact,
 	while (std::getline(io, header_line) && header_line != "\r")
 	{
 		auto sep = header_line.find(": ");
-		if (sep == string::npos || sep > header_line.size() - 2)
+		if (sep == string::npos || sep > header_line.length - 2)
 			throw new Exception("Invalid HTTP header " ~ header_line);
 		const string key = header_line.substr(0, sep);
 
-		if (sep + 2 < header_line.size() - 1)
+		if (sep + 2 < header_line.length - 1)
 		{
-			const string val = header_line.substr(sep + 2, (header_line.size() - 1) - (sep + 2));
+			const string val = header_line.substr(sep + 2, (header_line.length - 1) - (sep + 2));
 			headers[key] = val;
 		}
 	}
@@ -170,7 +170,7 @@ Response http_sync(http_exch_fn http_transact,
 	Vector!ubyte buf(4096);
 	while(io.good())
 	{
-		io.read(cast(char*)(&buf[0]), buf.size());
+		io.read(cast(char*)(&buf[0]), buf.length);
 		resp_body.insert(resp_body.end(), &buf[0], &buf[io.gcount()]);
 	}
 
@@ -178,9 +178,9 @@ Response http_sync(http_exch_fn http_transact,
 
 	if (header_size != "")
 	{
-		if (resp_body.size() != to_uint(header_size))
+		if (resp_body.length != to_uint(header_size))
 			throw new Exception("Content-Length disagreement, header says " ~
-											 header_size ~ " got " ~ std.conv.to!string(resp_body.size()));
+											 header_size ~ " got " ~ std.conv.to!string(resp_body.length));
 	}
 
 	return Response(status_code, status_message, resp_body, headers);

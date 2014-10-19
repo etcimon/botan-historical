@@ -64,7 +64,7 @@ Server_Hello::Server_Hello(Handshake_IO& io,
 */
 Server_Hello::Server_Hello(in Vector!ubyte buf)
 {
-	if (buf.size() < 38)
+	if (buf.length < 38)
 		throw new Decoding_Error("Server_Hello: Packet corrupted");
 
 	TLS_Data_Reader reader("ServerHello", buf);
@@ -122,7 +122,7 @@ Server_Hello_Done::Server_Hello_Done(Handshake_IO& io,
 */
 Server_Hello_Done::Server_Hello_Done(in Vector!ubyte buf)
 {
-	if (buf.size())
+	if (buf.length)
 		throw new Decoding_Error("Server_Hello_Done: Must be empty, and is not");
 }
 

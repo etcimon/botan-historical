@@ -16,7 +16,7 @@ import botan.asn1.ber_dec;
 import botan.asn1.oid_lookup.oids;
 import botan.internal.stl_util;
 import botan.utils.charset;
-import botan.parsing;
+import botan.utils.parsing;
 import botan.utils.loadstor;
 import map;
 
@@ -101,7 +101,7 @@ public:
 			}
 			else if (tag == 1 || tag == 2 || tag == 6)
 			{
-				const string value = Charset.transcode(asn1.to_string(obj),
+				const string value = transcode(asn1.to_string(obj),
 				                                        LATIN1_CHARSET,
 				                                        LOCAL_CHARSET);
 				
@@ -111,7 +111,7 @@ public:
 			}
 			else if (tag == 7)
 			{
-				if (obj.value.size() == 4)
+				if (obj.value.length == 4)
 				{
 					const uint ip = load_be!uint(&obj.value[0], 0);
 					add_attribute("IP", ipv4_to_string(ip));
@@ -187,7 +187,7 @@ public:
 	*/
 	bool has_items() const
 	{
-		return (alt_info.size() > 0 || othernames.size() > 0);
+		return (alt_info.length > 0 || othernames.length > 0);
 	}
 
 	/*

@@ -25,7 +25,7 @@ Vector!ubyte make_hello_random(RandomNumberGenerator rng)
 		std::chrono::system_clock::to_time_t(Clock.currTime()));
 
 	store_be(time32, &buf[0]);
-	rng.randomize(&buf[4], buf.size() - 4);
+	rng.randomize(&buf[4], buf.length - 4);
 	return buf;
 }
 
@@ -42,7 +42,7 @@ Hello_Request::Hello_Request(Handshake_IO& io)
 */
 Hello_Request::Hello_Request(in Vector!ubyte buf)
 {
-	if (buf.size())
+	if (buf.length)
 		throw new Decoding_Error("Bad Hello_Request, has non-zero size");
 }
 
@@ -185,7 +185,7 @@ Vector!ubyte Client_Hello::serialize() const
 
 void Client_Hello::deserialize_sslv2(in Vector!ubyte buf)
 {
-	if (buf.size() < 12 || buf[0] != 1)
+	if (buf.length < 12 || buf[0] != 1)
 		throw new Decoding_Error("Client_Hello: SSLv2 hello corrupted");
 
 	const size_t cipher_spec_len = make_ushort(buf[3], buf[4]);
@@ -195,7 +195,7 @@ void Client_Hello::deserialize_sslv2(in Vector!ubyte buf)
 	const size_t expected_size =
 		(9 + m_session_id_len + cipher_spec_len + challenge_len);
 
-	if (buf.size() != expected_size)
+	if (buf.length != expected_size)
 		throw new Decoding_Error("Client_Hello: SSLv2 hello corrupted");
 
 	if (m_session_id_len != 0 || cipher_spec_len % 3 != 0 ||
@@ -226,10 +226,10 @@ void Client_Hello::deserialize_sslv2(in Vector!ubyte buf)
 */
 void Client_Hello::deserialize(in Vector!ubyte buf)
 {
-	if (buf.size() == 0)
+	if (buf.length == 0)
 		throw new Decoding_Error("Client_Hello: Packet corrupted");
 
-	if (buf.size() < 41)
+	if (buf.length < 41)
 		throw new Decoding_Error("Client_Hello: Packet corrupted");
 
 	TLS_Data_Reader reader("ClientHello", buf);
@@ -273,7 +273,7 @@ void Client_Hello::deserialize(in Vector!ubyte buf)
 */
 bool Client_Hello::offered_suite(ushort ciphersuite) const
 {
-	for (size_t i = 0; i != m_suites.size(); ++i)
+	for (size_t i = 0; i != m_suites.length; ++i)
 		if (m_suites[i] == ciphersuite)
 			return true;
 	return false;

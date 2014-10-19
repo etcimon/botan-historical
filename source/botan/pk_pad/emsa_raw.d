@@ -49,14 +49,14 @@ private:
 	            in SafeVector!ubyte raw,
 	            size_t)
 	{
-		if (coded.size() == raw.size())
+		if (coded.length == raw.length)
 			return (coded == raw);
 		
-		if (coded.size() > raw.size())
+		if (coded.length > raw.length)
 			return false;
 		
 		// handle zero padding differences
-		const size_t leading_zeros_expected = raw.size() - coded.size();
+		const size_t leading_zeros_expected = raw.length - coded.length;
 		
 		bool same_modulo_leading_zeros = true;
 		
@@ -64,7 +64,7 @@ private:
 			if (raw[i])
 				same_modulo_leading_zeros = false;
 		
-		if (!same_mem(&coded[0], &raw[leading_zeros_expected], coded.size()))
+		if (!same_mem(&coded[0], &raw[leading_zeros_expected], coded.length))
 			same_modulo_leading_zeros = false;
 		
 		return same_modulo_leading_zeros;

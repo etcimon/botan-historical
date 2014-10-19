@@ -49,7 +49,7 @@ private:
 		
 		for (size_t i = 0; i != blocks; ++i)
 		{
-			load_be(&M[0], input, M.size());
+			load_be(&M[0], input, M.length);
 			
 			ulong K0, K1, K2, K3, K4, K5, K6, K7;
 			K0 = digest[0]; K1 = digest[1]; K2 = digest[2]; K3 = digest[3];

@@ -34,9 +34,9 @@ public:
 		while(zlib.stream.avail_in != 0)
 		{
 			zlib.stream.next_out = cast(ubyte*)(&buffer[0]);
-			zlib.stream.avail_out = buffer.size();
+			zlib.stream.avail_out = buffer.length;
 			deflate(&(zlib.stream), Z_NO_FLUSH);
-			send(&buffer[0], buffer.size() - zlib.stream.avail_out);
+			send(&buffer[0], buffer.length - zlib.stream.avail_out);
 		}
 	}
 
@@ -73,10 +73,10 @@ public:
 		while(rc != Z_STREAM_END)
 		{
 			zlib.stream.next_out = cast(ubyte*)(&buffer[0]);
-			zlib.stream.avail_out = buffer.size();
+			zlib.stream.avail_out = buffer.length;
 			
 			rc = deflate(&(zlib.stream), Z_FINISH);
-			send(&buffer[0], buffer.size() - zlib.stream.avail_out);
+			send(&buffer[0], buffer.length - zlib.stream.avail_out);
 		}
 		
 		clear();
@@ -92,13 +92,13 @@ public:
 		
 		while(true)
 		{
-			zlib.stream.avail_out = buffer.size();
+			zlib.stream.avail_out = buffer.length;
 			zlib.stream.next_out = cast(ubyte*)(&buffer[0]);
 			
 			deflate(&(zlib.stream), Z_FULL_FLUSH);
-			send(&buffer[0], buffer.size() - zlib.stream.avail_out);
+			send(&buffer[0], buffer.length - zlib.stream.avail_out);
 			
-			if (zlib.stream.avail_out == buffer.size())
+			if (zlib.stream.avail_out == buffer.length)
 				break;
 		}
 	}
@@ -166,7 +166,7 @@ public:
 		while(zlib.stream.avail_in != 0)
 		{
 			zlib.stream.next_out = cast(ubyte*)(&buffer[0]);
-			zlib.stream.avail_out = buffer.size();
+			zlib.stream.avail_out = buffer.length;
 			
 			int rc = inflate(&(zlib.stream), Z_SYNC_FLUSH);
 			
@@ -183,7 +183,7 @@ public:
 					throw new Exception("Zlib decompression: Unknown error");
 			}
 			
-			send(&buffer[0], buffer.size() - zlib.stream.avail_out);
+			send(&buffer[0], buffer.length - zlib.stream.avail_out);
 			
 			if (rc == Z_STREAM_END)
 			{
@@ -225,7 +225,7 @@ public:
 		while(rc != Z_STREAM_END)
 		{
 			zlib.stream.next_out = cast(ubyte*)(&buffer[0]);
-			zlib.stream.avail_out = buffer.size();
+			zlib.stream.avail_out = buffer.length;
 			rc = inflate(&(zlib.stream), Z_SYNC_FLUSH);
 			
 			if (rc != Z_OK && rc != Z_STREAM_END)
@@ -234,7 +234,7 @@ public:
 				throw new Decoding_Error("Zlib_Decompression: Error finalizing");
 			}
 			
-			send(&buffer[0], buffer.size() - zlib.stream.avail_out);
+			send(&buffer[0], buffer.length - zlib.stream.avail_out);
 		}
 		
 		clear();

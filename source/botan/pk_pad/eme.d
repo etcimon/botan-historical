@@ -47,7 +47,7 @@ public:
 	                        size_t key_bits,
 	                        RandomNumberGenerator rng) const
 	{
-		return pad(&msg[0], msg.size(), key_bits, rng);
+		return pad(&msg[0], msg.length, key_bits, rng);
 	}
 
 	/**
@@ -73,7 +73,7 @@ public:
 	SafeVector!ubyte decode(in SafeVector!ubyte msg,
 	                        size_t key_bits) const
 	{
-		return unpad(&msg[0], msg.size(), key_bits);
+		return unpad(&msg[0], msg.length, key_bits);
 	}
 
 	~this() {}

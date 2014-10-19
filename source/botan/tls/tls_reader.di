@@ -30,7 +30,7 @@ class TLS_Data_Reader
 
 		size_t remaining_bytes() const
 		{
-			return m_buf.size() - m_offset;
+			return m_buf.length - m_offset;
 		}
 
 		bool has_remaining() const
@@ -111,7 +111,7 @@ class TLS_Data_Reader
 			Vector!ubyte v =
 				get_range_vector!ubyte(len_bytes, min_bytes, max_bytes);
 
-			return string(cast(char*)(&v[0]), v.size());
+			return string(cast(char*)(&v[0]), v.length);
 		}
 
 		Vector!T get_fixed(T)(size_t size)
@@ -152,10 +152,10 @@ class TLS_Data_Reader
 
 		void assert_at_least(size_t n) const
 		{
-			if (m_buf.size() - m_offset < n)
+			if (m_buf.length - m_offset < n)
 				throw new decode_error("Expected " ~ std.conv.to!string(n) +
 										 " bytes remaining, only " ~
-										 std.conv.to!string(m_buf.size()-m_offset) +
+										 std.conv.to!string(m_buf.length-m_offset) +
 										 " left");
 		}
 
@@ -199,7 +199,7 @@ void append_tls_length_value(T, Alloc, Alloc2)(Vector!( ubyte, Alloc )& buf,
 												  const Vector!( T, Alloc2 )& vals,
 												  size_t tag_size)
 {
-	append_tls_length_value(buf, &vals[0], vals.size(), tag_size);
+	append_tls_length_value(buf, &vals[0], vals.length, tag_size);
 }
 
 void append_tls_length_value(Alloc)(Vector!( ubyte, Alloc )& buf,
@@ -208,7 +208,7 @@ void append_tls_length_value(Alloc)(Vector!( ubyte, Alloc )& buf,
 {
 	append_tls_length_value(buf,
 							cast(const ubyte*)(str[0]),
-							str.size(),
+							str.length,
 							tag_size);
 }
 

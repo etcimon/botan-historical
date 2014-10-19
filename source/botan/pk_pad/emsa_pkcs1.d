@@ -42,24 +42,24 @@ public:
 		            size_t output_bits,
 		            RandomNumberGenerator)
 	{
-		if (msg.size() != m_hash.output_length())
+		if (msg.length != m_hash.output_length())
 			throw new Encoding_Error("encoding_of: Bad input length");
 		
 		return emsa3_encoding(msg, output_bits,
-		                      &m_hash_id[0], m_hash_id.size());
+		                      &m_hash_id[0], m_hash_id.length);
 	}
 
 	bool verify(in SafeVector!ubyte coded,
 	            in SafeVector!ubyte raw,
 	            size_t key_bits)
 	{
-		if (raw.size() != m_hash.output_length())
+		if (raw.length != m_hash.output_length())
 			return false;
 		
 		try
 		{
 			return (coded == emsa3_encoding(raw, key_bits,
-			                                &m_hash_id[0], m_hash_id.size()));
+			                                &m_hash_id[0], m_hash_id.length));
 		}
 		catch
 		{
@@ -125,16 +125,16 @@ SafeVector!ubyte emsa3_encoding(in SafeVector!ubyte msg,
                                 size_t hash_id_length)
 {
 	size_t output_length = output_bits / 8;
-	if (output_length < hash_id_length + msg.size() + 10)
+	if (output_length < hash_id_length + msg.length + 10)
 		throw new Encoding_Error("emsa3_encoding: Output length is too small");
 	
 	SafeVector!ubyte T = SafeVector!ubyte(output_length);
-	const size_t P_LENGTH = output_length - msg.size() - hash_id_length - 2;
+	const size_t P_LENGTH = output_length - msg.length - hash_id_length - 2;
 	
 	T[0] = 0x01;
 	set_mem(&T[1], P_LENGTH, 0xFF);
 	T[P_LENGTH+1] = 0x00;
 	buffer_insert(T, P_LENGTH+2, hash_id, hash_id_length);
-	buffer_insert(T, output_length-msg.size(), &msg[0], msg.size());
+	buffer_insert(T, output_length-msg.length, &msg[0], msg.length);
 	return T;
 }

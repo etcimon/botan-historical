@@ -63,7 +63,7 @@ public:
 		
 		if (vals.empty())
 			throw new Invalid_State("get1: No values set for " ~ key);
-		if (vals.size() > 1)
+		if (vals.length > 1)
 			throw new Invalid_State("get1: More than one value for " ~ key);
 		
 		return vals[0];
@@ -74,7 +74,7 @@ public:
 	{
 		Vector!string vals = get(key);
 		
-		if (vals.size() > 1)
+		if (vals.length > 1)
 			throw new Invalid_State("get1: More than one value for " ~ key);
 		
 		if (vals.empty())
@@ -94,7 +94,7 @@ public:
 		if (vals.empty())
 			return Vector!ubyte();
 		
-		if (vals.size() > 1)
+		if (vals.length > 1)
 			throw new Invalid_State("get1_memvec: Multiple values for " ~
 			                        key);
 		
@@ -111,7 +111,7 @@ public:
 		
 		if (vals.empty())
 			return default_val;
-		else if (vals.size() > 1)
+		else if (vals.length > 1)
 			throw new Invalid_State("get1_uint: Multiple values for " ~
 			                        key);
 		
@@ -149,12 +149,12 @@ public:
 	*/
 	void add(in string key, in SafeVector!ubyte val)
 	{
-		add(key, hex_encode(&val[0], val.size()));
+		add(key, hex_encode(&val[0], val.length));
 	}
 	
 	void add(in string key, in Vector!ubyte val)
 	{
-		add(key, hex_encode(&val[0], val.size()));
+		add(key, hex_encode(&val[0], val.length));
 	}
 	
 	/*
@@ -174,7 +174,7 @@ private:
 
 import botan.utils.datastor.datastor;
 import botan.utils.exceptn;
-import botan.parsing;
+import botan.utils.parsing;
 import botan.codec.hex;
 import botan.internal.stl_util;
 

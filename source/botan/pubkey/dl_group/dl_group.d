@@ -7,7 +7,7 @@
 
 import botan.dl_group;
 import botan.libstate.libstate;
-import botan.parsing;
+import botan.utils.parsing;
 import botan.math.numbertheory.numthry;
 import botan.asn1.der_enc;
 import botan.asn1.ber_dec;

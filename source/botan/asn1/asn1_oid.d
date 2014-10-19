@@ -10,7 +10,7 @@ import botan.asn1.asn1_obj;
 import botan.asn1.der_enc;
 import botan.asn1.ber_dec;
 import botan.utils.bit_ops;
-import botan.parsing;
+import botan.utils.parsing;
 
 import string;
 import vector;
@@ -32,13 +32,13 @@ public:
 	*/
 	void encode_into(DER_Encoder der) const
 	{
-		if (id.size() < 2)
+		if (id.length < 2)
 			throw new Invalid_Argument("encode_into: OID is invalid");
 		
 		Vector!ubyte encoding;
 		encoding.push_back(40 * id[0] + id[1]);
 		
-		for (size_t i = 2; i != id.size(); ++i)
+		for (size_t i = 2; i != id.length; ++i)
 		{
 			if (id[i] == 0)
 				encoding.push_back(0);
@@ -65,17 +65,17 @@ public:
 		if (obj.type_tag != ASN1_Tag.OBJECT_ID || obj.class_tag != ASN1_Tag.UNIVERSAL)
 			throw new BER_Bad_Tag("Error decoding OID, unknown tag",
 			                      obj.type_tag, obj.class_tag);
-		if (obj.value.size() < 2)
+		if (obj.value.length < 2)
 			throw new BER_Decoding_Error("OID encoding is too short");
 		clear();
 		id.push_back(obj.value[0] / 40);
 		id.push_back(obj.value[0] % 40);
 		
 		size_t i = 0;
-		while(i != obj.value.size() - 1)
+		while(i != obj.value.length - 1)
 		{
 			uint component = 0;
-			while(i != obj.value.size() - 1)
+			while(i != obj.value.length - 1)
 			{
 				++i;
 				
@@ -96,7 +96,7 @@ public:
 	* Find out whether this OID is empty
 	* @return true is no OID value is set
 	*/
-	bool empty() const { return id.size() == 0; }
+	bool empty() const { return id.length == 0; }
 
 	/**
 	* Get this OID as list (vector) of its components.
@@ -111,10 +111,10 @@ public:
 	string as_string() const
 	{
 		string oid_str;
-		for (size_t i = 0; i != id.size(); ++i)
+		for (size_t i = 0; i != id.length; ++i)
 		{
 			oid_str += std.conv.to!string(id[i]);
-			if (i != id.size() - 1)
+			if (i != id.length - 1)
 				oid_str += '.';
 		}
 		return oid_str;
@@ -126,9 +126,9 @@ public:
 	*/
 	bool opEquals(in OID oid) const
 	{
-		if (id.size() != oid.id.size())
+		if (id.length != oid.id.length)
 			return false;
-		for (size_t i = 0; i != id.size(); ++i)
+		for (size_t i = 0; i != id.length; ++i)
 			if (id[i] != oid.id[i])
 				return false;
 		return true;
@@ -178,11 +178,11 @@ public:
 		const Vector!uint oid1 = get_id();
 		const Vector!uint oid2 = b.get_id();
 		
-		if (oid1.size() < oid2.size())
+		if (oid1.length < oid2.length)
 			return true;
-		if (oid1.size() > oid2.size())
+		if (oid1.length > oid2.length)
 			return false;
-		for (size_t i = 0; i != oid1.size(); ++i)
+		for (size_t i = 0; i != oid1.length; ++i)
 		{
 			if (oid1[i] < oid2[i])
 				return true;
@@ -223,7 +223,7 @@ public:
 			throw new Invalid_OID(oid_str);
 		}
 		
-		if (id.size() < 2 || id[0] > 2)
+		if (id.length < 2 || id[0] > 2)
 			throw new Invalid_OID(oid_str);
 		if ((id[0] == 0 || id[0] == 1) && id[1] > 39)
 			throw new Invalid_OID(oid_str);

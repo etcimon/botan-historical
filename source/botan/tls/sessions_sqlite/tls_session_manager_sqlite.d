@@ -29,7 +29,7 @@ SymmetricKey derive_key(in string passphrase,
 											iterations).bits_of();
 
 	check_val = make_ushort(x[0], x[1]);
-	return SymmetricKey(&x[2], x.size() - 2);
+	return SymmetricKey(&x[2], x.length - 2);
 }
 
 }
@@ -99,7 +99,7 @@ Session_Manager_SQLite::Session_Manager_SQLite(in string passphrase,
 		const size_t iterations = 256 * 1024;
 		size_t check_val = 0;
 
-		m_session_key = derive_key(passphrase, &salt[0], salt.size(),
+		m_session_key = derive_key(passphrase, &salt[0], salt.length,
 											iterations, check_val);
 
 		sqlite3_statement stmt(m_db, "insert into tls_sessions_metadata"

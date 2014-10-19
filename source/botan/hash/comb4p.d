@@ -85,7 +85,7 @@ private:
 		SafeVector!ubyte h2 = m_hash2.flush();
 		
 		// First round
-		xor_buf(&h1[0], &h2[0], std.algorithm.min(h1.size(), h2.size()));
+		xor_buf(&h1[0], &h2[0], std.algorithm.min(h1.length, h2.length));
 		
 		// Second round
 		comb4p_round(h2, h1, 1, *m_hash1, *m_hash2);
@@ -93,8 +93,8 @@ private:
 		// Third round
 		comb4p_round(h1, h2, 2, *m_hash1, *m_hash2);
 		
-		copy_mem(output				, &h1[0], h1.size());
-		copy_mem(output + h1.size(), &h2[0], h2.size());
+		copy_mem(output				, &h1[0], h1.length);
+		copy_mem(output + h1.length, &h2[0], h2.length);
 		
 		// Prep for processing next message, if any
 		m_hash1.update(0);
@@ -115,12 +115,12 @@ void comb4p_round(SafeVector!ubyte output,
 	h1.update(round_no);
 	h2.update(round_no);
 	
-	h1.update(&input[0], input.size());
-	h2.update(&input[0], input.size());
+	h1.update(&input[0], input.length);
+	h2.update(&input[0], input.length);
 	
 	SafeVector!ubyte h_buf = h1.flush();
-	xor_buf(&output[0], &h_buf[0], std.algorithm.min(output.size(), h_buf.size()));
+	xor_buf(&output[0], &h_buf[0], std.algorithm.min(output.length, h_buf.length));
 	
 	h_buf = h2.flush();
-	xor_buf(&output[0], &h_buf[0], std.algorithm.min(output.size(), h_buf.size()));
+	xor_buf(&output[0], &h_buf[0], std.algorithm.min(output.length, h_buf.length));
 }

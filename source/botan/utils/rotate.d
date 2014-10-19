@@ -4,6 +4,7 @@
 *
 * Distributed under the terms of the botan license.
 */
+module botan.utils.rotate;
 
 import botan.utils.types;
 /**

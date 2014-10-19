@@ -10,7 +10,7 @@ import botan.asn1.asn1_obj;
 import botan.asn1.der_enc;
 import botan.math.bigint.bigint;
 import botan.utils.get_byte;
-import botan.parsing;
+import botan.utils.parsing;
 import botan.utils.bit_ops;
 import std.algorithm;
 
@@ -35,7 +35,7 @@ public:
 	*/
 	SafeVector!ubyte get_contents()
 	{
-		if (subsequences.size() != 0)
+		if (subsequences.length != 0)
 			throw new Invalid_State("DER_Encoder: Sequence hasn't been marked done");
 		
 		SafeVector!ubyte output;
@@ -61,7 +61,7 @@ public:
 		if (subsequences.empty())
 			throw new Invalid_State("end_cons: No such sequence");
 		
-		SafeVector!ubyte seq = subsequences[subsequences.size()-1].get_contents();
+		SafeVector!ubyte seq = subsequences[subsequences.length-1].get_contents();
 		subsequences.pop_back();
 		raw_bytes(seq);
 		return this;
@@ -93,12 +93,12 @@ public:
 	*/
 	DER_Encoder raw_bytes(in SafeVector!ubyte val)
 	{
-		return raw_bytes(&val[0], val.size());
+		return raw_bytes(&val[0], val.length);
 	}
 	
 	DER_Encoder raw_bytes(in Vector!ubyte val)
 	{
-		return raw_bytes(&val[0], val.size());
+		return raw_bytes(&val[0], val.length);
 	}
 	
 	/*
@@ -106,8 +106,8 @@ public:
 	*/
 	DER_Encoder raw_bytes(in ubyte* bytes, size_t length)
 	{
-		if (subsequences.size())
-			subsequences[subsequences.size()-1].add_bytes(bytes, length);
+		if (subsequences.length)
+			subsequences[subsequences.length-1].add_bytes(bytes, length);
 		else
 			contents += Pair(bytes, length);
 		
@@ -152,7 +152,7 @@ public:
 	DER_Encoder encode(in SafeVector!ubyte bytes,
 	                   ASN1_Tag real_type)
 	{
-		return encode(&bytes[0], bytes.size(),
+		return encode(&bytes[0], bytes.length,
 		real_type, real_type, ASN1_Tag.UNIVERSAL);
 	}
 	
@@ -162,7 +162,7 @@ public:
 	DER_Encoder encode(in Vector!ubyte bytes,
 	                   ASN1_Tag real_type)
 	{
-		return encode(&bytes[0], bytes.size(),
+		return encode(&bytes[0], bytes.length,
 		real_type, real_type, ASN1_Tag.UNIVERSAL);
 	}
 	
@@ -208,9 +208,9 @@ public:
 		BigInt.encode(&contents[extra_zero], n);
 		if (n < 0)
 		{
-			for (size_t i = 0; i != contents.size(); ++i)
+			for (size_t i = 0; i != contents.length; ++i)
 				contents[i] = ~contents[i];
-			for (size_t i = contents.size(); i > 0; --i)
+			for (size_t i = contents.length; i > 0; --i)
 				if (++contents[i-1])
 					break;
 		}
@@ -225,7 +225,7 @@ public:
 	                   ASN1_Tag real_type,
 	                   ASN1_Tag type_tag, ASN1_Tag class_tag = ASN1_Tag.CONTEXT_SPECIFIC)
 	{
-		return encode(&bytes[0], bytes.size(),
+		return encode(&bytes[0], bytes.length,
 		real_type, type_tag, class_tag);
 	}
 	
@@ -236,7 +236,7 @@ public:
 	                   ASN1_Tag real_type,
 	                   ASN1_Tag type_tag, ASN1_Tag class_tag = ASN1_Tag.CONTEXT_SPECIFIC)
 	{
-		return encode(&bytes[0], bytes.size(),
+		return encode(&bytes[0], bytes.length,
 		real_type, type_tag, class_tag);
 	}
 	
@@ -296,7 +296,7 @@ public:
 
 	DER_Encoder encode_list(T)(in Vector!T values)
 	{
-		for (size_t i = 0; i != values.size(); ++i)
+		for (size_t i = 0; i != values.length; ++i)
 			encode(values[i]);
 		return this;
 	}
@@ -308,7 +308,7 @@ public:
 	                       in string rep_str)
 	{
 		const ubyte* rep = cast(const ubyte*)(rep_str.data());
-		const size_t rep_len = rep_str.size();
+		const size_t rep_len = rep_str.length;
 		return add_object(type_tag, class_tag, rep, rep_len);
 	}
 
@@ -339,13 +339,13 @@ public:
 	DER_Encoder add_object(ASN1_Tag type_tag, ASN1_Tag class_tag,
 							in Vector!ubyte rep)
 	{
-		return add_object(type_tag, class_tag, &rep[0], rep.size());
+		return add_object(type_tag, class_tag, &rep[0], rep.length);
 	}
 
 	DER_Encoder add_object(ASN1_Tag type_tag, ASN1_Tag class_tag,
 							in SafeVector!ubyte rep)
 	{
-		return add_object(type_tag, class_tag, &rep[0], rep.size());
+		return add_object(type_tag, class_tag, &rep[0], rep.length);
 	}
 private:
 	class DER_Sequence
@@ -369,14 +369,14 @@ private:
 			if (type_tag == ASN1_Tag.SET)
 			{
 				std.algorithm.sort(set_contents.begin(), set_contents.end());
-				for (size_t i = 0; i != set_contents.size(); ++i)
+				for (size_t i = 0; i != set_contents.length; ++i)
 					contents += set_contents[i];
 				set_contents.clear();
 			}
 			
 			SafeVector!ubyte result;
 			result += encode_tag(type_tag, real_class_tag);
-			result += encode_length(contents.size());
+			result += encode_length(contents.length);
 			result += contents;
 			contents.clear();
 			

@@ -22,19 +22,17 @@ enum : Character_Set {
 /*
 * Character Set Handling
 */
-
-
 /*
 * Convert from UCS-2 to ISO 8859-1
 */
 string ucs2_to_latin1(in string ucs2)
 {
-	if (ucs2.size() % 2 == 1)
+	if (ucs2.length % 2 == 1)
 		throw new Decoding_Error("UCS-2 string has an odd number of bytes");
 	
 	string latin1;
 	
-	for (size_t i = 0; i != ucs2.size(); i += 2)
+	for (size_t i = 0; i != ucs2.length; i += 2)
 	{
 		const ubyte c1 = ucs2[i];
 		const ubyte c2 = ucs2[i+1];
@@ -56,7 +54,7 @@ string utf8_to_latin1(in string utf8)
 	string iso8859;
 	
 	size_t position = 0;
-	while(position != utf8.size())
+	while(position != utf8.length)
 	{
 		const ubyte c1 = cast(ubyte)(utf8[position++]);
 		
@@ -64,7 +62,7 @@ string utf8_to_latin1(in string utf8)
 			iso8859 += cast(char)(c1);
 		else if (c1 >= 0xC0 && c1 <= 0xC7)
 		{
-			if (position == utf8.size())
+			if (position == utf8.length)
 				throw new Decoding_Error("UTF-8: sequence truncated");
 			
 			const ubyte c2 = cast(ubyte)(utf8[position++]);
@@ -88,7 +86,7 @@ string utf8_to_latin1(in string utf8)
 string latin1_to_utf8(in string iso8859)
 {
 	string utf8;
-	for (size_t i = 0; i != iso8859.size(); ++i)
+	for (size_t i = 0; i != iso8859.length; ++i)
 	{
 		const ubyte c = cast(ubyte)(iso8859[i]);
 		
@@ -101,8 +99,6 @@ string latin1_to_utf8(in string iso8859)
 		}
 	}
 	return utf8;
-}
-
 }
 
 /*
@@ -200,6 +196,7 @@ char digit2char(ubyte b)
 */
 bool caseless_cmp(char a, char b)
 {
-	return (std::tolower(cast(char)(a)) ==
-	        std::tolower(cast(char)(b)));
+	import std.ascii : toLower;
+	return (toLower(cast(char)(a)) ==
+	        toLower(cast(char)(b)));
 }

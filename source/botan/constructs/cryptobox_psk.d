@@ -110,7 +110,7 @@ struct CryptoBox {
 		mac.update(&input[0], input_len - MAC_OUTPUT_LENGTH);
 		SafeVector!ubyte computed_mac = mac.flush();
 		
-		if (!same_mem(&input[input_len - MAC_OUTPUT_LENGTH], &computed_mac[0], computed_mac.size()))
+		if (!same_mem(&input[input_len - MAC_OUTPUT_LENGTH], &computed_mac[0], computed_mac.length))
 			throw new Decoding_Error("MAC verification failed");
 		
 		SymmetricKey cipher_key =

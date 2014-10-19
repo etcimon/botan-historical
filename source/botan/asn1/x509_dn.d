@@ -12,7 +12,7 @@ import botan.asn1.asn1_str;
 import botan.asn1.x509_dn;
 import botan.asn1.der_enc;
 import botan.asn1.ber_dec;
-import botan.parsing;
+import botan.utils.parsing;
 import botan.internal.stl_util;
 import botan.asn1.oid_lookup.oids;
 import ostream;
@@ -210,7 +210,7 @@ public:
 		auto attr1 = dn1.get_attributes();
 		auto attr2 = dn2.get_attributes();
 		
-		if (attr1.size() != attr2.size()) return false;
+		if (attr1.length != attr2.length) return false;
 		
 		auto p1 = attr1.begin();
 		auto p2 = attr2.begin();
@@ -248,8 +248,8 @@ public:
 		auto attr1 = get_attributes();
 		auto attr2 = dn2.get_attributes();
 		
-		if (attr1.size() < attr2.size()) return true;
-		if (attr1.size() > attr2.size()) return false;
+		if (attr1.length < attr2.length) return true;
+		if (attr1.length > attr2.length) return false;
 		
 		for (auto p1 = attr1.begin(); p1 != attr1.end(); ++p1)
 		{

@@ -57,7 +57,7 @@ GOST_3410_PublicKey::GOST_3410_PublicKey(in AlgorithmIdentifier alg_id,
 	SafeVector!ubyte bits;
 	BER_Decoder(key_bits).decode(bits, ASN1_Tag.OCTET_STRING);
 
-	const size_t part_size = bits.size() / 2;
+	const size_t part_size = bits.length / 2;
 
 	// Keys are stored in little endian format (WTF)
 	for (size_t i = 0; i != part_size / 2; ++i)
@@ -81,10 +81,10 @@ BigInt decode_le(in ubyte* msg, size_t msg_len)
 {
 	SafeVector!ubyte msg_le(msg, msg + msg_len);
 
-	for (size_t i = 0; i != msg_le.size() / 2; ++i)
-		std.algorithm.swap(msg_le[i], msg_le[msg_le.size()-1-i]);
+	for (size_t i = 0; i != msg_le.length / 2; ++i)
+		std.algorithm.swap(msg_le[i], msg_le[msg_le.length-1-i]);
 
-	return BigInt(&msg_le[0], msg_le.size());
+	return BigInt(&msg_le[0], msg_le.length);
 }
 
 }
@@ -126,8 +126,8 @@ GOST_3410_Signature_Operation::sign(in ubyte* msg, size_t msg_len,
 		throw new Invalid_State("GOST 34.10: r == 0 || s == 0");
 
 	SafeVector!ubyte output = SafeVector!ubyte(2*order.bytes());
-	s.binary_encode(&output[output.size() / 2 - s.bytes()]);
-	r.binary_encode(&output[output.size() - r.bytes()]);
+	s.binary_encode(&output[output.length / 2 - s.bytes()]);
+	r.binary_encode(&output[output.length - r.bytes()]);
 	return output;
 }
 

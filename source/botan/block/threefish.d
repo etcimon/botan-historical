@@ -6,7 +6,7 @@
 */
 module botan.block.threefish;
 
-import botan.rotate;
+import botan.utils.rotate;
 import botan.utils.loadstor;
 import botan.block.block_cipher;
 
@@ -18,8 +18,8 @@ class Threefish_512 : Block_Cipher_Fixed_Params!(64, 64)
 public:
 	override void encrypt_n(ubyte* input, ubyte* output, size_t blocks) const
 	{
-		BOTAN_ASSERT(m_K.size() == 9, "Key was set");
-		BOTAN_ASSERT(m_T.size() == 3, "Tweak was set");
+		BOTAN_ASSERT(m_K.length == 9, "Key was set");
+		BOTAN_ASSERT(m_T.length == 3, "Tweak was set");
 		
 		for (size_t i = 0; i != blocks; ++i)
 		{
@@ -53,8 +53,8 @@ public:
 
 	override void decrypt_n(ubyte* input, ubyte* output, size_t blocks) const
 	{
-		BOTAN_ASSERT(m_K.size() == 9, "Key was set");
-		BOTAN_ASSERT(m_T.size() == 3, "Tweak was set");
+		BOTAN_ASSERT(m_K.length == 9, "Key was set");
+		BOTAN_ASSERT(m_T.length == 3, "Tweak was set");
 		
 		for (size_t i = 0; i != blocks; ++i)
 		{
@@ -128,8 +128,8 @@ private:
 	abstract void skein_feedfwd(in SafeVector!ulong M,
 	                   			const ref SafeVector!ulong T)
 	{
-		BOTAN_ASSERT(m_K.size() == 9, "Key was set");
-		BOTAN_ASSERT(M.size() == 8, "Single block");
+		BOTAN_ASSERT(m_K.length == 9, "Key was set");
+		BOTAN_ASSERT(M.length == 8, "Single block");
 		
 		m_T[0] = T[0];
 		m_T[1] = T[1];

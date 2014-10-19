@@ -47,12 +47,12 @@ public:
 			y0 = m_ghash.nonce_hash(nonce, nonce_len);
 		}
 		
-		m_ctr.set_iv(&y0[0], y0.size());
+		m_ctr.set_iv(&y0[0], y0.length);
 		
 		SafeVector!ubyte m_enc_y0(BS);
 		m_ctr.encipher(m_enc_y0);
 		
-		m_ghash.start(&m_enc_y0[0], m_enc_y0.size());
+		m_ghash.start(&m_enc_y0[0], m_enc_y0.length);
 		
 		return SafeVector!ubyte();
 	}
@@ -93,7 +93,7 @@ package:
 		m_ctr.set_key(key, keylen);
 		
 		const Vector!ubyte zeros(BS);
-		m_ctr.set_iv(&zeros[0], zeros.size());
+		m_ctr.set_iv(&zeros[0], zeros.length);
 		
 		SafeVector!ubyte H(BS);
 		m_ctr.encipher(H);
@@ -148,8 +148,8 @@ public:
 
 	override void update(SafeVector!ubyte buffer, size_t offset = 0)
 	{
-		BOTAN_ASSERT(buffer.size() >= offset, "Offset is sane");
-		const size_t sz = buffer.size() - offset;
+		BOTAN_ASSERT(buffer.length >= offset, "Offset is sane");
+		const size_t sz = buffer.length - offset;
 		ubyte* buf = &buffer[offset];
 		
 		m_ctr.cipher(buf, buf, sz);
@@ -189,8 +189,8 @@ public:
 
 	override void update(SafeVector!ubyte buffer, size_t offset = 0)
 	{
-		BOTAN_ASSERT(buffer.size() >= offset, "Offset is sane");
-		const size_t sz = buffer.size() - offset;
+		BOTAN_ASSERT(buffer.length >= offset, "Offset is sane");
+		const size_t sz = buffer.length - offset;
 		ubyte* buf = &buffer[offset];
 		
 		m_ghash.update(buf, sz);
@@ -199,8 +199,8 @@ public:
 
 	override void finish(SafeVector!ubyte buffer, size_t offset)
 	{
-		BOTAN_ASSERT(buffer.size() >= offset, "Offset is sane");
-		const size_t sz = buffer.size() - offset;
+		BOTAN_ASSERT(buffer.length >= offset, "Offset is sane");
+		const size_t sz = buffer.length - offset;
 		ubyte* buf = &buffer[offset];
 		
 		BOTAN_ASSERT(sz >= tag_size(), "Have the tag as part of final input");
@@ -242,7 +242,7 @@ public:
 
 	SafeVector!ubyte nonce_hash(in ubyte* nonce, size_t nonce_len)
 	{
-		BOTAN_ASSERT(m_ghash.size() == 0, "nonce_hash called during wrong time");
+		BOTAN_ASSERT(m_ghash.length == 0, "nonce_hash called during wrong time");
 		SafeVector!ubyte y0(16);
 		
 		ghash_update(y0, nonce, nonce_len);
@@ -262,7 +262,7 @@ public:
 	*/
 	void update(in ubyte* input, size_t length)
 	{
-		BOTAN_ASSERT(m_ghash.size() == 16, "Key was set");
+		BOTAN_ASSERT(m_ghash.length == 16, "Key was set");
 		
 		m_text_len += length;
 		
@@ -369,7 +369,7 @@ private:
 	{
 		SafeVector!ubyte final_block(16);
 		store_be!ulong(&final_block[0], 8*ad_len, 8*text_len);
-		ghash_update(hash, &final_block[0], final_block.size());
+		ghash_update(hash, &final_block[0], final_block.length);
 	}
 
 	SafeVector!ubyte m_H;

@@ -59,36 +59,38 @@ void xor_buf(T)(T* output,
 		output[i] = input[i] ^ input2[i];
 }
 
-#if BOTAN_TARGET_UNALIGNED_MEMORY_ACCESS_OK
+static if (BOTAN_TARGET_UNALIGNED_MEMORY_ACCESS_OK) {
 
- void xor_buf(ubyte* output, in ubyte* input, size_t length)
-{
-	while(length >= 8)
+	void xor_buf(ubyte* output, in ubyte* input, size_t length)
 	{
-		*cast(ulong*)(output) ^= *cast(const ulong*)(input);
-		output += 8; input += 8; length -= 8;
+		while(length >= 8)
+		{
+			*cast(ulong*)(output) ^= *cast(const ulong*)(input);
+			output += 8; input += 8; length -= 8;
+		}
+
+		for (size_t i = 0; i != length; ++i)
+			output[i] ^= input[i];
 	}
 
-	for (size_t i = 0; i != length; ++i)
-		output[i] ^= input[i];
-}
-
- void xor_buf(ubyte* output,
-			  in ubyte* input,
-			  in ubyte* input2,
-			  size_t length)
-{
-	while(length >= 8)
+	void xor_buf(ubyte* output,
+				  in ubyte* input,
+				  in ubyte* input2,
+				  size_t length)
 	{
-		*cast(ulong*)(output) =
-			*cast(const ulong*)(input) ^
-			*cast(const ulong*)(input2);
+		while(length >= 8)
+		{
+			*cast(ulong*)(output) =
+				*cast(const ulong*)(input) ^
+				*cast(const ulong*)(input2);
 
-		input += 8; input2 += 8; output += 8; length -= 8;
+			input += 8; input2 += 8; output += 8; length -= 8;
+		}
+
+		for (size_t i = 0; i != length; ++i)
+			output[i] = input[i] ^ input2[i];
 	}
 
-	for (size_t i = 0; i != length; ++i)
-		output[i] = input[i] ^ input2[i];
 }
 
 void xor_buf(Alloc, Alloc2)(Vector!( ubyte, Alloc ) output,
@@ -98,7 +100,7 @@ void xor_buf(Alloc, Alloc2)(Vector!( ubyte, Alloc ) output,
 	xor_buf(&output[0], &input[0], n);
 }
 
-void xor_buf(Alloc)(Vector!( ubyte, Alloc )& output,
+void xor_buf(Alloc)(ref Vector!( ubyte, Alloc ) output,
 				 in ubyte* input,
 				 size_t n)
 {
@@ -107,20 +109,21 @@ void xor_buf(Alloc)(Vector!( ubyte, Alloc )& output,
 
 void xor_buf(Alloc, Alloc2)(Vector!( ubyte, Alloc ) output,
 							 in ubyte* input,
-							 in Vector!( ubyte, Alloc2 )& input2,
+							 ref in Vector!( ubyte, Alloc2 ) input2,
 							 size_t n)
 {
 	xor_buf(&output[0], &input[0], &input2[0], n);
 }
 
-template<typename T, typename Alloc, typename Alloc2>
+// fixme: Move into Vector type
 Vector!(T, Alloc)
-operator^=(Vector!(T, Alloc) output,
-			  in Vector!( T, Alloc2 ) input)
+	opOpAssign(string op, T, Alloc, Alloc2)(Vector!(T, Alloc) output,
+			 					 in Vector!( T, Alloc2 ) input)
+		if (op == "^=")
 {
-	if (output.size() < input.size())
-		output.resize(input.size());
+	if (output.length < input.length)
+		output.resize(input.length);
 
-	xor_buf(&output[0], &input[0], input.size());
+	xor_buf(&output[0], &input[0], input.length);
 	return output;
 }

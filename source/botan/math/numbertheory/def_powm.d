@@ -35,7 +35,7 @@ public:
 		g[0] = 1;
 		g[1] = base;
 		
-		for (size_t i = 2; i != g.size(); ++i)
+		for (size_t i = 2; i != g.length; ++i)
 			g[i] = reducer.multiply(g[i-1], g[0]);
 	}
 
@@ -103,13 +103,13 @@ public:
 		m_g.resize((1 << m_window_bits));
 		
 		BigInt z(BigInt.Positive, 2 * (m_mod_words + 1));
-		SafeVector!word workspace(z.size());
+		SafeVector!word workspace(z.length);
 		
 		m_g[0] = 1;
 		
-		bigint_monty_mul(z.mutable_data(), z.size(),
-		                 m_g[0].data(), m_g[0].size(), m_g[0].sig_words(),
-		m_R2_mod.data(), m_R2_mod.size(), m_R2_mod.sig_words(),
+		bigint_monty_mul(z.mutable_data(), z.length,
+		                 m_g[0].data(), m_g[0].length, m_g[0].sig_words(),
+		m_R2_mod.data(), m_R2_mod.length, m_R2_mod.sig_words(),
 		m_modulus.data(), m_mod_words, m_mod_prime,
 		&workspace[0]);
 		
@@ -117,9 +117,9 @@ public:
 		
 		m_g[1] = (base >= m_modulus) ? (base % m_modulus) : base;
 		
-		bigint_monty_mul(z.mutable_data(), z.size(),
-		                 m_g[1].data(), m_g[1].size(), m_g[1].sig_words(),
-		m_R2_mod.data(), m_R2_mod.size(), m_R2_mod.sig_words(),
+		bigint_monty_mul(z.mutable_data(), z.length,
+		                 m_g[1].data(), m_g[1].length, m_g[1].sig_words(),
+		m_R2_mod.data(), m_R2_mod.length, m_R2_mod.sig_words(),
 		m_modulus.data(), m_mod_words, m_mod_prime,
 		&workspace[0]);
 		
@@ -128,14 +128,14 @@ public:
 		const ref BigInt x = m_g[1];
 		const size_t x_sig = x.sig_words();
 		
-		for (size_t i = 2; i != m_g.size(); ++i)
+		for (size_t i = 2; i != m_g.length; ++i)
 		{
 			const ref BigInt y = m_g[i-1];
 			const size_t y_sig = y.sig_words();
 			
-			bigint_monty_mul(z.mutable_data(), z.size(),
-			                 x.data(), x.size(), x_sig,
-			                 y.data(), y.size(), y_sig,
+			bigint_monty_mul(z.mutable_data(), z.length,
+			                 x.data(), x.length, x_sig,
+			                 y.data(), y.length, y_sig,
 			                 m_modulus.data(), m_mod_words, m_mod_prime,
 			                 &workspace[0]);
 			
@@ -162,7 +162,7 @@ public:
 			for (size_t k = 0; k != m_window_bits; ++k)
 			{
 				bigint_monty_sqr(z.mutable_data(), z_size,
-				                 x.data(), x.size(), x.sig_words(),
+				                 x.data(), x.length, x.sig_words(),
 				                 m_modulus.data(), m_mod_words, m_mod_prime,
 				                 &workspace[0]);
 				
@@ -174,8 +174,8 @@ public:
 			const ref BigInt y = m_g[nibble];
 			
 			bigint_monty_mul(z.mutable_data(), z_size,
-			                 x.data(), x.size(), x.sig_words(),
-			                 y.data(), y.size(), y.sig_words(),
+			                 x.data(), x.length, x.sig_words(),
+			                 y.data(), y.length, y.sig_words(),
 			                 m_modulus.data(), m_mod_words, m_mod_prime,
 			                 &workspace[0]);
 			

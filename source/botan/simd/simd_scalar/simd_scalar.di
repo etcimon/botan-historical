@@ -7,7 +7,7 @@
 module botan.simd.simd_scalar.simd_scalar;
 
 import botan.utils.loadstor;
-import botan.bswap;
+import botan.utils.bswap;
 
 /**
 * Fake SIMD, using plain scalar operations

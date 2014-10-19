@@ -54,8 +54,8 @@ ECDSA_Signature_Operation::sign(in ubyte* msg, size_t msg_len,
 	}
 
 	SafeVector!ubyte output = SafeVector!ubyte(2*order.bytes());
-	r.binary_encode(&output[output.size() / 2 - r.bytes()]);
-	s.binary_encode(&output[output.size() - s.bytes()]);
+	r.binary_encode(&output[output.length / 2 - r.bytes()]);
+	s.binary_encode(&output[output.length - s.bytes()]);
 	return output;
 }
 

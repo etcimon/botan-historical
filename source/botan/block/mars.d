@@ -8,7 +8,7 @@ module botan.block.mars;
 
 import botan.block.block_cipher;
 import botan.utils.loadstor;
-import botan.rotate;
+import botan.utils.rotate;
 
 /**
 * MARS, IBM's candidate for AES

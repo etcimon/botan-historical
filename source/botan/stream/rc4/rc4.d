@@ -13,12 +13,12 @@ import botan.utils.rounding;
 */
 void RC4::cipher(in ubyte* input, ubyte* output)
 {
-	while(length >= buffer.size() - position)
+	while(length >= buffer.length - position)
 	{
-		xor_buf(output, input, &buffer[position], buffer.size() - position);
-		length -= (buffer.size() - position);
-		input += (buffer.size() - position);
-		output += (buffer.size() - position);
+		xor_buf(output, input, &buffer[position], buffer.length - position);
+		length -= (buffer.length - position);
+		input += (buffer.length - position);
+		output += (buffer.length - position);
 		generate();
 	}
 	xor_buf(output, input, &buffer[position], length);
@@ -31,7 +31,7 @@ void RC4::cipher(in ubyte* input, ubyte* output)
 void RC4::generate()
 {
 	ubyte SX, SY;
-	for (size_t i = 0; i != buffer.size(); i += 4)
+	for (size_t i = 0; i != buffer.length; i += 4)
 	{
 		SX = state[X+1]; Y = (Y + SX) % 256; SY = state[Y];
 		state[X+1] = SY; state[Y] = SX;
@@ -72,10 +72,10 @@ void RC4::key_schedule(in ubyte* key, size_t length)
 		std.algorithm.swap(state[i], state[state_index]);
 	}
 
-	for (size_t i = 0; i <= SKIP; i += buffer.size())
+	for (size_t i = 0; i <= SKIP; i += buffer.length)
 		generate();
 
-	position += (SKIP % buffer.size());
+	position += (SKIP % buffer.length);
 }
 
 /*

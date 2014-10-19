@@ -9,7 +9,7 @@ module botan.hash.sha160;
 import botan.hash.mdx_hash;
 
 import botan.utils.loadstor;
-import botan.rotate;
+import botan.utils.rotate;
 
 /**
 * NIST's SHA-160

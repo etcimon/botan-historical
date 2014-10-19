@@ -34,10 +34,10 @@ Vector!ubyte Next_Protocol::serialize() const
 
 	append_tls_length_value(buf,
 									cast(const ubyte*)(m_protocol.data()),
-									m_protocol.size(),
+									m_protocol.length,
 									1);
 
-	const ubyte padding_len = 32 - ((m_protocol.size() + 2) % 32);
+	const ubyte padding_len = 32 - ((m_protocol.length + 2) % 32);
 
 	buf.push_back(padding_len);
 

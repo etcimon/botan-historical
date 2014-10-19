@@ -9,7 +9,7 @@ module botan.modes.cfb;
 import botan.modes.cipher_mode;
 import botan.block.block_cipher;
 import botan.modes.mode_pad;
-import botan.parsing;
+import botan.utils.parsing;
 import botan.internal.xor_buf;
 /**
 * CFB Mode
@@ -23,7 +23,7 @@ public:
 			throw new Invalid_IV_Length(name(), nonce_len);
 		
 		m_shift_register.assign(nonce, nonce + nonce_len);
-		m_keystream_buf.resize(m_shift_register.size());
+		m_keystream_buf.resize(m_shift_register.length);
 		cipher().encrypt(m_shift_register, m_keystream_buf);
 		
 		return SafeVector!ubyte();
@@ -115,8 +115,8 @@ public:
 
 	override void update(SafeVector!ubyte buffer, size_t offset = 0)
 	{
-		BOTAN_ASSERT(buffer.size() >= offset, "Offset is sane");
-		size_t sz = buffer.size() - offset;
+		BOTAN_ASSERT(buffer.length >= offset, "Offset is sane");
+		size_t sz = buffer.length - offset;
 		ubyte* buf = &buffer[offset];
 		
 		const size_t BS = cipher().block_size();
@@ -159,8 +159,8 @@ public:
 
 	override void update(SafeVector!ubyte buffer, size_t offset = 0)
 	{
-		BOTAN_ASSERT(buffer.size() >= offset, "Offset is sane");
-		size_t sz = buffer.size() - offset;
+		BOTAN_ASSERT(buffer.length >= offset, "Offset is sane");
+		size_t sz = buffer.length - offset;
 		ubyte* buf = &buffer[offset];
 		
 		const size_t BS = cipher().block_size();

@@ -7,7 +7,7 @@
 
 import botan.chacha;
 import botan.utils.loadstor;
-import botan.rotate;
+import botan.utils.rotate;
 import botan.internal.xor_buf;
 void ChaCha::chacha(ubyte output[64], const uint input[16])
 {
@@ -62,12 +62,12 @@ void ChaCha::chacha(ubyte output[64], const uint input[16])
 */
 void ChaCha::cipher(in ubyte* input, ubyte* output)
 {
-	while(length >= m_buffer.size() - m_position)
+	while(length >= m_buffer.length - m_position)
 	{
-		xor_buf(output, input, &m_buffer[m_position], m_buffer.size() - m_position);
-		length -= (m_buffer.size() - m_position);
-		input += (m_buffer.size() - m_position);
-		output += (m_buffer.size() - m_position);
+		xor_buf(output, input, &m_buffer[m_position], m_buffer.length - m_position);
+		length -= (m_buffer.length - m_position);
+		input += (m_buffer.length - m_position);
+		output += (m_buffer.length - m_position);
 		chacha(&m_buffer[0], &m_state[0]);
 
 		++m_state[12];

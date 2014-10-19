@@ -11,7 +11,7 @@ import botan.cert.x509.crl_ent;
 import botan.cert.x509.x509_ext;
 import botan.cert.x509.x509cert;
 import botan.asn1.ber_dec;
-import botan.parsing;
+import botan.utils.parsing;
 import botan.math.bigint.bigint;
 import botan.asn1.oid_lookup.oids;
 
@@ -57,7 +57,7 @@ public:
 		
 		bool is_revoked = false;
 		
-		for (size_t i = 0; i != revoked.size(); ++i)
+		for (size_t i = 0; i != revoked.length; ++i)
 		{
 			if (cert_serial == revoked[i].serial_number())
 			{

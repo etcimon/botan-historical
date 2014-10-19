@@ -6,32 +6,12 @@
 * Distributed under the terms of the botan license.
 */
 module botan.utils.loadstor;
+
 import botan.utils.types;
-import botan.bswap;
+import botan.utils.bswap;
 import botan.utils.get_byte;
 import cstring;
 
-#if BOTAN_TARGET_UNALIGNED_MEMORY_ACCESS_OK
-
-#if defined(BOTAN_TARGET_CPU_IS_BIG_ENDIAN)
-
-#define BOTAN_ENDIAN_N2B(x) (x)
-#define BOTAN_ENDIAN_B2N(x) (x)
-
-#define BOTAN_ENDIAN_N2L(x) reverse_bytes(x)
-#define BOTAN_ENDIAN_L2N(x) reverse_bytes(x)
-
-#elif defined(BOTAN_TARGET_CPU_IS_LITTLE_ENDIAN)
-
-#define BOTAN_ENDIAN_N2L(x) (x)
-#define BOTAN_ENDIAN_L2N(x) (x)
-
-#define BOTAN_ENDIAN_N2B(x) reverse_bytes(x)
-#define BOTAN_ENDIAN_B2N(x) reverse_bytes(x)
-
-#endif
-
-#endif
 /**
 * Make a ushort from two bytes
 * @param i0 the first ubyte
@@ -92,11 +72,11 @@ ulong make_ulong(ubyte i0, ubyte i1, ubyte i2, ubyte i3,
 */
 T load_be(T)(in ubyte* input, size_t off)
 {
-	in += off * sizeof(T);
-	T out = 0;
+	input += off * sizeof(T);
+	T output = 0;
 	for (size_t i = 0; i != sizeof(T); ++i)
-		out = (out << 8) | input[i];
-	return out;
+		output = (output << 8) | input[i];
+	return output;
 }
 
 /**
@@ -107,11 +87,11 @@ T load_be(T)(in ubyte* input, size_t off)
 */
 T load_le(T)(in ubyte* input, size_t off)
 {
-	in += off * sizeof(T);
-	T out = 0;
+	input += off * sizeof(T);
+	T output = 0;
 	for (size_t i = 0; i != sizeof(T); ++i)
-		out = (out << 8) | input[sizeof(T)-1-i];
-	return out;
+		output = (output << 8) | input[sizeof(T)-1-i];
+	return output;
 }
 
 /**
@@ -122,12 +102,12 @@ T load_le(T)(in ubyte* input, size_t off)
 */
 ushort load_be(T : ushort)(in ubyte* input, size_t off)
 {
-#if BOTAN_TARGET_UNALIGNED_MEMORY_ACCESS_OK
-	return BOTAN_ENDIAN_N2B(*(cast(const ushort*)(input) + off));
-#else
-	in += off * sizeof(ushort);
-	return make_ushort(input[0], input[1]);
-#endif
+	static if (BOTAN_TARGET_UNALIGNED_MEMORY_ACCESS_OK){
+		return nativeToBigEndian(*(cast(const ushort*)(input) + off));
+	} else {
+		input += off * sizeof(ushort);
+		return make_ushort(input[0], input[1]);
+	}
 }
 
 /**
@@ -138,12 +118,12 @@ ushort load_be(T : ushort)(in ubyte* input, size_t off)
 */
 ushort load_le(T : ushort)(in ubyte* input, size_t off)
 {
-#if BOTAN_TARGET_UNALIGNED_MEMORY_ACCESS_OK
-	return BOTAN_ENDIAN_N2L(*(cast(const ushort*)(input) + off));
-#else
-	in += off * sizeof(ushort);
-	return make_ushort(input[1], input[0]);
-#endif
+	static if (BOTAN_TARGET_UNALIGNED_MEMORY_ACCESS_OK) {
+		return BOTAN_ENDIAN_N2L(*(cast(const ushort*)(input) + off));
+	} else {
+		input += off * sizeof(ushort);
+		return make_ushort(input[1], input[0]);
+	}
 }
 
 /**
@@ -154,12 +134,12 @@ ushort load_le(T : ushort)(in ubyte* input, size_t off)
 */
 uint load_be(T : uint)(in ubyte* input, size_t off)
 {
-#if BOTAN_TARGET_UNALIGNED_MEMORY_ACCESS_OK
-	return BOTAN_ENDIAN_N2B(*(cast(const uint*)(input) + off));
-#else
-	in += off * sizeof(uint);
-	return make_uint(input[0], input[1], input[2], input[3]);
-#endif
+	static if (BOTAN_TARGET_UNALIGNED_MEMORY_ACCESS_OK) {
+		return nativeToBigEndian(*(cast(const uint*)(input) + off));
+	} else {
+		input += off * sizeof(uint);
+		return make_uint(input[0], input[1], input[2], input[3]);
+	}
 }
 
 /**
@@ -171,12 +151,12 @@ uint load_be(T : uint)(in ubyte* input, size_t off)
 
 uint load_le(T : uint)(in ubyte* input, size_t off)
 {
-#if BOTAN_TARGET_UNALIGNED_MEMORY_ACCESS_OK
-	return BOTAN_ENDIAN_N2L(*(cast(const uint*)(input) + off));
-#else
-	in += off * sizeof(uint);
-	return make_uint(input[3], input[2], input[1], input[0]);
-#endif
+	static if (BOTAN_TARGET_UNALIGNED_MEMORY_ACCESS_OK) {
+		return BOTAN_ENDIAN_N2L(*(cast(const uint*)(input) + off));
+	} else {
+		input += off * sizeof(uint);
+		return make_uint(input[3], input[2], input[1], input[0]);
+	}
 }
 
 /**
@@ -185,16 +165,15 @@ uint load_le(T : uint)(in ubyte* input, size_t off)
 * @param off an offset into the array
 * @return off'th ulong of in, as a big-endian value
 */
-template<>
- ulong load_be(T : ulong)(in ubyte* input, size_t off)
+ulong load_be(T : ulong)(in ubyte* input, size_t off)
 {
-#if BOTAN_TARGET_UNALIGNED_MEMORY_ACCESS_OK
-	return BOTAN_ENDIAN_N2B(*(cast(const ulong*)(input) + off));
-#else
-	in += off * sizeof(ulong);
-	return make_ulong(input[0], input[1], input[2], input[3],
+	static if (BOTAN_TARGET_UNALIGNED_MEMORY_ACCESS_OK) {
+		return nativeToBigEndian(*(cast(const ulong*)(input) + off));
+	} else {
+		input += off * sizeof(ulong);
+		return make_ulong(input[0], input[1], input[2], input[3],
 							 input[4], input[5], input[6], input[7]);
-#endif
+	}
 }
 
 /**
@@ -203,16 +182,15 @@ template<>
 * @param off an offset into the array
 * @return off'th ulong of in, as a little-endian value
 */
-template<>
- ulong load_le(T : ulong)(in ubyte* input, size_t off)
+ulong load_le(T : ulong)(in ubyte* input, size_t off)
 {
-#if BOTAN_TARGET_UNALIGNED_MEMORY_ACCESS_OK
-	return BOTAN_ENDIAN_N2L(*(cast(const ulong*)(input) + off));
-#else
-	in += off * sizeof(ulong);
-	return make_ulong(input[7], input[6], input[5], input[4],
+	static if (BOTAN_TARGET_UNALIGNED_MEMORY_ACCESS_OK) {
+		return BOTAN_ENDIAN_N2L(*(cast(const ulong*)(input) + off));
+	} else {
+		input += off * sizeof(ulong);
+		return make_ulong(input[7], input[6], input[5], input[4],
 							 input[3], input[2], input[1], input[0]);
-#endif
+	}
 }
 
 /**
@@ -221,7 +199,6 @@ template<>
 * @param x0 where the first word will be written
 * @param x1 where the second word will be written
 */
-
 void load_le(T)(in ubyte* input, ref T x0, ref T x1)
 {
 	x0 = load_le!T(input, 0);
@@ -236,7 +213,7 @@ void load_le(T)(in ubyte* input, ref T x0, ref T x1)
 * @param x2 where the third word will be written
 * @param x3 where the fourth word will be written
 */
-void load_le(T)(in ubyte* in,
+void load_le(T)(in ubyte* input,
 						 ref T x0, ref T x1, ref T x2, ref T x3)
 {
 	x0 = load_le!T(input, 0);
@@ -278,27 +255,28 @@ void load_le(T)(in ubyte* input,
 * @param count how many words are in in
 */
 void load_le(T)(T* output,
-				  in ubyte* input,
-				  size_t count)
+				in ubyte* input,
+				size_t count)
 {
-#if defined(BOTAN_TARGET_CPU_HAS_KNOWN_ENDIANNESS)
-	std::memcpy(output, input, sizeof(T)*count);
+	static if (BOTAN_TARGET_CPU_HAS_KNOWN_ENDIANNESS) {
+		import std.c.string : memcpy;
+		memcpy(output, input, sizeof(T)*count);
 
-#if defined(BOTAN_TARGET_CPU_IS_BIG_ENDIAN)
-	const size_t blocks = count - (count % 4);
-	const size_t left = count - blocks;
+		version(BigEndian) {
+			const size_t blocks = count - (count % 4);
+			const size_t left = count - blocks;
 
-	for (size_t i = 0; i != blocks; i += 4)
-		bswap_4(output + i);
+			for (size_t i = 0; i != blocks; i += 4)
+				bswap_4(output + i);
 
-	for (size_t i = 0; i != left; ++i)
-		output[blocks+i] = reverse_bytes(output[blocks+i]);
-#endif
+			for (size_t i = 0; i != left; ++i)
+				output[blocks+i] = reverse_bytes(output[blocks+i]);
+		}
 
-#else
-	for (size_t i = 0; i != count; ++i)
-		output[i] = load_le!T(input, i);
-#endif
+	} else {
+		for (size_t i = 0; i != count; ++i)
+			output[i] = load_le!T(input, i);
+	}
 }
 
 /**
@@ -343,8 +321,8 @@ void load_be(T)(in ubyte* input,
 * @param x7 where the eighth word will be written
 */
 void load_be(T)(in ubyte* input,
-				  ref T x0, ref T x1, ref T x2, ref T x3,
-				  ref T x4, ref T x5, ref T x6, ref T x7)
+				ref T x0, ref T x1, ref T x2, ref T x3,
+				ref T x4, ref T x5, ref T x6, ref T x7)
 {
 	x0 = load_be!T(input, 0);
 	x1 = load_be!T(input, 1);
@@ -366,24 +344,25 @@ void load_be(T)(T* output,
 						  in ubyte* input,
 						  size_t count)
 {
-#if defined(BOTAN_TARGET_CPU_HAS_KNOWN_ENDIANNESS)
-	std::memcpy(output, input, sizeof(T)*count);
+	static if (BOTAN_TARGET_CPU_HAS_KNOWN_ENDIANNESS) {
+		import std.c.string : memcpy;
+		memcpy(output, input, sizeof(T)*count);
 
-#if defined(BOTAN_TARGET_CPU_IS_LITTLE_ENDIAN)
-	const size_t blocks = count - (count % 4);
-	const size_t left = count - blocks;
+		version(LittleEndian) {
+			const size_t blocks = count - (count % 4);
+			const size_t left = count - blocks;
 
-	for (size_t i = 0; i != blocks; i += 4)
-		bswap_4(output + i);
+			for (size_t i = 0; i != blocks; i += 4)
+				bswap_4(output + i);
 
-	for (size_t i = 0; i != left; ++i)
-		output[blocks+i] = reverse_bytes(output[blocks+i]);
-#endif
+			for (size_t i = 0; i != left; ++i)
+				output[blocks+i] = reverse_bytes(output[blocks+i]);
+		}
 
-#else
-	for (size_t i = 0; i != count; ++i)
-		output[i] = load_be!T(input, i);
-#endif
+	} else {
+		for (size_t i = 0; i != count; ++i)
+			output[i] = load_be!T(input, i);
+	}
 }
 
 /**
@@ -393,12 +372,12 @@ void load_be(T)(T* output,
 */
 void store_be(ushort input, ubyte* output)
 {
-#if BOTAN_TARGET_UNALIGNED_MEMORY_ACCESS_OK
-	*cast(ushort*)(output.ptr) = BOTAN_ENDIAN_B2N(input);
-#else
-	output[0] = get_byte(0, input);
-	output[1] = get_byte(1, input);
-#endif
+	static if (BOTAN_TARGET_UNALIGNED_MEMORY_ACCESS_OK) {
+		*cast(ushort*)(output.ptr) = bigEndianToNative(input);
+	} else {
+		output[0] = get_byte(0, input);
+		output[1] = get_byte(1, input);
+	}
 }
 
 /**
@@ -408,12 +387,12 @@ void store_be(ushort input, ubyte* output)
 */
 void store_le(ushort input, ubyte[2] output)
 {
-#if BOTAN_TARGET_UNALIGNED_MEMORY_ACCESS_OK
-	*cast(ushort*)(output) = BOTAN_ENDIAN_L2N(input);
-#else
-	output[0] = get_byte(1, input);
-	output[1] = get_byte(0, input);
-#endif
+	static if (BOTAN_TARGET_UNALIGNED_MEMORY_ACCESS_OK) {
+		*cast(ushort*)(output) = BOTAN_ENDIAN_L2N(input);
+	} else {
+		output[0] = get_byte(1, input);
+		output[1] = get_byte(0, input);
+	}
 }
 
 /**
@@ -421,16 +400,16 @@ void store_le(ushort input, ubyte[2] output)
 * @param input the input uint
 * @param output the ubyte array to write to
 */
-void store_be(uint in, ubyte[4] output)
+void store_be(uint input, ubyte[4] output)
 {
-#if BOTAN_TARGET_UNALIGNED_MEMORY_ACCESS_OK
-	*cast(uint*)(output) = BOTAN_ENDIAN_B2N(input);
-#else
-	output[0] = get_byte(0, input);
-	output[1] = get_byte(1, input);
-	output[2] = get_byte(2, input);
-	output[3] = get_byte(3, input);
-#endif
+	static if (BOTAN_TARGET_UNALIGNED_MEMORY_ACCESS_OK) {
+		*cast(uint*)(output) = bigEndianToNative(input);
+	} else {
+		output[0] = get_byte(0, input);
+		output[1] = get_byte(1, input);
+		output[2] = get_byte(2, input);
+		output[3] = get_byte(3, input);
+	}
 }
 
 /**
@@ -440,14 +419,14 @@ void store_be(uint in, ubyte[4] output)
 */
 void store_le(uint input, ubyte[4] output)
 {
-#if BOTAN_TARGET_UNALIGNED_MEMORY_ACCESS_OK
-	*cast(uint*)(output) = BOTAN_ENDIAN_L2N(input);
-#else
-	output[0] = get_byte(3, input);
-	output[1] = get_byte(2, input);
-	output[2] = get_byte(1, input);
-	output[3] = get_byte(0, input);
-#endif
+	static if (BOTAN_TARGET_UNALIGNED_MEMORY_ACCESS_OK) {
+		*cast(uint*)(output) = BOTAN_ENDIAN_L2N(input);
+	} else {
+		output[0] = get_byte(3, input);
+		output[1] = get_byte(2, input);
+		output[2] = get_byte(1, input);
+		output[3] = get_byte(0, input);
+	}
 }
 
 /**
@@ -457,18 +436,18 @@ void store_le(uint input, ubyte[4] output)
 */
 void store_be(ulong input, ubyte[8] output)
 {
-#if BOTAN_TARGET_UNALIGNED_MEMORY_ACCESS_OK
-	*cast(ulong*)(output) = BOTAN_ENDIAN_B2N(input);
-#else
-	output[0] = get_byte(0, input);
-	output[1] = get_byte(1, input);
-	output[2] = get_byte(2, input);
-	output[3] = get_byte(3, input);
-	output[4] = get_byte(4, input);
-	output[5] = get_byte(5, input);
-	output[6] = get_byte(6, input);
-	output[7] = get_byte(7, input);
-#endif
+	static if (BOTAN_TARGET_UNALIGNED_MEMORY_ACCESS_OK) {
+		*cast(ulong*)(output) = bigEndianToNative(input);
+	} else {
+		output[0] = get_byte(0, input);
+		output[1] = get_byte(1, input);
+		output[2] = get_byte(2, input);
+		output[3] = get_byte(3, input);
+		output[4] = get_byte(4, input);
+		output[5] = get_byte(5, input);
+		output[6] = get_byte(6, input);
+		output[7] = get_byte(7, input);
+	}
 }
 
 /**
@@ -476,20 +455,20 @@ void store_be(ulong input, ubyte[8] output)
 * @param input the input ulong
 * @param output the ubyte array to write to
 */
-void store_le(ulong in, ubyte[8] output)
+void store_le(ulong input, ubyte[8] output)
 {
-#if BOTAN_TARGET_UNALIGNED_MEMORY_ACCESS_OK
-	*cast(ulong*)(output) = BOTAN_ENDIAN_L2N(input);
-#else
-	output[0] = get_byte(7, input);
-	output[1] = get_byte(6, input);
-	output[2] = get_byte(5, input);
-	output[3] = get_byte(4, input);
-	output[4] = get_byte(3, input);
-	output[5] = get_byte(2, input);
-	output[6] = get_byte(1, input);
-	output[7] = get_byte(0, input);
-#endif
+	static if (BOTAN_TARGET_UNALIGNED_MEMORY_ACCESS_OK) {
+		*cast(ulong*)(output) = BOTAN_ENDIAN_L2N(input);
+	} else {
+		output[0] = get_byte(7, input);
+		output[1] = get_byte(6, input);
+		output[2] = get_byte(5, input);
+		output[3] = get_byte(4, input);
+		output[4] = get_byte(3, input);
+		output[5] = get_byte(2, input);
+		output[6] = get_byte(1, input);
+		output[7] = get_byte(0, input);
+	}
 }
 
 /**

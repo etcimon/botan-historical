@@ -278,7 +278,7 @@ void decrypt(ubyte* input, ubyte* output, size_t blocks,
 		ulong D1 = load_be!ulong(input, 0);
 		ulong D2 = load_be!ulong(input, 1);
 		
-		const ulong* K = &SK[SK.size()-1];
+		const ulong* K = &SK[SK.length-1];
 		
 		D2 ^= *K--;
 		D1 ^= *K--;

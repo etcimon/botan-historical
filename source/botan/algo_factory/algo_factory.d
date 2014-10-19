@@ -348,7 +348,7 @@ private:
 	Engine get_engine_n(size_t n) const
 	{
 		// Get an engine out of the list
-		if (n >= engines.size())
+		if (n >= engines.length)
 			return null;
 		return engines[n];
 	}
@@ -411,7 +411,7 @@ const T factory_prototype(T)(in string algo_spec,
 	if (scan_name.cipher_mode() != "")
 		return null;
 
-	for (size_t i = 0; i != engines.size(); ++i)
+	for (size_t i = 0; i != engines.length; ++i)
 	{
 		if (provider == "" || engines[i].provider_name() == provider)
 		{

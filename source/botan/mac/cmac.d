@@ -63,7 +63,7 @@ public:
 		SafeVector!ubyte output = input;
 		
 		ubyte carry = 0;
-		for (size_t i = output.size(); i != 0; --i)
+		for (size_t i = output.length; i != 0; --i)
 		{
 			ubyte temp = output[i-1];
 			output[i-1] = (temp << 1) | carry;
@@ -72,21 +72,21 @@ public:
 		
 		if (top_carry)
 		{
-			switch(input.size())
+			switch(input.length)
 			{
 				case 8:
-					output[output.size()-1] ^= 0x1B;
+					output[output.length-1] ^= 0x1B;
 					break;
 				case 16:
-					output[output.size()-1] ^= 0x87;
+					output[output.length-1] ^= 0x87;
 					break;
 				case 32:
-					output[output.size()-2] ^= 0x4;
-					output[output.size()-1] ^= 0x25;
+					output[output.length-2] ^= 0x4;
+					output[output.length-1] ^= 0x25;
 					break;
 				case 64:
-					output[output.size()-2] ^= 0x1;
-					output[output.size()-1] ^= 0x25;
+					output[output.length-2] ^= 0x1;
+					output[output.length-1] ^= 0x25;
 					break;
 			}
 		}

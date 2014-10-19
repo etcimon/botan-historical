@@ -42,7 +42,7 @@ class RandomNumberGenerator
 		abstract SafeVector!ubyte random_vec(size_t bytes)
 		{
 			SafeVector!ubyte output = SafeVector!ubyte(bytes);
-			randomize(&output[0], output.size());
+			randomize(&output[0], output.length);
 			return output;
 		}
 

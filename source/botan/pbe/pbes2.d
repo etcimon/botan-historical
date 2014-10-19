@@ -16,7 +16,7 @@ import botan.algo_factory;
 import botan.libstate.libstate;
 import botan.asn1.der_enc;
 import botan.asn1.ber_dec;
-import botan.parsing;
+import botan.utils.parsing;
 import botan.asn1.alg_id;
 import botan.asn1.oid_lookup.oids;
 import botan.libstate.lookup;
@@ -145,8 +145,8 @@ public:
 		Algorithm_Factory af = global_state().algorithm_factory();
 		
 		string cipher = oids.lookup(enc_algo.oid);
-		Vector!string cipher_spec = std.algorithm.splitter(cipher, '/');
-		if (cipher_spec.size() != 2)
+		Vector!string cipher_spec = splitter(cipher, '/');
+		if (cipher_spec.length != 2)
 			throw new Decoding_Error("PBE-PKCS5 v2.0: Invalid cipher spec " ~ cipher);
 		
 		if (cipher_spec[1] != "CBC")
@@ -161,13 +161,13 @@ public:
 		if (key_length == 0)
 			key_length = block_cipher.maximum_keylength();
 		
-		if (salt.size() < 8)
+		if (salt.length < 8)
 			throw new Decoding_Error("PBE-PKCS5 v2.0: Encoded salt is too small");
 		
 		PKCS5_PBKDF2 pbkdf(m_prf.clone());
 		
 		key = pbkdf.derive_key(key_length, passphrase,
-		                       &salt[0], salt.size(),
+		                       &salt[0], salt.length,
 		iterations).bits_of();
 	}
 
@@ -194,7 +194,7 @@ public:
 		PKCS5_PBKDF2 pbkdf = PKCS5_PBKDF2(m_prf.clone());
 		
 		key = pbkdf.derive_key(key_length, passphrase,
-		                     	&salt[0], salt.size(),
+		                     	&salt[0], salt.length,
 								msec, iterations).bits_of();
 	}
 
@@ -215,7 +215,7 @@ private:
 		SafeVector!ubyte buffer(DEFAULT_BUFFERSIZE);
 		while(pipe.remaining())
 		{
-			const size_t got = pipe.read(&buffer[0], buffer.size());
+			const size_t got = pipe.read(&buffer[0], buffer.length);
 			send(buffer, got);
 		}
 	}

@@ -322,7 +322,7 @@ class Certificate : Handshake_Message
 		override Handshake_Type type() const { return CERTIFICATE; }
 		const Vector!( X509_Certificate )& cert_chain() const { return m_certs; }
 
-		size_t count() const { return m_certs.size(); }
+		size_t count() const { return m_certs.length; }
 		bool empty() const { return m_certs.empty(); }
 
 		Certificate(Handshake_IO io,

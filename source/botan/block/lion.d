@@ -10,7 +10,7 @@ import botan.block.block_cipher;
 import botan.stream.stream_cipher;
 import botan.hash.hash;
 import botan.internal.xor_buf;
-import botan.parsing;
+import botan.utils.parsing;
 
 /**
 * Lion is a block cipher construction designed by Ross Anderson and

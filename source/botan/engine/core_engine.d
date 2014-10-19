@@ -7,7 +7,7 @@
 module botan.engine.core_engine;
 
 import botan.engine.engine;
-import botan.parsing;
+import botan.utils.parsing;
 import botan.filters.filters;
 import botan.algo_factory;
 import botan.modes.mode_pad;
@@ -246,7 +246,7 @@ public:
 	                                 Cipher_Dir direction,
 	                                 Algorithm_Factory af)
 	{
-		Vector!string algo_parts = std.algorithm.splitter(algo_spec, '/');
+		Vector!string algo_parts = splitter(algo_spec, '/');
 		if (algo_parts.empty())
 			throw new Invalid_Algorithm_Name(algo_spec);
 		
@@ -261,17 +261,17 @@ public:
 		if (!block_cipher)
 			return null;
 		
-		if (algo_parts.size() >= 4)
+		if (algo_parts.length >= 4)
 			return null; // 4 part mode, not something we know about
 		
-		if (algo_parts.size() < 2)
+		if (algo_parts.length < 2)
 			throw new Lookup_Error("Cipher specification '" ~ algo_spec +
 			                       "' is missing mode identifier");
 		
 		string mode = algo_parts[1];
 		
 		string padding;
-		if (algo_parts.size() == 3)
+		if (algo_parts.length == 3)
 			padding = algo_parts[2];
 		else
 			padding = (mode == "CBC") ? "PKCS7" : "NoPadding";
@@ -610,7 +610,7 @@ public:
 				}
 				
 				Vector!( HashFunction ) hashes;
-				for (size_t i = 0; i != hash_prototypes.size(); ++i)
+				for (size_t i = 0; i != hash_prototypes.length; ++i)
 					hashes.push_back(hash_prototypes[i].clone());
 				
 				return new Parallel(hashes);
@@ -753,7 +753,7 @@ Keyed_Filter get_cipher_mode(const BlockCipher block_cipher,
 		const string mode_name = algo_info[0];
 		
 		size_t bits = 8 * block_cipher.block_size();
-		if (algo_info.size() > 1)
+		if (algo_info.length > 1)
 			bits = to_uint(algo_info[1]);
 		
 		static if (BOTAN_HAS_MODE_CFB) {
@@ -776,7 +776,7 @@ Keyed_Filter get_cipher_mode(const BlockCipher block_cipher,
 			static if (BOTAN_HAS_AEAD_CCM) {
 					if (mode_name == "CCM")
 					{
-						const size_t L = (algo_info.size() == 3) ? to_uint(algo_info[2]) : 3;
+						const size_t L = (algo_info.length == 3) ? to_uint(algo_info[2]) : 3;
 						if (direction == ENCRYPTION)
 							return new AEAD_Filter(new CCM_Encryption(block_cipher.clone(), tag_size, L));
 						else

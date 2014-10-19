@@ -16,7 +16,7 @@ import botan.cert.x509.x509_ext;
 import botan.asn1.der_enc;
 import botan.asn1.ber_dec;
 import botan.internal.stl_util;
-import botan.parsing;
+import botan.utils.parsing;
 import botan.math.bigint.bigint;
 import botan.libstate.lookup;
 import botan.asn1.oid_lookup.oids;
@@ -298,7 +298,7 @@ public:
 				continue;
 			
 			output ~= "Subject " ~ dn_fields[i] ~ ":";
-			for (size_t j = 0; j != vals.size(); ++j)
+			for (size_t j = 0; j != vals.length; ++j)
 				output ~= " " ~ vals[j];
 			output ~= "";
 		}
@@ -311,7 +311,7 @@ public:
 				continue;
 			
 			output ~= "Issuer " ~ dn_fields[i] ~ ":";
-			for (size_t j = 0; j != vals.size(); ++j)
+			for (size_t j = 0; j != vals.length; ++j)
 				output ~= " " ~ vals[j];
 			output ~= "";
 		}
@@ -347,7 +347,7 @@ public:
 		if (!policies.empty())
 		{
 			output ~= "Policies: ";
-			for (size_t i = 0; i != policies.size(); i++)
+			for (size_t i = 0; i != policies.length; i++)
 				output ~= "	" ~ policies[i];
 		}
 		
@@ -355,7 +355,7 @@ public:
 		if (!ex_constraints.empty())
 		{
 			output ~= "Extended Constraints:";
-			for (size_t i = 0; i != ex_constraints.size(); i++)
+			for (size_t i = 0; i != ex_constraints.length; i++)
 				output ~= "	" ~ ex_constraints[i];
 		}
 		
@@ -369,10 +369,10 @@ public:
 		
 		output ~= "Serial number: " ~ hex_encode(this.serial_number());
 		
-		if (this.authority_key_id().size())
+		if (this.authority_key_id().length)
 			output ~= "Authority keyid: " ~ hex_encode(this.authority_key_id());
 		
-		if (this.subject_key_id().size())
+		if (this.subject_key_id().length)
 			output ~= "Subject keyid: " ~ hex_encode(this.subject_key_id());
 		
 		Unique!X509_PublicKey pubkey = this.subject_public_key();
@@ -393,12 +393,12 @@ public:
 		
 		string formatted_print;
 		
-		for (size_t i = 0; i != hex_print.size(); i += 2)
+		for (size_t i = 0; i != hex_print.length; i += 2)
 		{
 			formatted_print.push_back(hex_print[i]);
 			formatted_print.push_back(hex_print[i+1]);
 			
-			if (i != hex_print.size() - 2)
+			if (i != hex_print.length - 2)
 				formatted_print.push_back(':');
 		}
 		
@@ -662,7 +662,7 @@ Vector!string lookup_oids(in Vector!string input)
 bool cert_subject_dns_match(in string name,
                             const Vector!string& cert_names)
 {
-	for (size_t i = 0; i != cert_names.size(); ++i)
+	for (size_t i = 0; i != cert_names.length; ++i)
 	{
 		const string cn = cert_names[i];
 		
@@ -673,11 +673,11 @@ bool cert_subject_dns_match(in string name,
 	* Possible wildcard match. We only support the most basic form of
 	* cert wildcarding ala RFC 2595
 	*/
-		if (cn.size() > 2 && cn[0] == '*' && cn[1] == '.' && name.size() > cn.size())
+		if (cn.length > 2 && cn[0] == '*' && cn[1] == '.' && name.length > cn.length)
 		{
 			const string base = cn.substr(1, string::npos);
 			
-			if (name.compare(name.size() - base.size(), base.size(), base) == 0)
+			if (name.compare(name.length - base.length, base.length, base) == 0)
 				return true;
 		}
 	}

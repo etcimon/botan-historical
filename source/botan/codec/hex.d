@@ -71,7 +71,7 @@ string hex_encode(in ubyte* input,
 string hex_encode(Alloc)(in Vector!( ubyte, Alloc ) input,
 							bool uppercase = true)
 {
-	return hex_encode(&input[0], input.size(), uppercase);
+	return hex_encode(&input[0], input.length, uppercase);
 }
 
 /**
@@ -249,7 +249,7 @@ Vector!ubyte hex_decode(string input,
 Vector!ubyte hex_decode(in string input,
                         bool ignore_ws = true)
 {
-	return hex_decode(&input[0], input.size(), ignore_ws);
+	return hex_decode(&input[0], input.length, ignore_ws);
 }
 
 /**
@@ -286,5 +286,5 @@ SafeVector!ubyte hex_decode_locked(string input,
 SafeVector!ubyte hex_decode_locked(in string input,
                                    bool ignore_ws = true)
 {
-	return hex_decode_locked(&input[0], input.size(), ignore_ws);
+	return hex_decode_locked(&input[0], input.length, ignore_ws);
 }

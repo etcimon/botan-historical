@@ -102,8 +102,8 @@ NR_Signature_Operation::sign(in ubyte* msg, size_t msg_len,
 	}
 
 	SafeVector!ubyte output = SafeVector!ubyte(2*q.bytes());
-	c.binary_encode(&output[output.size() / 2 - c.bytes()]);
-	d.binary_encode(&output[output.size() - d.bytes()]);
+	c.binary_encode(&output[output.length / 2 - c.bytes()]);
+	d.binary_encode(&output[output.length - d.bytes()]);
 	return output;
 }
 

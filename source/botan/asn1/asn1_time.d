@@ -12,7 +12,7 @@ import botan.utils.mixins;
 import botan.asn1.der_enc;
 import botan.asn1.ber_dec;
 import botan.utils.charset;
-import botan.parsing;
+import botan.utils.parsing;
 import botan.calendar;
 
 class DER_Encoder;
@@ -35,7 +35,7 @@ public:
 			throw new Invalid_Argument("X509_Time: Bad encoding tag");
 		
 		der.add_object(tag, ASN1_Tag.UNIVERSAL,
-		               Charset.transcode(as_string(),
+		               transcode(as_string(),
 		                  LOCAL_CHARSET,
 		                  LATIN1_CHARSET));
 	}
@@ -47,7 +47,7 @@ public:
 	{
 		BER_Object ber_time = source.get_next_object();
 		
-		set_to(Charset.transcode(asn1.to_string(ber_time),
+		set_to(transcode(asn1.to_string(ber_time),
 		                         LATIN1_CHARSET,
 		                         LOCAL_CHARSET),
 		       ber_time.type_tag);
@@ -81,7 +81,7 @@ public:
 		
 		uint desired_size = (tag == ASN1_Tag.UTC_TIME) ? 13 : 15;
 		
-		while(repr.size() < desired_size)
+		while(repr.length < desired_size)
 			repr = "0" ~ repr;
 		
 		return repr;
@@ -153,9 +153,9 @@ public:
 		Vector!string params;
 		string current;
 		
-		for (size_t j = 0; j != time_str.size(); ++j)
+		for (size_t j = 0; j != time_str.length; ++j)
 		{
-			if (Charset.is_digit(time_str[j]))
+			if (is_digit(time_str[j]))
 				current += time_str[j];
 			else
 			{
@@ -167,15 +167,15 @@ public:
 		if (current != "")
 			params.push_back(current);
 		
-		if (params.size() < 3 || params.size() > 6)
+		if (params.length < 3 || params.length > 6)
 			throw new Invalid_Argument("Invalid time specification " ~ time_str);
 		
 		year	= to_uint(params[0]);
 		month  = to_uint(params[1]);
 		day	 = to_uint(params[2]);
-		hour	= (params.size() >= 4) ? to_uint(params[3]) : 0;
-		minute = (params.size() >= 5) ? to_uint(params[4]) : 0;
-		second = (params.size() == 6) ? to_uint(params[5]) : 0;
+		hour	= (params.length >= 4) ? to_uint(params[3]) : 0;
+		minute = (params.length >= 5) ? to_uint(params[4]) : 0;
+		second = (params.length == 6) ? to_uint(params[5]) : 0;
 		
 		tag = (year >= 2050) ? ASN1_Tag.GENERALIZED_TIME : ASN1_Tag.UTC_TIME;
 		
@@ -191,12 +191,12 @@ public:
 	{
 		if (spec_tag == ASN1_Tag.GENERALIZED_TIME)
 		{
-			if (t_spec.size() != 13 && t_spec.size() != 15)
+			if (t_spec.length != 13 && t_spec.length != 15)
 				throw new Invalid_Argument("Invalid GeneralizedTime: " ~ t_spec);
 		}
 		else if (spec_tag == ASN1_Tag.UTC_TIME)
 		{
-			if (t_spec.size() != 11 && t_spec.size() != 13)
+			if (t_spec.length != 11 && t_spec.length != 13)
 				throw new Invalid_Argument("Invalid UTCTime: " ~ t_spec);
 		}
 		else
@@ -204,7 +204,7 @@ public:
 			throw new Invalid_Argument("Invalid time tag " ~ std.conv.to!string(spec_tag) ~ " val " ~ t_spec);
 		}
 		
-		if (t_spec[t_spec.size()-1] != 'Z')
+		if (t_spec[t_spec.length-1] != 'Z')
 			throw new Invalid_Argument("Invalid time encoding: " ~ t_spec);
 		
 		const size_t YEAR_SIZE = (spec_tag == ASN1_Tag.UTC_TIME) ? 2 : 4;
@@ -217,10 +217,10 @@ public:
 		params.push_back(current);
 		current.clear();
 		
-		for (size_t j = YEAR_SIZE; j != t_spec.size() - 1; ++j)
+		for (size_t j = YEAR_SIZE; j != t_spec.length - 1; ++j)
 		{
 			current += t_spec[j];
-			if (current.size() == 2)
+			if (current.length == 2)
 			{
 				params.push_back(current);
 				current.clear();
@@ -232,7 +232,7 @@ public:
 		day	 = to_uint(params[2]);
 		hour	= to_uint(params[3]);
 		minute = to_uint(params[4]);
-		second = (params.size() == 6) ? to_uint(params[5]) : 0;
+		second = (params.length == 6) ? to_uint(params[5]) : 0;
 		tag	 = spec_tag;
 		
 		if (spec_tag == ASN1_Tag.UTC_TIME)

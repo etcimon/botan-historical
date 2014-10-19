@@ -28,13 +28,13 @@ SafeVector!ubyte rfc3394_keywrap(in SafeVector!ubyte key,
                                  const ref SymmetricKey kek,
                                  Algorithm_Factory af)
 {
-	if (key.size() % 8 != 0)
+	if (key.length % 8 != 0)
 		throw new Invalid_Argument("Bad input key size for NIST key wrap");
 	
 	Unique!BlockCipher aes = make_aes(kek.length(), af);
 	aes.set_key(kek);
 	
-	const size_t n = key.size() / 8;
+	const size_t n = key.length / 8;
 	
 	SafeVector!ubyte R = SafeVector!ubyte((n + 1) * 8);
 	SafeVector!ubyte A = SafeVector!ubyte(16);
@@ -42,7 +42,7 @@ SafeVector!ubyte rfc3394_keywrap(in SafeVector!ubyte key,
 	for (size_t i = 0; i != 8; ++i)
 		A[i] = 0xA6;
 	
-	copy_mem(&R[8], &key[0], key.size());
+	copy_mem(&R[8], &key[0], key.length);
 	
 	for (size_t j = 0; j <= 5; ++j)
 	{
@@ -79,13 +79,13 @@ SafeVector!ubyte rfc3394_keyunwrap(in SafeVector!ubyte key,
                                    const ref SymmetricKey kek,
                                    Algorithm_Factory af)
 {
-	if (key.size() < 16 || key.size() % 8 != 0)
+	if (key.length < 16 || key.length % 8 != 0)
 		throw new Invalid_Argument("Bad input key size for NIST key unwrap");
 	
 	Unique!BlockCipher aes = Unique!BlockCipher.create(make_aes(kek.length(), af));
 	aes.set_key(kek);
 	
-	const size_t n = (key.size() - 8) / 8;
+	const size_t n = (key.length - 8) / 8;
 	
 	SafeVector!ubyte R = SafeVector!ubyte(n * 8);
 	SafeVector!ubyte A = SafeVector!ubyte(16);
@@ -93,7 +93,7 @@ SafeVector!ubyte rfc3394_keyunwrap(in SafeVector!ubyte key,
 	for (size_t i = 0; i != 8; ++i)
 		A[i] = key[i];
 	
-	copy_mem(&R[0], &key[8], key.size() - 8);
+	copy_mem(&R[0], &key[8], key.length - 8);
 	
 	for (size_t j = 0; j <= 5; ++j)
 	{

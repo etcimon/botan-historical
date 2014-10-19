@@ -142,7 +142,7 @@ Server_Key_Exchange::Server_Key_Exchange(in Vector!ubyte buf,
 													  Protocol_Version _version) :
 	m_kex_key(null), m_srp_params(null)
 {
-	if (buf.size() < 6)
+	if (buf.length < 6)
 		throw new Decoding_Error("Server_Key_Exchange: Packet corrupted");
 
 	TLS_Data_Reader reader("ServerKeyExchange", buf);
@@ -231,7 +231,7 @@ Vector!ubyte Server_Key_Exchange::serialize() const
 {
 	Vector!ubyte buf = params();
 
-	if (m_signature.size())
+	if (m_signature.length)
 	{
 		// This should be an explicit version check
 		if (m_hash_algo != "" && m_sig_algo != "")

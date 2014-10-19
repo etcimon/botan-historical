@@ -70,16 +70,16 @@ void decode(BER_Decoder source, ref Key_Constraints key_usage)
 	if (obj.type_tag != ASN1_Tag.BIT_STRING || obj.class_tag != ASN1_Tag.UNIVERSAL)
 		throw new BER_Bad_Tag("Bad tag for usage constraint",
 		                      obj.type_tag, obj.class_tag);
-	if (obj.value.size() != 2 && obj.value.size() != 3)
+	if (obj.value.length != 2 && obj.value.length != 3)
 		throw new BER_Decoding_Error("Bad size for BITSTRING in usage constraint");
 	if (obj.value[0] >= 8)
 		throw new BER_Decoding_Error("Invalid unused bits in usage constraint");
 	
 	const ubyte mask = (0xFF << obj.value[0]);
-	obj.value[obj.value.size()-1] &= mask;
+	obj.value[obj.value.length-1] &= mask;
 	
 	ushort usage = 0;
-	for (size_t j = 1; j != obj.value.size(); ++j)
+	for (size_t j = 1; j != obj.value.length; ++j)
 		usage = (obj.value[j] << 8) | usage;
 	
 	key_usage = Key_Constraints(usage);

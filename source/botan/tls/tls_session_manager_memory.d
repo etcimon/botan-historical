@@ -102,7 +102,7 @@ void Session_Manager_In_Memory::save(in Session session)
 		We generate new session IDs with the first 4 bytes being a
 		timestamp, so this actually removes the oldest sessions first.
 		*/
-		while(m_sessions.size() >= m_max_sessions)
+		while(m_sessions.length >= m_max_sessions)
 			m_sessions.erase(m_sessions.begin());
 	}
 

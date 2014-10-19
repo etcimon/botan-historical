@@ -10,7 +10,7 @@ import botan.asn1.asn1_obj;
 import botan.asn1.der_enc;
 import botan.asn1.ber_dec;
 import botan.utils.charset;
-import botan.parsing;
+import botan.utils.parsing;
 
 class DER_Encoder;
 class BER_Decoder;
@@ -31,7 +31,7 @@ public:
 	{
 		string value = iso_8859();
 		if (tagging() == ASN1_Tag.UTF8_STRING)
-			value = Charset.transcode(value, LATIN1_CHARSET, UTF8_CHARSET);
+			value = transcode(value, LATIN1_CHARSET, UTF8_CHARSET);
 		encoder.add_object(tagging(), ASN1_Tag.UNIVERSAL, value);
 	}
 
@@ -52,7 +52,7 @@ public:
 			charset_is = LATIN1_CHARSET;
 		
 		*this = ASN1_String(
-			Charset.transcode(asn1.to_string(obj), charset_is, LOCAL_CHARSET),
+			transcode(asn1.to_string(obj), charset_is, LOCAL_CHARSET),
 			obj.type_tag);
 	}
 
@@ -61,7 +61,7 @@ public:
 	*/
 	string value() const
 	{
-		return Charset.transcode(iso_8859_str, LATIN1_CHARSET, LOCAL_CHARSET);
+		return transcode(iso_8859_str, LATIN1_CHARSET, LOCAL_CHARSET);
 	}
 
 
@@ -84,7 +84,7 @@ public:
 	this(in string str, ASN1_Tag t)
 	{
 		tag = t;
-		iso_8859_str = Charset.transcode(str, LOCAL_CHARSET, LATIN1_CHARSET);
+		iso_8859_str = transcode(str, LOCAL_CHARSET, LATIN1_CHARSET);
 		
 		if (tag == ASN1_Tag.DIRECTORY_STRING)
 			tag = choose_encoding(iso_8859_str, "latin1");
@@ -102,7 +102,7 @@ public:
 
 	this(in string str)
 	{
-		iso_8859_str = Charset.transcode(str, LOCAL_CHARSET, LATIN1_CHARSET);
+		iso_8859_str = transcode(str, LOCAL_CHARSET, LATIN1_CHARSET);
 		tag = choose_encoding(iso_8859_str, "latin1");
 	}
 private:
@@ -140,7 +140,7 @@ ASN1_Tag choose_encoding(in string str,
 		0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 		0x00, 0x00, 0x00, 0x00 ];
 	
-	for (size_t i = 0; i != str.size(); ++i)
+	for (size_t i = 0; i != str.length; ++i)
 	{
 		if (!IS_PRINTABLE[cast(ubyte)(str[i])])
 		{

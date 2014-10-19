@@ -8,7 +8,7 @@ module botan.constructs.srp6_files;
 
 import botan.math.bigint.bigint;
 import botan.srp6_files;
-import botan.parsing;
+import botan.utils.parsing;
 import botan.codec.base64;
 import fstream;
 import string;
@@ -32,7 +32,7 @@ public:
 		
 		foreach (line; range) {	
 			import std.array : array;
-			string[] parts = cast(string[]) std.algorithm.splitter(line, ':').array;
+			string[] parts = cast(string[]) splitter(line, ':').array;
 			
 			if (parts.length != 4)
 				throw new Decoding_Error("Invalid line in SRP authenticator file");

@@ -28,16 +28,16 @@ public:
 	void write(in ubyte* input, size_t length)
 	{
 		buffer_insert(input, position, input, length);
-		if (position + length >= input.size())
+		if (position + length >= input.length)
 		{
-			encode_and_send(&input[0], input.size());
-			input += (input.size() - position);
-			length -= (input.size() - position);
-			while(length >= input.size())
+			encode_and_send(&input[0], input.length);
+			input += (input.length - position);
+			length -= (input.length - position);
+			while(length >= input.length)
 			{
-				encode_and_send(input, input.size());
-				input += input.size();
-				length -= input.size();
+				encode_and_send(input, input.length);
+				input += input.length;
+				length -= input.length;
 			}
 			copy_mem(&input[0], input, length);
 			position = 0;
@@ -84,7 +84,7 @@ private:
 	{
 		while(length)
 		{
-			const size_t proc = std.algorithm.min(length, input.size());
+			const size_t proc = std.algorithm.min(length, input.length);
 			
 			size_t consumed = 0;
 			size_t produced = base64_encode(cast(char*)(&output[0]), input,
@@ -148,7 +148,7 @@ public:
 	{
 		while(length)
 		{
-			size_t to_copy = std.algorithm.min(length, input.size() - position);
+			size_t to_copy = std.algorithm.min(length, input.length - position);
 			copy_mem(&input[position], input, to_copy);
 			position += to_copy;
 			

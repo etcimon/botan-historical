@@ -183,7 +183,7 @@ private:
 		const uint* S3 = &S[512];
 		const uint* S4 = &S[768];
 		
-		for (size_t i = 0; i != box.size(); i += 2)
+		for (size_t i = 0; i != box.length; i += 2)
 		{
 			L ^= load_be!uint(salt, (i + salt_off) % 4);
 			R ^= load_be!uint(salt, (i + salt_off + 1) % 4);

@@ -8,7 +8,7 @@ module botan.block.kasumi;
 
 import botan.block.block_cipher;
 import botan.utils.loadstor;
-import botan.rotate;
+import botan.utils.rotate;
 
 /**
 * KASUMI, the block cipher used in 3G telephony

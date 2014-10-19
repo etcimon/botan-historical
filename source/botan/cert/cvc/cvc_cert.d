@@ -118,7 +118,7 @@ private:
 				.decode(m_cex)
 				.verify_end();
 		
-		if (enc_chat_val.size() != 1)
+		if (enc_chat_val.length != 1)
 			throw new Decoding_Error("CertificateHolderAuthorizationValue was not of length 1");
 		
 		if (cpi != 0)

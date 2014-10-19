@@ -94,8 +94,8 @@ public:
 
 	override void update(SafeVector!ubyte buffer, size_t offset = 0)
 	{
-		BOTAN_ASSERT(buffer.size() >= offset, "Offset is sane");
-		const size_t sz = buffer.size() - offset;
+		BOTAN_ASSERT(buffer.length >= offset, "Offset is sane");
+		const size_t sz = buffer.length - offset;
 		ubyte* buf = &buffer[offset];
 		
 		const size_t BS = cipher().block_size();
@@ -108,8 +108,8 @@ public:
 
 	override void finish(SafeVector!ubyte buffer, size_t offset = 0)
 	{
-		BOTAN_ASSERT(buffer.size() >= offset, "Offset is sane");
-		const size_t sz = buffer.size() - offset;
+		BOTAN_ASSERT(buffer.length >= offset, "Offset is sane");
+		const size_t sz = buffer.length - offset;
 		
 		const size_t BS = cipher().block_size();
 		
@@ -117,7 +117,7 @@ public:
 		
 		padding().add_padding(buffer, bytes_in_final_block, BS);
 		
-		if (buffer.size() % BS)
+		if (buffer.length % BS)
 			throw new Exception("Did not pad to full block size in " ~ name());
 		
 		update(buffer, offset);
@@ -147,8 +147,8 @@ public:
 
 	override void update(SafeVector!ubyte buffer, size_t offset = 0)
 	{
-		BOTAN_ASSERT(buffer.size() >= offset, "Offset is sane");
-		const size_t sz = buffer.size() - offset;
+		BOTAN_ASSERT(buffer.length >= offset, "Offset is sane");
+		const size_t sz = buffer.length - offset;
 		ubyte* buf = &buffer[offset];
 		
 		const size_t BS = cipher().block_size();
@@ -161,8 +161,8 @@ public:
 
 	override void finish(SafeVector!ubyte buffer, size_t offset = 0)
 	{
-		BOTAN_ASSERT(buffer.size() >= offset, "Offset is sane");
-		const size_t sz = buffer.size() - offset;
+		BOTAN_ASSERT(buffer.length >= offset, "Offset is sane");
+		const size_t sz = buffer.length - offset;
 		
 		const size_t BS = cipher().block_size();
 		
@@ -171,8 +171,8 @@ public:
 		
 		update(buffer, offset);
 		
-		const size_t pad_bytes = BS - padding().unpad(&buffer[buffer.size()-BS], BS);
-		buffer.resize(buffer.size() - pad_bytes); // remove padding
+		const size_t pad_bytes = BS - padding().unpad(&buffer[buffer.length-BS], BS);
+		buffer.resize(buffer.length - pad_bytes); // remove padding
 	}
 
 	override size_t output_length(size_t input_length) const

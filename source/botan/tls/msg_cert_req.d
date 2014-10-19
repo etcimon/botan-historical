@@ -61,8 +61,8 @@ Certificate_Req::Certificate_Req(Handshake_IO& io,
 		Vector!string hashes = policy.allowed_signature_hashes();
 		Vector!string sigs = policy.allowed_signature_methods();
 
-		for (size_t i = 0; i != hashes.size(); ++i)
-			for (size_t j = 0; j != sigs.size(); ++j)
+		for (size_t i = 0; i != hashes.length; ++i)
+			for (size_t j = 0; j != sigs.length; ++j)
 				m_supported_algos.push_back(Pair(hashes[i], sigs[j]));
 	}
 
@@ -75,14 +75,14 @@ Certificate_Req::Certificate_Req(Handshake_IO& io,
 Certificate_Req::Certificate_Req(in Vector!ubyte buf,
 											Protocol_Version _version)
 {
-	if (buf.size() < 4)
+	if (buf.length < 4)
 		throw new Decoding_Error("Certificate_Req: Bad certificate request");
 
 	TLS_Data_Reader reader("CertificateRequest", buf);
 
 	Vector!ubyte cert_type_codes = reader.get_range_vector!ubyte(1, 1, 255);
 
-	for (size_t i = 0; i != cert_type_codes.size(); ++i)
+	for (size_t i = 0; i != cert_type_codes.length; ++i)
 	{
 		const string cert_type_name = cert_type_code_to_name(cert_type_codes[i]);
 
@@ -96,10 +96,10 @@ Certificate_Req::Certificate_Req(in Vector!ubyte buf,
 	{
 		Vector!ubyte sig_hash_algs = reader.get_range_vector!ubyte(2, 2, 65534);
 
-		if (sig_hash_algs.size() % 2 != 0)
+		if (sig_hash_algs.length % 2 != 0)
 			throw new Decoding_Error("Bad length for signature IDs in certificate request");
 
-		for (size_t i = 0; i != sig_hash_algs.size(); i += 2)
+		for (size_t i = 0; i != sig_hash_algs.length; i += 2)
 		{
 			string hash = Signature_Algorithms::hash_algo_name(sig_hash_algs[i]);
 			string sig = Signature_Algorithms::sig_algo_name(sig_hash_algs[i+1]);
@@ -116,7 +116,7 @@ Certificate_Req::Certificate_Req(in Vector!ubyte buf,
 	{
 		Vector!ubyte name_bits = reader.get_range_vector!ubyte(2, 0, 65535);
 
-		BER_Decoder decoder(&name_bits[0], name_bits.size());
+		BER_Decoder decoder(&name_bits[0], name_bits.length);
 		X509_DN name;
 		decoder.decode(name);
 		m_names.push_back(name);
@@ -132,7 +132,7 @@ Vector!ubyte Certificate_Req::serialize() const
 
 	Vector!ubyte cert_types;
 
-	for (size_t i = 0; i != m_cert_key_types.size(); ++i)
+	for (size_t i = 0; i != m_cert_key_types.length; ++i)
 		cert_types.push_back(cert_type_name_to_code(m_cert_key_types[i]));
 
 	append_tls_length_value(buf, cert_types, 1);
@@ -142,7 +142,7 @@ Vector!ubyte Certificate_Req::serialize() const
 
 	Vector!ubyte encoded_names;
 
-	for (size_t i = 0; i != m_names.size(); ++i)
+	for (size_t i = 0; i != m_names.length; ++i)
 	{
 		DER_Encoder encoder = DER_Encoder();
 		encoder.encode(m_names[i]);

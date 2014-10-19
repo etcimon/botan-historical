@@ -10,7 +10,7 @@ public import botan.libstate.init;
 public import botan.libstate.lookup;
 public import botan.libstate.libstate;
 public import botan.utils.version_;
-public import botan.parsing;
+public import botan.utils.parsing;
 
 public import botan.rng;
 

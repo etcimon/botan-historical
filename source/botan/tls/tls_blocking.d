@@ -55,7 +55,7 @@ void Blocking_Client::do_handshake()
 
 	while(!m_channel.is_closed() && !m_channel.is_active())
 	{
-		const size_t from_socket = m_read_fn(&readbuf[0], readbuf.size());
+		const size_t from_socket = m_read_fn(&readbuf[0], readbuf.length);
 		m_channel.received_data(&readbuf[0], from_socket);
 	}
 }
@@ -66,11 +66,11 @@ size_t Blocking_Client::read(ubyte buf[], size_t buf_len)
 
 	while(m_plaintext.empty() && !m_channel.is_closed())
 	{
-		const size_t from_socket = m_read_fn(&readbuf[0], readbuf.size());
+		const size_t from_socket = m_read_fn(&readbuf[0], readbuf.length);
 		m_channel.received_data(&readbuf[0], from_socket);
 	}
 
-	const size_t returned = std.algorithm.min(buf_len, m_plaintext.size());
+	const size_t returned = std.algorithm.min(buf_len, m_plaintext.length);
 
 	for (size_t i = 0; i != returned; ++i)
 		buf[i] = m_plaintext[i];

@@ -12,7 +12,7 @@ import botan.stream.stream_cipher;
 import botan.mac.mac;
 import botan.cmac.cmac;
 import botan.ctr;
-import botan.parsing;
+import botan.utils.parsing;
 import botan.internal.xor_buf;
 import std.algorithm;
 
@@ -39,8 +39,8 @@ public:
 
 	override void update(SafeVector!ubyte buffer, size_t offset = 0)
 	{
-		BOTAN_ASSERT(buffer.size() >= offset, "Offset is sane");
-		const size_t sz = buffer.size() - offset;
+		BOTAN_ASSERT(buffer.length >= offset, "Offset is sane");
+		const size_t sz = buffer.length - offset;
 		ubyte* buf = &buffer[offset];
 		
 		m_msg_buf.insert(m_msg_buf.end(), buf, buf + sz);
@@ -49,7 +49,7 @@ public:
 
 	void set_associated_data_n(size_t n, in ubyte* ad, size_t length)
 	{
-		if (n >= m_ad_macs.size())
+		if (n >= m_ad_macs.length)
 			m_ad_macs.resize(n+1);
 		
 		m_ad_macs[n] = m_cmac.process(ad, length);
@@ -111,7 +111,7 @@ package:
 		V[8] &= 0x7F;
 		V[12] &= 0x7F;
 		
-		ctr().set_iv(&V[0], V.size());
+		ctr().set_iv(&V[0], V.length);
 	}
 
 	SafeVector!ubyte msg_buf() { return m_msg_buf; }
@@ -122,13 +122,13 @@ package:
 		
 		SafeVector!ubyte V = cmac().process(zero, 16);
 		
-		for (size_t i = 0; i != m_ad_macs.size(); ++i)
+		for (size_t i = 0; i != m_ad_macs.length; ++i)
 		{
 			V = CMAC.poly_double(V);
 			V ^= m_ad_macs[i];
 		}
 		
-		if (m_nonce.size())
+		if (m_nonce.length)
 		{
 			V = CMAC.poly_double(V);
 			V ^= m_nonce;
@@ -183,16 +183,16 @@ public:
 
 	override void finish(SafeVector!ubyte buffer, size_t offset = 0)
 	{
-		BOTAN_ASSERT(buffer.size() >= offset, "Offset is sane");
+		BOTAN_ASSERT(buffer.length >= offset, "Offset is sane");
 		
 		buffer.insert(buffer.begin() + offset, msg_buf().begin(), msg_buf().end());
 		
-		SafeVector!ubyte V = S2V(&buffer[offset], buffer.size() - offset);
+		SafeVector!ubyte V = S2V(&buffer[offset], buffer.length - offset);
 		
 		buffer.insert(buffer.begin() + offset, V.begin(), V.end());
 		
 		set_ctr_iv(V);
-		ctr().cipher1(&buffer[offset + V.size()], buffer.size() - offset - V.size());
+		ctr().cipher1(&buffer[offset + V.length], buffer.length - offset - V.length);
 	}
 
 	override size_t output_length(size_t input_length) const
@@ -217,11 +217,11 @@ public:
 
 	override void finish(SafeVector!ubyte buffer, size_t offset)
 	{
-		BOTAN_ASSERT(buffer.size() >= offset, "Offset is sane");
+		BOTAN_ASSERT(buffer.length >= offset, "Offset is sane");
 		
 		buffer.insert(buffer.begin() + offset, msg_buf().begin(), msg_buf().end());
 		
-		const size_t sz = buffer.size() - offset;
+		const size_t sz = buffer.length - offset;
 		
 		BOTAN_ASSERT(sz >= tag_size(), "We have the tag");
 		
@@ -229,16 +229,16 @@ public:
 		
 		set_ctr_iv(V);
 		
-		ctr().cipher(&buffer[offset + V.size()],
+		ctr().cipher(&buffer[offset + V.length],
 		&buffer[offset],
-		buffer.size() - offset - V.size());
+		buffer.length - offset - V.length);
 		
-		SafeVector!ubyte T = S2V(&buffer[offset], buffer.size() - offset - V.size());
+		SafeVector!ubyte T = S2V(&buffer[offset], buffer.length - offset - V.length);
 		
 		if (T != V)
 			throw new Integrity_Failure("SIV tag check failed");
 		
-		buffer.resize(buffer.size() - tag_size());
+		buffer.resize(buffer.length - tag_size());
 	}
 
 	override size_t output_length(size_t input_length) const

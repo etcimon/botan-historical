@@ -90,7 +90,7 @@ ElGamal_Encryption_Operation::encrypt(in ubyte* msg, size_t msg_len,
 
 	SafeVector!ubyte output = SafeVector!ubyte(2*p.bytes());
 	a.binary_encode(&output[p.bytes() - a.bytes()]);
-	b.binary_encode(&output[output.size() / 2 + (p.bytes() - b.bytes())]);
+	b.binary_encode(&output[output.length / 2 + (p.bytes() - b.bytes())]);
 	return output;
 }
 

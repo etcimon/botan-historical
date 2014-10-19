@@ -85,7 +85,7 @@ Connection_Cipher_State::Connection_Cipher_State(Protocol_Version _version,
 in SafeVector!ubyte Connection_Cipher_State::aead_nonce(ulong seq)
 {
 	BOTAN_ASSERT(m_aead, "Using AEAD mode");
-	BOTAN_ASSERT(m_nonce.size() == 12, "Expected nonce size");
+	BOTAN_ASSERT(m_nonce.length == 12, "Expected nonce size");
 	store_be(seq, &m_nonce[4]);
 	return m_nonce;
 }
@@ -95,7 +95,7 @@ Connection_Cipher_State::aead_nonce(in ubyte* record)
 {
 	size_t record_len = record.length;
 	BOTAN_ASSERT(m_aead, "Using AEAD mode");
-	BOTAN_ASSERT(m_nonce.size() == 12, "Expected nonce size");
+	BOTAN_ASSERT(m_nonce.length == 12, "Expected nonce size");
 	BOTAN_ASSERT(record_len >= 8, "Record includes nonce");
 	copy_mem(&m_nonce[4], record, 8);
 	return m_nonce;
@@ -161,7 +161,7 @@ void write_record(SafeVector!ubyte output,
 		const size_t implicit_nonce_bytes = 4; // FIXME, take from ciphersuite
 		const size_t explicit_nonce_bytes = 8;
 
-		BOTAN_ASSERT(nonce.size() == implicit_nonce_bytes + explicit_nonce_bytes,
+		BOTAN_ASSERT(nonce.length == implicit_nonce_bytes + explicit_nonce_bytes,
 						 "Expected nonce size");
 
 		// wrong if start_vec returns something
@@ -179,13 +179,13 @@ void write_record(SafeVector!ubyte output,
 		output += Pair(&nonce[implicit_nonce_bytes], explicit_nonce_bytes);
 		output += aead.start_vec(nonce);
 
-		const size_t offset = output.size();
+		const size_t offset = output.length;
 		output += Pair(&msg[0], msg_length);
 		aead.finish(output, offset);
 
-		BOTAN_ASSERT(output.size() == offset + ctext_size, "Expected size");
+		BOTAN_ASSERT(output.length == offset + ctext_size, "Expected size");
 
-		BOTAN_ASSERT(output.size() < MAX_CIPHERTEXT_SIZE,
+		BOTAN_ASSERT(output.length < MAX_CIPHERTEXT_SIZE,
 						 "Produced ciphertext larger than protocol allows");
 		return;
 	}
@@ -210,18 +210,18 @@ void write_record(SafeVector!ubyte output,
 	output.push_back(get_byte<ushort>(0, buf_size));
 	output.push_back(get_byte<ushort>(1, buf_size));
 
-	const size_t header_size = output.size();
+	const size_t header_size = output.length;
 
 	if (iv_size)
 	{
-		output.resize(output.size() + iv_size);
-		rng.randomize(&output[output.size() - iv_size], iv_size);
+		output.resize(output.length + iv_size);
+		rng.randomize(&output[output.length - iv_size], iv_size);
 	}
 
 	output.insert(output.end(), &msg[0], &msg[msg_length]);
 
-	output.resize(output.size() + mac_size);
-	cipherstate.mac().flushInto(&output[output.size() - mac_size]);
+	output.resize(output.length + mac_size);
+	cipherstate.mac().flushInto(&output[output.length - mac_size]);
 
 	if (block_size)
 	{
@@ -235,7 +235,7 @@ void write_record(SafeVector!ubyte output,
 	if (buf_size > MAX_CIPHERTEXT_SIZE)
 		throw new Internal_Error("Produced ciphertext larger than protocol allows");
 
-	BOTAN_ASSERT(buf_size + header_size == output.size(),
+	BOTAN_ASSERT(buf_size + header_size == output.length,
 					 "Output buffer is sized properly");
 
 	if (StreamCipher sc = cipherstate.stream_cipher())
@@ -277,17 +277,17 @@ size_t fill_buffer_to(SafeVector!ubyte readbuf,
 							 size_t& input_consumed,
 							 size_t desired)
 {
-	if (readbuf.size() >= desired)
+	if (readbuf.length >= desired)
 		return 0; // already have it
 
-	const size_t taken = std.algorithm.min(input_size, desired - readbuf.size());
+	const size_t taken = std.algorithm.min(input_size, desired - readbuf.length);
 
 	readbuf.insert(readbuf.end(), &input[0], &input[taken]);
 	input_consumed += taken;
 	input_size -= taken;
 	input += taken;
 
-	return (desired - readbuf.size()); // how many bytes do we still need?
+	return (desired - readbuf.length); // how many bytes do we still need?
 }
 
 /*
@@ -402,11 +402,11 @@ void decrypt_record(SafeVector!ubyte output,
 
 		output += aead.start_vec(nonce);
 
-		const size_t offset = output.size();
+		const size_t offset = output.length;
 		output += Pair(&msg[0], msg_length);
 		aead.finish(output, offset);
 
-		BOTAN_ASSERT(output.size() == ptext_size + offset, "Produced expected size");
+		BOTAN_ASSERT(output.length == ptext_size + offset, "Produced expected size");
 	}
 	else
 	{
@@ -480,14 +480,14 @@ size_t read_record(SafeVector!ubyte readbuf,
 {
 	consumed = 0;
 	size_t input_sz = input.length;
-	if (readbuf.size() < TLS_HEADER_SIZE) // header incomplete?
+	if (readbuf.length < TLS_HEADER_SIZE) // header incomplete?
 	{
 		if (size_t needed = fill_buffer_to(readbuf,
 											 input, input_sz, consumed,
 											 TLS_HEADER_SIZE))
 			return needed;
 
-		BOTAN_ASSERT_EQUAL(readbuf.size(), TLS_HEADER_SIZE,
+		BOTAN_ASSERT_EQUAL(readbuf.length, TLS_HEADER_SIZE,
 								 "Have an entire header");
 	}
 
@@ -507,7 +507,7 @@ size_t read_record(SafeVector!ubyte readbuf,
 														 record_len + 2))
 				return needed;
 
-			BOTAN_ASSERT_EQUAL(readbuf.size(), (record_len + 2),
+			BOTAN_ASSERT_EQUAL(readbuf.length, (record_len + 2),
 									 "Have the entire SSLv2 hello");
 
 			// Fake v3-style handshake message wrapper
@@ -515,13 +515,13 @@ size_t read_record(SafeVector!ubyte readbuf,
 			*record_sequence = 0;
 			*record_type = HANDSHAKE;
 
-			record.resize(4 + readbuf.size() - 2);
+			record.resize(4 + readbuf.length - 2);
 
 			record[0] = CLIENT_HELLO_SSLV2;
 			record[1] = 0;
 			record[2] = readbuf[0] & 0x7F;
 			record[3] = readbuf[1];
-			copy_mem(&record[4], &readbuf[2], readbuf.size() - 2);
+			copy_mem(&record[4], &readbuf[2], readbuf.length - 2);
 
 			readbuf.clear();
 			return 0;
@@ -532,14 +532,14 @@ size_t read_record(SafeVector!ubyte readbuf,
 
 	const bool is_dtls = record_version.is_datagram_protocol();
 
-	if (is_dtls && readbuf.size() < DTLS_HEADER_SIZE)
+	if (is_dtls && readbuf.length < DTLS_HEADER_SIZE)
 	{
 		if (size_t needed = fill_buffer_to(readbuf,
 											 input, input_sz, consumed,
 											 DTLS_HEADER_SIZE))
 			return needed;
 
-		BOTAN_ASSERT_EQUAL(readbuf.size(), DTLS_HEADER_SIZE,
+		BOTAN_ASSERT_EQUAL(readbuf.length, DTLS_HEADER_SIZE,
 								 "Have an entire header");
 	}
 
@@ -558,7 +558,7 @@ size_t read_record(SafeVector!ubyte readbuf,
 		return needed; // wrong for DTLS?
 
 	BOTAN_ASSERT_EQUAL(cast(size_t)(header_size) + record_len,
-							 readbuf.size(),
+							 readbuf.length,
 							 "Have the full record");
 
 	*record_type = cast(Record_Type)(readbuf[0]);

@@ -10,7 +10,7 @@ import botan.internal.xor_buf;
 CTR_BE::CTR_BE(BlockCipher ciph) :
 	m_cipher(ciph),
 	m_counter(256 * m_cipher.block_size()),
-	m_pad(m_counter.size()),
+	m_pad(m_counter.length),
 	m_pad_pos(0)
 {
 }
@@ -38,12 +38,12 @@ string CTR_BE::name() const
 
 void CTR_BE::cipher(in ubyte* input, ubyte* output)
 {
-	while(length >= m_pad.size() - m_pad_pos)
+	while(length >= m_pad.length - m_pad_pos)
 	{
-		xor_buf(output, input, &m_pad[m_pad_pos], m_pad.size() - m_pad_pos);
-		length -= (m_pad.size() - m_pad_pos);
-		input += (m_pad.size() - m_pad_pos);
-		output += (m_pad.size() - m_pad_pos);
+		xor_buf(output, input, &m_pad[m_pad_pos], m_pad.length - m_pad_pos);
+		length -= (m_pad.length - m_pad_pos);
+		input += (m_pad.length - m_pad_pos);
+		output += (m_pad.length - m_pad_pos);
 		increment_counter();
 	}
 	xor_buf(output, input, &m_pad[m_pad_pos], length);

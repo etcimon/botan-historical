@@ -78,7 +78,7 @@ public:
 		}
 		
 		return Pair(iterations_performed,
-		            OctetString(&key[0], std.algorithm.min(key_len, key.size())));
+		            OctetString(&key[0], std.algorithm.min(key_len, key.length)));
 	}
 private:
 	Unique!HashFunction hash;

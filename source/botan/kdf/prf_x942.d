@@ -32,7 +32,7 @@ public:
 		SafeVector!ubyte key;
 		uint counter = 1;
 		
-		while(key.size() != key_len && counter)
+		while(key.length != key_len && counter)
 		{
 			hash.update(secret, secret_len);
 			
@@ -59,7 +59,7 @@ public:
 				);
 			
 			SafeVector!ubyte digest = hash.flush();
-			const size_t needed = std.algorithm.min(digest.size(), key_len - key.size());
+			const size_t needed = std.algorithm.min(digest.length, key_len - key.length);
 			key += Pair(&digest[0], needed);
 			
 			++counter;

@@ -22,7 +22,7 @@ import core.sys.posix.unistd;
 	SafeVector!ubyte buffer(DEFAULT_BUFFERSIZE);
 	while(pipe.remaining())
 	{
-		size_t got = pipe.read(&buffer[0], buffer.size());
+		size_t got = pipe.read(&buffer[0], buffer.length);
 		size_t position = 0;
 		while(got)
 		{
@@ -47,7 +47,7 @@ import core.sys.posix.unistd;
 	SafeVector!ubyte buffer(DEFAULT_BUFFERSIZE);
 	while(true)
 	{
-		ssize_t ret = read(fd, &buffer[0], buffer.size());
+		ssize_t ret = read(fd, &buffer[0], buffer.length);
 		if (ret == 0) break;
 		if (ret == -1)
 			throw new Stream_IO_Error("Pipe input operator (unixfd) has failed");

@@ -13,7 +13,7 @@ import botan.pubkey;
 import botan.asn1.oid_lookup.oids;
 import botan.asn1.der_enc;
 import botan.asn1.ber_dec;
-import botan.parsing;
+import botan.utils.parsing;
 import botan.codec.pem;
 import std.algorithm;
 import vector;
@@ -56,16 +56,16 @@ public:
 	string hash_used_for_signature() const
 	{
 		Vector!string sig_info =
-			std.algorithm.splitter(oids.lookup(sig_algo.oid), '/');
+			splitter(oids.lookup(sig_algo.oid), '/');
 		
-		if (sig_info.size() != 2)
+		if (sig_info.length != 2)
 			throw new Internal_Error("Invalid name format found for " ~
 			                         sig_algo.oid.as_string());
 		
 		Vector!string pad_and_hash =
 			parse_algorithm_name(sig_info[1]);
 		
-		if (pad_and_hash.size() != 2)
+		if (pad_and_hash.length != 2)
 			throw new Internal_Error("Invalid name format " ~ sig_info[1]);
 		
 		return pad_and_hash[1];
@@ -105,9 +105,9 @@ public:
 	{
 		try {
 			Vector!string sig_info =
-				std.algorithm.splitter(oids.lookup(sig_algo.oid), '/');
+				splitter(oids.lookup(sig_algo.oid), '/');
 			
-			if (sig_info.size() != 2 || sig_info[0] != pub_key.algo_name())
+			if (sig_info.length != 2 || sig_info[0] != pub_key.algo_name())
 				return false;
 			
 			string padding = sig_info[1];
@@ -195,7 +195,7 @@ package:
 	*/
 	this(in Vector!ubyte vec, in string labels)
 	{
-		DataSource_Memory stream = new DataSource_Memory(&vec[0], vec.size());
+		DataSource_Memory stream = new DataSource_Memory(&vec[0], vec.length);
 		scope(exit) delete stream;
 		init(stream, labels);
 	}
@@ -232,8 +232,8 @@ private:
 	*/
 	void init(DataSource input, in string labels)
 	{
-		PEM_labels_allowed = std.algorithm.splitter(labels, '/');
-		if (PEM_labels_allowed.size() < 1)
+		PEM_labels_allowed = splitter(labels, '/');
+		if (PEM_labels_allowed.length < 1)
 			throw new Invalid_Argument("Bad labels argument to X509_Object");
 		
 		PEM_label_pref = PEM_labels_allowed[0];

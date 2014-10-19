@@ -70,8 +70,8 @@ alias SafeVector(T) = Vector!(T, secure_allocator!T);
 
 Vector!T unlock(T)(in SafeVector!T input)
 {
-	Vector!T output = Vector!T(input.size());
-	copy_mem(&output[0], &input[0], input.size());
+	Vector!T output = Vector!T(input.length);
+	copy_mem(&output[0], &input[0], input.length);
 	return output;
 }
 
@@ -81,7 +81,7 @@ size_t buffer_insert(T, Alloc)(Vector!(T, Alloc) buf,
 							in T* input,
 							size_t input_length)
 {
-	const size_t to_copy = std.algorithm.min(input_length, buf.size() - buf_offset);
+	const size_t to_copy = std.algorithm.min(input_length, buf.length - buf_offset);
 	copy_mem(&buf[buf_offset], input, to_copy);
 	return to_copy;
 }
@@ -90,7 +90,7 @@ size_t buffer_insert(T, Alloc, Alloc2)(Vector!(T, Alloc) buf,
 										size_t buf_offset,
 										const Vector!( T, Alloc2 ) input)
 {
-	const size_t to_copy = std.algorithm.min(input.size(), buf.size() - buf_offset);
+	const size_t to_copy = std.algorithm.min(input.length, buf.length - buf_offset);
 	copy_mem(&buf[buf_offset], &input[0], to_copy);
 	return to_copy;
 }
@@ -100,9 +100,9 @@ Vector!(T, Alloc)
 			  const Vector!( T, Alloc2 ) input)
 		if (op == "+=")
 {
-	const size_t copy_offset = output.size();
-	output.resize(output.size() + input.size());
-	copy_mem(&output[copy_offset], &input[0], input.size());
+	const size_t copy_offset = output.length;
+	output.resize(output.length + input.length);
+	copy_mem(&output[copy_offset], &input[0], input.length);
 	return output;
 }
 
@@ -119,8 +119,8 @@ Vector!(T, Alloc)
 										const Pair!(const T*, L) input)
 		if (op == "+=")
 {
-	const size_t copy_offset = output.size();
-	output.resize(output.size() + input.second);
+	const size_t copy_offset = output.length;
+	output.resize(output.length + input.second);
 	copy_mem(&output[copy_offset], input.first, input.second);
 	return output;
 }
@@ -130,8 +130,8 @@ Vector!(T, Alloc)
 											 const Pair!(T*, L) input)
 		if (op == "+=")
 {
-	const size_t copy_offset = output.size();
-	output.resize(output.size() + input.second);
+	const size_t copy_offset = output.length;
+	output.resize(output.length + input.second);
 	copy_mem(&output[copy_offset], input.first, input.second);
 	return output;
 }
@@ -142,7 +142,7 @@ Vector!(T, Alloc)
 */
 void zeroise(T, Alloc)(Vector!(T, Alloc) vec)
 {
-	clear_mem(&vec[0], vec.size());
+	clear_mem(&vec[0], vec.length);
 }
 
 /**

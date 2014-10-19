@@ -23,8 +23,8 @@ public:
 	*/
 	size_t maximum_input_size(size_t keybits) const
 	{
-		if (keybits / 8 > 2*m_Phash.size() + 1)
-			return ((keybits / 8) - 2*m_Phash.size() - 1);
+		if (keybits / 8 > 2*m_Phash.length + 1)
+			return ((keybits / 8) - 2*m_Phash.length - 1);
 		else
 			return 0;
 	}
@@ -49,24 +49,24 @@ private:
 	{
 		key_length /= 8;
 		
-		if (key_length < in_length + 2*m_Phash.size() + 1)
+		if (key_length < in_length + 2*m_Phash.length + 1)
 			throw new Invalid_Argument("OAEP: Input is too large");
 		
 		SafeVector!ubyte output = SafeVector!ubyte(key_length);
 		
-		rng.randomize(&output[0], m_Phash.size());
+		rng.randomize(&output[0], m_Phash.length);
 		
-		buffer_insert(output, m_Phash.size(), &m_Phash[0], m_Phash.size());
-		output[output.size() - in_length - 1] = 0x01;
-		buffer_insert(output, output.size() - in_length, input, in_length);
-		
-		mgf1_mask(*m_hash,
-		          &output[0], m_Phash.size(),
-		&output[m_Phash.size()], output.size() - m_Phash.size());
+		buffer_insert(output, m_Phash.length, &m_Phash[0], m_Phash.length);
+		output[output.length - in_length - 1] = 0x01;
+		buffer_insert(output, output.length - in_length, input, in_length);
 		
 		mgf1_mask(*m_hash,
-		          &output[m_Phash.size()], output.size() - m_Phash.size(),
-		&output[0], m_Phash.size());
+		          &output[0], m_Phash.length,
+		&output[m_Phash.length], output.length - m_Phash.length);
+		
+		mgf1_mask(*m_hash,
+		          &output[m_Phash.length], output.length - m_Phash.length,
+		&output[0], m_Phash.length);
 		
 		return output;
 	}
@@ -99,23 +99,23 @@ private:
 		buffer_insert(input, key_length - in_length, input, in_length);
 		
 		mgf1_mask(*m_hash,
-		          &input[m_Phash.size()], input.size() - m_Phash.size(),
-		&input[0], m_Phash.size());
+		          &input[m_Phash.length], input.length - m_Phash.length,
+		&input[0], m_Phash.length);
 		
 		mgf1_mask(*m_hash,
-		          &input[0], m_Phash.size(),
-		&input[m_Phash.size()], input.size() - m_Phash.size());
+		          &input[0], m_Phash.length,
+		&input[m_Phash.length], input.length - m_Phash.length);
 		
 		bool waiting_for_delim = true;
 		bool bad_input = false;
-		size_t delim_idx = 2 * m_Phash.size();
+		size_t delim_idx = 2 * m_Phash.length;
 		
 		/*
 		* GCC 4.5 on x86-64 compiles this in a way that is still vunerable
 		* to timing analysis. Other compilers, or GCC on other platforms,
 		* may or may not.
 		*/
-		for (size_t i = delim_idx; i < input.size(); ++i)
+		for (size_t i = delim_idx; i < input.length; ++i)
 		{
 			const bool zero_p = !input[i];
 			const bool one_p = input[i] == 0x01;
@@ -132,12 +132,12 @@ private:
 		// If we never saw any non-zero ubyte, then it's not valid input
 		bad_input |= waiting_for_delim;
 		
-		bad_input |= !same_mem(&input[m_Phash.size()], &m_Phash[0], m_Phash.size());
+		bad_input |= !same_mem(&input[m_Phash.length], &m_Phash[0], m_Phash.length);
 		
 		if (bad_input)
 			throw new Decoding_Error("Invalid OAEP encoding");
 		
-		return SafeVector!ubyte(&input[delim_idx + 1], &input[input.size()]);
+		return SafeVector!ubyte(&input[delim_idx + 1], &input[input.length]);
 	}
 
 	SafeVector!ubyte m_Phash;

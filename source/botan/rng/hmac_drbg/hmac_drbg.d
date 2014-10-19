@@ -28,7 +28,7 @@ void HMAC_DRBG::randomize(ubyte* output)
 
 	while(length)
 	{
-		const size_t to_copy = std.algorithm.min(length, m_V.size());
+		const size_t to_copy = std.algorithm.min(length, m_V.length);
 		m_V = m_mac.process(m_V);
 		copy_mem(&output[0], &m_V[0], to_copy);
 
@@ -73,7 +73,7 @@ void HMAC_DRBG::reseed(size_t poll_bits)
 		if (m_prng.is_seeded())
 		{
 			SafeVector!ubyte input = m_prng.random_vec(m_mac.output_length());
-			update(&input[0], input.size());
+			update(&input[0], input.length);
 			m_reseed_counter = 1;
 		}
 	}

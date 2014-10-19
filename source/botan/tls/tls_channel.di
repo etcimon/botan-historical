@@ -54,7 +54,7 @@ class Channel
 		*/
 		void send(Alloc)(in Vector!( char, Alloc ) val)
 		{
-			send(&val[0], val.size());
+			send(&val[0], val.length);
 		}
 
 		/**

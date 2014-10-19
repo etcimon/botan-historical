@@ -30,7 +30,7 @@ New_Session_Ticket::New_Session_Ticket(Handshake_IO& io,
 
 New_Session_Ticket::New_Session_Ticket(in Vector!ubyte buf)
 {
-	if (buf.size() < 6)
+	if (buf.length < 6)
 		throw new Decoding_Error("Session ticket message too short to be valid");
 
 	TLS_Data_Reader reader("SessionTicket", buf);

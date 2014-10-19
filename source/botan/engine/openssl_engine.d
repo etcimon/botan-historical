@@ -9,7 +9,7 @@ module botan.engine.openssl_engine;
 import botan.engine.engine;
 import botan.internal.bn_wrap;
 import botan.math.bigint.bigint;
-import botan.parsing;
+import botan.utils.parsing;
 import openssl.rc4;
 import openssl.evp;
 import botan.internal.bn_wrap;
@@ -307,7 +307,7 @@ public:
 		m_bn = BN_new();
 		SafeVector!ubyte encoding = BigInt.encode_locked(input);
 		if (input != 0)
-			BN_bin2bn(&encoding[0], encoding.size(), m_bn);
+			BN_bin2bn(&encoding[0], encoding.length, m_bn);
 	}
 	
 	/*

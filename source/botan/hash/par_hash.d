@@ -8,7 +8,7 @@ module botan.hash.par_hash;
 
 import botan.hash.hash;
 import vector;
-import botan.parsing;
+import botan.utils.parsing;
 
 /**
 * Parallel Hashes

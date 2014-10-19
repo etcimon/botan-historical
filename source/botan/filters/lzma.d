@@ -34,7 +34,7 @@ public:
 		while(lzma.stream.avail_in != 0)
 		{
 			lzma.stream.next_out = cast(uint8_t*)(&buffer[0]);
-			lzma.stream.avail_out = buffer.size();
+			lzma.stream.avail_out = buffer.length;
 			
 			lzma_ret ret = lzma_code(&(lzma.stream), LZMA_RUN);
 			
@@ -43,7 +43,7 @@ public:
 			else if (ret != LZMA_OK)
 				throw new Exception("Lzma compression: Error writing");
 			
-			send(&buffer[0], buffer.size() - lzma.stream.avail_out);
+			send(&buffer[0], buffer.length - lzma.stream.avail_out);
 		}
 	}
 
@@ -75,10 +75,10 @@ public:
 		while(ret != LZMA_STREAM_END)
 		{
 			lzma.stream.next_out = cast(uint8_t*)(&buffer[0]);
-			lzma.stream.avail_out = buffer.size();
+			lzma.stream.avail_out = buffer.length;
 			
 			ret = lzma_code(&(lzma.stream), LZMA_FINISH);
-			send(&buffer[0], buffer.size() - lzma.stream.avail_out);
+			send(&buffer[0], buffer.length - lzma.stream.avail_out);
 		}
 		
 		clear();
@@ -95,7 +95,7 @@ public:
 		while(true)
 		{
 			lzma.stream.next_out = cast(uint8_t*)(&buffer[0]);
-			lzma.stream.avail_out = buffer.size();
+			lzma.stream.avail_out = buffer.length;
 			
 			lzma_ret ret = lzma_code(&(lzma.stream), LZMA_FULL_FLUSH);
 			
@@ -104,9 +104,9 @@ public:
 			else if (ret != LZMA_OK && ret != LZMA_STREAM_END)
 				throw new Exception("Lzma compression: Error flushing");
 			
-			send(&buffer[0], buffer.size() - lzma.stream.avail_out);
+			send(&buffer[0], buffer.length - lzma.stream.avail_out);
 			
-			if (lzma.stream.avail_out == buffer.size())
+			if (lzma.stream.avail_out == buffer.length)
 				break;
 		}
 	}
@@ -165,7 +165,7 @@ public:
 		while(lzma.stream.avail_in != 0)
 		{
 			lzma.stream.next_out = cast(uint8_t*)(&buffer[0]);
-			lzma.stream.avail_out = buffer.size();
+			lzma.stream.avail_out = buffer.length;
 			
 			lzma_ret ret = lzma_code(&(lzma.stream), LZMA_RUN);
 			
@@ -180,7 +180,7 @@ public:
 					throw new Exception("Lzma decompression: Unknown error");
 			}
 			
-			send(&buffer[0], buffer.size() - lzma.stream.avail_out);
+			send(&buffer[0], buffer.length - lzma.stream.avail_out);
 			
 			if (ret == LZMA_STREAM_END)
 			{
@@ -226,7 +226,7 @@ public:
 		while(ret != LZMA_STREAM_END)
 		{
 			lzma.stream.next_out = cast(uint8_t*)(&buffer[0]);
-			lzma.stream.avail_out = buffer.size();
+			lzma.stream.avail_out = buffer.length;
 			ret = lzma_code(&(lzma.stream), LZMA_FINISH);
 			
 			if (ret != LZMA_OK && ret != LZMA_STREAM_END)
@@ -235,7 +235,7 @@ public:
 				throw new Decoding_Error("Lzma_Decompression: Error finalizing");
 			}
 			
-			send(&buffer[0], buffer.size() - lzma.stream.avail_out);
+			send(&buffer[0], buffer.length - lzma.stream.avail_out);
 		}
 		
 		clear();

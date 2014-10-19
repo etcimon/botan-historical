@@ -9,7 +9,7 @@ module botan.utils.version_;
 import botan.constants;
 import botan.utils.types;
 import string;
-import botan.parsing;
+import botan.utils.parsing;
 /*
  * These are intentionally compiled so an application running against a 
  * shared library can test the true version they are running against.

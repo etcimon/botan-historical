@@ -51,7 +51,7 @@ public:
 			output += n;
 			got += n;
 			length -= n;
-			if (head.size() == 0)
+			if (head.length == 0)
 			{
 				SecureQueueNode* holder = head.next;
 				delete head;
@@ -71,9 +71,9 @@ public:
 		
 		while(offset && current)
 		{
-			if (offset >= current.size())
+			if (offset >= current.length)
 			{
-				offset -= current.size();
+				offset -= current.length;
 				current = current.next;
 			}
 			else
@@ -125,7 +125,7 @@ public:
 		
 		while(current)
 		{
-			count += current.size();
+			count += current.length;
 			current = current.next;
 		}
 		return count;
@@ -222,7 +222,7 @@ public:
 	
 	size_t write(in ubyte* input, size_t length)
 	{
-		size_t copied = std.algorithm.min(length, buffer.size() - end);
+		size_t copied = std.algorithm.min(length, buffer.length - end);
 		copy_mem(&buffer[end], input, copied);
 		end += copied;
 		return copied;

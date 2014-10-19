@@ -272,7 +272,7 @@ bool Channel::heartbeat_sending_allowed() const
 
 size_t Channel::received_data(in Vector!ubyte buf)
 {
-	return this.received_data(&buf[0], buf.size());
+	return this.received_data(&buf[0], buf.length);
 }
 
 size_t Channel::received_data(in ubyte* input, size_t input_size)
@@ -317,7 +317,7 @@ size_t Channel::received_data(in ubyte* input, size_t input_size)
 			if (input_size == 0 && needed != 0)
 				return needed; // need more data to complete record
 
-			if (record.size() > max_fragment_size)
+			if (record.length > max_fragment_size)
 				throw new TLS_Exception(Alert::RECORD_OVERFLOW,
 										  "Plaintext record is too large");
 
@@ -359,14 +359,14 @@ size_t Channel::received_data(in ubyte* input, size_t input_size)
 					if (!pending_state())
 					{
 						Heartbeat_Message response(Heartbeat_Message::RESPONSE,
-															&payload[0], payload.size());
+															&payload[0], payload.length);
 
 						send_record(HEARTBEAT, response.contents());
 					}
 				}
 				else
 				{
-					m_alert_cb(Alert(Alert::HEARTBEAT_PAYLOAD), &payload[0], payload.size());
+					m_alert_cb(Alert(Alert::HEARTBEAT_PAYLOAD), &payload[0], payload.length);
 				}
 			}
 			else if (record_type == APPLICATION_DATA)
@@ -379,8 +379,8 @@ size_t Channel::received_data(in ubyte* input, size_t input_size)
 				* before TLS v1.1 in order to randomize the IV of the
 				* following record. Avoid spurious callbacks.
 				*/
-				if (record.size() > 0)
-					m_data_cb(&record[0], record.size());
+				if (record.length > 0)
+					m_data_cb(&record[0], record.length);
 			}
 			else if (record_type == ALERT)
 			{
@@ -465,7 +465,7 @@ void Channel::write_record(Connection_Cipher_State* cipher_state,
 							cipher_state,
 							m_rng);
 
-	m_output_fn(&m_writebuf[0], m_writebuf.size());
+	m_output_fn(&m_writebuf[0], m_writebuf.length);
 }
 
 void Channel::send_record_array(ushort epoch, ubyte type, in ubyte* input, size_t length)
@@ -509,13 +509,13 @@ void Channel::send_record_array(ushort epoch, ubyte type, in ubyte* input, size_
 void Channel::send_record(ubyte record_type, in Vector!ubyte record)
 {
 	send_record_array(sequence_numbers().current_write_epoch(),
-							record_type, &record[0], record.size());
+							record_type, &record[0], record.length);
 }
 
 void Channel::send_record_under_epoch(ushort epoch, ubyte record_type,
 												  in Vector!ubyte record)
 {
-	send_record_array(epoch, record_type, &record[0], record.size());
+	send_record_array(epoch, record_type, &record[0], record.length);
 }
 
 void Channel::send(in ubyte* buf, size_t buf_size)
@@ -529,7 +529,7 @@ void Channel::send(in ubyte* buf, size_t buf_size)
 
 void Channel::send(in string string)
 {
-	this.send(cast(const ubyte*)(string.toStringz), string.size());
+	this.send(cast(const ubyte*)(string.toStringz), string.length);
 }
 
 void Channel::send_alert(in Alert alert)

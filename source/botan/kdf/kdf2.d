@@ -32,7 +32,7 @@ public:
 			
 			SafeVector!ubyte hash_result = hash.flush();
 			
-			size_t added = std.algorithm.min(hash_result.size(), out_len);
+			size_t added = std.algorithm.min(hash_result.length, out_len);
 			output += Pair(&hash_result[0], added);
 			out_len -= added;
 			

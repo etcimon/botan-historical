@@ -35,7 +35,7 @@ public:
 		count = position = 0;
 	}
 
-	size_t hash_block_size() const { return buffer.size(); }
+	size_t hash_block_size() const { return buffer.length; }
 package:
 	/*
 	* Update the hash
@@ -48,22 +48,22 @@ package:
 		{
 			buffer_insert(buffer, position, input, length);
 			
-			if (position + length >= buffer.size())
+			if (position + length >= buffer.length)
 			{
 				compress_n(&buffer[0], 1);
-				input += (buffer.size() - position);
-				length -= (buffer.size() - position);
+				input += (buffer.length - position);
+				length -= (buffer.length - position);
 				position = 0;
 			}
 		}
 		
-		const size_t full_blocks = length / buffer.size();
-		const size_t remaining	= length % buffer.size();
+		const size_t full_blocks = length / buffer.length;
+		const size_t remaining	= length % buffer.length;
 		
 		if (full_blocks)
 			compress_n(input, full_blocks);
 		
-		buffer_insert(buffer, position, input + full_blocks * buffer.size(), remaining);
+		buffer_insert(buffer, position, input + full_blocks * buffer.length, remaining);
 		position += remaining;
 	}
 
@@ -74,16 +74,16 @@ package:
 	void final_result(ubyte* output)
 	{
 		buffer[position] = (BIG_BIT_ENDIAN ? 0x80 : 0x01);
-		for (size_t i = position+1; i != buffer.size(); ++i)
+		for (size_t i = position+1; i != buffer.length; ++i)
 			buffer[i] = 0;
 		
-		if (position >= buffer.size() - COUNT_SIZE)
+		if (position >= buffer.length - COUNT_SIZE)
 		{
 			compress_n(&buffer[0], 1);
 			zeroise(buffer);
 		}
 		
-		write_count(&buffer[buffer.size() - COUNT_SIZE]);
+		write_count(&buffer[buffer.length - COUNT_SIZE]);
 		
 		compress_n(&buffer[0], 1);
 		copy_out(output);

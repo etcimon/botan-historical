@@ -38,11 +38,11 @@ Heartbeat_Message::Heartbeat_Message(Type type,
 
 Vector!ubyte Heartbeat_Message::contents() const
 {
-	Vector!ubyte send_buf(3 + m_payload.size() + 16);
+	Vector!ubyte send_buf(3 + m_payload.length + 16);
 	send_buf[0] = m_type;
-	send_buf[1] = get_byte<ushort>(0, m_payload.size());
-	send_buf[2] = get_byte<ushort>(1, m_payload.size());
-	copy_mem(&send_buf[3], &m_payload[0], m_payload.size());
+	send_buf[1] = get_byte<ushort>(0, m_payload.length);
+	send_buf[2] = get_byte<ushort>(1, m_payload.length);
+	copy_mem(&send_buf[3], &m_payload[0], m_payload.length);
 	// leave padding as all zeros
 
 	return send_buf;

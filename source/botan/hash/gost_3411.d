@@ -8,7 +8,7 @@ module botan.hash.gost_3411;
 import botan.hash.hash;
 import botan.block.gost_28147;
 import botan.utils.loadstor;
-import botan.rotate;
+import botan.utils.rotate;
 import botan.internal.xor_buf;
 /**
 * GOST 34.11
@@ -230,7 +230,7 @@ private:
 	{
 		if (position)
 		{
-			clear_mem(&buffer[0] + position, buffer.size() - position);
+			clear_mem(&buffer[0] + position, buffer.length - position);
 			compress_n(&buffer[0], 1);
 		}
 		

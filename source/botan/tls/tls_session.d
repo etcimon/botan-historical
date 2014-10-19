@@ -43,7 +43,7 @@ Session::Session(in string pem)
 {
 	SafeVector!ubyte der = pem.decode_check_label(pem, "SSL SESSION");
 
-	*this = Session(&der[0], der.size());
+	*this = Session(&der[0], der.length);
 }
 
 Session::Session(in ubyte* ber, size_t ber_len)
@@ -96,7 +96,7 @@ Session::Session(in ubyte* ber, size_t ber_len)
 
 	if (!peer_cert_bits.empty())
 	{
-		DataSource_Memory certs = new DataSource_Memory(&peer_cert_bits[0], peer_cert_bits.size());
+		DataSource_Memory certs = new DataSource_Memory(&peer_cert_bits[0], peer_cert_bits.length);
 			scope(exit) delete certs;
 		while(!certs.end_of_data())
 			m_peer_certs.push_back(X509_Certificate(certs));
@@ -106,7 +106,7 @@ Session::Session(in ubyte* ber, size_t ber_len)
 SafeVector!ubyte Session::DER_encode() const
 {
 	Vector!ubyte peer_cert_bits;
-	for (size_t i = 0; i != m_peer_certs.size(); ++i)
+	for (size_t i = 0; i != m_peer_certs.length; ++i)
 		peer_cert_bits += m_peer_certs[i].BER_encode();
 
 	return DER_Encoder()
@@ -147,7 +147,7 @@ Session::encrypt(in SymmetricKey master_key,
 {
 	const auto der = this.DER_encode();
 
-	return CryptoBox.encrypt(&der[0], der.size(), master_key, rng);
+	return CryptoBox.encrypt(&der[0], der.length, master_key, rng);
 }
 
 Session Session::decrypt(in ubyte* buf, size_t buf_len,
@@ -157,7 +157,7 @@ Session Session::decrypt(in ubyte* buf, size_t buf_len,
 	{
 		const auto ber = CryptoBox.decrypt(buf, buf_len, master_key);
 
-		return Session(&ber[0], ber.size());
+		return Session(&ber[0], ber.length);
 	}
 	catch(Exception e)
 	{

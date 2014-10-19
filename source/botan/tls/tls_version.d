@@ -7,7 +7,7 @@
 
 import botan.tls_version;
 import botan.tls_exceptn;
-import botan.parsing;
+import botan.utils.parsing;
 namespace TLS {
 
 string Protocol_Version::to_string() const

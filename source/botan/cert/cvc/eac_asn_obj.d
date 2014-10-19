@@ -13,7 +13,7 @@ import botan.asn1.ber_dec;
 import botan.utils.rounding;
 import botan.calendar;
 import botan.utils.charset;
-import botan.parsing;
+import botan.utils.parsing;
 import std.datetime;
 
 /**
@@ -44,7 +44,7 @@ public:
 		if (obj.type_tag != this.tag)
 			throw new BER_Decoding_Error("Tag mismatch when decoding");
 		
-		if (obj.value.size() != 6)
+		if (obj.value.length != 6)
 		{
 			throw new Decoding_Error("EAC_Time decoding failed");
 		}
@@ -140,9 +140,9 @@ public:
 		Vector!string params;
 		string current;
 		
-		for (uint j = 0; j != time_str.size(); ++j)
+		for (uint j = 0; j != time_str.length; ++j)
 		{
-			if (Charset.is_digit(time_str[j]))
+			if (is_digit(time_str[j]))
 				current += time_str[j];
 			else
 			{
@@ -154,7 +154,7 @@ public:
 		if (current != "")
 			params.push_back(current);
 		
-		if (params.size() != 3)
+		if (params.length != 3)
 			throw new Invalid_Argument("Invalid time specification " ~ time_str);
 		
 		year	= to_uint(params[0]);
@@ -417,7 +417,7 @@ public:
 		try
 		{
 			*this = ASN1_EAC_String(
-				Charset.transcode(asn1.to_string(obj), charset_is, LOCAL_CHARSET),
+				transcode(asn1.to_string(obj), charset_is, LOCAL_CHARSET),
 				obj.type_tag);
 		}
 		catch(Invalid_Argument inv_arg)
@@ -434,7 +434,7 @@ public:
 	*/
 	string value() const
 	{
-		return Charset.transcode(iso_8859_str, LATIN1_CHARSET, LOCAL_CHARSET);
+		return transcode(iso_8859_str, LATIN1_CHARSET, LOCAL_CHARSET);
 	}
 
 	/**
@@ -460,7 +460,7 @@ public:
 	this(in string str, ASN1_Tag t)
 	{
 		tag = t;
-		iso_8859_str = Charset.transcode(str, LOCAL_CHARSET, LATIN1_CHARSET);
+		iso_8859_str = transcode(str, LOCAL_CHARSET, LATIN1_CHARSET);
 		
 		if (!sanity_check())
 			throw new Invalid_Argument("ASN1_EAC_String contains illegal characters");
@@ -484,7 +484,7 @@ package:
 	bool sanity_check() const
 	{
 		const ubyte* rep = cast(const ubyte*)(iso_8859_str.data());
-		const size_t rep_len = iso_8859_str.size();
+		const size_t rep_len = iso_8859_str.length;
 		
 		for (size_t i = 0; i != rep_len; ++i)
 		{

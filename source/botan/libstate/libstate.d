@@ -137,7 +137,7 @@ public:
 		
 		while(!accum.polling_goal_achieved() && poll_attempt < 16)
 		{
-			const size_t src_idx = poll_attempt % m_sources.size();
+			const size_t src_idx = poll_attempt % m_sources.length;
 			m_sources[src_idx].poll(accum);
 			++poll_attempt;
 		}
