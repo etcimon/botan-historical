@@ -14,7 +14,7 @@ import botan.asn1.ber_dec;
 import botan.cert.x509.x509_ext;
 import botan.asn1.oid_lookup.oids;
 import botan.codec.base64;
-import botan.pubkey;
+import botan.pubkey.pubkey;
 import botan.cert.x509.x509path;
 import botan.http_util;
 
@@ -213,8 +213,7 @@ void check_signature(in Vector!ubyte tbs_response,
 	Signature_Format format =
 		(pub_key.message_parts() >= 2) ? DER_SEQUENCE : IEEE_1363;
 	
-	PK_Verifier verifier = new PK_Verifier(*pub_key, padding, format);
-	scope(exit) delete verifier;
+	PK_Verifier verifier = PK_Verifier(*pub_key, padding, format);
 	if (!verifier.verify_message(asn1_obj.put_in_sequence(tbs_response), signature))
 		throw new Exception("Signature on OCSP response does not verify");
 }

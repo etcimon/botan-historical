@@ -55,16 +55,16 @@ Given a ``DL_Group``, you can create new DSA, Diffie-Hellman, and
 Nyberg-Rueppel key pairs with
 
 .. cpp:function:: DSA_PrivateKey::DSA_PrivateKey(RandomNumberGenerator& rng, \
-   const DL_Group& group, const BigInt& x = 0)
+   const ref DL_Group group, const BigInt& x = 0)
 
 .. cpp:function:: DH_PrivateKey::DH_PrivateKey(RandomNumberGenerator& rng, \
-   const DL_Group& group, const BigInt& x = 0)
+   const ref DL_Group group, const BigInt& x = 0)
 
 .. cpp:function:: NR_PrivateKey::NR_PrivateKey(RandomNumberGenerator& rng, \
-   const DL_Group& group, const BigInt& x = 0)
+   const ref DL_Group group, const BigInt& x = 0)
 
 .. cpp:function:: ElGamal_PrivateKey::ElGamal_PrivateKey(RandomNumberGenerator& rng, \
-   const DL_Group& group, const BigInt& x = 0)
+   const ref DL_Group group, const BigInt& x = 0)
 
   The optional *x* parameter to each of these contructors is a private key
   value. This allows you to create keys where the private key is formed by
@@ -243,7 +243,7 @@ some trusted cryptographic primitive like SHA-2.
 
 Instantiating a ``DL_Group`` simply requires calling
 
-.. cpp:function:: DL_Group::DL_Group(const std::string& name)
+.. cpp:function:: DL_Group.DL_Group(const std::string& name)
 
   The *name* parameter is a specially formatted string that consists of three
   things, the type of the group ("modp" or "dsa"), the creator of the group,
@@ -265,7 +265,7 @@ Instantiating a ``DL_Group`` simply requires calling
 
 You can generate a new random group using
 
-.. cpp:function:: DL_Group::DL_Group(RandomNumberGenerator& rng, \
+.. cpp:function:: DL_Group.DL_Group(RandomNumberGenerator& rng, \
    PrimeType type, size_t pbits, size_t qbits = 0)
 
   The *type* can be either ``Strong``, ``Prime_Subgroup``, or
@@ -275,11 +275,11 @@ You can generate a new random group using
 
 You can serialize a ``DL_Group`` using
 
-.. cpp:function:: SafeVector<byte> DL_Group::DER_Encode(Format format)
+.. cpp:function:: SafeVector<byte> DL_Group.DER_Encode(Format format)
 
 or
 
-.. cpp:function:: std::string DL_Group::PEM_encode(Format format)
+.. cpp:function:: std::string DL_Group.PEM_encode(Format format)
 
 where *format* is any of
 
@@ -290,9 +290,9 @@ where *format* is any of
 
 You can reload a serialized group using
 
-.. cpp:function:: void DL_Group::BER_decode(DataSource& source, Format format)
+.. cpp:function:: void DL_Group.BER_decode(DataSource& source, Format format)
 
-.. cpp:function:: void DL_Group::PEM_decode(DataSource& source)
+.. cpp:function:: void DL_Group.PEM_decode(DataSource& source)
 
 .. _ec_group:
 

@@ -8,7 +8,7 @@
 import botan.rsa;
 import botan.utils.parsing;
 import botan.math.numbertheory.numthry;
-import botan.keypair;
+import botan.pubkey.algo.keypair;
 import future;
 /*
 * Create a RSA private key
@@ -53,7 +53,7 @@ bool RSA_PrivateKey::check_key(RandomNumberGenerator rng, bool strong) const
 	if ((e * d) % lcm(p - 1, q - 1) != 1)
 		return false;
 
-	return KeyPair::signature_consistency_check(rng, *this, "EMSA4(SHA-1)");
+	return signature_consistency_check(rng, *this, "EMSA4(SHA-1)");
 }
 
 RSA_Private_Operation::RSA_Private_Operation(in RSA_PrivateKey rsa,

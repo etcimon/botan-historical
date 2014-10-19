@@ -2,45 +2,64 @@
 * Blinding for public key operations
 * (C) 1999-2010 Jack Lloyd
 *
-* Distributed under the terms of the Botan license
+* Distributed under the terms of the botan license.
 */
+module botan.pubkey.blinding;
 
-import botan.blinding;
+import botan.math.bigint.bigint;
+import botan.math.numbertheory.reducer;
 import botan.math.numbertheory.numthry;
-/*
-* Blinder Constructor
+
+/**
+* Blinding Function Object
 */
-Blinder::Blinder(in BigInt e, const ref BigInt d, const ref BigInt n)
+class Blinder
 {
-	if (e < 1 || d < 1 || n < 1)
-		throw new Invalid_Argument("Blinder: Arguments too small");
+public:
+	/*
+	* Blind a number
+	*/
+	BigInt blind(in BigInt i)
+	{
+		if (!reducer.initialized())
+			return i;
+		
+		e = reducer.square(e);
+		d = reducer.square(d);
+		return reducer.multiply(i, e);
+	}
 
-	reducer = Modular_Reducer(n);
-	this.e = e;
-	this.d = d;
-}
+	/*
+	* Unblind a number
+	*/
+	BigInt unblind(in BigInt i) const
+	{
+		if (!reducer.initialized())
+			return i;
+		return reducer.multiply(i, d);
+	}
 
-/*
-* Blind a number
-*/
-BigInt Blinder::blind(in BigInt i) const
-{
-	if (!reducer.initialized())
-		return i;
+	bool initialized() const { return reducer.initialized(); }
 
-	e = reducer.square(e);
-	d = reducer.square(d);
-	return reducer.multiply(i, e);
-}
+	this() {}
 
-/*
-* Unblind a number
-*/
-BigInt Blinder::unblind(in BigInt i) const
-{
-	if (!reducer.initialized())
-		return i;
-	return reducer.multiply(i, d);
-}
+	/**
+	* Construct a blinder
+	* @param mask the forward (blinding) mask
+	* @param inverse_mask the inverse of mask (depends on algo)
+	* @param modulus of the group operations are performed in
+	*/
+	this(in BigInt e, const ref BigInt d, const ref BigInt n)
+	{
+		if (e < 1 || d < 1 || n < 1)
+			throw new Invalid_Argument("Blinder: Arguments too small");
+		
+		reducer = Modular_Reducer(n);
+		this.e = e;
+		this.d = d;
+	}
 
-}
+private:
+	Modular_Reducer reducer;
+	BigInt e, d;
+};

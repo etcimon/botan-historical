@@ -16,8 +16,8 @@ import std.c.stdio;
 /* GnuMP 5.0 and later have a side-channel resistent powm */
 version(HAVE_MPZ_POWM_SEC)	alias mpz_powm_sec mpz_powm;
 static if (BOTAN_HAS_RSA)	import botan.rsa;
-static if (BOTAN_HAS_DSA)	import botan.dsa;
-static if (BOTAN_HAS_DIFFIE_HELLMAN)	import botan.dh;
+static if (BOTAN_HAS_DSA)	import botan.pubkey.algo.dsa;
+static if (BOTAN_HAS_DIFFIE_HELLMAN)	import botan.pubkey.algo.dh;
 
 size_t GNU_MP_VERSION_CODE_FOR(size_t a, size_t b, size_t c) {
 	return ((a << 16) | (b << 8) | (c));

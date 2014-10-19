@@ -40,7 +40,8 @@ class Illegal_Point : Exception
 class PointGFp
 {
 public:
-	enum Compression_Type {
+	typedef ubyte Compression_Type;
+	enum : Compression_Type {
 		UNCOMPRESSED = 0,
 		COMPRESSED	= 1,
 		HYBRID		 = 2
@@ -159,7 +160,7 @@ public:
 	ref PointGFp opBinary(string op)(in BigInt scalar, const ref PointGFp point)
 		if (op == "*")
 	{
-		const CurveGFp& curve = point.get_curve();
+		const CurveGFp curve = point.get_curve();
 		
 		if (scalar.is_zero())
 			return PointGFp(curve); // zero point
@@ -817,7 +818,7 @@ PointGFp OS2ECP(in ubyte* data, size_t data_len,
 	return result;
 }
 
-PointGFp OS2ECP(Alloc)(in Vector!( ubyte, Alloc ) data, const CurveGFp& curve)
+PointGFp OS2ECP(Alloc)(in Vector!( ubyte, Alloc ) data, const ref CurveGFp curve)
 { return OS2ECP(&data[0], data.length, curve); }
 
 void swap(ref PointGFp x, ref PointGFp y)
@@ -827,7 +828,7 @@ private:
 
 BigInt decompress_point(bool yMod2,
                         const ref BigInt x,
-                        const CurveGFp& curve)
+                        const ref CurveGFp curve)
 {
 	BigInt xpow3 = x * x * x;
 	

@@ -7,7 +7,7 @@
 module botan.cert.x509.x509self;
 
 import botan.cert.x509.x509cert;
-import botan.pkcs8;
+import botan.pubkey.pkcs8;
 import botan.cert.x509.pkcs10;
 import botan.asn1.asn1_time;
 import botan.asn1.oid_lookup.oids;
@@ -295,7 +295,7 @@ PKCS10_Request create_cert_req(in X509_Cert_Options opts,
 	opts.sanity_check();
 	
 	Vector!ubyte pub_key = x509_key.BER_encode(key);
-	Unique!PK_Signer signer = choose_sig_format(key, hash_fn, sig_algo);
+	PK_Signer signer = choose_sig_format(key, hash_fn, sig_algo);
 	load_info(opts, subject_dn, subject_alt);
 	
 	const size_t PKCS10_VERSION = 0;
@@ -347,7 +347,7 @@ PKCS10_Request create_cert_req(in X509_Cert_Options opts,
 			.end_cons();
 	
 	const Vector!ubyte req =
-		X509_Object.make_signed(signer.get(), rng, sig_algo,
+		X509_Object.make_signed(signer, rng, sig_algo,
 		                         tbs_req.get_contents());
 	
 	return PKCS10_Request(req);

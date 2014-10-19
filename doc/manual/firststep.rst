@@ -3,7 +3,7 @@ Getting Started
 ========================================
 
 All declarations in the library are contained within the namespace
-``Botan``, so you need to either prefix types with ``Botan::`` or add
+``Botan``, so you need to either prefix types with ```` or add
 a ``using`` declaration in your code. All examples will assume a
 ``using`` declaration.
 
@@ -33,7 +33,7 @@ matters. With no arguments, the library is initialized with various
 default settings. So (unless you are writing threaded code; see
 below), all you need is::
 
-   Botan::LibraryInitializer init;
+   LibraryInitializer init;
 
 at the start of your ``main``.
 

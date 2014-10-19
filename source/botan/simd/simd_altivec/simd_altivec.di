@@ -77,7 +77,7 @@ public:
 
 		vec.V = vec_perm(reg, reg, perm);
 
-		Botan::store_be(output, vec.R[0], vec.R[1], vec.R[2], vec.R[3]);
+		store_be(output, vec.R[0], vec.R[1], vec.R[2], vec.R[3]);
 	}
 
 	void store_be(ubyte* output) const
@@ -89,7 +89,7 @@ public:
 
 		vec.V = reg;
 
-		Botan::store_be(output, vec.R[0], vec.R[1], vec.R[2], vec.R[3]);
+		store_be(output, vec.R[0], vec.R[1], vec.R[2], vec.R[3]);
 	}
 
 	void rotate_left(size_t rot)

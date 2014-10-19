@@ -7,8 +7,8 @@
 
 import botan.elgamal;
 import botan.math.numbertheory.numthry;
-import botan.keypair;
-import botan.workfactor;
+import botan.pubkey.algo.keypair;
+import botan.pubkey.workfactor;
 /*
 * ElGamal_PublicKey Constructor
 */
@@ -22,7 +22,7 @@ ElGamal_PublicKey::ElGamal_PublicKey(in DL_Group grp, const ref BigInt y1)
 * ElGamal_PrivateKey Constructor
 */
 ElGamal_PrivateKey::ElGamal_PrivateKey(RandomNumberGenerator rng,
-													const DL_Group& grp,
+													const ref DL_Group grp,
 													const ref BigInt x_arg)
 {
 	group = grp;
@@ -42,7 +42,7 @@ ElGamal_PrivateKey::ElGamal_PrivateKey(RandomNumberGenerator rng,
 ElGamal_PrivateKey::ElGamal_PrivateKey(in AlgorithmIdentifier alg_id,
 													in SafeVector!ubyte key_bits,
 													RandomNumberGenerator rng) :
-	DL_Scheme_PrivateKey(alg_id, key_bits, DL_Group::ANSI_X9_42)
+	DL_Scheme_PrivateKey(alg_id, key_bits, DL_Group.ANSI_X9_42)
 {
 	y = power_mod(group_g(), x, group_p());
 	load_check(rng);
@@ -60,7 +60,7 @@ bool ElGamal_PrivateKey::check_key(RandomNumberGenerator rng,
 	if (!strong)
 		return true;
 
-	return KeyPair::encryption_consistency_check(rng, *this, "EME1(SHA-1)");
+	return encryption_consistency_check(rng, *this, "EME1(SHA-1)");
 }
 
 ElGamal_Encryption_Operation::ElGamal_Encryption_Operation(in ElGamal_PublicKey key)

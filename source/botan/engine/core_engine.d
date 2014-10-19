@@ -30,13 +30,13 @@ static if (BOTAN_HAS_AEAD_OCB) 		import botan.modes.aead.ocb;
 static if (BOTAN_HAS_AEAD_GCM) 		import botan.modes.aead.gcm;
 static if (BOTAN_HAS_RSA) 			import botan.rsa;
 static if (BOTAN_HAS_RW) 			import botan.rw;
-static if (BOTAN_HAS_DSA) 			import botan.dsa;
-static if (BOTAN_HAS_ECDSA) 		import botan.ecdsa;
+static if (BOTAN_HAS_DSA) 			import botan.pubkey.algo.dsa;
+static if (BOTAN_HAS_ECDSA) 		import botan.pubkey.algo.ecdsa;
 static if (BOTAN_HAS_ELGAMAL) 		import botan.elgamal;
 static if (BOTAN_HAS_GOST_34_10_2001) 	import botan.gost_3410;
 static if (BOTAN_HAS_NYBERG_RUEPPEL)import botan.nr;
-static if (BOTAN_HAS_DIFFIE_HELLMAN)import botan.dh;
-static if (BOTAN_HAS_ECDH) 			import botan.ecdh;
+static if (BOTAN_HAS_DIFFIE_HELLMAN)import botan.pubkey.algo.dh;
+static if (BOTAN_HAS_ECDH) 			import botan.pubkey.algo.ecdh;
 /// Blocks
 static if (BOTAN_HAS_AES) 			import botan.block.aes;
 static if (BOTAN_HAS_BLOWFISH) 		import botan.block.blowfish;

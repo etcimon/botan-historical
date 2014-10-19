@@ -7,7 +7,7 @@
 
 import botan.rw;
 import botan.math.numbertheory.numthry;
-import botan.keypair;
+import botan.pubkey.algo.keypair;
 import botan.utils.parsing;
 import std.algorithm;
 import future;
@@ -54,7 +54,7 @@ bool RW_PrivateKey::check_key(RandomNumberGenerator rng, bool strong) const
 	if ((e * d) % (lcm(p - 1, q - 1) / 2) != 1)
 		return false;
 
-	return KeyPair::signature_consistency_check(rng, *this, "EMSA2(SHA-1)");
+	return signature_consistency_check(rng, *this, "EMSA2(SHA-1)");
 }
 
 RW_Signature_Operation::RW_Signature_Operation(in RW_PrivateKey rw) :

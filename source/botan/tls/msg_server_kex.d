@@ -11,9 +11,9 @@ import botan.internal.tls_extensions;
 import botan.internal.tls_handshake_io;
 import botan.credentials.credentials_manager;
 import botan.utils.loadstor;
-import botan.pubkey;
-import botan.dh;
-import botan.ecdh;
+import botan.pubkey.pubkey;
+import botan.pubkey.algo.dh;
+import botan.pubkey.algo.ecdh;
 import botan.rsa;
 import botan.constructs.srp6;
 import botan.asn1.oid_lookup.oids;
@@ -122,7 +122,7 @@ Server_Key_Exchange::Server_Key_Exchange(Handshake_IO& io,
 		Pair!(string, Signature_Format) format =
 			state.choose_sig_format(*signing_key, m_hash_algo, m_sig_algo, false, policy);
 
-		PK_Signer signer(*signing_key, format.first, format.second);
+		PK_Signer signer = PK_Signer(*signing_key, format.first, format.second);
 
 		signer.update(state.client_hello().random());
 		signer.update(state.server_hello().random());
@@ -255,8 +255,7 @@ bool Server_Key_Exchange::verify(in Public_Key server_key,
 	Pair!(string, Signature_Format) format =
 		state.understand_sig_format(server_key, m_hash_algo, m_sig_algo, false);
 
-	PK_Verifier verifier = new PK_Verifier(server_key, format.first, format.second);
-		scope(exit) delete verifier;
+	PK_Verifier verifier = PK_Verifier(server_key, format.first, format.second);
 	verifier.update(state.client_hello().random());
 	verifier.update(state.server_hello().random());
 	verifier.update(params());

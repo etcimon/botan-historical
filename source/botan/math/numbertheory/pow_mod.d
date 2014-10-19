@@ -179,7 +179,7 @@ private:
 class Fixed_Exponent_Power_Mod : Power_Mod
 {
 public:
-	BigInt operator()(in BigInt b) const
+	BigInt opCall(in BigInt b) const
 	{ set_base(b); return execute(); }
 
 	this() {}
@@ -204,7 +204,7 @@ public:
 class Fixed_Base_Power_Mod : Power_Mod
 {
 public:
-	BigInt operator()(in BigInt e) const
+	BigInt opCall(in BigInt e) const
 	{ set_exponent(e); return execute(); }
 
 	this() {}

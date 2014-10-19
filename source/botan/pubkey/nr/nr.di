@@ -5,7 +5,7 @@
 * Distributed under the terms of the botan license.
 */
 
-import botan.dl_algo;
+import botan.pubkey.algo.dl_algo;
 import botan.pubkey.pk_ops;
 import botan.math.numbertheory.numthry;
 import botan.math.numbertheory.reducer;
@@ -17,7 +17,7 @@ class NR_PublicKey : DL_Scheme_PublicKey
 	public:
 		string algo_name() const { return "NR"; }
 
-		DL_Group::Format group_format() const { return DL_Group::ANSI_X9_57; }
+		DL_Group.Format group_format() const { return DL_Group.ANSI_X9_57; }
 
 		size_t message_parts() const { return 2; }
 		size_t message_part_size() const { return group_q().bytes(); }
@@ -45,7 +45,7 @@ class NR_PrivateKey : NR_PublicKey,
 						  RandomNumberGenerator rng);
 
 		NR_PrivateKey(RandomNumberGenerator rng,
-						  const DL_Group& group,
+						  const ref DL_Group group,
 						  const ref BigInt x = 0);
 };
 

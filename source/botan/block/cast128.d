@@ -305,7 +305,7 @@ private:
 		class ByteReader
 		{
 		public:
-			ubyte operator()(size_t i) { return (X[i/4] >> (8*(3 - (i%4)))); } 
+			ubyte opCall(size_t i) { return (X[i/4] >> (8*(3 - (i%4)))); } 
 			this(const uint* x) { X = x; }
 		private:
 			const uint* X;

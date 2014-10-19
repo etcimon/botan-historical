@@ -1,15 +1,20 @@
 /*
 * Public Key Work Factor Functions
-* (C) 1999-2007,2012 Jack Lloyd
+* (C) 1999-2007 Jack Lloyd
 *
-* Distributed under the terms of the Botan license
+* Distributed under the terms of the botan license.
 */
-
-import botan.workfactor;
-import std.algorithm;
-import cmath;
-size_t dl_work_factor(size_t bits)
+module botan.pubkey.workfactor;
+import botan.utils.types;
+/**
+* Estimate work factor for discrete logarithm
+* @param prime_group_size size of the group in bits
+* @return estimated security level for this group
+*/
+size_t dl_work_factor(size_t prime_group_size)
 {
+	import std.algorithm : max;
+	import std.math : pow, log;
 	/*
 	Based on GNFS work factors. Constant is 1.43 times the asymptotic
 	value; I'm not sure but I believe that came from a paper on 'real
@@ -32,16 +37,14 @@ size_t dl_work_factor(size_t bits)
 	operations) while minimizing the exponent size for performance
 	reasons.
 	*/
-
-	const size_t MIN_WORKFACTOR = 64;
-
+	
+	immutable size_t MIN_WORKFACTOR = 64;
+	
 	// approximates natural logarithm of p
-	const double log_p = bits / 1.4426;
+	const double log_p = prime_group_size / 1.4426;
 
 	const double strength =
-		2.76 * std::pow(log_p, 1.0/3.0) * std::pow(std::log(log_p), 2.0/3.0);
-
-	return std.algorithm.max(cast(size_t)(strength), MIN_WORKFACTOR);
-}
-
+		2.76 * pow(log_p, 1.0/3.0) * pow(log(log_p), 2.0/3.0);
+	
+	return max(cast(size_t)(strength), MIN_WORKFACTOR);
 }

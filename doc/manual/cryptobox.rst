@@ -9,7 +9,7 @@ Encryption using a passphrase
 
 This is a set of simple routines that encrypt some data using a
 passphrase. There are defined in the header `cryptobox.h`, inside
-namespace `Botan::CryptoBox`.
+namespace `CryptoBox`.
 
  .. cpp:function:: std::string encrypt(const byte input[], size_t input_len, \
                                        const std::string& passphrase, \

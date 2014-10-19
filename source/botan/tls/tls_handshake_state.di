@@ -12,7 +12,7 @@ import botan.tls_ciphersuite;
 import botan.tls_exceptn;
 import botan.tls_handshake_msg;
 import botan.pk_keys;
-import botan.pubkey;
+import botan.pubkey.pubkey;
 import functional;
 class KDF;
 

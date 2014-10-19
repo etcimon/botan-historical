@@ -9,7 +9,7 @@ module botan.cert.x509.x509path;
 import botan.cert.x509.ocsp;
 import botan.http_util;
 import botan.utils.parsing;
-import botan.pubkey;
+import botan.pubkey.pubkey;
 import botan.asn1.oid_lookup.oids;
 import std.algorithm;
 import std.datetime;

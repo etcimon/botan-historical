@@ -7,7 +7,7 @@
 
 import botan.if_algo;
 import botan.math.numbertheory.numthry;
-import botan.workfactor;
+import botan.pubkey.workfactor;
 import botan.asn1.der_enc;
 import botan.asn1.ber_dec;
 size_t IF_Scheme_PublicKey::estimated_strength() const

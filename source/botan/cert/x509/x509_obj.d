@@ -9,7 +9,7 @@ import botan.asn1.asn1_obj;
 import botan.filters.pipe;
 import botan.rng;
 import botan.x509_key;
-import botan.pubkey;
+import botan.pubkey.pubkey;
 import botan.asn1.oid_lookup.oids;
 import botan.asn1.der_enc;
 import botan.asn1.ber_dec;
@@ -80,7 +80,7 @@ public:
 	* @param tbs the tbs bits to be signed
 	* @return signed X509 object
 	*/
-	static Vector!ubyte make_signed(PK_Signer signer,
+	static Vector!ubyte make_signed(ref PK_Signer signer,
 	                         RandomNumberGenerator rng,
 	                         const AlgorithmIdentifier algo,
 	                         in SafeVector!ubyte tbs_bits)
@@ -114,8 +114,7 @@ public:
 			Signature_Format format =
 				(pub_key.message_parts() >= 2) ? DER_SEQUENCE : IEEE_1363;
 			
-			PK_Verifier verifier = new PK_Verifier(pub_key, padding, format);
-			scope(exit) delete verifier;
+			PK_Verifier verifier = PK_Verifier(pub_key, padding, format);
 			return verifier.verify_message(tbs_data(), signature());
 		}
 		catch(Exception e)

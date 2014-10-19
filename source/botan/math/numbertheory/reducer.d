@@ -83,7 +83,7 @@ public:
 	* @return (x * x) % p
 	*/
 	BigInt square(in BigInt x) const
-	{ return reduce(Botan::square(x)); }
+	{ return reduce(square(x)); }
 
 	/**
 	* Cube mod p

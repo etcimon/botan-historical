@@ -15,12 +15,12 @@ import openssl.evp;
 import botan.internal.bn_wrap;
 
 static if (BOTAN_HAS_RSA)  import botan.rsa;
-static if (BOTAN_HAS_DSA)  import botan.dsa;
+static if (BOTAN_HAS_DSA)  import botan.pubkey.algo.dsa;
 static if (BOTAN_HAS_ECDSA) {
-	import botan.ecdsa;
+	import botan.pubkey.algo.ecdsa;
 	import openssl.ecdsa;
 }
-static if (BOTAN_HAS_DIFFIE_HELLMAN) import botan.dh;
+static if (BOTAN_HAS_DIFFIE_HELLMAN) import botan.pubkey.algo.dh;
 /**
 * OpenSSL Engine
 */

@@ -7,7 +7,7 @@
 
 import botan.math.bigint.bigint;
 import botan.x509_key;
-import botan.pkcs8;
+import botan.pubkey.pkcs8;
 /**
 * This class represents public keys
 * of integer factorization based (IF) public key schemes.

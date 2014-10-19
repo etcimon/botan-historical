@@ -171,7 +171,7 @@ class Ciphersuite_Preference_Ordering
 												  const Vector!string& sigs) :
 			m_ciphers(ciphers), m_macs(macs), m_kex(kex), m_sigs(sigs) {}
 
-		bool operator()(in Ciphersuite a, const Ciphersuite& b) const
+		bool opCall(in Ciphersuite a, const Ciphersuite& b) const
 		{
 			if (a.kex_algo() != b.kex_algo())
 			{

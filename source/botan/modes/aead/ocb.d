@@ -423,7 +423,7 @@ public:
 	
 	const SafeVector!ubyte dollar() const { return m_L_dollar; }
 	
-	const SafeVector!ubyte operator()(size_t i) { return get(i); }
+	const SafeVector!ubyte opCall(size_t i) { return get(i); }
 	
 	const SafeVector!ubyte compute_offsets(SafeVector!ubyte offset,
 	                                    size_t block_index,

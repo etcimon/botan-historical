@@ -8,7 +8,7 @@
 import botan.if_algo;
 import botan.pubkey.pk_ops;
 import botan.math.numbertheory.reducer;
-import botan.blinding;
+import botan.pubkey.blinding;
 /**
 * RSA Public Key
 */

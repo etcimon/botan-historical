@@ -12,7 +12,7 @@ import botan.tls_session;
 import botan.tls_policy;
 import botan.tls_ciphersuite;
 import botan.math.bigint.bigint;
-import botan.pkcs8;
+import botan.pubkey.pkcs8;
 import botan.cert.x509.x509cert;
 import vector;
 import string;

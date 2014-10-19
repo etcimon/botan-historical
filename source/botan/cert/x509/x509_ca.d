@@ -9,10 +9,10 @@ module botan.cert.x509.x509_ca;
 import botan.cert.x509.x509cert;
 import botan.cert.x509.x509_crl;
 import botan.cert.x509.x509_ext;
-import botan.pkcs8;
+import botan.pubkey.pkcs8;
 import botan.cert.x509.pkcs10;
-import botan.pubkey;
-import botan.pubkey;
+import botan.pubkey.pubkey;
+import botan.pubkey.pubkey;
 import botan.asn1.der_enc;
 import botan.asn1.ber_dec;
 import botan.math.bigint.bigint;
@@ -114,10 +114,9 @@ public:
 	                    RandomNumberGenerator rng,
 	                    Duration next_update = 0.seconds) const
 	{
+
 		Vector!( CRL_Entry ) revoked = crl.get_revoked();
-		
-		std::copy(new_revoked.begin(), new_revoked.end(),
-		          std::back_inserter(revoked));
+		new_revoked = revoked.dup;
 		
 		return make_crl(revoked, crl.crl_number() + 1, next_update, rng);
 	}
@@ -136,7 +135,7 @@ public:
 	* @param extensions an optional list of certificate extensions
 	* @returns newly minted certificate
 	*/
-	static X509_Certificate make_cert(PK_Signer signer,
+	static X509_Certificate make_cert(ref PK_Signer signer,
 	                           RandomNumberGenerator rng,
 	                           const AlgorithmIdentifier sig_algo,
 	                           in Vector!ubyte pub_key,
@@ -204,7 +203,6 @@ public:
 	*/
 	~this()
 	{
-		delete signer;
 	}
 private:
 	/*
@@ -302,6 +300,6 @@ PK_Signer choose_sig_format(in Private_Key key,
 	sig_algo.oid = oids.lookup(algo_name ~ "/" ~ padding);
 	sig_algo.parameters = key.algorithm_identifier().parameters;
 	
-	return new PK_Signer(key, padding, format);
+	return PK_Signer(key, padding, format);
 }
 

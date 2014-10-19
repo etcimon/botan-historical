@@ -7,11 +7,11 @@
 
 import botan.nr;
 import botan.math.numbertheory.numthry;
-import botan.keypair;
+import botan.pubkey.algo.keypair;
 import future;
 NR_PublicKey::NR_PublicKey(in AlgorithmIdentifier alg_id,
 									in SafeVector!ubyte key_bits) :
-	DL_Scheme_PublicKey(alg_id, key_bits, DL_Group::ANSI_X9_57)
+	DL_Scheme_PublicKey(alg_id, key_bits, DL_Group.ANSI_X9_57)
 {
 }
 
@@ -28,7 +28,7 @@ NR_PublicKey::NR_PublicKey(in DL_Group grp, const ref BigInt y1)
 * Create a NR private key
 */
 NR_PrivateKey::NR_PrivateKey(RandomNumberGenerator rng,
-									  const DL_Group& grp,
+									  const ref DL_Group grp,
 									  const ref BigInt x_arg)
 {
 	group = grp;
@@ -48,7 +48,7 @@ NR_PrivateKey::NR_PrivateKey(RandomNumberGenerator rng,
 NR_PrivateKey::NR_PrivateKey(in AlgorithmIdentifier alg_id,
 									  in SafeVector!ubyte key_bits,
 									  RandomNumberGenerator rng) :
-	DL_Scheme_PrivateKey(alg_id, key_bits, DL_Group::ANSI_X9_57)
+	DL_Scheme_PrivateKey(alg_id, key_bits, DL_Group.ANSI_X9_57)
 {
 	y = power_mod(group_g(), x, group_p());
 
@@ -66,7 +66,7 @@ bool NR_PrivateKey::check_key(RandomNumberGenerator rng, bool strong) const
 	if (!strong)
 		return true;
 
-	return KeyPair::signature_consistency_check(rng, *this, "EMSA1(SHA-1)");
+	return signature_consistency_check(rng, *this, "EMSA1(SHA-1)");
 }
 
 NR_Signature_Operation::NR_Signature_Operation(in NR_PrivateKey nr) :

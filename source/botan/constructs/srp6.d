@@ -10,7 +10,7 @@ import botan.math.bigint.bigint;
 import botan.hash.hash;
 import botan.rng;
 import botan.algo_base.symkey;
-import botan.dl_group;
+import botan.pubkey.algo.dl_group;
 import botan.libstate.libstate;
 import botan.math.numbertheory.numthry;
 import string;

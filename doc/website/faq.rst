@@ -113,7 +113,7 @@ on OS specific code, you must load a module to help. POSIX threads and
 Win32 critical sections are both supported out of the box, other
 thread libraries are very easy to add. To enable thread safe
 operation, include "thread_safe" in the string you pass to
-``Botan::LibraryInitializer`` constructor. If for whatever reason a
+``LibraryInitializer`` constructor. If for whatever reason a
 working mutex implementation cannot be found, LibraryInitializer will
 throw an exception rather than continue operating in a bad state.
 

@@ -10,9 +10,9 @@ import botan.internal.tls_reader;
 import botan.internal.tls_extensions;
 import botan.internal.tls_handshake_io;
 import botan.credentials.credentials_manager;
-import botan.pubkey;
-import botan.dh;
-import botan.ecdh;
+import botan.pubkey.pubkey;
+import botan.pubkey.algo.dh;
+import botan.pubkey.algo.ecdh;
 import botan.rsa;
 import botan.constructs.srp6;
 import botan.rng;
@@ -279,7 +279,8 @@ Client_Key_Exchange::Client_Key_Exchange(in Vector!ubyte contents,
 		if (!cast(const RSA_PrivateKey*)(server_rsa_kex_key))
 			throw new Internal_Error("Expected RSA key but got " ~ server_rsa_kex_key.algo_name());
 
-		PK_Decryptor_EME decryptor(*server_rsa_kex_key, "PKCS1v15");
+		PK_Decryptor_EME decryptor = new PK_Decryptor_EME(*server_rsa_kex_key, "PKCS1v15");
+			scope(exit) delete decryptor;
 
 		Protocol_Version client_version = state.client_hello()._version();
 

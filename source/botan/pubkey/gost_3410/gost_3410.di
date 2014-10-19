@@ -7,7 +7,7 @@
 * Distributed under the terms of the botan license.
 */
 
-import botan.ecc_key;
+import botan.pubkey.algo.ecc_key;
 import botan.pubkey.pk_ops;
 /**
 * GOST-34.10 Public Key

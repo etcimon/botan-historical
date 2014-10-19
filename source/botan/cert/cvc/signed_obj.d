@@ -11,7 +11,7 @@ import botan.asn1.asn1_obj;
 import botan.cert.x509.key_constraint;
 import botan.x509_key;
 import botan.filters.pipe;
-import botan.pubkey;
+import botan.pubkey.pubkey;
 import botan.asn1.oid_lookup.oids;
 import vector;
 
@@ -75,8 +75,7 @@ public:
 			
 			Vector!ubyte to_sign = tbs_data();
 			
-			PK_Verifier verifier = new PK_Verifier(pub_key, padding, format);
-			scope(exit) delete verifier;
+			PK_Verifier verifier = PK_Verifier(pub_key, padding, format);
 			return verifier.verify_message(to_sign, sig);
 		}
 		catch

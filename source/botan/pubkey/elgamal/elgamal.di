@@ -5,10 +5,10 @@
 * Distributed under the terms of the botan license.
 */
 
-import botan.dl_algo;
+import botan.pubkey.algo.dl_algo;
 import botan.math.numbertheory.numthry;
 import botan.math.numbertheory.reducer;
-import botan.blinding;
+import botan.pubkey.blinding;
 import botan.pubkey.pk_ops;
 /**
 * ElGamal Public Key
@@ -17,13 +17,13 @@ class ElGamal_PublicKey : DL_Scheme_PublicKey
 {
 	public:
 		string algo_name() const { return "ElGamal"; }
-		DL_Group::Format group_format() const { return DL_Group::ANSI_X9_42; }
+		DL_Group.Format group_format() const { return DL_Group.ANSI_X9_42; }
 
 		size_t max_input_bits() const { return (group_p().bits() - 1); }
 
 		ElGamal_PublicKey(in AlgorithmIdentifier alg_id,
 								in SafeVector!ubyte key_bits) :
-			DL_Scheme_PublicKey(alg_id, key_bits, DL_Group::ANSI_X9_42)
+			DL_Scheme_PublicKey(alg_id, key_bits, DL_Group.ANSI_X9_42)
 		{}
 
 		ElGamal_PublicKey(in DL_Group group, const ref BigInt y);
@@ -45,7 +45,7 @@ class ElGamal_PrivateKey : ElGamal_PublicKey,
 								 RandomNumberGenerator rng);
 
 		ElGamal_PrivateKey(RandomNumberGenerator rng,
-								 const DL_Group& group,
+								 const ref DL_Group group,
 								 const ref BigInt priv_key = 0);
 };
 

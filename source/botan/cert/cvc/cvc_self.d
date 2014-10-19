@@ -7,13 +7,13 @@
 */
 module botan.cert.cvc.cvc_self;
 
-import botan.pkcs8;
+import botan.pubkey.pkcs8;
 import botan.asn1.oid_lookup.oids;
-import botan.ecdsa;
+import botan.pubkey.algo.ecdsa;
 import botan.asn1.asn1_obj;
 import botan.cert.cvc.cvc_req;
 import botan.cert.cvc.cvc_ado;
-import botan.ecc_key;
+import botan.pubkey.algo.ecc_key;
 import botan.math.ec_gfp.curve_gfp;
 import botan.asn1.oid_lookup.oids;
 import sstream;
@@ -397,13 +397,13 @@ Vector!ubyte eac_1_1_encoding(const EC_PublicKey* key,
 		encode_eac_bigint(enc, domain.get_curve().get_a(), ASN1_Tag(2));
 		encode_eac_bigint(enc, domain.get_curve().get_b(), ASN1_Tag(3));
 		
-		enc.encode(EC2OSP(domain.get_base_point(), PointGFp::UNCOMPRESSED),
+		enc.encode(EC2OSP(domain.get_base_point(), PointGFp.UNCOMPRESSED),
 		           ASN1_Tag.OCTET_STRING, ASN1_Tag(4));
 		
 		encode_eac_bigint(enc, domain.get_order(), ASN1_Tag(4));
 	}
 	
-	enc.encode(EC2OSP(key.public_point(), PointGFp::UNCOMPRESSED),
+	enc.encode(EC2OSP(key.public_point(), PointGFp.UNCOMPRESSED),
 	           ASN1_Tag.OCTET_STRING, ASN1_Tag(6));
 	
 	if (key.domain_format() == EC_DOMPAR_ENC_EXPLICIT)

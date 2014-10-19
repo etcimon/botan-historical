@@ -7,7 +7,7 @@
 module botan.filters.pk_filts;
 
 import botan.filters.filter;
-import botan.pubkey;
+import botan.pubkey.pubkey;
 /**
 * PK_Encryptor Filter
 */
@@ -97,7 +97,7 @@ public:
 	}
 
 
-	this(PK_Signer s,
+	this(ref PK_Signer s,
 		 RandomNumberGenerator rng_ref)
 	{
 		signer = s;

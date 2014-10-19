@@ -9,7 +9,7 @@ module botan.cert.cvc.cvc_cert;
 
 import botan.cert.cvc.cvc_gen_cert;
 import botan.asn1.oid_lookup.oids;
-import botan.ecdsa;
+import botan.pubkey.algo.ecdsa;
 import string;
 /**
 * This class represents TR03110 (EAC) v1.1 CV Certificates

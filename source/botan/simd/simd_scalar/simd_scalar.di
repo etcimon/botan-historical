@@ -40,7 +40,7 @@ public:
 		const ubyte* in_b = cast(const ubyte*)(input);
 
 		for (size_t i = 0; i != size(); ++i)
-			output.m_v[i] = Botan::load_le<T>(in_b, i);
+			output.m_v[i] = load_le<T>(in_b, i);
 
 		return output;
 	}
@@ -51,7 +51,7 @@ public:
 		const ubyte* in_b = cast(const ubyte*)(input);
 
 		for (size_t i = 0; i != size(); ++i)
-			output.m_v[i] = Botan::load_be!T(in_b, i);
+			output.m_v[i] = load_be!T(in_b, i);
 
 		return output;
 	}
@@ -59,25 +59,25 @@ public:
 	void store_le(ubyte* output) const
 	{
 		for (size_t i = 0; i != size(); ++i)
-			Botan::store_le(m_v[i], output + i*sizeof(T));
+			store_le(m_v[i], output + i*sizeof(T));
 	}
 
 	void store_be(ubyte* output) const
 	{
 		for (size_t i = 0; i != size(); ++i)
-			Botan::store_be(m_v[i], output + i*sizeof(T));
+			store_be(m_v[i], output + i*sizeof(T));
 	}
 
 	void rotate_left(size_t rot)
 	{
 		for (size_t i = 0; i != size(); ++i)
-			m_v[i] = Botan::rotate_left(m_v[i], rot);
+			m_v[i] = rotate_left(m_v[i], rot);
 	}
 
 	void rotate_right(size_t rot)
 	{
 		for (size_t i = 0; i != size(); ++i)
-			m_v[i] = Botan::rotate_right(m_v[i], rot);
+			m_v[i] = rotate_right(m_v[i], rot);
 	}
 
 	void operator+=(in SIMD_Scalar!(T, N) other)

@@ -25,7 +25,7 @@ Certificate_Verify::Certificate_Verify(Handshake_IO& io,
 	Pair!(string, Signature_Format) format =
 		state.choose_sig_format(*priv_key, m_hash_algo, m_sig_algo, true, policy);
 
-	PK_Signer signer(*priv_key, format.first, format.second);
+	PK_Signer signer = PK_Signer(*priv_key, format.first, format.second);
 
 	if (state._version() == Protocol_Version::SSL_V3)
 	{
@@ -94,8 +94,7 @@ bool Certificate_Verify::verify(const X509_Certificate cert,
 	Pair!(string, Signature_Format) format =
 		state.understand_sig_format(*key.get(), m_hash_algo, m_sig_algo, true);
 
-	PK_Verifier verifier = new PK_Verifier(*key, format.first, format.second);
-		scope(exit) delete verifier;
+	PK_Verifier verifier = PK_Verifier(*key, format.first, format.second);
 	if (state._version() == Protocol_Version::SSL_V3)
 	{
 		SafeVector!ubyte md5_sha = state.hash().final_ssl3(
