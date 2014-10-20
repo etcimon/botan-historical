@@ -6,14 +6,14 @@
 */
 
 import botan.tls_magic;
-import botan.tls_version;
+import botan.tls.tls_version;
 import botan.modes.aead.aead;
 import botan.block.block_cipher;
 import botan.stream.stream_cipher;
 import botan.mac.mac;
 import vector;
 import std.datetime;
-namespace TLS {
+
 
 class Ciphersuite;
 class Session_Keys;

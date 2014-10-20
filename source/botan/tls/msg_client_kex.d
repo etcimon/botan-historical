@@ -6,8 +6,8 @@
 */
 
 import botan.internal.tls_messages;
-import botan.internal.tls_reader;
-import botan.internal.tls_extensions;
+import botan.tls.tls_reader;
+import botan.tls.tls_extensions;
 import botan.internal.tls_handshake_io;
 import botan.credentials.credentials_manager;
 import botan.pubkey.pubkey;
@@ -15,9 +15,9 @@ import botan.pubkey.algo.dh;
 import botan.pubkey.algo.ecdh;
 import botan.pubkey.algo.rsa;
 import botan.constructs.srp6;
-import botan.rng;
+import botan.rng.rng;
 import botan.utils.loadstor;
-namespace TLS {
+
 
 namespace {
 
@@ -108,7 +108,7 @@ Client_Key_Exchange::Client_Key_Exchange(Handshake_IO& io,
 				throw new Decoding_Error("Bad params size for DH key exchange");
 
 			if (p.bits() < policy.minimum_dh_group_size())
-				throw new TLS_Exception(Alert::INSUFFICIENT_SECURITY,
+				throw new TLS_Exception(Alert.INSUFFICIENT_SECURITY,
 										  "Server sent DH group of " ~
 										  std.conv.to!string(p.bits()) +
 										  " bits, policy requires at least " ~
@@ -121,7 +121,7 @@ Client_Key_Exchange::Client_Key_Exchange(Handshake_IO& io,
 			* advantage to bogus keys anyway.
 			*/
 			if (Y <= 1 || Y >= p - 1)
-				throw new TLS_Exception(Alert::INSUFFICIENT_SECURITY,
+				throw new TLS_Exception(Alert.INSUFFICIENT_SECURITY,
 										  "Server sent bad DH key for DHE exchange");
 
 			DL_Group group(p, g);
@@ -242,13 +242,13 @@ Client_Key_Exchange::Client_Key_Exchange(Handshake_IO& io,
 
 			Vector!ubyte encrypted_key = encryptor.encrypt(m_pre_master, rng);
 
-			if (state._version() == Protocol_Version::SSL_V3)
+			if (state._version() == Protocol_Version.SSL_V3)
 				m_key_material = encrypted_key; // no length field
 			else
 				append_tls_length_value(m_key_material, encrypted_key, 2);
 		}
 		else
-			throw new TLS_Exception(Alert::HANDSHAKE_FAILURE,
+			throw new TLS_Exception(Alert.HANDSHAKE_FAILURE,
 									  "Expected a RSA key in server cert but got " ~
 									  server_public_key.algo_name());
 	}
@@ -301,7 +301,7 @@ Client_Key_Exchange::Client_Key_Exchange(in Vector!ubyte contents,
 
 		try
 		{
-			if (state._version() == Protocol_Version::SSL_V3)
+			if (state._version() == Protocol_Version.SSL_V3)
 			{
 				m_pre_master = decryptor.decrypt(contents);
 			}
@@ -342,7 +342,7 @@ Client_Key_Exchange::Client_Key_Exchange(in Vector!ubyte contents,
 				if (policy.hide_unknown_users())
 					psk = SymmetricKey(rng, 16);
 				else
-					throw new TLS_Exception(Alert::UNKNOWN_PSK_IDENTITY,
+					throw new TLS_Exception(Alert.UNKNOWN_PSK_IDENTITY,
 											  "No PSK for identifier " ~ psk_identity);
 			}
 		}

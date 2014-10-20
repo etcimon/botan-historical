@@ -187,7 +187,6 @@ public:
 	
 	static void add_alias(in string _alias, in string basename)
 	{
-		s_alias_map_mutex.lock(); scope(exit) s_alias_map_mutex.unlock();
 		
 		if (s_alias_map.find(_alias) == s_alias_map.end())
 			s_alias_map[_alias] = basename;
@@ -201,7 +200,6 @@ public:
 
 	static string deref_alias(in string _alias)
 	{
-		s_alias_map_mutex.lock(); scope(exit) s_alias_map_mutex.unlock();
 		
 		string name = _alias;
 		
@@ -246,7 +244,6 @@ public:
 	
 
 private:
-	static Mutex s_alias_map_mutex;
 	static HashMap!(string, string) s_alias_map;
 	
 	string orig_algo_spec;

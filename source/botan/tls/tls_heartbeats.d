@@ -6,10 +6,10 @@
 */
 
 import botan.internal.tls_heartbeats;
-import botan.internal.tls_extensions;
-import botan.internal.tls_reader;
+import botan.tls.tls_extensions;
+import botan.tls.tls_reader;
 import botan.tls_exceptn;
-namespace TLS {
+
 
 Heartbeat_Message::Heartbeat_Message(in Vector!ubyte buf)
 {
@@ -18,7 +18,7 @@ Heartbeat_Message::Heartbeat_Message(in Vector!ubyte buf)
 	const ubyte type = reader.get_byte();
 
 	if (type != 1 && type != 2)
-		throw new TLS_Exception(Alert::ILLEGAL_PARAMETER,
+		throw new TLS_Exception(Alert.ILLEGAL_PARAMETER,
 								  "Unknown heartbeat message type");
 
 	m_type = cast(Type)(type);
@@ -55,7 +55,7 @@ Vector!ubyte Heartbeat_Support_Indicator::serialize() const
 	return heartbeat;
 }
 
-Heartbeat_Support_Indicator::Heartbeat_Support_Indicator(TLS_Data_Reader& reader,
+Heartbeat_Support_Indicator::Heartbeat_Support_Indicator(ref TLS_Data_Reader reader,
 																			ushort extension_size)
 {
 	if (extension_size != 1)
@@ -64,7 +64,7 @@ Heartbeat_Support_Indicator::Heartbeat_Support_Indicator(TLS_Data_Reader& reader
 	const ubyte code = reader.get_byte();
 
 	if (code != 1 && code != 2)
-		throw new TLS_Exception(Alert::ILLEGAL_PARAMETER,
+		throw new TLS_Exception(Alert.ILLEGAL_PARAMETER,
 								  "Unknown heartbeat code " ~ std.conv.to!string(code));
 
 	m_peer_allowed_to_send = (code == 1);

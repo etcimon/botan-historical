@@ -6,7 +6,7 @@
 * Distributed under the terms of the botan license.
 */
 module botan.math.bigint.bigint;
-import botan.rng;
+import botan.rng.rng;
 import botan.alloc.secmem;
 public import botan.botan.math.mp.mp_types;
 import iosfwd;

@@ -6,7 +6,7 @@
 */
 
 import botan.tls_magic;
-import botan.tls_version;
+import botan.tls.tls_version;
 import botan.utils.loadstor;
 import functional;
 import vector;
@@ -15,7 +15,7 @@ import map;
 import set;
 import utility;
 import tuple;
-namespace TLS {
+
 
 class Handshake_Message;
 

@@ -13,8 +13,8 @@ import botan.utils.loadstor;
 import botan.internal.tls_seq_numbers;
 import botan.internal.tls_session_key;
 import botan.utils.rounding;
-import botan.internal.xor_buf;
-namespace TLS {
+import botan.utils.xor_buf;
+
 
 Connection_Cipher_State::Connection_Cipher_State(Protocol_Version _version,
 																 Connection_Side side,
@@ -22,7 +22,7 @@ Connection_Cipher_State::Connection_Cipher_State(Protocol_Version _version,
 																 const Ciphersuite& suite,
 																 const Session_Keys& keys) :
 	m_start_time(Clock.currTime()),
-	m_is_ssl3(_version == Protocol_Version::SSL_V3)
+	m_is_ssl3(_version == Protocol_Version.SSL_V3)
 {
 	SymmetricKey mac_key, cipher_key;
 	InitializationVector iv;
@@ -54,7 +54,7 @@ Connection_Cipher_State::Connection_Cipher_State(Protocol_Version _version,
 		return;
 	}
 
-	Algorithm_Factory af = global_state().algorithm_factory();
+	AlgorithmFactory af = global_state().algorithm_factory();
 
 	if (const BlockCipher bc = af.prototype_block_cipher(cipher_algo))
 	{
@@ -74,7 +74,7 @@ Connection_Cipher_State::Connection_Cipher_State(Protocol_Version _version,
 	else
 		throw new Invalid_Argument("Unknown TLS cipher " ~ cipher_algo);
 
-	if (_version == Protocol_Version::SSL_V3)
+	if (_version == Protocol_Version.SSL_V3)
 		m_mac.reset(af.make_mac("SSL3-MAC(" ~ mac_algo ~ ")"));
 	else
 		m_mac.reset(af.make_mac("HMAC(" ~ mac_algo ~ ")"));
@@ -112,7 +112,7 @@ Connection_Cipher_State::format_ad(ulong msg_sequence,
 		m_ad.push_back(get_byte(i, msg_sequence));
 	m_ad.push_back(msg_type);
 
-	if (_version != Protocol_Version::SSL_V3)
+	if (_version != Protocol_Version.SSL_V3)
 	{
 		m_ad.push_back(_version.major_version());
 		m_ad.push_back(_version.minor_version());
@@ -460,7 +460,7 @@ void decrypt_record(SafeVector!ubyte output,
 		const bool mac_bad = !same_mem(&record_contents[mac_offset], &mac_buf[0], mac_size);
 
 		if (mac_bad || padding_bad)
-			throw new TLS_Exception(Alert::BAD_RECORD_MAC, "Message authentication failure");
+			throw new TLS_Exception(Alert.BAD_RECORD_MAC, "Message authentication failure");
 
 		output.assign(plaintext_block, plaintext_block + plaintext_length);
 	}
@@ -495,7 +495,7 @@ size_t read_record(SafeVector!ubyte readbuf,
 	if (!sequence_numbers && (readbuf[0] & 0x80) && (readbuf[2] == 1))
 	{
 		if (readbuf[3] == 0 && readbuf[4] == 2)
-			throw new TLS_Exception(Alert::PROTOCOL_VERSION,
+			throw new TLS_Exception(Alert.PROTOCOL_VERSION,
 									  "Client claims to only support SSLv2, rejecting");
 
 		if (readbuf[3] >= 3) // SSLv2 mapped TLS hello, then?
@@ -511,7 +511,7 @@ size_t read_record(SafeVector!ubyte readbuf,
 									 "Have the entire SSLv2 hello");
 
 			// Fake v3-style handshake message wrapper
-			*record_version = Protocol_Version::TLS_V10;
+			*record_version = Protocol_Version.TLS_V10;
 			*record_sequence = 0;
 			*record_type = HANDSHAKE;
 
@@ -549,7 +549,7 @@ size_t read_record(SafeVector!ubyte readbuf,
 											readbuf[header_size-1]);
 
 	if (record_len > MAX_CIPHERTEXT_SIZE)
-		throw new TLS_Exception(Alert::RECORD_OVERFLOW,
+		throw new TLS_Exception(Alert.RECORD_OVERFLOW,
 								  "Got message that exceeds maximum size");
 
 	if (size_t needed = fill_buffer_to(readbuf,

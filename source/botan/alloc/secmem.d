@@ -10,8 +10,9 @@ import botan.utils.mem_ops;
 import std.algorithm;
 import vector;
 
-version (BOTAN_HAS_LOCKING_ALLOCATOR)
-  import botan.locking_allocator;
+static if (BOTAN_HAS_LOCKING_ALLOCATOR)
+  import botan.alloc.locking_allocator;
+
 // todo: Manual Memory Management, freelist backend
 struct secure_allocator(T)
 {

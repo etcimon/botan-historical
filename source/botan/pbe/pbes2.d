@@ -12,7 +12,7 @@ import botan.mac.mac;
 import botan.filters.pipe;
 import std.datetime;
 import botan.pbkdf.pbkdf2;
-import botan.algo_factory;
+import botan.algo_factory.algo_factory;
 import botan.libstate.libstate;
 import botan.asn1.der_enc;
 import botan.asn1.ber_dec;
@@ -142,7 +142,7 @@ public:
 				.verify_end()
 				.end_cons();
 		
-		Algorithm_Factory af = global_state().algorithm_factory();
+		AlgorithmFactory af = global_state().algorithm_factory();
 		
 		string cipher = oids.lookup(enc_algo.oid);
 		Vector!string cipher_spec = splitter(cipher, '/');

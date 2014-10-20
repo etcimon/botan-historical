@@ -9,7 +9,7 @@ import botan.hash.hash;
 import botan.block.gost_28147;
 import botan.utils.loadstor;
 import botan.utils.rotate;
-import botan.internal.xor_buf;
+import botan.utils.xor_buf;
 /**
 * GOST 34.11
 */

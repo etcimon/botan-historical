@@ -44,8 +44,8 @@ public:
 	* Construct a chain of up to four filters. The filters are set
 	* up in the same order as the arguments.
 	*/
-	this(Filter* f1 = null, Filter* f2 = null,
-			Filter* f3 = null, Filter* f4 = null)
+	this(Filter f1 = null, Filter f2 = null,
+			Filter f3 = null, Filter f4 = null)
 	{
 		if (f1) { attach(f1); incr_owns(); }
 		if (f2) { attach(f2); incr_owns(); }
@@ -58,7 +58,7 @@ public:
 	* @param filter_arr the list of filters
 	* @param length how many filters
 	*/
-	this(Filter** filter_arr, size_t length) {
+	this(Filter* filter_arr, size_t length) {
 		for (size_t j = 0; j != length; ++j) {
 			if (filter_arr[j])
 			{
@@ -90,9 +90,9 @@ public:
 	/**
 	* Construct a Fork filter with up to four forks.
 	*/
-	this(Filter* f1, Filter* f2, Filter* f3 = null, Filter* f4 = null)
+	this(Filter f1, Filter f2, Filter f3 = null, Filter f4 = null)
 	{
-		Filter*[4] filters = [ f1, f2, f3, f4 ];
+		Filter[4] filters = [ f1, f2, f3, f4 ];
 		set_next(filters, 4);
 	}
 
@@ -101,7 +101,7 @@ public:
 	* @param filter_arr the list of filters
 	* @param length how many filters
 	*/	
-	this(Filter** filter_arr, size_t length)
+	this(Filter* filter_arr, size_t length)
 	{
 		set_next(filter_arr, length);
 	}
@@ -123,11 +123,11 @@ public:
 	/**
 	* Construct a Threaded_Fork filter with up to four forks.
 	*/
-	this(Filter* f1, Filter* f2, Filter* f3 = null, Filter* f4 = null)
+	this(Filter f1, Filter f2, Filter f3 = null, Filter f4 = null)
 	{ 
 		super(null, cast(size_t)(0));
 		m_thread_data = new Threaded_Fork_Data;
-		Filter*[4] filters = [ f1, f2, f3, f4 ];
+		Filter[4] filters = [ f1, f2, f3, f4 ];
 		set_next(filters, 4);
 	}
 
@@ -136,7 +136,7 @@ public:
 	* @param filter_arr the list of filters
 	* @param length how many filters
 	*/
-	this(Filter** filter_arr, size_t length)
+	this(Filter* filter_arr, size_t length)
 	{
 		
 		super(null, cast(size_t)(0));
@@ -156,7 +156,7 @@ public:
 	}
 
 package:
-	void set_next(Filter** f, size_t n)
+	void set_next(Filter* f, size_t n)
 	{
 		super.set_next(f, n);
 		n = next.length;
@@ -211,7 +211,7 @@ private:
 		m_thread_data.m_input_length = 0;
 	}
 
-	static void thread_entry(Threaded_Fork This, Filter* filter)
+	static void thread_entry(Threaded_Fork This, Filter filter)
 	{
 		while(true)
 		{

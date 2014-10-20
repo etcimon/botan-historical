@@ -7,12 +7,12 @@
 module botan.constructs.aont_package;
 
 import botan.block.block_cipher;
-import botan.rng;
+import botan.rng.rng;
 import botan.pkg;
 import botan.filters.filters;
-import botan.ctr;
+import botan.stream.ctr;
 import botan.utils.get_byte;
-import botan.internal.xor_buf;
+import botan.utils.xor_buf;
 
 
 /**
@@ -37,7 +37,7 @@ void aont_package(RandomNumberGenerator rng,
 	// The all-zero string which is used both as the CTR IV and as K0
 	const string all_zeros(BLOCK_SIZE*2, '0');
 	
-	SymmetricKey package_key(rng, BLOCK_SIZE);
+	SymmetricKey package_key = SymmetricKey(rng, BLOCK_SIZE);
 	
 	Pipe pipe = Pipe(new StreamCipher_Filter(new CTR_BE(cipher), package_key));
 	

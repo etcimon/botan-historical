@@ -6,9 +6,9 @@
 */
 
 import botan.alloc.secmem;
-import botan.tls_version;
+import botan.tls.tls_version;
 import botan.tls_magic;
-namespace TLS {
+
 
 using namespace Botan;
 

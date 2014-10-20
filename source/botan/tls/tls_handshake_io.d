@@ -10,7 +10,7 @@ import botan.internal.tls_messages;
 import botan.internal.tls_record;
 import botan.internal.tls_seq_numbers;
 import botan.utils.exceptn;
-namespace TLS {
+
 
 namespace {
 
@@ -33,7 +33,7 @@ void store_be24(ubyte[3] output, size_t val)
 
 Protocol_Version Stream_Handshake_IO::initial_record_version() const
 {
-	return Protocol_Version::TLS_V10;
+	return Protocol_Version.TLS_V10;
 }
 
 void Stream_Handshake_IO::add_record(in Vector!ubyte record,
@@ -113,7 +113,7 @@ Vector!ubyte Stream_Handshake_IO::send(in Handshake_Message msg)
 
 Protocol_Version Datagram_Handshake_IO::initial_record_version() const
 {
-	return Protocol_Version::DTLS_V10;
+	return Protocol_Version.DTLS_V10;
 }
 
 void Datagram_Handshake_IO::add_record(in Vector!ubyte record,

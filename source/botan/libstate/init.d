@@ -29,12 +29,12 @@ public:
 		try
 		{
 			/*
-			This two stage initialization process is because Library_State's
+			This two stage initialization process is because LibraryState's
 			constructor will implicitly refer to global state through the
 			allocators and so forth, so global_state() has to be a valid
 			reference before initialize() can be called. Yeah, gross.
 			*/
-			Global_State_Management.set_global_state(new Library_State);
+			Global_State_Management.set_global_state(new LibraryState);
 			
 			global_state().initialize();
 		}

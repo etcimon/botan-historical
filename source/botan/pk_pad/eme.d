@@ -7,7 +7,7 @@
 module botan.pk_pad.eme;
 
 import botan.alloc.secmem;
-import botan.rng;
+import botan.rng.rng;
 /**
 * Encoding Method for Encryption
 */

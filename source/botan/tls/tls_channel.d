@@ -14,7 +14,7 @@ import botan.internal.tls_seq_numbers;
 import botan.utils.rounding;
 import botan.internal.stl_util;
 import botan.utils.loadstor;
-namespace TLS {
+
 
 Channel::Channel(void delegate(in ubyte[]) output_fn,
 					  void delegate(in ubyte[]) data_cb,
@@ -318,7 +318,7 @@ size_t Channel::received_data(in ubyte* input, size_t input_size)
 				return needed; // need more data to complete record
 
 			if (record.length > max_fragment_size)
-				throw new TLS_Exception(Alert::RECORD_OVERFLOW,
+				throw new TLS_Exception(Alert.RECORD_OVERFLOW,
 										  "Plaintext record is too large");
 
 			if (record_type == HANDSHAKE || record_type == CHANGE_CIPHER_SPEC)
@@ -366,7 +366,7 @@ size_t Channel::received_data(in ubyte* input, size_t input_size)
 				}
 				else
 				{
-					m_alert_cb(Alert(Alert::HEARTBEAT_PAYLOAD), &payload[0], payload.length);
+					m_alert_cb(Alert(Alert.HEARTBEAT_PAYLOAD), &payload[0], payload.length);
 				}
 			}
 			else if (record_type == APPLICATION_DATA)
@@ -386,7 +386,7 @@ size_t Channel::received_data(in ubyte* input, size_t input_size)
 			{
 				Alert alert_msg(record);
 
-				if (alert_msg.type() == Alert::NO_RENEGOTIATION)
+				if (alert_msg.type() == Alert.NO_RENEGOTIATION)
 					m_pending_state.reset();
 
 				m_alert_cb(alert_msg, null, 0);
@@ -397,10 +397,10 @@ size_t Channel::received_data(in ubyte* input, size_t input_size)
 						m_session_manager.remove_entry(active.server_hello().session_id());
 				}
 
-				if (alert_msg.type() == Alert::CLOSE_NOTIFY)
-					send_warning_alert(Alert::CLOSE_NOTIFY); // reply in kind
+				if (alert_msg.type() == Alert.CLOSE_NOTIFY)
+					send_warning_alert(Alert.CLOSE_NOTIFY); // reply in kind
 
-				if (alert_msg.type() == Alert::CLOSE_NOTIFY || alert_msg.is_fatal())
+				if (alert_msg.type() == Alert.CLOSE_NOTIFY || alert_msg.is_fatal())
 				{
 					reset_state();
 					return 0;
@@ -421,17 +421,17 @@ size_t Channel::received_data(in ubyte* input, size_t input_size)
 	}
 	catch(Integrity_Failure& e)
 	{
-		send_fatal_alert(Alert::BAD_RECORD_MAC);
+		send_fatal_alert(Alert.BAD_RECORD_MAC);
 		throw;
 	}
 	catch(Decoding_Error e)
 	{
-		send_fatal_alert(Alert::DECODE_ERROR);
+		send_fatal_alert(Alert.DECODE_ERROR);
 		throw;
 	}
 	catch
 	{
-		send_fatal_alert(Alert::INTERNAL_ERROR);
+		send_fatal_alert(Alert.INTERNAL_ERROR);
 		throw;
 	}
 }
@@ -543,14 +543,14 @@ void Channel::send_alert(in Alert alert)
 		catch { /* swallow it */ }
 	}
 
-	if (alert.type() == Alert::NO_RENEGOTIATION)
+	if (alert.type() == Alert.NO_RENEGOTIATION)
 		m_pending_state.reset();
 
 	if (alert.is_fatal())
 		if (auto active = active_state())
 			m_session_manager.remove_entry(active.server_hello().session_id());
 
-	if (alert.type() == Alert::CLOSE_NOTIFY || alert.is_fatal())
+	if (alert.type() == Alert.CLOSE_NOTIFY || alert.is_fatal())
 		reset_state();
 }
 
@@ -563,7 +563,7 @@ void Channel::secure_renegotiation_check(const Client_Hello* client_hello)
 		const bool active_sr = active.client_hello().secure_renegotiation();
 
 		if (active_sr != secure_renegotiation)
-			throw new TLS_Exception(Alert::HANDSHAKE_FAILURE,
+			throw new TLS_Exception(Alert.HANDSHAKE_FAILURE,
 									  "Client changed its mind about secure renegotiation");
 	}
 
@@ -572,7 +572,7 @@ void Channel::secure_renegotiation_check(const Client_Hello* client_hello)
 		in Vector!ubyte data = client_hello.renegotiation_info();
 
 		if (data != secure_renegotiation_data_for_client_hello())
-			throw new TLS_Exception(Alert::HANDSHAKE_FAILURE,
+			throw new TLS_Exception(Alert.HANDSHAKE_FAILURE,
 									  "Client sent bad values for secure renegotiation");
 	}
 }
@@ -586,7 +586,7 @@ void Channel::secure_renegotiation_check(const Server_Hello* server_hello)
 		const bool active_sr = active.client_hello().secure_renegotiation();
 
 		if (active_sr != secure_renegotiation)
-			throw new TLS_Exception(Alert::HANDSHAKE_FAILURE,
+			throw new TLS_Exception(Alert.HANDSHAKE_FAILURE,
 									  "Server changed its mind about secure renegotiation");
 	}
 
@@ -595,7 +595,7 @@ void Channel::secure_renegotiation_check(const Server_Hello* server_hello)
 		in Vector!ubyte data = server_hello.renegotiation_info();
 
 		if (data != secure_renegotiation_data_for_server_hello())
-			throw new TLS_Exception(Alert::HANDSHAKE_FAILURE,
+			throw new TLS_Exception(Alert.HANDSHAKE_FAILURE,
 									  "Server sent bad values for secure renegotiation");
 	}
 }

@@ -8,7 +8,7 @@ module botan.mac.x919_mac;
 
 import botan.mac.mac;
 import botan.block.block_cipher;
-import botan.internal.xor_buf;
+import botan.utils.xor_buf;
 import std.algorithm;
 
 /**

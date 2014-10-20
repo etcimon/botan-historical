@@ -11,12 +11,11 @@ import botan.internal.tls_session_key;
 import botan.tls_ciphersuite;
 import botan.tls_exceptn;
 import botan.tls_handshake_msg;
-import botan.pk_keys;
+import botan.pubkey.pk_keys;
 import botan.pubkey.pubkey;
 import functional;
-class KDF;
 
-namespace TLS {
+class KDF;
 
 class Policy;
 

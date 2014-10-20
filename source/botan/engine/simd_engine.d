@@ -26,7 +26,7 @@ public:
 	string provider_name() const { return "simd"; }
 
 	BlockCipher find_block_cipher(in SCAN_Name request,
-	                              Algorithm_Factory) const
+	                              AlgorithmFactory) const
 	{
 		static if (BOTAN_HAS_AES_SSSE3) {
 			if (request.algo_name() == "AES-128" && CPUID.has_ssse3())
@@ -66,7 +66,7 @@ public:
 	}
 
 	HashFunction find_hash(in SCAN_Name request,
-	                       Algorithm_Factory) const
+	                       AlgorithmFactory) const
 	{
 		static if (BOTAN_HAS_SHA1_SSE2) {
 			if (request.algo_name() == "SHA-160" && CPUID.has_sse2())

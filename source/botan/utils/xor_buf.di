@@ -4,6 +4,7 @@
 *
 * Distributed under the terms of the botan license.
 */
+module botan.utils.xor_buf;
 
 import botan.utils.types;
 import vector;

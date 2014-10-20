@@ -7,8 +7,8 @@
 module botan.libstate.libstate;
 
 import botan.libstate.global_state;
-import botan.algo_factory;
-import botan.rng;
+import botan.algo_factory.algo_factory;
+import botan.rng.rng;
 import botan.utils.charset;
 import botan.engine.engine;
 import botan.utils.cpuid;
@@ -23,7 +23,7 @@ import vector;
 import map;
 
 static if (BOTAN_HAS_SELFTESTS)
-	import botan.selftest;
+	import botan.selftest.selftest;
 
 // Engines
 static if (BOTAN_HAS_ENGINE_ASSEMBLER)
@@ -56,24 +56,29 @@ static if (BOTAN_HAS_ENTROPY_SRC_WIN32)
 static if (BOTAN_HAS_ENTROPY_SRC_PROC_WALKER)
 	import botan.entropy.proc_walk;
 
+alias LibraryState = RefCounted!LibraryStateImpl;
+
 /**
 * Global Library State
 */
-class Library_State
+class LibraryStateImpl
 {
 public:
-	this() {}
+	shared this()
+	{
+		m_entropy_src_mutex = new Mutex;
+		m_global_prng = new shared Serialized_RNG();
+	}
 
 	void initialize()
 	{
-		if (m_algorithm_factory.release())
-			throw new Invalid_State("Library_State has already been initialized");
-		
+		if (initialized)
+			return false;
+
 		SCAN_Name.set_default_aliases();
 		oids.set_defaults();
 
-		if (m_algorithm_factory) delete m_algorithm_factory;
-		m_algorithm_factory = new Algorithm_Factory();
+		m_algorithm_factory = AlgorithmFactory.init;
 		
 		static if (BOTAN_HAS_ENGINE_GNU_MP)
 			algorithm_factory().add_engine(new GMP_Engine);
@@ -96,21 +101,23 @@ public:
 		
 		
 		algorithm_factory().add_engine(new Core_Engine);
-		
-		m_sources = entropy_sources();
-		
-		m_global_prng.reset(new Serialized_RNG());
-		
+
+		synchronized(m_entropy_src_mutex)
+			if (!m_sources)
+				m_sources = entropy_sources();
+
 		static if (BOTAN_HAS_SELFTESTS)
 			confirm_startup_self_tests(algorithm_factory());
+
+		initialized = true;
 
 	}
 
 	/**
-	* Return a reference to the Algorithm_Factory
-	* @return global Algorithm_Factory
+	* Return a reference to the AlgorithmFactory
+	* @return global AlgorithmFactory
 	*/
-	Algorithm_Factory algorithm_factory() const
+	AlgorithmFactory algorithm_factory() const
 	{
 		if (!m_algorithm_factory)
 			throw new Invalid_State("Uninitialized in algorithm_factory");
@@ -123,28 +130,27 @@ public:
 	*/
 	RandomNumberGenerator global_rng()
 	{
-		return *m_global_prng;
+		return m_global_prng;
 	}
 
 	void poll_available_sources(ref Entropy_Accumulator accum)
 	{
-		m_entropy_src_mutex.lock(); scope(exit) m_entropy_src_mutex.unlock();
-		
-		if (m_sources.empty())
-			throw new Exception("No entropy sources enabled at build time, poll failed");
-		
-		size_t poll_attempt = 0;
-		
-		while(!accum.polling_goal_achieved() && poll_attempt < 16)
-		{
-			const size_t src_idx = poll_attempt % m_sources.length;
-			m_sources[src_idx].poll(accum);
-			++poll_attempt;
+		synchronized(m_entropy_src_mutex){
+			if (m_sources.empty())
+				throw new Exception("No entropy sources enabled at build time, poll failed");
+			
+			size_t poll_attempt = 0;
+			
+			while(!accum.polling_goal_achieved() && poll_attempt < 16)
+			{
+				const size_t src_idx = poll_attempt % m_sources.length;
+				m_sources[src_idx].poll(accum);
+				++poll_attempt;
+			}
 		}
 	}
-	
 
-
+	~this() { }
 private:
 	static Vector!( Unique!EntropySource ) entropy_sources()
 	{
@@ -189,10 +195,10 @@ private:
 		return sources;
 	}
 
-	Unique!Serialized_RNG m_global_prng;
+	shared Serialized_RNG m_global_prng;
+	__gshared Mutex m_entropy_src_mutex;
+	__gshared Vector!( Unique!EntropySource ) m_sources;
 
-	Mutex m_entropy_src_mutex;
-	Vector!( Unique!EntropySource ) m_sources;
-
-	Algorithm_Factory m_algorithm_factory;
+	AlgorithmFactory m_algorithm_factory;
+	bool initialized;
 };

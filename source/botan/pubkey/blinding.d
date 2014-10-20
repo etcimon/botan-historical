@@ -13,7 +13,7 @@ import botan.math.numbertheory.numthry;
 /**
 * Blinding Function Object
 */
-class Blinder
+struct Blinder
 {
 public:
 	/*

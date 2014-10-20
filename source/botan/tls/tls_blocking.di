@@ -10,7 +10,7 @@ import botan.tls_server;
 import deque;
 alias secure_deque(T) = Vector!( T, secure_allocator<T>);
 
-namespace TLS {
+
 
 /**
 * Blocking TLS Client
@@ -26,7 +26,7 @@ class Blocking_Client
 							 in Policy policy,
 							 RandomNumberGenerator rng,
 							 in Server_Information server_info = Server_Information(),
-							 in Protocol_Version offer_version = Protocol_Version::latest_tls_version(),
+							 in Protocol_Version offer_version = Protocol_Version.latest_tls_version(),
 							 string delegate(string[]) next_protocol = string.init);
 
 		/**

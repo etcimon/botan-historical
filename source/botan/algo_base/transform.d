@@ -7,7 +7,7 @@
 module botan.algo_base.transform;
 
 import botan.alloc.secmem;
-import botan.key_spec;
+import botan.algo_base.key_spec;
 import botan.utils.exceptn;
 import botan.algo_base.symkey;
 import string;

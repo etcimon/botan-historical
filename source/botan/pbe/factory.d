@@ -49,7 +49,7 @@ PBE get_pbe(in string algo_spec,
 	if (cipher_mode != "CBC")
 		throw new Invalid_Argument("PBE: Invalid cipher mode " ~ cipher);
 	
-	Algorithm_Factory af = global_state().algorithm_factory();
+	AlgorithmFactory af = global_state().algorithm_factory();
 	
 	const BlockCipher block_cipher = af.prototype_block_cipher(cipher_algo);
 	if (!block_cipher)

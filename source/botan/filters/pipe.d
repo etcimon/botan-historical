@@ -11,6 +11,7 @@ import botan.filters.data_src;
 import botan.filters.filter;
 import botan.utils.exceptn;
 import initializer_list;
+import std.typecons : Unique, Proxy;
 // import iosfwd; // std.stdio?
 static if (BOTAN_HAS_PIPE_UNIXFD_IO && false)
 	import botan.fd_unix;
@@ -19,6 +20,7 @@ import botan.filters.out_buf;
 import botan.filters.secqueue;
 import botan.utils.parsing;
 
+
 /**
 * This class represents pipe objects.
 * A set of filters can be placed into a pipe, and information flows
@@ -26,7 +28,7 @@ import botan.utils.parsing;
 * collected for retrieval.  If you're familiar with the Unix shell
 * environment, this design will sound quite familiar.
 */
-class Pipe : DataSource
+struct Pipe
 {
 public:
 
@@ -70,7 +72,7 @@ public:
 	{
 		if (!inside_msg)
 			throw new Invalid_State("Cannot write to a Pipe while it is not processing");
-		pipe.write(input, length);
+		pipe_to.write(input, length);
 	}
 
 	/**
@@ -103,7 +105,7 @@ public:
 	*/
 	void write(DataSource source)
 	{
-		SafeVector!ubyte buffer(DEFAULT_BUFFERSIZE);
+		SafeVector!ubyte buffer = SafeVector!ubyte(DEFAULT_BUFFERSIZE);
 		while(!source.end_of_data())
 		{
 			size_t got = source.read(&buffer[0], buffer.length);
@@ -253,7 +255,7 @@ public:
 	SafeVector!ubyte read_all(message_id msg = DEFAULT_MESSAGE)
 	{
 		msg = ((msg != DEFAULT_MESSAGE) ? msg : default_msg());
-		SafeVector!ubyte buffer(remaining(msg));
+		SafeVector!ubyte buffer = SafeVector!ubyte(remaining(msg));
 		size_t got = read(&buffer[0], buffer.length, msg);
 		buffer.resize(got);
 		return buffer;
@@ -329,6 +331,44 @@ public:
 	}
 
 	/**
+	* Read one ubyte.
+	* @param output the ubyte to read to
+	* @return length in bytes that was actually read and put
+	* into out
+	*/
+	size_t read_byte(ref ubyte output)
+	{
+		return read(output.ptr[0..1]);
+	}
+	
+	
+	/**
+	* Peek at one ubyte.
+	* @param output an output ubyte
+	* @return length in bytes that was actually read and put
+	* into out
+	*/
+	size_t peek_byte(ref ubyte output) const
+	{
+		return peek(output.ptr[0..1]);
+	}
+	
+	
+	/**
+	* Discard the next N bytes of the data
+	* @param N the number of bytes to discard
+	* @return number of bytes actually discarded
+	*/
+	size_t discard_next(size_t n)
+	{
+		size_t discarded = 0;
+		ubyte dummy;
+		for (size_t j = 0; j != n; ++j)
+			discarded += read_byte(dummy);
+		return discarded;
+	}
+
+	/**
 	* @return the number of bytes read from the default message.
 	*/
 	size_t get_bytes_read() const
@@ -388,10 +428,10 @@ public:
 	{
 		if (inside_msg)
 			throw new Invalid_State("Pipe::start_msg: Message was already started");
-		if (pipe == null)
-			pipe = new Null_Filter;
-		find_endpoints(pipe);
-		pipe.new_msg();
+		if (pipe_to == null)
+			pipe_to = new Null_Filter;
+		find_endpoints(pipe_to);
+		pipe_to.new_msg();
 		inside_msg = true;
 	}
 
@@ -402,12 +442,12 @@ public:
 	{
 		if (!inside_msg)
 			throw new Invalid_State("Pipe::end_msg: Message was already ended");
-		pipe.finish_msg();
-		clear_endpoints(pipe);
-		if (cast(Null_Filter*)(pipe))
+		pipe_to.finish_msg();
+		clear_endpoints(pipe_to);
+		if (cast(Null_Filter)(pipe_to))
 		{
-			delete pipe;
-			pipe = null;
+			delete pipe_to;
+			pipe_to = null;
 		}
 		inside_msg = false;
 		
@@ -418,7 +458,7 @@ public:
 	* Insert a new filter at the front of the pipe
 	* @param filt the new filter to insert
 	*/
-	void prepend(Filter* filter)
+	void prepend(Filter filter)
 	{
 		if (inside_msg)
 			throw new Invalid_State("Cannot prepend to a Pipe while it is processing");
@@ -431,15 +471,15 @@ public:
 		
 		filter.owned = true;
 		
-		if (pipe) filter.attach(pipe);
-		pipe = filter;
+		if (pipe_to) filter.attach(pipe_to);
+		pipe_to = filter;
 	}
 
 	/**
 	* Insert a new filter at the back of the pipe
 	* @param filt the new filter to insert
 	*/
-	void append(Filter* filter)
+	void append(Filter filter)
 	{
 		if (inside_msg)
 			throw new Invalid_State("Cannot append to a Pipe while it is processing");
@@ -452,8 +492,8 @@ public:
 		
 		filter.owned = true;
 		
-		if (!pipe) pipe = filter;
-		else		pipe.attach(filter);
+		if (!pipe_to) pipe_to = filter;
+		else		pipe_to.attach(filter);
 	}
 
 
@@ -465,21 +505,21 @@ public:
 		if (inside_msg)
 			throw new Invalid_State("Cannot pop off a Pipe while it is processing");
 		
-		if (!pipe)
+		if (!pipe_to)
 			return;
 		
-		if (pipe.total_ports() > 1)
+		if (pipe_to.total_ports() > 1)
 			throw new Invalid_State("Cannot pop off a Filter with multiple ports");
 		
-		Filter* f = pipe;
+		Filter f = pipe_to;
 		size_t owns = f.owns();
-		pipe = pipe.next[0];
+		pipe_to = pipe_to.next[0];
 		delete f;
 		
 		while(owns--)
 		{
-			f = pipe;
-			pipe = pipe.next[0];
+			f = pipe_to;
+			pipe_to = pipe_to.next[0];
 			delete f;
 		}
 	}
@@ -490,8 +530,8 @@ public:
 	*/
 	void reset()
 	{
-		destruct(pipe);
-		pipe = null;
+		destruct(pipe_to);
+		pipe_to = null;
 		inside_msg = false;
 	}
 
@@ -500,8 +540,8 @@ public:
 	* Construct a Pipe of up to four filters. The filters are set up
 	* in the same order as the arguments.
 	*/
-	this(Filter* f1 = null, Filter* f2 = null,
-		  Filter* f3 = null, Filter* f4 = null)
+	this(Filter f1 = null, Filter f2 = null,
+		  Filter f3 = null, Filter f4 = null)
 	{
 		init();
 		append(f1);
@@ -514,7 +554,7 @@ public:
 	* Construct a Pipe from a list of filters
 	* @param filters the set of filters to use
 	*/
-	this(Filter*[] filters)
+	this(Filter[] filters)
 	{
 		init();
 		
@@ -524,7 +564,7 @@ public:
 
 	~this()
 	{
-		destruct(pipe);
+		destruct(pipe_to);
 		delete outputs;
 	}
 private:
@@ -533,8 +573,7 @@ private:
 	*/
 	void init()
 	{
-		outputs = new Output_Buffers;
-		pipe = null;
+		pipe_to = null;
 		default_read = 0;
 		inside_msg = false;
 	}
@@ -542,7 +581,7 @@ private:
 	/*
 	* Destroy the Pipe
 	*/
-	void destruct(Filter* to_kill)
+	void destruct(Filter to_kill)
 	{
 		if (!to_kill || cast(SecureQueue*)(to_kill))
 			return;
@@ -554,7 +593,7 @@ private:
 	/*
 	* Find the endpoints of the Pipe
 	*/
-	void find_endpoints(Filter* f)
+	void find_endpoints(Filter f)
 	{
 		for (size_t j = 0; j != f.total_ports(); ++j)
 			if (f.next[j] && !cast(SecureQueue*)(f.next[j]))
@@ -570,7 +609,7 @@ private:
 	/*
 	* Remove the SecureQueues attached to the Filter
 	*/
-	void clear_endpoints(Filter* f)
+	void clear_endpoints(Filter f)
 	{
 		if (!f) return;
 		for (size_t j = 0; j != f.total_ports(); ++j)
@@ -598,9 +637,8 @@ private:
 		return msg;
 	}
 
-
-	Filter* pipe;
-	class Output_Buffers* outputs;
+	Filter pipe_to;
+	Output_Buffers outputs;
 	message_id default_read;
 	bool inside_msg;
 };

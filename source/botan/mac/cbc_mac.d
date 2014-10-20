@@ -7,7 +7,7 @@
 module botan.mac.cbc_mac;
 import botan.mac.mac;
 import botan.block.block_cipher;
-import botan.internal.xor_buf;
+import botan.utils.xor_buf;
 import std.algorithm;
 
 /**

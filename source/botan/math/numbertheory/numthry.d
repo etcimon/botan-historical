@@ -6,10 +6,10 @@
 */
 module botan.math.numbertheory.numthry;
 
-import botan.math.bigint.bigint;
-import botan.math.numbertheory.pow_mod;
-import botan.rng;
-import botan.algo_factory;
+public import botan.math.bigint.bigint;
+public import botan.math.numbertheory.pow_mod;
+import botan.rng.rng;
+import botan.algo_factory.algo_factory;
 import botan.hash.hash;
 import botan.utils.parsing;
 import std.algorithm;
@@ -18,6 +18,7 @@ import botan.utils.bit_ops;
 import botan.math.mp.mp_core;
 import botan.math.numbertheory.primes;
 import std.algorithm;
+import botan.algo_factory.algo_factory : AlgorithmFactory;
 /**
 * Fused multiply-add
 * @param a an integer
@@ -41,7 +42,7 @@ BigInt mul_add(in BigInt a, const ref BigInt b, const ref BigInt c)
 	const size_t b_sw = b.sig_words();
 	const size_t c_sw = c.sig_words();
 	
-	BigInt r(sign, std.algorithm.max(a.length + b.length, c_sw) + 1);
+	BigInt r = BigInt(sign, std.algorithm.max(a.length + b.length, c_sw) + 1);
 	SafeVector!word workspace(r.length);
 	
 	bigint_mul(r.mutable_data(), r.length,
@@ -131,7 +132,7 @@ BigInt square(in BigInt x)
 	const size_t x_sw = x.sig_words();
 	
 	BigInt z = BigInt(BigInt.Positive, round_up!size_t(2*x_sw, 16));
-	SafeVector!word workspace(z.length);
+	SafeVector!word workspace = SafeVector!word(z.length);
 	
 	bigint_sqr(z.mutable_data(), z.length,
 	           &workspace[0],
@@ -251,7 +252,8 @@ int jacobi(in BigInt a, const ref BigInt n)
 */
 BigInt power_mod(in BigInt base, const ref BigInt exp, const ref BigInt mod)
 {
-	Power_Mod pow_mod(mod);
+	Power_Mod pow_mod = new Power_Mod(mod);
+	scope(exit) delete pow_mod;
 	
 	/*
 	* Calling set_base before set_exponent means we end up using a
@@ -569,8 +571,6 @@ BigInt random_safe_prime(RandomNumberGenerator rng, size_t bits)
 	return p;
 }
 
-class Algorithm_Factory;
-
 /**
 * Generate DSA parameters using the FIPS 186 kosherizer
 * @param rng a random number generator
@@ -582,7 +582,7 @@ class Algorithm_Factory;
 * @return random seed used to generate this parameter set
 */
 Vector!ubyte generate_dsa_primes(RandomNumberGenerator rng,
-                                 Algorithm_Factory af,
+                                 AlgorithmFactory af,
                                  ref BigInt p, ref BigInt q,
                                  size_t pbits, size_t qbits)
 {
@@ -610,7 +610,7 @@ Vector!ubyte generate_dsa_primes(RandomNumberGenerator rng,
 			 false. p_out and q_out are only valid if true was returned.
 */
 bool generate_dsa_primes(RandomNumberGenerator rng,
-                         Algorithm_Factory af,
+                         AlgorithmFactory af,
                          ref BigInt p, ref BigInt q,
                          size_t pbits, size_t qbits,
                          in Vector!ubyte seed_c)
@@ -800,7 +800,3 @@ size_t mr_test_iterations(size_t n_bits, size_t prob, bool random)
 	
 	return base;
 }
-
-
-
-

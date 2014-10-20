@@ -29,7 +29,7 @@ class OpenSSL_Engine : Engine
 public:
 	string provider_name() const { return "openssl"; }
 
-	pk_ops.Key_Agreement get_key_agreement_op(in Private_Key key, RandomNumberGenerator) const
+	Key_Agreement get_key_agreement_op(in Private_Key key, RandomNumberGenerator) const
 	{
 		static if (BOTAN_HAS_DIFFIE_HELLMAN) {
 			if (const DH_PrivateKey* dh = cast(const DH_PrivateKey*)(key))
@@ -39,7 +39,7 @@ public:
 		return 0;
 	}
 
-	pk_ops.Signature get_signature_op(in Private_Key key, RandomNumberGenerator) const
+	Signature get_signature_op(in Private_Key key, RandomNumberGenerator) const
 	{
 		static if (BOTAN_HAS_RSA) {
 			if (const RSA_PrivateKey* s = cast(const RSA_PrivateKey*)(key))
@@ -54,7 +54,7 @@ public:
 		return 0;
 	}
 
-	pk_ops.Verification get_verify_op(in Public_Key key, RandomNumberGenerator) const
+	Verification get_verify_op(in Public_Key key, RandomNumberGenerator) const
 	{
 		static if (BOTAN_HAS_RSA) {
 			if (const RSA_PublicKey* s = cast(const RSA_PublicKey*)(key))
@@ -69,7 +69,7 @@ public:
 		return 0;
 	}
 
-	pk_ops.Encryption get_encryption_op(in Public_Key key, RandomNumberGenerator) const
+	Encryption get_encryption_op(in Public_Key key, RandomNumberGenerator) const
 	{
 		static if (BOTAN_HAS_RSA) {
 			if (const RSA_PublicKey* s = cast(const RSA_PublicKey*)(key))
@@ -79,7 +79,7 @@ public:
 		return 0;
 	}
 
-	pk_ops.Decryption get_decryption_op(in Private_Key key, RandomNumberGenerator) const
+	Decryption get_decryption_op(in Private_Key key, RandomNumberGenerator) const
 	{
 		static if (BOTAN_HAS_RSA) {
 			if (const RSA_PrivateKey* s = cast(const RSA_PrivateKey*)(key))
@@ -103,7 +103,7 @@ public:
 	* Look for an algorithm with this name
 	*/
 	BlockCipher find_block_cipher(in SCAN_Name request,
-	                              Algorithm_Factory af) const
+	                              AlgorithmFactory af) const
 	{
 		
 		version(OPENSSL_NO_AES){} else {
@@ -161,7 +161,7 @@ public:
 	* Look for an OpenSSL-supported stream cipher (RC4)
 	*/
 	StreamCipher find_stream_cipher(in SCAN_Name request,
-	                                Algorithm_Factory) const
+	                                AlgorithmFactory) const
 	{
 		if (request.algo_name() == "RC4")
 			return new RC4_OpenSSL(request.arg_as_integer(0, 0));
@@ -176,7 +176,7 @@ public:
 	* Look for an algorithm with this name
 	*/
 	HashFunction find_hash(in SCAN_Name request,
-	                       Algorithm_Factory af) const
+	                       AlgorithmFactory af) const
 	{
 		version(OPENSSL_NO_SHA){} else {
 			if (request.algo_name() == "SHA-160")
@@ -674,7 +674,7 @@ private:
 package:
 
 static if (BOTAN_HAS_DIFFIE_HELLMAN) {
-	class OSSL_DH_KA_Operation : pk_ops.Key_Agreement
+	class OSSL_DH_KA_Operation : Key_Agreement
 	{
 	public:
 		this(in DH_PrivateKey dh) 
@@ -699,7 +699,7 @@ static if (BOTAN_HAS_DIFFIE_HELLMAN) {
 
 static if (BOTAN_HAS_DSA) {
 	
-	class OSSL_DSA_Signature_Operation : pk_ops.Signature
+	class OSSL_DSA_Signature_Operation : Signature
 	{
 	public:
 		this(in DSA_PrivateKey dsa) 
@@ -758,7 +758,7 @@ static if (BOTAN_HAS_DSA) {
 	};
 	
 	
-	class OSSL_DSA_Verification_Operation : pk_ops.Verification
+	class OSSL_DSA_Verification_Operation : Verification
 	{
 	public:
 		this(in DSA_PublicKey dsa)
@@ -821,7 +821,7 @@ static if (BOTAN_HAS_DSA) {
 	
 	static if (BOTAN_HAS_RSA) {
 		
-		class OSSL_RSA_Private_Operation : pk_ops.Signature, pk_ops.Decryption
+		class OSSL_RSA_Private_Operation : Signature, Decryption
 		{
 		public:
 			this(in RSA_PrivateKey rsa)
@@ -871,7 +871,7 @@ static if (BOTAN_HAS_DSA) {
 		};
 		
 		
-		class OSSL_RSA_Public_Operation : pk_ops.Verification, pk_ops.Encryption
+		class OSSL_RSA_Public_Operation : Verification, Encryption
 		{
 		public:
 			this(in RSA_PublicKey rsa) 

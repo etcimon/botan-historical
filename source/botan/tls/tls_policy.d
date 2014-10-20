@@ -10,7 +10,7 @@ import botan.tls_ciphersuite;
 import botan.tls_magic;
 import botan.tls_exceptn;
 import botan.internal.stl_util;
-namespace TLS {
+
 
 Vector!string Policy::allowed_ciphers() const
 {
@@ -142,7 +142,7 @@ bool Policy::acceptable_protocol_version(Protocol_Version _version) const
 	if (_version.is_datagram_protocol())
 		return false;
 
-	return (_version > Protocol_Version::SSL_V3);
+	return (_version > Protocol_Version.SSL_V3);
 }
 
 bool Policy::acceptable_ciphersuite(in Ciphersuite) const

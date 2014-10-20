@@ -9,7 +9,7 @@ import botan.tls_client;
 import botan.internal.tls_handshake_state;
 import botan.internal.tls_messages;
 import botan.internal.stl_util;
-namespace TLS {
+
 
 namespace {
 
@@ -165,7 +165,7 @@ void Client::process_handshake_msg(const Handshake_State* active_state,
 			(!m_policy.allow_insecure_renegotiation() && !secure_renegotiation_supported()))
 		{
 			// RFC 5746 section 4.2
-			send_warning_alert(Alert::NO_RENEGOTIATION);
+			send_warning_alert(Alert.NO_RENEGOTIATION);
 			return;
 		}
 
@@ -194,14 +194,14 @@ void Client::process_handshake_msg(const Handshake_State* active_state,
 
 		if (!state.client_hello().offered_suite(state.server_hello().ciphersuite()))
 		{
-			throw new TLS_Exception(Alert::HANDSHAKE_FAILURE,
+			throw new TLS_Exception(Alert.HANDSHAKE_FAILURE,
 									  "Server replied with ciphersuite we didn't send");
 		}
 
 		if (!value_exists(state.client_hello().compression_methods(),
 							  state.server_hello().compression_method()))
 		{
-			throw new TLS_Exception(Alert::HANDSHAKE_FAILURE,
+			throw new TLS_Exception(Alert.HANDSHAKE_FAILURE,
 									  "Server replied with compression method we didn't send");
 		}
 
@@ -216,7 +216,7 @@ void Client::process_handshake_msg(const Handshake_State* active_state,
 
 		foreach (i; diff)
 		{
-			throw new TLS_Exception(Alert::HANDSHAKE_FAILURE,
+			throw new TLS_Exception(Alert.HANDSHAKE_FAILURE,
 									  "Server sent extension " ~ std.conv.to!string(i) +
 									  " but we did not request it");
 		}
@@ -238,7 +238,7 @@ void Client::process_handshake_msg(const Handshake_State* active_state,
 			* session, and the server must resume with the same version.
 			*/
 			if (state.server_hello()._version() != state.client_hello()._version())
-				throw new TLS_Exception(Alert::HANDSHAKE_FAILURE,
+				throw new TLS_Exception(Alert.HANDSHAKE_FAILURE,
 										  "Server resumed session but with wrong version");
 
 			state.compute_session_keys(state.resume_master_secret);
@@ -255,19 +255,19 @@ void Client::process_handshake_msg(const Handshake_State* active_state,
 			if (state.client_hello()._version().is_datagram_protocol() !=
 				state.server_hello()._version().is_datagram_protocol())
 			{
-				throw new TLS_Exception(Alert::PROTOCOL_VERSION,
+				throw new TLS_Exception(Alert.PROTOCOL_VERSION,
 										  "Server replied with different protocol type than we offered");
 			}
 
 			if (state._version() > state.client_hello()._version())
 			{
-				throw new TLS_Exception(Alert::HANDSHAKE_FAILURE,
+				throw new TLS_Exception(Alert.HANDSHAKE_FAILURE,
 										  "Server replied with later version than in hello");
 			}
 
 			if (!m_policy.acceptable_protocol_version(state._version()))
 			{
-				throw new TLS_Exception(Alert::PROTOCOL_VERSION,
+				throw new TLS_Exception(Alert.PROTOCOL_VERSION,
 										  "Server version is unacceptable by policy");
 			}
 
@@ -317,7 +317,7 @@ void Client::process_handshake_msg(const Handshake_State* active_state,
 			state.server_certs().cert_chain();
 
 		if (server_certs.empty())
-			throw new TLS_Exception(Alert::HANDSHAKE_FAILURE,
+			throw new TLS_Exception(Alert.HANDSHAKE_FAILURE,
 									  "Client: No certificates sent by server");
 
 		try
@@ -326,13 +326,13 @@ void Client::process_handshake_msg(const Handshake_State* active_state,
 		}
 		catch(Exception e)
 		{
-			throw new TLS_Exception(Alert::BAD_CERTIFICATE, e.what());
+			throw new TLS_Exception(Alert.BAD_CERTIFICATE, e.what());
 		}
 
 		Unique!Public_Key peer_key = server_certs[0].subject_public_key();
 
 		if (peer_key.algo_name() != state.ciphersuite().sig_algo())
-			throw new TLS_Exception(Alert::ILLEGAL_PARAMETER,
+			throw new TLS_Exception(Alert.ILLEGAL_PARAMETER,
 									  "Certificate key type did not match ciphersuite");
 
 		state.server_public_key.reset(peer_key.release());
@@ -355,7 +355,7 @@ void Client::process_handshake_msg(const Handshake_State* active_state,
 
 			if (!state.server_kex().verify(server_key, state))
 			{
-				throw new TLS_Exception(Alert::DECRYPT_ERROR,
+				throw new TLS_Exception(Alert.DECRYPT_ERROR,
 										  "Bad signature on server key exchange");
 			}
 		}
@@ -459,7 +459,7 @@ void Client::process_handshake_msg(const Handshake_State* active_state,
 		state.server_finished(new Finished(contents));
 
 		if (!state.server_finished().verify(state, SERVER))
-			throw new TLS_Exception(Alert::DECRYPT_ERROR,
+			throw new TLS_Exception(Alert.DECRYPT_ERROR,
 									  "Finished message didn't verify");
 
 		state.hash().update(state.handshake_io().format(contents, type));

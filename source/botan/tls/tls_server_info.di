@@ -7,7 +7,7 @@
 
 import botan.utils.types;
 import string;
-namespace TLS {
+
 
 /**
 * Represents information known about a TLS server.

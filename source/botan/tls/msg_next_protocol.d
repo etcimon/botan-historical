@@ -6,10 +6,10 @@
 */
 
 import botan.internal.tls_messages;
-import botan.internal.tls_extensions;
-import botan.internal.tls_reader;
+import botan.tls.tls_extensions;
+import botan.tls.tls_reader;
 import botan.internal.tls_handshake_io;
-namespace TLS {
+
 
 Next_Protocol::Next_Protocol(Handshake_IO& io,
 									  Handshake_Hash& hash,

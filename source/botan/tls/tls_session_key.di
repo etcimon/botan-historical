@@ -6,7 +6,7 @@
 */
 
 import botan.algo_base.symkey;
-namespace TLS {
+
 
 /**
 * TLS Session Keys

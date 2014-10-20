@@ -7,7 +7,7 @@
 module botan.pubkey.pk_ops;
 
 import botan.alloc.secmem;
-import botan.rng;
+import botan.rng.rng;
 
 /**
 * Public key encryption interface

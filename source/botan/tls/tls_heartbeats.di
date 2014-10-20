@@ -6,7 +6,7 @@
 */
 
 import botan.alloc.secmem;
-namespace TLS {
+
 
 /**
 * TLS Heartbeat message

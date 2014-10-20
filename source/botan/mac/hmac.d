@@ -8,7 +8,7 @@ module botan.mac.hmac;
 import botan.mac.mac;
 import botan.hash.hash;
 import std.algorithm : fill;
-import botan.internal.xor_buf;
+import botan.utils.xor_buf;
 /**
 * HMAC
 */

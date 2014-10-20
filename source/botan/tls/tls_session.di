@@ -6,14 +6,14 @@
 */
 
 import botan.cert.x509.x509cert;
-import botan.tls_version;
+import botan.tls.tls_version;
 import botan.tls_ciphersuite;
 import botan.tls_magic;
 import botan.tls_server_info;
 import botan.alloc.secmem;
 import botan.algo_base.symkey;
 import std.datetime;
-namespace TLS {
+
 
 /**
 * Class representing a TLS session state

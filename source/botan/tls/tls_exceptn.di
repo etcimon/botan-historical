@@ -7,7 +7,7 @@
 
 import botan.utils.exceptn;
 import botan.tls_alert;
-namespace TLS {
+
 
 /**
 * Exception Base Class
@@ -32,7 +32,7 @@ class TLS_Exception : Exception
 struct Unexpected_Message : TLS_Exception
 {
 	Unexpected_Message(in string err) :
-		TLS_Exception(Alert::UNEXPECTED_MESSAGE, err) {}
+		TLS_Exception(Alert.UNEXPECTED_MESSAGE, err) {}
 };
 
 }

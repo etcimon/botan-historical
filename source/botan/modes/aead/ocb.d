@@ -11,7 +11,7 @@ import botan.block.block_cipher;
 import botan.filters.buf_filt;
 
 import botan.cmac.cmac;
-import botan.internal.xor_buf;
+import botan.utils.xor_buf;
 import botan.utils.bit_ops;
 import std.algorithm;
 

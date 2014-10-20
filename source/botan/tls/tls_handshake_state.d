@@ -8,7 +8,7 @@
 import botan.internal.tls_handshake_state;
 import botan.internal.tls_messages;
 import botan.internal.tls_record;
-namespace TLS {
+
 
 namespace {
 
@@ -255,7 +255,7 @@ Vector!ubyte Handshake_State::session_ticket() const
 
 KDF Handshake_State::protocol_specific_prf() const
 {
-	if (_version() == Protocol_Version::SSL_V3)
+	if (_version() == Protocol_Version.SSL_V3)
 	{
 		return get_kdf("SSL3-PRF");
 	}
@@ -288,7 +288,7 @@ string choose_hash(in string sig_algo,
 {
 	if (!negotiated_version.supports_negotiable_signature_algorithms())
 	{
-		if (for_client_auth && negotiated_version == Protocol_Version::SSL_V3)
+		if (for_client_auth && negotiated_version == Protocol_Version.SSL_V3)
 			return "Raw";
 
 		if (sig_algo == "RSA")
@@ -402,7 +402,7 @@ Handshake_State::understand_sig_format(const Public_Key key,
 
 	if (algo_name == "RSA")
 	{
-		if (for_client_auth && this._version() == Protocol_Version::SSL_V3)
+		if (for_client_auth && this._version() == Protocol_Version.SSL_V3)
 		{
 			hash_algo = "Raw";
 		}
@@ -416,7 +416,7 @@ Handshake_State::understand_sig_format(const Public_Key key,
 	}
 	else if (algo_name == "DSA" || algo_name == "ECDSA")
 	{
-		if (algo_name == "DSA" && for_client_auth && this._version() == Protocol_Version::SSL_V3)
+		if (algo_name == "DSA" && for_client_auth && this._version() == Protocol_Version.SSL_V3)
 		{
 			hash_algo = "Raw";
 		}

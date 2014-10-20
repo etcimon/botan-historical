@@ -6,7 +6,7 @@
 */
 module botan.pubkey.algo.keypair;
 
-import botan.pk_keys;
+import botan.pubkey.pk_keys;
 import botan.pubkey.pubkey;
 
 /**

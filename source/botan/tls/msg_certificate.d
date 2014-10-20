@@ -6,13 +6,13 @@
 */
 
 import botan.internal.tls_messages;
-import botan.internal.tls_reader;
-import botan.internal.tls_extensions;
+import botan.tls.tls_reader;
+import botan.tls.tls_extensions;
 import botan.internal.tls_handshake_io;
 import botan.asn1.der_enc;
 import botan.asn1.ber_dec;
 import botan.utils.loadstor;
-namespace TLS {
+
 
 /**
 * Create a new Certificate message

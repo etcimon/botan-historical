@@ -157,7 +157,7 @@ public:
 /**
 * GOST-34.10 signature operation
 */
-class GOST_3410_Signature_Operation : pk_ops.Signature
+class GOST_3410_Signature_Operation : Signature
 {
 public:	
 	this(const GOST_3410_PrivateKey gost_3410)
@@ -213,7 +213,7 @@ private:
 /**
 * GOST-34.10 verification operation
 */
-class GOST_3410_Verification_Operation : pk_ops.Verification
+class GOST_3410_Verification_Operation : Verification
 {
 public:
 	this(in GOST_3410_PublicKey gost) 

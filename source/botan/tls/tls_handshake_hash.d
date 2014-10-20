@@ -9,7 +9,7 @@ import botan.internal.tls_handshake_hash;
 import botan.tls_exceptn;
 import botan.libstate.libstate;
 import botan.hash.hash;
-namespace TLS {
+
 
 /**
 * Return a TLS Handshake Hash
@@ -17,7 +17,7 @@ namespace TLS {
 SafeVector!ubyte Handshake_Hash::flushInto(Protocol_Version _version,
 														in string mac_algo) const
 {
-	Algorithm_Factory af = global_state().algorithm_factory();
+	AlgorithmFactory af = global_state().algorithm_factory();
 
 	Unique!HashFunction hash;
 
@@ -42,7 +42,7 @@ SafeVector!ubyte Handshake_Hash::final_ssl3(in SafeVector!ubyte secret) const
 {
 	const ubyte PAD_INNER = 0x36, PAD_OUTER = 0x5C;
 
-	Algorithm_Factory af = global_state().algorithm_factory();
+	AlgorithmFactory af = global_state().algorithm_factory();
 
 	Unique!HashFunction md5 = af.make_hash_function("MD5");
 	Unique!HashFunction sha1 = af.make_hash_function("SHA-1");

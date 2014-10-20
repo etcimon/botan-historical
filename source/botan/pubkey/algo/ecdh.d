@@ -95,7 +95,7 @@ public:
 /**
 * ECDH operation
 */
-class ECDH_KA_Operation : pk_ops.Key_Agreement
+class ECDH_KA_Operation : Key_Agreement
 {
 public:
 	this(in ECDH_PrivateKey key) 

@@ -9,7 +9,7 @@ module botan.pbkdf.pbkdf2;
 import botan.pbkdf.pbkdf;
 import botan.mac.mac;
 import botan.utils.get_byte;
-import botan.internal.xor_buf;
+import botan.utils.xor_buf;
 import botan.utils.rounding;
 
 /**

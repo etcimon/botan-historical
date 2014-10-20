@@ -47,7 +47,7 @@ string PGP_encode(
 		new Base64_Encoder(true, PGP_WIDTH),
 		new Chain(new Hash_Filter(new CRC24), new Base64_Encoder)
 		)
-	          );
+	);
 	
 	pipe.process_msg(input, length);
 	

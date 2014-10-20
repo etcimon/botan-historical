@@ -10,7 +10,7 @@ import botan.modes.cipher_mode;
 import botan.block.block_cipher;
 import botan.modes.mode_pad;
 import botan.utils.parsing;
-import botan.internal.xor_buf;
+import botan.utils.xor_buf;
 /**
 * CFB Mode
 */

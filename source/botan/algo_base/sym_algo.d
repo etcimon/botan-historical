@@ -1,9 +1,9 @@
 ﻿module botan.algo_base.sym_algo;
 
-import botan.key_spec;
 import botan.utils.exceptn;
-import botan.algo_base.symkey;
-import botan.utils.types;
+public import botan.algo_base.key_spec;
+public import botan.algo_base.symkey;
+public import botan.utils.types;
 
 /**
 * This class represents a symmetric algorithm object.

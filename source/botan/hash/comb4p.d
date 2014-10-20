@@ -6,7 +6,7 @@
 */
 module botan.hash.comb4p;
 import botan.hash.hash;
-import botan.internal.xor_buf;
+import botan.utils.xor_buf;
 import stdexcept;
 
 /**

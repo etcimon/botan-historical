@@ -7,7 +7,7 @@
 module botan.block.desx;
 
 import botan.block.des;
-import botan.internal.xor_buf;
+import botan.utils.xor_buf;
 
 /**
 * DESX

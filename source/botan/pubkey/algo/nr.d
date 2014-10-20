@@ -106,7 +106,7 @@ public:
 /**
 * Nyberg-Rueppel signature operation
 */
-class NR_Signature_Operation : pk_ops.Signature
+class NR_Signature_Operation : Signature
 {
 public:
 	size_t message_parts() const { return 2; }
@@ -159,7 +159,7 @@ private:
 /**
 * Nyberg-Rueppel verification operation
 */
-class NR_Verification_Operation : pk_ops.Verification
+class NR_Verification_Operation : Verification
 {
 public:
 	this(in NR_PublicKey nr) 

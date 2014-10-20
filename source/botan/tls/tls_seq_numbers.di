@@ -7,7 +7,7 @@
 
 import botan.utils.types;
 import stdexcept;
-namespace TLS {
+
 
 class Connection_Sequence_Numbers
 {

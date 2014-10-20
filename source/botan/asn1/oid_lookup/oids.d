@@ -78,7 +78,7 @@ bool name_of(in OID oid, in string name)
 	return (oid == lookup(name));
 }
 
-class OID_Map
+struct OID_Map
 {
 public:
 	void add_oid(in OID oid, in string str)
@@ -89,7 +89,6 @@ public:
 	
 	void add_str2oid(in OID oid, in string str)
 	{
-		m_mutex.lock(); scope(exit) m_mutex.unlock();
 		auto i = m_str2oid.find(str);
 		if (i == m_str2oid.end())
 			m_str2oid.insert(Pair(str, oid));
@@ -97,7 +96,6 @@ public:
 	
 	void add_oid2str(in OID oid, in string str)
 	{
-		m_mutex.lock(); scope(exit) m_mutex.unlock();
 		auto i = m_oid2str.find(oid);
 		if (i == m_oid2str.end())
 			m_oid2str.insert(Pair(oid, str));
@@ -105,8 +103,6 @@ public:
 	
 	string lookup(in OID oid)
 	{
-		m_mutex.lock(); scope(exit) m_mutex.unlock();
-		
 		auto i = m_oid2str.find(oid);
 		if (i != m_oid2str.end())
 			return i.second;
@@ -116,7 +112,6 @@ public:
 	
 	OID lookup(in string str)
 	{
-		m_mutex.lock(); scope(exit) m_mutex.unlock();
 		
 		auto i = m_str2oid.find(str);
 		if (i != m_str2oid.end())
@@ -134,17 +129,15 @@ public:
 	
 	bool have_oid(in string str)
 	{
-		m_mutex.lock(); scope(exit) m_mutex.unlock();
 		return m_str2oid.find(str) != m_str2oid.end();
 	}
 	
 private:
-	Mutex m_mutex;
 	HashMap!(string, OID) m_str2oid;
 	HashMap!(OID, string) m_oid2str;
 };
 
-ref OID_Map global_oid_map()
+OID_Map global_oid_map()
 {
 	static OID_Map map;
 	return map;

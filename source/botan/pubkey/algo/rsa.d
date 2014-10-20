@@ -130,8 +130,8 @@ public:
 /**
 * RSA private (decrypt/sign) operation
 */
-class RSA_Private_Operation : pk_ops.Signature,
-							  public pk_ops.Decryption
+class RSA_Private_Operation : Signature,
+							  public Decryption
 {
 public:
 	this(in RSA_PrivateKey rsa,
@@ -206,8 +206,8 @@ private:
 /**
 * RSA public (encrypt/verify) operation
 */
-class RSA_Public_Operation : pk_ops.Verification,
-							 pk_ops.Encryption
+class RSA_Public_Operation : Verification,
+							 Encryption
 {
 public:
 	this(in RSA_PublicKey rsa)

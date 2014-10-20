@@ -8,7 +8,7 @@
 import botan.tls_session_manager;
 import botan.codec.hex;
 import std.datetime;
-namespace TLS {
+
 
 Session_Manager_In_Memory::Session_Manager_In_Memory(
 	RandomNumberGenerator rng,

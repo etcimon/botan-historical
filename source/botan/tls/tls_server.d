@@ -9,7 +9,7 @@ import botan.tls_server;
 import botan.internal.tls_handshake_state;
 import botan.internal.tls_messages;
 import botan.internal.stl_util;
-namespace TLS {
+
 
 namespace {
 
@@ -118,7 +118,7 @@ ushort choose_ciphersuite(
 	const Vector!( ushort ) server_suites = policy.ciphersuite_list(_version, have_srp);
 
 	if (server_suites.empty())
-		throw new TLS_Exception(Alert::HANDSHAKE_FAILURE,
+		throw new TLS_Exception(Alert.HANDSHAKE_FAILURE,
 								  "Policy forbids us from negotiating any ciphersuite");
 
 	const bool have_shared_ecc_curve =
@@ -152,13 +152,13 @@ ushort choose_ciphersuite(
 		 - RFC 5054 section 2.5.1.2
 		*/
 		if (suite.kex_algo() == "SRP_SHA" && client_hello.srp_identifier() == "")
-			throw new TLS_Exception(Alert::UNKNOWN_PSK_IDENTITY,
+			throw new TLS_Exception(Alert.UNKNOWN_PSK_IDENTITY,
 									  "Client wanted SRP but did not send username");
 
 		return suite_id;
 	}
 
-	throw new TLS_Exception(Alert::HANDSHAKE_FAILURE,
+	throw new TLS_Exception(Alert.HANDSHAKE_FAILURE,
 							  "Can't agree on a ciphersuite with client");
 }/*
 * Choose which compression algorithm to use
@@ -279,7 +279,7 @@ void Server::process_handshake_msg(const Handshake_State* active_state,
 		if (!m_policy.allow_insecure_renegotiation() &&
 			!(initial_handshake || secure_renegotiation_supported()))
 		{
-			send_warning_alert(Alert::NO_RENEGOTIATION);
+			send_warning_alert(Alert.NO_RENEGOTIATION);
 			return;
 		}
 
@@ -311,7 +311,7 @@ void Server::process_handshake_msg(const Handshake_State* active_state,
 			*/
 			if (active_state._version() > client_version)
 			{
-				throw new TLS_Exception(Alert::PROTOCOL_VERSION,
+				throw new TLS_Exception(Alert.PROTOCOL_VERSION,
 										  "Client negotiated " ~
 										  active_state._version().to_string() +
 										  " then renegotiated with " ~
@@ -331,12 +331,12 @@ void Server::process_handshake_msg(const Handshake_State* active_state,
 
 		if (!m_policy.acceptable_protocol_version(negotiated_version))
 		{
-			throw new TLS_Exception(Alert::PROTOCOL_VERSION,
+			throw new TLS_Exception(Alert.PROTOCOL_VERSION,
 									  "Client version is unacceptable by policy");
 		}
 
 		if (!initial_handshake && state.client_hello().next_protocol_notification())
-			throw new TLS_Exception(Alert::HANDSHAKE_FAILURE,
+			throw new TLS_Exception(Alert.HANDSHAKE_FAILURE,
 									  "Client included NPN extension for renegotiation");
 
 		secure_renegotiation_check(state.client_hello());
@@ -459,7 +459,7 @@ void Server::process_handshake_msg(const Handshake_State* active_state,
 				* anonymous operation.
 				*/
 				if (!cert_chains.empty())
-					send_alert(Alert(Alert::UNRECOGNIZED_NAME));
+					send_alert(Alert(Alert.UNRECOGNIZED_NAME));
 			}
 
 			state.server_hello(
@@ -608,7 +608,7 @@ void Server::process_handshake_msg(const Handshake_State* active_state,
 		* unable to correctly verify a signature, ..."
 		*/
 		if (!sig_valid)
-			throw new TLS_Exception(Alert::DECRYPT_ERROR, "Client cert verify failed");
+			throw new TLS_Exception(Alert.DECRYPT_ERROR, "Client cert verify failed");
 
 		try
 		{
@@ -616,7 +616,7 @@ void Server::process_handshake_msg(const Handshake_State* active_state,
 		}
 		catch(Exception e)
 		{
-			throw new TLS_Exception(Alert::BAD_CERTIFICATE, e.what());
+			throw new TLS_Exception(Alert.BAD_CERTIFICATE, e.what());
 		}
 
 		state.set_expected_next(HANDSHAKE_CCS);
@@ -646,7 +646,7 @@ void Server::process_handshake_msg(const Handshake_State* active_state,
 		state.client_finished(new Finished(contents));
 
 		if (!state.client_finished().verify(state, CLIENT))
-			throw new TLS_Exception(Alert::DECRYPT_ERROR,
+			throw new TLS_Exception(Alert.DECRYPT_ERROR,
 									  "Finished message didn't verify");
 
 		if (!state.server_finished())

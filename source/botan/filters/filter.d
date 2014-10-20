@@ -173,11 +173,11 @@ private:
 	* Attach another filter to this one
 	* @param f filter to attach
 	*/
-	void attach(Filter* new_filter)
+	void attach(Filter new_filter)
 	{
 		if (new_filter)
 		{
-			Filter* last = this;
+			Filter last = this;
 			while(last.get_next())
 				last = last.get_next();
 			last.next[last.current_port()] = new_filter;
@@ -188,7 +188,7 @@ private:
 	* @param filters the filters to set
 	* @param count number of items in filters
 	*/
-	void set_next(Filter** filters, size_t size)
+	void set_next(Filter* filters, size_t size)
 	{
 		next.clear();
 		
@@ -206,7 +206,7 @@ private:
 	/*
 	* Return the next Filter in the logical chain
 	*/
-	Filter* get_next() const
+	Filter get_next() const
 	{
 		if (port_num < next.length)
 			return next[port_num];
@@ -214,7 +214,7 @@ private:
 	}
 
 	SafeVector!ubyte write_queue;
-	Vector!( Filter* ) next;
+	Vector!Filter next;
 	size_t port_num, filter_owns;
 
 	// true if filter belongs to a pipe -. prohibit filter sharing!
@@ -234,9 +234,9 @@ package:
 
 	void set_port(size_t n) { set_port(n); }
 
-	void set_next(Filter** f, size_t n) { set_next(f, n); }
+	void set_next(Filter* f, size_t n) { set_next(f, n); }
 
-	void attach(Filter* f) { attach(f); }
+	void attach(Filter f) { attach(f); }
 
 /*private:
 	using write_queue;

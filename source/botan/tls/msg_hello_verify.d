@@ -7,7 +7,7 @@
 
 import botan.internal.tls_messages;
 import botan.libstate.lookup;
-namespace TLS {
+
 
 Hello_Verify_Request::Hello_Verify_Request(in Vector!ubyte buf)
 {
@@ -16,8 +16,8 @@ Hello_Verify_Request::Hello_Verify_Request(in Vector!ubyte buf)
 
 	Protocol_Version version(buf[0], buf[1]);
 
-	if (version != Protocol_Version::DTLS_V10 &&
-		version != Protocol_Version::DTLS_V12)
+	if (version != Protocol_Version.DTLS_V10 &&
+		version != Protocol_Version.DTLS_V12)
 	{
 		throw new Decoding_Error("Unknown version from server in hello verify request");
 	}
@@ -50,7 +50,7 @@ Vector!ubyte Hello_Verify_Request::serialize() const
 		negotiated (RFC 6347, section 4.2.1)
 	*/
 
-	Protocol_Version format_version(Protocol_Version::DTLS_V10);
+	Protocol_Version format_version(Protocol_Version.DTLS_V10);
 
 	Vector!ubyte bits;
 	bits.push_back(format_version.major_version());

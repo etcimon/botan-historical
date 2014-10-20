@@ -13,7 +13,7 @@ import botan.cert.x509.x509cert;
 import vector;
 import string;
 import map;
-namespace TLS {
+
 
 class Connection_Cipher_State;
 class Connection_Sequence_Numbers;
@@ -77,7 +77,7 @@ class Channel
 		/**
 		* Send a close notification alert
 		*/
-		void close() { send_warning_alert(Alert::CLOSE_NOTIFY); }
+		void close() { send_warning_alert(Alert.CLOSE_NOTIFY); }
 
 		/**
 		* @return true iff the connection is active for sending application data

@@ -103,7 +103,7 @@ public:
 		
 	{
 		buffer = DEFAULT_BUFFERSIZE;
-		Algorithm_Factory af = global_state().algorithm_factory();
+		AlgorithmFactory af = global_state().algorithm_factory();
 		cipher = af.make_stream_cipher(sc_name);
 	}
 
@@ -116,7 +116,7 @@ public:
 	     const ref SymmetricKey key)
 	{
 		buffer = DEFAULT_BUFFERSIZE);
-		Algorithm_Factory af = global_state().algorithm_factory();
+		AlgorithmFactory af = global_state().algorithm_factory();
 		cipher = af.make_stream_cipher(sc_name);
 		cipher.set_key(key);
 	}
@@ -175,7 +175,7 @@ public:
 	     size_t len = 0)
 	{
 		OUTPUT_LENGTH = len;
-		Algorithm_Factory af = global_state().algorithm_factory();
+		AlgorithmFactory af = global_state().algorithm_factory();
 		hash = af.make_hash_function(algo_spec);
 	}
 
@@ -258,7 +258,7 @@ public:
 	this(in string mac_name, size_t len = 0)
 	{
 		OUTPUT_LENGTH = len;
-		Algorithm_Factory af = global_state().algorithm_factory();
+		AlgorithmFactory af = global_state().algorithm_factory();
 		mac = af.make_mac(mac_name);
 	}
 
@@ -275,7 +275,7 @@ public:
 	     size_t len = 0)
 	{
 		OUTPUT_LENGTH = len;
-		Algorithm_Factory af = global_state().algorithm_factory();
+		AlgorithmFactory af = global_state().algorithm_factory();
 		mac = af.make_mac(mac_name);
 		mac.set_key(key);
 	}

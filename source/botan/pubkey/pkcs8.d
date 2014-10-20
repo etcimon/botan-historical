@@ -6,7 +6,7 @@
 */
 module botan.pubkey.pkcs8;
 
-import botan.x509_key;
+import botan.pubkey.x509_key;
 import functional;
 import std.datetime;
 import botan.pbe.factory;

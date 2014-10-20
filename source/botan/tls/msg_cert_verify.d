@@ -5,16 +5,12 @@
 * Released under the terms of the Botan license
 */
 
-import botan.internal.tls_messages;
-import botan.internal.tls_reader;
-import botan.internal.tls_extensions;
-import botan.internal.tls_handshake_io;
-namespace TLS {
+
 
 /*
 * Create a new Certificate Verify message
 */
-Certificate_Verify::Certificate_Verify(Handshake_IO& io,
+this(Handshake_IO io,
 													Handshake_State state,
 													const Policy policy,
 													RandomNumberGenerator rng,
@@ -27,7 +23,7 @@ Certificate_Verify::Certificate_Verify(Handshake_IO& io,
 
 	PK_Signer signer = PK_Signer(*priv_key, format.first, format.second);
 
-	if (state._version() == Protocol_Version::SSL_V3)
+	if (state._version() == Protocol_Version.SSL_V3)
 	{
 		SafeVector!ubyte md5_sha = state.hash().final_ssl3(
 			state.session_keys().master_secret());
@@ -48,15 +44,15 @@ Certificate_Verify::Certificate_Verify(Handshake_IO& io,
 /*
 * Deserialize a Certificate Verify message
 */
-Certificate_Verify::Certificate_Verify(in Vector!ubyte buf,
+this(in Vector!ubyte buf,
 													Protocol_Version _version)
 {
-	TLS_Data_Reader reader("CertificateVerify", buf);
+	TLS_Data_Reader reader = TLS_Data_Reader("CertificateVerify", buf);
 
 	if (_version.supports_negotiable_signature_algorithms())
 	{
-		m_hash_algo = Signature_Algorithms::hash_algo_name(reader.get_byte());
-		m_sig_algo = Signature_Algorithms::sig_algo_name(reader.get_byte());
+		m_hash_algo = Signature_Algorithms.hash_algo_name(reader.get_byte());
+		m_sig_algo = Signature_Algorithms.sig_algo_name(reader.get_byte());
 	}
 
 	m_signature = reader.get_range!ubyte(2, 0, 65535);
@@ -65,14 +61,14 @@ Certificate_Verify::Certificate_Verify(in Vector!ubyte buf,
 /*
 * Serialize a Certificate Verify message
 */
-Vector!ubyte Certificate_Verify::serialize() const
+Vector!ubyte serialize() const
 {
 	Vector!ubyte buf;
 
 	if (m_hash_algo != "" && m_sig_algo != "")
 	{
-		buf.push_back(Signature_Algorithms::hash_algo_code(m_hash_algo));
-		buf.push_back(Signature_Algorithms::sig_algo_code(m_sig_algo));
+		buf.push_back(Signature_Algorithms.hash_algo_code(m_hash_algo));
+		buf.push_back(Signature_Algorithms.sig_algo_code(m_sig_algo));
 	}
 
 	const ushort sig_len = m_signature.length;
@@ -86,7 +82,7 @@ Vector!ubyte Certificate_Verify::serialize() const
 /*
 * Verify a Certificate Verify message
 */
-bool Certificate_Verify::verify(const X509_Certificate cert,
+bool verify(const X509_Certificate cert,
 										  const Handshake_State state) const
 {
 	Unique!Public_Key key = cert.subject_public_key();
@@ -95,7 +91,7 @@ bool Certificate_Verify::verify(const X509_Certificate cert,
 		state.understand_sig_format(*key.get(), m_hash_algo, m_sig_algo, true);
 
 	PK_Verifier verifier = PK_Verifier(*key, format.first, format.second);
-	if (state._version() == Protocol_Version::SSL_V3)
+	if (state._version() == Protocol_Version.SSL_V3)
 	{
 		SafeVector!ubyte md5_sha = state.hash().final_ssl3(
 			state.session_keys().master_secret());
@@ -105,8 +101,4 @@ bool Certificate_Verify::verify(const X509_Certificate cert,
 	}
 
 	return verifier.verify_message(state.hash().get_contents(), m_signature);
-}
-
-}
-
 }

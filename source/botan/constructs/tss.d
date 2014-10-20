@@ -8,7 +8,7 @@ module botan.constructs.tss;
 
 import botan.alloc.secmem;
 import botan.hash.hash;
-import botan.rng;
+import botan.rng.rng;
 import botan.utils.loadstor;
 import botan.filters.pipe;
 import botan.codec.hex;

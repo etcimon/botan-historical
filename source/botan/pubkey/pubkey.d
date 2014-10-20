@@ -5,10 +5,10 @@
 * Distributed under the terms of the botan license.
 */
 module botan.pubkey.pubkey;
-import botan.pk_keys;
+import botan.pubkey.pk_keys;
 import botan.pubkey.pk_ops;
 import botan.algo_base.symkey;
-import botan.rng;
+import botan.rng.rng;
 import botan.pk_pad.eme;
 import botan.emsa;
 import botan.kdf.kdf;
@@ -237,7 +237,7 @@ public:
 	     Signature_Format format = IEEE_1363,
 	     Fault_Protection prot = ENABLE_FAULT_PROTECTION)
 	{
-		Algorithm_Factory.Engine_Iterator i = Algorithm_Factory.Engine_Iterator(global_state().algorithm_factory());
+		AlgorithmFactory.Engine_Iterator i = AlgorithmFactory.Engine_Iterator(global_state().algorithm_factory());
 		RandomNumberGenerator rng = global_state().global_rng();
 		
 		m_op = null;
@@ -294,8 +294,8 @@ private:
 			&sig[0], sig.length);
 	}
 
-	Unique!pk_ops.Signature m_op;
-	Unique!pk_ops.Verification m_verify_op;
+	Unique!Signature m_op;
+	Unique!Verification m_verify_op;
 	Unique!EMSA m_emsa;
 	Signature_Format m_sig_format;
 };
@@ -434,7 +434,7 @@ public:
 	     in string emsa_name,
 	     Signature_Format format = IEEE_1363)
 	{
-		Algorithm_Factory.Engine_Iterator i = Algorithm_Factory.Engine_Iterator(global_state().algorithm_factory());
+		AlgorithmFactory.Engine_Iterator i = AlgorithmFactory.Engine_Iterator(global_state().algorithm_factory());
 		RandomNumberGenerator rng = global_state().global_rng();
 		
 		foreach(const Engine engine; i)
@@ -471,7 +471,7 @@ private:
 		}
 	}
 
-	Unique!pk_ops.Verification m_op;
+	Unique!Verification m_op;
 	Unique!EMSA m_emsa;
 	Signature_Format m_sig_format;
 };
@@ -559,7 +559,7 @@ public:
 	this(in PK_Key_Agreement_Key key,
 	     in string kdf_name)
 	{
-		Algorithm_Factory.Engine_Iterator i = Algorithm_Factory.Engine_Iterator(global_state().algorithm_factory());
+		AlgorithmFactory.Engine_Iterator i = AlgorithmFactory.Engine_Iterator(global_state().algorithm_factory());
 		RandomNumberGenerator rng = global_state().global_rng();
 		
 		foreach(const Engine engine; i)
@@ -575,7 +575,7 @@ public:
 		m_kdf.reset(get_kdf(kdf_name));
 	}
 private:
-	Unique!pk_ops.Key_Agreement m_op;
+	Unique!Key_Agreement m_op;
 	Unique!KDF m_kdf;
 };
 
@@ -604,7 +604,7 @@ public:
 	this(in Public_Key key,
 	     in string eme_name)
 	{
-		Algorithm_Factory.Engine_Iterator iter = Algorithm_Factory.Engine_Iterator(global_state().algorithm_factory());
+		AlgorithmFactory.Engine_Iterator iter = AlgorithmFactory.Engine_Iterator(global_state().algorithm_factory());
 		RandomNumberGenerator rng = global_state().global_rng();
 
 		foreach (const Engine engine; iter)
@@ -645,7 +645,7 @@ private:
 		}
 	}
 
-	Unique!pk_ops.Encryption m_op;
+	Unique!Encryption m_op;
 	Unique!EME m_eme;
 };
 
@@ -663,7 +663,7 @@ public:
 	this(in Private_Key key,
 		     in string eme_name)
 	{
-		Algorithm_Factory.Engine_Iterator i = Algorithm_Factory.Engine_Iterator(global_state().algorithm_factory());
+		AlgorithmFactory.Engine_Iterator i = AlgorithmFactory.Engine_Iterator(global_state().algorithm_factory());
 		RandomNumberGenerator rng = global_state().global_rng();
 		
 		foreach (const Engine engine; i)
@@ -699,6 +699,6 @@ private:
 		}
 	}
 
-	Unique!pk_ops.Decryption m_op;
+	Unique!Decryption m_op;
 	Unique!EME m_eme;
 };

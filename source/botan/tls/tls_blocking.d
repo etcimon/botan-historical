@@ -6,7 +6,7 @@
 */
 
 import botan.tls_blocking;
-namespace TLS {
+
 
 using namespace std::placeholders;
 

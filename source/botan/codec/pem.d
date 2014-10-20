@@ -22,7 +22,7 @@ string encode(in ubyte* der, size_t length, in string label,
 	const string PEM_HEADER = "-----BEGIN " ~ label ~ "-----";
 	const string PEM_TRAILER = "-----END " ~ label ~ "-----";
 	
-	Unique!Pipe pipe = Unique!Pipe.create(new Base64_Encoder(true, width));
+	Pipe pipe = Pipe(new Base64_Encoder(true, width));
 	pipe.process_msg(der, length);
 	return (PEM_HEADER + pipe.read_all_as_string() + PEM_TRAILER);
 }

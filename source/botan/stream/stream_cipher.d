@@ -5,7 +5,8 @@
 * Distributed under the terms of the botan license.
 */
 module botan.stream.stream_cipher;
-import botan.algo_base.sym_algo;
+
+public import botan.algo_base.sym_algo;
 /**
 * Base class for all stream ciphers
 */

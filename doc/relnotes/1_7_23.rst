@@ -9,7 +9,7 @@ Version 1.7.23, 2008-11-23
 * Avoid bogging down startup in /proc walking entropy source
 * Remove Buffered_EntropySource helper class
 * Add a Default_Benchmark_Timer typedef in benchmark.h
-* Add examples using benchmark.h and Algorithm_Factory
+* Add examples using benchmark.h and AlgorithmFactory
 * Add ECC tests from InSiTo
 * Minor documentation updates
 

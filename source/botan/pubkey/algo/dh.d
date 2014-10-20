@@ -75,9 +75,26 @@ public:
 	* @param key_bits the subject public key
 	* @param rng a random number generator
 	*/
+	this(in AlgorithmIdentifier alg_id,
+	     in SafeVector!ubyte key_bits,
+	     RandomNumberGenerator rng) 
+	{
+		super(alg_id, key_bits, DL_Group.ANSI_X9_42);
+		if (y == 0)
+			y = power_mod(group_g(), x, group_p());
+		
+		load_check(rng);
+	}
+
+	/**
+	* Construct a private key with predetermined value.
+	* @param rng random number generator to use
+	* @param grp the group to be used in the key
+	* @param x_args the key's secret value (or if zero, generate a new key)
+	*/
 	this(RandomNumberGenerator rng,
-	     ref const DL_Group grp,
-	     const ref BigInt x_arg)
+	     const ref DL_Group grp,
+	     const ref BigInt x_arg = 0)
 	{
 		group = grp;
 		x = x_arg;
@@ -96,35 +113,12 @@ public:
 		else
 			load_check(rng);
 	}
-
-	/*
-	* Load a DH private key
-	*/
-	this(in AlgorithmIdentifier alg_id,
-	     in SafeVector!ubyte key_bits,
-	     RandomNumberGenerator rng) 
-	{
-		super(alg_id, key_bits, DL_Group.ANSI_X9_42);
-		if (y == 0)
-			y = power_mod(group_g(), x, group_p());
-		
-		load_check(rng);
-	}
-
-	/**
-	* Construct a private key with predetermined value.
-	* @param rng random number generator to use
-	* @param grp the group to be used in the key
-	* @param x the key's secret value (or if zero, generate a new key)
-	*/
-	DH_PrivateKey(RandomNumberGenerator rng, const ref DL_Group grp,
-					  const ref BigInt x = 0);
 };
 
 /**
 * DH operation
 */
-class DH_KA_Operation : pk_ops.Key_Agreement
+class DH_KA_Operation : Key_Agreement
 {
 public:
 	this(in DH_PrivateKey dh,

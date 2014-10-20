@@ -9,27 +9,28 @@ module botan.engine.core_engine;
 import botan.engine.engine;
 import botan.utils.parsing;
 import botan.filters.filters;
-import botan.algo_factory;
+import botan.algo_factory.algo_factory;
 import botan.modes.mode_pad;
 import botan.filters.transform_filter;
 import botan.math.numbertheory.def_powm;
 import botan.algo_base.scan_name;
-import botan.algo_factory;
+import botan.algo_factory.algo_factory;
 
 static if (BOTAN_HAS_MODE_CFB)		import botan.modes.cfb;
 static if (BOTAN_HAS_MODE_ECB)		import botan.modes.ecb;
 static if (BOTAN_HAS_MODE_CBC) 		import botan.modes.cbc;
 static if (BOTAN_HAS_MODE_XTS)	 	import botan.modes.xts;
 
-static if (BOTAN_HAS_OFB) 			import botan.ofb;
-static if (BOTAN_HAS_CTR_BE)		import botan.ctr;
+static if (BOTAN_HAS_OFB) 			import botan.stream.ofb;
+static if (BOTAN_HAS_CTR_BE)		import botan.stream.ctr;
+
 static if (BOTAN_HAS_AEAD_FILTER)	import botan.filters.aead_filt;
 static if (BOTAN_HAS_AEAD_CCM) 		import botan.modes.aead.ccm;
 static if (BOTAN_HAS_AEAD_EAX) 		import botan.modes.aead.eax;	
 static if (BOTAN_HAS_AEAD_OCB) 		import botan.modes.aead.ocb;
 static if (BOTAN_HAS_AEAD_GCM) 		import botan.modes.aead.gcm;
 static if (BOTAN_HAS_RSA) 			import botan.pubkey.algo.rsa;
-static if (BOTAN_HAS_RW) 			import botan.rw;
+static if (BOTAN_HAS_RW) 			import botan.pubkey.algo.rw;
 static if (BOTAN_HAS_DSA) 			import botan.pubkey.algo.dsa;
 static if (BOTAN_HAS_ECDSA) 		import botan.pubkey.algo.ecdsa;
 static if (BOTAN_HAS_ELGAMAL) 		import botan.pubkey.algo.elgamal;
@@ -101,11 +102,9 @@ static if (BOTAN_HAS_PBKDF1) 		import botan.pbkdf.pbkdf1;
 static if (BOTAN_HAS_PBKDF2)		import botan.pbkdf.pbkdf2;
 
 /// STREAM
-static if (BOTAN_HAS_OFB)  			import botan.ofb;
-static if (BOTAN_HAS_CTR_BE)  		import botan.ctr;
-static if (BOTAN_HAS_RC4)  			import botan.rc4;
-static if (BOTAN_HAS_CHACHA)  		import botan.chacha;
-static if (BOTAN_HAS_SALSA20)  		import botan.salsa20;
+static if (BOTAN_HAS_RC4)  			import botan.stream.rc4;
+static if (BOTAN_HAS_CHACHA)  		import botan.stream.chacha;
+static if (BOTAN_HAS_SALSA20)  		import botan.stream.salsa20;
 
 /**
 * Core Engine
@@ -115,7 +114,7 @@ class Core_Engine : Engine
 public:
 	string provider_name() const { return "core"; }
 
-	pk_ops.Key_Agreement get_key_agreement_op(in Private_Key key, RandomNumberGenerator rng) const
+	Key_Agreement get_key_agreement_op(in Private_Key key, RandomNumberGenerator rng) const
 	{
 		static if (BOTAN_HAS_DIFFIE_HELLMAN) {
 			if (const DH_PrivateKey* dh = cast(const DH_PrivateKey*)(key))
@@ -130,7 +129,7 @@ public:
 		return null;
 	}
 
-	pk_ops.Signature get_signature_op(in Private_Key key, RandomNumberGenerator rng) const
+	Signature get_signature_op(in Private_Key key, RandomNumberGenerator rng) const
 	{
 		static if (BOTAN_HAS_RSA) {
 			if (const RSA_PrivateKey* s = cast(const RSA_PrivateKey*)(key))
@@ -166,7 +165,7 @@ public:
 		return null;
 	}
 
-	pk_ops.Verification
+	Verification
 		get_verify_op(in Public_Key key, RandomNumberGenerator rng) const
 	{
 		static if (BOTAN_HAS_RSA) {
@@ -204,7 +203,7 @@ public:
 	}
 
 
-	pk_ops.Encryption get_encryption_op(in Public_Key key, RandomNumberGenerator) const
+	Encryption get_encryption_op(in Public_Key key, RandomNumberGenerator) const
 	{
 		static if (BOTAN_HAS_RSA) {
 			if (const RSA_PublicKey* s = cast(const RSA_PublicKey*)(key))
@@ -219,7 +218,7 @@ public:
 		return null;
 	}
 
-	pk_ops.Decryption get_decryption_op(in Private_Key key, RandomNumberGenerator rng) const
+	Decryption get_decryption_op(in Private_Key key, RandomNumberGenerator rng) const
 	{
 		static if (BOTAN_HAS_RSA) {
 			if (const RSA_PrivateKey* s = cast(const RSA_PrivateKey*)(key))
@@ -244,7 +243,7 @@ public:
 
 	Keyed_Filter get_cipher(in string algo_spec,
 	                                 Cipher_Dir direction,
-	                                 Algorithm_Factory af)
+	                                 AlgorithmFactory af)
 	{
 		Vector!string algo_parts = splitter(algo_spec, '/');
 		if (algo_parts.empty())
@@ -293,7 +292,7 @@ public:
 
 
 	BlockCipher find_block_cipher(in SCAN_Name request,
-                                      		Algorithm_Factory af) const
+                                      		AlgorithmFactory af) const
 	{
 		
 		static if (BOTAN_HAS_AES) {
@@ -448,7 +447,7 @@ public:
 	}
 
 	StreamCipher find_stream_cipher(in SCAN_Name request,
-	                                         Algorithm_Factory af) const
+	                                         AlgorithmFactory af) const
 	{
 		static if (BOTAN_HAS_OFB) {
 			if (request.algo_name() == "OFB" && request.arg_count() == 1)
@@ -487,7 +486,7 @@ public:
 	}
 
 	HashFunction find_hash(in SCAN_Name request,
-	                                Algorithm_Factory af) const
+	                                AlgorithmFactory af) const
 	{
 		static if (BOTAN_HAS_ADLER32) {
 			if (request.algo_name() == "Adler32")
@@ -622,7 +621,7 @@ public:
 	}
 
 	MessageAuthenticationCode find_mac(in SCAN_Name request,
-	                                            Algorithm_Factory af) const
+	                                            AlgorithmFactory af) const
 	{
 		
 		static if (BOTAN_HAS_CBC_MAC) {
@@ -655,7 +654,7 @@ public:
 
 
 	PBKDF find_pbkdf(in SCAN_Name algo_spec,
-	                          Algorithm_Factory af) const
+	                          AlgorithmFactory af) const
 	{
 		static if (BOTAN_HAS_PBKDF1) {
 			if (algo_spec.algo_name() == "PBKDF1" && algo_spec.arg_count() == 1)

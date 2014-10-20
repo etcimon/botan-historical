@@ -7,7 +7,7 @@
 
 import botan.alloc.secmem;
 import string;
-namespace TLS {
+
 
 /**
 * SSL/TLS Alert Message
@@ -15,10 +15,11 @@ namespace TLS {
 class Alert
 {
 public:
+	typedef ushort Type;
 	/**
 	* Type codes for TLS alerts
 	*/
-	enum Type {
+	enum : Type {
 		CLOSE_NOTIFY						  = 0,
 		UNEXPECTED_MESSAGE				  = 10,
 		BAD_RECORD_MAC						= 20,

@@ -11,7 +11,7 @@ import botan.asn1.ber_dec;
 import botan.asn1.asn1_str;
 import botan.codec.pem;
 import botan.constructs.cryptobox_psk;
-namespace TLS {
+
 
 Session::Session(in Vector!ubyte session_identifier,
 					  in SafeVector!ubyte master_secret,

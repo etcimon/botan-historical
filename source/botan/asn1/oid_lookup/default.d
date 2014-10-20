@@ -27,7 +27,7 @@ static void set_defaults()
 	* This is an OID defined for ECDH keys though rarely used for such.
 	* In this configuration it is accepted on decoding, but not used for
 	* encoding. You can enable it for encoding by calling
-	*	 OIDS::add_str2oid("ECDH", "1.3.132.1.12")
+	*	 oids.add_str2oid("ECDH", "1.3.132.1.12")
 	* from your application code.
 	*/
 	add_oid2str(OID("1.3.132.1.12"), "ECDH");

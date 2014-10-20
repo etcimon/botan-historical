@@ -7,7 +7,7 @@
 module botan.hash.md2;
 
 import botan.hash.hash;
-import botan.internal.xor_buf;
+import botan.utils.xor_buf;
 /**
 * MD2
 */

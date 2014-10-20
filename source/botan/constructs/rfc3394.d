@@ -7,13 +7,12 @@
 module botan.constructs.rfc3394;
 
 import botan.algo_base.symkey;
-import botan.algo_factory;
+import botan.algo_factory.algo_factory;
 import botan.block.block_cipher;
 import botan.utils.loadstor;
 import botan.utils.exceptn;
-import botan.internal.xor_buf;
-
-class Algorithm_Factory;
+import botan.utils.xor_buf;
+import botan.algo_factory.algo_factory;
 
 /**
 * Encrypt a key under a key encryption key using the algorithm
@@ -26,7 +25,7 @@ class Algorithm_Factory;
 */
 SafeVector!ubyte rfc3394_keywrap(in SafeVector!ubyte key,
                                  const ref SymmetricKey kek,
-                                 Algorithm_Factory af)
+                                 AlgorithmFactory af)
 {
 	if (key.length % 8 != 0)
 		throw new Invalid_Argument("Bad input key size for NIST key wrap");
@@ -77,7 +76,7 @@ SafeVector!ubyte rfc3394_keywrap(in SafeVector!ubyte key,
 */
 SafeVector!ubyte rfc3394_keyunwrap(in SafeVector!ubyte key,
                                    const ref SymmetricKey kek,
-                                   Algorithm_Factory af)
+                                   AlgorithmFactory af)
 {
 	if (key.length < 16 || key.length % 8 != 0)
 		throw new Invalid_Argument("Bad input key size for NIST key unwrap");
@@ -126,7 +125,7 @@ SafeVector!ubyte rfc3394_keyunwrap(in SafeVector!ubyte key,
 
 private:
 BlockCipher make_aes(size_t keylength,
-                     Algorithm_Factory af)
+                     AlgorithmFactory af)
 {
 	if (keylength == 16)
 		return af.make_block_cipher("AES-128");

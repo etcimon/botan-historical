@@ -9,7 +9,7 @@ import botan.tls_session;
 import core.sync.mutex;
 import std.datetime;
 import map;
-namespace TLS {
+
 
 /**
 * Session_Manager is an interface to systems which can save

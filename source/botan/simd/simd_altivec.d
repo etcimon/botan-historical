@@ -4,34 +4,33 @@
 *
 * Distributed under the terms of the botan license.
 */
-
-module botan.simd.simd_altivec.simd_altivec;
+module botan.simd.simd_altivec;
 
 // static if (BOTAN_TARGET_SUPPORTS_ALTIVEC):
 
 import botan.utils.loadstor;
 import botan.utils.cpuid;
 
-import altivec.h;
+//import altivec.h;
 
-class SIMD_Altivec
+struct SIMD_Altivec
 {
 public:
 	static bool enabled() { return CPUID.has_altivec(); }
 
 	this(const uint B[4])
 	{
-		reg = cast(Vector!uint){B[0], B[1], B[2], B[3]};
+		reg = [B[0], B[1], B[2], B[3]];
 	}
 
 	this(uint B0, uint B1, uint B2, uint B3)
 	{
-		reg = cast(Vector!uint){B0, B1, B2, B3};
+		reg = [B0, B1, B2, B3];
 	}
 
 	this(uint B)
 	{
-		reg = cast(Vector!uint){B, B, B, B};
+		reg = [B, B, B, B];
 	}
 
 	static SIMD_Altivec load_le(const void* input)
@@ -105,68 +104,80 @@ public:
 		rotate_left(32 - rot);
 	}
 
-	void operator+=(in SIMD_Altivec other)
+	void opOpAssign(string op)(in SIMD_Altivec other)
+		if (op == "+=")
 	{
 		reg = vec_add(reg, other.reg);
 	}
 
-	SIMD_Altivec operator+(in SIMD_Altivec other) const
+	SIMD_Altivec opBinary(string op)(in SIMD_Altivec other) const
+		if (op == "+")
 	{
 		return vec_add(reg, other.reg);
 	}
 
-	void operator-=(in SIMD_Altivec other)
+	void opOpAssign(string op)(in SIMD_Altivec other)
+		if (op == "-=")
 	{
 		reg = vec_sub(reg, other.reg);
 	}
 
-	SIMD_Altivec operator-(in SIMD_Altivec other) const
+	SIMD_Altivec opBinary(string op)(in SIMD_Altivec other) const
+		if (op == "-")
 	{
 		return vec_sub(reg, other.reg);
 	}
 
-	void operator^=(in SIMD_Altivec other)
+	void opOpAssign(string op)(in SIMD_Altivec other)
+		if (op == "^=")
 	{
 		reg = vec_xor(reg, other.reg);
 	}
 
-	SIMD_Altivec operator^(in SIMD_Altivec other) const
+	SIMD_Altivec opBinary(string op)(in SIMD_Altivec other) const
+		if (op == "^")
 	{
 		return vec_xor(reg, other.reg);
 	}
 
-	void operator|=(in SIMD_Altivec other)
+	void opOpAssign(string op)(in SIMD_Altivec other)
+		if (op == "|=")
 	{
 		reg = vec_or(reg, other.reg);
 	}
 
-	SIMD_Altivec operator&(in SIMD_Altivec other)
+	SIMD_Altivec opBinary(string op)(in SIMD_Altivec other)
+		if (op == "&")
 	{
 		return vec_and(reg, other.reg);
 	}
 
-	void operator&=(in SIMD_Altivec other)
+	void opOpAssign(string op)(in SIMD_Altivec other)
+		if (op == "&=")
 	{
 		reg = vec_and(reg, other.reg);
 	}
 
-	SIMD_Altivec operator<<(size_t shift) const
+	SIMD_Altivec opBinary(string op)(size_t shift) const
+		if (op == "<<")
 	{
 		Vector!uint shift_vec =
-			(Vector!uint){shift, shift, shift, shift};
+			Vector!uint([shift, shift, shift, shift]);
 
 		return vec_sl(reg, shift_vec);
 	}
 
-	SIMD_Altivec operator>>(size_t shift) const
+	SIMD_Altivec opBinary(string op)(size_t shift) const
+		if (op == ">>")
 	{
 		Vector!uint shift_vec =
-			(Vector!uint){shift, shift, shift, shift};
+			Vector!uint([shift, shift, shift, shift]);
 
 		return vec_sr(reg, shift_vec);
 	}
 
-	SIMD_Altivec operator~() const
+	SIMD_Altivec opUnary(string op)() const
+		if (op == "~")
 	{
 		return vec_nor(reg, reg);
 	}
@@ -179,15 +190,15 @@ public:
 
 	SIMD_Altivec bswap() const
 	{
-		Vector!char perm = vec_lvsl(0, (uint*)0);
+		Vector!char perm = vec_lvsl(0, null);
 
 		perm = vec_xor(perm, vec_splat_u8(3));
 
 		return SIMD_Altivec(vec_perm(reg, reg, perm));
 	}
 
-	static void transpose(SIMD_Altivec& B0, SIMD_Altivec& B1,
-								 SIMD_Altivec& B2, SIMD_Altivec& B3)
+	static void transpose(ref SIMD_Altivec B0, refSIMD_Altivec B1,
+								 ref SIMD_Altivec B2, ref SIMD_Altivec B3)
 	{
 		Vector!uint T0 = vec_mergeh(B0.reg, B2.reg);
 		Vector!uint T1 = vec_mergel(B0.reg, B2.reg);
@@ -203,5 +214,5 @@ public:
 private:
 	this(Vector!uint input) { reg = input; }
 
-	Vector uint reg;
+	Vector!uint reg;
 };

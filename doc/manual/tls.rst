@@ -237,7 +237,7 @@ TLS Clients
    strategy if the initial attempt fails.
 
    Setting *offer_version* is also used to offer DTLS instead of TLS;
-   use :cpp:func:`TLS::Protocol_Version::latest_dtls_version`.
+   use :cpp:func:`TLS::Protocol_Version.latest_dtls_version`.
 
    .. warning::
 

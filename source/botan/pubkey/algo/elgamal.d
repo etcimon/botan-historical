@@ -101,7 +101,7 @@ public:
 /**
 * ElGamal encryption operation
 */
-class ElGamal_Encryption_Operation : pk_ops.Encryption
+class ElGamal_Encryption_Operation : Encryption
 {
 public:
 	size_t max_input_bits() const { return mod_p.get_modulus().bits() - 1; }
@@ -145,7 +145,7 @@ private:
 /**
 * ElGamal decryption operation
 */
-class ElGamal_Decryption_Operation : pk_ops.Decryption
+class ElGamal_Decryption_Operation : Decryption
 {
 public:
 	size_t max_input_bits() const { return mod_p.get_modulus().bits() - 1; }

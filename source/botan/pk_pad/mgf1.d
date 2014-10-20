@@ -9,7 +9,7 @@ module botan.pk_pad.mgf1;
 import botan.kdf.kdf;
 import botan.hash.hash;
 import botan.utils.exceptn;
-import botan.internal.xor_buf;
+import botan.utils.xor_buf;
 import std.algorithm;
 
 /**

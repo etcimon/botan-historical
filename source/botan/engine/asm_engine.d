@@ -24,7 +24,7 @@ public:
 
 		
 	BlockCipher find_block_cipher(	in SCAN_Name request,
-	                             			Algorithm_Factory af) const
+	                             			AlgorithmFactory af) const
 	{
 		static if (BOTAN_HAS_SERPENT_X86_32) { 
 			if (request.algo_name() == "Serpent")
@@ -37,7 +37,7 @@ public:
 	}
 
 	HashFunction find_hash(in SCAN_Name request,
-	                                Algorithm_Factory af) const
+	                                AlgorithmFactory af) const
 	{
 		static if (BOTAN_HAS_MD4_X86_32) {
 			if (request.algo_name() == "MD4")

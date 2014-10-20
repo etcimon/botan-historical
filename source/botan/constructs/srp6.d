@@ -8,7 +8,7 @@ module botan.constructs.srp6;
 
 import botan.math.bigint.bigint;
 import botan.hash.hash;
-import botan.rng;
+import botan.rng.rng;
 import botan.algo_base.symkey;
 import botan.pubkey.algo.dl_group;
 import botan.libstate.libstate;

@@ -6,7 +6,7 @@
 */
 
 import botan.alloc.secmem;
-import botan.rng;
+import botan.rng.rng;
 /**
 * Encoding Method for Signatures, Appendix
 */

@@ -27,7 +27,7 @@ EMSA* get_emsa(in string algo_spec)
 {
 	SCAN_Name request = SCAN_Name(algo_spec);
 	
-	Algorithm_Factory af = global_state().algorithm_factory();
+	AlgorithmFactory af = global_state().algorithm_factory();
 	
 	static if (BOTAN_HAS_EMSA_RAW) {
 		if (request.algo_name() == "Raw" && request.arg_count() == 0)
@@ -100,7 +100,7 @@ EME get_eme(in string algo_spec)
 	}
 	
 	static if (BOTAN_HAS_EME_OAEP) {
-		Algorithm_Factory af = global_state().algorithm_factory();
+		AlgorithmFactory af = global_state().algorithm_factory();
 		
 		if (request.algo_name() == "OAEP" && request.arg_count_between(1, 2))
 		{

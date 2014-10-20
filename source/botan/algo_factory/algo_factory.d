@@ -22,11 +22,15 @@ import std.algorithm;
 import botan.utils.types;
 import string;
 import vector;
+import std.typecons : RefCounted;
+
+
+alias AlgorithmFactory = RefCounted!AlgorithmFactoryImpl;
 
 /**
 * Algorithm Factory
 */
-class Algorithm_Factory
+class AlgorithmFactoryImpl
 {
 public:
 	/**
@@ -45,15 +49,10 @@ public:
 	/**
 	* Destructor
 	*/
-	~this()
-	{
-		/// All engines will be destroyed in Algorithm_Cache when
-		/// this goes out of scope in libstate...
-
-	}
+	~this()	{ }
 	
 	/**
-	* @param engine to add (Algorithm_Factory takes ownership)
+	* @param engine to add (AlgorithmFactory takes ownership)
 	*/
 	void add_engine(Engine engine)
 	{
@@ -338,9 +337,9 @@ public:
 		/**
 		* @param a an algorithm factory
 		*/
-		this(Algorithm_Factory a) { af = a; n = 0; }
+		this(AlgorithmFactory a) { af = a; n = 0; }
 	private:
-		const Algorithm_Factory af;
+		const AlgorithmFactory af;
 		size_t n;
 	}
 
@@ -353,13 +352,13 @@ private:
 		return engines[n];
 	}
 	
-	Vector!( Engine ) engines;
+	Vector!Engine engines;
 	
-	Unique!(Algorithm_Cache!(BlockCipher)) block_cipher_cache;
-	Unique!(Algorithm_Cache!(StreamCipher)) stream_cipher_cache;
-	Unique!(Algorithm_Cache!(HashFunction)) hash_cache;
-	Unique!(Algorithm_Cache!(MessageAuthenticationCode)) mac_cache;
-	Unique!(Algorithm_Cache!(PBKDF)) pbkdf_cache;
+	Algorithm_Cache!BlockCipher block_cipher_cache;
+	Algorithm_Cache!StreamCipher stream_cipher_cache;
+	Algorithm_Cache!HashFunction hash_cache;
+	Algorithm_Cache!MessageAuthenticationCode mac_cache;
+	Algorithm_Cache!PBKDF pbkdf_cache;
 };
 
 private:
@@ -369,38 +368,38 @@ private:
 */
 T engine_get_algo(T)(Engine,
 					 const ref SCAN_Name,
-					 Algorithm_Factory)
+					 AlgorithmFactory)
 { static assert(false, "Invalid engine"); }
 
 BlockCipher engine_get_algo(T : BlockCipher)(Engine engine,
 							  const ref SCAN_Name request,
-							  Algorithm_Factory af)
+							  AlgorithmFactory af)
 { return engine.find_block_cipher(request, af); }
 
 StreamCipher engine_get_algo(T : StreamCipher)(Engine engine,
 										const ref SCAN_Name request,
-										Algorithm_Factory af)
+										AlgorithmFactory af)
 { return engine.find_stream_cipher(request, af); }
 
 HashFunction engine_get_algo(T : HashFunction)(Engine engine,
 										const ref SCAN_Name request,
-										Algorithm_Factory af)
+										AlgorithmFactory af)
 { return engine.find_hash(request, af); }
 
 MessageAuthenticationCode engine_get_algo(T : MessageAuthenticationCode)(Engine engine,
 														 const ref SCAN_Name request,
-														 Algorithm_Factory af)
+														 AlgorithmFactory af)
 { return engine.find_mac(request, af); }
 
 PBKDF engine_get_algo(T : PBKDF)(Engine engine,
 							  const ref SCAN_Name request,
-							  Algorithm_Factory af)
+							  AlgorithmFactory af)
 { return engine.find_pbkdf(request, af); }
 
 const T factory_prototype(T)(in string algo_spec,
 									in string provider,
 									in Vector!( Engine ) engines,
-									Algorithm_Factory af,
+									AlgorithmFactory af,
 									Algorithm_Cache!T cache)
 {
 	if (const T cache_hit = cache.get(algo_spec, provider))

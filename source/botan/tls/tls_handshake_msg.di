@@ -8,7 +8,7 @@
 import botan.tls_magic;
 import vector;
 import string;
-namespace TLS {
+
 
 /**
 * TLS Handshake Message Base Class

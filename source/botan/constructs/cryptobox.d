@@ -7,7 +7,7 @@
 module botan.constructs.cryptobox;
 
 import string;
-import botan.rng;
+import botan.rng.rng;
 import botan.algo_base.symkey;
 import botan.cryptobox;
 import botan.filters.filters;
@@ -126,9 +126,9 @@ struct CryptoBox {
 		InitializationVector iv = InitializationVector(&mk[CIPHER_KEY_LEN + MAC_KEY_LEN], CIPHER_IV_LEN);
 		
 		Pipe pipe = Pipe(new Fork(
-			get_cipher("Serpent/CTR-BE", cipher_key, iv, DECRYPTION),
-			new MAC_Filter(new HMAC(new SHA_512),
-		               mac_key, MAC_OUTPUT_LEN)));
+							get_cipher("Serpent/CTR-BE", cipher_key, iv, DECRYPTION),
+							new MAC_Filter(new HMAC(new SHA_512),
+		              		mac_key, MAC_OUTPUT_LEN)));
 		
 		const size_t ciphertext_offset =
 			VERSION_CODE_LEN + PBKDF_SALT_LEN + MAC_OUTPUT_LEN;

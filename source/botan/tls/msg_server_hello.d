@@ -6,12 +6,12 @@
 */
 
 import botan.internal.tls_messages;
-import botan.internal.tls_reader;
+import botan.tls.tls_reader;
 import botan.internal.tls_session_key;
-import botan.internal.tls_extensions;
+import botan.tls.tls_extensions;
 import botan.internal.tls_handshake_io;
 import botan.internal.stl_util;
-namespace TLS {
+
 
 /*
 * Create a new Server Hello message

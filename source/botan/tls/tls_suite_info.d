@@ -9,7 +9,7 @@
 */
 
 import botan.tls_ciphersuite;
-namespace TLS {
+
 
 Ciphersuite Ciphersuite::by_id(ushort suite)
 {

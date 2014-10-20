@@ -9,7 +9,7 @@ module botan.pubkey.algo.dlies;
 import botan.pubkey.pubkey;
 import botan.mac.mac;
 import botan.kdf.kdf;
-import botan.internal.xor_buf;
+import botan.utils.xor_buf;
 
 /**
 * DLIES Encryption

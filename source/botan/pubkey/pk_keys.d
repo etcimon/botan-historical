@@ -4,11 +4,12 @@
 *
 * Distributed under the terms of the botan license.
 */
+module botan.pubkey.pk_keys;
 
 import botan.alloc.secmem;
 import botan.asn1.asn1_oid;
 import botan.asn1.alg_id;
-import botan.rng;
+import botan.rng.rng;
 import botan.asn1.der_enc;
 import botan.asn1.oid_lookup.oids;
 

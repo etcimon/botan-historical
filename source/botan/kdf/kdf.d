@@ -125,7 +125,7 @@ KDF get_kdf(in string algo_spec)
 {
 	SCAN_Name request = SCAN_Name(algo_spec);
 	
-	Algorithm_Factory af = global_state().algorithm_factory();
+	AlgorithmFactory af = global_state().algorithm_factory();
 	
 	if (request.algo_name() == "Raw")
 		return null; // No KDF

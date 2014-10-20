@@ -107,7 +107,7 @@ public:
 /**
 * ECDSA signature operation
 */
-class ECDSA_Signature_Operation : pk_ops.Signature
+class ECDSA_Signature_Operation : Signature
 {
 public:
 	this(in ECDSA_PrivateKey ecdsa)
@@ -161,7 +161,7 @@ private:
 /**
 * ECDSA verification operation
 */
-class ECDSA_Verification_Operation : pk_ops.Verification
+class ECDSA_Verification_Operation : Verification
 {
 public:
 	this(in ECDSA_PublicKey ecdsa) 

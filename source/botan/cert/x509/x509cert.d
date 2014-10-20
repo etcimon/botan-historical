@@ -8,7 +8,7 @@ module botan.cert.x509.x509cert;
 
 import botan.cert.x509.x509_obj;
 import botan.asn1.x509_dn;
-import botan.x509_key;
+import botan.pubkey.x509_key;
 import botan.asn1.asn1_alt_name;
 import botan.utils.datastor.datastor;
 import botan.cert.x509.key_constraint;

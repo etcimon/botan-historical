@@ -9,8 +9,8 @@
 module botan.pubkey.algo.ecc_key;
 
 import botan.pubkey.algo.ec_group;
-import botan.pk_keys;
-import botan.x509_key;
+import botan.pubkey.pk_keys;
+import botan.pubkey.x509_key;
 import botan.pubkey.pkcs8;
 import botan.math.numbertheory.numthry;
 import botan.asn1.der_enc;

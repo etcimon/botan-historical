@@ -6,10 +6,10 @@
 */
 module botan.pubkey.x509_key;
 
-import botan.pk_keys;
+import botan.pubkey.pk_keys;
 import botan.asn1.alg_id;
 import botan.filters.pipe;
-import botan.x509_key;
+import botan.pubkey.x509_key;
 import botan.asn1.der_enc;
 import botan.asn1.ber_dec;
 import botan.codec.pem;

@@ -155,7 +155,7 @@ private:
 
 import botan.pk_pad.mgf1;
 import botan.utils.bit_ops;
-import botan.internal.xor_buf;
+import botan.utils.xor_buf;
 
 
 

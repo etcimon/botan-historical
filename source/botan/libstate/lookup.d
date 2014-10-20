@@ -25,7 +25,7 @@ import botan.engine.engine;
 */
 const BlockCipher retrieve_block_cipher(in string algo_spec)
 {
-	Algorithm_Factory af = global_state().algorithm_factory();
+	AlgorithmFactory af = global_state().algorithm_factory();
 	return af.prototype_block_cipher(algo_spec);
 }
 
@@ -37,7 +37,7 @@ const BlockCipher retrieve_block_cipher(in string algo_spec)
 */
 const StreamCipher retrieve_stream_cipher(in string algo_spec)
 {
-	Algorithm_Factory af = global_state().algorithm_factory();
+	AlgorithmFactory af = global_state().algorithm_factory();
 	return af.prototype_stream_cipher(algo_spec);
 }
 
@@ -49,7 +49,7 @@ const StreamCipher retrieve_stream_cipher(in string algo_spec)
 */
 const HashFunction retrieve_hash(in string algo_spec)
 {
-	Algorithm_Factory af = global_state().algorithm_factory();
+	AlgorithmFactory af = global_state().algorithm_factory();
 	return af.prototype_hash_function(algo_spec);
 }
 
@@ -61,7 +61,7 @@ const HashFunction retrieve_hash(in string algo_spec)
 */
 const MessageAuthenticationCode retrieve_mac(in string algo_spec)
 {
-	Algorithm_Factory af = global_state().algorithm_factory();
+	AlgorithmFactory af = global_state().algorithm_factory();
 	return af.prototype_mac(algo_spec);
 }
 
@@ -80,7 +80,7 @@ const MessageAuthenticationCode retrieve_mac(in string algo_spec)
 */
 BlockCipher get_block_cipher(in string algo_spec)
 {
-	Algorithm_Factory af = global_state().algorithm_factory();
+	AlgorithmFactory af = global_state().algorithm_factory();
 	return af.make_block_cipher(algo_spec);
 }
 
@@ -93,7 +93,7 @@ BlockCipher get_block_cipher(in string algo_spec)
 */
 StreamCipher get_stream_cipher(in string algo_spec)
 {
-	Algorithm_Factory af = global_state().algorithm_factory();
+	AlgorithmFactory af = global_state().algorithm_factory();
 	return af.make_stream_cipher(algo_spec);
 }
 
@@ -106,7 +106,7 @@ StreamCipher get_stream_cipher(in string algo_spec)
 */
 HashFunction get_hash(in string algo_spec)
 {
-	Algorithm_Factory af = global_state().algorithm_factory();
+	AlgorithmFactory af = global_state().algorithm_factory();
 	return af.make_hash_function(algo_spec);
 }
 
@@ -119,7 +119,7 @@ HashFunction get_hash(in string algo_spec)
 */
 MessageAuthenticationCode get_mac(in string algo_spec)
 {
-	Algorithm_Factory af = global_state().algorithm_factory();
+	AlgorithmFactory af = global_state().algorithm_factory();
 	return af.make_mac(algo_spec);
 }
 
@@ -130,7 +130,7 @@ MessageAuthenticationCode get_mac(in string algo_spec)
 */
 PBKDF get_pbkdf(in string algo_spec)
 {
-	Algorithm_Factory af = global_state().algorithm_factory();
+	AlgorithmFactory af = global_state().algorithm_factory();
 	
 	if (PBKDF pbkdf = af.make_pbkdf(algo_spec))
 		return pbkdf;
@@ -209,9 +209,9 @@ Keyed_Filter get_cipher(in string algo_spec,
 Keyed_Filter get_cipher(in string algo_spec,
                         Cipher_Dir direction)
 {
-	Algorithm_Factory af = global_state().algorithm_factory();
+	AlgorithmFactory af = global_state().algorithm_factory();
 	
-	Algorithm_Factory.Engine_Iterator i(af);
+	AlgorithmFactory.Engine_Iterator i(af);
 
 	Engine engine = i.next();
 
@@ -233,7 +233,7 @@ Keyed_Filter get_cipher(in string algo_spec,
 */
 bool have_algorithm(in string name)
 {
-	Algorithm_Factory af = global_state().algorithm_factory();
+	AlgorithmFactory af = global_state().algorithm_factory();
 	
 	if (af.prototype_block_cipher(name))
 		return true;
@@ -255,7 +255,7 @@ bool have_algorithm(in string name)
 */
 bool have_block_cipher(in string algo_spec)
 {
-	Algorithm_Factory af = global_state().algorithm_factory();
+	AlgorithmFactory af = global_state().algorithm_factory();
 	return (af.prototype_block_cipher(algo_spec) != null);
 }
 
@@ -268,7 +268,7 @@ bool have_block_cipher(in string algo_spec)
 */
 bool have_stream_cipher(in string algo_spec)
 {
-	Algorithm_Factory af = global_state().algorithm_factory();
+	AlgorithmFactory af = global_state().algorithm_factory();
 	return (af.prototype_stream_cipher(algo_spec) != null);
 }
 
@@ -281,7 +281,7 @@ bool have_stream_cipher(in string algo_spec)
 */
 bool have_hash(in string algo_spec)
 {
-	Algorithm_Factory af = global_state().algorithm_factory();
+	AlgorithmFactory af = global_state().algorithm_factory();
 	return (af.prototype_hash_function(algo_spec) != null);
 }
 
@@ -294,7 +294,7 @@ bool have_hash(in string algo_spec)
 */
 bool have_mac(in string algo_spec)
 {
-	Algorithm_Factory af = global_state().algorithm_factory();
+	AlgorithmFactory af = global_state().algorithm_factory();
 	return (af.prototype_mac(algo_spec) != null);
 }
 
@@ -311,7 +311,7 @@ bool have_mac(in string algo_spec)
 */
 size_t block_size_of(in string name)
 {
-	Algorithm_Factory af = global_state().algorithm_factory();
+	AlgorithmFactory af = global_state().algorithm_factory();
 	
 	if (const BlockCipher cipher = af.prototype_block_cipher(name))
 		return cipher.block_size();
@@ -332,7 +332,7 @@ size_t block_size_of(in string name)
 */
 size_t output_length_of(in string name)
 {
-	Algorithm_Factory af = global_state().algorithm_factory();
+	AlgorithmFactory af = global_state().algorithm_factory();
 	
 	if (const HashFunction hash = af.prototype_hash_function(name))
 		return hash.output_length();

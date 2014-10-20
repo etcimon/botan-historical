@@ -7,9 +7,9 @@
 
 import botan.tls_alert;
 import botan.utils.exceptn;
-namespace TLS {
 
-Alert::Alert(in SafeVector!ubyte buf)
+
+Alert.Alert(in SafeVector!ubyte buf)
 {
 	if (buf.length != 2)
 		throw new Decoding_Error("Alert: Bad size " ~ std.conv.to!string(buf.length) +
@@ -25,7 +25,7 @@ Alert::Alert(in SafeVector!ubyte buf)
 	m_type_code = cast(Type)(dc);
 }
 
-Vector!ubyte Alert::serialize() const
+Vector!ubyte Alert.serialize() const
 {
 	return Vector!ubyte({
 		cast(ubyte)(is_fatal() ? 2 : 1),
@@ -33,7 +33,7 @@ Vector!ubyte Alert::serialize() const
 	});
 }
 
-string Alert::type_string() const
+string Alert.type_string() const
 {
 	switch(type())
 	{

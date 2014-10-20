@@ -4,7 +4,7 @@
 *
 * Released under the terms of the botan license.
 */
-namespace TLS {
+
 
 /**
 * Protocol Constants for SSL/TLS

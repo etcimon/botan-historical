@@ -329,7 +329,7 @@ to four filter pointers, or a pre-defined array and a length::
               new Filter3(/*args*/), new Filter4(/*args*/));
    Pipe pipe2(new Filter1(/*args*/), new Filter2(/*args*/));
 
-   Filter* filters[5] = {
+   Filter filters[5] = {
      new Filter1(/*args*/), new Filter2(/*args*/), new Filter3(/*args*/),
      new Filter4(/*args*/), new Filter5(/*args*/) /* more if desired... */
    };
@@ -342,7 +342,7 @@ used while the pipe in question is not in use; that is, either before
 calling ``start_msg``, or after ``end_msg`` has been called (and no
 new calls to ``start_msg`` have been made yet).
 
-.. cpp:function:: void Pipe::prepend(Filter* filter)
+.. cpp:function:: void Pipe::prepend(Filter filter)
 
   Calling ``prepend`` will put the passed filter first in the list of
   transformations. For example, if you prepend a filter implementing
@@ -350,7 +350,7 @@ new calls to ``start_msg`` have been made yet).
   input, then the next message processed would be first encrypted,
   and *then* hex encoded.
 
-.. cpp:function:: void Pipe::append(Filter* filter)
+.. cpp:function:: void Pipe::append(Filter filter)
 
   Like ``prepend``, but places the filter at the end of the message
   flow. This doesn't always do what you expect if there is a fork.
@@ -554,10 +554,10 @@ then call ``get_cipher``. You will pass the return value
 directly into a ``Pipe``. There are a couple different functions
 which do varying levels of initialization:
 
-.. cpp:function:: Keyed_Filter* get_cipher(std::string cipher_spec, \
+.. cpp:function:: Keyed_Filter get_cipher(std::string cipher_spec, \
    SymmetricKey key, InitializationVector iv, Cipher_Dir dir)
 
-.. cpp:function:: Keyed_Filter* get_cipher(std::string cipher_spec, \
+.. cpp:function:: Keyed_Filter get_cipher(std::string cipher_spec, \
    SymmetricKey key, Cipher_Dir dir)
 
 The version that doesn't take an IV is useful for things that don't

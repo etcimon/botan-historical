@@ -103,7 +103,7 @@ public:
 /**
 * Object that can create a DSA signature
 */
-class DSA_Signature_Operation : pk_ops.Signature
+class DSA_Signature_Operation : Signature
 {
 public:
 	this(in DSA_PrivateKey dsa)
@@ -158,7 +158,7 @@ private:
 /**
 * Object that can verify a DSA signature
 */
-class DSA_Verification_Operation : pk_ops.Verification
+class DSA_Verification_Operation : Verification
 {
 public:
 

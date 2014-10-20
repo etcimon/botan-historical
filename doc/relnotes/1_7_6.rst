@@ -8,5 +8,5 @@ Version 1.7.6, 2008-05-05
 * Removed the AEP module, due to inability to test
 * Removed Global_RNG and rng.h
 * Removed system_clock
-* Removed Library_State::UI and the pulse callback logic
+* Removed LibraryState::UI and the pulse callback logic
 

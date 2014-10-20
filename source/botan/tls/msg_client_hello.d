@@ -6,12 +6,12 @@
 */
 
 import botan.internal.tls_messages;
-import botan.internal.tls_reader;
+import botan.tls.tls_reader;
 import botan.internal.tls_session_key;
 import botan.internal.tls_handshake_io;
 import botan.internal.stl_util;
 import std.datetime;
-namespace TLS {
+
 
 enum {
 	TLS_EMPTY_RENEGOTIATION_INFO_SCSV		  = 0x00FF
@@ -254,10 +254,10 @@ void Client_Hello::deserialize(in Vector!ubyte buf)
 
 	if (offered_suite(cast(ushort)(TLS_EMPTY_RENEGOTIATION_INFO_SCSV)))
 	{
-		if (Renegotiation_Extension* reneg = m_extensions.get<Renegotiation_Extension>())
+		if (Renegotiation_Extension reneg = m_extensions.get<Renegotiation_Extension>())
 		{
 			if (!reneg.renegotiation_info().empty())
-				throw new TLS_Exception(Alert::HANDSHAKE_FAILURE,
+				throw new TLS_Exception(Alert.HANDSHAKE_FAILURE,
 										  "Client send renegotiation SCSV and non-empty extension");
 		}
 		else

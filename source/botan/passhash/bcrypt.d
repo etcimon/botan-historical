@@ -6,7 +6,7 @@
 */
 module botan.passhash.bcrypt;
 
-import botan.rng;
+import botan.rng.rng;
 import botan.utils.loadstor;
 import botan.block.blowfish;
 import botan.codec.base64;

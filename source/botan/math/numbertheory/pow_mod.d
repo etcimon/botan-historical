@@ -5,6 +5,7 @@
 * Distributed under the terms of the botan license.
 */
 module botan.math.numbertheory.pow_mod;
+
 import botan.math.bigint.bigint;
 import botan.libstate.libstate;
 import botan.engine.engine;
@@ -89,7 +90,7 @@ public:
 		
 		if (n != 0)
 		{
-			Algorithm_Factory.Engine_Iterator i = Algorithm_Factory.Engine_Iterator(global_state().algorithm_factory());
+			AlgorithmFactory.Engine_Iterator i = AlgorithmFactory.Engine_Iterator(global_state().algorithm_factory());
 			Engine engine;
 			while(engine = i.next())
 			{

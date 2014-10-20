@@ -13,7 +13,7 @@ import botan.utils.loadstor;
 import botan.utils.parsing;
 import botan.utils.exceptn;
 import botan.utils.rotate;
-import botan.internal.xor_buf;
+import botan.utils.xor_buf;
 
 /**
 * Keccak[1600], a SHA-3 candidate

@@ -10,7 +10,7 @@ import botan.utils.types;
 /**
 * Represents the length requirements on an algorithm key
 */
-class Key_Length_Specification
+struct Key_Length_Specification
 {
 public:
 	/**

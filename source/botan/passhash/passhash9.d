@@ -6,7 +6,7 @@
 */
 module botan.passhash.passhash9;
 
-import botan.rng;
+import botan.rng.rng;
 import botan.utils.loadstor;
 import botan.libstate.libstate;
 import botan.pbkdf.pbkdf2;
@@ -142,7 +142,7 @@ const size_t WORK_FACTOR_SCALE = 10000;
 
 MessageAuthenticationCode get_pbkdf_prf(ubyte alg_id)
 {
-	Algorithm_Factory af = global_state().algorithm_factory();
+	AlgorithmFactory af = global_state().algorithm_factory();
 	
 	try
 	{

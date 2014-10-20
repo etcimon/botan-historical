@@ -69,7 +69,7 @@ public:
 
 	string provider_name() const { return "gmp"; }
 
-	pk_ops.Key_Agreement
+	Key_Agreement
 		get_key_agreement_op(in Private_Key key, RandomNumberGenerator) const
 	{
 		static if (BOTAN_HAS_DIFFIE_HELLMAN) {
@@ -80,7 +80,7 @@ public:
 		return null;
 	}
 
-	pk_ops.Signature
+	Signature
 		get_signature_op(in Private_Key key, RandomNumberGenerator) const
 	{
 		static if (BOTAN_HAS_RSA) {
@@ -96,7 +96,7 @@ public:
 		return null;
 	}
 
-	pk_ops.Verification
+	Verification
 		get_verify_op(in Public_Key key, RandomNumberGenerator) const
 	{
 		static if (BOTAN_HAS_RSA) {
@@ -112,7 +112,7 @@ public:
 		return null;
 	}
 	
-	pk_ops.Encryption
+	Encryption
 		get_encryption_op(in Public_Key key, RandomNumberGenerator) const
 	{
 		static if (BOTAN_HAS_RSA) {
@@ -123,7 +123,7 @@ public:
 		return null;
 	}
 	
-	pk_ops.Decryption
+	Decryption
 		get_decryption_op(in Private_Key key, RandomNumberGenerator) const
 	{
 		static if (BOTAN_HAS_RSA) {
@@ -261,7 +261,7 @@ public:
 };
 
 static if (BOTAN_HAS_DIFFIE_HELLMAN) {
-	class GMP_DH_KA_Operation : pk_ops.Key_Agreement
+	class GMP_DH_KA_Operation : Key_Agreement
 	{
 	public:
 		this(in DH_PrivateKey dh) 
@@ -284,7 +284,7 @@ static if (BOTAN_HAS_DIFFIE_HELLMAN) {
 
 static if (BOTAN_HAS_DSA) {
 	
-	class GMP_DSA_Signature_Operation : pk_ops.Signature
+	class GMP_DSA_Signature_Operation : Signature
 	{
 	public:
 		this(in DSA_PrivateKey dsa) 
@@ -343,7 +343,7 @@ static if (BOTAN_HAS_DSA) {
 	};
 	
 	
-	class GMP_DSA_Verification_Operation : pk_ops.Verification
+	class GMP_DSA_Verification_Operation : Verification
 	{
 	public:
 		this(in DSA_PublicKey dsa) 
@@ -408,7 +408,7 @@ static if (BOTAN_HAS_DSA) {
 	
 	static if (BOTAN_HAS_RSA) {
 		
-		class GMP_RSA_Private_Operation : pk_ops.Signature, pk_ops.Decryption
+		class GMP_RSA_Private_Operation : Signature, Decryption
 		{
 		public:
 			this(in RSA_PrivateKey rsa)
@@ -458,7 +458,7 @@ static if (BOTAN_HAS_DSA) {
 		};
 		
 		
-		class GMP_RSA_Public_Operation : pk_ops.Verification, pk_ops.Encryption
+		class GMP_RSA_Public_Operation : Verification, Encryption
 		{
 		public:
 			this(in RSA_PublicKey rsa)

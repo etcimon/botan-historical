@@ -1,5 +1,5 @@
 /*
-* An algorithm cache (used by Algorithm_Factory)
+* An algorithm cache (used by AlgorithmFactory)
 * (C) 2008-2009,2011 Jack Lloyd
 *
 * Distributed under the terms of the botan license.
@@ -8,7 +8,6 @@ module botan.algo_factory.algo_cache;
 
 import botan.utils.types;
 import botan.internal.stl_util;
-import core.sync.mutex;
 import string;
 import vector;
 import map;
@@ -19,7 +18,7 @@ import map;
 size_t static_provider_weight(in string prov_name);
 
 /**
-* Algorithm_Cache (used by Algorithm_Factory)
+* Algorithm_Cache (used by AlgorithmFactory)
 */
 struct Algorithm_Cache(T)
 {
@@ -32,8 +31,6 @@ public:
 	*/
 	const T get(in string algo_spec, in string requested_provider)
 	{
-		mutex.lock(); scope(exit) mutex.unlock();
-		
 		auto algo = find_algorithm(algo_spec);
 		if (algo == algorithms.end()) // algo not found at all (no providers)
 			return null;
@@ -84,9 +81,7 @@ public:
 	{
 		if (!algo)
 			return;
-		
-		mutex.lock(); scope(exit) mutex.unlock();
-		
+				
 		if (algo.name() != requested_name &&
 		    aliases.find(requested_name) == aliases.end())
 		{
@@ -108,9 +103,7 @@ public:
 	*/
 	void set_preferred_provider(in string algo_spec,
 	                            in string provider)
-	{
-		mutex.lock(); scope(exit) mutex.unlock();
-		
+	{		
 		pref_providers[algo_spec] = provider;
 	}
 
@@ -122,11 +115,9 @@ public:
 	*/
 	Vector!string providers_of(in string algo_name)
 	{
-		mutex.lock(); scope(exit) mutex.unlock();
 		
 		Vector!string providers;
-		
-		auto algo = find_algorithm(algo_name);
+
 		if (algo != algorithms.end())
 		{
 			auto provider = algo.second.begin();
@@ -187,8 +178,6 @@ private:
 		
 		return algo;
 	}
-
-	Mutex mutex;
 	HashMap!(string, string) aliases;
 	HashMap!(string, string) pref_providers;
 	HashMap!(string, HashMap!(string, T)) algorithms;

@@ -63,7 +63,7 @@ class AEAD_Mode : Cipher_Mode
 */
 AEAD_Mode* get_aead(in string algo_spec, Cipher_Dir direction)
 {
-	Algorithm_Factory af = global_state().algorithm_factory();
+	AlgorithmFactory af = global_state().algorithm_factory();
 	
 	const Vector!string algo_parts = splitter(algo_spec, '/');
 	if (algo_parts.empty())

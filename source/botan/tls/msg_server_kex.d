@@ -6,8 +6,8 @@
 */
 
 import botan.internal.tls_messages;
-import botan.internal.tls_reader;
-import botan.internal.tls_extensions;
+import botan.tls.tls_reader;
+import botan.tls.tls_extensions;
 import botan.internal.tls_handshake_io;
 import botan.credentials.credentials_manager;
 import botan.utils.loadstor;
@@ -17,7 +17,7 @@ import botan.pubkey.algo.ecdh;
 import botan.pubkey.algo.rsa;
 import botan.constructs.srp6;
 import botan.asn1.oid_lookup.oids;
-namespace TLS {
+
 
 /**
 * Create a new Server Key Exchange message
@@ -60,7 +60,7 @@ Server_Key_Exchange::Server_Key_Exchange(Handshake_IO& io,
 		const string curve_name = policy.choose_curve(curves);
 
 		if (curve_name == "")
-			throw new TLS_Exception(Alert::HANDSHAKE_FAILURE,
+			throw new TLS_Exception(Alert.HANDSHAKE_FAILURE,
 									  "Could not agree on an ECC curve with the client");
 
 		EC_Group ec_group(curve_name);
@@ -97,7 +97,7 @@ Server_Key_Exchange::Server_Key_Exchange(Handshake_IO& io,
 														  policy.hide_unknown_users());
 
 		if (!found)
-			throw new TLS_Exception(Alert::UNKNOWN_PSK_IDENTITY,
+			throw new TLS_Exception(Alert.UNKNOWN_PSK_IDENTITY,
 									  "Unknown SRP user " ~ srp_identifier);
 
 		m_srp_params.reset(new SRP6_Server_Session);
@@ -212,8 +212,8 @@ Server_Key_Exchange::Server_Key_Exchange(in Vector!ubyte buf,
 	{
 		if (_version.supports_negotiable_signature_algorithms())
 		{
-			m_hash_algo = Signature_Algorithms::hash_algo_name(reader.get_byte());
-			m_sig_algo = Signature_Algorithms::sig_algo_name(reader.get_byte());
+			m_hash_algo = Signature_Algorithms.hash_algo_name(reader.get_byte());
+			m_sig_algo = Signature_Algorithms.sig_algo_name(reader.get_byte());
 		}
 
 		m_signature = reader.get_range!ubyte(2, 0, 65535);
@@ -236,8 +236,8 @@ Vector!ubyte Server_Key_Exchange::serialize() const
 		// This should be an explicit version check
 		if (m_hash_algo != "" && m_sig_algo != "")
 		{
-			buf.push_back(Signature_Algorithms::hash_algo_code(m_hash_algo));
-			buf.push_back(Signature_Algorithms::sig_algo_code(m_sig_algo));
+			buf.push_back(Signature_Algorithms.hash_algo_code(m_hash_algo));
+			buf.push_back(Signature_Algorithms.sig_algo_code(m_sig_algo));
 		}
 
 		append_tls_length_value(buf, m_signature, 2);

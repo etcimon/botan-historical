@@ -5,7 +5,7 @@
 * Distributed under the terms of the botan license.
 */
 module botan.benchmark.benchmark;
-import botan.algo_factory;
+import botan.algo_factory.algo_factory;
 import botan.algo_base.buf_comp;
 import botan.block.block_cipher;
 import botan.stream.stream_cipher;
@@ -16,7 +16,7 @@ import std.datetime;
 import std.conv;
 import vector;
 import std.datetime;
-import botan.rng;
+import botan.rng.rng;
 import map;
 import string;
 import std.datetime;
@@ -33,7 +33,7 @@ import std.datetime;
 */
 HashMap!(string, double)
 	time_algorithm_ops(in string name,
-	                   Algorithm_Factory af,
+	                   AlgorithmFactory af,
 	                   in string provider,
 	                   RandomNumberGenerator rng,
 	                   Duration runtime,
@@ -126,7 +126,7 @@ HashMap!(string, double)
 */
 HashMap!(string, double)
 	algorithm_benchmark(in string name,
-	                    Algorithm_Factory af,
+	                    AlgorithmFactory af,
 	                    RandomNumberGenerator rng,
 	                    Duration milliseconds,
 	                    size_t buf_size)

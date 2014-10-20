@@ -14,7 +14,7 @@ import botan.filters.secqueue;
 /**
 * Container of output buffers for Pipe
 */
-class Output_Buffers
+struct Output_Buffers
 {
 public:
 	/*
