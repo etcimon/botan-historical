@@ -14,7 +14,7 @@ import openssl.rc4;
 import openssl.evp;
 import botan.internal.bn_wrap;
 
-static if (BOTAN_HAS_RSA)  import botan.rsa;
+static if (BOTAN_HAS_RSA)  import botan.pubkey.algo.rsa;
 static if (BOTAN_HAS_DSA)  import botan.pubkey.algo.dsa;
 static if (BOTAN_HAS_ECDSA) {
 	import botan.pubkey.algo.ecdsa;

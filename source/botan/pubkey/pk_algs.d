@@ -8,14 +8,14 @@ module botan.pubkey.pk_algs;
 import botan.pk_keys;
 import botan.asn1.oid_lookup.oids;
 
-static if (BOTAN_HAS_RSA)  				import botan.rsa;
+static if (BOTAN_HAS_RSA)  				import botan.pubkey.algo.rsa;
 static if (BOTAN_HAS_DSA)  				import botan.pubkey.algo.dsa;
 static if (BOTAN_HAS_DIFFIE_HELLMAN)  	import botan.pubkey.algo.dh;
 static if (BOTAN_HAS_ECDSA)  			import botan.pubkey.algo.ecdsa;
-static if (BOTAN_HAS_GOST_34_10_2001) 	import botan.gost_3410;
-static if (BOTAN_HAS_NYBERG_RUEPPEL)  	import botan.nr;
+static if (BOTAN_HAS_GOST_34_10_2001) 	import botan.pubkey.algo.gost_3410;
+static if (BOTAN_HAS_NYBERG_RUEPPEL)  	import  botan.pubkey.algo.nr;
 static if (BOTAN_HAS_RW)  				import botan.rw;
-static if (BOTAN_HAS_ELGAMAL)  			import botan.elgamal;
+static if (BOTAN_HAS_ELGAMAL)  			import botan.pubkey.algo.elgamal;
 static if (BOTAN_HAS_ECDH) 				import botan.pubkey.algo.ecdh;
 
 Public_Key make_public_key(in AlgorithmIdentifier alg_id,

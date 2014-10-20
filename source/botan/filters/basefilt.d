@@ -211,17 +211,17 @@ private:
 		m_thread_data.m_input_length = 0;
 	}
 
-	void thread_entry(Filter* filter)
+	static void thread_entry(Threaded_Fork This, Filter* filter)
 	{
 		while(true)
 		{
-			m_thread_data.m_input_ready_semaphore.acquire();
+			This.m_thread_data.m_input_ready_semaphore.acquire();
 			
-			if (!m_thread_data.m_input)
+			if (!This.m_thread_data.m_input)
 				break;
 			
 			filter.write(m_thread_data.m_input, m_thread_data.m_input_length);
-			m_thread_data.m_input_complete_semaphore.release();
+			This.m_thread_data.m_input_complete_semaphore.release();
 		}
 	}
 

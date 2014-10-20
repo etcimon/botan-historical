@@ -121,7 +121,7 @@ public:
 	SafeVector!ubyte sign(in ubyte* msg, size_t msg_len,
 		 					    RandomNumberGenerator rng)
 	{
-		import std.concurrency : spawn, receiveOnly;
+		import std.concurrency : spawn, receiveOnly, thisTid, send;
 		rng.add_entropy(msg, msg_len);
 		
 		BigInt i = BigInt(msg, msg_len);
@@ -134,7 +134,7 @@ public:
 				k.randomize(rng, q.bits());
 			while(k >= q);
 			
-			auto tid = spawn((Fixed_Base_Power_Mod powermod_g_p2, BigInt k2){ return mod_q.reduce(powermod_g_p2(k2)); }, powermod_g_p, k);
+			auto tid = spawn((Tid tid, Fixed_Base_Power_Mod powermod_g_p2, BigInt k2){ send(tid, mod_q.reduce(powermod_g_p2(k2))); }, thisTid, powermod_g_p, k);
 			
 			s = inverse_mod(k, q);
 
@@ -181,7 +181,7 @@ public:
 	bool verify(in ubyte* msg, size_t msg_len,
 	            in ubyte* sig, size_t sig_len)
 	{
-		import std.concurrency : spawn, receiveOnly;
+		import std.concurrency : spawn, receiveOnly, send, thisTid;
 		const ref BigInt q = mod_q.get_modulus();
 		
 		if (sig_len != 2*q.bytes() || msg_len > q.bytes())
@@ -196,9 +196,9 @@ public:
 		
 		s = inverse_mod(s, q);
 		
-		auto tid = spawn((Fixed_Base_Power_Mod powermod_g_p2, BigInt mod_q2, BigInt s2, BigInt i2) 
-		                 { return powermod_g_p2(mod_q2.multiply(s2, i2)); }, 
-								powermod_g_p, mod_q, s, i);
+		auto tid = spawn((Tid tid, Fixed_Base_Power_Mod powermod_g_p2, BigInt mod_q2, BigInt s2, BigInt i2) 
+		                 { send(tid, powermod_g_p2(mod_q2.multiply(s2, i2))); }, 
+								thisTid, powermod_g_p, mod_q, s, i);
 		
 		BigInt s_r = powermod_y_p(mod_q.multiply(s, r));
 		BigInt s_i = receiveOnly!BigInt();

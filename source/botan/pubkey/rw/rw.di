@@ -5,7 +5,7 @@
 * Distributed under the terms of the botan license.
 */
 
-import botan.if_algo;
+import  botan.pubkey.algo.if_algo;
 import botan.pubkey.pk_ops;
 import botan.math.numbertheory.reducer;
 import botan.pubkey.blinding;

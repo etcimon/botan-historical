@@ -14,7 +14,7 @@ import botan.utils.loadstor;
 import botan.pubkey.pubkey;
 import botan.pubkey.algo.dh;
 import botan.pubkey.algo.ecdh;
-import botan.rsa;
+import botan.pubkey.algo.rsa;
 import botan.constructs.srp6;
 import botan.asn1.oid_lookup.oids;
 namespace TLS {

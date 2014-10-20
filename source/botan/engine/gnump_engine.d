@@ -15,7 +15,7 @@ import std.c.stdlib;
 import std.c.stdio;
 /* GnuMP 5.0 and later have a side-channel resistent powm */
 version(HAVE_MPZ_POWM_SEC)	alias mpz_powm_sec mpz_powm;
-static if (BOTAN_HAS_RSA)	import botan.rsa;
+static if (BOTAN_HAS_RSA)	import botan.pubkey.algo.rsa;
 static if (BOTAN_HAS_DSA)	import botan.pubkey.algo.dsa;
 static if (BOTAN_HAS_DIFFIE_HELLMAN)	import botan.pubkey.algo.dh;
 
