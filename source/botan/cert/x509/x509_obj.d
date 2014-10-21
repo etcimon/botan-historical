@@ -16,6 +16,7 @@ import botan.asn1.ber_dec;
 import botan.utils.parsing;
 import botan.codec.pem;
 import std.algorithm;
+import botan.utils.types;
 import vector;
 
 /**
@@ -155,7 +156,7 @@ public:
 	*/
 	Vector!ubyte BER_encode() const
 	{
-		DER_Encoder der = BER_Decoder();
+		auto der = BER_Decoder();
 		encode_into(der);
 		return der.get_contents_unlocked();
 	}
@@ -184,8 +185,7 @@ package:
 	*/
 	this(in string file, in string labels)
 	{
-		DataSource_Stream stream = new DataSource_Stream(file, true);
-		scope(exit) delete stream;
+		auto stream = scoped!DataSource_Stream(file, true);
 		init(stream, labels);
 	}
 
@@ -194,8 +194,7 @@ package:
 	*/
 	this(in Vector!ubyte vec, in string labels)
 	{
-		DataSource_Memory stream = new DataSource_Memory(&vec[0], vec.length);
-		scope(exit) delete stream;
+		auto stream = scoped!DataSource_Memory(&vec[0], vec.length);
 		init(stream, labels);
 	}
 
@@ -241,20 +240,19 @@ private:
 		try {
 			if (asn1_obj.maybe_BER(input) && !pem.matches(input))
 			{
-				BER_Decoder dec = BER_Decoder(input);
+				auto dec = BER_Decoder(input);
 				decode_from(dec);
 			}
 			else
 			{
 				string got_label;
-				DataSource_Memory ber = new DataSource_Memory(pem.decode(input, got_label));
-				scope(exit) delete ber;
+				auto ber = scoped!DataSource_Memory(pem.decode(input, got_label));
 				import std.algorithm : canFind;
 				size_t idx = PEM_labels_allowed.canFind(got_label);
 				if (idx == -1)
 					throw new Decoding_Error("Invalid PEM label: " ~ got_label);
 				
-				BER_Decoder dec = BER_Decoder(ber);
+				auto dec = BER_Decoder(ber);
 				decode_from(dec);
 			}
 		}

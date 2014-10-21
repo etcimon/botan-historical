@@ -11,15 +11,16 @@ import botan.filters.data_src;
 import botan.ber_dec;
 import botan.math.bigint.bigint;
 import botan.utils.get_byte;
+import botan.utils.memory : FreeListRef;
+
+alias BER_Decoder = FreeListRef!BER_Decoder_Impl;
 
 /**
 * BER Decoding Object
 */
-class BER_Decoder
+class BER_Decoder_Impl
 {
 public:
-	import botan.utils.mixins;
-	mixin USE_STRUCT_INIT!();
 
 	/*
 	* Return the BER encoding of the next object
@@ -681,20 +682,19 @@ size_t find_eoc(DataSource ber)
 		data += Pair(&buffer[0], got);
 	}
 
-	DataSource_Memory source = new DataSource_Memory(data);
-	scope(exit) delete data;
+	auto source = scoped!DataSource_Memory(data);
 	data.clear();
 	
 	size_t length = 0;
 	while(true)
 	{
 		ASN1_Tag type_tag, class_tag;
-		size_t tag_size = decode_tag(&source, type_tag, class_tag);
+		size_t tag_size = decode_tag(source.Scoped_payload, type_tag, class_tag);
 		if (type_tag == ASN1_Tag.NO_OBJECT)
 			break;
 		
 		size_t length_size = 0;
-		size_t item_size = decode_length(&source, length_size);
+		size_t item_size = decode_length(source.scopedPayload, length_size);
 		source.discard_next(item_size);
 		
 		length += item_size + length_size + tag_size;

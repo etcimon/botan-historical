@@ -10,6 +10,7 @@ import botan.block.block_cipher;
 import botan.block.cast_sboxes;
 import botan.utils.loadstor;
 import botan.utils.rotate;
+import botan.utils.types;
 
 /**
 * CAST-128
@@ -312,12 +313,8 @@ private:
 		};
 		
 		SafeVector!uint Z = SafeVector!uint(4);
-		ByteReader x = new ByteReader(&X[0]);
-		ByteReader z = new ByteReader(&Z[0]);
-		scope(exit) {
-			delete x;
-			delete z;
-		}
+		auto x = scoped!ByteReader(&X[0]);
+		auto z = scoped!ByteReader(&Z[0]);
 		Z[0]  = X[0] ^ S5[x(13)] ^ S6[x(15)] ^ S7[x(12)] ^ S8[x(14)] ^ S7[x( 8)];
 		Z[1]  = X[2] ^ S5[z( 0)] ^ S6[z( 2)] ^ S7[z( 1)] ^ S8[z( 3)] ^ S8[x(10)];
 		Z[2]  = X[3] ^ S5[z( 7)] ^ S6[z( 6)] ^ S7[z( 5)] ^ S8[z( 4)] ^ S5[x( 9)];

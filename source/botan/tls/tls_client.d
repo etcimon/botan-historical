@@ -10,22 +10,21 @@ import botan.internal.tls_handshake_state;
 import botan.internal.tls_messages;
 import botan.internal.stl_util;
 
-
-namespace {
-
 class Client_Handshake_State : Handshake_State
 {
 	public:
 		// using Handshake_State::Handshake_State;
 
-		Client_Handshake_State(Handshake_IO* io,
-									  void delegate(const Handshake_Message) msg_callback) :
-			Handshake_State(io, msg_callback) {}
+		Client_Handshake_State(Handshake_IO io,
+									  void delegate(const Handshake_Message) msg_callback) 
+		{ 
+			super(io, msg_callback);
+		}
 
-		const Public_Key& get_server_public_Key() const
+		const Public_Key get_server_public_Key() const
 		{
 			BOTAN_ASSERT(server_public_key, "Server sent us a certificate");
-			return *server_public_key.get();
+			return server_public_key.get();
 		}
 
 		// Used during session resumption
@@ -34,7 +33,7 @@ class Client_Handshake_State : Handshake_State
 		Unique!Public_Key server_public_key;
 
 		// Used by client using NPN
-		std::function<string (Vector!string)> client_npn_cb;
+		string delegate(Vector!string) client_npn_cb;
 };
 
 }
@@ -53,29 +52,29 @@ Client::Client(void delegate(in ubyte[]) output_fn,
 					in Server_Information info,
 					in Protocol_Version offer_version,
 					string delegate(string[]) next_protocol,
-					size_t io_buf_sz) :
-	Channel(output_fn, proc_cb, alert_cb, handshake_cb, session_manager, rng, io_buf_sz),
-	m_policy(policy),
-	m_creds(creds),
-	m_info(info)
-{
+					size_t io_buf_sz)
+{ 
+	super(output_fn, proc_cb, alert_cb, handshake_cb, session_manager, rng, io_buf_sz);
+	m_policy = policy;
+	m_creds = creds;
+	m_info = info;
 	const string srp_identifier = m_creds.srp_identifier("tls-client", m_info.hostname());
 
 	Handshake_State& state = create_handshake_state(offer_version);
 	send_client_hello(state, false, offer_version, srp_identifier, next_protocol);
 }
 
-Handshake_State* Client::new_handshake_state(Handshake_IO* io)
+Handshake_State Client::new_handshake_state(Handshake_IO io)
 {
 	return new Client_Handshake_State(io);
 }
 
-Vector!( X509_Certificate )
+Vector!X509_Certificate
 Client::get_peer_cert_chain(in Handshake_State state) const
 {
 	if (state.server_certs())
 		return state.server_certs().cert_chain();
-	return Vector!( X509_Certificate )();
+	return Vector!X509_Certificate();
 }
 
 /*
@@ -146,7 +145,7 @@ void Client::send_client_hello(Handshake_State state_base,
 /*
 * Process a handshake message
 */
-void Client::process_handshake_msg(const Handshake_State* active_state,
+void Client::process_handshake_msg(const Handshake_State active_state,
 											  Handshake_State& state_base,
 											  Handshake_Type type,
 											  in Vector!ubyte contents)
@@ -313,7 +312,7 @@ void Client::process_handshake_msg(const Handshake_State* active_state,
 
 		state.server_certs(new Certificate(contents));
 
-		const Vector!( X509_Certificate )& server_certs =
+		const Vector!X509_Certificate& server_certs =
 			state.server_certs().cert_chain();
 
 		if (server_certs.empty())
@@ -335,7 +334,7 @@ void Client::process_handshake_msg(const Handshake_State* active_state,
 			throw new TLS_Exception(Alert.ILLEGAL_PARAMETER,
 									  "Certificate key type did not match ciphersuite");
 
-		state.server_public_key.reset(peer_key.release());
+		state.server_public_key = peer_key;
 	}
 	else if (type == SERVER_KEX)
 	{
@@ -378,7 +377,7 @@ void Client::process_handshake_msg(const Handshake_State* active_state,
 			const Vector!string& types =
 				state.cert_req().acceptable_cert_types();
 
-			Vector!( X509_Certificate ) client_certs =
+			Vector!X509_Certificate client_certs =
 				m_creds.cert_chain(types,
 										 "tls-client",
 										 m_info.hostname());
@@ -520,8 +519,4 @@ void Client::process_handshake_msg(const Handshake_State* active_state,
 	}
 	else
 		throw new Unexpected_Message("Unknown handshake message received");
-}
-
-}
-
 }

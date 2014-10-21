@@ -132,71 +132,70 @@ public:
 	Signature get_signature_op(in Private_Key key, RandomNumberGenerator rng) const
 	{
 		static if (BOTAN_HAS_RSA) {
-			if (const RSA_PrivateKey* s = cast(const RSA_PrivateKey*)(key))
-				return new RSA_Private_Operation(*s, rng);
+			if (const RSA_PrivateKey s = cast(const RSA_PrivateKey)(key))
+				return new RSA_Private_Operation(s, rng);
 		}
 		
 		static if (BOTAN_HAS_RW) {
 			if (const RW_PrivateKey* s = cast(const RW_PrivateKey*)(key))
-				return new RW_Signature_Operation(*s);
+				return new RW_Signature_Operation(s);
 		}
 		
 		static if (BOTAN_HAS_DSA) {
 			if (const DSA_PrivateKey* s = cast(const DSA_PrivateKey*)(key))
-				return new DSA_Signature_Operation(*s);
+				return new DSA_Signature_Operation(s);
 		}
 		
 		static if (BOTAN_HAS_ECDSA) {
-			if (const ECDSA_PrivateKey* s = cast(const ECDSA_PrivateKey*)(key))
-				return new ECDSA_Signature_Operation(*s);
+			if (const ECDSA_PrivateKey s = cast(const ECDSA_PrivateKey)(key))
+				return new ECDSA_Signature_Operation(s);
 		}
 		
 		static if (BOTAN_HAS_GOST_34_10_2001) {
 			if (const GOST_3410_PrivateKey* s =
 			    cast(const GOST_3410_PrivateKey*)(key))
-				return new GOST_3410_Signature_Operation(*s);
+				return new GOST_3410_Signature_Operation(s);
 		}
 		
 		static if (BOTAN_HAS_NYBERG_RUEPPEL) {
 			if (const NR_PrivateKey* s = cast(const NR_PrivateKey*)(key))
-				return new NR_Signature_Operation(*s);
+				return new NR_Signature_Operation(s);
 		}
 		
 		return null;
 	}
 
-	Verification
-		get_verify_op(in Public_Key key, RandomNumberGenerator rng) const
+	Verification get_verify_op(in Public_Key key, RandomNumberGenerator rng) const
 	{
 		static if (BOTAN_HAS_RSA) {
-			if (const RSA_PublicKey* s = cast(const RSA_PublicKey*)(key))
-				return new RSA_Public_Operation(*s);
+			if (const RSA_PublicKey s = cast(const RSA_PublicKey)(key))
+				return new RSA_Public_Operation(s);
 		}
 		
 		static if (BOTAN_HAS_RW) {
 			if (const RW_PublicKey* s = cast(const RW_PublicKey*)(key))
-				return new RW_Verification_Operation(*s);
+				return new RW_Verification_Operation(s);
 		}
 		
 		static if (BOTAN_HAS_DSA) {
 			if (const DSA_PublicKey* s = cast(const DSA_PublicKey*)(key))
-				return new DSA_Verification_Operation(*s);
+				return new DSA_Verification_Operation(s);
 		}
 		
 		static if (BOTAN_HAS_ECDSA) {
 			if (const ECDSA_PublicKey s = cast(const ECDSA_PublicKey)(key))
-				return new ECDSA_Verification_Operation(*s);
+				return new ECDSA_Verification_Operation(s);
 		}
 		
 		static if (BOTAN_HAS_GOST_34_10_2001) {
 			if (const GOST_3410_PublicKey* s =
 			    cast(const GOST_3410_PublicKey*)(key))
-				return new GOST_3410_Verification_Operation(*s);
+				return new GOST_3410_Verification_Operation(s);
 		}
 		
 		static if (BOTAN_HAS_NYBERG_RUEPPEL) {
 			if (const NR_PublicKey* s = cast(const NR_PublicKey*)(key))
-				return new NR_Verification_Operation(*s);
+				return new NR_Verification_Operation(s);
 		}
 		
 		return null;
@@ -206,13 +205,13 @@ public:
 	Encryption get_encryption_op(in Public_Key key, RandomNumberGenerator) const
 	{
 		static if (BOTAN_HAS_RSA) {
-			if (const RSA_PublicKey* s = cast(const RSA_PublicKey*)(key))
-				return new RSA_Public_Operation(*s);
+			if (const RSA_PublicKey s = cast(const RSA_PublicKey)(key))
+				return new RSA_Public_Operation(s);
 		}
 		
 		static if (BOTAN_HAS_ELGAMAL) {
 			if (const ElGamal_PublicKey* s = cast(const ElGamal_PublicKey*)(key))
-				return new ElGamal_Encryption_Operation(*s);
+				return new ElGamal_Encryption_Operation(s);
 		}
 		
 		return null;
@@ -221,13 +220,13 @@ public:
 	Decryption get_decryption_op(in Private_Key key, RandomNumberGenerator rng) const
 	{
 		static if (BOTAN_HAS_RSA) {
-			if (const RSA_PrivateKey* s = cast(const RSA_PrivateKey*)(key))
-				return new RSA_Private_Operation(*s, rng);
+			if (const RSA_PrivateKey s = cast(const RSA_PrivateKey)(key))
+				return new RSA_Private_Operation(s, rng);
 		}
 		
 		static if (BOTAN_HAS_ELGAMAL) {
 			if (const ElGamal_PrivateKey* s = cast(const ElGamal_PrivateKey*)(key))
-				return new ElGamal_Decryption_Operation(*s, rng);
+				return new ElGamal_Decryption_Operation(s, rng);
 		}
 		
 		return null;

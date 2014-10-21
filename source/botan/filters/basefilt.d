@@ -9,7 +9,7 @@ module botan.filters.basefilt;
 
 import botan.filters.filter;
 import std.concurrency;
-import std.typecons : RefCounted;
+import botan.utils.memory : FreeListRef;
 import botan.filters.key_filt;
 
 import botan.utils.semaphore;
@@ -169,7 +169,7 @@ package:
 			for (size_t i = m_threads.length; i != n; ++i)
 			{
 				m_threads.push_back(
-					RefCounted!Thread(
+					FreeListRef!Thread(
 						spawn(&thread_entry, this, next[i])));
 			}
 		}
@@ -225,7 +225,7 @@ private:
 		}
 	}
 
-	Vector!(RefCounted!Tid) m_threads;
+	Vector!(FreeListRef!Tid) m_threads;
 	Unique!Threaded_Fork_Data m_thread_data;
 };
 

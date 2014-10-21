@@ -93,7 +93,7 @@ public:
 		if (!strong)
 			return true;
 		
-		return signature_consistency_check(rng, *this, "EMSA1(SHA-1)");
+		return signature_consistency_check(rng, this, "EMSA1(SHA-1)");
 	}
 
 

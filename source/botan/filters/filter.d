@@ -123,7 +123,7 @@ package:
 
 private:
 	/**
-	* Start a new message in *this and all following filters. Only for
+	* Start a new message in this and all following filters. Only for
 	* internal use, not intended for use in client applications.
 	*/
 	void new_msg()
@@ -135,7 +135,7 @@ private:
 	}
 
 	/**
-	* End a new message in *this and all following filters. Only for
+	* End a new message in this and all following filters. Only for
 	* internal use, not intended for use in client applications.
 	*/
 	void finish_msg()

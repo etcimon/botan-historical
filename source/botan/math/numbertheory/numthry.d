@@ -252,9 +252,8 @@ int jacobi(in BigInt a, const ref BigInt n)
 */
 BigInt power_mod(in BigInt base, const ref BigInt exp, const ref BigInt mod)
 {
-	Power_Mod pow_mod = new Power_Mod(mod);
-	scope(exit) delete pow_mod;
-	
+	auto pow_mod = scoped!Power_Mod(mod);
+
 	/*
 	* Calling set_base before set_exponent means we end up using a
 	* minimal window. This makes sense given that here we know that any

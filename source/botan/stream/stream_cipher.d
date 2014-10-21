@@ -60,7 +60,7 @@ public:
 	}
 
 	/**
-	* Get a new object representing the same algorithm as *this
+	* Get a new object representing the same algorithm as this
 	*/
 	abstract StreamCipher clone() const;
 };

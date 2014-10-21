@@ -44,7 +44,7 @@ class Session
 				  ubyte compression_method,
 				  Connection_Side side,
 				  size_t fragment_size,
-				  const Vector!( X509_Certificate )& peer_certs,
+				  const Vector!X509_Certificate& peer_certs,
 				  in Vector!ubyte session_ticket,
 				  const Server_Information& server_info,
 				  in string srp_identifier);
@@ -149,7 +149,7 @@ class Session
 		/**
 		* Return the certificate chain of the peer (possibly empty)
 		*/
-		Vector!( X509_Certificate ) peer_certs() const { return m_peer_certs; }
+		Vector!X509_Certificate peer_certs() const { return m_peer_certs; }
 
 		/**
 		* Get the wall clock time this session began
@@ -185,7 +185,7 @@ class Session
 
 		size_t m_fragment_size;
 
-		Vector!( X509_Certificate ) m_peer_certs;
+		Vector!X509_Certificate m_peer_certs;
 		Server_Information m_server_info; // optional
 		string m_srp_identifier; // optional
 };

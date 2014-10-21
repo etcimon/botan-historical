@@ -21,10 +21,10 @@ public:
 	/**
 	* Subject DN and (optionally) key identifier
 	*/
-	abstract const X509_Certificate*
+	abstract const X509_Certificate
 		find_cert(in X509_DN subject_dn, in Vector!ubyte key_id) const;
 
-	abstract const X509_CRL* find_crl_for(in X509_Certificate subject) const
+	abstract const X509_CRL find_crl_for(in X509_Certificate subject) const
 	{
 		return null;
 	}
@@ -82,7 +82,7 @@ public:
 		return subjects;
 	}
 
-	const X509_Certificate*
+	const X509_Certificate
 		find_cert(in X509_DN subject_dn,
 		          in Vector!ubyte key_id) const
 	{
@@ -108,7 +108,7 @@ public:
 		m_crls.push_back(crl);
 	}
 
-	const X509_CRL* find_crl_for(in X509_Certificate subject) const
+	const X509_CRL find_crl_for(in X509_Certificate subject) const
 	{
 		const Vector!ubyte key_id = subject.authority_key_id();
 		
@@ -132,14 +132,14 @@ public:
 
 private:
 	// TODO: Add indexing on the DN and key id to avoid linear search
-	Vector!( X509_Certificate ) m_certs;
-	Vector!( X509_CRL ) m_crls;
+	Vector!X509_Certificate m_certs;
+	Vector!X509_CRL m_crls;
 };
 
 final class Certificate_Store_Overlay : Certificate_Store
 {
 public:
-	this(in Vector!( X509_Certificate ) certs)
+	this(in Vector!X509_Certificate certs)
 	{
 		m_certs = certs;
 	}
@@ -152,19 +152,19 @@ public:
 		return subjects;
 	}
 
-	const X509_Certificate*
+	const X509_Certificate
 		find_cert(in X509_DN subject_dn,
 		          in Vector!ubyte key_id) const
 	{
 		return cert_search(subject_dn, key_id, m_certs);
 	}
 private:
-	const Vector!( X509_Certificate ) m_certs;
+	const Vector!X509_Certificate m_certs;
 };
 
-const X509_Certificate*
+const X509_Certificate
 	cert_search(in X509_DN subject_dn, in Vector!ubyte key_id,
-	            const ref Vector!( X509_Certificate ) certs)
+	            const ref Vector!X509_Certificate certs)
 {
 	for (size_t i = 0; i != certs.length; ++i)
 	{

@@ -10,6 +10,7 @@ import botan.math.bigint.bigint;
 import string;
 import botan.rng.hmac_drbg;
 import botan.libstate.libstate;
+import botan.utils.types;
 /**
 * @param x the secret (EC)DSA key
 * @param q the group order
@@ -23,9 +24,8 @@ BigInt generate_rfc6979_nonce(in BigInt x,
 {
 	AlgorithmFactory af = global_state().algorithm_factory();
 	
-	HMAC_DRBG rng = new HMAC_DRBG(af.make_mac("HMAC(" ~ hash ~ ")"), null);
-	scope(exit) delete rng;
-	
+	auto rng = scoped!HMAC_DRBG(af.make_mac("HMAC(" ~ hash ~ ")"), null);
+
 	const size_t qlen = q.bits();
 	const size_t rlen = qlen / 8 + (qlen % 8 ? 1 : 0);
 	

@@ -59,7 +59,7 @@ public:
 	*/
 	void verify_certificate_chain(	in string type,
 									in string purported_hostname,
-									const ref Vector!( X509_Certificate ) cert_chainput)
+									const ref Vector!X509_Certificate cert_chainput)
 	{
 		if (cert_chain.empty())
 			throw new Invalid_Argument("Certificate chain was empty");
@@ -97,11 +97,11 @@ public:
 	*
 	* @param context specifies a context relative to type.
 	*/
-	Vector!( X509_Certificate ) cert_chain( const ref Vector!string cert_key_types,
+	Vector!X509_Certificate cert_chain( const ref Vector!string cert_key_types,
 											in string type,
 											in string context)
 	{
-		return Vector!( X509_Certificate )();
+		return Vector!X509_Certificate();
 	}
 
 	/**
@@ -118,7 +118,7 @@ public:
 	*
 	* @param context specifies a context relative to type.
 	*/
-	Vector!( X509_Certificate ) cert_chain_single_type( in string cert_key_type,
+	Vector!X509_Certificate cert_chain_single_type( in string cert_key_type,
 														in string type,
 														in string context)
 	{

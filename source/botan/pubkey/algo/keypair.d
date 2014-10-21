@@ -8,6 +8,7 @@ module botan.pubkey.algo.keypair;
 
 import botan.pubkey.pk_keys;
 import botan.pubkey.pubkey;
+import botan.utils.types;
 
 /**
 * Tests whether the key is consistent for encryption; whether
@@ -21,9 +22,8 @@ bool encryption_consistency_check(RandomNumberGenerator rng,
                                   in Private_Key key,
                                   in string padding)
 {
-	PK_Encryptor_EME encryptor = new PK_Encryptor_EME(key, padding);
-	PK_Decryptor_EME decryptor = new PK_Decryptor_EME(key, padding);
-	scope(exit) { delete encryptor; delete decryptor; }
+	auto encryptor = scoped!PK_Encryptor_EME(key, padding);
+	auto decryptor = scoped!PK_Decryptor_EME(key, padding);
 	
 	/*
 	Weird corner case, if the key is too small to encrypt anything at
@@ -56,8 +56,8 @@ bool signature_consistency_check(RandomNumberGenerator rng,
                                  in Private_Key key,
                                  in string padding)
 {
-	PK_Signer signer = PK_Signer(key, padding);
-	PK_Verifier verifier = PK_Verifier(key, padding);
+	auto signer = PK_Signer(key, padding);
+	auto verifier = PK_Verifier(key, padding);
 	Vector!ubyte message = unlock(rng.random_vec(16));
 	
 	Vector!ubyte signature;

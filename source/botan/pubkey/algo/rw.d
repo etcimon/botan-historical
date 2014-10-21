@@ -104,7 +104,7 @@ public:
 		if ((e * d) % (lcm(p - 1, q - 1) / 2) != 1)
 			return false;
 		
-		return signature_consistency_check(rng, *this, "EMSA2(SHA-1)");
+		return signature_consistency_check(rng, this, "EMSA2(SHA-1)");
 	}
 };
 

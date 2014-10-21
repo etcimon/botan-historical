@@ -15,6 +15,7 @@ import botan.asn1.ber_dec;
 import botan.codec.pem;
 import botan.asn1.alg_id;
 import botan.pubkey.pk_algs;
+import botan.utils.types;
 
 import string;
 /**
@@ -70,10 +71,9 @@ Public_Key load_key(DataSource source)
 		}
 		else
 		{
-			DataSource_Memory ber = new DataSource_Memory(
+			auto ber = scoped!DataSource_Memory(
 				pem.decode_check_label(source, "PUBLIC KEY")
 				);
-			scope(exit) delete ber;
 			
 			BER_Decoder(ber)
 				.start_cons(ASN1_Tag.SEQUENCE)
@@ -101,8 +101,7 @@ Public_Key load_key(DataSource source)
 */
 Public_Key load_key(in string filename)
 {
-	DataSource_Stream source = new DataSource_Stream(filename, true);
-	scope(exit) delete source;
+	auto source = scoped!DataSource_Stream(filename, true);
 	return x509_key.load_key(source);
 }
 
@@ -114,8 +113,7 @@ Public_Key load_key(in string filename)
 */
 Public_Key load_key(in Vector!ubyte enc)
 {
-	DataSource_Memory source = new DataSource_Memory(enc);
-	scope(exit) delete source;
+	auto source = scoped!DataSource_Memory(enc);
 	return x509_key.load_key(source);
 }
 
@@ -126,7 +124,6 @@ Public_Key load_key(in Vector!ubyte enc)
 */
 Public_Key copy_key(in Public_Key key)
 {
-	DataSource_Memory source = new DataSource_Memory(PEM_encode(key));
-	scope(exit) delete source;
+	auto source = scoped!DataSource_Memory(PEM_encode(key));
 	return x509_key.load_key(source);
 }

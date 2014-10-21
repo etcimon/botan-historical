@@ -60,7 +60,7 @@ public:
 	AlgorithmIdentifier algorithm_identifier() const
 	{
 		return AlgorithmIdentifier(get_oid(),
-		                           AlgorithmIdentifier.Encoding_Option.USE_NULL_PARAM);
+		                           AlgorithmIdentifier.USE_NULL_PARAM);
 	}
 
 	Vector!ubyte x509_subject_public_key() const

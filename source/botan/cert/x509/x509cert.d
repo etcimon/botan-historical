@@ -22,15 +22,18 @@ import botan.libstate.lookup;
 import botan.asn1.oid_lookup.oids;
 import botan.codec.pem;
 import botan.codec.hex;
+import botan.utils.types;
 import std.algorithm;
 import iterator;
 import sstream;
 import map;
 
+alias X509_Certificate = FreeListRef!X509_Certificate_Impl;
+
 /**
 * This class represents X.509 Certificate
 */
-class X509_Certificate : X509_Object
+class X509_Certificate_Impl : X509_Object
 {
 public:
 	/**

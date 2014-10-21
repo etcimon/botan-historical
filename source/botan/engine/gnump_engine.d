@@ -84,7 +84,7 @@ public:
 		get_signature_op(in Private_Key key, RandomNumberGenerator) const
 	{
 		static if (BOTAN_HAS_RSA) {
-			if (const RSA_PrivateKey* s = cast(const RSA_PrivateKey*)(key))
+			if (const RSA_PrivateKey s = cast(const RSA_PrivateKey)(key))
 				return new GMP_RSA_Private_Operation(*s);
 		}
 		
@@ -100,7 +100,7 @@ public:
 		get_verify_op(in Public_Key key, RandomNumberGenerator) const
 	{
 		static if (BOTAN_HAS_RSA) {
-			if (const RSA_PublicKey* s = cast(const RSA_PublicKey*)(key))
+			if (const RSA_PublicKey s = cast(const RSA_PublicKey)(key))
 				return new GMP_RSA_Public_Operation(*s);
 		}
 		
@@ -116,7 +116,7 @@ public:
 		get_encryption_op(in Public_Key key, RandomNumberGenerator) const
 	{
 		static if (BOTAN_HAS_RSA) {
-			if (const RSA_PublicKey* s = cast(const RSA_PublicKey*)(key))
+			if (const RSA_PublicKey s = cast(const RSA_PublicKey)(key))
 				return new GMP_RSA_Public_Operation(*s);
 		}
 		
@@ -127,7 +127,7 @@ public:
 		get_decryption_op(in Private_Key key, RandomNumberGenerator) const
 	{
 		static if (BOTAN_HAS_RSA) {
-			if (const RSA_PrivateKey* s = cast(const RSA_PrivateKey*)(key))
+			if (const RSA_PrivateKey s = cast(const RSA_PrivateKey)(key))
 				return new GMP_RSA_Private_Operation(*s);
 		}
 		

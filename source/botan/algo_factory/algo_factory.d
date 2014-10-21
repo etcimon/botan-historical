@@ -22,10 +22,10 @@ import std.algorithm;
 import botan.utils.types;
 import string;
 import vector;
-import std.typecons : RefCounted;
+import botan.utils.memory : FreeListRef;
 
 
-alias AlgorithmFactory = RefCounted!AlgorithmFactoryImpl;
+alias AlgorithmFactory = FreeListRef!AlgorithmFactoryImpl;
 
 /**
 * Algorithm Factory

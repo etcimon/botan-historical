@@ -18,18 +18,17 @@ import botan.internal.stl_util;
 import botan.utils.charset;
 import botan.utils.parsing;
 import botan.utils.loadstor;
+import botan.utils.types;
 import map;
 
-class DER_Encoder;
-class BER_Decoder;
+alias AlternativeName = FreeListRef!AlternativeNameImpl;
+
 /**
 * Alternative Name
 */
-class AlternativeName : ASN1_Object
+class AlternativeNameImpl : ASN1_Object
 {
 public:
-	import botan.utils.mixins;
-	mixin USE_STRUCT_INIT!();
 	/*
 	* DER encode an AlternativeName extension
 	*/
@@ -58,7 +57,7 @@ public:
 	/*
 	* Decode a BER encoded AlternativeName
 	*/
-	void decode_from(BER_Decoder source = BER_Decoder())
+	void decode_from(BER_Decoder source)
 	{
 		BER_Decoder names = source.start_cons(ASN1_Tag.SEQUENCE);
 		
@@ -73,7 +72,7 @@ public:
 			
 			if (tag == 0)
 			{
-				BER_Decoder othername(obj.value);
+				auto othername = BER_Decoder(obj.value);
 				
 				OID oid;
 				othername.decode(oid);
@@ -88,7 +87,7 @@ public:
 					    )
 						throw new Decoding_Error("Invalid tags on otherName value");
 					
-					BER_Decoder othername_value_inner(othername_value_outer.value);
+					auto othername_value_inner = BER_Decoder(othername_value_outer.value);
 					
 					BER_Object value = othername_value_inner.get_next_object();
 					othername_value_inner.verify_end();

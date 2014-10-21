@@ -67,7 +67,7 @@ public:
 		{
 			OID dom_par_oid;
 			BER_Decoder(ber_data).decode(dom_par_oid);
-			*this = EC_Group(dom_par_oid);
+			this = EC_Group(dom_par_oid);
 		}
 		else if (obj.type_tag == ASN1_Tag.SEQUENCE)
 		{
@@ -110,7 +110,7 @@ public:
 		if (!pem)
 			throw new Lookup_Error("No ECC domain data for " ~ domain_oid.as_string());
 		
-		*this = EC_Group(pem);
+		this = EC_Group(pem);
 		oid = domain_oid.as_string();
 	}
 
@@ -129,11 +129,11 @@ public:
 			Vector!ubyte ber =
 				unlock(pem.decode_check_label(pem_or_oid, "EC PARAMETERS"));
 			
-			*this = EC_Group(ber);
+			this = EC_Group(ber);
 		}
 		catch(Decoding_Error) // hmm, not PEM?
 		{
-			*this = EC_Group(oids.lookup(pem_or_oid));
+			this = EC_Group(oids.lookup(pem_or_oid));
 		}
 	}
 

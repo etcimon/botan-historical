@@ -8,6 +8,7 @@ module botan.cert.cvc.cvc_ado;
 import botan.cert.cvc.eac_obj;
 import botan.cert.cvc.eac_asn_obj;
 import botan.cert.cvc.cvc_req;
+import botan.utils.types;
 // import fstream;
 import string;
 
@@ -25,8 +26,7 @@ public:
 	*/
 	this(in string input)
 	{
-		DataSource_Stream stream = new DataSource_Stream(input, true);
-		scope(exit) delete stream;
+		auto stream = scoped!DataSource_Stream(input, true);
 		init(stream);
 		do_decode();
 	}
@@ -143,8 +143,7 @@ private:
 				.end_cons()
 				.get_contents_unlocked();
 		
-		DataSource_Memory req_source = new DataSource_Memory(req_bits);
-		scope(exit) delete req_source;
+		auto req_source = scoped!DataSource_Memory(req_bits);
 		m_req = EAC1_1_Req(req_source);
 		sig_algo = m_req.sig_algo;
 	}

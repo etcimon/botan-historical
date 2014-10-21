@@ -16,7 +16,6 @@ import botan.math.bigint.bigint;
 import botan.asn1.oid_lookup.oids;
 
 import vector;
-class X509_Certificate;
 
 /**
 * This class represents X.509 Certificate Revocation Lists (CRLs).

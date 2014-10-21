@@ -52,17 +52,11 @@ enum ASN1_Tag {
 	DIRECTORY_STRING	= 0xFF01
 }
 
-class DER_Encoder;
-class BER_Decoder;
-
 /**
 * Basic ASN.1 Object Interface
 */
 class ASN1_Object
 {
-
-	import botan.utils.mixins;
-	mixin USE_STRUCT_INIT!();
 
 public:
 	/**

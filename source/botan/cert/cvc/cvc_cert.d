@@ -10,6 +10,7 @@ module botan.cert.cvc.cvc_cert;
 import botan.cert.cvc.cvc_gen_cert;
 import botan.asn1.oid_lookup.oids;
 import botan.pubkey.algo.ecdsa;
+import botan.utils.types;
 import string;
 /**
 * This class represents TR03110 (EAC) v1.1 CV Certificates
@@ -85,8 +86,7 @@ public:
 	*/
 	this(in string input)
 	{
-		DataSource_Stream stream = new DataSource_Stream(input, true);
-		scope(exit) delete stream;
+		auto stream = scoped!DataSource_Stream(input, true);
 		init(stream);
 		self_signed = false;
 		do_decode();
@@ -188,8 +188,7 @@ EAC1_1_CVC make_cvc_cert(PK_Signer signer,
 		            build_cert_body(tbs),
 		            rng);
 	
-	DataSource_Memory source = new DataSource_Memory(signed_cert);
-	scope(exit) delete source;
+	auto source = scoped!DataSource_Memory(signed_cert);
 	return EAC1_1_CVC(source);
 }
 

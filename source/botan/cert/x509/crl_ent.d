@@ -14,9 +14,6 @@ import botan.asn1.ber_dec;
 import botan.math.bigint.bigint;
 import botan.asn1.oid_lookup.oids;
 
-class BER_Decoder;
-class DER_Encoder;
-
 /**
 * X.509v2 CRL Reason Code.
 */
@@ -43,12 +40,10 @@ enum CRL_Code {
 class CRL_Entry : ASN1_Object
 {
 public:
-	import botan.utils.mixins;
-	mixin USE_STRUCT_INIT!();
 	/*
 	* DER encode a CRL_Entry
 	*/
-	void encode_into(DER_Encoder to = DER_Encoder()) const
+	void encode_into(DER_Encoder to) const
 	{
 		Extensions extensions;
 		
@@ -67,7 +62,7 @@ public:
 	/*
 	* Decode a BER encoded CRL_Entry
 	*/
-	void decode_from(BER_Decoder source = BER_Decoder())
+	void decode_from(BER_Decoder source)
 	{
 		BigInt serial_number_bn;
 		reason = CRL_Code.UNSPECIFIED;

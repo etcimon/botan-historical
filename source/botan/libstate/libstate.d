@@ -56,7 +56,7 @@ static if (BOTAN_HAS_ENTROPY_SRC_WIN32)
 static if (BOTAN_HAS_ENTROPY_SRC_PROC_WALKER)
 	import botan.entropy.proc_walk;
 
-alias LibraryState = RefCounted!LibraryStateImpl;
+alias LibraryState = FreeListRef!LibraryStateImpl;
 
 /**
 * Global Library State
@@ -152,52 +152,52 @@ public:
 
 	~this() { }
 private:
-	static Vector!( Unique!EntropySource ) entropy_sources()
+	static Vector!( EntropySource ) entropy_sources()
 	{
-		Vector!( Unique!EntropySource ) sources;
+		Vector!( EntropySource ) sources;
 		
 		static if (BOTAN_HAS_ENTROPY_SRC_HIGH_RESOLUTION_TIMER)
-			sources.push_back(Unique!EntropySource(new High_Resolution_Timestamp));
+			sources.push_back(new High_Resolution_Timestamp);
 				
 		static if (BOTAN_HAS_ENTROPY_SRC_RDRAND)
-			sources.push_back(Unique!EntropySource(new Intel_Rdrand));
+			sources.push_back(new Intel_Rdrand);
 				
 		static if (BOTAN_HAS_ENTROPY_SRC_UNIX_PROCESS_RUNNER)
-			sources.push_back(Unique!EntropySource(new UnixProcessInfo_EntropySource));
+			sources.push_back(new UnixProcessInfo_EntropySource);
 				
 		static if (BOTAN_HAS_ENTROPY_SRC_DEV_RANDOM)
-			sources.push_back(Unique!EntropySource(new Device_EntropySource(
+			sources.push_back(new Device_EntropySource(
 				[ "/dev/random", "/dev/srandom", "/dev/urandom" ]
-			)));
-				
-		static if (BOTAN_HAS_ENTROPY_SRC_CAPI)
-			sources.push_back(Unique!EntropySource(new Win32_CAPI_EntropySource));
-				
-		static if (BOTAN_HAS_ENTROPY_SRC_PROC_WALKER)
-			sources.push_back(Unique!EntropySource(new ProcWalking_EntropySource("/proc")));
-				
-		static if (BOTAN_HAS_ENTROPY_SRC_WIN32)
-			sources.push_back(Unique!EntropySource(new Win32_EntropySource));
-				
-		static if (BOTAN_HAS_ENTROPY_SRC_BEOS)
-			sources.push_back(Unique!EntropySource(new BeOS_EntropySource));
-
-		static if (BOTAN_HAS_ENTROPY_SRC_UNIX_PROCESS_RUNNER)
-			sources.push_back(Unique!EntropySource(
-				new Unix_EntropySource(	[ "/bin", "/sbin", "/usr/bin", "/usr/sbin" ] )
 			));
 				
+		static if (BOTAN_HAS_ENTROPY_SRC_CAPI)
+			sources.push_back(EntropySource(new Win32_CAPI_EntropySource));
+				
+		static if (BOTAN_HAS_ENTROPY_SRC_PROC_WALKER)
+			sources.push_back(new ProcWalking_EntropySource("/proc"));
+				
+		static if (BOTAN_HAS_ENTROPY_SRC_WIN32)
+			sources.push_back(new Win32_EntropySource);
+				
+		static if (BOTAN_HAS_ENTROPY_SRC_BEOS)
+			sources.push_back(new BeOS_EntropySource);
+
+		static if (BOTAN_HAS_ENTROPY_SRC_UNIX_PROCESS_RUNNER)
+			sources.push_back(
+				new Unix_EntropySource(	[ "/bin", "/sbin", "/usr/bin", "/usr/sbin" ] )
+			);
+				
 		static if (BOTAN_HAS_ENTROPY_SRC_EGD)
-			sources.push_back(Unique!EntropySource(
+			sources.push_back(
 				new EGD_EntropySource( [ "/var/run/egd-pool", "/dev/egd-pool" ] )
-				));
+				);
 				
 		return sources;
 	}
 
 	shared Serialized_RNG m_global_prng;
 	__gshared Mutex m_entropy_src_mutex;
-	__gshared Vector!( Unique!EntropySource ) m_sources;
+	__gshared Vector!( EntropySource ) m_sources;
 
 	AlgorithmFactory m_algorithm_factory;
 	bool initialized;

@@ -81,7 +81,7 @@ uint bitmask_for_handshake_type(Handshake_Type type)
 /*
 * Initialize the SSL/TLS Handshake State
 */
-Handshake_State::Handshake_State(Handshake_IO* io,
+Handshake_State::Handshake_State(Handshake_IO io,
 											void delegate(const Handshake_Message) msg_callback) :
 	m_msg_callback(msg_callback),
 	m_handshake_io(io),
@@ -228,7 +228,7 @@ bool Handshake_State::received_handshake_msg(Handshake_Type handshake_msg) const
 	return (m_hand_received_mask & mask);
 }
 
-Pair!(Handshake_Type, Vector!( ubyte) )
+Pair!(Handshake_Type, Vector!ubyte )
 Handshake_State::get_next_handshake_msg()
 {
 	const bool expecting_ccs =

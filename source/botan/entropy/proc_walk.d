@@ -68,7 +68,7 @@ private:
 	}
 	
 	Pair!(DIR*, string) m_cur_dir;
-	std::deque<string> m_dirlist;
+	Deque!string m_dirlist;
 };
 
 

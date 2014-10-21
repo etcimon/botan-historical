@@ -92,7 +92,7 @@ public:
 			Vector!ubyte tbs_bits;
 			AlgorithmIdentifier sig_algo;
 			Vector!ubyte signature;
-			Vector!( X509_Certificate ) certs;
+			Vector!X509_Certificate certs;
 			
 			basicresponse.start_cons(ASN1_Tag.SEQUENCE)
 				.raw_bytes(tbs_bits)
@@ -174,7 +174,7 @@ private:
 
 void decode_optional_list(BER_Decoder ber,
                           ASN1_Tag tag,
-                          ref Vector!( X509_Certificate ) output)
+                          ref Vector!X509_Certificate output)
 {
 	BER_Object obj = ber.get_next_object();
 	
@@ -224,7 +224,7 @@ void check_signature(in Vector!ubyte tbs_response,
                      const ref AlgorithmIdentifier sig_algo,
                      in Vector!ubyte signature,
                      const ref Certificate_Store trusted_roots,
-                     const ref Vector!( X509_Certificate ) certs)
+                     const ref Vector!X509_Certificate certs)
 {
 	if (certs.length < 1)
 		throw new Invalid_Argument("Short cert chain for check_signature");
@@ -245,7 +245,7 @@ void check_signature(in Vector!ubyte tbs_response,
 	if (!trusted_roots.certificate_known(result.trust_root())) // not needed anymore?
 		throw new Exception("Certificate chain roots in unknown/untrusted CA");
 	
-	const Vector!( X509_Certificate )& cert_path = result.cert_path();
+	const Vector!X509_Certificate& cert_path = result.cert_path();
 	
 	check_signature(tbs_response, sig_algo, signature, cert_path[0]);
 }

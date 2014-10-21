@@ -15,8 +15,6 @@ import botan.utils.parsing;
 import string;
 import vector;
 
-class DER_Encoder;
-class BER_Decoder;
 
 /**
 * This class represents ASN.1 object identifiers.
@@ -24,8 +22,6 @@ class BER_Decoder;
 class OID : ASN1_Object
 {
 public:
-	import botan.utils.mixins;
-	mixin USE_STRUCT_INIT!();
 
 	/*
 	* DER encode an OBJECT IDENTIFIER
@@ -196,7 +192,7 @@ public:
 	/**
 	* Add a component to this OID.
 	* @param new_comp the new component to add to the end of this OID
-	* @return reference to *this
+	* @return reference to this
 	*/
 	ref OID opOpAssign(string op)(uint new_comp)
 		if (op == "~=") 

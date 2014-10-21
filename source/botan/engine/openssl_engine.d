@@ -42,7 +42,7 @@ public:
 	Signature get_signature_op(in Private_Key key, RandomNumberGenerator) const
 	{
 		static if (BOTAN_HAS_RSA) {
-			if (const RSA_PrivateKey* s = cast(const RSA_PrivateKey*)(key))
+			if (const RSA_PrivateKey s = cast(const RSA_PrivateKey)(key))
 				return new OSSL_RSA_Private_Operation(*s);
 		}
 		
@@ -57,7 +57,7 @@ public:
 	Verification get_verify_op(in Public_Key key, RandomNumberGenerator) const
 	{
 		static if (BOTAN_HAS_RSA) {
-			if (const RSA_PublicKey* s = cast(const RSA_PublicKey*)(key))
+			if (const RSA_PublicKey s = cast(const RSA_PublicKey)(key))
 				return new OSSL_RSA_Public_Operation(*s);
 		}
 		
@@ -72,7 +72,7 @@ public:
 	Encryption get_encryption_op(in Public_Key key, RandomNumberGenerator) const
 	{
 		static if (BOTAN_HAS_RSA) {
-			if (const RSA_PublicKey* s = cast(const RSA_PublicKey*)(key))
+			if (const RSA_PublicKey s = cast(const RSA_PublicKey)(key))
 				return new OSSL_RSA_Public_Operation(*s);
 		}
 		
@@ -82,7 +82,7 @@ public:
 	Decryption get_decryption_op(in Private_Key key, RandomNumberGenerator) const
 	{
 		static if (BOTAN_HAS_RSA) {
-			if (const RSA_PrivateKey* s = cast(const RSA_PrivateKey*)(key))
+			if (const RSA_PrivateKey s = cast(const RSA_PrivateKey)(key))
 				return new OSSL_RSA_Private_Operation(*s);
 		}
 		
@@ -242,7 +242,7 @@ public:
 	
 	Modular_Exponentiator copy() const
 	{ 
-		return new OpenSSL_Modular_Exponentiator(*this); 
+		return new OpenSSL_Modular_Exponentiator(this); 
 	}
 	
 	this(in BigInt n) {

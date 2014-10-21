@@ -128,7 +128,7 @@ class BlockCipher : SymmetricAlgorithm
 								size_t blocks) const;
 
 		/**
-		* @return new object representing the same algorithm as *this
+		* @return new object representing the same algorithm as this
 		*/
 		abstract BlockCipher clone() const;
 };

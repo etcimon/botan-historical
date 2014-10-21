@@ -67,8 +67,6 @@ public:
 	*/
 	void decrypt_n(ubyte* input, ubyte* output, size_t blocks) const
 	{
-		const ubyte* cached = output;
-		scope(exit) output = cached;
 		for (size_t i = 0; i != blocks; ++i)
 		{
 			uint A = load_be!uint(input, 0);
@@ -208,39 +206,34 @@ private:
 };
 
 
-
-package {
+private:
 	
-	/*
-	* CAST-256 Round Type 1
-	*/
-	void round1(ref uint output, uint input, uint mask, uint rot)
-	{
-		uint temp = rotate_left(mask + input, rot);
-		output  ^= (CAST_SBOX1[get_byte(0, temp)] ^ CAST_SBOX2[get_byte(1, temp)]) -
-			CAST_SBOX3[get_byte(2, temp)] + CAST_SBOX4[get_byte(3, temp)];
-	}
-	
-	/*
-	* CAST-256 Round Type 2
-	*/
-	void round2(ref uint output, uint input, uint mask, uint rot)
-	{
-		uint temp = rotate_left(mask ^ input, rot);
-		output  ^= (CAST_SBOX1[get_byte(0, temp)]  - CAST_SBOX2[get_byte(1, temp)] +
-		CAST_SBOX3[get_byte(2, temp)]) ^ CAST_SBOX4[get_byte(3, temp)];
-	}
-	
-	/*
-	* CAST-256 Round Type 3
-	*/
-	void round3(ref uint output, uint input, uint mask, uint rot)
-	{
-		uint temp = rotate_left(mask - input, rot);
-		output  ^= ((CAST_SBOX1[get_byte(0, temp)]  + CAST_SBOX2[get_byte(1, temp)]) ^
-		            CAST_SBOX3[get_byte(2, temp)]) - CAST_SBOX4[get_byte(3, temp)];
-	}
-	
+/*
+* CAST-256 Round Type 1
+*/
+void round1(ref uint output, uint input, uint mask, uint rot)
+{
+	uint temp = rotate_left(mask + input, rot);
+	output  ^= (CAST_SBOX1[get_byte(0, temp)] ^ CAST_SBOX2[get_byte(1, temp)]) -
+		CAST_SBOX3[get_byte(2, temp)] + CAST_SBOX4[get_byte(3, temp)];
 }
 
+/*
+* CAST-256 Round Type 2
+*/
+void round2(ref uint output, uint input, uint mask, uint rot)
+{
+	uint temp = rotate_left(mask ^ input, rot);
+	output  ^= (CAST_SBOX1[get_byte(0, temp)]  - CAST_SBOX2[get_byte(1, temp)] +
+	CAST_SBOX3[get_byte(2, temp)]) ^ CAST_SBOX4[get_byte(3, temp)];
+}
 
+/*
+* CAST-256 Round Type 3
+*/
+void round3(ref uint output, uint input, uint mask, uint rot)
+{
+	uint temp = rotate_left(mask - input, rot);
+	output  ^= ((CAST_SBOX1[get_byte(0, temp)]  + CAST_SBOX2[get_byte(1, temp)]) ^
+	            CAST_SBOX3[get_byte(2, temp)]) - CAST_SBOX4[get_byte(3, temp)];
+}

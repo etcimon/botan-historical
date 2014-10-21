@@ -64,7 +64,7 @@ public:
 		if ((e * d) % lcm(p - 1, q - 1) != 1)
 			return false;
 		
-		return signature_consistency_check(rng, *this, "EMSA4(SHA-1)");
+		return signature_consistency_check(rng, this, "EMSA4(SHA-1)");
 	}
 
 	this(in AlgorithmIdentifier alg_id,

@@ -8,7 +8,7 @@
 import botan.internal.tls_messages;
 import botan.tls.tls_extensions;
 import botan.tls.tls_reader;
-import botan.internal.tls_handshake_io;
+import botan.tls.tls_handshake_io;
 import botan.utils.loadstor;
 
 
@@ -19,13 +19,13 @@ New_Session_Ticket::New_Session_Ticket(Handshake_IO& io,
 	m_ticket_lifetime_hint(lifetime),
 	m_ticket(ticket)
 {
-	hash.update(io.send(*this));
+	hash.update(io.send(this));
 }
 
 New_Session_Ticket::New_Session_Ticket(Handshake_IO& io,
 													Handshake_Hash& hash)
 {
-	hash.update(io.send(*this));
+	hash.update(io.send(this));
 }
 
 New_Session_Ticket::New_Session_Ticket(in Vector!ubyte buf)

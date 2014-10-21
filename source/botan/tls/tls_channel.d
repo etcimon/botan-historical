@@ -16,20 +16,20 @@ import botan.internal.stl_util;
 import botan.utils.loadstor;
 
 
-Channel::Channel(void delegate(in ubyte[]) output_fn,
+this(void delegate(in ubyte[]) output_fn,
 					  void delegate(in ubyte[]) data_cb,
 					  void delegate(Alert, in ubyte[]) alert_cb,
 					  bool delegate(in Session) handshake_cb,
 					  Session_Manager session_manager,
 					  RandomNumberGenerator rng,
-					  size_t reserved_io_buffer_size) :
-	m_handshake_cb(handshake_cb),
-	m_data_cb(data_cb),
-	m_alert_cb(alert_cb),
-	m_output_fn(output_fn),
-	m_rng(rng),
-	m_session_manager(session_manager)
+					  size_t reserved_io_buffer_size)
 {
+	m_handshake_cb = handshake_cb;
+	m_data_cb = data_cb;
+	m_alert_cb = alert_cb;
+	m_output_fn = output_fn;
+	m_rng = rng;
+	m_session_manager = session_manager;
 	/* epoch 0 is plaintext, thus null cipher state */
 	m_write_cipher_states[0] = null;
 	m_read_cipher_states[0] = null;
@@ -38,7 +38,7 @@ Channel::Channel(void delegate(in ubyte[]) output_fn,
 	m_readbuf.reserve(reserved_io_buffer_size);
 }
 
-void Channel::reset_state()
+void reset_state()
 {
 	m_active_state.reset();
 	m_pending_state.reset();
@@ -47,18 +47,18 @@ void Channel::reset_state()
 	m_read_cipher_states.clear();
 }
 
-Channel::~this()
+~this()
 {
 	// So unique_ptr destructors run correctly
 }
 
-Connection_Sequence_Numbers& Channel::sequence_numbers() const
+ref Connection_Sequence_Numbers sequence_numbers() const
 {
 	BOTAN_ASSERT(m_sequence_numbers, "Have a sequence numbers object");
 	return *m_sequence_numbers;
 }
 
-std::shared_ptr<Connection_Cipher_State> Channel::read_cipher_state_epoch(ushort epoch) const
+FreeListRef!Connection_Cipher_State read_cipher_state_epoch(ushort epoch) const
 {
 	auto i = m_read_cipher_states.find(epoch);
 
@@ -68,7 +68,7 @@ std::shared_ptr<Connection_Cipher_State> Channel::read_cipher_state_epoch(ushort
 	return i.second;
 }
 
-std::shared_ptr<Connection_Cipher_State> Channel::write_cipher_state_epoch(ushort epoch) const
+FreeListRef!Connection_Cipher_State write_cipher_state_epoch(ushort epoch) const
 {
 	auto i = m_write_cipher_states.find(epoch);
 
@@ -78,14 +78,14 @@ std::shared_ptr<Connection_Cipher_State> Channel::write_cipher_state_epoch(ushor
 	return i.second;
 }
 
-Vector!( X509_Certificate ) Channel::peer_cert_chain() const
+Vector!X509_Certificate peer_cert_chain() const
 {
 	if (auto active = active_state())
 		return get_peer_cert_chain(*active);
-	return Vector!( X509_Certificate )();
+	return Vector!X509_Certificate();
 }
 
-Handshake_State& Channel::create_handshake_state(Protocol_Version _version)
+ref Handshake_State create_handshake_state(Protocol_Version _version)
 {
 	if (pending_state())
 		throw new Internal_Error("create_handshake_state called during handshake");
@@ -112,19 +112,13 @@ Handshake_State& Channel::create_handshake_state(Protocol_Version _version)
 
 	Unique!Handshake_IO io;
 	if (_version.is_datagram_protocol())
-		io.reset(new Datagram_Handshake_IO(
+		io = new Datagram_Handshake_IO(
 						sequence_numbers(),
-						std::bind(&Channel::send_record_under_epoch, this,
-									 std::placeholders::_1,
-									 std::placeholders::_2,
-									 std::placeholders::_3)));
+						&send_record_under_epoch);
 	else
-		io.reset(new Stream_Handshake_IO(
-						std::bind(&Channel::send_record, this,
-									 std::placeholders::_1,
-									 std::placeholders::_2)));
+		io = new Stream_Handshake_IO(&send_record);
 
-	m_pending_state.reset(new_handshake_state(io.release()));
+	m_pending_state = new_handshake_state(io.opDot());
 
 	if (auto active = active_state())
 		m_pending_state.set_version(active._version());
@@ -132,7 +126,7 @@ Handshake_State& Channel::create_handshake_state(Protocol_Version _version)
 	return *m_pending_state.get();
 }
 
-void Channel::renegotiate(bool force_full_renegotiation)
+void renegotiate(bool force_full_renegotiation)
 {
 	if (pending_state()) // currently in handshake?
 		return;
@@ -144,7 +138,7 @@ void Channel::renegotiate(bool force_full_renegotiation)
 		throw new Exception("Cannot renegotiate on inactive connection");
 }
 
-size_t Channel::maximum_fragment_size() const
+size_t maximum_fragment_size() const
 {
 	// should we be caching this value?
 
@@ -160,7 +154,7 @@ size_t Channel::maximum_fragment_size() const
 	return MAX_PLAINTEXT_SIZE;
 }
 
-void Channel::change_cipher_spec_reader(Connection_Side side)
+void change_cipher_spec_reader(Connection_Side side)
 {
 	auto pending = pending_state();
 
@@ -188,7 +182,7 @@ void Channel::change_cipher_spec_reader(Connection_Side side)
 	m_read_cipher_states[epoch] = read_state;
 }
 
-void Channel::change_cipher_spec_writer(Connection_Side side)
+void change_cipher_spec_writer(Connection_Side side)
 {
 	auto pending = pending_state();
 
@@ -215,12 +209,12 @@ void Channel::change_cipher_spec_writer(Connection_Side side)
 	m_write_cipher_states[epoch] = write_state;
 }
 
-bool Channel::is_active() const
+bool is_active() const
 {
 	return (active_state() != null);
 }
 
-bool Channel::is_closed() const
+bool is_closed() const
 {
 	if (active_state() || pending_state())
 		return false;
@@ -234,7 +228,7 @@ bool Channel::is_closed() const
 	return (m_sequence_numbers != null);
 }
 
-void Channel::activate_session()
+void activate_session()
 {
 	std.algorithm.swap(m_active_state, m_pending_state);
 	m_pending_state.reset();
@@ -256,26 +250,26 @@ void Channel::activate_session()
 	}
 }
 
-bool Channel::peer_supports_heartbeats() const
+bool peer_supports_heartbeats() const
 {
 	if (auto active = active_state())
 		return active.server_hello().supports_heartbeats();
 	return false;
 }
 
-bool Channel::heartbeat_sending_allowed() const
+bool heartbeat_sending_allowed() const
 {
 	if (auto active = active_state())
 		return active.server_hello().peer_can_send_heartbeats();
 	return false;
 }
 
-size_t Channel::received_data(in Vector!ubyte buf)
+size_t received_data(in Vector!ubyte buf)
 {
 	return this.received_data(&buf[0], buf.length);
 }
 
-size_t Channel::received_data(in ubyte* input, size_t input_size)
+size_t received_data(in ubyte* input, size_t input_size)
 {
 	const auto get_cipherstate = [this](ushort epoch)
 	{ return this.read_cipher_state_epoch(epoch).get(); };
@@ -436,7 +430,7 @@ size_t Channel::received_data(in ubyte* input, size_t input_size)
 	}
 }
 
-void Channel::heartbeat(in ubyte* payload, size_t payload_size)
+void heartbeat(in ubyte* payload, size_t payload_size)
 {
 	if (heartbeat_sending_allowed())
 	{
@@ -447,7 +441,7 @@ void Channel::heartbeat(in ubyte* payload, size_t payload_size)
 	}
 }
 
-void Channel::write_record(Connection_Cipher_State* cipher_state,
+void write_record(Connection_Cipher_State* cipher_state,
 									ubyte record_type, in ubyte* input, size_t length)
 {
 	BOTAN_ASSERT(m_pending_state || m_active_state,
@@ -468,7 +462,7 @@ void Channel::write_record(Connection_Cipher_State* cipher_state,
 	m_output_fn(&m_writebuf[0], m_writebuf.length);
 }
 
-void Channel::send_record_array(ushort epoch, ubyte type, in ubyte* input, size_t length)
+void send_record_array(ushort epoch, ubyte type, in ubyte* input, size_t length)
 {
 	if (length == 0)
 		return;
@@ -506,19 +500,19 @@ void Channel::send_record_array(ushort epoch, ubyte type, in ubyte* input, size_
 	}
 }
 
-void Channel::send_record(ubyte record_type, in Vector!ubyte record)
+void send_record(ubyte record_type, in Vector!ubyte record)
 {
 	send_record_array(sequence_numbers().current_write_epoch(),
 							record_type, &record[0], record.length);
 }
 
-void Channel::send_record_under_epoch(ushort epoch, ubyte record_type,
+void send_record_under_epoch(ushort epoch, ubyte record_type,
 												  in Vector!ubyte record)
 {
 	send_record_array(epoch, record_type, &record[0], record.length);
 }
 
-void Channel::send(in ubyte* buf, size_t buf_size)
+void send(in ubyte* buf, size_t buf_size)
 {
 	if (!is_active())
 		throw new Exception("Data cannot be sent on inactive TLS connection");
@@ -527,12 +521,12 @@ void Channel::send(in ubyte* buf, size_t buf_size)
 							APPLICATION_DATA, buf, buf_size);
 }
 
-void Channel::send(in string string)
+void send(in string string)
 {
 	this.send(cast(const ubyte*)(string.toStringz), string.length);
 }
 
-void Channel::send_alert(in Alert alert)
+void send_alert(in Alert alert)
 {
 	if (alert.is_valid() && !is_closed())
 	{
@@ -554,7 +548,7 @@ void Channel::send_alert(in Alert alert)
 		reset_state();
 }
 
-void Channel::secure_renegotiation_check(const Client_Hello* client_hello)
+void secure_renegotiation_check(const Client_Hello* client_hello)
 {
 	const bool secure_renegotiation = client_hello.secure_renegotiation();
 
@@ -577,7 +571,7 @@ void Channel::secure_renegotiation_check(const Client_Hello* client_hello)
 	}
 }
 
-void Channel::secure_renegotiation_check(const Server_Hello* server_hello)
+void secure_renegotiation_check(const Server_Hello* server_hello)
 {
 	const bool secure_renegotiation = server_hello.secure_renegotiation();
 
@@ -600,14 +594,14 @@ void Channel::secure_renegotiation_check(const Server_Hello* server_hello)
 	}
 }
 
-Vector!ubyte Channel::secure_renegotiation_data_for_client_hello() const
+Vector!ubyte secure_renegotiation_data_for_client_hello() const
 {
 	if (auto active = active_state())
 		return active.client_finished().verify_data();
 	return Vector!ubyte();
 }
 
-Vector!ubyte Channel::secure_renegotiation_data_for_server_hello() const
+Vector!ubyte secure_renegotiation_data_for_server_hello() const
 {
 	if (auto active = active_state())
 	{
@@ -619,7 +613,7 @@ Vector!ubyte Channel::secure_renegotiation_data_for_server_hello() const
 	return Vector!ubyte();
 }
 
-bool Channel::secure_renegotiation_supported() const
+bool secure_renegotiation_supported() const
 {
 	if (auto active = active_state())
 		return active.server_hello().secure_renegotiation();
@@ -631,7 +625,7 @@ bool Channel::secure_renegotiation_supported() const
 	return false;
 }
 
-SymmetricKey Channel::key_material_export(in string label,
+SymmetricKey key_material_export(in string label,
 														in string context,
 														size_t length) const
 {
@@ -652,18 +646,13 @@ SymmetricKey Channel::key_material_export(in string label,
 			size_t context_size = context.length;
 			if (context_size > 0xFFFF)
 				throw new Exception("key_material_export context is too long");
-			salt.push_back(get_byte<ushort>(0, context_size));
-			salt.push_back(get_byte<ushort>(1, context_size));
+			salt.push_back(get_byte!ushort(0, context_size));
+			salt.push_back(get_byte!ushort(1, context_size));
 			salt += to_byte_vector(context);
 		}
 
 		return prf.derive_key(length, master_secret, salt);
 	}
 	else
-		throw new Exception("Channel::key_material_export connection not active");
+		throw new Exception("key_material_export connection not active");
 }
-
-}
-
-}
-

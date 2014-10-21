@@ -16,6 +16,7 @@ import botan.asn1.alg_id;
 import botan.asn1.oid_lookup.oids;
 import botan.codec.pem;
 import botan.pubkey.pk_algs;
+import botan.utils.types;
 
 /**
 * PKCS #8 General Exception
@@ -83,7 +84,7 @@ Vector!ubyte BER_encode(in Private_Key key,
 	
 	AlgorithmIdentifier pbe_algid(pbe.get_oid(), pbe.encode_params());
 	
-	Pipe key_encrytor = Pipe(pbe.release());
+	Pipe key_encrytor = Pipe(pbe.opDot());
 	key_encrytor.process_msg(BER_encode(key));
 	
 	return DER_Encoder()
@@ -128,7 +129,7 @@ string PEM_encode(in Private_Key key,
 */
 Private_Key load_key(DataSource source,
                      RandomNumberGenerator rng,
-                     Pair!(bool, string) delegate() get_pass)
+                     Single_Shot_Passphrase get_pass)
 {
 	AlgorithmIdentifier alg_id;
 	SafeVector!ubyte pkcs8_key = PKCS8_decode(source, get_pass, alg_id);
@@ -163,11 +164,10 @@ Private_Key load_key(DataSource source,
 * @return loaded private key object
 */
 Private_Key load_key(in string filename,
-                      RandomNumberGenerator rng,
-                      Pair!(bool, string) delegate() get_pass)
+                     RandomNumberGenerator rng,
+                     Single_Shot_Passphrase get_pass)
 {
-	DataSource_Stream source = new DataSource_Stream(filename, true);
-	scope(exit) delete source;
+	auto source = scoped!DataSource_Stream(filename, true);
 	return load_key(source, rng, get_pass);
 }
 
@@ -195,8 +195,7 @@ Private_Key load_key(in string filename,
 Private_Key copy_key(in Private_Key key,
                      RandomNumberGenerator rng)
 {
-	DataSource_Memory source = new DataSource_Memory(PEM_encode(key));
-	scope(exit) delete source;
+	auto source = scoped!DataSource_Memory(PEM_encode(key));
 	return load_key(source, rng);
 }
 
@@ -222,7 +221,7 @@ SafeVector!ubyte PKCS8_extract(DataSource source,
 */
 SafeVector!ubyte PKCS8_decode(
 	DataSource source,
-	Pair!(bool,string) delegate() get_passphrase,
+	Single_Shot_Passphrase get_passphrase,
 	AlgorithmIdentifier pk_alg_id)
 {
 	AlgorithmIdentifier pbe_alg_id;
@@ -240,8 +239,7 @@ SafeVector!ubyte PKCS8_decode(
 				is_encrypted = false;
 			else if (label == "ENCRYPTED PRIVATE KEY")
 			{
-				DataSource_Memory key_source = new DataSource_Memory(key_data);
-				scope(exit) delete key_source;
+				auto key_source = scoped!DataSource_Memory(key_data);
 				key_data = PKCS8_extract(key_source, pbe_alg_id);
 			}
 			else
@@ -303,21 +301,7 @@ SafeVector!ubyte PKCS8_decode(
 }
 
 
-
-
-
-
-
-/*
-* Extract a private key and return it
-*/
-
-/*
-* Extract a private key and return it
-*/
-
-
-private class Single_Shot_Passphrase
+private struct Single_Shot_Passphrase
 {
 public:
 	this(in string pass) 

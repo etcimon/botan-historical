@@ -25,8 +25,6 @@ import iosfwd;
 class X509_DN : ASN1_Object
 {
 public:
-	import botan.utils.mixins;
-	mixin USE_STRUCT_INIT!();
 	/*
 	* DER encode a DistinguishedName
 	*/
@@ -55,7 +53,7 @@ public:
 	/*
 	* Decode a BER encoded DistinguishedName
 	*/
-	void decode_from(BER_Decoder source = BER_Decoder())
+	void decode_from(BER_Decoder source)
 	{
 		Vector!ubyte bits;
 		

@@ -16,10 +16,13 @@ import std.algorithm;
 
 import vector;
 
+alias DER_Encoder = FreeListRef!BER_Decoder_Impl;
+
+
 /**
 * General DER Encoding Object
 */
-class DER_Encoder
+class DER_Encoder_Impl
 {
 public:
 
@@ -410,7 +413,7 @@ private:
 	};
 
 	SafeVector!ubyte contents;
-	Vector!( DER_Sequence ) subsequences;
+	Vector!DER_Sequence subsequences;
 };
 
 /*

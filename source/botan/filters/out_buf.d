@@ -124,6 +124,6 @@ private:
 		return buffers[msg-offset];
 	}
 
-	std::deque<SecureQueue*> buffers;
+	Deque!(SecureQueue*) buffers;
 	Pipe.message_id offset;
 };

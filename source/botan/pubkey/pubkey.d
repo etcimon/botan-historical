@@ -5,9 +5,10 @@
 * Distributed under the terms of the botan license.
 */
 module botan.pubkey.pubkey;
-import botan.pubkey.pk_keys;
-import botan.pubkey.pk_ops;
-import botan.algo_base.symkey;
+
+public import botan.pubkey.pk_keys;
+public import botan.pubkey.pk_ops;
+public import botan.algo_base.symkey;
 import botan.rng.rng;
 import botan.pk_pad.eme;
 import botan.emsa;

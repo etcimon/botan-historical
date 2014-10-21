@@ -16,6 +16,7 @@ import botan.cert.cvc.cvc_ado;
 import botan.pubkey.algo.ecc_key;
 import botan.math.ec_gfp.curve_gfp;
 import botan.asn1.oid_lookup.oids;
+import botan.utils.types;
 import sstream;
 
 /**
@@ -47,7 +48,7 @@ EAC1_1_CVC create_self_signed_cert(const ref Private_Key key,
 {
 	// NOTE: we ignore the value of opt.chr
 	
-	const ECDSA_PrivateKey* priv_key = cast(const ECDSA_PrivateKey*)(key);
+	const ECDSA_PrivateKey priv_key = cast(const ECDSA_PrivateKey)(key);
 	
 	if (priv_key == 0)
 		throw new Invalid_Argument("CVC_EAC::create_self_signed_cert(): unsupported key type");
@@ -57,7 +58,7 @@ EAC1_1_CVC create_self_signed_cert(const ref Private_Key key,
 	AlgorithmIdentifier sig_algo;
 	string padding_and_hash = "EMSA1_BSI(" ~ opt.hash_alg ~ ")";
 	sig_algo.oid = oids.lookup(priv_key.algo_name() ~ "/" ~ padding_and_hash);
-	sig_algo = AlgorithmIdentifier(sig_algo.oid, AlgorithmIdentifier.Encoding_Option.USE_NULL_PARAM);
+	sig_algo = AlgorithmIdentifier(sig_algo.oid, AlgorithmIdentifier.USE_NULL_PARAM);
 	
 	PK_Signer signer = PK_Signer(*priv_key, padding_and_hash);
 	
@@ -87,7 +88,7 @@ EAC1_1_Req create_cvc_req(const ref Private_Key key,
                           RandomNumberGenerator rng)
 {
 	
-	const ECDSA_PrivateKey* priv_key = cast(const ECDSA_PrivateKey*)(&key);
+	const ECDSA_PrivateKey priv_key = cast(const ECDSA_PrivateKey)(&key);
 	if (priv_key == 0)
 	{
 		throw new Invalid_Argument("CVC_EAC::create_self_signed_cert(): unsupported key type");
@@ -95,7 +96,7 @@ EAC1_1_Req create_cvc_req(const ref Private_Key key,
 	AlgorithmIdentifier sig_algo;
 	string padding_and_hash = "EMSA1_BSI(" ~ hash_alg ~ ")";
 	sig_algo.oid = oids.lookup(priv_key.algo_name() ~ "/" ~ padding_and_hash);
-	sig_algo = AlgorithmIdentifier(sig_algo.oid, AlgorithmIdentifier.Encoding_Option.USE_NULL_PARAM);
+	sig_algo = AlgorithmIdentifier(sig_algo.oid, AlgorithmIdentifier.USE_NULL_PARAM);
 	
 	PK_Signer signer = PK_Signer(*priv_key, padding_and_hash);
 	
@@ -114,8 +115,7 @@ EAC1_1_Req create_cvc_req(const ref Private_Key key,
 		                                        EAC1_1_gen_CVC!EAC1_1_Req.build_cert_body(tbs),
 		                                        rng);
 	
-	DataSource_Memory source = new DataSource_Memory(signed_cert);
-	scope(exit) delete source;
+	auto source = scoped!DataSource_Memory(signed_cert);
 	return EAC1_1_Req(source);
 }
 
@@ -133,7 +133,7 @@ EAC1_1_ADO create_ado_req(const ref Private_Key key,
                           RandomNumberGenerator rng)
 {
 	
-	const ECDSA_PrivateKey* priv_key = cast(const ECDSA_PrivateKey*)(&key);
+	const ECDSA_PrivateKey priv_key = cast(const ECDSA_PrivateKey)(&key);
 	if (priv_key == 0)
 	{
 		throw new Invalid_Argument("CVC_EAC::create_self_signed_cert(): unsupported key type");
@@ -147,8 +147,7 @@ EAC1_1_ADO create_ado_req(const ref Private_Key key,
 	Vector!ubyte signed_cert =
 		EAC1_1_ADO.make_signed(signer, tbs_bits, rng);
 	
-	DataSource_Memory source = new DataSource_Memory(signed_cert);
-	scope(exit) delete source;
+	auto source = scoped!DataSource_Memory(signed_cert);
 	return EAC1_1_ADO(source);
 }
 
@@ -174,7 +173,7 @@ EAC1_1_CVC create_cvca(const ref Private_Key key,
                        uint cvca_validity_months,
                        RandomNumberGenerator rng)
 {
-	const ECDSA_PrivateKey* priv_key = cast(const ECDSA_PrivateKey*)(&key);
+	const ECDSA_PrivateKey priv_key = cast(const ECDSA_PrivateKey)(&key);
 	if (priv_key == 0)
 	{
 		throw new Invalid_Argument("CVC_EAC::create_self_signed_cert(): unsupported key type");
@@ -206,7 +205,7 @@ EAC1_1_CVC link_cvca(const ref EAC1_1_CVC signer,
                      const ref EAC1_1_CVC signee,
                      RandomNumberGenerator rng)
 {
-	const ECDSA_PrivateKey* priv_key = cast(const ECDSA_PrivateKey*)(&key);
+	const ECDSA_PrivateKey priv_key = cast(const ECDSA_PrivateKey)(&key);
 	
 	if (priv_key == 0)
 		throw new Invalid_Argument("link_cvca(): unsupported key type");
@@ -257,7 +256,7 @@ EAC1_1_Req create_cvc_req_implicitca(const ref Private_Key prkey,
                           const ref string hash_alg,
                           RandomNumberGenerator rng)
 {
-	const ECDSA_PrivateKey* priv_key = cast(const ECDSA_PrivateKey*)(&prkey);
+	const ECDSA_PrivateKey priv_key = cast(const ECDSA_PrivateKey)(&prkey);
 	if (priv_key == 0)
 	{
 		throw new Invalid_Argument("CVC_EAC::create_self_signed_cert(): unsupported key type");
@@ -294,7 +293,7 @@ EAC1_1_CVC sign_request(const ref EAC1_1_CVC signer_cert,
                         uint ca_is_validity_months,
                         RandomNumberGenerator rng)
 {
-	const ECDSA_PrivateKey * priv_key = cast(const ECDSA_PrivateKey *)(&key);
+	const ECDSA_PrivateKey  priv_key = cast(const ECDSA_PrivateKey)(&key);
 	if (priv_key == 0)
 	{
 		throw new Invalid_Argument("CVC_EAC::create_self_signed_cert(): unsupported key type");
@@ -362,7 +361,8 @@ EAC1_1_CVC sign_request(const ref EAC1_1_CVC signer_cert,
 /*
 * cvc CHAT values
 */
-enum CHAT_values {
+typedef ubyte CHAT_values;
+enum : CHAT_values {
 	CVCA = 0xC0,
 	DVCA_domestic = 0x80,
 	DVCA_foreign =  0x40,
@@ -424,6 +424,3 @@ string padding_and_hash_from_oid(const ref OID oid)
 	padding_and_hash.erase(0, padding_and_hash.find("/") + 1);
 	return padding_and_hash;
 }
-	
-
-

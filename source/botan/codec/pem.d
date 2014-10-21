@@ -9,6 +9,7 @@ module botan.codec.pem;
 import botan.filters.filters;
 import botan.utils.parsing;
 import botan.filters.data_src;
+import botan.utils.types;
 
 /**
 * Encode some binary data in PEM format
@@ -119,8 +120,7 @@ SafeVector!ubyte decode(DataSource source, ref string label)
 */
 SafeVector!ubyte decode(in string pem, ref string label)
 {
-	DataSource_Memory src = new DataSource_Memory(pem);
-	scope(exit) delete src;
+	auto src = scoped!DataSource_Memory(pem);
 	return decode(src, label);
 }
 /**
@@ -147,8 +147,7 @@ SafeVector!ubyte decode_check_label(DataSource source,
 SafeVector!ubyte decode_check_label(in string pem,
                                     in string label_want)
 {
-	DataSource_Memory src = new DataSource_Memory(pem);
-	scope(exit) delete src;
+	auto src = scoped!DataSource_Memory(pem);
 	return decode_check_label(src, label_want);
 }
 

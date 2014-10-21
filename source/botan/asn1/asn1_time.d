@@ -15,17 +15,13 @@ import botan.utils.charset;
 import botan.utils.parsing;
 import botan.calendar;
 
-class DER_Encoder;
-class BER_Decoder;
-
 /**
 * X.509 Time
 */
 class X509_Time : ASN1_Object
 {
 public:
-	import botan.utils.mixins;
-	mixin USE_STRUCT_INIT!();
+
 	/*
 	* DER encode a X509_Time
 	*/
@@ -43,7 +39,7 @@ public:
 	/*
 	* Decode a BER encoded X509_Time
 	*/
-	void decode_from(BER_Decoder source = BER_Decoder())
+	void decode_from(BER_Decoder source)
 	{
 		BER_Object ber_time = source.get_next_object();
 		

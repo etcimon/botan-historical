@@ -6,27 +6,24 @@
 */
 module botan.asn1.alg_id;
 
+import botan.utils.types;
 import botan.asn1.asn1_obj;
 import botan.asn1.asn1_oid;
 import botan.asn1.der_enc;
 import botan.asn1.ber_dec;
 import botan.asn1.oid_lookup.oids;
-
 import string;
 
-class DER_Encoder;
-class BER_Decoder;
+alias AlgorithmIdentifier = FreeListRef!AlgorithmIdentifierImpl;
 
 /**
 * Algorithm Identifier
 */
-class AlgorithmIdentifier : ASN1_Object
+class AlgorithmIdentifierImpl : ASN1_Object
 {
 public:
-	import botan.utils.mixins;
-	mixin USE_STRUCT_INIT!();
-
-	enum Encoding_Option { USE_NULL_PARAM };
+	typedef bool Encoding_Option;
+	enum : Encoding_Option { USE_NULL_PARAM };
 
 	/*
 	* DER encode an AlgorithmIdentifier
@@ -37,7 +34,7 @@ public:
 			.encode(oid)
 				.raw_bytes(parameters)
 				.end_cons();
-	}	
+	}
 
 	/*
 	* Decode a BER encoded AlgorithmIdentifier
@@ -56,11 +53,11 @@ public:
 	* Create an AlgorithmIdentifier
 	*/
 	this(in OID, Encoding_Option) {
-		immutable ubyte[] DER_NULL = [ 0x05, 0x00 ];
+		immutable ubyte[2] DER_NULL = [ 0x05, 0x00 ];
 		
 		oid = alg_id;
 		
-		if (option == Encoding_Option.USE_NULL_PARAM)
+		if (option == USE_NULL_PARAM)
 			parameters += Pair!(const ubyte*, size_t)(DER_NULL, sizeof(DER_NULL));
 	}
 
@@ -68,11 +65,11 @@ public:
 	* Create an AlgorithmIdentifier
 	*/
 	this(in string, Encoding_Option) {
-		immutable ubyte[] DER_NULL = [ 0x05, 0x00 ];
+		immutable ubyte[2] DER_NULL = [ 0x05, 0x00 ];
 		
 		oid = oids.lookup(alg_id);
 		
-		if (option == Encoding_Option.USE_NULL_PARAM)
+		if (option == USE_NULL_PARAM)
 			parameters += Pair!(const ubyte*, size_t)(DER_NULL, sizeof(DER_NULL));
 	}
 	

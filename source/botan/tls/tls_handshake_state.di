@@ -5,8 +5,8 @@
 * Released under the terms of the botan license.
 */
 
-import botan.internal.tls_handshake_hash;
-import botan.internal.tls_handshake_io;
+import botan.tls.tls_handshake_hash;
+import botan.tls.tls_handshake_io;
 import botan.internal.tls_session_key;
 import botan.tls_ciphersuite;
 import botan.tls_exceptn;
@@ -67,7 +67,7 @@ class Handshake_State
 		*/
 		void set_expected_next(Handshake_Type msg_type);
 
-		Pair!(Handshake_Type, Vector!( ubyte) )
+		Pair!(Handshake_Type, Vector!ubyte )
 			get_next_handshake_msg();
 
 		Vector!ubyte session_ticket() const;

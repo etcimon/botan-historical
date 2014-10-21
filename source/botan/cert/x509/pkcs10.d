@@ -21,6 +21,7 @@ import botan.asn1.ber_dec;
 import botan.utils.parsing;
 import botan.asn1.oid_lookup.oids;
 import botan.codec.pem;
+import botan.utils.types;
 import vector;
 /**
 * PKCS #10 Certificate Request.
@@ -45,8 +46,7 @@ public:
 	*/
 	Vector!ubyte raw_public_key() const
 	{
-		DataSource_Memory source = new DataSource_Memory(info.get1("X509.Certificate.public_key"));
-		scope(exit) delete source;
+		auto source = scoped!DataSource_Memory(info.get1("X509.Certificate.public_key"));
 		return unlock(pem.decode_check_label(source, "PUBLIC KEY"));
 	}
 
@@ -188,7 +188,7 @@ private:
 		if (attr_bits.type_tag == 0 &&
 		    attr_bits.class_tag == ASN1_Tag(CONSTRUCTED | ASN1_Tag.CONTEXT_SPECIFIC))
 		{
-			BER_Decoder attributes(attr_bits.value);
+			auto attributes = BER_Decoder(attr_bits.value);
 			while(attributes.more_items())
 			{
 				Attribute attr;
@@ -212,7 +212,7 @@ private:
 	*/
 	void handle_attribute(in Attribute attr)
 	{
-		BER_Decoder value(attr.parameters);
+		auto value = BER_Decoder(attr.parameters);
 		
 		if (attr.oid == oids.lookup("PKCS9.EmailAddress"))
 		{
@@ -228,7 +228,7 @@ private:
 		}
 		else if (attr.oid == oids.lookup("PKCS9.ExtensionRequest"))
 		{
-			Extensions extensions;
+			auto extensions = scoped!Extensions;
 			value.decode(extensions).verify_end();
 			
 			Data_Store issuer_info;

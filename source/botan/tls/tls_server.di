@@ -43,12 +43,12 @@ private:
 	override void initiate_handshake(Handshake_State& state,
 									 bool force_full_renegotiation);
 
-	override void process_handshake_msg(const Handshake_State* active_state,
+	override void process_handshake_msg(const Handshake_State active_state,
 										Handshake_State& pending_state,
 										Handshake_Type type,
 										 in Vector!ubyte contents);
 
-	override Handshake_State* new_handshake_state(Handshake_IO* io);
+	override Handshake_State new_handshake_state(Handshake_IO io);
 
 	const Policy& m_policy;
 	Credentials_Manager& m_creds;

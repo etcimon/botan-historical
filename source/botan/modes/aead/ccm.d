@@ -50,8 +50,8 @@ public:
 			// FIXME: support larger AD using length encoding rules
 			BOTAN_ASSERT(length < (0xFFFF - 0xFF), "Supported CCM AD length");
 			
-			m_ad_buf.push_back(get_byte<ushort>(0, length));
-			m_ad_buf.push_back(get_byte<ushort>(1, length));
+			m_ad_buf.push_back(get_byte!ushort(0, length));
+			m_ad_buf.push_back(get_byte!ushort(1, length));
 			m_ad_buf += Pair(ad, length);
 			while(m_ad_buf.length % BS)
 				m_ad_buf.push_back(0); // pad with zeros to full block size

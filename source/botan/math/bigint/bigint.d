@@ -121,7 +121,7 @@ public:
 			base = Hexadecimal;
 		}
 		
-		*this = decode(cast(const ubyte*)(str.data()) + markers,
+		this = decode(cast(const ubyte*)(str.data()) + markers,
 		               str.length() - markers, base);
 		
 		if (negative) set_sign(Negative);

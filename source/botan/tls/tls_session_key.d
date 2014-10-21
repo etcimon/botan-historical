@@ -13,7 +13,7 @@ import botan.internal.tls_messages;
 /**
 * Session_Keys Constructor
 */
-Session_Keys::Session_Keys(const Handshake_State* state,
+Session_Keys::Session_Keys(const Handshake_State state,
 									in SafeVector!ubyte pre_master_secret,
 									bool resuming)
 {

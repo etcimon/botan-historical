@@ -127,7 +127,7 @@ class Channel
 		/**
 		* @return certificate chain of the peer (may be empty)
 		*/
-		Vector!( X509_Certificate ) peer_cert_chain() const;
+		Vector!X509_Certificate peer_cert_chain() const;
 
 		/**
 		* Key material export (RFC 5705)
@@ -155,7 +155,7 @@ class Channel
 		~this();
 	package:
 
-		abstract void process_handshake_msg(const Handshake_State* active_state,
+		abstract void process_handshake_msg(const Handshake_State active_state,
 													  Handshake_State& pending_state,
 													  Handshake_Type type,
 													  in Vector!ubyte contents);
@@ -163,10 +163,10 @@ class Channel
 		abstract void initiate_handshake(Handshake_State& state,
 												  bool force_full_renegotiation);
 
-		abstract Vector!( X509_Certificate )
+		abstract Vector!X509_Certificate
 			get_peer_cert_chain(in Handshake_State state) const;
 
-		abstract Handshake_State* new_handshake_state(class Handshake_IO* io);
+		abstract Handshake_State new_handshake_state(Handshake_IO io);
 
 		Handshake_State& create_handshake_state(Protocol_Version version);
 
@@ -212,9 +212,9 @@ class Channel
 
 		void reset_state();
 
-		const Handshake_State* active_state() const { return m_active_state.get(); }
+		const Handshake_State active_state() const { return m_active_state.get(); }
 
-		const Handshake_State* pending_state() const { return m_pending_state.get(); }
+		const Handshake_State pending_state() const { return m_pending_state.get(); }
 
 		/* callbacks */
 		bool delegate(const Session) m_handshake_cb;

@@ -14,18 +14,12 @@ import botan.asn1.asn1_obj;
 import botan.asn1.asn1_oid;
 import vector;
 
-class DER_Encoder;
-class BER_Decoder;
-
 /**
 * Attribute
 */
 class Attribute : ASN1_Object
 {
 public:
-	import botan.utils.mixins;
-	mixin USE_STRUCT_INIT!();
-
 	/*
 	* Create an Attribute
 	*/

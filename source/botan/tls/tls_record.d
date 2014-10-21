@@ -145,8 +145,8 @@ void write_record(SafeVector!ubyte output,
 
 	if (!cipherstate) // initial unencrypted handshake records
 	{
-		output.push_back(get_byte<ushort>(0, msg_length));
-		output.push_back(get_byte<ushort>(1, msg_length));
+		output.push_back(get_byte!ushort(0, msg_length));
+		output.push_back(get_byte!ushort(1, msg_length));
 
 		output.insert(output.end(), &msg[0], &msg[msg_length]);
 
@@ -169,8 +169,8 @@ void write_record(SafeVector!ubyte output,
 
 		BOTAN_ASSERT(rec_size <= 0xFFFF, "Ciphertext length fits in field");
 
-		output.push_back(get_byte<ushort>(0, rec_size));
-		output.push_back(get_byte<ushort>(1, rec_size));
+		output.push_back(get_byte!ushort(0, rec_size));
+		output.push_back(get_byte!ushort(1, rec_size));
 
 		aead.set_associated_data_vec(
 			cipherstate.format_ad(msg_sequence, msg_type, _version, msg_length)
@@ -207,8 +207,8 @@ void write_record(SafeVector!ubyte output,
 	if (buf_size > MAX_CIPHERTEXT_SIZE)
 		throw new Internal_Error("Output record is larger than allowed by protocol");
 
-	output.push_back(get_byte<ushort>(0, buf_size));
-	output.push_back(get_byte<ushort>(1, buf_size));
+	output.push_back(get_byte!ushort(0, buf_size));
+	output.push_back(get_byte!ushort(1, buf_size));
 
 	const size_t header_size = output.length;
 

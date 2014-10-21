@@ -26,7 +26,7 @@ public:
 	*/
 	static RandomNumberGenerator make_rng()
 	{
-		return make_rng(global_state().algorithm_factory()).release();
+		return make_rng(global_state().algorithm_factory());
 	}
 
 	/**

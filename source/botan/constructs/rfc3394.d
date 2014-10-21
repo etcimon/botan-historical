@@ -13,6 +13,7 @@ import botan.utils.loadstor;
 import botan.utils.exceptn;
 import botan.utils.xor_buf;
 import botan.algo_factory.algo_factory;
+import botan.utils.types;
 
 /**
 * Encrypt a key under a key encryption key using the algorithm
@@ -81,7 +82,7 @@ SafeVector!ubyte rfc3394_keyunwrap(in SafeVector!ubyte key,
 	if (key.length < 16 || key.length % 8 != 0)
 		throw new Invalid_Argument("Bad input key size for NIST key unwrap");
 	
-	Unique!BlockCipher aes = Unique!BlockCipher.create(make_aes(kek.length(), af));
+	auto aes = scoped!BlockCipher(make_aes(kek.length(), af));
 	aes.set_key(kek);
 	
 	const size_t n = (key.length - 8) / 8;

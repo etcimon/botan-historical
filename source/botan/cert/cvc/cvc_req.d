@@ -51,8 +51,7 @@ public:
 	*/
 	this(in string str)
 	{
-		DataSource_Stream stream = new DataSource_Stream(input, true);
-		scope(exit) delete stream;
+		auto stream = scoped!DataSource_Stream(input, true);
 		init(stream);
 		self_signed = true;
 		do_decode();

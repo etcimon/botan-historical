@@ -747,21 +747,20 @@ public:
 	{
 		Handshake_Extension_Type type = T.static_type();
 
-		auto i = extensions.find(type);
-
-		if (i != extensions.end())
-			return cast(T*)(i.second.get());
-		return null;
+		return extensions.get(type, null);
 	}
 
 	void add(Extension extn)
 	{
-		extensions[extn.type()].reset(extn);
+		auto val = extensions.get(extn.type(), null);
+		if (val)
+			delete val;
+		extensions[extn.type()] = extn;
 	}
 
 	Vector!ubyte serialize() const
 	{
-		Vector!ubyte buf(2); // 2 bytes for length field
+		Vector!ubyte buf = Vector!ubyte(2); // 2 bytes for length field
 		
 		foreach (ref extn; extensions)
 		{
@@ -827,7 +826,7 @@ private:
 	this(in Extensions) {}
 	Extensions opAssign(in Extensions) { return this; }
 
-	HashMap!(Handshake_Extension_Type, Unique!Extension) extensions;
+	HashMap!(Handshake_Extension_Type, Extension) extensions;
 }
 
 

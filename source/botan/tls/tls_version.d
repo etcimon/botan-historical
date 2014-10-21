@@ -9,13 +9,13 @@ module botan.tls.tls_version;
 import botan.utils.get_byte;
 import botan.tls_exceptn;
 import botan.utils.parsing;
-
+import botan.utils.types;
 import string;
 
 /**
 * TLS Protocol Version
 */
-class Protocol_Version
+struct Protocol_Version
 {
 public:
 	typedef ushort Version_Code;
@@ -39,15 +39,10 @@ public:
 		return Protocol_Version(DTLS_V12);
 	}
 
-	this() 
-	{
-		m_version = 0;
-	}
-
 	/**
 	* @param named_version a specific named version of the protocol
 	*/
-	this(Version_Code named_version)
+	this(Version_Code named_version = 0)
 	{
 		m_version = cast(ushort) named_version;
 	}

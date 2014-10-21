@@ -37,7 +37,7 @@ public:
 	/*
 	* Decode a BER encoded EAC_Time
 	*/
-	void decode_from(BER_Decoder source = BER_Decoder())
+	void decode_from(BER_Decoder source)
 	{
 		BER_Object obj = source.get_next_object();
 		
@@ -385,7 +385,7 @@ public:
 	/*
 	* DER encode an ASN1_EAC_String
 	*/
-	void encode_into(DER_Encoder encoder = DER_Encoder()) const
+	void encode_into(DER_Encoder encoder) const
 	{
 		string value = iso_8859();
 		encoder.add_object(tagging(), ASN1_Tag.APPLICATION, value);
@@ -394,7 +394,7 @@ public:
 	/*
 	* Decode a BER encoded ASN1_EAC_String
 	*/
-	void decode_from(BER_Decoder source = BER_Decoder())
+	void decode_from(BER_Decoder source)
 	{
 		BER_Object obj = source.get_next_object();
 		
@@ -416,7 +416,7 @@ public:
 		
 		try
 		{
-			*this = ASN1_EAC_String(
+			this = ASN1_EAC_String(
 				transcode(asn1.to_string(obj), charset_is, LOCAL_CHARSET),
 				obj.type_tag);
 		}

@@ -11,7 +11,7 @@ import botan.asn1.ber_dec;
 import botan.asn1.asn1_str;
 import botan.codec.pem;
 import botan.constructs.cryptobox_psk;
-
+import botan.utils.types;
 
 Session::Session(in Vector!ubyte session_identifier,
 					  in SafeVector!ubyte master_secret,
@@ -20,7 +20,7 @@ Session::Session(in Vector!ubyte session_identifier,
 					  ubyte compression_method,
 					  Connection_Side side,
 					  size_t fragment_size,
-					  const Vector!( X509_Certificate )& certs,
+					  const Vector!X509_Certificate certs,
 					  in Vector!ubyte ticket,
 					  const Server_Information& server_info,
 					  in string srp_identifier) :
@@ -43,7 +43,7 @@ Session::Session(in string pem)
 {
 	SafeVector!ubyte der = pem.decode_check_label(pem, "SSL SESSION");
 
-	*this = Session(&der[0], der.length);
+	this = Session(&der[0], der.length);
 }
 
 Session::Session(in ubyte* ber, size_t ber_len)
@@ -96,8 +96,7 @@ Session::Session(in ubyte* ber, size_t ber_len)
 
 	if (!peer_cert_bits.empty())
 	{
-		DataSource_Memory certs = new DataSource_Memory(&peer_cert_bits[0], peer_cert_bits.length);
-			scope(exit) delete certs;
+		auto certs = scoped!DataSource_Memory(&peer_cert_bits[0], peer_cert_bits.length);
 		while(!certs.end_of_data())
 			m_peer_certs.push_back(X509_Certificate(certs));
 	}

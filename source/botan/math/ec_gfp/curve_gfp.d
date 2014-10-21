@@ -86,7 +86,7 @@ public:
 	size_t get_p_words() const { return m_p_words; }
 
 	/**
-	* swaps the states of *this and other, does not throw
+	* swaps the states of this and other, does not throw
 	* @param other curve to swap values with
 	*/
 	void swap(CurveGFp other)

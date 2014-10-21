@@ -12,8 +12,6 @@ import botan.asn1.ber_dec;
 import botan.utils.charset;
 import botan.utils.parsing;
 
-class DER_Encoder;
-class BER_Decoder;
 
 /**
 * Simple String
@@ -21,13 +19,11 @@ class BER_Decoder;
 class ASN1_String : ASN1_Object
 {
 public:
-	import botan.utils.mixins;
-	mixin USE_STRUCT_INIT!();
 
 	/*
 	* DER encode an ASN1_String
 	*/
-	void encode_into(DER_Encoder encoder = DER_Encoder()) const
+	void encode_into(DER_Encoder encoder) const
 	{
 		string value = iso_8859();
 		if (tagging() == ASN1_Tag.UTF8_STRING)
@@ -38,7 +34,7 @@ public:
 	/*
 	* Decode a BER encoded ASN1_String
 	*/
-	void decode_from(BER_Decoder source = BER_Decoder())
+	void decode_from(BER_Decoder source)
 	{
 		BER_Object obj = source.get_next_object();
 		
@@ -51,7 +47,7 @@ public:
 		else
 			charset_is = LATIN1_CHARSET;
 		
-		*this = ASN1_String(
+		this = ASN1_String(
 			transcode(asn1.to_string(obj), charset_is, LOCAL_CHARSET),
 			obj.type_tag);
 	}

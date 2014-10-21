@@ -18,10 +18,11 @@ import botan.cert.x509.x509_ca;
 import botan.asn1.der_enc;
 import botan.asn1.oid_lookup.oids;
 import botan.filters.pipe;
+
 /**
 * Options for X.509 certificates.
 */
-class X509_Cert_Options
+struct X509_Cert_Options
 {
 public:
 	/**

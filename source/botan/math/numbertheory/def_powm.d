@@ -62,7 +62,7 @@ public:
 	}
 
 	Modular_Exponentiator copy() const
-	{ return new Fixed_Window_Exponentiator(*this); }
+	{ return new Fixed_Window_Exponentiator(this); }
 
 	this(in BigInt n, Power_Mod.Usage_Hints _hints)
 	{
@@ -193,7 +193,7 @@ public:
 	}
 
 	Modular_Exponentiator copy() const
-	{ return new Montgomery_Exponentiator(*this); }
+	{ return new Montgomery_Exponentiator(this); }
 
 	/*
 	* Montgomery_Exponentiator Constructor

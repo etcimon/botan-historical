@@ -197,8 +197,7 @@ BigInt compute_x(in string hash_id,
                  in string password,
                  in Vector!ubyte salt)
 {
-	Unique!HashFunction hash_fn = Unique!HashFunction.create(
-		global_state().algorithm_factory().make_hash_function(hash_id));
+	Unique!HashFunction hash_fn = global_state().algorithm_factory().make_hash_function(hash_id);
 	
 	hash_fn.update(identifier);
 	hash_fn.update(":");

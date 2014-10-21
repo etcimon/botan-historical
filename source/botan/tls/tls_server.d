@@ -18,7 +18,7 @@ class Server_Handshake_State : Handshake_State
 	public:
 		// using Handshake_State::Handshake_State;
 
-		Server_Handshake_State(Handshake_IO* io) : Handshake_State(io) {}
+		Server_Handshake_State(Handshake_IO io) : Handshake_State(io) {}
 
 		// Used by the server only, in case of RSA key exchange. Not owned
 		Private_Key server_rsa_kex_key = null;
@@ -105,7 +105,7 @@ ushort choose_ciphersuite(
 	const Policy& policy,
 	Protocol_Version _version,
 	Credentials_Manager& creds,
-	const HashMap<string, Vector!( X509_Certificate ) >& cert_chains,
+	const HashMap<string, Vector!X509_Certificate >& cert_chains,
 	const Client_Hello* client_hello)
 {
 	const bool our_choice = policy.server_uses_own_ciphersuite_preferences();
@@ -113,9 +113,9 @@ ushort choose_ciphersuite(
 	const bool have_srp = creds.attempt_srp("tls-server",
 														 client_hello.sni_hostname());
 
-	const Vector!( ushort ) client_suites = client_hello.ciphersuites();
+	const Vector!ushort client_suites = client_hello.ciphersuites();
 
-	const Vector!( ushort ) server_suites = policy.ciphersuite_list(_version, have_srp);
+	const Vector!ushort server_suites = policy.ciphersuite_list(_version, have_srp);
 
 	if (server_suites.empty())
 		throw new TLS_Exception(Alert.HANDSHAKE_FAILURE,
@@ -124,8 +124,8 @@ ushort choose_ciphersuite(
 	const bool have_shared_ecc_curve =
 		(policy.choose_curve(client_hello.supported_ecc_curves()) != "");
 
-	Vector!( ushort ) pref_list = server_suites;
-	Vector!( ushort ) other_list = client_suites;
+	Vector!ushort pref_list = server_suites;
+	Vector!ushort other_list = client_suites;
 
 	if (!our_choice)
 		std.algorithm.swap(pref_list, other_list);
@@ -176,17 +176,17 @@ ubyte choose_compression(in Policy policy,
 	return NO_COMPRESSION;
 }
 
-HashMap<string, Vector!( X509_Certificate ) >
+HashMap<string, Vector!X509_Certificate >
 get_server_certs(in string hostname,
 					  Credentials_Manager& creds)
 {
 	string[] cert_types = { "RSA", "DSA", "ECDSA", null };
 
-	HashMap<string, Vector!( X509_Certificate ) > cert_chains;
+	HashMap<string, Vector!X509_Certificate > cert_chains;
 
 	for (size_t i = 0; cert_types[i]; ++i)
 	{
-		Vector!( X509_Certificate ) certs =
+		Vector!X509_Certificate certs =
 			creds.cert_chain_single_type(cert_types[i], "tls-server", hostname);
 
 		if (!certs.empty())
@@ -218,19 +218,19 @@ Server::Server(void delegate(in ubyte*) output_fn,
 {
 }
 
-Handshake_State* Server::new_handshake_state(Handshake_IO* io)
+Handshake_State Server::new_handshake_state(Handshake_IO io)
 {
-	Unique!Handshake_State state = new Server_Handshake_State(io);
+	Handshake_State state = new Server_Handshake_State(io);
 	state.set_expected_next(CLIENT_HELLO);
-	return state.release();
+	return state;
 }
 
-Vector!( X509_Certificate )
+Vector!X509_Certificate
 Server::get_peer_cert_chain(in Handshake_State state) const
 {
 	if (state.client_certs())
 		return state.client_certs().cert_chain();
-	return Vector!( X509_Certificate )();
+	return Vector!X509_Certificate();
 }
 
 /*
@@ -242,18 +242,18 @@ void Server::initiate_handshake(Handshake_State& state,
 	cast(Server_Handshake_State&)(state).allow_session_resumption =
 		!force_full_renegotiation;
 
-	Hello_Request hello_req(state.handshake_io());
+	auto hello_req = scoped!Hello_Request(state.handshake_io());
 }
 
 /*
 * Process a handshake message
 */
-void Server::process_handshake_msg(const Handshake_State* active_state,
-											  Handshake_State& state_base,
+void Server::process_handshake_msg(const Handshake_State active_state,
+											  Handshake_State state_base,
 											  Handshake_Type type,
 											  in Vector!ubyte contents)
 {
-	Server_Handshake_State& state = cast(Server_Handshake_State&)(state_base);
+	Server_Handshake_State state = cast(Server_Handshake_State)(state_base);
 
 	state.confirm_transition_to(type);
 
@@ -441,7 +441,7 @@ void Server::process_handshake_msg(const Handshake_State* active_state,
 		}
 		else // new session
 		{
-			HashMap<string, Vector!( X509_Certificate ) > cert_chains;
+			HashMap<string, Vector!X509_Certificate > cert_chains;
 
 			const string sni_hostname = state.client_hello().sni_hostname();
 
@@ -594,7 +594,7 @@ void Server::process_handshake_msg(const Handshake_State* active_state,
 	{
 		state.client_verify(new Certificate_Verify(contents, state._version()));
 
-		const Vector!( X509_Certificate )& client_certs =
+		const Vector!X509_Certificate client_certs =
 			state.client_certs().cert_chain();
 
 		const bool sig_valid =

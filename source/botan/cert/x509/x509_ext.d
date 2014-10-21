@@ -65,8 +65,6 @@ package:
 class Extensions : ASN1_Object
 {
 public:
-	import botan.utils.mixins;
-	mixin USE_STRUCT_INIT!();
 
 	void encode_into(DER_Encoder to) const
 	{
@@ -915,14 +913,14 @@ public:
 	this() {}
 	this(in OID oid_) { oid = oid_; }
 	
-	void encode_into(DER_Encoder codec = DER_Encoder()) const
+	void encode_into(DER_Encoder codec) const
 	{
 		codec.start_cons(ASN1_Tag.SEQUENCE)
 			.encode(oid)
 				.end_cons();
 	}
 	
-	void decode_from(BER_Decoder codec = BER_Decoder())
+	void decode_from(BER_Decoder codec)
 	{
 		codec.start_cons(ASN1_Tag.SEQUENCE)
 			.decode(oid)

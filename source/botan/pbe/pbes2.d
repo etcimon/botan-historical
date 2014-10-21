@@ -53,7 +53,7 @@ public:
 				                    .encode_if (
 					m_prf.name() != "HMAC(SHA-160)",
 					AlgorithmIdentifier(m_prf.name(),
-				                    AlgorithmIdentifier.Encoding_Option.USE_NULL_PARAM))
+				                    AlgorithmIdentifier.USE_NULL_PARAM))
 				                    .end_cons()
 				                    .get_contents_unlocked()
 				                    )
@@ -138,7 +138,7 @@ public:
 				.decode_optional(key_length, INTEGER, ASN1_Tag.UNIVERSAL)
 				.decode_optional(prf_algo, ASN1_Tag.SEQUENCE, CONSTRUCTED,
 				                 AlgorithmIdentifier("HMAC(SHA-160)",
-				                    AlgorithmIdentifier.Encoding_Option.USE_NULL_PARAM))
+				                    AlgorithmIdentifier.USE_NULL_PARAM))
 				.verify_end()
 				.end_cons();
 		
