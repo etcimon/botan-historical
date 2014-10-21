@@ -115,7 +115,7 @@ public:
 
 	override void update(SafeVector!ubyte buffer, size_t offset = 0)
 	{
-		BOTAN_ASSERT(buffer.length >= offset, "Offset is sane");
+		assert(buffer.length >= offset, "Offset is sane");
 		size_t sz = buffer.length - offset;
 		ubyte* buf = &buffer[offset];
 		
@@ -159,7 +159,7 @@ public:
 
 	override void update(SafeVector!ubyte buffer, size_t offset = 0)
 	{
-		BOTAN_ASSERT(buffer.length >= offset, "Offset is sane");
+		assert(buffer.length >= offset, "Offset is sane");
 		size_t sz = buffer.length - offset;
 		ubyte* buf = &buffer[offset];
 		

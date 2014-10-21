@@ -124,13 +124,13 @@ public:
 
 	override void update(SafeVector!ubyte buffer, size_t offset = 0)
 	{
-		BOTAN_ASSERT(buffer.length >= offset, "Offset is sane");
+		assert(buffer.length >= offset, "Offset is sane");
 		const size_t sz = buffer.length - offset;
 		ubyte* buf = &buffer[offset];
 		
 		const size_t BS = cipher().block_size();
 		
-		BOTAN_ASSERT(sz % BS == 0, "Input is full blocks");
+		assert(sz % BS == 0, "Input is full blocks");
 		size_t blocks = sz / BS;
 		
 		const size_t blocks_in_tweak = update_granularity() / BS;
@@ -153,11 +153,11 @@ public:
 
 	override void finish(SafeVector!ubyte buffer, size_t offset = 0)
 	{
-		BOTAN_ASSERT(buffer.length >= offset, "Offset is sane");
+		assert(buffer.length >= offset, "Offset is sane");
 		const size_t sz = buffer.length - offset;
 		ubyte* buf = &buffer[offset];
 		
-		BOTAN_ASSERT(sz >= minimum_final_size(), "Have sufficient final input");
+		assert(sz >= minimum_final_size(), "Have sufficient final input");
 		
 		const size_t BS = cipher().block_size();
 		
@@ -170,7 +170,7 @@ public:
 			// steal ciphertext
 			const size_t full_blocks = ((sz / BS) - 1) * BS;
 			const size_t final_bytes = sz - full_blocks;
-			BOTAN_ASSERT(final_bytes > BS && final_bytes < 2*BS, "Left over size in expected range");
+			assert(final_bytes > BS && final_bytes < 2*BS, "Left over size in expected range");
 			
 			SafeVector!ubyte last(buf + full_blocks, buf + full_blocks + final_bytes);
 			buffer.resize(full_blocks + offset);
@@ -214,13 +214,13 @@ public:
 
 	override void update(SafeVector!ubyte buffer, size_t offset = 0)
 	{
-		BOTAN_ASSERT(buffer.length >= offset, "Offset is sane");
+		assert(buffer.length >= offset, "Offset is sane");
 		const size_t sz = buffer.length - offset;
 		ubyte* buf = &buffer[offset];
 		
 		const size_t BS = cipher().block_size();
 		
-		BOTAN_ASSERT(sz % BS == 0, "Input is full blocks");
+		assert(sz % BS == 0, "Input is full blocks");
 		size_t blocks = sz / BS;
 		
 		const size_t blocks_in_tweak = update_granularity() / BS;
@@ -243,11 +243,11 @@ public:
 
 	override void finish(SafeVector!ubyte buffer, size_t offset = 0)
 	{
-		BOTAN_ASSERT(buffer.length >= offset, "Offset is sane");
+		assert(buffer.length >= offset, "Offset is sane");
 		const size_t sz = buffer.length - offset;
 		ubyte* buf = &buffer[offset];
 		
-		BOTAN_ASSERT(sz >= minimum_final_size(), "Have sufficient final input");
+		assert(sz >= minimum_final_size(), "Have sufficient final input");
 		
 		const size_t BS = cipher().block_size();
 		
@@ -260,7 +260,7 @@ public:
 			// steal ciphertext
 			const size_t full_blocks = ((sz / BS) - 1) * BS;
 			const size_t final_bytes = sz - full_blocks;
-			BOTAN_ASSERT(final_bytes > BS && final_bytes < 2*BS, "Left over size in expected range");
+			assert(final_bytes > BS && final_bytes < 2*BS, "Left over size in expected range");
 			
 			SafeVector!ubyte last(buf + full_blocks, buf + full_blocks + final_bytes);
 			buffer.resize(full_blocks + offset);

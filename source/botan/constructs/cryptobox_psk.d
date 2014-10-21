@@ -12,7 +12,7 @@ import botan.algo_base.symkey;
 import botan.filters.pipe;
 import botan.libstate.lookup;
 import botan.utils.loadstor;
-import std.typecons : Unique;
+import botan.utils.types : Unique;
 /**
 * This namespace holds various high-level crypto functions
 */

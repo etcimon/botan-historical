@@ -7,7 +7,7 @@
 
 import botan.tls_client;
 import botan.internal.tls_handshake_state;
-import botan.internal.tls_messages;
+import botan.tls.tls_messages;
 import botan.internal.stl_util;
 
 class Client_Handshake_State : Handshake_State
@@ -23,7 +23,7 @@ class Client_Handshake_State : Handshake_State
 
 		const Public_Key get_server_public_Key() const
 		{
-			BOTAN_ASSERT(server_public_key, "Server sent us a certificate");
+			assert(server_public_key, "Server sent us a certificate");
 			return server_public_key.get();
 		}
 

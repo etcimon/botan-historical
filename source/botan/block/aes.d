@@ -521,7 +521,7 @@ void aes_encrypt_n(ubyte* input, ubyte* output,
                    const ref SafeVector!uint EK,
                    in SafeVector!ubyte ME)
 {
-	BOTAN_ASSERT(EK.length && ME.length == 16, "Key was set");
+	assert(EK.length && ME.length == 16, "Key was set");
 	
 	const size_t BLOCK_SIZE = 16;
 	
@@ -634,7 +634,7 @@ void aes_decrypt_n(ubyte* input, ubyte* output, size_t blocks,
                    const ref SafeVector!uint DK,
                    in SafeVector!ubyte MD)
 {
-	BOTAN_ASSERT(DK.length && MD.length == 16, "Key was set");
+	assert(DK.length && MD.length == 16, "Key was set");
 	
 	const size_t BLOCK_SIZE = 16;
 	

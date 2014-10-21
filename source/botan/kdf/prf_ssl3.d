@@ -62,7 +62,7 @@ OctetString next_hash(size_t where, size_t want,
                       in ubyte* secret, size_t secret_len,
                       in ubyte* seed, size_t seed_len) pure
 {
-	BOTAN_ASSERT(want <= md5.output_length(),
+	assert(want <= md5.output_length(),
 	             "Output size producable by MD5");
 	
 	const ubyte ASCII_A_CHAR = 0x41;

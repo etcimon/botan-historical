@@ -62,7 +62,7 @@ public:
 		
 		public_key = PointGFp(domain().get_curve(), x, y);
 		
-		BOTAN_ASSERT(public_key.on_the_curve(),
+		assert(public_key.on_the_curve(),
 		             "Loaded GOST 34.10 public key is on the curve");
 	}
 
@@ -188,7 +188,7 @@ public:
 		
 		PointGFp k_times_P = base_point * k;
 		
-		BOTAN_ASSERT(k_times_P.on_the_curve(),
+		assert(k_times_P.on_the_curve(),
 		             "GOST 34.10 k*g is on the curve");
 		
 		BigInt r = k_times_P.get_affine_x() % order;

@@ -11,7 +11,6 @@ import botan.filters.data_src;
 import botan.filters.filter;
 import botan.utils.exceptn;
 import initializer_list;
-import std.typecons : Unique, Proxy;
 // import iosfwd; // std.stdio?
 static if (BOTAN_HAS_PIPE_UNIXFD_IO && false)
 	import botan.fd_unix;

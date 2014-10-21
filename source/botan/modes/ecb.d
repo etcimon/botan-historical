@@ -94,13 +94,13 @@ public:
 
 	override void update(SafeVector!ubyte buffer, size_t offset = 0)
 	{
-		BOTAN_ASSERT(buffer.length >= offset, "Offset is sane");
+		assert(buffer.length >= offset, "Offset is sane");
 		const size_t sz = buffer.length - offset;
 		ubyte* buf = &buffer[offset];
 		
 		const size_t BS = cipher().block_size();
 		
-		BOTAN_ASSERT(sz % BS == 0, "ECB input is full blocks");
+		assert(sz % BS == 0, "ECB input is full blocks");
 		const size_t blocks = sz / BS;
 		
 		cipher().encrypt_n(&buf[0], &buf[0], blocks);
@@ -108,7 +108,7 @@ public:
 
 	override void finish(SafeVector!ubyte buffer, size_t offset = 0)
 	{
-		BOTAN_ASSERT(buffer.length >= offset, "Offset is sane");
+		assert(buffer.length >= offset, "Offset is sane");
 		const size_t sz = buffer.length - offset;
 		
 		const size_t BS = cipher().block_size();
@@ -147,13 +147,13 @@ public:
 
 	override void update(SafeVector!ubyte buffer, size_t offset = 0)
 	{
-		BOTAN_ASSERT(buffer.length >= offset, "Offset is sane");
+		assert(buffer.length >= offset, "Offset is sane");
 		const size_t sz = buffer.length - offset;
 		ubyte* buf = &buffer[offset];
 		
 		const size_t BS = cipher().block_size();
 		
-		BOTAN_ASSERT(sz % BS == 0, "Input is full blocks");
+		assert(sz % BS == 0, "Input is full blocks");
 		size_t blocks = sz / BS;
 		
 		cipher().decrypt_n(&buf[0], &buf[0], blocks);
@@ -161,7 +161,7 @@ public:
 
 	override void finish(SafeVector!ubyte buffer, size_t offset = 0)
 	{
-		BOTAN_ASSERT(buffer.length >= offset, "Offset is sane");
+		assert(buffer.length >= offset, "Offset is sane");
 		const size_t sz = buffer.length - offset;
 		
 		const size_t BS = cipher().block_size();

@@ -100,7 +100,7 @@ HashMap!(string, double)
 		Unique!AEAD_Mode enc = get_aead(name, ENCRYPTION);
 		Unique!AEAD_Mode dec = get_aead(name, DECRYPTION);
 		
-		if (enc && dec)
+		if (!enc.isEmpty && !dec.isEmpty)
 		{
 			const SymmetricKey key = SymmetricKey(rng, enc.key_spec().maximum_keylength());
 			HashMap!(string, double) ret;

@@ -33,7 +33,7 @@ public:
 
 	override void update(SafeVector!ubyte buffer, size_t offset = 0)
 	{
-		BOTAN_ASSERT(buffer.length >= offset, "Offset is sane");
+		assert(buffer.length >= offset, "Offset is sane");
 		const size_t sz = buffer.length - offset;
 		ubyte* buf = &buffer[offset];
 		
@@ -48,7 +48,7 @@ public:
 		if (length)
 		{
 			// FIXME: support larger AD using length encoding rules
-			BOTAN_ASSERT(length < (0xFFFF - 0xFF), "Supported CCM AD length");
+			assert(length < (0xFFFF - 0xFF), "Supported CCM AD length");
 			
 			m_ad_buf.push_back(get_byte!ushort(0, length));
 			m_ad_buf.push_back(get_byte!ushort(1, length));
@@ -128,12 +128,12 @@ package:
 	{
 		const size_t len_bytes = L();
 		
-		BOTAN_ASSERT(len_bytes < sizeof(size_t), "Length field fits");
+		assert(len_bytes < sizeof(size_t), "Length field fits");
 		
 		for (size_t i = 0; i != len_bytes; ++i)
 			output[len_bytes-1-i] = get_byte(sizeof(size_t)-1-i, len);
 		
-		BOTAN_ASSERT((len >> (len_bytes*8)) == 0, "Message length fits in field");
+		assert((len >> (len_bytes*8)) == 0, "Message length fits in field");
 	}
 
 	void inc(SafeVector!ubyte C)
@@ -204,17 +204,17 @@ public:
 
 	override void finish(SafeVector!ubyte buffer, size_t offset = 0)
 	{
-		BOTAN_ASSERT(buffer.length >= offset, "Offset is sane");
+		assert(buffer.length >= offset, "Offset is sane");
 		
 		buffer.insert(buffer.begin() + offset, msg_buf().begin(), msg_buf().end());
 		
 		const size_t sz = buffer.length - offset;
 		ubyte* buf = &buffer[offset];
 		
-		BOTAN_ASSERT(sz >= tag_size(), "We have the tag");
+		assert(sz >= tag_size(), "We have the tag");
 		
 		const SafeVector!ubyte ad = ad_buf();
-		BOTAN_ASSERT(ad.length % BS == 0, "AD is block size multiple");
+		assert(ad.length % BS == 0, "AD is block size multiple");
 		
 		const BlockCipher E = cipher();
 		
@@ -285,7 +285,7 @@ public:
 
 	override void finish(SafeVector!ubyte buffer, size_t offset)
 	{
-		BOTAN_ASSERT(buffer.length >= offset, "Offset is sane");
+		assert(buffer.length >= offset, "Offset is sane");
 		
 		buffer.insert(buffer.begin() + offset, msg_buf().begin(), msg_buf().end());
 		
@@ -293,7 +293,7 @@ public:
 		ubyte* buf = &buffer[offset];
 		
 		const SafeVector!ubyte ad = ad_buf();
-		BOTAN_ASSERT(ad.length % BS == 0, "AD is block size multiple");
+		assert(ad.length % BS == 0, "AD is block size multiple");
 		
 		const BlockCipher E = cipher();
 		
@@ -336,7 +336,7 @@ public:
 
 	override size_t output_length(size_t input_length) const
 	{
-		BOTAN_ASSERT(input_length > tag_size(), "Sufficient input");
+		assert(input_length > tag_size(), "Sufficient input");
 		return input_length - tag_size();
 	}
 

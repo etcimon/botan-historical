@@ -156,7 +156,7 @@ public:
 		
 		public_key = domain().get_base_point() * Private_Key;
 		
-		BOTAN_ASSERT(public_key.on_the_curve(),
+		assert(public_key.on_the_curve(),
 		             "Generated public key point was on the curve");
 	}
 
@@ -184,7 +184,7 @@ public:
 		{
 			public_key = domain().get_base_point() * Private_Key;
 			
-			BOTAN_ASSERT(public_key.on_the_curve(),
+			assert(public_key.on_the_curve(),
 			             "Public point derived from loaded key was on the curve");
 		}
 		else

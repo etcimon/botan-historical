@@ -174,7 +174,7 @@ public:
 		const BigInt m = BigInt(msg, msg_len);
 		const BigInt x = blinder.unblind(private_op(blinder.blind(m)));
 		
-		BOTAN_ASSERT(m == powermod_e_n(x),
+		assert(m == powermod_e_n(x),
 		             "RSA decrypt passed consistency check");
 		
 		return BigInt.encode_locked(x);

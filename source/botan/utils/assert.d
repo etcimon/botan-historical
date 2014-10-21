@@ -38,7 +38,7 @@ void assertion_failure(string expr_str,
 /**
 * Make an assertion
 */
-void BOTAN_ASSERT(bool expr, string assertion_made) {
+void assert(bool expr, string assertion_made) {
 	assert(expr, assertion_made);
 }
 

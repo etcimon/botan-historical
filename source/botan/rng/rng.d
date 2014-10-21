@@ -12,7 +12,7 @@ import string;
 import core.sync.mutex;
 import botan.rng.hmac_rng;
 import botan.libstate.libstate;
-import std.typecons : Unique;
+import botan.utils.types : Unique;
 
 /**
 * This class represents a random number (RNG) generator object.

@@ -6,8 +6,8 @@
 */
 
 import botan.internal.tls_handshake_state;
-import botan.internal.tls_messages;
-import botan.internal.tls_record;
+import botan.tls.tls_messages;
+import botan.tls.tls_record;
 
 
 namespace {

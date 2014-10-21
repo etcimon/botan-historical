@@ -6,7 +6,7 @@
 */
 
 import botan.utils.exceptn;
-import botan.tls_alert;
+import botan.tls.tls_alert;
 
 
 /**

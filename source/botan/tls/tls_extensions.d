@@ -15,7 +15,7 @@ import set;
 
 import botan.tls.tls_reader;
 import botan.tls_exceptn;
-import std.typecons : Unique;
+import botan.utils.types : Unique;
 
 typedef ushort Handshake_Extension_Type;
 enum : Handshake_Extension_Type {

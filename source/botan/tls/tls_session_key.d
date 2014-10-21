@@ -7,7 +7,7 @@
 
 import botan.internal.tls_session_key;
 import botan.internal.tls_handshake_state;
-import botan.internal.tls_messages;
+import botan.tls.tls_messages;
 
 
 /**

@@ -1,120 +1,205 @@
 /*
 * Alert Message
-* (C) 2004-2006,2011 Jack Lloyd
+* (C) 2004-2006,2011,2012 Jack Lloyd
 *
-* Released under the terms of the Botan license
+* Released under the terms of the botan license.
 */
+module botan.tls.tls_alert;
 
-import botan.tls_alert;
+import botan.alloc.secmem;
+import string;
 import botan.utils.exceptn;
 
-
-Alert.Alert(in SafeVector!ubyte buf)
+/**
+* SSL/TLS Alert Message
+*/
+class Alert
 {
-	if (buf.length != 2)
-		throw new Decoding_Error("Alert: Bad size " ~ std.conv.to!string(buf.length) +
-									" for alert message");
+public:
+	typedef ushort Type;
+	/**
+	* Type codes for TLS alerts
+	*/
+	enum : Type {
+		CLOSE_NOTIFY						= 0,
+		UNEXPECTED_MESSAGE				 	= 10,
+		BAD_RECORD_MAC						= 20,
+		DECRYPTION_FAILED					= 21,
+		RECORD_OVERFLOW					  	= 22,
+		DECOMPRESSION_FAILURE			  	= 30,
+		HANDSHAKE_FAILURE					= 40,
+		NO_CERTIFICATE						= 41, // SSLv3 only
+		BAD_CERTIFICATE					  	= 42,
+		UNSUPPORTED_CERTIFICATE				= 43,
+		CERTIFICATE_REVOKED				 	= 44,
+		CERTIFICATE_EXPIRED				 	= 45,
+		CERTIFICATE_UNKNOWN				 	= 46,
+		ILLEGAL_PARAMETER					= 47,
+		UNKNOWN_CA							= 48,
+		ACCESS_DENIED						= 49,
+		DECODE_ERROR						= 50,
+		DECRYPT_ERROR						= 51,
+		EXPORT_RESTRICTION				  	= 60,
+		PROTOCOL_VERSION					= 70,
+		INSUFFICIENT_SECURITY			  	= 71,
+		INTERNAL_ERROR						= 80,
+		USER_CANCELED						= 90,
+		NO_RENEGOTIATION					= 100,
+		UNSUPPORTED_EXTENSION			  	= 110,
+		CERTIFICATE_UNOBTAINABLE		  	= 111,
+		UNRECOGNIZED_NAME					= 112,
+		BAD_CERTIFICATE_STATUS_RESPONSE 	= 113,
+		BAD_CERTIFICATE_HASH_VALUE			= 114,
+		UNKNOWN_PSK_IDENTITY				= 115,
 
-	if (buf[0] == 1)		m_fatal = false;
-	else if (buf[0] == 2) m_fatal = true;
-	else
-		throw new Decoding_Error("Alert: Bad code for alert level");
+		// pseudo alert values
+		NULL_ALERT							= 256,
+		HEARTBEAT_PAYLOAD					= 257
+	};
 
-	const ubyte dc = buf[1];
+	/**
+	* @return true iff this alert is non-empty
+	*/
+	bool is_valid() const { return (m_type_code != NULL_ALERT); }
 
-	m_type_code = cast(Type)(dc);
-}
+	/**
+	* @return if this alert is a fatal one or not
+	*/
+	bool is_fatal() const { return m_fatal; }
 
-Vector!ubyte Alert.serialize() const
-{
-	return Vector!ubyte({
-		cast(ubyte)(is_fatal() ? 2 : 1),
-		cast(ubyte)(type())
-	});
-}
+	/**
+	* @return type of alert
+	*/
+	Type type() const { return m_type_code; }
 
-string Alert.type_string() const
-{
-	switch(type())
+	/**
+	* @return type of alert
+	*/
+	string type_string() const
 	{
-		case CLOSE_NOTIFY:
-			return "close_notify";
-		case UNEXPECTED_MESSAGE:
-			return "unexpected_message";
-		case BAD_RECORD_MAC:
-			return "bad_record_mac";
-		case DECRYPTION_FAILED:
-			return "decryption_failed";
-		case RECORD_OVERFLOW:
-			return "record_overflow";
-		case DECOMPRESSION_FAILURE:
-			return "decompression_failure";
-		case HANDSHAKE_FAILURE:
-			return "handshake_failure";
-		case NO_CERTIFICATE:
-			return "no_certificate";
-		case BAD_CERTIFICATE:
-			return "bad_certificate";
-		case UNSUPPORTED_CERTIFICATE:
-			return "unsupported_certificate";
-		case CERTIFICATE_REVOKED:
-			return "certificate_revoked";
-		case CERTIFICATE_EXPIRED:
-			return "certificate_expired";
-		case CERTIFICATE_UNKNOWN:
-			return "certificate_unknown";
-		case ILLEGAL_PARAMETER:
-			return "illegal_parameter";
-		case UNKNOWN_CA:
-			return "unknown_ca";
-		case ACCESS_DENIED:
-			return "access_denied";
-		case DECODE_ERROR:
-			return "decode_error";
-		case DECRYPT_ERROR:
-			return "decrypt_error";
-		case EXPORT_RESTRICTION:
-			return "export_restriction";
-		case PROTOCOL_VERSION:
-			return "protocol_version";
-		case INSUFFICIENT_SECURITY:
-			return "insufficient_security";
-		case INTERNAL_ERROR:
-			return "internal_error";
-		case USER_CANCELED:
-			return "user_canceled";
-		case NO_RENEGOTIATION:
-			return "no_renegotiation";
-
-		case UNSUPPORTED_EXTENSION:
-			return "unsupported_extension";
-		case CERTIFICATE_UNOBTAINABLE:
-			return "certificate_unobtainable";
-		case UNRECOGNIZED_NAME:
-			return "unrecognized_name";
-		case BAD_CERTIFICATE_STATUS_RESPONSE:
-			return "bad_certificate_status_response";
-		case BAD_CERTIFICATE_HASH_VALUE:
-			return "bad_certificate_hash_value";
-		case UNKNOWN_PSK_IDENTITY:
-			return "unknown_psk_identity";
-
-		case NULL_ALERT:
-			return "none";
-
-		case HEARTBEAT_PAYLOAD:
-			return "heartbeat_payload";
-	}
-
-	/*
+		switch(type())
+		{
+			case CLOSE_NOTIFY:
+				return "close_notify";
+			case UNEXPECTED_MESSAGE:
+				return "unexpected_message";
+			case BAD_RECORD_MAC:
+				return "bad_record_mac";
+			case DECRYPTION_FAILED:
+				return "decryption_failed";
+			case RECORD_OVERFLOW:
+				return "record_overflow";
+			case DECOMPRESSION_FAILURE:
+				return "decompression_failure";
+			case HANDSHAKE_FAILURE:
+				return "handshake_failure";
+			case NO_CERTIFICATE:
+				return "no_certificate";
+			case BAD_CERTIFICATE:
+				return "bad_certificate";
+			case UNSUPPORTED_CERTIFICATE:
+				return "unsupported_certificate";
+			case CERTIFICATE_REVOKED:
+				return "certificate_revoked";
+			case CERTIFICATE_EXPIRED:
+				return "certificate_expired";
+			case CERTIFICATE_UNKNOWN:
+				return "certificate_unknown";
+			case ILLEGAL_PARAMETER:
+				return "illegal_parameter";
+			case UNKNOWN_CA:
+				return "unknown_ca";
+			case ACCESS_DENIED:
+				return "access_denied";
+			case DECODE_ERROR:
+				return "decode_error";
+			case DECRYPT_ERROR:
+				return "decrypt_error";
+			case EXPORT_RESTRICTION:
+				return "export_restriction";
+			case PROTOCOL_VERSION:
+				return "protocol_version";
+			case INSUFFICIENT_SECURITY:
+				return "insufficient_security";
+			case INTERNAL_ERROR:
+				return "internal_error";
+			case USER_CANCELED:
+				return "user_canceled";
+			case NO_RENEGOTIATION:
+				return "no_renegotiation";
+				
+			case UNSUPPORTED_EXTENSION:
+				return "unsupported_extension";
+			case CERTIFICATE_UNOBTAINABLE:
+				return "certificate_unobtainable";
+			case UNRECOGNIZED_NAME:
+				return "unrecognized_name";
+			case BAD_CERTIFICATE_STATUS_RESPONSE:
+				return "bad_certificate_status_response";
+			case BAD_CERTIFICATE_HASH_VALUE:
+				return "bad_certificate_hash_value";
+			case UNKNOWN_PSK_IDENTITY:
+				return "unknown_psk_identity";
+				
+			case NULL_ALERT:
+				return "none";
+				
+			case HEARTBEAT_PAYLOAD:
+				return "heartbeat_payload";
+		}
+		
+		/*
 	* This is effectively the default case for the switch above, but we
 	* leave it out so that when an alert type is added to the enum the
 	* compiler can warn us that it is not included in the switch
 	* statement.
 	*/
-	return "unrecognized_alert_" ~ std.conv.to!string(type());
-}
+		return "unrecognized_alert_" ~ std.conv.to!string(type());
+	}
 
-}
+	/**
+	* Serialize an alert
+	*/
+	Vector!ubyte serialize() const
+	{
+		return Vector!ubyte([
+			cast(ubyte)(is_fatal() ? 2 : 1),
+			cast(ubyte)(type())
+		]);
+	}
 
-}
+	/**
+	* Deserialize an Alert message
+	* @param buf the serialized alert
+	*/
+	this(in SafeVector!ubyte buf)
+	{
+		if (buf.length != 2)
+			throw new Decoding_Error("Alert: Bad size " ~ std.conv.to!string(buf.length) +
+			                         " for alert message");
+		
+		if (buf[0] == 1)		m_fatal = false;
+		else if (buf[0] == 2) m_fatal = true;
+		else
+			throw new Decoding_Error("Alert: Bad code for alert level");
+		
+		const ubyte dc = buf[1];
+		
+		m_type_code = cast(Type)(dc);
+	}
+
+	/**
+	* Create a new Alert
+	* @param type_code the type of alert
+	* @param fatal specifies if this is a fatal alert
+	*/
+	this(Type type_code = NULL_ALERT, bool fatal = false)
+	{
+		m_fatal = fatal;
+		m_type_code = type_code;
+	}
+
+private:
+	bool m_fatal;
+	Type m_type_code;
+};

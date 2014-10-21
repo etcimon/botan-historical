@@ -7,9 +7,9 @@
 
 import botan.tls_channel;
 import botan.internal.tls_handshake_state;
-import botan.internal.tls_messages;
+import botan.tls.tls_messages;
 import botan.internal.tls_heartbeats;
-import botan.internal.tls_record;
+import botan.tls.tls_record;
 import botan.internal.tls_seq_numbers;
 import botan.utils.rounding;
 import botan.internal.stl_util;
@@ -54,7 +54,7 @@ void reset_state()
 
 ref Connection_Sequence_Numbers sequence_numbers() const
 {
-	BOTAN_ASSERT(m_sequence_numbers, "Have a sequence numbers object");
+	assert(m_sequence_numbers, "Have a sequence numbers object");
 	return *m_sequence_numbers;
 }
 
@@ -62,7 +62,7 @@ FreeListRef!Connection_Cipher_State read_cipher_state_epoch(ushort epoch) const
 {
 	auto i = m_read_cipher_states.find(epoch);
 
-	BOTAN_ASSERT(i != m_read_cipher_states.end(),
+	assert(i != m_read_cipher_states.end(),
 					 "Have a cipher state for the specified epoch");
 
 	return i.second;
@@ -72,7 +72,7 @@ FreeListRef!Connection_Cipher_State write_cipher_state_epoch(ushort epoch) const
 {
 	auto i = m_write_cipher_states.find(epoch);
 
-	BOTAN_ASSERT(i != m_write_cipher_states.end(),
+	assert(i != m_write_cipher_states.end(),
 					 "Have a cipher state for the specified epoch");
 
 	return i.second;
@@ -158,7 +158,7 @@ void change_cipher_spec_reader(Connection_Side side)
 {
 	auto pending = pending_state();
 
-	BOTAN_ASSERT(pending && pending.server_hello(),
+	assert(pending && pending.server_hello(),
 					 "Have received server hello");
 
 	if (pending.server_hello().compression_method() != NO_COMPRESSION)
@@ -168,16 +168,15 @@ void change_cipher_spec_reader(Connection_Side side)
 
 	const ushort epoch = sequence_numbers().current_read_epoch();
 
-	BOTAN_ASSERT(m_read_cipher_states.count(epoch) == 0,
+	assert(m_read_cipher_states.count(epoch) == 0,
 					 "No read cipher state currently set for next epoch");
 
 	// flip side as we are reading
-	std::shared_ptr<Connection_Cipher_State> read_state(
-		new Connection_Cipher_State(pending._version(),
+	Connection_Cipher_State read_state = Connection_Cipher_State(pending._version(),
 											 (side == CLIENT) ? SERVER : CLIENT,
 											 false,
 											 pending.ciphersuite(),
-											 pending.session_keys()));
+											 pending.session_keys());
 
 	m_read_cipher_states[epoch] = read_state;
 }
@@ -186,7 +185,7 @@ void change_cipher_spec_writer(Connection_Side side)
 {
 	auto pending = pending_state();
 
-	BOTAN_ASSERT(pending && pending.server_hello(),
+	assert(pending && pending.server_hello(),
 					 "Have received server hello");
 
 	if (pending.server_hello().compression_method() != NO_COMPRESSION)
@@ -196,7 +195,7 @@ void change_cipher_spec_writer(Connection_Side side)
 
 	const ushort epoch = sequence_numbers().current_write_epoch();
 
-	BOTAN_ASSERT(m_write_cipher_states.count(epoch) == 0,
+	assert(m_write_cipher_states.count(epoch) == 0,
 					 "No write cipher state currently set for next epoch");
 
 	std::shared_ptr<Connection_Cipher_State> write_state(
@@ -299,13 +298,13 @@ size_t received_data(in ubyte* input, size_t input_size)
 								m_sequence_numbers.get(),
 								get_cipherstate);
 
-			BOTAN_ASSERT(consumed <= input_size,
+			assert(consumed <= input_size,
 							 "Record reader consumed sane amount");
 
 			input += consumed;
 			input_size -= consumed;
 
-			BOTAN_ASSERT(input_size == 0 || needed == 0,
+			assert(input_size == 0 || needed == 0,
 							 "Got a full record or consumed all input");
 
 			if (input_size == 0 && needed != 0)
@@ -444,7 +443,7 @@ void heartbeat(in ubyte* payload, size_t payload_size)
 void write_record(Connection_Cipher_State* cipher_state,
 									ubyte record_type, in ubyte* input, size_t length)
 {
-	BOTAN_ASSERT(m_pending_state || m_active_state,
+	assert(m_pending_state || m_active_state,
 					 "Some connection state exists");
 
 	Protocol_Version record_version =

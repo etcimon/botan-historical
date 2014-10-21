@@ -112,7 +112,7 @@ public:
 		
 		PointGFp S = (cofactor * point) * l_times_priv;
 		
-		BOTAN_ASSERT(S.on_the_curve(),
+		assert(S.on_the_curve(),
 		             "ECDH agreed value was on the curve");
 		
 		return BigInt.encode_1363(S.get_affine_x(),

@@ -148,7 +148,7 @@ public:
 
 	override void update(SafeVector!ubyte buffer, size_t offset = 0)
 	{
-		BOTAN_ASSERT(buffer.length >= offset, "Offset is sane");
+		assert(buffer.length >= offset, "Offset is sane");
 		const size_t sz = buffer.length - offset;
 		ubyte* buf = &buffer[offset];
 		
@@ -181,7 +181,7 @@ public:
 
 	override size_t output_length(size_t input_length) const
 	{
-		BOTAN_ASSERT(input_length > tag_size(), "Sufficient input");
+		assert(input_length > tag_size(), "Sufficient input");
 		return input_length - tag_size();
 	}
 
@@ -189,7 +189,7 @@ public:
 
 	override void update(SafeVector!ubyte buffer, size_t offset = 0)
 	{
-		BOTAN_ASSERT(buffer.length >= offset, "Offset is sane");
+		assert(buffer.length >= offset, "Offset is sane");
 		const size_t sz = buffer.length - offset;
 		ubyte* buf = &buffer[offset];
 		
@@ -199,11 +199,11 @@ public:
 
 	override void finish(SafeVector!ubyte buffer, size_t offset)
 	{
-		BOTAN_ASSERT(buffer.length >= offset, "Offset is sane");
+		assert(buffer.length >= offset, "Offset is sane");
 		const size_t sz = buffer.length - offset;
 		ubyte* buf = &buffer[offset];
 		
-		BOTAN_ASSERT(sz >= tag_size(), "Have the tag as part of final input");
+		assert(sz >= tag_size(), "Have the tag as part of final input");
 		
 		const size_t remaining = sz - tag_size();
 		
@@ -242,7 +242,7 @@ public:
 
 	SafeVector!ubyte nonce_hash(in ubyte* nonce, size_t nonce_len)
 	{
-		BOTAN_ASSERT(m_ghash.length == 0, "nonce_hash called during wrong time");
+		assert(m_ghash.length == 0, "nonce_hash called during wrong time");
 		SafeVector!ubyte y0(16);
 		
 		ghash_update(y0, nonce, nonce_len);
@@ -262,7 +262,7 @@ public:
 	*/
 	void update(in ubyte* input, size_t length)
 	{
-		BOTAN_ASSERT(m_ghash.length == 16, "Key was set");
+		assert(m_ghash.length == 16, "Key was set");
 		
 		m_text_len += length;
 		

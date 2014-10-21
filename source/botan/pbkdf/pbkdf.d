@@ -46,7 +46,7 @@ public:
 		                              salt, salt_len, iterations,
 		                              Duration(0));
 		
-		BOTAN_ASSERT(derived.first == iterations,
+		assert(derived.first == iterations,
 		             "PBKDF used the correct number of iterations");
 		
 		return derived.second;

@@ -34,7 +34,7 @@ public:
 		if (!valid_nonce_length(nonce_len))
 			throw new Invalid_IV_Length(name(), nonce_len);
 		
-		BOTAN_ASSERT(m_L, "A key was set");
+		assert(m_L, "A key was set");
 		
 		m_offset = update_nonce(nonce, nonce_len);
 		zeroise(m_checksum);
@@ -45,7 +45,7 @@ public:
 
 	override void set_associated_data(in ubyte* ad, size_t ad_len)
 	{
-		BOTAN_ASSERT(m_L, "A key was set");
+		assert(m_L, "A key was set");
 		m_ad_hash = ocb_hash(*m_L, *m_cipher, &ad[0], ad_len);
 	}
 
@@ -122,7 +122,7 @@ private:
 	SafeVector!ubyte
 		update_nonce(in ubyte* nonce, size_t nonce_len)
 	{
-		BOTAN_ASSERT(nonce_len < BS, "Nonce is less than 128 bits");
+		assert(nonce_len < BS, "Nonce is less than 128 bits");
 		
 		SafeVector!ubyte nonce_buf(BS);
 		
@@ -187,11 +187,11 @@ public:
 
 	override void update(SafeVector!ubyte buffer, size_t offset = 0)
 	{
-		BOTAN_ASSERT(buffer.length >= offset, "Offset is sane");
+		assert(buffer.length >= offset, "Offset is sane");
 		const size_t sz = buffer.length - offset;
 		ubyte* buf = &buffer[offset];
 		
-		BOTAN_ASSERT(sz % BS == 0, "Input length is an even number of blocks");
+		assert(sz % BS == 0, "Input length is an even number of blocks");
 		
 		encrypt(buf, sz / BS);
 	}
@@ -199,7 +199,7 @@ public:
 
 	override void finish(SafeVector!ubyte buffer, size_t offset = 0)
 	{
-		BOTAN_ASSERT(buffer.length >= offset, "Offset is sane");
+		assert(buffer.length >= offset, "Offset is sane");
 		const size_t sz = buffer.length - offset;
 		ubyte* buf = &buffer[offset];
 		
@@ -212,7 +212,7 @@ public:
 			
 			if (remainder_bytes)
 			{
-				BOTAN_ASSERT(remainder_bytes < BS, "Only a partial block left");
+				assert(remainder_bytes < BS, "Only a partial block left");
 				ubyte* remainder = &buf[sz - remainder_bytes];
 				
 				xor_buf(&m_checksum[0], &remainder[0], remainder_bytes);
@@ -289,7 +289,7 @@ public:
 
 	override size_t output_length(size_t input_length) const
 	{
-		BOTAN_ASSERT(input_length > tag_size(), "Sufficient input");
+		assert(input_length > tag_size(), "Sufficient input");
 		return input_length - tag_size();
 	}
 
@@ -297,22 +297,22 @@ public:
 
 	override void update(SafeVector!ubyte buffer, size_t offset)
 	{
-		BOTAN_ASSERT(buffer.length >= offset, "Offset is sane");
+		assert(buffer.length >= offset, "Offset is sane");
 		const size_t sz = buffer.length - offset;
 		ubyte* buf = &buffer[offset];
 		
-		BOTAN_ASSERT(sz % BS == 0, "Input length is an even number of blocks");
+		assert(sz % BS == 0, "Input length is an even number of blocks");
 		
 		decrypt(buf, sz / BS);
 	}
 
 	override void finish(SafeVector!ubyte buffer, size_t offset = 0)
 	{
-		BOTAN_ASSERT(buffer.length >= offset, "Offset is sane");
+		assert(buffer.length >= offset, "Offset is sane");
 		const size_t sz = buffer.length - offset;
 		ubyte* buf = &buffer[offset];
 		
-		BOTAN_ASSERT(sz >= tag_size(), "We have the tag");
+		assert(sz >= tag_size(), "We have the tag");
 		
 		const size_t remaining = sz - tag_size();
 		
@@ -325,7 +325,7 @@ public:
 			
 			if (final_bytes)
 			{
-				BOTAN_ASSERT(final_bytes < BS, "Only a partial block left");
+				assert(final_bytes < BS, "Only a partial block left");
 				
 				ubyte* remainder = &buf[remaining - final_bytes];
 				
@@ -378,7 +378,7 @@ private:
 		
 		const size_t par_bytes = m_cipher.parallel_bytes();
 		
-		BOTAN_ASSERT(par_bytes % BS == 0, "Cipher is parallel in full blocks");
+		assert(par_bytes % BS == 0, "Cipher is parallel in full blocks");
 		
 		const size_t par_blocks = par_bytes / BS;
 		

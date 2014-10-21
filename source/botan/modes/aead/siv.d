@@ -39,7 +39,7 @@ public:
 
 	override void update(SafeVector!ubyte buffer, size_t offset = 0)
 	{
-		BOTAN_ASSERT(buffer.length >= offset, "Offset is sane");
+		assert(buffer.length >= offset, "Offset is sane");
 		const size_t sz = buffer.length - offset;
 		ubyte* buf = &buffer[offset];
 		
@@ -183,7 +183,7 @@ public:
 
 	override void finish(SafeVector!ubyte buffer, size_t offset = 0)
 	{
-		BOTAN_ASSERT(buffer.length >= offset, "Offset is sane");
+		assert(buffer.length >= offset, "Offset is sane");
 		
 		buffer.insert(buffer.begin() + offset, msg_buf().begin(), msg_buf().end());
 		
@@ -217,13 +217,13 @@ public:
 
 	override void finish(SafeVector!ubyte buffer, size_t offset)
 	{
-		BOTAN_ASSERT(buffer.length >= offset, "Offset is sane");
+		assert(buffer.length >= offset, "Offset is sane");
 		
 		buffer.insert(buffer.begin() + offset, msg_buf().begin(), msg_buf().end());
 		
 		const size_t sz = buffer.length - offset;
 		
-		BOTAN_ASSERT(sz >= tag_size(), "We have the tag");
+		assert(sz >= tag_size(), "We have the tag");
 		
 		SafeVector!ubyte V = SafeVector!ubyte(&buffer[offset], &buffer[offset + 16]);
 		
@@ -243,7 +243,7 @@ public:
 
 	override size_t output_length(size_t input_length) const
 	{
-		BOTAN_ASSERT(input_length > tag_size(), "Sufficient input");
+		assert(input_length > tag_size(), "Sufficient input");
 		return input_length - tag_size();
 	}
 

@@ -4,6 +4,7 @@
 *
 * Released under the terms of the botan license.
 */
+module botan.tls.tls_messages;
 
 import botan.internal.tls_handshake_state;
 import botan.internal.tls_session_key;
@@ -37,12 +38,10 @@ import botan.utils.loadstor;
 import botan.utils.types;
 import botan.libstate.lookup;
 import botan.rng.rng;
-import std.typecons : Unique;
+import botan.utils.types : Unique;
 import std.datetime;
 import vector;
 import string;
-
-class Handshake_IO;
 
 enum {
 	TLS_EMPTY_RENEGOTIATION_INFO_SCSV		  = 0x00FF
@@ -656,7 +655,7 @@ public:
 		
 		if (kex_algo == "RSA")
 		{
-			BOTAN_ASSERT(state.server_certs() && !state.server_certs().cert_chain().empty(),
+			assert(state.server_certs() && !state.server_certs().cert_chain().empty(),
 			             "RSA key exchange negotiated so server sent a certificate");
 			
 			if (!server_rsa_kex_key)
@@ -1665,7 +1664,7 @@ public:
 		
 		if (state.ciphersuite().sig_algo() != "")
 		{
-			BOTAN_ASSERT(signing_key, "Signing key was set");
+			assert(signing_key, "Signing key was set");
 			
 			Pair!(string, Signature_Format) format =
 				state.choose_sig_format(signing_key, m_hash_algo, m_sig_algo, false, policy);
@@ -1811,7 +1810,7 @@ public:
 	override Handshake_Type type() const { return NEW_SESSION_TICKET; }
 
 	uint ticket_lifetime_hint() const { return m_ticket_lifetime_hint; }
-	in Vector!ubyte ticket() const { return m_ticket; }
+	const Vector!ubyte ticket() const { return m_ticket; }
 
 	this(Handshake_IO io,
 	     Handshake_Hash hash,
@@ -1823,12 +1822,31 @@ public:
 		hash.update = io.send(this);
 	}
 
-	New_Session_Ticket(Handshake_IO io,
-							 Handshake_Hash hash);
+	this(in Vector!ubyte buf)
+	{
+		if (buf.length < 6)
+			throw new Decoding_Error("Session ticket message too short to be valid");
+		
+		TLS_Data_Reader reader = TLS_Data_Reader("SessionTicket", buf);
+		
+		m_ticket_lifetime_hint = reader.get_uint();
+		m_ticket = reader.get_range!ubyte(2, 0, 65535);
+	}
 
-	New_Session_Ticket(in Vector!ubyte buf);
+	this(Handshake_IO io,
+	     Handshake_Hash hash)
+	{
+		hash.update(io.send(this));
+	}
+
 private:
-	override Vector!ubyte serialize() const;
+	override Vector!ubyte serialize() const
+	{
+		Vector!ubyte buf = Vector!ubyte(4);
+		store_be(m_ticket_lifetime_hint.seconds, &buf[0]);
+		append_tls_length_value(buf, m_ticket, 2);
+		return buf;
+	}
 
 	Duration m_ticket_lifetime_hint;
 	Vector!ubyte m_ticket;

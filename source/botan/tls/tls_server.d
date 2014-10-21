@@ -7,7 +7,7 @@
 
 import botan.tls_server;
 import botan.internal.tls_handshake_state;
-import botan.internal.tls_messages;
+import botan.tls.tls_messages;
 import botan.internal.stl_util;
 
 
@@ -492,7 +492,7 @@ void Server::process_handshake_msg(const Handshake_State active_state,
 
 			if (sig_algo != "")
 			{
-				BOTAN_ASSERT(!cert_chains[sig_algo].empty(),
+				assert(!cert_chains[sig_algo].empty(),
 								 "Attempting to send empty certificate chain");
 
 				state.server_certs(
@@ -711,8 +711,4 @@ void Server::process_handshake_msg(const Handshake_State active_state,
 	}
 	else
 		throw new Unexpected_Message("Unknown handshake message received");
-}
-
-}
-
 }

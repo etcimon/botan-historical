@@ -105,13 +105,13 @@ public:
 
 	Pair!(const ubyte*, size_t) get_blob(int column)
 	{
-		BOTAN_ASSERT(sqlite3_column_type(m_stmt, 0) == SQLITE_BLOB,
+		assert(sqlite3_column_type(m_stmt, 0) == SQLITE_BLOB,
 		             "Return value is a blob");
 		
 		const void* session_blob = sqlite3_column_blob(m_stmt, column);
 		const int session_blob_size = sqlite3_column_bytes(m_stmt, column);
 		
-		BOTAN_ASSERT(session_blob_size >= 0, "Blob size is non-negative");
+		assert(session_blob_size >= 0, "Blob size is non-negative");
 		
 		return Pair(cast(const ubyte*)(session_blob),
 		            cast(size_t)(session_blob_size));
@@ -119,12 +119,12 @@ public:
 
 	size_t get_size_t(int column)
 	{
-		BOTAN_ASSERT(sqlite3_column_type(m_stmt, column) == SQLITE_INTEGER,
+		assert(sqlite3_column_type(m_stmt, column) == SQLITE_INTEGER,
 		             "Return count is an integer");
 		
 		const int sessions_int = sqlite3_column_int(m_stmt, column);
 		
-		BOTAN_ASSERT(sessions_int >= 0, "Expected size_t is non-negative");
+		assert(sessions_int >= 0, "Expected size_t is non-negative");
 		
 		return cast(size_t)(sessions_int);
 	}

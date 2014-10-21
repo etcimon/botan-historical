@@ -69,9 +69,9 @@ public:
 	*/
 	void add(SecureQueue* queue)
 	{
-		BOTAN_ASSERT(queue, "queue was provided");
+		assert(queue, "queue was provided");
 		
-		BOTAN_ASSERT(buffers.length < buffers.max_size(),
+		assert(buffers.length < buffers.max_size(),
 		             "Room was available in container");
 		
 		buffers.push_back(queue);
@@ -119,7 +119,7 @@ private:
 		if (msg < offset)
 			return null;
 		
-		BOTAN_ASSERT(msg < message_count(), "Message number is in range");
+		assert(msg < message_count(), "Message number is in range");
 		
 		return buffers[msg-offset];
 	}

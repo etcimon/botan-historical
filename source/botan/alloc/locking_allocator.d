@@ -53,7 +53,7 @@ public:
 				m_freelist.erase(i);
 				clear_mem(m_pool + offset, n);
 				
-				BOTAN_ASSERT((cast(size_t)(m_pool) + offset) % alignment == 0,
+				assert((cast(size_t)(m_pool) + offset) % alignment == 0,
 				             "Returning correctly aligned pointer");
 				
 				return m_pool + offset;
@@ -96,7 +96,7 @@ public:
 			
 			clear_mem(m_pool + offset + alignment_padding, n);
 			
-			BOTAN_ASSERT((cast(size_t)(m_pool) + offset + alignment_padding) % alignment == 0,
+			assert((cast(size_t)(m_pool) + offset + alignment_padding) % alignment == 0,
 			             "Returning correctly aligned pointer");
 			
 			return m_pool + offset + alignment_padding;
@@ -116,7 +116,7 @@ public:
 		We return null in allocate if there was an overflow, so we
 		should never ever see an overflow in a deallocation.
 		*/
-		BOTAN_ASSERT(n / elem_size == num_elems,
+		assert(n / elem_size == num_elems,
 		             "No overflow in deallocation");
 		
 		if (!ptr_in_pool(m_pool, m_poolsize, p, n))
@@ -268,7 +268,7 @@ bool ptr_in_pool(const void* pool_ptr, size_t poolsize,
 	if (buf < pool || buf >= pool + poolsize)
 		return false;
 
-	BOTAN_ASSERT(buf + bufsize <= pool + poolsize,
+	assert(buf + bufsize <= pool + poolsize,
 					 "Pointer does not partially overlap pool");
 
 	return true;

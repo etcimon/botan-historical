@@ -117,7 +117,7 @@ private:
 
 		Vector!ubyte get()
 		{
-			BOTAN_ASSERT(m_fresh_nonce, "The nonce is fresh for this message");
+			assert(m_fresh_nonce, "The nonce is fresh for this message");
 			
 			if (!m_nonce.empty())
 				m_fresh_nonce = false;

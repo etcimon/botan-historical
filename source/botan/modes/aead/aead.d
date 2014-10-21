@@ -61,7 +61,7 @@ class AEAD_Mode : Cipher_Mode
 /**
 * Get an AEAD mode by name (eg "AES-128/GCM" or "Serpent/EAX")
 */
-AEAD_Mode* get_aead(in string algo_spec, Cipher_Dir direction)
+AEAD_Mode get_aead(in string algo_spec, Cipher_Dir direction)
 {
 	AlgorithmFactory af = global_state().algorithm_factory();
 	
@@ -119,7 +119,7 @@ AEAD_Mode* get_aead(in string algo_spec, Cipher_Dir direction)
 	static if (BOTAN_HAS_AEAD_SIV) {
 		if (mode_name == "SIV")
 		{
-			BOTAN_ASSERT(tag_size == 16, "Valid tag size for SIV");
+			assert(tag_size == 16, "Valid tag size for SIV");
 			if (direction == ENCRYPTION)
 				return new SIV_Encryption(cipher.clone());
 			else

@@ -14,7 +14,7 @@ import botan.modes.aead.aead;
 class AEAD_Filter : Transformation_Filter
 {
 public:
-	this(AEAD_Mode* aead)
+	this(AEAD_Mode aead)
 	{
 		super(aead);
 	}
