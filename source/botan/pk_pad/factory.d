@@ -6,7 +6,7 @@
 */
 module botan.pk_pad.factory;
 
-import botan.emsa;
+import botan.pk_pad.emsa;
 import botan.pk_pad.eme;
 import botan.libstate.libstate;
 import botan.algo_base.scan_name;
@@ -23,7 +23,7 @@ static if (BOTAN_HAS_EME_PKCS1v15)  import botan.pk_pad.eme_pkcs;
 /*
 * Get an EMSA by name
 */
-EMSA* get_emsa(in string algo_spec)
+EMSA get_emsa(in string algo_spec)
 {
 	SCAN_Name request = SCAN_Name(algo_spec);
 	

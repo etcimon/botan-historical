@@ -38,7 +38,7 @@ public:
 	*/
 	void clear()
 	{
-	MDx_HashFunction::clear();
+		MDx_HashFunction.clear();
 		zeroise(X);
 		digest[0] = 0x0123456789ABCDEF;
 		digest[1] = 0xFEDCBA9876543210;

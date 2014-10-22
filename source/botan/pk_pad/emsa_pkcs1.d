@@ -5,7 +5,7 @@
 * Distributed under the terms of the botan license.
 */
 module botan.pk_pad.emsa_pkcs1;
-import botan.emsa;
+import botan.pk_pad.emsa;
 import botan.hash.hash;
 import botan.pk_pad.emsa_pkcs1;
 import botan.pk_pad.hash_id;

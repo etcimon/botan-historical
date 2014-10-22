@@ -320,7 +320,7 @@ string ipv4_to_string(uint ip)
 {
 	import std.array : Appender;
 	Appender!string str;
-	for (size_t i = 0; i != sizeof(ip); ++i)
+	for (size_t i = 0; i != (ip).sizeof; ++i)
 	{
 		if (i)
 			str ~= ".";

@@ -65,9 +65,9 @@ public:
 
 	override void clear()
 	{
-		m_cipher.reset();
-		m_ctr.reset();
-		m_cmac.reset();
+		m_cipher.clear();
+		m_ctr.clear();
+		m_cmac.clear();
 		zeroise(m_ad_mac);
 		zeroise(m_nonce_mac);
 	}

@@ -133,7 +133,7 @@ string make_bcrypt(in string pass,
 		0x63, 0x72, 0x79, 0x44, 0x6F, 0x75, 0x62, 0x74
 	];
 	
-	Vector!ubyte ctext(magic, magic + sizeof(magic));
+	Vector!ubyte ctext(magic, magic + (magic).sizeof);
 	
 	Blowfish blowfish;
 	

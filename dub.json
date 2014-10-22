@@ -1,8 +1,8 @@
 {
 	"name": "botan",
-	"description": "A library for crypto and TLS ",
-	"license": "MIT",
-	"authors": ["See readme.."],
+	"description": "A D library for crypto and TLS",
+	"license": "2-BSD",
+	"authors": ["Jack Lloyd", "Etienne Cimon", "See readme for more.."],
 	"targetName": "botan",
 	"targetType": "staticLibrary",
 	"targetPath": "build",

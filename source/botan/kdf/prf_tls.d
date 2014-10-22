@@ -46,8 +46,8 @@ public:
 	*/
 	this()
 	{
-		hmac_md5.reset(new HMAC(new MD5));
-		hmac_sha1.reset(new HMAC(new SHA_160));
+		hmac_md5 = new HMAC(new MD5);
+		hmac_sha1= new HMAC(new SHA_160);
 	}
 
 private:

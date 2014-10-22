@@ -228,7 +228,7 @@ EAC1_1_CVC link_cvca(const ref EAC1_1_CVC signer,
 	string padding_and_hash = padding_and_hash_from_oid(sig_algo.oid);
 	PK_Signer pk_signer = PK_Signer(*priv_key, padding_and_hash);
 	Unique!Public_Key pk = signee.subject_public_key();
-	ECDSA_PublicKey subj_pk = cast(ECDSA_PublicKey)(pk.get());
+	ECDSA_PublicKey subj_pk = cast(ECDSA_PublicKey)(*pk);
 	subj_pk.set_parameter_encoding(EC_DOMPAR_ENC_EXPLICIT);
 	
 	Vector!ubyte enc_public_key = eac_1_1_encoding(priv_key, sig_algo.oid);
@@ -309,9 +309,9 @@ EAC1_1_CVC sign_request(const ref EAC1_1_CVC signer_cert,
 	ASN1_Chr chr(chr_str);
 	string padding_and_hash = padding_and_hash_from_oid(signee.signature_algorithm().oid);
 	PK_Signer pk_signer = PK_Signer(*priv_key, padding_and_hash);
-	Unique!Public_Key pk(signee.subject_public_key());
-	ECDSA_PublicKey  subj_pk = cast(ECDSA_PublicKey)(pk.get());
-	Unique!Public_Key signer_pk = signer_cert.subject_public_key();
+	Unique!Public_Key pk = signee.subject_public_key();
+	ECDSA_PublicKey  subj_pk = cast(ECDSA_PublicKey)(*pk);
+	// Unique!Public_Key signer_pk = signer_cert.subject_public_key();
 	
 	// for the case that the domain parameters are not set...
 	// (we use those from the signer because they must fit)

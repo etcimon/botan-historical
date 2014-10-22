@@ -73,8 +73,8 @@ public:
 
 	override void clear()
 	{
-		m_cipher.reset();
-		m_L.reset();
+		m_cipher.clear();
+		m_L.clear();
 		
 		zeroise(m_ad_hash);
 		zeroise(m_offset);
@@ -106,7 +106,7 @@ package:
 	override void key_schedule(in ubyte* key, size_t length)
 	{
 		m_cipher.set_key(key, length);
-		m_L.reset(new L_computer(*m_cipher));
+		m_L = new L_computer(*m_cipher);
 	}
 
 	// fixme make these private

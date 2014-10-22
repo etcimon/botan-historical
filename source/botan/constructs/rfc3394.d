@@ -82,7 +82,7 @@ SafeVector!ubyte rfc3394_keyunwrap(in SafeVector!ubyte key,
 	if (key.length < 16 || key.length % 8 != 0)
 		throw new Invalid_Argument("Bad input key size for NIST key unwrap");
 	
-	auto aes = scoped!BlockCipher(make_aes(kek.length(), af));
+	Unique!BlockCipher aes = make_aes(kek.length(), af);
 	aes.set_key(kek);
 	
 	const size_t n = (key.length - 8) / 8;
@@ -121,10 +121,8 @@ SafeVector!ubyte rfc3394_keyunwrap(in SafeVector!ubyte key,
 }
 
 
-
-
-
 private:
+
 BlockCipher make_aes(size_t keylength,
                      AlgorithmFactory af)
 {

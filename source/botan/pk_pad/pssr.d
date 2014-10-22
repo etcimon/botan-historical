@@ -6,7 +6,7 @@
 */
 module botan.pk_pad.pssr;
 
-import botan.emsa;
+import botan.pk_pad.emsa;
 import botan.hash.hash;
 /**
 * PSSR (called EMSA4 in IEEE 1363 and in old versions of the library)

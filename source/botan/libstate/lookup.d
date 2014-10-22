@@ -12,7 +12,7 @@ import botan.filters.filters;
 import botan.modes.mode_pad;
 import botan.kdf.kdf;
 import botan.pk_pad.eme;
-import botan.emsa;
+import botan.pk_pad.emsa;
 import botan.pbkdf.pbkdf;
 import botan.libstate.libstate;
 import botan.engine.engine;

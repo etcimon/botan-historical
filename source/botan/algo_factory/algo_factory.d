@@ -36,15 +36,7 @@ public:
 	/**
 	* Constructor
 	*/
-	this()
-	{
-		/// Setup caches
-		block_cipher_cache.reset(Algorithm_Cache!BlockCipher.init);
-		stream_cipher_cache.reset(Algorithm_Cache!StreamCipher.init);
-		hash_cache.reset(Algorithm_Cache!HashFunction.init);
-		mac_cache.reset(Algorithm_Cache!MessageAuthenticationCode.init);
-		pbkdf_cache.reset(Algorithm_Cache!PBKDF.init);
-	}
+	this() { }
 	
 	/**
 	* Destructor

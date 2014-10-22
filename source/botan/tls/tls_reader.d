@@ -13,7 +13,6 @@ import string;
 import vector;
 import stdexcept;
 
-
 /**
 * Helper class for decoding TLS protocol messages
 */
@@ -77,14 +76,14 @@ public:
 	
 	Container get_elem(T, Container)(size_t num_elems)
 	{
-		assert_at_least(num_elems * sizeof(T));
+		assert_at_least(num_elems * (T).sizeof);
 
 		Container result(num_elems);
 
 		for (size_t i = 0; i != num_elems; ++i)
 			result[i] = load_be!T(&m_buf[m_offset], i);
 
-		m_offset += num_elems * sizeof(T);
+		m_offset += num_elems * (T).sizeof;
 
 		return result;
 	}
@@ -94,7 +93,7 @@ public:
 							  size_t max_elems)
 	{
 		const size_t num_elems =
-			get_num_elems(len_bytes, sizeof(T), min_elems, max_elems);
+			get_num_elems(len_bytes, (T).sizeof, min_elems, max_elems);
 
 		return get_elem!(T, Vector!T)(num_elems);
 	}
@@ -104,7 +103,7 @@ public:
 									  size_t max_elems)
 	{
 		const size_t num_elems =
-			get_num_elems(len_bytes, sizeof(T), min_elems, max_elems);
+			get_num_elems(len_bytes, (T).sizeof, min_elems, max_elems);
 
 		return get_elem!(T, Vector!T)(num_elems);
 	}
@@ -182,7 +181,7 @@ void append_tls_length_value(T, Alloc)(ref Vector!( ubyte, Alloc ) buf,
 										  size_t vals_size,
 										  size_t tag_size)
 {
-	const size_t T_size = sizeof(T);
+	const size_t T_size = (T).sizeof;
 	const size_t val_bytes = T_size * vals_size;
 
 	if (tag_size != 1 && tag_size != 2)
@@ -193,26 +192,26 @@ void append_tls_length_value(T, Alloc)(ref Vector!( ubyte, Alloc ) buf,
 		throw new Invalid_Argument("append_tls_length_value: value too large");
 
 	for (size_t i = 0; i != tag_size; ++i)
-		buf.push_back(get_byte(sizeof(val_bytes)-tag_size+i, val_bytes));
+		buf.push_back(get_byte((val_bytes).sizeof-tag_size+i, val_bytes));
 
 	for (size_t i = 0; i != vals_size; ++i)
 		for (size_t j = 0; j != T_size; ++j)
 			buf.push_back(get_byte(j, vals[i]));
 }
 
-void append_tls_length_value(T, Alloc, Alloc2)(Vector!( ubyte, Alloc )& buf,
-												  const Vector!( T, Alloc2 )& vals,
+void append_tls_length_value(T, Alloc, Alloc2)(ref Vector!( ubyte, Alloc ) buf,
+												  const ref Vector!( T, Alloc2 ) vals,
 												  size_t tag_size)
 {
 	append_tls_length_value(buf, &vals[0], vals.length, tag_size);
 }
 
-void append_tls_length_value(Alloc)(Vector!( ubyte, Alloc )& buf,
+void append_tls_length_value(Alloc)(ref Vector!( ubyte, Alloc ) buf,
 									  in string str,
 									  size_t tag_size)
 {
 	append_tls_length_value(buf,
-							cast(const ubyte*)(str[0]),
+							cast(const ubyte*)(&str[0]),
 							str.length,
 							tag_size);
 }

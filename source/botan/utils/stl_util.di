@@ -69,16 +69,3 @@ bool value_exists(in Vector!T vec,
 			return true;
 	return false;
 }
-
-template<typename T, typename Pred>
-void map_remove_if (Pred pred, T& assoc)
-{
-	auto i = assoc.begin();
-	while(i != assoc.end())
-	{
-		if (pred(i.first))
-			assoc.erase(i++);
-		else
-			i++;
-	}
-}

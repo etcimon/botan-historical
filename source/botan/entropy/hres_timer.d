@@ -56,7 +56,7 @@ public:
 			{
 				timespec ts;
 				clock_gettime(src, &ts);
-				accum.add(&ts, sizeof(ts), ESTIMATED_ENTROPY_PER_BYTE);
+				accum.add(&ts, (ts).sizeof, ESTIMATED_ENTROPY_PER_BYTE);
 			}
 			
 			version(CLOCK_REALTIME) {

@@ -7,7 +7,7 @@
 module botan.tls.tls_version;
 
 import botan.utils.get_byte;
-import botan.tls_exceptn;
+import botan.tls.tls_exceptn;
 import botan.utils.parsing;
 import botan.utils.types;
 import string;

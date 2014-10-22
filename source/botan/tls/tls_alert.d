@@ -13,7 +13,7 @@ import botan.utils.exceptn;
 /**
 * SSL/TLS Alert Message
 */
-class Alert
+struct Alert
 {
 public:
 	typedef ushort Type;

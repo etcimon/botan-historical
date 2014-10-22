@@ -53,7 +53,7 @@ public:
 	*/
 	void update_be(T)(in T input)
 	{
-		for (size_t i = 0; i != sizeof(T); ++i)
+		for (size_t i = 0; i != (T).sizeof; ++i)
 		{
 			ubyte b = get_byte(i, input);
 			add_data(&b, 1);

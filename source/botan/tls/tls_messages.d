@@ -6,22 +6,23 @@
 */
 module botan.tls.tls_messages;
 
-import botan.internal.tls_handshake_state;
-import botan.internal.tls_session_key;
+import botan.tls.tls_handshake_state;
+import botan.tls.tls_session_key;
 import botan.internal.stl_util;
 
-import botan.algo_base.sym_algo;
-import botan.tls_handshake_msg;
-import botan.tls_session;
-import botan.tls_policy;
-import botan.tls_ciphersuite;
-import botan.tls.tls_reader;
-import botan.tls.tls_extensions;
-import botan.tls.tls_handshake_io;
-import botan.tls.tls_version;
-import botan.tls.tls_handshake_hash;
+public import botan.algo_base.sym_algo;
+public import botan.tls.tls_handshake_msg;
+public import botan.tls.tls_session;
+public import botan.tls.tls_policy;
+public import botan.tls.tls_ciphersuite;
+public import botan.tls.tls_reader;
+public import botan.tls.tls_extensions;
+public import botan.tls.tls_handshake_io;
+public import botan.tls.tls_version;
+public import botan.tls.tls_handshake_hash;
+public import botan.tls.tls_magic;
 import botan.constructs.srp6;
-import botan.credentials.credentials_manager;
+public import botan.credentials.credentials_manager;
 import botan.utils.loadstor;
 import botan.constructs.srp6;
 import botan.math.bigint.bigint;
@@ -47,17 +48,18 @@ enum {
 	TLS_EMPTY_RENEGOTIATION_INFO_SCSV		  = 0x00FF
 };
 
-Vector!ubyte make_hello_random(RandomNumberGenerator rng)
+/**
+* TLS Handshake Message Base Class
+*/
+class Handshake_Message
 {
-	Vector!ubyte buf = Vector!ubyte(32);
+public:
+	abstract Handshake_Type type() const;
 	
-	const uint time32 = cast(uint)(
-		std::chrono::system_clock::to_time_t(Clock.currTime()));
+	abstract Vector!ubyte serialize() const;
 	
-	store_be(time32, &buf[0]);
-	rng.randomize(&buf[4], buf.length - 4);
-	return buf;
-}
+	~this() {}
+};
 
 /**
 * DTLS Hello Verify Request
@@ -1257,9 +1259,9 @@ public:
 		Unique!Public_Key key = cert.subject_public_key();
 		
 		Pair!(string, Signature_Format) format =
-			state.understand_sig_format(key.opDot(), m_hash_algo, m_sig_algo, true);
+			state.understand_sig_format(*key, m_hash_algo, m_sig_algo, true);
 		
-		PK_Verifier verifier = PK_Verifier(key.opDot(), format.first, format.second);
+		PK_Verifier verifier = PK_Verifier(*key, format.first, format.second);
 		if (state._version() == Protocol_Version.SSL_V3)
 		{
 			SafeVector!ubyte md5_sha = state.hash().final_ssl3(
@@ -1466,7 +1468,7 @@ public:
 	const Private_Key server_kex_key() const
 	{
 		BOTAN_ASSERT_NONNULL(m_kex_key);
-		return m_kex_key.opDot();
+		return *m_kex_key;
 	}
 
 	// Only valid for SRP negotiation
@@ -1647,7 +1649,7 @@ public:
 				throw new TLS_Exception(Alert.UNKNOWN_PSK_IDENTITY,
 				                        "Unknown SRP user " ~ srp_identifier);
 			
-			m_srp_params.reset(new SRP6_Server_Session);
+			m_srp_params = new SRP6_Server_Session;
 			
 			BigInt B = m_srp_params.step1(v, group_id,
 			                              "SHA-1", rng);
@@ -1928,9 +1930,9 @@ Vector!ubyte finished_compute_verify(in Handshake_State state,
 		Vector!ubyte ssl3_finished;
 		
 		if (side == CLIENT)
-			hash.update(SSL_CLIENT_LABEL, sizeof(SSL_CLIENT_LABEL));
+			hash.update(SSL_CLIENT_LABEL, (SSL_CLIENT_LABEL).sizeof);
 		else
-			hash.update(SSL_SERVER_LABEL, sizeof(SSL_SERVER_LABEL));
+			hash.update(SSL_SERVER_LABEL, (SSL_SERVER_LABEL).sizeof);
 		
 		return unlock(hash.final_ssl3(state.session_keys().master_secret()));
 	}
@@ -1948,12 +1950,23 @@ Vector!ubyte finished_compute_verify(in Handshake_State state,
 		
 		Vector!ubyte input;
 		if (side == CLIENT)
-			input += Pair(TLS_CLIENT_LABEL, sizeof(TLS_CLIENT_LABEL));
+			input += Pair(TLS_CLIENT_LABEL, (TLS_CLIENT_LABEL).sizeof);
 		else
-			input += Pair(TLS_SERVER_LABEL, sizeof(TLS_SERVER_LABEL));
+			input += Pair(TLS_SERVER_LABEL, (TLS_SERVER_LABEL).sizeof);
 		
 		input += state.hash().flushInto(state._version(), state.ciphersuite().prf_algo());
 		
 		return unlock(prf.derive_key(12, state.session_keys().master_secret(), input));
 	}
+}
+
+Vector!ubyte make_hello_random(RandomNumberGenerator rng)
+{
+	Vector!ubyte buf = Vector!ubyte(32);
+	
+	const uint time32 = cast(uint)(Clock.currTime().toUnixTime);
+	
+	store_be(time32, &buf[0]);
+	rng.randomize(&buf[4], buf.length - 4);
+	return buf;
 }

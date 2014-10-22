@@ -128,7 +128,7 @@ public:
 		const double ENTROPY_ESTIMATE = 1.0 / (8*1024);
 		
 		if (!m_dir)
-			m_dir.reset(new Directory_Walker(m_path));
+			m_dir = new Directory_Walker(m_path);
 		
 		SafeVector!ubyte io_buffer = accum.get_io_buffer(4096);
 		
@@ -139,7 +139,7 @@ public:
 			// If we've exhaused this walk of the directory, halt the poll
 			if (fd == -1)
 			{
-				m_dir.reset();
+				m_dir.clear();
 				break;
 			}
 			
@@ -157,7 +157,7 @@ public:
 	this(in string root_dir)
 	{
 		m_path = root_dir;
-		m_dir = null;
+		m_dir.clear();
 	}
 
 private:

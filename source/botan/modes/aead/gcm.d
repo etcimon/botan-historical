@@ -111,9 +111,9 @@ package:
 			throw new Invalid_Argument("GCM requires a 128 bit cipher so cannot be used with " ~
 			                           cipher.name());
 		
-		m_ghash.reset(new GHASH);
+		m_ghash = new GHASH;
 		
-		m_ctr.reset(new CTR_BE(cipher)); // CTR_BE takes ownership of cipher
+		m_ctr = new CTR_BE(cipher); // CTR_BE takes ownership of cipher
 		
 		if (m_tag_size != 8 && m_tag_size != 16)
 			throw new Invalid_Argument(name() ~ ": Bad tag size " ~ std.conv.to!string(m_tag_size));

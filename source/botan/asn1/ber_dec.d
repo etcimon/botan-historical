@@ -370,7 +370,7 @@ public:
 	                                   ASN1_Tag type_tag,
 	                                   ASN1_Tag class_tag = ASN1_Tag.CONTEXT_SPECIFIC)
 	{
-		output = decode_constrained_integer(type_tag, class_tag, sizeof(output));
+		output = decode_constrained_integer(type_tag, class_tag, (output).sizeof);
 		return this;
 	}
 	

@@ -5,7 +5,7 @@
 * Distributed under the terms of the botan license.
 */
 
-import botan.emsa;
+import botan.pk_pad.emsa;
 import botan.hash.hash;
 /**
 * EMSA1 from IEEE 1363

@@ -148,7 +148,7 @@ private:
 			if (fd >= 0)
 			{
 				sockaddr_un addr;
-				memset(&addr, 0, sizeof(addr));
+				memset(&addr, 0, (addr).sizeof);
 				addr.sun_family = PF_LOCAL;
 				
 				if (sizeof(addr.sun_path) < path.length() + 1)

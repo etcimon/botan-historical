@@ -92,7 +92,7 @@ public:
 
 	override void clear()
 	{
-		m_cipher.reset();
+		m_cipher.clear();
 		m_msg_buf.clear();
 		m_ad_buf.clear();
 	}
@@ -128,10 +128,10 @@ package:
 	{
 		const size_t len_bytes = L();
 		
-		assert(len_bytes < sizeof(size_t), "Length field fits");
+		assert(len_bytes < (size_t).sizeof, "Length field fits");
 		
 		for (size_t i = 0; i != len_bytes; ++i)
-			output[len_bytes-1-i] = get_byte(sizeof(size_t)-1-i, len);
+			output[len_bytes-1-i] = get_byte((size_t).sizeof-1-i, len);
 		
 		assert((len >> (len_bytes*8)) == 0, "Message length fits in field");
 	}

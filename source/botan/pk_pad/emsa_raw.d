@@ -6,7 +6,7 @@
 */
 module botan.pk_pad.emsa_raw;
 
-import botan.emsa;
+import botan.pk_pad.emsa;
 /**
 * EMSA-Raw - sign inputs directly
 * Don't use this unless you know what you are doing.

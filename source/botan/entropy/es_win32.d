@@ -68,7 +68,7 @@ public:
 		{
 			size_t heap_lists_found = 0;
 			HEAPLIST32 heap_list;
-			heap_list.dwSize = sizeof(HEAPLIST32);
+			heap_list.dwSize = (HEAPLIST32).sizeof;
 			
 			const size_t HEAP_LISTS_MAX = 32;
 			const size_t HEAP_OBJS_PER_LIST = 128;
@@ -84,7 +84,7 @@ public:
 					
 					size_t heap_objs_found = 0;
 					HEAPENTRY32 heap_entry;
-					heap_entry.dwSize = sizeof(HEAPENTRY32);
+					heap_entry.dwSize = (HEAPENTRY32).sizeof;
 					if (Heap32First(&heap_entry, heap_list.th32ProcessID,
 					                heap_list.th32HeapID))
 					{
@@ -113,7 +113,7 @@ void TOOLHELP32_ITER(alias DATA_TYPE, alias FUNC_FIRST, alias FUNC_NEXT)(ref Ent
 	if (!accum.polling_goal_achieved())
 	{
 		DATA_TYPE info;
-		info.dwSize = sizeof(DATA_TYPE);
+		info.dwSize = (DATA_TYPE).sizeof;
 		if (FUNC_FIRST(snapshot, &info))
 		{
 			do

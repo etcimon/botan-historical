@@ -72,9 +72,9 @@ ulong make_ulong(ubyte i0, ubyte i1, ubyte i2, ubyte i3,
 */
 T load_be(T)(in ubyte* input, size_t off)
 {
-	input += off * sizeof(T);
+	input += off * (T).sizeof;
 	T output = 0;
-	for (size_t i = 0; i != sizeof(T); ++i)
+	for (size_t i = 0; i != (T).sizeof; ++i)
 		output = (output << 8) | input[i];
 	return output;
 }
@@ -87,10 +87,10 @@ T load_be(T)(in ubyte* input, size_t off)
 */
 T load_le(T)(in ubyte* input, size_t off)
 {
-	input += off * sizeof(T);
+	input += off * (T).sizeof;
 	T output = 0;
-	for (size_t i = 0; i != sizeof(T); ++i)
-		output = (output << 8) | input[sizeof(T)-1-i];
+	for (size_t i = 0; i != (T).sizeof; ++i)
+		output = (output << 8) | input[(T).sizeof-1-i];
 	return output;
 }
 
@@ -105,7 +105,7 @@ ushort load_be(T : ushort)(in ubyte* input, size_t off)
 	static if (BOTAN_TARGET_UNALIGNED_MEMORY_ACCESS_OK){
 		return nativeToBigEndian(*(cast(const ushort*)(input) + off));
 	} else {
-		input += off * sizeof(ushort);
+		input += off * (ushort).sizeof;
 		return make_ushort(input[0], input[1]);
 	}
 }
@@ -121,7 +121,7 @@ ushort load_le(T : ushort)(in ubyte* input, size_t off)
 	static if (BOTAN_TARGET_UNALIGNED_MEMORY_ACCESS_OK) {
 		return BOTAN_ENDIAN_N2L(*(cast(const ushort*)(input) + off));
 	} else {
-		input += off * sizeof(ushort);
+		input += off * (ushort).sizeof;
 		return make_ushort(input[1], input[0]);
 	}
 }
@@ -137,7 +137,7 @@ uint load_be(T : uint)(in ubyte* input, size_t off)
 	static if (BOTAN_TARGET_UNALIGNED_MEMORY_ACCESS_OK) {
 		return nativeToBigEndian(*(cast(const uint*)(input) + off));
 	} else {
-		input += off * sizeof(uint);
+		input += off * (uint).sizeof;
 		return make_uint(input[0], input[1], input[2], input[3]);
 	}
 }
@@ -154,7 +154,7 @@ uint load_le(T : uint)(in ubyte* input, size_t off)
 	static if (BOTAN_TARGET_UNALIGNED_MEMORY_ACCESS_OK) {
 		return BOTAN_ENDIAN_N2L(*(cast(const uint*)(input) + off));
 	} else {
-		input += off * sizeof(uint);
+		input += off * (uint).sizeof;
 		return make_uint(input[3], input[2], input[1], input[0]);
 	}
 }
@@ -170,7 +170,7 @@ ulong load_be(T : ulong)(in ubyte* input, size_t off)
 	static if (BOTAN_TARGET_UNALIGNED_MEMORY_ACCESS_OK) {
 		return nativeToBigEndian(*(cast(const ulong*)(input) + off));
 	} else {
-		input += off * sizeof(ulong);
+		input += off * (ulong).sizeof;
 		return make_ulong(input[0], input[1], input[2], input[3],
 							 input[4], input[5], input[6], input[7]);
 	}
@@ -187,7 +187,7 @@ ulong load_le(T : ulong)(in ubyte* input, size_t off)
 	static if (BOTAN_TARGET_UNALIGNED_MEMORY_ACCESS_OK) {
 		return BOTAN_ENDIAN_N2L(*(cast(const ulong*)(input) + off));
 	} else {
-		input += off * sizeof(ulong);
+		input += off * (ulong).sizeof;
 		return make_ulong(input[7], input[6], input[5], input[4],
 							 input[3], input[2], input[1], input[0]);
 	}
@@ -260,7 +260,7 @@ void load_le(T)(T* output,
 {
 	static if (BOTAN_TARGET_CPU_HAS_KNOWN_ENDIANNESS) {
 		import std.c.string : memcpy;
-		memcpy(output, input, sizeof(T)*count);
+		memcpy(output, input, (T).sizeof*count);
 
 		version(BigEndian) {
 			const size_t blocks = count - (count % 4);
@@ -346,7 +346,7 @@ void load_be(T)(T* output,
 {
 	static if (BOTAN_TARGET_CPU_HAS_KNOWN_ENDIANNESS) {
 		import std.c.string : memcpy;
-		memcpy(output, input, sizeof(T)*count);
+		memcpy(output, input, (T).sizeof*count);
 
 		version(LittleEndian) {
 			const size_t blocks = count - (count % 4);
@@ -479,8 +479,8 @@ void store_le(ulong input, ubyte[8] output)
 */
 void store_le(T)(ubyte* output, T x0, T x1)
 {
-	store_le(x0, output + (0 * sizeof(T)));
-	store_le(x1, output + (1 * sizeof(T)));
+	store_le(x0, output + (0 * (T).sizeof));
+	store_le(x1, output + (1 * (T).sizeof));
 }
 
 /**
@@ -491,8 +491,8 @@ void store_le(T)(ubyte* output, T x0, T x1)
 */
 void store_be(T)(ref ubyte* output, T x0, T x1)
 {
-	store_be(x0, output + (0 * sizeof(T)));
-	store_be(x1, output + (1 * sizeof(T)));
+	store_be(x0, output + (0 * (T).sizeof));
+	store_be(x1, output + (1 * (T).sizeof));
 }
 
 /**
@@ -505,10 +505,10 @@ void store_be(T)(ref ubyte* output, T x0, T x1)
 */
 void store_le(T)(ubyte* output, T x0, T x1, T x2, T x3)
 {
-	store_le(x0, output + (0 * sizeof(T)));
-	store_le(x1, output + (1 * sizeof(T)));
-	store_le(x2, output + (2 * sizeof(T)));
-	store_le(x3, output + (3 * sizeof(T)));
+	store_le(x0, output + (0 * (T).sizeof));
+	store_le(x1, output + (1 * (T).sizeof));
+	store_le(x2, output + (2 * (T).sizeof));
+	store_le(x3, output + (3 * (T).sizeof));
 }
 
 /**
@@ -521,10 +521,10 @@ void store_le(T)(ubyte* output, T x0, T x1, T x2, T x3)
 */
 void store_be(T)(ref ubyte* output, T x0, T x1, T x2, T x3)
 {
-	store_be(x0, output + (0 * sizeof(T)));
-	store_be(x1, output + (1 * sizeof(T)));
-	store_be(x2, output + (2 * sizeof(T)));
-	store_be(x3, output + (3 * sizeof(T)));
+	store_be(x0, output + (0 * (T).sizeof));
+	store_be(x1, output + (1 * (T).sizeof));
+	store_be(x2, output + (2 * (T).sizeof));
+	store_be(x3, output + (3 * (T).sizeof));
 }
 
 /**
@@ -542,14 +542,14 @@ void store_be(T)(ref ubyte* output, T x0, T x1, T x2, T x3)
 void store_le(T)(ubyte* output, T x0, T x1, T x2, T x3,
 								T x4, T x5, T x6, T x7)
 {
-	store_le(x0, output + (0 * sizeof(T)));
-	store_le(x1, output + (1 * sizeof(T)));
-	store_le(x2, output + (2 * sizeof(T)));
-	store_le(x3, output + (3 * sizeof(T)));
-	store_le(x4, output + (4 * sizeof(T)));
-	store_le(x5, output + (5 * sizeof(T)));
-	store_le(x6, output + (6 * sizeof(T)));
-	store_le(x7, output + (7 * sizeof(T)));
+	store_le(x0, output + (0 * (T).sizeof));
+	store_le(x1, output + (1 * (T).sizeof));
+	store_le(x2, output + (2 * (T).sizeof));
+	store_le(x3, output + (3 * (T).sizeof));
+	store_le(x4, output + (4 * (T).sizeof));
+	store_le(x5, output + (5 * (T).sizeof));
+	store_le(x6, output + (6 * (T).sizeof));
+	store_le(x7, output + (7 * (T).sizeof));
 }
 
 /**
@@ -567,12 +567,12 @@ void store_le(T)(ubyte* output, T x0, T x1, T x2, T x3,
 void store_be(T)(ubyte* output, T x0, T x1, T x2, T x3,
 								T x4, T x5, T x6, T x7)
 {
-	store_be(x0, output + (0 * sizeof(T)));
-	store_be(x1, output + (1 * sizeof(T)));
-	store_be(x2, output + (2 * sizeof(T)));
-	store_be(x3, output + (3 * sizeof(T)));
-	store_be(x4, output + (4 * sizeof(T)));
-	store_be(x5, output + (5 * sizeof(T)));
-	store_be(x6, output + (6 * sizeof(T)));
-	store_be(x7, output + (7 * sizeof(T)));
+	store_be(x0, output + (0 * (T).sizeof));
+	store_be(x1, output + (1 * (T).sizeof));
+	store_be(x2, output + (2 * (T).sizeof));
+	store_be(x3, output + (3 * (T).sizeof));
+	store_be(x4, output + (4 * (T).sizeof));
+	store_be(x5, output + (5 * (T).sizeof));
+	store_be(x6, output + (6 * (T).sizeof));
+	store_be(x7, output + (7 * (T).sizeof));
 }

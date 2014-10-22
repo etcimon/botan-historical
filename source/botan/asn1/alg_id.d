@@ -58,7 +58,7 @@ public:
 		oid = alg_id;
 		
 		if (option == USE_NULL_PARAM)
-			parameters += Pair!(const ubyte*, size_t)(DER_NULL, sizeof(DER_NULL));
+			parameters += Pair!(const ubyte*, size_t)(DER_NULL, (DER_NULL).sizeof);
 	}
 
 	/*
@@ -70,7 +70,7 @@ public:
 		oid = oids.lookup(alg_id);
 		
 		if (option == USE_NULL_PARAM)
-			parameters += Pair!(const ubyte*, size_t)(DER_NULL, sizeof(DER_NULL));
+			parameters += Pair!(const ubyte*, size_t)(DER_NULL, (DER_NULL).sizeof);
 	}
 	
 	/*

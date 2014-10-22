@@ -6,12 +6,12 @@
 */
 module botan.tls.tls_handshake_io;
 
-import botan.tls_magic;
+import botan.tls.tls_magic;
 import botan.tls.tls_version;
 import botan.utils.loadstor;
 import botan.tls.tls_messages;
 import botan.tls.tls_record;
-import botan.internal.tls_seq_numbers;
+import botan.tls.tls_seq_numbers;
 import botan.utils.exceptn;
 import std.algorithm : count;
 import functional;
@@ -21,9 +21,6 @@ import map;
 import set;
 import utility;
 import tuple;
-
-
-class Handshake_Message;
 
 /**
 * Handshake IO Interface
@@ -53,7 +50,7 @@ public:
 
 	Handshake_IO(in Handshake_IO);
 
-	Handshake_IO& operator=(in Handshake_IO);
+	Handshake_IO operator=(in Handshake_IO);
 
 	~this() {}
 };
@@ -61,7 +58,7 @@ public:
 /**
 * Handshake IO for stream-based handshakes
 */
-class Stream_Handshake_IO : Handshake_IO
+package final class Stream_Handshake_IO : Handshake_IO
 {
 public:
 	this(void delegate(ubyte, in Vector!ubyte) writer) 
@@ -119,7 +116,7 @@ public:
 			
 			// Pretend it's a regular handshake message of zero length
 			const(ubyte)[] ccs_hs = { HANDSHAKE_CCS, 0, 0, 0 };
-			m_queue.insert(m_queue.end(), ccs_hs, ccs_hs + sizeof(ccs_hs));
+			m_queue.insert(m_queue.end(), ccs_hs, ccs_hs + (ccs_hs).sizeof);
 		}
 		else
 			throw new Decoding_Error("Unknown message type in handshake processing");
@@ -155,7 +152,7 @@ private:
 /**
 * Handshake IO for datagram-based handshakes
 */
-class Datagram_Handshake_IO : Handshake_IO
+package final class Datagram_Handshake_IO : Handshake_IO
 {
 public:
 	this(Connection_Sequence_Numbers seq,
@@ -311,108 +308,108 @@ public:
 
 private:
 
-	Vector!ubyte format_fragment(in ubyte* fragment,
-	                             size_t frag_len,
-	                             ushort frag_offset,
-	                             ushort msg_len,
-	                             Handshake_Type type,
-	                             ushort msg_sequence) const
-	{
-		Vector!ubyte send_buf = Vector!ubyte(12 + frag_len);
-		
-		send_buf[0] = type;
-		
-		store_be24(&send_buf[1], msg_len);
-		
-		store_be(msg_sequence, &send_buf[4]);
-		
-		store_be24(&send_buf[6], frag_offset);
-		store_be24(&send_buf[9], frag_len);
-		
-		copy_mem(&send_buf[12], &fragment[0], frag_len);
-		
-		return send_buf;
-	}
+Vector!ubyte format_fragment(in ubyte* fragment,
+                             size_t frag_len,
+                             ushort frag_offset,
+                             ushort msg_len,
+                             Handshake_Type type,
+                             ushort msg_sequence) const
+{
+	Vector!ubyte send_buf = Vector!ubyte(12 + frag_len);
+	
+	send_buf[0] = type;
+	
+	store_be24(&send_buf[1], msg_len);
+	
+	store_be(msg_sequence, &send_buf[4]);
+	
+	store_be24(&send_buf[6], frag_offset);
+	store_be24(&send_buf[9], frag_len);
+	
+	copy_mem(&send_buf[12], &fragment[0], frag_len);
+	
+	return send_buf;
+}
 
-	Vector!ubyte format_w_seq(in Vector!ubyte msg,
-		             Handshake_Type type,
-		             ushort msg_sequence) const
-	{
-		return format_fragment(&msg[0], msg.length, 0, msg.length, type, msg_sequence);
-	}
+Vector!ubyte format_w_seq(in Vector!ubyte msg,
+	             Handshake_Type type,
+	             ushort msg_sequence) const
+{
+	return format_fragment(&msg[0], msg.length, 0, msg.length, type, msg_sequence);
+}
 
-	class Handshake_Reassembly
+class Handshake_Reassembly
+{
+public:
+	void add_fragment(
+		in ubyte* fragment,
+		size_t fragment_length,
+		size_t fragment_offset,
+		ushort epoch,
+		ubyte msg_type,
+		size_t msg_length)
 	{
-	public:
-		void add_fragment(
-			in ubyte* fragment,
-			size_t fragment_length,
-			size_t fragment_offset,
-			ushort epoch,
-			ubyte msg_type,
-			size_t msg_length)
+		if (complete())
+			return; // already have entire message, ignore this
+		
+		if (m_msg_type == HANDSHAKE_NONE)
 		{
-			if (complete())
-				return; // already have entire message, ignore this
+			m_epoch = epoch;
+			m_msg_type = msg_type;
+			m_msg_length = msg_length;
+		}
+		
+		if (msg_type != m_msg_type || msg_length != m_msg_length || epoch != m_epoch)
+			throw new Decoding_Error("Inconsistent values in DTLS handshake header");
+		
+		if (fragment_offset > m_msg_length)
+			throw new Decoding_Error("Fragment offset past end of message");
+		
+		if (fragment_offset + fragment_length > m_msg_length)
+			throw new Decoding_Error("Fragment overlaps past end of message");
+		
+		if (fragment_offset == 0 && fragment_length == m_msg_length)
+		{
+			m_fragments.clear();
+			m_message.assign(fragment, fragment+fragment_length);
+		}
+		else
+		{
+			/*
+	* FIXME. This is a pretty lame way to do defragmentation, huge
+	* overhead with a tree node per ubyte.
+	*
+	* Also should confirm that all overlaps have no changes,
+	* otherwise we expose ourselves to the classic fingerprinting
+	* and IDS evasion attacks on IP fragmentation.
+	*/
+			for (size_t i = 0; i != fragment_length; ++i)
+				m_fragments[fragment_offset+i] = fragment[i];
 			
-			if (m_msg_type == HANDSHAKE_NONE)
+			if (m_fragments.length == m_msg_length)
 			{
-				m_epoch = epoch;
-				m_msg_type = msg_type;
-				m_msg_length = msg_length;
-			}
-			
-			if (msg_type != m_msg_type || msg_length != m_msg_length || epoch != m_epoch)
-				throw new Decoding_Error("Inconsistent values in DTLS handshake header");
-			
-			if (fragment_offset > m_msg_length)
-				throw new Decoding_Error("Fragment offset past end of message");
-			
-			if (fragment_offset + fragment_length > m_msg_length)
-				throw new Decoding_Error("Fragment overlaps past end of message");
-			
-			if (fragment_offset == 0 && fragment_length == m_msg_length)
-			{
+				m_message.resize(m_msg_length);
+				for (size_t i = 0; i != m_msg_length; ++i)
+					m_message[i] = m_fragments[i];
 				m_fragments.clear();
-				m_message.assign(fragment, fragment+fragment_length);
-			}
-			else
-			{
-				/*
-		* FIXME. This is a pretty lame way to do defragmentation, huge
-		* overhead with a tree node per ubyte.
-		*
-		* Also should confirm that all overlaps have no changes,
-		* otherwise we expose ourselves to the classic fingerprinting
-		* and IDS evasion attacks on IP fragmentation.
-		*/
-				for (size_t i = 0; i != fragment_length; ++i)
-					m_fragments[fragment_offset+i] = fragment[i];
-				
-				if (m_fragments.length == m_msg_length)
-				{
-					m_message.resize(m_msg_length);
-					for (size_t i = 0; i != m_msg_length; ++i)
-						m_message[i] = m_fragments[i];
-					m_fragments.clear();
-				}
 			}
 		}
+	}
 
-		bool complete() const
-		{
-			return (m_msg_type != HANDSHAKE_NONE && m_message.length == m_msg_length);
-		}
+	bool complete() const
+	{
+		return (m_msg_type != HANDSHAKE_NONE && m_message.length == m_msg_length);
+	}
 
-		ushort epoch() const { return m_epoch; }
+	ushort epoch() const { return m_epoch; }
 
-		Pair!(Handshake_Type, Vector!ubyte) message() const
-		{
-			if (!complete())
-				throw new Internal_Error("Datagram_Handshake_IO - message not complete");
-			
-			return Pair(cast(Handshake_Type)(m_msg_type), m_message);
-		}
+	Pair!(Handshake_Type, Vector!ubyte) message() const
+	{
+		if (!complete())
+			throw new Internal_Error("Datagram_Handshake_IO - message not complete");
+		
+		return Pair(cast(Handshake_Type)(m_msg_type), m_message);
+	}
 
 	private:
 		ubyte m_msg_type = HANDSHAKE_NONE;
@@ -443,8 +440,8 @@ size_t load_be24(const ubyte q[3])
 {
 	return make_uint(0,
 	                 q[0],
-	q[1],
-	q[2]);
+					q[1],
+					q[2]);
 }
 
 void store_be24(ubyte[3] output, size_t val)

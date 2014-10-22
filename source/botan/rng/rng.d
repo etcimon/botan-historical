@@ -107,12 +107,6 @@ public:
 	*/
 	abstract void add_entropy(in ubyte* input, size_t length);
 
-	/*
-	* Never copy a RNG, create a new one
-	*/
-	@disable this(in RandomNumberGenerator rng);
-	@disable RandomNumberGenerator opAssign(in RandomNumberGenerator rng);
-
 	this() {}
 	~this() {}
 };

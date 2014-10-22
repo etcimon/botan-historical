@@ -4,12 +4,13 @@
 *
 * Released under the terms of the botan license.
 */
-
+module botan.tls.tls_magic;
 
 /**
 * Protocol Constants for SSL/TLS
 */
-enum Size_Limits {
+typedef ushort Size_Limits;
+enum : Size_Limits {
 	TLS_HEADER_SIZE	 = 5,
 	DTLS_HEADER_SIZE	= TLS_HEADER_SIZE + 8,
 
@@ -18,9 +19,11 @@ enum Size_Limits {
 	MAX_CIPHERTEXT_SIZE = MAX_COMPRESSED_SIZE + 1024,
 };
 
-enum Connection_Side { CLIENT = 1, SERVER = 2 };
+typedef ubyte Connection_Side;
+enum : Connection_Side { CLIENT = 1, SERVER = 2 };
 
-enum Record_Type {
+typedef ubyte Record_Type;
+enum : Record_Type {
 	NO_RECORD			 = 0,
 
 	CHANGE_CIPHER_SPEC = 20,
@@ -30,7 +33,8 @@ enum Record_Type {
 	HEARTBEAT			 = 24,
 };
 
-enum Handshake_Type {
+typedef ubyte Handshake_Type;
+enum : Handshake_Type {
 	HELLO_REQUEST		  = 0,
 	CLIENT_HELLO			= 1,
 	CLIENT_HELLO_SSLV2	= 253, // Not a wire value
@@ -54,9 +58,8 @@ enum Handshake_Type {
 	HANDSHAKE_NONE		 = 255  // Null value
 };
 
-enum Compression_Method {
+typedef ubyte Compression_Method;
+enum : Compression_Method {
 	NO_COMPRESSION		 = 0x00,
 	DEFLATE_COMPRESSION  = 0x01
 };
-
-}

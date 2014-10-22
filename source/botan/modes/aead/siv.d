@@ -88,7 +88,7 @@ public:
 
 	override void clear()
 	{
-		m_ctr.reset();
+		m_ctr.clear();
 		m_nonce.clear();
 		m_msg_buf.clear();
 		m_ad_macs.clear();

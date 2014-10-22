@@ -270,7 +270,7 @@ X509_Certificate create_self_signed_cert(in X509_Cert_Options opts,
 	extensions.add(
 		new x509_ext.Extended_Key_Usage(opts.ex_constraints));
 	
-	return X509_CA.make_cert(signer.get(), rng, sig_algo, pub_key,
+	return X509_CA.make_cert(*signer, rng, sig_algo, pub_key,
 	                          opts.start, opts.end,
 	                          subject_dn, subject_dn,
 	                          extensions);

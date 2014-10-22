@@ -78,7 +78,7 @@ public:
 		if (n == 0)
 			return;
 		
-		const size_t limbs_needed = sizeof(ulong) / sizeof(word);
+		const size_t limbs_needed = (ulong).sizeof / (word).sizeof;
 		
 		m_reg.resize(4*limbs_needed);
 		for (size_t i = 0; i != limbs_needed; ++i)
@@ -625,7 +625,7 @@ public:
 	*/
 	ubyte byte_at(size_t n) const
 	{
-		const size_t WORD_BYTES = sizeof(word);
+		const size_t WORD_BYTES = (word).sizeof;
 		size_t word_num = n / WORD_BYTES, byte_num = n % WORD_BYTES;
 		if (word_num >= size())
 			return 0;
@@ -810,7 +810,7 @@ public:
 	*/
 	void binary_decode(in ubyte* buf, size_t length)
 	{
-		const size_t WORD_BYTES = sizeof(word);
+		const size_t WORD_BYTES = (word).sizeof;
 		
 		clear();
 		m_reg.resize(round_up!size_t((length / WORD_BYTES) + 1, 8));

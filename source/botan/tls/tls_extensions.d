@@ -7,14 +7,14 @@
 module botan.tls.tls_extensions;
 
 import botan.alloc.secmem;
-import botan.tls_magic;
+import botan.tls.tls_magic;
 import vector;
 import string;
 import map;
 import set;
 
 import botan.tls.tls_reader;
-import botan.tls_exceptn;
+import botan.tls.tls_exceptn;
 import botan.utils.types : Unique;
 
 typedef ushort Handshake_Extension_Type;
@@ -496,7 +496,7 @@ public:
 
 	Vector!ubyte serialize() const
 	{
-		Vector!ubyte buf(2);
+		Vector!ubyte buf = Vector!ubyte(2);
 		
 		for (size_t i = 0; i != m_curves.length; ++i)
 		{
@@ -636,7 +636,29 @@ public:
 		return m_supported_algos;
 	}
 
-	Vector!ubyte serialize() const;
+	Vector!ubyte serialize() const
+	{
+		Vector!ubyte buf = Vector!ubyte(2);
+		
+		for (size_t i = 0; i != m_supported_algos.length; ++i)
+		{
+			try
+			{
+				const ubyte hash_code = hash_algo_code(m_supported_algos[i].first);
+				const ubyte sig_code = sig_algo_code(m_supported_algos[i].second);
+				
+				buf.push_back(hash_code);
+				buf.push_back(sig_code);
+			}
+			catch
+			{}
+		}
+		
+		buf[0] = get_byte!ushort(0, buf.length-2);
+		buf[1] = get_byte!ushort(1, buf.length-2);
+		
+		return buf;
+	}
 
 	bool empty() const { return false; }
 
@@ -695,34 +717,34 @@ public:
 
 	Vector!ubyte serialize() const
 	{
-		Vector!ubyte buf = Vector!ubyte(2);
-		
-		for (size_t i = 0; i != m_supported_algos.length; ++i)
-		{
-			try
-			{
-				const ubyte hash_code = hash_algo_code(m_supported_algos[i].first);
-				const ubyte sig_code = sig_algo_code(m_supported_algos[i].second);
-				
-				buf.push_back(hash_code);
-				buf.push_back(sig_code);
-			}
-			catch
-			{}
-		}
-		
-		buf[0] = get_byte!ushort(0, buf.length-2);
-		buf[1] = get_byte!ushort(1, buf.length-2);
-		
-		return buf;
+		Vector!ubyte heartbeat(1);
+		heartbeat[0] = (m_peer_allowed_to_send ? 1 : 2);
+		return heartbeat;
 	}
+
+
 
 	bool empty() const { return false; }
 
-	Heartbeat_Support_Indicator(bool peer_allowed_to_send) :
-		m_peer_allowed_to_send(peer_allowed_to_send) {}
+	this(bool peer_allowed_to_send) 
+	{
+		m_peer_allowed_to_send = peer_allowed_to_send; 
+	}
 
-	Heartbeat_Support_Indicator(ref TLS_Data_Reader reader, ushort extension_size);
+	this(ref TLS_Data_Reader reader,
+	     ushort extension_size)
+	{
+		if (extension_size != 1)
+			throw new Decoding_Error("Strange size for heartbeat extension");
+		
+		const ubyte code = reader.get_byte();
+		
+		if (code != 1 && code != 2)
+			throw new TLS_Exception(Alert.ILLEGAL_PARAMETER,
+			                        "Unknown heartbeat code " ~ std.conv.to!string(code));
+		
+		m_peer_allowed_to_send = (code == 1);
+	}
 
 private:
 	bool m_peer_allowed_to_send;

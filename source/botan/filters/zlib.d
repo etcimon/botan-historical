@@ -317,7 +317,7 @@ public:
 	*/
 	this()
 	{
-		memset(&stream, 0, sizeof(z_stream));
+		memset(&stream, 0, (z_stream).sizeof);
 		stream.zalloc = zlib_malloc;
 		stream.zfree = zlib_free;
 		stream.opaque = new Zlib_Alloc_Info;
@@ -330,7 +330,7 @@ public:
 	{
 		Zlib_Alloc_Info* info = cast(Zlib_Alloc_Info*)(stream.opaque);
 		delete info;
-		memset(&stream, 0, sizeof(z_stream));
+		memset(&stream, 0, (z_stream).sizeof);
 	}
 };
 

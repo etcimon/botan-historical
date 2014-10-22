@@ -379,11 +379,11 @@ Vector!( Set<Certificate_Status_Code )
 	
 	Vector!( std::future<ocsp.Response )> ocsp_responses;
 	
-	Vector!( Set<Certificate_Status_Code )> cert_status(cert_path.length);
+	Vector!( Certificate_Status_Code[] ) cert_status(cert_path.length);
 	
 	for (size_t i = 0; i != cert_path.length; ++i)
 	{
-		Set!Certificate_Status_Code status = cert_status.at(i);
+		Certificate_Status_Code[] status = cert_status.at(i);
 		
 		const bool at_self_signed_root = (i == cert_path.length - 1);
 		
@@ -433,16 +433,16 @@ Vector!( Set<Certificate_Status_Code )
 	for (size_t i = 0; i != cert_path.length - 1; ++i)
 	{
 
-		Set<Certificate_Status_Code>& status = cert_status.at(i);
+		Certificate_Status_Code[] status = cert_status.at(i);
 		
-		const X509_Certificate& subject = cert_path.at(i);
-		const X509_Certificate& ca = cert_path.at(i+1);
+		const X509_Certificate subject = cert_path.at(i);
+		const X509_Certificate ca = cert_path.at(i+1);
 		
 		if (i < ocsp_responses.length)
 		{
 			try
 			{
-				ocsp.Response ocsp = ocsp_responses[i].get();
+				ocsp.Response ocsp = ocsp_responses[i].receiveOnly!(ocsp.Response)();
 				
 				auto ocsp_status = ocsp.status_for(ca, subject);
 				
@@ -467,26 +467,26 @@ Vector!( Set<Certificate_Status_Code )
 		if (!crl_p)
 		{
 			if (restrictions.require_revocation_information())
-				status.insert(Certificate_Status_Code.NO_REVOCATION_DATA);
+				status ~= Certificate_Status_Code.NO_REVOCATION_DATA;
 			continue;
 		}
 		
-		const X509_CRL& crl = *crl_p;
+		const X509_CRL crl = *crl_p;
 		
 		if (!ca.allowed_usage(CRL_SIGN))
-			status.insert(Certificate_Status_Code.CA_CERT_NOT_FOR_CRL_ISSUER);
+			status ~= Certificate_Status_Code.CA_CERT_NOT_FOR_CRL_ISSUER;
 		
 		if (current_time < X509_Time(crl.this_update()))
-			status.insert(Certificate_Status_Code.CRL_NOT_YET_VALID);
+			status ~= Certificate_Status_Code.CRL_NOT_YET_VALID;
 		
 		if (current_time > X509_Time(crl.next_update()))
-			status.insert(Certificate_Status_Code.CRL_HAS_EXPIRED);
+			status ~= Certificate_Status_Code.CRL_HAS_EXPIRED;
 		
 		if (crl.check_signature(ca.subject_public_key()) == false)
-			status.insert(Certificate_Status_Code.CRL_BAD_SIGNATURE);
+			status ~= Certificate_Status_Code.CRL_BAD_SIGNATURE;
 		
 		if (crl.is_revoked(subject))
-			status.insert(Certificate_Status_Code.CERT_IS_REVOKED);
+			status ~= Certificate_Status_Code.CERT_IS_REVOKED;
 	}
 	
 	if (self_signed_ee_cert)

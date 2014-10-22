@@ -156,7 +156,7 @@ public:
 	     const ref BigInt n,
 	     in Vector!ubyte tweak)
 	{
-		mac.reset(new HMAC(new SHA_256));
+		mac = new HMAC(new SHA_256);
 		mac.set_key(key);
 		
 		Vector!ubyte n_bin = BigInt.encode(n);

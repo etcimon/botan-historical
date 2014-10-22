@@ -6,12 +6,13 @@
 */
 module botan.pubkey.pubkey;
 
+import botan.utils.types;
 public import botan.pubkey.pk_keys;
 public import botan.pubkey.pk_ops;
 public import botan.algo_base.symkey;
 import botan.rng.rng;
 import botan.pk_pad.eme;
-import botan.emsa;
+import botan.pk_pad.emsa;
 import botan.kdf.kdf;
 import botan.asn1.der_enc;
 import botan.asn1.ber_dec;
@@ -108,11 +109,8 @@ public:
 		return dec(&input[0], input.length);
 	}
 
-	PK_Decryptor() {}
+	this() {}
 	~this() {}
-
-	PK_Decryptor(in PK_Decryptor);
-	PK_Decryptor& operator=(in PK_Decryptor);
 
 private:
 	abstract SafeVector!ubyte dec(in ubyte*, size_t) const;
@@ -193,7 +191,7 @@ public:
 		
 		Vector!ubyte plain_sig = unlock(m_op.sign(&encoded[0], encoded.length, rng));
 		
-		BOTAN_ASSERT(self_test_signature(encoded, plain_sig), "Signature was consistent");
+		assert(self_test_signature(encoded, plain_sig), "Signature was consistent");
 		
 		if (m_op.message_parts() == 1 || m_sig_format == IEEE_1363)
 			return plain_sig;
@@ -203,8 +201,8 @@ public:
 			if (plain_sig.length % m_op.message_parts())
 				throw new Encoding_Error("PK_Signer: strange signature size found");
 			const size_t SIZE_OF_PART = plain_sig.length / m_op.message_parts();
-			
-			Vector!( BigInt ) sig_parts(m_op.message_parts());
+
+			Vector!BigInt sig_parts = Vector!BigInt(m_op.message_parts());
 			for (size_t j = 0; j != sig_parts.length; ++j)
 				sig_parts[j].binary_decode(&plain_sig[SIZE_OF_PART*j], SIZE_OF_PART);
 			
@@ -247,10 +245,10 @@ public:
 		foreach(const Engine engine; i)
 		{
 			if (!m_op)
-				m_op.reset(engine.get_signature_op(key, rng));
+				m_op = engine.get_signature_op(key, rng);
 			
 			if (!m_verify_op && prot == ENABLE_FAULT_PROTECTION)
-				m_verify_op.reset(engine.get_verify_op(key, rng));
+				m_verify_op = engine.get_verify_op(key, rng);
 			
 			if (m_op && (m_verify_op || prot == DISABLE_FAULT_PROTECTION))
 				break;
@@ -259,7 +257,7 @@ public:
 		if (!m_op || (!m_verify_op && prot == ENABLE_FAULT_PROTECTION))
 			throw new Lookup_Error("Signing with " ~ key.algo_name() ~ " not supported");
 		
-		m_emsa.reset(get_emsa(emsa_name));
+		m_emsa = get_emsa(emsa_name);
 		m_sig_format = format;
 	}
 private:
@@ -361,7 +359,7 @@ public:
 	* @param input the new message part
 	*/
 	void update(in Vector!ubyte input)
-	{ update(&input[0], in.length); }
+	{ update(&input[0], input.length); }
 
 	/**
 	* Check the signature of the buffered message, i.e. the one build
@@ -440,7 +438,7 @@ public:
 		
 		foreach(const Engine engine; i)
 		{
-			m_op.reset(engine.get_verify_op(key, rng));
+			m_op = engine.get_verify_op(key, rng);
 			if (m_op)
 				break;
 		}
@@ -448,7 +446,7 @@ public:
 		if (!m_op)
 			throw new Lookup_Error("Verification with " ~ key.algo_name() ~ " not supported");
 		
-		m_emsa.reset(get_emsa(emsa_name));
+		m_emsa = get_emsa(emsa_name);
 		m_sig_format = format;
 	}
 
@@ -565,7 +563,7 @@ public:
 		
 		foreach(const Engine engine; i)
 		{
-			m_op.reset(engine.get_key_agreement_op(key, rng));
+			m_op = engine.get_key_agreement_op(key, rng);
 			if (m_op)
 				break;
 		}
@@ -573,7 +571,7 @@ public:
 		if (!m_op)
 			throw new Lookup_Error("Key agreement with " ~ key.algo_name() ~ " not supported");
 		
-		m_kdf.reset(get_kdf(kdf_name));
+		m_kdf = get_kdf(kdf_name);
 	}
 private:
 	Unique!Key_Agreement m_op;
@@ -610,7 +608,7 @@ public:
 
 		foreach (const Engine engine; iter)
 		{
-			m_op.reset(engine.get_encryption_op(key, rng));
+			m_op = engine.get_encryption_op(key, rng);
 			if (m_op)
 				break;
 		}
@@ -618,7 +616,7 @@ public:
 		if (!m_op)
 			throw new Lookup_Error("Encryption with " ~ key.algo_name() ~ " not supported");
 		
-		m_eme.reset(get_eme(eme_name));
+		m_eme = get_eme(eme_name);
 	}
 
 private:
@@ -669,7 +667,7 @@ public:
 		
 		foreach (const Engine engine; i)
 		{
-			m_op.reset(engine.get_decryption_op(key, rng));
+			m_op = engine.get_decryption_op(key, rng);
 			if (m_op)
 				break;
 		}
@@ -677,7 +675,7 @@ public:
 		if (!m_op)
 			throw new Lookup_Error("Decryption with " ~ key.algo_name() ~ " not supported");
 		
-		m_eme.reset(get_eme(eme_name));
+		m_eme = get_eme(eme_name);
 	}
 
 private:

@@ -64,8 +64,8 @@ void aont_package(RandomNumberGenerator rng,
 		zeroise(buf);
 		copy_mem(&buf[0], output + (BLOCK_SIZE * i), left);
 		
-		for (size_t j = 0; j != sizeof(i); ++j)
-			buf[BLOCK_SIZE - 1 - j] ^= get_byte(sizeof(i)-1-j, i);
+		for (size_t j = 0; j != (i).sizeof; ++j)
+			buf[BLOCK_SIZE - 1 - j] ^= get_byte((i).sizeof-1-j, i);
 		
 		cipher.encrypt(&buf[0]);
 		
@@ -120,8 +120,8 @@ void aont_unpackage(BlockCipher cipher,
 		zeroise(buf);
 		copy_mem(&buf[0], input + (BLOCK_SIZE * i), left);
 		
-		for (size_t j = 0; j != sizeof(i); ++j)
-			buf[BLOCK_SIZE - 1 - j] ^= get_byte(sizeof(i)-1-j, i);
+		for (size_t j = 0; j != (i).sizeof; ++j)
+			buf[BLOCK_SIZE - 1 - j] ^= get_byte((i).sizeof-1-j, i);
 		
 		cipher.encrypt(&buf[0]);
 		

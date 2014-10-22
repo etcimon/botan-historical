@@ -375,7 +375,7 @@ version (PPC) {
 			// From Apple's docs
 			int[2] sels = { CTL_HW, HW_VECTORUNIT };
 			int vector_type = 0;
-			size_t length = sizeof(vector_type);
+			size_t length = (vector_type).sizeof;
 			int error = sysctl(sels, 2, &vector_type, &length, NULL, 0);
 			
 			if (error == 0 && vector_type > 0)

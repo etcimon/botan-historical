@@ -12,6 +12,7 @@ import botan.modes.mode_pad;
 import botan.utils.loadstor;
 import botan.utils.xor_buf;
 import botan.utils.rounding;
+import botan.utils.types;
 
 /**
 * ECB mode
@@ -69,7 +70,7 @@ package:
 
 	const BlockCipher cipher() const { return *m_cipher; }
 
-	const BlockCipherModePaddingMethod& padding() const { return *m_padding; }
+	const BlockCipherModePaddingMethod padding() const { return *m_padding; }
 
 private:
 	override void key_schedule(in ubyte* key, size_t length)

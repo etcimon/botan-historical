@@ -74,7 +74,7 @@ package:
 		if (m_cipher.block_size() != 8 && m_cipher.block_size() != 16)
 			throw new Invalid_Argument("Bad cipher for XTS: " ~ cipher.name());
 		
-		m_tweak_cipher.reset(m_cipher.clone());
+		m_tweak_cipher = m_cipher.clone();
 		m_tweak.resize(update_granularity());
 	}
 

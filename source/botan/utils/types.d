@@ -33,29 +33,6 @@ struct Unique(T)
 		alias RefT = T*;
 	
 public:
-	// Deferred in case we get some language support for checking uniqueness.
-	version(None)
-		/**
-    Allows safe construction of $(D Unique). It creates the resource and
-    guarantees unique ownership of it (unless $(D T) publishes aliases of
-    $(D this)).
-    Note: Nested structs/classes cannot be created.
-    Params:
-    args = Arguments to pass to $(D T)'s constructor.
-    ---
-    static class C {}
-    auto u = Unique!(C).create();
-    ---
-    */
-		static Unique!T create(A...)(auto ref A args)
-			if (__traits(compiles, new T(args)))
-	{
-		debug(Unique) writeln("Unique.create for ", T.stringof);
-		Unique!T u;
-		u._p = new T(args);
-		return u;
-	}
-	
 	/**
     Constructor that takes an rvalue.
     It will ensure uniqueness, as long as the rvalue
@@ -103,6 +80,12 @@ public:
 		u._p = null;
 	}
 
+	void clear()
+	{
+		RefT p = null;
+		opAssign(p);
+	}
+	
 	void opAssign(ref RefT p)
 	{
 		destroy(this);
@@ -110,6 +93,7 @@ public:
 		p = null;
 		assert(p is null);
 	}
+
 	/// Transfer ownership from a $(D Unique) of a type that is convertible to our type.
 	void opAssign(U)(Unique!U u)
 		if (is(u.RefT:RefT))
@@ -132,6 +116,7 @@ public:
 	{
 		return _p is null;
 	}
+
 	/** Transfer ownership to a $(D Unique) rvalue. Nullifies the current contents. */
 	Unique release()
 	{
@@ -141,12 +126,19 @@ public:
 		debug(Unique) writeln("return from Release");
 		return u;
 	}
+
 	/** Forwards member access to contents. */
 	RefT opDot() { return _p; }
+
+	RefT opUnary(string op)() if (op == "*") { return _p; }
+
+	RefT get() { return _p; }
 
 	bool opCast(T : bool)() {
 		return !isEmpty;
 	}
+
+
 	/**
     Postblit operator is undefined to prevent the cloning of $(D Unique) objects.
     */

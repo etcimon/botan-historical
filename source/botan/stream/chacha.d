@@ -167,7 +167,7 @@ private:
 		m_position = 0;
 		
 		const ubyte[8] ZERO;
-		set_iv(ZERO, sizeof(ZERO));
+		set_iv(ZERO, (ZERO).sizeof);
 	}
 
 

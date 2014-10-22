@@ -82,9 +82,9 @@ Vector!ubyte BER_encode(in Private_Key key,
 		        dur,
 		        rng);
 	
-	AlgorithmIdentifier pbe_algid(pbe.get_oid(), pbe.encode_params());
+	AlgorithmIdentifier pbe_algid = AlgorithmIdentifier(pbe.get_oid(), pbe.encode_params());
 	
-	Pipe key_encrytor = Pipe(pbe.opDot());
+	Pipe key_encrytor = Pipe(*pbe);
 	key_encrytor.process_msg(BER_encode(key));
 	
 	return DER_Encoder()

@@ -29,7 +29,7 @@ struct secure_allocator(T)
 	T* allocate(size_t n, const void* = 0)
 	{
 		static if (BOTAN_HAS_LOCKING_ALLOCATOR) {
-			if (pointer p = cast(pointer)(mlock_allocator.instance().allocate(n, sizeof(T))))
+			if (pointer p = cast(pointer)(mlock_allocator.instance().allocate(n, (T).sizeof)))
 				return p;
 		}
 		pointer p = new T[n];
@@ -42,7 +42,7 @@ struct secure_allocator(T)
 		clear_mem(p, n);
 
 		static if (BOTAN_HAS_LOCKING_ALLOCATOR) {
-			if (mlock_allocator.instance().deallocate(p, n, sizeof(T)))
+			if (mlock_allocator.instance().deallocate(p, n, (T).sizeof))
 				return;
 		}
 		.destroy(p);
@@ -50,7 +50,7 @@ struct secure_allocator(T)
 
 	size_t max_size() const nothrow
 	{
-		return cast(size_type)(-1) / sizeof(T);
+		return cast(size_type)(-1) / (T).sizeof;
 	}
 
 	void construct(U, Args...)(ref U* p, Args args)

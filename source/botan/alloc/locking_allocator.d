@@ -228,8 +228,8 @@ private:
 };
 
 /**
-* Requests for objects of sizeof(T) will be aligned at
-* sizeof(T)*ALIGNMENT_MULTIPLE bytes.
+* Requests for objects of (T).sizeof will be aligned at
+* (T).sizeof*ALIGNMENT_MULTIPLE bytes.
 */
 const size_t ALIGNMENT_MULTIPLE = 2;
 

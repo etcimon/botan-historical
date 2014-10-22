@@ -18,7 +18,7 @@ import botan.utils.rounding;
 class Transformation_Filter : Keyed_Filter, Buffered_Filter
 {
 public:
-	this(Transformation* transform)
+	this(Transformation transform)
 	{
 		super(choose_update_size(transform.update_granularity()),
 		      transform.minimum_final_size());
@@ -34,7 +34,7 @@ public:
 
 	void set_key(in SymmetricKey key)
 	{
-		if (Keyed_Transform* keyed = cast(Keyed_Transform*)(m_transform.get()))
+		if (Keyed_Transform keyed = cast(Keyed_Transform)(*m_transform))
 			keyed.set_key(key);
 		else if (key.length() != 0)
 			throw new Exception("Transformation " ~ name() ~ " does not accept keys");
@@ -42,7 +42,7 @@ public:
 
 	Key_Length_Specification key_spec() const
 	{
-		if (Keyed_Transform* keyed = cast(Keyed_Transform*)(m_transform.get()))
+		if (Keyed_Transform keyed = cast(Keyed_Transform)(*m_transform))
 			return keyed.key_spec();
 		return Key_Length_Specification(0);
 	}
@@ -70,7 +70,7 @@ private:
 
 	void start_msg()
 	{
-		send(m_transform.start_vec(m_nonce.get()));
+		send(m_transform.start_vec(m_nonce));
 	}
 
 	void end_msg()
@@ -96,7 +96,7 @@ private:
 
 	void buffered_final(in ubyte* input, size_t input_length)
 	{
-		SafeVector!ubyte buf(input, input + input_length);
+		SafeVector!ubyte buf = SafeVector!ubyte(input, input + input_length);
 		m_transform.finish(buf);
 		send(buf);
 	}

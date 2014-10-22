@@ -6,17 +6,17 @@
 */
 module botan.tls.tls_record;
 
-import botan.tls_magic;
+import botan.tls.tls_magic;
 import botan.tls.tls_version;
 import botan.modes.aead.aead;
 import botan.block.block_cipher;
 import botan.stream.stream_cipher;
-import botan.internal.tls_seq_numbers;
-import botan.internal.tls_session_key;
+import botan.tls.tls_seq_numbers;
+import botan.tls.tls_session_key;
 import botan.utils.rounding;
 import botan.utils.xor_buf;
-import botan.tls_ciphersuite;
-import botan.tls_exceptn;
+import botan.tls.tls_ciphersuite;
+import botan.tls.tls_exceptn;
 import botan.libstate.libstate;
 import botan.utils.loadstor;
 import botan.mac.mac;
@@ -29,7 +29,7 @@ alias Connection_Cipher_State = FreeListRef!Connection_Cipher_State_Impl;
 /**
 * TLS Cipher State
 */
-class Connection_Cipher_State_Impl
+final class Connection_Cipher_State_Impl
 {
 public:
 	/**
@@ -64,7 +64,7 @@ public:
 		
 		if (AEAD_Mode aead = get_aead(cipher_algo, our_side ? ENCRYPTION : DECRYPTION))
 		{
-			m_aead.reset(aead);
+			m_aead = aead;
 			m_aead.set_key(cipher_key + mac_key);
 			
 			assert(iv.length() == 4, "Using 4/8 partial implicit nonce");
@@ -77,7 +77,7 @@ public:
 		
 		if (const BlockCipher bc = af.prototype_block_cipher(cipher_algo))
 		{
-			m_block_cipher.reset(bc.clone());
+			m_block_cipher = bc.clone();
 			m_block_cipher.set_key(cipher_key);
 			m_block_cipher_cbc_state = iv.bits_of();
 			m_block_size = bc.block_size();
@@ -87,21 +87,21 @@ public:
 		}
 		else if (const StreamCipher sc = af.prototype_stream_cipher(cipher_algo))
 		{
-			m_stream_cipher.reset(sc.clone());
+			m_stream_cipher = sc.clone();
 			m_stream_cipher.set_key(cipher_key);
 		}
 		else
 			throw new Invalid_Argument("Unknown TLS cipher " ~ cipher_algo);
 		
 		if (_version == Protocol_Version.SSL_V3)
-			m_mac.reset(af.make_mac("SSL3-MAC(" ~ mac_algo ~ ")"));
+			m_mac = af.make_mac("SSL3-MAC(" ~ mac_algo ~ ")");
 		else
-			m_mac.reset(af.make_mac("HMAC(" ~ mac_algo ~ ")"));
+			m_mac = af.make_mac("HMAC(" ~ mac_algo ~ ")");
 		
 		m_mac.set_key(mac_key);
 	}
 
-	AEAD_Mode aead() { return m_aead.get(); }
+	AEAD_Mode aead() { return *m_aead; }
 
 	const SafeVector!ubyte aead_nonce(ulong seq)
 	{
@@ -143,11 +143,11 @@ public:
 		return m_ad;
 	}
 
-	BlockCipher block_cipher() { return m_block_cipher.get(); }
+	BlockCipher block_cipher() { return *m_block_cipher; }
 
-	StreamCipher stream_cipher() { return m_stream_cipher.get(); }
+	StreamCipher stream_cipher() { return *m_stream_cipher; }
 
-	MessageAuthenticationCode mac() { return m_mac.get(); }
+	MessageAuthenticationCode mac() { return *m_mac; }
 
 	SafeVector!ubyte cbc_state() { return m_block_cipher_cbc_state; }
 
@@ -227,7 +227,6 @@ void write_record(SafeVector!ubyte output,
 	
 	if (Unique!AEAD_Mode aead = cipherstate.aead())
 	{
-		scope(exit) delete aead;
 		const size_t ctext_size = aead.output_length(msg_length);
 		
 		auto nonce = cipherstate.aead_nonce(msg_sequence);

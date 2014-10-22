@@ -456,7 +456,7 @@ SafeVector!ubyte encode_length(size_t length)
 		
 		encoded_length.push_back(cast(ubyte)(0x80 | top_byte));
 		
-		for (size_t i = sizeof(length) - top_byte; i != sizeof(length); ++i)
+		for (size_t i = (length).sizeof - top_byte; i != (length).sizeof; ++i)
 			encoded_length.push_back(get_byte(i, length));
 	}
 	return encoded_length;

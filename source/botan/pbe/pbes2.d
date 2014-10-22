@@ -102,7 +102,7 @@ public:
 	{
 		pipe.end_msg();
 		flush_pipe(false);
-		pipe.reset();
+		pipe.clear();
 	}
 
 	/**

@@ -4,6 +4,7 @@
 *
 * Distributed under the terms of the botan license.
 */
+module botan.pk_pad.emsa;
 
 import botan.alloc.secmem;
 import botan.rng.rng;
@@ -55,4 +56,4 @@ public:
 * @param algo_spec the name of the EME to create
 * @return pointer to newly allocated object of that type
 */
-EMSA* get_emsa(in string algo_spec);
+EMSA get_emsa(in string algo_spec);

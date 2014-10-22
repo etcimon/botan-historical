@@ -68,7 +68,7 @@ public:
 	*/
 	void add(T)(in T v, double entropy_bits_per_byte)
 	{
-		add(&v, sizeof(T), entropy_bits_per_byte);
+		add(&v, (T).sizeof, entropy_bits_per_byte);
 	}
 private:
 	bool delegate(in ubyte*, size_t, double) m_accum_fn;

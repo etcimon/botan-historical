@@ -266,7 +266,7 @@ public:
 	*/
 	this()
 	{
-		memset(&stream, 0, sizeof(bz_stream));
+		memset(&stream, 0, (bz_stream).sizeof);
 		stream.bzalloc = bzip_malloc;
 		stream.bzfree = bzip_free;
 		stream.opaque = new Bzip_Alloc_Info;
@@ -279,7 +279,7 @@ public:
 	{
 		Bzip_Alloc_Info* info = cast(Bzip_Alloc_Info*)(stream.opaque);
 		delete info;
-		memset(&stream, 0, sizeof(bz_stream));
+		memset(&stream, 0, (bz_stream).sizeof);
 	}
 };
 

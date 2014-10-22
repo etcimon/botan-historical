@@ -5,7 +5,7 @@
 * Released under the terms of the botan license.
 */
 module botan.tls.sessions_sqlite.tls_session_manager_sqlite;
-import botan.tls_session_manager;
+import botan.tls.tls_session_manager;
 import botan.rng.rng;
 import botan.utils.sqlite3.sqlite3;
 import botan.libstate.lookup;
@@ -22,7 +22,7 @@ import std.datetime;
 * sessions are stored in the database in plaintext. This may be a
 * serious privacy risk in some situations.
 */
-class Session_Manager_SQLite : Session_Manager
+final class Session_Manager_SQLite : Session_Manager
 {
 public:
 	/**
@@ -40,7 +40,7 @@ public:
            RandomNumberGenerator rng,
            in string db_filename,
            size_t max_sessions = 1000,
-           Duration session_lifetime = Duration(7200)) 
+           Duration session_lifetime = 7200.seconds) 
 	{
 		m_rng = rng;
 		m_max_sessions = max_sessions;
@@ -122,7 +122,7 @@ public:
 
 	override bool load_from_session_id(in Vector!ubyte session_id, ref Session session)
 	{
-		sqlite3_statement stmt(m_db, "select session from tls_sessions where session_id = ?1");
+		sqlite3_statement stmt = sqlite3_statement(m_db, "select session from tls_sessions where session_id = ?1");
 		
 		stmt.bind(1, hex_encode(session_id));
 		
@@ -132,7 +132,7 @@ public:
 			
 			try
 			{
-				session = Session::decrypt(blob.first, blob.second, m_session_key);
+				session = Session.decrypt(blob.first, blob.second, m_session_key);
 				return true;
 			}
 			catch
@@ -159,7 +159,7 @@ public:
 			
 			try
 			{
-				session = Session::decrypt(blob.first, blob.second, m_session_key);
+				session = Session.decrypt(blob.first, blob.second, m_session_key);
 				return true;
 			}
 			catch

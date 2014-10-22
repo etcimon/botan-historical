@@ -314,7 +314,7 @@ public:
 		Lzma_Alloc_Info* info = cast(Lzma_Alloc_Info*)(stream.allocator.opaque);
 		delete info;
 		delete stream.allocator;
-		memset(&stream, 0, sizeof(lzma_stream));
+		memset(&stream, 0, (lzma_stream).sizeof);
 	}
 };
 

@@ -182,12 +182,12 @@ public:
 	*/
 	BigInt to_bigint() const
 	{
-		BigInt output = BigInt(BigInt.Positive, (bytes() + sizeof(word) - 1) / sizeof(word));
+		BigInt output = BigInt(BigInt.Positive, (bytes() + (word).sizeof - 1) / (word).sizeof);
 		size_t dummy = 0;
 		
 		word* reg = output.mutable_data();
 		
-		mpz_export(reg, &dummy, -1, sizeof(word), 0, 0, value);
+		mpz_export(reg, &dummy, -1, (word).sizeof, 0, 0, value);
 		
 		if (mpz_sgn(value) < 0)
 			output.flip_sign();
@@ -239,7 +239,7 @@ public:
 	{
 		mpz_init(value);
 		if (input != 0)
-			mpz_import(value, input.sig_words(), -1, sizeof(word), 0, 0, input.data());
+			mpz_import(value, input.sig_words(), -1, (word).sizeof, 0, 0, input.data());
 	}
 	
 	/*
@@ -508,7 +508,7 @@ static if (BOTAN_HAS_DSA) {
 */
 void* gmp_malloc(size_t n)
 {
-	// Maintain alignment, mlock goes for sizeof(T) alignment
+	// Maintain alignment, mlock goes for (T).sizeof alignment
 	if (n % 8 == 0)
 		return secure_allocator!ulong().allocate(n / 8);
 	else if (n % 4 == 0)

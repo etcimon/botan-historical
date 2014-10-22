@@ -25,43 +25,43 @@ Vector!ubyte pkcs_hash_id(in string name)
 	
 	if (name == "MD2")
 		return Vector!ubyte(MD2_PKCS_ID,
-		                    MD2_PKCS_ID + sizeof(MD2_PKCS_ID));
+		                    MD2_PKCS_ID + (MD2_PKCS_ID).sizeof);
 	
 	if (name == "MD5")
 		return Vector!ubyte(MD5_PKCS_ID,
-		                    MD5_PKCS_ID + sizeof(MD5_PKCS_ID));
+		                    MD5_PKCS_ID + (MD5_PKCS_ID).sizeof);
 	
 	if (name == "RIPEMD-128")
 		return Vector!ubyte(RIPEMD_128_PKCS_ID,
-		                    RIPEMD_128_PKCS_ID + sizeof(RIPEMD_128_PKCS_ID));
+		                    RIPEMD_128_PKCS_ID + (RIPEMD_128_PKCS_ID).sizeof);
 	
 	if (name == "RIPEMD-160")
 		return Vector!ubyte(RIPEMD_160_PKCS_ID,
-		                    RIPEMD_160_PKCS_ID + sizeof(RIPEMD_160_PKCS_ID));
+		                    RIPEMD_160_PKCS_ID + (RIPEMD_160_PKCS_ID).sizeof);
 	
 	if (name == "SHA-160")
 		return Vector!ubyte(SHA_160_PKCS_ID,
-		                    SHA_160_PKCS_ID + sizeof(SHA_160_PKCS_ID));
+		                    SHA_160_PKCS_ID + (SHA_160_PKCS_ID).sizeof);
 	
 	if (name == "SHA-224")
 		return Vector!ubyte(SHA_224_PKCS_ID,
-		                    SHA_224_PKCS_ID + sizeof(SHA_224_PKCS_ID));
+		                    SHA_224_PKCS_ID + (SHA_224_PKCS_ID).sizeof);
 	
 	if (name == "SHA-256")
 		return Vector!ubyte(SHA_256_PKCS_ID,
-		                    SHA_256_PKCS_ID + sizeof(SHA_256_PKCS_ID));
+		                    SHA_256_PKCS_ID + (SHA_256_PKCS_ID).sizeof);
 	
 	if (name == "SHA-384")
 		return Vector!ubyte(SHA_384_PKCS_ID,
-		                    SHA_384_PKCS_ID + sizeof(SHA_384_PKCS_ID));
+		                    SHA_384_PKCS_ID + (SHA_384_PKCS_ID).sizeof);
 	
 	if (name == "SHA-512")
 		return Vector!ubyte(SHA_512_PKCS_ID,
-		                    SHA_512_PKCS_ID + sizeof(SHA_512_PKCS_ID));
+		                    SHA_512_PKCS_ID + (SHA_512_PKCS_ID).sizeof);
 	
 	if (name == "Tiger(24,3)")
 		return Vector!ubyte(TIGER_PKCS_ID,
-		                    TIGER_PKCS_ID + sizeof(TIGER_PKCS_ID));
+		                    TIGER_PKCS_ID + (TIGER_PKCS_ID).sizeof);
 	
 	throw new Invalid_Argument("No PKCS #1 identifier for " ~ name);
 }
