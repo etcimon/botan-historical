@@ -11,14 +11,14 @@ import botan.block.block_cipher;
 /**
 * Block Cipher Cascade
 */
-class Cascade_Cipher : BlockCipher
+final class Cascade_Cipher : BlockCipher
 {
 public:
 	void encrypt_n(ubyte* input, ubyte* output, size_t blocks,
 	               size_t blocks) const
 	{
-		size_t c1_blocks = blocks * (block_size() / m_cipher1.block_size());
-		size_t c2_blocks = blocks * (block_size() / m_cipher2.block_size());
+		size_t c1_blocks = blocks * (this.block_size / m_cipher1.block_size);
+		size_t c2_blocks = blocks * (this.block_size / m_cipher2.block_size);
 		
 		m_cipher1.encrypt_n(input, output, c1_blocks);
 		m_cipher2.encrypt_n(output, output, c2_blocks);
@@ -27,14 +27,14 @@ public:
 	void decrypt_n(ubyte* input, ubyte* output, size_t blocks,
 	               size_t blocks) const
 	{
-		size_t c1_blocks = blocks * (block_size() / m_cipher1.block_size());
-		size_t c2_blocks = blocks * (block_size() / m_cipher2.block_size());
+		size_t c1_blocks = blocks * (this.block_size / m_cipher1.block_size);
+		size_t c2_blocks = blocks * (this.block_size / m_cipher2.block_size);
 		
 		m_cipher2.decrypt_n(input, output, c2_blocks);
 		m_cipher1.decrypt_n(output, output, c1_blocks);
 	}
 
-	size_t block_size() const { return m_block; }
+	@property size_t block_size() const { return m_block; }
 
 	Key_Length_Specification key_spec() const
 	{
@@ -49,9 +49,9 @@ public:
 	}
 
 
-	string name() const
+	@property string name() const
 	{
-		return "Cascade(" ~ m_cipher1.name() ~ "," ~ m_cipher2.name() ~ ")";
+		return "Cascade(" ~ m_cipher1.name ~ "," ~ m_cipher2.name ~ ")";
 	}
 
 	BlockCipher clone() const
@@ -68,9 +68,9 @@ public:
 	this(BlockCipher c1, BlockCipher c2) 
 	{
 		m_cipher1 = c1; m_cipher2 = c2;
-		m_block = block_size_for_cascade(c1.block_size(), c2.block_size());
+		m_block = block_size_for_cascade(c1.block_size, c2.block_size);
 		
-		if (block_size() % c1.block_size() || block_size() % c2.block_size())
+		if (this.block_size % c1.block_size || this.block_size % c2.block_size)
 			throw new Internal_Error("Failure in " ~ name() ~ " constructor");
 	}
 private:

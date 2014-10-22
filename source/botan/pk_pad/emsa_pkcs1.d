@@ -24,7 +24,7 @@ public:
 	this(HashFunction hash)
 	{
 		m_hash = hash;
-		m_hash_id = pkcs_hash_id(m_hash.name());
+		m_hash_id = pkcs_hash_id(m_hash.name);
 	}
 
 	void update(in ubyte* input, size_t length)
@@ -42,7 +42,7 @@ public:
 		            size_t output_bits,
 		            RandomNumberGenerator)
 	{
-		if (msg.length != m_hash.output_length())
+		if (msg.length != m_hash.output_length)
 			throw new Encoding_Error("encoding_of: Bad input length");
 		
 		return emsa3_encoding(msg, output_bits,
@@ -53,7 +53,7 @@ public:
 	            in SafeVector!ubyte raw,
 	            size_t key_bits)
 	{
-		if (raw.length != m_hash.output_length())
+		if (raw.length != m_hash.output_length)
 			return false;
 		
 		try

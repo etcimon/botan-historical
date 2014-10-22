@@ -6,9 +6,10 @@
 * Distributed under the terms of the botan license.
 */
 module botan.math.bigint.bigint;
+
+public import botan.botan.math.mp.mp_types;
 import botan.rng.rng;
 import botan.alloc.secmem;
-public import botan.botan.math.mp.mp_types;
 import iosfwd;
 import botan.math.bigint.bigint;
 import botan.utils.charset;
@@ -1069,7 +1070,7 @@ public:
 		const BigInt x = this;
 		const size_t x_sw = x.sig_words(), y_sw = y.sig_words();
 		
-		BigInt z(x.sign(), std.algorithm.max(x_sw, y_sw) + 1);
+		BigInt z = BigInt(x.sign(), std.algorithm.max(x_sw, y_sw) + 1);
 		
 		if ((x.sign() == y.sign()))
 			bigint_add3(z.mutable_data(), x.data(), x_sw, y.data(), y_sw);

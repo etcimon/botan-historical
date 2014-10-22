@@ -19,13 +19,13 @@ public:
 	/*
 	* Return the name of this type
 	*/
-	string name() const
+	@property string name() const
 	{
 		return "Tiger(" ~ std.conv.to!string(output_length()) ~ "," ~
 			std.conv.to!string(passes) ~ ")";
 	}
 
-	size_t output_length() const { return hash_len; }
+	@property size_t output_length() const { return hash_len; }
 
 	HashFunction clone() const
 	{
@@ -92,7 +92,7 @@ private:
 			B = digest[1] = B - digest[1];
 			C = (digest[2] += C);
 			
-			input += hash_block_size();
+			input += hash_block_size;
 		}
 	}
 

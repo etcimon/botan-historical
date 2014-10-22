@@ -149,7 +149,7 @@ public:
 		zap(EK);
 	}
 
-	string name() const
+	@property string name() const
 	{
 		/*
 	'Guess' the right name for the sbox on the basis of the values.

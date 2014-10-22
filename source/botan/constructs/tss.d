@@ -14,11 +14,12 @@ import botan.filters.pipe;
 import botan.codec.hex;
 import botan.sha2_32;
 import botan.hash.sha160;
-import vector;
+import botan.utils.types;
+
 /**
 * A split secret, using the format from draft-mcgrew-tss-03
 */
-class RTSS_Share
+final class RTSS_Share
 {
 public:
 	/**
@@ -29,7 +30,7 @@ public:
 	* @param identifier the 16 ubyte share identifier
 	* @param rng the random number generator to use
 	*/
-	static Vector!( RTSS_Share ) split(	ubyte M, ubyte N,
+	static Vector!RTSS_Share split(	ubyte M, ubyte N,
 										in ubyte* S, ushort S_len,
 										const ubyte identifier[16],
 										RandomNumberGenerator rng)
@@ -39,13 +40,13 @@ public:
 		
 		SHA_256 hash; // always use SHA-256 when generating shares
 		
-		Vector!( RTSS_Share ) shares = Vector!RTSS_Share(N);
+		Vector!RTSS_Share shares = Vector!RTSS_Share(N);
 		
 		// Create RTSS header in each share
 		for (ubyte i = 0; i != N; ++i)
 		{
 			shares[i].contents += Pair(identifier, 16);
-			shares[i].contents += rtss_hash_id(hash.name());
+			shares[i].contents += rtss_hash_id(hash.name);
 			shares[i].contents += M;
 			shares[i].contents += get_byte(0, S_len);
 			shares[i].contents += get_byte(1, S_len);
@@ -89,7 +90,7 @@ public:
 	* @param shares the list of shares
 	*/
 
-	static SafeVector!ubyte reconstruct(in Vector!( RTSS_Share ) shares)
+	static SafeVector!ubyte reconstruct(in Vector!RTSS_Share shares)
 	{
 		const size_t RTSS_HEADER_SIZE = 20;
 		
@@ -117,7 +118,7 @@ public:
 		
 		Unique!HashFunction hash = get_rtss_hash_by_id(hash_id);
 		
-		if (shares[0].length != secret_len + hash.output_length() + RTSS_HEADER_SIZE + 1)
+		if (shares[0].length != secret_len + hash.output_length + RTSS_HEADER_SIZE + 1)
 			throw new Decoding_Error("Bad RTSS length field in header");
 		
 		Vector!ubyte V(shares.length);
@@ -156,14 +157,14 @@ public:
 			secret.push_back(r);
 		}
 		
-		if (secret.length != secret_len + hash.output_length())
+		if (secret.length != secret_len + hash.output_length)
 			throw new Decoding_Error("Bad length in RTSS output");
 		
 		hash.update(&secret[0], secret_len);
 		SafeVector!ubyte hash_check = hash.flush();
 		
 		if (!same_mem(&hash_check[0],
-		&secret[secret_len], hash.output_length()))
+		&secret[secret_len], hash.output_length))
 			throw new Decoding_Error("RTSS hash check failed");
 		
 		return SafeVector!ubyte(&secret[0], &secret[secret_len]);

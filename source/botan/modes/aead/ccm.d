@@ -58,9 +58,9 @@ public:
 		}
 	}
 
-	override string name() const
+	override @property string name() const
 	{
-		return (m_cipher.name() ~ "/CCM(" ~ std.conv.to!string(tag_size()) ~ "," ~ std.conv.to!string(L())) ~ ")";
+		return (m_cipher.name ~ "/CCM(" ~ std.conv.to!string(tag_size()) ~ "," ~ std.conv.to!string(L())) ~ ")";
 	}
 
 	size_t update_granularity() const
@@ -110,8 +110,8 @@ package:
 		m_tag_size = tag_size;
 		m_L = L;
 		m_cipher = cipher;
-		if (m_cipher.block_size() != BS)
-			throw new Invalid_Argument(m_cipher.name() ~ " cannot be used with CCM mode");
+		if (m_cipher.block_size != BS)
+			throw new Invalid_Argument(m_cipher.name ~ " cannot be used with CCM mode");
 		
 		if (L < 2 || L > 8)
 			throw new Invalid_Argument("Invalid CCM L value " ~ std.conv.to!string(L));

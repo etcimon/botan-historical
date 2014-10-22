@@ -19,7 +19,7 @@ public:
 
 	void clear() { m_rng.clear(); }
 
-	string name() const { return m_rng.name(); }
+	@property string name() const { return m_rng.name; }
 
 	void reseed(size_t poll_bits = 256) { m_rng.reseed(poll_bits); }
 

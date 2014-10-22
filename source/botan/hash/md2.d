@@ -14,9 +14,9 @@ import botan.utils.xor_buf;
 class MD2 : HashFunction
 {
 public:
-	string name() const { return "MD2"; }
-	size_t output_length() const { return 16; }
-	size_t hash_block_size() const { return 16; }
+	@property string name() const { return "MD2"; }
+	@property size_t output_length() const { return 16; }
+	@property size_t hash_block_size() const { return 16; }
 	HashFunction clone() const { return new MD2; }
 
 	/**
@@ -45,16 +45,16 @@ private:
 	{
 		buffer_insert(buffer, position, input, length);
 		
-		if (position + length >= hash_block_size())
+		if (position + length >= hash_block_size)
 		{
 			hash(&buffer[0]);
-			input += (hash_block_size() - position);
-			length -= (hash_block_size() - position);
-			while(length >= hash_block_size())
+			input += (hash_block_size - position);
+			length -= (hash_block_size - position);
+			while(length >= hash_block_size)
 			{
 				hash(input);
-				input += hash_block_size();
-				length -= hash_block_size();
+				input += hash_block_size;
+				length -= hash_block_size;
 			}
 			copy_mem(&buffer[0], input, length);
 			position = 0;
@@ -90,8 +90,8 @@ private:
 			0x31, 0x44, 0x50, 0xB4, 0x8F, 0xED, 0x1F, 0x1A, 0xDB, 0x99, 0x8D, 0x33,
 			0x9F, 0x11, 0x83, 0x14 ];
 		
-		buffer_insert(X, 16, input, hash_block_size());
-		xor_buf(&X[32], &X[0], &X[16], hash_block_size());
+		buffer_insert(X, 16, input, hash_block_size);
+		xor_buf(&X[32], &X[0], &X[16], hash_block_size);
 		ubyte T = 0;
 		
 		for (size_t i = 0; i != 18; ++i)
@@ -108,7 +108,7 @@ private:
 		}
 		
 		T = checksum[15];
-		for (size_t i = 0; i != hash_block_size(); ++i)
+		for (size_t i = 0; i != hash_block_size; ++i)
 			T = checksum[i] ^= SBOX[input[i] ^ T];
 	}
 
@@ -117,12 +117,12 @@ private:
 	*/
 	void final_result(ubyte* output)
 	{
-		for (size_t i = position; i != hash_block_size(); ++i)
-			buffer[i] = cast(ubyte)(hash_block_size() - position);
+		for (size_t i = position; i != hash_block_size; ++i)
+			buffer[i] = cast(ubyte)(hash_block_size - position);
 		
 		hash(&buffer[0]);
 		hash(&checksum[0]);
-		copy_mem(output, &X[0], output_length());
+		copy_mem(output, &X[0], output_length);
 		clear();
 	}
 

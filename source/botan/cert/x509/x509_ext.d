@@ -176,22 +176,22 @@ private:
 	*/
 	Certificate_Extension get_extension(in OID oid)
 	{
-		string X509_EXTENSION(T)(string NAME, T t) {
-			return "if (oids.name_of(oid, " ~ NAME ~ ")) return new x509_ext. ~ " ~ T.stringof ~ "();";
+		string X509_EXTENSION(string NAME, alias T)() {
+			return "if (oid.name_of(" ~ NAME ~ ")) return new " ~ __traits(T, identifier).stringof ~ "();";
 		}
 		
-		mixin( X509_EXTENSION("X509v3.KeyUsage", Key_Usage) );
-		mixin( X509_EXTENSION("X509v3.BasicConstraints", Basic_Constraints) );
-		mixin( X509_EXTENSION("X509v3.SubjectKeyIdentifier", Subject_Key_ID) );
-		mixin( X509_EXTENSION("X509v3.AuthorityKeyIdentifier", Authority_Key_ID) );
-		mixin( X509_EXTENSION("X509v3.ExtendedKeyUsage", Extended_Key_Usage) );
-		mixin( X509_EXTENSION("X509v3.IssuerAlternativeName", Issuer_Alternative_Name) );
-		mixin( X509_EXTENSION("X509v3.SubjectAlternativeName", Subject_Alternative_Name) );
-		mixin( X509_EXTENSION("X509v3.CertificatePolicies", Certificate_Policies) );
-		mixin( X509_EXTENSION("X509v3.CRLDistributionPoints", CRL_Distribution_Points) );
-		mixin( X509_EXTENSION("PKIX.AuthorityInformationAccess", Authority_Information_Access) );
-		mixin( X509_EXTENSION("X509v3.CRLNumber", CRL_Number) );
-		mixin( X509_EXTENSION("X509v3.ReasonCode", CRL_ReasonCode) );
+		mixin( X509_EXTENSION!("X509v3.KeyUsage", Key_Usage)() );
+		mixin( X509_EXTENSION!("X509v3.BasicConstraints", Basic_Constraints)() );
+		mixin( X509_EXTENSION!("X509v3.SubjectKeyIdentifier", Subject_Key_ID)() );
+		mixin( X509_EXTENSION!("X509v3.AuthorityKeyIdentifier", Authority_Key_ID)() );
+		mixin( X509_EXTENSION!("X509v3.ExtendedKeyUsage", Extended_Key_Usage)() );
+		mixin( X509_EXTENSION!("X509v3.IssuerAlternativeName", Issuer_Alternative_Name)() );
+		mixin( X509_EXTENSION!("X509v3.SubjectAlternativeName", Subject_Alternative_Name)() );
+		mixin( X509_EXTENSION!("X509v3.CertificatePolicies", Certificate_Policies)() );
+		mixin( X509_EXTENSION!("X509v3.CRLDistributionPoints", CRL_Distribution_Points)() );
+		mixin( X509_EXTENSION!("PKIX.AuthorityInformationAccess", Authority_Information_Access)() );
+		mixin( X509_EXTENSION!("X509v3.CRLNumber", CRL_Number)() );
+		mixin( X509_EXTENSION!("X509v3.ReasonCode", CRL_ReasonCode)() );
 		
 		return null;
 	}
@@ -555,9 +555,12 @@ public:
 	Extended_Key_Usage copy() const { return new Extended_Key_Usage(oids); }
 
 	this() {}
-	this(in Vector!( OID ) o) : oids(o) {}
+	this(in Vector!OID o) 
+	{
+		oids = o;
+	}
 
-	Vector!( OID ) get_oids() const { return oids; }
+	Vector!OID get_oids() const { return oids; }
 private:
 	string oid_name() const { return "X509v3.ExtendedKeyUsage"; }
 
@@ -591,7 +594,7 @@ private:
 			subject.add("X509v3.ExtendedKeyUsage", oids[i].as_string());
 	}
 
-	Vector!( OID ) oids;
+	Vector!OID oids;
 };
 
 /**
@@ -604,9 +607,9 @@ public:
 	{ return new Certificate_Policies(oids); }
 
 	Certificate_Policies() {}
-	Certificate_Policies(in Vector!( OID ) o) : oids(o) {}
+	Certificate_Policies(in Vector!OID o) : oids(o) {}
 
-	Vector!( OID ) get_oids() const { return oids; }
+	Vector!OID get_oids() const { return oids; }
 private:
 	string oid_name() const { return "X509v3.CertificatePolicies"; }
 
@@ -651,7 +654,7 @@ private:
 			info.add("X509v3.CertificatePolicies", oids[i].as_string());
 	}
 
-	Vector!( OID ) oids;
+	Vector!OID oids;
 };
 
 class Authority_Information_Access : Certificate_Extension
@@ -672,7 +675,7 @@ private:
 
 	Vector!ubyte encode_inner() const
 	{
-		ASN1_String url(m_ocsp_responder, IA5_STRING);
+		ASN1_String url = ASN1_String(m_ocsp_responder, IA5_STRING);
 		
 		return DER_Encoder()
 			.start_cons(ASN1_Tag.SEQUENCE)

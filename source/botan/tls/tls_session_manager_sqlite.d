@@ -46,7 +46,7 @@ public:
 		m_max_sessions = max_sessions;
 		m_session_lifetime = session_lifetime;
 		m_db = new sqlite3_database(db_filename);
-		
+
 		m_db.create_table(
 			"create table if not exists tls_sessions "
 			"("

@@ -11,10 +11,10 @@ static if (BOTAN_HAS_ENTROPY_SRC_BEOS):
 /**
 * BeOS Entropy Source
 */
-class BeOS_EntropySource : EntropySource
+final class BeOS_EntropySource : EntropySource
 {
 	private:
-		string name() const { return "BeOS Statistics"; }
+		@property string name() const { return "BeOS Statistics"; }
 
 	/**
 	* BeOS entropy poll

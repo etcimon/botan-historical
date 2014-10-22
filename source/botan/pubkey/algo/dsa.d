@@ -19,7 +19,7 @@ import future;
 class DSA_PublicKey : DL_Scheme_PublicKey
 {
 public:
-	string algo_name() const { return "DSA"; }
+	@property string algo_name() const { return "DSA"; }
 
 	DL_Group.Format group_format() const { return DL_Group.ANSI_X9_57; }
 	size_t message_parts() const { return 2; }

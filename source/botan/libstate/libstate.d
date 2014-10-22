@@ -19,7 +19,7 @@ import std.algorithm;
 import core.sync.mutex;
 import std.typecons;
 import string;
-import vector;
+import botan.utils.types;
 import map;
 
 static if (BOTAN_HAS_SELFTESTS)

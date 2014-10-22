@@ -7,7 +7,7 @@
 module botan.alloc.locking_allocator;
 
 import botan.utils.types;
-import vector;
+import botan.utils.types;
 import core.sync.mutex;
 
 import botan.utils.mem_ops;

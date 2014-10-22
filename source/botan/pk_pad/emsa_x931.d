@@ -26,10 +26,10 @@ public:
 		m_hash = hash;
 		m_empty_hash = m_hash.flush();
 		
-		m_hash_id = ieee1363_hash_id(hash.name());
+		m_hash_id = ieee1363_hash_id(hash.name);
 		
 		if (!m_hash_id)
-			throw new Encoding_Error("EMSA_X931 no hash identifier for " ~ hash.name());
+			throw new Encoding_Error("EMSA_X931 no hash identifier for " ~ hash.name);
 	}
 	EMSA_X931(HashFunction hash);
 private:

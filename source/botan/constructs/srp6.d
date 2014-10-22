@@ -117,7 +117,7 @@ string srp6_group_identifier(in BigInt N, const ref BigInt g)
 /**
 * Represents a SRP-6a server session
 */
-class SRP6_Server_Session
+final class SRP6_Server_Session
 {
 public:
 	/**

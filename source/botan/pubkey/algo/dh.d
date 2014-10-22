@@ -19,7 +19,7 @@ import botan.pubkey.workfactor;
 class DH_PublicKey : DL_Scheme_PublicKey
 {
 public:
-	string algo_name() const { return "DH"; }
+	@property string algo_name() const { return "DH"; }
 
 	/*
 	* Return the public value for key agreement

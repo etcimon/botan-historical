@@ -21,7 +21,7 @@ import future;
 class RSA_PublicKey : IF_Scheme_PublicKey
 {
 public:
-	string algo_name() const { return "RSA"; }
+	@property string algo_name() const { return "RSA"; }
 
 	this(in AlgorithmIdentifier alg_id,
 		 in SafeVector!ubyte key_bits) 
@@ -104,10 +104,10 @@ public:
 	     size_t bits, size_t exp = 65537)
 	{
 		if (bits < 1024)
-			throw new Invalid_Argument(algo_name() ~ ": Can't make a key that is only " ~
+			throw new Invalid_Argument(algo_name ~ ": Can't make a key that is only " ~
 			                           std.conv.to!string(bits) ~ " bits long");
 		if (exp < 3 || exp % 2 == 0)
-			throw new Invalid_Argument(algo_name() ~ ": Invalid encryption exponent");
+			throw new Invalid_Argument(algo_name ~ ": Invalid encryption exponent");
 		
 		e = exp;
 		

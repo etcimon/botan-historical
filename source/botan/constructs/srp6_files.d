@@ -18,7 +18,7 @@ import std.stdio;
 /**
 * A GnuTLS compatible SRP6 authenticator file
 */
-class SRP6_Authenticator_File
+final class SRP6_Authenticator_File
 {
 public:
 	/**

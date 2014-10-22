@@ -42,7 +42,7 @@ public:
 		return output;
 	}
 
-	string name() const { return "KDF2(" ~ hash.name() ~ ")"; }
+	@property string name() const { return "KDF2(" ~ hash.name ~ ")"; }
 	KDF clone() const { return new KDF2(hash.clone()); }
 
 	this(HashFunction h) { hash = h; }

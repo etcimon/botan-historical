@@ -110,7 +110,7 @@ public:
 	/*
 	* Return the name of this type
 	*/
-	string name() const
+	@property string name() const
 	{
 		return "Salsa20";
 	}

@@ -7,13 +7,13 @@
 module botan.engine.dyn_engine;
 
 import botan.engine.engine;
-import botan.internal.dyn_load;
+import botan.utils.dyn_load.dyn_load;
 
 /**
 * Dynamically_Loaded_Engine just proxies the requests to the underlying
 * Engine object, and handles load/unload details
 */
-class Dynamically_Loaded_Engine : Engine
+final class Dynamically_Loaded_Engine : Engine
 {
 public:
 	/**
@@ -148,4 +148,3 @@ private nothrow @nogc extern(C):
 
 typedef Engine function() creator_func;
 typedef uint function() module_version_func;
-

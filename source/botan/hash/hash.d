@@ -20,10 +20,10 @@ public:
 
 	abstract void clear();
 
-	abstract string name() const;
+	abstract @property string name() const;
 
 	/**
 	* @return hash block size as defined for this algorithm
 	*/
-	abstract size_t hash_block_size() const { return 0; }
+	abstract @property size_t hash_block_size() const { return 0; }
 };

@@ -112,7 +112,7 @@ public:
 	{
 		zap(EK);
 	}
-	string name() const { return "KASUMI"; }
+	@property string name() const { return "KASUMI"; }
 	BlockCipher clone() const { return new KASUMI; }
 private:
 	/*

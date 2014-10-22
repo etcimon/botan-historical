@@ -107,7 +107,7 @@ public:
 		zap(EK);
 	}
 
-	string name() const { return "MARS"; }
+	@property string name() const { return "MARS"; }
 	BlockCipher clone() const { return new MARS; }
 private:
 	/*

@@ -5,7 +5,7 @@
 * Distributed under the terms of the botan license.
 */
 
-import vector;
+import botan.utils.types;
 import string;
 import map;
  Vector!ubyte to_byte_vector(in string s)

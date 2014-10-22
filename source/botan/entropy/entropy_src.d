@@ -85,7 +85,7 @@ public:
 	/**
 	* @return name identifying this entropy source
 	*/
-	string name() const;
+	@property string name() const;
 
 	/**
 	* Perform an entropy gathering poll

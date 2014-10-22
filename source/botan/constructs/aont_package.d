@@ -8,12 +8,11 @@ module botan.constructs.aont_package;
 
 import botan.block.block_cipher;
 import botan.rng.rng;
-import botan.pkg;
 import botan.filters.filters;
 import botan.stream.ctr;
 import botan.utils.get_byte;
 import botan.utils.xor_buf;
-
+import botan.algo_base.symkey;
 
 /**
 * Rivest's Package Tranform
@@ -29,13 +28,15 @@ void aont_package(RandomNumberGenerator rng,
                   in ubyte* input, size_t input_len,
                   ubyte* output)
 {
-	const size_t BLOCK_SIZE = cipher.block_size();
+	const size_t BLOCK_SIZE = cipher.block_size;
 	
 	if (!cipher.valid_keylength(BLOCK_SIZE))
 		throw new Invalid_Argument("AONT::package: Invalid cipher");
 	
 	// The all-zero string which is used both as the CTR IV and as K0
-	const string all_zeros(BLOCK_SIZE*2, '0');
+	string all_zeros;
+	all_zeros.length = BLOCK_SIZE*2;
+	all_zeros.fill('0');
 	
 	SymmetricKey package_key = SymmetricKey(rng, BLOCK_SIZE);
 	
@@ -88,7 +89,7 @@ void aont_unpackage(BlockCipher cipher,
                     in ubyte* input, size_t input_len,
                     ubyte* output)
 {
-	const size_t BLOCK_SIZE = cipher.block_size();
+	const size_t BLOCK_SIZE = cipher.block_size;
 	
 	if (!cipher.valid_keylength(BLOCK_SIZE))
 		throw new Invalid_Argument("AONT::unpackage: Invalid cipher");
@@ -97,7 +98,9 @@ void aont_unpackage(BlockCipher cipher,
 		throw new Invalid_Argument("AONT::unpackage: Input too short");
 	
 	// The all-zero string which is used both as the CTR IV and as K0
-	const string all_zeros(BLOCK_SIZE*2, '0');
+	string all_zeros;
+	all_zeros.length = BLOCK_SIZE*2;
+	all_zeros.fill('0');
 	
 	cipher.set_key(SymmetricKey(all_zeros));
 	
@@ -136,4 +139,3 @@ void aont_unpackage(BlockCipher cipher,
 
 
 }
-

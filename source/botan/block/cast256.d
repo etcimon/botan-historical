@@ -15,7 +15,7 @@ import botan.utils.rotate;
 /**
 * CAST-256
 */
-class CAST_256 : Block_Cipher_Fixed_Params!(16, 4, 32, 4)
+final class CAST_256 : Block_Cipher_Fixed_Params!(16, 4, 32, 4)
 {
 public:
 	/*
@@ -112,7 +112,7 @@ public:
 		zap(RK);
 	}
 
-	string name() const { return "CAST-256"; }
+	@property string name() const { return "CAST-256"; }
 	BlockCipher clone() const { return new CAST_256; }
 private:
 

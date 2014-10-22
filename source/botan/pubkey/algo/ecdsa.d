@@ -41,7 +41,7 @@ public:
 	* Get this keys algorithm name.
 	* @result this keys algorithm name ("ECDSA")
 	*/
-	string algo_name() const { return "ECDSA"; }
+	@property string algo_name() const { return "ECDSA"; }
 
 	/**
 	* Get the maximum number of bits allowed to be fed to this key.

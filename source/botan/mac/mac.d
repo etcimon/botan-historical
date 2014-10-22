@@ -23,7 +23,7 @@ public:
 	* @param length the length of param in
 	* @return true if the MAC is valid, false otherwise
 	*/
-	bool verify_mac(in ubyte* mac, size_t length)
+	final bool verify_mac(in ubyte* mac, size_t length)
 	{
 		SafeVector!ubyte our_mac = flush();
 		
@@ -42,5 +42,5 @@ public:
 	* Get the name of this algorithm.
 	* @return name of this algorithm
 	*/
-	abstract string name() const;
+	abstract @property string name() const;
 };

@@ -23,7 +23,7 @@ public:
 	* Get the name of the underlying public key scheme.
 	* @return name of the public key scheme
 	*/
-	abstract string algo_name() const;
+	abstract @property string algo_name() const;
 
 	/**
 	* Return the estimated strength of the underlying key against
@@ -43,7 +43,7 @@ public:
 	OID get_oid() const
 	{
 		try {
-			return oids.lookup(algo_name());
+			return oids.lookup(algo_name);
 		}
 		catch(Lookup_Error)
 		{
@@ -99,7 +99,7 @@ package:
 	void load_check(RandomNumberGenerator rng) const
 	{
 		if (!check_key(rng, BOTAN_PUBLIC_KEY_STRONG_CHECKS_ON_LOAD))
-			throw new Invalid_Argument(algo_name() ~ ": Invalid public key");
+			throw new Invalid_Argument(algo_name ~ ": Invalid public key");
 	}
 };
 
@@ -129,7 +129,7 @@ package:
 			void load_check(RandomNumberGenerator rng) const
 	{
 		if (!check_key(rng, BOTAN_Private_Key_STRONG_CHECKS_ON_LOAD))
-			throw new Invalid_Argument(algo_name() ~ ": Invalid private key");
+			throw new Invalid_Argument(algo_name ~ ": Invalid private key");
 	}
 
 	/**
@@ -139,7 +139,7 @@ package:
 	void gen_check(RandomNumberGenerator rng) const
 	{
 		if (!check_key(rng, BOTAN_Private_Key_STRONG_CHECKS_ON_GENERATE))
-			throw new Self_Test_Failure(algo_name() ~ " private key generation failed");
+			throw new Self_Test_Failure(algo_name ~ " private key generation failed");
 	}
 };
 

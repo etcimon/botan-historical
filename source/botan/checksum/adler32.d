@@ -11,18 +11,18 @@ import botan.hash.hash;
 /**
 * The Adler32 checksum, used in zlib
 */
-class Adler32 : HashFunction
+final class Adler32 : HashFunction
 {
 public:
-	string name() const { return "Adler32"; }
-	size_t output_length() const { return 4; }
+	@property string name() const { return "Adler32"; }
+	@property size_t output_length() const { return 4; }
 	HashFunction clone() const { return new Adler32; }
 
 	void clear() { S1 = 1; S2 = 0; }
 
 	this() { clear(); }
 	~this() { clear(); }
-private:
+package:
 	/*
 	* Update an Adler32 Checksum
 	*/

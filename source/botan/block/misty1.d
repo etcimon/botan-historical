@@ -121,7 +121,7 @@ public:
 		zap(DK);
 	}
 
-	string name() const { return "MISTY1"; }
+	@property string name() const { return "MISTY1"; }
 	BlockCipher clone() const { return new MISTY1; }
 
 	/**

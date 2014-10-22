@@ -13,8 +13,8 @@ import botan.utils.loadstor;
 class Whirlpool : MDx_HashFunction
 {
 public:
-	string name() const { return "Whirlpool"; }
-	size_t output_length() const { return 64; }
+	@property string name() const { return "Whirlpool"; }
+	@property size_t output_length() const { return 64; }
 	HashFunction clone() const { return new Whirlpool; }
 
 	/*
@@ -144,7 +144,7 @@ private:
 			digest[6] ^= B6 ^ M[6];
 			digest[7] ^= B7 ^ M[7];
 			
-			input += hash_block_size();
+			input += hash_block_size;
 		}
 	}
 	

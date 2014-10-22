@@ -12,7 +12,7 @@ import botan.tls.tls_messages;
 import botan.tls.tls_alert;
 import botan.rng.rng;
 import botan.internal.stl_util;
-import vector;
+import botan.utils.types;
 
 /**
 * TLS Server
@@ -322,22 +322,22 @@ private:
 						);
 				}
 				
-				Private_Key Private_Key = null;
+				Private_Key priv_key = null;
 				
 				if (kex_algo == "RSA" || sig_algo != "")
 				{
-					Private_Key = m_creds.Private_Key_for(	state.server_certs().cert_chain()[0],
+					priv_key = m_creds.Private_Key_for(	state.server_certs().cert_chain()[0],
 															"tls-server",
 															sni_hostname
 					);
 					
-					if (!Private_Key)
+					if (!priv_key)
 						throw new Internal_Error("No private key located for associated server cert");
 				}
 				
 				if (kex_algo == "RSA")
 				{
-					state.server_rsa_kex_key = Private_Key;
+					state.server_rsa_kex_key = priv_key;
 				}
 				else
 				{
@@ -347,7 +347,7 @@ private:
 						                        m_policy,
 						                        m_creds,
 						                        rng(),
-						                        Private_Key)
+					                        	priv_key)
 						);
 				}
 				

@@ -12,7 +12,7 @@ import botan.utils.xor_buf;
 /**
 * HMAC
 */
-class HMAC : MessageAuthenticationCode
+final class HMAC : MessageAuthenticationCode
 {
 public:
 	/*
@@ -28,9 +28,9 @@ public:
 	/*
 	* Return the name of this type
 	*/
-	string name() const
+	@property string name() const
 	{
-		return "HMAC(" ~ m_hash.name() ~ ")";
+		return "HMAC(" ~ m_hash.name ~ ")";
 	}
 
 	/*
@@ -41,7 +41,7 @@ public:
 		return new HMAC(m_hash.clone());
 	}
 
-	size_t output_length() const { return m_hash.output_length(); }
+	@property size_t output_length() const { return m_hash.output_length; }
 
 	Key_Length_Specification key_spec() const
 	{
@@ -55,8 +55,8 @@ public:
 	this(HashFunction hash) 
 	{
 		m_hash = hash;
-		if (m_hash.hash_block_size() == 0)
-			throw new Invalid_Argument("HMAC cannot be used with " ~ m_hash.name());
+		if (m_hash.hash_block_size == 0)
+			throw new Invalid_Argument("HMAC cannot be used with " ~ m_hash.name);
 	}
 private:
 	/*
@@ -86,13 +86,13 @@ private:
 	{
 		m_hash.clear();
 		
-		m_ikey.resize(m_hash.hash_block_size());
-		m_okey.resize(m_hash.hash_block_size());
+		m_ikey.resize(m_hash.hash_block_size);
+		m_okey.resize(m_hash.hash_block_size);
 		
 		std.algorithm.fill(m_ikey.begin(), m_ikey.end(), 0x36);
 		std.algorithm.fill(m_okey.begin(), m_okey.end(), 0x5C);
 		
-		if (length > m_hash.hash_block_size())
+		if (length > m_hash.hash_block_size)
 		{
 			SafeVector!ubyte hmac_key = m_hash.process(key, length);
 			xor_buf(m_ikey, hmac_key, hmac_key.length);

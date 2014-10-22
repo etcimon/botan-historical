@@ -67,7 +67,7 @@ public:
 		zap(K);
 	}
 
-	string name() const { return "TEA"; }
+	@property string name() const { return "TEA"; }
 	BlockCipher clone() const { return new TEA; }
 private:
 	/*

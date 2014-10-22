@@ -8,7 +8,7 @@ module botan.tls.tls_extensions;
 
 import botan.alloc.secmem;
 import botan.tls.tls_magic;
-import vector;
+import botan.utils.types;
 import string;
 import map;
 import set;
@@ -127,7 +127,7 @@ public:
 		buf.push_back(get_byte!ushort(1, name_len));
 		
 		buf += Pair(
-			cast(const ubyte*)(sni_host_name.data()),
+			cast(const ubyte*)(sni_host_name.ptr),
 			sni_host_name.length);
 		
 		return buf;
@@ -172,9 +172,9 @@ public:
 	Vector!ubyte serialize() const
 	{
 		Vector!ubyte buf;
-		
+
 		const ubyte* srp_bytes =
-			cast(const ubyte*)(srp_identifier.data());
+			cast(const ubyte*)(srp_identifier.ptr);
 		
 		append_tls_length_value(buf, srp_bytes, srp_identifier.length, 1);
 		
@@ -352,7 +352,7 @@ public:
 			
 			if (p != "")
 				append_tls_length_value(buf,
-				                        cast(const ubyte*)(p.data()),
+				                        cast(const ubyte*)(p.ptr),
 				                        p.length,
 				                        1);
 		}

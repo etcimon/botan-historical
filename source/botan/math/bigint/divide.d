@@ -9,6 +9,7 @@ module botan.math.bigint.divide;
 import botan.math.bigint.bigint;
 import botan.math.mp.mp_core;
 import botan.internal.mp_madd;
+
 /**
 * BigInt Division
 * @param x an integer

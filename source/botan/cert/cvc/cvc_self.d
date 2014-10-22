@@ -16,13 +16,14 @@ import botan.cert.cvc.cvc_ado;
 import botan.pubkey.algo.ecc_key;
 import botan.math.ec_gfp.curve_gfp;
 import botan.asn1.oid_lookup.oids;
+import botan.cert.cvc.eac_asn_obj;
 import botan.utils.types;
 import sstream;
 
 /**
 * This class represents a set of options used for the creation of CVC certificates
 */
-class EAC1_1_CVC_Options
+struct EAC1_1_CVC_Options
 {
 public:
 
@@ -57,7 +58,7 @@ EAC1_1_CVC create_self_signed_cert(const ref Private_Key key,
 	
 	AlgorithmIdentifier sig_algo;
 	string padding_and_hash = "EMSA1_BSI(" ~ opt.hash_alg ~ ")";
-	sig_algo.oid = oids.lookup(priv_key.algo_name() ~ "/" ~ padding_and_hash);
+	sig_algo.oid = oids.lookup(priv_key.algo_name ~ "/" ~ padding_and_hash);
 	sig_algo = AlgorithmIdentifier(sig_algo.oid, AlgorithmIdentifier.USE_NULL_PARAM);
 	
 	PK_Signer signer = PK_Signer(*priv_key, padding_and_hash);
@@ -95,7 +96,7 @@ EAC1_1_Req create_cvc_req(const ref Private_Key key,
 	}
 	AlgorithmIdentifier sig_algo;
 	string padding_and_hash = "EMSA1_BSI(" ~ hash_alg ~ ")";
-	sig_algo.oid = oids.lookup(priv_key.algo_name() ~ "/" ~ padding_and_hash);
+	sig_algo.oid = oids.lookup(priv_key.algo_name ~ "/" ~ padding_and_hash);
 	sig_algo = AlgorithmIdentifier(sig_algo.oid, AlgorithmIdentifier.USE_NULL_PARAM);
 	
 	PK_Signer signer = PK_Signer(*priv_key, padding_and_hash);

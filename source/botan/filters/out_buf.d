@@ -23,7 +23,7 @@ public:
 	size_t read(ubyte* output, size_t length,
 	            Pipe.message_id msg)
 	{
-		SecureQueue* q = get(msg);
+		SecureQueue q = get(msg);
 		if (q)
 			return q.read(output, length);
 		return 0;
@@ -36,7 +36,7 @@ public:
 	            size_t stream_offset,
 	            Pipe.message_id msg) const
 	{
-		SecureQueue* q = get(msg);
+		SecureQueue q = get(msg);
 		if (q)
 			return q.peek(output, length, stream_offset);
 		return 0;
@@ -47,7 +47,7 @@ public:
 	*/
 	size_t get_bytes_read(Pipe.message_id msg) const
 	{
-		SecureQueue* q = get(msg);
+		SecureQueue q = get(msg);
 		if (q)
 			return q.get_bytes_read();
 		return 0;
@@ -58,7 +58,7 @@ public:
 	*/
 	size_t remaining(Pipe.message_id msg) const
 	{
-		SecureQueue* q = get(msg);
+		SecureQueue q = get(msg);
 		if (q)
 			return q.length;
 		return 0;
@@ -67,7 +67,7 @@ public:
 	/*
 	* Add a new output queue
 	*/
-	void add(SecureQueue* queue)
+	void add(SecureQueue queue)
 	{
 		assert(queue, "queue was provided");
 		
@@ -114,7 +114,7 @@ private:
 	/*
 	* Get a particular output queue
 	*/
-	SecureQueue* get(Pipe.message_id msg) const
+	SecureQueue get(Pipe.message_id msg) const
 	{
 		if (msg < offset)
 			return null;
@@ -124,6 +124,6 @@ private:
 		return buffers[msg-offset];
 	}
 
-	Deque!(SecureQueue*) buffers;
+	Deque!(SecureQueue) buffers;
 	Pipe.message_id offset;
 };

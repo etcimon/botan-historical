@@ -93,7 +93,7 @@ public:
 		zap(RK);
 	}
 
-	string name() const { return "CAST-128"; }
+	@property string name() const { return "CAST-128"; }
 	BlockCipher clone() const { return new CAST_128; }
 
 private:

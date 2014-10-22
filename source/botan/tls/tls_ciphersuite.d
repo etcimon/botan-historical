@@ -7,7 +7,7 @@
 
 import botan.utils.types;
 import string;
-import vector;
+import botan.utils.types;
 import botan.libstate.libstate;
 import botan.parsing;
 import sstream;

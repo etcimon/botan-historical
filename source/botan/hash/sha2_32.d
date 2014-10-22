@@ -17,8 +17,8 @@ import botan.utils.rotate;
 class SHA_224 : MDx_HashFunction
 {
 public:
-	string name() const { return "SHA-224"; }
-	size_t output_length() const { return 28; }
+	@property string name() const { return "SHA-224"; }
+	@property size_t output_length() const { return 28; }
 	HashFunction clone() const { return new SHA_224; }
 
 	/*
@@ -72,8 +72,8 @@ private:
 class SHA_256 : MDx_HashFunction
 {
 public:
-	string name() const { return "SHA-256"; }
-	size_t output_length() const { return 32; }
+	@property string name() const { return "SHA-256"; }
+	@property size_t output_length() const { return 32; }
 	HashFunction clone() const { return new SHA_256; }
 
 	/*

@@ -17,7 +17,7 @@ import string;
 */
 
  // CRTP continuation from EAC1_1_obj
-class EAC1_1_ADO : public EAC1_1_obj!EAC1_1_ADO
+final class EAC1_1_ADO : public EAC1_1_obj!EAC1_1_ADO
 {
 public:
 	/**

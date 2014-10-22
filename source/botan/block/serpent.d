@@ -124,7 +124,7 @@ public:
 		zap(round_key);
 	}
 
-	string name() const { return "Serpent"; }
+	@property string name() const { return "Serpent"; }
 	BlockCipher clone() const { return new Serpent; }
 package:
 	/**

@@ -126,7 +126,7 @@ All block ciphers classes in botan are subclasses of
 
    Which subclasses the :cpp:class:`SymmetricAlgorithm` interface.
 
-   .. cpp:function:: size_t block_size() const
+   .. cpp:function:: @property size_t block_size() const
 
       Returns the block size of the cipher in bytes
 

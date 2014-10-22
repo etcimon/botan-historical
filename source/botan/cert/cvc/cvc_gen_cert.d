@@ -23,7 +23,7 @@ public:
 	* Get this certificates public key.
 	* @result this certificates public key
 	*/
-	Public_Key subject_public_key() const
+	final Public_Key subject_public_key() const
 	{
 		return new ECDSA_PublicKey(m_pk);
 	}
@@ -32,7 +32,7 @@ public:
 	* Find out whether this object is self signed.
 	* @result true if this object is self signed
 	*/
-	bool is_self_signed() const
+	final bool is_self_signed() const
 	{
 		return self_signed;
 	}
@@ -42,7 +42,7 @@ public:
 	* Get the CHR of the certificate.
 	* @result the CHR of the certificate
 	*/
-	ASN1_Chr get_chr() const {
+	final ASN1_Chr get_chr() const {
 		return m_chr;
 	};
 
@@ -52,7 +52,7 @@ public:
 	* @param output the pipe to push the DER encoded version into
 	* @param encoding the encoding to use. Must be DER.
 	*/
-	void encode(Pipe output, X509_Encoding encoding) const
+	final void encode(Pipe output, X509_Encoding encoding) const
 	{
 		Vector!ubyte concat_sig = EAC1_1_obj!Derived.m_sig.get_concatenation();
 		Vector!ubyte der = DER_Encoder()
@@ -74,9 +74,9 @@ public:
 	* Get the to-be-signed (TBS) data of this object.
 	* @result the TBS data of this object
 	*/
-	Vector!ubyte tbs_data() const
+	final Vector!ubyte tbs_data() const
 	{
-		return build_cert_body(EAC1_1_obj<Derived>::tbs_bits);
+		return build_cert_body(EAC1_1_obj!Derived.tbs_bits);
 	}
 
 

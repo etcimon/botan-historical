@@ -206,7 +206,7 @@ void check_signature(in Vector!ubyte tbs_response,
 	const Vector!string sig_info =
 		splitter(oids.lookup(sig_algo.oid), '/');
 	
-	if (sig_info.length != 2 || sig_info[0] != pub_key.algo_name())
+	if (sig_info.length != 2 || sig_info[0] != pub_key.algo_name)
 		throw new Exception("Information in OCSP response does not match cert");
 	
 	string padding = sig_info[1];

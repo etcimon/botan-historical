@@ -22,7 +22,7 @@ import future;
 class RW_PublicKey : IF_Scheme_PublicKey
 {
 public:
-	string algo_name() const { return "RW"; }
+	@property string algo_name() const { return "RW"; }
 
 	this(in AlgorithmIdentifier alg_id,
 					 in SafeVector!ubyte key_bits)
@@ -68,10 +68,10 @@ public:
 	     size_t bits, size_t exp = 2)
 	{
 		if (bits < 1024)
-			throw new Invalid_Argument(algo_name() ~ ": Can't make a key that is only " ~
+			throw new Invalid_Argument(algo_name ~ ": Can't make a key that is only " ~
 			                           std.conv.to!string(bits) ~ " bits long");
 		if (exp < 2 || exp % 2 == 1)
-			throw new Invalid_Argument(algo_name() ~ ": Invalid encryption exponent");
+			throw new Invalid_Argument(algo_name ~ ": Invalid encryption exponent");
 		
 		e = exp;
 		

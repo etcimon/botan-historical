@@ -17,7 +17,7 @@ import botan.utils.parsing;
 import botan.codec.pem;
 import std.algorithm;
 import botan.utils.types;
-import vector;
+import botan.utils.types;
 
 /**
 * This class represents abstract X.509 signed objects as
@@ -108,7 +108,7 @@ public:
 			Vector!string sig_info =
 				splitter(oids.lookup(sig_algo.oid), '/');
 			
-			if (sig_info.length != 2 || sig_info[0] != pub_key.algo_name())
+			if (sig_info.length != 2 || sig_info[0] != pub_key.algo_name)
 				return false;
 			
 			string padding = sig_info[1];

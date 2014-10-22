@@ -17,7 +17,7 @@ import std.algorithm;
 * Converts arbitrary binary data to hex strings, optionally with
 * newlines inserted
 */
-class Hex_Encoder : Filter
+final class Hex_Encoder : Filter
 {
 public:
 	/**
@@ -25,7 +25,7 @@ public:
 	*/
 	enum Case { Uppercase, Lowercase };
 
-	string name() const { return "Hex_Encoder"; }
+	@property string name() const { return "Hex_Encoder"; }
 
 	/*
 	* Convert some data into hex format
@@ -133,10 +133,10 @@ private:
 /**
 * Converts hex strings to bytes
 */
-class Hex_Decoder : Filter
+final class Hex_Decoder : Filter
 {
 public:
-	string name() const { return "Hex_Decoder"; }
+	@property string name() const { return "Hex_Decoder"; }
 
 	/*
 	* Convert some data from hex format
@@ -178,11 +178,11 @@ public:
 	{
 		size_t consumed = 0;
 		size_t written = hex_decode(&output[0],
-		cast(string)(input[0]),
-		position,
-		consumed,
-		checking != FULL_CHECK);
-		
+									cast(string)(input[0]),
+									position,
+									consumed,
+									checking != FULL_CHECK);
+									
 		send(output, written);
 		
 		const bool not_full_bytes = consumed != position;

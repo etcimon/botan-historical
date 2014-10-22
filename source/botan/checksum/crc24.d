@@ -11,11 +11,11 @@ import botan.hash.hash;
 /**
 * 24-bit cyclic redundancy check
 */
-class CRC24 : HashFunction
+final class CRC24 : HashFunction
 {
 public:
-	string name() const { return "CRC24"; }
-	size_t output_length() const { return 3; }
+	@property string name() const { return "CRC24"; }
+	@property size_t output_length() const { return 3; }
 	HashFunction clone() const { return new CRC24; }
 
 	void clear() { crc = 0xB704CE; }

@@ -13,7 +13,7 @@ import botan.utils.bit_ops;
 import botan.utils.parsing;
 
 import string;
-import vector;
+import botan.utils.types;
 
 
 /**

@@ -183,7 +183,7 @@ public:
 		zap(DK);
 	}
 
-	string name() const { return "AES-128"; }
+	@property string name() const { return "AES-128"; }
 	BlockCipher clone() const { return new AES_128_NI; }
 private:
 	/*
@@ -421,7 +421,7 @@ public:
 		zap(EK);
 		zap(DK);
 	}
-	string name() const { return "AES-192"; }
+	@property string name() const { return "AES-192"; }
 	BlockCipher clone() const { return new AES_192_NI; }
 private:
 	/*
@@ -663,7 +663,7 @@ public:
 		zap(DK);
 	}
 
-	string name() const { return "AES-256"; }
+	@property string name() const { return "AES-256"; }
 	BlockCipher clone() const { return new AES_256_NI; }
 private:
 	/*

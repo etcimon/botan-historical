@@ -7,7 +7,7 @@
 module botan.pbe.factory;
 
 import botan.pbe.pbe;
-import vector;
+import botan.utils.types;
 import string;
 import std.datetime;
 import botan.asn1.oid_lookup.oids;
@@ -35,7 +35,7 @@ PBE get_pbe(in string algo_spec,
 {
 	SCAN_Name request(algo_spec);
 	
-	const string pbe = request.algo_name();
+	const string pbe = request.algo_name;
 	string digest_name = request.arg(0);
 	const string cipher = request.arg(1);
 	
@@ -88,7 +88,7 @@ PBE get_pbe(in OID pbe_oid,
 {
 	SCAN_Name request(oids.lookup(pbe_oid));
 	
-	const string pbe = request.algo_name();
+	const string pbe = request.algo_name;
 	
 	static if (BOTAN_HAS_PBE_PKCS_V20) {
 		if (pbe == "PBE-PKCS5v20")

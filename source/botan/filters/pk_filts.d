@@ -11,7 +11,7 @@ import botan.pubkey.pubkey;
 /**
 * PK_Encryptor Filter
 */
-class PK_Encryptor_Filter : Filter
+final class PK_Encryptor_Filter : Filter
 {
 public:
 	/*
@@ -47,7 +47,7 @@ private:
 /**
 * PK_Decryptor Filter
 */
-class PK_Decryptor_Filter : Filter
+final class PK_Decryptor_Filter : Filter
 {
 public:
 	/*
@@ -77,7 +77,7 @@ private:
 /**
 * PK_Signer Filter
 */
-class PK_Signer_Filter : Filter
+final class PK_Signer_Filter : Filter
 {
 public:
 	/*
@@ -113,7 +113,7 @@ private:
 /**
 * PK_Verifier Filter
 */
-class PK_Verifier_Filter : Filter
+final class PK_Verifier_Filter : Filter
 {
 public:
 	/*
@@ -153,11 +153,11 @@ public:
 	
 
 
-	this(PK_Verifier* v) { verifier = v; }
+	this(ref PK_Verifier v) { verifier = v; }
 	/*
 	* PK_Verifier_Filter Constructor
 	*/
-	this(PK_Verifier* v, in ubyte* sig,
+	this(ref PK_Verifier v, in ubyte* sig,
 	     size_t length)
 	{
 		verifier = v;
@@ -167,7 +167,7 @@ public:
 	/*
 	* PK_Verifier_Filter Constructor
 	*/
-	this(PK_Verifier* v,
+	this(ref PK_Verifier v,
 	     in SafeVector!ubyte sig) 
 	{
 		verifier = v;
@@ -176,6 +176,6 @@ public:
 
 	~this() { delete verifier; }
 private:
-	PK_Verifier* verifier;
+	PK_Verifier verifier;
 	SafeVector!ubyte signature;
 };

@@ -11,7 +11,7 @@ import botan.algo_base.key_spec;
 import botan.utils.exceptn;
 import botan.algo_base.symkey;
 import string;
-import vector;
+import botan.utils.types;
 
 /**
 * Interface for general transformations on data
@@ -22,9 +22,8 @@ public:
 	/**
 	* Begin processing a message.
 	* @param nonce the per message nonce
-	*/
-	
-	SafeVector!ubyte start_vec(Alloc)(in Vector!( ubyte, Alloc ) nonce)
+	*/	
+	final SafeVector!ubyte start_vec(Alloc)(in Vector!( ubyte, Alloc ) nonce)
 	{
 		return start(&nonce[0], nonce.length);
 	}
@@ -88,7 +87,7 @@ public:
 	*/
 	abstract string provider() const { return "core"; }
 
-	abstract string name() const;
+	abstract @property string name() const;
 
 	abstract void clear();
 
@@ -108,17 +107,17 @@ public:
 	* @param length the key length to be checked.
 	* @return true if the key length is valid.
 	*/
-	bool valid_keylength(size_t length) const
+	final bool valid_keylength(size_t length) const
 	{
 		return key_spec().valid_keylength(length);
 	}
 
-	void set_key(Alloc)(in Vector!( ubyte, Alloc ) key)
+	final void set_key(Alloc)(in Vector!( ubyte, Alloc ) key)
 	{
 		set_key(&key[0], key.length);
 	}
 
-	void set_key(in SymmetricKey key)
+	final void set_key(in SymmetricKey key)
 	{
 		set_key(key.begin(), key.length());
 	}
@@ -128,7 +127,7 @@ public:
 	* @param key contains the key material
 	* @param length in bytes of key param
 	*/
-	void set_key(in ubyte* key, size_t length)
+	final void set_key(in ubyte* key, size_t length)
 	{
 		if (!valid_keylength(length))
 			throw new Invalid_Key_Length(name(), length);

@@ -7,7 +7,7 @@
 module botan.hash.par_hash;
 
 import botan.hash.hash;
-import vector;
+import botan.utils.types;
 import botan.utils.parsing;
 
 /**
@@ -28,12 +28,12 @@ public:
 	/*
 	* Return the name of this type
 	*/
-	string name() const
+	@property string name() const
 	{
 		Vector!string names;
 		
 		foreach (hash; hashes)
-			names.push_back(hash.name());
+			names.push_back(hash.name);
 		
 		return "Parallel(" ~ string_join(names, ',') ~ ")";
 	}
@@ -54,12 +54,12 @@ public:
 	/*
 	* Return output size
 	*/
-	size_t output_length() const
+	@property size_t output_length() const
 	{
 		size_t sum = 0;
 		
 		foreach (hash; hashes)
-			sum += hash.output_length();
+			sum += hash.output_length;
 		return sum;
 	}
 
@@ -100,7 +100,7 @@ private:
 		foreach (hash; hashes)
 		{
 			hash.flushInto(output + offset);
-			offset += hash.output_length();
+			offset += hash.output_length;
 		}
 	}
 	Vector!( HashFunction ) hashes;

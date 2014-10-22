@@ -69,7 +69,7 @@ public:
 	}
 
 
-	string name() const { return "X942_PRF(" ~ key_wrap_oid ~ ")"; }
+	@property string name() const { return "X942_PRF(" ~ key_wrap_oid ~ ")"; }
 	KDF clone() const { return new X942_PRF(key_wrap_oid); }
 	/*
 	* X9.42 Constructor

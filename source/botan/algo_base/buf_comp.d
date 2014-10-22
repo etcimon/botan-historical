@@ -20,20 +20,26 @@ public:
 	/**
 	* @return length of the output of this function in bytes
 	*/
-	abstract size_t output_length() const;
+	abstract @property size_t output_length() const;
+
+	/**
+	* Add new input to process.
+	* @param input the input to process as a ubyte array
+	*/
+	final void update(in ubyte[] input) { add_data(input.ptr, input.length); }
 
 	/**
 	* Add new input to process.
 	* @param input the input to process as a ubyte array
 	* @param length of param in in bytes
 	*/
-	void update(in ubyte* input, size_t length) { add_data(input, length); }
+	final void update(in ubyte* input, size_t length) { add_data(input, length); }
 
 	/**
 	* Add new input to process.
 	* @param input the input to process as a SafeVector
 	*/
-	void update(in SafeVector!ubyte input)
+	final void update(in SafeVector!ubyte input)
 	{
 		add_data(&input[0], input.length);
 	}
@@ -42,7 +48,7 @@ public:
 	* Add new input to process.
 	* @param input the input to process as a Vector
 	*/
-	void update(in Vector!ubyte input)
+	final void update(in Vector!ubyte input)
 	{
 		add_data(&input[0], input.length);
 	}
@@ -51,7 +57,7 @@ public:
 	* Add an integer in big-endian order
 	* @param input the value
 	*/
-	void update_be(T)(in T input)
+	final void update_be(T)(in T input)
 	{
 		for (size_t i = 0; i != (T).sizeof; ++i)
 		{
@@ -66,7 +72,7 @@ public:
 	* as a ubyte array based on
 	* the strings encoding.
 	*/
-	void update(in string str)
+	final void update(in string str)
 	{
 		add_data(&str, str.length);
 	}
@@ -75,7 +81,7 @@ public:
 	* Process a single ubyte.
 	* @param input the ubyte to process
 	*/
-	void update(ubyte input) { add_data(&input, 1); }
+	final void update(ubyte input) { add_data(&input, 1); }
 
 	/**
 	* Complete the computation and retrieve the
@@ -83,14 +89,24 @@ public:
 	* @param output The ubyte array to be filled with the result.
 	* Must be of length output_length()
 	*/
-	void flushInto(ubyte* output) { final_result(output); }
+	final void flushInto(ref ubyte[] output) 
+	in { output.length == output_length; }
+	body { final_result(output.ptr); }
+
+	/**
+	* Complete the computation and retrieve the
+	* final result.
+	* @param output The ubyte array to be filled with the result.
+	* Must be of length output_length()
+	*/
+	final void flushInto(ubyte* output) { final_result(output); }
 
 	/**
 	* Complete the computation and retrieve the
 	* final result.
 	* @return SafeVector holding the result
 	*/
-	SafeVector!ubyte flush()
+	final SafeVector!ubyte flush()
 	{
 		SafeVector!ubyte output = SafeVector!ubyte(output_length());
 		final_result(&output[0]);
@@ -104,7 +120,20 @@ public:
 	* @param length the length of the ubyte array
 	* @result the result of the call to flush()
 	*/
-	SafeVector!ubyte process(in ubyte* input, size_t length)
+	final SafeVector!ubyte process(in ubyte[] input)
+	{
+		add_data(input);
+		return flush();
+	}
+
+	/**
+	* Update and finalize computation. Does the same as calling update()
+	* and flush() consecutively.
+	* @param input the input to process as a ubyte array
+	* @param length the length of the ubyte array
+	* @result the result of the call to flush()
+	*/
+	final SafeVector!ubyte process(in ubyte* input, size_t length)
 	{
 		add_data(input, length);
 		return flush();
@@ -116,7 +145,7 @@ public:
 	* @param input the input to process
 	* @result the result of the call to flush()
 	*/
-	SafeVector!ubyte process(in SafeVector!ubyte input)
+	final SafeVector!ubyte process(in SafeVector!ubyte input)
 	{
 		add_data(input[]);
 		return flush();
@@ -128,7 +157,7 @@ public:
 	* @param input the input to process
 	* @result the result of the call to flush()
 	*/
-	SafeVector!ubyte process(in Vector!ubyte input)
+	final SafeVector!ubyte process(in Vector!ubyte input)
 	{
 		add_data(input[]);
 		return flush();
@@ -140,7 +169,7 @@ public:
 	* @param input the input to process as a string
 	* @result the result of the call to flush()
 	*/
-	SafeVector!ubyte process(in string input)
+	final SafeVector!ubyte process(in string input)
 	{
 		update(input);
 		return flush();

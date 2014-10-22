@@ -18,10 +18,10 @@ import etc.c.zlib;
 /**
 * Zlib Compression Filter
 */
-class Zlib_Compression : Filter
+final class Zlib_Compression : Filter
 {
 public:
-	string name() const { return "Zlib_Compression"; }
+	@property string name() const { return "Zlib_Compression"; }
 
 	/*
 	* Compress Input with Zlib
@@ -145,10 +145,10 @@ private:
 /**
 * Zlib Decompression Filter
 */
-class Zlib_Decompression : Filter
+final class Zlib_Decompression : Filter
 {
 public:
-	string name() const { return "Zlib_Decompression"; }
+	@property string name() const { return "Zlib_Decompression"; }
 
 	/*
 	* Decompress Input with Zlib

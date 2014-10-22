@@ -13,18 +13,18 @@ import botan.utils.xor_buf;
 /**
 * CMAC, also known as OMAC1
 */
-class CMAC : MessageAuthenticationCode
+final class CMAC : MessageAuthenticationCode
 {
 public:
 	/*
 	* Return the name of this type
 	*/
-	string name() const
+	@property string name() const
 	{
-		return "CMAC(" ~ m_cipher.name() ~ ")";
+		return "CMAC(" ~ m_cipher.name ~ ")";
 	}
 
-	size_t output_length() const { return m_cipher.block_size(); }
+	@property size_t output_length() const { return m_cipher.block_size; }
 	/*
 	* Return a clone of this object
 	*/
@@ -100,12 +100,12 @@ public:
 	this(BlockCipher cipher)
 	{
 		m_cipher = cipher;
-		if (m_cipher.block_size() !=  8 && m_cipher.block_size() != 16 &&
-		    m_cipher.block_size() != 32 && m_cipher.block_size() != 64)
+		if (m_cipher.block_size !=  8 && m_cipher.block_size != 16 &&
+		    m_cipher.block_size != 32 && m_cipher.block_size != 64)
 		{
 			throw new Invalid_Argument("CMAC cannot use the " ~
-			                           std.conv.to!string(m_cipher.block_size() * 8) +
-			                           " bit cipher " ~ m_cipher.name());
+			                           std.conv.to!string(m_cipher.block_size * 8) +
+			                           " bit cipher " ~ m_cipher.name);
 		}
 		
 		m_state.resize(output_length());

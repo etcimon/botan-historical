@@ -56,9 +56,9 @@ public:
 		m_R_pos = 0;
 	}
 
-	string name() const
+	@property string name() const
 	{
-		return "X9.31(" ~ m_cipher.name() ~ ")";
+		return "X9.31(" ~ m_cipher.name ~ ")";
 	}
 
 	void reseed(size_t poll_bits)
@@ -83,7 +83,7 @@ public:
 	{
 		m_cipher = cipher;
 		m_prng = prng;
-		m_R = m_cipher.block_size();
+		m_R = m_cipher.block_size;
 		m_R_pos = 0;
 	}
 
@@ -93,7 +93,7 @@ private:
 	*/
 	void rekey()
 	{
-		const size_t BLOCK_SIZE = m_cipher.block_size();
+		const size_t BLOCK_SIZE = m_cipher.block_size;
 		
 		if (m_prng.is_seeded())
 		{
@@ -112,7 +112,7 @@ private:
 	*/
 	void update_buffer()
 	{
-		const size_t BLOCK_SIZE = m_cipher.block_size();
+		const size_t BLOCK_SIZE = m_cipher.block_size;
 		
 		SafeVector!ubyte DT = m_prng.random_vec(BLOCK_SIZE);
 		m_cipher.encrypt(DT);

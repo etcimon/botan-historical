@@ -144,17 +144,17 @@ package:
 	/**
 	* @return block size of inputs
 	*/
-	size_t buffered_block_size() const { return main_block_mod; }
+	final size_t buffered_block_size() const { return main_block_mod; }
 
 	/**
 	* @return current position in the buffer
 	*/
-	size_t current_position() const { return buffer_pos; }
+	final size_t current_position() const { return buffer_pos; }
 
 	/**
 	* Reset the buffer position
 	*/
-	void buffer_reset() { buffer_pos = 0; }
+	final void buffer_reset() { buffer_pos = 0; }
 private:
 	size_t main_block_mod, final_minimum;
 

@@ -12,7 +12,7 @@ import botan.tls.tls_handshake_state;
 import botan.tls.tls_messages;
 import botan.internal.stl_util;
 import botan.utils.types;
-import vector;
+import botan.utils.types;
 
 /**
 * SSL/TLS Client
@@ -341,7 +341,7 @@ private:
 			
 			Unique!Public_Key peer_key = server_certs[0].subject_public_key();
 			
-			if (peer_key.algo_name() != state.ciphersuite().sig_algo())
+			if (peer_key.algo_name != state.ciphersuite().sig_algo())
 				throw new TLS_Exception(Alert.ILLEGAL_PARAMETER,
 				                        "Certificate key type did not match ciphersuite");
 			

@@ -20,7 +20,7 @@ import future;
 class NR_PublicKey : DL_Scheme_PublicKey
 {
 public:
-	string algo_name() const { return "NR"; }
+	@property string algo_name() const { return "NR"; }
 
 	DL_Group.Format group_format() const { return DL_Group.ANSI_X9_57; }
 

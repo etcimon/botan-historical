@@ -13,7 +13,7 @@ import botan.pubkey.x509_key;
 import botan.filters.pipe;
 import botan.pubkey.pubkey;
 import botan.asn1.oid_lookup.oids;
-import vector;
+import botan.utils.types;
 
 /**
 * This class represents abstract signed EAC object
@@ -64,7 +64,7 @@ public:
 			Vector!string sig_info =
 				splitter(oids.lookup(sig_algo.oid), '/');
 			
-			if (sig_info.length != 2 || sig_info[0] != pub_key.algo_name())
+			if (sig_info.length != 2 || sig_info[0] != pub_key.algo_name)
 			{
 				return false;
 			}

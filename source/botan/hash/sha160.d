@@ -17,8 +17,8 @@ import botan.utils.rotate;
 class SHA_160 : MDx_HashFunction
 {
 public:
-	string name() const { return "SHA-160"; }
-	size_t output_length() const { return 20; }
+	@property string name() const { return "SHA-160"; }
+	@property size_t output_length() const { return 20; }
 	HashFunction clone() const { return new SHA_160; }
 
 	/*
@@ -131,7 +131,7 @@ package:
 			D = (digest[3] += D);
 			E = (digest[4] += E);
 			
-			input += hash_block_size();
+			input += hash_block_size;
 		}
 	}
 

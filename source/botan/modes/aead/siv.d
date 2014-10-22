@@ -60,7 +60,7 @@ public:
 		set_associated_data_n(0, ad, ad_len);
 	}
 
-	override string name() const
+	override @property string name() const
 	{
 		return m_name;
 	}
@@ -99,7 +99,7 @@ public:
 package:
 	this(BlockCipher cipher) 
 	{
-		m_name = cipher.name() ~ "/SIV";
+		m_name = cipher.name ~ "/SIV";
 		m_ctr = new CTR_BE(cipher.clone());
 		m_cmac = new CMAC(cipher);
 	}

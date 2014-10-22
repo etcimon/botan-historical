@@ -28,7 +28,7 @@ public:
 	}
 
 
-	string name() const { return "KDF1(" ~ hash.name() ~ ")"; }
+	@property string name() const { return "KDF1(" ~ hash.name ~ ")"; }
 	KDF clone() const { return new KDF1(hash.clone()); }
 
 	this(HashFunction h) 

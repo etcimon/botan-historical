@@ -50,7 +50,7 @@ public:
 	void expand(ubyte* output, size_t output_len,
 	            in ubyte* info, size_t info_len)
 	{
-		if (output_len > m_prf.output_length() * 255)
+		if (output_len > m_prf.output_length * 255)
 			throw new Invalid_Argument("HKDF requested output too large");
 		
 		ubyte counter = 1;
@@ -72,9 +72,9 @@ public:
 	}
 
 
-	string name() const
+	@property string name() const
 	{
-		return "HKDF(" ~ m_prf.name() ~ ")";
+		return "HKDF(" ~ m_prf.name ~ ")";
 	}
 
 	void clear()

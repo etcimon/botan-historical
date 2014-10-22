@@ -28,15 +28,6 @@ import std.datetime;
 struct Session
 {
 public:
-
-	/**
-	* Uninitialized session
-	*/
-	this() 
-	{
-		m_start_time = SysTime.min;
-	}
-
 	/**
 	* New session (sets session start time)
 	*/
@@ -132,7 +123,7 @@ public:
 	{
 		SafeVector!ubyte der = pem.decode_check_label(pem, "SSL SESSION");
 		
-		this = Session(&der[0], der.length);
+		this(&der[0], der.length);
 	}
 
 	/**

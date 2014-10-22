@@ -30,7 +30,7 @@ public:
 		*/
 		Unique!HashFunction hash = get_hash("SHA-160");
 		
-		m_hash_id = AlgorithmIdentifier(hash.name(), AlgorithmIdentifier.USE_NULL_PARAM);
+		m_hash_id = AlgorithmIdentifier(hash.name, AlgorithmIdentifier.USE_NULL_PARAM);
 		m_issuer_key_hash = unlock(hash.process(extract_key_bitstr(issuer)));
 		m_issuer_dn_hash = unlock(hash.process(subject.raw_issuer_dn()));
 		m_subject_serial = BigInt.decode(subject.serial_number());

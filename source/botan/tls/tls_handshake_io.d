@@ -15,7 +15,7 @@ import botan.tls.tls_seq_numbers;
 import botan.utils.exceptn;
 import std.algorithm : count;
 import functional;
-import vector;
+import botan.utils.types;
 import deque;
 import map;
 import set;

@@ -15,8 +15,8 @@ import botan.utils.rotate;
 class MD4 : MDx_HashFunction
 {
 public:
-	string name() const { return "MD4"; }
-	size_t output_length() const { return 16; }
+	@property string name() const { return "MD4"; }
+	@property size_t output_length() const { return 16; }
 	HashFunction clone() const { return new MD4; }
 
 	/*
@@ -83,7 +83,7 @@ package:
 			C = (digest[2] += C);
 			D = (digest[3] += D);
 			
-			input += hash_block_size();
+			input += hash_block_size;
 		}
 	}
 
@@ -92,7 +92,7 @@ package:
 	*/
 	void copy_out(ubyte* output)
 	{
-		for (size_t i = 0; i != output_length(); i += 4)
+		for (size_t i = 0; i != output_length; i += 4)
 			store_le(digest[i/4], output + i);
 	}
 

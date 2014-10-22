@@ -36,7 +36,7 @@ public:
 		if (!valid_iv_length(iv_len))
 			throw new Invalid_IV_Length(name(), iv_len);
 		
-		const size_t bs = m_cipher.block_size();
+		const size_t bs = m_cipher.block_size;
 		
 		zeroise(m_counter);
 		
@@ -57,16 +57,16 @@ public:
 	}
 
 	bool valid_iv_length(size_t iv_len) const
-	{ return (iv_len <= m_cipher.block_size()); }
+	{ return (iv_len <= m_cipher.block_size); }
 
 	Key_Length_Specification key_spec() const
 	{
 		return m_cipher.key_spec();
 	}
 
-	string name() const
+	@property string name() const
 	{
-		return ("CTR-BE(" ~ m_cipher.name() ~ ")");
+		return ("CTR-BE(" ~ m_cipher.name ~ ")");
 	}
 
 	CTR_BE* clone() const
@@ -86,7 +86,7 @@ public:
 	this(BlockCipher ciph)
 	{
 		m_cipher = ciph;
-		m_counter = 256 * m_cipher.block_size();
+		m_counter = 256 * m_cipher.block_size;
 		m_pad = m_counter.length;
 		m_pad_pos = 0;
 	}
@@ -104,7 +104,7 @@ private:
 	*/
 	void increment_counter()
 	{
-		const size_t bs = m_cipher.block_size();
+		const size_t bs = m_cipher.block_size;
 		
 		/*
 	* Each counter value always needs to be incremented by 256,

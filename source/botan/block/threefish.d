@@ -101,7 +101,7 @@ public:
 		zeroise(m_T);
 	}
 
-	override string name() const { return "Threefish-512"; }
+	override @property string name() const { return "Threefish-512"; }
 	override BlockCipher clone() const { return new Threefish_512; }
 
 	this() {

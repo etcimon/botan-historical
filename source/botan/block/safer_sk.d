@@ -100,7 +100,7 @@ public:
 	/*
 	* Return the name of this type
 	*/
-	string name() const
+	@property string name() const
 	{
 		return "SAFER-SK(" ~ std.conv.to!string(rounds) ~ ")";
 	}

@@ -15,12 +15,12 @@ import botan.utils.rounding;
 /**
 * PKCS #5 PBKDF2
 */
-class PKCS5_PBKDF2 : PBKDF
+final class PKCS5_PBKDF2 : PBKDF
 {
 public:
-	override string name() const
+	override @property string name() const
 	{
-		return "PBKDF2(" ~ mac.name() ~ ")";
+		return "PBKDF2(" ~ mac.name ~ ")";
 	}
 
 	override PBKDF clone() const
@@ -57,16 +57,16 @@ public:
 		
 		ubyte* T = &key[0];
 		
-		SafeVector!ubyte U = SafeVector!ubyte(mac.output_length());
+		SafeVector!ubyte U = SafeVector!ubyte(mac.output_length);
 		
-		const size_t blocks_needed = round_up(key_len, mac.output_length()) / mac.output_length();
+		const size_t blocks_needed = round_up(key_len, mac.output_length) / mac.output_length;
 		
 		Duration dur_per_block = loop_for / blocks_needed;
 		
 		uint counter = 1;
 		while(key_len)
 		{
-			size_t T_size = std.algorithm.min(mac.output_length(), key_len);
+			size_t T_size = std.algorithm.min(mac.output_length, key_len);
 			
 			mac.update(salt, salt_len);
 			mac.update_be(counter);

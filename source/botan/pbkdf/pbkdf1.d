@@ -16,7 +16,7 @@ import botan.utils.exceptn;
 * Can only generate a key up to the size of the hash output.
 * Unless needed for backwards compatability, use PKCS5_PBKDF2
 */
-class PKCS5_PBKDF1 : PBKDF
+final class PKCS5_PBKDF1 : PBKDF
 {
 public:
 	/**
@@ -28,9 +28,9 @@ public:
 		hash = hash_input;
 	}
 
-	string name() const
+	@property string name() const
 	{
-		return "PBKDF1(" ~ hash.name() ~ ")";
+		return "PBKDF1(" ~ hash.name ~ ")";
 	}
 
 	PBKDF clone() const
@@ -47,7 +47,7 @@ public:
 	                                          size_t iterations,
 	                                          Duration loop_for) const
 	{
-		if (key_len > hash.output_length())
+		if (key_len > hash.output_length)
 			throw new Invalid_Argument("PKCS5_PBKDF1: Requested output length too long");
 		
 		hash.update(passphrase);

@@ -8,6 +8,7 @@ module botan.math.numbertheory.reducer;
 
 import botan.math.numbertheory.numthry;
 import botan.math.mp.mp_core;
+
 /**
 * Modular Reducer (using Barrett's technique)
 */

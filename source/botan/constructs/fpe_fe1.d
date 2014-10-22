@@ -149,7 +149,7 @@ size_t rounds(in BigInt a, const ref BigInt b)
 /*
 * A simple round function based on HMAC(SHA-256)
 */
-class FPE_Encryptor
+final class FPE_Encryptor
 {
 public:
 	this(in SymmetricKey key,
@@ -192,6 +192,3 @@ private:
 	Unique!MessageAuthenticationCode mac;
 	Vector!ubyte mac_n_t;
 };
-
-
-

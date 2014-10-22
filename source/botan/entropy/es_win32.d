@@ -12,10 +12,10 @@ import core.sys.windows.windows;
 /**
 * Win32 Entropy Source
 */
-class Win32_EntropySource : EntropySource
+final class Win32_EntropySource : EntropySource
 {
 public:
-	string name() const { return "Win32 Statistics"; }
+	@property string name() const { return "Win32 Statistics"; }
 	/**
 * Win32 poll using stats functions including Tooltip32
 */

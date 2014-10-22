@@ -314,10 +314,10 @@ size_t block_size_of(in string name)
 	AlgorithmFactory af = global_state().algorithm_factory();
 	
 	if (const BlockCipher cipher = af.prototype_block_cipher(name))
-		return cipher.block_size();
+		return cipher.block_size;
 	
 	if (const HashFunction hash = af.prototype_hash_function(name))
-		return hash.hash_block_size();
+		return hash.hash_block_size;
 	
 	throw new Algorithm_Not_Found(name);
 }
@@ -335,10 +335,10 @@ size_t output_length_of(in string name)
 	AlgorithmFactory af = global_state().algorithm_factory();
 	
 	if (const HashFunction hash = af.prototype_hash_function(name))
-		return hash.output_length();
+		return hash.output_length;
 	
 	if (const MessageAuthenticationCode mac = af.prototype_mac(name))
-		return mac.output_length();
+		return mac.output_length;
 	
 	throw new Algorithm_Not_Found(name);
 }

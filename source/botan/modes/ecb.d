@@ -28,9 +28,9 @@ public:
 		return SafeVector!ubyte();
 	}
 
-	override string name() const
+	override @property string name() const
 	{
-		return cipher().name() ~ "/ECB/" ~ padding().name();
+		return cipher().name ~ "/ECB/" ~ padding().name;
 	}
 
 	override size_t update_granularity() const
@@ -62,10 +62,10 @@ package:
 	{
 		m_cipher = cipher;
 		m_padding = padding;
-		if (!m_padding.valid_blocksize(cipher.block_size()))
-			throw new Invalid_Argument("Padding " ~ m_padding.name() +
+		if (!m_padding.valid_blocksize(cipher.block_size))
+			throw new Invalid_Argument("Padding " ~ m_padding.name +
 			                           " cannot be used with " ~
-			                           cipher.name() ~ "/ECB");
+			                           cipher.name ~ "/ECB");
 	}
 
 	const BlockCipher cipher() const { return *m_cipher; }
@@ -99,7 +99,7 @@ public:
 		const size_t sz = buffer.length - offset;
 		ubyte* buf = &buffer[offset];
 		
-		const size_t BS = cipher().block_size();
+		const size_t BS = cipher().block_size;
 		
 		assert(sz % BS == 0, "ECB input is full blocks");
 		const size_t blocks = sz / BS;
@@ -112,7 +112,7 @@ public:
 		assert(buffer.length >= offset, "Offset is sane");
 		const size_t sz = buffer.length - offset;
 		
-		const size_t BS = cipher().block_size();
+		const size_t BS = cipher().block_size;
 		
 		const size_t bytes_in_final_block = sz % BS;
 		
@@ -126,7 +126,7 @@ public:
 
 	override size_t output_length(size_t input_length) const
 	{
-		return round_up(input_length, cipher().block_size());
+		return round_up(input_length, cipher().block_size);
 	}
 
 	override size_t minimum_final_size() const
@@ -152,7 +152,7 @@ public:
 		const size_t sz = buffer.length - offset;
 		ubyte* buf = &buffer[offset];
 		
-		const size_t BS = cipher().block_size();
+		const size_t BS = cipher().block_size;
 		
 		assert(sz % BS == 0, "Input is full blocks");
 		size_t blocks = sz / BS;
@@ -165,7 +165,7 @@ public:
 		assert(buffer.length >= offset, "Offset is sane");
 		const size_t sz = buffer.length - offset;
 		
-		const size_t BS = cipher().block_size();
+		const size_t BS = cipher().block_size;
 		
 		if (sz == 0 || sz % BS)
 			throw new Decoding_Error(name() ~ ": Ciphertext not a multiple of block size");
@@ -183,6 +183,6 @@ public:
 
 	override size_t minimum_final_size() const
 	{
-		return cipher().block_size();
+		return cipher().block_size;
 	}
 };

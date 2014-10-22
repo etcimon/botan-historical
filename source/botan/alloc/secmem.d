@@ -8,7 +8,7 @@ module botan.alloc.secmem;
 
 import botan.utils.mem_ops;
 import std.algorithm;
-import vector;
+import botan.utils.types;
 
 static if (BOTAN_HAS_LOCKING_ALLOCATOR)
   import botan.alloc.locking_allocator;

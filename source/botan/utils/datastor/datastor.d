@@ -10,7 +10,7 @@ import botan.alloc.secmem;
 import functional;
 import utility;
 import string;
-import vector;
+import botan.utils.types;
 import map;
 /**
 * Data Store

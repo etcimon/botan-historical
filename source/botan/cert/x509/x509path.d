@@ -13,7 +13,7 @@ import botan.pubkey.pubkey;
 import botan.asn1.oid_lookup.oids;
 import std.algorithm;
 import std.datetime;
-import vector;
+import botan.utils.types;
 import set;
 
 import iostream;

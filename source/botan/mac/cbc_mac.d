@@ -13,15 +13,15 @@ import std.algorithm;
 /**
 * CBC-MAC
 */
-class CBC_MAC : MessageAuthenticationCode
+final class CBC_MAC : MessageAuthenticationCode
 {
 public:
 	/*
 	* Return the name of this type
 	*/
-	string name() const
+	@property string name() const
 	{
-		return "CBC-MAC(" ~ m_cipher.name() ~ ")";
+		return "CBC-MAC(" ~ m_cipher.name ~ ")";
 	}
 
 	/*
@@ -32,7 +32,7 @@ public:
 		return new CBC_MAC(m_cipher.clone());
 	}
 
-	size_t output_length() const { return m_cipher.block_size(); }
+	@property size_t output_length() const { return m_cipher.block_size; }
 
 	/*
 	* Clear memory of sensitive data
@@ -55,7 +55,7 @@ public:
 	this(BlockCipher cipher)
 	{
 		m_cipher = cipher;
-		m_state = cipher.block_size();
+		m_state = cipher.block_size;
 	}
 
 

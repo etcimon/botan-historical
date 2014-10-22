@@ -19,7 +19,7 @@ private:
 		for (size_t i = 0; i != blocks; ++i)
 		{
 			botan_md5_x86_32_compress(&digest[0], input, &M[0]);
-			input += hash_block_size();
+			input += hash_block_size;
 		}
 	}
 
@@ -35,7 +35,7 @@ void botan_md5_x86_32_compress(uint[4]* digest,
 
 		ZEROIZE(ESI) ~
 
-		START_LOOP(.LOAD_INPUT) ~
+		START_LOOP(".LOAD_INPUT") ~
 		ADD_IMM(ESI, 4) ~
 
 		ASSIGN(EAX, ARRAY4(EBP, 0)) ~
@@ -49,7 +49,7 @@ void botan_md5_x86_32_compress(uint[4]* digest,
 		ASSIGN(ARRAY4_INDIRECT(EDI,ESI,-3), EBX) ~
 		ASSIGN(ARRAY4_INDIRECT(EDI,ESI,-2), ECX) ~
 		ASSIGN(ARRAY4_INDIRECT(EDI,ESI,-1), EDX) ~
-		LOOP_UNTIL_EQ(ESI, 16, .LOAD_INPUT) ~
+		LOOP_UNTIL_EQ(ESI, 16, ".LOAD_INPUT") ~
 
 		ASSIGN(EBP, ARG(1)) ~
 		ASSIGN(EAX, ARRAY4(EBP, 0)) ~

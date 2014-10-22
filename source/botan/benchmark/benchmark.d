@@ -14,7 +14,7 @@ import botan.hash.hash;
 import botan.mac.mac;
 import std.datetime;
 import std.conv;
-import vector;
+import botan.utils.types;
 import std.datetime;
 import botan.rng.rng;
 import map;

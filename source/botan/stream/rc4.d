@@ -47,7 +47,7 @@ public:
 	/*
 	* Return the name of this type
 	*/
-	string name() const
+	@property string name() const
 	{
 		if (SKIP == 0)	return "RC4";
 		if (SKIP == 256) return "MARK-4";

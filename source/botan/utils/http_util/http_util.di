@@ -7,7 +7,7 @@
 
 import botan.utils.types;
 import future;
-import vector;
+import botan.utils.types;
 import map;
 import std.datetime;
 import string;

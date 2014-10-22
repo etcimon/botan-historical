@@ -12,19 +12,32 @@ import botan.utils.types;
 /**
 * Camellia-128
 */
-class Camellia_128 : Block_Cipher_Fixed_Params!(16, 16)
+final class Camellia_128 : Block_Cipher_Fixed_Params!(16, 16)
 {
-	public:
-		void encrypt_n(ubyte* input, ubyte* output, size_t blocks) const;
-		void decrypt_n(ubyte* input, ubyte* output, size_t blocks) const;
+public:
+	void encrypt_n(ubyte* input, ubyte* output, size_t blocks) const
+	{
+		encrypt(input, output, blocks, SK, 9);
+	}
 
-		void clear();
-		string name() const { return "Camellia-128"; }
-		BlockCipher clone() const { return new Camellia_128; }
-	private:
-		void key_schedule(in ubyte* key);
+	void decrypt_n(ubyte* input, ubyte* output, size_t blocks) const
+	{
+		decrypt(input, output, blocks, SK, 9);
+	}
 
-		SafeVector!ulong SK;
+	void clear()
+	{
+		zap(SK);
+	}
+	@property string name() const { return "Camellia-128"; }
+	BlockCipher clone() const { return new Camellia_128; }
+private:
+	void key_schedule(in ubyte* key)
+	{
+		key_schedule(SK, key, length);
+	}
+
+	SafeVector!ulong SK;
 };
 
 /**
@@ -32,17 +45,30 @@ class Camellia_128 : Block_Cipher_Fixed_Params!(16, 16)
 */
 class Camellia_192 : Block_Cipher_Fixed_Params!(16, 24)
 {
-	public:
-		void encrypt_n(ubyte* input, ubyte* output, size_t blocks) const;
-		void decrypt_n(ubyte* input, ubyte* output, size_t blocks) const;
+public:
+	void encrypt_n(ubyte* input, ubyte* output, size_t blocks) const
+	{
+		encrypt(input, output, blocks, SK, 12);
+	}
 
-		void clear();
-		string name() const { return "Camellia-192"; }
-		BlockCipher clone() const { return new Camellia_192; }
-	private:
-		void key_schedule(in ubyte* key);
+	void decrypt_n(ubyte* input, ubyte* output, size_t blocks) const
+	{
+		decrypt(input, output, blocks, SK, 12);
+	}
 
-		SafeVector!ulong SK;
+	void clear()
+	{
+		zap(SK);
+	}
+	@property string name() const { return "Camellia-192"; }
+	BlockCipher clone() const { return new Camellia_192; }
+private:
+	void key_schedule(in ubyte* key)
+	{
+		key_schedule(SK, key, length);
+	}
+
+	SafeVector!ulong SK;
 };
 
 /**
@@ -50,79 +76,34 @@ class Camellia_192 : Block_Cipher_Fixed_Params!(16, 24)
 */
 class Camellia_256 : Block_Cipher_Fixed_Params!(16, 32)
 {
-	public:
-		void encrypt_n(ubyte* input, ubyte* output, size_t blocks) const;
-		void decrypt_n(ubyte* input, ubyte* output, size_t blocks) const;
+public:
+	void encrypt_n(ubyte* input, ubyte* output, size_t blocks) const
+	{
+		encrypt(input, output, blocks, SK, 12);
+	}
 
-		void clear();
-		string name() const { return "Camellia-256"; }
-		BlockCipher clone() const { return new Camellia_256; }
-	private:
-		void key_schedule(in ubyte* key);
+	void decrypt_n(ubyte* input, ubyte* output, size_t blocks) const
+	{
+		decrypt(input, output, blocks, SK, 12);
+	}
 
-		SafeVector!ulong SK;
+	void clear()
+	{
+		zap(SK);
+	}
+	@property string name() const { return "Camellia-256"; }
+	BlockCipher clone() const { return new Camellia_256; }
+private:
+	void key_schedule(in ubyte* key)
+	{
+		key_schedule(SK, key, length);
+	}
+
+	SafeVector!ulong SK;
 };
 
 
-void Camellia_128::encrypt_n(ubyte* input, ubyte* output, size_t blocks) const
-{
-Camellia_F::encrypt(input, output, blocks, SK, 9);
-}
-
-void Camellia_192::encrypt_n(ubyte* input, ubyte* output, size_t blocks) const
-{
-Camellia_F::encrypt(input, output, blocks, SK, 12);
-}
-
-void Camellia_256::encrypt_n(ubyte* input, ubyte* output, size_t blocks) const
-{
-Camellia_F::encrypt(input, output, blocks, SK, 12);
-}
-
-void Camellia_128::decrypt_n(ubyte* input, ubyte* output, size_t blocks) const
-{
-Camellia_F::decrypt(input, output, blocks, SK, 9);
-}
-
-void Camellia_192::decrypt_n(ubyte* input, ubyte* output, size_t blocks) const
-{
-Camellia_F::decrypt(input, output, blocks, SK, 12);
-}
-
-void Camellia_256::decrypt_n(ubyte* input, ubyte* output, size_t blocks) const
-{
-Camellia_F::decrypt(input, output, blocks, SK, 12);
-}
-
-void Camellia_128::key_schedule(in ubyte* key)
-{
-Camellia_F::key_schedule(SK, key, length);
-}
-
-void Camellia_192::key_schedule(in ubyte* key)
-{
-Camellia_F::key_schedule(SK, key, length);
-}
-
-void Camellia_256::key_schedule(in ubyte* key)
-{
-Camellia_F::key_schedule(SK, key, length);
-}
-
-void Camellia_128::clear()
-{
-	zap(SK);
-}
-
-void Camellia_192::clear()
-{
-	zap(SK);
-}
-
-void Camellia_256::clear()
-{
-	zap(SK);
-}
+private:
 
 /*
 * We use the slow ubyte-wise version of F in the first and last rounds

@@ -41,15 +41,15 @@ public:
 			                           std.conv.to!string(output_bits));
 	}
 
-	size_t hash_block_size() const { return bitrate / 8; }
-	size_t output_length() const { return output_bits / 8; }
+	@property size_t hash_block_size() const { return bitrate / 8; }
+	@property size_t output_length() const { return output_bits / 8; }
 
 	HashFunction clone() const
 	{
 		return new Keccak_1600(output_bits);
 	}
 
-	string name() const
+	@property string name() const
 	{
 		return "Keccak-1600(" ~ std.conv.to!string(output_bits) ~ ")";
 	}

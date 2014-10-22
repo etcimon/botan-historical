@@ -10,18 +10,18 @@ import botan.mac.mac;
 /**
 * A MAC only used in SSLv3. Do not use elsewhere! Use HMAC instead.
 */
-class SSL3_MAC : MessageAuthenticationCode
+final class SSL3_MAC : MessageAuthenticationCode
 {
 public:
 	/*
 	* Return the name of this type
 	*/
-	string name() const
+	@property string name() const
 	{
-		return "SSL3-MAC(" ~ m_hash.name() ~ ")";
+		return "SSL3-MAC(" ~ m_hash.name ~ ")";
 	}
 
-	size_t output_length() const { return m_hash.output_length(); }
+	@property size_t output_length() const { return m_hash.output_length; }
 
 	/*
 	* Return a clone of this object
@@ -44,7 +44,7 @@ public:
 
 	Key_Length_Specification key_spec() const
 	{
-		return Key_Length_Specification(m_hash.output_length());
+		return Key_Length_Specification(m_hash.output_length);
 	}
 
 	/**
@@ -53,8 +53,8 @@ public:
 	this(HashFunction hash)
 	{
 		m_hash = hash;
-		if (m_hash.hash_block_size() == 0)
-			throw new Invalid_Argument("SSL3-MAC cannot be used with " ~ m_hash.name());
+		if (m_hash.hash_block_size == 0)
+			throw new Invalid_Argument("SSL3-MAC cannot be used with " ~ m_hash.name);
 	}
 private:
 	/*
@@ -86,7 +86,7 @@ private:
 		
 		// Quirk to deal with specification bug
 		const size_t inner_hash_length =
-			(m_hash.name() == "SHA-160") ? 60 : m_hash.hash_block_size();
+			(m_hash.name == "SHA-160") ? 60 : m_hash.hash_block_size;
 		
 		m_ikey.resize(inner_hash_length);
 		m_okey.resize(inner_hash_length);

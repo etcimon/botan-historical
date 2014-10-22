@@ -17,11 +17,11 @@ import botan.utils.semaphore;
 /**
 * BitBucket is a filter which simply discards all inputs
 */
-class BitBucket : Filter
+final class BitBucket : Filter
 {
 	void write(in ubyte*, size_t) {}
 
-	string name() const { return "BitBucket"; }
+	@property string name() const { return "BitBucket"; }
 };
 
 /**
@@ -30,12 +30,12 @@ class BitBucket : Filter
 * through all the Filters contained in the Chain.
 */
 
-class Chain : Fanout_Filter
+final class Chain : Fanout_Filter
 {
 public:
 	void write(in ubyte* input, size_t length) { send(input, length); }
 
-	string name() const
+	@property string name() const
 	{
 		return "Chain";
 	}
@@ -79,10 +79,10 @@ public:
 class Fork : Fanout_Filter
 {
 public:
-	void write(in ubyte* input, size_t length) { send(input, length); }
-	void set_port(size_t n) { super.set_port(n); }
+	final void write(in ubyte* input, size_t length) { send(input, length); }
+	final void set_port(size_t n) { super.set_port(n); }
 
-	string name() const
+	@property string name() const
 	{
 		return "Fork";
 	}
@@ -115,7 +115,7 @@ public:
 class Threaded_Fork : Fork
 {
 public:
-	string name() const
+	@property string name() const
 	{
 		return "Threaded Fork";
 	}

@@ -124,7 +124,7 @@ public:
 		zap(RK);
 	}
 
-	string name() const { return "Twofish"; }
+	@property string name() const { return "Twofish"; }
 	BlockCipher clone() const { return new Twofish; }
 private:
 	/*

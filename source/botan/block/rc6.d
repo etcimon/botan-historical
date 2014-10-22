@@ -117,7 +117,7 @@ public:
 		zap(S);
 	}
 
-	string name() const { return "RC6"; }
+	@property string name() const { return "RC6"; }
 	BlockCipher clone() const { return new RC6; }
 private:
 	/*

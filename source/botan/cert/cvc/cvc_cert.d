@@ -15,7 +15,7 @@ import string;
 /**
 * This class represents TR03110 (EAC) v1.1 CV Certificates
 */
-class EAC1_1_CVC : EAC1_1_gen_CVC!EAC1_1_CVC//Signed_Object
+final class EAC1_1_CVC : EAC1_1_gen_CVC!EAC1_1_CVC//Signed_Object
 {
 public:
 	/**

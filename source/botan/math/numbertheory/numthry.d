@@ -627,7 +627,7 @@ bool generate_dsa_primes(RandomNumberGenerator rng,
 	Unique!HashFunction hash =
 		af.make_hash_function("SHA-" ~ std.conv.to!string(qbits));
 	
-	const size_t HASH_SIZE = hash.output_length();
+	const size_t HASH_SIZE = hash.output_length;
 	
 	struct Seed
 	{

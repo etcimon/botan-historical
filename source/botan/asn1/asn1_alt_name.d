@@ -238,7 +238,7 @@ void encode_entries(DER_Encoder encoder = DER_Encoder(),
 	{
 		if (type == "RFC822" || type == "DNS" || type == "URI")
 		{
-			ASN1_String asn1_string(i.second, IA5_STRING);
+			ASN1_String asn1_string = ASN1_String(i.second, IA5_STRING);
 			encoder.add_object(tagging, ASN1_Tag.CONTEXT_SPECIFIC, asn1_string.iso_8859());
 		}
 		else if (type == "IP")

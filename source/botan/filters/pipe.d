@@ -97,6 +97,14 @@ public:
 		write(cast(const ubyte*)(input.data()), input.length);
 	}
 
+	/**
+	* Write input to the pipe, i.e. to its first filter.
+	* @param input the ubyte array containing the data to write
+	*/
+	void write(in ubyte[] input)
+	{
+		write(cast(const ubyte*)(input.ptr), input.length);
+	}
 
 	/**
 	* Write input to the pipe, i.e. to its first filter.
@@ -463,7 +471,7 @@ public:
 			throw new Invalid_State("Cannot prepend to a Pipe while it is processing");
 		if (!filter)
 			return;
-		if (cast(SecureQueue*)(filter))
+		if (cast(SecureQueue)(filter))
 			throw new Invalid_Argument("Pipe::prepend: SecureQueue cannot be used");
 		if (filter.owned)
 			throw new Invalid_Argument("Filters cannot be shared among multiple Pipes");
@@ -484,7 +492,7 @@ public:
 			throw new Invalid_State("Cannot append to a Pipe while it is processing");
 		if (!filter)
 			return;
-		if (cast(SecureQueue*)(filter))
+		if (cast(SecureQueue)(filter))
 			throw new Invalid_Argument("Pipe::append: SecureQueue cannot be used");
 		if (filter.owned)
 			throw new Invalid_Argument("Filters cannot be shared among multiple Pipes");
@@ -582,7 +590,7 @@ private:
 	*/
 	void destruct(Filter to_kill)
 	{
-		if (!to_kill || cast(SecureQueue*)(to_kill))
+		if (!to_kill || cast(SecureQueue)(to_kill))
 			return;
 		for (size_t j = 0; j != to_kill.total_ports(); ++j)
 			destruct(to_kill.next[j]);
@@ -595,11 +603,11 @@ private:
 	void find_endpoints(Filter f)
 	{
 		for (size_t j = 0; j != f.total_ports(); ++j)
-			if (f.next[j] && !cast(SecureQueue*)(f.next[j]))
+			if (f.next[j] && !cast(SecureQueue)(f.next[j]))
 				find_endpoints(f.next[j]);
 			else
 		{
-			SecureQueue* q = new SecureQueue;
+			SecureQueue q = new SecureQueue;
 			f.next[j] = q;
 			outputs.add(q);
 		}
@@ -613,7 +621,7 @@ private:
 		if (!f) return;
 		for (size_t j = 0; j != f.total_ports(); ++j)
 		{
-			if (f.next[j] && cast(SecureQueue*)(f.next[j]))
+			if (f.next[j] && cast(SecureQueue)(f.next[j]))
 				f.next[j] = null;
 			clear_endpoints(f.next[j]);
 		}
@@ -645,11 +653,11 @@ private:
 /*
 * A Filter that does nothing
 */
-class Null_Filter : Filter
+final class Null_Filter : Filter
 {
 public:
 	void write(in ubyte* input, size_t length)
 	{ send(input, length); }
 	
-	string name() const { return "Null"; }
+	@property string name() const { return "Null"; }
 };

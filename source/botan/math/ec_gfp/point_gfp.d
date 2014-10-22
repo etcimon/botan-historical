@@ -9,7 +9,7 @@
 module botan.math.ec_gfp.point_gfp;
 
 import botan.math.ec_gfp.curve_gfp;
-import vector;
+import botan.utils.types;
 import botan.math.numbertheory.numthry;
 import botan.math.numbertheory.reducer;
 import botan.math.mp.mp_core;
@@ -37,7 +37,7 @@ class Illegal_Point : Exception
 /**
 * This class represents one point on a curve of GF(p)
 */
-class PointGFp
+struct PointGFp
 {
 public:
 	typedef ubyte Compression_Type;
@@ -90,7 +90,7 @@ public:
 	{
 		if (this != &other)
 			this.swap(other);
-		return (this);
+		return this;
 	}
 
 	/**

@@ -7,7 +7,7 @@
 module botan.entropy.unix_procs;
 
 import botan.entropy.entropy_src;
-import vector;
+import botan.utils.types;
 import botan.utils.parsing;
 import std.algorithm;
 import core.sys.posix.sys.types;
@@ -25,10 +25,10 @@ import std.c.stdlib;
 * effective against local attackers as they can sample from the same
 * distribution.
 */
-class Unix_EntropySource : EntropySource
+final class Unix_EntropySource : EntropySource
 {
 public:
-	string name() const { return "Unix Process Runner"; }
+	@property string name() const { return "Unix Process Runner"; }
 
 	void poll(ref Entropy_Accumulator accum)
 	{
@@ -175,7 +175,7 @@ private:
 		return srcs;
 	}
 
-	class Unix_Process
+	struct Unix_Process
 	{
 	public:
 		int fd() const { return m_fd; }
@@ -252,9 +252,6 @@ private:
 			m_pid = -1;
 		}
 
-
-		this() {}
-
 		this(in Vector!string args) { spawn(args); }
 
 		~this() { shutdown(); }
@@ -264,9 +261,6 @@ private:
 			std.algorithm.swap(m_fd, other.m_fd);
 			std.algorithm.swap(m_pid, other.m_pid);
 		}
-
-		this(in Unix_Process);
-		void opAssign(in Unix_Process);
 	private:
 		int m_fd = -1;
 		pid_t m_pid = -1;
@@ -283,16 +277,16 @@ private:
 	const Vector!string m_trusted_paths;
 	const size_t m_concurrent;
 
-	Vector!( std::vector<string )> m_sources;
+	Vector!(Vector!string) m_sources;
 	size_t m_sources_idx = 0;
 
-	Vector!( Unix_Process ) m_procs;
+	Vector!Unix_Process m_procs;
 };
 
-class UnixProcessInfo_EntropySource : EntropySource
+final class UnixProcessInfo_EntropySource : EntropySource
 {
 public:
-	string name() const { return "Unix Process Info"; }
+	@property string name() const { return "Unix Process Info"; }
 
 	void poll(ref Entropy_Accumulator accum)
 	{

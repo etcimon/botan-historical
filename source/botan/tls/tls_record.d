@@ -21,7 +21,7 @@ import botan.libstate.libstate;
 import botan.utils.loadstor;
 import botan.mac.mac;
 import std.algorithm;
-import vector;
+import botan.utils.types;
 import std.datetime;
 
 alias Connection_Cipher_State = FreeListRef!Connection_Cipher_State_Impl;
@@ -80,7 +80,7 @@ public:
 			m_block_cipher = bc.clone();
 			m_block_cipher.set_key(cipher_key);
 			m_block_cipher_cbc_state = iv.bits_of();
-			m_block_size = bc.block_size();
+			m_block_size = bc.block_size;
 			
 			if (_version.supports_explicit_cbc_ivs())
 				m_iv_size = m_block_size;
@@ -151,9 +151,9 @@ public:
 
 	SafeVector!ubyte cbc_state() { return m_block_cipher_cbc_state; }
 
-	size_t block_size() const { return m_block_size; }
+	@property size_t block_size() const { return m_block_size; }
 
-	size_t mac_size() const { return m_mac.output_length(); }
+	size_t mac_size() const { return m_mac.output_length; }
 
 	size_t iv_size() const { return m_iv_size; }
 
@@ -268,7 +268,7 @@ void write_record(SafeVector!ubyte output,
 	
 	cipherstate.mac().update(msg, msg_length);
 	
-	const size_t block_size = cipherstate.block_size();
+	const size_t block_size = cipherstate.block_size;
 	const size_t iv_size = cipherstate.iv_size();
 	const size_t mac_size = cipherstate.mac_size();
 	
@@ -570,7 +570,7 @@ Connection_Cipher_State cipherstate,
 const BlockCipher bc)
 {
 	size_t record_len = record_contents.length;
-	const size_t block_size = cipherstate.block_size();
+	const size_t block_size = cipherstate.block_size;
 	
 	assert(record_len % block_size == 0, "Buffer is an even multiple of block size");
 	
@@ -646,7 +646,7 @@ void decrypt_record(SafeVector!ubyte output,
 			cbc_decrypt_record(record_contents, record_len, cipherstate, bc);
 			
 			pad_size = tls_padding_check(cipherstate.cipher_padding_single_byte(),
-			                             cipherstate.block_size(),
+			                             cipherstate.block_size,
 			                             record_contents, record_len);
 			
 			padding_bad = (pad_size == 0);

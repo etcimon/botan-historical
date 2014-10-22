@@ -91,7 +91,7 @@ public:
 	/**
 	* Return the name of this object
 	*/
-	abstract string name() const;
+	abstract @property string name() const;
 
 	/**
 	* Seed this RNG using the entropy sources it contains.
@@ -121,7 +121,7 @@ public:
 
 	override void clear() {}
 
-	override string name() const { return "Null_RNG"; }
+	override @property string name() const { return "Null_RNG"; }
 
 	override void reseed(size_t) {}
 	override bool is_seeded() const { return false; }
@@ -149,9 +149,9 @@ public:
 		m_rng.clear();
 	}
 
-	synchronized string name() const
+	synchronized @property string name() const
 	{
-		return m_rng.name();
+		return m_rng.name;
 	}
 
 	synchronized void reseed(size_t poll_bits)

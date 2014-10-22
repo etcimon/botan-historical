@@ -53,7 +53,7 @@ public:
 		zap(K2);
 	}
 
-	string name() const { return "DESX"; }
+	@property string name() const { return "DESX"; }
 	BlockCipher clone() const { return new DESX; }
 
 private:

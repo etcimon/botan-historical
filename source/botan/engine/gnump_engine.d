@@ -40,7 +40,7 @@ __gshared size_t gmp_alloc_refcnt;
 /**
 * Engine using GNU MP
 */
-class GMP_Engine : Engine
+final class GMP_Engine : Engine
 {
 public:
 	/*
@@ -149,7 +149,7 @@ public:
 /*
 * GMP Modular Exponentiator
 */
-class GMP_Modular_Exponentiator : Modular_Exponentiator
+final class GMP_Modular_Exponentiator : Modular_Exponentiator
 {
 public:
 	void set_base(in BigInt b) { base = b; }
@@ -261,7 +261,7 @@ public:
 };
 
 static if (BOTAN_HAS_DIFFIE_HELLMAN) {
-	class GMP_DH_KA_Operation : Key_Agreement
+	final class GMP_DH_KA_Operation : Key_Agreement
 	{
 	public:
 		this(in DH_PrivateKey dh) 
@@ -284,7 +284,7 @@ static if (BOTAN_HAS_DIFFIE_HELLMAN) {
 
 static if (BOTAN_HAS_DSA) {
 	
-	class GMP_DSA_Signature_Operation : Signature
+	final class GMP_DSA_Signature_Operation : Signature
 	{
 	public:
 		this(in DSA_PrivateKey dsa) 
@@ -343,7 +343,7 @@ static if (BOTAN_HAS_DSA) {
 	};
 	
 	
-	class GMP_DSA_Verification_Operation : Verification
+	final class GMP_DSA_Verification_Operation : Verification
 	{
 	public:
 		this(in DSA_PublicKey dsa) 
@@ -408,7 +408,7 @@ static if (BOTAN_HAS_DSA) {
 	
 	static if (BOTAN_HAS_RSA) {
 		
-		class GMP_RSA_Private_Operation : Signature, Decryption
+		final class GMP_RSA_Private_Operation : Signature, Decryption
 		{
 		public:
 			this(in RSA_PrivateKey rsa)
@@ -458,7 +458,7 @@ static if (BOTAN_HAS_DSA) {
 		};
 		
 		
-		class GMP_RSA_Public_Operation : Verification, Encryption
+		final class GMP_RSA_Public_Operation : Verification, Encryption
 		{
 		public:
 			this(in RSA_PublicKey rsa)

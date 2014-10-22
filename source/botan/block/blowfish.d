@@ -13,7 +13,7 @@ import botan.utils.loadstor;
 /**
 * Blowfish
 */
-class Blowfish : Block_Cipher_Fixed_Params!(8, 1, 56)
+final class Blowfish : Block_Cipher_Fixed_Params!(8, 1, 56)
 {
 public:
 	/*
@@ -136,7 +136,7 @@ public:
 		zap(S);
 	}
 
-	string name() const { return "Blowfish"; }
+	@property string name() const { return "Blowfish"; }
 	BlockCipher clone() const { return new Blowfish; }
 private:
 	/*

@@ -84,7 +84,7 @@ public:
 		zap(round_key);
 	}
 
-	string name() const { return "DES"; }
+	@property string name() const { return "DES"; }
 	BlockCipher clone() const { return new DES; }
 private:
 	/*
@@ -175,7 +175,7 @@ public:
 		zap(round_key);
 	}
 
-	string name() const { return "TripleDES"; }
+	@property string name() const { return "TripleDES"; }
 	BlockCipher clone() const { return new TripleDES; }
 private:
 	/*

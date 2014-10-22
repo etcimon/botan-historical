@@ -7,19 +7,19 @@
 module botan.engine.engine;
 
 import botan.engine.engine;
-import botan.algo_base.scan_name;
-import botan.block.block_cipher;
-import botan.stream.stream_cipher;
-import botan.hash.hash;
-import botan.mac.mac;
-import botan.pbkdf.pbkdf;
-import botan.math.numbertheory.pow_mod;
-import botan.pubkey.pk_keys;
-import botan.pubkey.pk_ops;
-import botan.algo_factory.algo_factory : AlgorithmFactory;
-
-class Keyed_Filter;
-class RandomNumberGenerator;
+public import botan.algo_base.scan_name;
+public import botan.block.block_cipher;
+public import botan.stream.stream_cipher;
+public import botan.hash.hash;
+public import botan.mac.mac;
+public import botan.pbkdf.pbkdf;
+public import botan.math.numbertheory.pow_mod;
+public import botan.pubkey.pk_keys;
+public import botan.pubkey.pk_ops;
+public import botan.rng.rng;
+public import botan.math.bigint.bigint;
+public import botan.filters.key_filt;
+public import botan.algo_factory.algo_factory : AlgorithmFactory;
 
 /**
 * Base class for all engines. All non-pure abstract functions simply

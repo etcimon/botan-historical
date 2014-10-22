@@ -22,7 +22,7 @@ private:
 		for (size_t i = 0; i != blocks; ++i)
 		{
 			botan_sha160_x86_64_compress(&digest[0], input, &W[0]);
-			input += hash_block_size();
+			input += hash_block_size;
 		}
 	}
 };

@@ -51,11 +51,11 @@ private:
 		if (other_key.empty())
 			throw new Invalid_State("DLIES: The other key was never set");
 		
-		SafeVector!ubyte output = SafeVector!ubyte(my_key.length + length + mac.output_length());
+		SafeVector!ubyte output = SafeVector!ubyte(my_key.length + length + mac.output_length);
 		buffer_insert(output, 0, my_key);
 		buffer_insert(output, my_key.length, input, length);
 		
-		SafeVector!ubyte vz(my_key.begin(), my_key.end());
+		SafeVector!ubyte vz = SafeVector!(my_key.begin(), my_key.end());
 		vz += ka.derive_key(0, other_key).bits_of();
 		
 		const size_t K_LENGTH = length + mac_keylen;
@@ -120,17 +120,17 @@ private:
 	*/
 	SafeVector!ubyte dec(in ubyte* msg, size_t length) const
 	{
-		if (length < my_key.length + mac.output_length())
+		if (length < my_key.length + mac.output_length)
 			throw new Decoding_Error("DLIES decryption: ciphertext is too short");
 		
-		const size_t CIPHER_LEN = length - my_key.length - mac.output_length();
+		const size_t CIPHER_LEN = length - my_key.length - mac.output_length;
 		
 		Vector!ubyte v(msg, msg + my_key.length);
 		
 		SafeVector!ubyte C(msg + my_key.length, msg + my_key.length + CIPHER_LEN);
 		
 		SafeVector!ubyte T(msg + my_key.length + CIPHER_LEN,
-		                   msg + my_key.length + CIPHER_LEN + mac.output_length());
+		                   msg + my_key.length + CIPHER_LEN + mac.output_length);
 		
 		SafeVector!ubyte vz(msg, msg + my_key.length);
 		vz += ka.derive_key(0, v).bits_of();

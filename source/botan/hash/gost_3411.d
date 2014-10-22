@@ -16,9 +16,9 @@ import botan.utils.xor_buf;
 class GOST_34_11 : HashFunction
 {
 public:
-	string name() const { return "GOST-R-34.11-94" ; }
-	size_t output_length() const { return 32; }
-	size_t hash_block_size() const { return 32; }
+	@property string name() const { return "GOST-R-34.11-94" ; }
+	@property size_t output_length() const { return 32; }
+	@property size_t hash_block_size() const { return 32; }
 	HashFunction clone() const { return new GOST_34_11; }
 
 	void clear()
@@ -204,22 +204,22 @@ private:
 		{
 			buffer_insert(buffer, position, input, length);
 			
-			if (position + length >= hash_block_size())
+			if (position + length >= hash_block_size)
 			{
 				compress_n(&buffer[0], 1);
-				input += (hash_block_size() - position);
-				length -= (hash_block_size() - position);
+				input += (hash_block_size - position);
+				length -= (hash_block_size - position);
 				position = 0;
 			}
 		}
 		
-		const size_t full_blocks = length / hash_block_size();
-		const size_t remaining	= length % hash_block_size();
+		const size_t full_blocks = length / hash_block_size;
+		const size_t remaining	= length % hash_block_size;
 		
 		if (full_blocks)
 			compress_n(input, full_blocks);
 		
-		buffer_insert(buffer, position, input + full_blocks * hash_block_size(), remaining);
+		buffer_insert(buffer, position, input + full_blocks * hash_block_size, remaining);
 		position += remaining;
 	}
 

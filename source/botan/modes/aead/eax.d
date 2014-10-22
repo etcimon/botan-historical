@@ -26,11 +26,11 @@ public:
 		if (!valid_nonce_length(nonce_len))
 			throw new Invalid_IV_Length(name(), nonce_len);
 		
-		m_nonce_mac = eax_prf(0, block_size(), *m_cmac, nonce, nonce_len);
+		m_nonce_mac = eax_prf(0, this.block_size, *m_cmac, nonce, nonce_len);
 		
 		m_ctr.set_iv(&m_nonce_mac[0], m_nonce_mac.length);
 		
-		for (size_t i = 0; i != block_size() - 1; ++i)
+		for (size_t i = 0; i != this.block_size - 1; ++i)
 			m_cmac.update(0);
 		m_cmac.update(2);
 		
@@ -40,12 +40,12 @@ public:
 
 	override void set_associated_data(in ubyte* ad, size_t length)
 	{
-		m_ad_mac = eax_prf(1, block_size(), *m_cmac, ad, length);
+		m_ad_mac = eax_prf(1, this.block_size, *m_cmac, ad, length);
 	}
 
-	override string name() const
+	override @property string name() const
 	{
-		return (m_cipher.name() ~ "/EAX");
+		return (m_cipher.name ~ "/EAX");
 	}
 
 	override size_t update_granularity() const
@@ -82,7 +82,7 @@ package:
 		m_ctr.set_key(key, length);
 		m_cmac.set_key(key, length);
 		
-		m_ad_mac = eax_prf(1, block_size(), *m_cmac, null, 0);
+		m_ad_mac = eax_prf(1, this.block_size, *m_cmac, null, 0);
 	}
 
 	/**
@@ -91,15 +91,15 @@ package:
 	*/
 	this(BlockCipher cipher, size_t tag_size) 
 	{
-		m_tag_size = tag_size ? tag_size : cipher.block_size();
+		m_tag_size = tag_size ? tag_size : cipher.block_size;
 		m_cipher = cipher;
 		m_ctr = new CTR_BE(m_cipher.clone());
 		m_cmac = new CMAC(m_cipher.clone());
-		if (m_tag_size < 8 || m_tag_size > m_cmac.output_length())
+		if (m_tag_size < 8 || m_tag_size > m_cmac.output_length)
 			throw new Invalid_Argument(name() ~ ": Bad tag size " ~ std.conv.to!string(tag_size));
 	}
 
-	size_t block_size() const { return m_cipher.block_size(); }
+	@property size_t block_size() const { return m_cipher.block_size; }
 
 	size_t m_tag_size;
 

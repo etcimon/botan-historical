@@ -40,7 +40,7 @@ class Public_Key;
 Key_Constraints find_constraints(in Public_Key pub_key,
                                  Key_Constraints limits)
 {
-	const string name = pub_key.algo_name();
+	const string name = pub_key.algo_name;
 	
 	size_t constraints = 0;
 	

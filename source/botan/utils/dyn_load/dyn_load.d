@@ -1,76 +1,110 @@
-/**
+/*
 * Dynamically Loaded Object
 * (C) 2010 Jack Lloyd
 *
-* Distributed under the terms of the Botan license
+* Distributed under the terms of the botan license.
 */
-
-import botan.internal.dyn_load;
+module botan.utils.dyn_load.dyn_load;
+import string;
+//todo : Mac OSX
 import botan.build;
 import stdexcept;
 
-#if defined(BOTAN_TARGET_OS_HAS_DLOPEN)
-  import dlfcn.h;
-#elif defined(BOTAN_TARGET_OS_HAS_LOADLIBRARY)
-  import windows.h;
-#endif
-namespace {
+version(linux){
+	import core.sys.linux.dlfcn;
+}
+else version(Windows)
+	import std.c.windows.windows;
 
 void raise_runtime_loader_exception(in string lib_name,
-												string msg)
+                                    string msg)
 {
 	throw new Exception("Failed to load " ~ lib_name ~ ": " ~
-									 (msg ? msg : "Unknown error"));
+	                    (msg ? msg : "Unknown error"));
 }
 
-}
-
-Dynamically_Loaded_Library::Dynamically_Loaded_Library(
-	in string library) :
-	lib_name(library), lib(null)
+/**
+* Represents a DLL or shared object
+*/
+class Dynamically_Loaded_Library
 {
-#if defined(BOTAN_TARGET_OS_HAS_DLOPEN)
-	lib = ::dlopen(lib_name.toStringz, RTLD_LAZY);
+public:
+	/**
+	* Load a DLL (or fail with an exception)
+	* @param lib_name name or path to a library
+	*
+	* If you don't use a full path, the search order will be defined
+	* by whatever the system linker does by default. Always using fully
+	* qualified pathnames can help prevent code injection attacks (eg
+	* via manipulation of LD_LIBRARY_PATH on Linux)
+	*/
+	this(in string library)
+	{
+		lib_name = library;
+		
+		version(linux) {
+			lib = dlopen(lib_name.toStringz, RTLD_LAZY);
+			
+			if (!lib)
+				raise_runtime_loader_exception(lib_name, dlerror());
+			
+		}
+		version(Windows) {
+			
+			lib = LoadLibraryA(lib_name.toStringz);
+			
+			if (!lib)
+				raise_runtime_loader_exception(lib_name, "LoadLibrary failed");
+		}
+		
+		if (!lib)
+			raise_runtime_loader_exception(lib_name, "Dynamic load not supported");
+	}
 
-	if (!lib)
-		raise_runtime_loader_exception(lib_name, dlerror());
+	/**
+	* Unload the DLL
+	* @warning Any pointers returned by resolve()/resolve_symbol()
+	* should not be used after this destructor runs.
+	*/
+	~this()
+	{
+		version(linux)
+			dlclose(lib);
+		version(Windows)
+			FreeLibrary(cast(HMODULE)lib);
+	}
 
-#elif defined(BOTAN_TARGET_OS_HAS_LOADLIBRARY)
-	lib = ::LoadLibraryA(lib_name.toStringz);
+	/**
+	* Load a symbol (or fail with an exception)
+	* @param symbol names the symbol to load
+	* @return address of the loaded symbol
+	*/
+	void* resolve_symbol(in string symbol)
+	{
+		void* addr = null;
+		
+		version(linux)
+			addr = ::dlsym(lib, symbol.toStringz);
+		version(Windows)
+			addr = cast(void*)(GetProcAddress((HMODULE)lib, symbol.toStringz));
+		if (!addr)
+			throw new Exception("Failed to resolve symbol " ~ symbol +
+			                    " in " ~ lib_name);
+		
+		return addr;
+	}
 
-	if (!lib)
-		raise_runtime_loader_exception(lib_name, "LoadLibrary failed");
-#endif
+	/**
+	* Convenience function for casting symbol to the right type
+	* @param symbol names the symbol to load
+	* @return address of the loaded symbol
+	*/
+	T resolve(T)(in string symbol)
+	{
+		return cast(T)(resolve_symbol(symbol));
+	}
 
-	if (!lib)
-		raise_runtime_loader_exception(lib_name, "Dynamic load not supported");
-}
-
-Dynamically_Loaded_Library::~this()
-{
-#if defined(BOTAN_TARGET_OS_HAS_DLOPEN)
-	::dlclose(lib);
-#elif defined(BOTAN_TARGET_OS_HAS_LOADLIBRARY)
-	::FreeLibrary((HMODULE)lib);
-#endif
-}
-
-void* Dynamically_Loaded_Library::resolve_symbol(in string symbol)
-{
-	void* addr = null;
-
-#if defined(BOTAN_TARGET_OS_HAS_DLOPEN)
-	addr = ::dlsym(lib, symbol.toStringz);
-#elif defined(BOTAN_TARGET_OS_HAS_LOADLIBRARY)
-	addr = cast(void*)(::GetProcAddress((HMODULE)lib,
-																	symbol.toStringz));
-#endif
-
-	if (!addr)
-		throw new Exception("Failed to resolve symbol " ~ symbol +
-										 " in " ~ lib_name);
-
-	return addr;
-}
-
-}
+private:
+	string lib_name;
+	void* lib;
+};

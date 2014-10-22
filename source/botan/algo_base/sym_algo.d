@@ -72,7 +72,7 @@ public:
 		key_schedule(key, length);
 	}
 	
-	abstract string name() const;
+	abstract @property string name() const;
 	
 private:
 	/**

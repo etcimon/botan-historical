@@ -107,7 +107,7 @@ public:
 		                      string sig_algo,
 		                      bool for_client_auth) const
 	{
-		const string algo_name = key.algo_name();
+		const string algo_name = key.algo_name;
 		
 		/*
 		FIXME: This should check what was sent against the client hello
@@ -171,7 +171,7 @@ public:
 		                  bool for_client_auth,
 		                  const Policy policy) const
 	{
-		const string sig_algo = key.algo_name();
+		const string sig_algo = key.algo_name;
 		
 		const string hash_algo =
 			choose_hash(sig_algo,

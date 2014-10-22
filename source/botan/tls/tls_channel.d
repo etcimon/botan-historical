@@ -10,7 +10,7 @@ import botan.tls.tls_session;
 import botan.tls.tls_alert;
 public import botan.tls.tls_session_manager;
 import botan.cert.x509.x509cert;
-import vector;
+import botan.utils.types;
 import string;
 import map;
 import botan.tls.tls_handshake_state;

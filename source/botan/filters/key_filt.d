@@ -11,7 +11,7 @@ import botan.algo_base.sym_algo;
 * This class represents keyed filters, i.e. filters that have to be
 * fed with a key in order to function.
 */
-class Keyed_Filter : Filter
+final class Keyed_Filter : Filter
 {
 public:
 	/**

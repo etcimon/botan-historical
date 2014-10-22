@@ -42,7 +42,7 @@ public:
 	/**
 	* @return name of the mode
 	*/
-	abstract string name() const;
+	abstract @property string name() const;
 
 	/**
 	* abstract destructor
@@ -88,7 +88,7 @@ public:
 
 	bool valid_blocksize(size_t bs) const { return (bs > 0 && bs < 256); }
 
-	string name() const { return "PKCS7"; }
+	@property string name() const { return "PKCS7"; }
 };
 
 /**
@@ -127,7 +127,7 @@ public:
 
 	bool valid_blocksize(size_t bs) const { return (bs > 0 && bs < 256); }
 
-	string name() const { return "X9.23"; }
+	@property string name() const { return "X9.23"; }
 };
 
 /**
@@ -169,7 +169,7 @@ public:
 
 	bool valid_blocksize(size_t bs) const { return (bs > 0); }
 
-	string name() const { return "OneAndZeros"; }
+	@property string name() const { return "OneAndZeros"; }
 };
 
 /**
@@ -184,5 +184,5 @@ public:
 
 	bool valid_blocksize(size_t) const { return true; }
 
-	string name() const { return "NoPadding"; }
+	@property string name() const { return "NoPadding"; }
 };

@@ -20,7 +20,7 @@ public:
 	*/
 	this(HashFunction h)
 	{
-		SALT_SIZE = h.output_length();
+		SALT_SIZE = h.output_length;
 		hash = h;
 	}
 
@@ -57,7 +57,7 @@ private:
 	                             size_t output_bits,
 	                             RandomNumberGenerator rng)
 	{
-		const size_t HASH_SIZE = hash.output_length();
+		const size_t HASH_SIZE = hash.output_length;
 		
 		if (msg.length != HASH_SIZE)
 			throw new Encoding_Error("encoding_of: Bad input length");
@@ -92,7 +92,7 @@ private:
 	bool verify(in SafeVector!ubyte const_coded,
 	            in SafeVector!ubyte raw, size_t key_bits)
 	{
-		const size_t HASH_SIZE = hash.output_length();
+		const size_t HASH_SIZE = hash.output_length;
 		const size_t KEY_BYTES = (key_bits + 7) / 8;
 		
 		if (key_bits < 8*HASH_SIZE + 9)

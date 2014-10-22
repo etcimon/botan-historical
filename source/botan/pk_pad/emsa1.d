@@ -23,7 +23,7 @@ public:
 	}
 
 package:
-	size_t hash_output_length() const { return m_hash.output_length(); }
+	size_t hash_output_length() const { return m_hash.output_length; }
 
 private:
 	void update(in ubyte* input, size_t length)
@@ -49,7 +49,7 @@ private:
 	            in SafeVector!ubyte raw, size_t key_bits)
 	{
 		try {
-			if (raw.length != m_hash.output_length())
+			if (raw.length != m_hash.output_length)
 				throw new Encoding_Error("encoding_of: Invalid size for input");
 			
 			SafeVector!ubyte our_coding = emsa1_encoding(raw, key_bits);

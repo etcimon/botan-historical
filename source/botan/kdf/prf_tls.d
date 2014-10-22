@@ -38,7 +38,7 @@ public:
 		return output;
 	}
 
-	string name() const { return "TLS-PRF"; }
+	@property string name() const { return "TLS-PRF"; }
 	KDF clone() const { return new TLS_PRF; }
 
 	/*
@@ -72,7 +72,7 @@ public:
 		return output;
 	}
 
-	string name() const { return "TLSv12-PRF(" ~ hmac.name() ~ ")"; }
+	@property string name() const { return "TLSv12-PRF(" ~ hmac.name ~ ")"; }
 	KDF clone() const { return new TLS_12_PRF(hmac.clone()); }
 
 	/*
@@ -114,7 +114,7 @@ void P_hash(SafeVector!ubyte output,
 	while(offset != output.length)
 	{
 		const size_t this_block_len =
-			std.algorithm.min(mac.output_length(), output.length - offset);
+			std.algorithm.min(mac.output_length, output.length - offset);
 		
 		A = mac.process(A);
 		

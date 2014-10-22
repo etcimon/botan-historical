@@ -12,9 +12,10 @@ import botan.math.bigint.bigint;
 import botan.utils.get_byte;
 import botan.utils.parsing;
 import botan.utils.bit_ops;
+import botan.utils.types;
 import std.algorithm;
 
-import vector;
+import botan.utils.types;
 
 alias DER_Encoder = FreeListRef!BER_Decoder_Impl;
 
@@ -25,10 +26,6 @@ alias DER_Encoder = FreeListRef!BER_Decoder_Impl;
 class DER_Encoder_Impl
 {
 public:
-
-	import botan.utils.mixins;
-	mixin USE_STRUCT_INIT!();
-
 	Vector!ubyte get_contents_unlocked()
 	{ return unlock(get_contents()); }
 

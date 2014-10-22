@@ -62,7 +62,7 @@ public:
 		m_ghash.set_associated_data(ad, ad_len);
 	}
 
-	override string name() const
+	override @property string name() const
 	{
 		return (m_cipher_name ~ "/GCM");
 	}
@@ -106,10 +106,10 @@ package:
 	this(BlockCipher cipher, size_t tag_size)
 	{ 
 		m_tag_size = tag_size;
-		m_cipher_name = cipher.name();
-		if (cipher.block_size() != BS)
+		m_cipher_name = cipher.name;
+		if (cipher.block_size != BS)
 			throw new Invalid_Argument("GCM requires a 128 bit cipher so cannot be used with " ~
-			                           cipher.name());
+			                           cipher.name);
 		
 		m_ghash = new GHASH;
 		
@@ -291,7 +291,7 @@ public:
 		m_text_len = m_ad_len = 0;
 	}
 
-	string name() const { return "GHASH"; }
+	@property string name() const { return "GHASH"; }
 private:
 	override void key_schedule(in ubyte* key, size_t length)
 	{

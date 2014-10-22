@@ -18,9 +18,9 @@ import botan.utils.rounding;
 class XTS_Mode : Cipher_Mode
 {
 public:
-	override string name() const
+	override @property string name() const
 	{
-		return cipher().name() ~ "/XTS";
+		return cipher().name ~ "/XTS";
 	}
 
 	override SafeVector!ubyte start(in ubyte* nonce, size_t nonce_len)
@@ -43,7 +43,7 @@ public:
 
 	override size_t minimum_final_size() const
 	{
-		return cipher().block_size() + 1;
+		return cipher().block_size + 1;
 	}
 
 	override Key_Length_Specification key_spec() const
@@ -53,12 +53,12 @@ public:
 
 	override size_t default_nonce_length() const
 	{
-		return cipher().block_size();
+		return cipher().block_size;
 	}
 
 	override bool valid_nonce_length(size_t n) const
 	{
-		return cipher().block_size() == n;
+		return cipher().block_size == n;
 	}
 
 	override void clear()
@@ -71,8 +71,8 @@ package:
 	this(BlockCipher cipher) 
 	{
 		m_cipher = cipher;
-		if (m_cipher.block_size() != 8 && m_cipher.block_size() != 16)
-			throw new Invalid_Argument("Bad cipher for XTS: " ~ cipher.name());
+		if (m_cipher.block_size != 8 && m_cipher.block_size != 16)
+			throw new Invalid_Argument("Bad cipher for XTS: " ~ cipher.name);
 		
 		m_tweak_cipher = m_cipher.clone();
 		m_tweak.resize(update_granularity());
@@ -84,7 +84,7 @@ package:
 
 	void update_tweak(size_t which)
 	{
-		const size_t BS = m_tweak_cipher.block_size();
+		const size_t BS = m_tweak_cipher.block_size;
 		
 		if (which > 0)
 			poly_double(&m_tweak[0], &m_tweak[(which-1)*BS], BS);
@@ -128,7 +128,7 @@ public:
 		const size_t sz = buffer.length - offset;
 		ubyte* buf = &buffer[offset];
 		
-		const size_t BS = cipher().block_size();
+		const size_t BS = cipher().block_size;
 		
 		assert(sz % BS == 0, "Input is full blocks");
 		size_t blocks = sz / BS;
@@ -159,7 +159,7 @@ public:
 		
 		assert(sz >= minimum_final_size(), "Have sufficient final input");
 		
-		const size_t BS = cipher().block_size();
+		const size_t BS = cipher().block_size;
 		
 		if (sz % BS == 0)
 		{
@@ -197,7 +197,7 @@ public:
 
 	override size_t output_length(size_t input_length) const
 	{
-		return round_up(input_length, cipher().block_size());
+		return round_up(input_length, cipher().block_size);
 	}
 };
 
@@ -218,7 +218,7 @@ public:
 		const size_t sz = buffer.length - offset;
 		ubyte* buf = &buffer[offset];
 		
-		const size_t BS = cipher().block_size();
+		const size_t BS = cipher().block_size;
 		
 		assert(sz % BS == 0, "Input is full blocks");
 		size_t blocks = sz / BS;
@@ -249,7 +249,7 @@ public:
 		
 		assert(sz >= minimum_final_size(), "Have sufficient final input");
 		
-		const size_t BS = cipher().block_size();
+		const size_t BS = cipher().block_size;
 		
 		if (sz % BS == 0)
 		{

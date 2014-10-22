@@ -15,8 +15,8 @@ import botan.hash.mdx_hash;
 class RIPEMD_128 : MDx_HashFunction
 {
 public:
-	string name() const { return "RIPEMD-128"; }
-	size_t output_length() const { return 16; }
+	@property string name() const { return "RIPEMD-128"; }
+	@property size_t output_length() const { return 16; }
 	HashFunction clone() const { return new RIPEMD_128; }
 
 	/*
@@ -131,7 +131,7 @@ private:
 			digest[3] = digest[0] + B1 + C2;
 			digest[0] = D2;
 			
-			input += hash_block_size();
+			input += hash_block_size;
 		}
 	}
 

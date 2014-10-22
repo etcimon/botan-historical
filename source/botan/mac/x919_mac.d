@@ -14,7 +14,7 @@ import std.algorithm;
 /**
 * DES/3DES-based MAC from ANSI X9.19
 */
-class ANSI_X919_MAC : MessageAuthenticationCode
+final class ANSI_X919_MAC : MessageAuthenticationCode
 {
 public:
 	/*
@@ -29,12 +29,12 @@ public:
 	}
 
 
-	string name() const
+	@property string name() const
 	{
 		return "X9.19-MAC";
 	}
 
-	size_t output_length() const { return 8; }
+	@property size_t output_length() const { return 8; }
 
 	MessageAuthenticationCode clone() const
 	{
@@ -55,7 +55,7 @@ public:
 		m_des2 = m_des1.clone();
 		m_state = 8;
 		m_position = 0;
-		if (cipher.name() != "DES")
+		if (cipher.name != "DES")
 			throw new Invalid_Argument("ANSI X9.19 MAC only supports DES");
 	}
 

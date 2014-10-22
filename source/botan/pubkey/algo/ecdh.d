@@ -40,7 +40,7 @@ public:
 	* Get this keys algorithm name.
 	* @return this keys algorithm name
 	*/
-	string algo_name() const { return "ECDH"; }
+	@property string algo_name() const { return "ECDH"; }
 
 	/**
 	* Get the maximum number of bits allowed to be fed to this key.

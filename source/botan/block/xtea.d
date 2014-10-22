@@ -81,7 +81,7 @@ public:
 		zap(EK);
 	}
 
-	string name() const { return "XTEA"; }
+	@property string name() const { return "XTEA"; }
 	BlockCipher clone() const { return new XTEA; }
 package:
 	/**

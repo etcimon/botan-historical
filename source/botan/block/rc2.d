@@ -142,7 +142,7 @@ public:
 		zap(K);
 	}
 
-	string name() const { return "RC2"; }
+	@property string name() const { return "RC2"; }
 	BlockCipher clone() const { return new RC2; }
 private:
 	/*

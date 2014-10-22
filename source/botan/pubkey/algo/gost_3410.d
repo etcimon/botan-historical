@@ -70,7 +70,7 @@ public:
 	* Get this keys algorithm name.
 	* @result this keys algorithm name
 	*/
-	string algo_name() const { return "GOST-34.10"; }
+	@property string algo_name() const { return "GOST-34.10"; }
 
 	AlgorithmIdentifier algorithm_identifier() const
 	{

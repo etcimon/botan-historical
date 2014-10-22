@@ -24,22 +24,22 @@ public:
 	{
 		m_hash1 = h1;
 		m_hash2 = h2;
-		if (m_hash1.name() == m_hash2.name())
+		if (m_hash1.name == m_hash2.name)
 			throw new Invalid_Argument("Comb4P: Must use two distinct hashes");
 		
-		if (m_hash1.output_length() != m_hash2.output_length())
+		if (m_hash1.output_length != m_hash2.output_length)
 			throw new Invalid_Argument("Comb4P: Incompatible hashes " ~
-			                           m_hash1.name() ~ " and " ~
-			                           m_hash2.name());
+			                           m_hash1.name ~ " and " ~
+			                           m_hash2.name);
 		
 		clear();
 	}
 
 
-	size_t hash_block_size() const
+	@property size_t hash_block_size() const
 	{
-		if (m_hash1.hash_block_size() == m_hash2.hash_block_size())
-			return m_hash1.hash_block_size();
+		if (m_hash1.hash_block_size == m_hash2.hash_block_size)
+			return m_hash1.hash_block_size;
 		
 		/*
 	* Return LCM of the block sizes? This would probably be OK for
@@ -48,9 +48,9 @@ public:
 		return 0;
 	}
 
-	size_t output_length() const
+	@property size_t output_length() const
 	{
-		return m_hash1.output_length() + m_hash2.output_length();
+		return m_hash1.output_length + m_hash2.output_length;
 	}
 
 	HashFunction clone() const
@@ -58,9 +58,9 @@ public:
 		return new Comb4P(m_hash1.clone(), m_hash2.clone());
 	}
 
-	string name() const
+	@property string name() const
 	{
-		return "Comb4P(" ~ m_hash1.name() ~ "," ~ m_hash2.name() ~ ")";
+		return "Comb4P(" ~ m_hash1.name ~ "," ~ m_hash2.name ~ ")";
 	}
 
 	void clear()

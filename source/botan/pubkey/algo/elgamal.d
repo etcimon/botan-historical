@@ -22,7 +22,7 @@ import botan.pubkey.workfactor;
 class ElGamal_PublicKey : DL_Scheme_PublicKey
 {
 public:
-	string algo_name() const { return "ElGamal"; }
+	@property string algo_name() const { return "ElGamal"; }
 	DL_Group.Format group_format() const { return DL_Group.ANSI_X9_42; }
 
 	size_t max_input_bits() const { return (group_p().bits() - 1); }

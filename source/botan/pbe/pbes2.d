@@ -20,12 +20,13 @@ import botan.utils.parsing;
 import botan.asn1.alg_id;
 import botan.asn1.oid_lookup.oids;
 import botan.libstate.lookup;
+import botan.utils.types;
 import std.algorithm;
 
 /**
 * PKCS #5 v2.0 PBE
 */
-class PBE_PKCS5v20 : PBE
+final class PBE_PKCS5v20 : PBE
 {
 public:
 	/*
@@ -51,15 +52,15 @@ public:
 				                    .encode(iterations)
 				                    .encode(key_length)
 				                    .encode_if (
-					m_prf.name() != "HMAC(SHA-160)",
-					AlgorithmIdentifier(m_prf.name(),
+					m_prf.name != "HMAC(SHA-160)",
+					AlgorithmIdentifier(m_prf.name,
 				                    AlgorithmIdentifier.USE_NULL_PARAM))
 				                    .end_cons()
 				                    .get_contents_unlocked()
 				                    )
 					)
 				.encode(
-					AlgorithmIdentifier(block_cipher.name() ~ "/CBC",
+					AlgorithmIdentifier(block_cipher.name ~ "/CBC",
 				                    DER_Encoder().encode(iv, ASN1_Tag.OCTET_STRING).get_contents_unlocked()
 				                    )
 					)
@@ -67,10 +68,10 @@ public:
 				.get_contents_unlocked();
 	}
 
-	string name() const
+	@property string name() const
 	{
-		return "PBE-PKCS5v20(" ~ block_cipher.name() ~ "," ~
-			m_prf.name() ~ ")";
+		return "PBE-PKCS5v20(" ~ block_cipher.name ~ "," ~
+			m_prf.name ~ ")";
 	}
 
 	/*
@@ -87,7 +88,7 @@ public:
 	*/
 	void start_msg()
 	{
-		pipe.append(get_cipher(block_cipher.name() ~ "/CBC/PKCS7",
+		pipe.append(get_cipher(block_cipher.name ~ "/CBC/PKCS7",
 		                       key, iv, direction));
 		
 		pipe.start_msg();
@@ -188,7 +189,7 @@ public:
 		block_cipher = cipher;
 		m_prf = mac;
 		salt = rng.random_vec(12);
-		iv = rng.random_vec(block_cipher.block_size());
+		iv = rng.random_vec(block_cipher.block_size);
 		iterations = 0;
 		key_length = block_cipher.maximum_keylength();
 		PKCS5_PBKDF2 pbkdf = PKCS5_PBKDF2(m_prf.clone());

@@ -36,7 +36,7 @@ public:
 		zap(DK);
 	}
 
-	string name() const { return "IDEA"; }
+	@property string name() const { return "IDEA"; }
 	BlockCipher clone() const { return new IDEA; }
 package:
 	/**

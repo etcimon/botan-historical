@@ -19,7 +19,7 @@ public:
 	void randomize(ubyte* output, size_t length)
 	{
 		if (!is_seeded() || m_reseed_counter > BOTAN_RNG_MAX_OUTPUT_BEFORE_RESEED)
-			reseed(m_mac.output_length() * 8);
+			reseed(m_mac.output_length * 8);
 		
 		if (!is_seeded())
 			throw new PRNG_Unseeded(name());
@@ -54,9 +54,9 @@ public:
 			m_prng.clear();
 	}
 
-	string name() const
+	@property string name() const
 	{
-		return "HMAC_DRBG(" ~ m_mac.name() ~ ")";
+		return "HMAC_DRBG(" ~ m_mac.name ~ ")";
 	}
 
 	void reseed(size_t poll_bits)
@@ -67,7 +67,7 @@ public:
 			
 			if (m_prng.is_seeded())
 			{
-				SafeVector!ubyte input = m_prng.random_vec(m_mac.output_length());
+				SafeVector!ubyte input = m_prng.random_vec(m_mac.output_length);
 				update(&input[0], input.length);
 				m_reseed_counter = 1;
 			}
@@ -89,9 +89,9 @@ public:
 	{ 
 		m_mac = mac;
 		m_prng = prng;
-		m_V = SafeVector!ubyte(m_mac.output_length(), 0x01);
+		m_V = SafeVector!ubyte(m_mac.output_length, 0x01);
 		m_reseed_counter = 0;
-		m_mac.set_key(SafeVector!ubyte(m_mac.output_length(), 0x00));
+		m_mac.set_key(SafeVector!ubyte(m_mac.output_length, 0x00));
 	}
 
 private:

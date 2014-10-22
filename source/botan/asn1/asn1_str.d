@@ -11,12 +11,14 @@ import botan.asn1.der_enc;
 import botan.asn1.ber_dec;
 import botan.utils.charset;
 import botan.utils.parsing;
+import botan.utils.types;
 
+alias ASN1_String = FreeListRef!ASN1_String_Impl;
 
 /**
 * Simple String
 */
-class ASN1_String : ASN1_Object
+class ASN1_String_Impl : ASN1_Object
 {
 public:
 
@@ -47,7 +49,7 @@ public:
 		else
 			charset_is = LATIN1_CHARSET;
 		
-		this = ASN1_String(
+		initialize(
 			transcode(asn1.to_string(obj), charset_is, LOCAL_CHARSET),
 			obj.type_tag);
 	}
@@ -79,6 +81,18 @@ public:
 
 	this(in string str, ASN1_Tag t)
 	{
+		initialize(str, t);
+	}
+
+	this(in string str)
+	{
+		iso_8859_str = transcode(str, LOCAL_CHARSET, LATIN1_CHARSET);
+		tag = choose_encoding(iso_8859_str, "latin1");
+	}
+
+
+private:
+	void initialize(in string str, ASN1_Tag t) {
 		tag = t;
 		iso_8859_str = transcode(str, LOCAL_CHARSET, LATIN1_CHARSET);
 		
@@ -96,12 +110,6 @@ public:
 			                           std.conv.to!string(tag));
 	}
 
-	this(in string str)
-	{
-		iso_8859_str = transcode(str, LOCAL_CHARSET, LATIN1_CHARSET);
-		tag = choose_encoding(iso_8859_str, "latin1");
-	}
-private:
 	string iso_8859_str;
 	ASN1_Tag tag;
 };

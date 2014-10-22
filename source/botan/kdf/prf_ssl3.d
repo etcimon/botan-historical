@@ -35,7 +35,7 @@ public:
 		int counter = 0;
 		while(key_len)
 		{
-			const size_t produce = std.algorithm.min(key_len, md5.output_length());
+			const size_t produce = std.algorithm.min(key_len, md5.output_length);
 			
 			output = output + next_hash(counter++, produce, md5, sha1,
 			                            secret, secret_len, seed, seed_len);
@@ -46,7 +46,7 @@ public:
 		return output.bits_of();
 	}
 
-	string name() const { return "SSL3-PRF"; }
+	@property string name() const { return "SSL3-PRF"; }
 	KDF clone() const { return new SSL3_PRF; }
 };
 
@@ -62,7 +62,7 @@ OctetString next_hash(size_t where, size_t want,
                       in ubyte* secret, size_t secret_len,
                       in ubyte* seed, size_t seed_len) pure
 {
-	assert(want <= md5.output_length(),
+	assert(want <= md5.output_length,
 	             "Output size producable by MD5");
 	
 	const ubyte ASCII_A_CHAR = 0x41;

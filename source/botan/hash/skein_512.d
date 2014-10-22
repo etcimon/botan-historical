@@ -43,15 +43,15 @@ public:
 		initial_block();
 	}
 
-	size_t hash_block_size() const { return 64; }
-	size_t output_length() const { return output_bits / 8; }
+	@property size_t hash_block_size() const { return 64; }
+	@property size_t output_length() const { return output_bits / 8; }
 
 	HashFunction clone() const
 	{
 		return new Skein_512(output_bits, personalization);
 	}
 
-	string name() const
+	@property string name() const
 	{
 		if (personalization != "")
 			return "Skein-512(" ~ std.conv.to!string(output_bits) ~ "," ~

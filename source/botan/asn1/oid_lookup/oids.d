@@ -7,8 +7,7 @@
 module botan.asn1.oid_lookup.oids;
 
 public import botan.asn1.oid_lookup.deflt;
-import botan.asn1.asn1_oid;
-import core.sync.mutex;
+public import botan.asn1.asn1_oid;
 
 /**
 * Register an OID to string mapping.

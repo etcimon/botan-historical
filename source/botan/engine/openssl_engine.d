@@ -140,7 +140,7 @@ public:
 		}
 		
 		version(OPENSSL_NO_RC5){} else static if (false) {
-			if (request.algo_name() == "RC5")
+			if (request.algo_name == "RC5")
 				if (request.arg_as_integer(0, 12) == 12)
 					return new EVP_BlockCipher(EVP_rc5_32_12_16_ecb,
 					                           "RC5(12)", 1, 32, 1);
@@ -163,9 +163,9 @@ public:
 	StreamCipher find_stream_cipher(in SCAN_Name request,
 	                                AlgorithmFactory) const
 	{
-		if (request.algo_name() == "RC4")
+		if (request.algo_name == "RC4")
 			return new RC4_OpenSSL(request.arg_as_integer(0, 0));
-		if (request.algo_name() == "RC4_drop")
+		if (request.algo_name == "RC4_drop")
 			return new RC4_OpenSSL(768);
 		
 		return 0;
@@ -179,41 +179,41 @@ public:
 	                       AlgorithmFactory af) const
 	{
 		version(OPENSSL_NO_SHA){} else {
-			if (request.algo_name() == "SHA-160")
+			if (request.algo_name == "SHA-160")
 				return new EVP_HashFunction(EVP_sha1(), "SHA-160");
 		}
 		
 		version(OPENSSL_NO_SHA256){} else {
-			if (request.algo_name() == "SHA-224")
+			if (request.algo_name == "SHA-224")
 				return new EVP_HashFunction(EVP_sha224(), "SHA-224");
-			if (request.algo_name() == "SHA-256")
+			if (request.algo_name == "SHA-256")
 				return new EVP_HashFunction(EVP_sha256(), "SHA-256");
 		}
 		
 		version(OPENSSL_NO_SHA512) {} else {
-			if (request.algo_name() == "SHA-384")
+			if (request.algo_name == "SHA-384")
 				return new EVP_HashFunction(EVP_sha384(), "SHA-384");
-			if (request.algo_name() == "SHA-512")
+			if (request.algo_name == "SHA-512")
 				return new EVP_HashFunction(EVP_sha512(), "SHA-512");
 		}
 		
 		version(OPENSSL_NO_MD2) {} else {
-			if (request.algo_name() == "MD2")
+			if (request.algo_name == "MD2")
 				return new EVP_HashFunction(EVP_md2(), "MD2");
 		}
 		
 		version(OPENSSL_NO_MD4) {} else {
-			if (request.algo_name() == "MD4")
+			if (request.algo_name == "MD4")
 				return new EVP_HashFunction(EVP_md4(), "MD4");
 		}
 		
 		version(OPENSSL_NO_MD5) {} else {
-			if (request.algo_name() == "MD5")
+			if (request.algo_name == "MD5")
 				return new EVP_HashFunction(EVP_md5(), "MD5");
 		}
 		
 		version(OPENSSL_NO_RIPEMD) {} else {
-			if (request.algo_name() == "RIPEMD-160")
+			if (request.algo_name == "RIPEMD-160")
 				return new EVP_HashFunction(EVP_ripemd160(), "RIPEMD-160");
 		}
 		
@@ -390,7 +390,7 @@ public:
 	/*
 	* Return the name of this type
 	*/
-	string name() const
+	@property string name() const
 	{
 		if (SKIP == 0)		return "RC4";
 		if (SKIP == 256) 	return "MARK-4";
@@ -454,7 +454,7 @@ public:
 		EVP_CIPHER_CTX_set_padding(&decrypt, 0);
 	}
 	
-	string name() const { return cipher_name; }
+	@property string name() const { return cipher_name; }
 	/*
 	* Return a clone of this object
 	*/
@@ -467,7 +467,7 @@ public:
 		                           cipher_key_spec.keylength_multiple());
 	}
 	
-	size_t block_size() const { return block_sz; }
+	@property size_t block_size() const { return block_sz; }
 	/*
 	* EVP Block Cipher Constructor
 	*/
@@ -583,13 +583,13 @@ private:
 
 string HANDLE_EVP_CIPHER(string NAME, alias EVP)()
 {
-	return `if (request.algo_name() == ` ~ NAME ~ ` && request.arg_count() == 0)
+	return `if (request.algo_name == ` ~ NAME ~ ` && request.arg_count() == 0)
 				return new EVP_BlockCipher(` ~ __traits(identifier, EVP).stringof ~ `(), ` ~ NAME ~ `);`;
 }
 
 
 string HANDLE_EVP_CIPHER_KEYLEN(string NAME, alias EVP, ubyte MIN, ubyte MAX, ubyte MOD)() {
-	return `if (request.algo_name() == ` ~ NAME ~ ` && request.arg_count() == 0)
+	return `if (request.algo_name == ` ~ NAME ~ ` && request.arg_count() == 0)
 				return new EVP_BlockCipher(` ~ __traits(identifier, EVP).stringof ~ `(), ` ~ 
 		NAME ~ `, ` ~ MIN.stringof ~ `, ` ~ MAX.stringof ~ `, ` ~ MOD.stringof ~ `);`;
 }
@@ -609,7 +609,7 @@ public:
 		EVP_DigestInit_ex(&md, algo, 0);
 	}
 	
-	string name() const { return algo_name; }
+	@property string name() const { return algo_name; }
 	/*
 	* Return a clone of this object
 	*/
@@ -619,12 +619,12 @@ public:
 		return new EVP_HashFunction(algo, name());
 	}
 	
-	size_t output_length() const
+	@property size_t output_length() const
 	{
 		return EVP_MD_size(EVP_MD_CTX_md(&md));
 	}
 	
-	size_t hash_block_size() const
+	@property size_t hash_block_size() const
 	{
 		return EVP_MD_block_size(EVP_MD_CTX_md(&md));
 	}

@@ -33,7 +33,7 @@ public:
 		zap(MD);
 	}
 
-	string name() const { return "AES-128"; }
+	@property string name() const { return "AES-128"; }
 	BlockCipher clone() const { return new AES_128; }
 private:
 	void key_schedule(in ubyte* key)
@@ -69,7 +69,7 @@ public:
 		zap(MD);
 	}
 
-	string name() const { return "AES-192"; }
+	@property string name() const { return "AES-192"; }
 	BlockCipher clone() const { return new AES_192; }
 private:	
 	void key_schedule(in ubyte* key)
@@ -105,7 +105,7 @@ public:
 		zap(MD);
 	}
 
-	string name() const { return "AES-256"; }
+	@property string name() const { return "AES-256"; }
 	BlockCipher clone() const { return new AES_256; }
 private:
 	void key_schedule(in ubyte* key)

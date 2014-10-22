@@ -59,7 +59,7 @@ public:
 	* @return length in bytes that was actually read and put
 	* into out
 	*/
-	size_t read_byte(ref ubyte output)
+	final size_t read_byte(ref ubyte output)
 	{
 		return read(output.ptr[0..1]);
 	}
@@ -71,7 +71,7 @@ public:
 	* @return length in bytes that was actually read and put
 	* into out
 	*/
-	size_t peek_byte(ref ubyte output) const
+	final size_t peek_byte(ref ubyte output) const
 	{
 		return peek(output.ptr[0..1]);
 	}
@@ -82,7 +82,7 @@ public:
 	* @param N the number of bytes to discard
 	* @return number of bytes actually discarded
 	*/
-	size_t discard_next(size_t n)
+	final size_t discard_next(size_t n)
 	{
 		size_t discarded = 0;
 		ubyte dummy;
@@ -105,7 +105,7 @@ public:
 /**
 * This class represents a Memory-Based DataSource
 */
-class DataSource_Memory : DataSource
+final class DataSource_Memory : DataSource
 {
 public:
 	size_t read(ubyte* output, size_t length)
@@ -146,8 +146,8 @@ public:
 	*/
 	this(in string input) 
 	{
-		source = SafeVector!ubyte(cast(const ubyte*) input.data(),
-		                          cast(const ubyte*)(input.data()) + input.length());
+		source = SafeVector!ubyte(cast(const ubyte*) input.ptr,
+		                          cast(const ubyte*)(input.ptr) + input.length());
 		offset = 0;
 	}
 
@@ -191,7 +191,7 @@ private:
 /**
 * This class represents a Stream-Based DataSource.
 */
-class DataSource_Stream : DataSource
+final class DataSource_Stream : DataSource
 {
 public:
 	/*
@@ -301,7 +301,7 @@ public:
 
 	}
 
-	abstract size_t get_bytes_read() const { return total_read; }
+	size_t get_bytes_read() const { return total_read; }
 private:
 	const string identifier;
 

@@ -10,7 +10,7 @@ version(Windows):
 static if (BOTAN_HAS_ENTROPY_SRC_CAPI):
 
 import botan.entropy.entropy_src;
-import vector;
+import botan.utils.types;
 import botan.utils.parsing;
 import windows.h;
 import wincrypt.h;
@@ -18,10 +18,10 @@ import wincrypt.h;
 /**
 * Win32 CAPI Entropy Source
 */
-class Win32_CAPI_EntropySource : EntropySource
+final class Win32_CAPI_EntropySource : EntropySource
 {
 public:
-	string name() const { return "Win32 CryptoGenRandom"; }
+	@property string name() const { return "Win32 CryptoGenRandom"; }
 
 	/*
 	* Gather Entropy from Win32 CAPI
@@ -68,7 +68,7 @@ public:
 		Vector!( ulong ) prov_types;
 };
 
-class CSP_Handle
+final class CSP_Handle
 {
 public:
 	this(ulong capi_provider)
@@ -101,7 +101,3 @@ private:
 	HCRYPTPROV handle;
 	bool valid;
 };
-
-
-
-

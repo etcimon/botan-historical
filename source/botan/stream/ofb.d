@@ -43,16 +43,16 @@ public:
 	}
 
 	bool valid_iv_length(size_t iv_len) const
-	{ return (iv_len <= m_cipher.block_size()); }
+	{ return (iv_len <= m_cipher.block_size); }
 
 	Key_Length_Specification key_spec() const
 	{
 		return m_cipher.key_spec();
 	}
 
-	string name() const
+	@property string name() const
 	{
-		return "OFB(" ~ m_cipher.name() ~ ")";
+		return "OFB(" ~ m_cipher.name ~ ")";
 	}
 
 	OFB* clone() const
@@ -71,7 +71,7 @@ public:
 	this(BlockCipher cipher)
 	{
 		m_cipher = cipher;
-		m_buffer = m_cipher.block_size();
+		m_buffer = m_cipher.block_size;
 		m_buf_pos = 0;
 	}
 private:

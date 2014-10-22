@@ -11,7 +11,7 @@ import botan.utils.exceptn;
 import stdexcept;
 import botan.utils.types;
 import string;
-import vector;
+import botan.utils.types;
 import core.sync.mutex;
 import map;
 
@@ -98,7 +98,7 @@ public:
 	/**
 	* @return algorithm name
 	*/
-	string algo_name() const { return alg_name; }
+	@property string algo_name() const { return alg_name; }
 	
 	/**
 	* @return algorithm name plus any arguments
@@ -107,7 +107,7 @@ public:
 	{
 		string output;
 		
-		output = algo_name();
+		output = algo_name;
 		
 		if (arg_count())
 		{

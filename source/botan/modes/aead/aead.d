@@ -24,38 +24,38 @@ static if (BOTAN_HAS_AEAD_OCB) import botan.modes.aead.ocb;
 */
 class AEAD_Mode : Cipher_Mode
 {
-	public:
-		override bool authenticated() const { return true; }
+public:
+	override bool authenticated() const { return true; }
 
-		/**
-		* Set associated data that is not included in the ciphertext but
-		* that should be authenticated. Must be called after set_key
-		* and before finish.
-		*
-		* Unless reset by another call, the associated data is kept
-		* between messages. Thus, if the AD does not change, calling
-		* once (after set_key) is the optimum.
-		*
-		* @param ad the associated data
-		* @param ad_len length of add in bytes
-		*/
-		abstract void set_associated_data(in ubyte* ad, size_t ad_len);
+	/**
+	* Set associated data that is not included in the ciphertext but
+	* that should be authenticated. Must be called after set_key
+	* and before finish.
+	*
+	* Unless reset by another call, the associated data is kept
+	* between messages. Thus, if the AD does not change, calling
+	* once (after set_key) is the optimum.
+	*
+	* @param ad the associated data
+	* @param ad_len length of add in bytes
+	*/
+	abstract void set_associated_data(in ubyte* ad, size_t ad_len);
 
-		void set_associated_data_vec(Alloc)(in Vector!( ubyte, Alloc ) ad)
-		{
-			set_associated_data(&ad[0], ad.length);
-		}
+	final void set_associated_data_vec(Alloc)(in Vector!( ubyte, Alloc ) ad)
+	{
+		set_associated_data(&ad[0], ad.length);
+	}
 
-		/**
-		* Default AEAD nonce size (a commonly supported value among AEAD
-		* modes, and large enough that random collisions are unlikely).
-		*/
-		override size_t default_nonce_length() const { return 12; }
+	/**
+	* Default AEAD nonce size (a commonly supported value among AEAD
+	* modes, and large enough that random collisions are unlikely).
+	*/
+	override size_t default_nonce_length() const { return 12; }
 
-		/**
-		* Return the size of the authentication tag used (in bytes)
-		*/
-		abstract size_t tag_size() const;
+	/**
+	* Return the size of the authentication tag used (in bytes)
+	*/
+	abstract size_t tag_size() const;
 };
 
 /**
@@ -84,7 +84,7 @@ AEAD_Mode get_aead(in string algo_spec, Cipher_Dir direction)
 	
 	const string mode_name = mode_info[0];
 	
-	const size_t tag_size = (mode_info.length > 1) ? to_uint(mode_info[1]) : cipher.block_size();
+	const size_t tag_size = (mode_info.length > 1) ? to_uint(mode_info[1]) : cipher.block_size;
 	
 	static if (BOTAN_HAS_AEAD_CCM) {
 		if (mode_name == "CCM-8")
@@ -127,7 +127,7 @@ AEAD_Mode get_aead(in string algo_spec, Cipher_Dir direction)
 		}
 	}
 	
-	static if (BOTAN_HAS_AEAD_GCM)
+	static if (BOTAN_HAS_AEAD_GCM) {
 		if (mode_name == "GCM")
 		{
 			if (direction == ENCRYPTION)

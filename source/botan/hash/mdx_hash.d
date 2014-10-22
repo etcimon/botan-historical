@@ -35,7 +35,7 @@ public:
 		count = position = 0;
 	}
 
-	size_t hash_block_size() const { return buffer.length; }
+	@property size_t hash_block_size() const { return buffer.length; }
 package:
 	/*
 	* Update the hash
@@ -120,7 +120,7 @@ package:
 	{
 		if (COUNT_SIZE < 8)
 			throw new Invalid_State("MDx_HashFunction::write_count: COUNT_SIZE < 8");
-		if (COUNT_SIZE >= output_length() || COUNT_SIZE >= hash_block_size())
+		if (COUNT_SIZE >= output_length() || COUNT_SIZE > = hash_block_size)
 			throw new Invalid_Argument("MDx_HashFunction: COUNT_SIZE is too big");
 		
 		const ulong bit_count = count * 8;

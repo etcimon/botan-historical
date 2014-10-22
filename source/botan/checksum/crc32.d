@@ -12,11 +12,11 @@ import botan.utils.loadstor;
 /**
 * 32-bit cyclic redundancy check
 */
-class CRC32 : HashFunction
+final class CRC32 : HashFunction
 {
 public:
-	string name() const { return "CRC32"; }
-	size_t output_length() const { return 4; }
+	@property string name() const { return "CRC32"; }
+	@property size_t output_length() const { return 4; }
 	HashFunction clone() const { return new CRC32; }
 
 	void clear() { crc = 0xFFFFFFFF; }

@@ -10,7 +10,7 @@ import std.exception;
 import etc.c.sqlite3;
 import botan.utils.types;
 import std.datetime;
-import vector;
+import botan.utils.types;
 
 class sqlite3_database
 {

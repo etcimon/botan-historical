@@ -83,11 +83,11 @@ public:
 		}
 	}
 
-	size_t block_size() const { return m_block_size; }
+	@property size_t block_size() const { return m_block_size; }
 
 	override Key_Length_Specification key_spec() const
 	{
-		return Key_Length_Specification(2, 2*m_hash.output_length(), 2);
+		return Key_Length_Specification(2, 2*m_hash.output_length, 2);
 	}
 
 	/*
@@ -104,10 +104,10 @@ public:
 	/*
 	* Return the name of this type
 	*/
-	override string name() const
+	override @property string name() const
 	{
-		return "Lion(" ~ m_hash.name() ~ "," ~
-			m_cipher.name() ~ "," ~
+		return "Lion(" ~ m_hash.name ~ "," ~
+			m_cipher.name ~ "," ~
 				std.conv.to!string(block_size()) ~ ")";
 	}
 
@@ -127,7 +127,7 @@ public:
 	*/
 	this(HashFunction hash, StreamCipher cipher, size_t block_size) 
 	{
-		m_block_size = std.algorithm.max(2*hash.output_length() + 1, block_size);
+		m_block_size = std.algorithm.max(2*hash.output_length + 1, block_size);
 		m_hash = hash;
 		m_cipher = cipher;
 		
@@ -154,7 +154,7 @@ private:
 		copy_mem(&m_key2[0], key + half, half);
 	}
 
-	size_t left_size() const { return m_hash.output_length(); }
+	size_t left_size() const { return m_hash.output_length; }
 	size_t right_size() const { return m_block_size - left_size(); }
 
 	const size_t m_block_size;

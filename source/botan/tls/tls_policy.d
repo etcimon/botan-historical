@@ -18,7 +18,7 @@ import std.datetime;
 import std.algorithm : uniq, sort;
 import std.array : array, Appender;
 import std.conv : to;
-import vector;
+import botan.utils.types;
 
 /**
 * TLS Policy Base Class

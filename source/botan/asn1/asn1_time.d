@@ -4,21 +4,22 @@
 *
 * Distributed under the terms of the botan license.
 */
-
-import botan.asn1.asn1_time;
+module botan.asn1.asn1_time;
 
 import std.datetime;
-import botan.utils.mixins;
 import botan.asn1.der_enc;
 import botan.asn1.ber_dec;
 import botan.utils.charset;
 import botan.utils.parsing;
 import botan.calendar;
+import botan.utils.types;
+
+alias X509_Time = FreeListRef!X509_Time_Impl;
 
 /**
 * X.509 Time
 */
-class X509_Time : ASN1_Object
+class X509_Time_Impl : ASN1_Object
 {
 public:
 

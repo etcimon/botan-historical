@@ -9,12 +9,12 @@ module botan.math.numbertheory.def_powm;
 import botan.math.numbertheory.pow_mod;
 import botan.math.numbertheory.reducer;
 import botan.math.bigint.bigint;
-import vector;
+import botan.utils.types;
 
 /**
 * Fixed Window Exponentiator
 */
-class Fixed_Window_Exponentiator : Modular_Exponentiator
+final class Fixed_Window_Exponentiator : Modular_Exponentiator
 {
 public:
 	/*

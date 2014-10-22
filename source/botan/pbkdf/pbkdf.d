@@ -24,7 +24,7 @@ public:
 	*/
 	abstract PBKDF clone() const;
 
-	abstract string name() const;
+	abstract @property string name() const;
 
 	/**
 	* Derive a key from a passphrase
@@ -34,7 +34,7 @@ public:
 	* @param salt_len length of salt in bytes
 	* @param iterations the number of iterations to use (use 10K or more)
 	*/
-	OctetString derive_key(size_t output_len,
+	final OctetString derive_key(size_t output_len,
 	                       in string passphrase,
 	                       in ubyte* salt, size_t salt_len,
 	                       size_t iterations) const
@@ -59,7 +59,7 @@ public:
 	* @param salt a randomly chosen salt
 	* @param iterations the number of iterations to use (use 10K or more)
 	*/
-	OctetString derive_key(Alloc)(size_t output_len,
+	final OctetString derive_key(Alloc)(size_t output_len,
 								  in string passphrase,
 								  ref const Vector!( ubyte, Alloc ) salt,
 								  size_t iterations) const
@@ -76,7 +76,7 @@ public:
 	* @param loop_for is how long to run the PBKDF
 	* @param iterations is set to the number of iterations used
 	*/
-	OctetString derive_key(size_t output_len,
+	final OctetString derive_key(size_t output_len,
 	                       in string passphrase,
 	                       in ubyte* salt, size_t salt_len,
 	                       Duration loop_for,
@@ -97,7 +97,7 @@ public:
 	* @param loop_for is how long to run the PBKDF
 	* @param iterations is set to the number of iterations used
 	*/
-	OctetString derive_key(Alloc)(size_t output_len,
+	final OctetString derive_key(Alloc)(size_t output_len,
 								  in string passphrase,
 								  ref const Vector!( ubyte, Alloc ) salt,
 	                              Duration loop_for,

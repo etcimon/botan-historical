@@ -8,7 +8,7 @@
 module botan.filters.filter;
 
 import botan.alloc.secmem;
-import vector;
+import botan.utils.types;
 import string;
 import botan.filters.secqueue;
 import botan.utils.exceptn;
@@ -22,7 +22,13 @@ public:
 	/**
 	* @return descriptive name for this filter
 	*/
-	abstract string name() const;
+	abstract @property string name() const;
+
+	/**
+	* Write a portion of a message to this filter.
+	* @param input the input as a ubyte array
+	*/
+	final void write(in ubyte[] input) { write(input.ptr, input.length); }
 
 	/**
 	* Write a portion of a message to this filter.

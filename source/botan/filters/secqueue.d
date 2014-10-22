@@ -14,10 +14,10 @@ import std.algorithm;
 /**
 * A queue that knows how to zeroize itself
 */
-class SecureQueue : Fanout_Filter, DataSource
+final class SecureQueue : Fanout_Filter, DataSource
 {
 public:
-	string name() const { return "Queue"; }
+	@property string name() const { return "Queue"; }
 
 	/*
 	* Add some bytes to the queue
@@ -53,7 +53,7 @@ public:
 			length -= n;
 			if (head.length == 0)
 			{
-				SecureQueueNode* holder = head.next;
+				SecureQueueNode holder = head.next;
 				delete head;
 				head = holder;
 			}
@@ -67,7 +67,7 @@ public:
 	*/
 	size_t peek(ubyte* output, size_t length, size_t offset = 0) const
 	{
-		SecureQueueNode* current = head;
+		SecureQueueNode current = head;
 		
 		while(offset && current)
 		{
@@ -120,7 +120,7 @@ public:
 	*/
 	size_t size() const
 	{
-		SecureQueueNode* current = head;
+		SecureQueueNode current = head;
 		size_t count = 0;
 		
 		while(current)
@@ -141,7 +141,7 @@ public:
 	{
 		destroy();
 		head = tail = new SecureQueueNode;
-		SecureQueueNode* temp = input.head;
+		SecureQueueNode temp = input.head;
 		while(temp)
 		{
 			write(&temp.buffer[temp.start], temp.end - temp.start);
@@ -171,7 +171,7 @@ public:
 		set_next(null, 0);
 		
 		head = tail = new SecureQueueNode;
-		SecureQueueNode* temp = input.head;
+		SecureQueueNode temp = input.head;
 		while(temp)
 		{
 			write(&temp.buffer[temp.start], temp.end - temp.start);
@@ -188,18 +188,18 @@ private:
 	*/
 	void destroy()
 	{
-		SecureQueueNode* temp = head;
+		SecureQueueNode temp = head;
 		while(temp)
 		{
-			SecureQueueNode* holder = temp.next;
+			SecureQueueNode holder = temp.next;
 			delete temp;
 			temp = holder;
 		}
 		head = tail = null;
 	}
 
-	SecureQueueNode* head;
-	SecureQueueNode* tail;
+	SecureQueueNode head;
+	SecureQueueNode tail;
 };
 
 /**
@@ -247,7 +247,7 @@ public:
 	
 	size_t size() const { return (end - start); }
 private:
-	SecureQueueNode* next;
+	SecureQueueNode next;
 	SafeVector!ubyte buffer;
 	size_t start, end;
 };

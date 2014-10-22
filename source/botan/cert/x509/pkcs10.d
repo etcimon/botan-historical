@@ -22,7 +22,7 @@ import botan.utils.parsing;
 import botan.asn1.oid_lookup.oids;
 import botan.codec.pem;
 import botan.utils.types;
-import vector;
+import botan.utils.types;
 /**
 * PKCS #10 Certificate Request.
 */

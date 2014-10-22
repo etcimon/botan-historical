@@ -7,7 +7,7 @@
 module botan.entropy.es_egd;
 import botan.entropy.entropy_src;
 import string;
-import vector;
+import botan.utils.types;
 
 import botan.utils.parsing;
 import botan.utils.exceptn;
@@ -29,10 +29,10 @@ enum PF_LOCAL = PF_UNIX;
 /**
 * EGD Entropy Source
 */
-class EGD_EntropySource : EntropySource
+final class EGD_EntropySource : EntropySource
 {
 public:
-	string name() const { return "EGD/PRNGD"; }
+	@property string name() const { return "EGD/PRNGD"; }
 
 	/**
 	* Gather Entropy from EGD

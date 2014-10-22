@@ -274,13 +274,13 @@ PK_Signer choose_sig_format(in Private_Key key,
 {
 	string padding;
 	
-	const string algo_name = key.algo_name();
+	const string algo_name = key.algo_name;
 	
 	const HashFunction proto_hash = retrieve_hash(hash_fn);
 	if (!proto_hash)
 		throw new Algorithm_Not_Found(hash_fn);
 	
-	if (key.max_input_bits() < proto_hash.output_length()*8)
+	if (key.max_input_bits() < proto_hash.output_length*8)
 		throw new Invalid_Argument("Key is too small for chosen hash function");
 	
 	if (algo_name == "RSA")
@@ -295,7 +295,7 @@ PK_Signer choose_sig_format(in Private_Key key,
 	Signature_Format format =
 		(key.message_parts() > 1) ? DER_SEQUENCE : IEEE_1363;
 	
-	padding = padding + '(' + proto_hash.name() + ')';
+	padding = padding + '(' + proto_hash.name + ')';
 	
 	sig_algo.oid = oids.lookup(algo_name ~ "/" ~ padding);
 	sig_algo.parameters = key.algorithm_identifier().parameters;

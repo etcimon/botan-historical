@@ -16,6 +16,9 @@ import botan.utils.charset;
 import botan.utils.parsing;
 import std.datetime;
 
+alias ASN1_Car = FreeListRef!ASN1_Car_Impl;
+
+
 /**
 * This class represents CVC EAC Time objects.
 * It only models year, month and day. Only limited sanity checks of
@@ -483,7 +486,7 @@ package:
 	// p. 43
 	bool sanity_check() const
 	{
-		const ubyte* rep = cast(const ubyte*)(iso_8859_str.data());
+		const ubyte* rep = cast(const ubyte*)(iso_8859_str.ptr);
 		const size_t rep_len = iso_8859_str.length;
 		
 		for (size_t i = 0; i != rep_len; ++i)
@@ -503,7 +506,7 @@ private:
 /**
 * This class represents CARs of CVCs. (String tagged with 2)
 */
-class ASN1_Car : ASN1_EAC_String
+final class ASN1_Car_Impl : ASN1_EAC_String
 {
 public:
 	/**

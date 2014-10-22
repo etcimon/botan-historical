@@ -17,7 +17,7 @@ static if (BOTAN_HAS_SHA1_X86_32)		import botan.hash.sha1_x86_32;
 /**
 * Engine for x86-32 specific implementations
 */
-class Assembler_Engine : Engine
+final class Assembler_Engine : Engine
 {
 public:
 	string provider_name() const { return "asm"; }
@@ -27,7 +27,7 @@ public:
 	                             			AlgorithmFactory af) const
 	{
 		static if (BOTAN_HAS_SERPENT_X86_32) { 
-			if (request.algo_name() == "Serpent")
+			if (request.algo_name == "Serpent")
 			{
 				
 				return new Serpent_X86_32;
@@ -40,16 +40,16 @@ public:
 	                                AlgorithmFactory af) const
 	{
 		static if (BOTAN_HAS_MD4_X86_32) {
-			if (request.algo_name() == "MD4")
+			if (request.algo_name == "MD4")
 				return new MD4_X86_32;
 		}
 		
 		static if (BOTAN_HAS_MD5_X86_32) {
-			if (request.algo_name() == "MD5")
+			if (request.algo_name == "MD5")
 				return new MD5_X86_32;
 		}
 		
-		if (request.algo_name() == "SHA-160")
+		if (request.algo_name == "SHA-160")
 		{
 			static if (BOTAN_HAS_SHA1_X86_64)
 				return new SHA_160_X86_64;

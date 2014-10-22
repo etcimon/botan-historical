@@ -27,12 +27,12 @@ public:
 		m_buffer = m_transform.update_granularity();
 	}
 
-	void set_iv(in InitializationVector iv)
+	final void set_iv(in InitializationVector iv)
 	{
 		m_nonce.update(iv);
 	}
 
-	void set_key(in SymmetricKey key)
+	final void set_key(in SymmetricKey key)
 	{
 		if (Keyed_Transform keyed = cast(Keyed_Transform)(*m_transform))
 			keyed.set_key(key);
@@ -40,45 +40,45 @@ public:
 			throw new Exception("Transformation " ~ name() ~ " does not accept keys");
 	}
 
-	Key_Length_Specification key_spec() const
+	final Key_Length_Specification key_spec() const
 	{
 		if (Keyed_Transform keyed = cast(Keyed_Transform)(*m_transform))
 			return keyed.key_spec();
 		return Key_Length_Specification(0);
 	}
 
-	bool valid_iv_length(size_t length) const
+	final bool valid_iv_length(size_t length) const
 	{
 		return m_transform.valid_nonce_length(length);
 	}
 
-	string name() const
+	final @property string name() const
 	{
-		return m_transform.name();
+		return m_transform.name;
 	}
 
 package:
-	const Transformation get_transform() const { return *m_transform; }
+	final const Transformation get_transform() const { return *m_transform; }
 
-	Transformation get_transform() { return *m_transform; }
+	final Transformation get_transform() { return *m_transform; }
 
 private:
-	void write(in ubyte* input, size_t input_length)
+	final void write(in ubyte* input, size_t input_length)
 	{
 		super.write(input, input_length);
 	}	
 
-	void start_msg()
+	final void start_msg()
 	{
 		send(m_transform.start_vec(m_nonce));
 	}
 
-	void end_msg()
+	final void end_msg()
 	{
 		super.end_msg();
 	}
 
-	void buffered_block(in ubyte* input, size_t input_length)
+	final void buffered_block(in ubyte* input, size_t input_length)
 	{
 		while(input_length)
 		{
@@ -94,14 +94,14 @@ private:
 		}
 	}
 
-	void buffered_final(in ubyte* input, size_t input_length)
+	final void buffered_final(in ubyte* input, size_t input_length)
 	{
 		SafeVector!ubyte buf = SafeVector!ubyte(input, input + input_length);
 		m_transform.finish(buf);
 		send(buf);
 	}
 
-	class Nonce_State
+	final class Nonce_State
 	{
 	public:
 		this(bool allow_null_nonce)

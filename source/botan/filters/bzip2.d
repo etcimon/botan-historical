@@ -16,10 +16,10 @@ import std.c.stdlib;
 /**
 * Bzip Compression Filter
 */
-class Bzip_Compression : Filter
+final class Bzip_Compression : Filter
 {
 public:
-	string name() const { return "Bzip_Compression"; }
+	@property string name() const { return "Bzip_Compression"; }
 
 	/*
 	* Compress Input with Bzip
@@ -110,16 +110,16 @@ private:
 
 	const size_t level;
 	SafeVector!ubyte buffer;
-	Bzip_Stream* bz;
+	Bzip_Stream bz;
 };
 
 /**
 * Bzip Decompression Filter
 */
-class Bzip_Decompression : Filter
+final class Bzip_Decompression : Filter
 {
 public:
-	string name() const { return "Bzip_Decompression"; }
+	@property string name() const { return "Bzip_Decompression"; }
 
 	/*
 	* Decompress Input with Bzip
@@ -236,14 +236,14 @@ private:
 
 	const bool small_mem;
 	SafeVector!ubyte buffer;
-	Bzip_Stream* bz;
+	Bzip_Stream bz;
 	bool no_writes;
 };
 
 /*
 * Allocation Information for Bzip
 */
-class Bzip_Alloc_Info
+final class Bzip_Alloc_Info
 {
 public:
 	HashMap!(void*, size_t) current_allocs;
@@ -253,7 +253,7 @@ public:
 /**
 * Wrapper Type for Bzip2 Stream
 */
-class Bzip_Stream
+final class Bzip_Stream
 {
 public:
 	/**

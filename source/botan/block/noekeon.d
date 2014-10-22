@@ -103,7 +103,7 @@ public:
 	}
 	
 
-	string name() const { return "Noekeon"; }
+	@property string name() const { return "Noekeon"; }
 	BlockCipher clone() const { return new Noekeon; }
 
 package:

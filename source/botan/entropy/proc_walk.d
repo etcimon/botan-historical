@@ -19,9 +19,8 @@ import core.sys.posix.fcntl;
 import core.sys.posix.unistd;
 import core.sys.posix.dirent;
 
-package:
 
-class Directory_Walker : File_Descriptor_Source
+final class Directory_Walker : File_Descriptor_Source
 {
 public:
 	this(in string root) 
@@ -72,7 +71,7 @@ private:
 };
 
 
-class File_Descriptor_Source
+final class File_Descriptor_Source
 {
 public:
 	int next_fd()
@@ -117,10 +116,10 @@ public:
 /**
 * File Tree Walking Entropy Source
 */
-class ProcWalking_EntropySource : EntropySource
+final class ProcWalking_EntropySource : EntropySource
 {
 public:
-	string name() const { return "Proc Walker"; }
+	@property string name() const { return "Proc Walker"; }
 
 	void poll(ref Entropy_Accumulator accum)
 	{

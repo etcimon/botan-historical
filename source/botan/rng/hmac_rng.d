@@ -8,7 +8,7 @@ module botan.rng.hmac_rng;
 
 import botan.mac.mac;
 import botan.rng.rng;
-import vector;
+import botan.utils.types;
 import botan.libstate.libstate;
 import botan.utils.get_byte;
 import botan.entropy.entropy_src;
@@ -40,7 +40,7 @@ public:
 				throw new PRNG_Unseeded(name());
 		}
 		
-		const size_t max_per_prf_iter = m_prf.output_length() / 2;
+		const size_t max_per_prf_iter = m_prf.output_length / 2;
 		
 		/*
 		 HMAC KDF as described in E-t-E, using a CTXinfo of "rng"
@@ -82,9 +82,9 @@ public:
 	/*
 	* Return the name of this type
 	*/
-	string name() const
+	@property string name() const
 	{
-		return "HMAC_RNG(" ~ m_extractor.name() ~ "," ~ m_prf.name() ~ ")";
+		return "HMAC_RNG(" ~ m_extractor.name ~ "," ~ m_prf.name ~ ")";
 	}
 
 	/*
@@ -144,7 +144,7 @@ public:
 		
 		m_collected_entropy_estimate =
 			std.algorithm.min(m_collected_entropy_estimate + bits_collected,
-			                  m_extractor.output_length() * 8);
+			                  m_extractor.output_length * 8);
 		
 		m_output_since_reseed = 0;
 	}
@@ -167,14 +167,14 @@ public:
 	{
 		m_extractor = extractor; 
 		m_prf = prf;
-		if (!m_prf.valid_keylength(m_extractor.output_length()) ||
-		    !m_extractor.valid_keylength(m_prf.output_length()))
+		if (!m_prf.valid_keylength(m_extractor.output_length) ||
+		    !m_extractor.valid_keylength(m_prf.output_length))
 			throw new Invalid_Argument("HMAC_RNG: Bad algo combination " ~
-			                           m_extractor.name() ~ " and " ~
-			                           m_prf.name());
+			                           m_extractor.name ~ " and " ~
+			                           m_prf.name);
 		
 		// First PRF inputs are all zero, as specified in section 2
-		m_K.resize(m_prf.output_length());
+		m_K.resize(m_prf.output_length);
 		
 		/*
 		Normally we want to feedback PRF outputs to the extractor function
@@ -189,7 +189,7 @@ public:
 		The PRF key will not be used to generate outputs until after reseed
 		sets m_seeded to true.
 		*/
-		SafeVector!ubyte prf_key(m_extractor.output_length());
+		SafeVector!ubyte prf_key(m_extractor.output_length);
 		m_prf.set_key(prf_key);
 		
 		/*

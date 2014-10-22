@@ -10,7 +10,7 @@ version(Posix):
 static if (BOTAN_HAS_ENTROPY_SRC_DEV_RANDOM):
 
 import botan.entropy.entropy_src;
-import vector;
+import botan.utils.types;
 import string;
 import core.sys.posix.sys.types;
 import core.sys.posix.sys.select;
@@ -23,10 +23,10 @@ import botan.utils.rounding;
 /**
 * Entropy source reading from kernel devices like /dev/random
 */
-class Device_EntropySource : EntropySource
+final class Device_EntropySource : EntropySource
 {
 public:
-	string name() const { return "RNG Device Reader"; }
+	@property string name() const { return "RNG Device Reader"; }
 
 	/**
 	* Gather entropy from a RNG device
@@ -101,5 +101,5 @@ public:
 private:
 	typedef int fd_type;
 
-	Vector!( fd_type ) m_devices;
+	Vector!fd_type m_devices;
 };

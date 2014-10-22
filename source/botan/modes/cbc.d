@@ -34,12 +34,12 @@ public:
 		return SafeVector!ubyte();
 	}
 
-	override string name() const
+	override @property string name() const
 	{
 		if (m_padding)
-			return cipher().name() ~ "/CBC/" ~ padding().name();
+			return cipher().name ~ "/CBC/" ~ padding().name;
 		else
-			return cipher().name() ~ "/CBC/CTS";
+			return cipher().name ~ "/CBC/CTS";
 	}
 
 	override size_t update_granularity() const
@@ -54,12 +54,12 @@ public:
 
 	override size_t default_nonce_length() const
 	{
-		return cipher().block_size();
+		return cipher().block_size;
 	}
 
 	override bool valid_nonce_length(size_t n) const
 	{
-		return (n == 0 || n == cipher().block_size());
+		return (n == 0 || n == cipher().block_size);
 	}
 
 	override void clear()
@@ -72,11 +72,11 @@ package:
 	{
 		m_cipher = cipher;
 		m_padding = padding;
-		m_state = m_cipher.block_size();
-		if (m_padding && !m_padding.valid_blocksize(cipher.block_size()))
-			throw new Invalid_Argument("Padding " ~ m_padding.name() +
+		m_state = m_cipher.block_size;
+		if (m_padding && !m_padding.valid_blocksize(cipher.block_size))
+			throw new Invalid_Argument("Padding " ~ m_padding.name +
 			                           " cannot be used with " ~
-			                           cipher.name() ~ "/CBC");
+			                           cipher.name ~ "/CBC");
 	}
 
 	const BlockCipher cipher() const { return *m_cipher; }
@@ -119,7 +119,7 @@ public:
 		const size_t sz = buffer.length - offset;
 		ubyte* buf = &buffer[offset];
 		
-		const size_t BS = cipher().block_size();
+		const size_t BS = cipher().block_size;
 		
 		assert(sz % BS == 0, "CBC input is full blocks");
 		const size_t blocks = sz / BS;
@@ -144,7 +144,7 @@ public:
 	{
 		assert(buffer.length >= offset, "Offset is sane");
 		
-		const size_t BS = cipher().block_size();
+		const size_t BS = cipher().block_size;
 		
 		const size_t bytes_in_final_block = (buffer.length-offset) % BS;
 		
@@ -158,7 +158,7 @@ public:
 
 	override size_t output_length(size_t input_length) const
 	{
-		return round_up(input_length, cipher().block_size());
+		return round_up(input_length, cipher().block_size);
 	}
 
 	override size_t minimum_final_size() const
@@ -189,7 +189,7 @@ public:
 		ubyte* buf = &buffer[offset];
 		const size_t sz = buffer.length - offset;
 		
-		const size_t BS = cipher().block_size();
+		const size_t BS = cipher().block_size;
 		
 		if (sz < BS + 1)
 			throw new Encoding_Error(name() ~ ": insufficient data to encrypt");
@@ -229,12 +229,12 @@ public:
 
 	override size_t minimum_final_size() const
 	{
-		return cipher().block_size() + 1;
+		return cipher().block_size + 1;
 	}
 
 	bool valid_nonce_length(size_t n) const
 	{
-		return (n == cipher().block_size());
+		return (n == cipher().block_size);
 	}
 
 };
@@ -257,7 +257,7 @@ public:
 		const size_t sz = buffer.length - offset;
 		ubyte* buf = &buffer[offset];
 		
-		const size_t BS = cipher().block_size();
+		const size_t BS = cipher().block_size;
 		
 		assert(sz % BS == 0, "Input is full blocks");
 		size_t blocks = sz / BS;
@@ -284,7 +284,7 @@ public:
 		assert(buffer.length >= offset, "Offset is sane");
 		const size_t sz = buffer.length - offset;
 		
-		const size_t BS = cipher().block_size();
+		const size_t BS = cipher().block_size;
 		
 		if (sz == 0 || sz % BS)
 			throw new Decoding_Error(name() ~ ": Ciphertext not a multiple of block size");
@@ -302,7 +302,7 @@ public:
 
 	override size_t minimum_final_size() const
 	{
-		return cipher().block_size();
+		return cipher().block_size;
 	}	 
 private:
 	SafeVector!ubyte m_tempbuf;
@@ -325,7 +325,7 @@ public:
 		const size_t sz = buffer.length - offset;
 		ubyte* buf = &buffer[offset];
 		
-		const size_t BS = cipher().block_size();
+		const size_t BS = cipher().block_size;
 		
 		if (sz < BS + 1)
 			throw new Encoding_Error(name() ~ ": insufficient data to decrypt");
@@ -366,11 +366,11 @@ public:
 
 	override size_t minimum_final_size() const
 	{
-		return cipher().block_size() + 1;
+		return cipher().block_size + 1;
 	}
 
 	bool valid_nonce_length(size_t n) const
 	{
-		return (n == cipher().block_size());
+		return (n == cipher().block_size);
 	}
 };

@@ -7,7 +7,7 @@
 
 import botan.utils.types;
 import string;
-import vector;
+import botan.utils.types;
 import botan.utils.parsing;
 import botan.utils.exceptn;
 import botan.utils.charset;

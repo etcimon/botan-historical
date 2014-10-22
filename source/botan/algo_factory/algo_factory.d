@@ -21,7 +21,7 @@ import std.algorithm;
 
 import botan.utils.types;
 import string;
-import vector;
+import botan.utils.types;
 import botan.utils.memory : FreeListRef;
 
 
@@ -148,7 +148,7 @@ public:
 	void add_block_cipher(BlockCipher block_cipher,
 	                      in string provider)
 	{
-		block_cipher_cache.add(block_cipher, block_cipher.name(), provider);
+		block_cipher_cache.add(block_cipher, block_cipher.name, provider);
 	}
 	
 	/**
@@ -189,7 +189,7 @@ public:
 	void add_stream_cipher(StreamCipher stream_cipher,
 	                       in string provider)
 	{
-		stream_cipher_cache.add(stream_cipher, stream_cipher.name(), provider);
+		stream_cipher_cache.add(stream_cipher, stream_cipher.name, provider);
 	}
 	
 	/**
@@ -229,7 +229,7 @@ public:
 	void add_hash_function(HashFunction hash,
 	                       in string provider)
 	{
-		hash_cache.add(hash, hash.name(), provider);
+		hash_cache.add(hash, hash.name, provider);
 	}
 	
 	/**
@@ -269,7 +269,7 @@ public:
 	void add_mac(MessageAuthenticationCode mac,
 	             in string provider)
 	{
-		mac_cache.add(mac, mac.name(), provider);
+		mac_cache.add(mac, mac.name, provider);
 	}
 
 	
@@ -310,7 +310,7 @@ public:
 	void add_pbkdf(PBKDF pbkdf,
 	               in string provider)
 	{
-		pbkdf_cache.add(pbkdf, pbkdf.name(), provider);
+		pbkdf_cache.add(pbkdf, pbkdf.name, provider);
 	}
 
 	

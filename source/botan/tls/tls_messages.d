@@ -41,7 +41,7 @@ import botan.libstate.lookup;
 import botan.rng.rng;
 import botan.utils.types : Unique;
 import std.datetime;
-import vector;
+import botan.utils.types;
 import string;
 
 enum {
@@ -664,7 +664,7 @@ public:
 				throw new Internal_Error("Expected RSA kex but no server kex key set");
 			
 			if (!cast(const RSA_PrivateKey)(server_rsa_kex_key))
-				throw new Internal_Error("Expected RSA key but got " ~ server_rsa_kex_key.algo_name());
+				throw new Internal_Error("Expected RSA key but got " ~ server_rsa_kex_key.algo_name);
 			
 			auto decryptor = scoped!PK_Decryptor_EME(*server_rsa_kex_key, "PKCS1v15");
 			
@@ -748,13 +748,13 @@ public:
 			else if (kex_algo == "DH" || kex_algo == "DHE_PSK" ||
 			         kex_algo == "ECDH" || kex_algo == "ECDHE_PSK")
 			{
-				const Private_Key Private_Key = state.server_kex().server_kex_key();
+				const Private_Key private_key = state.server_kex().server_kex_key();
 				
-				const PK_Key_Agreement_Key ka_key = cast(const PK_Key_Agreement_Key)(Private_Key);
+				const PK_Key_Agreement_Key ka_key = cast(const PK_Key_Agreement_Key)(private_key);
 				
 				if (!ka_key)
 					throw new Internal_Error("Expected key agreement key type but got " ~
-					                         Private_Key.algo_name());
+					                         private_key.algo_name);
 				
 				try
 				{
@@ -762,14 +762,14 @@ public:
 					
 					Vector!ubyte client_pubkey;
 					
-					if (ka_key.algo_name() == "DH")
+					if (ka_key.algo_name == "DH")
 						client_pubkey = reader.get_range!ubyte(2, 0, 65535);
 					else
 						client_pubkey = reader.get_range!ubyte(1, 0, 255);
 					
 					SafeVector!ubyte shared_secret = ka.derive_key(0, client_pubkey).bits_of();
 					
-					if (ka_key.algo_name() == "DH")
+					if (ka_key.algo_name == "DH")
 						shared_secret = strip_leading_zeros(shared_secret);
 					
 					if (kex_algo == "DHE_PSK" || kex_algo == "ECDHE_PSK")
@@ -1006,7 +1006,7 @@ public:
 			else
 				throw new TLS_Exception(Alert.HANDSHAKE_FAILURE,
 				                        "Expected a RSA key in server cert but got " ~
-				                        server_public_key.algo_name());
+				                        server_public_key.algo_name);
 		}
 		
 		state.hash().update(io.send(this));
@@ -1295,7 +1295,7 @@ public:
 			SafeVector!ubyte md5_sha = state.hash().final_ssl3(
 				state.session_keys().master_secret());
 			
-			if (priv_key.algo_name() == "DSA")
+			if (priv_key.algo_name == "DSA")
 				m_signature = signer.sign_message(&md5_sha[16], md5_sha.length-16, rng);
 			else
 				m_signature = signer.sign_message(md5_sha, rng);
@@ -1786,7 +1786,7 @@ private:
 		Vector!ubyte buf;
 		
 		append_tls_length_value(buf,
-		                        cast(const ubyte*)(m_protocol.data()),
+		                        cast(const ubyte*)(m_protocol.ptr),
 		                        m_protocol.length,
 		                        1);
 		

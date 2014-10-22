@@ -6,12 +6,13 @@
 */
 module botan.filters.filters;
 
+import botan.filters.filter;
 import botan.block.block_cipher;
 import botan.stream.stream_cipher;
 import botan.hash.hash;
 import botan.mac.mac;
 
-import botan.filters.pipe;
+public import botan.filters.pipe;
 import botan.filters.basefilt;
 import botan.filters.key_filt;
 import botan.libstate.libstate;
@@ -27,11 +28,11 @@ import std.algorithm;
 /**
 * Stream Cipher Filter
 */
-class StreamCipher_Filter : Keyed_Filter
+final class StreamCipher_Filter : Keyed_Filter
 {
 public:
 
-	string name() const { return cipher.name(); }
+	@property string name() const { return cipher.name; }
 
 	/**
 	* Write input data
@@ -115,7 +116,7 @@ public:
 	this(in string sc_name,
 	     const ref SymmetricKey key)
 	{
-		buffer = DEFAULT_BUFFERSIZE);
+		buffer = DEFAULT_BUFFERSIZE;
 		AlgorithmFactory af = global_state().algorithm_factory();
 		cipher = af.make_stream_cipher(sc_name);
 		cipher.set_key(key);
@@ -130,7 +131,7 @@ private:
 /**
 * Hash Filter.
 */
-class Hash_Filter : Filter
+final class Hash_Filter : Filter
 {
 public:
 	void write(in ubyte* input, size_t len) { hash.update(input, len); }
@@ -147,7 +148,7 @@ public:
 			send(output);
 	}
 
-	string name() const { return hash.name(); }
+	@property string name() const { return hash.name; }
 
 	/**
 	* Construct a hash filter.
@@ -188,7 +189,7 @@ private:
 /**
 * MessageAuthenticationCode Filter.
 */
-class MAC_Filter : Keyed_Filter
+final class MAC_Filter : Keyed_Filter
 {
 public:
 	void write(in ubyte* input, size_t len) { mac.update(input, len); }
@@ -205,7 +206,7 @@ public:
 			send(output);
 	}
 
-	string name() const { return mac.name(); }
+	@property string name() const { return mac.name; }
 
 	/**
 	* Set the key of this filter.

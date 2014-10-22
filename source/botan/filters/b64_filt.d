@@ -15,10 +15,10 @@ import std.algorithm;
 /**
 * This class represents a Base64 encoder.
 */
-class Base64_Encoder : Filter
+final class Base64_Encoder : Filter
 {
 public:
-	string name() const { return "Base64_Encoder"; }
+	@property string name() const { return "Base64_Encoder"; }
 
 	/**
 	* Input a part of a message to the encoder.
@@ -134,10 +134,10 @@ private:
 /**
 * This object represents a Base64 decoder.
 */
-class Base64_Decoder : Filter
+final class Base64_Decoder : Filter
 {
 public:
-	string name() const { return "Base64_Decoder"; }
+	@property string name() const { return "Base64_Decoder"; }
 
 	/**
 	* Input a part of a message to the decoder.

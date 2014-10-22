@@ -49,9 +49,9 @@ public:
 		m_ad_hash = ocb_hash(*m_L, *m_cipher, &ad[0], ad_len);
 	}
 
-	override string name() const
+	override @property string name() const
 	{
-		return m_cipher.name() ~ "/OCB"; // include tag size
+		return m_cipher.name ~ "/OCB"; // include tag size
 	}
 
 	override size_t update_granularity() const
@@ -93,9 +93,9 @@ package:
 		m_offset = BS;
 		m_ad_hash = BS;
 		m_tag_size = tag_size;
-		if (m_cipher.block_size() != BS)
+		if (m_cipher.block_size != BS)
 			throw new Invalid_Argument("OCB requires a 128 bit cipher so cannot be used with " ~
-			                           m_cipher.name());
+			                           m_cipher.name);
 		
 		if (m_tag_size != 8 && m_tag_size != 12 && m_tag_size != 16)
 			throw new Invalid_Argument("OCB cannot produce a " ~ std.conv.to!string(m_tag_size) +
@@ -413,7 +413,7 @@ class L_computer
 public:
 	this(in BlockCipher cipher)
 	{
-		m_L_star.resize(cipher.block_size());
+		m_L_star.resize(cipher.block_size);
 		cipher.encrypt(m_L_star);
 		m_L_dollar = poly_double(star());
 		m_L.push_back(poly_double(dollar()));

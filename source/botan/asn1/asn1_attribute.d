@@ -12,7 +12,7 @@ import botan.asn1.ber_dec;
 import botan.asn1.oid_lookup.oids;
 import botan.asn1.asn1_obj;
 import botan.asn1.asn1_oid;
-import vector;
+import botan.utils.types;
 
 /**
 * Attribute

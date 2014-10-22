@@ -18,10 +18,10 @@ import map;
 /**
 * Lzma Compression Filter
 */
-class Lzma_Compression : Filter
+final class Lzma_Compression : Filter
 {
 public:
-	string name() const { return "Lzma_Compression"; }
+	@property string name() const { return "Lzma_Compression"; }
 
 	/*
 	* Compress Input with Lzma
@@ -145,10 +145,10 @@ private:
 /**
 * Lzma Decompression Filter
 */
-class Lzma_Decompression : Filter
+final class Lzma_Decompression : Filter
 {
 public:
-	string name() const { return "Lzma_Decompression"; }
+	@property string name() const { return "Lzma_Decompression"; }
 
 	/*
 	* Decompress Input with Lzma

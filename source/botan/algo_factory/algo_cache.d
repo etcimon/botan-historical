@@ -9,7 +9,7 @@ module botan.algo_factory.algo_cache;
 import botan.utils.types;
 import botan.internal.stl_util;
 import string;
-import vector;
+import botan.utils.types;
 import map;
 /**
 * @param prov_name a provider name
@@ -82,14 +82,14 @@ public:
 		if (!algo)
 			return;
 				
-		if (algo.name() != requested_name &&
+		if (algo.name != requested_name &&
 		    aliases.find(requested_name) == aliases.end())
 		{
-			aliases[requested_name] = algo.name();
+			aliases[requested_name] = algo.name;
 		}
 		
-		if (!algorithms[algo.name()][provider])
-			algorithms[algo.name()][provider] = algo;
+		if (!algorithms[algo.name][provider])
+			algorithms[algo.name][provider] = algo;
 		//else
 		//	delete algo;
 		// todo: Manual Memory Management

@@ -98,7 +98,7 @@ public:
 		zap(K);
 	}
 
-	string name() const { return "SEED"; }
+	@property string name() const { return "SEED"; }
 	BlockCipher clone() const { return new SEED; }
 private:
 

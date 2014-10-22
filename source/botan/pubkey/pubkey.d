@@ -255,7 +255,7 @@ public:
 		}
 		
 		if (!m_op || (!m_verify_op && prot == ENABLE_FAULT_PROTECTION))
-			throw new Lookup_Error("Signing with " ~ key.algo_name() ~ " not supported");
+			throw new Lookup_Error("Signing with " ~ key.algo_name ~ " not supported");
 		
 		m_emsa = get_emsa(emsa_name);
 		m_sig_format = format;
@@ -444,7 +444,7 @@ public:
 		}
 		
 		if (!m_op)
-			throw new Lookup_Error("Verification with " ~ key.algo_name() ~ " not supported");
+			throw new Lookup_Error("Verification with " ~ key.algo_name ~ " not supported");
 		
 		m_emsa = get_emsa(emsa_name);
 		m_sig_format = format;
@@ -531,7 +531,7 @@ public:
 									in string params = "") const
 	{
 		return derive_key(key_len, input, in_len,
-								cast(const ubyte*)(params.data()),
+								cast(const ubyte*)(params.ptr),
 								params.length());
 	}
 
@@ -546,7 +546,7 @@ public:
 									in string params = "") const
 	{
 		return derive_key(key_len, &input[0], input.length,
-								cast(const ubyte*)(params.data()),
+								cast(const ubyte*)(params.ptr),
 								params.length());
 	}
 
@@ -569,7 +569,7 @@ public:
 		}
 		
 		if (!m_op)
-			throw new Lookup_Error("Key agreement with " ~ key.algo_name() ~ " not supported");
+			throw new Lookup_Error("Key agreement with " ~ key.algo_name ~ " not supported");
 		
 		m_kdf = get_kdf(kdf_name);
 	}
@@ -614,7 +614,7 @@ public:
 		}
 		
 		if (!m_op)
-			throw new Lookup_Error("Encryption with " ~ key.algo_name() ~ " not supported");
+			throw new Lookup_Error("Encryption with " ~ key.algo_name ~ " not supported");
 		
 		m_eme = get_eme(eme_name);
 	}
@@ -673,7 +673,7 @@ public:
 		}
 		
 		if (!m_op)
-			throw new Lookup_Error("Decryption with " ~ key.algo_name() ~ " not supported");
+			throw new Lookup_Error("Decryption with " ~ key.algo_name ~ " not supported");
 		
 		m_eme = get_eme(eme_name);
 	}
