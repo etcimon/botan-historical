@@ -14,7 +14,7 @@ import botan.utils.xor_buf;
 /**
 * DJB's ChaCha (http://cr.yp.to/chacha.html)
 */
-class ChaCha : StreamCipher
+final class ChaCha : StreamCipher
 {
 public:
 	/*
@@ -47,7 +47,7 @@ public:
 	void set_iv(in ubyte* iv, size_t length)
 	{
 		if (!valid_iv_length(length))
-			throw new Invalid_IV_Length(name(), length);
+			throw new Invalid_IV_Length(name, length);
 		
 		m_state[12] = 0;
 		m_state[13] = 0;
@@ -89,9 +89,9 @@ public:
 	}
 
 	StreamCipher clone() const { return new ChaCha; }
-package:
+protected:
 
-	void chacha(ubyte output[64], const uint input[16])
+	void chacha(ubyte[64]* output, const uint[16]* input)
 	{
 		uint x00 = input[ 0], x01 = input[ 1], x02 = input[ 2], x03 = input[ 3],
 			x04 = input[ 4], x05 = input[ 5], x06 = input[ 6], x07 = input[ 7],
@@ -171,8 +171,8 @@ private:
 	}
 
 
-	SafeVector!uint m_state;
-	SafeVector!ubyte m_buffer;
+	Secure_Vector!uint m_state;
+	Secure_Vector!ubyte m_buffer;
 	size_t m_position = 0;
 };
 

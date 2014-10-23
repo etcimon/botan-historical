@@ -120,7 +120,7 @@ public:
 	~this()
 	{ delete m_pk; }
 
-package:
+protected:
 	ECDSA_PublicKey m_pk;
 	ASN1_Chr m_chr;
 	bool self_signed;

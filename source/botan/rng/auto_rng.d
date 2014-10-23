@@ -7,9 +7,10 @@
 module botan.rng.auto_rng;
 
 import botan.rng.rng;
+import botan.utils.types;
 import string;
 
-class AutoSeeded_RNG : RandomNumberGenerator
+final class AutoSeeded_RNG : RandomNumberGenerator
 {
 public:
 	void randomize(ubyte* output, size_t len)

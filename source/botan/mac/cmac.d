@@ -56,11 +56,11 @@ public:
 	* @param input the input
 	* @param polynomial the ubyte value of the polynomial
 	*/
-	SafeVector!ubyte poly_double(in SafeVector!ubyte input)
+	Secure_Vector!ubyte poly_double(in Secure_Vector!ubyte input)
 	{
 		const bool top_carry = (input[0] & 0x80);
 		
-		SafeVector!ubyte output = input;
+		Secure_Vector!ubyte output = input;
 		
 		ubyte carry = 0;
 		for (size_t i = output.length; i != 0; --i)
@@ -182,6 +182,6 @@ private:
 
 
 	Unique!BlockCipher m_cipher;
-	SafeVector!ubyte m_buffer, m_state, m_B, m_P;
+	Secure_Vector!ubyte m_buffer, m_state, m_B, m_P;
 	size_t m_position;
 };

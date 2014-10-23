@@ -90,7 +90,7 @@ public:
 		
 		if (n != 0)
 		{
-			AlgorithmFactory.Engine_Iterator i = AlgorithmFactory.Engine_Iterator(global_state().algorithm_factory());
+			Algorithm_Factory.Engine_Iterator i = Algorithm_Factory.Engine_Iterator(global_state().algorithm_factory());
 			Engine engine;
 			while(engine = i.next())
 			{

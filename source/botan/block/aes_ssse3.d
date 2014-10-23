@@ -14,7 +14,7 @@ import botan.utils.simd.tmmintrin;
 /**
 * AES-128 using SSSE3
 */
-class AES_128_SSSE3 : Block_Cipher_Fixed_Params!(16, 16)
+final class AES_128_SSSE3 : Block_Cipher_Fixed_Params!(16, 16)
 {
 public:
 	/*
@@ -99,13 +99,13 @@ private:
 		_mm_storeu_si128(DK_mm, aes_schedule_mangle_last_dec(key));
 	}
 
-	SafeVector!uint EK, DK;
+	Secure_Vector!uint EK, DK;
 };
 
 /**
 * AES-192 using SSSE3
 */
-class AES_192_SSSE3 : Block_Cipher_Fixed_Params!(16, 24)
+final class AES_192_SSSE3 : Block_Cipher_Fixed_Params!(16, 24)
 {
 public:
 	/*
@@ -218,13 +218,13 @@ private:
 		}
 	}
 
-	SafeVector!uint EK, DK;
+	Secure_Vector!uint EK, DK;
 };
 
 /**
 * AES-256 using SSSE3
 */
-class AES_256_SSSE3 : Block_Cipher_Fixed_Params!(16, 32)
+final class AES_256_SSSE3 : Block_Cipher_Fixed_Params!(16, 32)
 {
 public:
 	/*
@@ -316,7 +316,7 @@ private:
 		_mm_storeu_si128(DK_mm + 0, aes_schedule_mangle_last_dec(key2));
 	}
 
-	SafeVector!uint EK, DK;
+	Secure_Vector!uint EK, DK;
 };
 	
 immutable __m128i low_nibs = _mm_set1_epi8(0x0F);

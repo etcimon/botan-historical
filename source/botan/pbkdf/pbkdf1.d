@@ -52,7 +52,7 @@ public:
 		
 		hash.update(passphrase);
 		hash.update(salt, salt_len);
-		SafeVector!ubyte key = hash.flush();
+		Secure_Vector!ubyte key = hash.flush();
 		
 		const start = Clock.currTime();
 		size_t iterations_performed = 1;

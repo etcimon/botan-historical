@@ -13,10 +13,10 @@ import botan.simd.simd_32;
 /**
 * XTEA implemented using SIMD operations
 */
-class XTEA_SIMD : XTEA
+final class XTEA_SIMD : XTEA
 {
 public:
-	size_t parallelism() const { return 8; }
+	override @property size_t parallelism() const { return 8; }
 
 	/*
 	* XTEA Encryption
@@ -61,7 +61,7 @@ public:
 
 package:
 
-void xtea_encrypt_8(const ubyte[64] input, ubyte[64] output, const uint[64] EK)
+void xtea_encrypt_8(const ubyte[64]* input, ubyte[64]* output, const uint[64]* EK) pure
 {
 	SIMD_32 L0 = SIMD_32.load_be(input	  );
 	SIMD_32 R0 = SIMD_32.load_be(input + 16);
@@ -98,7 +98,7 @@ void xtea_encrypt_8(const ubyte[64] input, ubyte[64] output, const uint[64] EK)
 	R1.store_be(output + 48);
 }
 
-void xtea_decrypt_8(const ubyte[64] input, ubyte[64] output, const uint[64] EK)
+void xtea_decrypt_8(const ubyte[64]* input, ubyte[64]* output, const uint[64]* EK)
 {
 	SIMD_32 L0 = SIMD_32.load_be(input	  );
 	SIMD_32 R0 = SIMD_32.load_be(input + 16);

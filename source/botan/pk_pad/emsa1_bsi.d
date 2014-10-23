@@ -5,14 +5,18 @@
 *
 * Distributed under the terms of the botan license.
 */
+module botan.pk_pad.emsa1_bsi;
 
-import botan.emsa1;
+import botan.pk_pad.emsa1;
+import botan.utils.types;
+
+
 /**
 * EMSA1_BSI is a variant of EMSA1 specified by the BSI. It accepts
 * only hash values which are less or equal than the maximum key
 * length. The implementation comes from InSiTo
 */
-class EMSA1_BSI : EMSA1
+final class EMSA1_BSI : EMSA1
 {
 public:
 	/**
@@ -26,7 +30,7 @@ private:
 	/*
 	* EMSA1 BSI Encode Operation
 	*/
-	SafeVector!ubyte encoding_of(in SafeVector!ubyte msg,
+	Secure_Vector!ubyte encoding_of(in Secure_Vector!ubyte msg,
 	                             size_t output_bits,
 	                             RandomNumberGenerator)
 	{

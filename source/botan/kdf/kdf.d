@@ -32,8 +32,8 @@ public:
 	* @param secret the secret input
 	* @param salt a diversifier
 	*/
-	SafeVector!ubyte derive_key(size_t key_len,
-								in SafeVector!ubyte secret,
+	Secure_Vector!ubyte derive_key(size_t key_len,
+								in Secure_Vector!ubyte secret,
 								in string salt = "") const
 	{
 		return derive_key(key_len, &secret[0], secret.length,
@@ -48,7 +48,7 @@ public:
 	* @param salt a diversifier
 	*/
 	
-	SafeVector!ubyte derive_key(Alloc, Alloc2)(size_t key_len,
+	Secure_Vector!ubyte derive_key(Alloc, Alloc2)(size_t key_len,
 												 in Vector!( ubyte, Alloc ) secret,
 												 in Vector!( ubyte, Alloc2 ) salt) const
 	{
@@ -64,8 +64,8 @@ public:
 	* @param salt a diversifier
 	* @param salt_len size of salt in bytes
 	*/
-	SafeVector!ubyte derive_key(size_t key_len,
-								in SafeVector!ubyte secret,
+	Secure_Vector!ubyte derive_key(size_t key_len,
+								in Secure_Vector!ubyte secret,
 								in ubyte* salt,
 								size_t salt_len) const
 	{
@@ -81,7 +81,7 @@ public:
 	* @param secret_len size of secret in bytes
 	* @param salt a diversifier
 	*/
-	SafeVector!ubyte derive_key(size_t key_len,
+	Secure_Vector!ubyte derive_key(size_t key_len,
 								in ubyte* secret,
 								size_t secret_len,
 								in string salt = "") const
@@ -99,7 +99,7 @@ public:
 	* @param salt a diversifier
 	* @param salt_len size of salt in bytes
 	*/
-	SafeVector!ubyte derive_key(size_t key_len,
+	Secure_Vector!ubyte derive_key(size_t key_len,
 								in ubyte* secret,
 								size_t secret_len,
 								in ubyte* salt,
@@ -110,7 +110,7 @@ public:
 
 	abstract KDF clone() const;
 private:
-	abstract SafeVector!ubyte
+	abstract Secure_Vector!ubyte
 		derive(size_t key_len,
 				 in ubyte* secret, size_t secret_len,
 				 in ubyte* salt, size_t salt_len) const;
@@ -125,7 +125,7 @@ KDF get_kdf(in string algo_spec)
 {
 	SCAN_Name request = SCAN_Name(algo_spec);
 	
-	AlgorithmFactory af = global_state().algorithm_factory();
+	Algorithm_Factory af = global_state().algorithm_factory();
 	
 	if (request.algo_name == "Raw")
 		return null; // No KDF

@@ -36,7 +36,7 @@ public:
 	}
 
 	// remove this (used by TLS::Server)
-	abstract Vector!( X509_DN ) all_subjects() const;
+	abstract Vector!X509_DN all_subjects() const;
 };
 
 /**
@@ -74,9 +74,9 @@ public:
 
 	void add_crl(in X509_CRL crl);
 
-	Vector!( X509_DN ) all_subjects() const
+	Vector!X509_DN all_subjects() const
 	{
-		Vector!( X509_DN ) subjects;
+		Vector!X509_DN subjects;
 		for (size_t i = 0; i != m_certs.length; ++i)
 			subjects.push_back(m_certs[i].subject_dn());
 		return subjects;
@@ -124,7 +124,7 @@ public:
 			}
 			
 			if (m_crls[i].issuer_dn() == subject.issuer_dn())
-				return &m_crls[i];
+				return m_crls[i];
 		}
 		
 		return null;
@@ -144,9 +144,9 @@ public:
 		m_certs = certs;
 	}
 
-	Vector!( X509_DN ) all_subjects() const
+	Vector!X509_DN all_subjects() const
 	{
-		Vector!( X509_DN ) subjects;
+		Vector!X509_DN subjects;
 		for (size_t i = 0; i != m_certs.length; ++i)
 			subjects.push_back(m_certs[i].subject_dn());
 		return subjects;
@@ -178,9 +178,8 @@ const X509_Certificate
 		}
 		
 		if (certs[i].subject_dn() == subject_dn)
-			return &certs[i];
+			return certs[i];
 	}
 	
 	return null;
 }
-

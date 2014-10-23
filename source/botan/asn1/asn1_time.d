@@ -19,7 +19,7 @@ alias X509_Time = FreeListRef!X509_Time_Impl;
 /**
 * X.509 Time
 */
-class X509_Time_Impl : ASN1_Object
+final class X509_Time_Impl : ASN1_Object
 {
 public:
 

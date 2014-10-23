@@ -13,7 +13,7 @@ import botan.utils.rotate;
 /**
 * RC2
 */
-class RC2 : Block_Cipher_Fixed_Params!(8, 1, 32)
+final class RC2 : Block_Cipher_Fixed_Params!(8, 1, 32)
 {
 public:
 	/*
@@ -142,7 +142,7 @@ public:
 		zap(K);
 	}
 
-	@property string name() const { return "RC2"; }
+	override @property string name() const { return "RC2"; }
 	BlockCipher clone() const { return new RC2; }
 private:
 	/*
@@ -174,7 +174,7 @@ private:
 				0xC5, 0xF3, 0xDB, 0x47, 0xE5, 0xA5, 0x9C, 0x77, 0x0A, 0xA6, 0x20, 0x68,
 			0xFE, 0x7F, 0xC1, 0xAD ];
 		
-		SafeVector!ubyte L = SafeVector!ubyte(128);
+		Secure_Vector!ubyte L = Secure_Vector!ubyte(128);
 		copy_mem(&L[0], key, length);
 		
 		for (size_t i = length; i != 128; ++i)
@@ -188,11 +188,5 @@ private:
 		K.resize(64);
 		load_le!ushort(&K[0], &L[0], 64);
 	}
-	SafeVector!ushort K;
+	Secure_Vector!ushort K;
 };
-
-
-
-
-
-

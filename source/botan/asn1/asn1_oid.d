@@ -6,7 +6,7 @@
 */
 module botan.asn1.asn1_oid;
 
-import botan.asn1.asn1_obj;
+public import botan.asn1.asn1_obj;
 import botan.asn1.der_enc;
 import botan.asn1.ber_dec;
 import botan.utils.bit_ops;
@@ -15,11 +15,12 @@ import botan.utils.parsing;
 import string;
 import botan.utils.types;
 
+alias OID = FreeListRef!OID_Impl;
 
 /**
 * This class represents ASN.1 object identifiers.
 */
-class OID : ASN1_Object
+final class OID_Impl : ASN1_Object
 {
 public:
 

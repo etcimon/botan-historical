@@ -214,7 +214,7 @@ public:
 			
 			if (relative_size < 0)
 			{
-				SafeVector!word z(reg_size - 1);
+				Secure_Vector!word z(reg_size - 1);
 				bigint_sub3(&z[0], y.data(), reg_size - 1, data(), x_sw);
 				std.algorithm.swap(m_reg, z);
 				set_sign(y.sign());
@@ -304,8 +304,8 @@ public:
 		{
 			grow_to(size() + y.length);
 			
-			SafeVector!word z(data(), data() + x_sw);
-			SafeVector!word workspace(size());
+			Secure_Vector!word z(data(), data() + x_sw);
+			Secure_Vector!word workspace(size());
 			
 			bigint_mul(mutable_data(), size(), &workspace[0],
 			&z[0], z.length, x_sw,
@@ -784,7 +784,7 @@ public:
 			clear();
 		else
 		{
-			SafeVector!ubyte array = rng.random_vec((bitsize + 7) / 8);
+			Secure_Vector!ubyte array = rng.random_vec((bitsize + 7) / 8);
 			
 			if (bitsize % 8)
 				array[0] &= 0xFF >> (8 - (bitsize % 8));
@@ -829,10 +829,10 @@ public:
 
 
 	/**
-	* Read integer value from a ubyte array (SafeVector!ubyte)
+	* Read integer value from a ubyte array (Secure_Vector!ubyte)
 	* @param buf the array to load from
 	*/
-	void binary_decode(in SafeVector!ubyte buf)
+	void binary_decode(in Secure_Vector!ubyte buf)
 	{
 		binary_decode(&buf[0], buf.length);
 	}
@@ -888,7 +888,7 @@ public:
 	* Encode the integer value from a BigInt to a std::vector of bytes
 	* @param n the BigInt to use as integer source
 	* @param base number-base of resulting ubyte array representation
-	* @result SafeVector of bytes containing the integer with given base
+	* @result Secure_Vector of bytes containing the integer with given base
 	*/
 	static Vector!ubyte encode(in BigInt n, Base base = Binary)
 	{
@@ -902,14 +902,14 @@ public:
 	}
 
 	/**
-	* Encode the integer value from a BigInt to a SafeVector of bytes
+	* Encode the integer value from a BigInt to a Secure_Vector of bytes
 	* @param n the BigInt to use as integer source
 	* @param base number-base of resulting ubyte array representation
-	* @result SafeVector of bytes containing the integer with given base
+	* @result Secure_Vector of bytes containing the integer with given base
 	*/
-	static SafeVector!ubyte encode_locked(in BigInt n, Base base = Binary)
+	static Secure_Vector!ubyte encode_locked(in BigInt n, Base base = Binary)
 	{
-		SafeVector!ubyte output = SafeVector!ubyte(n.encoded_size(base));
+		Secure_Vector!ubyte output = Secure_Vector!ubyte(n.encoded_size(base));
 		encode(&output[0], n, base);
 		if (base != Binary)
 			for (size_t j = 0; j != output.length; ++j)
@@ -933,7 +933,7 @@ public:
 		}
 		else if (base == Hexadecimal)
 		{
-			SafeVector!ubyte binary = SafeVector!ubyte(n.encoded_size(Binary));
+			Secure_Vector!ubyte binary = Secure_Vector!ubyte(n.encoded_size(Binary));
 			n.binary_encode(&binary[0]);
 			
 			hex_encode(cast(char*)(output),
@@ -972,7 +972,7 @@ public:
 			r.binary_decode(buf, length);
 		else if (base == Hexadecimal)
 		{
-			SafeVector!ubyte binary;
+			Secure_Vector!ubyte binary;
 			
 			if (length % 2)
 			{
@@ -1024,7 +1024,7 @@ public:
 	* @param base number-base of the integer in buf
 	* @result BigInt representing the integer in the ubyte array
 	*/
-	static ref BigInt decode(in SafeVector!ubyte buf,
+	static ref BigInt decode(in Secure_Vector!ubyte buf,
 							Base base = Binary)
 	{
 		return BigInt.decode(&buf[0], buf.length, base);
@@ -1045,10 +1045,10 @@ public:
 	/**
 	* Encode a BigInt to a ubyte array according to IEEE 1363
 	* @param n the BigInt to encode
-	* @param bytes the length of the resulting SafeVector!ubyte
-	* @result a SafeVector!ubyte containing the encoded BigInt
+	* @param bytes the length of the resulting Secure_Vector!ubyte
+	* @result a Secure_Vector!ubyte containing the encoded BigInt
 	*/
-	static SafeVector!ubyte encode_1363(in BigInt n, size_t bytes)
+	static Secure_Vector!ubyte encode_1363(in BigInt n, size_t bytes)
 	{
 		const size_t n_bytes = n.bytes();
 		if (n_bytes > bytes)
@@ -1056,7 +1056,7 @@ public:
 		
 		const size_t leading_0s = bytes - n_bytes;
 		
-		SafeVector!ubyte output = SafeVector!ubyte(bytes);
+		Secure_Vector!ubyte output = Secure_Vector!ubyte(bytes);
 		encode(&output[leading_0s], n, Binary);
 		return output;
 	}
@@ -1146,7 +1146,7 @@ public:
 			bigint_linmul3(z.mutable_data(), x.data(), x_sw, y.word_at(0));
 		else if (x_sw && y_sw)
 		{
-			SafeVector!word workspace(z.length);
+			Secure_Vector!word workspace(z.length);
 			bigint_mul(z.mutable_data(), z.length, &workspace[0],
 			x.data(), x.length, x_sw,
 			y.data(), y.length, y_sw);
@@ -1252,7 +1252,7 @@ public:
 		return y;
 	}
 private:
-	SafeVector!word m_reg;
+	Secure_Vector!word m_reg;
 	Sign m_signedness = Positive;
 };
 

@@ -6,23 +6,26 @@
 */
 module botan.asn1.x509_dn;
 
-import botan.asn1.asn1_obj;
-import botan.asn1.asn1_oid;
-import botan.asn1.asn1_str;
-import botan.asn1.x509_dn;
+public import botan.asn1.asn1_obj;
+public import botan.asn1.asn1_oid;
+public import botan.asn1.asn1_str;
+public import botan.asn1.x509_dn;
 import botan.asn1.der_enc;
 import botan.asn1.ber_dec;
 import botan.utils.parsing;
+import botan.utils.types;
 import botan.internal.stl_util;
 import botan.asn1.oid_lookup.oids;
 import ostream;
 import map;
 import iosfwd;
 
+alias X509_DN = FreeListRef!X509_DN_Impl;
+
 /**
 * Distinguished Name
 */
-class X509_DN : ASN1_Object
+final class X509_DN_Impl : ASN1_Object
 {
 public:
 	/*

@@ -7,8 +7,9 @@
 
 module botan.asn1.asn1_obj;
 
-import botan.asn1.der_enc;
-import botan.asn1.ber_dec;
+public import botan.asn1.der_enc;
+public import botan.asn1.ber_dec;
+public import botan.asn1.alg_id;
 import botan.filters.data_src;
 import botan.utils.parsing;
 import botan.alloc.secmem;
@@ -24,7 +25,7 @@ enum ASN1_Tag {
 	
 	CONSTRUCTED			= 0x20,
 
-	PRIVATE				= CONSTRUCTED | ASN1_Tag.CONTEXT_SPECIFIC,
+	PRIVATE				= ASN1_Tag.CONSTRUCTED | ASN1_Tag.CONTEXT_SPECIFIC,
 
 	EOC					= 0x00,
 	BOOLEAN				= 0x01,
@@ -94,7 +95,7 @@ public:
 	}
 
 	ASN1_Tag type_tag, class_tag;
-	SafeVector!ubyte value;
+	Secure_Vector!ubyte value;
 }
 
 /*

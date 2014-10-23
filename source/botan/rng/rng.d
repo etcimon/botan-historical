@@ -36,7 +36,7 @@ public:
 	/*
 	* Create and seed a new RNG object
 	*/
-	static RandomNumberGenerator make_rng(AlgorithmFactory af)
+	static RandomNumberGenerator make_rng(Algorithm_Factory af)
 	{
 		RandomNumberGenerator rng =
 			new HMAC_RNG(af.make_mac("HMAC(SHA-512)"),
@@ -59,9 +59,9 @@ public:
 	* @param bytes number of bytes in the result
 	* @return randomized vector of length bytes
 	*/
-	abstract SafeVector!ubyte random_vec(size_t bytes)
+	abstract Secure_Vector!ubyte random_vec(size_t bytes)
 	{
-		SafeVector!ubyte output = SafeVector!ubyte(bytes);
+		Secure_Vector!ubyte output = Secure_Vector!ubyte(bytes);
 		randomize(&output[0], output.length);
 		return output;
 	}
@@ -70,7 +70,7 @@ public:
 	* Return a random ubyte
 	* @return random ubyte
 	*/
-	ubyte next_byte()
+	final ubyte next_byte()
 	{
 		ubyte output;
 		this.randomize(&output, 1);
@@ -117,7 +117,7 @@ public:
 class Null_RNG : RandomNumberGenerator
 {
 public:
-	override void randomize(ubyte[], size_t) { throw new PRNG_Unseeded("Null_RNG"); }
+	override void randomize(ubyte*, size_t) { throw new PRNG_Unseeded("Null_RNG"); }
 
 	override void clear() {}
 

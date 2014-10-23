@@ -9,6 +9,7 @@ module botan.block.gost_28147;
 import botan.block.block_cipher;
 import botan.utils.loadstor;
 import botan.utils.rotate;
+import botan.utils.exceptn;
 
 /**
 * The GOST 28147-89 block cipher uses a set of 4 bit Sboxes, however
@@ -16,7 +17,7 @@ import botan.utils.rotate;
 * considered a local configuration issue. Several different sets are
 * used.
 */
-class GOST_28147_89_Params
+final class GOST_28147_89_Params
 {
 public:
 	/**
@@ -81,7 +82,7 @@ private:
 /**
 * GOST 28147-89
 */
-class GOST_28147_89 : Block_Cipher_Fixed_Params!(8, 32)
+final class GOST_28147_89 : Block_Cipher_Fixed_Params!(8, 32)
 {
 public:
 
@@ -207,10 +208,10 @@ private:
 	*/
 	Vector!uint SBOX;
 
-	SafeVector!uint EK;
+	Secure_Vector!uint EK;
 };
 
-package:
+protected:
 
 /*
 * Two rounds of GOST

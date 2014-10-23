@@ -14,7 +14,7 @@ import botan.utils.xor_buf;
 /**
 * DJB's Salsa20 (and XSalsa20)
 */
-class Salsa20 : StreamCipher
+final class Salsa20 : StreamCipher
 {
 public:
 	/*
@@ -64,7 +64,7 @@ public:
 			m_state[8] = load_le!uint(iv, 2);
 			m_state[9] = load_le!uint(iv, 3);
 			
-			SafeVector!uint hsalsa(8);
+			Secure_Vector!uint hsalsa(8);
 			hsalsa20(&hsalsa[0], &m_state[0]);
 			
 			m_state[ 1] = hsalsa[0];
@@ -115,7 +115,7 @@ public:
 		return "Salsa20";
 	}
 
-	StreamCipher clone() const { return new Salsa20; }
+	Salsa20 clone() const { return new Salsa20; }
 private:
 	/*
 	* Salsa20 Key Schedule
@@ -157,8 +157,8 @@ private:
 		set_iv(ZERO, (ZERO).sizeof);
 	}
 
-	SafeVector!uint m_state;
-	SafeVector!ubyte m_buffer;
+	Secure_Vector!uint m_state;
+	Secure_Vector!ubyte m_buffer;
 	size_t m_position;
 };
 
@@ -168,7 +168,7 @@ private:
 /*
 * Generate HSalsa20 cipher stream (for XSalsa20 IV setup)
 */
-void hsalsa20(uint[8] output, const uint[16] input)
+void hsalsa20(uint[8]* output, const uint[16]* input)
 {
 	uint x00 = input[ 0], x01 = input[ 1], x02 = input[ 2], x03 = input[ 3],
 		x04 = input[ 4], x05 = input[ 5], x06 = input[ 6], x07 = input[ 7],
@@ -202,7 +202,7 @@ void hsalsa20(uint[8] output, const uint[16] input)
 /*
 * Generate Salsa20 cipher stream
 */
-void salsa20(ubyte[64] output, const uint[16] input)
+void salsa20(ubyte[64]* output, const uint[16]* input)
 {
 	uint x00 = input[ 0], x01 = input[ 1], x02 = input[ 2], x03 = input[ 3],
 		x04 = input[ 4], x05 = input[ 5], x06 = input[ 6], x07 = input[ 7],

@@ -13,7 +13,7 @@ import botan.utils.xor_buf;
 /**
 * CTR-BE (Counter mode, big-endian)
 */
-class CTR_BE : StreamCipher
+final class CTR_BE : StreamCipher
 {
 public:
 	void cipher(in ubyte* input, ubyte* output)
@@ -34,7 +34,7 @@ public:
 	void set_iv(in ubyte* iv, size_t iv_len)
 	{
 		if (!valid_iv_length(iv_len))
-			throw new Invalid_IV_Length(name(), iv_len);
+			throw new Invalid_IV_Length(name, iv_len);
 		
 		const size_t bs = m_cipher.block_size;
 		
@@ -69,7 +69,7 @@ public:
 		return ("CTR-BE(" ~ m_cipher.name ~ ")");
 	}
 
-	CTR_BE* clone() const
+	CTR_BE clone() const
 	{ return new CTR_BE(m_cipher.clone()); }
 
 	void clear()
@@ -123,6 +123,6 @@ private:
 	}
 
 	Unique!BlockCipher m_cipher;
-	SafeVector!ubyte m_counter, m_pad;
+	Secure_Vector!ubyte m_counter, m_pad;
 	size_t m_pad_pos;
 };

@@ -18,7 +18,7 @@ import botan.utils.rounding;
 class CBC_Mode : Cipher_Mode
 {
 public:
-	override SafeVector!ubyte start(in ubyte* nonce, size_t nonce_len)
+	final override Secure_Vector!ubyte start(in ubyte* nonce, size_t nonce_len)
 	{
 		if (!valid_nonce_length(nonce_len))
 			throw new Invalid_IV_Length(name(), nonce_len);
@@ -31,10 +31,10 @@ public:
 		if (nonce_len)
 			m_state.assign(nonce, nonce + nonce_len);
 		
-		return SafeVector!ubyte();
+		return Secure_Vector!ubyte();
 	}
 
-	override @property string name() const
+	final override @property string name() const
 	{
 		if (m_padding)
 			return cipher().name ~ "/CBC/" ~ padding().name;
@@ -42,32 +42,32 @@ public:
 			return cipher().name ~ "/CBC/CTS";
 	}
 
-	override size_t update_granularity() const
+	final override size_t update_granularity() const
 	{
 		return cipher().parallel_bytes();
 	}
 
-	override Key_Length_Specification key_spec() const
+	final override Key_Length_Specification key_spec() const
 	{
 		return cipher().key_spec();
 	}
 
-	override size_t default_nonce_length() const
+	final override size_t default_nonce_length() const
 	{
 		return cipher().block_size;
 	}
 
-	override bool valid_nonce_length(size_t n) const
+	final override bool valid_nonce_length(size_t n) const
 	{
 		return (n == 0 || n == cipher().block_size);
 	}
 
-	override void clear()
+	final override void clear()
 	{
 		m_cipher.clear();
 		m_state.clear();
 	}
-package:
+protected:
 	this(BlockCipher cipher, BlockCipherModePaddingMethod padding) 
 	{
 		m_cipher = cipher;
@@ -79,27 +79,27 @@ package:
 			                           cipher.name ~ "/CBC");
 	}
 
-	const BlockCipher cipher() const { return *m_cipher; }
+	final const BlockCipher cipher() const { return *m_cipher; }
 
-	const BlockCipherModePaddingMethod padding() const
+	final const BlockCipherModePaddingMethod padding() const
 	{
 		BOTAN_ASSERT_NONNULL(m_padding);
 		return *m_padding;
 	}
 
-	SafeVector!ubyte state() { return m_state; }
+	final Secure_Vector!ubyte state() { return m_state; }
 
-	ubyte* state_ptr() { return &m_state[0]; }
+	final ubyte* state_ptr() { return &m_state[0]; }
 
 private:
-	override void key_schedule(in ubyte* key, size_t length)
+	final override void key_schedule(in ubyte* key, size_t length)
 	{
 		m_cipher.set_key(key, length);
 	}
 
 	Unique!BlockCipher m_cipher;
 	Unique!BlockCipherModePaddingMethod m_padding;
-	SafeVector!ubyte m_state;
+	Secure_Vector!ubyte m_state;
 };
 
 /**
@@ -113,7 +113,7 @@ public:
 		super(cipher, padding);
 	}
 
-	override void update(SafeVector!ubyte buffer, size_t offset = 0)
+	final override void update(Secure_Vector!ubyte buffer, size_t offset = 0)
 	{
 		assert(buffer.length >= offset, "Offset is sane");
 		const size_t sz = buffer.length - offset;
@@ -140,7 +140,7 @@ public:
 	}
 
 
-	override void finish(SafeVector!ubyte buffer, size_t offset = 0)
+	override void finish(Secure_Vector!ubyte buffer, size_t offset = 0)
 	{
 		assert(buffer.length >= offset, "Offset is sane");
 		
@@ -151,7 +151,7 @@ public:
 		padding().add_padding(buffer, bytes_in_final_block, BS);
 		
 		if ((buffer.length-offset) % BS)
-			throw new Exception("Did not pad to full block size in " ~ name());
+			throw new Exception("Did not pad to full block size in " ~ name);
 		
 		update(buffer, offset);
 	}
@@ -170,7 +170,7 @@ public:
 /**
 * CBC Encryption with ciphertext stealing (CBC-CS3 variant)
 */
-class CTS_Encryption : CBC_Encryption
+final class CTS_Encryption : CBC_Encryption
 {
 public:
 	this(BlockCipher cipher)
@@ -183,7 +183,7 @@ public:
 		return input_length; // no ciphertext expansion in CTS
 	}
 
-	override void finish(SafeVector!ubyte buffer, size_t offset = 0)
+	override void finish(Secure_Vector!ubyte buffer, size_t offset = 0)
 	{
 		assert(buffer.length >= offset, "Offset is sane");
 		ubyte* buf = &buffer[offset];
@@ -208,7 +208,7 @@ public:
 			const size_t final_bytes = sz - full_blocks;
 			assert(final_bytes > BS && final_bytes < 2*BS, "Left over size in expected range");
 			
-			SafeVector!ubyte last = SafeVector!ubyte(buf + full_blocks, buf + full_blocks + final_bytes);
+			Secure_Vector!ubyte last = Secure_Vector!ubyte(buf + full_blocks, buf + full_blocks + final_bytes);
 			buffer.resize(full_blocks + offset);
 			update(buffer, offset);
 			
@@ -251,7 +251,7 @@ public:
 		m_tempbuf = update_granularity();
 	}
 
-	override void update(SafeVector!ubyte buffer, size_t offset)
+	final override void update(Secure_Vector!ubyte buffer, size_t offset)
 	{
 		assert(buffer.length >= offset, "Offset is sane");
 		const size_t sz = buffer.length - offset;
@@ -279,7 +279,7 @@ public:
 		}
 	}
 
-	override void finish(SafeVector!ubyte buffer, size_t offset = 0)
+	override void finish(Secure_Vector!ubyte buffer, size_t offset = 0)
 	{
 		assert(buffer.length >= offset, "Offset is sane");
 		const size_t sz = buffer.length - offset;
@@ -305,13 +305,13 @@ public:
 		return cipher().block_size;
 	}	 
 private:
-	SafeVector!ubyte m_tempbuf;
+	Secure_Vector!ubyte m_tempbuf;
 };
 
 /**
 * CBC Decryption with ciphertext stealing (CBC-CS3 variant)
 */
-class CTS_Decryption : CBC_Decryption
+final class CTS_Decryption : CBC_Decryption
 {
 public:
 	this(BlockCipher cipher)
@@ -319,7 +319,7 @@ public:
 		super(cipher, null)
 	}
 
-	override void finish(SafeVector!ubyte buffer, size_t offset = 0)
+	override void finish(Secure_Vector!ubyte buffer, size_t offset = 0)
 	{
 		assert(buffer.length >= offset, "Offset is sane");
 		const size_t sz = buffer.length - offset;
@@ -345,7 +345,7 @@ public:
 			const size_t final_bytes = sz - full_blocks;
 			assert(final_bytes > BS && final_bytes < 2*BS, "Left over size in expected range");
 			
-			SafeVector!ubyte last = SafeVector!ubyte(buf + full_blocks, buf + full_blocks + final_bytes);
+			Secure_Vector!ubyte last = Secure_Vector!ubyte(buf + full_blocks, buf + full_blocks + final_bytes);
 			buffer.resize(full_blocks + offset);
 			update(buffer, offset);
 			

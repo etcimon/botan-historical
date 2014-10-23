@@ -22,14 +22,14 @@ BigInt generate_rfc6979_nonce(in BigInt x,
                               const ref BigInt h,
                               in string hash)
 {
-	AlgorithmFactory af = global_state().algorithm_factory();
+	Algorithm_Factory af = global_state().algorithm_factory();
 	
 	auto rng = scoped!HMAC_DRBG(af.make_mac("HMAC(" ~ hash ~ ")"), null);
 
 	const size_t qlen = q.bits();
 	const size_t rlen = qlen / 8 + (qlen % 8 ? 1 : 0);
 	
-	SafeVector!ubyte input = BigInt.encode_1363(x, rlen);
+	Secure_Vector!ubyte input = BigInt.encode_1363(x, rlen);
 	
 	input += BigInt.encode_1363(h, rlen);
 	
@@ -37,7 +37,7 @@ BigInt generate_rfc6979_nonce(in BigInt x,
 	
 	BigInt k;
 	
-	SafeVector!ubyte kbits(rlen);
+	Secure_Vector!ubyte kbits(rlen);
 	
 	while(k == 0 || k >= q)
 	{

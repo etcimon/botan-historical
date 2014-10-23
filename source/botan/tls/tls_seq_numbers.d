@@ -7,7 +7,7 @@
 module botan.tls.tls_seq_numbers;
 
 import botan.utils.types;
-import stdexcept;
+import std.exception;
 
 
 class Connection_Sequence_Numbers

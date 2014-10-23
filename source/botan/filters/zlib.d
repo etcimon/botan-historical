@@ -138,7 +138,7 @@ private:
 	const size_t level;
 	const bool raw_deflate;
 
-	SafeVector!ubyte buffer;
+	Secure_Vector!ubyte buffer;
 	Zlib_Stream* zlib;
 };
 
@@ -258,7 +258,7 @@ private:
 
 	const bool raw_deflate;
 
-	SafeVector!ubyte buffer;
+	Secure_Vector!ubyte buffer;
 	Zlib_Stream* zlib;
 	bool no_writes;
 };

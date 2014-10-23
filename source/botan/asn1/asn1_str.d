@@ -18,7 +18,7 @@ alias ASN1_String = FreeListRef!ASN1_String_Impl;
 /**
 * Simple String
 */
-class ASN1_String_Impl : ASN1_Object
+final class ASN1_String_Impl : ASN1_Object
 {
 public:
 

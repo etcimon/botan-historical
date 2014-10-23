@@ -135,7 +135,7 @@ private:
 	}
 
 
-	SafeVector!uint X, digest;
+	Secure_Vector!uint X, digest;
 };
 
 private:

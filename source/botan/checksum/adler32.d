@@ -22,7 +22,7 @@ public:
 
 	this() { clear(); }
 	~this() { clear(); }
-package:
+protected:
 	/*
 	* Update an Adler32 Checksum
 	*/
@@ -51,9 +51,6 @@ package:
 
 	ushort S1, S2;
 };
-
-
-
 
 package:
 

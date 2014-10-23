@@ -11,13 +11,13 @@ import botan.pk_pad.eme;
 import botan.libstate.libstate;
 import botan.algo_base.scan_name;
 
-static if (BOTAN_HAS_EMSA1)  import botan.emsa1;
-static if (BOTAN_HAS_EMSA1_BSI)  import botan.emsa1_bsi;
-static if (BOTAN_HAS_EMSA_X931)  import botan.pk_pad.emsa_x931;
-static if (BOTAN_HAS_EMSA_PKCS1)  import botan.pk_pad.emsa_pkcs1;
-static if (BOTAN_HAS_EMSA_PSSR)  import botan.pk_pad.pssr;
-static if (BOTAN_HAS_EMSA_RAW)  import botan.pk_pad.emsa_raw;
-static if (BOTAN_HAS_EME_OAEP)  import botan.pk_pad.oaep;
+static if (BOTAN_HAS_EMSA1)  		import botan.pk_pad.emsa1;
+static if (BOTAN_HAS_EMSA1_BSI)  	import botan.pk_pad.emsa1_bsi;
+static if (BOTAN_HAS_EMSA_X931)  	import botan.pk_pad.emsa_x931;
+static if (BOTAN_HAS_EMSA_PKCS1)  	import botan.pk_pad.emsa_pkcs1;
+static if (BOTAN_HAS_EMSA_PSSR)  	import botan.pk_pad.pssr;
+static if (BOTAN_HAS_EMSA_RAW)  	import botan.pk_pad.emsa_raw;
+static if (BOTAN_HAS_EME_OAEP)  	import botan.pk_pad.oaep;
 static if (BOTAN_HAS_EME_PKCS1v15)  import botan.pk_pad.eme_pkcs;
 
 /*
@@ -27,7 +27,7 @@ EMSA get_emsa(in string algo_spec)
 {
 	SCAN_Name request = SCAN_Name(algo_spec);
 	
-	AlgorithmFactory af = global_state().algorithm_factory();
+	Algorithm_Factory af = global_state().algorithm_factory();
 	
 	static if (BOTAN_HAS_EMSA_RAW) {
 		if (request.algo_name == "Raw" && request.arg_count() == 0)
@@ -100,7 +100,7 @@ EME get_eme(in string algo_spec)
 	}
 	
 	static if (BOTAN_HAS_EME_OAEP) {
-		AlgorithmFactory af = global_state().algorithm_factory();
+		Algorithm_Factory af = global_state().algorithm_factory();
 		
 		if (request.algo_name == "OAEP" && request.arg_count_between(1, 2))
 		{
@@ -114,4 +114,3 @@ EME get_eme(in string algo_spec)
 	
 	throw new Algorithm_Not_Found(algo_spec);
 }
-

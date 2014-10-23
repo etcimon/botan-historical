@@ -13,6 +13,8 @@ import botan.pubkey.pk_ops;
 import botan.pubkey.algo.gost_3410;
 import botan.asn1.der_enc;
 import botan.asn1.ber_dec;
+import botan.math.ec_gfp.point_gfp;
+import botan.rng.rng;
 
 /**
 * GOST-34.10 Public Key
@@ -27,7 +29,7 @@ public:
 	* @param public_point the public point defining this key
 	*/
 	this(in EC_Group dom_par,
-						const ref PointGFp public_point) 
+		 const ref PointGFp public_point) 
 	{
 		super(dom_par, public_point); 
 	}
@@ -35,8 +37,8 @@ public:
 	/**
 	* Construct from X.509 algorithm id and subject public key bits
 	*/
-	this(in AlgorithmIdentifier alg_id,
-	     in SafeVector!ubyte key_bits)
+	this(in Algorithm_Identifier alg_id,
+	     in Secure_Vector!ubyte key_bits)
 	{
 		OID ecc_param_id;
 		
@@ -45,7 +47,7 @@ public:
 		
 		domain_params = EC_Group(ecc_param_id);
 		
-		SafeVector!ubyte bits;
+		Secure_Vector!ubyte bits;
 		BER_Decoder(key_bits).decode(bits, ASN1_Tag.OCTET_STRING);
 		
 		const size_t part_size = bits.length / 2;
@@ -72,7 +74,7 @@ public:
 	*/
 	@property string algo_name() const { return "GOST-34.10"; }
 
-	AlgorithmIdentifier algorithm_identifier() const
+	Algorithm_Identifier algorithm_identifier() const
 	{
 		Vector!ubyte params =
 			DER_Encoder().start_cons(ASN1_Tag.SEQUENCE)
@@ -80,7 +82,7 @@ public:
 				.end_cons()
 				.get_contents_unlocked();
 		
-		return AlgorithmIdentifier(get_oid(), params);
+		return Algorithm_Identifier(get_oid(), params);
 	}
 
 	Vector!ubyte x509_subject_public_key() const
@@ -119,20 +121,20 @@ public:
 	size_t message_part_size() const
 	{ return domain().get_order().bytes(); }
 
-package:
+protected:
 	this() {}
 };
 
 /**
 * GOST-34.10 Private Key
 */
-class GOST_3410_PrivateKey : GOST_3410_PublicKey,
+final class GOST_3410_PrivateKey : GOST_3410_PublicKey,
 							 EC_PrivateKey
 {
 public:
 
-	this(in AlgorithmIdentifier alg_id,
-								in SafeVector!ubyte key_bits)
+	this(in Algorithm_Identifier alg_id,
+			in Secure_Vector!ubyte key_bits)
 	{
 		super(alg_id, key_bits);
 	}
@@ -143,21 +145,21 @@ public:
 	* @param domain parameters to used for this key
 	* @param x the private key; if zero, a new random key is generated
 	*/
-	GOST_3410_PrivateKey(RandomNumberGenerator rng,
-								const ref EC_Group domain,
-								const ref BigInt x = 0)
+	this(	RandomNumberGenerator rng,
+			const ref EC_Group domain,
+			const ref BigInt x = 0)
 	{
 		super(rng, domain, x);
 	}
 
-	AlgorithmIdentifier pkcs8_algorithm_identifier() const
+	Algorithm_Identifier pkcs8_algorithm_identifier() const
 	{ return super.algorithm_identifier(); }
 };
 
 /**
 * GOST-34.10 signature operation
 */
-class GOST_3410_Signature_Operation : Signature
+final class GOST_3410_Signature_Operation : Signature
 {
 public:	
 	this(const GOST_3410_PrivateKey gost_3410)
@@ -172,7 +174,7 @@ public:
 	size_t message_part_size() const { return order.bytes(); }
 	size_t max_input_bits() const { return order.bits(); }
 
-	SafeVector!ubyte sign(in ubyte* msg, size_t msg_len,
+	Secure_Vector!ubyte sign(in ubyte* msg, size_t msg_len,
 	                      RandomNumberGenerator rng)
 	{
 		BigInt k;
@@ -198,22 +200,22 @@ public:
 		if (r == 0 || s == 0)
 			throw new Invalid_State("GOST 34.10: r == 0 || s == 0");
 		
-		SafeVector!ubyte output = SafeVector!ubyte(2*order.bytes());
+		Secure_Vector!ubyte output = Secure_Vector!ubyte(2*order.bytes());
 		s.binary_encode(&output[output.length / 2 - s.bytes()]);
 		r.binary_encode(&output[output.length - r.bytes()]);
 		return output;
 	}
 
 private:
-	const ref PointGFp base_point;
-	const ref BigInt order;
-	const ref BigInt x;
+	const PointGFp base_point;
+	const BigInt order;
+	const BigInt x;
 };
 
 /**
 * GOST-34.10 verification operation
 */
-class GOST_3410_Verification_Operation : Verification
+final class GOST_3410_Verification_Operation : Verification
 {
 public:
 	this(in GOST_3410_PublicKey gost) 
@@ -261,9 +263,9 @@ public:
 		return (R.get_affine_x() == r);
 	}
 private:
-	const ref PointGFp base_point;
-	const ref PointGFp public_point;
-	const ref BigInt order;
+	const PointGFp base_point;
+	const PointGFp public_point;
+	const BigInt order;
 };
 
 
@@ -271,7 +273,7 @@ private:
 
 BigInt decode_le(in ubyte* msg, size_t msg_len)
 {
-	SafeVector!ubyte msg_le = SafeVector!ubyte(msg, msg + msg_len);
+	Secure_Vector!ubyte msg_le = Secure_Vector!ubyte(msg, msg + msg_len);
 	
 	for (size_t i = 0; i != msg_le.length / 2; ++i)
 		std.algorithm.swap(msg_le[i], msg_le[msg_le.length-1-i]);

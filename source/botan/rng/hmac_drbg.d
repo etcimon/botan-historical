@@ -8,12 +8,13 @@ module botan.rng.hmac_drbg;
 
 import botan.rng.rng;
 import botan.mac.mac;
+import botan.utils.types;
 import std.algorithm;
 
 /**
 * HMAC_DRBG (SP800-90A)
 */
-class HMAC_DRBG : RandomNumberGenerator
+final class HMAC_DRBG : RandomNumberGenerator
 {
 public:
 	void randomize(ubyte* output, size_t length)
@@ -22,7 +23,7 @@ public:
 			reseed(m_mac.output_length * 8);
 		
 		if (!is_seeded())
-			throw new PRNG_Unseeded(name());
+			throw new PRNG_Unseeded(name);
 		
 		while(length)
 		{
@@ -67,7 +68,7 @@ public:
 			
 			if (m_prng.is_seeded())
 			{
-				SafeVector!ubyte input = m_prng.random_vec(m_mac.output_length);
+				Secure_Vector!ubyte input = m_prng.random_vec(m_mac.output_length);
 				update(&input[0], input.length);
 				m_reseed_counter = 1;
 			}
@@ -89,9 +90,9 @@ public:
 	{ 
 		m_mac = mac;
 		m_prng = prng;
-		m_V = SafeVector!ubyte(m_mac.output_length, 0x01);
+		m_V = Secure_Vector!ubyte(m_mac.output_length, 0x01);
 		m_reseed_counter = 0;
-		m_mac.set_key(SafeVector!ubyte(m_mac.output_length, 0x00));
+		m_mac.set_key(Secure_Vector!ubyte(m_mac.output_length, 0x00));
 	}
 
 private:
@@ -121,6 +122,6 @@ private:
 	Unique!MessageAuthenticationCode m_mac;
 	Unique!RandomNumberGenerator m_prng;
 
-	SafeVector!ubyte m_V;
+	Secure_Vector!ubyte m_V;
 	size_t m_reseed_counter;
 };

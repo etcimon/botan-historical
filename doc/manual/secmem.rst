@@ -9,7 +9,7 @@ floating around in memory for later retreval.
 
 For this reason the library uses a ``std::vector`` with a custom
 allocator that will zero memory before deallocation, named via typedef
-as ``SafeVector``. Because it is simply a STL vector with a custom
+as ``Secure_Vector``. Because it is simply a STL vector with a custom
 allocator, it has an identical API to the ``std::vector`` you know and
 love.
 
@@ -21,7 +21,7 @@ of memory. On these systems, allocations first attempt to allocate out
 of this small locked pool, and then if that fails will fall back to
 normal heap allocations.
 
-The ``SafeVector`` template is only meant for primitive data types
+The ``Secure_Vector`` template is only meant for primitive data types
 (bytes or ints): if you want a container of higher level Botan
 objects, you can just use a ``std::vector``, since these objects know
 how to clear themselves when they are destroyed. You cannot, however,

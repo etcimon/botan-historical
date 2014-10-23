@@ -127,6 +127,11 @@ public:
 		return u;
 	}
 
+	void drop()
+	{
+		_p = null;
+	}
+
 	/** Forwards member access to contents. */
 	RefT opDot() { return _p; }
 

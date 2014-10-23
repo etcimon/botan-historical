@@ -40,14 +40,14 @@ public:
 	* Get the OID of the underlying public key scheme.
 	* @return OID of the public key scheme
 	*/
-	OID get_oid() const
+	final OID get_oid() const
 	{
 		try {
 			return oids.lookup(algo_name);
 		}
 		catch(Lookup_Error)
 		{
-			throw new Lookup_Error("PK algo " ~ algo_name() ~ " has no defined OIDs");
+			throw new Lookup_Error("PK algo " ~ algo_name ~ " has no defined OIDs");
 		}
 	}
 
@@ -81,9 +81,9 @@ public:
 	abstract size_t max_input_bits() const;
 
 	/**
-	* @return X.509 AlgorithmIdentifier for this key
+	* @return X.509 Algorithm_Identifier for this key
 	*/
-	abstract AlgorithmIdentifier algorithm_identifier() const;
+	abstract Algorithm_Identifier algorithm_identifier() const;
 
 	/**
 	* @return X.509 subject key encoding for this key object
@@ -91,12 +91,12 @@ public:
 	abstract Vector!ubyte x509_subject_public_key() const;
 
 	~this() {}
-package:
+protected:
 	/**
 	* Self-test after loading a key
 	* @param rng a random number generator
 	*/
-	void load_check(RandomNumberGenerator rng) const
+	abstract void load_check(RandomNumberGenerator rng) const
 	{
 		if (!check_key(rng, BOTAN_PUBLIC_KEY_STRONG_CHECKS_ON_LOAD))
 			throw new Invalid_Argument(algo_name ~ ": Invalid public key");
@@ -112,21 +112,21 @@ public:
 	/**
 	* @return PKCS #8 private key encoding for this key object
 	*/
-	abstract SafeVector!ubyte pkcs8_Private_Key() const;
+	abstract Secure_Vector!ubyte pkcs8_Private_Key() const;
 
 	/**
-	* @return PKCS #8 AlgorithmIdentifier for this key
+	* @return PKCS #8 Algorithm_Identifier for this key
 	* Might be different from the X.509 identifier, but normally is not
 	*/
-	abstract AlgorithmIdentifier pkcs8_algorithm_identifier() const
+	abstract Algorithm_Identifier pkcs8_algorithm_identifier() const
 	{ return algorithm_identifier(); }
 
-package:
+protected:
 	/**
 	* Self-test after loading a key
 	* @param rng a random number generator
 	*/
-			void load_check(RandomNumberGenerator rng) const
+	final override void load_check(RandomNumberGenerator rng) const
 	{
 		if (!check_key(rng, BOTAN_Private_Key_STRONG_CHECKS_ON_LOAD))
 			throw new Invalid_Argument(algo_name ~ ": Invalid private key");
@@ -136,7 +136,7 @@ package:
 	* Self-test after generating a key
 	* @param rng a random number generator
 	*/
-	void gen_check(RandomNumberGenerator rng) const
+	final void gen_check(RandomNumberGenerator rng) const
 	{
 		if (!check_key(rng, BOTAN_Private_Key_STRONG_CHECKS_ON_GENERATE))
 			throw new Self_Test_Failure(algo_name ~ " private key generation failed");

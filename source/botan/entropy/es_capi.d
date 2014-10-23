@@ -28,7 +28,7 @@ public:
 	*/
 	void poll(ref Entropy_Accumulator accum)
 	{
-		SafeVector!ubyte io_buffer = accum.get_io_buffer(32);
+		Secure_Vector!ubyte io_buffer = accum.get_io_buffer(32);
 		
 		for (size_t i = 0; i != prov_types.length; ++i)
 		{

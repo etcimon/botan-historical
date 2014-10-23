@@ -7,6 +7,8 @@
 module botan.utils.rotate;
 
 import botan.utils.types;
+pure:
+
 /**
 * Bit rotation left
 * @param input the input word

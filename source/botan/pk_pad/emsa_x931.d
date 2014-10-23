@@ -15,7 +15,7 @@ import botan.pk_pad.hash_id;
 * Useful for Rabin-Williams, also sometimes used with RSA in
 * odd protocols.
 */
-class EMSA_X931 : EMSA
+final class EMSA_X931 : EMSA
 {
 public:
 	/**
@@ -31,14 +31,13 @@ public:
 		if (!m_hash_id)
 			throw new Encoding_Error("EMSA_X931 no hash identifier for " ~ hash.name);
 	}
-	EMSA_X931(HashFunction hash);
 private:
 	void update(in ubyte* input, size_t length)
 	{
 		m_hash.update(input, length);
 	}
 
-	SafeVector!ubyte raw_data()
+	Secure_Vector!ubyte raw_data()
 	{
 		return m_hash.flush();
 	}
@@ -46,7 +45,7 @@ private:
 	/*
 	* EMSA_X931 Encode Operation
 	*/
-	SafeVector!ubyte encoding_of(in SafeVector!ubyte msg,
+	Secure_Vector!ubyte encoding_of(in Secure_Vector!ubyte msg,
 	                             size_t output_bits,
 	                             RandomNumberGenerator)
 	{
@@ -56,8 +55,8 @@ private:
 	/*
 	* EMSA_X931 Verify Operation
 	*/
-	bool verify(in SafeVector!ubyte coded,
-	            in SafeVector!ubyte raw,
+	bool verify(in Secure_Vector!ubyte coded,
+	            in Secure_Vector!ubyte raw,
 	            size_t key_bits)
 	{
 		try
@@ -71,16 +70,16 @@ private:
 		}
 	}
 
-	SafeVector!ubyte m_empty_hash;
+	Secure_Vector!ubyte m_empty_hash;
 	Unique!HashFunction m_hash;
 	ubyte m_hash_id;
 };
 
 private:
 
-SafeVector!ubyte emsa2_encoding(in SafeVector!ubyte msg,
+Secure_Vector!ubyte emsa2_encoding(in Secure_Vector!ubyte msg,
                                 size_t output_bits,
-                                in SafeVector!ubyte empty_hash,
+                                in Secure_Vector!ubyte empty_hash,
                                 ubyte hash_id)
 {
 	const size_t HASH_SIZE = empty_hash.length;
@@ -94,7 +93,7 @@ SafeVector!ubyte emsa2_encoding(in SafeVector!ubyte msg,
 	
 	const bool empty_input = (msg == empty_hash);
 	
-	SafeVector!ubyte output = SafeVector!ubyte(output_length);
+	Secure_Vector!ubyte output = Secure_Vector!ubyte(output_length);
 	
 	output[0] = (empty_input ? 0x4B : 0x6B);
 	output[output_length - 3 - HASH_SIZE] = 0xBA;

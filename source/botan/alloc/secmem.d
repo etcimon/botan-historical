@@ -67,9 +67,9 @@ struct secure_allocator(T)
 	{ return false; }
 };
 
-alias SafeVector(T) = Vector!(T, secure_allocator!T);
+alias Secure_Vector(T) = Vector!(T, secure_allocator!T);
 
-Vector!T unlock(T)(in SafeVector!T input)
+Vector!T unlock(T)(in Secure_Vector!T input)
 {
 	Vector!T output = Vector!T(input.length);
 	copy_mem(&output[0], &input[0], input.length);

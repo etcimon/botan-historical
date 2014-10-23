@@ -14,7 +14,7 @@ import std.algorithm;
 /**
 * RC6, Ron Rivest's AES candidate
 */
-class RC6 : Block_Cipher_Fixed_Params!(16, 1, 32)
+final class RC6 : Block_Cipher_Fixed_Params!(16, 1, 32)
 {
 public:
 	/*
@@ -117,7 +117,7 @@ public:
 		zap(S);
 	}
 
-	@property string name() const { return "RC6"; }
+	override @property string name() const { return "RC6"; }
 	BlockCipher clone() const { return new RC6; }
 private:
 	/*
@@ -134,7 +134,7 @@ private:
 		for (size_t i = 1; i != S.length; ++i)
 			S[i] = S[i-1] + 0x9E3779B9;
 		
-		SafeVector!uint K = SafeVector!uint(8);
+		Secure_Vector!uint K = Secure_Vector!uint(8);
 		
 		for (int i = length-1; i >= 0; --i)
 			K[i/4] = (K[i/4] << 8) + key[i];
@@ -149,9 +149,5 @@ private:
 		}
 	}
 
-	SafeVector!uint S;
+	Secure_Vector!uint S;
 };
-
-
-
-

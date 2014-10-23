@@ -47,7 +47,7 @@ public:
 		{
 			while(!is_closed() && input_size)
 			{
-				SafeVector!ubyte record;
+				Secure_Vector!ubyte record;
 				ulong record_sequence = 0;
 				Record_Type record_type = NO_RECORD;
 				Protocol_Version record_version;
@@ -395,7 +395,7 @@ public:
 		{
 			Unique!KDF prf = active.protocol_specific_prf();
 			
-			const SafeVector!ubyte master_secret =
+			const Secure_Vector!ubyte master_secret =
 				active.session_keys().master_secret();
 			
 			Vector!ubyte salt;
@@ -445,7 +445,7 @@ public:
 	{
 		// So unique_ptr destructors run correctly
 	}
-package:
+protected:
 
 	abstract void process_handshake_msg(const Handshake_State active_state,
 												  Handshake_State pending_state,
@@ -814,6 +814,6 @@ private:
 	HashMap!(ushort, Connection_Cipher_State) m_read_cipher_states;
 
 	/* I/O buffers */
-	SafeVector!ubyte m_writebuf;
-	SafeVector!ubyte m_readbuf;
+	Secure_Vector!ubyte m_writebuf;
+	Secure_Vector!ubyte m_readbuf;
 };

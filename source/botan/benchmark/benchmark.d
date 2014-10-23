@@ -33,7 +33,7 @@ import std.datetime;
 */
 HashMap!(string, double)
 	time_algorithm_ops(in string name,
-	                   AlgorithmFactory af,
+	                   Algorithm_Factory af,
 	                   in string provider,
 	                   RandomNumberGenerator rng,
 	                   Duration runtime,
@@ -41,7 +41,7 @@ HashMap!(string, double)
 {
 	const size_t Mebibyte = 1024*1024;
 	
-	SafeVector!ubyte buffer = SafeVector!ubyte(buf_size * 1024);
+	Secure_Vector!ubyte buffer = Secure_Vector!ubyte(buf_size * 1024);
 	rng.randomize(&buffer[0], buffer.length);
 	
 	const double mb_mult = buffer.length / cast(double)(Mebibyte);
@@ -126,7 +126,7 @@ HashMap!(string, double)
 */
 HashMap!(string, double)
 	algorithm_benchmark(in string name,
-	                    AlgorithmFactory af,
+	                    Algorithm_Factory af,
 	                    RandomNumberGenerator rng,
 	                    Duration milliseconds,
 	                    size_t buf_size)

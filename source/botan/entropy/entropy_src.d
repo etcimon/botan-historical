@@ -35,7 +35,7 @@ public:
 	* @param size requested size for the I/O buffer
 	* @return cached I/O buffer for repeated polls
 	*/
-	SafeVector!ubyte get_io_buffer(size_t size)
+	Secure_Vector!ubyte get_io_buffer(size_t size)
 	{
 		m_io_buffer.clear();
 		m_io_buffer.resize(size);
@@ -73,7 +73,7 @@ public:
 private:
 	bool delegate(in ubyte*, size_t, double) m_accum_fn;
 	bool m_done;
-	SafeVector!ubyte m_io_buffer;
+	Secure_Vector!ubyte m_io_buffer;
 };
 
 /**

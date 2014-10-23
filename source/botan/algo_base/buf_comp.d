@@ -37,9 +37,9 @@ public:
 
 	/**
 	* Add new input to process.
-	* @param input the input to process as a SafeVector
+	* @param input the input to process as a Secure_Vector
 	*/
-	final void update(in SafeVector!ubyte input)
+	final void update(in Secure_Vector!ubyte input)
 	{
 		add_data(&input[0], input.length);
 	}
@@ -104,11 +104,11 @@ public:
 	/**
 	* Complete the computation and retrieve the
 	* final result.
-	* @return SafeVector holding the result
+	* @return Secure_Vector holding the result
 	*/
-	final SafeVector!ubyte flush()
+	final Secure_Vector!ubyte flush()
 	{
-		SafeVector!ubyte output = SafeVector!ubyte(output_length());
+		Secure_Vector!ubyte output = Secure_Vector!ubyte(output_length());
 		final_result(&output[0]);
 		return output;
 	}
@@ -120,7 +120,7 @@ public:
 	* @param length the length of the ubyte array
 	* @result the result of the call to flush()
 	*/
-	final SafeVector!ubyte process(in ubyte[] input)
+	final Secure_Vector!ubyte process(in ubyte[] input)
 	{
 		add_data(input);
 		return flush();
@@ -133,7 +133,7 @@ public:
 	* @param length the length of the ubyte array
 	* @result the result of the call to flush()
 	*/
-	final SafeVector!ubyte process(in ubyte* input, size_t length)
+	final Secure_Vector!ubyte process(in ubyte* input, size_t length)
 	{
 		add_data(input, length);
 		return flush();
@@ -145,7 +145,7 @@ public:
 	* @param input the input to process
 	* @result the result of the call to flush()
 	*/
-	final SafeVector!ubyte process(in SafeVector!ubyte input)
+	final Secure_Vector!ubyte process(in Secure_Vector!ubyte input)
 	{
 		add_data(input[]);
 		return flush();
@@ -157,7 +157,7 @@ public:
 	* @param input the input to process
 	* @result the result of the call to flush()
 	*/
-	final SafeVector!ubyte process(in Vector!ubyte input)
+	final Secure_Vector!ubyte process(in Vector!ubyte input)
 	{
 		add_data(input[]);
 		return flush();
@@ -169,7 +169,7 @@ public:
 	* @param input the input to process as a string
 	* @result the result of the call to flush()
 	*/
-	final SafeVector!ubyte process(in string input)
+	final Secure_Vector!ubyte process(in string input)
 	{
 		update(input);
 		return flush();

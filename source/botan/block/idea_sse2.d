@@ -5,15 +5,17 @@
 * Distributed under the terms of the botan license.
 */
 module botan.block.idea_sse2;
-import botan.utils.simd.emmintrin;
 
+import botan.block.idea;
+import botan.utils.simd.emmintrin;
+import botan.block.block_cipher;
 /**
 * IDEA in SSE2
 */
-class IDEA_SSE2 : IDEA
+final class IDEA_SSE2 : IDEA
 {
 public:
-	size_t parallelism() const { return 8; }
+	override @property size_t parallelism() const { return 8; }
 
 	/*
 	* IDEA Encryption
@@ -58,7 +60,7 @@ public:
 
 package:
 
-__m128i mul(__m128i X, ushort K_16)
+__m128i mul(__m128i X, ushort K_16) pure
 {
 	const __m128i zeros = _mm_set1_epi16(0);
 	const __m128i ones = _mm_set1_epi16(1);
@@ -106,7 +108,7 @@ __m128i mul(__m128i X, ushort K_16)
 * that extra unpack could easily save 3-4 cycles per block, and would
 * also help a lot with register pressure on 32-bit x86
 */
-void transpose_in(ref __m128i B0, ref __m128i B1, ref __m128i B2, ref __m128i B3)
+void transpose_in(ref __m128i B0, ref __m128i B1, ref __m128i B2, ref __m128i B3) pure
 {
 	__m128i T0 = _mm_unpackhi_epi32(B0, B1);
 	__m128i T1 = _mm_unpacklo_epi32(B0, B1);
@@ -142,7 +144,7 @@ void transpose_in(ref __m128i B0, ref __m128i B1, ref __m128i B2, ref __m128i B3
 /*
 * 4x8 matrix transpose (reverse)
 */
-void transpose_out(ref __m128i B0, ref __m128i B1, ref __m128i B2, ref __m128i B3)
+void transpose_out(ref __m128i B0, ref __m128i B1, ref __m128i B2, ref __m128i B3) pure
 {
 	__m128i T0 = _mm_unpacklo_epi64(B0, B1);
 	__m128i T1 = _mm_unpacklo_epi64(B2, B3);
@@ -173,7 +175,7 @@ void transpose_out(ref __m128i B0, ref __m128i B1, ref __m128i B2, ref __m128i B
 /*
 * IDEA encryption/decryption in SSE2
 */
-void idea_op_8(in ubyte[64] input, ref ubyte[64] output, in ushort[52] EK)
+void idea_op_8(in ubyte[64] input, ref ubyte[64] output, in ushort[52] EK) pure
 {
 	const __m128i* in_mm = cast(const __m128i*)(input.ptr);
 	

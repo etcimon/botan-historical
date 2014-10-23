@@ -12,6 +12,7 @@ import botan.pubkey.algo.ecc_key;
 import botan.math.numbertheory.reducer;
 import botan.pubkey.pk_ops;
 import botan.pubkey.algo.keypair;
+import botan.math.ec_gfp.point_gfp;
 
 /**
 * This class represents ECDSA Public Keys.
@@ -31,8 +32,8 @@ public:
 		super(dom_par, public_point);
 	}
 
-	this(in AlgorithmIdentifier alg_id,
-		 in SafeVector!ubyte key_bits)
+	this(in Algorithm_Identifier alg_id,
+		 in Secure_Vector!ubyte key_bits)
 	{
 		super(alg_id, key_bits);
 	}
@@ -55,14 +56,14 @@ public:
 	size_t message_part_size() const
 	{ return domain().get_order().bytes(); }
 
-package:
+protected:
 	this() {}
 };
 
 /**
 * This class represents ECDSA Private Keys
 */
-class ECDSA_PrivateKey : ECDSA_PublicKey,
+final class ECDSA_PrivateKey : ECDSA_PublicKey,
 						 EC_PrivateKey
 {
 public:
@@ -72,8 +73,8 @@ public:
 	* @param alg_id the X.509 algorithm identifier
 	* @param key_bits PKCS #8 structure
 	*/
-	this(in AlgorithmIdentifier alg_id,
-		 in SafeVector!ubyte key_bits)
+	this(in Algorithm_Identifier alg_id,
+		 in Secure_Vector!ubyte key_bits)
 	{
 		super(alg_id, key_bits);
 	}
@@ -107,7 +108,7 @@ public:
 /**
 * ECDSA signature operation
 */
-class ECDSA_Signature_Operation : Signature
+final class ECDSA_Signature_Operation : Signature
 {
 public:
 	this(in ECDSA_PrivateKey ecdsa)
@@ -118,7 +119,7 @@ public:
 		mod_order = order;
 	}
 
-	SafeVector!ubyte sign(in ubyte* msg, size_t msg_len,
+	Secure_Vector!ubyte sign(in ubyte* msg, size_t msg_len,
 	                      RandomNumberGenerator rng)
 	{
 		rng.add_entropy(msg, msg_len);
@@ -141,7 +142,7 @@ public:
 			s = mod_order.multiply(inverse_mod(k, order), mul_add(x, r, m));
 		}
 		
-		SafeVector!ubyte output = SafeVector!ubyte(2*order.bytes());
+		Secure_Vector!ubyte output = Secure_Vector!ubyte(2*order.bytes());
 		r.binary_encode(&output[output.length / 2 - r.bytes()]);
 		s.binary_encode(&output[output.length - s.bytes()]);
 		return output;
@@ -161,7 +162,7 @@ private:
 /**
 * ECDSA verification operation
 */
-class ECDSA_Verification_Operation : Verification
+final class ECDSA_Verification_Operation : Verification
 {
 public:
 	this(in ECDSA_PublicKey ecdsa) 
@@ -203,7 +204,7 @@ public:
 	}
 
 private:
-	const ref PointGFp base_point;
-	const ref PointGFp public_point;
-	const ref BigInt order;
+	const PointGFp base_point;
+	const PointGFp public_point;
+	const BigInt order;
 };

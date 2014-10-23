@@ -13,7 +13,7 @@ import botan.utils.parsing;
 /**
 * Tiger
 */
-class Tiger : MDx_HashFunction
+final class Tiger : MDx_HashFunction
 {
 public:
 	/*
@@ -111,7 +111,7 @@ private:
 	* Tiger Pass
 	*/
 	void pass(ref ulong A, ref ulong B, ref ulong C,
-	          const ref SafeVector!ulong X,
+	          const ref Secure_Vector!ulong X,
 	          ubyte mul)
 	{
 		C ^= X[0];
@@ -523,14 +523,14 @@ private:
 		0x411218F2EF552BED, 0xCB0C0708705A36A3, 0xE74D14754F986044,
 		0xCD56D9430EA8280E, 0xC12591D7535F5065, 0xC83223F1720AEF96,
 		0xC3A0396F7363A51F ];
-	SafeVector!ulong X, digest;
+	Secure_Vector!ulong X, digest;
 	const size_t hash_len, passes;
 };
 
 /*
 * Tiger Mixing Function
 */
-void mix(ref SafeVector!ulong X) pure
+void mix(ref Secure_Vector!ulong X) pure
 {
 	X[0] -= X[7] ^ 0xA5A5A5A5A5A5A5A5;
 	X[1] ^= X[0];

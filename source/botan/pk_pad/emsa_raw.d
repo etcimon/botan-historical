@@ -11,7 +11,7 @@ import botan.pk_pad.emsa;
 * EMSA-Raw - sign inputs directly
 * Don't use this unless you know what you are doing.
 */
-class EMSA_Raw : EMSA
+final class EMSA_Raw : EMSA
 {
 private:
 	/*
@@ -25,9 +25,9 @@ private:
 	/*
 	* Return the raw (unencoded) data
 	*/
-	SafeVector!ubyte raw_data()
+	Secure_Vector!ubyte raw_data()
 	{
-		SafeVector!ubyte output;
+		Secure_Vector!ubyte output;
 		std.algorithm.swap(message, output);
 		return output;
 	}
@@ -35,7 +35,7 @@ private:
 	/*
 	* EMSA-Raw Encode Operation
 	*/
-	SafeVector!ubyte encoding_of(in SafeVector!ubyte msg,
+	Secure_Vector!ubyte encoding_of(in Secure_Vector!ubyte msg,
 	                             size_t,
 	                             RandomNumberGenerator)
 	{
@@ -45,8 +45,8 @@ private:
 	/*
 	* EMSA-Raw Verify Operation
 	*/
-	bool verify(in SafeVector!ubyte coded,
-	            in SafeVector!ubyte raw,
+	bool verify(in Secure_Vector!ubyte coded,
+	            in Secure_Vector!ubyte raw,
 	            size_t)
 	{
 		if (coded.length == raw.length)
@@ -70,5 +70,5 @@ private:
 		return same_modulo_leading_zeros;
 	}
 
-	SafeVector!ubyte message;
+	Secure_Vector!ubyte message;
 };

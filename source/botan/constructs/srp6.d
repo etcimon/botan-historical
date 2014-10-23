@@ -203,12 +203,12 @@ BigInt compute_x(in string hash_id,
 	hash_fn.update(":");
 	hash_fn.update(password);
 	
-	SafeVector!ubyte inner_h = hash_fn.flush();
+	Secure_Vector!ubyte inner_h = hash_fn.flush();
 	
 	hash_fn.update(salt);
 	hash_fn.update(inner_h);
 	
-	SafeVector!ubyte outer_h = hash_fn.flush();
+	Secure_Vector!ubyte outer_h = hash_fn.flush();
 	
 	return BigInt.decode(outer_h);
 }

@@ -25,7 +25,7 @@ import std.datetime;
 * Krawczyk's paper), for instance one could use HMAC(SHA-512) as the
 * extractor and CMAC(AES-256) as the PRF.
 */
-class HMAC_RNG : RandomNumberGenerator
+final class HMAC_RNG : RandomNumberGenerator
 {
 public:
 	/*
@@ -37,7 +37,7 @@ public:
 		{
 			reseed(256);
 			if (!is_seeded())
-				throw new PRNG_Unseeded(name());
+				throw new PRNG_Unseeded(name);
 		}
 		
 		const size_t max_per_prf_iter = m_prf.output_length / 2;
@@ -189,7 +189,7 @@ public:
 		The PRF key will not be used to generate outputs until after reseed
 		sets m_seeded to true.
 		*/
-		SafeVector!ubyte prf_key(m_extractor.output_length);
+		Secure_Vector!ubyte prf_key(m_extractor.output_length);
 		m_prf.set_key(prf_key);
 		
 		/*
@@ -210,7 +210,7 @@ private:
 	size_t m_collected_entropy_estimate = 0;
 	size_t m_output_since_reseed = 0;
 
-	SafeVector!ubyte m_K;
+	Secure_Vector!ubyte m_K;
 	uint m_counter = 0;
 };
 
@@ -219,13 +219,12 @@ private:
 private:
 
 void hmac_prf(MessageAuthenticationCode prf,
-              SafeVector!ubyte K,
+              Secure_Vector!ubyte K,
               ref uint counter,
               in string label)
 {
-	typedef std::chrono::high_resolution_clock clock;
 	
-	auto timestamp = clock::now().time_since_epoch().count();
+	auto timestamp = Clock.currStdTime();
 	
 	prf.update(K);
 	prf.update(label);

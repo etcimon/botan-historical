@@ -104,7 +104,7 @@ public:
 		m_g.resize((1 << m_window_bits));
 		
 		BigInt z(BigInt.Positive, 2 * (m_mod_words + 1));
-		SafeVector!word workspace(z.length);
+		Secure_Vector!word workspace(z.length);
 		
 		m_g[0] = 1;
 		
@@ -156,7 +156,7 @@ public:
 		const size_t z_size = 2*(m_mod_words + 1);
 		
 		BigInt z(BigInt.Positive, z_size);
-		SafeVector!word workspace(z_size);
+		Secure_Vector!word workspace(z_size);
 		
 		for (size_t i = exp_nibbles; i > 0; --i)
 		{

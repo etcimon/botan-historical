@@ -41,7 +41,7 @@ string encode(in ubyte* der, size_t length, in string label,
 /**
 * Encode some binary data in PEM format
 */
- string encode(in SafeVector!ubyte data,
+ string encode(in Secure_Vector!ubyte data,
 								  in string label,
 								  size_t line_width = 64)
 {
@@ -56,7 +56,7 @@ string encode(in ubyte* der, size_t length, in string label,
 /*
 * Decode PEM down to raw BER/DER
 */
-SafeVector!ubyte decode(DataSource source, ref string label)
+Secure_Vector!ubyte decode(DataSource source, ref string label)
 {
 	const size_t RANDOM_CHAR_LIMIT = 8;
 	
@@ -118,7 +118,7 @@ SafeVector!ubyte decode(DataSource source, ref string label)
 * @param pem a string containing PEM encoded data
 * @param label is set to the PEM label found for later inspection
 */
-SafeVector!ubyte decode(in string pem, ref string label)
+Secure_Vector!ubyte decode(in string pem, ref string label)
 {
 	auto src = scoped!DataSource_Memory(pem);
 	return decode(src, label);
@@ -128,11 +128,11 @@ SafeVector!ubyte decode(in string pem, ref string label)
 * @param pem a datasource containing PEM encoded data
 * @param label is what we expect the label to be
 */
-SafeVector!ubyte decode_check_label(DataSource source,
+Secure_Vector!ubyte decode_check_label(DataSource source,
                                     in string label_want)
 {
 	string label_got;
-	SafeVector!ubyte ber = decode(source, label_got);
+	Secure_Vector!ubyte ber = decode(source, label_got);
 	if (label_got != label_want)
 		throw new Decoding_Error("PEM: Label mismatch, wanted " ~ label_want +
 		                         ", got " ~ label_got);
@@ -144,7 +144,7 @@ SafeVector!ubyte decode_check_label(DataSource source,
 * @param pem a string containing PEM encoded data
 * @param label is what we expect the label to be
 */
-SafeVector!ubyte decode_check_label(in string pem,
+Secure_Vector!ubyte decode_check_label(in string pem,
                                     in string label_want)
 {
 	auto src = scoped!DataSource_Memory(pem);
@@ -160,7 +160,7 @@ bool matches(DataSource source, in string extra = "",
 {
 	const string PEM_HEADER = "-----BEGIN " ~ extra;
 	
-	SafeVector!ubyte search_buf(search_range);
+	Secure_Vector!ubyte search_buf(search_range);
 	size_t got = source.peek(&search_buf[0], search_buf.length, 0);
 	
 	if (got < PEM_HEADER.length())

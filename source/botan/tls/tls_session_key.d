@@ -25,7 +25,7 @@ public:
 	InitializationVector client_iv() const { return c_iv; }
 	InitializationVector server_iv() const { return s_iv; }
 
-	const SafeVector!ubyte master_secret() const { return master_sec; }
+	const Secure_Vector!ubyte master_secret() const { return master_sec; }
 
 	@disable this();
 
@@ -33,7 +33,7 @@ public:
 	* Session_Keys Constructor
 	*/
 	this(const Handshake_State state,
-	     in SafeVector!ubyte pre_master_secret,
+	     in Secure_Vector!ubyte pre_master_secret,
 	     bool resuming)
 	{
 		const size_t cipher_keylen = state.ciphersuite().cipher_keylen();
@@ -56,7 +56,7 @@ public:
 		}
 		else
 		{
-			SafeVector!ubyte salt;
+			Secure_Vector!ubyte salt;
 			
 			if (state._version() != Protocol_Version.SSL_V3)
 				salt += Pair(MASTER_SECRET_MAGIC, (MASTER_SECRET_MAGIC).sizeof);
@@ -67,7 +67,7 @@ public:
 			master_sec = prf.derive_key(48, pre_master_secret, salt);
 		}
 		
-		SafeVector!ubyte salt;
+		Secure_Vector!ubyte salt;
 		if (state._version() != Protocol_Version.SSL_V3)
 			salt += Pair(KEY_GEN_MAGIC, (KEY_GEN_MAGIC).sizeof);
 		salt += state.server_hello().random();
@@ -96,7 +96,7 @@ public:
 	}
 
 private:
-	SafeVector!ubyte master_sec;
+	Secure_Vector!ubyte master_sec;
 	SymmetricKey c_cipher, s_cipher, c_mac, s_mac;
 	InitializationVector c_iv, s_iv;
 };

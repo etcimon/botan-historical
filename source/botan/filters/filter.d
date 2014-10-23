@@ -56,7 +56,7 @@ public:
 	abstract bool attachable() { return true; }
 
 	~this() {}
-package:
+protected:
 	/**
 	* @param input some input for the filter
 	* @param length the length of in
@@ -91,7 +91,7 @@ package:
 	/**
 	* @param input some input for the filter
 	*/
-	void send(in SafeVector!ubyte input) { send(&input[0], input.length); }
+	void send(in Secure_Vector!ubyte input) { send(&input[0], input.length); }
 
 	/**
 	* @param input some input for the filter
@@ -102,7 +102,7 @@ package:
 	* @param input some input for the filter
 	* @param length the number of bytes of in to send
 	*/
-	void send(in SafeVector!ubyte input)
+	void send(in Secure_Vector!ubyte input)
 	{
 		send(&input[0], length);
 	}
@@ -219,7 +219,7 @@ private:
 		return null;
 	}
 
-	SafeVector!ubyte write_queue;
+	Secure_Vector!ubyte write_queue;
 	Vector!Filter next;
 	size_t port_num, filter_owns;
 
@@ -232,7 +232,7 @@ private:
 **/
 class Fanout_Filter : Filter
 {
-package:
+protected:
 	/**
 	* Increment the number of filters past us that we own
 	*/

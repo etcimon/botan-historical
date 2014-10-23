@@ -57,7 +57,7 @@ public:
 			shares[i].contents.push_back(i+1);
 		
 		// secret = S || H(S)
-		SafeVector!ubyte secret(S, S + S_len);
+		Secure_Vector!ubyte secret(S, S + S_len);
 		secret += hash.process(S, S_len);
 		
 		for (size_t i = 0; i != secret.length; ++i)
@@ -90,7 +90,7 @@ public:
 	* @param shares the list of shares
 	*/
 
-	static SafeVector!ubyte reconstruct(in Vector!RTSS_Share shares)
+	static Secure_Vector!ubyte reconstruct(in Vector!RTSS_Share shares)
 	{
 		const size_t RTSS_HEADER_SIZE = 20;
 		
@@ -122,7 +122,7 @@ public:
 			throw new Decoding_Error("Bad RTSS length field in header");
 		
 		Vector!ubyte V(shares.length);
-		SafeVector!ubyte secret;
+		Secure_Vector!ubyte secret;
 		
 		for (size_t i = RTSS_HEADER_SIZE + 1; i != shares[0].length; ++i)
 		{
@@ -161,13 +161,13 @@ public:
 			throw new Decoding_Error("Bad length in RTSS output");
 		
 		hash.update(&secret[0], secret_len);
-		SafeVector!ubyte hash_check = hash.flush();
+		Secure_Vector!ubyte hash_check = hash.flush();
 		
 		if (!same_mem(&hash_check[0],
 		&secret[secret_len], hash.output_length))
 			throw new Decoding_Error("RTSS hash check failed");
 		
-		return SafeVector!ubyte(&secret[0], &secret[secret_len]);
+		return Secure_Vector!ubyte(&secret[0], &secret[secret_len]);
 	}
 
 
@@ -210,7 +210,7 @@ public:
 	*/
 	bool initialized() const { return (contents.length > 0); }
 private:
-	SafeVector!ubyte contents;
+	Secure_Vector!ubyte contents;
 };
 
 

@@ -11,7 +11,7 @@ import botan.utils.loadstor;
 /**
 * Serpent implementation in x86-32 assembly
 */
-class Serpent_X86_32 : Serpent
+final class Serpent_X86_32 : Serpent
 {
 public:
 	/*
@@ -51,7 +51,7 @@ private:
 	*/
 	void key_schedule(in ubyte* key)
 	{
-		SafeVector!uint W = SafeVector!uint(140);
+		Secure_Vector!uint W = Secure_Vector!uint(140);
 		for (size_t i = 0; i != length / 4; ++i)
 			W[i] = load_le!uint(key, i);
 		W[length / 4] |= uint(1) << ((length%4)*8);
@@ -70,7 +70,7 @@ private:
 */
 void botan_serpent_x86_32_encrypt(	const ubyte[16]* input,
 									ubyte[16]* output,
-									const uint[132]* ks )
+									const uint[132]* ks ) pure
 {
 
 	enum PUSHED = 4;
@@ -141,7 +141,7 @@ void botan_serpent_x86_32_encrypt(	const ubyte[16]* input,
 
 void botan_serpent_x86_32_decrypt(	const ubyte[16]* input,
 									ubyte[16]* output,
-									const uint[132]* ks) 
+									const uint[132]* ks) pure
 {
 
 	enum PUSHED = 4;
@@ -211,7 +211,7 @@ void botan_serpent_x86_32_decrypt(	const ubyte[16]* input,
 			final key schedule
 */
 
-void botan_serpent_x86_32_key_schedule(uint[140]* ks) 
+void botan_serpent_x86_32_key_schedule(uint[140]* ks) pure
 {
 	string LOAD_AND_SBOX(alias SBOX)(ubyte MSG) {
 		return 	ASSIGN(EAX, ARRAY4(EDI, (4*MSG+ 8))) ~

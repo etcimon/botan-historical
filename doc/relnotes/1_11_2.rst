@@ -39,7 +39,7 @@ Other API Changes
 """"""""""""""""""""""""""""""""""""""""
 
 * The API of `Credentials_Manager::trusted_certificate_authorities`
-  has changed to return a vector of `Certificate_Store*` instead of
+  has changed to return a vector of `Certificate_Store` instead of
   `X509_Certificate`. This allows the list of trusted CAs to be
   more easily updated dynamically or loaded lazily.
 

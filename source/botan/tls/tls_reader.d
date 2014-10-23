@@ -11,7 +11,7 @@ import botan.alloc.secmem;
 import botan.utils.loadstor;
 import string;
 import botan.utils.types;
-import stdexcept;
+import std.exception;
 
 /**
 * Helper class for decoding TLS protocol messages

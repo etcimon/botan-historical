@@ -76,7 +76,7 @@ string PGP_encode(in ubyte* input, size_t length,
 * @param headers is set to any headers
 * @return decoded output as raw binary
 */
-SafeVector!ubyte PGP_decode(DataSource source,
+Secure_Vector!ubyte PGP_decode(DataSource source,
                             ref string label,
                             ref HashMap!(string, string) headers)
 {
@@ -199,7 +199,7 @@ SafeVector!ubyte PGP_decode(DataSource source,
 * @param label is set to the human-readable label
 * @return decoded output as raw binary
 */
-SafeVector!ubyte PGP_decode(DataSource source, ref string label)
+Secure_Vector!ubyte PGP_decode(DataSource source, ref string label)
 {
 	HashMap!(string, string) ignored;
 	return PGP_decode(source, label, ignored);

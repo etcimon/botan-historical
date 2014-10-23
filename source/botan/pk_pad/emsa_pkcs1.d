@@ -15,7 +15,7 @@ import botan.pk_pad.hash_id;
 * aka PKCS #1 block type 1
 * aka EMSA3 from IEEE 1363
 */
-class EMSA_PKCS1v15 : EMSA
+final class EMSA_PKCS1v15 : EMSA
 {
 public:
 	/**
@@ -32,13 +32,13 @@ public:
 		m_hash.update(input, length);
 	}
 
-	SafeVector!ubyte raw_data()
+	Secure_Vector!ubyte raw_data()
 	{
 		return m_hash.flush();
 	}
 
-	SafeVector!ubyte
-		encoding_of(in SafeVector!ubyte msg,
+	Secure_Vector!ubyte
+		encoding_of(in Secure_Vector!ubyte msg,
 		            size_t output_bits,
 		            RandomNumberGenerator)
 	{
@@ -49,8 +49,8 @@ public:
 		                      &m_hash_id[0], m_hash_id.length);
 	}
 
-	bool verify(in SafeVector!ubyte coded,
-	            in SafeVector!ubyte raw,
+	bool verify(in Secure_Vector!ubyte coded,
+	            in Secure_Vector!ubyte raw,
 	            size_t key_bits)
 	{
 		if (raw.length != m_hash.output_length)
@@ -76,7 +76,7 @@ private:
 * (which according to QCA docs is "identical to PKCS#11's CKM_RSA_PKCS
 * mechanism", something I have not confirmed)
 */
-class EMSA_PKCS1v15_Raw : EMSA
+final class EMSA_PKCS1v15_Raw : EMSA
 {
 public:
 	void update(in ubyte* input, size_t length)
@@ -84,23 +84,23 @@ public:
 		message += Pair(input, length);
 	}
 
-	SafeVector!ubyte raw_data()
+	Secure_Vector!ubyte raw_data()
 	{
-		SafeVector!ubyte ret;
+		Secure_Vector!ubyte ret;
 		std.algorithm.swap(ret, message);
 		return ret;
 	}
 
-	SafeVector!ubyte
-		encoding_of(in SafeVector!ubyte msg,
+	Secure_Vector!ubyte
+		encoding_of(in Secure_Vector!ubyte msg,
 		            size_t output_bits,
 		            RandomNumberGenerator)
 	{
 		return emsa3_encoding(msg, output_bits, null, 0);
 	}
 
-	bool verify(in SafeVector!ubyte coded,
-	            in SafeVector!ubyte raw,
+	bool verify(in Secure_Vector!ubyte coded,
+	            in Secure_Vector!ubyte raw,
 	            size_t key_bits)
 	{
 		try
@@ -114,12 +114,12 @@ public:
 	}
 
 private:
-	SafeVector!ubyte message;
+	Secure_Vector!ubyte message;
 };
 
 private:
 
-SafeVector!ubyte emsa3_encoding(in SafeVector!ubyte msg,
+Secure_Vector!ubyte emsa3_encoding(in Secure_Vector!ubyte msg,
                                 size_t output_bits,
                                 in ubyte* hash_id,
                                 size_t hash_id_length)
@@ -128,7 +128,7 @@ SafeVector!ubyte emsa3_encoding(in SafeVector!ubyte msg,
 	if (output_length < hash_id_length + msg.length + 10)
 		throw new Encoding_Error("emsa3_encoding: Output length is too small");
 	
-	SafeVector!ubyte T = SafeVector!ubyte(output_length);
+	Secure_Vector!ubyte T = Secure_Vector!ubyte(output_length);
 	const size_t P_LENGTH = output_length - msg.length - hash_id_length - 2;
 	
 	T[0] = 0x01;

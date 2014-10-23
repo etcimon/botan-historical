@@ -12,10 +12,10 @@ import botan.hash.mdx_hash;
 /**
 * RIPEMD-128
 */
-class RIPEMD_128 : MDx_HashFunction
+final class RIPEMD_128 : MDx_HashFunction
 {
 public:
-	@property string name() const { return "RIPEMD-128"; }
+	override @property string name() const { return "RIPEMD-128"; }
 	@property size_t output_length() const { return 16; }
 	HashFunction clone() const { return new RIPEMD_128; }
 
@@ -145,7 +145,7 @@ private:
 	}
 
 
-	SafeVector!uint M, digest;
+	Secure_Vector!uint M, digest;
 };
 
 
@@ -158,7 +158,7 @@ private:
 * RIPEMD-128 F1 Function
 */
 void F1(ref uint A, uint B, uint C, uint D,
-        uint msg, uint shift)
+        uint msg, uint shift) pure
 {
 	A += (B ^ C ^ D) + msg;
 	A  = rotate_left(A, shift);
@@ -168,7 +168,7 @@ void F1(ref uint A, uint B, uint C, uint D,
 * RIPEMD-128 F2 Function
 */
 void F2(ref uint A, uint B, uint C, uint D,
-        uint msg, uint shift, uint magic)
+        uint msg, uint shift, uint magic) pure
 {
 	A += (D ^ (B & (C ^ D))) + msg + magic;
 	A  = rotate_left(A, shift);
@@ -178,7 +178,7 @@ void F2(ref uint A, uint B, uint C, uint D,
 * RIPEMD-128 F3 Function
 */
 void F3(ref uint A, uint B, uint C, uint D,
-        uint msg, uint shift, uint magic)
+        uint msg, uint shift, uint magic) pure
 {
 	A += (D ^ (B | ~C)) + msg + magic;
 	A  = rotate_left(A, shift);
@@ -188,7 +188,7 @@ void F3(ref uint A, uint B, uint C, uint D,
 * RIPEMD-128 F4 Function
 */
 void F4(ref uint A, uint B, uint C, uint D,
-        uint msg, uint shift, uint magic)
+        uint msg, uint shift, uint magic) pure
 {
 	A += (C ^ (D & (B ^ C))) + msg + magic;
 	A  = rotate_left(A, shift);

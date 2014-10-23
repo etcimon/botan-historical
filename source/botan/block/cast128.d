@@ -15,7 +15,7 @@ import botan.utils.types;
 /**
 * CAST-128
 */
-class CAST_128 : Block_Cipher_Fixed_Params!(8, 11, 16)
+final class CAST_128 : Block_Cipher_Fixed_Params!(8, 11, 16)
 {
 public:
 	/*
@@ -105,13 +105,13 @@ private:
 		MK.resize(48);
 		RK.resize(48);
 		
-		SafeVector!uint X = SafeVector!uint(4);
+		Secure_Vector!uint X = Secure_Vector!uint(4);
 		for (size_t i = 0; i != length; ++i)
 			X[i/4] = (X[i/4] << 8) + key[i];
 		
 		cast_ks(MK, X);
 		
-		SafeVector!uint RK32 = SafeVector!uint(48);
+		Secure_Vector!uint RK32 = Secure_Vector!uint(48);
 		cast_ks(RK32, X);
 		
 		for (size_t i = 0; i != 16; ++i)
@@ -120,8 +120,8 @@ private:
 	/*
 	* S-Box Based Key Expansion
 	*/
-	static void cast_ks(ref SafeVector!uint K,
-	            		ref SafeVector!uint X)
+	static void cast_ks(ref Secure_Vector!uint K,
+	            		ref Secure_Vector!uint X)
 	{
 		immutable uint[256] S5 = [
 			0x7EC90C04, 0x2C6E74B9, 0x9B0E66DF, 0xA6337911, 0xB86A7FFF, 0x1DD358F5,
@@ -312,7 +312,7 @@ private:
 			const uint* X;
 		};
 		
-		SafeVector!uint Z = SafeVector!uint(4);
+		Secure_Vector!uint Z = Secure_Vector!uint(4);
 		auto x = scoped!ByteReader(&X[0]);
 		auto z = scoped!ByteReader(&Z[0]);
 		Z[0]  = X[0] ^ S5[x(13)] ^ S6[x(15)] ^ S7[x(12)] ^ S8[x(14)] ^ S7[x( 8)];
@@ -349,42 +349,38 @@ private:
 		K[15] = S5[x(14)] ^ S6[x(15)] ^ S7[x( 1)] ^ S8[x( 0)] ^ S8[x(13)];
 	}
 
-	SafeVector!uint MK;
-	SafeVector!ubyte RK;
+	Secure_Vector!uint MK;
+	Secure_Vector!ubyte RK;
 };
 
+private:
+	
+/*
+* CAST-128 Round Type 1
+*/
+void R1(ref uint L, uint R, uint MK, ubyte RK) pure
+{
+	uint T = rotate_left(MK + R, RK);
+	L ^= (CAST_SBOX1[get_byte(0, T)] ^ CAST_SBOX2[get_byte(1, T)]) -
+		CAST_SBOX3[get_byte(2, T)] + CAST_SBOX4[get_byte(3, T)];
+}
 
+/*
+* CAST-128 Round Type 2
+*/
+void R2(ref uint L, uint R, uint MK, ubyte RK) pure
+{
+	uint T = rotate_left(MK ^ R, RK);
+	L ^= (CAST_SBOX1[get_byte(0, T)]  - CAST_SBOX2[get_byte(1, T)] +
+	CAST_SBOX3[get_byte(2, T)]) ^ CAST_SBOX4[get_byte(3, T)];
+}
 
-package {
-	
-	/*
-	* CAST-128 Round Type 1
-	*/
-	void R1(ref uint L, uint R, uint MK, ubyte RK)
-	{
-		uint T = rotate_left(MK + R, RK);
-		L ^= (CAST_SBOX1[get_byte(0, T)] ^ CAST_SBOX2[get_byte(1, T)]) -
-			CAST_SBOX3[get_byte(2, T)] + CAST_SBOX4[get_byte(3, T)];
-	}
-	
-	/*
-	* CAST-128 Round Type 2
-	*/
-	void R2(ref uint L, uint R, uint MK, ubyte RK)
-	{
-		uint T = rotate_left(MK ^ R, RK);
-		L ^= (CAST_SBOX1[get_byte(0, T)]  - CAST_SBOX2[get_byte(1, T)] +
-		CAST_SBOX3[get_byte(2, T)]) ^ CAST_SBOX4[get_byte(3, T)];
-	}
-	
-	/*
-	* CAST-128 Round Type 3
-	*/
-	void R3(ref uint L, uint R, uint MK, ubyte RK)
-	{
-		uint T = rotate_left(MK - R, RK);
-		L ^= ((CAST_SBOX1[get_byte(0, T)]  + CAST_SBOX2[get_byte(1, T)]) ^
-		      CAST_SBOX3[get_byte(2, T)]) - CAST_SBOX4[get_byte(3, T)];
-	}
-	
+/*
+* CAST-128 Round Type 3
+*/
+void R3(ref uint L, uint R, uint MK, ubyte RK) pure
+{
+	uint T = rotate_left(MK - R, RK);
+	L ^= ((CAST_SBOX1[get_byte(0, T)]  + CAST_SBOX2[get_byte(1, T)]) ^
+	      CAST_SBOX3[get_byte(2, T)]) - CAST_SBOX4[get_byte(3, T)];
 }

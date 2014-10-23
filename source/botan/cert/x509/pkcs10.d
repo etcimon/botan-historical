@@ -23,10 +23,13 @@ import botan.asn1.oid_lookup.oids;
 import botan.codec.pem;
 import botan.utils.types;
 import botan.utils.types;
+
+alias PKCS10_Request = FreeListRef!PKCS10_Request_Impl;
+
 /**
 * PKCS #10 Certificate Request.
 */
-class PKCS10_Request : X509_Object
+final class PKCS10_Request_Impl : X509_Object
 {
 public:
 	/**
@@ -63,7 +66,7 @@ public:
 	* Get the subject alternative name.
 	* @return the alternative names of the requestor
 	*/
-	AlternativeName subject_alt_name() const
+	Alternative_Name subject_alt_name() const
 	{
 		return create_alt_name(info);
 	}
@@ -172,7 +175,7 @@ private:
 		info.add(dn_subject.contents());
 		
 		BER_Object public_key = cert_req_info.get_next_object();
-		if (public_key.type_tag != ASN1_Tag.SEQUENCE || public_key.class_tag != CONSTRUCTED)
+		if (public_key.type_tag != ASN1_Tag.SEQUENCE || public_key.class_tag != ASN1_Tag.CONSTRUCTED)
 			throw new BER_Bad_Tag("PKCS10_Request: Unexpected tag for public key",
 			                      public_key.type_tag, public_key.class_tag);
 		

@@ -25,7 +25,7 @@ import botan.algo_base.symkey;
 /*
 * Perform Self Tests
 */
-void confirm_startup_self_tests(AlgorithmFactory af)
+void confirm_startup_self_tests(Algorithm_Factory af)
 {
 	cipher_kat(af, "DES",
 	           "0123456789ABCDEF", "1234567890ABCDEF",
@@ -107,7 +107,7 @@ void confirm_startup_self_tests(AlgorithmFactory af)
 * @param af an algorithm factory
 * @returns false if a failure occured, otherwise true
 */
-bool passes_self_tests(AlgorithmFactory af)
+bool passes_self_tests(Algorithm_Factory af)
 {
 	try
 	{
@@ -133,7 +133,7 @@ bool passes_self_tests(AlgorithmFactory af)
 HashMap!(string, bool)
 	algorithm_kat(in SCAN_Name algo_name,
 	              const ref HashMap!(string, string) vars,
-	              AlgorithmFactory af)
+	              Algorithm_Factory af)
 {
 	const auto result = algorithm_kat_detailed(algo_name, vars, af);
 	
@@ -156,7 +156,7 @@ HashMap!(string, bool)
 HashMap!(string, string)
 	algorithm_kat_detailed(in SCAN_Name algo_name,
 	                       const ref HashMap!(string, string) vars,
-	                       AlgorithmFactory af)
+	                       Algorithm_Factory af)
 {
 	const string algo = algo_name.algo_name_and_args();
 	
@@ -263,7 +263,7 @@ void verify_results(in string algo,
 	}
 }
 
-void hash_test(AlgorithmFactory af,
+void hash_test(Algorithm_Factory af,
                in string name,
                in string input,
                in string output)
@@ -275,7 +275,7 @@ void hash_test(AlgorithmFactory af,
 	verify_results(name, algorithm_kat_detailed(name, vars, af));
 }
 
-void mac_test(AlgorithmFactory af,
+void mac_test(Algorithm_Factory af,
               in string name,
               in string input,
               in string output,
@@ -292,7 +292,7 @@ void mac_test(AlgorithmFactory af,
 /*
 * Perform a KAT for a cipher
 */
-void cipher_kat(AlgorithmFactory af,
+void cipher_kat(Algorithm_Factory af,
                 in string algo,
                 in string key_str,
                 in string iv_str,
@@ -311,7 +311,7 @@ void cipher_kat(AlgorithmFactory af,
 	vars["iv"] = iv_str;
 	vars["input"] = input;
 	
-	HashMap<string, bool> results;
+	HashMap!(string, bool) results;
 	
 	vars["output"] = ecb_out;
 	verify_results(algo ~ "/ECB", algorithm_kat_detailed(algo ~ "/ECB", vars, af));

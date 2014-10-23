@@ -86,28 +86,26 @@ private:
 	Unique!BlockCipher m_cipher1, m_cipher2;
 };
 
-package {
-	
-	size_t euclids_algorithm(size_t a, size_t b)
+private:
+
+size_t euclids_algorithm(size_t a, size_t b)
+{
+	while(b != 0) // gcd
 	{
-		while(b != 0) // gcd
-		{
-			size_t t = b;
-			b = a % b;
-			a = t;
-		}
-		
-		return a;
+		size_t t = b;
+		b = a % b;
+		a = t;
 	}
 	
-	size_t block_size_for_cascade(size_t bs, size_t bs2)
-	{
-		if (bs == bs2)
-			return bs;
-		
-		size_t gcd = euclids_algorithm(bs, bs2);
-		
-		return (bs * bs2) / gcd;
-	}
+	return a;
+}
+
+size_t block_size_for_cascade(size_t bs, size_t bs2)
+{
+	if (bs == bs2)
+		return bs;
 	
+	size_t gcd = euclids_algorithm(bs, bs2);
+	
+	return (bs * bs2) / gcd;
 }

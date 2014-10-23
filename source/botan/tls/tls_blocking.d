@@ -92,7 +92,7 @@ public:
 
 	~this() {}
 
-package:
+protected:
 	/**
 	 * Can to get the handshake complete notification override
 	*/

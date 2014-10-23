@@ -6,11 +6,11 @@
 */
 module botan.cert.x509.x509cert;
 
+public import botan.utils.datastor.datastor;
 import botan.cert.x509.x509_obj;
 import botan.asn1.x509_dn;
 import botan.pubkey.x509_key;
 import botan.asn1.asn1_alt_name;
-import botan.utils.datastor.datastor;
 import botan.cert.x509.key_constraint;
 import botan.cert.x509.x509_ext;
 import botan.asn1.der_enc;
@@ -33,7 +33,7 @@ alias X509_Certificate = FreeListRef!X509_Certificate_Impl;
 /**
 * This class represents X.509 Certificate
 */
-class X509_Certificate_Impl : X509_Object
+final class X509_Certificate_Impl : X509_Object
 {
 public:
 	/**
@@ -503,13 +503,13 @@ public:
 
 private:
 	/*
-* Decode the TBSCertificate data
-*/
+	* Decode the TBSCertificate data
+	*/
 	void force_decode()
 	{
 		size_t _version;
 		BigInt serial_bn;
-		AlgorithmIdentifier sig_algo_inner;
+		Algorithm_Identifier sig_algo_inner;
 		X509_DN dn_issuer, dn_subject;
 		X509_Time start, end;
 		
@@ -541,7 +541,7 @@ private:
 		issuer.add("X509.Certificate.dn_bits", asn1_obj.put_in_sequence(dn_issuer.get_bits()));
 		
 		BER_Object public_key = tbs_cert.get_next_object();
-		if (public_key.type_tag != ASN1_Tag.SEQUENCE || public_key.class_tag != CONSTRUCTED)
+		if (public_key.type_tag != ASN1_Tag.SEQUENCE || public_key.class_tag != ASN1_Tag.CONSTRUCTED)
 			throw new BER_Bad_Tag("X509_Certificate: Unexpected tag for public key",
 			                      public_key.type_tag, public_key.class_tag);
 		
@@ -626,20 +626,19 @@ X509_DN create_dn(in Data_Store info)
 
 
 /*
-* Create and populate an AlternativeName
+* Create and populate an Alternative_Name
 */
-AlternativeName create_alt_name(in Data_Store info)
+Alternative_Name create_alt_name(in Data_Store info)
 {
-	auto names = info.search_for(
-		[](in string key, in string)
-	{
-		return (key == "RFC822" ||
-		        key == "DNS" ||
-		        key == "URI" ||
-		        key == "IP");
-	});
+	auto names = info.search_for((in string key, in string)
+									{
+										return (key == "RFC822" ||
+										        key == "DNS" ||
+										        key == "URI" ||
+										        key == "IP");
+									});
 	
-	AlternativeName alt_name;
+	Alternative_Name alt_name;
 	
 	for (auto i = names.begin(); i != names.end(); ++i)
 		alt_name.add_attribute(i.first, i.second);
@@ -663,7 +662,7 @@ Vector!string lookup_oids(in Vector!string input)
 
 
 bool cert_subject_dns_match(in string name,
-                            const Vector!string& cert_names)
+                            const Vector!string cert_names)
 {
 	for (size_t i = 0; i != cert_names.length; ++i)
 	{
@@ -673,9 +672,9 @@ bool cert_subject_dns_match(in string name,
 			return true;
 		
 		/*
-	* Possible wildcard match. We only support the most basic form of
-	* cert wildcarding ala RFC 2595
-	*/
+		* Possible wildcard match. We only support the most basic form of
+		* cert wildcarding ala RFC 2595
+		*/
 		if (cn.length > 2 && cn[0] == '*' && cn[1] == '.' && name.length > cn.length)
 		{
 			const string base = cn.substr(1, string::npos);
@@ -687,9 +686,3 @@ bool cert_subject_dns_match(in string name,
 	
 	return false;
 }
-
-
-
-
-
-

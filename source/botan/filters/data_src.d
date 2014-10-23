@@ -146,7 +146,7 @@ public:
 	*/
 	this(in string input) 
 	{
-		source = SafeVector!ubyte(cast(const ubyte*) input.ptr,
+		source = Secure_Vector!ubyte(cast(const ubyte*) input.ptr,
 		                          cast(const ubyte*)(input.ptr) + input.length());
 		offset = 0;
 	}
@@ -159,15 +159,15 @@ public:
 	*/
 	this(in ubyte* input, size_t length)
 	{
-		source = SafeVector!ubyte(input, input + length);
+		source = Secure_Vector!ubyte(input, input + length);
 		offset = 0; 
 	}
 
 	/**
-	* Construct a memory source that reads from a SafeVector
+	* Construct a memory source that reads from a Secure_Vector
 	* @param input the MemoryRegion to read from
 	*/
-	this(in SafeVector!ubyte input)
+	this(in Secure_Vector!ubyte input)
 	{
 		source = input;
 		offset = 0;
@@ -178,13 +178,13 @@ public:
 	* @param input the MemoryRegion to read from
 	*/
 	this(in Vector!ubyte input) {
-		source = SafeVector!ubyte(&input[0], &input[input.length]);
+		source = Secure_Vector!ubyte(&input[0], &input[input.length]);
 		offset = 0;
 	}
 
 	abstract size_t get_bytes_read() const { return offset; }
 private:
-	SafeVector!ubyte source;
+	Secure_Vector!ubyte source;
 	size_t offset;
 };
 
@@ -222,7 +222,7 @@ public:
 		
 		if (offset)
 		{
-			SafeVector!ubyte buf(offset);
+			Secure_Vector!ubyte buf(offset);
 			ubyte[] data;
 			try data = source.rawRead(buf[0..length]);
 			catch (Exception e)

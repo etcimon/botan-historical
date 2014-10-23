@@ -8,6 +8,8 @@ module botan.pk_pad.pssr;
 
 import botan.pk_pad.emsa;
 import botan.hash.hash;
+import botan.utils.types;
+
 /**
 * PSSR (called EMSA4 in IEEE 1363 and in old versions of the library)
 */
@@ -45,7 +47,7 @@ private:
 	/*
 	* Return the raw (unencoded) data
 	*/
-	SafeVector!ubyte raw_data()
+	Secure_Vector!ubyte raw_data()
 	{
 		return hash.flush();
 	}
@@ -53,7 +55,7 @@ private:
 	/*
 	* PSSR Encode Operation
 	*/
-	SafeVector!ubyte encoding_of(in SafeVector!ubyte msg,
+	Secure_Vector!ubyte encoding_of(in Secure_Vector!ubyte msg,
 	                             size_t output_bits,
 	                             RandomNumberGenerator rng)
 	{
@@ -66,15 +68,15 @@ private:
 		
 		const size_t output_length = (output_bits + 7) / 8;
 		
-		SafeVector!ubyte salt = rng.random_vec(SALT_SIZE);
+		Secure_Vector!ubyte salt = rng.random_vec(SALT_SIZE);
 		
 		for (size_t j = 0; j != 8; ++j)
 			hash.update(0);
 		hash.update(msg);
 		hash.update(salt);
-		SafeVector!ubyte H = hash.flush();
+		Secure_Vector!ubyte H = hash.flush();
 		
-		SafeVector!ubyte EM(output_length);
+		Secure_Vector!ubyte EM(output_length);
 		
 		EM[output_length - HASH_SIZE - SALT_SIZE - 2] = 0x01;
 		buffer_insert(EM, output_length - 1 - HASH_SIZE - SALT_SIZE, salt);
@@ -89,8 +91,8 @@ private:
 	/*
 	* PSSR Decode/Verify Operation
 	*/
-	bool verify(in SafeVector!ubyte const_coded,
-	            in SafeVector!ubyte raw, size_t key_bits)
+	bool verify(in Secure_Vector!ubyte const_coded,
+	            in Secure_Vector!ubyte raw, size_t key_bits)
 	{
 		const size_t HASH_SIZE = hash.output_length;
 		const size_t KEY_BYTES = (key_bits + 7) / 8;
@@ -107,10 +109,10 @@ private:
 		if (const_coded[const_coded.length-1] != 0xBC)
 			return false;
 		
-		SafeVector!ubyte coded = const_coded;
+		Secure_Vector!ubyte coded = const_coded;
 		if (coded.length < KEY_BYTES)
 		{
-			SafeVector!ubyte temp(KEY_BYTES);
+			Secure_Vector!ubyte temp(KEY_BYTES);
 			buffer_insert(temp, KEY_BYTES - coded.length, coded);
 			coded = temp;
 		}
@@ -143,7 +145,7 @@ private:
 			hash.update(0);
 		hash.update(raw);
 		hash.update(&DB[salt_offset], DB_size - salt_offset);
-		SafeVector!ubyte H2 = hash.flush();
+		Secure_Vector!ubyte H2 = hash.flush();
 		
 		return same_mem(&H[0], &H2[0], HASH_SIZE);
 	}

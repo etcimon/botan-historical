@@ -12,7 +12,7 @@ import botan.utils.parsing;
 /**
 * MISTY1
 */
-class MISTY1 : Block_Cipher_Fixed_Params!(8, 16)
+final class MISTY1 : Block_Cipher_Fixed_Params!(8, 16)
 {
 public:
 	/*
@@ -141,7 +141,7 @@ private:
 	*/
 	void key_schedule(in ubyte* key)
 	{
-		SafeVector!ushort KS = SafeVector!ushort(32);
+		Secure_Vector!ushort KS = Secure_Vector!ushort(32);
 		for (size_t i = 0; i != length / 2; ++i)
 			KS[i] = load_be!ushort(key, i);
 		
@@ -190,10 +190,10 @@ private:
 	
 
 
-	SafeVector!ushort EK, DK;
+	Secure_Vector!ushort EK, DK;
 };
 
-package:
+private:
 
 immutable ubyte[128] MISTY1_SBOX_S7 = [
 	0x1B, 0x32, 0x33, 0x5A, 0x3B, 0x10, 0x17, 0x54, 0x5B, 0x1A, 0x72, 0x73,
@@ -270,7 +270,7 @@ immutable ushort[512] MISTY1_SBOX_S9 = [
 /*
 * MISTY1 FI Function
 */
-ushort FI(ushort input, ushort key7, ushort key9)
+ushort FI(ushort input, ushort key7, ushort key9) pure
 {
 	ushort D9 = input >> 7, D7 = input & 0x7F;
 	D9 = MISTY1_SBOX_S9[D9] ^ D7;

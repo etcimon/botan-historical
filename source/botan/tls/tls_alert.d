@@ -172,7 +172,7 @@ public:
 	* Deserialize an Alert message
 	* @param buf the serialized alert
 	*/
-	this(in SafeVector!ubyte buf)
+	this(in Secure_Vector!ubyte buf)
 	{
 		if (buf.length != 2)
 			throw new Decoding_Error("Alert: Bad size " ~ std.conv.to!string(buf.length) +

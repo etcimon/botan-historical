@@ -9,7 +9,7 @@ module botan.codec.hex;
 import botan.alloc.secmem;
 import botan.codec.hex;
 import botan.utils.mem_ops;
-import stdexcept;
+import std.exception;
 import string;
 
 /**
@@ -260,11 +260,11 @@ Vector!ubyte hex_decode(in string input,
 						 exception if whitespace is encountered
 * @return decoded hex output
 */
-SafeVector!ubyte hex_decode_locked(string input,
+Secure_Vector!ubyte hex_decode_locked(string input,
                                    size_t input_length,
                                    bool ignore_ws = true)
 {
-	SafeVector!ubyte bin;
+	Secure_Vector!ubyte bin;
 	bin.reserve(1 + input_length / 2);
 	
 	size_t written = hex_decode(&binput[0],
@@ -283,7 +283,7 @@ SafeVector!ubyte hex_decode_locked(string input,
 						 exception if whitespace is encountered
 * @return decoded hex output
 */
-SafeVector!ubyte hex_decode_locked(in string input,
+Secure_Vector!ubyte hex_decode_locked(in string input,
                                    bool ignore_ws = true)
 {
 	return hex_decode_locked(&input[0], input.length, ignore_ws);

@@ -21,11 +21,11 @@ public:
 	/*
 	* TLS PRF
 	*/
-	SafeVector!ubyte derive(size_t key_len,
+	Secure_Vector!ubyte derive(size_t key_len,
 	                        in ubyte* secret, size_t secret_len,
 	                        in ubyte* seed, size_t seed_len) const
 	{
-		SafeVector!ubyte output = SafeVector!ubyte(key_len);
+		Secure_Vector!ubyte output = Secure_Vector!ubyte(key_len);
 		
 		size_t S1_len = (secret_len + 1) / 2,
 			S2_len = (secret_len + 1) / 2;
@@ -61,11 +61,11 @@ private:
 class TLS_12_PRF : KDF
 {
 public:
-	SafeVector!ubyte derive(size_t key_len,
+	Secure_Vector!ubyte derive(size_t key_len,
 	                               in ubyte* secret, size_t secret_len,
 	                               in ubyte* seed, size_t seed_len) const
 	{
-		SafeVector!ubyte output = SafeVector!ubyte(key_len);
+		Secure_Vector!ubyte output = Secure_Vector!ubyte(key_len);
 		
 		P_hash(output, *hmac, secret, secret_len, seed, seed_len);
 		
@@ -91,7 +91,7 @@ private:
 /*
 * TLS PRF P_hash function
 */
-void P_hash(SafeVector!ubyte output,
+void P_hash(Secure_Vector!ubyte output,
             MessageAuthenticationCode mac,
             in ubyte* secret, size_t secret_len,
             in ubyte* seed, size_t seed_len) pure
@@ -107,7 +107,7 @@ void P_hash(SafeVector!ubyte output,
 		                         " bytes is too long for the PRF");
 	}
 	
-	SafeVector!ubyte A = SafeVector!ubyte(seed, seed + seed_len);
+	Secure_Vector!ubyte A = Secure_Vector!ubyte(seed, seed + seed_len);
 	
 	size_t offset = 0;
 	
@@ -120,7 +120,7 @@ void P_hash(SafeVector!ubyte output,
 		
 		mac.update(A);
 		mac.update(seed, seed_len);
-		SafeVector!ubyte block = mac.flush();
+		Secure_Vector!ubyte block = mac.flush();
 		
 		xor_buf(&output[offset], &block[0], this_block_len);
 		offset += this_block_len;

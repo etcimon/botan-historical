@@ -1,5 +1,5 @@
 /*
-* An algorithm cache (used by AlgorithmFactory)
+* An algorithm cache (used by Algorithm_Factory)
 * (C) 2008-2009,2011 Jack Lloyd
 *
 * Distributed under the terms of the botan license.
@@ -18,7 +18,7 @@ import map;
 size_t static_provider_weight(in string prov_name);
 
 /**
-* Algorithm_Cache (used by AlgorithmFactory)
+* Algorithm_Cache (used by Algorithm_Factory)
 */
 struct Algorithm_Cache(T)
 {

@@ -4,17 +4,20 @@
 *
 * Distributed under the terms of the botan license.
 */
+module botan.hash.md5_x86_32;
 
 import botan.hash.md5;
+import botan.hash.hash;
+
 /**
 * MD5 in x86 assembly
 */
-class MD5_X86_32 : MD5
+final class MD5_X86_32 : MD5
 {
 public:
-	HashFunction clone() const { return new MD5_X86_32; }
+	override HashFunction clone() const { return new MD5_X86_32; }
 private:
-	void compress_n(in ubyte* input, size_t blocks)
+	override void compress_n(in ubyte* input, size_t blocks)
 	{
 		for (size_t i = 0; i != blocks; ++i)
 		{
@@ -27,7 +30,7 @@ private:
 
 void botan_md5_x86_32_compress(uint[4]* digest,
 								const ubyte[64]* input,
-								uint[16]* M) 
+								uint[16]* M) pure
 {
 	mixin(`asm { ` ~ 
 		ASSIGN(EBP, ARG(2)) ~ /* input block */

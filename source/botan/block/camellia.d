@@ -37,13 +37,13 @@ private:
 		key_schedule(SK, key, length);
 	}
 
-	SafeVector!ulong SK;
+	Secure_Vector!ulong SK;
 };
 
 /**
 * Camellia-192
 */
-class Camellia_192 : Block_Cipher_Fixed_Params!(16, 24)
+final class Camellia_192 : Block_Cipher_Fixed_Params!(16, 24)
 {
 public:
 	void encrypt_n(ubyte* input, ubyte* output, size_t blocks) const
@@ -68,13 +68,13 @@ private:
 		key_schedule(SK, key, length);
 	}
 
-	SafeVector!ulong SK;
+	Secure_Vector!ulong SK;
 };
 
 /**
 * Camellia-256
 */
-class Camellia_256 : Block_Cipher_Fixed_Params!(16, 32)
+final class Camellia_256 : Block_Cipher_Fixed_Params!(16, 32)
 {
 public:
 	void encrypt_n(ubyte* input, ubyte* output, size_t blocks) const
@@ -99,7 +99,7 @@ private:
 		key_schedule(SK, key, length);
 	}
 
-	SafeVector!ulong SK;
+	Secure_Vector!ulong SK;
 };
 
 
@@ -206,7 +206,7 @@ ulong FLINV(ulong v, ulong K)
 * Camellia Encryption
 */
 void encrypt(ubyte* input, ubyte* output, size_t blocks,
-             const SafeVector!ulong& SK, const size_t rounds)
+             const Secure_Vector!ulong& SK, const size_t rounds)
 {
 	size_t blocks = input.length;
 	for (size_t i = 0; i != blocks; ++i)
@@ -251,7 +251,7 @@ void encrypt(ubyte* input, ubyte* output, size_t blocks,
 * Camellia Decryption
 */
 void decrypt(ubyte* input, ubyte* output, size_t blocks,
-             const SafeVector!ulong& SK, const size_t rounds)
+             const Secure_Vector!ulong& SK, const size_t rounds)
 {
 	size_t blocks = input.length;
 	for (size_t i = 0; i != blocks; ++i)
@@ -305,7 +305,7 @@ ulong left_rot_lo(ulong h, ulong l, size_t shift)
 /*
 * Camellia Key Schedule
 */
-void key_schedule(SafeVector!ulong& SK, in ubyte* key)
+void key_schedule(Secure_Vector!ulong& SK, in ubyte* key)
 {
 	const ulong Sigma1 = 0xA09E667F3BCC908B;
 	const ulong Sigma2 = 0xB67AE8584CAA73B2;

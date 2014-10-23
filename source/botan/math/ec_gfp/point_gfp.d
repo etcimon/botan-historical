@@ -714,29 +714,29 @@ private:
 
 	CurveGFp curve;
 	BigInt coord_x, coord_y, coord_z;
-	SafeVector!word ws; // workspace for Montgomery
+	Secure_Vector!word ws; // workspace for Montgomery
 };
 
 
 
 // encoding and decoding
 // encoding and decoding
-SafeVector!ubyte EC2OSP(in PointGFp point, ubyte format)
+Secure_Vector!ubyte EC2OSP(in PointGFp point, ubyte format)
 {
 	if (point.is_zero())
-		return SafeVector!ubyte(1); // single 0 ubyte
+		return Secure_Vector!ubyte(1); // single 0 ubyte
 	
 	const size_t p_bytes = point.get_curve().get_p().bytes();
 	
 	BigInt x = point.get_affine_x();
 	BigInt y = point.get_affine_y();
 	
-	SafeVector!ubyte bX = BigInt.encode_1363(x, p_bytes);
-	SafeVector!ubyte bY = BigInt.encode_1363(y, p_bytes);
+	Secure_Vector!ubyte bX = BigInt.encode_1363(x, p_bytes);
+	Secure_Vector!ubyte bY = BigInt.encode_1363(y, p_bytes);
 	
 	if (format == UNCOMPRESSED)
 	{
-		SafeVector!ubyte result;
+		Secure_Vector!ubyte result;
 		result.push_back(0x04);
 		
 		result += bX;
@@ -746,7 +746,7 @@ SafeVector!ubyte EC2OSP(in PointGFp point, ubyte format)
 	}
 	else if (format == COMPRESSED)
 	{
-		SafeVector!ubyte result;
+		Secure_Vector!ubyte result;
 		result.push_back(0x02 | cast(ubyte)(y.get_bit(0)));
 		
 		result += bX;
@@ -755,7 +755,7 @@ SafeVector!ubyte EC2OSP(in PointGFp point, ubyte format)
 	}
 	else if (format == HYBRID)
 	{
-		SafeVector!ubyte result;
+		Secure_Vector!ubyte result;
 		result.push_back(0x06 | cast(ubyte)(y.get_bit(0)));
 		
 		result += bX;

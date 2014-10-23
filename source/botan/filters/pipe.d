@@ -76,9 +76,9 @@ public:
 
 	/**
 	* Write input to the pipe, i.e. to its first filter.
-	* @param input the SafeVector containing the data to write
+	* @param input the Secure_Vector containing the data to write
 	*/
-	void write(in SafeVector!ubyte input)
+	void write(in Secure_Vector!ubyte input)
 	{ write(&input[0], input.length); }
 
 	/**
@@ -112,7 +112,7 @@ public:
 	*/
 	void write(DataSource source)
 	{
-		SafeVector!ubyte buffer = SafeVector!ubyte(DEFAULT_BUFFERSIZE);
+		Secure_Vector!ubyte buffer = Secure_Vector!ubyte(DEFAULT_BUFFERSIZE);
 		while(!source.end_of_data())
 		{
 			size_t got = source.read(&buffer[0], buffer.length);
@@ -152,16 +152,16 @@ public:
 
 	/**
 	* Perform start_msg(), write() and end_msg() sequentially.
-	* @param input the SafeVector containing the data to write
+	* @param input the Secure_Vector containing the data to write
 	*/
-	void process_msg(in SafeVector!ubyte input)
+	void process_msg(in Secure_Vector!ubyte input)
 	{
 		process_msg(&input[0], input.length);
 	}
 
 	/**
 	* Perform start_msg(), write() and end_msg() sequentially.
-	* @param input the SafeVector containing the data to write
+	* @param input the Secure_Vector containing the data to write
 	*/
 	void process_msg(in Vector!ubyte input)
 	{
@@ -257,12 +257,12 @@ public:
 	/**
 	* Read the full contents of the pipe.
 	* @param msg the number identifying the message to read from
-	* @return SafeVector holding the contents of the pipe
+	* @return Secure_Vector holding the contents of the pipe
 	*/
-	SafeVector!ubyte read_all(message_id msg = DEFAULT_MESSAGE)
+	Secure_Vector!ubyte read_all(message_id msg = DEFAULT_MESSAGE)
 	{
 		msg = ((msg != DEFAULT_MESSAGE) ? msg : default_msg());
-		SafeVector!ubyte buffer = SafeVector!ubyte(remaining(msg));
+		Secure_Vector!ubyte buffer = Secure_Vector!ubyte(remaining(msg));
 		size_t got = read(&buffer[0], buffer.length, msg);
 		buffer.resize(got);
 		return buffer;
@@ -277,7 +277,7 @@ public:
 	string read_all_as_string(message_id msg = DEFAULT_MESSAGE)
 	{
 		msg = ((msg != DEFAULT_MESSAGE) ? msg : default_msg());
-		SafeVector!ubyte buffer = SafeVector!ubyte(DEFAULT_BUFFERSIZE);
+		Secure_Vector!ubyte buffer = Secure_Vector!ubyte(DEFAULT_BUFFERSIZE);
 		string str;
 		str.reserve(remaining(msg));
 		

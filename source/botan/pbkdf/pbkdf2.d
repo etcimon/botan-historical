@@ -49,15 +49,15 @@ public:
 		}
 		catch(Invalid_Key_Length)
 		{
-			throw new Exception(name() ~ " cannot accept passphrases of length " ~
+			throw new Exception(name ~ " cannot accept passphrases of length " ~
 			                    std.conv.to!string(passphrase.length()));
 		}
 		
-		SafeVector!ubyte key = SafeVector!ubyte(key_len);
+		Secure_Vector!ubyte key = Secure_Vector!ubyte(key_len);
 		
 		ubyte* T = &key[0];
 		
-		SafeVector!ubyte U = SafeVector!ubyte(mac.output_length);
+		Secure_Vector!ubyte U = Secure_Vector!ubyte(mac.output_length);
 		
 		const size_t blocks_needed = round_up(key_len, mac.output_length) / mac.output_length;
 		

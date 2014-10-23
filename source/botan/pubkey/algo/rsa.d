@@ -23,8 +23,8 @@ class RSA_PublicKey : IF_Scheme_PublicKey
 public:
 	@property string algo_name() const { return "RSA"; }
 
-	this(in AlgorithmIdentifier alg_id,
-		 in SafeVector!ubyte key_bits) 
+	this(in Algorithm_Identifier alg_id,
+		 in Secure_Vector!ubyte key_bits) 
 	{
 		super(alg_id, key_bits);
 	}
@@ -39,14 +39,14 @@ public:
 		super(n, e);
 	}
 
-package:
+protected:
 	this() {}
 };
 
 /**
 * RSA Private Key
 */
-class RSA_PrivateKey : RSA_PublicKey,
+final class RSA_PrivateKey : RSA_PublicKey,
 					   IF_Scheme_PrivateKey
 {
 public:
@@ -67,8 +67,8 @@ public:
 		return signature_consistency_check(rng, this, "EMSA4(SHA-1)");
 	}
 
-	this(in AlgorithmIdentifier alg_id,
-						in SafeVector!ubyte key_bits,
+	this(in Algorithm_Identifier alg_id,
+						in Secure_Vector!ubyte key_bits,
 						RandomNumberGenerator rng) 
 	{
 		super(rng, alg_id, key_bits);
@@ -130,8 +130,8 @@ public:
 /**
 * RSA private (decrypt/sign) operation
 */
-class RSA_Private_Operation : Signature,
-							  public Decryption
+final class RSA_Private_Operation : Signature,
+							  		Decryption
 {
 public:
 	this(in RSA_PrivateKey rsa,
@@ -150,7 +150,7 @@ public:
 
 	size_t max_input_bits() const { return (n.bits() - 1); }
 
-	SafeVector!ubyte
+	Secure_Vector!ubyte
 		sign(in ubyte* msg, size_t msg_len,
 		     RandomNumberGenerator rng)
 	{
@@ -169,7 +169,7 @@ public:
 	/*
 	* RSA Decryption Operation
 	*/
-	SafeVector!ubyte decrypt(in ubyte* msg, size_t msg_len)
+	Secure_Vector!ubyte decrypt(in ubyte* msg, size_t msg_len)
 	{
 		const BigInt m = BigInt(msg, msg_len);
 		const BigInt x = blinder.unblind(private_op(blinder.blind(m)));
@@ -206,7 +206,7 @@ private:
 /**
 * RSA public (encrypt/verify) operation
 */
-class RSA_Public_Operation : Verification,
+final class RSA_Public_Operation : Verification,
 							 Encryption
 {
 public:
@@ -219,14 +219,14 @@ public:
 	size_t max_input_bits() const { return (n.bits() - 1); }
 	bool with_recovery() const { return true; }
 
-	SafeVector!ubyte encrypt(in ubyte* msg, size_t msg_len,
+	Secure_Vector!ubyte encrypt(in ubyte* msg, size_t msg_len,
 										RandomNumberGenerator)
 	{
 		BigInt m = BigInt(msg, msg_len);
 		return BigInt.encode_1363(public_op(m), n.bytes());
 	}
 
-	SafeVector!ubyte verify_mr(in ubyte* msg, size_t msg_len)
+	Secure_Vector!ubyte verify_mr(in ubyte* msg, size_t msg_len)
 	{
 		BigInt m = BigInt(msg, msg_len);
 		return BigInt.encode_locked(public_op(m));

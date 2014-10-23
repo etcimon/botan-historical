@@ -106,7 +106,7 @@ public:
 	@property string name() const { return "Noekeon"; }
 	BlockCipher clone() const { return new Noekeon; }
 
-package:
+protected:
 	/**
 	* The Noekeon round constants
 	*/
@@ -118,12 +118,12 @@ package:
 	/**
 	* @return const reference to encryption subkeys
 	*/
-	const ref SafeVector!uint get_EK() const { return EK; }
+	const ref Secure_Vector!uint get_EK() const { return EK; }
 
 	/**
 	* @return const reference to decryption subkeys
 	*/
-	const ref SafeVector!uint get_DK() const { return DK; }
+	const ref Secure_Vector!uint get_DK() const { return DK; }
 
 private:
 	/*
@@ -169,7 +169,7 @@ private:
 		EK[3] = A3;
 	}
 
-	SafeVector!uint EK, DK;
+	Secure_Vector!uint EK, DK;
 };
 
 package:
@@ -179,7 +179,7 @@ package:
 */
 void theta(ref uint A0, ref uint A1,
            ref uint A2, ref uint A3,
-           const uint EK[4])
+           const uint EK[4]) pure
 {
 	uint T = A0 ^ A2;
 	T ^= rotate_left(T, 8) ^ rotate_right(T, 8);
@@ -201,7 +201,7 @@ void theta(ref uint A0, ref uint A1,
 * Theta With Null Key
 */
 void theta(ref uint A0, ref uint A1,
-           ref uint A2, ref uint A3)
+           ref uint A2, ref uint A3) pure
 {
 	uint T = A0 ^ A2;
 	T ^= rotate_left(T, 8) ^ rotate_right(T, 8);
@@ -217,7 +217,7 @@ void theta(ref uint A0, ref uint A1,
 /*
 * Noekeon's Gamma S-Box Layer
 */
-void gamma(ref uint A0, ref uint A1, ref uint A2, ref uint A3)
+void gamma(ref uint A0, ref uint A1, ref uint A2, ref uint A3) pure
 {
 	A1 ^= ~A3 & ~A2;
 	A0 ^= A2 & A1;

@@ -11,11 +11,12 @@ import botan.kdf.kdf;
 import botan.hash.hash;
 import botan.pk_pad.mgf1;
 import botan.utils.mem_ops;
+import botan.utils.types;
 
 /**
 * OAEP (called EME1 in IEEE 1363 and in earlier versions of the library)
 */
-class OAEP : EME
+final class OAEP : EME
 {
 public:
 	/*
@@ -39,11 +40,12 @@ public:
 		m_hash = hash;
 		m_Phash = m_hash.process(P);
 	}
+
 private:
 	/*
 	* OAEP Pad Operation
 	*/
-	SafeVector!ubyte pad(in ubyte* input, size_t in_length,
+	Secure_Vector!ubyte pad(in ubyte* input, size_t in_length,
 	                     size_t key_length,
 	                     RandomNumberGenerator rng) const
 	{
@@ -52,7 +54,7 @@ private:
 		if (key_length < in_length + 2*m_Phash.length + 1)
 			throw new Invalid_Argument("OAEP: Input is too large");
 		
-		SafeVector!ubyte output = SafeVector!ubyte(key_length);
+		Secure_Vector!ubyte output = Secure_Vector!ubyte(key_length);
 		
 		rng.randomize(&output[0], m_Phash.length);
 		
@@ -74,7 +76,7 @@ private:
 	/*
 	* OAEP Unpad Operation
 	*/
-	SafeVector!ubyte unpad(in ubyte* input, size_t in_length,
+	Secure_Vector!ubyte unpad(in ubyte* input, size_t in_length,
 	                       size_t key_length) const
 	{
 		/*
@@ -95,7 +97,7 @@ private:
 		if (in_length > key_length)
 			in_length = 0;
 		
-		SafeVector!ubyte input = SafeVector!ubyte(key_length);
+		Secure_Vector!ubyte input = Secure_Vector!ubyte(key_length);
 		buffer_insert(input, key_length - in_length, input, in_length);
 		
 		mgf1_mask(*m_hash,
@@ -137,9 +139,9 @@ private:
 		if (bad_input)
 			throw new Decoding_Error("Invalid OAEP encoding");
 		
-		return SafeVector!ubyte(&input[delim_idx + 1], &input[input.length]);
+		return Secure_Vector!ubyte(&input[delim_idx + 1], &input[input.length]);
 	}
 
-	SafeVector!ubyte m_Phash;
+	Secure_Vector!ubyte m_Phash;
 	Unique!HashFunction m_hash;
 };

@@ -78,7 +78,7 @@ public:
 		SCAN_Name.set_default_aliases();
 		oids.set_defaults();
 
-		m_algorithm_factory = AlgorithmFactory.init;
+		m_algorithm_factory = Algorithm_Factory.init;
 		
 		static if (BOTAN_HAS_ENGINE_GNU_MP)
 			algorithm_factory().add_engine(new GMP_Engine);
@@ -114,10 +114,10 @@ public:
 	}
 
 	/**
-	* Return a reference to the AlgorithmFactory
-	* @return global AlgorithmFactory
+	* Return a reference to the Algorithm_Factory
+	* @return global Algorithm_Factory
 	*/
-	AlgorithmFactory algorithm_factory() const
+	Algorithm_Factory algorithm_factory() const
 	{
 		if (!m_algorithm_factory)
 			throw new Invalid_State("Uninitialized in algorithm_factory");
@@ -199,6 +199,6 @@ private:
 	__gshared Mutex m_entropy_src_mutex;
 	__gshared Vector!( EntropySource ) m_sources;
 
-	AlgorithmFactory m_algorithm_factory;
+	Algorithm_Factory m_algorithm_factory;
 	bool initialized;
 };

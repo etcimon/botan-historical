@@ -25,7 +25,7 @@ public:
 	*/
 	final bool verify_mac(in ubyte* mac, size_t length)
 	{
-		SafeVector!ubyte our_mac = flush();
+		Secure_Vector!ubyte our_mac = flush();
 		
 		if (our_mac.length != length)
 			return false;

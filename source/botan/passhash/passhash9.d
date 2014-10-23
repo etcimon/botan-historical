@@ -40,12 +40,12 @@ string generate_passhash9(in string pass,
 	
 	PKCS5_PBKDF2 kdf(prf); // takes ownership of pointer
 	
-	SafeVector!ubyte salt(SALT_BYTES);
+	Secure_Vector!ubyte salt(SALT_BYTES);
 	rng.randomize(&salt[0], salt.length);
 	
 	const size_t kdf_iterations = WORK_FACTOR_SCALE * work_factor;
 	
-	SafeVector!ubyte pbkdf2_output =
+	Secure_Vector!ubyte pbkdf2_output =
 		kdf.derive_key(PASSHASH9_PBKDF_OUTPUT_LEN,
 		               pass,
 		               &salt[0], salt.length,
@@ -92,7 +92,7 @@ bool check_passhash9(in string password, in string hash)
 	pipe.write(hash.toStringz + MAGIC_PREFIX.length);
 	pipe.end_msg();
 	
-	SafeVector!ubyte bin = pipe.read_all();
+	Secure_Vector!ubyte bin = pipe.read_all();
 	
 	if (bin.length != BINARY_LENGTH)
 		return false;
@@ -118,7 +118,7 @@ bool check_passhash9(in string password, in string hash)
 	
 	PKCS5_PBKDF2 kdf(pbkdf_prf); // takes ownership of pointer
 	
-	SafeVector!ubyte cmp = kdf.derive_key(
+	Secure_Vector!ubyte cmp = kdf.derive_key(
 		PASSHASH9_PBKDF_OUTPUT_LEN,
 		password,
 		&binput[ALGID_BYTES + WORKFACTOR_BYTES], SALT_BYTES,
@@ -142,7 +142,7 @@ const size_t WORK_FACTOR_SCALE = 10000;
 
 MessageAuthenticationCode get_pbkdf_prf(ubyte alg_id)
 {
-	AlgorithmFactory af = global_state().algorithm_factory();
+	Algorithm_Factory af = global_state().algorithm_factory();
 	
 	try
 	{

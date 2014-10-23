@@ -10,7 +10,7 @@ import botan.utils.loadstor;
 /**
 * TEA
 */
-class TEA : Block_Cipher_Fixed_Params!(8, 16)
+final class TEA : Block_Cipher_Fixed_Params!(8, 16)
 {
 public:
 	/*
@@ -67,7 +67,7 @@ public:
 		zap(K);
 	}
 
-	@property string name() const { return "TEA"; }
+	override @property string name() const { return "TEA"; }
 	BlockCipher clone() const { return new TEA; }
 private:
 	/*
@@ -79,5 +79,5 @@ private:
 		for (size_t i = 0; i != 4; ++i)
 			K[i] = load_be!uint(key, i);
 	}
-	SafeVector!uint K;
+	Secure_Vector!uint K;
 };

@@ -33,12 +33,12 @@ public:
 	/*
 	* Return the encoded contents
 	*/
-	SafeVector!ubyte get_contents()
+	Secure_Vector!ubyte get_contents()
 	{
 		if (subsequences.length != 0)
 			throw new Invalid_State("DER_Encoder: Sequence hasn't been marked done");
 		
-		SafeVector!ubyte output;
+		Secure_Vector!ubyte output;
 		std.algorithm.swap(output, contents);
 		return output;
 	}
@@ -61,7 +61,7 @@ public:
 		if (subsequences.empty())
 			throw new Invalid_State("end_cons: No such sequence");
 		
-		SafeVector!ubyte seq = subsequences[subsequences.length-1].get_contents();
+		Secure_Vector!ubyte seq = subsequences[subsequences.length-1].get_contents();
 		subsequences.pop_back();
 		raw_bytes(seq);
 		return this;
@@ -91,7 +91,7 @@ public:
 	/*
 	* Write raw bytes into the stream
 	*/
-	DER_Encoder raw_bytes(in SafeVector!ubyte val)
+	DER_Encoder raw_bytes(in Secure_Vector!ubyte val)
 	{
 		return raw_bytes(&val[0], val.length);
 	}
@@ -149,7 +149,7 @@ public:
 	/*
 	* DER encode an OCTET STRING or BIT STRING
 	*/
-	DER_Encoder encode(in SafeVector!ubyte bytes,
+	DER_Encoder encode(in Secure_Vector!ubyte bytes,
 	                   ASN1_Tag real_type)
 	{
 		return encode(&bytes[0], bytes.length,
@@ -204,7 +204,7 @@ public:
 			return add_object(type_tag, class_tag, 0);
 		
 		bool extra_zero = (n.bits() % 8 == 0);
-		SafeVector!ubyte contents = SafeVector!ubyte(extra_zero + n.bytes());
+		Secure_Vector!ubyte contents = Secure_Vector!ubyte(extra_zero + n.bytes());
 		BigInt.encode(&contents[extra_zero], n);
 		if (n < 0)
 		{
@@ -221,7 +221,7 @@ public:
 	/*
 	* DER encode an OCTET STRING or BIT STRING
 	*/
-	DER_Encoder encode(in SafeVector!ubyte bytes,
+	DER_Encoder encode(in Secure_Vector!ubyte bytes,
 	                   ASN1_Tag real_type,
 	                   ASN1_Tag type_tag, ASN1_Tag class_tag = ASN1_Tag.CONTEXT_SPECIFIC)
 	{
@@ -252,7 +252,7 @@ public:
 		
 		if (real_type == ASN1_Tag.BIT_STRING)
 		{
-			SafeVector!ubyte encoded;
+			Secure_Vector!ubyte encoded;
 			encoded.push_back(0);
 			encoded += Pair(bytes, length);
 			return add_object(type_tag, class_tag, encoded);
@@ -318,7 +318,7 @@ public:
 	DER_Encoder add_object(ASN1_Tag type_tag, ASN1_Tag class_tag,
 	                       in ubyte* rep, size_t length)
 	{
-		SafeVector!ubyte buffer;
+		Secure_Vector!ubyte buffer;
 		buffer += encode_tag(type_tag, class_tag);
 		buffer += encode_length(length);
 		buffer += Pair(rep, length);
@@ -343,7 +343,7 @@ public:
 	}
 
 	DER_Encoder add_object(ASN1_Tag type_tag, ASN1_Tag class_tag,
-							in SafeVector!ubyte rep)
+							in Secure_Vector!ubyte rep)
 	{
 		return add_object(type_tag, class_tag, &rep[0], rep.length);
 	}
@@ -362,7 +362,7 @@ private:
 		/*
 		* Return the encoded ASN1_Tag.SEQUENCE/SET
 		*/
-		SafeVector!ubyte get_contents()
+		Secure_Vector!ubyte get_contents()
 		{
 			const ASN1_Tag real_class_tag = ASN1_Tag(class_tag | ASN1_Tag.CONSTRUCTED);
 			
@@ -374,7 +374,7 @@ private:
 				set_contents.clear();
 			}
 			
-			SafeVector!ubyte result;
+			Secure_Vector!ubyte result;
 			result += encode_tag(type_tag, real_class_tag);
 			result += encode_length(contents.length);
 			result += contents;
@@ -389,7 +389,7 @@ private:
 		void add_bytes(in ubyte* data, size_t length)
 		{
 			if (type_tag == ASN1_Tag.SET)
-				set_contents.push_back(SafeVector!ubyte(data, data + length));
+				set_contents.push_back(Secure_Vector!ubyte(data, data + length));
 			else
 				contents += Pair(data, length);
 		}
@@ -405,24 +405,24 @@ private:
 
 	private:
 		ASN1_Tag type_tag, class_tag;
-		SafeVector!ubyte contents;
-		Vector!(  SafeVector!ubyte  ) set_contents;
+		Secure_Vector!ubyte contents;
+		Vector!(  Secure_Vector!ubyte  ) set_contents;
 	};
 
-	SafeVector!ubyte contents;
+	Secure_Vector!ubyte contents;
 	Vector!DER_Sequence subsequences;
 };
 
 /*
 * DER encode an ASN.1 type tag
 */
-SafeVector!ubyte encode_tag(ASN1_Tag type_tag, ASN1_Tag class_tag)
+Secure_Vector!ubyte encode_tag(ASN1_Tag type_tag, ASN1_Tag class_tag)
 {
 	if ((class_tag | 0xE0) != 0xE0)
 		throw new Encoding_Error("DER_Encoder: Invalid class tag " ~
 		                         std.conv.to!string(class_tag));
 	
-	SafeVector!ubyte encoded_tag;
+	Secure_Vector!ubyte encoded_tag;
 	if (type_tag <= 30)
 		encoded_tag.push_back(cast(ubyte)(type_tag | class_tag));
 	else
@@ -442,9 +442,9 @@ SafeVector!ubyte encode_tag(ASN1_Tag type_tag, ASN1_Tag class_tag)
 /*
 * DER encode an ASN.1 length field
 */
-SafeVector!ubyte encode_length(size_t length)
+Secure_Vector!ubyte encode_length(size_t length)
 {
-	SafeVector!ubyte encoded_length;
+	Secure_Vector!ubyte encoded_length;
 	if (length <= 127)
 		encoded_length.push_back(cast(ubyte)(length));
 	else

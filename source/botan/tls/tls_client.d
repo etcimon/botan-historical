@@ -385,7 +385,7 @@ private:
 			
 			if (state.received_handshake_msg(CERTIFICATE_REQUEST))
 			{
-				const Vector!string& types =
+				const Vector!string types =
 					state.cert_req().acceptable_cert_types();
 				
 				Vector!X509_Certificate client_certs =
@@ -415,7 +415,7 @@ private:
 			if (state.received_handshake_msg(CERTIFICATE_REQUEST) &&
 			    !state.client_certs().empty())
 			{
-				Private_Key Private_Key =
+				Private_Key priv_key =
 					m_creds.Private_Key_for(state.client_certs().cert_chain()[0],
 					"tls-client",
 					m_info.hostname());
@@ -425,7 +425,7 @@ private:
 				                       state,
 				                       m_policy,
 				                       rng(),
-				                       Private_Key)
+				                       priv_key)
 					);
 			}
 			
@@ -565,7 +565,7 @@ public:
 	}
 	
 	// Used during session resumption
-	SafeVector!ubyte resume_master_secret;
+	Secure_Vector!ubyte resume_master_secret;
 	
 	Unique!Public_Key server_public_key;
 	

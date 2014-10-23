@@ -12,7 +12,7 @@ import botan.utils.types;
 import botan.utils.parsing;
 import botan.utils.exceptn;
 import cstring;
-import stdexcept;
+import std.exception;
 
 import core.sys.posix.sys.types;
 import core.sys.posix.sys.stat;
@@ -41,7 +41,7 @@ public:
 	{
 		const size_t READ_ATTEMPT = 32;
 		
-		SafeVector!ubyte io_buffer = accum.get_io_buffer(READ_ATTEMPT);
+		Secure_Vector!ubyte io_buffer = accum.get_io_buffer(READ_ATTEMPT);
 		
 		for (size_t i = 0; i != sockets.length; ++i)
 		{

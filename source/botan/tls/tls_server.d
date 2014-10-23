@@ -354,7 +354,7 @@ private:
 				auto trusted_CAs =
 					m_creds.trusted_certificate_authorities("tls-server", sni_hostname);
 				
-				Vector!( X509_DN ) client_auth_CAs;
+				Vector!X509_DN client_auth_CAs;
 				
 				foreach (store; trusted_CAs)
 				{

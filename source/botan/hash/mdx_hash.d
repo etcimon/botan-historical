@@ -35,12 +35,12 @@ public:
 		count = position = 0;
 	}
 
-	@property size_t hash_block_size() const { return buffer.length; }
-package:
+	final override @property size_t hash_block_size() const { return buffer.length; }
+protected:
 	/*
 	* Update the hash
 	*/
-	void add_data(in ubyte* input, size_t length)
+	final void add_data(in ubyte* input, size_t length)
 	{
 		count += length;
 		
@@ -71,7 +71,7 @@ package:
 	/*
 	* Finalize a hash
 	*/
-	void final_result(ubyte* output)
+	final void final_result(ubyte* output)
 	{
 		buffer[position] = (BIG_BIT_ENDIAN ? 0x80 : 0x01);
 		for (size_t i = position+1; i != buffer.length; ++i)
@@ -100,7 +100,7 @@ package:
 	/*
 	* Clear memory of sensitive data
 	*/
-	void clear()
+	final void clear()
 	{
 		zeroise(buffer);
 		count = position = 0;
@@ -116,11 +116,11 @@ package:
 	* Write the count, if used, to this spot
 	* @param output where to write the counter to
 	*/
-	void write_count(ubyte* output)
+	final void write_count(ubyte* output)
 	{
 		if (COUNT_SIZE < 8)
 			throw new Invalid_State("MDx_HashFunction::write_count: COUNT_SIZE < 8");
-		if (COUNT_SIZE >= output_length() || COUNT_SIZE > = hash_block_size)
+		if (COUNT_SIZE >= output_length() || COUNT_SIZE >= hash_block_size)
 			throw new Invalid_Argument("MDx_HashFunction: COUNT_SIZE is too big");
 		
 		const ulong bit_count = count * 8;
@@ -131,7 +131,7 @@ package:
 			store_le(bit_count, output + COUNT_SIZE - 8);
 	}
 private:
-	SafeVector!ubyte buffer;
+	Secure_Vector!ubyte buffer;
 	ulong count;
 	size_t position;
 

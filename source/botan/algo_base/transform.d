@@ -23,7 +23,7 @@ public:
 	* Begin processing a message.
 	* @param nonce the per message nonce
 	*/	
-	final SafeVector!ubyte start_vec(Alloc)(in Vector!( ubyte, Alloc ) nonce)
+	final Secure_Vector!ubyte start_vec(Alloc)(in Vector!( ubyte, Alloc ) nonce)
 	{
 		return start(&nonce[0], nonce.length);
 	}
@@ -33,14 +33,14 @@ public:
 	* @param nonce the per message nonce
 	* @param nonce_len length of nonce
 	*/
-	abstract SafeVector!ubyte start(in ubyte* nonce, size_t nonce_len);
+	abstract Secure_Vector!ubyte start(in ubyte* nonce, size_t nonce_len);
 
 	/**
 	* Process some data. Input must be in size update_granularity() ubyte blocks.
 	* @param blocks in/out paramter which will possibly be resized
 	* @param offset an offset into blocks to begin processing
 	*/
-	abstract void update(SafeVector!ubyte blocks, size_t offset = 0);
+	abstract void update(Secure_Vector!ubyte blocks, size_t offset = 0);
 
 	/**
 	* Complete processing of a message.
@@ -49,7 +49,7 @@ public:
 	*		  minimum_final_size() bytes, and will be set to any final output
 	* @param offset an offset into final_block to begin processing
 	*/
-	abstract void finish(SafeVector!ubyte final_block, size_t offset = 0);
+	abstract void finish(Secure_Vector!ubyte final_block, size_t offset = 0);
 
 	/**
 	* Returns the size of the output if this transform is used to process a
@@ -130,7 +130,7 @@ public:
 	final void set_key(in ubyte* key, size_t length)
 	{
 		if (!valid_keylength(length))
-			throw new Invalid_Key_Length(name(), length);
+			throw new Invalid_Key_Length(name, length);
 		key_schedule(key, length);
 	}
 

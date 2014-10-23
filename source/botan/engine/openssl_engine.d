@@ -24,7 +24,7 @@ static if (BOTAN_HAS_DIFFIE_HELLMAN) import botan.pubkey.algo.dh;
 /**
 * OpenSSL Engine
 */
-class OpenSSL_Engine : Engine
+final class OpenSSL_Engine : Engine
 {
 public:
 	string provider_name() const { return "openssl"; }
@@ -32,8 +32,8 @@ public:
 	Key_Agreement get_key_agreement_op(in Private_Key key, RandomNumberGenerator) const
 	{
 		static if (BOTAN_HAS_DIFFIE_HELLMAN) {
-			if (const DH_PrivateKey* dh = cast(const DH_PrivateKey*)(key))
-				return new OSSL_DH_KA_Operation(*dh);
+			if (const DH_PrivateKey dh = cast(const DH_PrivateKey)(key))
+				return new OSSL_DH_KA_Operation(dh);
 		}
 		
 		return 0;
@@ -43,12 +43,12 @@ public:
 	{
 		static if (BOTAN_HAS_RSA) {
 			if (const RSA_PrivateKey s = cast(const RSA_PrivateKey)(key))
-				return new OSSL_RSA_Private_Operation(*s);
+				return new OSSL_RSA_Private_Operation(s);
 		}
 		
 		static if (BOTAN_HAS_DSA) {
-			if (const DSA_PrivateKey* s = cast(const DSA_PrivateKey*)(key))
-				return new OSSL_DSA_Signature_Operation(*s);
+			if (const DSA_PrivateKey s = cast(const DSA_PrivateKey)(key))
+				return new OSSL_DSA_Signature_Operation(s);
 		}
 		
 		return 0;
@@ -58,12 +58,12 @@ public:
 	{
 		static if (BOTAN_HAS_RSA) {
 			if (const RSA_PublicKey s = cast(const RSA_PublicKey)(key))
-				return new OSSL_RSA_Public_Operation(*s);
+				return new OSSL_RSA_Public_Operation(s);
 		}
 		
 		static if (BOTAN_HAS_DSA) {
-			if (const DSA_PublicKey* s = cast(const DSA_PublicKey*)(key))
-				return new OSSL_DSA_Verification_Operation(*s);
+			if (const DSA_PublicKey s = cast(const DSA_PublicKey)(key))
+				return new OSSL_DSA_Verification_Operation(s);
 		}
 		
 		return 0;
@@ -73,7 +73,7 @@ public:
 	{
 		static if (BOTAN_HAS_RSA) {
 			if (const RSA_PublicKey s = cast(const RSA_PublicKey)(key))
-				return new OSSL_RSA_Public_Operation(*s);
+				return new OSSL_RSA_Public_Operation(s);
 		}
 		
 		return 0;
@@ -83,7 +83,7 @@ public:
 	{
 		static if (BOTAN_HAS_RSA) {
 			if (const RSA_PrivateKey s = cast(const RSA_PrivateKey)(key))
-				return new OSSL_RSA_Private_Operation(*s);
+				return new OSSL_RSA_Private_Operation(s);
 		}
 		
 		return 0;
@@ -103,7 +103,7 @@ public:
 	* Look for an algorithm with this name
 	*/
 	BlockCipher find_block_cipher(in SCAN_Name request,
-	                              AlgorithmFactory af) const
+	                              Algorithm_Factory af) const
 	{
 		
 		version(OPENSSL_NO_AES){} else {
@@ -161,7 +161,7 @@ public:
 	* Look for an OpenSSL-supported stream cipher (RC4)
 	*/
 	StreamCipher find_stream_cipher(in SCAN_Name request,
-	                                AlgorithmFactory) const
+	                                Algorithm_Factory) const
 	{
 		if (request.algo_name == "RC4")
 			return new RC4_OpenSSL(request.arg_as_integer(0, 0));
@@ -176,7 +176,7 @@ public:
 	* Look for an algorithm with this name
 	*/
 	HashFunction find_hash(in SCAN_Name request,
-	                       AlgorithmFactory af) const
+	                       Algorithm_Factory af) const
 	{
 		version(OPENSSL_NO_SHA){} else {
 			if (request.algo_name == "SHA-160")
@@ -226,7 +226,7 @@ package:
 /*
 * OpenSSL Modular Exponentiator
 */
-class OpenSSL_Modular_Exponentiator : Modular_Exponentiator
+final class OpenSSL_Modular_Exponentiator : Modular_Exponentiator
 {
 public:
 	void set_base(in BigInt b) { base = b; }
@@ -257,7 +257,7 @@ import openssl.bn;
 /**
 * Lightweight OpenSSL BN wrapper. For internal use only.
 */
-class OSSL_BN
+struct OSSL_BN
 {
 public:
 	/*
@@ -265,7 +265,7 @@ public:
 	*/
 	BigInt to_bigint() const
 	{
-		SafeVector!ubyte output = SafeVector!ubyte(bytes());
+		Secure_Vector!ubyte output = Secure_Vector!ubyte(bytes());
 		BN_bn2bin(m_bn, &output[0]);
 		return BigInt.decode(output);
 	}
@@ -288,7 +288,7 @@ public:
 	}
 	
 	
-	SafeVector!ubyte to_bytes() const
+	Secure_Vector!ubyte to_bytes() const
 	{ 
 		return BigInt.encode_locked(to_bigint()); 
 	}
@@ -305,7 +305,7 @@ public:
 	this(in BigInt input = 0)
 	{
 		m_bn = BN_new();
-		SafeVector!ubyte encoding = BigInt.encode_locked(input);
+		Secure_Vector!ubyte encoding = BigInt.encode_locked(input);
 		if (input != 0)
 			BN_bin2bn(&encoding[0], encoding.length, m_bn);
 	}
@@ -346,23 +346,26 @@ private:
 /**
 * Lightweight OpenSSL BN_CTX wrapper. For internal use only.
 */
-class OSSL_BN_CTX
+struct OSSL_BN_CTX
 {
 public:
-	OSSL_BN_CTX opAssign(in OSSL_BN_CTX)
+	OSSL_BN_CTX opAssign(in OSSL_BN_CTX bn)
 	{
-		m_ctx = BN_CTX_new();
+		m_ctx = bn.m_ctx;
 		return this;
 	}
 	
-	this()
+	this(BN_CTX* ctx = null)
 	{
-		m_ctx = BN_CTX_new();
+		if (ctx)
+			m_ctx = ctx;
+		else
+			m_ctx = BN_CTX_new();
 	}
-	
-	this(in OSSL_BN_CTX)
+
+	this(in OSSL_BN_CTX bn)
 	{
-		m_ctx = BN_CTX_new();
+		m_ctx = bn.m_ctx;
 	}
 	
 	~this()
@@ -382,7 +385,7 @@ package:
 /**
 * RC4 as implemented by OpenSSL
 */
-class RC4_OpenSSL : StreamCipher
+final class RC4_OpenSSL : StreamCipher
 {
 public:
 	void clear() { clear_mem(&state, 1); }
@@ -434,7 +437,7 @@ private:
 /*
 * EVP Block Cipher
 */
-class EVP_BlockCipher : BlockCipher
+final class EVP_BlockCipher : BlockCipher
 {
 public:
 	/*
@@ -552,7 +555,7 @@ private:
 	*/
 	void key_schedule(in ubyte* key, size_t length)
 	{
-		SafeVector!ubyte full_key = SafeVector!ubyte(key, key + length);
+		Secure_Vector!ubyte full_key = Secure_Vector!ubyte(key, key + length);
 		
 		if (cipher_name == "TripleDES" && length == 16)
 		{
@@ -597,7 +600,7 @@ string HANDLE_EVP_CIPHER_KEYLEN(string NAME, alias EVP, ubyte MIN, ubyte MAX, ub
 /*
 * EVP Hash Function
 */
-class EVP_HashFunction : HashFunction
+final class EVP_HashFunction : HashFunction
 {
 public:
 	/*
@@ -616,7 +619,7 @@ public:
 	HashFunction clone() const
 	{
 		const EVP_MD* algo = EVP_MD_CTX_md(&md);
-		return new EVP_HashFunction(algo, name());
+		return new EVP_HashFunction(algo, name);
 	}
 	
 	@property size_t output_length() const
@@ -674,7 +677,7 @@ private:
 package:
 
 static if (BOTAN_HAS_DIFFIE_HELLMAN) {
-	class OSSL_DH_KA_Operation : Key_Agreement
+	final class OSSL_DH_KA_Operation : Key_Agreement
 	{
 	public:
 		this(in DH_PrivateKey dh) 
@@ -683,7 +686,7 @@ static if (BOTAN_HAS_DIFFIE_HELLMAN) {
 			p = dh.group_p();
 		}
 		
-		SafeVector!ubyte agree(in ubyte* w, size_t w_len)
+		Secure_Vector!ubyte agree(in ubyte* w, size_t w_len)
 		{
 			OSSL_BN i = OSSL_BN(w, w_len);
 			OSSL_BN r;
@@ -699,7 +702,7 @@ static if (BOTAN_HAS_DIFFIE_HELLMAN) {
 
 static if (BOTAN_HAS_DSA) {
 	
-	class OSSL_DSA_Signature_Operation : Signature
+	final class OSSL_DSA_Signature_Operation : Signature
 	{
 	public:
 		this(in DSA_PrivateKey dsa) 
@@ -715,7 +718,7 @@ static if (BOTAN_HAS_DSA) {
 		size_t message_part_size() const { return (q_bits + 7) / 8; }
 		size_t max_input_bits() const { return q_bits; }
 		
-		SafeVector!ubyte
+		Secure_Vector!ubyte
 			sign(in ubyte* msg, size_t msg_len,
 			     RandomNumberGenerator rng)
 		{
@@ -728,8 +731,8 @@ static if (BOTAN_HAS_DSA) {
 				k_bn.randomize(rng, q_bits);
 			while(k_bn >= q.to_bigint());
 			
-			OSSL_BN i(msg, msg_len);
-			OSSL_BN k(k_bn);
+			OSSL_BN i = OSSL_BN(msg, msg_len);
+			OSSL_BN k = OSSL_BN(k_bn);
 			
 			OSSL_BN r;
 			BN_mod_exp(r.ptr(), g.ptr(), k.ptr(), p.ptr(), ctx.ptr());
@@ -745,7 +748,7 @@ static if (BOTAN_HAS_DSA) {
 			if (BN_is_zero(r.ptr()) || BN_is_zero(s.ptr()))
 				throw new Internal_Error("OpenSSL_DSA_Op::sign: r or s was zero");
 			
-			SafeVector!ubyte output = SafeVector!ubyte(2*q_bytes);
+			Secure_Vector!ubyte output = Secure_Vector!ubyte(2*q_bytes);
 			r.encode(&output[0], q_bytes);
 			s.encode(&output[q_bytes], q_bytes);
 			return output;
@@ -758,7 +761,7 @@ static if (BOTAN_HAS_DSA) {
 	};
 	
 	
-	class OSSL_DSA_Verification_Operation : Verification
+	final class OSSL_DSA_Verification_Operation : Verification
 	{
 	public:
 		this(in DSA_PublicKey dsa)
@@ -821,7 +824,7 @@ static if (BOTAN_HAS_DSA) {
 	
 	static if (BOTAN_HAS_RSA) {
 		
-		class OSSL_RSA_Private_Operation : Signature, Decryption
+		final class OSSL_RSA_Private_Operation : Signature, Decryption
 		{
 		public:
 			this(in RSA_PrivateKey rsa)
@@ -837,7 +840,7 @@ static if (BOTAN_HAS_DSA) {
 			
 			size_t max_input_bits() const { return (n_bits - 1); }
 			
-			SafeVector!ubyte sign(in ubyte* msg, size_t msg_len,
+			Secure_Vector!ubyte sign(in ubyte* msg, size_t msg_len,
 			                      RandomNumberGenerator)
 			{
 				BigInt m = BigInt(msg, msg_len);
@@ -845,7 +848,7 @@ static if (BOTAN_HAS_DSA) {
 				return BigInt.encode_1363(x, (n_bits + 7) / 8);
 			}
 			
-			SafeVector!ubyte decrypt(in ubyte* msg, size_t msg_len)
+			Secure_Vector!ubyte decrypt(in ubyte* msg, size_t msg_len)
 			{
 				BigInt m = BigInt(msg, msg_len);
 				return BigInt.encode_locked(private_op(m));
@@ -871,7 +874,7 @@ static if (BOTAN_HAS_DSA) {
 		};
 		
 		
-		class OSSL_RSA_Public_Operation : Verification, Encryption
+		final class OSSL_RSA_Public_Operation : Verification, Encryption
 		{
 		public:
 			this(in RSA_PublicKey rsa) 
@@ -884,14 +887,14 @@ static if (BOTAN_HAS_DSA) {
 			size_t max_input_bits() const { return (n.bits() - 1); }
 			bool with_recovery() const { return true; }
 			
-			SafeVector!ubyte encrypt(in ubyte* msg, size_t msg_len,
+			Secure_Vector!ubyte encrypt(in ubyte* msg, size_t msg_len,
 			                         RandomNumberGenerator)
 			{
 				BigInt m(msg, msg_len);
 				return BigInt.encode_1363(public_op(m), n.bytes());
 			}
 			
-			SafeVector!ubyte verify_mr(in ubyte* msg, size_t msg_len)
+			Secure_Vector!ubyte verify_mr(in ubyte* msg, size_t msg_len)
 			{
 				BigInt m(msg, msg_len);
 				return BigInt.encode_locked(public_op(m));
@@ -903,7 +906,7 @@ static if (BOTAN_HAS_DSA) {
 				if (m >= n)
 					throw new Invalid_Argument("RSA public op - input is too large");
 				
-				OSSL_BN m_bn(m), r;
+				OSSL_BN m_bn = OSSL_BN(m), r;
 				BN_mod_exp(r.ptr(), m_bn.ptr(), e.ptr(), mod.ptr(), ctx.ptr());
 				return r.to_bigint();
 			}
@@ -916,10 +919,3 @@ static if (BOTAN_HAS_DSA) {
 	}
 	
 }
-
-
-
-
-
-
-

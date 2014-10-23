@@ -16,7 +16,7 @@ class MD2 : HashFunction
 public:
 	@property string name() const { return "MD2"; }
 	@property size_t output_length() const { return 16; }
-	@property size_t hash_block_size() const { return 16; }
+	override @property size_t hash_block_size() const { return 16; }
 	HashFunction clone() const { return new MD2; }
 
 	/**
@@ -126,7 +126,7 @@ private:
 		clear();
 	}
 
-	SafeVector!ubyte X, checksum, buffer;
+	Secure_Vector!ubyte X, checksum, buffer;
 	size_t position;
 };
 

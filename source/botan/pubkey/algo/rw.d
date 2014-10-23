@@ -24,8 +24,8 @@ class RW_PublicKey : IF_Scheme_PublicKey
 public:
 	@property string algo_name() const { return "RW"; }
 
-	this(in AlgorithmIdentifier alg_id,
-					 in SafeVector!ubyte key_bits)
+	this(in Algorithm_Identifier alg_id,
+					 in Secure_Vector!ubyte key_bits)
 	{
 		super(alg_id, key_bits);
 	}
@@ -35,19 +35,19 @@ public:
 		super(mod, exponent);
 	}
 
-package:
+protected:
 	this() {}
 };
 
 /**
 * Rabin-Williams Private Key
 */
-class RW_PrivateKey : RW_PublicKey,
+final class RW_PrivateKey : RW_PublicKey,
 					  IF_Scheme_PrivateKey
 {
 public:
-	this(in AlgorithmIdentifier alg_id,
-					  in SafeVector!ubyte key_bits,
+	this(in Algorithm_Identifier alg_id,
+					  in Secure_Vector!ubyte key_bits,
 					  RandomNumberGenerator rng) 
 	{
 		super(rng, alg_id, key_bits);
@@ -111,7 +111,7 @@ public:
 /**
 * Rabin-Williams Signature Operation
 */
-class RW_Signature_Operation : Signature
+final class RW_Signature_Operation : Signature
 {
 public:
 	this(in RW_PrivateKey rw) 
@@ -127,7 +127,7 @@ public:
 
 	size_t max_input_bits() const { return (n.bits() - 1); }
 
-	SafeVector!ubyte sign(in ubyte* msg, size_t msg_len,
+	Secure_Vector!ubyte sign(in ubyte* msg, size_t msg_len,
 	                      RandomNumberGenerator rng)
 	{
 		rng.add_entropy(msg, msg_len);
@@ -175,7 +175,7 @@ private:
 /**
 * Rabin-Williams Verification Operation
 */
-class RW_Verification_Operation : Verification
+final class RW_Verification_Operation : Verification
 {
 public:
 	this(in RW_PublicKey rw)
@@ -187,7 +187,7 @@ public:
 	size_t max_input_bits() const { return (n.bits() - 1); }
 	bool with_recovery() const { return true; }
 
-	SafeVector!ubyte verify_mr(in ubyte* msg, size_t msg_len)
+	Secure_Vector!ubyte verify_mr(in ubyte* msg, size_t msg_len)
 	{
 		BigInt m(msg, msg_len);
 		

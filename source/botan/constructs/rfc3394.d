@@ -24,9 +24,9 @@ import botan.utils.types;
 * @param af an algorithm factory
 * @return key encrypted under kek
 */
-SafeVector!ubyte rfc3394_keywrap(in SafeVector!ubyte key,
+Secure_Vector!ubyte rfc3394_keywrap(in Secure_Vector!ubyte key,
                                  const ref SymmetricKey kek,
-                                 AlgorithmFactory af)
+                                 Algorithm_Factory af)
 {
 	if (key.length % 8 != 0)
 		throw new Invalid_Argument("Bad input key size for NIST key wrap");
@@ -36,8 +36,8 @@ SafeVector!ubyte rfc3394_keywrap(in SafeVector!ubyte key,
 	
 	const size_t n = key.length / 8;
 	
-	SafeVector!ubyte R = SafeVector!ubyte((n + 1) * 8);
-	SafeVector!ubyte A = SafeVector!ubyte(16);
+	Secure_Vector!ubyte R = Secure_Vector!ubyte((n + 1) * 8);
+	Secure_Vector!ubyte A = Secure_Vector!ubyte(16);
 	
 	for (size_t i = 0; i != 8; ++i)
 		A[i] = 0xA6;
@@ -75,9 +75,9 @@ SafeVector!ubyte rfc3394_keywrap(in SafeVector!ubyte key,
 * @param af an algorithm factory
 * @return key decrypted under kek
 */
-SafeVector!ubyte rfc3394_keyunwrap(in SafeVector!ubyte key,
+Secure_Vector!ubyte rfc3394_keyunwrap(in Secure_Vector!ubyte key,
                                    const ref SymmetricKey kek,
-                                   AlgorithmFactory af)
+                                   Algorithm_Factory af)
 {
 	if (key.length < 16 || key.length % 8 != 0)
 		throw new Invalid_Argument("Bad input key size for NIST key unwrap");
@@ -87,8 +87,8 @@ SafeVector!ubyte rfc3394_keyunwrap(in SafeVector!ubyte key,
 	
 	const size_t n = (key.length - 8) / 8;
 	
-	SafeVector!ubyte R = SafeVector!ubyte(n * 8);
-	SafeVector!ubyte A = SafeVector!ubyte(16);
+	Secure_Vector!ubyte R = Secure_Vector!ubyte(n * 8);
+	Secure_Vector!ubyte A = Secure_Vector!ubyte(16);
 	
 	for (size_t i = 0; i != 8; ++i)
 		A[i] = key[i];
@@ -124,7 +124,7 @@ SafeVector!ubyte rfc3394_keyunwrap(in SafeVector!ubyte key,
 private:
 
 BlockCipher make_aes(size_t keylength,
-                     AlgorithmFactory af)
+                     Algorithm_Factory af)
 {
 	if (keylength == 16)
 		return af.make_block_cipher("AES-128");

@@ -16,14 +16,14 @@ import botan.utils.rotate;
 class MD5 : MDx_HashFunction
 {
 public:
-	@property string name() const { return "MD5"; }
-	@property size_t output_length() const { return 16; }
-	HashFunction clone() const { return new MD5; }
+	final override @property string name() const { return "MD5"; }
+	final @property size_t output_length() const { return 16; }
+	override HashFunction clone() const { return new MD5; }
 
 	/*
 	* Clear memory of sensitive data
 	*/
-	void clear()
+	final void clear()
 	{
 		super.clear();
 		zeroise(M);
@@ -41,10 +41,10 @@ public:
 		digest = 4;
 		clear();
 	}
-package:
+protected:
 	/*
-* MD5 Compression Function
-*/
+	* MD5 Compression Function
+	*/
 	void compress_n(in ubyte* input, size_t blocks)
 	{
 		uint A = digest[0], B = digest[1], C = digest[2], D = digest[3];
@@ -101,7 +101,7 @@ package:
 	/*
 	* Copy out the digest
 	*/
-	void copy_out(ubyte* output)
+	final void copy_out(ubyte* output)
 	{
 		for (size_t i = 0; i != output_length; i += 4)
 			store_le(digest[i/4], output + i);
@@ -110,12 +110,12 @@ package:
 	/**
 	* The message buffer, exposed for use by subclasses (x86 asm)
 	*/
-	SafeVector!uint M;
+	Secure_Vector!uint M;
 
 	/**
 	* The digest value, exposed for use by subclasses (x86 asm)
 	*/
-	SafeVector!uint digest;
+	Secure_Vector!uint digest;
 };
 
 private:
@@ -124,7 +124,7 @@ private:
 * MD5 FF Function
 */
 void FF(ref uint A, uint B, uint C, uint D, uint msg,
-        ubyte S, uint magic)
+        ubyte S, uint magic) pure
 {
 	A += (D ^ (B & (C ^ D))) + msg + magic;
 	A  = rotate_left(A, S) + B;
@@ -134,7 +134,7 @@ void FF(ref uint A, uint B, uint C, uint D, uint msg,
 * MD5 GG Function
 */
 void GG(ref uint A, uint B, uint C, uint D, uint msg,
-        ubyte S, uint magic)
+        ubyte S, uint magic) pure
 {
 	A += (C ^ (D & (B ^ C))) + msg + magic;
 	A  = rotate_left(A, S) + B;
@@ -144,7 +144,7 @@ void GG(ref uint A, uint B, uint C, uint D, uint msg,
 * MD5 HH Function
 */
 void HH(ref uint A, uint B, uint C, uint D, uint msg,
-        ubyte S, uint magic)
+        ubyte S, uint magic) pure
 {
 	A += (B ^ C ^ D) + msg + magic;
 	A  = rotate_left(A, S) + B;
@@ -154,7 +154,7 @@ void HH(ref uint A, uint B, uint C, uint D, uint msg,
 * MD5 II Function
 */
 void II(ref uint A, uint B, uint C, uint D, uint msg,
-        ubyte S, uint magic)
+        ubyte S, uint magic) pure
 {
 	A += (C ^ (B | ~D)) + msg + magic;
 	A  = rotate_left(A, S) + B;

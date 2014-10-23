@@ -23,14 +23,14 @@ public:
 	/**
 	* @return native parallelism of this cipher in blocks
 	*/
-	abstract size_t parallelism() const { return 1; }
+	abstract @property size_t parallelism() const { return 1; }
 
 	/**
 	* @return prefererred parallelism of this cipher in bytes
 	*/
 	final size_t parallel_bytes() const
 	{
-		return parallelism() * this.block_size * BOTAN_BLOCK_CIPHER_PAR_MULT;
+		return parallelism * this.block_size * BOTAN_BLOCK_CIPHER_PAR_MULT;
 	}
 
 	/**

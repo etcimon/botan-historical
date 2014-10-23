@@ -26,8 +26,6 @@ enum Key_Constraints {
 	DECIPHER_ONLY		= 128
 };
 
-class Public_Key;
-
 /**
 * Create the key constraints for a specific public key.
 * @param pub_key the public key from which the basic set of

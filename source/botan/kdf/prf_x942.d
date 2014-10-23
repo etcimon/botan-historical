@@ -22,14 +22,14 @@ public:
 	/*
 	* X9.42 PRF
 	*/
-	SafeVector!ubyte derive(size_t key_len,
+	Secure_Vector!ubyte derive(size_t key_len,
 	                        in ubyte* secret, size_t secret_len,
 	                        in ubyte* salt, size_t salt_len) const
 	{
 		SHA_160 hash;
 		const OID kek_algo(key_wrap_oid);
 		
-		SafeVector!ubyte key;
+		Secure_Vector!ubyte key;
 		uint counter = 1;
 		
 		while(key.length != key_len && counter)
@@ -58,7 +58,7 @@ public:
 				.end_cons().get_contents()
 				);
 			
-			SafeVector!ubyte digest = hash.flush();
+			Secure_Vector!ubyte digest = hash.flush();
 			const size_t needed = std.algorithm.min(digest.length, key_len - key.length);
 			key += Pair(&digest[0], needed);
 			

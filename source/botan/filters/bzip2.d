@@ -109,7 +109,7 @@ private:
 	}
 
 	const size_t level;
-	SafeVector!ubyte buffer;
+	Secure_Vector!ubyte buffer;
 	Bzip_Stream bz;
 };
 
@@ -235,7 +235,7 @@ private:
 	}
 
 	const bool small_mem;
-	SafeVector!ubyte buffer;
+	Secure_Vector!ubyte buffer;
 	Bzip_Stream bz;
 	bool no_writes;
 };

@@ -73,8 +73,8 @@ public:
 		get_key_agreement_op(in Private_Key key, RandomNumberGenerator) const
 	{
 		static if (BOTAN_HAS_DIFFIE_HELLMAN) {
-			if (const DH_PrivateKey* dh = cast(const DH_PrivateKey*)(key))
-				return new GMP_DH_KA_Operation(*dh);
+			if (const DH_PrivateKey dh = cast(const DH_PrivateKey)(key))
+				return new GMP_DH_KA_Operation(dh);
 		}
 		
 		return null;
@@ -85,12 +85,12 @@ public:
 	{
 		static if (BOTAN_HAS_RSA) {
 			if (const RSA_PrivateKey s = cast(const RSA_PrivateKey)(key))
-				return new GMP_RSA_Private_Operation(*s);
+				return new GMP_RSA_Private_Operation(s);
 		}
 		
 		static if (BOTAN_HAS_DSA) {
-			if (const DSA_PrivateKey* s = cast(const DSA_PrivateKey*)(key))
-				return new GMP_DSA_Signature_Operation(*s);
+			if (const DSA_PrivateKey s = cast(const DSA_PrivateKey)(key))
+				return new GMP_DSA_Signature_Operation(s);
 		}
 		
 		return null;
@@ -101,12 +101,12 @@ public:
 	{
 		static if (BOTAN_HAS_RSA) {
 			if (const RSA_PublicKey s = cast(const RSA_PublicKey)(key))
-				return new GMP_RSA_Public_Operation(*s);
+				return new GMP_RSA_Public_Operation(s);
 		}
 		
 		static if (BOTAN_HAS_DSA) {
-			if (const DSA_PublicKey* s = cast(const DSA_PublicKey*)(key))
-				return new GMP_DSA_Verification_Operation(*s);
+			if (const DSA_PublicKey s = cast(const DSA_PublicKey)(key))
+				return new GMP_DSA_Verification_Operation(s);
 		}
 		
 		return null;
@@ -117,7 +117,7 @@ public:
 	{
 		static if (BOTAN_HAS_RSA) {
 			if (const RSA_PublicKey s = cast(const RSA_PublicKey)(key))
-				return new GMP_RSA_Public_Operation(*s);
+				return new GMP_RSA_Public_Operation(s);
 		}
 		
 		return null;
@@ -128,7 +128,7 @@ public:
 	{
 		static if (BOTAN_HAS_RSA) {
 			if (const RSA_PrivateKey s = cast(const RSA_PrivateKey)(key))
-				return new GMP_RSA_Private_Operation(*s);
+				return new GMP_RSA_Private_Operation(s);
 		}
 		
 		return null;
@@ -213,7 +213,7 @@ public:
 		return ((mpz_sizeinbase(value, 2) + 7) / 8);
 	}
 	
-	SafeVector!ubyte to_bytes() const
+	Secure_Vector!ubyte to_bytes() const
 	{ return BigInt.encode_locked(to_bigint()); }
 	
 	/*
@@ -270,7 +270,7 @@ static if (BOTAN_HAS_DIFFIE_HELLMAN) {
 			p = dh.group_p();
 		}
 		
-		SafeVector!ubyte agree(in ubyte* w, size_t w_len)
+		Secure_Vector!ubyte agree(in ubyte* w, size_t w_len)
 		{
 			GMP_MPZ z(w, w_len);
 			mpz_powm(z.value, z.value, x.value, p.value);
@@ -300,7 +300,7 @@ static if (BOTAN_HAS_DSA) {
 		size_t message_part_size() const { return (q_bits + 7) / 8; }
 		size_t max_input_bits() const { return q_bits; }
 		
-		SafeVector!ubyte
+		Secure_Vector!ubyte
 			sign(in ubyte* msg, size_t msg_len,
 			     RandomNumberGenerator rng)
 		{
@@ -331,7 +331,7 @@ static if (BOTAN_HAS_DSA) {
 			if (mpz_cmp_ui(r.value, 0) == 0 || mpz_cmp_ui(s.value, 0) == 0)
 				throw new Internal_Error("GMP_DSA_Op::sign: r or s was zero");
 			
-			SafeVector!ubyte output = SafeVector(2*q_bytes);
+			Secure_Vector!ubyte output = Secure_Vector(2*q_bytes);
 			r.encode(&output[0], q_bytes);
 			s.encode(&output[q_bytes], q_bytes);
 			return output;
@@ -424,7 +424,7 @@ static if (BOTAN_HAS_DSA) {
 			
 			size_t max_input_bits() const { return (n_bits - 1); }
 			
-			SafeVector!ubyte sign(in ubyte* msg, size_t msg_len,
+			Secure_Vector!ubyte sign(in ubyte* msg, size_t msg_len,
 			                      RandomNumberGenerator)
 			{
 				BigInt m(msg, msg_len);
@@ -432,7 +432,7 @@ static if (BOTAN_HAS_DSA) {
 				return BigInt.encode_1363(x, (n_bits + 7) / 8);
 			}
 			
-			SafeVector!ubyte decrypt(in ubyte* msg, size_t msg_len)
+			Secure_Vector!ubyte decrypt(in ubyte* msg, size_t msg_len)
 			{
 				BigInt m(msg, msg_len);
 				return BigInt.encode_locked(private_op(m));
@@ -471,14 +471,14 @@ static if (BOTAN_HAS_DSA) {
 			size_t max_input_bits() const { return (n.bits() - 1); }
 			bool with_recovery() const { return true; }
 			
-			SafeVector!ubyte encrypt(in ubyte* msg, size_t msg_len,
+			Secure_Vector!ubyte encrypt(in ubyte* msg, size_t msg_len,
 			                         RandomNumberGenerator)
 			{
 				BigInt m(msg, msg_len);
 				return BigInt.encode_1363(public_op(m), n.bytes());
 			}
 			
-			SafeVector!ubyte verify_mr(in ubyte* msg, size_t msg_len)
+			Secure_Vector!ubyte verify_mr(in ubyte* msg, size_t msg_len)
 			{
 				BigInt m(msg, msg_len);
 				return BigInt.encode_locked(public_op(m));

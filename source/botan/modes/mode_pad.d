@@ -22,7 +22,7 @@ import string;
 class BlockCipherModePaddingMethod
 {
 public:
-	abstract void add_padding(SafeVector!ubyte buffer,
+	abstract void add_padding(Secure_Vector!ubyte buffer,
 									 size_t final_block_bytes,
 									 size_t block_size) const;
 
@@ -53,13 +53,13 @@ public:
 /**
 * PKCS#7 Padding
 */
-class PKCS7_Padding : BlockCipherModePaddingMethod
+final class PKCS7_Padding : BlockCipherModePaddingMethod
 {
 public:
 	/*
 	* Pad with PKCS #7 Method
 	*/
-	override void add_padding(SafeVector!ubyte buffer,
+	override void add_padding(Secure_Vector!ubyte buffer,
 				                 size_t last_byte_pos,
 				                 size_t block_size) const
 	{
@@ -77,11 +77,11 @@ public:
 		size_t position = block[size-1];
 		
 		if (position > size)
-			throw new Decoding_Error("Bad padding in " ~ name());
+			throw new Decoding_Error("Bad padding in " ~ name);
 		
 		for (size_t j = size-position; j != size-1; ++j)
 			if (block[j] != position)
-				throw new Decoding_Error("Bad padding in " ~ name());
+				throw new Decoding_Error("Bad padding in " ~ name);
 		
 		return (size-position);
 	}
@@ -94,13 +94,13 @@ public:
 /**
 * ANSI X9.23 Padding
 */
-class ANSI_X923_Padding : BlockCipherModePaddingMethod
+final class ANSI_X923_Padding : BlockCipherModePaddingMethod
 {
 public:
 	/*
 	* Pad with ANSI X9.23 Method
 	*/
-	override void add_padding(SafeVector!ubyte buffer,
+	override void add_padding(Secure_Vector!ubyte buffer,
 				                 size_t last_byte_pos,
 				                 size_t block_size) const
 	{
@@ -118,10 +118,10 @@ public:
 	{
 		size_t position = block[size-1];
 		if (position > size)
-			throw new Decoding_Error(name());
+			throw new Decoding_Error(name);
 		for (size_t j = size-position; j != size-1; ++j)
 			if (block[j] != 0)
-				throw new Decoding_Error(name());
+				throw new Decoding_Error(name);
 		return (size-position);
 	}
 
@@ -133,13 +133,13 @@ public:
 /**
 * One And Zeros Padding
 */
-class OneAndZeros_Padding : BlockCipherModePaddingMethod
+final class OneAndZeros_Padding : BlockCipherModePaddingMethod
 {
 public:
 	/*
 	* Pad with One and Zeros Method
 	*/
-	override void add_padding(SafeVector!ubyte buffer,
+	override void add_padding(Secure_Vector!ubyte buffer,
 				                 size_t last_byte_pos,
 				                 size_t block_size) const
 	{
@@ -159,11 +159,11 @@ public:
 			if (block[size-1] == 0x80)
 				break;
 			if (block[size-1] != 0x00)
-				throw new Decoding_Error(name());
+				throw new Decoding_Error(name);
 			size--;
 		}
 		if (!size)
-			throw new Decoding_Error(name());
+			throw new Decoding_Error(name);
 		return (size-1);
 	}
 
@@ -175,10 +175,10 @@ public:
 /**
 * Null Padding
 */
-class Null_Padding : BlockCipherModePaddingMethod
+final class Null_Padding : BlockCipherModePaddingMethod
 {
 public:
-	override void add_padding(SafeVector!ubyte, size_t, size_t) const {}
+	override void add_padding(Secure_Vector!ubyte, size_t, size_t) const {}
 
 	size_t unpad(const ubyte[], size_t size) const { return size; }
 

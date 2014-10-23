@@ -40,9 +40,9 @@ public:
 		return true;
 	}
 
-	AlgorithmIdentifier algorithm_identifier() const
+	Algorithm_Identifier algorithm_identifier() const
 	{
-		return AlgorithmIdentifier(get_oid(),
+		return Algorithm_Identifier(get_oid(),
 		                           group.DER_encode(group_format()));
 	}
 
@@ -91,8 +91,8 @@ public:
 		return dl_work_factor(group.get_p().bits());
 	}
 
-	this(in AlgorithmIdentifier alg_id,
-	     in SafeVector!ubyte key_bits,
+	this(in Algorithm_Identifier alg_id,
+	     in Secure_Vector!ubyte key_bits,
 	     DL_Group.Format format)
 	{
 		group.BER_decode(alg_id.parameters, format);
@@ -100,7 +100,7 @@ public:
 		BER_Decoder(key_bits).decode(y);
 	}
 
-package:
+protected:
 	this() {}
 
 	/**
@@ -137,13 +137,13 @@ public:
 	*/
 	const ref BigInt get_x() const { return x; }
 
-	SafeVector!ubyte pkcs8_Private_Key() const
+	Secure_Vector!ubyte pkcs8_Private_Key() const
 	{
 		return DER_Encoder().encode(x).get_contents();
 	}
 
-	this(in AlgorithmIdentifier alg_id,
-	     in SafeVector!ubyte key_bits,
+	this(in Algorithm_Identifier alg_id,
+	     in Secure_Vector!ubyte key_bits,
 	     DL_Group.Format format)
 	{
 		group.BER_decode(alg_id.parameters, format);
@@ -151,7 +151,7 @@ public:
 		BER_Decoder(key_bits).decode(x);
 	}
 
-package:
+protected:
 	this() {}
 
 	/**

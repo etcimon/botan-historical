@@ -10,7 +10,7 @@ import botan.engine.engine;
 
 static if (BOTAN_HAS_SERPENT_X86_32) 	import botan.block.serp_x86_32;
 static if (BOTAN_HAS_MD4_X86_32) 		import botan.hash.md4_x86_32;
-static if (BOTAN_HAS_MD5_X86_32) 		import botan.md5_x86_32;
+static if (BOTAN_HAS_MD5_X86_32) 		import botan.hash.md5_x86_32;
 static if (BOTAN_HAS_SHA1_X86_64)		import botan.hash.sha1_x86_64;
 static if (BOTAN_HAS_SHA1_X86_32)		import botan.hash.sha1_x86_32;
 
@@ -24,7 +24,7 @@ public:
 
 		
 	BlockCipher find_block_cipher(	in SCAN_Name request,
-	                             			AlgorithmFactory af) const
+	                             			Algorithm_Factory af) const
 	{
 		static if (BOTAN_HAS_SERPENT_X86_32) { 
 			if (request.algo_name == "Serpent")
@@ -37,7 +37,7 @@ public:
 	}
 
 	HashFunction find_hash(in SCAN_Name request,
-	                                AlgorithmFactory af) const
+	                                Algorithm_Factory af) const
 	{
 		static if (BOTAN_HAS_MD4_X86_32) {
 			if (request.algo_name == "MD4")

@@ -13,7 +13,7 @@ import botan.utils.bswap;
 * Fake SIMD, using plain scalar operations
 * Often still faster than iterative on superscalar machines
 */
-class SIMD_Scalar(T, size_t N)
+struct SIMD_Scalar(T, size_t N)
 {
 public:
 	static bool enabled() { return true; }

@@ -10,7 +10,7 @@ module botan.simd.simd_sse2;
 import botan.utils.cpuid;
 import botan.utils.simd.emmintrin;
 
-class SIMD_SSE2
+struct SIMD_SSE2
 {
 public:
 	static bool enabled() { return CPUID.has_sse2(); }

@@ -7,7 +7,7 @@
 module botan.hash.comb4p;
 import botan.hash.hash;
 import botan.utils.xor_buf;
-import stdexcept;
+import std.exception;
 
 /**
 * Combines two hash functions using a Feistel scheme. Described in
@@ -81,8 +81,8 @@ private:
 
 	void final_result(ubyte* output)
 	{
-		SafeVector!ubyte h1 = m_hash1.flush();
-		SafeVector!ubyte h2 = m_hash2.flush();
+		Secure_Vector!ubyte h1 = m_hash1.flush();
+		Secure_Vector!ubyte h2 = m_hash2.flush();
 		
 		// First round
 		xor_buf(&h1[0], &h2[0], std.algorithm.min(h1.length, h2.length));
@@ -106,8 +106,8 @@ private:
 
 private:
 	
-void comb4p_round(SafeVector!ubyte output,
-                  in SafeVector!ubyte input,
+void comb4p_round(Secure_Vector!ubyte output,
+                  in Secure_Vector!ubyte input,
                   ubyte round_no,
                   HashFunction h1,
                   HashFunction h2)
@@ -118,7 +118,7 @@ void comb4p_round(SafeVector!ubyte output,
 	h1.update(&input[0], input.length);
 	h2.update(&input[0], input.length);
 	
-	SafeVector!ubyte h_buf = h1.flush();
+	Secure_Vector!ubyte h_buf = h1.flush();
 	xor_buf(&output[0], &h_buf[0], std.algorithm.min(output.length, h_buf.length));
 	
 	h_buf = h2.flush();

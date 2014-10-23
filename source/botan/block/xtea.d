@@ -81,13 +81,13 @@ public:
 		zap(EK);
 	}
 
-	@property string name() const { return "XTEA"; }
+	override @property string name() const { return "XTEA"; }
 	BlockCipher clone() const { return new XTEA; }
-package:
+protected:
 	/**
 	* @return const reference to the key schedule
 	*/
-	const ref SafeVector!uint get_EK() const { return EK; }
+	const ref Secure_Vector!uint get_EK() const { return EK; }
 
 private:
 	/*
@@ -97,7 +97,7 @@ private:
 	{
 		EK.resize(64);
 		
-		SafeVector!uint UK(4);
+		Secure_Vector!uint UK(4);
 		for (size_t i = 0; i != 4; ++i)
 			UK[i] = load_be!uint(key, i);
 		
@@ -110,12 +110,13 @@ private:
 		}
 	}
 
-	SafeVector!uint EK;
+	Secure_Vector!uint EK;
 };
 
 package:
+pure:
 
-void xtea_encrypt_4(const ubyte[32] input, ubyte[32] output, const uint[64] EK)
+void xtea_encrypt_4(const ubyte[32]* input, ubyte[32]* output, const uint[64]* EK)
 {
 	uint L0, R0, L1, R1, L2, R2, L3, R3;
 	load_be(input, L0, R0, L1, R1, L2, R2, L3, R3);
@@ -136,7 +137,7 @@ void xtea_encrypt_4(const ubyte[32] input, ubyte[32] output, const uint[64] EK)
 	store_be(output, L0, R0, L1, R1, L2, R2, L3, R3);
 }
 
-void xtea_decrypt_4(const ubyte[32] input, ubyte[32] output, const uint[64] EK)
+void xtea_decrypt_4(const ubyte[32]* input, ubyte[32]* output, const uint[64]* EK)
 {
 	uint L0, R0, L1, R1, L2, R2, L3, R3;
 	load_be(input, L0, R0, L1, R1, L2, R2, L3, R3);

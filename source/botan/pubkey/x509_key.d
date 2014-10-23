@@ -6,9 +6,9 @@
 */
 module botan.pubkey.x509_key;
 
-import botan.pubkey.pk_keys;
-import botan.asn1.alg_id;
-import botan.filters.pipe;
+public import botan.pubkey.pk_keys;
+public import botan.asn1.alg_id;
+public import botan.filters.pipe;
 import botan.pubkey.x509_key;
 import botan.asn1.der_enc;
 import botan.asn1.ber_dec;
@@ -57,8 +57,8 @@ string PEM_encode(in Public_Key key)
 Public_Key load_key(DataSource source)
 {
 	try {
-		AlgorithmIdentifier alg_id;
-		SafeVector!ubyte key_bits;
+		Algorithm_Identifier alg_id;
+		Secure_Vector!ubyte key_bits;
 		
 		if (asn1_obj.maybe_BER(source) && !pem.matches(source))
 		{

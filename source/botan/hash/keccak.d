@@ -18,7 +18,7 @@ import botan.utils.xor_buf;
 /**
 * Keccak[1600], a SHA-3 candidate
 */
-class Keccak_1600 : HashFunction
+final class Keccak_1600 : HashFunction
 {
 public:
 
@@ -41,8 +41,8 @@ public:
 			                           std.conv.to!string(output_bits));
 	}
 
-	@property size_t hash_block_size() const { return bitrate / 8; }
-	@property size_t output_length() const { return output_bits / 8; }
+	override @property size_t hash_block_size() const { return bitrate / 8; }
+	override @property size_t output_length() const { return output_bits / 8; }
 
 	HashFunction clone() const
 	{
@@ -126,14 +126,14 @@ private:
 	}
 
 	size_t output_bits, bitrate;
-	SafeVector!ulong S;
+	Secure_Vector!ulong S;
 	size_t S_pos;
 };
 
 
 
 
-void keccak_f_1600(ulong[25]* A)
+void keccak_f_1600(ulong[25]* A) pure
 {
 	immutable ulong[24] RC = [
 		0x0000000000000001, 0x0000000000008082, 0x800000000000808A,

@@ -19,7 +19,7 @@ public import botan.pubkey.pk_ops;
 public import botan.rng.rng;
 public import botan.math.bigint.bigint;
 public import botan.filters.key_filt;
-public import botan.algo_factory.algo_factory : AlgorithmFactory;
+public import botan.algo_factory.algo_factory : Algorithm_Factory;
 
 /**
 * Base class for all engines. All non-pure abstract functions simply
@@ -41,7 +41,7 @@ public:
 	* @return newly allocated object, or NULL
 	*/
 	BlockCipher find_block_cipher(in SCAN_Name algo_spec,
-	                              AlgorithmFactory af) const;
+	                              Algorithm_Factory af) const;
 
 
 	/**
@@ -50,7 +50,7 @@ public:
 	* @return newly allocated object, or NULL
 	*/
 	StreamCipher find_stream_cipher(in SCAN_Name algo_spec,
-	                                AlgorithmFactory af) const;
+	                                Algorithm_Factory af) const;
 
 	/**
 	* @param algo_spec the algorithm name/specification
@@ -58,7 +58,7 @@ public:
 	* @return newly allocated object, or NULL
 	*/
 	HashFunction find_hash(in SCAN_Name algo_spec,
-	                       AlgorithmFactory af) const;
+	                       Algorithm_Factory af) const;
 
 
 	/**
@@ -67,7 +67,7 @@ public:
 	* @return newly allocated object, or NULL
 	*/
 	MessageAuthenticationCode find_mac(in SCAN_Name algo_spec,
-	                                   AlgorithmFactory af) const;
+	                                   Algorithm_Factory af) const;
 
 	/**
 	* @param algo_spec the algorithm name/specification
@@ -75,7 +75,7 @@ public:
 	* @return newly allocated object, or NULL
 	*/
 	PBKDF find_pbkdf(in SCAN_Name algo_spec,
-	                 AlgorithmFactory af) const;
+	                 Algorithm_Factory af) const;
 
 	/**
 	* @param n the modulus
@@ -94,7 +94,7 @@ public:
 	*/
 	Keyed_Filter get_cipher(in string algo_spec,
 	                        Cipher_Dir dir,
-	                        AlgorithmFactory af);
+	                        Algorithm_Factory af);
 
 	/**
 	* Return a new operator object for this key, if possible

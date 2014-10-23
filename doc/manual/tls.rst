@@ -367,7 +367,7 @@ There are also functions for serialization and deserializing sessions:
       ``encrypt`` and *key*, or throws an exception if decryption
       fails.
 
-   .. cpp:function:: SafeVector<byte> DER_encode() const
+   .. cpp:function:: Secure_Vector<byte> DER_encode() const
 
        Returns a serialized version of the session.
 

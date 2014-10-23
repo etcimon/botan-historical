@@ -203,7 +203,7 @@ Identifier), ``by_name`` (the CommonName DN entry), and ``by_email``
 (stored in either the distinguished name, or in a
 subjectAlternativeName extension). The name and email versions take a
 ``std::string``, while the SKID version takes a
-``SafeVector<byte>`` containing the subject key identifier in raw
+``Secure_Vector<byte>`` containing the subject key identifier in raw
 binary. You can choose not to implement ``by_name`` or ``by_email``,
 but ``by_SKID`` is mandatory to implement, and, currently, is the only
 version that is used by ``X509_Store``.
@@ -221,7 +221,7 @@ it will be used by ``X509_CRL``.
 As for using such a store, you have to tell ``X509_Store`` about it
 with
 
-.. cpp:function:: void X509_Store::add_new_certstore(Certificate_Store* new_store)
+.. cpp:function:: void X509_Store::add_new_certstore(Certificate_Store new_store)
 
   The store object will be owned by (and deleted by) ``X509_Store``,
   so make sure to allocate it with ``new``.
@@ -315,7 +315,7 @@ The ``CRL_Entry`` type is a structure that contains, at a minimum, the serial
 number of the revoked certificate. As serial numbers are never repeated, the
 pairing of an issuer and a serial number (should) distinctly identify any
 certificate. In this case, we represent the serial number as a
-``SafeVector<byte>`` called ``serial``. There are two additional (optional)
+``Secure_Vector<byte>`` called ``serial``. There are two additional (optional)
 values, an enumeration called ``CRL_Code`` that specifies the reason for
 revocation (``reason``), and an object that represents the time that the
 certificate became invalid (if this information is known).

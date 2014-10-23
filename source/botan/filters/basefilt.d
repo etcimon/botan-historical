@@ -155,7 +155,7 @@ public:
 			thread.join();
 	}
 
-package:
+protected:
 	void set_next(Filter* f, size_t n)
 	{
 		super.set_next(f, n);

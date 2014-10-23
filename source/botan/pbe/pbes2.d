@@ -45,7 +45,7 @@ public:
 		return DER_Encoder()
 			.start_cons(ASN1_Tag.SEQUENCE)
 				.encode(
-					AlgorithmIdentifier("PKCS5.PBKDF2",
+					Algorithm_Identifier("PKCS5.PBKDF2",
 				                    DER_Encoder()
 				                    .start_cons(ASN1_Tag.SEQUENCE)
 				                    .encode(salt, ASN1_Tag.OCTET_STRING)
@@ -53,14 +53,14 @@ public:
 				                    .encode(key_length)
 				                    .encode_if (
 					m_prf.name != "HMAC(SHA-160)",
-					AlgorithmIdentifier(m_prf.name,
-				                    AlgorithmIdentifier.USE_NULL_PARAM))
+					Algorithm_Identifier(m_prf.name,
+				                    Algorithm_Identifier.USE_NULL_PARAM))
 				                    .end_cons()
 				                    .get_contents_unlocked()
 				                    )
 					)
 				.encode(
-					AlgorithmIdentifier(block_cipher.name ~ "/CBC",
+					Algorithm_Identifier(block_cipher.name ~ "/CBC",
 				                    DER_Encoder().encode(iv, ASN1_Tag.OCTET_STRING).get_contents_unlocked()
 				                    )
 					)
@@ -117,7 +117,7 @@ public:
 		direction = DECRYPTION;
 		block_cipher = null;
 		m_prf = null;
-		AlgorithmIdentifier kdf_algo, enc_algo;
+		Algorithm_Identifier kdf_algo, enc_algo;
 		
 		BER_Decoder(params)
 			.start_cons(ASN1_Tag.SEQUENCE)
@@ -126,7 +126,7 @@ public:
 				.verify_end()
 				.end_cons();
 		
-		AlgorithmIdentifier prf_algo;
+		Algorithm_Identifier prf_algo;
 		
 		if (kdf_algo.oid != oids.lookup("PKCS5.PBKDF2"))
 			throw new Decoding_Error("PBE-PKCS5 v2.0: Unknown KDF algorithm " ~
@@ -137,13 +137,13 @@ public:
 				.decode(salt, ASN1_Tag.OCTET_STRING)
 				.decode(iterations)
 				.decode_optional(key_length, INTEGER, ASN1_Tag.UNIVERSAL)
-				.decode_optional(prf_algo, ASN1_Tag.SEQUENCE, CONSTRUCTED,
-				                 AlgorithmIdentifier("HMAC(SHA-160)",
-				                    AlgorithmIdentifier.USE_NULL_PARAM))
+				.decode_optional(prf_algo, ASN1_Tag.SEQUENCE, ASN1_Tag.CONSTRUCTED,
+				                 Algorithm_Identifier("HMAC(SHA-160)",
+				                    Algorithm_Identifier.USE_NULL_PARAM))
 				.verify_end()
 				.end_cons();
 		
-		AlgorithmFactory af = global_state().algorithm_factory();
+		Algorithm_Factory af = global_state().algorithm_factory();
 		
 		string cipher = oids.lookup(enc_algo.oid);
 		Vector!string cipher_spec = splitter(cipher, '/');
@@ -213,7 +213,7 @@ private:
 		if (safe_to_skip && pipe.remaining() < 64)
 			return;
 		
-		SafeVector!ubyte buffer(DEFAULT_BUFFERSIZE);
+		Secure_Vector!ubyte buffer(DEFAULT_BUFFERSIZE);
 		while(pipe.remaining())
 		{
 			const size_t got = pipe.read(&buffer[0], buffer.length);
@@ -224,7 +224,7 @@ private:
 	Cipher_Dir direction;
 	BlockCipher block_cipher;
 	MessageAuthenticationCode m_prf;
-	SafeVector!ubyte salt, key, iv;
+	Secure_Vector!ubyte salt, key, iv;
 	size_t iterations, key_length;
 	Pipe pipe;
 };

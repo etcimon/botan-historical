@@ -64,7 +64,7 @@ public:
 /**
 * DTLS Hello Verify Request
 */
-class Hello_Verify_Request : Handshake_Message
+final class Hello_Verify_Request : Handshake_Message
 {
 public:
 	override Vector!ubyte serialize() const
@@ -128,7 +128,7 @@ private:
 /**
 * Client Hello Message
 */
-class Client_Hello : Handshake_Message
+final class Client_Hello : Handshake_Message
 {
 public:
 	override Handshake_Type type() const { return CLIENT_HELLO; }
@@ -462,7 +462,7 @@ private:
 /**
 * Server Hello Message
 */
-class Server_Hello : Handshake_Message
+final class Server_Hello : Handshake_Message
 {
 public:
 	override Handshake_Type type() const { return SERVER_HELLO; }
@@ -635,12 +635,12 @@ private:
 /**
 * Client Key Exchange Message
 */
-class Client_Key_Exchange : Handshake_Message
+final class Client_Key_Exchange : Handshake_Message
 {
 public:
 	override Handshake_Type type() const { return CLIENT_KEX; }
 
-	const SafeVector!ubyte pre_master_secret() const
+	const Secure_Vector!ubyte pre_master_secret() const
 	{ return m_pre_master; }
 
 	/*
@@ -681,7 +681,7 @@ public:
 			* Some timing channel likely remains due to exception handling
 			* and the like.
 			*/
-			SafeVector!ubyte fake_pre_master = rng.random_vec(48);
+			Secure_Vector!ubyte fake_pre_master = rng.random_vec(48);
 			fake_pre_master[0] = client_version.major_version();
 			fake_pre_master[1] = client_version.minor_version();
 			
@@ -767,7 +767,7 @@ public:
 					else
 						client_pubkey = reader.get_range!ubyte(1, 0, 255);
 					
-					SafeVector!ubyte shared_secret = ka.derive_key(0, client_pubkey).bits_of();
+					Secure_Vector!ubyte shared_secret = ka.derive_key(0, client_pubkey).bits_of();
 					
 					if (ka_key.algo_name == "DH")
 						shared_secret = strip_leading_zeros(shared_secret);
@@ -891,7 +891,7 @@ public:
 				
 				auto ka = scoped!PK_Key_Agreement(priv_key, "Raw");
 				
-				SafeVector!ubyte dh_secret = strip_leading_zeros(
+				Secure_Vector!ubyte dh_secret = strip_leading_zeros(
 					ka.derive_key(0, counterparty_key.public_value()).bits_of());
 				
 				if (kex_algo == "DH")
@@ -928,7 +928,7 @@ public:
 				
 				auto ka = scoped!PK_Key_Agreement(priv_key, "Raw");
 				
-				SafeVector!ubyte ecdh_secret =
+				Secure_Vector!ubyte ecdh_secret =
 					ka.derive_key(0, counterparty_key.public_value()).bits_of();
 				
 				if (kex_algo == "ECDH")
@@ -1018,13 +1018,13 @@ private:
 	{ return m_key_material; }
 
 	Vector!ubyte m_key_material;
-	SafeVector!ubyte m_pre_master;
+	Secure_Vector!ubyte m_pre_master;
 };
 
 /**
 * Certificate Message
 */
-class Certificate : Handshake_Message
+final class Certificate : Handshake_Message
 {
 public:
 	override Handshake_Type type() const { return CERTIFICATE; }
@@ -1117,7 +1117,7 @@ public:
 	const Vector!string& acceptable_cert_types() const
 	{ return m_cert_key_types; }
 
-	Vector!( X509_DN ) acceptable_CAs() const { return m_names; }
+	Vector!X509_DN acceptable_CAs() const { return m_names; }
 
 	Vector!( Pair!(string, string)  ) supported_algos() const
 	{ return m_supported_algos; }
@@ -1243,7 +1243,7 @@ private:
 /**
 * Certificate Verify Message
 */
-class Certificate_Verify : Handshake_Message
+final class Certificate_Verify : Handshake_Message
 {
 public:
 	override Handshake_Type type() const { return CERTIFICATE_VERIFY; }
@@ -1264,7 +1264,7 @@ public:
 		PK_Verifier verifier = PK_Verifier(*key, format.first, format.second);
 		if (state._version() == Protocol_Version.SSL_V3)
 		{
-			SafeVector!ubyte md5_sha = state.hash().final_ssl3(
+			Secure_Vector!ubyte md5_sha = state.hash().final_ssl3(
 				state.session_keys().master_secret());
 			
 			return verifier.verify_message(&md5_sha[16], md5_sha.length-16,
@@ -1292,7 +1292,7 @@ public:
 		
 		if (state._version() == Protocol_Version.SSL_V3)
 		{
-			SafeVector!ubyte md5_sha = state.hash().final_ssl3(
+			Secure_Vector!ubyte md5_sha = state.hash().final_ssl3(
 				state.session_keys().master_secret());
 			
 			if (priv_key.algo_name == "DSA")
@@ -1354,7 +1354,7 @@ private:
 /**
 * Finished Message
 */
-class Finished : Handshake_Message
+final class Finished : Handshake_Message
 {
 public:
 	override Handshake_Type type() const { return FINISHED; }
@@ -1406,7 +1406,7 @@ private:
 /**
 * Hello Request Message
 */
-class Hello_Request : Handshake_Message
+final class Hello_Request : Handshake_Message
 {
 public:
 	override Handshake_Type type() const { return HELLO_REQUEST; }
@@ -1440,7 +1440,7 @@ private:
 /**
 * Server Key Exchange Message
 */
-class Server_Key_Exchange : Handshake_Message
+final class Server_Key_Exchange : Handshake_Message
 {
 public:
 	override Handshake_Type type() const { return SERVER_KEX; }
@@ -1720,7 +1720,7 @@ private:
 /**
 * Server Hello Done Message
 */
-class Server_Hello_Done : Handshake_Message
+final class Server_Hello_Done : Handshake_Message
 {
 public:
 	override Handshake_Type type() const { return SERVER_HELLO_DONE; }
@@ -1755,7 +1755,7 @@ private:
 /**
 * Next Protocol Message
 */
-class Next_Protocol : Handshake_Message
+final class Next_Protocol : Handshake_Message
 {
 public:
 	override Handshake_Type type() const { return NEXT_PROTOCOL; }
@@ -1806,7 +1806,7 @@ private:
 /**
 * New Session Ticket Message
 */
-class New_Session_Ticket : Handshake_Message
+final class New_Session_Ticket : Handshake_Message
 {
 public:
 	override Handshake_Type type() const { return NEW_SESSION_TICKET; }
@@ -1857,7 +1857,7 @@ private:
 /**
 * Change Cipher Spec
 */
-class Change_Cipher_Spec : Handshake_Message
+final class Change_Cipher_Spec : Handshake_Message
 {
 public:
 	override Handshake_Type type() const { return HANDSHAKE_CCS; }
@@ -1897,7 +1897,7 @@ ubyte cert_type_name_to_code(in string name)
 }
 
 
-SafeVector!ubyte strip_leading_zeros(in SafeVector!ubyte input)
+Secure_Vector!ubyte strip_leading_zeros(in Secure_Vector!ubyte input)
 {
 	size_t leading_zeros = 0;
 	
@@ -1908,7 +1908,7 @@ SafeVector!ubyte strip_leading_zeros(in SafeVector!ubyte input)
 		++leading_zeros;
 	}
 	
-	SafeVector!ubyte output = SafeVector!ubyte(&input[leading_zeros],
+	Secure_Vector!ubyte output = Secure_Vector!ubyte(&input[leading_zeros],
 	&input[input.length]);
 	return output;
 }

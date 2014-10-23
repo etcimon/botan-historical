@@ -20,7 +20,7 @@ import botan.utils.parsing;
 
 * http://www.cl.cam.ac.uk/~rja14/Papers/bear-lion.pdf
 */
-class Lion : BlockCipher
+final class Lion : BlockCipher
 {
 public:
 	/*
@@ -31,7 +31,7 @@ public:
 		const size_t LEFT_SIZE = left_size();
 		const size_t RIGHT_SIZE = right_size();
 		
-		SafeVector!ubyte buffer_vec = SafeVector!ubyte(LEFT_SIZE);
+		Secure_Vector!ubyte buffer_vec = Secure_Vector!ubyte(LEFT_SIZE);
 		ubyte* buffer = &buffer_vec[0];
 		
 		for (size_t i = 0; i != blocks; ++i)
@@ -61,7 +61,7 @@ public:
 		const size_t LEFT_SIZE = left_size();
 		const size_t RIGHT_SIZE = right_size();
 		
-		SafeVector!ubyte buffer_vec = SafeVector!ubyte(LEFT_SIZE);
+		Secure_Vector!ubyte buffer_vec = Secure_Vector!ubyte(LEFT_SIZE);
 		ubyte* buffer = &buffer_vec[0];
 		
 		for (size_t i = 0; i != blocks; ++i)
@@ -132,10 +132,10 @@ public:
 		m_cipher = cipher;
 		
 		if (2*left_size() + 1 > m_block_size)
-			throw new Invalid_Argument(name() ~ ": Chosen block size is too small");
+			throw new Invalid_Argument(name ~ ": Chosen block size is too small");
 		
 		if (!m_cipher.valid_keylength(left_size()))
-			throw new Invalid_Argument(name() ~ ": This stream/hash combo is invalid");
+			throw new Invalid_Argument(name ~ ": This stream/hash combo is invalid");
 		
 		m_key1.resize(left_size());
 		m_key2.resize(left_size());
@@ -160,5 +160,5 @@ private:
 	const size_t m_block_size;
 	Unique!HashFunction m_hash;
 	Unique!StreamCipher m_cipher;
-	SafeVector!ubyte m_key1, m_key2;
+	Secure_Vector!ubyte m_key1, m_key2;
 };

@@ -55,7 +55,7 @@ public:
 		
 		ubyte counter = 1;
 		
-		SafeVector!ubyte T;
+		Secure_Vector!ubyte T;
 		
 		while(output_len)
 		{

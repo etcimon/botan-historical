@@ -86,7 +86,7 @@ public:
 		}
 	}
 
-	void set_tweak(in ubyte* tweak, size_t len)
+	final void set_tweak(in ubyte* tweak, size_t len)
 	{
 		if (len != 16)
 			throw new Exception("Unsupported twofish tweak length");
@@ -101,16 +101,16 @@ public:
 		zeroise(m_T);
 	}
 
-	override @property string name() const { return "Threefish-512"; }
+	final override @property string name() const { return "Threefish-512"; }
 	override BlockCipher clone() const { return new Threefish_512; }
 
 	this() {
 		m_T = 3;
 	}
 
-package:
-	const ref SafeVector!ulong get_T() const { return m_T; }
-	const ref SafeVector!ulong get_K() const { return m_K; }
+protected:
+	final const ref Secure_Vector!ulong get_T() const { return m_T; }
+	final const ref Secure_Vector!ulong get_K() const { return m_K; }
 private:
 	override void key_schedule(in ubyte* key, size_t)
 	{
@@ -125,8 +125,8 @@ private:
 	}
 
 
-	abstract void skein_feedfwd(in SafeVector!ulong M,
-	                   			const ref SafeVector!ulong T)
+	final void skein_feedfwd(in Secure_Vector!ulong M,
+	                   			const ref Secure_Vector!ulong T)
 	{
 		assert(m_K.length == 9, "Key was set");
 		assert(M.length == 8, "Single block");
@@ -170,9 +170,11 @@ private:
 	}
 
 	// Private data
-	SafeVector!ulong m_T;
-	SafeVector!ulong m_K;
+	Secure_Vector!ulong m_T;
+	Secure_Vector!ulong m_K;
 };
+
+package:
 
 
 string THREEFISH_ENC_ROUND(alias _X0, alias _X1, alias _X2, alias _X3, 

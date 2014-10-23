@@ -199,7 +199,7 @@ EAC1_1_CVC make_cvc_cert(PK_Signer signer,
 */
 
 ECDSA_PublicKey decode_eac1_1_key(in Vector!ubyte,
-                                   ref AlgorithmIdentifier)
+                                   ref Algorithm_Identifier)
 {
 	throw new Internal_Error("decode_eac1_1_key: Unimplemented");
 	return 0;

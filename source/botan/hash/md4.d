@@ -39,7 +39,7 @@ public:
 		digest = 4;
 		clear(); 
 	}
-package:
+protected:
 	/*
 	* MD4 Compression Function
 	*/
@@ -99,12 +99,12 @@ package:
 	/**
 	* The message buffer, exposed for use by subclasses (x86 asm)
 	*/
-	SafeVector!uint M;
+	Secure_Vector!uint M;
 
 	/**
 	* The digest value, exposed for use by subclasses (x86 asm)
 	*/
-	SafeVector!uint digest;
+	Secure_Vector!uint digest;
 };
 
 private:

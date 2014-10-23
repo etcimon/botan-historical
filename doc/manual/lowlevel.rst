@@ -161,7 +161,7 @@ All block ciphers classes in botan are subclasses of
 
       Identical to :cpp:func:`decrypt`\ (block, block)
 
-   .. cpp:function:: size_t parallelism() const
+   .. cpp:function:: @property size_t parallelism() const
 
       Returns the native parallelism of this implementation, ie how
       many blocks can be processed in parallel if sufficient data is
@@ -204,7 +204,7 @@ Updates the hash/mac calculation with *input*.
 
 .. cpp:function:: void BufferedComputation::final(byte* out)
 
-.. cpp:function:: SafeVector<byte> BufferedComputation::final()
+.. cpp:function:: Secure_Vector<byte> BufferedComputation::final()
 
 Complete the hash/MAC calculation and place the result into ``out``.
 For the argument taking an array, exactly ``output_length`` bytes will

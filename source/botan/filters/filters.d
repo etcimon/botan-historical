@@ -104,7 +104,7 @@ public:
 		
 	{
 		buffer = DEFAULT_BUFFERSIZE;
-		AlgorithmFactory af = global_state().algorithm_factory();
+		Algorithm_Factory af = global_state().algorithm_factory();
 		cipher = af.make_stream_cipher(sc_name);
 	}
 
@@ -117,14 +117,14 @@ public:
 	     const ref SymmetricKey key)
 	{
 		buffer = DEFAULT_BUFFERSIZE;
-		AlgorithmFactory af = global_state().algorithm_factory();
+		Algorithm_Factory af = global_state().algorithm_factory();
 		cipher = af.make_stream_cipher(sc_name);
 		cipher.set_key(key);
 	}
 
 	~this() { delete cipher; }
 private:
-	SafeVector!ubyte buffer;
+	Secure_Vector!ubyte buffer;
 	StreamCipher cipher;
 };
 
@@ -141,7 +141,7 @@ public:
 	*/
 	void end_msg()
 	{
-		SafeVector!ubyte output = hash.flush();
+		Secure_Vector!ubyte output = hash.flush();
 		if (OUTPUT_LENGTH)
 			send(output, std.algorithm.min(OUTPUT_LENGTH, output.length));
 		else
@@ -176,7 +176,7 @@ public:
 	     size_t len = 0)
 	{
 		OUTPUT_LENGTH = len;
-		AlgorithmFactory af = global_state().algorithm_factory();
+		Algorithm_Factory af = global_state().algorithm_factory();
 		hash = af.make_hash_function(algo_spec);
 	}
 
@@ -199,7 +199,7 @@ public:
 	*/
 	void end_msg()
 	{
-		SafeVector!ubyte output = mac.flush();
+		Secure_Vector!ubyte output = mac.flush();
 		if (OUTPUT_LENGTH)
 			send(output, std.algorithm.min(OUTPUT_LENGTH, output.length));
 		else
@@ -259,7 +259,7 @@ public:
 	this(in string mac_name, size_t len = 0)
 	{
 		OUTPUT_LENGTH = len;
-		AlgorithmFactory af = global_state().algorithm_factory();
+		Algorithm_Factory af = global_state().algorithm_factory();
 		mac = af.make_mac(mac_name);
 	}
 
@@ -276,7 +276,7 @@ public:
 	     size_t len = 0)
 	{
 		OUTPUT_LENGTH = len;
-		AlgorithmFactory af = global_state().algorithm_factory();
+		Algorithm_Factory af = global_state().algorithm_factory();
 		mac = af.make_mac(mac_name);
 		mac.set_key(key);
 	}

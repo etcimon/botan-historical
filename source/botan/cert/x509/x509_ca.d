@@ -25,10 +25,11 @@ import std.algorithm;
 import typeinfo;
 import iterator;
 import set;
+
 /**
 * This class represents X.509 Certificate Authorities (CAs).
 */
-class X509_CA
+struct X509_CA
 {
 public:
 
@@ -97,7 +98,7 @@ public:
 	X509_CRL new_crl(RandomNumberGenerator rng,
 	                 Duration next_update = 0.seconds) const
 	{
-		Vector!( CRL_Entry ) empty;
+		Vector!CRL_Entry empty;
 		return make_crl(empty, 1, next_update, rng);
 	}
 
@@ -110,12 +111,12 @@ public:
 	* as the offset from the current time
 	*/
 	X509_CRL update_crl(in X509_CRL crl,
-	                    const ref Vector!( CRL_Entry ) new_revoked,
+	                    const ref Vector!CRL_Entry new_revoked,
 	                    RandomNumberGenerator rng,
 	                    Duration next_update = 0.seconds) const
 	{
 
-		Vector!( CRL_Entry ) revoked = crl.get_revoked();
+		Vector!CRL_Entry revoked = crl.get_revoked();
 		new_revoked = revoked.dup;
 		
 		return make_crl(revoked, crl.crl_number() + 1, next_update, rng);
@@ -137,7 +138,7 @@ public:
 	*/
 	static X509_Certificate make_cert(ref PK_Signer signer,
 	                           RandomNumberGenerator rng,
-	                           const AlgorithmIdentifier sig_algo,
+	                           const Algorithm_Identifier sig_algo,
 	                           in Vector!ubyte pub_key,
 	                           const X509_Time not_before,
 	                           const X509_Time not_after,
@@ -208,7 +209,7 @@ private:
 	/*
 	* Create a CRL
 	*/
-	X509_CRL make_crl(in Vector!( CRL_Entry ) revoked,
+	X509_CRL make_crl(in Vector!CRL_Entry revoked,
 	                  uint crl_number, Duration next_update,
 	                  RandomNumberGenerator rng) const
 	{
@@ -252,7 +253,7 @@ private:
 	}	
 
 
-	AlgorithmIdentifier ca_sig_algo;
+	Algorithm_Identifier ca_sig_algo;
 	X509_Certificate cert;
 	PK_Signer signer;
 };
@@ -270,7 +271,7 @@ private:
 */
 PK_Signer choose_sig_format(in Private_Key key,
                             in string hash_fn,
-                            AlgorithmIdentifier sig_algo)
+                            Algorithm_Identifier sig_algo)
 {
 	string padding;
 	
@@ -302,4 +303,3 @@ PK_Signer choose_sig_format(in Private_Key key,
 	
 	return PK_Signer(key, padding, format);
 }
-

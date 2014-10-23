@@ -41,7 +41,7 @@ public:
 private:
 	PK_Encryptor* cipher;
 	RandomNumberGenerator rng;
-	SafeVector!ubyte buffer;
+	Secure_Vector!ubyte buffer;
 };
 
 /**
@@ -71,7 +71,7 @@ public:
 	~this() { delete cipher; }
 private:
 	PK_Decryptor* cipher;
-	SafeVector!ubyte buffer;
+	Secure_Vector!ubyte buffer;
 };
 
 /**
@@ -146,7 +146,7 @@ public:
 	/*
 	* Set the signature to check
 	*/
-	void set_signature(in SafeVector!ubyte sig)
+	void set_signature(in Secure_Vector!ubyte sig)
 	{
 		signature = sig;
 	}
@@ -161,14 +161,14 @@ public:
 	     size_t length)
 	{
 		verifier = v;
-		signature = SafeVector!ubyte(sig, sig + length);
+		signature = Secure_Vector!ubyte(sig, sig + length);
 	}
 	
 	/*
 	* PK_Verifier_Filter Constructor
 	*/
 	this(ref PK_Verifier v,
-	     in SafeVector!ubyte sig) 
+	     in Secure_Vector!ubyte sig) 
 	{
 		verifier = v;
 		signature = sig;
@@ -177,5 +177,5 @@ public:
 	~this() { delete verifier; }
 private:
 	PK_Verifier verifier;
-	SafeVector!ubyte signature;
+	Secure_Vector!ubyte signature;
 };

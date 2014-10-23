@@ -9,11 +9,12 @@ module botan.block.kasumi;
 import botan.block.block_cipher;
 import botan.utils.loadstor;
 import botan.utils.rotate;
+import botan.utils.types;
 
 /**
 * KASUMI, the block cipher used in 3G telephony
 */
-class KASUMI : Block_Cipher_Fixed_Params!(8, 16)
+final class KASUMI : Block_Cipher_Fixed_Params!(8, 16)
 {
 public:
 	/*
@@ -123,7 +124,7 @@ private:
 		immutable ushort[] RC = { 0x0123, 0x4567, 0x89AB, 0xCDEF,
 			0xFEDC, 0xBA98, 0x7654, 0x3210 };
 		
-		SafeVector!ushort K = SafeVector!ushort(16);
+		Secure_Vector!ushort K = Secure_Vector!ushort(16);
 		for (size_t i = 0; i != 8; ++i)
 		{
 			K[i] = load_be!ushort(key, i);
@@ -146,11 +147,11 @@ private:
 	}
 
 
-	SafeVector!ushort EK;
+	Secure_Vector!ushort EK;
 };
 
 
-package:
+private:
 
 /*
 * KASUMI S-Boxes

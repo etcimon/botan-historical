@@ -20,7 +20,7 @@ public:
 	string provider_name() const { return "aes_isa"; }
 
 	BlockCipher find_block_cipher(in SCAN_Name request,
-	                              AlgorithmFactory af) const
+	                              Algorithm_Factory af) const
 	{
 		static if (BOTAN_HAS_AES_NI) {
 			if (CPUID.has_aes_ni())

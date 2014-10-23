@@ -11,19 +11,19 @@ shared secret created using Diffie-Hellman key agreement.
 
 .. cpp:class:: KDF
 
-  .. cpp:function:: SafeVector<byte> derive_key( \
+  .. cpp:function:: Secure_Vector<byte> derive_key( \
      size_t key_len, const std::vector<byte>& secret, \
      const std::string& salt = "") const
 
-  .. cpp:function:: SafeVector<byte> derive_key( \
+  .. cpp:function:: Secure_Vector<byte> derive_key( \
      size_t key_len, const std::vector<byte>& secret, \
      const std::vector<byte>& salt) const
 
-  .. cpp:function:: SafeVector<byte> derive_key( \
+  .. cpp:function:: Secure_Vector<byte> derive_key( \
      size_t key_len, const std::vector<byte>& secret, \
      const byte* salt, size_t salt_len) const
 
-  .. cpp:function:: SafeVector<byte> derive_key( \
+  .. cpp:function:: Secure_Vector<byte> derive_key( \
      size_t key_len, const byte* secret, size_t secret_len, \
      const std::string& salt) const
 

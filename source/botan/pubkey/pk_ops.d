@@ -17,7 +17,7 @@ class Encryption
 	public:
 		abstract size_t max_input_bits() const;
 
-		abstract SafeVector!ubyte encrypt(in ubyte* msg, size_t msg_len,
+		abstract Secure_Vector!ubyte encrypt(in ubyte* msg, size_t msg_len,
 													  RandomNumberGenerator rng);
 
 		~this() {}
@@ -31,7 +31,7 @@ class Decryption
 	public:
 		abstract size_t max_input_bits() const;
 
-		abstract SafeVector!ubyte decrypt(in ubyte* msg,
+		abstract Secure_Vector!ubyte decrypt(in ubyte* msg,
 													  size_t msg_len);
 
 		~this() {}
@@ -67,7 +67,7 @@ class Signature
 		* @param msg_len the length of msg in bytes
 		* @param rng a random number generator
 		*/
-		abstract SafeVector!ubyte sign(in ubyte* msg, size_t msg_len,
+		abstract Secure_Vector!ubyte sign(in ubyte* msg, size_t msg_len,
 												  RandomNumberGenerator rng);
 
 		~this() {}
@@ -124,7 +124,7 @@ class Verification
 		* @param msg_len the length of msg in bytes
 		* @returns recovered message
 		*/
-		abstract SafeVector!ubyte verify_mr(const ubyte[],
+		abstract Secure_Vector!ubyte verify_mr(const ubyte[],
 														 size_t)
 		{
 			throw new Invalid_State("Message recovery not supported");
@@ -145,7 +145,7 @@ class Key_Agreement
 		* @param w_len the length of w in bytes
 		* @returns the agreed key
 		*/
-		abstract SafeVector!ubyte agree(in ubyte* w, size_t w_len);
+		abstract Secure_Vector!ubyte agree(in ubyte* w, size_t w_len);
 
 		~this() {}
 };

@@ -44,7 +44,7 @@ public:
 	* Get the signature algorithm identifier used to sign this object.
 	* @result the signature algorithm identifier
 	*/
-	AlgorithmIdentifier signature_algorithm() const
+	Algorithm_Identifier signature_algorithm() const
 	{
 		return sig_algo;
 	}
@@ -120,7 +120,7 @@ public:
 	}
 
 	~this() {}
-package:
+protected:
 
 	/*
 	* Try to decode the actual information
@@ -144,7 +144,7 @@ package:
 
 	this() {}
 
-	AlgorithmIdentifier sig_algo;
+	Algorithm_Identifier sig_algo;
 	Vector!ubyte tbs_bits;
 	string PEM_label_pref;
 	Vector!string PEM_labels_allowed;

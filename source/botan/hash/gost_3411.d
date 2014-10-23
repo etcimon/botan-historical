@@ -234,11 +234,11 @@ private:
 			compress_n(&buffer[0], 1);
 		}
 		
-		SafeVector!ubyte length_buf = SafeVector!ubyte(32);
+		Secure_Vector!ubyte length_buf = Secure_Vector!ubyte(32);
 		const ulong bit_count = count * 8;
 		store_le(bit_count, &length_buf[0]);
 		
-		SafeVector!ubyte sum_buf = sum;
+		Secure_Vector!ubyte sum_buf = sum;
 		
 		compress_n(&length_buf[0], 1);
 		compress_n(&sum_buf[0], 1);
@@ -249,7 +249,7 @@ private:
 	}
 
 	GOST_28147_89 cipher;
-	SafeVector!ubyte buffer, sum, hash;
+	Secure_Vector!ubyte buffer, sum, hash;
 	size_t position;
 	ulong count;
 };

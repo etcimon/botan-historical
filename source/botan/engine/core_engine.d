@@ -117,13 +117,13 @@ public:
 	Key_Agreement get_key_agreement_op(in Private_Key key, RandomNumberGenerator rng) const
 	{
 		static if (BOTAN_HAS_DIFFIE_HELLMAN) {
-			if (const DH_PrivateKey* dh = cast(const DH_PrivateKey*)(key))
-				return new DH_KA_Operation(*dh, rng);
+			if (const DH_PrivateKey dh = cast(const DH_PrivateKey)(key))
+				return new DH_KA_Operation(dh, rng);
 		}
 		
 		static if (BOTAN_HAS_ECDH) {
-			if (const ECDH_PrivateKey* ecdh = cast(const ECDH_PrivateKey*)(key))
-				return new ECDH_KA_Operation(*ecdh);
+			if (const ECDH_PrivateKey ecdh = cast(const ECDH_PrivateKey)(key))
+				return new ECDH_KA_Operation(ecdh);
 		}
 		
 		return null;
@@ -137,12 +137,12 @@ public:
 		}
 		
 		static if (BOTAN_HAS_RW) {
-			if (const RW_PrivateKey* s = cast(const RW_PrivateKey*)(key))
+			if (const RW_PrivateKey s = cast(const RW_PrivateKey)(key))
 				return new RW_Signature_Operation(s);
 		}
 		
 		static if (BOTAN_HAS_DSA) {
-			if (const DSA_PrivateKey* s = cast(const DSA_PrivateKey*)(key))
+			if (const DSA_PrivateKey s = cast(const DSA_PrivateKey)(key))
 				return new DSA_Signature_Operation(s);
 		}
 		
@@ -152,13 +152,12 @@ public:
 		}
 		
 		static if (BOTAN_HAS_GOST_34_10_2001) {
-			if (const GOST_3410_PrivateKey* s =
-			    cast(const GOST_3410_PrivateKey*)(key))
+			if (const GOST_3410_PrivateKey s = cast(const GOST_3410_PrivateKey)(key))
 				return new GOST_3410_Signature_Operation(s);
 		}
 		
 		static if (BOTAN_HAS_NYBERG_RUEPPEL) {
-			if (const NR_PrivateKey* s = cast(const NR_PrivateKey*)(key))
+			if (const NR_PrivateKey s = cast(const NR_PrivateKey)(key))
 				return new NR_Signature_Operation(s);
 		}
 		
@@ -173,12 +172,12 @@ public:
 		}
 		
 		static if (BOTAN_HAS_RW) {
-			if (const RW_PublicKey* s = cast(const RW_PublicKey*)(key))
+			if (const RW_PublicKey s = cast(const RW_PublicKey)(key))
 				return new RW_Verification_Operation(s);
 		}
 		
 		static if (BOTAN_HAS_DSA) {
-			if (const DSA_PublicKey* s = cast(const DSA_PublicKey*)(key))
+			if (const DSA_PublicKey s = cast(const DSA_PublicKey)(key))
 				return new DSA_Verification_Operation(s);
 		}
 		
@@ -188,13 +187,12 @@ public:
 		}
 		
 		static if (BOTAN_HAS_GOST_34_10_2001) {
-			if (const GOST_3410_PublicKey* s =
-			    cast(const GOST_3410_PublicKey*)(key))
+			if (const GOST_3410_PublicKey s = cast(const GOST_3410_PublicKey)(key))
 				return new GOST_3410_Verification_Operation(s);
 		}
 		
 		static if (BOTAN_HAS_NYBERG_RUEPPEL) {
-			if (const NR_PublicKey* s = cast(const NR_PublicKey*)(key))
+			if (const NR_PublicKey s = cast(const NR_PublicKey)(key))
 				return new NR_Verification_Operation(s);
 		}
 		
@@ -210,7 +208,7 @@ public:
 		}
 		
 		static if (BOTAN_HAS_ELGAMAL) {
-			if (const ElGamal_PublicKey* s = cast(const ElGamal_PublicKey*)(key))
+			if (const ElGamal_PublicKey s = cast(const ElGamal_PublicKey)(key))
 				return new ElGamal_Encryption_Operation(s);
 		}
 		
@@ -225,7 +223,7 @@ public:
 		}
 		
 		static if (BOTAN_HAS_ELGAMAL) {
-			if (const ElGamal_PrivateKey* s = cast(const ElGamal_PrivateKey*)(key))
+			if (const ElGamal_PrivateKey s = cast(const ElGamal_PrivateKey)(key))
 				return new ElGamal_Decryption_Operation(s, rng);
 		}
 		
@@ -242,7 +240,7 @@ public:
 
 	Keyed_Filter get_cipher(in string algo_spec,
 	                                 Cipher_Dir direction,
-	                                 AlgorithmFactory af)
+	                                 Algorithm_Factory af)
 	{
 		Vector!string algo_parts = splitter(algo_spec, '/');
 		if (algo_parts.empty())
@@ -291,7 +289,7 @@ public:
 
 
 	BlockCipher find_block_cipher(in SCAN_Name request,
-                                      		AlgorithmFactory af) const
+                                      		Algorithm_Factory af) const
 	{
 		
 		static if (BOTAN_HAS_AES) {
@@ -446,7 +444,7 @@ public:
 	}
 
 	StreamCipher find_stream_cipher(in SCAN_Name request,
-	                                         AlgorithmFactory af) const
+	                                         Algorithm_Factory af) const
 	{
 		static if (BOTAN_HAS_OFB) {
 			if (request.algo_name == "OFB" && request.arg_count() == 1)
@@ -485,7 +483,7 @@ public:
 	}
 
 	HashFunction find_hash(in SCAN_Name request,
-	                                AlgorithmFactory af) const
+	                                Algorithm_Factory af) const
 	{
 		static if (BOTAN_HAS_ADLER32) {
 			if (request.algo_name == "Adler32")
@@ -620,7 +618,7 @@ public:
 	}
 
 	MessageAuthenticationCode find_mac(in SCAN_Name request,
-	                                            AlgorithmFactory af) const
+	                                            Algorithm_Factory af) const
 	{
 		
 		static if (BOTAN_HAS_CBC_MAC) {
@@ -653,7 +651,7 @@ public:
 
 
 	PBKDF find_pbkdf(in SCAN_Name algo_spec,
-	                          AlgorithmFactory af) const
+	                          Algorithm_Factory af) const
 	{
 		static if (BOTAN_HAS_PBKDF1) {
 			if (algo_spec.algo_name == "PBKDF1" && algo_spec.arg_count() == 1)

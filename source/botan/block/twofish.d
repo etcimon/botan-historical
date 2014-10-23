@@ -10,12 +10,12 @@ import botan.block.block_cipher;
 /**
 * Twofish, an AES finalist
 */
-class Twofish : Block_Cipher_Fixed_Params!(16, 16, 32, 8)
+final class Twofish : Block_Cipher_Fixed_Params!(16, 16, 32, 8)
 {
 public:
 	/*
-* Twofish Encryption
-*/
+	* Twofish Encryption
+	*/
 	void encrypt_n(ubyte* input, ubyte* output, size_t blocks) const
 	{
 		for (size_t i = 0; i != blocks; ++i)
@@ -65,8 +65,8 @@ public:
 	}
 
 	/*
-* Twofish Decryption
-*/
+	* Twofish Decryption
+	*/
 	void decrypt_n(ubyte* input, ubyte* output, size_t blocks) const
 	{
 		for (size_t i = 0; i != blocks; ++i)
@@ -124,7 +124,7 @@ public:
 		zap(RK);
 	}
 
-	@property string name() const { return "Twofish"; }
+	override @property string name() const { return "Twofish"; }
 	BlockCipher clone() const { return new Twofish; }
 private:
 	/*
@@ -135,7 +135,7 @@ private:
 		SB.resize(1024);
 		RK.resize(40);
 		
-		SafeVector!ubyte S = SafeVector!ubyte(16);
+		Secure_Vector!ubyte S = Secure_Vector!ubyte(16);
 		
 		for (size_t i = 0; i != length; ++i)
 			rs_mul(&S[4*(i/8)], key[i], i);
@@ -526,5 +526,5 @@ private:
 		0xE2510FE2, 0x00000000, 0x9A196F9A, 0xE01A9DE0, 0x8F94368F, 0xE6C742E6,
 		0xECC94AEC, 0xFDD25EFD, 0xAB7FC1AB, 0xD8A8E0D8 ];
 
-	SafeVector!uint SB, RK;
+	Secure_Vector!uint SB, RK;
 };

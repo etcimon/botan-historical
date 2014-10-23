@@ -10,7 +10,7 @@ import botan.utils.loadstor;
 /**
 * Whirlpool
 */
-class Whirlpool : MDx_HashFunction
+final class Whirlpool : MDx_HashFunction
 {
 public:
 	@property string name() const { return "Whirlpool"; }
@@ -686,6 +686,6 @@ private:
 		0x70DD70A7ADE0D770, 0xB6E2B6D954716FB6, 0xD067D0CEB7BD1ED0, 0xED93ED3B7EC7D6ED,
 		0xCC17CC2EDB85E2CC, 0x4215422A57846842, 0x985A98B4C22D2C98, 0xA4AAA4490E55EDA4,
 		0x28A0285D88507528, 0x5C6D5CDA31B8865C, 0xF8C7F8933FED6BF8, 0x86228644A411C286 ];
-	SafeVector!ulong M, digest;
+	Secure_Vector!ulong M, digest;
 };
 

@@ -18,7 +18,7 @@ import botan.utils.bit_ops;
 import botan.math.mp.mp_core;
 import botan.math.numbertheory.primes;
 import std.algorithm;
-import botan.algo_factory.algo_factory : AlgorithmFactory;
+import botan.algo_factory.algo_factory : Algorithm_Factory;
 /**
 * Fused multiply-add
 * @param a an integer
@@ -43,7 +43,7 @@ BigInt mul_add(in BigInt a, const ref BigInt b, const ref BigInt c)
 	const size_t c_sw = c.sig_words();
 	
 	BigInt r = BigInt(sign, std.algorithm.max(a.length + b.length, c_sw) + 1);
-	SafeVector!word workspace(r.length);
+	Secure_Vector!word workspace(r.length);
 	
 	bigint_mul(r.mutable_data(), r.length,
 	           &workspace[0],
@@ -132,7 +132,7 @@ BigInt square(in BigInt x)
 	const size_t x_sw = x.sig_words();
 	
 	BigInt z = BigInt(BigInt.Positive, round_up!size_t(2*x_sw, 16));
-	SafeVector!word workspace = SafeVector!word(z.length);
+	Secure_Vector!word workspace = Secure_Vector!word(z.length);
 	
 	bigint_sqr(z.mutable_data(), z.length,
 	           &workspace[0],
@@ -514,7 +514,7 @@ BigInt random_prime(RandomNumberGenerator rng,
 			p += (modulo - p % modulo) + equiv;
 		
 		const size_t sieve_size = std.algorithm.min(bits / 2, PRIME_TABLE_SIZE);
-		SafeVector!ushort sieve(sieve_size);
+		Secure_Vector!ushort sieve(sieve_size);
 		
 		for (size_t j = 0; j != sieve.length; ++j)
 			sieve[j] = p % PRIMES[j];
@@ -581,7 +581,7 @@ BigInt random_safe_prime(RandomNumberGenerator rng, size_t bits)
 * @return random seed used to generate this parameter set
 */
 Vector!ubyte generate_dsa_primes(RandomNumberGenerator rng,
-                                 AlgorithmFactory af,
+                                 Algorithm_Factory af,
                                  ref BigInt p, ref BigInt q,
                                  size_t pbits, size_t qbits)
 {
@@ -609,7 +609,7 @@ Vector!ubyte generate_dsa_primes(RandomNumberGenerator rng,
 			 false. p_out and q_out are only valid if true was returned.
 */
 bool generate_dsa_primes(RandomNumberGenerator rng,
-                         AlgorithmFactory af,
+                         Algorithm_Factory af,
                          ref BigInt p, ref BigInt q,
                          size_t pbits, size_t qbits,
                          in Vector!ubyte seed_c)

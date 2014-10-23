@@ -14,7 +14,7 @@ import botan.utils.rounding;
 /**
 * RC4 stream cipher
 */
-class RC4 : StreamCipher
+final class RC4 : StreamCipher
 {
 public:
 	/*
@@ -54,7 +54,7 @@ public:
 		else				return "RC4_skip(" ~ std.conv.to!string(SKIP) ~ ")";
 	}
 
-	StreamCipher clone() const { return new RC4(SKIP); }
+	RC4 clone() const { return new RC4(SKIP); }
 
 	Key_Length_Specification key_spec() const
 	{
@@ -125,8 +125,8 @@ private:
 	const size_t SKIP;
 
 	ubyte X, Y;
-	SafeVector!ubyte state;
+	Secure_Vector!ubyte state;
 
-	SafeVector!ubyte buffer;
+	Secure_Vector!ubyte buffer;
 	size_t position;
 };

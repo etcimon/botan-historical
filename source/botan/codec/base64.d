@@ -9,7 +9,7 @@ import botan.alloc.secmem;
 import botan.codec.base64;
 import botan.utils.mem_ops;
 import botan.utils.rounding;
-import stdexcept;
+import std.exception;
 import string;
 
 /**
@@ -272,11 +272,11 @@ size_t base64_decode(ubyte* output,
 						 exception if whitespace is encountered
 * @return decoded base64 output
 */
-SafeVector!ubyte base64_decode(string input,
+Secure_Vector!ubyte base64_decode(string input,
                                size_t input_length,
                                bool ignore_ws = true)
 {
-	SafeVector!ubyte bin;
+	Secure_Vector!ubyte bin;
 	bin.reserve((round_up!size_t(input_length, 4) * 3) / 4);
 	
 	size_t written = base64_decode(&binput[0],
@@ -296,7 +296,7 @@ SafeVector!ubyte base64_decode(string input,
 						 exception if whitespace is encountered
 * @return decoded base64 output
 */
-SafeVector!ubyte base64_decode(in string input,
+Secure_Vector!ubyte base64_decode(in string input,
                                bool ignore_ws = true)
 {
 	return base64_decode(&input[0], input.length, ignore_ws);

@@ -27,8 +27,8 @@ public:
 
 	size_t max_input_bits() const { return (group_p().bits() - 1); }
 
-	this(in AlgorithmIdentifier alg_id,
-							in SafeVector!ubyte key_bits)
+	this(in Algorithm_Identifier alg_id,
+							in Secure_Vector!ubyte key_bits)
 	{
 		super(alg_id, key_bits, DL_Group.ANSI_X9_42);
 	}
@@ -40,14 +40,14 @@ public:
 		group = grp;
 		y = y1;
 	}
-package:
+protected:
 	this() {}
 };
 
 /**
 * ElGamal Private Key
 */
-class ElGamal_PrivateKey : ElGamal_PublicKey,
+final class ElGamal_PrivateKey : ElGamal_PublicKey,
 							DL_Scheme_PrivateKey
 {
 public:
@@ -88,8 +88,8 @@ public:
 			load_check(rng);
 	}
 
-	this(in AlgorithmIdentifier alg_id,
-	     in SafeVector!ubyte key_bits,
+	this(in Algorithm_Identifier alg_id,
+	     in Secure_Vector!ubyte key_bits,
 	     RandomNumberGenerator rng) 
 	{
 		super(alg_id, key_bits, DL_Group.ANSI_X9_42);
@@ -101,7 +101,7 @@ public:
 /**
 * ElGamal encryption operation
 */
-class ElGamal_Encryption_Operation : Encryption
+final class ElGamal_Encryption_Operation : Encryption
 {
 public:
 	size_t max_input_bits() const { return mod_p.get_modulus().bits() - 1; }
@@ -116,7 +116,7 @@ public:
 		mod_p = Modular_Reducer(p);
 	}
 
-	SafeVector!ubyte encrypt(in ubyte* msg, size_t msg_len,
+	Secure_Vector!ubyte encrypt(in ubyte* msg, size_t msg_len,
 	                         RandomNumberGenerator rng)
 	{
 		const ref BigInt p = mod_p.get_modulus();
@@ -126,12 +126,12 @@ public:
 		if (m >= p)
 			throw new Invalid_Argument("ElGamal encryption: Input is too large");
 		
-		BigInt k(rng, 2 * dl_work_factor(p.bits()));
+		BigInt k = BigInt(rng, 2 * dl_work_factor(p.bits()));
 		
 		BigInt a = powermod_g_p(k);
 		BigInt b = mod_p.multiply(m, powermod_y_p(k));
 		
-		SafeVector!ubyte output = SafeVector!ubyte(2*p.bytes());
+		Secure_Vector!ubyte output = Secure_Vector!ubyte(2*p.bytes());
 		a.binary_encode(&output[p.bytes() - a.bytes()]);
 		b.binary_encode(&output[output.length / 2 + (p.bytes() - b.bytes())]);
 		return output;
@@ -145,7 +145,7 @@ private:
 /**
 * ElGamal decryption operation
 */
-class ElGamal_Decryption_Operation : Decryption
+final class ElGamal_Decryption_Operation : Decryption
 {
 public:
 	size_t max_input_bits() const { return mod_p.get_modulus().bits() - 1; }
@@ -158,11 +158,11 @@ public:
 		powermod_x_p = Fixed_Exponent_Power_Mod(key.get_x(), p);
 		mod_p = Modular_Reducer(p);
 		
-		BigInt k(rng, p.bits() - 1);
+		BigInt k = BigInt(rng, p.bits() - 1);
 		blinder = Blinder(k, powermod_x_p(k), p);
 	}
 
-	SafeVector!ubyte decrypt(in ubyte* msg, size_t msg_len)
+	Secure_Vector!ubyte decrypt(in ubyte* msg, size_t msg_len)
 	{
 		const ref BigInt p = mod_p.get_modulus();
 		
@@ -171,8 +171,8 @@ public:
 		if (msg_len != 2 * p_bytes)
 			throw new Invalid_Argument("ElGamal decryption: Invalid message");
 		
-		BigInt a(msg, p_bytes);
-		BigInt b(msg + p_bytes, p_bytes);
+		BigInt a = BigInt(msg, p_bytes);
+		BigInt b = BigInt(msg + p_bytes, p_bytes);
 		
 		if (a >= p || b >= p)
 			throw new Invalid_Argument("ElGamal decryption: Invalid message");

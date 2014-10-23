@@ -8,7 +8,7 @@ module botan.algo_base.scan_name;
 
 import botan.utils.parsing;
 import botan.utils.exceptn;
-import stdexcept;
+import std.exception;
 import botan.utils.types;
 import string;
 import botan.utils.types;
@@ -145,7 +145,7 @@ public:
 	string arg(size_t i) const
 	{
 		if (i >= arg_count())
-			throw new std::range_error("SCAN_Name::argument - i out of range");
+			throw new Range_Error("SCAN_Name::argument - i out of range");
 		return args[i];
 	}
 	
@@ -212,34 +212,34 @@ public:
 	static void set_default_aliases()
 	{
 		// common variations worth supporting
-		add_alias("EME-PKCS1-v1_5",  "PKCS1v15");
-		add_alias("3DES",	  "TripleDES");
-		add_alias("DES-EDE",  "TripleDES");
-		add_alias("CAST5",	 "CAST-128");
-		add_alias("SHA1",	  "SHA-160");
-		add_alias("SHA-1",	 "SHA-160");
-		add_alias("MARK-4",	"RC4(256)");
-		add_alias("ARC4",	  "RC4");
-		add_alias("OMAC",	  "CMAC");
+		add_alias("EME-PKCS1-v1_5",	"PKCS1v15");
+		add_alias("3DES",			"TripleDES");
+		add_alias("DES-EDE",		"TripleDES");
+		add_alias("CAST5",			"CAST-128");
+		add_alias("SHA1",			"SHA-160");
+		add_alias("SHA-1",			"SHA-160");
+		add_alias("MARK-4",			"RC4(256)");
+		add_alias("ARC4",	  		"RC4");
+		add_alias("OMAC",	  		"CMAC");
 			
-		add_alias("EMSA-PSS",		  "PSSR");
-		add_alias("PSS-MGF1",		  "PSSR");
-		add_alias("EME-OAEP",		  "OAEP");
+		add_alias("EMSA-PSS",		"PSSR");
+		add_alias("PSS-MGF1",		"PSSR");
+		add_alias("EME-OAEP",		"OAEP");
 			
-		add_alias("EMSA2",			  "EMSA_X931");
-		add_alias("EMSA3",			  "EMSA_PKCS1");
-		add_alias("EMSA-PKCS1-v1_5", "EMSA_PKCS1");
+		add_alias("EMSA2",			"EMSA_X931");
+		add_alias("EMSA3",			"EMSA_PKCS1");
+		add_alias("EMSA-PKCS1-v1_5","EMSA_PKCS1");
 			
 			// should be renamed in sources
-		add_alias("X9.31",			  "EMSA2");
+		add_alias("X9.31",			"EMSA2");
 			
 			// kept for compatability with old library versions
-		add_alias("EMSA4",			  "PSSR");
-		add_alias("EME1",				"OAEP");
+		add_alias("EMSA4",			"PSSR");
+		add_alias("EME1",			"OAEP");
 			
 			// probably can be removed
-		add_alias("GOST",	  "GOST-28147-89");
-		add_alias("GOST-34.11", "GOST-R-34.11-94");
+		add_alias("GOST",			"GOST-28147-89");
+		add_alias("GOST-34.11",		"GOST-R-34.11-94");
 	}
 	
 

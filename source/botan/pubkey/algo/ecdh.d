@@ -19,8 +19,8 @@ class ECDH_PublicKey : EC_PublicKey
 {
 public:
 
-	this(in AlgorithmIdentifier alg_id,
-						in SafeVector!ubyte key_bits) 
+	this(in Algorithm_Identifier alg_id,
+						in Secure_Vector!ubyte key_bits) 
 	{ 
 		super(alg_id, key_bits);
 	}
@@ -56,21 +56,21 @@ public:
 	Vector!ubyte public_value() const
 	{ return unlock(EC2OSP(public_point(), PointGFp.UNCOMPRESSED)); }
 
-package:
+protected:
 	this() {}
 };
 
 /**
 * This class represents ECDH Private Keys.
 */
-class ECDH_PrivateKey : ECDH_PublicKey,
+final class ECDH_PrivateKey : ECDH_PublicKey,
 						 EC_PrivateKey,
 						 PK_Key_Agreement_Key
 {
 public:
 
-	this(in AlgorithmIdentifier alg_id,
-						 in SafeVector!ubyte key_bits) 
+	this(in Algorithm_Identifier alg_id,
+						 in Secure_Vector!ubyte key_bits) 
 	{
 		super(alg_id, key_bits);
 	}
@@ -95,7 +95,7 @@ public:
 /**
 * ECDH operation
 */
-class ECDH_KA_Operation : Key_Agreement
+final class ECDH_KA_Operation : Key_Agreement
 {
 public:
 	this(in ECDH_PrivateKey key) 
@@ -106,7 +106,7 @@ public:
 			key.private_value();
 	}
 
-	SafeVector!ubyte agree(in ubyte* w, size_t w_len)
+	Secure_Vector!ubyte agree(in ubyte* w, size_t w_len)
 	{
 		PointGFp point = OS2ECP(w, w_len, curve);
 		
@@ -120,6 +120,6 @@ public:
 	}
 private:
 	const CurveGFp curve;
-	const ref BigInt cofactor;
+	const BigInt cofactor;
 	BigInt l_times_priv;
 };

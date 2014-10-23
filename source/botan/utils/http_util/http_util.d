@@ -222,7 +222,3 @@ std::future<Response> GET_async(in string url, size_t allowable_redirects)
 {
 	return std::async(std::launch::async, GET_sync, url, allowable_redirects);
 }
-
-}
-
-}

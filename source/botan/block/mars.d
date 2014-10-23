@@ -13,7 +13,7 @@ import botan.utils.rotate;
 /**
 * MARS, IBM's candidate for AES
 */
-class MARS : Block_Cipher_Fixed_Params!(16, 16, 32, 4)
+final class MARS : Block_Cipher_Fixed_Params!(16, 16, 32, 4)
 {
 public:
 	/*
@@ -115,7 +115,7 @@ private:
 	*/
 	void key_schedule(in ubyte* key)
 	{
-		SafeVector!uint T = SafeVector!uint(15);
+		Secure_Vector!uint T = Secure_Vector!uint(15);
 		for (size_t i = 0; i != length / 4; ++i)
 			T[i] = load_le!uint(key, i);
 		
@@ -180,11 +180,11 @@ private:
 		}
 	}
 
-	SafeVector!uint EK;
+	Secure_Vector!uint EK;
 };
 
 
-package:
+private:
 
 /**
 * The MARS sbox
@@ -281,7 +281,7 @@ immutable uint[512] SBOX = [
 * MARS Encryption Round
 */
 void encrypt_round(ref uint A, ref uint B, ref uint C, ref uint D,
-                   uint EK1, uint EK2)
+                   uint EK1, uint EK2) pure
 {
 	const uint X = A + EK1;
 	A  = rotate_left(A, 13);
@@ -301,7 +301,7 @@ void encrypt_round(ref uint A, ref uint B, ref uint C, ref uint D,
 * MARS Decryption Round
 */
 void decrypt_round(ref uint A, ref uint B, ref uint C, ref uint D,
-                   uint EK1, uint EK2)
+                   uint EK1, uint EK2) pure
 {
 	uint Y = A * EK1;
 	A = rotate_right(A, 13);
@@ -320,7 +320,7 @@ void decrypt_round(ref uint A, ref uint B, ref uint C, ref uint D,
 /*
 * MARS Forward Mixing Operation
 */
-void forward_mix(ref uint A, ref uint B, ref uint C, ref uint D)
+void forward_mix(ref uint A, ref uint B, ref uint C, ref uint D) pure
 {
 	for (size_t j = 0; j != 2; ++j)
 	{
@@ -345,7 +345,7 @@ void forward_mix(ref uint A, ref uint B, ref uint C, ref uint D)
 /*
 * MARS Reverse Mixing Operation
 */
-void reverse_mix(ref uint A, ref uint B, ref uint C, ref uint D)
+void reverse_mix(ref uint A, ref uint B, ref uint C, ref uint D) pure
 {
 	for (size_t j = 0; j != 2; ++j)
 	{
@@ -371,7 +371,7 @@ void reverse_mix(ref uint A, ref uint B, ref uint C, ref uint D)
 /*
 * Generate a mask for runs of bits
 */
-uint gen_mask(uint input)
+uint gen_mask(uint input) pure
 {
 	uint mask = 0;
 	

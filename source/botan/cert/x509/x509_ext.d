@@ -10,6 +10,7 @@ import botan.asn1.asn1_obj;
 import botan.asn1.asn1_oid;
 import botan.utils.datastor.datastor;
 import botan.cert.x509.crl_ent;
+import botan.cert.x509.key_constraint;
 import botan.hash.sha160;
 import botan.asn1.der_enc;
 import botan.asn1.ber_dec;
@@ -17,6 +18,7 @@ import botan.asn1.oid_lookup.oids;
 import botan.utils.charset;
 import botan.utils.bit_ops;
 import std.algorithm;
+import botan.utils.types;
 
 /**
 * X.509 Certificate Extension
@@ -27,7 +29,7 @@ public:
 	/**
 	* @return OID representing this extension
 	*/
-	OID oid_of() const
+	final OID oid_of() const
 	{
 		return oids.lookup(oid_name());
 	}
@@ -53,16 +55,18 @@ public:
 	abstract string oid_name() const;
 
 	~this() {}
-package:
+protected:
 	abstract bool should_encode() const { return true; }
 	abstract Vector!ubyte encode_inner() const;
 	abstract void decode_inner(in Vector!ubyte);
 };
 
+alias Extensions = FreeListRef!Extensions_Impl;
+
 /**
 * X.509 Certificate Extension List
 */
-class Extensions : ASN1_Object
+final class Extensions_Impl : ASN1_Object
 {
 public:
 
@@ -201,12 +205,12 @@ private:
 	bool m_throw_on_unknown_critical;
 };
 
-static const size_t NO_CERT_PATH_LIMIT = 0xFFFFFFF0;
+immutable size_t NO_CERT_PATH_LIMIT = 0xFFFFFFF0;
 
 /**
 * Basic Constraints Extension
 */
-class Basic_Constraints : Certificate_Extension
+final class Basic_Constraints : Certificate_Extension
 {
 public:
 	Basic_Constraints copy() const
@@ -280,7 +284,7 @@ private:
 /**
 * Key Usage Constraints Extension
 */
-class Key_Usage : Certificate_Extension
+final class Key_Usage : Certificate_Extension
 {
 public:
 	Key_Usage copy() const { return new Key_Usage(constraints); }
@@ -356,7 +360,7 @@ private:
 /**
 * Subject Key Identifier Extension
 */
-class Subject_Key_ID : Certificate_Extension
+final class Subject_Key_ID : Certificate_Extension
 {
 public:
 	Subject_Key_ID copy() const { return new Subject_Key_ID(key_id); }
@@ -460,11 +464,11 @@ private:
 class Alternative_Name : Certificate_Extension
 {
 public:
-	AlternativeName get_alt_name() const { return alt_name; }
+	Alternative_Name get_alt_name() const { return alt_name; }
 
-package:
+protected:
 
-	this(in AlternativeName alt_name,
+	this(in Alternative_Name alt_name,
 	     in string oid_name_str)
 	{
 		this.alt_name = alt_name;
@@ -511,7 +515,7 @@ private:
 	}
 
 	string oid_name_str;
-	AlternativeName alt_name;
+	Alternative_Name alt_name;
 };
 
 
@@ -520,14 +524,14 @@ private:
 /**
 * Subject Alternative Name Extension
 */
-class Subject_Alternative_Name : Alternative_Name
+final class Subject_Alternative_Name : Alternative_Name
 {
 public:
 	Subject_Alternative_Name copy() const
 	{ return new Subject_Alternative_Name(get_alt_name()); }
 
 	this() {}
-	this(in AlternativeName name = AlternativeName()) {
+	this(in Alternative_Name name = new Subject_Alternative_Name()) {
 		super(name, "X509v3.SubjectAlternativeName");
 	}
 };
@@ -535,13 +539,13 @@ public:
 /**
 * Issuer Alternative Name Extension
 */
-class Issuer_Alternative_Name : Alternative_Name
+final class Issuer_Alternative_Name : Alternative_Name
 {
 public:
 	Issuer_Alternative_Name copy() const
 	{ return new Issuer_Alternative_Name(get_alt_name()); }
 
-	this(in AlternativeName name = AlternativeName()) {
+	this(in Alternative_Name name = new Issuer_Alternative_Name()) {
 		super(name, "X509v3.IssuerAlternativeName");
 	}
 };
@@ -549,7 +553,7 @@ public:
 /**
 * Extended Key Usage Extension
 */
-class Extended_Key_Usage : Certificate_Extension
+final class Extended_Key_Usage : Certificate_Extension
 {
 public:
 	Extended_Key_Usage copy() const { return new Extended_Key_Usage(oids); }
@@ -600,14 +604,14 @@ private:
 /**
 * Certificate Policies Extension
 */
-class Certificate_Policies : Certificate_Extension
+final class Certificate_Policies : Certificate_Extension
 {
 public:
 	Certificate_Policies copy() const
 	{ return new Certificate_Policies(oids); }
 
-	Certificate_Policies() {}
-	Certificate_Policies(in Vector!OID o) : oids(o) {}
+	this() {}
+	this(in Vector!OID o) { oids = o; }
 
 	Vector!OID get_oids() const { return oids; }
 private:
@@ -657,7 +661,7 @@ private:
 	Vector!OID oids;
 };
 
-class Authority_Information_Access : Certificate_Extension
+final class Authority_Information_Access : Certificate_Extension
 {
 public:
 	Authority_Information_Access copy() const
@@ -665,8 +669,7 @@ public:
 
 	this() {}
 
-	this(in string ocsp) :
-		m_ocsp_responder(ocsp) {}
+	this(in string ocsp) { m_ocsp_responder = ocsp; }
 
 private:
 	string oid_name() const { return "PKIX.AuthorityInformationAccess"; }
@@ -728,13 +731,13 @@ private:
 /**
 * CRL Number Extension
 */
-class CRL_Number : Certificate_Extension
+final class CRL_Number : Certificate_Extension
 {
 public:
 	/*
 	* Copy a CRL_Number extension
 	*/
-	CRL_Number* copy() const
+	CRL_Number copy() const
 	{
 		if (!has_value)
 			throw new Invalid_State("CRL_Number::copy: Not set");
@@ -743,7 +746,7 @@ public:
 
 
 	this() { has_value = false; crl_number = 0; }
-	CRL_Number(size_t n) { has_value = true; crl_number = n; }
+	this(size_t n) { has_value = true; crl_number = n; }
 
 	/*
 	* Checked accessor for the crl_number member
@@ -789,10 +792,10 @@ private:
 /**
 * CRL Entry Reason Code Extension
 */
-class CRL_ReasonCode : Certificate_Extension
+final class CRL_ReasonCode : Certificate_Extension
 {
 public:
-	CRL_ReasonCode* copy() const { return new CRL_ReasonCode(reason); }
+	CRL_ReasonCode copy() const { return new CRL_ReasonCode(reason); }
 
 	this(CRL_Code r = CRL_Code.UNSPECIFIED) { reason = r; }
 
@@ -836,10 +839,11 @@ private:
 /**
 * CRL Distribution Points Extension
 */
-class CRL_Distribution_Points : Certificate_Extension
+final class CRL_Distribution_Points : Certificate_Extension
 {
 public:
-	class Distribution_Point : ASN1_Object
+	alias Distribution_Point = FreeListRef!Distribution_Point_Impl;
+	final class Distribution_Point_Impl : ASN1_Object
 	{
 	public:
 		void encode_into(DER_Encoder) const
@@ -852,15 +856,15 @@ public:
 			ber.start_cons(ASN1_Tag.SEQUENCE)
 				.start_cons(ASN1_Tag(0), ASN1_Tag.CONTEXT_SPECIFIC)
 					.decode_optional_implicit(m_point, ASN1_Tag(0),
-					                          ASN1_Tag(ASN1_Tag.CONTEXT_SPECIFIC | CONSTRUCTED),
-					                          ASN1_Tag.SEQUENCE, CONSTRUCTED)
+					                          ASN1_Tag(ASN1_Tag.CONTEXT_SPECIFIC | ASN1_Tag.CONSTRUCTED),
+					                          ASN1_Tag.SEQUENCE, ASN1_Tag.CONSTRUCTED)
 					.end_cons().end_cons();
 		}
 
 
-		const AlternativeName point() const { return m_point; }
+		const Alternative_Name point() const { return m_point; }
 	private:
-		AlternativeName m_point;
+		Alternative_Name m_point;
 	};
 
 	CRL_Distribution_Points copy() const
@@ -905,10 +909,13 @@ private:
 	Vector!( Distribution_Point ) m_distribution_points;
 };
 
+
+alias Policy_Information = FreeListRef!Policy_Information_Impl;
+
 /*
 * A policy specifier
 */
-class Policy_Information : ASN1_Object
+final class Policy_Information_Impl : ASN1_Object
 {
 public:
 	OID oid;

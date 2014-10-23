@@ -31,10 +31,10 @@ public:
 	/**
 	* Return a TLS Handshake Hash
 	*/
-	SafeVector!ubyte flushInto(Protocol_Version _version,
+	Secure_Vector!ubyte flushInto(Protocol_Version _version,
 	                           in string mac_algo) const
 	{
-		AlgorithmFactory af = global_state().algorithm_factory();
+		Algorithm_Factory af = global_state().algorithm_factory();
 		
 		Unique!HashFunction hash;
 		
@@ -55,11 +55,11 @@ public:
 	/**
 	* Return a SSLv3 Handshake Hash
 	*/
-	SafeVector!ubyte final_ssl3(in SafeVector!ubyte secret) const
+	Secure_Vector!ubyte final_ssl3(in Secure_Vector!ubyte secret) const
 	{
 		const ubyte PAD_INNER = 0x36, PAD_OUTER = 0x5C;
 		
-		AlgorithmFactory af = global_state().algorithm_factory();
+		Algorithm_Factory af = global_state().algorithm_factory();
 		
 		Unique!HashFunction md5 = af.make_hash_function("MD5");
 		Unique!HashFunction sha1 = af.make_hash_function("SHA-1");
@@ -75,7 +75,7 @@ public:
 		for (size_t i = 0; i != 40; ++i)
 			sha1.update(PAD_INNER);
 		
-		SafeVector!ubyte inner_md5 = md5.flush(), inner_sha1 = sha1.flush();
+		Secure_Vector!ubyte inner_md5 = md5.flush(), inner_sha1 = sha1.flush();
 		
 		md5.update(secret);
 		sha1.update(secret);
@@ -88,7 +88,7 @@ public:
 		md5.update(inner_md5);
 		sha1.update(inner_sha1);
 		
-		SafeVector!ubyte output;
+		Secure_Vector!ubyte output;
 		output += md5.flush();
 		output += sha1.flush();
 		return output;

@@ -22,10 +22,10 @@ import std.algorithm;
 class SIV_Mode : AEAD_Mode
 {
 public:
-	override SafeVector!ubyte start(in ubyte* nonce, size_t nonce_len)
+	final override Secure_Vector!ubyte start(in ubyte* nonce, size_t nonce_len)
 	{
 		if (!valid_nonce_length(nonce_len))
-			throw new Invalid_IV_Length(name(), nonce_len);
+			throw new Invalid_IV_Length(name, nonce_len);
 		
 		if (nonce_len)
 			m_nonce = m_cmac.process(nonce, nonce_len);
@@ -34,10 +34,10 @@ public:
 		
 		m_msg_buf.clear();
 		
-		return SafeVector!ubyte();
+		return Secure_Vector!ubyte();
 	}
 
-	override void update(SafeVector!ubyte buffer, size_t offset = 0)
+	final override void update(Secure_Vector!ubyte buffer, size_t offset = 0)
 	{
 		assert(buffer.length >= offset, "Offset is sane");
 		const size_t sz = buffer.length - offset;
@@ -47,7 +47,7 @@ public:
 		buffer.resize(offset); // truncate msg
 	}
 
-	void set_associated_data_n(size_t n, in ubyte* ad, size_t length)
+	final void set_associated_data_n(size_t n, in ubyte* ad, size_t length)
 	{
 		if (n >= m_ad_macs.length)
 			m_ad_macs.resize(n+1);
@@ -55,17 +55,17 @@ public:
 		m_ad_macs[n] = m_cmac.process(ad, length);
 	}
 
-	override void set_associated_data(in ubyte* ad, size_t ad_len)
+	final override void set_associated_data(in ubyte* ad, size_t ad_len)
 	{
 		set_associated_data_n(0, ad, ad_len);
 	}
 
-	override @property string name() const
+	final override @property string name() const
 	{
 		return m_name;
 	}
 
-	override size_t update_granularity() const
+	final override size_t update_granularity() const
 	{
 		/*
 		This value does not particularly matter as regardless update
@@ -76,17 +76,17 @@ public:
 		return 128;
 	}
 
-	override Key_Length_Specification key_spec() const
+	final override Key_Length_Specification key_spec() const
 	{
 		return m_cmac.key_spec().multiple(2);
 	}
 
-	override bool valid_nonce_length(size_t) const
+	final override bool valid_nonce_length(size_t) const
 	{
 		return true;
 	}
 
-	override void clear()
+	final override void clear()
 	{
 		m_ctr.clear();
 		m_nonce.clear();
@@ -94,9 +94,9 @@ public:
 		m_ad_macs.clear();
 	}
 
-	override size_t tag_size() const { return 16; }
+	final override size_t tag_size() const { return 16; }
 
-package:
+protected:
 	this(BlockCipher cipher) 
 	{
 		m_name = cipher.name ~ "/SIV";
@@ -104,9 +104,9 @@ package:
 		m_cmac = new CMAC(cipher);
 	}
 
-	StreamCipher ctr() { return *m_ctr; }
+	final StreamCipher ctr() { return *m_ctr; }
 
-	void set_ctr_iv(SafeVector!ubyte V)
+	final void set_ctr_iv(Secure_Vector!ubyte V)
 	{
 		V[8] &= 0x7F;
 		V[12] &= 0x7F;
@@ -114,13 +114,13 @@ package:
 		ctr().set_iv(&V[0], V.length);
 	}
 
-	SafeVector!ubyte msg_buf() { return m_msg_buf; }
+	final Secure_Vector!ubyte msg_buf() { return m_msg_buf; }
 
-	SafeVector!ubyte S2V(const ubyte* text, size_t text_len)
+	final Secure_Vector!ubyte S2V(const ubyte* text, size_t text_len)
 	{
 		const ubyte[16] zero;
 		
-		SafeVector!ubyte V = cmac().process(zero, 16);
+		Secure_Vector!ubyte V = cmac().process(zero, 16);
 		
 		for (size_t i = 0; i != m_ad_macs.length; ++i)
 		{
@@ -149,9 +149,9 @@ package:
 		return cmac().flush();
 	}
 private:
-	MessageAuthenticationCode cmac() { return *m_cmac; }
+	final MessageAuthenticationCode cmac() { return *m_cmac; }
 
-	override void key_schedule(in ubyte* key, size_t length)
+	final override void key_schedule(in ubyte* key, size_t length)
 	{
 		const size_t keylen = length / 2;
 		m_cmac.set_key(key, keylen);
@@ -163,14 +163,14 @@ private:
 
 	Unique!StreamCipher m_ctr;
 	Unique!MessageAuthenticationCode m_cmac;
-	SafeVector!ubyte m_nonce, m_msg_buf;
-	Vector!( SafeVector!ubyte ) m_ad_macs;
+	Secure_Vector!ubyte m_nonce, m_msg_buf;
+	Vector!( Secure_Vector!ubyte ) m_ad_macs;
 };
 
 /**
 * SIV Encryption
 */
-class SIV_Encryption : SIV_Mode
+final class SIV_Encryption : SIV_Mode
 {
 public:
 	/**
@@ -181,13 +181,13 @@ public:
 		super(cipher);
 	}
 
-	override void finish(SafeVector!ubyte buffer, size_t offset = 0)
+	override void finish(Secure_Vector!ubyte buffer, size_t offset = 0)
 	{
 		assert(buffer.length >= offset, "Offset is sane");
 		
 		buffer.insert(buffer.begin() + offset, msg_buf().begin(), msg_buf().end());
 		
-		SafeVector!ubyte V = S2V(&buffer[offset], buffer.length - offset);
+		Secure_Vector!ubyte V = S2V(&buffer[offset], buffer.length - offset);
 		
 		buffer.insert(buffer.begin() + offset, V.begin(), V.end());
 		
@@ -204,7 +204,7 @@ public:
 /**
 * SIV Decryption
 */
-class SIV_Decryption : SIV_Mode
+final class SIV_Decryption : SIV_Mode
 {
 public:
 	/**
@@ -215,7 +215,7 @@ public:
 		super(cipher);
 	}
 
-	override void finish(SafeVector!ubyte buffer, size_t offset)
+	override void finish(Secure_Vector!ubyte buffer, size_t offset)
 	{
 		assert(buffer.length >= offset, "Offset is sane");
 		
@@ -225,7 +225,7 @@ public:
 		
 		assert(sz >= tag_size(), "We have the tag");
 		
-		SafeVector!ubyte V = SafeVector!ubyte(&buffer[offset], &buffer[offset + 16]);
+		Secure_Vector!ubyte V = Secure_Vector!ubyte(&buffer[offset], &buffer[offset + 16]);
 		
 		set_ctr_iv(V);
 		
@@ -233,7 +233,7 @@ public:
 		&buffer[offset],
 		buffer.length - offset - V.length);
 		
-		SafeVector!ubyte T = S2V(&buffer[offset], buffer.length - offset - V.length);
+		Secure_Vector!ubyte T = S2V(&buffer[offset], buffer.length - offset - V.length);
 		
 		if (T != V)
 			throw new Integrity_Failure("SIV tag check failed");

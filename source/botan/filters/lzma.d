@@ -138,7 +138,7 @@ private:
 	}
 	const size_t level;
 
-	SafeVector!ubyte buffer;
+	Secure_Vector!ubyte buffer;
 	Lzma_Stream* lzma;
 };
 
@@ -268,7 +268,7 @@ private:
 		}
 	}
 
-	SafeVector!ubyte buffer;
+	Secure_Vector!ubyte buffer;
 	Lzma_Stream* lzma;
 	bool no_writes;
 };

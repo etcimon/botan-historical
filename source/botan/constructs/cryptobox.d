@@ -36,7 +36,7 @@ struct CryptoBox {
 	                      in string passphrase,
 	                      RandomNumberGenerator rng)
 	{
-		SafeVector!ubyte pbkdf_salt = SafeVector!ubyte(PBKDF_SALT_LEN);
+		Secure_Vector!ubyte pbkdf_salt = Secure_Vector!ubyte(PBKDF_SALT_LEN);
 		rng.randomize(&pbkdf_salt[0], pbkdf_salt.length);
 		
 		PKCS5_PBKDF2 pbkdf = PKCS5_PBKDF2(new HMAC(new SHA_512));
@@ -97,7 +97,7 @@ struct CryptoBox {
 	                      in string passphrase)
 	{
 		DataSource_Memory input_src(input, input_len);
-		SafeVector!ubyte ciphertext =
+		Secure_Vector!ubyte ciphertext =
 			pem.decode_check_label(input_src,
 			                       "BOTAN CRYPTOBOX MESSAGE");
 		

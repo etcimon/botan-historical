@@ -15,7 +15,7 @@ import botan.block.block_cipher;
 /**
 * RC5
 */
-class RC5 : Block_Cipher_Fixed_Params!(8, 1, 32)
+final class RC5 : Block_Cipher_Fixed_Params!(8, 1, 32)
 {
 public:
 	/*
@@ -92,7 +92,7 @@ public:
 	/*
 	* Return the name of this type
 	*/
-	@property string name() const
+	override @property string name() const
 	{
 		return "RC5(" ~ std.conv.to!string(rounds) ~ ")";
 	}
@@ -127,7 +127,7 @@ private:
 		for (size_t i = 1; i != S.length; ++i)
 			S[i] = S[i-1] + 0x9E3779B9;
 		
-		SafeVector!uint K = SafeVector!uint(8);
+		Secure_Vector!uint K = Secure_Vector!uint(8);
 		
 		for (int i = length-1; i >= 0; --i)
 			K[i/4] = (K[i/4] << 8) + key[i];
@@ -145,5 +145,5 @@ private:
 
 
 	size_t rounds;
-	SafeVector!uint S;
+	Secure_Vector!uint S;
 };

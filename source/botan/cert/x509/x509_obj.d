@@ -30,7 +30,7 @@ public:
 	* The underlying data that is to be or was signed
 	* @return data that is or was signed
 	*/
-	Vector!ubyte tbs_data() const
+	final Vector!ubyte tbs_data() const
 	{
 		return asn1_obj.put_in_sequence(tbs_bits);
 	}
@@ -38,7 +38,7 @@ public:
 	/**
 	* @return signature on tbs_data()
 	*/
-	Vector!ubyte signature() const
+	final Vector!ubyte signature() const
 	{
 		return sig;
 	}
@@ -46,7 +46,7 @@ public:
 	/**
 	* @return signature algorithm that was used to generate signature
 	*/
-	AlgorithmIdentifier signature_algorithm() const
+	final Algorithm_Identifier signature_algorithm() const
 	{
 		return sig_algo;
 	}
@@ -54,7 +54,7 @@ public:
 	/**
 	* @return hash algorithm that was used to generate signature
 	*/
-	string hash_used_for_signature() const
+	final string hash_used_for_signature() const
 	{
 		Vector!string sig_info =
 			splitter(oids.lookup(sig_algo.oid), '/');
@@ -83,8 +83,8 @@ public:
 	*/
 	static Vector!ubyte make_signed(ref PK_Signer signer,
 	                         RandomNumberGenerator rng,
-	                         const AlgorithmIdentifier algo,
-	                         in SafeVector!ubyte tbs_bits)
+	                         const Algorithm_Identifier algo,
+	                         in Secure_Vector!ubyte tbs_bits)
 	{
 		return DER_Encoder()
 			.start_cons(ASN1_Tag.SEQUENCE)
@@ -102,7 +102,7 @@ public:
 	* @param key the public key purportedly used to sign this data
 	* @return true if the signature is valid, otherwise false
 	*/
-	bool check_signature(in Public_Key pub_key) const
+	final bool check_signature(in Public_Key pub_key) const
 	{
 		try {
 			Vector!string sig_info =
@@ -154,7 +154,7 @@ public:
 	/**
 	* @return BER encoding of this
 	*/
-	Vector!ubyte BER_encode() const
+	final Vector!ubyte BER_encode() const
 	{
 		auto der = BER_Decoder();
 		encode_into(der);
@@ -165,13 +165,13 @@ public:
 	/**
 	* @return PEM encoding of this
 	*/
-	string PEM_encode() const
+	final string PEM_encode() const
 	{
 		return pem.encode(BER_encode(), PEM_label_pref);
 	}
 
 	~this() {}
-package:
+protected:
 	/*
 	* Create a generic X.509 object
 	*/
@@ -198,12 +198,10 @@ package:
 		init(stream, labels);
 	}
 
-
-
 	/*
 	* Try to decode the actual information
 	*/
-	void do_decode()
+	final void do_decode()
 	{
 		try {
 			force_decode();
@@ -220,7 +218,7 @@ package:
 		}
 	}
 	this() {}
-	AlgorithmIdentifier sig_algo;
+	Algorithm_Identifier sig_algo;
 	Vector!ubyte tbs_bits, sig;
 private:
 	abstract void force_decode();
@@ -228,7 +226,7 @@ private:
 	/*
 	* Read a PEM or BER X.509 object
 	*/
-	void init(DataSource input, in string labels)
+	final void init(DataSource input, in string labels)
 	{
 		PEM_labels_allowed = splitter(labels, '/');
 		if (PEM_labels_allowed.length < 1)

@@ -13,7 +13,7 @@ import botan.hash.sha160;
 class SHA_160_X86_32 : SHA_160
 {
 public:
-	HashFunction clone() const { return new SHA_160_X86_32; }
+	override HashFunction clone() const { return new SHA_160_X86_32; }
 
 	// Note 81 instead of normal 80: x86-32 asm needs an extra temp
 	this() 
@@ -24,7 +24,7 @@ private:
 	/*
 	* SHA-160 Compression Function
 	*/
-	void compress_n(in ubyte* input, size_t blocks)
+	override void compress_n(in ubyte* input, size_t blocks)
 	{
 		for (size_t i = 0; i != blocks; ++i)
 		{
@@ -37,7 +37,7 @@ private:
 
 private:
 
-void botan_sha160_x86_32_compress(uint[5]* arg1, const ubyte[64]* arg2, uint[81]* arg2)
+void botan_sha160_x86_32_compress(uint[5]* arg1, const ubyte[64]* arg2, uint[81]* arg2) pure
 {
 	mixin(`asm {` ~
 	      ASSIGN(EDI, ARG(2)) ~

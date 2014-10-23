@@ -12,12 +12,12 @@ import botan.hash.sha160;
 class SHA_160_X86_64 : SHA_160
 {
 public:
-	HashFunction clone() const { return new SHA_160_X86_64; }
+	override HashFunction clone() const { return new SHA_160_X86_64; }
 private:
 	/*
 	* SHA-160 Compression Function
 	*/
-	void compress_n(in ubyte* input, size_t blocks)
+	override void compress_n(in ubyte* input, size_t blocks)
 	{
 		for (size_t i = 0; i != blocks; ++i)
 		{
@@ -28,6 +28,7 @@ private:
 };
 
 private:
+pure:
 
 void botan_sha160_x86_64_compress(uint[5]* arg1, const ubyte[64]* arg2, uint[80]* arg3)
 {

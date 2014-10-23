@@ -26,9 +26,9 @@ public:
 	size_t length() const { return bits.length; }
 	
 	/**
-		* @return this object as a SafeVector!ubyte
+		* @return this object as a Secure_Vector!ubyte
 		*/
-	SafeVector!ubyte bits_of() const { return bits; }
+	Secure_Vector!ubyte bits_of() const { return bits; }
 	
 	/**
 		* @return start of this string
@@ -128,13 +128,13 @@ public:
 		* Create a new OctetString
 		* @param input a bytestring
 		*/
-	this(in SafeVector!ubyte input) { bits = input; }
+	this(in Secure_Vector!ubyte input) { bits = input; }
 	
 	/**
 		* Create a new OctetString
 		* @param input a bytestring
 		*/
-	this(in Vector!ubyte input) {  bits = SafeVector!ubyte(&input[0], &input[input.length]); }
+	this(in Vector!ubyte input) {  bits = Secure_Vector!ubyte(&input[0], &input[input.length]); }
 
 
 		/**
@@ -167,7 +167,7 @@ public:
 	*/
 	OctetString opBinary(op)(const ref OctetString other)
 	if (op == "+") {
-		SafeVector!ubyte output;
+		Secure_Vector!ubyte output;
 		output += bits_of();
 		output += other.bits_of();
 		return OctetString(output);
@@ -181,7 +181,7 @@ public:
 	*/
 	OctetString opBinary(op)(const ref OctetString other)
 	if (op == "^") {
-		SafeVector!ubyte ret = SafeVector!ubyte(std.algorithm.max(length(), other.length()));
+		Secure_Vector!ubyte ret = Secure_Vector!ubyte(std.algorithm.max(length(), other.length()));
 		
 		copy_mem(&ret[0], k1.begin(), k1.length());
 		xor_buf(&ret[0], k2.begin(), k2.length());
@@ -189,7 +189,7 @@ public:
 	}
 
 private:
-	SafeVector!ubyte bits;
+	Secure_Vector!ubyte bits;
 }
 
 /**

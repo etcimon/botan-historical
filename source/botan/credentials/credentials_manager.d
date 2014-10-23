@@ -8,11 +8,12 @@ module botan.credentials.credentials_manager;
 
 import botan.cert.x509.x509cert;
 import botan.cert.x509.certstor;
+import botan.math.bigint.bigint;
+import botan.pubkey.pk_keys;
 import botan.algo_base.symkey;
 import botan.credentials.credentials_manager;
 import botan.cert.x509.x509path;
 import string;
-class BigInt;
 
 /**
 * Interface for a credentials manager.
@@ -36,11 +37,11 @@ public:
 	* @param context specifies a context relative to type. For instance
 	*		  for type "tls-client", context specifies the servers name.
 	*/
-	Vector!( Certificate_Store* ) trusted_certificate_authorities(
-										in string type,
-										in string context)
+	abstract Vector!Certificate_Store trusted_certificate_authorities(
+											in string type,
+											in string context)
 	{
-		return Vector!( Certificate_Store* )();
+		return Vector!Certificate_Store();
 	}
 
 	/**
@@ -57,9 +58,9 @@ public:
 	* @param cert_chain specifies a certificate chain leading to a
 	*		  trusted root CA certificate.
 	*/
-	void verify_certificate_chain(	in string type,
-									in string purported_hostname,
-									const ref Vector!X509_Certificate cert_chainput)
+	abstract void verify_certificate_chain(	in string type,
+											in string purported_hostname,
+											const ref Vector!X509_Certificate cert_chainput)
 	{
 		if (cert_chain.empty())
 			throw new Invalid_Argument("Certificate chain was empty");
@@ -97,9 +98,9 @@ public:
 	*
 	* @param context specifies a context relative to type.
 	*/
-	Vector!X509_Certificate cert_chain( const ref Vector!string cert_key_types,
-											in string type,
-											in string context)
+	abstract Vector!X509_Certificate cert_chain( const ref Vector!string cert_key_types,
+													in string type,
+													in string context)
 	{
 		return Vector!X509_Certificate();
 	}
@@ -118,9 +119,9 @@ public:
 	*
 	* @param context specifies a context relative to type.
 	*/
-	Vector!X509_Certificate cert_chain_single_type( in string cert_key_type,
-														in string type,
-														in string context)
+	abstract Vector!X509_Certificate cert_chain_single_type( in string cert_key_type,
+																in string type,
+																in string context)
 	{
 		Vector!string cert_types;
 		cert_types.push_back(cert_key_type);
@@ -133,9 +134,9 @@ public:
 	* @note this object should retain ownership of the returned key;
 	*		 it should not be deleted by the caller.
 	*/
-	Private_Key Private_Key_for( in X509_Certificate cert,
-								 in string type,
-								 in string context)
+	abstract Private_Key Private_Key_for( in X509_Certificate cert,
+											 in string type,
+											 in string context)
 	{
 		return null;
 	}
@@ -145,8 +146,8 @@ public:
 	* @param context specifies a context relative to type.
 	* @return true if we should attempt SRP authentication
 	*/
-	bool attempt_srp(in string,
-	                 in string)
+	abstract bool attempt_srp(in string,
+	                 			in string)
 	{
 		return false;
 	}
@@ -158,8 +159,8 @@ public:
 				 for this type/context. Should return empty string
 				 if password auth not desired/available.
 	*/
-	string srp_identifier(	in string type,
-							in string context)
+	abstract string srp_identifier(	in string type,
+										in string context)
 	{
 		return "";
 	}
@@ -173,9 +174,9 @@ public:
 	* @return password for client-side SRP auth, if available
 				 for this identifier/type/context.
 	*/
-	string srp_password(in string type,
-						in string context,
-						in string identifier)
+	abstract string srp_password(in string type,
+									in string context,
+									in string identifier)
 	{
 		return "";
 	}
@@ -183,13 +184,13 @@ public:
 	/**
 	* Retrieve SRP verifier parameters
 	*/
-	bool srp_verifier(in string type,
-					  in string context,
-					  in string identifier,
-					  ref string group_name,
-					  ref BigInt verifier,
-					  ref Vector!ubyte salt,
-					  bool generate_fake_on_unknown)
+	abstract bool srp_verifier(in string type,
+								  in string context,
+								  in string identifier,
+								  ref string group_name,
+								  ref BigInt verifier,
+								  ref Vector!ubyte salt,
+								  bool generate_fake_on_unknown)
 	{
 		return false;
 	}
@@ -199,8 +200,8 @@ public:
 	* @param context specifies a context relative to type.
 	* @return the PSK identity hint for this type/context
 	*/
-	string psk_identity_hint(in string type,
-	                         in string context)
+	abstract string psk_identity_hint(in string type,
+	                        			 in string context)
 	{
 		return "";
 	}
@@ -211,9 +212,9 @@ public:
 	* @param identity_hint was passed by the server (but may be empty)
 	* @return the PSK identity we want to use
 	*/
-	string psk_identity(in string type,
-	                    in string context,
-	                    in string identity_hint)
+	abstract string psk_identity(in string type,
+				                    in string context,
+				                    in string identity_hint)
 	{
 		return "";
 	}
@@ -226,9 +227,9 @@ public:
 	* @return the PSK used for identity, or throw new an exception if no
 	* key exists
 	*/
-	SymmetricKey psk(in string type,
-	                 in string context,
-	                 in string identity)
+	abstract SymmetricKey psk(in string type,
+				                 in string context,
+				                 in string identity)
 	{
 		throw new Internal_Error("No PSK set for identity " ~ identity);
 	}
@@ -236,8 +237,8 @@ public:
 
 private:
 
-bool cert_in_some_store(in Vector!( Certificate_Store* ) trusted_CAs,
-                        const ref X509_Certificate trust_root)
+bool cert_in_some_store(in Vector!Certificate_Store trusted_CAs,
+                        const X509_Certificate trust_root)
 {
 	foreach (CAs; trusted_CAs)
 		if (CAs.certificate_known(trust_root))

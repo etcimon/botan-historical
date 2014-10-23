@@ -33,8 +33,8 @@ public:
 
 	DL_Group.Format group_format() const { return DL_Group.ANSI_X9_42; }
 
-	this(in AlgorithmIdentifier alg_id,
-					 in SafeVector!ubyte key_bits)
+	this(in Algorithm_Identifier alg_id,
+					 in Secure_Vector!ubyte key_bits)
 	{
 		super(alg_id, key_bits, DL_Group.ANSI_X9_42);
 	}
@@ -49,7 +49,7 @@ public:
 		group = grp;
 		y = y1;
 	}
-package:
+protected:
 	this() {}
 };
 
@@ -75,8 +75,8 @@ public:
 	* @param key_bits the subject public key
 	* @param rng a random number generator
 	*/
-	this(in AlgorithmIdentifier alg_id,
-	     in SafeVector!ubyte key_bits,
+	this(in Algorithm_Identifier alg_id,
+	     in Secure_Vector!ubyte key_bits,
 	     RandomNumberGenerator rng) 
 	{
 		super(alg_id, key_bits, DL_Group.ANSI_X9_42);
@@ -130,7 +130,7 @@ public:
 		blinder = Blinder(k, powermod_x_p(inverse_mod(k, p)), p);
 	}
 
-	SafeVector!ubyte agree(in ubyte* w, size_t w_len)
+	Secure_Vector!ubyte agree(in ubyte* w, size_t w_len)
 	{
 		BigInt input = BigInt.decode(w, w_len);
 		

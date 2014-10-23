@@ -40,7 +40,7 @@ public:
 	                       size_t iterations) const
 	{
 		if (iterations == 0)
-			throw new Invalid_Argument(name() ~ ": Invalid iteration count");
+			throw new Invalid_Argument(name ~ ": Invalid iteration count");
 		
 		auto derived = key_derivation(output_len, passphrase,
 		                              salt, salt_len, iterations,
@@ -129,4 +129,4 @@ public:
 };
 
 
-import stdexcept;
+import std.exception;

@@ -26,8 +26,8 @@ public:
 	size_t message_part_size() const { return group_q().bytes(); }
 	size_t max_input_bits() const { return group_q().bits(); }
 
-	this(in AlgorithmIdentifier alg_id,
-					  in SafeVector!ubyte key_bits) 
+	this(in Algorithm_Identifier alg_id,
+					  in Secure_Vector!ubyte key_bits) 
 	{
 		super(alg_id, key_bits, DL_Group.ANSI_X9_57);
 	}
@@ -40,15 +40,15 @@ public:
 		group = grp;
 		y = y1;
 	}
-package:
+protected:
 	this() {}
 };
 
 /**
 * DSA Private Key
 */
-class DSA_PrivateKey : DSA_PublicKey,
-						DL_Scheme_PrivateKey
+final class DSA_PrivateKey : DSA_PublicKey,
+								DL_Scheme_PrivateKey
 {
 public:
 	/*
@@ -72,8 +72,8 @@ public:
 			load_check(rng);
 	}
 
-	this(in AlgorithmIdentifier alg_id,
-	     in SafeVector!ubyte key_bits,
+	this(in Algorithm_Identifier alg_id,
+	     in Secure_Vector!ubyte key_bits,
 	     RandomNumberGenerator rng)
 	{
 		super(alg_id, key_bits, DL_Group.ANSI_X9_57);
@@ -103,7 +103,7 @@ public:
 /**
 * Object that can create a DSA signature
 */
-class DSA_Signature_Operation : Signature
+final class DSA_Signature_Operation : Signature
 {
 public:
 	this(in DSA_PrivateKey dsa)
@@ -118,7 +118,7 @@ public:
 	size_t message_part_size() const { return q.bytes(); }
 	size_t max_input_bits() const { return q.bits(); }
 
-	SafeVector!ubyte sign(in ubyte* msg, size_t msg_len,
+	Secure_Vector!ubyte sign(in ubyte* msg, size_t msg_len,
 		 					    RandomNumberGenerator rng)
 	{
 		import std.concurrency : spawn, receiveOnly, thisTid, send;
@@ -143,7 +143,7 @@ public:
 			s = mod_q.multiply(s, mul_add(x, r, i));
 		}
 		
-		SafeVector!ubyte output = SafeVector!ubyte(2*q.bytes());
+		Secure_Vector!ubyte output = Secure_Vector!ubyte(2*q.bytes());
 		r.binary_encode(&output[output.length / 2 - r.bytes()]);
 		s.binary_encode(&output[output.length - s.bytes()]);
 		return output;
@@ -158,7 +158,7 @@ private:
 /**
 * Object that can verify a DSA signature
 */
-class DSA_Verification_Operation : Verification
+final class DSA_Verification_Operation : Verification
 {
 public:
 

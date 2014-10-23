@@ -101,5 +101,5 @@ private:
 	}
 
 	Unique!HashFunction m_hash;
-	SafeVector!ubyte m_ikey, m_okey;
+	Secure_Vector!ubyte m_ikey, m_okey;
 };

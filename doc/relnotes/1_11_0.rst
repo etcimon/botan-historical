@@ -34,7 +34,7 @@ Memory Container Changes
 The memory container types have changed substantially.  The
 ``MemoryVector`` and ``SecureVector`` container types have been
 removed, and an alias of ``std::vector`` using an allocator that
-clears memory named ``SafeVector`` is used for key material, with
+clears memory named ``Secure_Vector`` is used for key material, with
 plain ``std::vector`` being used for everything else.
 
 The technique used for mlock'ing memory on Linux and BSD systems is

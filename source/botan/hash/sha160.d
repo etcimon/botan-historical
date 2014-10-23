@@ -17,14 +17,14 @@ import botan.utils.rotate;
 class SHA_160 : MDx_HashFunction
 {
 public:
-	@property string name() const { return "SHA-160"; }
-	@property size_t output_length() const { return 20; }
+	final override @property string name() const { return "SHA-160"; }
+	final @property size_t output_length() const { return 20; }
 	HashFunction clone() const { return new SHA_160; }
 
 	/*
 	* Clear memory of sensitive data
 	*/
-	void clear()
+	final void clear()
 	{
 		super.clear();
 		zeroise(W);
@@ -42,7 +42,7 @@ public:
 		W = 80;
 		clear();
 	}
-package:
+protected:
 	/**
 	* Set a custom size for the W array. Normally 80, but some
 	* subclasses need slightly more for best performance/internal
@@ -138,7 +138,7 @@ package:
 	/*
 	* Copy out the digest
 	*/
-	void copy_out(ubyte* output)
+	final void copy_out(ubyte* output)
 	{
 		for (size_t i = 0; i != output_length(); i += 4)
 			store_be(digest[i/4], output + i);
@@ -147,16 +147,16 @@ package:
 	/**
 	* The digest value, exposed for use by subclasses (asm, SSE2)
 	*/
-	SafeVector!uint digest;
+	Secure_Vector!uint digest;
 
 	/**
 	* The message buffer, exposed for use by subclasses (asm, SSE2)
 	*/
-	SafeVector!uint W;
+	Secure_Vector!uint W;
 };
 
 private:
-
+pure:
 /*
 * SHA-160 F1 Function
 */

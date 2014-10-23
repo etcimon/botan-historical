@@ -248,6 +248,6 @@ public:
 	size_t size() const { return (end - start); }
 private:
 	SecureQueueNode next;
-	SafeVector!ubyte buffer;
+	Secure_Vector!ubyte buffer;
 	size_t start, end;
 };

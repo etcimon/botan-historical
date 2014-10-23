@@ -22,20 +22,18 @@ static if (BOTAN_HAS_GCM_CLMUL) {
 	import botan.utils.cpuid;
 }
 
-class GHASH;
-
 /**
 * GCM Mode
 */
 class GCM_Mode : AEAD_Mode
 {
 public:
-	override SafeVector!ubyte start(in ubyte* nonce, size_t nonce_len)
+	final override Secure_Vector!ubyte start(in ubyte* nonce, size_t nonce_len)
 	{
 		if (!valid_nonce_length(nonce_len))
-			throw new Invalid_IV_Length(name(), nonce_len);
+			throw new Invalid_IV_Length(name, nonce_len);
 		
-		SafeVector!ubyte y0(BS);
+		Secure_Vector!ubyte y0 = Secure_Vector!ubyte(BS);
 		
 		if (nonce_len == 12)
 		{
@@ -49,53 +47,53 @@ public:
 		
 		m_ctr.set_iv(&y0[0], y0.length);
 		
-		SafeVector!ubyte m_enc_y0(BS);
+		Secure_Vector!ubyte m_enc_y0 = Secure_Vector!ubyte(BS);
 		m_ctr.encipher(m_enc_y0);
 		
 		m_ghash.start(&m_enc_y0[0], m_enc_y0.length);
 		
-		return SafeVector!ubyte();
+		return Secure_Vector!ubyte();
 	}
 
-	override void set_associated_data(in ubyte* ad, size_t ad_len)
+	final override void set_associated_data(in ubyte* ad, size_t ad_len)
 	{
 		m_ghash.set_associated_data(ad, ad_len);
 	}
 
-	override @property string name() const
+	final override @property string name() const
 	{
 		return (m_cipher_name ~ "/GCM");
 	}
 
-	override size_t update_granularity() const
+	final override size_t update_granularity() const
 	{
 		return 4096; // CTR-BE's internal block size
 	}
 
-	override Key_Length_Specification key_spec() const
+	final override Key_Length_Specification key_spec() const
 	{
 		return m_ctr.key_spec();
 	}
 
 	// GCM supports arbitrary nonce lengths
-	override bool valid_nonce_length(size_t) const { return true; }
+	final override bool valid_nonce_length(size_t) const { return true; }
 
-	override size_t tag_size() const { return m_tag_size; }
+	final override size_t tag_size() const { return m_tag_size; }
 
-	override void clear()
+	final override void clear()
 	{
 		m_ctr.clear();
 		m_ghash.clear();
 	}
-package:
+protected:
 	override void key_schedule(in ubyte* key, size_t length)
 	{
 		m_ctr.set_key(key, keylen);
 		
-		const Vector!ubyte zeros(BS);
+		const Vector!ubyte zeros = Vector!ubyte(BS);
 		m_ctr.set_iv(&zeros[0], zeros.length);
 		
-		SafeVector!ubyte H(BS);
+		Secure_Vector!ubyte H = Secure_Vector!ubyte(BS);
 		m_ctr.encipher(H);
 		m_ghash.set_key(H);
 	}
@@ -116,10 +114,10 @@ package:
 		m_ctr = new CTR_BE(cipher); // CTR_BE takes ownership of cipher
 		
 		if (m_tag_size != 8 && m_tag_size != 16)
-			throw new Invalid_Argument(name() ~ ": Bad tag size " ~ std.conv.to!string(m_tag_size));
+			throw new Invalid_Argument(name ~ ": Bad tag size " ~ std.conv.to!string(m_tag_size));
 	}
 
-	const size_t BS = 16;
+	immutable size_t BS = 16;
 
 	const size_t m_tag_size;
 	const string m_cipher_name;
@@ -131,7 +129,7 @@ package:
 /**
 * GCM Encryption
 */
-class GCM_Encryption : GCM_Mode
+final class GCM_Encryption : GCM_Mode
 {
 public:
 	/**
@@ -146,7 +144,7 @@ public:
 
 	override size_t minimum_final_size() const { return 0; }
 
-	override void update(SafeVector!ubyte buffer, size_t offset = 0)
+	override void update(Secure_Vector!ubyte buffer, size_t offset = 0)
 	{
 		assert(buffer.length >= offset, "Offset is sane");
 		const size_t sz = buffer.length - offset;
@@ -156,7 +154,7 @@ public:
 		m_ghash.update(buf, sz);
 	}
 
-	override void finish(SafeVector!ubyte buffer, size_t offset = 0)
+	override void finish(Secure_Vector!ubyte buffer, size_t offset = 0)
 	{
 		update(buffer, offset);
 		auto mac = m_ghash.flush();
@@ -167,7 +165,7 @@ public:
 /**
 * GCM Decryption
 */
-class GCM_Decryption : GCM_Mode
+final class GCM_Decryption : GCM_Mode
 {
 public:
 	/**
@@ -187,7 +185,7 @@ public:
 
 	override size_t minimum_final_size() const { return tag_size(); }
 
-	override void update(SafeVector!ubyte buffer, size_t offset = 0)
+	override void update(Secure_Vector!ubyte buffer, size_t offset = 0)
 	{
 		assert(buffer.length >= offset, "Offset is sane");
 		const size_t sz = buffer.length - offset;
@@ -197,7 +195,7 @@ public:
 		m_ctr.cipher(buf, buf, sz);
 	}
 
-	override void finish(SafeVector!ubyte buffer, size_t offset)
+	override void finish(Secure_Vector!ubyte buffer, size_t offset)
 	{
 		assert(buffer.length >= offset, "Offset is sane");
 		const size_t sz = buffer.length - offset;
@@ -229,7 +227,7 @@ public:
 * GCM's GHASH
 * Maybe a Transform?
 */
-class GHASH : SymmetricAlgorithm
+final class GHASH : SymmetricAlgorithm
 {
 public:
 	void set_associated_data(in ubyte* input, size_t length)
@@ -240,10 +238,10 @@ public:
 		m_ad_len = length;
 	}
 
-	SafeVector!ubyte nonce_hash(in ubyte* nonce, size_t nonce_len)
+	Secure_Vector!ubyte nonce_hash(in ubyte* nonce, size_t nonce_len)
 	{
 		assert(m_ghash.length == 0, "nonce_hash called during wrong time");
-		SafeVector!ubyte y0(16);
+		Secure_Vector!ubyte y0(16);
 		
 		ghash_update(y0, nonce, nonce_len);
 		add_final_block(y0, 0, nonce_len);
@@ -269,11 +267,11 @@ public:
 		ghash_update(m_ghash, input, length);
 	}
 
-	SafeVector!ubyte flush()
+	Secure_Vector!ubyte flush()
 	{
 		add_final_block(m_ghash, m_ad_len, m_text_len);
 		
-		SafeVector!ubyte mac;
+		Secure_Vector!ubyte mac;
 		mac.swap(m_ghash);
 		
 		mac ^= m_nonce;
@@ -302,7 +300,7 @@ private:
 	}
 
 
-	void gcm_multiply(SafeVector!ubyte x) const
+	void gcm_multiply(Secure_Vector!ubyte x) const
 	{
 		static if (BOTAN_HAS_GCM_CLMUL) {
 			if (CPUID.has_clmul())
@@ -342,7 +340,7 @@ private:
 		store_be!ulong(&x[0], Z[0], Z[1]);
 	}
 
-	void ghash_update(SafeVector!ubyte ghash,
+	void ghash_update(Secure_Vector!ubyte ghash,
 	                  in ubyte* input, size_t length)
 	{
 		const size_t BS = 16;
@@ -364,22 +362,22 @@ private:
 		}
 	}
 
-	void add_final_block(SafeVector!ubyte hash,
+	void add_final_block(Secure_Vector!ubyte hash,
 	                     size_t ad_len, size_t text_len)
 	{
-		SafeVector!ubyte final_block(16);
+		Secure_Vector!ubyte final_block(16);
 		store_be!ulong(&final_block[0], 8*ad_len, 8*text_len);
 		ghash_update(hash, &final_block[0], final_block.length);
 	}
 
-	SafeVector!ubyte m_H;
-	SafeVector!ubyte m_H_ad;
-	SafeVector!ubyte m_nonce;
-	SafeVector!ubyte m_ghash;
+	Secure_Vector!ubyte m_H;
+	Secure_Vector!ubyte m_H_ad;
+	Secure_Vector!ubyte m_nonce;
+	Secure_Vector!ubyte m_ghash;
 	size_t m_ad_len = 0, m_text_len = 0;
 };
 
-void gcm_multiply_clmul(ubyte[16]* x, in ubyte[16]* H)
+void gcm_multiply_clmul(ubyte[16]* x, in ubyte[16]* H) pure
 {
 	/*
 	* Algorithms 1 and 5 from Intel's CLMUL guide

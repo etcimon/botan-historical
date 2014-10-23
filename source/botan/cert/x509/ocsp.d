@@ -18,13 +18,11 @@ import botan.pubkey.pubkey;
 import botan.cert.x509.x509path;
 import botan.http_util;
 
-class Certificate_Store;
-
 class Request
 {
 public:
 	this(in X509_Certificate issuer_cert,
-		 const ref X509_Certificate subject_cert) 
+		 const X509_Certificate subject_cert) 
 		
 	{
 		m_issuer = issuer_cert;
@@ -33,7 +31,7 @@ public:
 
 	Vector!ubyte BER_encode() const
 	{
-		CertID certid(m_issuer, m_subject);
+		CertID certid = CertID(m_issuer, m_subject);
 		
 		return DER_Encoder().start_cons(ASN1_Tag.SEQUENCE)
 			.start_cons(ASN1_Tag.SEQUENCE)
@@ -54,9 +52,9 @@ public:
 		return Botan.base64_encode(BER_encode());
 	}
 
-	const ref X509_Certificate issuer() const { return m_issuer; }
+	const X509_Certificate issuer() const { return m_issuer; }
 
-	const ref X509_Certificate subject() const { return m_subject; }
+	const X509_Certificate subject() const { return m_subject; }
 private:
 	X509_Certificate m_issuer, m_subject;
 };
@@ -90,7 +88,7 @@ public:
 				BER_Decoder(response_bytes.get_next_octet_string()).start_cons(ASN1_Tag.SEQUENCE);
 			
 			Vector!ubyte tbs_bits;
-			AlgorithmIdentifier sig_algo;
+			Algorithm_Identifier sig_algo;
 			Vector!ubyte signature;
 			Vector!X509_Certificate certs;
 			
@@ -139,7 +137,7 @@ public:
 	}
 
 	Certificate_Status_Code status_for(in X509_Certificate issuer,
-	                                   const ref X509_Certificate subject) const
+	                                   const X509_Certificate subject) const
 	{
 		foreach (response; m_responses)
 		{
@@ -178,7 +176,7 @@ void decode_optional_list(BER_Decoder ber,
 {
 	BER_Object obj = ber.get_next_object();
 	
-	if (obj.type_tag != tag || obj.class_tag != (ASN1_Tag.CONTEXT_SPECIFIC | CONSTRUCTED))
+	if (obj.type_tag != tag || obj.class_tag != (ASN1_Tag.CONTEXT_SPECIFIC | ASN1_Tag.CONSTRUCTED))
 	{
 		ber.push_back(obj);
 		return;
@@ -197,9 +195,9 @@ void decode_optional_list(BER_Decoder ber,
 /// Does not use trusted roots
 /// Throws if not trusted
 void check_signature(in Vector!ubyte tbs_response,
-                     const ref AlgorithmIdentifier sig_algo,
+                     const Algorithm_Identifier sig_algo,
                      in Vector!ubyte signature,
-                     const ref X509_Certificate cert)
+                     const X509_Certificate cert)
 {
 	Unique!Public_Key pub_key = cert.subject_public_key();
 	
@@ -221,9 +219,9 @@ void check_signature(in Vector!ubyte tbs_response,
 /// Iterates over trusted roots certificate store
 /// throws if not trusted
 void check_signature(in Vector!ubyte tbs_response,
-                     const ref AlgorithmIdentifier sig_algo,
+                     const Algorithm_Identifier sig_algo,
                      in Vector!ubyte signature,
-                     const ref Certificate_Store trusted_roots,
+                     const Certificate_Store trusted_roots,
                      const ref Vector!X509_Certificate certs)
 {
 	if (certs.length < 1)
@@ -252,8 +250,8 @@ void check_signature(in Vector!ubyte tbs_response,
 
 /// Checks the certificate online
 Response online_check(in X509_Certificate issuer,
-                      const ref X509_Certificate subject,
-                      const Certificate_Store* trusted_roots)
+                      const X509_Certificate subject,
+                      const Certificate_Store trusted_roots)
 {
 	const string responder_url = subject.ocsp_responder();
 	
@@ -270,7 +268,7 @@ Response online_check(in X509_Certificate issuer,
 	
 	// Check the MIME type?
 	
-	ocsp.Response response = ocsp.Reponse(*trusted_roots, http._body());
+	ocsp.Response response = ocsp.Reponse(trusted_roots, http._body());
 	
 	return response;
 }

@@ -13,6 +13,7 @@ import botan.filters.buf_filt;
 import botan.cmac.cmac;
 import botan.utils.xor_buf;
 import botan.utils.bit_ops;
+import botan.utils.types;
 import std.algorithm;
 
 class L_computer;
@@ -29,10 +30,10 @@ class L_computer;
 class OCB_Mode : AEAD_Mode
 {
 public:
-	override SafeVector!ubyte start(in ubyte* nonce, size_t nonce_len)
+	final override Secure_Vector!ubyte start(in ubyte* nonce, size_t nonce_len)
 	{
 		if (!valid_nonce_length(nonce_len))
-			throw new Invalid_IV_Length(name(), nonce_len);
+			throw new Invalid_IV_Length(name, nonce_len);
 		
 		assert(m_L, "A key was set");
 		
@@ -40,38 +41,38 @@ public:
 		zeroise(m_checksum);
 		m_block_index = 0;
 		
-		return SafeVector!ubyte();
+		return Secure_Vector!ubyte();
 	}
 
-	override void set_associated_data(in ubyte* ad, size_t ad_len)
+	final override void set_associated_data(in ubyte* ad, size_t ad_len)
 	{
 		assert(m_L, "A key was set");
 		m_ad_hash = ocb_hash(*m_L, *m_cipher, &ad[0], ad_len);
 	}
 
-	override @property string name() const
+	final override @property string name() const
 	{
 		return m_cipher.name ~ "/OCB"; // include tag size
 	}
 
-	override size_t update_granularity() const
+	final override size_t update_granularity() const
 	{
 		return m_cipher.parallel_bytes();
 	}
 
-	override Key_Length_Specification key_spec() const
+	final override Key_Length_Specification key_spec() const
 	{
 		return m_cipher.key_spec();
 	}
 
-	override bool valid_nonce_length(size_t length) const
+	final override bool valid_nonce_length(size_t length) const
 	{
 		return (length > 0 && length < 16);
 	}
 
-	override size_t tag_size() const { return m_tag_size; }
+	final override size_t tag_size() const { return m_tag_size; }
 
-	override void clear()
+	final override void clear()
 	{
 		m_cipher.clear();
 		m_L.clear();
@@ -82,7 +83,7 @@ public:
 	}
 
 	~this() { /* for unique_ptr destructor */ }
-package:
+protected:
 	/**
 	* @param cipher the 128-bit block cipher to use
 	* @param tag_size is how big the auth tag will be
@@ -103,7 +104,7 @@ package:
 		
 	}
 
-	override void key_schedule(in ubyte* key, size_t length)
+	final override void key_schedule(in ubyte* key, size_t length)
 	{
 		m_cipher.set_key(key, length);
 		m_L = new L_computer(*m_cipher);
@@ -115,16 +116,16 @@ package:
 
 	size_t m_block_index = 0;
 
-	SafeVector!ubyte m_checksum;
-	SafeVector!ubyte m_offset;
-	SafeVector!ubyte m_ad_hash;
+	Secure_Vector!ubyte m_checksum;
+	Secure_Vector!ubyte m_offset;
+	Secure_Vector!ubyte m_ad_hash;
 private:
-	SafeVector!ubyte
-		update_nonce(in ubyte* nonce, size_t nonce_len)
+	final Secure_Vector!ubyte
+			update_nonce(in ubyte* nonce, size_t nonce_len)
 	{
 		assert(nonce_len < BS, "Nonce is less than 128 bits");
 		
-		SafeVector!ubyte nonce_buf(BS);
+		Secure_Vector!ubyte nonce_buf(BS);
 		
 		copy_mem(&nonce_buf[BS - nonce_len], nonce, nonce_len);
 		nonce_buf[0] = ((tag_size() * 8) % 128) << 1;
@@ -152,7 +153,7 @@ private:
 		const size_t shift_bytes = bottom / 8;
 		const size_t shift_bits  = bottom % 8;
 		
-		SafeVector!ubyte offset(BS);
+		Secure_Vector!ubyte offset(BS);
 		for (size_t i = 0; i != BS; ++i)
 		{
 			offset[i]  = (m_stretch[i+shift_bytes] << shift_bits);
@@ -164,11 +165,11 @@ private:
 
 
 	size_t m_tag_size = 0;
-	SafeVector!ubyte m_last_nonce;
-	SafeVector!ubyte m_stretch;
+	Secure_Vector!ubyte m_last_nonce;
+	Secure_Vector!ubyte m_stretch;
 };
 
-class OCB_Encryption : OCB_Mode
+final class OCB_Encryption : OCB_Mode
 {
 public:
 	/**
@@ -185,7 +186,7 @@ public:
 
 	override size_t minimum_final_size() const { return 0; }
 
-	override void update(SafeVector!ubyte buffer, size_t offset = 0)
+	override void update(Secure_Vector!ubyte buffer, size_t offset = 0)
 	{
 		assert(buffer.length >= offset, "Offset is sane");
 		const size_t sz = buffer.length - offset;
@@ -197,7 +198,7 @@ public:
 	}
 
 
-	override void finish(SafeVector!ubyte buffer, size_t offset = 0)
+	override void finish(Secure_Vector!ubyte buffer, size_t offset = 0)
 	{
 		assert(buffer.length >= offset, "Offset is sane");
 		const size_t sz = buffer.length - offset;
@@ -220,20 +221,20 @@ public:
 				
 				m_offset ^= m_L.star(); // Offset_*
 				
-				SafeVector!ubyte buf(BS);
+				Secure_Vector!ubyte buf(BS);
 				m_cipher.encrypt(m_offset, buf);
 				xor_buf(&remainder[0], &buf[0], remainder_bytes);
 			}
 		}
 		
-		SafeVector!ubyte checksum(BS);
+		Secure_Vector!ubyte checksum(BS);
 		
 		// fold checksum
 		for (size_t i = 0; i != m_checksum.length; ++i)
 			checksum[i % checksum.length] ^= m_checksum[i];
 		
 		// now compute the tag
-		SafeVector!ubyte mac = m_offset;
+		Secure_Vector!ubyte mac = m_offset;
 		mac ^= checksum;
 		mac ^= m_L.dollar();
 		
@@ -275,7 +276,7 @@ private:
 	}
 };
 
-class OCB_Decryption : OCB_Mode
+final class OCB_Decryption : OCB_Mode
 {
 public:
 	/**
@@ -295,7 +296,7 @@ public:
 
 	override size_t minimum_final_size() const { return tag_size(); }
 
-	override void update(SafeVector!ubyte buffer, size_t offset)
+	override void update(Secure_Vector!ubyte buffer, size_t offset)
 	{
 		assert(buffer.length >= offset, "Offset is sane");
 		const size_t sz = buffer.length - offset;
@@ -306,7 +307,7 @@ public:
 		decrypt(buf, sz / BS);
 	}
 
-	override void finish(SafeVector!ubyte buffer, size_t offset = 0)
+	override void finish(Secure_Vector!ubyte buffer, size_t offset = 0)
 	{
 		assert(buffer.length >= offset, "Offset is sane");
 		const size_t sz = buffer.length - offset;
@@ -331,7 +332,7 @@ public:
 				
 				m_offset ^= m_L.star(); // Offset_*
 				
-				SafeVector!ubyte pad(BS);
+				Secure_Vector!ubyte pad(BS);
 				m_cipher.encrypt(m_offset, pad); // P_*
 				
 				xor_buf(&remainder[0], &pad[0], final_bytes);
@@ -341,14 +342,14 @@ public:
 			}
 		}
 		
-		SafeVector!ubyte checksum(BS);
+		Secure_Vector!ubyte checksum(BS);
 		
 		// fold checksum
 		for (size_t i = 0; i != m_checksum.length; ++i)
 			checksum[i % checksum.length] ^= m_checksum[i];
 		
 		// compute the mac
-		SafeVector!ubyte mac = m_offset;
+		Secure_Vector!ubyte mac = m_offset;
 		mac ^= checksum;
 		mac ^= m_L.dollar();
 		
@@ -408,7 +409,7 @@ private:
 const size_t BS = 16; // intrinsic to OCB definition
 
 // Has to be in Botan namespace so unique_ptr can reference it
-class L_computer
+final class L_computer
 {
 public:
 	this(in BlockCipher cipher)
@@ -419,13 +420,13 @@ public:
 		m_L.push_back(poly_double(dollar()));
 	}
 	
-	const SafeVector!ubyte star() const { return m_L_star; }
+	const Secure_Vector!ubyte star() const { return m_L_star; }
 	
-	const SafeVector!ubyte dollar() const { return m_L_dollar; }
+	const Secure_Vector!ubyte dollar() const { return m_L_dollar; }
 	
-	const SafeVector!ubyte opCall(size_t i) { return get(i); }
+	const Secure_Vector!ubyte opCall(size_t i) { return get(i); }
 	
-	const SafeVector!ubyte compute_offsets(SafeVector!ubyte offset,
+	const Secure_Vector!ubyte compute_offsets(Secure_Vector!ubyte offset,
 	                                    size_t block_index,
 	                                    size_t blocks)
 	{
@@ -441,7 +442,7 @@ public:
 	}
 	
 private:
-	const SafeVector!ubyte get(size_t i)
+	const Secure_Vector!ubyte get(size_t i)
 	{
 		while(m_L.length <= i)
 			m_L.push_back(poly_double(m_L.back()));
@@ -449,27 +450,27 @@ private:
 		return m_L.at(i);
 	}
 	
-	SafeVector!ubyte poly_double(in SafeVector!ubyte input) const
+	Secure_Vector!ubyte poly_double(in Secure_Vector!ubyte input) const
 	{
 		return CMAC.poly_double(input);
 	}
 	
-	SafeVector!ubyte m_L_dollar, m_L_star;
-	Vector!( SafeVector!ubyte ) m_L;
-	SafeVector!ubyte m_offset_buf;
+	Secure_Vector!ubyte m_L_dollar, m_L_star;
+	Vector!( Secure_Vector!ubyte ) m_L;
+	Secure_Vector!ubyte m_offset_buf;
 };
 
 /*
 * OCB's HASH
 */
-SafeVector!ubyte ocb_hash(in L_computer L,
+Secure_Vector!ubyte ocb_hash(in L_computer L,
                           const BlockCipher cipher,
                           in ubyte* ad, size_t ad_len)
 {
-	SafeVector!ubyte sum(BS);
-	SafeVector!ubyte offset(BS);
+	Secure_Vector!ubyte sum = Secure_Vector!ubyte(BS);
+	Secure_Vector!ubyte offset = Secure_Vector!ubyte(BS);
 	
-	SafeVector!ubyte buf(BS);
+	Secure_Vector!ubyte buf = Secure_Vector!ubyte(BS);
 	
 	const size_t ad_blocks = (ad_len / BS);
 	const size_t ad_remainder = (ad_len % BS);

@@ -14,7 +14,7 @@ import botan.utils.rotate;
 /**
 * SAFER-SK
 */
-class SAFER_SK : Block_Cipher_Fixed_Params!(8, 16)
+final class SAFER_SK : Block_Cipher_Fixed_Params!(8, 16)
 {
 public:
 
@@ -100,7 +100,7 @@ public:
 	/*
 	* Return the name of this type
 	*/
-	@property string name() const
+	override @property string name() const
 	{
 		return "SAFER-SK(" ~ std.conv.to!string(rounds) ~ ")";
 	}
@@ -121,7 +121,7 @@ public:
 	{
 		rounds = r;
 		if (rounds > 13 || rounds == 0)
-			throw new Invalid_Argument(name() ~ ": Invalid number of rounds");
+			throw new Invalid_Argument(name ~ ": Invalid number of rounds");
 	}
 
 private:
@@ -172,7 +172,7 @@ private:
 		
 		EK.resize(16 * rounds + 8);
 		
-		SafeVector!ubyte KB = SafeVector!ubyte(18);
+		Secure_Vector!ubyte KB = Secure_Vector!ubyte(18);
 		
 		for (size_t i = 0; i != 8; ++i)
 		{
@@ -191,19 +191,10 @@ private:
 
 
 	size_t rounds;
-	SafeVector!ubyte EK;
+	Secure_Vector!ubyte EK;
 };
 
-
-
-
-
-
-
-
-
-
-package:
+private:
 
 immutable ubyte[256] EXP = [
 	0x01, 0x2D, 0xE2, 0x93, 0xBE, 0x45, 0x15, 0xAE, 0x78, 0x03, 0x87, 0xA4,

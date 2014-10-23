@@ -238,9 +238,9 @@ X509_Certificate create_self_signed_cert(in X509_Cert_Options opts,
                                          in string hash_fn,
                                          RandomNumberGenerator rng)
 {
-	AlgorithmIdentifier sig_algo;
+	Algorithm_Identifier sig_algo;
 	X509_DN subject_dn;
-	AlternativeName subject_alt;
+	Alternative_Name subject_alt;
 	
 	opts.sanity_check();
 	
@@ -289,9 +289,9 @@ PKCS10_Request create_cert_req(in X509_Cert_Options opts,
                                in string hash_fn,
                                RandomNumberGenerator rng)
 {
-	AlgorithmIdentifier sig_algo;
+	Algorithm_Identifier sig_algo;
 	X509_DN subject_dn;
-	AlternativeName subject_alt;
+	Alternative_Name subject_alt;
 	
 	opts.sanity_check();
 	
@@ -358,7 +358,7 @@ PKCS10_Request create_cert_req(in X509_Cert_Options opts,
 * Load information from the X509_Cert_Options
 */
 private void load_info(in X509_Cert_Options opts, ref X509_DN subject_dn,
-               ref AlternativeName subject_alt)
+               			ref Alternative_Name subject_alt)
 {
 	subject_dn.add_attribute("X520.CommonName", opts.common_name);
 	subject_dn.add_attribute("X520.Country", opts.country);
@@ -367,7 +367,7 @@ private void load_info(in X509_Cert_Options opts, ref X509_DN subject_dn,
 	subject_dn.add_attribute("X520.Organization", opts.organization);
 	subject_dn.add_attribute("X520.OrganizationalUnit", opts.org_unit);
 	subject_dn.add_attribute("X520.SerialNumber", opts.serial_number);
-	subject_alt = AlternativeName(opts.email, opts.uri, opts.dns, opts.ip);
+	subject_alt = Alternative_Name(opts.email, opts.uri, opts.dns, opts.ip);
 	subject_alt.add_othername(oids.lookup("PKIX.XMPPAddr"),
 	                          opts.xmpp, ASN1_Tag.UTF8_STRING);
 }

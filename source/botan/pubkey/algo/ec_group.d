@@ -9,6 +9,8 @@
 module botan.pubkey.algo.ec_group;
 
 import botan.math.ec_gfp.curve_gfp;
+import botan.math.ec_gfp.point_gfp;
+import botan.math.bigint.bigint;
 import botan.asn1.asn1_oid;
 import botan.asn1.ber_dec;
 import botan.asn1.der_enc;
@@ -76,7 +78,7 @@ public:
 			
 			BER_Decoder(ber_data)
 				.start_cons(ASN1_Tag.SEQUENCE)
-					.decode_and_check<size_t>(1, "Unknown ECC param version code")
+					.decode_and_check!size_t(1, "Unknown ECC param version code")
 					.start_cons(ASN1_Tag.SEQUENCE)
 					.decode_and_check(OID("1.2.840.10045.1.1"),
 					                  "Only prime ECC fields supported")

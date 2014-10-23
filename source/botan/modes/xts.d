@@ -18,56 +18,56 @@ import botan.utils.rounding;
 class XTS_Mode : Cipher_Mode
 {
 public:
-	override @property string name() const
+	final override @property string name() const
 	{
 		return cipher().name ~ "/XTS";
 	}
 
-	override SafeVector!ubyte start(in ubyte* nonce, size_t nonce_len)
+	final override Secure_Vector!ubyte start(in ubyte* nonce, size_t nonce_len)
 	{
 		if (!valid_nonce_length(nonce_len))
-			throw new Invalid_IV_Length(name(), nonce_len);
+			throw new Invalid_IV_Length(name, nonce_len);
 		
 		copy_mem(&m_tweak[0], nonce, nonce_len);
 		m_tweak_cipher.encrypt(&m_tweak[0]);
 		
 		update_tweak(0);
 		
-		return SafeVector!ubyte();
+		return Secure_Vector!ubyte();
 	}
 
-	override size_t update_granularity() const
+	final override size_t update_granularity() const
 	{
 		return cipher().parallel_bytes();
 	}
 
-	override size_t minimum_final_size() const
+	final override size_t minimum_final_size() const
 	{
 		return cipher().block_size + 1;
 	}
 
-	override Key_Length_Specification key_spec() const
+	final override Key_Length_Specification key_spec() const
 	{
 		return cipher().key_spec().multiple(2);
 	}
 
-	override size_t default_nonce_length() const
+	final override size_t default_nonce_length() const
 	{
 		return cipher().block_size;
 	}
 
-	override bool valid_nonce_length(size_t n) const
+	final override bool valid_nonce_length(size_t n) const
 	{
 		return cipher().block_size == n;
 	}
 
-	override void clear()
+	final override void clear()
 	{
 		m_cipher.clear();
 		m_tweak_cipher.clear();
 		zeroise(m_tweak);
 	}
-package:
+protected:
 	this(BlockCipher cipher) 
 	{
 		m_cipher = cipher;
@@ -78,11 +78,11 @@ package:
 		m_tweak.resize(update_granularity());
 	}
 
-	const ubyte* tweak() const { return &m_tweak[0]; }
+	final const ubyte* tweak() const { return &m_tweak[0]; }
 
-	const BlockCipher cipher() const { return *m_cipher; }
+	final const BlockCipher cipher() const { return *m_cipher; }
 
-	void update_tweak(size_t which)
+	final void update_tweak(size_t which)
 	{
 		const size_t BS = m_tweak_cipher.block_size;
 		
@@ -96,25 +96,25 @@ package:
 	}
 
 private:
-	override void key_schedule(in ubyte* key, size_t length)
+	final override void key_schedule(in ubyte* key, size_t length)
 	{
 		const size_t key_half = length / 2;
 		
 		if (length % 2 == 1 || !m_cipher.valid_keylength(key_half))
-			throw new Invalid_Key_Length(name(), length);
+			throw new Invalid_Key_Length(name, length);
 		
 		m_cipher.set_key(&key[0], key_half);
 		m_tweak_cipher.set_key(&key[key_half], key_half);
 	}
 
 	Unique!BlockCipher m_cipher, m_tweak_cipher;
-	SafeVector!ubyte m_tweak;
+	Secure_Vector!ubyte m_tweak;
 };
 
 /**
 * IEEE P1619 XTS Encryption
 */
-class XTS_Encryption : XTS_Mode
+final class XTS_Encryption : XTS_Mode
 {
 public:
 	this(BlockCipher cipher) 
@@ -122,7 +122,7 @@ public:
 		super(cipher);
 	}
 
-	override void update(SafeVector!ubyte buffer, size_t offset = 0)
+	override void update(Secure_Vector!ubyte buffer, size_t offset = 0)
 	{
 		assert(buffer.length >= offset, "Offset is sane");
 		const size_t sz = buffer.length - offset;
@@ -151,7 +151,7 @@ public:
 		}
 	}
 
-	override void finish(SafeVector!ubyte buffer, size_t offset = 0)
+	override void finish(Secure_Vector!ubyte buffer, size_t offset = 0)
 	{
 		assert(buffer.length >= offset, "Offset is sane");
 		const size_t sz = buffer.length - offset;
@@ -172,7 +172,7 @@ public:
 			const size_t final_bytes = sz - full_blocks;
 			assert(final_bytes > BS && final_bytes < 2*BS, "Left over size in expected range");
 			
-			SafeVector!ubyte last(buf + full_blocks, buf + full_blocks + final_bytes);
+			Secure_Vector!ubyte last(buf + full_blocks, buf + full_blocks + final_bytes);
 			buffer.resize(full_blocks + offset);
 			update(buffer, offset);
 			
@@ -204,7 +204,7 @@ public:
 /**
 * IEEE P1619 XTS Decryption
 */
-class XTS_Decryption : XTS_Mode
+final class XTS_Decryption : XTS_Mode
 {
 public:
 	this(BlockCipher cipher)
@@ -212,7 +212,7 @@ public:
 		super(cipher);
 	}
 
-	override void update(SafeVector!ubyte buffer, size_t offset = 0)
+	override void update(Secure_Vector!ubyte buffer, size_t offset = 0)
 	{
 		assert(buffer.length >= offset, "Offset is sane");
 		const size_t sz = buffer.length - offset;
@@ -241,7 +241,7 @@ public:
 		}
 	}
 
-	override void finish(SafeVector!ubyte buffer, size_t offset = 0)
+	override void finish(Secure_Vector!ubyte buffer, size_t offset = 0)
 	{
 		assert(buffer.length >= offset, "Offset is sane");
 		const size_t sz = buffer.length - offset;
@@ -262,7 +262,7 @@ public:
 			const size_t final_bytes = sz - full_blocks;
 			assert(final_bytes > BS && final_bytes < 2*BS, "Left over size in expected range");
 			
-			SafeVector!ubyte last(buf + full_blocks, buf + full_blocks + final_bytes);
+			Secure_Vector!ubyte last(buf + full_blocks, buf + full_blocks + final_bytes);
 			buffer.resize(full_blocks + offset);
 			update(buffer, offset);
 			
@@ -295,7 +295,7 @@ public:
 
 private:
 
-void poly_double_128(ubyte* output, in ubyte* input)
+void poly_double_128(ubyte* output, in ubyte* input) pure
 {
 	ulong X0 = load_le!ulong(input, 0);
 	ulong X1 = load_le!ulong(input, 1);
@@ -311,7 +311,7 @@ void poly_double_128(ubyte* output, in ubyte* input)
 	store_le(output, X0, X1);
 }
 
-void poly_double_64(ubyte* output, in ubyte* input)
+void poly_double_64(ubyte* output, in ubyte* input) pure
 {
 	ulong X = load_le!ulong(input, 0);
 	const bool carry = (X >> 63);
@@ -321,7 +321,7 @@ void poly_double_64(ubyte* output, in ubyte* input)
 	store_le(X, output);
 }
 
-void poly_double(ubyte* output, in ubyte* input)
+void poly_double(ubyte* output, in ubyte* input) pure
 {
 	if (size == 8)
 		poly_double_64(output, input);

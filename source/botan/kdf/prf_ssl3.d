@@ -20,7 +20,7 @@ public:
 	/*
 	* SSL3 PRF
 	*/
-	SafeVector!ubyte derive(size_t key_len,
+	Secure_Vector!ubyte derive(size_t key_len,
 	                        in ubyte* secret, size_t secret_len,
 	                        in ubyte* seed, size_t seed_len) const
 	{
@@ -71,11 +71,11 @@ OctetString next_hash(size_t where, size_t want,
 		sha1.update(cast(ubyte)(ASCII_A_CHAR + where));
 	sha1.update(secret, secret_len);
 	sha1.update(seed, seed_len);
-	SafeVector!ubyte sha1_hash = sha1.flush();
+	Secure_Vector!ubyte sha1_hash = sha1.flush();
 	
 	md5.update(secret, secret_len);
 	md5.update(sha1_hash);
-	SafeVector!ubyte md5_hash = md5.flush();
+	Secure_Vector!ubyte md5_hash = md5.flush();
 	
 	return OctetString(&md5_hash[0], want);
 }

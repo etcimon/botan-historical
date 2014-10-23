@@ -14,10 +14,12 @@ import botan.asn1.asn1_obj;
 import botan.asn1.asn1_oid;
 import botan.utils.types;
 
+alias Attribute = FreeListRef!Attribute_Impl;
+
 /**
 * Attribute
 */
-class Attribute : ASN1_Object
+final class Attribute_Impl : ASN1_Object
 {
 public:
 	/*

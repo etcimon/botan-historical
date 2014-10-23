@@ -82,7 +82,7 @@ Vector!ubyte get_concatenation() const
 	const auto sv_r = BigInt.encode_1363(m_r, enc_len);
 	const auto sv_s = BigInt.encode_1363(m_s, enc_len);
 	
-	SafeVector!ubyte result(sv_r);
+	Secure_Vector!ubyte result(sv_r);
 	result += sv_s;
 	return unlock(result);
 }

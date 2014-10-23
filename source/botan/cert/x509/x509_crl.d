@@ -10,17 +10,20 @@ import botan.cert.x509.x509_obj;
 import botan.cert.x509.crl_ent;
 import botan.cert.x509.x509_ext;
 import botan.cert.x509.x509cert;
+import botan.asn1.x509_dn;
 import botan.asn1.ber_dec;
 import botan.utils.parsing;
 import botan.math.bigint.bigint;
 import botan.asn1.oid_lookup.oids;
-
+import botan.asn1.asn1_time;
 import botan.utils.types;
+
+alias X509_CRL = FreeListRef!X509_CRL_Impl;
 
 /**
 * This class represents X.509 Certificate Revocation Lists (CRLs).
 */
-class X509_CRL : X509_Object
+final class X509_CRL_Impl : X509_Object
 {
 public:
 	/**
@@ -75,7 +78,7 @@ public:
 	* Get the entries of this CRL in the form of a vector.
 	* @return vector containing the entries of this CRL.
 	*/
-	Vector!( CRL_Entry ) get_revoked() const
+	Vector!CRL_Entry get_revoked() const
 	{
 		return revoked;
 	}
@@ -183,7 +186,7 @@ private:
 			throw new X509_CRL_Error("Unknown X.509 CRL version " ~
 			                         std.conv.to!string(_version+1));
 		
-		AlgorithmIdentifier sig_algo_inner;
+		Algorithm_Identifier sig_algo_inner;
 		tbs_crl.decode(sig_algo_inner);
 		
 		if (sig_algo != sig_algo_inner)
@@ -200,7 +203,7 @@ private:
 		
 		BER_Object next = tbs_crl.get_next_object();
 		
-		if (next.type_tag == ASN1_Tag.SEQUENCE && next.class_tag == CONSTRUCTED)
+		if (next.type_tag == ASN1_Tag.SEQUENCE && next.class_tag == ASN1_Tag.CONSTRUCTED)
 		{
 			BER_Decoder cert_list = BER_Decoder(next.value);
 			
@@ -235,6 +238,6 @@ private:
 
 
 	bool throw_on_unknown_critical;
-	Vector!( CRL_Entry ) revoked;
+	Vector!CRL_Entry revoked;
 	Data_Store info;
 };

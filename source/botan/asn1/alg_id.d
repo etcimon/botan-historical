@@ -14,19 +14,19 @@ import botan.asn1.ber_dec;
 import botan.asn1.oid_lookup.oids;
 import string;
 
-alias AlgorithmIdentifier = FreeListRef!AlgorithmIdentifierImpl;
+alias Algorithm_Identifier = FreeListRef!Algorithm_Identifier_Impl;
 
 /**
 * Algorithm Identifier
 */
-class AlgorithmIdentifierImpl : ASN1_Object
+final class Algorithm_Identifier_Impl : ASN1_Object
 {
 public:
 	typedef bool Encoding_Option;
 	enum : Encoding_Option { USE_NULL_PARAM };
 
 	/*
-	* DER encode an AlgorithmIdentifier
+	* DER encode an Algorithm_Identifier
 	*/
 	void encode_into(DER_Encoder codec) const
 	{
@@ -37,7 +37,7 @@ public:
 	}
 
 	/*
-	* Decode a BER encoded AlgorithmIdentifier
+	* Decode a BER encoded Algorithm_Identifier
 	*/
 	void decode_from(BER_Decoder codec)
 	{
@@ -50,7 +50,7 @@ public:
 	this() {}
 
 	/*
-	* Create an AlgorithmIdentifier
+	* Create an Algorithm_Identifier
 	*/
 	this(in OID, Encoding_Option) {
 		immutable ubyte[2] DER_NULL = [ 0x05, 0x00 ];
@@ -62,7 +62,7 @@ public:
 	}
 
 	/*
-	* Create an AlgorithmIdentifier
+	* Create an Algorithm_Identifier
 	*/
 	this(in string, Encoding_Option) {
 		immutable ubyte[2] DER_NULL = [ 0x05, 0x00 ];
@@ -74,7 +74,7 @@ public:
 	}
 	
 	/*
-	* Create an AlgorithmIdentifier
+	* Create an Algorithm_Identifier
 	*/
 	this(in OID alg_id, in Vector!ubyte param)
 	{
@@ -83,7 +83,7 @@ public:
 	}
 
 	/*
-	* Create an AlgorithmIdentifier
+	* Create an Algorithm_Identifier
 	*/
 	this(in string, in Vector!ubyte) {
 		oid = oids.lookup(alg_id);
@@ -91,9 +91,9 @@ public:
 	}
 
 	/*
-	* Compare two AlgorithmIdentifiers
+	* Compare two Algorithm_Identifiers
 	*/
-	bool opEquals(const ref AlgorithmIdentifier a2)
+	bool opEquals(const ref Algorithm_Identifier a2)
 	{
 		if (oid != a2.oid)
 			return false;
@@ -103,9 +103,9 @@ public:
 	}
 
 	/*
-	* Compare two AlgorithmIdentifiers
+	* Compare two Algorithm_Identifiers
 	*/
-	bool opCmp(const ref AlgorithmIdentifier a2)
+	bool opCmp(const ref Algorithm_Identifier a2)
 	{
 		return !(this == a2);
 	}

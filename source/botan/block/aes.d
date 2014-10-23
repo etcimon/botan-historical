@@ -12,7 +12,7 @@ import botan.utils.rotate;
 /**
 * AES-128
 */
-class AES_128 : Block_Cipher_Fixed_Params!(16, 16)
+final class AES_128 : Block_Cipher_Fixed_Params!(16, 16)
 {
 public:
 	void encrypt_n(ubyte* input, ubyte* output, size_t blocks) const
@@ -41,14 +41,14 @@ private:
 		aes_key_schedule(key, length, EK, DK, ME, MD);
 	}
 
-	SafeVector!uint EK, DK;
-	SafeVector!ubyte ME, MD;
+	Secure_Vector!uint EK, DK;
+	Secure_Vector!ubyte ME, MD;
 };
 
 /**
 * AES-192
 */
-class AES_192 : Block_Cipher_Fixed_Params!(16, 24)
+final class AES_192 : Block_Cipher_Fixed_Params!(16, 24)
 {
 public:
 	void encrypt_n(ubyte* input, ubyte* output, size_t blocks) const
@@ -77,14 +77,14 @@ private:
 		aes_key_schedule(key, length, EK, DK, ME, MD);
 	}
 
-	SafeVector!uint EK, DK;
-	SafeVector!ubyte ME, MD;
+	Secure_Vector!uint EK, DK;
+	Secure_Vector!ubyte ME, MD;
 };
 
 /**
 * AES-256
 */
-class AES_256 : Block_Cipher_Fixed_Params!(16, 32)
+final class AES_256 : Block_Cipher_Fixed_Params!(16, 32)
 {
 public:
 	void encrypt_n(ubyte* input, ubyte* output, size_t blocks) const
@@ -113,8 +113,8 @@ private:
 		aes_key_schedule(key, length, EK, DK, ME, MD);
 	}
 
-	SafeVector!uint EK, DK;
-	SafeVector!ubyte ME, MD;
+	Secure_Vector!uint EK, DK;
+	Secure_Vector!ubyte ME, MD;
 };
 
 package :
@@ -518,8 +518,8 @@ immutable uint[1024] TD = [
 */
 void aes_encrypt_n(ubyte* input, ubyte* output,
                    size_t blocks,
-                   const ref SafeVector!uint EK,
-                   in SafeVector!ubyte ME)
+                   const ref Secure_Vector!uint EK,
+                   in Secure_Vector!ubyte ME) pure
 {
 	assert(EK.length && ME.length == 16, "Key was set");
 	
@@ -631,8 +631,8 @@ void aes_encrypt_n(ubyte* input, ubyte* output,
 * AES Decryption
 */
 void aes_decrypt_n(ubyte* input, ubyte* output, size_t blocks,
-                   const ref SafeVector!uint DK,
-                   in SafeVector!ubyte MD)
+                   const ref Secure_Vector!uint DK,
+                   in Secure_Vector!ubyte MD) pure
 {
 	assert(DK.length && MD.length == 16, "Key was set");
 	
@@ -714,10 +714,10 @@ void aes_decrypt_n(ubyte* input, ubyte* output, size_t blocks,
 }
 
 void aes_key_schedule(in ubyte* key, size_t length,
-                      ref SafeVector!uint EK,
-                      ref SafeVector!uint DK,
-                      SafeVector!ubyte ME,
-                      SafeVector!ubyte MD)
+                      ref Secure_Vector!uint EK,
+                      ref Secure_Vector!uint DK,
+                      Secure_Vector!ubyte ME,
+                      Secure_Vector!ubyte MD) pure
 {
 	immutable uint[10] RC = [
 		0x01000000, 0x02000000, 0x04000000, 0x08000000, 0x10000000,
@@ -725,7 +725,7 @@ void aes_key_schedule(in ubyte* key, size_t length,
 	
 	const size_t rounds = (length / 4) + 6;
 	
-	SafeVector!uint XEK(length + 32), XDK(length + 32);
+	Secure_Vector!uint XEK(length + 32), XDK(length + 32);
 	
 	const size_t X = length / 4;
 	for (size_t i = 0; i != X; ++i)

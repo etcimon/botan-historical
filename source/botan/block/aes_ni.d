@@ -13,10 +13,10 @@ import botan.utils.simd.xmmintrin;
 /**
 * AES-128 using AES-NI
 */
-class AES_128_NI : Block_Cipher_Fixed_Params!(16, 16)
+final class AES_128_NI : Block_Cipher_Fixed_Params!(16, 16)
 {
 public:
-	size_t parallelism() const { return 4; }
+	override @property size_t parallelism() const { return 4; }
 
 	/*
 	* AES-128 Encryption
@@ -236,16 +236,16 @@ private:
 	}
 
 
-	SafeVector!uint EK, DK;
+	Secure_Vector!uint EK, DK;
 };
 
 /**
 * AES-192 using AES-NI
 */
-class AES_192_NI : Block_Cipher_Fixed_Params!(16, 24)
+final class AES_192_NI : Block_Cipher_Fixed_Params!(16, 24)
 {
 public:
-	size_t parallelism() const { return 4; }
+	override @property size_t parallelism() const { return 4; }
 
 	/*
 	* AES-192 Encryption
@@ -467,16 +467,16 @@ private:
 	}
 
 
-	SafeVector!uint EK, DK;
+	Secure_Vector!uint EK, DK;
 };
 
 /**
 * AES-256 using AES-NI
 */
-class AES_256_NI : Block_Cipher_Fixed_Params!(16, 32)
+final class AES_256_NI : Block_Cipher_Fixed_Params!(16, 32)
 {
 public:
-	size_t parallelism() const { return 4; }
+	override @property size_t parallelism() const { return 4; }
 
 	/*
 	* AES-256 Encryption
@@ -734,7 +734,7 @@ private:
 	}
 
 
-	SafeVector!uint EK, DK;
+	Secure_Vector!uint EK, DK;
 };
 
 __m128i aes_128_key_expansion(__m128i key, __m128i key_with_rcon)

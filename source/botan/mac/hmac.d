@@ -94,7 +94,7 @@ private:
 		
 		if (length > m_hash.hash_block_size)
 		{
-			SafeVector!ubyte hmac_key = m_hash.process(key, length);
+			Secure_Vector!ubyte hmac_key = m_hash.process(key, length);
 			xor_buf(m_ikey, hmac_key, hmac_key.length);
 			xor_buf(m_okey, hmac_key, hmac_key.length);
 		}
@@ -108,5 +108,5 @@ private:
 	}
 
 	Unique!HashFunction m_hash;
-	SafeVector!ubyte m_ikey, m_okey;
+	Secure_Vector!ubyte m_ikey, m_okey;
 };

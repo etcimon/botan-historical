@@ -7,7 +7,7 @@
 module botan.utils.xor_buf;
 
 import botan.utils.types;
-import botan.utils.types;
+pure:
 /**
 * XOR arrays. Postcondition output[i] = input[i] ^ output[i] forall i = 0...length
 * @param output the input/output buffer

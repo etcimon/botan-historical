@@ -21,16 +21,16 @@ import botan.utils.loadstor;
 import botan.utils.types;
 import map;
 
-alias AlternativeName = FreeListRef!AlternativeNameImpl;
+alias Alternative_Name = FreeListRef!Alternative_Name_Impl;
 
 /**
 * Alternative Name
 */
-class AlternativeNameImpl : ASN1_Object
+final class Alternative_Name_Impl : ASN1_Object
 {
 public:
 	/*
-	* DER encode an AlternativeName extension
+	* DER encode an Alternative_Name extension
 	*/
 	void encode_into(DER_Encoder der) const
 	{
@@ -55,7 +55,7 @@ public:
 	}
 
 	/*
-	* Decode a BER encoded AlternativeName
+	* Decode a BER encoded Alternative_Name
 	*/
 	void decode_from(BER_Decoder source)
 	{
@@ -65,7 +65,7 @@ public:
 		{
 			BER_Object obj = names.get_next_object();
 			if ((obj.class_tag != ASN1_Tag.CONTEXT_SPECIFIC) &&
-			    (obj.class_tag != (ASN1_Tag.CONTEXT_SPECIFIC | CONSTRUCTED)))
+			    (obj.class_tag != (ASN1_Tag.CONTEXT_SPECIFIC | ASN1_Tag.CONSTRUCTED)))
 				continue;
 			
 			const ASN1_Tag tag = obj.type_tag;
@@ -83,7 +83,7 @@ public:
 					
 					if (othername_value_outer.type_tag != ASN1_Tag(0) ||
 					    othername_value_outer.class_tag !=
-					    (ASN1_Tag.CONTEXT_SPECIFIC | CONSTRUCTED)
+					    (ASN1_Tag.CONTEXT_SPECIFIC | ASN1_Tag.CONSTRUCTED)
 					    )
 						throw new Decoding_Error("Invalid tags on otherName value");
 					
@@ -190,7 +190,7 @@ public:
 	}
 
 	/*
-	* Create an AlternativeName
+	* Create an Alternative_Name
 	*/
 	this(in string email_addr = "",
 	     in string uri = "",
@@ -226,7 +226,7 @@ bool is_string_type(ASN1_Tag tag)
 
 
 /*
-* DER encode an AlternativeName entry
+* DER encode an Alternative_Name entry
 */
 void encode_entries(DER_Encoder encoder = DER_Encoder(),
                     const ref MultiMap!(string, string) attr,

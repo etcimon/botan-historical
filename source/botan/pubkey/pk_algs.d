@@ -5,6 +5,7 @@
 * Distributed under the terms of the botan license.
 */
 module botan.pubkey.pk_algs;
+
 import botan.pubkey.pk_keys;
 import botan.asn1.oid_lookup.oids;
 
@@ -13,13 +14,13 @@ static if (BOTAN_HAS_DSA)  				import botan.pubkey.algo.dsa;
 static if (BOTAN_HAS_DIFFIE_HELLMAN)  	import botan.pubkey.algo.dh;
 static if (BOTAN_HAS_ECDSA)  			import botan.pubkey.algo.ecdsa;
 static if (BOTAN_HAS_GOST_34_10_2001) 	import botan.pubkey.algo.gost_3410;
-static if (BOTAN_HAS_NYBERG_RUEPPEL)  	import  botan.pubkey.algo.nr;
+static if (BOTAN_HAS_NYBERG_RUEPPEL)  	import botan.pubkey.algo.nr;
 static if (BOTAN_HAS_RW)  				import botan.pubkey.algo.rw;
 static if (BOTAN_HAS_ELGAMAL)  			import botan.pubkey.algo.elgamal;
 static if (BOTAN_HAS_ECDH) 				import botan.pubkey.algo.ecdh;
 
-Public_Key make_public_key(in AlgorithmIdentifier alg_id,
-                           in SafeVector!ubyte key_bits)
+Public_Key make_public_key(in Algorithm_Identifier alg_id,
+                           in Secure_Vector!ubyte key_bits)
 {
 	const string alg_name = oids.lookup(alg_id.oid);
 	if (alg_name == "")
@@ -73,8 +74,8 @@ Public_Key make_public_key(in AlgorithmIdentifier alg_id,
 	return null;
 }
 
-Private_Key make_Private_Key(in AlgorithmIdentifier alg_id,
-                             in SafeVector!ubyte key_bits,
+Private_Key make_Private_Key(in Algorithm_Identifier alg_id,
+                             in Secure_Vector!ubyte key_bits,
                              RandomNumberGenerator rng)
 {
 	const string alg_name = oids.lookup(alg_id.oid);

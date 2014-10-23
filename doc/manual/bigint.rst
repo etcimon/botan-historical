@@ -13,7 +13,7 @@ Encoding Functions
 These transform the normal representation of a ``BigInt`` into some
 other form, such as a decimal string:
 
-.. cpp:function:: SafeVector<byte> BigInt::encode(const BigInt& n, Encoding enc = Binary)
+.. cpp:function:: Secure_Vector<byte> BigInt::encode(const BigInt& n, Encoding enc = Binary)
 
   This function encodes the BigInt n into a memory
   vector. ``Encoding`` is an enum that has values ``Binary``,
@@ -27,7 +27,7 @@ These functions are static member functions, so they would be called
 like this::
 
   BigInt n1 = ...; // some number
-  SafeVector<byte> n1_encoded = BigInt::encode(n1);
+  Secure_Vector<byte> n1_encoded = BigInt::encode(n1);
   BigInt n2 = BigInt::decode(n1_encoded);
   assert(n1 == n2);
 

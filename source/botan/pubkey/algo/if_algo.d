@@ -21,8 +21,8 @@ class IF_Scheme_PublicKey : Public_Key
 {
 public:
 
-	this(in AlgorithmIdentifier,
-	     in SafeVector!ubyte key_bits)
+	this(in Algorithm_Identifier,
+	     in Secure_Vector!ubyte key_bits)
 	{
 		BER_Decoder(key_bits)
 			.start_cons(ASN1_Tag.SEQUENCE)
@@ -57,10 +57,10 @@ public:
 		return true;
 	}
 
-	AlgorithmIdentifier algorithm_identifier() const
+	Algorithm_Identifier algorithm_identifier() const
 	{
-		return AlgorithmIdentifier(get_oid(),
-		                           AlgorithmIdentifier.USE_NULL_PARAM);
+		return Algorithm_Identifier(get_oid(),
+		                           Algorithm_Identifier.USE_NULL_PARAM);
 	}
 
 	Vector!ubyte x509_subject_public_key() const
@@ -90,7 +90,7 @@ public:
 		return dl_work_factor(n.bits());
 	}
 
-package:
+protected:
 	this() {}
 
 	BigInt n, e;
@@ -100,17 +100,17 @@ package:
 * This class represents public keys
 * of integer factorization based (IF) public key schemes.
 */
-class IF_Scheme_PrivateKey : IF_Scheme_PublicKey,
+final class IF_Scheme_PrivateKey : IF_Scheme_PublicKey,
 							 Private_Key
 {
 public:
 	this(RandomNumberGenerator rng,
-	     const AlgorithmIdentifier,
-	     in SafeVector!ubyte key_bits)
+	     const Algorithm_Identifier,
+	     in Secure_Vector!ubyte key_bits)
 	{
 		BER_Decoder(key_bits)
 			.start_cons(ASN1_Tag.SEQUENCE)
-				.decode_and_check<size_t>(0, "Unknown PKCS #1 key format version")
+				.decode_and_check!size_t(0, "Unknown PKCS #1 key format version")
 				.decode(n)
 				.decode(e)
 				.decode(d)
@@ -185,7 +185,7 @@ public:
 	const ref BigInt get_d1() const { return d1; }
 	const ref BigInt get_d2() const { return d2; }
 
-	SafeVector!ubyte  pkcs8_Private_Key() const
+	Secure_Vector!ubyte  pkcs8_Private_Key() const
 	{
 		return DER_Encoder()
 			.start_cons(ASN1_Tag.SEQUENCE)
@@ -202,7 +202,7 @@ public:
 				.get_contents();
 	}
 
-package:
+protected:
 	this() {}
 
 	BigInt d, p, q, d1, d2, c;

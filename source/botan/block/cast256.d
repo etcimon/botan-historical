@@ -164,7 +164,7 @@ private:
 		MK.resize(48);
 		RK.resize(48);
 		
-		SafeVector!uint K = SafeVector!uint(8);
+		Secure_Vector!uint K = Secure_Vector!uint(8);
 		for (size_t i = 0; i != length; ++i)
 			K[i/4] = (K[i/4] << 8) + key[i];
 		
@@ -201,8 +201,8 @@ private:
 		}
 	}
 
-	SafeVector!uint MK;
-	SafeVector!ubyte RK;
+	Secure_Vector!uint MK;
+	Secure_Vector!ubyte RK;
 };
 
 
@@ -211,7 +211,7 @@ private:
 /*
 * CAST-256 Round Type 1
 */
-void round1(ref uint output, uint input, uint mask, uint rot)
+void round1(ref uint output, uint input, uint mask, uint rot) pure
 {
 	uint temp = rotate_left(mask + input, rot);
 	output  ^= (CAST_SBOX1[get_byte(0, temp)] ^ CAST_SBOX2[get_byte(1, temp)]) -
@@ -221,7 +221,7 @@ void round1(ref uint output, uint input, uint mask, uint rot)
 /*
 * CAST-256 Round Type 2
 */
-void round2(ref uint output, uint input, uint mask, uint rot)
+void round2(ref uint output, uint input, uint mask, uint rot) pure
 {
 	uint temp = rotate_left(mask ^ input, rot);
 	output  ^= (CAST_SBOX1[get_byte(0, temp)]  - CAST_SBOX2[get_byte(1, temp)] +
@@ -231,7 +231,7 @@ void round2(ref uint output, uint input, uint mask, uint rot)
 /*
 * CAST-256 Round Type 3
 */
-void round3(ref uint output, uint input, uint mask, uint rot)
+void round3(ref uint output, uint input, uint mask, uint rot) pure
 {
 	uint temp = rotate_left(mask - input, rot);
 	output  ^= ((CAST_SBOX1[get_byte(0, temp)]  + CAST_SBOX2[get_byte(1, temp)]) ^

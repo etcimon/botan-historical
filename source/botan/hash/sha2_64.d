@@ -13,7 +13,7 @@ import botan.utils.rotate;
 /**
 * SHA-384
 */
-class SHA_384 : MDx_HashFunction
+final class SHA_384 : MDx_HashFunction
 {
 public:
 	@property string name() const { return "SHA-384"; }
@@ -60,13 +60,13 @@ private:
 			store_be(digest[i/8], output + i);
 	}
 
-	SafeVector!ulong digest;
+	Secure_Vector!ulong digest;
 };
 
 /**
 * SHA-512
 */
-class SHA_512 : MDx_HashFunction
+final class SHA_512 : MDx_HashFunction
 {
 public:
 	@property string name() const { return "SHA-512"; }
@@ -113,9 +113,11 @@ private:
 			store_be(digest[i/8], output + i);
 	}
 
-	SafeVector!ulong digest;
+	Secure_Vector!ulong digest;
 };
 
+private:
+pure:
 
 /*
 * SHA-{384,512} Rho Function
@@ -164,8 +166,8 @@ string SHA2_64_F(alias _A, alias _B, alias _C, alias _D, alias _E, alias _F, ali
 /*
 * SHA-{384,512} Compression Function
 */
-void compress(ref SafeVector!ulong digest,
-              in ubyte* input, size_t blocks)
+void compress(ref Secure_Vector!ulong digest,
+              in ubyte* input, size_t blocks) pure
 {
 	ulong A = digest[0], B = digest[1], C = digest[2],
 		D = digest[3], E = digest[4], F = digest[5],

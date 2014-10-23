@@ -26,7 +26,7 @@ public:
 		return check_signature(key, m_sig.DER_encode());
 	}
 
-package:
+protected:
 	ECDSA_Signature m_sig;
 
 	void init(DataSource input)

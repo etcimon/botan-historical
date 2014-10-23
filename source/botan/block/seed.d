@@ -11,7 +11,7 @@ import botan.utils.loadstor;
 /**
 * SEED, a Korean block cipher
 */
-class SEED : Block_Cipher_Fixed_Params!(16, 16)
+final class SEED : Block_Cipher_Fixed_Params!(16, 16)
 {
 public:
 	/*
@@ -98,7 +98,7 @@ public:
 		zap(K);
 	}
 
-	@property string name() const { return "SEED"; }
+	override @property string name() const { return "SEED"; }
 	BlockCipher clone() const { return new SEED; }
 private:
 
@@ -114,7 +114,7 @@ private:
 			0x779B99E3, 0xEF3733C6, 0xDE6E678D, 0xBCDCCF1B
 		];
 		
-		SafeVector!uint WK = SafeVector!uint(4);
+		Secure_Vector!uint WK = Secure_Vector!uint(4);
 		
 		for (size_t i = 0; i != 4; ++i)
 			WK[i] = load_be!uint(key, i);
@@ -335,5 +335,5 @@ private:
 
 	};
 
-	SafeVector!uint K;
+	Secure_Vector!uint K;
 };

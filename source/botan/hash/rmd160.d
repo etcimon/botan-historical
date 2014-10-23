@@ -13,10 +13,10 @@ import botan.utils.rotate;
 /**
 * RIPEMD-160
 */
-class RIPEMD_160 : MDx_HashFunction
+final class RIPEMD_160 : MDx_HashFunction
 {
 public:
-	@property string name() const { return "RIPEMD-160"; }
+	override @property string name() const { return "RIPEMD-160"; }
 	@property size_t output_length() const { return 20; }
 	HashFunction clone() const { return new RIPEMD_160; }
 
@@ -166,7 +166,7 @@ private:
 			store_le(digest[i/4], output + i);
 	}
 
-	SafeVector!uint M, digest;
+	Secure_Vector!uint M, digest;
 };
 
 private:
@@ -175,7 +175,7 @@ private:
 * RIPEMD-160 F1 Function
 */
 void F1(ref uint A, uint B, ref uint C, uint D, uint E,
-        uint msg, uint shift)
+        uint msg, uint shift) pure
 {
 	A += (B ^ C ^ D) + msg;
 	A  = rotate_left(A, shift) + E;
@@ -186,7 +186,7 @@ void F1(ref uint A, uint B, ref uint C, uint D, uint E,
 * RIPEMD-160 F2 Function
 */
 void F2(ref uint A, uint B, ref uint C, uint D, uint E,
-        uint msg, uint shift, uint magic)
+        uint msg, uint shift, uint magic) pure
 {
 	A += (D ^ (B & (C ^ D))) + msg + magic;
 	A  = rotate_left(A, shift) + E;
@@ -197,7 +197,7 @@ void F2(ref uint A, uint B, ref uint C, uint D, uint E,
 * RIPEMD-160 F3 Function
 */
 void F3(ref uint A, uint B, ref uint C, uint D, uint E,
-        uint msg, uint shift, uint magic)
+        uint msg, uint shift, uint magic) pure
 {
 	A += (D ^ (B | ~C)) + msg + magic;
 	A  = rotate_left(A, shift) + E;
@@ -208,7 +208,7 @@ void F3(ref uint A, uint B, ref uint C, uint D, uint E,
 * RIPEMD-160 F4 Function
 */
 void F4(ref uint A, uint B, ref uint C, uint D, uint E,
-        uint msg, uint shift, uint magic)
+        uint msg, uint shift, uint magic) pure
 {
 	A += (C ^ (D & (B ^ C))) + msg + magic;
 	A  = rotate_left(A, shift) + E;
@@ -219,7 +219,7 @@ void F4(ref uint A, uint B, ref uint C, uint D, uint E,
 * RIPEMD-160 F5 Function
 */
 void F5(ref uint A, uint B, ref uint C, uint D, uint E,
-        uint msg, uint shift, uint magic)
+        uint msg, uint shift, uint magic) pure
 {
 	A += (B ^ (C | ~D)) + msg + magic;
 	A  = rotate_left(A, shift) + E;

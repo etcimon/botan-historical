@@ -8,7 +8,7 @@ module botan.utils.dyn_load.dyn_load;
 import string;
 //todo : Mac OSX
 import botan.build;
-import stdexcept;
+import std.exception;
 
 version(linux){
 	import core.sys.linux.dlfcn;

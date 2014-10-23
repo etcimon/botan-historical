@@ -6,12 +6,17 @@
 */
 module botan.utils.datastor.datastor;
 
+import botan.utils.exceptn;
+import botan.utils.parsing;
+import botan.codec.hex;
+import botan.internal.stl_util;
 import botan.alloc.secmem;
 import functional;
 import utility;
 import string;
 import botan.utils.types;
 import map;
+
 /**
 * Data Store
 */
@@ -147,7 +152,7 @@ public:
 	/*
 	* Insert a single key and value
 	*/
-	void add(in string key, in SafeVector!ubyte val)
+	void add(in string key, in Secure_Vector!ubyte val)
 	{
 		add(key, hex_encode(&val[0], val.length));
 	}
@@ -169,23 +174,3 @@ public:
 private:
 	MultiMap!(string, string) contents;
 };
-
-
-
-import botan.utils.datastor.datastor;
-import botan.utils.exceptn;
-import botan.utils.parsing;
-import botan.codec.hex;
-import botan.internal.stl_util;
-
-
-
-
-
-
-
-
-
-
-
-

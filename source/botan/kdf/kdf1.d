@@ -18,7 +18,7 @@ public:
 	/*
 	* KDF1 Key Derivation Mechanism
 	*/
-	SafeVector!ubyte derive(size_t,
+	Secure_Vector!ubyte derive(size_t,
 	                        in ubyte* secret, size_t secret_len,
 	                        in ubyte* P, size_t P_len) const
 	{

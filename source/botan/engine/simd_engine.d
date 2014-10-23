@@ -21,13 +21,13 @@ static if (BOTAN_HAS_SHA1_SSE2) 		import botan.hash.sha1_sse2;
 /**
 * Engine for implementations that use some kind of SIMD
 */
-class SIMD_Engine : Engine
+final class SIMD_Engine : Engine
 {
 public:
 	string provider_name() const { return "simd"; }
 
 	BlockCipher find_block_cipher(in SCAN_Name request,
-	                              AlgorithmFactory) const
+	                              Algorithm_Factory) const
 	{
 		static if (BOTAN_HAS_AES_SSSE3) {
 			if (request.algo_name == "AES-128" && CPUID.has_ssse3())
@@ -67,7 +67,7 @@ public:
 	}
 
 	HashFunction find_hash(in SCAN_Name request,
-	                       AlgorithmFactory) const
+	                       Algorithm_Factory) const
 	{
 		static if (BOTAN_HAS_SHA1_SSE2) {
 			if (request.algo_name == "SHA-160" && CPUID.has_sse2())

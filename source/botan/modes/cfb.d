@@ -17,19 +17,19 @@ import botan.utils.xor_buf;
 class CFB_Mode : Cipher_Mode
 {
 public:
-	override SafeVector!ubyte start(in ubyte* nonce, size_t nonce_len)
+	final override Secure_Vector!ubyte start(in ubyte* nonce, size_t nonce_len)
 	{
 		if (!valid_nonce_length(nonce_len))
-			throw new Invalid_IV_Length(name(), nonce_len);
+			throw new Invalid_IV_Length(name, nonce_len);
 		
 		m_shift_register.assign(nonce, nonce + nonce_len);
 		m_keystream_buf.resize(m_shift_register.length);
 		cipher().encrypt(m_shift_register, m_keystream_buf);
 		
-		return SafeVector!ubyte();
+		return Secure_Vector!ubyte();
 	}
 
-	override @property string name() const
+	final override @property string name() const
 	{
 		if (feedback() == cipher().block_size)
 			return cipher().name ~ "/CFB";
@@ -37,42 +37,42 @@ public:
 			return cipher().name ~ "/CFB(" ~ std.conv.to!string(feedback()*8) ~ ")";
 	}
 
-	override size_t update_granularity() const
+	final override size_t update_granularity() const
 	{
 		return feedback();
 	}
 
-	override size_t minimum_final_size() const
+	final override size_t minimum_final_size() const
 	{
 		return 0;
 	}
 
-	override Key_Length_Specification key_spec() const
+	final override Key_Length_Specification key_spec() const
 	{
 		return cipher().key_spec();
 	}
 
-	override size_t output_length(size_t input_length) const
+	final override size_t output_length(size_t input_length) const
 	{
 		return input_length;
 	}
 
-	override size_t default_nonce_length() const
+	final override size_t default_nonce_length() const
 	{
 		return cipher().block_size;
 	}
 
-	override bool valid_nonce_length(size_t n) const
+	final override bool valid_nonce_length(size_t n) const
 	{
 		return (n == cipher().block_size);
 	}
 
-	override void clear()
+	final override void clear()
 	{
 		m_cipher.clear();
 		m_shift_register.clear();
 	}
-package:
+protected:
 	this(BlockCipher cipher, size_t feedback_bits)
 	{ 
 		m_cipher = cipher;
@@ -82,30 +82,30 @@ package:
 			                           std.conv.to!string(feedback_bits) ~ " not supported");
 	}
 
-	const BlockCipher cipher() const { return *m_cipher; }
+	final const BlockCipher cipher() const { return *m_cipher; }
 
-	size_t feedback() const { return m_feedback_bytes; }
+	final size_t feedback() const { return m_feedback_bytes; }
 
-	SafeVector!ubyte shift_register() { return m_shift_register; }
+	final Secure_Vector!ubyte shift_register() { return m_shift_register; }
 
-	SafeVector!ubyte keystream_buf() { return m_keystream_buf; }
+	final Secure_Vector!ubyte keystream_buf() { return m_keystream_buf; }
 
 private:
-	override void key_schedule(in ubyte* key, size_t length)
+	final override void key_schedule(in ubyte* key, size_t length)
 	{
 		m_cipher.set_key(key, length);
 	}
 
 	Unique!BlockCipher m_cipher;
-	SafeVector!ubyte m_shift_register;
-	SafeVector!ubyte m_keystream_buf;
+	Secure_Vector!ubyte m_shift_register;
+	Secure_Vector!ubyte m_keystream_buf;
 	size_t m_feedback_bytes;
 };
 
 /**
 * CFB Encryption
 */
-class CFB_Encryption : CFB_Mode
+final class CFB_Encryption : CFB_Mode
 {
 public:
 	this(BlockCipher cipher, size_t feedback_bits)
@@ -113,7 +113,7 @@ public:
 		super(cipher, feedback_bits) 
 	}
 
-	override void update(SafeVector!ubyte buffer, size_t offset = 0)
+	override void update(Secure_Vector!ubyte buffer, size_t offset = 0)
 	{
 		assert(buffer.length >= offset, "Offset is sane");
 		size_t sz = buffer.length - offset;
@@ -121,7 +121,7 @@ public:
 		
 		const size_t BS = cipher().block_size;
 		
-		SafeVector!ubyte state = shift_register();
+		Secure_Vector!ubyte state = shift_register();
 		const size_t shift = feedback();
 		
 		while(sz)
@@ -140,7 +140,7 @@ public:
 	}
 
 
-	override void finish(SafeVector!ubyte buffer, size_t offset = 0)
+	override void finish(Secure_Vector!ubyte buffer, size_t offset = 0)
 	{
 		update(buffer, offset);
 	}
@@ -149,7 +149,7 @@ public:
 /**
 * CFB Decryption
 */
-class CFB_Decryption : CFB_Mode
+final class CFB_Decryption : CFB_Mode
 {
 public:
 	this(BlockCipher cipher, size_t feedback_bits) 
@@ -157,7 +157,7 @@ public:
 		super(cipher, feedback_bits);
 	}
 
-	override void update(SafeVector!ubyte buffer, size_t offset = 0)
+	override void update(Secure_Vector!ubyte buffer, size_t offset = 0)
 	{
 		assert(buffer.length >= offset, "Offset is sane");
 		size_t sz = buffer.length - offset;
@@ -165,7 +165,7 @@ public:
 		
 		const size_t BS = cipher().block_size;
 		
-		SafeVector!ubyte state = shift_register();
+		Secure_Vector!ubyte state = shift_register();
 		const size_t shift = feedback();
 		
 		while(sz)
@@ -187,7 +187,7 @@ public:
 		}
 	}
 
-	override void finish(SafeVector!ubyte buffer, size_t offset = 0)
+	override void finish(Secure_Vector!ubyte buffer, size_t offset = 0)
 	{
 		update(buffer, offset);
 	}

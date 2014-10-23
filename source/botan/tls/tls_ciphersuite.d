@@ -11,7 +11,7 @@ import botan.utils.types;
 import botan.libstate.libstate;
 import botan.parsing;
 import sstream;
-import stdexcept;
+import std.exception;
 
 /**
 * Ciphersuite Information
@@ -179,7 +179,7 @@ public:
 		if (!m_cipher_keylen) // uninitialized object
 			return false;
 		
-		AlgorithmFactory af = global_state().algorithm_factory();
+		Algorithm_Factory af = global_state().algorithm_factory();
 		
 		if (!af.prototype_hash_function(prf_algo()))
 			return false;

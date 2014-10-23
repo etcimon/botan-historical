@@ -31,10 +31,10 @@ struct CryptoBox {
 	{
 		Unique!KDF kdf = get_kdf(CRYPTOBOX_KDF);
 		
-		const SafeVector!ubyte cipher_key_salt =
+		const Secure_Vector!ubyte cipher_key_salt =
 			rng.random_vec(KEY_KDF_SALT_LENGTH);
 		
-		const SafeVector!ubyte mac_key_salt =
+		const Secure_Vector!ubyte mac_key_salt =
 			rng.random_vec(KEY_KDF_SALT_LENGTH);
 		
 		SymmetricKey cipher_key =
@@ -54,7 +54,7 @@ struct CryptoBox {
 		
 		Pipe pipe = Pipe(get_cipher(CRYPTOBOX_CIPHER, cipher_key, cipher_iv, ENCRYPTION));
 		pipe.process_msg(input, input_len);
-		SafeVector!ubyte ctext = pipe.read_all(0);
+		Secure_Vector!ubyte ctext = pipe.read_all(0);
 		
 		Vector!ubyte output = Vector!ubyte(MAGIC_LENGTH);
 		store_be(CRYPTOBOX_MAGIC, &output[0]);
@@ -76,7 +76,7 @@ struct CryptoBox {
 	* @param key the key used to encrypt the message
 	* @param rng a ref to a random number generator, such as AutoSeeded_RNG
 	*/
-	static SafeVector!ubyte decrypt(in ubyte* input, size_t input_len,
+	static Secure_Vector!ubyte decrypt(in ubyte* input, size_t input_len,
 	                                const ref SymmetricKey master_key)
 	{
 		const size_t MIN_CTEXT_SIZE = 16; // due to using CBC with padding
@@ -109,7 +109,7 @@ struct CryptoBox {
 		mac.set_key(mac_key);
 		
 		mac.update(&input[0], input_len - MAC_OUTPUT_LENGTH);
-		SafeVector!ubyte computed_mac = mac.flush();
+		Secure_Vector!ubyte computed_mac = mac.flush();
 		
 		if (!same_mem(&input[input_len - MAC_OUTPUT_LENGTH], &computed_mac[0], computed_mac.length))
 			throw new Decoding_Error("MAC verification failed");

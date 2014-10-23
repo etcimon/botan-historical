@@ -12,7 +12,7 @@ import botan.utils.xor_buf;
 /**
 * DESX
 */
-class DESX : Block_Cipher_Fixed_Params!(8, 24)
+final class DESX : Block_Cipher_Fixed_Params!(8, 24)
 {
 public:
 	/*
@@ -67,9 +67,6 @@ private:
 		K2.assign(key + 16, key + 24);
 	}
 
-	SafeVector!ubyte K1, K2;
+	Secure_Vector!ubyte K1, K2;
 	DES des;
 };
-
-
-

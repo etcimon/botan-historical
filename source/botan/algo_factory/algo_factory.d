@@ -25,12 +25,12 @@ import botan.utils.types;
 import botan.utils.memory : FreeListRef;
 
 
-alias AlgorithmFactory = FreeListRef!AlgorithmFactoryImpl;
+alias Algorithm_Factory = FreeListRef!Algorithm_Factory_Impl;
 
 /**
 * Algorithm Factory
 */
-class AlgorithmFactoryImpl
+final class Algorithm_Factory_Impl
 {
 public:
 	/**
@@ -44,7 +44,7 @@ public:
 	~this()	{ }
 	
 	/**
-	* @param engine to add (AlgorithmFactory takes ownership)
+	* @param engine to add (Algorithm_Factory takes ownership)
 	*/
 	void add_engine(Engine engine)
 	{
@@ -329,9 +329,9 @@ public:
 		/**
 		* @param a an algorithm factory
 		*/
-		this(AlgorithmFactory a) { af = a; n = 0; }
+		this(Algorithm_Factory a) { af = a; n = 0; }
 	private:
-		const AlgorithmFactory af;
+		const Algorithm_Factory af;
 		size_t n;
 	}
 
@@ -360,51 +360,51 @@ private:
 */
 T engine_get_algo(T)(Engine,
 					 const ref SCAN_Name,
-					 AlgorithmFactory)
+					 Algorithm_Factory)
 { static assert(false, "Invalid engine"); }
 
 BlockCipher engine_get_algo(T : BlockCipher)(Engine engine,
 							  const ref SCAN_Name request,
-							  AlgorithmFactory af)
+							  Algorithm_Factory af)
 { return engine.find_block_cipher(request, af); }
 
 StreamCipher engine_get_algo(T : StreamCipher)(Engine engine,
 										const ref SCAN_Name request,
-										AlgorithmFactory af)
+										Algorithm_Factory af)
 { return engine.find_stream_cipher(request, af); }
 
 HashFunction engine_get_algo(T : HashFunction)(Engine engine,
 										const ref SCAN_Name request,
-										AlgorithmFactory af)
+										Algorithm_Factory af)
 { return engine.find_hash(request, af); }
 
 MessageAuthenticationCode engine_get_algo(T : MessageAuthenticationCode)(Engine engine,
 														 const ref SCAN_Name request,
-														 AlgorithmFactory af)
+														 Algorithm_Factory af)
 { return engine.find_mac(request, af); }
 
 PBKDF engine_get_algo(T : PBKDF)(Engine engine,
 							  const ref SCAN_Name request,
-							  AlgorithmFactory af)
+							  Algorithm_Factory af)
 { return engine.find_pbkdf(request, af); }
 
 const T factory_prototype(T)(in string algo_spec,
 									in string provider,
 									in Vector!( Engine ) engines,
-									AlgorithmFactory af,
+									Algorithm_Factory af,
 									Algorithm_Cache!T cache)
 {
 	if (const T cache_hit = cache.get(algo_spec, provider))
 		return cache_hit;
 
-	SCAN_Name scan_name(algo_spec);
+	SCAN_Name scan_name = SCAN_Name(algo_spec);
 
 	if (scan_name.cipher_mode() != "")
 		return null;
 
 	for (size_t i = 0; i != engines.length; ++i)
 	{
-		if (provider == "" || engines[i].provider_name() == provider)
+		if (provider == "" || engines[i].provider_name == provider)
 		{
 			if (T impl = af.engine_get_algo!T(engines[i], scan_name, af))
 				cache.add(impl, algo_spec, engines[i].provider_name());

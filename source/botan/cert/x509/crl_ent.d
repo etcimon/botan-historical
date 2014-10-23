@@ -13,6 +13,8 @@ import botan.asn1.der_enc;
 import botan.asn1.ber_dec;
 import botan.math.bigint.bigint;
 import botan.asn1.oid_lookup.oids;
+import botan.utils.types;
+alias CRL_Entry = FreeListRef!CRL_Entry_Impl;
 
 /**
 * X.509v2 CRL Reason Code.
@@ -37,7 +39,7 @@ enum CRL_Code {
 /**
 * This class represents CRL entries
 */
-class CRL_Entry : ASN1_Object
+final class CRL_Entry_Impl : ASN1_Object
 {
 public:
 	/*

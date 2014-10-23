@@ -67,31 +67,31 @@ public:
 	string provider_name() const { return engine.provider_name(); }
 
 	BlockCipher find_block_cipher(in SCAN_Name algo_spec,
-											  AlgorithmFactory af) const
+											  Algorithm_Factory af) const
 	{
 		return engine.find_block_cipher(algo_spec, af);
 	}
 
 	StreamCipher find_stream_cipher(in SCAN_Name algo_spec,
-												 AlgorithmFactory af) const
+												 Algorithm_Factory af) const
 	{
 		return engine.find_stream_cipher(algo_spec, af);
 	}
 
 	HashFunction find_hash(in SCAN_Name algo_spec,
-									 AlgorithmFactory af) const
+									 Algorithm_Factory af) const
 	{
 		return engine.find_hash(algo_spec, af);
 	}
 
 	MessageAuthenticationCode find_mac(in SCAN_Name algo_spec,
-													 AlgorithmFactory af) const
+													 Algorithm_Factory af) const
 	{
 		return engine.find_mac(algo_spec, af);
 	}
 
 	PBKDF find_pbkdf(in SCAN_Name algo_spec,
-							 AlgorithmFactory af) const
+							 Algorithm_Factory af) const
 	{
 		return engine.find_pbkdf(algo_spec, af);
 	}
@@ -104,7 +104,7 @@ public:
 
 	Keyed_Filter get_cipher(in string algo_spec,
 									 Cipher_Dir dir,
-									 AlgorithmFactory af)
+									 Algorithm_Factory af)
 	{
 		return engine.get_cipher(algo_spec, dir, af);
 	}

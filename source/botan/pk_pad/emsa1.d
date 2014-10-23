@@ -4,9 +4,12 @@
 *
 * Distributed under the terms of the botan license.
 */
+module botan.pk_pad.emsa1;
 
 import botan.pk_pad.emsa;
 import botan.hash.hash;
+import botan.utils.types;
+
 /**
 * EMSA1 from IEEE 1363
 * Essentially, sign the hash directly
@@ -22,7 +25,7 @@ public:
 		m_hash = hash;
 	}
 
-package:
+protected:
 	size_t hash_output_length() const { return m_hash.output_length; }
 
 private:
@@ -31,12 +34,12 @@ private:
 		m_hash.update(input, length);
 	}
 
-	SafeVector!ubyte raw_data()
+	Secure_Vector!ubyte raw_data()
 	{
 		return m_hash.flush();
 	}
 
-	SafeVector!ubyte encoding_of(in SafeVector!ubyte msg,
+	Secure_Vector!ubyte encoding_of(in Secure_Vector!ubyte msg,
 	                             size_t output_bits,
 	                             RandomNumberGenerator)
 	{
@@ -45,14 +48,14 @@ private:
 		return emsa1_encoding(msg, output_bits);
 	}
 
-	bool verify(in SafeVector!ubyte coded,
-	            in SafeVector!ubyte raw, size_t key_bits)
+	bool verify(in Secure_Vector!ubyte coded,
+	            in Secure_Vector!ubyte raw, size_t key_bits)
 	{
 		try {
 			if (raw.length != m_hash.output_length)
 				throw new Encoding_Error("encoding_of: Invalid size for input");
 			
-			SafeVector!ubyte our_coding = emsa1_encoding(raw, key_bits);
+			Secure_Vector!ubyte our_coding = emsa1_encoding(raw, key_bits);
 			
 			if (our_coding == coded) return true;
 			if (our_coding.empty() || our_coding[0] != 0) return false;
@@ -81,7 +84,7 @@ private:
 
 private:
 
-SafeVector!ubyte emsa1_encoding(in SafeVector!ubyte msg,
+Secure_Vector!ubyte emsa1_encoding(in Secure_Vector!ubyte msg,
                                 size_t output_bits)
 {
 	if (8*msg.length <= output_bits)
@@ -90,7 +93,7 @@ SafeVector!ubyte emsa1_encoding(in SafeVector!ubyte msg,
 	size_t shift = 8*msg.length - output_bits;
 	
 	size_t byte_shift = shift / 8, bit_shift = shift % 8;
-	SafeVector!ubyte digest(msg.length - byte_shift);
+	Secure_Vector!ubyte digest(msg.length - byte_shift);
 	
 	for (size_t j = 0; j != msg.length - byte_shift; ++j)
 		digest[j] = msg[j];

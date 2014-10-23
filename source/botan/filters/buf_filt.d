@@ -10,7 +10,7 @@ import botan.alloc.secmem;
 
 import botan.utils.mem_ops;
 import botan.utils.rounding;
-import stdexcept;
+import std.exception;
 
 /**
 * Filter mixin that breaks input into blocks, useful for
@@ -124,7 +124,7 @@ public:
 		buffer_pos = 0;
 	}
 	~this() {}
-package:
+protected:
 	/**
 	* The block processor, implemented by subclasses
 	* @param input some input bytes
@@ -158,6 +158,6 @@ package:
 private:
 	size_t main_block_mod, final_minimum;
 
-	SafeVector!ubyte buffer;
+	Secure_Vector!ubyte buffer;
 	size_t buffer_pos;
 };

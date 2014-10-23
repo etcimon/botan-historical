@@ -9,7 +9,7 @@ import botan.pk_pad.eme;
 /**
 * EME from PKCS #1 v1.5
 */
-class EME_PKCS1v15 : EME
+final class EME_PKCS1v15 : EME
 {
 public:
 	/*
@@ -26,7 +26,7 @@ private:
 	/*
 * PKCS1 Pad Operation
 */
-	SafeVector!ubyte pad(in ubyte* input, size_t inlen,
+	Secure_Vector!ubyte pad(in ubyte* input, size_t inlen,
 	                     size_t olen,
 	                     RandomNumberGenerator rng) const
 	{
@@ -37,7 +37,7 @@ private:
 		if (inlen > olen - 10)
 			throw new Encoding_Error("PKCS1: Input is too large");
 		
-		SafeVector!ubyte output = SafeVector!ubyte(olen);
+		Secure_Vector!ubyte output = Secure_Vector!ubyte(olen);
 		
 		output[0] = 0x02;
 		for (size_t j = 1; j != olen - inlen - 1; ++j)
@@ -51,7 +51,7 @@ private:
 	/*
 	* PKCS1 Unpad Operation
 	*/
-	SafeVector!ubyte unpad(in ubyte* input, size_t inlen,
+	Secure_Vector!ubyte unpad(in ubyte* input, size_t inlen,
 	                       size_t key_len) const
 	{
 		if (inlen != key_len / 8 || inlen < 10 || input[0] != 0x02)
@@ -67,11 +67,7 @@ private:
 		if (seperator < 9)
 			throw new Decoding_Error("PKCS1::unpad");
 		
-		return SafeVector!ubyte(&input[seperator + 1], &input[inlen]);
+		return Secure_Vector!ubyte(&input[seperator + 1], &input[inlen]);
 	}
 
 };
-
-
-
-

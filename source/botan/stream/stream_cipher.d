@@ -26,16 +26,23 @@ public:
 	* @param buf the plaintext / ciphertext
 	* @param len the length of buf in bytes
 	*/
-	void cipher1(ubyte buf*, size_t len)
+	final void cipher1(ubyte* buf, size_t len)
 	{ cipher(buf, buf, len); }
 
-	void encipher(Alloc)(ref Vector!( ubyte, Alloc ) inoutput)
+	/**
+	* Encrypt or decrypt a message
+	* @param buf the plaintext / ciphertext
+	*/
+	final void cipher1(ref ubyte[] buf)
+	{ cipher(buf.ptr, buf.ptr, buf.length); }
+
+	final void encipher(Alloc)(ref Vector!( ubyte, Alloc ) inoutput)
 	{ cipher(&inoutput[0], &inoutput[0], inoutput.length); }
 
-	void encrypt(Alloc)(ref Vector!( ubyte, Alloc ) inoutput)
+	final void encrypt(Alloc)(ref Vector!( ubyte, Alloc ) inoutput)
 	{ cipher(&inoutput[0], &inoutput[0], inoutput.length); }
 
-	void decrypt(Alloc)(ref Vector!( ubyte, Alloc ) inoutput)
+	final void decrypt(Alloc)(ref Vector!( ubyte, Alloc ) inoutput)
 	{ cipher(&inoutput[0], &inoutput[0], inoutput.length); }
 
 	/**
@@ -46,7 +53,7 @@ public:
 	abstract void set_iv(const ubyte*, size_t iv_len)
 	{
 		if (iv_len)
-			throw new Invalid_Argument("The stream cipher " ~ name() +
+			throw new Invalid_Argument("The stream cipher " ~ name ~
 			                           " does not support resyncronization");
 	}
 

@@ -8,15 +8,16 @@
 */
 module botan.pubkey.algo.ecc_key;
 
-import botan.pubkey.algo.ec_group;
-import botan.pubkey.pk_keys;
-import botan.pubkey.x509_key;
+public import botan.pubkey.algo.ec_group;
+public import botan.math.numbertheory.numthry;
+public import botan.math.ec_gfp.curve_gfp;
+public import botan.math.ec_gfp.point_gfp;
+public import botan.pubkey.pk_keys;
+public import botan.pubkey.x509_key;
 import botan.pubkey.pkcs8;
-import botan.math.numbertheory.numthry;
 import botan.asn1.der_enc;
 import botan.asn1.ber_dec;
 import botan.alloc.secmem;
-import botan.math.ec_gfp.curve_gfp;
 
 /**
 * This class represents abstract ECC public keys. When encoding a key
@@ -41,8 +42,8 @@ public:
 			throw new Invalid_Argument("EC_PublicKey: curve mismatch in constructor");
 	}
 
-	this(in AlgorithmIdentifier alg_id,
-	     in SafeVector!ubyte key_bits)
+	this(in Algorithm_Identifier alg_id,
+	     in Secure_Vector!ubyte key_bits)
 	{
 		domain_params = EC_Group(alg_id.parameters);
 		domain_encoding = EC_DOMPAR_ENC_EXPLICIT;
@@ -58,9 +59,9 @@ public:
 	*/
 	const ref PointGFp public_point() const { return public_key; }
 
-	AlgorithmIdentifier algorithm_identifier() const
+	Algorithm_Identifier algorithm_identifier() const
 	{
-		return AlgorithmIdentifier(get_oid(), DER_domain());
+		return Algorithm_Identifier(get_oid(), DER_domain());
 	}
 
 	Vector!ubyte x509_subject_public_key() const
@@ -121,7 +122,7 @@ public:
 	}
 
 
-package:
+protected:
 	this() 
 	{
 		domain_encoding = EC_DOMPAR_ENC_EXPLICIT;
@@ -135,8 +136,8 @@ package:
 /**
 * This abstract class represents ECC private keys
 */
-class EC_PrivateKey : EC_PublicKey,
-						Private_Key
+final class EC_PrivateKey : EC_PublicKey,
+							Private_Key
 {
 public:
 	/**
@@ -150,29 +151,29 @@ public:
 		domain_encoding = EC_DOMPAR_ENC_EXPLICIT;
 		
 		if (private_key == 0)
-			Private_Key = BigInt.random_integer(rng, 1, domain().get_order());
+			priv_key = BigInt.random_integer(rng, 1, domain().get_order());
 		else
-			Private_Key = private_key;
+			priv_key = private_key;
 		
-		public_key = domain().get_base_point() * Private_Key;
+		public_key = domain().get_base_point() * priv_key;
 		
 		assert(public_key.on_the_curve(),
 		             "Generated public key point was on the curve");
 	}
 
-	this(in AlgorithmIdentifier alg_id,
-	     in SafeVector!ubyte key_bits)
+	this(in Algorithm_Identifier alg_id,
+	     in Secure_Vector!ubyte key_bits)
 	{
 		domain_params = EC_Group(alg_id.parameters);
 		domain_encoding = EC_DOMPAR_ENC_EXPLICIT;
 		
 		OID key_parameters;
-		SafeVector!ubyte public_key_bits;
+		Secure_Vector!ubyte public_key_bits;
 		
 		BER_Decoder(key_bits)
 			.start_cons(ASN1_Tag.SEQUENCE)
-				.decode_and_check<size_t>(1, "Unknown version code for ECC key")
-				.decode_octet_string_bigint(Private_Key)
+				.decode_and_check!size_t(1, "Unknown version code for ECC key")
+				.decode_octet_string_bigint(priv_key)
 				.decode_optional(key_parameters, ASN1_Tag(0), PRIVATE)
 				.decode_optional_string(public_key_bits, ASN1_Tag.BIT_STRING, 1, PRIVATE)
 				.end_cons();
@@ -182,7 +183,7 @@ public:
 		
 		if (public_key_bits.empty())
 		{
-			public_key = domain().get_base_point() * Private_Key;
+			public_key = domain().get_base_point() * priv_key;
 			
 			assert(public_key.on_the_curve(),
 			             "Public point derived from loaded key was on the curve");
@@ -194,12 +195,12 @@ public:
 		}
 	}
 
-	SafeVector!ubyte pkcs8_Private_Key() const
+	Secure_Vector!ubyte pkcs8_Private_Key() const
 	{
 		return DER_Encoder()
 			.start_cons(ASN1_Tag.SEQUENCE)
 				.encode(cast(size_t)(1))
-				.encode(BigInt.encode_1363(Private_Key, Private_Key.bytes()),
+				.encode(BigInt.encode_1363(priv_key, priv_key.bytes()),
 				        ASN1_Tag.OCTET_STRING)
 				.end_cons()
 				.get_contents();
@@ -211,13 +212,13 @@ public:
 	*/
 	const ref BigInt private_value() const
 	{
-		if (Private_Key == 0)
+		if (priv_key == 0)
 			throw new Invalid_State("EC_PrivateKey::private_value - uninitialized");
 		
-		return Private_Key;
+		return priv_key;
 	}
-package:
+protected:
 	this() {}
 
-	BigInt Private_Key;
+	BigInt priv_key;
 };

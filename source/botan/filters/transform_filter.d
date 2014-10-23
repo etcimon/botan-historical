@@ -37,7 +37,7 @@ public:
 		if (Keyed_Transform keyed = cast(Keyed_Transform)(*m_transform))
 			keyed.set_key(key);
 		else if (key.length() != 0)
-			throw new Exception("Transformation " ~ name() ~ " does not accept keys");
+			throw new Exception("Transformation " ~ name ~ " does not accept keys");
 	}
 
 	final Key_Length_Specification key_spec() const
@@ -57,7 +57,7 @@ public:
 		return m_transform.name;
 	}
 
-package:
+protected:
 	final const Transformation get_transform() const { return *m_transform; }
 
 	final Transformation get_transform() { return *m_transform; }
@@ -96,7 +96,7 @@ private:
 
 	final void buffered_final(in ubyte* input, size_t input_length)
 	{
-		SafeVector!ubyte buf = SafeVector!ubyte(input, input + input_length);
+		Secure_Vector!ubyte buf = Secure_Vector!ubyte(input, input + input_length);
 		m_transform.finish(buf);
 		send(buf);
 	}
@@ -130,7 +130,7 @@ private:
 
 	Nonce_State m_nonce;
 	Unique!Transformation m_transform;
-	SafeVector!ubyte m_buffer;
+	Secure_Vector!ubyte m_buffer;
 };
 
 private:

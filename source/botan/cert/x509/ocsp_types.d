@@ -15,14 +15,17 @@ import botan.cert.x509.x509_ext;
 import botan.libstate.lookup;
 import botan.hash.hash;
 import botan.asn1.oid_lookup.oids;
+import botan.utils.types;
 
-class CertID : ASN1_Object
+alias CertID = FreeListRef!CertID_Impl;
+
+final class CertID_Impl : ASN1_Object
 {
 public:
 	this() {}
 
 	this(in X509_Certificate issuer,
-	     const ref X509_Certificate subject)
+	     const X509_Certificate subject)
 	{
 		/*
 		In practice it seems some responders, including, notably,
@@ -30,14 +33,14 @@ public:
 		*/
 		Unique!HashFunction hash = get_hash("SHA-160");
 		
-		m_hash_id = AlgorithmIdentifier(hash.name, AlgorithmIdentifier.USE_NULL_PARAM);
+		m_hash_id = Algorithm_Identifier(hash.name, Algorithm_Identifier.USE_NULL_PARAM);
 		m_issuer_key_hash = unlock(hash.process(extract_key_bitstr(issuer)));
 		m_issuer_dn_hash = unlock(hash.process(subject.raw_issuer_dn()));
 		m_subject_serial = BigInt.decode(subject.serial_number());
 	}
 
 	bool is_id_for(in X509_Certificate issuer,
-	               const ref X509_Certificate subject) const
+	               const X509_Certificate subject) const
 	{
 		try
 		{
@@ -87,7 +90,7 @@ private:
 	{
 		const auto key_bits = cert.subject_public_key_bits();
 		
-		AlgorithmIdentifier public_key_algid;
+		Algorithm_Identifier public_key_algid;
 		Vector!ubyte public_key_bitstr;
 		
 		BER_Decoder(key_bits)
@@ -97,16 +100,18 @@ private:
 		return public_key_bitstr;
 	}
 
-	AlgorithmIdentifier m_hash_id;
+	Algorithm_Identifier m_hash_id;
 	Vector!ubyte m_issuer_dn_hash;
 	Vector!ubyte m_issuer_key_hash;
 	BigInt m_subject_serial;
 };
 
-class SingleResponse : ASN1_Object
+alias SingleResponse = FreeListRef!SingleResponse_Impl;
+
+final class SingleResponse_Impl : ASN1_Object
 {
 public:
-	const ref CertID certid() const { return m_certid; }
+	const CertID certid() const { return m_certid; }
 
 	size_t cert_status() const { return m_cert_status; }
 
@@ -129,10 +134,10 @@ public:
 				.get_next(cert_status)
 				.decode(m_thisupdate)
 				.decode_optional(m_nextupdate, ASN1_Tag(0),
-				                 ASN1_Tag(ASN1_Tag.CONTEXT_SPECIFIC | CONSTRUCTED))
+				                 ASN1_Tag(ASN1_Tag.CONTEXT_SPECIFIC | ASN1_Tag.CONSTRUCTED))
 				.decode_optional(extensions,
 				                 ASN1_Tag(1),
-				                 ASN1_Tag(ASN1_Tag.CONTEXT_SPECIFIC | CONSTRUCTED))
+				                 ASN1_Tag(ASN1_Tag.CONTEXT_SPECIFIC | ASN1_Tag.CONSTRUCTED))
 				.end_cons();
 		
 		m_cert_status = cert_status.type_tag;

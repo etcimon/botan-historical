@@ -48,7 +48,7 @@ void aont_package(RandomNumberGenerator rng,
 	// Set K0 (the all zero key)
 	cipher.set_key(SymmetricKey(all_zeros));
 	
-	SafeVector!ubyte buf(BLOCK_SIZE);
+	Secure_Vector!ubyte buf(BLOCK_SIZE);
 	
 	const size_t blocks =
 		(input_len + BLOCK_SIZE - 1) / BLOCK_SIZE;
@@ -104,8 +104,8 @@ void aont_unpackage(BlockCipher cipher,
 	
 	cipher.set_key(SymmetricKey(all_zeros));
 	
-	SafeVector!ubyte package_key(BLOCK_SIZE);
-	SafeVector!ubyte buf(BLOCK_SIZE);
+	Secure_Vector!ubyte package_key(BLOCK_SIZE);
+	Secure_Vector!ubyte buf(BLOCK_SIZE);
 	
 	// Copy the package key (masked with the block hashes)
 	copy_mem(&package_key[0],

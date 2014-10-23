@@ -185,7 +185,7 @@ private:
 			D = (digest[3] += D);
 			E = (digest[4] += E);
 			
-			input += (hash_block_size() / 16);
+			input += (hash_block_size / 16);
 		}
 	}
 
@@ -206,7 +206,8 @@ private:
 	Much slower on all tested platforms
 	#define GET_P_32(P,i) _mm_cvtsi128_si32(_mm_srli_si128(P.u128, i*4))
 */
-string GET_P_32(alias P, ubyte i)() {
+string GET_P_32(alias P, ubyte i)() 
+{
 	return __traits(identifier, P).stringof ~ `.u32[` ~ i.stringof ~ `]`;
 }
 
@@ -302,6 +303,8 @@ string prep(alias _prep, alias _XW0, alias _XW1, alias _XW2, alias _XW3, alias _
 				` ~ prep ~ `.u128 = _mm_add_epi32(r0, ` ~ K ~ `);
 		}`;
 }
+
+pure:
 
 /*
 * SHA-160 F1 Function

@@ -9,12 +9,13 @@ module botan.rng.x931_rng;
 import botan.rng.rng;
 import botan.block.block_cipher;
 import botan.utils.xor_buf;
+import botan.utils.types;
 import std.algorithm;
 
 /**
 * ANSI X9.31 RNG
 */
-class ANSI_X931_RNG : RandomNumberGenerator
+final class ANSI_X931_RNG : RandomNumberGenerator
 {
 public:
 	void randomize(ubyte* output, size_t length)
@@ -24,7 +25,7 @@ public:
 			reseed(BOTAN_RNG_RESEED_POLL_BITS);
 			
 			if (!is_seeded())
-				throw new PRNG_Unseeded(name());
+				throw new PRNG_Unseeded(name);
 		}
 		
 		while(length)
@@ -114,7 +115,7 @@ private:
 	{
 		const size_t BLOCK_SIZE = m_cipher.block_size;
 		
-		SafeVector!ubyte DT = m_prng.random_vec(BLOCK_SIZE);
+		Secure_Vector!ubyte DT = m_prng.random_vec(BLOCK_SIZE);
 		m_cipher.encrypt(DT);
 		
 		xor_buf(&m_R[0], &m_V[0], &DT[0], BLOCK_SIZE);
@@ -129,6 +130,6 @@ private:
 
 	Unique!BlockCipher m_cipher;
 	Unique!RandomNumberGenerator m_prng;
-	SafeVector!ubyte m_V, m_R;
+	Secure_Vector!ubyte m_V, m_R;
 	size_t m_R_pos;
 };

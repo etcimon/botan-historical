@@ -113,7 +113,7 @@ public:
 	/**
 	* @return the trust root of the validation
 	*/
-	const ref X509_Certificate trust_root() const
+	const X509_Certificate trust_root() const
 	{
 		return m_cert_path[m_cert_path.length-1];
 	}
@@ -247,7 +247,7 @@ private:
 Path_Validation_Result x509_path_validate(
 	const ref Vector!X509_Certificate end_certs,
 	const ref Path_Validation_Restrictions restrictions,
-	const ref Vector!( Certificate_Store* ) certstores)
+	const ref Vector!Certificate_Store certstores)
 {
 	if (end_certs.empty())
 		throw new Invalid_Argument("x509_path_validate called with no subjects");
@@ -276,9 +276,9 @@ Path_Validation_Result x509_path_validate(
 * PKIX Path Validation
 */
 Path_Validation_Result x509_path_validate(
-	const ref X509_Certificate end_cert,
+	const X509_Certificate end_cert,
 	const ref Path_Validation_Restrictions restrictions,
-	const ref Vector!( Certificate_Store* ) certstores)
+	const ref Vector!Certificate_Store certstores)
 {
 	Vector!X509_Certificate certs;
 	certs.push_back(end_cert);
@@ -290,14 +290,14 @@ Path_Validation_Result x509_path_validate(
 */
 
 Path_Validation_Result x509_path_validate(
-	const ref X509_Certificate end_cert,
+	const X509_Certificate end_cert,
 	const ref Path_Validation_Restrictions restrictions,
 	const ref Certificate_Store store)
 {
 	Vector!X509_Certificate certs;
 	certs.push_back(end_cert);
 	
-	Vector!( Certificate_Store* ) certstores;
+	Vector!Certificate_Store certstores;
 	certstores.push_back(&store);
 	
 	return x509_path_validate(certs, restrictions, certstores);
@@ -310,7 +310,7 @@ Path_Validation_Result x509_path_validate(
 	const ref Path_Validation_Restrictions restrictions,
 	const ref Certificate_Store store)
 {
-	Vector!( Certificate_Store* ) certstores;
+	Vector!Certificate_Store certstores;
 	certstores.push_back(&store);
 	
 	return x509_path_validate(end_certs, restrictions, certstores);
@@ -319,7 +319,7 @@ Path_Validation_Result x509_path_validate(
 const X509_Certificate
 	find_issuing_cert(in X509_Certificate cert,
 	                  ref Certificate_Store end_certs,
-	                  const ref Vector!( Certificate_Store* ) certstores)
+	                  const ref Vector!Certificate_Store certstores)
 {
 	const X509_DN issuer_dn = cert.issuer_dn();
 	const Vector!ubyte auth_key_id = cert.authority_key_id();
@@ -337,7 +337,7 @@ const X509_Certificate
 }
 
 const X509_CRL find_crls_for(in X509_Certificate cert,
-                              const ref Vector!( Certificate_Store* ) certstores)
+                              const ref Vector!Certificate_Store certstores)
 {
 	for (size_t i = 0; i != certstores.length; ++i)
 	{
@@ -346,6 +346,7 @@ const X509_CRL find_crls_for(in X509_Certificate cert,
 	}
 	
 	version(none) {
+		/*
 		const string crl_url = cert.crl_distribution_point();
 		if (crl_url != "")
 		{
@@ -357,10 +358,10 @@ const X509_CRL find_crls_for(in X509_Certificate cert,
 			http.throw_unless_ok();
 			// check the mime type
 			
-			auto crl = new X509_CRL(http.body());
+			auto crl = X509_CRL(http.body());
 			
 			return crl;
-		}
+		}*/
 	}
 	
 	return null;
@@ -369,7 +370,7 @@ const X509_CRL find_crls_for(in X509_Certificate cert,
 Vector!( Set<Certificate_Status_Code )
 	check_chain(in Vector!X509_Certificate cert_path,
 	            const ref Path_Validation_Restrictions restrictions,
-	            const ref Vector!( Certificate_Store* ) certstores)
+	            const ref Vector!Certificate_Store certstores)
 {
 	const ref Set!string trusted_hashes = restrictions.trusted_hashes();
 	
@@ -391,7 +392,7 @@ Vector!( Set<Certificate_Status_Code )
 		
 		const X509_Certificate issuer = cert_path[at_self_signed_root ? (i) : (i + 1)];
 		
-		const Certificate_Store* trusted = certstores[0]; // fixme
+		const Certificate_Store trusted = certstores[0]; // fixme
 		
 		if (i == 0 || restrictions.ocsp_all_intermediates())
 			ocsp_responses.push_back(

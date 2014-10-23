@@ -19,7 +19,7 @@ import std.algorithm;
 /**
 * Skein-512, a SHA-3 candidate
 */
-class Skein_512 : HashFunction
+final class Skein_512 : HashFunction
 {
 public:
 	/**
@@ -43,7 +43,7 @@ public:
 		initial_block();
 	}
 
-	@property size_t hash_block_size() const { return 64; }
+	override @property size_t hash_block_size() const { return 64; }
 	@property size_t output_length() const { return output_bits / 8; }
 
 	HashFunction clone() const
@@ -133,7 +133,7 @@ private:
 
 	void ubi_512(in ubyte* msg, size_t msg_len)
 	{
-		SafeVector!ulong M = SafeVector!ulong(8);
+		Secure_Vector!ulong M = Secure_Vector!ulong(8);
 		
 		do
 		{
@@ -203,7 +203,7 @@ private:
 	size_t output_bits;
 
 	Unique!Threefish_512 m_threefish;
-	SafeVector!ulong T;
-	SafeVector!ubyte buffer;
+	Secure_Vector!ulong T;
+	Secure_Vector!ubyte buffer;
 	size_t buf_pos;
 };

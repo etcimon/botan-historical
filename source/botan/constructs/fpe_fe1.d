@@ -12,7 +12,7 @@ import botan.math.numbertheory.numthry;
 import botan.mac.hmac;
 import botan.sha2_32;
 import botan.utils.exceptn;
-import stdexcept;
+import std.exception;
 
 struct FPE {
 
@@ -176,7 +176,7 @@ public:
 	
 	BigInt opCall(size_t round_no, const ref BigInt R)
 	{
-		SafeVector!ubyte r_bin = BigInt.encode_locked(R);
+		Secure_Vector!ubyte r_bin = BigInt.encode_locked(R);
 		
 		mac.update(mac_n_t);
 		mac.update_be(cast(uint)(round_no));
@@ -184,7 +184,7 @@ public:
 		mac.update_be(cast(uint)(r_bin.length));
 		mac.update(&r_binput[0], r_bin.length);
 		
-		SafeVector!ubyte X = mac.flush();
+		Secure_Vector!ubyte X = mac.flush();
 		return BigInt(&X[0], X.length);
 	}
 	

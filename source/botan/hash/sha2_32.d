@@ -14,7 +14,7 @@ import botan.utils.rotate;
 /**
 * SHA-224
 */
-class SHA_224 : MDx_HashFunction
+final class SHA_224 : MDx_HashFunction
 {
 public:
 	@property string name() const { return "SHA-224"; }
@@ -62,7 +62,7 @@ private:
 			store_be(digest[i/4], output + i);
 	}
 
-	SafeVector!uint digest;
+	Secure_Vector!uint digest;
 };
 
 
@@ -117,13 +117,16 @@ private:
 	}
 
 
-	SafeVector!uint digest;
+	Secure_Vector!uint digest;
 };
+
+private:
+pure:
 
 /*
 * SHA-256 Rho Function
 */
-uint rho(uint X, uint rot1, uint rot2, uint rot3) pure
+uint rho(uint X, uint rot1, uint rot2, uint rot3)
 {
 	return (rotate_right(X, rot1) ^ rotate_right(X, rot2) ^
 	        rotate_right(X, rot3));
@@ -132,7 +135,7 @@ uint rho(uint X, uint rot1, uint rot2, uint rot3) pure
 /*
 * SHA-256 Sigma Function
 */
-uint sigma(uint X, uint rot1, uint rot2, uint shift) pure
+uint sigma(uint X, uint rot1, uint rot2, uint shift)
 {
 	return (rotate_right(X, rot1) ^ rotate_right(X, rot2) ^ (X >> shift));
 }
@@ -167,7 +170,7 @@ string SHA2_32_F(alias _A, alias _B, alias _C, alias _D, alias _E, alias _F, ali
 /*
 * SHA-224 / SHA-256 compression function
 */
-void compress(ref SafeVector!uint digest,
+void compress(ref Secure_Vector!uint digest,
               in ubyte* input, size_t blocks) pure
 {
 	uint A = digest[0], B = digest[1], C = digest[2],

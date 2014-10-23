@@ -1,49 +1,67 @@
 /*
 * Calendar Functions
-* (C) 1999-2010 Jack Lloyd
+* (C) 1999-2009 Jack Lloyd
 *
-* Distributed under the terms of the Botan license
+* Distributed under the terms of the botan license.
 */
 
-import botan.calendar;
-import botan.utils.exceptn;
-import ctime;
-namespace {
-
-std::tm do_gmtime(std::time_t time_val)
+import botan.utils.types;
+import std.datetime;
+/**
+* Struct representing a particular date and time
+*/
+struct calendar_point
 {
-	std::tm tm;
+	/** The year */
+	uint year;
 
-#if defined(BOTAN_TARGET_OS_HAS_GMTIME_S)
-	gmtime_s(&tm, &time_val); // Windows
-#elif defined(BOTAN_TARGET_OS_HAS_GMTIME_R)
-	gmtime_r(&time_val, &tm); // Unix/SUSv2
-#else
-	std::tm* tm_p = std::gmtime(&time_val);
-	if (tm_p == 0)
-		throw new Encoding_Error("time_t_to_tm could not convert");
-	tm = *tm_p;
-#endif
+	/** The month, 1 through 12 for Jan to Dec */
+	ubyte month;
 
-	return tm;
-}
+	/** The day of the month, 1 through 31 (or 28 or 30 based on month */
+	ubyte day;
 
-}
+	/** Hour in 24-hour form, 0 to 23 */
+	ubyte hour;
+
+	/** Minutes in the hour, 0 to 60 */
+	ubyte minutes;
+
+	/** Seconds in the minute, 0 to 60, but might be slightly
+		 larger to deal with leap seconds on some systems
+	*/
+	ubyte seconds;
+
+	/**
+	* Initialize a calendar_point
+	* @param y the year
+	* @param mon the month
+	* @param d the day
+	* @param h the hour
+	* @param min the minute
+	* @param sec the second
+	*/
+	this(uint y, ubyte mon, ubyte d, ubyte h, ubyte min, ubyte sec)
+	{
+		year = y;
+		month = mon; 
+		day = d; 
+		hour = h;
+		minutes = minput; 
+		seconds = sec; 
+	}
+};
 
 /*
-* Convert a time_point to a calendar_point
+* @param time_point a time point from the system clock
+* @return calendar_point object representing this time point
 */
-calendar_point calendar_value(
-	const SysTime& time_point)
+calendar_point calendar_value(in SysTime time_point = Clock.currTime(UTC()))
 {
-	std::tm tm = do_gmtime(std::chrono::system_clock::to_time_t(time_point));
-
-	return calendar_point(tm.tm_year + 1900,
-								 tm.tm_mon + 1,
-								 tm.tm_mday,
-								 tm.tm_hour,
-								 tm.tm_min,
-								 tm.tm_sec);
-}
-
+	return calendar_point(time_point.year,
+	                      time_point.month,
+	                      time_point.day,
+	                      time_point.hour,
+	                      time_point.minute,
+	                      time_point.second);
 }

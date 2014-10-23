@@ -6,22 +6,24 @@
 */
 module botan.block.noekeon_simd;
 import botan.block.noekeon;
+import botan.block.block_cipher;
+import botan.utils.loadstor;
 import botan.simd.simd_32;
 
 /**
 * Noekeon implementation using SIMD operations
 */
-class Noekeon_SIMD : Noekeon
+final class Noekeon_SIMD : Noekeon
 {
 public:
-	size_t parallelism() const { return 4; }
+	override @property size_t parallelism() const { return 4; }
 
 	/*
-* Noekeon Encryption
-*/
+	* Noekeon Encryption
+	*/
 	void encrypt_n(ubyte* input, ubyte* output, size_t blocks) const
 	{
-		const SafeVector!uint EK = this.get_EK();
+		const Secure_Vector!uint EK = this.get_EK();
 		
 		SIMD_32 K0 = SIMD_32(EK[0]);
 		SIMD_32 K1 = SIMD_32(EK[1]);
@@ -78,7 +80,7 @@ public:
 	*/
 	void decrypt_n(ubyte* input, ubyte* output, size_t blocks) const
 	{
-		const SafeVector!uint DK = this.get_DK();
+		const Secure_Vector!uint DK = this.get_DK();
 		
 		SIMD_32 K0 = SIMD_32(DK[0]);
 		SIMD_32 K1 = SIMD_32(DK[1]);

@@ -12,10 +12,10 @@ import botan.block.serpent;
 /**
 * Serpent implementation using SIMD
 */
-class Serpent_SIMD : Serpent
+final class Serpent_SIMD : Serpent
 {
 public:
-	size_t parallelism() const { return 4; }
+	override @property size_t parallelism() const { return 4; }
 
 	/*
 	* Serpent Encryption
@@ -58,14 +58,14 @@ public:
 	BlockCipher clone() const { return new Serpent_SIMD; }
 };
 
-package:
+protected:
 
 /*
 * SIMD Serpent Encryption of 4 blocks in parallel
 */
-void serpent_encrypt_4(const ubyte[64] input,
-					   ubyte[64] output,
-					   const uint keys[132])
+void serpent_encrypt_4(const ubyte[64]* input,
+					   ubyte[64]* output,
+						const uint[132]* keys) pure
 {
 	SIMD_32 B0 = SIMD_32.load_le(input);
 	SIMD_32 B1 = SIMD_32.load_le(input + 16);
@@ -121,9 +121,9 @@ void serpent_encrypt_4(const ubyte[64] input,
 /*
 * SIMD Serpent Decryption of 4 blocks in parallel
 */
-void serpent_decrypt_4(const ubyte[64] input,
-					   ubyte[64] output,
-					   const uint keys[132])
+void serpent_decrypt_4(const ubyte[64]* input,
+					   ubyte[64]* output,
+						const uint[132]* keys) pure 
 {
 	SIMD_32 B0 = SIMD_32.load_le(input);
 	SIMD_32 B1 = SIMD_32.load_le(input + 16);

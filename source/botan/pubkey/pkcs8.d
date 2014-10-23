@@ -9,6 +9,8 @@ module botan.pubkey.pkcs8;
 import botan.pubkey.x509_key;
 import functional;
 import std.datetime;
+import botan.rng.rng;
+import botan.filters.pipe;
 import botan.pbe.factory;
 import botan.asn1.der_enc;
 import botan.asn1.ber_dec;
@@ -21,7 +23,7 @@ import botan.utils.types;
 /**
 * PKCS #8 General Exception
 */
-class PKCS8_Exception : Decoding_Error
+final class PKCS8_Exception : Decoding_Error
 {
 	this(in string error)
 	{
@@ -34,7 +36,7 @@ class PKCS8_Exception : Decoding_Error
 * @param key the private key to encode
 * @return BER encoded key
 */
-SafeVector!ubyte BER_encode(in Private_Key key)
+Secure_Vector!ubyte BER_encode(in Private_Key key)
 {
 	const size_t PKCS8_VERSION = 0;
 	
@@ -82,7 +84,7 @@ Vector!ubyte BER_encode(in Private_Key key,
 		        dur,
 		        rng);
 	
-	AlgorithmIdentifier pbe_algid = AlgorithmIdentifier(pbe.get_oid(), pbe.encode_params());
+	Algorithm_Identifier pbe_algid = Algorithm_Identifier(pbe.get_oid(), pbe.encode_params());
 	
 	Pipe key_encrytor = Pipe(*pbe);
 	key_encrytor.process_msg(BER_encode(key));
@@ -131,8 +133,8 @@ Private_Key load_key(DataSource source,
                      RandomNumberGenerator rng,
                      Single_Shot_Passphrase get_pass)
 {
-	AlgorithmIdentifier alg_id;
-	SafeVector!ubyte pkcs8_key = PKCS8_decode(source, get_pass, alg_id);
+	Algorithm_Identifier alg_id;
+	Secure_Vector!ubyte pkcs8_key = PKCS8_decode(source, get_pass, alg_id);
 	
 	const string alg_name = oids.lookup(alg_id.oid);
 	if (alg_name == "" || alg_name == alg_id.oid.as_string())
@@ -202,10 +204,10 @@ Private_Key copy_key(in Private_Key key,
 /*
 * Get info from an EncryptedPrivateKeyInfo
 */
-SafeVector!ubyte PKCS8_extract(DataSource source,
-                               AlgorithmIdentifier pbe_alg_id)
+Secure_Vector!ubyte PKCS8_extract(DataSource source,
+                               Algorithm_Identifier pbe_alg_id)
 {
-	SafeVector!ubyte key_data;
+	Secure_Vector!ubyte key_data;
 	
 	BER_Decoder(source)
 		.start_cons(ASN1_Tag.SEQUENCE)
@@ -219,13 +221,13 @@ SafeVector!ubyte PKCS8_extract(DataSource source,
 /*
 * PEM decode and/or decrypt a private key
 */
-SafeVector!ubyte PKCS8_decode(
+Secure_Vector!ubyte PKCS8_decode(
 	DataSource source,
 	Single_Shot_Passphrase get_passphrase,
-	AlgorithmIdentifier pk_alg_id)
+	Algorithm_Identifier pk_alg_id)
 {
-	AlgorithmIdentifier pbe_alg_id;
-	SafeVector!ubyte key_data, key;
+	Algorithm_Identifier pbe_alg_id;
+	Secure_Vector!ubyte key_data, key;
 	bool is_encrypted = true;
 	
 	try {
@@ -281,7 +283,7 @@ SafeVector!ubyte PKCS8_decode(
 			
 			BER_Decoder(key)
 				.start_cons(ASN1_Tag.SEQUENCE)
-					.decode_and_check<size_t>(0, "Unknown PKCS #8 version number")
+					.decode_and_check!size_t(0, "Unknown PKCS #8 version number")
 					.decode(pk_alg_id)
 					.decode(key, ASN1_Tag.OCTET_STRING)
 					.discard_remaining()

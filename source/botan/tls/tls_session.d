@@ -32,7 +32,7 @@ public:
 	* New session (sets session start time)
 	*/
 	this(in Vector!ubyte session_identifier,
-	     in SafeVector!ubyte master_secret,
+	     in Secure_Vector!ubyte master_secret,
 	     Protocol_Version _version,
 	     ushort ciphersuite,
 	     ubyte compression_method,
@@ -121,7 +121,7 @@ public:
 	*/
 	this(in string pem)
 	{
-		SafeVector!ubyte der = pem.decode_check_label(pem, "SSL SESSION");
+		Secure_Vector!ubyte der = pem.decode_check_label(pem, "SSL SESSION");
 		
 		this(&der[0], der.length);
 	}
@@ -131,7 +131,7 @@ public:
 	* @warning if the master secret is compromised so is the
 	* session traffic
 	*/
-	SafeVector!ubyte DER_encode() const
+	Secure_Vector!ubyte DER_encode() const
 	{
 		Vector!ubyte peer_cert_bits;
 		for (size_t i = 0; i != m_peer_certs.length; ++i)
@@ -247,7 +247,7 @@ public:
 	/**
 	* Get the saved master secret
 	*/
-	const SafeVector!ubyte master_secret() const
+	const Secure_Vector!ubyte master_secret() const
 	{ return m_master_secret; }
 
 	/**
@@ -294,7 +294,7 @@ private:
 
 	Vector!ubyte m_identifier;
 	Vector!ubyte m_session_ticket; // only used by client side
-	SafeVector!ubyte m_master_secret;
+	Secure_Vector!ubyte m_master_secret;
 
 	Protocol_Version m_version;
 	ushort m_ciphersuite;

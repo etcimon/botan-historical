@@ -9,10 +9,11 @@ module botan.stream.ofb;
 import botan.stream.stream_cipher;
 import botan.block.block_cipher;
 import botan.utils.xor_buf;
+
 /**
 * Output Feedback Mode
 */
-class OFB : StreamCipher
+final class OFB : StreamCipher
 {
 public:
 	void cipher(in ubyte* input, ubyte* output)
@@ -33,7 +34,7 @@ public:
 	void set_iv(in ubyte* iv, size_t iv_len)
 	{
 		if (!valid_iv_length(iv_len))
-			throw new Invalid_IV_Length(name(), iv_len);
+			throw new Invalid_IV_Length(name, iv_len);
 		
 		zeroise(m_buffer);
 		buffer_insert(m_buffer, 0, iv, iv_len);
@@ -55,7 +56,7 @@ public:
 		return "OFB(" ~ m_cipher.name ~ ")";
 	}
 
-	OFB* clone() const
+	OFB clone() const
 	{ return new OFB(m_cipher.clone()); }
 
 	void clear()
@@ -84,6 +85,6 @@ private:
 	}
 
 	Unique!BlockCipher m_cipher;
-	SafeVector!ubyte m_buffer;
+	Secure_Vector!ubyte m_buffer;
 	size_t m_buf_pos;
 };

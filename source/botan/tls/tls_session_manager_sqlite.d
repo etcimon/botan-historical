@@ -237,7 +237,7 @@ SymmetricKey derive_key(in string passphrase,
 {
 	Unique!PBKDF pbkdf = get_pbkdf("PBKDF2(SHA-512)");
 	
-	SafeVector!ubyte x = pbkdf.derive_key(32 + 2,
+	Secure_Vector!ubyte x = pbkdf.derive_key(32 + 2,
 	                                      passphrase,
 	                                      salt, salt_len,
 	                                      iterations).bits_of();

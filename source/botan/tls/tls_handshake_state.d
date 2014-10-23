@@ -14,6 +14,7 @@ import botan.tls.tls_exceptn;
 import botan.tls.tls_handshake_msg;
 import botan.pubkey.pk_keys;
 import botan.pubkey.pubkey;
+import botan.kdf.kdf;
 import botan.tls.tls_messages;
 import botan.tls.tls_record;
 import functional;
@@ -380,7 +381,7 @@ public:
 		m_session_keys = Session_Keys(this, client_kex().pre_master_secret(), false);
 	}
 
-	void compute_session_keys(in SafeVector!ubyte resume_master_secret)
+	void compute_session_keys(in Secure_Vector!ubyte resume_master_secret)
 	{
 		m_session_keys = Session_Keys(this, resume_master_secret, true);
 	}

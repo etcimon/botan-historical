@@ -124,14 +124,14 @@ public:
 		zap(round_key);
 	}
 
-	@property string name() const { return "Serpent"; }
+	override @property string name() const { return "Serpent"; }
 	BlockCipher clone() const { return new Serpent; }
-package:
+protected:
 	/**
 	* For use by subclasses using SIMD, asm, etc
 	* @return const reference to the key schedule
 	*/
-	const ref SafeVector!uint get_round_keys() const
+	const ref Secure_Vector!uint get_round_keys() const
 	{ return round_key; }
 
 	/**
@@ -151,7 +151,7 @@ private:
 	{
 		const uint PHI = 0x9E3779B9;
 		
-		SafeVector!uint W = SafeVector!uint(140);
+		Secure_Vector!uint W = Secure_Vector!uint(140);
 		for (size_t i = 0; i != length / 4; ++i)
 			W[i] = load_le!uint(key, i);
 		
@@ -184,7 +184,7 @@ private:
 		round_key.assign(&W[8], &W[140]);
 	}
 
-	SafeVector!uint round_key;
+	Secure_Vector!uint round_key;
 };
 
 
@@ -656,7 +656,8 @@ void i_transform(ref uint B0, ref uint B1, ref uint B2, ref uint B3)
 /*
 * XOR a key block with a data block
 */
-string key_xor(ubyte round)() {
+string key_xor(ubyte round)()
+{
 	return `B0 ^= round_key[4*` ~ round.stringof ~ `  ];
 			B1 ^= round_key[4*` ~ round.stringof ~ `+1];
 			B2 ^= round_key[4*` ~ round.stringof ~ `+2];

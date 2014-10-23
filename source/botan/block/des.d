@@ -8,12 +8,12 @@ module botan.block.des;
 
 import botan.utils.loadstor;
 import botan.utils.rotate;
-import botan.block.block_cipher;
+public import botan.block.block_cipher;
 
 /**
 * DES
 */
-class DES : Block_Cipher_Fixed_Params!(8, 8)
+final class DES : Block_Cipher_Fixed_Params!(8, 8)
 {
 public:
 
@@ -96,7 +96,7 @@ private:
 		des_key_schedule(&round_key[0], key);
 	}
 
-	SafeVector!uint round_key;
+	Secure_Vector!uint round_key;
 };
 
 /**
@@ -194,7 +194,7 @@ private:
 	}
 
 
-	SafeVector!uint round_key;
+	Secure_Vector!uint round_key;
 };
 
 /*
@@ -825,127 +825,126 @@ immutable ulong[256] DES_FPTAB2 = [
 	0x0101010000000101, 0x0101014000000101, 0x0101010001000101, 0x0101014001000101,
 	0x0101010000010101, 0x0101014000010101, 0x0101010001010101, 0x0101014001010101 ];
 	
-package {
-	/*
-	* DES Key Schedule
-	*/
-	void des_key_schedule(uint[32] round_key, in ubyte[8] key)
+package: //used by desx as well
+
+/*
+* DES Key Schedule
+*/
+void des_key_schedule(uint[32]* round_key, in ubyte[8]* key) pure
+{
+	immutable ubyte[16] ROT = [ 1, 1, 2, 2, 2, 2, 2, 2,
+		1, 2, 2, 2, 2, 2, 2, 1 ];
+	
+	uint C = ((key[7] & 0x80) << 20) | ((key[6] & 0x80) << 19) |
+		((key[5] & 0x80) << 18) | ((key[4] & 0x80) << 17) |
+			((key[3] & 0x80) << 16) | ((key[2] & 0x80) << 15) |
+			((key[1] & 0x80) << 14) | ((key[0] & 0x80) << 13) |
+			((key[7] & 0x40) << 13) | ((key[6] & 0x40) << 12) |
+			((key[5] & 0x40) << 11) | ((key[4] & 0x40) << 10) |
+			((key[3] & 0x40) <<  9) | ((key[2] & 0x40) <<  8) |
+			((key[1] & 0x40) <<  7) | ((key[0] & 0x40) <<  6) |
+			((key[7] & 0x20) <<  6) | ((key[6] & 0x20) <<  5) |
+			((key[5] & 0x20) <<  4) | ((key[4] & 0x20) <<  3) |
+			((key[3] & 0x20) <<  2) | ((key[2] & 0x20) <<  1) |
+			((key[1] & 0x20)		) | ((key[0] & 0x20) >>  1) |
+			((key[7] & 0x10) >>  1) | ((key[6] & 0x10) >>  2) |
+			((key[5] & 0x10) >>  3) | ((key[4] & 0x10) >>  4);
+	uint D = ((key[7] & 0x02) << 26) | ((key[6] & 0x02) << 25) |
+		((key[5] & 0x02) << 24) | ((key[4] & 0x02) << 23) |
+			((key[3] & 0x02) << 22) | ((key[2] & 0x02) << 21) |
+			((key[1] & 0x02) << 20) | ((key[0] & 0x02) << 19) |
+			((key[7] & 0x04) << 17) | ((key[6] & 0x04) << 16) |
+			((key[5] & 0x04) << 15) | ((key[4] & 0x04) << 14) |
+			((key[3] & 0x04) << 13) | ((key[2] & 0x04) << 12) |
+			((key[1] & 0x04) << 11) | ((key[0] & 0x04) << 10) |
+			((key[7] & 0x08) <<  8) | ((key[6] & 0x08) <<  7) |
+			((key[5] & 0x08) <<  6) | ((key[4] & 0x08) <<  5) |
+			((key[3] & 0x08) <<  4) | ((key[2] & 0x08) <<  3) |
+			((key[1] & 0x08) <<  2) | ((key[0] & 0x08) <<  1) |
+			((key[3] & 0x10) >>  1) | ((key[2] & 0x10) >>  2) |
+			((key[1] & 0x10) >>  3) | ((key[0] & 0x10) >>  4);
+	
+	for (size_t i = 0; i != 16; ++i)
 	{
-		immutable ubyte[16] ROT = [ 1, 1, 2, 2, 2, 2, 2, 2,
-			1, 2, 2, 2, 2, 2, 2, 1 ];
+		C = ((C << ROT[i]) | (C >> (28-ROT[i]))) & 0x0FFFFFFF;
+		D = ((D << ROT[i]) | (D >> (28-ROT[i]))) & 0x0FFFFFFF;
+		round_key[2*i  ] = ((C & 0x00000010) << 22) | ((C & 0x00000800) << 17) |
+			((C & 0x00000020) << 16) | ((C & 0x00004004) << 15) |
+				((C & 0x00000200) << 11) | ((C & 0x00020000) << 10) |
+				((C & 0x01000000) >>  6) | ((C & 0x00100000) >>  4) |
+				((C & 0x00010000) <<  3) | ((C & 0x08000000) >>  2) |
+				((C & 0x00800000) <<  1) | ((D & 0x00000010) <<  8) |
+				((D & 0x00000002) <<  7) | ((D & 0x00000001) <<  2) |
+				((D & 0x00000200)		) | ((D & 0x00008000) >>  2) |
+				((D & 0x00000088) >>  3) | ((D & 0x00001000) >>  7) |
+				((D & 0x00080000) >>  9) | ((D & 0x02020000) >> 14) |
+				((D & 0x00400000) >> 21);
+		round_key[2*i+1] = ((C & 0x00000001) << 28) | ((C & 0x00000082) << 18) |
+			((C & 0x00002000) << 14) | ((C & 0x00000100) << 10) |
+				((C & 0x00001000) <<  9) | ((C & 0x00040000) <<  6) |
+				((C & 0x02400000) <<  4) | ((C & 0x00008000) <<  2) |
+				((C & 0x00200000) >>  1) | ((C & 0x04000000) >> 10) |
+				((D & 0x00000020) <<  6) | ((D & 0x00000100)		) |
+				((D & 0x00000800) >>  1) | ((D & 0x00000040) >>  3) |
+				((D & 0x00010000) >>  4) | ((D & 0x00000400) >>  5) |
+				((D & 0x00004000) >> 10) | ((D & 0x04000000) >> 13) |
+				((D & 0x00800000) >> 14) | ((D & 0x00100000) >> 18) |
+				((D & 0x01000000) >> 24) | ((D & 0x08000000) >> 26);
+	}
+}
+
+/*
+* DES Encryption
+*/
+void des_encrypt(ref uint L, ref uint R,
+                 in uint[32]* round_key) pure
+{
+	for (size_t i = 0; i != 16; i += 2)
+	{
+		uint T0, T1;
 		
-		uint C = ((key[7] & 0x80) << 20) | ((key[6] & 0x80) << 19) |
-			((key[5] & 0x80) << 18) | ((key[4] & 0x80) << 17) |
-				((key[3] & 0x80) << 16) | ((key[2] & 0x80) << 15) |
-				((key[1] & 0x80) << 14) | ((key[0] & 0x80) << 13) |
-				((key[7] & 0x40) << 13) | ((key[6] & 0x40) << 12) |
-				((key[5] & 0x40) << 11) | ((key[4] & 0x40) << 10) |
-				((key[3] & 0x40) <<  9) | ((key[2] & 0x40) <<  8) |
-				((key[1] & 0x40) <<  7) | ((key[0] & 0x40) <<  6) |
-				((key[7] & 0x20) <<  6) | ((key[6] & 0x20) <<  5) |
-				((key[5] & 0x20) <<  4) | ((key[4] & 0x20) <<  3) |
-				((key[3] & 0x20) <<  2) | ((key[2] & 0x20) <<  1) |
-				((key[1] & 0x20)		) | ((key[0] & 0x20) >>  1) |
-				((key[7] & 0x10) >>  1) | ((key[6] & 0x10) >>  2) |
-				((key[5] & 0x10) >>  3) | ((key[4] & 0x10) >>  4);
-		uint D = ((key[7] & 0x02) << 26) | ((key[6] & 0x02) << 25) |
-			((key[5] & 0x02) << 24) | ((key[4] & 0x02) << 23) |
-				((key[3] & 0x02) << 22) | ((key[2] & 0x02) << 21) |
-				((key[1] & 0x02) << 20) | ((key[0] & 0x02) << 19) |
-				((key[7] & 0x04) << 17) | ((key[6] & 0x04) << 16) |
-				((key[5] & 0x04) << 15) | ((key[4] & 0x04) << 14) |
-				((key[3] & 0x04) << 13) | ((key[2] & 0x04) << 12) |
-				((key[1] & 0x04) << 11) | ((key[0] & 0x04) << 10) |
-				((key[7] & 0x08) <<  8) | ((key[6] & 0x08) <<  7) |
-				((key[5] & 0x08) <<  6) | ((key[4] & 0x08) <<  5) |
-				((key[3] & 0x08) <<  4) | ((key[2] & 0x08) <<  3) |
-				((key[1] & 0x08) <<  2) | ((key[0] & 0x08) <<  1) |
-				((key[3] & 0x10) >>  1) | ((key[2] & 0x10) >>  2) |
-				((key[1] & 0x10) >>  3) | ((key[0] & 0x10) >>  4);
+		T0 = rotate_right(R, 4) ^ round_key[2*i];
+		T1 =				  R	  ^ round_key[2*i + 1];
 		
-		for (size_t i = 0; i != 16; ++i)
-		{
-			C = ((C << ROT[i]) | (C >> (28-ROT[i]))) & 0x0FFFFFFF;
-			D = ((D << ROT[i]) | (D >> (28-ROT[i]))) & 0x0FFFFFFF;
-			round_key[2*i  ] = ((C & 0x00000010) << 22) | ((C & 0x00000800) << 17) |
-				((C & 0x00000020) << 16) | ((C & 0x00004004) << 15) |
-					((C & 0x00000200) << 11) | ((C & 0x00020000) << 10) |
-					((C & 0x01000000) >>  6) | ((C & 0x00100000) >>  4) |
-					((C & 0x00010000) <<  3) | ((C & 0x08000000) >>  2) |
-					((C & 0x00800000) <<  1) | ((D & 0x00000010) <<  8) |
-					((D & 0x00000002) <<  7) | ((D & 0x00000001) <<  2) |
-					((D & 0x00000200)		) | ((D & 0x00008000) >>  2) |
-					((D & 0x00000088) >>  3) | ((D & 0x00001000) >>  7) |
-					((D & 0x00080000) >>  9) | ((D & 0x02020000) >> 14) |
-					((D & 0x00400000) >> 21);
-			round_key[2*i+1] = ((C & 0x00000001) << 28) | ((C & 0x00000082) << 18) |
-				((C & 0x00002000) << 14) | ((C & 0x00000100) << 10) |
-					((C & 0x00001000) <<  9) | ((C & 0x00040000) <<  6) |
-					((C & 0x02400000) <<  4) | ((C & 0x00008000) <<  2) |
-					((C & 0x00200000) >>  1) | ((C & 0x04000000) >> 10) |
-					((D & 0x00000020) <<  6) | ((D & 0x00000100)		) |
-					((D & 0x00000800) >>  1) | ((D & 0x00000040) >>  3) |
-					((D & 0x00010000) >>  4) | ((D & 0x00000400) >>  5) |
-					((D & 0x00004000) >> 10) | ((D & 0x04000000) >> 13) |
-					((D & 0x00800000) >> 14) | ((D & 0x00100000) >> 18) |
-					((D & 0x01000000) >> 24) | ((D & 0x08000000) >> 26);
-		}
+		L ^= DES_SPBOX1[get_byte(0, T0)] ^ DES_SPBOX2[get_byte(0, T1)] ^
+			DES_SPBOX3[get_byte(1, T0)] ^ DES_SPBOX4[get_byte(1, T1)] ^
+			DES_SPBOX5[get_byte(2, T0)] ^ DES_SPBOX6[get_byte(2, T1)] ^
+			DES_SPBOX7[get_byte(3, T0)] ^ DES_SPBOX8[get_byte(3, T1)];
+		
+		T0 = rotate_right(L, 4) ^ round_key[2*i + 2];
+		T1 =				  L	  ^ round_key[2*i + 3];
+		
+		R ^= DES_SPBOX1[get_byte(0, T0)] ^ DES_SPBOX2[get_byte(0, T1)] ^
+			DES_SPBOX3[get_byte(1, T0)] ^ DES_SPBOX4[get_byte(1, T1)] ^
+			DES_SPBOX5[get_byte(2, T0)] ^ DES_SPBOX6[get_byte(2, T1)] ^
+			DES_SPBOX7[get_byte(3, T0)] ^ DES_SPBOX8[get_byte(3, T1)];
 	}
-	
-	/*
-	* DES Encryption
-	*/
-	void des_encrypt(ref uint L, ref uint R,
-	                 in uint[32] round_key)
+}
+
+/*
+* DES Decryption
+*/
+void des_decrypt(ref uint L, ref uint R,
+                 in uint[32]* round_key) pure
+{
+	for (size_t i = 16; i != 0; i -= 2)
 	{
-		for (size_t i = 0; i != 16; i += 2)
-		{
-			uint T0, T1;
-			
-			T0 = rotate_right(R, 4) ^ round_key[2*i];
-			T1 =				  R	  ^ round_key[2*i + 1];
-			
-			L ^= DES_SPBOX1[get_byte(0, T0)] ^ DES_SPBOX2[get_byte(0, T1)] ^
-				DES_SPBOX3[get_byte(1, T0)] ^ DES_SPBOX4[get_byte(1, T1)] ^
-				DES_SPBOX5[get_byte(2, T0)] ^ DES_SPBOX6[get_byte(2, T1)] ^
-				DES_SPBOX7[get_byte(3, T0)] ^ DES_SPBOX8[get_byte(3, T1)];
-			
-			T0 = rotate_right(L, 4) ^ round_key[2*i + 2];
-			T1 =				  L	  ^ round_key[2*i + 3];
-			
-			R ^= DES_SPBOX1[get_byte(0, T0)] ^ DES_SPBOX2[get_byte(0, T1)] ^
-				DES_SPBOX3[get_byte(1, T0)] ^ DES_SPBOX4[get_byte(1, T1)] ^
-				DES_SPBOX5[get_byte(2, T0)] ^ DES_SPBOX6[get_byte(2, T1)] ^
-				DES_SPBOX7[get_byte(3, T0)] ^ DES_SPBOX8[get_byte(3, T1)];
-		}
+		uint T0, T1;
+		
+		T0 = rotate_right(R, 4) ^ round_key[2*i - 2];
+		T1 =				  R	  ^ round_key[2*i - 1];
+		
+		L ^= DES_SPBOX1[get_byte(0, T0)] ^ DES_SPBOX2[get_byte(0, T1)] ^
+			DES_SPBOX3[get_byte(1, T0)] ^ DES_SPBOX4[get_byte(1, T1)] ^
+			DES_SPBOX5[get_byte(2, T0)] ^ DES_SPBOX6[get_byte(2, T1)] ^
+			DES_SPBOX7[get_byte(3, T0)] ^ DES_SPBOX8[get_byte(3, T1)];
+		
+		T0 = rotate_right(L, 4) ^ round_key[2*i - 4];
+		T1 =				  L	  ^ round_key[2*i - 3];
+		
+		R ^= DES_SPBOX1[get_byte(0, T0)] ^ DES_SPBOX2[get_byte(0, T1)] ^
+			DES_SPBOX3[get_byte(1, T0)] ^ DES_SPBOX4[get_byte(1, T1)] ^
+			DES_SPBOX5[get_byte(2, T0)] ^ DES_SPBOX6[get_byte(2, T1)] ^
+			DES_SPBOX7[get_byte(3, T0)] ^ DES_SPBOX8[get_byte(3, T1)];
 	}
-	
-	/*
-	* DES Decryption
-	*/
-	void des_decrypt(ref uint L, ref uint R,
-	                 in uint[32] round_key)
-	{
-		for (size_t i = 16; i != 0; i -= 2)
-		{
-			uint T0, T1;
-			
-			T0 = rotate_right(R, 4) ^ round_key[2*i - 2];
-			T1 =				  R	  ^ round_key[2*i - 1];
-			
-			L ^= DES_SPBOX1[get_byte(0, T0)] ^ DES_SPBOX2[get_byte(0, T1)] ^
-				DES_SPBOX3[get_byte(1, T0)] ^ DES_SPBOX4[get_byte(1, T1)] ^
-				DES_SPBOX5[get_byte(2, T0)] ^ DES_SPBOX6[get_byte(2, T1)] ^
-				DES_SPBOX7[get_byte(3, T0)] ^ DES_SPBOX8[get_byte(3, T1)];
-			
-			T0 = rotate_right(L, 4) ^ round_key[2*i - 4];
-			T1 =				  L	  ^ round_key[2*i - 3];
-			
-			R ^= DES_SPBOX1[get_byte(0, T0)] ^ DES_SPBOX2[get_byte(0, T1)] ^
-				DES_SPBOX3[get_byte(1, T0)] ^ DES_SPBOX4[get_byte(1, T1)] ^
-				DES_SPBOX5[get_byte(2, T0)] ^ DES_SPBOX6[get_byte(2, T1)] ^
-				DES_SPBOX7[get_byte(3, T0)] ^ DES_SPBOX8[get_byte(3, T1)];
-		}
-	}
-	
 }

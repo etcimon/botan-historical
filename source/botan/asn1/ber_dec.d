@@ -6,19 +6,18 @@
 */
 module botan.asn1.ber_dec;
 
-import botan.asn1.asn1_oid;
+public import botan.asn1.asn1_oid;
 import botan.filters.data_src;
-import botan.ber_dec;
 import botan.math.bigint.bigint;
 import botan.utils.get_byte;
-import botan.utils.memory : FreeListRef;
+import botan.utils.types;
 
 alias BER_Decoder = FreeListRef!BER_Decoder_Impl;
 
 /**
 * BER Decoding Object
 */
-class BER_Decoder_Impl
+final class BER_Decoder_Impl
 {
 public:
 
@@ -103,7 +102,7 @@ public:
 	}
 
 	/*
-	* Begin decoding a CONSTRUCTED type
+	* Begin decoding a ASN1_Tag.CONSTRUCTED type
 	*/
 	BER_Decoder start_cons(ASN1_Tag type_tag,
 	                       ASN1_Tag class_tag = ASN1_Tag.UNIVERSAL)
@@ -117,7 +116,7 @@ public:
 	}
 
 	/*
-	* Finish decoding a CONSTRUCTED type
+	* Finish decoding a ASN1_Tag.CONSTRUCTED type
 	*/
 	BER_Decoder end_cons()
 	{
@@ -139,7 +138,7 @@ public:
 	/*
 	* Save all the bytes remaining in the source
 	*/
-	BER_Decoder raw_bytes(SafeVector!ubyte output)
+	BER_Decoder raw_bytes(Secure_Vector!ubyte output)
 	{
 		output.clear();
 		ubyte buf;
@@ -274,7 +273,7 @@ public:
 	/*
 	* BER decode a BIT STRING or OCTET STRING
 	*/
-	BER_Decoder decode(SafeVector!ubyte output, ASN1_Tag real_type)
+	BER_Decoder decode(Secure_Vector!ubyte output, ASN1_Tag real_type)
 	{
 		return decode(output, real_type, real_type, ASN1_Tag.UNIVERSAL);
 	}
@@ -290,7 +289,7 @@ public:
 	/*
 	* BER decode a BIT STRING or OCTET STRING
 	*/
-	BER_Decoder decode(SafeVector!ubyte buffer,
+	BER_Decoder decode(Secure_Vector!ubyte buffer,
 	                   ASN1_Tag real_type,
 	                   ASN1_Tag type_tag, ASN1_Tag class_tag = ASN1_Tag.CONTEXT_SPECIFIC)
 	{
@@ -502,13 +501,11 @@ public:
 
 	BER_Decoder decode_octet_string_bigint(ref BigInt output)
 	{
-		SafeVector!ubyte out_vec;
+		Secure_Vector!ubyte out_vec;
 		decode(out_vec, ASN1_Tag.OCTET_STRING);
 		output = BigInt.decode(&out_vec[0], out_vec.length);
 		return this;
 	}
-	
-
 
 	/*
 	* BER_Decoder Constructor
@@ -535,7 +532,7 @@ public:
 	/*
 	* BER_Decoder Constructor
 	*/
-	this(in SafeVector!ubyte data)
+	this(in Secure_Vector!ubyte data)
 	{
 		source = new DataSource_Memory(data);
 		owns = true;
@@ -576,12 +573,13 @@ public:
 	~this()
 	{
 		if (owns)
-			delete source;
-		source = null;
+			source.clear();
+		else
+			source.drop();
 	}
 private:
 	BER_Decoder parent;
-	DataSource source;
+	Unique!DataSource source;
 	BER_Object pushed;
 	bool owns;
 };
@@ -671,7 +669,7 @@ size_t decode_length(DataSource ber)
 */
 size_t find_eoc(DataSource ber)
 {
-	SafeVector!ubyte buffer(DEFAULT_BUFFERSIZE), data;
+	Secure_Vector!ubyte buffer(DEFAULT_BUFFERSIZE), data;
 	
 	while(true)
 	{

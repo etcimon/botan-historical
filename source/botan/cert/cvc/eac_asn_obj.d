@@ -15,9 +15,11 @@ import botan.calendar;
 import botan.utils.charset;
 import botan.utils.parsing;
 import std.datetime;
+import botan.utils.types;
 
 alias ASN1_Car = FreeListRef!ASN1_Car_Impl;
-
+alias ASN1_Cex = FreeListRef!ASN1_Cex_Impl;
+alias ASN1_Ced = FreeListRef!ASN1_Ced_Impl;
 
 /**
 * This class represents CVC EAC Time objects.
@@ -320,7 +322,7 @@ private:
 * This class represents CVC CEDs. Only limited sanity checks of
 * the inputted date value are performed.
 */
-class ASN1_Ced : EAC_Time
+final class ASN1_Ced_Impl : EAC_Time
 {
 public:
 	/**
@@ -354,7 +356,7 @@ public:
 * This class represents CVC CEXs. Only limited sanity checks of
 * the inputted date value are performed.
 */
-class ASN1_Cex : EAC_Time
+final class ASN1_Cex_Impl : EAC_Time
 {
 public:
 	/**
@@ -481,7 +483,7 @@ public:
 	}
 
 	~this() {}
-package:
+protected:
 	// checks for compliance to the alphabet defined in TR-03110 v1.10, 2007-08-20
 	// p. 43
 	bool sanity_check() const
@@ -524,7 +526,7 @@ public:
 /**
 * This class represents CHRs of CVCs (tag 32)
 */
-class ASN1_Chr : ASN1_EAC_String
+final class ASN1_Chr : ASN1_EAC_String
 {
 public:
 	/**

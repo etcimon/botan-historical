@@ -20,6 +20,8 @@ import botan.tls.tls_exceptn;
 import botan.libstate.libstate;
 import botan.utils.loadstor;
 import botan.mac.mac;
+import botan.algo_factory.algo_factory;
+import botan.rng.rng;
 import std.algorithm;
 import botan.utils.types;
 import std.datetime;
@@ -73,7 +75,7 @@ public:
 			return;
 		}
 		
-		AlgorithmFactory af = global_state().algorithm_factory();
+		Algorithm_Factory af = global_state().algorithm_factory();
 		
 		if (const BlockCipher bc = af.prototype_block_cipher(cipher_algo))
 		{
@@ -103,7 +105,7 @@ public:
 
 	AEAD_Mode aead() { return *m_aead; }
 
-	const SafeVector!ubyte aead_nonce(ulong seq)
+	const Secure_Vector!ubyte aead_nonce(ulong seq)
 	{
 		assert(m_aead, "Using AEAD mode");
 		assert(m_nonce.length == 12, "Expected nonce size");
@@ -111,7 +113,7 @@ public:
 		return m_nonce;
 	}
 
-	const SafeVector!ubyte aead_nonce(in ubyte* record, size_t record_len)
+	const Secure_Vector!ubyte aead_nonce(in ubyte* record, size_t record_len)
 	{
 		assert(m_aead, "Using AEAD mode");
 		assert(m_nonce.length == 12, "Expected nonce size");
@@ -121,7 +123,7 @@ public:
 	}
 
 
-	const SafeVector!ubyte format_ad(ulong msg_sequence,
+	const Secure_Vector!ubyte format_ad(ulong msg_sequence,
 	                                 ubyte msg_type,
 	                                 Protocol_Version _version,
 	                                 ushort msg_length)
@@ -149,7 +151,7 @@ public:
 
 	MessageAuthenticationCode mac() { return *m_mac; }
 
-	SafeVector!ubyte cbc_state() { return m_block_cipher_cbc_state; }
+	Secure_Vector!ubyte cbc_state() { return m_block_cipher_cbc_state; }
 
 	@property size_t block_size() const { return m_block_size; }
 
@@ -172,12 +174,12 @@ public:
 private:
 	SysTime m_start_time;
 	Unique!BlockCipher m_block_cipher;
-	SafeVector!ubyte m_block_cipher_cbc_state;
+	Secure_Vector!ubyte m_block_cipher_cbc_state;
 	Unique!StreamCipher m_stream_cipher;
 	Unique!MessageAuthenticationCode m_mac;
 
 	Unique!AEAD_Mode m_aead;
-	SafeVector!ubyte m_nonce, m_ad;
+	Secure_Vector!ubyte m_nonce, m_ad;
 
 	size_t m_block_size = 0;
 	size_t m_iv_size = 0;
@@ -196,7 +198,7 @@ private:
 * @param rng is a random number generator
 * @return number of bytes written to write_buffer
 */
-void write_record(SafeVector!ubyte output,
+void write_record(Secure_Vector!ubyte output,
                   ubyte msg_type, in ubyte* msg, size_t msg_length,
                   Protocol_Version _version,
                   ulong msg_sequence,
@@ -316,7 +318,7 @@ void write_record(SafeVector!ubyte output,
 	}
 	else if (BlockCipher bc = cipherstate.block_cipher())
 	{
-		SafeVector!ubyte cbc_state = cipherstate.cbc_state();
+		Secure_Vector!ubyte cbc_state = cipherstate.cbc_state();
 		
 		assert(buf_size % block_size == 0,
 		             "Buffer is an even multiple of block size");
@@ -345,10 +347,10 @@ void write_record(SafeVector!ubyte output,
 * Decode a TLS record
 * @return zero if full message, else number of bytes still needed
 */
-size_t read_record(SafeVector!ubyte readbuf,
+size_t read_record(Secure_Vector!ubyte readbuf,
                    in ubyte* input, in size_t input_sz,
                    ref size_t consumed,
-                   SafeVector!ubyte record,
+                   Secure_Vector!ubyte record,
                    ref ulong record_sequence,
                    Protocol_Version record_version,
                    Record_Type record_type,
@@ -495,7 +497,7 @@ size_t read_record(SafeVector!ubyte readbuf,
 
 private:
 					
-size_t fill_buffer_to(SafeVector!ubyte readbuf,
+size_t fill_buffer_to(Secure_Vector!ubyte readbuf,
                       const ref ubyte* input,
                       ref size_t input_size,
                       ref size_t input_consumed,
@@ -580,13 +582,13 @@ const BlockCipher bc)
 	
 	ubyte* buf = record_contents.ptr;
 	
-	SafeVector!ubyte last_ciphertext = SafeVector!ubyte(block_size);
+	Secure_Vector!ubyte last_ciphertext = Secure_Vector!ubyte(block_size);
 	copy_mem(&last_ciphertext[0], &buf[0], block_size);
 	
 	bc.decrypt(&buf[0]);
 	xor_buf(&buf[0], &cipherstate.cbc_state()[0], block_size);
 	
-	SafeVector!ubyte last_ciphertext2;
+	Secure_Vector!ubyte last_ciphertext2;
 	
 	for (size_t i = 1; i < blocks; ++i)
 	{
@@ -599,7 +601,7 @@ const BlockCipher bc)
 	cipherstate.cbc_state() = last_ciphertext;
 }
 
-void decrypt_record(SafeVector!ubyte output,
+void decrypt_record(Secure_Vector!ubyte output,
                     in ubyte* record_contents, in size_t record_len,
                     ulong record_sequence,
                     Protocol_Version record_version,

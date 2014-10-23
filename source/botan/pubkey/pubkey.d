@@ -94,7 +94,7 @@ public:
 	* @param length the length of the above ubyte array
 	* @return decrypted message
 	*/
-	SafeVector!ubyte decrypt(in ubyte* input, size_t length) const
+	Secure_Vector!ubyte decrypt(in ubyte* input, size_t length) const
 	{
 		return dec(input, length);
 	}
@@ -104,7 +104,7 @@ public:
 	* @param input the ciphertext
 	* @return decrypted message
 	*/
-	SafeVector!ubyte decrypt(Alloc)(in Vector!( ubyte, Alloc ) input) const
+	Secure_Vector!ubyte decrypt(Alloc)(in Vector!( ubyte, Alloc ) input) const
 	{
 		return dec(&input[0], input.length);
 	}
@@ -113,7 +113,7 @@ public:
 	~this() {}
 
 private:
-	abstract SafeVector!ubyte dec(in ubyte*, size_t) const;
+	abstract Secure_Vector!ubyte dec(in ubyte*, size_t) const;
 };
 
 /**
@@ -151,7 +151,7 @@ public:
 											 RandomNumberGenerator rng)
 	{ return sign_message(&input[0], input.length, rng); }
 
-	Vector!ubyte sign_message(in SafeVector!ubyte input,
+	Vector!ubyte sign_message(in Secure_Vector!ubyte input,
 											 RandomNumberGenerator rng)
 	{ return sign_message(&input[0], input.length, rng); }
 
@@ -236,7 +236,7 @@ public:
 	     Signature_Format format = IEEE_1363,
 	     Fault_Protection prot = ENABLE_FAULT_PROTECTION)
 	{
-		AlgorithmFactory.Engine_Iterator i = AlgorithmFactory.Engine_Iterator(global_state().algorithm_factory());
+		Algorithm_Factory.Engine_Iterator i = Algorithm_Factory.Engine_Iterator(global_state().algorithm_factory());
 		RandomNumberGenerator rng = global_state().global_rng();
 		
 		m_op = null;
@@ -433,7 +433,7 @@ public:
 	     in string emsa_name,
 	     Signature_Format format = IEEE_1363)
 	{
-		AlgorithmFactory.Engine_Iterator i = AlgorithmFactory.Engine_Iterator(global_state().algorithm_factory());
+		Algorithm_Factory.Engine_Iterator i = Algorithm_Factory.Engine_Iterator(global_state().algorithm_factory());
 		RandomNumberGenerator rng = global_state().global_rng();
 		
 		foreach(const Engine engine; i)
@@ -451,19 +451,19 @@ public:
 	}
 
 private:
-	bool validate_signature(in SafeVector!ubyte msg,
+	bool validate_signature(in Secure_Vector!ubyte msg,
 	                        in ubyte* sig, size_t sig_len)
 	{
 		if (m_op.with_recovery())
 		{
-			SafeVector!ubyte output_of_key = m_op.verify_mr(sig, sig_len);
+			Secure_Vector!ubyte output_of_key = m_op.verify_mr(sig, sig_len);
 			return m_emsa.verify(output_of_key, msg, m_op.max_input_bits());
 		}
 		else
 		{
 			RandomNumberGenerator rng = global_state().global_rng();
 			
-			SafeVector!ubyte encoded =
+			Secure_Vector!ubyte encoded =
 				m_emsa.encoding_of(msg, m_op.max_input_bits(), rng);
 			
 			return m_op.verify(&encoded[0], encoded.length, sig, sig_len);
@@ -494,7 +494,7 @@ public:
 	                        size_t in_len, in ubyte* params,
 	                        size_t params_len) const
 	{
-		SafeVector!ubyte z = m_op.agree(input, in_len);
+		Secure_Vector!ubyte z = m_op.agree(input, in_len);
 		
 		if (!m_kdf)
 			return z;
@@ -558,7 +558,7 @@ public:
 	this(in PK_Key_Agreement_Key key,
 	     in string kdf_name)
 	{
-		AlgorithmFactory.Engine_Iterator i = AlgorithmFactory.Engine_Iterator(global_state().algorithm_factory());
+		Algorithm_Factory.Engine_Iterator i = Algorithm_Factory.Engine_Iterator(global_state().algorithm_factory());
 		RandomNumberGenerator rng = global_state().global_rng();
 		
 		foreach(const Engine engine; i)
@@ -603,7 +603,7 @@ public:
 	this(in Public_Key key,
 	     in string eme_name)
 	{
-		AlgorithmFactory.Engine_Iterator iter = AlgorithmFactory.Engine_Iterator(global_state().algorithm_factory());
+		Algorithm_Factory.Engine_Iterator iter = Algorithm_Factory.Engine_Iterator(global_state().algorithm_factory());
 		RandomNumberGenerator rng = global_state().global_rng();
 
 		foreach (const Engine engine; iter)
@@ -627,7 +627,7 @@ private:
 	{
 		if (m_eme)
 		{
-			SafeVector!ubyte encoded =
+			Secure_Vector!ubyte encoded =
 				m_eme.encode(input, length, m_op.max_input_bits(), rng);
 			
 			if (8*(encoded.length - 1) + high_bit(encoded[0]) > m_op.max_input_bits())
@@ -662,7 +662,7 @@ public:
 	this(in Private_Key key,
 		     in string eme_name)
 	{
-		AlgorithmFactory.Engine_Iterator i = AlgorithmFactory.Engine_Iterator(global_state().algorithm_factory());
+		Algorithm_Factory.Engine_Iterator i = Algorithm_Factory.Engine_Iterator(global_state().algorithm_factory());
 		RandomNumberGenerator rng = global_state().global_rng();
 		
 		foreach (const Engine engine; i)
@@ -682,11 +682,11 @@ private:
 	/*
 	* Decrypt a message
 	*/
-	SafeVector!ubyte dec(in ubyte* msg,
+	Secure_Vector!ubyte dec(in ubyte* msg,
 	                     size_t length) const
 	{
 		try {
-			SafeVector!ubyte decrypted = m_op.decrypt(msg, length);
+			Secure_Vector!ubyte decrypted = m_op.decrypt(msg, length);
 			if (m_eme)
 				return m_eme.decode(decrypted, m_op.max_input_bits());
 			else

@@ -29,8 +29,8 @@ public:
 	size_t max_input_bits() const { return (group_q().bits() - 1); }
 
 
-	this(in AlgorithmIdentifier alg_id,
-	     in SafeVector!ubyte key_bits) 
+	this(in Algorithm_Identifier alg_id,
+	     in Secure_Vector!ubyte key_bits) 
 	{
 		super(alg_id, key_bits, DL_Group.ANSI_X9_57);
 	}
@@ -44,21 +44,21 @@ public:
 		y = y1;
 	}
 
-package:
+protected:
 	this() {}
 };
 
 /**
 * Nyberg-Rueppel Private Key
 */
-class NR_PrivateKey : NR_PublicKey,
+final class NR_PrivateKey : NR_PublicKey,
 					 DL_Scheme_PrivateKey
 {
 public:
 	/*
 * Check Private Nyberg-Rueppel Parameters
 */
-	bool  check_key(RandomNumberGenerator rng, bool strong) const
+	bool check_key(RandomNumberGenerator rng, bool strong) const
 	{
 		if (!super.check_key(rng, strong) || x >= group_q())
 			return false;
@@ -91,8 +91,8 @@ public:
 			load_check(rng);
 	}
 
-	this(in AlgorithmIdentifier alg_id,
-	     in SafeVector!ubyte key_bits,
+	this(in Algorithm_Identifier alg_id,
+	     in Secure_Vector!ubyte key_bits,
 	     RandomNumberGenerator rng)
 	{ 
 		super(alg_id, key_bits, DL_Group.ANSI_X9_57);
@@ -106,7 +106,7 @@ public:
 /**
 * Nyberg-Rueppel signature operation
 */
-class NR_Signature_Operation : Signature
+final class NR_Signature_Operation : Signature
 {
 public:
 	size_t message_parts() const { return 2; }
@@ -121,7 +121,7 @@ public:
 		mod_q = Modular_Reducer(nr.group_q());
 	}
 
-	SafeVector!ubyte sign(in ubyte* msg, size_t msg_len,
+	Secure_Vector!ubyte sign(in ubyte* msg, size_t msg_len,
 	                      RandomNumberGenerator rng)
 	{
 		rng.add_entropy(msg, msg_len);
@@ -144,7 +144,7 @@ public:
 			d = mod_q.reduce(k - x * c);
 		}
 		
-		SafeVector!ubyte output = SafeVector!ubyte(2*q.bytes());
+		Secure_Vector!ubyte output = Secure_Vector!ubyte(2*q.bytes());
 		c.binary_encode(&output[output.length / 2 - c.bytes()]);
 		d.binary_encode(&output[output.length - d.bytes()]);
 		return output;
@@ -159,7 +159,7 @@ private:
 /**
 * Nyberg-Rueppel verification operation
 */
-class NR_Verification_Operation : Verification
+final class NR_Verification_Operation : Verification
 {
 public:
 	this(in NR_PublicKey nr) 
@@ -178,7 +178,7 @@ public:
 
 	bool with_recovery() const { return true; }
 
-	SafeVector!ubyte verify_mr(in ubyte* msg, size_t msg_len)
+	Secure_Vector!ubyte verify_mr(in ubyte* msg, size_t msg_len)
 	{
 		const ref BigInt q = mod_q.get_modulus();
 		size_t msg_len = msg.length;

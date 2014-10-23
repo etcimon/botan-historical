@@ -15,7 +15,6 @@ import botan.cert.cvc.cvc_req;
 import botan.cert.cvc.cvc_ado;
 import botan.pubkey.algo.ecc_key;
 import botan.math.ec_gfp.curve_gfp;
-import botan.asn1.oid_lookup.oids;
 import botan.cert.cvc.eac_asn_obj;
 import botan.utils.types;
 import sstream;
@@ -56,10 +55,10 @@ EAC1_1_CVC create_self_signed_cert(const ref Private_Key key,
 	
 	ASN1_Chr chr(opt.car.value());
 	
-	AlgorithmIdentifier sig_algo;
+	Algorithm_Identifier sig_algo;
 	string padding_and_hash = "EMSA1_BSI(" ~ opt.hash_alg ~ ")";
 	sig_algo.oid = oids.lookup(priv_key.algo_name ~ "/" ~ padding_and_hash);
-	sig_algo = AlgorithmIdentifier(sig_algo.oid, AlgorithmIdentifier.USE_NULL_PARAM);
+	sig_algo = Algorithm_Identifier(sig_algo.oid, Algorithm_Identifier.USE_NULL_PARAM);
 	
 	PK_Signer signer = PK_Signer(*priv_key, padding_and_hash);
 	
@@ -94,10 +93,10 @@ EAC1_1_Req create_cvc_req(const ref Private_Key key,
 	{
 		throw new Invalid_Argument("CVC_EAC::create_self_signed_cert(): unsupported key type");
 	}
-	AlgorithmIdentifier sig_algo;
+	Algorithm_Identifier sig_algo;
 	string padding_and_hash = "EMSA1_BSI(" ~ hash_alg ~ ")";
 	sig_algo.oid = oids.lookup(priv_key.algo_name ~ "/" ~ padding_and_hash);
-	sig_algo = AlgorithmIdentifier(sig_algo.oid, AlgorithmIdentifier.USE_NULL_PARAM);
+	sig_algo = Algorithm_Identifier(sig_algo.oid, Algorithm_Identifier.USE_NULL_PARAM);
 	
 	PK_Signer signer = PK_Signer(*priv_key, padding_and_hash);
 	
@@ -225,7 +224,7 @@ EAC1_1_CVC link_cvca(const ref EAC1_1_CVC signer,
 	{
 		throw new Invalid_Argument("link_cvca(): signature algorithms of signer and signee don't match");
 	}
-	AlgorithmIdentifier sig_algo = signer.signature_algorithm();
+	Algorithm_Identifier sig_algo = signer.signature_algorithm();
 	string padding_and_hash = padding_and_hash_from_oid(sig_algo.oid);
 	PK_Signer pk_signer = PK_Signer(*priv_key, padding_and_hash);
 	Unique!Public_Key pk = signee.subject_public_key();
@@ -320,7 +319,7 @@ EAC1_1_CVC sign_request(const ref EAC1_1_CVC signer_cert,
 	
 	subj_pk.set_parameter_encoding(EC_DOMPAR_ENC_IMPLICITCA);
 	
-	AlgorithmIdentifier sig_algo = AlgorithmIdentifier(signer_cert.signature_algorithm());
+	Algorithm_Identifier sig_algo = Algorithm_Identifier(signer_cert.signature_algorithm());
 	
 	ASN1_Ced ced(Clock.currTime());
 	

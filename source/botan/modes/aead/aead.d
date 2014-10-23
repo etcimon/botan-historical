@@ -25,7 +25,7 @@ static if (BOTAN_HAS_AEAD_OCB) import botan.modes.aead.ocb;
 class AEAD_Mode : Cipher_Mode
 {
 public:
-	override bool authenticated() const { return true; }
+	final override bool authenticated() const { return true; }
 
 	/**
 	* Set associated data that is not included in the ciphertext but
@@ -50,7 +50,7 @@ public:
 	* Default AEAD nonce size (a commonly supported value among AEAD
 	* modes, and large enough that random collisions are unlikely).
 	*/
-	override size_t default_nonce_length() const { return 12; }
+	final override size_t default_nonce_length() const { return 12; }
 
 	/**
 	* Return the size of the authentication tag used (in bytes)
@@ -63,7 +63,7 @@ public:
 */
 AEAD_Mode get_aead(in string algo_spec, Cipher_Dir direction)
 {
-	AlgorithmFactory af = global_state().algorithm_factory();
+	Algorithm_Factory af = global_state().algorithm_factory();
 	
 	const Vector!string algo_parts = splitter(algo_spec, '/');
 	if (algo_parts.empty())

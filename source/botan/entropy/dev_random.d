@@ -57,7 +57,7 @@ public:
 		if (select(max_fd + 1, &read_set, null, null, &timeout) < 0)
 			return;
 		
-		SafeVector!ubyte io_buffer = accum.get_io_buffer(READ_ATTEMPT);
+		Secure_Vector!ubyte io_buffer = accum.get_io_buffer(READ_ATTEMPT);
 		
 		for (size_t i = 0; i != m_devices.length; ++i)
 		{
