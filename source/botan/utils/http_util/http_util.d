@@ -128,7 +128,7 @@ Response http_sync(http_exch_fn http_transact,
 
 	string line1;
 	std::getline(io, line1);
-	if (!io || line1.empty())
+	if (!io || line1.empty)
 		throw new Exception("No response");
 
 	stringstream response_stream(line1);
@@ -167,7 +167,7 @@ Response http_sync(http_exch_fn http_transact,
 	}
 
 	Vector!ubyte resp_body;
-	Vector!ubyte buf(4096);
+	Vector!ubyte buf = Vector!ubyte(BOTAN_DEFAULT_BUFFER_SIZE);
 	while(io.good())
 	{
 		io.read(cast(char*)(&buf[0]), buf.length);

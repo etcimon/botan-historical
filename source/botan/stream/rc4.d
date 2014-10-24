@@ -6,6 +6,9 @@
 */
 module botan.stream.rc4;
 
+import botan.constants;
+static if (BOTAN_HAS_RC4):
+
 import botan.stream.stream_cipher;
 import botan.utils.types;
 import botan.utils.xor_buf;

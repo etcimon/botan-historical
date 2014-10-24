@@ -6,6 +6,9 @@
 */
 module botan.block.serp_simd;
 
+import botan.constants;
+static if (BOTAN_HAS_SERPENT_SIMD):
+
 import botan.simd.simd_32;
 import botan.utils.loadstor;
 import botan.block.serpent;

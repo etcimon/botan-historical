@@ -8,6 +8,9 @@
 */
 module botan.pubkey.algo.ecdh;
 
+import botan.constants;
+static if (BOTAN_HAS_ECDH):
+
 import botan.pubkey.algo.ecc_key;
 import botan.pubkey.pk_ops;
 import botan.math.bigint.bigint;

@@ -6,6 +6,9 @@
 */
 module botan.block.twofish;
 
+import botan.constants;
+static if (BOTAN_HAS_TWOFISH):
+
 import botan.block.block_cipher;
 /**
 * Twofish, an AES finalist

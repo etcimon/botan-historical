@@ -178,10 +178,10 @@ public:
 				.decode_optional_string(public_key_bits, ASN1_Tag.BIT_STRING, 1, PRIVATE)
 				.end_cons();
 		
-		if (!key_parameters.empty() && key_parameters != alg_id.oid)
+		if (!key_parameters.empty && key_parameters != alg_id.oid)
 			throw new Decoding_Error("EC_PrivateKey - inner and outer OIDs did not match");
 		
-		if (public_key_bits.empty())
+		if (public_key_bits.empty)
 		{
 			public_key = domain().get_base_point() * priv_key;
 			
@@ -195,7 +195,7 @@ public:
 		}
 	}
 
-	Secure_Vector!ubyte pkcs8_Private_Key() const
+	Secure_Vector!ubyte pkcs8_private_key() const
 	{
 		return DER_Encoder()
 			.start_cons(ASN1_Tag.SEQUENCE)

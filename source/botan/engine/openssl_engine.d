@@ -6,13 +6,18 @@
 */
 module botan.engine.openssl_engine;
 
+import botan.constants;
+static if (BOTAN_HAS_ENGINE_OPENSSL):
+
 import botan.engine.engine;
+import botan.pubkey.pk_keys;
+import botan.rng.rng;
+import botan.block.block_cipher;
 import botan.internal.bn_wrap;
 import botan.math.bigint.bigint;
 import botan.utils.parsing;
-import openssl.rc4;
-import openssl.evp;
-import botan.internal.bn_wrap;
+import deimos.openssl.rc4;
+import deimos.openssl.evp;
 
 static if (BOTAN_HAS_RSA)  import botan.pubkey.algo.rsa;
 static if (BOTAN_HAS_DSA)  import botan.pubkey.algo.dsa;
@@ -21,6 +26,7 @@ static if (BOTAN_HAS_ECDSA) {
 	import openssl.ecdsa;
 }
 static if (BOTAN_HAS_DIFFIE_HELLMAN) import botan.pubkey.algo.dh;
+
 /**
 * OpenSSL Engine
 */

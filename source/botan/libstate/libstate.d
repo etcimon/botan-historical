@@ -18,13 +18,11 @@ import botan.internal.stl_util;
 import std.algorithm;
 import core.sync.mutex;
 import std.typecons;
-import string;
 import botan.utils.types;
 import map;
 
 static if (BOTAN_HAS_SELFTESTS)
 	import botan.selftest.selftest;
-
 // Engines
 static if (BOTAN_HAS_ENGINE_ASSEMBLER)
 	import botan.engine.asm_engine;
@@ -55,6 +53,7 @@ static if (BOTAN_HAS_ENTROPY_SRC_WIN32)
 	import botan.entropy.es_win32;
 static if (BOTAN_HAS_ENTROPY_SRC_PROC_WALKER)
 	import botan.entropy.proc_walk;
+
 
 alias LibraryState = FreeListRef!LibraryStateImpl;
 
@@ -136,7 +135,7 @@ public:
 	void poll_available_sources(ref Entropy_Accumulator accum)
 	{
 		synchronized(m_entropy_src_mutex){
-			if (m_sources.empty())
+			if (m_sources.empty)
 				throw new Exception("No entropy sources enabled at build time, poll failed");
 			
 			size_t poll_attempt = 0;

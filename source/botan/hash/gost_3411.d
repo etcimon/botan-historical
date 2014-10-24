@@ -5,6 +5,10 @@
 * Distributed under the terms of the botan license.
 */
 module botan.hash.gost_3411;
+
+import botan.constants;
+static if (BOTAN_HAS_GOST_34_11):
+
 import botan.hash.hash;
 import botan.block.gost_28147;
 import botan.utils.loadstor;

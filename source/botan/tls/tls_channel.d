@@ -5,25 +5,25 @@
 * Released under the terms of the botan license.
 */
 
+public import botan.cert.x509.x509cert;
 public import botan.tls.tls_policy;
-import botan.tls.tls_session;
-import botan.tls.tls_alert;
+public import botan.tls.tls_session;
+public import botan.tls.tls_alert;
 public import botan.tls.tls_session_manager;
-import botan.cert.x509.x509cert;
-import botan.utils.types;
-import string;
-import map;
+public import botan.tls.tls_version;
+public import botan.tls.tls_exceptn;
+public import botan.rng.rng;
 import botan.tls.tls_handshake_state;
 import botan.tls.tls_messages;
 import botan.tls.tls_heartbeats;
 import botan.tls.tls_record;
 import botan.tls.tls_seq_numbers;
-import botan.tls.tls_handshake_state;
 import botan.utils.rounding;
 import botan.internal.stl_util;
 import botan.utils.loadstor;
 import botan.utils.types;
-
+import string;
+import map;
 
 /**
 * Generic interface for TLS endpoint
@@ -113,7 +113,7 @@ public:
 					if (!active_state())
 						throw new Unexpected_Message("Heartbeat sent before handshake done");
 					
-					Heartbeat_Message heartbeat(unlock(record));
+					Heartbeat_Message heartbeat = Heartbeat_Message(unlock(record));
 					
 					const Vector!ubyte payload = heartbeat.payload();
 					

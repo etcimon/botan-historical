@@ -6,6 +6,9 @@
 */
 module botan.block.aes;
 
+import botan.constants;
+static if (BOTAN_HAS_AES):
+
 import botan.block.block_cipher;
 import botan.utils.loadstor;
 import botan.utils.rotate;

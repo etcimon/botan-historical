@@ -6,6 +6,9 @@
 */
 module botan.hash.sha1_x86_32;
 
+import botan.constants;
+static if (BOTAN_HAS_SHA1_X86_32):
+
 import botan.hash.sha160;
 /**
 * SHA-160 in x86 assembly

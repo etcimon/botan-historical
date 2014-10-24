@@ -8,6 +8,9 @@
 */
 module botan.pubkey.algo.gost_3410;
 
+import botan.constants;
+static if (BOTAN_HAS_GOST_34_10_2001):
+
 import botan.pubkey.algo.ecc_key;
 import botan.pubkey.pk_ops;
 import botan.pubkey.algo.gost_3410;

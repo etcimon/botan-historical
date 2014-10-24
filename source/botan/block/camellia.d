@@ -5,6 +5,10 @@
 * Distributed under the terms of the botan license.
 */
 module botan.block.camellia;
+
+import botan.constants;
+static if (BOTAN_HAS_CAMELLIA):
+
 import botan.block.block_cipher;
 import botan.utils.loadstor;
 import botan.utils.types;
@@ -206,7 +210,7 @@ ulong FLINV(ulong v, ulong K)
 * Camellia Encryption
 */
 void encrypt(ubyte* input, ubyte* output, size_t blocks,
-             const Secure_Vector!ulong& SK, const size_t rounds)
+             const ref Secure_Vector!ulong SK, const size_t rounds)
 {
 	size_t blocks = input.length;
 	for (size_t i = 0; i != blocks; ++i)
@@ -240,10 +244,10 @@ void encrypt(ubyte* input, ubyte* output, size_t blocks,
 		D2 ^= *K++;
 		D1 ^= *K++;
 		
-		store_be(out, D2, D1);
+		store_be(output, D2, D1);
 		
-		in += 16;
-		out += 16;
+		input += 16;
+		output += 16;
 	}
 }
 
@@ -251,7 +255,7 @@ void encrypt(ubyte* input, ubyte* output, size_t blocks,
 * Camellia Decryption
 */
 void decrypt(ubyte* input, ubyte* output, size_t blocks,
-             const Secure_Vector!ulong& SK, const size_t rounds)
+             const ref Secure_Vector!ulong SK, const size_t rounds)
 {
 	size_t blocks = input.length;
 	for (size_t i = 0; i != blocks; ++i)
@@ -305,7 +309,7 @@ ulong left_rot_lo(ulong h, ulong l, size_t shift)
 /*
 * Camellia Key Schedule
 */
-void key_schedule(Secure_Vector!ulong& SK, in ubyte* key)
+void key_schedule(ref Secure_Vector!ulong SK, in ubyte* key)
 {
 	const ulong Sigma1 = 0xA09E667F3BCC908B;
 	const ulong Sigma2 = 0xB67AE8584CAA73B2;

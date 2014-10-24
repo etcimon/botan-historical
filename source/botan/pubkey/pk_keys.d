@@ -112,7 +112,7 @@ public:
 	/**
 	* @return PKCS #8 private key encoding for this key object
 	*/
-	abstract Secure_Vector!ubyte pkcs8_Private_Key() const;
+	abstract Secure_Vector!ubyte pkcs8_private_key() const;
 
 	/**
 	* @return PKCS #8 Algorithm_Identifier for this key
@@ -128,7 +128,7 @@ protected:
 	*/
 	final override void load_check(RandomNumberGenerator rng) const
 	{
-		if (!check_key(rng, BOTAN_Private_Key_STRONG_CHECKS_ON_LOAD))
+		if (!check_key(rng, BOTAN_PRIVATE_KEY_STRONG_CHECKS_ON_LOAD))
 			throw new Invalid_Argument(algo_name ~ ": Invalid private key");
 	}
 
@@ -138,7 +138,7 @@ protected:
 	*/
 	final void gen_check(RandomNumberGenerator rng) const
 	{
-		if (!check_key(rng, BOTAN_Private_Key_STRONG_CHECKS_ON_GENERATE))
+		if (!check_key(rng, BOTAN_PRIVATE_KEY_STRONG_CHECKS_ON_GENERATE))
 			throw new Self_Test_Failure(algo_name ~ " private key generation failed");
 	}
 };

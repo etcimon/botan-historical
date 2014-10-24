@@ -6,6 +6,9 @@
 */
 module botan.filters.aead_filt;
 
+import botan.constants;
+static if (BOTAN_HAS_AEAD_FILTER):
+
 import botan.filters.transform_filter;
 import botan.modes.aead.aead;
 /**

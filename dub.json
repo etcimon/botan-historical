@@ -6,5 +6,16 @@
 	"targetName": "botan",
 	"targetType": "staticLibrary",
 	"targetPath": "build",
-	"workingDirectory": "build"
+	"workingDirectory": "build",
+	"dependencies": { "libasync": "0.6.3" },
+	"configurations": [
+		{
+			"name": "core"
+		},
+		{
+			"name": "openssl",
+			"dependencies": { "openssl": "1.1.0+1.0.1g" },
+			"versions": ["OpenSSL"]
+		}
+	]
 }

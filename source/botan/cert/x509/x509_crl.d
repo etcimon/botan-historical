@@ -51,7 +51,7 @@ public:
 		Vector!ubyte crl_akid = authority_key_id();
 		Vector!ubyte cert_akid = cert.authority_key_id();
 		
-		if (!crl_akid.empty() && !cert_akid.empty())
+		if (!crl_akid.empty && !cert_akid.empty)
 			if (crl_akid != cert_akid)
 				return false;
 		

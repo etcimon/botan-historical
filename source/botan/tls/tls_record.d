@@ -365,7 +365,7 @@ size_t read_record(Secure_Vector!ubyte readbuf,
 				                           TLS_HEADER_SIZE))
 			return needed;
 			
-			BOTAN_ASSERT_EQUAL(readbuf.length, TLS_HEADER_SIZE,
+			assert(readbuf.length == TLS_HEADER_SIZE,
 		                   "Have an entire header");
 	}
 	
@@ -385,7 +385,7 @@ size_t read_record(Secure_Vector!ubyte readbuf,
 			                                   record_len + 2))
 				return needed;
 			
-			BOTAN_ASSERT_EQUAL(readbuf.length, (record_len + 2),
+			assert(readbuf.length == (record_len + 2),
 			                   "Have the entire SSLv2 hello");
 			
 			// Fake v3-style handshake message wrapper
@@ -417,7 +417,7 @@ size_t read_record(Secure_Vector!ubyte readbuf,
 		                                   DTLS_HEADER_SIZE))
 			return needed;
 		
-		BOTAN_ASSERT_EQUAL(readbuf.length, DTLS_HEADER_SIZE,
+		assert(readbuf.length == DTLS_HEADER_SIZE,
 		                   "Have an entire header");
 	}
 	
@@ -435,8 +435,7 @@ size_t read_record(Secure_Vector!ubyte readbuf,
 	                                   header_size + record_len))
 		return needed; // wrong for DTLS?
 	
-	BOTAN_ASSERT_EQUAL(cast(size_t)(header_size) + record_len,
-	                   readbuf.length,
+	assert(cast(size_t)(header_size) + record_len == readbuf.length,
 	                   "Have the full record");
 	
 	record_type = cast(Record_Type)(readbuf[0]);

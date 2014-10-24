@@ -271,7 +271,7 @@ public:
 			m_extensions.add(new Signature_Algorithms(policy.allowed_signature_hashes(),
 			                                          policy.allowed_signature_methods()));
 		
-		if (reneg_info.empty() && next_protocol)
+		if (reneg_info.empty && next_protocol)
 			m_extensions.add(new Next_Protocol_Notification());
 		
 		hash.update(io.send(this));
@@ -316,7 +316,7 @@ public:
 			m_extensions.add(new Signature_Algorithms(policy.allowed_signature_hashes(),
 			                                          policy.allowed_signature_methods()));
 		
-		if (reneg_info.empty() && next_protocol)
+		if (reneg_info.empty && next_protocol)
 			m_extensions.add(new Next_Protocol_Notification());
 		
 		hash.update(io.send(this));
@@ -399,7 +399,7 @@ private:
 		{
 			if (Renegotiation_Extension reneg = m_extensions.get!Renegotiation_Extension())
 			{
-				if (!reneg.renegotiation_info().empty())
+				if (!reneg.renegotiation_info().empty)
 					throw new TLS_Exception(Alert.HANDSHAKE_FAILURE,
 					                        "Client send renegotiation SCSV and non-empty extension");
 			}
@@ -657,7 +657,7 @@ public:
 		
 		if (kex_algo == "RSA")
 		{
-			assert(state.server_certs() && !state.server_certs().cert_chain().empty(),
+			assert(state.server_certs() && !state.server_certs().cert_chain().empty,
 			             "RSA key exchange negotiated so server sent a certificate");
 			
 			if (!server_rsa_kex_key)
@@ -1031,7 +1031,7 @@ public:
 	const ref Vector!X509_Certificate cert_chain() const { return m_certs; }
 
 	size_t count() const { return m_certs.length; }
-	bool empty() const { return m_certs.empty(); }
+	@property bool empty() const { return m_certs.empty; }
 
 	/**
 	* Create a new Certificate message
@@ -1109,12 +1109,12 @@ private:
 /**
 * Certificate Request Message
 */
-class Certificate_Req : Handshake_Message
+final class Certificate_Req : Handshake_Message
 {
 public:
 	override Handshake_Type type() const { return CERTIFICATE_REQUEST; }
 
-	const Vector!string& acceptable_cert_types() const
+	const Vector!string acceptable_cert_types() const
 	{ return m_cert_key_types; }
 
 	Vector!X509_DN acceptable_CAs() const { return m_names; }
@@ -1155,7 +1155,7 @@ public:
 		if (buf.length < 4)
 			throw new Decoding_Error("Certificate_Req: Bad certificate request");
 		
-		TLS_Data_Reader reader("CertificateRequest", buf);
+		TLS_Data_Reader reader = TLS_Data_Reader("CertificateRequest", buf);
 		
 		Vector!ubyte cert_type_codes = reader.get_range_vector!ubyte(1, 1, 255);
 		
@@ -1193,7 +1193,7 @@ public:
 		{
 			Vector!ubyte name_bits = reader.get_range_vector!ubyte(2, 0, 65535);
 			
-			BER_Decoder decoder(&name_bits[0], name_bits.length);
+			BER_Decoder decoder = BER_Decoder(&name_bits[0], name_bits.length);
 			X509_DN name;
 			decoder.decode(name);
 			m_names.push_back(name);
@@ -1216,7 +1216,7 @@ private:
 		
 		append_tls_length_value(buf, cert_types, 1);
 		
-		if (!m_supported_algos.empty())
+		if (!m_supported_algos.empty)
 			buf += Signature_Algorithms(m_supported_algos).serialize();
 		
 		Vector!ubyte encoded_names;
@@ -1283,12 +1283,12 @@ public:
 	     RandomNumberGenerator rng,
 	     const Private_Key priv_key)
 	{
-		BOTAN_ASSERT_NONNULL(priv_key);
+		assert(priv_key, "No private key defined");
 		
 		Pair!(string, Signature_Format) format =
-			state.choose_sig_format(*priv_key, m_hash_algo, m_sig_algo, true, policy);
+			state.choose_sig_format(priv_key, m_hash_algo, m_sig_algo, true, policy);
 		
-		PK_Signer signer = PK_Signer(*priv_key, format.first, format.second);
+		PK_Signer signer = PK_Signer(priv_key, format.first, format.second);
 		
 		if (state._version() == Protocol_Version.SSL_V3)
 		{
@@ -1467,15 +1467,15 @@ public:
 	// Only valid for certain kex types
 	const Private_Key server_kex_key() const
 	{
-		BOTAN_ASSERT_NONNULL(m_kex_key);
+		assert(m_kex_key, "Private_Key cannot be null");
 		return *m_kex_key;
 	}
 
 	// Only valid for SRP negotiation
 	SRP6_Server_Session server_srp_params() const
 	{
-		BOTAN_ASSERT_NONNULL(m_srp_params);
-		return m_srp_params;
+		assert(m_srp_params, "SRP6_Server_Session cannot be null");
+		return *m_srp_params;
 	}
 
 	/**
@@ -1486,8 +1486,8 @@ public:
 	     in string sig_algo,
 	     Protocol_Version _version) 
 	{
-		m_kex_key = null;
-		m_srp_params = null;
+		m_kex_key.clear();
+		m_srp_params.clear();
 		if (buf.length < 6)
 			throw new Decoding_Error("Server_Key_Exchange: Packet corrupted");
 		
@@ -1603,7 +1603,7 @@ public:
 			const Vector!string curves =
 				state.client_hello().supported_ecc_curves();
 			
-			if (curves.empty())
+			if (curves.empty)
 				throw new Internal_Error("Client sent no ECC extension but we negotiated ECDH");
 			
 			const string curve_name = policy.choose_curve(curves);

@@ -6,6 +6,9 @@
 */
 module botan.selftest.selftest;
 
+import botan.constants;
+static if (BOTAN_HAS_SELFTESTS):
+
 import botan.algo_factory.algo_factory;
 import botan.algo_base.scan_name;
 import map;
@@ -163,7 +166,7 @@ HashMap!(string, string)
 	Vector!string providers = af.providers_of(algo);
 	HashMap!(string, string) all_results;
 	
-	if (providers.empty()) // no providers, nothing to do
+	if (providers.empty) // no providers, nothing to do
 		return all_results;
 	
 	const string input = search_map(vars, string("input"));
@@ -231,7 +234,7 @@ HashMap!(string, string)
 			
 			const Vector!ubyte ad = hex_decode(search_map(vars, string("ad")));
 			
-			if (!ad.empty())
+			if (!ad.empty)
 			{
 				if (AEAD_Filter enc_aead = cast(AEAD_Filter)(enc))
 				{

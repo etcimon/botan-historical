@@ -6,6 +6,9 @@
 */
 module botan.pubkey.algo.dh;
 
+import botan.constants;
+static if (BOTAN_HAS_DIFFIE_HELLMAN):
+
 import botan.pubkey.algo.dl_algo;
 import botan.math.numbertheory.pow_mod;
 import botan.pubkey.blinding;

@@ -5,6 +5,10 @@
 * Distributed under the terms of the botan license.
 */
 module botan.entropy.es_egd;
+
+import botan.constants;
+static if (BOTAN_HAS_ENTROPY_SRC_EGD):
+
 import botan.entropy.entropy_src;
 import string;
 import botan.utils.types;

@@ -5,6 +5,10 @@
 * Distributed under the terms of the botan license.
 */
 module botan.block.tea;
+
+import botan.constants;
+static if (BOTAN_HAS_TEA):
+
 import botan.block.block_cipher;
 import botan.utils.loadstor;
 /**

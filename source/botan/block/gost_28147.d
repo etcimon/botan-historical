@@ -6,6 +6,9 @@
 */
 module botan.block.gost_28147;
 
+import botan.constants;
+static if (BOTAN_HAS_GOST_28147_89):
+
 import botan.block.block_cipher;
 import botan.utils.loadstor;
 import botan.utils.rotate;

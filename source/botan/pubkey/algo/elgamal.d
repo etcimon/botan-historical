@@ -6,6 +6,9 @@
 */
 module botan.pubkey.algo.elgamal;
 
+import botan.constants;
+static if (BOTAN_HAS_ELGAMAL):
+
 import botan.pubkey.algo.dl_algo;
 import botan.math.numbertheory.numthry;
 import botan.math.numbertheory.reducer;

@@ -6,6 +6,9 @@
 */
 module botan.modes.aead.ocb;
 
+import botan.constants;
+static if (BOTAN_HAS_AEAD_OCB):
+
 import botan.modes.aead.aead;
 import botan.block.block_cipher;
 import botan.filters.buf_filt;

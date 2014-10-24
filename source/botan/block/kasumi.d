@@ -6,6 +6,9 @@
 */
 module botan.block.kasumi;
 
+import botan.constants;
+static if (BOTAN_HAS_KASUMI):
+
 import botan.block.block_cipher;
 import botan.utils.loadstor;
 import botan.utils.rotate;

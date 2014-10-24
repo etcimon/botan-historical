@@ -6,6 +6,9 @@
 */
 module botan.stream.salsa20;
 
+import botan.constants;
+static if (BOTAN_HAS_SALSA20):
+
 import botan.stream.stream_cipher;
 import botan.utils.loadstor;
 import botan.utils.rotate;

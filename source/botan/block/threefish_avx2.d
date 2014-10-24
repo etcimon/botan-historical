@@ -5,6 +5,10 @@
 * Distributed under the terms of the botan license.
 */
 module botan.block.threefish_avx2;
+
+import botan.constants;
+static if (BOTAN_HAS_THREEFISH_512_AVX2):
+
 import botan.block.threefish;
 import botan.utils.simd.immintrin;
 /**

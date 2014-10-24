@@ -6,12 +6,13 @@
 */
 module botan.tls.tls_client;
 
-import botan.tls.tls_channel;
-import botan.credentials.credentials_manager;
+public import botan.tls.tls_channel;
+public import botan.credentials.credentials_manager;
+public import botan.tls.tls_server_info;
+public import botan.rng.rng;
 import botan.tls.tls_handshake_state;
 import botan.tls.tls_messages;
 import botan.internal.stl_util;
-import botan.utils.types;
 import botan.utils.types;
 
 /**
@@ -115,7 +116,7 @@ private:
 		
 		const bool send_npn_request = cast(bool)(next_protocol);
 		
-		if (!force_full_renegotiation && !m_info.empty())
+		if (!force_full_renegotiation && !m_info.empty)
 		{
 			Session session_info;
 			if (session_manager().load_from_server_info(m_info, session_info))
@@ -236,7 +237,7 @@ private:
 			secure_renegotiation_check(state.server_hello());
 			
 			const bool server_returned_same_session_id =
-				!state.server_hello().session_id().empty() &&
+				!state.server_hello().session_id().empty &&
 					(state.server_hello().session_id() == state.client_hello().session_id());
 			
 			if (server_returned_same_session_id)
@@ -326,7 +327,7 @@ private:
 			const Vector!X509_Certificate& server_certs =
 				state.server_certs().cert_chain();
 			
-			if (server_certs.empty())
+			if (server_certs.empty)
 				throw new TLS_Exception(Alert.HANDSHAKE_FAILURE,
 				                        "Client: No certificates sent by server");
 			
@@ -413,10 +414,10 @@ private:
 			state.compute_session_keys();
 			
 			if (state.received_handshake_msg(CERTIFICATE_REQUEST) &&
-			    !state.client_certs().empty())
+			    !state.client_certs().empty)
 			{
 				Private_Key priv_key =
-					m_creds.Private_Key_for(state.client_certs().cert_chain()[0],
+					m_creds.private_key_for(state.client_certs().cert_chain()[0],
 					"tls-client",
 					m_info.hostname());
 				
@@ -429,7 +430,7 @@ private:
 					);
 			}
 			
-			state.handshake_io().send(Change_Cipher_Spec());
+			state.handshake_io().send(scoped!Change_Cipher_Spec());
 			
 			change_cipher_spec_writer(CLIENT);
 			
@@ -476,7 +477,7 @@ private:
 			
 			if (!state.client_finished()) // session resume case
 			{
-				state.handshake_io().send(Change_Cipher_Spec());
+				state.handshake_io().send(scoped!Change_Cipher_Spec());
 				
 				change_cipher_spec_writer(CLIENT);
 				
@@ -499,7 +500,7 @@ private:
 			
 			const Vector!ubyte session_ticket = state.session_ticket();
 			
-			if (session_id.empty() && !session_ticket.empty())
+			if (session_id.empty && !session_ticket.empty)
 				session_id = make_hello_random(rng());
 			
 			Session session_info = Session(
@@ -518,7 +519,7 @@ private:
 			
 			const bool should_save = save_session(session_info);
 			
-			if (!session_id.empty())
+			if (!session_id.empty)
 			{
 				if (should_save)
 					session_manager().save(session_info);

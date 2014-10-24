@@ -6,6 +6,9 @@
 */
 module botan.entropy.rdrand;
 
+import botan.constants;
+static if (BOTAN_HAS_ENTROPY_SRC_RDRAND):
+
 import botan.entropy.entropy_src;
 import botan.utils.cpuid;
 

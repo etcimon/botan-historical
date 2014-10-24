@@ -82,7 +82,7 @@ static if (BOTAN_HAS_MD5) 			import botan.hash.md5;
 static if (BOTAN_HAS_RIPEMD_128) 	import botan.hash.rmd128;
 static if (BOTAN_HAS_RIPEMD_160) 	import botan.hash.rmd160;
 static if (BOTAN_HAS_SHA1) 			import botan.hash.sha160;
-static if (BOTAN_HAS_SHA2_32) 		import botan.sha2_32;
+static if (BOTAN_HAS_SHA2_32) 		import botan.hash.sha2_32;
 static if (BOTAN_HAS_SHA2_64) 		import botan.hash.sha2_64;
 static if (BOTAN_HAS_SKEIN_512) 	import botan.hash.skein_512;
 static if (BOTAN_HAS_TIGER) 		import botan.hash.tiger;
@@ -243,7 +243,7 @@ public:
 	                                 Algorithm_Factory af)
 	{
 		Vector!string algo_parts = splitter(algo_spec, '/');
-		if (algo_parts.empty())
+		if (algo_parts.empty)
 			throw new Invalid_Algorithm_Name(algo_spec);
 		
 		const string cipher_name = algo_parts[0];

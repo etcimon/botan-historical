@@ -6,6 +6,9 @@
 */
 module botan.pbkdf.pbkdf2;
 
+import botan.constants;
+static if (BOTAN_HAS_PBKDF2):
+
 import botan.pbkdf.pbkdf;
 import botan.mac.mac;
 import botan.utils.get_byte;

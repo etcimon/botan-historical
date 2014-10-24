@@ -6,6 +6,9 @@
 */
 module botan.block.idea;
 
+import botan.constants;
+static if (BOTAN_HAS_IDEA):
+
 import botan.block.block_cipher;
 import botan.utils.loadstor;
 

@@ -7,9 +7,9 @@
 module botan.cert.x509.x509cert;
 
 public import botan.utils.datastor.datastor;
-import botan.cert.x509.x509_obj;
-import botan.asn1.x509_dn;
-import botan.pubkey.x509_key;
+public import botan.pubkey.x509_key;
+public import botan.cert.x509.x509_obj;
+public import botan.asn1.x509_dn;
 import botan.asn1.asn1_alt_name;
 import botan.cert.x509.key_constraint;
 import botan.cert.x509.x509_ext;
@@ -297,7 +297,7 @@ public:
 		{
 			const Vector!string vals = this.subject_info(dn_fields[i]);
 			
-			if (vals.empty())
+			if (vals.empty)
 				continue;
 			
 			output ~= "Subject " ~ dn_fields[i] ~ ":";
@@ -310,7 +310,7 @@ public:
 		{
 			const Vector!string vals = this.issuer_info(dn_fields[i]);
 			
-			if (vals.empty())
+			if (vals.empty)
 				continue;
 			
 			output ~= "Issuer " ~ dn_fields[i] ~ ":";
@@ -347,7 +347,7 @@ public:
 		}
 		
 		Vector!string policies = this.policies();
-		if (!policies.empty())
+		if (!policies.empty)
 		{
 			output ~= "Policies: ";
 			for (size_t i = 0; i != policies.length; i++)
@@ -355,7 +355,7 @@ public:
 		}
 		
 		Vector!string ex_constraints = this.ex_constraints();
-		if (!ex_constraints.empty())
+		if (!ex_constraints.empty)
 		{
 			output ~= "Extended Constraints:";
 			for (size_t i = 0; i != ex_constraints.length; i++)

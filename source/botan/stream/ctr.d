@@ -6,6 +6,9 @@
 */
 module botan.stream.ctr;
 
+import botan.constants;
+static if (BOTAN_HAS_CTR_BE):
+
 import botan.block.block_cipher;
 import botan.stream.stream_cipher;
 import botan.utils.xor_buf;

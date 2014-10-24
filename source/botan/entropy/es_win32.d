@@ -5,6 +5,10 @@
 * Distributed under the terms of the botan license.
 */
 module botan.entropy.es_win32;
+
+import botan.constants;
+static if (BOTAN_HAS_ENTROPY_SRC_WIN32):
+
 import botan.entropy.entropy_src;
 
 import core.sys.windows.windows;

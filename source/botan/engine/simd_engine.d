@@ -6,6 +6,9 @@
 */
 module botan.engine.simd_engine.simd_engine;
 
+import botan.constants;
+static if (BOTAN_HAS_ENGINE_SIMD):
+
 import botan.engine.engine;
 import botan.simd.simd_32;
 import botan.utils.cpuid;

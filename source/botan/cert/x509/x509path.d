@@ -222,7 +222,7 @@ public:
 		// take the "worst" error as overall
 		foreach (s; m_all_status)
 		{
-			if (!s.empty())
+			if (!s.empty)
 			{
 				auto worst = *s.rbegin();
 				// Leave OCSP confirmations on cert-level status only
@@ -249,7 +249,7 @@ Path_Validation_Result x509_path_validate(
 	const ref Path_Validation_Restrictions restrictions,
 	const ref Vector!Certificate_Store certstores)
 {
-	if (end_certs.empty())
+	if (end_certs.empty)
 		throw new Invalid_Argument("x509_path_validate called with no subjects");
 	
 	Vector!X509_Certificate cert_path;
@@ -424,7 +424,7 @@ Vector!( Set<Certificate_Status_Code )
 			status.insert(Certificate_Status_Code.SIGNATURE_METHOD_TOO_WEAK);
 		
 		// Allow untrusted hashes on self-signed roots
-		if (!trusted_hashes.empty() && !at_self_signed_root)
+		if (!trusted_hashes.empty && !at_self_signed_root)
 		{
 			if (!trusted_hashes.count(subject.hash_used_for_signature()))
 				status.insert(Certificate_Status_Code.UNTRUSTED_HASH);

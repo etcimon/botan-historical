@@ -46,11 +46,7 @@ public:
 	abstract Pair!(Handshake_Type, Vector!ubyte )
 		get_next_record(bool expecting_ccs);
 
-	Handshake_IO() {}
-
-	Handshake_IO(in Handshake_IO);
-
-	Handshake_IO operator=(in Handshake_IO);
+	this() {}
 
 	~this() {}
 };
@@ -280,12 +276,12 @@ public:
 
 	override Pair!(Handshake_Type, Vector!ubyte) get_next_record(bool expecting_ccs)
 	{
-		if (!m_flights.rbegin().empty())
+		if (!m_flights.rbegin().empty)
 			m_flights.push_back(Vector!ushort());
 		
 		if (expecting_ccs)
 		{
-			if (!m_messages.empty())
+			if (!m_messages.empty)
 			{
 				const ushort current_epoch = m_messages.begin().second.epoch();
 

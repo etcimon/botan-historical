@@ -6,6 +6,9 @@
 */
 module botan.block.des;
 
+import botan.constants;
+static if (BOTAN_HAS_DES):
+
 import botan.utils.loadstor;
 import botan.utils.rotate;
 public import botan.block.block_cipher;

@@ -187,7 +187,7 @@ private:
 				
 				const bool offer_new_session_ticket =
 					(state.client_hello().supports_session_ticket() &&
-					 state.client_hello().session_ticket().empty() &&
+					 state.client_hello().session_ticket().empty &&
 					 have_session_ticket_key);
 				
 				state.server_hello(
@@ -249,7 +249,7 @@ private:
 					}
 				}
 				
-				state.handshake_io().send(Change_Cipher_Spec());
+				state.handshake_io().send(scoped!Change_Cipher_Spec());
 				
 				change_cipher_spec_writer(SERVER);
 				
@@ -267,7 +267,7 @@ private:
 				
 				cert_chains = get_server_certs(sni_hostname, m_creds);
 				
-				if (sni_hostname != "" && cert_chains.empty())
+				if (sni_hostname != "" && cert_chains.empty)
 				{
 					cert_chains = get_server_certs("", m_creds);
 						
@@ -278,7 +278,7 @@ private:
 					* unrecognized_name when a server is configured for purely
 					* anonymous operation.
 					*/
-					if (!cert_chains.empty())
+					if (!cert_chains.empty)
 						send_alert(Alert(Alert.UNRECOGNIZED_NAME));
 				}
 								
@@ -312,7 +312,7 @@ private:
 				
 				if (sig_algo != "")
 				{
-					assert(!cert_chains[sig_algo].empty(),
+					assert(!cert_chains[sig_algo].empty,
 					"Attempting to send empty certificate chain");
 					
 					state.server_certs(
@@ -326,7 +326,7 @@ private:
 				
 				if (kex_algo == "RSA" || sig_algo != "")
 				{
-					priv_key = m_creds.Private_Key_for(	state.server_certs().cert_chain()[0],
+					priv_key = m_creds.private_key_for(	state.server_certs().cert_chain()[0],
 															"tls-server",
 															sni_hostname
 					);
@@ -364,7 +364,7 @@ private:
 					                       subjects.end());
 				}
 				
-				if (!client_auth_CAs.empty() && state.ciphersuite().sig_algo() != "")
+				if (!client_auth_CAs.empty && state.ciphersuite().sig_algo() != "")
 				{
 					state.cert_req(
 						new Certificate_Req(state.handshake_io(),
@@ -397,7 +397,7 @@ private:
 		}
 		else if (type == CLIENT_KEX)
 		{
-			if (state.received_handshake_msg(CERTIFICATE) && !state.client_certs().empty())
+			if (state.received_handshake_msg(CERTIFICATE) && !state.client_certs().empty)
 				state.set_expected_next(CERTIFICATE_VERIFY);
 			else
 				state.set_expected_next(HANDSHAKE_CCS);
@@ -518,7 +518,7 @@ private:
 						);
 				}
 				
-				state.handshake_io().send(Change_Cipher_Spec());
+				state.handshake_io().send(scoped!Change_Cipher_Spec());
 				
 				change_cipher_spec_writer(SERVER);
 				
@@ -558,9 +558,9 @@ bool check_for_resume(Session session_info,
 	const Vector!ubyte client_session_id = client_hello.session_id();
 	const Vector!ubyte session_ticket = client_hello.session_ticket();
 	
-	if (session_ticket.empty())
+	if (session_ticket.empty)
 	{
-		if (client_session_id.empty()) // not resuming
+		if (client_session_id.empty) // not resuming
 			return false;
 		
 		// not found
@@ -636,7 +636,7 @@ ushort choose_ciphersuite(
 	
 	const Vector!ushort server_suites = policy.ciphersuite_list(_version, have_srp);
 	
-	if (server_suites.empty())
+	if (server_suites.empty)
 		throw new TLS_Exception(Alert.HANDSHAKE_FAILURE,
 		                        "Policy forbids us from negotiating any ciphersuite");
 	
@@ -710,7 +710,7 @@ HashMap!(string, Vector!X509_Certificate)
 		Vector!X509_Certificate certs =
 			creds.cert_chain_single_type(cert_types[i], "tls-server", hostname);
 		
-		if (!certs.empty())
+		if (!certs.empty)
 			cert_chains[cert_types[i]] = certs;
 	}
 	

@@ -12,8 +12,10 @@ import string;
 import std.datetime;
 import botan.asn1.oid_lookup.oids;
 import botan.algo_base.scan_name;
+import botan.rng.rng;
 import botan.utils.parsing;
 import botan.libstate.libstate;
+import std.datetime;
 
 static if (BOTAN_HAS_PBE_PKCS_V20) {
 	import botan.pbe.pbes2;
@@ -86,7 +88,7 @@ PBE get_pbe(in OID pbe_oid,
 		             in Vector!ubyte params,
 		             in string passphrase)
 {
-	SCAN_Name request(oids.lookup(pbe_oid));
+	SCAN_Name request = SCAN_Name(oids.lookup(pbe_oid));
 	
 	const string pbe = request.algo_name;
 	

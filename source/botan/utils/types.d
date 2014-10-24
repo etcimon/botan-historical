@@ -7,7 +7,6 @@
 module botan.utils.types;
 
 import botan.build;
-import botan.utils.assert_;
 import cstddef;
 public import botan.utils.memory;
 public import std.typecons : scoped;

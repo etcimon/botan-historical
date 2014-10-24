@@ -6,6 +6,9 @@
 */
 module botan.block.safer_sk;
 
+import botan.constants;
+static if (BOTAN_HAS_SAFER):
+
 import botan.block.block_cipher;
 import botan.utils.rotate;
 import botan.utils.parsing;

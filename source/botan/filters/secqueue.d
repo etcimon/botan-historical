@@ -110,7 +110,7 @@ public:
 	}
 
 
-	bool empty() const
+	@property bool empty() const
 	{
 		return (size() == 0);
 	}

@@ -6,16 +6,14 @@
 */
 module botan.libstate.lookup;
 
-import botan.libstate.libstate;
+public import botan.filters.filters;
+public import botan.modes.mode_pad;
+public import botan.kdf.kdf;
+public import botan.pk_pad.eme;
+public import botan.pk_pad.emsa;
+public import botan.pbkdf.pbkdf;
 import botan.engine.engine;
-import botan.filters.filters;
-import botan.modes.mode_pad;
-import botan.kdf.kdf;
-import botan.pk_pad.eme;
-import botan.pk_pad.emsa;
-import botan.pbkdf.pbkdf;
 import botan.libstate.libstate;
-import botan.engine.engine;
 
 /**
 * Retrieve an object prototype from the global factory
@@ -143,7 +141,7 @@ PBKDF get_pbkdf(in string algo_spec)
 * @param algo_spec the name of the desired algorithm
 * @return pointer to newly allocated object of that type
 */
- PBKDF get_s2k(in string algo_spec)
+PBKDF get_s2k(in string algo_spec)
 {
 	return get_pbkdf(algo_spec);
 }

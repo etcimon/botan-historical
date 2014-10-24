@@ -6,6 +6,9 @@
 */
 module botan.checksum.adler32;
 
+import botan.constants;
+static if (BOTAN_HAS_ADLER32):
+
 import botan.utils.loadstor;
 import botan.hash.hash;
 /**

@@ -6,6 +6,9 @@
 */
 module botan.hash.skein_512;
 
+import botan.constants;
+static if (BOTAN_HAS_SKEIN_512):
+
 import botan.hash.hash;
 import botan.block.threefish;
 import string;
@@ -14,6 +17,7 @@ import botan.utils.loadstor;
 import botan.utils.parsing;
 import botan.utils.exceptn;
 import botan.utils.xor_buf;
+import botan.utils.types;
 import std.algorithm;
 
 /**

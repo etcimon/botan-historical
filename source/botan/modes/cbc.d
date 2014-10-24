@@ -5,6 +5,10 @@
 * Distributed under the terms of the botan license.
 */
 module botan.modes.cbc;
+
+import botan.constants;
+static if (BOTAN_HAS_MODE_CBC):
+
 import botan.modes.cipher_mode;
 import botan.block.block_cipher;
 import botan.modes.mode_pad;
@@ -83,7 +87,7 @@ protected:
 
 	final const BlockCipherModePaddingMethod padding() const
 	{
-		BOTAN_ASSERT_NONNULL(m_padding);
+		assert(m_padding, "No padding defined");
 		return *m_padding;
 	}
 

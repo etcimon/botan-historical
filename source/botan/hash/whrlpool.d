@@ -5,6 +5,10 @@
 * Distributed under the terms of the botan license.
 */
 module botan.hash.whrlpool;
+
+import botan.constants;
+static if (BOTAN_HAS_WHIRLPOOL):
+
 import botan.hash.mdx_hash;
 import botan.utils.loadstor;
 /**

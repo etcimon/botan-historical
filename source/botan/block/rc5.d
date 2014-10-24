@@ -6,6 +6,9 @@
 */
 module botan.block.rc5;
 
+import botan.constants;
+static if (BOTAN_HAS_RC5):
+
 import botan.utils.loadstor;
 import botan.utils.rotate;
 import botan.utils.parsing;

@@ -6,6 +6,9 @@
 */
 module botan.block.idea_sse2;
 
+import botan.constants;
+static if (BOTAN_HAS_IDEA_SSE2):
+
 import botan.block.idea;
 import botan.utils.simd.emmintrin;
 import botan.block.block_cipher;

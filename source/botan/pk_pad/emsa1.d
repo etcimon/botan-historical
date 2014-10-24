@@ -58,7 +58,7 @@ private:
 			Secure_Vector!ubyte our_coding = emsa1_encoding(raw, key_bits);
 			
 			if (our_coding == coded) return true;
-			if (our_coding.empty() || our_coding[0] != 0) return false;
+			if (our_coding.empty || our_coding[0] != 0) return false;
 			if (our_coding.length <= coded.length) return false;
 			
 			size_t offset = 0;

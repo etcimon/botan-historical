@@ -6,6 +6,9 @@
 */
 module botan.block.seed;
 
+import botan.constants;
+static if (BOTAN_HAS_SEED):
+
 import botan.block.block_cipher;
 import botan.utils.loadstor;
 /**

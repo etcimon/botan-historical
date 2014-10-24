@@ -7,6 +7,7 @@
 module botan.botan.math.mp.mp_types;
 import botan.utils.types;
 import botan.utils.mul128;
+import botan.constants;
 
 static if (BOTAN_MP_WORD_BITS == 8) {
 	typedef ubyte word;
@@ -18,7 +19,6 @@ else static if (BOTAN_MP_WORD_BITS == 16) {
 	typedef uint dword;
 	enum BOTAN_HAS_MP_DWORD = 1;
 }
-
 else static if (BOTAN_MP_WORD_BITS == 32) {
 	typedef uint word;
 	typedef ulong dword;

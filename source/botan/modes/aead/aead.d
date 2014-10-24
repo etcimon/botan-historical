@@ -66,7 +66,7 @@ AEAD_Mode get_aead(in string algo_spec, Cipher_Dir direction)
 	Algorithm_Factory af = global_state().algorithm_factory();
 	
 	const Vector!string algo_parts = splitter(algo_spec, '/');
-	if (algo_parts.empty())
+	if (algo_parts.empty)
 		throw new Invalid_Algorithm_Name(algo_spec);
 	
 	if (algo_parts.length < 2)
@@ -79,7 +79,7 @@ AEAD_Mode get_aead(in string algo_spec, Cipher_Dir direction)
 	
 	const Vector!string mode_info = parse_algorithm_name(algo_parts[1]);
 	
-	if (mode_info.empty())
+	if (mode_info.empty)
 		return null;
 	
 	const string mode_name = mode_info[0];

@@ -6,6 +6,9 @@
 */
 module botan.hash.sha2_64;
 
+import botan.constants;
+static if (BOTAN_HAS_SHA2_64):
+
 import botan.hash.mdx_hash;
 import botan.utils.loadstor;
 import botan.utils.rotate;

@@ -6,6 +6,9 @@
 */
 module botan.block.lion;
 
+import botan.constants;
+static if (BOTAN_HAS_LION):
+
 import botan.block.block_cipher;
 import botan.stream.stream_cipher;
 import botan.hash.hash;

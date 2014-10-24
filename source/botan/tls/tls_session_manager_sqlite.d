@@ -5,8 +5,8 @@
 * Released under the terms of the botan license.
 */
 module botan.tls.sessions_sqlite.tls_session_manager_sqlite;
+
 import botan.tls.tls_session_manager;
-import botan.rng.rng;
 import botan.utils.sqlite3.sqlite3;
 import botan.libstate.lookup;
 import botan.codec.hex;
@@ -214,7 +214,7 @@ private:
 		
 		if (sessions > m_max_sessions)
 		{
-			sqlite3_statement remove_some(m_db, "delete from tls_sessions where session_id in "
+			sqlite3_statement remove_some = sqlite3_statement(m_db, "delete from tls_sessions where session_id in "
 			                              "(select session_id from tls_sessions limit ?1)");
 			
 			remove_some.bind(1, sessions - m_max_sessions);

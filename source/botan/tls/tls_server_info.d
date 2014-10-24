@@ -50,7 +50,7 @@ public:
 
 	ushort port() const { return m_port; }
 
-	bool empty() const { return m_hostname.empty(); }
+	@property bool empty() const { return m_hostname.empty; }
 
 	bool opEquals(const ref Server_Information b)
 	{

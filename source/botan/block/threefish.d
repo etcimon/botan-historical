@@ -6,6 +6,9 @@
 */
 module botan.block.threefish;
 
+import botan.constants;
+static if (BOTAN_HAS_THREEFISH_512):
+
 import botan.utils.rotate;
 import botan.utils.loadstor;
 import botan.block.block_cipher;

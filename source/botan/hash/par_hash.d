@@ -6,6 +6,9 @@
 */
 module botan.hash.par_hash;
 
+import botan.constants;
+static if (BOTAN_HAS_PARALLEL_HASH):
+
 import botan.hash.hash;
 import botan.utils.types;
 import botan.utils.parsing;

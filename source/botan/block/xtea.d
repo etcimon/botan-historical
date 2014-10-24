@@ -6,6 +6,9 @@
 */
 module botan.block.xtea;
 
+import botan.constants;
+static if (BOTAN_HAS_XTEA):
+
 import botan.block.block_cipher;
 import botan.utils.loadstor;
 /**

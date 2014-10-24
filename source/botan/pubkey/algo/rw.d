@@ -6,6 +6,9 @@
 */
 module botan.pubkey.algo.rw;
 
+import botan.constants;
+static if (BOTAN_HAS_RW):
+
 import botan.pubkey.algo.if_algo;
 import botan.pubkey.pk_ops;
 import botan.math.numbertheory.reducer;

@@ -6,6 +6,9 @@
 */
 module botan.entropy.unix_procs;
 
+import botan.constants;
+static if (BOTAN_HAS_ENTROPY_SRC_UNIX_PROCESS_RUNNER):
+
 import botan.entropy.entropy_src;
 import botan.utils.types;
 import botan.utils.parsing;
@@ -37,7 +40,7 @@ public:
 		if (getuid() == 0 || geteuid() == 0)
 			return;
 		
-		if (m_sources.empty())
+		if (m_sources.empty)
 		{
 			auto sources = get_default_sources();
 			
@@ -52,7 +55,7 @@ public:
 			}
 		}
 		
-		if (m_sources.empty())
+		if (m_sources.empty)
 			return; // still empty, really nothing to try
 		
 		const size_t MS_WAIT_TIME = 32;
@@ -80,7 +83,7 @@ public:
 				}
 			}
 			
-			if (fds.empty())
+			if (fds.empty)
 				break;
 			
 			const int max_fd = *std.algorithm.max_element(fds.begin(), fds.end());

@@ -6,6 +6,9 @@
 */
 module botan.block.serp_x86_32;
 
+import botan.constants;
+static if (BOTAN_HAS_SERPENT_X86_32):
+
 import botan.block.serpent;
 import botan.utils.loadstor;
 /**

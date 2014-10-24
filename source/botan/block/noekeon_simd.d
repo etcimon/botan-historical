@@ -5,6 +5,10 @@
 * Distributed under the terms of the botan license.
 */
 module botan.block.noekeon_simd;
+
+import botan.constants;
+static if (BOTAN_HAS_NOEKEON_SIMD):
+
 import botan.block.noekeon;
 import botan.block.block_cipher;
 import botan.utils.loadstor;

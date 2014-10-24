@@ -6,6 +6,9 @@
 */
 module botan.hash.tiger;
 
+import botan.constants;
+static if (BOTAN_HAS_TIGER):
+
 import botan.hash.mdx_hash;
 import botan.utils.exceptn;
 import botan.utils.loadstor;

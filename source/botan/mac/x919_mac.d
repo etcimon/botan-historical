@@ -6,6 +6,9 @@
 */
 module botan.mac.x919_mac;
 
+import botan.constants;
+static if (BOTAN_HAS_ANSI_X919_MAC):
+
 import botan.mac.mac;
 import botan.block.block_cipher;
 import botan.utils.xor_buf;

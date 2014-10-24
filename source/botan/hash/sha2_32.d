@@ -7,8 +7,11 @@
 */
 module botan.hash.sha2_32;
 
+import botan.constants;
+static if (BOTAN_HAS_SHA2_32):
+
 import botan.hash.mdx_hash;
-import botan.sha2_32;
+import botan.hash.sha2_32;
 import botan.utils.loadstor;
 import botan.utils.rotate;
 /**

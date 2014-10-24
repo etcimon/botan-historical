@@ -14,9 +14,10 @@ import botan.tls.tls_exceptn;
 /**
 * TLS Heartbeat message
 */
-class Heartbeat_Message
+struct Heartbeat_Message
 {
 public:
+	typedef ubyte Type;
 	enum Type { REQUEST = 1, RESPONSE = 2 };
 
 	Vector!ubyte contents() const

@@ -6,6 +6,9 @@
 */
 module botan.block.serpent;
 
+import botan.constants;
+static if (BOTAN_HAS_SERPENT):
+
 import botan.block.block_cipher;
 import botan.utils.loadstor;
 import botan.utils.rotate;

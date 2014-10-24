@@ -6,6 +6,9 @@
 */
 module botan.block.desx;
 
+import botan.constants;
+static if (BOTAN_HAS_DES):
+
 import botan.block.des;
 import botan.utils.xor_buf;
 

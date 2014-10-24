@@ -6,6 +6,9 @@
 */
 module botan.modes.cfb;
 
+import botan.constants;
+static if (BOTAN_HAS_MODE_CFB):
+
 import botan.modes.cipher_mode;
 import botan.block.block_cipher;
 import botan.modes.mode_pad;

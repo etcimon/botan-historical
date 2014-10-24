@@ -6,6 +6,9 @@
 */
 module botan.checksum.crc32;
 
+import botan.constants;
+static if (BOTAN_HAS_CRC32):
+
 import botan.hash.hash;
 import botan.utils.loadstor;
 

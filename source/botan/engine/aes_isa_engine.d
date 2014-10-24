@@ -6,6 +6,9 @@
 */
 module botan.engine.aes_isa_engine;
 
+import botan.constants;
+static if (BOTAN_HAS_ENGINE_AES_ISA):
+
 import botan.engine.engine;
 import botan.utils.cpuid;
 static if (BOTAN_HAS_AES_NI) import botan.block.aes_ni;

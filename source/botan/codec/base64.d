@@ -86,9 +86,9 @@ string base64_encode(in ubyte* input,
 	size_t produced = base64_encode(&output[0],
 									input, input_length,
 									consumed, true);
-	
-	BOTAN_ASSERT_EQUAL(consumed, input_length, "Consumed the entire input");
-	BOTAN_ASSERT_EQUAL(produced, output.length, "Produced expected size");
+
+	assert(consumed == input_length, "Consumed the entire input");
+	assert(produced == output.length, "Produced expected size");
 	
 	return output;
 }

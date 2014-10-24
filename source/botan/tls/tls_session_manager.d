@@ -6,16 +6,15 @@
 */
 module botan.tls.tls_session_manager;
 
-import botan.tls.tls_session;
-import botan.tls.tls_server_info;
-import botan.algo_base.sym_algo;
-import botan.rng.rng;
+public import botan.tls.tls_session;
+public import botan.tls.tls_server_info;
+public import botan.algo_base.sym_algo;
+public import botan.rng.rng;
 import botan.codec.hex;
 import std.datetime;
 import core.sync.mutex;
 import std.datetime;
 import map;
-
 
 /**
 * Session_Manager is an interface to systems which can save
@@ -107,10 +106,9 @@ public:
 	* @param session_lifetime sessions are expired after this many
 	*		  seconds have elapsed from initial handshake.
 	*/
-	this(
-		RandomNumberGenerator rng,
-		size_t max_sessions = 1000,
-		Duration session_lifetime = TickDuration.from!"seconds"(7200).to!Duration) 
+	this(RandomNumberGenerator rng,
+			size_t max_sessions = 1000,
+			Duration session_lifetime = 7200.seconds) 
 	{
 		m_max_sessions = max_sessions;
 		m_session_lifetime = session_lifetime;
@@ -119,14 +117,14 @@ public:
 		
 	}
 
-	synchronized override bool load_from_session_id(
+	override bool load_from_session_id(
 		in Vector!ubyte session_id, Session session)
 	{
 		
 		return load_from_session_str(hex_encode(session_id), session);
 	}
 
-	synchronized override bool load_from_server_info(
+	override bool load_from_server_info(
 		const Server_Information info, Session session)
 	{
 		
@@ -147,7 +145,7 @@ public:
 		return false;
 	}
 
-	synchronized override void remove_entry(
+	override void remove_entry(
 		in Vector!ubyte session_id)
 	{		
 		auto i = m_sessions.find(hex_encode(session_id));
@@ -156,16 +154,15 @@ public:
 			m_sessions.erase(i);
 	}
 
-	synchronized override void save(in Session session)
+	override void save(in Session session)
 	{
-		m_mutex.lock(); scope(exit) m_mutex.unlock();
 		
 		if (m_max_sessions != 0)
 		{
 			/*
-		We generate new session IDs with the first 4 bytes being a
-		timestamp, so this actually removes the oldest sessions first.
-		*/
+			We generate new session IDs with the first 4 bytes being a
+			timestamp, so this actually removes the oldest sessions first.
+			*/
 			while(m_sessions.length >= m_max_sessions)
 				m_sessions.erase(m_sessions.begin());
 		}
@@ -174,7 +171,7 @@ public:
 		
 		m_sessions[session_id_str] = session.encrypt(m_session_key, m_rng);
 		
-		if (session.side() == CLIENT && !session.server_info().empty())
+		if (session.side() == CLIENT && !session.server_info().empty)
 			m_info_sessions[session.server_info()] = session_id_str;
 	}
 
@@ -182,8 +179,7 @@ public:
 	{ return m_session_lifetime; }
 
 private:
-	bool load_from_session_str(
-		in string session_str, Session session)
+	bool load_from_session_str(in string session_str, Session session)
 	{
 		// assert(lock is held)
 		

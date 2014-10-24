@@ -6,6 +6,9 @@
 */
 module botan.modes.xts;
 
+import botan.constants;
+static if (BOTAN_HAS_MODE_XTS):
+
 import botan.modes.cipher_mode;
 import botan.block.block_cipher;
 import botan.modes.xts;

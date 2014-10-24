@@ -5,6 +5,10 @@
 * Distributed under the terms of the botan license.
 */
 module botan.hash.comb4p;
+
+import botan.constants;
+static if (BOTAN_HAS_COMB4P):
+
 import botan.hash.hash;
 import botan.utils.xor_buf;
 import std.exception;

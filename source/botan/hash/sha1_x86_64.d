@@ -5,6 +5,10 @@
 * Distributed under the terms of the botan license.
 */
 module botan.hash.sha1_x86_64;
+
+import botan.constants;
+static if (BOTAN_HAS_SHA1_X86_64):
+
 import botan.hash.sha160;
 /**
 * SHA-160 in x86-64 assembly

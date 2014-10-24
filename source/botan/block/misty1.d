@@ -5,6 +5,10 @@
 * Distributed under the terms of the botan license.
 */
 module botan.block.misty1;
+
+import botan.constants;
+static if (BOTAN_HAS_MISTY1):
+
 import botan.block.block_cipher;
 import botan.utils.loadstor;
 import botan.utils.parsing;

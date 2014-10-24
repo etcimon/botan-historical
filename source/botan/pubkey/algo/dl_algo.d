@@ -137,7 +137,7 @@ public:
 	*/
 	const ref BigInt get_x() const { return x; }
 
-	Secure_Vector!ubyte pkcs8_Private_Key() const
+	Secure_Vector!ubyte pkcs8_private_key() const
 	{
 		return DER_Encoder().encode(x).get_contents();
 	}

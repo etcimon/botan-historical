@@ -5,6 +5,10 @@
 * Distributed under the terms of the botan license.
 */
 module botan.mac.cbc_mac;
+
+import botan.constants;
+static if (BOTAN_HAS_CBC_MAC):
+
 import botan.mac.mac;
 import botan.block.block_cipher;
 import botan.utils.xor_buf;

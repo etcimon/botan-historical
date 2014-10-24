@@ -58,7 +58,7 @@ public:
 	*/
 	DER_Encoder end_cons()
 	{
-		if (subsequences.empty())
+		if (subsequences.empty)
 			throw new Invalid_State("end_cons: No such sequence");
 		
 		Secure_Vector!ubyte seq = subsequences[subsequences.length-1].get_contents();

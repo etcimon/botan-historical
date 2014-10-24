@@ -6,6 +6,9 @@
 */
 module botan.hash.md5_x86_32;
 
+import botan.constants;
+static if (BOTAN_HAS_MD5_X86_32):
+
 import botan.hash.md5;
 import botan.hash.hash;
 

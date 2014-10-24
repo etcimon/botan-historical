@@ -33,7 +33,7 @@ public:
 	*/
 	void poll(ref Entropy_Accumulator accum)
 	{
-		if (m_devices.empty())
+		if (m_devices.empty)
 			return;
 		
 		const size_t ENTROPY_BITS_PER_BYTE = 8;

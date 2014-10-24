@@ -5,6 +5,10 @@
 * Distributed under the terms of the botan license.
 */
 module botan.hash.sha1_sse2;
+
+import botan.constants;
+static if (BOTAN_HAS_SHA1_SSE2):
+
 import botan.hash.sha160;
 import botan.utils.rotate;
 import botan.utils.simd.emmintrin;

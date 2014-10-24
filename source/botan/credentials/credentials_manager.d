@@ -62,7 +62,7 @@ public:
 											in string purported_hostname,
 											const ref Vector!X509_Certificate cert_chainput)
 	{
-		if (cert_chain.empty())
+		if (cert_chain.empty)
 			throw new Invalid_Argument("Certificate chain was empty");
 		
 		auto trusted_CAs = trusted_certificate_authorities(type, purported_hostname);
@@ -134,7 +134,7 @@ public:
 	* @note this object should retain ownership of the returned key;
 	*		 it should not be deleted by the caller.
 	*/
-	abstract Private_Key Private_Key_for( in X509_Certificate cert,
+	abstract Private_Key private_key_for( in X509_Certificate cert,
 											 in string type,
 											 in string context)
 	{

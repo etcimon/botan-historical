@@ -6,6 +6,9 @@
 */
 module botan.pubkey.algo.rsa;
 
+import botan.constants;
+static if (BOTAN_HAS_RSA):
+
 import botan.pubkey.algo.if_algo;
 import botan.pubkey.pk_ops;
 import botan.math.numbertheory.reducer;

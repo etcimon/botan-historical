@@ -6,6 +6,9 @@
 */
 module botan.modes.ecb;
 
+import botan.constants;
+static if (BOTAN_HAS_MODE_ECB):
+
 import botan.modes.cipher_mode;
 import botan.block.block_cipher;
 import botan.modes.mode_pad;

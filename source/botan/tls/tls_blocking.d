@@ -6,8 +6,8 @@
 */
 module botan.tls.tls_blocking;
 
-import botan.tls_client;
-import botan.tls_server;
+import botan.tls.tls_client;
+import botan.tls.tls_server;
 import deque;
 
 alias secure_deque(T) = Vector!( T, secure_allocator!T);
@@ -15,7 +15,7 @@ alias secure_deque(T) = Vector!( T, secure_allocator!T);
 /**
 * Blocking TLS Client
 */
-final class Blocking_Client
+class Blocking_Client
 {
 public:
 	this(size_t delegate(ref ubyte[]) read_fn,
@@ -36,9 +36,9 @@ public:
 	/**
 	* Completes full handshake then returns
 	*/
-	void do_handshake()
+	final void do_handshake()
 	{
-		Vector!ubyte readbuf = Vector!ubyte(4096);
+		Vector!ubyte readbuf = Vector!ubyte(BOTAN_DEFAULT_BUFFER_SIZE);
 		
 		while(!m_channel.is_closed() && !m_channel.is_active())
 		{
@@ -51,16 +51,16 @@ public:
 	* Number of bytes pending read in the plaintext buffer (bytes
 	* readable without blocking)
 	*/
-	size_t pending() const { return m_plaintext.length; }
+	final size_t pending() const { return m_plaintext.length; }
 
 	/**
 	* Blocking read, will return at least 1 ubyte or 0 on connection close
 	*/
-	size_t read(ubyte* buf, size_t buf_len)
+	final size_t read(ubyte* buf, size_t buf_len)
 	{
-		Vector!ubyte readbuf = Vector!ubyte(4096);
+		Vector!ubyte readbuf = Vector!ubyte(BOTAN_DEFAULT_BUFFER_SIZE);
 		
-		while(m_plaintext.empty() && !m_channel.is_closed())
+		while(m_plaintext.empty && !m_channel.is_closed())
 		{
 			const size_t from_socket = m_read_fn(&readbuf[0], readbuf.length);
 			m_channel.received_data(&readbuf[0], from_socket);
@@ -71,23 +71,23 @@ public:
 		for (size_t i = 0; i != returned; ++i)
 			buf[i] = m_plaintext[i];
 		m_plaintext.erase(m_plaintext.begin(), m_plaintext.begin() + returned);
-		
-		BOTAN_ASSERT_IMPLICATION(returned == 0, m_channel.is_closed(),
+
+		assert(returned == 0 && m_channel.is_closed(),
 		                         "Only return zero if channel is closed");
 		
 		return returned;
 	}
 
-	void write(in ubyte* buf) { m_channel.send(buf); }
+	final void write(in ubyte* buf) { m_channel.send(buf); }
 
-	Channel underlying_channel() const { return m_channel; }
-	Channel underlying_channel() { return m_channel; }
+	final Channel underlying_channel() const { return m_channel; }
+	final Channel underlying_channel() { return m_channel; }
 
-	void close() { m_channel.close(); }
+	final void close() { m_channel.close(); }
 
-	bool is_closed() const { return m_channel.is_closed(); }
+	final bool is_closed() const { return m_channel.is_closed(); }
 
-	X509_Certificate[] peer_cert_chain() const
+	final X509_Certificate[] peer_cert_chain() const
 	{ return m_channel.peer_cert_chain(); }
 
 	~this() {}
@@ -105,17 +105,17 @@ protected:
 
 private:
 
-	bool handshake_cb(in Session session)
+	final bool handshake_cb(in Session session)
 	{
 		return this.handshake_complete(session);
 	}
 
-	void data_cb(in ubyte[] data)
+	final void data_cb(in ubyte[] data)
 	{
 		m_plaintext.insert(m_plaintext.end(), data.ptr, data.length);
 	}
 
-	void alert_cb(const Alert alert, in ubyte[])
+	final void alert_cb(const Alert alert, in ubyte[])
 	{
 		this.alert_notification(alert);
 	}

@@ -8,10 +8,12 @@ module botan.prf.hkdf;
 
 import botan.mac.mac;
 import botan.hash.hash;
+import botan.utils.types;
+
 /**
 * HKDF, see @rfc 5869 for details
 */
-class HKDF
+final class HKDF
 {
 public:
 	this(MessageAuthenticationCode extractor,

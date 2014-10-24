@@ -6,6 +6,9 @@
 */
 module botan.block.noekeon;
 
+import botan.constants;
+static if (BOTAN_HAS_NOEKEON):
+
 import botan.block.block_cipher;
 import botan.utils.loadstor;
 import botan.utils.rotate;

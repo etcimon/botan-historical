@@ -135,7 +135,7 @@ HashMap!(string, double)
 	
 	HashMap!(string, double) all_results; // provider . ops/sec
 	
-	if (!providers.empty())
+	if (!providers.empty)
 	{
 		const Duration ns_per_provider = milliseconds / providers.length;
 		

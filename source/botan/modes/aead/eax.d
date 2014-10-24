@@ -6,6 +6,9 @@
 */
 module botan.modes.aead.eax;
 
+import botan.constants;
+static if (BOTAN_HAS_AEAD_EAX):
+
 import botan.modes.aead.aead;
 import botan.block.block_cipher;
 import botan.stream.stream_cipher;

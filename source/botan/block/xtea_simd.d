@@ -6,6 +6,9 @@
 */
 module botan.block.xtea_simd;
 
+import botan.constants;
+static if (BOTAN_HAS_XTEA_SIMD):
+
 import botan.block.xtea;
 import botan.utils.loadstor;
 import botan.simd.simd_32;

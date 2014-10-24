@@ -5,6 +5,10 @@
 * Distributed under the terms of the botan license.
 */
 module botan.mac.hmac;
+
+import botan.constants;
+static if (BOTAN_HAS_HMAC || BOTAN_HAS_PBE_PKCS_V20):
+
 import botan.mac.mac;
 import botan.hash.hash;
 import std.algorithm : fill;

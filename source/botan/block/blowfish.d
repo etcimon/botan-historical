@@ -7,6 +7,9 @@
 
 module botan.block.blowfish;
 
+import botan.constants;
+static if (BOTAN_HAS_BLOWFISH):
+
 import botan.block.block_cipher;
 import botan.utils.loadstor;
 

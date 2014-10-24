@@ -6,6 +6,9 @@
 */
 module botan.pubkey.algo.nr;
 
+import botan.constants;
+static if (BOTAN_HAS_NYBERG_RUEPPEL):
+
 import botan.pubkey.algo.dl_algo;
 import botan.pubkey.pk_ops;
 import botan.math.numbertheory.numthry;

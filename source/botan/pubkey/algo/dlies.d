@@ -48,7 +48,7 @@ private:
 	{
 		if (length > maximum_input_size())
 			throw new Invalid_Argument("DLIES: Plaintext too large");
-		if (other_key.empty())
+		if (other_key.empty)
 			throw new Invalid_State("DLIES: The other key was never set");
 		
 		Secure_Vector!ubyte output = Secure_Vector!ubyte(my_key.length + length + mac.output_length);

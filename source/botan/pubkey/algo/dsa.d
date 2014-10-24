@@ -6,6 +6,9 @@
 */
 module botan.pubkey.algo.dsa;
 
+import botan.constants;
+static if (BOTAN_HAS_DSA):
+
 import botan.pubkey.algo.dl_algo;
 import botan.pubkey.pk_ops;
 import botan.math.numbertheory.reducer;

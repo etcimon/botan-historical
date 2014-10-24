@@ -93,7 +93,7 @@ public:
 	* Find out whether this OID is empty
 	* @return true is no OID value is set
 	*/
-	bool empty() const { return id.length == 0; }
+	@property bool empty() const { return id.length == 0; }
 
 	/**
 	* Get this OID as list (vector) of its components.

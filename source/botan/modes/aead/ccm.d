@@ -5,6 +5,10 @@
 * Distributed under the terms of the botan license.
 */
 module botan.modes.aead.ccm;
+
+import botan.constants;
+static if (BOTAN_HAS_AEAD_CCM):
+
 import botan.modes.aead.aead;
 import botan.block.block_cipher;
 import botan.stream.stream_cipher;

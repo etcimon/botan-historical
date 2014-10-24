@@ -6,6 +6,9 @@
 */
 module botan.stream.chacha;
 
+import botan.constants;
+static if (BOTAN_HAS_CHACHA):
+
 import botan.stream.stream_cipher;
 import botan.utils.loadstor;
 import botan.utils.rotate;

@@ -6,6 +6,9 @@
 */
 module botan.block.cast128;
 
+import botan.constants;
+static if (BOTAN_HAS_CAST):
+
 import botan.block.block_cipher;
 import botan.block.cast_sboxes;
 import botan.utils.loadstor;

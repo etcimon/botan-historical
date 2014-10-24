@@ -5,6 +5,10 @@
 * Distributed under the terms of the botan license.
 */
 module botan.hash.md4_x86_32;
+
+import botan.constants;
+static if (BOTAN_HAS_MD4_X86_32):
+
 import botan.hash.md4;
 /**
 * MD4 using x86 assembly

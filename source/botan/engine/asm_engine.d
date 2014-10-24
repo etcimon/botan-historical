@@ -6,6 +6,9 @@
 */
 module botan.engine.asm_engine;
 
+import botan.constants;
+static if (BOTAN_HAS_ENGINE_ASSEMBLER):
+
 import botan.engine.engine;
 
 static if (BOTAN_HAS_SERPENT_X86_32) 	import botan.block.serp_x86_32;

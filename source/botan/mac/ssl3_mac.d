@@ -5,6 +5,10 @@
 * Distributed under the terms of the botan license.
 */
 module botan.mac.ssl3_mac;
+
+import botan.constants;
+static if (BOTAN_HAS_SSL3_MAC):
+
 import botan.hash.hash;
 import botan.mac.mac;
 /**

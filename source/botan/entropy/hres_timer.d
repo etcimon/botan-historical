@@ -6,6 +6,9 @@
 */
 module botan.entropy.hres_timer;
 
+import botan.constants;
+static if (BOTAN_HAS_ENTROPY_SRC_HIGH_RESOLUTION_TIMER):
+
 import botan.entropy.entropy_src;
 
 import botan.utils.cpuid;

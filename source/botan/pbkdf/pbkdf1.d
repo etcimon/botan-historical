@@ -6,6 +6,9 @@
 */
 module botan.pbkdf.pbkdf1;
 
+import botan.constants;
+static if (BOTAN_HAS_PBKDF1):
+
 import botan.pbkdf.pbkdf;
 import botan.hash.hash;
 import std.datetime;

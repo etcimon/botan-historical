@@ -58,7 +58,7 @@ public:
 	/**
 	* @return if we should encode this extension or not
 	*/
-	abstract bool empty() const;
+	abstract @property bool empty() const;
 
 	~this() {}
 }
@@ -133,7 +133,7 @@ public:
 		return buf;
 	}
 
-	bool empty() const { return sni_host_name == ""; }
+	@property bool empty() const { return sni_host_name == ""; }
 private:
 	string sni_host_name;
 }
@@ -181,7 +181,7 @@ public:
 		return buf;
 	}
 
-	bool empty() const { return srp_identifier == ""; }
+	@property bool empty() const { return srp_identifier == ""; }
 private:
 	string srp_identifier;
 }
@@ -223,7 +223,7 @@ public:
 		return buf;
 	}
 
-	bool empty() const { return false; } // always send this
+	@property bool empty() const { return false; } // always send this
 private:
 	Vector!ubyte reneg_data;
 }
@@ -239,7 +239,7 @@ public:
 
 	Handshake_Extension_Type type() const { return static_type(); }
 
-	bool empty() const { return false; }
+	@property bool empty() const { return false; }
 
 	size_t fragment_size() const { return m_max_fragment; }
 
@@ -360,7 +360,7 @@ public:
 		return buf;
 	}
 
-	bool empty() const { return false; }
+	@property bool empty() const { return false; }
 private:
 	Vector!string m_protocols;
 }
@@ -405,7 +405,7 @@ public:
 
 	Vector!ubyte serialize() const { return m_ticket; }
 
-	bool empty() const { return false; }
+	@property bool empty() const { return false; }
 private:
 	Vector!ubyte m_ticket;
 }
@@ -539,7 +539,7 @@ public:
 		}
 	}
 
-	bool empty() const { return m_curves.empty(); }
+	@property bool empty() const { return m_curves.empty; }
 private:
 	Vector!string m_curves;
 }
@@ -660,7 +660,7 @@ public:
 		return buf;
 	}
 
-	bool empty() const { return false; }
+	@property bool empty() const { return false; }
 
 	this(in Vector!string hashes,
 	     const ref Vector!string sigs)
@@ -724,7 +724,7 @@ public:
 
 
 
-	bool empty() const { return false; }
+	@property bool empty() const { return false; }
 
 	this(bool peer_allowed_to_send) 
 	{
@@ -786,7 +786,7 @@ public:
 		
 		foreach (ref extn; extensions)
 		{
-			if (extn.second.empty())
+			if (extn.second.empty)
 				continue;
 			
 			const ushort extn_code = extn.second.type();

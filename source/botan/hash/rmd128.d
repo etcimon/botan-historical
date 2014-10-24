@@ -6,6 +6,9 @@
 */
 module botan.hash.rmd128;
 
+import botan.constants;
+static if (BOTAN_HAS_RIPEMD_128):
+
 import botan.utils.loadstor;
 import botan.utils.rotate;
 import botan.hash.mdx_hash;

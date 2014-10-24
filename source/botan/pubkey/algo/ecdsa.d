@@ -8,6 +8,9 @@
 */
 module botan.pubkey.algo.ecdsa;
 
+import botan.constants;
+static if (BOTAN_HAS_ECDSA):
+
 import botan.pubkey.algo.ecc_key;
 import botan.math.numbertheory.reducer;
 import botan.pubkey.pk_ops;

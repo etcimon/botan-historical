@@ -44,7 +44,7 @@ Secure_Vector!ubyte BER_encode(in Private_Key key)
 		.start_cons(ASN1_Tag.SEQUENCE)
 			.encode(PKCS8_VERSION)
 			.encode(key.pkcs8_algorithm_identifier())
-			.encode(key.pkcs8_Private_Key(), ASN1_Tag.OCTET_STRING)
+			.encode(key.pkcs8_private_key(), ASN1_Tag.OCTET_STRING)
 			.end_cons()
 			.get_contents();
 }
@@ -141,7 +141,7 @@ Private_Key load_key(DataSource source,
 		throw new PKCS8_Exception("Unknown algorithm OID: " ~
 		                          alg_id.oid.as_string());
 	
-	return make_Private_Key(alg_id, pkcs8_key, rng);
+	return make_private_key(alg_id, pkcs8_key, rng);
 }
 
 /** Load a key from a data source.
@@ -248,7 +248,7 @@ Secure_Vector!ubyte PKCS8_decode(
 				throw new PKCS8_Exception("Unknown PEM label " ~ label);
 		}
 		
-		if (key_data.empty())
+		if (key_data.empty)
 			throw new PKCS8_Exception("No key data found");
 	}
 	catch(Decoding_Error e)
@@ -297,7 +297,7 @@ Secure_Vector!ubyte PKCS8_decode(
 		}
 	}
 	
-	if (key.empty())
+	if (key.empty)
 		throw new Decoding_Error("PKCS #8 private key decoding failed");
 	return key;
 }

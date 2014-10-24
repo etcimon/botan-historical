@@ -108,7 +108,7 @@ public:
 		
 		m_srp_identifier = srp_identifier_str.value();
 		
-		if (!peer_cert_bits.empty())
+		if (!peer_cert_bits.empty)
 		{
 			auto certs = scoped!DataSource_Memory(&peer_cert_bits[0], peer_cert_bits.length);
 			while(!certs.end_of_data())

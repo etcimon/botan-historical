@@ -302,7 +302,7 @@ public:
 			ciphersuites ~= suite;
 		}
 		
-		if (ciphersuites.empty())
+		if (ciphersuites.empty)
 			throw new Logic_Error("Policy does not allow any available cipher suite");
 		Vector!ushort ciphersuite_codes;
 		foreach (i; ciphersuites.data.uniq.sort!((a,b){ return order.compare(a, b); }).array.to!(Ciphersuite[]))

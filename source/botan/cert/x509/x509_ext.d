@@ -880,7 +880,7 @@ public:
 private:
 	string oid_name() const { return "X509v3.CRLDistributionPoints"; }
 
-	bool should_encode() const { return !m_distribution_points.empty(); }
+	bool should_encode() const { return !m_distribution_points.empty; }
 
 	Vector!ubyte encode_inner() const
 	{

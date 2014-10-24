@@ -246,7 +246,7 @@ public:
 		BER_Object obj = get_next_object();
 		obj.assert_is_a(type_tag, class_tag);
 		
-		if (obj.value.empty())
+		if (obj.value.empty)
 			output = 0;
 		else
 		{

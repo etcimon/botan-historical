@@ -6,8 +6,9 @@
 */
 module botan.entropy.es_beos;
 
-version(linux):
+import botan.constants;
 static if (BOTAN_HAS_ENTROPY_SRC_BEOS):
+
 /**
 * BeOS Entropy Source
 */

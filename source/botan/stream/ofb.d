@@ -6,6 +6,9 @@
 */
 module botan.stream.ofb;
 
+import botan.constants;
+static if (BOTAN_HAS_OFB):
+
 import botan.stream.stream_cipher;
 import botan.block.block_cipher;
 import botan.utils.xor_buf;

@@ -37,7 +37,7 @@ public:
 		
 		der.start_cons(ASN1_Tag.SEQUENCE);
 		
-		if (!dn_bits.empty())
+		if (!dn_bits.empty)
 			der.raw_bytes(dn_bits);
 		else
 		{

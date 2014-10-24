@@ -83,7 +83,7 @@ Public_Key load_key(DataSource source)
 					.end_cons();
 		}
 		
-		if (key_bits.empty())
+		if (key_bits.empty)
 			throw new Decoding_Error("X.509 public key decoding failed");
 		
 		return make_public_key(alg_id, key_bits);

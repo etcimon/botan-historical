@@ -6,6 +6,9 @@
 */
 module botan.cmac.cmac;
 
+import botan.constants;
+static if (BOTAN_HAS_CMAC):
+
 import botan.mac.mac;
 import botan.block.block_cipher;
 import botan.utils.loadstor;

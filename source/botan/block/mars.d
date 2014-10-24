@@ -6,6 +6,9 @@
 */
 module botan.block.mars;
 
+import botan.constants;
+static if (BOTAN_HAS_MARS):
+
 import botan.block.block_cipher;
 import botan.utils.loadstor;
 import botan.utils.rotate;

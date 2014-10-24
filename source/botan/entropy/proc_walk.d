@@ -6,6 +6,9 @@
 */
 module botan.entropy.proc_walk;
 
+import botan.constants;
+static if (BOTAN_HAS_ENTROPY_SRC_PROC_WALKER):
+
 import botan.entropy.entropy_src;
 import botan.alloc.secmem;
 import cstring;
@@ -53,7 +56,7 @@ private:
 			closedir(m_cur_dir.first);
 			m_cur_dir = Pair!(DIR*, string)(null, "");
 			
-			while(!m_dirlist.empty() && !m_cur_dir.first)
+			while(!m_dirlist.empty && !m_cur_dir.first)
 			{
 				const string next_dir_name = m_dirlist[0];
 				m_dirlist.pop_front();

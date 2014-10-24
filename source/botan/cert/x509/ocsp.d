@@ -122,7 +122,7 @@ public:
 					.decode_optional(extensions, ASN1_Tag(1),
 					                 ASN1_Tag(CONSTRUCTED | ASN1_Tag.CONTEXT_SPECIFIC));
 			
-			if (certs.empty())
+			if (certs.empty)
 			{
 				if (auto cert = trusted_roots.find_cert(name, Vector!ubyte()))
 					certs.push_back(*cert);

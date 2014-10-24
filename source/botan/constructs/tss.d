@@ -12,7 +12,7 @@ import botan.rng.rng;
 import botan.utils.loadstor;
 import botan.filters.pipe;
 import botan.codec.hex;
-import botan.sha2_32;
+import botan.hash.sha2_32;
 import botan.hash.sha160;
 import botan.utils.types;
 
@@ -32,7 +32,7 @@ public:
 	*/
 	static Vector!RTSS_Share split(	ubyte M, ubyte N,
 										in ubyte* S, ushort S_len,
-										const ubyte identifier[16],
+										const ubyte[16]* identifier,
 										RandomNumberGenerator rng)
 	{
 		if (M == 0 || N == 0 || M > N)
@@ -62,7 +62,7 @@ public:
 		
 		for (size_t i = 0; i != secret.length; ++i)
 		{
-			Vector!ubyte coefficients(M-1);
+			Vector!ubyte coefficients = Vector!ubyte(M-1);
 			rng.randomize(&coefficients[0], coefficients.length);
 			
 			for (ubyte j = 0; j != N; ++j)

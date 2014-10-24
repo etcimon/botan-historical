@@ -74,7 +74,7 @@ Public_Key make_public_key(in Algorithm_Identifier alg_id,
 	return null;
 }
 
-Private_Key make_Private_Key(in Algorithm_Identifier alg_id,
+Private_Key make_private_key(in Algorithm_Identifier alg_id,
                              in Secure_Vector!ubyte key_bits,
                              RandomNumberGenerator rng)
 {

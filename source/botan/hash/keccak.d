@@ -6,6 +6,9 @@
 */
 module botan.hash.keccak;
 
+import botan.constants;
+static if (BOTAN_HAS_KECCAK):
+
 import botan.hash.hash;
 import botan.alloc.secmem;
 import string;

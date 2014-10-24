@@ -6,6 +6,9 @@
 */
 module botan.engine.gnump_engine;
 
+import botan.constants;
+static if (BOTAN_HAS_ENGINE_GNU_MP):
+
 import botan.engine.engine;
 import cstring;
 import core.atomic;

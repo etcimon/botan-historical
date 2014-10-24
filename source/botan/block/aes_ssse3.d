@@ -6,6 +6,8 @@
 */
 module botan.block.aes_ssse3;
 
+import botan.constants;
+static if (BOTAN_HAS_AES_SSSE3):
 
 import botan.block.block_cipher;
 import botan.utils.simd.tmmintrin;

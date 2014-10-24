@@ -185,7 +185,7 @@ public:
 	const ref BigInt get_d1() const { return d1; }
 	const ref BigInt get_d2() const { return d2; }
 
-	Secure_Vector!ubyte  pkcs8_Private_Key() const
+	Secure_Vector!ubyte  pkcs8_private_key() const
 	{
 		return DER_Encoder()
 			.start_cons(ASN1_Tag.SEQUENCE)
