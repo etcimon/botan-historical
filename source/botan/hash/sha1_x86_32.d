@@ -48,7 +48,7 @@ void botan_sha160_x86_32_compress(uint[5]* arg1, const ubyte[64]* arg2, uint[81]
 	      
 	      ZEROIZE(ESI) ~
 	      
-	      START_LOOP(.LOAD_INPUT) ~
+	      START_LOOP(".LOAD_INPUT") ~
 	      ADD_IMM(ESI, 4) ~
 	      
 	      ASSIGN(EAX, ARRAY4(EDI, 0)) ~
@@ -67,11 +67,11 @@ void botan_sha160_x86_32_compress(uint[5]* arg1, const ubyte[64]* arg2, uint[81]
 	      ASSIGN(ARRAY4_INDIRECT(EBP,ESI,-3), EBX) ~
 	      ASSIGN(ARRAY4_INDIRECT(EBP,ESI,-2), ECX) ~
 	      ASSIGN(ARRAY4_INDIRECT(EBP,ESI,-1), EDX) ~
-	      LOOP_UNTIL_EQ(ESI, 16, .LOAD_INPUT) ~
+	      LOOP_UNTIL_EQ(ESI, 16, ".LOAD_INPUT") ~
 	      
 	      ADD2_IMM(EDI, EBP, 64) ~
 	      
-	      START_LOOP(.L_SHA_EXPANSION) ~
+	      START_LOOP(".L_SHA_EXPANSION") ~
 	      ADD_IMM(ESI, 4) ~
 	      
 	      ZEROIZE(EAX) ~
@@ -106,7 +106,7 @@ void botan_sha160_x86_32_compress(uint[5]* arg1, const ubyte[64]* arg2, uint[81]
 	      ASSIGN(ARRAY4(EDI, 3), EAX) ~
 	      
 	      ADD_IMM(EDI, 16) ~
-	      LOOP_UNTIL_EQ(ESI, 80, .L_SHA_EXPANSION) ~
+	      LOOP_UNTIL_EQ(ESI, 80, ".L_SHA_EXPANSION") ~
 	      
 	      ASSIGN(EAX, ARG(1)) ~
 	      ASSIGN(EDI, ARRAY4(EAX, 0)) ~

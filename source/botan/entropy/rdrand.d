@@ -11,9 +11,7 @@ static if (BOTAN_HAS_ENTROPY_SRC_RDRAND):
 
 import botan.entropy.entropy_src;
 import botan.utils.cpuid;
-
-static if (!BOTAN_USE_GCC_INLINE_ASM)
-	import botan.utils.simd.immintrin;
+import botan.utils.simd.immintrin;
 
 /**
 * Entropy source using the rdrand instruction first introduced on
@@ -50,18 +48,10 @@ public:
 		for (size_t i = 0; i != RDRAND_POLLS; ++i)
 		{
 			uint r = 0;
-			
-			static if (BOTAN_USE_GCC_INLINE_ASM) {
-				int cf = 0;
-				
-				// Encoding of rdrand %eax
-				static assert(false); //asm(".ubyte 0x0F, 0xC7, 0xF0; adcl $0,%1" : "=a" (r), "=r" (cf) : "0" (r), "1" (cf) : "cc");
-			} 
-			else 
-			{
-				int cf = _rdrand32_step(&r);
-			}
-			
+
+			int cf = _rdrand32_step(&r);
+
+
 			if (cf == 1)
 				accum.add(r, ENTROPY_PER_POLL);
 		}

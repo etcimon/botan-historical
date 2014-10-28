@@ -9,6 +9,7 @@ module botan.hash.md4_x86_32;
 import botan.constants;
 static if (BOTAN_HAS_MD4_X86_32):
 
+import botan.utils.asm_x86_32.asm_x86_32;
 import botan.hash.md4;
 /**
 * MD4 using x86 assembly
