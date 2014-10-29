@@ -65,22 +65,22 @@ package:
 
 __m128i mul(__m128i X, ushort K_16) pure
 {
-	const __m128i zeros = _mm_set1_epi16(0);
-	const __m128i ones = _mm_set1_epi16(1);
+	const(__m128i) zeros = _mm_set1_epi16(0);
+	const(__m128i) ones = _mm_set1_epi16(1);
 	
-	const __m128i K = _mm_set1_epi16(K_16);
+	const(__m128i) K = _mm_set1_epi16(K_16);
 	
-	const __m128i X_is_zero = _mm_cmpeq_epi16(X, zeros);
-	const __m128i K_is_zero = _mm_cmpeq_epi16(K, zeros);
+	const(__m128i) X_is_zero = _mm_cmpeq_epi16(X, zeros);
+	const(__m128i) K_is_zero = _mm_cmpeq_epi16(K, zeros);
 	
-	const __m128i mul_lo = _mm_mullo_epi16(X, K);
-	const __m128i mul_hi = _mm_mulhi_epu16(X, K);
+	const(__m128i) mul_lo = _mm_mullo_epi16(X, K);
+	const(__m128i) mul_hi = _mm_mulhi_epu16(X, K);
 	
 	__m128i T = _mm_sub_epi16(mul_lo, mul_hi);
 	
 	// Unsigned compare; cmp = 1 if mul_lo < mul_hi else 0
-	const __m128i subs = _mm_subs_epu16(mul_hi, mul_lo);
-	const __m128i cmp = _mm_min_epu8(
+	const(__m128i) subs = _mm_subs_epu16(mul_hi, mul_lo);
+	const(__m128i) cmp = _mm_min_epu8(
 		_mm_or_si128(subs, _mm_srli_epi16(subs, 8)), ones);
 	
 	T = _mm_add_epi16(T, cmp);
@@ -180,7 +180,7 @@ void transpose_out(ref __m128i B0, ref __m128i B1, ref __m128i B2, ref __m128i B
 */
 void idea_op_8(in ubyte[64] input, ref ubyte[64] output, in ushort[52] EK) pure
 {
-	const __m128i* in_mm = cast(const __m128i*)(input.ptr);
+	const(__m128i)* in_mm = cast(const(__m128i)*)(input.ptr);
 	
 	__m128i B0 = _mm_loadu_si128(in_mm + 0);
 	__m128i B1 = _mm_loadu_si128(in_mm + 1);

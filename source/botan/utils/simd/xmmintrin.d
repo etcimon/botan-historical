@@ -1,4 +1,12 @@
 ﻿module botan.utils.simd.xmmintrin;
 
-align(16) union __m128i { ubyte[16] data; };
-align(8) union __m64 { ubyte[8] data; };
+/*
+* LDC, GDC, DMD Intrinsics for SSSE 3
+* (C) 2014-. Etienne Cimon
+*
+* Distributed under the terms of the MIT License.
+*/
+
+import botan.constants;
+static if (BOTAN_HAS_AES_SSSE3):
+

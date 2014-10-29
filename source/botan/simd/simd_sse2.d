@@ -15,14 +15,14 @@ struct SIMD_SSE2
 public:
 	static bool enabled() { return CPUID.has_sse2(); }
 
-	this(const uint[4] B)
+	this(const uint[4]* B)
 	{
-		reg = _mm_loadu_si128(cast(const __m128i*)(B));
+		reg = _mm_loadu_si128(cast(const(__m128i)*)(B));
 	}
 
 	this(uint B0, uint B1, uint B2, uint B3)
 	{
-		reg = _mm_set_epi32(B0, B1, B2, B3);
+		reg = _mm_set_epi32!(B0, B1, B2, B3)();
 	}
 
 	this(uint B)
@@ -32,7 +32,7 @@ public:
 
 	static SIMD_SSE2 load_le(const void* input)
 	{
-		return _mm_loadu_si128(cast(const __m128i*)(input));
+		return _mm_loadu_si128(cast(const(__m128i)*)(input));
 	}
 
 	static SIMD_SSE2 load_be(in void* input)

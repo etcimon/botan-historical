@@ -139,8 +139,10 @@ public:
 	* @param cipher the 128 bit block cipher to use
 	* @param tag_size is how big the auth tag will be
 	*/
-	GCM_Encryption(BlockCipher cipher, size_t tag_size = 16) :
-		GCM_Mode(cipher, tag_size) {}
+	this(BlockCipher cipher, size_t tag_size = 16) 
+	{
+		super(cipher, tag_size);
+	}
 
 	override size_t output_length(size_t input_length) const
 	{ return input_length + tag_size(); }
@@ -244,7 +246,7 @@ public:
 	Secure_Vector!ubyte nonce_hash(in ubyte* nonce, size_t nonce_len)
 	{
 		assert(m_ghash.length == 0, "nonce_hash called during wrong time");
-		Secure_Vector!ubyte y0(16);
+		Secure_Vector!ubyte y0 = Secure_Vector!ubyte(16);
 		
 		ghash_update(y0, nonce, nonce_len);
 		add_final_block(y0, 0, nonce_len);
@@ -385,10 +387,10 @@ void gcm_multiply_clmul(ubyte[16]* x, in ubyte[16]* H) pure
 	/*
 	* Algorithms 1 and 5 from Intel's CLMUL guide
 	*/
-	const __m128i BSWAP_MASK = _mm_set_epi8(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15);
+	immutable(__m128i) BSWAP_MASK = _mm_set_epi8!([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15])();
 	
-	__m128i a = _mm_loadu_si128(cast(const __m128i*)(x[0]));
-	__m128i b = _mm_loadu_si128(cast(const __m128i*)(H[0]));
+	__m128i a = _mm_loadu_si128(cast(const(__m128i)*)(x[0]));
+	__m128i b = _mm_loadu_si128(cast(const(__m128i)*)(H[0]));
 	
 	a = _mm_shuffle_epi8(a, BSWAP_MASK);
 	b = _mm_shuffle_epi8(b, BSWAP_MASK);

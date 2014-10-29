@@ -7,9 +7,13 @@
 * Distributed under the terms of the MIT License.
 */
 
+import botan.constants;
+
+static if (Threefish_512_AVX2):
+
 import core.simd;
 
-alias __m256i = ubyte32;
+alias __m256i = byte32;
 
 pure:
 nothrow:
@@ -191,10 +195,13 @@ version(LDC) {
 
 }
 
-version(DMD) {
+version(D_InlineAsm_X86_64) {
+	static assert(false, "DMD does not currently support AVX2.");
+
+	// todo: move this to another module
 	int _rdrand32_step(uint* r) {
 		int ret;
-
+		
 		asm
 		{
 			mov EAX, ret;
@@ -314,6 +321,8 @@ version(DMD) {
 		
 		*ptr = ret;	
 	}
+
+	// todo: Prepare the rest of the assembly. Use GDC/LDC in the meantime
 
 }
 

@@ -35,6 +35,8 @@ else						enum BOTAN_TARGET_CPU_IS_X86_FAMILY = false;
 version(ARM)			{	enum BOTAN_TARGET_CPU_IS_ARM_FAMILY = true;												}
 else						enum BOTAN_TARGET_CPU_IS_ARM_FAMILY = false;
 
+version(FORCE_SSE4)		{	enum BOTAN_FORCE_SSE4 = true;															}
+else						enum BOTAN_FORCE_SSE4 = false;
 version(SIMD_SSE2)		{	enum BOTAN_HAS_SIMD_SSE2 = true;														}
 else						enum BOTAN_HAS_SIMD_SSE2 = false;
 version(SIMD_Altivec)	{	enum BOTAN_HAS_SIMD_ALTIVEC = true;														}
