@@ -31,10 +31,10 @@ private:
 	void compress_n(in ubyte* input_bytes, size_t blocks)
 	{
 		
-		const(__m128i) K00_19 = _mm_set1_epi32(0x5A827999);
-		const(__m128i) K20_39 = _mm_set1_epi32(0x6ED9EBA1);
-		const(__m128i) K40_59 = _mm_set1_epi32(0x8F1BBCDC);
-		const(__m128i) K60_79 = _mm_set1_epi32(0xCA62C1D6);
+		const(__m128i) K00_19 = _mm_set1_epi32!(0x5A827999)();
+		const(__m128i) K20_39 = _mm_set1_epi32!(0x6ED9EBA1)();
+		const(__m128i) K40_59 = _mm_set1_epi32!(0x8F1BBCDC)();
+		const(__m128i) K60_79 = _mm_set1_epi32!(0xCA62C1D6)();
 		
 		uint A = digest[0],
 			B = digest[1],
@@ -213,7 +213,7 @@ private:
 string GET_P_32(alias P, ubyte i)() 
 {
 	static if (BOTAN_FORCE_SSE4)
-		return `_mm_extract_epi32(` ~ __traits(identifier, P).stringof ~ `.128, ` ~ i.stringof ~ `)`;
+		return `_mm_extract_epi32(` ~ __traits(identifier, P).stringof ~ `.u128, ` ~ i.stringof ~ `)`;
 	else
 		return __traits(identifier, P).stringof ~ `.u32[` ~ i.stringof ~ `]`;
 

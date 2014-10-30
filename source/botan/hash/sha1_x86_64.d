@@ -36,204 +36,206 @@ pure:
 
 void botan_sha160_x86_64_compress(uint[5]* arg1, const ubyte[64]* arg2, uint[80]* arg3)
 {
-		mixin(`asm { ` ~
-				ZEROIZE(LOOP_CTR) ~
+	/* defined later
+	 	enum A = "R8D";
+		enum B = "R9D";
+		enum C = "R10D";
+		enum D = "R11D";
+		enum E = "ECX";
+	*/
+	mixin(`asm { ` ~
+			ZEROIZE(LOOP_CTR) ~
 
-				ALIGN ~ `;` ~
-				`.LOOP_LOAD_INPUT:
-				addl $8, %eax
+			ALIGN ~ `;` ~
+			`LOOP_LOAD_INPUT:
+			add EAX, 8;
 
-				movq ARRAY8(INPUT, 0), r8
-				movq ARRAY8(INPUT, 1), r9
-				movq ARRAY8(INPUT, 2), r10
-				movq ARRAY8(INPUT, 3), r11
+			mov r8, ` ~ ARRAY8(INPUT, 0) ~ `
+			mov r9, ` ~ ARRAY8(INPUT, 1) ~ `
+			mov r10, ` ~ ARRAY8(INPUT, 2) ~ `
+			mov r11, ` ~ ARRAY8(INPUT, 3) ~ `
 
-				bswap r8
-				bswap r9
-				bswap r10
-				bswap r11
+			bswap r8
+			bswap r9
+			bswap r10
+			bswap r11
 
-				rolq $32, r8
-				rolq $32, r9
-				rolq $32, r10
-				rolq $32, r11
+			rolq $32, r8
+			rolq $32, r9
+			rolq $32, r10
+			rolq $32, r11
 
-				movq r8, ARRAY8(W, 0)
-				movq r9, ARRAY8(W, 1)
-				movq r10, ARRAY8(W, 2)
-				movq r11, ARRAY8(W, 3)
+			movq r8, ARRAY8(W, 0)
+			movq r9, ARRAY8(W, 1)
+			movq r10, ARRAY8(W, 2)
+			movq r11, ARRAY8(W, 3)
 
-				addq $32, W
-				addq $32, INPUT
+			addq $32, W
+			addq $32, INPUT
 
-				cmp ` ~ IMM(16) ~ `, ` ~ LOOP_CTR ~ `
-				jne .LOOP_LOAD_INPUT` ~
+			cmp ` ~ IMM(16) ~ `, ` ~ LOOP_CTR ~ `
+			jne LOOP_LOAD_INPUT;` ~
 
-				/*
-				#define A %r8d
-				#define B %r9d
-				#define C %r10d
-				#define D %r11d
-				#define E %ecx
-				*/
+			
+			
 
-				ALIGN ~ `;
-				.LOOP_EXPANSION:
-				addl $4, ` ~ LOOP_CTR ~
-					
-				ZEROIZE(A) ~
-				ASSIGN(B, ARRAY4(W, -1)) ~
-				ASSIGN(C, ARRAY4(W, -2)) ~
-				ASSIGN(D, ARRAY4(W, -3)) ~
+			ALIGN ~ `;
+			LOOP_EXPANSION:
+			addl $4, ` ~ LOOP_CTR ~
+				
+			ZEROIZE(A) ~
+			ASSIGN(B, ARRAY4(W, -1)) ~
+			ASSIGN(C, ARRAY4(W, -2)) ~
+			ASSIGN(D, ARRAY4(W, -3)) ~
 
-				XOR(A, ARRAY4(W, -5)) ~
-				XOR(B, ARRAY4(W, -6)) ~
-				XOR(C, ARRAY4(W, -7)) ~
-				XOR(D, ARRAY4(W, -8)) ~
+			XOR(A, ARRAY4(W, -5)) ~
+			XOR(B, ARRAY4(W, -6)) ~
+			XOR(C, ARRAY4(W, -7)) ~
+			XOR(D, ARRAY4(W, -8)) ~
 
-				XOR(A, ARRAY4(W, -11)) ~
-				XOR(B, ARRAY4(W, -12)) ~
-				XOR(C, ARRAY4(W, -13)) ~
-				XOR(D, ARRAY4(W, -14)) ~
+			XOR(A, ARRAY4(W, -11)) ~
+			XOR(B, ARRAY4(W, -12)) ~
+			XOR(C, ARRAY4(W, -13)) ~
+			XOR(D, ARRAY4(W, -14)) ~
 
-				XOR(A, ARRAY4(W, -13)) ~
-				XOR(B, ARRAY4(W, -14)) ~
-				XOR(C, ARRAY4(W, -15)) ~
-				XOR(D, ARRAY4(W, -16)) ~
+			XOR(A, ARRAY4(W, -13)) ~
+			XOR(B, ARRAY4(W, -14)) ~
+			XOR(C, ARRAY4(W, -15)) ~
+			XOR(D, ARRAY4(W, -16)) ~
 
-				ROTL_IMM(D, 1) ~
-				ROTL_IMM(C, 1) ~
-				ROTL_IMM(B, 1) ~
-				XOR(A, D) ~
-				ROTL_IMM(A, 1) ~
+			ROTL_IMM(D, 1) ~
+			ROTL_IMM(C, 1) ~
+			ROTL_IMM(B, 1) ~
+			XOR(A, D) ~
+			ROTL_IMM(A, 1) ~
 
-				ASSIGN(ARRAY4(W, 0), D) ~
-				ASSIGN(ARRAY4(W, 1), C) ~
-				ASSIGN(ARRAY4(W, 2), B) ~
-				ASSIGN(ARRAY4(W, 3), A) ~
+			ASSIGN(ARRAY4(W, 0), D) ~
+			ASSIGN(ARRAY4(W, 1), C) ~
+			ASSIGN(ARRAY4(W, 2), B) ~
+			ASSIGN(ARRAY4(W, 3), A) ~
 
-				`addq $16, ` ~ W ~ `
-				cmp ` ~ IMM(80) ~ `, ` ~ LOOP_CTR ~ `
-				jne .LOOP_EXPANSION
+			`addq $16, ` ~ W ~ `
+			cmp ` ~ IMM(80) ~ `, ` ~ LOOP_CTR ~ `
+			jne LOOP_EXPANSION;
 
-				subq $320, ` ~ W ~ `;` ~
+			subq $320, ` ~ W ~ `;` ~
 
 
 
-				ASSIGN(T, ARRAY4(DIGEST_ARR, 0)) ~
-				ASSIGN(B, ARRAY4(DIGEST_ARR, 1)) ~
-				ASSIGN(C, ARRAY4(DIGEST_ARR, 2)) ~
-				ASSIGN(D, ARRAY4(DIGEST_ARR, 3)) ~
-				ASSIGN(E, ARRAY4(DIGEST_ARR, 4)) ~
+			ASSIGN(T, ARRAY4(DIGEST_ARR, 0)) ~
+			ASSIGN(B, ARRAY4(DIGEST_ARR, 1)) ~
+			ASSIGN(C, ARRAY4(DIGEST_ARR, 2)) ~
+			ASSIGN(D, ARRAY4(DIGEST_ARR, 3)) ~
+			ASSIGN(E, ARRAY4(DIGEST_ARR, 4)) ~
 
-				/* First Round */
-				F1(A, B, C, D, E, T, 0) ~
-				F1(T, A, B, C, D, E, 1) ~
-				F1(E, T, A, B, C, D, 2) ~
-				F1(D, E, T, A, B, C, 3) ~
-				F1(C, D, E, T, A, B, 4) ~
-				F1(B, C, D, E, T, A, 5) ~
-				F1(A, B, C, D, E, T, 6) ~
-				F1(T, A, B, C, D, E, 7) ~
-				F1(E, T, A, B, C, D, 8) ~
-				F1(D, E, T, A, B, C, 9) ~
-				F1(C, D, E, T, A, B, 10) ~
-				F1(B, C, D, E, T, A, 11) ~
-				F1(A, B, C, D, E, T, 12) ~
-				F1(T, A, B, C, D, E, 13) ~
-				F1(E, T, A, B, C, D, 14) ~
-				F1(D, E, T, A, B, C, 15) ~
-				F1(C, D, E, T, A, B, 16) ~
-				F1(B, C, D, E, T, A, 17) ~
-				F1(A, B, C, D, E, T, 18) ~
-				F1(T, A, B, C, D, E, 19) ~
+			/* First Round */
+			F1(A, B, C, D, E, T, 0) ~
+			F1(T, A, B, C, D, E, 1) ~
+			F1(E, T, A, B, C, D, 2) ~
+			F1(D, E, T, A, B, C, 3) ~
+			F1(C, D, E, T, A, B, 4) ~
+			F1(B, C, D, E, T, A, 5) ~
+			F1(A, B, C, D, E, T, 6) ~
+			F1(T, A, B, C, D, E, 7) ~
+			F1(E, T, A, B, C, D, 8) ~
+			F1(D, E, T, A, B, C, 9) ~
+			F1(C, D, E, T, A, B, 10) ~
+			F1(B, C, D, E, T, A, 11) ~
+			F1(A, B, C, D, E, T, 12) ~
+			F1(T, A, B, C, D, E, 13) ~
+			F1(E, T, A, B, C, D, 14) ~
+			F1(D, E, T, A, B, C, 15) ~
+			F1(C, D, E, T, A, B, 16) ~
+			F1(B, C, D, E, T, A, 17) ~
+			F1(A, B, C, D, E, T, 18) ~
+			F1(T, A, B, C, D, E, 19) ~
 
-				/* Second Round */
-				F2(E, T, A, B, C, D, 20) ~
-				F2(D, E, T, A, B, C, 21) ~
-				F2(C, D, E, T, A, B, 22) ~
-				F2(B, C, D, E, T, A, 23) ~
-				F2(A, B, C, D, E, T, 24) ~
-				F2(T, A, B, C, D, E, 25) ~
-				F2(E, T, A, B, C, D, 26) ~
-				F2(D, E, T, A, B, C, 27) ~
-				F2(C, D, E, T, A, B, 28) ~
-				F2(B, C, D, E, T, A, 29 ) ~
-				F2(A, B, C, D, E, T, 30 ) ~
-				F2(T, A, B, C, D, E, 31 ) ~
-				F2(E, T, A, B, C, D, 32 ) ~
-				F2(D, E, T, A, B, C, 33 ) ~
-				F2(C, D, E, T, A, B, 34 ) ~
-				F2(B, C, D, E, T, A, 35 ) ~
-				F2(A, B, C, D, E, T, 36 ) ~
-				F2(T, A, B, C, D, E, 37 ) ~
-				F2(E, T, A, B, C, D, 38 ) ~
-				F2(D, E, T, A, B, C, 39 ) ~
+			/* Second Round */
+			F2(E, T, A, B, C, D, 20) ~
+			F2(D, E, T, A, B, C, 21) ~
+			F2(C, D, E, T, A, B, 22) ~
+			F2(B, C, D, E, T, A, 23) ~
+			F2(A, B, C, D, E, T, 24) ~
+			F2(T, A, B, C, D, E, 25) ~
+			F2(E, T, A, B, C, D, 26) ~
+			F2(D, E, T, A, B, C, 27) ~
+			F2(C, D, E, T, A, B, 28) ~
+			F2(B, C, D, E, T, A, 29 ) ~
+			F2(A, B, C, D, E, T, 30 ) ~
+			F2(T, A, B, C, D, E, 31 ) ~
+			F2(E, T, A, B, C, D, 32 ) ~
+			F2(D, E, T, A, B, C, 33 ) ~
+			F2(C, D, E, T, A, B, 34 ) ~
+			F2(B, C, D, E, T, A, 35 ) ~
+			F2(A, B, C, D, E, T, 36 ) ~
+			F2(T, A, B, C, D, E, 37 ) ~
+			F2(E, T, A, B, C, D, 38 ) ~
+			F2(D, E, T, A, B, C, 39 ) ~
 
-				/* Third Round */
-				F3(C, D, E, T, A, B, 40 ) ~
-				F3(B, C, D, E, T, A, 41 ) ~
-				F3(A, B, C, D, E, T, 42 ) ~
-				F3(T, A, B, C, D, E, 43 ) ~
-				F3(E, T, A, B, C, D, 44 ) ~
-				F3(D, E, T, A, B, C, 45 ) ~
-				F3(C, D, E, T, A, B, 46 ) ~
-				F3(B, C, D, E, T, A, 47 ) ~
-				F3(A, B, C, D, E, T, 48 ) ~
-				F3(T, A, B, C, D, E, 49 ) ~
-				F3(E, T, A, B, C, D, 50 ) ~
-				F3(D, E, T, A, B, C, 51 ) ~
-				F3(C, D, E, T, A, B, 52 ) ~
-				F3(B, C, D, E, T, A, 53 ) ~
-				F3(A, B, C, D, E, T, 54 ) ~
-				F3(T, A, B, C, D, E, 55 ) ~
-				F3(E, T, A, B, C, D, 56 ) ~
-				F3(D, E, T, A, B, C, 57 ) ~
-				F3(C, D, E, T, A, B, 58 ) ~
-				F3(B, C, D, E, T, A, 59 ) ~
+			/* Third Round */
+			F3(C, D, E, T, A, B, 40 ) ~
+			F3(B, C, D, E, T, A, 41 ) ~
+			F3(A, B, C, D, E, T, 42 ) ~
+			F3(T, A, B, C, D, E, 43 ) ~
+			F3(E, T, A, B, C, D, 44 ) ~
+			F3(D, E, T, A, B, C, 45 ) ~
+			F3(C, D, E, T, A, B, 46 ) ~
+			F3(B, C, D, E, T, A, 47 ) ~
+			F3(A, B, C, D, E, T, 48 ) ~
+			F3(T, A, B, C, D, E, 49 ) ~
+			F3(E, T, A, B, C, D, 50 ) ~
+			F3(D, E, T, A, B, C, 51 ) ~
+			F3(C, D, E, T, A, B, 52 ) ~
+			F3(B, C, D, E, T, A, 53 ) ~
+			F3(A, B, C, D, E, T, 54 ) ~
+			F3(T, A, B, C, D, E, 55 ) ~
+			F3(E, T, A, B, C, D, 56 ) ~
+			F3(D, E, T, A, B, C, 57 ) ~
+			F3(C, D, E, T, A, B, 58 ) ~
+			F3(B, C, D, E, T, A, 59 ) ~
 
-				/* Fourth Round */
-				F4(A, B, C, D, E, T, 60 ) ~
-				F4(T, A, B, C, D, E, 61 ) ~
-				F4(E, T, A, B, C, D, 62 ) ~
-				F4(D, E, T, A, B, C, 63 ) ~
-				F4(C, D, E, T, A, B, 64 ) ~
-				F4(B, C, D, E, T, A, 65 ) ~
-				F4(A, B, C, D, E, T, 66 ) ~
-				F4(T, A, B, C, D, E, 67 ) ~
-				F4(E, T, A, B, C, D, 68 ) ~
-				F4(D, E, T, A, B, C, 69 ) ~
-				F4(C, D, E, T, A, B, 70 ) ~
-				F4(B, C, D, E, T, A, 71 ) ~
-				F4(A, B, C, D, E, T, 72 ) ~
-				F4(T, A, B, C, D, E, 73 ) ~
-				F4(E, T, A, B, C, D, 74 ) ~
-				F4(D, E, T, A, B, C, 75 ) ~
-				F4(C, D, E, T, A, B, 76 ) ~
-				F4(B, C, D, E, T, A, 77 ) ~
-				F4(A, B, C, D, E, T, 78 ) ~
-				F4(T, A, B, C, D, E, 79 ) ~
+			/* Fourth Round */
+			F4(A, B, C, D, E, T, 60 ) ~
+			F4(T, A, B, C, D, E, 61 ) ~
+			F4(E, T, A, B, C, D, 62 ) ~
+			F4(D, E, T, A, B, C, 63 ) ~
+			F4(C, D, E, T, A, B, 64 ) ~
+			F4(B, C, D, E, T, A, 65 ) ~
+			F4(A, B, C, D, E, T, 66 ) ~
+			F4(T, A, B, C, D, E, 67 ) ~
+			F4(E, T, A, B, C, D, 68 ) ~
+			F4(D, E, T, A, B, C, 69 ) ~
+			F4(C, D, E, T, A, B, 70 ) ~
+			F4(B, C, D, E, T, A, 71 ) ~
+			F4(A, B, C, D, E, T, 72 ) ~
+			F4(T, A, B, C, D, E, 73 ) ~
+			F4(E, T, A, B, C, D, 74 ) ~
+			F4(D, E, T, A, B, C, 75 ) ~
+			F4(C, D, E, T, A, B, 76 ) ~
+			F4(B, C, D, E, T, A, 77 ) ~
+			F4(A, B, C, D, E, T, 78 ) ~
+			F4(T, A, B, C, D, E, 79 ) ~
 
-				ADD(ARRAY4(DIGEST_ARR, 0), D) ~
-				ADD(ARRAY4(DIGEST_ARR, 1), T) ~
-				ADD(ARRAY4(DIGEST_ARR, 2), A) ~
-				ADD(ARRAY4(DIGEST_ARR, 3), B) ~
-				ADD(ARRAY4(DIGEST_ARR, 4), C) ~
-	      `}`);
+			ADD(ARRAY4(DIGEST_ARR, 0), D) ~
+			ADD(ARRAY4(DIGEST_ARR, 1), T) ~
+			ADD(ARRAY4(DIGEST_ARR, 2), A) ~
+			ADD(ARRAY4(DIGEST_ARR, 3), B) ~
+			ADD(ARRAY4(DIGEST_ARR, 4), C) ~
+      `}`);
 
 
 }
 
-enum DIGEST_ARR = "rdi";
-enum INPUT = "rsi";
-enum W = "rdx";
-enum LOOP_CTR = "eax";
+enum DIGEST_ARR = "RDI";
+enum INPUT = "RSI";
+enum W = "RDX";
+enum LOOP_CTR = "EAX";
 
-enum A = "r8d";
-enum B = "r9d";
-enum C = "r10d";
-enum D = "r11d";
-enum E = "ecx";
+enum A = "R8D";
+enum B = "R9D";
+enum C = "R10D";
+enum D = "R11D";
+enum E = "ECX";
 
 /*
 * Using negative values for SHA-1 constants > 2^31 to work around
@@ -246,8 +248,8 @@ enum MAGIC2 = 0x6ED9EBA1;
 enum MAGIC3 = -0x70E44324;
 enum MAGIC4 = -0x359D3E2A;
 
-enum T = "esi";
-enum T2 = "eax";
+enum T = "RSI";
+enum T2 = "EAX";
 
 string F1(string A, string B, string C, string D, string E, string F, ubyte N)
 {

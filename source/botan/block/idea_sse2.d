@@ -65,8 +65,8 @@ package:
 
 __m128i mul(__m128i X, ushort K_16) pure
 {
-	const(__m128i) zeros = _mm_set1_epi16(0);
-	const(__m128i) ones = _mm_set1_epi16(1);
+	const(__m128i) zeros = _mm_set1_epi16!(0)();
+	const(__m128i) ones = _mm_set1_epi16!(1)();
 	
 	const(__m128i) K = _mm_set1_epi16(K_16);
 	

@@ -27,7 +27,7 @@ public:
 
 	this(uint B)
 	{
-		reg = _mm_set1_epi32(B);
+		reg = _mm_set1_epi32!(B)();
 	}
 
 	static SIMD_SSE2 load_le(const void* input)
@@ -130,7 +130,7 @@ public:
 	SIMD_SSE2 OpUnary(string op)() const
 		if (op == "~")
 	{
-		return _mm_xor_si128(reg, _mm_set1_epi32(0xFFFFFFFF));
+		return _mm_xor_si128(reg, _mm_set1_epi32!(0xFFFFFFFF)());
 	}
 
 	// (~reg) & other

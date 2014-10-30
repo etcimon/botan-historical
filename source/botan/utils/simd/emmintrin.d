@@ -45,12 +45,32 @@ __m128i _mm_set1_epi8(byte[] arr)() {
 	return cast(__m128i) byte16(arr);
 }
 
+// _mm_set1_epi16
+__m128i _mm_set1_epi16(short w)() {
+	return cast(__m128i) short8([w,w,w,w,w,w,w,w]);
+}
+
 version(GDC) {
 	// GDC <--> emmintrin => gcc/gcc/config/i386/emmintrin.h
 	static import gcc.attribute;
 	import gcc.builtins;
 	enum inline = gcc.attribute.attribute("forceinline");
 @inline:
+	// _mm_set1_epi16
+	__m128i _mm_set1_epi16(short w) {
+		short[8] a = [w,w,w,w,w,w,w,w];
+		__m128i b;
+		short[8]* _a = &a;
+		__m128i* b = &b;
+		asm {
+			mov RAX, _a;
+			mov RBX, _b;
+			movdqu XMM0, [RAX];
+			movdqu [RBX], XMM0;
+		}
+		return b;
+	}
+
 	ulong bswap64(ulong val) {
 		return cast(ulong) __builtin_bswap64(val);
 	}
@@ -74,10 +94,6 @@ version(GDC) {
 		return cast(__m128i) __builtin_ia32_pmulhuw128(cast(short8) a, cast(short8) b);
 	}
 
-	// _mm_set1_epi16
-	__m128i _mm_set1_epi16 (short w) {
-		return cast(__m128i) short8([w,w,w,w,w,w,w,w]);
-	}
 
 	// _mm_cmpeq_epi16 ; PCMPEQW
 	__m128i _mm_cmpeq_epi16 (__m128i a, in __m128i b) {
@@ -215,6 +231,22 @@ version(LDC) {
 
 	pragma(LDC_intrinsic, "llvm.bswap.i64")
 		ulong bswap64(ulong i);
+
+	// _mm_set1_epi16
+	__m128i _mm_set1_epi16(short w) {
+		pragma(LDC_allow_inline);
+		short[8] a = [w,w,w,w,w,w,w,w];
+		__m128i b;
+		short[8]* _a = &a;
+		__m128i* b = &b;
+		asm {
+			mov RAX, _a;
+			mov RBX, _b;
+			movdqu XMM0, [RAX];
+			movdqu [RBX], XMM0;
+		}
+		return b;
+	}
 
 	__m128i _mm_cvtsi128_si32(__m128i a) {
 		return cast(int) __builtin_ia32_vec_ext_v4si(cast(int4) a, 0);
@@ -380,6 +412,21 @@ version(LDC) {
 }
 
 version(D_InlineAsm_X86_64) {
+	// _mm_set1_epi16
+	__m128i _mm_set1_epi16(short w) {
+		short[8] a = [w,w,w,w,w,w,w,w];
+		__m128i b;
+		short[8]* _a = &a;
+		__m128i* b = &b;
+		asm {
+			mov RAX, _a;
+			mov RBX, _b;
+			movdqu XMM0, [RAX];
+			movdqu [RBX], XMM0;
+		}
+		return b;
+	}
+
 	// _mm_min_epu8 ; PMINUB
 	__m128i _mm_min_epu8(__m128i a, in __m128i b) {
 
@@ -505,7 +552,8 @@ version(D_InlineAsm_X86_64) {
 	// _mm_srli_epi16 ; PSRLW
 	__m128i _mm_srli_epi16 (__m128i a, in int imm) {
 		__m128i* _a = &a;
-		const(byte)* _b = cast(const(byte)*)&imm;
+		const(byte) b = cast(const byte) imm;
+		const(byte)* _b = cast(const(byte)*)&b;
 		
 		asm {
 			mov RAX, _a;
@@ -520,7 +568,8 @@ version(D_InlineAsm_X86_64) {
 	// _mm_slli_epi16 ; PSLLW
 	__m128i _mm_slli_epi16(__m128i a, in int imm) {
 		__m128i* _a = &a;
-		const(byte)* _b = cast(const(byte)*)&imm;
+		const(byte) b = cast(const byte) imm;
+		const(byte)* _b = cast(const(byte)*)&b;
 		asm {
 			mov RAX, _a;
 			mov RBX, _b;
@@ -534,7 +583,8 @@ version(D_InlineAsm_X86_64) {
 	// _mm_shufflehi_epi16 ; PSHUFHW
 	__m128i _mm_shufflehi_epi16 (__m128i a, in int imm) {
 		__m128i* _a = &a;
-		const(byte)* _b = cast(const(byte)*)&imm;
+		const(byte) b = cast(const byte) imm;
+		const(byte)* _b = cast(const(byte)*)&b;
 		asm {
 			mov RAX, _a;
 			mov RBX, _b;
@@ -548,7 +598,8 @@ version(D_InlineAsm_X86_64) {
 	// _mm_shufflelo_epi16 ; PSHUFLW
 	__m128i _mm_shufflelo_epi16 (__m128i a, in int imm) {
 		__m128i* _a = &a;
-		const(byte)* _b = cast(const(byte)*)&imm;
+		const(byte) b = cast(const byte) imm;
+		const(byte)* _b = cast(const(byte)*)&b;
 		asm {
 			mov RAX, _a;
 			mov RBX, _b;
@@ -611,7 +662,8 @@ version(D_InlineAsm_X86_64) {
 	// _mm_shuffle_epi32 ;  PSHUFD
 	__m128i _mm_shuffle_epi32 (__m128i a, in int imm) {
 		__m128i* _a = &a;
-		const(byte)* _b = cast(const(byte)*)&imm;
+		const(byte) b = cast(const byte) imm;
+		const(byte)* _b = cast(const(byte)*)&b;
 		asm {
 			mov RAX, _a;
 			mov RBX, _b;
@@ -625,7 +677,8 @@ version(D_InlineAsm_X86_64) {
 	// _mm_extract_epi32 ; pextrd
 	int _mm_extract_epi32(__m128i a, in int ndx) {
 		__m128i* _a = &a;
-		const(byte)* _b = cast(const(byte)*)&ndx;
+		const(byte) b = cast(const byte) ndx;
+		const(byte)* _b = cast(const(byte)*)&b;
 		asm {
 			mov RAX, _a;
 			mov RBX, _b;
@@ -808,7 +861,8 @@ version(D_InlineAsm_X86_64) {
 	// _mm_srli_si128 ; PSRLDQ
 	__m128i _mm_srli_si128 (__m128i a, in int imm) {
 		__m128i* _a = &a;
-		const(byte)* _b = cast(const(byte)*)&imm;
+		const(byte) b = cast(const byte) imm;
+		const(byte)* _b = cast(const(byte)*)&b;
 		asm {
 			mov RAX, _a;
 			mov RBX, _b;
@@ -822,7 +876,8 @@ version(D_InlineAsm_X86_64) {
 	// _mm_slli_si128 ; PSLLDQ
 	__m128i _mm_slli_si128 (__m128i a, in int imm) {
 		__m128i* _a = &a;
-		const(byte)* _b = cast(const(byte)*)&imm;
+		const(byte) b = cast(const byte) imm;
+		const(byte)* _b = cast(const(byte)*)&b;
 		asm {
 			mov RAX, _a;
 			mov RBX, _b;

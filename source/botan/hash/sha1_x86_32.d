@@ -230,7 +230,7 @@ enum T2 = EBP;
 string F1(string A, string B, string C, string D, string E, string F, ubyte N) 
 {
 	return ASSIGN(T2, ARRAY4(MSG, N)) ~
-		ASSIGN(A, F) ~
+			ASSIGN(A, F) ~
 			ROTL_IMM(F, 5) ~
 			ADD(F, E) ~
 			ASSIGN(E, C)	 ~
@@ -245,7 +245,7 @@ string F1(string A, string B, string C, string D, string E, string F, ubyte N)
 string F2_4(string A, string B, string C, string D, string E, string F, ubyte N, int MAGIC)
 {
 	return ASSIGN(T2, ARRAY4(MSG, N)) ~
-		ASSIGN(A, F)	 ~
+			ASSIGN(A, F)	 ~
 			ROTL_IMM(F, 5) ~
 			ADD(F, E) ~
 			ASSIGN(E, B)	 ~
@@ -259,7 +259,7 @@ string F2_4(string A, string B, string C, string D, string E, string F, ubyte N,
 string F3(string A, string B, string C, string D, string E, string F, ubyte N)
 {
 	return ASSIGN(T2, ARRAY4(MSG, N)) ~
-		ASSIGN(A, F)	 ~
+			ASSIGN(A, F)	 ~
 			ROTL_IMM(F, 5) ~
 			ADD(F, E) ~
 			ASSIGN(E, B)	 ~

@@ -9,86 +9,67 @@ module botan.utils.asm_x86_64.asm_x86_64;
 * General/Global Macros
 */
 
-enum ALIGN = ".p2align 4,,15";
-
-#define START_LISTING(FILENAME) \
-	.file #FILENAME;				 \
-	.text;							  \
-	ALIGN;
-
-#if defined(__ELF__)
-.section .note.GNU-stack,"",%progbits
-#endif
-
-/*
-* Function Definitions
-*/
-#define START_FUNCTION(func_name) \
-	ALIGN;								 \
-	.global  func_name;				\
-	.type	 func_name,@function;  \
-func_name:
-
-#define END_FUNCTION(func_name) \
-	ret
+enum ALIGN = "align 16";
 
 /*
 * Conditional Jumps
 */
-#define JUMP_IF_ZERO(REG, LABEL) \
-	cmp IMM(0), REG;				  \
-	jz LABEL
+string JUMP_IF_ZERO(string REG, string LABEL)() {
+	return `cmp ` ~ REG ~ `, ` ~ IMM(0) ~ `;
+			jz ` ~ LABEL ~ `;`;
+}
 
-#define JUMP_IF_LT(REG, NUM, LABEL) \
-	cmp IMM(NUM), REG;					\
-	jl LABEL
+string JUMP_IF_LT(string REG, int NUM, string LABEL) {
+	return `cmp ` ~ IMM(NUM) ~ `, ` ~ REG ~ `;
+			jl ` ~ LABEL ~ `;`;
+}
 
 /*
 * Register Names
 */
-#define R0  %rax
-#define R1  %rbx
-#define R2  %rcx
-#define R2_32  %ecx
-#define R3  %rdx
-#define R3_32  %edx
-#define R4  %rsp
-#define R5  %rbp
-#define R6  %rsi
-#define R6_32  %esi
-#define R7  %rdi
-#define R8  %r8
-#define R9  %r9
-#define R9_32  %r9d
-#define R10 %r10
-#define R11 %r11
-#define R12 %r12
-#define R13 %r13
-#define R14 %r14
-#define R15 %r15
-#define R16 %r16
+enum R0 = "RAX";
+enum R1 = "RBX";
+enum R2 = "RCX";
+enum R2_32 = "ECX";
+enum R3 = "RDX";
+enum R3_32 = "EDX";
+enum R4 = "RSP";
+enum R5 = "RBP";
+enum R6 = "RSI";
+enum R6_32 = "ESI";
+enum R7 = "RDI";
+enum R8 = "R8";
+enum R9 = "R9";
+enum R9_32 = "R9D";
+enum R10 = "R10";
+enum R11 = "R11;";
+enum R12 = "R12";
+enum R13 = "R13";
+enum R14 = "R14";
+enum R15 = "R15";
+enum R16 = "R16";
 
-#define ARG_1 R7
-#define ARG_2 R6
-#define ARG_2_32 R6_32
-#define ARG_3 R3
-#define ARG_3_32 R3_32
-#define ARG_4 R2
-#define ARG_4_32 R2_32
-#define ARG_5 R8
-#define ARG_6 R9
-#define ARG_6_32 R9_32
+enum ARG_1 = R7;
+enum ARG_2 = R6;
+enum ARG_2_32 = R6_32;
+enum ARG_3 = R3;
+enum ARG_3_32 = R3_32;
+enum ARG_4 = R2;
+enum ARG_4_32 = R2_32;
+enum ARG_5 = R8;
+enum ARG_6 = R9;
+enum ARG_6_32 = R9_32;
 
-#define TEMP_1 R10
-#define TEMP_2 R11
-#define TEMP_3 ARG_6
-#define TEMP_4 ARG_5
-#define TEMP_5 ARG_4
-#define TEMP_5_32 ARG_4_32
-#define TEMP_6 ARG_3
-#define TEMP_7 ARG_2
-#define TEMP_8 ARG_1
-#define TEMP_9 R0
+enum TEMP_1 = R10;
+enum TEMP_2 = R11;
+enum TEMP_3 = ARG_6;
+enum TEMP_4 = ARG_5;
+enum TEMP_5 = ARG_4;
+enum TEMP_5_32 = ARG_4_32;
+enum TEMP_6 = ARG_3;
+enum TEMP_7 = ARG_2;
+enum TEMP_8 = ARG_1;
+enum TEMP_9 = R0;
 
 /*
 * Memory Access Operations
