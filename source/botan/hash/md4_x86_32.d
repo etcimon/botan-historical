@@ -43,13 +43,15 @@ void botan_md4_x86_32_compress(uint[4]* digest,
 								const ubyte[64]* input,
 								uint[16]* M)
 {
+	enum PUSHED = 4;
 	mixin(`asm {` ~ 
-			ASSIGN(EBP, ARG(2)) ~/* input block */
-			ASSIGN(EDI, ARG(3)) ~ /* expanded words */
+	      	SPILL_REGS() ~ 
+			ASSIGN(EBP, ARG(PUSHED, 2)) ~/* input block */
+			ASSIGN(EDI, ARG(PUSHED, 3)) ~ /* expanded words */
 
 			ZEROIZE(ESI) ~
 
-			START_LOOP(".LOAD_INPUT") ~
+			START_LOOP("LOAD_INPUT") ~
 			ADD_IMM(ESI, 4) ~
 
 			ASSIGN(EAX, ARRAY4(EBP, 0)) ~
@@ -63,9 +65,9 @@ void botan_md4_x86_32_compress(uint[4]* digest,
 			ASSIGN(ARRAY4_INDIRECT(EDI,ESI,-3), EBX) ~
 			ASSIGN(ARRAY4_INDIRECT(EDI,ESI,-2), ECX) ~
 			ASSIGN(ARRAY4_INDIRECT(EDI,ESI,-1), EDX) ~
-			LOOP_UNTIL_EQ(ESI, 16, ".LOAD_INPUT") ~
+			LOOP_UNTIL_EQ(ESI, 16, "LOAD_INPUT") ~
 
-			ASSIGN(EBP, ARG(1)) ~
+			ASSIGN(EBP, ARG(PUSHED, 1)) ~
 			ASSIGN(EAX, ARRAY4(EBP, 0)) ~
 			ASSIGN(EBX, ARRAY4(EBP, 1)) ~
 			ASSIGN(ECX, ARRAY4(EBP, 2)) ~
@@ -122,11 +124,12 @@ void botan_md4_x86_32_compress(uint[4]* digest,
 			HH(ECX,EDX,EAX,EBX, 7,11) ~
 			HH(EBX,ECX,EDX,EAX,15,15) ~
 
-			ASSIGN(EBP, ARG(1)) ~
+			ASSIGN(EBP, ARG(PUSHED, 1)) ~
 			ADD(ARRAY4(EBP, 0), EAX) ~
 			ADD(ARRAY4(EBP, 1), EBX) ~
 			ADD(ARRAY4(EBP, 2), ECX) ~
 			ADD(ARRAY4(EBP, 3), EDX) ~
+	     	RESTORE_REGS() ~
 	      `}`);
 }
 

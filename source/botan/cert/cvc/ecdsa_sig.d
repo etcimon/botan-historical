@@ -15,8 +15,6 @@ import botan.asn1.ber_dec;
 class ECDSA_Signature
 {
 public:
-	friend class ECDSA_Signature_Decoder;
-
 	this() {}
 	this(in BigInt r, const ref BigInt s) {
 		m_r = r;
@@ -39,7 +37,18 @@ public:
 	/**
 	* return the r||s
 	*/
-	Vector!ubyte get_concatenation() const;
+	Vector!ubyte get_concatenation() const
+	{
+		// use the larger
+		const size_t enc_len = m_r > m_s ? m_r.bytes() : m_s.bytes();
+		
+		const auto sv_r = BigInt.encode_1363(m_r, enc_len);
+		const auto sv_s = BigInt.encode_1363(m_s, enc_len);
+		
+		Secure_Vector!ubyte result(sv_r);
+		result += sv_s;
+		return unlock(result);
+	}
 
 	Vector!ubyte DER_encode() const
 	{
@@ -68,25 +77,6 @@ private:
 	BigInt m_s;
 };
 
-
-ECDSA_Signature decode_concatenation(in Vector!ubyte concatenation);
-
-
-
-
-Vector!ubyte get_concatenation() const
-{
-	// use the larger
-	const size_t enc_len = m_r > m_s ? m_r.bytes() : m_s.bytes();
-	
-	const auto sv_r = BigInt.encode_1363(m_r, enc_len);
-	const auto sv_s = BigInt.encode_1363(m_s, enc_len);
-	
-	Secure_Vector!ubyte result(sv_r);
-	result += sv_s;
-	return unlock(result);
-}
-
 ECDSA_Signature decode_concatenation(in Vector!ubyte concat)
 {
 	if (concat.length % 2 != 0)
@@ -98,6 +88,4 @@ ECDSA_Signature decode_concatenation(in Vector!ubyte concat)
 	BigInt s = BigInt.decode(&concat[rs_len], rs_len);
 	
 	return ECDSA_Signature(r, s);
-}
-
 }

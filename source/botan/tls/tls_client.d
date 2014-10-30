@@ -219,16 +219,13 @@ private:
 			auto client_extn = state.client_hello().extension_types();
 			auto server_extn = state.server_hello().extension_types();
 			
-			Vector!( Handshake_Extension_Type ) diff;
-			
-			Set_difference(server_extn.begin(), server_extn.end(),
-			               client_extn.begin(), server_extn.end(),
-			               std::back_inserter(diff));
-			
-			foreach (i; diff)
+			import std.algorithm : setDifference;
+			import std.range : empty;
+			auto diff = setDifference(server_extn, client_extn);
+			if (!diff.empty)
 			{
 				throw new TLS_Exception(Alert.HANDSHAKE_FAILURE,
-				                        "Server sent extension " ~ std.conv.to!string(i) +
+				                        "Server sent extension " ~ std.conv.to!string(i[0]) +
 				                        " but we did not request it");
 			}
 			

@@ -169,11 +169,11 @@ HashMap!(string, string)
 	if (providers.empty) // no providers, nothing to do
 		return all_results;
 	
-	const string input = search_map(vars, string("input"));
-	const string output = search_map(vars, string("output"));
+	const string input = vars.get("input");
+	const string output = vars.get("output");
 	
-	SymmetricKey key = SymmetricKey(search_map(vars, string("key")));
-	InitializationVector iv = InitializationVector(search_map(vars, string("iv")));
+	SymmetricKey key = SymmetricKey(vars.get("key"));
+	InitializationVector iv = InitializationVector(vars.get("iv"));
 	
 	for (size_t i = 0; i != providers.length; ++i)
 	{
@@ -232,7 +232,7 @@ HashMap!(string, string)
 			else if (!dec.valid_iv_length(0))
 				throw new Invalid_IV_Length(algo, iv.length());
 			
-			const Vector!ubyte ad = hex_decode(search_map(vars, string("ad")));
+			const Vector!ubyte ad = hex_decode(vars.get("ad"));
 			
 			if (!ad.empty)
 			{

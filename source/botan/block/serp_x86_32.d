@@ -11,6 +11,7 @@ static if (BOTAN_HAS_SERPENT_X86_32):
 
 import botan.block.serpent;
 import botan.utils.loadstor;
+import botan.utils.asm_x86_32.asm_x86_32;
 /**
 * Serpent implementation in x86-32 assembly
 */
@@ -77,7 +78,8 @@ void botan_serpent_x86_32_encrypt(	const ubyte[16]* input,
 {
 
 	enum PUSHED = 4;
-	mixin(`asm {` ~	      
+	mixin(`asm {` ~
+	      SPILL_REGS() ~
 	      ASSIGN(EBP, ARG(PUSHED, 1)) /* input block */ ~
 	      ASSIGN(EAX, ARRAY4(EBP, 0)) ~
 	      ASSIGN(EBX, ARRAY4(EBP, 1)) ~
@@ -131,6 +133,7 @@ void botan_serpent_x86_32_encrypt(	const ubyte[16]* input,
 	      ASSIGN(ARRAY4(EBP, 1), EBX) ~
 	      ASSIGN(ARRAY4(EBP, 2), ECX) ~
 	      ASSIGN(ARRAY4(EBP, 3), EDX) ~
+	      RESTORE_REGS() ~
 	      ` } `
 	      );
 }
@@ -150,7 +153,7 @@ void botan_serpent_x86_32_decrypt(	const ubyte[16]* input,
 	enum PUSHED = 4;
 	
 	mixin( `asm {` ~
-
+	      SPILL_REGS() ~ 
 	      ASSIGN(EBP, ARG(PUSHED, 1)) ~ /* input block */
 	      ASSIGN(EAX, ARRAY4(EBP, 0)) ~
 	      ASSIGN(EBX, ARRAY4(EBP, 1)) ~ 
@@ -205,6 +208,7 @@ void botan_serpent_x86_32_decrypt(	const ubyte[16]* input,
 	      ASSIGN(ARRAY4(EBP, 1), EBX) ~
 	      ASSIGN(ARRAY4(EBP, 2), ECX) ~
 	      ASSIGN(ARRAY4(EBP, 3), EDX) ~
+	      RESTORE_REGS() ~ 
 	      `}`);
 }
 
@@ -229,12 +233,12 @@ void botan_serpent_x86_32_key_schedule(uint[140]* ks) pure
 	}
 	enum PUSHED = 4;
 	mixin(	`asm { ` ~
-	      
+	      SPILL_REGS() ~
 	      ASSIGN(EDI, ARG(PUSHED, 1)) ~ /* round keys */
 	      ASSIGN(ESI, IMM(8)) ~
 	      ADD_IMM(EDI, 32) ~
 	      
-	      START_LOOP(".L_SERP_EXPANSION") ~
+	      START_LOOP("L_SERP_EXPANSION") ~
 	      ASSIGN(EAX, ARRAY4(EDI, -1)) ~
 	      ASSIGN(EBX, ARRAY4(EDI, -3)) ~
 	      ASSIGN(ECX, ARRAY4(EDI, -5)) ~
@@ -254,7 +258,7 @@ void botan_serpent_x86_32_key_schedule(uint[140]* ks) pure
 	      
 	      ADD_IMM(ESI, 1) ~
 	      ADD_IMM(EDI, 4) ~
-	      LOOP_UNTIL_EQ(ESI, 140, ".L_SERP_EXPANSION") ~
+	      LOOP_UNTIL_EQ(ESI, 140, "L_SERP_EXPANSION") ~
 	      
 	      ASSIGN(EDI, ARG(PUSHED, 1)) ~ /* round keys */
 	      
@@ -295,6 +299,8 @@ void botan_serpent_x86_32_key_schedule(uint[140]* ks) pure
 	      LOAD_AND_SBOX!SBOX_E6(30 ) ~
 	      LOAD_AND_SBOX!SBOX_E5(31 ) ~
 	      LOAD_AND_SBOX!SBOX_E4(32 ) ~
+
+	      RESTORE_REGS() ~
 
 	      `}`);
 }

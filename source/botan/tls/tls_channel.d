@@ -399,7 +399,7 @@ public:
 				active.session_keys().master_secret();
 			
 			Vector!ubyte salt;
-			salt += to_byte_vector(label);
+			salt += label;
 			salt += active.client_hello().random();
 			salt += active.server_hello().random();
 			
@@ -410,7 +410,7 @@ public:
 					throw new Exception("key_material_export context is too long");
 				salt.push_back(get_byte!ushort(0, context_size));
 				salt.push_back(get_byte!ushort(1, context_size));
-				salt += to_byte_vector(context);
+				salt += context;
 			}
 			
 			return prf.derive_key(length, master_secret, salt);

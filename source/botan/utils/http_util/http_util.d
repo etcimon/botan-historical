@@ -174,7 +174,7 @@ Response http_sync(http_exch_fn http_transact,
 		resp_body.insert(resp_body.end(), &buf[0], &buf[io.gcount()]);
 	}
 
-	const string header_size = search_map(headers, string("Content-Length"));
+	const string header_size = headers.get("Content-Length");
 
 	if (header_size != "")
 	{

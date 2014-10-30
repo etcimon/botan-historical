@@ -6,7 +6,7 @@
 */
 module botan.tls.tls_extensions;
 
-import botan.alloc.secmem;
+import botan.alloc.zeroize;
 import botan.tls.tls_magic;
 import botan.utils.types;
 import string;

@@ -7,7 +7,7 @@
 module botan.tls.tls_reader;
 
 import botan.utils.exceptn;
-import botan.alloc.secmem;
+import botan.alloc.zeroize;
 import botan.utils.loadstor;
 import string;
 import botan.utils.types;

@@ -8,7 +8,7 @@
 	License: Subject to the terms of the MIT license, as written in the included LICENSE.txt file.
 	Authors: SÃ¶nke Ludwig
 */
-module botan.utils.memory;
+module botan.utils.memory.memory;
 
 import core.exception : OutOfMemoryError;
 import core.stdc.stdlib;
@@ -18,32 +18,21 @@ import std.exception : enforceEx;
 import std.traits;
 import std.algorithm;
 
-
-Allocator defaultAllocator()
+auto vulnerable_allocator()
 {
-	version(VibeManualMemoryManagement){
-		return manualAllocator();
-	} else {
-		static __gshared Allocator alloc;
-		if( !alloc ){
-			alloc = new GCAllocator;
-			//alloc = new AutoFreeListAllocator(alloc);
-			//alloc = new DebugAllocator(alloc);
-			alloc = new LockAllocator(alloc);
-		}
-		return alloc;
-	}
-}
-
-Allocator manualAllocator()
-{
+	alias Allocator = LockAllocator!(DebugAllocator!(AutoFreeListAllocator!(MallocAllocator)));
 	static __gshared Allocator alloc;
 	if( !alloc ){
-		alloc = new MallocAllocator;
-		alloc = new AutoFreeListAllocator(alloc);
-		//alloc = new DebugAllocator(alloc);
-		alloc = new LockAllocator(alloc);
+		alloc = new Allocator;
 	}
+	return alloc;
+}
+
+
+package auto R getAllocator(R)() {
+	static __gshared R alloc;
+	if (!alloc)
+		alloc = new R;
 	return alloc;
 }
 
@@ -104,15 +93,14 @@ interface Allocator {
 	}
 }
 
-
 /**
 	Simple proxy allocator protecting its base allocator with a mutex.
 */
-class LockAllocator : Allocator {
+final class LockAllocator(Base) : Allocator {
 	private {
-		Allocator m_base;
+		Base m_base;
 	}
-	this(Allocator base) { m_base = base; }
+	this() { m_base = getAllocator!Base(); }
 	void[] alloc(size_t sz) { synchronized(this) return m_base.alloc(sz); }
 	void[] realloc(void[] mem, size_t new_sz)
 	in {
@@ -128,19 +116,19 @@ class LockAllocator : Allocator {
 	body { synchronized(this) m_base.free(mem); }
 }
 
-final class DebugAllocator : Allocator {
-	import libasync.internals.hashmap : HashMap;
+final class DebugAllocator(Base) : Allocator {
+	import botan.utils.hashmap : HashMap;
 	private {
-		Allocator m_baseAlloc;
+		Base m_baseAlloc;
 		HashMap!(void*, size_t) m_blocks;
 		size_t m_bytes;
 		size_t m_maxBytes;
 	}
 	
-	this(Allocator base_allocator)
+	this()
 	{
-		m_baseAlloc = base_allocator;
-		m_blocks = HashMap!(void*, size_t)(manualAllocator());
+		m_baseAlloc = getAllocator!Base();
+		m_blocks = HashMap!(void*, size_t)(vulnerable_allocator());
 	}
 	
 	@property size_t allocatedBlockCount() const { return m_blocks.length; }
@@ -227,56 +215,19 @@ final class MallocAllocator : Allocator {
 	}
 }
 
-final class GCAllocator : Allocator {
-	void[] alloc(size_t sz)
-	{
-		auto mem = GC.malloc(sz+Allocator.alignment);
-		auto alignedmem = adjustPointerAlignment(mem);
-		assert(alignedmem - mem <= Allocator.alignment);
-		auto ret = alignedmem[0 .. sz];
-		ensureValidMemory(ret);
-		return ret;
-	}
-	void[] realloc(void[] mem, size_t new_size)
-	{
-		size_t csz = min(mem.length, new_size);
-		
-		auto p = extractUnalignedPointer(mem.ptr);
-		size_t misalign = mem.ptr - p;
-		assert(misalign <= Allocator.alignment);
-		
-		void[] ret;
-		auto extended = GC.extend(p, new_size - mem.length, new_size - mem.length);
-		if (extended) {
-			assert(extended >= new_size+Allocator.alignment);
-			ret = p[misalign .. new_size+misalign];
-		} else {
-			ret = alloc(new_size);
-			ret[0 .. csz] = mem[0 .. csz];
-		}
-		ensureValidMemory(ret);
-		return ret;
-	}
-	void free(void[] mem)
-	{
-		// For safety reasons, the GCAllocator should never explicitly free memory.
-		//GC.free(extractUnalignedPointer(mem.ptr));
-	}
-}
-
-final class AutoFreeListAllocator : Allocator {
+final class AutoFreeListAllocator(Base) : Allocator {
 	import std.typetuple;
 	
 	private {
 		enum minExponent = 5;
 		enum freeListCount = 14;
 		FreeListAlloc[freeListCount] m_freeLists;
-		Allocator m_baseAlloc;
+		Base m_baseAlloc;
 	}
 	
-	this(Allocator base_allocator)
+	this()
 	{
-		m_baseAlloc = base_allocator;
+		m_baseAlloc = getAllocator!Base();
 		foreach (i; iotaTuple!freeListCount)
 			m_freeLists[i] = new FreeListAlloc(nthFreeListSize!(i), m_baseAlloc);
 	}
@@ -332,148 +283,6 @@ final class AutoFreeListAllocator : Allocator {
 	private template iotaTuple(size_t i) {
 		static if (i > 1) alias iotaTuple = TypeTuple!(iotaTuple!(i-1), i-1);
 		else alias iotaTuple = TypeTuple!(0);
-	}
-}
-
-final class PoolAllocator : Allocator {
-	static struct Pool { Pool* next; void[] data; void[] remaining; }
-	static struct Destructor { Destructor* next; void function(void*) destructor; void* object; }
-	private {
-		Allocator m_baseAllocator;
-		Pool* m_freePools;
-		Pool* m_fullPools;
-		Destructor* m_destructors;
-		size_t m_poolSize;
-	}
-	
-	this(size_t pool_size, Allocator base)
-	{
-		m_poolSize = pool_size;
-		m_baseAllocator = base;
-	}
-	
-	@property size_t totalSize()
-	{
-		size_t amt = 0;
-		for (auto p = m_fullPools; p; p = p.next)
-			amt += p.data.length;
-		for (auto p = m_freePools; p; p = p.next)
-			amt += p.data.length;
-		return amt;
-	}
-	
-	@property size_t allocatedSize()
-	{
-		size_t amt = 0;
-		for (auto p = m_fullPools; p; p = p.next)
-			amt += p.data.length;
-		for (auto p = m_freePools; p; p = p.next)
-			amt += p.data.length - p.remaining.length;
-		return amt;
-	}
-	
-	void[] alloc(size_t sz)
-	{
-		auto aligned_sz = alignedSize(sz);
-		
-		Pool* pprev = null;
-		Pool* p = cast(Pool*)m_freePools;
-		while( p && p.remaining.length < aligned_sz ){
-			pprev = p;
-			p = p.next;
-		}
-		
-		if( !p ){
-			auto pmem = m_baseAllocator.alloc(AllocSize!Pool);
-			
-			p = emplace!Pool(pmem);
-			p.data = m_baseAllocator.alloc(max(aligned_sz, m_poolSize));
-			p.remaining = p.data;
-			p.next = cast(Pool*)m_freePools;
-			m_freePools = p;
-			pprev = null;
-		}
-		
-		auto ret = p.remaining[0 .. aligned_sz];
-		p.remaining = p.remaining[aligned_sz .. $];
-		if( !p.remaining.length ){
-			if( pprev ){
-				pprev.next = p.next;
-			} else {
-				m_freePools = p.next;
-			}
-			p.next = cast(Pool*)m_fullPools;
-			m_fullPools = p;
-		}
-		
-		return ret[0 .. sz];
-	}
-	
-	void[] realloc(void[] arr, size_t newsize)
-	{
-		auto aligned_sz = alignedSize(arr.length);
-		auto aligned_newsz = alignedSize(newsize);
-		
-		if( aligned_newsz <= aligned_sz ) return arr[0 .. newsize]; // TODO: back up remaining
-		
-		auto pool = m_freePools;
-		bool last_in_pool = pool && arr.ptr+aligned_sz == pool.remaining.ptr;
-		if( last_in_pool && pool.remaining.length+aligned_sz >= aligned_newsz ){
-			pool.remaining = pool.remaining[aligned_newsz-aligned_sz .. $];
-			arr = arr.ptr[0 .. aligned_newsz];
-			assert(arr.ptr+arr.length == pool.remaining.ptr, "Last block does not align with the remaining space!?");
-			return arr[0 .. newsize];
-		} else {
-			auto ret = alloc(newsize);
-			assert(ret.ptr >= arr.ptr+aligned_sz || ret.ptr+ret.length <= arr.ptr, "New block overlaps old one!?");
-			ret[0 .. min(arr.length, newsize)] = arr[0 .. min(arr.length, newsize)];
-			return ret;
-		}
-	}
-	
-	void free(void[] mem)
-	{
-	}
-	
-	void freeAll()
-	{
-		version(VibeManualMemoryManagement){
-			// destroy all initialized objects
-			for (auto d = m_destructors; d; d = d.next)
-				d.destructor(cast(void*)d.object);
-			m_destructors = null;
-			
-			// put all full Pools into the free pools list
-			for (Pool* p = cast(Pool*)m_fullPools, pnext; p; p = pnext) {
-				pnext = p.next;
-				p.next = cast(Pool*)m_freePools;
-				m_freePools = cast(Pool*)p;
-			}
-			
-			// free up all pools
-			for (Pool* p = cast(Pool*)m_freePools; p; p = p.next)
-				p.remaining = p.data;
-		}
-	}
-	
-	void reset()
-	{
-		version(VibeManualMemoryManagement){
-			freeAll();
-			Pool* pnext;
-			for (auto p = cast(Pool*)m_freePools; p; p = pnext) {
-				pnext = p.next;
-				m_baseAllocator.free(p.data);
-				m_baseAllocator.free((cast(void*)p)[0 .. AllocSize!Pool]);
-			}
-			m_freePools = null;
-		}
-	}
-	
-	private static destroy(T)(void* ptr)
-	{
-		static if( is(T == class) ) .destroy(cast(T)ptr);
-		else .destroy(*cast(T*)ptr);
 	}
 }
 
@@ -553,7 +362,7 @@ template FreeListObjectAlloc(T, bool USE_GC = true, bool INIT = true)
 	TR alloc(ARGS...)(ARGS args)
 	{
 		//logInfo("alloc %s/%d", T.stringof, ElemSize);
-		auto mem = manualAllocator().alloc(ElemSize);
+		auto mem = vulnerable_allocator().alloc(ElemSize);
 		static if( hasIndirections!T ) GC.addRange(mem.ptr, ElemSize);
 		static if( INIT ) return emplace!T(mem, args);
 		else return cast(TR)mem.ptr;
@@ -566,7 +375,7 @@ template FreeListObjectAlloc(T, bool USE_GC = true, bool INIT = true)
 			.destroy(objc);//typeid(T).destroy(cast(void*)obj);
 		}
 		static if( hasIndirections!T ) GC.removeRange(cast(void*)obj);
-		manualAllocator().free((cast(void*)obj)[0 .. ElemSize]);
+		vulnerable_allocator().free((cast(void*)obj)[0 .. ElemSize]);
 	}
 }
 
@@ -599,7 +408,7 @@ struct FreeListRef(T, bool INIT = true)
 	{
 		//logInfo("refalloc %s/%d", T.stringof, ElemSize);
 		FreeListRef ret;
-		auto mem = manualAllocator().alloc(ElemSize + int.sizeof);
+		auto mem = vulnerable_allocator().alloc(ElemSize + int.sizeof);
 		static if( hasIndirections!T ) GC.addRange(mem.ptr, ElemSize);
 		static if( INIT ) ret.m_object = cast(TR)emplace!(Unqual!T)(mem, args);
 		else ret.m_object = cast(TR)mem.ptr;
@@ -649,7 +458,7 @@ struct FreeListRef(T, bool INIT = true)
 					//logInfo("ref %s destroyed", T.stringof);
 				}
 				static if( hasIndirections!T ) GC.removeRange(cast(void*)m_object);
-				manualAllocator().free((cast(void*)m_object)[0 .. ElemSize+int.sizeof]);
+				vulnerable_allocator().free((cast(void*)m_object)[0 .. ElemSize+int.sizeof]);
 			}
 		}
 		

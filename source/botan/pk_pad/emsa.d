@@ -6,7 +6,7 @@
 */
 module botan.pk_pad.emsa;
 
-import botan.alloc.secmem;
+import botan.alloc.zeroize;
 import botan.rng.rng;
 /**
 * Encoding Method for Signatures, Appendix

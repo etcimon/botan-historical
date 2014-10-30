@@ -9,6 +9,7 @@ module botan.hash.sha1_x86_64;
 import botan.constants;
 static if (BOTAN_HAS_SHA1_X86_64):
 
+import botan.utils.asm_x86_64.asm_x86_64;
 import botan.hash.sha160;
 /**
 * SHA-160 in x86-64 assembly
@@ -50,30 +51,30 @@ void botan_sha160_x86_64_compress(uint[5]* arg1, const ubyte[64]* arg2, uint[80]
 			`LOOP_LOAD_INPUT:
 			add EAX, 8;
 
-			mov r8, ` ~ ARRAY8(INPUT, 0) ~ `
-			mov r9, ` ~ ARRAY8(INPUT, 1) ~ `
-			mov r10, ` ~ ARRAY8(INPUT, 2) ~ `
-			mov r11, ` ~ ARRAY8(INPUT, 3) ~ `
+			mov ` ~ R8 ~ `, ` ~ ARRAY8(INPUT, 0) ~ `;
+			mov ` ~ R9 ~ `, ` ~ ARRAY8(INPUT, 1) ~ `;
+			mov ` ~ R10 ~ `, ` ~ ARRAY8(INPUT, 2) ~ `;
+			mov ` ~ R11 ~ `, ` ~ ARRAY8(INPUT, 3) ~ `;
 
-			bswap r8
-			bswap r9
-			bswap r10
-			bswap r11
+			bswap ` ~ R8 ~ `;
+			bswap ` ~ R9 ~ `;
+			bswap ` ~ R10 ~ `;
+			bswap ` ~ R11 ~ `;
 
-			rolq $32, r8
-			rolq $32, r9
-			rolq $32, r10
-			rolq $32, r11
+			rol ` ~ R8 ~ `, 32;
+			rol ` ~ R9 ~ `, 32;
+			rol ` ~ R10 ~ `, 32;
+			rol ` ~ R11 ~ `, 32;
 
-			movq r8, ARRAY8(W, 0)
-			movq r9, ARRAY8(W, 1)
-			movq r10, ARRAY8(W, 2)
-			movq r11, ARRAY8(W, 3)
+			mov ` ~ ARRAY8(W, 0) ~ `, ` ~ R8 ~ `;
+			mov ` ~ ARRAY8(W, 1) ~ `, ` ~ R9 ~ `;
+			mov ` ~ ARRAY8(W, 2) ~ `, ` ~ R10 ~ `;
+			mov ` ~ ARRAY8(W, 3) ~ `, ` ~ R11 ~ `;
 
-			addq $32, W
-			addq $32, INPUT
+			add ` ~ W ~ `, 32;
+			add ` ~ INPUT ~ `, 32;
 
-			cmp ` ~ IMM(16) ~ `, ` ~ LOOP_CTR ~ `
+			cmp ` ~ LOOP_CTR ~ `, ` ~ IMM(16) ~ `;
 			jne LOOP_LOAD_INPUT;` ~
 
 			
@@ -81,7 +82,7 @@ void botan_sha160_x86_64_compress(uint[5]* arg1, const ubyte[64]* arg2, uint[80]
 
 			ALIGN ~ `;
 			LOOP_EXPANSION:
-			addl $4, ` ~ LOOP_CTR ~
+			add ` ~ LOOP_CTR ~ `, 4;`  ~
 				
 			ZEROIZE(A) ~
 			ASSIGN(B, ARRAY4(W, -1)) ~
@@ -114,11 +115,11 @@ void botan_sha160_x86_64_compress(uint[5]* arg1, const ubyte[64]* arg2, uint[80]
 			ASSIGN(ARRAY4(W, 2), B) ~
 			ASSIGN(ARRAY4(W, 3), A) ~
 
-			`addq $16, ` ~ W ~ `
-			cmp ` ~ IMM(80) ~ `, ` ~ LOOP_CTR ~ `
+			`add ` ~ W ~ `, 16;
+			cmp ` ~ LOOP_CTR ~ `, ` ~ IMM(80) ~ `;
 			jne LOOP_EXPANSION;
 
-			subq $320, ` ~ W ~ `;` ~
+			sub ` ~ W ~ `, 320;` ~
 
 
 

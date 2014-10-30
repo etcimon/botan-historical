@@ -4,7 +4,7 @@
 *
 * Distributed under the terms of the Botan license
 */
-module botan.alloc.locking_allocator;
+module botan.utils.memory.noswap;
 
 import botan.utils.types;
 import botan.utils.types;
@@ -17,16 +17,10 @@ import string;
 import core.sys.posix.sys.mman;
 import core.sys.posix.sys.resource;
 
-struct mlock_allocator
+struct NoSwapAllocator
 {
 public:
-	static ref mlock_allocator instance()
-	{
-		static mlock_allocator mlock;
-		return mlock;
-	}
-
-	void* allocate(size_t num_elems, size_t elem_size)
+	void[] alloc(size_t n)
 	{
 		if (!m_pool)
 			return null;
@@ -79,12 +73,12 @@ public:
 			if (alignment_padding)
 			{
 				/*
-			If we used the entire block except for small piece used for
-			alignment at the beginning, so just update the entry already
-			in place (as it is in the correct location), rather than
-			deleting the empty range and inserting the new one in the
-			same location.
-			*/
+				If we used the entire block except for small piece used for
+				alignment at the beginning, so just update the entry already
+				in place (as it is in the correct location), rather than
+				deleting the empty range and inserting the new one in the
+				same location.
+				*/
 				if (best_fit.second == 0)
 				{
 					best_fit.first = offset;

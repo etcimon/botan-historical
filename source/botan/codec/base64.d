@@ -5,7 +5,7 @@
 * Distributed under the terms of the botan license.
 */
 module botan.codec.base64;
-import botan.alloc.secmem;
+import botan.alloc.zeroize;
 import botan.codec.base64;
 import botan.utils.mem_ops;
 import botan.utils.rounding;

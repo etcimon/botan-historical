@@ -7,7 +7,7 @@
 
 module botan.algo_base.buf_comp;
 
-import botan.secmem;
+import botan.zeroize;
 import botan.utils.get_byte;
 
 /**

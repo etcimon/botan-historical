@@ -48,7 +48,7 @@ public:
 		string prototype_provider;
 		size_t prototype_prov_weight = 0;
 		
-		const string pref_provider = search_map(pref_providers, algo_spec);
+		const string pref_provider = pref_providers.get(algo_spec);
 		
 		for (auto i = algo.second.begin(); i != algo.second.end(); ++i)
 		{

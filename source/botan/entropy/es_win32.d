@@ -20,9 +20,10 @@ final class Win32_EntropySource : EntropySource
 {
 public:
 	@property string name() const { return "Win32 Statistics"; }
+
 	/**
-* Win32 poll using stats functions including Tooltip32
-*/
+	* Win32 poll using stats functions including Tooltip32
+	*/
 	void poll(ref Entropy_Accumulator accum)
 	{
 		/*

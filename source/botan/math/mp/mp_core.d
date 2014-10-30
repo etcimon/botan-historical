@@ -9,6 +9,7 @@ module botan.math.mp.mp_core;
 public import botan.botan.math.mp.mp_types;
 
 pure nothrow @nogc:
+// todo: Bring back ASM for x86_32, x86_64, from Botan C++.
 
 /*
 * The size of the word type, in bits

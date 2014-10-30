@@ -10,6 +10,7 @@ import botan.constants;
 static if (BOTAN_HAS_SHA1_X86_32):
 
 import botan.hash.sha160;
+import botan.utils.asm_x86_32.asm_x86_32;
 /**
 * SHA-160 in x86 assembly
 */
@@ -42,13 +43,15 @@ private:
 
 void botan_sha160_x86_32_compress(uint[5]* arg1, const ubyte[64]* arg2, uint[81]* arg2) pure
 {
+	enum PUSHED = 4;
 	mixin(`asm {` ~
-	      ASSIGN(EDI, ARG(2)) ~
-	      ASSIGN(EBP, ARG(3)) ~
+	      SPILL_REGS() ~ 
+	      ASSIGN(EDI, ARG(PUSHED, 2)) ~
+	      ASSIGN(EBP, ARG(PUSHED, 3)) ~
 	      
 	      ZEROIZE(ESI) ~
 	      
-	      START_LOOP(".LOAD_INPUT") ~
+	      START_LOOP("LOAD_INPUT") ~
 	      ADD_IMM(ESI, 4) ~
 	      
 	      ASSIGN(EAX, ARRAY4(EDI, 0)) ~
@@ -67,11 +70,11 @@ void botan_sha160_x86_32_compress(uint[5]* arg1, const ubyte[64]* arg2, uint[81]
 	      ASSIGN(ARRAY4_INDIRECT(EBP,ESI,-3), EBX) ~
 	      ASSIGN(ARRAY4_INDIRECT(EBP,ESI,-2), ECX) ~
 	      ASSIGN(ARRAY4_INDIRECT(EBP,ESI,-1), EDX) ~
-	      LOOP_UNTIL_EQ(ESI, 16, ".LOAD_INPUT") ~
+	      LOOP_UNTIL_EQ(ESI, 16, "LOAD_INPUT") ~
 	      
 	      ADD2_IMM(EDI, EBP, 64) ~
 	      
-	      START_LOOP(".L_SHA_EXPANSION") ~
+	      START_LOOP("L_SHA_EXPANSION") ~
 	      ADD_IMM(ESI, 4) ~
 	      
 	      ZEROIZE(EAX) ~
@@ -106,9 +109,9 @@ void botan_sha160_x86_32_compress(uint[5]* arg1, const ubyte[64]* arg2, uint[81]
 	      ASSIGN(ARRAY4(EDI, 3), EAX) ~
 	      
 	      ADD_IMM(EDI, 16) ~
-	      LOOP_UNTIL_EQ(ESI, 80, ".L_SHA_EXPANSION") ~
+	      LOOP_UNTIL_EQ(ESI, 80, "L_SHA_EXPANSION") ~
 	      
-	      ASSIGN(EAX, ARG(1)) ~
+	      ASSIGN(EAX, ARG(PUSHED, 1)) ~
 	      ASSIGN(EDI, ARRAY4(EAX, 0)) ~
 	      ASSIGN(EBX, ARRAY4(EAX, 1)) ~
 	      ASSIGN(ECX, ARRAY4(EAX, 2)) ~
@@ -208,13 +211,14 @@ void botan_sha160_x86_32_compress(uint[5]* arg1, const ubyte[64]* arg2, uint[81]
 	      
 	      ASSIGN(ESP, ARRAY4(ESP, 80)) ~
 	      
-	      ASSIGN(EBP, ARG(1)) ~
+	      ASSIGN(EBP, ARG(PUSHED, 1)) ~
 	      ADD(ARRAY4(EBP, 0), EDX) ~
 	      ADD(ARRAY4(EBP, 1), EDI) ~
 	      ADD(ARRAY4(EBP, 2), EAX) ~
 	      ADD(ARRAY4(EBP, 3), EBX) ~
 	      ADD(ARRAY4(EBP, 4), ECX) ~
-	      
+
+	      RESTORE_REGS() ~
 	      `}`);
 	
 }

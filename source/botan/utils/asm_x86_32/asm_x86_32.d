@@ -61,8 +61,8 @@ string ARRAY4(string REG, int NUM) { return `[` ~ REG ~ ` + 4*` ~ NUM ~ `]`; }
 string ARRAY4_INDIRECT(string BASE, string OFFSET, int NUM) { return `4*` ~ NUM ~ `[` ~ BASE ~ ` + ` ~ OFFSET ~ ` * 4]`; }
 string ARG(int PUSHED, int NUM) { return `4*` ~ PUSHED ~ ` + ` ~ ARRAY4(ESP, NUM); }
 
-string ASSIGN(string TO, string FROM)() { return `mov ` ~ TO ~ `, ` ~ FROM ~ `;`; }
-string ASSIGN_BYTE(string TO, string FROM)() { return `mov ` ~ TO ~ `, ` ~ FROM ~ `;`; }
+string ASSIGN(string TO, string FROM) { return `mov ` ~ TO ~ `, ` ~ FROM ~ `;`; }
+string ASSIGN_BYTE(string TO, string FROM) { return `mov ` ~ TO ~ `, ` ~ FROM ~ `;`; }
 
 string PUSH(string REG) { return `push` ~ REG ~ `;`; }
 string POP(string REG) { return `pop` ~ REG ~ `;`; }

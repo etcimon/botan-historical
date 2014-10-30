@@ -17,7 +17,7 @@ public import botan.pubkey.x509_key;
 import botan.pubkey.pkcs8;
 import botan.asn1.der_enc;
 import botan.asn1.ber_dec;
-import botan.alloc.secmem;
+import botan.alloc.zeroize;
 
 /**
 * This class represents abstract ECC public keys. When encoding a key

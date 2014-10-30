@@ -6,7 +6,7 @@
 */
 module botan.tls.tls_handshake_hash;
 
-import botan.alloc.secmem;
+import botan.alloc.zeroize;
 import botan.tls.tls_version;
 import botan.tls.tls_magic;
 import botan.tls.tls_exceptn;

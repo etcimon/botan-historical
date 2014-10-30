@@ -11,7 +11,7 @@ Version 1.5.2, 2006-01-15
 * Removed MemoryRegion::bits(), which was unused and incorrect
 * Changed maximum HMAC keylength to 1024 bits
 * Various minor Makefile and build system changes
-* Avoid using std::min in <secmem.h> to bypass Windows libc macro pollution
+* Avoid using std::min in <zeroize.h> to bypass Windows libc macro pollution
 * Switched checks/clock.cpp back to using clock() by default
 * Enabled the symmetric algorithm tests, which were accidentally off in 1.5.1
 * Removed the Default_Mutex's unused clone() member function

@@ -9,7 +9,7 @@ module botan.math.bigint.bigint;
 
 public import botan.botan.math.mp.mp_types;
 import botan.rng.rng;
-import botan.alloc.secmem;
+import botan.alloc.zeroize;
 import iosfwd;
 import botan.math.bigint.bigint;
 import botan.utils.charset;

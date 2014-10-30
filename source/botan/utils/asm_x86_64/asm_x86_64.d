@@ -74,33 +74,31 @@ enum TEMP_9 = R0;
 /*
 * Memory Access Operations
 */
-#define ARRAY8(REG, NUM) 8*(NUM)(REG)
-#define ARRAY4(REG, NUM) 4*(NUM)(REG)
+string ARRAY4(string REG, int NUM) { return `[` ~ REG ~ ` + 4*` ~ NUM ~ `]`; }
+string ARRAY8(string REG, int NUM) { return `[` ~ REG ~ ` + 8*` ~ NUM ~ `]`; }
+string ASSIGN(string TO, string FROM) { return `mov ` ~ TO ~ `, ` ~ FROM ~ `;`; }
 
-#define ASSIGN(TO, FROM) mov FROM, TO
 
 /*
 * ALU Operations
 */
-#define IMM(VAL) $VAL
+string IMM(int VAL) { return VAL.to!string; }
 
-#define ADD(TO, FROM) add FROM, TO
-#define ADD_LAST_CARRY(REG) adc IMM(0), REG
-#define ADD_IMM(TO, NUM) ADD(TO, IMM(NUM))
-#define ADD_W_CARRY(TO1, TO2, FROM) add FROM, TO1; adc IMM(0), TO2;
-#define SUB_IMM(TO, NUM) sub IMM(NUM), TO
-#define MUL(REG) mul REG
+string ADD(string TO, string FROM) { return `add ` ~ TO ~ `, ` ~ FROM ~ `;`; }
+string ADD_IMM(string TO, int NUM) { return ADD(TO, IMM(NUM)); }
+string ADD_LAST_CARRY(string REG) { return `adc ` ~ REG ~ `, ` ~ IMM(0) ~ `;`; }
+string ADD_W_CARRY(string TO1, string TO2, string FROM) { return `add ` ~ TO1 ~ `, ` ~ FROM ~ `;
+																	adc ` ~ TO2 ~ `, ` ~ IMM(0) ~ `;`; }
+string SUB_IMM(string TO, int NUM) { return `sub ` ~ TO ~ `, ` ~ IMM(NUM) ~ `;`; }
+string MUL(string REG) { return `mul ` ~ REG ~ `;`; }
 
-#define XOR(TO, FROM) xor FROM, TO
-#define AND(TO, FROM) and FROM, TO
-#define OR(TO, FROM) or FROM, TO
-#define NOT(REG) not REG
-#define ZEROIZE(REG) XOR(REG, REG)
+string XOR(string TO, string FROM) { return `xor ` ~ TO ~ `, ` ~ FROM ~ `;`; }
+string AND(string TO, string FROM) { return `and ` ~ TO ~ `, ` ~ FROM ~ `;`; }
+string OR(string TO, string FROM) { return `or ` ~ TO ~ `, ` ~ FROM ~ `;`; }
+string NOT(string REG) { return `not ` ~ REG ~ `;`; }
+string ZEROIZE(string REG) { return XOR(REG, REG); }
 
-#define RETURN_VALUE_IS(V) ASSIGN(%rax, V)
 
-#define ROTL_IMM(REG, NUM) rol IMM(NUM), REG
-#define ROTR_IMM(REG, NUM) ror IMM(NUM), REG
-#define ADD3_IMM(TO, FROM, NUM) lea NUM(TO,FROM,1), TO
-
-#endif
+string ROTL_IMM(string REG, int NUM) { return `rol ` ~ REG ~ `, ` ~ IMM(NUM) ~ `;`; }
+string ROTR_IMM(string REG, int NUM) { return `ror ` ~ REG ~ `, ` ~ IMM(NUM) ~ `;`; }
+string ADD3_IMM(string TO, string FROM, int NUM) { return `lea ` ~ TO ~ `, ` ~ NUM ~ `[` ~ TO ~ `+` ~ FROM ~ `];`; }

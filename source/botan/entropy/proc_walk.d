@@ -10,7 +10,7 @@ import botan.constants;
 static if (BOTAN_HAS_ENTROPY_SRC_PROC_WALKER):
 
 import botan.entropy.entropy_src;
-import botan.alloc.secmem;
+import botan.alloc.zeroize;
 import cstring;
 import deque;
 

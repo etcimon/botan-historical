@@ -6,7 +6,7 @@
 */
 module botan.codec.hex;
 
-import botan.alloc.secmem;
+import botan.alloc.zeroize;
 import botan.codec.hex;
 import botan.utils.mem_ops;
 import std.exception;

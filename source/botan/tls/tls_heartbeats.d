@@ -6,7 +6,7 @@
 */
 module botan.tls.tls_heartbeats;
 
-import botan.alloc.secmem;
+import botan.alloc.zeroize;
 import botan.tls.tls_extensions;
 import botan.tls.tls_reader;
 import botan.tls.tls_exceptn;

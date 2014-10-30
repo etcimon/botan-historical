@@ -7,7 +7,7 @@ Contents
    index
    building
    firststep
-   secmem
+   zeroize
    rng
    filters
    pubkey

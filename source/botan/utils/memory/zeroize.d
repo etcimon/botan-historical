@@ -4,17 +4,25 @@
 *
 * Distributed under the terms of the botan license.
 */
-module botan.alloc.secmem;
+module botan.utils.memory.zeroize;
 
 import botan.utils.mem_ops;
 import std.algorithm;
 import botan.utils.types;
+import botan.utils.memory.memory;
+import botan.utils.memory.noswap;
 
-static if (BOTAN_HAS_LOCKING_ALLOCATOR)
-  import botan.alloc.locking_allocator;
+auto secure_allocator()
+{
+	alias Allocator = AutoFreeListAllocator!(ZeroizeAllocator!(NoSwapAllocator));
+	static __gshared Allocator alloc;
+	if( !alloc ){
+		alloc = new Allocator;
+	}
+	return alloc;
+}
 
-// todo: Manual Memory Management, freelist backend
-struct secure_allocator(T)
+final class ZeroizeAllocator : Allocator
 {
 	this() nothrow {}
 

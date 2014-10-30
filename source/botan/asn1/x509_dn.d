@@ -95,7 +95,7 @@ public:
 	{
 		MultiMap!(OID, string) retval;
 		for (auto i = dn_info.begin(); i != dn_info.end(); ++i)
-			multimap_insert(retval, i.first, i.second.value());
+			retval.insert(Pair(i.first, i.second.value()));
 		return retval;
 	}
 
@@ -121,7 +121,7 @@ public:
 	{
 		MultiMap!(string, string) retval;
 		for (auto i = dn_info.begin(); i != dn_info.end(); ++i)
-			multimap_insert(retval, oids.lookup(i.first), i.second.value());
+			retval.insert(Pair(oids.lookup(i.first), i.second.value()));
 		return retval;
 	}
 
@@ -149,7 +149,7 @@ public:
 			if (i.second.value() == str)
 				return;
 		
-		multimap_insert(dn_info, oid, ASN1_String(str));
+		dn_info.insert(Pair(oid, ASN1_String(str)));
 		dn_bits.clear();
 	}
 

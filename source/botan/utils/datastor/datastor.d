@@ -10,7 +10,7 @@ import botan.utils.exceptn;
 import botan.utils.parsing;
 import botan.codec.hex;
 import botan.internal.stl_util;
-import botan.alloc.secmem;
+import botan.alloc.zeroize;
 import functional;
 import utility;
 import string;
@@ -66,7 +66,7 @@ public:
 	{
 		Vector!string vals = get(key);
 		
-		if (vals.empty())
+		if (vals.empty)
 			throw new Invalid_State("get1: No values set for " ~ key);
 		if (vals.length > 1)
 			throw new Invalid_State("get1: More than one value for " ~ key);
@@ -82,7 +82,7 @@ public:
 		if (vals.length > 1)
 			throw new Invalid_State("get1: More than one value for " ~ key);
 		
-		if (vals.empty())
+		if (vals.empty)
 			return default_value;
 		
 		return vals[0];
@@ -96,7 +96,7 @@ public:
 	{
 		Vector!string vals = get(key);
 		
-		if (vals.empty())
+		if (vals.empty)
 			return Vector!ubyte();
 		
 		if (vals.length > 1)
@@ -114,7 +114,7 @@ public:
 	{
 		Vector!string vals = get(key);
 		
-		if (vals.empty())
+		if (vals.empty)
 			return default_val;
 		else if (vals.length > 1)
 			throw new Invalid_State("get1_uint: Multiple values for " ~

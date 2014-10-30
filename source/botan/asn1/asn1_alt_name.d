@@ -129,10 +129,10 @@ public:
 		MultiMap!(string, string) names;
 		
 		for (auto i = alt_info.begin(); i != alt_info.end(); ++i)
-			multimap_insert(names, i.first, i.second);
+			names.insert(i);
 		
 		for (auto i = othernames.begin(); i != othernames.end(); ++i)
-			multimap_insert(names, oids.lookup(i.first), i.second.value());
+			names.insert(Pair(ids.lookup(i.first), i.second.value()));
 		
 		return names;
 	}
@@ -151,7 +151,7 @@ public:
 			if (j.second == str)
 				return;
 		
-		multimap_insert(alt_info, type, str);
+		alt_info.insert(Pair(type, str));
 	}
 	
 	/*
@@ -170,7 +170,7 @@ public:
 	{
 		if (value == "")
 			return;
-		multimap_insert(othernames, oid, ASN1_String(value, type));
+		othernames.insert(Pair(oid, ASN1_String(value, type)));
 	}
 
 	/*

@@ -6,7 +6,7 @@
 */
 module botan.constructs.tss;
 
-import botan.alloc.secmem;
+import botan.alloc.zeroize;
 import botan.hash.hash;
 import botan.rng.rng;
 import botan.utils.loadstor;

@@ -10,7 +10,7 @@ import botan.tls.tls_version;
 import botan.tls.tls_ciphersuite;
 import botan.tls.tls_magic;
 import botan.tls.tls_server_info;
-import botan.alloc.secmem;
+import botan.alloc.zeroize;
 import botan.algo_base.symkey;
 import botan.asn1.der_enc;
 import botan.asn1.ber_dec;
@@ -140,7 +140,7 @@ public:
 		return DER_Encoder()
 			.start_cons(ASN1_Tag.SEQUENCE)
 				.encode(cast(size_t)(TLS_SESSION_PARAM_STRUCT_VERSION))
-				.encode(cast(size_t)(std::chrono::system_clock::to_time_t(m_start_time)))
+				.encode(cast(size_t)(m_start_time.toUnixTime()))
 				.encode(cast(size_t)(m_version.major_version()))
 				.encode(cast(size_t)(m_version.minor_version()))
 				.encode(m_identifier, ASN1_Tag.OCTET_STRING)

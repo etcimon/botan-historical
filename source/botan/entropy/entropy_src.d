@@ -6,7 +6,7 @@
 */
 module botan.entropy.entropy_src;
 
-import botan.alloc.secmem;
+import botan.alloc.zeroize;
 import string;
 import functional;
 

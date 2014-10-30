@@ -7,7 +7,7 @@
 */
 module botan.filters.filter;
 
-import botan.alloc.secmem;
+import botan.alloc.zeroize;
 import botan.utils.types;
 import string;
 import botan.filters.secqueue;

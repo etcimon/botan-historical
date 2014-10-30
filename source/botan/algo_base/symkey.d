@@ -11,7 +11,7 @@ import botan.rng.rng;
 import botan.filters.pipe;
 import botan.codec.hex;
 import std.algorithm;
-import botan.alloc.secmem;
+import botan.alloc.zeroize;
 import string;
 
 /**

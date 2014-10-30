@@ -6,7 +6,7 @@
 * Distributed under the terms of the botan license.
 */
 module botan.filters.data_src;
-import botan.alloc.secmem;
+import botan.alloc.zeroize;
 import string;
 import std.stdio;
 import botan.utils.exceptn;

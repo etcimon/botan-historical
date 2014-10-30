@@ -5,7 +5,7 @@
 * Distributed under the terms of the botan license.
 */
 module botan.kdf.kdf;
-import botan.alloc.secmem;
+import botan.alloc.zeroize;
 import botan.utils.types;
 import string;
 import botan.libstate.libstate;

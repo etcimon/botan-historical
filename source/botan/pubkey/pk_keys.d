@@ -6,7 +6,7 @@
 */
 module botan.pubkey.pk_keys;
 
-import botan.alloc.secmem;
+import botan.alloc.zeroize;
 import botan.asn1.asn1_oid;
 import botan.asn1.alg_id;
 import botan.rng.rng;
