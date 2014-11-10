@@ -280,7 +280,7 @@ static if (BOTAN_HAS_DIFFIE_HELLMAN) {
 			return z.to_bytes();
 		}
 		
-	private:
+	m_tag
 		GMP_MPZ x, p;
 	};
 }
@@ -340,7 +340,7 @@ static if (BOTAN_HAS_DSA) {
 			return output;
 		}
 		
-	private:
+	m_tag
 		const GMP_MPZ x, p, q, g;
 		size_t q_bits;
 	};
@@ -403,7 +403,7 @@ static if (BOTAN_HAS_DSA) {
 			return false;			
 		}
 		
-	private:
+	m_tag
 		const GMP_MPZ y, p, q, g;
 		size_t q_bits;
 	};
@@ -441,7 +441,7 @@ static if (BOTAN_HAS_DSA) {
 				return BigInt.encode_locked(private_op(m));
 			}
 			
-		private:
+		m_tag
 			BigInt private_op(in BigInt m) const
 			{
 				GMP_MPZ j1, j2, h(m);
@@ -487,7 +487,7 @@ static if (BOTAN_HAS_DSA) {
 				return BigInt.encode_locked(public_op(m));
 			}
 			
-		private:
+		m_tag
 			BigInt public_op(in BigInt m) const
 			{
 				if (m >= n)

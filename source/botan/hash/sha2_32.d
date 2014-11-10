@@ -123,7 +123,7 @@ private:
 	Secure_Vector!uint digest;
 };
 
-private:
+m_tag
 pure:
 
 /*

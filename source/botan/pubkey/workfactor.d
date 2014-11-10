@@ -38,7 +38,7 @@ size_t dl_work_factor(size_t prime_group_size)
 	reasons.
 	*/
 	
-	immutable size_t MIN_WORKFACTOR = 64;
+	__gshared immutable size_t MIN_WORKFACTOR = 64;
 	
 	// approximates natural logarithm of p
 	const double log_p = prime_group_size / 1.4426;

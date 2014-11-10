@@ -31,7 +31,7 @@ Secure_Vector!ubyte rfc3394_keywrap(in Secure_Vector!ubyte key,
 	if (key.length % 8 != 0)
 		throw new Invalid_Argument("Bad input key size for NIST key wrap");
 	
-	Unique!BlockCipher aes = make_aes(kek.length(), af);
+	Unique!BlockCipher aes = make_aes(kek.length, af);
 	aes.set_key(kek);
 	
 	const size_t n = key.length / 8;
@@ -82,7 +82,7 @@ Secure_Vector!ubyte rfc3394_keyunwrap(in Secure_Vector!ubyte key,
 	if (key.length < 16 || key.length % 8 != 0)
 		throw new Invalid_Argument("Bad input key size for NIST key unwrap");
 	
-	Unique!BlockCipher aes = make_aes(kek.length(), af);
+	Unique!BlockCipher aes = make_aes(kek.length, af);
 	aes.set_key(kek);
 	
 	const size_t n = (key.length - 8) / 8;

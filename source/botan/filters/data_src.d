@@ -147,7 +147,7 @@ public:
 	this(in string input) 
 	{
 		source = Secure_Vector!ubyte(cast(const ubyte*) input.ptr,
-		                          cast(const ubyte*)(input.ptr) + input.length());
+		                          cast(const ubyte*)(input.ptr) + input.length);
 		offset = 0;
 	}
 

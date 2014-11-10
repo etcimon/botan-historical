@@ -48,7 +48,7 @@ struct CryptoBox {
 		pbkdf_salt.length,
 		PBKDF_ITERATIONS);
 		
-		const ubyte* mk = master_key.begin();
+		const ubyte* mk = master_key.ptr;
 		
 		SymmetricKey cipher_key = SymmetricKey(&mk[0], CIPHER_KEY_LEN);
 		SymmetricKey mac_key = SymmetricKey(&mk[CIPHER_KEY_LEN], MAC_KEY_LEN);
@@ -119,7 +119,7 @@ struct CryptoBox {
 			PBKDF_SALT_LEN,
 			PBKDF_ITERATIONS);
 		
-		const ubyte* mk = master_key.begin();
+		const ubyte* mk = master_key.ptr;
 		
 		SymmetricKey cipher_key = SymmetricKey(&mk[0], CIPHER_KEY_LEN);
 		SymmetricKey mac_key = SymmetricKey(&mk[CIPHER_KEY_LEN], MAC_KEY_LEN);
@@ -144,7 +144,7 @@ struct CryptoBox {
 						MAC_OUTPUT_LEN))
 			throw new Decoding_Error("CryptoBox integrity failure");
 		
-		return pipe.read_all_as_string(0);
+		return pipe.toString(0);
 	}
 
 

@@ -1775,8 +1775,8 @@ void word3_muladd_2(word* w2, word* w1, word* w0, word a, word b)
 	*w2 = word_add(*w2, top, &carry);
 }
 
-immutable size_t KARATSUBA_MULTIPLY_THRESHOLD = 32;
-immutable size_t KARATSUBA_SQUARE_THRESHOLD = 32;
+__gshared immutable size_t KARATSUBA_MULTIPLY_THRESHOLD = 32;
+__gshared immutable size_t KARATSUBA_SQUARE_THRESHOLD = 32;
 
 /*
 * Karatsuba Multiplication Operation

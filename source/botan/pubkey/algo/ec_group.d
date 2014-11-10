@@ -110,10 +110,10 @@ public:
 		string pem = PEM_for_named_group(oids.lookup(domain_oid));
 		
 		if (!pem)
-			throw new Lookup_Error("No ECC domain data for " ~ domain_oid.as_string());
+			throw new Lookup_Error("No ECC domain data for " ~ domain_oid.toString());
 		
 		this(pem);
-		oid = domain_oid.as_string();
+		oid = domain_oid.toString();
 	}
 
 	/**

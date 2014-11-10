@@ -119,7 +119,7 @@ public:
 
 	final void set_key(in SymmetricKey key)
 	{
-		set_key(key.begin(), key.length());
+		set_key(key.ptr, key.length);
 	}
 
 	/**

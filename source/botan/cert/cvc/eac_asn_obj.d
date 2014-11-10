@@ -35,7 +35,7 @@ public:
 	*/
 	void encode_into(DER_Encoder der) const
 	{
-		der.add_object(tag, ASN1_Tag.APPLICATION,
+		der.add_object(m_tag, ASN1_Tag.APPLICATION,
 		               encoded_eac_time());
 	}
 
@@ -46,7 +46,7 @@ public:
 	{
 		BER_Object obj = source.get_next_object();
 		
-		if (obj.type_tag != this.tag)
+		if (obj.type_tag != this.m_tag)
 			throw new BER_Decoding_Error("Tag mismatch when decoding");
 		
 		if (obj.value.length != 6)
@@ -74,10 +74,10 @@ public:
 	* Return a string representation of the time
 	* @return date string
 	*/
-	string as_string() const
+	string toString() const
 	{
 		if (time_is_set() == false)
-			throw new Invalid_State("as_string: No time set");
+			throw new Invalid_State("toString: No time set");
 		
 		return std.conv.to!string(year * 10000 + month * 100 + day);
 	}
@@ -220,12 +220,11 @@ public:
 	this(in SysTime time,
 	         ASN1_Tag t = ASN1_Tag(0))
 	{
-		tag = t;
-		calendar_point cal = calendar_value(time);
+		m_tag = t;
 		
-		year = cal.year;
-		month = cal.month;
-		day	= cal.day;
+		year = time.year;
+		month = time.month;
+		day	= time.day;
 	}
 
 	/*
@@ -233,7 +232,7 @@ public:
 	*/
 	this(in string t_spec, ASN1_Tag t = ASN1_Tag(0))
 	{
-		tag = t;
+		m_tag = t;
 		set_to(t_spec);
 	}
 
@@ -245,7 +244,7 @@ public:
 		year = y;
 		month = m;
 		day = d;
-		tag = t;
+		m_tag = t;
 	}
 
 	/*
@@ -315,7 +314,7 @@ private:
 		return true;
 	}
 	uint year, month, day;
-	ASN1_Tag tag;
+	ASN1_Tag m_tag;
 };
 
 /**
@@ -403,7 +402,7 @@ public:
 	{
 		BER_Object obj = source.get_next_object();
 		
-		if (obj.type_tag != this.tag)
+		if (obj.type_tag != this.m_tag)
 		{
 			import std.array : Appender;
 			Appender!string ss;
@@ -411,7 +410,7 @@ public:
 			ss ~= "ASN1_EAC_String tag mismatch, tag was "
 				 ~ obj.type_tag
 					~ " expected "
-					 ~ this.tag;
+					 ~ this.m_tag;
 			
 			throw new Decoding_Error(ss.data);
 		}
@@ -439,7 +438,7 @@ public:
 	*/
 	string value() const
 	{
-		return transcode(iso_8859_str, LATIN1_CHARSET, LOCAL_CHARSET);
+		return transcode(m_iso_8859_str, LATIN1_CHARSET, LOCAL_CHARSET);
 	}
 
 	/**
@@ -448,7 +447,7 @@ public:
 	*/
 	string iso_8859() const
 	{
-		return iso_8859_str;
+		return m_iso_8859_str;
 	}
 
 	/*
@@ -456,7 +455,7 @@ public:
 	*/
 	ASN1_Tag tagging() const
 	{
-		return tag;
+		return m_tag;
 	}
 
 	/*
@@ -464,8 +463,8 @@ public:
 	*/
 	this(in string str, ASN1_Tag t)
 	{
-		tag = t;
-		iso_8859_str = transcode(str, LOCAL_CHARSET, LATIN1_CHARSET);
+		m_tag = t;
+		m_iso_8859_str = transcode(str, LOCAL_CHARSET, LATIN1_CHARSET);
 		
 		if (!sanity_check())
 			throw new Invalid_Argument("ASN1_EAC_String contains illegal characters");
@@ -488,8 +487,8 @@ protected:
 	// p. 43
 	bool sanity_check() const
 	{
-		const ubyte* rep = cast(const ubyte*)(iso_8859_str.ptr);
-		const size_t rep_len = iso_8859_str.length;
+		const ubyte* rep = cast(const ubyte*)(m_iso_8859_str.ptr);
+		const size_t rep_len = m_iso_8859_str.length;
 		
 		for (size_t i = 0; i != rep_len; ++i)
 		{
@@ -501,8 +500,8 @@ protected:
 	}
 
 private:
-	string iso_8859_str;
-	ASN1_Tag tag;
+	string m_iso_8859_str;
+	ASN1_Tag m_tag;
 };
 
 /**

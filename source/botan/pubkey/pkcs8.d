@@ -137,9 +137,9 @@ Private_Key load_key(DataSource source,
 	Secure_Vector!ubyte pkcs8_key = PKCS8_decode(source, get_pass, alg_id);
 	
 	const string alg_name = oids.lookup(alg_id.oid);
-	if (alg_name == "" || alg_name == alg_id.oid.as_string())
+	if (alg_name == "" || alg_name == alg_id.oid.toString())
 		throw new PKCS8_Exception("Unknown algorithm OID: " ~
-		                          alg_id.oid.as_string());
+		                          alg_id.oid.toString());
 	
 	return make_private_key(alg_id, pkcs8_key, rng);
 }

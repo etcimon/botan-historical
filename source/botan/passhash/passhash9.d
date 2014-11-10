@@ -60,7 +60,7 @@ string generate_passhash9(in string pass,
 	pipe.write(pbkdf2_output);
 	pipe.end_msg();
 	
-	return MAGIC_PREFIX + pipe.read_all_as_string();
+	return MAGIC_PREFIX + pipe.toString();
 }
 
 

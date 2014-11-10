@@ -185,11 +185,11 @@ public:
 	{
 		assert(buffer.length >= offset, "Offset is sane");
 		
-		buffer.insert(buffer.begin() + offset, msg_buf().begin(), msg_buf().end());
+		buffer.insert(buffer.ptr + offset, msg_buf().ptr, msg_buf().end());
 		
 		Secure_Vector!ubyte V = S2V(&buffer[offset], buffer.length - offset);
 		
-		buffer.insert(buffer.begin() + offset, V.begin(), V.end());
+		buffer.insert(buffer.ptr + offset, V.ptr, V.end());
 		
 		set_ctr_iv(V);
 		ctr().cipher1(&buffer[offset + V.length], buffer.length - offset - V.length);
@@ -219,7 +219,7 @@ public:
 	{
 		assert(buffer.length >= offset, "Offset is sane");
 		
-		buffer.insert(buffer.begin() + offset, msg_buf().begin(), msg_buf().end());
+		buffer.insert(buffer.ptr + offset, msg_buf().ptr, msg_buf().end());
 		
 		const size_t sz = buffer.length - offset;
 		

@@ -6,6 +6,7 @@
 */
 module botan.filters.filters;
 
+import botan.algo_factory.algo_factory;
 import botan.filters.filter;
 import botan.block.block_cipher;
 import botan.stream.stream_cipher;
@@ -60,7 +61,7 @@ public:
 	*/
 	void set_iv(in InitializationVector iv)
 	{
-		cipher.set_iv(iv.begin(), iv.length());
+		cipher.set_iv(iv.ptr, iv.length);
 	}
 
 

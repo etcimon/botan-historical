@@ -700,7 +700,7 @@ static if (BOTAN_HAS_DIFFIE_HELLMAN) {
 			return r.to_bytes();
 		}
 		
-	private:
+	m_tag
 		const OSSL_BN x, p;
 		OSSL_BN_CTX ctx;
 	};
@@ -760,7 +760,7 @@ static if (BOTAN_HAS_DSA) {
 			return output;
 		}
 		
-	private:
+	m_tag
 		const OSSL_BN x, p, q, g;
 		const OSSL_BN_CTX ctx;
 		size_t q_bits;
@@ -821,7 +821,7 @@ static if (BOTAN_HAS_DSA) {
 			return false;
 		}
 		
-	private:
+	m_tag
 		const OSSL_BN y, p, q, g;
 		const OSSL_BN_CTX ctx;
 		size_t q_bits;
@@ -860,7 +860,7 @@ static if (BOTAN_HAS_DSA) {
 				return BigInt.encode_locked(private_op(m));
 			}
 			
-		private:
+		m_tag
 			BigInt private_op(in BigInt m) const
 			{
 				OSSL_BN j1, j2, h(m);
@@ -906,7 +906,7 @@ static if (BOTAN_HAS_DSA) {
 				return BigInt.encode_locked(public_op(m));
 			}
 			
-		private:
+		m_tag
 			BigInt public_op(in BigInt m) const
 			{
 				if (m >= n)

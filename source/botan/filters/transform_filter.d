@@ -36,7 +36,7 @@ public:
 	{
 		if (Keyed_Transform keyed = cast(Keyed_Transform)(*m_transform))
 			keyed.set_key(key);
-		else if (key.length() != 0)
+		else if (key.length != 0)
 			throw new Exception("Transformation " ~ name ~ " does not accept keys");
 	}
 
@@ -123,7 +123,7 @@ private:
 				m_fresh_nonce = false;
 			return m_nonce;
 		}
-	private:
+	m_tag
 		bool m_fresh_nonce;
 		Vector!ubyte m_nonce;
 	};

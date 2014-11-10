@@ -723,7 +723,7 @@ public:
 				                state.client_hello().sni_hostname(),
 				                psk_identity);
 				
-				if (psk.length() == 0)
+				if (psk.length == 0)
 				{
 					if (policy.hide_unknown_users())
 						psk = SymmetricKey(rng, 16);
@@ -735,7 +735,7 @@ public:
 			
 			if (kex_algo == "PSK")
 			{
-				Vector!ubyte zeros = Vector!ubyte(psk.length());
+				Vector!ubyte zeros = Vector!ubyte(psk.length);
 				append_tls_length_value(m_pre_master, zeros, 2);
 				append_tls_length_value(m_pre_master, psk.bits_of(), 2);
 			}
@@ -829,7 +829,7 @@ public:
 			
 			SymmetricKey psk = creds.psk("tls-client", hostname, psk_identity);
 			
-			Vector!ubyte zeros = Vector!ubyte(psk.length());
+			Vector!ubyte zeros = Vector!ubyte(psk.length);
 			
 			append_tls_length_value(m_pre_master, zeros, 2);
 			append_tls_length_value(m_pre_master, psk.bits_of(), 2);

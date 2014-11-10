@@ -69,7 +69,7 @@ public:
 			m_aead = aead;
 			m_aead.set_key(cipher_key + mac_key);
 			
-			assert(iv.length() == 4, "Using 4/8 partial implicit nonce");
+			assert(iv.length == 4, "Using 4/8 partial implicit nonce");
 			m_nonce = iv.bits_of();
 			m_nonce.resize(12);
 			return;

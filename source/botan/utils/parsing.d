@@ -14,7 +14,7 @@ import botan.utils.charset;
 import botan.utils.get_byte;
 import istream;
 import functional;
-import map;
+import botan.utils.hashmap;
 /**
 * Parse a SCAN-style algorithm name
 * @param scan_name the name

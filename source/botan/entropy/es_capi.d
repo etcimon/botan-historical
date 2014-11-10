@@ -64,7 +64,7 @@ public:
 			prov_types.push_back(PROV_RSA_FULL);
 	}
 
-	private:
+	m_tag
 		Vector!( ulong ) prov_types;
 };
 

@@ -24,7 +24,7 @@ Public_Key make_public_key(in Algorithm_Identifier alg_id,
 {
 	const string alg_name = oids.lookup(alg_id.oid);
 	if (alg_name == "")
-		throw new Decoding_Error("Unknown algorithm OID: " ~ alg_id.oid.as_string());
+		throw new Decoding_Error("Unknown algorithm OID: " ~ alg_id.oid.toString());
 	
 	static if (BOTAN_HAS_RSA) {
 		if (alg_name == "RSA")
@@ -80,7 +80,7 @@ Private_Key make_private_key(in Algorithm_Identifier alg_id,
 {
 	const string alg_name = oids.lookup(alg_id.oid);
 	if (alg_name == "")
-		throw new Decoding_Error("Unknown algorithm OID: " ~ alg_id.oid.as_string());
+		throw new Decoding_Error("Unknown algorithm OID: " ~ alg_id.oid.toString());
 	
 	static if (BOTAN_HAS_RSA) {
 		if (alg_name == "RSA")

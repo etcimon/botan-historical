@@ -13,7 +13,7 @@ import botan.checksum.crc24;
 import botan.filters.data_src;
 import std.array : Appender;
 import string;
-import map;
+import botan.utils.hashmap;
 
 /**
 * @param input the input data
@@ -51,8 +51,8 @@ string PGP_encode(
 	
 	pipe.process_msg(input, length);
 	
-	pgp_encoded ~= pipe.read_all_as_string(0);
-	pgp_encoded ~= '=' ~ pipe.read_all_as_string(1) ~ '\n';
+	pgp_encoded ~= pipe.toString(0);
+	pgp_encoded ~= '=' ~ pipe.toString(1) ~ '\n';
 	pgp_encoded ~= PGP_TRAILER;
 	
 	return pgp_encoded.data;
@@ -86,7 +86,7 @@ Secure_Vector!ubyte PGP_decode(DataSource source,
 	const string PGP_HEADER2 = "-----";
 	size_t position = 0;
 	
-	while(position != PGP_HEADER1.length())
+	while(position != PGP_HEADER1.length)
 	{
 		ubyte b;
 		if (!source.read_byte(b))
@@ -99,7 +99,7 @@ Secure_Vector!ubyte PGP_decode(DataSource source,
 			position = 0;
 	}
 	position = 0;
-	while(position != PGP_HEADER2.length())
+	while(position != PGP_HEADER2.length)
 	{
 		ubyte b;
 		if (!source.read_byte(b))
@@ -128,7 +128,7 @@ Secure_Vector!ubyte PGP_decode(DataSource source,
 		}
 		
 		end_of_headers = true;
-		for (size_t j = 0; j != this_header.length(); ++j)
+		for (size_t j = 0; j != this_header.length; ++j)
 			if (!is_space(this_header[j]))
 				end_of_headers = false;
 		
@@ -158,7 +158,7 @@ Secure_Vector!ubyte PGP_decode(DataSource source,
 	position = 0;
 	bool newline_seen = 0;
 	string crc;
-	while(position != PGP_TRAILER.length())
+	while(position != PGP_TRAILER.length)
 	{
 		ubyte b;
 		if (!source.read_byte(b))
@@ -188,7 +188,7 @@ Secure_Vector!ubyte PGP_decode(DataSource source,
 	}
 	base64.end_msg();
 	
-	if (crc != "" && crc != base64.read_all_as_string(1))
+	if (crc != "" && crc != base64.toString(1))
 		throw new Decoding_Error("PGP: Corrupt CRC");
 	
 	return base64.read_all();

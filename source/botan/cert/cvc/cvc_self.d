@@ -215,9 +215,9 @@ EAC1_1_CVC link_cvca(const ref EAC1_1_CVC signer,
 	if (*cast(EAC_Time*)(&ced) > *cast(EAC_Time*)(&cex))
 	{
 		string detail = "link_cvca(): validity periods of provided certificates don't overlap: currend time = ced = ";
-		detail ~= ced.as_string();
+		detail ~= ced.toString();
 		detail ~= ", signee.cex = ";
-		detail ~= cex.as_string();
+		detail ~= cex.toString();
 		throw new Invalid_Argument(detail);
 	}
 	if (signer.signature_algorithm() != signee.signature_algorithm())

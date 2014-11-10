@@ -244,7 +244,7 @@ protected:
 
 	void attach(Filter f) { attach(f); }
 
-/*private:
+/*m_tag
 	using write_queue;
 	using total_ports;
 	using next;*/

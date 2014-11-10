@@ -19,7 +19,7 @@ import std.algorithm;
 import core.sync.mutex;
 import std.typecons;
 import botan.utils.types;
-import map;
+import botan.utils.hashmap;
 
 static if (BOTAN_HAS_SELFTESTS)
 	import botan.selftest.selftest;

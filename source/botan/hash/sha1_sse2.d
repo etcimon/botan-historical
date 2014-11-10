@@ -24,7 +24,7 @@ public:
 	{
 		super(0);
 	} // no W needed
-private:
+m_tag
 	/*
 * SHA-160 Compression Function using SSE for message expansion
 */

@@ -140,9 +140,9 @@ private:
 	*/
 	void key_schedule(in ubyte* key, size_t length)
 	{
-		immutable uint[] TAU =	[ 0x61707865, 0x3120646e, 0x79622d36, 0x6b206574 ];
+		__gshared immutable uint[] TAU =	[ 0x61707865, 0x3120646e, 0x79622d36, 0x6b206574 ];
 		
-		immutable uint[] SIGMA = [ 0x61707865, 0x3320646e, 0x79622d32, 0x6b206574 ];
+		__gshared immutable uint[] SIGMA = [ 0x61707865, 0x3320646e, 0x79622d32, 0x6b206574 ];
 		
 		const uint* CONSTANTS = (length == 16) ? TAU : SIGMA;
 		

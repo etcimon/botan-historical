@@ -174,7 +174,7 @@ public:
 	*/
 	void process_msg(in string input)
 	{
-		process_msg(cast(const ubyte*)(input.data()), input.length());
+		process_msg(cast(const ubyte*)(input.data()), input.length);
 	}
 
 	/**
@@ -274,7 +274,7 @@ public:
 	* @param msg the number identifying the message to read from
 	* @return string holding the contents of the pipe
 	*/
-	string read_all_as_string(message_id msg = DEFAULT_MESSAGE)
+	string toString(message_id msg = DEFAULT_MESSAGE)
 	{
 		msg = ((msg != DEFAULT_MESSAGE) ? msg : default_msg());
 		Secure_Vector!ubyte buffer = Secure_Vector!ubyte(DEFAULT_BUFFERSIZE);
@@ -291,8 +291,6 @@ public:
 		
 		return str;
 	}
-
-	string toString() { return read_all_as_string(); }
 
 	/** Read from the default message but do not modify the internal
 	* offset. Consecutive calls to peek() will return portions of

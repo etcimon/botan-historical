@@ -32,7 +32,7 @@ private:
 	}
 };
 
-private:
+m_tag
 pure:
 
 void botan_sha160_x86_64_compress(uint[5]* arg1, const ubyte[64]* arg2, uint[80]* arg3)

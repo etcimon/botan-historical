@@ -8,7 +8,7 @@
 import botan.utils.types;
 import future;
 import botan.utils.types;
-import map;
+import botan.utils.hashmap;
 import std.datetime;
 import string;
 namespace HTTP {
@@ -40,7 +40,7 @@ struct Response
 				throw new Exception("HTTP error: " ~ status_message());
 		}
 
-	private:
+	m_tag
 		uint m_status_code;
 		string m_status_message;
 		Vector!ubyte m_body;

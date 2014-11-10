@@ -236,14 +236,15 @@ public:
 	     Signature_Format format = IEEE_1363,
 	     Fault_Protection prot = ENABLE_FAULT_PROTECTION)
 	{
-		Algorithm_Factory.Engine_Iterator i = Algorithm_Factory.Engine_Iterator(global_state().algorithm_factory());
+		Algorithm_Factory af = global_state().algorithm_factory();
+
 		RandomNumberGenerator rng = global_state().global_rng();
 		
 		m_op = null;
 		m_verify_op = null;
-		
-		foreach(const Engine engine; i)
-		{
+
+		foreach (Engine engine; af.engines) {
+
 			if (!m_op)
 				m_op = engine.get_signature_op(key, rng);
 			
@@ -433,11 +434,11 @@ public:
 	     in string emsa_name,
 	     Signature_Format format = IEEE_1363)
 	{
-		Algorithm_Factory.Engine_Iterator i = Algorithm_Factory.Engine_Iterator(global_state().algorithm_factory());
+		Algorithm_Factory af = global_state().algorithm_factory();
+
 		RandomNumberGenerator rng = global_state().global_rng();
-		
-		foreach(const Engine engine; i)
-		{
+
+		foreach (Engine engine; af.engines) {
 			m_op = engine.get_verify_op(key, rng);
 			if (m_op)
 				break;
@@ -532,7 +533,7 @@ public:
 	{
 		return derive_key(key_len, input, in_len,
 								cast(const ubyte*)(params.ptr),
-								params.length());
+								params.length);
 	}
 
 	/*
@@ -547,7 +548,7 @@ public:
 	{
 		return derive_key(key_len, &input[0], input.length,
 								cast(const ubyte*)(params.ptr),
-								params.length());
+								params.length);
 	}
 
 	/**
@@ -555,13 +556,12 @@ public:
 	* @param key the key to use
 	* @param kdf_name name of the KDF to use (or 'Raw' for no KDF)
 	*/
-	this(in PK_Key_Agreement_Key key,
-	     in string kdf_name)
+	this(in PK_Key_Agreement_Key key,  in string kdf_name)
 	{
-		Algorithm_Factory.Engine_Iterator i = Algorithm_Factory.Engine_Iterator(global_state().algorithm_factory());
+		Algorithm_Factory af = global_state().algorithm_factory();
 		RandomNumberGenerator rng = global_state().global_rng();
-		
-		foreach(const Engine engine; i)
+
+		foreach (Engine engine; af.engines)
 		{
 			m_op = engine.get_key_agreement_op(key, rng);
 			if (m_op)
@@ -603,11 +603,11 @@ public:
 	this(in Public_Key key,
 	     in string eme_name)
 	{
-		Algorithm_Factory.Engine_Iterator iter = Algorithm_Factory.Engine_Iterator(global_state().algorithm_factory());
+		
+		Algorithm_Factory af = global_state().algorithm_factory();
 		RandomNumberGenerator rng = global_state().global_rng();
 
-		foreach (const Engine engine; iter)
-		{
+		foreach (Engine engine; af.engines) {
 			m_op = engine.get_encryption_op(key, rng);
 			if (m_op)
 				break;
@@ -662,10 +662,10 @@ public:
 	this(in Private_Key key,
 		     in string eme_name)
 	{
-		Algorithm_Factory.Engine_Iterator i = Algorithm_Factory.Engine_Iterator(global_state().algorithm_factory());
+		Algorithm_Factory af = global_state().algorithm_factory();
 		RandomNumberGenerator rng = global_state().global_rng();
-		
-		foreach (const Engine engine; i)
+
+		foreach (Engine engine; af.engines)
 		{
 			m_op = engine.get_decryption_op(key, rng);
 			if (m_op)

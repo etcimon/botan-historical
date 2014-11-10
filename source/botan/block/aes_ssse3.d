@@ -321,7 +321,7 @@ private:
 	Secure_Vector!uint EK, DK;
 };
 
-static this() {
+shared static this() {
 	low_nibs = _mm_set1_epi8!(0x0F)();
 	k_ipt1 = _mm_set_epi32!(
 		0xCABAE090, 0x52227808, 0xC2B2E898, 0x5A2A7000)();
@@ -347,20 +347,20 @@ static this() {
 		_mm_set_epi32!(0x0306090C, 0x0F020508, 0x0B0E0104, 0x070A0D00)()];
 }
 
-immutable __m128i low_nibs;
+__gshared immutable __m128i low_nibs;
 
-immutable __m128i k_ipt1 ;
-immutable __m128i k_ipt2;
+__gshared immutable __m128i k_ipt1 ;
+__gshared immutable __m128i k_ipt2;
 
-immutable __m128i k_inv1;
-immutable __m128i k_inv2;
+__gshared immutable __m128i k_inv1;
+__gshared immutable __m128i k_inv2;
 
-immutable __m128i sb1u;
-immutable __m128i sb1t;
+__gshared immutable __m128i sb1u;
+__gshared immutable __m128i sb1t;
 
-immutable __m128i[4] mc_forward;
+__gshared immutable __m128i[4] mc_forward;
 
-immutable __m128i[4] sr;
+__gshared immutable __m128i[4] sr;
 
 package:
 
@@ -401,7 +401,7 @@ return _mm_xor_si128(y,_mm_xor_si128(
 
 __m128i aes_schedule_mangle_dec(__m128i k, ubyte round_no)
 {
-	immutable(__m128i) dsk[8] = [
+	__gshared immutable(__m128i) dsk[8] = [
 		_mm_set_epi32!(0x4AED9334, 0x82255BFC, 0xB6116FC8, 0x7ED9A700)(),
 			_mm_set_epi32!(0x8BB89FAC, 0xE9DAFDCE, 0x45765162, 0x27143300)(),
 			_mm_set_epi32!(0x4622EE8A, 0xADC90561, 0x27438FEB, 0xCCA86400)(),

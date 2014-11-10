@@ -95,8 +95,8 @@ private:
 		m_ikey.resize(inner_hash_length);
 		m_okey.resize(inner_hash_length);
 		
-		std.algorithm.fill(m_ikey.begin(), m_ikey.end(), 0x36);
-		std.algorithm.fill(m_okey.begin(), m_okey.end(), 0x5C);
+		std.algorithm.fill(m_ikey.ptr, m_ikey.end(), 0x36);
+		std.algorithm.fill(m_okey.ptr, m_okey.end(), 0x5C);
 		
 		copy_mem(&m_ikey[0], key, length);
 		copy_mem(&m_okey[0], key, length);

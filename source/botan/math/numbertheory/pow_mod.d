@@ -49,7 +49,7 @@ public:
 	static size_t window_bits(size_t exp_bits, size_t,
 	                          Power_Mod.Usage_Hints hints)
 	{
-		immutable size_t[][2] wsize = [
+		__gshared immutable size_t[][2] wsize = [
 			[ 1434, 7 ],
 			[  539, 6 ],
 			[  197, 4 ],
@@ -90,10 +90,9 @@ public:
 		
 		if (n != 0)
 		{
-			Algorithm_Factory.Engine_Iterator i = Algorithm_Factory.Engine_Iterator(global_state().algorithm_factory());
-			Engine engine;
-			while(engine = i.next())
-			{
+			Algorithm_Factory af = global_state().algorithm_factory();
+
+			foreach (Engine engine; af.engines) {
 				core = engine.mod_exp(n, hints);
 				
 				if (core)

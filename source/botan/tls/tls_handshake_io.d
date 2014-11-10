@@ -17,7 +17,7 @@ import std.algorithm : count;
 import functional;
 import botan.utils.types;
 import deque;
-import map;
+import botan.utils.hashmap;
 import set;
 import utility;
 import tuple;
@@ -103,7 +103,7 @@ public:
 	{
 		if (record_type == HANDSHAKE)
 		{
-			m_queue.insert(m_queue.end(), record.begin(), record.end());
+			m_queue.insert(m_queue.end(), record.ptr, record.end());
 		}
 		else if (record_type == CHANGE_CIPHER_SPEC)
 		{
@@ -128,10 +128,10 @@ public:
 			{
 				Handshake_Type type = cast(Handshake_Type)(m_queue[0]);
 				
-				Vector!ubyte contents = Vector!ubyte(m_queue.begin() + 4,
-				                      m_queue.begin() + 4 + length);
+				Vector!ubyte contents = Vector!ubyte(m_queue.ptr + 4,
+				                      m_queue.ptr + 4 + length);
 				
-				m_queue.erase(m_queue.begin(), m_queue.begin() + 4 + length);
+				m_queue.erase(m_queue.ptr, m_queue.ptr + 4 + length);
 				
 				return Pair(type, contents);
 			}
@@ -283,7 +283,7 @@ public:
 		{
 			if (!m_messages.empty)
 			{
-				const ushort current_epoch = m_messages.begin().second.epoch();
+				const ushort current_epoch = m_messages.ptr.second.epoch();
 
 				if (m_ccs_epochs.count(current_epoch) > 0)
 					return Pair(HANDSHAKE_CCS, Vector!ubyte());
@@ -407,7 +407,7 @@ public:
 		return Pair(cast(Handshake_Type)(m_msg_type), m_message);
 	}
 
-	private:
+	m_tag
 		ubyte m_msg_type = HANDSHAKE_NONE;
 		size_t m_msg_length = 0;
 		ushort m_epoch = 0;

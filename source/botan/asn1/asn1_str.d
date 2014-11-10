@@ -59,7 +59,7 @@ public:
 	*/
 	string value() const
 	{
-		return transcode(iso_8859_str, LATIN1_CHARSET, LOCAL_CHARSET);
+		return transcode(m_iso_8859_str, LATIN1_CHARSET, LOCAL_CHARSET);
 	}
 
 
@@ -68,7 +68,7 @@ public:
 	*/
 	string iso_8859() const
 	{
-		return iso_8859_str;
+		return m_iso_8859_str;
 	}
 
 	/*
@@ -76,7 +76,7 @@ public:
 	*/
 	ASN1_Tag tagging() const
 	{
-		return tag;
+		return m_tag;
 	}
 
 	this(in string str, ASN1_Tag t)
@@ -86,32 +86,32 @@ public:
 
 	this(in string str)
 	{
-		iso_8859_str = transcode(str, LOCAL_CHARSET, LATIN1_CHARSET);
-		tag = choose_encoding(iso_8859_str, "latin1");
+		m_iso_8859_str = transcode(str, LOCAL_CHARSET, LATIN1_CHARSET);
+		m_tag = choose_encoding(m_iso_8859_str, "latin1");
 	}
 
 
 private:
 	void initialize(in string str, ASN1_Tag t) {
-		tag = t;
-		iso_8859_str = transcode(str, LOCAL_CHARSET, LATIN1_CHARSET);
+		m_tag = t;
+		m_iso_8859_str = transcode(str, LOCAL_CHARSET, LATIN1_CHARSET);
 		
-		if (tag == ASN1_Tag.DIRECTORY_STRING)
-			tag = choose_encoding(iso_8859_str, "latin1");
+		if (m_tag == ASN1_Tag.DIRECTORY_STRING)
+			m_tag = choose_encoding(m_iso_8859_str, "latin1");
 		
-		if (tag != ASN1_Tag.NUMERIC_STRING &&
-		    tag != ASN1_Tag.PRINTABLE_STRING &&
-		    tag != ASN1_Tag.VISIBLE_STRING &&
-		    tag != ASN1_Tag.T61_STRING &&
-		    tag != ASN1_Tag.IA5_STRING &&
-		    tag != ASN1_Tag.UTF8_STRING &&
-		    tag != ASN1_Tag.BMP_STRING)
+		if (m_tag != ASN1_Tag.NUMERIC_STRING &&
+		    m_tag != ASN1_Tag.PRINTABLE_STRING &&
+		    m_tag != ASN1_Tag.VISIBLE_STRING &&
+		    m_tag != ASN1_Tag.T61_STRING &&
+		    m_tag != ASN1_Tag.IA5_STRING &&
+		    m_tag != ASN1_Tag.UTF8_STRING &&
+		    m_tag != ASN1_Tag.BMP_STRING)
 			throw new Invalid_Argument("ASN1_String: Unknown string type " ~
-			                           std.conv.to!string(tag));
+			                           std.conv.to!string(m_tag));
 	}
 
-	string iso_8859_str;
-	ASN1_Tag tag;
+	string m_iso_8859_str;
+	ASN1_Tag m_tag;
 };
 
 /*
@@ -120,7 +120,7 @@ private:
 ASN1_Tag choose_encoding(in string str,
                          in string type)
 {
-	immutable ubyte[256] IS_PRINTABLE = [
+	__gshared immutable ubyte[256] IS_PRINTABLE = [
 		0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 		0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 		0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00,
@@ -155,11 +155,3 @@ ASN1_Tag choose_encoding(in string str,
 	}
 	return ASN1_Tag.PRINTABLE_STRING;
 }
-
-
-
-
-
-
-
-

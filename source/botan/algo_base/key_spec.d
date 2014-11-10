@@ -19,9 +19,9 @@ public:
 	*/
 	this(size_t keylen)
 	{
-		min_keylen = keylen;
-		max_keylen = keylen;
-		keylen_mod = 1;
+		m_min_keylen = keylen;
+		m_max_keylen = keylen;
+		m_keylen_mod = 1;
 	}
 
 	/**
@@ -34,9 +34,9 @@ public:
 		 size_t max_k,
 		 size_t k_mod = 1)
 	{
-		min_keylen = min_k;
-		max_keylen = max_k ? max_k : min_k;
-		keylen_mod = k_mod;
+		m_min_keylen = min_k;
+		m_max_keylen = max_k ? max_k : min_k;
+		m_keylen_mod = k_mod;
 	}
 
 	/**
@@ -45,9 +45,9 @@ public:
 	*/
 	bool valid_keylength(size_t length) const
 	{
-		return ((length >= min_keylen) &&
-				  (length <= max_keylen) &&
-				  (length % keylen_mod == 0));
+		return ((length >= m_min_keylen) &&
+				  (length <= m_max_keylen) &&
+				  (length % m_keylen_mod == 0));
 	}
 
 	/**
@@ -55,7 +55,7 @@ public:
 	*/
 	size_t minimum_keylength() const
 	{
-		return min_keylen;
+		return m_min_keylen;
 	}
 
 	/**
@@ -63,7 +63,7 @@ public:
 	*/
 	size_t maximum_keylength() const
 	{
-		return max_keylen;
+		return m_max_keylen;
 	}
 
 	/**
@@ -71,16 +71,17 @@ public:
 	*/
 	size_t keylength_multiple() const
 	{
-		return keylen_mod;
+		return m_keylen_mod;
 	}
 
 	Key_Length_Specification multiple(size_t n) const
 	{
-		return Key_Length_Specification(n * min_keylen,
-												  n * max_keylen,
-												  n * keylen_mod);
+		return Key_Length_Specification(n * m_min_keylen,
+												  n * m_max_keylen,
+												  n * m_keylen_mod);
 	}
 
 private:
-	size_t min_keylen, max_keylen, keylen_mod;
+
+	size_t m_min_keylen, m_max_keylen, m_keylen_mod;
 };

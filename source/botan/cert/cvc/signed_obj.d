@@ -116,7 +116,7 @@ public:
 		pem.start_msg();
 		encode(pem, PEM);
 		pem.end_msg();
-		return pem.read_all_as_string();
+		return pem.toString();
 	}
 
 	~this() {}

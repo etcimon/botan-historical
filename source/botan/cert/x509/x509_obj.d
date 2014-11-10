@@ -61,7 +61,7 @@ public:
 		
 		if (sig_info.length != 2)
 			throw new Internal_Error("Invalid name format found for " ~
-			                         sig_algo.oid.as_string());
+			                         sig_algo.oid.toString());
 		
 		Vector!string pad_and_hash =
 			parse_algorithm_name(sig_info[1]);
@@ -233,7 +233,7 @@ private:
 			throw new Invalid_Argument("Bad labels argument to X509_Object");
 		
 		PEM_label_pref = PEM_labels_allowed[0];
-		std.algorithm.sort(PEM_labels_allowed.begin(), PEM_labels_allowed.end());
+		std.algorithm.sort(PEM_labels_allowed.ptr, PEM_labels_allowed.end());
 		
 		try {
 			if (asn1_obj.maybe_BER(input) && !pem.matches(input))

@@ -11,7 +11,7 @@ static if (BOTAN_HAS_SELFTESTS):
 
 import botan.algo_factory.algo_factory;
 import botan.algo_base.scan_name;
-import map;
+import botan.utils.hashmap;
 import string;
 import botan.filters.filters;
 import botan.filters.aead_filt;
@@ -220,17 +220,17 @@ HashMap!(string, string)
 			
 			enc.set_key(key);
 			
-			if (enc.valid_iv_length(iv.length()))
+			if (enc.valid_iv_length(iv.length))
 				enc.set_iv(iv);
 			else if (!enc.valid_iv_length(0))
-				throw new Invalid_IV_Length(algo, iv.length());
+				throw new Invalid_IV_Length(algo, iv.length);
 			
 			dec.set_key(key);
 			
-			if (dec.valid_iv_length(iv.length()))
+			if (dec.valid_iv_length(iv.length))
 				dec.set_iv(iv);
 			else if (!dec.valid_iv_length(0))
-				throw new Invalid_IV_Length(algo, iv.length());
+				throw new Invalid_IV_Length(algo, iv.length);
 			
 			const Vector!ubyte ad = hex_decode(vars.get("ad"));
 			
@@ -258,7 +258,7 @@ private:
 void verify_results(in string algo,
                     const ref HashMap!(string, string) results)
 {
-	for (auto i = results.begin(); i != results.end(); ++i)
+	for (auto i = results.ptr; i != results.end(); ++i)
 	{
 		if (i.second != "passed")
 			throw new Self_Test_Failure(algo ~ " self-test failed (" ~ i.second ~ ")" ~
@@ -346,7 +346,7 @@ string test_filter_kat(Filter filter,
 		Pipe pipe = Pipe(new Hex_Decoder, filter, new Hex_Encoder);
 		pipe.process_msg(input);
 		
-		const string got = pipe.read_all_as_string();
+		const string got = pipe.toString();
 		
 		const bool same = (got == expected);
 		

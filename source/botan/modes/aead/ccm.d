@@ -210,7 +210,7 @@ public:
 	{
 		assert(buffer.length >= offset, "Offset is sane");
 		
-		buffer.insert(buffer.begin() + offset, msg_buf().begin(), msg_buf().end());
+		buffer.insert(buffer.ptr + offset, msg_buf().ptr, msg_buf().end());
 		
 		const size_t sz = buffer.length - offset;
 		ubyte* buf = &buffer[offset];
@@ -291,7 +291,7 @@ public:
 	{
 		assert(buffer.length >= offset, "Offset is sane");
 		
-		buffer.insert(buffer.begin() + offset, msg_buf().begin(), msg_buf().end());
+		buffer.insert(buffer.ptr + offset, msg_buf().ptr, msg_buf().end());
 		
 		const size_t sz = buffer.length - offset;
 		ubyte* buf = &buffer[offset];

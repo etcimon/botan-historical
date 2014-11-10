@@ -10,7 +10,7 @@ import botan.alloc.zeroize;
 import botan.tls.tls_magic;
 import botan.utils.types;
 import string;
-import map;
+import botan.utils.hashmap;
 import set;
 
 import botan.tls.tls_reader;
@@ -224,7 +224,7 @@ public:
 	}
 
 	@property bool empty() const { return false; } // always send this
-private:
+m_tag
 	Vector!ubyte reneg_data;
 }
 
@@ -245,7 +245,7 @@ public:
 
 	Vector!ubyte serialize() const
 	{
-		immutable ubyte[size_t] fragment_to_code = [ 512: 1, 1024: 2, 2048: 3, 4096: 4 ];
+		__gshared immutable ubyte[size_t] fragment_to_code = [ 512: 1, 1024: 2, 2048: 3, 4096: 4 ];
 		
 		auto i = fragment_to_code.get(m_max_fragment, 0);
 		
@@ -270,7 +270,7 @@ public:
 	this(ref TLS_Data_Reader reader,
 	     ushort extension_size)
 	{
-		immutable size_t[ubyte] code_to_fragment = [ 1:  512, 2: 1024, 3: 2048, 4: 4096 ];
+		__gshared immutable size_t[ubyte] code_to_fragment = [ 1:  512, 2: 1024, 3: 2048, 4: 4096 ];
 		if (extension_size != 1)
 			throw new Decoding_Error("Bad size for maximum fragment extension");
 		ubyte val = reader.get_byte();

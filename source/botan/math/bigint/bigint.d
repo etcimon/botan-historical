@@ -109,13 +109,13 @@ public:
 		size_t markers = 0;
 		bool negative = false;
 		
-		if (str.length() > 0 && str[0] == '-')
+		if (str.length > 0 && str[0] == '-')
 		{
 			markers += 1;
 			negative = true;
 		}
 		
-		if (str.length() > markers + 2 && str[markers	 ] == '0' &&
+		if (str.length > markers + 2 && str[markers	 ] == '0' &&
 		str[markers + 1] == 'x')
 		{
 			markers += 2;
@@ -123,7 +123,7 @@ public:
 		}
 		
 		this = decode(cast(const ubyte*)(str.data()) + markers,
-		               str.length() - markers, base);
+		               str.length - markers, base);
 		
 		if (negative) set_sign(Negative);
 		else			set_sign(Positive);

@@ -54,7 +54,7 @@ private:
 string bcrypt_base64_encode(in ubyte* input, size_t length)
 {
 	// Bcrypt uses a non-standard base64 alphabet
-	immutable ubyte[256] OPENBSD_BASE64_SUB = [
+	__gshared immutable ubyte[256] OPENBSD_BASE64_SUB = [
 		0x00, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80,
 		0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80,
 		0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80,
@@ -92,7 +92,7 @@ string bcrypt_base64_encode(in ubyte* input, size_t length)
 
 Vector!ubyte bcrypt_base64_decode(string input)
 {
-	immutable ubyte[256] OPENBSD_BASE64_SUB = [
+	__gshared immutable ubyte[256] OPENBSD_BASE64_SUB = [
 		0x00, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80,
 		0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80,
 		0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80,
@@ -127,19 +127,19 @@ string make_bcrypt(in string pass,
                    in Vector!ubyte salt,
                    ushort work_factor)
 {
-	immutable ubyte[24] magic = [
+	__gshared immutable ubyte[24] magic = [
 		0x4F, 0x72, 0x70, 0x68, 0x65, 0x61, 0x6E, 0x42,
 		0x65, 0x68, 0x6F, 0x6C, 0x64, 0x65, 0x72, 0x53,
 		0x63, 0x72, 0x79, 0x44, 0x6F, 0x75, 0x62, 0x74
 	];
 	
-	Vector!ubyte ctext(magic, magic + (magic).sizeof);
+	Vector!ubyte ctext = Vector!ubyte(magic, magic + (magic).sizeof);
 	
 	Blowfish blowfish;
 	
 	// Include the trailing NULL ubyte
 	blowfish.eks_key_schedule(cast(const ubyte*)(pass.toStringz),
-	                          pass.length() + 1,
+	                          pass.length + 1,
 	                          &salt[0],
 	work_factor);
 	
@@ -149,7 +149,7 @@ string make_bcrypt(in string pass,
 	string salt_b64 = bcrypt_base64_encode(&salt[0], salt.length);
 	
 	string work_factor_str = std.conv.to!string(work_factor);
-	if (work_factor_str.length() == 1)
+	if (work_factor_str.length == 1)
 		work_factor_str = "0" ~ work_factor_str;
 	
 	return "$2a$" ~ work_factor_str +

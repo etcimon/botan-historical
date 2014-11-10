@@ -12,7 +12,7 @@ import botan.utils.parsing;
 import botan.codec.base64;
 import fstream;
 import string;
-import map;
+import botan.utils.hashmap;
 import std.stdio;
 
 /**

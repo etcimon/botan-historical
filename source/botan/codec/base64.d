@@ -129,7 +129,7 @@ size_t base64_decode(ubyte* output,
 	* Base64 Decoder Lookup Table
 	* Warning: assumes ASCII encodings
 	*/
-	immutable ubyte[256] BASE64_TO_BIN = [
+	__gshared immutable ubyte[256] BASE64_TO_BIN = [
 		0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0x80,
 		0x80, 0xFF, 0xFF, 0x80, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
 		0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
@@ -260,7 +260,7 @@ size_t base64_decode(ubyte* output,
                      in string input,
                      bool ignore_ws = true)
 {
-	return base64_decode(output, &input[0], input.length(), ignore_ws);
+	return base64_decode(output, &input[0], input.length, ignore_ws);
 }
 
 
@@ -306,7 +306,7 @@ Secure_Vector!ubyte base64_decode(in string input,
 
 package:
 	
-immutable ubyte[64] BIN_TO_BASE64 = [
+__gshared immutable ubyte[64] BIN_TO_BASE64 = [
 	'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M',
 	'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z',
 	'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm',

@@ -70,7 +70,7 @@ public:
 		
 		for (size_t i = 0; i != returned; ++i)
 			buf[i] = m_plaintext[i];
-		m_plaintext.erase(m_plaintext.begin(), m_plaintext.begin() + returned);
+		m_plaintext.erase(m_plaintext.ptr, m_plaintext.ptr + returned);
 
 		assert(returned == 0 && m_channel.is_closed(),
 		                         "Only return zero if channel is closed");

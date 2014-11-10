@@ -68,7 +68,7 @@ Both symmetric keys and initialization values can be considered byte
 
       This constructor copies its input.
 
-   .. cpp:function:: as_string() const
+   .. cpp:function:: toString() const
 
       Returns the hex representation of the key or IV
 

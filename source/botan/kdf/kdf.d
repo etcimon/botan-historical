@@ -88,7 +88,7 @@ public:
 	{
 		return derive_key(key_len, secret, secret_len,
 								cast(const ubyte*)(salt.ptr),
-								salt.length());
+								salt.length);
 	}
 
 	/**

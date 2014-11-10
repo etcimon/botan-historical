@@ -15,7 +15,7 @@ import functional;
 import utility;
 import string;
 import botan.utils.types;
-import map;
+import botan.utils.hashmap;
 
 /**
 * Data Store

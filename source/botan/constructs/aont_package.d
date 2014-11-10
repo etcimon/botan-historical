@@ -74,7 +74,7 @@ void aont_package(RandomNumberGenerator rng,
 	}
 	
 	// XOR the random package key into the final block
-	xor_buf(&final_block[0], package_key.begin(), BLOCK_SIZE);
+	xor_buf(&final_block[0], package_key.ptr, BLOCK_SIZE);
 }
 
 /**

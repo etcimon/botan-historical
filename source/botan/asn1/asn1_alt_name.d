@@ -19,7 +19,7 @@ import botan.utils.charset;
 import botan.utils.parsing;
 import botan.utils.loadstor;
 import botan.utils.types;
-import map;
+import botan.utils.hashmap;
 
 alias Alternative_Name = FreeListRef!Alternative_Name_Impl;
 
@@ -36,12 +36,12 @@ public:
 	{
 		der.start_cons(ASN1_Tag.SEQUENCE);
 		
-		encode_entries(der, alt_info, "RFC822", ASN1_Tag(1));
-		encode_entries(der, alt_info, "DNS", ASN1_Tag(2));
-		encode_entries(der, alt_info, "URI", ASN1_Tag(6));
-		encode_entries(der, alt_info, "IP", ASN1_Tag(7));
+		encode_entries(der, m_alt_info, "RFC822", ASN1_Tag(1));
+		encode_entries(der, m_alt_info, "DNS", ASN1_Tag(2));
+		encode_entries(der, m_alt_info, "URI", ASN1_Tag(6));
+		encode_entries(der, m_alt_info, "IP", ASN1_Tag(7));
 		
-		for (auto i = othernames.begin(); i != othernames.end(); ++i)
+		for (auto i = m_othernames.ptr; i != m_othernames.end(); ++i)
 		{
 			der.start_explicit(0)
 				.encode(i.first)
@@ -120,7 +120,6 @@ public:
 		}
 	}
 
-
 	/*
 	* Return all of the alternative names
 	*/
@@ -128,10 +127,11 @@ public:
 	{
 		MultiMap!(string, string) names;
 		
-		for (auto i = alt_info.begin(); i != alt_info.end(); ++i)
+		for (auto i = m_alt_info.ptr; i != m_alt_info.end(); ++i)
 			names.insert(i);
 		
-		for (auto i = othernames.begin(); i != othernames.end(); ++i)
+		
+		for (auto i = m_othernames.ptr; i != m_othernames.end(); ++i)
 			names.insert(Pair(ids.lookup(i.first), i.second.value()));
 		
 		return names;
@@ -146,12 +146,12 @@ public:
 		if (type == "" || str == "")
 			return;
 		
-		auto range = alt_info.equal_range(type);
+		auto range = m_alt_info.equal_range(type);
 		for (auto j = range.first; j != range.second; ++j)
 			if (j.second == str)
 				return;
 		
-		alt_info.insert(Pair(type, str));
+		m_alt_info.insert(Pair(type, str));
 	}
 	
 	/*
@@ -159,7 +159,7 @@ public:
 	*/
 	MultiMap!(string, string) get_attributes() const
 	{
-		return alt_info;
+		return m_alt_info;
 	}
 
 	/*
@@ -170,7 +170,7 @@ public:
 	{
 		if (value == "")
 			return;
-		othernames.insert(Pair(oid, ASN1_String(value, type)));
+		m_othernames.insert(Pair(oid, ASN1_String(value, type)));
 	}
 
 	/*
@@ -178,7 +178,7 @@ public:
 	*/
 	MultiMap!(OID, ASN1_String) get_othernames() const
 	{
-		return othernames;
+		return m_othernames;
 	}
 
 	/*
@@ -186,7 +186,7 @@ public:
 	*/
 	bool has_items() const
 	{
-		return (alt_info.length > 0 || othernames.length > 0);
+		return (m_alt_info.length > 0 || m_othernames.length > 0);
 	}
 
 	/*
@@ -204,8 +204,8 @@ public:
 	}
 
 private:
-	MultiMap!(string, string) alt_info;
-	MultiMap!(OID, ASN1_String) othernames;
+	MultiMap!(string, string) m_alt_info;
+	MultiMap!(OID, ASN1_String) m_othernames;
 };
 
 

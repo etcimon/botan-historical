@@ -20,6 +20,9 @@ import core.sys.posix.sys.resource;
 struct NoSwapAllocator
 {
 public:
+	static this() {
+
+
 	void[] alloc(size_t n)
 	{
 		if (!m_pool)
@@ -38,7 +41,7 @@ public:
 		
 		auto best_fit = m_freelist.end();
 		
-		for (auto i = m_freelist.begin(); i != m_freelist.end(); ++i)
+		for (auto i = m_freelist.ptr; i != m_freelist.end(); ++i)
 		{
 			// If we have a perfect fit, use it immediately
 			if (i.second == n && (i.first % alignment) == 0)
@@ -120,9 +123,9 @@ public:
 		
 		const size_t start = cast(ubyte*)(p) - m_pool;
 		
-		auto comp = [](Pair!(size_t, size_t) x, Pair!(size_t, size_t) y){ return x.first < y.first; };
+		auto comp = (Pair!(size_t, size_t) x, Pair!(size_t, size_t) y){ return x.first < y.first; };
 		
-		auto i = std::lower_bound(m_freelist.begin(), m_freelist.end(),
+		auto i = std::lower_bound(m_freelist.ptr, m_freelist.end(),
 		                          Pair(start, 0), comp);
 		
 		// try to merge with later block
@@ -134,7 +137,7 @@ public:
 		}
 		
 		// try to merge with previous block
-		if (i != m_freelist.begin())
+		if (i != m_freelist.ptr)
 		{
 			auto prev = std::prev(i);
 			

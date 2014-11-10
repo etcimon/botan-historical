@@ -23,7 +23,7 @@ void zero_mem(void* ptr, size_t n)
 */
 void clear_mem(T)(T* ptr, size_t n)
 {
-	zero_mem(ptr, (T).sizeof*n);
+	ptr[0 .. T.sizeof*n] = 0;
 }
 
 /**

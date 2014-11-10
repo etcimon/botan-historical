@@ -26,7 +26,7 @@ import botan.utils.types;
 import std.algorithm;
 import iterator;
 import sstream;
-import map;
+import botan.utils.hashmap;
 
 alias X509_Certificate = FreeListRef!X509_Certificate_Impl;
 
@@ -618,7 +618,7 @@ X509_DN create_dn(in Data_Store info)
 	
 	X509_DN dn;
 	
-	for (auto i = names.begin(); i != names.end(); ++i)
+	for (auto i = names.ptr; i != names.end(); ++i)
 		dn.add_attribute(i.first, i.second);
 	
 	return dn;
@@ -640,7 +640,7 @@ Alternative_Name create_alt_name(in Data_Store info)
 	
 	Alternative_Name alt_name;
 	
-	for (auto i = names.begin(); i != names.end(); ++i)
+	for (auto i = names.ptr; i != names.end(); ++i)
 		alt_name.add_attribute(i.first, i.second);
 	
 	return alt_name;
@@ -655,7 +655,7 @@ Vector!string lookup_oids(in Vector!string input)
 {
 	Vector!string output;
 	
-	for (auto i = input.begin(); i != input.end(); ++i)
+	for (auto i = input.ptr; i != input.end(); ++i)
 		output.push_back(oids.lookup(OID(*i)));
 	return output;
 }

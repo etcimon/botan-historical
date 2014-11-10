@@ -14,7 +14,7 @@ import botan.utils.memory.noswap;
 
 auto secure_allocator()
 {
-	alias Allocator = AutoFreeListAllocator!(ZeroizeAllocator!(NoSwapAllocator));
+	alias Allocator = AutoFreeListAllocator!(ZeroizeAllocator);
 	static __gshared Allocator alloc;
 	if( !alloc ){
 		alloc = new Allocator;

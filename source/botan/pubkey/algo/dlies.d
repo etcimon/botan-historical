@@ -55,18 +55,18 @@ private:
 		buffer_insert(output, 0, my_key);
 		buffer_insert(output, my_key.length, input, length);
 		
-		Secure_Vector!ubyte vz = Secure_Vector!(my_key.begin(), my_key.end());
+		Secure_Vector!ubyte vz = Secure_Vector!(my_key.ptr, my_key.end());
 		vz += ka.derive_key(0, other_key).bits_of();
 		
 		const size_t K_LENGTH = length + mac_keylen;
 		OctetString K = kdf.derive_key(K_LENGTH, vz);
 		
-		if (K.length() != K_LENGTH)
+		if (K.length != K_LENGTH)
 			throw new Encoding_Error("DLIES: KDF did not provide sufficient output");
 		ubyte* C = &output[my_key.length];
 		
-		xor_buf(C, K.begin() + mac_keylen, length);
-		mac.set_key(K.begin(), mac_keylen);
+		xor_buf(C, K.ptr + mac_keylen, length);
+		mac.set_key(K.ptr, mac_keylen);
 		
 		mac.update(C, length);
 		for (size_t j = 0; j != 8; ++j)
@@ -137,10 +137,10 @@ private:
 		
 		const size_t K_LENGTH = C.length + mac_keylen;
 		OctetString K = kdf.derive_key(K_LENGTH, vz);
-		if (K.length() != K_LENGTH)
+		if (K.length != K_LENGTH)
 			throw new Encoding_Error("DLIES: KDF did not provide sufficient output");
 		
-		mac.set_key(K.begin(), mac_keylen);
+		mac.set_key(K.ptr, mac_keylen);
 		mac.update(C);
 		for (size_t j = 0; j != 8; ++j)
 			mac.update(0);
@@ -148,7 +148,7 @@ private:
 		if (T != T2)
 			throw new Decoding_Error("DLIES: message authentication failed");
 		
-		xor_buf(C, K.begin() + mac_keylen, C.length);
+		xor_buf(C, K.ptr + mac_keylen, C.length);
 		
 		return C;
 	}

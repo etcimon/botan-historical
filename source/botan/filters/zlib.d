@@ -12,7 +12,7 @@ import botan.utils.exceptn;
 
 import std.c.string;
 import std.c.stdio;
-import map;
+import botan.utils.hashmap;
 import etc.c.zlib;
 
 /**

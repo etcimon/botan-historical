@@ -368,7 +368,7 @@ private:
 			
 			if (type_tag == ASN1_Tag.SET)
 			{
-				std.algorithm.sort(set_contents.begin(), set_contents.end());
+				std.algorithm.sort(set_contents.ptr, set_contents.end());
 				for (size_t i = 0; i != set_contents.length; ++i)
 					contents += set_contents[i];
 				set_contents.clear();
@@ -403,7 +403,7 @@ private:
 			class_tag = t2;
 		}
 
-	private:
+	m_tag
 		ASN1_Tag type_tag, class_tag;
 		Secure_Vector!ubyte contents;
 		Vector!(  Secure_Vector!ubyte  ) set_contents;

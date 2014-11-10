@@ -24,11 +24,11 @@ void hex_encode(char* output,
                 size_t input_length,
                 bool uppercase = true)
 {
-	immutable ubyte[16] BIN_TO_HEX_UPPER = [
+	__gshared immutable ubyte[16] BIN_TO_HEX_UPPER = [
 		'0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
 		'A', 'B', 'C', 'D', 'E', 'F' ];
 	
-	immutable ubyte[16] BIN_TO_HEX_LOWER = [
+	__gshared immutable ubyte[16] BIN_TO_HEX_LOWER = [
 		'0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
 		'a', 'b', 'c', 'd', 'e', 'f' ];
 	
@@ -102,7 +102,7 @@ size_t hex_decode(ubyte* output,
 	* Warning: this table assumes ASCII character encodings
 	*/
 	
-	immutable ubyte[256] HEX_TO_BIN = [
+	__gshared immutable ubyte[256] HEX_TO_BIN = [
 		0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0x80,
 		0x80, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
 		0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
@@ -212,7 +212,7 @@ size_t hex_decode(ubyte* output,
                   in string input,
                   bool ignore_ws = true)
 {
-	return hex_decode(output, &input[0], input.length(), ignore_ws);
+	return hex_decode(output, &input[0], input.length, ignore_ws);
 }
 
 /**

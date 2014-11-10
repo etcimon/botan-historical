@@ -48,12 +48,12 @@ public:
 		try
 		{
 			mac.set_key(cast(const ubyte*)(passphrase.data()),
-			            passphrase.length());
+			            passphrase.length);
 		}
 		catch(Invalid_Key_Length)
 		{
 			throw new Exception(name ~ " cannot accept passphrases of length " ~
-			                    std.conv.to!string(passphrase.length()));
+			                    std.conv.to!string(passphrase.length));
 		}
 		
 		Secure_Vector!ubyte key = Secure_Vector!ubyte(key_len);

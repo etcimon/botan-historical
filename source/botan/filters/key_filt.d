@@ -27,8 +27,8 @@ public:
 	*/
 	void set_iv(in InitializationVector iv)
 	{
-		if (iv.length() != 0)
-			throw new Invalid_IV_Length(name(), iv.length());
+		if (iv.length != 0)
+			throw new Invalid_IV_Length(name(), iv.length);
 	}
 
 	/**

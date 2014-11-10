@@ -86,7 +86,7 @@ public:
 			if (fds.empty)
 				break;
 			
-			const int max_fd = *std.algorithm.max_element(fds.begin(), fds.end());
+			const int max_fd = *std.algorithm.max_element(fds.ptr, fds.end());
 			
 			timeval timeout;
 			timeout.tv_sec = (MS_WAIT_TIME / 1000);
@@ -264,7 +264,7 @@ private:
 			std.algorithm.swap(m_fd, other.m_fd);
 			std.algorithm.swap(m_pid, other.m_pid);
 		}
-	private:
+	m_tag
 		int m_fd = -1;
 		pid_t m_pid = -1;
 	};

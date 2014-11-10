@@ -23,7 +23,7 @@ import botan.internal.stl_util;
 import botan.utils.loadstor;
 import botan.utils.types;
 import string;
-import map;
+import botan.utils.hashmap;
 
 /**
 * Generic interface for TLS endpoint

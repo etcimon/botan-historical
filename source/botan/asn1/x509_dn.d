@@ -17,7 +17,7 @@ import botan.utils.types;
 import botan.internal.stl_util;
 import botan.asn1.oid_lookup.oids;
 import ostream;
-import map;
+import botan.utils.hashmap;
 import iosfwd;
 
 alias X509_DN = FreeListRef!X509_DN_Impl;
@@ -94,7 +94,7 @@ public:
 	MultiMap!(OID, string) get_attributes() const
 	{
 		MultiMap!(OID, string) retval;
-		for (auto i = dn_info.begin(); i != dn_info.end(); ++i)
+		for (auto i = dn_info.ptr; i != dn_info.end(); ++i)
 			retval.insert(Pair(i.first, i.second.value()));
 		return retval;
 	}
@@ -120,7 +120,7 @@ public:
 	MultiMap!(string, string) contents() const
 	{
 		MultiMap!(string, string) retval;
-		for (auto i = dn_info.begin(); i != dn_info.end(); ++i)
+		for (auto i = dn_info.ptr; i != dn_info.end(); ++i)
 			retval.insert(Pair(oids.lookup(i.first), i.second.value()));
 		return retval;
 	}
@@ -190,7 +190,7 @@ public:
 	*/
 	this(in MultiMap!(OID, string) args)
 	{
-		for (auto i = args.begin(); i != args.end(); ++i)
+		for (auto i = args.ptr; i != args.end(); ++i)
 			add_attribute(i.first, i.second);
 	}
 	
@@ -199,7 +199,7 @@ public:
 	*/
 	this(in MultiMap!(string, string) args)
 	{
-		for (auto i = args.begin(); i != args.end(); ++i)
+		for (auto i = args.ptr; i != args.end(); ++i)
 			add_attribute(oids.lookup(i.first), i.second);
 	}
 
@@ -213,8 +213,8 @@ public:
 		
 		if (attr1.length != attr2.length) return false;
 		
-		auto p1 = attr1.begin();
-		auto p2 = attr2.begin();
+		auto p1 = attr1.ptr;
+		auto p2 = attr2.ptr;
 		
 		while(true)
 		{
@@ -252,7 +252,7 @@ public:
 		if (attr1.length < attr2.length) return true;
 		if (attr1.length > attr2.length) return false;
 		
-		for (auto p1 = attr1.begin(); p1 != attr1.end(); ++p1)
+		for (auto p1 = attr1.ptr; p1 != attr1.end(); ++p1)
 		{
 			auto p2 = attr2.find(p1.first);
 			if (p2 == attr2.end())		 return false;

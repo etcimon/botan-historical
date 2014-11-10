@@ -36,6 +36,6 @@ else static if (BOTAN_MP_WORD_BITS == 64) {
 	static assert(false, "BOTAN_MP_WORD_BITS must be 8, 16, 32, or 64");
 
 
-immutable word MP_WORD_MASK = ~cast(word)(0);
-immutable word MP_WORD_TOP_BIT = cast(word)(1) << (8*(word).sizeof - 1);
-immutable word MP_WORD_MAX = MP_WORD_MASK;
+__gshared immutable word MP_WORD_MASK = ~cast(word)(0);
+__gshared immutable word MP_WORD_TOP_BIT = cast(word)(1) << (8*(word).sizeof - 1);
+__gshared immutable word MP_WORD_MAX = MP_WORD_MASK;

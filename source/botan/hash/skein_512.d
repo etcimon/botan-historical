@@ -183,12 +183,12 @@ private:
 			  algorithm specification. Could be fixed relatively easily, but
 			  doesn't seem worth the trouble.
 			*/
-			if (personalization.length() > 64)
+			if (personalization.length > 64)
 				throw new Invalid_Argument("Skein personalization must be less than 64 bytes");
 			
 			const ubyte* bits = cast(const ubyte*)(personalization.data());
 			reset_tweak(type_code.SKEIN_PERSONALIZATION, true);
-			ubi_512(bits, personalization.length());
+			ubi_512(bits, personalization.length);
 		}
 		
 		reset_tweak(type_code.SKEIN_MSG, false);

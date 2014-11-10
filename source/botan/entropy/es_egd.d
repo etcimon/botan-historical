@@ -141,7 +141,7 @@ private:
 			return 0;
 		}
 
-	private:
+	m_tag
 		/**
 		* Attempt a connection to an EGD/PRNGD socket
 		*/
@@ -155,7 +155,7 @@ private:
 				memset(&addr, 0, (addr).sizeof);
 				addr.sun_family = PF_LOCAL;
 				
-				if (sizeof(addr.sun_path) < path.length() + 1)
+				if (sizeof(addr.sun_path) < path.length + 1)
 					throw new Invalid_Argument("EGD socket path is too long");
 				
 				strncpy(addr.sun_path, path.toStringz, sizeof(addr.sun_path));

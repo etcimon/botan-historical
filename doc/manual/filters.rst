@@ -22,8 +22,8 @@ Here is an example that uses a pipe to base64 encode some strings::
   // process_msg(x) is start_msg() && write(x) && end_msg()
   pipe.process_msg("message2");
 
-  std::string m1 = pipe.read_all_as_string(0); // "message1"
-  std::string m2 = pipe.read_all_as_string(1); // "message2"
+  std::string m1 = pipe.toString(0); // "message1"
+  std::string m2 = pipe.toString(1); // "message2"
 
 Bytestreams in the pipe are grouped into messages; blocks of data that
 are processed in an identical fashion (ie, with the same sequence of
@@ -215,7 +215,7 @@ a case where that is useful::
       );
 
    pipe.process_msg(ciphertext);
-   std::string plaintext = pipe.read_all_as_string(0);
+   std::string plaintext = pipe.toString(0);
    Secure_Vector<byte> mac = pipe.read_all(1);
 
    if(mac != auth_code)
@@ -433,7 +433,7 @@ Functions in ``Pipe`` related to reading include:
 
   Reads the entire message into a buffer and returns it
 
-.. cpp:function:: std::string Pipe::read_all_as_string()
+.. cpp:function:: std::string Pipe::toString()
 
   Like ``read_all``, but it returns the data as a ``std::string``.
   No encoding is done; if the message contains raw binary, so will

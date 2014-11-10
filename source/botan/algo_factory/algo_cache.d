@@ -10,7 +10,7 @@ import botan.utils.types;
 import botan.internal.stl_util;
 import string;
 import botan.utils.types;
-import map;
+import botan.utils.hashmap;
 /**
 * @param prov_name a provider name
 * @return weight for this provider
@@ -32,7 +32,7 @@ public:
 	const T get(in string algo_spec, in string requested_provider)
 	{
 		auto algo = find_algorithm(algo_spec);
-		if (algo == algorithms.end()) // algo not found at all (no providers)
+		if (algo == m_algorithms.end()) // algo not found at all (no providers)
 			return null;
 		
 		// If a provider is requested specifically, return it or fail entirely
@@ -48,9 +48,9 @@ public:
 		string prototype_provider;
 		size_t prototype_prov_weight = 0;
 		
-		const string pref_provider = pref_providers.get(algo_spec);
+		const string pref_provider = m_pref_providers.get(algo_spec);
 		
-		for (auto i = algo.second.begin(); i != algo.second.end(); ++i)
+		for (auto i = algo.second.ptr; i != algo.second.end(); ++i)
 		{
 			// preferred prov exists, return immediately
 			if (i.first == pref_provider)
@@ -83,13 +83,13 @@ public:
 			return;
 				
 		if (algo.name != requested_name &&
-		    aliases.find(requested_name) == aliases.end())
+		    m_aliases.find(requested_name) == m_aliases.end())
 		{
-			aliases[requested_name] = algo.name;
+			m_aliases[requested_name] = algo.name;
 		}
 		
-		if (!algorithms[algo.name][provider])
-			algorithms[algo.name][provider] = algo;
+		if (!m_algorithms[algo.name][provider])
+			m_algorithms[algo.name][provider] = algo;
 		//else
 		//	delete algo;
 		// todo: Manual Memory Management
@@ -104,7 +104,7 @@ public:
 	void set_preferred_provider(in string algo_spec,
 	                            in string provider)
 	{		
-		pref_providers[algo_spec] = provider;
+		m_pref_providers[algo_spec] = provider;
 	}
 
 	/**
@@ -118,9 +118,9 @@ public:
 		
 		Vector!string providers;
 
-		if (algo != algorithms.end())
+		if (algo != m_algorithms.end())
 		{
-			auto provider = algo.second.begin();
+			auto provider = algo.second.ptr;
 			
 			while(provider != algo.second.end())
 			{
@@ -137,11 +137,11 @@ public:
 	*/
 	void clear_cache()
 	{
-		auto algo = algorithms.begin();
+		auto algo = m_algorithms.ptr;
 		
-		while(algo != algorithms.end())
+		while(algo != m_algorithms.end())
 		{
-			auto provider = algo.second.begin();
+			auto provider = algo.second.ptr;
 			
 			while(provider != algo.second.end())
 			{
@@ -153,7 +153,7 @@ public:
 			++algo;
 		}
 		
-		algorithms.clear();
+		m_algorithms.clear();
 	}
 
 	~this() { clear_cache(); }
@@ -165,20 +165,20 @@ private:
 	*/
 	auto find_algorithm(in string algo_spec)
 	{
-		auto algo = algorithms.find(algo_spec);
+		auto algo = m_algorithms.find(algo_spec);
 		
 		// Not found? Check if a known alias
-		if (algo == algorithms.end())
+		if (algo == m_algorithms.end())
 		{
-			auto _alias = aliases.find(algo_spec);
+			auto _alias = m_aliases.find(algo_spec);
 
-			if (_alias != aliases.end())
-				algo = algorithms.find(_alias.second);
+			if (_alias != m_aliases.end())
+				algo = m_algorithms.find(_alias.second);
 		}
 		
 		return algo;
 	}
-	HashMap!(string, string) aliases;
-	HashMap!(string, string) pref_providers;
-	HashMap!(string, HashMap!(string, T)) algorithms;
+	HashMap!(string, string) m_aliases;
+	HashMap!(string, string) m_pref_providers;
+	HashMap!(string, HashMap!(string, T)) m_algorithms;
 }

@@ -14,7 +14,7 @@ import botan.codec.hex;
 import std.datetime;
 import core.sync.mutex;
 import std.datetime;
-import map;
+import botan.utils.hashmap;
 
 /**
 * Session_Manager is an interface to systems which can save
@@ -164,7 +164,7 @@ public:
 			timestamp, so this actually removes the oldest sessions first.
 			*/
 			while(m_sessions.length >= m_max_sessions)
-				m_sessions.erase(m_sessions.begin());
+				m_sessions.erase(m_sessions.ptr);
 		}
 		
 		const string session_id_str = hex_encode(session.session_id());

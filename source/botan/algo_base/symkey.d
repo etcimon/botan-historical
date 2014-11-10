@@ -21,31 +21,31 @@ struct OctetString
 {
 public:
 	/**
-		* @return size of this octet string in bytes
-		*/
-	size_t length() const { return bits.length; }
+	* @return size of this octet string in bytes
+	*/
+	size_t length() const { return m_bits.length; }
 	
 	/**
-		* @return this object as a Secure_Vector!ubyte
-		*/
-	Secure_Vector!ubyte bits_of() const { return bits; }
+	* @return this object as a Secure_Vector!ubyte
+	*/
+	Secure_Vector!ubyte bits_of() const { return m_bits; }
 	
 	/**
-		* @return start of this string
-		*/
-	const ubyte* begin() const { return &bits[0]; }
+	* @return start of this string
+	*/
+	const ubyte* begin() const { return &m_bits[0]; }
 	
 	/**
-		* @return end of this string
-		*/
-	const ubyte* end() const{ return begin() + bits.length; }
+	* @return end of this string
+	*/
+	const ubyte* end() const{ return begin() + m_bits.length; }
 	
 	/**
-		* @return this encoded as hex
-		*/
-	string as_string() const
+	* @return this encoded as hex
+	*/
+	string toString() const
 	{
-		return hex_encode(&bits[0], bits.length);
+		return hex_encode(&m_bits[0], m_bits.length);
 	}
 		
 	/**
@@ -56,8 +56,8 @@ public:
 	void opOpAssign(string op)(const ref OctetString k)
 		if (op == "^=")
 	{
-		if (&k == this) { zeroise(bits); return; }
-		xor_buf(&bits[0], k.begin(), std.algorithm.min(length(), k.length()));
+		if (&k == this) { zeroise(m_bits); return; }
+		xor_buf(&m_bits[0], k.ptr, std.algorithm.min(length(), k.length));
 		return;
 	}
 	
@@ -66,7 +66,7 @@ public:
 		*/
 	void set_odd_parity()
 	{
-		immutable ubyte[256] ODD_PARITY = {
+		__gshared immutable ubyte[256] ODD_PARITY = [
 			0x01, 0x01, 0x02, 0x02, 0x04, 0x04, 0x07, 0x07, 0x08, 0x08, 0x0B, 0x0B,
 				0x0D, 0x0D, 0x0E, 0x0E, 0x10, 0x10, 0x13, 0x13, 0x15, 0x15, 0x16, 0x16,
 				0x19, 0x19, 0x1A, 0x1A, 0x1C, 0x1C, 0x1F, 0x1F, 0x20, 0x20, 0x23, 0x23,
@@ -88,10 +88,10 @@ public:
 				0xD9, 0xD9, 0xDA, 0xDA, 0xDC, 0xDC, 0xDF, 0xDF, 0xE0, 0xE0, 0xE3, 0xE3,
 				0xE5, 0xE5, 0xE6, 0xE6, 0xE9, 0xE9, 0xEA, 0xEA, 0xEC, 0xEC, 0xEF, 0xEF,
 				0xF1, 0xF1, 0xF2, 0xF2, 0xF4, 0xF4, 0xF7, 0xF7, 0xF8, 0xF8, 0xFB, 0xFB,
-			0xFD, 0xFD, 0xFE, 0xFE };
+			0xFD, 0xFD, 0xFE, 0xFE ];
 		
-		foreach (j; 0 .. bits.length)
-			bits[j] = ODD_PARITY[bits[j]];
+		foreach (j; 0 .. m_bits.length)
+			m_bits[j] = ODD_PARITY[m_bits[j]];
 	}
 	
 	/**
@@ -100,8 +100,8 @@ public:
 		*/
 	this(in string hex_string)
 	{
-		bits.resize(1 + hex_string.length() / 2);
-		bits.resize(hex_decode(&bits[0], hex_string));
+		m_bits.resize(1 + hex_string.length / 2);
+		m_bits.resize(hex_decode(&m_bits[0], hex_string));
 	}
 
 	/**
@@ -111,7 +111,7 @@ public:
 		*/
 	this(RandomNumberGenerator rng, size_t length)
 	{
-		bits = rng.random_vec(length);
+		m_bits = rng.random_vec(length);
 	}
 	
 	/**
@@ -121,7 +121,7 @@ public:
 		*/
 	this(in ubyte* input, size_t len)
 	{
-		bits.assign(input, len);
+		m_bits.assign(input, len);
 	}
 	
 	/**
@@ -181,15 +181,15 @@ public:
 	*/
 	OctetString opBinary(op)(const ref OctetString other)
 	if (op == "^") {
-		Secure_Vector!ubyte ret = Secure_Vector!ubyte(std.algorithm.max(length(), other.length()));
+		Secure_Vector!ubyte ret = Secure_Vector!ubyte(std.algorithm.max(length(), other.length));
 		
-		copy_mem(&ret[0], k1.begin(), k1.length());
-		xor_buf(&ret[0], k2.begin(), k2.length());
+		copy_mem(&ret[0], k1.ptr, k1.length);
+		xor_buf(&ret[0], k2.ptr, k2.length);
 		return OctetString(ret);
 	}
 
 private:
-	Secure_Vector!ubyte bits;
+	Secure_Vector!ubyte m_bits;
 }
 
 /**

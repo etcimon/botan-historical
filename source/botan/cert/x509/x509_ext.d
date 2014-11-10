@@ -115,7 +115,7 @@ public:
 			
 			if (!ext && critical && m_throw_on_unknown_critical)
 				throw new Decoding_Error("Encountered unknown X.509 extension marked "
-				                         "as critical; OID = " ~ oid.as_string());
+				                         "as critical; OID = " ~ oid.toString());
 			
 			if (ext)
 			{
@@ -126,7 +126,7 @@ public:
 				catch(Exception e)
 				{
 					throw new Decoding_Error("Exception while decoding extension " ~
-					                         oid.as_string() ~ ": " ~ e.what());
+					                         oid.toString() ~ ": " ~ e.what());
 				}
 				
 				extensions.push_back(Pair(ext, critical));
@@ -205,7 +205,7 @@ private:
 	bool m_throw_on_unknown_critical;
 };
 
-immutable size_t NO_CERT_PATH_LIMIT = 0xFFFFFFF0;
+__gshared immutable size_t NO_CERT_PATH_LIMIT = 0xFFFFFFF0;
 
 /**
 * Basic Constraints Extension
@@ -595,7 +595,7 @@ private:
 	void contents_to(ref Data_Store subject, ref Data_Store) const
 	{
 		for (size_t i = 0; i != oids.length; ++i)
-			subject.add("X509v3.ExtendedKeyUsage", oids[i].as_string());
+			subject.add("X509v3.ExtendedKeyUsage", oids[i].toString());
 	}
 
 	Vector!OID oids;
@@ -655,7 +655,7 @@ private:
 	void contents_to(ref Data_Store info, ref Data_Store) const
 	{
 		for (size_t i = 0; i != oids.length; ++i)
-			info.add("X509v3.CertificatePolicies", oids[i].as_string());
+			info.add("X509v3.CertificatePolicies", oids[i].toString());
 	}
 
 	Vector!OID oids;
@@ -863,7 +863,7 @@ public:
 
 
 		const Alternative_Name point() const { return m_point; }
-	private:
+	m_tag
 		Alternative_Name m_point;
 	};
 

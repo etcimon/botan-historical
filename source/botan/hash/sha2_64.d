@@ -119,7 +119,7 @@ private:
 	Secure_Vector!ulong digest;
 };
 
-private:
+m_tag
 pure:
 
 /*

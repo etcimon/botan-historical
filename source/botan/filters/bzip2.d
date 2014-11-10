@@ -9,7 +9,7 @@ module botan.filters.bzip2;
 import botan.filters.filter;
 import botan.utils.exceptn;
 
-import map;
+import botan.utils.hashmap;
 import std.c.string;
 import std.c.stdlib;
 

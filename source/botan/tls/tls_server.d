@@ -177,7 +177,7 @@ private:
 			try
 			{
 				have_session_ticket_key =
-					m_creds.psk("tls-server", "session-ticket", "").length() > 0;
+					m_creds.psk("tls-server", "session-ticket", "").length > 0;
 			}
 			catch {}
 
@@ -360,7 +360,7 @@ private:
 				{
 					auto subjects = store.all_subjects();
 					client_auth_CAs.insert(client_auth_CAs.end(),
-					                       subjects.begin(),
+					                       subjects.ptr,
 					                       subjects.end());
 				}
 				

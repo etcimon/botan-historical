@@ -168,7 +168,7 @@ Keyed_Filter get_cipher(in string algo_spec,
 	Keyed_Filter cipher = get_cipher(algo_spec, direction);
 	cipher.set_key(key);
 	
-	if (iv.length())
+	if (iv.length)
 		cipher.set_iv(iv);
 	
 	return cipher;
@@ -208,17 +208,10 @@ Keyed_Filter get_cipher(in string algo_spec,
                         Cipher_Dir direction)
 {
 	Algorithm_Factory af = global_state().algorithm_factory();
-	
-	Algorithm_Factory.Engine_Iterator i(af);
 
-	Engine engine = i.next();
-
-	while(engine)
-	{
+	foreach (Engine engine; af.engines) {
 		if (Keyed_Filter algo = engine.get_cipher(algo_spec, direction, af))
 			return algo;
-
-		engine = i.next();
 	}
 	
 	throw new Algorithm_Not_Found(algo_spec);

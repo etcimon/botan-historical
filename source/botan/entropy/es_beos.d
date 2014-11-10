@@ -14,7 +14,7 @@ static if (BOTAN_HAS_ENTROPY_SRC_BEOS):
 */
 final class BeOS_EntropySource : EntropySource
 {
-	private:
+	m_tag
 		@property string name() const { return "BeOS Statistics"; }
 
 	/**

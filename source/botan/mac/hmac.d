@@ -93,8 +93,8 @@ private:
 		m_ikey.resize(m_hash.hash_block_size);
 		m_okey.resize(m_hash.hash_block_size);
 		
-		std.algorithm.fill(m_ikey.begin(), m_ikey.end(), 0x36);
-		std.algorithm.fill(m_okey.begin(), m_okey.end(), 0x5C);
+		std.algorithm.fill(m_ikey.ptr, m_ikey.end(), 0x36);
+		std.algorithm.fill(m_okey.ptr, m_okey.end(), 0x5C);
 		
 		if (length > m_hash.hash_block_size)
 		{

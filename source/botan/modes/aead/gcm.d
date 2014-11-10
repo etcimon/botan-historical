@@ -7,6 +7,7 @@
 module botan.modes.aead.gcm;
 
 import botan.constants;
+
 static if (BOTAN_HAS_AEAD_GCM):
 
 import botan.modes.aead.aead;
@@ -120,7 +121,7 @@ protected:
 			throw new Invalid_Argument(name ~ ": Bad tag size " ~ std.conv.to!string(m_tag_size));
 	}
 
-	immutable size_t BS = 16;
+	__gshared immutable size_t BS = 16;
 
 	const size_t m_tag_size;
 	const string m_cipher_name;
@@ -387,7 +388,7 @@ void gcm_multiply_clmul(ubyte[16]* x, in ubyte[16]* H) pure
 	/*
 	* Algorithms 1 and 5 from Intel's CLMUL guide
 	*/
-	immutable(__m128i) BSWAP_MASK = _mm_set_epi8!([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15])();
+	__gshared immutable(__m128i) BSWAP_MASK = _mm_set_epi8!([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15])();
 	
 	__m128i a = _mm_loadu_si128(cast(const(__m128i)*)(x[0]));
 	__m128i b = _mm_loadu_si128(cast(const(__m128i)*)(H[0]));

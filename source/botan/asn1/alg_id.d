@@ -53,7 +53,7 @@ public:
 	* Create an Algorithm_Identifier
 	*/
 	this(in OID, Encoding_Option) {
-		immutable ubyte[2] DER_NULL = [ 0x05, 0x00 ];
+		__gshared immutable ubyte[2] DER_NULL = [ 0x05, 0x00 ];
 		
 		oid = alg_id;
 		
@@ -65,7 +65,7 @@ public:
 	* Create an Algorithm_Identifier
 	*/
 	this(in string, Encoding_Option) {
-		immutable ubyte[2] DER_NULL = [ 0x05, 0x00 ];
+		__gshared immutable ubyte[2] DER_NULL = [ 0x05, 0x00 ];
 		
 		oid = oids.lookup(alg_id);
 		

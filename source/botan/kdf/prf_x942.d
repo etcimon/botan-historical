@@ -77,7 +77,7 @@ public:
 	this(in string oid)
 	{
 		if (oids.have_oid(oid))
-			key_wrap_oid = oids.lookup(oid).as_string();
+			key_wrap_oid = oids.lookup(oid).toString();
 		else
 			key_wrap_oid = oid;
 	}

@@ -25,7 +25,7 @@ string encode(in ubyte* der, size_t length, in string label,
 	
 	Pipe pipe = Pipe(new Base64_Encoder(true, width));
 	pipe.process_msg(der, length);
-	return (PEM_HEADER + pipe.read_all_as_string() + PEM_TRAILER);
+	return (PEM_HEADER + pipe.toString() + PEM_TRAILER);
 }
 
 /**
@@ -64,7 +64,7 @@ Secure_Vector!ubyte decode(DataSource source, ref string label)
 	const string PEM_HEADER2 = "-----";
 	size_t position = 0;
 	
-	while(position != PEM_HEADER1.length())
+	while(position != PEM_HEADER1.length)
 	{
 		ubyte b;
 		if (!source.read_byte(b))
@@ -77,7 +77,7 @@ Secure_Vector!ubyte decode(DataSource source, ref string label)
 			position = 0;
 	}
 	position = 0;
-	while(position != PEM_HEADER2.length())
+	while(position != PEM_HEADER2.length)
 	{
 		ubyte b;
 		if (!source.read_byte(b))
@@ -96,7 +96,7 @@ Secure_Vector!ubyte decode(DataSource source, ref string label)
 	
 	const string PEM_TRAILER = "-----END " ~ label ~ "-----";
 	position = 0;
-	while(position != PEM_TRAILER.length())
+	while(position != PEM_TRAILER.length)
 	{
 		ubyte b;
 		if (!source.read_byte(b))
@@ -163,7 +163,7 @@ bool matches(DataSource source, in string extra = "",
 	Secure_Vector!ubyte search_buf(search_range);
 	size_t got = source.peek(&search_buf[0], search_buf.length, 0);
 	
-	if (got < PEM_HEADER.length())
+	if (got < PEM_HEADER.length)
 		return false;
 	
 	size_t index = 0;

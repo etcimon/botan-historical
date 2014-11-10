@@ -49,7 +49,7 @@ public:
 	void add_engine(Engine engine)
 	{
 		clear_caches();
-		engines.push_back(engine);
+		m_engines.push_back(engine);
 	}
 	
 	/**
@@ -57,11 +57,11 @@ public:
 	*/
 	void clear_caches()
 	{
-		block_cipher_cache.clear_cache();
-		stream_cipher_cache.clear_cache();
-		hash_cache.clear_cache();
-		mac_cache.clear_cache();
-		pbkdf_cache.clear_cache();
+		m_block_cipher_cache.clear_cache();
+		m_stream_cipher_cache.clear_cache();
+		m_hash_cache.clear_cache();
+		m_mac_cache.clear_cache();
+		m_pbkdf_cache.clear_cache();
 	}
 	
 	/**
@@ -78,15 +78,15 @@ public:
 		*/
 		
 		if (prototype_block_cipher(algo_spec))
-			return block_cipher_cache.providers_of(algo_spec);
+			return m_block_cipher_cache.providers_of(algo_spec);
 		else if (prototype_stream_cipher(algo_spec))
-			return stream_cipher_cache.providers_of(algo_spec);
+			return m_stream_cipher_cache.providers_of(algo_spec);
 		else if (prototype_hash_function(algo_spec))
-			return hash_cache.providers_of(algo_spec);
+			return m_hash_cache.providers_of(algo_spec);
 		else if (prototype_mac(algo_spec))
-			return mac_cache.providers_of(algo_spec);
+			return m_mac_cache.providers_of(algo_spec);
 		else if (prototype_pbkdf(algo_spec))
-			return pbkdf_cache.providers_of(algo_spec);
+			return m_pbkdf_cache.providers_of(algo_spec);
 		else
 			return Vector!string();
 	}
@@ -101,15 +101,15 @@ public:
 	                            in string provider)
 	{
 		if (prototype_block_cipher(algo_spec))
-			block_cipher_cache.set_preferred_provider(algo_spec, provider);
+			m_block_cipher_cache.set_preferred_provider(algo_spec, provider);
 		else if (prototype_stream_cipher(algo_spec))
-			stream_cipher_cache.set_preferred_provider(algo_spec, provider);
+			m_stream_cipher_cache.set_preferred_provider(algo_spec, provider);
 		else if (prototype_hash_function(algo_spec))
-			hash_cache.set_preferred_provider(algo_spec, provider);
+			m_hash_cache.set_preferred_provider(algo_spec, provider);
 		else if (prototype_mac(algo_spec))
-			mac_cache.set_preferred_provider(algo_spec, provider);
+			m_mac_cache.set_preferred_provider(algo_spec, provider);
 		else if (prototype_pbkdf(algo_spec))
-			pbkdf_cache.set_preferred_provider(algo_spec, provider);
+			m_pbkdf_cache.set_preferred_provider(algo_spec, provider);
 	}
 	
 	/**
@@ -123,7 +123,7 @@ public:
 		                       in string provider)
 	{
 		return factory_prototype!BlockCipher(algo_spec, provider, engines,
-		                                     this, *block_cipher_cache);
+		                                     this, m_block_cipher_cache);
 	}
 	
 	/**
@@ -148,7 +148,7 @@ public:
 	void add_block_cipher(BlockCipher block_cipher,
 	                      in string provider)
 	{
-		block_cipher_cache.add(block_cipher, block_cipher.name, provider);
+		m_block_cipher_cache.add(block_cipher, block_cipher.name, provider);
 	}
 	
 	/**
@@ -162,7 +162,7 @@ public:
 		                        in string provider)
 	{
 		return factory_prototype!StreamCipher(algo_spec, provider, engines,
-		                                      this, *stream_cipher_cache);
+		                                      this, m_stream_cipher_cache);
 	}
 
 	
@@ -189,7 +189,7 @@ public:
 	void add_stream_cipher(StreamCipher stream_cipher,
 	                       in string provider)
 	{
-		stream_cipher_cache.add(stream_cipher, stream_cipher.name, provider);
+		m_stream_cipher_cache.add(stream_cipher, stream_cipher.name, provider);
 	}
 	
 	/**
@@ -203,7 +203,7 @@ public:
 		                        in string provider)
 	{
 		return factory_prototype!HashFunction(algo_spec, provider, engines,
-		                                      this, *hash_cache);
+		                                      this, m_hash_cache);
 	}
 
 	
@@ -229,7 +229,7 @@ public:
 	void add_hash_function(HashFunction hash,
 	                       in string provider)
 	{
-		hash_cache.add(hash, hash.name, provider);
+		m_hash_cache.add(hash, hash.name, provider);
 	}
 	
 	/**
@@ -244,7 +244,7 @@ public:
 	{
 		return factory_prototype!MessageAuthenticationCode(algo_spec, provider,
 		                                                   engines,
-		                                                   this, *mac_cache);
+		                                                   this, m_mac_cache);
 	}
 	
 	/**
@@ -269,7 +269,7 @@ public:
 	void add_mac(MessageAuthenticationCode mac,
 	             in string provider)
 	{
-		mac_cache.add(mac, mac.name, provider);
+		m_mac_cache.add(mac, mac.name, provider);
 	}
 
 	
@@ -284,7 +284,7 @@ public:
 	{
 		return factory_prototype!PBKDF(algo_spec, provider,
 		                               engines,
-		                               this, *pbkdf_cache);
+		                               this, m_pbkdf_cache);
 	}
 
 	
@@ -310,47 +310,30 @@ public:
 	void add_pbkdf(PBKDF pbkdf,
 	               in string provider)
 	{
-		pbkdf_cache.add(pbkdf, pbkdf.name, provider);
+		m_pbkdf_cache.add(pbkdf, pbkdf.name, provider);
 	}
 
 	
-	/**
-	* An iterator for the engines in this factory
-	* @deprecated Avoid in new code
-	*/
-	class Engine_Iterator
-	{
-	public:
-		/**
-		* @return next engine in the sequence
-		*/
-		Engine next() { return af.get_engine_n(n++); }
-		
-		/**
-		* @param a an algorithm factory
-		*/
-		this(Algorithm_Factory a) { af = a; n = 0; }
-	private:
-		const Algorithm_Factory af;
-		size_t n;
+	@property Vector!Engine engines() {
+		return m_engines;
 	}
 
 private:
 	Engine get_engine_n(size_t n) const
 	{
 		// Get an engine out of the list
-		if (n >= engines.length)
+		if (n >= m_engines.length)
 			return null;
-		return engines[n];
+		return m_engines[n];
 	}
 	
-	Vector!Engine engines;
+	Vector!Engine m_engines;
 	
-	Algorithm_Cache!BlockCipher block_cipher_cache;
-	Algorithm_Cache!StreamCipher stream_cipher_cache;
-	Algorithm_Cache!HashFunction hash_cache;
-	Algorithm_Cache!MessageAuthenticationCode mac_cache;
-	Algorithm_Cache!PBKDF pbkdf_cache;
+	Algorithm_Cache!BlockCipher m_block_cipher_cache;
+	Algorithm_Cache!StreamCipher m_stream_cipher_cache;
+	Algorithm_Cache!HashFunction m_hash_cache;
+	Algorithm_Cache!MessageAuthenticationCode m_mac_cache;
+	Algorithm_Cache!PBKDF m_pbkdf_cache;
 };
 
 private:

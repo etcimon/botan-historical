@@ -9,11 +9,12 @@ module botan.utils.types;
 import botan.build;
 import cstddef;
 public import botan.utils.memory;
+public import botan.utils.vector;
 public import std.typecons : scoped;
 
 alias Scoped(T) = typeof(scoped!T());
 
-immutable size_t DEFAULT_BUFFERSIZE = 4096;
+__gshared immutable size_t DEFAULT_BUFFERSIZE = 4096;
 
 /**
 * The two possible directions for cipher filters, determining whether they
@@ -22,6 +23,24 @@ immutable size_t DEFAULT_BUFFERSIZE = 4096;
 typedef Cipher_Dir = bool;
 enum : Cipher_Dir { ENCRYPTION, DECRYPTION };
 
+struct Pair(T, U) {
+	import std.typecons : Tuple;
+	private Tuple!(T,U) m_obj;
+
+	@property T first() {
+		return m_obj[0];
+	}
+
+	@property U second() {
+		return m_obj[1];
+	}
+
+	this(T a, U b) {
+		m_obj = Tuple!(T,U)(a,b);
+	}
+
+	alias m_obj this;
+}
 
 struct Unique(T)
 {

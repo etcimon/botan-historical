@@ -158,7 +158,7 @@ protected:
 	Secure_Vector!uint W;
 };
 
-private:
+m_tag
 pure:
 /*
 * SHA-160 F1 Function

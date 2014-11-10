@@ -131,7 +131,7 @@ struct Vector(T, ALLOCATOR)
 		}
 		
 		// Insert one item
-		size_t insertBack(Stuff)(Stuff stuff)
+		size_t push_back(Stuff)(Stuff stuff)
 			if (isImplicitlyConvertible!(Stuff, T))
 		{
 			if (_capacity == length)
@@ -145,7 +145,7 @@ struct Vector(T, ALLOCATOR)
 		}
 		
 		/// Insert a range of items
-		size_t insertBack(Stuff)(Stuff stuff)
+		size_t push_back(Stuff)(Stuff stuff)
 			if (isInputRange!Stuff && isImplicitlyConvertible!(ElementType!Stuff, T))
 		{
 			static if (hasLength!Stuff)
@@ -156,7 +156,7 @@ struct Vector(T, ALLOCATOR)
 			size_t result;
 			foreach (item; stuff)
 			{
-				insertBack(item);
+				push_back(item);
 				++result;
 			}
 			static if (hasLength!Stuff)
@@ -196,7 +196,7 @@ struct Vector(T, ALLOCATOR)
 	this(Stuff)(Stuff stuff)
 		if (isInputRange!Stuff && isImplicitlyConvertible!(ElementType!Stuff, T) && !is(Stuff == T[]))
 	{
-		insertBack(stuff);
+		push_back(stuff);
 	}
 	
 	
@@ -383,7 +383,15 @@ struct Vector(T, ALLOCATOR)
 	{
 		return length;
 	}
-	
+
+	@property T* ptr() {
+		return _data._payload.ptr;
+	}
+
+	@property T* end() {
+		return this.ptr + this.length;
+	}
+
 	/**
 		Returns the maximum number of elements the container can store without
 		   (a) allocating memory, (b) invalidating iterators upon insertion.
@@ -554,18 +562,18 @@ struct Vector(T, ALLOCATOR)
 	}
 	
 	/**
-		Forwards to $(D insertBack(stuff)).
+		Forwards to $(D push_back(stuff)).
      */
 	void opOpAssign(string op, Stuff)(Stuff stuff)
 		if (op == "~")
 	{
 		static if (is(typeof(stuff[])))
 		{
-			insertBack(stuff[]);
+			push_back(stuff[]);
 		}
 		else
 		{
-			insertBack(stuff);
+			push_back(stuff);
 		}
 	}
 	
@@ -597,27 +605,7 @@ struct Vector(T, ALLOCATOR)
 		_data.refCountedStore.ensureInitialized();
 		_data.length = newLength;
 	}
-	
-	/**
-		Picks one value in an unspecified position in the container, removes
-		it from the container, and returns it. The stable version behaves the same,
-		but guarantees that ranges iterating over the container are never invalidated.
 
-		Precondition: $(D !empty)
-
-		Returns: The element removed.
-
-		Complexity: $(BIGOH log(n)).
-     */
-	T removeAny()
-	{
-		auto result = back;
-		removeBack();
-		return result;
-	}
-	/// ditto
-	alias stableRemoveAny = removeAny;
-	
 	/**
 		Inserts $(D value) to the front or back of the container. $(D stuff)
 		can be a value convertible to $(D T) or a range of objects convertible
@@ -629,15 +617,15 @@ struct Vector(T, ALLOCATOR)
 		Complexity: $(BIGOH m * log(n)), where $(D m) is the number of
 		elements in $(D stuff)
     */
-	size_t insertBack(Stuff)(Stuff stuff)
+	size_t push_back(Stuff)(Stuff stuff)
 		if (isImplicitlyConvertible!(Stuff, T) ||
 		    isInputRange!Stuff && isImplicitlyConvertible!(ElementType!Stuff, T))
 	{
 		_data.refCountedStore.ensureInitialized();
-		return _data.insertBack(stuff);
+		return _data.push_back(stuff);
 	}
 	/// ditto
-	alias insert = insertBack;
+	alias insert = push_back;
 	
 	/**
 		Removes the value at the back of the container. The stable version
@@ -742,7 +730,7 @@ struct Vector(T, ALLOCATOR)
 			enforce(_data);
 			immutable offset = r._a;
 			enforce(offset <= length);
-			auto result = insertBack(stuff);
+			auto result = push_back(stuff);
 			bringToFront(this[offset .. length - result],
 			this[length - result .. length]);
 			return result;
@@ -756,7 +744,7 @@ struct Vector(T, ALLOCATOR)
 		// TODO: optimize
 		immutable offset = r._b;
 		enforce(offset <= length);
-		auto result = insertBack(stuff);
+		auto result = push_back(stuff);
 		bringToFront(this[offset .. length - result],
 		this[length - result .. length]);
 		return result;
@@ -827,7 +815,4 @@ struct Vector(T, ALLOCATOR)
 		length = offset1 + tailLength;
 		return this[length - tailLength .. length];
 	}
-}
-
-	assert(c.i == 42); //fails
 }

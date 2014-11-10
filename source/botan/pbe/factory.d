@@ -97,5 +97,5 @@ PBE get_pbe(in OID pbe_oid,
 			return new PBE_PKCS5v20(params, passphrase);
 	}
 	
-	throw new Algorithm_Not_Found(pbe_oid.as_string());
+	throw new Algorithm_Not_Found(pbe_oid.toString());
 }
