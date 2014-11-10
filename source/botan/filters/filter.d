@@ -225,7 +225,7 @@ private:
 
 	// true if filter belongs to a pipe -. prohibit filter sharing!
 	bool owned;
-};
+}
 
 /**
 * This is the abstract Fanout_Filter base class.
@@ -248,7 +248,7 @@ protected:
 	using write_queue;
 	using total_ports;
 	using next;*/
-};
+}
 
 /**
 * The type of checking to be performed by decoders:
@@ -256,4 +256,4 @@ protected:
 * whitespaces, FULL_CHECK - perform checks, also complain
 * about white spaces.
 */
-enum Decoder_Checking { NONE, IGNORE_WS, FULL_CHECK };
+enum Decoder_Checking { NONE, IGNORE_WS, FULL_CHECK }

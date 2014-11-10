@@ -42,4 +42,4 @@ enum Certificate_Status_Code {
 	CERT_IS_REVOKED = 5000,
 	CRL_BAD_SIGNATURE,
 	SIGNATURE_ERROR,
-};
+}

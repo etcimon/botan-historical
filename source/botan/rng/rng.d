@@ -109,7 +109,7 @@ public:
 
 	this() {}
 	~this() {}
-};
+}
 
 /**
 * Null/stub RNG - fails if you try to use it for anything
@@ -126,7 +126,7 @@ public:
 	override void reseed(size_t) {}
 	override bool is_seeded() const { return false; }
 	override void add_entropy(const ubyte[], size_t) {}
-};
+}
 
 /**
 * Wraps access to a RNG in a mutex
@@ -171,4 +171,4 @@ public:
 
 private:
 	Unique!RandomNumberGenerator m_rng;
-};
+}

@@ -646,9 +646,9 @@ bool generate_dsa_primes(RandomNumberGenerator rng,
 					break;
 			return this;
 		}
-	m_tag
+	private:
 		Vector!ubyte seed;
-	};
+	}
 	
 	Seed seed = Seed(seed_c);
 	

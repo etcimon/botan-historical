@@ -256,4 +256,4 @@ private:
 	Secure_Vector!ubyte buffer, sum, hash;
 	size_t position;
 	ulong count;
-};
+}

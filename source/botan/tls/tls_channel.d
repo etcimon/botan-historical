@@ -39,7 +39,7 @@ public:
 	size_t received_data(in ubyte* input, size_t input_size)
 	{
 		const auto get_cipherstate = (ushort epoch)
-		{ return this.read_cipher_state_epoch(epoch); };
+		{ return this.read_cipher_state_epoch(epoch); }
 		
 		const size_t max_fragment_size = maximum_fragment_size();
 		
@@ -471,9 +471,9 @@ protected:
 			
 			if (active_version.is_datagram_protocol() != _version.is_datagram_protocol())
 				throw new Exception("Active state using version " ~
-				                    active_version.to_string() +
+				                    active_version.toString() +
 				                    " cannot change to " ~
-				                    _version.to_string() +
+				                    _version.toString() +
 				                    " in pending");
 		}
 		
@@ -816,4 +816,4 @@ private:
 	/* I/O buffers */
 	Secure_Vector!ubyte m_writebuf;
 	Secure_Vector!ubyte m_readbuf;
-};
+}

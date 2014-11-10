@@ -200,4 +200,4 @@ private:
 
 	Algorithm_Factory m_algorithm_factory;
 	bool initialized;
-};
+}

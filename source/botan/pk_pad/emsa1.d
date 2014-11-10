@@ -80,7 +80,7 @@ private:
 	}
 
 	Unique!HashFunction m_hash;
-};
+}
 
 private:
 

@@ -81,7 +81,7 @@ private:
 		SKEIN_NONCE = 20,
 		SKEIN_MSG = 48,
 		SKEIN_OUTPUT = 63
-	};
+	}
 
 	void add_data(in ubyte* input, size_t length)
 	{
@@ -170,7 +170,7 @@ private:
 		m_threefish.set_key(zeros, (zeros).sizeof);
 		
 		// ASCII("SHA3") followed by version (0x0001) code
-		ubyte[32] config_str = { 0x53, 0x48, 0x41, 0x33, 0x01, 0x00, 0 };
+		ubyte[32] config_str = [0x53, 0x48, 0x41, 0x33, 0x01, 0x00, 0 ];
 		store_le(uint(output_bits), config_str + 8);
 		
 		reset_tweak(type_code.SKEIN_CONFIG, true);
@@ -210,4 +210,4 @@ private:
 	Secure_Vector!ulong T;
 	Secure_Vector!ubyte buffer;
 	size_t buf_pos;
-};
+}

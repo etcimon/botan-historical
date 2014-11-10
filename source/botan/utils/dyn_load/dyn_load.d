@@ -107,4 +107,4 @@ public:
 private:
 	string lib_name;
 	void* lib;
-};
+}

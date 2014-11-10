@@ -48,7 +48,7 @@ public:
 
 	@property string name() const { return "SSL3-PRF"; }
 	KDF clone() const { return new SSL3_PRF; }
-};
+}
 
 	
 

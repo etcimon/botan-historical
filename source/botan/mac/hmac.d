@@ -113,4 +113,4 @@ private:
 
 	Unique!HashFunction m_hash;
 	Secure_Vector!ubyte m_ikey, m_okey;
-};
+}

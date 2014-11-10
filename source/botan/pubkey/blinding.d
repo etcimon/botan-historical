@@ -62,4 +62,4 @@ public:
 private:
 	Modular_Reducer reducer;
 	BigInt e, d;
-};
+}

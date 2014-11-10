@@ -228,4 +228,4 @@ public:
 	}
 private:
 	Vector!uint m_id;
-};
+}

@@ -18,7 +18,7 @@ struct Heartbeat_Message
 {
 public:
 	typedef ubyte Type;
-	enum Type { REQUEST = 1, RESPONSE = 2 };
+	enum Type { REQUEST = 1, RESPONSE = 2 }
 
 	Vector!ubyte contents() const
 	{
@@ -63,4 +63,4 @@ public:
 private:
 	Type m_type;
 	Vector!ubyte m_payload;
-};
+}

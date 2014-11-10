@@ -77,7 +77,7 @@ private:
 	size_t window_bits;
 	Vector!BigInt g;
 	Power_Mod.Usage_Hints hints;
-};
+}
 
 /**
 * Montgomery Exponentiator
@@ -221,5 +221,5 @@ private:
 	size_t m_mod_words, m_exp_bits, m_window_bits;
 	Power_Mod.Usage_Hints m_hints;
 	Vector!( BigInt ) m_g;
-};
+}
 

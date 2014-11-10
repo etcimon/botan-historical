@@ -73,7 +73,7 @@ private:
 	Secure_Vector!ubyte m_empty_hash;
 	Unique!HashFunction m_hash;
 	ubyte m_hash_id;
-};
+}
 
 private:
 

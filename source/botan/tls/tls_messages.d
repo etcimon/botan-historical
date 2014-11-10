@@ -46,7 +46,7 @@ import string;
 
 enum {
 	TLS_EMPTY_RENEGOTIATION_INFO_SCSV		  = 0x00FF
-};
+}
 
 /**
 * TLS Handshake Message Base Class
@@ -59,7 +59,7 @@ public:
 	abstract Vector!ubyte serialize() const;
 	
 	~this() {}
-};
+}
 
 /**
 * DTLS Hello Verify Request
@@ -123,7 +123,7 @@ public:
 	}
 private:
 	Vector!ubyte m_cookie;
-};
+}
 
 /**
 * Client Hello Message
@@ -457,7 +457,7 @@ private:
 	Vector!ubyte m_hello_cookie; // DTLS only
 
 	Extensions m_extensions;
-};
+}
 
 /**
 * Server Hello Message
@@ -630,7 +630,7 @@ private:
 	ubyte m_comp_method;
 
 	Extensions m_extensions;
-};
+}
 
 /**
 * Client Key Exchange Message
@@ -1019,7 +1019,7 @@ private:
 
 	Vector!ubyte m_key_material;
 	Secure_Vector!ubyte m_pre_master;
-};
+}
 
 /**
 * Certificate Message
@@ -1104,7 +1104,7 @@ private:
 	}
 
 	Vector!(X509_Certificate) m_certs;
-};
+}
 
 /**
 * Certificate Request Message
@@ -1238,7 +1238,7 @@ private:
 	Vector!string m_cert_key_types;
 
 	Vector!( Pair!(string, string)  ) m_supported_algos;
-};
+}
 
 /**
 * Certificate Verify Message
@@ -1349,7 +1349,7 @@ private:
 	string m_sig_algo; // sig algo used to create signature
 	string m_hash_algo; // hash used to create signature
 	Vector!ubyte m_signature;
-};
+}
 
 /**
 * Finished Message
@@ -1401,7 +1401,7 @@ private:
 	Vector!ubyte serialize() const;
 
 	Vector!ubyte m_verification_data;
-};
+}
 
 /**
 * Hello Request Message
@@ -1435,7 +1435,7 @@ private:
 	{
 		return Vector!ubyte();
 	}
-};
+}
 
 /**
 * Server Key Exchange Message
@@ -1715,7 +1715,7 @@ private:
 	string m_sig_algo; // sig algo used to create signature
 	string m_hash_algo; // hash used to create signature
 	Vector!ubyte m_signature;
-};
+}
 
 /**
 * Server Hello Done Message
@@ -1750,7 +1750,7 @@ private:
 	{
 		return Vector!ubyte();
 	}
-};
+}
 
 /**
 * Next Protocol Message
@@ -1801,7 +1801,7 @@ private:
 	}
 
 	string m_protocol;
-};
+}
 
 /**
 * New Session Ticket Message
@@ -1852,7 +1852,7 @@ private:
 
 	Duration m_ticket_lifetime_hint;
 	Vector!ubyte m_ticket;
-};
+}
 
 /**
 * Change Cipher Spec
@@ -1864,7 +1864,7 @@ public:
 
 	override Vector!ubyte serialize() const
 	{ return Vector!ubyte(1, 1); }
-};
+}
 
 
 private:
@@ -1922,8 +1922,8 @@ Vector!ubyte finished_compute_verify(in Handshake_State state,
 {
 	if (state._version() == Protocol_Version.SSL_V3)
 	{
-		const(ubyte)[] SSL_CLIENT_LABEL = { 0x43, 0x4C, 0x4E, 0x54 };
-		const(ubyte)[] SSL_SERVER_LABEL = { 0x53, 0x52, 0x56, 0x52 };
+		const(ubyte)[] SSL_CLIENT_LABEL = [ 0x43, 0x4C, 0x4E, 0x54 ];
+		const(ubyte)[] SSL_SERVER_LABEL = [ 0x53, 0x52, 0x56, 0x52 ];
 		
 		Handshake_Hash hash = state.hash(); // don't modify state
 		
@@ -1938,13 +1938,13 @@ Vector!ubyte finished_compute_verify(in Handshake_State state,
 	}
 	else
 	{
-		const(ubyte)[] TLS_CLIENT_LABEL = {
+		const(ubyte)[] TLS_CLIENT_LABEL = [
 			0x63, 0x6C, 0x69, 0x65, 0x6E, 0x74, 0x20, 0x66, 0x69, 0x6E, 0x69,
-			0x73, 0x68, 0x65, 0x64 };
+			0x73, 0x68, 0x65, 0x64 ];
 		
-		const(ubyte)[] TLS_SERVER_LABEL = {
+		const(ubyte)[] TLS_SERVER_LABEL = [
 			0x73, 0x65, 0x72, 0x76, 0x65, 0x72, 0x20, 0x66, 0x69, 0x6E, 0x69,
-			0x73, 0x68, 0x65, 0x64 };
+			0x73, 0x68, 0x65, 0x64 ];
 		
 		Unique!KDF prf = state.protocol_specific_prf();
 		

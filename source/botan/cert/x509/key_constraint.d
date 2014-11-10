@@ -24,7 +24,7 @@ enum Key_Constraints {
 	CRL_SIGN			  = 512,
 	ENCIPHER_ONLY		= 256,
 	DECIPHER_ONLY		= 128
-};
+}
 
 /**
 * Create the key constraints for a specific public key.

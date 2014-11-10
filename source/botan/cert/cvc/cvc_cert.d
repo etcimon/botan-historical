@@ -138,7 +138,7 @@ private:
 	ASN1_Cex m_cex;
 	ubyte m_chat_val;
 	OID m_chat_oid;
-};
+}
 
 /**
 * Create an arbitrary EAC 1.1 CVC.

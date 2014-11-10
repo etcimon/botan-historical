@@ -59,7 +59,7 @@ protected:
 	abstract bool should_encode() const { return true; }
 	abstract Vector!ubyte encode_inner() const;
 	abstract void decode_inner(in Vector!ubyte);
-};
+}
 
 alias Extensions = FreeListRef!Extensions_Impl;
 
@@ -72,10 +72,10 @@ public:
 
 	void encode_into(DER_Encoder to) const
 	{
-		for (size_t i = 0; i != extensions.length; ++i)
+		for (size_t i = 0; i != m_extensions.length; ++i)
 		{
-			const Certificate_Extension ext = extensions[i].first;
-			const bool is_critical = extensions[i].second;
+			const Certificate_Extension ext = m_extensions[i].first;
+			const bool is_critical = m_extensions[i].second;
 			
 			const bool should_encode = ext.should_encode();
 			
@@ -92,9 +92,9 @@ public:
 
 	void decode_from(BER_Decoder from_source)
 	{
-		for (size_t i = 0; i != extensions.length; ++i)
-			delete extensions[i].first;
-		extensions.clear();
+		for (size_t i = 0; i != m_extensions.length; ++i)
+			delete m_extensions[i].first;
+		m_extensions.clear();
 		
 		BER_Decoder sequence = from_source.start_cons(ASN1_Tag.SEQUENCE);
 		
@@ -126,10 +126,10 @@ public:
 				catch(Exception e)
 				{
 					throw new Decoding_Error("Exception while decoding extension " ~
-					                         oid.toString() ~ ": " ~ e.what());
+					                         oid.toString() ~ ": " ~ e.msg);
 				}
 				
-				extensions.push_back(Pair(ext, critical));
+				m_extensions.push_back(Pair(ext, critical));
 			}
 		}
 		
@@ -139,25 +139,25 @@ public:
 	void contents_to(ref Data_Store subject_info,
 	                 ref Data_Store issuer_info) const
 	{
-		for (size_t i = 0; i != extensions.length; ++i)
-			extensions[i].first.contents_to(subject_info, issuer_info);
+		for (size_t i = 0; i != m_extensions.length; ++i)
+			m_extensions[i].first.contents_to(subject_info, issuer_info);
 	}
 
 	void add(Certificate_Extension extn, bool critical)
 	{
-		extensions.push_back(Pair(extn, critical));
+		m_extensions.push_back(Pair(extn, critical));
 	}
 
 	Extensions opAssign(in Extensions other)
 	{
-		for (size_t i = 0; i != extensions.length; ++i)
-			delete extensions[i].first;
-		extensions.clear();
+		for (size_t i = 0; i != m_extensions.length; ++i)
+			delete m_extensions[i].first;
+		m_extensions.clear();
 		
-		for (size_t i = 0; i != other.extensions.length; ++i)
-			extensions.push_back(
-				Pair(other.extensions[i].first.copy(),
-			other.extensions[i].second));
+		for (size_t i = 0; i != other.m_extensions.length; ++i)
+			m_extensions.push_back(
+				Pair(other.m_extensions[i].first.copy(),
+			other.m_extensions[i].second));
 		
 		return this;
 	}
@@ -169,8 +169,8 @@ public:
 	this(bool st = true) { m_throw_on_unknown_critical = st; }
 	~this()
 	{
-		for (size_t i = 0; i != extensions.length; ++i)
-			delete extensions[i].first;
+		for (size_t i = 0; i != m_extensions.length; ++i)
+			delete m_extensions[i].first;
 	}
 
 private:
@@ -201,9 +201,9 @@ private:
 	}
 
 
-	Vector!( Pair!(Certificate_Extension, bool)  ) extensions;
+	Vector!( Pair!(Certificate_Extension, bool)  ) m_extensions;
 	bool m_throw_on_unknown_critical;
-};
+}
 
 __gshared immutable size_t NO_CERT_PATH_LIMIT = 0xFFFFFFF0;
 
@@ -214,23 +214,23 @@ final class Basic_Constraints : Certificate_Extension
 {
 public:
 	Basic_Constraints copy() const
-	{ return new Basic_Constraints(is_ca, path_limit); }
+	{ return new Basic_Constraints(m_is_ca, path_limit); }
 
 	this(bool ca = false, size_t limit = 0)
 	{
-		is_ca = ca;
-		path_limit = limit; 
+		m_is_ca = ca;
+		m_path_limit = limit; 
 	}
 
-	bool get_is_ca() const { return is_ca; }
+	bool get_is_ca() const { return m_is_ca; }
 	/*
 	* Checked accessor for the path_limit member
 	*/
 	size_t get_path_limit() const
 	{
-		if (!is_ca)
+		if (!m_is_ca)
 			throw new Invalid_State("Basic_Constraints::get_path_limit: Not a CA");
-		return path_limit;
+		return m_path_limit;
 	}
 
 private:
@@ -243,10 +243,10 @@ private:
 	{
 		return DER_Encoder()
 			.start_cons(ASN1_Tag.SEQUENCE)
-				.encode_if (is_ca,
+				.encode_if (m_is_ca,
 				            DER_Encoder()
-				            .encode(is_ca)
-				            .encode_optional(path_limit, NO_CERT_PATH_LIMIT)
+				            .encode(m_is_ca)
+				            .encode_optional(m_path_limit, NO_CERT_PATH_LIMIT)
 				            )
 				.end_cons()
 				.get_contents_unlocked();
@@ -259,13 +259,13 @@ private:
 	{
 		BER_Decoder(input)
 			.start_cons(ASN1_Tag.SEQUENCE)
-				.decode_optional(is_ca, BOOLEAN, ASN1_Tag.UNIVERSAL, false)
-				.decode_optional(path_limit, INTEGER, ASN1_Tag.UNIVERSAL, NO_CERT_PATH_LIMIT)
+				.decode_optional(m_is_ca, BOOLEAN, ASN1_Tag.UNIVERSAL, false)
+				.decode_optional(m_path_limit, INTEGER, ASN1_Tag.UNIVERSAL, NO_CERT_PATH_LIMIT)
 				.verify_end()
 				.end_cons();
 		
-		if (is_ca == false)
-			path_limit = 0;
+		if (m_is_ca == false)
+			m_path_limit = 0;
 	}
 
 	/*
@@ -273,13 +273,13 @@ private:
 	*/
 	void contents_to(ref Data_Store subject, ref Data_Store) const
 	{
-		subject.add("X509v3.BasicConstraints.is_ca", (is_ca ? 1 : 0));
-		subject.add("X509v3.BasicConstraints.path_constraint", path_limit);
+		subject.add("X509v3.BasicConstraints.is_ca", (m_is_ca ? 1 : 0));
+		subject.add("X509v3.BasicConstraints.path_constraint", m_path_limit);
 	}
 
-	bool is_ca;
-	size_t path_limit;
-};
+	bool m_is_ca;
+	size_t m_path_limit;
+}
 
 /**
 * Key Usage Constraints Extension
@@ -287,7 +287,7 @@ private:
 final class Key_Usage : Certificate_Extension
 {
 public:
-	Key_Usage copy() const { return new Key_Usage(constraints); }
+	Key_Usage copy() const { return new Key_Usage(m_constraints); }
 
 	this(Key_Constraints c = Key_Constraints.NO_CONSTRAINTS) { constraints = c; }
 
@@ -302,18 +302,18 @@ private:
 	*/
 	Vector!ubyte encode_inner() const
 	{
-		if (constraints == Key_Constraints.NO_CONSTRAINTS)
+		if (m_constraints == Key_Constraints.NO_CONSTRAINTS)
 			throw new Encoding_Error("Cannot encode zero usage constraints");
 		
-		const size_t unused_bits = low_bit(constraints) - 1;
+		const size_t unused_bits = low_bit(m_constraints) - 1;
 		
 		Vector!ubyte der;
 		der.push_back(ASN1_Tag.BIT_STRING);
 		der.push_back(2 + ((unused_bits < 8) ? 1 : 0));
 		der.push_back(unused_bits % 8);
-		der.push_back((constraints >> 8) & 0xFF);
-		if (constraints & 0xFF)
-			der.push_back(constraints & 0xFF);
+		der.push_back((m_constraints >> 8) & 0xFF);
+		if (m_constraints & 0xFF)
+			der.push_back(m_constraints & 0xFF);
 		
 		return der;
 	}
@@ -323,7 +323,7 @@ private:
 	*/
 	void decode_inner(in Vector!ubyte input)
 	{
-		BER_Decoder ber(input);
+		BER_Decoder ber = BER_Decoder(input);
 		
 		BER_Object obj = ber.get_next_object();
 		
@@ -343,7 +343,7 @@ private:
 		for (size_t i = 1; i != obj.value.length; ++i)
 			usage = (obj.value[i] << 8) | usage;
 		
-		constraints = Key_Constraints(usage);
+		m_constraints = Key_Constraints(usage);
 	}
 
 	/*
@@ -351,11 +351,11 @@ private:
 	*/
 	void contents_to(ref Data_Store subject, ref Data_Store) const
 	{
-		subject.add("X509v3.KeyUsage", constraints);
+		subject.add("X509v3.KeyUsage", m_constraints);
 	}
 
-	Key_Constraints constraints;
-};
+	Key_Constraints m_constraints;
+}
 
 /**
 * Subject Key Identifier Extension
@@ -363,28 +363,28 @@ private:
 final class Subject_Key_ID : Certificate_Extension
 {
 public:
-	Subject_Key_ID copy() const { return new Subject_Key_ID(key_id); }
+	Subject_Key_ID copy() const { return new Subject_Key_ID(m_key_id); }
 
 	this() {}
 	this(in Vector!ubyte pub_key)
 	{
 		SHA_160 hash;
-		key_id = unlock(hash.process(pub_key));
+		m_key_id = unlock(hash.process(pub_key));
 	}
 
 
-	Vector!ubyte get_key_id() const { return key_id; }
+	Vector!ubyte get_key_id() const { return m_key_id; }
 private:
 	string oid_name() const { return "X509v3.SubjectKeyIdentifier"; }
 
-	bool should_encode() const { return (key_id.length > 0); }
+	bool should_encode() const { return (m_key_id.length > 0); }
 
 	/*
 	* Encode the extension
 	*/
 	Vector!ubyte encode_inner() const
 	{
-		return DER_Encoder().encode(key_id, ASN1_Tag.OCTET_STRING).get_contents_unlocked();
+		return DER_Encoder().encode(m_key_id, ASN1_Tag.OCTET_STRING).get_contents_unlocked();
 	}
 
 	/*
@@ -392,7 +392,7 @@ private:
 	*/
 	void decode_inner(in Vector!ubyte input)
 	{
-		BER_Decoder(input).decode(key_id, ASN1_Tag.OCTET_STRING).verify_end();
+		BER_Decoder(input).decode(m_key_id, ASN1_Tag.OCTET_STRING).verify_end();
 	}
 
 	/*
@@ -400,11 +400,11 @@ private:
 	*/
 	void contents_to(ref Data_Store subject, ref Data_Store) const
 	{
-		subject.add("X509v3.SubjectKeyIdentifier", key_id);
+		subject.add("X509v3.SubjectKeyIdentifier", m_key_id);
 	}
 
-	Vector!ubyte key_id;
-};
+	Vector!ubyte m_key_id;
+}
 
 /**
 * Authority Key Identifier Extension
@@ -412,16 +412,16 @@ private:
 class Authority_Key_ID : Certificate_Extension
 {
 public:
-	Authority_Key_ID* copy() const { return new Authority_Key_ID(key_id); }
+	Authority_Key_ID copy() const { return new Authority_Key_ID(m_key_id); }
 
 	this() {}
-	this(in Vector!ubyte k) { key_id = k; }
+	this(in Vector!ubyte k) { m_key_id = k; }
 
-	Vector!ubyte get_key_id() const { return key_id; }
+	Vector!ubyte get_key_id() const { return m_key_id; }
 private:
 	string oid_name() const { return "X509v3.AuthorityKeyIdentifier"; }
 
-	bool should_encode() const { return (key_id.length > 0); }
+	bool should_encode() const { return (m_key_id.length > 0); }
 
 	/*
 	* Encode the extension
@@ -430,7 +430,7 @@ private:
 	{
 		return DER_Encoder()
 			.start_cons(ASN1_Tag.SEQUENCE)
-				.encode(key_id, ASN1_Tag.OCTET_STRING, ASN1_Tag(0), ASN1_Tag.CONTEXT_SPECIFIC)
+				.encode(m_key_id, ASN1_Tag.OCTET_STRING, ASN1_Tag(0), ASN1_Tag.CONTEXT_SPECIFIC)
 				.end_cons()
 				.get_contents_unlocked();
 	}
@@ -442,7 +442,7 @@ private:
 	{
 		BER_Decoder(input)
 			.start_cons(ASN1_Tag.SEQUENCE)
-				.decode_optional_string(key_id, ASN1_Tag.OCTET_STRING, 0);
+				.decode_optional_string(m_key_id, ASN1_Tag.OCTET_STRING, 0);
 	}
 
 	/*
@@ -450,13 +450,13 @@ private:
 	*/
 	void contents_to(ref Data_Store, ref Data_Store issuer) const
 	{
-		if (key_id.length)
-			issuer.add("X509v3.AuthorityKeyIdentifier", key_id);
+		if (m_key_id.length)
+			issuer.add("X509v3.AuthorityKeyIdentifier", m_key_id);
 	}
 
 
-	Vector!ubyte key_id;
-};
+	Vector!ubyte m_key_id;
+}
 
 /**
 * Alternative Name Extension Base Class
@@ -464,28 +464,28 @@ private:
 class Alternative_Name : Certificate_Extension
 {
 public:
-	Alternative_Name get_alt_name() const { return alt_name; }
+	Alternative_Name get_alt_name() const { return m_alt_name; }
 
 protected:
 
 	this(in Alternative_Name alt_name,
 	     in string oid_name_str)
 	{
-		this.alt_name = alt_name;
-		this.oid_name_str = oid_name_str;
+		m_alt_name = alt_name;
+		m_oid_name_str = oid_name_str;
 	}
 
 private:
-	string oid_name() const { return oid_name_str; }
+	string oid_name() const { return m_oid_name_str; }
 
-	bool should_encode() const { return alt_name.has_items(); }
+	bool should_encode() const { return m_alt_name.has_items(); }
 
 	/*
 	* Encode the extension
 	*/
 	Vector!ubyte encode_inner() const
 	{
-		return DER_Encoder().encode(alt_name).get_contents_unlocked();
+		return DER_Encoder().encode(m_alt_name).get_contents_unlocked();
 	}
 
 	/*
@@ -493,7 +493,7 @@ private:
 	*/
 	void decode_inner(in Vector!ubyte input)
 	{
-		BER_Decoder(input).decode(alt_name);
+		BER_Decoder(input).decode(m_alt_name);
 	}
 
 	/*
@@ -505,18 +505,18 @@ private:
 		MultiMap!(string, string) contents =
 			get_alt_name().contents();
 		
-		if (oid_name_str == "X509v3.SubjectAlternativeName")
+		if (m_oid_name_str == "X509v3.SubjectAlternativeName")
 			subject_info.add(contents);
-		else if (oid_name_str == "X509v3.IssuerAlternativeName")
+		else if (m_oid_name_str == "X509v3.IssuerAlternativeName")
 			issuer_info.add(contents);
 		else
 			throw new Internal_Error("In Alternative_Name, unknown type " ~
-			                         oid_name_str);
+			                         m_oid_name_str);
 	}
 
-	string oid_name_str;
-	Alternative_Name alt_name;
-};
+	string m_oid_name_str;
+	Alternative_Name m_alt_name;
+}
 
 
 
@@ -534,7 +534,7 @@ public:
 	this(in Alternative_Name name = new Subject_Alternative_Name()) {
 		super(name, "X509v3.SubjectAlternativeName");
 	}
-};
+}
 
 /**
 * Issuer Alternative Name Extension
@@ -548,7 +548,7 @@ public:
 	this(in Alternative_Name name = new Issuer_Alternative_Name()) {
 		super(name, "X509v3.IssuerAlternativeName");
 	}
-};
+}
 
 /**
 * Extended Key Usage Extension
@@ -556,19 +556,19 @@ public:
 final class Extended_Key_Usage : Certificate_Extension
 {
 public:
-	Extended_Key_Usage copy() const { return new Extended_Key_Usage(oids); }
+	Extended_Key_Usage copy() const { return new Extended_Key_Usage(m_oids); }
 
 	this() {}
 	this(in Vector!OID o) 
 	{
-		oids = o;
+		m_oids = o;
 	}
 
-	Vector!OID get_oids() const { return oids; }
+	Vector!OID get_oids() const { return m_oids; }
 private:
 	string oid_name() const { return "X509v3.ExtendedKeyUsage"; }
 
-	bool should_encode() const { return (oids.length > 0); }
+	bool should_encode() const { return (m_oids.length > 0); }
 	/*
 * Encode the extension
 */
@@ -576,7 +576,7 @@ private:
 	{
 		return DER_Encoder()
 			.start_cons(ASN1_Tag.SEQUENCE)
-				.encode_list(oids)
+				.encode_list(m_oids)
 				.end_cons()
 				.get_contents_unlocked();
 	}
@@ -586,7 +586,7 @@ private:
 	*/
 	void decode_inner(in Vector!ubyte input)
 	{
-		BER_Decoder(input).decode_list(oids);
+		BER_Decoder(input).decode_list(m_oids);
 	}
 
 	/*
@@ -594,12 +594,12 @@ private:
 	*/
 	void contents_to(ref Data_Store subject, ref Data_Store) const
 	{
-		for (size_t i = 0; i != oids.length; ++i)
-			subject.add("X509v3.ExtendedKeyUsage", oids[i].toString());
+		for (size_t i = 0; i != m_oids.length; ++i)
+			subject.add("X509v3.ExtendedKeyUsage", m_oids[i].toString());
 	}
 
-	Vector!OID oids;
-};
+	Vector!OID m_oids;
+}
 
 /**
 * Certificate Policies Extension
@@ -608,16 +608,16 @@ final class Certificate_Policies : Certificate_Extension
 {
 public:
 	Certificate_Policies copy() const
-	{ return new Certificate_Policies(oids); }
+	{ return new Certificate_Policies(m_oids); }
 
 	this() {}
-	this(in Vector!OID o) { oids = o; }
+	this(in Vector!OID o) { m_oids = o; }
 
-	Vector!OID get_oids() const { return oids; }
+	Vector!OID get_oids() const { return m_oids; }
 private:
 	string oid_name() const { return "X509v3.CertificatePolicies"; }
 
-	bool should_encode() const { return (oids.length > 0); }
+	bool should_encode() const { return (m_oids.length > 0); }
 
 	/*
 	* Encode the extension
@@ -626,8 +626,8 @@ private:
 	{
 		Vector!( Policy_Information ) policies;
 		
-		for (size_t i = 0; i != oids.length; ++i)
-			policies.push_back(oids[i]);
+		for (size_t i = 0; i != m_oids.length; ++i)
+			policies.push_back(m_oids[i]);
 		
 		return DER_Encoder()
 			.start_cons(ASN1_Tag.SEQUENCE)
@@ -644,9 +644,9 @@ private:
 		
 		BER_Decoder(input).decode_list(policies);
 		
-		oids.clear();
+		m_oids.clear();
 		for (size_t i = 0; i != policies.length; ++i)
-			oids.push_back(policies[i].oid);
+			m_oids.push_back(policies[i].oid);
 	}
 
 	/*
@@ -654,12 +654,12 @@ private:
 	*/
 	void contents_to(ref Data_Store info, ref Data_Store) const
 	{
-		for (size_t i = 0; i != oids.length; ++i)
-			info.add("X509v3.CertificatePolicies", oids[i].toString());
+		for (size_t i = 0; i != m_oids.length; ++i)
+			info.add("X509v3.CertificatePolicies", m_oids[i].toString());
 	}
 
-	Vector!OID oids;
-};
+	Vector!OID m_oids;
+}
 
 final class Authority_Information_Access : Certificate_Extension
 {
@@ -707,7 +707,7 @@ private:
 				
 				if (name.type_tag == 6 && name.class_tag == ASN1_Tag.CONTEXT_SPECIFIC)
 				{
-					m_ocsp_responder = transcode(asn1.to_string(name),
+					m_ocsp_responder = transcode(asn1.toString(name),
 					                                     LATIN1_CHARSET,
 					                                     LOCAL_CHARSET);
 				}
@@ -725,7 +725,7 @@ private:
 	}
 
 	string m_ocsp_responder;
-};
+}
 
 
 /**
@@ -739,42 +739,42 @@ public:
 	*/
 	CRL_Number copy() const
 	{
-		if (!has_value)
+		if (!m_has_value)
 			throw new Invalid_State("CRL_Number::copy: Not set");
-		return new CRL_Number(crl_number);
+		return new CRL_Number(m_crl_number);
 	}
 
 
-	this() { has_value = false; crl_number = 0; }
-	this(size_t n) { has_value = true; crl_number = n; }
+	this() { m_has_value = false; m_crl_number = 0; }
+	this(size_t n) { m_has_value = true; m_crl_number = n; }
 
 	/*
 	* Checked accessor for the crl_number member
 	*/
 	size_t get_crl_number() const
 	{
-		if (!has_value)
+		if (!m_has_value)
 			throw new Invalid_State("CRL_Number::get_crl_number: Not set");
-		return crl_number;
+		return m_crl_number;
 	}
 
 private:
 	string oid_name() const { return "X509v3.CRLNumber"; }
 
-	bool should_encode() const { return has_value; }
+	bool should_encode() const { return m_has_value; }
 	/*
 	* Encode the extension
 	*/
 	Vector!ubyte encode_inner() const
 	{
-		return DER_Encoder().encode(crl_number).get_contents_unlocked();
+		return DER_Encoder().encode(m_crl_number).get_contents_unlocked();
 	}
 	/*
 	* Decode the extension
 	*/
 	void decode_inner(in Vector!ubyte input)
 	{
-		BER_Decoder(input).decode(crl_number);
+		BER_Decoder(input).decode(m_crl_number);
 	}
 
 	/*
@@ -782,12 +782,12 @@ private:
 	*/
 	void contents_to(ref Data_Store info, ref Data_Store) const
 	{
-		info.add("X509v3.CRLNumber", crl_number);
+		info.add("X509v3.CRLNumber", m_crl_number);
 	}
 
-	bool has_value;
-	size_t crl_number;
-};
+	bool m_has_value;
+	size_t m_crl_number;
+}
 
 /**
 * CRL Entry Reason Code Extension
@@ -795,22 +795,22 @@ private:
 final class CRL_ReasonCode : Certificate_Extension
 {
 public:
-	CRL_ReasonCode copy() const { return new CRL_ReasonCode(reason); }
+	CRL_ReasonCode copy() const { return new CRL_ReasonCode(m_reason); }
 
-	this(CRL_Code r = CRL_Code.UNSPECIFIED) { reason = r; }
+	this(CRL_Code r = CRL_Code.UNSPECIFIED) { m_reason = r; }
 
-	CRL_Code get_reason() const { return reason; }
+	CRL_Code get_reason() const { return m_reason; }
 private:
 	string oid_name() const { return "X509v3.ReasonCode"; }
 
-	bool should_encode() const { return (reason != CRL_Code.UNSPECIFIED); }
+	bool should_encode() const { return (m_reason != CRL_Code.UNSPECIFIED); }
 	/*
 	* Encode the extension
 	*/
 	Vector!ubyte encode_inner() const
 	{
 		return DER_Encoder()
-			.encode(cast(size_t)(reason), ASN1_Tag.ENUMERATED, ASN1_Tag.UNIVERSAL)
+			.encode(cast(size_t)(m_reason), ASN1_Tag.ENUMERATED, ASN1_Tag.UNIVERSAL)
 				.get_contents_unlocked();
 	}
 
@@ -821,7 +821,7 @@ private:
 	{
 		size_t reason_code = 0;
 		BER_Decoder(input).decode(reason_code, ASN1_Tag.ENUMERATED, ASN1_Tag.UNIVERSAL);
-		reason = cast(CRL_Code)(reason_code);
+		m_reason = cast(CRL_Code)(reason_code);
 	}
 
 	/*
@@ -829,11 +829,11 @@ private:
 	*/
 	void contents_to(ref Data_Store info, ref Data_Store) const
 	{
-		info.add("X509v3.CRLReasonCode", reason);
+		info.add("X509v3.CRLReasonCode", m_reason);
 	}
 
-	CRL_Code reason;
-};
+	CRL_Code m_reason;
+}
 
 
 /**
@@ -863,9 +863,9 @@ public:
 
 
 		const Alternative_Name point() const { return m_point; }
-	m_tag
+	private:
 		Alternative_Name m_point;
-	};
+	}
 
 	CRL_Distribution_Points copy() const
 	{ return new CRL_Distribution_Points(m_distribution_points); }
@@ -907,7 +907,7 @@ private:
 	}
 
 	Vector!( Distribution_Point ) m_distribution_points;
-};
+}
 
 
 alias Policy_Information = FreeListRef!Policy_Information_Impl;
@@ -937,4 +937,4 @@ public:
 				.discard_remaining()
 				.end_cons();
 	}
-};
+}

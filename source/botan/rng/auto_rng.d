@@ -33,4 +33,4 @@ public:
 	}
 private:
 	Unique!RandomNumberGenerator m_rng;
-};
+}

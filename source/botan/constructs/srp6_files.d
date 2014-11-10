@@ -89,7 +89,7 @@ private:
 		BigInt v;
 		Vector!ubyte salt;
 		string group_id;
-	};
+	}
 
 	HashMap!(string, SRP6_Data) entries;
-};
+}

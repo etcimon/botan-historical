@@ -49,7 +49,7 @@ m_tag
 			union v4si {
 				uint u32[4];
 				__m128i u128;
-			};
+			}
 			
 			v4si P0, P1, P2, P3;
 			
@@ -193,7 +193,7 @@ m_tag
 		}
 	}
 
-};
+}
 
 
 private:

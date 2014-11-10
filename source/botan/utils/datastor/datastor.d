@@ -6,13 +6,12 @@
 */
 module botan.utils.datastor.datastor;
 
-import botan.utils.exceptn;
+public import botan.utils.exceptn;
 import botan.utils.parsing;
 import botan.codec.hex;
 import botan.internal.stl_util;
 import botan.alloc.zeroize;
 import functional;
-import utility;
 import string;
 import botan.utils.types;
 import botan.utils.hashmap;
@@ -173,4 +172,4 @@ public:
 
 private:
 	MultiMap!(string, string) contents;
-};
+}

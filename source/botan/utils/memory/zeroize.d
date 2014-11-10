@@ -73,7 +73,7 @@ final class ZeroizeAllocator : Allocator
 
 	bool opCmp(T)(in secure_allocator!T)
 	{ return false; }
-};
+}
 
 alias Secure_Vector(T) = Vector!(T, secure_allocator!T);
 

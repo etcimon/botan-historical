@@ -117,7 +117,7 @@ public:
 	/**
 	* The key extended constraints for the subject public key
 	*/
-	Vector!( OID ) ex_constraints;
+	Vector!OID ex_constraints;
 
 	/**
 	* Check the options set in this object for validity.
@@ -222,7 +222,7 @@ public:
 		if (parsed.length >= 3) organization = parsed[2];
 		if (parsed.length == 4) org_unit	  = parsed[3];
 	}
-};
+}
 
 /**
 * Create a self-signed X.509 certificate.

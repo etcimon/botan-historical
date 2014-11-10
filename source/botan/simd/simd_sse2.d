@@ -167,4 +167,4 @@ private:
 	this(__m128i input) { reg = input; }
 
 	__m128i reg;
-};
+}

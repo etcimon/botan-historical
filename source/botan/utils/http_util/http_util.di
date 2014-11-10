@@ -40,12 +40,12 @@ struct Response
 				throw new Exception("HTTP error: " ~ status_message());
 		}
 
-	m_tag
+	private:
 		uint m_status_code;
 		string m_status_message;
 		Vector!ubyte m_body;
 		HashMap!(string, string) m_headers;
-};
+}
 
 ref std.ostream operator<<(ref std.ostream o, const Response& resp);
 

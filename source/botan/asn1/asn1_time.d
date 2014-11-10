@@ -44,7 +44,7 @@ public:
 	{
 		BER_Object ber_time = source.get_next_object();
 		
-		set_to(transcode(asn1.to_string(ber_time),
+		set_to(transcode(asn1.toString(ber_time),
 		                         LATIN1_CHARSET,
 		                         LOCAL_CHARSET),
 		       ber_time.type_tag);
@@ -106,7 +106,7 @@ public:
 	}
 
 
-	string to_string() const { return readable_string(); }
+	string toString() const { return readable_string(); }
 
 
 	/*
@@ -320,4 +320,4 @@ private:
 
 	uint m_year, m_month, m_day, m_hour, m_minute, m_second;
 	ASN1_Tag m_tag;
-};
+}

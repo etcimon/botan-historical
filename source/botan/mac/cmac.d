@@ -187,4 +187,4 @@ private:
 	Unique!BlockCipher m_cipher;
 	Secure_Vector!ubyte m_buffer, m_state, m_B, m_P;
 	size_t m_position;
-};
+}

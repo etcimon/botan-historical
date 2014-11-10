@@ -104,7 +104,7 @@ private:
 	Vector!ubyte m_issuer_dn_hash;
 	Vector!ubyte m_issuer_key_hash;
 	BigInt m_subject_serial;
-};
+}
 
 alias SingleResponse = FreeListRef!SingleResponse_Impl;
 
@@ -148,4 +148,4 @@ private:
 	size_t m_cert_status = 2; // unknown
 	X509_Time m_thisupdate;
 	X509_Time m_nextupdate;
-};
+}

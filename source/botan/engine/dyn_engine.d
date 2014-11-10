@@ -142,7 +142,7 @@ public:
 private:
 	Dynamically_Loaded_Library lib;
 	Engine engine;
-};
+}
 
 private nothrow @nogc extern(C):
 

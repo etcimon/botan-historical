@@ -81,7 +81,7 @@ any ``std::exception`` throws (remember to catch by reference, as
         }
      catch(std::exception& e)
         {
-        std::cerr << e.what() << "\n";
+        std::cerr << e.msg << "\n";
         }
      }
 

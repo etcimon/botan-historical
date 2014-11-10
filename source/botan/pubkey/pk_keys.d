@@ -101,7 +101,7 @@ protected:
 		if (!check_key(rng, BOTAN_PUBLIC_KEY_STRONG_CHECKS_ON_LOAD))
 			throw new Invalid_Argument(algo_name ~ ": Invalid public key");
 	}
-};
+}
 
 /**
 * Private Key Base Class
@@ -141,7 +141,7 @@ protected:
 		if (!check_key(rng, BOTAN_PRIVATE_KEY_STRONG_CHECKS_ON_GENERATE))
 			throw new Self_Test_Failure(algo_name ~ " private key generation failed");
 	}
-};
+}
 
 /**
 * PK Secret Value Derivation Key
@@ -155,7 +155,7 @@ class PK_Key_Agreement_Key : Private_Key
 		abstract Vector!ubyte public_value() const;
 
 		~this() {}
-};
+}
 
 /*
 * Typedefs

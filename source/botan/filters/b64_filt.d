@@ -129,7 +129,7 @@ private:
 	const bool trailing_newline;
 	Vector!ubyte input, output;
 	size_t position, out_position;
-};
+}
 
 /**
 * This object represents a Base64 decoder.
@@ -215,4 +215,4 @@ private:
 	const Decoder_Checking checking;
 	Vector!ubyte input, output;
 	size_t position;
-};
+}

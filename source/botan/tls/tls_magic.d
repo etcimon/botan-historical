@@ -17,10 +17,10 @@ enum : Size_Limits {
 	MAX_PLAINTEXT_SIZE = 16*1024,
 	MAX_COMPRESSED_SIZE = MAX_PLAINTEXT_SIZE + 1024,
 	MAX_CIPHERTEXT_SIZE = MAX_COMPRESSED_SIZE + 1024,
-};
+}
 
 typedef ubyte Connection_Side;
-enum : Connection_Side { CLIENT = 1, SERVER = 2 };
+enum : Connection_Side { CLIENT = 1, SERVER = 2 }
 
 typedef ubyte Record_Type;
 enum : Record_Type {
@@ -31,7 +31,7 @@ enum : Record_Type {
 	HANDSHAKE			 = 22,
 	APPLICATION_DATA	= 23,
 	HEARTBEAT			 = 24,
-};
+}
 
 typedef ubyte Handshake_Type;
 enum : Handshake_Type {
@@ -56,10 +56,10 @@ enum : Handshake_Type {
 
 	HANDSHAKE_CCS		  = 254, // Not a wire value
 	HANDSHAKE_NONE		 = 255  // Null value
-};
+}
 
 typedef ubyte Compression_Method;
 enum : Compression_Method {
 	NO_COMPRESSION		 = 0x00,
 	DEFLATE_COMPRESSION  = 0x01
-};
+}

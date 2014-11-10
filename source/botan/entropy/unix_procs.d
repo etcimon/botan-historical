@@ -264,10 +264,10 @@ private:
 			std.algorithm.swap(m_fd, other.m_fd);
 			std.algorithm.swap(m_pid, other.m_pid);
 		}
-	m_tag
+	private:
 		int m_fd = -1;
 		pid_t m_pid = -1;
-	};
+	}
 
 	const Vector!string next_source()
 	{
@@ -284,7 +284,7 @@ private:
 	size_t m_sources_idx = 0;
 
 	Vector!Unix_Process m_procs;
-};
+}
 
 final class UnixProcessInfo_EntropySource : EntropySource
 {
@@ -308,7 +308,7 @@ public:
 		accum.add(usage, 0.0);
 	}
 
-};
+}
 
 
 

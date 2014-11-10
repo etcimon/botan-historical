@@ -46,7 +46,7 @@ public:
 	*/
 	HashFunction clone() const
 	{
-		Vector!( HashFunction ) hash_copies;
+		Vector!HashFunction hash_copies;
 		
 		foreach (hash; hashes)
 			hash_copies.push_back(hash.clone());
@@ -70,7 +70,7 @@ public:
 	* Constructor
 	* @param hash_input a set of hashes to compute in parallel
 	*/
-	this(in Vector!( HashFunction ) hash_input)
+	this(in Vector!HashFunction hash_input)
 	{
 		hashes = hash_input;
 	}
@@ -106,5 +106,5 @@ private:
 			offset += hash.output_length;
 		}
 	}
-	Vector!( HashFunction ) hashes;
-};
+	Vector!HashFunction hashes;
+}

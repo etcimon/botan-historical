@@ -10,7 +10,7 @@ import string;
 import botan.utils.types;
 import botan.libstate.libstate;
 import botan.parsing;
-import sstream;
+import std.array : Appender;
 import std.exception;
 
 /**
@@ -35,7 +35,7 @@ public:
 	{
 		foreach (suite; all_known_ciphersuites())
 		{
-			if (suite.to_string() == name)
+			if (suite.toString() == name)
 				return suite;
 		}
 		
@@ -47,7 +47,7 @@ public:
 	*
 	* @return list of all known ciphersuites
 	*/
-	static const ref Vector!( Ciphersuite ) all_known_ciphersuites()
+	static const ref Vector!Ciphersuite all_known_ciphersuites()
 	{
 		static Vector!Ciphersuite all_ciphersuites = Vector!CipherSuite(gather_known_ciphersuites());
 		return all_ciphersuites;
@@ -57,11 +57,10 @@ public:
 	* Formats the ciphersuite back to an RFC-style ciphersuite string
 	* @return RFC ciphersuite string identifier
 	*/
-	string to_string() const
+	string toString() const
 	{
 		if (m_cipher_keylen == 0)
-			throw new Exception("to_string - no value set");
-		import std.array : Appender;
+			throw new Exception("toString - no value set");
 		Appender!string output;
 		
 		output ~= "TLS_";
@@ -296,16 +295,16 @@ private:
 	size_t m_cipher_keylen = 0;
 	size_t m_cipher_ivlen = 0;
 	size_t m_mac_keylen = 0;
-};
+}
 
 private:
 /*
 * This way all work happens at the constuctor call, and we can
 * rely on that happening only once in D
 */
-Vector!( Ciphersuite ) gather_known_ciphersuites()
+Vector!Ciphersuite gather_known_ciphersuites()
 {
-	Vector!( Ciphersuite ) ciphersuites;
+	Vector!Ciphersuite ciphersuites;
 	
 	for (size_t i = 0; i <= 0xFFFF; ++i)
 	{

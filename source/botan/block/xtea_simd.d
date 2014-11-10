@@ -60,7 +60,7 @@ public:
 	}
 
 	BlockCipher clone() const { return new XTEA_SIMD; }
-};
+}
 
 package:
 

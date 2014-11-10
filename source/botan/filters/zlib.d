@@ -140,7 +140,7 @@ private:
 
 	Secure_Vector!ubyte buffer;
 	Zlib_Stream* zlib;
-};
+}
 
 /**
 * Zlib Decompression Filter
@@ -261,7 +261,7 @@ private:
 	Secure_Vector!ubyte buffer;
 	Zlib_Stream* zlib;
 	bool no_writes;
-};
+}
 
 
 /*
@@ -271,7 +271,7 @@ class Zlib_Alloc_Info
 {
 public:
 	HashMap!(void*, size_t) current_allocs;
-};
+}
 
 /*
 * Allocation Function for Zlib
@@ -332,7 +332,7 @@ public:
 		delete info;
 		memset(&stream, 0, (z_stream).sizeof);
 	}
-};
+}
 
 
 

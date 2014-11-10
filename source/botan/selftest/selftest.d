@@ -357,6 +357,6 @@ string test_filter_kat(Filter filter,
 	}
 	catch(Exception e)
 	{
-		return string("exception ") + e.what();
+		return string("exception ") + e.msg;
 	}
 }

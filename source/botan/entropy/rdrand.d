@@ -56,5 +56,5 @@ public:
 				accum.add(r, ENTROPY_PER_POLL);
 		}
 	}
-};
+}
 

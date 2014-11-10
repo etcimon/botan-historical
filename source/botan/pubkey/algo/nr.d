@@ -49,7 +49,7 @@ public:
 
 protected:
 	this() {}
-};
+}
 
 /**
 * Nyberg-Rueppel Private Key
@@ -104,7 +104,7 @@ public:
 		load_check(rng);
 	}
 
-};
+}
 
 /**
 * Nyberg-Rueppel signature operation
@@ -157,7 +157,7 @@ private:
 	const ref BigInt x;
 	Fixed_Base_Power_Mod powermod_g_p;
 	Modular_Reducer mod_q;
-};
+}
 
 /**
 * Nyberg-Rueppel verification operation
@@ -207,4 +207,4 @@ private:
 
 	Fixed_Base_Power_Mod powermod_g_p, powermod_y_p;
 	Modular_Reducer mod_p, mod_q;
-};
+}

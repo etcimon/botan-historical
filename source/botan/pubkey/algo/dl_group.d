@@ -70,12 +70,12 @@ public:
 		DH_PARAMETERS = ANSI_X9_42,
 		X942_DH_PARAMETERS = ANSI_X9_42,
 		PKCS3_DH_PARAMETERS = PKCS_3
-	};
+	}
 
 	/**
 	* Determine the prime creation for DL groups.
 	*/
-	enum PrimeType { Strong, Prime_Subgroup, DSA_Kosherizer };
+	enum PrimeType { Strong, Prime_Subgroup, DSA_Kosherizer }
 
 	/**
 	* Perform validity checks on the group.
@@ -749,6 +749,4 @@ private:
 		
 		return null;
 	}
-};
-
-
+}

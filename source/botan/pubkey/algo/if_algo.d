@@ -94,7 +94,7 @@ protected:
 	this() {}
 
 	BigInt n, e;
-};
+}
 
 /**
 * This class represents public keys
@@ -206,4 +206,4 @@ protected:
 	this() {}
 
 	BigInt d, p, q, d1, d2, c;
-};
+}

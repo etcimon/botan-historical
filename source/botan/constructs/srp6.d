@@ -174,7 +174,7 @@ private:
 	string hash_id;
 	BigInt B, b, v, S, p;
 	size_t p_bytes;
-};
+}
 
 private:
 	

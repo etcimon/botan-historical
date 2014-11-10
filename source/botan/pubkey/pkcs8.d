@@ -29,7 +29,7 @@ final class PKCS8_Exception : Decoding_Error
 	{
 		super("PKCS #8: " ~ error);
 	}
-};
+}
 
 /**
 * BER encode a private key
@@ -253,7 +253,7 @@ Secure_Vector!ubyte PKCS8_decode(
 	}
 	catch(Decoding_Error e)
 	{
-		throw new Decoding_Error("PKCS #8 private key decoding failed: " ~ string(e.what()));
+		throw new Decoding_Error("PKCS #8 private key decoding failed: " ~ string(e.msg));
 	}
 	
 	if (!is_encrypted)
@@ -326,4 +326,4 @@ public:
 private:
 	string passphrase;
 	bool first;
-};
+}

@@ -87,4 +87,4 @@ public:
 private:
 	Unique!MessageAuthenticationCode m_extractor;
 	Unique!MessageAuthenticationCode m_prf;
-};
+}

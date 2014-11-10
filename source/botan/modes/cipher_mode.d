@@ -19,4 +19,4 @@ public:
 	* confidentiality.
 	*/
 	abstract bool authenticated() const { return false; }
-};
+}

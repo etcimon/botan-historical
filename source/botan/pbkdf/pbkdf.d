@@ -126,7 +126,7 @@ public:
 							in ubyte* salt, size_t salt_len,
 							size_t iterations,
 		               Duration loop_for) const;
-};
+}
 
 
 import std.exception;

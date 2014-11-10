@@ -233,7 +233,7 @@ public:
 			return get_kdf("TLS-PRF");
 		}
 		
-		throw new Internal_Error("Unknown version code " ~ _version().to_string());
+		throw new Internal_Error("Unknown version code " ~ _version().toString());
 	}
 
 	Protocol_Version _version() const { return m_version; }
@@ -422,7 +422,7 @@ private:
 	Unique!New_Session_Ticket m_new_session_ticket;
 	Unique!Finished m_server_finished;
 	Unique!Finished m_client_finished;
-};
+}
 
 
 private:

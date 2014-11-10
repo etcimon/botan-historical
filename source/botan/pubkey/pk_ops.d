@@ -21,7 +21,7 @@ class Encryption
 													  RandomNumberGenerator rng);
 
 		~this() {}
-};
+}
 
 /**
 * Public key decryption interface
@@ -35,7 +35,7 @@ class Decryption
 													  size_t msg_len);
 
 		~this() {}
-};
+}
 
 /**
 * Public key signature creation interface
@@ -71,7 +71,7 @@ class Signature
 												  RandomNumberGenerator rng);
 
 		~this() {}
-};
+}
 
 /**
 * Public key signature verification interface
@@ -131,7 +131,7 @@ class Verification
 		}
 
 		~this() {}
-};
+}
 
 /**
 * A generic key agreement Operation (eg DH or ECDH)
@@ -148,4 +148,4 @@ class Key_Agreement
 		abstract Secure_Vector!ubyte agree(in ubyte* w, size_t w_len);
 
 		~this() {}
-};
+}

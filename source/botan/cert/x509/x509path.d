@@ -88,7 +88,7 @@ private:
 	bool m_ocsp_all_intermediates;
 	Set!string m_trusted_hashes;
 	size_t m_minimum_key_strength;
-};
+}
 
 /**
 * Represents the result of a PKIX path validation
@@ -239,7 +239,7 @@ private:
 	Certificate_Status_Code m_overall;
 	Vector!( Set<Certificate_Status_Code ) m_all_status;
 	Vector!X509_Certificate m_cert_path;
-};
+}
 
 /**
 * PKIX Path Validation
@@ -459,7 +459,7 @@ Vector!( Set<Certificate_Status_Code )
 			}
 			catch(Exception e)
 			{
-				//std::cout << "OCSP error: " << e.what() << "";
+				//std::cout << "OCSP error: " << e.msg << "";
 			}
 		}
 		

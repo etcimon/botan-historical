@@ -66,7 +66,7 @@ private:
 	}
 
 	Secure_Vector!uint digest;
-};
+}
 
 
 /**
@@ -121,9 +121,9 @@ private:
 
 
 	Secure_Vector!uint digest;
-};
+}
 
-m_tag
+private:
 pure:
 
 /*

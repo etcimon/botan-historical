@@ -124,7 +124,7 @@ public:
 
 	void clear()
 	{
-		zap(round_key);
+		zap(m_round_key);
 	}
 
 	override @property string name() const { return "Serpent"; }
@@ -135,7 +135,7 @@ protected:
 	* @return const reference to the key schedule
 	*/
 	const ref Secure_Vector!uint get_round_keys() const
-	{ return round_key; }
+	{ return m_round_key; }
 
 	/**
 	* For use by subclasses that implement the key schedule
@@ -143,14 +143,14 @@ protected:
 	*/
 	void set_round_keys(const uint ks[132])
 	{
-		round_key.assign(&ks[0], &ks[132]);
+		m_round_key.assign(&ks[0], &ks[132]);
 	}
 
 private:
 	/*
 	* Serpent Key Schedule
 	*/
-	void key_schedule(in ubyte* key)
+	void key_schedule(in ubyte* key, size_t length)
 	{
 		const uint PHI = 0x9E3779B9;
 		
@@ -184,11 +184,11 @@ private:
 		mixin(SBoxE6!(W[128],W[129],W[130],W[131])()); mixin(SBoxE5!(W[132],W[133],W[134],W[135])());
 		mixin(SBoxE4!(W[136],W[137],W[138],W[139])());
 		
-		round_key.assign(&W[8], &W[140]);
+		m_round_key.assign(&W[8], &W[140]);
 	}
 
-	Secure_Vector!uint round_key;
-};
+	Secure_Vector!uint m_round_key;
+}
 
 
 package:

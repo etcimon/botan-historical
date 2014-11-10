@@ -311,7 +311,7 @@ public:
 	}
 
 	~this() {}
-};
+}
 
 /**
 * NSA Suite B 128-bit security level (see @rfc 6460)
@@ -339,7 +339,7 @@ public:
 
 	override bool acceptable_protocol_version(Protocol_Version _version) const
 	{ return _version == Protocol_Version.TLS_V12; }
-};
+}
 
 /**
 * Policy for DTLS. We require DTLS v1.2 and an AEAD mode
@@ -352,7 +352,7 @@ public:
 
 	override bool acceptable_protocol_version(Protocol_Version _version) const
 	{ return _version == Protocol_Version.DTLS_V12; }
-};
+}
 
 
 private:
@@ -429,4 +429,4 @@ public:
 	}
 private:
 	Vector!string m_ciphers, m_macs, m_kex, m_sigs;
-};
+}

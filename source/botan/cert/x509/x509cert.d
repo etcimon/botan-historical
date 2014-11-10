@@ -25,7 +25,7 @@ import botan.codec.hex;
 import botan.utils.types;
 import std.algorithm;
 import iterator;
-import sstream;
+import std.array : Appender;
 import botan.utils.hashmap;
 
 alias X509_Certificate = FreeListRef!X509_Certificate_Impl;
@@ -52,7 +52,7 @@ public:
 	*/
 	Vector!ubyte subject_public_key_bits() const
 	{
-		return hex_decode(subject.get1("X509.Certificate.public_key"));
+		return hex_decode(m_subject.get1("X509.Certificate.public_key"));
 	}
 
 	/**
@@ -61,7 +61,7 @@ public:
 	*/
 	X509_DN issuer_dn() const
 	{
-		return create_dn(issuer);
+		return create_dn(m_issuer);
 	}
 
 	/**
@@ -70,7 +70,7 @@ public:
 	*/
 	X509_DN subject_dn() const
 	{
-		return create_dn(subject);
+		return create_dn(m_subject);
 	}
 
 	/**
@@ -88,7 +88,7 @@ public:
 	Vector!string
 		subject_info(in string what) const
 	{
-		return subject.get(X509_DN.deref_info_field(what));
+		return m_subject.get(X509_DN.deref_info_field(what));
 	}
 
 	/**
@@ -99,7 +99,7 @@ public:
 	*/
 	Vector!string issuer_info(in string what) const
 	{
-		return issuer.get(X509_DN.deref_info_field(what));
+		return m_issuer.get(X509_DN.deref_info_field(what));
 	}
 
 	/**
@@ -107,7 +107,7 @@ public:
 	*/
 	Vector!ubyte raw_issuer_dn() const
 	{
-		return issuer.get1_memvec("X509.Certificate.dn_bits");
+		return m_issuer.get1_memvec("X509.Certificate.dn_bits");
 	}
 
 
@@ -116,7 +116,7 @@ public:
 	*/
 	Vector!ubyte raw_subject_dn() const
 	{
-		return subject.get1_memvec("X509.Certificate.dn_bits");
+		return m_subject.get1_memvec("X509.Certificate.dn_bits");
 	}
 
 	/**
@@ -125,7 +125,7 @@ public:
 	*/
 	string start_time() const
 	{
-		return subject.get1("X509.Certificate.start");
+		return m_subject.get1("X509.Certificate.start");
 	}
 
 	/**
@@ -134,7 +134,7 @@ public:
 	*/
 	string end_time() const
 	{
-		return subject.get1("X509.Certificate.end");
+		return m_subject.get1("X509.Certificate.end");
 	}
 
 	/**
@@ -143,7 +143,7 @@ public:
 	*/
 	uint x509_version() const
 	{
-		return (subject.get1_uint("X509.Certificate.version") + 1);
+		return (m_subject.get1_uint("X509.Certificate.version") + 1);
 	}
 
 	/**
@@ -152,7 +152,7 @@ public:
 	*/
 	Vector!ubyte serial_number() const
 	{
-		return subject.get1_memvec("X509.Certificate.serial");
+		return m_subject.get1_memvec("X509.Certificate.serial");
 	}
 
 	/**
@@ -161,7 +161,7 @@ public:
 	*/
 	Vector!ubyte authority_key_id() const
 	{
-		return issuer.get1_memvec("X509v3.AuthorityKeyIdentifier");
+		return m_issuer.get1_memvec("X509v3.AuthorityKeyIdentifier");
 	}
 
 	/**
@@ -170,14 +170,14 @@ public:
 	*/
 	Vector!ubyte subject_key_id() const
 	{
-		return subject.get1_memvec("X509v3.SubjectKeyIdentifier");
+		return m_subject.get1_memvec("X509v3.SubjectKeyIdentifier");
 	}
 
 	/**
 	* Check whether this certificate is self signed.
 	* @return true if this certificate is self signed
 	*/
-	bool is_self_signed() const { return self_signed; }
+	bool is_self_signed() const { return m_self_signed; }
 
 	/**
 	* Check whether this certificate is a CA certificate.
@@ -185,7 +185,7 @@ public:
 	*/
 	bool is_CA_cert() const
 	{
-		if (!subject.get1_uint("X509v3.BasicConstraints.is_ca"))
+		if (!m_subject.get1_uint("X509v3.BasicConstraints.is_ca"))
 			return false;
 		
 		return allowed_usage(KEY_CERT_SIGN);
@@ -220,7 +220,7 @@ public:
 	*/
 	uint path_limit() const
 	{
-		return subject.get1_uint("X509v3.BasicConstraints.path_constraint", 0);
+		return m_subject.get1_uint("X509v3.BasicConstraints.path_constraint", 0);
 	}
 
 	/**
@@ -230,7 +230,7 @@ public:
 	*/
 	Key_Constraints constraints() const
 	{
-		return Key_Constraints(subject.get1_uint("X509v3.KeyUsage",
+		return Key_Constraints(m_subject.get1_uint("X509v3.KeyUsage",
 		                                         Key_Constraints.NO_CONSTRAINTS));
 	}
 
@@ -242,7 +242,7 @@ public:
 	*/
 	Vector!string ex_constraints() const
 	{
-		return lookup_oids(subject.get("X509v3.ExtendedKeyUsage"));
+		return lookup_oids(m_subject.get("X509v3.ExtendedKeyUsage"));
 	}
 
 	/**
@@ -252,7 +252,7 @@ public:
 	*/
 	Vector!string policies() const
 	{
-		return lookup_oids(subject.get("X509v3.CertificatePolicies"));
+		return lookup_oids(m_subject.get("X509v3.CertificatePolicies"));
 	}
 
 	/**
@@ -260,7 +260,7 @@ public:
 	*/
 	string ocsp_responder() const
 	{
-		return subject.get1("OCSP.responder", "");
+		return m_subject.get1("OCSP.responder", "");
 	}
 
 	/**
@@ -268,28 +268,28 @@ public:
 	*/
 	string crl_distribution_point() const
 	{
-		return subject.get1("CRL.DistributionPoint", "");
+		return m_subject.get1("CRL.DistributionPoint", "");
 	}
 
 	/**
 	* @return a string describing the certificate
 	*/
 
-	string to_string() const
+	string toString() const
 	{
 		import std.array : Appender;
-		string[] dn_fields = { "Name",
+		string[] dn_fields = [ "Name",
 			"Email",
-				"Organization",
-				"Organizational Unit",
-				"Locality",
-				"State",
-				"Country",
-				"IP",
-				"DNS",
-				"URI",
-				"PKIX.XMPPAddr",
-			null };
+			"Organization",
+			"Organizational Unit",
+			"Locality",
+			"State",
+			"Country",
+			"IP",
+			"DNS",
+			"URI",
+			"PKIX.XMPPAddr",
+			null ];
 		
 		Appender!string output;
 		
@@ -434,9 +434,9 @@ public:
 	{
 		return (sig == other.sig &&
 		        sig_algo == other.sig_algo &&
-		        self_signed == other.self_signed &&
-		        issuer == other.issuer &&
-		        subject == other.subject);
+		        m_self_signed == other.m_self_signed &&
+		        m_issuer == other.m_issuer &&
+		        m_subject == other.m_subject);
 	}
 
 	/**
@@ -478,7 +478,7 @@ public:
 	this(DataSource input)
 	{
 		super(input, "CERTIFICATE/X509 CERTIFICATE");
-		self_signed = false;
+		m_self_signed = false;
 		do_decode();
 	}
 
@@ -490,14 +490,14 @@ public:
 	this(in string filename)
 	{
 		super(filename, "CERTIFICATE/X509 CERTIFICATE");
-		self_signed = false;
+		m_self_signed = false;
 		do_decode();
 	}
 
 	this(in Vector!ubyte input)
 	{
 		super(input, "CERTIFICATE/X509 CERTIFICATE");
-		self_signed = false;
+		m_self_signed = false;
 		do_decode();
 	}
 
@@ -532,13 +532,13 @@ private:
 		if (sig_algo != sig_algo_inner)
 			throw new Decoding_Error("Algorithm identifier mismatch");
 		
-		self_signed = (dn_subject == dn_issuer);
+		m_self_signed = (dn_subject == dn_issuer);
 		
-		subject.add(dn_subject.contents());
-		issuer.add(dn_issuer.contents());
+		m_subject.add(dn_subject.contents());
+		m_issuer.add(dn_issuer.contents());
 		
-		subject.add("X509.Certificate.dn_bits", asn1_obj.put_in_sequence(dn_subject.get_bits()));
-		issuer.add("X509.Certificate.dn_bits", asn1_obj.put_in_sequence(dn_issuer.get_bits()));
+		m_subject.add("X509.Certificate.dn_bits", asn1_obj.put_in_sequence(dn_subject.get_bits()));
+		m_issuer.add("X509.Certificate.dn_bits", asn1_obj.put_in_sequence(dn_issuer.get_bits()));
 		
 		BER_Object public_key = tbs_cert.get_next_object();
 		if (public_key.type_tag != ASN1_Tag.SEQUENCE || public_key.class_tag != ASN1_Tag.CONSTRUCTED)
@@ -558,7 +558,7 @@ private:
 			
 			BER_Decoder(v3_exts_data.value).decode(extensions).verify_end();
 			
-			extensions.contents_to(subject, issuer);
+			extensions.contents_to(m_subject, m_issuer);
 		}
 		else if (v3_exts_data.type_tag != ASN1_Tag.NO_OBJECT)
 			throw new BER_Bad_Tag("Unknown tag in X.509 cert",
@@ -567,39 +567,39 @@ private:
 		if (tbs_cert.more_items())
 			throw new Decoding_Error("TBSCertificate has more items that expected");
 		
-		subject.add("X509.Certificate.version", _version);
-		subject.add("X509.Certificate.serial", BigInt.encode(serial_bn));
-		subject.add("X509.Certificate.start", start.readable_string());
-		subject.add("X509.Certificate.end", end.readable_string());
+		m_subject.add("X509.Certificate.version", _version);
+		m_subject.add("X509.Certificate.serial", BigInt.encode(serial_bn));
+		m_subject.add("X509.Certificate.start", start.readable_string());
+		m_subject.add("X509.Certificate.end", end.readable_string());
 		
-		issuer.add("X509.Certificate.v2.key_id", v2_issuer_key_id);
-		subject.add("X509.Certificate.v2.key_id", v2_subject_key_id);
+		m_issuer.add("X509.Certificate.v2.key_id", v2_issuer_key_id);
+		m_subject.add("X509.Certificate.v2.key_id", v2_subject_key_id);
 		
-		subject.add("X509.Certificate.public_key",
+		m_subject.add("X509.Certificate.public_key",
 		            hex_encode(public_key.value));
 		
-		if (self_signed && _version == 0)
+		if (m_self_signed && _version == 0)
 		{
-			subject.add("X509v3.BasicConstraints.is_ca", 1);
-			subject.add("X509v3.BasicConstraints.path_constraint", x509_ext.NO_CERT_PATH_LIMIT);
+			m_subject.add("X509v3.BasicConstraints.is_ca", 1);
+			m_subject.add("X509v3.BasicConstraints.path_constraint", x509_ext.NO_CERT_PATH_LIMIT);
 		}
 		
 		if (is_CA_cert() &&
-		    !subject.has_value("X509v3.BasicConstraints.path_constraint"))
+		    !m_subject.has_value("X509v3.BasicConstraints.path_constraint"))
 		{
 			const size_t limit = (x509_version() < 3) ?
 				x509_ext.NO_CERT_PATH_LIMIT : 0;
 			
-			subject.add("X509v3.BasicConstraints.path_constraint", limit);
+			m_subject.add("X509v3.BasicConstraints.path_constraint", limit);
 		}
 	}
 
 
 	this() {}
 
-	Data_Store subject, issuer;
-	bool self_signed;
-};
+	Data_Store m_subject, m_issuer;
+	bool m_self_signed;
+}
 
 
 /*
@@ -610,10 +610,9 @@ private:
 */
 X509_DN create_dn(in Data_Store info)
 {
-	auto names = info.search_for(
-		[](in string key, in string)
+	auto names = info.search_for((in string key, in string)
 	{
-		return (key.find("X520.") != string::npos);
+		return (key.canFind("X520."));
 	});
 	
 	X509_DN dn;

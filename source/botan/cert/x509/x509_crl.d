@@ -34,7 +34,7 @@ public:
 		this(in string error) {
 			super("X509_CRL: " ~ error);
 		}
-	};
+	}
 
 	/**
 	* Check if this particular certificate is listed in the CRL
@@ -59,11 +59,11 @@ public:
 		
 		bool is_revoked = false;
 		
-		for (size_t i = 0; i != revoked.length; ++i)
+		for (size_t i = 0; i != m_revoked.length; ++i)
 		{
-			if (cert_serial == revoked[i].serial_number())
+			if (cert_serial == m_revoked[i].serial_number())
 			{
-				if (revoked[i].reason_code() == CRL_Code.REMOVE_FROM_CRL)
+				if (m_revoked[i].reason_code() == CRL_Code.REMOVE_FROM_CRL)
 					is_revoked = false;
 				else
 					is_revoked = true;
@@ -80,7 +80,7 @@ public:
 	*/
 	Vector!CRL_Entry get_revoked() const
 	{
-		return revoked;
+		return m_revoked;
 	}
 
 	/**
@@ -89,7 +89,7 @@ public:
 	*/
 	X509_DN issuer_dn() const
 	{
-		return create_dn(info);
+		return create_dn(m_info);
 	}
 
 
@@ -99,7 +99,7 @@ public:
 	*/
 	Vector!ubyte authority_key_id() const
 	{
-		return info.get1_memvec("X509v3.AuthorityKeyIdentifier");
+		return m_info.get1_memvec("X509v3.AuthorityKeyIdentifier");
 	}
 
 	/**
@@ -108,7 +108,7 @@ public:
 	*/
 	uint crl_number() const
 	{
-		return info.get1_uint("X509v3.CRLNumber");
+		return m_info.get1_uint("X509v3.CRLNumber");
 	}
 
 	/**
@@ -117,7 +117,7 @@ public:
 	*/
 	X509_Time this_update() const
 	{
-		return info.get1("X509.CRL.start");
+		return m_info.get1("X509.CRL.start");
 	}
 
 	/**
@@ -126,7 +126,7 @@ public:
 	*/
 	X509_Time next_update() const
 	{
-		return info.get1("X509.CRL.end");
+		return m_info.get1("X509.CRL.end");
 	}
 
 	/**
@@ -137,7 +137,7 @@ public:
 	*/
 	this(DataSource input, bool throw_on_unknown_critical_ = false)
 	{
-		throw_on_unknown_critical = throw_on_unknown_critical_;
+		m_throw_on_unknown_critical = throw_on_unknown_critical_;
 		super(input, "X509 CRL/CRL");
 		do_decode();
 	}
@@ -151,7 +151,7 @@ public:
 	this(in string filename,
 				bool throw_on_unknown_critical_ = false)
 	{
-		throw_on_unknown_critical = throw_on_unknown_critical_;
+		m_throw_on_unknown_critical = throw_on_unknown_critical_;
 		super(input, "CRL/X509 CRL");
 		do_decode();
 	}
@@ -165,7 +165,7 @@ public:
 	this(in Vector!ubyte vec,
 				bool throw_on_unknown_critical_ = false)
 	{
-		throw_on_unknown_critical = throw_on_unknown_critical_;
+		m_throw_on_unknown_critical = throw_on_unknown_critical_;
 		super(input, "CRL/X509 CRL");
 		do_decode();
 	}
@@ -194,12 +194,12 @@ private:
 		
 		X509_DN dn_issuer;
 		tbs_crl.decode(dn_issuer);
-		info.add(dn_issuer.contents());
+		m_info.add(dn_issuer.contents());
 		
 		X509_Time start, end;
 		tbs_crl.decode(start).decode(end);
-		info.add("X509.CRL.start", start.readable_string());
-		info.add("X509.CRL.end", end.readable_string());
+		m_info.add("X509.CRL.start", start.readable_string());
+		m_info.add("X509.CRL.end", end.readable_string());
 		
 		BER_Object next = tbs_crl.get_next_object();
 		
@@ -209,9 +209,9 @@ private:
 			
 			while(cert_list.more_items())
 			{
-				CRL_Entry entry = CRL_Entry(throw_on_unknown_critical);
+				CRL_Entry entry = CRL_Entry(m_throw_on_unknown_critical);
 				cert_list.decode(entry);
-				revoked.push_back(entry);
+				m_revoked.push_back(entry);
 			}
 			next = tbs_crl.get_next_object();
 		}
@@ -221,11 +221,11 @@ private:
 		{
 			BER_Decoder crl_options = BER_Decoder(next.value);
 			
-			Extensions extensions = Extensions(throw_on_unknown_critical);
+			Extensions extensions = Extensions(m_throw_on_unknown_critical);
 			
 			crl_options.decode(extensions).verify_end();
 			
-			extensions.contents_to(info, info);
+			extensions.contents_to(m_info, m_info);
 			
 			next = tbs_crl.get_next_object();
 		}
@@ -237,7 +237,7 @@ private:
 	}
 
 
-	bool throw_on_unknown_critical;
-	Vector!CRL_Entry revoked;
-	Data_Store info;
-};
+	bool m_throw_on_unknown_critical;
+	Vector!CRL_Entry m_revoked;
+	Data_Store m_info;
+}

@@ -83,7 +83,7 @@ private:
 
 	Unique!BlockCipher m_cipher;
 	Unique!BlockCipherModePaddingMethod m_padding;
-};
+}
 
 /**
 * ECB Encryption
@@ -136,7 +136,7 @@ public:
 	{
 		return 0;
 	}
-};
+}
 
 /**
 * ECB Decryption
@@ -188,4 +188,4 @@ public:
 	{
 		return cipher().block_size;
 	}
-};
+}

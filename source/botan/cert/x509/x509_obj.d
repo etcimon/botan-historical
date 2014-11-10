@@ -18,6 +18,7 @@ import botan.codec.pem;
 import std.algorithm;
 import botan.utils.types;
 import botan.utils.types;
+import std.array;
 
 /**
 * This class represents abstract X.509 signed objects as
@@ -32,7 +33,7 @@ public:
 	*/
 	final Vector!ubyte tbs_data() const
 	{
-		return asn1_obj.put_in_sequence(tbs_bits);
+		return asn1_obj.put_in_sequence(m_tbs_bits);
 	}
 
 	/**
@@ -40,7 +41,7 @@ public:
 	*/
 	final Vector!ubyte signature() const
 	{
-		return sig;
+		return m_sig;
 	}
 
 	/**
@@ -48,7 +49,7 @@ public:
 	*/
 	final Algorithm_Identifier signature_algorithm() const
 	{
-		return sig_algo;
+		return m_sig_algo;
 	}
 
 	/**
@@ -57,11 +58,11 @@ public:
 	final string hash_used_for_signature() const
 	{
 		Vector!string sig_info =
-			splitter(oids.lookup(sig_algo.oid), '/');
+			splitter(oids.lookup(m_sig_algo.oid), '/');
 		
 		if (sig_info.length != 2)
 			throw new Internal_Error("Invalid name format found for " ~
-			                         sig_algo.oid.toString());
+			                         m_sig_algo.oid.toString());
 		
 		Vector!string pad_and_hash =
 			parse_algorithm_name(sig_info[1]);
@@ -88,9 +89,9 @@ public:
 	{
 		return DER_Encoder()
 			.start_cons(ASN1_Tag.SEQUENCE)
-				.raw_bytes(tbs_bits)
+				.raw_bytes(m_tbs_bits)
 				.encode(algo)
-				.encode(signer.sign_message(tbs_bits, rng), ASN1_Tag.BIT_STRING)
+				.encode(signer.sign_message(m_tbs_bits, rng), ASN1_Tag.BIT_STRING)
 				.end_cons()
 				.get_contents_unlocked();
 	}
@@ -106,7 +107,7 @@ public:
 	{
 		try {
 			Vector!string sig_info =
-				splitter(oids.lookup(sig_algo.oid), '/');
+				splitter(oids.lookup(m_sig_algo.oid), '/');
 			
 			if (sig_info.length != 2 || sig_info[0] != pub_key.algo_name)
 				return false;
@@ -128,9 +129,9 @@ public:
 	{
 		to.start_cons(ASN1_Tag.SEQUENCE)
 			.start_cons(ASN1_Tag.SEQUENCE)
-				.raw_bytes(tbs_bits)
+				.raw_bytes(m_tbs_bits)
 				.end_cons()
-				.encode(sig_algo)
+				.encode(m_sig_algo)
 				.encode(sig, ASN1_Tag.BIT_STRING)
 				.end_cons();
 	}
@@ -142,10 +143,10 @@ public:
 	{
 		from.start_cons(ASN1_Tag.SEQUENCE)
 			.start_cons(ASN1_Tag.SEQUENCE)
-				.raw_bytes(tbs_bits)
+				.raw_bytes(m_tbs_bits)
 				.end_cons()
-				.decode(sig_algo)
-				.decode(sig, ASN1_Tag.BIT_STRING)
+				.decode(m_sig_algo)
+				.decode(m_sig, ASN1_Tag.BIT_STRING)
 				.verify_end()
 				.end_cons();
 	}
@@ -167,7 +168,7 @@ public:
 	*/
 	final string PEM_encode() const
 	{
-		return pem.encode(BER_encode(), PEM_label_pref);
+		return pem.encode(BER_encode(), m_PEM_label_pref);
 	}
 
 	~this() {}
@@ -208,18 +209,18 @@ protected:
 		}
 		catch(Decoding_Error e)
 		{
-			throw new Decoding_Error(PEM_label_pref ~ " decoding failed (" ~
-			                         e.what() ~ ")");
+			throw new Decoding_Error(m_PEM_label_pref ~ " decoding failed (" ~
+			                         e.msg ~ ")");
 		}
 		catch(Invalid_Argument e)
 		{
-			throw new Decoding_Error(PEM_label_pref ~ " decoding failed (" ~
-			                         e.what() ~ ")");
+			throw new Decoding_Error(m_PEM_label_pref ~ " decoding failed (" ~
+			                         e.msg ~ ")");
 		}
 	}
 	this() {}
-	Algorithm_Identifier sig_algo;
-	Vector!ubyte tbs_bits, sig;
+	Algorithm_Identifier m_sig_algo;
+	Vector!ubyte m_tbs_bits, m_sig;
 private:
 	abstract void force_decode();
 
@@ -228,12 +229,12 @@ private:
 	*/
 	final void init(DataSource input, in string labels)
 	{
-		PEM_labels_allowed = splitter(labels, '/');
+		m_PEM_labels_allowed = splitter(labels, '/').array!(string[]);
 		if (PEM_labels_allowed.length < 1)
 			throw new Invalid_Argument("Bad labels argument to X509_Object");
 		
-		PEM_label_pref = PEM_labels_allowed[0];
-		std.algorithm.sort(PEM_labels_allowed.ptr, PEM_labels_allowed.end());
+		m_PEM_label_pref = m_PEM_labels_allowed;
+		std.algorithm.sort(m_PEM_labels_allowed);
 		
 		try {
 			if (asn1_obj.maybe_BER(input) && !pem.matches(input))
@@ -245,9 +246,7 @@ private:
 			{
 				string got_label;
 				auto ber = scoped!DataSource_Memory(pem.decode(input, got_label));
-				import std.algorithm : canFind;
-				size_t idx = PEM_labels_allowed.canFind(got_label);
-				if (idx == -1)
+				if (m_PEM_labels_allowed.canFind(got_label))
 					throw new Decoding_Error("Invalid PEM label: " ~ got_label);
 				
 				auto dec = BER_Decoder(ber);
@@ -256,10 +255,10 @@ private:
 		}
 		catch(Decoding_Error e)
 		{
-			throw new Decoding_Error(PEM_label_pref ~ " decoding failed: " ~ e.what());
+			throw new Decoding_Error(m_PEM_label_pref ~ " decoding failed: " ~ e.msg);
 		}
 	}
 
-	Vector!string PEM_labels_allowed;
-	string PEM_label_pref;
-};
+	string[] m_PEM_labels_allowed;
+	string m_PEM_label_pref;
+}

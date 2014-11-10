@@ -200,7 +200,7 @@ private:
 
 	SecureQueueNode head;
 	SecureQueueNode tail;
-};
+}
 
 /**
 * A node in a SecureQueue
@@ -250,4 +250,4 @@ private:
 	SecureQueueNode next;
 	Secure_Vector!ubyte buffer;
 	size_t start, end;
-};
+}

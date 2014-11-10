@@ -53,4 +53,4 @@ public:
 	*/
 	abstract bool valid_iv_length(size_t length) const
 	{ return (length == 0); }
-};
+}

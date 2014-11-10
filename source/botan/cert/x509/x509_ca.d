@@ -6,6 +6,7 @@
 */
 module botan.cert.x509.x509_ca;
 
+import botan.asn1.asn1_time;
 import botan.cert.x509.x509cert;
 import botan.cert.x509.x509_crl;
 import botan.cert.x509.x509_ext;
@@ -20,6 +21,7 @@ import botan.utils.parsing;
 import botan.libstate.lookup;
 import botan.asn1.oid_lookup.oids;
 import botan.cert.x509.key_constraint;
+import botan.rng.rng;
 import std.datetime;
 import std.algorithm;
 import typeinfo;
@@ -43,8 +45,8 @@ public:
 	*/
 	X509_Certificate sign_request(in PKCS10_Request req,
 	                              RandomNumberGenerator rng,
-	                              const X509_Time not_before,
-	                              const X509_Time not_after)
+	                              in X509_Time not_before,
+	                              in X509_Time not_after)
 	{
 		Key_Constraints constraints;
 		if (req.is_CA())
@@ -63,7 +65,7 @@ public:
 		
 		extensions.add(new x509_ext.Key_Usage(constraints), true);
 		
-		extensions.add(new x509_ext.Authority_Key_ID(cert.subject_key_id()));
+		extensions.add(new x509_ext.Authority_Key_ID(m_cert.subject_key_id()));
 		extensions.add(new x509_ext.Subject_Key_ID(req.raw_public_key()));
 		
 		extensions.add(
@@ -72,10 +74,10 @@ public:
 		extensions.add(
 			new x509_ext.Extended_Key_Usage(req.ex_constraints()));
 		
-		return make_cert(signer, rng, ca_sig_algo,
+		return make_cert(m_signer, rng, m_ca_sig_algo,
 		                 req.raw_public_key(),
 		                 not_before, not_after,
-		                 cert.subject_dn(), req.subject_dn(),
+		                 m_cert.subject_dn(), req.subject_dn(),
 		                 extensions);
 	}
 
@@ -85,7 +87,7 @@ public:
 	*/
 	X509_Certificate ca_certificate() const
 	{
-		return cert;
+		return m_cert;
 	}
 
 	/**
@@ -192,11 +194,11 @@ public:
 	        in Private_Key key,
 	        in string hash_fn)
 	{
-		cert = c;
-		if (!cert.is_CA_cert())
+		m_cert = c;
+		if (!m_cert.is_CA_cert())
 			throw new Invalid_Argument("X509_CA: This certificate is not for a CA");
 		
-		signer = choose_sig_format(key, hash_fn, ca_sig_algo);
+		m_signer = choose_sig_format(key, hash_fn, m_ca_sig_algo);
 	}
 
 	/*
@@ -224,15 +226,15 @@ private:
 		
 		Extensions extensions;
 		extensions.add(
-			new x509_ext.Authority_Key_ID(cert.subject_key_id()));
+			new x509_ext.Authority_Key_ID(m_cert.subject_key_id()));
 		extensions.add(new x509_ext.CRL_Number(crl_number));
 		
 		const Vector!ubyte crl = x509_obj.make_signed(
-			signer, rng, ca_sig_algo,
+			m_signer, rng, m_ca_sig_algo,
 			DER_Encoder().start_cons(ASN1_Tag.SEQUENCE)
 			.encode(X509_CRL_VERSION-1)
-			.encode(ca_sig_algo)
-			.encode(cert.issuer_dn())
+			.encode(m_ca_sig_algo)
+			.encode(m_cert.issuer_dn())
 			.encode(X509_Time(current_time))
 			.encode(X509_Time(expire_time))
 			.encode_if (revoked.length > 0,
@@ -253,10 +255,10 @@ private:
 	}	
 
 
-	Algorithm_Identifier ca_sig_algo;
-	X509_Certificate cert;
-	PK_Signer signer;
-};
+	Algorithm_Identifier m_ca_sig_algo;
+	X509_Certificate m_cert;
+	PK_Signer m_signer;
+}
 
 /**
 * Choose the default signature format for a certain public key signature

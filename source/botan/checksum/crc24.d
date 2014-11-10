@@ -115,4 +115,4 @@ private:
 		clear();
 	}
 	uint crc;
-};
+}

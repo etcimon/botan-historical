@@ -186,7 +186,7 @@ private:
 
 	Unique!BlockCipher m_cipher;
 	Secure_Vector!ubyte m_nonce, m_msg_buf, m_ad_buf;
-};
+}
 
 /**
 * CCM Encryption
@@ -267,7 +267,7 @@ public:
 	{ return input_length + tag_size(); }
 
 	override size_t minimum_final_size() const { return 0; }
-};
+}
 
 /**
 * CCM Decryption
@@ -345,4 +345,4 @@ public:
 	}
 
 	override size_t minimum_final_size() const { return tag_size(); }
-};
+}

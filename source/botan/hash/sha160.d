@@ -156,9 +156,9 @@ protected:
 	* The message buffer, exposed for use by subclasses (asm, SSE2)
 	*/
 	Secure_Vector!uint W;
-};
+}
 
-m_tag
+private:
 pure:
 /*
 * SHA-160 F1 Function

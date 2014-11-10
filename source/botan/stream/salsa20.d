@@ -163,7 +163,7 @@ private:
 	Secure_Vector!uint m_state;
 	Secure_Vector!ubyte m_buffer;
 	size_t m_position;
-};
+}
 
 
 private:

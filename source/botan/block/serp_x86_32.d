@@ -53,7 +53,7 @@ private:
 	/*
 	* Serpent Key Schedule
 	*/
-	void key_schedule(in ubyte* key)
+	void key_schedule(in ubyte* key, size_t length)
 	{
 		Secure_Vector!uint W = Secure_Vector!uint(140);
 		for (size_t i = 0; i != length / 4; ++i)
@@ -64,7 +64,7 @@ private:
 		this.set_round_keys(&W[8]);
 	}
 
-};
+}
 
 /**
 * Entry point for Serpent encryption in x86 asm

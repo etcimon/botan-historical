@@ -140,7 +140,7 @@ private:
 
 	Secure_Vector!ubyte buffer;
 	Lzma_Stream* lzma;
-};
+}
 
 /**
 * Lzma Decompression Filter
@@ -271,7 +271,7 @@ private:
 	Secure_Vector!ubyte buffer;
 	Lzma_Stream* lzma;
 	bool no_writes;
-};
+}
 
 /*
 * Allocation Information for Lzma
@@ -280,7 +280,7 @@ class Lzma_Alloc_Info
 {
 public:
 	HashMap!(void*, size_t) current_allocs;
-};
+}
 
 
 /**
@@ -316,7 +316,7 @@ public:
 		delete stream.allocator;
 		memset(&stream, 0, (lzma_stream).sizeof);
 	}
-};
+}
 
 
 private:
@@ -487,7 +487,7 @@ struct lzma_stream
 	lzma_reserved_enum reserved_enum2;
 }
 //
-@property lzma_stream LZMA_STREAM_INIT(){ return lzma_stream.init; };
+@property lzma_stream LZMA_STREAM_INIT(){ return lzma_stream.init; }
 lzma_ret lzma_code(lzma_stream *strm, lzma_action action);
 void lzma_end(lzma_stream *strm);
 pure ulong lzma_memusage(const lzma_stream *strm);
@@ -612,7 +612,7 @@ lzma_ret lzma_filter_flags_decode(
 	const ubyte *in_, size_t *in_pos, size_t in_size);
 ulong lzma_physmem();
 
-struct lzma_index {};
+struct lzma_index {}
 struct lzma_index_iter
 {
 	struct StreamStruct
@@ -727,7 +727,7 @@ lzma_ret lzma_index_buffer_encode(const lzma_index *i,
 lzma_ret lzma_index_buffer_decode(lzma_index **i,
                                   ulong *memlimit, lzma_allocator *allocator,
                                   const ubyte *in_, size_t *in_pos, size_t in_size);
-struct lzma_index_hash {};
+struct lzma_index_hash {}
 lzma_index_hash * lzma_index_hash_init(
 	lzma_index_hash *index_hash, lzma_allocator *allocator);
 void lzma_index_hash_end(

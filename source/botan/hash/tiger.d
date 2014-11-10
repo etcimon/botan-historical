@@ -528,7 +528,7 @@ private:
 		0xC3A0396F7363A51F ];
 	Secure_Vector!ulong X, digest;
 	const size_t hash_len, passes;
-};
+}
 
 /*
 * Tiger Mixing Function

@@ -45,7 +45,7 @@ public:
 	}
 protected:
 	this() {}
-};
+}
 
 /**
 * ElGamal Private Key
@@ -99,7 +99,7 @@ public:
 		y = power_mod(group_g(), x, group_p());
 		load_check(rng);
 	}
-};
+}
 
 /**
 * ElGamal encryption operation
@@ -143,7 +143,7 @@ public:
 private:
 	Fixed_Base_Power_Mod powermod_g_p, powermod_y_p;
 	Modular_Reducer mod_p;
-};
+}
 
 /**
 * ElGamal decryption operation
@@ -190,4 +190,4 @@ private:
 	Fixed_Exponent_Power_Mod powermod_x_p;
 	Modular_Reducer mod_p;
 	Blinder blinder;
-};
+}

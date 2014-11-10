@@ -102,4 +102,4 @@ private:
 	typedef int fd_type;
 
 	Vector!fd_type m_devices;
-};
+}

@@ -35,15 +35,15 @@ public:
 			{
 				uint T0, T1;
 				
-				T0 = B2 ^ K[2*j];
-				T1 = G(B2 ^ B3 ^ K[2*j+1]);
+				T0 = B2 ^ m_K[2*j];
+				T1 = G(B2 ^ B3 ^ m_K[2*j+1]);
 				T0 = G(T1 + T0);
 				T1 = G(T1 + T0);
 				B1 ^= T1;
 				B0 ^= T0 + T1;
 				
-				T0 = B0 ^ K[2*j+2];
-				T1 = G(B0 ^ B1 ^ K[2*j+3]);
+				T0 = B0 ^ m_K[2*j+2];
+				T1 = G(B0 ^ B1 ^ m_K[2*j+3]);
 				T0 = G(T1 + T0);
 				T1 = G(T1 + T0);
 				B3 ^= T1;
@@ -74,15 +74,15 @@ public:
 			{
 				uint T0, T1;
 				
-				T0 = B2 ^ K[30-2*j];
-				T1 = G(B2 ^ B3 ^ K[31-2*j]);
+				T0 = B2 ^ m_K[30-2*j];
+				T1 = G(B2 ^ B3 ^ m_K[31-2*j]);
 				T0 = G(T1 + T0);
 				T1 = G(T1 + T0);
 				B1 ^= T1;
 				B0 ^= T0 + T1;
 				
-				T0 = B0 ^ K[28-2*j];
-				T1 = G(B0 ^ B1 ^ K[29-2*j]);
+				T0 = B0 ^ m_K[28-2*j];
+				T1 = G(B0 ^ B1 ^ m_K[29-2*j]);
 				T0 = G(T1 + T0);
 				T1 = G(T1 + T0);
 				B3 ^= T1;
@@ -98,7 +98,7 @@ public:
 
 	void clear()
 	{
-		zap(K);
+		zap(m_K);
 	}
 
 	override @property string name() const { return "SEED"; }
@@ -124,19 +124,19 @@ private:
 		
 		G_FUNC G;
 		
-		K.resize(32);
+		m_K.resize(32);
 		
 		for (size_t i = 0; i != 16; i += 2)
 		{
-			K[2*i  ] = G(WK[0] + WK[2] - RC[i]);
-			K[2*i+1] = G(WK[1] - WK[3] + RC[i]) ^ K[2*i];
+			m_K[2*i  ] = G(WK[0] + WK[2] - RC[i]);
+			m_K[2*i+1] = G(WK[1] - WK[3] + RC[i]) ^ m_K[2*i];
 			
 			ubyte T = get_byte(3, WK[0]);
 			WK[0] = (WK[0] >> 8) | (get_byte(3, WK[1]) << 24);
 			WK[1] = (WK[1] >> 8) | (T << 24);
 			
-			K[2*i+2] = G(WK[0] + WK[2] - RC[i+1]);
-			K[2*i+3] = G(WK[1] - WK[3] + RC[i+1]) ^ K[2*i+2];
+			m_K[2*i+2] = G(WK[0] + WK[2] - RC[i+1]);
+			m_K[2*i+3] = G(WK[1] - WK[3] + RC[i+1]) ^ m_K[2*i+2];
 			
 			T = get_byte(0, WK[3]);
 			WK[3] = (WK[3] << 8) | get_byte(0, WK[2]);
@@ -144,7 +144,7 @@ private:
 		}
 	}
 
-	class G_FUNC
+	struct G_FUNC
 	{
 	public:
 		/*
@@ -152,11 +152,11 @@ private:
 		*/
 		uint opCall(uint X) const
 		{
-			return (S0[get_byte(3, X)] ^ S1[get_byte(2, X)] ^
-			S2[get_byte(1, X)] ^ S3[get_byte(0, X)]);
+			return (m_S0[get_byte(3, X)] ^ m_S1[get_byte(2, X)] ^
+			m_S2[get_byte(1, X)] ^ m_S3[get_byte(0, X)]);
 		}
-	m_tag		
-		__gshared immutable uint[256] S0 = [
+	private:		
+		__gshared immutable uint[256] m_S0 = [
 			0x2989A1A8, 0x05858184, 0x16C6D2D4, 0x13C3D3D0, 0x14445054, 0x1D0D111C,
 			0x2C8CA0AC, 0x25052124, 0x1D4D515C, 0x03434340, 0x18081018, 0x1E0E121C,
 			0x11415150, 0x3CCCF0FC, 0x0ACAC2C8, 0x23436360, 0x28082028, 0x04444044,
@@ -201,7 +201,7 @@ private:
 			0x07070304, 0x33033330, 0x28C8E0E8, 0x1B0B1318, 0x05050104, 0x39497178,
 			0x10809090, 0x2A4A6268, 0x2A0A2228, 0x1A8A9298 ];
 		
-		__gshared immutable uint[256] S1 = [
+		__gshared immutable uint[256] m_S1 = [
 			0x38380830, 0xE828C8E0, 0x2C2D0D21, 0xA42686A2, 0xCC0FCFC3, 0xDC1ECED2,
 			0xB03383B3, 0xB83888B0, 0xAC2F8FA3, 0x60204060, 0x54154551, 0xC407C7C3,
 			0x44044440, 0x6C2F4F63, 0x682B4B63, 0x581B4B53, 0xC003C3C3, 0x60224262,
@@ -246,7 +246,7 @@ private:
 			0x080A0A02, 0x84078783, 0xD819C9D1, 0x4C0C4C40, 0x80038383, 0x8C0F8F83,
 			0xCC0ECEC2, 0x383B0B33, 0x480A4A42, 0xB43787B3 ];
 		
-		__gshared immutable uint[256] S2 = [
+		__gshared immutable uint[256] m_S2 = [
 			0xA1A82989, 0x81840585, 0xD2D416C6, 0xD3D013C3, 0x50541444, 0x111C1D0D,
 			0xA0AC2C8C, 0x21242505, 0x515C1D4D, 0x43400343, 0x10181808, 0x121C1E0E,
 			0x51501141, 0xF0FC3CCC, 0xC2C80ACA, 0x63602343, 0x20282808, 0x40440444,
@@ -291,7 +291,7 @@ private:
 			0x03040707, 0x33303303, 0xE0E828C8, 0x13181B0B, 0x01040505, 0x71783949,
 			0x90901080, 0x62682A4A, 0x22282A0A, 0x92981A8A ];
 		
-		__gshared immutable uint[256] S3 = [
+		__gshared immutable uint[256] m_S3 = [
 			0x08303838, 0xC8E0E828, 0x0D212C2D, 0x86A2A426, 0xCFC3CC0F, 0xCED2DC1E,
 			0x83B3B033, 0x88B0B838, 0x8FA3AC2F, 0x40606020, 0x45515415, 0xC7C3C407,
 			0x44404404, 0x4F636C2F, 0x4B63682B, 0x4B53581B, 0xC3C3C003, 0x42626022,
@@ -336,7 +336,7 @@ private:
 			0x0A02080A, 0x87838407, 0xC9D1D819, 0x4C404C0C, 0x83838003, 0x8F838C0F,
 			0xCEC2CC0E, 0x0B33383B, 0x4A42480A, 0x87B3B437 ];
 
-	};
+	}
 
-	Secure_Vector!uint K;
-};
+	Secure_Vector!uint m_K;
+}

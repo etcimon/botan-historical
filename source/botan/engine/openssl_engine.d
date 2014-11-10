@@ -225,7 +225,7 @@ public:
 		
 		return 0;
 	}
-};
+}
 
 package:
 
@@ -257,7 +257,7 @@ public:
 private:
 	OSSL_BN base, exp, mod;
 	OSSL_BN_CTX ctx;
-};
+}
 
 import openssl.bn;
 /**
@@ -347,7 +347,7 @@ public:
 	BIGNUM* ptr() const { return m_bn; }
 private:
 	BIGNUM* m_bn;
-};
+}
 
 /**
 * Lightweight OpenSSL BN_CTX wrapper. For internal use only.
@@ -383,7 +383,7 @@ public:
 	
 private:
 	BN_CTX* m_ctx;
-};
+}
 
 
 package:
@@ -438,7 +438,7 @@ private:
 	
 	const size_t SKIP;
 	RC4_KEY state;
-};
+}
 
 /*
 * EVP Block Cipher
@@ -587,7 +587,7 @@ private:
 	Key_Length_Specification cipher_key_spec;
 	string cipher_name;
 	EVP_CIPHER_CTX encrypt, decrypt;
-};
+}
 
 
 string HANDLE_EVP_CIPHER(string NAME, alias EVP)()
@@ -676,7 +676,7 @@ private:
 	
 	string algo_name;
 	EVP_MD_CTX md;
-};
+}
 
 
 
@@ -700,10 +700,10 @@ static if (BOTAN_HAS_DIFFIE_HELLMAN) {
 			return r.to_bytes();
 		}
 		
-	m_tag
+	private:
 		const OSSL_BN x, p;
 		OSSL_BN_CTX ctx;
-	};
+	}
 }
 
 static if (BOTAN_HAS_DSA) {
@@ -760,11 +760,11 @@ static if (BOTAN_HAS_DSA) {
 			return output;
 		}
 		
-	m_tag
+	private:
 		const OSSL_BN x, p, q, g;
 		const OSSL_BN_CTX ctx;
 		size_t q_bits;
-	};
+	}
 	
 	
 	final class OSSL_DSA_Verification_Operation : Verification
@@ -821,11 +821,11 @@ static if (BOTAN_HAS_DSA) {
 			return false;
 		}
 		
-	m_tag
+	private:
 		const OSSL_BN y, p, q, g;
 		const OSSL_BN_CTX ctx;
 		size_t q_bits;
-	};
+	}
 	
 	
 	static if (BOTAN_HAS_RSA) {
@@ -860,7 +860,7 @@ static if (BOTAN_HAS_DSA) {
 				return BigInt.encode_locked(private_op(m));
 			}
 			
-		m_tag
+		private:
 			BigInt private_op(in BigInt m) const
 			{
 				OSSL_BN j1, j2, h(m);
@@ -877,7 +877,7 @@ static if (BOTAN_HAS_DSA) {
 			const OSSL_BN mod, p, q, d1, d2, c;
 			const OSSL_BN_CTX ctx;
 			size_t n_bits;
-		};
+		}
 		
 		
 		final class OSSL_RSA_Public_Operation : Verification, Encryption
@@ -906,7 +906,7 @@ static if (BOTAN_HAS_DSA) {
 				return BigInt.encode_locked(public_op(m));
 			}
 			
-		m_tag
+		private:
 			BigInt public_op(in BigInt m) const
 			{
 				if (m >= n)
@@ -920,7 +920,7 @@ static if (BOTAN_HAS_DSA) {
 			const ref BigInt n;
 			const OSSL_BN e, mod;
 			const OSSL_BN_CTX ctx;
-		};
+		}
 		
 	}
 	

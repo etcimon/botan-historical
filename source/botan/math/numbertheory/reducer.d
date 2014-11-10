@@ -116,4 +116,4 @@ public:
 private:
 	BigInt modulus, modulus_2, mu;
 	size_t mod_words;
-};
+}

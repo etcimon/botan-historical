@@ -30,7 +30,7 @@ private:
 			input += hash_block_size;
 		}
 	}
-};
+}
 
 private:
 /**

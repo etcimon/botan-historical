@@ -27,7 +27,7 @@ public:
 		const(__m128i)* in_mm = cast(const(__m128i)*)(input);
 		__m128i* out_mm = cast(__m128i*)(output);
 		
-		const(__m128i)* keys = cast(const(__m128i)*)(EK[0]);
+		const(__m128i)* keys = cast(const(__m128i)*)(m_EK[0]);
 		
 		for (size_t i = 0; i != blocks; ++i)
 		{
@@ -44,7 +44,7 @@ public:
 		const(__m128i)* in_mm = cast(const(__m128i)*)(input);
 		__m128i* out_mm = cast(__m128i*)(output);
 		
-		const(__m128i)* keys = cast(const(__m128i)*)(DK[0]);
+		const(__m128i)* keys = cast(const(__m128i)*)(m_DK[0]);
 		
 		for (size_t i = 0; i != blocks; ++i)
 		{
@@ -55,8 +55,8 @@ public:
 
 	void clear()
 	{
-		zap(EK);
-		zap(DK);
+		zap(m_EK);
+		zap(m_DK);
 	}
 
 	@property string name() const { return "AES-128"; }
@@ -73,11 +73,11 @@ private:
 		
 		__m128i key = _mm_loadu_si128(cast(const(__m128i)*)(keyb));
 		
-		EK.resize(11*4);
-		DK.resize(11*4);
+		m_EK.resize(11*4);
+		m_DK.resize(11*4);
 		
-		__m128i* EK_mm = cast(__m128i*)(&EK[0]);
-		__m128i* DK_mm = cast(__m128i*)(&DK[0]);
+		__m128i* EK_mm = cast(__m128i*)(&m_EK[0]);
+		__m128i* DK_mm = cast(__m128i*)(&m_DK[0]);
 		
 		_mm_storeu_si128(DK_mm + 10, _mm_shuffle_epi8(key, sr[2]));
 		
@@ -101,8 +101,8 @@ private:
 		_mm_storeu_si128(DK_mm, aes_schedule_mangle_last_dec(key));
 	}
 
-	Secure_Vector!uint EK, DK;
-};
+	Secure_Vector!uint m_EK, m_DK;
+}
 
 /**
 * AES-192 using SSSE3
@@ -118,7 +118,7 @@ public:
 		const(__m128i)* in_mm = cast(const(__m128i)*)(input);
 		__m128i* out_mm = cast(__m128i*)(output);
 		
-		const(__m128i)* keys = cast(const(__m128i)*)(EK[0]);
+		const(__m128i)* keys = cast(const(__m128i)*)(m_EK[0]);
 		
 		for (size_t i = 0; i != blocks; ++i)
 		{
@@ -135,7 +135,7 @@ public:
 		const(__m128i)* in_mm = cast(const(__m128i)*)(input);
 		__m128i* out_mm = cast(__m128i*)(output);
 		
-		const(__m128i)* keys = cast(const(__m128i)*)(DK[0]);
+		const(__m128i)* keys = cast(const(__m128i)*)(m_DK[0]);
 		
 		for (size_t i = 0; i != blocks; ++i)
 		{
@@ -146,8 +146,8 @@ public:
 
 	void clear()
 	{
-		zap(EK);
-		zap(DK);
+		zap(m_EK);
+		zap(m_DK);
 	}
 
 	@property string name() const { return "AES-192"; }
@@ -161,11 +161,11 @@ private:
 		__m128i rcon = _mm_set_epi32!(0x702A9808, 0x4D7C7D81,
 		                             0x1F8391B9, 0xAF9DEEB6)();
 		
-		EK.resize(13*4);
-		DK.resize(13*4);
+		m_EK.resize(13*4);
+		m_DK.resize(13*4);
 		
-		__m128i* EK_mm = cast(__m128i*)(&EK[0]);
-		__m128i* DK_mm = cast(__m128i*)(&DK[0]);
+		__m128i* EK_mm = cast(__m128i*)(&m_EK[0]);
+		__m128i* DK_mm = cast(__m128i*)(&m_DK[0]);
 		
 		__m128i key1 = _mm_loadu_si128(cast(const(__m128i)*)(keyb));
 		__m128i key2 = _mm_loadu_si128(cast(const(__m128i)*)((keyb + 8)));
@@ -220,8 +220,8 @@ private:
 		}
 	}
 
-	Secure_Vector!uint EK, DK;
-};
+	Secure_Vector!uint m_EK, m_DK;
+}
 
 /**
 * AES-256 using SSSE3
@@ -237,7 +237,7 @@ public:
 		const(__m128i)* in_mm = cast(const(__m128i)*)(input);
 		__m128i* out_mm = cast(__m128i*)(output);
 		
-		const(__m128i)* keys = cast(const(__m128i)*)(EK[0]);
+		const(__m128i)* keys = cast(const(__m128i)*)(m_EK[0]);
 		
 		for (size_t i = 0; i != blocks; ++i)
 		{
@@ -254,7 +254,7 @@ public:
 		const(__m128i)* in_mm = cast(const(__m128i)*)(input);
 		__m128i* out_mm = cast(__m128i*)(output);
 		
-		const(__m128i)* keys = cast(const(__m128i)*)(DK[0]);
+		const(__m128i)* keys = cast(const(__m128i)*)(m_DK[0]);
 		
 		for (size_t i = 0; i != blocks; ++i)
 		{
@@ -265,8 +265,8 @@ public:
 
 	void clear()
 	{
-		zap(EK);
-		zap(DK);
+		zap(m_EK);
+		zap(m_DK);
 	}
 
 	@property string name() const { return "AES-256"; }
@@ -280,11 +280,11 @@ private:
 		__m128i rcon = _mm_set_epi32!(0x702A9808, 0x4D7C7D81,
 		                             0x1F8391B9, 0xAF9DEEB6)();
 		
-		EK.resize(15*4);
-		DK.resize(15*4);
+		m_EK.resize(15*4);
+		m_DK.resize(15*4);
 		
-		__m128i* EK_mm = cast(__m128i*)(&EK[0]);
-		__m128i* DK_mm = cast(__m128i*)(&DK[0]);
+		__m128i* EK_mm = cast(__m128i*)(&m_EK[0]);
+		__m128i* DK_mm = cast(__m128i*)(&m_DK[0]);
 		
 		__m128i key1 = _mm_loadu_si128(cast(const(__m128i)*)(keyb));
 		__m128i key2 = _mm_loadu_si128(cast(const(__m128i)*)((keyb + 16)));
@@ -318,8 +318,8 @@ private:
 		_mm_storeu_si128(DK_mm + 0, aes_schedule_mangle_last_dec(key2));
 	}
 
-	Secure_Vector!uint EK, DK;
-};
+	Secure_Vector!uint m_EK, m_DK;
+}
 
 shared static this() {
 	low_nibs = _mm_set1_epi8!(0x0F)();
@@ -642,4 +642,3 @@ __m128i aes_ssse3_decrypt(__m128i B, const(__m128i)* keys, size_t rounds)
 		mc = _mm_alignr_epi8(mc, mc, 12);
 	}
 }
-	

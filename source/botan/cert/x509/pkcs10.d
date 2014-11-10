@@ -22,7 +22,7 @@ import botan.utils.parsing;
 import botan.asn1.oid_lookup.oids;
 import botan.codec.pem;
 import botan.utils.types;
-import botan.utils.types;
+import botan.utils.exceptn;
 
 alias PKCS10_Request = FreeListRef!PKCS10_Request_Impl;
 
@@ -38,7 +38,7 @@ public:
 	*/
 	Public_Key subject_public_key() const
 	{
-		DataSource_Memory source = info.get1("X509.Certificate.public_key");
+		DataSource_Memory source = m_info.get1("X509.Certificate.public_key");
 		return x509_key.load_key(source);
 	}
 
@@ -49,7 +49,7 @@ public:
 	*/
 	Vector!ubyte raw_public_key() const
 	{
-		auto source = scoped!DataSource_Memory(info.get1("X509.Certificate.public_key"));
+		auto source = scoped!DataSource_Memory(m_info.get1("X509.Certificate.public_key"));
 		return unlock(pem.decode_check_label(source, "PUBLIC KEY"));
 	}
 
@@ -59,7 +59,7 @@ public:
 	*/
 	X509_DN subject_dn() const
 	{
-		return create_dn(info);
+		return create_dn(m_info);
 	}
 
 	/**
@@ -68,9 +68,8 @@ public:
 	*/
 	Alternative_Name subject_alt_name() const
 	{
-		return create_alt_name(info);
+		return create_alt_name(m_info);
 	}
-
 
 	/**
 	* Get the key constraints for the key associated with this
@@ -79,18 +78,18 @@ public:
 	*/
 	Key_Constraints constraints() const
 	{
-		return Key_Constraints(info.get1_uint("X509v3.KeyUsage", Key_Constraints.NO_CONSTRAINTS));
+		return Key_Constraints(m_info.get1_uint("X509v3.KeyUsage", Key_Constraints.NO_CONSTRAINTS));
 	}
 
 	/**
 	* Get the extendend key constraints (if any).
 	* @return the extendend key constraints (if any)
 	*/
-	Vector!( OID ) ex_constraints() const
+	Vector!OID ex_constraints() const
 	{
-		Vector!string oids = info.get("X509v3.ExtendedKeyUsage");
+		Vector!string oids = m_info.get("X509v3.ExtendedKeyUsage");
 		
-		Vector!( OID ) result;
+		Vector!OID result;
 		for (size_t i = 0; i != oids.length; ++i)
 			result.push_back(OID(oids[i]));
 		return result;
@@ -102,7 +101,7 @@ public:
 	*/
 	bool is_CA() const
 	{
-		return (info.get1_uint("X509v3.BasicConstraints.is_ca") > 0);
+		return (m_info.get1_uint("X509v3.BasicConstraints.is_ca") > 0);
 	}
 
 
@@ -113,7 +112,7 @@ public:
 	*/
 	uint path_limit() const
 	{
-		return info.get1_uint("X509v3.BasicConstraints.path_constraint", 0);
+		return m_info.get1_uint("X509v3.BasicConstraints.path_constraint", 0);
 	}
 
 	/**
@@ -122,7 +121,7 @@ public:
 	*/
 	string challenge_password() const
 	{
-		return info.get1("PKCS9.ChallengePassword");
+		return m_info.get1("PKCS9.ChallengePassword");
 	}
 
 	/**
@@ -161,7 +160,7 @@ private:
 	*/
 	void force_decode()
 	{
-		BER_Decoder cert_req_info(tbs_bits);
+		BER_Decoder cert_req_info = BER_Decoder(tbs_bits);
 		
 		size_t _version;
 		cert_req_info.decode(_version);
@@ -172,14 +171,14 @@ private:
 		X509_DN dn_subject;
 		cert_req_info.decode(dn_subject);
 		
-		info.add(dn_subject.contents());
+		m_info.add(dn_subject.contents());
 		
 		BER_Object public_key = cert_req_info.get_next_object();
 		if (public_key.type_tag != ASN1_Tag.SEQUENCE || public_key.class_tag != ASN1_Tag.CONSTRUCTED)
 			throw new BER_Bad_Tag("PKCS10_Request: Unexpected tag for public key",
 			                      public_key.type_tag, public_key.class_tag);
 		
-		info.add("X509.Certificate.public_key",
+		m_info.add("X509.Certificate.public_key",
 		         pem.encode(
 			asn1_obj.put_in_sequence(unlock(public_key.value)),
 			"PUBLIC KEY"
@@ -221,13 +220,13 @@ private:
 		{
 			ASN1_String email;
 			value.decode(email);
-			info.add("RFC822", email.value());
+			m_info.add("RFC822", email.value());
 		}
 		else if (attr.oid == oids.lookup("PKCS9.ChallengePassword"))
 		{
 			ASN1_String challenge_password;
 			value.decode(challenge_password);
-			info.add("PKCS9.ChallengePassword", challenge_password.value());
+			m_info.add("PKCS9.ChallengePassword", challenge_password.value());
 		}
 		else if (attr.oid == oids.lookup("PKCS9.ExtensionRequest"))
 		{
@@ -235,10 +234,10 @@ private:
 			value.decode(extensions).verify_end();
 			
 			Data_Store issuer_info;
-			extensions.contents_to(info, issuer_info);
+			extensions.contents_to(m_info, issuer_info);
 		}
 	}
 
 
-	Data_Store info;
-};
+	Data_Store m_info;
+}

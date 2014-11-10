@@ -45,7 +45,7 @@ public:
 	}
 protected:
 	this() {}
-};
+}
 
 /**
 * DSA Private Key
@@ -101,7 +101,7 @@ public:
 
 
 	bool check_key(RandomNumberGenerator rng, bool strong) const;
-};
+}
 
 /**
 * Object that can create a DSA signature
@@ -156,7 +156,7 @@ private:
 	const BigInt x;
 	Fixed_Base_Power_Mod powermod_g_p;
 	Modular_Reducer mod_q;
-};
+}
 
 /**
 * Object that can verify a DSA signature
@@ -217,4 +217,4 @@ private:
 
 	Fixed_Base_Power_Mod powermod_g_p, powermod_y_p;
 	Modular_Reducer mod_p, mod_q;
-};
+}

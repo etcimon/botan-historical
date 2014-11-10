@@ -33,24 +33,24 @@ public:
 			
 			for (size_t j = 0; j != 16; ++j)
 			{
-				R0 += (R1 & ~R3) + (R2 & R3) + K[4*j];
+				R0 += (R1 & ~R3) + (R2 & R3) + m_K[4*j];
 				R0 = rotate_left(R0, 1);
 				
-				R1 += (R2 & ~R0) + (R3 & R0) + K[4*j + 1];
+				R1 += (R2 & ~R0) + (R3 & R0) + m_K[4*j + 1];
 				R1 = rotate_left(R1, 2);
 				
-				R2 += (R3 & ~R1) + (R0 & R1) + K[4*j + 2];
+				R2 += (R3 & ~R1) + (R0 & R1) + m_K[4*j + 2];
 				R2 = rotate_left(R2, 3);
 				
-				R3 += (R0 & ~R2) + (R1 & R2) + K[4*j + 3];
+				R3 += (R0 & ~R2) + (R1 & R2) + m_K[4*j + 3];
 				R3 = rotate_left(R3, 5);
 				
 				if (j == 4 || j == 10)
 				{
-					R0 += K[R3 % 64];
-					R1 += K[R0 % 64];
-					R2 += K[R1 % 64];
-					R3 += K[R2 % 64];
+					R0 += m_K[R3 % 64];
+					R1 += m_K[R0 % 64];
+					R2 += m_K[R1 % 64];
+					R3 += m_K[R2 % 64];
 				}
 			}
 			
@@ -76,23 +76,23 @@ public:
 			for (size_t j = 0; j != 16; ++j)
 			{
 				R3 = rotate_right(R3, 5);
-				R3 -= (R0 & ~R2) + (R1 & R2) + K[63 - (4*j + 0)];
+				R3 -= (R0 & ~R2) + (R1 & R2) + m_K[63 - (4*j + 0)];
 				
 				R2 = rotate_right(R2, 3);
-				R2 -= (R3 & ~R1) + (R0 & R1) + K[63 - (4*j + 1)];
+				R2 -= (R3 & ~R1) + (R0 & R1) + m_K[63 - (4*j + 1)];
 				
 				R1 = rotate_right(R1, 2);
-				R1 -= (R2 & ~R0) + (R3 & R0) + K[63 - (4*j + 2)];
+				R1 -= (R2 & ~R0) + (R3 & R0) + m_K[63 - (4*j + 2)];
 				
 				R0 = rotate_right(R0, 1);
-				R0 -= (R1 & ~R3) + (R2 & R3) + K[63 - (4*j + 3)];
+				R0 -= (R1 & ~R3) + (R2 & R3) + m_K[63 - (4*j + 3)];
 				
 				if (j == 4 || j == 10)
 				{
-					R3 -= K[R2 % 64];
-					R2 -= K[R1 % 64];
-					R1 -= K[R0 % 64];
-					R0 -= K[R3 % 64];
+					R3 -= m_K[R2 % 64];
+					R2 -= m_K[R1 % 64];
+					R1 -= m_K[R0 % 64];
+					R0 -= m_K[R3 % 64];
 				}
 			}
 			
@@ -142,7 +142,7 @@ public:
 
 	void clear()
 	{
-		zap(K);
+		zap(m_K);
 	}
 
 	override @property string name() const { return "RC2"; }
@@ -151,7 +151,7 @@ private:
 	/*
 	* RC2 Key Schedule
 	*/
-	void key_schedule(in ubyte* key)
+	void key_schedule(in ubyte* key, size_t length)
 	{
 		__gshared immutable ubyte[256] TABLE = [
 			0xD9, 0x78, 0xF9, 0xC4, 0x19, 0xDD, 0xB5, 0xED, 0x28, 0xE9, 0xFD, 0x79,
@@ -188,8 +188,9 @@ private:
 		for (int i = 127-length; i >= 0; --i)
 			L[i] = TABLE[L[i+1] ^ L[i+length]];
 		
-		K.resize(64);
-		load_le!ushort(&K[0], &L[0], 64);
+		m_K.resize(64);
+		load_le!ushort(&m_K[0], &L[0], 64);
 	}
-	Secure_Vector!ushort K;
-};
+
+	Secure_Vector!ushort m_K;
+}

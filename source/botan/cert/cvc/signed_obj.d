@@ -14,6 +14,7 @@ import botan.filters.pipe;
 import botan.pubkey.pubkey;
 import botan.asn1.oid_lookup.oids;
 import botan.utils.types;
+import botan.utils.exceptn;
 
 /**
 * This class represents abstract signed EAC object
@@ -46,7 +47,7 @@ public:
 	*/
 	Algorithm_Identifier signature_algorithm() const
 	{
-		return sig_algo;
+		return m_sig_algo;
 	}
 
 	/**
@@ -62,7 +63,7 @@ public:
 		try
 		{
 			Vector!string sig_info =
-				splitter(oids.lookup(sig_algo.oid), '/');
+				splitter(oids.lookup(m_sig_algo.oid), '/');
 			
 			if (sig_info.length != 2 || sig_info[0] != pub_key.algo_name)
 			{
@@ -132,22 +133,22 @@ protected:
 		}
 		catch(Decoding_Error e)
 		{
-			const string what = e.what();
-			throw new Decoding_Error(PEM_label_pref ~ " decoding failed (" ~ what ~ ")");
+			const string what = e.msg;
+			throw new Decoding_Error(m_PEM_label_pref ~ " decoding failed (" ~ what ~ ")");
 		}
 		catch(Invalid_Argument e)
 		{
-			const string what = e.what();
-			throw new Decoding_Error(PEM_label_pref ~ " decoding failed (" ~ what ~ ")");
+			const string what = e.msg;
+			throw new Decoding_Error(m_PEM_label_pref ~ " decoding failed (" ~ what ~ ")");
 		}
 	}
 
 	this() {}
 
-	Algorithm_Identifier sig_algo;
-	Vector!ubyte tbs_bits;
-	string PEM_label_pref;
-	Vector!string PEM_labels_allowed;
+	Algorithm_Identifier m_sig_algo;
+	Vector!ubyte m_tbs_bits;
+	string m_PEM_label_pref;
+	string[] m_PEM_labels_allowed;
 private:
 	abstract void force_decode();
-};
+}

@@ -23,7 +23,7 @@ public:
 	/**
 	* Whether to use uppercase or lowercase letters for the encoded string.
 	*/
-	enum Case { Uppercase, Lowercase };
+	enum Case { Uppercase, Lowercase }
 
 	@property string name() const { return "Hex_Encoder"; }
 
@@ -128,7 +128,7 @@ private:
 	const size_t line_length;
 	Vector!ubyte input, output;
 	size_t position, counter;
-};
+}
 
 /**
 * Converts hex strings to bytes
@@ -210,7 +210,7 @@ private:
 	const Decoder_Checking checking;
 	Vector!ubyte input, output;
 	size_t position;
-};
+}
 
 /**
 * Size used for internal buffer in hex encoder/decoder

@@ -184,7 +184,7 @@ public:
 	/**
 	* @return hex representation
 	*/
-	string to_string() const
+	string toString() const
 	{
 		return hex_encode(&contents[0], contents.length);
 	}
@@ -211,7 +211,7 @@ public:
 	bool initialized() const { return (contents.length > 0); }
 private:
 	Secure_Vector!ubyte contents;
-};
+}
 
 
 private:

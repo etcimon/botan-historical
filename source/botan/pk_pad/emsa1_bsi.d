@@ -42,5 +42,5 @@ private:
 		
 		throw new Encoding_Error("EMSA1_BSI::encoding_of: max key input size exceeded");
 	}
-};
+}
 

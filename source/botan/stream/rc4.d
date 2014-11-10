@@ -132,4 +132,4 @@ private:
 
 	Secure_Vector!ubyte buffer;
 	size_t position;
-};
+}

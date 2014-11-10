@@ -20,33 +20,33 @@ final class AES_128 : Block_Cipher_Fixed_Params!(16, 16)
 public:
 	void encrypt_n(ubyte* input, ubyte* output, size_t blocks) const
 	{
-		aes_encrypt_n(input, output, blocks, EK, ME);
+		aes_encrypt_n(input, output, blocks, m_EK, ME);
 	}
 	
 	void decrypt_n(ubyte* input, ubyte* output, size_t blocks) const
 	{
-		aes_decrypt_n(input, output, blocks, DK, MD);
+		aes_decrypt_n(input, output, blocks, m_DK, m_MD);
 	}
 	
 	void clear()
 	{
-		zap(EK);
-		zap(DK);
-		zap(ME);
-		zap(MD);
+		zap(m_EK);
+		zap(m_DK);
+		zap(m_ME);
+		zap(m_MD);
 	}
 
 	@property string name() const { return "AES-128"; }
 	BlockCipher clone() const { return new AES_128; }
 private:
-	void key_schedule(in ubyte* key)
+	void key_schedule(in ubyte* key, size_t length)
 	{
-		aes_key_schedule(key, length, EK, DK, ME, MD);
+		aes_key_schedule(key, length, m_EK, m_DK, m_ME, m_MD);
 	}
 
-	Secure_Vector!uint EK, DK;
-	Secure_Vector!ubyte ME, MD;
-};
+	Secure_Vector!uint m_EK, m_DK;
+	Secure_Vector!ubyte m_ME, m_MD;
+}
 
 /**
 * AES-192
@@ -56,33 +56,33 @@ final class AES_192 : Block_Cipher_Fixed_Params!(16, 24)
 public:
 	void encrypt_n(ubyte* input, ubyte* output, size_t blocks) const
 	{
-		aes_encrypt_n(input, output, blocks, EK, ME);
+		aes_encrypt_n(input, output, blocks, m_EK, m_ME);
 	}
 	
 	void decrypt_n(ubyte* input, ubyte* output, size_t blocks) const
 	{
-		aes_decrypt_n(input, output, blocks, DK, MD);
+		aes_decrypt_n(input, output, blocks, m_DK, m_MD);
 	}
 	
 	void clear()
 	{
-		zap(EK);
-		zap(DK);
-		zap(ME);
-		zap(MD);
+		zap(m_EK);
+		zap(m_DK);
+		zap(m_ME);
+		zap(m_MD);
 	}
 
 	@property string name() const { return "AES-192"; }
 	BlockCipher clone() const { return new AES_192; }
-m_tag	
-	void key_schedule(in ubyte* key)
+private:	
+	void key_schedule(in ubyte* key, size_t length)
 	{
-		aes_key_schedule(key, length, EK, DK, ME, MD);
+		aes_key_schedule(key, length, m_EK, m_DK, m_ME, m_MD);
 	}
 
-	Secure_Vector!uint EK, DK;
-	Secure_Vector!ubyte ME, MD;
-};
+	Secure_Vector!uint m_EK, m_DK;
+	Secure_Vector!ubyte m_ME, m_MD;
+}
 
 /**
 * AES-256
@@ -92,33 +92,33 @@ final class AES_256 : Block_Cipher_Fixed_Params!(16, 32)
 public:
 	void encrypt_n(ubyte* input, ubyte* output, size_t blocks) const
 	{
-		aes_encrypt_n(input, output, blocks, EK, ME);
+		aes_encrypt_n(input, output, blocks, m_EK, m_ME);
 	}
 	
 	void decrypt_n(ubyte* input, ubyte* output, size_t blocks) const
 	{
-		aes_decrypt_n(input, output, blocks, DK, MD);
+		aes_decrypt_n(input, output, blocks, m_DK, m_MD);
 	}
 
 	void clear()
 	{
-		zap(EK);
-		zap(DK);
-		zap(ME);
-		zap(MD);
+		zap(m_EK);
+		zap(m_DK);
+		zap(m_ME);
+		zap(m_MD);
 	}
 
 	@property string name() const { return "AES-256"; }
 	BlockCipher clone() const { return new AES_256; }
 private:
-	void key_schedule(in ubyte* key)
+	void key_schedule(in ubyte* key, size_t length)
 	{
-		aes_key_schedule(key, length, EK, DK, ME, MD);
+		aes_key_schedule(key, length, m_EK, m_DK, m_ME, m_MD);
 	}
 
-	Secure_Vector!uint EK, DK;
-	Secure_Vector!ubyte ME, MD;
-};
+	Secure_Vector!uint m_EK, m_DK;
+	Secure_Vector!ubyte m_ME, m_MD;
+}
 
 package :
 
@@ -728,7 +728,8 @@ void aes_key_schedule(in ubyte* key, size_t length,
 	
 	const size_t rounds = (length / 4) + 6;
 	
-	Secure_Vector!uint XEK(length + 32), XDK(length + 32);
+	Secure_Vector!uint XEK = SecureVector!uint(length + 32);
+	Secure_Vector!uint XDK = SecureVector!uint(length + 32);
 	
 	const size_t X = length / 4;
 	for (size_t i = 0; i != X; ++i)

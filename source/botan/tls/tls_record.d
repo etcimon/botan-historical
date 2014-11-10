@@ -184,7 +184,7 @@ private:
 	size_t m_block_size = 0;
 	size_t m_iv_size = 0;
 	bool m_is_ssl3 = false;
-};
+}
 
 /**
 * Create a TLS record

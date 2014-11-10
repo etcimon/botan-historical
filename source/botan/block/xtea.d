@@ -24,7 +24,7 @@ public:
 	{
 		while(blocks >= 4)
 		{
-			xtea_encrypt_4(input, output, &(this.EK[0]));
+			xtea_encrypt_4(input, output, &(m_EK[0]));
 			input += 4 * BLOCK_SIZE;
 			output += 4 * BLOCK_SIZE;
 			blocks -= 4;
@@ -37,8 +37,8 @@ public:
 			
 			for (size_t j = 0; j != 32; ++j)
 			{
-				L += (((R << 4) ^ (R >> 5)) + R) ^ EK[2*j];
-				R += (((L << 4) ^ (L >> 5)) + L) ^ EK[2*j+1];
+				L += (((R << 4) ^ (R >> 5)) + R) ^ m_EK[2*j];
+				R += (((L << 4) ^ (L >> 5)) + L) ^ m_EK[2*j+1];
 			}
 			
 			store_be(output, L, R);
@@ -55,7 +55,7 @@ public:
 	{
 		while(blocks >= 4)
 		{
-			xtea_decrypt_4(input, output, &(this.EK[0]));
+			xtea_decrypt_4(input, output, &(m_EK[0]));
 			input += 4 * BLOCK_SIZE;
 			output += 4 * BLOCK_SIZE;
 			blocks -= 4;
@@ -68,8 +68,8 @@ public:
 			
 			for (size_t j = 0; j != 32; ++j)
 			{
-				R -= (((L << 4) ^ (L >> 5)) + L) ^ EK[63 - 2*j];
-				L -= (((R << 4) ^ (R >> 5)) + R) ^ EK[62 - 2*j];
+				R -= (((L << 4) ^ (L >> 5)) + L) ^ m_EK[63 - 2*j];
+				L -= (((R << 4) ^ (R >> 5)) + R) ^ m_EK[62 - 2*j];
 			}
 			
 			store_be(output, L, R);
@@ -81,7 +81,7 @@ public:
 
 	void clear()
 	{
-		zap(EK);
+		zap(m_EK);
 	}
 
 	override @property string name() const { return "XTEA"; }
@@ -90,7 +90,7 @@ protected:
 	/**
 	* @return const reference to the key schedule
 	*/
-	const ref Secure_Vector!uint get_EK() const { return EK; }
+	const ref Secure_Vector!uint get_EK() const { return m_EK; }
 
 private:
 	/*
@@ -98,23 +98,23 @@ private:
 	*/
 	void key_schedule(in ubyte* key, size_t)
 	{
-		EK.resize(64);
+		m_EK.resize(64);
 		
-		Secure_Vector!uint UK(4);
+		Secure_Vector!uint UK = Secure_Vector!uint(4);
 		for (size_t i = 0; i != 4; ++i)
 			UK[i] = load_be!uint(key, i);
 		
 		uint D = 0;
 		for (size_t i = 0; i != 64; i += 2)
 		{
-			EK[i  ] = D + UK[D % 4];
+			m_EK[i  ] = D + UK[D % 4];
 			D += 0x9E3779B9;
-			EK[i+1] = D + UK[(D >> 11) % 4];
+			m_EK[i+1] = D + UK[(D >> 11) % 4];
 		}
 	}
 
-	Secure_Vector!uint EK;
-};
+	Secure_Vector!uint m_EK;
+}
 
 package:
 pure:

@@ -87,7 +87,7 @@ private:
 
 	size_t m_block;
 	Unique!BlockCipher m_cipher1, m_cipher2;
-};
+}
 
 private:
 

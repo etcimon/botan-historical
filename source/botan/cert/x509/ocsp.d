@@ -9,6 +9,9 @@ module botan.cert.x509.ocsp;
 import botan.cert.x509.cert_status;
 import botan.cert.x509.ocsp_types;
 import botan.cert.x509.certstor;
+import botan.cert.x509.x509cert;
+import botan.asn1.asn1_time;
+import botan.asn1.x509_dn;
 import botan.asn1.der_enc;
 import botan.asn1.ber_dec;
 import botan.cert.x509.x509_ext;
@@ -17,12 +20,13 @@ import botan.codec.base64;
 import botan.pubkey.pubkey;
 import botan.cert.x509.x509path;
 import botan.http_util;
+import botan.utils.types;
 
 class Request
 {
 public:
 	this(in X509_Certificate issuer_cert,
-		 const X509_Certificate subject_cert) 
+		 in X509_Certificate subject_cert) 
 		
 	{
 		m_issuer = issuer_cert;
@@ -57,7 +61,7 @@ public:
 	const X509_Certificate subject() const { return m_subject; }
 private:
 	X509_Certificate m_issuer, m_subject;
-};
+}
 
 class Response
 {
@@ -137,7 +141,7 @@ public:
 	}
 
 	Certificate_Status_Code status_for(in X509_Certificate issuer,
-	                                   const X509_Certificate subject) const
+	                                   in X509_Certificate subject) const
 	{
 		foreach (response; m_responses)
 		{
@@ -167,7 +171,7 @@ public:
 
 private:
 	Vector!( SingleResponse ) m_responses;
-};
+}
 
 
 void decode_optional_list(BER_Decoder ber,
@@ -182,7 +186,7 @@ void decode_optional_list(BER_Decoder ber,
 		return;
 	}
 	
-	BER_Decoder list(obj.value);
+	BER_Decoder list = BER_Decoder(obj.value);
 	
 	while(list.more_items())
 	{

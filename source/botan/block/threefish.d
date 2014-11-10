@@ -175,7 +175,7 @@ private:
 	// Private data
 	Secure_Vector!ulong m_T;
 	Secure_Vector!ulong m_K;
-};
+}
 
 package:
 

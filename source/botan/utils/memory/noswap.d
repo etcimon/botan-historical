@@ -123,7 +123,7 @@ public:
 		
 		const size_t start = cast(ubyte*)(p) - m_pool;
 		
-		auto comp = (Pair!(size_t, size_t) x, Pair!(size_t, size_t) y){ return x.first < y.first; };
+			auto comp = (Pair!(size_t, size_t) x, Pair!(size_t, size_t) y){ return x.first < y.first; };
 		
 		auto i = std::lower_bound(m_freelist.ptr, m_freelist.end(),
 		                          Pair(start, 0), comp);
@@ -222,7 +222,7 @@ private:
 	Mutex m_mutex;
 	Vector!( Pair!(size_t, size_t) ) m_freelist;
 	ubyte* m_pool;
-};
+}
 
 /**
 * Requests for objects of (T).sizeof will be aligned at

@@ -104,7 +104,7 @@ private:
 	Unique!BlockCipher m_cipher;
 	Unique!BlockCipherModePaddingMethod m_padding;
 	Secure_Vector!ubyte m_state;
-};
+}
 
 /**
 * CBC Encryption
@@ -169,7 +169,7 @@ public:
 	{
 		return 0;
 	}
-};
+}
 
 /**
 * CBC Encryption with ciphertext stealing (CBC-CS3 variant)
@@ -241,7 +241,7 @@ public:
 		return (n == cipher().block_size);
 	}
 
-};
+}
 
 /**
 * CBC Decryption
@@ -310,7 +310,7 @@ public:
 	}	 
 private:
 	Secure_Vector!ubyte m_tempbuf;
-};
+}
 
 /**
 * CBC Decryption with ciphertext stealing (CBC-CS3 variant)
@@ -377,4 +377,4 @@ public:
 	{
 		return (n == cipher().block_size);
 	}
-};
+}

@@ -170,7 +170,7 @@ private:
 	size_t m_tag_size = 0;
 	Secure_Vector!ubyte m_last_nonce;
 	Secure_Vector!ubyte m_stretch;
-};
+}
 
 final class OCB_Encryption : OCB_Mode
 {
@@ -277,7 +277,7 @@ private:
 			m_block_index += proc_blocks;
 		}
 	}
-};
+}
 
 final class OCB_Decryption : OCB_Mode
 {
@@ -405,7 +405,7 @@ private:
 		}
 	}
 
-};
+}
 
 private:
 
@@ -461,7 +461,7 @@ private:
 	Secure_Vector!ubyte m_L_dollar, m_L_star;
 	Vector!( Secure_Vector!ubyte ) m_L;
 	Secure_Vector!ubyte m_offset_buf;
-};
+}
 
 /*
 * OCB's HASH

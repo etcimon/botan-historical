@@ -23,42 +23,42 @@ public:
 	{
 		for (size_t i = 0; i != blocks; ++i)
 		{
-			uint A = load_le!uint(input, 0) ^ RK[0];
-			uint B = load_le!uint(input, 1) ^ RK[1];
-			uint C = load_le!uint(input, 2) ^ RK[2];
-			uint D = load_le!uint(input, 3) ^ RK[3];
+			uint A = load_le!uint(input, 0) ^ m_RK[0];
+			uint B = load_le!uint(input, 1) ^ m_RK[1];
+			uint C = load_le!uint(input, 2) ^ m_RK[2];
+			uint D = load_le!uint(input, 3) ^ m_RK[3];
 			
 			for (size_t j = 0; j != 16; j += 2)
 			{
 				uint X, Y;
 				
-				X = SB[	 get_byte(3, A)] ^ SB[256+get_byte(2, A)] ^
-					SB[512+get_byte(1, A)] ^ SB[768+get_byte(0, A)];
-				Y = SB[	 get_byte(0, B)] ^ SB[256+get_byte(3, B)] ^
-					SB[512+get_byte(2, B)] ^ SB[768+get_byte(1, B)];
+				X = m_SB[	 get_byte(3, A)] ^ m_SB[256+get_byte(2, A)] ^
+					m_SB[512+get_byte(1, A)] ^ m_SB[768+get_byte(0, A)];
+				Y = m_SB[	 get_byte(0, B)] ^ m_SB[256+get_byte(3, B)] ^
+					m_SB[512+get_byte(2, B)] ^ m_SB[768+get_byte(1, B)];
 				X += Y;
-				Y += X + RK[2*j + 9];
-				X += RK[2*j + 8];
+				Y += X + m_RK[2*j + 9];
+				X += m_RK[2*j + 8];
 				
 				C = rotate_right(C ^ X, 1);
 				D = rotate_left(D, 1) ^ Y;
 				
-				X = SB[	 get_byte(3, C)] ^ SB[256+get_byte(2, C)] ^
-					SB[512+get_byte(1, C)] ^ SB[768+get_byte(0, C)];
-				Y = SB[	 get_byte(0, D)] ^ SB[256+get_byte(3, D)] ^
-					SB[512+get_byte(2, D)] ^ SB[768+get_byte(1, D)];
+				X = m_SB[	 get_byte(3, C)] ^ m_SB[256+get_byte(2, C)] ^
+					m_SB[512+get_byte(1, C)] ^ m_SB[768+get_byte(0, C)];
+				Y = m_SB[	 get_byte(0, D)] ^ m_SB[256+get_byte(3, D)] ^
+					m_SB[512+get_byte(2, D)] ^ m_SB[768+get_byte(1, D)];
 				X += Y;
-				Y += X + RK[2*j + 11];
-				X += RK[2*j + 10];
+				Y += X + m_RK[2*j + 11];
+				X += m_RK[2*j + 10];
 				
 				A = rotate_right(A ^ X, 1);
 				B = rotate_left(B, 1) ^ Y;
 			}
 			
-			C ^= RK[4];
-			D ^= RK[5];
-			A ^= RK[6];
-			B ^= RK[7];
+			C ^= m_RK[4];
+			D ^= m_RK[5];
+			A ^= m_RK[6];
+			B ^= m_RK[7];
 			
 			store_le(output, C, D, A, B);
 			
@@ -74,42 +74,42 @@ public:
 	{
 		for (size_t i = 0; i != blocks; ++i)
 		{
-			uint A = load_le!uint(input, 0) ^ RK[4];
-			uint B = load_le!uint(input, 1) ^ RK[5];
-			uint C = load_le!uint(input, 2) ^ RK[6];
-			uint D = load_le!uint(input, 3) ^ RK[7];
+			uint A = load_le!uint(input, 0) ^ m_RK[4];
+			uint B = load_le!uint(input, 1) ^ m_RK[5];
+			uint C = load_le!uint(input, 2) ^ m_RK[6];
+			uint D = load_le!uint(input, 3) ^ m_RK[7];
 			
 			for (size_t j = 0; j != 16; j += 2)
 			{
 				uint X, Y;
 				
-				X = SB[	 get_byte(3, A)] ^ SB[256+get_byte(2, A)] ^
-					SB[512+get_byte(1, A)] ^ SB[768+get_byte(0, A)];
-				Y = SB[	 get_byte(0, B)] ^ SB[256+get_byte(3, B)] ^
-					SB[512+get_byte(2, B)] ^ SB[768+get_byte(1, B)];
+				X = m_SB[	 get_byte(3, A)] ^ m_SB[256+get_byte(2, A)] ^
+					m_SB[512+get_byte(1, A)] ^ m_SB[768+get_byte(0, A)];
+				Y = m_SB[	 get_byte(0, B)] ^ m_SB[256+get_byte(3, B)] ^
+					m_SB[512+get_byte(2, B)] ^ m_SB[768+get_byte(1, B)];
 				X += Y;
-				Y += X + RK[39 - 2*j];
-				X += RK[38 - 2*j];
+				Y += X + m_RK[39 - 2*j];
+				X += m_RK[38 - 2*j];
 				
 				C = rotate_left(C, 1) ^ X;
 				D = rotate_right(D ^ Y, 1);
 				
-				X = SB[	 get_byte(3, C)] ^ SB[256+get_byte(2, C)] ^
-					SB[512+get_byte(1, C)] ^ SB[768+get_byte(0, C)];
-				Y = SB[	 get_byte(0, D)] ^ SB[256+get_byte(3, D)] ^
-					SB[512+get_byte(2, D)] ^ SB[768+get_byte(1, D)];
+				X = m_SB[	 get_byte(3, C)] ^ m_SB[256+get_byte(2, C)] ^
+					m_SB[512+get_byte(1, C)] ^ m_SB[768+get_byte(0, C)];
+				Y = m_SB[	 get_byte(0, D)] ^ m_SB[256+get_byte(3, D)] ^
+					m_SB[512+get_byte(2, D)] ^ m_SB[768+get_byte(1, D)];
 				X += Y;
-				Y += X + RK[37 - 2*j];
-				X += RK[36 - 2*j];
+				Y += X + m_RK[37 - 2*j];
+				X += m_RK[36 - 2*j];
 				
 				A = rotate_left(A, 1) ^ X;
 				B = rotate_right(B ^ Y, 1);
 			}
 			
-			C ^= RK[0];
-			D ^= RK[1];
-			A ^= RK[2];
-			B ^= RK[3];
+			C ^= m_RK[0];
+			D ^= m_RK[1];
+			A ^= m_RK[2];
+			B ^= m_RK[3];
 			
 			store_le(output, C, D, A, B);
 			
@@ -123,8 +123,8 @@ public:
 	*/
 	void clear()
 	{
-		zap(SB);
-		zap(RK);
+		zap(m_SB);
+		zap(m_RK);
 	}
 
 	override @property string name() const { return "Twofish"; }
@@ -133,122 +133,122 @@ private:
 	/*
 	* Twofish Key Schedule
 	*/
-	void key_schedule(in ubyte* key)
+	void key_schedule(in ubyte* key, size_t length)
 	{
-		SB.resize(1024);
-		RK.resize(40);
+		m_SB.resize(1024);
+		m_RK.resize(40);
 		
 		Secure_Vector!ubyte S = Secure_Vector!ubyte(16);
 		
 		for (size_t i = 0; i != length; ++i)
-			rs_mul(&S[4*(i/8)], key[i], i);
+			m_RS_mul(&S[4*(i/8)], key[i], i);
 		
 		if (length == 16)
 		{
 			for (size_t i = 0; i != 256; ++i)
 			{
-				SB[	 i] = MDS0[Q0[Q0[i]^S[ 0]]^S[ 4]];
-				SB[256+i] = MDS1[Q0[Q1[i]^S[ 1]]^S[ 5]];
-				SB[512+i] = MDS2[Q1[Q0[i]^S[ 2]]^S[ 6]];
-				SB[768+i] = MDS3[Q1[Q1[i]^S[ 3]]^S[ 7]];
+				m_SB[	 i] = m_MDS0[m_Q0[m_Q0[i]^S[ 0]]^S[ 4]];
+				m_SB[256+i] = m_MDS1[m_Q0[m_Q1[i]^S[ 1]]^S[ 5]];
+				m_SB[512+i] = m_MDS2[m_Q1[m_Q0[i]^S[ 2]]^S[ 6]];
+				m_SB[768+i] = m_MDS3[m_Q1[m_Q1[i]^S[ 3]]^S[ 7]];
 			}
 			
 			for (size_t i = 0; i != 40; i += 2)
 			{
-				uint X = MDS0[Q0[Q0[i  ]^key[ 8]]^key[ 0]] ^
-					MDS1[Q0[Q1[i  ]^key[ 9]]^key[ 1]] ^
-					MDS2[Q1[Q0[i  ]^key[10]]^key[ 2]] ^
-					MDS3[Q1[Q1[i  ]^key[11]]^key[ 3]];
-				uint Y = MDS0[Q0[Q0[i+1]^key[12]]^key[ 4]] ^
-					MDS1[Q0[Q1[i+1]^key[13]]^key[ 5]] ^
-					MDS2[Q1[Q0[i+1]^key[14]]^key[ 6]] ^
-					MDS3[Q1[Q1[i+1]^key[15]]^key[ 7]];
+				uint X = m_MDS0[m_Q0[m_Q0[i  ]^key[ 8]]^key[ 0]] ^
+					m_MDS1[m_Q0[m_Q1[i  ]^key[ 9]]^key[ 1]] ^
+					m_MDS2[m_Q1[m_Q0[i  ]^key[10]]^key[ 2]] ^
+					m_MDS3[m_Q1[m_Q1[i  ]^key[11]]^key[ 3]];
+				uint Y = m_MDS0[m_Q0[m_Q0[i+1]^key[12]]^key[ 4]] ^
+					m_MDS1[m_Q0[m_Q1[i+1]^key[13]]^key[ 5]] ^
+					m_MDS2[m_Q1[m_Q0[i+1]^key[14]]^key[ 6]] ^
+					m_MDS3[m_Q1[m_Q1[i+1]^key[15]]^key[ 7]];
 				Y = rotate_left(Y, 8);
 				X += Y; Y += X;
 				
-				RK[i] = X;
-				RK[i+1] = rotate_left(Y, 9);
+				m_RK[i] = X;
+				m_RK[i+1] = rotate_left(Y, 9);
 			}
 		}
 		else if (length == 24)
 		{
 			for (size_t i = 0; i != 256; ++i)
 			{
-				SB[	 i] = MDS0[Q0[Q0[Q1[i]^S[ 0]]^S[ 4]]^S[ 8]];
-				SB[256+i] = MDS1[Q0[Q1[Q1[i]^S[ 1]]^S[ 5]]^S[ 9]];
-				SB[512+i] = MDS2[Q1[Q0[Q0[i]^S[ 2]]^S[ 6]]^S[10]];
-				SB[768+i] = MDS3[Q1[Q1[Q0[i]^S[ 3]]^S[ 7]]^S[11]];
+				m_SB[	 i] = m_MDS0[m_Q0[m_Q0[m_Q1[i]^S[ 0]]^S[ 4]]^S[ 8]];
+				m_SB[256+i] = m_MDS1[m_Q0[m_Q1[m_Q1[i]^S[ 1]]^S[ 5]]^S[ 9]];
+				m_SB[512+i] = m_MDS2[m_Q1[m_Q0[m_Q0[i]^S[ 2]]^S[ 6]]^S[10]];
+				m_SB[768+i] = m_MDS3[m_Q1[m_Q1[m_Q0[i]^S[ 3]]^S[ 7]]^S[11]];
 			}
 			
 			for (size_t i = 0; i != 40; i += 2)
 			{
-				uint X = MDS0[Q0[Q0[Q1[i  ]^key[16]]^key[ 8]]^key[ 0]] ^
-					MDS1[Q0[Q1[Q1[i  ]^key[17]]^key[ 9]]^key[ 1]] ^
-					MDS2[Q1[Q0[Q0[i  ]^key[18]]^key[10]]^key[ 2]] ^
-					MDS3[Q1[Q1[Q0[i  ]^key[19]]^key[11]]^key[ 3]];
-				uint Y = MDS0[Q0[Q0[Q1[i+1]^key[20]]^key[12]]^key[ 4]] ^
-					MDS1[Q0[Q1[Q1[i+1]^key[21]]^key[13]]^key[ 5]] ^
-					MDS2[Q1[Q0[Q0[i+1]^key[22]]^key[14]]^key[ 6]] ^
-					MDS3[Q1[Q1[Q0[i+1]^key[23]]^key[15]]^key[ 7]];
+				uint X = m_MDS0[m_Q0[m_Q0[m_Q1[i  ]^key[16]]^key[ 8]]^key[ 0]] ^
+					m_MDS1[m_Q0[m_Q1[m_Q1[i  ]^key[17]]^key[ 9]]^key[ 1]] ^
+					m_MDS2[m_Q1[m_Q0[m_Q0[i  ]^key[18]]^key[10]]^key[ 2]] ^
+					m_MDS3[m_Q1[m_Q1[m_Q0[i  ]^key[19]]^key[11]]^key[ 3]];
+				uint Y = m_MDS0[m_Q0[m_Q0[m_Q1[i+1]^key[20]]^key[12]]^key[ 4]] ^
+					m_MDS1[m_Q0[m_Q1[m_Q1[i+1]^key[21]]^key[13]]^key[ 5]] ^
+					m_MDS2[m_Q1[m_Q0[m_Q0[i+1]^key[22]]^key[14]]^key[ 6]] ^
+					m_MDS3[m_Q1[m_Q1[m_Q0[i+1]^key[23]]^key[15]]^key[ 7]];
 				Y = rotate_left(Y, 8);
 				X += Y; Y += X;
 				
-				RK[i] = X;
-				RK[i+1] = rotate_left(Y, 9);
+				m_RK[i] = X;
+				m_RK[i+1] = rotate_left(Y, 9);
 			}
 		}
 		else if (length == 32)
 		{
 			for (size_t i = 0; i != 256; ++i)
 			{
-				SB[	 i] = MDS0[Q0[Q0[Q1[Q1[i]^S[ 0]]^S[ 4]]^S[ 8]]^S[12]];
-				SB[256+i] = MDS1[Q0[Q1[Q1[Q0[i]^S[ 1]]^S[ 5]]^S[ 9]]^S[13]];
-				SB[512+i] = MDS2[Q1[Q0[Q0[Q0[i]^S[ 2]]^S[ 6]]^S[10]]^S[14]];
-				SB[768+i] = MDS3[Q1[Q1[Q0[Q1[i]^S[ 3]]^S[ 7]]^S[11]]^S[15]];
+				m_SB[	 i] = m_MDS0[m_Q0[m_Q0[m_Q1[m_Q1[i]^S[ 0]]^S[ 4]]^S[ 8]]^S[12]];
+				m_SB[256+i] = m_MDS1[m_Q0[m_Q1[m_Q1[m_Q0[i]^S[ 1]]^S[ 5]]^S[ 9]]^S[13]];
+				m_SB[512+i] = m_MDS2[m_Q1[m_Q0[m_Q0[m_Q0[i]^S[ 2]]^S[ 6]]^S[10]]^S[14]];
+				m_SB[768+i] = m_MDS3[m_Q1[m_Q1[m_Q0[m_Q1[i]^S[ 3]]^S[ 7]]^S[11]]^S[15]];
 			}
 			
 			for (size_t i = 0; i != 40; i += 2)
 			{
-				uint X = MDS0[Q0[Q0[Q1[Q1[i  ]^key[24]]^key[16]]^key[ 8]]^key[ 0]] ^
-					MDS1[Q0[Q1[Q1[Q0[i  ]^key[25]]^key[17]]^key[ 9]]^key[ 1]] ^
-					MDS2[Q1[Q0[Q0[Q0[i  ]^key[26]]^key[18]]^key[10]]^key[ 2]] ^
-					MDS3[Q1[Q1[Q0[Q1[i  ]^key[27]]^key[19]]^key[11]]^key[ 3]];
-				uint Y = MDS0[Q0[Q0[Q1[Q1[i+1]^key[28]]^key[20]]^key[12]]^key[ 4]] ^
-					MDS1[Q0[Q1[Q1[Q0[i+1]^key[29]]^key[21]]^key[13]]^key[ 5]] ^
-					MDS2[Q1[Q0[Q0[Q0[i+1]^key[30]]^key[22]]^key[14]]^key[ 6]] ^
-					MDS3[Q1[Q1[Q0[Q1[i+1]^key[31]]^key[23]]^key[15]]^key[ 7]];
+				uint X = m_MDS0[m_Q0[m_Q0[m_Q1[m_Q1[i  ]^key[24]]^key[16]]^key[ 8]]^key[ 0]] ^
+					m_MDS1[m_Q0[m_Q1[m_Q1[m_Q0[i  ]^key[25]]^key[17]]^key[ 9]]^key[ 1]] ^
+					m_MDS2[m_Q1[m_Q0[m_Q0[m_Q0[i  ]^key[26]]^key[18]]^key[10]]^key[ 2]] ^
+					m_MDS3[m_Q1[m_Q1[m_Q0[m_Q1[i  ]^key[27]]^key[19]]^key[11]]^key[ 3]];
+				uint Y = m_MDS0[m_Q0[m_Q0[m_Q1[m_Q1[i+1]^key[28]]^key[20]]^key[12]]^key[ 4]] ^
+					m_MDS1[m_Q0[m_Q1[m_Q1[m_Q0[i+1]^key[29]]^key[21]]^key[13]]^key[ 5]] ^
+					m_MDS2[m_Q1[m_Q0[m_Q0[m_Q0[i+1]^key[30]]^key[22]]^key[14]]^key[ 6]] ^
+					m_MDS3[m_Q1[m_Q1[m_Q0[m_Q1[i+1]^key[31]]^key[23]]^key[15]]^key[ 7]];
 				Y = rotate_left(Y, 8);
 				X += Y; Y += X;
 				
-				RK[i] = X;
-				RK[i+1] = rotate_left(Y, 9);
+				m_RK[i] = X;
+				m_RK[i+1] = rotate_left(Y, 9);
 			}
 		}
 	}
 	
 
 	/*
-	* Do one column of the RS matrix multiplcation
+	* Do one column of the m_RS matrix multiplcation
 	*/
-	static void rs_mul(ubyte S[4], ubyte key, size_t offset)
+	static void m_RS_mul(ubyte[4]* S, ubyte key, size_t offset)
 	{
 		if (key)
 		{
-			ubyte X = POLY_TO_EXP[key - 1];
+			ubyte X = m_POLY_TO_EXP[key - 1];
 			
-			ubyte RS1 = RS[(4*offset  ) % 32];
-			ubyte RS2 = RS[(4*offset+1) % 32];
-			ubyte RS3 = RS[(4*offset+2) % 32];
-			ubyte RS4 = RS[(4*offset+3) % 32];
+			ubyte m_RS1 = m_RS[(4*offset  ) % 32];
+			ubyte m_RS2 = m_RS[(4*offset+1) % 32];
+			ubyte m_RS3 = m_RS[(4*offset+2) % 32];
+			ubyte m_RS4 = m_RS[(4*offset+3) % 32];
 			
-			S[0] ^= EXP_TO_POLY[(X + POLY_TO_EXP[RS1 - 1]) % 255];
-			S[1] ^= EXP_TO_POLY[(X + POLY_TO_EXP[RS2 - 1]) % 255];
-			S[2] ^= EXP_TO_POLY[(X + POLY_TO_EXP[RS3 - 1]) % 255];
-			S[3] ^= EXP_TO_POLY[(X + POLY_TO_EXP[RS4 - 1]) % 255];
+			S[0] ^= m_EXP_TO_POLY[(X + m_POLY_TO_EXP[m_RS1 - 1]) % 255];
+			S[1] ^= m_EXP_TO_POLY[(X + m_POLY_TO_EXP[m_RS2 - 1]) % 255];
+			S[2] ^= m_EXP_TO_POLY[(X + m_POLY_TO_EXP[m_RS3 - 1]) % 255];
+			S[3] ^= m_EXP_TO_POLY[(X + m_POLY_TO_EXP[m_RS4 - 1]) % 255];
 		}
 	}
 
-	__gshared immutable ubyte[256] Q0 = [
+	__gshared immutable ubyte[256] m_Q0 = [
 		0xA9, 0x67, 0xB3, 0xE8, 0x04, 0xFD, 0xA3, 0x76, 0x9A, 0x92, 0x80, 0x78,
 		0xE4, 0xDD, 0xD1, 0x38, 0x0D, 0xC6, 0x35, 0x98, 0x18, 0xF7, 0xEC, 0x6C,
 		0x43, 0x75, 0x37, 0x26, 0xFA, 0x13, 0x94, 0x48, 0xF2, 0xD0, 0x8B, 0x30,
@@ -272,7 +272,7 @@ private:
 		0xCA, 0x10, 0x21, 0xF0, 0xD3, 0x5D, 0x0F, 0x00, 0x6F, 0x9D, 0x36, 0x42,
 		0x4A, 0x5E, 0xC1, 0xE0 ];
 	
-	__gshared immutable ubyte[256] Q1 = [
+	__gshared immutable ubyte[256] m_Q1 = [
 		0x75, 0xF3, 0xC6, 0xF4, 0xDB, 0x7B, 0xFB, 0xC8, 0x4A, 0xD3, 0xE6, 0x6B,
 		0x45, 0x7D, 0xE8, 0x4B, 0xD6, 0x32, 0xD8, 0xFD, 0x37, 0x71, 0xF1, 0xE1,
 		0x30, 0x0F, 0xF8, 0x1B, 0x87, 0xFA, 0x06, 0x3F, 0x5E, 0xBA, 0xAE, 0x5B,
@@ -296,12 +296,12 @@ private:
 		0xD7, 0x61, 0x1E, 0xB4, 0x50, 0x04, 0xF6, 0xC2, 0x16, 0x25, 0x86, 0x56,
 		0x55, 0x09, 0xBE, 0x91 ];
 	
-	__gshared immutable ubyte[32] RS = [
+	__gshared immutable ubyte[32] m_RS = [
 		0x01, 0xA4, 0x02, 0xA4, 0xA4, 0x56, 0xA1, 0x55, 0x55, 0x82, 0xFC, 0x87,
 		0x87, 0xF3, 0xC1, 0x5A, 0x5A, 0x1E, 0x47, 0x58, 0x58, 0xC6, 0xAE, 0xDB,
 		0xDB, 0x68, 0x3D, 0x9E, 0x9E, 0xE5, 0x19, 0x03 ];
 	
-	__gshared immutable ubyte[255] EXP_TO_POLY = [
+	__gshared immutable ubyte[255] m_EXP_TO_POLY = [
 		0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80, 0x4D, 0x9A, 0x79, 0xF2,
 		0xA9, 0x1F, 0x3E, 0x7C, 0xF8, 0xBD, 0x37, 0x6E, 0xDC, 0xF5, 0xA7, 0x03,
 		0x06, 0x0C, 0x18, 0x30, 0x60, 0xC0, 0xCD, 0xD7, 0xE3, 0x8B, 0x5B, 0xB6,
@@ -325,7 +325,7 @@ private:
 		0x3B, 0x76, 0xEC, 0x95, 0x67, 0xCE, 0xD1, 0xEF, 0x93, 0x6B, 0xD6, 0xE1,
 		0x8F, 0x53, 0xA6 ];
 	
-	__gshared immutable ubyte[255] POLY_TO_EXP = [
+	__gshared immutable ubyte[255] m_POLY_TO_EXP = [
 		0x00, 0x01, 0x17, 0x02, 0x2E, 0x18, 0x53, 0x03, 0x6A, 0x2F, 0x93, 0x19,
 		0x34, 0x54, 0x45, 0x04, 0x5C, 0x6B, 0xB6, 0x30, 0xA6, 0x94, 0x4B, 0x1A,
 		0x8C, 0x35, 0x81, 0x55, 0xAA, 0x46, 0x0D, 0x05, 0x24, 0x5D, 0x87, 0x6C,
@@ -349,7 +349,7 @@ private:
 		0xB4, 0x0B, 0x7F, 0x51, 0x15, 0x43, 0x91, 0x10, 0x71, 0xBB, 0xEE, 0xBF,
 		0x85, 0xC8, 0xA1 ];
 	
-	__gshared immutable uint[256] MDS0 = [
+	__gshared immutable uint[256] m_MDS0 = [
 		0xBCBC3275, 0xECEC21F3, 0x202043C6, 0xB3B3C9F4, 0xDADA03DB, 0x02028B7B,
 		0xE2E22BFB, 0x9E9EFAC8, 0xC9C9EC4A, 0xD4D409D3, 0x18186BE6, 0x1E1E9F6B,
 		0x98980E45, 0xB2B2387D, 0xA6A6D2E8, 0x2626B74B, 0x3C3C57D6, 0x93938A32,
@@ -394,7 +394,7 @@ private:
 		0x04047FF6, 0x272746C2, 0xACACA716, 0xD0D07625, 0x50501386, 0xDCDCF756,
 		0x84841A55, 0xE1E15109, 0x7A7A25BE, 0x1313EF91 ];
 	
-	__gshared immutable uint[256] MDS1 = [
+	__gshared immutable uint[256] m_MDS1 = [
 		0xA9D93939, 0x67901717, 0xB3719C9C, 0xE8D2A6A6, 0x04050707, 0xFD985252,
 		0xA3658080, 0x76DFE4E4, 0x9A084545, 0x92024B4B, 0x80A0E0E0, 0x78665A5A,
 		0xE4DDAFAF, 0xDDB06A6A, 0xD1BF6363, 0x38362A2A, 0x0D54E6E6, 0xC6432020,
@@ -439,7 +439,7 @@ private:
 		0x0FE25151, 0x00000000, 0x6F9A1919, 0x9DE01A1A, 0x368F9494, 0x42E6C7C7,
 		0x4AECC9C9, 0x5EFDD2D2, 0xC1AB7F7F, 0xE0D8A8A8 ];
 	
-	__gshared immutable uint[256] MDS2 = [
+	__gshared immutable uint[256] m_MDS2 = [
 		0xBC75BC32, 0xECF3EC21, 0x20C62043, 0xB3F4B3C9, 0xDADBDA03, 0x027B028B,
 		0xE2FBE22B, 0x9EC89EFA, 0xC94AC9EC, 0xD4D3D409, 0x18E6186B, 0x1E6B1E9F,
 		0x9845980E, 0xB27DB238, 0xA6E8A6D2, 0x264B26B7, 0x3CD63C57, 0x9332938A,
@@ -484,7 +484,7 @@ private:
 		0x04F6047F, 0x27C22746, 0xAC16ACA7, 0xD025D076, 0x50865013, 0xDC56DCF7,
 		0x8455841A, 0xE109E151, 0x7ABE7A25, 0x139113EF ];
 	
-	__gshared immutable uint[256] MDS3 = [
+	__gshared immutable uint[256] m_MDS3 = [
 		0xD939A9D9, 0x90176790, 0x719CB371, 0xD2A6E8D2, 0x05070405, 0x9852FD98,
 		0x6580A365, 0xDFE476DF, 0x08459A08, 0x024B9202, 0xA0E080A0, 0x665A7866,
 		0xDDAFE4DD, 0xB06ADDB0, 0xBF63D1BF, 0x362A3836, 0x54E60D54, 0x4320C643,
@@ -529,5 +529,5 @@ private:
 		0xE2510FE2, 0x00000000, 0x9A196F9A, 0xE01A9DE0, 0x8F94368F, 0xE6C742E6,
 		0xECC94AEC, 0xFDD25EFD, 0xAB7FC1AB, 0xD8A8E0D8 ];
 
-	Secure_Vector!uint SB, RK;
-};
+	Secure_Vector!uint m_SB, m_RK;
+}

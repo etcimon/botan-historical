@@ -137,7 +137,7 @@ public:
 	}
 
 	BlockCipher clone() const { return new Noekeon_SIMD; }
-};
+}
 
 /*
 * Noekeon's Theta Operation

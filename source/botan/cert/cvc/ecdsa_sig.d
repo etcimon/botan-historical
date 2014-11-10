@@ -75,7 +75,7 @@ public:
 private:
 	BigInt m_r;
 	BigInt m_s;
-};
+}
 
 ECDSA_Signature decode_concatenation(in Vector!ubyte concat)
 {

@@ -128,4 +128,4 @@ private:
 	Unique!BlockCipher m_cipher;
 	Secure_Vector!ubyte m_counter, m_pad;
 	size_t m_pad_pos;
-};
+}

@@ -26,4 +26,4 @@ public:
 	* @return hash block size as defined for this algorithm
 	*/
 	abstract @property size_t hash_block_size() const { return 0; }
-};
+}

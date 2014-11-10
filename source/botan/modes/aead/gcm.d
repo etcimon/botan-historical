@@ -128,7 +128,7 @@ protected:
 
 	Unique!StreamCipher m_ctr;
 	Unique!GHASH m_ghash;
-};
+}
 
 /**
 * GCM Encryption
@@ -166,7 +166,7 @@ public:
 		auto mac = m_ghash.flush();
 		buffer += Pair(&mac[0], tag_size());
 	}
-};
+}
 
 /**
 * GCM Decryption
@@ -227,7 +227,7 @@ public:
 		
 		buffer.resize(offset + remaining);
 	}
-};
+}
 
 /**
 * GCM's GHASH
@@ -315,12 +315,12 @@ private:
 		
 		static const ulong R = 0xE100000000000000;
 		
-		ulong[2] H = {
+		ulong[2] H = [
 			load_be!ulong(&m_H[0], 0),
 				load_be!ulong(&m_H[0], 1)
-		};
+		];
 		
-		ulong[2] Z = { 0, 0 };
+		ulong[2] Z = [ 0, 0 ];
 		
 		// SSE2 might be useful here
 		
@@ -381,7 +381,7 @@ private:
 	Secure_Vector!ubyte m_nonce;
 	Secure_Vector!ubyte m_ghash;
 	size_t m_ad_len = 0, m_text_len = 0;
-};
+}
 
 void gcm_multiply_clmul(ubyte[16]* x, in ubyte[16]* H) pure
 {

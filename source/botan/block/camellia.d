@@ -21,28 +21,28 @@ final class Camellia_128 : Block_Cipher_Fixed_Params!(16, 16)
 public:
 	void encrypt_n(ubyte* input, ubyte* output, size_t blocks) const
 	{
-		encrypt(input, output, blocks, SK, 9);
+		encrypt(input, output, blocks, m_SK, 9);
 	}
 
 	void decrypt_n(ubyte* input, ubyte* output, size_t blocks) const
 	{
-		decrypt(input, output, blocks, SK, 9);
+		decrypt(input, output, blocks, m_SK, 9);
 	}
 
 	void clear()
 	{
-		zap(SK);
+		zap(m_SK);
 	}
 	@property string name() const { return "Camellia-128"; }
 	BlockCipher clone() const { return new Camellia_128; }
 private:
-	void key_schedule(in ubyte* key)
+	void key_schedule(in ubyte* key, size_t length)
 	{
-		key_schedule(SK, key, length);
+		key_schedule(m_SK, key, length);
 	}
 
-	Secure_Vector!ulong SK;
-};
+	Secure_Vector!ulong m_SK;
+}
 
 /**
 * Camellia-192
@@ -52,28 +52,28 @@ final class Camellia_192 : Block_Cipher_Fixed_Params!(16, 24)
 public:
 	void encrypt_n(ubyte* input, ubyte* output, size_t blocks) const
 	{
-		encrypt(input, output, blocks, SK, 12);
+		encrypt(input, output, blocks, m_SK, 12);
 	}
 
 	void decrypt_n(ubyte* input, ubyte* output, size_t blocks) const
 	{
-		decrypt(input, output, blocks, SK, 12);
+		decrypt(input, output, blocks, m_SK, 12);
 	}
 
 	void clear()
 	{
-		zap(SK);
+		zap(m_SK);
 	}
 	@property string name() const { return "Camellia-192"; }
 	BlockCipher clone() const { return new Camellia_192; }
 private:
-	void key_schedule(in ubyte* key)
+	void key_schedule(in ubyte* key, size_t length)
 	{
-		key_schedule(SK, key, length);
+		key_schedule(m_SK, key, length);
 	}
 
-	Secure_Vector!ulong SK;
-};
+	Secure_Vector!ulong m_SK;
+}
 
 /**
 * Camellia-256
@@ -83,28 +83,28 @@ final class Camellia_256 : Block_Cipher_Fixed_Params!(16, 32)
 public:
 	void encrypt_n(ubyte* input, ubyte* output, size_t blocks) const
 	{
-		encrypt(input, output, blocks, SK, 12);
+		encrypt(input, output, blocks, m_SK, 12);
 	}
 
 	void decrypt_n(ubyte* input, ubyte* output, size_t blocks) const
 	{
-		decrypt(input, output, blocks, SK, 12);
+		decrypt(input, output, blocks, m_SK, 12);
 	}
 
 	void clear()
 	{
-		zap(SK);
+		zap(m_SK);
 	}
 	@property string name() const { return "Camellia-256"; }
 	BlockCipher clone() const { return new Camellia_256; }
 private:
-	void key_schedule(in ubyte* key)
+	void key_schedule(in ubyte* key, size_t length)
 	{
-		key_schedule(SK, key, length);
+		key_schedule(m_SK, key, length);
 	}
 
-	Secure_Vector!ulong SK;
-};
+	Secure_Vector!ulong m_SK;
+}
 
 
 private:

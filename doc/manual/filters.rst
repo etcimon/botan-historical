@@ -61,7 +61,7 @@ Here's code that uses one of them to encrypt a string with AES::
 
   Secure_Vector<byte> c1 = pipe.read_all(0);
 
-  byte c2[4096] = { 0 };
+  byte c2[4096] = { 0 }
   size_t got_out = pipe.read(c2, (c2).sizeof, 1);
   // use c2[0...got_out]
 
@@ -332,7 +332,7 @@ to four filter pointers, or a pre-defined array and a length::
    Filter filters[5] = {
      new Filter1(/*args*/), new Filter2(/*args*/), new Filter3(/*args*/),
      new Filter4(/*args*/), new Filter5(/*args*/) /* more if desired... */
-   };
+   }
    Pipe pipe3(filters, 5);
 
 This is by far the most common way to initialize a ``Pipe``. However,

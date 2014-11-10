@@ -110,7 +110,7 @@ public:
 		
 		CloseHandle(snapshot);
 	}
-};
+}
 
 
 

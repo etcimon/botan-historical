@@ -53,7 +53,7 @@ protected:
 	}
 
 	ushort S1, S2;
-};
+}
 
 package:
 

@@ -212,7 +212,7 @@ private:
 
 	Secure_Vector!ubyte m_K;
 	uint m_counter = 0;
-};
+}
 
 
 

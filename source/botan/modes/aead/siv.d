@@ -165,7 +165,7 @@ private:
 	Unique!MessageAuthenticationCode m_cmac;
 	Secure_Vector!ubyte m_nonce, m_msg_buf;
 	Vector!( Secure_Vector!ubyte ) m_ad_macs;
-};
+}
 
 /**
 * SIV Encryption
@@ -199,7 +199,7 @@ public:
 	{ return input_length + tag_size(); }
 
 	override size_t minimum_final_size() const { return 0; }
-};
+}
 
 /**
 * SIV Decryption
@@ -248,4 +248,4 @@ public:
 	}
 
 	override size_t minimum_final_size() const { return tag_size(); }
-};
+}

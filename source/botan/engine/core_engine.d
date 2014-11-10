@@ -605,7 +605,7 @@ public:
 					hash_prototypes.push_back(hash);
 				}
 				
-				Vector!( HashFunction ) hashes;
+				Vector!HashFunction hashes;
 				for (size_t i = 0; i != hash_prototypes.length; ++i)
 					hashes.push_back(hash_prototypes[i].clone());
 				
@@ -671,7 +671,7 @@ public:
 		return null;
 	}
 
-};
+}
 
 /**
 * Create a cipher mode filter object

@@ -22,7 +22,7 @@ final class BitBucket : Filter
 	void write(in ubyte*, size_t) {}
 
 	@property string name() const { return "BitBucket"; }
-};
+}
 
 /**
 * This class represents Filter chains. A Filter chain is an ordered
@@ -69,7 +69,7 @@ public:
 	}
 
 
-};
+}
 
 /**
 * This class represents a fork filter, whose purpose is to fork the
@@ -105,7 +105,7 @@ public:
 	{
 		set_next(filter_arr, length);
 	}
-};
+}
 
 /**
 * This class is a threaded version of the Fork filter. While this uses
@@ -227,7 +227,7 @@ private:
 
 	Vector!(FreeListRef!Tid) m_threads;
 	Unique!Threaded_Fork_Data m_thread_data;
-};
+}
 
 
 
@@ -256,4 +256,4 @@ struct Threaded_Fork_Data
 	* The length of the work that needs to be done.
 	*/
 	size_t m_input_length = 0;
-};
+}

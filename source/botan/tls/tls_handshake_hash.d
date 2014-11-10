@@ -100,4 +100,4 @@ public:
 	void reset() { data.clear(); }
 private:
 	Vector!ubyte data;
-};
+}

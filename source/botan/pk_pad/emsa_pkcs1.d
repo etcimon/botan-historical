@@ -69,7 +69,7 @@ public:
 private:
 	Unique!HashFunction m_hash;
 	Vector!ubyte m_hash_id;
-};
+}
 
 /**
 * EMSA_PKCS1v15_Raw which is EMSA_PKCS1v15 without a hash or digest id
@@ -115,7 +115,7 @@ public:
 
 private:
 	Secure_Vector!ubyte message;
-};
+}
 
 private:
 

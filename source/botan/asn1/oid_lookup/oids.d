@@ -134,7 +134,7 @@ public:
 private:
 	HashMap!(string, OID) m_str2oid;
 	HashMap!(OID, string) m_oid2str;
-};
+}
 
 OID_Map global_oid_map()
 {

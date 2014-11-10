@@ -7,6 +7,12 @@
 module botan.cert.cvc.eac_obj;
 import botan.cert.cvc.signed_obj;
 import botan.cert.cvc.ecdsa_sig;
+import botan.filters.data_src;
+import botan.pubkey.pubkey;
+import botan.utils.types;
+import botan.utils.exceptn;
+
+
 /**
 * TR03110 v1.1 EAC CV Certificate
 */
@@ -33,13 +39,13 @@ protected:
 	{
 		try
 		{
-			decode_info(input, tbs_bits, m_sig);
+			decode_info(input, m_tbs_bits, m_sig);
 		}
 		catch(Decoding_Error)
 		{
-			throw new Decoding_Error(PEM_label_pref ~ " decoding failed");
+			throw new Decoding_Error(m_PEM_label_pref ~ " decoding failed");
 		}
 	}
 
 	~this(){}
-};
+}

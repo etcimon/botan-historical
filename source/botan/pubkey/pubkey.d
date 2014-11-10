@@ -26,7 +26,7 @@ typedef bool Signature_Format;
 /**
 * The two types of signature format supported by Botan.
 */
-enum : Signature_Format { IEEE_1363, DER_SEQUENCE };
+enum : Signature_Format { IEEE_1363, DER_SEQUENCE }
 typedef bool Fault_Protection;
 /**
 * Enum marking if protection against fault attacks should be used
@@ -34,7 +34,7 @@ typedef bool Fault_Protection;
 enum : Fault_Protection {
 	ENABLE_FAULT_PROTECTION,
 	DISABLE_FAULT_PROTECTION
-};
+}
 
 /**
 * Public Key Encryptor
@@ -80,7 +80,7 @@ public:
 private:
 	abstract Vector!ubyte enc(in ubyte*, size_t,
 											 RandomNumberGenerator) const;
-};
+}
 
 /**
 * Public Key Decryptor
@@ -114,7 +114,7 @@ public:
 
 private:
 	abstract Secure_Vector!ubyte dec(in ubyte*, size_t) const;
-};
+}
 
 /**
 * Public Key Signer. Use the sign_message() functions for small
@@ -298,7 +298,7 @@ private:
 	Unique!Verification m_verify_op;
 	Unique!EMSA m_emsa;
 	Signature_Format m_sig_format;
-};
+}
 
 /**
 * Public Key Verifier. Use the verify_message() functions for small
@@ -474,7 +474,7 @@ private:
 	Unique!Verification m_op;
 	Unique!EMSA m_emsa;
 	Signature_Format m_sig_format;
-};
+}
 
 /**
 * Key used for key agreement
@@ -576,7 +576,7 @@ public:
 private:
 	Unique!Key_Agreement m_op;
 	Unique!KDF m_kdf;
-};
+}
 
 /**
 * Encryption with an MR algorithm and an EME.
@@ -646,7 +646,7 @@ private:
 
 	Unique!Encryption m_op;
 	Unique!EME m_eme;
-};
+}
 
 /**
 * Decryption with an MR algorithm and an EME.
@@ -700,4 +700,4 @@ private:
 
 	Unique!Decryption m_op;
 	Unique!EME m_eme;
-};
+}

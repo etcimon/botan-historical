@@ -132,4 +132,4 @@ private:
 	Unique!RandomNumberGenerator m_prng;
 	Secure_Vector!ubyte m_V, m_R;
 	size_t m_R_pos;
-};
+}

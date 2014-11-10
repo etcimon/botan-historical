@@ -131,7 +131,7 @@ private:
 	size_t output_bits, bitrate;
 	Secure_Vector!ulong S;
 	size_t S_pos;
-};
+}
 
 
 

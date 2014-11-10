@@ -30,7 +30,7 @@ private:
 		}
 	}
 
-};
+}
 
 void botan_md5_x86_32_compress(uint[4]* digest,
 								const ubyte[64]* input,

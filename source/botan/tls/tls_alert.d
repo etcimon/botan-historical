@@ -55,7 +55,7 @@ public:
 		// pseudo alert values
 		NULL_ALERT							= 256,
 		HEARTBEAT_PAYLOAD					= 257
-	};
+	}
 
 	/**
 	* @return true iff this alert is non-empty
@@ -202,4 +202,4 @@ public:
 private:
 	bool m_fatal;
 	Type m_type_code;
-};
+}

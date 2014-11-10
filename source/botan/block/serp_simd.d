@@ -59,9 +59,9 @@ public:
 	}
 
 	BlockCipher clone() const { return new Serpent_SIMD; }
-};
+}
 
-protected:
+package:
 
 /*
 * SIMD Serpent Encryption of 4 blocks in parallel

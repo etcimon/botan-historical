@@ -21,7 +21,7 @@ public:
 	abstract BigInt execute() const;
 	abstract Modular_Exponentiator copy() const;
 	~this() {}
-};
+}
 
 /**
 * Modular Exponentiator Proxy
@@ -41,7 +41,7 @@ public:
 		EXP_IS_FIXED	 = 0x0100,
 		EXP_IS_SMALL	 = 0x0200,
 		EXP_IS_LARGE	 = 0x0400
-	};
+	}
 
 	/*
 	* Try to choose a good window size
@@ -171,7 +171,7 @@ public:
 	}
 private:
 	Modular_Exponentiator core;
-};
+}
 
 /**
 * Fixed Exponent Modular Exponentiator Proxy
@@ -196,7 +196,7 @@ public:
 	}
 	
 
-};
+}
 
 /**
 * Fixed Base Modular Exponentiator Proxy
@@ -218,7 +218,7 @@ public:
 		set_base(b);
 	}
 
-};
+}
 
 
 /*

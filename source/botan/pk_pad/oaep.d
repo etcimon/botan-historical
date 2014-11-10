@@ -144,4 +144,4 @@ private:
 
 	Secure_Vector!ubyte m_Phash;
 	Unique!HashFunction m_hash;
-};
+}

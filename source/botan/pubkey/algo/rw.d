@@ -40,7 +40,7 @@ public:
 
 protected:
 	this() {}
-};
+}
 
 /**
 * Rabin-Williams Private Key
@@ -109,7 +109,7 @@ public:
 		
 		return signature_consistency_check(rng, this, "EMSA2(SHA-1)");
 	}
-};
+}
 
 /**
 * Rabin-Williams Signature Operation
@@ -173,7 +173,7 @@ private:
 	Unique!Fixed_Exponent_Power_Mod powermod_d1_p, powermod_d2_q;
 	Modular_Reducer mod_p;
 	Blinder blinder;
-};
+}
 
 /**
 * Rabin-Williams Verification Operation
@@ -215,4 +215,4 @@ public:
 private:
 	const ref BigInt n;
 	Fixed_Exponent_Power_Mod powermod_e_n;
-};
+}

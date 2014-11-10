@@ -233,7 +233,7 @@ public:
 	{
 		throw new Internal_Error("No PSK set for identity " ~ identity);
 	}
-};
+}
 
 private:
 

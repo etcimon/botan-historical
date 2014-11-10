@@ -44,7 +44,7 @@ public:
 
 protected:
 	this() {}
-};
+}
 
 /**
 * RSA Private Key
@@ -128,7 +128,7 @@ public:
 		
 		gen_check(rng);
 	}
-};
+}
 
 /**
 * RSA private (decrypt/sign) operation
@@ -204,7 +204,7 @@ private:
 	Fixed_Exponent_Power_Mod powermod_e_n, powermod_d1_p, powermod_d2_q;
 	Modular_Reducer mod_p;
 	Blinder blinder;
-};
+}
 
 /**
 * RSA public (encrypt/verify) operation
@@ -245,4 +245,4 @@ private:
 
 	const ref BigInt n;
 	Fixed_Exponent_Power_Mod powermod_e_n;
-};
+}

@@ -131,7 +131,7 @@ protected:
 	EC_Group domain_params;
 	PointGFp public_key;
 	EC_Group_Encoding domain_encoding;
-};
+}
 
 /**
 * This abstract class represents ECC private keys
@@ -221,4 +221,4 @@ protected:
 	this() {}
 
 	BigInt priv_key;
-};
+}

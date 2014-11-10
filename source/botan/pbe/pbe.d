@@ -28,4 +28,4 @@ public:
 	* @return object identifier
 	*/
 	abstract OID get_oid() const;
-};
+}

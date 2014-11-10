@@ -42,7 +42,7 @@ private:
 	PK_Encryptor* cipher;
 	RandomNumberGenerator rng;
 	Secure_Vector!ubyte buffer;
-};
+}
 
 /**
 * PK_Decryptor Filter
@@ -72,7 +72,7 @@ public:
 private:
 	PK_Decryptor* cipher;
 	Secure_Vector!ubyte buffer;
-};
+}
 
 /**
 * PK_Signer Filter
@@ -108,7 +108,7 @@ public:
 private:
 	PK_Signer signer;
 	RandomNumberGenerator rng;
-};
+}
 
 /**
 * PK_Verifier Filter
@@ -178,4 +178,4 @@ public:
 private:
 	PK_Verifier verifier;
 	Secure_Vector!ubyte signature;
-};
+}

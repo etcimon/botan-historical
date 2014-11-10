@@ -85,5 +85,5 @@ public:
 	}
 private:
 	Unique!HashFunction hash;
-};
+}
 

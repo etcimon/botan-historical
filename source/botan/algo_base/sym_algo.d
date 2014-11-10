@@ -81,5 +81,5 @@ private:
 	* @param length of key
 	*/
 	abstract void key_schedule(in ubyte* key, size_t length);
-};
+}
 

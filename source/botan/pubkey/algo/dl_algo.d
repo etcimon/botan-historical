@@ -112,7 +112,7 @@ protected:
 	* The DL group
 	*/
 	DL_Group group;
-};
+}
 
 /**
 * This class represents discrete logarithm (DL) private keys.
@@ -158,4 +158,4 @@ protected:
 	* The DL private key
 	*/
 	BigInt x;
-};
+}

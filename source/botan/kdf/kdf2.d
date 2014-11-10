@@ -48,4 +48,4 @@ public:
 	this(HashFunction h) { hash = h; }
 private:
 	Unique!HashFunction hash;
-};
+}

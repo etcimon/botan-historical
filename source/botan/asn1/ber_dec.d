@@ -28,20 +28,20 @@ public:
 	{
 		BER_Object next;
 		
-		if (pushed.type_tag != ASN1_Tag.NO_OBJECT)
+		if (m_pushed.type_tag != ASN1_Tag.NO_OBJECT)
 		{
-			next = pushed;
-			pushed.class_tag = pushed.type_tag = ASN1_Tag.NO_OBJECT;
+			next = m_pushed;
+			m_pushed.class_tag = m_pushed.type_tag = ASN1_Tag.NO_OBJECT;
 			return next;
 		}
 		
-		decode_tag(source, next.type_tag, next.class_tag);
+		decode_tag(m_source, next.type_tag, next.class_tag);
 		if (next.type_tag == ASN1_Tag.NO_OBJECT)
 			return next;
 		
-		size_t length = decode_length(source);
+		size_t length = decode_length(m_source);
 		next.value.resize(length);
-		if (source.read(&next.value[0], length) != length)
+		if (m_source.read(&next.value[0], length) != length)
 			throw new BER_Decoding_Error("Value truncated");
 		
 		if (next.type_tag == ASN1_Tag.EOC && next.class_tag == ASN1_Tag.UNIVERSAL)
@@ -64,9 +64,9 @@ public:
 	*/
 	void push_back(in BER_Object obj)
 	{
-		if (pushed.type_tag != ASN1_Tag.NO_OBJECT)
+		if (m_pushed.type_tag != ASN1_Tag.NO_OBJECT)
 			throw new Invalid_State("BER_Decoder: Only one push back is allowed");
-		pushed = obj;
+		m_pushed = obj;
 	}
 
 	
@@ -75,28 +75,28 @@ public:
 	*/
 	bool more_items() const
 	{
-		if (source.end_of_data() && (pushed.type_tag == ASN1_Tag.NO_OBJECT))
+		if (m_source.end_of_data() && (m_pushed.type_tag == ASN1_Tag.NO_OBJECT))
 			return false;
 		return true;
 	}
 
 	/*
-	* Verify that no bytes remain in the source
+	* Verify that no bytes remain in the m_source
 	*/
 	BER_Decoder verify_end()
 	{
-		if (!source.end_of_data() || (pushed.type_tag != ASN1_Tag.NO_OBJECT))
+		if (!m_source.end_of_data() || (m_pushed.type_tag != ASN1_Tag.NO_OBJECT))
 			throw new Invalid_State("verify_end called, but data remains");
 		return this;
 	}
 
 	/*
-	* Discard all the bytes remaining in the source
+	* Discard all the bytes remaining in the m_source
 	*/
 	BER_Decoder discard_remaining()
 	{
 		ubyte buf;
-		while(source.read_byte(buf))
+		while(m_source.read_byte(buf))
 			continue;
 		return this;
 	}
@@ -111,7 +111,7 @@ public:
 		obj.assert_is_a(type_tag, ASN1_Tag(class_tag | ASN1_Tag.CONSTRUCTED));
 		
 		BER_Decoder result = new BER_Decoder(&obj.value[0], obj.value.length);
-		result.parent = this;
+		result.m_parent = this;
 		return result;
 	}
 
@@ -120,11 +120,11 @@ public:
 	*/
 	BER_Decoder end_cons()
 	{
-		if (!parent)
-			throw new Invalid_State("end_cons called with NULL parent");
-		if (!source.end_of_data())
+		if (!m_parent)
+			throw new Invalid_State("end_cons called with NULL m_parent");
+		if (!m_source.end_of_data())
 			throw new Decoding_Error("end_cons called with data left");
-		return (*parent);
+		return m_parent;
 	}
 	
 
@@ -136,13 +136,13 @@ public:
 	}
 		
 	/*
-	* Save all the bytes remaining in the source
+	* Save all the bytes remaining in the m_source
 	*/
 	BER_Decoder raw_bytes(Secure_Vector!ubyte output)
 	{
 		output.clear();
 		ubyte buf;
-		while(source.read_byte(buf))
+		while(m_source.read_byte(buf))
 			output.push_back(buf);
 		return this;
 	}
@@ -151,7 +151,7 @@ public:
 	{
 		output.clear();
 		ubyte buf;
-		while(source.read_byte(buf))
+		while(m_source.read_byte(buf))
 			output.push_back(buf);
 		return this;
 	}
@@ -512,10 +512,10 @@ public:
 	*/
 	this(DataSource src)
 	{
-		source = src;
-		owns = false;
-		pushed.type_tag = pushed.class_tag = ASN1_Tag.NO_OBJECT;
-		parent = null;
+		m_source = src;
+		m_owns = false;
+		m_pushed.type_tag = m_pushed.class_tag = ASN1_Tag.NO_OBJECT;
+		m_parent = null;
 	}
 	
 	/*
@@ -523,10 +523,10 @@ public:
 	*/
 	this(in ubyte* data, size_t length)
 	{
-		source = new DataSource_Memory(data, length);
-		owns = true;
-		pushed.type_tag = pushed.class_tag = ASN1_Tag.NO_OBJECT;
-		parent = null;
+		m_source = new DataSource_Memory(data, length);
+		m_owns = true;
+		m_pushed.type_tag = m_pushed.class_tag = ASN1_Tag.NO_OBJECT;
+		m_parent = null;
 	}
 	
 	/*
@@ -534,10 +534,10 @@ public:
 	*/
 	this(in Secure_Vector!ubyte data)
 	{
-		source = new DataSource_Memory(data);
-		owns = true;
-		pushed.type_tag = pushed.class_tag = ASN1_Tag.NO_OBJECT;
-		parent = null;
+		m_source = new DataSource_Memory(data);
+		m_owns = true;
+		m_pushed.type_tag = m_pushed.class_tag = ASN1_Tag.NO_OBJECT;
+		m_parent = null;
 	}
 	
 	/*
@@ -545,10 +545,10 @@ public:
 	*/
 	this(in Vector!ubyte data)
 	{
-		source = new DataSource_Memory(&data[0], data.length);
-		owns = true;
-		pushed.type_tag = pushed.class_tag = ASN1_Tag.NO_OBJECT;
-		parent = null;
+		m_source = new DataSource_Memory(&data[0], data.length);
+		m_owns = true;
+		m_pushed.type_tag = m_pushed.class_tag = ASN1_Tag.NO_OBJECT;
+		m_parent = null;
 	}
 	
 	/*
@@ -556,15 +556,15 @@ public:
 	*/
 	this(in BER_Decoder other)
 	{
-		source = other.source;
-		owns = false;
-		if (other.owns)
+		m_source = other.m_source;
+		m_owns = false;
+		if (other.m_owns)
 		{
-			other.owns = false;
-			owns = true;
+			other.m_owns = false;
+			m_owns = true;
 		}
-		pushed.type_tag = pushed.class_tag = ASN1_Tag.NO_OBJECT;
-		parent = other.parent;
+		m_pushed.type_tag = m_pushed.class_tag = ASN1_Tag.NO_OBJECT;
+		m_parent = other.m_parent;
 	}
 
 	/*
@@ -572,22 +572,19 @@ public:
 	*/
 	~this()
 	{
-		if (owns)
-			source.clear();
+		if (m_owns)
+			m_source.clear();
 		else
-			source.drop();
+			m_source.drop();
 	}
 private:
-	BER_Decoder parent;
-	Unique!DataSource source;
-	BER_Object pushed;
-	bool owns;
-};
+	BER_Decoder m_parent;
+	Unique!DataSource m_source;
+	BER_Object m_pushed;
+	bool m_owns;
+}
 
-
-
-
-
+private:
 /*
 * BER decode an ASN.1 type tag
 */
@@ -680,20 +677,20 @@ size_t find_eoc(DataSource ber)
 		data += Pair(&buffer[0], got);
 	}
 
-	auto source = scoped!DataSource_Memory(data);
+	auto m_source = scoped!DataSource_Memory(data);
 	data.clear();
 	
 	size_t length = 0;
 	while(true)
 	{
 		ASN1_Tag type_tag, class_tag;
-		size_t tag_size = decode_tag(source.Scoped_payload, type_tag, class_tag);
+		size_t tag_size = decode_tag(m_source.Scoped_payload, type_tag, class_tag);
 		if (type_tag == ASN1_Tag.NO_OBJECT)
 			break;
 		
 		size_t length_size = 0;
-		size_t item_size = decode_length(source.scopedPayload, length_size);
-		source.discard_next(item_size);
+		size_t item_size = decode_length(m_source.scopedPayload, length_size);
+		m_source.discard_next(item_size);
 		
 		length += item_size + length_size + tag_size;
 		

@@ -91,7 +91,7 @@ private:
 	Unique!KDF kdf;
 	Unique!MessageAuthenticationCode mac;
 	size_t mac_keylen;
-};
+}
 
 /**
 * DLIES Decryption
@@ -159,4 +159,4 @@ private:
 	Unique!KDF kdf;
 	Unique!MessageAuthenticationCode mac;
 	size_t mac_keylen;
-};
+}

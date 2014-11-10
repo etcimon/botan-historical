@@ -21,7 +21,7 @@ import string;
 /**
 * The two types of X509 encoding supported by Botan.
 */
-enum X509_Encoding { RAW_BER, PEM };
+enum X509_Encoding { RAW_BER, PEM }
 
 /**
 * BER encode a key

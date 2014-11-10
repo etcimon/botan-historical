@@ -170,7 +170,7 @@ private:
 	}
 
 	Secure_Vector!uint M, digest;
-};
+}
 
 private:
 

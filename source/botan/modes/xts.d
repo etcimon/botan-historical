@@ -112,7 +112,7 @@ private:
 
 	Unique!BlockCipher m_cipher, m_tweak_cipher;
 	Secure_Vector!ubyte m_tweak;
-};
+}
 
 /**
 * IEEE P1619 XTS Encryption
@@ -202,7 +202,7 @@ public:
 	{
 		return round_up(input_length, cipher().block_size);
 	}
-};
+}
 
 /**
 * IEEE P1619 XTS Decryption
@@ -293,7 +293,7 @@ public:
 		// might be less
 		return input_length;
 	}
-};
+}
 
 
 private:

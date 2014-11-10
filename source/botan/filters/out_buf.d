@@ -126,4 +126,4 @@ private:
 
 	Deque!(SecureQueue) buffers;
 	Pipe.message_id offset;
-};
+}

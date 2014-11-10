@@ -230,4 +230,4 @@ private:
 	Secure_Vector!ubyte salt, key, iv;
 	size_t iterations, key_length;
 	Pipe pipe;
-};
+}

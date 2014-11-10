@@ -124,4 +124,4 @@ private:
 
 	Secure_Vector!ubyte m_V;
 	size_t m_reseed_counter;
-};
+}

@@ -62,7 +62,7 @@ public:
 	}
 private:
 	sqlite3* m_db;
-};
+}
 
 struct sqlite3_statement
 {
@@ -147,4 +147,4 @@ public:
 	}
 private:
 	sqlite3_stmt* m_stmt;
-};
+}

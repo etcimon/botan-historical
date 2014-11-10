@@ -54,7 +54,7 @@ public:
 	}
 protected:
 	this() {}
-};
+}
 
 /**
 * This class represents Diffie-Hellman private keys.
@@ -116,7 +116,7 @@ public:
 		else
 			load_check(rng);
 	}
-};
+}
 
 /**
 * DH operation
@@ -150,4 +150,4 @@ private:
 
 	Fixed_Exponent_Power_Mod powermod_x_p;
 	Blinder blinder;
-};
+}

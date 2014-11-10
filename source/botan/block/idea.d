@@ -23,7 +23,7 @@ public:
 	*/
 	void encrypt_n(ubyte* input, ubyte* output, size_t blocks) const
 	{
-		idea_op(input, output, blocks, &EK[0]);
+		idea_op(input, output, blocks, &m_EK[0]);
 	}
 
 	/*
@@ -31,13 +31,13 @@ public:
 	*/
 	void decrypt_n(ubyte* input, ubyte* output, size_t blocks) const
 	{
-		idea_op(input, output, blocks, &DK[0]);
+		idea_op(input, output, blocks, &m_DK[0]);
 	}
 
 	void clear()
 	{
-		zap(EK);
-		zap(DK);
+		zap(m_EK);
+		zap(m_DK);
 	}
 
 	@property string name() const { return "IDEA"; }
@@ -51,7 +51,7 @@ protected:
 	/**
 	* @return const reference to decryption subkeys
 	*/
-	const ref Secure_Vector!ushort get_DK() const { return DK; }
+	const ref Secure_Vector!ushort get_DK() const { return m_DK; }
 
 private:
 	/*
@@ -63,40 +63,40 @@ private:
 		DK.resize(52);
 		
 		for (size_t i = 0; i != 8; ++i)
-			EK[i] = load_be!ushort(key, i);
+			m_EK[i] = load_be!ushort(key, i);
 		
 		for (size_t i = 1, j = 8, offset = 0; j != 52; i %= 8, ++i, ++j)
 		{
-			EK[i+7+offset] = cast(ushort)((EK[(i	  % 8) + offset] << 9) |
-			                              (EK[((i+1) % 8) + offset] >> 7));
+			m_EK[i+7+offset] = cast(ushort)((m_EK[(i	  % 8) + offset] << 9) |
+			                              (m_EK[((i+1) % 8) + offset] >> 7));
 			offset += (i == 8) ? 8 : 0;
 		}
 		
-		DK[51] = mul_inv(EK[3]);
-		DK[50] = -EK[2];
-		DK[49] = -EK[1];
-		DK[48] = mul_inv(EK[0]);
+		m_DK[51] = mul_inv(m_EK[3]);
+		m_DK[50] = -m_EK[2];
+		m_DK[49] = -m_EK[1];
+		m_DK[48] = mul_inv(m_EK[0]);
 		
 		for (size_t i = 1, j = 4, counter = 47; i != 8; ++i, j += 6)
 		{
-			DK[counter--] = EK[j+1];
-			DK[counter--] = EK[j];
-			DK[counter--] = mul_inv(EK[j+5]);
-			DK[counter--] = -EK[j+3];
-			DK[counter--] = -EK[j+4];
-			DK[counter--] = mul_inv(EK[j+2]);
+			m_DK[counter--] = m_EK[j+1];
+			m_DK[counter--] = m_EK[j];
+			m_DK[counter--] = mul_inv(m_EK[j+5]);
+			m_DK[counter--] = -m_EK[j+3];
+			m_DK[counter--] = -m_EK[j+4];
+			m_DK[counter--] = mul_inv(m_EK[j+2]);
 		}
 		
-		DK[5] = EK[47];
-		DK[4] = EK[46];
-		DK[3] = mul_inv(EK[51]);
-		DK[2] = -EK[50];
-		DK[1] = -EK[49];
-		DK[0] = mul_inv(EK[48]);
+		m_DK[5] = m_EK[47];
+		m_DK[4] = m_EK[46];
+		m_DK[3] = mul_inv(m_EK[51]);
+		m_DK[2] = -m_EK[50];
+		m_DK[1] = -m_EK[49];
+		m_DK[0] = mul_inv(m_EK[48]);
 	}
 
-	Secure_Vector!ushort EK, DK;
-};
+	Secure_Vector!ushort m_EK, m_DK;
+}
 
 package:
 	

@@ -101,7 +101,7 @@ private:
 	abstract Secure_Vector!ubyte unpad(in ubyte* input,
 												size_t in_length,
 												size_t key_length) const;
-};
+}
 
 /**
 * Factory method for EME (message-encoding methods for encryption) objects

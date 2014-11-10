@@ -71,6 +71,6 @@ public:
 	Vector!ubyte parameters;
 
 	this() {}
-};
+}
 
 

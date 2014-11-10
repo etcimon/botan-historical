@@ -33,8 +33,8 @@ public:
 			
 			for (size_t j = 0; j != 16; ++j)
 			{
-				A0 ^= RC[j];
-				theta(A0, A1, A2, A3, &EK[0]);
+				A0 ^= m_RC[j];
+				theta(A0, A1, A2, A3, &m_EK[0]);
 				
 				A1 = rotate_left(A1, 1);
 				A2 = rotate_left(A2, 5);
@@ -47,8 +47,8 @@ public:
 				A3 = rotate_right(A3, 2);
 			}
 			
-			A0 ^= RC[16];
-			theta(A0, A1, A2, A3, &EK[0]);
+			A0 ^= m_RC[16];
+			theta(A0, A1, A2, A3, &m_EK[0]);
 			
 			store_be(output, A0, A1, A2, A3);
 			
@@ -71,8 +71,8 @@ public:
 			
 			for (size_t j = 16; j != 0; --j)
 			{
-				theta(A0, A1, A2, A3, &DK[0]);
-				A0 ^= RC[j];
+				theta(A0, A1, A2, A3, &m_DK[0]);
+				A0 ^= m_RC[j];
 				
 				A1 = rotate_left(A1, 1);
 				A2 = rotate_left(A2, 5);
@@ -85,8 +85,8 @@ public:
 				A3 = rotate_right(A3, 2);
 			}
 			
-			theta(A0, A1, A2, A3, &DK[0]);
-			A0 ^= RC[0];
+			theta(A0, A1, A2, A3, &m_DK[0]);
+			A0 ^= m_RC[0];
 			
 			store_be(output, A0, A1, A2, A3);
 			
@@ -101,8 +101,8 @@ public:
 	*/
 	void clear()
 	{
-		zap(EK);
-		zap(DK);
+		zap(m_EK);
+		zap(m_DK);
 	}
 	
 
@@ -113,7 +113,7 @@ protected:
 	/**
 	* The Noekeon round constants
 	*/
-	__gshared immutable ubyte[17] RC = [
+	__gshared immutable ubyte[17] m_RC = [
 		0x80, 0x1B, 0x36, 0x6C, 0xD8, 0xAB, 0x4D, 0x9A,
 		0x2F, 0x5E, 0xBC, 0x63, 0xC6, 0x97, 0x35, 0x6A,
 		0xD4 ];
@@ -121,12 +121,12 @@ protected:
 	/**
 	* @return const reference to encryption subkeys
 	*/
-	const ref Secure_Vector!uint get_EK() const { return EK; }
+	const ref Secure_Vector!uint get_EK() const { return m_EK; }
 
 	/**
 	* @return const reference to decryption subkeys
 	*/
-	const ref Secure_Vector!uint get_DK() const { return DK; }
+	const ref Secure_Vector!uint get_DK() const { return m_DK; }
 
 private:
 	/*
@@ -141,7 +141,7 @@ private:
 		
 		for (size_t i = 0; i != 16; ++i)
 		{
-			A0 ^= RC[i];
+			A0 ^= m_RC[i];
 			theta(A0, A1, A2, A3);
 			
 			A1 = rotate_left(A1, 1);
@@ -155,25 +155,25 @@ private:
 			A3 = rotate_right(A3, 2);
 		}
 		
-		A0 ^= RC[16];
+		A0 ^= m_RC[16];
 		
-		DK.resize(4);
-		DK[0] = A0;
-		DK[1] = A1;
-		DK[2] = A2;
-		DK[3] = A3;
+		m_DK.resize(4);
+		m_DK[0] = A0;
+		m_DK[1] = A1;
+		m_DK[2] = A2;
+		m_DK[3] = A3;
 		
 		theta(A0, A1, A2, A3);
 		
-		EK.resize(4);
-		EK[0] = A0;
-		EK[1] = A1;
-		EK[2] = A2;
-		EK[3] = A3;
+		m_EK.resize(4);
+		m_EK[0] = A0;
+		m_EK[1] = A1;
+		m_EK[2] = A2;
+		m_EK[3] = A3;
 	}
 
-	Secure_Vector!uint EK, DK;
-};
+	Secure_Vector!uint m_EK, m_DK;
+}
 
 package:
 	

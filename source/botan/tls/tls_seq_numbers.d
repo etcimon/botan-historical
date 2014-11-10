@@ -24,7 +24,7 @@ public:
 
 	abstract bool already_seen(ulong seq) const;
 	abstract void read_accept(ulong seq);
-};
+}
 
 final class Stream_Sequence_Numbers : Connection_Sequence_Numbers
 {
@@ -45,7 +45,7 @@ private:
 	ulong m_read_seq_no = 0;
 	ushort m_read_epoch = 0;
 	ushort m_write_epoch = 0;
-};
+}
 
 final class Datagram_Sequence_Numbers : Connection_Sequence_Numbers
 {
@@ -111,4 +111,4 @@ private:
 	ushort m_read_epoch = 0;
 	ulong m_window_highest = 0;
 	ulong m_window_bits = 0;
-};
+}

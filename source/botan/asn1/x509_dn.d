@@ -37,8 +37,8 @@ public:
 		
 		der.start_cons(ASN1_Tag.SEQUENCE);
 		
-		if (!dn_bits.empty)
-			der.raw_bytes(dn_bits);
+		if (!m_dn_bits.empty)
+			der.raw_bytes(m_dn_bits);
 		else
 		{
 			do_ava(der, dn_info, ASN1_Tag.PRINTABLE_STRING, "X520.Country");
@@ -85,7 +85,7 @@ public:
 			}
 		}
 		
-		dn_bits = bits;
+		m_dn_bits = bits;
 	}
 
 	/*
@@ -94,7 +94,7 @@ public:
 	MultiMap!(OID, string) get_attributes() const
 	{
 		MultiMap!(OID, string) retval;
-		for (auto i = dn_info.ptr; i != dn_info.end(); ++i)
+		for (auto i = m_dn_info.ptr; i != m_dn_info.end(); ++i)
 			retval.insert(Pair(i.first, i.second.value()));
 		return retval;
 	}
@@ -106,7 +106,7 @@ public:
 	{
 		const OID oid = oids.lookup(deref_info_field(attr));
 		
-		auto range = dn_info.equal_range(oid);
+		auto range = m_dn_info.equal_range(oid);
 		
 		Vector!string values;
 		for (auto i = range.first; i != range.second; ++i)
@@ -120,7 +120,7 @@ public:
 	MultiMap!(string, string) contents() const
 	{
 		MultiMap!(string, string) retval;
-		for (auto i = dn_info.ptr; i != dn_info.end(); ++i)
+		for (auto i = m_dn_info.ptr; i != m_dn_info.end(); ++i)
 			retval.insert(Pair(oids.lookup(i.first), i.second.value()));
 		return retval;
 	}
@@ -144,13 +144,13 @@ public:
 		if (str == "")
 			return;
 		
-		auto range = dn_info.equal_range(oid);
+		auto range = m_dn_info.equal_range(oid);
 		for (auto i = range.first; i != range.second; ++i)
 			if (i.second.value() == str)
 				return;
 		
-		dn_info.insert(Pair(oid, ASN1_String(str)));
-		dn_bits.clear();
+		m_dn_info.insert(Pair(oid, ASN1_String(str)));
+		m_dn_bits.clear();
 	}
 
 	/*
@@ -175,7 +175,7 @@ public:
 	*/
 	Vector!ubyte get_bits() const
 	{
-		return dn_bits;
+		return m_dn_bits;
 	}
 
 	/*
@@ -277,9 +277,9 @@ public:
 	}
 
 private:
-	MultiMap!(OID, ASN1_String) dn_info;
-	Vector!ubyte dn_bits;
-};
+	MultiMap!(OID, ASN1_String) m_dn_info;
+	Vector!ubyte m_dn_bits;
+}
 
 /*
 * DER encode a RelativeDistinguishedName

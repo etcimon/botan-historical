@@ -188,7 +188,7 @@ public:
 		catch(Exception e)
 		{
 			throw new Decoding_Error("Failed to decrypt encrypted session -" ~
-			                         string(e.what()));
+			                         string(e.msg));
 		}
 	}
 
@@ -288,7 +288,7 @@ public:
 	Server_Information server_info() const { return m_server_info; }
 
 private:
-	enum { TLS_SESSION_PARAM_STRUCT_VERSION = 0x2994e301 };
+	enum { TLS_SESSION_PARAM_STRUCT_VERSION = 0x2994e301 }
 
 	SysTime m_start_time;
 
@@ -306,4 +306,4 @@ private:
 	Vector!X509_Certificate m_peer_certs;
 	Server_Information m_server_info; // optional
 	string m_srp_identifier; // optional
-};
+}

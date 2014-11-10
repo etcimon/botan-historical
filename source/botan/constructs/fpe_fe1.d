@@ -191,4 +191,4 @@ public:
 private:
 	Unique!MessageAuthenticationCode mac;
 	Vector!ubyte mac_n_t;
-};
+}

@@ -10,10 +10,11 @@ module botan.asn1.asn1_obj;
 public import botan.asn1.der_enc;
 public import botan.asn1.ber_dec;
 public import botan.asn1.alg_id;
-import botan.filters.data_src;
+public import botan.filters.data_src;
 import botan.utils.parsing;
 import botan.alloc.zeroize;
 import botan.utils.exceptn;
+import std.conv : to;
 
 /**
 * ASN.1 Type and Class Tags
@@ -98,11 +99,6 @@ public:
 	Secure_Vector!ubyte value;
 }
 
-/*
-* ASN.1 Utility Functions
-*/
-class DataSource;
-
 /**
 * General BER Decoding Error Exception
 */
@@ -111,7 +107,7 @@ class BER_Decoding_Error : Decoding_Error
 	this(in string str) {
 		super("BER: " ~ str);
 	}
-};
+}
 
 /**
 * Exception For Incorrect BER Taggings
@@ -132,7 +128,7 @@ class BER_Bad_Tag : BER_Decoding_Error
 	this(in string str, ASN1_Tag tag1, ASN1_Tag tag2) {
 		super(str ~ ": " ~ std.conv.to!string(tag1) ~ "/" ~ std.conv.to!string(tag2));
 	}
-};
+}
 	
 /*
 * Put some arbitrary bytes into a ASN1_Tag.SEQUENCE
@@ -149,7 +145,7 @@ Vector!ubyte put_in_sequence(in Vector!ubyte contents)
 /*
 * Convert a BER object into a string object
 */
-string to_string(in BER_Object obj)
+string toString(in BER_Object obj)
 {
 	return obj.value.data;
 }

@@ -137,4 +137,4 @@ private:
 
 	const bool BIG_BYTE_ENDIAN, BIG_BIT_ENDIAN;
 	const size_t COUNT_SIZE;
-};
+}

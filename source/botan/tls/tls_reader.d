@@ -171,7 +171,7 @@ private:
 	string m_typename;
 	const Vector!ubyte m_buf;
 	size_t m_offset;
-};
+}
 
 /**
 * Helper function for encoding length-tagged vectors

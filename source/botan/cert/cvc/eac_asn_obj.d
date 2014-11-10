@@ -16,6 +16,7 @@ import botan.utils.charset;
 import botan.utils.parsing;
 import std.datetime;
 import botan.utils.types;
+import std.array : Appender;
 
 alias ASN1_Car = FreeListRef!ASN1_Car_Impl;
 alias ASN1_Cex = FreeListRef!ASN1_Cex_Impl;
@@ -248,8 +249,8 @@ public:
 	}
 
 	/*
-* Compare two EAC_Times for in various ways
-*/
+	* Compare two EAC_Times for in various ways
+	*/
 	bool opEquals(const ref EAC_Time t2)
 	{
 		return (cmp(t2) == 0);
@@ -315,7 +316,7 @@ private:
 	}
 	uint year, month, day;
 	ASN1_Tag m_tag;
-};
+}
 
 /**
 * This class represents CVC CEDs. Only limited sanity checks of
@@ -349,7 +350,7 @@ public:
 		super(other.get_year(), other.get_month(), other.get_day(),
 		      ASN1_Tag(37));
 	}
-};
+}
 
 /**
 * This class represents CVC CEXs. Only limited sanity checks of
@@ -378,7 +379,7 @@ public:
 		super(other.get_year(), other.get_month(), other.get_day(),
 		      ASN1_Tag(36));
 	}
-};
+}
 
 /**
 * Base class for car/chr of cv certificates.
@@ -404,7 +405,6 @@ public:
 		
 		if (obj.type_tag != this.m_tag)
 		{
-			import std.array : Appender;
 			Appender!string ss;
 			
 			ss ~= "ASN1_EAC_String tag mismatch, tag was "
@@ -421,13 +421,13 @@ public:
 		try
 		{
 			this = ASN1_EAC_String(
-				transcode(asn1.to_string(obj), charset_is, LOCAL_CHARSET),
+				transcode(asn1.toString(obj), charset_is, LOCAL_CHARSET),
 				obj.type_tag);
 		}
 		catch(Invalid_Argument inv_arg)
 		{
 			throw new Decoding_Error(string("ASN1_EAC_String decoding failed: ") +
-			                         inv_arg.what());
+			                         inv_arg.msg);
 		}
 	}
 	
@@ -502,7 +502,7 @@ protected:
 private:
 	string m_iso_8859_str;
 	ASN1_Tag m_tag;
-};
+}
 
 /**
 * This class represents CARs of CVCs. (String tagged with 2)
@@ -520,7 +520,7 @@ public:
 
 	}
 		
-};
+}
 
 /**
 * This class represents CHRs of CVCs (tag 32)
@@ -537,7 +537,7 @@ public:
 		super(str, ASN1_Tag(32));
 	}
 
-};
+}
 
 
 Vector!ubyte enc_two_digit(uint input)

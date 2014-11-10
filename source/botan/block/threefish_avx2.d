@@ -189,9 +189,9 @@ private:
 	}
 
 	override BlockCipher clone() const { return new Threefish_512_AVX2; }
-};
+}
 
-protected:
+private:
 	
 void interleave_epi64(ref __m256i X0, ref __m256i X1) pure
 {

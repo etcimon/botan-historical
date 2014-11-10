@@ -106,7 +106,7 @@ private:
 	}
 
 	Unique!HashFunction m_hash1, m_hash2;
-};
+}
 
 private:
 	

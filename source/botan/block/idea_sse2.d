@@ -59,7 +59,7 @@ public:
 	}
 
 	BlockCipher clone() const { return new IDEA_SSE2; }
-};
+}
 
 package:
 

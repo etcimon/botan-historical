@@ -227,7 +227,7 @@ private:
 	size_t m_max_sessions;
 	Duration m_session_lifetime;
 	sqlite3_database m_db;
-};
+}
 
 SymmetricKey derive_key(in string passphrase,
                         in ubyte* salt,

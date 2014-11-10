@@ -53,7 +53,7 @@ public:
 private:
 	Unique!MessageAuthenticationCode hmac_md5;
 	Unique!MessageAuthenticationCode hmac_sha1;
-};
+}
 
 /**
 * PRF used in TLS 1.2
@@ -84,7 +84,7 @@ public:
 	}
 private:
 	Unique!MessageAuthenticationCode hmac;
-};
+}
 
 
 private:

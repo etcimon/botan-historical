@@ -60,4 +60,4 @@ public:
 	{ LibraryInitializer.initialize(options); }
 
 	~this() { LibraryInitializer.deinitialize(); }
-};
+}

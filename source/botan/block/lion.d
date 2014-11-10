@@ -148,11 +148,11 @@ private:
 	/*
 	* Lion Key Schedule
 	*/
-	void key_schedule(in ubyte* key)
+	void key_schedule(in ubyte* key, size_t length)
 	{
 		clear();
 		
-		const size_t half = key.length / 2;
+		const size_t half = length / 2;
 		copy_mem(&m_key1[0], key, half);
 		copy_mem(&m_key2[0], key + half, half);
 	}
@@ -164,4 +164,4 @@ private:
 	Unique!HashFunction m_hash;
 	Unique!StreamCipher m_cipher;
 	Secure_Vector!ubyte m_key1, m_key2;
-};
+}

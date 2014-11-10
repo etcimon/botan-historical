@@ -139,7 +139,7 @@ private:
 
 
 	Secure_Vector!uint X, digest;
-};
+}
 
 private:
 

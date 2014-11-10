@@ -43,4 +43,4 @@ public:
 	* @return name of this algorithm
 	*/
 	abstract @property string name() const;
-};
+}

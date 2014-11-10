@@ -64,9 +64,9 @@ public:
 			prov_types.push_back(PROV_RSA_FULL);
 	}
 
-	m_tag
+	private:
 		Vector!( ulong ) prov_types;
-};
+}
 
 final class CSP_Handle
 {
@@ -100,4 +100,4 @@ public:
 private:
 	HCRYPTPROV handle;
 	bool valid;
-};
+}

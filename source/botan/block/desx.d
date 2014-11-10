@@ -25,9 +25,9 @@ public:
 	{
 		for (size_t i = 0; i != blocks; ++i)
 		{
-			xor_buf(output, input, &K1[0], BLOCK_SIZE);
-			des.encrypt(output);
-			xor_buf(output, &K2[0], BLOCK_SIZE);
+			xor_buf(output, input, &m_K1[0], BLOCK_SIZE);
+			m_des.encrypt(output);
+			xor_buf(output, &m_K2[0], BLOCK_SIZE);
 			
 			input += BLOCK_SIZE;
 			output += BLOCK_SIZE;
@@ -41,9 +41,9 @@ public:
 	{	
 		for (size_t i = 0; i != blocks; ++i)
 		{
-			xor_buf(output, input, &K2[0], BLOCK_SIZE);
-			des.decrypt(output);
-			xor_buf(output, &K1[0], BLOCK_SIZE);
+			xor_buf(output, input, &m_K2[0], BLOCK_SIZE);
+			m_des.decrypt(output);
+			xor_buf(output, &m_K1[0], BLOCK_SIZE);
 			
 			input += BLOCK_SIZE;
 			output += BLOCK_SIZE;
@@ -51,9 +51,9 @@ public:
 	}
 	void clear()
 	{
-		des.clear();
-		zap(K1);
-		zap(K2);
+		m_des.clear();
+		zap(m_K1);
+		zap(m_K2);
 	}
 
 	@property string name() const { return "DESX"; }
@@ -65,11 +65,11 @@ private:
 	*/
 	void key_schedule(in ubyte* key, size_t)
 	{
-		K1.assign(key, key + 8);
-		des.set_key(key + 8, 8);
-		K2.assign(key + 16, key + 24);
+		m_K1.assign(key, key + 8);
+		m_des.set_key(key + 8, 8);
+		m_K2.assign(key + 16, key + 24);
 	}
 
-	Secure_Vector!ubyte K1, K2;
-	DES des;
-};
+	Secure_Vector!ubyte m_K1, m_K2;
+	DES m_des;
+}

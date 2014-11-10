@@ -64,7 +64,7 @@ private:
 	}
 
 	Secure_Vector!ulong digest;
-};
+}
 
 /**
 * SHA-512
@@ -117,9 +117,9 @@ private:
 	}
 
 	Secure_Vector!ulong digest;
-};
+}
 
-m_tag
+private:
 pure:
 
 /*

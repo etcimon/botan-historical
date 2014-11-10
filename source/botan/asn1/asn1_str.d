@@ -50,7 +50,7 @@ public:
 			charset_is = LATIN1_CHARSET;
 		
 		initialize(
-			transcode(asn1.to_string(obj), charset_is, LOCAL_CHARSET),
+			transcode(asn1.toString(obj), charset_is, LOCAL_CHARSET),
 			obj.type_tag);
 	}
 
@@ -112,7 +112,7 @@ private:
 
 	string m_iso_8859_str;
 	ASN1_Tag m_tag;
-};
+}
 
 /*
 * Choose an encoding for the string

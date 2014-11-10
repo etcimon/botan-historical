@@ -24,7 +24,7 @@ class Illegal_Transformation : Exception
 	{
 		super(err);
 	}
-};
+}
 
 /**
 * Exception thrown if some form of illegal point is decoded
@@ -32,7 +32,7 @@ class Illegal_Transformation : Exception
 class Illegal_Point : Exception
 {
 	this(in string err = "Malformed ECP point detected") { super(err); }
-};
+}
 
 /**
 * This class represents one point on a curve of GF(p)
@@ -45,7 +45,7 @@ public:
 		UNCOMPRESSED = 0,
 		COMPRESSED	= 1,
 		HYBRID		 = 2
-	};
+	}
 
 	/**
 	* Construct an uninitialized PointGFp
@@ -715,7 +715,7 @@ private:
 	CurveGFp curve;
 	BigInt coord_x, coord_y, coord_z;
 	Secure_Vector!word ws; // workspace for Montgomery
-};
+}
 
 
 

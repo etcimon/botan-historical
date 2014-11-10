@@ -56,7 +56,7 @@ public:
 	* Return the size of the authentication tag used (in bytes)
 	*/
 	abstract size_t tag_size() const;
-};
+}
 
 /**
 * Get an AEAD mode by name (eg "AES-128/GCM" or "Serpent/EAX")

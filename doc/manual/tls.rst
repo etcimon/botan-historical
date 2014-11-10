@@ -652,7 +652,7 @@ TLS Ciphersuites
 
      Return the numerical code for this ciphersuite
 
- .. cpp:function:: std::string to_string() const
+ .. cpp:function:: std::string toString() const
 
      Return the ful name of ciphersuite (for example
      "RSA_WITH_RC4_128_SHA" or "ECDHE_RSA_WITH_AES_128_GCM_SHA256")
@@ -735,7 +735,7 @@ The ``TLS::Protocol_Version`` class represents a specific version:
 
       Returns minor number of the protocol version
 
- .. cpp:function:: std::string to_string() const
+ .. cpp:function:: std::string toString() const
 
       Returns string description of the version, for instance "SSL v3",
       "TLS v1.1", or "DTLS v1.0".

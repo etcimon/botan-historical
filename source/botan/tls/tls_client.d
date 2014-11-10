@@ -334,7 +334,7 @@ private:
 			}
 			catch(Exception e)
 			{
-				throw new TLS_Exception(Alert.BAD_CERTIFICATE, e.what());
+				throw new TLS_Exception(Alert.BAD_CERTIFICATE, e.msg);
 			}
 			
 			Unique!Public_Key peer_key = server_certs[0].subject_public_key();
@@ -543,7 +543,7 @@ private:
 	const Policy m_policy;
 	Credentials_Manager m_creds;
 	const Server_Information m_info;
-};
+}
 
 
 private final class Client_Handshake_State : Handshake_State
@@ -569,4 +569,4 @@ public:
 	
 	// Used by client using NPN
 	string delegate(Vector!string) client_npn_cb;
-};
+}

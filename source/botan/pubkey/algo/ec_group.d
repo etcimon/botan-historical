@@ -26,7 +26,7 @@ enum : EC_Group_Encoding {
 	EC_DOMPAR_ENC_EXPLICIT = 0,
 	EC_DOMPAR_ENC_IMPLICITCA = 1,
 	EC_DOMPAR_ENC_OID = 2
-};
+}
 
 /**
 * Class representing an elliptic curve
@@ -538,4 +538,4 @@ private:
 	PointGFp base_point;
 	BigInt order, cofactor;
 	string oid;
-};
+}

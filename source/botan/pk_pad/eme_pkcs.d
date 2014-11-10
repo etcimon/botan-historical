@@ -70,4 +70,4 @@ private:
 		return Secure_Vector!ubyte(&input[seperator + 1], &input[inlen]);
 	}
 
-};
+}

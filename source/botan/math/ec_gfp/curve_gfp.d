@@ -137,7 +137,7 @@ private:
 	// Montgomery parameters
 	BigInt m_r2, m_a_r, m_b_r;
 	word m_p_dash;
-};
+}
 
 void swap(CurveGFp curve1, CurveGFp curve2)
 {

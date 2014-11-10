@@ -95,12 +95,12 @@ public:
 					const ASN1_Tag value_type = value.type_tag;
 					
 					if (is_string_type(value_type) && value.class_tag == ASN1_Tag.UNIVERSAL)
-						add_othername(oid, asn1.to_string(value), value_type);
+						add_othername(oid, asn1.toString(value), value_type);
 				}
 			}
 			else if (tag == 1 || tag == 2 || tag == 6)
 			{
-				const string value = transcode(asn1.to_string(obj),
+				const string value = transcode(asn1.toString(obj),
 				                                        LATIN1_CHARSET,
 				                                        LOCAL_CHARSET);
 				
@@ -206,7 +206,7 @@ public:
 private:
 	MultiMap!(string, string) m_alt_info;
 	MultiMap!(OID, ASN1_String) m_othernames;
-};
+}
 
 
 

@@ -131,7 +131,7 @@ private:
 
 	Secure_Vector!ubyte X, checksum, buffer;
 	size_t position;
-};
+}
 
 
 

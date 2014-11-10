@@ -123,15 +123,15 @@ private:
 				m_fresh_nonce = false;
 			return m_nonce;
 		}
-	m_tag
+	private:
 		bool m_fresh_nonce;
 		Vector!ubyte m_nonce;
-	};
+	}
 
 	Nonce_State m_nonce;
 	Unique!Transformation m_transform;
 	Secure_Vector!ubyte m_buffer;
-};
+}
 
 private:
 

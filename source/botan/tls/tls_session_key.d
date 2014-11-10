@@ -99,4 +99,4 @@ private:
 	Secure_Vector!ubyte master_sec;
 	SymmetricKey c_cipher, s_cipher, c_mac, s_mac;
 	InitializationVector c_iv, s_iv;
-};
+}

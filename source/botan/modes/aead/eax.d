@@ -114,7 +114,7 @@ protected:
 	Secure_Vector!ubyte m_ad_mac;
 
 	Secure_Vector!ubyte m_nonce_mac;
-};
+}
 
 /**
 * EAX Encryption
@@ -156,7 +156,7 @@ public:
 		
 		buffer += Pair(&data_mac[0], tag_size());
 	}
-};
+}
 
 /**
 * EAX Decryption
@@ -218,7 +218,7 @@ public:
 		
 		buffer.resize(offset + remaining);
 	}
-};
+}
 
 
 /*

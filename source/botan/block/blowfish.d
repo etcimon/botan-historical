@@ -24,10 +24,10 @@ public:
 	*/
 	void encrypt_n(ubyte* input, ubyte* output, size_t blocks) const
 	{
-		const uint* S1 = &S[0];
-		const uint* S2 = &S[256];
-		const uint* S3 = &S[512];
-		const uint* S4 = &S[768];
+		const uint* S1 = &m_S[0];
+		const uint* S2 = &m_S[256];
+		const uint* S3 = &m_S[512];
+		const uint* S4 = &m_S[768];
 		
 		for (size_t i = 0; i != blocks; ++i)
 		{
@@ -36,16 +36,16 @@ public:
 			
 			for (size_t j = 0; j != 16; j += 2)
 			{
-				L ^= P[j];
+				L ^= m_P[j];
 				R ^= ((S1[get_byte(0, L)]  + S2[get_byte(1, L)]) ^
 				      S3[get_byte(2, L)]) + S4[get_byte(3, L)];
 				
-				R ^= P[j+1];
+				R ^= m_P[j+1];
 				L ^= ((S1[get_byte(0, R)]  + S2[get_byte(1, R)]) ^
 				      S3[get_byte(2, R)]) + S4[get_byte(3, R)];
 			}
 			
-			L ^= P[16]; R ^= P[17];
+			L ^= m_P[16]; R ^= m_P[17];
 			
 			store_be(output, R, L);
 			
@@ -60,10 +60,10 @@ public:
 	*/
 	void decrypt_n(ubyte* input, ubyte* output, size_t blocks) const
 	{
-		const uint* S1 = &S[0];
-		const uint* S2 = &S[256];
-		const uint* S3 = &S[512];
-		const uint* S4 = &S[768];
+		const uint* S1 = &m_S[0];
+		const uint* S2 = &m_S[256];
+		const uint* S3 = &m_S[512];
+		const uint* S4 = &m_S[768];
 		
 		for (size_t i = 0; i != blocks; ++i)
 		{
@@ -72,16 +72,16 @@ public:
 			
 			for (size_t j = 17; j != 1; j -= 2)
 			{
-				L ^= P[j];
+				L ^= m_P[j];
 				R ^= ((S1[get_byte(0, L)]  + S2[get_byte(1, L)]) ^
 				      S3[get_byte(2, L)]) + S4[get_byte(3, L)];
 				
-				R ^= P[j-1];
+				R ^= m_P[j-1];
 				L ^= ((S1[get_byte(0, R)]  + S2[get_byte(1, R)]) ^
 				      S3[get_byte(2, R)]) + S4[get_byte(3, R)];
 			}
 			
-			L ^= P[1]; R ^= P[0];
+			L ^= m_P[1]; R ^= m_P[0];
 			
 			store_be(output, R, L);
 			
@@ -112,11 +112,11 @@ public:
 			throw new Invalid_Argument("Requested Bcrypt work factor " ~
 			                           std.conv.to!string(workfactor) ~ " too large");
 		
-		P.resize(18);
-		std.algorithm.copy(P_INIT[0 .. 18], P);
+		m_P.resize(18);
+		std.algorithm.copy(P_INIT[0 .. 18], m_P);
 		
-		S.resize(1024);
-		std.algorithm.copy(S_INIT[0 .. 1024], S);
+		m_S.resize(1024);
+		std.algorithm.copy(S_INIT[0 .. 1024], m_S);
 		
 		key_expansion(key, length, salt);
 		
@@ -135,8 +135,8 @@ public:
 	*/
 	void clear()
 	{
-		zap(P);
-		zap(S);
+		zap(m_P);
+		zap(m_S);
 	}
 
 	override @property string name() const { return "Blowfish"; }
@@ -145,13 +145,13 @@ private:
 	/*
 	* Blowfish Key Schedule
 	*/
-	void key_schedule(in ubyte* key)
+	void key_schedule(in ubyte* key, size_t length)
 	{
-		P.resize(18);
-		std.algorithm.copy(P_INIT[0 .. 18], P);
+		m_P.resize(18);
+		std.algorithm.copy(P_INIT[0 .. 18], m_P);
 		
-		S.resize(1024);
-		std.algorithm.copy(S_INIT[0 .. 1024], S);
+		m_S.resize(1024);
+		std.algorithm.copy(S_INIT[0 .. 1024], m_S);
 		
 		immutable ubyte[16] null_salt;
 		
@@ -164,12 +164,12 @@ private:
 	                   in ubyte[16] salt)
 	{
 		for (size_t i = 0, j = 0; i != 18; ++i, j += 4)
-			P[i] ^= make_uint(key[(j  ) % length], key[(j+1) % length],
+			m_P[i] ^= make_uint(key[(j  ) % length], key[(j+1) % length],
 		key[(j+2) % length], key[(j+3) % length]);
 		
 		uint L = 0, R = 0;
-		generate_sbox(P, L, R, salt, 0);
-		generate_sbox(S, L, R, salt, 2);
+		generate_sbox(m_P, L, R, salt, 0);
+		generate_sbox(m_S, L, R, salt, 2);
 	}
 
 
@@ -181,10 +181,10 @@ private:
 	                   in ubyte[16] salt,
 					   size_t salt_off) const
 	{
-		const uint* S1 = &S[0];
-		const uint* S2 = &S[256];
-		const uint* S3 = &S[512];
-		const uint* S4 = &S[768];
+		const uint* S1 = &m_S[0];
+		const uint* S2 = &m_S[256];
+		const uint* S3 = &m_S[512];
+		const uint* S4 = &m_S[768];
 		
 		for (size_t i = 0; i != box.length; i += 2)
 		{
@@ -193,16 +193,16 @@ private:
 			
 			for (size_t j = 0; j != 16; j += 2)
 			{
-				L ^= P[j];
+				L ^= m_P[j];
 				R ^= ((S1[get_byte(0, L)]  + S2[get_byte(1, L)]) ^
 				      S3[get_byte(2, L)]) + S4[get_byte(3, L)];
 				
-				R ^= P[j+1];
+				R ^= m_P[j+1];
 				L ^= ((S1[get_byte(0, R)]  + S2[get_byte(1, R)]) ^
 				      S3[get_byte(2, R)]) + S4[get_byte(3, R)];
 			}
 			
-			uint T = R; R = L ^ P[16]; L = T ^ P[17];
+			uint T = R; R = L ^ m_P[16]; L = T ^ m_P[17];
 			box[i] = L;
 			box[i+1] = R;
 		}
@@ -385,5 +385,5 @@ private:
 		0x01C36AE4, 0xD6EBE1F9, 0x90D4F869, 0xA65CDEA0, 0x3F09252D, 0xC208E69F,
 		0xB74E6132, 0xCE77E25B, 0x578FDFE3, 0x3AC372E6 ];
 
-	Secure_Vector!uint S, P;
-};
+	Secure_Vector!uint m_S, m_P;
+}

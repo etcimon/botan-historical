@@ -8,6 +8,7 @@ module botan.cert.x509.certstor;
 
 import botan.cert.x509.x509cert;
 import botan.cert.x509.x509_crl;
+import botan.utils.types;
 import std.file;
 
 /**
@@ -37,7 +38,7 @@ public:
 
 	// remove this (used by TLS::Server)
 	abstract Vector!X509_DN all_subjects() const;
-};
+}
 
 /**
 * In Memory Certificate Store
@@ -134,7 +135,7 @@ private:
 	// TODO: Add indexing on the DN and key id to avoid linear search
 	Vector!X509_Certificate m_certs;
 	Vector!X509_CRL m_crls;
-};
+}
 
 final class Certificate_Store_Overlay : Certificate_Store
 {
@@ -160,7 +161,7 @@ public:
 	}
 private:
 	const Vector!X509_Certificate m_certs;
-};
+}
 
 const X509_Certificate
 	cert_search(in X509_DN subject_dn, in Vector!ubyte key_id,

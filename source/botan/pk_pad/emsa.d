@@ -48,7 +48,7 @@ public:
 							  in Secure_Vector!ubyte raw,
 							  size_t key_bits);
 	~this() {}
-};
+}
 
 /**
 * Factory method for EMSA (message-encoding methods for signatures

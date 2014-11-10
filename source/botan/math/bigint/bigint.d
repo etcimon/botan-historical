@@ -47,13 +47,13 @@ public:
 	/**
 	* Base enumerator for encoding and decoding
 	*/
-	enum : Base { Decimal = 10, Hexadecimal = 16, Binary = 256 };
+	enum : Base { Decimal = 10, Hexadecimal = 16, Binary = 256 }
 
 	typedef bool Sign;
 	/**
 	* Sign symbol definitions for positive and negative numbers
 	*/
-	enum : Sign { Negative = 0, Positive = 1 };
+	enum : Sign { Negative = 0, Positive = 1 }
 
 	/**
 	* DivideByZero Exception
@@ -63,7 +63,7 @@ public:
 		this() {
 			super("BigInt divide by zero");
 		}
-	};
+	}
 
 	/**
 	* Create empty BigInt
@@ -978,7 +978,7 @@ public:
 			{
 				// Handle lack of leading 0
 				const char buf0_with_leading_0[2] =
-				{ '0', cast(char)(buf[0]) };
+				{ '0', cast(char)(buf[0]) }
 				
 				binary = hex_decode_locked(buf0_with_leading_0, 2);
 				
@@ -1254,7 +1254,7 @@ public:
 private:
 	Secure_Vector!word m_reg;
 	Sign m_signedness = Positive;
-};
+}
 
 private:
 

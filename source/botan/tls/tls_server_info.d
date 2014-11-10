@@ -80,4 +80,4 @@ public:
 private:
 	string m_hostname, m_service;
 	ushort m_port;
-};
+}

@@ -24,7 +24,7 @@ public:
 
 private:
 	Alert.Type alert_type;
-};
+}
 
 /**
 * Unexpected_Message Exception
@@ -35,4 +35,4 @@ class Unexpected_Message : TLS_Exception
 	{
 		super(Alert.UNEXPECTED_MESSAGE, err);
 	}
-};
+}

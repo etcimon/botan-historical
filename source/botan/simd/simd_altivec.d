@@ -215,4 +215,4 @@ private:
 	this(Vector!uint input) { reg = input; }
 
 	Vector!uint reg;
-};
+}

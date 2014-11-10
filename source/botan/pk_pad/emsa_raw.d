@@ -71,4 +71,4 @@ private:
 	}
 
 	Secure_Vector!ubyte message;
-};
+}

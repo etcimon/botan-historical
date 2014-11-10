@@ -44,7 +44,7 @@ public:
 	*/
 	final ASN1_Chr get_chr() const {
 		return m_chr;
-	};
+	}
 
 	/**
 	* Put the DER encoded version of this object into a pipe. PEM
@@ -140,4 +140,4 @@ protected:
 		res_sig = decode_concatenation(concat_sig);
 	}
 
-};
+}

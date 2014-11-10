@@ -34,4 +34,4 @@ public:
 	{
 		(cast(AEAD_Mode)(get_transform())).set_associated_data(ad, ad_len);
 	}
-};
+}

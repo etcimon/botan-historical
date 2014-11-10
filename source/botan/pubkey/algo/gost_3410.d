@@ -126,7 +126,7 @@ public:
 
 protected:
 	this() {}
-};
+}
 
 /**
 * GOST-34.10 Private Key
@@ -157,7 +157,7 @@ public:
 
 	Algorithm_Identifier pkcs8_algorithm_identifier() const
 	{ return super.algorithm_identifier(); }
-};
+}
 
 /**
 * GOST-34.10 signature operation
@@ -213,7 +213,7 @@ private:
 	const PointGFp base_point;
 	const BigInt order;
 	const BigInt x;
-};
+}
 
 /**
 * GOST-34.10 verification operation
@@ -269,7 +269,7 @@ private:
 	const PointGFp base_point;
 	const PointGFp public_point;
 	const BigInt order;
-};
+}
 
 
 private:

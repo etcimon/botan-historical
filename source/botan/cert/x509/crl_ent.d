@@ -34,7 +34,7 @@ enum CRL_Code {
 	DELETE_CRL_ENTRY		= 0xFF00,
 	OCSP_GOOD				= 0xFF01,
 	OCSP_UNKNOWN			= 0xFF02
-};
+}
 
 /**
 * This class represents CRL entries
@@ -53,7 +53,7 @@ public:
 		
 		to.start_cons(ASN1_Tag.SEQUENCE)
 			.encode(BigInt.decode(serial))
-				.encode(time)
+				.encode(m_time)
 				.start_cons(ASN1_Tag.SEQUENCE)
 				.encode(extensions)
 				.end_cons()
@@ -67,19 +67,19 @@ public:
 	void decode_from(BER_Decoder source)
 	{
 		BigInt serial_number_bn;
-		reason = CRL_Code.UNSPECIFIED;
+		m_reason = CRL_Code.UNSPECIFIED;
 		
 		BER_Decoder entry = source.start_cons(ASN1_Tag.SEQUENCE);
 		
-		entry.decode(serial_number_bn).decode(time);
+		entry.decode(serial_number_bn).decode(m_time);
 		
 		if (entry.more_items())
 		{
-			Extensions extensions = Extensions(throw_on_unknown_critical);
+			Extensions extensions = Extensions(m_throw_on_unknown_critical);
 			entry.decode(extensions);
 			Data_Store info;
 			extensions.contents_to(info, info);
-			reason = CRL_Code(info.get1_uint("X509v3.CRLReasonCode"));
+			m_reason = CRL_Code(info.get1_uint("X509v3.CRLReasonCode"));
 		}
 		
 		entry.end_cons();
@@ -91,27 +91,27 @@ public:
 	* Get the serial number of the certificate associated with this entry.
 	* @return certificate's serial number
 	*/
-	Vector!ubyte serial_number() const { return serial; }
+	Vector!ubyte serial_number() const { return m_serial; }
 
 	/**
 	* Get the revocation date of the certificate associated with this entry
 	* @return certificate's revocation date
 	*/
-	X509_Time expire_time() const { return time; }
+	X509_Time expire_time() const { return m_time; }
 
 	/**
 	* Get the entries reason code
 	* @return reason code
 	*/
-	CRL_Code reason_code() const { return reason; }
+	CRL_Code reason_code() const { return m_reason; }
 
 	/**
 	* Construct an empty CRL entry.
 	*/
 	this(bool throw_on_unknown_critical_extension)
 	{
-		throw_on_unknown_critical = throw_on_unknown_critical_extension;
-		reason = CRL_Code.UNSPECIFIED;
+		m_throw_on_unknown_critical = throw_on_unknown_critical_extension;
+		m_reason = CRL_Code.UNSPECIFIED;
 	}
 
 	/**
@@ -121,10 +121,10 @@ public:
 	*/
 	this(in X509_Certificate cert, CRL_Code why = CRL_Code.UNSPECIFIED)
 	{
-		throw_on_unknown_critical = false;
-		serial = cert.serial_number();
-		time = X509_Time(Clock.currTime());
-		reason = why;
+		m_throw_on_unknown_critical = false;
+		m_serial = cert.serial_number();
+		m_time = X509_Time(Clock.currTime());
+		m_reason = why;
 	}
 
 	/*
@@ -152,8 +152,8 @@ public:
 
 
 private:
-	bool throw_on_unknown_critical;
-	Vector!ubyte serial;
-	X509_Time time;
-	CRL_Code reason;
-};
+	bool m_throw_on_unknown_critical;
+	Vector!ubyte m_serial;
+	X509_Time m_time;
+	CRL_Code m_reason;
+}

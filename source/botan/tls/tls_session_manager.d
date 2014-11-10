@@ -71,7 +71,7 @@ public:
 	abstract Duration session_lifetime() const;
 
 	~this() {}
-};
+}
 
 /**
 * An implementation of Session_Manager that does not save sessions at
@@ -92,7 +92,7 @@ public:
 
 	override Duration session_lifetime() const
 	{ return Duration.init; }
-};
+}
 
 /**
 * An implementation of Session_Manager that saves values in memory.
@@ -218,4 +218,4 @@ private:
 
 	HashMap!(string, Vector!ubyte) m_sessions; // hex(session_id) . session
 	HashMap!(Server_Information, string) m_info_sessions;
-};
+}

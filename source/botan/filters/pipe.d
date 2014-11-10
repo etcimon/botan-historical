@@ -50,7 +50,7 @@ public:
 			super("Pipe::" ~ where ~ ": Invalid message number " ~
 			      std.conv.to!string(msg));
 		}
-	};
+	}
 
 	/**
 	* A meta-id for whatever the last message is
@@ -646,7 +646,7 @@ private:
 	Output_Buffers outputs;
 	message_id default_read;
 	bool inside_msg;
-};
+}
 
 /*
 * A Filter that does nothing
@@ -658,4 +658,4 @@ public:
 	{ send(input, length); }
 	
 	@property string name() const { return "Null"; }
-};
+}

@@ -48,4 +48,4 @@ private:
 	int m_wakeups;
 	Mutex m_mutex;
 	Condition m_cond;
-};
+}

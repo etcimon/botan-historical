@@ -61,7 +61,7 @@ public:
 
 protected:
 	this() {}
-};
+}
 
 /**
 * This class represents ECDH Private Keys.
@@ -93,7 +93,7 @@ public:
 
 	Vector!ubyte public_value() const
 	{ return super.public_value(); }
-};
+}
 
 /**
 * ECDH operation
@@ -125,4 +125,4 @@ private:
 	const CurveGFp curve;
 	const BigInt cofactor;
 	BigInt l_times_priv;
-};
+}

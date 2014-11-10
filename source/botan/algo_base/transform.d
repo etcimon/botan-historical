@@ -92,7 +92,7 @@ public:
 	abstract void clear();
 
 	~this() {}
-};
+}
 
 class Keyed_Transform : Transformation
 {
@@ -136,4 +136,4 @@ public:
 
 private:
 	abstract void key_schedule(in ubyte* key, size_t length);
-};
+}

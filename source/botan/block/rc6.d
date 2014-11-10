@@ -32,7 +32,7 @@ public:
 			uint C = load_le!uint(input, 2);
 			uint D = load_le!uint(input, 3);
 			
-			B += S[0]; D += S[1];
+			B += m_S[0]; D += m_S[1];
 			
 			for (size_t j = 0; j != 20; j += 4)
 			{
@@ -40,26 +40,26 @@ public:
 				
 				T1 = rotate_left(B*(2*B+1), 5);
 				T2 = rotate_left(D*(2*D+1), 5);
-				A = rotate_left(A ^ T1, T2 % 32) + S[2*j+2];
-				C = rotate_left(C ^ T2, T1 % 32) + S[2*j+3];
+				A = rotate_left(A ^ T1, T2 % 32) + m_S[2*j+2];
+				C = rotate_left(C ^ T2, T1 % 32) + m_S[2*j+3];
 				
 				T1 = rotate_left(C*(2*C+1), 5);
 				T2 = rotate_left(A*(2*A+1), 5);
-				B = rotate_left(B ^ T1, T2 % 32) + S[2*j+4];
-				D = rotate_left(D ^ T2, T1 % 32) + S[2*j+5];
+				B = rotate_left(B ^ T1, T2 % 32) + m_S[2*j+4];
+				D = rotate_left(D ^ T2, T1 % 32) + m_S[2*j+5];
 				
 				T1 = rotate_left(D*(2*D+1), 5);
 				T2 = rotate_left(B*(2*B+1), 5);
-				C = rotate_left(C ^ T1, T2 % 32) + S[2*j+6];
-				A = rotate_left(A ^ T2, T1 % 32) + S[2*j+7];
+				C = rotate_left(C ^ T1, T2 % 32) + m_S[2*j+6];
+				A = rotate_left(A ^ T2, T1 % 32) + m_S[2*j+7];
 				
 				T1 = rotate_left(A*(2*A+1), 5);
 				T2 = rotate_left(C*(2*C+1), 5);
-				D = rotate_left(D ^ T1, T2 % 32) + S[2*j+8];
-				B = rotate_left(B ^ T2, T1 % 32) + S[2*j+9];
+				D = rotate_left(D ^ T1, T2 % 32) + m_S[2*j+8];
+				B = rotate_left(B ^ T2, T1 % 32) + m_S[2*j+9];
 			}
 			
-			A += S[42]; C += S[43];
+			A += m_S[42]; C += m_S[43];
 			
 			store_le(output, A, B, C, D);
 			
@@ -79,7 +79,7 @@ public:
 			uint C = load_le!uint(input, 2);
 			uint D = load_le!uint(input, 3);
 			
-			C -= S[43]; A -= S[42];
+			C -= m_S[43]; A -= m_S[42];
 			
 			for (size_t j = 0; j != 20; j += 4)
 			{
@@ -92,21 +92,21 @@ public:
 				
 				T1 = rotate_left(D*(2*D+1), 5);
 				T2 = rotate_left(B*(2*B+1), 5);
-				A = rotate_right(A - S[39 - 2*j], T1 % 32) ^ T2;
-				C = rotate_right(C - S[38 - 2*j], T2 % 32) ^ T1;
+				A = rotate_right(A - m_S[39 - 2*j], T1 % 32) ^ T2;
+				C = rotate_right(C - m_S[38 - 2*j], T2 % 32) ^ T1;
 				
 				T1 = rotate_left(C*(2*C+1), 5);
 				T2 = rotate_left(A*(2*A+1), 5);
-				D = rotate_right(D - S[37 - 2*j], T1 % 32) ^ T2;
-				B = rotate_right(B - S[36 - 2*j], T2 % 32) ^ T1;
+				D = rotate_right(D - m_S[37 - 2*j], T1 % 32) ^ T2;
+				B = rotate_right(B - m_S[36 - 2*j], T2 % 32) ^ T1;
 				
 				T1 = rotate_left(B*(2*B+1), 5);
 				T2 = rotate_left(D*(2*D+1), 5);
-				C = rotate_right(C - S[35 - 2*j], T1 % 32) ^ T2;
-				A = rotate_right(A - S[34 - 2*j], T2 % 32) ^ T1;
+				C = rotate_right(C - m_S[35 - 2*j], T1 % 32) ^ T2;
+				A = rotate_right(A - m_S[34 - 2*j], T2 % 32) ^ T1;
 			}
 			
-			D -= S[1]; B -= S[0];
+			D -= m_S[1]; B -= m_S[0];
 			
 			store_le(output, A, B, C, D);
 			
@@ -117,7 +117,7 @@ public:
 
 	void clear()
 	{
-		zap(S);
+		zap(m_S);
 	}
 
 	override @property string name() const { return "RC6"; }
@@ -126,16 +126,16 @@ private:
 	/*
 	* RC6 Key Schedule
 	*/
-	void key_schedule(in ubyte* key)
+	void key_schedule(in ubyte* key, size_t length)
 	{
-		S.resize(44);
+		m_S.resize(44);
 		
 		const size_t WORD_KEYLENGTH = (((length - 1) / 4) + 1);
-		const size_t MIX_ROUNDS	  = 3 * std.algorithm.max(WORD_KEYLENGTH, S.length);
+		const size_t MIX_ROUNDS	  = 3 * std.algorithm.max(WORD_KEYLENGTH, m_S.length);
 		
-		S[0] = 0xB7E15163;
+		m_S[0] = 0xB7E15163;
 		for (size_t i = 1; i != S.length; ++i)
-			S[i] = S[i-1] + 0x9E3779B9;
+			m_S[i] = m_S[i-1] + 0x9E3779B9;
 		
 		Secure_Vector!uint K = Secure_Vector!uint(8);
 		
@@ -145,12 +145,12 @@ private:
 		uint A = 0, B = 0;
 		for (size_t i = 0; i != MIX_ROUNDS; ++i)
 		{
-			A = rotate_left(S[i % S.length] + A + B, 3);
+			A = rotate_left(m_S[i % m_S.length] + A + B, 3);
 			B = rotate_left(K[i % WORD_KEYLENGTH] + A + B, (A + B) % 32);
-			S[i % S.length] = A;
+			m_S[i % m_S.length] = A;
 			K[i % WORD_KEYLENGTH] = B;
 		}
 	}
 
-	Secure_Vector!uint S;
-};
+	Secure_Vector!uint m_S;
+}

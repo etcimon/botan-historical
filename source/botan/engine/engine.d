@@ -130,4 +130,4 @@ public:
 	* @return newly allocated operator object, or NULL
 	*/
 	Decryption get_decryption_op(in Private_Key key, RandomNumberGenerator rng) const;
-};
+}

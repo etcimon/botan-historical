@@ -174,7 +174,7 @@ public:
 	* @return new object representing the same algorithm as this
 	*/
 	abstract BlockCipher clone() const;
-};
+}
 
 /**
 * Represents a block cipher with a single fixed block size
@@ -182,11 +182,11 @@ public:
 class Block_Cipher_Fixed_Params(size_t BS, size_t KMIN, size_t KMAX = 0, size_t KMOD = 1) : BlockCipher
 {
 	public:
-		enum { BLOCK_SIZE = BS };
+		enum { BLOCK_SIZE = BS }
 		@property size_t block_size() const { return BS; }
 
 		Key_Length_Specification key_spec() const
 		{
 			return Key_Length_Specification(KMIN, KMAX, KMOD);
 		}
-};
+}

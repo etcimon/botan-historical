@@ -127,7 +127,7 @@ public:
 private:
 	Secure_Vector!ubyte buffer;
 	StreamCipher cipher;
-};
+}
 
 /**
 * Hash Filter.
@@ -185,7 +185,7 @@ public:
 private:
 	const size_t OUTPUT_LENGTH;
 	HashFunction hash;
-};
+}
 
 /**
 * MessageAuthenticationCode Filter.
@@ -288,4 +288,4 @@ public:
 private:
 	const size_t OUTPUT_LENGTH;
 	MessageAuthenticationCode mac;
-};
+}

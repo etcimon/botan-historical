@@ -334,7 +334,7 @@ private:
 	Algorithm_Cache!HashFunction m_hash_cache;
 	Algorithm_Cache!MessageAuthenticationCode m_mac_cache;
 	Algorithm_Cache!PBKDF m_pbkdf_cache;
-};
+}
 
 private:
 

@@ -113,7 +113,7 @@ private:
 			{
 				// 1 == EGD command for non-blocking read
 				ubyte[2] egd_read_command = {
-					1, cast(ubyte)(std.algorithm.min(length, 255)) };
+					1, cast(ubyte)(std.algorithm.min(length, 255)) }
 				
 				if (write(m_fd, egd_read_command, 2) != 2)
 					throw new Exception("Writing entropy read command to EGD failed");
@@ -141,7 +141,7 @@ private:
 			return 0;
 		}
 
-	m_tag
+	private:
 		/**
 		* Attempt a connection to an EGD/PRNGD socket
 		*/
@@ -174,7 +174,7 @@ private:
 
 		string socket_path;
 		int m_fd; // cached fd
-	};
+	}
 
 	Vector!( EGD_Socket ) sockets;
-};
+}

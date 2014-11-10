@@ -49,7 +49,7 @@ public:
 	this() {}
 
 	~this() {}
-};
+}
 
 /**
 * Handshake IO for stream-based handshakes
@@ -111,7 +111,7 @@ public:
 				throw new Decoding_Error("Invalid ChangeCipherSpec");
 			
 			// Pretend it's a regular handshake message of zero length
-			const(ubyte)[] ccs_hs = { HANDSHAKE_CCS, 0, 0, 0 };
+			const(ubyte)[] ccs_hs = [ HANDSHAKE_CCS, 0, 0, 0 ];
 			m_queue.insert(m_queue.end(), ccs_hs, ccs_hs + (ccs_hs).sizeof);
 		}
 		else
@@ -143,7 +143,7 @@ public:
 private:
 	Deque!ubyte m_queue;
 	void delegate(ubyte, in Vector!ubyte) m_send_hs;
-};
+}
 
 /**
 * Handshake IO for datagram-based handshakes
@@ -407,14 +407,14 @@ public:
 		return Pair(cast(Handshake_Type)(m_msg_type), m_message);
 	}
 
-	m_tag
+	private:
 		ubyte m_msg_type = HANDSHAKE_NONE;
 		size_t m_msg_length = 0;
 		ushort m_epoch = 0;
 
 		HashMap!(size_t, ubyte) m_fragments;
 		Vector!ubyte m_message;
-	};
+	}
 
 	Connection_Sequence_Numbers m_seqs;
 	HashMap!(ushort, Handshake_Reassembly) m_messages;
@@ -427,7 +427,7 @@ public:
 	ushort m_in_message_seq = 0;
 	ushort m_out_message_seq = 0;
 	void delegate(ushort, ubyte, in Vector!ubyte) m_send_hs;
-};
+}
 
 
 private:

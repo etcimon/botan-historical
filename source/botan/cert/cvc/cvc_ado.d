@@ -8,6 +8,12 @@ module botan.cert.cvc.cvc_ado;
 import botan.cert.cvc.eac_obj;
 import botan.cert.cvc.eac_asn_obj;
 import botan.cert.cvc.cvc_req;
+import botan.rng.rng;
+import botan.pubkey.pubkey;
+import botan.filters.data_src;
+import botan.filters.pipe;
+import botan.pubkey.x509_key;
+import botan.asn1.asn1_obj;
 import botan.utils.types;
 // import fstream;
 import string;
@@ -112,7 +118,7 @@ public:
 	*/
 	Vector!ubyte tbs_data() const
 	{
-		return tbs_bits;
+		return m_tbs_bits;
 	}
 
 
@@ -176,4 +182,4 @@ private:
 		res_tbs_bits += DER_Encoder().encode(car).get_contents();
 		res_sig = decode_concatenation(concat_sig);
 	}
-};
+}

@@ -123,4 +123,4 @@ private:
 	size_t delegate(ref ubyte[]) m_read_fn;
 	Client m_channel;
 	secure_deque!ubyte m_plaintext;
-};
+}

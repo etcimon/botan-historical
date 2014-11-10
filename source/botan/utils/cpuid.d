@@ -197,7 +197,7 @@ private:
 		CPUID_RDSEED_BIT = 64+18,
 		CPUID_ADX_BIT = 64+19,
 		CPUID_SHA_BIT = 64+29,
-	};
+	}
 
 	static bool x86_processor_flags_has(ulong bit)
 	{
@@ -207,7 +207,7 @@ private:
 	static ulong[2] m_x86_processor_flags;
 	static size_t m_cache_line_size;
 	static bool m_altivec_capable;
-};
+}
 
 
 
@@ -371,9 +371,9 @@ version (PPC) {
 			enum supported = true;
 		else enum supported = false;
 		static if (supported) {
-			int[2] sels = { CTL_MACHDEP, CPU_ALTIVEC };
+			int[2] sels = [ CTL_MACHDEP, CPU_ALTIVEC ];
 			// From Apple's docs
-			int[2] sels = { CTL_HW, HW_VECTORUNIT };
+			int[2] sels = [ CTL_HW, HW_VECTORUNIT ];
 			int vector_type = 0;
 			size_t length = (vector_type).sizeof;
 			int error = sysctl(sels, 2, &vector_type, &length, NULL, 0);

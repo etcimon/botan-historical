@@ -114,7 +114,7 @@ private:
 		derive(size_t key_len,
 				 in ubyte* secret, size_t secret_len,
 				 in ubyte* salt, size_t salt_len) const;
-};
+}
 
 /**
 * Factory method for KDF (key derivation function)

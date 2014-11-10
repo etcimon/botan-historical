@@ -48,7 +48,7 @@ public:
 	* abstract destructor
 	*/
 	~this() {}
-};
+}
 
 /**
 * PKCS#7 Padding
@@ -89,7 +89,7 @@ public:
 	bool valid_blocksize(size_t bs) const { return (bs > 0 && bs < 256); }
 
 	@property string name() const { return "PKCS7"; }
-};
+}
 
 /**
 * ANSI X9.23 Padding
@@ -128,7 +128,7 @@ public:
 	bool valid_blocksize(size_t bs) const { return (bs > 0 && bs < 256); }
 
 	@property string name() const { return "X9.23"; }
-};
+}
 
 /**
 * One And Zeros Padding
@@ -170,7 +170,7 @@ public:
 	bool valid_blocksize(size_t bs) const { return (bs > 0); }
 
 	@property string name() const { return "OneAndZeros"; }
-};
+}
 
 /**
 * Null Padding
@@ -185,4 +185,4 @@ public:
 	bool valid_blocksize(size_t) const { return true; }
 
 	@property string name() const { return "NoPadding"; }
-};
+}

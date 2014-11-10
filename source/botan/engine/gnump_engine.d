@@ -146,7 +146,7 @@ public:
 		return new GMP_Modular_Exponentiator(n);
 	}
 
-};
+}
 
 
 /*
@@ -170,7 +170,7 @@ public:
 	this(in BigInt n) { mod = n; }
 private:
 	GMP_MPZ base, exp, mod;
-};
+}
 
 /**
 * Lightweight GMP mpz_t wrapper. For internal use only.
@@ -261,7 +261,7 @@ public:
 	{
 		mpz_clear(value);
 	}
-};
+}
 
 static if (BOTAN_HAS_DIFFIE_HELLMAN) {
 	final class GMP_DH_KA_Operation : Key_Agreement
@@ -280,9 +280,9 @@ static if (BOTAN_HAS_DIFFIE_HELLMAN) {
 			return z.to_bytes();
 		}
 		
-	m_tag
+	private:
 		GMP_MPZ x, p;
-	};
+	}
 }
 
 static if (BOTAN_HAS_DSA) {
@@ -340,10 +340,10 @@ static if (BOTAN_HAS_DSA) {
 			return output;
 		}
 		
-	m_tag
+	private:
 		const GMP_MPZ x, p, q, g;
 		size_t q_bits;
-	};
+	}
 	
 	
 	final class GMP_DSA_Verification_Operation : Verification
@@ -403,10 +403,10 @@ static if (BOTAN_HAS_DSA) {
 			return false;			
 		}
 		
-	m_tag
+	private:
 		const GMP_MPZ y, p, q, g;
 		size_t q_bits;
-	};
+	}
 	
 	
 	static if (BOTAN_HAS_RSA) {
@@ -441,7 +441,7 @@ static if (BOTAN_HAS_DSA) {
 				return BigInt.encode_locked(private_op(m));
 			}
 			
-		m_tag
+		private:
 			BigInt private_op(in BigInt m) const
 			{
 				GMP_MPZ j1, j2, h(m);
@@ -458,7 +458,7 @@ static if (BOTAN_HAS_DSA) {
 			
 			GMP_MPZ mod, p, q, d1, d2, c;
 			size_t n_bits;
-		};
+		}
 		
 		
 		final class GMP_RSA_Public_Operation : Verification, Encryption
@@ -487,7 +487,7 @@ static if (BOTAN_HAS_DSA) {
 				return BigInt.encode_locked(public_op(m));
 			}
 			
-		m_tag
+		private:
 			BigInt public_op(in BigInt m) const
 			{
 				if (m >= n)
@@ -500,7 +500,7 @@ static if (BOTAN_HAS_DSA) {
 			
 			const ref BigInt n;
 			const GMP_MPZ e, mod;
-		};
+		}
 		
 	}
 	
@@ -622,7 +622,7 @@ extern(C) nothrow @nogc
 		gmp_randalg_t _mp_alg;  /* Currently unused. */
 		union _mp_algdata {
 			void *_mp_lc;         /* Pointer to function pointers structure.  */
-		};
+		}
 	}
 	alias __gmp_randstate_struct gmp_randstate_t[1];
 	alias __mpz_struct *mpz_srcptr;

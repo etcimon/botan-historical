@@ -90,4 +90,4 @@ private:
 	Unique!BlockCipher m_cipher;
 	Secure_Vector!ubyte m_buffer;
 	size_t m_buf_pos;
-};
+}

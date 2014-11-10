@@ -26,7 +26,7 @@ public:
 		const(__m128i)* in_mm = cast(const(__m128i)*)(input);
 		__m128i* out_mm = cast(__m128i*)(output);
 		
-		const(__m128i)* key_mm = cast(const(__m128i)*)(EK[0]);
+		const(__m128i)* key_mm = cast(const(__m128i)*)(m_EK[0]);
 		
 		__m128i K0  = _mm_loadu_si128(key_mm);
 		__m128i K1  = _mm_loadu_si128(key_mm + 1);
@@ -102,7 +102,7 @@ public:
 		const(__m128i)* in_mm = cast(const(__m128i)*)(input);
 		__m128i* out_mm = cast(__m128i*)(output);
 		
-		const(__m128i)* key_mm = cast(const(__m128i)*)(DK[0]);
+		const(__m128i)* key_mm = cast(const(__m128i)*)(m_DK[0]);
 		
 		__m128i K0  = _mm_loadu_si128(key_mm);
 		__m128i K1  = _mm_loadu_si128(key_mm + 1);
@@ -176,8 +176,8 @@ public:
 	*/
 	void clear()
 	{
-		zap(EK);
-		zap(DK);
+		zap(m_EK);
+		zap(m_DK);
 	}
 
 	@property string name() const { return "AES-128"; }
@@ -188,8 +188,8 @@ private:
 	*/
 	void key_schedule(in ubyte* key, size_t)
 	{
-		EK.resize(44);
-		DK.resize(44);
+		m_EK.resize(44);
+		m_DK.resize(44);
 		
 		__m128i K0  = _mm_loadu_si128(cast(const(__m128i)*)(key));
 		mixin(`	__m128i K1  = ` ~ AES_128_key_exp!(K0, 0x01)() ~ `
@@ -203,7 +203,7 @@ private:
 				__m128i K9  = ` ~  AES_128_key_exp!(K8, 0x1B)() ~ `
 		      	__m128i K10 = ` ~  AES_128_key_exp!(K9, 0x36)());
 		
-		__m128i* EK_mm = cast(__m128i*)(&EK[0]);
+		__m128i* EK_mm = cast(__m128i*)(&m_EK[0]);
 		_mm_storeu_si128(EK_mm	  , K0);
 		_mm_storeu_si128(EK_mm +  1, K1);
 		_mm_storeu_si128(EK_mm +  2, K2);
@@ -218,7 +218,7 @@ private:
 		
 		// Now generate decryption keys
 		
-		__m128i* DK_mm = cast(__m128i*)(&DK[0]);
+		__m128i* DK_mm = cast(__m128i*)(&m_DK[0]);
 		_mm_storeu_si128(DK_mm	  , K10);
 		_mm_storeu_si128(DK_mm +  1, _mm_aesimc_si128(K9));
 		_mm_storeu_si128(DK_mm +  2, _mm_aesimc_si128(K8));
@@ -233,8 +233,8 @@ private:
 	}
 
 
-	Secure_Vector!uint EK, DK;
-};
+	Secure_Vector!uint m_EK, m_DK;
+}
 
 /**
 * AES-192 using AES-NI
@@ -252,7 +252,7 @@ public:
 		const(__m128i)* in_mm = cast(const(__m128i)*)(input);
 		__m128i* out_mm = cast(__m128i*)(output);
 		
-		const(__m128i)* key_mm = cast(const(__m128i)*)(EK[0]);
+		const(__m128i)* key_mm = cast(const(__m128i)*)(m_EK[0]);
 		
 		__m128i K0  = _mm_loadu_si128(key_mm);
 		__m128i K1  = _mm_loadu_si128(key_mm + 1);
@@ -334,7 +334,7 @@ public:
 		const(__m128i)* in_mm = cast(const(__m128i)*)(input);
 		__m128i* out_mm = cast(__m128i*)(output);
 		
-		const(__m128i)* key_mm = cast(const(__m128i)*)(DK[0]);
+		const(__m128i)* key_mm = cast(const(__m128i)*)(m_DK[0]);
 		
 		__m128i K0  = _mm_loadu_si128(key_mm);
 		__m128i K1  = _mm_loadu_si128(key_mm + 1);
@@ -415,8 +415,8 @@ public:
 	*/
 	void clear()
 	{
-		zap(EK);
-		zap(DK);
+		zap(m_EK);
+		zap(m_DK);
 	}
 	@property string name() const { return "AES-192"; }
 	BlockCipher clone() const { return new AES_192_NI; }
@@ -426,14 +426,14 @@ private:
 	*/
 	void key_schedule(in ubyte* key, size_t)
 	{
-		EK.resize(52);
-		DK.resize(52);
+		m_EK.resize(52);
+		m_DK.resize(52);
 		
 		__m128i K0 = _mm_loadu_si128(cast(const(__m128i)*)(key));
 		__m128i K1 = _mm_loadu_si128(cast(const(__m128i)*)(key + 8));
 		K1 = _mm_srli_si128(K1, 8);
 		
-		load_le(&EK[0], key, 6);
+		load_le(&m_EK[0], key, 6);
 		
 		mixin(AES_192_key_exp!(0x01, 6)());
 		mixin(AES_192_key_exp!(0x02, 12)());
@@ -445,9 +445,9 @@ private:
 		mixin(AES_192_key_exp!(0x80, 48)());
 		
 		// Now generate decryption keys
-		const(__m128i)* EK_mm = cast(const(__m128i)*)(EK[0]);
+		const(__m128i)* EK_mm = cast(const(__m128i)*)(m_EK[0]);
 		
-		__m128i* DK_mm = cast(__m128i*)(&DK[0]);
+		__m128i* DK_mm = cast(__m128i*)(&m_DK[0]);
 		_mm_storeu_si128(DK_mm	  , _mm_loadu_si128(EK_mm + 12));
 		_mm_storeu_si128(DK_mm +  1, _mm_aesimc_si128(_mm_loadu_si128(EK_mm + 11)));
 		_mm_storeu_si128(DK_mm +  2, _mm_aesimc_si128(_mm_loadu_si128(EK_mm + 10)));
@@ -464,8 +464,8 @@ private:
 	}
 
 
-	Secure_Vector!uint EK, DK;
-};
+	Secure_Vector!uint m_EK, m_DK;
+}
 
 /**
 * AES-256 using AES-NI
@@ -483,7 +483,7 @@ public:
 		const(__m128i)* in_mm = cast(const(__m128i)*)(input);
 		__m128i* out_mm = cast(__m128i*)(output);
 		
-		const(__m128i)* key_mm = cast(const(__m128i)*)(EK[0]);
+		const(__m128i)* key_mm = cast(const(__m128i)*)(m_EK[0]);
 		
 		__m128i K0  = _mm_loadu_si128(key_mm);
 		__m128i K1  = _mm_loadu_si128(key_mm + 1);
@@ -571,7 +571,7 @@ public:
 		const(__m128i)* in_mm = cast(const(__m128i)*)(input);
 		__m128i* out_mm = cast(__m128i*)(output);
 		
-		const(__m128i)* key_mm = cast(const(__m128i)*)(DK[0]);
+		const(__m128i)* key_mm = cast(const(__m128i)*)(m_DK[0]);
 		
 		__m128i K0  = _mm_loadu_si128(key_mm);
 		__m128i K1  = _mm_loadu_si128(key_mm + 1);
@@ -656,8 +656,8 @@ public:
 	*/
 	void clear()
 	{
-		zap(EK);
-		zap(DK);
+		zap(m_EK);
+		zap(m_DK);
 	}
 
 	@property string name() const { return "AES-256"; }
@@ -668,8 +668,8 @@ private:
 	*/
 	void key_schedule(in ubyte* key, size_t)
 	{
-		EK.resize(60);
-		DK.resize(60);
+		m_EK.resize(60);
+		m_DK.resize(60);
 		
 		__m128i K0 = _mm_loadu_si128(cast(const(__m128i)*)(key));
 		__m128i K1 = _mm_loadu_si128(cast(const(__m128i)*)(key + 16));
@@ -694,7 +694,7 @@ private:
 		
 		__m128i K14 = aes_128_key_expansion(K12, _mm_aeskeygenassist_si128(K13, 0x40));
 		
-		__m128i* EK_mm = cast(__m128i*)(&EK[0]);
+		__m128i* EK_mm = cast(__m128i*)(&m_EK[0]);
 		_mm_storeu_si128(EK_mm	  , K0);
 		_mm_storeu_si128(EK_mm +  1, K1);
 		_mm_storeu_si128(EK_mm +  2, K2);
@@ -712,7 +712,7 @@ private:
 		_mm_storeu_si128(EK_mm + 14, K14);
 		
 		// Now generate decryption keys
-		__m128i* DK_mm = cast(__m128i*)(&DK[0]);
+		__m128i* DK_mm = cast(__m128i*)(&m_DK[0]);
 		_mm_storeu_si128(DK_mm	  , K14);
 		_mm_storeu_si128(DK_mm +  1, _mm_aesimc_si128(K13));
 		_mm_storeu_si128(DK_mm +  2, _mm_aesimc_si128(K12));
@@ -731,8 +731,8 @@ private:
 	}
 
 
-	Secure_Vector!uint EK, DK;
-};
+	Secure_Vector!uint m_EK, m_DK;
+}
 
 __m128i aes_128_key_expansion(__m128i key, __m128i key_with_rcon)
 {
@@ -827,5 +827,5 @@ string AES_128_key_exp(alias K, ubyte RCON)() {
 string AES_192_key_exp(ubyte RCON, size_t EK_OFF)() {
 	return `aes_192_key_expansion(&K0, &K1, 
 						          _mm_aeskeygenassist_si128(K1, ` ~ RCON.stringof ~ `),
-						          &EK[` ~ EK_OFF.stringof ~ `], ` ~ EK_OFF.stringof ~ ` == 48);`;
+						          &m_EK[` ~ EK_OFF.stringof ~ `], ` ~ EK_OFF.stringof ~ ` == 48);`;
 }

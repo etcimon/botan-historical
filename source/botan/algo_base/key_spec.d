@@ -84,4 +84,4 @@ public:
 private:
 
 	size_t m_min_keylen, m_max_keylen, m_keylen_mod;
-};
+}

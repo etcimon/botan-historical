@@ -111,7 +111,7 @@ private:
 	const size_t level;
 	Secure_Vector!ubyte buffer;
 	Bzip_Stream bz;
-};
+}
 
 /**
 * Bzip Decompression Filter
@@ -238,7 +238,7 @@ private:
 	Secure_Vector!ubyte buffer;
 	Bzip_Stream bz;
 	bool no_writes;
-};
+}
 
 /*
 * Allocation Information for Bzip
@@ -247,7 +247,7 @@ final class Bzip_Alloc_Info
 {
 public:
 	HashMap!(void*, size_t) current_allocs;
-};
+}
 
 
 /**
@@ -281,7 +281,7 @@ public:
 		delete info;
 		memset(&stream, 0, (bz_stream).sizeof);
 	}
-};
+}
 
 /*
 * Allocation Function for Bzip

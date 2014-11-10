@@ -37,7 +37,7 @@ private:
 		}
 	}
 
-};
+}
 
 private:
 

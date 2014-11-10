@@ -134,9 +134,9 @@ private:
 				{
 					throw new TLS_Exception(Alert.PROTOCOL_VERSION,
 					                        "Client negotiated " ~
-					                        active_state._version().to_string() +
+					                        active_state._version().toString() +
 					                        " then renegotiated with " ~
-					                        client_version.to_string());
+					                        client_version.toString());
 				}
 				else
 					negotiated_version = active_state._version();
@@ -436,7 +436,7 @@ private:
 			}
 			catch(Exception e)
 			{
-				throw new TLS_Exception(Alert.BAD_CERTIFICATE, e.what());
+				throw new TLS_Exception(Alert.BAD_CERTIFICATE, e.msg);
 			}
 			
 			state.set_expected_next(HANDSHAKE_CCS);
@@ -544,7 +544,7 @@ private:
 
 	Vector!string m_possible_protocols;
 	string m_next_protocol;
-};
+}
 
 private:
 
@@ -701,7 +701,7 @@ HashMap!(string, Vector!X509_Certificate)
 	get_server_certs(in string hostname,
 	                 Credentials_Manager creds)
 {
-	string[] cert_types = { "RSA", "DSA", "ECDSA", null };
+	string[] cert_types = [ "RSA", "DSA", "ECDSA", null ];
 	
 	HashMap!(string, Vector!X509_Certificate) cert_chains;
 	
@@ -733,4 +733,4 @@ public:
 	* a server-initiated renegotiation
 	*/
 	bool allow_session_resumption = true;
-};
+}

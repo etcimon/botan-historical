@@ -23,7 +23,7 @@ final class Algorithm_Identifier_Impl : ASN1_Object
 {
 public:
 	typedef bool Encoding_Option;
-	enum : Encoding_Option { USE_NULL_PARAM };
+	enum : Encoding_Option { USE_NULL_PARAM }
 
 	/*
 	* DER encode an Algorithm_Identifier
@@ -112,4 +112,4 @@ public:
 
 	OID oid;
 	Vector!ubyte parameters;
-};
+}

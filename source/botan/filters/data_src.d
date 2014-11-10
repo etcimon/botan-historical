@@ -100,7 +100,7 @@ public:
 	this() {}
 	~this() {}
 
-};
+}
 
 /**
 * This class represents a Memory-Based DataSource
@@ -186,7 +186,7 @@ public:
 private:
 	Secure_Vector!ubyte source;
 	size_t offset;
-};
+}
 
 /**
 * This class represents a Stream-Based DataSource.
@@ -307,4 +307,4 @@ private:
 
 	File source;
 	size_t total_read;
-};
+}

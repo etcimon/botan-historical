@@ -152,7 +152,7 @@ private:
 
 	size_t SALT_SIZE;
 	Unique!HashFunction hash;
-};
+}
 
 
 import botan.pk_pad.mgf1;

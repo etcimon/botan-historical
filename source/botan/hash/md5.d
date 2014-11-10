@@ -119,7 +119,7 @@ protected:
 	* The digest value, exposed for use by subclasses (x86 asm)
 	*/
 	Secure_Vector!uint digest;
-};
+}
 
 private:
 

@@ -17,7 +17,7 @@ enum : Character_Set {
 	UCS2_CHARSET,
 	UTF8_CHARSET,
 	LATIN1_CHARSET
-};
+}
 
 /*
 * Character Set Handling

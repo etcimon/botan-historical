@@ -27,7 +27,7 @@ public:
 
 		DTLS_V10			  = 0xFEFF,
 		DTLS_V12			  = 0xFEFD
-	};
+	}
 
 	static Protocol_Version latest_tls_version()
 	{
@@ -87,7 +87,7 @@ public:
 	/**
 	* @return human-readable description of this version
 	*/
-	string to_string() const
+	string toString() const
 	{
 		const ubyte maj = major_version();
 		const ubyte min = minor_version();
@@ -189,8 +189,8 @@ public:
 	{
 		if (this.is_datagram_protocol() != other.is_datagram_protocol())
 			throw new TLS_Exception(Alert.PROTOCOL_VERSION,
-			                        "Version comparing " ~ to_string() +
-			                        " with " ~ other.to_string());
+			                        "Version comparing " ~ toString() +
+			                        " with " ~ other.toString());
 		
 		if (this.is_datagram_protocol())
 			return m_version < other.m_version; // goes backwards
@@ -210,4 +210,4 @@ public:
 
 private:
 	ushort m_version;
-};
+}

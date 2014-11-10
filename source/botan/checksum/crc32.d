@@ -117,4 +117,4 @@ private:
 	}
 
 	uint crc;
-};
+}

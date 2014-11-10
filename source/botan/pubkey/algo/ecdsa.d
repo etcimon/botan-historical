@@ -61,7 +61,7 @@ public:
 
 protected:
 	this() {}
-};
+}
 
 /**
 * This class represents ECDSA Private Keys
@@ -106,7 +106,7 @@ public:
 		
 		return signature_consistency_check(rng, this, "EMSA1(SHA-1)");
 	}
-};
+}
 
 /**
 * ECDSA signature operation
@@ -160,7 +160,7 @@ private:
 	const BigInt order;
 	const BigInt x;
 	Modular_Reducer mod_order;
-};
+}
 
 /**
 * ECDSA verification operation
@@ -210,4 +210,4 @@ private:
 	const PointGFp base_point;
 	const PointGFp public_point;
 	const BigInt order;
-};
+}

@@ -103,7 +103,7 @@ private:
 	Secure_Vector!ubyte m_shift_register;
 	Secure_Vector!ubyte m_keystream_buf;
 	size_t m_feedback_bytes;
-};
+}
 
 /**
 * CFB Encryption
@@ -147,7 +147,7 @@ public:
 	{
 		update(buffer, offset);
 	}
-};
+}
 
 /**
 * CFB Decryption
@@ -195,4 +195,4 @@ public:
 		update(buffer, offset);
 	}
 
-};
+}

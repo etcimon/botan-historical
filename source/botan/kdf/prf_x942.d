@@ -83,7 +83,7 @@ public:
 	}
 private:
 	string key_wrap_oid;
-};
+}
 
 private:
 

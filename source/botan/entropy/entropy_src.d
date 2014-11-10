@@ -74,7 +74,7 @@ private:
 	bool delegate(in ubyte*, size_t, double) m_accum_fn;
 	bool m_done;
 	Secure_Vector!ubyte m_io_buffer;
-};
+}
 
 /**
 * Abstract interface to a source of entropy
@@ -92,4 +92,4 @@ public:
 	* @param accum is an accumulator object that will be given entropy
 	*/
 	void poll(ref Entropy_Accumulator accum);
-};
+}

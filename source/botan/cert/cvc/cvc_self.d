@@ -11,13 +11,17 @@ import botan.pubkey.pkcs8;
 import botan.asn1.oid_lookup.oids;
 import botan.pubkey.algo.ecdsa;
 import botan.asn1.asn1_obj;
+import botan.cert.cvc.cvc_cert;
 import botan.cert.cvc.cvc_req;
 import botan.cert.cvc.cvc_ado;
+import botan.pubkey.pubkey;
 import botan.pubkey.algo.ecc_key;
 import botan.math.ec_gfp.curve_gfp;
 import botan.cert.cvc.eac_asn_obj;
+import botan.rng.rng;
 import botan.utils.types;
-import sstream;
+import std.array : Appender;
+
 
 /**
 * This class represents a set of options used for the creation of CVC certificates
@@ -32,7 +36,7 @@ public:
 	ASN1_Ced ced;
 	ASN1_Cex cex;
 	string hash_alg;
-};
+}
 
 /**
 * Create a selfsigned CVCA
@@ -210,15 +214,15 @@ EAC1_1_CVC link_cvca(const ref EAC1_1_CVC signer,
 	if (priv_key == 0)
 		throw new Invalid_Argument("link_cvca(): unsupported key type");
 	
-	ASN1_Ced ced(Clock.currTime());
-	ASN1_Cex cex(signee.get_cex());
+	ASN1_Ced ced = ASN1_Ced(Clock.currTime());
+	ASN1_Cex cex = ASN1_Cex(signee.get_cex());
 	if (*cast(EAC_Time*)(&ced) > *cast(EAC_Time*)(&cex))
 	{
-		string detail = "link_cvca(): validity periods of provided certificates don't overlap: currend time = ced = ";
+		Appender!string detail = "link_cvca(): validity periods of provided certificates don't overlap: currend time = ced = ";
 		detail ~= ced.toString();
 		detail ~= ", signee.cex = ";
 		detail ~= cex.toString();
-		throw new Invalid_Argument(detail);
+		throw new Invalid_Argument(detail.data);
 	}
 	if (signer.signature_algorithm() != signee.signature_algorithm())
 	{
@@ -306,7 +310,7 @@ EAC1_1_CVC sign_request(const ref EAC1_1_CVC signer_cert,
 		seqnr_string = '0' + seqnr_string;
 	
 	chr_str += seqnr_string;
-	ASN1_Chr chr(chr_str);
+	ASN1_Chr chr = ASN1_Chr(chr_str);
 	string padding_and_hash = padding_and_hash_from_oid(signee.signature_algorithm().oid);
 	PK_Signer pk_signer = PK_Signer(*priv_key, padding_and_hash);
 	Unique!Public_Key pk = signee.subject_public_key();
@@ -321,7 +325,7 @@ EAC1_1_CVC sign_request(const ref EAC1_1_CVC signer_cert,
 	
 	Algorithm_Identifier sig_algo = Algorithm_Identifier(signer_cert.signature_algorithm());
 	
-	ASN1_Ced ced(Clock.currTime());
+	ASN1_Ced ced = ASN1_Ced(Clock.currTime());
 	
 	uint chat_val;
 	uint chat_low = signer_cert.get_chat_value() & 0x3; // take the chat rights from signer
@@ -370,7 +374,7 @@ enum : CHAT_values {
 	
 	IRIS = 0x02,
 	FINGERPRINT = 0x01
-};
+}
 
 void encode_eac_bigint(ref DER_Encoder der, const ref BigInt x, ASN1_Tag tag)
 {

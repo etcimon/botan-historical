@@ -21,7 +21,7 @@ __gshared immutable size_t DEFAULT_BUFFERSIZE = 4096;
 * actually perform encryption or decryption.
 */
 typedef Cipher_Dir = bool;
-enum : Cipher_Dir { ENCRYPTION, DECRYPTION };
+enum : Cipher_Dir { ENCRYPTION, DECRYPTION }
 
 struct Pair(T, U) {
 	import std.typecons : Tuple;

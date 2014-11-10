@@ -71,7 +71,7 @@ private:
 	
 	Pair!(DIR*, string) m_cur_dir;
 	Deque!string m_dirlist;
-};
+}
 
 
 final class File_Descriptor_Source
@@ -114,7 +114,7 @@ public:
 	}
 
 	~this() {}
-};
+}
 
 /**
 * File Tree Walking Entropy Source
@@ -165,4 +165,4 @@ public:
 private:
 	const string m_path;
 	Unique!File_Descriptor_Source m_dir;
-};
+}
