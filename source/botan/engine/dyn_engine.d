@@ -21,13 +21,13 @@ public:
 	*/
 	this(in string library_path) 
 	{
-		engine = null;
-		lib = new Dynamically_Loaded_Library(library_path);
+		m_engine = null;
+		m_lib = new Dynamically_Loaded_Library(library_path);
 		
 		try
 		{
 			module_version_func get_version =
-				lib.resolve!module_version_func("module_version");
+				m_lib.resolve!module_version_func("module_version");
 			
 			const uint mod_version = get_version();
 			
@@ -37,11 +37,11 @@ public:
 				                    std.conv.to!string(mod_version));
 			
 			creator_func creator =
-				lib.resolve!creator_func("create_engine");
+				m_lib.resolve!creator_func("create_engine");
 			
-			engine = creator();
+			m_engine = creator();
 			
-			if (!engine)
+			if (!m_engine)
 				throw new Exception("Creator function in " ~
 				                    library_path ~ " failed");
 		}
@@ -60,88 +60,88 @@ public:
 
 	~this()
 	{
-		delete engine;
-		delete lib;
+		delete m_engine;
+		delete m_lib;
 	}
 
-	string provider_name() const { return engine.provider_name(); }
+	string provider_name() const { return m_engine.provider_name(); }
 
 	BlockCipher find_block_cipher(in SCAN_Name algo_spec,
 											  Algorithm_Factory af) const
 	{
-		return engine.find_block_cipher(algo_spec, af);
+		return m_engine.find_block_cipher(algo_spec, af);
 	}
 
 	StreamCipher find_stream_cipher(in SCAN_Name algo_spec,
 												 Algorithm_Factory af) const
 	{
-		return engine.find_stream_cipher(algo_spec, af);
+		return m_engine.find_stream_cipher(algo_spec, af);
 	}
 
 	HashFunction find_hash(in SCAN_Name algo_spec,
 									 Algorithm_Factory af) const
 	{
-		return engine.find_hash(algo_spec, af);
+		return m_engine.find_hash(algo_spec, af);
 	}
 
 	MessageAuthenticationCode find_mac(in SCAN_Name algo_spec,
 													 Algorithm_Factory af) const
 	{
-		return engine.find_mac(algo_spec, af);
+		return m_engine.find_mac(algo_spec, af);
 	}
 
 	PBKDF find_pbkdf(in SCAN_Name algo_spec,
 							 Algorithm_Factory af) const
 	{
-		return engine.find_pbkdf(algo_spec, af);
+		return m_engine.find_pbkdf(algo_spec, af);
 	}
 
 	Modular_Exponentiator mod_exp(in BigInt n,
 											  power_mod.Usage_Hints hints) const
 	{
-		return engine.mod_exp(n, hints);
+		return m_engine.mod_exp(n, hints);
 	}
 
 	Keyed_Filter get_cipher(in string algo_spec,
 									 Cipher_Dir dir,
 									 Algorithm_Factory af)
 	{
-		return engine.get_cipher(algo_spec, dir, af);
+		return m_engine.get_cipher(algo_spec, dir, af);
 	}
 
 	Key_Agreement
 		 get_key_agreement_op(in Private_Key key, RandomNumberGenerator rng) const
 	{
-		return engine.get_key_agreement_op(key, rng);
+		return m_engine.get_key_agreement_op(key, rng);
 	}
 
 	Signature
 		 get_signature_op(in Private_Key key, RandomNumberGenerator rng) const
 	{
-		return engine.get_signature_op(key, rng);
+		return m_engine.get_signature_op(key, rng);
 	}
 
 	Verification
 		 get_verify_op(in Public_Key key, RandomNumberGenerator rng) const
 	{
-		return engine.get_verify_op(key, rng);
+		return m_engine.get_verify_op(key, rng);
 	}
 
 	Encryption
 			get_encryption_op(in Public_Key key, RandomNumberGenerator rng) const
 	{
-		return engine.get_encryption_op(key, rng);
+		return m_engine.get_encryption_op(key, rng);
 	}
 
 	Decryption
 		 get_decryption_op(in Private_Key key, RandomNumberGenerator rng) const
 	{
-		return engine.get_decryption_op(key, rng);
+		return m_engine.get_decryption_op(key, rng);
 	}
 
 private:
-	Dynamically_Loaded_Library lib;
-	Engine engine;
+	Dynamically_Loaded_Library m_lib;
+	Engine m_engine;
 }
 
 private nothrow @nogc extern(C):

@@ -15,11 +15,12 @@ import botan.codec.hex;
 import botan.hash.sha2_32;
 import botan.hash.sha160;
 import botan.utils.types;
+import botan.utils.exceptn;
 
 /**
 * A split secret, using the format from draft-mcgrew-tss-03
 */
-final class RTSS_Share
+struct RTSS_Share
 {
 public:
 	/**
@@ -45,16 +46,16 @@ public:
 		// Create RTSS header in each share
 		for (ubyte i = 0; i != N; ++i)
 		{
-			shares[i].contents += Pair(identifier, 16);
-			shares[i].contents += rtss_hash_id(hash.name);
-			shares[i].contents += M;
-			shares[i].contents += get_byte(0, S_len);
-			shares[i].contents += get_byte(1, S_len);
+			shares[i].m_contents += Pair(identifier, 16);
+			shares[i].m_contents += rtss_hash_id(hash.name);
+			shares[i].m_contents += M;
+			shares[i].m_contents += get_byte(0, S_len);
+			shares[i].m_contents += get_byte(1, S_len);
 		}
 		
 		// Choose sequential values for X starting from 1
 		for (ubyte i = 0; i != N; ++i)
-			shares[i].contents.push_back(i+1);
+			shares[i].m_contents.push_back(i+1);
 		
 		// secret = S || H(S)
 		Secure_Vector!ubyte secret = Secure_Vector!ubyte(S, S + S_len);
@@ -78,7 +79,7 @@ public:
 					X_i  = gfp_mul(X_i, X);
 				}
 				
-				shares[j].contents.push_back(sum);
+				shares[j].m_contents.push_back(sum);
 			}
 		}
 		
@@ -103,31 +104,31 @@ public:
 			if (shares[i].length < RTSS_HEADER_SIZE)
 				throw new Decoding_Error("Missing or malformed RTSS header");
 			
-			if (!same_mem(&shares[0].contents[0],
-			&shares[i].contents[0], RTSS_HEADER_SIZE))
+			if (!same_mem(&shares[0].m_contents[0],
+			&shares[i].m_contents[0], RTSS_HEADER_SIZE))
 				throw new Decoding_Error("Different RTSS headers detected");
 		}
 		
 		if (shares.length < shares[0].contents[17])
 			throw new Decoding_Error("Insufficient shares to do TSS reconstruction");
 		
-		ushort secret_len = make_ushort(shares[0].contents[18],
-		shares[0].contents[19]);
+		ushort secret_len = make_ushort(shares[0].m_contents[18],
+		shares[0].m_contents[19]);
 		
-		ubyte hash_id = shares[0].contents[16];
+		ubyte hash_id = shares[0].m_contents[16];
 		
 		Unique!HashFunction hash = get_rtss_hash_by_id(hash_id);
 		
 		if (shares[0].length != secret_len + hash.output_length + RTSS_HEADER_SIZE + 1)
 			throw new Decoding_Error("Bad RTSS length field in header");
 		
-		Vector!ubyte V(shares.length);
+		Vector!ubyte V = Vector!ubyte(shares.length);
 		Secure_Vector!ubyte secret;
 		
 		for (size_t i = RTSS_HEADER_SIZE + 1; i != shares[0].length; ++i)
 		{
 			for (size_t j = 0; j != V.length; ++j)
-				V[j] = shares[j].contents[i];
+				V[j] = shares[j].m_contents[i];
 			
 			ubyte r = 0;
 			for (size_t k = 0; k != shares.length; ++k)
@@ -177,7 +178,7 @@ public:
 	*/
 	this(in string hex_input)
 	{
-		contents = hex_decode_locked(hex_input);
+		m_contents = hex_decode_locked(hex_input);
 	}
 
 
@@ -186,7 +187,7 @@ public:
 	*/
 	string toString() const
 	{
-		return hex_encode(&contents[0], contents.length);
+		return hex_encode(&m_contents[0], m_contents.length);
 	}
 
 	/**
@@ -197,20 +198,20 @@ public:
 		if (!initialized())
 			throw new Invalid_State("share_id not initialized");
 		
-		return contents[20];
+		return m_contents[20];
 	}
 
 	/**
 	* @return size of this share in bytes
 	*/
-	size_t size() const { return contents.length; }
+	size_t size() const { return m_contents.length; }
 
 	/**
 	* @return if this TSS share was initialized or not
 	*/
-	bool initialized() const { return (contents.length > 0); }
+	bool initialized() const { return (m_contents.length > 0); }
 private:
-	Secure_Vector!ubyte contents;
+	Secure_Vector!ubyte m_contents;
 }
 
 

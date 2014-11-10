@@ -169,14 +169,14 @@ private:
 First 24 bits of SHA-256("Botan Cryptobox"), followed by 8 0 bits
 for later use as flags, etc if needed
 */
-const uint CRYPTOBOX_VERSION_CODE = 0xEFC22400;
+__gshared immutable uint CRYPTOBOX_VERSION_CODE = 0xEFC22400;
 
-const size_t VERSION_CODE_LEN = 4;
-const size_t CIPHER_KEY_LEN = 32;
-const size_t CIPHER_IV_LEN = 16;
-const size_t MAC_KEY_LEN = 32;
-const size_t MAC_OUTPUT_LEN = 20;
-const size_t PBKDF_SALT_LEN = 10;
-const size_t PBKDF_ITERATIONS = 8 * 1024;
+__gshared immutable size_t VERSION_CODE_LEN = 4;
+__gshared immutable size_t CIPHER_KEY_LEN = 32;
+__gshared immutable size_t CIPHER_IV_LEN = 16;
+__gshared immutable size_t MAC_KEY_LEN = 32;
+__gshared immutable size_t MAC_OUTPUT_LEN = 20;
+__gshared immutable size_t PBKDF_SALT_LEN = 10;
+__gshared immutable size_t PBKDF_ITERATIONS = 8 * 1024;
 
-const size_t PBKDF_OUTPUT_LEN = CIPHER_KEY_LEN + CIPHER_IV_LEN + MAC_KEY_LEN;
+__gshared immutable size_t PBKDF_OUTPUT_LEN = CIPHER_KEY_LEN + CIPHER_IV_LEN + MAC_KEY_LEN;

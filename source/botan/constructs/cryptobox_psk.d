@@ -135,14 +135,14 @@ struct CryptoBox {
 
 private:
 
-const uint CRYPTOBOX_MAGIC = 0x571B0E4F;
-const string CRYPTOBOX_CIPHER = "AES-256/CBC";
-const string CRYPTOBOX_MAC = "HMAC(SHA-256)";
-const string CRYPTOBOX_KDF = "KDF2(SHA-256)";
+__gshared immutable uint CRYPTOBOX_MAGIC = 0x571B0E4F;
+__gshared immutable string CRYPTOBOX_CIPHER = "AES-256/CBC";
+__gshared immutable string CRYPTOBOX_MAC = "HMAC(SHA-256)";
+__gshared immutable string CRYPTOBOX_KDF = "KDF2(SHA-256)";
 
-const size_t MAGIC_LENGTH = 4;
-const size_t KEY_KDF_SALT_LENGTH = 10;
-const size_t MAC_KEY_LENGTH = 32;
-const size_t CIPHER_KEY_LENGTH = 32;
-const size_t CIPHER_IV_LENGTH = 16;
-const size_t MAC_OUTPUT_LENGTH = 32;
+__gshared immutable size_t MAGIC_LENGTH = 4;
+__gshared immutable size_t KEY_KDF_SALT_LENGTH = 10;
+__gshared immutable size_t MAC_KEY_LENGTH = 32;
+__gshared immutable size_t CIPHER_KEY_LENGTH = 32;
+__gshared immutable size_t CIPHER_IV_LENGTH = 16;
+__gshared immutable size_t MAC_OUTPUT_LENGTH = 32;

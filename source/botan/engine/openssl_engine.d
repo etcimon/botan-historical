@@ -235,14 +235,14 @@ package:
 final class OpenSSL_Modular_Exponentiator : Modular_Exponentiator
 {
 public:
-	void set_base(in BigInt b) { base = b; }
+	void set_base(in BigInt b) { m_base = b; }
 	
-	void set_exponent(in BigInt e) { exp = e; }
+	void set_exponent(in BigInt e) { m_exp = e; }
 	
 	BigInt execute() const
 	{
 		OSSL_BN r;
-		BN_mod_exp(r.ptr(), base.ptr(), exp.ptr(), mod.ptr(), ctx.ptr());
+		BN_mod_exp(r.ptr(), m_base.ptr(), m_exp.ptr(), m_mod.ptr(), m_ctx.ptr());
 		return r.to_bigint();
 	}
 	
@@ -252,11 +252,11 @@ public:
 	}
 	
 	this(in BigInt n) {
-		mod = n;
+		m_mod = n;
 	}
 private:
-	OSSL_BN base, exp, mod;
-	OSSL_BN_CTX ctx;
+	OSSL_BN m_base, m_exp, m_mod;
+	OSSL_BN_CTX m_ctx;
 }
 
 import openssl.bn;
@@ -394,7 +394,7 @@ package:
 final class RC4_OpenSSL : StreamCipher
 {
 public:
-	void clear() { clear_mem(&state, 1); }
+	void clear() { clear_mem(&m_state, 1); }
 	
 	/*
 	* Return the name of this type
@@ -403,17 +403,17 @@ public:
 	{
 		if (SKIP == 0)		return "RC4";
 		if (SKIP == 256) 	return "MARK-4";
-		else				return "RC4_skip(" ~ std.conv.to!string(SKIP) ~ ")";
+		else				return "RC4_skip(" ~ std.conv.to!string(m_SKIP) ~ ")";
 	}
 	
-	StreamCipher clone() const { return new RC4_OpenSSL(SKIP); }
+	StreamCipher clone() const { return new RC4_OpenSSL(m_SKIP); }
 	
 	Key_Length_Specification key_spec() const
 	{
 		return Key_Length_Specification(1, 32);
 	}		
 	
-	this(size_t s = 0) { SKIP = s; clear(); }
+	this(size_t s = 0) { m_SKIP = s; clear(); }
 	
 	~this() { clear(); }
 private:
@@ -422,7 +422,7 @@ private:
 	*/
 	void cipher(in ubyte* input, ubyte* output, size_t length)
 	{
-		RC4(&state, length, input, output);
+		RC4(&m_state, length, input, output);
 	}
 	
 	/*
@@ -430,14 +430,14 @@ private:
 	*/
 	void key_schedule(in ubyte* key, size_t length)
 	{
-		RC4_set_key(&state, length, key);
+		RC4_set_key(&m_state, length, key);
 		ubyte dummy = 0;
-		for (size_t i = 0; i != SKIP; ++i)
-			RC4(&state, 1, &dummy, &dummy);
+		for (size_t i = 0; i != m_SKIP; ++i)
+			RC4(&m_state, 1, &dummy, &dummy);
 	}
 	
-	const size_t SKIP;
-	RC4_KEY state;
+	const size_t m_SKIP;
+	RC4_KEY m_state;
 }
 
 /*
@@ -451,52 +451,52 @@ public:
 	*/
 	void clear()
 	{
-		const EVP_CIPHER* algo = EVP_CIPHER_CTX_cipher(&encrypt);
+		const EVP_CIPHER* algo = EVP_CIPHER_CTX_cipher(&m_encrypt);
 		
-		EVP_CIPHER_CTX_cleanup(&encrypt);
-		EVP_CIPHER_CTX_cleanup(&decrypt);
-		EVP_CIPHER_CTX_init(&encrypt);
-		EVP_CIPHER_CTX_init(&decrypt);
-		EVP_EncryptInit_ex(&encrypt, algo, 0, 0, 0);
-		EVP_DecryptInit_ex(&decrypt, algo, 0, 0, 0);
-		EVP_CIPHER_CTX_set_padding(&encrypt, 0);
-		EVP_CIPHER_CTX_set_padding(&decrypt, 0);
+		EVP_CIPHER_CTX_cleanup(&m_encrypt);
+		EVP_CIPHER_CTX_cleanup(&m_decrypt);
+		EVP_CIPHER_CTX_init(&m_encrypt);
+		EVP_CIPHER_CTX_init(&m_decrypt);
+		EVP_EncryptInit_ex(&m_encrypt, algo, 0, 0, 0);
+		EVP_DecryptInit_ex(&m_decrypt, algo, 0, 0, 0);
+		EVP_CIPHER_CTX_set_padding(&m_encrypt, 0);
+		EVP_CIPHER_CTX_set_padding(&m_decrypt, 0);
 	}
 	
-	@property string name() const { return cipher_name; }
+	@property string name() const { return m_cipher_name; }
 	/*
 	* Return a clone of this object
 	*/
 	BlockCipher clone() const
 	{
-		return new EVP_BlockCipher(EVP_CIPHER_CTX_cipher(&encrypt),
-		                           cipher_name,
-		                           cipher_key_spec.minimum_keylength(),
-		                           cipher_key_spec.maximum_keylength(),
-		                           cipher_key_spec.keylength_multiple());
+		return new EVP_BlockCipher(EVP_CIPHER_CTX_cipher(&m_encrypt),
+		                           m_cipher_name,
+		                           m_cipher_key_spec.minimum_keylength(),
+		                           m_cipher_key_spec.maximum_keylength(),
+		                           m_cipher_key_spec.keylength_multiple());
 	}
 	
-	@property size_t block_size() const { return block_sz; }
+	@property size_t block_size() const { return m_block_sz; }
 	/*
 	* EVP Block Cipher Constructor
 	*/
 	this(const EVP_CIPHER* algo,
 	     in string algo_name)
 	{
-		block_sz = EVP_CIPHER_block_size(algo);
-		cipher_key_spec = EVP_CIPHER_key_length(algo);
-		cipher_name = algo_name;
+		m_block_sz = EVP_CIPHER_block_size(algo);
+		m_cipher_key_spec = EVP_CIPHER_key_length(algo);
+		m_cipher_name = algo_name;
 		if (EVP_CIPHER_mode(algo) != EVP_CIPH_ECB_MODE)
 			throw new Invalid_Argument("EVP_BlockCipher: Non-ECB EVP was passed in");
 		
-		EVP_CIPHER_CTX_init(&encrypt);
-		EVP_CIPHER_CTX_init(&decrypt);
+		EVP_CIPHER_CTX_init(&m_encrypt);
+		EVP_CIPHER_CTX_init(&m_decrypt);
 		
-		EVP_EncryptInit_ex(&encrypt, algo, 0, 0, 0);
-		EVP_DecryptInit_ex(&decrypt, algo, 0, 0, 0);
+		EVP_EncryptInit_ex(&m_encrypt, algo, 0, 0, 0);
+		EVP_DecryptInit_ex(&m_decrypt, algo, 0, 0, 0);
 		
-		EVP_CIPHER_CTX_set_padding(&encrypt, 0);
-		EVP_CIPHER_CTX_set_padding(&decrypt, 0);
+		EVP_CIPHER_CTX_set_padding(&m_encrypt, 0);
+		EVP_CIPHER_CTX_set_padding(&m_decrypt, 0);
 	}
 	
 	
@@ -508,32 +508,32 @@ public:
 	     size_t key_min, size_t key_max,
 	     size_t key_mod) 
 	{
-		block_sz = EVP_CIPHER_block_size(algo);
-		cipher_key_spec = Key_Length_Specification(key_min, key_max, key_mod);
-		cipher_name = algo_name;
+		m_block_sz = EVP_CIPHER_block_size(algo);
+		m_cipher_key_spec = Key_Length_Specification(key_min, key_max, key_mod);
+		m_cipher_name = algo_name;
 		if (EVP_CIPHER_mode(algo) != EVP_CIPH_ECB_MODE)
 			throw new Invalid_Argument("EVP_BlockCipher: Non-ECB EVP was passed in");
 		
-		EVP_CIPHER_CTX_init(&encrypt);
-		EVP_CIPHER_CTX_init(&decrypt);
+		EVP_CIPHER_CTX_init(&m_encrypt);
+		EVP_CIPHER_CTX_init(&m_decrypt);
 		
-		EVP_EncryptInit_ex(&encrypt, algo, 0, 0, 0);
-		EVP_DecryptInit_ex(&decrypt, algo, 0, 0, 0);
+		EVP_EncryptInit_ex(&m_encrypt, algo, 0, 0, 0);
+		EVP_DecryptInit_ex(&m_decrypt, algo, 0, 0, 0);
 		
-		EVP_CIPHER_CTX_set_padding(&encrypt, 0);
-		EVP_CIPHER_CTX_set_padding(&decrypt, 0);
+		EVP_CIPHER_CTX_set_padding(&m_encrypt, 0);
+		EVP_CIPHER_CTX_set_padding(&m_decrypt, 0);
 	}
 	
 	
-	Key_Length_Specification key_spec() const { return cipher_key_spec; }
+	Key_Length_Specification key_spec() const { return m_cipher_key_spec; }
 	
 	/*
 	* EVP Block Cipher Destructor
 	*/
 	~this()
 	{
-		EVP_CIPHER_CTX_cleanup(&encrypt);
-		EVP_CIPHER_CTX_cleanup(&decrypt);
+		EVP_CIPHER_CTX_cleanup(&m_encrypt);
+		EVP_CIPHER_CTX_cleanup(&m_decrypt);
 	}
 private:
 	/*
@@ -543,7 +543,7 @@ private:
 	               size_t blocks) const
 	{
 		int out_len = 0;
-		EVP_EncryptUpdate(&encrypt, output, &out_len, input, blocks * block_sz);
+		EVP_EncryptUpdate(&m_encrypt, output, &out_len, input, blocks * m_block_sz);
 	}
 	
 	/*
@@ -553,7 +553,7 @@ private:
 	               size_t blocks) const
 	{
 		int out_len = 0;
-		EVP_DecryptUpdate(&decrypt, output, &out_len, input, blocks * block_sz);
+		EVP_DecryptUpdate(&m_decrypt, output, &out_len, input, blocks * m_block_sz);
 	}
 	
 	/*
@@ -563,30 +563,30 @@ private:
 	{
 		Secure_Vector!ubyte full_key = Secure_Vector!ubyte(key, key + length);
 		
-		if (cipher_name == "TripleDES" && length == 16)
+		if (m_cipher_name == "TripleDES" && length == 16)
 		{
 			full_key += Pair(key, 8);
 		}
 		else
-			if (EVP_CIPHER_CTX_set_key_length(&encrypt, length) == 0 ||
-			    EVP_CIPHER_CTX_set_key_length(&decrypt, length) == 0)
+			if (EVP_CIPHER_CTX_set_key_length(&m_encrypt, length) == 0 ||
+			    EVP_CIPHER_CTX_set_key_length(&m_decrypt, length) == 0)
 				throw new Invalid_Argument("EVP_BlockCipher: Bad key length for " ~
 				                           cipher_name);
 		
-		if (cipher_name == "RC2")
+		if (m_cipher_name == "RC2")
 		{
-			EVP_CIPHER_CTX_ctrl(&encrypt, EVP_CTRL_SET_RC2_KEY_BITS, length*8, 0);
-			EVP_CIPHER_CTX_ctrl(&decrypt, EVP_CTRL_SET_RC2_KEY_BITS, length*8, 0);
+			EVP_CIPHER_CTX_ctrl(&m_encrypt, EVP_CTRL_SET_RC2_KEY_BITS, length*8, 0);
+			EVP_CIPHER_CTX_ctrl(&m_decrypt, EVP_CTRL_SET_RC2_KEY_BITS, length*8, 0);
 		}
 		
-		EVP_EncryptInit_ex(&encrypt, 0, 0, &full_key[0], 0);
-		EVP_DecryptInit_ex(&decrypt, 0, 0, &full_key[0], 0);
+		EVP_EncryptInit_ex(&m_encrypt, 0, 0, &full_key[0], 0);
+		EVP_DecryptInit_ex(&m_decrypt, 0, 0, &full_key[0], 0);
 	}
 	
-	size_t block_sz;
-	Key_Length_Specification cipher_key_spec;
-	string cipher_name;
-	EVP_CIPHER_CTX encrypt, decrypt;
+	size_t m_block_sz;
+	Key_Length_Specification m_cipher_key_spec;
+	string m_cipher_name;
+	EVP_CIPHER_CTX m_encrypt, m_decrypt;
 }
 
 
@@ -614,28 +614,28 @@ public:
 	*/
 	void clear()
 	{
-		const EVP_MD* algo = EVP_MD_CTX_md(&md);
-		EVP_DigestInit_ex(&md, algo, 0);
+		const EVP_MD* algo = EVP_MD_CTX_md(&m_md);
+		EVP_DigestInit_ex(&m_md, algo, 0);
 	}
 	
-	@property string name() const { return algo_name; }
+	@property string name() const { return m_algo_name; }
 	/*
 	* Return a clone of this object
 	*/
 	HashFunction clone() const
 	{
-		const EVP_MD* algo = EVP_MD_CTX_md(&md);
+		const EVP_MD* algo = EVP_MD_CTX_md(&m_md);
 		return new EVP_HashFunction(algo, name);
 	}
 	
 	@property size_t output_length() const
 	{
-		return EVP_MD_size(EVP_MD_CTX_md(&md));
+		return EVP_MD_size(EVP_MD_CTX_md(&m_md));
 	}
 	
 	@property size_t hash_block_size() const
 	{
-		return EVP_MD_block_size(EVP_MD_CTX_md(&md));
+		return EVP_MD_block_size(EVP_MD_CTX_md(&m_md));
 	}
 	/*
 	* Create an EVP hash function
@@ -643,16 +643,16 @@ public:
 	this(const EVP_MD* algo,
 	     in string name)
 	{
-		algo_name = name;
-		EVP_MD_CTX_init(&md);
-		EVP_DigestInit_ex(&md, algo, 0);
+		m_algo_name = name;
+		EVP_MD_CTX_init(&m_md);
+		EVP_DigestInit_ex(&m_md, algo, 0);
 	}
 	/*
 	* Destroy an EVP hash function
 	*/
 	~this()
 	{
-		EVP_MD_CTX_cleanup(&md);
+		EVP_MD_CTX_cleanup(&m_md);
 	}
 	
 private:
@@ -662,20 +662,20 @@ private:
 */
 	void add_data(in ubyte* input, size_t length)
 	{
-		EVP_DigestUpdate(&md, input, length);
+		EVP_DigestUpdate(&m_md, input, length);
 	}
 	/*
 	* Finalize an EVP Hash Calculation
 	*/
 	void final_result(ubyte* output)
 	{
-		EVP_DigestFinal_ex(&md, output, 0);
-		const EVP_MD* algo = EVP_MD_CTX_md(&md);
-		EVP_DigestInit_ex(&md, algo, 0);
+		EVP_DigestFinal_ex(&m_md, output, 0);
+		const EVP_MD* algo = EVP_MD_CTX_md(&m_md);
+		EVP_DigestInit_ex(&m_md, algo, 0);
 	}
 	
-	string algo_name;
-	EVP_MD_CTX md;
+	string m_algo_name;
+	EVP_MD_CTX m_md;
 }
 
 
@@ -688,21 +688,21 @@ static if (BOTAN_HAS_DIFFIE_HELLMAN) {
 	public:
 		this(in DH_PrivateKey dh) 
 		{
-			x = dh.get_x();
-			p = dh.group_p();
+			m_x = dh.get_x();
+			m_p = dh.group_p();
 		}
 		
 		Secure_Vector!ubyte agree(in ubyte* w, size_t w_len)
 		{
 			OSSL_BN i = OSSL_BN(w, w_len);
 			OSSL_BN r;
-			BN_mod_exp(r.ptr(), i.ptr(), x.ptr(), p.ptr(), ctx.ptr());
+			BN_mod_exp(r.ptr(), i.ptr(), m_x.ptr(), m_p.ptr(), m_ctx.ptr());
 			return r.to_bytes();
 		}
 		
 	private:
-		const OSSL_BN x, p;
-		OSSL_BN_CTX ctx;
+		const OSSL_BN m_x, m_p;
+		OSSL_BN_CTX m_ctx;
 	}
 }
 
@@ -713,43 +713,43 @@ static if (BOTAN_HAS_DSA) {
 	public:
 		this(in DSA_PrivateKey dsa) 
 		{
-			x = dsa.get_x();
-			p = dsa.group_p();
-			q = dsa.group_q();
-			g = dsa.group_g();
-			q_bits = dsa.group_q().bits();
+			m_x = dsa.get_x();
+			m_p = dsa.group_p();
+			m_q = dsa.group_q();
+			m_g = dsa.group_g();
+			m_q_bits = dsa.group_q().bits();
 		}
 		
 		size_t message_parts() const { return 2; }
-		size_t message_part_size() const { return (q_bits + 7) / 8; }
-		size_t max_input_bits() const { return q_bits; }
+		size_t message_part_size() const { return (m_q_bits + 7) / 8; }
+		size_t max_input_bits() const { return m_q_bits; }
 		
 		Secure_Vector!ubyte
 			sign(in ubyte* msg, size_t msg_len,
 			     RandomNumberGenerator rng)
 		{
-			const size_t q_bytes = (q_bits + 7) / 8;
+			const size_t q_bytes = (m_q_bits + 7) / 8;
 			
 			rng.add_entropy(msg, msg_len);
 			
 			BigInt k_bn;
 			do
-				k_bn.randomize(rng, q_bits);
-			while(k_bn >= q.to_bigint());
+				k_bn.randomize(rng, m_q_bits);
+			while(k_bn >= m_q.to_bigint());
 			
 			OSSL_BN i = OSSL_BN(msg, msg_len);
 			OSSL_BN k = OSSL_BN(k_bn);
 			
 			OSSL_BN r;
-			BN_mod_exp(r.ptr(), g.ptr(), k.ptr(), p.ptr(), ctx.ptr());
-			BN_nnmod(r.ptr(), r.ptr(), q.ptr(), ctx.ptr());
+			BN_mod_exp(r.ptr(), m_g.ptr(), k.ptr(), m_p.ptr(), m_ctx.ptr());
+			BN_nnmod(r.ptr(), r.ptr(), m_q.ptr(), m_ctx.ptr());
 			
-			BN_mod_inverse(k.ptr(), k.ptr(), q.ptr(), ctx.ptr());
+			BN_mod_inverse(k.ptr(), k.ptr(), m_q.ptr(), m_ctx.ptr());
 			
 			OSSL_BN s;
-			BN_mul(s.ptr(), x.ptr(), r.ptr(), ctx.ptr());
+			BN_mul(s.ptr(), m_x.ptr(), r.ptr(), m_ctx.ptr());
 			BN_add(s.ptr(), s.ptr(), i.ptr());
-			BN_mod_mul(s.ptr(), s.ptr(), k.ptr(), q.ptr(), ctx.ptr());
+			BN_mod_mul(s.ptr(), s.ptr(), k.ptr(), m_q.ptr(), m_ctx.ptr());
 			
 			if (BN_is_zero(r.ptr()) || BN_is_zero(s.ptr()))
 				throw new Internal_Error("OpenSSL_DSA_Op::sign: r or s was zero");
@@ -761,9 +761,9 @@ static if (BOTAN_HAS_DSA) {
 		}
 		
 	private:
-		const OSSL_BN x, p, q, g;
-		const OSSL_BN_CTX ctx;
-		size_t q_bits;
+		const OSSL_BN m_x, m_p, m_q, m_g;
+		const OSSL_BN_CTX m_ctx;
+		size_t m_q_bits;
 	}
 	
 	
@@ -772,23 +772,23 @@ static if (BOTAN_HAS_DSA) {
 	public:
 		this(in DSA_PublicKey dsa)
 		{
-			y = dsa.get_y();
-			p = dsa.group_p();
-			q = dsa.group_q();
-			g = dsa.group_g();
-			q_bits = dsa.group_q().bits();
+			m_y = dsa.get_y();
+			m_p = dsa.group_p();
+			m_q = dsa.group_q();
+			m_g = dsa.group_g();
+			m_q_bits = dsa.group_q().bits();
 		}
 		
 		size_t message_parts() const { return 2; }
-		size_t message_part_size() const { return (q_bits + 7) / 8; }
-		size_t max_input_bits() const { return q_bits; }
+		size_t message_part_size() const { return (m_q_bits + 7) / 8; }
+		size_t max_input_bits() const { return m_q_bits; }
 		
 		bool with_recovery() const { return false; }
 		
 		bool verify(in ubyte* msg, size_t msg_len,
 		            in ubyte* sig, size_t sig_len)
 		{
-			const size_t q_bytes = q.bytes();
+			const size_t q_bytes = m_q.bytes();
 			
 			if (sig_len != 2*q_bytes || msg_len > q_bytes)
 				return false;
@@ -797,24 +797,24 @@ static if (BOTAN_HAS_DSA) {
 			OSSL_BN s = OSSL_BN(sig + q_bytes, q_bytes);
 			OSSL_BN i = OSSL_BN(msg, msg_len);
 			
-			if (BN_is_zero(r.ptr()) || BN_cmp(r.ptr(), q.ptr()) >= 0)
+			if (BN_is_zero(r.ptr()) || BN_cmp(r.ptr(), m_q.ptr()) >= 0)
 				return false;
-			if (BN_is_zero(s.ptr()) || BN_cmp(s.ptr(), q.ptr()) >= 0)
+			if (BN_is_zero(s.ptr()) || BN_cmp(s.ptr(), m_q.ptr()) >= 0)
 				return false;
 			
-			if (BN_mod_inverse(s.ptr(), s.ptr(), q.ptr(), ctx.ptr()) == 0)
+			if (BN_mod_inverse(s.ptr(), s.ptr(), m_q.ptr(), m_ctx.ptr()) == 0)
 				return false;
 			
 			OSSL_BN si;
-			BN_mod_mul(si.ptr(), s.ptr(), i.ptr(), q.ptr(), ctx.ptr());
-			BN_mod_exp(si.ptr(), g.ptr(), si.ptr(), p.ptr(), ctx.ptr());
+			BN_mod_mul(si.ptr(), s.ptr(), i.ptr(), m_q.ptr(), m_ctx.ptr());
+			BN_mod_exp(si.ptr(), m_g.ptr(), si.ptr(), m_p.ptr(), m_ctx.ptr());
 			
 			OSSL_BN sr;
-			BN_mod_mul(sr.ptr(), s.ptr(), r.ptr(), q.ptr(), ctx.ptr());
-			BN_mod_exp(sr.ptr(), y.ptr(), sr.ptr(), p.ptr(), ctx.ptr());
+			BN_mod_mul(sr.ptr(), s.ptr(), r.ptr(), m_q.ptr(), m_ctx.ptr());
+			BN_mod_exp(sr.ptr(), m_y.ptr(), sr.ptr(), m_p.ptr(), m_ctx.ptr());
 			
-			BN_mod_mul(si.ptr(), si.ptr(), sr.ptr(), p.ptr(), ctx.ptr());
-			BN_nnmod(si.ptr(), si.ptr(), q.ptr(), ctx.ptr());
+			BN_mod_mul(si.ptr(), si.ptr(), sr.ptr(), m_p.ptr(), m_ctx.ptr());
+			BN_nnmod(si.ptr(), si.ptr(), m_q.ptr(), m_ctx.ptr());
 			
 			if (BN_cmp(si.ptr(), r.ptr()) == 0)
 				return true;
@@ -822,9 +822,9 @@ static if (BOTAN_HAS_DSA) {
 		}
 		
 	private:
-		const OSSL_BN y, p, q, g;
-		const OSSL_BN_CTX ctx;
-		size_t q_bits;
+		const OSSL_BN m_y, m_p, m_q, m_g;
+		const OSSL_BN_CTX m_ctx;
+		size_t m_q_bits;
 	}
 	
 	
@@ -835,23 +835,23 @@ static if (BOTAN_HAS_DSA) {
 		public:
 			this(in RSA_PrivateKey rsa)
 			{
-				mod = rsa.get_n();
-				p = rsa.get_p();
-				q = rsa.get_q();
-				d1 = rsa.get_d1();
-				d2 = rsa.get_d2();
-				c = rsa.get_c();
-				n_bits = rsa.get_n().bits();
+				m_mod = rsa.get_n();
+				m_p = rsa.get_p();
+				m_q = rsa.get_q();
+				m_d1 = rsa.get_d1();
+				m_d2 = rsa.get_d2();
+				m_c = rsa.get_c();
+				m_n_bits = rsa.get_n().bits();
 			}
 			
-			size_t max_input_bits() const { return (n_bits - 1); }
+			size_t max_input_bits() const { return (m_n_bits - 1); }
 			
 			Secure_Vector!ubyte sign(in ubyte* msg, size_t msg_len,
 			                      RandomNumberGenerator)
 			{
 				BigInt m = BigInt(msg, msg_len);
 				BigInt x = private_op(m);
-				return BigInt.encode_1363(x, (n_bits + 7) / 8);
+				return BigInt.encode_1363(x, (m_n_bits + 7) / 8);
 			}
 			
 			Secure_Vector!ubyte decrypt(in ubyte* msg, size_t msg_len)
@@ -863,20 +863,21 @@ static if (BOTAN_HAS_DSA) {
 		private:
 			BigInt private_op(in BigInt m) const
 			{
-				OSSL_BN j1, j2, h(m);
+				OSSL_BN j1, j2;
+				OSSL_BN h = OSSL_BN(m);
 				
-				BN_mod_exp(j1.ptr(), h.ptr(), d1.ptr(), p.ptr(), ctx.ptr());
-				BN_mod_exp(j2.ptr(), h.ptr(), d2.ptr(), q.ptr(), ctx.ptr());
+				BN_mod_exp(j1.ptr(), h.ptr(), m_d1.ptr(), m_p.ptr(), m_ctx.ptr());
+				BN_mod_exp(j2.ptr(), h.ptr(), m_d2.ptr(), m_q.ptr(), m_ctx.ptr());
 				BN_sub(h.ptr(), j1.ptr(), j2.ptr());
-				BN_mod_mul(h.ptr(), h.ptr(), c.ptr(), p.ptr(), ctx.ptr());
-				BN_mul(h.ptr(), h.ptr(), q.ptr(), ctx.ptr());
+				BN_mod_mul(h.ptr(), h.ptr(), m_c.ptr(), m_p.ptr(), m_ctx.ptr());
+				BN_mul(h.ptr(), h.ptr(), m_q.ptr(), m_ctx.ptr());
 				BN_add(h.ptr(), h.ptr(), j2.ptr());
 				return h.to_bigint();
 			}
 			
-			const OSSL_BN mod, p, q, d1, d2, c;
-			const OSSL_BN_CTX ctx;
-			size_t n_bits;
+			const OSSL_BN m_mod, m_p, m_q, m_d1, m_d2, m_c;
+			const OSSL_BN_CTX m_ctx;
+			size_t m_n_bits;
 		}
 		
 		
@@ -885,24 +886,24 @@ static if (BOTAN_HAS_DSA) {
 		public:
 			this(in RSA_PublicKey rsa) 
 			{
-				n = rsa.get_n();
-				e = rsa.get_e();
-				mod = rsa.get_n();
+				m_n = rsa.get_n();
+				m_e = rsa.get_e();
+				m_mod = rsa.get_n();
 			}
 			
-			size_t max_input_bits() const { return (n.bits() - 1); }
+			size_t max_input_bits() const { return (m_n.bits() - 1); }
 			bool with_recovery() const { return true; }
 			
 			Secure_Vector!ubyte encrypt(in ubyte* msg, size_t msg_len,
 			                         RandomNumberGenerator)
 			{
-				BigInt m(msg, msg_len);
-				return BigInt.encode_1363(public_op(m), n.bytes());
+				BigInt m = BigInt(msg, msg_len);
+				return BigInt.encode_1363(public_op(m), m_n.bytes());
 			}
 			
 			Secure_Vector!ubyte verify_mr(in ubyte* msg, size_t msg_len)
 			{
-				BigInt m(msg, msg_len);
+				BigInt m = BigInt(msg, msg_len);
 				return BigInt.encode_locked(public_op(m));
 			}
 			
@@ -913,13 +914,13 @@ static if (BOTAN_HAS_DSA) {
 					throw new Invalid_Argument("RSA public op - input is too large");
 				
 				OSSL_BN m_bn = OSSL_BN(m), r;
-				BN_mod_exp(r.ptr(), m_bn.ptr(), e.ptr(), mod.ptr(), ctx.ptr());
+				BN_mod_exp(r.ptr(), m_bn.ptr(), m_e.ptr(), m_mod.ptr(), m_ctx.ptr());
 				return r.to_bigint();
 			}
 			
-			const ref BigInt n;
-			const OSSL_BN e, mod;
-			const OSSL_BN_CTX ctx;
+			const ref BigInt m_n;
+			const OSSL_BN m_e, m_mod;
+			const OSSL_BN_CTX m_ctx;
 		}
 		
 	}

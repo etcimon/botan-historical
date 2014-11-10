@@ -237,7 +237,7 @@ public:
 
 private:
 	Certificate_Status_Code m_overall;
-	Vector!( Set<Certificate_Status_Code ) m_all_status;
+	Vector!( Set!Certificate_Status_Code ) m_all_status;
 	Vector!X509_Certificate m_cert_path;
 }
 
@@ -367,7 +367,7 @@ const X509_CRL find_crls_for(in X509_Certificate cert,
 	return null;
 }
 
-Vector!( Set<Certificate_Status_Code )
+Vector!( Set!Certificate_Status_Code )
 	check_chain(in Vector!X509_Certificate cert_path,
 	            const ref Path_Validation_Restrictions restrictions,
 	            const ref Vector!Certificate_Store certstores)

@@ -91,7 +91,7 @@ struct FPE {
 private:
 
 // Normally FPE is for SSNs, CC#s, etc, nothing too big
-const size_t MAX_N_BYTES = 128/8;
+__gshared immutable size_t MAX_N_BYTES = 128/8;
 
 /*
 * Factor n into a and b which are as close together as possible.
@@ -156,21 +156,21 @@ public:
 	     const ref BigInt n,
 	     in Vector!ubyte tweak)
 	{
-		mac = new HMAC(new SHA_256);
-		mac.set_key(key);
+		m_mac = new HMAC(new SHA_256);
+		m_mac.set_key(key);
 		
 		Vector!ubyte n_bin = BigInt.encode(n);
 		
 		if (n_bin.length > MAX_N_BYTES)
 			throw new Exception("N is too large for FPE encryption");
 		
-		mac.update_be(cast(uint)(n_bin.length));
-		mac.update(&n_binput[0], n_bin.length);
+		m_mac.update_be(cast(uint)(n_bin.length));
+		m_mac.update(&n_binput[0], n_bin.length);
 		
-		mac.update_be(cast(uint)(tweak.length));
-		mac.update(&tweak[0], tweak.length);
+		m_mac.update_be(cast(uint)(tweak.length));
+		m_mac.update(&tweak[0], tweak.length);
 		
-		mac_n_t = unlock(mac.flush());
+		m_mac_n_t = unlock(m_mac.flush());
 	}
 
 	
@@ -178,17 +178,17 @@ public:
 	{
 		Secure_Vector!ubyte r_bin = BigInt.encode_locked(R);
 		
-		mac.update(mac_n_t);
-		mac.update_be(cast(uint)(round_no));
+		m_mac.update(m_mac_n_t);
+		m_mac.update_be(cast(uint)(round_no));
 		
-		mac.update_be(cast(uint)(r_bin.length));
-		mac.update(&r_binput[0], r_bin.length);
+		m_mac.update_be(cast(uint)(r_bin.length));
+		m_mac.update(&r_binput[0], r_bin.length);
 		
-		Secure_Vector!ubyte X = mac.flush();
+		Secure_Vector!ubyte X = m_mac.flush();
 		return BigInt(&X[0], X.length);
 	}
 	
 private:
-	Unique!MessageAuthenticationCode mac;
-	Vector!ubyte mac_n_t;
+	Unique!MessageAuthenticationCode m_mac;
+	Vector!ubyte m_mac_n_t;
 }

@@ -21,7 +21,7 @@ public:
 	@property size_t output_length() const { return 3; }
 	HashFunction clone() const { return new CRC24; }
 
-	void clear() { crc = 0xB704CE; }
+	void clear() { m_crc = 0xB704CE; }
 
 	this() { clear(); }
 	~this() { clear(); }
@@ -76,7 +76,7 @@ private:
 			0x00FA48FA, 0x007C0401, 0x0042FA2F, 0x00C4B6D4, 0x00C82F22, 0x004E63D9,
 			0x00D11CCE, 0x00575035, 0x005BC9C3, 0x00DD8538 ];
 		
-		uint tmp = crc;
+		uint tmp = m_crc;
 		while(length >= 16)
 		{
 			tmp = TABLE[((tmp >> 16) ^ input[ 0]) & 0xFF] ^ (tmp << 8);
@@ -102,7 +102,7 @@ private:
 		for (size_t i = 0; i != length; ++i)
 			tmp = TABLE[((tmp >> 16) ^ input[i]) & 0xFF] ^ (tmp << 8);
 		
-		crc = tmp;
+		m_crc = tmp;
 	}
 
 	/*
@@ -111,8 +111,8 @@ private:
 	void final_result(ubyte* output)
 	{
 		for (size_t i = 0; i != 3; ++i)
-			output[i] = get_byte(i+1, crc);
+			output[i] = get_byte(i+1, m_crc);
 		clear();
 	}
-	uint crc;
+	uint m_crc;
 }

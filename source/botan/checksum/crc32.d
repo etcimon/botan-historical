@@ -22,7 +22,7 @@ public:
 	@property size_t output_length() const { return 4; }
 	HashFunction clone() const { return new CRC32; }
 
-	void clear() { crc = 0xFFFFFFFF; }
+	void clear() { m_crc = 0xFFFFFFFF; }
 
 	this() { clear(); }
 	~this() { clear(); }
@@ -77,7 +77,7 @@ private:
 			0x54DE5729, 0x23D967BF, 0xB3667A2E, 0xC4614AB8, 0x5D681B02, 0x2A6F2B94,
 			0xB40BBE37, 0xC30C8EA1, 0x5A05DF1B, 0x2D02EF8D ];
 		
-		uint tmp = crc;
+		uint tmp = m_crc;
 		while(length >= 16)
 		{
 			tmp = TABLE[(tmp ^ input[ 0]) & 0xFF] ^ (tmp >> 8);
@@ -103,7 +103,7 @@ private:
 		for (size_t i = 0; i != length; ++i)
 			tmp = TABLE[(tmp ^ input[i]) & 0xFF] ^ (tmp >> 8);
 		
-		crc = tmp;
+		m_crc = tmp;
 	}
 
 	/*
@@ -111,10 +111,10 @@ private:
 	*/
 	void final_result(ubyte* output)
 	{
-		crc ^= 0xFFFFFFFF;
-		store_be(crc, output);
+		m_crc ^= 0xFFFFFFFF;
+		store_be(m_crc, output);
 		clear();
 	}
 
-	uint crc;
+	uint m_crc;
 }

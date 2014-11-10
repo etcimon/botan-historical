@@ -37,8 +37,8 @@ Pair!(BigInt, SymmetricKey)
 	                  RandomNumberGenerator rng)
 {
 	DL_Group group = DL_Group(group_id);
-	const ref BigInt g = group.get_g();
-	const ref BigInt p = group.get_p();
+	const BigInt g = group.get_g();
+	const BigInt p = group.get_p();
 	
 	const size_t p_bytes = group.get_p().bytes();
 	
@@ -101,7 +101,7 @@ string srp6_group_identifier(in BigInt N, const ref BigInt g)
 	{
 		const string group_name = "modp/srp/" ~ std.conv.to!string(N.bits());
 		
-		DL_Group group(group_name);
+		DL_Group group = DL_Group(group_name);
 		
 		if (group.get_p() == N && group.get_g() == g)
 			return group_name;
@@ -137,20 +137,20 @@ public:
 		const ref BigInt g = group.get_g();
 		const ref BigInt p = group.get_p();
 		
-		p_bytes = p.bytes();
+		m_p_bytes = p.bytes();
 		
 		BigInt k = hash_seq(hash_id, p_bytes, p, g);
 		
 		BigInt b = BigInt(rng, 256);
 		
-		B = (v*k + power_mod(g, b, p)) % p;
+		m_B = (v*k + power_mod(g, b, p)) % p;
 		
-		this.v = v;
-		this.b = b;
-		this.p = p;
-		this.hash_id = hash_id;
+		m_v = v;
+		m_b = b;
+		m_p = p;
+		m_hash_id = hash_id;
 		
-		return B;
+		return m_B;
 	}
 
 	/**
@@ -163,17 +163,17 @@ public:
 		if (A <= 0 || A >= p)
 			throw new Exception("Invalid SRP parameter from client");
 		
-		BigInt u = hash_seq(hash_id, p_bytes, A, B);
+		BigInt u = hash_seq(m_hash_id, m_p_bytes, A, m_B);
 		
-		BigInt S = power_mod(A * power_mod(v, u, p), b, p);
+		BigInt S = power_mod(A * power_mod(m_v, u, m_p), m_b, m_p);
 		
-		return BigInt.encode_1363(S, p_bytes);
+		return BigInt.encode_1363(S, m_p_bytes);
 	}
 
 private:
-	string hash_id;
-	BigInt B, b, v, S, p;
-	size_t p_bytes;
+	string m_hash_id;
+	BigInt m_B, m_b, m_v, m_p; // m_S
+	size_t m_p_bytes;
 }
 
 private:
