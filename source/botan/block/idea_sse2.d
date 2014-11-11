@@ -88,9 +88,9 @@ __m128i mul(__m128i X, ushort K_16) pure
 	/* Selection: if X[i] is zero then assign 1-K
 				  if K is zero then assign 1-X[i]
 
-	Could if () off value of K_16 for the second, but this gives a
-	constant time implementation which is a nice bonus.
-*/
+		Could if () off value of K_16 for the second, but this gives a
+		constant time implementation which is a nice bonus.
+	*/
 	
 	T = _mm_or_si128(
 		_mm_andnot_si128(X_is_zero, T),

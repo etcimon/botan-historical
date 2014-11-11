@@ -25,16 +25,16 @@ public:
 	*/
 	void cipher(in ubyte* input, ubyte* output)
 	{
-		while(length >= buffer.length - position)
+		while(length >= m_buffer.length - m_position)
 		{
-			xor_buf(output, input, &buffer[position], buffer.length - position);
-			length -= (buffer.length - position);
-			input += (buffer.length - position);
-			output += (buffer.length - position);
+			xor_buf(output, input, &m_buffer[m_position], m_buffer.length - m_position);
+			length -= (m_buffer.length - m_position);
+			input += (m_buffer.length - m_position);
+			output += (m_buffer.length - m_position);
 			generate();
 		}
-		xor_buf(output, input, &buffer[position], length);
-		position += length;
+		xor_buf(output, input, &m_buffer[m_position], length);
+		m_position += length;
 	}
 
 	/*
@@ -42,9 +42,9 @@ public:
 	*/
 	void clear()
 	{
-		zap(state);
-		zap(buffer);
-		position = X = Y = 0;
+		zap(m_state);
+		zap(m_buffer);
+		m_position = m_X = m_Y = 0;
 	}
 
 	/*
@@ -52,12 +52,12 @@ public:
 	*/
 	@property string name() const
 	{
-		if (SKIP == 0)	return "RC4";
-		if (SKIP == 256) return "MARK-4";
-		else				return "RC4_skip(" ~ std.conv.to!string(SKIP) ~ ")";
+		if (m_SKIP == 0)	return "RC4";
+		if (m_SKIP == 256) return "MARK-4";
+		else				return "RC4_skip(" ~ std.conv.to!string(m_SKIP) ~ ")";
 	}
 
-	RC4 clone() const { return new RC4(SKIP); }
+	RC4 clone() const { return new RC4(m_SKIP); }
 
 	Key_Length_Specification key_spec() const
 	{
@@ -67,7 +67,7 @@ public:
 	/**
 	* @param skip skip this many initial bytes in the keystream
 	*/
-	this(size_t s = 0) { SKIP = s; }
+	this(size_t s = 0) { m_SKIP = s; }
 
 	~this() { clear(); }
 private:
@@ -76,24 +76,24 @@ private:
 	*/
 	void key_schedule(in ubyte* key, size_t length)
 	{
-		state.resize(256);
-		buffer.resize(round_up!size_t(DEFAULT_BUFFERSIZE, 4));
+		m_state.resize(256);
+		m_buffer.resize(round_up!size_t(DEFAULT_BUFFERSIZE, 4));
 		
-		position = X = Y = 0;
+		m_position = m_X = m_Y = 0;
 		
 		for (size_t i = 0; i != 256; ++i)
-			state[i] = cast(ubyte)(i);
+			m_state[i] = cast(ubyte)(i);
 		
 		for (size_t i = 0, state_index = 0; i != 256; ++i)
 		{
-			state_index = (state_index + key[i % length] + state[i]) % 256;
-			std.algorithm.swap(state[i], state[state_index]);
+			state_index = (state_index + key[i % length] + m_state[i]) % 256;
+			std.algorithm.swap(m_state[i], m_state[state_index]);
 		}
 		
-		for (size_t i = 0; i <= SKIP; i += buffer.length)
+		for (size_t i = 0; i <= m_SKIP; i += m_buffer.length)
 			generate();
 		
-		position += (SKIP % buffer.length);
+		m_position += (m_SKIP % m_buffer.length);
 	}
 
 
@@ -103,33 +103,33 @@ private:
 	void generate()
 	{
 		ubyte SX, SY;
-		for (size_t i = 0; i != buffer.length; i += 4)
+		for (size_t i = 0; i != m_buffer.length; i += 4)
 		{
-			SX = state[X+1]; Y = (Y + SX) % 256; SY = state[Y];
-			state[X+1] = SY; state[Y] = SX;
-			buffer[i] = state[(SX + SY) % 256];
+			SX = m_state[m_X+1]; m_Y = (m_Y + SX) % 256; SY = m_state[m_Y];
+			m_state[m_X+1] = SY; m_state[m_Y] = SX;
+			m_buffer[i] = m_state[(SX + SY) % 256];
 			
-			SX = state[X+2]; Y = (Y + SX) % 256; SY = state[Y];
-			state[X+2] = SY; state[Y] = SX;
-			buffer[i+1] = state[(SX + SY) % 256];
+			SX = m_state[m_X+2]; m_Y = (m_Y + SX) % 256; SY = m_state[m_Y];
+			m_state[m_X+2] = SY; m_state[m_Y] = SX;
+			m_buffer[i+1] = m_state[(SX + SY) % 256];
 			
-			SX = state[X+3]; Y = (Y + SX) % 256; SY = state[Y];
-			state[X+3] = SY; state[Y] = SX;
-			buffer[i+2] = state[(SX + SY) % 256];
+			SX = m_state[m_X+3]; m_Y = (m_Y + SX) % 256; SY = m_state[m_Y];
+			m_state[m_X+3] = SY; m_state[m_Y] = SX;
+			m_buffer[i+2] = m_state[(SX + SY) % 256];
 			
-			X = (X + 4) % 256;
-			SX = state[X]; Y = (Y + SX) % 256; SY = state[Y];
-			state[X] = SY; state[Y] = SX;
-			buffer[i+3] = state[(SX + SY) % 256];
+			m_X = (m_X + 4) % 256;
+			SX = m_state[m_X]; m_Y = (m_Y + SX) % 256; SY = m_state[m_Y];
+			m_state[m_X] = SY; m_state[m_Y] = SX;
+			m_buffer[i+3] = m_state[(SX + SY) % 256];
 		}
-		position = 0;
+		m_position = 0;
 	}
 
-	const size_t SKIP;
+	const size_t m_SKIP;
 
-	ubyte X, Y;
-	Secure_Vector!ubyte state;
+	ubyte m_X, m_Y;
+	Secure_Vector!ubyte m_state;
 
-	Secure_Vector!ubyte buffer;
-	size_t position;
+	Secure_Vector!ubyte m_buffer;
+	size_t m_position;
 }

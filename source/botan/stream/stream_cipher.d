@@ -71,6 +71,3 @@ public:
 	*/
 	abstract StreamCipher clone() const;
 }
-
-
-

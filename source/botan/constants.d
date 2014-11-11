@@ -27,6 +27,9 @@ version(D_InlineAsm_X86) {	enum BOTAN_USE_GCC_INLINE_ASM = true;													}
 version(D_InlineAsm_X86_64){enum BOTAN_USE_GCC_INLINE_ASM = true;													}
 else static assert("Inline ASM not implemented");
 
+version(PPC)			{	enum BOTAN_TARGET_CPU_IS_PPC_FAMILY = true;												}
+else version(PPC64)		{	enum BOTAN_TARGET_CPU_IS_PPC_FAMILY = true;												}
+else					{	enum BOTAN_TARGET_CPU_IS_PPC_FAMILY = false;											}
 version(X86_64)			{	enum BOTAN_TARGET_CPU_HAS_SSE2 = true;													}
 else						enum BOTAN_TARGET_CPU_HAS_SSE2 = false;
 version(X86)			{	enum BOTAN_TARGET_CPU_IS_X86_FAMILY = true;												}
@@ -39,8 +42,11 @@ version(FORCE_SSE4)		{	enum BOTAN_FORCE_SSE4 = true;															}
 else						enum BOTAN_FORCE_SSE4 = false;
 version(SIMD_SSE2)		{	enum BOTAN_HAS_SIMD_SSE2 = true;														}
 else						enum BOTAN_HAS_SIMD_SSE2 = false;
-version(SIMD_Altivec)	{	enum BOTAN_HAS_SIMD_ALTIVEC = true;														}
+version(SIMD_Altivec)	{	static if (BOTAN_TARGET_CPU_IS_PPC_FAMILY) 
+								enum BOTAN_HAS_SIMD_ALTIVEC = true;
+							else enum BOTAN_HAS_SIMD_ALTIVEC = false;												}
 else						enum BOTAN_HAS_SIMD_ALTIVEC = false;
+
 version(SIMD_Scalar)	{	enum BOTAN_HAS_SIMD_SCALAR = true;														}
 else						enum BOTAN_HAS_SIMD_SCALAR = false;
 

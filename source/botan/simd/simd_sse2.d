@@ -5,7 +5,7 @@
 * Distributed under the terms of the botan license.
 */
 module botan.simd.simd_sse2;
-//static if (BOTAN_TARGET_SUPPORTS_SSE2):
+static if (BOTAN_TARGET_SUPPORTS_SSE2):
 
 import botan.utils.cpuid;
 import botan.utils.simd.emmintrin;

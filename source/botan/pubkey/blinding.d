@@ -24,9 +24,9 @@ public:
 		if (!reducer.initialized())
 			return i;
 		
-		e = reducer.square(e);
-		d = reducer.square(d);
-		return reducer.multiply(i, e);
+		m_e = reducer.square(e);
+		m_d = reducer.square(d);
+		return reducer.multiply(i, m_e);
 	}
 
 	/*
@@ -34,9 +34,9 @@ public:
 	*/
 	BigInt unblind(in BigInt i) const
 	{
-		if (!reducer.initialized())
+		if (!m_reducer.initialized())
 			return i;
-		return reducer.multiply(i, d);
+		return m_reducer.multiply(i, m_d);
 	}
 
 	bool initialized() const { return reducer.initialized(); }
@@ -54,12 +54,12 @@ public:
 		if (e < 1 || d < 1 || n < 1)
 			throw new Invalid_Argument("Blinder: Arguments too small");
 		
-		reducer = Modular_Reducer(n);
-		this.e = e;
-		this.d = d;
+		m_reducer = Modular_Reducer(n);
+		m_e = e;
+		m_d = d;
 	}
 
 private:
-	Modular_Reducer reducer;
-	BigInt e, d;
+	Modular_Reducer m_reducer;
+	BigInt m_e, m_d;
 }

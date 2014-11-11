@@ -6,6 +6,7 @@
 */
 module botan.simd.simd_scalar;
 
+static if (BOTAN_HAS_SIMD_SCALAR):
 import botan.utils.loadstor;
 import botan.utils.bswap;
 
