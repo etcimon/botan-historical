@@ -37,9 +37,9 @@ public:
 		personalization = arg_personalization;
 		output_bits = arg_output_bits;
 		m_threefish = new Threefish_512;
-		T = 2;
-		buffer = 64; 
-		buf_pos = 0;
+		m_T = 2;
+		m_buffer = 64; 
+		m_buf_pos = 0;
 
 		if (output_bits == 0 || output_bits % 8 != 0 || output_bits > 512)
 			throw new Invalid_Argument("Bad output bits size for Skein-512");
@@ -65,8 +65,8 @@ public:
 
 	void clear()
 	{
-		zeroise(buffer);
-		buf_pos = 0;
+		zeroise(m_buffer);
+		m_buf_pos = 0;
 		
 		initial_block();
 	}
@@ -88,16 +88,16 @@ private:
 		if (length == 0)
 			return;
 		
-		if (buf_pos)
+		if (m_buf_pos)
 		{
-			buffer_insert(buffer, buf_pos, input, length);
-			if (buf_pos + length > 64)
+			buffer_insert(m_buffer, m_buf_pos, input, length);
+			if (m_buf_pos + length > 64)
 			{
-				ubi_512(&buffer[0], buffer.length);
+				ubi_512(&m_buffer[0], m_buffer.length);
 				
-				input += (64 - buf_pos);
-				length -= (64 - buf_pos);
-				buf_pos = 0;
+				input += (64 - m_buf_pos);
+				length -= (64 - m_buf_pos);
+				m_buf_pos = 0;
 			}
 		}
 		
@@ -108,18 +108,18 @@ private:
 		
 		length -= full_blocks * 64;
 		
-		buffer_insert(buffer, buf_pos, input + full_blocks * 64, length);
-		buf_pos += length;
+		buffer_insert(m_buffer, m_buf_pos, input + full_blocks * 64, length);
+		m_buf_pos += length;
 	}
 
 	void final_result(ubyte* output)
 	{
-		T[1] |= (cast(ulong)(1) << 63); // final block flag
+		m_T[1] |= (cast(ulong)(1) << 63); // final block flag
 		
-		for (size_t i = buf_pos; i != buffer.length; ++i)
-			buffer[i] = 0;
+		for (size_t i = m_buf_pos; i != m_buffer.length; ++i)
+			m_buffer[i] = 0;
 		
-		ubi_512(&buffer[0], buf_pos);
+		ubi_512(&m_buffer[0], m_buf_pos);
 		
 		const ubyte[8] counter;
 		
@@ -131,7 +131,7 @@ private:
 		for (size_t i = 0; i != out_bytes; ++i)
 			output[i] = get_byte(7-i%8, m_threefish.m_K[i/8]);
 		
-		buf_pos = 0;
+		m_buf_pos = 0;
 		initial_block();
 	}
 
@@ -142,7 +142,7 @@ private:
 		do
 		{
 			const size_t to_proc = std.algorithm.min(msg_len, 64);
-			T[0] += to_proc;
+			m_T[0] += to_proc;
 			
 			load_le(&M[0], msg, to_proc / 8);
 			
@@ -152,10 +152,10 @@ private:
 					M[to_proc/8] |= cast(ulong)(msg[8*(to_proc/8)+j]) << (8*j);
 			}
 			
-			m_threefish.skein_feedfwd(M, T);
+			m_threefish.skein_feedfwd(M, m_T);
 			
 			// clear first flag if set
-			T[1] &= ~(cast(ulong)(1) << 62);
+			m_T[1] &= ~(cast(ulong)(1) << 62);
 			
 			msg_len -= to_proc;
 			msg += to_proc;
@@ -196,9 +196,9 @@ private:
 
 	void reset_tweak(type_code type, bool fin)
 	{
-		T[0] = 0;
+		m_T[0] = 0;
 		
-		T[1] = (cast(ulong)(type) << 56) |
+		m_T[1] = (cast(ulong)(type) << 56) |
 			(cast(ulong)(1) << 62) |
 				(cast(ulong)(fin) << 63);
 	}
@@ -207,7 +207,7 @@ private:
 	size_t output_bits;
 
 	Unique!Threefish_512 m_threefish;
-	Secure_Vector!ulong T;
-	Secure_Vector!ubyte buffer;
-	size_t buf_pos;
+	Secure_Vector!ulong m_T;
+	Secure_Vector!ubyte m_buffer;
+	size_t m_buf_pos;
 }

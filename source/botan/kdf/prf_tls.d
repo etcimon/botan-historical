@@ -32,8 +32,8 @@ public:
 		const ubyte* S1 = secret;
 		const ubyte* S2 = secret + (secret_len - S2_len);
 		
-		P_hash(output, *hmac_md5,  S1, S1_len, seed, seed_len);
-		P_hash(output, *hmac_sha1, S2, S2_len, seed, seed_len);
+		P_hash(output, *m_hmac_md5,  S1, S1_len, seed, seed_len);
+		P_hash(output, *m_hmac_sha1, S2, S2_len, seed, seed_len);
 		
 		return output;
 	}
@@ -46,13 +46,13 @@ public:
 	*/
 	this()
 	{
-		hmac_md5 = new HMAC(new MD5);
-		hmac_sha1= new HMAC(new SHA_160);
+		m_hmac_md5 = new HMAC(new MD5);
+		m_hmac_sha1= new HMAC(new SHA_160);
 	}
 
 private:
-	Unique!MessageAuthenticationCode hmac_md5;
-	Unique!MessageAuthenticationCode hmac_sha1;
+	Unique!MessageAuthenticationCode m_hmac_md5;
+	Unique!MessageAuthenticationCode m_hmac_sha1;
 }
 
 /**
@@ -67,23 +67,23 @@ public:
 	{
 		Secure_Vector!ubyte output = Secure_Vector!ubyte(key_len);
 		
-		P_hash(output, *hmac, secret, secret_len, seed, seed_len);
+		P_hash(output, *m_hmac, secret, secret_len, seed, seed_len);
 		
 		return output;
 	}
 
-	@property string name() const { return "TLSv12-PRF(" ~ hmac.name ~ ")"; }
-	KDF clone() const { return new TLS_12_PRF(hmac.clone()); }
+	@property string name() const { return "TLSv12-PRF(" ~ m_hmac.name ~ ")"; }
+	KDF clone() const { return new TLS_12_PRF(m_hmac.clone()); }
 
 	/*
 	* TLS v1.2 PRF Constructor and Destructor
 	*/
 	this(MessageAuthenticationCode mac)
 	{
-		hmac = mac;
+		m_hmac = mac;
 	}
 private:
-	Unique!MessageAuthenticationCode hmac;
+	Unique!MessageAuthenticationCode m_hmac;
 }
 
 

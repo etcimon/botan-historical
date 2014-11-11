@@ -30,9 +30,9 @@ public:
 	{
 		Secure_Vector!ubyte io_buffer = accum.get_io_buffer(32);
 		
-		for (size_t i = 0; i != prov_types.length; ++i)
+		for (size_t i = 0; i != m_prov_types.length; ++i)
 		{
-			CSP_Handle csp(prov_types[i]);
+			CSP_Handle csp(m_prov_types[i]);
 			
 			size_t got = csp.gen_random(&io_buffer[0], io_buffer.length);
 			
@@ -54,18 +54,18 @@ public:
 		
 		for (size_t i = 0; i != capi_provs.length; ++i)
 		{
-			if (capi_provs[i] == "RSA_FULL")  prov_types.push_back(PROV_RSA_FULL);
-			if (capi_provs[i] == "INTEL_SEC") prov_types.push_back(PROV_INTEL_SEC);
-			if (capi_provs[i] == "FORTEZZA")  prov_types.push_back(PROV_FORTEZZA);
-			if (capi_provs[i] == "RNG")		 prov_types.push_back(PROV_RNG);
+			if (capi_provs[i] == "RSA_FULL")  m_prov_types.push_back(PROV_RSA_FULL);
+			if (capi_provs[i] == "INTEL_SEC") m_prov_types.push_back(PROV_INTEL_SEC);
+			if (capi_provs[i] == "FORTEZZA")  m_prov_types.push_back(PROV_FORTEZZA);
+			if (capi_provs[i] == "RNG")		 m_prov_types.push_back(PROV_RNG);
 		}
 		
-		if (prov_types.length == 0)
-			prov_types.push_back(PROV_RSA_FULL);
+		if (m_prov_types.length == 0)
+			m_prov_types.push_back(PROV_RSA_FULL);
 	}
 
 	private:
-		Vector!( ulong ) prov_types;
+		Vector!( ulong ) m_prov_types;
 }
 
 final class CSP_Handle
@@ -73,31 +73,31 @@ final class CSP_Handle
 public:
 	this(ulong capi_provider)
 	{
-		valid = false;
+		m_valid = false;
 		DWORD prov_type = cast(DWORD)capi_provider;
 		
-		if (CryptAcquireContext(&handle, 0, 0,
+		if (CryptAcquireContext(&m_handle, 0, 0,
 		                        prov_type, CRYPT_VERIFYCONTEXT))
-			valid = true;
+			m_valid = true;
 	}
 	
 	~this()
 	{
 		if (is_valid())
-			CryptReleaseContext(handle, 0);
+			CryptReleaseContext(m_handle, 0);
 	}
 	
 	size_t gen_random(ubyte* output) const
 	{
-		if (is_valid() && CryptGenRandom(handle, cast(DWORD)(output.length), output))
+		if (is_valid() && CryptGenRandom(m_handle, cast(DWORD)(output.length), output))
 			return output.length;
 		return 0;
 	}
 	
-	bool is_valid() const { return valid; }
+	bool is_valid() const { return m_valid; }
 	
-	HCRYPTPROV get_handle() const { return handle; }
+	HCRYPTPROV get_handle() const { return m_handle; }
 private:
-	HCRYPTPROV handle;
-	bool valid;
+	HCRYPTPROV m_handle;
+	bool m_valid;
 }

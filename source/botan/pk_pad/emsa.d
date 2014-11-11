@@ -49,11 +49,3 @@ public:
 							  size_t key_bits);
 	~this() {}
 }
-
-/**
-* Factory method for EMSA (message-encoding methods for signatures
-* with appendix) objects
-* @param algo_spec the name of the EME to create
-* @return pointer to newly allocated object of that type
-*/
-EMSA get_emsa(in string algo_spec);

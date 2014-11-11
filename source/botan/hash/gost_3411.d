@@ -4,12 +4,12 @@
 *
 * Distributed under the terms of the botan license.
 */
-module botan.hash.gost_3411;
+module botan.m_hash.gost_3411;
 
 import botan.constants;
 static if (BOTAN_HAS_GOST_34_11):
 
-import botan.hash.hash;
+import botan.m_hash.m_hash;
 import botan.block.gost_28147;
 import botan.utils.loadstor;
 import botan.utils.rotate;
@@ -27,11 +27,11 @@ public:
 
 	void clear()
 	{
-		cipher.clear();
-		zeroise(sum);
-		zeroise(hash);
-		count = 0;
-		position = 0;
+		m_cipher.clear();
+		zeroise(m_sum);
+		zeroise(m_hash);
+		m_count = 0;
+		m_position = 0;
 	}
 
 	/**
@@ -39,12 +39,12 @@ public:
 	*/
 	this() 
 	{
-		cipher = GOST_28147_89_Params("R3411_CryptoPro");
-		buffer = 32;
-		sum = 32;
-		hash = 32;
-		count = 0;
-		position = 0;
+		m_cipher = GOST_28147_89_Params("R3411_CryptoPro");
+		m_buffer = 32;
+		m_sum = 32;
+		m_hash = 32;
+		m_count = 0;
+		m_position = 0;
 	}
 private:
 	/**
@@ -56,15 +56,15 @@ private:
 		{
 			for (ushort j = 0, carry = 0; j != 32; ++j)
 			{
-				ushort s = sum[j] + input[32*i+j] + carry;
+				ushort s = m_sum[j] + input[32*i+j] + carry;
 				carry = get_byte(0, s);
-				sum[j] = get_byte(1, s);
+				m_sum[j] = get_byte(1, s);
 			}
 			
 			ubyte[32] S;
 			
 			ulong[4] U, V;
-			load_be(U, &hash[0], 4);
+			load_be(U, &m_hash[0], 4);
 			load_be(V, input + 32*i, 4);
 			
 			for (size_t j = 0; j != 4; ++j)
@@ -76,8 +76,8 @@ private:
 					for (size_t l = 0; l != 8; ++l)
 						key[4*l+k] = get_byte(l, U[k]) ^ get_byte(l, V[k]);
 				
-				cipher.set_key(key, 32);
-				cipher.encrypt(&hash[8*j], S + 8*j);
+				m_cipher.set_key(key, 32);
+				m_cipher.encrypt(&m_hash[8*j], S + 8*j);
 				
 				if (j == 3)
 					break;
@@ -151,7 +151,7 @@ private:
 			S[30] = S2[0];
 			S[31] = S2[1];
 			
-			xor_buf(S, &hash[0], 32);
+			xor_buf(S, &m_hash[0], 32);
 			
 			// 61 rounds of psi
 			S2[ 0] = S[ 2] ^ S[ 6] ^ S[14] ^ S[20] ^ S[22] ^ S[26] ^ S[28] ^ S[30];
@@ -193,7 +193,7 @@ private:
 			S2[30] = S[ 2] ^ S[ 4] ^ S[ 8] ^ S[14] ^ S[16] ^ S[18] ^ S[22] ^ S[24] ^ S[28] ^ S[30];
 			S2[31] = S[ 3] ^ S[ 5] ^ S[ 9] ^ S[15] ^ S[17] ^ S[19] ^ S[23] ^ S[25] ^ S[29] ^ S[31];
 			
-			copy_mem(&hash[0], &S2[0], 32);
+			copy_mem(&m_hash[0], &S2[0], 32);
 		}
 	}
 
@@ -202,18 +202,18 @@ private:
 	*/
 	void add_data(in ubyte* input, size_t length)
 	{
-		count += length;
+		m_count += length;
 		
-		if (position)
+		if (m_position)
 		{
-			buffer_insert(buffer, position, input, length);
+			buffer_insert(m_buffer, m_position, input, length);
 			
-			if (position + length >= hash_block_size)
+			if (m_position + length >= hash_block_size)
 			{
-				compress_n(&buffer[0], 1);
-				input += (hash_block_size - position);
-				length -= (hash_block_size - position);
-				position = 0;
+				compress_n(&m_buffer[0], 1);
+				input += (hash_block_size - m_position);
+				length -= (hash_block_size - m_position);
+				m_position = 0;
 			}
 		}
 		
@@ -223,8 +223,8 @@ private:
 		if (full_blocks)
 			compress_n(input, full_blocks);
 		
-		buffer_insert(buffer, position, input + full_blocks * hash_block_size, remaining);
-		position += remaining;
+		buffer_insert(m_buffer, m_position, input + full_blocks * hash_block_size, remaining);
+		m_position += remaining;
 	}
 
 	/**
@@ -232,28 +232,28 @@ private:
 	*/
 	void final_result(ubyte* output)
 	{
-		if (position)
+		if (m_position)
 		{
-			clear_mem(&buffer[0] + position, buffer.length - position);
-			compress_n(&buffer[0], 1);
+			clear_mem(&m_buffer[0] + m_position, m_buffer.length - m_position);
+			compress_n(&m_buffer[0], 1);
 		}
 		
 		Secure_Vector!ubyte length_buf = Secure_Vector!ubyte(32);
-		const ulong bit_count = count * 8;
+		const ulong bit_count = m_count * 8;
 		store_le(bit_count, &length_buf[0]);
 		
-		Secure_Vector!ubyte sum_buf = sum;
+		Secure_Vector!ubyte sum_buf = m_sum;
 		
 		compress_n(&length_buf[0], 1);
 		compress_n(&sum_buf[0], 1);
 		
-		copy_mem(output, &hash[0], 32);
+		copy_mem(output, &m_hash[0], 32);
 		
 		clear();
 	}
 
-	GOST_28147_89 cipher;
-	Secure_Vector!ubyte buffer, sum, hash;
-	size_t position;
-	ulong count;
+	GOST_28147_89 m_cipher;
+	Secure_Vector!ubyte m_buffer, m_sum, m_hash;
+	size_t m_position;
+	ulong m_count;
 }

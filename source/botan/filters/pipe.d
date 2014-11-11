@@ -69,9 +69,9 @@ public:
 	*/
 	void write(in ubyte* input, size_t length)
 	{
-		if (!inside_msg)
+		if (!m_inside_msg)
 			throw new Invalid_State("Cannot write to a Pipe while it is not processing");
-		pipe_to.write(input, length);
+		m_pipe_to.write(input, length);
 	}
 
 	/**
@@ -196,7 +196,7 @@ public:
 	*/
 	size_t remaining(message_id msg = DEFAULT_MESSAGE) const
 	{
-		return outputs.remaining(get_message_no("remaining", msg));
+		return m_outputs.remaining(get_message_no("remaining", msg));
 	}
 
 	/**
@@ -224,7 +224,7 @@ public:
 	*/
 	size_t read(ubyte* output, size_t length, message_id msg)
 	{
-		return outputs.read(output, length, get_message_no("read", msg));
+		return m_outputs.read(output, length, get_message_no("read", msg));
 	}
 
 	/**
@@ -237,7 +237,7 @@ public:
 	*/
 	size_t read(ref ubyte[] output, message_id msg = DEFAULT_MESSAGE)
 	{
-		return outputs.read(output.ptr, output.length, get_message_no("read", msg));
+		return m_outputs.read(output.ptr, output.length, get_message_no("read", msg));
 	}
 
 	/**
@@ -303,7 +303,7 @@ public:
 	size_t peek(ubyte* output, size_t length,
 	            size_t offset, message_id msg = DEFAULT_MESSAGE) const
 	{
-		return outputs.peek(output, length, offset, get_message_no("peek", msg));
+		return m_outputs.peek(output, length, offset, get_message_no("peek", msg));
 	}
 
 	/** Read from the specified message but do not modify the
@@ -378,7 +378,7 @@ public:
 	*/
 	size_t get_bytes_read() const
 	{
-		return outputs.get_bytes_read(DEFAULT_MESSAGE);
+		return m_outputs.get_bytes_read(DEFAULT_MESSAGE);
 	}
 
 	/**
@@ -386,13 +386,13 @@ public:
 	*/
 	size_t get_bytes_read(message_id msg = DEFAULT_MESSAGE) const
 	{
-		return outputs.get_bytes_read(msg);
+		return m_outputs.get_bytes_read(msg);
 	}
 
 	/**
 	* @return currently set default message
 	*/
-	size_t default_msg() const { return default_read; }
+	size_t default_msg() const { return m_default_read; }
 
 	/**
 	* Set the default message
@@ -403,7 +403,7 @@ public:
 	{
 		if (msg >= message_count())
 			throw new Invalid_Argument("Pipe::set_default_msg: msg number is too high");
-		default_read = msg;
+		m_default_read = msg;
 	}
 
 	/**
@@ -412,7 +412,7 @@ public:
 	*/
 	message_id message_count() const
 	{
-		return outputs.message_count();
+		return m_outputs.message_count();
 	}
 
 
@@ -431,13 +431,13 @@ public:
 	*/
 	void start_msg()
 	{
-		if (inside_msg)
+		if (m_inside_msg)
 			throw new Invalid_State("Pipe::start_msg: Message was already started");
-		if (pipe_to == null)
-			pipe_to = new Null_Filter;
-		find_endpoints(pipe_to);
-		pipe_to.new_msg();
-		inside_msg = true;
+		if (m_pipe_to == null)
+			m_pipe_to = new Null_Filter;
+		find_endpoints(m_pipe_to);
+		m_pipe_to.new_msg();
+		m_inside_msg = true;
 	}
 
 	/**
@@ -445,18 +445,18 @@ public:
 	*/
 	void end_msg()
 	{
-		if (!inside_msg)
+		if (!m_inside_msg)
 			throw new Invalid_State("Pipe::end_msg: Message was already ended");
-		pipe_to.finish_msg();
-		clear_endpoints(pipe_to);
-		if (cast(Null_Filter)(pipe_to))
+		m_pipe_to.finish_msg();
+		clear_endpoints(m_pipe_to);
+		if (cast(Null_Filter)(m_pipe_to))
 		{
-			delete pipe_to;
-			pipe_to = null;
+			delete m_pipe_to;
+			m_pipe_to = null;
 		}
-		inside_msg = false;
+		m_inside_msg = false;
 		
-		outputs.retire();
+		m_outputs.retire();
 	}
 
 	/**
@@ -465,19 +465,19 @@ public:
 	*/
 	void prepend(Filter filter)
 	{
-		if (inside_msg)
+		if (m_inside_msg)
 			throw new Invalid_State("Cannot prepend to a Pipe while it is processing");
 		if (!filter)
 			return;
-		if (cast(SecureQueue)(filter))
-			throw new Invalid_Argument("Pipe::prepend: SecureQueue cannot be used");
+		if (cast(Secure_Queue)(filter))
+			throw new Invalid_Argument("Pipe::prepend: Secure_Queue cannot be used");
 		if (filter.owned)
 			throw new Invalid_Argument("Filters cannot be shared among multiple Pipes");
 		
 		filter.owned = true;
 		
-		if (pipe_to) filter.attach(pipe_to);
-		pipe_to = filter;
+		if (m_pipe_to) filter.attach(m_pipe_to);
+		m_pipe_to = filter;
 	}
 
 	/**
@@ -486,19 +486,19 @@ public:
 	*/
 	void append(Filter filter)
 	{
-		if (inside_msg)
+		if (m_inside_msg)
 			throw new Invalid_State("Cannot append to a Pipe while it is processing");
 		if (!filter)
 			return;
-		if (cast(SecureQueue)(filter))
-			throw new Invalid_Argument("Pipe::append: SecureQueue cannot be used");
+		if (cast(Secure_Queue)(filter))
+			throw new Invalid_Argument("Pipe::append: Secure_Queue cannot be used");
 		if (filter.owned)
 			throw new Invalid_Argument("Filters cannot be shared among multiple Pipes");
 		
 		filter.owned = true;
 		
-		if (!pipe_to) pipe_to = filter;
-		else		pipe_to.attach(filter);
+		if (!m_pipe_to) m_pipe_to = filter;
+		else		m_pipe_to.attach(filter);
 	}
 
 
@@ -507,24 +507,24 @@ public:
 	*/
 	void pop()
 	{
-		if (inside_msg)
+		if (m_inside_msg)
 			throw new Invalid_State("Cannot pop off a Pipe while it is processing");
 		
-		if (!pipe_to)
+		if (!m_pipe_to)
 			return;
 		
-		if (pipe_to.total_ports() > 1)
+		if (m_pipe_to.total_ports() > 1)
 			throw new Invalid_State("Cannot pop off a Filter with multiple ports");
 		
-		Filter f = pipe_to;
+		Filter f = m_pipe_to;
 		size_t owns = f.owns();
-		pipe_to = pipe_to.next[0];
+		m_pipe_to = m_pipe_to.next[0];
 		delete f;
 		
 		while(owns--)
 		{
-			f = pipe_to;
-			pipe_to = pipe_to.next[0];
+			f = m_pipe_to;
+			m_pipe_to = m_pipe_to.next[0];
 			delete f;
 		}
 	}
@@ -535,9 +535,9 @@ public:
 	*/
 	void reset()
 	{
-		destruct(pipe_to);
-		pipe_to = null;
-		inside_msg = false;
+		destruct(m_pipe_to);
+		m_pipe_to = null;
+		m_inside_msg = false;
 	}
 
 
@@ -569,8 +569,8 @@ public:
 
 	~this()
 	{
-		destruct(pipe_to);
-		delete outputs;
+		destruct(m_pipe_to);
+		delete m_outputs;
 	}
 private:
 	/*
@@ -578,9 +578,9 @@ private:
 	*/
 	void init()
 	{
-		pipe_to = null;
-		default_read = 0;
-		inside_msg = false;
+		m_pipe_to = null;
+		m_default_read = 0;
+		m_inside_msg = false;
 	}
 
 	/*
@@ -588,7 +588,7 @@ private:
 	*/
 	void destruct(Filter to_kill)
 	{
-		if (!to_kill || cast(SecureQueue)(to_kill))
+		if (!to_kill || cast(Secure_Queue)(to_kill))
 			return;
 		for (size_t j = 0; j != to_kill.total_ports(); ++j)
 			destruct(to_kill.next[j]);
@@ -601,13 +601,13 @@ private:
 	void find_endpoints(Filter f)
 	{
 		for (size_t j = 0; j != f.total_ports(); ++j)
-			if (f.next[j] && !cast(SecureQueue)(f.next[j]))
+			if (f.next[j] && !cast(Secure_Queue)(f.next[j]))
 				find_endpoints(f.next[j]);
 			else
 		{
-			SecureQueue q = new SecureQueue;
+			Secure_Queue q = new Secure_Queue;
 			f.next[j] = q;
-			outputs.add(q);
+			m_outputs.add(q);
 		}
 	}
 
@@ -619,7 +619,7 @@ private:
 		if (!f) return;
 		for (size_t j = 0; j != f.total_ports(); ++j)
 		{
-			if (f.next[j] && cast(SecureQueue)(f.next[j]))
+			if (f.next[j] && cast(Secure_Queue)(f.next[j]))
 				f.next[j] = null;
 			clear_endpoints(f.next[j]);
 		}
@@ -642,10 +642,10 @@ private:
 		return msg;
 	}
 
-	Filter pipe_to;
-	Output_Buffers outputs;
-	message_id default_read;
-	bool inside_msg;
+	Filter m_pipe_to;
+	Output_Buffers m_outputs;
+	message_id m_default_read;
+	bool m_inside_msg;
 }
 
 /*

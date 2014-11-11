@@ -320,7 +320,7 @@ final class CTS_Decryption : CBC_Decryption
 public:
 	this(BlockCipher cipher)
 	{
-		super(cipher, null)
+		super(cipher, null);
 	}
 
 	override void finish(Secure_Vector!ubyte buffer, size_t offset = 0)

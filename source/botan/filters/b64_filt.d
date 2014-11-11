@@ -27,22 +27,22 @@ public:
 	*/
 	void write(in ubyte* input, size_t length)
 	{
-		buffer_insert(input, position, input, length);
-		if (position + length >= input.length)
+		buffer_insert(m_input, m_position, input, length);
+		if (m_position + length >= m_input.length)
 		{
-			encode_and_send(&input[0], input.length);
-			input += (input.length - position);
-			length -= (input.length - position);
-			while(length >= input.length)
+			encode_and_send(&m_input[0], m_input.length);
+			input += (m_input.length - m_position);
+			length -= (m_input.length - m_position);
+			while(length >= m_input.length)
 			{
-				encode_and_send(input, input.length);
-				input += input.length;
-				length -= input.length;
+				encode_and_send(input, m_input.length);
+				input += m_input.length;
+				length -= m_input.length;
 			}
-			copy_mem(&input[0], input, length);
-			position = 0;
+			copy_mem(&m_input[0], input, length);
+			m_position = 0;
 		}
-		position += length;
+		m_position += length;
 	}
 
 
@@ -51,12 +51,12 @@ public:
 	*/
 	void end_msg()
 	{
-		encode_and_send(&input[0], position, true);
+		encode_and_send(&m_input[0], m_position, true);
 		
-		if (trailing_newline || (out_position && line_length))
+		if (m_trailing_newline || (m_out_position && m_line_length))
 			send('\n');
 		
-		out_position = position = 0;
+		m_out_position = m_position = 0;
 	}
 
 	/**
@@ -67,12 +67,12 @@ public:
 	*/
 	this(bool breaks = false, size_t length = 72, bool t_n = false) 
 	{
-		line_length = breaks ? length : 0;
-		trailing_newline = t_n && breaks;
-		input = 48;
-		output = 64;
-		position = 0;
-		out_position = 0;
+		m_line_length = breaks ? length : 0;
+		m_trailing_newline = t_n && breaks;
+		m_input = 48;
+		m_output = 64;
+		m_position = 0;
+		m_out_position = 0;
 	}
 
 private:
@@ -87,10 +87,10 @@ private:
 			const size_t proc = std.algorithm.min(length, input.length);
 			
 			size_t consumed = 0;
-			size_t produced = base64_encode(cast(char*)(&output[0]), input,
+			size_t produced = base64_encode(cast(char*)(&m_output[0]), input,
 			                                proc, consumed, final_inputs);
 			
-			do_output(&output[0], produced);
+			do_output(&m_output[0], produced);
 			
 			// FIXME: s/proc/consumed/?
 			input += proc;
@@ -103,32 +103,32 @@ private:
 	*/
 	void do_output(in ubyte* input, size_t length)
 	{
-		if (line_length == 0)
+		if (m_line_length == 0)
 			send(input, length);
 		else
 		{
 			size_t remaining = length, offset = 0;
 			while(remaining)
 			{
-				size_t sent = std.algorithm.min(line_length - out_position, remaining);
+				size_t sent = std.algorithm.min(m_line_length - m_out_position, remaining);
 				send(input + offset, sent);
-				out_position += sent;
+				m_out_position += sent;
 				remaining -= sent;
 				offset += sent;
-				if (out_position == line_length)
+				if (m_out_position == m_line_length)
 				{
 					send('\n');
-					out_position = 0;
+					m_out_position = 0;
 				}
 			}
 		}
 	}
 
 
-	const size_t line_length;
-	const bool trailing_newline;
-	Vector!ubyte input, output;
-	size_t position, out_position;
+	const size_t m_line_length;
+	const bool m_trailing_newline;
+	Vector!ubyte m_input, m_output;
+	size_t m_position, m_out_position;
 }
 
 /**
@@ -148,27 +148,27 @@ public:
 	{
 		while(length)
 		{
-			size_t to_copy = std.algorithm.min(length, input.length - position);
-			copy_mem(&input[position], input, to_copy);
-			position += to_copy;
+			size_t to_copy = std.algorithm.min(length, m_input.length - m_position);
+			copy_mem(&m_input[m_position], input, to_copy);
+			m_position += to_copy;
 			
 			size_t consumed = 0;
-			size_t written = base64_decode(&output[0],
-			cast(string)(input[0]),
-			position,
-			consumed,
-			false,
-			checking != FULL_CHECK);
+			size_t written = base64_decode(&m_output[0],
+								cast(string)(m_input[0]),
+								m_position,
+								consumed,
+								false,
+								m_checking != FULL_CHECK);
 			
-			send(output, written);
+			send(m_output, written);
 			
-			if (consumed != position)
+			if (consumed != m_position)
 			{
-				copy_mem(&input[0], &input[consumed], position - consumed);
-				position = position - consumed;
+				copy_mem(&m_input[0], &m_input[consumed], m_position - consumed);
+				m_position = m_position - consumed;
 			}
 			else
-				position = 0;
+				m_position = 0;
 			
 			length -= to_copy;
 			input += to_copy;
@@ -181,18 +181,18 @@ public:
 	void end_msg()
 	{
 		size_t consumed = 0;
-		size_t written = base64_decode(&output[0],
-		cast(string)(input[0]),
-		position,
-		consumed,
-		true,
-		checking != FULL_CHECK);
+		size_t written = base64_decode(&m_output[0],
+										cast(string)(m_input[0]),
+										m_position,
+										consumed,
+										true,
+										m_checking != FULL_CHECK);
 		
-		send(output, written);
+		send(m_output, written);
 		
-		const bool not_full_bytes = consumed != position;
+		const bool not_full_bytes = consumed != m_position;
 		
-		position = 0;
+		m_position = 0;
 		
 		if (not_full_bytes)
 			throw new Invalid_Argument("Base64_Decoder: Input not full bytes");
@@ -205,14 +205,14 @@ public:
 	*/
 	this(Decoder_Checking c = NONE)
 	{
-		checking = c;
-		input = 64;
-		output = 48;
-		position = 0;
+		m_checking = c;
+		m_input = 64;
+		m_output = 48;
+		m_position = 0;
 	}
 
 private:
-	const Decoder_Checking checking;
-	Vector!ubyte input, output;
-	size_t position;
+	const Decoder_Checking m_checking;
+	Vector!ubyte m_input, m_output;
+	size_t m_position;
 }

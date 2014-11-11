@@ -28,15 +28,15 @@ public:
 	*/
 	void write(in ubyte* input, size_t length)
 	{
-		zlib.stream.next_in = cast(ubyte*)input;
-		zlib.stream.avail_in = length;
+		m_zlib.m_stream.next_in = cast(ubyte*)input;
+		m_zlib.m_stream.avail_in = length;
 		
-		while(zlib.stream.avail_in != 0)
+		while(m_zlib.m_stream.avail_in != 0)
 		{
-			zlib.stream.next_out = cast(ubyte*)(&buffer[0]);
-			zlib.stream.avail_out = buffer.length;
-			deflate(&(zlib.stream), Z_NO_FLUSH);
-			send(&buffer[0], buffer.length - zlib.stream.avail_out);
+			m_zlib.m_stream.next_out = cast(ubyte*)(&m_buffer[0]);
+			m_zlib.m_stream.avail_out = m_buffer.length;
+			deflate(&(m_zlib.m_stream), Z_NO_FLUSH);
+			send(&m_buffer[0], m_buffer.length - m_zlib.m_stream.avail_out);
 		}
 	}
 
@@ -46,12 +46,12 @@ public:
 	void start_msg()
 	{
 		clear();
-		zlib = new Zlib_Stream;
+		m_zlib = new Zlib_Stream;
 		
-		int res = deflateInit2(&(zlib.stream),
-		                       level,
+		int res = deflateInit2(&(m_zlib.m_stream),
+		                       m_level,
 		                       Z_DEFLATED,
-		                       (raw_deflate ? -15 : 15),
+		                       (m_raw_deflate ? -15 : 15),
 		                       8,
 		                       Z_DEFAULT_STRATEGY);
 		
@@ -66,17 +66,17 @@ public:
 	*/
 	void end_msg()
 	{
-		zlib.stream.next_in = 0;
-		zlib.stream.avail_in = 0;
+		m_zlib.m_stream.next_in = 0;
+		m_zlib.m_stream.avail_in = 0;
 		
 		int rc = Z_OK;
 		while(rc != Z_STREAM_END)
 		{
-			zlib.stream.next_out = cast(ubyte*)(&buffer[0]);
-			zlib.stream.avail_out = buffer.length;
+			m_zlib.m_stream.next_out = cast(ubyte*)(&m_buffer[0]);
+			m_zlib.m_stream.avail_out = m_buffer.length;
 			
-			rc = deflate(&(zlib.stream), Z_FINISH);
-			send(&buffer[0], buffer.length - zlib.stream.avail_out);
+			rc = deflate(&(m_zlib.m_stream), Z_FINISH);
+			send(&m_buffer[0], m_buffer.length - m_zlib.m_stream.avail_out);
 		}
 		
 		clear();
@@ -87,35 +87,35 @@ public:
 	*/
 	void flush()
 	{
-		zlib.stream.next_in = 0;
-		zlib.stream.avail_in = 0;
+		m_zlib.m_stream.next_in = 0;
+		m_zlib.m_stream.avail_in = 0;
 		
 		while(true)
 		{
-			zlib.stream.avail_out = buffer.length;
-			zlib.stream.next_out = cast(ubyte*)(&buffer[0]);
+			m_zlib.m_stream.avail_out = m_buffer.length;
+			m_zlib.m_stream.next_out = cast(ubyte*)(&m_buffer[0]);
 			
-			deflate(&(zlib.stream), Z_FULL_FLUSH);
-			send(&buffer[0], buffer.length - zlib.stream.avail_out);
+			deflate(&(m_zlib.m_stream), Z_FULL_FLUSH);
+			send(&m_buffer[0], m_buffer.length - m_zlib.m_stream.avail_out);
 			
-			if (zlib.stream.avail_out == buffer.length)
+			if (m_zlib.m_stream.avail_out == m_buffer.length)
 				break;
 		}
 	}
 
 	/**
-	* @param _level how much effort to use on compressing (0 to 9);
+	* @param level how much effort to use on compressing (0 to 9);
 	*		  higher levels are slower but tend to give better
 	*		  compression
-	* @param _raw_deflate if true no zlib header/trailer will be used
+	* @param raw_deflate if true no m_zlib header/trailer will be used
 	*/
-	this(size_t _level = 6, bool _raw_deflate = false)
+	this(size_t level = 6, bool raw_deflate = false)
 	{
 		
-		level = (_level >= 9) ? 9 : _level;
-		raw_deflate = _raw_deflate;
-		buffer = DEFAULT_BUFFERSIZE;
-		zlib = 0;
+		m_level = (level >= 9) ? 9 : level;
+		m_raw_deflate = raw_deflate;
+		m_buffer = DEFAULT_BUFFERSIZE;
+		m_zlib = 0;
 	}
 
 	~this() { clear(); }
@@ -125,21 +125,21 @@ private:
 	*/
 	void clear()
 	{
-		zeroise(buffer);
+		zeroise(m_buffer);
 		
-		if (zlib)
+		if (m_zlib)
 		{
-			deflateEnd(&(zlib.stream));
-			delete zlib;
-			zlib = 0;
+			deflateEnd(&(m_zlib.m_stream));
+			delete m_zlib;
+			m_zlib = 0;
 		}
 	}
 
-	const size_t level;
-	const bool raw_deflate;
+	const size_t m_level;
+	const bool m_raw_deflate;
 
-	Secure_Vector!ubyte buffer;
-	Zlib_Stream* zlib;
+	Secure_Vector!ubyte m_buffer;
+	Zlib_Stream m_zlib;
 }
 
 /**
@@ -155,20 +155,20 @@ public:
 	*/
 	void write(in ubyte* input_arr, size_t length)
 	{
-		if (length) no_writes = false;
+		if (length) m_no_writes = false;
 		
-		// non-const needed by zlib api :(
+		// non-const needed by m_zlib api :(
 		ubyte* input = cast(ubyte*)(input_arr);
 		
-		zlib.stream.next_in = input;
-		zlib.stream.avail_in = length;
+		m_zlib.m_stream.next_in = input;
+		m_zlib.m_stream.avail_in = length;
 		
-		while(zlib.stream.avail_in != 0)
+		while(m_zlib.m_stream.avail_in != 0)
 		{
-			zlib.stream.next_out = cast(ubyte*)(&buffer[0]);
-			zlib.stream.avail_out = buffer.length;
+			m_zlib.m_stream.next_out = cast(ubyte*)(&m_buffer[0]);
+			m_zlib.m_stream.avail_out = m_buffer.length;
 			
-			int rc = inflate(&(zlib.stream), Z_SYNC_FLUSH);
+			int rc = inflate(&(m_zlib.m_stream), Z_SYNC_FLUSH);
 			
 			if (rc != Z_OK && rc != Z_STREAM_END)
 			{
@@ -183,15 +183,15 @@ public:
 					throw new Exception("Zlib decompression: Unknown error");
 			}
 			
-			send(&buffer[0], buffer.length - zlib.stream.avail_out);
+			send(&m_buffer[0], m_buffer.length - m_zlib.m_stream.avail_out);
 			
 			if (rc == Z_STREAM_END)
 			{
-				size_t read_from_block = length - zlib.stream.avail_in;
+				size_t read_from_block = length - m_zlib.m_stream.avail_in;
 				start_msg();
 				
-				zlib.stream.next_in = input + read_from_block;
-				zlib.stream.avail_in = length - read_from_block;
+				m_zlib.m_stream.next_in = input + read_from_block;
+				m_zlib.m_stream.avail_in = length - read_from_block;
 				
 				input += read_from_block;
 				length -= read_from_block;
@@ -205,9 +205,9 @@ public:
 	void start_msg()
 	{
 		clear();
-		zlib = new Zlib_Stream;
+		m_zlib = new Zlib_Stream;
 		
-		if (inflateInit2(&(zlib.stream), (raw_deflate ? -15 : 15)) != Z_OK)
+		if (inflateInit2(&(m_zlib.m_stream), (m_raw_deflate ? -15 : 15)) != Z_OK)
 			throw new Memory_Exhaustion();
 	}
 
@@ -216,17 +216,17 @@ public:
 	*/
 	void end_msg()
 	{
-		if (no_writes) return;
-		zlib.stream.next_in = 0;
-		zlib.stream.avail_in = 0;
+		if (m_no_writes) return;
+		m_zlib.m_stream.next_in = 0;
+		m_zlib.m_stream.avail_in = 0;
 		
 		int rc = Z_OK;
 		
 		while(rc != Z_STREAM_END)
 		{
-			zlib.stream.next_out = cast(ubyte*)(&buffer[0]);
-			zlib.stream.avail_out = buffer.length;
-			rc = inflate(&(zlib.stream), Z_SYNC_FLUSH);
+			m_zlib.m_stream.next_out = cast(ubyte*)(&m_buffer[0]);
+			m_zlib.m_stream.avail_out = m_buffer.length;
+			rc = inflate(&(m_zlib.m_stream), Z_SYNC_FLUSH);
 			
 			if (rc != Z_OK && rc != Z_STREAM_END)
 			{
@@ -234,7 +234,7 @@ public:
 				throw new Decoding_Error("Zlib_Decompression: Error finalizing");
 			}
 			
-			send(&buffer[0], buffer.length - zlib.stream.avail_out);
+			send(&m_buffer[0], m_buffer.length - m_zlib.m_stream.avail_out);
 		}
 		
 		clear();
@@ -246,21 +246,37 @@ public:
 	*/
 	this(bool _raw_deflate = false)
 	{
-		raw_deflate = _raw_deflate;
-		buffer = DEFAULT_BUFFERSIZE;
-		zlib = 0;
-		no_writes = true;
+		m_raw_deflate = _raw_deflate;
+		m_buffer = DEFAULT_BUFFERSIZE;
+		m_zlib = null;
+		m_no_writes = true;
 	}
 
 	~this() { clear(); }
 private:
-	void clear();
 
-	const bool raw_deflate;
+	/*
+	* Clean up Decompression Context
+	*/
+	void clear()
+	{
+		zeroise(m_buffer);
+		
+		m_no_writes = true;
+		
+		if (m_zlib)
+		{
+			inflateEnd(&(m_zlib.m_stream));
+			delete m_zlib;
+			m_zlib = null;
+		}
+	}
 
-	Secure_Vector!ubyte buffer;
-	Zlib_Stream* zlib;
-	bool no_writes;
+	const bool m_raw_deflate;
+
+	Secure_Vector!ubyte m_buffer;
+	Zlib_Stream m_zlib;
+	bool m_no_writes;
 }
 
 
@@ -308,19 +324,19 @@ class Zlib_Stream
 {
 public:
 	/**
-	* Underlying stream
+	* Underlying m_stream
 	*/
-	z_stream stream;
+	z_stream* m_stream;
 	
 	/**
 	* Constructor
 	*/
 	this()
 	{
-		memset(&stream, 0, (z_stream).sizeof);
-		stream.zalloc = zlib_malloc;
-		stream.zfree = zlib_free;
-		stream.opaque = new Zlib_Alloc_Info;
+		memset(&m_stream, 0, (z_stream).sizeof);
+		m_stream.zalloc = zlib_malloc;
+		m_stream.zfree = zlib_free;
+		m_stream.opaque = new Zlib_Alloc_Info;
 	}
 	
 	/**
@@ -328,32 +344,8 @@ public:
 	*/
 	~this()
 	{
-		Zlib_Alloc_Info* info = cast(Zlib_Alloc_Info*)(stream.opaque);
+		Zlib_Alloc_Info* info = cast(Zlib_Alloc_Info*)(m_stream.opaque);
 		delete info;
-		memset(&stream, 0, (z_stream).sizeof);
+		memset(m_stream, 0, (z_stream).sizeof);
 	}
-}
-
-
-
-
-
-
-/*
-* Clean up Decompression Context
-*/
-void clear()
-{
-	zeroise(buffer);
-	
-	no_writes = true;
-	
-	if (zlib)
-	{
-		inflateEnd(&(zlib.stream));
-		delete zlib;
-		zlib = 0;
-	}
-}
-
 }

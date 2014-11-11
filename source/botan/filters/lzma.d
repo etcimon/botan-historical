@@ -28,22 +28,22 @@ public:
 	*/
 	void write(in ubyte* input, size_t length)
 	{
-		lzma.stream.next_in = cast(const uint8_t*)(input);
-		lzma.stream.avail_in = length;
+		m_lzma.m_stream.next_in = cast(const ubyte*)(input);
+		m_lzma.m_stream.avail_in = length;
 		
-		while(lzma.stream.avail_in != 0)
+		while(m_lzma.m_stream.avail_in != 0)
 		{
-			lzma.stream.next_out = cast(uint8_t*)(&buffer[0]);
-			lzma.stream.avail_out = buffer.length;
+			m_lzma.m_stream.next_out = cast(ubyte*)(&m_buffer[0]);
+			m_lzma.m_stream.avail_out = m_buffer.length;
 			
-			lzma_ret ret = lzma_code(&(lzma.stream), LZMA_RUN);
+			lzma_ret ret = lzma_code(&(m_lzma.m_stream), LZMA_RUN);
 			
 			if (ret == LZMA_MEM_ERROR)
 				throw new Memory_Exhaustion();
 			else if (ret != LZMA_OK)
 				throw new Exception("Lzma compression: Error writing");
 			
-			send(&buffer[0], buffer.length - lzma.stream.avail_out);
+			send(&m_buffer[0], m_buffer.length - m_lzma.m_stream.avail_out);
 		}
 	}
 
@@ -53,9 +53,9 @@ public:
 	void start_msg()
 	{
 		clear();
-		lzma = new Lzma_Stream;
+		m_lzma = new Lzma_Stream;
 		
-		lzma_ret ret = lzma_easy_encoder(&(lzma.stream), level, LZMA_CHECK_CRC64);
+		lzma_ret ret = lzma_easy_encoder(&(m_lzma.m_stream), m_level, LZMA_CHECK_CRC64);
 		
 		if (ret == LZMA_MEM_ERROR)
 			throw new Memory_Exhaustion();
@@ -68,17 +68,17 @@ public:
 	*/
 	void end_msg()
 	{
-		lzma.stream.next_in = 0;
-		lzma.stream.avail_in = 0;
+		m_lzma.m_stream.next_in = 0;
+		m_lzma.m_stream.avail_in = 0;
 		
 		int ret = LZMA_OK;
 		while(ret != LZMA_STREAM_END)
 		{
-			lzma.stream.next_out = cast(uint8_t*)(&buffer[0]);
-			lzma.stream.avail_out = buffer.length;
+			m_lzma.m_stream.next_out = cast(ubyte*)(&m_buffer[0]);
+			m_lzma.m_stream.avail_out = m_buffer.length;
 			
-			ret = lzma_code(&(lzma.stream), LZMA_FINISH);
-			send(&buffer[0], buffer.length - lzma.stream.avail_out);
+			ret = lzma_code(&(m_lzma.m_stream), LZMA_FINISH);
+			send(&m_buffer[0], m_buffer.length - m_lzma.m_stream.avail_out);
 		}
 		
 		clear();
@@ -89,24 +89,24 @@ public:
 	*/
 	void flush()
 	{
-		lzma.stream.next_in = 0;
-		lzma.stream.avail_in = 0;
+		m_lzma.m_stream.next_in = 0;
+		m_lzma.m_stream.avail_in = 0;
 		
 		while(true)
 		{
-			lzma.stream.next_out = cast(uint8_t*)(&buffer[0]);
-			lzma.stream.avail_out = buffer.length;
+			m_lzma.m_stream.next_out = cast(ubyte*)(&m_buffer[0]);
+			m_lzma.m_stream.avail_out = m_buffer.length;
 			
-			lzma_ret ret = lzma_code(&(lzma.stream), LZMA_FULL_FLUSH);
+			lzma_ret ret = lzma_code(&(m_lzma.m_stream), LZMA_FULL_FLUSH);
 			
 			if (ret == LZMA_MEM_ERROR)
 				throw new Memory_Exhaustion();
 			else if (ret != LZMA_OK && ret != LZMA_STREAM_END)
 				throw new Exception("Lzma compression: Error flushing");
 			
-			send(&buffer[0], buffer.length - lzma.stream.avail_out);
+			send(&m_buffer[0], m_buffer.length - m_lzma.m_stream.avail_out);
 			
-			if (lzma.stream.avail_out == buffer.length)
+			if (m_lzma.m_stream.avail_out == m_buffer.length)
 				break;
 		}
 	}
@@ -118,28 +118,28 @@ public:
 	*/
 	this(size_t l = 6)
 	{
-		level = (l >= 9) ? 9 : l;
-		buffer = DEFAULT_BUFFERSIZE;
-		lzma = 0;
+		m_level = (l >= 9) ? 9 : l;
+		m_buffer = DEFAULT_BUFFERSIZE;
+		m_lzma = null;
 	}
 
 	~this() { clear(); }
 private:
 	void clear()
 	{
-		zeroise(buffer);
+		zeroise(m_buffer);
 		
-		if (lzma)
+		if (m_lzma)
 		{
-			lzma_end(&(lzma.stream));
-			delete lzma;
-			lzma = 0;
+			lzma_end(&(m_lzma.m_stream));
+			delete m_lzma;
+			m_lzma = null;
 		}
 	}
-	const size_t level;
+	const size_t m_level;
 
-	Secure_Vector!ubyte buffer;
-	Lzma_Stream* lzma;
+	Secure_Vector!ubyte m_buffer;
+	Lzma_Stream* m_lzma;
 }
 
 /**
@@ -155,19 +155,19 @@ public:
 	*/
 	void write(in ubyte* input_arr, size_t length)
 	{
-		if (length) no_writes = false;
+		if (length) m_no_writes = false;
 		
-		const uint8_t* input = cast(const uint8_t*)(input_arr);
+		const ubyte* input = cast(const ubyte*)(input_arr);
 		
-		lzma.stream.next_in = input;
-		lzma.stream.avail_in = length;
+		m_lzma.m_stream.next_in = input;
+		m_lzma.m_stream.avail_in = length;
 		
-		while(lzma.stream.avail_in != 0)
+		while(m_lzma.m_stream.avail_in != 0)
 		{
-			lzma.stream.next_out = cast(uint8_t*)(&buffer[0]);
-			lzma.stream.avail_out = buffer.length;
+			m_lzma.m_stream.next_out = cast(ubyte*)(&m_buffer[0]);
+			m_lzma.m_stream.avail_out = m_buffer.length;
 			
-			lzma_ret ret = lzma_code(&(lzma.stream), LZMA_RUN);
+			lzma_ret ret = lzma_code(&(m_lzma.m_stream), LZMA_RUN);
 			
 			if (ret != LZMA_OK && ret != LZMA_STREAM_END)
 			{
@@ -180,15 +180,15 @@ public:
 					throw new Exception("Lzma decompression: Unknown error");
 			}
 			
-			send(&buffer[0], buffer.length - lzma.stream.avail_out);
+			send(&m_buffer[0], m_buffer.length - lzma.m_stream.avail_out);
 			
 			if (ret == LZMA_STREAM_END)
 			{
-				size_t read_from_block = length - lzma.stream.avail_in;
+				size_t read_from_block = length - m_lzma.m_stream.avail_in;
 				start_msg();
 				
-				lzma.stream.next_in = input + read_from_block;
-				lzma.stream.avail_in = length - read_from_block;
+				m_lzma.m_stream.next_in = input + read_from_block;
+				m_lzma.m_stream.avail_in = length - read_from_block;
 				
 				input += read_from_block;
 				length -= read_from_block;
@@ -202,9 +202,9 @@ public:
 	void start_msg()
 	{
 		clear();
-		lzma = new Lzma_Stream;
+		m_lzma = new Lzma_Stream;
 		
-		lzma_ret ret = lzma_stream_decoder(&(lzma.stream), UINT64_MAX, LZMA_TELL_UNSUPPORTED_CHECK | LZMA_CONCATENATED);
+		lzma_ret ret = lzma_stream_decoder(&(m_lzma.m_stream), UINT64_MAX, LZMA_TELL_UNSUPPORTED_CHECK | LZMA_CONCATENATED);
 		
 		if (ret == LZMA_MEM_ERROR)
 			throw new Memory_Exhaustion();
@@ -217,17 +217,17 @@ public:
 	*/
 	void end_msg()
 	{
-		if (no_writes) return;
-		lzma.stream.next_in = 0;
-		lzma.stream.avail_in = 0;
+		if (m_no_writes) return;
+		m_lzma.m_stream.next_in = 0;
+		m_lzma.m_stream.avail_in = 0;
 		
 		int ret = LZMA_OK;
 		
 		while(ret != LZMA_STREAM_END)
 		{
-			lzma.stream.next_out = cast(uint8_t*)(&buffer[0]);
-			lzma.stream.avail_out = buffer.length;
-			ret = lzma_code(&(lzma.stream), LZMA_FINISH);
+			m_lzma.m_stream.next_out = cast(ubyte*)(&m_buffer[0]);
+			m_lzma.m_stream.avail_out = m_buffer.length;
+			ret = lzma_code(&(m_lzma.m_stream), LZMA_FINISH);
 			
 			if (ret != LZMA_OK && ret != LZMA_STREAM_END)
 			{
@@ -235,7 +235,7 @@ public:
 				throw new Decoding_Error("Lzma_Decompression: Error finalizing");
 			}
 			
-			send(&buffer[0], buffer.length - lzma.stream.avail_out);
+			send(&m_buffer[0], m_buffer.length - m_lzma.m_stream.avail_out);
 		}
 		
 		clear();
@@ -244,9 +244,9 @@ public:
 
 	this()
 	{
-		buffer = DEFAULT_BUFFERSIZE;
-		lzma = 0;
-		no_writes = true;
+		m_buffer = DEFAULT_BUFFERSIZE;
+		m_lzma = null;
+		m_no_writes = true;
 	}
 
 	~this() { clear(); }
@@ -256,21 +256,21 @@ private:
 	*/
 	void clear()
 	{
-		zeroise(buffer);
+		zeroise(m_buffer);
 		
-		no_writes = true;
+		m_no_writes = true;
 		
-		if (lzma)
+		if (m_lzma)
 		{
-			lzma_end(&(lzma.stream));
-			delete lzma;
-			lzma = 0;
+			lzma_end(&(m_lzma.m_stream));
+			delete m_lzma;
+			m_lzma = null;
 		}
 	}
 
-	Secure_Vector!ubyte buffer;
-	Lzma_Stream* lzma;
-	bool no_writes;
+	Secure_Vector!ubyte m_buffer;
+	Lzma_Stream m_lzma;
+	bool m_no_writes;
 }
 
 /*
@@ -290,20 +290,20 @@ class Lzma_Stream
 {
 public:
 	/**
-	* Underlying stream
+	* Underlying m_stream
 	*/
-	lzma_stream stream;
-	
+	lzma_stream* m_stream;
+
 	/**
 	* Constructor
 	*/
 	this()
 	{
-		stream = LZMA_STREAM_INIT;
-		stream.allocator = new lzma_allocator;
-		stream.allocator.alloc = lzma_malloc;
-		stream.allocator.free = lzma_free;
-		stream.allocator.opaque = new Lzma_Alloc_Info;
+		m_stream = LZMA_STREAM_INIT;
+		m_stream.allocator = new lzma_allocator;
+		m_stream.allocator.alloc = lzma_malloc;
+		m_stream.allocator.free = lzma_free;
+		m_stream.allocator.opaque = new Lzma_Alloc_Info;
 	}
 	
 	/**
@@ -311,10 +311,10 @@ public:
 	*/
 	~this()
 	{
-		Lzma_Alloc_Info* info = cast(Lzma_Alloc_Info*)(stream.allocator.opaque);
+		Lzma_Alloc_Info* info = cast(Lzma_Alloc_Info*)(m_stream.allocator.opaque);
 		delete info;
-		delete stream.allocator;
-		memset(&stream, 0, (lzma_stream).sizeof);
+		delete m_stream.allocator;
+		memset(m_stream, 0, (lzma_stream).sizeof);
 	}
 }
 
@@ -641,7 +641,7 @@ struct lzma_index_iter
 		lzma_vli reserved_vli3;
 		lzma_vli reserved_vli4;
 	}
-	StreamStruct stream;
+	StreamStruct m_stream;
 	struct BlockStruct
 	{
 		

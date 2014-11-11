@@ -10,6 +10,7 @@ import botan.pk_pad.emsa;
 import botan.pk_pad.eme;
 import botan.libstate.libstate;
 import botan.algo_base.scan_name;
+import botan.utils.exceptn;
 
 static if (BOTAN_HAS_EMSA1)  		import botan.pk_pad.emsa1;
 static if (BOTAN_HAS_EMSA1_BSI)  	import botan.pk_pad.emsa1_bsi;
@@ -20,8 +21,11 @@ static if (BOTAN_HAS_EMSA_RAW)  	import botan.pk_pad.emsa_raw;
 static if (BOTAN_HAS_EME_OAEP)  	import botan.pk_pad.oaep;
 static if (BOTAN_HAS_EME_PKCS1v15)  import botan.pk_pad.eme_pkcs;
 
-/*
-* Get an EMSA by name
+/**
+* Factory method for EMSA (message-encoding methods for signatures
+* with appendix) objects
+* @param algo_spec the name of the EME to create
+* @return pointer to newly allocated object of that type
 */
 EMSA get_emsa(in string algo_spec)
 {
@@ -84,8 +88,10 @@ EMSA get_emsa(in string algo_spec)
 	throw new Algorithm_Not_Found(algo_spec);
 }
 
-/*
-* Get an EME by name
+/**
+* Factory method for EME (message-encoding methods for encryption) objects
+* @param algo_spec the name of the EME to create
+* @return pointer to newly allocated object of that type
 */
 EME get_eme(in string algo_spec)
 {

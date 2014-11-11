@@ -8,6 +8,8 @@ module botan.filters.pk_filts;
 
 import botan.filters.filter;
 import botan.pubkey.pubkey;
+import botan.rng.rng;
+
 /**
 * PK_Encryptor Filter
 */
@@ -19,29 +21,29 @@ public:
 	*/
 	void write(in ubyte* input, size_t length)
 	{
-		buffer ~= Pair(input, length);
+		m_buffer ~= Pair(input, length);
 	}
 	/*
 	* Encrypt the message
 	*/
 	void end_msg()
 	{
-		send(cipher.encrypt(buffer, rng));
-		buffer.clear();
+		send(m_cipher.encrypt(buffer, m_rng));
+		m_buffer.clear();
 	}
 
-	this(	PK_Encryptor* c,
+	this(	PK_Encryptor c,
 			RandomNumberGenerator rng_ref) 
 	{
-		cipher = c;
-		rng = rng_ref;
+		m_cipher = c;
+		m_rng = rng_ref;
 	}
 
 	~this() { delete cipher; }
 private:
-	PK_Encryptor* cipher;
-	RandomNumberGenerator rng;
-	Secure_Vector!ubyte buffer;
+	PK_Encryptor m_cipher;
+	RandomNumberGenerator m_rng;
+	Secure_Vector!ubyte m_buffer;
 }
 
 /**
@@ -55,7 +57,7 @@ public:
 	*/
 	void write(in ubyte* input, size_t length)
 	{
-		buffer ~= Pair(input, length);
+		m_buffer ~= Pair(input, length);
 	}
 
 	/*
@@ -63,15 +65,15 @@ public:
 	*/
 	void end_msg()
 	{
-		send(cipher.decrypt(buffer));
-		buffer.clear();
+		send(m_cipher.decrypt(m_buffer));
+		m_buffer.clear();
 	}
 
-	this(PK_Decryptor* c) {  cipher = c; }
-	~this() { delete cipher; }
+	this(PK_Decryptor c) {  m_cipher = c; }
+	~this() { delete m_cipher; }
 private:
-	PK_Decryptor* cipher;
-	Secure_Vector!ubyte buffer;
+	PK_Decryptor m_cipher;
+	Secure_Vector!ubyte m_buffer;
 }
 
 /**
@@ -85,7 +87,7 @@ public:
 	*/
 	void write(in ubyte* input, size_t length)
 	{
-		signer.update(input, length);
+		m_signer.update(input, length);
 	}
 
 	/*
@@ -93,21 +95,21 @@ public:
 	*/
 	void end_msg()
 	{
-		send(signer.signature(rng));
+		send(m_signer.signature(m_rng));
 	}
 
 
 	this(ref PK_Signer s,
 		 RandomNumberGenerator rng_ref)
 	{
-		signer = s;
+		signer = &s;
 		rng = rng_ref;
 	}
 
-	~this() { delete signer; }
+	~this() {  }
 private:
-	PK_Signer signer;
-	RandomNumberGenerator rng;
+	PK_Signer* m_signer;
+	RandomNumberGenerator m_rng;
 }
 
 /**
@@ -121,7 +123,7 @@ public:
 	*/
 	void write(in ubyte* input, size_t length)
 	{
-		verifier.update(input, length);
+		m_verifier.update(input, length);
 	}
 	
 	/*
@@ -129,9 +131,9 @@ public:
 	*/
 	void end_msg()
 	{
-		if (signature.empty)
+		if (m_signature.empty)
 			throw new Invalid_State("PK_Verifier_Filter: No signature to check against");
-		bool is_valid = verifier.check_signature(signature);
+		bool is_valid = verifier.check_signature(m_signature);
 		send((is_valid ? 1 : 0));
 	}
 
@@ -140,7 +142,7 @@ public:
 	*/
 	void set_signature(in ubyte* sig, size_t length)
 	{
-		signature.assign(sig, sig + length);
+		m_signature.assign(sig, sig + length);
 	}
 	
 	/*
@@ -148,7 +150,7 @@ public:
 	*/
 	void set_signature(in Secure_Vector!ubyte sig)
 	{
-		signature = sig;
+		m_signature = sig;
 	}
 	
 
@@ -161,7 +163,7 @@ public:
 	     size_t length)
 	{
 		verifier = v;
-		signature = Secure_Vector!ubyte(sig, sig + length);
+		m_signature = Secure_Vector!ubyte(sig, sig + length);
 	}
 	
 	/*
@@ -170,12 +172,12 @@ public:
 	this(ref PK_Verifier v,
 	     in Secure_Vector!ubyte sig) 
 	{
-		verifier = v;
-		signature = sig;
+		m_verifier = &v;
+		m_signature = sig;
 	}
 
-	~this() { delete verifier; }
+	~this() {  }
 private:
-	PK_Verifier verifier;
-	Secure_Vector!ubyte signature;
+	PK_Verifier m_verifier;
+	Secure_Vector!ubyte m_signature;
 }

@@ -9,7 +9,7 @@ import botan.build;
 import botan.libstate.libstate;
 
 /// Thread-Local, no locks needed.
-private LibraryState global_lib_state;
+private LibraryState g_lib_state;
 
 /**
 * Access the global library state
@@ -20,8 +20,8 @@ LibraryState global_state()
 	/* Lazy initialization. Botan still needs to be deinitialized later
 		on or memory might leak.
 	*/
-	global_lib_state.initialize();
-	return global_lib_state;
+	g_lib_state.initialize();
+	return g_lib_state;
 }
 
 /**
@@ -30,7 +30,7 @@ LibraryState global_state()
 */
 void set_global_state(LibraryState new_state)
 {
-	global_lib_state = new_state;
+	g_lib_state = new_state;
 }
 
 
@@ -43,13 +43,13 @@ void set_global_state(LibraryState new_state)
 */
 bool set_global_state_unless_set(LibraryState new_state)
 {
-	if (global_lib_state)
+	if (g_lib_state)
 	{
 		return false;
 	}
 	else
 	{
-		global_lib_state = new_state;
+		g_lib_state = new_state;
 		return true;
 	}
 }
@@ -60,6 +60,6 @@ bool set_global_state_unless_set(LibraryState new_state)
 */
 bool global_state_exists()
 {
-	return (global_lib_state !is LibraryState.init);
+	return (g_lib_state !is LibraryState.init);
 }
 

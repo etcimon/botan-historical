@@ -27,17 +27,17 @@ public:
 	*/
 	void clear()
 	{
-		zeroise(X);
-		zeroise(checksum);
-		zeroise(buffer);
-		position = 0;
+		zeroise(m_X);
+		zeroise(m_checksum);
+		zeroise(m_buffer);
+		m_position = 0;
 	}
 
 	this() 
 	{ 
-		X = 48;
-		checksum = 16;
-		buffer = 16;
+		m_X = 48;
+		m_checksum = 16;
+		m_buffer = 16;
 		clear(); 
 	}
 private:
@@ -46,30 +46,30 @@ private:
 	*/
 	void add_data(in ubyte* input, size_t length)
 	{
-		buffer_insert(buffer, position, input, length);
+		buffer_insert(m_buffer, m_position, input, length);
 		
-		if (position + length >= hash_block_size)
+		if (m_position + length >= hash_block_size)
 		{
-			hash(&buffer[0]);
-			input += (hash_block_size - position);
-			length -= (hash_block_size - position);
+			hash(&m_buffer[0]);
+			input += (hash_block_size - m_position);
+			length -= (hash_block_size - m_position);
 			while(length >= hash_block_size)
 			{
 				hash(input);
 				input += hash_block_size;
 				length -= hash_block_size;
 			}
-			copy_mem(&buffer[0], input, length);
-			position = 0;
+			copy_mem(&m_buffer[0], input, length);
+			m_position = 0;
 		}
-		position += length;
+		m_position += length;
 	}
 	/**
 	* MD2 Compression Function
 	*/
 	void hash(in ubyte* input)
 	{
-		immutable ubyte[256] SBOX = [
+		__gshared immutable ubyte[256] SBOX = [
 			0x29, 0x2E, 0x43, 0xC9, 0xA2, 0xD8, 0x7C, 0x01, 0x3D, 0x36, 0x54, 0xA1,
 			0xEC, 0xF0, 0x06, 0x13, 0x62, 0xA7, 0x05, 0xF3, 0xC0, 0xC7, 0x73, 0x8C,
 			0x98, 0x93, 0x2B, 0xD9, 0xBC, 0x4C, 0x82, 0xCA, 0x1E, 0x9B, 0x57, 0x3C,
@@ -93,26 +93,26 @@ private:
 			0x31, 0x44, 0x50, 0xB4, 0x8F, 0xED, 0x1F, 0x1A, 0xDB, 0x99, 0x8D, 0x33,
 			0x9F, 0x11, 0x83, 0x14 ];
 		
-		buffer_insert(X, 16, input, hash_block_size);
-		xor_buf(&X[32], &X[0], &X[16], hash_block_size);
+		buffer_insert(m_X, 16, input, hash_block_size);
+		xor_buf(&m_X[32], &m_X[0], &m_X[16], hash_block_size);
 		ubyte T = 0;
 		
 		for (size_t i = 0; i != 18; ++i)
 		{
 			for (size_t k = 0; k != 48; k += 8)
 			{
-				T = X[k  ] ^= SBOX[T]; T = X[k+1] ^= SBOX[T];
-				T = X[k+2] ^= SBOX[T]; T = X[k+3] ^= SBOX[T];
-				T = X[k+4] ^= SBOX[T]; T = X[k+5] ^= SBOX[T];
-				T = X[k+6] ^= SBOX[T]; T = X[k+7] ^= SBOX[T];
+				T = m_X[k  ] ^= SBOX[T]; T = m_X[k+1] ^= SBOX[T];
+				T = m_X[k+2] ^= SBOX[T]; T = m_X[k+3] ^= SBOX[T];
+				T = m_X[k+4] ^= SBOX[T]; T = m_X[k+5] ^= SBOX[T];
+				T = m_X[k+6] ^= SBOX[T]; T = m_X[k+7] ^= SBOX[T];
 			}
 			
 			T += cast(ubyte)(i);
 		}
 		
-		T = checksum[15];
+		T = m_checksum[15];
 		for (size_t i = 0; i != hash_block_size; ++i)
-			T = checksum[i] ^= SBOX[input[i] ^ T];
+			T = m_checksum[i] ^= SBOX[input[i] ^ T];
 	}
 
 	/**
@@ -120,17 +120,17 @@ private:
 	*/
 	void final_result(ubyte* output)
 	{
-		for (size_t i = position; i != hash_block_size; ++i)
-			buffer[i] = cast(ubyte)(hash_block_size - position);
+		for (size_t i = m_position; i != hash_block_size; ++i)
+			m_buffer[i] = cast(ubyte)(hash_block_size - m_position);
 		
-		hash(&buffer[0]);
-		hash(&checksum[0]);
-		copy_mem(output, &X[0], output_length);
+		hash(&m_buffer[0]);
+		hash(&m_checksum[0]);
+		copy_mem(output, &m_X[0], output_length);
 		clear();
 	}
 
-	Secure_Vector!ubyte X, checksum, buffer;
-	size_t position;
+	Secure_Vector!ubyte m_X, m_checksum, m_buffer;
+	size_t m_position;
 }
 
 

@@ -229,9 +229,6 @@ private:
 	Unique!Threaded_Fork_Data m_thread_data;
 }
 
-
-
-
 struct Threaded_Fork_Data
 {
 	/*
@@ -250,7 +247,7 @@ struct Threaded_Fork_Data
 	* are NOT running (i.e. before notifying the work condition, after
 	* the input_complete_semaphore is completely reset.)
 	*/
-	const ubyte* m_input = null;
+	const ubyte* m_input;
 	
 	/*
 	* The length of the work that needs to be done.

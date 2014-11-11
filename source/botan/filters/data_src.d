@@ -110,8 +110,8 @@ final class DataSource_Memory : DataSource
 public:
 	size_t read(ubyte* output, size_t length)
 	{
-		size_t got = std.algorithm.min(source.length - offset, length);
-		copy_mem(output, &source[offset], got);
+		size_t got = std.algorithm.min(m_source.length - offset, length);
+		copy_mem(output, &m_source[offset], got);
 		offset += got;
 		return got;
 	}
@@ -123,11 +123,11 @@ public:
 	            size_t peek_offset) const
 	{
 		size_t length = output.length;
-		const size_t bytes_left = source.length - offset;
+		const size_t bytes_left = m_source.length - offset;
 		if (peek_offset >= bytes_left) return 0;
 		
 		size_t got = std.algorithm.min(bytes_left - peek_offset, length);
-		copy_mem(output, &source[offset + peek_offset], got);
+		copy_mem(output, &m_source[offset + peek_offset], got);
 		return got;
 	}
 
@@ -136,7 +136,7 @@ public:
 	*/
 	bool end_of_data() const
 	{
-		return (offset == source.length);
+		return (offset == m_source.length);
 	}
 
 
@@ -146,7 +146,7 @@ public:
 	*/
 	this(in string input) 
 	{
-		source = Secure_Vector!ubyte(cast(const ubyte*) input.ptr,
+		m_source = Secure_Vector!ubyte(cast(const ubyte*) input.ptr,
 		                          cast(const ubyte*)(input.ptr) + input.length);
 		offset = 0;
 	}
@@ -159,7 +159,7 @@ public:
 	*/
 	this(in ubyte* input, size_t length)
 	{
-		source = Secure_Vector!ubyte(input, input + length);
+		m_source = Secure_Vector!ubyte(input, input + length);
 		offset = 0; 
 	}
 
@@ -169,7 +169,7 @@ public:
 	*/
 	this(in Secure_Vector!ubyte input)
 	{
-		source = input;
+		m_source = input;
 		offset = 0;
 	}
 
@@ -178,14 +178,14 @@ public:
 	* @param input the MemoryRegion to read from
 	*/
 	this(in Vector!ubyte input) {
-		source = Secure_Vector!ubyte(&input[0], &input[input.length]);
+		m_source = Secure_Vector!ubyte(&input[0], &input[input.length]);
 		offset = 0;
 	}
 
 	abstract size_t get_bytes_read() const { return offset; }
 private:
-	Secure_Vector!ubyte source;
-	size_t offset;
+	Secure_Vector!ubyte m_source;
+	size_t m_offset;
 }
 
 /**
@@ -200,12 +200,12 @@ public:
 	size_t read(ubyte* output, size_t length)
 	{
 		ubyte[] data;
-		try data = source.rawRead(output[0..length]);
+		try data = m_source.rawRead(output[0..length]);
 		catch (Exception e)
 			throw new Stream_IO_Error("read: Source failure..." ~ e.toString());
 		
 		size_t got = data.length;
-		total_read += got;
+		m_total_read += got;
 		return got;
 	}
 
@@ -222,9 +222,9 @@ public:
 		
 		if (offset)
 		{
-			Secure_Vector!ubyte buf(offset);
+			Secure_Vector!ubyte buf = Secure_Vector!ubyte(offset);
 			ubyte[] data;
-			try data = source.rawRead(buf[0..length]);
+			try data = m_source.rawRead(buf[0..length]);
 			catch (Exception e)
 				throw new Stream_IO_Error("peek: Source failure..." ~ e.toString());
 			
@@ -234,17 +234,17 @@ public:
 		if (got == offset)
 		{
 			ubyte[] data;
-			try data = source.rawRead(output[0..length]);
+			try data = m_source.rawRead(output[0..length]);
 			catch (Exception e)
 				throw new Stream_IO_Error("peek: Source failure" ~ e.toString());
 			got = data.length;
 		}
 		
-		if (source.eof) {
-			source.clearerr();
-			source.rewind();
+		if (m_source.eof) {
+			m_source.clearerr();
+			m_source.rewind();
 		}
-		source.seek(total_read, SEEK_SET);
+		m_source.seek(m_total_read, SEEK_SET);
 		
 		return got;
 	}
@@ -254,7 +254,7 @@ public:
 	*/
 	bool end_of_data() const
 	{
-		return (!source.eof && !source.error());
+		return (!m_source.eof && !m_source.error());
 	}
 
 	/*
@@ -262,7 +262,7 @@ public:
 	*/
 	string id() const
 	{
-		return identifier;
+		return m_identifier;
 	}
 
 	/*
@@ -271,9 +271,9 @@ public:
 	this(ref File input,
 	                  in string name)
 	{
-		identifier = name;
-		source = input;
-		total_read = 0;
+		m_identifier = name;
+		m_source = input;
+		m_total_read = 0;
 	}
 
 	/**
@@ -284,10 +284,10 @@ public:
 	this(in string path, bool use_binary = false)
 	{
 		
-		identifier = path;
-		source = File(path, use_binary ? "rb" : "r");
-		total_read = 0;
-		if (source.error())
+		m_identifier = path;
+		m_source = File(path, use_binary ? "rb" : "r");
+		m_total_read = 0;
+		if (m_source.error())
 		{
 			throw new Stream_IO_Error("DataSource: Failure opening file " ~ path);
 		}
@@ -301,10 +301,10 @@ public:
 
 	}
 
-	size_t get_bytes_read() const { return total_read; }
+	size_t get_bytes_read() const { return m_total_read; }
 private:
-	const string identifier;
+	const string m_identifier;
 
-	File source;
-	size_t total_read;
+	File m_source;
+	size_t m_total_read;
 }

@@ -24,10 +24,11 @@ public:
 	{
 		super(0);
 	} // no W needed
-m_tag
+
+private:
 	/*
-* SHA-160 Compression Function using SSE for message expansion
-*/
+	* SHA-160 Compression Function using SSE for message expansion
+	*/
 	void compress_n(in ubyte* input_bytes, size_t blocks)
 	{
 		
@@ -36,11 +37,11 @@ m_tag
 		const(__m128i) K40_59 = _mm_set1_epi32!(0x8F1BBCDC)();
 		const(__m128i) K60_79 = _mm_set1_epi32!(0xCA62C1D6)();
 		
-		uint A = digest[0],
-			B = digest[1],
-			C = digest[2],
-			D = digest[3],
-			E = digest[4];
+		uint A = m_digest[0],
+			B = m_digest[1],
+			C = m_digest[2],
+			D = m_digest[3],
+			E = m_digest[4];
 		
 		const(__m128i)* input = cast(const(__m128i)*)(input_bytes);
 		
@@ -53,7 +54,7 @@ m_tag
 			
 			v4si P0, P1, P2, P3;
 			
-			__m128i W0 = _mm_loadu_si128(&input[0]);
+			__m128i W0 = _mm_loadu_si12input8(&input[0]);
 			mixin(prep00_15!(P0, W0)());
 			
 			__m128i W1 = _mm_loadu_si128(&input[1]);
@@ -183,11 +184,11 @@ m_tag
 		F4(C, D, E, A, B, ` ~ GET_P_32!(P3, 2)() ~ `);
 		F4(B, C, D, E, A, ` ~ GET_P_32!(P3, 3)() ~ `);`);
 			
-			A = (digest[0] += A);
-			B = (digest[1] += B);
-			C = (digest[2] += C);
-			D = (digest[3] += D);
-			E = (digest[4] += E);
+			A = (m_digest[0] += A);
+			B = (m_digest[1] += B);
+			C = (m_digest[2] += C);
+			D = (m_digest[3] += D);
+			E = (m_digest[4] += E);
 			
 			input += (hash_block_size / 16);
 		}

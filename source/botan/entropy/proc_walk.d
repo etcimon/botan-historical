@@ -11,6 +11,7 @@ static if (BOTAN_HAS_ENTROPY_SRC_PROC_WALKER):
 
 import botan.entropy.entropy_src;
 import botan.alloc.zeroize;
+import botan.utils.types;
 import cstring;
 import deque;
 

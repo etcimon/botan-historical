@@ -23,62 +23,52 @@ public:
 	bool check_key(RandomNumberGenerator rng,
 	               bool strong) const
 	{
-		const ref BigInt p = group_p();
-		const ref BigInt g = group_g();
-		
-		if (y < 2 || y >= p || x < 2 || x >= p)
+		if (m_y < 2 || m_y >= group_p())
 			return false;
-		if (!group.verify_group(rng, strong))
+		if (!m_group.verify_group(rng, strong))
 			return false;
-		
-		if (!strong)
-			return true;
-		
-		if (y != power_mod(g, x, p))
-			return false;
-		
 		return true;
 	}
 
 	Algorithm_Identifier algorithm_identifier() const
 	{
 		return Algorithm_Identifier(get_oid(),
-		                           group.DER_encode(group_format()));
+		                           m_group.DER_encode(group_format()));
 	}
 
 	Vector!ubyte x509_subject_public_key() const
 	{
-		return DER_Encoder().encode(y).get_contents_unlocked();
+		return DER_Encoder().encode(m_y).get_contents_unlocked();
 	}
 
 	/**
 	* Get the DL domain parameters of this key.
 	* @return DL domain parameters of this key
 	*/
-	const ref DL_Group get_domain() const { return group; }
+	const ref DL_Group get_domain() const { return m_group; }
 
 	/**
-	* Get the public value y with y = g^x mod p where x is the secret key.
+	* Get the public value m_y with m_y = g^m_x mod p where m_x is the secret key.
 	*/
-	const ref BigInt get_y() const { return y; }
+	const ref BigInt get_y() const { return m_y; }
 
 	/**
-	* Get the prime p of the underlying DL group.
+	* Get the prime p of the underlying DL m_group.
 	* @return prime p
 	*/
-	const ref BigInt group_p() const { return group.get_p(); }
+	const ref BigInt group_p() const { return m_group.get_p(); }
 
 	/**
-	* Get the prime q of the underlying DL group.
+	* Get the prime q of the underlying DL m_group.
 	* @return prime q
 	*/
-	const ref BigInt group_q() const { return group.get_q(); }
+	const ref BigInt group_q() const { return m_group.get_q(); }
 
 	/**
-	* Get the generator g of the underlying DL group.
+	* Get the generator g of the underlying DL m_group.
 	* @return generator g
 	*/
-	const ref BigInt group_g() const { return group.get_g(); }
+	const ref BigInt group_g() const { return m_group.get_g(); }
 
 	/**
 	* Get the underlying groups encoding format.
@@ -88,16 +78,16 @@ public:
 
 	override size_t estimated_strength() const
 	{
-		return dl_work_factor(group.get_p().bits());
+		return dl_work_factor(m_group.get_p().bits());
 	}
 
 	this(in Algorithm_Identifier alg_id,
 	     in Secure_Vector!ubyte key_bits,
 	     DL_Group.Format format)
 	{
-		group.BER_decode(alg_id.parameters, format);
+		m_group.BER_decode(alg_id.parameters, format);
 		
-		BER_Decoder(key_bits).decode(y);
+		BER_Decoder(key_bits).decode(m_y);
 	}
 
 protected:
@@ -106,12 +96,12 @@ protected:
 	/**
 	* The DL public key
 	*/
-	BigInt y;
+	BigInt m_y;
 
 	/**
-	* The DL group
+	* The DL m_group
 	*/
-	DL_Group group;
+	DL_Group m_group;
 }
 
 /**
@@ -121,34 +111,45 @@ class DL_Scheme_PrivateKey : DL_Scheme_PublicKey,
 							 Private_Key
 {
 public:
+
 	bool check_key(RandomNumberGenerator rng,
 	               bool strong) const
 	{
-		if (y < 2 || y >= group_p())
+		const BigInt p = group_p();
+		const BigInt g = group_g();
+		
+		if (m_y < 2 || m_y >= p || m_x < 2 || m_x >= p)
 			return false;
-		if (!group.verify_group(rng, strong))
+		if (!m_group.verify_group(rng, strong))
 			return false;
+		
+		if (!strong)
+			return true;
+		
+		if (m_y != power_mod(g, m_x, p))
+			return false;
+		
 		return true;
 	}
 
 	/**
-	* Get the secret key x.
+	* Get the secret key m_x.
 	* @return secret key
 	*/
-	const ref BigInt get_x() const { return x; }
+	const ref BigInt get_x() const { return m_x; }
 
 	Secure_Vector!ubyte pkcs8_private_key() const
 	{
-		return DER_Encoder().encode(x).get_contents();
+		return DER_Encoder().encode(m_x).get_contents();
 	}
 
 	this(in Algorithm_Identifier alg_id,
 	     in Secure_Vector!ubyte key_bits,
 	     DL_Group.Format format)
 	{
-		group.BER_decode(alg_id.parameters, format);
+		m_group.BER_decode(alg_id.parameters, format);
 		
-		BER_Decoder(key_bits).decode(x);
+		BER_Decoder(key_bits).decode(m_x);
 	}
 
 protected:
@@ -157,5 +158,5 @@ protected:
 	/**
 	* The DL private key
 	*/
-	BigInt x;
+	BigInt m_x;
 }

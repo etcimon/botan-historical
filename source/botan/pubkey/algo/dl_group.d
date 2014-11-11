@@ -19,20 +19,20 @@ import botan.pubkey.workfactor;
 
 /**
 * This class represents discrete logarithm groups. It holds a prime p,
-* a prime q = (p-1)/2 and g = x^((p-1)/q) mod p.
+* a prime q = (p-1)/2 and m_g = x^((p-1)/q) mod p.
 */
 struct DL_Group
 {
 public:
 
 	/**
-	* Get the prime p.
-	* @return prime p
+	* Get the prime m_p.
+	* @return prime m_p
 	*/
 	const ref BigInt get_p() const
 	{
 		init_check();
-		return p;
+		return m_p;
 	}
 
 	/**
@@ -42,19 +42,19 @@ public:
 	const ref BigInt get_q() const
 	{
 		init_check();
-		if (q == 0)
-			throw new Invalid_State("DLP group has no q prime specified");
-		return q;
+		if (m_q == 0)
+			throw new Invalid_State("DLP group has no m_q prime specified");
+		return m_q;
 	}
 
 	/**
-	* Get the base g.
-	* @return base g
+	* Get the base m_g.
+	* @return base m_g
 	*/
 	const ref BigInt get_g() const
 	{
 		init_check();
-		return g;
+		return m_g;
 	}
 
 	typedef ubyte format;
@@ -88,16 +88,16 @@ public:
 	{
 		init_check();
 		
-		if (g < 2 || p < 3 || q < 0)
+		if (m_g < 2 || m_p < 3 || m_q < 0)
 			return false;
-		if ((q != 0) && ((p - 1) % q != 0))
+		if ((m_q != 0) && ((m_p - 1) % m_q != 0))
 			return false;
 		
 		const size_t prob = (strong) ? 56 : 10;
 		
-		if (!is_prime(p, rng, prob))
+		if (!is_prime(m_p, rng, prob))
 			return false;
-		if ((q > 0) && !is_prime(q, rng, prob))
+		if ((m_q > 0) && !is_prime(m_q, rng, prob))
 			return false;
 		return true;
 	}
@@ -130,16 +130,16 @@ public:
 	{
 		init_check();
 		
-		if ((q == 0) && (format != PKCS_3))
+		if ((m_q == 0) && (format != PKCS_3))
 			throw new Encoding_Error("The ANSI DL parameter formats require a subgroup");
 		
 		if (format == ANSI_X9_57)
 		{
 			return DER_Encoder()
 				.start_cons(ASN1_Tag.SEQUENCE)
-					.encode(p)
-					.encode(q)
-					.encode(g)
+					.encode(m_p)
+					.encode(m_q)
+					.encode(m_g)
 					.end_cons()
 					.get_contents_unlocked();
 		}
@@ -147,9 +147,9 @@ public:
 		{
 			return DER_Encoder()
 				.start_cons(ASN1_Tag.SEQUENCE)
-					.encode(p)
-					.encode(g)
-					.encode(q)
+					.encode(m_p)
+					.encode(m_g)
+					.encode(m_q)
 					.end_cons()
 					.get_contents_unlocked();
 		}
@@ -157,8 +157,8 @@ public:
 		{
 			return DER_Encoder()
 				.start_cons(ASN1_Tag.SEQUENCE)
-					.encode(p)
-					.encode(g)
+					.encode(m_p)
+					.encode(m_g)
 					.end_cons()
 					.get_contents_unlocked();
 		}
@@ -232,7 +232,7 @@ public:
 	*/
 	this()
 	{
-		initialized = false;
+		m_initialized = false;
 	}
 
 	/**
@@ -274,24 +274,24 @@ public:
 		
 		if (type == Strong)
 		{
-			p = random_safe_prime(rng, pbits);
-			q = (p - 1) / 2;
-			g = 2;
+			m_p = random_safe_prime(rng, pbits);
+			m_q = (m_p - 1) / 2;
+			m_g = 2;
 		}
 		else if (type == Prime_Subgroup)
 		{
 			if (!qbits)
 				qbits = 2 * dl_work_factor(pbits);
 			
-			q = random_prime(rng, qbits);
+			m_q = random_prime(rng, qbits);
 			BigInt X;
-			while(p.bits() != pbits || !is_prime(p, rng))
+			while(m_p.bits() != pbits || !is_prime(m_p, rng))
 			{
 				X.randomize(rng, pbits);
-				p = X - (X % (2*q) - 1);
+				m_p = X - (X % (2*m_q) - 1);
 			}
 			
-			g = make_dsa_generator(p, q);
+			m_g = make_dsa_generator(m_p, m_q);
 		}
 		else if (type == DSA_Kosherizer)
 		{
@@ -299,13 +299,13 @@ public:
 			
 			generate_dsa_primes(rng,
 			                    global_state().algorithm_factory(),
-			                    p, q,
+			                    m_p, m_q,
 			                    pbits, qbits);
 			
-			g = make_dsa_generator(p, q);
+			m_g = make_dsa_generator(m_p, m_q);
 		}
 		
-		initialized = true;
+		m_initialized = true;
 	}
 
 	/**
@@ -321,19 +321,19 @@ public:
 	{
 		if (!generate_dsa_primes(rng,
 		                         global_state().algorithm_factory(),
-		                         p, q, pbits, qbits, seed))
+		                         m_p, m_q, pbits, qbits, seed))
 			throw new Invalid_Argument("DL_Group: The seed given does not "
 			                           "generate a DSA group");
 		
-		g = make_dsa_generator(p, q);
+		m_g = make_dsa_generator(m_p, m_q);
 		
-		initialized = true;
+		m_initialized = true;
 	}
 
 	/**
 	* Create a DL group. The prime q will be determined according to p.
 	* @param p1 the prime p
-	* @param g1 the base g
+	* @param g1 the base m_g
 	*/
 	this(in BigInt p1, const ref BigInt g1)
 	{
@@ -342,9 +342,9 @@ public:
 
 	/**
 	* Create a DL group.
-	* @param p1 the prime p
-	* @param q1 the prime q
-	* @param g1 the base g
+	* @param p1 the prime m_p
+	* @param q1 the prime m_q
+	* @param g1 the base m_g
 	*/
 	this(in BigInt p1, const ref BigInt q1, const ref BigInt g1)
 	{
@@ -357,18 +357,18 @@ private:
 	/*
 	* Create generator of the q-sized subgroup (DSA style generator)
 	*/
-	static BigInt make_dsa_generator(in BigInt p, const ref BigInt q)
+	static BigInt make_dsa_generator(in BigInt m_p, const ref BigInt m_q)
 	{
-		const BigInt e = (p - 1) / q;
+		const BigInt e = (m_p - 1) / m_q;
 		
-		if (e == 0 || (p - 1) % q > 0)
-			throw new Invalid_Argument("make_dsa_generator q does not divide p-1");
+		if (e == 0 || (m_p - 1) % m_q > 0)
+			throw new Invalid_Argument("make_dsa_generator m_q does not divide m_p-1");
 		
 		for (size_t i = 0; i != PRIME_TABLE_SIZE; ++i)
 		{
-			BigInt g = power_mod(PRIMES[i], e, p);
-			if (g > 1)
-				return g;
+			BigInt m_g = power_mod(PRIMES[i], e, m_p);
+			if (m_g > 1)
+				return m_g;
 		}
 		
 		throw new Internal_Error("DL_Group: Couldn't create a suitable generator");
@@ -376,7 +376,7 @@ private:
 
 	void init_check() const
 	{
-		if (!initialized)
+		if (!m_initialized)
 			throw new Invalid_State("DLP group cannot be used uninitialized");
 	}
 
@@ -389,15 +389,15 @@ private:
 		if (q1 < 0 || q1 >= p1)
 			throw new Invalid_Argument("DL_Group: Subgroup invalid");
 		
-		p = p1;
-		g = g1;
-		q = q1;
+		m_p = p1;
+		m_g = g1;
+		m_q = q1;
 		
-		initialized = true;
+		m_initialized = true;
 	}
 
-	bool initialized;
-	BigInt p, q, g;
+	bool m_initialized;
+	BigInt m_p, m_q, m_g;
 
 	/**
 	* Return PEM representation of named DL group
@@ -460,7 +460,7 @@ private:
 				"fDKQXkYuNs474553LBgOhgObJ4Oi7Aeij7XFXfBvTFLJ3ivL9pVYFxg5lUl86pVq"
 				"5RXSJhiY+gUQFXKOWoqsqmj//////////wIBAgKCAQB//////////+SH7VEQtGEa"
 				"YmMxRcBuDmiUgScERTPmOgEF31Mdic2RKKUEPMcaAm73yozZ5p0hjZgVhTb5L4ob"
-				"p/Catrao4SLyQtq7MS8/Y3omIXTTG/a1hf+uW3oDW/b3HDX9rUTP0tdPkgi+JY/z"
+				"m_p/Catrao4SLyQtq7MS8/Y3omIXTTG/a1hf+uW3oDW/b3HDX9rUTP0tdPkgi+JY/z"
 				"JJQzKPZyLZ7hAD5cULHfgsxtJBsOKunNNIsf1H6SZ6/Bsq6R7lHWyw4xeasQQqld"
 				"z2qUg7hLSzazhhqnJV5MAni6NgRlDBC+GUgvIxcbZx3xzzuWDAdDAc2TwdF2A9FH"
 				"2uKu+DemKWTvFeX7SqwLjBzKpL51SrVyiukTDEx9AogKuUctRVZVNH//////////"

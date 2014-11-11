@@ -26,36 +26,28 @@ public:
 	{
 		BER_Decoder(key_bits)
 			.start_cons(ASN1_Tag.SEQUENCE)
-				.decode(n)
-				.decode(e)
+				.decode(m_n)
+				.decode(m_e)
 				.verify_end()
 				.end_cons();
 	}
 
-	this(in BigInt _n, const ref BigInt _e)
+	this(in BigInt n, const ref BigInt e)
 	{
-		n = _n;
-		e = _e; 
+		m_n = n;
+		m_e = e; 
 	}
 
 	/*
-	* Check IF Scheme Private Parameters
+	* Check IF Scheme Public Parameters
 	*/
-	bool  check_key(RandomNumberGenerator rng,
-	                bool strong) const
+	bool check_key(RandomNumberGenerator, bool) const
 	{
-		if (n < 35 || n.is_even() || e < 2 || d < 2 || p < 3 || q < 3 || p*q != n)
-			return false;
-		
-		if (d1 != d % (p - 1) || d2 != d % (q - 1) || c != inverse_mod(q, p))
-			return false;
-		
-		const size_t prob = (strong) ? 56 : 12;
-		
-		if (!is_prime(p, rng, prob) || !is_prime(q, rng, prob))
+		if (m_n < 35 || m_n.is_even() || m_e < 2)
 			return false;
 		return true;
 	}
+
 
 	Algorithm_Identifier algorithm_identifier() const
 	{
@@ -67,8 +59,8 @@ public:
 	{
 		return DER_Encoder()
 			.start_cons(ASN1_Tag.SEQUENCE)
-				.encode(n)
-				.encode(e)
+				.encode(m_n)
+				.encode(m_e)
 				.end_cons()
 				.get_contents_unlocked();
 	}
@@ -76,24 +68,24 @@ public:
 	/**
 	* @return public modulus
 	*/
-	const ref BigInt get_n() const { return n; }
+	const ref BigInt get_n() const { return m_n; }
 
 	/**
 	* @return public exponent
 	*/
-	const ref BigInt get_e() const { return e; }
+	const ref BigInt get_e() const { return m_e; }
 
-	size_t max_input_bits() const { return (n.bits() - 1); }
+	size_t max_input_bits() const { return (m_n.bits() - 1); }
 
 	override size_t estimated_strength() const
 	{
-		return dl_work_factor(n.bits());
+		return dl_work_factor(m_n.bits());
 	}
 
 protected:
 	this() {}
 
-	BigInt n, e;
+	BigInt m_n, m_e;
 }
 
 /**
@@ -111,14 +103,14 @@ public:
 		BER_Decoder(key_bits)
 			.start_cons(ASN1_Tag.SEQUENCE)
 				.decode_and_check!size_t(0, "Unknown PKCS #1 key format version")
-				.decode(n)
-				.decode(e)
-				.decode(d)
-				.decode(p)
-				.decode(q)
-				.decode(d1)
-				.decode(d2)
-				.decode(c)
+				.decode(m_n)
+				.decode(m_e)
+				.decode(m_d)
+				.decode(m_p)
+				.decode(m_q)
+				.decode(m_d1)
+				.decode(m_d2)
+				.decode(m_c)
 				.end_cons();
 		
 		load_check(rng);
@@ -131,34 +123,44 @@ public:
 	     const ref BigInt d_exp,
 	     const ref BigInt mod)
 	{
-		p = prime1;
-		q = prime2;
+		m_p = prime1;
+		m_q = prime2;
 		e = exp;
-		d = d_exp;
-		n = mod.is_nonzero() ? mod : p * q;
+		m_d = d_exp;
+		n = mod.is_nonzero() ? mod : m_p * m_q;
 		
-		if (d == 0)
+		if (m_d == 0)
 		{
-			BigInt inv_for_d = lcm(p - 1, q - 1);
+			BigInt inv_for_d = lcm(m_p - 1, m_q - 1);
 			if (e.is_even())
 				inv_for_d >>= 1;
 			
-			d = inverse_mod(e, inv_for_d);
+			m_d = inverse_mod(e, inv_for_d);
 		}
 		
-		d1 = d % (p - 1);
-		d2 = d % (q - 1);
-		c = inverse_mod(q, p);
-		
+		m_d1 = m_d % (m_p - 1);
+		m_d2 = m_d % (m_q - 1);
+		m_c = inverse_mod(m_q, m_p);
+
 		load_check(rng);
+
 	}
 
 	/*
-	* Check IF Scheme Public Parameters
+	* Check IF Scheme Private Parameters
 	*/
-	bool check_key(RandomNumberGenerator, bool) const
+	bool  check_key(RandomNumberGenerator rng,
+	                bool strong) const
 	{
-		if (n < 35 || n.is_even() || e < 2)
+		if (m_n < 35 || m_n.is_even() || m_e < 2 || m_d < 2 || m_p < 3 || m_q < 3 || m_p*m_q != m_n)
+			return false;
+		
+		if (m_d1 != m_d % (m_p - 1) || m_d2 != m_d % (m_q - 1) || m_c != inverse_mod(m_q, m_p))
+			return false;
+		
+		const size_t prob = (strong) ? 56 : 12;
+		
+		if (!is_prime(m_p, rng, prob) || !is_prime(m_q, rng, prob))
 			return false;
 		return true;
 	}
@@ -167,37 +169,37 @@ public:
 	* Get the first prime p.
 	* @return prime p
 	*/
-	const ref BigInt get_p() const { return p; }
+	const ref BigInt get_p() const { return m_p; }
 
 	/**
 	* Get the second prime q.
 	* @return prime q
 	*/
-	const ref BigInt get_q() const { return q; }
+	const ref BigInt get_q() const { return m_q; }
 
 	/**
 	* Get d with exp * d = 1 mod (p - 1, q - 1).
 	* @return d
 	*/
-	const ref BigInt get_d() const { return d; }
+	const ref BigInt get_d() const { return m_d; }
 
-	const ref BigInt get_c() const { return c; }
-	const ref BigInt get_d1() const { return d1; }
-	const ref BigInt get_d2() const { return d2; }
+	const ref BigInt get_c() const { return m_c; }
+	const ref BigInt get_d1() const { return m_d1; }
+	const ref BigInt get_d2() const { return m_d2; }
 
 	Secure_Vector!ubyte  pkcs8_private_key() const
 	{
 		return DER_Encoder()
 			.start_cons(ASN1_Tag.SEQUENCE)
 				.encode(cast(size_t)(0))
-				.encode(n)
-				.encode(e)
-				.encode(d)
-				.encode(p)
-				.encode(q)
-				.encode(d1)
-				.encode(d2)
-				.encode(c)
+				.encode(m_n)
+				.encode(m_e)
+				.encode(m_d)
+				.encode(m_p)
+				.encode(m_q)
+				.encode(m_d1)
+				.encode(m_d2)
+				.encode(m_c)
 				.end_cons()
 				.get_contents();
 	}
@@ -205,5 +207,5 @@ public:
 protected:
 	this() {}
 
-	BigInt d, p, q, d1, d2, c;
+	BigInt m_d, m_p, m_q, m_d1, m_d2, m_c;
 }

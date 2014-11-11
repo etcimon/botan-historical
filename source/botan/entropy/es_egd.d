@@ -47,9 +47,9 @@ public:
 		
 		Secure_Vector!ubyte io_buffer = accum.get_io_buffer(READ_ATTEMPT);
 		
-		for (size_t i = 0; i != sockets.length; ++i)
+		for (size_t i = 0; i != m_sockets.length; ++i)
 		{
-			size_t got = sockets[i].read(&io_buffer[0], io_buffer.length);
+			size_t got = m_sockets[i].read(&io_buffer[0], io_buffer.length);
 			
 			if (got)
 			{
@@ -65,13 +65,13 @@ public:
 	this(in Vector!string paths)
 	{
 		for (size_t i = 0; i != paths.length; ++i)
-			sockets.push_back(EGD_Socket(paths[i]));
+			m_sockets.push_back(EGD_Socket(paths[i]));
 	}
 	~this()
 	{
-		for (size_t i = 0; i != sockets.length; ++i)
-			sockets[i].close();
-		sockets.clear();
+		for (size_t i = 0; i != m_sockets.length; ++i)
+			m_sockets[i].close();
+		m_sockets.clear();
 	}
 private:
 	class EGD_Socket
@@ -79,7 +79,7 @@ private:
 	public:
 		this(in string path)
 		{
-			socket_path = path;
+			m_socket_path = path;
 			m_fd = -1;
 		}
 
@@ -104,16 +104,15 @@ private:
 			
 			if (m_fd < 0)
 			{
-				m_fd = open_socket(socket_path);
+				m_fd = open_socket(m_socket_path);
 				if (m_fd < 0)
 					return 0;
 			}
-			
+
 			try
 			{
 				// 1 == EGD command for non-blocking read
-				ubyte[2] egd_read_command = {
-					1, cast(ubyte)(std.algorithm.min(length, 255)) }
+				ubyte[2] egd_read_command = [ 1, cast(ubyte)(std.algorithm.min(length, 255)) ];
 				
 				if (write(m_fd, egd_read_command, 2) != 2)
 					throw new Exception("Writing entropy read command to EGD failed");
@@ -172,9 +171,9 @@ private:
 			return fd;
 		}
 
-		string socket_path;
+		string m_socket_path;
 		int m_fd; // cached fd
 	}
 
-	Vector!( EGD_Socket ) sockets;
+	Vector!( EGD_Socket ) m_sockets;
 }

@@ -27,7 +27,7 @@ public:
 	                        in ubyte* salt, size_t salt_len) const
 	{
 		SHA_160 hash;
-		const OID kek_algo(key_wrap_oid);
+		const OID kek_algo = OID(m_key_wrap_oid);
 		
 		Secure_Vector!ubyte key;
 		uint counter = 1;
@@ -69,20 +69,20 @@ public:
 	}
 
 
-	@property string name() const { return "X942_PRF(" ~ key_wrap_oid ~ ")"; }
-	KDF clone() const { return new X942_PRF(key_wrap_oid); }
+	@property string name() const { return "X942_PRF(" ~ m_key_wrap_oid ~ ")"; }
+	KDF clone() const { return new X942_PRF(m_key_wrap_oid); }
 	/*
 	* X9.42 Constructor
 	*/
 	this(in string oid)
 	{
 		if (oids.have_oid(oid))
-			key_wrap_oid = oids.lookup(oid).toString();
+			m_key_wrap_oid = oids.lookup(oid).toString();
 		else
-			key_wrap_oid = oid;
+			m_key_wrap_oid = oid;
 	}
 private:
-	string key_wrap_oid;
+	string m_key_wrap_oid;
 }
 
 private:

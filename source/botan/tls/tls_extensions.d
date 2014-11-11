@@ -224,7 +224,8 @@ public:
 	}
 
 	@property bool empty() const { return false; } // always send this
-m_tag
+
+private:
 	Vector!ubyte reneg_data;
 }
 

@@ -34,7 +34,7 @@ bool check_bcrypt(in string password, in string hash)
 {
 	if (hash.length != 60 ||
 	    hash[0] != '$' || hash[1] != '2' || hash[2] != 'a' ||
-	hash[3] != '$' || hash[6] != '$')
+		hash[3] != '$' || hash[6] != '$')
 	{
 		return false;
 	}

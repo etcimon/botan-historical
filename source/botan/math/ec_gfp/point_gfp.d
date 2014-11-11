@@ -276,7 +276,7 @@ public:
 		PointGFp H(p1.curve); // create as zero
 		size_t bits_left = std.algorithm.max(z1.bits(), z2.bits());
 		
-		Vector!BigInt ws(9);
+		Vector!BigInt ws = Vector!BigInt(9);
 		
 		while(bits_left)
 		{

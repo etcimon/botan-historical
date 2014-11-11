@@ -23,12 +23,12 @@ final class PKCS5_PBKDF2 : PBKDF
 public:
 	override @property string name() const
 	{
-		return "PBKDF2(" ~ mac.name ~ ")";
+		return "PBKDF2(" ~ m_mac.name ~ ")";
 	}
 
 	override PBKDF clone() const
 	{
-		return new PKCS5_PBKDF2(mac.clone());
+		return new PKCS5_PBKDF2(m_mac.clone());
 	}
 
 	/*
@@ -47,7 +47,7 @@ public:
 		
 		try
 		{
-			mac.set_key(cast(const ubyte*)(passphrase.data()),
+			m_mac.set_key(cast(const ubyte*)(passphrase.data()),
 			            passphrase.length);
 		}
 		catch(Invalid_Key_Length)
@@ -60,9 +60,9 @@ public:
 		
 		ubyte* T = &key[0];
 		
-		Secure_Vector!ubyte U = Secure_Vector!ubyte(mac.output_length);
+		Secure_Vector!ubyte U = Secure_Vector!ubyte(m_mac.output_length);
 		
-		const size_t blocks_needed = round_up(key_len, mac.output_length) / mac.output_length;
+		const size_t blocks_needed = round_up(key_len, m_mac.output_length) / m_mac.output_length;
 		
 		Duration dur_per_block = loop_for / blocks_needed;
 		
@@ -71,9 +71,9 @@ public:
 		{
 			size_t T_size = std.algorithm.min(mac.output_length, key_len);
 			
-			mac.update(salt, salt_len);
-			mac.update_be(counter);
-			mac.flushInto(&U[0]);
+			m_mac.update(salt, salt_len);
+			m_mac.update_be(counter);
+			m_mac.flushInto(&U[0]);
 			
 			xor_buf(T, &U[0], T_size);
 			
@@ -90,8 +90,8 @@ public:
 				
 				while(true)
 				{
-					mac.update(U);
-					mac.flushInto(&U[0]);
+					m_mac.update(U);
+					m_mac.flushInto(&U[0]);
 					xor_buf(T, &U[0], T_size);
 					iterations++;
 					
@@ -112,8 +112,8 @@ public:
 			{
 				for (size_t i = 1; i != iterations; ++i)
 				{
-					mac.update(U);
-					mac.flushInto(&U[0]);
+					m_mac.update(U);
+					m_mac.flushInto(&U[0]);
 					xor_buf(T, &U[0], T_size);
 				}
 			}
@@ -132,8 +132,8 @@ public:
 	*/
 	this(MessageAuthenticationCode mac_fn) 
 	{
-		mac = mac_fn;
+		m_mac = mac_fn;
 	}
 private:
-	Unique!MessageAuthenticationCode mac;
+	Unique!MessageAuthenticationCode m_mac;
 }

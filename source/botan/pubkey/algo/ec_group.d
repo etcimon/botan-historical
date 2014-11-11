@@ -42,16 +42,16 @@ public:
 	* @param order the order of the base point
 	* @param cofactor the cofactor
 	*/
-	this(in CurveGFp _curve,
-				const ref PointGFp _base_point,
-				const ref BigInt _order,
-				const ref BigInt _cofactor) 
+	this(in CurveGFp curve,
+				const ref PointGFp base_point,
+				const ref BigInt order,
+				const ref BigInt cofactor) 
 	{
-		curve = _curve;
-		base_point = _base_point;
-		order = _order;
-		cofactor = _cofactor;
-		oid = "";
+		m_curve = curve;
+		m_base_point = base_point;
+		m_order = order;
+		m_cofactor = cofactor;
+		m_oid = "";
 	}
 
 	/**
@@ -89,13 +89,13 @@ public:
 					.decode_octet_string_bigint(b)
 					.end_cons()
 					.decode(sv_base_point, ASN1_Tag.OCTET_STRING)
-					.decode(order)
-					.decode(cofactor)
+					.decode(m_order)
+					.decode(m_cofactor)
 					.end_cons()
 					.verify_end();
 			
-			curve = CurveGFp(p, a, b);
-			base_point = OS2ECP(sv_base_point, curve);
+			m_curve = CurveGFp(p, a, b);
+			m_base_point = OS2ECP(sv_base_point, m_curve);
 		}
 		else
 			throw new Decoding_Error("Unexpected tag while decoding ECC domain params");
@@ -149,26 +149,26 @@ public:
 		if (form == EC_DOMPAR_ENC_EXPLICIT)
 		{
 			const size_t ecpVers1 = 1;
-			OID curve_type("1.2.840.10045.1.1");
+			OID curve_type = OID("1.2.840.10045.1.1");
 			
-			const size_t p_bytes = curve.get_p().bytes();
+			const size_t p_bytes = m_curve.get_p().bytes();
 			
 			return DER_Encoder()
 				.start_cons(ASN1_Tag.SEQUENCE)
 					.encode(ecpVers1)
 					.start_cons(ASN1_Tag.SEQUENCE)
-					.encode(curve_type)
-					.encode(curve.get_p())
+					.encode(m_curve_type)
+					.encode(m_curve.get_p())
 					.end_cons()
 					.start_cons(ASN1_Tag.SEQUENCE)
-					.encode(BigInt.encode_1363(curve.get_a(), p_bytes),
+					.encode(BigInt.encode_1363(m_curve.get_a(), p_bytes),
 					        ASN1_Tag.OCTET_STRING)
-					.encode(BigInt.encode_1363(curve.get_b(), p_bytes),
+					.encode(BigInt.encode_1363(m_curve.get_b(), p_bytes),
 					        ASN1_Tag.OCTET_STRING)
 					.end_cons()
-					.encode(EC2OSP(base_point, PointGFp.UNCOMPRESSED), ASN1_Tag.OCTET_STRING)
-					.encode(order)
-					.encode(cofactor)
+					.encode(EC2OSP(m_base_point, PointGFp.UNCOMPRESSED), ASN1_Tag.OCTET_STRING)
+					.encode(m_order)
+					.encode(m_cofactor)
 					.end_cons()
 					.get_contents_unlocked();
 		}
@@ -194,33 +194,33 @@ public:
 	* Return domain parameter curve
 	* @result domain parameter curve
 	*/
-	const ref CurveGFp get_curve() const { return curve; }
+	const ref CurveGFp get_curve() const { return m_curve; }
 
 	/**
 	* Return domain parameter curve
 	* @result domain parameter curve
 	*/
-	const ref PointGFp get_base_point() const { return base_point; }
+	const ref PointGFp get_base_point() const { return m_base_point; }
 
 	/**
 	* Return the order of the base point
 	* @result order of the base point
 	*/
-	const ref BigInt get_order() const { return order; }
+	const ref BigInt get_order() const { return m_order; }
 
 	/**
 	* Return the cofactor
 	* @result the cofactor
 	*/
-	const ref BigInt get_cofactor() const { return cofactor; }
+	const ref BigInt get_cofactor() const { return m_cofactor; }
 
-	bool initialized() const { return !base_point.is_zero(); }
+	bool initialized() const { return !m_base_point.is_zero(); }
 
 	/**
 	* Return the OID of these domain parameters
 	* @result the OID
 	*/
-	string get_oid() const { return oid; }
+	string get_oid() const { return m_oid; }
 	bool opCmp(string op)(const ref EC_Group rhs)
 		if (op == "!=")
 	{
@@ -235,6 +235,14 @@ public:
 				  (get_cofactor() == other.get_cofactor()));
 	}
 
+
+private:
+	CurveGFp m_curve;
+	PointGFp m_base_point;
+	BigInt m_order, m_cofactor;
+	string m_oid;
+
+public:
 	/**
 	* Return PEM representation of named EC group
 	*/
@@ -533,9 +541,4 @@ public:
 		return null;
 	}
 
-private:
-	CurveGFp curve;
-	PointGFp base_point;
-	BigInt order, cofactor;
-	string oid;
 }

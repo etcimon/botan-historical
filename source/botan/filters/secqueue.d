@@ -1,5 +1,5 @@
 /*
-* SecureQueue
+* Secure_Queue
 * (C) 1999-2007 Jack Lloyd
 *	  2012 Markus Wanner
 *
@@ -14,7 +14,7 @@ import std.algorithm;
 /**
 * A queue that knows how to zeroize itself
 */
-final class SecureQueue : Fanout_Filter, DataSource
+final class Secure_Queue : Fanout_Filter, DataSource
 {
 public:
 	@property string name() const { return "Queue"; }
@@ -24,17 +24,17 @@ public:
 	*/
 	void write(in ubyte* input, size_t length)
 	{
-		if (!head)
-			head = tail = new SecureQueueNode;
+		if (!m_head)
+			m_head = m_tail = new SecureQueueNode;
 		while(length)
 		{
-			const size_t n = tail.write(input, length);
+			const size_t n = m_tail.write(input, length);
 			input += n;
 			length -= n;
 			if (length)
 			{
-				tail.next = new SecureQueueNode;
-				tail = tail.next;
+				m_tail.next = new SecureQueueNode;
+				m_tail = m_tail.next;
 			}
 		}
 	}
@@ -45,17 +45,17 @@ public:
 	size_t read(ubyte* output, size_t length)
 	{
 		size_t got = 0;
-		while(length && head)
+		while(length && m_head)
 		{
-			const size_t n = head.read(output, length);
+			const size_t n = m_head.read(output, length);
 			output += n;
 			got += n;
 			length -= n;
-			if (head.length == 0)
+			if (m_head.length == 0)
 			{
-				SecureQueueNode holder = head.next;
-				delete head;
-				head = holder;
+				SecureQueueNode holder = m_head.next;
+				delete m_head;
+				m_head = holder;
 			}
 		}
 		bytes_read += got;
@@ -67,7 +67,7 @@ public:
 	*/
 	size_t peek(ubyte* output, size_t length, size_t offset = 0) const
 	{
-		SecureQueueNode current = head;
+		SecureQueueNode current = m_head;
 		
 		while(offset && current)
 		{
@@ -120,7 +120,7 @@ public:
 	*/
 	size_t size() const
 	{
-		SecureQueueNode current = head;
+		SecureQueueNode current = m_head;
 		size_t count = 0;
 		
 		while(current)
@@ -134,47 +134,47 @@ public:
 	bool attachable() { return false; }
 
 	/**
-	* SecureQueue assignment
+	* Secure_Queue assignment
 	* @param other the queue to copy
 	*/
-	SecureQueue opAssign(in SecureQueue input)
+	Secure_Queue opAssign(in Secure_Queue input)
 	{
 		destroy();
-		head = tail = new SecureQueueNode;
-		SecureQueueNode temp = input.head;
+		m_head = m_tail = new SecureQueueNode;
+		SecureQueueNode temp = input.m_head;
 		while(temp)
 		{
-			write(&temp.buffer[temp.start], temp.end - temp.start);
-			temp = temp.next;
+			write(&temp.buffer[temp.m_start], temp.m_end - temp.m_start);
+			temp = temp.m_next;
 		}
 		return this;
 	}
 
 
 	/**
-	* SecureQueue default constructor (creates empty queue)
+	* Secure_Queue default constructor (creates empty queue)
 	*/
 	this()
 	{
 		bytes_read = 0;
 		set_next(null, 0);
-		head = tail = new SecureQueueNode;
+		m_head = m_tail = new SecureQueueNode;
 	}
 
 	/**
-	* SecureQueue copy constructor
+	* Secure_Queue copy constructor
 	* @param other the queue to copy
 	*/
-	this(in SecureQueue input)
+	this(in Secure_Queue input)
 	{
 		bytes_read = 0;
 		set_next(null, 0);
 		
-		head = tail = new SecureQueueNode;
-		SecureQueueNode temp = input.head;
+		m_head = m_tail = new SecureQueueNode;
+		SecureQueueNode temp = input.m_head;
 		while(temp)
 		{
-			write(&temp.buffer[temp.start], temp.end - temp.start);
+			write(&temp.buffer[temp.m_start], temp.m_end - temp.m_start);
 			temp = temp.next;
 		}
 	}
@@ -184,26 +184,26 @@ private:
 	size_t bytes_read;
 
 	/*
-	* Destroy this SecureQueue
+	* Destroy this Secure_Queue
 	*/
 	void destroy()
 	{
-		SecureQueueNode temp = head;
+		SecureQueueNode temp = m_head;
 		while(temp)
 		{
-			SecureQueueNode holder = temp.next;
+			SecureQueueNode holder = temp.m_next;
 			delete temp;
 			temp = holder;
 		}
-		head = tail = null;
+		m_head = m_tail = null;
 	}
 
-	SecureQueueNode head;
-	SecureQueueNode tail;
+	SecureQueueNode m_head;
+	SecureQueueNode m_tail;
 }
 
 /**
-* A node in a SecureQueue
+* A node in a Secure_Queue
 */
 class SecureQueueNode
 {
@@ -211,43 +211,43 @@ public:
 
 	this() 
 	{ 
-		buffer = DEFAULT_BUFFERSIZE; 
-		next = null; 
-		start = end = 0; }
+		m_buffer = DEFAULT_BUFFERSIZE; 
+		m_next = null; 
+		m_start = m_end = 0; }
 	
 	~this() { 
-		next = null; 
-		start = end = 0; 
+		m_next = null; 
+		m_start = m_end = 0; 
 	}
-	
+
 	size_t write(in ubyte* input, size_t length)
 	{
-		size_t copied = std.algorithm.min(length, buffer.length - end);
-		copy_mem(&buffer[end], input, copied);
-		end += copied;
+		size_t copied = std.algorithm.min(length, m_buffer.length - m_end);
+		copy_mem(&m_buffer[end], input, copied);
+		m_end += copied;
 		return copied;
 	}
 	
 	size_t read(ubyte* output, size_t length)
 	{
-		size_t copied = std.algorithm.min(length, end - start);
-		copy_mem(output, &buffer[start], copied);
-		start += copied;
+		size_t copied = std.algorithm.min(length, m_end - m_start);
+		copy_mem(output, &m_buffer[m_start], copied);
+		m_start += copied;
 		return copied;
 	}
 	
 	size_t peek(ubyte* output, size_t length, size_t offset = 0)
 	{
-		const size_t left = end - start;
+		const size_t left = m_end - m_start;
 		if (offset >= left) return 0;
 		size_t copied = std.algorithm.min(length, left - offset);
-		copy_mem(output, &buffer[start + offset], copied);
+		copy_mem(output, &m_buffer[m_start + offset], copied);
 		return copied;
 	}
 	
-	size_t size() const { return (end - start); }
+	size_t size() const { return (m_end - m_start); }
 private:
-	SecureQueueNode next;
-	Secure_Vector!ubyte buffer;
-	size_t start, end;
+	SecureQueueNode m_next;
+	Secure_Vector!ubyte m_buffer;
+	size_t m_start, m_end;
 }

@@ -28,43 +28,43 @@ public:
 	     bool bit_end,
 	     size_t cnt_size = 0)
 	{
-		buffer = block_len;
-		BIG_BYTE_ENDIAN = byte_end;
-		BIG_BIT_ENDIAN = bit_end;
-		COUNT_SIZE = cnt_size;
-		count = position = 0;
+		m_buffer = block_len;
+		m_BIG_BYTE_ENDIAN = byte_end;
+		m_BIG_BIT_ENDIAN = bit_end;
+		m_COUNT_SIZE = cnt_size;
+		m_count = m_position = 0;
 	}
 
-	final override @property size_t hash_block_size() const { return buffer.length; }
+	final override @property size_t hash_block_size() const { return m_buffer.length; }
 protected:
 	/*
 	* Update the hash
 	*/
 	final void add_data(in ubyte* input, size_t length)
 	{
-		count += length;
+		m_count += length;
 		
-		if (position)
+		if (m_position)
 		{
-			buffer_insert(buffer, position, input, length);
+			buffer_insert(m_buffer, m_position, input, length);
 			
-			if (position + length >= buffer.length)
+			if (m_position + length >= m_buffer.length)
 			{
-				compress_n(&buffer[0], 1);
-				input += (buffer.length - position);
-				length -= (buffer.length - position);
-				position = 0;
+				compress_n(&m_buffer[0], 1);
+				input += (m_buffer.length - m_position);
+				length -= (m_buffer.length - m_position);
+				m_position = 0;
 			}
 		}
 		
-		const size_t full_blocks = length / buffer.length;
-		const size_t remaining	= length % buffer.length;
+		const size_t full_blocks = length / m_buffer.length;
+		const size_t remaining	= length % m_buffer.length;
 		
 		if (full_blocks)
 			compress_n(input, full_blocks);
 		
-		buffer_insert(buffer, position, input + full_blocks * buffer.length, remaining);
-		position += remaining;
+		buffer_insert(m_buffer, m_position, input + full_blocks * m_buffer.length, remaining);
+		m_position += remaining;
 	}
 
 
@@ -73,19 +73,19 @@ protected:
 	*/
 	final void final_result(ubyte* output)
 	{
-		buffer[position] = (BIG_BIT_ENDIAN ? 0x80 : 0x01);
-		for (size_t i = position+1; i != buffer.length; ++i)
-			buffer[i] = 0;
+		m_buffer[m_position] = (m_BIG_BIT_ENDIAN ? 0x80 : 0x01);
+		for (size_t i = m_position+1; i != m_buffer.length; ++i)
+			m_buffer[i] = 0;
 		
-		if (position >= buffer.length - COUNT_SIZE)
+		if (m_position >= m_buffer.length - m_COUNT_SIZE)
 		{
-			compress_n(&buffer[0], 1);
-			zeroise(buffer);
+			compress_n(&m_buffer[0], 1);
+			zeroise(m_buffer);
 		}
 		
-		write_count(&buffer[buffer.length - COUNT_SIZE]);
+		write_count(&m_buffer[m_buffer.length - m_COUNT_SIZE]);
 		
-		compress_n(&buffer[0], 1);
+		compress_n(&m_buffer[0], 1);
 		copy_out(output);
 		clear();
 	}
@@ -102,8 +102,8 @@ protected:
 	*/
 	final void clear()
 	{
-		zeroise(buffer);
-		count = position = 0;
+		zeroise(m_buffer);
+		m_count = m_position = 0;
 	}
 
 	/**
@@ -118,23 +118,23 @@ protected:
 	*/
 	final void write_count(ubyte* output)
 	{
-		if (COUNT_SIZE < 8)
+		if (m_COUNT_SIZE < 8)
 			throw new Invalid_State("MDx_HashFunction::write_count: COUNT_SIZE < 8");
-		if (COUNT_SIZE >= output_length() || COUNT_SIZE >= hash_block_size)
+		if (m_COUNT_SIZE >= output_length() || m_COUNT_SIZE >= hash_block_size)
 			throw new Invalid_Argument("MDx_HashFunction: COUNT_SIZE is too big");
 		
-		const ulong bit_count = count * 8;
+		const ulong bit_count = m_count * 8;
 		
-		if (BIG_BYTE_ENDIAN)
-			store_be(bit_count, output + COUNT_SIZE - 8);
+		if (m_BIG_BYTE_ENDIAN)
+			store_be(bit_count, output + m_COUNT_SIZE - 8);
 		else
-			store_le(bit_count, output + COUNT_SIZE - 8);
+			store_le(bit_count, output + m_COUNT_SIZE - 8);
 	}
 private:
-	Secure_Vector!ubyte buffer;
-	ulong count;
-	size_t position;
+	Secure_Vector!ubyte m_buffer;
+	ulong m_count;
+	size_t m_position;
 
-	const bool BIG_BYTE_ENDIAN, BIG_BIT_ENDIAN;
-	const size_t COUNT_SIZE;
+	const bool m_BIG_BYTE_ENDIAN, m_BIG_BIT_ENDIAN;
+	const size_t m_COUNT_SIZE;
 }

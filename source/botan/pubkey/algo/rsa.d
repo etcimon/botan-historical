@@ -16,6 +16,7 @@ import botan.pubkey.blinding;
 import botan.utils.parsing;
 import botan.math.numbertheory.numthry;
 import botan.pubkey.algo.keypair;
+import botan.rng.rng;
 import future;
 
 /**
@@ -64,7 +65,7 @@ public:
 		if (!strong)
 			return true;
 		
-		if ((e * d) % lcm(p - 1, q - 1) != 1)
+		if ((m_e * m_d) % lcm(m_p - 1, m_q - 1) != 1)
 			return false;
 		
 		return signature_consistency_check(rng, this, "EMSA4(SHA-1)");
@@ -112,19 +113,19 @@ public:
 		if (exp < 3 || exp % 2 == 0)
 			throw new Invalid_Argument(algo_name ~ ": Invalid encryption exponent");
 		
-		e = exp;
+		m_e = exp;
 		
 		do
 		{
-			p = random_prime(rng, (bits + 1) / 2, e);
-			q = random_prime(rng, bits - p.bits(), e);
-			n = p * q;
-		} while(n.bits() != bits);
+			m_p = random_prime(rng, (bits + 1) / 2, m_e);
+			m_q = random_prime(rng, bits - m_p.bits(), m_e);
+			m_n = m_p * m_q;
+		} while(m_n.bits() != bits);
 		
-		d = inverse_mod(e, lcm(p - 1, q - 1));
-		d1 = d % (p - 1);
-		d2 = d % (q - 1);
-		c = inverse_mod(q, p);
+		m_d = inverse_mod(e, lcm(m_p - 1, m_q - 1));
+		m_d1 = m_d % (m_p - 1);
+		m_d2 = m_d % (m_q - 1);
+		m_c = inverse_mod(m_q, m_p);
 		
 		gen_check(rng);
 	}
@@ -140,15 +141,15 @@ public:
 	this(in RSA_PrivateKey rsa,
 	     RandomNumberGenerator rng) 
 	{
-		n = rsa.get_n();
-		q = rsa.get_q();
-		c = rsa.get_c();
-		powermod_e_n = Fixed_Exponent_Power_Mod(rsa.get_e(), rsa.get_n());
-		powermod_d1_p = Fixed_Exponent_Power_Mod(rsa.get_d1(), rsa.get_p());
-		powermod_d2_q = Fixed_Exponent_Power_Mod(rsa.get_d2(), rsa.get_q());
-		mod_p = rsa.get_p();
-		BigInt k = BigInt(rng, n.bits() - 1);
-		blinder = Blinder(powermod_e_n(k), inverse_mod(k, n), n);
+		m_n = rsa.get_n();
+		m_q = rsa.get_q();
+		m_c = rsa.get_c();
+		m_powermod_e_n = Fixed_Exponent_Power_Mod(rsa.get_e(), rsa.get_n());
+		m_powermod_d1_p = Fixed_Exponent_Power_Mod(rsa.get_d1(), rsa.get_p());
+		m_powermod_d2_q = Fixed_Exponent_Power_Mod(rsa.get_d2(), rsa.get_q());
+		m_mod_p = rsa.get_p();
+		BigInt k = BigInt(rng, m_n.bits() - 1);
+		m_blinder = Blinder(m_powermod_e_n(k), inverse_mod(k, m_n), m_n);
 	}
 
 	size_t max_input_bits() const { return (n.bits() - 1); }
@@ -165,7 +166,7 @@ public:
 		*/
 		
 		const BigInt m = BigInt(msg, msg_len);
-		const BigInt x = blinder.unblind(private_op(blinder.blind(m)));
+		const BigInt x = m_blinder.unblind(private_op(m_blinder.blind(m)));
 		return BigInt.encode_1363(x, n.bytes());
 	}
 
@@ -175,9 +176,9 @@ public:
 	Secure_Vector!ubyte decrypt(in ubyte* msg, size_t msg_len)
 	{
 		const BigInt m = BigInt(msg, msg_len);
-		const BigInt x = blinder.unblind(private_op(blinder.blind(m)));
+		const BigInt x = m_blinder.unblind(private_op(m_blinder.blind(m)));
 		
-		assert(m == powermod_e_n(x),
+		assert(m == m_powermod_e_n(x),
 		             "RSA decrypt passed consistency check");
 		
 		return BigInt.encode_locked(x);
@@ -185,25 +186,25 @@ public:
 private:
 	BigInt private_op(in BigInt m) const
 	{
-		if (m >= n)
+		if (m >= m_n)
 			throw new Invalid_Argument("RSA private op - input is too large");
 
 		import std.concurrency : spawn, receiveOnly, thidTid, send;
-		auto tid = spawn((Tid tid, Fixed_Exponent_Power_Mod powermod_d1_p2, BigInt m2) { send(tid, powermod_d1_p(m2)); }, thisTid, powermod_d1_p, m);
-		BigInt j2 = powermod_d2_q(m);
+		auto tid = spawn((Tid tid, Fixed_Exponent_Power_Mod powermod_d1_p2, BigInt m2) { send(tid, powermod_d1_p2(m2)); }, thisTid, m_powermod_d1_p, m);
+		BigInt j2 = m_powermod_d2_q(m);
 		BigInt j1 = receiveOnly!BigInt();
 		
-		j1 = mod_p.reduce(sub_mul(j1, j2, c));
+		j1 = m_mod_p.reduce(sub_mul(j1, j2, c));
 		
 		return mul_add(j1, q, j2);
 	}
 
-	const ref BigInt n;
-	const ref BigInt q;
-	const ref BigInt c;
-	Fixed_Exponent_Power_Mod powermod_e_n, powermod_d1_p, powermod_d2_q;
-	Modular_Reducer mod_p;
-	Blinder blinder;
+	const BigInt m_n;
+	const BigInt m_q;
+	const BigInt m_c;
+	Fixed_Exponent_Power_Mod m_powermod_e_n, m_powermod_d1_p, m_powermod_d2_q;
+	Modular_Reducer m_mod_p;
+	Blinder m_blinder;
 }
 
 /**
@@ -215,8 +216,8 @@ final class RSA_Public_Operation : Verification,
 public:
 	this(in RSA_PublicKey rsa)
 	{
-		n = rsa.get_n();
-		powermod_e_n = Fixed_Exponent_Power_Mod(rsa.get_e(), rsa.get_n());
+		m_n = rsa.get_n();
+		m_powermod_e_n = Fixed_Exponent_Power_Mod(rsa.get_e(), rsa.get_n());
 	}
 
 	size_t max_input_bits() const { return (n.bits() - 1); }
@@ -226,7 +227,7 @@ public:
 										RandomNumberGenerator)
 	{
 		BigInt m = BigInt(msg, msg_len);
-		return BigInt.encode_1363(public_op(m), n.bytes());
+		return BigInt.encode_1363(public_op(m), m_n.bytes());
 	}
 
 	Secure_Vector!ubyte verify_mr(in ubyte* msg, size_t msg_len)
@@ -238,11 +239,11 @@ public:
 private:
 	BigInt public_op(in BigInt m) const
 	{
-		if (m >= n)
+		if (m >= m_n)
 			throw new Invalid_Argument("RSA public op - input is too large");
-		return powermod_e_n(m);
+		return m_powermod_e_n(m);
 	}
 
-	const ref BigInt n;
-	Fixed_Exponent_Power_Mod powermod_e_n;
+	const BigInt n;
+	Fixed_Exponent_Power_Mod m_powermod_e_n;
 }

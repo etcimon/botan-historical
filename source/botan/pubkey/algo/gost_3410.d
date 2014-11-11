@@ -65,9 +65,9 @@ public:
 		BigInt x = BigInt(&bits[0], part_size);
 		BigInt y = BigInt(&bits[part_size], part_size);
 		
-		public_key = PointGFp(domain().get_curve(), x, y);
+		m_public_key = PointGFp(domain().get_curve(), x, y);
 		
-		assert(public_key.on_the_curve(),
+		assert(m_public_key.on_the_curve(),
 		             "Loaded GOST 34.10 public key is on the curve");
 	}
 
@@ -168,51 +168,51 @@ public:
 	this(const GOST_3410_PrivateKey gost_3410)
 	{
 		
-		base_point = gost_3410.domain().get_base_point();
-		order = gost_3410.domain().get_order();
-		x = gost_3410.private_value();
+		m_base_point = gost_3410.domain().get_base_point();
+		m_order = gost_3410.domain().get_order();
+		m_x = gost_3410.private_value();
 	}
 
 	size_t message_parts() const { return 2; }
-	size_t message_part_size() const { return order.bytes(); }
-	size_t max_input_bits() const { return order.bits(); }
+	size_t message_part_size() const { return m_order.bytes(); }
+	size_t max_input_bits() const { return m_order.bits(); }
 
 	Secure_Vector!ubyte sign(in ubyte* msg, size_t msg_len,
 	                      RandomNumberGenerator rng)
 	{
 		BigInt k;
 		do
-			k.randomize(rng, order.bits()-1);
-		while(k >= order);
+			k.randomize(rng, m_order.bits()-1);
+		while(k >= m_order);
 		
 		BigInt e = decode_le(msg, msg_len);
 		
-		e %= order;
+		e %= m_order;
 		if (e == 0)
 			e = 1;
 		
-		PointGFp k_times_P = base_point * k;
+		PointGFp k_times_P = m_base_point * k;
 		
 		assert(k_times_P.on_the_curve(),
 		             "GOST 34.10 k*g is on the curve");
 		
-		BigInt r = k_times_P.get_affine_x() % order;
+		BigInt r = k_times_P.get_affine_x() % m_order;
 		
-		BigInt s = (r*x + k*e) % order;
+		BigInt s = (r*m_x + k*e) % m_order;
 		
 		if (r == 0 || s == 0)
 			throw new Invalid_State("GOST 34.10: r == 0 || s == 0");
 		
-		Secure_Vector!ubyte output = Secure_Vector!ubyte(2*order.bytes());
+		Secure_Vector!ubyte output = Secure_Vector!ubyte(2*m_order.bytes());
 		s.binary_encode(&output[output.length / 2 - s.bytes()]);
 		r.binary_encode(&output[output.length - r.bytes()]);
 		return output;
 	}
 
 private:
-	const PointGFp base_point;
-	const BigInt order;
-	const BigInt x;
+	const PointGFp m_base_point;
+	const BigInt m_order;
+	const BigInt m_x;
 }
 
 /**
@@ -223,21 +223,21 @@ final class GOST_3410_Verification_Operation : Verification
 public:
 	this(in GOST_3410_PublicKey gost) 
 	{
-		base_point = gost.domain().get_base_point();
-		public_point = gost.public_point();
-		order = gost.domain().get_order();
+		m_base_point = gost.domain().get_base_point();
+		m_public_point = gost.public_point();
+		m_order = gost.domain().get_order();
 	}
 
 	size_t message_parts() const { return 2; }
-	size_t message_part_size() const { return order.bytes(); }
-	size_t max_input_bits() const { return order.bits(); }
+	size_t message_part_size() const { return m_order.bytes(); }
+	size_t max_input_bits() const { return m_order.bits(); }
 
 	bool with_recovery() const { return false; }
 
 	bool verify(in ubyte* msg, size_t msg_len,
 	            in ubyte* sig, size_t sig_len)
 	{
-		if (sig_len != order.bytes()*2)
+		if (sig_len != m_order.bytes()*2)
 			return false;
 		
 		BigInt e = decode_le(msg, msg_len);
@@ -245,20 +245,20 @@ public:
 		BigInt s = BigInt(sig, sig_len / 2);
 		BigInt r = BigInt(sig + sig_len / 2, sig_len / 2);
 		
-		if (r <= 0 || r >= order || s <= 0 || s >= order)
+		if (r <= 0 || r >= m_order || s <= 0 || s >= m_order)
 			return false;
 		
-		e %= order;
+		e %= m_order;
 		if (e == 0)
 			e = 1;
 		
-		BigInt v = inverse_mod(e, order);
+		BigInt v = inverse_mod(e, m_order);
 		
-		BigInt z1 = (s*v) % order;
-		BigInt z2 = (-r*v) % order;
+		BigInt z1 = (s*v) % m_order;
+		BigInt z2 = (-r*v) % m_order;
 		
-		PointGFp R = multi_exponentiate(base_point, z1,
-		                                public_point, z2);
+		PointGFp R = multi_exponentiate(m_base_point, z1,
+		                                m_public_point, z2);
 		
 		if (R.is_zero())
 			return false;
@@ -266,9 +266,9 @@ public:
 		return (R.get_affine_x() == r);
 	}
 private:
-	const PointGFp base_point;
-	const PointGFp public_point;
-	const BigInt order;
+	const PointGFp m_base_point;
+	const PointGFp m_public_point;
+	const BigInt m_order;
 }
 
 

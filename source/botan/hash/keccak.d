@@ -29,38 +29,38 @@ public:
 	* @param output_bits the size of the hash output; must be one of
 	*						  224, 256, 384, or 512
 	*/
-	this(size_t _output_bits = 512) 
+	this(size_t output_bits = 512) 
 	{
-		output_bits = _output_bits;
-		bitrate = 1600 - 2*output_bits;
-		S = 25;
-		S_pos = 0;
+		m_output_bits = output_bits;
+		m_bitrate = 1600 - 2*m_output_bits;
+		m_S = 25;
+		m_S_pos = 0;
 		
 		// We only support the parameters for the SHA-3 proposal
 		
-		if (output_bits != 224 && output_bits != 256 &&
-		    output_bits != 384 && output_bits != 512)
+		if (m_output_bits != 224 && m_output_bits != 256 &&
+		    m_output_bits != 384 && m_output_bits != 512)
 			throw new Invalid_Argument("Keccak_1600: Invalid output length " ~
-			                           std.conv.to!string(output_bits));
+			                           std.conv.to!string(m_output_bits));
 	}
 
-	override @property size_t hash_block_size() const { return bitrate / 8; }
-	override @property size_t output_length() const { return output_bits / 8; }
+	override @property size_t hash_block_size() const { return m_bitrate / 8; }
+	override @property size_t output_length() const { return m_output_bits / 8; }
 
 	HashFunction clone() const
 	{
-		return new Keccak_1600(output_bits);
+		return new Keccak_1600(m_output_bits);
 	}
 
 	@property string name() const
 	{
-		return "Keccak-1600(" ~ std.conv.to!string(output_bits) ~ ")";
+		return "Keccak-1600(" ~ std.conv.to!string(m_output_bits) ~ ")";
 	}
 
 	void clear()
 	{
-		zeroise(S);
-		S_pos = 0;
+		zeroise(m_S);
+		m_S_pos = 0;
 	}
 
 private:
@@ -71,47 +71,47 @@ private:
 		
 		while(length)
 		{
-			size_t to_take = std.algorithm.min(length, bitrate / 8 - S_pos);
+			size_t to_take = std.algorithm.min(length, m_bitrate / 8 - m_S_pos);
 			
 			length -= to_take;
 			
-			while(to_take && S_pos % 8)
+			while(to_take && m_S_pos % 8)
 			{
-				S[S_pos / 8] ^= cast(ulong)(input[0]) << (8 * (S_pos % 8));
+				m_S[m_S_pos / 8] ^= cast(ulong)(input[0]) << (8 * (m_S_pos % 8));
 				
-				++S_pos;
+				++m_S_pos;
 				++input;
 				--to_take;
 			}
 			
 			while(to_take && to_take % 8 == 0)
 			{
-				S[S_pos / 8] ^= load_le!ulong(input, 0);
-				S_pos += 8;
+				m_S[m_S_pos / 8] ^= load_le!ulong(input, 0);
+				m_S_pos += 8;
 				input += 8;
 				to_take -= 8;
 			}
 			
 			while(to_take)
 			{
-				S[S_pos / 8] ^= cast(ulong)(input[0]) << (8 * (S_pos % 8));
+				m_S[m_S_pos / 8] ^= cast(ulong)(input[0]) << (8 * (m_S_pos % 8));
 				
-				++S_pos;
+				++m_S_pos;
 				++input;
 				--to_take;
 			}
 			
-			if (S_pos == bitrate / 8)
+			if (m_S_pos == m_bitrate / 8)
 			{
-				keccak_f_1600(&S[0]);
-				S_pos = 0;
+				keccak_f_1600(&m_S[0]);
+				m_S_pos = 0;
 			}
 		}
 	}
 
 	void final_result(ubyte* output)
 	{
-		Vector!ubyte padding(bitrate / 8 - S_pos);
+		Vector!ubyte padding = Vector!ubyte(m_bitrate / 8 - m_S_pos);
 		
 		padding[0] = 0x01;
 		padding[padding.length-1] |= 0x80;
@@ -122,15 +122,15 @@ private:
 		* We never have to run the permutation again because we only support
 		* limited output lengths
 		*/
-		for (size_t i = 0; i != output_bits/8; ++i)
-			output[i] = get_byte(7 - (i % 8), S[i/8]);
+		for (size_t i = 0; i != m_output_bits/8; ++i)
+			output[i] = get_byte(7 - (i % 8), m_S[i/8]);
 		
 		clear();
 	}
 
-	size_t output_bits, bitrate;
-	Secure_Vector!ulong S;
-	size_t S_pos;
+	size_t m_output_bits, m_bitrate;
+	Secure_Vector!ulong m_S;
+	size_t m_S_pos;
 }
 
 

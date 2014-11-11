@@ -68,18 +68,18 @@ protected:
 		
 		bool nothing_attached = true;
 		for (size_t j = 0; j != total_ports(); ++j)
-			if (next[j])
+			if (m_next[j])
 		{
-			if (write_queue.length)
-				next[j].write(&write_queue[0], write_queue.length);
-			next[j].write(input, length);
+			if (m_write_queue.length)
+				m_next[j].write(&m_write_queue[0], m_write_queue.length);
+			m_next[j].write(input, length);
 			nothing_attached = false;
 		}
 		
 		if (nothing_attached)
-			write_queue += Pair(input, length);
+			m_write_queue += Pair(input, length);
 		else
-			write_queue.clear();
+			m_write_queue.clear();
 	}
 
 
@@ -121,10 +121,10 @@ protected:
 	*/
 	this()
 	{
-		next.resize(1);
-		port_num = 0;
-		filter_owns = 0;
-		owned = false;
+		m_next.resize(1);
+		m_port_num = 0;
+		m_filter_owns = 0;
+		m_owned = false;
 	}
 
 private:
@@ -136,8 +136,8 @@ private:
 	{
 		start_msg();
 		for (size_t j = 0; j != total_ports(); ++j)
-			if (next[j])
-				next[j].new_msg();
+			if (m_next[j])
+				m_next[j].new_msg();
 	}
 
 	/**
@@ -148,8 +148,8 @@ private:
 	{
 		end_msg();
 		for (size_t j = 0; j != total_ports(); ++j)
-			if (next[j])
-				next[j].finish_msg();
+			if (m_next[j])
+				m_next[j].finish_msg();
 	}
 
 	/*
@@ -157,10 +157,10 @@ private:
 	*/
 	size_t total_ports() const
 	{
-		return next.length;
+		return m_next.length;
 	}
 
-	size_t current_port() const { return port_num; }
+	size_t current_port() const { return m_port_num; }
 
 	/**
 	* Set the active port
@@ -170,10 +170,10 @@ private:
 	{
 		if (new_port >= total_ports())
 			throw new Invalid_Argument("Filter: Invalid port number");
-		port_num = new_port;
+		m_port_num = new_port;
 	}
 
-	size_t owns() const { return filter_owns; }
+	size_t owns() const { return m_filter_owns; }
 
 	/**
 	* Attach another filter to this one
@@ -186,7 +186,7 @@ private:
 			Filter last = this;
 			while(last.get_next())
 				last = last.get_next();
-			last.next[last.current_port()] = new_filter;
+			last.m_next[last.current_port()] = new_filter;
 		}
 	}
 
@@ -196,16 +196,16 @@ private:
 	*/
 	void set_next(Filter* filters, size_t size)
 	{
-		next.clear();
+		m_next.clear();
 		
-		port_num = 0;
-		filter_owns = 0;
+		m_port_num = 0;
+		m_filter_owns = 0;
 		
 		while(size && filters && (filters[size-1] == null))
 			--size;
 		
 		if (filters && size)
-			next.assign(filters, filters + size);
+			m_next.assign(filters, filters + size);
 	}
 
 
@@ -214,17 +214,17 @@ private:
 	*/
 	Filter get_next() const
 	{
-		if (port_num < next.length)
-			return next[port_num];
+		if (m_port_num < m_next.length)
+			return m_next[m_port_num];
 		return null;
 	}
 
-	Secure_Vector!ubyte write_queue;
-	Vector!Filter next;
-	size_t port_num, filter_owns;
+	Secure_Vector!ubyte m_write_queue;
+	Vector!Filter m_next;
+	size_t m_port_num, m_filter_owns;
 
 	// true if filter belongs to a pipe -. prohibit filter sharing!
-	bool owned;
+	bool m_owned;
 }
 
 /**
@@ -236,15 +236,15 @@ protected:
 	/**
 	* Increment the number of filters past us that we own
 	*/
-	void incr_owns() { ++filter_owns; }
+	void incr_owns() { ++m_filter_owns; }
 
 	void set_port(size_t n) { set_port(n); }
 
-	void set_next(Filter* f, size_t n) { set_next(f, n); }
+	void set_next(Filter f, size_t n) { set_next(f, n); }
 
 	void attach(Filter f) { attach(f); }
 
-/*m_tag
+/*private:
 	using write_queue;
 	using total_ports;
 	using next;*/
@@ -256,4 +256,5 @@ protected:
 * whitespaces, FULL_CHECK - perform checks, also complain
 * about white spaces.
 */
-enum Decoder_Checking { NONE, IGNORE_WS, FULL_CHECK }
+typedef ubyte Decoder_Checking;
+enum : Decoder_Checking { NONE, IGNORE_WS, FULL_CHECK }

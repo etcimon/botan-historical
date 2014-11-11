@@ -30,32 +30,32 @@ public:
 		if (!input_size)
 			return;
 		
-		if (buffer_pos + input_size >= main_block_mod + final_minimum)
+		if (m_buffer_pos + input_size >= m_main_block_mod + m_final_minimum)
 		{
-			size_t to_copy = std.algorithm.min(buffer.length - buffer_pos, input_size);
+			size_t to_copy = std.algorithm.min(m_buffer.length - m_buffer_pos, input_size);
 			
-			copy_mem(&buffer[buffer_pos], input, to_copy);
-			buffer_pos += to_copy;
+			copy_mem(&m_buffer[m_buffer_pos], input, to_copy);
+			m_buffer_pos += to_copy;
 			
 			input += to_copy;
 			input_size -= to_copy;
 			
 			size_t total_to_consume =
-				round_down(std.algorithm.min(buffer_pos,
-				                             buffer_pos + input_size - final_minimum),
-				           main_block_mod);
+				round_down(std.algorithm.min(m_buffer_pos,
+				                             m_buffer_pos + input_size - m_final_minimum),
+				           m_main_block_mod);
 			
-			buffered_block(&buffer[0], total_to_consume);
+			buffered_block(&m_buffer[0], total_to_consume);
 			
-			buffer_pos -= total_to_consume;
+			m_buffer_pos -= total_to_consume;
 			
-			copy_mem(&buffer[0], &buffer[0] + total_to_consume, buffer_pos);
+			copy_mem(&m_buffer[0], &m_buffer[0] + total_to_consume, buffer_pos);
 		}
 		
-		if (input_size >= final_minimum)
+		if (input_size >= m_final_minimum)
 		{
-			size_t full_blocks = (input_size - final_minimum) / main_block_mod;
-			size_t to_copy = full_blocks * main_block_mod;
+			size_t full_blocks = (input_size - m_final_minimum) / m_main_block_mod;
+			size_t to_copy = full_blocks * m_main_block_mod;
 			
 			if (to_copy)
 			{
@@ -66,11 +66,11 @@ public:
 			}
 		}
 		
-		copy_mem(&buffer[buffer_pos], input, input_size);
-		buffer_pos += input_size;
+		copy_mem(&m_buffer[buffer_pos], input, input_size);
+		m_buffer_pos += input_size;
 	}
 
-	void write(in Vector!( ubyte, Alloc ) input)
+	void write(Alloc)(in Vector!( ubyte, Alloc ) input)
 	{
 		write(&input[0], input.length);
 	}
@@ -82,46 +82,46 @@ public:
 	*/
 	void end_msg()
 	{
-		if (buffer_pos < final_minimum)
+		if (m_buffer_pos < m_final_minimum)
 			throw new Exception("Buffered filter end_msg without enough input");
 		
-		size_t spare_blocks = (buffer_pos - final_minimum) / main_block_mod;
+		size_t spare_blocks = (m_buffer_pos - m_final_minimum) / m_main_block_mod;
 		
 		if (spare_blocks)
 		{
-			size_t spare_bytes = main_block_mod * spare_blocks;
-			buffered_block(&buffer[0], spare_bytes);
-			buffered_final(&buffer[spare_bytes], buffer_pos - spare_bytes);
+			size_t spare_bytes = m_main_block_mod * spare_blocks;
+			buffered_block(&m_buffer[0], spare_bytes);
+			buffered_final(&m_buffer[spare_bytes], m_buffer_pos - spare_bytes);
 		}
 		else
 		{
-			buffered_final(&buffer[0], buffer_pos);
+			buffered_final(&m_buffer[0], m_buffer_pos);
 		}
 		
-		buffer_pos = 0;
+		m_buffer_pos = 0;
 	}
 
 	/**
 	* Initialize a Buffered_Filter
-	* @param _block_size the function buffered_block will be called
+	* @param block_size the function buffered_block will be called
 	*		  with inputs which are a multiple of this size
-	* @param _final_minimum the function buffered_final will be called
+	* @param final_minimum the function buffered_final will be called
 	*		  with at least this many bytes.
 	*/
-	this(size_t _block_size, size_t _final_minimum)
+	this(size_t block_size, size_t final_minimum)
 	{
 		
-		main_block_mod = _block_size;
-		final_minimum = _final_minimum;
+		m_main_block_mod = block_size;
+		m_final_minimum = final_minimum;
 		
-		if (main_block_mod == 0)
+		if (m_main_block_mod == 0)
 			throw new Invalid_Argument("main_block_mod == 0");
 		
-		if (final_minimum > main_block_mod)
+		if (m_final_minimum > m_main_block_mod)
 			throw new Invalid_Argument("final_minimum > main_block_mod");
 		
-		buffer.resize(2 * main_block_mod);
-		buffer_pos = 0;
+		m_buffer.resize(2 * m_main_block_mod);
+		m_buffer_pos = 0;
 	}
 	~this() {}
 protected:
@@ -144,20 +144,20 @@ protected:
 	/**
 	* @return block size of inputs
 	*/
-	final size_t buffered_block_size() const { return main_block_mod; }
+	final size_t buffered_block_size() const { return m_main_block_mod; }
 
 	/**
 	* @return current position in the buffer
 	*/
-	final size_t current_position() const { return buffer_pos; }
+	final size_t current_position() const { return m_buffer_pos; }
 
 	/**
 	* Reset the buffer position
 	*/
-	final void buffer_reset() { buffer_pos = 0; }
+	final void buffer_reset() { m_buffer_pos = 0; }
 private:
-	size_t main_block_mod, final_minimum;
+	size_t m_main_block_mod, m_final_minimum;
 
-	Secure_Vector!ubyte buffer;
-	size_t buffer_pos;
+	Secure_Vector!ubyte m_buffer;
+	size_t m_buffer_pos;
 }

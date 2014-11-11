@@ -81,13 +81,13 @@ final class EMSA_PKCS1v15_Raw : EMSA
 public:
 	void update(in ubyte* input, size_t length)
 	{
-		message += Pair(input, length);
+		m_message += Pair(input, length);
 	}
 
 	Secure_Vector!ubyte raw_data()
 	{
 		Secure_Vector!ubyte ret;
-		std.algorithm.swap(ret, message);
+		std.algorithm.swap(ret, m_message);
 		return ret;
 	}
 
@@ -114,7 +114,7 @@ public:
 	}
 
 private:
-	Secure_Vector!ubyte message;
+	Secure_Vector!ubyte m_message;
 }
 
 private:

@@ -40,8 +40,8 @@ public:
 	*/
 	this(in DL_Group grp, const ref BigInt y1)
 	{
-		group = grp;
-		y = y1;
+		m_group = grp;
+		m_y = y1;
 	}
 protected:
 	this() {}
@@ -61,13 +61,13 @@ public:
 	     const ref DL_Group dl_group,
 	     const ref BigInt private_key = 0)
 	{
-		group = dl_group;
-		x = private_key;
+		m_group = dl_group;
+		m_x = private_key;
 		
-		if (x == 0)
-			x = BigInt.random_integer(rng, 2, group_q() - 1);
+		if (m_x == 0)
+			m_x = BigInt.random_integer(rng, 2, group_q() - 1);
 		
-		y = power_mod(group_g(), x, group_p());
+		m_y = power_mod(group_g(), m_x, group_p());
 		
 		if (private_key == 0)
 			gen_check(rng);
@@ -80,7 +80,7 @@ public:
 	     RandomNumberGenerator rng)
 	{
 		super(alg_id, key_bits, DL_Group.ANSI_X9_57);
-		y = power_mod(group_g(), x, group_p());
+		m_y = power_mod(group_g(), m_x, group_p());
 		
 		load_check(rng);
 	}
@@ -90,7 +90,7 @@ public:
 	*/
 	bool check_key(RandomNumberGenerator rng, bool strong) const
 	{
-		if (!super.check_key(rng, strong) || x >= group_q())
+		if (!super.check_key(rng, strong) || m_x >= group_q())
 			return false;
 		
 		if (!strong)
@@ -99,8 +99,6 @@ public:
 		return signature_consistency_check(rng, this, "EMSA1(SHA-1)");
 	}
 
-
-	bool check_key(RandomNumberGenerator rng, bool strong) const;
 }
 
 /**
@@ -111,15 +109,15 @@ final class DSA_Signature_Operation : Signature
 public:
 	this(in DSA_PrivateKey dsa)
 	{ 
-		q = dsa.group_q();
-		x = dsa.get_x();
-		powermod_g_p = Fixed_Base_Power_Mod(dsa.group_g(), dsa.group_p());
-		mod_q = dsa.group_q();
+		m_q = dsa.group_q();
+		m_x = dsa.get_x();
+		m_powermod_g_p = Fixed_Base_Power_Mod(dsa.group_g(), dsa.group_p());
+		m_mod_q = dsa.group_q();
 	}
 
 	size_t message_parts() const { return 2; }
-	size_t message_part_size() const { return q.bytes(); }
-	size_t max_input_bits() const { return q.bits(); }
+	size_t message_part_size() const { return m_q.bytes(); }
+	size_t max_input_bits() const { return m_q.bits(); }
 
 	Secure_Vector!ubyte sign(in ubyte* msg, size_t msg_len,
 		 					    RandomNumberGenerator rng)
@@ -134,28 +132,28 @@ public:
 		{
 			BigInt k;
 			do
-				k.randomize(rng, q.bits());
-			while(k >= q);
+				k.randomize(rng, m_q.bits());
+			while(k >= m_q);
 			
-			auto tid = spawn((Tid tid, Fixed_Base_Power_Mod powermod_g_p2, BigInt k2){ send(tid, mod_q.reduce(powermod_g_p2(k2))); }, thisTid, powermod_g_p, k);
+			auto tid = spawn((Tid tid, Fixed_Base_Power_Mod powermod_g_p2, BigInt k2){ send(tid, m_mod_q.reduce(powermod_g_p2(k2))); }, thisTid, m_powermod_g_p, k);
 			
-			s = inverse_mod(k, q);
+			s = inverse_mod(k, m_q);
 
 			r = receiveOnly!BigInt();
 
-			s = mod_q.multiply(s, mul_add(x, r, i));
+			s = m_mod_q.multiply(s, mul_add(m_x, r, i));
 		}
 		
-		Secure_Vector!ubyte output = Secure_Vector!ubyte(2*q.bytes());
+		Secure_Vector!ubyte output = Secure_Vector!ubyte(2*m_q.bytes());
 		r.binary_encode(&output[output.length / 2 - r.bytes()]);
 		s.binary_encode(&output[output.length - s.bytes()]);
 		return output;
 	}
 private:
-	const BigInt q;
-	const BigInt x;
-	Fixed_Base_Power_Mod powermod_g_p;
-	Modular_Reducer mod_q;
+	const BigInt m_q;
+	const BigInt m_x;
+	Fixed_Base_Power_Mod m_powermod_g_p;
+	Modular_Reducer m_mod_q;
 }
 
 /**
@@ -167,17 +165,17 @@ public:
 
 	this(in DSA_PublicKey dsa) 
 	{
-		q = dsa.group_q();
-		y = dsa.get_y();
-		powermod_g_p = Fixed_Base_Power_Mod(dsa.group_g(), dsa.group_p());
-		powermod_y_p = Fixed_Base_Power_Mod(y, dsa.group_p());
-		mod_p = Modular_Reducer(dsa.group_p());
-		mod_q = Modular_Reducer(dsa.group_q());
+		m_q = dsa.group_q();
+		m_y = dsa.get_y();
+		m_powermod_g_p = Fixed_Base_Power_Mod(dsa.group_g(), dsa.group_p());
+		m_powermod_y_p = Fixed_Base_Power_Mod(y, dsa.group_p());
+		m_mod_p = Modular_Reducer(dsa.group_p());
+		m_mod_q = Modular_Reducer(dsa.group_q());
 	}
 
 	size_t message_parts() const { return 2; }
-	size_t message_part_size() const { return q.bytes(); }
-	size_t max_input_bits() const { return q.bits(); }
+	size_t message_part_size() const { return m_q.bytes(); }
+	size_t max_input_bits() const { return m_q.bits(); }
 
 	bool with_recovery() const { return false; }
 
@@ -185,7 +183,7 @@ public:
 	            in ubyte* sig, size_t sig_len)
 	{
 		import std.concurrency : spawn, receiveOnly, send, thisTid;
-		const ref BigInt q = mod_q.get_modulus();
+		const BigInt q = mod_q.get_modulus();
 		
 		if (sig_len != 2*q.bytes() || msg_len > q.bytes())
 			return false;
@@ -201,20 +199,20 @@ public:
 		
 		auto tid = spawn((Tid tid, Fixed_Base_Power_Mod powermod_g_p2, BigInt mod_q2, BigInt s2, BigInt i2) 
 		                 { send(tid, powermod_g_p2(mod_q2.multiply(s2, i2))); }, 
-								thisTid, powermod_g_p, mod_q, s, i);
+							thisTid, m_powermod_g_p, m_mod_q, s, i);
 		
-		BigInt s_r = powermod_y_p(mod_q.multiply(s, r));
+		BigInt s_r = m_powermod_y_p(m_mod_q.multiply(s, r));
 		BigInt s_i = receiveOnly!BigInt();
 		
-		s = mod_p.multiply(s_i, s_r);
+		s = m_mod_p.multiply(s_i, s_r);
 		
-		return (mod_q.reduce(s) == r);
+		return (m_mod_q.reduce(s) == r);
 	}
 
 private:
 	const BigInt q;
 	const BigInt y;
 
-	Fixed_Base_Power_Mod powermod_g_p, powermod_y_p;
-	Modular_Reducer mod_p, mod_q;
+	Fixed_Base_Power_Mod m_powermod_g_p, m_powermod_y_p;
+	Modular_Reducer m_mod_p, m_mod_q;
 }

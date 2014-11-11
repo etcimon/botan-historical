@@ -16,6 +16,7 @@ import botan.math.numbertheory.reducer;
 import botan.pubkey.pk_ops;
 import botan.pubkey.algo.keypair;
 import botan.math.ec_gfp.point_gfp;
+import botan.rng.rng;
 
 /**
 * This class represents ECDSA Public Keys.
@@ -116,10 +117,10 @@ final class ECDSA_Signature_Operation : Signature
 public:
 	this(in ECDSA_PrivateKey ecdsa)
 	{
-		base_point = ecdsa.domain().get_base_point();
-		order = ecdsa.domain().get_order();
-		x = ecdsa.private_value();
-		mod_order = order;
+		m_base_point = ecdsa.domain().get_base_point();
+		m_order = ecdsa.domain().get_order();
+		m_x = ecdsa.private_value();
+		m_mod_order = order;
 	}
 
 	Secure_Vector!ubyte sign(in ubyte* msg, size_t msg_len,
@@ -135,31 +136,31 @@ public:
 		{
 			// This contortion is necessary for the tests
 			BigInt k;
-			k.randomize(rng, order.bits());
+			k.randomize(rng, m_order.bits());
 			
-			while(k >= order)
-				k.randomize(rng, order.bits() - 1);
+			while(k >= m_order)
+				k.randomize(rng, m_order.bits() - 1);
 			
-			PointGFp k_times_P = base_point * k;
-			r = mod_order.reduce(k_times_P.get_affine_x());
-			s = mod_order.multiply(inverse_mod(k, order), mul_add(x, r, m));
+			PointGFp k_times_P = m_base_point * k;
+			r = m_mod_order.reduce(k_times_P.get_affine_x());
+			s = m_mod_order.multiply(inverse_mod(k, m_order), mul_add(m_x, r, m));
 		}
 		
-		Secure_Vector!ubyte output = Secure_Vector!ubyte(2*order.bytes());
+		Secure_Vector!ubyte output = Secure_Vector!ubyte(2*m_order.bytes());
 		r.binary_encode(&output[output.length / 2 - r.bytes()]);
 		s.binary_encode(&output[output.length - s.bytes()]);
 		return output;
 	}
 
 	size_t message_parts() const { return 2; }
-	size_t message_part_size() const { return order.bytes(); }
-	size_t max_input_bits() const { return order.bits(); }
+	size_t message_part_size() const { return m_order.bytes(); }
+	size_t max_input_bits() const { return m_order.bits(); }
 
 private:
-	const PointGFp base_point;
-	const BigInt order;
-	const BigInt x;
-	Modular_Reducer mod_order;
+	const PointGFp m_base_point;
+	const BigInt m_order;
+	const BigInt m_x;
+	Modular_Reducer m_mod_order;
 }
 
 /**
@@ -170,21 +171,21 @@ final class ECDSA_Verification_Operation : Verification
 public:
 	this(in ECDSA_PublicKey ecdsa) 
 	{
-		base_point = ecdsa.domain().get_base_point();
-		public_point = ecdsa.public_point();
-		order = ecdsa.domain().get_order();
+		m_base_point = ecdsa.domain().get_base_point();
+		m_public_point = ecdsa.public_point();
+		m_order = ecdsa.domain().get_order();
 	}
 
 	size_t message_parts() const { return 2; }
-	size_t message_part_size() const { return order.bytes(); }
-	size_t max_input_bits() const { return order.bits(); }
+	size_t message_part_size() const { return m_order.bytes(); }
+	size_t max_input_bits() const { return m_order.bits(); }
 
 	bool with_recovery() const { return false; }
 
 	bool verify(in ubyte* msg, size_t msg_len,
 	            in ubyte* sig, size_t sig_len)
 	{
-		if (sig_len != order.bytes()*2)
+		if (sig_len != m_order.bytes()*2)
 			return false;
 		
 		BigInt e = BigInt(msg, msg_len);
@@ -192,22 +193,22 @@ public:
 		BigInt r = BigInt(sig, sig_len / 2);
 		BigInt s = BigInt(sig + sig_len / 2, sig_len / 2);
 		
-		if (r <= 0 || r >= order || s <= 0 || s >= order)
+		if (r <= 0 || r >= m_order || s <= 0 || s >= m_order)
 			return false;
 		
-		BigInt w = inverse_mod(s, order);
+		BigInt w = inverse_mod(s, m_order);
 		
-		PointGFp R = w * multi_exponentiate(base_point, e,
-		                                    public_point, r);
+		PointGFp R = w * multi_exponentiate(m_base_point, e,
+		                                    m_public_point, r);
 		
 		if (R.is_zero())
 			return false;
 		
-		return (R.get_affine_x() % order == r);
+		return (R.get_affine_x() % m_order == r);
 	}
 
 private:
-	const PointGFp base_point;
-	const PointGFp public_point;
-	const BigInt order;
+	const PointGFp m_base_point;
+	const PointGFp m_public_point;
+	const BigInt m_order;
 }

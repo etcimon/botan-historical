@@ -23,13 +23,13 @@ public:
 	this(in PK_Key_Agreement_Key key,
 	     KDF kdf_obj,
 	     MessageAuthenticationCode mac_obj,
-	     size_t mac_key_len = 20)
+	     size_t mac_keylen = 20)
 	{ 
-		ka = PK_Key_Agreement(key, "Raw");
-		kdf = kdf_obj;
-		mac = mac_obj;
-		mac_keylen = mac_key_len;
-		my_key = key.public_value();
+		m_ka = PK_Key_Agreement(key, "Raw");
+		m_kdf = kdf_obj;
+		m_mac = mac_obj;
+		m_mac_keylen = mac_keylen;
+		m_my_key = key.public_value();
 	}
 
 	/*
@@ -51,28 +51,28 @@ private:
 		if (other_key.empty)
 			throw new Invalid_State("DLIES: The other key was never set");
 		
-		Secure_Vector!ubyte output = Secure_Vector!ubyte(my_key.length + length + mac.output_length);
-		buffer_insert(output, 0, my_key);
-		buffer_insert(output, my_key.length, input, length);
+		Secure_Vector!ubyte output = Secure_Vector!ubyte(m_my_key.length + length + m_mac.output_length);
+		buffer_insert(output, 0, m_my_key);
+		buffer_insert(output, m_my_key.length, input, length);
 		
-		Secure_Vector!ubyte vz = Secure_Vector!(my_key.ptr, my_key.end());
-		vz += ka.derive_key(0, other_key).bits_of();
+		Secure_Vector!ubyte vz = Secure_Vector!(m_my_key.ptr, m_my_key.end());
+		vz += m_ka.derive_key(0, other_key).bits_of();
 		
-		const size_t K_LENGTH = length + mac_keylen;
-		OctetString K = kdf.derive_key(K_LENGTH, vz);
+		const size_t K_LENGTH = length + m_mac_keylen;
+		OctetString K = m_kdf.derive_key(K_LENGTH, vz);
 		
 		if (K.length != K_LENGTH)
 			throw new Encoding_Error("DLIES: KDF did not provide sufficient output");
-		ubyte* C = &output[my_key.length];
+		ubyte* C = &output[m_my_key.length];
 		
-		xor_buf(C, K.ptr + mac_keylen, length);
-		mac.set_key(K.ptr, mac_keylen);
+		xor_buf(C, K.ptr + m_mac_keylen, length);
+		m_mac.set_key(K.ptr, m_mac_keylen);
 		
-		mac.update(C, length);
+		m_mac.update(C, length);
 		for (size_t j = 0; j != 8; ++j)
-			mac.update(0);
+			m_mac.update(0);
 		
-		mac.flushInto(C + length);
+		m_mac.flushInto(C + length);
 		
 		return unlock(output);
 	}
@@ -85,12 +85,12 @@ private:
 		return 32;
 	}
 
-	Vector!ubyte other_key, my_key;
+	Vector!ubyte other_key, m_my_key;
 
-	PK_Key_Agreement ka;
-	Unique!KDF kdf;
-	Unique!MessageAuthenticationCode mac;
-	size_t mac_keylen;
+	PK_Key_Agreement m_ka;
+	Unique!KDF m_kdf;
+	Unique!MessageAuthenticationCode m_mac;
+	size_t m_mac_keylen;
 }
 
 /**
@@ -107,11 +107,11 @@ public:
 	     MessageAuthenticationCode mac_obj,
 	     size_t mac_key_len = 20)
 	{
-		ka = PK_Key_Agreement(key, "Raw");
-		kdf = kdf_obj;
-		mac = mac_obj;
-		mac_keylen = mac_key_len;
-		my_key = key.public_value();
+		m_ka = PK_Key_Agreement(key, "Raw");
+		m_kdf = kdf_obj;
+		m_mac = mac_obj;
+		m_mac_keylen = mac_key_len;
+		m_my_key = key.public_value();
 	}
 
 private:
@@ -120,43 +120,43 @@ private:
 	*/
 	Secure_Vector!ubyte dec(in ubyte* msg, size_t length) const
 	{
-		if (length < my_key.length + mac.output_length)
+		if (length < m_my_key.length + m_mac.output_length)
 			throw new Decoding_Error("DLIES decryption: ciphertext is too short");
 		
-		const size_t CIPHER_LEN = length - my_key.length - mac.output_length;
+		const size_t CIPHER_LEN = length - m_my_key.length - m_mac.output_length;
 		
-		Vector!ubyte v(msg, msg + my_key.length);
+		Vector!ubyte v = Vector!ubyte(msg, msg + m_my_key.length);
 		
-		Secure_Vector!ubyte C(msg + my_key.length, msg + my_key.length + CIPHER_LEN);
+		Secure_Vector!ubyte C = Secure_Vector!ubyte(msg + m_my_key.length, msg + m_my_key.length + CIPHER_LEN);
 		
-		Secure_Vector!ubyte T(msg + my_key.length + CIPHER_LEN,
-		                   msg + my_key.length + CIPHER_LEN + mac.output_length);
+		Secure_Vector!ubyte T = Secure_Vector!ubyte(msg + m_my_key.length + CIPHER_LEN,
+		                   msg + m_my_key.length + CIPHER_LEN + m_mac.output_length);
 		
-		Secure_Vector!ubyte vz(msg, msg + my_key.length);
-		vz += ka.derive_key(0, v).bits_of();
+		Secure_Vector!ubyte vz = Secure_Vector!ubyte(msg, msg + m_my_key.length);
+		vz += m_ka.derive_key(0, v).bits_of();
 		
-		const size_t K_LENGTH = C.length + mac_keylen;
-		OctetString K = kdf.derive_key(K_LENGTH, vz);
+		const size_t K_LENGTH = C.length + m_mac_keylen;
+		OctetString K = m_kdf.derive_key(K_LENGTH, vz);
 		if (K.length != K_LENGTH)
 			throw new Encoding_Error("DLIES: KDF did not provide sufficient output");
 		
-		mac.set_key(K.ptr, mac_keylen);
-		mac.update(C);
+		m_mac.set_key(K.ptr, m_mac_keylen);
+		m_mac.update(C);
 		for (size_t j = 0; j != 8; ++j)
-			mac.update(0);
-		Secure_Vector!ubyte T2 = mac.flush();
+			m_mac.update(0);
+		Secure_Vector!ubyte T2 = m_mac.flush();
 		if (T != T2)
 			throw new Decoding_Error("DLIES: message authentication failed");
 		
-		xor_buf(C, K.ptr + mac_keylen, C.length);
+		xor_buf(C, K.ptr + m_mac_keylen, C.length);
 		
 		return C;
 	}
 
-	Vector!ubyte my_key;
+	Vector!ubyte m_my_key;
 
-	PK_Key_Agreement ka;
-	Unique!KDF kdf;
-	Unique!MessageAuthenticationCode mac;
-	size_t mac_keylen;
+	PK_Key_Agreement m_ka;
+	Unique!KDF m_kdf;
+	Unique!MessageAuthenticationCode m_mac;
+	size_t m_mac_keylen;
 }

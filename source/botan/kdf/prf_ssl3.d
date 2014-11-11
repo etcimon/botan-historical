@@ -10,6 +10,7 @@ import botan.algo_base.symkey;
 import botan.utils.exceptn;
 import botan.hash.sha160;
 import botan.hash.md5;
+import botan.utils.types;
 
 /**
 * PRF used in SSLv3
@@ -27,8 +28,8 @@ public:
 		if (key_len > 416)
 			throw new Invalid_Argument("SSL3_PRF: Requested key length is too large");
 		
-		MD5 md5;
-		SHA_160 sha1;
+		auto md5 = scoped!MD5();
+		auto sha1 = scoped!SHA_160();
 		
 		OctetString output;
 		

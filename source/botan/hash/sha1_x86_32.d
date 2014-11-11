@@ -32,7 +32,7 @@ private:
 	{
 		for (size_t i = 0; i != blocks; ++i)
 		{
-			botan_sha160_x86_32_compress(&digest[0], input, &W[0]);
+			botan_sha160_x86_32_compress(&m_digest[0], input, &W[0]);
 			input += hash_block_size;
 		}
 	}

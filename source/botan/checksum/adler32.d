@@ -21,7 +21,7 @@ public:
 	@property size_t output_length() const { return 4; }
 	HashFunction clone() const { return new Adler32; }
 
-	void clear() { S1 = 1; S2 = 0; }
+	void clear() { m_S1 = 1; m_S2 = 0; }
 
 	this() { clear(); }
 	~this() { clear(); }
@@ -35,12 +35,12 @@ protected:
 		
 		while(length >= PROCESS_AMOUNT)
 		{
-			adler32_update(input, PROCESS_AMOUNT, S1, S2);
+			adler32_update(input, PROCESS_AMOUNT, m_S1, m_S2);
 			input += PROCESS_AMOUNT;
 			length -= PROCESS_AMOUNT;
 		}
 		
-		adler32_update(input, length, S1, S2);
+		adler32_update(input, length, m_S1, m_S2);
 	}
 
 	/*
@@ -48,11 +48,11 @@ protected:
 	*/
 	void final_result(ubyte* output)
 	{
-		store_be(output, S2, S1);
+		store_be(output, m_S2, m_S1);
 		clear();
 	}
 
-	ushort S1, S2;
+	ushort m_S1, m_S2;
 }
 
 package:

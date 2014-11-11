@@ -26,15 +26,15 @@ public:
 	*/
 	void write(in ubyte* input, size_t length)
 	{
-		bz.stream.next_in = cast(char*) input;
-		bz.stream.avail_in = length;
+		m_bz.m_stream.next_in = cast(char*) input;
+		m_bz.m_stream.avail_in = length;
 		
-		while(bz.stream.avail_in != 0)
+		while(m_bz.m_stream.avail_in != 0)
 		{
-			bz.stream.next_out = cast(char*)(&buffer[0]);
-			bz.stream.avail_out = buffer.length;
-			BZ2_bzCompress(&(bz.stream), BZ_RUN);
-			send(buffer, buffer.length - bz.stream.avail_out);
+			m_bz.m_stream.next_out = cast(char*)(&m_buffer[0]);
+			m_bz.m_stream.avail_out = m_buffer.length;
+			BZ2_bzCompress(&(m_bz.m_stream), BZ_RUN);
+			send(m_buffer, m_buffer.length - m_bz.m_stream.avail_out);
 		}
 	}
 	/*
@@ -43,8 +43,8 @@ public:
 	void start_msg()
 	{
 		clear();
-		bz = new Bzip_Stream;
-		if (BZ2_bzCompressInit(&(bz.stream), level, 0, 0) != BZ_OK)
+		m_bz = new Bzip_Stream;
+		if (BZ2_bzCompressInit(&(m_bz.m_stream), m_level, 0, 0) != BZ_OK)
 			throw new Memory_Exhaustion();
 	}
 
@@ -53,16 +53,16 @@ public:
 	*/
 	void end_msg()
 	{
-		bz.stream.next_in = 0;
-		bz.stream.avail_in = 0;
+		m_bz.m_stream.next_in = 0;
+		m_bz.m_stream.avail_in = 0;
 		
 		int rc = BZ_OK;
 		while(rc != BZ_STREAM_END)
 		{
-			bz.stream.next_out = cast(char*)(&buffer[0]);
-			bz.stream.avail_out = buffer.length;
-			rc = BZ2_bzCompress(&(bz.stream), BZ_FINISH);
-			send(buffer, buffer.length - bz.stream.avail_out);
+			m_bz.m_stream.next_out = cast(char*)(&m_buffer[0]);
+			m_bz.m_stream.avail_out = m_buffer.length;
+			rc = BZ2_bzCompress(&(m_bz.m_stream), BZ_FINISH);
+			send(m_buffer, m_buffer.length - m_bz.m_stream.avail_out);
 		}
 		clear();
 	}
@@ -72,24 +72,24 @@ public:
 	*/
 	void flush()
 	{
-		bz.stream.next_in = 0;
-		bz.stream.avail_in = 0;
+		m_bz.m_stream.next_in = 0;
+		m_bz.m_stream.avail_in = 0;
 		
 		int rc = BZ_OK;
 		while(rc != BZ_RUN_OK)
 		{
-			bz.stream.next_out = cast(char*)(&buffer[0]);
-			bz.stream.avail_out = buffer.length;
-			rc = BZ2_bzCompress(&(bz.stream), BZ_FLUSH);
-			send(buffer, buffer.length - bz.stream.avail_out);
+			m_bz.m_stream.next_out = cast(char*)(&m_buffer[0]);
+			m_bz.m_stream.avail_out = m_buffer.length;
+			rc = BZ2_bzCompress(&(m_bz.m_stream), BZ_FLUSH);
+			send(m_buffer, m_buffer.length - m_bz.m_stream.avail_out);
 		}
 	}
 
 	this(size_t = 9)
 	{
-		level = (l >= 9) ? 9 : l;
-		buffer = DEFAULT_BUFFERSIZE;
-		bz = 0;
+		m_level = (l >= 9) ? 9 : l;
+		m_buffer = DEFAULT_BUFFERSIZE;
+		m_bz = null;
 	}
 	~this() { clear(); }
 private:
@@ -98,19 +98,19 @@ private:
 	*/
 	void clear()
 	{
-		zeroise(buffer);
+		zeroise(m_buffer);
 		
-		if (bz)
+		if (m_bz)
 		{
-			BZ2_bzCompressEnd(&(bz.stream));
-			delete bz;
-			bz = 0;
+			BZ2_bzCompressEnd(&(m_bz.m_stream));
+			delete m_bz;
+			m_bz = null;
 		}
 	}
 
-	const size_t level;
-	Secure_Vector!ubyte buffer;
-	Bzip_Stream bz;
+	const size_t m_level;
+	Secure_Vector!ubyte m_buffer;
+	Bzip_Stream m_bz;
 }
 
 /**
@@ -126,19 +126,19 @@ public:
 	*/
 	void write(in ubyte* input_arr, size_t length)
 	{
-		if (length) no_writes = false;
+		if (length) m_no_writes = false;
 		
 		char* input = cast(char*) input_arr;
 		
-		bz.stream.next_in = input;
-		bz.stream.avail_in = length;
+		m_bz.m_stream.next_in = input;
+		m_bz.m_stream.avail_in = length;
 		
-		while(bz.stream.avail_in != 0)
+		while(m_bz.m_stream.avail_in != 0)
 		{
-			bz.stream.next_out = cast(char*)(&buffer[0]);
-			bz.stream.avail_out = buffer.length;
+			m_bz.m_stream.next_out = cast(char*)(&m_buffer[0]);
+			m_bz.m_stream.avail_out = m_buffer.length;
 			
-			int rc = BZ2_bzDecompress(&(bz.stream));
+			int rc = BZ2_bzDecompress(&(m_bz.m_stream));
 			
 			if (rc != BZ_OK && rc != BZ_STREAM_END)
 			{
@@ -154,14 +154,14 @@ public:
 					throw new Exception("Bzip2 decompression: Unknown error");
 			}
 			
-			send(buffer, buffer.length - bz.stream.avail_out);
+			send(m_buffer, m_buffer.length - m_bz.m_stream.avail_out);
 			
 			if (rc == BZ_STREAM_END)
 			{
-				size_t read_from_block = length - bz.stream.avail_in;
+				size_t read_from_block = length - m_bz.m_stream.avail_in;
 				start_msg();
-				bz.stream.next_in = input + read_from_block;
-				bz.stream.avail_in = length - read_from_block;
+				m_bz.m_stream.next_in = input + read_from_block;
+				m_bz.m_stream.avail_in = length - read_from_block;
 				input += read_from_block;
 				length -= read_from_block;
 			}
@@ -174,12 +174,12 @@ public:
 	void start_msg()
 	{
 		clear();
-		bz = new Bzip_Stream;
+		m_bz = new Bzip_Stream;
 		
-		if (BZ2_bzDecompressInit(&(bz.stream), 0, small_mem) != BZ_OK)
+		if (BZ2_bzDecompressInit(&(m_bz.m_stream), 0, m_small_mem) != BZ_OK)
 			throw new Memory_Exhaustion();
 		
-		no_writes = true;
+		m_no_writes = true;
 	}
 
 	/*
@@ -187,16 +187,16 @@ public:
 	*/
 	void end_msg()
 	{
-		if (no_writes) return;
-		bz.stream.next_in = 0;
-		bz.stream.avail_in = 0;
+		if (m_no_writes) return;
+		m_bz.m_stream.next_in = 0;
+		m_bz.m_stream.avail_in = 0;
 		
 		int rc = BZ_OK;
 		while(rc != BZ_STREAM_END)
 		{
-			bz.stream.next_out = cast(char*)(&buffer[0]);
-			bz.stream.avail_out = buffer.length;
-			rc = BZ2_bzDecompress(&(bz.stream));
+			m_bz.m_stream.next_out = cast(char*)(&m_buffer[0]);
+			m_bz.m_stream.avail_out = m_buffer.length;
+			rc = BZ2_bzDecompress(&(m_bz.m_stream));
 			
 			if (rc != BZ_OK && rc != BZ_STREAM_END)
 			{
@@ -204,7 +204,7 @@ public:
 				throw new Decoding_Error("Bzip_Decompression: Error finalizing");
 			}
 			
-			send(buffer, buffer.length - bz.stream.avail_out);
+			send(m_buffer, m_buffer.length - bz.m_stream.avail_out);
 		}
 		
 		clear();
@@ -212,10 +212,10 @@ public:
 
 	this(bool small = false)
 	{
-		small_mem = s;
-		buffer = DEFAULT_BUFFERSIZE;
-		no_writes = true;
-		bz = 0;
+		m_small_mem = small;
+		m_buffer = DEFAULT_BUFFERSIZE;
+		m_no_writes = true;
+		m_bz = null;
 	}
 	~this() { clear(); }
 private:
@@ -228,16 +228,16 @@ private:
 		
 		if (bz)
 		{
-			BZ2_bzDecompressEnd(&(bz.stream));
-			delete bz;
-			bz = 0;
+			BZ2_bzDecompressEnd(&(m_bz.m_stream));
+			delete m_bz;
+			m_bz = null;
 		}
 	}
 
-	const bool small_mem;
-	Secure_Vector!ubyte buffer;
-	Bzip_Stream bz;
-	bool no_writes;
+	const bool m_small_mem;
+	Secure_Vector!ubyte m_buffer;
+	Bzip_Stream m_bz;
+	bool m_no_writes;
 }
 
 /*
@@ -257,19 +257,19 @@ final class Bzip_Stream
 {
 public:
 	/**
-	* Underlying stream
+	* Underlying m_stream
 	*/
-	bz_stream stream;
-	
+	bz_stream* m_stream;
+
 	/**
 	* Constructor
 	*/
 	this()
 	{
-		memset(&stream, 0, (bz_stream).sizeof);
-		stream.bzalloc = bzip_malloc;
-		stream.bzfree = bzip_free;
-		stream.opaque = new Bzip_Alloc_Info;
+		memset(&m_stream, 0, (bz_stream).sizeof);
+		m_stream.bzalloc = bzip_malloc;
+		m_stream.bzfree = bzip_free;
+		m_stream.opaque = new Bzip_Alloc_Info;
 	}
 	
 	/**
@@ -277,9 +277,9 @@ public:
 	*/
 	~this()
 	{
-		Bzip_Alloc_Info* info = cast(Bzip_Alloc_Info*)(stream.opaque);
+		Bzip_Alloc_Info* info = cast(Bzip_Alloc_Info*)(m_stream.opaque);
 		delete info;
-		memset(&stream, 0, (bz_stream).sizeof);
+		memset(m_stream, 0, (bz_stream).sizeof);
 	}
 }
 

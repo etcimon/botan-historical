@@ -273,7 +273,7 @@ Data Sources
 A ``DataSource`` is a simple abstraction for a thing that stores
 bytes. This type is used heavily in the areas of the API related to
 ASN.1 encoding/decoding. The following types are ``DataSource``:
-``Pipe``, ``SecureQueue``, and a couple of special purpose ones:
+``Pipe``, ``Secure_Queue``, and a couple of special purpose ones:
 ``DataSource_Memory`` and ``DataSource_Stream``.
 
 You can create a ``DataSource_Memory`` with an array of bytes and a

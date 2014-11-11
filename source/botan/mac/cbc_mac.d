@@ -65,8 +65,8 @@ public:
 
 private:
 	/*
-* Update an CBC-MAC Calculation
-*/
+	* Update an CBC-MAC Calculation
+	*/
 	void add_data(in ubyte* input, size_t length)
 	{
 		size_t xored = std.algorithm.min(output_length() - m_position, length);
@@ -116,5 +116,5 @@ private:
 
 	Unique!BlockCipher m_cipher;
 	Secure_Vector!ubyte m_state;
-	size_t m_position = 0;
+	size_t m_position;
 }

@@ -28,17 +28,17 @@ public:
 	*/
 	this(HashFunction hash_input)
 	{
-		hash = hash_input;
+		m_hash = hash_input;
 	}
 
 	@property string name() const
 	{
-		return "PBKDF1(" ~ hash.name ~ ")";
+		return "PBKDF1(" ~ m_hash.name ~ ")";
 	}
 
 	PBKDF clone() const
 	{
-		return new PKCS5_PBKDF1(hash.clone());
+		return new PKCS5_PBKDF1(m_hash.clone());
 	}
 
 	/*
@@ -50,12 +50,12 @@ public:
 	                                          size_t iterations,
 	                                          Duration loop_for) const
 	{
-		if (key_len > hash.output_length)
+		if (key_len > m_hash.output_length)
 			throw new Invalid_Argument("PKCS5_PBKDF1: Requested output length too long");
 		
-		hash.update(passphrase);
-		hash.update(salt, salt_len);
-		Secure_Vector!ubyte key = hash.flush();
+		m_hash.update(passphrase);
+		m_hash.update(salt, salt_len);
+		Secure_Vector!ubyte key = m_hash.flush();
 		
 		const start = Clock.currTime();
 		size_t iterations_performed = 1;
@@ -74,8 +74,8 @@ public:
 			else if (iterations_performed == iterations)
 				break;
 			
-			hash.update(key);
-			hash.flushInto(&key[0]);
+			m_hash.update(key);
+			m_hash.flushInto(&key[0]);
 			
 			++iterations_performed;
 		}
@@ -84,6 +84,6 @@ public:
 		            OctetString(&key[0], std.algorithm.min(key_len, key.length)));
 	}
 private:
-	Unique!HashFunction hash;
+	Unique!HashFunction m_hash;
 }
 

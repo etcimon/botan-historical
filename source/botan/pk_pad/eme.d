@@ -102,10 +102,3 @@ private:
 												size_t in_length,
 												size_t key_length) const;
 }
-
-/**
-* Factory method for EME (message-encoding methods for encryption) objects
-* @param algo_spec the name of the EME to create
-* @return pointer to newly allocated object of that type
-*/
-EME*  get_eme(in string algo_spec);

@@ -28,18 +28,18 @@ public:
 	void clear()
 	{
 		super.clear();
-		zeroise(M);
-		digest[0] = 0x67452301;
-		digest[1] = 0xEFCDAB89;
-		digest[2] = 0x98BADCFE;
-		digest[3] = 0x10325476;
+		zeroise(m_M);
+		m_digest[0] = 0x67452301;
+		m_digest[1] = 0xEFCDAB89;
+		m_digest[2] = 0x98BADCFE;
+		m_digest[3] = 0x10325476;
 	}
 
 	this()
 	{  
 		super(64, false, true);
-		M = 16;
-		digest = 4;
+		m_M = 16;
+		m_digest = 4;
 		clear(); 
 	}
 protected:
@@ -48,43 +48,43 @@ protected:
 	*/
 	void compress_n(in ubyte* input, size_t blocks)
 	{
-		uint A = digest[0], B = digest[1], C = digest[2], D = digest[3];
+		uint A = m_digest[0], B = m_digest[1], C = m_digest[2], D = m_digest[3];
 		
 		for (size_t i = 0; i != blocks; ++i)
 		{
-			load_le(&M[0], input, M.length);
+			load_le(&m_M[0], input, m_M.length);
 			
-			FF(A,B,C,D,M[ 0], 3);	FF(D,A,B,C,M[ 1], 7);
-			FF(C,D,A,B,M[ 2],11);	FF(B,C,D,A,M[ 3],19);
-			FF(A,B,C,D,M[ 4], 3);	FF(D,A,B,C,M[ 5], 7);
-			FF(C,D,A,B,M[ 6],11);	FF(B,C,D,A,M[ 7],19);
-			FF(A,B,C,D,M[ 8], 3);	FF(D,A,B,C,M[ 9], 7);
-			FF(C,D,A,B,M[10],11);	FF(B,C,D,A,M[11],19);
-			FF(A,B,C,D,M[12], 3);	FF(D,A,B,C,M[13], 7);
-			FF(C,D,A,B,M[14],11);	FF(B,C,D,A,M[15],19);
+			FF(A,B,C,D,m_M[ 0], 3);	FF(D,A,B,C,m_M[ 1], 7);
+			FF(C,D,A,B,m_M[ 2],11);	FF(B,C,D,A,m_M[ 3],19);
+			FF(A,B,C,D,m_M[ 4], 3);	FF(D,A,B,C,m_M[ 5], 7);
+			FF(C,D,A,B,m_M[ 6],11);	FF(B,C,D,A,m_M[ 7],19);
+			FF(A,B,C,D,m_M[ 8], 3);	FF(D,A,B,C,m_M[ 9], 7);
+			FF(C,D,A,B,m_M[10],11);	FF(B,C,D,A,m_M[11],19);
+			FF(A,B,C,D,m_M[12], 3);	FF(D,A,B,C,m_M[13], 7);
+			FF(C,D,A,B,m_M[14],11);	FF(B,C,D,A,m_M[15],19);
 			
-			GG(A,B,C,D,M[ 0], 3);	GG(D,A,B,C,M[ 4], 5);
-			GG(C,D,A,B,M[ 8], 9);	GG(B,C,D,A,M[12],13);
-			GG(A,B,C,D,M[ 1], 3);	GG(D,A,B,C,M[ 5], 5);
-			GG(C,D,A,B,M[ 9], 9);	GG(B,C,D,A,M[13],13);
-			GG(A,B,C,D,M[ 2], 3);	GG(D,A,B,C,M[ 6], 5);
-			GG(C,D,A,B,M[10], 9);	GG(B,C,D,A,M[14],13);
-			GG(A,B,C,D,M[ 3], 3);	GG(D,A,B,C,M[ 7], 5);
-			GG(C,D,A,B,M[11], 9);	GG(B,C,D,A,M[15],13);
+			GG(A,B,C,D,m_M[ 0], 3);	GG(D,A,B,C,m_M[ 4], 5);
+			GG(C,D,A,B,m_M[ 8], 9);	GG(B,C,D,A,m_M[12],13);
+			GG(A,B,C,D,m_M[ 1], 3);	GG(D,A,B,C,m_M[ 5], 5);
+			GG(C,D,A,B,m_M[ 9], 9);	GG(B,C,D,A,m_M[13],13);
+			GG(A,B,C,D,m_M[ 2], 3);	GG(D,A,B,C,m_M[ 6], 5);
+			GG(C,D,A,B,m_M[10], 9);	GG(B,C,D,A,m_M[14],13);
+			GG(A,B,C,D,m_M[ 3], 3);	GG(D,A,B,C,m_M[ 7], 5);
+			GG(C,D,A,B,m_M[11], 9);	GG(B,C,D,A,m_M[15],13);
 			
-			HH(A,B,C,D,M[ 0], 3);	HH(D,A,B,C,M[ 8], 9);
-			HH(C,D,A,B,M[ 4],11);	HH(B,C,D,A,M[12],15);
-			HH(A,B,C,D,M[ 2], 3);	HH(D,A,B,C,M[10], 9);
-			HH(C,D,A,B,M[ 6],11);	HH(B,C,D,A,M[14],15);
-			HH(A,B,C,D,M[ 1], 3);	HH(D,A,B,C,M[ 9], 9);
-			HH(C,D,A,B,M[ 5],11);	HH(B,C,D,A,M[13],15);
-			HH(A,B,C,D,M[ 3], 3);	HH(D,A,B,C,M[11], 9);
-			HH(C,D,A,B,M[ 7],11);	HH(B,C,D,A,M[15],15);
+			HH(A,B,C,D,m_M[ 0], 3);	HH(D,A,B,C,m_M[ 8], 9);
+			HH(C,D,A,B,m_M[ 4],11);	HH(B,C,D,A,m_M[12],15);
+			HH(A,B,C,D,m_M[ 2], 3);	HH(D,A,B,C,m_M[10], 9);
+			HH(C,D,A,B,m_M[ 6],11);	HH(B,C,D,A,m_M[14],15);
+			HH(A,B,C,D,m_M[ 1], 3);	HH(D,A,B,C,m_M[ 9], 9);
+			HH(C,D,A,B,m_M[ 5],11);	HH(B,C,D,A,m_M[13],15);
+			HH(A,B,C,D,m_M[ 3], 3);	HH(D,A,B,C,m_M[11], 9);
+			HH(C,D,A,B,m_M[ 7],11);	HH(B,C,D,A,m_M[15],15);
 			
-			A = (digest[0] += A);
-			B = (digest[1] += B);
-			C = (digest[2] += C);
-			D = (digest[3] += D);
+			A = (m_digest[0] += A);
+			B = (m_digest[1] += B);
+			C = (m_digest[2] += C);
+			D = (m_digest[3] += D);
 			
 			input += hash_block_size;
 		}
@@ -96,18 +96,18 @@ protected:
 	void copy_out(ubyte* output)
 	{
 		for (size_t i = 0; i != output_length; i += 4)
-			store_le(digest[i/4], output + i);
+			store_le(m_digest[i/4], output + i);
 	}
 
 	/**
 	* The message buffer, exposed for use by subclasses (x86 asm)
 	*/
-	Secure_Vector!uint M;
+	Secure_Vector!uint m_M;
 
 	/**
 	* The digest value, exposed for use by subclasses (x86 asm)
 	*/
-	Secure_Vector!uint digest;
+	Secure_Vector!uint m_digest;
 }
 
 private:

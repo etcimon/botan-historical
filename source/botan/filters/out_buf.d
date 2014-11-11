@@ -23,7 +23,7 @@ public:
 	size_t read(ubyte* output, size_t length,
 	            Pipe.message_id msg)
 	{
-		SecureQueue q = get(msg);
+		Secure_Queue q = get(msg);
 		if (q)
 			return q.read(output, length);
 		return 0;
@@ -36,7 +36,7 @@ public:
 	            size_t stream_offset,
 	            Pipe.message_id msg) const
 	{
-		SecureQueue q = get(msg);
+		Secure_Queue q = get(msg);
 		if (q)
 			return q.peek(output, length, stream_offset);
 		return 0;
@@ -47,7 +47,7 @@ public:
 	*/
 	size_t get_bytes_read(Pipe.message_id msg) const
 	{
-		SecureQueue q = get(msg);
+		Secure_Queue q = get(msg);
 		if (q)
 			return q.get_bytes_read();
 		return 0;
@@ -58,7 +58,7 @@ public:
 	*/
 	size_t remaining(Pipe.message_id msg) const
 	{
-		SecureQueue q = get(msg);
+		Secure_Queue q = get(msg);
 		if (q)
 			return q.length;
 		return 0;
@@ -67,14 +67,14 @@ public:
 	/*
 	* Add a new output queue
 	*/
-	void add(SecureQueue queue)
+	void add(Secure_Queue queue)
 	{
 		assert(queue, "queue was provided");
 		
-		assert(buffers.length < buffers.max_size(),
+		assert(m_buffers.length < m_buffers.max_size(),
 		             "Room was available in container");
 		
-		buffers.push_back(queue);
+		m_buffers.push_back(queue);
 	}
 
 	/*
@@ -82,17 +82,17 @@ public:
 	*/
 	void retire()
 	{
-		for (size_t i = 0; i != buffers.length; ++i)
-			if (buffers[i] && buffers[i].length == 0)
+		for (size_t i = 0; i != m_buffers.length; ++i)
+			if (m_buffers[i] && m_buffers[i].length == 0)
 		{
-			delete buffers[i];
-			buffers[i] = null;
+			delete m_buffers[i];
+			m_buffers[i] = null;
 		}
 		
-		while(buffers.length && !buffers[0])
+		while(m_buffers.length && !m_buffers[0])
 		{
-			buffers.pop_front();
-			offset = offset + Pipe.message_id(1);
+			m_buffers.pop_front();
+			m_offset = m_offset + Pipe.message_id(1);
 		}
 	}
 
@@ -101,29 +101,29 @@ public:
 	*/
 	Pipe.message_id message_count() const
 	{
-		return (offset + buffers.length);
+		return (m_offset + m_buffers.length);
 	}
 
-	this() { offset = 0; }
+	this() { m_offset = 0; }
 	~this()
 	{
-		for (size_t j = 0; j != buffers.length; ++j)
-			delete buffers[j];
+		for (size_t j = 0; j != m_buffers.length; ++j)
+			delete m_buffers[j];
 	}
 private:
 	/*
 	* Get a particular output queue
 	*/
-	SecureQueue get(Pipe.message_id msg) const
+	Secure_Queue get(Pipe.message_id msg) const
 	{
-		if (msg < offset)
+		if (msg < m_offset)
 			return null;
 		
 		assert(msg < message_count(), "Message number is in range");
 		
-		return buffers[msg-offset];
+		return m_buffers[msg - m_offset];
 	}
 
-	Deque!(SecureQueue) buffers;
-	Pipe.message_id offset;
+	Deque!(Secure_Queue) m_buffers;
+	Pipe.message_id m_offset;
 }

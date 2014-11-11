@@ -29,20 +29,20 @@ public:
 	void clear()
 	{
 		super.clear();
-		digest[0] = 0xCBBB9D5DC1059ED8;
-		digest[1] = 0x629A292A367CD507;
-		digest[2] = 0x9159015A3070DD17;
-		digest[3] = 0x152FECD8F70E5939;
-		digest[4] = 0x67332667FFC00B31;
-		digest[5] = 0x8EB44A8768581511;
-		digest[6] = 0xDB0C2E0D64F98FA7;
-		digest[7] = 0x47B5481DBEFA4FA4;
+		m_digest[0] = 0xCBBB9D5DC1059ED8;
+		m_digest[1] = 0x629A292A367CD507;
+		m_digest[2] = 0x9159015A3070DD17;
+		m_digest[3] = 0x152FECD8F70E5939;
+		m_digest[4] = 0x67332667FFC00B31;
+		m_digest[5] = 0x8EB44A8768581511;
+		m_digest[6] = 0xDB0C2E0D64F98FA7;
+		m_digest[7] = 0x47B5481DBEFA4FA4;
 	}
 
 	this()
 	{  
 		super(128, true, true, 16);
-		digest = 8;
+		m_digest = 8;
 		clear();
 	}
 private:
@@ -51,7 +51,7 @@ private:
 	*/
 	void compress_n(in ubyte* input, size_t blocks)
 	{
-		compress(digest, input, blocks);
+		compress(m_digest, input, blocks);
 	}
 
 	/*
@@ -60,10 +60,10 @@ private:
 	void copy_out(ubyte* output)
 	{
 		for (size_t i = 0; i != output_length(); i += 8)
-			store_be(digest[i/8], output + i);
+			store_be(m_digest[i/8], output + i);
 	}
 
-	Secure_Vector!ulong digest;
+	Secure_Vector!ulong m_digest;
 }
 
 /**
@@ -82,20 +82,20 @@ public:
 	void clear()
 	{
 		super.clear();
-		digest[0] = 0x6A09E667F3BCC908;
-		digest[1] = 0xBB67AE8584CAA73B;
-		digest[2] = 0x3C6EF372FE94F82B;
-		digest[3] = 0xA54FF53A5F1D36F1;
-		digest[4] = 0x510E527FADE682D1;
-		digest[5] = 0x9B05688C2B3E6C1F;
-		digest[6] = 0x1F83D9ABFB41BD6B;
-		digest[7] = 0x5BE0CD19137E2179;
+		m_digest[0] = 0x6A09E667F3BCC908;
+		m_digest[1] = 0xBB67AE8584CAA73B;
+		m_digest[2] = 0x3C6EF372FE94F82B;
+		m_digest[3] = 0xA54FF53A5F1D36F1;
+		m_digest[4] = 0x510E527FADE682D1;
+		m_digest[5] = 0x9B05688C2B3E6C1F;
+		m_digest[6] = 0x1F83D9ABFB41BD6B;
+		m_digest[7] = 0x5BE0CD19137E2179;
 	}
 
 	this() 
 	{ 
 		super(128, true, true, 16);
-		digest = 8;
+		m_digest = 8;
 		clear(); 
 	}
 private:
@@ -104,7 +104,7 @@ private:
 	*/
 	void compress_n(in ubyte* input, size_t blocks)
 	{
-		compress(digest, input, blocks);
+		compress(m_digest, input, blocks);
 	}
 
 	/*
@@ -113,10 +113,10 @@ private:
 	void copy_out(ubyte* output)
 	{
 		for (size_t i = 0; i != output_length(); i += 8)
-			store_be(digest[i/8], output + i);
+			store_be(m_digest[i/8], output + i);
 	}
 
-	Secure_Vector!ulong digest;
+	Secure_Vector!ulong m_digest;
 }
 
 private:

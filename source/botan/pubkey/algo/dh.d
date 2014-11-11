@@ -15,6 +15,7 @@ import botan.pubkey.blinding;
 import botan.pubkey.pk_ops;
 import botan.math.numbertheory.numthry;
 import botan.pubkey.workfactor;
+import botan.rng.rng;
 
 /**
 * This class represents Diffie-Hellman public keys.
@@ -104,8 +105,8 @@ public:
 		
 		if (x == 0)
 		{
-			const ref BigInt p = group_p();
-			x.randomize(rng, 2 * dl_work_factor(p.bits()));
+			const ref BigInt m_p = group_p();
+			x.randomize(rng, 2 * dl_work_factor(m_p.bits()));
 		}
 		
 		if (y == 0)
@@ -124,30 +125,29 @@ public:
 class DH_KA_Operation : Key_Agreement
 {
 public:
-	this(in DH_PrivateKey dh,
-	     RandomNumberGenerator rng) 
+	this(in DH_PrivateKey dh, RandomNumberGenerator rng) 
 	{
-		p = dh.group_p();
-		powermod_x_p = Fixed_Exponent_Power_Mod(dh.get_x(), p);
-		BigInt k = BigInt(rng, p.bits() - 1);
-		blinder = Blinder(k, powermod_x_p(inverse_mod(k, p)), p);
+		m_p = dh.group_p();
+		m_powermod_x_p = Fixed_Exponent_Power_Mod(dh.get_x(), m_p);
+		BigInt k = BigInt(rng, m_p.bits() - 1);
+		m_blinder = Blinder(k, m_powermod_x_p(inverse_mod(k, m_p)), m_p);
 	}
 
 	Secure_Vector!ubyte agree(in ubyte* w, size_t w_len)
 	{
 		BigInt input = BigInt.decode(w, w_len);
 		
-		if (input <= 1 || input >= p - 1)
+		if (input <= 1 || input >= m_p - 1)
 			throw new Invalid_Argument("DH agreement - invalid key provided");
 		
-		BigInt r = blinder.unblind(powermod_x_p(blinder.blind(input)));
+		BigInt r = m_blinder.unblind(m_powermod_x_p(m_blinder.blind(input)));
 		
-		return BigInt.encode_1363(r, p.bytes());
+		return BigInt.encode_1363(r, m_p.bytes());
 	}
 
 private:
-	const ref BigInt p;
+	const BigInt m_p;
 
-	Fixed_Exponent_Power_Mod powermod_x_p;
-	Blinder blinder;
+	Fixed_Exponent_Power_Mod m_powermod_x_p;
+	Blinder m_blinder;
 }

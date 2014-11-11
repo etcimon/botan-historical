@@ -18,6 +18,7 @@ import botan.pubkey.pkcs8;
 import botan.asn1.der_enc;
 import botan.asn1.ber_dec;
 import botan.alloc.zeroize;
+import botan.utils.exceptn;
 
 /**
 * This class represents abstract ECC public keys. When encoding a key
@@ -35,9 +36,9 @@ public:
 	this(in EC_Group dom_par,
 	     const ref PointGFp pub_point) 
 	{
-		domain_params = dom_par;
-		public_key = pub_point;
-		domain_encoding = EC_DOMPAR_ENC_EXPLICIT;
+		m_domain_params = dom_par;
+		m_public_key = pub_point;
+		m_domain_encoding = EC_DOMPAR_ENC_EXPLICIT;
 		if (domain().get_curve() != public_point().get_curve())
 			throw new Invalid_Argument("EC_PublicKey: curve mismatch in constructor");
 	}
@@ -45,10 +46,10 @@ public:
 	this(in Algorithm_Identifier alg_id,
 	     in Secure_Vector!ubyte key_bits)
 	{
-		domain_params = EC_Group(alg_id.parameters);
-		domain_encoding = EC_DOMPAR_ENC_EXPLICIT;
+		m_domain_params = EC_Group(alg_id.parameters);
+		m_domain_encoding = EC_DOMPAR_ENC_EXPLICIT;
 		
-		public_key = OS2ECP(key_bits, domain().get_curve());
+		m_public_key = OS2ECP(key_bits, domain().get_curve());
 	}
 
 	/**
@@ -57,7 +58,7 @@ public:
 	* domain parameters of this point are not set
 	* @result the public point of this key
 	*/
-	const ref PointGFp public_point() const { return public_key; }
+	const ref PointGFp public_point() const { return m_public_key; }
 
 	Algorithm_Identifier algorithm_identifier() const
 	{
@@ -81,7 +82,7 @@ public:
 	* domain parameters of this point are not set
 	* @result the domain parameters of this key
 	*/
-	const EC_Group& domain() const { return domain_params; }
+	const EC_Group domain() const { return m_domain_params; }
 
 	/**
 	* Set the domain parameter encoding to be used when encoding this key.
@@ -94,12 +95,12 @@ public:
 		    form != EC_DOMPAR_ENC_OID)
 			throw new Invalid_Argument("Invalid encoding form for EC-key object specified");
 		
-		if ((form == EC_DOMPAR_ENC_OID) && (domain_params.get_oid() == ""))
+		if ((form == EC_DOMPAR_ENC_OID) && (m_domain_params.get_oid() == ""))
 			throw new Invalid_Argument("Invalid encoding form OID specified for "
 			                           "EC-key object whose corresponding domain "
 			                           "parameters are without oid");
 		
-		domain_encoding = form;
+		m_domain_encoding = form;
 	}
 
 	/**
@@ -114,7 +115,7 @@ public:
 	* @result the encoding to use
 	*/
 	EC_Group_Encoding domain_format() const
-	{ return domain_encoding; }
+	{ return m_domain_encoding; }
 
 	override size_t estimated_strength() const
 	{
@@ -128,9 +129,9 @@ protected:
 		domain_encoding = EC_DOMPAR_ENC_EXPLICIT;
 	}
 
-	EC_Group domain_params;
-	PointGFp public_key;
-	EC_Group_Encoding domain_encoding;
+	EC_Group m_domain_params;
+	PointGFp m_public_key;
+	EC_Group_Encoding m_domain_encoding;
 }
 
 /**
@@ -147,25 +148,25 @@ public:
 	     const ref EC_Group ec_group,
 	     const ref BigInt private_key)
 	{
-		domain_params = ec_group;
-		domain_encoding = EC_DOMPAR_ENC_EXPLICIT;
+		m_domain_params = ec_group;
+		m_domain_encoding = EC_DOMPAR_ENC_EXPLICIT;
 		
 		if (private_key == 0)
-			priv_key = BigInt.random_integer(rng, 1, domain().get_order());
+			m_private_key = BigInt.random_integer(rng, 1, domain().get_order());
 		else
-			priv_key = private_key;
+			m_private_key = private_key;
 		
-		public_key = domain().get_base_point() * priv_key;
+		m_public_key = domain().get_base_point() * m_private_key;
 		
-		assert(public_key.on_the_curve(),
+		assert(m_public_key.on_the_curve(),
 		             "Generated public key point was on the curve");
 	}
 
 	this(in Algorithm_Identifier alg_id,
 	     in Secure_Vector!ubyte key_bits)
 	{
-		domain_params = EC_Group(alg_id.parameters);
-		domain_encoding = EC_DOMPAR_ENC_EXPLICIT;
+		m_domain_params = EC_Group(alg_id.parameters);
+		m_domain_encoding = EC_DOMPAR_ENC_EXPLICIT;
 		
 		OID key_parameters;
 		Secure_Vector!ubyte public_key_bits;
@@ -173,9 +174,9 @@ public:
 		BER_Decoder(key_bits)
 			.start_cons(ASN1_Tag.SEQUENCE)
 				.decode_and_check!size_t(1, "Unknown version code for ECC key")
-				.decode_octet_string_bigint(priv_key)
-				.decode_optional(key_parameters, ASN1_Tag(0), PRIVATE)
-				.decode_optional_string(public_key_bits, ASN1_Tag.BIT_STRING, 1, PRIVATE)
+				.decode_octet_string_bigint(m_private_key)
+				.decode_optional(key_parameters, ASN1_Tag(0), ASN1_Tag.PRIVATE)
+				.decode_optional_string(public_key_bits, ASN1_Tag.BIT_STRING, 1, ASN1_Tag.PRIVATE)
 				.end_cons();
 		
 		if (!key_parameters.empty && key_parameters != alg_id.oid)
@@ -183,9 +184,9 @@ public:
 		
 		if (public_key_bits.empty)
 		{
-			public_key = domain().get_base_point() * priv_key;
+			m_public_key = domain().get_base_point() * m_private_key;
 			
-			assert(public_key.on_the_curve(),
+			assert(m_public_key.on_the_curve(),
 			             "Public point derived from loaded key was on the curve");
 		}
 		else
@@ -200,7 +201,7 @@ public:
 		return DER_Encoder()
 			.start_cons(ASN1_Tag.SEQUENCE)
 				.encode(cast(size_t)(1))
-				.encode(BigInt.encode_1363(priv_key, priv_key.bytes()),
+				.encode(BigInt.encode_1363(m_private_key, m_private_key.bytes()),
 				        ASN1_Tag.OCTET_STRING)
 				.end_cons()
 				.get_contents();
@@ -212,13 +213,13 @@ public:
 	*/
 	const ref BigInt private_value() const
 	{
-		if (priv_key == 0)
+		if (m_private_key == 0)
 			throw new Invalid_State("EC_PrivateKey::private_value - uninitialized");
 		
-		return priv_key;
+		return m_private_key;
 	}
 protected:
 	this() {}
 
-	BigInt priv_key;
+	BigInt m_private_key;
 }

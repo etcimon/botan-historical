@@ -26,11 +26,11 @@ public:
 		
 		while(out_len && counter)
 		{
-			hash.update(secret, secret_len);
-			hash.update_be(counter);
-			hash.update(P, P_len);
+			m_hash.update(secret, secret_len);
+			m_hash.update_be(counter);
+			m_hash.update(P, P_len);
 			
-			Secure_Vector!ubyte hash_result = hash.flush();
+			Secure_Vector!ubyte hash_result = m_hash.flush();
 			
 			size_t added = std.algorithm.min(hash_result.length, out_len);
 			output += Pair(&hash_result[0], added);
@@ -42,10 +42,10 @@ public:
 		return output;
 	}
 
-	@property string name() const { return "KDF2(" ~ hash.name ~ ")"; }
-	KDF clone() const { return new KDF2(hash.clone()); }
+	@property string name() const { return "KDF2(" ~ m_hash.name ~ ")"; }
+	KDF clone() const { return new KDF2(m_hash.clone()); }
 
-	this(HashFunction h) { hash = h; }
+	this(HashFunction h) { m_hash = h; }
 private:
-	Unique!HashFunction hash;
+	Unique!HashFunction m_hash;
 }

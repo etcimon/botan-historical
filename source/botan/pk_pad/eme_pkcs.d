@@ -24,8 +24,8 @@ public:
 	}
 private:
 	/*
-* PKCS1 Pad Operation
-*/
+	* PKCS1 Pad Operation
+	*/
 	Secure_Vector!ubyte pad(in ubyte* input, size_t inlen,
 	                     size_t olen,
 	                     RandomNumberGenerator rng) const

@@ -19,7 +19,7 @@ private:
 	*/
 	void update(in ubyte* input, size_t length)
 	{
-		message += Pair(input, length);
+		m_message += Pair(input, length);
 	}
 
 	/*
@@ -28,7 +28,7 @@ private:
 	Secure_Vector!ubyte raw_data()
 	{
 		Secure_Vector!ubyte output;
-		std.algorithm.swap(message, output);
+		std.algorithm.swap(m_message, output);
 		return output;
 	}
 
@@ -70,5 +70,5 @@ private:
 		return same_modulo_leading_zeros;
 	}
 
-	Secure_Vector!ubyte message;
+	Secure_Vector!ubyte m_message;
 }

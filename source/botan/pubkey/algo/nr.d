@@ -43,8 +43,8 @@ public:
 	*/
 	this(in DL_Group grp, const ref BigInt y1)
 	{
-		group = grp;
-		y = y1;
+		m_group = grp;
+		m_y = y1;
 	}
 
 protected:
@@ -63,7 +63,7 @@ public:
 */
 	bool check_key(RandomNumberGenerator rng, bool strong) const
 	{
-		if (!super.check_key(rng, strong) || x >= group_q())
+		if (!super.check_key(rng, strong) || m_x >= group_q())
 			return false;
 		
 		if (!strong)
@@ -80,13 +80,13 @@ public:
 	     const ref DL_Group grp,
 	     const ref BigInt x_arg)
 	{
-		group = grp;
-		x = x_arg;
+		m_group = grp;
+		m_x = x_arg;
 		
-		if (x == 0)
-			x = BigInt.random_integer(rng, 2, group_q() - 1);
+		if (m_x == 0)
+			m_x = BigInt.random_integer(rng, 2, group_q() - 1);
 		
-		y = power_mod(group_g(), x, group_p());
+		m_y = power_mod(group_g(), m_x, group_p());
 		
 		if (x_arg == 0)
 			gen_check(rng);
@@ -99,7 +99,7 @@ public:
 	     RandomNumberGenerator rng)
 	{ 
 		super(alg_id, key_bits, DL_Group.ANSI_X9_57);
-		y = power_mod(group_g(), x, group_p());
+		m_y = power_mod(group_g(), m_x, group_p());
 		
 		load_check(rng);
 	}
@@ -113,15 +113,15 @@ final class NR_Signature_Operation : Signature
 {
 public:
 	size_t message_parts() const { return 2; }
-	size_t message_part_size() const { return q.bytes(); }
-	size_t max_input_bits() const { return (q.bits() - 1); }
+	size_t message_part_size() const { return m_q.bytes(); }
+	size_t max_input_bits() const { return (m_q.bits() - 1); }
 
 	this(in NR_PrivateKey nr)
 	{
-		q = nr.group_q();
-		x = nr.get_x();
-		powermod_g_p = Fixed_Base_Power_Mod(nr.group_g(), nr.group_p());
-		mod_q = Modular_Reducer(nr.group_q());
+		m_q = nr.group_q();
+		m_x = nr.get_x();
+		m_powermod_g_p = Fixed_Base_Power_Mod(nr.group_g(), nr.group_p());
+		m_mod_q = Modular_Reducer(nr.group_q());
 	}
 
 	Secure_Vector!ubyte sign(in ubyte* msg, size_t msg_len,
@@ -129,9 +129,9 @@ public:
 	{
 		rng.add_entropy(msg, msg_len);
 		
-		BigInt f(msg, msg_len);
+		BigInt f = BigInt(msg, msg_len);
 		
-		if (f >= q)
+		if (f >= m_q)
 			throw new Invalid_Argument("NR_Signature_Operation: Input is out of range");
 		
 		BigInt c, d;
@@ -140,23 +140,23 @@ public:
 		{
 			BigInt k;
 			do
-				k.randomize(rng, q.bits());
-			while(k >= q);
+				k.randomize(rng, m_q.bits());
+			while(k >= m_q);
 			
-			c = mod_q.reduce(powermod_g_p(k) + f);
-			d = mod_q.reduce(k - x * c);
+			c = m_mod_q.reduce(m_powermod_g_p(k) + f);
+			d = m_mod_q.reduce(k - x * c);
 		}
 		
-		Secure_Vector!ubyte output = Secure_Vector!ubyte(2*q.bytes());
+		Secure_Vector!ubyte output = Secure_Vector!ubyte(2*m_q.bytes());
 		c.binary_encode(&output[output.length / 2 - c.bytes()]);
 		d.binary_encode(&output[output.length - d.bytes()]);
 		return output;
 	}
 private:
-	const ref BigInt q;
-	const ref BigInt x;
-	Fixed_Base_Power_Mod powermod_g_p;
-	Modular_Reducer mod_q;
+	const BigInt m_q;
+	const BigInt m_x;
+	Fixed_Base_Power_Mod m_powermod_g_p;
+	Modular_Reducer m_mod_q;
 }
 
 /**
@@ -167,23 +167,23 @@ final class NR_Verification_Operation : Verification
 public:
 	this(in NR_PublicKey nr) 
 	{
-		q = nr.group_q();
-		y = nr.get_y();
-		powermod_g_p = Fixed_Base_Power_Mod(nr.group_g(), nr.group_p());
-		powermod_y_p = Fixed_Base_Power_Mod(y, nr.group_p());
-		mod_p = Modular_Reducer(nr.group_p());
-		mod_q = Modular_Reducer(nr.group_q());
+		m_q = nr.group_q();
+		m_y = nr.get_y();
+		m_powermod_g_p = Fixed_Base_Power_Mod(nr.group_g(), nr.group_p());
+		m_powermod_y_p = Fixed_Base_Power_Mod(y, nr.group_p());
+		m_mod_p = Modular_Reducer(nr.group_p());
+		m_mod_q = Modular_Reducer(nr.group_q());
 	}
 
 	size_t message_parts() const { return 2; }
-	size_t message_part_size() const { return q.bytes(); }
-	size_t max_input_bits() const { return (q.bits() - 1); }
+	size_t message_part_size() const { return m_q.bytes(); }
+	size_t max_input_bits() const { return (m_q.bits() - 1); }
 
 	bool with_recovery() const { return true; }
 
 	Secure_Vector!ubyte verify_mr(in ubyte* msg, size_t msg_len)
 	{
-		const ref BigInt q = mod_q.get_modulus();
+		const BigInt q = m_mod_q.get_modulus(); // todo: why not use m_q?
 		size_t msg_len = msg.length;
 		if (msg_len != 2*q.bytes())
 			throw new Invalid_Argument("NR verification: Invalid signature");
@@ -195,16 +195,16 @@ public:
 			throw new Invalid_Argument("NR verification: Invalid signature");
 		import std.concurrency : spawn, receiveOnly, send, thisTid;
 
-		auto tid = spawn((Tid tid, Fixed_Base_Power_Mod powermod_y_p2, BigInt c2) { send(tid, powermod_y_p2(c2)); }, thisTid, powermod_y_p, c );
-		BigInt g_d = powermod_g_p(d);
+		auto tid = spawn((Tid tid, Fixed_Base_Power_Mod powermod_y_p2, BigInt c2) { send(tid, powermod_y_p2(c2)); }, thisTid, m_powermod_y_p, c );
+		BigInt g_d = m_powermod_g_p(d);
 		
-		BigInt i = mod_p.multiply(g_d, receiveOnly!BigInt());
-		return BigInt.encode_locked(mod_q.reduce(c - i));
+		BigInt i = m_mod_p.multiply(g_d, receiveOnly!BigInt());
+		return BigInt.encode_locked(m_mod_q.reduce(c - i));
 	}
 private:
-	const ref BigInt q;
-	const ref BigInt y;
+	const BigInt m_q;
+	const BigInt m_y;
 
-	Fixed_Base_Power_Mod powermod_g_p, powermod_y_p;
-	Modular_Reducer mod_p, mod_q;
+	Fixed_Base_Power_Mod m_powermod_g_p, m_powermod_y_p;
+	Modular_Reducer m_mod_p, m_mod_q;
 }

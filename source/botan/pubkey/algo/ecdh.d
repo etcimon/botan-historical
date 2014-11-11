@@ -23,7 +23,7 @@ class ECDH_PublicKey : EC_PublicKey
 public:
 
 	this(in Algorithm_Identifier alg_id,
-						in Secure_Vector!ubyte key_bits) 
+			in Secure_Vector!ubyte key_bits) 
 	{ 
 		super(alg_id, key_bits);
 	}
@@ -34,7 +34,7 @@ public:
 	* @param public_point the public point defining this key
 	*/
 	this(in EC_Group dom_par,
-						const ref PointGFp public_point) 
+			const ref PointGFp public_point) 
 	{
 		super(dom_par, public_point);
 	}
@@ -103,26 +103,26 @@ final class ECDH_KA_Operation : Key_Agreement
 public:
 	this(in ECDH_PrivateKey key) 
 	{
-		curve = key.domain().get_curve();
-		cofactor = key.domain().get_cofactor();
-		l_times_priv = inverse_mod(cofactor, key.domain().get_order()) *
+		m_curve = key.domain().get_curve();
+		m_cofactor = key.domain().get_cofactor();
+		l_times_priv = inverse_mod(m_cofactor, key.domain().get_order()) *
 			key.private_value();
 	}
 
 	Secure_Vector!ubyte agree(in ubyte* w, size_t w_len)
 	{
-		PointGFp point = OS2ECP(w, w_len, curve);
+		PointGFp point = OS2ECP(w, w_len, m_curve);
 		
-		PointGFp S = (cofactor * point) * l_times_priv;
+		PointGFp S = (m_cofactor * point) * m_l_times_priv;
 		
 		assert(S.on_the_curve(),
 		             "ECDH agreed value was on the curve");
 		
 		return BigInt.encode_1363(S.get_affine_x(),
-		                          curve.get_p().bytes());
+		                          m_curve.get_p().bytes());
 	}
 private:
-	const CurveGFp curve;
-	const BigInt cofactor;
-	BigInt l_times_priv;
+	const CurveGFp m_curve;
+	const BigInt m_cofactor;
+	BigInt m_l_times_priv;
 }

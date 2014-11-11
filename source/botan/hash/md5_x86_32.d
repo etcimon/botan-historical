@@ -25,7 +25,7 @@ private:
 	{
 		for (size_t i = 0; i != blocks; ++i)
 		{
-			botan_md5_x86_32_compress(&digest[0], input, &M[0]);
+			botan_md5_x86_32_compress(&m_digest[0], input, &m_M[0]);
 			input += hash_block_size;
 		}
 	}

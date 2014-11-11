@@ -71,7 +71,7 @@ public:
 
 	void initialize()
 	{
-		if (initialized)
+		if (m_initialized)
 			return false;
 
 		SCAN_Name.set_default_aliases();
@@ -108,7 +108,7 @@ public:
 		static if (BOTAN_HAS_SELFTESTS)
 			confirm_startup_self_tests(algorithm_factory());
 
-		initialized = true;
+		m_initialized = true;
 
 	}
 
@@ -199,5 +199,5 @@ private:
 	__gshared Vector!( EntropySource ) m_sources;
 
 	Algorithm_Factory m_algorithm_factory;
-	bool initialized;
+	bool m_initialized;
 }

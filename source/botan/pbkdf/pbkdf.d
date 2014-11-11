@@ -8,6 +8,8 @@ module botan.pbkdf.pbkdf;
 
 import botan.algo_base.symkey;
 import std.datetime;
+import std.exception;
+
 /**
 * Base class for PBKDF (password based key derivation function)
 * implementations. Converts a password into a key using a salt
@@ -127,6 +129,3 @@ public:
 							size_t iterations,
 		               Duration loop_for) const;
 }
-
-
-import std.exception;
