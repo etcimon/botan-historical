@@ -9,7 +9,7 @@ module botan.tls.tls_reader;
 import botan.utils.exceptn;
 import botan.alloc.zeroize;
 import botan.utils.loadstor;
-import string;
+// import string;
 import botan.utils.types;
 import std.exception;
 
@@ -76,44 +76,41 @@ public:
 	
 	Container get_elem(T, Container)(size_t num_elems)
 	{
-		assert_at_least(num_elems * (T).sizeof);
+		assert_at_least(num_elems * T.sizeof);
 
 		Container result(num_elems);
 
-		for (size_t i = 0; i != num_elems; ++i)
+		foreach (size_t i; 0 .. num_elems)
 			result[i] = load_be!T(&m_buf[m_offset], i);
 
-		m_offset += num_elems * (T).sizeof;
+		m_offset += num_elems * T.sizeof;
 
 		return result;
 	}
 
 	Vector!T get_range(T)(size_t len_bytes,
-							  size_t min_elems,
-							  size_t max_elems)
+							size_t min_elems,
+							size_t max_elems)
 	{
-		const size_t num_elems =
-			get_num_elems(len_bytes, (T).sizeof, min_elems, max_elems);
+		const size_t num_elems = get_num_elems(len_bytes, T.sizeof, min_elems, max_elems);
 
 		return get_elem!(T, Vector!T)(num_elems);
 	}
 
 	Vector!T get_range_vector(T)(size_t len_bytes,
-									  size_t min_elems,
-									  size_t max_elems)
+								 size_t min_elems,
+								 size_t max_elems)
 	{
-		const size_t num_elems =
-			get_num_elems(len_bytes, (T).sizeof, min_elems, max_elems);
+		const size_t num_elems = get_num_elems(len_bytes, T.sizeof, min_elems, max_elems);
 
 		return get_elem!(T, Vector!T)(num_elems);
 	}
 
 	string get_string(size_t len_bytes,
-								  size_t min_bytes,
-								  size_t max_bytes)
+					  size_t min_bytes,
+					  size_t max_bytes)
 	{
-		Vector!ubyte v =
-			get_range_vector!ubyte(len_bytes, min_bytes, max_bytes);
+		Vector!ubyte v = get_range_vector!ubyte(len_bytes, min_bytes, max_bytes);
 
 		return string(cast(char*)(&v[0]), v.length);
 	}
@@ -157,15 +154,15 @@ private:
 	void assert_at_least(size_t n) const
 	{
 		if (m_buf.length - m_offset < n)
-			throw new decode_error("Expected " ~ std.conv.to!string(n) +
+			throw new decode_error("Expected " ~ std.conv.to!string(n) ~
 									 " bytes remaining, only " ~
-									 std.conv.to!string(m_buf.length-m_offset) +
+									 std.conv.to!string(m_buf.length-m_offset) ~
 									 " left");
 	}
 
 	Decoding_Error decode_error(in string why) const
 	{
-		return Decoding_Error("Invalid " ~ string(m_typename) ~ ": " ~ why);
+		return new Decoding_Error("Invalid " ~ string(m_typename) ~ ": " ~ why);
 	}
 
 	string m_typename;
@@ -181,7 +178,7 @@ void append_tls_length_value(T, Alloc)(ref Vector!( ubyte, Alloc ) buf,
 										  size_t vals_size,
 										  size_t tag_size)
 {
-	const size_t T_size = (T).sizeof;
+	const size_t T_size = T.sizeof;
 	const size_t val_bytes = T_size * vals_size;
 
 	if (tag_size != 1 && tag_size != 2)
@@ -191,11 +188,11 @@ void append_tls_length_value(T, Alloc)(ref Vector!( ubyte, Alloc ) buf,
 		(tag_size == 2 && val_bytes > 65535))
 		throw new Invalid_Argument("append_tls_length_value: value too large");
 
-	for (size_t i = 0; i != tag_size; ++i)
+	foreach (size_t i; 0 .. tag_size)
 		buf.push_back(get_byte((val_bytes).sizeof-tag_size+i, val_bytes));
 
-	for (size_t i = 0; i != vals_size; ++i)
-		for (size_t j = 0; j != T_size; ++j)
+	foreach (size_t i; 0 .. vals_size)
+		foreach (size_t j; 0 .. T_size)
 			buf.push_back(get_byte(j, vals[i]));
 }
 

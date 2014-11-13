@@ -30,9 +30,9 @@ public:
 	{
 		Secure_Vector!ubyte io_buffer = accum.get_io_buffer(32);
 		
-		for (size_t i = 0; i != m_prov_types.length; ++i)
+		foreach (prov_type; m_prov_types[])
 		{
-			CSP_Handle csp(m_prov_types[i]);
+			CSP_Handle csp = CSP_Handle(prov_type);
 			
 			size_t got = csp.gen_random(&io_buffer[0], io_buffer.length);
 			
@@ -52,12 +52,12 @@ public:
 	{
 		Vector!string capi_provs = splitter(provs, ':');
 		
-		for (size_t i = 0; i != capi_provs.length; ++i)
+		foreach (capi_prov; capi_provs)
 		{
-			if (capi_provs[i] == "RSA_FULL")  m_prov_types.push_back(PROV_RSA_FULL);
-			if (capi_provs[i] == "INTEL_SEC") m_prov_types.push_back(PROV_INTEL_SEC);
-			if (capi_provs[i] == "FORTEZZA")  m_prov_types.push_back(PROV_FORTEZZA);
-			if (capi_provs[i] == "RNG")		 m_prov_types.push_back(PROV_RNG);
+			if (capi_prov == "RSA_FULL")  m_prov_types.push_back(PROV_RSA_FULL);
+			if (capi_prov == "INTEL_SEC") m_prov_types.push_back(PROV_INTEL_SEC);
+			if (capi_prov == "FORTEZZA")  m_prov_types.push_back(PROV_FORTEZZA);
+			if (capi_prov == "RNG")		 m_prov_types.push_back(PROV_RNG);
 		}
 		
 		if (m_prov_types.length == 0)

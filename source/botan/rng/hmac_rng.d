@@ -142,9 +142,8 @@ public:
 		zeroise(m_K);
 		m_counter = 0;
 		
-		m_collected_entropy_estimate =
-			std.algorithm.min(m_collected_entropy_estimate + bits_collected,
-			                  m_extractor.output_length * 8);
+		m_collected_entropy_estimate = std.algorithm.min(m_collected_entropy_estimate + bits_collected,
+		                                                 m_extractor.output_length * 8);
 		
 		m_output_since_reseed = 0;
 	}
@@ -189,7 +188,7 @@ public:
 		The PRF key will not be used to generate outputs until after reseed
 		sets m_seeded to true.
 		*/
-		Secure_Vector!ubyte prf_key(m_extractor.output_length);
+		Secure_Vector!ubyte prf_key = Secure_Vector!ubyte(m_extractor.output_length);
 		m_prf.set_key(prf_key);
 		
 		/*

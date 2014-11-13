@@ -7,7 +7,7 @@
 module botan.utils.charset;
 
 import botan.utils.types;
-import string;
+// import string;
 /**
 * The different charsets (nominally) supported by Botan.
 */
@@ -197,6 +197,5 @@ char digit2char(ubyte b)
 bool caseless_cmp(char a, char b)
 {
 	import std.ascii : toLower;
-	return (toLower(cast(char)(a)) ==
-	        toLower(cast(char)(b)));
+	return (toLower(cast(char)(a)) == toLower(cast(char)(b)));
 }

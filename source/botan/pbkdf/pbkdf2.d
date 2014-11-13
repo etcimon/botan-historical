@@ -110,7 +110,7 @@ public:
 			}
 			else
 			{
-				for (size_t i = 1; i != iterations; ++i)
+				foreach (size_t i; 1 .. iterations)
 				{
 					m_mac.update(U);
 					m_mac.flushInto(&U[0]);

@@ -233,7 +233,7 @@ public:
 			
 			while(bits_left >= window_size)
 			{
-				for (size_t i = 0; i != window_size; ++i)
+				foreach (size_t i; 0 .. window_size)
 					H.mult2(ws);
 				
 				const uint nibble = scalar.get_substring(bits_left - window_size,
@@ -273,7 +273,7 @@ public:
 	{
 		const PointGFp p3 = p1 + p2;
 		
-		PointGFp H(p1.curve); // create as zero
+		PointGFp H = PointGFp(p1.curve); // create as zero
 		size_t bits_left = std.algorithm.max(z1.bits(), z2.bits());
 		
 		Vector!BigInt ws = Vector!BigInt(9);
@@ -345,7 +345,7 @@ public:
 		if (is_zero())
 			throw new Illegal_Transformation("Cannot convert zero point to affine");
 		
-		const ref BigInt r2 = curve.get_r2();
+		const BigInt r2 = curve.get_r2();
 		
 		BigInt z3 = monty_mult(coord_z, monty_sqr(coord_z));
 		z3 = inverse_mod(z3, curve.get_p());
@@ -382,7 +382,7 @@ public:
 		
 		BigInt ax = monty_mult(coord_x, curve.get_a_r());
 		
-		const ref BigInt b_r = curve.get_b_r();
+		const BigInt b_r = curve.get_b_r();
 		
 		BigInt z2 = monty_sqr(coord_z);
 		
@@ -467,7 +467,7 @@ private:
 			return;
 		}
 		
-		const ref BigInt p = curve.get_p();
+		const BigInt p = curve.get_p();
 		const size_t p_size = curve.get_p_words();
 		const word p_dash = curve.get_p_dash();
 		
@@ -510,7 +510,7 @@ private:
 			return;
 		}
 		
-		const ref BigInt p = curve.get_p();
+		const BigInt p = curve.get_p();
 		const size_t p_size = curve.get_p_words();
 		const word p_dash = curve.get_p_dash();
 		
@@ -541,7 +541,7 @@ private:
 		else if (rhs.is_zero())
 			return;
 		
-		const ref BigInt p = curve.get_p();
+		const BigInt p = curve.get_p();
 		
 		BigInt rhs_z2 = ws_bn[0];
 		BigInt U1 = ws_bn[1];
@@ -623,17 +623,17 @@ private:
 			return;
 		}
 		
-		const ref BigInt p = curve.get_p();
+		const BigInt p = curve.get_p();
 		
-		ref BigInt y_2 = ws_bn[0];
-		ref BigInt S = ws_bn[1];
-		ref BigInt z4 = ws_bn[2];
-		ref BigInt a_z4 = ws_bn[3];
-		ref BigInt M = ws_bn[4];
-		ref BigInt U = ws_bn[5];
-		ref BigInt x = ws_bn[6];
-		ref BigInt y = ws_bn[7];
-		ref BigInt z = ws_bn[8];
+		BigInt y_2 = ws_bn[0];
+		BigInt S = ws_bn[1];
+		BigInt z4 = ws_bn[2];
+		BigInt a_z4 = ws_bn[3];
+		BigInt M = ws_bn[4];
+		BigInt U = ws_bn[5];
+		BigInt x = ws_bn[6];
+		BigInt y = ws_bn[7];
+		BigInt z = ws_bn[8];
 		
 		monty_sqr(y_2, coord_y);
 		
@@ -810,7 +810,7 @@ PointGFp OS2ECP(in ubyte* data, size_t data_len,
 	else
 		throw new Invalid_Argument("OS2ECP: Unknown format type " ~ std.conv.to!string(pc));
 	
-	PointGFp result(curve, x, y);
+	PointGFp result = PointGFp(curve, x, y);
 	
 	if (!result.on_the_curve())
 		throw new Illegal_Point("OS2ECP: Decoded point was not on the curve");

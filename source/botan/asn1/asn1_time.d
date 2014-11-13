@@ -209,7 +209,7 @@ public:
 		Vector!string params;
 		string current;
 		
-		for (size_t j = 0; j != YEAR_SIZE; ++j)
+		foreach (size_t j; 0 .. YEAR_SIZE)
 			current += t_spec[j];
 		params.push_back(current);
 		current.clear();

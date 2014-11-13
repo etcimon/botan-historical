@@ -176,7 +176,7 @@ void compress(ref Secure_Vector!ulong digest,
 		D = digest[3], E = digest[4], F = digest[5],
 		G = digest[6], H = digest[7];
 	
-	for (size_t i = 0; i != blocks; ++i)
+	foreach (size_t i; 0 .. blocks)
 	{
 		ulong W00 = load_be!ulong(input,  0);
 		ulong W01 = load_be!ulong(input,  1);

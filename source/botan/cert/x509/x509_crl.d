@@ -59,11 +59,11 @@ public:
 		
 		bool is_revoked = false;
 		
-		for (size_t i = 0; i != m_revoked.length; ++i)
+		foreach (const revoked; m_revoked)
 		{
-			if (cert_serial == m_revoked[i].serial_number())
+			if (cert_serial == revoked.serial_number())
 			{
-				if (m_revoked[i].reason_code() == CRL_Code.REMOVE_FROM_CRL)
+				if (revoked.reason_code() == CRL_Code.REMOVE_FROM_CRL)
 					is_revoked = false;
 				else
 					is_revoked = true;

@@ -59,7 +59,7 @@ public:
 	*/
 	final void update_be(T)(in T input)
 	{
-		for (size_t i = 0; i != (T).sizeof; ++i)
+		foreach (size_t i; 0 .. T.sizeof)
 		{
 			ubyte b = get_byte(i, input);
 			add_data(&b, 1);

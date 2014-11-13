@@ -9,6 +9,8 @@ module botan.block.twofish;
 import botan.constants;
 static if (BOTAN_HAS_TWOFISH):
 
+import std.range : iota;
+
 import botan.block.block_cipher;
 /**
 * Twofish, an AES finalist
@@ -21,7 +23,7 @@ public:
 	*/
 	void encrypt_n(ubyte* input, ubyte* output, size_t blocks) const
 	{
-		for (size_t i = 0; i != blocks; ++i)
+		foreach (size_t i; 0 .. blocks)
 		{
 			uint A = load_le!uint(input, 0) ^ m_RK[0];
 			uint B = load_le!uint(input, 1) ^ m_RK[1];
@@ -72,7 +74,7 @@ public:
 	*/
 	void decrypt_n(ubyte* input, ubyte* output, size_t blocks) const
 	{
-		for (size_t i = 0; i != blocks; ++i)
+		foreach (size_t i; 0 .. blocks)
 		{
 			uint A = load_le!uint(input, 0) ^ m_RK[4];
 			uint B = load_le!uint(input, 1) ^ m_RK[5];
@@ -140,12 +142,12 @@ private:
 		
 		Secure_Vector!ubyte S = Secure_Vector!ubyte(16);
 		
-		for (size_t i = 0; i != length; ++i)
+		foreach (size_t i; 0 .. length)
 			m_RS_mul(&S[4*(i/8)], key[i], i);
 		
 		if (length == 16)
 		{
-			for (size_t i = 0; i != 256; ++i)
+			foreach (size_t i; 0 .. 256)
 			{
 				m_SB[	 i] = m_MDS0[m_Q0[m_Q0[i]^S[ 0]]^S[ 4]];
 				m_SB[256+i] = m_MDS1[m_Q0[m_Q1[i]^S[ 1]]^S[ 5]];
@@ -153,7 +155,7 @@ private:
 				m_SB[768+i] = m_MDS3[m_Q1[m_Q1[i]^S[ 3]]^S[ 7]];
 			}
 			
-			for (size_t i = 0; i != 40; i += 2)
+			foreach (size_t i; iota(0, 40, 2))
 			{
 				uint X = m_MDS0[m_Q0[m_Q0[i  ]^key[ 8]]^key[ 0]] ^
 					m_MDS1[m_Q0[m_Q1[i  ]^key[ 9]]^key[ 1]] ^
@@ -172,7 +174,7 @@ private:
 		}
 		else if (length == 24)
 		{
-			for (size_t i = 0; i != 256; ++i)
+			foreach (size_t i; 0 .. 256)
 			{
 				m_SB[	 i] = m_MDS0[m_Q0[m_Q0[m_Q1[i]^S[ 0]]^S[ 4]]^S[ 8]];
 				m_SB[256+i] = m_MDS1[m_Q0[m_Q1[m_Q1[i]^S[ 1]]^S[ 5]]^S[ 9]];
@@ -180,7 +182,7 @@ private:
 				m_SB[768+i] = m_MDS3[m_Q1[m_Q1[m_Q0[i]^S[ 3]]^S[ 7]]^S[11]];
 			}
 			
-			for (size_t i = 0; i != 40; i += 2)
+			foreach (size_t i; iota(0, 40, 2))
 			{
 				uint X = m_MDS0[m_Q0[m_Q0[m_Q1[i  ]^key[16]]^key[ 8]]^key[ 0]] ^
 					m_MDS1[m_Q0[m_Q1[m_Q1[i  ]^key[17]]^key[ 9]]^key[ 1]] ^
@@ -199,7 +201,7 @@ private:
 		}
 		else if (length == 32)
 		{
-			for (size_t i = 0; i != 256; ++i)
+			foreach (size_t i; 0 .. 256)
 			{
 				m_SB[	 i] = m_MDS0[m_Q0[m_Q0[m_Q1[m_Q1[i]^S[ 0]]^S[ 4]]^S[ 8]]^S[12]];
 				m_SB[256+i] = m_MDS1[m_Q0[m_Q1[m_Q1[m_Q0[i]^S[ 1]]^S[ 5]]^S[ 9]]^S[13]];
@@ -207,7 +209,7 @@ private:
 				m_SB[768+i] = m_MDS3[m_Q1[m_Q1[m_Q0[m_Q1[i]^S[ 3]]^S[ 7]]^S[11]]^S[15]];
 			}
 			
-			for (size_t i = 0; i != 40; i += 2)
+			foreach (size_t i; iota(0, 40, 2))
 			{
 				uint X = m_MDS0[m_Q0[m_Q0[m_Q1[m_Q1[i  ]^key[24]]^key[16]]^key[ 8]]^key[ 0]] ^
 					m_MDS1[m_Q0[m_Q1[m_Q1[m_Q0[i  ]^key[25]]^key[17]]^key[ 9]]^key[ 1]] ^

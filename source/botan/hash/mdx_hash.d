@@ -74,7 +74,7 @@ protected:
 	final void final_result(ubyte* output)
 	{
 		m_buffer[m_position] = (m_BIG_BIT_ENDIAN ? 0x80 : 0x01);
-		for (size_t i = m_position+1; i != m_buffer.length; ++i)
+		foreach (size_t i; (m_position+1) .. m_buffer.length)
 			m_buffer[i] = 0;
 		
 		if (m_position >= m_buffer.length - m_COUNT_SIZE)

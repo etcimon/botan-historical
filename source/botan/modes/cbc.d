@@ -132,7 +132,7 @@ public:
 		
 		if (blocks)
 		{
-			for (size_t i = 0; i != blocks; ++i)
+			foreach (size_t i; 0 .. blocks)
 			{
 				xor_buf(&buf[BS*i], prev_block, BS);
 				cipher().encrypt(&buf[BS*i]);
@@ -203,7 +203,7 @@ public:
 			update(buffer, offset);
 			
 			// swap last two blocks
-			for (size_t i = 0; i != BS; ++i)
+			foreach (size_t i; 0 .. BS)
 				std.algorithm.swap(buffer[buffer.length-BS+i], buffer[buffer.length-2*BS+i]);
 		}
 		else
@@ -219,7 +219,7 @@ public:
 			xor_buf(&last[0], state_ptr(), BS);
 			cipher().encrypt(&last[0]);
 			
-			for (size_t i = 0; i != final_bytes - BS; ++i)
+			foreach (size_t i; 0 .. (final_bytes - BS))
 			{
 				last[i] ^= last[i + BS];
 				last[i + BS] ^= last[i];
@@ -338,7 +338,7 @@ public:
 		{
 			// swap last two blocks
 			
-			for (size_t i = 0; i != BS; ++i)
+			foreach (size_t i; 0 .. BS)
 				std.algorithm.swap(buffer[buffer.length-BS+i], buffer[buffer.length-2*BS+i]);
 			
 			update(buffer, offset);
@@ -357,7 +357,7 @@ public:
 			
 			xor_buf(&last[0], &last[BS], final_bytes - BS);
 			
-			for (size_t i = 0; i != final_bytes - BS; ++i)
+			foreach (size_t i; 0 .. (final_bytes - BS))
 				std.algorithm.swap(last[i], last[i + BS]);
 			
 			cipher().decrypt(&last[0]);

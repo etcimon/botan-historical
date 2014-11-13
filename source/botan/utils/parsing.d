@@ -6,7 +6,7 @@
 */
 
 import botan.utils.types;
-import string;
+// import string;
 import botan.utils.types;
 import botan.utils.parsing;
 import botan.utils.exceptn;

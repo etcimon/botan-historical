@@ -8,7 +8,7 @@ module botan.modes.mode_pad;
 
 import botan.alloc.zeroize;
 import botan.utils.exceptn;
-import string;
+// import string;
 
 /**
 * Block Cipher Mode Padding Method
@@ -65,7 +65,7 @@ public:
 	{
 		const ubyte pad_value = block_size - last_byte_pos;
 		
-		for (size_t i = 0; i != pad_value; ++i)
+		foreach (size_t i; 0 .. pad_value)
 			buffer.push_back(pad_value);
 	}
 
@@ -79,7 +79,7 @@ public:
 		if (position > size)
 			throw new Decoding_Error("Bad padding in " ~ name);
 		
-		for (size_t j = size-position; j != size-1; ++j)
+		foreach (size_t j; (size-position) .. (size-1))
 			if (block[j] != position)
 				throw new Decoding_Error("Bad padding in " ~ name);
 		
@@ -119,7 +119,7 @@ public:
 		size_t position = block[size-1];
 		if (position > size)
 			throw new Decoding_Error(name);
-		for (size_t j = size-position; j != size-1; ++j)
+		foreach (size_t j; (size-position) .. (size-1))
 			if (block[j] != 0)
 				throw new Decoding_Error(name);
 		return (size-position);

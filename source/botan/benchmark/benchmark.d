@@ -18,7 +18,7 @@ import botan.utils.types;
 import std.datetime;
 import botan.rng.rng;
 import botan.utils.hashmap;
-import string;
+// import string;
 import std.datetime;
 
 /**

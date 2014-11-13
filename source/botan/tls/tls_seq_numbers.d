@@ -107,8 +107,8 @@ public:
 	}
 
 private:
-	ulong m_write_seq_no = 0;
-	ushort m_read_epoch = 0;
-	ulong m_window_highest = 0;
-	ulong m_window_bits = 0;
+	ulong m_write_seq_no;
+	ushort m_read_epoch;
+	ulong m_window_highest;
+	ulong m_window_bits;
 }

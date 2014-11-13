@@ -40,7 +40,7 @@ private:
 		Secure_Vector!ubyte output = Secure_Vector!ubyte(olen);
 		
 		output[0] = 0x02;
-		for (size_t j = 1; j != olen - inlen - 1; ++j)
+		foreach (size_t j; 1 .. (olen - inlen - 1))
 			while(output[j] == 0)
 				output[j] = rng.next_byte();
 		buffer_insert(output, olen - inlen, input, inlen);
@@ -58,7 +58,7 @@ private:
 			throw new Decoding_Error("PKCS1::unpad");
 		
 		size_t seperator = 0;
-		for (size_t j = 0; j != inlen; ++j)
+		foreach (size_t j; 0 .. inlen)
 			if (input[j] == 0)
 		{
 			seperator = j;

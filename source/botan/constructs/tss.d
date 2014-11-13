@@ -44,7 +44,7 @@ public:
 		Vector!RTSS_Share shares = Vector!RTSS_Share(N);
 		
 		// Create RTSS header in each share
-		for (ubyte i = 0; i != N; ++i)
+		foreach (ubyte i; 0 .. N)
 		{
 			shares[i].m_contents += Pair(identifier, 16);
 			shares[i].m_contents += rtss_hash_id(hash.name);
@@ -54,28 +54,28 @@ public:
 		}
 		
 		// Choose sequential values for X starting from 1
-		for (ubyte i = 0; i != N; ++i)
+		foreach (ubyte i; 0 .. N)
 			shares[i].m_contents.push_back(i+1);
 		
 		// secret = S || H(S)
 		Secure_Vector!ubyte secret = Secure_Vector!ubyte(S, S + S_len);
 		secret += hash.process(S, S_len);
 		
-		for (size_t i = 0; i != secret.length; ++i)
+		foreach (s; secret[])
 		{
 			Vector!ubyte coefficients = Vector!ubyte(M-1);
 			rng.randomize(&coefficients[0], coefficients.length);
 			
-			for (ubyte j = 0; j != N; ++j)
+			foreach (ubyte j; 0 .. N)
 			{
 				const ubyte X = j + 1;
 				
-				ubyte sum = secret[i];
+				ubyte sum = s;
 				ubyte X_i = X;
 				
-				for (size_t k = 0; k != coefficients.length; ++k)
+				foreach (coefficient; coefficients)
 				{
-					sum ^= gfp_mul(X_i, coefficients[k]);
+					sum ^= gfp_mul(X_i, coefficient);
 					X_i  = gfp_mul(X_i, X);
 				}
 				
@@ -93,19 +93,19 @@ public:
 
 	static Secure_Vector!ubyte reconstruct(in Vector!RTSS_Share shares)
 	{
-		const size_t RTSS_HEADER_SIZE = 20;
+		__gshared immutable size_t RTSS_HEADER_SIZE = 20;
 		
-		for (size_t i = 0; i != shares.length; ++i)
+		foreach (share; shares[])
 		{
-			if (shares[i].length != shares[0].length)
+			if (share.length != shares[0].length)
 				throw new Decoding_Error("Different sized RTSS shares detected");
-			if (shares[i].share_id() == 0)
+			if (share.share_id() == 0)
 				throw new Decoding_Error("Invalid (id = 0) RTSS share detected");
-			if (shares[i].length < RTSS_HEADER_SIZE)
+			if (share.length < RTSS_HEADER_SIZE)
 				throw new Decoding_Error("Missing or malformed RTSS header");
 			
 			if (!same_mem(&shares[0].m_contents[0],
-			&shares[i].m_contents[0], RTSS_HEADER_SIZE))
+			&share.m_contents[0], RTSS_HEADER_SIZE))
 				throw new Decoding_Error("Different RTSS headers detected");
 		}
 		
@@ -125,17 +125,17 @@ public:
 		Vector!ubyte V = Vector!ubyte(shares.length);
 		Secure_Vector!ubyte secret;
 		
-		for (size_t i = RTSS_HEADER_SIZE + 1; i != shares[0].length; ++i)
+		foreach (size_t i; (RTSS_HEADER_SIZE + 1) .. shares[0].length)
 		{
-			for (size_t j = 0; j != V.length; ++j)
+			foreach (size_t j; 0 .. V.length)
 				V[j] = shares[j].m_contents[i];
 			
 			ubyte r = 0;
-			for (size_t k = 0; k != shares.length; ++k)
+			foreach (size_t k; 0 .. shares.length)
 			{
 				// L_i function:
 				ubyte r2 = 1;
-				for (size_t l = 0; l != shares.length; ++l)
+				foreach (size_t l; 0 .. shares.length)
 				{
 					if (k == l)
 						continue;

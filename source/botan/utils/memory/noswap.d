@@ -12,7 +12,7 @@ import core.sync.mutex;
 
 import botan.utils.mem_ops;
 import std.algorithm;
-import string;
+// import string;
 
 import core.sys.posix.sys.mman;
 import core.sys.posix.sys.resource;
@@ -225,8 +225,8 @@ private:
 }
 
 /**
-* Requests for objects of (T).sizeof will be aligned at
-* (T).sizeof*ALIGNMENT_MULTIPLE bytes.
+* Requests for objects of T.sizeof will be aligned at
+* T.sizeof*ALIGNMENT_MULTIPLE bytes.
 */
 const size_t ALIGNMENT_MULTIPLE = 2;
 

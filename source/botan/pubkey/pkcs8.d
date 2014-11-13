@@ -41,7 +41,7 @@ Secure_Vector!ubyte BER_encode(in Private_Key key)
 	const size_t PKCS8_VERSION = 0;
 	
 	return DER_Encoder()
-		.start_cons(ASN1_Tag.SEQUENCE)
+			.start_cons(ASN1_Tag.SEQUENCE)
 			.encode(PKCS8_VERSION)
 			.encode(key.pkcs8_algorithm_identifier())
 			.encode(key.pkcs8_private_key(), ASN1_Tag.OCTET_STRING)
@@ -78,11 +78,7 @@ Vector!ubyte BER_encode(in Private_Key key,
 {
 	const string DEFAULT_PBE = "PBE-PKCS5v20(SHA-1,AES-256/CBC)";
 	
-	Unique!PBE pbe =
-		get_pbe(((pbe_algo != "") ? pbe_algo : DEFAULT_PBE),
-		        pass,
-		        dur,
-		        rng);
+	Unique!PBE pbe = get_pbe(((pbe_algo != "") ? pbe_algo : DEFAULT_PBE), pass, dur, rng);
 	
 	Algorithm_Identifier pbe_algid = Algorithm_Identifier(pbe.get_oid(), pbe.encode_params());
 	
@@ -90,7 +86,7 @@ Vector!ubyte BER_encode(in Private_Key key,
 	key_encrytor.process_msg(BER_encode(key));
 	
 	return DER_Encoder()
-		.start_cons(ASN1_Tag.SEQUENCE)
+			.start_cons(ASN1_Tag.SEQUENCE)
 			.encode(pbe_algid)
 			.encode(key_encrytor.read_all(), ASN1_Tag.OCTET_STRING)
 			.end_cons()
@@ -210,7 +206,7 @@ Secure_Vector!ubyte PKCS8_extract(DataSource source,
 	Secure_Vector!ubyte key_data;
 	
 	BER_Decoder(source)
-		.start_cons(ASN1_Tag.SEQUENCE)
+			.start_cons(ASN1_Tag.SEQUENCE)
 			.decode(pbe_alg_id)
 			.decode(key_data, ASN1_Tag.OCTET_STRING)
 			.verify_end();
@@ -282,7 +278,7 @@ Secure_Vector!ubyte PKCS8_decode(
 			}
 			
 			BER_Decoder(key)
-				.start_cons(ASN1_Tag.SEQUENCE)
+					.start_cons(ASN1_Tag.SEQUENCE)
 					.decode_and_check!size_t(0, "Unknown PKCS #8 version number")
 					.decode(pk_alg_id)
 					.decode(key, ASN1_Tag.OCTET_STRING)

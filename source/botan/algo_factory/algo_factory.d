@@ -20,7 +20,7 @@ import botan.pbkdf.pbkdf;
 import std.algorithm;
 
 import botan.utils.types;
-import string;
+// import string;
 import botan.utils.types;
 import botan.utils.memory : FreeListRef;
 
@@ -385,12 +385,12 @@ const T factory_prototype(T)(in string algo_spec,
 	if (scan_name.cipher_mode() != "")
 		return null;
 
-	for (size_t i = 0; i != engines.length; ++i)
+	foreach(const engine; engines[])
 	{
-		if (provider == "" || engines[i].provider_name == provider)
+		if (provider == "" || engine.provider_name == provider)
 		{
-			if (T impl = af.engine_get_algo!T(engines[i], scan_name, af))
-				cache.add(impl, algo_spec, engines[i].provider_name());
+			if (T impl = af.engine_get_algo!T(engine, scan_name, af))
+				cache.add(impl, algo_spec, engine.provider_name());
 		}
 	}
 

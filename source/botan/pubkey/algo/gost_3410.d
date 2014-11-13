@@ -56,7 +56,7 @@ public:
 		const size_t part_size = bits.length / 2;
 		
 		// Keys are stored in little endian format (WTF)
-		for (size_t i = 0; i != part_size / 2; ++i)
+		foreach (size_t i; 0 .. (part_size / 2))
 		{
 			std.algorithm.swap(bits[i], bits[part_size-1-i]);
 			std.algorithm.swap(bits[part_size+i], bits[2*part_size-1-i]);
@@ -79,11 +79,10 @@ public:
 
 	Algorithm_Identifier algorithm_identifier() const
 	{
-		Vector!ubyte params =
-			DER_Encoder().start_cons(ASN1_Tag.SEQUENCE)
-				.encode(OID(domain().get_oid()))
-				.end_cons()
-				.get_contents_unlocked();
+		Vector!ubyte params = DER_Encoder().start_cons(ASN1_Tag.SEQUENCE)
+											.encode(OID(domain().get_oid()))
+											.end_cons()
+											.get_contents_unlocked();
 		
 		return Algorithm_Identifier(get_oid(), params);
 	}
@@ -102,7 +101,7 @@ public:
 		y.binary_encode(&bits[2*part_size - y.bytes()]);
 		
 		// Keys are stored in little endian format (WTF)
-		for (size_t i = 0; i != part_size / 2; ++i)
+		foreach (size_t i; 0 .. (part_size / 2))
 		{
 			std.algorithm.swap(bits[i], bits[part_size-1-i]);
 			std.algorithm.swap(bits[part_size+i], bits[2*part_size-1-i]);
@@ -136,8 +135,7 @@ final class GOST_3410_PrivateKey : GOST_3410_PublicKey,
 {
 public:
 
-	this(in Algorithm_Identifier alg_id,
-			in Secure_Vector!ubyte key_bits)
+	this(in Algorithm_Identifier alg_id, in Secure_Vector!ubyte key_bits)
 	{
 		super(alg_id, key_bits);
 	}
@@ -148,7 +146,7 @@ public:
 	* @param domain parameters to used for this key
 	* @param x the private key; if zero, a new random key is generated
 	*/
-	this(	RandomNumberGenerator rng,
+	this(RandomNumberGenerator rng,
 			const ref EC_Group domain,
 			const ref BigInt x = 0)
 	{

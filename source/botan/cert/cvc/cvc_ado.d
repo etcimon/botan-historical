@@ -16,7 +16,7 @@ import botan.pubkey.x509_key;
 import botan.asn1.asn1_obj;
 import botan.utils.types;
 // import fstream;
-import string;
+// import string;
 
 /**
 * This class represents a TR03110 (EAC) v1.1 CVC ADO request

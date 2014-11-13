@@ -73,7 +73,7 @@ public:
 			out_mm += 4;
 		}
 		
-		for (size_t i = 0; i != blocks; ++i)
+		foreach (size_t i; 0 .. blocks)
 		{
 			__m128i B = _mm_loadu_si128(in_mm + i);
 			
@@ -149,7 +149,7 @@ public:
 			out_mm += 4;
 		}
 		
-		for (size_t i = 0; i != blocks; ++i)
+		foreach (size_t i; 0 .. blocks)
 		{
 			__m128i B = _mm_loadu_si128(in_mm + i);
 			
@@ -303,7 +303,7 @@ public:
 			out_mm += 4;
 		}
 		
-		for (size_t i = 0; i != blocks; ++i)
+		foreach (size_t i; 0 .. blocks)
 		{
 			__m128i B = _mm_loadu_si128(in_mm + i);
 			
@@ -385,7 +385,7 @@ public:
 			out_mm += 4;
 		}
 		
-		for (size_t i = 0; i != blocks; ++i)
+		foreach (size_t i; 0 .. blocks)
 		{
 			__m128i B = _mm_loadu_si128(in_mm + i);
 			
@@ -538,7 +538,7 @@ public:
 			out_mm += 4;
 		}
 		
-		for (size_t i = 0; i != blocks; ++i)
+		foreach (size_t i; 0 .. blocks)
 		{
 			__m128i B = _mm_loadu_si128(in_mm + i);
 			
@@ -626,7 +626,7 @@ public:
 			out_mm += 4;
 		}
 		
-		for (size_t i = 0; i != blocks; ++i)
+		foreach (size_t i; 0 .. blocks)
 		{
 			__m128i B = _mm_loadu_si128(in_mm + i);
 			

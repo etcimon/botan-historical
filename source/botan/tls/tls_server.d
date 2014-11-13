@@ -60,8 +60,7 @@ private:
 	override void initiate_handshake(Handshake_State state,
 	                        bool force_full_renegotiation)
 	{
-		(cast(Server_Handshake_State)state).allow_session_resumption =
-			!force_full_renegotiation;
+		(cast(Server_Handshake_State)state).allow_session_resumption = !force_full_renegotiation;
 		
 		auto hello_req = scoped!Hello_Request(state.handshake_io());
 	}
@@ -134,7 +133,7 @@ private:
 				{
 					throw new TLS_Exception(Alert.PROTOCOL_VERSION,
 					                        "Client negotiated " ~
-					                        active_state._version().toString() +
+					                        active_state._version().toString() ~
 					                        " then renegotiated with " ~
 					                        client_version.toString());
 				}
@@ -176,8 +175,7 @@ private:
 			
 			try
 			{
-				have_session_ticket_key =
-					m_creds.psk("tls-server", "session-ticket", "").length > 0;
+				have_session_ticket_key = m_creds.psk("tls-server", "session-ticket", "").length > 0;
 			}
 			catch {}
 
@@ -185,29 +183,25 @@ private:
 			{
 				// resume session
 				
-				const bool offer_new_session_ticket =
-					(state.client_hello().supports_session_ticket() &&
-					 state.client_hello().session_ticket().empty &&
-					 have_session_ticket_key);
+				const bool offer_new_session_ticket = (state.client_hello().supports_session_ticket() &&
+														state.client_hello().session_ticket().empty &&
+														have_session_ticket_key);
 				
-				state.server_hello(
-					new Server_Hello(
-					state.handshake_io(),
-					state.hash(),
-					m_policy,
-					state.client_hello().session_id(),
-					Protocol_Version(session_info._version()),
-					session_info.ciphersuite_code(),
-					session_info.compression_method(),
-					session_info.fragment_size(),
-					state.client_hello().secure_renegotiation(),
-					secure_renegotiation_data_for_server_hello(),
-					offer_new_session_ticket,
-					state.client_hello().next_protocol_notification(),
-					m_possible_protocols,
-					state.client_hello().supports_heartbeats(),
-					rng())
-					);
+				state.server_hello(new Server_Hello(state.handshake_io(),
+													state.hash(),
+													m_policy,
+													state.client_hello().session_id(),
+													Protocol_Version(session_info._version()),
+													session_info.ciphersuite_code(),
+													session_info.compression_method(),
+													session_info.fragment_size(),
+													state.client_hello().secure_renegotiation(),
+													secure_renegotiation_data_for_server_hello(),
+													offer_new_session_ticket,
+													state.client_hello().next_protocol_notification(),
+													m_possible_protocols,
+													state.client_hello().supports_heartbeats(),
+													rng()));
 				
 				secure_renegotiation_check(state.server_hello());
 				
@@ -219,10 +213,7 @@ private:
 					
 					if (state.server_hello().supports_session_ticket()) // send an empty ticket
 					{
-						state.new_session_ticket(
-							new New_Session_Ticket(state.handshake_io(),
-						                       state.hash())
-							);
+						state.new_session_ticket(new New_Session_Ticket(state.handshake_io(), state.hash()));
 					}
 				}
 				
@@ -232,20 +223,16 @@ private:
 					{
 						const SymmetricKey ticket_key = m_creds.psk("tls-server", "session-ticket", "");
 						
-						state.new_session_ticket(
-							new New_Session_Ticket(state.handshake_io(),
-						                       state.hash(),
-						                       session_info.encrypt(ticket_key, rng()),
-						                       m_policy.session_ticket_lifetime())
-							);
+						state.new_session_ticket(new New_Session_Ticket(state.handshake_io(),
+													                    state.hash(),
+													                    session_info.encrypt(ticket_key, rng()),
+													                    m_policy.session_ticket_lifetime()));
 					}
 					catch {}
 					
 					if (!state.new_session_ticket())
 					{
-						state.new_session_ticket(
-							new New_Session_Ticket(state.handshake_io(), state.hash())
-							);
+						state.new_session_ticket(new New_Session_Ticket(state.handshake_io(), state.hash()));
 					}
 				}
 				
@@ -253,9 +240,7 @@ private:
 				
 				change_cipher_spec_writer(SERVER);
 				
-				state.server_finished(
-					new Finished(state.handshake_io(), state, SERVER)
-					);
+				state.server_finished(new Finished(state.handshake_io(), state, SERVER));
 				
 				state.set_expected_next(HANDSHAKE_CCS);
 			}
@@ -319,7 +304,7 @@ private:
 						new Certificate(state.handshake_io(),
 					                state.hash(),
 					                cert_chains[sig_algo])
-						);
+					);
 				}
 				
 				Private_Key priv_key = null;
@@ -351,8 +336,7 @@ private:
 						);
 				}
 				
-				auto trusted_CAs =
-					m_creds.trusted_certificate_authorities("tls-server", sni_hostname);
+				auto trusted_CAs = m_creds.trusted_certificate_authorities("tls-server", sni_hostname);
 				
 				Vector!X509_DN client_auth_CAs;
 				
@@ -366,13 +350,11 @@ private:
 				
 				if (!client_auth_CAs.empty && state.ciphersuite().sig_algo() != "")
 				{
-					state.cert_req(
-						new Certificate_Req(state.handshake_io(),
-					                    state.hash(),
-					                    m_policy,
-					                    client_auth_CAs,
-					                    state._version())
-						);
+					state.cert_req(new Certificate_Req(state.handshake_io(),
+									                   state.hash(),
+									                   m_policy,
+									                   client_auth_CAs,
+									                   state._version()));
 					
 					state.set_expected_next(CERTIFICATE);
 				}
@@ -386,7 +368,7 @@ private:
 				
 				state.server_hello_done(
 					new Server_Hello_Done(state.handshake_io(), state.hash())
-					);
+				);
 			}
 		}
 		else if (type == CERTIFICATE)
@@ -406,7 +388,7 @@ private:
 				new Client_Key_Exchange(contents, state,
 			                        state.server_rsa_kex_key,
 			                        m_creds, m_policy, rng())
-				);
+			);
 			
 			state.compute_session_keys();
 		}
@@ -414,11 +396,9 @@ private:
 		{
 			state.client_verify(new Certificate_Verify(contents, state._version()));
 			
-			const Vector!X509_Certificate client_certs =
-				state.client_certs().cert_chain();
+			const Vector!X509_Certificate client_certs = state.client_certs().cert_chain();
 			
-			const bool sig_valid =
-				state.client_verify().verify(client_certs[0], state);
+			const bool sig_valid = state.client_verify().verify(client_certs[0], state);
 			
 			state.hash().update(state.handshake_io().format(contents, type));
 			
@@ -629,19 +609,16 @@ ushort choose_ciphersuite(
 {
 	const bool our_choice = policy.server_uses_own_ciphersuite_preferences();
 	
-	const bool have_srp = creds.attempt_srp("tls-server",
-	                                        client_hello.sni_hostname());
+	const bool have_srp = creds.attempt_srp("tls-server", client_hello.sni_hostname());
 	
 	const Vector!ushort client_suites = client_hello.ciphersuites();
 	
 	const Vector!ushort server_suites = policy.ciphersuite_list(_version, have_srp);
 	
 	if (server_suites.empty)
-		throw new TLS_Exception(Alert.HANDSHAKE_FAILURE,
-		                        "Policy forbids us from negotiating any ciphersuite");
+		throw new TLS_Exception(Alert.HANDSHAKE_FAILURE, "Policy forbids us from negotiating any ciphersuite");
 	
-	const bool have_shared_ecc_curve =
-		(policy.choose_curve(client_hello.supported_ecc_curves()) != "");
+	const bool have_shared_ecc_curve = (policy.choose_curve(client_hello.supported_ecc_curves()) != "");
 	
 	Vector!ushort pref_list = server_suites;
 	Vector!ushort other_list = client_suites;
@@ -707,8 +684,7 @@ HashMap!(string, Vector!X509_Certificate)
 	
 	for (size_t i = 0; cert_types[i]; ++i)
 	{
-		Vector!X509_Certificate certs =
-			creds.cert_chain_single_type(cert_types[i], "tls-server", hostname);
+		Vector!X509_Certificate certs =	creds.cert_chain_single_type(cert_types[i], "tls-server", hostname);
 		
 		if (!certs.empty)
 			cert_chains[cert_types[i]] = certs;

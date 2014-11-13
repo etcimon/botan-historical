@@ -9,6 +9,7 @@ module botan.block.des;
 import botan.constants;
 static if (BOTAN_HAS_DES):
 
+import std.range : iota;
 import botan.utils.loadstor;
 import botan.utils.rotate;
 public import botan.block.block_cipher;
@@ -25,7 +26,7 @@ public:
 	*/
 	void encrypt_n(ubyte* input, ubyte* output, size_t blocks) const
 	{
-		for (size_t i = 0; i != blocks; ++i)
+		foreach (size_t i; 0 .. blocks)
 		{
 			ulong T = (DES_IPTAB1[input[0]]	  ) | (DES_IPTAB1[input[1]] << 1) |
 				(DES_IPTAB1[input[2]] << 2) | (DES_IPTAB1[input[3]] << 3) |
@@ -56,7 +57,7 @@ public:
 	*/
 	void decrypt_n(ubyte* input, ubyte* output, size_t blocks) const
 	{
-		for (size_t i = 0; i != blocks; ++i)
+		foreach (size_t i; 0 .. blocks)
 		{
 			ulong T = (DES_IPTAB1[input[0]]	  ) | (DES_IPTAB1[input[1]] << 1) |
 				(DES_IPTAB1[input[2]] << 2) | (DES_IPTAB1[input[3]] << 3) |
@@ -113,7 +114,7 @@ public:
 	*/
 	void encrypt_n(ubyte* input, ubyte* output, size_t blocks) const
 	{
-		for (size_t i = 0; i != blocks; ++i)
+		foreach (size_t i; 0 .. blocks)
 		{
 			ulong T = (DES_IPTAB1[input[0]]	  ) | (DES_IPTAB1[input[1]] << 1) |
 				(DES_IPTAB1[input[2]] << 2) | (DES_IPTAB1[input[3]] << 3) |
@@ -145,7 +146,7 @@ public:
 	*/
 	void decrypt_n(ubyte* input, ubyte* output, size_t blocks) const
 	{
-		for (size_t i = 0; i != blocks; ++i)
+		foreach (size_t i; 0 .. blocks)
 		{
 			ulong T = (DES_IPTAB1[input[0]]	  ) | (DES_IPTAB1[input[1]] << 1) |
 				(DES_IPTAB1[input[2]] << 2) | (DES_IPTAB1[input[3]] << 3) |
@@ -867,7 +868,7 @@ void des_key_schedule(uint[32]* round_key, in ubyte[8]* key) pure
 			((key[3] & 0x10) >>  1) | ((key[2] & 0x10) >>  2) |
 			((key[1] & 0x10) >>  3) | ((key[0] & 0x10) >>  4);
 	
-	for (size_t i = 0; i != 16; ++i)
+	foreach (size_t i; 0 .. 16)
 	{
 		C = ((C << ROT[i]) | (C >> (28-ROT[i]))) & 0x0FFFFFFF;
 		D = ((D << ROT[i]) | (D >> (28-ROT[i]))) & 0x0FFFFFFF;
@@ -902,7 +903,7 @@ void des_key_schedule(uint[32]* round_key, in ubyte[8]* key) pure
 void des_encrypt(ref uint L, ref uint R,
                  in uint[32]* round_key) pure
 {
-	for (size_t i = 0; i != 16; i += 2)
+	foreach (size_t i; iota(0, 16, 2))
 	{
 		uint T0, T1;
 		

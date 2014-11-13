@@ -9,9 +9,11 @@ module botan.block.xtea_simd;
 import botan.constants;
 static if (BOTAN_HAS_XTEA_SIMD):
 
+
 import botan.block.xtea;
 import botan.utils.loadstor;
 import botan.simd.simd_32;
+import std.range : iota;
 
 /**
 * XTEA implemented using SIMD operations
@@ -73,7 +75,7 @@ void xtea_encrypt_8(const ubyte[64]* input, ubyte[64]* output, const uint[64]* E
 	
 	SIMD_32.transpose(L0, R0, L1, R1);
 	
-	for (size_t i = 0; i != 32; i += 2)
+	foreach (size_t i; iota(0, 32, 2))
 	{
 		SIMD_32 K0(EK[2*i  ]);
 		SIMD_32 K1(EK[2*i+1]);
@@ -110,7 +112,7 @@ void xtea_decrypt_8(const ubyte[64]* input, ubyte[64]* output, const uint[64]* E
 	
 	SIMD_32.transpose(L0, R0, L1, R1);
 	
-	for (size_t i = 0; i != 32; i += 2)
+	foreach (size_t i; iota(0, 32, 2))
 	{
 		SIMD_32 K0(EK[63 - 2*i]);
 		SIMD_32 K1(EK[62 - 2*i]);

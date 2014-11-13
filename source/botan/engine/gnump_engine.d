@@ -513,7 +513,7 @@ static if (BOTAN_HAS_DSA) {
 */
 void* gmp_malloc(size_t n)
 {
-	// Maintain alignment, mlock goes for (T).sizeof alignment
+	// Maintain alignment, mlock goes for T.sizeof alignment
 	if (n % 8 == 0)
 		return secure_allocator!ulong().allocate(n / 8);
 	else if (n % 4 == 0)

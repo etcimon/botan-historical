@@ -9,7 +9,7 @@ module botan.filters.filter;
 
 import botan.alloc.zeroize;
 import botan.utils.types;
-import string;
+// import string;
 import botan.filters.secqueue;
 import botan.utils.exceptn;
 
@@ -67,7 +67,7 @@ protected:
 			return;
 		
 		bool nothing_attached = true;
-		for (size_t j = 0; j != total_ports(); ++j)
+		foreach (size_t j; 0 .. total_ports())
 			if (m_next[j])
 		{
 			if (m_write_queue.length)
@@ -135,7 +135,7 @@ private:
 	void new_msg()
 	{
 		start_msg();
-		for (size_t j = 0; j != total_ports(); ++j)
+		foreach (size_t j; 0 .. total_ports())
 			if (m_next[j])
 				m_next[j].new_msg();
 	}
@@ -147,7 +147,7 @@ private:
 	void finish_msg()
 	{
 		end_msg();
-		for (size_t j = 0; j != total_ports(); ++j)
+		foreach (size_t j; 0 .. total_ports())
 			if (m_next[j])
 				m_next[j].finish_msg();
 	}

@@ -12,7 +12,7 @@ import botan.asn1.asn1_oid;
 import botan.asn1.der_enc;
 import botan.asn1.ber_dec;
 import botan.asn1.oid_lookup.oids;
-import string;
+// import string;
 
 alias Algorithm_Identifier = FreeListRef!Algorithm_Identifier_Impl;
 

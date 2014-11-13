@@ -18,16 +18,12 @@ void xor_buf(T)(T* output, in T* input, size_t length)
 {
 	while(length >= 8)
 	{
-		output[0] ^= input[0]; output[1] ^= input[1];
-		output[2] ^= input[2]; output[3] ^= input[3];
-		output[4] ^= input[4]; output[5] ^= input[5];
-		output[6] ^= input[6]; output[7] ^= input[7];
+		output[0 .. 8] ^= input[0 .. 8];
 
 		output += 8; input += 8; length -= 8;
 	}
 
-	for (size_t i = 0; i != length; ++i)
-		output[i] ^= input[i];
+	output[0 .. length] ^= input[0 .. length];
 }
 
 /**
@@ -44,20 +40,12 @@ void xor_buf(T)(T* output,
 {
 	while(length >= 8)
 	{
-		output[0] = input[0] ^ in2[0];
-		output[1] = input[1] ^ in2[1];
-		output[2] = input[2] ^ in2[2];
-		output[3] = input[3] ^ in2[3];
-		output[4] = input[4] ^ in2[4];
-		output[5] = input[5] ^ in2[5];
-		output[6] = input[6] ^ in2[6];
-		output[7] = input[7] ^ in2[7];
+		output[0 .. 8] = input[0 .. 8] ^ input2[0 .. 8];
 
 		input += 8; input2 += 8; output += 8; length -= 8;
 	}
 
-	for (size_t i = 0; i != length; ++i)
-		output[i] = input[i] ^ input2[i];
+	output[0 .. length] = input[0 .. length] ^ input2[0 .. length];
 }
 
 static if (BOTAN_TARGET_UNALIGNED_MEMORY_ACCESS_OK) {
@@ -70,8 +58,7 @@ static if (BOTAN_TARGET_UNALIGNED_MEMORY_ACCESS_OK) {
 			output += 8; input += 8; length -= 8;
 		}
 
-		for (size_t i = 0; i != length; ++i)
-			output[i] ^= input[i];
+		output[0 .. length] ^= input[0 .. length];
 	}
 
 	void xor_buf(ubyte* output,
@@ -81,15 +68,12 @@ static if (BOTAN_TARGET_UNALIGNED_MEMORY_ACCESS_OK) {
 	{
 		while(length >= 8)
 		{
-			*cast(ulong*)(output) =
-				*cast(const ulong*)(input) ^
-				*cast(const ulong*)(input2);
+			*cast(ulong*)(output) = *cast(const ulong*)(input) ^ *cast(const ulong*)(input2);
 
 			input += 8; input2 += 8; output += 8; length -= 8;
 		}
 
-		for (size_t i = 0; i != length; ++i)
-			output[i] = input[i] ^ input2[i];
+		output[0 .. length] = input[0 .. length] ^ input2[0 .. length];
 	}
 
 }

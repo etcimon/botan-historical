@@ -9,6 +9,7 @@ module botan.block.mars;
 import botan.constants;
 static if (BOTAN_HAS_MARS):
 
+import std.range : iota;
 import botan.block.block_cipher;
 import botan.utils.loadstor;
 import botan.utils.rotate;
@@ -24,7 +25,7 @@ public:
 	*/
 	void encrypt_n(ubyte* input, ubyte* output, size_t blocks) const
 	{
-		for (size_t i = 0; i != blocks; ++i)
+		foreach (size_t i; 0 .. blocks)
 		{
 			uint A = load_le!uint(input, 0) + m_EK[0];
 			uint B = load_le!uint(input, 1) + m_EK[1];
@@ -67,7 +68,7 @@ public:
 	*/
 	void decrypt_n(ubyte* input, ubyte* output, size_t blocks) const
 	{
-		for (size_t i = 0; i != blocks; ++i)
+		foreach (size_t i; 0 .. blocks)
 		{
 			uint A = load_le!uint(input, 3) + m_EK[39];
 			uint B = load_le!uint(input, 2) + m_EK[38];
@@ -119,7 +120,7 @@ private:
 	void key_schedule(in ubyte* key, size_t length)
 	{
 		Secure_Vector!uint T = Secure_Vector!uint(15);
-		for (size_t i = 0; i != length / 4; ++i)
+		foreach (size_t i; 0 .. (length / 4))
 			T[i] = load_le!uint(key, i);
 		
 		T[length / 4] = cast(uint)(length) / 4;
@@ -144,7 +145,7 @@ private:
 			T[13] ^= rotate_left(T[ 6] ^ T[11], 3) ^ (i + 52);
 			T[14] ^= rotate_left(T[ 7] ^ T[12], 3) ^ (i + 56);
 			
-			for (size_t j = 0; j != 4; ++j)
+			foreach (size_t j; 0 .. 4)
 			{
 				T[ 0] = rotate_left(T[ 0] + SBOX[T[14] % 512], 9);
 				T[ 1] = rotate_left(T[ 1] + SBOX[T[ 0] % 512], 9);
@@ -175,7 +176,7 @@ private:
 			m_EK[10*i + 9] = T[ 6];
 		}
 		
-		for (size_t i = 5; i != 37; i += 2)
+		foreach (size_t i; iota(5, 37, 2))
 		{
 			const uint key3 = m_EK[i] & 3;
 			m_EK[i] |= 3;
@@ -325,7 +326,7 @@ void decrypt_round(ref uint A, ref uint B, ref uint C, ref uint D,
 */
 void forward_mix(ref uint A, ref uint B, ref uint C, ref uint D) pure
 {
-	for (size_t j = 0; j != 2; ++j)
+	foreach (size_t j; 0 .. 2)
 	{
 		B ^= SBOX[get_byte(3, A)]; B += SBOX[get_byte(2, A) + 256];
 		C += SBOX[get_byte(1, A)]; D ^= SBOX[get_byte(0, A) + 256];
@@ -350,7 +351,7 @@ void forward_mix(ref uint A, ref uint B, ref uint C, ref uint D) pure
 */
 void reverse_mix(ref uint A, ref uint B, ref uint C, ref uint D) pure
 {
-	for (size_t j = 0; j != 2; ++j)
+	foreach (size_t j; 0 .. 2)
 	{
 		B ^= SBOX[get_byte(3, A) + 256]; C -= SBOX[get_byte(0, A)];
 		D -= SBOX[get_byte(1, A) + 256]; D ^= SBOX[get_byte(2, A)];

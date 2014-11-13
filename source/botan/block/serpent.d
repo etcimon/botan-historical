@@ -23,7 +23,7 @@ public:
 	*/
 	void encrypt_n(ubyte* input, ubyte* output, size_t blocks) const
 	{
-		for (size_t i = 0; i != blocks; ++i)
+		foreach (size_t i; 0 .. blocks)
 		{
 			uint B0 = load_le!uint(input, 0);
 			uint B1 = load_le!uint(input, 1);
@@ -75,7 +75,7 @@ public:
 	*/
 	void decrypt_n(ubyte* input, ubyte* output, size_t blocks) const
 	{
-		for (size_t i = 0; i != blocks; ++i)
+		foreach (size_t i; 0 .. blocks)
 		{
 			uint B0 = load_le!uint(input, 0);
 			uint B1 = load_le!uint(input, 1);
@@ -155,12 +155,12 @@ private:
 		const uint PHI = 0x9E3779B9;
 		
 		Secure_Vector!uint W = Secure_Vector!uint(140);
-		for (size_t i = 0; i != length / 4; ++i)
+		foreach (size_t i; 0 .. (length / 4))
 			W[i] = load_le!uint(key, i);
 		
 		W[length / 4] |= uint(1) << ((length%4)*8);
 		
-		for (size_t i = 8; i != 140; ++i)
+		foreach (size_t i; 8 .. 140)
 		{
 			uint wi = W[i-8] ^ W[i-5] ^ W[i-3] ^ W[i-1] ^ PHI ^ uint(i-8);
 			W[i] = rotate_left(wi, 11);

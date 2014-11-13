@@ -10,6 +10,7 @@ module botan.block.cast256;
 import botan.constants;
 static if (BOTAN_HAS_CAST):
 
+import std.range : iota;
 import botan.block.block_cipher;
 import botan.block.cast_sboxes;
 import botan.utils.loadstor;
@@ -26,7 +27,7 @@ public:
 */
 	void encrypt_n(ubyte* input, ubyte* output, size_t blocks) const
 	{
-		for (size_t i = 0; i != blocks; ++i)
+		foreach (size_t i; 0 .. blocks)
 		{
 			uint A = load_be!uint(input, 0);
 			uint B = load_be!uint(input, 1);
@@ -70,7 +71,7 @@ public:
 	*/
 	void decrypt_n(ubyte* input, ubyte* output, size_t blocks) const
 	{
-		for (size_t i = 0; i != blocks; ++i)
+		foreach (size_t i; 0 .. blocks)
 		{
 			uint A = load_be!uint(input, 0);
 			uint B = load_be!uint(input, 1);
@@ -168,13 +169,13 @@ private:
 		m_RK.resize(48);
 		
 		Secure_Vector!uint K = Secure_Vector!uint(8);
-		for (size_t i = 0; i != length; ++i)
+		foreach (size_t i; 0 .. length)
 			K[i/4] = (K[i/4] << 8) + key[i];
 		
 		uint A = K[0], B = K[1], C = K[2], D = K[3],
 			E = K[4], F = K[5], G = K[6], H = K[7];
 		
-		for (size_t i = 0; i != 48; i += 4)
+		foreach (size_t i; iota(0, 48, 4))
 		{
 			round1(G, H, KEY_MASK[4*i+ 0], KEY_ROT[(4*i+ 0) % 32]);
 			round2(F, G, KEY_MASK[4*i+ 1], KEY_ROT[(4*i+ 1) % 32]);

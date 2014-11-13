@@ -24,14 +24,14 @@ public:
 	*/
 	void encrypt_n(ubyte* input, ubyte* output, size_t blocks) const
 	{
-		for (size_t i = 0; i != blocks; ++i)
+		foreach (size_t i; 0 .. blocks)
 		{
 			uint A0 = load_be!uint(input, 0);
 			uint A1 = load_be!uint(input, 1);
 			uint A2 = load_be!uint(input, 2);
 			uint A3 = load_be!uint(input, 3);
 			
-			for (size_t j = 0; j != 16; ++j)
+			foreach (size_t j; 0 .. 16)
 			{
 				A0 ^= m_RC[j];
 				theta(A0, A1, A2, A3, &m_EK[0]);
@@ -62,7 +62,7 @@ public:
 	*/
 	void decrypt_n(ubyte* input, ubyte* output, size_t blocks) const
 	{
-		for (size_t i = 0; i != blocks; ++i)
+		foreach (size_t i; 0 .. blocks)
 		{
 			uint A0 = load_be!uint(input, 0);
 			uint A1 = load_be!uint(input, 1);
@@ -139,7 +139,7 @@ private:
 		uint A2 = load_be!uint(key, 2);
 		uint A3 = load_be!uint(key, 3);
 		
-		for (size_t i = 0; i != 16; ++i)
+		foreach (size_t i; 0 .. 16)
 		{
 			A0 ^= m_RC[i];
 			theta(A0, A1, A2, A3);

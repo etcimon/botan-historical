@@ -62,7 +62,7 @@ private:
 		EK.resize(52);
 		DK.resize(52);
 		
-		for (size_t i = 0; i != 8; ++i)
+		foreach (size_t i; 0 .. 8)
 			m_EK[i] = load_be!ushort(key, i);
 		
 		for (size_t i = 1, j = 8, offset = 0; j != 52; i %= 8, ++i, ++j)
@@ -134,7 +134,7 @@ ushort mul_inv(ushort x) pure
 {
 	ushort y = x;
 	
-	for (size_t i = 0; i != 15; ++i)
+	foreach (size_t i; 0 .. 15)
 	{
 		y = mul(y, y); // square
 		y = mul(y, x);
@@ -150,14 +150,14 @@ void idea_op(ubyte* input, ubyte* output, size_t blocks) pure
 {
 	const size_t BLOCK_SIZE = 8;
 	
-	for (size_t i = 0; i != blocks; ++i)
+	foreach (size_t i; 0 .. blocks)
 	{
 		ushort X1 = load_be!ushort(input, 0);
 		ushort X2 = load_be!ushort(input, 1);
 		ushort X3 = load_be!ushort(input, 2);
 		ushort X4 = load_be!ushort(input, 3);
 		
-		for (size_t j = 0; j != 8; ++j)
+		foreach (size_t j; 0 .. 8)
 		{
 			X1 = mul(X1, K[6*j+0]);
 			X2 += K[6*j+1];

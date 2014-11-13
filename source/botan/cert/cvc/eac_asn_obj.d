@@ -490,7 +490,7 @@ protected:
 		const ubyte* rep = cast(const ubyte*)(m_iso_8859_str.ptr);
 		const size_t rep_len = m_iso_8859_str.length;
 		
-		for (size_t i = 0; i != rep_len; ++i)
+		foreach (size_t i; 0 .. rep_len)
 		{
 			if ((rep[i] < 0x20) || ((rep[i] >= 0x7F) && (rep[i] < 0xA0)))
 				return false;

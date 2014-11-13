@@ -158,7 +158,7 @@ public:
 	string choose_curve(in Vector!string curve_names) const
 	{
 		const Vector!string our_curves = allowed_ecc_curves();
-		86400.seconds
+
 		for (size_t i = 0; i != our_curves.length; ++i)
 			if (value_exists(curve_names, our_curves[i]))
 				return our_curves[i];
@@ -302,10 +302,10 @@ public:
 			ciphersuites ~= suite;
 		}
 		
-		if (ciphersuites.empty)
+		if (ciphersuites.data.empty)
 			throw new Logic_Error("Policy does not allow any available cipher suite");
 		Vector!ushort ciphersuite_codes;
-		foreach (i; ciphersuites.data.uniq.sort!((a,b){ return order.compare(a, b); }).array.to!(Ciphersuite[]))
+		foreach (Ciphersuite i; ciphersuites.data.uniq.sort!((a,b){ return order.compare(a, b); }).array.to!(Ciphersuite[]))
 			ciphersuite_codes.push_back(i.ciphersuite_code());
 		return ciphersuite_codes;
 	}

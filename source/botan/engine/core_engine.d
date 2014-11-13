@@ -427,11 +427,9 @@ public:
 			{
 				const size_t block_size = request.arg_as_integer(2, 1024);
 				
-				const HashFunction hash =
-					af.prototype_hash_function(request.arg(0));
+				const HashFunction hash = af.prototype_hash_function(request.arg(0));
 				
-				const StreamCipher stream_cipher =
-					af.prototype_stream_cipher(request.arg(1));
+				const StreamCipher stream_cipher = af.prototype_stream_cipher(request.arg(1));
 				
 				if (!hash || !stream_cipher)
 					return null;
@@ -594,9 +592,9 @@ public:
 				Vector!( const HashFunction ) hash_prototypes;
 				
 				/* First pass, just get the prototypes (no memory allocation). Then
-				if all were found, replace each prototype with a newly created clone
-			*/
-				for (size_t i = 0; i != request.arg_count(); ++i)
+					if all were found, replace each prototype with a newly created clone
+				*/
+				foreach (size_t i; 0 .. request.arg_count())
 				{
 					const HashFunction hash = af.prototype_hash_function(request.arg(i));
 					if (!hash)
@@ -606,8 +604,8 @@ public:
 				}
 				
 				Vector!HashFunction hashes;
-				for (size_t i = 0; i != hash_prototypes.length; ++i)
-					hashes.push_back(hash_prototypes[i].clone());
+				foreach (hash_prototype; hash_prototypes)
+					hashes.push_back(hash_prototype.clone());
 				
 				return new Parallel(hashes);
 			}

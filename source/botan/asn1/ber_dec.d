@@ -232,7 +232,7 @@ public:
 			throw new BER_Decoding_Error("Decoded integer value larger than expected");
 		
 		output = 0;
-		for (size_t i = 0; i != 4; ++i)
+		foreach (size_t i; 0 .. 4)
 			output = (output << 8) | integer.byte_at(3-i);
 		
 		return this;
@@ -257,7 +257,7 @@ public:
 				for (size_t i = obj.value.length; i > 0; --i)
 					if (obj.value[i-1]--)
 						break;
-				for (size_t i = 0; i != obj.value.length; ++i)
+				foreach (size_t i; 0 .. obj.value.length)
 					obj.value[i] = ~obj.value[i];
 			}
 			
@@ -352,7 +352,7 @@ public:
 			throw new BER_Decoding_Error("Decoded integer value larger than expected");
 		
 		ulong output = 0;
-		for (size_t i = 0; i != 8; ++i)
+		foreach (size_t i; 0 .. 8)
 			output = (output << 8) | integer.byte_at(7-i);
 		
 		return output;
@@ -641,7 +641,7 @@ size_t decode_length(DataSource ber, ref size_t field_size)
 	
 	size_t length = 0;
 	
-	for (size_t i = 0; i != field_size - 1; ++i)
+	foreach (size_t i; 0 .. (field_size - 1))
 	{
 		if (get_byte(0, length) != 0)
 			throw new BER_Decoding_Error("Field length overflow");
@@ -666,7 +666,8 @@ size_t decode_length(DataSource ber)
 */
 size_t find_eoc(DataSource ber)
 {
-	Secure_Vector!ubyte buffer(DEFAULT_BUFFERSIZE), data;
+	Secure_Vector!ubyte buffer = Secure_Vector!ubyte(DEFAULT_BUFFERSIZE);
+	Secure_Vector!ubyte data;
 	
 	while(true)
 	{

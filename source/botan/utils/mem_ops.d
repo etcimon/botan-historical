@@ -35,7 +35,7 @@ void clear_mem(T)(T* ptr, size_t n)
 void copy_mem(T)(T* output, const T* input)
 {
 	import std.c.string : memmove;
-	memmove(output, input, (T).sizeof*n);
+	memmove(output, input, T.sizeof*n);
 }
 
 /**
@@ -47,7 +47,7 @@ void copy_mem(T)(T* output, const T* input)
 void set_mem(T)(T* ptr, size_t n, ubyte val)
 {
 	import std.c.string : memset;
-	memset(ptr, val, (T).sizeof*n);
+	memset(ptr, val, T.sizeof*n);
 }
 
 /**

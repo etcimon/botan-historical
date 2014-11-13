@@ -10,7 +10,7 @@ import botan.constants;
 static if (BOTAN_HAS_ENTROPY_SRC_EGD):
 
 import botan.entropy.entropy_src;
-import string;
+// import string;
 import botan.utils.types;
 
 import botan.utils.parsing;
@@ -43,13 +43,13 @@ public:
 	*/
 	void poll(ref Entropy_Accumulator accum)
 	{
-		const size_t READ_ATTEMPT = 32;
+		__gshared immutable size_t READ_ATTEMPT = 32;
 		
 		Secure_Vector!ubyte io_buffer = accum.get_io_buffer(READ_ATTEMPT);
 		
-		for (size_t i = 0; i != m_sockets.length; ++i)
+		foreach (socket; m_sockets)
 		{
-			size_t got = m_sockets[i].read(&io_buffer[0], io_buffer.length);
+			size_t got = socket.read(&io_buffer[0], io_buffer.length);
 			
 			if (got)
 			{
@@ -64,13 +64,13 @@ public:
 	*/
 	this(in Vector!string paths)
 	{
-		for (size_t i = 0; i != paths.length; ++i)
+		foreach (path; paths[])
 			m_sockets.push_back(EGD_Socket(paths[i]));
 	}
 	~this()
 	{
-		for (size_t i = 0; i != m_sockets.length; ++i)
-			m_sockets[i].close();
+		foreach (socket; m_sockets[])
+			socket[i].close();
 		m_sockets.clear();
 	}
 private:

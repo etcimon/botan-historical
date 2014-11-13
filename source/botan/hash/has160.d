@@ -54,7 +54,7 @@ private:
 		uint A = m_digest[0], B = m_digest[1], C = m_digest[2],
 			D = m_digest[3], E = m_digest[4];
 		
-		for (size_t i = 0; i != blocks; ++i)
+		foreach (size_t i; 0 .. blocks)
 		{
 			load_le(&m_X[0], input, 16);
 			

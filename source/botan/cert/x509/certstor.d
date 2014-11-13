@@ -64,9 +64,9 @@ public:
 
 	void add_certificate(in X509_Certificate cert)
 	{
-		for (size_t i = 0; i != m_certs.length; ++i)
+		foreach (const ref cert_stored; m_certs)
 		{
-			if (m_certs[i] == cert)
+			if (cert_stored == cert)
 				return;
 		}
 		
@@ -78,8 +78,8 @@ public:
 	Vector!X509_DN all_subjects() const
 	{
 		Vector!X509_DN subjects;
-		for (size_t i = 0; i != m_certs.length; ++i)
-			subjects.push_back(m_certs[i].subject_dn());
+		foreach (ref cert; m_certs)
+			subjects.push_back(cert.subject_dn());
 		return subjects;
 	}
 
@@ -94,13 +94,13 @@ public:
 	{
 		X509_DN crl_issuer = crl.issuer_dn();
 		
-		for (size_t i = 0; i != m_crls.length; ++i)
+		foreach (crl_stored; m_crls)
 		{
 			// Found an update of a previously existing one; replace it
-			if (m_crls[i].issuer_dn() == crl_issuer)
+			if (crl_stored.issuer_dn() == crl_issuer)
 			{
-				if (m_crls[i].this_update() <= crl.this_update())
-					m_crls[i] = crl;
+				if (crl_stored.this_update() <= crl.this_update())
+					crl_stored = crl;
 				return;
 			}
 		}
@@ -113,19 +113,19 @@ public:
 	{
 		const Vector!ubyte key_id = subject.authority_key_id();
 		
-		for (size_t i = 0; i != m_crls.length; ++i)
+		foreach (const crl; m_crls)
 		{
 			// Only compare key ids if set in both call and in the CRL
 			if (key_id.length)
 			{
-				Vector!ubyte akid = m_crls[i].authority_key_id();
+				Vector!ubyte akid = crl.authority_key_id();
 				
 				if (akid.length && akid != key_id) // no match
 					continue;
 			}
 			
-			if (m_crls[i].issuer_dn() == subject.issuer_dn())
-				return m_crls[i];
+			if (crl.issuer_dn() == subject.issuer_dn())
+				return crl;
 		}
 		
 		return null;
@@ -148,8 +148,8 @@ public:
 	Vector!X509_DN all_subjects() const
 	{
 		Vector!X509_DN subjects;
-		for (size_t i = 0; i != m_certs.length; ++i)
-			subjects.push_back(m_certs[i].subject_dn());
+		foreach (cert; m_certs)
+			subjects.push_back(cert.subject_dn());
 		return subjects;
 	}
 
@@ -167,19 +167,19 @@ const X509_Certificate
 	cert_search(in X509_DN subject_dn, in Vector!ubyte key_id,
 	            const ref Vector!X509_Certificate certs)
 {
-	for (size_t i = 0; i != certs.length; ++i)
+	foreach (const cert; certs[])
 	{
 		// Only compare key ids if set in both call and in the cert
 		if (key_id.length)
 		{
-			Vector!ubyte skid = certs[i].subject_key_id();
+			Vector!ubyte skid = cert.subject_key_id();
 			
 			if (skid.length && skid != key_id) // no match
 				continue;
 		}
 		
-		if (certs[i].subject_dn() == subject_dn)
-			return certs[i];
+		if (cert.subject_dn() == subject_dn)
+			return cert;
 	}
 	
 	return null;

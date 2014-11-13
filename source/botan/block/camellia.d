@@ -213,7 +213,7 @@ void encrypt(ubyte* input, ubyte* output, size_t blocks,
              const ref Secure_Vector!ulong SK, const size_t rounds)
 {
 	size_t blocks = input.length;
-	for (size_t i = 0; i != blocks; ++i)
+	foreach (size_t i; 0 .. blocks)
 	{
 		ulong D1 = load_be!ulong(input, 0);
 		ulong D2 = load_be!ulong(input, 1);
@@ -258,7 +258,7 @@ void decrypt(ubyte* input, ubyte* output, size_t blocks,
              const ref Secure_Vector!ulong SK, const size_t rounds)
 {
 	size_t blocks = input.length;
-	for (size_t i = 0; i != blocks; ++i)
+	foreach (size_t i; 0 .. blocks)
 	{
 		ulong D1 = load_be!ulong(input, 0);
 		ulong D2 = load_be!ulong(input, 1);
@@ -322,8 +322,7 @@ void key_schedule(ref Secure_Vector!ulong SK, in ubyte* key)
 	const ulong KL_L = load_be!ulong(key, 1);
 	
 	const ulong KR_H = (length >= 24) ? load_be!ulong(key, 2) : 0;
-	const ulong KR_L =
-		(length == 32) ? load_be!ulong(key, 3) : ((length == 24) ? ~KR_H : 0);
+	const ulong KR_L = (length == 32) ? load_be!ulong(key, 3) : ((length == 24) ? ~KR_H : 0);
 	
 	ulong D1 = KL_H ^ KR_H;
 	ulong D2 = KL_L ^ KR_L;

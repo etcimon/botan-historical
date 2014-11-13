@@ -37,7 +37,7 @@ public:
 		Secure_Vector!ubyte buffer_vec = Secure_Vector!ubyte(LEFT_SIZE);
 		ubyte* buffer = &buffer_vec[0];
 		
-		for (size_t i = 0; i != blocks; ++i)
+		foreach (size_t i; 0 .. blocks)
 		{
 			xor_buf(buffer, input, &m_key1[0], LEFT_SIZE);
 			m_cipher.set_key(buffer, LEFT_SIZE);
@@ -67,7 +67,7 @@ public:
 		Secure_Vector!ubyte buffer_vec = Secure_Vector!ubyte(LEFT_SIZE);
 		ubyte* buffer = &buffer_vec[0];
 		
-		for (size_t i = 0; i != blocks; ++i)
+		foreach (size_t i; 0 .. blocks)
 		{
 			xor_buf(buffer, input, &m_key2[0], LEFT_SIZE);
 			m_cipher.set_key(buffer, LEFT_SIZE);

@@ -15,15 +15,15 @@ import botan.tls.tls_alert;
 class TLS_Exception : Exception
 {
 public:
-	Alert.Type type() const nothrow { return alert_type; }
+	Alert.Type type() const nothrow { return m_alert_type; }
 
 	this(Alert.Type type, in string err_msg = "Unknown error") {
-		alert_type = type;
+		m_alert_type = type;
 		super(err_msg);
 	}
 
 private:
-	Alert.Type alert_type;
+	Alert.Type m_alert_type;
 }
 
 /**

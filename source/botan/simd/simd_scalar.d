@@ -60,13 +60,13 @@ public:
 	void store_le(ubyte* output) const
 	{
 		for (size_t i = 0; i != size(); ++i)
-			store_le(m_v[i], output + i*(T).sizeof);
+			store_le(m_v[i], output + i*T.sizeof);
 	}
 
 	void store_be(ubyte* output) const
 	{
 		for (size_t i = 0; i != size(); ++i)
-			store_be(m_v[i], output + i*(T).sizeof);
+			store_be(m_v[i], output + i*T.sizeof);
 	}
 
 	void rotate_left(size_t rot)

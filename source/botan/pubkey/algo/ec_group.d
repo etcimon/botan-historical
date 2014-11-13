@@ -77,11 +77,10 @@ public:
 			Vector!ubyte sv_base_point;
 			
 			BER_Decoder(ber_data)
-				.start_cons(ASN1_Tag.SEQUENCE)
+					.start_cons(ASN1_Tag.SEQUENCE)
 					.decode_and_check!size_t(1, "Unknown ECC param version code")
 					.start_cons(ASN1_Tag.SEQUENCE)
-					.decode_and_check(OID("1.2.840.10045.1.1"),
-					                  "Only prime ECC fields supported")
+					.decode_and_check(OID("1.2.840.10045.1.1"), "Only prime ECC fields supported")
 					.decode(p)
 					.end_cons()
 					.start_cons(ASN1_Tag.SEQUENCE)
@@ -128,8 +127,7 @@ public:
 		
 		try
 		{
-			Vector!ubyte ber =
-				unlock(pem.decode_check_label(pem_or_oid, "EC PARAMETERS"));
+			Vector!ubyte ber = unlock(pem.decode_check_label(pem_or_oid, "EC PARAMETERS"));
 			
 			this(ber);
 		}
@@ -154,17 +152,15 @@ public:
 			const size_t p_bytes = m_curve.get_p().bytes();
 			
 			return DER_Encoder()
-				.start_cons(ASN1_Tag.SEQUENCE)
+					.start_cons(ASN1_Tag.SEQUENCE)
 					.encode(ecpVers1)
 					.start_cons(ASN1_Tag.SEQUENCE)
 					.encode(m_curve_type)
 					.encode(m_curve.get_p())
 					.end_cons()
 					.start_cons(ASN1_Tag.SEQUENCE)
-					.encode(BigInt.encode_1363(m_curve.get_a(), p_bytes),
-					        ASN1_Tag.OCTET_STRING)
-					.encode(BigInt.encode_1363(m_curve.get_b(), p_bytes),
-					        ASN1_Tag.OCTET_STRING)
+					.encode(BigInt.encode_1363(m_curve.get_a(), p_bytes), ASN1_Tag.OCTET_STRING)
+					.encode(BigInt.encode_1363(m_curve.get_b(), p_bytes), ASN1_Tag.OCTET_STRING)
 					.end_cons()
 					.encode(EC2OSP(m_base_point, PointGFp.UNCOMPRESSED), ASN1_Tag.OCTET_STRING)
 					.encode(m_order)

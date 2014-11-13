@@ -180,7 +180,7 @@ void compress(ref Secure_Vector!uint digest,
 		D = digest[3], E = digest[4], F = digest[5],
 		G = digest[6], H = digest[7];
 	
-	for (size_t i = 0; i != blocks; ++i)
+	foreach (size_t i; 0 .. blocks)
 	{
 		uint W00 = load_be!uint(input,  0);
 		uint W01 = load_be!uint(input,  1);

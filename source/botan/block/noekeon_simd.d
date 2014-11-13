@@ -43,7 +43,7 @@ public:
 			
 			SIMD_32.transpose(A0, A1, A2, A3);
 			
-			for (size_t i = 0; i != 16; ++i)
+			foreach (size_t i; 0 .. 16)
 			{
 				A0 ^= SIMD_32(RC[i]);
 				
@@ -100,7 +100,7 @@ public:
 			
 			SIMD_32.transpose(A0, A1, A2, A3);
 			
-			for (size_t i = 0; i != 16; ++i)
+			foreach (size_t i; 0 .. 16)
 			{
 				mixin(NOK_SIMD_THETA());
 				

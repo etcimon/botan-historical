@@ -99,7 +99,7 @@ private:
 			length -= 16;
 		}
 		
-		for (size_t i = 0; i != length; ++i)
+		foreach (size_t i; 0 .. length)
 			tmp = TABLE[((tmp >> 16) ^ input[i]) & 0xFF] ^ (tmp << 8);
 		
 		m_crc = tmp;
@@ -110,7 +110,7 @@ private:
 	*/
 	void final_result(ubyte* output)
 	{
-		for (size_t i = 0; i != 3; ++i)
+		foreach (size_t i; 0 .. 3)
 			output[i] = get_byte(i+1, m_crc);
 		clear();
 	}

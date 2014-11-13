@@ -11,7 +11,7 @@ static if (BOTAN_HAS_ENTROPY_SRC_DEV_RANDOM):
 
 import botan.entropy.entropy_src;
 import botan.utils.types;
-import string;
+// import string;
 import core.sys.posix.sys.types;
 import core.sys.posix.sys.select;
 import core.sys.posix.sys.stat;
@@ -36,17 +36,17 @@ public:
 		if (m_devices.empty)
 			return;
 		
-		const size_t ENTROPY_BITS_PER_BYTE = 8;
-		const size_t MS_WAIT_TIME = 32;
-		const size_t READ_ATTEMPT = 32;
+		__gshared immutable size_t ENTROPY_BITS_PER_BYTE = 8;
+		__gshared immutable size_t MS_WAIT_TIME = 32;
+		__gshared immutable size_t READ_ATTEMPT = 32;
 		
 		int max_fd = m_devices[0];
 		fd_set read_set;
 		FD_ZERO(&read_set);
-		for (size_t i = 0; i != m_devices.length; ++i)
+		foreach (device; m_devices[])
 		{
-			FD_SET(m_devices[i], &read_set);
-			max_fd = std.algorithm.max(m_devices[i], max_fd);
+			FD_SET(device, &read_set);
+			max_fd = std.algorithm.max(device, max_fd);
 		}
 		
 		timeval timeout;
@@ -58,12 +58,12 @@ public:
 			return;
 		
 		Secure_Vector!ubyte io_buffer = accum.get_io_buffer(READ_ATTEMPT);
-		
-		for (size_t i = 0; i != m_devices.length; ++i)
+
+		foreach (device; m_devices[])
 		{
-			if (FD_ISSET(m_devices[i], &read_set))
+			if (FD_ISSET(device, &read_set))
 			{
-				const ssize_t got = read(m_devices[i], &io_buffer[0], io_buffer.length);
+				const ssize_t got = read(device, &io_buffer[0], io_buffer.length);
 				if (got > 0)
 					accum.add(&io_buffer[0], got, ENTROPY_BITS_PER_BYTE);
 			}
@@ -82,7 +82,7 @@ public:
 		
 		const int flags = O_RDONLY | O_NONBLOCK | O_NOCTTY;
 		
-		foreach (fsname; fsnames)
+		foreach (fsname; fsnames[])
 		{
 			fd_type fd = open(fsname.toStringz, flags);
 			
@@ -95,8 +95,8 @@ public:
 
 	~this()
 	{
-		for (size_t i = 0; i != m_devices.length; ++i)
-			close(m_devices[i]);
+		foreach (device; m_devices[])
+			close(device);
 	}
 private:
 	typedef int fd_type;

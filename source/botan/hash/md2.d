@@ -97,7 +97,7 @@ private:
 		xor_buf(&m_X[32], &m_X[0], &m_X[16], hash_block_size);
 		ubyte T = 0;
 		
-		for (size_t i = 0; i != 18; ++i)
+		foreach (size_t i; 0 .. 18)
 		{
 			for (size_t k = 0; k != 48; k += 8)
 			{
@@ -111,7 +111,7 @@ private:
 		}
 		
 		T = m_checksum[15];
-		for (size_t i = 0; i != hash_block_size; ++i)
+		foreach (size_t i; 0 .. hash_block_size)
 			T = m_checksum[i] ^= SBOX[input[i] ^ T];
 	}
 
@@ -120,7 +120,7 @@ private:
 	*/
 	void final_result(ubyte* output)
 	{
-		for (size_t i = m_position; i != hash_block_size; ++i)
+		foreach (size_t i; m_position .. hash_block_size)
 			m_buffer[i] = cast(ubyte)(hash_block_size - m_position);
 		
 		hash(&m_buffer[0]);

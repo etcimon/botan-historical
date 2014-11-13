@@ -160,7 +160,7 @@ bool matches(DataSource source, in string extra = "",
 {
 	const string PEM_HEADER = "-----BEGIN " ~ extra;
 	
-	Secure_Vector!ubyte search_buf(search_range);
+	Secure_Vector!ubyte search_buf = Secure_Vector!ubyte(search_range);
 	size_t got = source.peek(&search_buf[0], search_buf.length, 0);
 	
 	if (got < PEM_HEADER.length)
@@ -168,7 +168,7 @@ bool matches(DataSource source, in string extra = "",
 	
 	size_t index = 0;
 	
-	for (size_t j = 0; j != got; ++j)
+	foreach (size_t j; 0 .. got)
 	{
 		if (search_buf[j] == PEM_HEADER[index])
 			++index;

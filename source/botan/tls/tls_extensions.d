@@ -9,7 +9,7 @@ module botan.tls.tls_extensions;
 import botan.alloc.zeroize;
 import botan.tls.tls_magic;
 import botan.utils.types;
-import string;
+// import string;
 import botan.utils.hashmap;
 import set;
 
@@ -76,7 +76,7 @@ public:
 
 	this(in string host_name) 
 	{
-		sni_host_name = host_name;
+		m_sni_host_name = host_name;
 	}
 
 	this(ref TLS_Data_Reader reader,
@@ -100,8 +100,8 @@ public:
 			
 			if (name_type == 0) // DNS
 			{
-				sni_host_name = reader.get_string(2, 1, 65535);
-				name_bytes -= (2 + sni_host_name.length);
+				m_sni_host_name = reader.get_string(2, 1, 65535);
+				name_bytes -= (2 + m_sni_host_name.length);
 			}
 			else // some other unknown name type
 			{
@@ -111,13 +111,13 @@ public:
 		}
 	}
 
-	string host_name() const { return sni_host_name; }
+	string host_name() const { return m_sni_host_name; }
 
 	Vector!ubyte serialize() const
 	{
 		Vector!ubyte buf;
 		
-		size_t name_len = sni_host_name.length;
+		size_t name_len = m_sni_host_name.length;
 		
 		buf.push_back(get_byte!ushort(0, name_len+3));
 		buf.push_back(get_byte!ushort(1, name_len+3));
@@ -127,15 +127,15 @@ public:
 		buf.push_back(get_byte!ushort(1, name_len));
 		
 		buf += Pair(
-			cast(const ubyte*)(sni_host_name.ptr),
-			sni_host_name.length);
+			cast(const ubyte*)(m_sni_host_name.ptr),
+			m_sni_host_name.length);
 		
 		return buf;
 	}
 
-	@property bool empty() const { return sni_host_name == ""; }
+	@property bool empty() const { return m_sni_host_name == ""; }
 private:
-	string sni_host_name;
+	string m_sni_host_name;
 }
 
 /**
@@ -151,39 +151,38 @@ public:
 
 	this(in string identifier) 
 	{
-		srp_identifier = identifier;
+		m_srp_identifier = identifier;
 	}
 
 	this(ref TLS_Data_Reader reader,
 	     ushort extension_size)
 	{
-		srp_identifier = reader.get_string(1, 1, 255);
+		m_srp_identifier = reader.get_string(1, 1, 255);
 		
-		if (srp_identifier.length + 1 != extension_size)
+		if (m_srp_identifier.length + 1 != extension_size)
 			throw new Decoding_Error("Bad encoding for SRP identifier extension");
 	}
 
 	this(ref TLS_Data_Reader reader,
 						ushort extension_size);
 
-	string identifier() const { return srp_identifier; }
+	string identifier() const { return m_srp_identifier; }
 
 
 	Vector!ubyte serialize() const
 	{
 		Vector!ubyte buf;
 
-		const ubyte* srp_bytes =
-			cast(const ubyte*)(srp_identifier.ptr);
+		const ubyte* srp_bytes = cast(const ubyte*)(m_srp_identifier.ptr);
 		
-		append_tls_length_value(buf, srp_bytes, srp_identifier.length, 1);
+		append_tls_length_value(buf, srp_bytes, m_srp_identifier.length, 1);
 		
 		return buf;
 	}
 
-	@property bool empty() const { return srp_identifier == ""; }
+	@property bool empty() const { return m_srp_identifier == ""; }
 private:
-	string srp_identifier;
+	string m_srp_identifier;
 }
 
 /**
@@ -201,32 +200,32 @@ public:
 
 	this(in Vector!ubyte bits)
 	{
-		reneg_data = bits;
+		m_reneg_data = bits;
 	}
 
 	this(ref TLS_Data_Reader reader,
 	     ushort extension_size)
 	{
-		reneg_data = reader.get_range!ubyte(1, 0, 255);
+		m_reneg_data = reader.get_range!ubyte(1, 0, 255);
 		
-		if (reneg_data.length + 1 != extension_size)
+		if (m_reneg_data.length + 1 != extension_size)
 			throw new Decoding_Error("Bad encoding for secure renegotiation extn");
 	}
 
 	const Vector!ubyte renegotiation_info() const
-	{ return reneg_data; }
+	{ return m_reneg_data; }
 
 	Vector!ubyte serialize() const
 	{
 		Vector!ubyte buf;
-		append_tls_length_value(buf, reneg_data, 1);
+		append_tls_length_value(buf, m_reneg_data, 1);
 		return buf;
 	}
 
 	@property bool empty() const { return false; } // always send this
 
 private:
-	Vector!ubyte reneg_data;
+	Vector!ubyte m_reneg_data;
 }
 
 /**
@@ -271,13 +270,13 @@ public:
 	this(ref TLS_Data_Reader reader,
 	     ushort extension_size)
 	{
-		__gshared immutable size_t[ubyte] code_to_fragment = [ 1:  512, 2: 1024, 3: 2048, 4: 4096 ];
+		__gshared immutable size_t[] code_to_fragment = [ 0, 512, 1024, 2048, 4096 ];
 		if (extension_size != 1)
 			throw new Decoding_Error("Bad size for maximum fragment extension");
 		ubyte val = reader.get_byte();
 
 		
-		auto i = code_to_fragment.get(val, 0);
+		auto i = code_to_fragment.get(cast(size_t) val, 0);
 
 		if (i == 0)
 			throw new TLS_Exception(Alert.ILLEGAL_PARAMETER,
@@ -530,7 +529,7 @@ public:
 		
 		len /= 2;
 		
-		for (size_t i = 0; i != len; ++i)
+		foreach (size_t i; 0 .. len)
 		{
 			const ushort id = reader.get_ushort();
 			const string name = curve_id_to_name(id);
@@ -718,7 +717,7 @@ public:
 
 	Vector!ubyte serialize() const
 	{
-		Vector!ubyte heartbeat(1);
+		Vector!ubyte heartbeat = Vector!ubyte(1);
 		heartbeat[0] = (m_peer_allowed_to_send ? 1 : 2);
 		return heartbeat;
 	}

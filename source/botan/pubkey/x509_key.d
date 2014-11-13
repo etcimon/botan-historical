@@ -17,7 +17,7 @@ import botan.asn1.alg_id;
 import botan.pubkey.pk_algs;
 import botan.utils.types;
 
-import string;
+// import string;
 /**
 * The two types of X509 encoding supported by Botan.
 */

@@ -102,7 +102,7 @@ protected:
 			x12 = input[12], x13 = input[13], x14 = input[14], x15 = input[15];
 		
 		
-		for (size_t i = 0; i != 10; ++i)
+		foreach (size_t i; 0 .. 10)
 		{
 			mixin(CHACHA_QUARTER_ROUND!(x00, x04, x08, x12)() ~
 			      CHACHA_QUARTER_ROUND!(x01, x05, x09, x13)() ~

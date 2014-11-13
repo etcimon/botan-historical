@@ -6,6 +6,8 @@
 */
 module botan.tls.tls_messages;
 
+
+
 import botan.tls.tls_handshake_state;
 import botan.tls.tls_session_key;
 import botan.internal.stl_util;
@@ -42,7 +44,7 @@ import botan.rng.rng;
 import botan.utils.types : Unique;
 import std.datetime;
 import botan.utils.types;
-import string;
+// import string;
 
 enum {
 	TLS_EMPTY_RENEGOTIATION_INFO_SCSV		  = 0x00FF
@@ -156,28 +158,28 @@ public:
 
 	Vector!( Pair!(string, string) ) supported_algos() const
 	{
-		if (Signature_Algorithms* sigs = m_extensions.get!Signature_Algorithms())
+		if (Signature_Algorithms sigs = m_extensions.get!Signature_Algorithms())
 			return sigs.supported_signature_algorthms();
 		return Vector!( Pair!(string, string) )();
 	}
 
 	Vector!string supported_ecc_curves() const
 	{
-		if (Supported_Elliptic_Curves* ecc = m_extensions.get!Supported_Elliptic_Curves())
+		if (Supported_Elliptic_Curves ecc = m_extensions.get!Supported_Elliptic_Curves())
 			return ecc.curves();
 		return Vector!string();
 	}
 
 	string sni_hostname() const
 	{
-		if (Server_Name_Indicator* sni = m_extensions.get!Server_Name_Indicator())
+		if (Server_Name_Indicator sni = m_extensions.get!Server_Name_Indicator())
 			return sni.host_name();
 		return "";
 	}
 
 	string srp_identifier() const
 	{
-		if (SRP_Identifier* srp = m_extensions.get!SRP_Identifier())
+		if (SRP_Identifier srp = m_extensions.get!SRP_Identifier())
 			return srp.identifier();
 		return "";
 	}
@@ -201,7 +203,7 @@ public:
 
 	size_t fragment_size() const
 	{
-		if (Maximum_Fragment_Length* frag = m_extensions.get!Maximum_Fragment_Length())
+		if (Maximum_Fragment_Length frag = m_extensions.get!Maximum_Fragment_Length())
 			return frag.fragment_size();
 		return 0;
 	}
@@ -213,7 +215,7 @@ public:
 
 	Vector!ubyte session_ticket() const
 	{
-		if (Session_Ticket* ticket = m_extensions.get!Session_Ticket())
+		if (Session_Ticket ticket = m_extensions.get!Session_Ticket())
 			return ticket.contents();
 		return Vector!ubyte();
 	}
@@ -420,8 +422,7 @@ private:
 		const size_t m_session_id_len = make_ushort(buf[5], buf[6]);
 		const size_t challenge_len = make_ushort(buf[7], buf[8]);
 		
-		const size_t expected_size =
-			(9 + m_session_id_len + cipher_spec_len + challenge_len);
+		const size_t expected_size = (9 + m_session_id_len + cipher_spec_len + challenge_len);
 		
 		if (buf.length != expected_size)
 			throw new Decoding_Error("Client_Hello: SSLv2 hello corrupted");
@@ -950,20 +951,17 @@ public:
 				
 				const string srp_group = srp6_group_identifier(N, g);
 				
-				const string srp_identifier =
-					creds.srp_identifier("tls-client", hostname);
+				const string srp_identifier = creds.srp_identifier("tls-client", hostname);
 				
-				const string srp_password =
-					creds.srp_password("tls-client", hostname, srp_identifier);
+				const string srp_password =	creds.srp_password("tls-client", hostname, srp_identifier);
 				
-				Pair!(BigInt, SymmetricKey) srp_vals =
-					srp6_client_agree(srp_identifier,
-					                  srp_password,
-					                  srp_group,
-					                  "SHA-1",
-					                  salt,
-					                  B,
-					                  rng);
+				Pair!(BigInt, SymmetricKey) srp_vals = srp6_client_agree(srp_identifier,
+														                  srp_password,
+														                  srp_group,
+														                  "SHA-1",
+														                  salt,
+														                  B,
+														                  rng);
 				
 				append_tls_length_value(m_key_material, BigInt.encode(srp_vals.first), 2);
 				m_pre_master = srp_vals.second.bits_of();
@@ -1091,13 +1089,13 @@ private:
 		{
 			Vector!ubyte raw_cert = m_certs[i].BER_encode();
 			const size_t cert_size = raw_cert.length;
-			for (size_t i = 0; i != 3; ++i)
+			foreach (size_t i; 0 .. 3)
 				buf.push_back(get_byte!uint(i+1, cert_size));
 			buf += raw_cert;
 		}
 		
 		const size_t buf_size = buf.length - 3;
-		for (size_t i = 0; i != 3; ++i)
+		foreach (size_t i; 0 .. 3)
 			buf[i] = get_byte!uint(i+1, buf_size);
 		
 		return buf;
@@ -1258,15 +1256,14 @@ public:
 	{
 		Unique!Public_Key key = cert.subject_public_key();
 		
-		Pair!(string, Signature_Format) format =
-			state.understand_sig_format(*key, m_hash_algo, m_sig_algo, true);
+		Pair!(string, Signature_Format) format = state.understand_sig_format(*key, m_hash_algo, m_sig_algo, true);
 		
 		PK_Verifier verifier = PK_Verifier(*key, format.first, format.second);
 		if (state._version() == Protocol_Version.SSL_V3)
 		{
 			Secure_Vector!ubyte md5_sha = state.hash().final_ssl3(
 				state.session_keys().master_secret());
-			
+
 			return verifier.verify_message(&md5_sha[16], md5_sha.length-16,
 			&m_signature[0], m_signature.length);
 		}
@@ -1285,15 +1282,13 @@ public:
 	{
 		assert(priv_key, "No private key defined");
 		
-		Pair!(string, Signature_Format) format =
-			state.choose_sig_format(priv_key, m_hash_algo, m_sig_algo, true, policy);
+		Pair!(string, Signature_Format) format = state.choose_sig_format(priv_key, m_hash_algo, m_sig_algo, true, policy);
 		
 		PK_Signer signer = PK_Signer(priv_key, format.first, format.second);
 		
 		if (state._version() == Protocol_Version.SSL_V3)
 		{
-			Secure_Vector!ubyte md5_sha = state.hash().final_ssl3(
-				state.session_keys().master_secret());
+			Secure_Vector!ubyte md5_sha = state.hash().final_ssl3(state.session_keys().master_secret());
 			
 			if (priv_key.algo_name == "DSA")
 				m_signature = signer.sign_message(&md5_sha[16], md5_sha.length-16, rng);
@@ -1397,8 +1392,6 @@ private:
 	{
 		return m_verification_data;
 	}
-	
-	Vector!ubyte serialize() const;
 
 	Vector!ubyte m_verification_data;
 }
@@ -1453,8 +1446,7 @@ public:
 	bool verify(in Public_Key server_key,
 	            const Handshake_State state) const
 	{
-		Pair!(string, Signature_Format) format =
-			state.understand_sig_format(server_key, m_hash_algo, m_sig_algo, false);
+		Pair!(string, Signature_Format) format = state.understand_sig_format(server_key, m_hash_algo, m_sig_algo, false);
 		
 		PK_Verifier verifier = PK_Verifier(server_key, format.first, format.second);
 		verifier.update(state.client_hello().random());
@@ -1509,7 +1501,7 @@ public:
 		{
 			// 3 bigints, DH p, g, Y
 			
-			for (size_t i = 0; i != 3; ++i)
+			foreach (size_t i; 0 .. 3)
 			{
 				BigInt v = BigInt.decode(reader.get_range!ubyte(2, 1, 65535));
 				append_tls_length_value(m_params, BigInt.encode(v), 2);
@@ -1524,7 +1516,7 @@ public:
 			
 			const ushort curve_id = reader.get_ushort();
 			
-			const string name = Supported_Elliptic_Curves::curve_id_to_name(curve_id);
+			const string name = Supported_Elliptic_Curves.curve_id_to_name(curve_id);
 			
 			Vector!ubyte ecdh_key = reader.get_range!ubyte(1, 1, 255);
 			
@@ -1583,8 +1575,7 @@ public:
 		
 		if (kex_algo == "PSK" || kex_algo == "DHE_PSK" || kex_algo == "ECDHE_PSK")
 		{
-			string identity_hint =
-				creds.psk_identity_hint("tls-server", hostname);
+			string identity_hint = creds.psk_identity_hint("tls-server", hostname);
 			
 			append_tls_length_value(m_params, identity_hint, 2);
 		}
@@ -1592,7 +1583,7 @@ public:
 		if (kex_algo == "DH" || kex_algo == "DHE_PSK")
 		{
 			Unique!DH_PrivateKey dh = new DH_PrivateKey(rng, policy.dh_group());
-			
+
 			append_tls_length_value(m_params, BigInt.encode(dh.get_domain().get_p()), 2);
 			append_tls_length_value(m_params, BigInt.encode(dh.get_domain().get_g()), 2);
 			append_tls_length_value(m_params, dh.public_value(), 2);
@@ -1600,8 +1591,7 @@ public:
 		}
 		else if (kex_algo == "ECDH" || kex_algo == "ECDHE_PSK")
 		{
-			const Vector!string curves =
-				state.client_hello().supported_ecc_curves();
+			const Vector!string curves = state.client_hello().supported_ecc_curves();
 			
 			if (curves.empty)
 				throw new Internal_Error("Client sent no ECC extension but we negotiated ECDH");
@@ -1609,10 +1599,9 @@ public:
 			const string curve_name = policy.choose_curve(curves);
 			
 			if (curve_name == "")
-				throw new TLS_Exception(Alert.HANDSHAKE_FAILURE,
-				                        "Could not agree on an ECC curve with the client");
-			
-			EC_Group ec_group(curve_name);
+				throw new TLS_Exception(Alert.HANDSHAKE_FAILURE, "Could not agree on an ECC curve with the client");
+
+			EC_Group ec_group = EC_Group(curve_name);
 			
 			Unique!ECDH_PrivateKey ecdh = new ECDH_PrivateKey(rng, ec_group);
 			
@@ -1622,7 +1611,7 @@ public:
 			if (domain == "")
 				throw new Internal_Error("Could not find name of ECDH domain " ~ ecdh_domain_oid);
 			
-			const ushort named_curve_id = Supported_Elliptic_Curves::name_to_curve_id(domainput);
+			const ushort named_curve_id = Supported_Elliptic_Curves.name_to_curve_id(domainput);
 			
 			m_params.push_back(3); // named curve
 			m_params.push_back(get_byte(0, named_curve_id));
@@ -1646,16 +1635,14 @@ public:
 			                                      policy.hide_unknown_users());
 			
 			if (!found)
-				throw new TLS_Exception(Alert.UNKNOWN_PSK_IDENTITY,
-				                        "Unknown SRP user " ~ srp_identifier);
+				throw new TLS_Exception(Alert.UNKNOWN_PSK_IDENTITY, "Unknown SRP user " ~ srp_identifier);
 			
 			m_srp_params = new SRP6_Server_Session;
 			
-			BigInt B = m_srp_params.step1(v, group_id,
-			                              "SHA-1", rng);
+			BigInt B = m_srp_params.step1(v, group_id, "SHA-1", rng);
 			
 			DL_Group group = DL_Group(group_id);
-			
+
 			append_tls_length_value(m_params, BigInt.encode(group.get_p()), 2);
 			append_tls_length_value(m_params, BigInt.encode(group.get_g()), 2);
 			append_tls_length_value(m_params, salt, 1);
@@ -1668,8 +1655,7 @@ public:
 		{
 			assert(signing_key, "Signing key was set");
 			
-			Pair!(string, Signature_Format) format =
-				state.choose_sig_format(signing_key, m_hash_algo, m_sig_algo, false, policy);
+			Pair!(string, Signature_Format) format = state.choose_sig_format(signing_key, m_hash_algo, m_sig_algo, false, policy);
 			
 			PK_Signer signer = PK_Signer(signing_key, format.first, format.second);
 			
@@ -1794,7 +1780,7 @@ private:
 		
 		buf.push_back(padding_len);
 		
-		for (size_t i = 0; i != padding_len; ++i)
+		foreach (size_t i; 0 .. padding_len)
 			buf.push_back(0);
 		
 		return buf;

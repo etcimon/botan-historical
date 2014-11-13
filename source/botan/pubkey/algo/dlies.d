@@ -69,7 +69,7 @@ private:
 		m_mac.set_key(K.ptr, m_mac_keylen);
 		
 		m_mac.update(C, length);
-		for (size_t j = 0; j != 8; ++j)
+		foreach (size_t j; 0 .. 8)
 			m_mac.update(0);
 		
 		m_mac.flushInto(C + length);
@@ -142,7 +142,7 @@ private:
 		
 		m_mac.set_key(K.ptr, m_mac_keylen);
 		m_mac.update(C);
-		for (size_t j = 0; j != 8; ++j)
+		foreach (size_t j; 0 .. 8)
 			m_mac.update(0);
 		Secure_Vector!ubyte T2 = m_mac.flush();
 		if (T != T2)

@@ -45,7 +45,7 @@ public:
 		const auto sv_r = BigInt.encode_1363(m_r, enc_len);
 		const auto sv_s = BigInt.encode_1363(m_s, enc_len);
 		
-		Secure_Vector!ubyte result(sv_r);
+		Secure_Vector!ubyte result = Secure_Vector!ubyte(sv_r);
 		result += sv_s;
 		return unlock(result);
 	}

@@ -11,7 +11,7 @@ import botan.utils.exceptn;
 import std.exception;
 import std.array : Appender;
 import botan.utils.types;
-import string;
+// import string;
 import botan.utils.types;
 import core.sync.mutex;
 import botan.utils.hashmap;
@@ -30,17 +30,16 @@ public:
 	{
 		m_orig_algo_spec = algo_spec;
 		
-		Vector!( Pair!(size_t, string)  ) name;
+		Vector!( Pair!(size_t, string)  ) names;
 		size_t level = 0;
-		Pair!(size_t, string) accum = Pair(level, "");
+		Pair!(size_t, Appender!string) accum = Pair(level, "");
 		
 		string decoding_error = "Bad SCAN name '" ~ algo_spec ~ "': ";
 		
 		algo_spec = deref_alias(algo_spec);
 		
-		for (size_t i = 0; i != algo_spec.length; ++i)
+		foreach (immutable(char) c; algo_spec)
 		{
-			char c = algo_spec[i];
 			
 			if (c == '/' || c == ',' || c == '(' || c == ')')
 			{
@@ -54,40 +53,42 @@ public:
 				}
 				
 				if (c == '/' && level > 0)
-					accum.second.push_back(c);
+					accum.second ~= c;
 				else
 				{
-					if (accum.second != "")
-						name.push_back(deref_aliases(accum));
-					accum = Pair(level, "");
+					if (accum.second.length > 0)
+						names.push_back(deref_aliases(Pair(accum.first, accum.second.data)));
+					Appender!string str;
+					str.reserve(8);
+					accum = Pair(level, str);
 				}
 			}
 			else
-				accum.second.push_back(c);
+				accum.second ~= c;
 		}
 		
-		if (accum.second != "")
-			name.push_back(deref_aliases(accum));
+		if (accum.second.length > 0)
+			names.push_back(deref_aliases(Pair(accum.first, accum.second.data)));
 		
 		if (level != 0)
 			throw new Decoding_Error(decoding_error ~ "Missing close paren");
 		
-		if (name.length == 0)
+		if (names.length == 0)
 			throw new Decoding_Error(decoding_error ~ "Empty name");
 		
-		m_alg_name = name[0].second;
+		m_alg_name = names[0].second;
 		
-		bool in_modes = false;
-		
-		for (size_t i = 1; i != name.length; ++i)
+		bool in_modes;
+
+		foreach (const name; names[])
 		{
-			if (name[i].first == 0)
+			if (name.first == 0)
 			{
-				m_mode_info.push_back(make_arg(name, i));
+				m_mode_info.push_back(make_arg(names, i));
 				in_modes = true;
 			}
-			else if (name[i].first == 1 && !in_modes)
-				m_args.push_back(make_arg(name, i));
+			else if (name.first == 1 && !in_modes)
+				m_args.push_back(make_arg(names, i));
 		}
 	}
 	
@@ -113,7 +114,7 @@ public:
 		if (arg_count())
 		{
 			output ~= '(';
-			for (size_t i = 0; i != arg_count(); ++i)
+			foreach (size_t i; 0 .. arg_count())
 			{
 				output ~= arg(i);
 				if (i != arg_count() - 1)
@@ -189,25 +190,14 @@ public:
 	static void add_alias(in string _alias, in string basename)
 	{
 		
-		if (s_alias_map.find(_alias) == s_alias_map.end())
+		if (s_alias_map.get(_alias, null) is null)
 			s_alias_map[_alias] = basename;
 	}
 
 	
 	static string deref_aliases(in Pair!(size_t, string) input)
 	{
-		return Pair(input.first, deref_alias(input.second));
-	}
-
-	static string deref_alias(in string _alias)
-	{
-		
-		string name = _alias;
-		
-		for (auto i = s_alias_map.find(name); i != s_alias_map.end(); i = s_alias_map.find(name))
-			name = i.second;
-		
-		return name;
+		return Pair(input.first, s_alias_map.get(input.second));
 	}
 
 	static void set_default_aliases()
@@ -253,7 +243,7 @@ private:
 	Vector!string m_mode_info;
 }
 
-string make_arg(in Vector!(Pair!(size_t, string)) name, size_t start)
+string make_arg(in Vector!(Pair!(size_t, string)) names, size_t start)
 {
 	Appender!string output;
 	output ~= name[start].second;
@@ -261,29 +251,29 @@ string make_arg(in Vector!(Pair!(size_t, string)) name, size_t start)
 	
 	size_t paren_depth = 0;
 	
-	foreach (i; start + 1 .. name.length)
+	foreach (name; name[start + 1 .. $])
 	{
-		if (name[i].first <= name[start].first)
+		if (name.first <= name[start].first)
 			break;
 		
-		if (name[i].first > level)
+		if (name.first > level)
 		{
-			output ~= '(' + name[i].second;
+			output ~= '(' + name.second;
 			++paren_depth;
 		}
-		else if (name[i].first < level)
+		else if (name.first < level)
 		{
-			output ~= ")," ~ name[i].second;
+			output ~= ")," ~ name.second;
 			--paren_depth;
 		}
 		else
 		{
 			if (output[output.length - 1] != '(')
 				output ~= ",";
-			output ~= name[i].second;
+			output ~= name.second;
 		}
 		
-		level = name[i].first;
+		level = name.first;
 	}
 	
 	foreach (i; 0 .. paren_depth)
@@ -294,40 +284,40 @@ string make_arg(in Vector!(Pair!(size_t, string)) name, size_t start)
 
 
 string make_arg(
-	const Vector!(Pair!(size_t, string)) name, size_t start)
+	const Vector!(Pair!(size_t, string)) names, size_t start)
 {
 	Appender!string output;
-	output ~= name[start].second;
-	size_t level = name[start].first;
+	output ~= names[start].second;
+	size_t level = names[start].first;
 
 	size_t paren_depth = 0;
 
-	for (size_t i = start + 1; i != name.length; ++i)
+	foreach (name; names[(start + 1) .. $])
 	{
-		if (name[i].first <= name[start].first)
+		if (name.first <= name[start].first)
 			break;
 
-		if (name[i].first > level)
+		if (name.first > level)
 		{
-			output ~= '(' + name[i].second;
+			output ~= '(' + name.second;
 			++paren_depth;
 		}
-		else if (name[i].first < level)
+		else if (name.first < level)
 		{
-			output ~= ")," ~ name[i].second;
+			output ~= ")," ~ name.second;
 			--paren_depth;
 		}
 		else
 		{
 			if (output[output.length - 1] != '(')
 				output ~= ",";
-			output ~= name[i].second;
+			output ~= name.second;
 		}
 
-		level = name[i].first;
+		level = name.first;
 	}
 
-	for (size_t i = 0; i != paren_depth; ++i)
+	foreach (size_t i; 0 .. paren_depth)
 		output ~= ')';
 
 	return output.data;

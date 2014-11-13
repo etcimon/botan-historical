@@ -53,7 +53,7 @@ private:
 			MAGIC4 = 0x8F1BBCDC, MAGIC5 = 0x50A28BE6,
 			MAGIC6 = 0x5C4DD124, MAGIC7 = 0x6D703EF3;
 		
-		for (size_t i = 0; i != blocks; ++i)
+		foreach (size_t i; 0 .. blocks)
 		{
 			load_le(&m_M[0], input, m_M.length);
 			

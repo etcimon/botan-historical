@@ -10,7 +10,7 @@ import botan.utils.get_byte;
 import botan.tls.tls_exceptn;
 import botan.utils.parsing;
 import botan.utils.types;
-import string;
+// import string;
 
 /**
 * TLS Protocol Version

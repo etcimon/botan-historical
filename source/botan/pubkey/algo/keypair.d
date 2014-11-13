@@ -32,8 +32,7 @@ bool encryption_consistency_check(RandomNumberGenerator rng,
 	if (encryptor.maximum_input_size() == 0)
 		return true;
 	
-	Vector!ubyte plaintext =
-		unlock(rng.random_vec(encryptor.maximum_input_size() - 1));
+	Vector!ubyte plaintext = unlock(rng.random_vec(encryptor.maximum_input_size() - 1));
 	
 	Vector!ubyte ciphertext = encryptor.encrypt(plaintext, rng);
 	if (ciphertext == plaintext)

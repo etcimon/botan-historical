@@ -216,7 +216,7 @@ private:
 		if (safe_to_skip && pipe.remaining() < 64)
 			return;
 		
-		Secure_Vector!ubyte buffer(DEFAULT_BUFFERSIZE);
+		Secure_Vector!ubyte buffer = Secure_Vector!ubyte(DEFAULT_BUFFERSIZE);
 		while(pipe.remaining())
 		{
 			const size_t got = pipe.read(&buffer[0], buffer.length);

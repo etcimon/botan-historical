@@ -217,10 +217,10 @@ public:
 			throw new Invalid_Argument("X.509 cert options: Too many names: "
 			                           + initial_opts);
 		
-		if (parsed.length >= 1) common_name  = parsed[0];
-		if (parsed.length >= 2) country		= parsed[1];
-		if (parsed.length >= 3) organization = parsed[2];
-		if (parsed.length == 4) org_unit	  = parsed[3];
+		if (parsed.length >= 1) common_name  	= parsed[0];
+		if (parsed.length >= 2) country			= parsed[1];
+		if (parsed.length >= 3) organization 	= parsed[2];
+		if (parsed.length == 4) org_unit	  	= parsed[3];
 	}
 }
 
@@ -256,19 +256,15 @@ X509_Certificate create_self_signed_cert(in X509_Cert_Options opts,
 	
 	Extensions extensions;
 	
-	extensions.add(
-		new x509_ext.Basic_Constraints(opts.is_CA, opts.path_limit),
-		true);
+	extensions.add(new x509_ext.Basic_Constraints(opts.is_CA, opts.path_limit), true);
 	
 	extensions.add(new x509_ext.Key_Usage(constraints), true);
 	
 	extensions.add(new x509_ext.Subject_Key_ID(pub_key));
 	
-	extensions.add(
-		new x509_ext.Subject_Alternative_Name(subject_alt));
+	extensions.add(new x509_ext.Subject_Alternative_Name(subject_alt));
 	
-	extensions.add(
-		new x509_ext.Extended_Key_Usage(opts.ex_constraints));
+	extensions.add(new x509_ext.Extended_Key_Usage(opts.ex_constraints));
 	
 	return X509_CA.make_cert(*signer, rng, sig_algo, pub_key,
 	                          opts.start, opts.end,
@@ -303,23 +299,17 @@ PKCS10_Request create_cert_req(in X509_Cert_Options opts,
 	
 	Extensions extensions;
 	
-	extensions.add(
-		new x509_ext.Basic_Constraints(opts.is_CA, opts.path_limit));
-	extensions.add(
-		new x509_ext.Key_Usage(
-		opts.is_CA ? Key_Constraints(KEY_CERT_SIGN | CRL_SIGN) :
-		find_constraints(key, opts.constraints)
-		)
-		);
-	extensions.add(
-		new x509_ext.Extended_Key_Usage(opts.ex_constraints));
-	extensions.add(
-		new x509_ext.Subject_Alternative_Name(subject_alt));
+	extensions.add(new x509_ext.Basic_Constraints(opts.is_CA, opts.path_limit));
+	extensions.add(new x509_ext.Key_Usage(opts.is_CA ? 
+	                                      Key_Constraints(KEY_CERT_SIGN | CRL_SIGN) : 
+	                                      find_constraints(key, opts.constraints)));
+	extensions.add(new x509_ext.Extended_Key_Usage(opts.ex_constraints));
+	extensions.add(new x509_ext.Subject_Alternative_Name(subject_alt));
 	
 	DER_Encoder tbs_req;
 	
 	tbs_req.start_cons(ASN1_Tag.SEQUENCE)
-		.encode(PKCS10_VERSION)
+			.encode(PKCS10_VERSION)
 			.encode(subject_dn)
 			.raw_bytes(pub_key)
 			.start_explicit(0);
@@ -335,21 +325,16 @@ PKCS10_Request create_cert_req(in X509_Cert_Options opts,
 			);
 	}
 	
-	tbs_req.encode(
-		Attribute("PKCS9.ExtensionRequest",
-	          DER_Encoder()
-	          .start_cons(ASN1_Tag.SEQUENCE)
-	          .encode(extensions)
-	          .end_cons()
-	          .get_contents_unlocked()
-	          )
-		)
-		.end_explicit()
-			.end_cons();
-	
-	const Vector!ubyte req =
-		X509_Object.make_signed(signer, rng, sig_algo,
-		                         tbs_req.get_contents());
+	tbs_req.encode(Attribute("PKCS9.ExtensionRequest",
+			          DER_Encoder()
+			          .start_cons(ASN1_Tag.SEQUENCE)
+			          .encode(extensions)
+			          .end_cons()
+			          .get_contents_unlocked()
+			          )
+	               ).end_explicit().end_cons();
+			
+	const Vector!ubyte req = X509_Object.make_signed(signer, rng, sig_algo, tbs_req.get_contents());
 	
 	return PKCS10_Request(req);
 }
@@ -368,6 +353,5 @@ private void load_info(in X509_Cert_Options opts, ref X509_DN subject_dn,
 	subject_dn.add_attribute("X520.OrganizationalUnit", opts.org_unit);
 	subject_dn.add_attribute("X520.SerialNumber", opts.serial_number);
 	subject_alt = Alternative_Name(opts.email, opts.uri, opts.dns, opts.ip);
-	subject_alt.add_othername(oids.lookup("PKIX.XMPPAddr"),
-	                          opts.xmpp, ASN1_Tag.UTF8_STRING);
+	subject_alt.add_othername(oids.lookup("PKIX.XMPPAddr"), opts.xmpp, ASN1_Tag.UTF8_STRING);
 }

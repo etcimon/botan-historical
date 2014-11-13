@@ -38,7 +38,7 @@ public:
 	     ubyte compression_method,
 	     Connection_Side side,
 	     size_t fragment_size,
-	     const Vector!X509_Certificate certs,
+	     in Vector!X509_Certificate certs,
 	     in Vector!ubyte ticket,
 	     const Server_Information server_info,
 	     in string srp_identifier)

@@ -143,7 +143,7 @@ string make_bcrypt(in string pass,
 	                          &salt[0],
 	work_factor);
 	
-	for (size_t i = 0; i != 64; ++i)
+	foreach (size_t i; 0 .. 64)
 		blowfish.encrypt_n(&ctext[0], &ctext[0], 3);
 	
 	string salt_b64 = bcrypt_base64_encode(&salt[0], salt.length);

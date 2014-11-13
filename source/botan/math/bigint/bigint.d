@@ -82,7 +82,7 @@ public:
 		const size_t limbs_needed = (ulong).sizeof / (word).sizeof;
 		
 		m_reg.resize(4*limbs_needed);
-		for (size_t i = 0; i != limbs_needed; ++i)
+		foreach (size_t i; 0 .. limbs_needed)
 			m_reg[i] = ((n >> (i*MP_WORD_BITS)) & MP_WORD_MASK);
 	}
 
@@ -519,7 +519,7 @@ public:
 	{
 		const size_t sw = sig_words();
 
-		for (size_t i = 0; i != sw; ++i)
+		foreach (size_t i; 0 .. sw)
 			if (m_reg[i])
 				return false;
 		return true;
@@ -590,7 +590,7 @@ public:
 			throw new Invalid_Argument("BigInt.get_substring: Substring size too big");
 		
 		ulong piece = 0;
-		for (size_t i = 0; i != 8; ++i)
+		foreach (size_t i; 0 .. 8)
 		{
 			const ubyte part = byte_at((offset / 8) + (7-i));
 			piece = (piece << 8) | part;
@@ -800,7 +800,7 @@ public:
 	void binary_encode(ubyte* output) const
 	{
 		const size_t sig_bytes = bytes();
-		for (size_t i = 0; i != sig_bytes; ++i)
+		foreach (size_t i; 0 .. sig_bytes)
 			output[sig_bytes-i-1] = byte_at(i);
 	}
 
@@ -816,14 +816,14 @@ public:
 		clear();
 		m_reg.resize(round_up!size_t((length / WORD_BYTES) + 1, 8));
 		
-		for (size_t i = 0; i != length / WORD_BYTES; ++i)
+		foreach (size_t i; 0 .. (length / WORD_BYTES))
 		{
 			const size_t top = length - WORD_BYTES*i;
 			for (size_t j = WORD_BYTES; j > 0; --j)
 				m_reg[i] = (m_reg[i] << 8) | buf[top - j];
 		}
 		
-		for (size_t i = 0; i != length % WORD_BYTES; ++i)
+		foreach (size_t i; 0 .. (length % WORD_BYTES))
 			m_reg[length / WORD_BYTES] = (m_reg[length / WORD_BYTES] << 8) | buf[i];
 	}
 
@@ -945,11 +945,10 @@ public:
 			BigInt remainder;
 			copy.set_sign(Positive);
 			const size_t output_size = n.encoded_size(Decimal);
-			for (size_t j = 0; j != output_size; ++j)
+			foreach (size_t j; 0 .. output_size)
 			{
 				divide(copy, 10, copy, remainder);
-				output[output_size - 1 - j] =
-					digit2char(cast(ubyte)(remainder.word_at(0)));
+				output[output_size - 1 - j] = digit2char(cast(ubyte)(remainder.word_at(0)));
 				if (copy.is_zero())
 					break;
 			}
@@ -977,24 +976,20 @@ public:
 			if (length % 2)
 			{
 				// Handle lack of leading 0
-				const char buf0_with_leading_0[2] =
-				{ '0', cast(char)(buf[0]) }
+				const char buf0_with_leading_0[2] = [ '0', cast(char)(buf[0]) ];
 				
 				binary = hex_decode_locked(buf0_with_leading_0, 2);
 				
-				binary += hex_decode_locked(cast(string)(buf[1]),
-				                            length - 1,
-				                            false);
+				binary += hex_decode_locked(cast(string) buf[1], length - 1, false);
 			}
 			else
-				binary = hex_decode_locked(cast(string)(buf),
-				                           length, false);
+				binary = hex_decode_locked(cast(string) buf, length, false);
 			
 			r.binary_decode(&binary[0], binary.length);
 		}
 		else if (base == Decimal)
 		{
-			for (size_t i = 0; i != length; ++i)
+			foreach (size_t i; 0 .. length)
 			{
 				if (is_space(buf[i]))
 					continue;
@@ -1025,7 +1020,7 @@ public:
 	* @result BigInt representing the integer in the ubyte array
 	*/
 	static ref BigInt decode(in Secure_Vector!ubyte buf,
-							Base base = Binary)
+	                         Base base = Binary)
 	{
 		return BigInt.decode(&buf[0], buf.length, base);
 	}
@@ -1037,7 +1032,7 @@ public:
 	* @result BigInt representing the integer in the ubyte array
 	*/
 	static ref BigInt decode(in Vector!ubyte buf,
-							Base base = Binary)
+	                         Base base = Binary)
 	{
 		return BigInt.decode(&buf[0], buf.length, base);
 	}
@@ -1048,7 +1043,8 @@ public:
 	* @param bytes the length of the resulting Secure_Vector!ubyte
 	* @result a Secure_Vector!ubyte containing the encoded BigInt
 	*/
-	static Secure_Vector!ubyte encode_1363(in BigInt n, size_t bytes)
+	static Secure_Vector!ubyte encode_1363(in BigInt n,
+	                                       size_t bytes)
 	{
 		const size_t n_bytes = n.bytes();
 		if (n_bytes > bytes)
@@ -1263,4 +1259,3 @@ void swap(BigInt x, BigInt y)
 	import std.algorithm : swap;
 	x.swap(y);
 }
-

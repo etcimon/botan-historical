@@ -75,13 +75,13 @@ private:
 		
 		Secure_Vector!ubyte salt = rng.random_vec(m_SALT_SIZE);
 		
-		for (size_t j = 0; j != 8; ++j)
+		foreach (size_t j; 0 .. 8)
 			m_hash.update(0);
 		m_hash.update(msg);
 		m_hash.update(salt);
 		Secure_Vector!ubyte H = m_hash.flush();
 		
-		Secure_Vector!ubyte EM(output_length);
+		Secure_Vector!ubyte EM = Secure_Vector!ubyte(output_length);
 		
 		EM[output_length - HASH_SIZE - m_SALT_SIZE - 2] = 0x01;
 		buffer_insert(EM, output_length - 1 - HASH_SIZE - m_SALT_SIZE, salt);
@@ -117,7 +117,7 @@ private:
 		Secure_Vector!ubyte coded = const_coded;
 		if (coded.length < KEY_BYTES)
 		{
-			Secure_Vector!ubyte temp(KEY_BYTES);
+			Secure_Vector!ubyte temp = Secure_Vector!ubyte(KEY_BYTES);
 			buffer_insert(temp, KEY_BYTES - coded.length, coded);
 			coded = temp;
 		}
@@ -136,7 +136,7 @@ private:
 		DB[0] &= 0xFF >> TOP_BITS;
 		
 		size_t salt_offset = 0;
-		for (size_t j = 0; j != DB_size; ++j)
+		foreach (size_t j; 0 .. DB_size)
 		{
 			if (DB[j] == 0x01)
 			{ salt_offset = j + 1; break; }
@@ -146,7 +146,7 @@ private:
 		if (salt_offset == 0)
 			return false;
 		
-		for (size_t j = 0; j != 8; ++j)
+		foreach (size_t j; 0 .. 8)
 			m_hash.update(0);
 		m_hash.update(raw);
 		m_hash.update(&DB[salt_offset], DB_size - salt_offset);

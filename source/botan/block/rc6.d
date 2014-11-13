@@ -25,7 +25,7 @@ public:
 	*/
 	void encrypt_n(ubyte* input, ubyte* output, size_t blocks) const
 	{
-		for (size_t i = 0; i != blocks; ++i)
+		foreach (size_t i; 0 .. blocks)
 		{
 			uint A = load_le!uint(input, 0);
 			uint B = load_le!uint(input, 1);
@@ -72,7 +72,7 @@ public:
 	*/
 	void decrypt_n(ubyte* input, ubyte* output, size_t blocks) const
 	{
-		for (size_t i = 0; i != blocks; ++i)
+		foreach (size_t i; 0 .. blocks)
 		{
 			uint A = load_le!uint(input, 0);
 			uint B = load_le!uint(input, 1);
@@ -87,8 +87,8 @@ public:
 				
 				T1 = rotate_left(A*(2*A+1), 5);
 				T2 = rotate_left(C*(2*C+1), 5);
-				B = rotate_right(B - S[41 - 2*j], T1 % 32) ^ T2;
-				D = rotate_right(D - S[40 - 2*j], T2 % 32) ^ T1;
+				B = rotate_right(B - m_S[41 - 2*j], T1 % 32) ^ T2;
+				D = rotate_right(D - m_S[40 - 2*j], T2 % 32) ^ T1;
 				
 				T1 = rotate_left(D*(2*D+1), 5);
 				T2 = rotate_left(B*(2*B+1), 5);
@@ -134,7 +134,7 @@ private:
 		const size_t MIX_ROUNDS	  = 3 * std.algorithm.max(WORD_KEYLENGTH, m_S.length);
 		
 		m_S[0] = 0xB7E15163;
-		for (size_t i = 1; i != S.length; ++i)
+		foreach (size_t i; 1 .. m_S.length)
 			m_S[i] = m_S[i-1] + 0x9E3779B9;
 		
 		Secure_Vector!uint K = Secure_Vector!uint(8);
@@ -143,7 +143,7 @@ private:
 			K[i/4] = (K[i/4] << 8) + key[i];
 		
 		uint A = 0, B = 0;
-		for (size_t i = 0; i != MIX_ROUNDS; ++i)
+		foreach (size_t i; 0 .. MIX_ROUNDS)
 		{
 			A = rotate_left(m_S[i % m_S.length] + A + B, 3);
 			B = rotate_left(K[i % WORD_KEYLENGTH] + A + B, (A + B) % 32);

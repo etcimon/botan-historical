@@ -76,7 +76,7 @@ private:
 	{
 		ulong A = m_digest[0], B = m_digest[1], C = m_digest[2];
 		
-		for (size_t i = 0; i != blocks; ++i)
+		foreach (size_t i; 0 .. blocks)
 		{
 			load_le(&m_X[0], input, m_X.length);
 			
@@ -84,7 +84,7 @@ private:
 			pass(C, A, B, m_X, 7); mix(m_X);
 			pass(B, C, A, m_X, 9);
 			
-			for (size_t j = 3; j != m_passes; ++j)
+			foreach (size_t j; 3 .. m_passes)
 			{
 				mix(m_X);
 				pass(A, B, C, m_X, 9);
@@ -105,7 +105,7 @@ private:
 	*/
 	void copy_out(ubyte* output)
 	{
-		for (size_t i = 0; i != output_length(); ++i)
+		foreach (size_t i; 0 .. output_length())
 			output[i] = get_byte(7 - (i % 8), m_digest[i/8]);
 	}
 

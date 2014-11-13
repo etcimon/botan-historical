@@ -22,7 +22,7 @@ import botan.utils.rounding;
 import botan.internal.stl_util;
 import botan.utils.loadstor;
 import botan.utils.types;
-import string;
+// import string;
 import botan.utils.hashmap;
 
 /**
@@ -39,7 +39,7 @@ public:
 	size_t received_data(in ubyte* input, size_t input_size)
 	{
 		const auto get_cipherstate = (ushort epoch)
-		{ return this.read_cipher_state_epoch(epoch); }
+		{ return this.read_cipher_state_epoch(epoch); };
 		
 		const size_t max_fragment_size = maximum_fragment_size();
 		
@@ -54,33 +54,29 @@ public:
 				
 				size_t consumed = 0;
 				
-				const size_t needed =
-					read_record(m_readbuf,
-					            input,
-					            input_size,
-					            consumed,
-					            record,
-					            &record_sequence,
-					            &record_version,
-					            &record_type,
-					            sequence_numbers(),
-					            get_cipherstate);
+				const size_t needed = read_record(m_readbuf,
+				                                  input,
+										          input_size,
+										          consumed,
+										          record,
+										          &record_sequence,
+										          &record_version,
+										          &record_type,
+										          sequence_numbers(),
+										          get_cipherstate);
 				
-				assert(consumed <= input_size,
-				       "Record reader consumed sane amount");
+				assert(consumed <= input_size, "Record reader consumed sane amount");
 				
 				input += consumed;
 				input_size -= consumed;
 				
-				assert(input_size == 0 || needed == 0,
-				       "Got a full record or consumed all input");
+				assert(input_size == 0 || needed == 0, "Got a full record or consumed all input");
 				
 				if (input_size == 0 && needed != 0)
 					return needed; // need more data to complete record
 				
 				if (record.length > max_fragment_size)
-					throw new TLS_Exception(Alert.RECORD_OVERFLOW,
-					                        "Plaintext record is too large");
+					throw new TLS_Exception(Alert.RECORD_OVERFLOW, "Plaintext record is too large");
 				
 				if (record_type == HANDSHAKE || record_type == CHANGE_CIPHER_SPEC)
 				{
@@ -170,9 +166,7 @@ public:
 				}
 			}
 			else
-				throw new Unexpected_Message("Unexpected record type " ~
-				                             std.conv.to!string(record_type) +
-				                             " from counterparty");
+				throw new Unexpected_Message("Unexpected record type " ~ std.conv.to!string(record_type) ~ " from counterparty");
 			}
 					
 			return 0; // on a record boundary
@@ -217,8 +211,7 @@ public:
 		if (!is_active())
 			throw new Exception("Data cannot be sent on inactive TLS connection");
 		
-		send_record_array(sequence_numbers().current_write_epoch(),
-		                  APPLICATION_DATA, buf, buf_size);
+		send_record_array(sequence_numbers().current_write_epoch(), APPLICATION_DATA, buf, buf_size);
 	}
 
 	/**
@@ -298,11 +291,11 @@ public:
 			return false;
 		
 		/*
-	* If no active or pending state, then either we had a connection
-	* and it has been closed, or we are a server which has never
-	* received a connection. This case is detectable by also lacking
-	* m_sequence_numbers
-	*/
+		* If no active or pending state, then either we had a connection
+		* and it has been closed, or we are a server which has never
+		* received a connection. This case is detectable by also lacking
+		* m_sequence_numbers
+		*/
 		return (m_sequence_numbers != null);
 	}
 
@@ -316,7 +309,7 @@ public:
 		if (pending_state()) // currently in handshake?
 			return;
 		
-		if (auto active = active_state())
+		if (Handshake_State active = active_state())
 			initiate_handshake(create_handshake_state(active._version()),
 			                   force_full_renegotiation);
 		else
@@ -328,7 +321,7 @@ public:
 	*/
 	bool peer_supports_heartbeats() const
 	{
-		if (auto active = active_state())
+		if (Handshake_State active = active_state())
 			return active.server_hello().supports_heartbeats();
 		return false;
 	}
@@ -338,7 +331,7 @@ public:
 	*/
 	bool heartbeat_sending_allowed() const
 	{
-		if (auto active = active_state())
+		if (Handshake_State active = active_state())
 			return active.server_hello().peer_can_send_heartbeats();
 		return false;
 	}
@@ -375,7 +368,7 @@ public:
 	*/
 	Vector!X509_Certificate peer_cert_chain() const
 	{
-		if (auto active = active_state())
+		if (Handshake_State active = active_state())
 			return get_peer_cert_chain(*active);
 		return Vector!X509_Certificate();
 	}
@@ -395,8 +388,7 @@ public:
 		{
 			Unique!KDF prf = active.protocol_specific_prf();
 			
-			const Secure_Vector!ubyte master_secret =
-				active.session_keys().master_secret();
+			const Secure_Vector!ubyte master_secret = active.session_keys().master_secret();
 			
 			Vector!ubyte salt;
 			salt += label;
@@ -465,16 +457,13 @@ protected:
 		if (pending_state())
 			throw new Internal_Error("create_handshake_state called during handshake");
 		
-		if (auto active = active_state())
+		if (Handshake_State active = active_state())
 		{
 			Protocol_Version active_version = active._version();
 			
 			if (active_version.is_datagram_protocol() != _version.is_datagram_protocol())
-				throw new Exception("Active state using version " ~
-				                    active_version.toString() +
-				                    " cannot change to " ~
-				                    _version.toString() +
-				                    " in pending");
+				throw new Exception("Active state using version " ~ active_version.toString() ~
+				                    " cannot change to " ~ _version.toString() ~ " in pending");
 		}
 		
 		if (!m_sequence_numbers)
@@ -487,9 +476,7 @@ protected:
 		
 		Unique!Handshake_IO io;
 		if (_version.is_datagram_protocol())
-			io = new Datagram_Handshake_IO(
-				sequence_numbers(),
-				&send_record_under_epoch);
+			io = new Datagram_Handshake_IO(sequence_numbers(), &send_record_under_epoch);
 		else
 			io = new Stream_Handshake_IO(&send_record);
 		
@@ -530,8 +517,7 @@ protected:
 	{
 		auto pending = pending_state();
 		
-		assert(pending && pending.server_hello(),
-		       "Have received server hello");
+		assert(pending && pending.server_hello(), "Have received server hello");
 		
 		if (pending.server_hello().compression_method() != NO_COMPRESSION)
 			throw new Internal_Error("Negotiated unknown compression algorithm");
@@ -540,8 +526,7 @@ protected:
 		
 		const ushort epoch = sequence_numbers().current_read_epoch();
 		
-		assert(m_read_cipher_states.count(epoch) == 0,
-		       "No read cipher state currently set for next epoch");
+		assert(m_read_cipher_states.count(epoch) == 0, "No read cipher state currently set for next epoch");
 		
 		// flip side as we are reading
 		Connection_Cipher_State read_state = Connection_Cipher_State(pending._version(),
@@ -557,8 +542,7 @@ protected:
 	{
 		auto pending = pending_state();
 		
-		assert(pending && pending.server_hello(),
-		       "Have received server hello");
+		assert(pending && pending.server_hello(), "Have received server hello");
 		
 		if (pending.server_hello().compression_method() != NO_COMPRESSION)
 			throw new Internal_Error("Negotiated unknown compression algorithm");
@@ -567,15 +551,13 @@ protected:
 		
 		const ushort epoch = sequence_numbers().current_write_epoch();
 		
-		assert(m_write_cipher_states.count(epoch) == 0,
-		       "No write cipher state currently set for next epoch");
+		assert(m_write_cipher_states.count(epoch) == 0, "No write cipher state currently set for next epoch");
 		
-		Connection_Cipher_State write_state = Connection_Cipher_State(
-			new Connection_Cipher_State(pending._version(),
-		                            side,
-		                            true,
-		                            pending.ciphersuite(),
-		                            pending.session_keys()));
+		Connection_Cipher_State write_state = new Connection_Cipher_State(pending._version(),
+												                          side,
+												                          true,
+												                          pending.ciphersuite(),
+												                          pending.session_keys());
 		
 		m_write_cipher_states[epoch] = write_state;
 	}
@@ -590,8 +572,7 @@ protected:
 			const bool active_sr = active.client_hello().secure_renegotiation();
 			
 			if (active_sr != secure_renegotiation)
-				throw new TLS_Exception(Alert.HANDSHAKE_FAILURE,
-				                        "Client changed its mind about secure renegotiation");
+				throw new TLS_Exception(Alert.HANDSHAKE_FAILURE, "Client changed its mind about secure renegotiation");
 		}
 		
 		if (secure_renegotiation)
@@ -599,8 +580,7 @@ protected:
 			const Vector!ubyte data = client_hello.renegotiation_info();
 			
 			if (data != secure_renegotiation_data_for_client_hello())
-				throw new TLS_Exception(Alert.HANDSHAKE_FAILURE,
-				                        "Client sent bad values for secure renegotiation");
+				throw new TLS_Exception(Alert.HANDSHAKE_FAILURE, "Client sent bad values for secure renegotiation");
 		}
 	}
 
@@ -613,8 +593,7 @@ protected:
 			const bool active_sr = active.client_hello().secure_renegotiation();
 			
 			if (active_sr != secure_renegotiation)
-				throw new TLS_Exception(Alert.HANDSHAKE_FAILURE,
-				                        "Server changed its mind about secure renegotiation");
+				throw new TLS_Exception(Alert.HANDSHAKE_FAILURE, "Server changed its mind about secure renegotiation");
 		}
 		
 		if (secure_renegotiation)
@@ -622,8 +601,7 @@ protected:
 			const Vector!ubyte data = server_hello.renegotiation_info();
 			
 			if (data != secure_renegotiation_data_for_server_hello())
-				throw new TLS_Exception(Alert.HANDSHAKE_FAILURE,
-				                        "Server sent bad values for secure renegotiation");
+				throw new TLS_Exception(Alert.HANDSHAKE_FAILURE, "Server sent bad values for secure renegotiation");
 		}
 	}
 
@@ -763,8 +741,7 @@ private:
 	{
 		auto i = m_read_cipher_states.get(epoch, Connection_Cipher_State.init);
 		
-		assert(i != Connection_Cipher_State.init,
-		       "Have a cipher state for the specified epoch");
+		assert(i != Connection_Cipher_State.init, "Have a cipher state for the specified epoch");
 		
 		return i;
 	}
@@ -773,8 +750,7 @@ private:
 	{
 		auto i = m_write_cipher_states.get(epoch, Connection_Cipher_State.init);
 		
-		assert(i != Connection_Cipher_State.init,
-		       "Have a cipher state for the specified epoch");
+		assert(i != Connection_Cipher_State.init, "Have a cipher state for the specified epoch");
 		
 		return i;
 	}

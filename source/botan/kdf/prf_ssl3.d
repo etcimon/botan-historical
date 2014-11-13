@@ -66,9 +66,9 @@ OctetString next_hash(size_t where, size_t want,
 	assert(want <= md5.output_length,
 	             "Output size producable by MD5");
 	
-	const ubyte ASCII_A_CHAR = 0x41;
+	__gshared immutable ubyte ASCII_A_CHAR = 0x41;
 	
-	for (size_t j = 0; j != where + 1; j++)
+	foreach (size_t j; 0 .. where + 1)
 		sha1.update(cast(ubyte)(ASCII_A_CHAR + where));
 	sha1.update(secret, secret_len);
 	sha1.update(seed, seed_len);

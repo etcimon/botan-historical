@@ -24,7 +24,7 @@ private:
 	*/
 	void compress_n(in ubyte* input, size_t blocks)
 	{
-		for (size_t i = 0; i != blocks; ++i)
+		foreach (size_t i; 0 .. blocks)
 		{
 			botan_md4_x86_32_compress(&m_digest[0], input, &m_M[0]);
 			input += hash_block_size;

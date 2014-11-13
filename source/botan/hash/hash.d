@@ -6,7 +6,7 @@
 */
 module botan.hash.hash;
 import botan.algo_base.buf_comp;
-import string;
+// import string;
 /**
 * This class represents hash function (message digest) objects
 */

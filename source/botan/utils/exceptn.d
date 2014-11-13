@@ -9,7 +9,7 @@ module botan.utils.exceptn;
 import botan.utils.types;
 import botan.utils.parsing;
 import std.exception;
-import string;
+// import string;
 
 class Range_Error : Exception
 {

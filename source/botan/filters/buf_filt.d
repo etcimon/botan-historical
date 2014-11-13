@@ -40,10 +40,9 @@ public:
 			input += to_copy;
 			input_size -= to_copy;
 			
-			size_t total_to_consume =
-				round_down(std.algorithm.min(m_buffer_pos,
-				                             m_buffer_pos + input_size - m_final_minimum),
-				           m_main_block_mod);
+			size_t total_to_consume = round_down(std.algorithm.min(m_buffer_pos,
+			                                     m_buffer_pos + input_size - m_final_minimum),
+			                                     m_main_block_mod);
 			
 			buffered_block(&m_buffer[0], total_to_consume);
 			

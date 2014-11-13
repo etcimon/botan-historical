@@ -295,8 +295,7 @@ PK_Signer choose_sig_format(in Private_Key key,
 	else
 		throw new Invalid_Argument("Unknown X.509 signing key type: " ~ algo_name);
 	
-	Signature_Format format =
-		(key.message_parts() > 1) ? DER_SEQUENCE : IEEE_1363;
+	Signature_Format format = (key.message_parts() > 1) ? DER_SEQUENCE : IEEE_1363;
 	
 	padding = padding + '(' + proto_hash.name + ')';
 	

@@ -39,13 +39,12 @@ public:
 		* want to assume). This limit ensures we're going to poll at least
 		* one other source so we have some diversity in our inputs.
 		*/
+
+		__gshared immutable size_t POLL_UPPER_BOUND = 96;
+		__gshared immutable size_t RDRAND_POLLS = 32;
+		__gshared immutable double ENTROPY_PER_POLL = cast(double)(POLL_UPPER_BOUND) / (RDRAND_POLLS * 4);
 		
-		const size_t POLL_UPPER_BOUND = 96;
-		const size_t RDRAND_POLLS = 32;
-		const double ENTROPY_PER_POLL =
-			cast(double)(POLL_UPPER_BOUND) / (RDRAND_POLLS * 4);
-		
-		for (size_t i = 0; i != RDRAND_POLLS; ++i)
+		foreach (size_t i; 0 .. RDRAND_POLLS)
 		{
 			uint r = 0;
 

@@ -134,7 +134,7 @@ protected:
 		
 		assert(len_bytes < (size_t).sizeof, "Length field fits");
 		
-		for (size_t i = 0; i != len_bytes; ++i)
+		foreach (size_t i; 0 .. len_bytes)
 			output[len_bytes-1-i] = get_byte((size_t).sizeof-1-i, len);
 		
 		assert((len >> (len_bytes*8)) == 0, "Message length fits in field");
@@ -153,7 +153,7 @@ protected:
 
 	final Secure_Vector!ubyte format_b0(size_t sz)
 	{
-		Secure_Vector!ubyte B0(BS);
+		Secure_Vector!ubyte B0 = Secure_Vector!ubyte(BS);
 		
 		const ubyte b_flags = (m_ad_buf.length ? 64 : 0) + (((tag_size()/2)-1) << 3) + (L()-1);
 		
@@ -166,7 +166,7 @@ protected:
 
 	final Secure_Vector!ubyte format_c0()
 	{
-		Secure_Vector!ubyte C(BS);
+		Secure_Vector!ubyte C = Secure_Vector!ubyte(BS);
 		
 		const ubyte a_flags = L()-1;
 		
@@ -222,7 +222,7 @@ public:
 		
 		const BlockCipher E = cipher();
 		
-		Secure_Vector!ubyte T(BS);
+		Secure_Vector!ubyte T = Secure_Vector!ubyte(BS);
 		E.encrypt(format_b0(sz - tag_size()), T);
 		
 		for (size_t i = 0; i != ad.length; i += BS)
@@ -233,7 +233,7 @@ public:
 		
 		Secure_Vector!ubyte C = format_c0();
 		
-		Secure_Vector!ubyte S0(BS);
+		Secure_Vector!ubyte S0 = Secure_Vector!ubyte(BS);
 		E.encrypt(C, S0);
 		inc(C);
 		
@@ -301,7 +301,7 @@ public:
 		
 		const BlockCipher E = cipher();
 		
-		Secure_Vector!ubyte T(BS);
+		Secure_Vector!ubyte T = Secure_Vector!ubyte(BS);
 		E.encrypt(format_b0(sz), T);
 		
 		for (size_t i = 0; i != ad.length; i += BS)
@@ -311,7 +311,7 @@ public:
 		}
 		
 		Secure_Vector!ubyte C = format_c0();
-		Secure_Vector!ubyte S0(BS);
+		Secure_Vector!ubyte S0 = Secure_Vector!ubyte(BS);
 		E.encrypt(C, S0);
 		inc(C);
 		

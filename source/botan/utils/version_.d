@@ -8,7 +8,7 @@ module botan.utils.version_;
 
 import botan.constants;
 import botan.utils.types;
-import string;
+// import string;
 import botan.utils.parsing;
 /*
  * These are intentionally compiled so an application running against a 

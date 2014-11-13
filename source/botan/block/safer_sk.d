@@ -26,7 +26,7 @@ public:
 	*/
 	void encrypt_n(ubyte* input, ubyte* output, size_t blocks) const
 	{
-		for (size_t i = 0; i != blocks; ++i)
+		foreach (size_t i; 0 .. blocks)
 		{
 			ubyte A = input[0], B = input[1], C = input[2], D = input[3],
 				E = input[4], F = input[5], G = input[6], H = input[7], X, Y;
@@ -62,7 +62,7 @@ public:
 	*/
 	void decrypt_n(ubyte* input, ubyte* output, size_t blocks) const
 	{
-		for (size_t i = 0; i != blocks; ++i)
+		foreach (size_t i; 0 .. blocks)
 		{
 			ubyte A = input[0], B = input[1], C = input[2], D = input[3],
 				E = input[4], F = input[5], G = input[6], H = input[7];
@@ -177,17 +177,17 @@ private:
 		
 		Secure_Vector!ubyte KB = Secure_Vector!ubyte(18);
 		
-		for (size_t i = 0; i != 8; ++i)
+		foreach (size_t i; 0 .. 8)
 		{
 			KB[ 8] ^= KB[i] = rotate_left(key[i], 5);
 			KB[17] ^= KB[i+9] = m_EK[i] = key[i+8];
 		}
 		
-		for (size_t i = 0; i != m_rounds; ++i)
+		foreach (size_t i; 0 .. m_rounds)
 		{
-			for (size_t j = 0; j != 18; ++j)
+			foreach (size_t j; 0 .. 18)
 				KB[j] = rotate_left(KB[j], 6);
-			for (size_t j = 0; j != 16; ++j)
+			foreach (size_t j; 0 .. 16)
 				m_EK[16*i+j+8] = KB[KEY_INDEX[16*i+j]] + BIAS[16*i+j];
 		}
 	}

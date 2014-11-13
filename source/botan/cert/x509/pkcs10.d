@@ -90,8 +90,8 @@ public:
 		Vector!string oids = m_info.get("X509v3.ExtendedKeyUsage");
 		
 		Vector!OID result;
-		for (size_t i = 0; i != oids.length; ++i)
-			result.push_back(OID(oids[i]));
+		foreach (oid; oids)
+			result.push_back(OID(oid));
 		return result;
 	}
 

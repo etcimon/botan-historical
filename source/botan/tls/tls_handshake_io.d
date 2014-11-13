@@ -178,8 +178,7 @@ public:
 			return Vector!ubyte(); // not included in handshake hashes
 		}
 		
-		const Vector!ubyte no_fragment =
-			format_w_seq(msg_bits, msg_type, m_out_message_seq);
+		const Vector!ubyte no_fragment = format_w_seq(msg_bits, msg_type, m_out_message_seq);
 		
 		if (no_fragment.length + DTLS_HEADER_SIZE <= m_mtu)
 			m_send_hs(epoch, HANDSHAKE, no_fragment);
@@ -193,18 +192,15 @@ public:
 			
 			while(frag_offset != msg_bits.length)
 			{
-				const size_t frag_len =
-					std.algorithm.min(msg_bits.length - frag_offset,
-					                  parts_size);
+				const size_t frag_len =	std.algorithm.min(msg_bits.length - frag_offset, parts_size);
 				
-				m_send_hs(epoch,
-				          HANDSHAKE,
+				m_send_hs(epoch, HANDSHAKE, 
 				          format_fragment(&msg_bits[frag_offset],
-				frag_len,
-				frag_offset,
-				msg_bits.length,
-				msg_type,
-				m_out_message_seq));
+											frag_len,
+											frag_offset,
+											msg_bits.length,
+											msg_type,
+											m_out_message_seq));
 				
 				frag_offset += frag_len;
 			}
@@ -262,11 +258,11 @@ public:
 			if (message_seq >= m_in_message_seq)
 			{
 				m_messages[message_seq].add_fragment(&record_bits[DTLS_HANDSHAKE_HEADER_LEN],
-				fragment_length,
-				fragment_offset,
-				epoch,
-				msg_type,
-				msg_len);
+														fragment_length,
+														fragment_offset,
+														epoch,
+														msg_type,
+														msg_len);
 			}
 			
 			record_bits += total_size;
@@ -337,13 +333,12 @@ Vector!ubyte format_w_seq(in Vector!ubyte msg,
 class Handshake_Reassembly
 {
 public:
-	void add_fragment(
-		in ubyte* fragment,
-		size_t fragment_length,
-		size_t fragment_offset,
-		ushort epoch,
-		ubyte msg_type,
-		size_t msg_length)
+	void add_fragment(in ubyte* fragment,
+						size_t fragment_length,
+						size_t fragment_offset,
+						ushort epoch,
+						ubyte msg_type,
+						size_t msg_length)
 	{
 		if (complete())
 			return; // already have entire message, ignore this
@@ -379,13 +374,13 @@ public:
 	* otherwise we expose ourselves to the classic fingerprinting
 	* and IDS evasion attacks on IP fragmentation.
 	*/
-			for (size_t i = 0; i != fragment_length; ++i)
+			foreach (size_t i; 0 .. fragment_length)
 				m_fragments[fragment_offset+i] = fragment[i];
 			
 			if (m_fragments.length == m_msg_length)
 			{
 				m_message.resize(m_msg_length);
-				for (size_t i = 0; i != m_msg_length; ++i)
+				foreach (size_t i; 0 .. m_msg_length)
 					m_message[i] = m_fragments[i];
 				m_fragments.clear();
 			}
@@ -449,7 +444,7 @@ void store_be24(ubyte[3] output, size_t val)
 
 size_t split_for_mtu(size_t mtu, size_t msg_size)
 {
-	const size_t DTLS_HEADERS_SIZE = 25; // DTLS record+handshake headers
+	__gshared immutable size_t DTLS_HEADERS_SIZE = 25; // DTLS record+handshake headers
 	
 	const size_t parts = (msg_size + mtu) / mtu;
 	

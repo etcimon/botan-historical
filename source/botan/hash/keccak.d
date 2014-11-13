@@ -11,7 +11,7 @@ static if (BOTAN_HAS_KECCAK):
 
 import botan.hash.hash;
 import botan.alloc.zeroize;
-import string;
+// import string;
 import botan.utils.loadstor;
 import botan.utils.parsing;
 import botan.utils.exceptn;
@@ -31,30 +31,30 @@ public:
 	*/
 	this(size_t output_bits = 512) 
 	{
-		m_output_bits = output_bits;
-		m_bitrate = 1600 - 2*m_output_bits;
+		output_bits = output_bits;
+		m_bitrate = 1600 - 2*output_bits;
 		m_S = 25;
 		m_S_pos = 0;
 		
 		// We only support the parameters for the SHA-3 proposal
 		
-		if (m_output_bits != 224 && m_output_bits != 256 &&
-		    m_output_bits != 384 && m_output_bits != 512)
+		if (output_bits != 224 && output_bits != 256 &&
+		    output_bits != 384 && output_bits != 512)
 			throw new Invalid_Argument("Keccak_1600: Invalid output length " ~
-			                           std.conv.to!string(m_output_bits));
+			                           std.conv.to!string(output_bits));
 	}
 
 	override @property size_t hash_block_size() const { return m_bitrate / 8; }
-	override @property size_t output_length() const { return m_output_bits / 8; }
+	override @property size_t output_length() const { return output_bits / 8; }
 
 	HashFunction clone() const
 	{
-		return new Keccak_1600(m_output_bits);
+		return new Keccak_1600(output_bits);
 	}
 
 	@property string name() const
 	{
-		return "Keccak-1600(" ~ std.conv.to!string(m_output_bits) ~ ")";
+		return "Keccak-1600(" ~ std.conv.to!string(output_bits) ~ ")";
 	}
 
 	void clear()
@@ -122,13 +122,13 @@ private:
 		* We never have to run the permutation again because we only support
 		* limited output lengths
 		*/
-		for (size_t i = 0; i != m_output_bits/8; ++i)
+		foreach (size_t i; 0 .. output_bits/8)
 			output[i] = get_byte(7 - (i % 8), m_S[i/8]);
 		
 		clear();
 	}
 
-	size_t m_output_bits, m_bitrate;
+	size_t output_bits, m_bitrate;
 	Secure_Vector!ulong m_S;
 	size_t m_S_pos;
 }
@@ -149,7 +149,7 @@ void keccak_f_1600(ulong[25]* A) pure
 		0x8000000000008080, 0x0000000080000001, 0x8000000080008008
 	];
 	
-	for (size_t i = 0; i != 24; ++i)
+	foreach (size_t i; 0 .. 24)
 	{
 		const ulong C0 = A[0] ^ A[5] ^ A[10] ^ A[15] ^ A[20];
 		const ulong C1 = A[1] ^ A[6] ^ A[11] ^ A[16] ^ A[21];

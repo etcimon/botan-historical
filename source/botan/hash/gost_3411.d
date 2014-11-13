@@ -52,7 +52,7 @@ private:
 	*/
 	void compress_n(in ubyte* input, size_t blocks)
 	{
-		for (size_t i = 0; i != blocks; ++i)
+		foreach (size_t i; 0 .. blocks)
 		{
 			for (ushort j = 0, carry = 0; j != 32; ++j)
 			{
@@ -67,13 +67,13 @@ private:
 			load_be(U, &m_hash[0], 4);
 			load_be(V, input + 32*i, 4);
 			
-			for (size_t j = 0; j != 4; ++j)
+			foreach (size_t j; 0 .. 4)
 			{
 				ubyte[32] key;
 				
 				// P transformation
-				for (size_t k = 0; k != 4; ++k)
-					for (size_t l = 0; l != 8; ++l)
+				foreach (size_t k; 0 .. 4)
+					foreach (size_t l; 0 .. 8)
 						key[4*l+k] = get_byte(l, U[k]) ^ get_byte(l, V[k]);
 				
 				m_cipher.set_key(key, 32);

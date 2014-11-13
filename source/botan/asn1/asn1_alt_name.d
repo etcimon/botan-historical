@@ -82,9 +82,7 @@ public:
 					othername.verify_end();
 					
 					if (othername_value_outer.type_tag != ASN1_Tag(0) ||
-					    othername_value_outer.class_tag !=
-					    (ASN1_Tag.CONTEXT_SPECIFIC | ASN1_Tag.CONSTRUCTED)
-					    )
+					    othername_value_outer.class_tag != (ASN1_Tag.CONTEXT_SPECIFIC | ASN1_Tag.CONSTRUCTED))
 						throw new Decoding_Error("Invalid tags on otherName value");
 					
 					auto othername_value_inner = BER_Decoder(othername_value_outer.value);

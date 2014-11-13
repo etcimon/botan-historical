@@ -10,7 +10,7 @@ import botan.codec.base64;
 import botan.utils.mem_ops;
 import botan.utils.rounding;
 import std.exception;
-import string;
+// import string;
 
 /**
 * Perform base64 encoding
@@ -48,7 +48,7 @@ size_t base64_encode(char* output,
 	if (final_inputs && input_remaining)
 	{
 		ubyte[3] remainder;
-		for (size_t i = 0; i != input_remaining; ++i)
+		foreach (size_t i; 0 .. input_remaining)
 			remainder[i] = input[input_consumed + i];
 		
 		do_base64_encode(output + output_produced, remainder);
@@ -164,7 +164,7 @@ size_t base64_decode(ubyte* output,
 	
 	clear_mem(output, input_length * 3 / 4);
 	
-	for (size_t i = 0; i != input_length; ++i)
+	foreach (size_t i; 0 .. input_length)
 	{
 		const ubyte bin = BASE64_TO_BIN[cast(ubyte)(input[i])];
 		
@@ -193,7 +193,7 @@ size_t base64_decode(ubyte* output,
 		{
 			if (decode_buf_pos)
 			{
-				for (size_t i = decode_buf_pos; i != 4; ++i)
+				foreach (size_t i; decode_buf_pos .. 4)
 					decode_buf[i] = 0;
 				final_truncate = (4 - decode_buf_pos);
 				decode_buf_pos = 4;

@@ -9,7 +9,7 @@ module botan.libstate.init;
 import botan.build;
 import botan.libstate.libstate;
 import botan.libstate.global_state;
-import string;
+// import string;
 /**
 * This class represents the Library Initialization/Shutdown Object. It
 * has to exceed the lifetime of any Botan object used in an

@@ -57,15 +57,12 @@ public:
 	*/
 	final string hash_used_for_signature() const
 	{
-		Vector!string sig_info =
-			splitter(oids.lookup(m_sig_algo.oid), '/');
+		Vector!string sig_info = splitter(oids.lookup(m_sig_algo.oid), '/');
 		
 		if (sig_info.length != 2)
-			throw new Internal_Error("Invalid name format found for " ~
-			                         m_sig_algo.oid.toString());
+			throw new Internal_Error("Invalid name format found for " ~ m_sig_algo.oid.toString());
 		
-		Vector!string pad_and_hash =
-			parse_algorithm_name(sig_info[1]);
+		Vector!string pad_and_hash = parse_algorithm_name(sig_info[1]);
 		
 		if (pad_and_hash.length != 2)
 			throw new Internal_Error("Invalid name format " ~ sig_info[1]);
@@ -88,7 +85,7 @@ public:
 	                         in Secure_Vector!ubyte tbs_bits)
 	{
 		return DER_Encoder()
-			.start_cons(ASN1_Tag.SEQUENCE)
+				.start_cons(ASN1_Tag.SEQUENCE)
 				.raw_bytes(m_tbs_bits)
 				.encode(algo)
 				.encode(signer.sign_message(m_tbs_bits, rng), ASN1_Tag.BIT_STRING)
@@ -106,15 +103,13 @@ public:
 	final bool check_signature(in Public_Key pub_key) const
 	{
 		try {
-			Vector!string sig_info =
-				splitter(oids.lookup(m_sig_algo.oid), '/');
+			Vector!string sig_info = splitter(oids.lookup(m_sig_algo.oid), '/');
 			
 			if (sig_info.length != 2 || sig_info[0] != pub_key.algo_name)
 				return false;
 			
 			string padding = sig_info[1];
-			Signature_Format format =
-				(pub_key.message_parts() >= 2) ? DER_SEQUENCE : IEEE_1363;
+			Signature_Format format = (pub_key.message_parts() >= 2) ? DER_SEQUENCE : IEEE_1363;
 			
 			PK_Verifier verifier = PK_Verifier(pub_key, padding, format);
 			return verifier.verify_message(tbs_data(), signature());
@@ -128,7 +123,7 @@ public:
 	override void encode_into(DER_Encoder to) const
 	{
 		to.start_cons(ASN1_Tag.SEQUENCE)
-			.start_cons(ASN1_Tag.SEQUENCE)
+				.start_cons(ASN1_Tag.SEQUENCE)
 				.raw_bytes(m_tbs_bits)
 				.end_cons()
 				.encode(m_sig_algo)
@@ -142,7 +137,7 @@ public:
 	override void decode_from(BER_Decoder from)
 	{
 		from.start_cons(ASN1_Tag.SEQUENCE)
-			.start_cons(ASN1_Tag.SEQUENCE)
+				.start_cons(ASN1_Tag.SEQUENCE)
 				.raw_bytes(m_tbs_bits)
 				.end_cons()
 				.decode(m_sig_algo)
@@ -209,13 +204,11 @@ protected:
 		}
 		catch(Decoding_Error e)
 		{
-			throw new Decoding_Error(m_PEM_label_pref ~ " decoding failed (" ~
-			                         e.msg ~ ")");
+			throw new Decoding_Error(m_PEM_label_pref ~ " decoding failed (" ~ e.msg ~ ")");
 		}
 		catch(Invalid_Argument e)
 		{
-			throw new Decoding_Error(m_PEM_label_pref ~ " decoding failed (" ~
-			                         e.msg ~ ")");
+			throw new Decoding_Error(m_PEM_label_pref ~ " decoding failed (" ~ e.msg ~ ")");
 		}
 	}
 	this() {}

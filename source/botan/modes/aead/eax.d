@@ -229,7 +229,7 @@ Secure_Vector!ubyte eax_prf(ubyte tag, size_t block_size,
                          in ubyte* input,
                          size_t length) pure
 {
-	for (size_t i = 0; i != block_size - 1; ++i)
+	foreach (size_t i; 0 .. (block_size - 1))
 		mac.update(0);
 	mac.update(tag);
 	mac.update(input, length);

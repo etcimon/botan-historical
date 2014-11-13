@@ -100,7 +100,7 @@ private:
 			length -= 16;
 		}
 		
-		for (size_t i = 0; i != length; ++i)
+		foreach (size_t i; 0 .. length)
 			tmp = TABLE[(tmp ^ input[i]) & 0xFF] ^ (tmp >> 8);
 		
 		m_crc = tmp;

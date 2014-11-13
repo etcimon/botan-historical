@@ -19,7 +19,7 @@ import core.sys.posix.unistd;
 */
 /*int operator<<(int fd, Pipe& pipe)
 {
-	Secure_Vector!ubyte buffer(DEFAULT_BUFFERSIZE);
+	Secure_Vector!ubyte buffer = Secure_Vector!ubyte(DEFAULT_BUFFERSIZE);
 	while(pipe.remaining())
 	{
 		size_t got = pipe.read(&buffer[0], buffer.length);
@@ -44,7 +44,7 @@ import core.sys.posix.unistd;
 */
 /*int opBinary(string op)(int fd, ref Pipe pipe)
 {
-	Secure_Vector!ubyte buffer(DEFAULT_BUFFERSIZE);
+	Secure_Vector!ubyte buffer = Secure_Vector!ubyte(DEFAULT_BUFFERSIZE);
 	while(true)
 	{
 		ssize_t ret = read(fd, &buffer[0], buffer.length);

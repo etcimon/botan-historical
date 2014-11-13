@@ -13,7 +13,7 @@ import botan.pubkey.pk_keys;
 import botan.algo_base.symkey;
 import botan.credentials.credentials_manager;
 import botan.cert.x509.x509path;
-import string;
+// import string;
 
 /**
 * Interface for a credentials manager.

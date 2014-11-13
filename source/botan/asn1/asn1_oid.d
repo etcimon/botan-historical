@@ -12,7 +12,7 @@ import botan.asn1.ber_dec;
 import botan.utils.bit_ops;
 import botan.utils.parsing;
 
-import string;
+// import string;
 import botan.utils.types;
 
 alias OID = FreeListRef!OID_Impl;
@@ -35,7 +35,7 @@ public:
 		Vector!ubyte encoding;
 		encoding.push_back(40 * m_id[0] + m_id[1]);
 		
-		for (size_t i = 2; i != m_id.length; ++i)
+		foreach (size_t i; 2 .. m_id.length)
 		{
 			if (m_id[i] == 0)
 				encoding.push_back(0);
@@ -44,7 +44,7 @@ public:
 				size_t blocks = high_bit(m_id[i]) + 6;
 				blocks = (blocks - (blocks % 7)) / 7;
 				
-				for (size_t j = 0; j != blocks - 1; ++j)
+				foreach (size_t j; 0 .. (blocks - 1))
 					encoding.push_back(0x80 | ((m_id[i] >> 7*(blocks-j-1)) & 0x7F));
 				encoding.push_back(m_id[i] & 0x7F);
 			}
@@ -108,7 +108,7 @@ public:
 	string toString() const
 	{
 		string oid_str;
-		for (size_t i = 0; i != m_id.length; ++i)
+		foreach (size_t i; 0 .. m_id.length)
 		{
 			oid_str += std.conv.to!string(m_id[i]);
 			if (i != m_id.length - 1)
@@ -125,7 +125,7 @@ public:
 	{
 		if (m_id.length != oid.m_id.length)
 			return false;
-		for (size_t i = 0; i != m_id.length; ++i)
+		foreach (size_t i; 0 .. m_id.length)
 			if (m_id[i] != oid.m_id[i])
 				return false;
 		return true;
@@ -179,11 +179,11 @@ public:
 			return true;
 		if (oid1.length > oid2.length)
 			return false;
-		for (size_t i = 0; i != oid1.length; ++i)
+		foreach (const i, const oid; oid1[])
 		{
-			if (oid1[i] < oid2[i])
+			if (oid < oid2[i])
 				return true;
-			if (oid1[i] > oid2[i])
+			if (oid > oid2[i])
 				return false;
 		}
 		return false;

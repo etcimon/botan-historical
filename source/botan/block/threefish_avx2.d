@@ -91,7 +91,7 @@ private:
 			blocks -= 2;
 		}
 		
-		for (size_t i = 0; i != blocks; ++i)
+		foreach (size_t i; 0 .. blocks)
 		{
 			__m256i X0 = _mm256_loadu_si256(in_mm++);
 			__m256i X1 = _mm256_loadu_si256(in_mm++);
@@ -157,7 +157,7 @@ private:
 		const __m256i* in_mm = cast(const __m256i*)(input);
 		__m256i* out_mm = cast(__m256i*)(output);
 		
-		for (size_t i = 0; i != blocks; ++i)
+		foreach (size_t i; 0 .. blocks)
 		{
 			__m256i X0 = _mm256_loadu_si256(in_mm++);
 			__m256i X1 = _mm256_loadu_si256(in_mm++);

@@ -72,10 +72,10 @@ public:
 
 	void encode_into(DER_Encoder to) const
 	{
-		for (size_t i = 0; i != m_extensions.length; ++i)
+		foreach (const extension; m_extensions)
 		{
-			const Certificate_Extension ext = m_extensions[i].first;
-			const bool is_critical = m_extensions[i].second;
+			const Certificate_Extension ext = extension.first;
+			const bool is_critical = extension.second;
 			
 			const bool should_encode = ext.should_encode();
 			
@@ -92,8 +92,8 @@ public:
 
 	void decode_from(BER_Decoder from_source)
 	{
-		for (size_t i = 0; i != m_extensions.length; ++i)
-			delete m_extensions[i].first;
+		foreach (extension; m_extensions)
+			delete extension.first;
 		m_extensions.clear();
 		
 		BER_Decoder sequence = from_source.start_cons(ASN1_Tag.SEQUENCE);
@@ -139,8 +139,8 @@ public:
 	void contents_to(ref Data_Store subject_info,
 	                 ref Data_Store issuer_info) const
 	{
-		for (size_t i = 0; i != m_extensions.length; ++i)
-			m_extensions[i].first.contents_to(subject_info, issuer_info);
+		foreach (extension; m_extensions)
+			extension.first.contents_to(subject_info, issuer_info);
 	}
 
 	void add(Certificate_Extension extn, bool critical)
@@ -150,14 +150,12 @@ public:
 
 	Extensions opAssign(in Extensions other)
 	{
-		for (size_t i = 0; i != m_extensions.length; ++i)
-			delete m_extensions[i].first;
+		foreach (extension; m_extensions)
+			delete extension.first;
 		m_extensions.clear();
 		
-		for (size_t i = 0; i != other.m_extensions.length; ++i)
-			m_extensions.push_back(
-				Pair(other.m_extensions[i].first.copy(),
-			other.m_extensions[i].second));
+		foreach (extension; other.m_extensions)
+			m_extensions.push_back(Pair(extension.first.copy(), extension.second));
 		
 		return this;
 	}
@@ -169,8 +167,8 @@ public:
 	this(bool st = true) { m_throw_on_unknown_critical = st; }
 	~this()
 	{
-		for (size_t i = 0; i != m_extensions.length; ++i)
-			delete m_extensions[i].first;
+		foreach (extension; m_extensions)
+			delete extension.first;
 	}
 
 private:
@@ -242,11 +240,11 @@ private:
 	Vector!ubyte encode_inner() const
 	{
 		return DER_Encoder()
-			.start_cons(ASN1_Tag.SEQUENCE)
+				.start_cons(ASN1_Tag.SEQUENCE)
 				.encode_if (m_is_ca,
 				            DER_Encoder()
-				            .encode(m_is_ca)
-				            .encode_optional(m_path_limit, NO_CERT_PATH_LIMIT)
+				            	.encode(m_is_ca)
+				            	.encode_optional(m_path_limit, NO_CERT_PATH_LIMIT)
 				            )
 				.end_cons()
 				.get_contents_unlocked();
@@ -258,7 +256,7 @@ private:
 	void decode_inner(in Vector!ubyte input)
 	{
 		BER_Decoder(input)
-			.start_cons(ASN1_Tag.SEQUENCE)
+				.start_cons(ASN1_Tag.SEQUENCE)
 				.decode_optional(m_is_ca, BOOLEAN, ASN1_Tag.UNIVERSAL, false)
 				.decode_optional(m_path_limit, INTEGER, ASN1_Tag.UNIVERSAL, NO_CERT_PATH_LIMIT)
 				.verify_end()
@@ -340,7 +338,7 @@ private:
 		obj.value[obj.value.length-1] &= (0xFF << obj.value[0]);
 		
 		ushort usage = 0;
-		for (size_t i = 1; i != obj.value.length; ++i)
+		foreach (size_t i; 1 .. obj.value.length)
 			usage = (obj.value[i] << 8) | usage;
 		
 		m_constraints = Key_Constraints(usage);
@@ -502,8 +500,7 @@ private:
 	void contents_to(ref Data_Store subject_info,
 	                 ref Data_Store issuer_info) const
 	{
-		MultiMap!(string, string) contents =
-			get_alt_name().contents();
+		MultiMap!(string, string) contents = get_alt_name().contents();
 		
 		if (m_oid_name_str == "X509v3.SubjectAlternativeName")
 			subject_info.add(contents);
@@ -594,8 +591,8 @@ private:
 	*/
 	void contents_to(ref Data_Store subject, ref Data_Store) const
 	{
-		for (size_t i = 0; i != m_oids.length; ++i)
-			subject.add("X509v3.ExtendedKeyUsage", m_oids[i].toString());
+		foreach (oid; m_oids)
+			subject.add("X509v3.ExtendedKeyUsage", oid.toString());
 	}
 
 	Vector!OID m_oids;
@@ -626,7 +623,7 @@ private:
 	{
 		Vector!( Policy_Information ) policies;
 		
-		for (size_t i = 0; i != m_oids.length; ++i)
+		foreach (oid; m_oids)
 			policies.push_back(m_oids[i]);
 		
 		return DER_Encoder()
@@ -645,8 +642,8 @@ private:
 		BER_Decoder(input).decode_list(policies);
 		
 		m_oids.clear();
-		for (size_t i = 0; i != policies.length; ++i)
-			m_oids.push_back(policies[i].oid);
+		foreach (policy; policies)
+			m_oids.push_back(policy.oid);
 	}
 
 	/*
@@ -654,8 +651,8 @@ private:
 	*/
 	void contents_to(ref Data_Store info, ref Data_Store) const
 	{
-		for (size_t i = 0; i != m_oids.length; ++i)
-			info.add("X509v3.CertificatePolicies", m_oids[i].toString());
+		foreach (oid; m_oids)
+			info.add("X509v3.CertificatePolicies", oid.toString());
 	}
 
 	Vector!OID m_oids;
@@ -895,9 +892,9 @@ private:
 
 	void contents_to(ref Data_Store info, ref Data_Store) const
 	{
-		for (size_t i = 0; i != m_distribution_points.length; ++i)
+		foreach (distribution_point; m_distribution_points)
 		{
-			auto point = m_distribution_points[i].point().contents();
+			auto point = distribution_point.point().contents();
 			
 			auto uris = point.equal_range("URI");
 			

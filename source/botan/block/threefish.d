@@ -24,7 +24,7 @@ public:
 		assert(m_K.length == 9, "Key was set");
 		assert(m_T.length == 3, "Tweak was set");
 		
-		for (size_t i = 0; i != blocks; ++i)
+		foreach (size_t i; 0 .. blocks)
 		{
 			ulong X0 = load_le!ulong(input, 0);
 			ulong X1 = load_le!ulong(input, 1);
@@ -59,7 +59,7 @@ public:
 		assert(m_K.length == 9, "Key was set");
 		assert(m_T.length == 3, "Tweak was set");
 		
-		for (size_t i = 0; i != blocks; ++i)
+		foreach (size_t i; 0 .. blocks)
 		{
 			ulong X0 = load_le!ulong(input, 0);
 			ulong X1 = load_le!ulong(input, 1);
@@ -120,7 +120,7 @@ private:
 		// todo: define key schedule for smaller keys
 		m_K.resize(9);
 		
-		for (size_t i = 0; i != 8; ++i)
+		foreach (size_t i; 0 .. 8)
 			m_K[i] = load_le!ulong(key, i);
 		
 		m_K[8] = m_K[0] ^ m_K[1] ^ m_K[2] ^ m_K[3] ^

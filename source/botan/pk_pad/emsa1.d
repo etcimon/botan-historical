@@ -93,7 +93,7 @@ Secure_Vector!ubyte emsa1_encoding(in Secure_Vector!ubyte msg,
 	size_t shift = 8*msg.length - output_bits;
 	
 	size_t byte_shift = shift / 8, bit_shift = shift % 8;
-	Secure_Vector!ubyte digest(msg.length - byte_shift);
+	Secure_Vector!ubyte digest = Secure_Vector!ubyte(msg.length - byte_shift);
 	
 	for (size_t j = 0; j != msg.length - byte_shift; ++j)
 		digest[j] = msg[j];

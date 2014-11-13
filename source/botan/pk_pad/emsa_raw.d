@@ -60,7 +60,7 @@ private:
 		
 		bool same_modulo_leading_zeros = true;
 		
-		for (size_t i = 0; i != leading_zeros_expected; ++i)
+		foreach (size_t i; 0 .. leading_zeros_expected)
 			if (raw[i])
 				same_modulo_leading_zeros = false;
 		

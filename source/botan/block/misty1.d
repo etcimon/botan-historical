@@ -24,7 +24,7 @@ public:
 	*/
 	void encrypt_n(ubyte* input, ubyte* output, size_t blocks) const
 	{
-		for (size_t i = 0; i != blocks; ++i)
+		foreach (size_t i; 0 .. blocks)
 		{
 			ushort B0 = load_be!ushort(input, 0);
 			ushort B1 = load_be!ushort(input, 1);
@@ -74,7 +74,7 @@ public:
 	*/
 	void decrypt_n(ubyte* input, ubyte* output, size_t blocks) const
 	{
-		for (size_t i = 0; i != blocks; ++i)
+		foreach (size_t i; 0 .. blocks)
 		{
 			ushort B0 = load_be!ushort(input, 2);
 			ushort B1 = load_be!ushort(input, 3);
@@ -146,10 +146,10 @@ private:
 	void key_schedule(in ubyte* key, size_t length)
 	{
 		Secure_Vector!ushort KS = Secure_Vector!ushort(32);
-		for (size_t i = 0; i != length / 2; ++i)
+		foreach (size_t i; 0 .. (length / 2))
 			KS[i] = load_be!ushort(key, i);
 		
-		for (size_t i = 0; i != 8; ++i)
+		foreach (size_t i; 0 .. 8)
 		{
 			KS[i+ 8] = FI(KS[i], KS[(i+1) % 8] >> 9, KS[(i+1) % 8] & 0x1FF);
 			KS[i+16] = KS[i+8] >> 9;
@@ -185,7 +185,7 @@ private:
 		m_EK.resize(100);
 		m_DK.resize(100);
 		
-		for (size_t i = 0; i != 100; ++i)
+		foreach (size_t i; 0 .. 100)
 		{
 			m_EK[i] = KS[EK_ORDER[i]];
 			m_DK[i] = KS[DK_ORDER[i]];

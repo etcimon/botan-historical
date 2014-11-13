@@ -43,8 +43,7 @@ size_t dl_work_factor(size_t prime_group_size)
 	// approximates natural logarithm of p
 	const double log_p = prime_group_size / 1.4426;
 
-	const double strength =
-		2.76 * pow(log_p, 1.0/3.0) * pow(log(log_p), 2.0/3.0);
+	const double strength =	2.76 * pow(log_p, 1.0/3.0) * pow(log(log_p), 2.0/3.0);
 	
 	return max(cast(size_t)(strength), MIN_WORKFACTOR);
 }

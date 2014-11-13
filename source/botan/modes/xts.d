@@ -175,7 +175,7 @@ public:
 			const size_t final_bytes = sz - full_blocks;
 			assert(final_bytes > BS && final_bytes < 2*BS, "Left over size in expected range");
 			
-			Secure_Vector!ubyte last(buf + full_blocks, buf + full_blocks + final_bytes);
+			Secure_Vector!ubyte last = Secure_Vector!ubyte(buf + full_blocks, buf + full_blocks + final_bytes);
 			buffer.resize(full_blocks + offset);
 			update(buffer, offset);
 			
@@ -183,7 +183,7 @@ public:
 			cipher().encrypt(last);
 			xor_buf(last, tweak(), BS);
 			
-			for (size_t i = 0; i != final_bytes - BS; ++i)
+			foreach (size_t i; 0 .. (final_bytes - BS))
 			{
 				last[i] ^= last[i + BS];
 				last[i + BS] ^= last[i];
@@ -265,7 +265,7 @@ public:
 			const size_t final_bytes = sz - full_blocks;
 			assert(final_bytes > BS && final_bytes < 2*BS, "Left over size in expected range");
 			
-			Secure_Vector!ubyte last(buf + full_blocks, buf + full_blocks + final_bytes);
+			Secure_Vector!ubyte last = Secure_Vector!ubyte(buf + full_blocks, buf + full_blocks + final_bytes);
 			buffer.resize(full_blocks + offset);
 			update(buffer, offset);
 			
@@ -273,7 +273,7 @@ public:
 			cipher().decrypt(last);
 			xor_buf(last, tweak() + BS, BS);
 			
-			for (size_t i = 0; i != final_bytes - BS; ++i)
+			foreach (size_t i; 0 .. (final_bytes - BS))
 			{
 				last[i] ^= last[i + BS];
 				last[i + BS] ^= last[i];

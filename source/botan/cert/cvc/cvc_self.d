@@ -114,10 +114,9 @@ EAC1_1_Req create_cvc_req(const ref Private_Key key,
 			.encode(chr)
 			.get_contents_unlocked();
 	
-	Vector!ubyte signed_cert =
-		EAC1_1_gen_CVC!EAC1_1_Req.make_signed(signer,
-		                                        EAC1_1_gen_CVC!EAC1_1_Req.build_cert_body(tbs),
-		                                        rng);
+	Vector!ubyte signed_cert = EAC1_1_gen_CVC!EAC1_1_Req.make_signed(signer,
+								                                     EAC1_1_gen_CVC!EAC1_1_Req.build_cert_body(tbs),
+	                                                                 rng);
 	
 	auto source = scoped!DataSource_Memory(signed_cert);
 	return EAC1_1_Req(source);
@@ -148,8 +147,7 @@ EAC1_1_ADO create_ado_req(const ref Private_Key key,
 	Vector!ubyte tbs_bits = req.BER_encode();
 	tbs_bits += DER_Encoder().encode(car).get_contents();
 	
-	Vector!ubyte signed_cert =
-		EAC1_1_ADO.make_signed(signer, tbs_bits, rng);
+	Vector!ubyte signed_cert = EAC1_1_ADO.make_signed(signer, tbs_bits, rng);
 	
 	auto source = scoped!DataSource_Memory(signed_cert);
 	return EAC1_1_ADO(source);

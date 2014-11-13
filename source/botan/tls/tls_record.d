@@ -129,7 +129,7 @@ public:
 	                                 ushort msg_length)
 	{
 		m_ad.clear();
-		for (size_t i = 0; i != 8; ++i)
+		foreach (size_t i; 0 .. 8)
 			m_ad.push_back(get_byte(i, msg_sequence));
 		m_ad.push_back(msg_type);
 		
@@ -188,17 +188,17 @@ private:
 
 /**
 * Create a TLS record
-* @param write_buffer the output record is placed here
+* @param output the output record is placed here
 * @param msg_type is the type of the message (handshake, alert, ...)
 * @param msg is the plaintext message
 * @param msg_length is the length of msg
-* @param msg_sequence is the sequence number
 * @param _version is the protocol version
+* @param msg_sequence is the sequence number
 * @param cipherstate is the writing cipher state
 * @param rng is a random number generator
 * @return number of bytes written to write_buffer
 */
-void write_record(Secure_Vector!ubyte output,
+void write_record(ref Secure_Vector!ubyte output,
                   ubyte msg_type, in ubyte* msg, size_t msg_length,
                   Protocol_Version _version,
                   ulong msg_sequence,
@@ -213,7 +213,7 @@ void write_record(Secure_Vector!ubyte output,
 	
 	if (_version.is_datagram_protocol())
 	{
-		for (size_t i = 0; i != 8; ++i)
+		foreach (size_t i; 0 .. 8)
 			output.push_back(get_byte(i, msg_sequence));
 	}
 	
@@ -299,10 +299,9 @@ void write_record(Secure_Vector!ubyte output,
 	
 	if (block_size)
 	{
-		const size_t pad_val =
-			buf_size - (iv_size + msg_length + mac_size + 1);
+		const size_t pad_val = buf_size - (iv_size + msg_length + mac_size + 1);
 		
-		for (size_t i = 0; i != pad_val + 1; ++i)
+		foreach (size_t i; 0 .. (pad_val + 1))
 			output.push_back(pad_val);
 	}
 	
@@ -558,9 +557,9 @@ size_t tls_padding_check(bool sslv3_padding,
 	*/
 	const size_t pad_start = record_len - padding_length - 1;
 	
-	volatile size_t cmp = 0;
+	size_t cmp = 0;
 	
-	for (size_t i = 0; i != padding_length; ++i)
+	foreach (size_t i; 0 .. padding_length)
 		cmp += record[pad_start + i] ^ padding_length;
 	
 	return cmp ? 0 : padding_length + 1;

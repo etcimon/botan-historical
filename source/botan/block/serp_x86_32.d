@@ -25,7 +25,7 @@ public:
 	{
 		auto keys = this.get_round_keys();
 		
-		for (size_t i = 0; i != blocks; ++i)
+		foreach (size_t i; 0 .. blocks)
 		{
 			botan_serpent_x86_32_encrypt(input, output, &keys[0]);
 			input += BLOCK_SIZE;
@@ -39,7 +39,7 @@ public:
 	{
 		auto keys = this.get_round_keys();
 		
-		for (size_t i = 0; i != blocks; ++i)
+		foreach (size_t i; 0 .. blocks)
 		{
 			botan_serpent_x86_32_decrypt(input, output, &keys[0]);
 			input += BLOCK_SIZE;
@@ -56,7 +56,7 @@ private:
 	void key_schedule(in ubyte* key, size_t length)
 	{
 		Secure_Vector!uint W = Secure_Vector!uint(140);
-		for (size_t i = 0; i != length / 4; ++i)
+		foreach (size_t i; 0 .. (length / 4))
 			W[i] = load_le!uint(key, i);
 		W[length / 4] |= uint(1) << ((length%4)*8);
 		

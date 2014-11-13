@@ -62,8 +62,7 @@ public:
 	{
 		try
 		{
-			Vector!string sig_info =
-				splitter(oids.lookup(m_sig_algo.oid), '/');
+			Vector!string sig_info = splitter(oids.lookup(m_sig_algo.oid), '/');
 			
 			if (sig_info.length != 2 || sig_info[0] != pub_key.algo_name)
 			{
@@ -71,8 +70,7 @@ public:
 			}
 			
 			string padding = sig_info[1];
-			Signature_Format format =
-				(pub_key.message_parts() >= 2) ? DER_SEQUENCE : IEEE_1363;
+			Signature_Format format = (pub_key.message_parts() >= 2) ? DER_SEQUENCE : IEEE_1363;
 			
 			Vector!ubyte to_sign = tbs_data();
 			
@@ -92,7 +90,7 @@ public:
 	* @param encoding the encoding type to use
 	*/
 	abstract void encode(Pipe pipe,
-							  X509_Encoding encoding = PEM) const;
+	                     X509_Encoding encoding = PEM) const;
 
 	/**
 	* BER encode this object.

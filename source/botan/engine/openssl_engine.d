@@ -432,7 +432,7 @@ private:
 	{
 		RC4_set_key(&m_state, length, key);
 		ubyte dummy = 0;
-		for (size_t i = 0; i != m_SKIP; ++i)
+		foreach (size_t i; 0 .. m_SKIP)
 			RC4(&m_state, 1, &dummy, &dummy);
 	}
 	
@@ -918,7 +918,7 @@ static if (BOTAN_HAS_DSA) {
 				return r.to_bigint();
 			}
 			
-			const ref BigInt m_n;
+			const BigInt m_n;
 			const OSSL_BN m_e, m_mod;
 			const OSSL_BN_CTX m_ctx;
 		}

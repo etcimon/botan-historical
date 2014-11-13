@@ -81,7 +81,7 @@ private:
 		
 		m_position = m_X = m_Y = 0;
 		
-		for (size_t i = 0; i != 256; ++i)
+		foreach (size_t i; 0 .. 256)
 			m_state[i] = cast(ubyte)(i);
 		
 		for (size_t i = 0, state_index = 0; i != 256; ++i)

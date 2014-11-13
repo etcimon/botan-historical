@@ -94,12 +94,12 @@ public:
 	*/
 	void encrypt_n(ubyte* input, ubyte* output, size_t blocks) const
 	{
-		for (size_t i = 0; i != blocks; ++i)
+		foreach (size_t i; 0 .. blocks)
 		{
 			uint N1 = load_le!uint(input, 0);
 			uint N2 = load_le!uint(input, 1);
 			
-			for (size_t j = 0; j != 3; ++j)
+			foreach (size_t j; 0 .. 3)
 			{
 				mixin(GOST_2ROUND!(N1, N2, 0, 1)());
 				mixin(GOST_2ROUND!(N1, N2, 2, 3)());
@@ -124,7 +124,7 @@ public:
 	*/
 	void decrypt_n(ubyte* input, ubyte* output, size_t blocks) const
 	{
-		for (size_t i = 0; i != blocks; ++i)
+		foreach (size_t i; 0 .. blocks)
 		{
 			uint N1 = load_le!uint(input, 0);
 			uint N2 = load_le!uint(input, 1);
@@ -134,7 +134,7 @@ public:
 			mixin(GOST_2ROUND!(N1, N2, 4, 5)());
 			mixin(GOST_2ROUND!(N1, N2, 6, 7)());
 			
-			for (size_t j = 0; j != 3; ++j)
+			foreach (size_t j; 0 .. 3)
 			{
 				mixin(GOST_2ROUND!(N1, N2, 7, 6)());
 				mixin(GOST_2ROUND!(N1, N2, 5, 4)());
@@ -181,8 +181,8 @@ public:
 	{
 		m_SBOX = 1024;
 		// Convert the parallel 4x4 sboxes into larger word-based sboxes
-		for (size_t i = 0; i != 4; ++i)
-			for (size_t j = 0; j != 256; ++j)
+		foreach (size_t i; 0 .. 4)
+			foreach (size_t j; 0 .. 256)
 		{
 			const uint T = (param.sbox_entry(2*i  , j % 16)) |
 				(param.sbox_entry(2*i+1, j / 16) << 4);
@@ -201,7 +201,7 @@ private:
 	void key_schedule(in ubyte* key, size_t)
 	{
 		m_EK.resize(8);
-		for (size_t i = 0; i != 8; ++i)
+		foreach (size_t i; 0 .. 8)
 			m_EK[i] = load_le!uint(key, i);
 	}
 

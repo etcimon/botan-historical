@@ -27,8 +27,8 @@ public:
 	{
 		Secure_Vector!ubyte output = Secure_Vector!ubyte(key_len);
 		
-		size_t S1_len = (secret_len + 1) / 2,
-			S2_len = (secret_len + 1) / 2;
+		size_t S1_len = (secret_len + 1) / 2;
+		size_t S2_len = (secret_len + 1) / 2;
 		const ubyte* S1 = secret;
 		const ubyte* S2 = secret + (secret_len - S2_len);
 		
@@ -102,9 +102,7 @@ void P_hash(Secure_Vector!ubyte output,
 	}
 	catch(Invalid_Key_Length)
 	{
-		throw new Internal_Error("The premaster secret of " ~
-		                         std.conv.to!string(secret_len) +
-		                         " bytes is too long for the PRF");
+		throw new Internal_Error("The premaster secret of " ~ std.conv.to!string(secret_len) + " bytes is too long for the PRF");
 	}
 	
 	Secure_Vector!ubyte A = Secure_Vector!ubyte(seed, seed + seed_len);
@@ -113,8 +111,7 @@ void P_hash(Secure_Vector!ubyte output,
 	
 	while(offset != output.length)
 	{
-		const size_t this_block_len =
-			std.algorithm.min(mac.output_length, output.length - offset);
+		const size_t this_block_len = std.algorithm.min(mac.output_length, output.length - offset);
 		
 		A = mac.process(A);
 		

@@ -125,11 +125,9 @@ private:
 	*/
 	void key_schedule(in ubyte* key, size_t length)
 	{
-		__gshared immutable uint[] TAU =
-		[ 0x61707865, 0x3120646e, 0x79622d36, 0x6b206574 ];
-		
-		__gshared immutable uint[] SIGMA =
-		[ 0x61707865, 0x3320646e, 0x79622d32, 0x6b206574 ];
+		__gshared immutable uint[] TAU = [ 0x61707865, 0x3120646e, 0x79622d36, 0x6b206574 ];
+
+		__gshared immutable uint[] SIGMA = [ 0x61707865, 0x3320646e, 0x79622d32, 0x6b206574 ];
 		
 		const uint* CONSTANTS = (length == 16) ? TAU : SIGMA;
 		
@@ -178,7 +176,7 @@ void hsalsa20(uint[8]* output, const uint[16]* input)
 		x08 = input[ 8], x09 = input[ 9], x10 = input[10], x11 = input[11],
 		x12 = input[12], x13 = input[13], x14 = input[14], x15 = input[15];
 	
-	for (size_t i = 0; i != 10; ++i)
+	foreach (size_t i; 0 .. 10)
 	{
 		mixin(	SALSA20_QUARTER_ROUND!(x00, x04, x08, x12)() ~
 				SALSA20_QUARTER_ROUND!(x05, x09, x13, x01)() ~
@@ -212,7 +210,7 @@ void salsa20(ubyte[64]* output, const uint[16]* input)
 		x08 = input[ 8], x09 = input[ 9], x10 = input[10], x11 = input[11],
 		x12 = input[12], x13 = input[13], x14 = input[14], x15 = input[15];
 	
-	for (size_t i = 0; i != 10; ++i)
+	foreach (size_t i; 0 .. 10)
 	{
 		mixin(	SALSA20_QUARTER_ROUND!(x00, x04, x08, x12)() ~
 				SALSA20_QUARTER_ROUND!(x05, x09, x13, x01)() ~

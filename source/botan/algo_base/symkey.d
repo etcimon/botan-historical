@@ -12,7 +12,7 @@ import botan.filters.pipe;
 import botan.codec.hex;
 import std.algorithm;
 import botan.alloc.zeroize;
-import string;
+// import string;
 
 /**
 * Octet String

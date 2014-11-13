@@ -7,7 +7,7 @@
 module botan.pubkey.algo.rfc6979;
 
 import botan.math.bigint.bigint;
-import string;
+// import string;
 import botan.rng.hmac_drbg;
 import botan.libstate.libstate;
 import botan.utils.types;
@@ -37,7 +37,7 @@ BigInt generate_rfc6979_nonce(in BigInt x,
 	
 	BigInt k;
 	
-	Secure_Vector!ubyte kbits(rlen);
+	Secure_Vector!ubyte kbits = Secure_Vector!ubyte(rlen);
 	
 	while(k == 0 || k >= q)
 	{

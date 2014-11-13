@@ -10,7 +10,7 @@ import botan.alloc.zeroize;
 import botan.codec.hex;
 import botan.utils.mem_ops;
 import std.exception;
-import string;
+// import string;
 
 /**
 * Perform hex encoding
@@ -34,7 +34,7 @@ void hex_encode(char* output,
 	
 	const ubyte* tbl = uppercase ? BIN_TO_HEX_UPPER : BIN_TO_HEX_LOWER;
 	
-	for (size_t i = 0; i != input_length; ++i)
+	foreach (size_t i; 0 .. input_length)
 	{
 		ubyte x = input[i];
 		output[2*i  ] = tbl[(x >> 4) & 0x0F];
@@ -135,7 +135,7 @@ size_t hex_decode(ubyte* output,
 	
 	clear_mem(output, input_length / 2);
 	
-	for (size_t i = 0; i != input_length; ++i)
+	foreach (size_t i; 0 .. input_length)
 	{
 		const ubyte bin = HEX_TO_BIN[cast(ubyte)(input[i])];
 		

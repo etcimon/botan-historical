@@ -9,6 +9,7 @@ module botan.block.xtea;
 import botan.constants;
 static if (BOTAN_HAS_XTEA):
 
+import std.range : iota;
 import botan.block.block_cipher;
 import botan.utils.loadstor;
 /**
@@ -30,12 +31,12 @@ public:
 			blocks -= 4;
 		}
 		
-		for (size_t i = 0; i != blocks; ++i)
+		foreach (size_t i; 0 .. blocks)
 		{
 			uint L = load_be!uint(input, 0);
 			uint R = load_be!uint(input, 1);
 			
-			for (size_t j = 0; j != 32; ++j)
+			foreach (size_t j; 0 .. 32)
 			{
 				L += (((R << 4) ^ (R >> 5)) + R) ^ m_EK[2*j];
 				R += (((L << 4) ^ (L >> 5)) + L) ^ m_EK[2*j+1];
@@ -61,12 +62,12 @@ public:
 			blocks -= 4;
 		}
 		
-		for (size_t i = 0; i != blocks; ++i)
+		foreach (size_t i; 0 .. blocks)
 		{
 			uint L = load_be!uint(input, 0);
 			uint R = load_be!uint(input, 1);
 			
-			for (size_t j = 0; j != 32; ++j)
+			foreach (size_t j; 0 .. 32)
 			{
 				R -= (((L << 4) ^ (L >> 5)) + L) ^ m_EK[63 - 2*j];
 				L -= (((R << 4) ^ (R >> 5)) + R) ^ m_EK[62 - 2*j];
@@ -101,11 +102,11 @@ private:
 		m_EK.resize(64);
 		
 		Secure_Vector!uint UK = Secure_Vector!uint(4);
-		for (size_t i = 0; i != 4; ++i)
+		foreach (size_t i; 0 .. 4)
 			UK[i] = load_be!uint(key, i);
 		
 		uint D = 0;
-		for (size_t i = 0; i != 64; i += 2)
+		foreach (size_t i; iota(0, 64, 2))
 		{
 			m_EK[i  ] = D + UK[D % 4];
 			D += 0x9E3779B9;
@@ -124,7 +125,7 @@ void xtea_encrypt_4(const ubyte[32]* input, ubyte[32]* output, const uint[64]* E
 	uint L0, R0, L1, R1, L2, R2, L3, R3;
 	load_be(input, L0, R0, L1, R1, L2, R2, L3, R3);
 	
-	for (size_t i = 0; i != 32; ++i)
+	foreach (size_t i; 0 .. 32)
 	{
 		L0 += (((R0 << 4) ^ (R0 >> 5)) + R0) ^ EK[2*i];
 		L1 += (((R1 << 4) ^ (R1 >> 5)) + R1) ^ EK[2*i];
@@ -145,7 +146,7 @@ void xtea_decrypt_4(const ubyte[32]* input, ubyte[32]* output, const uint[64]* E
 	uint L0, R0, L1, R1, L2, R2, L3, R3;
 	load_be(input, L0, R0, L1, R1, L2, R2, L3, R3);
 	
-	for (size_t i = 0; i != 32; ++i)
+	foreach (size_t i; 0 .. 32)
 	{
 		R0 -= (((L0 << 4) ^ (L0 >> 5)) + L0) ^ EK[63 - 2*i];
 		R1 -= (((L1 << 4) ^ (L1 >> 5)) + L1) ^ EK[63 - 2*i];

@@ -166,7 +166,7 @@ BigInt inverse_mod(in BigInt n, const ref BigInt mod)
 	{
 		const size_t u_zero_bits = low_zero_bits(u);
 		u >>= u_zero_bits;
-		for (size_t i = 0; i != u_zero_bits; ++i)
+		foreach (size_t i; 0 .. u_zero_bits)
 		{
 			if (A.is_odd() || B.is_odd())
 			{ A += n; B -= mod; }
@@ -175,7 +175,7 @@ BigInt inverse_mod(in BigInt n, const ref BigInt mod)
 		
 		const size_t v_zero_bits = low_zero_bits(v);
 		v >>= v_zero_bits;
-		for (size_t i = 0; i != v_zero_bits; ++i)
+		foreach (size_t i; 0 .. v_zero_bits)
 		{
 			if (C.is_odd() || D.is_odd())
 			{ C += n; D -= mod; }
@@ -429,6 +429,7 @@ size_t low_zero_bits(in BigInt n)
 bool is_prime(in BigInt n, RandomNumberGenerator rng,
               size_t prob = 56, bool is_random = false)
 {
+	import std.range : assumeSorted, SortedRange, front;
 	if (n == 2)
 		return true;
 	if (n <= 1 || n.is_even())
@@ -438,8 +439,8 @@ bool is_prime(in BigInt n, RandomNumberGenerator rng,
 	if (n <= PRIMES[PRIME_TABLE_SIZE-1])
 	{
 		const ushort num = n.word_at(0);
-		
-		return std::binary_search(PRIMES, PRIMES + PRIME_TABLE_SIZE, num);
+		auto r = assumeSorted(PRIMES);
+		return r.equalRange(num).front;
 	}
 	
 	const size_t test_iterations = mr_test_iterations(n.bits(), prob, is_random);
@@ -450,7 +451,7 @@ bool is_prime(in BigInt n, RandomNumberGenerator rng,
 	Fixed_Exponent_Power_Mod pow_mod = Fixed_Exponent_Power_Mod(n_minus_1 >> s, n);
 	Modular_Reducer reducer = Modular_Reducer(n);
 	
-	for (size_t i = 0; i != test_iterations; ++i)
+	foreach (size_t i; 0 .. test_iterations)
 	{
 		const BigInt a = BigInt.random_integer(rng, 2, n_minus_1);
 		
@@ -624,8 +625,7 @@ bool generate_dsa_primes(RandomNumberGenerator rng,
 			"Generating a DSA parameter set with a " ~ std.conv.to!string(qbits) +
 			"long q requires a seed at least as many bits long");
 	
-	Unique!HashFunction hash =
-		af.make_hash_function("SHA-" ~ std.conv.to!string(qbits));
+	Unique!HashFunction hash = af.make_hash_function("SHA-" ~ std.conv.to!string(qbits));
 	
 	const size_t HASH_SIZE = hash.output_length;
 	
@@ -665,7 +665,7 @@ bool generate_dsa_primes(RandomNumberGenerator rng,
 	BigInt X;
 	Vector!ubyte V = Vector!ubyte(HASH_SIZE * (n+1));
 	
-	for (size_t j = 0; j != 4096; ++j)
+	foreach (size_t j; 0 .. 4096)
 	{
 		for (size_t k = 0; k <= n; ++k)
 		{
@@ -721,7 +721,7 @@ BigInt inverse_mod_odd_modulus(in BigInt n, const ref BigInt mod)
 	{
 		const size_t u_zero_bits = low_zero_bits(u);
 		u >>= u_zero_bits;
-		for (size_t i = 0; i != u_zero_bits; ++i)
+		foreach (size_t i; 0 .. u_zero_bits)
 		{
 			if (B.is_odd())
 			{ B -= mod; }
@@ -730,7 +730,7 @@ BigInt inverse_mod_odd_modulus(in BigInt n, const ref BigInt mod)
 		
 		const size_t v_zero_bits = low_zero_bits(v);
 		v >>= v_zero_bits;
-		for (size_t i = 0; i != v_zero_bits; ++i)
+		foreach (size_t i; 0 .. v_zero_bits)
 		{
 			if (D.is_odd())
 			{ D -= mod; }
@@ -760,7 +760,7 @@ bool mr_witness(ref BigInt y,
 	if (y == 1 || y == n_minus_1)
 		return false;
 	
-	for (size_t i = 1; i != s; ++i)
+	foreach (size_t i; 1 .. s)
 	{
 		y = reducer_n.square(y);
 		

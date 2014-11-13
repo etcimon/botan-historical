@@ -45,7 +45,7 @@ private:
 		
 		const(__m128i)* input = cast(const(__m128i)*)(input_bytes);
 		
-		for (size_t i = 0; i != blocks; ++i)
+		foreach (size_t i; 0 .. blocks)
 		{
 			union v4si {
 				uint u32[4];

@@ -207,7 +207,7 @@ public:
 		BigInt.encode(&m_contents[extra_zero], n);
 		if (n < 0)
 		{
-			for (size_t i = 0; i != m_contents.length; ++i)
+			foreach (size_t i; 0 .. m_contents.length)
 				m_contents[i] = ~m_contents[i];
 			for (size_t i = m_contents.length; i > 0; --i)
 				if (++m_contents[i-1])
@@ -293,8 +293,8 @@ public:
 
 	DER_Encoder encode_list(T)(in Vector!T values)
 	{
-		for (size_t i = 0; i != values.length; ++i)
-			encode(values[i]);
+		foreach (const value; values[])
+			encode(value);
 		return this;
 	}
 
@@ -364,10 +364,11 @@ private:
 			const ASN1_Tag real_class_tag = ASN1_Tag(m_class_tag | ASN1_Tag.CONSTRUCTED);
 			
 			if (m_type_tag == ASN1_Tag.SET)
-			{
-				std.algorithm.sort(m_set_contents.ptr, m_set_contents.end());
-				for (size_t i = 0; i != m_set_contents.length; ++i)
-					m_contents += m_set_contents[i];
+			{	// sort?
+				auto set_contents = m_set_contents[];
+				std.algorithm.sort!("a[0] < b[0]", SwapStrategy.stable)(set_contents);
+				foreach(Secure_Vector!ubyte data; set_contents)
+					m_contents += data;
 				m_set_contents.clear();
 			}
 			
@@ -430,7 +431,7 @@ Secure_Vector!ubyte encode_tag(ASN1_Tag m_type_tag, ASN1_Tag m_class_tag)
 		blocks = (blocks - (blocks % 7)) / 7;
 		
 		encoded_tag.push_back(m_class_tag | 0x1F);
-		for (size_t i = 0; i != blocks - 1; ++i)
+		foreach (size_t i; 0 .. (blocks - 1))
 			encoded_tag.push_back(0x80 | ((m_type_tag >> 7*(blocks-i-1)) & 0x7F));
 		encoded_tag.push_back(m_type_tag & 0x7F);
 	}

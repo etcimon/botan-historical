@@ -105,8 +105,8 @@ public:
 	Set!string trusted_hashes() const
 	{
 		Set!string hashes;
-		for (size_t i = 0; i != m_cert_path.length; ++i)
-			hashes.insert(m_cert_path[i].hash_used_for_signature());
+		foreach (cert_path; m_cert_path)
+			hashes.insert(cert_path.hash_used_for_signature());
 		return hashes;
 	}
 
@@ -327,9 +327,9 @@ const X509_Certificate
 	if (const X509_Certificate cert = end_certs.find_cert(issuer_dn, auth_key_id))
 		return cert;
 	
-	for (size_t i = 0; i != certstores.length; ++i)
+	foreach (certstore; certstores)
 	{
-		if (const X509_Certificate cert = certstores[i].find_cert(issuer_dn, auth_key_id))
+		if (const X509_Certificate cert = certstore.find_cert(issuer_dn, auth_key_id))
 			return cert;
 	}
 	
@@ -339,12 +339,13 @@ const X509_Certificate
 const X509_CRL find_crls_for(in X509_Certificate cert,
                               const ref Vector!Certificate_Store certstores)
 {
-	for (size_t i = 0; i != certstores.length; ++i)
+	foreach (certstore; certstores)
 	{
-		if (const X509_CRL crl = certstores[i].find_crl_for(cert))
+		if (const X509_CRL crl = certstore.find_crl_for(cert))
 			return crl;
 	}
-	
+
+	/// todo: use crl distribution point and download the CRL
 	version(none) {
 		/*
 		const string crl_url = cert.crl_distribution_point();
@@ -382,7 +383,7 @@ Vector!( Set!Certificate_Status_Code )
 	
 	Vector!( Certificate_Status_Code[] ) cert_status(cert_path.length);
 	
-	for (size_t i = 0; i != cert_path.length; ++i)
+	foreach (size_t i; 0 .. cert_path.length)
 	{
 		Certificate_Status_Code[] status = cert_status.at(i);
 		
@@ -431,7 +432,7 @@ Vector!( Set!Certificate_Status_Code )
 		}
 	}
 	
-	for (size_t i = 0; i != cert_path.length - 1; ++i)
+	foreach (size_t i; 0 .. cert_path.length - 1)
 	{
 
 		Certificate_Status_Code[] status = cert_status.at(i);

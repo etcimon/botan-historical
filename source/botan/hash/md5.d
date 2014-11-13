@@ -9,6 +9,7 @@ module botan.hash.md5;
 import botan.constants;
 static if (BOTAN_HAS_MD5):
 
+
 import botan.hash.mdx_hash;
 import botan.utils.loadstor;
 import botan.utils.rotate;
@@ -52,7 +53,7 @@ protected:
 	{
 		uint A = m_digest[0], B = m_digest[1], C = m_digest[2], D = m_digest[3];
 		
-		for (size_t i = 0; i != blocks; ++i)
+		foreach (size_t i; 0 .. blocks)
 		{
 			load_le(&m_M[0], input, m_M.length);
 			

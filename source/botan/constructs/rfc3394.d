@@ -39,14 +39,14 @@ Secure_Vector!ubyte rfc3394_keywrap(in Secure_Vector!ubyte key,
 	Secure_Vector!ubyte R = Secure_Vector!ubyte((n + 1) * 8);
 	Secure_Vector!ubyte A = Secure_Vector!ubyte(16);
 	
-	for (size_t i = 0; i != 8; ++i)
+	foreach (size_t i; 0 .. 8)
 		A[i] = 0xA6;
 	
 	copy_mem(&R[8], &key[0], key.length);
 	
-	for (size_t j = 0; j <= 5; ++j)
+	foreach (size_t j; 0 .. 5 + 1)
 	{
-		for (size_t i = 1; i <= n; ++i)
+		foreach (size_t i; 1 .. n + 1)
 		{
 			const uint t = (n * j) + i;
 			
@@ -90,12 +90,12 @@ Secure_Vector!ubyte rfc3394_keyunwrap(in Secure_Vector!ubyte key,
 	Secure_Vector!ubyte R = Secure_Vector!ubyte(n * 8);
 	Secure_Vector!ubyte A = Secure_Vector!ubyte(16);
 	
-	for (size_t i = 0; i != 8; ++i)
+	foreach (size_t i; 0 .. 8)
 		A[i] = key[i];
 	
 	copy_mem(&R[0], &key[8], key.length - 8);
 	
-	for (size_t j = 0; j <= 5; ++j)
+	foreach (size_t j; 0 .. 5 + 1)
 	{
 		for (size_t i = n; i != 0; --i)
 		{
@@ -119,7 +119,6 @@ Secure_Vector!ubyte rfc3394_keyunwrap(in Secure_Vector!ubyte key,
 	
 	return R;
 }
-
 
 private:
 

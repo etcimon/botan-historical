@@ -135,7 +135,7 @@ public:
 		
 		Secure_Vector!ubyte io_buffer = accum.get_io_buffer(4096);
 		
-		for (size_t i = 0; i != MAX_FILES_READ_PER_POLL; ++i)
+		foreach (size_t i; 0 .. MAX_FILES_READ_PER_POLL)
 		{
 			int fd = m_dir.next_fd();
 			

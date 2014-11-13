@@ -71,9 +71,9 @@ public:
 			                             " received " ~ std.conv.to!string(m_hand_received_mask));
 		
 		/* We don't know what to expect next, so force a call to
-		set_expected_next; if it doesn't happen, the next transition
-		check will always fail which is what we want.
-	*/
+			set_expected_next; if it doesn't happen, the next transition
+			check will always fail which is what we want.
+		*/
 		m_hand_expecting_mask = 0;
 	}
 
@@ -88,8 +88,7 @@ public:
 
 	Pair!(Handshake_Type, Vector!ubyte) get_next_handshake_msg()
 	{
-		const bool expecting_ccs =
-			(bitmask_for_handshake_type(HANDSHAKE_CCS) & m_hand_expecting_mask);
+		const bool expecting_ccs = (bitmask_for_handshake_type(HANDSHAKE_CCS) & m_hand_expecting_mask);
 		
 		return m_handshake_io.get_next_record(expecting_ccs);
 	}
@@ -174,13 +173,12 @@ public:
 	{
 		const string sig_algo = key.algo_name;
 		
-		const string hash_algo =
-			choose_hash(sig_algo,
-			            this._version(),
-			            policy,
-			            for_client_auth,
-			            client_hello(),
-			            cert_req());
+		const string hash_algo = choose_hash(sig_algo,
+									         this._version(),
+									         policy,
+									         for_client_auth,
+									         client_hello(),
+									         cert_req());
 		
 		if (this._version().supports_negotiable_signature_algorithms())
 		{
@@ -517,13 +515,13 @@ string choose_hash(in string sig_algo,
 		throw new Internal_Error("Unknown TLS signature algo " ~ sig_algo);
 	}
 	
-	const auto supported_algos = for_client_auth ?
+	const Vector!(Pair!(string, string)) supported_algos = for_client_auth ?
 		cert_req.supported_algos() :
 			client_hello.supported_algos();
 	
 	if (!supported_algos.empty())
 	{
-		const auto hashes = policy.allowed_signature_hashes();
+		const Vector!string hashes = policy.allowed_signature_hashes();
 		
 		/*
 		* Choose our most preferred hash that the counterparty supports

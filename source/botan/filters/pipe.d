@@ -368,7 +368,7 @@ public:
 	{
 		size_t discarded = 0;
 		ubyte dummy;
-		for (size_t j = 0; j != n; ++j)
+		foreach (size_t j; 0 .. n)
 			discarded += read_byte(dummy);
 		return discarded;
 	}

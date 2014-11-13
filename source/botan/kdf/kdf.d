@@ -7,7 +7,7 @@
 module botan.kdf.kdf;
 import botan.alloc.zeroize;
 import botan.utils.types;
-import string;
+// import string;
 import botan.libstate.libstate;
 import botan.algo_base.scan_name;
 static if (BOTAN_HAS_KDF1) 			import botan.kdf.kdf1;

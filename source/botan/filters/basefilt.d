@@ -59,7 +59,7 @@ public:
 	* @param length how many filters
 	*/
 	this(Filter* filter_arr, size_t length) {
-		for (size_t j = 0; j != length; ++j) {
+		foreach (size_t j; 0 .. length) {
 			if (filter_arr[j])
 			{
 				attach(filter_arr[j]);
@@ -166,7 +166,7 @@ protected:
 		else
 		{
 			m_threads.reserve(n);
-			for (size_t i = m_threads.length; i != n; ++i)
+			foreach (size_t i; m_threads.length .. n)
 			{
 				m_threads.push_back(
 					FreeListRef!Thread(
@@ -182,7 +182,7 @@ protected:
 		thread_delegate_work(input, length);
 		
 		bool nothing_attached = true;
-		for (size_t j = 0; j != total_ports(); ++j)
+		foreach (size_t j; 0 .. total_ports())
 			if (next[j])
 				nothing_attached = false;
 		
@@ -203,7 +203,7 @@ private:
 		m_thread_data.m_input_ready_semaphore.release(total_ports());
 		
 		//Wait for all the filters to finish processing.
-		for (size_t i = 0; i != total_ports(); ++i)
+		foreach (size_t i; 0 .. total_ports())
 			m_thread_data.m_input_complete_semaphore.acquire();
 		
 		//Reset the thread data

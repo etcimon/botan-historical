@@ -10,7 +10,7 @@ import botan.alloc.zeroize;
 import botan.algo_base.key_spec;
 import botan.utils.exceptn;
 import botan.algo_base.symkey;
-import string;
+// import string;
 import botan.utils.types;
 
 /**

@@ -8,7 +8,7 @@ module botan.rng.auto_rng;
 
 import botan.rng.rng;
 import botan.utils.types;
-import string;
+// import string;
 
 final class AutoSeeded_RNG : RandomNumberGenerator
 {

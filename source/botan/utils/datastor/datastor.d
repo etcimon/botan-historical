@@ -12,7 +12,7 @@ import botan.codec.hex;
 import botan.internal.stl_util;
 import botan.alloc.zeroize;
 import functional;
-import string;
+// import string;
 import botan.utils.types;
 import botan.utils.hashmap;
 

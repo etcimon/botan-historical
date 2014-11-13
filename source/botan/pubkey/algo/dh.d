@@ -105,7 +105,7 @@ public:
 		
 		if (x == 0)
 		{
-			const ref BigInt m_p = group_p();
+			const BigInt m_p = group_p();
 			x.randomize(rng, 2 * dl_work_factor(m_p.bits()));
 		}
 		

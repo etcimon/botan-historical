@@ -22,13 +22,13 @@ public:
 	*/
 	void encrypt_n(ubyte* input, ubyte* output, size_t blocks) const
 	{
-		for (size_t i = 0; i != blocks; ++i)
+		foreach (size_t i; 0 .. blocks)
 		{
 			uint L = load_be!uint(input, 0);
 			uint R = load_be!uint(input, 1);
 			
 			uint S = 0;
-			for (size_t j = 0; j != 32; ++j)
+			foreach (size_t j; 0 .. 32)
 			{
 				S += 0x9E3779B9;
 				L += ((R << 4) + m_K[0]) ^ (R + S) ^ ((R >> 5) + m_K[1]);
@@ -46,13 +46,13 @@ public:
 	*/
 	void decrypt_n(ubyte* input, ubyte* output, size_t blocks) const
 	{
-		for (size_t i = 0; i != blocks; ++i)
+		foreach (size_t i; 0 .. blocks)
 		{
 			uint L = load_be!uint(input, 0);
 			uint R = load_be!uint(input, 1);
 			
 			uint S = 0xC6EF3720;
-			for (size_t j = 0; j != 32; ++j)
+			foreach (size_t j; 0 .. 32)
 			{
 				R -= ((L << 4) + m_K[2]) ^ (L + S) ^ ((L >> 5) + m_K[3]);
 				L -= ((R << 4) + m_K[0]) ^ (R + S) ^ ((R >> 5) + m_K[1]);
@@ -80,7 +80,7 @@ private:
 	void key_schedule(in ubyte* key, size_t)
 	{
 		m_K.resize(4);
-		for (size_t i = 0; i != 4; ++i)
+		foreach (size_t i; 0 .. 4)
 			m_K[i] = load_be!uint(key, i);
 	}
 	Secure_Vector!uint m_K;

@@ -48,24 +48,22 @@ void aont_package(RandomNumberGenerator rng,
 	// Set K0 (the all zero key)
 	cipher.set_key(SymmetricKey(all_zeros));
 	
-	Secure_Vector!ubyte buf(BLOCK_SIZE);
-	
-	const size_t blocks =
-		(input_len + BLOCK_SIZE - 1) / BLOCK_SIZE;
+	Secure_Vector!ubyte buf = Secure_Vector!ubyte(BLOCK_SIZE);
+
+	const size_t blocks = (input_len + BLOCK_SIZE - 1) / BLOCK_SIZE;
 	
 	ubyte* final_block = output + input_len;
 	clear_mem(final_block, BLOCK_SIZE);
 	
 	// XOR the hash blocks into the final block
-	for (size_t i = 0; i != blocks; ++i)
+	foreach (size_t i; 0 .. blocks)
 	{
-		const size_t left = std.algorithm.min(BLOCK_SIZE,
-		                                      input_len - BLOCK_SIZE * i);
+		const size_t left = std.algorithm.min(BLOCK_SIZE, input_len - BLOCK_SIZE * i);
 		
 		zeroise(buf);
 		copy_mem(&buf[0], output + (BLOCK_SIZE * i), left);
 		
-		for (size_t j = 0; j != (i).sizeof; ++j)
+		for (size_t j = 0; j != i.sizeof; ++j)
 			buf[BLOCK_SIZE - 1 - j] ^= get_byte((i).sizeof-1-j, i);
 		
 		cipher.encrypt(&buf[0]);
@@ -104,18 +102,16 @@ void aont_unpackage(BlockCipher cipher,
 	
 	cipher.set_key(SymmetricKey(all_zeros));
 	
-	Secure_Vector!ubyte package_key(BLOCK_SIZE);
-	Secure_Vector!ubyte buf(BLOCK_SIZE);
+	Secure_Vector!ubyte package_key = Secure_Vector!ubyte(BLOCK_SIZE);
+	Secure_Vector!ubyte buf = Secure_Vector!ubyte(BLOCK_SIZE);
 	
 	// Copy the package key (masked with the block hashes)
-	copy_mem(&package_key[0],
-	input + (input_len - BLOCK_SIZE),
-	BLOCK_SIZE);
+	copy_mem(&package_key[0], input + (input_len - BLOCK_SIZE), BLOCK_SIZE);
 	
 	const size_t blocks = ((input_len - 1) / BLOCK_SIZE);
 	
 	// XOR the blocks into the package key bits
-	for (size_t i = 0; i != blocks; ++i)
+	foreach (size_t i; 0 .. blocks)
 	{
 		const size_t left = std.algorithm.min(BLOCK_SIZE,
 		                                      input_len - BLOCK_SIZE * (i+1));

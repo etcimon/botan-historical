@@ -324,11 +324,11 @@ private:
 		
 		// SSE2 might be useful here
 		
-		for (size_t i = 0; i != 2; ++i)
+		foreach (size_t i; 0 .. 2)
 		{
 			const ulong X = load_be!ulong(&x[0], i);
 			
-			for (size_t j = 0; j != 64; ++j)
+			foreach (size_t j; 0 .. 64)
 			{
 				if ((X >> (63-j)) & 1)
 				{
@@ -371,7 +371,7 @@ private:
 	void add_final_block(Secure_Vector!ubyte hash,
 	                     size_t ad_len, size_t text_len)
 	{
-		Secure_Vector!ubyte final_block(16);
+		Secure_Vector!ubyte final_block = Secure_Vector!ubyte(16);
 		store_be!ulong(&final_block[0], 8*ad_len, 8*text_len);
 		ghash_update(hash, &final_block[0], final_block.length);
 	}

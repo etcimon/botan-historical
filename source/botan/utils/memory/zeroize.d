@@ -37,7 +37,7 @@ final class ZeroizeAllocator : Allocator
 	T* allocate(size_t n, const void* = 0)
 	{
 		static if (BOTAN_HAS_LOCKING_ALLOCATOR) {
-			if (pointer p = cast(pointer)(mlock_allocator.instance().allocate(n, (T).sizeof)))
+			if (pointer p = cast(pointer)(mlock_allocator.instance().allocate(n, T.sizeof)))
 				return p;
 		}
 		pointer p = new T[n];
@@ -50,7 +50,7 @@ final class ZeroizeAllocator : Allocator
 		clear_mem(p, n);
 
 		static if (BOTAN_HAS_LOCKING_ALLOCATOR) {
-			if (mlock_allocator.instance().deallocate(p, n, (T).sizeof))
+			if (mlock_allocator.instance().deallocate(p, n, T.sizeof))
 				return;
 		}
 		.destroy(p);
@@ -58,7 +58,7 @@ final class ZeroizeAllocator : Allocator
 
 	size_t max_size() const nothrow
 	{
-		return cast(size_type)(-1) / (T).sizeof;
+		return cast(size_type)(-1) / T.sizeof;
 	}
 
 	void construct(U, Args...)(ref U* p, Args args)

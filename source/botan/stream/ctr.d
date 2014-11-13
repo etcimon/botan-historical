@@ -12,6 +12,7 @@ static if (BOTAN_HAS_CTR_BE):
 import botan.block.block_cipher;
 import botan.stream.stream_cipher;
 import botan.utils.xor_buf;
+import botan.utils.types;
 
 /**
 * CTR-BE (Counter mode, big-endian)
@@ -46,11 +47,11 @@ public:
 		buffer_insert(m_counter, 0, iv, iv_len);
 		
 		// Set m_counter blocks to IV, IV + 1, ... IV + 255
-		for (size_t i = 1; i != 256; ++i)
+		foreach (size_t i; 1 .. 256)
 		{
 			buffer_insert(m_counter, i*bs, &m_counter[(i-1)*bs], bs);
 			
-			for (size_t j = 0; j != bs; ++j)
+			foreach (size_t j; 0 .. bs)
 				if (++m_counter[i*bs + (bs - 1 - j)])
 					break;
 		}
@@ -110,13 +111,13 @@ private:
 		const size_t bs = m_cipher.block_size;
 		
 		/*
-	* Each counter value always needs to be incremented by 256,
-	* so we don't touch the lowest ubyte and instead treat it as
-	* an increment of one starting with the next ubyte.
-	*/
-		for (size_t i = 0; i != 256; ++i)
+		* Each counter value always needs to be incremented by 256,
+		* so we don't touch the lowest ubyte and instead treat it as
+		* an increment of one starting with the next ubyte.
+		*/
+		foreach (size_t i; 0 .. 256)
 		{
-			for (size_t j = 1; j != bs; ++j)
+			foreach (size_t j; 1 .. bs)
 				if (++m_counter[i*bs + (bs - 1 - j)])
 					break;
 		}

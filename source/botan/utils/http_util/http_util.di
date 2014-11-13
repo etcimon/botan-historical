@@ -10,7 +10,7 @@ import future;
 import botan.utils.types;
 import botan.utils.hashmap;
 import std.datetime;
-import string;
+// import string;
 namespace HTTP {
 
 struct Response

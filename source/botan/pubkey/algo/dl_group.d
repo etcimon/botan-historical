@@ -364,7 +364,7 @@ private:
 		if (e == 0 || (m_p - 1) % m_q > 0)
 			throw new Invalid_Argument("make_dsa_generator m_q does not divide m_p-1");
 		
-		for (size_t i = 0; i != PRIME_TABLE_SIZE; ++i)
+		foreach (size_t i; 0 .. PRIME_TABLE_SIZE)
 		{
 			BigInt m_g = power_mod(PRIMES[i], e, m_p);
 			if (m_g > 1)

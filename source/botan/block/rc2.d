@@ -24,14 +24,14 @@ public:
 	*/
 	void encrypt_n(ubyte* input, ubyte* output, size_t blocks) const
 	{
-		for (size_t i = 0; i != blocks; ++i)
+		foreach (size_t i; 0 .. blocks)
 		{
 			ushort R0 = load_le!ushort(input, 0);
 			ushort R1 = load_le!ushort(input, 1);
 			ushort R2 = load_le!ushort(input, 2);
 			ushort R3 = load_le!ushort(input, 3);
 			
-			for (size_t j = 0; j != 16; ++j)
+			foreach (size_t j; 0 .. 16)
 			{
 				R0 += (R1 & ~R3) + (R2 & R3) + m_K[4*j];
 				R0 = rotate_left(R0, 1);
@@ -66,14 +66,14 @@ public:
 	*/
 	void decrypt_n(ubyte* input, ubyte* output, size_t blocks) const
 	{
-		for (size_t i = 0; i != blocks; ++i)
+		foreach (size_t i; 0 .. blocks)
 		{
 			ushort R0 = load_le!ushort(input, 0);
 			ushort R1 = load_le!ushort(input, 1);
 			ushort R2 = load_le!ushort(input, 2);
 			ushort R3 = load_le!ushort(input, 3);
 			
-			for (size_t j = 0; j != 16; ++j)
+			foreach (size_t j; 0 .. 16)
 			{
 				R3 = rotate_right(R3, 5);
 				R3 -= (R0 & ~R2) + (R1 & R2) + m_K[63 - (4*j + 0)];
@@ -180,7 +180,7 @@ private:
 		Secure_Vector!ubyte L = Secure_Vector!ubyte(128);
 		copy_mem(&L[0], key, length);
 		
-		for (size_t i = length; i != 128; ++i)
+		foreach (size_t i; length .. 128)
 			L[i] = TABLE[(L[i-1] + L[i-length]) % 256];
 		
 		L[128-length] = TABLE[L[128-length]];

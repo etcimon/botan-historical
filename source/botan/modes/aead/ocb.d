@@ -128,7 +128,7 @@ private:
 	{
 		assert(nonce_len < BS, "Nonce is less than 128 bits");
 		
-		Secure_Vector!ubyte nonce_buf(BS);
+		Secure_Vector!ubyte nonce_buf = Secure_Vector!ubyte(BS);
 		
 		copy_mem(&nonce_buf[BS - nonce_len], nonce, nonce_len);
 		nonce_buf[0] = ((tag_size() * 8) % 128) << 1;
@@ -145,7 +145,7 @@ private:
 			
 			m_cipher.encrypt(nonce_buf);
 			
-			for (size_t i = 0; i != 8; ++i)
+			foreach (size_t i; 0 .. 8)
 				nonce_buf.push_back(nonce_buf[i] ^ nonce_buf[i+1]);
 			
 			m_stretch = nonce_buf;
@@ -156,8 +156,8 @@ private:
 		const size_t shift_bytes = bottom / 8;
 		const size_t shift_bits  = bottom % 8;
 		
-		Secure_Vector!ubyte offset(BS);
-		for (size_t i = 0; i != BS; ++i)
+		Secure_Vector!ubyte offset = Secure_Vector!ubyte(BS);
+		foreach (size_t i; 0 .. BS)
 		{
 			offset[i]  = (m_stretch[i+shift_bytes] << shift_bits);
 			offset[i] |= (m_stretch[i+shift_bytes+1] >> (8-shift_bits));
@@ -224,13 +224,13 @@ public:
 				
 				m_offset ^= m_L.star(); // Offset_*
 				
-				Secure_Vector!ubyte buf(BS);
+				Secure_Vector!ubyte buf = Secure_Vector!ubyte(BS);
 				m_cipher.encrypt(m_offset, buf);
 				xor_buf(&remainder[0], &buf[0], remainder_bytes);
 			}
 		}
 		
-		Secure_Vector!ubyte checksum(BS);
+		Secure_Vector!ubyte checksum = Secure_Vector!ubyte(BS);
 		
 		// fold checksum
 		for (size_t i = 0; i != m_checksum.length; ++i)
@@ -264,7 +264,7 @@ private:
 			const size_t proc_blocks = std.algorithm.min(blocks, par_blocks);
 			const size_t proc_bytes = proc_blocks * BS;
 			
-			const auto& offsets = L.compute_offsets(m_offset, m_block_index, proc_blocks);
+			const offsets = L.compute_offsets(m_offset, m_block_index, proc_blocks);
 			
 			xor_buf(&m_checksum[0], &buffer[0], proc_bytes);
 			
@@ -335,7 +335,7 @@ public:
 				
 				m_offset ^= m_L.star(); // Offset_*
 				
-				Secure_Vector!ubyte pad(BS);
+				Secure_Vector!ubyte pad = Secure_Vector!ubyte(BS);
 				m_cipher.encrypt(m_offset, pad); // P_*
 				
 				xor_buf(&remainder[0], &pad[0], final_bytes);
@@ -345,7 +345,7 @@ public:
 			}
 		}
 		
-		Secure_Vector!ubyte checksum(BS);
+		Secure_Vector!ubyte checksum = Secure_Vector!ubyte(BS);
 		
 		// fold checksum
 		for (size_t i = 0; i != m_checksum.length; ++i)
@@ -391,7 +391,7 @@ private:
 			const size_t proc_blocks = std.algorithm.min(blocks, par_blocks);
 			const size_t proc_bytes = proc_blocks * BS;
 			
-			const auto& offsets = L.compute_offsets(m_offset, m_block_index, proc_blocks);
+			const offsets = L.compute_offsets(m_offset, m_block_index, proc_blocks);
 			
 			xor_buf(&buffer[0], &offsets[0], proc_bytes);
 			m_cipher.decrypt_n(&buffer[0], &buffer[0], proc_blocks);
@@ -435,7 +435,7 @@ public:
 	{
 		m_offset_buf.resize(blocks*BS);
 		
-		for (size_t i = 0; i != blocks; ++i)
+		foreach (size_t i; 0 .. blocks)
 		{ // could be done in parallel
 			offset ^= get(ctz(block_index + 1 + i));
 			copy_mem(&m_offset_buf[BS*i], &offset[0], BS);
@@ -478,7 +478,7 @@ Secure_Vector!ubyte ocb_hash(in L_computer L,
 	const size_t ad_blocks = (ad_len / BS);
 	const size_t ad_remainder = (ad_len % BS);
 	
-	for (size_t i = 0; i != ad_blocks; ++i)
+	foreach (size_t i; 0 .. ad_blocks)
 	{
 		// this loop could run in parallel
 		offset ^= L(ctz(i+1));

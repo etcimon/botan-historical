@@ -24,7 +24,7 @@ private:
 	*/
 	override void compress_n(in ubyte* input, size_t blocks)
 	{
-		for (size_t i = 0; i != blocks; ++i)
+		foreach (size_t i; 0 .. blocks)
 		{
 			botan_sha160_x86_64_compress(&m_digest[0], input, &W[0]);
 			input += hash_block_size;

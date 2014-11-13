@@ -26,6 +26,7 @@ import botan.utils.types;
 import std.algorithm;
 import iterator;
 import std.array : Appender;
+
 import botan.utils.hashmap;
 
 alias X509_Certificate = FreeListRef!X509_Certificate_Impl;
@@ -43,7 +44,7 @@ public:
 	Public_Key subject_public_key() const
 	{
 		return x509_key.load_key(
-			asn1_obj.put_in_sequence(this.subject_public_key_bits()));
+			asn1_obj.put_in_sequence(subject_public_key_bits()));
 	}
 
 	/**
@@ -278,7 +279,7 @@ public:
 	string toString() const
 	{
 		import std.array : Appender;
-		string[] dn_fields = [ "Name",
+		__gshared immutable string[] dn_fields = [ "Name",
 			"Email",
 			"Organization",
 			"Organizational Unit",
@@ -288,44 +289,43 @@ public:
 			"IP",
 			"DNS",
 			"URI",
-			"PKIX.XMPPAddr",
-			null ];
+			"PKIX.XMPPAddr" ];
 		
 		Appender!string output;
 		
-		for (size_t i = 0; dn_fields[i]; ++i)
+		foreach (const dn_field; dn_fields)
 		{
-			const Vector!string vals = this.subject_info(dn_fields[i]);
+			const Vector!string vals = subject_info(dn_field);
 			
 			if (vals.empty)
 				continue;
 			
-			output ~= "Subject " ~ dn_fields[i] ~ ":";
+			output ~= "Subject " ~ dn_field ~ ":";
 			for (size_t j = 0; j != vals.length; ++j)
 				output ~= " " ~ vals[j];
 			output ~= "";
 		}
 		
-		for (size_t i = 0; dn_fields[i]; ++i)
+		foreach (const dn_field; dn_fields)
 		{
-			const Vector!string vals = this.issuer_info(dn_fields[i]);
+			const Vector!string vals = issuer_info(dn_field);
 			
 			if (vals.empty)
 				continue;
 			
-			output ~= "Issuer " ~ dn_fields[i] ~ ":";
+			output ~= "Issuer " ~ dn_field ~ ":";
 			for (size_t j = 0; j != vals.length; ++j)
 				output ~= " " ~ vals[j];
 			output ~= "";
 		}
 		
-		output ~= "Version: " ~ this.x509_version();
+		output ~= "Version: " ~ x509_version();
 		
-		output ~= "Not valid before: " ~ this.start_time();
-		output ~= "Not valid after: " ~ this.end_time();
+		output ~= "Not valid before: " ~ start_time();
+		output ~= "Not valid after: " ~ end_time();
 		
 		output ~= "Constraints:";
-		Key_Constraints constraints = this.constraints();
+		Key_Constraints constraints = constraints();
 		if (constraints == Key_Constraints.NO_CONSTRAINTS)
 			output ~= " None";
 		else
@@ -346,20 +346,20 @@ public:
 				output ~= "	CRL Sign";
 		}
 		
-		Vector!string policies = this.policies();
+		Vector!string policies = policies();
 		if (!policies.empty)
 		{
 			output ~= "Policies: ";
-			for (size_t i = 0; i != policies.length; i++)
-				output ~= "	" ~ policies[i];
+			foreach (const policy; policies[])
+				output ~= "	" ~ policy;
 		}
 		
-		Vector!string ex_constraints = this.ex_constraints();
+		Vector!string ex_constraints = ex_constraints();
 		if (!ex_constraints.empty)
 		{
 			output ~= "Extended Constraints:";
-			for (size_t i = 0; i != ex_constraints.length; i++)
-				output ~= "	" ~ ex_constraints[i];
+			foreach (const ex_constraint; ex_constraints[])
+				output ~= "	" ~ ex_constraint;
 		}
 		
 		if (ocsp_responder() != "")
@@ -368,17 +368,17 @@ public:
 			output ~= "CRL " ~ crl_distribution_point();
 		
 		output ~= "Signature algorithm: " ~
-			oids.lookup(this.signature_algorithm().oid);
+			oids.lookup(signature_algorithm().oid);
 		
-		output ~= "Serial number: " ~ hex_encode(this.serial_number());
+		output ~= "Serial number: " ~ hex_encode(serial_number());
 		
-		if (this.authority_key_id().length)
-			output ~= "Authority keyid: " ~ hex_encode(this.authority_key_id());
+		if (authority_key_id().length)
+			output ~= "Authority keyid: " ~ hex_encode(authority_key_id());
 		
-		if (this.subject_key_id().length)
-			output ~= "Subject keyid: " ~ hex_encode(this.subject_key_id());
+		if (subject_key_id().length)
+			output ~= "Subject keyid: " ~ hex_encode(subject_key_id());
 		
-		Unique!X509_PublicKey pubkey = this.subject_public_key();
+		Unique!X509_PublicKey pubkey = subject_public_key();
 		output ~= "Public Key:" ~ x509_key.PEM_encode(*pubkey);
 		
 		return output.data;
@@ -391,7 +391,7 @@ public:
 	string fingerprint(in string hash_name) const
 	{
 		Unique!HashFunction hash = get_hash(hash_name);
-		hash.update(this.BER_encode());
+		hash.update(BER_encode());
 		const auto hex_print = hex_encode(hash.flush());
 		
 		string formatted_print;
@@ -663,10 +663,8 @@ Vector!string lookup_oids(in Vector!string input)
 bool cert_subject_dns_match(in string name,
                             const Vector!string cert_names)
 {
-	for (size_t i = 0; i != cert_names.length; ++i)
+	foreach (const cn; cert_names)
 	{
-		const string cn = cert_names[i];
-		
 		if (cn == name)
 			return true;
 		
@@ -676,9 +674,9 @@ bool cert_subject_dns_match(in string name,
 		*/
 		if (cn.length > 2 && cn[0] == '*' && cn[1] == '.' && name.length > cn.length)
 		{
-			const string base = cn.substr(1, string::npos);
-			
-			if (name.compare(name.length - base.length, base.length, base) == 0)
+			const string base = cn[1 .. $];
+			size_t start = name.length - base.length;
+			if (name[start .. start + base.length] == base)
 				return true;
 		}
 	}

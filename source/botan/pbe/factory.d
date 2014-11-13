@@ -8,7 +8,7 @@ module botan.pbe.factory;
 
 import botan.pbe.pbe;
 import botan.utils.types;
-import string;
+// import string;
 import std.datetime;
 import botan.asn1.oid_lookup.oids;
 import botan.algo_base.scan_name;

@@ -6,6 +6,8 @@
 * Distributed under the terms of the botan license.
 */
 module botan.math.mp.mp_core;
+
+
 public import botan.botan.math.mp.mp_types;
 
 pure nothrow @nogc:
@@ -132,8 +134,7 @@ void bigint_add2(word* x, size_t x_size, const word* y, size_t y_size)
 void bigint_add3(word* z, const word* x, size_t x_size,
                  const word* y, size_t y_size)
 {
-	z[(x_size > y_size ? x_size : y_size)] +=
-		bigint_add3_nc(z, x, x_size, y, y_size);
+	z[(x_size > y_size ? x_size : y_size)] += bigint_add3_nc(z, x, x_size, y, y_size);
 }
 
 /**
@@ -148,10 +149,10 @@ word bigint_add2_nc(word* x, size_t x_size, const word* y, size_t y_size)
 	for (size_t i = 0; i != blocks; i += 8)
 		carry = word8_add2(x + i, y + i, carry);
 	
-	for (size_t i = blocks; i != y_size; ++i)
+	foreach (size_t i; blocks .. y_size)
 		x[i] = word_add(x[i], y[i], &carry);
 	
-	for (size_t i = y_size; i != x_size; ++i)
+	foreach (size_t i; y_size .. x_size)
 		x[i] = word_add(x[i], 0, &carry);
 	
 	return carry;
@@ -173,10 +174,10 @@ word bigint_add3_nc(word* z, const word* x, size_t x_size,
 	for (size_t i = 0; i != blocks; i += 8)
 		carry = word8_add3(z + i, x + i, y + i, carry);
 	
-	for (size_t i = blocks; i != y_size; ++i)
+	foreach (size_t i; blocks .. y_size)
 		z[i] = word_add(x[i], y[i], &carry);
 	
-	for (size_t i = y_size; i != x_size; ++i)
+	foreach (size_t i; y_size .. x_size)
 		z[i] = word_add(x[i], 0, &carry);
 	
 	return carry;
@@ -194,10 +195,10 @@ word bigint_sub2(word* x, size_t x_size, const word* y, size_t y_size)
 	for (size_t i = 0; i != blocks; i += 8)
 		borrow = word8_sub2(x + i, y + i, borrow);
 	
-	for (size_t i = blocks; i != y_size; ++i)
+	foreach (size_t i; blocks .. y_size)
 		x[i] = word_sub(x[i], y[i], &borrow);
 	
-	for (size_t i = y_size; i != x_size; ++i)
+	foreach (size_t i; y_size .. x_size)
 		x[i] = word_sub(x[i], 0, &borrow);
 	
 	return borrow;
@@ -215,7 +216,7 @@ void bigint_sub2_rev(word* x,  const word* y, size_t y_size)
 	for (size_t i = 0; i != blocks; i += 8)
 		borrow = word8_sub2_rev(x + i, y + i, borrow);
 	
-	for (size_t i = blocks; i != y_size; ++i)
+	foreach (size_t i; blocks .. y_size)
 		x[i] = word_sub(y[i], x[i], &borrow);
 	
 	if (borrow)
@@ -235,10 +236,10 @@ word bigint_sub3(word* z, const word* x, size_t x_size,
 	for (size_t i = 0; i != blocks; i += 8)
 		borrow = word8_sub3(z + i, x + i, y + i, borrow);
 	
-	for (size_t i = blocks; i != y_size; ++i)
+	foreach (size_t i; blocks .. y_size)
 		z[i] = word_sub(x[i], y[i], &borrow);
 	
-	for (size_t i = y_size; i != x_size; ++i)
+	foreach (size_t i; y_size .. x_size)
 		z[i] = word_sub(x[i], 0, &borrow);
 	
 	return borrow;
@@ -262,7 +263,7 @@ void bigint_shl1(word* x, size_t x_size, size_t word_shift, size_t bit_shift)
 	if (bit_shift)
 	{
 		word carry = 0;
-		for (size_t j = word_shift; j != x_size + word_shift + 1; ++j)
+		foreach (size_t j; word_shift .. (x_size + word_shift + 1))
 		{
 			word temp = x[j];
 			x[j] = (temp << bit_shift) | carry;
@@ -332,12 +333,12 @@ void bigint_shr1(word* x, size_t x_size, size_t word_shift, size_t bit_shift)
 void bigint_shl2(word* y, const word* x, size_t x_size,
                  size_t word_shift, size_t bit_shift)
 {
-	for (size_t j = 0; j != x_size; ++j)
+	foreach (size_t j; 0 .. x_size)
 		y[j + word_shift] = x[j];
 	if (bit_shift)
 	{
 		word carry = 0;
-		for (size_t j = word_shift; j != x_size + word_shift + 1; ++j)
+		foreach (size_t j; word_shift .. (x_size + word_shift + 1))
 		{
 			word w = y[j];
 			y[j] = (w << bit_shift) | carry;
@@ -354,7 +355,7 @@ void bigint_shr2(word* y, const word* x, size_t x_size,
 {
 	if (x_size < word_shift) return;
 	
-	for (size_t j = 0; j != x_size - word_shift; ++j)
+	foreach (size_t j; 0 .. (x_size - word_shift))
 		y[j] = x[j + word_shift];
 	if (bit_shift)
 	{
@@ -382,7 +383,7 @@ void bigint_simple_mul(word* z, const word* x, size_t x_size,
 	
 	clear_mem(z, x_size + y_size);
 	
-	for (size_t i = 0; i != y_size; ++i)
+	foreach (size_t i; 0 .. y_size)
 	{
 		const word y_i = y[i];
 		
@@ -391,7 +392,7 @@ void bigint_simple_mul(word* z, const word* x, size_t x_size,
 		for (size_t j = 0; j != x_size_8; j += 8)
 			carry = word8_madd3(z + i + j, x + j, y_i, carry);
 		
-		for (size_t j = x_size_8; j != x_size; ++j)
+		foreach (size_t j; x_size_8 .. x_size)
 			z[i+j] = word_madd3(x[j], y_i, z[i+j], &carry);
 		
 		z[x_size+i] = carry;
@@ -415,7 +416,7 @@ void bigint_simple_sqr(word* z, const word* x, size_t x_size)
 	
 	clear_mem(z, 2*x_size);
 	
-	for (size_t i = 0; i != x_size; ++i)
+	foreach (size_t i; 0 .. x_size)
 	{
 		const word x_i = x[i];
 		word carry = 0;
@@ -423,7 +424,7 @@ void bigint_simple_sqr(word* z, const word* x, size_t x_size)
 		for (size_t j = 0; j != x_size_8; j += 8)
 			carry = word8_madd3(z + i + j, x + j, x_i, carry);
 		
-		for (size_t j = x_size_8; j != x_size; ++j)
+		foreach (size_t j; x_size_8 .. x_size)
 			z[i+j] = word_madd3(x[j], x_i, z[i+j], &carry);
 		
 		z[x_size+i] = carry;
@@ -446,7 +447,7 @@ void bigint_linmul2(word* x, size_t x_size, word y)
 	for (size_t i = 0; i != blocks; i += 8)
 		carry = word8_linmul2(x + i, y, carry);
 	
-	for (size_t i = blocks; i != x_size; ++i)
+	foreach (size_t i; blocks .. x_size)
 		x[i] = word_madd2(x[i], y, &carry);
 	
 	x[x_size] = carry;
@@ -464,7 +465,7 @@ void bigint_linmul3(word* z, const word* x, size_t x_size, word y)
 	for (size_t i = 0; i != blocks; i += 8)
 		carry = word8_linmul3(z + i, x + i, y, carry);
 	
-	for (size_t i = blocks; i != x_size; ++i)
+	foreach (size_t i; blocks .. x_size)
 		z[i] = word_madd2(x[i], y, &carry);
 	
 	z[x_size] = carry;
@@ -489,7 +490,7 @@ void bigint_monty_redc(word* z,
 	
 	const size_t blocks_of_8 = p_size - (p_size % 8);
 	
-	for (size_t i = 0; i != p_size; ++i)
+	foreach (size_t i; 0 .. p_size)
 	{
 		word* z_i = z + i;
 		
@@ -505,7 +506,7 @@ void bigint_monty_redc(word* z,
 		for (size_t j = 0; j != blocks_of_8; j += 8)
 			carry = word8_madd3(z_i + j, p + j, y, carry);
 		
-		for (size_t j = blocks_of_8; j != p_size; ++j)
+		foreach (size_t j; blocks_of_8 .. p_size)
 			z_i[j] = word_madd3(p[j], y, z_i[j], &carry);
 		
 		word z_sum = z_i[p_size] + carry;
@@ -520,7 +521,7 @@ void bigint_monty_redc(word* z,
 	}
 	
 	word borrow = 0;
-	for (size_t i = 0; i != p_size; ++i)
+	foreach (size_t i; 0 .. p_size)
 		ws[i] = word_sub(z[p_size + i], p[i], &borrow);
 	
 	ws[p_size] = word_sub(z[p_size+p_size], 0, &borrow);
@@ -600,7 +601,7 @@ word bigint_divop(word n1, word n0, word d)
 {
 	word high = n1 % d, quotient = 0;
 	
-	for (size_t i = 0; i != MP_WORD_BITS; ++i)
+	foreach (size_t i; 0 .. MP_WORD_BITS)
 	{
 		word high_top_bit = (high & MP_WORD_TOP_BIT);
 		

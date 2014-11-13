@@ -6,7 +6,7 @@
 */
 module botan.constructs.cryptobox_psk;
 
-import string;
+// import string;
 import botan.rng.rng;
 import botan.algo_base.symkey;
 import botan.filters.pipe;
@@ -31,21 +31,13 @@ struct CryptoBox {
 	{
 		Unique!KDF kdf = get_kdf(CRYPTOBOX_KDF);
 		
-		const Secure_Vector!ubyte cipher_key_salt =
-			rng.random_vec(KEY_KDF_SALT_LENGTH);
+		const Secure_Vector!ubyte cipher_key_salt = rng.random_vec(KEY_KDF_SALT_LENGTH);
 		
-		const Secure_Vector!ubyte mac_key_salt =
-			rng.random_vec(KEY_KDF_SALT_LENGTH);
+		const Secure_Vector!ubyte mac_key_salt = rng.random_vec(KEY_KDF_SALT_LENGTH);
 		
-		SymmetricKey cipher_key =
-			kdf.derive_key(CIPHER_KEY_LENGTH,
-			               master_key.bits_of(),
-			               cipher_key_salt);
+		SymmetricKey cipher_key = kdf.derive_key(CIPHER_KEY_LENGTH, master_key.bits_of(), cipher_key_salt);
 		
-		SymmetricKey mac_key =
-			kdf.derive_key(MAC_KEY_LENGTH,
-			               master_key.bits_of(),
-			               mac_key_salt);
+		SymmetricKey mac_key = kdf.derive_key(MAC_KEY_LENGTH, master_key.bits_of(), mac_key_salt);
 		
 		InitializationVector cipher_iv = InitializationVector(rng, 16);
 		
@@ -79,14 +71,10 @@ struct CryptoBox {
 	static Secure_Vector!ubyte decrypt(in ubyte* input, size_t input_len,
 	                                const ref SymmetricKey master_key)
 	{
-		const size_t MIN_CTEXT_SIZE = 16; // due to using CBC with padding
+		__gshared immutable size_t MIN_CTEXT_SIZE = 16; // due to using CBC with padding
 		
-		const size_t MIN_POSSIBLE_LENGTH =
-			MAGIC_LENGTH +
-				2 * KEY_KDF_SALT_LENGTH +
-				CIPHER_IV_LENGTH +
-				MIN_CTEXT_SIZE +
-				MAC_OUTPUT_LENGTH;
+		__gshared immutable size_t MIN_POSSIBLE_LENGTH = MAGIC_LENGTH + 2 * KEY_KDF_SALT_LENGTH + CIPHER_IV_LENGTH + 
+														 MIN_CTEXT_SIZE + MAC_OUTPUT_LENGTH;
 		
 		if (input_len < MIN_POSSIBLE_LENGTH)
 			throw new Decoding_Error("Encrypted input too short to be valid");
@@ -114,13 +102,9 @@ struct CryptoBox {
 		if (!same_mem(&input[input_len - MAC_OUTPUT_LENGTH], &computed_mac[0], computed_mac.length))
 			throw new Decoding_Error("MAC verification failed");
 		
-		SymmetricKey cipher_key =
-			kdf.derive_key(CIPHER_KEY_LENGTH,
-			               master_key.bits_of(),
-			               cipher_key_salt, KEY_KDF_SALT_LENGTH);
+		SymmetricKey cipher_key = kdf.derive_key(CIPHER_KEY_LENGTH, master_key.bits_of(), cipher_key_salt, KEY_KDF_SALT_LENGTH);
 		
-		InitializationVector cipher_iv = InitializationVector(&input[MAGIC_LENGTH+2*KEY_KDF_SALT_LENGTH],
-		CIPHER_IV_LENGTH);
+		InitializationVector cipher_iv = InitializationVector(&input[MAGIC_LENGTH+2*KEY_KDF_SALT_LENGTH], CIPHER_IV_LENGTH);
 		
 		const size_t CTEXT_OFFSET = MAGIC_LENGTH + 2 * KEY_KDF_SALT_LENGTH + CIPHER_IV_LENGTH;
 		
@@ -131,7 +115,6 @@ struct CryptoBox {
 	}
 
 }
-	
 
 private:
 

@@ -23,7 +23,7 @@ public:
 	*/
 	void encrypt_n(ubyte* input, ubyte* output, size_t blocks) const
 	{
-		for (size_t i = 0; i != blocks; ++i)
+		foreach (size_t i; 0 .. blocks)
 		{
 			xor_buf(output, input, &m_K1[0], BLOCK_SIZE);
 			m_des.encrypt(output);
@@ -39,7 +39,7 @@ public:
 	*/
 	void decrypt_n(ubyte* input, ubyte* output, size_t blocks) const
 	{	
-		for (size_t i = 0; i != blocks; ++i)
+		foreach (size_t i; 0 .. blocks)
 		{
 			xor_buf(output, input, &m_K2[0], BLOCK_SIZE);
 			m_des.decrypt(output);

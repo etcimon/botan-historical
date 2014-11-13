@@ -533,7 +533,7 @@ void aes_encrypt_n(ubyte* input, ubyte* output,
 	const uint* TE2 = TE + 512;
 	const uint* TE3 = TE + 768;
 	
-	for (size_t i = 0; i != blocks; ++i)
+	foreach (size_t i; 0 .. blocks)
 	{
 		uint T0 = load_be!uint(input, 0) ^ EK[0];
 		uint T1 = load_be!uint(input, 1) ^ EK[1];
@@ -646,7 +646,7 @@ void aes_decrypt_n(ubyte* input, ubyte* output, size_t blocks,
 	const uint* TD2 = TD + 512;
 	const uint* TD3 = TD + 768;
 	
-	for (size_t i = 0; i != blocks; ++i)
+	foreach (size_t i; 0 .. blocks)
 	{
 		uint T0 = load_be!uint(input, 0) ^ DK[0];
 		uint T1 = load_be!uint(input, 1) ^ DK[1];
@@ -732,7 +732,7 @@ void aes_key_schedule(in ubyte* key, size_t length,
 	Secure_Vector!uint XDK = SecureVector!uint(length + 32);
 	
 	const size_t X = length / 4;
-	for (size_t i = 0; i != X; ++i)
+	foreach (size_t i; 0 .. X)
 		XEK[i] = load_be!uint(key, i);
 	
 	for (size_t i = X; i < 4*(rounds+1); i += X)
@@ -743,7 +743,7 @@ void aes_key_schedule(in ubyte* key, size_t length,
 			SE[get_byte(3, XEK[i-1])],
 			SE[get_byte(0, XEK[i-1])]);
 		
-		for (size_t j = 1; j != X; ++j)
+		foreach (size_t j; 1 .. X)
 		{
 			XEK[i+j] = XEK[i+j-X];
 			
@@ -765,7 +765,7 @@ void aes_key_schedule(in ubyte* key, size_t length,
 		XDK[i+3] = XEK[4*rounds-i+3];
 	}
 	
-	for (size_t i = 4; i != length + 24; ++i)
+	foreach (size_t i; 4 .. (length + 24))
 		XDK[i] = TD[SE[get_byte(0, XDK[i])] +	0] ^
 		TD[SE[get_byte(1, XDK[i])] + 256] ^
 		TD[SE[get_byte(2, XDK[i])] + 512] ^
@@ -774,7 +774,7 @@ void aes_key_schedule(in ubyte* key, size_t length,
 	ME.resize(16);
 	MD.resize(16);
 	
-	for (size_t i = 0; i != 4; ++i)
+	foreach (size_t i; 0 .. 4)
 	{
 		store_be(XEK[i+4*rounds], &ME[4*i]);
 		store_be(XEK[i], &MD[4*i]);

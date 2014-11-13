@@ -82,7 +82,7 @@ public:
 	*/
 	void retire()
 	{
-		for (size_t i = 0; i != m_buffers.length; ++i)
+		foreach (size_t i; 0 .. m_buffers.length)
 			if (m_buffers[i] && m_buffers[i].length == 0)
 		{
 			delete m_buffers[i];

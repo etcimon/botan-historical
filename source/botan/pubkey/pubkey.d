@@ -273,14 +273,13 @@ private:
 		
 		if (m_verify_op.with_recovery())
 		{
-			Vector!ubyte recovered =
-				unlock(m_verify_op.verify_mr(&sig[0], sig.length));
+			Vector!ubyte recovered = unlock(m_verify_op.verify_mr(&sig[0], sig.length));
 			
 			if (msg.length > recovered.length)
 			{
 				size_t extra_0s = msg.length - recovered.length;
 				
-				for (size_t i = 0; i != extra_0s; ++i)
+				foreach (size_t i; 0 .. extra_0s)
 					if (msg[i] != 0)
 						return false;
 				
@@ -290,8 +289,7 @@ private:
 			return (recovered == msg);
 		}
 		else
-			return m_verify_op.verify(&msg[0], msg.length,
-			&sig[0], sig.length);
+			return m_verify_op.verify(&msg[0], msg.length, &sig[0], sig.length);
 	}
 
 	Unique!Signature m_op;
@@ -332,8 +330,7 @@ public:
 	bool verify_message(Alloc, Alloc2)(in Vector!( ubyte, Alloc ) msg,
 							  const Vector!( ubyte, Alloc2 ) sig)
 	{
-		return verify_message(&msg[0], msg.length,
-									 &sig[0], sig.length);
+		return verify_message(&msg[0], msg.length, &sig[0], sig.length);
 	}
 
 	/**
@@ -516,8 +513,7 @@ public:
 									in ubyte* params,
 									size_t params_len) const
 	{
-		return derive_key(key_len, &input[0], input.length,
-								params, params_len);
+		return derive_key(key_len, &input[0], input.length, params, params_len);
 	}
 
 	/*
@@ -528,12 +524,10 @@ public:
 	* @param params extra derivation params
 	*/
 	SymmetricKey derive_key(size_t key_len,
-									in ubyte* input, size_t in_len,
-									in string params = "") const
+							in ubyte* input, size_t in_len,
+							in string params = "") const
 	{
-		return derive_key(key_len, input, in_len,
-								cast(const ubyte*)(params.ptr),
-								params.length);
+		return derive_key(key_len, input, in_len, cast(const ubyte*)(params.ptr), params.length);
 	}
 
 	/*
@@ -627,8 +621,7 @@ private:
 	{
 		if (m_eme)
 		{
-			Secure_Vector!ubyte encoded =
-				m_eme.encode(input, length, m_op.max_input_bits(), rng);
+			Secure_Vector!ubyte encoded = m_eme.encode(input, length, m_op.max_input_bits(), rng);
 			
 			if (8*(encoded.length - 1) + high_bit(encoded[0]) > m_op.max_input_bits())
 				throw new Invalid_Argument("PK_Encryptor_EME: Input is too large");

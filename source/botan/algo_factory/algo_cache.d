@@ -8,7 +8,7 @@ module botan.algo_factory.algo_cache;
 
 import botan.utils.types;
 import botan.internal.stl_util;
-import string;
+// import string;
 import botan.utils.types;
 import botan.utils.hashmap;
 /**

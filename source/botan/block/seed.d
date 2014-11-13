@@ -9,6 +9,8 @@ module botan.block.seed;
 import botan.constants;
 static if (BOTAN_HAS_SEED):
 
+
+import std.range : iota;
 import botan.block.block_cipher;
 import botan.utils.loadstor;
 /**
@@ -22,7 +24,7 @@ public:
 	*/
 	void encrypt_n(ubyte* input, ubyte* output, size_t blocks) const
 	{
-		for (size_t i = 0; i != blocks; ++i)
+		foreach (size_t i; 0 .. blocks)
 		{
 			uint B0 = load_be!uint(input, 0);
 			uint B1 = load_be!uint(input, 1);
@@ -61,7 +63,7 @@ public:
 	*/
 	void decrypt_n(ubyte* input, ubyte* output, size_t blocks) const
 	{
-		for (size_t i = 0; i != blocks; ++i)
+		foreach (size_t i; 0 .. blocks)
 		{
 			uint B0 = load_be!uint(input, 0);
 			uint B1 = load_be!uint(input, 1);
@@ -119,14 +121,14 @@ private:
 		
 		Secure_Vector!uint WK = Secure_Vector!uint(4);
 		
-		for (size_t i = 0; i != 4; ++i)
+		foreach (size_t i; 0 .. 4)
 			WK[i] = load_be!uint(key, i);
 		
 		G_FUNC G;
 		
 		m_K.resize(32);
 		
-		for (size_t i = 0; i != 16; i += 2)
+		foreach (size_t i; iota(0, 16, 2))
 		{
 			m_K[2*i  ] = G(WK[0] + WK[2] - RC[i]);
 			m_K[2*i+1] = G(WK[1] - WK[3] + RC[i]) ^ m_K[2*i];

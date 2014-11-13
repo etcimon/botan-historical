@@ -40,16 +40,14 @@ string generate_passhash9(in string pass,
 	
 	PKCS5_PBKDF2 kdf(prf); // takes ownership of pointer
 	
-	Secure_Vector!ubyte salt(SALT_BYTES);
+	Secure_Vector!ubyte salt = Secure_Vector!ubyte(SALT_BYTES);
 	rng.randomize(&salt[0], salt.length);
 	
 	const size_t kdf_iterations = WORK_FACTOR_SCALE * work_factor;
 	
-	Secure_Vector!ubyte pbkdf2_output =
-		kdf.derive_key(PASSHASH9_PBKDF_OUTPUT_LEN,
-		               pass,
-		               &salt[0], salt.length,
-		kdf_iterations).bits_of();
+	Secure_Vector!ubyte pbkdf2_output = kdf.derive_key(PASSHASH9_PBKDF_OUTPUT_LEN,
+	                                                   pass, &salt[0], salt.length,
+	                                                   kdf_iterations).bits_of();
 	
 	Pipe pipe = Pipe(new Base64_Encoder);
 	pipe.start_msg();
@@ -118,27 +116,21 @@ bool check_passhash9(in string password, in string hash)
 	
 	PKCS5_PBKDF2 kdf(pbkdf_prf); // takes ownership of pointer
 	
-	Secure_Vector!ubyte cmp = kdf.derive_key(
-		PASSHASH9_PBKDF_OUTPUT_LEN,
-		password,
-		&binput[ALGID_BYTES + WORKFACTOR_BYTES], SALT_BYTES,
-	kdf_iterations).bits_of();
+	Secure_Vector!ubyte cmp = kdf.derive_key(PASSHASH9_PBKDF_OUTPUT_LEN, password,
+	                                         &binput[ALGID_BYTES + WORKFACTOR_BYTES], SALT_BYTES,
+	                                         kdf_iterations).bits_of();
 	
-	return same_mem(&cmp[0],
-	&binput[ALGID_BYTES + WORKFACTOR_BYTES + SALT_BYTES],
-	PASSHASH9_PBKDF_OUTPUT_LEN);
+	return same_mem(&cmp[0], &binput[ALGID_BYTES + WORKFACTOR_BYTES + SALT_BYTES], PASSHASH9_PBKDF_OUTPUT_LEN);
 }
 
 private:
 
-const string MAGIC_PREFIX = "$9$";
-
-const size_t WORKFACTOR_BYTES = 2;
-const size_t ALGID_BYTES = 1;
-const size_t SALT_BYTES = 12; // 96 bits of salt
-const size_t PASSHASH9_PBKDF_OUTPUT_LEN = 24; // 192 bits output
-
-const size_t WORK_FACTOR_SCALE = 10000;
+__gshared immutable string MAGIC_PREFIX = "$9$";
+__gshared immutable size_t WORKFACTOR_BYTES = 2;
+__gshared immutable size_t ALGID_BYTES = 1;
+__gshared immutable size_t SALT_BYTES = 12; // 96 bits of salt
+__gshared immutable size_t PASSHASH9_PBKDF_OUTPUT_LEN = 24; // 192 bits output
+__gshared immutable size_t WORK_FACTOR_SCALE = 10000;
 
 MessageAuthenticationCode get_pbkdf_prf(ubyte alg_id)
 {

@@ -11,7 +11,7 @@ import botan.cert.cvc.cvc_gen_cert;
 import botan.asn1.oid_lookup.oids;
 import botan.pubkey.algo.ecdsa;
 import botan.utils.types;
-import string;
+// import string;
 /**
 * This class represents TR03110 (EAC) v1.1 CV Certificates
 */
@@ -183,10 +183,7 @@ EAC1_1_CVC make_cvc_cert(PK_Signer signer,
 			.encode(cex)
 			.get_contents_unlocked();
 	
-	Vector!ubyte signed_cert =
-		make_signed(signer,
-		            build_cert_body(tbs),
-		            rng);
+	Vector!ubyte signed_cert = make_signed(signer, build_cert_body(tbs), rng);
 	
 	auto source = scoped!DataSource_Memory(signed_cert);
 	return EAC1_1_CVC(source);

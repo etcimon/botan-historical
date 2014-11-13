@@ -13,7 +13,7 @@ import botan.algo_base.symkey;
 import botan.pubkey.algo.dl_group;
 import botan.libstate.libstate;
 import botan.math.numbertheory.numthry;
-import string;
+// import string;
 
 /**
 * SRP6a Client side
@@ -133,9 +133,9 @@ public:
 	             in string hash_id,
 	             RandomNumberGenerator rng)
 	{
-		DL_Group group(group_id);
-		const ref BigInt g = group.get_g();
-		const ref BigInt p = group.get_p();
+		DL_Group group = DL_Group(group_id);
+		const BigInt g = group.get_g();
+		const BigInt p = group.get_p();
 		
 		m_p_bytes = p.bytes();
 		
@@ -183,8 +183,7 @@ BigInt hash_seq(in string hash_id,
                 const ref BigInt in1,
                 const ref BigInt in2)
 {
-	Unique!HashFunction hash_fn =
-		global_state().algorithm_factory().make_hash_function(hash_id);
+	Unique!HashFunction hash_fn = global_state().algorithm_factory().make_hash_function(hash_id);
 	
 	hash_fn.update(BigInt.encode_1363(in1, pad_to));
 	hash_fn.update(BigInt.encode_1363(in2, pad_to));

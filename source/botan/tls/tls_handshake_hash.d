@@ -23,10 +23,10 @@ class Handshake_Hash
 {
 public:
 	void update(in ubyte* input, size_t length)
-	{ data += Pair(input, length); }
+	{ m_data += Pair(input, length); }
 
 	void update(in Vector!ubyte input)
-	{ data += input; }
+	{ m_data += input; }
 
 	/**
 	* Return a TLS Handshake Hash
@@ -48,7 +48,7 @@ public:
 		else
 			hash = af.make_hash_function("Parallel(MD5,SHA-160)");
 		
-		hash.update(data);
+		hash.update(m_data);
 		return hash.flush();
 	}
 
@@ -64,15 +64,15 @@ public:
 		Unique!HashFunction md5 = af.make_hash_function("MD5");
 		Unique!HashFunction sha1 = af.make_hash_function("SHA-1");
 		
-		md5.update(data);
-		sha1.update(data);
+		md5.update(m_data);
+		sha1.update(m_data);
 		
 		md5.update(secret);
 		sha1.update(secret);
 		
-		for (size_t i = 0; i != 48; ++i)
+		foreach (size_t i; 0 .. 48)
 			md5.update(PAD_INNER);
-		for (size_t i = 0; i != 40; ++i)
+		foreach (size_t i; 0 .. 40)
 			sha1.update(PAD_INNER);
 		
 		Secure_Vector!ubyte inner_md5 = md5.flush(), inner_sha1 = sha1.flush();
@@ -80,9 +80,9 @@ public:
 		md5.update(secret);
 		sha1.update(secret);
 		
-		for (size_t i = 0; i != 48; ++i)
+		foreach (size_t i; 0 .. 48)
 			md5.update(PAD_OUTER);
-		for (size_t i = 0; i != 40; ++i)
+		foreach (size_t i; 0 .. 40)
 			sha1.update(PAD_OUTER);
 		
 		md5.update(inner_md5);
@@ -95,9 +95,9 @@ public:
 	}
 
 	const Vector!ubyte get_contents() const
-	{ return data; }
+	{ return m_data; }
 
-	void reset() { data.clear(); }
+	void reset() { m_data.clear(); }
 private:
-	Vector!ubyte data;
+	Vector!ubyte m_data;
 }

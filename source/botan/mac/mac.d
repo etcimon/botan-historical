@@ -7,7 +7,7 @@
 module botan.mac.mac;
 import botan.algo_base.buf_comp;
 import botan.algo_base.sym_algo;
-import string;
+// import string;
 
 import botan.utils.mem_ops;
 

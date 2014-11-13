@@ -40,7 +40,7 @@ struct FPE {
 		
 		BigInt X = X0;
 		
-		for (size_t i = 0; i != r; ++i)
+		foreach (size_t i; 0 .. r)
 		{
 			BigInt L = X / b;
 			BigInt R = X % b;
@@ -73,7 +73,7 @@ struct FPE {
 		
 		BigInt X = X0;
 		
-		for (size_t i = 0; i != r; ++i)
+		foreach (size_t i; 0 .. r)
 		{
 			BigInt W = X % a;
 			BigInt R = X / a;
@@ -112,7 +112,7 @@ void factor(BigInt n, ref BigInt a, ref BigInt b)
 	b <<= n_low_zero - (n_low_zero / 2);
 	n >>= n_low_zero;
 	
-	for (size_t i = 0; i != PRIME_TABLE_SIZE; ++i)
+	foreach (size_t i; 0 .. PRIME_TABLE_SIZE)
 	{
 		while(n % PRIMES[i] == 0)
 		{

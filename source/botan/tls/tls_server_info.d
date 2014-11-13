@@ -7,7 +7,7 @@
 module botan.tls.tls_server_info;
 
 import botan.utils.types;
-import string;
+// import string;
 
 
 /**

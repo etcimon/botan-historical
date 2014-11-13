@@ -8,7 +8,7 @@ module botan.rng.rng;
 
 import botan.entropy.entropy_src;
 import botan.utils.exceptn;
-import string;
+// import string;
 import core.sync.mutex;
 import botan.rng.hmac_rng;
 import botan.libstate.libstate;
@@ -33,15 +33,10 @@ public:
 	* Create a seeded and active RNG object for general application use
 	* Added in 1.11.5
 	*/
-	/*
-	* Create and seed a new RNG object
-	*/
 	static RandomNumberGenerator make_rng(Algorithm_Factory af)
 	{
-		RandomNumberGenerator rng =
-			new HMAC_RNG(af.make_mac("HMAC(SHA-512)"),
-			             af.make_mac("HMAC(SHA-256)"))
-				;
+		RandomNumberGenerator rng = new HMAC_RNG(af.make_mac("HMAC(SHA-512)"),
+		                                         af.make_mac("HMAC(SHA-256)"));
 		
 		rng.reseed(256);
 		

@@ -68,7 +68,7 @@ public:
 		
 		const size_t returned = std.algorithm.min(buf_len, m_plaintext.length);
 		
-		for (size_t i = 0; i != returned; ++i)
+		foreach (size_t i; 0 .. returned)
 			buf[i] = m_plaintext[i];
 		m_plaintext.erase(m_plaintext.ptr, m_plaintext.ptr + returned);
 
@@ -78,7 +78,7 @@ public:
 		return returned;
 	}
 
-	final void write(in ubyte* buf) { m_channel.send(buf); }
+	final void write(in ubyte* buf, size_t len) { m_channel.send(buf, len); }
 
 	final Channel underlying_channel() const { return m_channel; }
 	final Channel underlying_channel() { return m_channel; }

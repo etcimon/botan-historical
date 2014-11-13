@@ -38,7 +38,7 @@ public:
 		CertID certid = CertID(m_issuer, m_subject);
 		
 		return DER_Encoder().start_cons(ASN1_Tag.SEQUENCE)
-			.start_cons(ASN1_Tag.SEQUENCE)
+				.start_cons(ASN1_Tag.SEQUENCE)
 				.start_explicit(0)
 				.encode(cast(size_t)(0)) // version #
 				.end_explicit()
@@ -82,14 +82,11 @@ public:
 		
 		if (response_outer.more_items())
 		{
-			BER_Decoder response_bytes =
-				response_outer.start_cons(ASN1_Tag(0), ASN1_Tag.CONTEXT_SPECIFIC).start_cons(ASN1_Tag.SEQUENCE);
+			BER_Decoder response_bytes = response_outer.start_cons(ASN1_Tag(0), ASN1_Tag.CONTEXT_SPECIFIC).start_cons(ASN1_Tag.SEQUENCE);
 			
-			response_bytes.decode_and_check(OID("1.3.6.1.5.5.7.48.1.1"),
-			                                "Unknown response type in OCSP response");
+			response_bytes.decode_and_check(OID("1.3.6.1.5.5.7.48.1.1"), "Unknown response type in OCSP response");
 			
-			BER_Decoder basicresponse =
-				BER_Decoder(response_bytes.get_next_octet_string()).start_cons(ASN1_Tag.SEQUENCE);
+			BER_Decoder basicresponse = BER_Decoder(response_bytes.get_next_octet_string()).start_cons(ASN1_Tag.SEQUENCE);
 			
 			Vector!ubyte tbs_bits;
 			Algorithm_Identifier sig_algo;
@@ -97,34 +94,31 @@ public:
 			Vector!X509_Certificate certs;
 			
 			basicresponse.start_cons(ASN1_Tag.SEQUENCE)
-				.raw_bytes(tbs_bits)
+					.raw_bytes(tbs_bits)
 					.end_cons()
 					.decode(sig_algo)
 					.decode(signature, ASN1_Tag.BIT_STRING);
+
 			decode_optional_list(basicresponse, ASN1_Tag(0), certs);
 			
-			size_t responsedata_version = 0;
+			size_t responsedata_version;
 			X509_DN name;
 			Vector!ubyte key_hash;
 			X509_Time produced_at;
 			Extensions extensions;
 			
 			BER_Decoder(tbs_bits)
-				.decode_optional(responsedata_version, ASN1_Tag(0),
-				                 ASN1_Tag(CONSTRUCTED | ASN1_Tag.CONTEXT_SPECIFIC))
+					.decode_optional(responsedata_version, ASN1_Tag(0), ASN1_Tag(ASN1_Tag.CONSTRUCTED | ASN1_Tag.CONTEXT_SPECIFIC))
 					
-					.decode_optional(name, ASN1_Tag(1),
-					                 ASN1_Tag(CONSTRUCTED | ASN1_Tag.CONTEXT_SPECIFIC))
+					.decode_optional(name, ASN1_Tag(1), ASN1_Tag(ASN1_Tag.CONSTRUCTED | ASN1_Tag.CONTEXT_SPECIFIC))
 					
-					.decode_optional_string(key_hash, ASN1_Tag.OCTET_STRING, 2,
-					                        ASN1_Tag(CONSTRUCTED | ASN1_Tag.CONTEXT_SPECIFIC))
+					.decode_optional_string(key_hash, ASN1_Tag.OCTET_STRING, 2,ASN1_Tag(ASN1_Tag.CONSTRUCTED | ASN1_Tag.CONTEXT_SPECIFIC))
 					
 					.decode(produced_at)
 					
 					.decode_list(m_responses)
 					
-					.decode_optional(extensions, ASN1_Tag(1),
-					                 ASN1_Tag(CONSTRUCTED | ASN1_Tag.CONTEXT_SPECIFIC));
+					.decode_optional(extensions, ASN1_Tag(1), ASN1_Tag(ASN1_Tag.CONSTRUCTED | ASN1_Tag.CONTEXT_SPECIFIC));
 			
 			if (certs.empty)
 			{
@@ -205,15 +199,13 @@ void check_signature(in Vector!ubyte tbs_response,
 {
 	Unique!Public_Key pub_key = cert.subject_public_key();
 	
-	const Vector!string sig_info =
-		splitter(oids.lookup(sig_algo.oid), '/');
+	const Vector!string sig_info = splitter(oids.lookup(sig_algo.oid), '/');
 	
 	if (sig_info.length != 2 || sig_info[0] != pub_key.algo_name)
 		throw new Exception("Information in OCSP response does not match cert");
-	
+
 	string padding = sig_info[1];
-	Signature_Format format =
-		(pub_key.message_parts() >= 2) ? DER_SEQUENCE : IEEE_1363;
+	Signature_Format format = (pub_key.message_parts() >= 2) ? DER_SEQUENCE : IEEE_1363;
 	
 	PK_Verifier verifier = PK_Verifier(*pub_key, padding, format);
 	if (!verifier.verify_message(asn1_obj.put_in_sequence(tbs_response), signature))
@@ -247,7 +239,7 @@ void check_signature(in Vector!ubyte tbs_response,
 	if (!trusted_roots.certificate_known(result.trust_root())) // not needed anymore?
 		throw new Exception("Certificate chain roots in unknown/untrusted CA");
 	
-	const Vector!X509_Certificate& cert_path = result.cert_path();
+	const Vector!X509_Certificate cert_path = result.cert_path();
 	
 	check_signature(tbs_response, sig_algo, signature, cert_path[0]);
 }
@@ -262,7 +254,7 @@ Response online_check(in X509_Certificate issuer,
 	if (responder_url == "")
 		throw new Exception("No OCSP responder specified");
 	
-	ocsp.Request req(issuer, subject);
+	ocsp.Request req = ocsp.Request(issuer, subject);
 	
 	auto http = http_util.POST_sync(responder_url,
 	                            "application/ocsp-request",

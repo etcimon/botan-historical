@@ -89,8 +89,7 @@ private:
 		m_hash.clear();
 		
 		// Quirk to deal with specification bug
-		const size_t inner_hash_length =
-			(m_hash.name == "SHA-160") ? 60 : m_hash.hash_block_size;
+		const size_t inner_hash_length = (m_hash.name == "SHA-160") ? 60 : m_hash.hash_block_size;
 		
 		m_ikey.resize(inner_hash_length);
 		m_okey.resize(inner_hash_length);

@@ -10,6 +10,7 @@ module botan.block.blowfish;
 import botan.constants;
 static if (BOTAN_HAS_BLOWFISH):
 
+import std.range : iota;
 import botan.block.block_cipher;
 import botan.utils.loadstor;
 
@@ -29,7 +30,7 @@ public:
 		const uint* S3 = &m_S[512];
 		const uint* S4 = &m_S[768];
 		
-		for (size_t i = 0; i != blocks; ++i)
+		foreach (size_t i; 0 .. blocks)
 		{
 			uint L = load_be!uint(input, 0);
 			uint R = load_be!uint(input, 1);
@@ -65,7 +66,7 @@ public:
 		const uint* S3 = &m_S[512];
 		const uint* S4 = &m_S[768];
 		
-		for (size_t i = 0; i != blocks; ++i)
+		foreach (size_t i; 0 .. blocks)
 		{
 			uint L = load_be!uint(input, 0);
 			uint R = load_be!uint(input, 1);
@@ -191,7 +192,7 @@ private:
 			L ^= load_be!uint(salt, (i + salt_off) % 4);
 			R ^= load_be!uint(salt, (i + salt_off + 1) % 4);
 			
-			for (size_t j = 0; j != 16; j += 2)
+			foreach (size_t j; iota(0, 16, 2))
 			{
 				L ^= m_P[j];
 				R ^= ((S1[get_byte(0, L)]  + S2[get_byte(1, L)]) ^

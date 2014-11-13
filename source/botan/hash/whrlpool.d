@@ -51,7 +51,7 @@ private:
 			0xBD5D10F4CB3E0567, 0xE427418BA77D95D8,
 			0xFBEE7C66DD17479E, 0xCA2DBF07AD5A8333 ];
 		
-		for (size_t i = 0; i != blocks; ++i)
+		foreach (size_t i; 0 .. blocks)
 		{
 			load_be(&m_M[0], input, m_M.length);
 			
@@ -63,7 +63,7 @@ private:
 			B0 = K0 ^ m_M[0]; B1 = K1 ^ m_M[1]; B2 = K2 ^ m_M[2]; B3 = K3 ^ m_M[3];
 			B4 = K4 ^ m_M[4]; B5 = K5 ^ m_M[5]; B6 = K6 ^ m_M[6]; B7 = K7 ^ m_M[7];
 			
-			for (size_t j = 0; j != 10; ++j)
+			foreach (size_t j; 0 .. 10)
 			{
 				ulong T0, T1, T2, T3, T4, T5, T6, T7;
 				T0 = C0[get_byte(0, K0)] ^ C1[get_byte(1, K7)] ^
