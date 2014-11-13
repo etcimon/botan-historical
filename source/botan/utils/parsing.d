@@ -214,7 +214,7 @@ Vector!uint parse_asn1_oid(in string oid)
 		{
 			if (substring.length == 0)
 				throw new Invalid_OID(oid);
-			oid_elems.push_back(to_uint(substring.data));
+			oid_elems.push_back(to!uint(substring.data));
 			substring.clear();
 		}
 		else
@@ -223,7 +223,7 @@ Vector!uint parse_asn1_oid(in string oid)
 	
 	if (substring.length == 0)
 		throw new Invalid_OID(oid);
-	oid_elems.push_back(to_uint(substring.data));
+	oid_elems.push_back(to!uint(substring.data));
 	
 	if (oid_elems.length < 2)
 		throw new Invalid_OID(oid);
@@ -274,17 +274,6 @@ bool x500_name_cmp(in string name1, in string name2)
 }
 
 /**
-* Convert a string to a number
-* @param str the string to convert
-* @return number value of the string
-*/
-uint to_uint(in string str)
-{
-	import std.conv : to;
-	str.to!uint;
-}
-
-/**
 * Convert a string representation of an IPv4 address to a number
 * @param ip_str the string representation
 * @return integer IPv4 address
@@ -300,7 +289,7 @@ uint string_to_ipv4(in string str)
 	
 	foreach (const string part; parts)
 	{
-		uint octet = to_uint(part);
+		uint octet = to!uint(part);
 		
 		if (octet > 255)
 			throw new Decoding_Error("Invalid IP string " ~ str);
@@ -324,7 +313,7 @@ string ipv4_to_string(uint ip)
 	{
 		if (i)
 			str ~= ".";
-		str ~= std.conv.to!string(get_byte(i, ip));
+		str ~= to!string(get_byte(i, ip));
 	}
 	
 	return str.data;

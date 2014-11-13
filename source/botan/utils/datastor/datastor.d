@@ -119,7 +119,7 @@ public:
 			throw new Invalid_State("get1_uint: Multiple values for " ~
 			                        key);
 		
-		return to_uint(vals[0]);
+		return to!uint(vals[0]);
 	}
 
 	/*
@@ -145,7 +145,7 @@ public:
 	*/
 	void add(in string key, uint val)
 	{
-		add(key, std.conv.to!string(val));
+		add(key, to!string(val));
 	}
 	
 	/*

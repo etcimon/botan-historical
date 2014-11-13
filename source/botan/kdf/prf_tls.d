@@ -102,7 +102,7 @@ void P_hash(Secure_Vector!ubyte output,
 	}
 	catch(Invalid_Key_Length)
 	{
-		throw new Internal_Error("The premaster secret of " ~ std.conv.to!string(secret_len) + " bytes is too long for the PRF");
+		throw new Internal_Error("The premaster secret of " ~ to!string(secret_len) + " bytes is too long for the PRF");
 	}
 	
 	Secure_Vector!ubyte A = Secure_Vector!ubyte(seed, seed + seed_len);

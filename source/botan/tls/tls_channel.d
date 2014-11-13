@@ -166,7 +166,7 @@ public:
 				}
 			}
 			else
-				throw new Unexpected_Message("Unexpected record type " ~ std.conv.to!string(record_type) ~ " from counterparty");
+				throw new Unexpected_Message("Unexpected record type " ~ to!string(record_type) ~ " from counterparty");
 			}
 					
 			return 0; // on a record boundary

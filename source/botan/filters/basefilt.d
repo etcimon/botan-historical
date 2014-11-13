@@ -177,8 +177,8 @@ protected:
 
 	void send(in ubyte* input, size_t length)
 	{
-		if (write_queue.length)
-			thread_delegate_work(&write_queue[0], write_queue.length);
+		if (m_write_queue.length)
+			thread_delegate_work(&m_write_queue[0], m_write_queue.length);
 		thread_delegate_work(input, length);
 		
 		bool nothing_attached = true;
@@ -187,9 +187,9 @@ protected:
 				nothing_attached = false;
 		
 		if (nothing_attached)
-			write_queue += Pair(input, length);
+			m_write_queue ~= input[0 .. length];
 		else
-			write_queue.clear();
+			m_write_queue.clear();
 	}
 
 private:

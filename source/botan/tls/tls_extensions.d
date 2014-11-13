@@ -250,9 +250,7 @@ public:
 		auto i = fragment_to_code.get(m_max_fragment, 0);
 		
 		if (i == 0)
-			throw new Invalid_Argument("Bad setting " ~
-			                           std.conv.to!string(m_max_fragment) +
-			                           " for maximum fragment size");
+			throw new Invalid_Argument("Bad setting " ~ to!string(m_max_fragment) ~ " for maximum fragment size");
 		
 		return Vector!ubyte(1, i);
 	}
@@ -741,7 +739,7 @@ public:
 		
 		if (code != 1 && code != 2)
 			throw new TLS_Exception(Alert.ILLEGAL_PARAMETER,
-			                        "Unknown heartbeat code " ~ std.conv.to!string(code));
+			                        "Unknown heartbeat code " ~ to!string(code));
 		
 		m_peer_allowed_to_send = (code == 1);
 	}

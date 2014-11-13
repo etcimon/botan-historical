@@ -80,7 +80,7 @@ public:
 		if (time_is_set() == false)
 			throw new Invalid_State("toString: No time set");
 		
-		return std.conv.to!string(year * 10000 + month * 100 + day);
+		return to!string(year * 10000 + month * 100 + day);
 	}
 
 
@@ -144,28 +144,29 @@ public:
 		}
 		
 		Vector!string params;
-		string current;
+		Appender!string current;
+		current.reserve(time_str.length);
 		
 		for (uint j = 0; j != time_str.length; ++j)
 		{
 			if (is_digit(time_str[j]))
-				current += time_str[j];
+				current ~= time_str[j];
 			else
 			{
-				if (current != "")
-					params.push_back(current);
+				if (current.data.length > 0)
+					params.push_back(current.data);
 				current.clear();
 			}
 		}
-		if (current != "")
-			params.push_back(current);
+		if (current.data.length > 0)
+			params.push_back(current.data);
 		
 		if (params.length != 3)
 			throw new Invalid_Argument("Invalid time specification " ~ time_str);
 		
-		year	= to_uint(params[0]);
-		month  = to_uint(params[1]);
-		day	 = to_uint(params[2]);
+		year	= to!uint(params[0]);
+		month  = to!uint(params[1]);
+		day	 = to!uint(params[2]);
 		
 		if (!passes_sanity_check())
 			throw new Invalid_Argument("Invalid time specification " ~ time_str);
@@ -213,7 +214,6 @@ public:
 	* @return day value
 	*/
 	uint get_day() const { return day; }
-
 
 	/*
 	* Create an EAC_Time
@@ -293,10 +293,10 @@ private:
 	*/
 	Vector!ubyte encoded_eac_time() const
 	{
-		Vector!ubyte result;
-		result += enc_two_digit(year);
-		result += enc_two_digit(month);
-		result += enc_two_digit(day);
+		Vector!ubyte result = Vector!ubyte(6);
+		result ~= enc_two_digit_arr(year);
+		result ~= enc_two_digit_arr(month);
+		result ~= enc_two_digit_arr(day);
 		return result;
 	}
 
@@ -347,8 +347,7 @@ public:
 	*/
 	this(in EAC_Time other)
 	{
-		super(other.get_year(), other.get_month(), other.get_day(),
-		      ASN1_Tag(37));
+		super(other.get_year(), other.get_month(), other.get_day(), ASN1_Tag(37));
 	}
 }
 
@@ -420,14 +419,14 @@ public:
 		
 		try
 		{
-			this = ASN1_EAC_String(
-				transcode(asn1.toString(obj), charset_is, LOCAL_CHARSET),
-				obj.type_tag);
+			this = ASN1_EAC_String(transcode(asn1.toString(obj),
+			                                 charset_is, 
+			                                 LOCAL_CHARSET),
+			                       obj.type_tag);
 		}
 		catch(Invalid_Argument inv_arg)
 		{
-			throw new Decoding_Error(string("ASN1_EAC_String decoding failed: ") +
-			                         inv_arg.msg);
+			throw new Decoding_Error(string("ASN1_EAC_String decoding failed: ") ~ inv_arg.msg);
 		}
 	}
 	
@@ -487,7 +486,7 @@ protected:
 	// p. 43
 	bool sanity_check() const
 	{
-		const ubyte* rep = cast(const ubyte*)(m_iso_8859_str.ptr);
+		const ubyte* rep = cast(const ubyte*) m_iso_8859_str.ptr;
 		const size_t rep_len = m_iso_8859_str.length;
 		
 		foreach (size_t i; 0 .. rep_len)
@@ -542,18 +541,24 @@ public:
 
 Vector!ubyte enc_two_digit(uint input)
 {
-	Vector!ubyte result;
+	ubyte[2] res = enc_two_digit_arr(input);
+	return Vector!ubyte(res.ptr[0 .. 2]);
+}
+
+ubyte[2] enc_two_digit_arr(uint input)
+{
+	ubyte[2] result;
 	input %= 100;
 	if (input < 10)
-		result.push_back(0x00);
+		result[0] = 0x00;
 	else
 	{
 		uint y_first_pos = round_down!uint(input, 10) / 10;
-		result.push_back(cast(ubyte)(y_first_pos));
+		result[0] = cast(ubyte) y_first_pos;
 	}
 	
 	uint y_sec_pos = input % 10;
-	result.push_back(cast(ubyte)(y_sec_pos));
+	result[1] = cast(ubyte) y_sec_pos;
 	return result;
 }
 

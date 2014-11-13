@@ -64,7 +64,7 @@ public:
 
 	final override @property string name() const
 	{
-		return (m_cipher.name ~ "/CCM(" ~ std.conv.to!string(tag_size()) ~ "," ~ std.conv.to!string(L())) ~ ")";
+		return (m_cipher.name ~ "/CCM(" ~ to!string(tag_size()) ~ "," ~ to!string(L())) ~ ")";
 	}
 
 	final size_t update_granularity() const
@@ -118,10 +118,10 @@ protected:
 			throw new Invalid_Argument(m_cipher.name ~ " cannot be used with CCM mode");
 		
 		if (L < 2 || L > 8)
-			throw new Invalid_Argument("Invalid CCM L value " ~ std.conv.to!string(L));
+			throw new Invalid_Argument("Invalid CCM L value " ~ to!string(L));
 		
 		if (tag_size < 4 || tag_size > 16 || tag_size % 2 != 0)
-			throw new Invalid_Argument("invalid CCM tag length " ~ std.conv.to!string(tag_size));
+			throw new Invalid_Argument("invalid CCM tag length " ~ to!string(tag_size));
 	}
 
 	final size_t L() const { return m_L; }

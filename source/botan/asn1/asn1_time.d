@@ -13,6 +13,8 @@ import botan.utils.charset;
 import botan.utils.parsing;
 import botan.calendar;
 import botan.utils.types;
+import std.conv : to;
+import std.array : Appender;
 
 alias X509_Time = FreeListRef!X509_Time_Impl;
 
@@ -63,18 +65,17 @@ public:
 		if (m_tag == ASN1_Tag.UTC_TIME)
 		{
 			if (m_year < 1950 || m_year >= 2050)
-				throw new Encoding_Error("X509_Time: The time " ~ readable_string() +
-				                         " cannot be encoded as a UTCTime");
+				throw new Encoding_Error("X509_Time: The time " ~ readable_string() ~ " cannot be encoded as a UTCTime");
 			
 			full_year = (m_year >= 2000) ? (m_year - 2000) : (m_year - 1900);
 		}
 		
-		string repr = std.conv.to!string(full_year*10000000000 +
-		                                 m_month*100000000 +
-		                                 m_day*1000000 +
-		                                 m_hour*10000 +
-		                                 m_minute*100 +
-		                                 m_second) ~ "Z";
+		string repr = to!string(full_year*10000000000 +
+	                            m_month*100000000 +
+	                            m_day*1000000 +
+	                            m_hour*10000 +
+	                            m_minute*100 +
+	                            m_second) ~ "Z";
 		
 		uint desired_size = (m_tag == ASN1_Tag.UTC_TIME) ? 13 : 15;
 		
@@ -167,12 +168,12 @@ public:
 		if (params.length < 3 || params.length > 6)
 			throw new Invalid_Argument("Invalid time specification " ~ time_str);
 		
-		m_year	= to_uint(params[0]);
-		m_month  = to_uint(params[1]);
-		m_day	 = to_uint(params[2]);
-		m_hour	= (params.length >= 4) ? to_uint(params[3]) : 0;
-		m_minute = (params.length >= 5) ? to_uint(params[4]) : 0;
-		m_second = (params.length == 6) ? to_uint(params[5]) : 0;
+		m_year	= to!uint(params[0]);
+		m_month  = to!uint(params[1]);
+		m_day	 = to!uint(params[2]);
+		m_hour	= (params.length >= 4) ? to!uint(params[3]) : 0;
+		m_minute = (params.length >= 5) ? to!uint(params[4]) : 0;
+		m_second = (params.length == 6) ? to!uint(params[5]) : 0;
 		
 		m_tag = (m_year >= 2050) ? ASN1_Tag.GENERALIZED_TIME : ASN1_Tag.UTC_TIME;
 		
@@ -198,7 +199,7 @@ public:
 		}
 		else
 		{
-			throw new Invalid_Argument("Invalid time m_tag " ~ std.conv.to!string(spec_tag) ~ " val " ~ t_spec);
+			throw new Invalid_Argument("Invalid time m_tag " ~ to!string(spec_tag) ~ " val " ~ t_spec);
 		}
 		
 		if (t_spec[t_spec.length-1] != 'Z')
@@ -207,16 +208,16 @@ public:
 		const size_t YEAR_SIZE = (spec_tag == ASN1_Tag.UTC_TIME) ? 2 : 4;
 		
 		Vector!string params;
-		string current;
-		
+		Appender!string current;
+		current.reserve(YEAR_SIZE);
 		foreach (size_t j; 0 .. YEAR_SIZE)
-			current += t_spec[j];
-		params.push_back(current);
+			current ~= t_spec[j];
+		params.push_back(current.data);
 		current.clear();
 		
 		for (size_t j = YEAR_SIZE; j != t_spec.length - 1; ++j)
 		{
-			current += t_spec[j];
+			current ~= t_spec[j];
 			if (current.length == 2)
 			{
 				params.push_back(current);
@@ -224,12 +225,12 @@ public:
 			}
 		}
 		
-		m_year	= to_uint(params[0]);
-		m_month  = to_uint(params[1]);
-		m_day	 = to_uint(params[2]);
-		m_hour	= to_uint(params[3]);
-		m_minute = to_uint(params[4]);
-		m_second = (params.length == 6) ? to_uint(params[5]) : 0;
+		m_year	= to!uint(params[0]);
+		m_month  = to!uint(params[1]);
+		m_day	 = to!uint(params[2]);
+		m_hour	= to!uint(params[3]);
+		m_minute = to!uint(params[4]);
+		m_second = (params.length == 6) ? to!uint(params[5]) : 0;
 		m_tag	 = spec_tag;
 		
 		if (spec_tag == ASN1_Tag.UTC_TIME)

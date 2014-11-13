@@ -10,10 +10,9 @@ module botan.utils.dyn_load.dyn_load;
 import botan.build;
 import std.exception;
 
-version(linux){
+version(linux)
 	import core.sys.linux.dlfcn;
-}
-else version(Windows)
+version(Windows)
 	import std.c.windows.windows;
 
 void raise_runtime_loader_exception(in string lib_name,
@@ -84,12 +83,11 @@ public:
 		void* addr = null;
 		
 		version(linux)
-			addr = ::dlsym(lib, symbol.toStringz);
+			addr = dlsym(lib, symbol.toStringz);
 		version(Windows)
-			addr = cast(void*)(GetProcAddress((HMODULE)lib, symbol.toStringz));
+			addr = cast(void*)(GetProcAddress(cast(HMODULE)lib, symbol.toStringz));
 		if (!addr)
-			throw new Exception("Failed to resolve symbol " ~ symbol +
-			                    " in " ~ lib_name);
+			throw new Exception("Failed to resolve symbol " ~ symbol ~ " in " ~ lib_name);
 		
 		return addr;
 	}

@@ -163,7 +163,7 @@ public:
 	*/
 	final string PEM_encode() const
 	{
-		return pem.encode(BER_encode(), m_PEM_label_pref);
+		return PEM.encode(BER_encode(), m_PEM_label_pref);
 	}
 
 	~this() {}
@@ -230,7 +230,7 @@ private:
 		std.algorithm.sort(m_PEM_labels_allowed);
 		
 		try {
-			if (asn1_obj.maybe_BER(input) && !pem.matches(input))
+			if (asn1_obj.maybe_BER(input) && !PEM.matches(input))
 			{
 				auto dec = BER_Decoder(input);
 				decode_from(dec);
@@ -238,7 +238,7 @@ private:
 			else
 			{
 				string got_label;
-				auto ber = scoped!DataSource_Memory(pem.decode(input, got_label));
+				auto ber = scoped!DataSource_Memory(PEM.decode(input, got_label));
 				if (m_PEM_labels_allowed.canFind(got_label))
 					throw new Decoding_Error("Invalid PEM label: " ~ got_label);
 				

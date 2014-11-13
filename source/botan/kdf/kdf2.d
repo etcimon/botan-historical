@@ -33,7 +33,7 @@ public:
 			Secure_Vector!ubyte hash_result = m_hash.flush();
 			
 			size_t added = std.algorithm.min(hash_result.length, out_len);
-			output += Pair(&hash_result[0], added);
+			output ~= hash_result.ptr[0 .. added];
 			out_len -= added;
 			
 			++counter;

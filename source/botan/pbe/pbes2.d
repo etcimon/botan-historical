@@ -132,8 +132,7 @@ public:
 		Algorithm_Identifier prf_algo;
 		
 		if (kdf_algo.oid != oids.lookup("PKCS5.PBKDF2"))
-			throw new Decoding_Error("PBE-PKCS5 v2.0: Unknown KDF algorithm " ~
-			                         kdf_algo.oid.toString());
+			throw new Decoding_Error("PBE-PKCS5 v2.0: Unknown KDF algorithm " ~ kdf_algo.oid.toString());
 		
 		BER_Decoder(kdf_algo.parameters)
 			.start_cons(ASN1_Tag.SEQUENCE)

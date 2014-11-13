@@ -52,11 +52,12 @@ T[] allocArray(T, bool MANAGED = true)(Allocator allocator, size_t n)
 {
 	auto mem = allocator.alloc(T.sizeof * n);
 	auto ret = cast(T[])mem;
-	static if( MANAGED ){
+	static if ( MANAGED )
+	{
 		static if( hasIndirections!T )
 			GC.addRange(mem.ptr, mem.length);
 		// TODO: use memset for class, pointers and scalars
-		foreach (ref el; ret) {
+		foreach (ref el; ret) { // calls constructors
 			emplace!T(cast(void[])((&el)[0 .. 1]));
 		}
 	}
@@ -67,6 +68,9 @@ void freeArray(T, bool MANAGED = true)(Allocator allocator, ref T[] array)
 {
 	static if (MANAGED && hasIndirections!T)
 		GC.removeRange(array.ptr);
+	static if (hasElaborateDestructor!T) // calls destructors
+		foreach (ref e; array)
+			.destroy(e);
 	allocator.free(cast(void[])array);
 	array = null;
 }

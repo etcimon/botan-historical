@@ -868,9 +868,9 @@ public:
 				if (p.bits() < policy.minimum_dh_group_size())
 					throw new TLS_Exception(Alert.INSUFFICIENT_SECURITY,
 					                        "Server sent DH group of " ~
-					                        std.conv.to!string(p.bits()) +
+					                        to!string(p.bits()) ~
 					                        " bits, policy requires at least " ~
-					                        std.conv.to!string(policy.minimum_dh_group_size()));
+					                        to!string(policy.minimum_dh_group_size()));
 				
 				/*
 				* A basic check for key validity. As we do not know q here we
@@ -917,7 +917,7 @@ public:
 				const string name = Supported_Elliptic_Curves.curve_id_to_name(curve_id);
 				
 				if (name == "")
-					throw new Decoding_Error("Server sent unknown named curve " ~ std.conv.to!string(curve_id));
+					throw new Decoding_Error("Server sent unknown named curve " ~ to!string(curve_id));
 				
 				EC_Group group = EC_Group(name);
 				
@@ -1522,7 +1522,7 @@ public:
 			
 			if (name == "")
 				throw new Decoding_Error("Server_Key_Exchange: Server sent unknown named curve " ~
-				                         std.conv.to!string(curve_id));
+				                         to!string(curve_id));
 			
 			m_params.push_back(curve_type);
 			m_params.push_back(get_byte(0, curve_id));

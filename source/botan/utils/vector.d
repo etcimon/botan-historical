@@ -4,7 +4,7 @@ import core.exception, core.memory, core.stdc.stdlib, core.stdc.string,
 	std.algorithm, std.conv, std.exception, std.range,
 	std.traits, std.typecons;
 public import std.container.util;
-import botan.utils.memory;
+import botan.utils.memory.memory;
 
 /**
 * Existence check for values
@@ -33,20 +33,34 @@ struct Vector(T, ALLOCATOR)
 		// Destructor releases array memory
 		~this()
 		{
-			//Warning: destroy will also destroy class instances.
-			//The hasElaborateDestructor protects us here.
-			static if (hasElaborateDestructor!T)
-				foreach (ref e; _payload)
-					.destroy(e);
-			
-			freeArray(_payload);
+			freeArray(_payload.ptr[0 .. capacity]); // calls destructors and frees memory
 		}
-		
+
 		@disable this(this);
-		
+
 		void opAssign(Payload rhs)
 		{
 			assert(false);
+			/* Done already, just in case the FreeListRef requires it
+			// shorten
+			static if (hasElaborateDestructor!T) {
+				foreach (ref e; _payload.ptr[newLength .. _payload.length])
+					.destroy(e);
+				
+				
+				// Zero out unused capacity to prevent gc from seeing
+				// false pointers
+				static if (hasIndirections!T)
+					memset(_payload.ptr + newLength, 0, (elements - oldLength) * T.sizeof);
+			}
+
+			freeArray!(T, false)(getAllocator!ALLOCATOR(), _payload.ptr[0 .. capacity]);
+
+			static if ( hasIndirections!T )
+				GC.removeRange(_payload.ptr, T.sizeof * _capacity);
+
+			_capacity = rhs._capacity;
+			_payload = rhs._payload; */
 		}
 		
 		// Duplicate data
@@ -71,17 +85,23 @@ struct Vector(T, ALLOCATOR)
 			if (length >= newLength)
 			{
 				// shorten
-				static if (hasElaborateDestructor!T)
+				static if (hasElaborateDestructor!T) {
 					foreach (ref e; _payload.ptr[newLength .. _payload.length])
 						.destroy(e);
-				
+
+
+					// Zero out unused capacity to prevent gc from seeing
+					// false pointers
+					static if (hasIndirections!T)
+						memset(_payload.ptr + newLength, 0, (elements - oldLength) * T.sizeof);
+				}
 				_payload = _payload.ptr[0 .. newLength];
 				return;
 			}
 			// enlarge
 			auto startEmplace = length;
-			_payload = (cast(T*) realloc(_payload.ptr,
-			                             T.sizeof * newLength))[0 .. newLength];
+			reserve(newLength);
+			_payload = _payload.ptr[0 .. newLength];
 			initializeAll(_payload.ptr[startEmplace .. length]);
 		}
 		
@@ -96,35 +116,29 @@ struct Vector(T, ALLOCATOR)
 		{
 			if (elements <= capacity) return;
 			immutable sz = elements * T.sizeof;
-			static if (hasIndirections!T)       // should use hasPointers instead
-			{
-				/* Because of the transactional nature of this
-                 * relative to the garbage collector, ensure no
-                 * threading bugs by using malloc/copy/free rather
-                 * than realloc.
-                 */
-				immutable oldLength = length;
-				auto newPayload = enforce(cast(T*) malloc(sz))[0 .. oldLength];
-				// copy old data over to new array
-				memcpy(newPayload.ptr, _payload.ptr, T.sizeof * oldLength);
+			/* Because of the transactional nature of this
+             * relative to the garbage collector, ensure no
+             * threading bugs by using malloc/copy/free rather
+             * than realloc.
+             */
+			immutable oldLength = length;
+			auto newPayload = allocArray!(T, false)(getAllocator!ALLOCATOR(), elements)[0 .. oldLength];
+
+			static if ( hasIndirections!T ) {
 				// Zero out unused capacity to prevent gc from seeing
 				// false pointers
-				memset(newPayload.ptr + oldLength,
-				       0,
-				       (elements - oldLength) * T.sizeof);
+				memset(newPayload.ptr + oldLength, 0, (elements - oldLength) * T.sizeof);
 				GC.addRange(newPayload.ptr, sz);
-				GC.removeRange(_payload.ptr);
-				free(_payload.ptr);
-				_payload = newPayload;
 			}
-			else
-			{
-				/* These can't have pointers, so no need to zero
-                 * unused region
-                 */
-				auto newPayload = enforce(cast(T*) realloc(_payload.ptr, sz))[0 .. length];
-				_payload = newPayload;
-			}
+			// copy old data over to new array
+			memcpy(newPayload.ptr, _payload.ptr, T.sizeof * oldLength);
+
+			freeArray!(T, false)(getAllocator!ALLOCATOR(), _payload.ptr[0 .. capacity]);
+
+			static if ( hasIndirections!T )
+				GC.removeRange(_payload.ptr, T.sizeof * _capacity);
+
+			_payload = newPayload;
 			_capacity = elements;
 		}
 		
@@ -167,7 +181,11 @@ struct Vector(T, ALLOCATOR)
 
 	private alias Data = FreeListRef!Payload;
 	private Data _data;
-	
+
+	this(size_t elms) {
+		reserve(elms);
+	}
+
 	/**
 		Constructor taking a number of items
      */
@@ -201,13 +219,13 @@ struct Vector(T, ALLOCATOR)
 	/**
 		Comparison for equality.
      */
-	bool opEquals(const Array rhs) const
+	bool opEquals(const Vector rhs) const
 	{
 		return opEquals(rhs);
 	}
 	
 	/// ditto
-	bool opEquals(ref const Array rhs) const
+	bool opEquals(ref const Vector rhs) const
 	{
 		if (empty) return rhs.empty;
 		if (rhs.empty) return false;
@@ -219,16 +237,22 @@ struct Vector(T, ALLOCATOR)
     */
 	static struct Range
 	{
-		private Array _outer;
+		private Vector _outer;
 		private size_t _a, _b;
 		
-		private this(ref Array data, size_t a, size_t b)
+		private this(ref Vector data, size_t a, size_t b)
 		{
 			_outer = data;
 			_a = a;
 			_b = b;
 		}
-		
+
+		U opCast(U = T[])() 
+			if (is (U == T[]))
+		{
+			return _outer._payload;
+		}
+
 		@property Range save()
 		{
 			return this;
@@ -349,10 +373,9 @@ struct Vector(T, ALLOCATOR)
 
 		Complexity: $(BIGOH n).
      */
-	@property Array dup()
+	@property Vector dup()
 	{
-		if (!_data.refCountedStore.isInitialized) return this;
-		return Array(_data._payload);
+		return Vector(_data._payload);
 	}
 	
 	/**
@@ -363,7 +386,7 @@ struct Vector(T, ALLOCATOR)
      */
 	@property bool empty() const
 	{
-		return !_data.refCountedStore.isInitialized || _data._payload.empty;
+		return _data._payload.empty;
 	}
 	
 	/**
@@ -373,7 +396,7 @@ struct Vector(T, ALLOCATOR)
      */
 	@property size_t length() const
 	{
-		return _data.refCountedStore.isInitialized ? _data._payload.length : 0;
+		return _data._payload.length;
 	}
 	
 	/// ditto
@@ -398,7 +421,7 @@ struct Vector(T, ALLOCATOR)
      */
 	@property size_t capacity()
 	{
-		return _data.refCountedStore.isInitialized ? _data._capacity : 0;
+		return _data._capacity;
 	}
 	
 	/**
@@ -410,22 +433,7 @@ struct Vector(T, ALLOCATOR)
      */
 	void reserve(size_t elements)
 	{
-		if (!_data.refCountedStore.isInitialized)
-		{
-			if (!elements) return;
-			immutable sz = elements * T.sizeof;
-			auto p = enforce(malloc(sz));
-			static if (hasIndirections!T)
-			{
-				GC.addRange(p, sz);
-			}
-			_data = Data(cast(T[]) p[0 .. 0]);
-			_data._capacity = elements;
-		}
-		else
-		{
-			_data.reserve(elements);
-		}
+		_data.reserve(elements);
 	}
 	
 	/**
@@ -462,14 +470,12 @@ struct Vector(T, ALLOCATOR)
      */
 	@property ref T front()
 	{
-		version (assert) if (!_data.refCountedStore.isInitialized) throw new RangeError();
 		return _data._payload[0];
 	}
 	
 	/// ditto
 	@property ref T back()
 	{
-		version (assert) if (!_data.refCountedStore.isInitialized) throw new RangeError();
 		return _data._payload[$ - 1];
 	}
 	
@@ -482,7 +488,6 @@ struct Vector(T, ALLOCATOR)
      */
 	ref T opIndex(size_t i)
 	{
-		version (assert) if (!_data.refCountedStore.isInitialized) throw new RangeError();
 		return _data._payload[i];
 	}
 	
@@ -495,16 +500,13 @@ struct Vector(T, ALLOCATOR)
      */
 	void opSliceAssign(T value)
 	{
-		if (!_data.refCountedStore.isInitialized) return;
 		_data._payload[] = value;
 	}
 	
 	/// ditto
 	void opSliceAssign(T value, size_t i, size_t j)
 	{
-		auto slice = _data.refCountedStore.isInitialized ?
-			_data._payload :
-				T[].init;
+		auto slice = _data._payload;
 		slice[i .. j] = value;
 	}
 	
@@ -512,7 +514,6 @@ struct Vector(T, ALLOCATOR)
 	void opSliceUnary(string op)()
 		if(op == "++" || op == "--")
 	{
-		if(!_data.refCountedStore.isInitialized) return;
 		mixin(op~"_data._payload[];");
 	}
 	
@@ -520,21 +521,18 @@ struct Vector(T, ALLOCATOR)
 	void opSliceUnary(string op)(size_t i, size_t j)
 		if(op == "++" || op == "--")
 	{
-		auto slice = _data.refCountedStore.isInitialized ? _data._payload : T[].init;
 		mixin(op~"slice[i .. j];");
 	}
 	
 	/// ditto
 	void opSliceOpAssign(string op)(T value)
 	{
-		if(!_data.refCountedStore.isInitialized) return;
 		mixin("_data._payload[] "~op~"= value;");
 	}
 	
 	/// ditto
 	void opSliceOpAssign(string op)(T value, size_t i, size_t j)
 	{
-		auto slice = _data.refCountedStore.isInitialized ? _data._payload : T[].init;
 		mixin("slice[i .. j] "~op~"= value;");
 	}
 	
@@ -546,11 +544,11 @@ struct Vector(T, ALLOCATOR)
 		Complexity: $(BIGOH n + m), where m is the number of elements in $(D
 		stuff)
      */
-	Array opBinary(string op, Stuff)(Stuff stuff)
+	Vector opBinary(string op, Stuff)(Stuff stuff)
 		if (op == "~")
 	{
 		// TODO: optimize
-		Array result;
+		Vector result;
 		// @@@BUG@@ result ~= this[] doesn't work
 		auto r = this[];
 		result ~= r;
@@ -565,9 +563,8 @@ struct Vector(T, ALLOCATOR)
 	void opOpAssign(string op, Stuff)(Stuff stuff)
 		if (op == "~")
 	{
-		static if (is(typeof(stuff[])))
-		{
-			push_back(stuff[]);
+		static if (is (Stuff == typeof(this))) {
+			push_bash(cast(T[]) stuff[]);
 		}
 		else
 		{
@@ -600,7 +597,6 @@ struct Vector(T, ALLOCATOR)
      */
 	@property void length(size_t newLength)
 	{
-		_data.refCountedStore.ensureInitialized();
 		_data.length = newLength;
 	}
 
@@ -619,9 +615,14 @@ struct Vector(T, ALLOCATOR)
 		if (isImplicitlyConvertible!(Stuff, T) ||
 		    isInputRange!Stuff && isImplicitlyConvertible!(ElementType!Stuff, T))
 	{
-		_data.refCountedStore.ensureInitialized();
 		return _data.push_back(stuff);
 	}
+
+	size_t push_back(U)(Vector!(U, ALLOCATOR) rhs)
+	{
+		return push_back(rhs[]);
+	}
+
 	/// ditto
 	alias insert = push_back;
 	
@@ -687,7 +688,6 @@ struct Vector(T, ALLOCATOR)
 	{
 		enforce(r._outer._data is _data && r._a <= length);
 		reserve(length + 1);
-		assert(_data.refCountedStore.isInitialized);
 		// Move elements over by one slot
 		memmove(_data._payload.ptr + r._a + 1,
 		        _data._payload.ptr + r._a,
@@ -708,7 +708,6 @@ struct Vector(T, ALLOCATOR)
 			auto extra = walkLength(stuff);
 			if (!extra) return 0;
 			reserve(length + extra);
-			assert(_data.refCountedStore.isInitialized);
 			// Move elements over by extra slots
 			memmove(_data._payload.ptr + r._a + extra,
 			        _data._payload.ptr + r._a,
@@ -802,7 +801,6 @@ struct Vector(T, ALLOCATOR)
 	Range linearRemove(Range r)
 	{
 		enforce(r._outer._data is _data);
-		enforce(_data.refCountedStore.isInitialized);
 		enforce(r._a <= r._b && r._b <= length);
 		immutable offset1 = r._a;
 		immutable offset2 = r._b;

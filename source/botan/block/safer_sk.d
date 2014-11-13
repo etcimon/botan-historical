@@ -105,7 +105,7 @@ public:
 	*/
 	override @property string name() const
 	{
-		return "SAFER-SK(" ~ std.conv.to!string(m_rounds) ~ ")";
+		return "SAFER-SK(" ~ to!string(m_rounds) ~ ")";
 	}
 
 	/*

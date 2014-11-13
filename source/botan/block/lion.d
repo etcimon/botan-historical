@@ -111,7 +111,7 @@ public:
 	{
 		return "Lion(" ~ m_hash.name ~ "," ~
 			m_cipher.name ~ "," ~
-				std.conv.to!string(block_size()) ~ ")";
+				to!string(block_size()) ~ ")";
 	}
 
 	/*

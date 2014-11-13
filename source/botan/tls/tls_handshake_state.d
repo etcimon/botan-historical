@@ -66,9 +66,9 @@ public:
 		
 		if (!ok)
 			throw new Unexpected_Message("Unexpected state transition in handshake, got " ~
-			                             std.conv.to!string(handshake_msg) +
-			                             " expected " ~ std.conv.to!string(m_hand_expecting_mask) +
-			                             " received " ~ std.conv.to!string(m_hand_received_mask));
+			                             to!string(handshake_msg) ~
+			                             " expected " ~ to!string(m_hand_expecting_mask) ~
+			                             " received " ~ to!string(m_hand_received_mask));
 		
 		/* We don't know what to expect next, so force a call to
 			set_expected_next; if it doesn't happen, the next transition
@@ -486,7 +486,7 @@ uint bitmask_for_handshake_type(Handshake_Type type)
 			return 0;
 	}
 	
-	throw new Internal_Error("Unknown handshake type " ~ std.conv.to!string(type));
+	throw new Internal_Error("Unknown handshake type " ~ to!string(type));
 }
 
 

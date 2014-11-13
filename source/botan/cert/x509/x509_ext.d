@@ -105,7 +105,7 @@ public:
 			bool critical;
 			
 			sequence.start_cons(ASN1_Tag.SEQUENCE)
-				.decode(oid)
+					.decode(oid)
 					.decode_optional(critical, BOOLEAN, ASN1_Tag.UNIVERSAL, false)
 					.decode(value, ASN1_Tag.OCTET_STRING)
 					.verify_end()

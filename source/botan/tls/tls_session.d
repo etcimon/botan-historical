@@ -121,7 +121,7 @@ public:
 	*/
 	this(in string pem)
 	{
-		Secure_Vector!ubyte der = pem.decode_check_label(pem, "SSL SESSION");
+		Secure_Vector!ubyte der = PEM.decode_check_label(pem, "SSL SESSION");
 		
 		this(&der[0], der.length);
 	}
@@ -210,7 +210,7 @@ public:
 	*/
 	string PEM_encode() const
 	{
-		return pem.encode(this.DER_encode(), "SSL SESSION");
+		return PEM.encode(this.DER_encode(), "SSL SESSION");
 	}
 
 	/**

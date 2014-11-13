@@ -60,7 +60,7 @@ public:
 		const Vector!ubyte concat_sig = signer.sign_message(tbs_bits, rng);
 		
 		return DER_Encoder()
-			.start_cons(ASN1_Tag(7), ASN1_Tag.APPLICATION)
+				.start_cons(ASN1_Tag(7), ASN1_Tag.APPLICATION)
 				.raw_bytes(tbs_bits)
 				.encode(concat_sig, ASN1_Tag.OCTET_STRING, ASN1_Tag(55), ASN1_Tag.APPLICATION)
 				.end_cons()
@@ -179,7 +179,7 @@ private:
 				.get_contents_unlocked();
 		
 		res_tbs_bits = enc_cert;
-		res_tbs_bits += DER_Encoder().encode(car).get_contents();
+		res_tbs_bits ~= DER_Encoder().encode(car).get_contents_unlocked();
 		res_sig = decode_concatenation(concat_sig);
 	}
 }

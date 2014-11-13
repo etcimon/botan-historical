@@ -58,9 +58,9 @@ public:
 	@property string name() const
 	{
 		if (m_personalization != "")
-			return "Skein-512(" ~ std.conv.to!string(m_output_bits) ~ "," ~
+			return "Skein-512(" ~ to!string(m_output_bits) ~ "," ~
 				m_personalization ~ ")";
-		return "Skein-512(" ~ std.conv.to!string(m_output_bits) ~ ")";
+		return "Skein-512(" ~ to!string(m_output_bits) ~ ")";
 	}
 
 	void clear()

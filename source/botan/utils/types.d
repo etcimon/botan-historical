@@ -8,7 +8,8 @@ module botan.utils.types;
 
 import botan.build;
 import cstddef;
-public import botan.utils.memory;
+public import botan.utils.memory.memory;
+public import botan.utils.memory.zeroize;
 public import botan.utils.vector;
 public import std.typecons : scoped;
 

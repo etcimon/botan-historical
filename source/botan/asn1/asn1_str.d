@@ -107,7 +107,7 @@ private:
 		    m_tag != ASN1_Tag.UTF8_STRING &&
 		    m_tag != ASN1_Tag.BMP_STRING)
 			throw new Invalid_Argument("ASN1_String: Unknown string type " ~
-			                           std.conv.to!string(m_tag));
+			                           to!string(m_tag));
 	}
 
 	string m_iso_8859_str;

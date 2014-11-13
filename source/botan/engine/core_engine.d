@@ -7,6 +7,7 @@
 module botan.engine.core_engine;
 
 import botan.engine.engine;
+import botan.rng.rng;
 import botan.utils.parsing;
 import botan.filters.filters;
 import botan.algo_factory.algo_factory;
@@ -15,6 +16,7 @@ import botan.filters.transform_filter;
 import botan.math.numbertheory.def_powm;
 import botan.algo_base.scan_name;
 import botan.algo_factory.algo_factory;
+import std.conv : to;
 
 static if (BOTAN_HAS_MODE_CFB)		import botan.modes.cfb;
 static if (BOTAN_HAS_MODE_ECB)		import botan.modes.ecb;
@@ -239,8 +241,8 @@ public:
 
 
 	Keyed_Filter get_cipher(in string algo_spec,
-	                                 Cipher_Dir direction,
-	                                 Algorithm_Factory af)
+                            Cipher_Dir direction,
+                            Algorithm_Factory af)
 	{
 		Vector!string algo_parts = splitter(algo_spec, '/');
 		if (algo_parts.empty)
@@ -261,8 +263,7 @@ public:
 			return null; // 4 part mode, not something we know about
 		
 		if (algo_parts.length < 2)
-			throw new Lookup_Error("Cipher specification '" ~ algo_spec +
-			                       "' is missing mode identifier");
+			throw new Lookup_Error("Cipher specification '" ~ algo_spec ~ "' is missing mode identifier");
 		
 		string mode = algo_parts[1];
 		
@@ -288,8 +289,7 @@ public:
 	}
 
 
-	BlockCipher find_block_cipher(in SCAN_Name request,
-                                      		Algorithm_Factory af) const
+	BlockCipher find_block_cipher(in SCAN_Name request, Algorithm_Factory af) const
 	{
 		
 		static if (BOTAN_HAS_AES) {
@@ -441,8 +441,7 @@ public:
 		return null;
 	}
 
-	StreamCipher find_stream_cipher(in SCAN_Name request,
-	                                         Algorithm_Factory af) const
+	StreamCipher find_stream_cipher(in SCAN_Name request, Algorithm_Factory af) const
 	{
 		static if (BOTAN_HAS_OFB) {
 			if (request.algo_name == "OFB" && request.arg_count() == 1)
@@ -480,8 +479,7 @@ public:
 		return null;
 	}
 
-	HashFunction find_hash(in SCAN_Name request,
-	                                Algorithm_Factory af) const
+	HashFunction find_hash(in SCAN_Name request, Algorithm_Factory af) const
 	{
 		static if (BOTAN_HAS_ADLER32) {
 			if (request.algo_name == "Adler32")
@@ -615,8 +613,7 @@ public:
 		
 	}
 
-	MessageAuthenticationCode find_mac(in SCAN_Name request,
-	                                            Algorithm_Factory af) const
+	MessageAuthenticationCode find_mac(in SCAN_Name request, Algorithm_Factory af) const
 	{
 		
 		static if (BOTAN_HAS_CBC_MAC) {
@@ -648,8 +645,7 @@ public:
 	}
 
 
-	PBKDF find_pbkdf(in SCAN_Name algo_spec,
-	                          Algorithm_Factory af) const
+	PBKDF find_pbkdf(in SCAN_Name algo_spec, Algorithm_Factory af) const
 	{
 		static if (BOTAN_HAS_PBKDF1) {
 			if (algo_spec.algo_name == "PBKDF1" && algo_spec.arg_count() == 1)
@@ -748,7 +744,7 @@ Keyed_Filter get_cipher_mode(const BlockCipher block_cipher,
 		
 		size_t bits = 8 * block_cipher.block_size;
 		if (algo_info.length > 1)
-			bits = to_uint(algo_info[1]);
+			bits = to!uint(algo_info[1]);
 		
 		static if (BOTAN_HAS_MODE_CFB) {
 				if (mode_name == "CFB")
@@ -770,7 +766,7 @@ Keyed_Filter get_cipher_mode(const BlockCipher block_cipher,
 			static if (BOTAN_HAS_AEAD_CCM) {
 					if (mode_name == "CCM")
 					{
-						const size_t L = (algo_info.length == 3) ? to_uint(algo_info[2]) : 3;
+						const size_t L = (algo_info.length == 3) ? to!uint(algo_info[2]) : 3;
 						if (direction == ENCRYPTION)
 							return new AEAD_Filter(new CCM_Encryption(block_cipher.clone(), tag_size, L));
 						else
@@ -819,8 +815,7 @@ private {
 	/**
 	* Get a block cipher padding method by name
 	*/
-	BlockCipherModePaddingMethod get_bc_pad(in string algo_spec,
-	                                         in string def_if_empty)
+	BlockCipherModePaddingMethod get_bc_pad(in string algo_spec, in string def_if_empty)
 	{
 		static if (BOTAN_HAS_CIPHER_MODE_PADDING) {
 			if (algo_spec == "NoPadding" || (algo_spec == "" && def_if_empty == "NoPadding"))

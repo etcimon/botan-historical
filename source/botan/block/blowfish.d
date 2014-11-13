@@ -111,7 +111,7 @@ public:
 		*/
 		if (workfactor > 18)
 			throw new Invalid_Argument("Requested Bcrypt work factor " ~
-			                           std.conv.to!string(workfactor) ~ " too large");
+			                           to!string(workfactor) ~ " too large");
 		
 		m_P.resize(18);
 		std.algorithm.copy(P_INIT[0 .. 18], m_P);

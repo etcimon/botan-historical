@@ -37,7 +37,7 @@ public:
 		if (feedback() == cipher().block_size)
 			return cipher().name ~ "/CFB";
 		else
-			return cipher().name ~ "/CFB(" ~ std.conv.to!string(feedback()*8) ~ ")";
+			return cipher().name ~ "/CFB(" ~ to!string(feedback()*8) ~ ")";
 	}
 
 	final override size_t update_granularity() const
@@ -82,7 +82,7 @@ protected:
 		m_feedback_bytes = feedback_bits ? feedback_bits / 8 : cipher.block_size;
 		if (feedback_bits % 8 || feedback() > cipher.block_size)
 			throw new Invalid_Argument(name() ~ ": feedback bits " ~
-			                           std.conv.to!string(feedback_bits) ~ " not supported");
+			                           to!string(feedback_bits) ~ " not supported");
 	}
 
 	final const BlockCipher cipher() const { return *m_cipher; }

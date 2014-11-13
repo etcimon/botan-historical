@@ -69,7 +69,7 @@ final class Invalid_Key_Length : Invalid_Argument
 {
 	this(in string name, size_t length) {
 		super(name ~ " cannot accept a key of length " ~
-		      std.conv.to!string(length));
+		      to!string(length));
 	}
 }
 
@@ -79,7 +79,7 @@ final class Invalid_Key_Length : Invalid_Argument
 final class Invalid_IV_Length : Invalid_Argument
 {
 	this(in string mode, size_t bad_len) {
-		super("IV length " ~ std.conv.to!string(bad_len) ~ " is invalid for " ~ mode);
+		super("IV length " ~ to!string(bad_len) ~ " is invalid for " ~ mode);
 	}
 }
 

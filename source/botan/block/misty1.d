@@ -136,7 +136,7 @@ public:
 	{
 		if (rounds != 8)
 			throw new Invalid_Argument("MISTY1: Invalid number of rounds: "
-			                           + std.conv.to!string(rounds));
+			                           + to!string(rounds));
 	}
 
 private:

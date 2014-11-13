@@ -123,7 +123,7 @@ string transcode(in string str,
 		return ucs2_to_latin1(str);
 	
 	throw new Invalid_Argument("Unknown transcoding operation from " ~
-	                           std.conv.to!string(from) ~ " to " ~ std.conv.to!string(to));
+	                           to!string(from) ~ " to " ~ to!string(to));
 }
 
 /*

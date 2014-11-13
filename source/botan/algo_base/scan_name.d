@@ -12,7 +12,7 @@ import std.exception;
 import std.array : Appender;
 import botan.utils.types;
 // import string;
-import botan.utils.types;
+import std.conv : to;
 import core.sync.mutex;
 import botan.utils.hashmap;
 
@@ -32,7 +32,9 @@ public:
 		
 		Vector!( Pair!(size_t, string)  ) names;
 		size_t level = 0;
-		Pair!(size_t, Appender!string) accum = Pair(level, "");
+		Appender!string def_buf;
+		def_buf.reserve(8);
+		Pair!(size_t, Appender!string) accum = Pair(level, def_buf);
 		
 		string decoding_error = "Bad SCAN name '" ~ algo_spec ~ "': ";
 		
@@ -40,7 +42,7 @@ public:
 		
 		foreach (immutable(char) c; algo_spec)
 		{
-			
+
 			if (c == '/' || c == ',' || c == '(' || c == ')')
 			{
 				if (c == '(')
@@ -172,7 +174,7 @@ public:
 	{
 		if (i >= arg_count())
 			return def_value;
-		return to_uint(m_args[i]);
+		return to!uint(m_args[i]);
 	}
 	
 	/**

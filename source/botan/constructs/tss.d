@@ -46,11 +46,11 @@ public:
 		// Create RTSS header in each share
 		foreach (ubyte i; 0 .. N)
 		{
-			shares[i].m_contents += Pair(identifier, 16);
-			shares[i].m_contents += rtss_hash_id(hash.name);
-			shares[i].m_contents += M;
-			shares[i].m_contents += get_byte(0, S_len);
-			shares[i].m_contents += get_byte(1, S_len);
+			shares[i].m_contents ~= identifier[0 .. 16];
+			shares[i].m_contents ~= rtss_hash_id(hash.name);
+			shares[i].m_contents ~= M;
+			shares[i].m_contents ~= get_byte(0, S_len);
+			shares[i].m_contents ~= get_byte(1, S_len);
 		}
 		
 		// Choose sequential values for X starting from 1
@@ -59,9 +59,9 @@ public:
 		
 		// secret = S || H(S)
 		Secure_Vector!ubyte secret = Secure_Vector!ubyte(S, S + S_len);
-		secret += hash.process(S, S_len);
+		secret ~= hash.process(S, S_len);
 		
-		foreach (s; secret[])
+		foreach (ubyte s; secret[])
 		{
 			Vector!ubyte coefficients = Vector!ubyte(M-1);
 			rng.randomize(&coefficients[0], coefficients.length);
@@ -146,9 +146,7 @@ public:
 					if (share_k == share_l)
 						throw new Decoding_Error("Duplicate shares found in RTSS recovery");
 					
-					ubyte div = RTSS_EXP[(255 +
-						                      RTSS_LOG[share_l] -
-						RTSS_LOG[share_k ^ share_l]) % 255];
+					ubyte div = RTSS_EXP[(255 + RTSS_LOG[share_l] - RTSS_LOG[share_k ^ share_l]) % 255];
 					
 					r2 = gfp_mul(r2, div);
 				}
@@ -164,8 +162,7 @@ public:
 		hash.update(&secret[0], secret_len);
 		Secure_Vector!ubyte hash_check = hash.flush();
 		
-		if (!same_mem(&hash_check[0],
-		&secret[secret_len], hash.output_length))
+		if (!same_mem(&hash_check[0], &secret[secret_len], hash.output_length))
 			throw new Decoding_Error("RTSS hash check failed");
 		
 		return Secure_Vector!ubyte(&secret[0], &secret[secret_len]);

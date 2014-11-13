@@ -127,7 +127,7 @@ public:
 		
 		try
 		{
-			Vector!ubyte ber = unlock(pem.decode_check_label(pem_or_oid, "EC PARAMETERS"));
+			Vector!ubyte ber = unlock(PEM.decode_check_label(pem_or_oid, "EC PARAMETERS"));
 			
 			this(ber);
 		}
@@ -183,7 +183,7 @@ public:
 	string PEM_encode() const
 	{
 		const Vector!ubyte der = DER_encode(EC_DOMPAR_ENC_EXPLICIT);
-		return pem.encode(der, "EC PARAMETERS");
+		return PEM.encode(der, "EC PARAMETERS");
 	}
 
 	/**

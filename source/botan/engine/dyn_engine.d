@@ -31,7 +31,7 @@ public:
 			const uint mod_version = get_version();
 			
 			if (mod_version != 20101003)
-				throw new Exception("Incompatible version in " ~ library_path ~ " of " ~ std.conv.to!string(mod_version));
+				throw new Exception("Incompatible version in " ~ library_path ~ " of " ~ to!string(mod_version));
 			
 			creator_func creator = m_lib.resolve!creator_func("create_engine");
 			

@@ -19,6 +19,7 @@ import botan.math.mp.mp_core;
 import botan.math.numbertheory.primes;
 import std.algorithm;
 import botan.algo_factory.algo_factory : Algorithm_Factory;
+
 /**
 * Fused multiply-add
 * @param a an integer
@@ -464,14 +465,16 @@ bool is_prime(in BigInt n, RandomNumberGenerator rng,
 	return true;
 }
 
- bool quick_check_prime(in BigInt n, RandomNumberGenerator rng)
+bool quick_check_prime(in BigInt n, RandomNumberGenerator rng)
 { return is_prime(n, rng, 32); }
 
- bool check_prime(in BigInt n, RandomNumberGenerator rng)
+bool check_prime(in BigInt n, RandomNumberGenerator rng)
 { return is_prime(n, rng, 56); }
 
- bool verify_prime(in BigInt n, RandomNumberGenerator rng)
-{ return is_prime(n, rng, 80); }/**
+bool verify_prime(in BigInt n, RandomNumberGenerator rng)
+{ return is_prime(n, rng, 80); }
+
+/**
 * Randomly generate a prime
 * @param rng a random number generator
 * @param bits how large the resulting prime should be in bits
@@ -487,7 +490,7 @@ BigInt random_prime(RandomNumberGenerator rng,
 {
 	if (bits <= 1)
 		throw new Invalid_Argument("random_prime: Can't make a prime of " ~
-		                           std.conv.to!string(bits) ~ " bits");
+		                           to!string(bits) ~ " bits");
 	else if (bits == 2)
 		return ((rng.next_byte() % 2) ? 2 : 3);
 	else if (bits == 3)
@@ -562,7 +565,7 @@ BigInt random_safe_prime(RandomNumberGenerator rng, size_t bits)
 {
 	if (bits <= 64)
 		throw new Invalid_Argument("random_safe_prime: Can't make a prime of " ~
-		                           std.conv.to!string(bits) ~ " bits");
+		                           to!string(bits) ~ " bits");
 	
 	BigInt p;
 	do
@@ -618,14 +621,13 @@ bool generate_dsa_primes(RandomNumberGenerator rng,
 	if (!fips186_3_valid_size(pbits, qbits))
 		throw new Invalid_Argument(
 			"FIPS 186-3 does not allow DSA domain parameters of " ~
-			std.conv.to!string(pbits) ~ "/" ~ std.conv.to!string(qbits) ~ " bits long");
+			to!string(pbits) ~ "/" ~ to!string(qbits) ~ " bits long");
 	
 	if (seed_c.length * 8 < qbits)
-		throw new Invalid_Argument(
-			"Generating a DSA parameter set with a " ~ std.conv.to!string(qbits) +
-			"long q requires a seed at least as many bits long");
+		throw new Invalid_Argument("Generating a DSA parameter set with a " ~ to!string(qbits) ~ 
+		                           "long q requires a seed at least as many bits long");
 	
-	Unique!HashFunction hash = af.make_hash_function("SHA-" ~ std.conv.to!string(qbits));
+	Unique!HashFunction hash = af.make_hash_function("SHA-" ~ to!string(qbits));
 	
 	const size_t HASH_SIZE = hash.output_length;
 	

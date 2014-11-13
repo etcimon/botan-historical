@@ -145,7 +145,7 @@ EAC1_1_ADO create_ado_req(const ref Private_Key key,
 	string padding_and_hash = padding_and_hash_from_oid(req.signature_algorithm().oid);
 	PK_Signer signer = PK_Signer(*priv_key, padding_and_hash);
 	Vector!ubyte tbs_bits = req.BER_encode();
-	tbs_bits += DER_Encoder().encode(car).get_contents();
+	tbs_bits ~= DER_Encoder().encode(car).get_contents_unlocked();
 	
 	Vector!ubyte signed_cert = EAC1_1_ADO.make_signed(signer, tbs_bits, rng);
 	
@@ -302,17 +302,17 @@ EAC1_1_CVC sign_request(const ref EAC1_1_CVC signer_cert,
 	}
 	string chr_str = signee.get_chr().value();
 	
-	string seqnr_string = std.conv.to!string(seqnr);
+	string seqnr_string = to!string(seqnr);
 	
 	while(seqnr_string.length < seqnr_len)
-		seqnr_string = '0' + seqnr_string;
+		seqnr_string = '0' ~ seqnr_string;
 	
-	chr_str += seqnr_string;
+	chr_str ~= seqnr_string;
 	ASN1_Chr chr = ASN1_Chr(chr_str);
 	string padding_and_hash = padding_and_hash_from_oid(signee.signature_algorithm().oid);
 	PK_Signer pk_signer = PK_Signer(*priv_key, padding_and_hash);
 	Unique!Public_Key pk = signee.subject_public_key();
-	ECDSA_PublicKey  subj_pk = cast(ECDSA_PublicKey)(*pk);
+	ECDSA_PublicKey  subj_pk = cast(ECDSA_PublicKey) *pk;
 	// Unique!Public_Key signer_pk = signer_cert.subject_public_key();
 	
 	// for the case that the domain parameters are not set...
@@ -399,13 +399,13 @@ Vector!ubyte eac_1_1_encoding(const EC_PublicKey* key,
 		encode_eac_bigint(enc, domain.get_curve().get_a(), ASN1_Tag(2));
 		encode_eac_bigint(enc, domain.get_curve().get_b(), ASN1_Tag(3));
 		
-		enc.encode(EC2OSP(domain.get_base_point(), PointGFp.UNCOMPRESSED),
+		enc.encode(EC2OSP(domain.get_base_point(), PointGFp.UNCOMPRESSED), 
 		           ASN1_Tag.OCTET_STRING, ASN1_Tag(4));
 		
 		encode_eac_bigint(enc, domain.get_order(), ASN1_Tag(4));
 	}
 	
-	enc.encode(EC2OSP(key.public_point(), PointGFp.UNCOMPRESSED),
+	enc.encode(EC2OSP(key.public_point(), PointGFp.UNCOMPRESSED), 
 	           ASN1_Tag.OCTET_STRING, ASN1_Tag(6));
 	
 	if (key.domain_format() == EC_DOMPAR_ENC_EXPLICIT)

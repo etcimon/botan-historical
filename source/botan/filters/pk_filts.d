@@ -21,7 +21,7 @@ public:
 	*/
 	void write(in ubyte* input, size_t length)
 	{
-		m_buffer ~= Pair(input, length);
+		m_buffer ~= input[0 .. length];
 	}
 	/*
 	* Encrypt the message
@@ -57,7 +57,7 @@ public:
 	*/
 	void write(in ubyte* input, size_t length)
 	{
-		m_buffer ~= Pair(input, length);
+		m_buffer ~= input[0 .. length];
 	}
 
 	/*

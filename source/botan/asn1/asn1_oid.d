@@ -107,14 +107,14 @@ public:
 	*/
 	string toString() const
 	{
-		string oid_str;
+		Appender!string oid_str;
 		foreach (size_t i; 0 .. m_id.length)
 		{
-			oid_str += std.conv.to!string(m_id[i]);
+			oid_str ~= to!string(m_id[i]);
 			if (i != m_id.length - 1)
-				oid_str += '.';
+				oid_str ~= '.';
 		}
-		return oid_str;
+		return oid_str.data;
 	}
 
 	/**
@@ -147,8 +147,8 @@ public:
 	OID opBinary(string op)(in OID oid, uint component)
 		if (op == "+")
 	{
-		OID new_oid(oid);
-		new_oid += component;
+		OID new_oid = OID(oid);
+		new_oid ~= component;
 		return new_oid;
 	}
 	

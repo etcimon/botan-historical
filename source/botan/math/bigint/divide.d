@@ -22,8 +22,6 @@ void divide(in BigInt x, const ref BigInt y_arg, ref BigInt q, ref BigInt r)
 	/*
 	* Solve x = q * y + r
 	*/
-
-
 	if (y_arg.is_zero())
 		throw new BigInt.DivideByZero();
 	

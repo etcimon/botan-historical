@@ -50,7 +50,7 @@ public:
 	Vector!ubyte raw_public_key() const
 	{
 		auto source = scoped!DataSource_Memory(m_info.get1("X509.Certificate.public_key"));
-		return unlock(pem.decode_check_label(source, "PUBLIC KEY"));
+		return unlock(PEM.decode_check_label(source, "PUBLIC KEY"));
 	}
 
 	/**
@@ -166,7 +166,7 @@ private:
 		cert_req_info.decode(_version);
 		if (_version != 0)
 			throw new Decoding_Error("Unknown version code in PKCS #10 request: " ~
-			                         std.conv.to!string(_version));
+			                         to!string(_version));
 		
 		X509_DN dn_subject;
 		cert_req_info.decode(dn_subject);
@@ -178,12 +178,8 @@ private:
 			throw new BER_Bad_Tag("PKCS10_Request: Unexpected tag for public key",
 			                      public_key.type_tag, public_key.class_tag);
 		
-		m_info.add("X509.Certificate.public_key",
-		         pem.encode(
-			asn1_obj.put_in_sequence(unlock(public_key.value)),
-			"PUBLIC KEY"
-			)
-		         );
+		m_info.add("X509.Certificate.public_key", 
+		           PEM.encode(asn1_obj.put_in_sequence(unlock(public_key.value)), "PUBLIC KEY"));
 		
 		BER_Object attr_bits = cert_req_info.get_next_object();
 		

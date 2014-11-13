@@ -40,7 +40,7 @@ bool check_bcrypt(in string password, in string hash)
 		return false;
 	}
 	
-	const ushort workfactor = to_uint(hash[4 .. 7]);
+	const ushort workfactor = to!uint(hash[4 .. 7]);
 	
 	Vector!ubyte salt = bcrypt_base64_decode(hash[7 .. 30]);
 	
@@ -147,7 +147,7 @@ string make_bcrypt(in string pass,
 	
 	string salt_b64 = bcrypt_base64_encode(&salt[0], salt.length);
 	
-	string work_factor_str = std.conv.to!string(work_factor);
+	string work_factor_str = to!string(work_factor);
 	if (work_factor_str.length == 1)
 		work_factor_str = "0" ~ work_factor_str;
 	

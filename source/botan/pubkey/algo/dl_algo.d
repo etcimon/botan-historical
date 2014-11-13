@@ -32,8 +32,7 @@ public:
 
 	Algorithm_Identifier algorithm_identifier() const
 	{
-		return Algorithm_Identifier(get_oid(),
-		                           m_group.DER_encode(group_format()));
+		return Algorithm_Identifier(get_oid(), m_group.DER_encode(group_format()));
 	}
 
 	Vector!ubyte x509_subject_public_key() const

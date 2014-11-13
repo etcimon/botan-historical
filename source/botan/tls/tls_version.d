@@ -20,13 +20,13 @@ struct Protocol_Version
 public:
 	typedef ushort Version_Code;
 	enum : Version_Code {
-		SSL_V3				 = 0x0300,
+		SSL_V3				= 0x0300,
 		TLS_V10				= 0x0301,
 		TLS_V11				= 0x0302,
 		TLS_V12				= 0x0303,
 
-		DTLS_V10			  = 0xFEFF,
-		DTLS_V12			  = 0xFEFD
+		DTLS_V10			= 0xFEFF,
+		DTLS_V12			= 0xFEFD
 	}
 
 	static Protocol_Version latest_tls_version()
@@ -96,13 +96,13 @@ public:
 			return "SSL v3";
 		
 		if (maj == 3 && min >= 1) // TLS v1.x
-			return "TLS v1." ~ std.conv.to!string(min-1);
+			return "TLS v1." ~ to!string(min-1);
 		
 		if (maj == 254) // DTLS 1.x
-			return "DTLS v1." ~ std.conv.to!string(255 - minput);
+			return "DTLS v1." ~ to!string(255 - minput);
 		
 		// Some very new or very old protocol (or bogus data)
-		return "Unknown " ~ std.conv.to!string(maj) ~ "." ~ std.conv.to!string(minput);
+		return "Unknown " ~ to!string(maj) ~ "." ~ to!string(minput);
 	}
 
 	/**
@@ -189,8 +189,7 @@ public:
 	{
 		if (this.is_datagram_protocol() != other.is_datagram_protocol())
 			throw new TLS_Exception(Alert.PROTOCOL_VERSION,
-			                        "Version comparing " ~ toString() +
-			                        " with " ~ other.toString());
+			                        "Version comparing " ~ toString() ~ " with " ~ other.toString());
 		
 		if (this.is_datagram_protocol())
 			return m_version < other.m_version; // goes backwards

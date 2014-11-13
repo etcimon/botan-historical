@@ -219,7 +219,7 @@ void round1(ref uint output, uint input, uint mask, uint rot) pure
 {
 	uint temp = rotate_left(mask + input, rot);
 	output  ^= (CAST_SBOX1[get_byte(0, temp)] ^ CAST_SBOX2[get_byte(1, temp)]) -
-		CAST_SBOX3[get_byte(2, temp)] + CAST_SBOX4[get_byte(3, temp)];
+				CAST_SBOX3[get_byte(2, temp)] + CAST_SBOX4[get_byte(3, temp)];
 }
 
 /*
@@ -229,7 +229,7 @@ void round2(ref uint output, uint input, uint mask, uint rot) pure
 {
 	uint temp = rotate_left(mask ^ input, rot);
 	output  ^= (CAST_SBOX1[get_byte(0, temp)]  - CAST_SBOX2[get_byte(1, temp)] +
-	CAST_SBOX3[get_byte(2, temp)]) ^ CAST_SBOX4[get_byte(3, temp)];
+				CAST_SBOX3[get_byte(2, temp)]) ^ CAST_SBOX4[get_byte(3, temp)];
 }
 
 /*

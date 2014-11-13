@@ -65,7 +65,7 @@ struct CryptoBox {
 		*/
 		const size_t ciphertext_len = pipe.remaining(0);
 		
-		Vector!ubyte out_buf = Vector!ubyte(VERSION_CODE_LEN + PBKDF_SALT_LEN + MAC_OUTPUT_LEN + ciphertext_len);
+		Secure_Vector!ubyte out_buf = Secure_Vector!ubyte(VERSION_CODE_LEN + PBKDF_SALT_LEN + MAC_OUTPUT_LEN + ciphertext_len);
 		
 		foreach (size_t i; 0 .. VERSION_CODE_LEN)
 			out_buf[i] = get_byte(i, CRYPTOBOX_VERSION_CODE);
@@ -76,7 +76,7 @@ struct CryptoBox {
 		pipe.read(&out_buf[VERSION_CODE_LEN + PBKDF_SALT_LEN + MAC_OUTPUT_LEN],
 		ciphertext_len, 0);
 		
-		return pem.encode(out_buf, "BOTAN CRYPTOBOX MESSAGE");
+		return PEM.encode(out_buf, "BOTAN CRYPTOBOX MESSAGE");
 	}
 
 	/**
@@ -89,7 +89,7 @@ struct CryptoBox {
 	                      in string passphrase)
 	{
 		DataSource_Memory input_src(input, input_len);
-		Secure_Vector!ubyte ciphertext = pem.decode_check_label(input_src, "BOTAN CRYPTOBOX MESSAGE");
+		Secure_Vector!ubyte ciphertext = PEM.decode_check_label(input_src, "BOTAN CRYPTOBOX MESSAGE");
 		
 		if (ciphertext.length < (VERSION_CODE_LEN + PBKDF_SALT_LEN + MAC_OUTPUT_LEN))
 			throw new Decoding_Error("Invalid CryptoBox input");

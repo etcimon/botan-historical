@@ -11,8 +11,9 @@ import botan.rng.rng;
 import botan.algo_base.symkey;
 import botan.filters.pipe;
 import botan.libstate.lookup;
+import botan.mac.mac;
 import botan.utils.loadstor;
-import botan.utils.types : Unique;
+import botan.utils.types;
 /**
 * This namespace holds various high-level crypto functions
 */
@@ -48,17 +49,17 @@ struct CryptoBox {
 		pipe.process_msg(input, input_len);
 		Secure_Vector!ubyte ctext = pipe.read_all(0);
 		
-		Vector!ubyte output = Vector!ubyte(MAGIC_LENGTH);
+		Secure_Vector!ubyte output = Secure_Vector!ubyte(MAGIC_LENGTH);
 		store_be(CRYPTOBOX_MAGIC, &output[0]);
-		output += cipher_key_salt;
-		output += mac_key_salt;
-		output += cipher_iv.bits_of();
-		output += ctext;
-		
+		output ~= cipher_key_salt;
+		output ~= mac_key_salt;
+		output ~= cipher_iv.bits_of();
+		output ~= ctext;
+
 		mac.update(output);
 		
-		output += mac.flush();
-		return output;
+		output ~= mac.flush();
+		return output.unlock();
 	}
 
 	/**

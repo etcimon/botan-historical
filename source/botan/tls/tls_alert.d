@@ -9,6 +9,8 @@ module botan.tls.tls_alert;
 import botan.alloc.zeroize;
 // import string;
 import botan.utils.exceptn;
+import botan.utils.types;
+import std.conv : to;
 
 /**
 * SSL/TLS Alert Message
@@ -154,7 +156,7 @@ public:
 	* compiler can warn us that it is not included in the switch
 	* statement.
 	*/
-		return "unrecognized_alert_" ~ std.conv.to!string(type());
+		return "unrecognized_alert_" ~ to!string(type());
 	}
 
 	/**
@@ -175,11 +177,10 @@ public:
 	this(in Secure_Vector!ubyte buf)
 	{
 		if (buf.length != 2)
-			throw new Decoding_Error("Alert: Bad size " ~ std.conv.to!string(buf.length) +
-			                         " for alert message");
+			throw new Decoding_Error("Alert: Bad size " ~ to!string(buf.length) ~ " for alert message");
 		
 		if (buf[0] == 1)		m_fatal = false;
-		else if (buf[0] == 2) m_fatal = true;
+		else if (buf[0] == 2) 	m_fatal = true;
 		else
 			throw new Decoding_Error("Alert: Bad code for alert level");
 		

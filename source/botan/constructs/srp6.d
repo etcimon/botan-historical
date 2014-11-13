@@ -13,6 +13,8 @@ import botan.algo_base.symkey;
 import botan.pubkey.algo.dl_group;
 import botan.libstate.libstate;
 import botan.math.numbertheory.numthry;
+import botan.utils.types;
+
 // import string;
 
 /**
@@ -99,7 +101,7 @@ string srp6_group_identifier(in BigInt N, const ref BigInt g)
 	*/
 	try
 	{
-		const string group_name = "modp/srp/" ~ std.conv.to!string(N.bits());
+		const string group_name = "modp/srp/" ~ to!string(N.bits());
 		
 		DL_Group group = DL_Group(group_name);
 		

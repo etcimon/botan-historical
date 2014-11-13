@@ -195,7 +195,7 @@ private:
 			{
 				munmap(m_pool, m_poolsize);
 				m_pool = null;
-				throw new Exception("Could not mlock " ~ std.conv.to!string(m_poolsize) ~ " bytes");
+				throw new Exception("Could not mlock " ~ to!string(m_poolsize) ~ " bytes");
 			}
 			
 			static if (MADV_DONTDUMP) {

@@ -120,7 +120,8 @@ public:
 	*/
 	const X509_Certificate trust_root() const
 	{
-		return m_cert_path[m_cert_path.length-1];
+		import std.range : back;
+		return m_cert_path[].back;
 	}
 
 	/**

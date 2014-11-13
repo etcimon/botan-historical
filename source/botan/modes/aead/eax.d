@@ -100,7 +100,7 @@ protected:
 		m_ctr = new CTR_BE(m_cipher.clone());
 		m_cmac = new CMAC(m_cipher.clone());
 		if (m_tag_size < 8 || m_tag_size > m_cmac.output_length)
-			throw new Invalid_Argument(name ~ ": Bad tag size " ~ std.conv.to!string(tag_size));
+			throw new Invalid_Argument(name ~ ": Bad tag size " ~ to!string(tag_size));
 	}
 
 	final @property size_t block_size() const { return m_cipher.block_size; }

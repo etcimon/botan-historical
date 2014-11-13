@@ -118,7 +118,7 @@ protected:
 		m_ctr = new CTR_BE(cipher); // CTR_BE takes ownership of cipher
 		
 		if (m_tag_size != 8 && m_tag_size != 16)
-			throw new Invalid_Argument(name ~ ": Bad tag size " ~ std.conv.to!string(m_tag_size));
+			throw new Invalid_Argument(name ~ ": Bad tag size " ~ to!string(m_tag_size));
 	}
 
 	__gshared immutable size_t BS = 16;

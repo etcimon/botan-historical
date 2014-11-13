@@ -84,7 +84,7 @@ AEAD_Mode get_aead(in string algo_spec, Cipher_Dir direction)
 	
 	const string mode_name = mode_info[0];
 	
-	const size_t tag_size = (mode_info.length > 1) ? to_uint(mode_info[1]) : cipher.block_size;
+	const size_t tag_size = (mode_info.length > 1) ? to!uint(mode_info[1]) : cipher.block_size;
 	
 	static if (BOTAN_HAS_AEAD_CCM) {
 		if (mode_name == "CCM-8")
@@ -97,7 +97,7 @@ AEAD_Mode get_aead(in string algo_spec, Cipher_Dir direction)
 		
 		if (mode_name == "CCM" || mode_name == "CCM-8")
 		{
-			const size_t L = (mode_info.length > 2) ? to_uint(mode_info[2]) : 3;
+			const size_t L = (mode_info.length > 2) ? to!uint(mode_info[2]) : 3;
 			
 			if (direction == ENCRYPTION)
 				return new CCM_Encryption(cipher.clone(), tag_size, L);

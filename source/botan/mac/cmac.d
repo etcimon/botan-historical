@@ -7,8 +7,10 @@
 module botan.cmac.cmac;
 
 import botan.constants;
+
 static if (BOTAN_HAS_CMAC):
 
+import botan.utils.types;
 import botan.mac.mac;
 import botan.block.block_cipher;
 import botan.utils.loadstor;
@@ -107,7 +109,7 @@ public:
 		    m_cipher.block_size != 32 && m_cipher.block_size != 64)
 		{
 			throw new Invalid_Argument("CMAC cannot use the " ~
-			                           std.conv.to!string(m_cipher.block_size * 8) +
+			                           to!string(m_cipher.block_size * 8) ~
 			                           " bit cipher " ~ m_cipher.name);
 		}
 		

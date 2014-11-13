@@ -216,13 +216,13 @@ string THREEFISH_ENC_INJECT_KEY(alias _r)()
 	const r = __traits(identifier, _r).stringof;
 
 	return `X0 += m_K[(` ~ r ~ `  ) % 9];
-		X1 += m_K[(` ~ r ~ `+1) % 9];
-		X2 += m_K[(` ~ r ~ `+2) % 9];
-		X3 += m_K[(` ~ r ~ `+3) % 9];
-		X4 += m_K[(` ~ r ~ `+4) % 9];
-		X5 += m_K[(` ~ r ~ `+5) % 9] + m_T[(` ~ r ~ `  ) % 3];
-		X6 += m_K[(` ~ r ~ `+6) % 9] + m_T[(` ~ r ~ `+1) % 3];
-		X7 += m_K[(` ~ r ~ `+7) % 9] + (` ~ r ~ `);`;
+			X1 += m_K[(` ~ r ~ `+1) % 9];
+			X2 += m_K[(` ~ r ~ `+2) % 9];
+			X3 += m_K[(` ~ r ~ `+3) % 9];
+			X4 += m_K[(` ~ r ~ `+4) % 9];
+			X5 += m_K[(` ~ r ~ `+5) % 9] + m_T[(` ~ r ~ `  ) % 3];
+			X6 += m_K[(` ~ r ~ `+6) % 9] + m_T[(` ~ r ~ `+1) % 3];
+			X7 += m_K[(` ~ r ~ `+7) % 9] + (` ~ r ~ `);`;
 }
 
 string THREEFISH_ENC_8_ROUNDS(ubyte R1, ubyte R2)()

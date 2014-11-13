@@ -12,6 +12,7 @@ import botan.libstate.libstate;
 import botan.pbkdf.pbkdf2;
 import botan.filters.b64_filt;
 import botan.filters.pipe;
+import botan.utils.exceptn;
 
 /**
 * Create a password hash using PBKDF2
@@ -34,11 +35,9 @@ string generate_passhash9(in string pass,
 	MessageAuthenticationCode prf = get_pbkdf_prf(alg_id);
 	
 	if (!prf)
-		throw new Invalid_Argument("Passhash9: Algorithm id " ~
-		                           std.conv.to!string(alg_id) +
-		                           " is not defined");
+		throw new Invalid_Argument("Passhash9: Algorithm id " ~ to!string(alg_id) ~ " is not defined");
 	
-	PKCS5_PBKDF2 kdf(prf); // takes ownership of pointer
+	auto kdf = scoped!PKCS5_PBKDF2(prf); // takes ownership of pointer
 	
 	Secure_Vector!ubyte salt = Secure_Vector!ubyte(SALT_BYTES);
 	rng.randomize(&salt[0], salt.length);
@@ -69,15 +68,10 @@ string generate_passhash9(in string pass,
 */
 bool check_passhash9(in string password, in string hash)
 {
-	const size_t BINARY_LENGTH =
-		ALGID_BYTES +
-			WORKFACTOR_BYTES +
-			PASSHASH9_PBKDF_OUTPUT_LEN +
-			SALT_BYTES;
+	__gshared immutable size_t BINARY_LENGTH = ALGID_BYTES + WORKFACTOR_BYTES + PASSHASH9_PBKDF_OUTPUT_LEN + SALT_BYTES;
 	
-	const size_t BASE64_LENGTH =
-		MAGIC_PREFIX.length + (BINARY_LENGTH * 8) / 6;
-	
+	__gshared immutable size_t BASE64_LENGTH = MAGIC_PREFIX.length + (BINARY_LENGTH * 8) / 6;
+
 	if (hash.length != BASE64_LENGTH)
 		return false;
 	
@@ -104,8 +98,7 @@ bool check_passhash9(in string password, in string hash)
 		return false;
 	
 	if (work_factor > 512)
-		throw new Invalid_Argument("Requested Bcrypt work factor " ~
-		                           std.conv.to!string(work_factor) ~ " too large");
+		throw new Invalid_Argument("Requested Bcrypt work factor " ~ to!string(work_factor) ~ " too large");
 	
 	const size_t kdf_iterations = WORK_FACTOR_SCALE * work_factor;
 	

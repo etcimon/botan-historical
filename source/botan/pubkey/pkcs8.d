@@ -56,7 +56,7 @@ Secure_Vector!ubyte BER_encode(in Private_Key key)
 */
 string PEM_encode(in Private_Key key)
 {
-	return pem.encode(BER_encode(key), "PRIVATE KEY");
+	return PEM.encode(BER_encode(key), "PRIVATE KEY");
 }
 
 /**
@@ -114,8 +114,7 @@ string PEM_encode(in Private_Key key,
 	if (pass == "")
 		return PEM_encode(key);
 
-	return pem.encode(BER_encode(key, rng, pass, dur, pbe_algo),
-	                  "ENCRYPTED PRIVATE KEY");
+	return PEM.encode(BER_encode(key, rng, pass, dur, pbe_algo), "ENCRYPTED PRIVATE KEY");
 }
 
 /**
@@ -227,12 +226,12 @@ Secure_Vector!ubyte PKCS8_decode(
 	bool is_encrypted = true;
 	
 	try {
-		if (asn1_obj.maybe_BER(source) && !pem.matches(source))
+		if (asn1_obj.maybe_BER(source) && !PEM.matches(source))
 			key_data = PKCS8_extract(source, pbe_alg_id);
 		else
 		{
 			string label;
-			key_data = pem.decode(source, label);
+			key_data = PEM.decode(source, label);
 			if (label == "PRIVATE KEY")
 				is_encrypted = false;
 			else if (label == "ENCRYPTED PRIVATE KEY")

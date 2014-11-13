@@ -24,8 +24,8 @@ public:
 	*/
 	@property string name() const
 	{
-		return "Tiger(" ~ std.conv.to!string(output_length()) ~ "," ~
-			std.conv.to!string(m_passes) ~ ")";
+		return "Tiger(" ~ to!string(output_length()) ~ "," ~
+			to!string(m_passes) ~ ")";
 	}
 
 	@property size_t output_length() const { return m_hash_len; }
@@ -61,11 +61,11 @@ public:
 		m_passes = passes;
 		if (output_length() != 16 && output_length() != 20 && output_length() != 24)
 			throw new Invalid_Argument("Tiger: Illegal hash output size: " ~
-			                           std.conv.to!string(output_length()));
+			                           to!string(output_length()));
 		
 		if (m_passes < 3)
 			throw new Invalid_Argument("Tiger: Invalid number of m_passes: "
-			                           + std.conv.to!string(m_passes));
+			                           + to!string(m_passes));
 		clear();
 	}
 private:

@@ -54,7 +54,7 @@ public:
 	{
 		if (m_SKIP == 0)	return "RC4";
 		if (m_SKIP == 256) return "MARK-4";
-		else				return "RC4_skip(" ~ std.conv.to!string(m_SKIP) ~ ")";
+		else				return "RC4_skip(" ~ to!string(m_SKIP) ~ ")";
 	}
 
 	RC4 clone() const { return new RC4(m_SKIP); }

@@ -77,7 +77,7 @@ protected:
 		}
 		
 		if (nothing_attached)
-			m_write_queue += Pair(input, length);
+			m_write_queue ~= input[0 .. length];
 		else
 			m_write_queue.clear();
 	}

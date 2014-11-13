@@ -97,7 +97,7 @@ public:
 	*/
 	override @property string name() const
 	{
-		return "RC5(" ~ std.conv.to!string(m_rounds) ~ ")";
+		return "RC5(" ~ to!string(m_rounds) ~ ")";
 	}
 
 	BlockCipher clone() const { return new RC5(m_rounds); }
@@ -112,7 +112,7 @@ public:
 		m_rounds = r;
 		if (m_rounds < 8 || m_rounds > 32 || (m_rounds % 4 != 0))
 			throw new Invalid_Argument("RC5: Invalid number of rounds " ~
-			                           std.conv.to!string(m_rounds));
+			                           to!string(m_rounds));
 	}
 private:
 

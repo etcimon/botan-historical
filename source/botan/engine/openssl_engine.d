@@ -403,7 +403,7 @@ public:
 	{
 		if (SKIP == 0)		return "RC4";
 		if (SKIP == 256) 	return "MARK-4";
-		else				return "RC4_skip(" ~ std.conv.to!string(m_SKIP) ~ ")";
+		else				return "RC4_skip(" ~ to!string(m_SKIP) ~ ")";
 	}
 	
 	StreamCipher clone() const { return new RC4_OpenSSL(m_SKIP); }
@@ -565,7 +565,7 @@ private:
 		
 		if (m_cipher_name == "TripleDES" && length == 16)
 		{
-			full_key += Pair(key, 8);
+			full_key ~= key[0 .. 8];
 		}
 		else
 			if (EVP_CIPHER_CTX_set_key_length(&m_encrypt, length) == 0 ||

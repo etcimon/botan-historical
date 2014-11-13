@@ -549,22 +549,22 @@ void aes_encrypt_n(ubyte* input, ubyte* output,
 		*/
 		
 		uint B0 = TE[get_byte(0, T0)] ^
-			rotate_right(TE[get_byte(1, T1)],  8) ^
+				rotate_right(TE[get_byte(1, T1)],  8) ^
 				rotate_right(TE[get_byte(2, T2)], 16) ^
 				rotate_right(TE[get_byte(3, T3)], 24) ^ EK[4];
 		
 		uint B1 = TE[get_byte(0, T1)] ^
-			rotate_right(TE[get_byte(1, T2)],  8) ^
+				rotate_right(TE[get_byte(1, T2)],  8) ^
 				rotate_right(TE[get_byte(2, T3)], 16) ^
 				rotate_right(TE[get_byte(3, T0)], 24) ^ EK[5];
 		
 		uint B2 = TE[get_byte(0, T2)] ^
-			rotate_right(TE[get_byte(1, T3)],  8) ^
+				rotate_right(TE[get_byte(1, T3)],  8) ^
 				rotate_right(TE[get_byte(2, T0)], 16) ^
 				rotate_right(TE[get_byte(3, T1)], 24) ^ EK[6];
 		
 		uint B3 = TE[get_byte(0, T3)] ^
-			rotate_right(TE[get_byte(1, T0)],  8) ^
+				rotate_right(TE[get_byte(1, T0)],  8) ^
 				rotate_right(TE[get_byte(2, T1)], 16) ^
 				rotate_right(TE[get_byte(3, T2)], 24) ^ EK[7];
 		
@@ -654,17 +654,17 @@ void aes_decrypt_n(ubyte* input, ubyte* output, size_t blocks,
 		uint T3 = load_be!uint(input, 3) ^ DK[3];
 		
 		uint B0 = TD[get_byte(0, T0)] ^
-			rotate_right(TD[get_byte(1, T3)],  8) ^
+				rotate_right(TD[get_byte(1, T3)],  8) ^
 				rotate_right(TD[get_byte(2, T2)], 16) ^
 				rotate_right(TD[get_byte(3, T1)], 24) ^ DK[4];
 		
 		uint B1 = TD[get_byte(0, T1)] ^
-			rotate_right(TD[get_byte(1, T0)],  8) ^
+				rotate_right(TD[get_byte(1, T0)],  8) ^
 				rotate_right(TD[get_byte(2, T3)], 16) ^
 				rotate_right(TD[get_byte(3, T2)], 24) ^ DK[5];
 		
 		uint B2 = TD[get_byte(0, T2)] ^
-			rotate_right(TD[get_byte(1, T1)],  8) ^
+				rotate_right(TD[get_byte(1, T1)],  8) ^
 				rotate_right(TD[get_byte(2, T0)], 16) ^
 				rotate_right(TD[get_byte(3, T3)], 24) ^ DK[6];
 		

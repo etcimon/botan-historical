@@ -154,9 +154,9 @@ private:
 	void assert_at_least(size_t n) const
 	{
 		if (m_buf.length - m_offset < n)
-			throw new decode_error("Expected " ~ std.conv.to!string(n) ~
+			throw new decode_error("Expected " ~ to!string(n) ~
 									 " bytes remaining, only " ~
-									 std.conv.to!string(m_buf.length-m_offset) ~
+									 to!string(m_buf.length-m_offset) ~
 									 " left");
 	}
 

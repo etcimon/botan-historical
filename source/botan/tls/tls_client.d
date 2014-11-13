@@ -225,8 +225,7 @@ private:
 			if (!diff.empty)
 			{
 				throw new TLS_Exception(Alert.HANDSHAKE_FAILURE,
-				                        "Server sent extension " ~ std.conv.to!string(i[0]) +
-				                        " but we did not request it");
+										"Server sent extension " ~ to!string(i[0]) ~ " but we did not request it");
 			}
 			
 			state.set_version(state.server_hello()._version());

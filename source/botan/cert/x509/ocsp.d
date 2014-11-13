@@ -80,7 +80,7 @@ public:
 		response_outer.decode(resp_status, ASN1_Tag.ENUMERATED, ASN1_Tag.UNIVERSAL);
 		
 		if (resp_status != 0)
-			throw new Exception("OCSP response status " ~ std.conv.to!string(resp_status));
+			throw new Exception("OCSP response status " ~ to!string(resp_status));
 		
 		if (response_outer.more_items())
 		{

@@ -78,9 +78,7 @@ protected:
 		m_padding = padding;
 		m_state = m_cipher.block_size;
 		if (m_padding && !m_padding.valid_blocksize(cipher.block_size))
-			throw new Invalid_Argument("Padding " ~ m_padding.name +
-			                           " cannot be used with " ~
-			                           cipher.name ~ "/CBC");
+			throw new Invalid_Argument("Padding " ~ m_padding.name ~ " cannot be used with " ~ cipher.name ~ "/CBC");
 	}
 
 	final const BlockCipher cipher() const { return *m_cipher; }

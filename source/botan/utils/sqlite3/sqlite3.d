@@ -72,22 +72,21 @@ public:
 		int rc = sqlite3_prepare_v2(db.m_db, base_sql.toStringz, -1, &m_stmt, null);
 		
 		if (rc != SQLITE_OK)
-			throw new Exception("sqlite3_prepare failed " ~ base_sql +
-			                    ", code " ~ std.conv.to!string(rc));
+			throw new Exception("sqlite3_prepare failed " ~ base_sql ~ ", code " ~ to!string(rc));
 	}
 
 	void bind(int column, in string val)
 	{
 		int rc = sqlite3_bind_text(m_stmt, column, val.toStringz, -1, SQLITE_TRANSIENT);
 		if (rc != SQLITE_OK)
-			throw new Exception("sqlite3_bind_text failed, code " ~ std.conv.to!string(rc));
+			throw new Exception("sqlite3_bind_text failed, code " ~ to!string(rc));
 	}
 
 	void bind(int column, int val)
 	{
 		int rc = sqlite3_bind_int(m_stmt, column, val);
 		if (rc != SQLITE_OK)
-			throw new Exception("sqlite3_bind_int failed, code " ~ std.conv.to!string(rc));
+			throw new Exception("sqlite3_bind_int failed, code " ~ to!string(rc));
 	}
 
 	void bind(int column, SysTime time)
@@ -100,7 +99,7 @@ public:
 	{
 		int rc = sqlite3_bind_blob(m_stmt, column, &val[0], val.length, SQLITE_TRANSIENT);
 		if (rc != SQLITE_OK)
-			throw new Exception("sqlite3_bind_text failed, code " ~ std.conv.to!string(rc));
+			throw new Exception("sqlite3_bind_text failed, code " ~ to!string(rc));
 	}
 
 	Pair!(const ubyte*, size_t) get_blob(int column)

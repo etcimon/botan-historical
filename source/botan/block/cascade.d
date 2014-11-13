@@ -41,8 +41,7 @@ public:
 
 	Key_Length_Specification key_spec() const
 	{
-		return Key_Length_Specification(m_cipher1.maximum_keylength() +
-												  m_cipher2.maximum_keylength());
+		return Key_Length_Specification(m_cipher1.maximum_keylength() + m_cipher2.maximum_keylength());
 	}
 
 	void clear()

@@ -48,7 +48,7 @@ public:
 		*/
 		this(in string where, message_id msg) {
 			super("Pipe::" ~ where ~ ": Invalid message number " ~
-			      std.conv.to!string(msg));
+			      to!string(msg));
 		}
 	}
 

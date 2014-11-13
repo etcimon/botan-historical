@@ -72,7 +72,7 @@ public:
 	{
 		if (bits < 1024)
 			throw new Invalid_Argument(algo_name ~ ": Can't make a key that is only " ~
-			                           std.conv.to!string(bits) ~ " bits long");
+			                           to!string(bits) ~ " bits long");
 		if (exp < 2 || exp % 2 == 1)
 			throw new Invalid_Argument(algo_name ~ ": Invalid encryption exponent");
 		

@@ -168,8 +168,8 @@ public:
 	OctetString opBinary(op)(const ref OctetString other)
 	if (op == "+") {
 		Secure_Vector!ubyte output;
-		output += bits_of();
-		output += other.bits_of();
+		output ~= bits_of();
+		output ~= other.bits_of();
 		return OctetString(output);
 	}
 	

@@ -45,8 +45,7 @@ Vector!ubyte BER_encode(in Public_Key key)
 */
 string PEM_encode(in Public_Key key)
 {
-	return pem.encode(x509_key.BER_encode(key),
-	                  "PUBLIC KEY");
+	return PEM.encode(x509_key.BER_encode(key), "PUBLIC KEY");
 }
 
 /**
@@ -60,7 +59,7 @@ Public_Key load_key(DataSource source)
 		Algorithm_Identifier alg_id;
 		Secure_Vector!ubyte key_bits;
 		
-		if (asn1_obj.maybe_BER(source) && !pem.matches(source))
+		if (asn1_obj.maybe_BER(source) && !PEM.matches(source))
 		{
 			BER_Decoder(source)
 				.start_cons(ASN1_Tag.SEQUENCE)
@@ -72,7 +71,7 @@ Public_Key load_key(DataSource source)
 		else
 		{
 			auto ber = scoped!DataSource_Memory(
-				pem.decode_check_label(source, "PUBLIC KEY")
+				PEM.decode_check_label(source, "PUBLIC KEY")
 				);
 			
 			BER_Decoder(ber)

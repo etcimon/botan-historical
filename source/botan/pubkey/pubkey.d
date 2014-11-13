@@ -214,7 +214,7 @@ public:
 		}
 		else
 			throw new Encoding_Error("PK_Signer: Unknown signature format " ~
-			                         std.conv.to!string(m_sig_format));
+			                         to!string(m_sig_format));
 	}
 
 	/**
@@ -394,7 +394,7 @@ public:
 			}
 			else
 				throw new Decoding_Error("PK_Verifier: Unknown signature format " ~
-				                         std.conv.to!string(m_sig_format));
+				                         to!string(m_sig_format));
 		}
 		catch(Invalid_Argument) { return false; }
 	}

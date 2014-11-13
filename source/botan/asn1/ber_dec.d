@@ -675,7 +675,7 @@ size_t find_eoc(DataSource ber)
 		if (got == 0)
 			break;
 		
-		data += Pair(&buffer[0], got);
+		data ~= buffer[];
 	}
 
 	auto m_source = scoped!DataSource_Memory(data);

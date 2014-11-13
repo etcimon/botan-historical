@@ -184,7 +184,7 @@ private:
 		
 		if (_version != 0 && _version != 1)
 			throw new X509_CRL_Error("Unknown X.509 CRL version " ~
-			                         std.conv.to!string(_version+1));
+			                         to!string(_version+1));
 		
 		Algorithm_Identifier sig_algo_inner;
 		tbs_crl.decode(sig_algo_inner);

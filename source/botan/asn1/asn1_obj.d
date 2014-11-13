@@ -89,10 +89,10 @@ public:
 	{
 		if (this.type_tag != type_tag || this.class_tag != class_tag)
 			throw new BER_Decoding_Error("Tag mismatch when decoding got " ~
-			                             std.conv.to!string(this.type_tag) ~ "/" ~
-			                             std.conv.to!string(this.class_tag) ~ " expected " ~
-			                             std.conv.to!string(type_tag) ~ "/" ~
-			                             std.conv.to!string(class_tag));
+			                             to!string(this.type_tag) ~ "/" ~
+			                             to!string(this.class_tag) ~ " expected " ~
+			                             to!string(type_tag) ~ "/" ~
+			                             to!string(class_tag));
 	}
 
 	ASN1_Tag type_tag, class_tag;
@@ -119,14 +119,14 @@ class BER_Bad_Tag : BER_Decoding_Error
 	* BER Decoding Exceptions
 	*/
 	this(in string str, ASN1_Tag tag) {
-		super(str ~ ": " ~ std.conv.to!string(tag));
+		super(str ~ ": " ~ to!string(tag));
 	}
 
 	/*
 	* BER Decoding Exceptions
 	*/
 	this(in string str, ASN1_Tag tag1, ASN1_Tag tag2) {
-		super(str ~ ": " ~ std.conv.to!string(tag1) ~ "/" ~ std.conv.to!string(tag2));
+		super(str ~ ": " ~ to!string(tag1) ~ "/" ~ to!string(tag2));
 	}
 }
 	

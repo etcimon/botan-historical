@@ -41,7 +41,7 @@ public:
 		if (output_bits != 224 && output_bits != 256 &&
 		    output_bits != 384 && output_bits != 512)
 			throw new Invalid_Argument("Keccak_1600: Invalid output length " ~
-			                           std.conv.to!string(output_bits));
+			                           to!string(output_bits));
 	}
 
 	override @property size_t hash_block_size() const { return m_bitrate / 8; }
@@ -54,7 +54,7 @@ public:
 
 	@property string name() const
 	{
-		return "Keccak-1600(" ~ std.conv.to!string(output_bits) ~ ")";
+		return "Keccak-1600(" ~ to!string(output_bits) ~ ")";
 	}
 
 	void clear()

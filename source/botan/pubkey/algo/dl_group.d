@@ -112,13 +112,13 @@ public:
 		const Vector!ubyte encoding = DER_encode(format);
 		
 		if (format == PKCS_3)
-			return pem.encode(encoding, "DH PARAMETERS");
+			return PEM.encode(encoding, "DH PARAMETERS");
 		else if (format == ANSI_X9_57)
-			return pem.encode(encoding, "DSA PARAMETERS");
+			return PEM.encode(encoding, "DSA PARAMETERS");
 		else if (format == ANSI_X9_42)
-			return pem.encode(encoding, "X942 DH PARAMETERS");
+			return PEM.encode(encoding, "X942 DH PARAMETERS");
 		else
-			throw new Invalid_Argument("Unknown DL_Group encoding " ~ std.conv.to!string(format));
+			throw new Invalid_Argument("Unknown DL_Group encoding " ~ to!string(format));
 	}
 
 	/**
@@ -136,7 +136,7 @@ public:
 		if (format == ANSI_X9_57)
 		{
 			return DER_Encoder()
-				.start_cons(ASN1_Tag.SEQUENCE)
+					.start_cons(ASN1_Tag.SEQUENCE)
 					.encode(m_p)
 					.encode(m_q)
 					.encode(m_g)
@@ -146,7 +146,7 @@ public:
 		else if (format == ANSI_X9_42)
 		{
 			return DER_Encoder()
-				.start_cons(ASN1_Tag.SEQUENCE)
+					.start_cons(ASN1_Tag.SEQUENCE)
 					.encode(m_p)
 					.encode(m_g)
 					.encode(m_q)
@@ -156,14 +156,14 @@ public:
 		else if (format == PKCS_3)
 		{
 			return DER_Encoder()
-				.start_cons(ASN1_Tag.SEQUENCE)
+					.start_cons(ASN1_Tag.SEQUENCE)
 					.encode(m_p)
 					.encode(m_g)
 					.end_cons()
 					.get_contents_unlocked();
 		}
 		
-		throw new Invalid_Argument("Unknown DL_Group encoding " ~ std.conv.to!string(format));
+		throw new Invalid_Argument("Unknown DL_Group encoding " ~ to!string(format));
 	}
 
 	/**
@@ -182,25 +182,25 @@ public:
 		if (format == ANSI_X9_57)
 		{
 			ber.decode(new_p)
-				.decode(new_q)
+					.decode(new_q)
 					.decode(new_g)
 					.verify_end();
 		}
 		else if (format == ANSI_X9_42)
 		{
 			ber.decode(new_p)
-				.decode(new_g)
+					.decode(new_g)
 					.decode(new_q)
 					.discard_remaining();
 		}
 		else if (format == PKCS_3)
 		{
 			ber.decode(new_p)
-				.decode(new_g)
+					.decode(new_g)
 					.discard_remaining();
 		}
 		else
-			throw new Invalid_Argument("Unknown DL_Group encoding " ~ std.conv.to!string(format));
+			throw new Invalid_Argument("Unknown DL_Group encoding " ~ to!string(format));
 		
 		initialize(new_p, new_q, new_g);
 	}
@@ -213,7 +213,7 @@ public:
 	{
 		string label;
 		
-		auto ber = unlock(pem.decode(pem, label));
+		auto ber = unlock(PEM.decode(pem, label));
 		
 		if (label == "DH PARAMETERS")
 			BER_decode(ber, PKCS_3);
@@ -269,8 +269,7 @@ public:
 	     PrimeType type, size_t pbits, size_t qbits = 0)
 	{
 		if (pbits < 512)
-			throw new Invalid_Argument("DL_Group: prime size " ~ std.conv.to!string(pbits) +
-			                           " is too small");
+			throw new Invalid_Argument("DL_Group: prime size " ~ to!string(pbits) ~ " is too small");
 		
 		if (type == Strong)
 		{

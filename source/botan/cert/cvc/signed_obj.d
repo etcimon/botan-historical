@@ -89,8 +89,7 @@ public:
 	* @param pipe the pipe to write the encoded object to
 	* @param encoding the encoding type to use
 	*/
-	abstract void encode(Pipe pipe,
-	                     X509_Encoding encoding = PEM) const;
+	abstract void encode(Pipe pipe, X509_Encoding encoding = PEM) const;
 
 	/**
 	* BER encode this object.
@@ -113,9 +112,9 @@ public:
 	{
 		Pipe pem;
 		pem.start_msg();
-		encode(pem, PEM);
-		pem.end_msg();
-		return pem.toString();
+		PEM.encode(pem, PEM);
+		end_msg();
+		return toString();
 	}
 
 	~this() {}

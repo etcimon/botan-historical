@@ -109,7 +109,7 @@ public:
 		if (m_subsequences.length)
 			m_subsequences[m_subsequences.length-1].add_bytes(bytes, length);
 		else
-			m_contents += Pair(bytes, length);
+			m_contents ~= bytes[0 .. length];
 		
 		return this;
 	}
@@ -251,7 +251,7 @@ public:
 		{
 			Secure_Vector!ubyte encoded;
 			encoded.push_back(0);
-			encoded += Pair(bytes, length);
+			encoded ~= bytes[0 .. length];
 			return add_object(m_type_tag, m_class_tag, encoded);
 		}
 		else
@@ -316,9 +316,9 @@ public:
 	                       in ubyte* rep, size_t length)
 	{
 		Secure_Vector!ubyte buffer;
-		buffer += encode_tag(m_type_tag, m_class_tag);
-		buffer += encode_length(length);
-		buffer += Pair(rep, length);
+		buffer ~= encode_tag(m_type_tag, m_class_tag);
+		buffer ~= encode_length(length);
+		buffer ~= rep[0 .. length];
 		
 		return raw_bytes(buffer);
 	}
@@ -366,16 +366,16 @@ private:
 			if (m_type_tag == ASN1_Tag.SET)
 			{	// sort?
 				auto set_contents = m_set_contents[];
-				std.algorithm.sort!("a[0] < b[0]", SwapStrategy.stable)(set_contents);
-				foreach(Secure_Vector!ubyte data; set_contents)
-					m_contents += data;
+				sort!("a < b", SwapStrategy.stable)(set_contents);
+				foreach (Secure_Vector!ubyte data; set_contents)
+					m_contents ~= data;
 				m_set_contents.clear();
 			}
 			
 			Secure_Vector!ubyte result;
-			result += encode_tag(m_type_tag, real_class_tag);
-			result += encode_length(m_contents.length);
-			result += m_contents;
+			result ~= encode_tag(m_type_tag, real_class_tag);
+			result ~= encode_length(m_contents.length);
+			result ~= m_contents;
 			m_contents.clear();
 			
 			return result;
@@ -389,7 +389,7 @@ private:
 			if (m_type_tag == ASN1_Tag.SET)
 				m_set_contents.push_back(Secure_Vector!ubyte(data, data + length));
 			else
-				m_contents += Pair(data, length);
+				m_contents ~= data[0 .. length];
 		}
 
 		/*
@@ -420,7 +420,7 @@ Secure_Vector!ubyte encode_tag(ASN1_Tag m_type_tag, ASN1_Tag m_class_tag)
 {
 	if ((m_class_tag | 0xE0) != 0xE0)
 		throw new Encoding_Error("DER_Encoder: Invalid class tag " ~
-		                         std.conv.to!string(m_class_tag));
+		                         to!string(m_class_tag));
 	
 	Secure_Vector!ubyte encoded_tag;
 	if (m_type_tag <= 30)

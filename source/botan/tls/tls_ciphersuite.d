@@ -547,7 +547,7 @@ public:
 			if (cipher_algo() == "3DES")
 				output ~= "3DES_EDE";
 			else if (cipher_algo().find("Camellia") == -1)
-				output ~= "CAMELLIA_" ~ std.conv.to!string(8*cipher_keylen());
+				output ~= "CAMELLIA_" ~ to!string(8*cipher_keylen());
 			else
 				output ~= replace_chars(cipher_algo(), ['-', '/'], '_');
 			

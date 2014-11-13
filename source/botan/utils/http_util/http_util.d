@@ -64,7 +64,7 @@ public:
 		output ~= "HTTP " ~ status_code() ~ " " ~ status_message() ~ "";
 		foreach (k, v; headers())
 			output ~= "Header '" ~ k ~ "' = '" ~ v ~ "'";
-		output ~= "Body " ~ std.conv.to!string(resp._body().length) ~ " bytes:";
+		output ~= "Body " ~ to!string(resp._body().length) ~ " bytes:";
 		output ~= cast(string) resp._body();
 		return output.data;
 	}
@@ -190,7 +190,7 @@ HTTP_Response http_sync(in string verb,
 	{
 		if (resp_body.length != to!size_t(header_size))
 			throw new Exception("Content-Length disagreement, header says " ~
-			                    header_size ~ " got " ~ std.conv.to!string(resp_body.length));
+			                    header_size ~ " got " ~ to!string(resp_body.length));
 	}
 	
 	return Response(status_code, status_message, resp_body, headers);

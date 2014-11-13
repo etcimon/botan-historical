@@ -31,8 +31,8 @@ public:
 	void encode_into(DER_Encoder codec) const
 	{
 		codec.start_cons(ASN1_Tag.SEQUENCE)
-			.encode(oid)
-				.raw_bytes(parameters)
+				.encode(m_oid)
+				.raw_bytes(m_parameters)
 				.end_cons();
 	}
 
@@ -42,8 +42,8 @@ public:
 	void decode_from(BER_Decoder codec)
 	{
 		codec.start_cons(ASN1_Tag.SEQUENCE)
-			.decode(oid)
-				.raw_bytes(parameters)
+				.decode(m_oid)
+				.raw_bytes(m_parameters)
 				.end_cons();
 	}
 
@@ -55,10 +55,10 @@ public:
 	this(in OID, Encoding_Option) {
 		__gshared immutable ubyte[2] DER_NULL = [ 0x05, 0x00 ];
 		
-		oid = alg_id;
+		m_oid = alg_id;
 		
 		if (option == USE_NULL_PARAM)
-			parameters += Pair!(const ubyte*, size_t)(DER_NULL, (DER_NULL).sizeof);
+			m_parameters ~= DER_NULL.ptr[0 .. $];
 	}
 
 	/*
@@ -67,10 +67,10 @@ public:
 	this(in string, Encoding_Option) {
 		__gshared immutable ubyte[2] DER_NULL = [ 0x05, 0x00 ];
 		
-		oid = oids.lookup(alg_id);
+		m_oid = oids.lookup(alg_id);
 		
 		if (option == USE_NULL_PARAM)
-			parameters += Pair!(const ubyte*, size_t)(DER_NULL, (DER_NULL).sizeof);
+			m_parameters ~= DER_NULL.ptr[0 .. $];
 	}
 	
 	/*
@@ -78,16 +78,16 @@ public:
 	*/
 	this(in OID alg_id, in Vector!ubyte param)
 	{
-		oid = alg_id;
-		parameters = param;
+		m_oid = alg_id;
+		m_parameters = param;
 	}
 
 	/*
 	* Create an Algorithm_Identifier
 	*/
 	this(in string, in Vector!ubyte) {
-		oid = oids.lookup(alg_id);
-		parameters = param;
+		m_oid = oids.lookup(alg_id);
+		m_parameters = param;
 	}
 
 	/*
@@ -95,9 +95,9 @@ public:
 	*/
 	bool opEquals(const ref Algorithm_Identifier a2)
 	{
-		if (oid != a2.oid)
+		if (m_oid != a2.m_oid)
 			return false;
-		if (parameters != a2.parameters)
+		if (m_parameters != a2.m_parameters)
 			return false;
 		return true;
 	}
@@ -110,6 +110,6 @@ public:
 		return !(this == a2);
 	}
 
-	OID oid;
-	Vector!ubyte parameters;
+	OID m_oid;
+	Vector!ubyte m_parameters;
 }
