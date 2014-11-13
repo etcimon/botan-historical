@@ -420,7 +420,7 @@ string padding_and_hash_from_oid(const ref OID oid)
 {
 	string padding_and_hash = oids.lookup(oid); // use the hash
 	
-	if (padding_and_hash.substr(0,6) != "ECDSA/")
+	if (padding_and_hash[0 .. 6] != "ECDSA/")
 		throw new Invalid_State("CVC: Can only use ECDSA, not " ~ padding_and_hash);
 	
 	padding_and_hash.erase(0, padding_and_hash.find("/") + 1);

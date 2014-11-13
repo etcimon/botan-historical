@@ -68,7 +68,7 @@ static if (BOTAN_TARGET_UNALIGNED_MEMORY_ACCESS_OK) {
 	{
 		while(length >= 8)
 		{
-			*cast(ulong*)(output) = *cast(const ulong*)(input) ^ *cast(const ulong*)(input2);
+			*cast(ulong*)(output) = (*cast(const ulong*) input) ^ (*cast(const ulong*)input2);
 
 			input += 8; input2 += 8; output += 8; length -= 8;
 		}

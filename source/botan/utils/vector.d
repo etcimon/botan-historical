@@ -104,8 +104,7 @@ struct Vector(T, ALLOCATOR)
                  * than realloc.
                  */
 				immutable oldLength = length;
-				auto newPayload =
-					enforce(cast(T*) malloc(sz))[0 .. oldLength];
+				auto newPayload = enforce(cast(T*) malloc(sz))[0 .. oldLength];
 				// copy old data over to new array
 				memcpy(newPayload.ptr, _payload.ptr, T.sizeof * oldLength);
 				// Zero out unused capacity to prevent gc from seeing
@@ -123,8 +122,7 @@ struct Vector(T, ALLOCATOR)
 				/* These can't have pointers, so no need to zero
                  * unused region
                  */
-				auto newPayload =
-					enforce(cast(T*) realloc(_payload.ptr, sz))[0 .. length];
+				auto newPayload = enforce(cast(T*) realloc(_payload.ptr, sz))[0 .. length];
 				_payload = newPayload;
 			}
 			_capacity = elements;
@@ -721,8 +719,7 @@ struct Vector(T, ALLOCATOR)
 				emplace(p, stuff.front);
 				stuff.popFront();
 			}
-			_data._payload =
-				_data._payload.ptr[0 .. _data._payload.length + extra];
+			_data._payload = _data._payload.ptr[0 .. _data._payload.length + extra];
 			return extra;
 		}
 		else

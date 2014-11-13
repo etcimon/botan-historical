@@ -66,7 +66,7 @@ public:
 	override void encode_into(DER_Encoder to) const
 	{
 		to.start_cons(ASN1_Tag.SEQUENCE)
-			.encode(m_hash_id)
+				.encode(m_hash_id)
 				.encode(m_issuer_dn_hash, ASN1_Tag.OCTET_STRING)
 				.encode(m_issuer_key_hash, ASN1_Tag.OCTET_STRING)
 				.encode(m_subject_serial)
@@ -77,7 +77,7 @@ public:
 	void decode_from(BER_Decoder from)
 	{
 		from.start_cons(ASN1_Tag.SEQUENCE)
-			.decode(m_hash_id)
+				.decode(m_hash_id)
 				.decode(m_issuer_dn_hash, ASN1_Tag.OCTET_STRING)
 				.decode(m_issuer_key_hash, ASN1_Tag.OCTET_STRING)
 				.decode(m_subject_serial)
@@ -94,7 +94,7 @@ private:
 		Vector!ubyte public_key_bitstr;
 		
 		BER_Decoder(key_bits)
-			.decode(public_key_algid)
+				.decode(public_key_algid)
 				.decode(public_key_bitstr, ASN1_Tag.BIT_STRING);
 		
 		return public_key_bitstr;
@@ -130,13 +130,12 @@ public:
 		Extensions extensions;
 		
 		from.start_cons(ASN1_Tag.SEQUENCE)
-			.decode(m_certid)
+				.decode(m_certid)
 				.get_next(cert_status)
 				.decode(m_thisupdate)
 				.decode_optional(m_nextupdate, ASN1_Tag(0),
 				                 ASN1_Tag(ASN1_Tag.CONTEXT_SPECIFIC | ASN1_Tag.CONSTRUCTED))
-				.decode_optional(extensions,
-				                 ASN1_Tag(1),
+				.decode_optional(extensions, ASN1_Tag(1),
 				                 ASN1_Tag(ASN1_Tag.CONTEXT_SPECIFIC | ASN1_Tag.CONSTRUCTED))
 				.end_cons();
 		

@@ -19,12 +19,14 @@ import botan.asn1.oid_lookup.oids;
 import botan.codec.base64;
 import botan.pubkey.pubkey;
 import botan.cert.x509.x509path;
-import botan.http_util;
+import botan.utils.http_util.http_util;
 import botan.utils.types;
 
-class Request
+struct OCSP_Request
 {
 public:
+	@disable this();
+
 	this(in X509_Certificate issuer_cert,
 		 in X509_Certificate subject_cert) 
 		
@@ -63,10 +65,10 @@ private:
 	X509_Certificate m_issuer, m_subject;
 }
 
-class Response
+struct OCSP_Response
 {
 public:
-	this() {}
+	@disable this();
 
 	this(in Certificate_Store trusted_roots,
 	         in Vector!ubyte response_bits)
@@ -108,16 +110,11 @@ public:
 			Extensions extensions;
 			
 			BER_Decoder(tbs_bits)
-					.decode_optional(responsedata_version, ASN1_Tag(0), ASN1_Tag(ASN1_Tag.CONSTRUCTED | ASN1_Tag.CONTEXT_SPECIFIC))
-					
-					.decode_optional(name, ASN1_Tag(1), ASN1_Tag(ASN1_Tag.CONSTRUCTED | ASN1_Tag.CONTEXT_SPECIFIC))
-					
-					.decode_optional_string(key_hash, ASN1_Tag.OCTET_STRING, 2,ASN1_Tag(ASN1_Tag.CONSTRUCTED | ASN1_Tag.CONTEXT_SPECIFIC))
-					
-					.decode(produced_at)
-					
-					.decode_list(m_responses)
-					
+					.decode_optional(responsedata_version, ASN1_Tag(0), ASN1_Tag(ASN1_Tag.CONSTRUCTED | ASN1_Tag.CONTEXT_SPECIFIC))					
+					.decode_optional(name, ASN1_Tag(1), ASN1_Tag(ASN1_Tag.CONSTRUCTED | ASN1_Tag.CONTEXT_SPECIFIC))					
+					.decode_optional_string(key_hash, ASN1_Tag.OCTET_STRING, 2,ASN1_Tag(ASN1_Tag.CONSTRUCTED | ASN1_Tag.CONTEXT_SPECIFIC))					
+					.decode(produced_at)					
+					.decode_list(m_responses)					
 					.decode_optional(extensions, ASN1_Tag(1), ASN1_Tag(ASN1_Tag.CONSTRUCTED | ASN1_Tag.CONTEXT_SPECIFIC));
 			
 			if (certs.empty)
@@ -245,7 +242,7 @@ void check_signature(in Vector!ubyte tbs_response,
 }
 
 /// Checks the certificate online
-Response online_check(in X509_Certificate issuer,
+OCSP_Response online_check(in X509_Certificate issuer,
                       const X509_Certificate subject,
                       const Certificate_Store trusted_roots)
 {
@@ -254,17 +251,15 @@ Response online_check(in X509_Certificate issuer,
 	if (responder_url == "")
 		throw new Exception("No OCSP responder specified");
 	
-	ocsp.Request req = ocsp.Request(issuer, subject);
+	OCSP_Request req = OCSP_Request(issuer, subject);
 	
-	auto http = http_util.POST_sync(responder_url,
-	                            "application/ocsp-request",
-	                            req.BER_encode());
+	HTTP_Response res = POST_sync(responder_url, "application/ocsp-request", req.BER_encode());
 	
-	http.throw_unless_ok();
+	res.throw_unless_ok();
 	
 	// Check the MIME type?
 	
-	ocsp.Response response = ocsp.Reponse(trusted_roots, http._body());
+	OCSP_Response response = OCSP_Response(trusted_roots, res._body());
 	
 	return response;
 }

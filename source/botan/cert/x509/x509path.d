@@ -11,16 +11,21 @@ import botan.http_util;
 import botan.utils.parsing;
 import botan.pubkey.pubkey;
 import botan.asn1.oid_lookup.oids;
+import botan.asn1.asn1_time;
 import std.algorithm;
 import std.datetime;
 import botan.utils.types;
-import set;
-
+import std.container.rbtree;
+version(Have_vibe_d) {
+	import vibe.core.concurrency;
+}
+else {
+	import std.concurrency;
+}
 import iostream;
 import botan.cert.x509.cert_status;
 import botan.cert.x509.x509cert;
 import botan.cert.x509.certstor;
-import set;
 
 /**
 * Specifies restrictions on the PKIX path validation
@@ -64,7 +69,7 @@ public:
 	this(bool require_rev,
 		  size_t minimum_key_strength,
 		  bool ocsp_all_intermediates,
-		  const ref Set!string trusted_hashes) {
+		  const ref RedBlackTree!string trusted_hashes) {
 		m_require_revocation_information = require_rev;
 		m_ocsp_all_intermediates = ocsp_all_intermediates;
 		m_trusted_hashes = trusted_hashes;
@@ -77,7 +82,7 @@ public:
 	bool ocsp_all_intermediates() const
 	{ return m_ocsp_all_intermediates; }
 
-	const ref Set!string trusted_hashes() const
+	const ref RedBlackTree!string trusted_hashes() const
 	{ return m_trusted_hashes; }
 
 	size_t minimum_key_strength() const
@@ -86,7 +91,7 @@ public:
 private:
 	bool m_require_revocation_information;
 	bool m_ocsp_all_intermediates;
-	Set!string m_trusted_hashes;
+	RedBlackTree!string m_trusted_hashes;
 	size_t m_minimum_key_strength;
 }
 
@@ -102,9 +107,9 @@ public:
 	* @return the set of hash functions you are implicitly
 	* trusting by trusting this result.
 	*/
-	Set!string trusted_hashes() const
+	 RedBlackTree!string trusted_hashes() const
 	{
-		Set!string hashes;
+		 RedBlackTree!string hashes;
 		foreach (cert_path; m_cert_path)
 			hashes.insert(cert_path.hash_used_for_signature());
 		return hashes;
@@ -142,7 +147,7 @@ public:
 	/**
 	* Return a set of status codes for each certificate in the chain
 	*/
-	const Vector!( Set!Certificate_Status_Code ) all_statuses() const
+	const Vector!(  RedBlackTree!Certificate_Status_Code ) all_statuses() const
 	{ return m_all_status; }
 
 	/**
@@ -213,14 +218,14 @@ public:
 		}
 	}
 
-	this(Vector!( Set!Certificate_Status_Code ) status,
+	this(Vector!(  RedBlackTree!Certificate_Status_Code ) status,
 	                       Vector!X509_Certificate cert_chainput)
 	{
 		m_overall = Certificate_Status_Code.VERIFIED;
 		m_all_status = status;
 		m_cert_path = cert_chainput;
 		// take the "worst" error as overall
-		foreach (s; m_all_status)
+		foreach (s; m_all_status[])
 		{
 			if (!s.empty)
 			{
@@ -237,7 +242,7 @@ public:
 
 private:
 	Certificate_Status_Code m_overall;
-	Vector!( Set!Certificate_Status_Code ) m_all_status;
+	Vector!(  RedBlackTree!Certificate_Status_Code ) m_all_status;
 	Vector!X509_Certificate m_cert_path;
 }
 
@@ -255,7 +260,7 @@ Path_Validation_Result x509_path_validate(
 	Vector!X509_Certificate cert_path;
 	cert_path.push_back(end_certs[0]);
 	
-	Certificate_Store_Overlay extra(end_certs);
+	auto extra = scoped!Certificate_Store_Overlay(end_certs);
 	
 	// iterate until we reach a root or cannot find the issuer
 	while(!cert_path.back().is_self_signed())
@@ -368,20 +373,20 @@ const X509_CRL find_crls_for(in X509_Certificate cert,
 	return null;
 }
 
-Vector!( Set!Certificate_Status_Code )
+Vector!(  RedBlackTree!Certificate_Status_Code )
 	check_chain(in Vector!X509_Certificate cert_path,
 	            const ref Path_Validation_Restrictions restrictions,
 	            const ref Vector!Certificate_Store certstores)
 {
-	const ref Set!string trusted_hashes = restrictions.trusted_hashes();
+	const  RedBlackTree!string trusted_hashes = restrictions.trusted_hashes();
 	
 	const bool self_signed_ee_cert = (cert_path.length == 1);
 	
-	X509_Time current_time(Clock.currTime());
+	X509_Time current_time = X509_Time(Clock.currTime());
 	
-	Vector!( std::future<ocsp.Response )> ocsp_responses;
+	Vector!( Tid ) ocsp_responses;
 	
-	Vector!( Certificate_Status_Code[] ) cert_status(cert_path.length);
+	Vector!( Certificate_Status_Code[] ) cert_status = Vector!( Certificate_Status_Code[] )( cert_path.length );
 	
 	foreach (size_t i; 0 .. cert_path.length)
 	{
@@ -395,11 +400,13 @@ Vector!( Set!Certificate_Status_Code )
 		
 		const Certificate_Store trusted = certstores[0]; // fixme
 		
-		if (i == 0 || restrictions.ocsp_all_intermediates())
-			ocsp_responses.push_back(
-				std::async(std::launch::async,
-			           ocsp.online_check, issuer, subject, trusted));
-		
+		if (i == 0 || restrictions.ocsp_all_intermediates()) {
+			version(Have_vibe_d)
+				ocsp_responses.push_back(runTask(&online_check, issuer, subject, trusted));
+			else
+				ocsp_responses.push_back(spawn(&online_check, issuer, subject, trusted));
+
+		}
 		// Check all certs for valid time range
 		if (current_time < X509_Time(subject.start_time()))
 			status.insert(Certificate_Status_Code.CERT_NOT_YET_VALID);
@@ -427,7 +434,7 @@ Vector!( Set!Certificate_Status_Code )
 		// Allow untrusted hashes on self-signed roots
 		if (!trusted_hashes.empty && !at_self_signed_root)
 		{
-			if (!trusted_hashes.count(subject.hash_used_for_signature()))
+			if (subject.hash_used_for_signature() !in trusted_hashes)
 				status.insert(Certificate_Status_Code.UNTRUSTED_HASH);
 		}
 	}
@@ -444,7 +451,7 @@ Vector!( Set!Certificate_Status_Code )
 		{
 			try
 			{
-				ocsp.Response ocsp = ocsp_responses[i].receiveOnly!(ocsp.Response)();
+				OCSP_Response ocsp = ocsp_responses[i].receiveOnly!(OCSP_Response)();
 				
 				auto ocsp_status = ocsp.status_for(ca, subject);
 				
