@@ -9,6 +9,8 @@ import botan.pk_pad.emsa;
 import botan.hash.hash;
 import botan.pk_pad.emsa_pkcs1;
 import botan.pk_pad.hash_id;
+import botan.utils.types;
+import std.algorithm : swap;
 
 /**
 * PKCS #1 v1.5 signature padding
@@ -91,10 +93,9 @@ public:
 		return ret;
 	}
 
-	Secure_Vector!ubyte
-		encoding_of(in Secure_Vector!ubyte msg,
-		            size_t output_bits,
-		            RandomNumberGenerator)
+	Secure_Vector!ubyte encoding_of(in Secure_Vector!ubyte msg,
+						            size_t output_bits,
+						            RandomNumberGenerator)
 	{
 		return emsa3_encoding(msg, output_bits, null, 0);
 	}

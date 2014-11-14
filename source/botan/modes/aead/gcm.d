@@ -349,7 +349,7 @@ private:
 	void ghash_update(Secure_Vector!ubyte ghash,
 	                  in ubyte* input, size_t length)
 	{
-		const size_t BS = 16;
+		__gshared immutable size_t BS = 16;
 		
 		/*
 		This assumes if less than block size input then we're just on the

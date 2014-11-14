@@ -4,6 +4,7 @@
 *
 * Released under the terms of the botan license.
 */
+module botan.tls.tls_session;
 
 import botan.cert.x509.x509cert;
 import botan.tls.tls_version;

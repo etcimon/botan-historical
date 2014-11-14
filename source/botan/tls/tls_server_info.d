@@ -21,8 +21,7 @@ public:
 	* @param port specifies the protocol port of the server (eg for
 	*		  TCP/UDP). Zero represents unknown.
 	*/
-	this(in string hostname,
-			ushort port = 0)
+	this(in string hostname, ushort port = 0)
 	{
 		m_hostname = hostname; 
 		m_port = port; 

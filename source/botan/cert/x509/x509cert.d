@@ -617,8 +617,8 @@ X509_DN create_dn(in Data_Store info)
 	
 	X509_DN dn;
 	
-	for (auto i = names.ptr; i != names.end(); ++i)
-		dn.add_attribute(i.first, i.second);
+	foreach (key, value; names)
+		dn.add_attribute(key, value);
 	
 	return dn;
 }
@@ -630,17 +630,12 @@ X509_DN create_dn(in Data_Store info)
 Alternative_Name create_alt_name(in Data_Store info)
 {
 	auto names = info.search_for((in string key, in string)
-									{
-										return (key == "RFC822" ||
-										        key == "DNS" ||
-										        key == "URI" ||
-										        key == "IP");
-									});
+	                             { return (key == "RFC822" || key == "DNS" || key == "URI" || key == "IP"); });
 	
 	Alternative_Name alt_name;
 	
-	for (auto i = names.ptr; i != names.end(); ++i)
-		alt_name.add_attribute(i.first, i.second);
+	foreach (key, value; names)
+		alt_name.add_attribute(key, value);
 	
 	return alt_name;
 }
@@ -654,8 +649,8 @@ Vector!string lookup_oids(in Vector!string input)
 {
 	Vector!string output;
 	
-	for (auto i = input.ptr; i != input.end(); ++i)
-		output.push_back(oids.lookup(OID(*i)));
+	foreach (oid_name; input)
+		output.push_back(oids.lookup(OID(oid_name)));
 	return output;
 }
 

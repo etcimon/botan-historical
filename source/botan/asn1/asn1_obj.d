@@ -95,6 +95,14 @@ public:
 			                             to!string(class_tag));
 	}
 
+	/*
+	* Convert a BER object into a string object
+	*/
+	string toString()
+	{
+		return value[];
+	}
+
 	ASN1_Tag type_tag, class_tag;
 	Secure_Vector!ubyte value;
 }
@@ -142,14 +150,6 @@ Vector!ubyte put_in_sequence(in Vector!ubyte contents)
 			.get_contents_unlocked();
 }
 
-/*
-* Convert a BER object into a string object
-*/
-string toString(in BER_Object obj)
-{
-	return obj.value.data;
-}
-	
 /**
 * Heuristics tests; is this object possibly BER?
 * @param src a data source that will be peeked at but not modified

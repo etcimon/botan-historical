@@ -16,11 +16,8 @@ import botan.utils.exceptn;
 import std.algorithm : count;
 import functional;
 import botan.utils.types;
-import deque;
 import botan.utils.hashmap;
-import set;
-import utility;
-import tuple;
+import std.typecons : Tuple;
 
 /**
 * Handshake IO Interface
@@ -32,19 +29,17 @@ public:
 
 	abstract Vector!ubyte send(in Handshake_Message msg);
 
-	abstract Vector!ubyte format(
-		in Vector!ubyte handshake_msg,
-		Handshake_Type handshake_type) const;
+	abstract Vector!ubyte format(in Vector!ubyte handshake_msg,
+	                             Handshake_Type handshake_type) const;
 
 	abstract void add_record(in Vector!ubyte record,
-									Record_Type type,
-									ulong sequence_number);
+	                         Record_Type type,
+	                         ulong sequence_number);
 
 	/**
 	* Returns (HANDSHAKE_NONE, Vector!(  )()) if no message currently available
 	*/
-	abstract Pair!(Handshake_Type, Vector!ubyte )
-		get_next_record(bool expecting_ccs);
+	abstract Pair!(Handshake_Type, Vector!ubyte ) get_next_record(bool expecting_ccs);
 
 	this() {}
 
@@ -82,8 +77,7 @@ public:
 		return buf;
 	}
 
-	override Vector!ubyte format(in Vector!ubyte msg,
-	                             Handshake_Type type) const
+	override Vector!ubyte format(in Vector!ubyte msg, Handshake_Type type) const
 	{
 		Vector!ubyte send_buf = Vector!ubyte(4 + msg.length);
 		
@@ -98,8 +92,7 @@ public:
 		return send_buf;
 	}
 
-	override void add_record(in Vector!ubyte record,
-	                         Record_Type record_type, ulong)
+	override void add_record(in Vector!ubyte record, Record_Type record_type, ulong)
 	{
 		if (record_type == HANDSHAKE)
 		{
@@ -151,11 +144,10 @@ private:
 package final class Datagram_Handshake_IO : Handshake_IO
 {
 public:
-	this(Connection_Sequence_Numbers seq,
-		 void delegate(ushort, ubyte, in Vector!ubyte) writer) 
+	this(Connection_Sequence_Numbers seq, void delegate(ushort, ubyte, in Vector!ubyte) writer) 
 	{
 		m_seqs = seq;
-		m_flights = 1;
+		m_flights.length = 1;
 		m_send_hs = writer; 
 	}
 
@@ -170,7 +162,7 @@ public:
 		const ushort epoch = m_seqs.current_write_epoch();
 		const Handshake_Type msg_type = msg.type();
 		
-		Tuple!(ushort, ubyte, Vector!ubyte) msg_info(epoch, msg_type, msg_bits);
+		Tuple!(ushort, ubyte, Vector!ubyte) msg_info = Tuple!(ushort, ubyte, Vector!ubyte)(epoch, msg_type, msg_bits);
 		
 		if (msg_type == HANDSHAKE_CCS)
 		{
@@ -207,7 +199,7 @@ public:
 		}
 		
 		// Note: not saving CCS, instead we know it was there due to change in epoch
-		m_flights.rbegin().push_back(m_out_message_seq);
+		m_flights[$-1].push_back(m_out_message_seq);
 		m_flight_data[m_out_message_seq] = msg_info;
 		
 		m_out_message_seq += 1;
@@ -233,7 +225,7 @@ public:
 			return;
 		}
 		
-		const size_t DTLS_HANDSHAKE_HEADER_LEN = 12;
+		__gshared immutable size_t DTLS_HANDSHAKE_HEADER_LEN = 12;
 		
 		const ubyte* record_bits = &record[0];
 		size_t record_size = record.length;
@@ -271,7 +263,7 @@ public:
 
 	override Pair!(Handshake_Type, Vector!ubyte) get_next_record(bool expecting_ccs)
 	{
-		if (!m_flights.rbegin().empty)
+		if (!m_flights[$-1].empty)
 			m_flights.push_back(Vector!ushort());
 		
 		if (expecting_ccs)
@@ -280,7 +272,7 @@ public:
 			{
 				const ushort current_epoch = m_messages.ptr.second.epoch();
 
-				if (m_ccs_epochs.count(current_epoch) > 0)
+				if (m_ccs_epochs.canFind(current_epoch))
 					return Pair(HANDSHAKE_CCS, Vector!ubyte());
 			}
 			

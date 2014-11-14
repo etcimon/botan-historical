@@ -14,6 +14,7 @@ import botan.filters.data_src;
 import std.array : Appender;
 // import string;
 import botan.utils.hashmap;
+import botan.utils.types;
 
 /**
 * @param input the input data
@@ -21,19 +22,18 @@ import botan.utils.hashmap;
 * @param label the human-readable label
 * @param headers a set of key/value pairs included in the header
 */
-string PGP_encode(
-	in ubyte* input, size_t length,
-	in string label,
-	const ref HashMap!(string, string) headers)
+string PGP_encode(in ubyte* input, size_t length,
+                  in string label,
+                  in HashMap!(string, string) headers)
 {
 	const string PGP_HEADER = "-----BEGIN PGP " ~ label ~ "-----";
 	const string PGP_TRAILER = "-----END PGP " ~ label ~ "-----";
-	const size_t PGP_WIDTH = 64;
+	__gshared immutable size_t PGP_WIDTH = 64;
 	
 	Appender!string pgp_encoded = PGP_HEADER;
 	
-	if (headers.find("Version") != headers.end())
-		pgp_encoded ~= "Version: " ~ headers.find("Version").second ~ '\n';
+	if (headers.get("Version") != null)
+		pgp_encoded ~= "Version: " ~ headers["Version"] ~ '\n';
 	
 
 	foreach(k, v; headers)
@@ -80,7 +80,7 @@ Secure_Vector!ubyte PGP_decode(DataSource source,
                             ref string label,
                             ref HashMap!(string, string) headers)
 {
-	const size_t RANDOM_CHAR_LIMIT = 5;
+	__gshared immutable size_t RANDOM_CHAR_LIMIT = 5;
 	
 	const string PGP_HEADER1 = "-----BEGIN PGP ";
 	const string PGP_HEADER2 = "-----";
@@ -99,6 +99,7 @@ Secure_Vector!ubyte PGP_decode(DataSource source,
 			position = 0;
 	}
 	position = 0;
+	Appender!string label_buf;
 	while(position != PGP_HEADER2.length)
 	{
 		ubyte b;
@@ -110,9 +111,9 @@ Secure_Vector!ubyte PGP_decode(DataSource source,
 			throw new Decoding_Error("PGP: Malformed PGP header");
 		
 		if (position == 0)
-			label ~= cast(char)(b);
+			label_buf ~= cast(char)(b);
 	}
-	
+	label = label_buf.data;
 	headers.clear();
 	bool end_of_headers = false;
 	while(!end_of_headers)
@@ -157,7 +158,7 @@ Secure_Vector!ubyte PGP_decode(DataSource source,
 	const string PGP_TRAILER = "-----END PGP " ~ label ~ "-----";
 	position = 0;
 	bool newline_seen = 0;
-	string crc;
+	Appender!string crc;
 	while(position != PGP_TRAILER.length)
 	{
 		ubyte b;
@@ -188,7 +189,7 @@ Secure_Vector!ubyte PGP_decode(DataSource source,
 	}
 	base64.end_msg();
 	
-	if (crc != "" && crc != base64.toString(1))
+	if (crc.data.length > 0 && crc.data != base64.toString(1))
 		throw new Decoding_Error("PGP: Corrupt CRC");
 	
 	return base64.read_all();

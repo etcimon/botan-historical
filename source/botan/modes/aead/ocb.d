@@ -407,7 +407,7 @@ private:
 
 private:
 
-const size_t BS = 16; // intrinsic to OCB definition
+__gshared immutable size_t BS = 16; // intrinsic to OCB definition
 
 // Has to be in Botan namespace so unique_ptr can reference it
 final class L_computer

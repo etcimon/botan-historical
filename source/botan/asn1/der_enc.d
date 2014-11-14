@@ -301,8 +301,7 @@ public:
 	/*
 	* Write the encoding of the ubyte(s)
 	*/
-	DER_Encoder add_object(ASN1_Tag m_type_tag, ASN1_Tag m_class_tag,
-	                       in string rep_str)
+	DER_Encoder add_object(ASN1_Tag m_type_tag, ASN1_Tag m_class_tag, in string rep_str)
 	{
 		const ubyte* rep = cast(const ubyte*)(rep_str.data());
 		const size_t rep_len = rep_str.length;
@@ -312,8 +311,7 @@ public:
 	/*
 	* Write the encoding of the ubyte(s)
 	*/
-	DER_Encoder add_object(ASN1_Tag m_type_tag, ASN1_Tag m_class_tag,
-	                       in ubyte* rep, size_t length)
+	DER_Encoder add_object(ASN1_Tag m_type_tag, ASN1_Tag m_class_tag, in ubyte* rep, size_t length)
 	{
 		Secure_Vector!ubyte buffer;
 		buffer ~= encode_tag(m_type_tag, m_class_tag);
@@ -326,21 +324,18 @@ public:
 	/*
 	* Write the encoding of the ubyte
 	*/
-	DER_Encoder add_object(ASN1_Tag m_type_tag,
-	                       ASN1_Tag m_class_tag, ubyte rep)
+	DER_Encoder add_object(ASN1_Tag m_type_tag, ASN1_Tag m_class_tag, ubyte rep)
 	{
 		return add_object(m_type_tag, m_class_tag, &rep, 1);
 	}
 
 
-	DER_Encoder add_object(ASN1_Tag m_type_tag, ASN1_Tag m_class_tag,
-							in Vector!ubyte rep)
+	DER_Encoder add_object(ASN1_Tag m_type_tag, ASN1_Tag m_class_tag, in Vector!ubyte rep)
 	{
 		return add_object(m_type_tag, m_class_tag, &rep[0], rep.length);
 	}
 
-	DER_Encoder add_object(ASN1_Tag m_type_tag, ASN1_Tag m_class_tag,
-							in Secure_Vector!ubyte rep)
+	DER_Encoder add_object(ASN1_Tag m_type_tag, ASN1_Tag m_class_tag, in Secure_Vector!ubyte rep)
 	{
 		return add_object(m_type_tag, m_class_tag, &rep[0], rep.length);
 	}

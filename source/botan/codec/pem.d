@@ -57,7 +57,7 @@ struct PEM
 	static Secure_Vector!ubyte decode(DataSource source, ref string label)
 	{
 		Appender!string label_buf;
-		const size_t RANDOM_CHAR_LIMIT = 8;
+		__gshared immutable size_t RANDOM_CHAR_LIMIT = 8;
 		
 		const string PEM_HEADER1 = "-----BEGIN ";
 		const string PEM_HEADER2 = "-----";

@@ -58,8 +58,8 @@ public:
 		if (m_sources.empty)
 			return; // still empty, really nothing to try
 		
-		const size_t MS_WAIT_TIME = 32;
-		const double ENTROPY_ESTIMATE = 1.0 / 1024;
+		__gshared immutable size_t MS_WAIT_TIME = 32;
+		__gshared immutable double ENTROPY_ESTIMATE = 1.0 / 1024;
 		
 		Secure_Vector!ubyte io_buffer = accum.get_io_buffer(4*1024); // page
 		
@@ -118,8 +118,7 @@ public:
 	*		  an executable to one of these directories then we will
 	*		  run arbitrary code.
 	*/
-	this(in Vector!string trusted_path,
-	     size_t proc_cnt = 0)
+	this(in Vector!string trusted_path, size_t proc_cnt = 0)
 	{
 		m_trusted_paths = trusted_path;
 		m_concurrent = concurrent_processes(proc_cnt);
@@ -128,9 +127,9 @@ private:
 	/**
 	* Default Commands for Entropy Gathering
 	*/
-	static Vector!(Vector!string) get_default_sources()
+	static Vector!(string[]) get_default_sources()
 	{
-		Vector!(Vector!string) srcs;
+		Vector!(string[]) srcs;
 		
 		srcs.push_back([ "netstat", "-in" ]);
 		srcs.push_back([ "pfstat" ]);
@@ -183,7 +182,7 @@ private:
 	public:
 		int fd() const { return m_fd; }
 
-		void spawn(in Vector!string args)
+		void spawn(in string[] args)
 		{
 			shutdown();
 			
@@ -255,7 +254,7 @@ private:
 			m_pid = -1;
 		}
 
-		this(in Vector!string args) { spawn(args); }
+		this(in string[] args) { spawn(args); }
 
 		~this() { shutdown(); }
 
@@ -269,7 +268,7 @@ private:
 		pid_t m_pid = -1;
 	}
 
-	const Vector!string next_source()
+	const string[] next_source()
 	{
 		const src = m_sources[m_sources_idx];
 		m_sources_idx = (m_sources_idx + 1) % m_sources.length;
@@ -280,7 +279,7 @@ private:
 	const Vector!string m_trusted_paths;
 	const size_t m_concurrent;
 
-	Vector!(Vector!string) m_sources;
+	Vector!(string[]) m_sources;
 	size_t m_sources_idx = 0;
 
 	Vector!Unix_Process m_procs;
@@ -310,12 +309,9 @@ public:
 
 }
 
-
-
 private:
 
-string find_full_path_if_exists(in Vector!string trusted_path,
-                                in string proc)
+string find_full_path_if_exists(in Vector!string trusted_path, in string proc)
 {
 	foreach (dir; trusted_path)
 	{
@@ -329,8 +325,8 @@ string find_full_path_if_exists(in Vector!string trusted_path,
 
 size_t concurrent_processes(size_t user_request)
 {
-	const size_t DEFAULT_CONCURRENT = 2;
-	const size_t MAX_CONCURRENT = 8;
+	__gshared immutable size_t DEFAULT_CONCURRENT = 2;
+	__gshared immutable size_t MAX_CONCURRENT = 8;
 	
 	if (user_request > 0 && user_request < MAX_CONCURRENT)
 		return user_request;
@@ -343,7 +339,7 @@ size_t concurrent_processes(size_t user_request)
 	return DEFAULT_CONCURRENT;
 }
 
-void do_exec(in Vector!string args)
+void do_exec(in string[] args)
 {
 	// cleaner way to do this?
 	string arg0 = (args.length > 0) ? args[0].toStringz : null;

@@ -75,8 +75,8 @@ public:
 			HEAPLIST32 heap_list;
 			heap_list.dwSize = (HEAPLIST32).sizeof;
 			
-			const size_t HEAP_LISTS_MAX = 32;
-			const size_t HEAP_OBJS_PER_LIST = 128;
+			__gshared immutable size_t HEAP_LISTS_MAX = 32;
+			__gshared immutable size_t HEAP_OBJS_PER_LIST = 128;
 			
 			if (Heap32ListFirst(snapshot, &heap_list))
 			{

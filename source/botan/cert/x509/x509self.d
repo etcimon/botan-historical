@@ -18,6 +18,7 @@ import botan.cert.x509.x509_ca;
 import botan.asn1.der_enc;
 import botan.asn1.oid_lookup.oids;
 import botan.filters.pipe;
+import botan.utils.types;
 
 /**
 * Options for X.509 certificates.
@@ -214,8 +215,7 @@ public:
 		Vector!string parsed = splitter(initial_opts, '/');
 		
 		if (parsed.length > 4)
-			throw new Invalid_Argument("X.509 cert options: Too many names: "
-			                           + initial_opts);
+			throw new Invalid_Argument("X.509 cert options: Too many names: " ~ initial_opts);
 		
 		if (parsed.length >= 1) common_name  	= parsed[0];
 		if (parsed.length >= 2) country			= parsed[1];
@@ -295,7 +295,7 @@ PKCS10_Request create_cert_req(in X509_Cert_Options opts,
 	PK_Signer signer = choose_sig_format(key, hash_fn, sig_algo);
 	load_info(opts, subject_dn, subject_alt);
 	
-	const size_t PKCS10_VERSION = 0;
+	__gshared immutable size_t PKCS10_VERSION = 0;
 	
 	Extensions extensions;
 	
@@ -318,11 +318,8 @@ PKCS10_Request create_cert_req(in X509_Cert_Options opts,
 	{
 		ASN1_String challenge(opts.challenge, ASN1_Tag.DIRECTORY_STRING);
 		
-		tbs_req.encode(
-			Attribute("PKCS9.ChallengePassword",
-		          DER_Encoder().encode(challenge).get_contents_unlocked()
-		          )
-			);
+		tbs_req.encode(Attribute("PKCS9.ChallengePassword",
+		                         DER_Encoder().encode(challenge).get_contents_unlocked()));
 	}
 	
 	tbs_req.encode(Attribute("PKCS9.ExtensionRequest",
@@ -342,7 +339,7 @@ PKCS10_Request create_cert_req(in X509_Cert_Options opts,
 /*
 * Load information from the X509_Cert_Options
 */
-private void load_info(in X509_Cert_Options opts, ref X509_DN subject_dn,
+private void load_info(in X509_Cert_Options opts, X509_DN subject_dn,
                			ref Alternative_Name subject_alt)
 {
 	subject_dn.add_attribute("X520.CommonName", opts.common_name);

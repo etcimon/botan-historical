@@ -526,12 +526,12 @@ void aes_encrypt_n(ubyte* input, ubyte* output,
 {
 	assert(EK.length && ME.length == 16, "Key was set");
 	
-	const size_t BLOCK_SIZE = 16;
+	__gshared immutable size_t BLOCK_SIZE = 16;
 	
-	const uint* TE0 = TE;
-	const uint* TE1 = TE + 256;
-	const uint* TE2 = TE + 512;
-	const uint* TE3 = TE + 768;
+	const uint* TE0 = &TE;
+	const uint* TE1 = &TE + 256;
+	const uint* TE2 = &TE + 512;
+	const uint* TE3 = &TE + 768;
 	
 	foreach (size_t i; 0 .. blocks)
 	{
@@ -639,12 +639,12 @@ void aes_decrypt_n(ubyte* input, ubyte* output, size_t blocks,
 {
 	assert(DK.length && MD.length == 16, "Key was set");
 	
-	const size_t BLOCK_SIZE = 16;
+	__gshared immutable size_t BLOCK_SIZE = 16;
 	
-	const uint* TD0 = TD;
-	const uint* TD1 = TD + 256;
-	const uint* TD2 = TD + 512;
-	const uint* TD3 = TD + 768;
+	const uint* TD0 = &TD;
+	const uint* TD1 = &TD + 256;
+	const uint* TD2 = &TD + 512;
+	const uint* TD3 = &TD + 768;
 	
 	foreach (size_t i; 0 .. blocks)
 	{

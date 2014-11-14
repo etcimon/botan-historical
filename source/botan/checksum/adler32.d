@@ -31,7 +31,7 @@ protected:
 	*/
 	void add_data(in ubyte* input, size_t length)
 	{
-		const size_t PROCESS_AMOUNT = 5552;
+		__gshared immutable size_t PROCESS_AMOUNT = 5552;
 		
 		while(length >= PROCESS_AMOUNT)
 		{

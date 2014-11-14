@@ -127,7 +127,7 @@ public:
 
 	void poll(ref Entropy_Accumulator accum)
 	{
-		const size_t MAX_FILES_READ_PER_POLL = 2048;
+		__gshared immutable size_t MAX_FILES_READ_PER_POLL = 2048;
 		const double ENTROPY_ESTIMATE = 1.0 / (8*1024);
 		
 		if (!m_dir)

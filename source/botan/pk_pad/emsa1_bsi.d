@@ -8,6 +8,7 @@
 module botan.pk_pad.emsa1_bsi;
 
 import botan.pk_pad.emsa1;
+import botan.hash.hash;
 import botan.utils.types;
 
 

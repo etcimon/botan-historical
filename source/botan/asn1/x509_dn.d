@@ -16,9 +16,8 @@ import botan.utils.parsing;
 import botan.utils.types;
 import botan.utils.multimap;
 import botan.asn1.oid_lookup.oids;
-import ostream;
 import botan.utils.hashmap;
-import iosfwd;
+import std.array : Appender;
 
 alias X509_DN = FreeListRef!X509_DN_Impl;
 
@@ -94,8 +93,8 @@ public:
 	MultiMap!(OID, string) get_attributes() const
 	{
 		MultiMap!(OID, string) retval;
-		for (auto i = m_dn_info.ptr; i != m_dn_info.end(); ++i)
-			retval.insert(Pair(i.first, i.second.value()));
+		foreach (oid, asn1_str; m_dn_info)
+			retval.insert(oid, asn1_str.value());
 		return retval;
 	}
 
@@ -117,11 +116,11 @@ public:
 	/*
 	* Get the contents of this X.500 Name
 	*/
-	MultiMap!string contents() const
+	MultiMap!(string, string) contents() const
 	{
-		MultiMap!string retval;
-		for (auto i = m_dn_info.ptr; i != m_dn_info.end(); ++i)
-			retval.insert(Pair(oids.lookup(i.first), i.second.value()));
+		MultiMap!(string, string) retval;
+		foreach (key, value; m_dn_info)
+			retval.insert(oids.lookup(key), value.value());
 		return retval;
 	}
 
@@ -143,14 +142,17 @@ public:
 	{
 		if (str == "")
 			return;
-		
-		auto range = m_dn_info.equal_range(oid);
-		for (auto i = range.first; i != range.second; ++i)
-			if (i.second.value() == str)
-				return;
-		
-		m_dn_info.insert(Pair(oid, ASN1_String(str)));
-		m_dn_bits.clear();
+
+		bool exists;
+		m_dn_info.equal_range(oid, (string name) {
+			if (name == str)
+				exists = true;
+		});
+
+		if (!exists) {
+			m_dn_info.insert(oid, ASN1_String(str));
+			m_dn_bits.clear();
+		}
 	}
 
 	/*
@@ -190,32 +192,44 @@ public:
 	*/
 	this(in MultiMap!(OID, string) args)
 	{
-		for (auto i = args.ptr; i != args.end(); ++i)
-			add_attribute(i.first, i.second);
+		foreach (oid, const ref val; args)
+			add_attribute(oid, val);
 	}
 	
 	/*
 	* Create an X509_DN
 	*/
-	this(in MultiMap!string args)
+	this(in MultiMap!(string, string) args)
 	{
-		for (auto i = args.ptr; i != args.end(); ++i)
-			add_attribute(oids.lookup(i.first), i.second);
+		foreach (key, const ref val; args)
+			add_attribute(oids.lookup(key), val);
 	}
 
 	/*
 	* Compare two X509_DNs for equality
 	*/
-	bool opEquals(const ref X509_DN dn2)
+	bool opEquals(in X509_DN dn2)
 	{
-		auto attr1 = dn1.get_attributes();
-		auto attr2 = dn2.get_attributes();
-		
+		Vector!(Pair!(OID, string)) attr1;
+		Vector!(Pair!(OID, string)) attr2;
+
+		{
+			MultiMap!(OID, string) map1 = get_attributes();
+			MultiMap!(OID, string) map2 = dn2.get_attributes();
+			foreach (oid, const ref val; map1) {
+				attr1 ~= Pair(oid, val);
+			}
+
+			foreach (oid, const ref val; map2) {
+				attr2 ~= Pair(oid, val);
+			}
+		}
+
 		if (attr1.length != attr2.length) return false;
-		
+
 		auto p1 = attr1.ptr;
 		auto p2 = attr2.ptr;
-		
+
 		while(true)
 		{
 			if (p1 == attr1.end() && p2 == attr2.end())
@@ -234,7 +248,7 @@ public:
 	/*
 	* Compare two X509_DNs for inequality
 	*/
-	bool opCmp(string op)(const ref X509_DN dn2)
+	bool opCmp(string op)(const X509_DN dn2)
 		if (op == "!=")
 	{
 		return !(this == dn2);
@@ -243,7 +257,7 @@ public:
 	/*
 	* Induce an arbitrary ordering on DNs
 	*/
-	bool opBinary(string op)(const ref X509_DN dn2)
+	bool opBinary(string op)(const X509_DN dn2)
 		if (op == "<")
 	{
 		auto attr1 = get_attributes();
@@ -251,29 +265,26 @@ public:
 		
 		if (attr1.length < attr2.length) return true;
 		if (attr1.length > attr2.length) return false;
-		
-		for (auto p1 = attr1.ptr; p1 != attr1.end(); ++p1)
-		{
-			auto p2 = attr2.find(p1.first);
-			if (p2 == attr2.end())		 return false;
-			if (p1.second > p2.second) return false;
-			if (p1.second < p2.second) return true;
+
+		foreach (key, value; attr1) {
+			auto value2 = attr2.get(key);
+			if (value2 == null) return false;
+			if (value > value2) return false;
+			if (value < value2) return true;
 		}
 		return false;
 	}
 
-
-	
-	X509_DN opBinary(string op, T)(ref T output)
-		if (op == "<<")
+	string toString()
 	{
-		MultiMap!string contents = dn.contents();
+		Appender!string output;
+		MultiMap!(string, string) contents = dn.contents();
 
-		foreach(pair; contents)
+		foreach(key, const ref val; contents)
 		{
-			output << to_short_form(pair.first) << "=" << pair.second << ' ';
+			output ~= to_short_form(key) ~ "=" ~ val ~ ' ';
 		}
-		return output;
+		return output.data;
 	}
 
 private:
@@ -285,28 +296,26 @@ private:
 * DER encode a RelativeDistinguishedName
 */
 void do_ava(DER_Encoder encoder = DER_Encoder(),
-            const ref MultiMap!(OID, string) dn_info,
+            in MultiMap!(OID, string) dn_info,
             ASN1_Tag string_type, in string oid_str,
             bool must_exist = false)
 {
 	const OID oid = oids.lookup(oid_str);
-	const bool exists = (dn_info.find(oid) != dn_info.end());
-	
+	const bool exists = (dn_info.get(oid) != null);
+
 	if (!exists && must_exist)
 		throw new Encoding_Error("X509_DN: No entry for " ~ oid_str);
 	if (!exists) return;
-	
-	auto range = dn_info.equal_range(oid);
-	
-	for (auto i = range.first; i != range.second; ++i)
-	{
-		encoder.start_cons(ASN1_Tag.SET)
-			.start_cons(ASN1_Tag.SEQUENCE)
+
+	dn_info.equal_range(oid, (string val) {
+		 encoder.start_cons(ASN1_Tag.SET)
+				.start_cons(ASN1_Tag.SEQUENCE)
 				.encode(oid)
-				.encode(ASN1_String(i.second, string_type))
+				.encode(ASN1_String(val, string_type))
 				.end_cons()
 				.end_cons();
-	}
+
+	});
 }
 
 string to_short_form(in string long_id)

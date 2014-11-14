@@ -38,7 +38,7 @@ final class PKCS8_Exception : Decoding_Error
 */
 Secure_Vector!ubyte BER_encode(in Private_Key key)
 {
-	const size_t PKCS8_VERSION = 0;
+	__gshared immutable size_t PKCS8_VERSION = 0;
 	
 	return DER_Encoder()
 			.start_cons(ASN1_Tag.SEQUENCE)
@@ -254,7 +254,7 @@ Secure_Vector!ubyte PKCS8_decode(
 	if (!is_encrypted)
 		key = key_data;
 	
-	const size_t MAX_TRIES = 3;
+	__gshared immutable size_t MAX_TRIES = 3;
 	
 	size_t tries = 0;
 	while(true)

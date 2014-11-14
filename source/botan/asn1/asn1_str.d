@@ -49,9 +49,10 @@ public:
 		else
 			charset_is = LATIN1_CHARSET;
 		
-		initialize(
-			transcode(asn1.toString(obj), charset_is, LOCAL_CHARSET),
-			obj.type_tag);
+		initialize(ranscode(obj.toString(), 
+		                    charset_is, 
+		                    LOCAL_CHARSET),
+		           obj.type_tag);
 	}
 
 	/*

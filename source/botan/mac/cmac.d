@@ -80,18 +80,18 @@ public:
 			switch(input.length)
 			{
 				case 8:
-					output[output.length-1] ^= 0x1B;
+					output[$-1] ^= 0x1B;
 					break;
 				case 16:
-					output[output.length-1] ^= 0x87;
+					output[$-1] ^= 0x87;
 					break;
 				case 32:
-					output[output.length-2] ^= 0x4;
-					output[output.length-1] ^= 0x25;
+					output[$-2] ^= 0x4;
+					output[$-1] ^= 0x25;
 					break;
 				case 64:
-					output[output.length-2] ^= 0x1;
-					output[output.length-1] ^= 0x25;
+					output[$-2] ^= 0x1;
+					output[$-1] ^= 0x25;
 					break;
 			}
 		}

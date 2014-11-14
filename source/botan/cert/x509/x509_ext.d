@@ -19,6 +19,7 @@ import botan.utils.charset;
 import botan.utils.bit_ops;
 import std.algorithm;
 import botan.utils.types;
+import botan.utils.multimap;
 
 /**
 * X.509 Certificate Extension
@@ -500,7 +501,7 @@ private:
 	void contents_to(ref Data_Store subject_info,
 	                 ref Data_Store issuer_info) const
 	{
-		MultiMap!string contents = get_alt_name().contents();
+		MultiMap!(string, string) contents = get_alt_name().contents();
 		
 		if (m_oid_name_str == "X509v3.SubjectAlternativeName")
 			subject_info.add(contents);
@@ -704,9 +705,9 @@ private:
 				
 				if (name.type_tag == 6 && name.class_tag == ASN1_Tag.CONTEXT_SPECIFIC)
 				{
-					m_ocsp_responder = transcode(asn1.toString(name),
-					                                     LATIN1_CHARSET,
-					                                     LOCAL_CHARSET);
+					m_ocsp_responder = transcode(name.toString(),
+					                             LATIN1_CHARSET,
+					                             LOCAL_CHARSET);
 				}
 				
 			}
@@ -896,10 +897,9 @@ private:
 		{
 			auto point = distribution_point.point().contents();
 			
-			auto uris = point.equal_range("URI");
-			
-			for (auto uri = uris.first; uri != uris.second; ++uri)
-				info.add("CRL.DistributionPoint", uri.second);
+			point.equal_range("URI", (string val) {
+				info.add("CRL.DistributionPoint", val);
+			});
 		}
 	}
 

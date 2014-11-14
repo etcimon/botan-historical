@@ -197,8 +197,8 @@ char digit2char(ubyte b)
 /*
 * Case-insensitive character comparison
 */
-bool caseless_cmp(char a, char b)
+bool caseless_cmp(T)(T a, T b)
 {
 	import std.ascii : toLower;
-	return (toLower(cast(char)(a)) == toLower(cast(char)(b)));
+	return (toLower(a) == toLower(b));
 }

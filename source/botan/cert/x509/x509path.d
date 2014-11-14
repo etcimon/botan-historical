@@ -230,7 +230,7 @@ public:
 		{
 			if (!s.empty)
 			{
-				auto worst = *s.rbegin();
+				auto worst = s.back;
 				// Leave OCSP confirmations on cert-level status only
 				if (worst != Certificate_Status_Code.OCSP_RESPONSE_GOOD)
 					m_overall = worst;
@@ -243,7 +243,7 @@ public:
 
 private:
 	Certificate_Status_Code m_overall;
-	Vector!(  RedBlackTree!Certificate_Status_Code ) m_all_status;
+	Vector!( RedBlackTree!Certificate_Status_Code ) m_all_status;
 	Vector!X509_Certificate m_cert_path;
 }
 

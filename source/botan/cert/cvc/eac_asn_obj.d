@@ -419,7 +419,7 @@ public:
 		
 		try
 		{
-			this = ASN1_EAC_String(transcode(asn1.toString(obj),
+			this = ASN1_EAC_String(transcode(obj.toString(),
 			                                 charset_is, 
 			                                 LOCAL_CHARSET),
 			                       obj.type_tag);

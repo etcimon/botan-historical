@@ -1012,8 +1012,7 @@ public:
 
 
 private:
-	override Vector!ubyte serialize() const
-	{ return m_key_material; }
+	override Vector!ubyte serialize() const { return m_key_material; }
 
 	Vector!ubyte m_key_material;
 	Secure_Vector!ubyte m_pre_master;
@@ -1101,7 +1100,7 @@ private:
 		return buf;
 	}
 
-	Vector!(X509_Certificate) m_certs;
+	Vector!X509_Certificate m_certs;
 }
 
 /**

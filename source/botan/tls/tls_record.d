@@ -282,7 +282,7 @@ void write_record(ref Secure_Vector!ubyte output,
 	if (iv_size)
 	{
 		output.resize(output.length + iv_size);
-		rng.randomize(&output[output.length - iv_size], iv_size);
+		rng.randomize(&output[$- iv_size], iv_size);
 	}
 	
 	output.insert(output.end(), &msg[0], &msg[msg_length]);
@@ -587,7 +587,7 @@ void decrypt_record(Secure_Vector!ubyte output,
 	if (Unique!AEAD_Mode aead = cipherstate.aead())
 	{
 		auto nonce = cipherstate.aead_nonce(record_contents);
-		const size_t nonce_length = 8; // fixme, take from ciphersuite
+		__gshared immutable size_t nonce_length = 8; // fixme, take from ciphersuite
 		
 		assert(record_len > nonce_length, "Have data past the nonce");
 		const ubyte* msg = &record_contents[nonce_length];

@@ -135,15 +135,15 @@ bool passes_self_tests(Algorithm_Factory af)
 */
 HashMap!(string, bool)
 	algorithm_kat(in SCAN_Name algo_name,
-	              const ref HashMap!(string, string) vars,
+	              in HashMap!(string, string) vars,
 	              Algorithm_Factory af)
 {
 	const auto result = algorithm_kat_detailed(algo_name, vars, af);
 	
 	HashMap!(string, bool) pass_or_fail;
 	
-	foreach (i; result)
-		pass_or_fail[i.first] = (i.second == "passed");
+	foreach (key, val; result)
+		pass_or_fail[key] = (val == "passed");
 	
 	return pass_or_fail;
 }
@@ -158,7 +158,7 @@ HashMap!(string, bool)
 */
 HashMap!(string, string)
 	algorithm_kat_detailed(in SCAN_Name algo_name,
-	                       const ref HashMap!(string, string) vars,
+	                       in HashMap!(string, string) vars,
 	                       Algorithm_Factory af)
 {
 	const string algo = algo_name.algo_name_and_args();
@@ -255,21 +255,17 @@ HashMap!(string, string)
 
 private:
 
-void verify_results(in string algo,
-                    const ref HashMap!(string, string) results)
+void verify_results(in string algo, in HashMap!(string, string) results)
 {
-	for (auto i = results.ptr; i != results.end(); ++i)
+	foreach (key, value; results)
 	{
-		if (i.second != "passed")
-			throw new Self_Test_Failure(algo ~ " self-test failed (" ~ i.second ~ ")" ~
-			                            " with provider " ~ i.first);
+		if (value != "passed")
+			throw new Self_Test_Failure(algo ~ " self-test failed (" ~ value ~ ")" ~
+			                            " with provider " ~ key);
 	}
 }
 
-void hash_test(Algorithm_Factory af,
-               in string name,
-               in string input,
-               in string output)
+void hash_test(Algorithm_Factory af, in string name, in string input, in string output)
 {
 	HashMap!(string, string) vars;
 	vars["input"] = input;
@@ -306,8 +302,8 @@ void cipher_kat(Algorithm_Factory af,
                 in string ofb_out,
                 in string ctr_out)
 {
-	SymmetricKey key(key_str);
-	InitializationVector iv(iv_str);
+	SymmetricKey key = SymmetricKey(key_str);
+	InitializationVector iv = InitializationVector(iv_str);
 	
 	HashMap!(string, string) vars;
 	vars["key"] = key_str;
@@ -353,10 +349,10 @@ string test_filter_kat(Filter filter,
 		if (same)
 			return "passed";
 		else
-			return (string("got ") + got ~ " expected " ~ expected);
+			return "got " ~ got ~ " expected " ~ expected;
 	}
 	catch(Exception e)
 	{
-		return string("exception ") + e.msg;
+		return "exception " ~ e.msg;
 	}
 }

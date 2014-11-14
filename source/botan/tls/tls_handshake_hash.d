@@ -15,6 +15,7 @@ import botan.libstate.libstate;
 import botan.tls.tls_exceptn;
 import botan.libstate.libstate;
 import botan.hash.hash;
+import botan.utils.types;
 
 /**
 * TLS Handshake Hash

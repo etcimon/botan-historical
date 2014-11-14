@@ -7,8 +7,11 @@
 */
 module botan.utils.multimap;
 
-import vibe.utils.string : icmp2;
+import botan.utils.memory.memory;
+import botan.utils.types;
 import std.exception : enforce;
+
+alias MultiMap(KEY, VALUE, bool case_sensitive = true, size_t NUM_STATIC_FIELDS = 8) = FreeListRef!(DictionaryList!(KEY, VALUE, case_sensitive, NUM_STATIC_FIELDS));
 
 /**
  * 
@@ -19,42 +22,29 @@ import std.exception : enforce;
 
 	Insertion and lookup has O(n) complexity.
 */
-struct MultiMap(VALUE, bool case_sensitive = true, size_t NUM_STATIC_FIELDS = 8) {
+struct DictionaryList(KEY, VALUE, bool case_sensitive = true, size_t NUM_STATIC_FIELDS = 8) {
 	import std.typecons : Tuple;
 	
 	private {
-		static struct Field { uint keyCheckSum; string key; VALUE value; }
+		static struct Field { uint keyCheckSum; KEY key; VALUE value; }
 		Field[NUM_STATIC_FIELDS] m_fields;
 		size_t m_fieldCount = 0;
 		Field[] m_extendedFields;
 		static char[256] s_keyBuffer;
 	}
-	
+
+	alias KeyType = KEY;
 	alias ValueType = VALUE;
 	
-	struct FieldTuple { string key; ValueType value; }
+	struct FieldTuple { KeyType key; ValueType value; }
 	
 	/** The number of fields present in the map.
 	*/
 	@property size_t length() const { return m_fieldCount + m_extendedFields.length; }
 	
-	/// Supports serialization using vibe.data.serialization.
-	static MultiMap fromRepresentation(FieldTuple[] array)
-	{
-		MultiMap ret;
-		foreach (ref v; array) ret.addField(v.key, v.value);
-		return ret;
-	}
-	/// ditto
-	FieldTuple[] toRepresentation() {
-		FieldTuple[] ret;
-		foreach (k, ref v; this) ret ~= FieldTuple(k, v);
-		return ret;
-	}
-	
 	/** Removes the first field that matches the given key.
 	*/
-	void remove(string key)
+	void remove(KeyType key)
 	{
 		auto keysum = computeCheckSumI(key);
 		auto idx = getIndex(m_fields[0 .. m_fieldCount], key, keysum);
@@ -71,7 +61,7 @@ struct MultiMap(VALUE, bool case_sensitive = true, size_t NUM_STATIC_FIELDS = 8)
 	
 	/** Removes all fields that matches the given key.
 	*/
-	void removeAll(string key)
+	void removeAll(KeyType key)
 	{
 		auto keysum = computeCheckSumI(key);
 		for (size_t i = 0; i < m_fieldCount;) {
@@ -95,7 +85,7 @@ struct MultiMap(VALUE, bool case_sensitive = true, size_t NUM_STATIC_FIELDS = 8)
 		have the same key, possibly resulting in duplicates. Use opIndexAssign
 		if you want to avoid duplicates.
 	*/
-	void insert(string key, ValueType value)
+	void insert(KeyType key, ValueType value)
 	{
 		auto keysum = computeCheckSumI(key);
 		if (m_fieldCount < m_fields.length)
@@ -107,7 +97,7 @@ struct MultiMap(VALUE, bool case_sensitive = true, size_t NUM_STATIC_FIELDS = 8)
 
 		If no field is found, def_val is returned.
 	*/
-	inout(ValueType) get(string key, lazy inout(ValueType) def_val = ValueType.init)
+	inout(ValueType) get(KeyType key, lazy inout(ValueType) def_val = ValueType.init)
 	inout {
 		if (auto pv = key in this) return *pv;
 		return def_val;
@@ -117,7 +107,7 @@ struct MultiMap(VALUE, bool case_sensitive = true, size_t NUM_STATIC_FIELDS = 8)
 
 		Note that the version returning an array will allocate for each call.
 	*/
-	const(ValueType)[] equal_range(string key)
+	const(ValueType)[] equal_range(KeyType key)
 	const {
 		import std.array;
 		auto ret = appender!(const(ValueType)[])();
@@ -125,7 +115,7 @@ struct MultiMap(VALUE, bool case_sensitive = true, size_t NUM_STATIC_FIELDS = 8)
 		return ret.data;
 	}
 	/// ditto
-	void equal_range(string key, scope void delegate(const(ValueType)) del)
+	void equal_range(KeyType key, scope void delegate(const(ValueType)) del)
 	const {
 		uint keysum = computeCheckSumI(key);
 		foreach (ref f; m_fields[0 .. m_fieldCount]) {
@@ -140,7 +130,7 @@ struct MultiMap(VALUE, bool case_sensitive = true, size_t NUM_STATIC_FIELDS = 8)
 	
 	/** Returns the first value matching the given key.
 	*/
-	inout(ValueType) opIndex(string key)
+	inout(ValueType) opIndex(KeyType key)
 	inout {
 		auto pitm = key in this;
 		enforce(pitm !is null, "Accessing non-existent key '"~key~"'.");
@@ -149,7 +139,7 @@ struct MultiMap(VALUE, bool case_sensitive = true, size_t NUM_STATIC_FIELDS = 8)
 	
 	/** Adds or replaces the given field with a new value.
 	*/
-	ValueType opIndexAssign(ValueType val, string key)
+	ValueType opIndexAssign(ValueType val, KeyType key)
 	{
 		auto pitm = key in this;
 		if( pitm ) *pitm = val;
@@ -160,7 +150,7 @@ struct MultiMap(VALUE, bool case_sensitive = true, size_t NUM_STATIC_FIELDS = 8)
 	
 	/** Returns a pointer to the first field that matches the given key.
 	*/
-	inout(ValueType)* opBinaryRight(string op)(string key) inout if(op == "in") {
+	inout(ValueType)* opBinaryRight(string op)(KeyType key) inout if(op == "in") {
 		uint keysum = computeCheckSumI(key);
 		auto idx = getIndex(m_fields[0 .. m_fieldCount], key, keysum);
 		if( idx >= 0 ) return &m_fields[idx].value;
@@ -169,13 +159,13 @@ struct MultiMap(VALUE, bool case_sensitive = true, size_t NUM_STATIC_FIELDS = 8)
 		return null;
 	}
 	/// ditto
-	bool opBinaryRight(string op)(string key) inout if(op == "!in") {
+	bool opBinaryRight(string op)(KeyType key) inout if(op == "!in") {
 		return !(key in this);
 	}
 	
 	/** Iterates over all fields, including duplicates.
 	*/
-	int opApply(scope int delegate(string key, ref ValueType val) del)
+	int opApply(scope int delegate(KeyType key, ref ValueType val) del)
 	{
 		foreach (ref kv; m_fields[0 .. m_fieldCount]) {
 			if (auto ret = del(kv.key, kv.value))
@@ -191,13 +181,13 @@ struct MultiMap(VALUE, bool case_sensitive = true, size_t NUM_STATIC_FIELDS = 8)
 	/// ditto
 	int opApply(scope int delegate(ref ValueType val) del)
 	{
-		return this.opApply((string key, ref ValueType val) { return del(val); });
+		return this.opApply((KeyType key, ref ValueType val) { return del(val); });
 	}
 	
 	/// ditto
-	int opApply(scope int delegate(string key, ref const(ValueType) val) del) const
+	int opApply(scope int delegate(KeyType key, ref const(ValueType) val) del) const
 	{
-		return (cast() this).opApply(cast(int delegate(string, ref ValueType)) del);
+		return (cast() this).opApply(cast(int delegate(KeyType, ref ValueType)) del);
 	}
 	
 	/// ditto
@@ -206,20 +196,7 @@ struct MultiMap(VALUE, bool case_sensitive = true, size_t NUM_STATIC_FIELDS = 8)
 		return (cast() this).opApply(cast(int delegate(ref ValueType)) del);
 	}
 	
-	static if (is(typeof({ const(ValueType) v; ValueType w; w = v; }))) {
-		/** Duplicates the header map.
-		*/
-		@property MultiMap dup()
-		const {
-			MultiMap ret;
-			ret.m_fields[0 .. m_fieldCount] = m_fields[0 .. m_fieldCount];
-			ret.m_fieldCount = m_fieldCount;
-			ret.m_extendedFields = m_extendedFields.dup;
-			return ret;
-		}
-	}
-	
-	private ptrdiff_t getIndex(in Field[] map, string key, uint keysum)
+	private ptrdiff_t getIndex(in Field[] map, KeyType key, uint keysum)
 	const {
 		foreach (i, ref const(Field) entry; map) {
 			if (entry.keyCheckSum != keysum) continue;
@@ -228,10 +205,11 @@ struct MultiMap(VALUE, bool case_sensitive = true, size_t NUM_STATIC_FIELDS = 8)
 		return -1;
 	}
 	
-	private static bool matches(string a, string b)
+	private static bool matches(KeyType a, KeyType b)
 	{
 		static if (case_sensitive) return a == b;
-		else return icmp2(a, b) == 0;
+		else static if (is (KeyType == string)) return icmp2(a, b) == 0;
+		else return a == b;
 	}
 	
 	// very simple check sum function with a good chance to match
@@ -249,30 +227,12 @@ struct MultiMap(VALUE, bool case_sensitive = true, size_t NUM_STATIC_FIELDS = 8)
 	}
 }
 
-unittest {
-	MultiMap!(int, true) a;
-	a.addField("a", 1);
-	a.addField("a", 2);
-	assert(a["a"] == 1);
-	assert(a.getAll("a") == [1, 2]);
-	a["a"] = 3;
-	assert(a["a"] == 3);
-	assert(a.getAll("a") == [3, 2]);
-	a.removeAll("a");
-	assert(a.getAll("a").length == 0);
-	assert(a.get("a", 4) == 4);
-	a.addField("b", 2);
-	a.addField("b", 1);
-	a.remove("b");
-	assert(a.getAll("b") == [1]);
-	
-	MultiMap!(int, false) b;
-	b.addField("a", 1);
-	b.addField("A", 2);
-	assert(b["A"] == 1);
-	assert(b.getAll("a") == [1, 2]);
+void removeFromArrayIdx(T)(ref T[] array, size_t idx)
+{
+	foreach( j; idx+1 .. array.length)
+		array[j-1] = array[j];
+	array.length = array.length-1;
 }
-
 
 /// Special version of icmp() with optimization for ASCII characters
 int icmp2(string a, string b)
@@ -313,11 +273,4 @@ int icmp2(string a, string b)
 	
 	assert(i == a.length || j == b.length, "Strings equal but we didn't fully compare them!?");
 	return 0;
-}
-
-void removeFromArrayIdx(T)(ref T[] array, size_t idx)
-{
-	foreach( j; idx+1 .. array.length)
-		array[j-1] = array[j];
-	array.length = array.length-1;
 }

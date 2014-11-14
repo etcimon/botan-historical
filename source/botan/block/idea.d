@@ -148,7 +148,7 @@ ushort mul_inv(ushort x) pure
 */
 void idea_op(ubyte* input, ubyte* output, size_t blocks) pure
 {
-	const size_t BLOCK_SIZE = 8;
+	__gshared immutable size_t BLOCK_SIZE = 8;
 	
 	foreach (size_t i; 0 .. blocks)
 	{

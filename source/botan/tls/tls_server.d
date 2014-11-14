@@ -4,6 +4,7 @@
 *
 * Released under the terms of the botan license.
 */
+module botan.tls.tls_server;
 
 import botan.tls.tls_channel;
 import botan.credentials.credentials_manager;
@@ -12,7 +13,9 @@ import botan.tls.tls_messages;
 import botan.tls.tls_alert;
 import botan.rng.rng;
 import botan.utils.multimap;
+import botan.utils.hashmap;
 import botan.utils.types;
+import std.datetime;
 
 /**
 * TLS Server
@@ -39,6 +42,7 @@ public:
 		m_creds = creds;
 		m_possible_protocols = next_protocols;
 	}
+
 	/**
 	* Return the protocol notification set by the client (using the
 	* NPN extension) for this connection, if any
@@ -46,8 +50,7 @@ public:
 	string next_protocol() const { return m_next_protocol; }
 
 private:
-	override Vector!X509_Certificate
-		get_peer_cert_chain(in Handshake_State state) const
+	override Vector!X509_Certificate get_peer_cert_chain(in Handshake_State state) const
 	{
 		if (state.client_certs())
 			return state.client_certs().cert_chain();
@@ -69,9 +72,9 @@ private:
 	* Process a handshake message
 	*/
 	override void process_handshake_msg(const Handshake_State active_state,
-	                           Handshake_State state_base,
-	                           Handshake_Type type,
-	                           in Vector!ubyte contents)
+	                                    Handshake_State state_base,
+	                                    Handshake_Type type,
+	                                    in Vector!ubyte contents)
 	{
 		Server_Handshake_State state = cast(Server_Handshake_State)(state_base);
 		
@@ -164,7 +167,7 @@ private:
 			state.set_version(negotiated_version);
 
 			Session session_info;
-			const bool resuming = 	state.allow_session_resumption &&
+			const bool resuming = state.allow_session_resumption &&
 									check_for_resume(session_info,
 									                 session_manager(),
 									                 m_creds,
@@ -385,9 +388,7 @@ private:
 				state.set_expected_next(HANDSHAKE_CCS);
 			
 			state.client_kex(
-				new Client_Key_Exchange(contents, state,
-			                        state.server_rsa_kex_key,
-			                        m_creds, m_policy, rng())
+				new Client_Key_Exchange(contents, state, state.server_rsa_kex_key, m_creds, m_policy, rng())
 			);
 			
 			state.compute_session_keys();
@@ -446,8 +447,7 @@ private:
 			state.client_finished(new Finished(contents));
 			
 			if (!state.client_finished().verify(state, CLIENT))
-				throw new TLS_Exception(Alert.DECRYPT_ERROR,
-				                        "Finished message didn't verify");
+				throw new TLS_Exception(Alert.DECRYPT_ERROR, "Finished message didn't verify");
 			
 			if (!state.server_finished())
 			{
@@ -456,17 +456,17 @@ private:
 				state.hash().update(state.handshake_io().format(contents, type));
 				
 				Session session_info = Session(
-					state.server_hello().session_id(),
-					state.session_keys().master_secret(),
-					state.server_hello()._version(),
-					state.server_hello().ciphersuite(),
-					state.server_hello().compression_method(),
-					SERVER,
-					state.server_hello().fragment_size(),
-					get_peer_cert_chain(state),
-					Vector!ubyte(),
-					Server_Information(state.client_hello().sni_hostname()),
-					state.srp_identifier()
+						state.server_hello().session_id(),
+						state.session_keys().master_secret(),
+						state.server_hello()._version(),
+						state.server_hello().ciphersuite(),
+						state.server_hello().compression_method(),
+						SERVER,
+						state.server_hello().fragment_size(),
+						get_peer_cert_chain(state),
+						Vector!ubyte(),
+						Server_Information(state.client_hello().sni_hostname()),
+						state.srp_identifier()
 					);
 				
 				if (save_session(session_info))
@@ -527,7 +527,6 @@ private:
 }
 
 private:
-
 
 bool check_for_resume(Session session_info,
                       Session_Manager session_manager,
@@ -600,12 +599,11 @@ bool check_for_resume(Session session_info,
 /*
 * Choose which ciphersuite to use
 */
-ushort choose_ciphersuite(
-	const Policy policy,
-	Protocol_Version _version,
-	Credentials_Manager creds,
-	const ref HashMap!(string, Vector!X509_Certificate) cert_chains,
-	const Client_Hello client_hello)
+ushort choose_ciphersuite(in Policy policy,
+                          Protocol_Version _version,
+                          Credentials_Manager creds,
+                          in HashMap!(string, Vector!X509_Certificate) cert_chains,
+                          in Client_Hello client_hello)
 {
 	const bool our_choice = policy.server_uses_own_ciphersuite_preferences();
 	
@@ -654,15 +652,13 @@ ushort choose_ciphersuite(
 		return suite_id;
 	}
 	
-	throw new TLS_Exception(Alert.HANDSHAKE_FAILURE,
-	                        "Can't agree on a ciphersuite with client");
+	throw new TLS_Exception(Alert.HANDSHAKE_FAILURE, "Can't agree on a ciphersuite with client");
 }
 
 /*
 * Choose which compression algorithm to use
 */
-ubyte choose_compression(in Policy policy,
-                         in Vector!ubyte c_comp)
+ubyte choose_compression(in Policy policy, in Vector!ubyte c_comp)
 {
 	Vector!ubyte s_comp = policy.compression();
 	
@@ -674,9 +670,8 @@ ubyte choose_compression(in Policy policy,
 	return NO_COMPRESSION;
 }
 
-HashMap!(string, Vector!X509_Certificate)
-	get_server_certs(in string hostname,
-	                 Credentials_Manager creds)
+HashMap!(string, Vector!X509_Certificate) 
+	get_server_certs(in string hostname, Credentials_Manager creds)
 {
 	string[] cert_types = [ "RSA", "DSA", "ECDSA", null ];
 	

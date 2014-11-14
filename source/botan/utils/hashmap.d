@@ -1,14 +1,13 @@
-﻿module botan.utils.hashmap;
-
-/**
+﻿/**
 	Internal hash map implementation.
 
 	Copyright: Â© 2013 RejectedSoftware e.K.
 	License: Subject to the terms of the MIT license, as written in the included LICENSE.txt file.
 	Authors: SÃ¶nke Ludwig
 */
-import botan.utils.memory;
+module botan.utils.hashmap;
 
+import botan.utils.memory.memory;
 import std.conv : emplace;
 import std.traits;
 
@@ -22,7 +21,9 @@ struct DefaultHashMapTraits(Key) {
 	}
 }
 
-struct HashMap(Key, Value, Traits = DefaultHashMapTraits!Key)
+alias HashMap(Key, Value) = FreeListRef!(HashMap_Impl!(Key, Value));
+
+struct HashMap_Impl(Key, Value, Traits = DefaultHashMapTraits!Key)
 {
 	struct TableEntry {
 		UnConst!Key key;
@@ -233,36 +234,6 @@ struct HashMap(Key, Value, Traits = DefaultHashMapTraits!Key)
 			(cast(ubyte[])(&m_table[idx])[0 .. 1])[] = (cast(ubyte[])(&el)[0 .. 1])[];
 		}
 		if (oldtable) freeArray(m_allocator, oldtable);
-	}
-}
-
-unittest {
-	import std.conv;
-	
-	HashMap!(string, string) map;
-	
-	foreach (i; 0 .. 100) {
-		map[to!string(i)] = to!string(i) ~ "+";
-		assert(map.length == i+1);
-	}
-	
-	foreach (i; 0 .. 100) {
-		auto str = to!string(i);
-		auto pe = str in map;
-		assert(pe !is null && *pe == str ~ "+");
-		assert(map[str] == str ~ "+");
-	}
-	
-	foreach (i; 0 .. 50) {
-		map.remove(to!string(i));
-		assert(map.length == 100-i-1);
-	}
-	
-	foreach (i; 50 .. 100) {
-		auto str = to!string(i);
-		auto pe = str in map;
-		assert(pe !is null && *pe == str ~ "+");
-		assert(map[str] == str ~ "+");
 	}
 }
 

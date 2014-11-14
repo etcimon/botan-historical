@@ -46,9 +46,9 @@ public:
 	{
 		BER_Object ber_time = source.get_next_object();
 		
-		set_to(transcode(asn1.toString(ber_time),
-		                         LATIN1_CHARSET,
-		                         LOCAL_CHARSET),
+		set_to(transcode(ber_time.toString(),
+		                 LATIN1_CHARSET,
+		                 LOCAL_CHARSET),
 		       ber_time.type_tag);
 	}
 

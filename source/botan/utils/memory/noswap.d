@@ -164,7 +164,7 @@ public:
 	}
 
 	
-	@disable this(in mlock_allocator);
+	@disable this(this);
 	
 	@disable ref mlock_allocator opAssign(in mlock_allocator);
 	
@@ -228,7 +228,7 @@ private:
 * Requests for objects of T.sizeof will be aligned at
 * T.sizeof*ALIGNMENT_MULTIPLE bytes.
 */
-const size_t ALIGNMENT_MULTIPLE = 2;
+__gshared immutable size_t ALIGNMENT_MULTIPLE = 2;
 
 size_t mlock_limit()
 {
@@ -241,7 +241,7 @@ size_t mlock_limit()
 	* programs), but small enough that we should not cause problems
 	* even if many processes are mlocking on the same machine.
 	*/
-	const size_t MLOCK_UPPER_BOUND = 512*1024;
+		__gshared immutable size_t MLOCK_UPPER_BOUND = 512*1024;
 
 	rlimit limits;
 	getrlimit(RLIMIT_MEMLOCK, &limits);

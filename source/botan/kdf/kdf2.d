@@ -7,6 +7,7 @@
 module botan.kdf.kdf2;
 import botan.kdf.kdf;
 import botan.hash.hash;
+import botan.utils.types;
 
 /**
 * KDF2, from IEEE 1363
@@ -18,8 +19,10 @@ public:
 	* KDF2 Key Derivation Mechanism
 	*/
 	Secure_Vector!ubyte derive(size_t out_len,
-	                              in ubyte* secret, size_t secret_len,
-	                              in ubyte* P, size_t P_len) const
+	                           in ubyte* secret, 
+	                           size_t secret_len,
+	                           in ubyte* P, 
+	                           size_t P_len) const
 	{
 		Secure_Vector!ubyte output;
 		uint counter = 1;

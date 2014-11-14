@@ -27,20 +27,19 @@ public:
 	*/
 	bool opEquals(in Data_Store other) const
 	{
-		return (contents == other.contents);
+		return (m_contents == other.m_contents);
 	}
 
 	/*
 	* Search based on an arbitrary predicate
 	*/
-	MultiMap!string search_for(
-		bool delegate(string, string) predicate) const
+	MultiMap!(string, string) search_for(bool delegate(string, string) predicate) const
 	{
-		MultiMap!string output;
+		MultiMap!(string, string) output;
 
-		foreach (el; contents)
-			if (predicate(el.first, el.second))
-				output.insert(Pair(i.first, i.second));
+		foreach (key, val; m_contents)
+			if (predicate(key, val))
+				output.insert(key, val);
 		
 		return output;
 	}
@@ -51,7 +50,7 @@ public:
 	Vector!string get(in string looking_for) const
 	{
 		Vector!string output;
-		foreach (el; contents)
+		foreach (el; m_contents)
 			if (looking_for == el.first)
 				output.push_back(el.second);
 		return output;
@@ -127,7 +126,7 @@ public:
 	*/
 	bool has_value(in string key) const
 	{
-		return (contents.lower_bound(key) != contents.end());
+		return (m_contents.lower_bound(key) != m_contents.end());
 	}
 
 
@@ -137,7 +136,7 @@ public:
 	*/
 	void add(in string key, in string val)
 	{
-		multimap_insert(contents, key, val);
+		multimap_insert(m_contents, key, val);
 	}
 	
 	/*
@@ -164,12 +163,12 @@ public:
 	/*
 	* Insert a mapping of key/value pairs
 	*/
-	void add(in MultiMap!string input)
+	void add(in MultiMap!(string, string) input)
 	{
-		foreach (el; input)
-			contents.insert(el);
+		foreach (k, const ref v; input)
+			m_contents.insert(k, v);
 	}
 
 private:
-	MultiMap!string contents;
+	MultiMap!(string, string) m_contents;
 }

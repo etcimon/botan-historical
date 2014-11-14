@@ -56,23 +56,19 @@ public:
 			Unique!Public_Key key = req.subject_public_key();
 			constraints = find_constraints(*key, req.constraints());
 		}
-		
+
 		Extensions extensions;
 		
-		extensions.add(
-			new x509_ext.Basic_Constraints(req.is_CA(), req.path_limit()),
-			true);
+		extensions.add(new x509_ext.Basic_Constraints(req.is_CA(), req.path_limit()), true);
 		
 		extensions.add(new x509_ext.Key_Usage(constraints), true);
 		
 		extensions.add(new x509_ext.Authority_Key_ID(m_cert.subject_key_id()));
 		extensions.add(new x509_ext.Subject_Key_ID(req.raw_public_key()));
 		
-		extensions.add(
-			new x509_ext.Subject_Alternative_Name(req.subject_alt_name()));
+		extensions.add(new x509_ext.Subject_Alternative_Name(req.subject_alt_name()));
 		
-		extensions.add(
-			new x509_ext.Extended_Key_Usage(req.ex_constraints()));
+		extensions.add(new x509_ext.Extended_Key_Usage(req.ex_constraints()));
 		
 		return make_cert(m_signer, rng, m_ca_sig_algo,
 		                 req.raw_public_key(),
@@ -139,21 +135,21 @@ public:
 	* @returns newly minted certificate
 	*/
 	static X509_Certificate make_cert(ref PK_Signer signer,
-	                           RandomNumberGenerator rng,
-	                           const Algorithm_Identifier sig_algo,
-	                           in Vector!ubyte pub_key,
-	                           const X509_Time not_before,
-	                           const X509_Time not_after,
-	                           const X509_DN issuer_dn,
-	                           const X509_DN subject_dn,
-	                           const ref Extensions extensions)
+			                          RandomNumberGenerator rng,
+			                          in Algorithm_Identifier sig_algo,
+			                          in Vector!ubyte pub_key,
+			                          in X509_Time not_before,
+			                          in X509_Time not_after,
+			                          in X509_DN issuer_dn,
+			                          in X509_DN subject_dn,
+			                          in Extensions extensions)
 	{
-		const size_t X509_CERT_VERSION = 3;
-		const size_t SERIAL_BITS = 128;
+		__gshared immutable size_t X509_CERT_VERSION = 3;
+		__gshared immutable size_t SERIAL_BITS = 128;
 		
 		BigInt serial_no = BigInt(rng, SERIAL_BITS);
 		
-		const Vector!ubyte cert = X509_OBJ.make_signed(
+		const Vector!ubyte cert = X509_Object.make_signed(
 			signer, rng, sig_algo,
 			DER_Encoder().start_cons(ASN1_Tag.SEQUENCE)
 			.start_explicit(0)
@@ -215,7 +211,7 @@ private:
 	                  uint crl_number, Duration next_update,
 	                  RandomNumberGenerator rng) const
 	{
-		const size_t X509_CRL_VERSION = 2;
+		__gshared immutable size_t X509_CRL_VERSION = 2;
 		
 		if (next_update == 0.seconds)
 			next_update = 7.days;
@@ -225,8 +221,7 @@ private:
 		auto expire_time = current_time + next_update;
 		
 		Extensions extensions;
-		extensions.add(
-			new x509_ext.Authority_Key_ID(m_cert.subject_key_id()));
+		extensions.add(new x509_ext.Authority_Key_ID(m_cert.subject_key_id()));
 		extensions.add(new x509_ext.CRL_Number(crl_number));
 		
 		const Vector!ubyte crl = x509_obj.make_signed(

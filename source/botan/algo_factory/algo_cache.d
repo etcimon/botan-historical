@@ -15,10 +15,10 @@ import botan.utils.hashmap;
 * @param prov_name a provider name
 * @return weight for this provider
 */
-size_t static_provider_weight(in string prov_name)
+ubyte static_provider_weight(in string prov_name)
 {
 	/*
-	* Prefer asm over C++, but prefer anything over OpenSSL or GNU MP; to use
+	* Prefer asm over D, but prefer anything over OpenSSL or GNU MP; to use
 	* them, set the provider explicitly for the algorithms you want
 	*/
 	
@@ -50,36 +50,32 @@ public:
 	const T get(in string algo_spec, in string requested_provider)
 	{
 		auto algo = find_algorithm(algo_spec);
-		if (algo == m_algorithms.end()) // algo not found at all (no providers)
+		if (algo.length == 0) // algo not found at all (no providers)
 			return null;
 		
 		// If a provider is requested specifically, return it or fail entirely
 		if (requested_provider != "")
 		{
-			auto prov = algo.second.find(requested_provider);
-			if (prov != algo.second.end())
-				return prov.second;
-			return null;
+			return algo.get(requested_provider);
 		}
-		
+
 		const T prototype = null;
 		string prototype_provider;
 		size_t prototype_prov_weight = 0;
 		
 		const string pref_provider = m_pref_providers.get(algo_spec);
-		
-		for (auto i = algo.second.ptr; i != algo.second.end(); ++i)
-		{
-			// preferred prov exists, return immediately
-			if (i.first == pref_provider)
-				return i.second;
-			
-			const size_t prov_weight = static_provider_weight(i.first);
+
+		if (algo.get(m_pref_providers))
+			return algo[m_pref_providers];
+
+		foreach (provider, instance; algo) 
+		{			
+			const ubyte prov_weight = static_provider_weight(provider);
 			
 			if (prototype == null || prov_weight > prototype_prov_weight)
 			{
-				prototype = i.second;
-				prototype_provider = i.first;
+				prototype = instance;
+				prototype_provider = provider;
 				prototype_prov_weight = prov_weight;
 			}
 		}
@@ -100,17 +96,14 @@ public:
 		if (!algo)
 			return;
 				
-		if (algo.name != requested_name &&
-		    m_aliases.find(requested_name) == m_aliases.end())
+		if (algo.name != requested_name && m_aliases.get(requested_name) == null)
 		{
 			m_aliases[requested_name] = algo.name;
 		}
 		
-		if (!m_algorithms[algo.name][provider])
+		if (!m_algorithms[algo.name].get(provider))
 			m_algorithms[algo.name][provider] = algo;
-		//else
-		//	delete algo;
-		// todo: Manual Memory Management
+
 	}
 
 
@@ -136,17 +129,18 @@ public:
 		
 		Vector!string providers;
 
-		if (algo != m_algorithms.end())
+		string algo = algo_name;
+		if (m_aliases.get(algo_name))
+			algo = m_aliases[algo_name];
+
+		if (!m_algorithms.get(algo))
+			return Vector!string();
+
+		foreach (provider, instance; m_algorithms[algo])
 		{
-			auto provider = algo.second.ptr;
-			
-			while(provider != algo.second.end())
-			{
-				providers.push_back(provider.first);
-				++provider;
-			}
+			providers.push_back(provider);
 		}
-		
+				
 		return providers;
 	}
 
@@ -155,22 +149,15 @@ public:
 	*/
 	void clear_cache()
 	{
-		auto algo = m_algorithms.ptr;
-		
-		while(algo != m_algorithms.end())
+		/*
+		foreach (provider, algorithms; m_algorithms)
 		{
-			auto provider = algo.second.ptr;
-			
-			while(provider != algo.second.end())
-			{
-				// delete provider.second;
-				// todo: Manual Memory Management
-				++provider;
+			foreach (name, instance; algorithms) {
+				delete instance;
 			}
-			
-			++algo;
-		}
-		
+		}*/
+
+		/// Let the GC handle this
 		m_algorithms.clear();
 	}
 
@@ -181,22 +168,26 @@ private:
 	* Look for an algorithm implementation in the cache, also checking aliases
 	* Assumes object lock is held
 	*/
-	auto find_algorithm(in string algo_spec)
+	HashMap!(string, T) find_algorithm(in string algo_spec)
 	{
-		auto algo = m_algorithms.find(algo_spec);
+		auto algo = m_algorithms.get(algo_spec);
 		
 		// Not found? Check if a known alias
-		if (algo == m_algorithms.end())
+		if (!algo)
 		{
-			auto _alias = m_aliases.find(algo_spec);
+			auto _alias = m_aliases.get(algo_spec);
 
-			if (_alias != m_aliases.end())
-				algo = m_algorithms.find(_alias.second);
+			if (_alias)
+				algo = m_algorithms.get(_alias);
+			else
+				return HashMap!(string, T).init;
 		}
 		
 		return algo;
 	}
 	HashMap!(string, string) m_aliases;
 	HashMap!(string, string) m_pref_providers;
+
+			// algo_name     //provider // instance
 	HashMap!(string, HashMap!(string, T)) m_algorithms;
 }

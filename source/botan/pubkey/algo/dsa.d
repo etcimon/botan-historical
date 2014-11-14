@@ -15,7 +15,7 @@ import botan.math.numbertheory.reducer;
 import botan.math.numbertheory.pow_mod;
 import botan.math.numbertheory.numthry;
 import botan.pubkey.algo.keypair;
-import future;
+
 /**
 * DSA Public Key
 */

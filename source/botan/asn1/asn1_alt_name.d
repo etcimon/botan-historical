@@ -41,12 +41,12 @@ public:
 		encode_entries(der, m_alt_info, "URI", ASN1_Tag(6));
 		encode_entries(der, m_alt_info, "IP", ASN1_Tag(7));
 		
-		for (auto i = m_othernames.ptr; i != m_othernames.end(); ++i)
+		foreach (oid, const ref asn1_str; m_othernames)
 		{
 			der.start_explicit(0)
-				.encode(i.first)
+					.encode(oid)
 					.start_explicit(0)
-					.encode(i.second)
+					.encode(asn1_str)
 					.end_explicit()
 					.end_explicit();
 		}
@@ -93,14 +93,14 @@ public:
 					const ASN1_Tag value_type = value.type_tag;
 					
 					if (is_string_type(value_type) && value.class_tag == ASN1_Tag.UNIVERSAL)
-						add_othername(oid, asn1.toString(value), value_type);
+						add_othername(oid, value.toString(), value_type);
 				}
 			}
 			else if (tag == 1 || tag == 2 || tag == 6)
 			{
-				const string value = transcode(asn1.toString(obj),
-				                                        LATIN1_CHARSET,
-				                                        LOCAL_CHARSET);
+				const string value = transcode(obj.toString(),
+				                               LATIN1_CHARSET,
+				                               LOCAL_CHARSET);
 				
 				if (tag == 1) add_attribute("RFC822", value);
 				if (tag == 2) add_attribute("DNS", value);
@@ -114,7 +114,7 @@ public:
 					add_attribute("IP", ipv4_to_string(ip));
 				}
 			}
-			
+
 		}
 	}
 
@@ -122,10 +122,13 @@ public:
 	/*
 	* Return all of the alternative names
 	*/
-
-	MultiMap!string contents() const
+	MultiMap!(string, string) contents() const
 	{
-		MultiMap!string names = m_alt_info.dup();
+		MultiMap!(string, string) names;
+
+		foreach (k, v; m_alt_info) {
+			names.insert(k, v);
+		}
 
 		foreach (oid, const ref asn1_str; m_othernames)
 			names.insert(ids.lookup(key), asn1_str.value());
@@ -136,26 +139,26 @@ public:
 	/*
 	* Add an attribute to an alternative name
 	*/
-	void add_attribute(in string type,
-	                   in string str)
+	void add_attribute(in string type, in string str)
 	{
 		if (type == "" || str == "")
 			return;
 
 		bool exists;
-		m_alt_info.equal_range(type, (string val) { 
-			if (val == str)
-				exists = true;
-		});
+		m_alt_info.equal_range(type, 
+		                       (string val) { 
+									if (val == str)
+										exists = true;
+								});
 
 		if (!exists)
-			m_alt_info.insert(Pair(type, str));
+			m_alt_info.insert(type, str);
 	}
 	
 	/*
 	* Get the attributes of this alternative name
 	*/
-	ref MultiMap!string get_attributes() const
+	MultiMap!(string, string) get_attributes() const
 	{
 		return m_alt_info;
 	}
@@ -163,12 +166,11 @@ public:
 	/*
 	* Add an OtherName field
 	*/
-	void add_othername(in OID oid, in string value,
-	                   ASN1_Tag type)
+	void add_othername(in OID oid, in string value, ASN1_Tag type)
 	{
 		if (value == "")
 			return;
-		m_othernames.insert(Pair(oid, ASN1_String(value, type)));
+		m_othernames.insert(oid, ASN1_String(value, type));
 	}
 
 	/*
@@ -202,7 +204,7 @@ public:
 	}
 
 private:
-	MultiMap!string m_alt_info;
+	MultiMap!(string, string) m_alt_info;
 	MultiMap!(OID, ASN1_String) m_othernames;
 }
 
@@ -227,24 +229,22 @@ bool is_string_type(ASN1_Tag tag)
 * DER encode an Alternative_Name entry
 */
 void encode_entries(DER_Encoder encoder = DER_Encoder(),
-                    const ref MultiMap!string attr,
+                    in MultiMap!(string, string) attr,
                     in string type, ASN1_Tag tagging)
 {
-	auto range = attr.equal_range(type);
+	attr.equal_range(type, (string alt_name) {
 	
-	for (auto i = range.first; i != range.second; ++i)
-	{
 		if (type == "RFC822" || type == "DNS" || type == "URI")
 		{
-			ASN1_String asn1_string = ASN1_String(i.second, IA5_STRING);
+			ASN1_String asn1_string = ASN1_String(alt_name, IA5_STRING);
 			encoder.add_object(tagging, ASN1_Tag.CONTEXT_SPECIFIC, asn1_string.iso_8859());
 		}
 		else if (type == "IP")
 		{
-			const uint ip = string_to_ipv4(i.second);
+			const uint ip = string_to_ipv4(alt_name);
 			ubyte[4] ip_buf;
 			store_be(ip, ip_buf);
-			encoder.add_object(tagging, ASN1_Tag.CONTEXT_SPECIFIC, ip_buf, 4);
+			encoder.add_object(tagging, ASN1_Tag.CONTEXT_SPECIFIC, ip_buf.ptr, 4);
 		}
-	}
+	});
 }

@@ -78,9 +78,9 @@ private:
 private:
 
 Secure_Vector!ubyte emsa2_encoding(in Secure_Vector!ubyte msg,
-                                size_t output_bits,
-                                in Secure_Vector!ubyte empty_hash,
-                                ubyte hash_id)
+                                   size_t output_bits,
+                                   in Secure_Vector!ubyte empty_hash,
+                                   ubyte hash_id)
 {
 	const size_t HASH_SIZE = empty_hash.length;
 	

@@ -11,7 +11,9 @@ import botan.algo_base.symkey;
 import botan.math.numbertheory.numthry;
 import botan.mac.hmac;
 import botan.hash.sha2_32;
+import botan.mac.mac;
 import botan.utils.exceptn;
+import botan.utils.types;
 import std.exception;
 
 struct FPE {
