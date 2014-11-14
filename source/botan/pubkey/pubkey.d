@@ -50,8 +50,7 @@ public:
 	* @param rng the random number source to use
 	* @return encrypted message
 	*/
-	Vector!ubyte encrypt(in ubyte* input, size_t length,
-										RandomNumberGenerator rng) const
+	Vector!ubyte encrypt(in ubyte* input, size_t length, RandomNumberGenerator rng) const
 	{
 		return enc(input, length, rng);
 	}
@@ -62,8 +61,7 @@ public:
 	* @param rng the random number source to use
 	* @return encrypted message
 	*/
-	Vector!ubyte encrypt(Alloc)(in Vector!( ubyte, Alloc ) input,
-									  RandomNumberGenerator rng) const
+	Vector!ubyte encrypt(Alloc)(in Vector!( ubyte, Alloc ) input, RandomNumberGenerator rng) const
 	{
 		return enc(&input[0], input.length, rng);
 	}
@@ -126,20 +124,16 @@ struct PK_Signer
 public:
 	/**
 	* Sign a message.
-	* @param input the message to sign as a ubyte array
+	* @param msg the message to sign as a ubyte array
 	* @param length the length of the above ubyte array
 	* @param rng the rng to use
 	* @return signature
 	*/
-	Vector!ubyte sign_message(in ubyte* msg, size_t length,
-	                          RandomNumberGenerator rng)
+	Vector!ubyte sign_message(in ubyte* msg, size_t length, RandomNumberGenerator rng)
 	{
 		update(msg, length);
 		return signature(rng);
 	}
-
-	Vector!ubyte sign_message(in ubyte* input, size_t length,
-											  RandomNumberGenerator rng);
 
 	/**
 	* Sign a message.
@@ -147,12 +141,10 @@ public:
 	* @param rng the rng to use
 	* @return signature
 	*/
-	Vector!ubyte sign_message(in Vector!ubyte input,
-											 RandomNumberGenerator rng)
+	Vector!ubyte sign_message(in Vector!ubyte input, RandomNumberGenerator rng)
 	{ return sign_message(&input[0], input.length, rng); }
 
-	Vector!ubyte sign_message(in Secure_Vector!ubyte input,
-											 RandomNumberGenerator rng)
+	Vector!ubyte sign_message(in Secure_Vector!ubyte input, RandomNumberGenerator rng)
 	{ return sign_message(&input[0], input.length, rng); }
 
 	/**
@@ -382,19 +374,17 @@ public:
 				{
 					BigInt sig_part;
 					ber_sig.decode(sig_part);
-					real_sig += BigInt.encode_1363(sig_part, m_op.message_part_size());
+					real_sig ~= BigInt.encode_1363(sig_part, m_op.message_part_size());
 					++count;
 				}
 				
 				if (count != m_op.message_parts())
 					throw new Decoding_Error("PK_Verifier: signature size invalid");
 				
-				return validate_signature(m_emsa.raw_data(),
-				                          &real_sig[0], real_sig.length);
+				return validate_signature(m_emsa.raw_data(), &real_sig[0], real_sig.length);
 			}
 			else
-				throw new Decoding_Error("PK_Verifier: Unknown signature format " ~
-				                         to!string(m_sig_format));
+				throw new Decoding_Error("PK_Verifier: Unknown signature format " ~ to!string(m_sig_format));
 		}
 		catch(Invalid_Argument) { return false; }
 	}

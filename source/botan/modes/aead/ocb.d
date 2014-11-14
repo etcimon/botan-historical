@@ -448,7 +448,7 @@ private:
 		while(m_L.length <= i)
 			m_L.push_back(poly_double(m_L.back()));
 		
-		return m_L.at(i);
+		return m_L[i];
 	}
 	
 	Secure_Vector!ubyte poly_double(in Secure_Vector!ubyte input) const

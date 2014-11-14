@@ -98,8 +98,7 @@ public:
 	/*
 	* Return the OpenSSL-based modular exponentiator
 	*/
-	Modular_Exponentiator mod_exp(in BigInt n,
-	                              Power_Mod.Usage_Hints) const
+	Modular_Exponentiator mod_exp(in BigInt n, Power_Mod.Usage_Hints) const
 	{
 		return new OpenSSL_Modular_Exponentiator(n);
 	}
@@ -108,55 +107,56 @@ public:
 	/*
 	* Look for an algorithm with this name
 	*/
-	BlockCipher find_block_cipher(in SCAN_Name request,
-	                              Algorithm_Factory af) const
+	BlockCipher find_block_cipher(in SCAN_Name request, Algorithm_Factory af) const
 	{
 		
-		version(OPENSSL_NO_AES){} else {
+		static if (!BOTAN_HAS_OPENSSL_NO_SHA) {
 			/*
-		Using OpenSSL's AES causes crashes inside EVP on x86-64 with OpenSSL 0.9.8g
-		cause is unknown
-		*/
+			Using OpenSSL's AES causes crashes inside EVP on x86-64 with OpenSSL 0.9.8g
+			cause is unknown
+			*/
 			mixin(HANDLE_EVP_CIPHER!("AES-128", EVP_aes_128_ecb)());
 			mixin(HANDLE_EVP_CIPHER!("AES-192", EVP_aes_192_ecb)());
 			mixin(HANDLE_EVP_CIPHER!("AES-256", EVP_aes_256_ecb)());
 		}
 
-		version(OPENSSL_NO_DES){} else {
+		static if (!BOTAN_HAS_OPENSSL_NO_DES) {
 			mixin(HANDLE_EVP_CIPHER!("DES", EVP_des_ecb())());
 			mixin(HANDLE_EVP_CIPHER_KEYLEN!("TripleDES", EVP_des_ede3_ecb, 16, 24, 8)());
 		}
 		
-		version(OPENSSL_NO_BF){} else {
+		static if (!BOTAN_HAS_OPENSSL_NO_BF) {
 			HANDLE_EVP_CIPHER_KEYLEN("Blowfish", EVP_bf_ecb, 1, 56, 1);
 		}
 		
-		version(OPENSSL_NO_CAST){} else {
+		static if (!BOTAN_HAS_OPENSSL_NO_CAST) {
 			HANDLE_EVP_CIPHER_KEYLEN("cast(-128", EVP_cast5_ecb), 1, 16, 1);
 		}
-		
-		version(OPENSSL_NO_CAMELLIA){} else {
+
+		static if (!BOTAN_HAS_OPENSSL_NO_CAMELLIA) {
 			HANDLE_EVP_CIPHER("Camellia-128", EVP_camellia_128_ecb);
 			HANDLE_EVP_CIPHER("Camellia-192", EVP_camellia_192_ecb);
 			HANDLE_EVP_CIPHER("Camellia-256", EVP_camellia_256_ecb);
 		}
 		
-		version(OPENSSL_NO_RC2){}else{
+		static if (!BOTAN_HAS_OPENSSL_NO_RC2) {
 			HANDLE_EVP_CIPHER_KEYLEN("RC2", EVP_rc2_ecb, 1, 32, 1);
 		}
 		
-		version(OPENSSL_NO_RC5){} else static if (false) {
+		static if (!BOTAN_HAS_OPENSSL_NO_RC5) {
+			/*
 			if (request.algo_name == "RC5")
 				if (request.arg_as_integer(0, 12) == 12)
 					return new EVP_BlockCipher(EVP_rc5_32_12_16_ecb,
 					                           "RC5(12)", 1, 32, 1);
+			*/
 		}
 		
-		version(OPENSSL_NO_IDEA){} else static if (false) {
-			HANDLE_EVP_CIPHER("IDEA", EVP_idea_ecb);
+		static if (!BOTAN_HAS_OPENSSL_NO_IDEA) {
+			// HANDLE_EVP_CIPHER("IDEA", EVP_idea_ecb);
 		}
 		
-		version(OPENSSL_NO_SEED){} else {
+		static if (!BOTAN_HAS_OPENSSL_NO_SEED) {
 			HANDLE_EVP_CIPHER("SEED", EVP_seed_ecb);
 		}
 		
@@ -184,41 +184,41 @@ public:
 	HashFunction find_hash(in SCAN_Name request,
 	                       Algorithm_Factory af) const
 	{
-		version(OPENSSL_NO_SHA){} else {
+		static if (!BOTAN_HAS_OPENSSL_NO_SHA) {
 			if (request.algo_name == "SHA-160")
 				return new EVP_HashFunction(EVP_sha1(), "SHA-160");
 		}
 		
-		version(OPENSSL_NO_SHA256){} else {
+		static if (!BOTAN_HAS_OPENSSL_NO_SHA256) {
 			if (request.algo_name == "SHA-224")
 				return new EVP_HashFunction(EVP_sha224(), "SHA-224");
 			if (request.algo_name == "SHA-256")
 				return new EVP_HashFunction(EVP_sha256(), "SHA-256");
 		}
 		
-		version(OPENSSL_NO_SHA512) {} else {
+		static if (!BOTAN_HAS_OPENSSL_NO_SHA512) {
 			if (request.algo_name == "SHA-384")
 				return new EVP_HashFunction(EVP_sha384(), "SHA-384");
 			if (request.algo_name == "SHA-512")
 				return new EVP_HashFunction(EVP_sha512(), "SHA-512");
 		}
 		
-		version(OPENSSL_NO_MD2) {} else {
+		static if (!BOTAN_HAS_OPENSSL_NO_MD2) {
 			if (request.algo_name == "MD2")
 				return new EVP_HashFunction(EVP_md2(), "MD2");
 		}
 		
-		version(OPENSSL_NO_MD4) {} else {
+		static if (!BOTAN_HAS_OPENSSL_NO_MD4) {
 			if (request.algo_name == "MD4")
 				return new EVP_HashFunction(EVP_md4(), "MD4");
 		}
 		
-		version(OPENSSL_NO_MD5) {} else {
+		static if (!BOTAN_HAS_OPENSSL_NO_MD5) {
 			if (request.algo_name == "MD5")
 				return new EVP_HashFunction(EVP_md5(), "MD5");
 		}
 		
-		version(OPENSSL_NO_RIPEMD) {} else {
+		static if (!BOTAN_HAS_OPENSSL_NO_RIPEMD) {
 			if (request.algo_name == "RIPEMD-160")
 				return new EVP_HashFunction(EVP_ripemd160(), "RIPEMD-160");
 		}
@@ -723,10 +723,8 @@ static if (BOTAN_HAS_DSA) {
 		size_t message_parts() const { return 2; }
 		size_t message_part_size() const { return (m_q_bits + 7) / 8; }
 		size_t max_input_bits() const { return m_q_bits; }
-		
-		Secure_Vector!ubyte
-			sign(in ubyte* msg, size_t msg_len,
-			     RandomNumberGenerator rng)
+
+		Secure_Vector!ubyte sign(in ubyte* msg, size_t msg_len, RandomNumberGenerator rng)
 		{
 			const size_t q_bytes = (m_q_bits + 7) / 8;
 			

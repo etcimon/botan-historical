@@ -127,7 +127,7 @@ else						enum BOTAN_HAS_CASCADE = false;
 version(DES)			{	enum BOTAN_HAS_DES = true;																}
 else						enum BOTAN_HAS_DES = false;
 version(GOST_28147)		{	enum BOTAN_HAS_GOST_28147_89 = true;													}
-else						enum BOTAN_HAS_GOST_28147_89 = false;
+else						enum BOTAN_HAS_GOST_28147_89 = false;OPENSS
 version(IDEA)			{	enum BOTAN_HAS_IDEA = true;																}
 else						enum BOTAN_HAS_IDEA = false;
 version(KASUMI)			{	enum BOTAN_HAS_KASUMI = true;															}
@@ -280,3 +280,40 @@ version(PBE_PKCSv20)	{	enum BOTAN_HAS_PBE_PKCS_V20 = true;														}
 else						enum BOTAN_HAS_PBE_PKCS_V20 = false;
 version(GCM_CLMUL)		{	enum BOTAN_HAS_GCM_CLMUL = true;														}
 else						enum BOTAN_HAS_GCM_CLMUL = false;
+
+
+
+version(OPENSSL_NO_SHA) {	enum BOTAN_HAS_OPENSSL_NO_SHA = true;													}
+else						enum BOTAN_HAS_OPENSSL_NO_SHA = false;
+version(OPENSSL_NO_SHA256) {enum BOTAN_HAS_OPENSSL_NO_SHA256 = true;												}
+else						enum BOTAN_HAS_OPENSSL_NO_SHA256 = false;
+version(OPENSSL_NO_SHA512) {enum BOTAN_HAS_OPENSSL_NO_SHA512 = true;												}
+else						enum BOTAN_HAS_OPENSSL_NO_SHA512 = false;
+version(OPENSSL_NO_MD2) {	enum BOTAN_HAS_OPENSSL_NO_MD2 = true;													}
+else						enum BOTAN_HAS_OPENSSL_NO_MD2 = false;
+version(OPENSSL_NO_MD4)	{ 	enum BOTAN_HAS_OPENSSL_NO_MD4 = true;													}
+else						enum BOTAN_HAS_OPENSSL_NO_MD4 = false;
+version(OPENSSL_NO_MD5) {	enum BOTAN_HAS_OPENSSL_NO_MD5 = true;													}
+else						enum BOTAN_HAS_OPENSSL_NO_MD5 = false;
+version(OPENSSL_NO_RIPEMD) {enum BOTAN_HAS_OPENSSL_NO_RIPEMD = true;													}
+else						enum BOTAN_HAS_OPENSSL_NO_RIPEMD = false;
+
+
+version(OPENSSL_NO_AES) {	enum BOTAN_HAS_OPENSSL_NO_AES = true;													}
+else						enum BOTAN_HAS_OPENSSL_NO_AES = false;
+version(OPENSSL_NO_DES) {	enum BOTAN_HAS_OPENSSL_NO_DES = true;													}
+else						enum BOTAN_HAS_OPENSSL_NO_DES = false;
+version(OPENSSL_NO_BF) {	enum BOTAN_HAS_OPENSSL_NO_BF = true;													}
+else						enum BOTAN_HAS_OPENSSL_NO_BF = false;
+version(OPENSSL_NO_CAST) {	enum BOTAN_HAS_OPENSSL_NO_CAST = true;													}
+else						enum BOTAN_HAS_OPENSSL_NO_CAST = false;
+version(OPENSSL_NO_CAMELLIA){enum BOTAN_HAS_OPENSSL_NO_CAMELLIA = true;												}
+else						enum BOTAN_HAS_OPENSSL_NO_CAMELLIA = false;
+version(OPENSSL_NO_RC2) {	enum BOTAN_HAS_OPENSSL_NO_RC2 = true;													}
+else						enum BOTAN_HAS_OPENSSL_NO_RC2 = false;
+version(OPENSSL_NO_RC5) {	enum BOTAN_HAS_OPENSSL_NO_RC5 = true;													}
+else						enum BOTAN_HAS_OPENSSL_NO_RC5 = false;
+version(OPENSSL_NO_IDEA) {	enum BOTAN_HAS_OPENSSL_NO_IDEA = true;													}
+else						enum BOTAN_HAS_OPENSSL_NO_IDEA = false;
+version(OPENSSL_NO_SEED) {	enum BOTAN_HAS_OPENSSL_NO_SEED = true;													}
+else						enum BOTAN_HAS_OPENSSL_NO_SEED = false;

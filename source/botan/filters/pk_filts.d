@@ -142,7 +142,7 @@ public:
 	*/
 	void set_signature(in ubyte* sig, size_t length)
 	{
-		m_signature.assign(sig, sig + length);
+		m_signature.replace(sig[0 .. sig + length]);
 	}
 	
 	/*

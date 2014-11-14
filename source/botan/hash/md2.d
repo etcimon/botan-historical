@@ -132,7 +132,3 @@ private:
 	Secure_Vector!ubyte m_X, m_checksum, m_buffer;
 	size_t m_position;
 }
-
-
-
-

@@ -143,7 +143,7 @@ protected:
 	*/
 	void set_round_keys(const uint ks[132])
 	{
-		m_round_key.assign(&ks[0], &ks[132]);
+		m_round_key.replace(ks.ptr[0 .. 132]);
 	}
 
 private:
@@ -184,7 +184,7 @@ private:
 		mixin(SBoxE6!(W[128],W[129],W[130],W[131])()); mixin(SBoxE5!(W[132],W[133],W[134],W[135])());
 		mixin(SBoxE4!(W[136],W[137],W[138],W[139])());
 		
-		m_round_key.assign(&W[8], &W[140]);
+		m_round_key.replace(W.ptr[8 .. 140]);
 	}
 
 	Secure_Vector!uint m_round_key;

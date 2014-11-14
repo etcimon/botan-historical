@@ -84,7 +84,7 @@ private:
 		{
 			const size_t take = std.algorithm.min(m_transform.update_granularity(), input_length);
 			
-			m_buffer.assign(input, input + take);
+			m_buffer.replace(input[0 .. input + take]);
 			m_transform.update(m_buffer);
 			
 			send(m_buffer);

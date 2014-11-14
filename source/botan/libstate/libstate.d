@@ -14,7 +14,7 @@ import botan.engine.engine;
 import botan.utils.cpuid;
 import botan.asn1.oid_lookup.oids;
 import botan.engine.core_engine;
-import botan.internal.stl_util;
+import botan.utils.multimap;
 import std.algorithm;
 import core.sync.mutex;
 import std.typecons;

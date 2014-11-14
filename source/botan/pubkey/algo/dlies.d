@@ -56,7 +56,7 @@ private:
 		buffer_insert(output, m_my_key.length, input, length);
 		
 		Secure_Vector!ubyte vz = Secure_Vector!(m_my_key.ptr, m_my_key.end());
-		vz += m_ka.derive_key(0, other_key).bits_of();
+		vz ~= m_ka.derive_key(0, other_key).bits_of();
 		
 		const size_t K_LENGTH = length + m_mac_keylen;
 		OctetString K = m_kdf.derive_key(K_LENGTH, vz);
@@ -133,7 +133,7 @@ private:
 		                   msg + m_my_key.length + CIPHER_LEN + m_mac.output_length);
 		
 		Secure_Vector!ubyte vz = Secure_Vector!ubyte(msg, msg + m_my_key.length);
-		vz += m_ka.derive_key(0, v).bits_of();
+		vz ~= m_ka.derive_key(0, v).bits_of();
 		
 		const size_t K_LENGTH = C.length + m_mac_keylen;
 		OctetString K = m_kdf.derive_key(K_LENGTH, vz);

@@ -14,7 +14,7 @@ import botan.asn1.asn1_alt_name;
 import botan.asn1.der_enc;
 import botan.asn1.ber_dec;
 import botan.asn1.oid_lookup.oids;
-import botan.internal.stl_util;
+import botan.utils.multimap;
 import botan.utils.charset;
 import botan.utils.parsing;
 import botan.utils.loadstor;
@@ -118,19 +118,17 @@ public:
 		}
 	}
 
+
 	/*
 	* Return all of the alternative names
 	*/
-	MultiMap!(string, string) contents() const
+
+	MultiMap!string contents() const
 	{
-		MultiMap!(string, string) names;
-		
-		for (auto i = m_alt_info.ptr; i != m_alt_info.end(); ++i)
-			names.insert(i);
-		
-		
-		for (auto i = m_othernames.ptr; i != m_othernames.end(); ++i)
-			names.insert(Pair(ids.lookup(i.first), i.second.value()));
+		MultiMap!string names = m_alt_info.dup();
+
+		foreach (oid, const ref asn1_str; m_othernames)
+			names.insert(ids.lookup(key), asn1_str.value());
 		
 		return names;
 	}
@@ -143,19 +141,21 @@ public:
 	{
 		if (type == "" || str == "")
 			return;
-		
-		auto range = m_alt_info.equal_range(type);
-		for (auto j = range.first; j != range.second; ++j)
-			if (j.second == str)
-				return;
-		
-		m_alt_info.insert(Pair(type, str));
+
+		bool exists;
+		m_alt_info.equal_range(type, (string val) { 
+			if (val == str)
+				exists = true;
+		});
+
+		if (!exists)
+			m_alt_info.insert(Pair(type, str));
 	}
 	
 	/*
 	* Get the attributes of this alternative name
 	*/
-	MultiMap!(string, string) get_attributes() const
+	ref MultiMap!string get_attributes() const
 	{
 		return m_alt_info;
 	}
@@ -202,7 +202,7 @@ public:
 	}
 
 private:
-	MultiMap!(string, string) m_alt_info;
+	MultiMap!string m_alt_info;
 	MultiMap!(OID, ASN1_String) m_othernames;
 }
 
@@ -227,7 +227,7 @@ bool is_string_type(ASN1_Tag tag)
 * DER encode an Alternative_Name entry
 */
 void encode_entries(DER_Encoder encoder = DER_Encoder(),
-                    const ref MultiMap!(string, string) attr,
+                    const ref MultiMap!string attr,
                     in string type, ASN1_Tag tagging)
 {
 	auto range = attr.equal_range(type);

@@ -500,7 +500,7 @@ private:
 	void contents_to(ref Data_Store subject_info,
 	                 ref Data_Store issuer_info) const
 	{
-		MultiMap!(string, string) contents = get_alt_name().contents();
+		MultiMap!string contents = get_alt_name().contents();
 		
 		if (m_oid_name_str == "X509v3.SubjectAlternativeName")
 			subject_info.add(contents);

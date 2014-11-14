@@ -69,8 +69,7 @@ public:
 class Server_Name_Indicator : Extension
 {
 public:
-	static Handshake_Extension_Type static_type()
-	{ return TLSEXT_SERVER_NAME_INDICATION; }
+	static Handshake_Extension_Type static_type() { return TLSEXT_SERVER_NAME_INDICATION; }
 
 	Handshake_Extension_Type type() const { return static_type(); }
 
@@ -79,8 +78,7 @@ public:
 		m_sni_host_name = host_name;
 	}
 
-	this(ref TLS_Data_Reader reader,
-	     ushort extension_size)
+	this(ref TLS_Data_Reader reader, ushort extension_size)
 	{
 		/*
 		* This is used by the server to confirm that it knew the name
@@ -126,9 +124,7 @@ public:
 		buf.push_back(get_byte!ushort(0, name_len));
 		buf.push_back(get_byte!ushort(1, name_len));
 		
-		buf += Pair(
-			cast(const ubyte*)(m_sni_host_name.ptr),
-			m_sni_host_name.length);
+		buf ~= (cast(const ubyte*)m_sni_host_name.ptr)[0 .. m_sni_host_name.length];
 		
 		return buf;
 	}
@@ -144,8 +140,7 @@ private:
 class SRP_Identifier : Extension
 {
 public:
-	static Handshake_Extension_Type static_type()
-	{ return TLSEXT_SRP_IDENTIFIER; }
+	static Handshake_Extension_Type static_type() { return TLSEXT_SRP_IDENTIFIER; }
 
 	Handshake_Extension_Type type() const { return static_type(); }
 
@@ -154,8 +149,7 @@ public:
 		m_srp_identifier = identifier;
 	}
 
-	this(ref TLS_Data_Reader reader,
-	     ushort extension_size)
+	this(ref TLS_Data_Reader reader, ushort extension_size)
 	{
 		m_srp_identifier = reader.get_string(1, 1, 255);
 		
@@ -163,8 +157,7 @@ public:
 			throw new Decoding_Error("Bad encoding for SRP identifier extension");
 	}
 
-	this(ref TLS_Data_Reader reader,
-						ushort extension_size);
+	this(ref TLS_Data_Reader reader, ushort extension_size);
 
 	string identifier() const { return m_srp_identifier; }
 
@@ -173,7 +166,7 @@ public:
 	{
 		Vector!ubyte buf;
 
-		const ubyte* srp_bytes = cast(const ubyte*)(m_srp_identifier.ptr);
+		const ubyte* srp_bytes = cast(const ubyte*) m_srp_identifier.ptr;
 		
 		append_tls_length_value(buf, srp_bytes, m_srp_identifier.length, 1);
 		
@@ -191,8 +184,7 @@ private:
 class Renegotiation_Extension : Extension
 {
 public:
-	static Handshake_Extension_Type static_type()
-	{ return TLSEXT_SAFE_RENEGOTIATION; }
+	static Handshake_Extension_Type static_type() { return TLSEXT_SAFE_RENEGOTIATION; }
 
 	Handshake_Extension_Type type() const { return static_type(); }
 
@@ -203,8 +195,7 @@ public:
 		m_reneg_data = bits;
 	}
 
-	this(ref TLS_Data_Reader reader,
-	     ushort extension_size)
+	this(ref TLS_Data_Reader reader, ushort extension_size)
 	{
 		m_reneg_data = reader.get_range!ubyte(1, 0, 255);
 		
@@ -212,8 +203,7 @@ public:
 			throw new Decoding_Error("Bad encoding for secure renegotiation extn");
 	}
 
-	const Vector!ubyte renegotiation_info() const
-	{ return m_reneg_data; }
+	const Vector!ubyte renegotiation_info() const { return m_reneg_data; }
 
 	Vector!ubyte serialize() const
 	{
@@ -234,8 +224,7 @@ private:
 class Maximum_Fragment_Length : Extension
 {
 public:
-	static Handshake_Extension_Type static_type()
-	{ return TLSEXT_MAX_FRAGMENT_LENGTH; }
+	static Handshake_Extension_Type static_type() { return TLSEXT_MAX_FRAGMENT_LENGTH; }
 
 	Handshake_Extension_Type type() const { return static_type(); }
 
@@ -265,8 +254,7 @@ public:
 		m_max_fragment = max_fragment;
 	}
 
-	this(ref TLS_Data_Reader reader,
-	     ushort extension_size)
+	this(ref TLS_Data_Reader reader, ushort extension_size)
 	{
 		__gshared immutable size_t[] code_to_fragment = [ 0, 512, 1024, 2048, 4096 ];
 		if (extension_size != 1)
@@ -277,8 +265,7 @@ public:
 		auto i = code_to_fragment.get(cast(size_t) val, 0);
 
 		if (i == 0)
-			throw new TLS_Exception(Alert.ILLEGAL_PARAMETER,
-			                        "Bad value in maximum fragment extension");
+			throw new TLS_Exception(Alert.ILLEGAL_PARAMETER, "Bad value in maximum fragment extension");
 		
 		m_max_fragment = i;
 	}
@@ -298,13 +285,11 @@ private:
 class Next_Protocol_Notification : Extension
 {
 public:
-	static Handshake_Extension_Type static_type()
-	{ return TLSEXT_NEXT_PROTOCOL; }
+	static Handshake_Extension_Type static_type() { return TLSEXT_NEXT_PROTOCOL; }
 
 	Handshake_Extension_Type type() const { return static_type(); }
 
-	ref const Vector!string protocols() const
-	{ return m_protocols; }
+	ref const Vector!string protocols() const { return m_protocols; }
 
 	/**
 	* Empty extension, used by client
@@ -319,8 +304,7 @@ public:
 		m_protocols = protocols; 
 	}
 
-	this(ref TLS_Data_Reader reader,
-	     ushort extension_size)
+	this(ref TLS_Data_Reader reader, ushort extension_size)
 	{
 		if (extension_size == 0)
 			return; // empty extension
@@ -349,10 +333,7 @@ public:
 			const string p = m_protocols[i];
 			
 			if (p != "")
-				append_tls_length_value(buf,
-				                        cast(const ubyte*)(p.ptr),
-				                        p.length,
-				                        1);
+				append_tls_length_value(buf, cast(const ubyte*) p.ptr, p.length, 1);
 		}
 		
 		return buf;
@@ -369,8 +350,7 @@ private:
 class Session_Ticket : Extension
 {
 public:
-	static Handshake_Extension_Type static_type()
-	{ return TLSEXT_SESSION_TICKET; }
+	static Handshake_Extension_Type static_type() { return TLSEXT_SESSION_TICKET; }
 
 	Handshake_Extension_Type type() const { return static_type(); }
 
@@ -395,8 +375,7 @@ public:
 	/**
 	* Deserialize a session ticket
 	*/
-	this(ref TLS_Data_Reader reader,
-	     ushort extension_size)
+	this(ref TLS_Data_Reader reader, ushort extension_size)
 	{
 		m_ticket = reader.get_elem!(ubyte, Vector!ubyte)(extension_size);
 	}
@@ -414,8 +393,7 @@ private:
 class Supported_Elliptic_Curves : Extension
 {
 public:
-	static Handshake_Extension_Type static_type()
-	{ return TLSEXT_USABLE_ELLIPTIC_CURVES; }
+	static Handshake_Extension_Type static_type() { return TLSEXT_USABLE_ELLIPTIC_CURVES; }
 
 	Handshake_Extension_Type type() const { return static_type(); }
 
@@ -514,8 +492,7 @@ public:
 		m_curves = curves;
 	}
 
-	this(ref TLS_Data_Reader reader,
-	     ushort extension_size)
+	this(ref TLS_Data_Reader reader, ushort extension_size)
 	{
 		ushort len = reader.get_ushort();
 		
@@ -548,12 +525,11 @@ private:
 class Signature_Algorithms : Extension
 {
 public:
-	static Handshake_Extension_Type static_type()
-	{ return TLSEXT_SIGNATURE_ALGORITHMS; }
+	static Handshake_Extension_Type static_type() { return TLSEXT_SIGNATURE_ALGORITHMS; }
 
 	Handshake_Extension_Type type() const { return static_type(); }
 
-		static string hash_algo_name(ubyte code)
+	static string hash_algo_name(ubyte code)
 	{
 		switch(code)
 		{
@@ -628,8 +604,7 @@ public:
 		throw new Internal_Error("Unknown sig ID " ~ name ~ " for signature_algorithms");
 	}
 
-	Vector!( Pair!(string, string)  )
-		supported_signature_algorthms() const
+	Vector!( Pair!(string, string)  ) supported_signature_algorthms() const
 	{
 		return m_supported_algos;
 	}
@@ -706,8 +681,7 @@ private:
 class Heartbeat_Support_Indicator : Extension
 {
 public:
-	static Handshake_Extension_Type static_type()
-	{ return TLSEXT_HEARTBEAT_SUPPORT; }
+	static Handshake_Extension_Type static_type() { return TLSEXT_HEARTBEAT_SUPPORT; }
 
 	Handshake_Extension_Type type() const { return static_type(); }
 
@@ -720,8 +694,6 @@ public:
 		return heartbeat;
 	}
 
-
-
 	@property bool empty() const { return false; }
 
 	this(bool peer_allowed_to_send) 
@@ -729,8 +701,7 @@ public:
 		m_peer_allowed_to_send = peer_allowed_to_send; 
 	}
 
-	this(ref TLS_Data_Reader reader,
-	     ushort extension_size)
+	this(ref TLS_Data_Reader reader, ushort extension_size)
 	{
 		if (extension_size != 1)
 			throw new Decoding_Error("Strange size for heartbeat extension");
@@ -738,8 +709,7 @@ public:
 		const ubyte code = reader.get_byte();
 		
 		if (code != 1 && code != 2)
-			throw new TLS_Exception(Alert.ILLEGAL_PARAMETER,
-			                        "Unknown heartbeat code " ~ to!string(code));
+			throw new TLS_Exception(Alert.ILLEGAL_PARAMETER, "Unknown heartbeat code " ~ to!string(code));
 		
 		m_peer_allowed_to_send = (code == 1);
 	}
@@ -797,7 +767,7 @@ public:
 			buf.push_back(get_byte!ushort(0, extn_val.length));
 			buf.push_back(get_byte!ushort(1, extn_val.length));
 			
-			buf += extn_val;
+			buf ~= extn_val;
 		}
 		
 		const ushort extn_size = buf.length - 2;

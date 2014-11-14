@@ -25,7 +25,7 @@ public:
 		if (!valid_nonce_length(nonce_len))
 			throw new Invalid_IV_Length(name, nonce_len);
 		
-		m_shift_register.assign(nonce, nonce + nonce_len);
+		m_shift_register.replace(nonce[0 .. nonce + nonce_len]);
 		m_keystream_buf.resize(m_shift_register.length);
 		cipher().encrypt(m_shift_register, m_keystream_buf);
 		

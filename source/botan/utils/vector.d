@@ -599,7 +599,7 @@ struct Vector(T, ALLOCATOR)
 	{
 		_data.length = newLength;
 	}
-
+	alias push_back = insertBack;
 	/**
 		Inserts $(D value) to the front or back of the container. $(D stuff)
 		can be a value convertible to $(D T) or a range of objects convertible
@@ -611,7 +611,7 @@ struct Vector(T, ALLOCATOR)
 		Complexity: $(BIGOH m * log(n)), where $(D m) is the number of
 		elements in $(D stuff)
     */
-	size_t push_back(Stuff)(Stuff stuff)
+	size_t insertBack(Stuff)(Stuff stuff)
 		if (isImplicitlyConvertible!(Stuff, T) ||
 		    isInputRange!Stuff && isImplicitlyConvertible!(ElementType!Stuff, T))
 	{
@@ -671,7 +671,7 @@ struct Vector(T, ALLOCATOR)
 	}
 	/// ditto
 	alias stableRemoveBack = removeBack;
-	
+	alias insert_before = insertBefore;
 	/**
 		Inserts $(D stuff) before, after, or instead range $(D r), which must
 		be a valid range previously extracted from this container. $(D stuff)

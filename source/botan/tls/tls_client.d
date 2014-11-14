@@ -12,7 +12,7 @@ public import botan.tls.tls_server_info;
 public import botan.rng.rng;
 import botan.tls.tls_handshake_state;
 import botan.tls.tls_messages;
-import botan.internal.stl_util;
+import botan.utils.multimap;
 import botan.utils.types;
 
 /**

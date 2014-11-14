@@ -9,7 +9,7 @@ module botan.utils.datastor.datastor;
 public import botan.utils.exceptn;
 import botan.utils.parsing;
 import botan.codec.hex;
-import botan.internal.stl_util;
+import botan.utils.multimap;
 import botan.alloc.zeroize;
 import functional;
 // import string;
@@ -33,10 +33,10 @@ public:
 	/*
 	* Search based on an arbitrary predicate
 	*/
-	MultiMap!(string, string) search_for(
+	MultiMap!string search_for(
 		bool delegate(string, string) predicate) const
 	{
-		MultiMap!(string, string) output;
+		MultiMap!string output;
 
 		foreach (el; contents)
 			if (predicate(el.first, el.second))
@@ -164,12 +164,12 @@ public:
 	/*
 	* Insert a mapping of key/value pairs
 	*/
-	void add(in MultiMap!(string, string) input)
+	void add(in MultiMap!string input)
 	{
 		foreach (el; input)
 			contents.insert(el);
 	}
 
 private:
-	MultiMap!(string, string) contents;
+	MultiMap!string contents;
 }

@@ -387,11 +387,11 @@ Vector!(  RedBlackTree!Certificate_Status_Code )
 	
 	Vector!( Tid ) ocsp_responses;
 	
-	Vector!( Certificate_Status_Code[] ) cert_status = Vector!( Certificate_Status_Code[] )( cert_path.length );
+	Vector!( RedBlackTree!Certificate_Status_Code ) cert_status = Vector!( Vector!Certificate_Status_Code )( cert_path.length );
 	
 	foreach (size_t i; 0 .. cert_path.length)
 	{
-		Certificate_Status_Code[] status = cert_status.at(i);
+		auto status = &cert_status[i];
 		
 		const bool at_self_signed_root = (i == cert_path.length - 1);
 		
@@ -443,10 +443,10 @@ Vector!(  RedBlackTree!Certificate_Status_Code )
 	foreach (size_t i; 0 .. cert_path.length - 1)
 	{
 
-		Certificate_Status_Code[] status = cert_status.at(i);
+		auto status = &cert_status[i];
 		
-		const X509_Certificate subject = cert_path.at(i);
-		const X509_Certificate ca = cert_path.at(i+1);
+		const X509_Certificate subject = cert_path[i];
+		const X509_Certificate ca = cert_path[i+1];
 		
 		if (i < ocsp_responses.length)
 		{
@@ -477,26 +477,26 @@ Vector!(  RedBlackTree!Certificate_Status_Code )
 		if (!crl_p)
 		{
 			if (restrictions.require_revocation_information())
-				status ~= Certificate_Status_Code.NO_REVOCATION_DATA;
+				status.insert(Certificate_Status_Code.NO_REVOCATION_DATA);
 			continue;
 		}
 		
 		const X509_CRL crl = *crl_p;
 		
 		if (!ca.allowed_usage(CRL_SIGN))
-			status ~= Certificate_Status_Code.CA_CERT_NOT_FOR_CRL_ISSUER;
+			status.insert(Certificate_Status_Code.CA_CERT_NOT_FOR_CRL_ISSUER);
 		
 		if (current_time < X509_Time(crl.this_update()))
-			status ~= Certificate_Status_Code.CRL_NOT_YET_VALID;
+			status.insert(Certificate_Status_Code.CRL_NOT_YET_VALID);
 		
 		if (current_time > X509_Time(crl.next_update()))
-			status ~= Certificate_Status_Code.CRL_HAS_EXPIRED;
+			status.insert(Certificate_Status_Code.CRL_HAS_EXPIRED);
 		
 		if (crl.check_signature(ca.subject_public_key()) == false)
-			status ~= Certificate_Status_Code.CRL_BAD_SIGNATURE;
+			status.insert(Certificate_Status_Code.CRL_BAD_SIGNATURE);
 		
 		if (crl.is_revoked(subject))
-			status ~= Certificate_Status_Code.CERT_IS_REVOKED;
+			status.insert(Certificate_Status_Code.CERT_IS_REVOKED);
 	}
 	
 	if (self_signed_ee_cert)

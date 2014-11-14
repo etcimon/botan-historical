@@ -7,6 +7,7 @@
 module botan.engine.gnump_engine;
 
 import botan.constants;
+
 static if (BOTAN_HAS_ENGINE_GNU_MP):
 
 import botan.engine.engine;
@@ -16,6 +17,7 @@ import std.c.string;
 import botan.math.bigint.bigint;
 import std.c.stdlib;
 import std.c.stdio;
+
 /* GnuMP 5.0 and later have a side-channel resistent powm */
 version(HAVE_MPZ_POWM_SEC)	alias mpz_powm_sec mpz_powm;
 static if (BOTAN_HAS_RSA)	import botan.pubkey.algo.rsa;
@@ -72,8 +74,7 @@ public:
 
 	string provider_name() const { return "gmp"; }
 
-	Key_Agreement
-		get_key_agreement_op(in Private_Key key, RandomNumberGenerator) const
+	Key_Agreement get_key_agreement_op(in Private_Key key, RandomNumberGenerator) const
 	{
 		static if (BOTAN_HAS_DIFFIE_HELLMAN) {
 			if (const DH_PrivateKey dh = cast(const DH_PrivateKey)(key))
@@ -83,8 +84,7 @@ public:
 		return null;
 	}
 
-	Signature
-		get_signature_op(in Private_Key key, RandomNumberGenerator) const
+	Signature get_signature_op(in Private_Key key, RandomNumberGenerator) const
 	{
 		static if (BOTAN_HAS_RSA) {
 			if (const RSA_PrivateKey s = cast(const RSA_PrivateKey)(key))
@@ -99,8 +99,7 @@ public:
 		return null;
 	}
 
-	Verification
-		get_verify_op(in Public_Key key, RandomNumberGenerator) const
+	Verification get_verify_op(in Public_Key key, RandomNumberGenerator) const
 	{
 		static if (BOTAN_HAS_RSA) {
 			if (const RSA_PublicKey s = cast(const RSA_PublicKey)(key))
@@ -115,8 +114,7 @@ public:
 		return null;
 	}
 	
-	Encryption
-		get_encryption_op(in Public_Key key, RandomNumberGenerator) const
+	Encryption get_encryption_op(in Public_Key key, RandomNumberGenerator) const
 	{
 		static if (BOTAN_HAS_RSA) {
 			if (const RSA_PublicKey s = cast(const RSA_PublicKey)(key))
@@ -126,8 +124,7 @@ public:
 		return null;
 	}
 	
-	Decryption
-		get_decryption_op(in Private_Key key, RandomNumberGenerator) const
+	Decryption get_decryption_op(in Private_Key key, RandomNumberGenerator) const
 	{
 		static if (BOTAN_HAS_RSA) {
 			if (const RSA_PrivateKey s = cast(const RSA_PrivateKey)(key))
@@ -140,8 +137,7 @@ public:
 	/*
 	* Return the GMP-based modular exponentiator
 	*/
-	Modular_Exponentiator mod_exp(in BigInt n,
-	                              Power_Mod.Usage_Hints) const
+	Modular_Exponentiator mod_exp(in BigInt n, Power_Mod.Usage_Hints) const
 	{
 		return new GMP_Modular_Exponentiator(n);
 	}
@@ -201,9 +197,8 @@ public:
 	/*
 	* Export the mpz_t as a bytestring
 	*/
-	void encode(ubyte* output) const
+	void encode(ubyte* output, size_t length) const
 	{
-		size_t length = output.length;
 		size_t dummy = 0;
 		mpz_export(output.ptr + (length - bytes()), &dummy, 1, 1, 0, 0, value);
 	}
@@ -303,9 +298,7 @@ static if (BOTAN_HAS_DSA) {
 		size_t message_part_size() const { return (m_q_bits + 7) / 8; }
 		size_t max_input_bits() const { return m_q_bits; }
 		
-		Secure_Vector!ubyte
-			sign(in ubyte* msg, size_t msg_len,
-			     RandomNumberGenerator rng)
+		Secure_Vector!ubyte sign(in ubyte* msg, size_t msg_len, RandomNumberGenerator rng)
 		{
 			const size_t q_bytes = (m_q_bits + 7) / 8;
 			
@@ -427,8 +420,7 @@ static if (BOTAN_HAS_DSA) {
 			
 			size_t max_input_bits() const { return (m_n_bits - 1); }
 			
-			Secure_Vector!ubyte sign(in ubyte* msg, size_t msg_len,
-			                      RandomNumberGenerator)
+			Secure_Vector!ubyte sign(in ubyte* msg, size_t msg_len, RandomNumberGenerator)
 			{
 				BigInt m = BigInt(msg, msg_len);
 				BigInt x = private_op(m);

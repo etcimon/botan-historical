@@ -215,8 +215,7 @@ public:
 		return no_fragment;
 	}
 
-	override Vector!ubyte format(in Vector!ubyte msg,
-	                             Handshake_Type type) const
+	override Vector!ubyte format(in Vector!ubyte msg, Handshake_Type type) const
 	{
 		return format_w_seq(msg, type, m_in_message_seq - 1);
 	}
@@ -362,18 +361,18 @@ public:
 		if (fragment_offset == 0 && fragment_length == m_msg_length)
 		{
 			m_fragments.clear();
-			m_message.assign(fragment, fragment+fragment_length);
+			m_message.replace(fragment[0 .. fragment+fragment_length]);
 		}
 		else
 		{
 			/*
-	* FIXME. This is a pretty lame way to do defragmentation, huge
-	* overhead with a tree node per ubyte.
-	*
-	* Also should confirm that all overlaps have no changes,
-	* otherwise we expose ourselves to the classic fingerprinting
-	* and IDS evasion attacks on IP fragmentation.
-	*/
+			* FIXME. This is a pretty lame way to do defragmentation, huge
+			* overhead with a tree node per ubyte.
+			*
+			* Also should confirm that all overlaps have no changes,
+			* otherwise we expose ourselves to the classic fingerprinting
+			* and IDS evasion attacks on IP fragmentation.
+			*/
 			foreach (size_t i; 0 .. fragment_length)
 				m_fragments[fragment_offset+i] = fragment[i];
 			

@@ -5,8 +5,11 @@
 * Distributed under the terms of the botan license.
 */
 module botan.utils.charset;
-
+import std.array : Appender;
 import botan.utils.types;
+import botan.utils.exceptn;
+import std.conv : to;
+
 // import string;
 /**
 * The different charsets (nominally) supported by Botan.
@@ -30,8 +33,9 @@ string ucs2_to_latin1(in string ucs2)
 	if (ucs2.length % 2 == 1)
 		throw new Decoding_Error("UCS-2 string has an odd number of bytes");
 	
-	string latin1;
-	
+	Appender!string latin1;
+	latin1.reserve(ucs2.length * 2);
+
 	for (size_t i = 0; i != ucs2.length; i += 2)
 	{
 		const ubyte c1 = ucs2[i];
@@ -40,7 +44,7 @@ string ucs2_to_latin1(in string ucs2)
 		if (c1 != 0)
 			throw new Decoding_Error("UCS-2 has non-Latin1 characters");
 		
-		latin1 += cast(char)(c2);
+		latin1 ~= cast(char)(c2);
 	}
 	
 	return latin1;
@@ -51,15 +55,15 @@ string ucs2_to_latin1(in string ucs2)
 */
 string utf8_to_latin1(in string utf8)
 {
-	string iso8859;
-	
+	Appender!string iso8859;
+	iso8859.reserve(utf8.length);
 	size_t position = 0;
 	while(position != utf8.length)
 	{
 		const ubyte c1 = cast(ubyte)(utf8[position++]);
 		
 		if (c1 <= 0x7F)
-			iso8859 += cast(char)(c1);
+			iso8859 ~= cast(char)(c1);
 		else if (c1 >= 0xC0 && c1 <= 0xC7)
 		{
 			if (position == utf8.length)
@@ -71,13 +75,13 @@ string utf8_to_latin1(in string utf8)
 			if (iso_char <= 0x7F)
 				throw new Decoding_Error("UTF-8: sequence longer than needed");
 			
-			iso8859 += cast(char)(iso_char);
+			iso8859 ~= cast(char)(iso_char);
 		}
 		else
 			throw new Decoding_Error("UTF-8: Unicode chars not in Latin1 used");
 	}
 	
-	return iso8859;
+	return iso8859.data;
 }
 
 /*
@@ -85,27 +89,27 @@ string utf8_to_latin1(in string utf8)
 */
 string latin1_to_utf8(in string iso8859)
 {
-	string utf8;
+	Appender!string utf8;
+	utf8.reserve(iso8859.length);
 	for (size_t i = 0; i != iso8859.length; ++i)
 	{
 		const ubyte c = cast(ubyte)(iso8859[i]);
 		
 		if (c <= 0x7F)
-			utf8 += cast(char)(c);
+			utf8 ~= cast(char)(c);
 		else
 		{
-			utf8 += cast(char)((0xC0 | (c >> 6)));
-			utf8 += cast(char)((0x80 | (c & 0x3F)));
+			utf8 ~= cast(char)((0xC0 | (c >> 6)));
+			utf8 ~= cast(char)((0x80 | (c & 0x3F)));
 		}
 	}
-	return utf8;
+	return utf8.data;
 }
 
 /*
 * Perform character set transcoding
 */
-string transcode(in string str,
-                 Character_Set to, Character_Set from)
+string transcode(in string str, Character_Set to, Character_Set from)
 {
 	if (to == LOCAL_CHARSET)
 		to = LATIN1_CHARSET;
@@ -122,8 +126,7 @@ string transcode(in string str,
 	if (from == UCS2_CHARSET && to == LATIN1_CHARSET)
 		return ucs2_to_latin1(str);
 	
-	throw new Invalid_Argument("Unknown transcoding operation from " ~
-	                           to!string(from) ~ " to " ~ to!string(to));
+	throw new Invalid_Argument("Unknown transcoding operation from " ~ to!string(from) ~ " to " ~ to!string(to));
 }
 
 /*

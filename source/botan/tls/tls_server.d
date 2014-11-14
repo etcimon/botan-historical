@@ -11,7 +11,7 @@ import botan.tls.tls_handshake_state;
 import botan.tls.tls_messages;
 import botan.tls.tls_alert;
 import botan.rng.rng;
-import botan.internal.stl_util;
+import botan.utils.multimap;
 import botan.utils.types;
 
 /**

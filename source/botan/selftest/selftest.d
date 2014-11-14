@@ -17,7 +17,7 @@ import botan.filters.filters;
 import botan.filters.aead_filt;
 import botan.codec.hex;
 import botan.engine.core_engine;
-import botan.internal.stl_util;
+import botan.utils.multimap;
 import botan.algo_base.symkey;
 
 /**

@@ -23,16 +23,15 @@ class Handshake_Hash
 {
 public:
 	void update(in ubyte* input, size_t length)
-	{ m_data += Pair(input, length); }
+	{ m_data ~= input[0 .. length]; }
 
 	void update(in Vector!ubyte input)
-	{ m_data += input; }
+	{ m_data ~= input; }
 
 	/**
 	* Return a TLS Handshake Hash
 	*/
-	Secure_Vector!ubyte flushInto(Protocol_Version _version,
-	                           in string mac_algo) const
+	Secure_Vector!ubyte flushInto(Protocol_Version _version, in string mac_algo) const
 	{
 		Algorithm_Factory af = global_state().algorithm_factory();
 		
@@ -89,8 +88,8 @@ public:
 		sha1.update(inner_sha1);
 		
 		Secure_Vector!ubyte output;
-		output += md5.flush();
-		output += sha1.flush();
+		output ~= md5.flush();
+		output ~= sha1.flush();
 		return output;
 	}
 

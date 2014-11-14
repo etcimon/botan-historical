@@ -15,7 +15,7 @@ import botan.cert.x509.key_constraint;
 import botan.cert.x509.x509_ext;
 import botan.asn1.der_enc;
 import botan.asn1.ber_dec;
-import botan.internal.stl_util;
+import botan.utils.multimap;
 import botan.utils.parsing;
 import botan.math.bigint.bigint;
 import botan.libstate.lookup;

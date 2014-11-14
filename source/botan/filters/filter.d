@@ -205,7 +205,7 @@ private:
 			--size;
 		
 		if (filters && size)
-			m_next.assign(filters, filters + size);
+			m_next.replace(filters[0 .. filters + size]);
 	}
 
 

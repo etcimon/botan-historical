@@ -33,7 +33,7 @@ public:
 		* this is the first message then we use an IV of all zeros.
 		*/
 		if (nonce_len)
-			m_state.assign(nonce, nonce + nonce_len);
+			m_state.replace(nonce[0 .. nonce + nonce_len]);
 		
 		return Secure_Vector!ubyte();
 	}
@@ -137,7 +137,7 @@ public:
 				prev_block = &buf[BS*i];
 			}
 			
-			state().assign(&buf[BS*(blocks-1)], &buf[BS*blocks]);
+			state().replace(buf.ptr[BS*(blocks-1) .. BS*blocks]);
 		}
 	}
 

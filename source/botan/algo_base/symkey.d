@@ -121,7 +121,7 @@ public:
 		*/
 	this(in ubyte* input, size_t len)
 	{
-		m_bits.assign(input, len);
+		m_bits.replace(input[0 .. len]);
 	}
 	
 	/**

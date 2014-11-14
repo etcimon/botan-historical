@@ -235,8 +235,7 @@ void write_record(ref Secure_Vector!ubyte output,
 		const size_t implicit_nonce_bytes = 4; // FIXME, take from ciphersuite
 		const size_t explicit_nonce_bytes = 8;
 		
-		assert(nonce.length == implicit_nonce_bytes + explicit_nonce_bytes,
-		             "Expected nonce size");
+		assert(nonce.length == implicit_nonce_bytes + explicit_nonce_bytes, "Expected nonce size");
 		
 		// wrong if start_vec returns something
 		const size_t rec_size = ctext_size + explicit_nonce_bytes;
@@ -246,15 +245,13 @@ void write_record(ref Secure_Vector!ubyte output,
 		output.push_back(get_byte!ushort(0, rec_size));
 		output.push_back(get_byte!ushort(1, rec_size));
 		
-		aead.set_associated_data_vec(
-			cipherstate.format_ad(msg_sequence, msg_type, _version, msg_length)
-			);
+		aead.set_associated_data_vec(cipherstate.format_ad(msg_sequence, msg_type, _version, msg_length));
 		
-		output += Pair(&nonce[implicit_nonce_bytes], explicit_nonce_bytes);
-		output += aead.start_vec(nonce);
+		output ~= nonce.ptr[implicit_nonce_bytes .. implicit_nonce_bytes + explicit_nonce_bytes];
+		output ~= aead.start_vec(nonce);
 		
 		const size_t offset = output.length;
-		output += Pair(&msg[0], msg_length);
+		output ~= msg.ptr[0 .. msg_length];
 		aead.finish(output, offset);
 		
 		assert(output.length == offset + ctext_size, "Expected size");
@@ -264,9 +261,7 @@ void write_record(ref Secure_Vector!ubyte output,
 		return;
 	}
 	
-	cipherstate.mac().update(
-		cipherstate.format_ad(msg_sequence, msg_type, _version, msg_length)
-		);
+	cipherstate.mac().update(cipherstate.format_ad(msg_sequence, msg_type, _version, msg_length));
 	
 	cipherstate.mac().update(msg, msg_length);
 	
@@ -274,9 +269,7 @@ void write_record(ref Secure_Vector!ubyte output,
 	const size_t iv_size = cipherstate.iv_size();
 	const size_t mac_size = cipherstate.mac_size();
 	
-	const size_t buf_size = round_up(
-		iv_size + msg_length + mac_size + (block_size ? 1 : 0),
-		block_size);
+	const size_t buf_size = round_up(iv_size + msg_length + mac_size + (block_size ? 1 : 0), block_size);
 	
 	if (buf_size > MAX_CIPHERTEXT_SIZE)
 		throw new Internal_Error("Output record is larger than allowed by protocol");
@@ -335,8 +328,7 @@ void write_record(ref Secure_Vector!ubyte output,
 			bc.encrypt(&buf[block_size*i]);
 		}
 		
-		cbc_state.assign(&buf[block_size*(blocks-1)],
-		&buf[block_size*blocks]);
+		cbc_state.replace(buf.ptr[block_size*(blocks-1) .. block_size*blocks]);
 	}
 	else
 		throw new Internal_Error("NULL cipher not supported");
@@ -359,9 +351,7 @@ size_t read_record(Secure_Vector!ubyte readbuf,
 	consumed = 0;
 	if (readbuf.length < TLS_HEADER_SIZE) // header incomplete?
 	{
-		if (size_t needed = fill_buffer_to(readbuf,
-						                   input, input_sz, consumed,
-				                           TLS_HEADER_SIZE))
+		if (size_t needed = fill_buffer_to(readbuf, input, input_sz, consumed, TLS_HEADER_SIZE))
 			return needed;
 			
 			assert(readbuf.length == TLS_HEADER_SIZE,
@@ -372,8 +362,7 @@ size_t read_record(Secure_Vector!ubyte readbuf,
 	if (!sequence_numbers && (readbuf[0] & 0x80) && (readbuf[2] == 1))
 	{
 		if (readbuf[3] == 0 && readbuf[4] == 2)
-			throw new TLS_Exception(Alert.PROTOCOL_VERSION,
-			                        "Client claims to only support SSLv2, rejecting");
+			throw new TLS_Exception(Alert.PROTOCOL_VERSION, "Client claims to only support SSLv2, rejecting");
 		
 		if (readbuf[3] >= 3) // SSLv2 mapped TLS hello, then?
 		{
@@ -384,8 +373,7 @@ size_t read_record(Secure_Vector!ubyte readbuf,
 			                                   record_len + 2))
 				return needed;
 			
-			assert(readbuf.length == (record_len + 2),
-			                   "Have the entire SSLv2 hello");
+			assert(readbuf.length == (record_len + 2), "Have the entire SSLv2 hello");
 			
 			// Fake v3-style handshake message wrapper
 			record_version = Protocol_Version.TLS_V10;
@@ -411,9 +399,7 @@ size_t read_record(Secure_Vector!ubyte readbuf,
 	
 	if (is_dtls && readbuf.length < DTLS_HEADER_SIZE)
 	{
-		if (size_t needed = fill_buffer_to(readbuf,
-		                                   input, input_sz, consumed,
-		                                   DTLS_HEADER_SIZE))
+		if (size_t needed = fill_buffer_to(readbuf, input, input_sz, consumed, DTLS_HEADER_SIZE))
 			return needed;
 		
 		assert(readbuf.length == DTLS_HEADER_SIZE,
@@ -426,16 +412,12 @@ size_t read_record(Secure_Vector!ubyte readbuf,
 	readbuf[header_size-1]);
 	
 	if (record_len > MAX_CIPHERTEXT_SIZE)
-		throw new TLS_Exception(Alert.RECORD_OVERFLOW,
-		                        "Got message that exceeds maximum size");
+		throw new TLS_Exception(Alert.RECORD_OVERFLOW, "Got message that exceeds maximum size");
 	
-	if (size_t needed = fill_buffer_to(readbuf,
-	                                   input, input_sz, consumed,
-	                                   header_size + record_len))
+	if (size_t needed = fill_buffer_to(readbuf, input, input_sz, consumed, header_size + record_len))
 		return needed; // wrong for DTLS?
 	
-	assert(cast(size_t)(header_size) + record_len == readbuf.length,
-	                   "Have the full record");
+	assert(cast(size_t)(header_size) + record_len == readbuf.length, "Have the full record");
 	
 	record_type = cast(Record_Type)(readbuf[0]);
 	
@@ -465,7 +447,7 @@ size_t read_record(Secure_Vector!ubyte readbuf,
 	
 	if (epoch == 0) // Unencrypted initial handshake
 	{
-		record.assign(&readbuf[header_size], &readbuf[header_size + record_len]);
+		record.replace(readbuf.ptr[header_size .. header_size + record_len]);
 		readbuf.clear();
 		return 0; // got a full record
 	}
@@ -530,12 +512,10 @@ size_t fill_buffer_to(Secure_Vector!ubyte readbuf,
 *
 * @fixme This should run in constant time
 */
-size_t tls_padding_check(bool sslv3_padding,
-                         size_t block_size,
-                         in ubyte* record, in size_t record_len)
+size_t tls_padding_check(bool sslv3_padding, size_t block_size, in ubyte* record, in size_t record_len)
 {
 	const size_t padding_length = record[(record_len-1)];
-	
+
 	if (padding_length >= record_len)
 		return 0;
 	
@@ -565,9 +545,7 @@ size_t tls_padding_check(bool sslv3_padding,
 	return cmp ? 0 : padding_length + 1;
 }
 
-void cbc_decrypt_record(ubyte[] record_contents,
-Connection_Cipher_State cipherstate,
-const BlockCipher bc)
+void cbc_decrypt_record(ubyte[] record_contents, Connection_Cipher_State cipherstate, const BlockCipher bc)
 {
 	size_t record_len = record_contents.length;
 	const size_t block_size = cipherstate.block_size;
@@ -590,7 +568,7 @@ const BlockCipher bc)
 	
 	for (size_t i = 1; i < blocks; ++i)
 	{
-		last_ciphertext2.assign(&buf[block_size*i], &buf[block_size*(i+1)]);
+		last_ciphertext2.replace(buf.ptr[block_size*i .. block_size*(i+1)]);
 		bc.decrypt(&buf[block_size*i]);
 		xor_buf(&buf[block_size*i], &last_ciphertext[0], block_size);
 		std.algorithm.swap(last_ciphertext, last_ciphertext2);
@@ -617,14 +595,12 @@ void decrypt_record(Secure_Vector!ubyte output,
 		
 		const size_t ptext_size = aead.output_length(msg_length);
 		
-		aead.set_associated_data_vec(
-			cipherstate.format_ad(record_sequence, record_type, record_version, ptext_size)
-			);
+		aead.set_associated_data_vec(cipherstate.format_ad(record_sequence, record_type, record_version, ptext_size));
 		
-		output += aead.start_vec(nonce);
+		output ~= aead.start_vec(nonce);
 		
 		const size_t offset = output.length;
-		output += Pair(&msg[0], msg_length);
+		output ~= msg[0 .. msg_length];
 		aead.finish(output, offset);
 		
 		assert(output.length == ptext_size + offset, "Produced expected size");
@@ -633,7 +609,7 @@ void decrypt_record(Secure_Vector!ubyte output,
 	{
 		// GenericBlockCipher / GenericStreamCipher case
 		
-		volatile bool padding_bad = false;
+		bool padding_bad = false;
 		size_t pad_size = 0;
 		
 		if (Unique!StreamCipher sc = cipherstate.stream_cipher())
@@ -667,9 +643,7 @@ void decrypt_record(Secure_Vector!ubyte output,
 		const ubyte* plaintext_block = &record_contents[iv_size];
 		const ushort plaintext_length = record_len - mac_pad_iv_size;
 		
-		cipherstate.mac().update(
-			cipherstate.format_ad(record_sequence, record_type, record_version, plaintext_length)
-			);
+		cipherstate.mac().update(cipherstate.format_ad(record_sequence, record_type, record_version, plaintext_length));
 		
 		cipherstate.mac().update(plaintext_block, plaintext_length);
 		
@@ -683,6 +657,6 @@ void decrypt_record(Secure_Vector!ubyte output,
 		if (mac_bad || padding_bad)
 			throw new TLS_Exception(Alert.BAD_RECORD_MAC, "Message authentication failure");
 		
-		output.assign(plaintext_block, plaintext_block + plaintext_length);
+		output.replace(plaintext_block[0 .. plaintext_block + plaintext_length]);
 	}
 }

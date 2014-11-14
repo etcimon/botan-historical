@@ -29,7 +29,7 @@ public:
 		if (!valid_nonce_length(nonce_len))
 			throw new Invalid_IV_Length(name, nonce_len);
 		
-		m_nonce.assign(nonce, nonce + nonce_len);
+		m_nonce.replace(nonce[0 .. nonce + nonce_len]);
 		m_msg_buf.clear();
 		
 		return Secure_Vector!ubyte();

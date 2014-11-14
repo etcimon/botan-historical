@@ -19,7 +19,7 @@ import botan.tls.tls_heartbeats;
 import botan.tls.tls_record;
 import botan.tls.tls_seq_numbers;
 import botan.utils.rounding;
-import botan.internal.stl_util;
+import botan.utils.multimap;
 import botan.utils.loadstor;
 import botan.utils.types;
 // import string;
@@ -391,9 +391,9 @@ public:
 			const Secure_Vector!ubyte master_secret = active.session_keys().master_secret();
 			
 			Vector!ubyte salt;
-			salt += label;
-			salt += active.client_hello().random();
-			salt += active.server_hello().random();
+			salt ~= label;
+			salt ~= active.client_hello().random();
+			salt ~= active.server_hello().random();
 			
 			if (context != "")
 			{
@@ -402,7 +402,7 @@ public:
 					throw new Exception("key_material_export context is too long");
 				salt.push_back(get_byte!ushort(0, context_size));
 				salt.push_back(get_byte!ushort(1, context_size));
-				salt += context;
+				salt ~= context;
 			}
 			
 			return prf.derive_key(length, master_secret, salt);
@@ -617,7 +617,7 @@ protected:
 		if (auto active = active_state())
 		{
 			Vector!ubyte buf = active.client_finished().verify_data();
-			buf += active.server_finished().verify_data();
+			buf ~= active.server_finished().verify_data();
 			return buf;
 		}
 		

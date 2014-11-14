@@ -65,9 +65,9 @@ private:
 	*/
 	void key_schedule(in ubyte* key, size_t)
 	{
-		m_K1.assign(key, key + 8);
+		m_K1.replace(key[0 .. key + 8]);
 		m_des.set_key(key + 8, 8);
-		m_K2.assign(key + 16, key + 24);
+		m_K2.replace(key[16 .. key + 24]);
 	}
 
 	Secure_Vector!ubyte m_K1, m_K2;

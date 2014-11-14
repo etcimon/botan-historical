@@ -14,7 +14,7 @@ import botan.asn1.der_enc;
 import botan.asn1.ber_dec;
 import botan.utils.parsing;
 import botan.utils.types;
-import botan.internal.stl_util;
+import botan.utils.multimap;
 import botan.asn1.oid_lookup.oids;
 import ostream;
 import botan.utils.hashmap;
@@ -117,9 +117,9 @@ public:
 	/*
 	* Get the contents of this X.500 Name
 	*/
-	MultiMap!(string, string) contents() const
+	MultiMap!string contents() const
 	{
-		MultiMap!(string, string) retval;
+		MultiMap!string retval;
 		for (auto i = m_dn_info.ptr; i != m_dn_info.end(); ++i)
 			retval.insert(Pair(oids.lookup(i.first), i.second.value()));
 		return retval;
@@ -197,7 +197,7 @@ public:
 	/*
 	* Create an X509_DN
 	*/
-	this(in MultiMap!(string, string) args)
+	this(in MultiMap!string args)
 	{
 		for (auto i = args.ptr; i != args.end(); ++i)
 			add_attribute(oids.lookup(i.first), i.second);
@@ -267,7 +267,7 @@ public:
 	X509_DN opBinary(string op, T)(ref T output)
 		if (op == "<<")
 	{
-		MultiMap!(string, string) contents = dn.contents();
+		MultiMap!string contents = dn.contents();
 
 		foreach(pair; contents)
 		{

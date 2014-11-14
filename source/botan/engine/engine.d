@@ -40,8 +40,7 @@ public:
 	* @param af an algorithm factory object
 	* @return newly allocated object, or NULL
 	*/
-	BlockCipher find_block_cipher(in SCAN_Name algo_spec,
-	                              Algorithm_Factory af) const;
+	BlockCipher find_block_cipher(in SCAN_Name algo_spec, Algorithm_Factory af) const;
 
 
 	/**
@@ -49,16 +48,14 @@ public:
 	* @param af an algorithm factory object
 	* @return newly allocated object, or NULL
 	*/
-	StreamCipher find_stream_cipher(in SCAN_Name algo_spec,
-	                                Algorithm_Factory af) const;
+	StreamCipher find_stream_cipher(in SCAN_Name algo_spec, Algorithm_Factory af) const;
 
 	/**
 	* @param algo_spec the algorithm name/specification
 	* @param af an algorithm factory object
 	* @return newly allocated object, or NULL
 	*/
-	HashFunction find_hash(in SCAN_Name algo_spec,
-	                       Algorithm_Factory af) const;
+	HashFunction find_hash(in SCAN_Name algo_spec, Algorithm_Factory af) const;
 
 
 	/**
@@ -66,24 +63,21 @@ public:
 	* @param af an algorithm factory object
 	* @return newly allocated object, or NULL
 	*/
-	MessageAuthenticationCode find_mac(in SCAN_Name algo_spec,
-	                                   Algorithm_Factory af) const;
+	MessageAuthenticationCode find_mac(in SCAN_Name algo_spec, Algorithm_Factory af) const;
 
 	/**
 	* @param algo_spec the algorithm name/specification
 	* @param af an algorithm factory object
 	* @return newly allocated object, or NULL
 	*/
-	PBKDF find_pbkdf(in SCAN_Name algo_spec,
-	                 Algorithm_Factory af) const;
+	PBKDF find_pbkdf(in SCAN_Name algo_spec, Algorithm_Factory af) const;
 
 	/**
 	* @param n the modulus
 	* @param hints any use hints
 	* @return newly allocated object, or NULL
 	*/
-	Modular_Exponentiator mod_exp(in BigInt n,
-	                              Power_Mod.Usage_Hints hints) const;
+	Modular_Exponentiator mod_exp(in BigInt n, Power_Mod.Usage_Hints hints) const;
 
 	/**
 	* Return a new cipher object
@@ -92,9 +86,7 @@ public:
 	* @param af an algorithm factory object
 	* @return newly allocated object, or NULL
 	*/
-	Keyed_Filter get_cipher(in string algo_spec,
-	                        Cipher_Dir dir,
-	                        Algorithm_Factory af);
+	Keyed_Filter get_cipher(in string algo_spec, Cipher_Dir dir, Algorithm_Factory af);
 
 	/**
 	* Return a new operator object for this key, if possible

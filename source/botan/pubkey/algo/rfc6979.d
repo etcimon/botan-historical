@@ -31,7 +31,7 @@ BigInt generate_rfc6979_nonce(in BigInt x,
 	
 	Secure_Vector!ubyte input = BigInt.encode_1363(x, rlen);
 	
-	input += BigInt.encode_1363(h, rlen);
+	input ~= BigInt.encode_1363(h, rlen);
 	
 	rng.add_entropy(&input[0], input.length);
 	

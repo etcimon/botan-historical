@@ -119,10 +119,9 @@ public:
 	/*
 	* Peek into a memory buffer
 	*/
-	size_t peek(ubyte* output,
+	size_t peek(ubyte* output, size_t length,
 	            size_t peek_offset) const
 	{
-		size_t length = output.length;
 		const size_t bytes_left = m_source.length - offset;
 		if (peek_offset >= bytes_left) return 0;
 		
@@ -214,7 +213,6 @@ public:
 	*/
 	size_t peek(ubyte* output, size_t length, size_t offset) const
 	{
-		size_t length = output.length;
 		if (end_of_data())
 			throw new Invalid_State("DataSource_Stream: Cannot peek when out of data");
 		

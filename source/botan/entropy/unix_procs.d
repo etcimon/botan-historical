@@ -271,7 +271,7 @@ private:
 
 	const Vector!string next_source()
 	{
-		const src = m_sources.at(m_sources_idx);
+		const src = m_sources[m_sources_idx];
 		m_sources_idx = (m_sources_idx + 1) % m_sources.length;
 		return src;
 	}

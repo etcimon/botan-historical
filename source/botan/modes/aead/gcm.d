@@ -257,7 +257,7 @@ public:
 
 	void start(in ubyte* nonce, size_t len)
 	{
-		m_nonce.assign(nonce, nonce + len);
+		m_nonce.replace(nonce[0 .. nonce + len]);
 		m_ghash = m_H_ad;
 	}
 
@@ -299,7 +299,7 @@ public:
 private:
 	override void key_schedule(in ubyte* key, size_t length)
 	{
-		m_H.assign(key, key+length);
+		m_H.replace(key[0 .. key+length]);
 		m_H_ad.resize(16);
 		m_ad_len = 0;
 		m_text_len = 0;

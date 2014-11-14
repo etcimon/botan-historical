@@ -10,7 +10,7 @@ module botan.tls.tls_messages;
 
 import botan.tls.tls_handshake_state;
 import botan.tls.tls_session_key;
-import botan.internal.stl_util;
+import botan.utils.multimap;
 
 public import botan.algo_base.sym_algo;
 public import botan.tls.tls_handshake_msg;
@@ -81,8 +81,8 @@ public:
 		Vector!ubyte bits;
 		bits.push_back(format_version.major_version());
 		bits.push_back(format_version.minor_version());
-		bits.push_back(cast(ubyte)(m_cookie.length));
-		bits += m_cookie;
+		bits.push_back(cast(ubyte) m_cookie.length);
+		bits ~= m_cookie;
 		return bits;
 	}
 
@@ -102,11 +102,11 @@ public:
 		{
 			throw new Decoding_Error("Unknown version from server in hello verify request");
 		}
-		
-		if (cast(size_t)(buf[2]) + 3 != buf.length)
+
+		if ((cast(size_t) buf[2]) + 3 != buf.length)
 			throw new Decoding_Error("Bad length in hello verify request");
 		
-		m_cookie.assign(&buf[3], &buf[buf.length]);
+		m_cookie.replace(buf.ptr[3 .. buf.length]);
 	}
 
 	this(in Vector!ubyte client_hello_bits,
@@ -345,7 +345,7 @@ private:
 		
 		buf.push_back(m_version.major_version());
 		buf.push_back(m_version.minor_version());
-		buf += m_random;
+		buf ~= m_random;
 		
 		append_tls_length_value(buf, m_session_id, 1);
 		

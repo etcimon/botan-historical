@@ -13,7 +13,7 @@ import botan.pubkey.algo.dl_group;
 import botan.tls.tls_ciphersuite;
 import botan.tls.tls_magic;
 import botan.tls.tls_exceptn;
-import botan.internal.stl_util;
+import botan.utils.multimap;
 import std.datetime;
 import std.algorithm : uniq, sort;
 import std.array : array, Appender;

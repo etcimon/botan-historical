@@ -7,7 +7,7 @@
 module botan.algo_factory.algo_factory;
 
 import botan.algo_factory.algo_cache;
-import botan.internal.stl_util;
+import botan.utils.multimap;
 import botan.engine.engine;
 import botan.utils.exceptn;
 
@@ -97,8 +97,7 @@ public:
 	* @param algo_spec the algorithm we are setting a provider for
 	* @param provider the provider we would like to use
 	*/
-	void set_preferred_provider(in string algo_spec,
-	                            in string provider)
+	void set_preferred_provider(in string algo_spec, in string provider)
 	{
 		if (prototype_block_cipher(algo_spec))
 			m_block_cipher_cache.set_preferred_provider(algo_spec, provider);
@@ -118,9 +117,7 @@ public:
 	* @param provider the provider we would like to use
 	* @returns pointer to const prototype object, ready to clone(), or NULL
 	*/
-	const BlockCipher
-		prototype_block_cipher(in string algo_spec,
-		                       in string provider)
+	const BlockCipher prototype_block_cipher(in string algo_spec, in string provider)
 	{
 		return factory_prototype!BlockCipher(algo_spec, provider, engines,
 		                                     this, m_block_cipher_cache);
@@ -145,8 +142,7 @@ public:
 	* @param algo the algorithm to add
 	* @param provider the provider of this algorithm
 	*/
-	void add_block_cipher(BlockCipher block_cipher,
-	                      in string provider)
+	void add_block_cipher(BlockCipher block_cipher, in string provider)
 	{
 		m_block_cipher_cache.add(block_cipher, block_cipher.name, provider);
 	}
@@ -157,9 +153,7 @@ public:
 	* @param provider the provider we would like to use
 	* @returns pointer to const prototype object, ready to clone(), or NULL
 	*/
-	const StreamCipher 
-		prototype_stream_cipher(in string algo_spec,
-		                        in string provider)
+	const StreamCipher prototype_stream_cipher(in string algo_spec, in string provider)
 	{
 		return factory_prototype!StreamCipher(algo_spec, provider, engines,
 		                                      this, m_stream_cipher_cache);
@@ -186,8 +180,7 @@ public:
 	* @param algo the algorithm to add
 	* @param provider the provider of this algorithm
 	*/
-	void add_stream_cipher(StreamCipher stream_cipher,
-	                       in string provider)
+	void add_stream_cipher(StreamCipher stream_cipher, in string provider)
 	{
 		m_stream_cipher_cache.add(stream_cipher, stream_cipher.name, provider);
 	}
@@ -198,9 +191,7 @@ public:
 	* @param provider the provider we would like to use
 	* @returns pointer to const prototype object, ready to clone(), or NULL
 	*/
-	const HashFunction
-		prototype_hash_function(in string algo_spec,
-		                        in string provider)
+	const HashFunction prototype_hash_function(in string algo_spec, in string provider)
 	{
 		return factory_prototype!HashFunction(algo_spec, provider, engines,
 		                                      this, m_hash_cache);
@@ -213,8 +204,7 @@ public:
 	* @param provider the provider we would like to use
 	* @returns pointer to freshly created instance of the request algorithm
 	*/
-	HashFunction make_hash_function(in string algo_spec,
-	                                in string provider)
+	HashFunction make_hash_function(in string algo_spec, in string provider)
 	{
 		if (const HashFunction proto = prototype_hash_function(algo_spec, provider))
 			return proto.clone();
@@ -226,8 +216,7 @@ public:
 	* @param algo the algorithm to add
 	* @param provider the provider of this algorithm
 	*/
-	void add_hash_function(HashFunction hash,
-	                       in string provider)
+	void add_hash_function(HashFunction hash, in string provider)
 	{
 		m_hash_cache.add(hash, hash.name, provider);
 	}
@@ -238,9 +227,7 @@ public:
 	* @param provider the provider we would like to use
 	* @returns pointer to const prototype object, ready to clone(), or NULL
 	*/
-	const MessageAuthenticationCode
-		prototype_mac(in string algo_spec,
-		              in string provider)
+	const MessageAuthenticationCode prototype_mac(in string algo_spec, in string provider)
 	{
 		return factory_prototype!MessageAuthenticationCode(algo_spec, provider,
 		                                                   engines,
@@ -253,8 +240,7 @@ public:
 	* @param provider the provider we would like to use
 	* @returns pointer to freshly created instance of the request algorithm
 	*/
-	MessageAuthenticationCode make_mac(in string algo_spec,
-	                                   in string provider)
+	MessageAuthenticationCode make_mac(in string algo_spec, in string provider)
 	{
 		if (const MessageAuthenticationCode proto = prototype_mac(algo_spec, provider))
 			return proto.clone();
@@ -266,8 +252,7 @@ public:
 	* @param algo the algorithm to add
 	* @param provider the provider of this algorithm
 	*/
-	void add_mac(MessageAuthenticationCode mac,
-	             in string provider)
+	void add_mac(MessageAuthenticationCode mac, in string provider)
 	{
 		m_mac_cache.add(mac, mac.name, provider);
 	}
@@ -279,12 +264,9 @@ public:
 	* @param provider the provider we would like to use
 	* @returns pointer to const prototype object, ready to clone(), or NULL
 	*/
-	const PBKDF prototype_pbkdf(in string algo_spec,
-	                            in string provider)
+	const PBKDF prototype_pbkdf(in string algo_spec, in string provider)
 	{
-		return factory_prototype!PBKDF(algo_spec, provider,
-		                               engines,
-		                               this, m_pbkdf_cache);
+		return factory_prototype!PBKDF(algo_spec, provider, engines, this, m_pbkdf_cache);
 	}
 
 	
@@ -295,8 +277,7 @@ public:
 	* @param provider the provider we would like to use
 	* @returns pointer to freshly created instance of the request algorithm
 	*/
-	PBKDF make_pbkdf(in string algo_spec,
-	                 in string provider)
+	PBKDF make_pbkdf(in string algo_spec, in string provider)
 	{
 		if (const PBKDF proto = prototype_pbkdf(algo_spec, provider))
 			return proto.clone();
@@ -307,8 +288,7 @@ public:
 	* @param algo the algorithm to add
 	* @param provider the provider of this algorithm
 	*/
-	void add_pbkdf(PBKDF pbkdf,
-	               in string provider)
+	void add_pbkdf(PBKDF pbkdf, in string provider)
 	{
 		m_pbkdf_cache.add(pbkdf, pbkdf.name, provider);
 	}
@@ -341,41 +321,30 @@ private:
 /*
 * Template functions for the factory prototype/search algorithm
 */
-T engine_get_algo(T)(Engine,
-					 const ref SCAN_Name,
-					 Algorithm_Factory)
+T engine_get_algo(T)(Engine, const ref SCAN_Name, Algorithm_Factory)
 { static assert(false, "Invalid engine"); }
 
-BlockCipher engine_get_algo(T : BlockCipher)(Engine engine,
-							  const ref SCAN_Name request,
-							  Algorithm_Factory af)
+BlockCipher engine_get_algo(T : BlockCipher)(Engine engine, const ref SCAN_Name request, Algorithm_Factory af)
 { return engine.find_block_cipher(request, af); }
 
-StreamCipher engine_get_algo(T : StreamCipher)(Engine engine,
-										const ref SCAN_Name request,
-										Algorithm_Factory af)
+StreamCipher engine_get_algo(T : StreamCipher)(Engine engine, const ref SCAN_Name request, Algorithm_Factory af)
 { return engine.find_stream_cipher(request, af); }
 
-HashFunction engine_get_algo(T : HashFunction)(Engine engine,
-										const ref SCAN_Name request,
-										Algorithm_Factory af)
+HashFunction engine_get_algo(T : HashFunction)(Engine engine, const ref SCAN_Name request, Algorithm_Factory af)
 { return engine.find_hash(request, af); }
 
-MessageAuthenticationCode engine_get_algo(T : MessageAuthenticationCode)(Engine engine,
-														 const ref SCAN_Name request,
-														 Algorithm_Factory af)
+MessageAuthenticationCode engine_get_algo(T : MessageAuthenticationCode)(Engine engine, const ref SCAN_Name request,
+														 				 Algorithm_Factory af)
 { return engine.find_mac(request, af); }
 
-PBKDF engine_get_algo(T : PBKDF)(Engine engine,
-							  const ref SCAN_Name request,
-							  Algorithm_Factory af)
+PBKDF engine_get_algo(T : PBKDF)(Engine engine, const ref SCAN_Name request, Algorithm_Factory af)
 { return engine.find_pbkdf(request, af); }
 
 const T factory_prototype(T)(in string algo_spec,
-									in string provider,
-									in Vector!( Engine ) engines,
-									Algorithm_Factory af,
-									Algorithm_Cache!T cache)
+                             in string provider,
+                             in Vector!( Engine ) engines,
+                             Algorithm_Factory af,
+                             Algorithm_Cache!T cache)
 {
 	if (const T cache_hit = cache.get(algo_spec, provider))
 		return cache_hit;
