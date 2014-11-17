@@ -28,9 +28,11 @@ else static if (BOTAN_MP_WORD_BITS == 64) {
 	typedef ulong word;
 
 	static if (BOTAN_TARGET_HAS_NATIVE_UINT128) {
-		typedef uint128_t dword;
-		enum BOTAN_HAS_MP_DWORD = 1;
+		static assert(false);
+		//typedef uint128_t dword;
+		//enum BOTAN_HAS_MP_DWORD = 1;
 	}
+	else enum BOTAN_HAS_MP_DWORD = 0;
 
 } else
 	static assert(false, "BOTAN_MP_WORD_BITS must be 8, 16, 32, or 64");

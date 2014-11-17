@@ -14,6 +14,9 @@ import botan.hash.mdx_hash;
 import botan.hash.sha2_32;
 import botan.utils.loadstor;
 import botan.utils.rotate;
+import botan.hash.hash;
+import botan.utils.types;
+
 /**
 * SHA-224
 */
@@ -131,8 +134,7 @@ pure:
 */
 uint rho(uint X, uint rot1, uint rot2, uint rot3)
 {
-	return (rotate_right(X, rot1) ^ rotate_right(X, rot2) ^
-	        rotate_right(X, rot3));
+	return (rotate_right(X, rot1) ^ rotate_right(X, rot2) ^ rotate_right(X, rot3));
 }
 
 /*

@@ -124,7 +124,7 @@ private:
 		const ubyte[8] counter;
 		
 		reset_tweak(type_code.SKEIN_OUTPUT, true);
-		ubi_512(counter, (counter).sizeof);
+		ubi_512(counter.ptr, counter.length);
 		
 		const size_t out_bytes = m_output_bits / 8;
 		
@@ -167,14 +167,14 @@ private:
 	{
 		const ubyte[64] zeros;
 		
-		m_threefish.set_key(zeros, (zeros).sizeof);
+		m_threefish.set_key(zeros.ptr, zeros.length);
 		
 		// ASCII("SHA3") followed by version (0x0001) code
 		ubyte[32] config_str = [0x53, 0x48, 0x41, 0x33, 0x01, 0x00, 0 ];
 		store_le(uint(m_output_bits), config_str + 8);
 		
 		reset_tweak(type_code.SKEIN_CONFIG, true);
-		ubi_512(config_str, (config_str).sizeof);
+		ubi_512(config_str.ptr, config_str.length);
 		
 		if (m_personalization != "")
 		{

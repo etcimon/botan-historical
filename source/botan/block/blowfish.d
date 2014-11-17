@@ -13,6 +13,7 @@ static if (BOTAN_HAS_BLOWFISH):
 import std.range : iota;
 import botan.block.block_cipher;
 import botan.utils.loadstor;
+import botan.utils.types;
 
 /**
 * Blowfish

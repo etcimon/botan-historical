@@ -33,7 +33,7 @@ public:
 	*/
 	static Vector!RTSS_Share split(ubyte M, ubyte N,
 	                               in ubyte* S, ushort S_len,
-	                               in ubyte[16]* identifier,
+	                               in ubyte[16] identifier,
 								   RandomNumberGenerator rng)
 	{
 		if (M == 0 || N == 0 || M > N)
@@ -46,7 +46,7 @@ public:
 		// Create RTSS header in each share
 		foreach (ubyte i; 0 .. N)
 		{
-			shares[i].m_contents ~= identifier[0 .. 16];
+			shares[i].m_contents ~= identifier.ptr[0 .. 16];
 			shares[i].m_contents ~= rtss_hash_id(hash.name);
 			shares[i].m_contents ~= M;
 			shares[i].m_contents ~= get_byte(0, S_len);

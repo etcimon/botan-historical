@@ -154,12 +154,12 @@ private:
 				memset(&addr, 0, (addr).sizeof);
 				addr.sun_family = PF_LOCAL;
 				
-				if (sizeof(addr.sun_path) < path.length + 1)
+				if (addr.sun_path.sizeof < path.length + 1)
 					throw new Invalid_Argument("EGD socket path is too long");
 				
 				strncpy(addr.sun_path, path.toStringz, sizeof(addr.sun_path));
 				
-				int len = sizeof(addr.sun_family) + strlen(addr.sun_path) + 1;
+				int len = addr.sun_family.sizeof + strlen(addr.sun_path) + 1;
 				
 				if (connect(fd, cast(sockaddr*)(&addr), len) < 0)
 				{

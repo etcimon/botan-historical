@@ -13,6 +13,7 @@ import botan.stream.stream_cipher;
 import botan.utils.loadstor;
 import botan.utils.rotate;
 import botan.utils.xor_buf;
+import botan.utils.types;
 
 /**
 * DJB's Salsa20 (and XSalsa20)
@@ -31,7 +32,7 @@ public:
 			length -= (m_buffer.length - m_position);
 			input += (m_buffer.length - m_position);
 			output += (m_buffer.length - m_position);
-			salsa20(m_buffer.ptr, m_state.ptr);
+			salsa20(*cast(ubyte[64]*) m_buffer.ptr, *cast(uint[16]*) m_state.ptr);
 			
 			++m_state[8];
 			m_state[9] += (m_state[8] == 0);
@@ -67,8 +68,8 @@ public:
 			m_state[8] = load_le!uint(iv, 2);
 			m_state[9] = load_le!uint(iv, 3);
 			
-			Secure_Vector!uint hsalsa(8);
-			hsalsa20(hsalsa.ptr, m_state.ptr);
+			Secure_Vector!uint hsalsa = Secure_Vector!uint(8);
+			hsalsa20(*cast(uint[8]*) hsalsa.ptr, *cast(uint[16]*) m_state.ptr);
 			
 			m_state[ 1] = hsalsa[0];
 			m_state[ 2] = hsalsa[1];
@@ -85,7 +86,7 @@ public:
 		m_state[8] = 0;
 		m_state[9] = 0;
 		
-		salsa20(m_buffer.ptr, m_state.ptr);
+		salsa20(*cast(ubyte[64]*) m_buffer.ptr, *cast(uint[16]*) m_state.ptr);
 		++m_state[8];
 		m_state[9] += (m_state[8] == 0);
 		
@@ -129,7 +130,7 @@ private:
 
 		__gshared immutable uint[] SIGMA = [ 0x61707865, 0x3320646e, 0x79622d32, 0x6b206574 ];
 		
-		const uint* CONSTANTS = (length == 16) ? TAU : SIGMA;
+		const uint[] CONSTANTS = (length == 16) ? TAU : SIGMA;
 		
 		m_state.resize(16);
 		m_buffer.resize(64);
@@ -155,7 +156,7 @@ private:
 		m_position = 0;
 		
 		const ubyte[8] ZERO;
-		set_iv(ZERO, (ZERO).sizeof);
+		set_iv(ZERO, ZERO.length);
 	}
 
 	Secure_Vector!uint m_state;
@@ -169,7 +170,7 @@ private:
 /*
 * Generate HSalsa20 cipher stream (for XSalsa20 IV setup)
 */
-void hsalsa20(uint[8]* output, const uint[16]* input)
+void hsalsa20(ref uint[8] output, in uint[16] input)
 {
 	uint x00 = input[ 0], x01 = input[ 1], x02 = input[ 2], x03 = input[ 3],
 		x04 = input[ 4], x05 = input[ 5], x06 = input[ 6], x07 = input[ 7],
@@ -203,7 +204,7 @@ void hsalsa20(uint[8]* output, const uint[16]* input)
 /*
 * Generate Salsa20 cipher stream
 */
-void salsa20(ubyte[64]* output, const uint[16]* input)
+void salsa20(ref ubyte[64] output, in uint[16] input)
 {
 	uint x00 = input[ 0], x01 = input[ 1], x02 = input[ 2], x03 = input[ 3],
 		x04 = input[ 4], x05 = input[ 5], x06 = input[ 6], x07 = input[ 7],
@@ -224,22 +225,22 @@ void salsa20(ubyte[64]* output, const uint[16]* input)
 		      );
 	}
 	
-	store_le(x00 + input[ 0], output + 4 *  0);
-	store_le(x01 + input[ 1], output + 4 *  1);
-	store_le(x02 + input[ 2], output + 4 *  2);
-	store_le(x03 + input[ 3], output + 4 *  3);
-	store_le(x04 + input[ 4], output + 4 *  4);
-	store_le(x05 + input[ 5], output + 4 *  5);
-	store_le(x06 + input[ 6], output + 4 *  6);
-	store_le(x07 + input[ 7], output + 4 *  7);
-	store_le(x08 + input[ 8], output + 4 *  8);
-	store_le(x09 + input[ 9], output + 4 *  9);
-	store_le(x10 + input[10], output + 4 * 10);
-	store_le(x11 + input[11], output + 4 * 11);
-	store_le(x12 + input[12], output + 4 * 12);
-	store_le(x13 + input[13], output + 4 * 13);
-	store_le(x14 + input[14], output + 4 * 14);
-	store_le(x15 + input[15], output + 4 * 15);
+	store_le(x00 + input[ 0], output.ptr + 4 *  0);
+	store_le(x01 + input[ 1], output.ptr + 4 *  1);
+	store_le(x02 + input[ 2], output.ptr + 4 *  2);
+	store_le(x03 + input[ 3], output.ptr + 4 *  3);
+	store_le(x04 + input[ 4], output.ptr + 4 *  4);
+	store_le(x05 + input[ 5], output.ptr + 4 *  5);
+	store_le(x06 + input[ 6], output.ptr + 4 *  6);
+	store_le(x07 + input[ 7], output.ptr + 4 *  7);
+	store_le(x08 + input[ 8], output.ptr + 4 *  8);
+	store_le(x09 + input[ 9], output.ptr + 4 *  9);
+	store_le(x10 + input[10], output.ptr + 4 * 10);
+	store_le(x11 + input[11], output.ptr + 4 * 11);
+	store_le(x12 + input[12], output.ptr + 4 * 12);
+	store_le(x13 + input[13], output.ptr + 4 * 13);
+	store_le(x14 + input[14], output.ptr + 4 * 14);
+	store_le(x15 + input[15], output.ptr + 4 * 15);
 }
 
 string SALSA20_QUARTER_ROUND(alias _x1, alias _x2, alias _x3, alias _x4)()

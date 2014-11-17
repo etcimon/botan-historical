@@ -23,11 +23,11 @@ public:
 	*/
 	void encrypt_n(ubyte* input, ubyte* output, size_t blocks) const
 	{
-		auto keys = this.get_round_keys();
+		auto keys = this.get_round_keys().ptr;
 		
 		foreach (size_t i; 0 .. blocks)
 		{
-			botan_serpent_x86_32_encrypt(input, output, keys.ptr);
+			botan_serpent_x86_32_encrypt(input, output, keys);
 			input += BLOCK_SIZE;
 			output += BLOCK_SIZE;
 		}
@@ -37,11 +37,11 @@ public:
 	*/
 	void decrypt_n(ubyte* input, ubyte* output, size_t blocks) const
 	{
-		auto keys = this.get_round_keys();
+		auto keys = this.get_round_keys().ptr;
 		
 		foreach (size_t i; 0 .. blocks)
 		{
-			botan_serpent_x86_32_decrypt(input, output, keys.ptr);
+			botan_serpent_x86_32_decrypt(input, output, keys);
 			input += BLOCK_SIZE;
 			output += BLOCK_SIZE;
 		}
@@ -61,7 +61,7 @@ private:
 		W[length / 4] |= uint(1) << ((length%4)*8);
 		
 		botan_serpent_x86_32_key_schedule(W.ptr);
-		this.set_round_keys(&W[8]);
+		this.set_round_keys(*cast(uint[132]*) &W[8]);
 	}
 
 }
@@ -72,9 +72,7 @@ private:
 * @param output the output block
 * @param ks the key schedule
 */
-void botan_serpent_x86_32_encrypt(	const ubyte[16]* input,
-									ubyte[16]* output,
-									const uint[132]* ks ) pure
+void botan_serpent_x86_32_encrypt(in ubyte* input, ubyte* output, in uint* ks ) pure
 {
 
 	enum PUSHED = 4;
@@ -145,9 +143,7 @@ void botan_serpent_x86_32_encrypt(	const ubyte[16]* input,
 * @param ks the key schedule
 */
 
-void botan_serpent_x86_32_decrypt(	const ubyte[16]* input,
-									ubyte[16]* output,
-									const uint[132]* ks) pure
+void botan_serpent_x86_32_decrypt(in ubyte* input, ubyte* output, in uint* ks) pure
 {
 
 	enum PUSHED = 4;
@@ -218,7 +214,7 @@ void botan_serpent_x86_32_decrypt(	const ubyte[16]* input,
 			final key schedule
 */
 
-void botan_serpent_x86_32_key_schedule(uint[140]* ks) pure
+void botan_serpent_x86_32_key_schedule(uint* ks) pure
 {
 	string LOAD_AND_SBOX(alias SBOX)(ubyte MSG) {
 		return 	ASSIGN(EAX, ARRAY4(EDI, (4*MSG+ 8))) ~

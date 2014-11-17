@@ -809,4 +809,6 @@ struct Vector(T, ALLOCATOR)
 		length = offset1 + tailLength;
 		return this[length - tailLength .. length];
 	}
+
+	alias remove = linearRemove;
 }

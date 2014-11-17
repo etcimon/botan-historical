@@ -32,9 +32,7 @@ private:
 
 }
 
-void botan_md5_x86_32_compress(uint[4]* digest,
-								const ubyte[64]* input,
-								uint[16]* M) pure
+void botan_md5_x86_32_compress(uint* digest, const ubyte* input, uint* M) pure
 {
 	enum PUSHED = 4;
 	mixin(`asm { ` ~ 

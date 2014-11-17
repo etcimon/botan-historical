@@ -13,6 +13,9 @@ import botan.utils.get_byte;
 import std.bitmanip;
 import cstring;
 
+nothrow:
+pure:
+
 /**
 * Make a ushort from two bytes
 * @param i0 the first ubyte
@@ -35,9 +38,9 @@ ushort make_ushort(ubyte i0, ubyte i1)
 uint make_uint(ubyte i0, ubyte i1, ubyte i2, ubyte i3)
 {
 	return ((cast(uint)(i0) << 24) |
-			  (cast(uint)(i1) << 16) |
-			  (cast(uint)(i2) <<  8) |
-			  (cast(uint)(i3)));
+			(cast(uint)(i1) << 16) |
+			(cast(uint)(i2) <<  8) |
+			(cast(uint)(i3)));
 }
 
 /**
@@ -55,14 +58,14 @@ uint make_uint(ubyte i0, ubyte i1, ubyte i2, ubyte i3)
 ulong make_ulong(ubyte i0, ubyte i1, ubyte i2, ubyte i3,
 				  ubyte i4, ubyte i5, ubyte i6, ubyte i7)
 {
-	return ((cast(ulong)(i0) << 56) |
-			  (cast(ulong)(i1) << 48) |
-			  (cast(ulong)(i2) << 40) |
-			  (cast(ulong)(i3) << 32) |
-			  (cast(ulong)(i4) << 24) |
-			  (cast(ulong)(i5) << 16) |
-			  (cast(ulong)(i6) <<  8) |
-			  (cast(ulong)(i7)));
+	return 	((cast(ulong)(i0) << 56) |
+			 (cast(ulong)(i1) << 48) |
+			 (cast(ulong)(i2) << 40) |
+			 (cast(ulong)(i3) << 32) |
+			 (cast(ulong)(i4) << 24) |
+			 (cast(ulong)(i5) << 16) |
+			 (cast(ulong)(i6) <<  8) |
+			 (cast(ulong)(i7)));
 }
 
 /**
@@ -103,12 +106,7 @@ T load_le(T)(in ubyte* input, size_t off)
 */
 ushort load_be(T : ushort)(in ubyte* input, size_t off)
 {
-	static if (BOTAN_TARGET_UNALIGNED_MEMORY_ACCESS_OK){
-		return nativeToBigEndian!ushort(*(cast(const ushort*)(input) + off));
-	} else {
-		input += off * (ushort).sizeof;
-		return make_ushort(input[0], input[1]);
-	}
+	return nativeToBigEndian!ushort(*cast(ubyte[2]*)( (cast(const ushort*) input) + off));
 }
 
 /**
@@ -119,12 +117,7 @@ ushort load_be(T : ushort)(in ubyte* input, size_t off)
 */
 ushort load_le(T : ushort)(in ubyte* input, size_t off)
 {
-	static if (BOTAN_TARGET_UNALIGNED_MEMORY_ACCESS_OK) {
-		return nativeToLittleEndian!ushort(*(cast(const ushort*)(input) + off));
-	} else {
-		input += off * (ushort).sizeof;
-		return make_ushort(input[1], input[0]);
-	}
+	return nativeToLittleEndian!ushort(*cast(ubyte[2]*)( (cast(const ushort*) input) + off));
 }
 
 /**
@@ -135,12 +128,7 @@ ushort load_le(T : ushort)(in ubyte* input, size_t off)
 */
 uint load_be(T : uint)(in ubyte* input, size_t off)
 {
-	static if (BOTAN_TARGET_UNALIGNED_MEMORY_ACCESS_OK) {
-		return nativeToBigEndian!uint(*(cast(const uint*)(input) + off));
-	} else {
-		input += off * (uint).sizeof;
-		return make_uint(input[0], input[1], input[2], input[3]);
-	}
+	return nativeToBigEndian!uint(*cast(ubyte[4]*)( (cast(const uint*) input) + off));
 }
 
 /**
@@ -152,12 +140,7 @@ uint load_be(T : uint)(in ubyte* input, size_t off)
 
 uint load_le(T : uint)(in ubyte* input, size_t off)
 {
-	static if (BOTAN_TARGET_UNALIGNED_MEMORY_ACCESS_OK) {
-		return nativeToLittleEndian!uint(*(cast(const uint*)(input) + off));
-	} else {
-		input += off * (uint).sizeof;
-		return make_uint(input[3], input[2], input[1], input[0]);
-	}
+	return nativeToLittleEndian!uint(*cast(ubyte[4]*)( (cast(const uint*) input) + off));
 }
 
 /**
@@ -168,13 +151,8 @@ uint load_le(T : uint)(in ubyte* input, size_t off)
 */
 ulong load_be(T : ulong)(in ubyte* input, size_t off)
 {
-	static if (BOTAN_TARGET_UNALIGNED_MEMORY_ACCESS_OK) {
-		return nativeToBigEndian!ulong(*(cast(const ulong*)(input) + off));
-	} else {
-		input += off * (ulong).sizeof;
-		return make_ulong(input[0], input[1], input[2], input[3],
-							 input[4], input[5], input[6], input[7]);
-	}
+	return nativeToBigEndian!ulong(*cast(ubyte[8]*)( (cast(const ulong*) input) + off));
+	
 }
 
 /**
@@ -185,13 +163,7 @@ ulong load_be(T : ulong)(in ubyte* input, size_t off)
 */
 ulong load_le(T : ulong)(in ubyte* input, size_t off)
 {
-	static if (BOTAN_TARGET_UNALIGNED_MEMORY_ACCESS_OK) {
-		return nativeToLittleEndian!ulong(*(cast(const ulong*)(input) + off));
-	} else {
-		input += off * (ulong).sizeof;
-		return make_ulong(input[7], input[6], input[5], input[4],
-							 input[3], input[2], input[1], input[0]);
-	}
+	return nativeToLittleEndian!ulong(*cast(ubyte[8]*)( (cast(const ulong*) input) + off));
 }
 
 /**
@@ -215,7 +187,7 @@ void load_le(T)(in ubyte* input, ref T x0, ref T x1)
 * @param x3 where the fourth word will be written
 */
 void load_le(T)(in ubyte* input,
-						 ref T x0, ref T x1, ref T x2, ref T x3)
+				ref T x0, ref T x1, ref T x2, ref T x3)
 {
 	x0 = load_le!T(input, 0);
 	x1 = load_le!T(input, 1);
@@ -255,9 +227,7 @@ void load_le(T)(in ubyte* input,
 * @param input the input array of bytes
 * @param count how many words are in in
 */
-void load_le(T)(T* output,
-				in ubyte* input,
-				size_t count)
+void load_le(T)(T* output, in ubyte* input, size_t count)
 {
 	static if (BOTAN_TARGET_CPU_HAS_KNOWN_ENDIANNESS) {
 		import std.c.string : memcpy;
@@ -269,7 +239,7 @@ void load_le(T)(T* output,
 			const size_t left = count - blocks;
 
 			for (size_t i = 0; i != blocks; i += 4)
-				bswap_4(output + i);
+				bswap_4(*cast(T[4]*) (output + i));
 
 			foreach (size_t i; 0 .. left)
 				output[blocks+i] = reverse_bytes(output[blocks+i]);
@@ -300,8 +270,7 @@ void load_be(T)(in ubyte* input, ref T x0, ref T x1)
 * @param x2 where the third word will be written
 * @param x3 where the fourth word will be written
 */
-void load_be(T)(in ubyte* input,
-				ref T x0, ref T x1, ref T x2, ref T x3)
+void load_be(T)(in ubyte* input, ref T x0, ref T x1, ref T x2, ref T x3)
 {
 	x0 = load_be!T(input, 0);
 	x1 = load_be!T(input, 1);
@@ -341,9 +310,7 @@ void load_be(T)(in ubyte* input,
 * @param input the input array of bytes
 * @param count how many words are in in
 */
-void load_be(T)(T* output,
-						  in ubyte* input,
-						  size_t count)
+void load_be(T)(T* output, in ubyte* input, size_t count)
 {
 	static if (BOTAN_TARGET_CPU_HAS_KNOWN_ENDIANNESS) {
 		import std.c.string : memcpy;
@@ -355,7 +322,7 @@ void load_be(T)(T* output,
 			const size_t left = count - blocks;
 
 			for (size_t i = 0; i != blocks; i += 4)
-				bswap_4(output + i);
+				bswap_4(*cast(T[4]*) (output + i));
 
 			foreach (size_t i; 0 .. left)
 				output[blocks+i] = reverse_bytes(output[blocks+i]);
@@ -372,14 +339,10 @@ void load_be(T)(T* output,
 * @param input the input ushort
 * @param output the ubyte array to write to
 */
-void store_be(ushort input, ubyte* output)
+void store_be(ushort input, ref ubyte[2] output)
 {
-	static if (BOTAN_TARGET_UNALIGNED_MEMORY_ACCESS_OK) {
-		*(cast(ubyte[2]*)output.ptr) = bigEndianToNative!(ubyte[2])(input);
-	} else {
-		output[0] = get_byte(0, input);
-		output[1] = get_byte(1, input);
-	}
+	*cast(ushort*) output = bigEndianToNative!ushort(*cast(ubyte[2]*) input);
+	
 }
 
 /**
@@ -387,14 +350,10 @@ void store_be(ushort input, ubyte* output)
 * @param input the input ushort
 * @param output the ubyte array to write to
 */
-void store_le(ushort input, ubyte[2]* output)
+void store_le(ushort input, ref ubyte[2] output)
 {
-	static if (BOTAN_TARGET_UNALIGNED_MEMORY_ACCESS_OK) {
-		*output = littleEndianToNative!(ubyte[2])(input);
-	} else {
-		output[0] = get_byte(1, input);
-		output[1] = get_byte(0, input);
-	}
+	*cast(ushort*) output = littleEndianToNative!ushort(*cast(ubyte[2]*) input);
+	
 }
 
 /**
@@ -402,16 +361,10 @@ void store_le(ushort input, ubyte[2]* output)
 * @param input the input uint
 * @param output the ubyte array to write to
 */
-void store_be(uint input, ubyte[4]* output)
+void store_be(uint input, ref ubyte[4] output)
 {
-	static if (BOTAN_TARGET_UNALIGNED_MEMORY_ACCESS_OK) {
-		*output = bigEndianToNative!(ubyte[4])(input);
-	} else {
-		output[0] = get_byte(0, input);
-		output[1] = get_byte(1, input);
-		output[2] = get_byte(2, input);
-		output[3] = get_byte(3, input);
-	}
+	*cast(uint*) output = bigEndianToNative!uint(*cast(ubyte[4]*) input);
+	
 }
 
 /**
@@ -419,16 +372,10 @@ void store_be(uint input, ubyte[4]* output)
 * @param input the input uint
 * @param output the ubyte array to write to
 */
-void store_le(uint input, ubyte[4]* output)
+void store_le(uint input, ref ubyte[4] output)
 {
-	static if (BOTAN_TARGET_UNALIGNED_MEMORY_ACCESS_OK) {
-		*output = littleEndianToNative!(ubyte[4])(input);
-	} else {
-		output[0] = get_byte(3, input);
-		output[1] = get_byte(2, input);
-		output[2] = get_byte(1, input);
-		output[3] = get_byte(0, input);
-	}
+	*cast(uint*) output = littleEndianToNative!uint(*cast(ubyte[4]*) input);
+
 }
 
 /**
@@ -436,20 +383,9 @@ void store_le(uint input, ubyte[4]* output)
 * @param input the input ulong
 * @param output the ubyte array to write to
 */
-void store_be(ulong input, ubyte[8]* output)
+void store_be(ulong input, ref ubyte[8] output)
 {
-	static if (BOTAN_TARGET_UNALIGNED_MEMORY_ACCESS_OK) {
-		*output = bigEndianToNative!(ubyte[8])(input);
-	} else {
-		output[0] = get_byte(0, input);
-		output[1] = get_byte(1, input);
-		output[2] = get_byte(2, input);
-		output[3] = get_byte(3, input);
-		output[4] = get_byte(4, input);
-		output[5] = get_byte(5, input);
-		output[6] = get_byte(6, input);
-		output[7] = get_byte(7, input);
-	}
+	*cast(ulong*) output = bigEndianToNative!ulong(*cast(ubyte[8]*) input);
 }
 
 /**
@@ -457,20 +393,29 @@ void store_be(ulong input, ubyte[8]* output)
 * @param input the input ulong
 * @param output the ubyte array to write to
 */
-void store_le(ulong input, ubyte[8]* output)
+void store_le(ulong input, ref ubyte[8] output)
 {
-	static if (BOTAN_TARGET_UNALIGNED_MEMORY_ACCESS_OK) {
-		*cast(ulong*)(output) = littleEndianToNative(input);
-	} else {
-		output[0] = get_byte(7, input);
-		output[1] = get_byte(6, input);
-		output[2] = get_byte(5, input);
-		output[3] = get_byte(4, input);
-		output[4] = get_byte(3, input);
-		output[5] = get_byte(2, input);
-		output[6] = get_byte(1, input);
-		output[7] = get_byte(0, input);
-	}
+	*cast(ulong*) output = littleEndianToNative!ulong(*cast(ubyte[8]*) input);
+}
+
+/**
+* Store a little-endian ulong
+* @param input the input ulong
+* @param output the ubyte array to write to
+*/
+void store_le(T)(T input, ubyte* output)
+{
+	store_le(input, *cast(ubyte[T.sizeof]*) output);
+}
+
+/**
+* Store a big-endian ulong
+* @param input the input ulong
+* @param output the ubyte array to write to
+*/
+void store_be(T)(T input, ubyte* output)
+{
+	store_be(input, *cast(ubyte[T.sizeof]*) output);
 }
 
 /**

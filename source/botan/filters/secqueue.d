@@ -9,7 +9,7 @@ module botan.filters.secqueue;
 
 import botan.filters.data_src;
 import botan.filters.filter;
-
+import botan.utils.types;
 import std.algorithm;
 /**
 * A queue that knows how to zeroize itself

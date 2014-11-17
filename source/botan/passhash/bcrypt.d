@@ -134,13 +134,12 @@ string make_bcrypt(in string pass,
 		0x63, 0x72, 0x79, 0x44, 0x6F, 0x75, 0x62, 0x74
 	];
 	
-	Vector!ubyte ctext = Vector!ubyte(magic, magic + magic.sizeof);
+	Vector!ubyte ctext = Vector!ubyte(magic.ptr[0 .. magic.length]);
 	
 	Blowfish blowfish;
 	
 	// Include the trailing NULL ubyte
-	blowfish.eks_key_schedule(cast(const ubyte*) pass.toStringz, pass.length + 1, salt.ptr,
-	work_factor);
+	blowfish.eks_key_schedule(cast(const ubyte*) pass.toStringz, pass.length + 1, salt.ptr,	work_factor);
 	
 	foreach (size_t i; 0 .. 64)
 		blowfish.encrypt_n(ctext.ptr, ctext.ptr, 3);

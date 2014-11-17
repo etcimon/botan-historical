@@ -106,9 +106,7 @@ public:
 	* @param session_lifetime sessions are expired after this many
 	*		  seconds have elapsed from initial handshake.
 	*/
-	this(RandomNumberGenerator rng,
-			size_t max_sessions = 1000,
-			Duration session_lifetime = 7200.seconds) 
+	this(RandomNumberGenerator rng, size_t max_sessions = 1000, Duration session_lifetime = 7200.seconds) 
 	{
 		m_max_sessions = max_sessions;
 		m_session_lifetime = session_lifetime;
@@ -145,8 +143,7 @@ public:
 		return false;
 	}
 
-	override void remove_entry(
-		in Vector!ubyte session_id)
+	override void remove_entry(in Vector!ubyte session_id)
 	{		
 		auto i = m_sessions.find(hex_encode(session_id));
 		

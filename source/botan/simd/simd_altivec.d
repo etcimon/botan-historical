@@ -18,7 +18,7 @@ struct SIMD_Altivec
 public:
 	static bool enabled() { return CPUID.has_altivec(); }
 
-	this(const uint B[4])
+	this(in uint[4] B)
 	{
 		m_reg = [B[0], B[1], B[2], B[3]];
 	}
@@ -71,7 +71,7 @@ public:
 
 		union {
 			Vector!uint V;
-			uint R[4];
+			uint[4] R;
 		} vec;
 
 		vec.V = vec_perm(m_reg, m_reg, perm);

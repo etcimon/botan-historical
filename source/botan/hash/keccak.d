@@ -31,7 +31,7 @@ public:
 	*/
 	this(size_t output_bits = 512) 
 	{
-		output_bits = output_bits;
+		m_output_bits = output_bits;
 		m_bitrate = 1600 - 2*output_bits;
 		m_S = 25;
 		m_S_pos = 0;
@@ -40,21 +40,20 @@ public:
 		
 		if (output_bits != 224 && output_bits != 256 &&
 		    output_bits != 384 && output_bits != 512)
-			throw new Invalid_Argument("Keccak_1600: Invalid output length " ~
-			                           to!string(output_bits));
+			throw new Invalid_Argument("Keccak_1600: Invalid output length " ~ to!string(output_bits));
 	}
 
 	override @property size_t hash_block_size() const { return m_bitrate / 8; }
-	override @property size_t output_length() const { return output_bits / 8; }
+	override @property size_t output_length() const { return m_output_bits / 8; }
 
 	HashFunction clone() const
 	{
-		return new Keccak_1600(output_bits);
+		return new Keccak_1600(m_output_bits);
 	}
 
 	@property string name() const
 	{
-		return "Keccak-1600(" ~ to!string(output_bits) ~ ")";
+		return "Keccak-1600(" ~ to!string(m_output_bits) ~ ")";
 	}
 
 	void clear()
@@ -103,7 +102,7 @@ private:
 			
 			if (m_S_pos == m_bitrate / 8)
 			{
-				keccak_f_1600(m_S.ptr);
+				keccak_f_1600(*cast(ulong[25]*) m_S.ptr);
 				m_S_pos = 0;
 			}
 		}
@@ -122,13 +121,13 @@ private:
 		* We never have to run the permutation again because we only support
 		* limited output lengths
 		*/
-		foreach (size_t i; 0 .. output_bits/8)
+		foreach (size_t i; 0 .. m_output_bits/8)
 			output[i] = get_byte(7 - (i % 8), m_S[i/8]);
 		
 		clear();
 	}
 
-	size_t output_bits, m_bitrate;
+	size_t m_output_bits, m_bitrate;
 	Secure_Vector!ulong m_S;
 	size_t m_S_pos;
 }
@@ -136,7 +135,7 @@ private:
 
 
 
-void keccak_f_1600(ulong[25]* A) pure
+void keccak_f_1600(ref ulong[25] A) pure
 {
 	__gshared immutable ulong[24] RC = [
 		0x0000000000000001, 0x0000000000008082, 0x800000000000808A,

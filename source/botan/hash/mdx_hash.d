@@ -18,15 +18,12 @@ class MDx_HashFunction : HashFunction
 {
 public:
 	/**
-	* @param block_length is the number of bytes per block
-	* @param big_byte_endian specifies if the hash uses big-endian bytes
-	* @param big_bit_endian specifies if the hash uses big-endian bits
-	* @param counter_size specifies the size of the counter var in bytes
+	* @param block_len is the number of bytes per block
+	* @param byte_end specifies if the hash uses big-endian bytes
+	* @param bit_end specifies if the hash uses big-endian bits
+	* @param cnt_size specifies the size of the counter var in bytes
 	*/
-	this(size_t block_len,
-	     bool byte_end,
-	     bool bit_end,
-	     size_t cnt_size = 0)
+	this(size_t block_len, bool byte_end, bool bit_end, size_t cnt_size = 0)
 	{
 		m_buffer = block_len;
 		m_BIG_BYTE_ENDIAN = byte_end;

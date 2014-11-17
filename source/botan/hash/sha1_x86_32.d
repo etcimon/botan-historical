@@ -22,7 +22,7 @@ public:
 	// Note 81 instead of normal 80: x86-32 asm needs an extra temp
 	this() 
 	{
-		SHA_160 = 81; 
+		super(81);
 	}
 private:
 	/*
@@ -32,7 +32,7 @@ private:
 	{
 		foreach (size_t i; 0 .. blocks)
 		{
-			botan_sha160_x86_32_compress(m_digest.ptr, input, W.ptr);
+			botan_sha160_x86_32_compress(m_digest.ptr, input, m_W.ptr);
 			input += hash_block_size;
 		}
 	}
@@ -41,7 +41,7 @@ private:
 
 private:
 
-void botan_sha160_x86_32_compress(uint[5]* arg1, in ubyte[64]* arg2, uint[81]* arg2) pure
+void botan_sha160_x86_32_compress(uint* arg1, in ubyte* arg2, uint* arg2) pure
 {
 	enum PUSHED = 4;
 	mixin(`asm {` ~

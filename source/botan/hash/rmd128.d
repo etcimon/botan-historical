@@ -12,6 +12,8 @@ static if (BOTAN_HAS_RIPEMD_128):
 import botan.utils.loadstor;
 import botan.utils.rotate;
 import botan.hash.mdx_hash;
+import botan.utils.types;
+
 /**
 * RIPEMD-128
 */
@@ -146,7 +148,6 @@ private:
 		for (size_t i = 0; i != output_length(); i += 4)
 			store_le(m_digest[i/4], output + i);
 	}
-
 
 	Secure_Vector!uint m_M, m_digest;
 }

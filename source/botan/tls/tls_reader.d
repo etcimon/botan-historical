@@ -173,10 +173,8 @@ private:
 /**
 * Helper function for encoding length-tagged vectors
 */
-void append_tls_length_value(T, Alloc)(ref Vector!( ubyte, Alloc ) buf,
-										  const T* vals,
-										  size_t vals_size,
-										  size_t tag_size)
+void append_tls_length_value(T, Alloc)(ref Vector!( ubyte, Alloc ) buf, in T* vals, 
+                                       size_t vals_size, size_t tag_size)
 {
 	const size_t T_size = T.sizeof;
 	const size_t val_bytes = T_size * vals_size;

@@ -1909,9 +1909,9 @@ Vector!ubyte finished_compute_verify(in Handshake_State state,
 		Vector!ubyte ssl3_finished;
 		
 		if (side == CLIENT)
-			hash.update(SSL_CLIENT_LABEL, (SSL_CLIENT_LABEL).sizeof);
+			hash.update(SSL_CLIENT_LABEL, SSL_CLIENT_LABEL.length);
 		else
-			hash.update(SSL_SERVER_LABEL, (SSL_SERVER_LABEL).sizeof);
+			hash.update(SSL_SERVER_LABEL, SSL_SERVER_LABEL.length);
 		
 		return unlock(hash.final_ssl3(state.session_keys().master_secret()));
 	}

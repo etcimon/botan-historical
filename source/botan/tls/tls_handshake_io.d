@@ -96,7 +96,7 @@ public:
 	{
 		if (record_type == HANDSHAKE)
 		{
-			m_queue.insert(m_queue.end(), record.ptr, record.end());
+			m_queue.insert(record);
 		}
 		else if (record_type == CHANGE_CIPHER_SPEC)
 		{
@@ -105,7 +105,7 @@ public:
 			
 			// Pretend it's a regular handshake message of zero length
 			const(ubyte)[] ccs_hs = [ HANDSHAKE_CCS, 0, 0, 0 ];
-			m_queue.insert(m_queue.end(), ccs_hs, ccs_hs + (ccs_hs).sizeof);
+			m_queue.insert(ccs_hs);
 		}
 		else
 			throw new Decoding_Error("Unknown message type in handshake processing");
@@ -121,20 +121,19 @@ public:
 			{
 				Handshake_Type type = cast(Handshake_Type)(m_queue[0]);
 				
-				Vector!ubyte contents = Vector!ubyte(m_queue.ptr + 4,
-				                      m_queue.ptr + 4 + length);
+				Vector!ubyte contents = Vector!ubyte(m_queue.ptr[4 .. 4 + length]);
 				
-				m_queue.erase(m_queue.ptr, m_queue.ptr + 4 + length);
+				m_queue.remove(m_queue[0 .. 4 + length]);
 				
 				return Pair(type, contents);
 			}
 		}
-		
+
 		return Pair(HANDSHAKE_NONE, Vector!ubyte());
 	}
 
 private:
-	Deque!ubyte m_queue;
+	Vector!ubyte m_queue;
 	void delegate(ubyte, in Vector!ubyte) m_send_hs;
 }
 

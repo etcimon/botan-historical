@@ -49,7 +49,7 @@ ulong reverse_bytes(ulong val)
 /**
 * Swap 4 Ts in an array
 */
-void bswap_4(T)(T[4]* x)
+void bswap_4(T)(ref T[4] x)
 {
 	x[0] = reverse_bytes(x[0]);
 	x[1] = reverse_bytes(x[1]);
@@ -62,7 +62,7 @@ static if (BOTAN_TARGET_CPU_HAS_SSE2 && !BOTAN_NO_SSE_INTRINSICS) {
 	/**
 	* Swap 4 uints in an array using SSE2 shuffle instructions
 	*/
-	void bswap_4(uint[4]* x)
+	void bswap_4(ref uint[4] x)
 	{
 		__m128i T = _mm_loadu_si128(cast(const(__m128i)*)(x.ptr));
 

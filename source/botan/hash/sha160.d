@@ -13,6 +13,7 @@ import botan.hash.mdx_hash;
 
 import botan.utils.loadstor;
 import botan.utils.rotate;
+import botan.utils.types;
 
 /**
 * NIST's SHA-160

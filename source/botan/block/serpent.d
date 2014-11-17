@@ -143,7 +143,7 @@ protected:
 	* For use by subclasses that implement the key schedule
 	* @param ks is the new key schedule value to set
 	*/
-	void set_round_keys(in uint ks[132])
+	void set_round_keys(in uint[132] ks)
 	{
 		m_round_key.replace(ks.ptr[0 .. 132]);
 	}

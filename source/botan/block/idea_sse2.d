@@ -25,11 +25,11 @@ public:
 	*/
 	void encrypt_n(ubyte* input, ubyte* output, size_t blocks) const
 	{
-		const ushort* KS = &super.get_EK()[0];
+		const ushort* KS = super.get_EK().ptr;
 		
 		while (blocks >= 8)
 		{
-			idea_op_8(input, output, KS);
+			idea_op_8(*cast(ubyte[64]*) input, *cast(ubyte[64]*) output, *cast(ushort[52]*) KS);
 			input += 8 * BLOCK_SIZE;
 			output += 8 * BLOCK_SIZE;
 			blocks -= 8;
@@ -44,11 +44,11 @@ public:
 	*/
 	void decrypt_n(ubyte* input, ubyte* output, size_t blocks) const
 	{
-		const ushort* KS = &this.get_DK()[0];
+		const ushort* KS = this.get_DK().ptr;
 		
 		while (blocks >= 8)
 		{
-			idea_op_8(input, output, KS);
+			idea_op_8(*cast(ubyte[64]*) input, *cast(ubyte[64]*) output, *cast(ushort[52]*) KS);
 			input += 8 * BLOCK_SIZE;
 			output += 8 * BLOCK_SIZE;
 			blocks -= 8;
@@ -80,8 +80,7 @@ __m128i mul(__m128i X, ushort K_16) pure
 	
 	// Unsigned compare; cmp = 1 if mul_lo < mul_hi else 0
 	const(__m128i) subs = _mm_subs_epu16(mul_hi, mul_lo);
-	const(__m128i) cmp = _mm_min_epu8(
-		_mm_or_si128(subs, _mm_srli_epi16(subs, 8)), ones);
+	const(__m128i) cmp = _mm_min_epu8(_mm_or_si128(subs, _mm_srli_epi16(subs, 8)), ones);
 	
 	T = _mm_add_epi16(T, cmp);
 	
@@ -178,9 +177,9 @@ void transpose_out(ref __m128i B0, ref __m128i B1, ref __m128i B2, ref __m128i B
 /*
 * IDEA encryption/decryption in SSE2
 */
-void idea_op_8(in ubyte[64]* input, ubyte[64]* output, in ushort[52] EK) pure
+void idea_op_8(in ubyte[64] input, ref ubyte[64] output, in ushort[52] EK) pure
 {
-	const(__m128i)* in_mm = cast(const(__m128i)*)(input);
+	const(__m128i)* in_mm = cast(const(__m128i)*)(input.ptr);
 	
 	__m128i B0 = _mm_loadu_si128(in_mm + 0);
 	__m128i B1 = _mm_loadu_si128(in_mm + 1);
@@ -234,7 +233,7 @@ void idea_op_8(in ubyte[64]* input, ubyte[64]* output, in ushort[52] EK) pure
 	
 	transpose_out(B0, B2, B1, B3);
 	
-	__m128i* out_mm = cast(__m128i*)(output);
+	__m128i* out_mm = cast(__m128i*)(output.ptr);
 	
 	_mm_storeu_si128(out_mm + 0, B0);
 	_mm_storeu_si128(out_mm + 1, B2);

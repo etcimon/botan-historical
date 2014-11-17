@@ -14,6 +14,7 @@ import botan.asn1.ber_dec;
 import botan.math.bigint.bigint;
 import botan.asn1.oid_lookup.oids;
 import botan.utils.types;
+
 alias CRL_Entry = FreeListRef!CRL_Entry_Impl;
 
 /**
@@ -45,13 +46,13 @@ public:
 	/*
 	* DER encode a CRL_Entry
 	*/
-	void encode_into(DER_Encoder to) const
+	void encode_into(DER_Encoder to_) const
 	{
 		Extensions extensions;
 		
 		extensions.add(new x509_ext.CRL_ReasonCode(reason));
 		
-		to.start_cons(ASN1_Tag.SEQUENCE)
+		to_.start_cons(ASN1_Tag.SEQUENCE)
 				.encode(BigInt.decode(serial))
 				.encode(m_time)
 				.start_cons(ASN1_Tag.SEQUENCE)

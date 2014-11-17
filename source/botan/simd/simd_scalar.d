@@ -23,7 +23,7 @@ public:
 
 	this() { /* uninitialized */ }
 
-	this(const T B[N])
+	this(in T[N] B)
 	{
 		for (size_t i = 0; i != size(); ++i)
 			m_v[i] = B[i];
@@ -187,7 +187,7 @@ public:
 	static void transpose(ref SIMD_Scalar!(T, N) B0, ref SIMD_Scalar!(T, N) B1,
 						  ref SIMD_Scalar!(T, N) B2, ref SIMD_Scalar!(T, N) B3)
 	{
-		static_assert(N == 4, "4x4 transpose");
+		static assert(N == 4, "4x4 transpose");
 		SIMD_Scalar!(T, N) T0 = SIMD_Scalar!(T, N)([B0.m_v[0], B1.m_v[0], B2.m_v[0], B3.m_v[0]]);
 		SIMD_Scalar!(T, N) T1 = SIMD_Scalar!(T, N)([B0.m_v[1], B1.m_v[1], B2.m_v[1], B3.m_v[1]]);
 		SIMD_Scalar!(T, N) T2 = SIMD_Scalar!(T, N)([B0.m_v[2], B1.m_v[2], B2.m_v[2], B3.m_v[2]]);

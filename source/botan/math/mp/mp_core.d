@@ -40,22 +40,22 @@ void bigint_mul(word* z, size_t z_size, word* workspace,
 	else if (x_sw <= 4 && x_size >= 4 &&
 	         y_sw <= 4 && y_size >= 4 && z_size >= 8)
 	{
-		bigint_comba_mul4(z, x, y);
+		bigint_comba_mul4(*cast(word[8]*) z, *cast(word[4]*) x, *cast(word[4]*) y);
 	}
 	else if (x_sw <= 6 && x_size >= 6 &&
 	         y_sw <= 6 && y_size >= 6 && z_size >= 12)
 	{
-		bigint_comba_mul6(z, x, y);
+		bigint_comba_mul6(*cast(word[12]*) z, *cast(word[6]*) x, *cast(word[6]*) y);
 	}
 	else if (x_sw <= 8 && x_size >= 8 &&
 	         y_sw <= 8 && y_size >= 8 && z_size >= 16)
 	{
-		bigint_comba_mul8(z, x, y);
+		bigint_comba_mul8(*cast(word[16]*) z, *cast(word[8]*) x, *cast(word[8]*) y);
 	}
 	else if (x_sw <= 16 && x_size >= 16 &&
 	         y_sw <= 16 && y_size >= 16 && z_size >= 32)
 	{
-		bigint_comba_mul16(z, x, y);
+		bigint_comba_mul16(*cast(word[32]*) z, *cast(word[16]*) x, *cast(word[16]*) y);
 	}
 	else if (x_sw < KARATSUBA_MULTIPLY_THRESHOLD ||
 	         y_sw < KARATSUBA_MULTIPLY_THRESHOLD ||
@@ -86,19 +86,19 @@ void bigint_sqr(word* z, size_t z_size, word* workspace,
 	}
 	else if (x_sw <= 4 && x_size >= 4 && z_size >= 8)
 	{
-		bigint_comba_sqr4(z, x);
+		bigint_comba_sqr4(*cast(word[8]*) z, *cast(word[4]*) x);
 	}
 	else if (x_sw <= 6 && x_size >= 6 && z_size >= 12)
 	{
-		bigint_comba_sqr6(z, x);
+		bigint_comba_sqr6(*cast(word[12]*) z, *cast(word[6]*) x);
 	}
 	else if (x_sw <= 8 && x_size >= 8 && z_size >= 16)
 	{
-		bigint_comba_sqr8(z, x);
+		bigint_comba_sqr8(*cast(word[16]*) z, *cast(word[8]*) x);
 	}
 	else if (x_sw <= 16 && x_size >= 16 && z_size >= 32)
 	{
-		bigint_comba_sqr16(z, x);
+		bigint_comba_sqr16(*cast(word[32]*) z, *cast(word[16]*) x);
 	}
 	else if (x_size < KARATSUBA_SQUARE_THRESHOLD || !workspace)
 	{
@@ -161,8 +161,7 @@ word bigint_add2_nc(word* x, size_t x_size, in word* y, size_t y_size)
 /**
 * Three operand addition with carry out
 */
-word bigint_add3_nc(word* z, in word* x, size_t x_size,
-                    in word* y, size_t y_size)
+word bigint_add3_nc(word* z, in word* x, size_t x_size, in word* y, size_t y_size)
 {
 	if (x_size < y_size)
 	{ return bigint_add3_nc(z, y, y_size, x, x_size); }
@@ -172,7 +171,7 @@ word bigint_add3_nc(word* z, in word* x, size_t x_size,
 	const size_t blocks = y_size - (y_size % 8);
 	
 	for (size_t i = 0; i != blocks; i += 8)
-		carry = word8_add3(z + i, x + i, y + i, carry);
+		carry = word8_add3(*cast(word[8]*) (z + i), *cast(word[8]*) (x + i), *cast(word[8]*) (y + i), carry);
 	
 	foreach (size_t i; blocks .. y_size)
 		z[i] = word_add(x[i], y[i], &carry);
@@ -193,7 +192,7 @@ word bigint_sub2(word* x, size_t x_size, in word* y, size_t y_size)
 	const size_t blocks = y_size - (y_size % 8);
 	
 	for (size_t i = 0; i != blocks; i += 8)
-		borrow = word8_sub2(x + i, y + i, borrow);
+		borrow = word8_sub2(*cast(word[8]*) (x + i), *cast(word[8]*) (y + i), borrow);
 	
 	foreach (size_t i; blocks .. y_size)
 		x[i] = word_sub(x[i], y[i], &borrow);
@@ -214,7 +213,7 @@ void bigint_sub2_rev(word* x,  in word* y, size_t y_size)
 	const size_t blocks = y_size - (y_size % 8);
 	
 	for (size_t i = 0; i != blocks; i += 8)
-		borrow = word8_sub2_rev(x + i, y + i, borrow);
+		borrow = word8_sub2_rev(*cast(word[8]*) (x + i), *cast(word[8]*) (y + i), borrow);
 	
 	foreach (size_t i; blocks .. y_size)
 		x[i] = word_sub(y[i], x[i], &borrow);
@@ -226,15 +225,14 @@ void bigint_sub2_rev(word* x,  in word* y, size_t y_size)
 /**
 * Three operand subtraction
 */
-word bigint_sub3(word* z, in word* x, size_t x_size,
-                 in word* y, size_t y_size)
+word bigint_sub3(word* z, in word* x, size_t x_size, in word* y, size_t y_size)
 {
 	word borrow = 0;
-	
+
 	const size_t blocks = y_size - (y_size % 8);
 	
 	for (size_t i = 0; i != blocks; i += 8)
-		borrow = word8_sub3(z + i, x + i, y + i, borrow);
+		borrow = word8_sub3(*cast(word[8]*) (z + i), *cast(word[8]*) (x + i), *cast(word[8]*) (y + i), borrow);
 	
 	foreach (size_t i; blocks .. y_size)
 		z[i] = word_sub(x[i], y[i], &borrow);
@@ -330,8 +328,7 @@ void bigint_shr1(word* x, size_t x_size, size_t word_shift, size_t bit_shift)
 /*
 * Two Operand Left Shift
 */
-void bigint_shl2(word* y, in word* x, size_t x_size,
-                 size_t word_shift, size_t bit_shift)
+void bigint_shl2(word* y, in word* x, size_t x_size, size_t word_shift, size_t bit_shift)
 {
 	foreach (size_t j; 0 .. x_size)
 		y[j + word_shift] = x[j];
@@ -372,12 +369,7 @@ void bigint_shr2(word* y, in word* x, size_t x_size,
 /*
 * Simple O(N^2) Multiplication and Squaring
 */
-
-/*
-* Simple O(N^2) Multiplication
-*/
-void bigint_simple_mul(word* z, in word* x, size_t x_size,
-                       in word* y, size_t y_size)
+void bigint_simple_mul(word* z, in word* x, size_t x_size, in word* y, size_t y_size)
 {
 	const size_t x_size_8 = x_size - (x_size % 8);
 	
@@ -390,7 +382,7 @@ void bigint_simple_mul(word* z, in word* x, size_t x_size,
 		word carry = 0;
 		
 		for (size_t j = 0; j != x_size_8; j += 8)
-			carry = word8_madd3(z + i + j, x + j, y_i, carry);
+			carry = word8_madd3(*cast(word[8]*) (z + i + j), *cast(word[8]*) (x + j), y_i, carry);
 		
 		foreach (size_t j; x_size_8 .. x_size)
 			z[i+j] = word_madd3(x[j], y_i, z[i+j], &carry);
@@ -422,7 +414,7 @@ void bigint_simple_sqr(word* z, in word* x, size_t x_size)
 		word carry = 0;
 		
 		for (size_t j = 0; j != x_size_8; j += 8)
-			carry = word8_madd3(z + i + j, x + j, x_i, carry);
+			carry = word8_madd3(*cast(word[8]*) (z + i + j), *cast(word[8]*) (x + j), x_i, carry);
 		
 		foreach (size_t j; x_size_8 .. x_size)
 			z[i+j] = word_madd3(x[j], x_i, z[i+j], &carry);
@@ -445,7 +437,7 @@ void bigint_linmul2(word* x, size_t x_size, word y)
 	word carry = 0;
 	
 	for (size_t i = 0; i != blocks; i += 8)
-		carry = word8_linmul2(x + i, y, carry);
+		carry = word8_linmul2(*cast(word[8]*) (x + i), y, carry);
 	
 	foreach (size_t i; blocks .. x_size)
 		x[i] = word_madd2(x[i], y, &carry);
@@ -463,7 +455,7 @@ void bigint_linmul3(word* z, in word* x, size_t x_size, word y)
 	word carry = 0;
 	
 	for (size_t i = 0; i != blocks; i += 8)
-		carry = word8_linmul3(z + i, x + i, y, carry);
+		carry = word8_linmul3(*cast(word[12]*) (z + i), *cast(word[12]*) (x + i), y, carry);
 	
 	foreach (size_t i; blocks .. x_size)
 		z[i] = word_madd2(x[i], y, &carry);
@@ -482,9 +474,7 @@ void bigint_linmul3(word* z, in word* x, size_t x_size, word y)
 * @param p_dash Montgomery value
 * @param workspace array of at least 2*(p_size+1) words
 */
-void bigint_monty_redc(word* z,
-                       in word* p, size_t p_size,
-                       word p_dash, word* ws)
+void bigint_monty_redc(word* z, in word* p, size_t p_size, word p_dash, word* ws)
 {
 	const size_t z_size = 2*(p_size+1);
 	
@@ -504,7 +494,7 @@ void bigint_monty_redc(word* z,
 		word carry = 0;
 		
 		for (size_t j = 0; j != blocks_of_8; j += 8)
-			carry = word8_madd3(z_i + j, p + j, y, carry);
+			carry = word8_madd3(*cast(word[12]*) (z_i + j), *cast(word[12]*) (p + j), y, carry);
 		
 		foreach (size_t j; blocks_of_8 .. p_size)
 			z_i[j] = word_madd3(p[j], y, z_i[j], &carry);
@@ -542,13 +532,11 @@ void bigint_monty_mul(word* z, size_t z_size,
                       in word* p, size_t p_size, word p_dash,
                       word* ws)
 {
-	bigint_mul(z.ptr, z_size, ws.ptr,
-	x.ptr, x_size, x_sw,
-	y.ptr, y_size, y_sw);
+	bigint_mul( z.ptr, z_size, ws.ptr,
+				x.ptr, x_size, x_sw,
+				y.ptr, y_size, y_sw);
 	
-	bigint_monty_redc(z.ptr,
-	p.ptr, p_size, p_dash,
-	ws.ptr);
+	bigint_monty_redc(z.ptr, p.ptr, p_size, p_dash, ws.ptr);
 }
 
 
@@ -560,12 +548,9 @@ void bigint_monty_sqr(word* z, size_t z_size,
                       in word* p, size_t p_size, word p_dash,
                       word* ws)
 {
-	bigint_sqr(z.ptr, z_size, ws.ptr,
-	x.ptr, x_size, x_sw);
-	
-	bigint_monty_redc(z.ptr,
-	p.ptr, p_size, p_dash,
-	ws.ptr);
+	bigint_sqr(z.ptr, z_size, ws.ptr, x.ptr, x_size, x_sw);
+
+	bigint_monty_redc(z.ptr, p.ptr, p_size, p_dash, ws.ptr);
 }
 
 /**
@@ -636,7 +621,7 @@ word bigint_modop(word n1, word n0, word d)
 /*
 * Comba 4x4 Squaring
 */
-void bigint_comba_sqr4(word[8]* z, in word[4]* x)
+void bigint_comba_sqr4(ref word[8] z, in word[4] x)
 {
 	word w2 = 0, w1 = 0, w0 = 0;
 	
@@ -669,7 +654,7 @@ void bigint_comba_sqr4(word[8]* z, in word[4]* x)
 /*
 * Comba 4x4 Multiplication
 */
-void bigint_comba_mul4(word[8]* z, in word[4]* x, in word[4]* y)
+void bigint_comba_mul4(ref word[8] z, in word[4] x, in word[4] y)
 {
 	word w2 = 0, w1 = 0, w0 = 0;
 	
@@ -708,7 +693,7 @@ void bigint_comba_mul4(word[8]* z, in word[4]* x, in word[4]* y)
 /*
 * Comba 6x6 Squaring
 */
-void bigint_comba_sqr6(word[12]* z, in word[6]* x)
+void bigint_comba_sqr6(ref word[12] z, in word[6] x)
 {
 	word w2 = 0, w1 = 0, w0 = 0;
 	
@@ -760,13 +745,13 @@ void bigint_comba_sqr6(word[12]* z, in word[6]* x)
 /*
 * Comba 6x6 Multiplication
 */
-void bigint_comba_mul6(word[12]* z, in word[6]* x, in word[6]* y)
+void bigint_comba_mul6(ref word[12] z, in word[6] x, in word[6] y)
 {
 	word w2 = 0, w1 = 0, w0 = 0;
 	
 	word3_muladd(&w2, &w1, &w0, x[ 0], y[ 0]);
 	z[ 0] = w0; w0 = 0;
-	
+
 	word3_muladd(&w0, &w2, &w1, x[ 0], y[ 1]);
 	word3_muladd(&w0, &w2, &w1, x[ 1], y[ 0]);
 	z[ 1] = w1; w1 = 0;
@@ -827,7 +812,7 @@ void bigint_comba_mul6(word[12]* z, in word[6]* x, in word[6]* y)
 /*
 * Comba 8x8 Squaring
 */
-void bigint_comba_sqr8(word[16]* z, in word[8]* x)
+void bigint_comba_sqr8(ref word[16] z, in word[8] x)
 {
 	word w2 = 0, w1 = 0, w0 = 0;
 	
@@ -902,7 +887,7 @@ void bigint_comba_sqr8(word[16]* z, in word[8]* x)
 /*
 * Comba 8x8 Multiplication
 */
-void bigint_comba_mul8(word[16]* z, in word[8]* x, in word[8]* y)
+void bigint_comba_mul8(ref word[16] z, in word[8] x, in word[8] y)
 {
 	word w2 = 0, w1 = 0, w0 = 0;
 	
@@ -1005,7 +990,7 @@ void bigint_comba_mul8(word[16]* z, in word[8]* x, in word[8]* y)
 /*
 * Comba 16x16 Squaring
 */
-void bigint_comba_sqr16(word[32]* z, in word[16]* x)
+void bigint_comba_sqr16(ref word[32] z, in word[16] x)
 {
 	word w2 = 0, w1 = 0, w0 = 0;
 	
@@ -1212,7 +1197,7 @@ void bigint_comba_sqr16(word[32]* z, in word[16]* x)
 /*
 * Comba 16x16 Multiplication
 */
-void bigint_comba_mul16(word[32]* z, in word[16]* x, in word[16]* y)
+void bigint_comba_mul16(ref word[32] z, in word[16] x, in word[16] y)
 {
 	word w2 = 0, w1 = 0, w0 = 0;
 	
@@ -1536,9 +1521,6 @@ void bigint_comba_mul16(word[32]* z, in word[16]* x, in word[16]* y)
 	z[31] = w1;
 }
 
-
-
-
 /*
 * Word Multiply/Add
 */
@@ -1549,7 +1531,7 @@ word word_madd2(word a, word b, word* c)
 		*c = cast(word)(s >> BOTAN_MP_WORD_BITS);
 		return cast(word)(s);
 	} else {
-		static_assert(BOTAN_MP_WORD_BITS == 64, "Unexpected word size");
+		static assert(BOTAN_MP_WORD_BITS == 64, "Unexpected word size");
 		
 		word[2] res;
 		
@@ -1573,7 +1555,7 @@ word word_madd3(word a, word b, word c, word* d)
 		*d = cast(word)(s >> BOTAN_MP_WORD_BITS);
 		return cast(word)(s);
 	} else {
-		static_assert(BOTAN_MP_WORD_BITS == 64, "Unexpected word size");
+		static assert(BOTAN_MP_WORD_BITS == 64, "Unexpected word size");
 		
 		word[2] res = 0;
 		
@@ -1606,7 +1588,7 @@ word word_add(word x, word y, word* carry)
 /*
 * Eight Word Block Addition, Two Argument
 */
-word word8_add2(word[8]* x, in word[8]* y, word carry)
+word word8_add2(ref word[8] x, in word[8] y, word carry)
 {
 	x[0] = word_add(x[0], y[0], &carry);
 	x[1] = word_add(x[1], y[1], &carry);
@@ -1622,7 +1604,7 @@ word word8_add2(word[8]* x, in word[8]* y, word carry)
 /*
 * Eight Word Block Addition, Three Argument
 */
-word word8_add3(word[8]* z, in word[8]* x, in word[8]* y, word carry)
+word word8_add3(ref word[8] z, in word[8] x, in word[8] y, word carry)
 {
 	z[0] = word_add(x[0], y[0], &carry);
 	z[1] = word_add(x[1], y[1], &carry);
@@ -1650,7 +1632,7 @@ word word_sub(word x, word y, word* carry)
 /*
 * Eight Word Block Subtraction, Two Argument
 */
-word word8_sub2(word[8]* x, in word[8]* y, word carry)
+word word8_sub2(ref word[8] x, in word[8] y, word carry)
 {
 	x[0] = word_sub(x[0], y[0], &carry);
 	x[1] = word_sub(x[1], y[1], &carry);
@@ -1666,7 +1648,7 @@ word word8_sub2(word[8]* x, in word[8]* y, word carry)
 /*
 * Eight Word Block Subtraction, Two Argument
 */
-word word8_sub2_rev(word[8]* x, in word[8]* y, word carry)
+word word8_sub2_rev(ref word[8] x, in word[8] y, word carry)
 {
 	x[0] = word_sub(y[0], x[0], &carry);
 	x[1] = word_sub(y[1], x[1], &carry);
@@ -1682,7 +1664,7 @@ word word8_sub2_rev(word[8]* x, in word[8]* y, word carry)
 /*
 * Eight Word Block Subtraction, Three Argument
 */
-word word8_sub3(word[8]* z, in word[8]* x, in word[8]* y, word carry)
+word word8_sub3(ref word[8] z, in word[8] x, in word[8] y, word carry)
 {
 	z[0] = word_sub(x[0], y[0], &carry);
 	z[1] = word_sub(x[1], y[1], &carry);
@@ -1698,7 +1680,7 @@ word word8_sub3(word[8]* z, in word[8]* x, in word[8]* y, word carry)
 /*
 * Eight Word Block Linear Multiplication
 */
-word word8_linmul2(word[8]* x, word y, word carry)
+word word8_linmul2(ref word[8] x, word y, word carry)
 {
 	x[0] = word_madd2(x[0], y, &carry);
 	x[1] = word_madd2(x[1], y, &carry);
@@ -1714,7 +1696,7 @@ word word8_linmul2(word[8]* x, word y, word carry)
 /*
 * Eight Word Block Linear Multiplication
 */
-word word8_linmul3(word[8]* z, in word[8]* x, word y, word carry)
+word word8_linmul3(ref word[8] z, in word[8] x, word y, word carry)
 {
 	z[0] = word_madd2(x[0], y, &carry);
 	z[1] = word_madd2(x[1], y, &carry);
@@ -1730,7 +1712,7 @@ word word8_linmul3(word[8]* z, in word[8]* x, word y, word carry)
 /*
 * Eight Word Block Multiply/Add
 */
-word word8_madd3(word[8]* z, in word[8]* x, word y, word carry)
+word word8_madd3(ref word[8] z, in word[8] x, word y, word carry)
 {
 	z[0] = word_madd3(x[0], y, z[0], &carry);
 	z[1] = word_madd3(x[1], y, z[1], &carry);
@@ -1780,17 +1762,16 @@ __gshared immutable size_t KARATSUBA_SQUARE_THRESHOLD = 32;
 /*
 * Karatsuba Multiplication Operation
 */
-void karatsuba_mul(word* z, in word* x, in word* y, size_t N,
-                   word* workspace)
+void karatsuba_mul(word* z, in word* x, in word* y, size_t N, word* workspace)
 {
 	if (N < KARATSUBA_MULTIPLY_THRESHOLD || N % 2)
 	{
 		if (N == 6)
-			return bigint_comba_mul6(z, x, y);
+			return bigint_comba_mul6(*cast(word[12]*) z, *cast(word[6]*) x, *cast(word[6]*) y);
 		else if (N == 8)
-			return bigint_comba_mul8(z, x, y);
+			return bigint_comba_mul8(*cast(word[16]*) z, *cast(word[8]*) x, *cast(word[8]*) y);
 		else if (N == 16)
-			return bigint_comba_mul16(z, x, y);
+			return bigint_comba_mul16(*cast(word[32]*) z, *cast(word[16]*) x, *cast(word[16]*) y);
 		else
 			return bigint_simple_mul(z, x, N, y, N);
 	}
@@ -1847,11 +1828,11 @@ void karatsuba_sqr(word* z, in word* x, size_t N, word* workspace)
 	if (N < KARATSUBA_SQUARE_THRESHOLD || N % 2)
 	{
 		if (N == 6)
-			return bigint_comba_sqr6(z, x);
+			return bigint_comba_sqr6(*cast(word[12]*) z, *cast(word[6]*) x);
 		else if (N == 8)
-			return bigint_comba_sqr8(z, x);
+			return bigint_comba_sqr8(*cast(word[16]*) z, *cast(word[8]*) x);
 		else if (N == 16)
-			return bigint_comba_sqr16(z, x);
+			return bigint_comba_sqr16(*cast(word[32]*) z, *cast(word[16]*) x);
 		else
 			return bigint_simple_sqr(z, x, N);
 	}

@@ -26,7 +26,7 @@ private:
 	{
 		foreach (size_t i; 0 .. blocks)
 		{
-			botan_sha160_x86_64_compress(m_digest.ptr, input, W.ptr);
+			botan_sha160_x86_64_compress(m_digest.ptr, input, m_W.ptr);
 			input += hash_block_size;
 		}
 	}
@@ -35,7 +35,7 @@ private:
 private:
 pure:
 
-void botan_sha160_x86_64_compress(uint[5]* arg1, const ubyte[64]* arg2, uint[80]* arg3)
+void botan_sha160_x86_64_compress(uint* arg1, const ubyte* arg2, uint* arg3)
 {
 	/* defined later
 	 	enum A = "R8D";

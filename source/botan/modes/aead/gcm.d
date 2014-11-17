@@ -311,10 +311,10 @@ private:
 	{
 		static if (BOTAN_HAS_GCM_CLMUL) {
 			if (CPUID.has_clmul())
-				return gcm_multiply_clmul(x.ptr, m_H.ptr);
+				return gcm_multiply_clmul(*cast(ubyte[16]*) x.ptr, *cast(ubyte[16]*) m_H.ptr);
 		}
 		
-		static const ulong R = 0xE100000000000000;
+		__gshared immutable ulong R = 0xE100000000000000;
 
 		ulong[2] H = [ load_be!ulong(m_H.ptr, 0), load_be!ulong(m_H.ptr, 1) ];
 		
@@ -344,8 +344,7 @@ private:
 		store_be!ulong(x.ptr, Z[0], Z[1]);
 	}
 
-	void ghash_update(Secure_Vector!ubyte ghash,
-	                  in ubyte* input, size_t length)
+	void ghash_update(Secure_Vector!ubyte ghash, in ubyte* input, size_t length)
 	{
 		__gshared immutable size_t BS = 16;
 		
@@ -381,7 +380,7 @@ private:
 	size_t m_ad_len = 0, m_text_len = 0;
 }
 
-void gcm_multiply_clmul(ubyte[16]* x, in ubyte[16]* H) pure
+void gcm_multiply_clmul(ref ubyte[16] x, in ubyte[16] H) pure
 {
 	/*
 	* Algorithms 1 and 5 from Intel's CLMUL guide

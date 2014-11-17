@@ -25,7 +25,7 @@ public:
 	{
 		while (blocks >= 4)
 		{
-			xtea_encrypt_4(input, output, m_EK.ptr);
+			xtea_encrypt_4(*cast(ubyte[32]*) input, *cast(ubyte[32]*) output, *cast(uint[64]*) m_EK.ptr);
 			input += 4 * BLOCK_SIZE;
 			output += 4 * BLOCK_SIZE;
 			blocks -= 4;
@@ -56,7 +56,7 @@ public:
 	{
 		while (blocks >= 4)
 		{
-			xtea_decrypt_4(input, output, m_EK.ptr);
+			xtea_decrypt_4(*cast(ubyte[32]*) input, *cast(ubyte[32]*) output, *cast(uint[64]*) m_EK.ptr);
 			input += 4 * BLOCK_SIZE;
 			output += 4 * BLOCK_SIZE;
 			blocks -= 4;
@@ -120,7 +120,7 @@ private:
 package:
 pure:
 
-void xtea_encrypt_4(const ubyte[32]* input, ubyte[32]* output, in uint[64]* EK)
+void xtea_encrypt_4(in ubyte[32] input, ref ubyte[32] output, in uint[64] EK)
 {
 	uint L0, R0, L1, R1, L2, R2, L3, R3;
 	load_be(input, L0, R0, L1, R1, L2, R2, L3, R3);
@@ -141,7 +141,7 @@ void xtea_encrypt_4(const ubyte[32]* input, ubyte[32]* output, in uint[64]* EK)
 	store_be(output, L0, R0, L1, R1, L2, R2, L3, R3);
 }
 
-void xtea_decrypt_4(const ubyte[32]* input, ubyte[32]* output, in uint[64]* EK)
+void xtea_decrypt_4(in ubyte[32] input, ref ubyte[32] output, in uint[64] EK)
 {
 	uint L0, R0, L1, R1, L2, R2, L3, R3;
 	load_be(input, L0, R0, L1, R1, L2, R2, L3, R3);

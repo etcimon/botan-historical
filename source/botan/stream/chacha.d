@@ -13,6 +13,7 @@ import botan.stream.stream_cipher;
 import botan.utils.loadstor;
 import botan.utils.rotate;
 import botan.utils.xor_buf;
+import botan.utils.types;
 
 /**
 * DJB's ChaCha (http://cr.yp.to/chacha.html)
@@ -31,7 +32,7 @@ public:
 			length -= (m_buffer.length - m_position);
 			input += (m_buffer.length - m_position);
 			output += (m_buffer.length - m_position);
-			chacha(m_buffer.ptr, m_state.ptr);
+			chacha(*cast(ubyte[64]*) m_buffer.ptr, *cast(ubyte[64]*) m_state.ptr);
 			
 			++m_state[12];
 			m_state[13] += (m_state[12] == 0);
@@ -58,7 +59,7 @@ public:
 		m_state[14] = load_le!uint(iv, 0);
 		m_state[15] = load_le!uint(iv, 1);
 		
-		chacha(m_buffer.ptr, m_state.ptr);
+		chacha(*cast(ubyte[64]*) m_buffer.ptr, *cast(ubyte[64]*) m_state.ptr);
 		++m_state[12];
 		m_state[13] += (m_state[12] == 0);
 		
@@ -94,7 +95,7 @@ public:
 	StreamCipher clone() const { return new ChaCha; }
 protected:
 
-	void chacha(ubyte[64]* output, const uint[16]* input)
+	void chacha(ref ubyte[64] output, in uint[16] input)
 	{
 		uint x00 = input[ 0], x01 = input[ 1], x02 = input[ 2], x03 = input[ 3],
 			x04 = input[ 4], x05 = input[ 5], x06 = input[ 6], x07 = input[ 7],
@@ -116,22 +117,22 @@ protected:
 			      );
 		}
 		
-		store_le(x00 + input[ 0], output + 4 *  0);
-		store_le(x01 + input[ 1], output + 4 *  1);
-		store_le(x02 + input[ 2], output + 4 *  2);
-		store_le(x03 + input[ 3], output + 4 *  3);
-		store_le(x04 + input[ 4], output + 4 *  4);
-		store_le(x05 + input[ 5], output + 4 *  5);
-		store_le(x06 + input[ 6], output + 4 *  6);
-		store_le(x07 + input[ 7], output + 4 *  7);
-		store_le(x08 + input[ 8], output + 4 *  8);
-		store_le(x09 + input[ 9], output + 4 *  9);
-		store_le(x10 + input[10], output + 4 * 10);
-		store_le(x11 + input[11], output + 4 * 11);
-		store_le(x12 + input[12], output + 4 * 12);
-		store_le(x13 + input[13], output + 4 * 13);
-		store_le(x14 + input[14], output + 4 * 14);
-		store_le(x15 + input[15], output + 4 * 15);
+		store_le(x00 + input[ 0], output.ptr + 4 *  0);
+		store_le(x01 + input[ 1], output.ptr + 4 *  1);
+		store_le(x02 + input[ 2], output.ptr + 4 *  2);
+		store_le(x03 + input[ 3], output.ptr + 4 *  3);
+		store_le(x04 + input[ 4], output.ptr + 4 *  4);
+		store_le(x05 + input[ 5], output.ptr + 4 *  5);
+		store_le(x06 + input[ 6], output.ptr + 4 *  6);
+		store_le(x07 + input[ 7], output.ptr + 4 *  7);
+		store_le(x08 + input[ 8], output.ptr + 4 *  8);
+		store_le(x09 + input[ 9], output.ptr + 4 *  9);
+		store_le(x10 + input[10], output.ptr + 4 * 10);
+		store_le(x11 + input[11], output.ptr + 4 * 11);
+		store_le(x12 + input[12], output.ptr + 4 * 12);
+		store_le(x13 + input[13], output.ptr + 4 * 13);
+		store_le(x14 + input[14], output.ptr + 4 * 14);
+		store_le(x15 + input[15], output.ptr + 4 * 15);
 	}
 
 private:
@@ -144,7 +145,7 @@ private:
 		
 		__gshared immutable uint[] SIGMA = [ 0x61707865, 0x3320646e, 0x79622d32, 0x6b206574 ];
 		
-		const uint* CONSTANTS = (length == 16) ? TAU : SIGMA;
+		const uint[] CONSTANTS = (length == 16) ? TAU : SIGMA;
 		
 		m_state.resize(16);
 		m_buffer.resize(64);
@@ -170,7 +171,7 @@ private:
 		m_position = 0;
 		
 		const ubyte[8] ZERO;
-		set_iv(ZERO, (ZERO).sizeof);
+		set_iv(ZERO, ZERO.length);
 	}
 
 

@@ -47,7 +47,7 @@ protected:
 	/**
 	* @return const reference to encryption subkeys
 	*/
-	const Secure_Vector!ushort get_EK() const { return EK; }
+	const Secure_Vector!ushort get_EK() const { return m_EK; }
 
 	/**
 	* @return const reference to decryption subkeys
@@ -60,8 +60,8 @@ private:
 	*/
 	void key_schedule(in ubyte* key, size_t)
 	{
-		EK.resize(52);
-		DK.resize(52);
+		m_EK.resize(52);
+		m_DK.resize(52);
 		
 		foreach (size_t i; 0 .. 8)
 			m_EK[i] = load_be!ushort(key, i);
@@ -69,7 +69,7 @@ private:
 		for (size_t i = 1, j = 8, offset = 0; j != 52; i %= 8, ++i, ++j)
 		{
 			m_EK[i+7+offset] = cast(ushort)((m_EK[(i	  % 8) + offset] << 9) |
-			                              (m_EK[((i+1) % 8) + offset] >> 7));
+			                              	(m_EK[((i+1) % 8) + offset] >> 7));
 			offset += (i == 8) ? 8 : 0;
 		}
 		
