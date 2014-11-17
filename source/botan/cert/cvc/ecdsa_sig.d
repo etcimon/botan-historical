@@ -16,7 +16,7 @@ class ECDSA_Signature
 {
 public:
 	this() {}
-	this(in BigInt r, const ref BigInt s) {
+	this(in BigInt r, in BigInt s) {
 		m_r = r;
 		m_s = s;
 	}
@@ -24,15 +24,15 @@ public:
 	this(in Vector!ubyte ber)
 	{
 		BER_Decoder(ber)
-			.start_cons(ASN1_Tag.SEQUENCE)
+				.start_cons(ASN1_Tag.SEQUENCE)
 				.decode(m_r)
 				.decode(m_s)
 				.end_cons()
 				.verify_end();
 	}
 
-	const ref BigInt get_r() const { return m_r; }
-	const ref BigInt get_s() const { return m_s; }
+	const BigInt get_r() const { return m_r; }
+	const BigInt get_s() const { return m_s; }
 
 	/**
 	* return the r||s
@@ -46,14 +46,14 @@ public:
 		const auto sv_s = BigInt.encode_1363(m_s, enc_len);
 		
 		Secure_Vector!ubyte result = Secure_Vector!ubyte(sv_r);
-		result += sv_s;
+		result ~= sv_s;
 		return unlock(result);
 	}
 
 	Vector!ubyte DER_encode() const
 	{
 		return DER_Encoder()
-			.start_cons(ASN1_Tag.SEQUENCE)
+				.start_cons(ASN1_Tag.SEQUENCE)
 				.encode(get_r())
 				.encode(get_s())
 				.end_cons()
@@ -66,7 +66,7 @@ public:
 		return (get_r() == other.get_r() && get_s() == other.get_s());
 	}
 
-	bool opCmp(string op)(const ref ECDSA_Signature rhs)
+	bool opCmp(string op)(in ECDSA_Signature rhs)
 		if (op == "!=")
 	{
 		return !(this == rhs);
@@ -84,7 +84,7 @@ ECDSA_Signature decode_concatenation(in Vector!ubyte concat)
 	
 	const size_t rs_len = concat.length / 2;
 	
-	BigInt r = BigInt.decode(&concat[0], rs_len);
+	BigInt r = BigInt.decode(concat.ptr, rs_len);
 	BigInt s = BigInt.decode(&concat[rs_len], rs_len);
 	
 	return ECDSA_Signature(r, s);

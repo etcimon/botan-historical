@@ -10,6 +10,7 @@ import botan.filters.filter;
 import botan.codec.base64;
 import botan.utils.charset;
 import botan.utils.exceptn;
+import botan.utils.types;
 import std.algorithm;
 
 /**
@@ -30,16 +31,16 @@ public:
 		buffer_insert(m_input, m_position, input, length);
 		if (m_position + length >= m_input.length)
 		{
-			encode_and_send(&m_input[0], m_input.length);
+			encode_and_send(m_input.ptr, m_input.length);
 			input += (m_input.length - m_position);
 			length -= (m_input.length - m_position);
-			while(length >= m_input.length)
+			while (length >= m_input.length)
 			{
 				encode_and_send(input, m_input.length);
 				input += m_input.length;
 				length -= m_input.length;
 			}
-			copy_mem(&m_input[0], input, length);
+			copy_mem(m_input.ptr, input, length);
 			m_position = 0;
 		}
 		m_position += length;
@@ -51,7 +52,7 @@ public:
 	*/
 	void end_msg()
 	{
-		encode_and_send(&m_input[0], m_position, true);
+		encode_and_send(m_input.ptr, m_position, true);
 		
 		if (m_trailing_newline || (m_out_position && m_line_length))
 			send('\n');
@@ -82,15 +83,15 @@ private:
 	void encode_and_send(in ubyte* input, size_t length,
 	                     bool final_inputs = false)
 	{
-		while(length)
+		while (length)
 		{
 			const size_t proc = std.algorithm.min(length, input.length);
 			
 			size_t consumed = 0;
-			size_t produced = base64_encode(cast(char*)(&m_output[0]), input,
+			size_t produced = base64_encode(cast(char*)(m_output.ptr), input,
 			                                proc, consumed, final_inputs);
 			
-			do_output(&m_output[0], produced);
+			do_output(m_output.ptr, produced);
 			
 			// FIXME: s/proc/consumed/?
 			input += proc;
@@ -108,7 +109,7 @@ private:
 		else
 		{
 			size_t remaining = length, offset = 0;
-			while(remaining)
+			while (remaining)
 			{
 				size_t sent = std.algorithm.min(m_line_length - m_out_position, remaining);
 				send(input + offset, sent);
@@ -146,25 +147,25 @@ public:
 	*/
 	void write(in ubyte* input, size_t length)
 	{
-		while(length)
+		while (length)
 		{
 			size_t to_copy = std.algorithm.min(length, m_input.length - m_position);
 			copy_mem(&m_input[m_position], input, to_copy);
 			m_position += to_copy;
 			
 			size_t consumed = 0;
-			size_t written = base64_decode(&m_output[0],
-								cast(string)(m_input[0]),
-								m_position,
-								consumed,
-								false,
-								m_checking != FULL_CHECK);
+			size_t written = base64_decode(m_output.ptr,
+			                               cast(const(char)*)(m_input.ptr),
+			                               m_position,
+			                               consumed,
+			                               false,
+			                               m_checking != FULL_CHECK);
 			
 			send(m_output, written);
 			
 			if (consumed != m_position)
 			{
-				copy_mem(&m_input[0], &m_input[consumed], m_position - consumed);
+				copy_mem(m_input.ptr, &m_input[consumed], m_position - consumed);
 				m_position = m_position - consumed;
 			}
 			else
@@ -181,12 +182,12 @@ public:
 	void end_msg()
 	{
 		size_t consumed = 0;
-		size_t written = base64_decode(&m_output[0],
-										cast(string)(m_input[0]),
-										m_position,
-										consumed,
-										true,
-										m_checking != FULL_CHECK);
+		size_t written = base64_decode(m_output.ptr,
+		                               cast(const(char)*)(m_input.ptr),
+		                               m_position,
+		                               consumed,
+		                               true,
+		                               m_checking != FULL_CHECK);
 		
 		send(m_output, written);
 		

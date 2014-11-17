@@ -85,7 +85,7 @@ private:
 		
 		EM[output_length - HASH_SIZE - m_SALT_SIZE - 2] = 0x01;
 		buffer_insert(EM, output_length - 1 - HASH_SIZE - m_SALT_SIZE, salt);
-		mgf1_mask(*m_hash, &H[0], HASH_SIZE, &EM[0], output_length - HASH_SIZE - 1);
+		mgf1_mask(*m_hash, H.ptr, HASH_SIZE, EM.ptr, output_length - HASH_SIZE - 1);
 		EM[0] &= 0xFF >> (8 * ((output_bits + 7) / 8) - output_bits);
 		buffer_insert(EM, output_length - 1 - HASH_SIZE, H);
 		EM[output_length-1] = 0xBC;
@@ -126,13 +126,13 @@ private:
 		if (TOP_BITS > 8 - high_bit(coded[0]))
 			return false;
 		
-		ubyte* DB = &coded[0];
+		ubyte* DB = coded.ptr;
 		const size_t DB_size = coded.length - HASH_SIZE - 1;
 		
 		const ubyte* H = &coded[DB_size];
 		const size_t H_size = HASH_SIZE;
 		
-		mgf1_mask(*m_hash, &H[0], H_size, &DB[0], DB_size);
+		mgf1_mask(*m_hash, H.ptr, H_size, DB.ptr, DB_size);
 		DB[0] &= 0xFF >> TOP_BITS;
 		
 		size_t salt_offset = 0;
@@ -152,7 +152,7 @@ private:
 		m_hash.update(&DB[salt_offset], DB_size - salt_offset);
 		Secure_Vector!ubyte H2 = m_hash.flush();
 		
-		return same_mem(&H[0], &H2[0], HASH_SIZE);
+		return same_mem(H.ptr, H2.ptr, HASH_SIZE);
 	}
 
 	size_t m_SALT_SIZE;

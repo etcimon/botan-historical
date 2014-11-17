@@ -9,21 +9,21 @@ module botan.pbe.pbes2;
 import botan.constants;
 static if (BOTAN_HAS_PBE_PKCS_V20):
 
+import botan.asn1.der_enc;
+import botan.asn1.ber_dec;
+import botan.asn1.alg_id;
+import botan.asn1.oid_lookup.oids;
 import botan.pbe.pbe;
 import botan.block.block_cipher;
 import botan.mac.mac;
 import botan.filters.pipe;
-import std.datetime;
 import botan.pbkdf.pbkdf2;
 import botan.algo_factory.algo_factory;
 import botan.libstate.libstate;
-import botan.asn1.der_enc;
-import botan.asn1.ber_dec;
-import botan.utils.parsing;
-import botan.asn1.alg_id;
-import botan.asn1.oid_lookup.oids;
 import botan.libstate.lookup;
+import botan.utils.parsing;
 import botan.utils.types;
+import std.datetime;
 import std.algorithm;
 
 /**
@@ -170,7 +170,7 @@ public:
 		PKCS5_PBKDF2 pbkdf(m_prf.clone());
 		
 		key = pbkdf.derive_key(key_length, passphrase,
-		                       &salt[0], salt.length,
+		                       salt.ptr, salt.length,
 		iterations).bits_of();
 	}
 
@@ -197,7 +197,7 @@ public:
 		PKCS5_PBKDF2 pbkdf = PKCS5_PBKDF2(m_prf.clone());
 		
 		key = pbkdf.derive_key(key_length, passphrase,
-		                     	&salt[0], salt.length,
+		                     	salt.ptr, salt.length,
 								msec, iterations).bits_of();
 	}
 
@@ -216,9 +216,9 @@ private:
 			return;
 		
 		Secure_Vector!ubyte buffer = Secure_Vector!ubyte(DEFAULT_BUFFERSIZE);
-		while(pipe.remaining())
+		while (pipe.remaining())
 		{
-			const size_t got = pipe.read(&buffer[0], buffer.length);
+			const size_t got = pipe.read(buffer.ptr, buffer.length);
 			send(buffer, got);
 		}
 	}

@@ -25,8 +25,8 @@ import botan.utils.types;
 * @return key encrypted under kek
 */
 Secure_Vector!ubyte rfc3394_keywrap(in Secure_Vector!ubyte key,
-                                 const ref SymmetricKey kek,
-                                 Algorithm_Factory af)
+                                    in SymmetricKey kek,
+                                    Algorithm_Factory af)
 {
 	if (key.length % 8 != 0)
 		throw new Invalid_Argument("Bad input key size for NIST key wrap");
@@ -42,7 +42,7 @@ Secure_Vector!ubyte rfc3394_keywrap(in Secure_Vector!ubyte key,
 	foreach (size_t i; 0 .. 8)
 		A[i] = 0xA6;
 	
-	copy_mem(&R[8], &key[0], key.length);
+	copy_mem(&R[8], key.ptr, key.length);
 	
 	foreach (size_t j; 0 .. 5 + 1)
 	{
@@ -52,16 +52,16 @@ Secure_Vector!ubyte rfc3394_keywrap(in Secure_Vector!ubyte key,
 			
 			copy_mem(&A[8], &R[8*i], 8);
 			
-			aes.encrypt(&A[0]);
+			aes.encrypt(A.ptr);
 			copy_mem(&R[8*i], &A[8], 8);
 			
 			ubyte[4] t_buf;
-			store_be(t, t_buf);
-			xor_buf(&A[4], &t_buf[0], 4);
+			store_be(t, t_buf.ptr);
+			xor_buf(&A[4], t_buf.ptr, 4);
 		}
 	}
 	
-	copy_mem(&R[0], &A[0], 8);
+	copy_mem(R.ptr, A.ptr, 8);
 	
 	return R;
 }
@@ -76,8 +76,8 @@ Secure_Vector!ubyte rfc3394_keywrap(in Secure_Vector!ubyte key,
 * @return key decrypted under kek
 */
 Secure_Vector!ubyte rfc3394_keyunwrap(in Secure_Vector!ubyte key,
-                                   const ref SymmetricKey kek,
-                                   Algorithm_Factory af)
+                                      in SymmetricKey kek,
+                                      Algorithm_Factory af)
 {
 	if (key.length < 16 || key.length % 8 != 0)
 		throw new Invalid_Argument("Bad input key size for NIST key unwrap");
@@ -93,7 +93,7 @@ Secure_Vector!ubyte rfc3394_keyunwrap(in Secure_Vector!ubyte key,
 	foreach (size_t i; 0 .. 8)
 		A[i] = key[i];
 	
-	copy_mem(&R[0], &key[8], key.length - 8);
+	copy_mem(R.ptr, &key[8], key.length - 8);
 	
 	foreach (size_t j; 0 .. 5 + 1)
 	{
@@ -104,17 +104,17 @@ Secure_Vector!ubyte rfc3394_keyunwrap(in Secure_Vector!ubyte key,
 			ubyte[4] t_buf;
 			store_be(t, t_buf);
 			
-			xor_buf(&A[4], &t_buf[0], 4);
+			xor_buf(&A[4], t_buf.ptr, 4);
 			
 			copy_mem(&A[8], &R[8*(i-1)], 8);
 			
-			aes.decrypt(&A[0]);
+			aes.decrypt(A.ptr);
 			
 			copy_mem(&R[8*(i-1)], &A[8], 8);
 		}
 	}
 	
-	if (load_be!ulong(&A[0], 0) != 0xA6A6A6A6A6A6A6A6)
+	if (load_be!ulong(A.ptr, 0) != 0xA6A6A6A6A6A6A6A6)
 		throw new Integrity_Failure("NIST key unwrap failed");
 	
 	return R;
@@ -122,8 +122,7 @@ Secure_Vector!ubyte rfc3394_keyunwrap(in Secure_Vector!ubyte key,
 
 private:
 
-BlockCipher make_aes(size_t keylength,
-                     Algorithm_Factory af)
+BlockCipher make_aes(size_t keylength, Algorithm_Factory af)
 {
 	if (keylength == 16)
 		return af.make_block_cipher("AES-128");

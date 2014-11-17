@@ -51,20 +51,20 @@ public:
 
 	@property bool empty() const { return m_hostname.empty; }
 
-	bool opEquals(const ref Server_Information b)
+	bool opEquals(in Server_Information b)
 	{
 		return (hostname() == b.hostname()) &&
-			(service() == b.service()) &&
+				(service() == b.service()) &&
 				(port() == b.port());
 		
 	}
 
-	bool opCmp(string op)(const ref Server_Information b)
+	bool opCmp(string op)(in Server_Information b)
 	{
 		return !(this == b);
 	}
 
-	bool opCmp(string op)(const ref Server_Information b)
+	bool opCmp(string op)(in Server_Information b)
 		if (op == "<")
 	{
 		if (a.hostname() != b.hostname())

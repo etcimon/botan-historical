@@ -317,8 +317,8 @@ private:
 		}
 		
 		Secure_Vector!uint Z = Secure_Vector!uint(4);
-		auto x = scoped!ByteReader(&X[0]);
-		auto z = scoped!ByteReader(&Z[0]);
+		auto x = scoped!ByteReader(X.ptr);
+		auto z = scoped!ByteReader(Z.ptr);
 		Z[0]  = X[0] ^ S5[x(13)] ^ S6[x(15)] ^ S7[x(12)] ^ S8[x(14)] ^ S7[x( 8)];
 		Z[1]  = X[2] ^ S5[z( 0)] ^ S6[z( 2)] ^ S7[z( 1)] ^ S8[z( 3)] ^ S8[x(10)];
 		Z[2]  = X[3] ^ S5[z( 7)] ^ S6[z( 6)] ^ S7[z( 5)] ^ S8[z( 4)] ^ S5[x( 9)];

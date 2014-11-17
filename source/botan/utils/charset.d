@@ -58,7 +58,7 @@ string utf8_to_latin1(in string utf8)
 	Appender!string iso8859;
 	iso8859.reserve(utf8.length);
 	size_t position = 0;
-	while(position != utf8.length)
+	while (position != utf8.length)
 	{
 		const ubyte c1 = cast(ubyte)(utf8[position++]);
 		

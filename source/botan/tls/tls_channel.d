@@ -45,7 +45,7 @@ public:
 		
 		try
 		{
-			while(!is_closed() && input_size)
+			while (!is_closed() && input_size)
 			{
 				Secure_Vector!ubyte record;
 				ulong record_sequence = 0;
@@ -91,7 +91,7 @@ public:
 					                                          record_type,
 					                                          record_sequence);
 					
-					while(true)
+					while (true)
 					{
 						if (Handshake_State pending = *m_pending_state) {
 							auto msg = pending.get_next_handshake_msg();
@@ -118,7 +118,7 @@ public:
 						if (!pending_state())
 						{
 							Heartbeat_Message response = Heartbeat_Message(Heartbeat_Message.RESPONSE,
-							                           &payload[0], payload.length);
+							                           payload.ptr, payload.length);
 							
 							send_record(HEARTBEAT, response.contents());
 						}
@@ -200,7 +200,7 @@ public:
 	*/
 	size_t received_data(in Vector!ubyte buf)
 	{
-		return this.received_data(&buf[0], buf.length);
+		return this.received_data(buf.ptr, buf.length);
 	}
 
 	/**
@@ -229,7 +229,7 @@ public:
 	*/
 	void send(Alloc)(in Vector!( char, Alloc ) val)
 	{
-		send(&val[0], val.length);
+		send(val.ptr, val.length);
 	}
 
 	/**
@@ -663,13 +663,13 @@ private:
 	void send_record(ubyte record_type, in Vector!ubyte record)
 	{
 		send_record_array(sequence_numbers().current_write_epoch(),
-		                  record_type, &record[0], record.length);
+		                  record_type, record.ptr, record.length);
 	}
 
 	void send_record_under_epoch(ushort epoch, ubyte record_type,
 	                             in Vector!ubyte record)
 	{
-		send_record_array(epoch, record_type, &record[0], record.length);
+		send_record_array(epoch, record_type, record.ptr, record.length);
 	}
 
 	void send_record_array(ushort epoch, ubyte type, in ubyte* input, size_t length)
@@ -693,17 +693,17 @@ private:
 		
 		if (type == APPLICATION_DATA && cipher_state.cbc_without_explicit_iv())
 		{
-			write_record(cipher_state, type, &input[0], 1);
+			write_record(cipher_state, type, input.ptr, 1);
 			input += 1;
 			length -= 1;
 		}
 		
 		const size_t max_fragment_size = maximum_fragment_size();
 		
-		while(length)
+		while (length)
 		{
 			const size_t sending = std.algorithm.min(length, max_fragment_size);
-			write_record(cipher_state, type, &input[0], sending);
+			write_record(cipher_state, type, input.ptr, sending);
 			
 			input += sending;
 			length -= sending;

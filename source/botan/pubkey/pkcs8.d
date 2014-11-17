@@ -257,7 +257,7 @@ Secure_Vector!ubyte PKCS8_decode(
 	__gshared immutable size_t MAX_TRIES = 3;
 	
 	size_t tries = 0;
-	while(true)
+	while (true)
 	{
 		try {
 			if (MAX_TRIES && tries >= MAX_TRIES)

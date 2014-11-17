@@ -109,7 +109,7 @@ void P_hash(Secure_Vector!ubyte output,
 	
 	size_t offset = 0;
 	
-	while(offset != output.length)
+	while (offset != output.length)
 	{
 		const size_t this_block_len = std.algorithm.min(mac.output_length, output.length - offset);
 		
@@ -119,7 +119,7 @@ void P_hash(Secure_Vector!ubyte output,
 		mac.update(seed, seed_len);
 		Secure_Vector!ubyte block = mac.flush();
 		
-		xor_buf(&output[offset], &block[0], this_block_len);
+		xor_buf(&output[offset], block.ptr, this_block_len);
 		offset += this_block_len;
 	}
 }

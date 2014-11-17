@@ -178,7 +178,7 @@ private:
 			0xFE, 0x7F, 0xC1, 0xAD ];
 		
 		Secure_Vector!ubyte L = Secure_Vector!ubyte(128);
-		copy_mem(&L[0], key, length);
+		copy_mem(L.ptr, key, length);
 		
 		foreach (size_t i; length .. 128)
 			L[i] = TABLE[(L[i-1] + L[i-length]) % 256];
@@ -189,7 +189,7 @@ private:
 			L[i] = TABLE[L[i+1] ^ L[i+length]];
 		
 		m_K.resize(64);
-		load_le!ushort(&m_K[0], &L[0], 64);
+		load_le!ushort(m_K.ptr, L.ptr, 64);
 	}
 
 	Secure_Vector!ushort m_K;

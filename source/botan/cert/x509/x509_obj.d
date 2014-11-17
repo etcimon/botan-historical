@@ -190,7 +190,7 @@ protected:
 	*/
 	this(in Vector!ubyte vec, in string labels)
 	{
-		auto stream = scoped!DataSource_Memory(&vec[0], vec.length);
+		auto stream = scoped!DataSource_Memory(vec.ptr, vec.length);
 		init(stream, labels);
 	}
 

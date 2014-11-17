@@ -82,7 +82,7 @@ string bcrypt_base64_encode(in ubyte* input, size_t length)
 	
 	string b64 = base64_encode(input, length);
 	
-	while(b64.length && b64[b64.length-1] == '=')
+	while (b64.length && b64[b64.length-1] == '=')
 		b64 = b64[0 .. $];
 	
 	foreach (size_t i; 0 .. b64.length)
@@ -139,18 +139,18 @@ string make_bcrypt(in string pass,
 	Blowfish blowfish;
 	
 	// Include the trailing NULL ubyte
-	blowfish.eks_key_schedule(cast(const ubyte*) pass.toStringz, pass.length + 1, &salt[0],
+	blowfish.eks_key_schedule(cast(const ubyte*) pass.toStringz, pass.length + 1, salt.ptr,
 	work_factor);
 	
 	foreach (size_t i; 0 .. 64)
-		blowfish.encrypt_n(&ctext[0], &ctext[0], 3);
+		blowfish.encrypt_n(ctext.ptr, ctext.ptr, 3);
 	
-	string salt_b64 = bcrypt_base64_encode(&salt[0], salt.length);
+	string salt_b64 = bcrypt_base64_encode(salt.ptr, salt.length);
 	
 	string work_factor_str = to!string(work_factor);
 	if (work_factor_str.length == 1)
 		work_factor_str = "0" ~ work_factor_str;
 	
-	return "$2a$" ~ work_factor_str ~ "$" ~ salt_b64[0 .. 22] ~ bcrypt_base64_encode(&ctext[0], ctext.length - 1);
+	return "$2a$" ~ work_factor_str ~ "$" ~ salt_b64[0 .. 22] ~ bcrypt_base64_encode(ctext.ptr, ctext.length - 1);
 }
 

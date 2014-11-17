@@ -40,10 +40,10 @@ public:
 	{
 		Vector!ubyte readbuf = Vector!ubyte(BOTAN_DEFAULT_BUFFER_SIZE);
 		
-		while(!m_channel.is_closed() && !m_channel.is_active())
+		while (!m_channel.is_closed() && !m_channel.is_active())
 		{
 			const size_t from_socket = m_read_fn(readbuf[]);
-			m_channel.received_data(&readbuf[0], from_socket);
+			m_channel.received_data(readbuf.ptr, from_socket);
 		}
 	}
 
@@ -60,10 +60,10 @@ public:
 	{
 		Vector!ubyte readbuf = Vector!ubyte(BOTAN_DEFAULT_BUFFER_SIZE);
 		
-		while(m_plaintext.empty && !m_channel.is_closed())
+		while (m_plaintext.empty && !m_channel.is_closed())
 		{
-			const size_t from_socket = m_read_fn(&readbuf[0], readbuf.length);
-			m_channel.received_data(&readbuf[0], from_socket);
+			const size_t from_socket = m_read_fn(readbuf.ptr, readbuf.length);
+			m_channel.received_data(readbuf.ptr, from_socket);
 		}
 		
 		const size_t returned = std.algorithm.min(buf_len, m_plaintext.length);

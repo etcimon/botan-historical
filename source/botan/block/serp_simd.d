@@ -27,7 +27,7 @@ public:
 	{
 		const uint* KS = &(this.get_round_keys()[0]);
 		
-		while(blocks >= 4)
+		while (blocks >= 4)
 		{
 			serpent_encrypt_4(input, output, KS);
 			input += 4 * BLOCK_SIZE;
@@ -46,7 +46,7 @@ public:
 	{
 		const uint* KS = &(this.get_round_keys()[0]);
 		
-		while(blocks >= 4)
+		while (blocks >= 4)
 		{
 			serpent_decrypt_4(input, output, KS);
 			input += 4 * BLOCK_SIZE;

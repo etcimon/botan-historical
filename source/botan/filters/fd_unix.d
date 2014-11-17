@@ -20,11 +20,11 @@ import core.sys.posix.unistd;
 /*int operator<<(int fd, Pipe& pipe)
 {
 	Secure_Vector!ubyte buffer = Secure_Vector!ubyte(DEFAULT_BUFFERSIZE);
-	while(pipe.remaining())
+	while (pipe.remaining())
 	{
-		size_t got = pipe.read(&buffer[0], buffer.length);
+		size_t got = pipe.read(buffer.ptr, buffer.length);
 		size_t position = 0;
-		while(got)
+		while (got)
 		{
 			ssize_t ret = write(fd, &buffer[position], got);
 			if (ret == -1)
@@ -45,13 +45,13 @@ import core.sys.posix.unistd;
 /*int opBinary(string op)(int fd, ref Pipe pipe)
 {
 	Secure_Vector!ubyte buffer = Secure_Vector!ubyte(DEFAULT_BUFFERSIZE);
-	while(true)
+	while (true)
 	{
-		ssize_t ret = read(fd, &buffer[0], buffer.length);
+		ssize_t ret = read(fd, buffer.ptr, buffer.length);
 		if (ret == 0) break;
 		if (ret == -1)
 			throw new Stream_IO_Error("Pipe input operator (unixfd) has failed");
-		pipe.write(&buffer[0], ret);
+		pipe.write(buffer.ptr, ret);
 	}
 	return fd;
 }

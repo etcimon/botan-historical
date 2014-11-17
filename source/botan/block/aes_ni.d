@@ -26,7 +26,7 @@ public:
 		const(__m128i)* in_mm = cast(const(__m128i)*)(input);
 		__m128i* out_mm = cast(__m128i*)(output);
 		
-		const(__m128i)* key_mm = cast(const(__m128i)*)(m_EK[0]);
+		const(__m128i)* key_mm = cast(const(__m128i)*)(m_EK.ptr);
 		
 		__m128i K0  = _mm_loadu_si128(key_mm);
 		__m128i K1  = _mm_loadu_si128(key_mm + 1);
@@ -40,7 +40,7 @@ public:
 		__m128i K9  = _mm_loadu_si128(key_mm + 9);
 		__m128i K10 = _mm_loadu_si128(key_mm + 10);
 		
-		while(blocks >= 4)
+		while (blocks >= 4)
 		{
 			__m128i B0 = _mm_loadu_si128(in_mm + 0);
 			__m128i B1 = _mm_loadu_si128(in_mm + 1);
@@ -102,7 +102,7 @@ public:
 		const(__m128i)* in_mm = cast(const(__m128i)*)(input);
 		__m128i* out_mm = cast(__m128i*)(output);
 		
-		const(__m128i)* key_mm = cast(const(__m128i)*)(m_DK[0]);
+		const(__m128i)* key_mm = cast(const(__m128i)*)(m_DK.ptr);
 		
 		__m128i K0  = _mm_loadu_si128(key_mm);
 		__m128i K1  = _mm_loadu_si128(key_mm + 1);
@@ -116,7 +116,7 @@ public:
 		__m128i K9  = _mm_loadu_si128(key_mm + 9);
 		__m128i K10 = _mm_loadu_si128(key_mm + 10);
 		
-		while(blocks >= 4)
+		while (blocks >= 4)
 		{
 			__m128i B0 = _mm_loadu_si128(in_mm + 0);
 			__m128i B1 = _mm_loadu_si128(in_mm + 1);
@@ -203,7 +203,7 @@ private:
 				__m128i K9  = ` ~  AES_128_key_exp!(K8, 0x1B)() ~ `
 		      	__m128i K10 = ` ~  AES_128_key_exp!(K9, 0x36)());
 		
-		__m128i* EK_mm = cast(__m128i*)(&m_EK[0]);
+		__m128i* EK_mm = cast(__m128i*)(m_EK.ptr);
 		_mm_storeu_si128(EK_mm	  , K0);
 		_mm_storeu_si128(EK_mm +  1, K1);
 		_mm_storeu_si128(EK_mm +  2, K2);
@@ -218,7 +218,7 @@ private:
 		
 		// Now generate decryption keys
 		
-		__m128i* DK_mm = cast(__m128i*)(&m_DK[0]);
+		__m128i* DK_mm = cast(__m128i*)(m_DK.ptr);
 		_mm_storeu_si128(DK_mm	  , K10);
 		_mm_storeu_si128(DK_mm +  1, _mm_aesimc_si128(K9));
 		_mm_storeu_si128(DK_mm +  2, _mm_aesimc_si128(K8));
@@ -252,7 +252,7 @@ public:
 		const(__m128i)* in_mm = cast(const(__m128i)*)(input);
 		__m128i* out_mm = cast(__m128i*)(output);
 		
-		const(__m128i)* key_mm = cast(const(__m128i)*)(m_EK[0]);
+		const(__m128i)* key_mm = cast(const(__m128i)*)(m_EK.ptr);
 		
 		__m128i K0  = _mm_loadu_si128(key_mm);
 		__m128i K1  = _mm_loadu_si128(key_mm + 1);
@@ -268,7 +268,7 @@ public:
 		__m128i K11 = _mm_loadu_si128(key_mm + 11);
 		__m128i K12 = _mm_loadu_si128(key_mm + 12);
 		
-		while(blocks >= 4)
+		while (blocks >= 4)
 		{
 			__m128i B0 = _mm_loadu_si128(in_mm + 0);
 			__m128i B1 = _mm_loadu_si128(in_mm + 1);
@@ -334,7 +334,7 @@ public:
 		const(__m128i)* in_mm = cast(const(__m128i)*)(input);
 		__m128i* out_mm = cast(__m128i*)(output);
 		
-		const(__m128i)* key_mm = cast(const(__m128i)*)(m_DK[0]);
+		const(__m128i)* key_mm = cast(const(__m128i)*)(m_DK.ptr);
 		
 		__m128i K0  = _mm_loadu_si128(key_mm);
 		__m128i K1  = _mm_loadu_si128(key_mm + 1);
@@ -350,7 +350,7 @@ public:
 		__m128i K11 = _mm_loadu_si128(key_mm + 11);
 		__m128i K12 = _mm_loadu_si128(key_mm + 12);
 		
-		while(blocks >= 4)
+		while (blocks >= 4)
 		{
 			__m128i B0 = _mm_loadu_si128(in_mm + 0);
 			__m128i B1 = _mm_loadu_si128(in_mm + 1);
@@ -433,7 +433,7 @@ private:
 		__m128i K1 = _mm_loadu_si128(cast(const(__m128i)*)(key + 8));
 		K1 = _mm_srli_si128(K1, 8);
 		
-		load_le(&m_EK[0], key, 6);
+		load_le(m_EK.ptr, key, 6);
 		
 		mixin(AES_192_key_exp!(0x01, 6)());
 		mixin(AES_192_key_exp!(0x02, 12)());
@@ -445,9 +445,9 @@ private:
 		mixin(AES_192_key_exp!(0x80, 48)());
 		
 		// Now generate decryption keys
-		const(__m128i)* EK_mm = cast(const(__m128i)*)(m_EK[0]);
+		const(__m128i)* EK_mm = cast(const(__m128i)*)(m_EK.ptr);
 		
-		__m128i* DK_mm = cast(__m128i*)(&m_DK[0]);
+		__m128i* DK_mm = cast(__m128i*)(m_DK.ptr);
 		_mm_storeu_si128(DK_mm	  , _mm_loadu_si128(EK_mm + 12));
 		_mm_storeu_si128(DK_mm +  1, _mm_aesimc_si128(_mm_loadu_si128(EK_mm + 11)));
 		_mm_storeu_si128(DK_mm +  2, _mm_aesimc_si128(_mm_loadu_si128(EK_mm + 10)));
@@ -483,7 +483,7 @@ public:
 		const(__m128i)* in_mm = cast(const(__m128i)*)(input);
 		__m128i* out_mm = cast(__m128i*)(output);
 		
-		const(__m128i)* key_mm = cast(const(__m128i)*)(m_EK[0]);
+		const(__m128i)* key_mm = cast(const(__m128i)*)(m_EK.ptr);
 		
 		__m128i K0  = _mm_loadu_si128(key_mm);
 		__m128i K1  = _mm_loadu_si128(key_mm + 1);
@@ -501,7 +501,7 @@ public:
 		__m128i K13 = _mm_loadu_si128(key_mm + 13);
 		__m128i K14 = _mm_loadu_si128(key_mm + 14);
 		
-		while(blocks >= 4)
+		while (blocks >= 4)
 		{
 			__m128i B0 = _mm_loadu_si128(in_mm + 0);
 			__m128i B1 = _mm_loadu_si128(in_mm + 1);
@@ -571,7 +571,7 @@ public:
 		const(__m128i)* in_mm = cast(const(__m128i)*)(input);
 		__m128i* out_mm = cast(__m128i*)(output);
 		
-		const(__m128i)* key_mm = cast(const(__m128i)*)(m_DK[0]);
+		const(__m128i)* key_mm = cast(const(__m128i)*)(m_DK.ptr);
 		
 		__m128i K0  = _mm_loadu_si128(key_mm);
 		__m128i K1  = _mm_loadu_si128(key_mm + 1);
@@ -589,7 +589,7 @@ public:
 		__m128i K13 = _mm_loadu_si128(key_mm + 13);
 		__m128i K14 = _mm_loadu_si128(key_mm + 14);
 		
-		while(blocks >= 4)
+		while (blocks >= 4)
 		{
 			__m128i B0 = _mm_loadu_si128(in_mm + 0);
 			__m128i B1 = _mm_loadu_si128(in_mm + 1);
@@ -694,7 +694,7 @@ private:
 		
 		__m128i K14 = aes_128_key_expansion(K12, _mm_aeskeygenassist_si128(K13, 0x40));
 		
-		__m128i* EK_mm = cast(__m128i*)(&m_EK[0]);
+		__m128i* EK_mm = cast(__m128i*)(m_EK.ptr);
 		_mm_storeu_si128(EK_mm	  , K0);
 		_mm_storeu_si128(EK_mm +  1, K1);
 		_mm_storeu_si128(EK_mm +  2, K2);
@@ -712,7 +712,7 @@ private:
 		_mm_storeu_si128(EK_mm + 14, K14);
 		
 		// Now generate decryption keys
-		__m128i* DK_mm = cast(__m128i*)(&m_DK[0]);
+		__m128i* DK_mm = cast(__m128i*)(m_DK.ptr);
 		_mm_storeu_si128(DK_mm	  , K14);
 		_mm_storeu_si128(DK_mm +  1, _mm_aesimc_si128(K13));
 		_mm_storeu_si128(DK_mm +  2, _mm_aesimc_si128(K12));

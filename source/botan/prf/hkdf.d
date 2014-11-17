@@ -59,7 +59,7 @@ public:
 		
 		Secure_Vector!ubyte T;
 		
-		while(output_len)
+		while (output_len)
 		{
 			m_prf.update(T);
 			m_prf.update(info, info_len);
@@ -67,7 +67,7 @@ public:
 			T = m_prf.flush();
 			
 			const size_t to_write = std.algorithm.min(T.length, output_len);
-			copy_mem(&output[0], &T[0], to_write);
+			copy_mem(output.ptr, T.ptr, to_write);
 			output += to_write;
 			output_len -= to_write;
 		}

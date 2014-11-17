@@ -77,7 +77,7 @@ private:
 		m_des1.encrypt(m_state);
 		input += xored;
 		length -= xored;
-		while(length >= 8)
+		while (length >= 8)
 		{
 			xor_buf(m_state, input, 8);
 			m_des1.encrypt(m_state);
@@ -96,7 +96,7 @@ private:
 	{
 		if (m_position)
 			m_des1.encrypt(m_state);
-		m_des2.decrypt(&m_state[0], mac);
+		m_des2.decrypt(m_state.ptr, mac);
 		m_des1.encrypt(mac);
 		zeroise(m_state);
 		m_position = 0;

@@ -10,7 +10,7 @@ public import botan.utils.exceptn;
 import botan.utils.parsing;
 import botan.codec.hex;
 import botan.utils.multimap;
-import botan.alloc.zeroize;
+import botan.utils.memory.zeroize;
 import functional;
 // import string;
 import botan.utils.types;
@@ -152,12 +152,12 @@ public:
 	*/
 	void add(in string key, in Secure_Vector!ubyte val)
 	{
-		add(key, hex_encode(&val[0], val.length));
+		add(key, hex_encode(val.ptr, val.length));
 	}
 	
 	void add(in string key, in Vector!ubyte val)
 	{
-		add(key, hex_encode(&val[0], val.length));
+		add(key, hex_encode(val.ptr, val.length));
 	}
 	
 	/*

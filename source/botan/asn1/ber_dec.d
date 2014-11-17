@@ -96,7 +96,7 @@ public:
 	BER_Decoder discard_remaining()
 	{
 		ubyte buf;
-		while(m_source.read_byte(buf))
+		while (m_source.read_byte(buf))
 			continue;
 		return this;
 	}
@@ -142,7 +142,7 @@ public:
 	{
 		output.clear();
 		ubyte buf;
-		while(m_source.read_byte(buf))
+		while (m_source.read_byte(buf))
 			output.push_back(buf);
 		return this;
 	}
@@ -151,7 +151,7 @@ public:
 	{
 		output.clear();
 		ubyte buf;
-		while(m_source.read_byte(buf))
+		while (m_source.read_byte(buf))
 			output.push_back(buf);
 		return this;
 	}
@@ -307,7 +307,7 @@ public:
 				throw new BER_Decoding_Error("Bad number of unused bits in BIT STRING");
 			
 			buffer.resize(obj.value.length - 1);
-			copy_mem(&buffer[0], &obj.value[1], obj.value.length - 1);
+			copy_mem(buffer.ptr, &obj.value[1], obj.value.length - 1);
 		}
 		return this;
 	}
@@ -330,7 +330,7 @@ public:
 				throw new BER_Decoding_Error("Bad number of unused bits in BIT STRING");
 			
 			buffer.resize(obj.value.length - 1);
-			copy_mem(&buffer[0], &obj.value[1], obj.value.length - 1);
+			copy_mem(buffer.ptr, &obj.value[1], obj.value.length - 1);
 		}
 		return this;
 	}
@@ -379,7 +379,7 @@ public:
 	BER_Decoder decode_optional(T)(ref T output,
 	                               ASN1_Tag type_tag,
 	                               ASN1_Tag class_tag,
-	                               const ref T default_value = T.init)
+	                               in T default_value = T.init)
 	{
 		BER_Object obj = get_next_object();
 		
@@ -405,13 +405,12 @@ public:
 	/*
 	* Decode an OPTIONAL or DEFAULT element
 	*/
-	BER_Decoder decode_optional_implicit(T)(
-		ref T output,
-		ASN1_Tag type_tag,
-		ASN1_Tag class_tag,
-		ASN1_Tag real_type,
-		ASN1_Tag real_class,
-		const ref T default_value = T.init)
+	BER_Decoder decode_optional_implicit(T)(ref T output,
+	                                        ASN1_Tag type_tag,
+											ASN1_Tag class_tag,
+											ASN1_Tag real_type,
+											ASN1_Tag real_class,
+											in T default_value = T.init)
 	{
 		BER_Object obj = get_next_object();
 		
@@ -441,7 +440,7 @@ public:
 	{
 		BER_Decoder list = start_cons(type_tag, class_tag);
 		
-		while(list.more_items())
+		while (list.more_items())
 		{
 			T value;
 			list.decode(value);
@@ -503,7 +502,7 @@ public:
 	{
 		Secure_Vector!ubyte out_vec;
 		decode(out_vec, ASN1_Tag.OCTET_STRING);
-		output = BigInt.decode(&out_vec[0], out_vec.length);
+		output = BigInt.decode(out_vec.ptr, out_vec.length);
 		return this;
 	}
 
@@ -545,7 +544,7 @@ public:
 	*/
 	this(in Vector!ubyte data)
 	{
-		m_source = new DataSource_Memory(&data[0], data.length);
+		m_source = new DataSource_Memory(data.ptr, data.length);
 		m_owns = true;
 		m_pushed.type_tag = m_pushed.class_tag = ASN1_Tag.NO_OBJECT;
 		m_parent = null;
@@ -608,7 +607,7 @@ size_t decode_tag(DataSource ber, ref ASN1_Tag type_tag, ref ASN1_Tag class_tag)
 	class_tag = ASN1_Tag(b & 0xE0);
 	
 	size_t tag_buf = 0;
-	while(true)
+	while (true)
 	{
 		if (!ber.read_byte(b))
 			throw new BER_Decoding_Error("Long-form tag truncated");
@@ -669,9 +668,9 @@ size_t find_eoc(DataSource ber)
 	Secure_Vector!ubyte buffer = Secure_Vector!ubyte(DEFAULT_BUFFERSIZE);
 	Secure_Vector!ubyte data;
 	
-	while(true)
+	while (true)
 	{
-		const size_t got = ber.peek(&buffer[0], buffer.length, data.length);
+		const size_t got = ber.peek(buffer.ptr, buffer.length, data.length);
 		if (got == 0)
 			break;
 		
@@ -682,7 +681,7 @@ size_t find_eoc(DataSource ber)
 	data.clear();
 	
 	size_t length = 0;
-	while(true)
+	while (true)
 	{
 		ASN1_Tag type_tag, class_tag;
 		size_t tag_size = decode_tag(m_source.Scoped_payload, type_tag, class_tag);

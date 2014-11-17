@@ -60,7 +60,7 @@ public:
 		const start = Clock.currTime();
 		size_t iterations_performed = 1;
 		
-		while(true)
+		while (true)
 		{
 			if (iterations == 0)
 			{
@@ -75,13 +75,13 @@ public:
 				break;
 			
 			m_hash.update(key);
-			m_hash.flushInto(&key[0]);
+			m_hash.flushInto(key.ptr);
 			
 			++iterations_performed;
 		}
 		
 		return Pair(iterations_performed,
-		            OctetString(&key[0], std.algorithm.min(key_len, key.length)));
+		            OctetString(key.ptr, std.algorithm.min(key_len, key.length)));
 	}
 private:
 	Unique!HashFunction m_hash;

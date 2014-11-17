@@ -21,12 +21,12 @@ public:
 	*/
 	BigInt blind(in BigInt i)
 	{
-		if (!reducer.initialized())
+		if (!m_reducer.initialized())
 			return i;
 		
-		m_e = reducer.square(e);
-		m_d = reducer.square(d);
-		return reducer.multiply(i, m_e);
+		m_e = m_reducer.square(e);
+		m_d = m_reducer.square(d);
+		return m_reducer.multiply(i, m_e);
 	}
 
 	/*
@@ -39,17 +39,17 @@ public:
 		return m_reducer.multiply(i, m_d);
 	}
 
-	bool initialized() const { return reducer.initialized(); }
+	bool initialized() const { return m_reducer.initialized(); }
 
 	this() {}
 
 	/**
 	* Construct a blinder
-	* @param mask the forward (blinding) mask
-	* @param inverse_mask the inverse of mask (depends on algo)
-	* @param modulus of the group operations are performed in
+	* @param e the forward (blinding) mask
+	* @param d the inverse of mask (depends on algo)
+	* @param n modulus of the group operations are performed in
 	*/
-	this(in BigInt e, const ref BigInt d, const ref BigInt n)
+	this(in BigInt e, in BigInt d, in BigInt n)
 	{
 		if (e < 1 || d < 1 || n < 1)
 			throw new Invalid_Argument("Blinder: Arguments too small");

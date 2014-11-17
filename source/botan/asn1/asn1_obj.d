@@ -12,7 +12,7 @@ public import botan.asn1.ber_dec;
 public import botan.asn1.alg_id;
 public import botan.filters.data_src;
 import botan.utils.parsing;
-import botan.alloc.zeroize;
+import botan.utils.memory.zeroize;
 import botan.utils.exceptn;
 import std.conv : to;
 

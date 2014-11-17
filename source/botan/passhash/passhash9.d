@@ -40,12 +40,12 @@ string generate_passhash9(in string pass,
 	auto kdf = scoped!PKCS5_PBKDF2(prf); // takes ownership of pointer
 	
 	Secure_Vector!ubyte salt = Secure_Vector!ubyte(SALT_BYTES);
-	rng.randomize(&salt[0], salt.length);
+	rng.randomize(salt.ptr, salt.length);
 	
 	const size_t kdf_iterations = WORK_FACTOR_SCALE * work_factor;
 	
 	Secure_Vector!ubyte pbkdf2_output = kdf.derive_key(PASSHASH9_PBKDF_OUTPUT_LEN,
-	                                                   pass, &salt[0], salt.length,
+	                                                   pass, salt.ptr, salt.length,
 	                                                   kdf_iterations).bits_of();
 	
 	Pipe pipe = Pipe(new Base64_Encoder);
@@ -113,7 +113,7 @@ bool check_passhash9(in string password, in string hash)
 	                                         &binput[ALGID_BYTES + WORKFACTOR_BYTES], SALT_BYTES,
 	                                         kdf_iterations).bits_of();
 	
-	return same_mem(&cmp[0], &binput[ALGID_BYTES + WORKFACTOR_BYTES + SALT_BYTES], PASSHASH9_PBKDF_OUTPUT_LEN);
+	return same_mem(cmp.ptr, &binput[ALGID_BYTES + WORKFACTOR_BYTES + SALT_BYTES], PASSHASH9_PBKDF_OUTPUT_LEN);
 }
 
 private:

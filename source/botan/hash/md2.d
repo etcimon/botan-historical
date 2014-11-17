@@ -50,16 +50,16 @@ private:
 		
 		if (m_position + length >= hash_block_size)
 		{
-			hash(&m_buffer[0]);
+			hash(m_buffer.ptr);
 			input += (hash_block_size - m_position);
 			length -= (hash_block_size - m_position);
-			while(length >= hash_block_size)
+			while (length >= hash_block_size)
 			{
 				hash(input);
 				input += hash_block_size;
 				length -= hash_block_size;
 			}
-			copy_mem(&m_buffer[0], input, length);
+			copy_mem(m_buffer.ptr, input, length);
 			m_position = 0;
 		}
 		m_position += length;
@@ -94,7 +94,7 @@ private:
 			0x9F, 0x11, 0x83, 0x14 ];
 		
 		buffer_insert(m_X, 16, input, hash_block_size);
-		xor_buf(&m_X[32], &m_X[0], &m_X[16], hash_block_size);
+		xor_buf(&m_X[32], m_X.ptr, &m_X[16], hash_block_size);
 		ubyte T = 0;
 		
 		foreach (size_t i; 0 .. 18)
@@ -123,9 +123,9 @@ private:
 		foreach (size_t i; m_position .. hash_block_size)
 			m_buffer[i] = cast(ubyte)(hash_block_size - m_position);
 		
-		hash(&m_buffer[0]);
-		hash(&m_checksum[0]);
-		copy_mem(output, &m_X[0], output_length);
+		hash(m_buffer.ptr);
+		hash(m_checksum.ptr);
+		copy_mem(output, m_X.ptr, output_length);
 		clear();
 	}
 

@@ -25,7 +25,7 @@ public:
 	*/
 	void cipher(in ubyte* input, ubyte* output)
 	{
-		while(length >= m_buffer.length - m_position)
+		while (length >= m_buffer.length - m_position)
 		{
 			xor_buf(output, input, &m_buffer[m_position], m_buffer.length - m_position);
 			length -= (m_buffer.length - m_position);

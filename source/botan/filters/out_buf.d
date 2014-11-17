@@ -89,7 +89,7 @@ public:
 			m_buffers[i] = null;
 		}
 		
-		while(m_buffers.length && !m_buffers[0])
+		while (m_buffers.length && !m_buffers[0])
 		{
 			m_buffers.pop_front();
 			m_offset = m_offset + Pipe.message_id(1);

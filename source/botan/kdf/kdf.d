@@ -5,7 +5,7 @@
 * Distributed under the terms of the botan license.
 */
 module botan.kdf.kdf;
-import botan.alloc.zeroize;
+import botan.utils.memory.zeroize;
 import botan.utils.types;
 // import string;
 import botan.libstate.libstate;
@@ -36,7 +36,7 @@ public:
 								in Secure_Vector!ubyte secret,
 								in string salt = "") const
 	{
-		return derive_key(key_len, &secret[0], secret.length,
+		return derive_key(key_len, secret.ptr, secret.length,
 								cast(const ubyte*)(salt.ptr),
 								salt.length);
 	}
@@ -53,8 +53,8 @@ public:
 												 in Vector!( ubyte, Alloc2 ) salt) const
 	{
 		return derive_key(key_len,
-								&secret[0], secret.length,
-								&salt[0], salt.length);
+								secret.ptr, secret.length,
+								salt.ptr, salt.length);
 	}
 
 	/**
@@ -70,7 +70,7 @@ public:
 								size_t salt_len) const
 	{
 		return derive_key(key_len,
-							&secret[0], secret.length,
+							secret.ptr, secret.length,
 							salt, salt_len);
 	}
 

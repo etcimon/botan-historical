@@ -50,7 +50,7 @@ public:
 	final override void set_associated_data(in ubyte* ad, size_t ad_len)
 	{
 		assert(m_L, "A key was set");
-		m_ad_hash = ocb_hash(*m_L, *m_cipher, &ad[0], ad_len);
+		m_ad_hash = ocb_hash(*m_L, *m_cipher, ad.ptr, ad_len);
 	}
 
 	final override @property string name() const
@@ -217,14 +217,14 @@ public:
 				assert(remainder_bytes < BS, "Only a partial block left");
 				ubyte* remainder = &buf[sz - remainder_bytes];
 				
-				xor_buf(&m_checksum[0], &remainder[0], remainder_bytes);
+				xor_buf(m_checksum.ptr, remainder.ptr, remainder_bytes);
 				m_checksum[remainder_bytes] ^= 0x80;
 				
 				m_offset ^= m_L.star(); // Offset_*
 				
 				Secure_Vector!ubyte buf = Secure_Vector!ubyte(BS);
 				m_cipher.encrypt(m_offset, buf);
-				xor_buf(&remainder[0], &buf[0], remainder_bytes);
+				xor_buf(remainder.ptr, buf.ptr, remainder_bytes);
 			}
 		}
 		
@@ -243,7 +243,7 @@ public:
 		
 		mac ^= m_ad_hash;
 		
-		buffer += Pair(&mac[0], tag_size());
+		buffer += Pair(mac.ptr, tag_size());
 		
 		zeroise(m_checksum);
 		zeroise(m_offset);
@@ -257,18 +257,18 @@ private:
 		
 		const size_t par_blocks = m_checksum.length / BS;
 		
-		while(blocks)
+		while (blocks)
 		{
 			const size_t proc_blocks = std.algorithm.min(blocks, par_blocks);
 			const size_t proc_bytes = proc_blocks * BS;
 			
 			const offsets = L.compute_offsets(m_offset, m_block_index, proc_blocks);
 			
-			xor_buf(&m_checksum[0], &buffer[0], proc_bytes);
+			xor_buf(m_checksum.ptr, buffer.ptr, proc_bytes);
 			
-			xor_buf(&buffer[0], &offsets[0], proc_bytes);
-			m_cipher.encrypt_n(&buffer[0], &buffer[0], proc_blocks);
-			xor_buf(&buffer[0], &offsets[0], proc_bytes);
+			xor_buf(buffer.ptr, offsets.ptr, proc_bytes);
+			m_cipher.encrypt_n(buffer.ptr, buffer.ptr, proc_blocks);
+			xor_buf(buffer.ptr, offsets.ptr, proc_bytes);
 			
 			buffer += proc_bytes;
 			blocks -= proc_blocks;
@@ -323,7 +323,7 @@ public:
 			const size_t final_full_blocks = remaining / BS;
 			const size_t final_bytes = remaining - (final_full_blocks * BS);
 			
-			decrypt(&buf[0], final_full_blocks);
+			decrypt(buf.ptr, final_full_blocks);
 			
 			if (final_bytes)
 			{
@@ -336,9 +336,9 @@ public:
 				Secure_Vector!ubyte pad = Secure_Vector!ubyte(BS);
 				m_cipher.encrypt(m_offset, pad); // P_*
 				
-				xor_buf(&remainder[0], &pad[0], final_bytes);
+				xor_buf(remainder.ptr, pad.ptr, final_bytes);
 				
-				xor_buf(&m_checksum[0], &remainder[0], final_bytes);
+				xor_buf(m_checksum.ptr, remainder.ptr, final_bytes);
 				m_checksum[final_bytes] ^= 0x80;
 			}
 		}
@@ -366,7 +366,7 @@ public:
 		// compare mac
 		const ubyte* included_tag = &buf[remaining];
 		
-		if (!same_mem(&mac[0], included_tag, tag_size()))
+		if (!same_mem(mac.ptr, included_tag, tag_size()))
 			throw new Integrity_Failure("OCB tag check failed");
 		
 		// remove tag from end of message
@@ -384,18 +384,18 @@ private:
 		
 		const size_t par_blocks = par_bytes / BS;
 		
-		while(blocks)
+		while (blocks)
 		{
 			const size_t proc_blocks = std.algorithm.min(blocks, par_blocks);
 			const size_t proc_bytes = proc_blocks * BS;
 			
 			const offsets = L.compute_offsets(m_offset, m_block_index, proc_blocks);
 			
-			xor_buf(&buffer[0], &offsets[0], proc_bytes);
-			m_cipher.decrypt_n(&buffer[0], &buffer[0], proc_blocks);
-			xor_buf(&buffer[0], &offsets[0], proc_bytes);
+			xor_buf(buffer.ptr, offsets.ptr, proc_bytes);
+			m_cipher.decrypt_n(buffer.ptr, buffer.ptr, proc_blocks);
+			xor_buf(buffer.ptr, offsets.ptr, proc_bytes);
 			
-			xor_buf(&m_checksum[0], &buffer[0], proc_bytes);
+			xor_buf(m_checksum.ptr, buffer.ptr, proc_bytes);
 			
 			buffer += proc_bytes;
 			blocks -= proc_blocks;
@@ -436,7 +436,7 @@ public:
 		foreach (size_t i; 0 .. blocks)
 		{ // could be done in parallel
 			offset ^= get(ctz(block_index + 1 + i));
-			copy_mem(&m_offset_buf[BS*i], &offset[0], BS);
+			copy_mem(&m_offset_buf[BS*i], offset.ptr, BS);
 		}
 		
 		return m_offset_buf;
@@ -445,7 +445,7 @@ public:
 private:
 	const Secure_Vector!ubyte get(size_t i)
 	{
-		while(m_L.length <= i)
+		while (m_L.length <= i)
 			m_L.push_back(poly_double(m_L.back()));
 		
 		return m_L[i];
@@ -482,7 +482,7 @@ Secure_Vector!ubyte ocb_hash(in L_computer L,
 		offset ^= L(ctz(i+1));
 		
 		buf = offset;
-		xor_buf(&buf[0], &ad[BS*i], BS);
+		xor_buf(buf.ptr, &ad[BS*i], BS);
 		
 		cipher.encrypt(buf);
 		
@@ -494,7 +494,7 @@ Secure_Vector!ubyte ocb_hash(in L_computer L,
 		offset ^= L.star();
 		
 		buf = offset;
-		xor_buf(&buf[0], &ad[BS*ad_blocks], ad_remainder);
+		xor_buf(buf.ptr, &ad[BS*ad_blocks], ad_remainder);
 		buf[ad_len % BS] ^= 0x80;
 		
 		cipher.encrypt(buf);

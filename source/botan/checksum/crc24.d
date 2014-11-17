@@ -77,7 +77,7 @@ private:
 			0x00D11CCE, 0x00575035, 0x005BC9C3, 0x00DD8538 ];
 		
 		uint tmp = m_crc;
-		while(length >= 16)
+		while (length >= 16)
 		{
 			tmp = TABLE[((tmp >> 16) ^ input[ 0]) & 0xFF] ^ (tmp << 8);
 			tmp = TABLE[((tmp >> 16) ^ input[ 1]) & 0xFF] ^ (tmp << 8);

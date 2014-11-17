@@ -101,7 +101,7 @@ public:
 			const size_t iterations = 256 * 1024;
 			size_t check_val = 0;
 			
-			m_session_key = derive_key(passphrase, &salt[0], salt.length,
+			m_session_key = derive_key(passphrase, salt.ptr, salt.length,
 			iterations, check_val);
 			
 			sqlite3_statement stmt = sqlite3_statement(m_db, "insert into tls_sessions_metadata"
@@ -126,7 +126,7 @@ public:
 		
 		stmt.bind(1, hex_encode(session_id));
 		
-		while(stmt.step())
+		while (stmt.step())
 		{
 			Pair!(const ubyte*, size_t) blob = stmt.get_blob(0);
 			
@@ -153,7 +153,7 @@ public:
 		stmt.bind(1, server.hostname());
 		stmt.bind(2, server.port());
 		
-		while(stmt.step())
+		while (stmt.step())
 		{
 			Pair!(const ubyte*, size_t) blob = stmt.get_blob(0);
 			

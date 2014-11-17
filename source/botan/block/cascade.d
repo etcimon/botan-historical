@@ -92,7 +92,7 @@ private:
 
 size_t euclids_algorithm(size_t a, size_t b)
 {
-	while(b != 0) // gcd
+	while (b != 0) // gcd
 	{
 		size_t t = b;
 		b = a % b;

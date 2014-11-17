@@ -26,7 +26,7 @@ public:
 	{
 		if (!m_head)
 			m_head = m_tail = new SecureQueueNode;
-		while(length)
+		while (length)
 		{
 			const size_t n = m_tail.write(input, length);
 			input += n;
@@ -45,7 +45,7 @@ public:
 	size_t read(ubyte* output, size_t length)
 	{
 		size_t got = 0;
-		while(length && m_head)
+		while (length && m_head)
 		{
 			const size_t n = m_head.read(output, length);
 			output += n;
@@ -69,7 +69,7 @@ public:
 	{
 		SecureQueueNode current = m_head;
 		
-		while(offset && current)
+		while (offset && current)
 		{
 			if (offset >= current.length)
 			{
@@ -81,7 +81,7 @@ public:
 		}
 		
 		size_t got = 0;
-		while(length && current)
+		while (length && current)
 		{
 			const size_t n = current.peek(output, length, offset);
 			offset = 0;
@@ -123,7 +123,7 @@ public:
 		SecureQueueNode current = m_head;
 		size_t count = 0;
 		
-		while(current)
+		while (current)
 		{
 			count += current.length;
 			current = current.next;
@@ -142,7 +142,7 @@ public:
 		destroy();
 		m_head = m_tail = new SecureQueueNode;
 		SecureQueueNode temp = input.m_head;
-		while(temp)
+		while (temp)
 		{
 			write(&temp.buffer[temp.m_start], temp.m_end - temp.m_start);
 			temp = temp.m_next;
@@ -172,7 +172,7 @@ public:
 		
 		m_head = m_tail = new SecureQueueNode;
 		SecureQueueNode temp = input.m_head;
-		while(temp)
+		while (temp)
 		{
 			write(&temp.buffer[temp.m_start], temp.m_end - temp.m_start);
 			temp = temp.next;
@@ -189,7 +189,7 @@ private:
 	void destroy()
 	{
 		SecureQueueNode temp = m_head;
-		while(temp)
+		while (temp)
 		{
 			SecureQueueNode holder = temp.m_next;
 			delete temp;

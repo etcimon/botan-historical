@@ -25,7 +25,7 @@ public:
 	*/
 	void encrypt_n(ubyte* input, ubyte* output, size_t blocks) const
 	{
-		const uint* S1 = &m_S[0];
+		const uint* S1 = m_S.ptr;
 		const uint* S2 = &m_S[256];
 		const uint* S3 = &m_S[512];
 		const uint* S4 = &m_S[768];
@@ -61,7 +61,7 @@ public:
 	*/
 	void decrypt_n(ubyte* input, ubyte* output, size_t blocks) const
 	{
-		const uint* S1 = &m_S[0];
+		const uint* S1 = m_S.ptr;
 		const uint* S2 = &m_S[256];
 		const uint* S3 = &m_S[512];
 		const uint* S4 = &m_S[768];
@@ -182,7 +182,7 @@ private:
 	                   in ubyte[16] salt,
 					   size_t salt_off) const
 	{
-		const uint* S1 = &m_S[0];
+		const uint* S1 = m_S.ptr;
 		const uint* S2 = &m_S[256];
 		const uint* S3 = &m_S[512];
 		const uint* S4 = &m_S[768];

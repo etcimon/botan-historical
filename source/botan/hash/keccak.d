@@ -10,7 +10,7 @@ import botan.constants;
 static if (BOTAN_HAS_KECCAK):
 
 import botan.hash.hash;
-import botan.alloc.zeroize;
+import botan.utils.memory.zeroize;
 // import string;
 import botan.utils.loadstor;
 import botan.utils.parsing;
@@ -69,13 +69,13 @@ private:
 		if (length == 0)
 			return;
 		
-		while(length)
+		while (length)
 		{
 			size_t to_take = std.algorithm.min(length, m_bitrate / 8 - m_S_pos);
 			
 			length -= to_take;
 			
-			while(to_take && m_S_pos % 8)
+			while (to_take && m_S_pos % 8)
 			{
 				m_S[m_S_pos / 8] ^= cast(ulong)(input[0]) << (8 * (m_S_pos % 8));
 				
@@ -84,7 +84,7 @@ private:
 				--to_take;
 			}
 			
-			while(to_take && to_take % 8 == 0)
+			while (to_take && to_take % 8 == 0)
 			{
 				m_S[m_S_pos / 8] ^= load_le!ulong(input, 0);
 				m_S_pos += 8;
@@ -92,7 +92,7 @@ private:
 				to_take -= 8;
 			}
 			
-			while(to_take)
+			while (to_take)
 			{
 				m_S[m_S_pos / 8] ^= cast(ulong)(input[0]) << (8 * (m_S_pos % 8));
 				
@@ -103,7 +103,7 @@ private:
 			
 			if (m_S_pos == m_bitrate / 8)
 			{
-				keccak_f_1600(&m_S[0]);
+				keccak_f_1600(m_S.ptr);
 				m_S_pos = 0;
 			}
 		}
@@ -116,7 +116,7 @@ private:
 		padding[0] = 0x01;
 		padding[padding.length-1] |= 0x80;
 		
-		add_data(&padding[0], padding.length);
+		add_data(padding.ptr, padding.length);
 		
 		/*
 		* We never have to run the permutation again because we only support

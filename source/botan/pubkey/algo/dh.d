@@ -48,10 +48,10 @@ public:
 	* @param grp the DL group to use in the key
 	* @param y the public value y
 	*/
-	this(in DL_Group grp, const ref BigInt y1)
+	this(in DL_Group grp, in BigInt y1)
 	{
-		group = grp;
-		y = y1;
+		m_group = grp;
+		m_y = y1;
 	}
 protected:
 	this() {}
@@ -84,8 +84,8 @@ public:
 	     RandomNumberGenerator rng) 
 	{
 		super(alg_id, key_bits, DL_Group.ANSI_X9_42);
-		if (y == 0)
-			y = power_mod(group_g(), x, group_p());
+		if (m_y == 0)
+			m_y = power_mod(group_g(), m_x, group_p());
 		
 		load_check(rng);
 	}
@@ -97,22 +97,22 @@ public:
 	* @param x_args the key's secret value (or if zero, generate a new key)
 	*/
 	this(RandomNumberGenerator rng,
-	     const ref DL_Group grp,
-	     const ref BigInt x_arg = 0)
+	     in DL_Group grp,
+	     in BigInt x_arg = 0)
 	{
-		group = grp;
-		x = x_arg;
+		m_group = grp;
+		m_x = x_arg;
 		
-		if (x == 0)
+		if (m_x == 0)
 		{
 			const BigInt m_p = group_p();
-			x.randomize(rng, 2 * dl_work_factor(m_p.bits()));
+			m_x.randomize(rng, 2 * dl_work_factor(m_p.bits()));
 		}
 		
-		if (y == 0)
-			y = power_mod(group_g(), x, group_p());
+		if (m_y == 0)
+			m_y = power_mod(group_g(), m_x, group_p());
 		
-		if (x == 0)
+		if (m_x == 0)
 			gen_check(rng);
 		else
 			load_check(rng);

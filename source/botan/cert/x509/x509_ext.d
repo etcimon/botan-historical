@@ -99,7 +99,7 @@ public:
 		
 		BER_Decoder sequence = from_source.start_cons(ASN1_Tag.SEQUENCE);
 		
-		while(sequence.more_items())
+		while (sequence.more_items())
 		{
 			OID oid;
 			Vector!ubyte value;
@@ -691,7 +691,7 @@ private:
 	{
 		BER_Decoder ber = BER_Decoder(input).start_cons(ASN1_Tag.SEQUENCE);
 		
-		while(ber.more_items())
+		while (ber.more_items())
 		{
 			OID oid;
 			

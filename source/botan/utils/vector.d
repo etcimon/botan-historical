@@ -9,8 +9,7 @@ import botan.utils.memory.memory;
 /**
 * Existence check for values
 */
-bool value_exists(T)(in Vector!T vec,
-                     const ref T val)
+bool value_exists(T)(in Vector!T vec, in T val)
 {
 	for (size_t i = 0; i != vec.length; ++i)
 		if (vec[i] == val)

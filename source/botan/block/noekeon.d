@@ -34,7 +34,7 @@ public:
 			foreach (size_t j; 0 .. 16)
 			{
 				A0 ^= m_RC[j];
-				theta(A0, A1, A2, A3, &m_EK[0]);
+				theta(A0, A1, A2, A3, m_EK.ptr);
 				
 				A1 = rotate_left(A1, 1);
 				A2 = rotate_left(A2, 5);
@@ -48,7 +48,7 @@ public:
 			}
 			
 			A0 ^= m_RC[16];
-			theta(A0, A1, A2, A3, &m_EK[0]);
+			theta(A0, A1, A2, A3, m_EK.ptr);
 			
 			store_be(output, A0, A1, A2, A3);
 			
@@ -71,7 +71,7 @@ public:
 			
 			for (size_t j = 16; j != 0; --j)
 			{
-				theta(A0, A1, A2, A3, &m_DK[0]);
+				theta(A0, A1, A2, A3, m_DK.ptr);
 				A0 ^= m_RC[j];
 				
 				A1 = rotate_left(A1, 1);
@@ -85,7 +85,7 @@ public:
 				A3 = rotate_right(A3, 2);
 			}
 			
-			theta(A0, A1, A2, A3, &m_DK[0]);
+			theta(A0, A1, A2, A3, m_DK.ptr);
 			A0 ^= m_RC[0];
 			
 			store_be(output, A0, A1, A2, A3);
@@ -121,12 +121,12 @@ protected:
 	/**
 	* @return const reference to encryption subkeys
 	*/
-	const ref Secure_Vector!uint get_EK() const { return m_EK; }
+	const Secure_Vector!uint get_EK() const { return m_EK; }
 
 	/**
 	* @return const reference to decryption subkeys
 	*/
-	const ref Secure_Vector!uint get_DK() const { return m_DK; }
+	const Secure_Vector!uint get_DK() const { return m_DK; }
 
 private:
 	/*
@@ -182,7 +182,7 @@ package:
 */
 void theta(ref uint A0, ref uint A1,
            ref uint A2, ref uint A3,
-           const uint EK[4]) pure
+           in uint EK[4]) pure
 {
 	uint T = A0 ^ A2;
 	T ^= rotate_left(T, 8) ^ rotate_right(T, 8);

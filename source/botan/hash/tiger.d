@@ -7,12 +7,15 @@
 module botan.hash.tiger;
 
 import botan.constants;
+
 static if (BOTAN_HAS_TIGER):
 
 import botan.hash.mdx_hash;
 import botan.utils.exceptn;
 import botan.utils.loadstor;
 import botan.utils.parsing;
+import botan.utils.types;
+
 /**
 * Tiger
 */
@@ -24,8 +27,7 @@ public:
 	*/
 	@property string name() const
 	{
-		return "Tiger(" ~ to!string(output_length()) ~ "," ~
-			to!string(m_passes) ~ ")";
+		return "Tiger(" ~ to!string(output_length()) ~ "," ~ to!string(m_passes) ~ ")";
 	}
 
 	@property size_t output_length() const { return m_hash_len; }
@@ -60,12 +62,10 @@ public:
 		m_hash_len = hash_len;
 		m_passes = passes;
 		if (output_length() != 16 && output_length() != 20 && output_length() != 24)
-			throw new Invalid_Argument("Tiger: Illegal hash output size: " ~
-			                           to!string(output_length()));
+			throw new Invalid_Argument("Tiger: Illegal hash output size: " ~ to!string(output_length()));
 		
 		if (m_passes < 3)
-			throw new Invalid_Argument("Tiger: Invalid number of m_passes: "
-			                           + to!string(m_passes));
+			throw new Invalid_Argument("Tiger: Invalid number of m_passes: " ~ to!string(m_passes));
 		clear();
 	}
 private:
@@ -78,7 +78,7 @@ private:
 		
 		foreach (size_t i; 0 .. blocks)
 		{
-			load_le(&m_X[0], input, m_X.length);
+			load_le(m_X.ptr, input, m_X.length);
 			
 			pass(A, B, C, m_X, 5); mix(m_X);
 			pass(C, A, B, m_X, 7); mix(m_X);
@@ -113,9 +113,7 @@ private:
 	/*
 	* Tiger Pass
 	*/
-	void pass(ref ulong A, ref ulong B, ref ulong C,
-	          const ref Secure_Vector!ulong m_X,
-	          ubyte mul)
+	void pass(ref ulong A, ref ulong B, ref ulong C, in Secure_Vector!ulong m_X, ubyte mul)
 	{
 		C ^= m_X[0];
 		A -= SBOX1[get_byte(7, C)] ^ SBOX2[get_byte(5, C)] ^

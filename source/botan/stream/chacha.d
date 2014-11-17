@@ -25,13 +25,13 @@ public:
 	*/
 	void cipher(in ubyte* input, ubyte* output)
 	{
-		while(length >= m_buffer.length - m_position)
+		while (length >= m_buffer.length - m_position)
 		{
 			xor_buf(output, input, &m_buffer[m_position], m_buffer.length - m_position);
 			length -= (m_buffer.length - m_position);
 			input += (m_buffer.length - m_position);
 			output += (m_buffer.length - m_position);
-			chacha(&m_buffer[0], &m_state[0]);
+			chacha(m_buffer.ptr, m_state.ptr);
 			
 			++m_state[12];
 			m_state[13] += (m_state[12] == 0);
@@ -58,7 +58,7 @@ public:
 		m_state[14] = load_le!uint(iv, 0);
 		m_state[15] = load_le!uint(iv, 1);
 		
-		chacha(&m_buffer[0], &m_state[0]);
+		chacha(m_buffer.ptr, m_state.ptr);
 		++m_state[12];
 		m_state[13] += (m_state[12] == 0);
 		

@@ -93,7 +93,7 @@ private:
 			buffer_insert(m_buffer, m_buf_pos, input, length);
 			if (m_buf_pos + length > 64)
 			{
-				ubi_512(&m_buffer[0], m_buffer.length);
+				ubi_512(m_buffer.ptr, m_buffer.length);
 				
 				input += (64 - m_buf_pos);
 				length -= (64 - m_buf_pos);
@@ -119,7 +119,7 @@ private:
 		foreach (size_t i; m_buf_pos .. m_buffer.length)
 			m_buffer[i] = 0;
 		
-		ubi_512(&m_buffer[0], m_buf_pos);
+		ubi_512(m_buffer.ptr, m_buf_pos);
 		
 		const ubyte[8] counter;
 		
@@ -144,7 +144,7 @@ private:
 			const size_t to_proc = std.algorithm.min(msg_len, 64);
 			m_T[0] += to_proc;
 			
-			load_le(&M[0], msg, to_proc / 8);
+			load_le(M.ptr, msg, to_proc / 8);
 			
 			if (to_proc % 8)
 			{
@@ -159,7 +159,7 @@ private:
 			
 			msg_len -= to_proc;
 			msg += to_proc;
-		} while(msg_len);
+		} while (msg_len);
 	}
 
 

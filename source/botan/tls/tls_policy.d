@@ -360,10 +360,7 @@ private:
 class Ciphersuite_Preference_Ordering
 {
 public:
-	this(in Vector!string ciphers,
-		    const ref Vector!string macs,
-		    const ref Vector!string kex,
-		    const ref Vector!string sigs)
+	this(in Vector!string ciphers, in Vector!string macs, in Vector!string kex, in Vector!string sigs)
 	{
 		m_ciphers = ciphers;
 		m_macs = macs;

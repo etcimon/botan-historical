@@ -12,6 +12,8 @@ static if (BOTAN_HAS_AES):
 import botan.block.block_cipher;
 import botan.utils.loadstor;
 import botan.utils.rotate;
+import botan.utils.types;
+
 /**
 * AES-128
 */
@@ -521,7 +523,7 @@ __gshared immutable uint[1024] TD = [
 */
 void aes_encrypt_n(ubyte* input, ubyte* output,
                    size_t blocks,
-                   const ref Secure_Vector!uint EK,
+                   in Secure_Vector!uint EK,
                    in Secure_Vector!ubyte ME) pure
 {
 	assert(EK.length && ME.length == 16, "Key was set");
@@ -634,7 +636,7 @@ void aes_encrypt_n(ubyte* input, ubyte* output,
 * AES Decryption
 */
 void aes_decrypt_n(ubyte* input, ubyte* output, size_t blocks,
-                   const ref Secure_Vector!uint DK,
+                   in Secure_Vector!uint DK,
                    in Secure_Vector!ubyte MD) pure
 {
 	assert(DK.length && MD.length == 16, "Key was set");
@@ -782,6 +784,6 @@ void aes_key_schedule(in ubyte* key, size_t length,
 	
 	EK.resize(length + 24);
 	DK.resize(length + 24);
-	copy_mem(&EK[0], &XEK[0], EK.length);
-	copy_mem(&DK[0], &XDK[0], DK.length);
+	copy_mem(EK.ptr, XEK.ptr, EK.length);
+	copy_mem(DK.ptr, XDK.ptr, DK.length);
 }

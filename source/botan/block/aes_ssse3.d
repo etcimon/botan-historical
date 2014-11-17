@@ -11,6 +11,8 @@ static if (BOTAN_HAS_AES_SSSE3):
 
 import std.range : iota;
 import botan.block.block_cipher;
+import botan.utils.types;
+
 import botan.utils.simd.tmmintrin;
 
 
@@ -28,7 +30,7 @@ public:
 		const(__m128i)* in_mm = cast(const(__m128i)*)(input);
 		__m128i* out_mm = cast(__m128i*)(output);
 		
-		const(__m128i)* keys = cast(const(__m128i)*)(m_EK[0]);
+		const(__m128i)* keys = cast(const(__m128i)*)(m_EK.ptr);
 		
 		foreach (size_t i; 0 .. blocks)
 		{
@@ -45,7 +47,7 @@ public:
 		const(__m128i)* in_mm = cast(const(__m128i)*)(input);
 		__m128i* out_mm = cast(__m128i*)(output);
 		
-		const(__m128i)* keys = cast(const(__m128i)*)(m_DK[0]);
+		const(__m128i)* keys = cast(const(__m128i)*)(m_DK.ptr);
 		
 		foreach (size_t i; 0 .. blocks)
 		{
@@ -77,8 +79,8 @@ private:
 		m_EK.resize(11*4);
 		m_DK.resize(11*4);
 		
-		__m128i* EK_mm = cast(__m128i*)(&m_EK[0]);
-		__m128i* DK_mm = cast(__m128i*)(&m_DK[0]);
+		__m128i* EK_mm = cast(__m128i*)(m_EK.ptr);
+		__m128i* DK_mm = cast(__m128i*)(m_DK.ptr);
 		
 		_mm_storeu_si128(DK_mm + 10, _mm_shuffle_epi8(key, sr[2]));
 		
@@ -90,11 +92,9 @@ private:
 		{
 			key = aes_schedule_round(&rcon, key, key);
 			
-			_mm_storeu_si128(EK_mm + i,
-			                 aes_schedule_mangle(key, (12-i) % 4));
+			_mm_storeu_si128(EK_mm + i, aes_schedule_mangle(key, (12-i) % 4));
 			
-			_mm_storeu_si128(DK_mm + (10-i),
-			                 aes_schedule_mangle_dec(key, (10-i) % 4));
+			_mm_storeu_si128(DK_mm + (10-i), aes_schedule_mangle_dec(key, (10-i) % 4));
 		}
 		
 		key = aes_schedule_round(&rcon, key, key);
@@ -119,7 +119,7 @@ public:
 		const(__m128i)* in_mm = cast(const(__m128i)*)(input);
 		__m128i* out_mm = cast(__m128i*)(output);
 		
-		const(__m128i)* keys = cast(const(__m128i)*)(m_EK[0]);
+		const(__m128i)* keys = cast(const(__m128i)*)(m_EK.ptr);
 		
 		foreach (size_t i; 0 .. blocks)
 		{
@@ -136,7 +136,7 @@ public:
 		const(__m128i)* in_mm = cast(const(__m128i)*)(input);
 		__m128i* out_mm = cast(__m128i*)(output);
 		
-		const(__m128i)* keys = cast(const(__m128i)*)(m_DK[0]);
+		const(__m128i)* keys = cast(const(__m128i)*)(m_DK.ptr);
 		
 		foreach (size_t i; 0 .. blocks)
 		{
@@ -165,8 +165,8 @@ private:
 		m_EK.resize(13*4);
 		m_DK.resize(13*4);
 		
-		__m128i* EK_mm = cast(__m128i*)(&m_EK[0]);
-		__m128i* DK_mm = cast(__m128i*)(&m_DK[0]);
+		__m128i* EK_mm = cast(__m128i*)(m_EK.ptr);
+		__m128i* DK_mm = cast(__m128i*)(m_DK.ptr);
 		
 		__m128i key1 = _mm_loadu_si128(cast(const(__m128i)*)(keyb));
 		__m128i key2 = _mm_loadu_si128(cast(const(__m128i)*)((keyb + 8)));
@@ -185,38 +185,29 @@ private:
 		{
 			key2 = aes_schedule_round(&rcon, key2, key1);
 			
-			_mm_storeu_si128(EK_mm + 3*i+1,
-			                 aes_schedule_mangle(_mm_alignr_epi8(key2, t, 8), (i+3)%4));
-			_mm_storeu_si128(DK_mm + 11-3*i,
-			                 aes_schedule_mangle_dec(_mm_alignr_epi8(key2, t, 8), (i+3)%4));
+			_mm_storeu_si128(EK_mm + 3*i+1, aes_schedule_mangle(_mm_alignr_epi8(key2, t, 8), (i+3)%4));
+			_mm_storeu_si128(DK_mm + 11-3*i, aes_schedule_mangle_dec(_mm_alignr_epi8(key2, t, 8), (i+3)%4));
 			
 			t = aes_schedule_192_smear(key2, t);
 			
-			_mm_storeu_si128(EK_mm + 3*i+2,
-			                 aes_schedule_mangle(t, (i+2)%4));
-			_mm_storeu_si128(DK_mm + 10-3*i,
-			                 aes_schedule_mangle_dec(t, (i+2)%4));
+			_mm_storeu_si128(EK_mm + 3*i+2, aes_schedule_mangle(t, (i+2)%4));
+			_mm_storeu_si128(DK_mm + 10-3*i, aes_schedule_mangle_dec(t, (i+2)%4));
 			
 			key2 = aes_schedule_round(&rcon, t, key2);
 			
 			if (i == 3)
 			{
-				_mm_storeu_si128(EK_mm + 3*i+3,
-				                 aes_schedule_mangle_last(key2, (i+1)%4));
-				_mm_storeu_si128(DK_mm + 9-3*i,
-				                 aes_schedule_mangle_last_dec(key2));
+				_mm_storeu_si128(EK_mm + 3*i+3, aes_schedule_mangle_last(key2, (i+1)%4));
+				_mm_storeu_si128(DK_mm + 9-3*i, aes_schedule_mangle_last_dec(key2));
 			}
 			else
 			{
-				_mm_storeu_si128(EK_mm + 3*i+3,
-				                 aes_schedule_mangle(key2, (i+1)%4));
-				_mm_storeu_si128(DK_mm + 9-3*i,
-				                 aes_schedule_mangle_dec(key2, (i+1)%4));
+				_mm_storeu_si128(EK_mm + 3*i+3, aes_schedule_mangle(key2, (i+1)%4));
+				_mm_storeu_si128(DK_mm + 9-3*i, aes_schedule_mangle_dec(key2, (i+1)%4));
 			}
 			
 			key1 = key2;
-			key2 = aes_schedule_192_smear(key2,
-			                              _mm_slli_si128(_mm_srli_si128(t, 8), 8));
+			key2 = aes_schedule_192_smear(key2, _mm_slli_si128(_mm_srli_si128(t, 8), 8));
 			t = _mm_slli_si128(_mm_srli_si128(key2, 8), 8);
 		}
 	}
@@ -238,7 +229,7 @@ public:
 		const(__m128i)* in_mm = cast(const(__m128i)*)(input);
 		__m128i* out_mm = cast(__m128i*)(output);
 		
-		const(__m128i)* keys = cast(const(__m128i)*)(m_EK[0]);
+		const(__m128i)* keys = cast(const(__m128i)*)(m_EK.ptr);
 		
 		foreach (size_t i; 0 .. blocks)
 		{
@@ -255,7 +246,7 @@ public:
 		const(__m128i)* in_mm = cast(const(__m128i)*)(input);
 		__m128i* out_mm = cast(__m128i*)(output);
 		
-		const(__m128i)* keys = cast(const(__m128i)*)(m_DK[0]);
+		const(__m128i)* keys = cast(const(__m128i)*)(m_DK.ptr);
 		
 		foreach (size_t i; 0 .. blocks)
 		{
@@ -284,8 +275,8 @@ private:
 		m_EK.resize(15*4);
 		m_DK.resize(15*4);
 		
-		__m128i* EK_mm = cast(__m128i*)(&m_EK[0]);
-		__m128i* DK_mm = cast(__m128i*)(&m_DK[0]);
+		__m128i* EK_mm = cast(__m128i*)(m_EK.ptr);
+		__m128i* DK_mm = cast(__m128i*)(m_DK.ptr);
 		
 		__m128i key1 = _mm_loadu_si128(cast(const(__m128i)*)(keyb));
 		__m128i key2 = _mm_loadu_si128(cast(const(__m128i)*)((keyb + 16)));
@@ -375,8 +366,7 @@ __m128i aes_schedule_transform(__m128i input,
 	
 __m128i aes_schedule_mangle(__m128i k, ubyte round_no)
 {
-	__m128i t = _mm_shuffle_epi8(_mm_xor_si128(k, _mm_set1_epi8!(0x5B)()),
-	                             mc_forward[0]);
+	__m128i t = _mm_shuffle_epi8(_mm_xor_si128(k, _mm_set1_epi8!(0x5B)()), mc_forward[0]);
 	
 	__m128i t2 = t;
 	
@@ -478,26 +468,22 @@ __m128i aes_schedule_round(__m128i* rcon, __m128i input1, __m128i input2)
 
 __m128i aes_ssse3_encrypt(__m128i B, const(__m128i)* keys, size_t rounds)
 {
-	immutable(__m128i) sb2u = _mm_set_epi32!(
-		0x5EB7E955, 0xBC982FCD, 0xE27A93C6, 0x0B712400)();
-	immutable(__m128i) sb2t = _mm_set_epi32!(
-		0xC2A163C8, 0xAB82234A, 0x69EB8840, 0x0AE12900)();
+	immutable(__m128i) sb2u = _mm_set_epi32!(0x5EB7E955, 0xBC982FCD, 0xE27A93C6, 0x0B712400)();
+	immutable(__m128i) sb2t = _mm_set_epi32!(0xC2A163C8, 0xAB82234A, 0x69EB8840, 0x0AE12900)();
 	
-	immutable(__m128i) sbou = _mm_set_epi32!(
-		0x15AABF7A, 0xC502A878, 0xD0D26D17, 0x6FBDC700)();
-	immutable(__m128i) sbot = _mm_set_epi32!(
-		0x8E1E90D1, 0x412B35FA, 0xCFE474A5, 0x5FBB6A00)();
+	immutable(__m128i) sbou = _mm_set_epi32!(0x15AABF7A, 0xC502A878, 0xD0D26D17, 0x6FBDC700)();
+	immutable(__m128i) sbot = _mm_set_epi32!(0x8E1E90D1, 0x412B35FA, 0xCFE474A5, 0x5FBB6A00)();
 	
 	immutable __m128i[4] mc_backward = [
-		_mm_set_epi32!(0x0E0D0C0F, 0x0A09080B, 0x06050407, 0x02010003)(),
+			_mm_set_epi32!(0x0E0D0C0F, 0x0A09080B, 0x06050407, 0x02010003)(),
 			_mm_set_epi32!(0x0A09080B, 0x06050407, 0x02010003, 0x0E0D0C0F)(),
 			_mm_set_epi32!(0x06050407, 0x02010003, 0x0E0D0C0F, 0x0A09080B)(),
 			_mm_set_epi32!(0x02010003, 0x0E0D0C0F, 0x0A09080B, 0x06050407)(),
 	];
 	
 	B = _mm_xor_si128(_mm_shuffle_epi8(k_ipt1, _mm_and_si128(low_nibs, B)),
-				_mm_xor_si128(_mm_shuffle_epi8(k_ipt2, _mm_srli_epi32(_mm_andnot_si128(low_nibs, B), 4)),
-	            _mm_loadu_si128(keys)));
+	                  _mm_xor_si128(_mm_shuffle_epi8(k_ipt2, _mm_srli_epi32(_mm_andnot_si128(low_nibs, B), 4)),
+	              	  _mm_loadu_si128(keys)));
 	
 	for (size_t r = 1; ; ++r)
 	{
@@ -519,25 +505,21 @@ __m128i aes_ssse3_encrypt(__m128i B, const(__m128i)* keys, size_t rounds)
 		
 		if (r == rounds)
 		{
-			B = _mm_shuffle_epi8(
-					_mm_xor_si128(_mm_shuffle_epi8(sbou, t5),
-			        	_mm_xor_si128(_mm_shuffle_epi8(sbot, t6), K),
-					sr[r % 4]));
+			B = _mm_shuffle_epi8(_mm_xor_si128(_mm_shuffle_epi8(sbou, t5),
+			                                   _mm_xor_si128(_mm_shuffle_epi8(sbot, t6), K),
+											   sr[r % 4]));
 			
 			return B;
 		}
 		
-		__m128i t7 = _mm_xor_si128(_mm_shuffle_epi8(sb1t, t6),
-	                     _mm_xor_si128( _mm_shuffle_epi8(sb1u, t5),
-		                     K));
-		
+		__m128i t7 = _mm_xor_si128(_mm_shuffle_epi8(sb1t, t6), _mm_xor_si128( _mm_shuffle_epi8(sb1u, t5), K));
+
 		__m128i t8 = _mm_xor_si128(_mm_shuffle_epi8(sb2t, t6),
-	                     _mm_xor_si128(_mm_shuffle_epi8(sb2u, t5),
-		                     _mm_shuffle_epi8(t7, mc_forward[r % 4])));
+		                           _mm_xor_si128(_mm_shuffle_epi8(sb2u, t5),
+		              			   _mm_shuffle_epi8(t7, mc_forward[r % 4])));
 		
 		B = _mm_xor_si128(_mm_shuffle_epi8(t8, mc_forward[r % 4]),
-	            _mm_xor_si128(_mm_shuffle_epi8(t7, mc_backward[r % 4]),
-		            t8));
+		              	  _mm_xor_si128(_mm_shuffle_epi8(t7, mc_backward[r % 4]), t8));
 	}
 }
 
@@ -598,15 +580,11 @@ __m128i aes_ssse3_decrypt(__m128i B, const(__m128i)* keys, size_t rounds)
 		__m128i t8 = _mm_xor_si128(_mm_shuffle_epi8(sb9t, t6),
 		                           _mm_xor_si128(_mm_shuffle_epi8(sb9u, t5), K));
 		
-		__m128i t9 = _mm_xor_si128(_mm_shuffle_epi8(t8, mc),
-	                     _mm_xor_si128(_mm_shuffle_epi8(sbdu, t5),
-		                     _mm_shuffle_epi8(sbdt, t6)));
-		
-		__m128i t12 = _mm_xor_si128(
-						_mm_xor_si128(
-							_mm_shuffle_epi8(t9, mc),
-							_mm_shuffle_epi8(sbbu, t5)),
-						_mm_shuffle_epi8(sbbt, t6));
+		__m128i t9 = _mm_xor_si128(_mm_shuffle_epi8(t8, mc), _mm_xor_si128(_mm_shuffle_epi8(sbdu, t5), _mm_shuffle_epi8(sbdt, t6)));
+
+		__m128i t12 = _mm_xor_si128(_mm_xor_si128(_mm_shuffle_epi8(t9, mc),
+		                            			  _mm_shuffle_epi8(sbbu, t5)),
+									_mm_shuffle_epi8(sbbt, t6));
 		
 		B = _mm_xor_si128(_mm_xor_si128(_mm_shuffle_epi8(t12, mc),
 		                                _mm_shuffle_epi8(sbeu, t5)),

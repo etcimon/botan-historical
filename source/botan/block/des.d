@@ -36,7 +36,7 @@ public:
 			uint L = cast(uint)(T >> 32);
 			uint R = cast(uint)(T);
 			
-			des_encrypt(L, R, &m_round_key[0]);
+			des_encrypt(L, R, m_round_key.ptr);
 			
 			T = (DES_FPTAB1[get_byte(0, L)] << 5) | (DES_FPTAB1[get_byte(1, L)] << 3) |
 				(DES_FPTAB1[get_byte(2, L)] << 1) | (DES_FPTAB2[get_byte(3, L)] << 1) |
@@ -67,7 +67,7 @@ public:
 			uint L = cast(uint)(T >> 32);
 			uint R = cast(uint)(T);
 			
-			des_decrypt(L, R, &m_round_key[0]);
+			des_decrypt(L, R, m_round_key.ptr);
 			
 			T = (DES_FPTAB1[get_byte(0, L)] << 5) | (DES_FPTAB1[get_byte(1, L)] << 3) |
 				(DES_FPTAB1[get_byte(2, L)] << 1) | (DES_FPTAB2[get_byte(3, L)] << 1) |
@@ -97,7 +97,7 @@ private:
 	void key_schedule(in ubyte* key, size_t)
 	{
 		m_round_key.resize(32);
-		des_key_schedule(&m_round_key[0], key);
+		des_key_schedule(m_round_key.ptr, key);
 	}
 
 	Secure_Vector!uint m_round_key;
@@ -124,7 +124,7 @@ public:
 			uint L = cast(uint)(T >> 32);
 			uint R = cast(uint)(T);
 			
-			des_encrypt(L, R, &m_round_key[0]);
+			des_encrypt(L, R, m_round_key.ptr);
 			des_decrypt(R, L, &m_round_key[32]);
 			des_encrypt(L, R, &m_round_key[64]);
 			
@@ -158,7 +158,7 @@ public:
 			
 			des_decrypt(L, R, &m_round_key[64]);
 			des_encrypt(R, L, &m_round_key[32]);
-			des_decrypt(L, R, &m_round_key[0]);
+			des_decrypt(L, R, m_round_key.ptr);
 			
 			T = (DES_FPTAB1[get_byte(0, L)] << 5) | (DES_FPTAB1[get_byte(1, L)] << 3) |
 				(DES_FPTAB1[get_byte(2, L)] << 1) | (DES_FPTAB2[get_byte(3, L)] << 1) |
@@ -188,13 +188,13 @@ private:
 	void key_schedule(in ubyte* key, size_t length)
 	{
 		m_round_key.resize(3*32);
-		des_key_schedule(&m_round_key[0], key);
+		des_key_schedule(m_round_key.ptr, key);
 		des_key_schedule(&m_round_key[32], key + 8);
 		
 		if (length == 24)
 			des_key_schedule(&m_round_key[64], key + 16);
 		else
-			copy_mem(&m_round_key[64], &m_round_key[0], 32);
+			copy_mem(&m_round_key[64], m_round_key.ptr, 32);
 	}
 
 

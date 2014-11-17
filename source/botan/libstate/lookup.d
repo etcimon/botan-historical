@@ -12,7 +12,7 @@ public import botan.kdf.kdf;
 public import botan.pk_pad.eme;
 public import botan.pk_pad.emsa;
 public import botan.pbkdf.pbkdf;
-import botan.engine.engine;
+public import botan.engine.engine;
 import botan.libstate.libstate;
 
 /**
@@ -160,10 +160,7 @@ PBKDF get_s2k(in string algo_spec)
 * or decrypting filter
 * @return pointer to newly allocated encryption or decryption filter
 */
-Keyed_Filter get_cipher(in string algo_spec,
-                        const ref SymmetricKey key,
-                        const ref InitializationVector iv,
-                        Cipher_Dir direction)
+Keyed_Filter get_cipher(in string algo_spec, in SymmetricKey key, in InitializationVector iv, Cipher_Dir direction)
 {
 	Keyed_Filter cipher = get_cipher(algo_spec, direction);
 	cipher.set_key(key);
@@ -183,12 +180,9 @@ Keyed_Filter get_cipher(in string algo_spec,
 * or decrypting filter
 * @return pointer to the encryption or decryption filter
 */
-Keyed_Filter get_cipher(in string algo_spec,
-                        const ref SymmetricKey key,
-                        Cipher_Dir direction)
+Keyed_Filter get_cipher(in string algo_spec, in SymmetricKey key, Cipher_Dir direction)
 {
-	return get_cipher(algo_spec,
-	                  key, InitializationVector(), direction);
+	return get_cipher(algo_spec, key, InitializationVector(), direction);
 }
 
 
@@ -204,8 +198,7 @@ Keyed_Filter get_cipher(in string algo_spec,
 /*
 * Get a cipher object
 */
-Keyed_Filter get_cipher(in string algo_spec,
-                        Cipher_Dir direction)
+Keyed_Filter get_cipher(in string algo_spec, Cipher_Dir direction)
 {
 	Algorithm_Factory af = global_state().algorithm_factory();
 

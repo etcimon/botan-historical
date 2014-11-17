@@ -27,7 +27,7 @@ public:
 		
 		foreach (size_t i; 0 .. blocks)
 		{
-			botan_serpent_x86_32_encrypt(input, output, &keys[0]);
+			botan_serpent_x86_32_encrypt(input, output, keys.ptr);
 			input += BLOCK_SIZE;
 			output += BLOCK_SIZE;
 		}
@@ -41,7 +41,7 @@ public:
 		
 		foreach (size_t i; 0 .. blocks)
 		{
-			botan_serpent_x86_32_decrypt(input, output, &keys[0]);
+			botan_serpent_x86_32_decrypt(input, output, keys.ptr);
 			input += BLOCK_SIZE;
 			output += BLOCK_SIZE;
 		}
@@ -60,7 +60,7 @@ private:
 			W[i] = load_le!uint(key, i);
 		W[length / 4] |= uint(1) << ((length%4)*8);
 		
-		botan_serpent_x86_32_key_schedule(&W[0]);
+		botan_serpent_x86_32_key_schedule(W.ptr);
 		this.set_round_keys(&W[8]);
 	}
 

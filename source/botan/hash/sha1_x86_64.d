@@ -26,7 +26,7 @@ private:
 	{
 		foreach (size_t i; 0 .. blocks)
 		{
-			botan_sha160_x86_64_compress(&m_digest[0], input, &W[0]);
+			botan_sha160_x86_64_compress(m_digest.ptr, input, W.ptr);
 			input += hash_block_size;
 		}
 	}

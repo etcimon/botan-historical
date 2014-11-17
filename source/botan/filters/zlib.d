@@ -31,12 +31,12 @@ public:
 		m_zlib.m_stream.next_in = cast(ubyte*)input;
 		m_zlib.m_stream.avail_in = length;
 		
-		while(m_zlib.m_stream.avail_in != 0)
+		while (m_zlib.m_stream.avail_in != 0)
 		{
-			m_zlib.m_stream.next_out = cast(ubyte*)(&m_buffer[0]);
+			m_zlib.m_stream.next_out = cast(ubyte*)(m_buffer.ptr);
 			m_zlib.m_stream.avail_out = m_buffer.length;
 			deflate(&(m_zlib.m_stream), Z_NO_FLUSH);
-			send(&m_buffer[0], m_buffer.length - m_zlib.m_stream.avail_out);
+			send(m_buffer.ptr, m_buffer.length - m_zlib.m_stream.avail_out);
 		}
 	}
 
@@ -70,13 +70,13 @@ public:
 		m_zlib.m_stream.avail_in = 0;
 		
 		int rc = Z_OK;
-		while(rc != Z_STREAM_END)
+		while (rc != Z_STREAM_END)
 		{
-			m_zlib.m_stream.next_out = cast(ubyte*)(&m_buffer[0]);
+			m_zlib.m_stream.next_out = cast(ubyte*)(m_buffer.ptr);
 			m_zlib.m_stream.avail_out = m_buffer.length;
 			
 			rc = deflate(&(m_zlib.m_stream), Z_FINISH);
-			send(&m_buffer[0], m_buffer.length - m_zlib.m_stream.avail_out);
+			send(m_buffer.ptr, m_buffer.length - m_zlib.m_stream.avail_out);
 		}
 		
 		clear();
@@ -90,13 +90,13 @@ public:
 		m_zlib.m_stream.next_in = 0;
 		m_zlib.m_stream.avail_in = 0;
 		
-		while(true)
+		while (true)
 		{
 			m_zlib.m_stream.avail_out = m_buffer.length;
-			m_zlib.m_stream.next_out = cast(ubyte*)(&m_buffer[0]);
+			m_zlib.m_stream.next_out = cast(ubyte*)(m_buffer.ptr);
 			
 			deflate(&(m_zlib.m_stream), Z_FULL_FLUSH);
-			send(&m_buffer[0], m_buffer.length - m_zlib.m_stream.avail_out);
+			send(m_buffer.ptr, m_buffer.length - m_zlib.m_stream.avail_out);
 			
 			if (m_zlib.m_stream.avail_out == m_buffer.length)
 				break;
@@ -163,9 +163,9 @@ public:
 		m_zlib.m_stream.next_in = input;
 		m_zlib.m_stream.avail_in = length;
 		
-		while(m_zlib.m_stream.avail_in != 0)
+		while (m_zlib.m_stream.avail_in != 0)
 		{
-			m_zlib.m_stream.next_out = cast(ubyte*)(&m_buffer[0]);
+			m_zlib.m_stream.next_out = cast(ubyte*)(m_buffer.ptr);
 			m_zlib.m_stream.avail_out = m_buffer.length;
 			
 			int rc = inflate(&(m_zlib.m_stream), Z_SYNC_FLUSH);
@@ -183,7 +183,7 @@ public:
 					throw new Exception("Zlib decompression: Unknown error");
 			}
 			
-			send(&m_buffer[0], m_buffer.length - m_zlib.m_stream.avail_out);
+			send(m_buffer.ptr, m_buffer.length - m_zlib.m_stream.avail_out);
 			
 			if (rc == Z_STREAM_END)
 			{
@@ -222,9 +222,9 @@ public:
 		
 		int rc = Z_OK;
 		
-		while(rc != Z_STREAM_END)
+		while (rc != Z_STREAM_END)
 		{
-			m_zlib.m_stream.next_out = cast(ubyte*)(&m_buffer[0]);
+			m_zlib.m_stream.next_out = cast(ubyte*)(m_buffer.ptr);
 			m_zlib.m_stream.avail_out = m_buffer.length;
 			rc = inflate(&(m_zlib.m_stream), Z_SYNC_FLUSH);
 			
@@ -234,7 +234,7 @@ public:
 				throw new Decoding_Error("Zlib_Decompression: Error finalizing");
 			}
 			
-			send(&m_buffer[0], m_buffer.length - m_zlib.m_stream.avail_out);
+			send(m_buffer.ptr, m_buffer.length - m_zlib.m_stream.avail_out);
 		}
 		
 		clear();

@@ -56,7 +56,7 @@ private:
 		
 		foreach (size_t i; 0 .. blocks)
 		{
-			load_le(&m_X[0], input, 16);
+			load_le(m_X.ptr, input, 16);
 			
 			m_X[16] = m_X[ 0] ^ m_X[ 1] ^ m_X[ 2] ^ m_X[ 3];
 			m_X[17] = m_X[ 4] ^ m_X[ 5] ^ m_X[ 6] ^ m_X[ 7];

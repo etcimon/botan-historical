@@ -207,7 +207,7 @@ private:
 		{
 			BER_Decoder cert_list = BER_Decoder(next.value);
 			
-			while(cert_list.more_items())
+			while (cert_list.more_items())
 			{
 				CRL_Entry entry = CRL_Entry(m_throw_on_unknown_critical);
 				cert_list.decode(entry);

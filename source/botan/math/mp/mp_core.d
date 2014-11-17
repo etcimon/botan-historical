@@ -26,8 +26,8 @@ const size_t MP_WORD_BITS = BOTAN_MP_WORD_BITS;
 * Multiplication Algorithm Dispatcher
 */
 void bigint_mul(word* z, size_t z_size, word* workspace,
-                const word* x, size_t x_size, size_t x_sw,
-                const word* y, size_t y_size, size_t y_sw)
+                in word* x, size_t x_size, size_t x_sw,
+                in word* y, size_t y_size, size_t y_sw)
 {
 	if (x_sw == 1)
 	{
@@ -78,7 +78,7 @@ void bigint_mul(word* z, size_t z_size, word* workspace,
 * Squaring Algorithm Dispatcher
 */
 void bigint_sqr(word* z, size_t z_size, word* workspace,
-                const word* x, size_t x_size, size_t x_sw)
+                in word* x, size_t x_size, size_t x_sw)
 {
 	if (x_sw == 1)
 	{
@@ -122,7 +122,7 @@ void bigint_sqr(word* z, size_t z_size, word* workspace,
 * @param y the second operand
 * @param y_size size of y (must be >= x_size)
 */
-void bigint_add2(word* x, size_t x_size, const word* y, size_t y_size)
+void bigint_add2(word* x, size_t x_size, in word* y, size_t y_size)
 {
 	if (bigint_add2_nc(x, x_size, y, y_size))
 		x[x_size] += 1;
@@ -131,8 +131,8 @@ void bigint_add2(word* x, size_t x_size, const word* y, size_t y_size)
 /**
 * Three operand addition
 */
-void bigint_add3(word* z, const word* x, size_t x_size,
-                 const word* y, size_t y_size)
+void bigint_add3(word* z, in word* x, size_t x_size,
+                 in word* y, size_t y_size)
 {
 	z[(x_size > y_size ? x_size : y_size)] += bigint_add3_nc(z, x, x_size, y, y_size);
 }
@@ -140,7 +140,7 @@ void bigint_add3(word* z, const word* x, size_t x_size,
 /**
 * Two operand addition with carry out
 */
-word bigint_add2_nc(word* x, size_t x_size, const word* y, size_t y_size)
+word bigint_add2_nc(word* x, size_t x_size, in word* y, size_t y_size)
 {
 	word carry = 0;
 	
@@ -161,8 +161,8 @@ word bigint_add2_nc(word* x, size_t x_size, const word* y, size_t y_size)
 /**
 * Three operand addition with carry out
 */
-word bigint_add3_nc(word* z, const word* x, size_t x_size,
-                    const word* y, size_t y_size)
+word bigint_add3_nc(word* z, in word* x, size_t x_size,
+                    in word* y, size_t y_size)
 {
 	if (x_size < y_size)
 	{ return bigint_add3_nc(z, y, y_size, x, x_size); }
@@ -186,7 +186,7 @@ word bigint_add3_nc(word* z, const word* x, size_t x_size,
 /**
 * Two operand subtraction
 */
-word bigint_sub2(word* x, size_t x_size, const word* y, size_t y_size)
+word bigint_sub2(word* x, size_t x_size, in word* y, size_t y_size)
 {
 	word borrow = 0;
 	
@@ -207,7 +207,7 @@ word bigint_sub2(word* x, size_t x_size, const word* y, size_t y_size)
 /**
 * Two operand subtraction, x = y - x; assumes y >= x
 */
-void bigint_sub2_rev(word* x,  const word* y, size_t y_size)
+void bigint_sub2_rev(word* x,  in word* y, size_t y_size)
 {
 	word borrow = 0;
 	
@@ -226,8 +226,8 @@ void bigint_sub2_rev(word* x,  const word* y, size_t y_size)
 /**
 * Three operand subtraction
 */
-word bigint_sub3(word* z, const word* x, size_t x_size,
-                 const word* y, size_t y_size)
+word bigint_sub3(word* z, in word* x, size_t x_size,
+                 in word* y, size_t y_size)
 {
 	word borrow = 0;
 	
@@ -295,7 +295,7 @@ void bigint_shr1(word* x, size_t x_size, size_t word_shift, size_t bit_shift)
 		
 		size_t top = x_size - word_shift;
 		
-		while(top >= 4)
+		while (top >= 4)
 		{
 			word w = x[top-1];
 			x[top-1] = (w >> bit_shift) | carry;
@@ -316,7 +316,7 @@ void bigint_shr1(word* x, size_t x_size, size_t word_shift, size_t bit_shift)
 			top -= 4;
 		}
 		
-		while(top)
+		while (top)
 		{
 			word w = x[top-1];
 			x[top-1] = (w >> bit_shift) | carry;
@@ -330,7 +330,7 @@ void bigint_shr1(word* x, size_t x_size, size_t word_shift, size_t bit_shift)
 /*
 * Two Operand Left Shift
 */
-void bigint_shl2(word* y, const word* x, size_t x_size,
+void bigint_shl2(word* y, in word* x, size_t x_size,
                  size_t word_shift, size_t bit_shift)
 {
 	foreach (size_t j; 0 .. x_size)
@@ -350,7 +350,7 @@ void bigint_shl2(word* y, const word* x, size_t x_size,
 /*
 * Two Operand Right Shift
 */
-void bigint_shr2(word* y, const word* x, size_t x_size,
+void bigint_shr2(word* y, in word* x, size_t x_size,
                  size_t word_shift, size_t bit_shift)
 {
 	if (x_size < word_shift) return;
@@ -376,8 +376,8 @@ void bigint_shr2(word* y, const word* x, size_t x_size,
 /*
 * Simple O(N^2) Multiplication
 */
-void bigint_simple_mul(word* z, const word* x, size_t x_size,
-                       const word* y, size_t y_size)
+void bigint_simple_mul(word* z, in word* x, size_t x_size,
+                       in word* y, size_t y_size)
 {
 	const size_t x_size_8 = x_size - (x_size % 8);
 	
@@ -410,7 +410,7 @@ void bigint_simple_mul(word* z, const word* x, size_t x_size,
 * Applied Cryptography, chapter 14
 *
 */
-void bigint_simple_sqr(word* z, const word* x, size_t x_size)
+void bigint_simple_sqr(word* z, in word* x, size_t x_size)
 {
 	const size_t x_size_8 = x_size - (x_size % 8);
 	
@@ -456,7 +456,7 @@ void bigint_linmul2(word* x, size_t x_size, word y)
 /*
 * Three Operand Linear Multiply
 */
-void bigint_linmul3(word* z, const word* x, size_t x_size, word y)
+void bigint_linmul3(word* z, in word* x, size_t x_size, word y)
 {
 	const size_t blocks = x_size - (x_size % 8);
 	
@@ -483,7 +483,7 @@ void bigint_linmul3(word* z, const word* x, size_t x_size, word y)
 * @param workspace array of at least 2*(p_size+1) words
 */
 void bigint_monty_redc(word* z,
-                       const word* p, size_t p_size,
+                       in word* p, size_t p_size,
                        word p_dash, word* ws)
 {
 	const size_t z_size = 2*(p_size+1);
@@ -537,18 +537,18 @@ void bigint_monty_redc(word* z,
 * Montgomery Multiplication
 */
 void bigint_monty_mul(word* z, size_t z_size,
-                      const word* x, size_t x_size, size_t x_sw,
-                      const word* y, size_t y_size, size_t y_sw,
-                      const word* p, size_t p_size, word p_dash,
+                      in word* x, size_t x_size, size_t x_sw,
+                      in word* y, size_t y_size, size_t y_sw,
+                      in word* p, size_t p_size, word p_dash,
                       word* ws)
 {
-	bigint_mul(&z[0], z_size, &ws[0],
-	&x[0], x_size, x_sw,
-	&y[0], y_size, y_sw);
+	bigint_mul(z.ptr, z_size, ws.ptr,
+	x.ptr, x_size, x_sw,
+	y.ptr, y_size, y_sw);
 	
-	bigint_monty_redc(&z[0],
-	&p[0], p_size, p_dash,
-	&ws[0]);
+	bigint_monty_redc(z.ptr,
+	p.ptr, p_size, p_dash,
+	ws.ptr);
 }
 
 
@@ -556,27 +556,27 @@ void bigint_monty_mul(word* z, size_t z_size,
 * Montgomery Squaring
 */
 void bigint_monty_sqr(word* z, size_t z_size,
-                      const word* x, size_t x_size, size_t x_sw,
-                      const word* p, size_t p_size, word p_dash,
+                      in word* x, size_t x_size, size_t x_sw,
+                      in word* p, size_t p_size, word p_dash,
                       word* ws)
 {
-	bigint_sqr(&z[0], z_size, &ws[0],
-	&x[0], x_size, x_sw);
+	bigint_sqr(z.ptr, z_size, ws.ptr,
+	x.ptr, x_size, x_sw);
 	
-	bigint_monty_redc(&z[0],
-	&p[0], p_size, p_dash,
-	&ws[0]);
+	bigint_monty_redc(z.ptr,
+	p.ptr, p_size, p_dash,
+	ws.ptr);
 }
 
 /**
 * Compare x and y
 */
-int bigint_cmp(const word* x, size_t x_size,
-               const word* y, size_t y_size)
+int bigint_cmp(in word* x, size_t x_size,
+               in word* y, size_t y_size)
 {
 	if (x_size < y_size) { return (-bigint_cmp(y, y_size, x, x_size)); }
 	
-	while(x_size > y_size)
+	while (x_size > y_size)
 	{
 		if (x[x_size-1])
 			return 1;
@@ -636,7 +636,7 @@ word bigint_modop(word n1, word n0, word d)
 /*
 * Comba 4x4 Squaring
 */
-void bigint_comba_sqr4(word[8]* z, const word[4]* x)
+void bigint_comba_sqr4(word[8]* z, in word[4]* x)
 {
 	word w2 = 0, w1 = 0, w0 = 0;
 	
@@ -669,7 +669,7 @@ void bigint_comba_sqr4(word[8]* z, const word[4]* x)
 /*
 * Comba 4x4 Multiplication
 */
-void bigint_comba_mul4(word[8]* z, const word[4]* x, const word[4]* y)
+void bigint_comba_mul4(word[8]* z, in word[4]* x, in word[4]* y)
 {
 	word w2 = 0, w1 = 0, w0 = 0;
 	
@@ -708,7 +708,7 @@ void bigint_comba_mul4(word[8]* z, const word[4]* x, const word[4]* y)
 /*
 * Comba 6x6 Squaring
 */
-void bigint_comba_sqr6(word[12]* z, const word[6]* x)
+void bigint_comba_sqr6(word[12]* z, in word[6]* x)
 {
 	word w2 = 0, w1 = 0, w0 = 0;
 	
@@ -760,7 +760,7 @@ void bigint_comba_sqr6(word[12]* z, const word[6]* x)
 /*
 * Comba 6x6 Multiplication
 */
-void bigint_comba_mul6(word[12]* z, const word[6]* x, const word[6]* y)
+void bigint_comba_mul6(word[12]* z, in word[6]* x, in word[6]* y)
 {
 	word w2 = 0, w1 = 0, w0 = 0;
 	
@@ -827,7 +827,7 @@ void bigint_comba_mul6(word[12]* z, const word[6]* x, const word[6]* y)
 /*
 * Comba 8x8 Squaring
 */
-void bigint_comba_sqr8(word[16]* z, const word[8]* x)
+void bigint_comba_sqr8(word[16]* z, in word[8]* x)
 {
 	word w2 = 0, w1 = 0, w0 = 0;
 	
@@ -902,7 +902,7 @@ void bigint_comba_sqr8(word[16]* z, const word[8]* x)
 /*
 * Comba 8x8 Multiplication
 */
-void bigint_comba_mul8(word[16]* z, const word[8]* x, const word[8]* y)
+void bigint_comba_mul8(word[16]* z, in word[8]* x, in word[8]* y)
 {
 	word w2 = 0, w1 = 0, w0 = 0;
 	
@@ -1005,7 +1005,7 @@ void bigint_comba_mul8(word[16]* z, const word[8]* x, const word[8]* y)
 /*
 * Comba 16x16 Squaring
 */
-void bigint_comba_sqr16(word[32]* z, const word[16]* x)
+void bigint_comba_sqr16(word[32]* z, in word[16]* x)
 {
 	word w2 = 0, w1 = 0, w0 = 0;
 	
@@ -1212,7 +1212,7 @@ void bigint_comba_sqr16(word[32]* z, const word[16]* x)
 /*
 * Comba 16x16 Multiplication
 */
-void bigint_comba_mul16(word[32]* z, const word[16]* x, const word[16]* y)
+void bigint_comba_mul16(word[32]* z, in word[16]* x, in word[16]* y)
 {
 	word w2 = 0, w1 = 0, w0 = 0;
 	
@@ -1606,7 +1606,7 @@ word word_add(word x, word y, word* carry)
 /*
 * Eight Word Block Addition, Two Argument
 */
-word word8_add2(word x[8], const word y[8], word carry)
+word word8_add2(word[8]* x, in word[8]* y, word carry)
 {
 	x[0] = word_add(x[0], y[0], &carry);
 	x[1] = word_add(x[1], y[1], &carry);
@@ -1622,8 +1622,7 @@ word word8_add2(word x[8], const word y[8], word carry)
 /*
 * Eight Word Block Addition, Three Argument
 */
-word word8_add3(word z[8], const word x[8],
-const word y[8], word carry)
+word word8_add3(word[8]* z, in word[8]* x, in word[8]* y, word carry)
 {
 	z[0] = word_add(x[0], y[0], &carry);
 	z[1] = word_add(x[1], y[1], &carry);
@@ -1651,7 +1650,7 @@ word word_sub(word x, word y, word* carry)
 /*
 * Eight Word Block Subtraction, Two Argument
 */
-word word8_sub2(word x[8], const word y[8], word carry)
+word word8_sub2(word[8]* x, in word[8]* y, word carry)
 {
 	x[0] = word_sub(x[0], y[0], &carry);
 	x[1] = word_sub(x[1], y[1], &carry);
@@ -1667,7 +1666,7 @@ word word8_sub2(word x[8], const word y[8], word carry)
 /*
 * Eight Word Block Subtraction, Two Argument
 */
-word word8_sub2_rev(word x[8], const word y[8], word carry)
+word word8_sub2_rev(word[8]* x, in word[8]* y, word carry)
 {
 	x[0] = word_sub(y[0], x[0], &carry);
 	x[1] = word_sub(y[1], x[1], &carry);
@@ -1683,8 +1682,7 @@ word word8_sub2_rev(word x[8], const word y[8], word carry)
 /*
 * Eight Word Block Subtraction, Three Argument
 */
-word word8_sub3(word z[8], const word x[8],
-const word y[8], word carry)
+word word8_sub3(word[8]* z, in word[8]* x, in word[8]* y, word carry)
 {
 	z[0] = word_sub(x[0], y[0], &carry);
 	z[1] = word_sub(x[1], y[1], &carry);
@@ -1700,7 +1698,7 @@ const word y[8], word carry)
 /*
 * Eight Word Block Linear Multiplication
 */
-word word8_linmul2(word x[8], word y, word carry)
+word word8_linmul2(word[8]* x, word y, word carry)
 {
 	x[0] = word_madd2(x[0], y, &carry);
 	x[1] = word_madd2(x[1], y, &carry);
@@ -1716,7 +1714,7 @@ word word8_linmul2(word x[8], word y, word carry)
 /*
 * Eight Word Block Linear Multiplication
 */
-word word8_linmul3(word z[8], const word x[8], word y, word carry)
+word word8_linmul3(word[8]* z, in word[8]* x, word y, word carry)
 {
 	z[0] = word_madd2(x[0], y, &carry);
 	z[1] = word_madd2(x[1], y, &carry);
@@ -1732,7 +1730,7 @@ word word8_linmul3(word z[8], const word x[8], word y, word carry)
 /*
 * Eight Word Block Multiply/Add
 */
-word word8_madd3(word z[8], const word x[8], word y, word carry)
+word word8_madd3(word[8]* z, in word[8]* x, word y, word carry)
 {
 	z[0] = word_madd3(x[0], y, z[0], &carry);
 	z[1] = word_madd3(x[1], y, z[1], &carry);
@@ -1782,7 +1780,7 @@ __gshared immutable size_t KARATSUBA_SQUARE_THRESHOLD = 32;
 /*
 * Karatsuba Multiplication Operation
 */
-void karatsuba_mul(word* z, const word* x, const word* y, size_t N,
+void karatsuba_mul(word* z, in word* x, in word* y, size_t N,
                    word* workspace)
 {
 	if (N < KARATSUBA_MULTIPLY_THRESHOLD || N % 2)
@@ -1844,7 +1842,7 @@ void karatsuba_mul(word* z, const word* x, const word* y, size_t N,
 /*
 * Karatsuba Squaring Operation
 */
-void karatsuba_sqr(word* z, const word* x, size_t N, word* workspace)
+void karatsuba_sqr(word* z, in word* x, size_t N, word* workspace)
 {
 	if (N < KARATSUBA_SQUARE_THRESHOLD || N % 2)
 	{

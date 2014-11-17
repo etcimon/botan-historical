@@ -19,6 +19,7 @@ import botan.utils.types;
 import std.array : Appender;
 
 alias ASN1_Car = FreeListRef!ASN1_Car_Impl;
+alias ASN1_Chr = FreeListRef!ASN1_Chr_Impl;
 alias ASN1_Cex = FreeListRef!ASN1_Cex_Impl;
 alias ASN1_Ced = FreeListRef!ASN1_Ced_Impl;
 
@@ -251,36 +252,36 @@ public:
 	/*
 	* Compare two EAC_Times for in various ways
 	*/
-	bool opEquals(const ref EAC_Time t2)
+	bool opEquals(in EAC_Time t2)
 	{
 		return (cmp(t2) == 0);
 	}
 	
-	bool opCmp(string op)(const ref EAC_Time t2)
+	bool opCmp(string op)(in EAC_Time t2)
 		if (op == "!=")
 	{
 		return (cmp(t2) != 0);
 	}
 
-	bool opCmp(string op)(const ref EAC_Time t2)
+	bool opCmp(string op)(in EAC_Time t2)
 		if (op == "<=")
 	{
 		return (cmp(t2) <= 0);
 	}
 
-	bool opCmp(string op)(const ref EAC_Time t2)
+	bool opCmp(string op)(in EAC_Time t2)
 		if (op == ">=")
 	{
 		return (cmp(t2) >= 0);
 	}
 
-	bool opBinary(string op)(const ref EAC_Time t2)
+	bool opBinary(string op)(in EAC_Time t2)
 		if (op == ">")
 	{
 		return (cmp(t2) > 0);
 	}
 
-	bool opBinary(string op)(const ref EAC_Time t2)
+	bool opBinary(string op)(in EAC_Time t2)
 		if (op == "<")
 	{
 		return (cmp(t2) < 0);
@@ -469,12 +470,12 @@ public:
 			throw new Invalid_Argument("ASN1_EAC_String contains illegal characters");
 	}
 
-	bool opEquals(const ref ASN1_EAC_String rhs)
+	bool opEquals(in ASN1_EAC_String rhs)
 	{
 		return (iso_8859() == rhs.iso_8859());
 	}
 
-	bool opCmp(string op)(const ref ASN1_EAC_String rhs)
+	bool opCmp(string op)(in ASN1_EAC_String rhs)
 		if (op == "!=")
 	{
 		return !(lhs == rhs);
@@ -513,7 +514,7 @@ public:
 	* Create a CAR with the specified content.
 	* @param str the CAR value
 	*/
-	this(const ref string str)
+	this(in string str)
 	{
 		super(str, ASN1_Tag(2));
 
@@ -524,14 +525,14 @@ public:
 /**
 * This class represents CHRs of CVCs (tag 32)
 */
-final class ASN1_Chr : ASN1_EAC_String
+final class ASN1_Chr_Impl : ASN1_EAC_String
 {
 public:
 	/**
 	* Create a CHR with the specified content.
 	* @param str the CHR value
 	*/
-	this(const ref string str)
+	this(in string str)
 	{
 		super(str, ASN1_Tag(32));
 	}

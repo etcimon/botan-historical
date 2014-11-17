@@ -21,14 +21,14 @@ void mgf1_mask(HashFunction hash,
 {
 	uint counter = 0;
 	
-	while(out_len)
+	while (out_len)
 	{
 		hash.update(input, in_len);
 		hash.update_be(counter);
 		Secure_Vector!ubyte buffer = hash.flush();
 		
 		size_t xored = std.algorithm.min(buffer.length, out_len);
-		xor_buf(output, &buffer[0], xored);
+		xor_buf(output, buffer.ptr, xored);
 		output += xored;
 		out_len -= xored;
 		

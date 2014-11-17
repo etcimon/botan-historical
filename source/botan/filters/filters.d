@@ -42,10 +42,10 @@ public:
 	*/
 	void write(in ubyte* input, size_t length)
 	{
-		while(length)
+		while (length)
 		{
 			size_t copied = std.algorithm.min(length, m_buffer.length);
-			m_cipher.cipher(input, &m_buffer[0], copied);
+			m_cipher.cipher(input, m_buffer.ptr, copied);
 			send(m_buffer, copied);
 			input += copied;
 			length -= copied;
@@ -89,8 +89,7 @@ public:
 	* @param cipher_obj a cipher object to use
 	* @param key the key to use inside this filter
 	*/
-	this(StreamCipher stream_cipher,
-	     const ref SymmetricKey key)
+	this(StreamCipher stream_cipher, in SymmetricKey key)
 	{
 		m_buffer = DEFAULT_BUFFERSIZE;
 		m_cipher = stream_cipher;
@@ -114,8 +113,7 @@ public:
 	* @param cipher the name of the desired cipher
 	* @param key the key to use inside this filter
 	*/
-	this(in string sc_name,
-	     const ref SymmetricKey key)
+	this(in string sc_name, in SymmetricKey key)
 	{
 		m_buffer = DEFAULT_BUFFERSIZE;
 		Algorithm_Factory af = global_state().algorithm_factory();
@@ -173,8 +171,7 @@ public:
 	* hash. Otherwise, specify a smaller value here so that the
 	* output of the hash algorithm will be cut off.
 	*/
-	this(in string algo_spec,
-	     size_t len = 0)
+	this(in string algo_spec, size_t len = 0)
 	{
 		m_OUTPUT_LENGTH = len;
 		Algorithm_Factory af = global_state().algorithm_factory();
@@ -240,9 +237,7 @@ public:
 	* MAC. Otherwise, specify a smaller value here so that the
 	* output of the MAC will be cut off.
 	*/
-	this(MessageAuthenticationCode mac_obj,
-				  const ref SymmetricKey key,
-				  size_t out_len = 0)
+	this(MessageAuthenticationCode mac_obj, in SymmetricKey key, size_t out_len = 0)
 	{
 		m_OUTPUT_LENGTH = out_len;
 		m_mac = mac_obj;
@@ -273,16 +268,13 @@ public:
 	* MAC. Otherwise, specify a smaller value here so that the
 	* output of the MAC will be cut off.
 	*/
-	this(in string mac_name, const ref SymmetricKey key,
-	     size_t len = 0)
+	this(in string mac_name, in SymmetricKey key, size_t len = 0)
 	{
 		m_OUTPUT_LENGTH = len;
 		Algorithm_Factory af = global_state().algorithm_factory();
 		m_mac = af.make_mac(mac_name);
 		m_mac.set_key(key);
 	}
-	
-
 
 	~this() { delete m_mac; }
 private:

@@ -49,11 +49,11 @@ public:
 		
 		foreach (socket; m_sockets)
 		{
-			size_t got = socket.read(&io_buffer[0], io_buffer.length);
+			size_t got = socket.read(io_buffer.ptr, io_buffer.length);
 			
 			if (got)
 			{
-				accum.add(&io_buffer[0], got, 6);
+				accum.add(io_buffer.ptr, got, 6);
 				break;
 			}
 		}

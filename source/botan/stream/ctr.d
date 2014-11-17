@@ -22,7 +22,7 @@ final class CTR_BE : StreamCipher
 public:
 	void cipher(in ubyte* input, ubyte* output)
 	{
-		while(length >= m_pad.length - m_pad_pos)
+		while (length >= m_pad.length - m_pad_pos)
 		{
 			xor_buf(output, input, &m_pad[m_pad_pos], m_pad.length - m_pad_pos);
 			length -= (m_pad.length - m_pad_pos);
@@ -56,7 +56,7 @@ public:
 					break;
 		}
 		
-		m_cipher.encrypt_n(&m_counter[0], &m_pad[0], 256);
+		m_cipher.encrypt_n(m_counter.ptr, m_pad.ptr, 256);
 		m_pad_pos = 0;
 	}
 
@@ -122,7 +122,7 @@ private:
 					break;
 		}
 		
-		m_cipher.encrypt_n(&m_counter[0], &m_pad[0], 256);
+		m_cipher.encrypt_n(m_counter.ptr, m_pad.ptr, 256);
 		m_pad_pos = 0;
 	}
 

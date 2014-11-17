@@ -34,7 +34,7 @@ public:
 	     Credentials_Manager creds,
 	     const Policy policy,
 	     RandomNumberGenerator rng,
-	     in string[] next_protocols = [],
+	     in Vector!string next_protocols = Vector!string(),
 		 size_t io_buf_sz = 16*1024) 
 	{
 		super(output_fn, data_cb, alert_cb, handshake_cb, session_manager, rng, io_buf_sz);

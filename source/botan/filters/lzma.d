@@ -31,9 +31,9 @@ public:
 		m_lzma.m_stream.next_in = cast(const ubyte*)(input);
 		m_lzma.m_stream.avail_in = length;
 		
-		while(m_lzma.m_stream.avail_in != 0)
+		while (m_lzma.m_stream.avail_in != 0)
 		{
-			m_lzma.m_stream.next_out = cast(ubyte*)(&m_buffer[0]);
+			m_lzma.m_stream.next_out = cast(ubyte*)(m_buffer.ptr);
 			m_lzma.m_stream.avail_out = m_buffer.length;
 			
 			lzma_ret ret = lzma_code(&(m_lzma.m_stream), LZMA_RUN);
@@ -43,7 +43,7 @@ public:
 			else if (ret != LZMA_OK)
 				throw new Exception("Lzma compression: Error writing");
 			
-			send(&m_buffer[0], m_buffer.length - m_lzma.m_stream.avail_out);
+			send(m_buffer.ptr, m_buffer.length - m_lzma.m_stream.avail_out);
 		}
 	}
 
@@ -72,13 +72,13 @@ public:
 		m_lzma.m_stream.avail_in = 0;
 		
 		int ret = LZMA_OK;
-		while(ret != LZMA_STREAM_END)
+		while (ret != LZMA_STREAM_END)
 		{
-			m_lzma.m_stream.next_out = cast(ubyte*)(&m_buffer[0]);
+			m_lzma.m_stream.next_out = cast(ubyte*)(m_buffer.ptr);
 			m_lzma.m_stream.avail_out = m_buffer.length;
 			
 			ret = lzma_code(&(m_lzma.m_stream), LZMA_FINISH);
-			send(&m_buffer[0], m_buffer.length - m_lzma.m_stream.avail_out);
+			send(m_buffer.ptr, m_buffer.length - m_lzma.m_stream.avail_out);
 		}
 		
 		clear();
@@ -92,9 +92,9 @@ public:
 		m_lzma.m_stream.next_in = 0;
 		m_lzma.m_stream.avail_in = 0;
 		
-		while(true)
+		while (true)
 		{
-			m_lzma.m_stream.next_out = cast(ubyte*)(&m_buffer[0]);
+			m_lzma.m_stream.next_out = cast(ubyte*)(m_buffer.ptr);
 			m_lzma.m_stream.avail_out = m_buffer.length;
 			
 			lzma_ret ret = lzma_code(&(m_lzma.m_stream), LZMA_FULL_FLUSH);
@@ -104,7 +104,7 @@ public:
 			else if (ret != LZMA_OK && ret != LZMA_STREAM_END)
 				throw new Exception("Lzma compression: Error flushing");
 			
-			send(&m_buffer[0], m_buffer.length - m_lzma.m_stream.avail_out);
+			send(m_buffer.ptr, m_buffer.length - m_lzma.m_stream.avail_out);
 			
 			if (m_lzma.m_stream.avail_out == m_buffer.length)
 				break;
@@ -162,9 +162,9 @@ public:
 		m_lzma.m_stream.next_in = input;
 		m_lzma.m_stream.avail_in = length;
 		
-		while(m_lzma.m_stream.avail_in != 0)
+		while (m_lzma.m_stream.avail_in != 0)
 		{
-			m_lzma.m_stream.next_out = cast(ubyte*)(&m_buffer[0]);
+			m_lzma.m_stream.next_out = cast(ubyte*)(m_buffer.ptr);
 			m_lzma.m_stream.avail_out = m_buffer.length;
 			
 			lzma_ret ret = lzma_code(&(m_lzma.m_stream), LZMA_RUN);
@@ -180,7 +180,7 @@ public:
 					throw new Exception("Lzma decompression: Unknown error");
 			}
 			
-			send(&m_buffer[0], m_buffer.length - lzma.m_stream.avail_out);
+			send(m_buffer.ptr, m_buffer.length - lzma.m_stream.avail_out);
 			
 			if (ret == LZMA_STREAM_END)
 			{
@@ -223,9 +223,9 @@ public:
 		
 		int ret = LZMA_OK;
 		
-		while(ret != LZMA_STREAM_END)
+		while (ret != LZMA_STREAM_END)
 		{
-			m_lzma.m_stream.next_out = cast(ubyte*)(&m_buffer[0]);
+			m_lzma.m_stream.next_out = cast(ubyte*)(m_buffer.ptr);
 			m_lzma.m_stream.avail_out = m_buffer.length;
 			ret = lzma_code(&(m_lzma.m_stream), LZMA_FINISH);
 			
@@ -235,7 +235,7 @@ public:
 				throw new Decoding_Error("Lzma_Decompression: Error finalizing");
 			}
 			
-			send(&m_buffer[0], m_buffer.length - m_lzma.m_stream.avail_out);
+			send(m_buffer.ptr, m_buffer.length - m_lzma.m_stream.avail_out);
 		}
 		
 		clear();

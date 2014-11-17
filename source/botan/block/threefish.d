@@ -12,6 +12,7 @@ static if (BOTAN_HAS_THREEFISH_512):
 import botan.utils.rotate;
 import botan.utils.loadstor;
 import botan.block.block_cipher;
+import botan.utils.types;
 
 /**
 * Threefish-512
@@ -112,8 +113,8 @@ public:
 	}
 
 protected:
-	final const ref Secure_Vector!ulong get_T() const { return m_T; }
-	final const ref Secure_Vector!ulong get_K() const { return m_K; }
+	final const Secure_Vector!ulong get_T() const { return m_T; }
+	final const Secure_Vector!ulong get_K() const { return m_K; }
 private:
 	override void key_schedule(in ubyte* key, size_t)
 	{
@@ -128,8 +129,7 @@ private:
 	}
 
 
-	final void skein_feedfwd(in Secure_Vector!ulong M,
-	                   			const ref Secure_Vector!ulong T)
+	final void skein_feedfwd(in Secure_Vector!ulong M, in Secure_Vector!ulong T)
 	{
 		assert(m_K.length == 9, "Key was set");
 		assert(M.length == 8, "Single block");

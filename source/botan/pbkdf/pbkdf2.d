@@ -57,7 +57,7 @@ public:
 		
 		Secure_Vector!ubyte key = Secure_Vector!ubyte(key_len);
 		
-		ubyte* T = &key[0];
+		ubyte* T = key.ptr;
 		
 		Secure_Vector!ubyte U = Secure_Vector!ubyte(m_mac.output_length);
 		
@@ -66,15 +66,15 @@ public:
 		Duration dur_per_block = loop_for / blocks_needed;
 		
 		uint counter = 1;
-		while(key_len)
+		while (key_len)
 		{
 			size_t T_size = std.algorithm.min(mac.output_length, key_len);
 			
 			m_mac.update(salt, salt_len);
 			m_mac.update_be(counter);
-			m_mac.flushInto(&U[0]);
+			m_mac.flushInto(U.ptr);
 			
-			xor_buf(T, &U[0], T_size);
+			xor_buf(T, U.ptr, T_size);
 			
 			if (iterations == 0)
 			{
@@ -87,11 +87,11 @@ public:
 				
 				iterations = 1; // the first iteration we did above
 				
-				while(true)
+				while (true)
 				{
 					m_mac.update(U);
-					m_mac.flushInto(&U[0]);
-					xor_buf(T, &U[0], T_size);
+					m_mac.flushInto(U.ptr);
+					xor_buf(T, U.ptr, T_size);
 					iterations++;
 					
 					/*
@@ -112,8 +112,8 @@ public:
 				foreach (size_t i; 1 .. iterations)
 				{
 					m_mac.update(U);
-					m_mac.flushInto(&U[0]);
-					xor_buf(T, &U[0], T_size);
+					m_mac.flushInto(U.ptr);
+					xor_buf(T, U.ptr, T_size);
 				}
 			}
 			

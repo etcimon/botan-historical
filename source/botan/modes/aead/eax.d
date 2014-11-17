@@ -32,7 +32,7 @@ public:
 		
 		m_nonce_mac = eax_prf(0, this.block_size, *m_cmac, nonce, nonce_len);
 		
-		m_ctr.set_iv(&m_nonce_mac[0], m_nonce_mac.length);
+		m_ctr.set_iv(m_nonce_mac.ptr, m_nonce_mac.length);
 		
 		for (size_t i = 0; i != this.block_size - 1; ++i)
 			m_cmac.update(0);
@@ -154,7 +154,7 @@ public:
 		xor_buf(data_mac, m_nonce_mac, data_mac.length);
 		xor_buf(data_mac, m_ad_mac, data_mac.length);
 		
-		buffer += Pair(&data_mac[0], tag_size());
+		buffer += Pair(data_mac.ptr, tag_size());
 	}
 }
 
@@ -213,7 +213,7 @@ public:
 		mac ^= m_nonce_mac;
 		mac ^= m_ad_mac;
 		
-		if (!same_mem(&mac[0], included_tag, tag_size()))
+		if (!same_mem(mac.ptr, included_tag, tag_size()))
 			throw new Integrity_Failure("EAX tag check failed");
 		
 		buffer.resize(offset + remaining);

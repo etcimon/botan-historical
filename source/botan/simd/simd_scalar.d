@@ -206,5 +206,5 @@ private:
 			m_v[i] = v;
 	}
 
-	T m_v[N];
+	T[N] m_v;
 }

@@ -6,7 +6,7 @@
 */
 module botan.tls.tls_alert;
 
-import botan.alloc.zeroize;
+import botan.utils.memory.zeroize;
 // import string;
 import botan.utils.exceptn;
 import botan.utils.types;

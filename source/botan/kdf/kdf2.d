@@ -27,7 +27,7 @@ public:
 		Secure_Vector!ubyte output;
 		uint counter = 1;
 		
-		while(out_len && counter)
+		while (out_len && counter)
 		{
 			m_hash.update(secret, secret_len);
 			m_hash.update_be(counter);

@@ -272,7 +272,7 @@ public:
 	BigInt to_bigint() const
 	{
 		Secure_Vector!ubyte output = Secure_Vector!ubyte(bytes());
-		BN_bn2bin(m_bn, &output[0]);
+		BN_bn2bin(m_bn, output.ptr);
 		return BigInt.decode(output);
 	}
 	
@@ -313,7 +313,7 @@ public:
 		m_bn = BN_new();
 		Secure_Vector!ubyte encoding = BigInt.encode_locked(input);
 		if (input != 0)
-			BN_bin2bn(&encoding[0], encoding.length, m_bn);
+			BN_bin2bn(encoding.ptr, encoding.length, m_bn);
 	}
 	
 	/*
@@ -579,8 +579,8 @@ private:
 			EVP_CIPHER_CTX_ctrl(&m_decrypt, EVP_CTRL_SET_RC2_KEY_BITS, length*8, 0);
 		}
 		
-		EVP_EncryptInit_ex(&m_encrypt, 0, 0, &full_key[0], 0);
-		EVP_DecryptInit_ex(&m_decrypt, 0, 0, &full_key[0], 0);
+		EVP_EncryptInit_ex(&m_encrypt, 0, 0, full_key.ptr, 0);
+		EVP_DecryptInit_ex(&m_decrypt, 0, 0, full_key.ptr, 0);
 	}
 	
 	size_t m_block_sz;
@@ -733,7 +733,7 @@ static if (BOTAN_HAS_DSA) {
 			BigInt k_bn;
 			do
 				k_bn.randomize(rng, m_q_bits);
-			while(k_bn >= m_q.to_bigint());
+			while (k_bn >= m_q.to_bigint());
 			
 			OSSL_BN i = OSSL_BN(msg, msg_len);
 			OSSL_BN k = OSSL_BN(k_bn);
@@ -753,7 +753,7 @@ static if (BOTAN_HAS_DSA) {
 				throw new Internal_Error("OpenSSL_DSA_Op::sign: r or s was zero");
 			
 			Secure_Vector!ubyte output = Secure_Vector!ubyte(2*q_bytes);
-			r.encode(&output[0], q_bytes);
+			r.encode(output.ptr, q_bytes);
 			s.encode(&output[q_bytes], q_bytes);
 			return output;
 		}

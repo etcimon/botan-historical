@@ -136,19 +136,19 @@ time. A common idiom for this is::
 
    pipe.start_msg();
    SecureBuffer<byte, 4096> buffer;
-   while(infile.good())
+   while (infile.good())
       {
-      infile.read((char*)&buffer[0], buffer.length);
+      infile.read((char*)buffer.ptr, buffer.length);
       const size_t got_from_infile = infile.gcount();
       pipe.write(buffer, got_from_infile);
 
       if(infile.eof())
          pipe.end_msg();
 
-      while(pipe.remaining() > 0)
+      while (pipe.remaining() > 0)
          {
          const size_t buffered = pipe.read(buffer, buffer.length);
-         outfile.write((const char*)&buffer[0], buffered);
+         outfile.write((const char*)buffer.ptr, buffered);
          }
       }
    if(infile.bad() || (infile.fail() && !infile.eof()))

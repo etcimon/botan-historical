@@ -30,7 +30,7 @@ public:
 	{
 		const uint* KS = &(this.get_EK()[0]);
 		
-		while(blocks >= 8)
+		while (blocks >= 8)
 		{
 			xtea_encrypt_8(input, output, KS);
 			input += 8 * BLOCK_SIZE;
@@ -49,7 +49,7 @@ public:
 	{
 		const uint* KS = &(this.get_EK()[0]);
 		
-		while(blocks >= 8)
+		while (blocks >= 8)
 		{
 			xtea_decrypt_8(input, output, KS);
 			input += 8 * BLOCK_SIZE;
@@ -66,13 +66,13 @@ public:
 
 package:
 
-void xtea_encrypt_8(const ubyte[64]* input, ubyte[64]* output, const uint[64]* EK) pure
+void xtea_encrypt_8(in ubyte[64]* input, ubyte[64]* output, in uint[64]* EK) pure
 {
 	SIMD_32 L0 = SIMD_32.load_be(input	  );
 	SIMD_32 R0 = SIMD_32.load_be(input + 16);
 	SIMD_32 L1 = SIMD_32.load_be(input + 32);
 	SIMD_32 R1 = SIMD_32.load_be(input + 48);
-	
+
 	SIMD_32.transpose(L0, R0, L1, R1);
 	
 	foreach (size_t i; iota(0, 32, 2))
@@ -103,13 +103,13 @@ void xtea_encrypt_8(const ubyte[64]* input, ubyte[64]* output, const uint[64]* E
 	R1.store_be(output + 48);
 }
 
-void xtea_decrypt_8(const ubyte[64]* input, ubyte[64]* output, const uint[64]* EK)
+void xtea_decrypt_8(in ubyte[64]* input, ubyte[64]* output, in uint[64]* EK)
 {
 	SIMD_32 L0 = SIMD_32.load_be(input	  );
 	SIMD_32 R0 = SIMD_32.load_be(input + 16);
 	SIMD_32 L1 = SIMD_32.load_be(input + 32);
 	SIMD_32 R1 = SIMD_32.load_be(input + 48);
-	
+
 	SIMD_32.transpose(L0, R0, L1, R1);
 	
 	foreach (size_t i; iota(0, 32, 2))

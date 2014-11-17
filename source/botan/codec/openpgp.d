@@ -12,7 +12,6 @@ import botan.utils.charset;
 import botan.checksum.crc24;
 import botan.filters.data_src;
 import std.array : Appender;
-// import string;
 import botan.utils.hashmap;
 import botan.utils.types;
 
@@ -22,8 +21,7 @@ import botan.utils.types;
 * @param label the human-readable label
 * @param headers a set of key/value pairs included in the header
 */
-string PGP_encode(in ubyte* input, size_t length,
-                  in string label,
+string PGP_encode(in ubyte* input, size_t length, in string label,
                   in HashMap!(string, string) headers)
 {
 	const string PGP_HEADER = "-----BEGIN PGP " ~ label ~ "-----";
@@ -61,10 +59,9 @@ string PGP_encode(in ubyte* input, size_t length,
 /**
 * @param input the input data
 * @param length length of input in bytes
-* @param label the human-readable label
+* @param type the human-readable label
 */
-string PGP_encode(in ubyte* input, size_t length,
-                  in string type)
+string PGP_encode(in ubyte* input, size_t length, in string type)
 {
 	HashMap!(string, string) empty;
 	return PGP_encode(input, length, type, empty);
@@ -86,7 +83,7 @@ Secure_Vector!ubyte PGP_decode(DataSource source,
 	const string PGP_HEADER2 = "-----";
 	size_t position = 0;
 	
-	while(position != PGP_HEADER1.length)
+	while (position != PGP_HEADER1.length)
 	{
 		ubyte b;
 		if (!source.read_byte(b))
@@ -100,7 +97,7 @@ Secure_Vector!ubyte PGP_decode(DataSource source,
 	}
 	position = 0;
 	Appender!string label_buf;
-	while(position != PGP_HEADER2.length)
+	while (position != PGP_HEADER2.length)
 	{
 		ubyte b;
 		if (!source.read_byte(b))
@@ -116,11 +113,11 @@ Secure_Vector!ubyte PGP_decode(DataSource source,
 	label = label_buf.data;
 	headers.clear();
 	bool end_of_headers = false;
-	while(!end_of_headers)
+	while (!end_of_headers)
 	{
 		string this_header;
 		ubyte b = 0;
-		while(b != '\n')
+		while (b != '\n')
 		{
 			if (!source.read_byte(b))
 				throw new Decoding_Error("PGP: Bad armor header");
@@ -159,7 +156,7 @@ Secure_Vector!ubyte PGP_decode(DataSource source,
 	position = 0;
 	bool newline_seen = 0;
 	Appender!string crc;
-	while(position != PGP_TRAILER.length)
+	while (position != PGP_TRAILER.length)
 	{
 		ubyte b;
 		if (!source.read_byte(b))
@@ -171,7 +168,7 @@ Secure_Vector!ubyte PGP_decode(DataSource source,
 		
 		if (b == '=' && newline_seen)
 		{
-			while(b != '\n')
+			while (b != '\n')
 			{
 				if (!source.read_byte(b))
 					throw new Decoding_Error("PGP: Bad CRC tail");

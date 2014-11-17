@@ -91,7 +91,7 @@ protected:
 
 	final Secure_Vector!ubyte state() { return m_state; }
 
-	final ubyte* state_ptr() { return &m_state[0]; }
+	final ubyte* state_ptr() { return m_state.ptr; }
 
 private:
 	final override void key_schedule(in ubyte* key, size_t length)
@@ -214,8 +214,8 @@ public:
 			buffer.resize(full_blocks + offset);
 			update(buffer, offset);
 			
-			xor_buf(&last[0], state_ptr(), BS);
-			cipher().encrypt(&last[0]);
+			xor_buf(last.ptr, state_ptr(), BS);
+			cipher().encrypt(last.ptr);
 			
 			foreach (size_t i; 0 .. (final_bytes - BS))
 			{
@@ -223,7 +223,7 @@ public:
 				last[i + BS] ^= last[i];
 			}
 			
-			cipher().encrypt(&last[0]);
+			cipher().encrypt(last.ptr);
 			
 			buffer += last;
 		}
@@ -264,17 +264,17 @@ public:
 		assert(sz % BS == 0, "Input is full blocks");
 		size_t blocks = sz / BS;
 		
-		while(blocks)
+		while (blocks)
 		{
 			const size_t to_proc = std.algorithm.min(BS * blocks, m_tempbuf.length);
 			
-			cipher().decrypt_n(buf, &m_tempbuf[0], to_proc / BS);
+			cipher().decrypt_n(buf, m_tempbuf.ptr, to_proc / BS);
 			
-			xor_buf(&m_tempbuf[0], state_ptr(), BS);
+			xor_buf(m_tempbuf.ptr, state_ptr(), BS);
 			xor_buf(&m_tempbuf[BS], buf, to_proc - BS);
 			copy_mem(state_ptr(), buf + (to_proc - BS), BS);
 			
-			copy_mem(buf, &m_tempbuf[0], to_proc);
+			copy_mem(buf, m_tempbuf.ptr, to_proc);
 			
 			buf += to_proc;
 			blocks -= to_proc / BS;
@@ -351,15 +351,15 @@ public:
 			buffer.resize(full_blocks + offset);
 			update(buffer, offset);
 			
-			cipher().decrypt(&last[0]);
+			cipher().decrypt(last.ptr);
 			
-			xor_buf(&last[0], &last[BS], final_bytes - BS);
+			xor_buf(last.ptr, &last[BS], final_bytes - BS);
 			
 			foreach (size_t i; 0 .. (final_bytes - BS))
 				std.algorithm.swap(last[i], last[i + BS]);
 			
-			cipher().decrypt(&last[0]);
-			xor_buf(&last[0], state_ptr(), BS);
+			cipher().decrypt(last.ptr);
+			xor_buf(last.ptr, state_ptr(), BS);
 			
 			buffer += last;
 		}

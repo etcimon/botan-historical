@@ -25,7 +25,7 @@ public:
 	     in Secure_Vector!ubyte key_bits)
 	{
 		BER_Decoder(key_bits)
-			.start_cons(ASN1_Tag.SEQUENCE)
+				.start_cons(ASN1_Tag.SEQUENCE)
 				.decode(m_n)
 				.decode(m_e)
 				.verify_end()
@@ -58,7 +58,7 @@ public:
 	Vector!ubyte x509_subject_public_key() const
 	{
 		return DER_Encoder()
-			.start_cons(ASN1_Tag.SEQUENCE)
+				.start_cons(ASN1_Tag.SEQUENCE)
 				.encode(m_n)
 				.encode(m_e)
 				.end_cons()
@@ -68,12 +68,12 @@ public:
 	/**
 	* @return public modulus
 	*/
-	const ref BigInt get_n() const { return m_n; }
+	const BigInt get_n() const { return m_n; }
 
 	/**
 	* @return public exponent
 	*/
-	const ref BigInt get_e() const { return m_e; }
+	const BigInt get_e() const { return m_e; }
 
 	size_t max_input_bits() const { return (m_n.bits() - 1); }
 
@@ -96,12 +96,10 @@ final class IF_Scheme_PrivateKey : IF_Scheme_PublicKey,
 							 Private_Key
 {
 public:
-	this(RandomNumberGenerator rng,
-	     const Algorithm_Identifier,
-	     in Secure_Vector!ubyte key_bits)
+	this(RandomNumberGenerator rng, in Algorithm_Identifier, in Secure_Vector!ubyte key_bits)
 	{
 		BER_Decoder(key_bits)
-			.start_cons(ASN1_Tag.SEQUENCE)
+				.start_cons(ASN1_Tag.SEQUENCE)
 				.decode_and_check!size_t(0, "Unknown PKCS #1 key format version")
 				.decode(m_n)
 				.decode(m_e)
@@ -117,11 +115,11 @@ public:
 	}
 
 	this(RandomNumberGenerator rng,
-	     const ref BigInt prime1,
-	     const ref BigInt prime2,
-	     const ref BigInt exp,
-	     const ref BigInt d_exp,
-	     const ref BigInt mod)
+	     in BigInt prime1,
+	     in BigInt prime2,
+	     in BigInt exp,
+	     in BigInt d_exp,
+	     in BigInt mod)
 	{
 		m_p = prime1;
 		m_q = prime2;
@@ -149,8 +147,7 @@ public:
 	/*
 	* Check IF Scheme Private Parameters
 	*/
-	bool  check_key(RandomNumberGenerator rng,
-	                bool strong) const
+	bool  check_key(RandomNumberGenerator rng, bool strong) const
 	{
 		if (m_n < 35 || m_n.is_even() || m_e < 2 || m_d < 2 || m_p < 3 || m_q < 3 || m_p*m_q != m_n)
 			return false;
@@ -169,28 +166,28 @@ public:
 	* Get the first prime p.
 	* @return prime p
 	*/
-	const ref BigInt get_p() const { return m_p; }
+	const BigInt get_p() const { return m_p; }
 
 	/**
 	* Get the second prime q.
 	* @return prime q
 	*/
-	const ref BigInt get_q() const { return m_q; }
+	const BigInt get_q() const { return m_q; }
 
 	/**
 	* Get d with exp * d = 1 mod (p - 1, q - 1).
 	* @return d
 	*/
-	const ref BigInt get_d() const { return m_d; }
+	const BigInt get_d() const { return m_d; }
 
-	const ref BigInt get_c() const { return m_c; }
-	const ref BigInt get_d1() const { return m_d1; }
-	const ref BigInt get_d2() const { return m_d2; }
+	const BigInt get_c() const { return m_c; }
+	const BigInt get_d1() const { return m_d1; }
+	const BigInt get_d2() const { return m_d2; }
 
 	Secure_Vector!ubyte  pkcs8_private_key() const
 	{
 		return DER_Encoder()
-			.start_cons(ASN1_Tag.SEQUENCE)
+				.start_cons(ASN1_Tag.SEQUENCE)
 				.encode(cast(size_t)(0))
 				.encode(m_n)
 				.encode(m_e)

@@ -30,7 +30,7 @@ public:
 		if (our_mac.length != length)
 			return false;
 		
-		return same_mem(&our_mac[0], &mac[0], length);
+		return same_mem(our_mac.ptr, mac.ptr, length);
 	}
 
 	/**

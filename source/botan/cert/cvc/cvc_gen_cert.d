@@ -11,6 +11,7 @@ import botan.cert.cvc.eac_obj;
 import botan.cert.cvc.eac_asn_obj;
 import botan.pubkey.algo.ecdsa;
 import botan.pubkey.pubkey;
+import botan.utils.types;
 
 /**
 *  This class represents TR03110 (EAC) v1.1 generalized CV Certificates
@@ -56,7 +57,7 @@ public:
 	{
 		Vector!ubyte concat_sig = EAC1_1_obj!Derived.m_sig.get_concatenation();
 		Vector!ubyte der = DER_Encoder()
-			.start_cons(ASN1_Tag(33), ASN1_Tag.APPLICATION)
+				.start_cons(ASN1_Tag(33), ASN1_Tag.APPLICATION)
 				.start_cons(ASN1_Tag(78), ASN1_Tag.APPLICATION)
 				.raw_bytes(EAC1_1_obj!Derived.tbs_bits)
 				.end_cons()
@@ -76,7 +77,7 @@ public:
 	*/
 	final Vector!ubyte tbs_data() const
 	{
-		return build_cert_body(EAC1_1_obj!Derived.tbs_bits);
+		return build_cert_body(m_tbs_bits);
 	}
 
 
@@ -88,7 +89,7 @@ public:
 	static Vector!ubyte build_cert_body(in Vector!ubyte tbs)
 	{
 		return DER_Encoder()
-			.start_cons(ASN1_Tag(78), ASN1_Tag.APPLICATION)
+				.start_cons(ASN1_Tag(78), ASN1_Tag.APPLICATION)
 				.raw_bytes(tbs)
 				.end_cons().get_contents_unlocked();
 	}
@@ -100,15 +101,14 @@ public:
 	* @param rng a random number generator
 	* @result the DER encoded signed generalized CVC object
 	*/
-	static Vector!ubyte make_signed(
-		PK_Signer signer,
-		in Vector!ubyte tbs_bits,
-		RandomNumberGenerator rng)
+	static Vector!ubyte make_signed(PK_Signer signer,
+									in Vector!ubyte tbs_bits,
+									RandomNumberGenerator rng)
 	{
 		const auto concat_sig = signer.sign_message(tbs_bits, rng);
 		
 		return DER_Encoder()
-			.start_cons(ASN1_Tag(33), ASN1_Tag.APPLICATION)
+				.start_cons(ASN1_Tag(33), ASN1_Tag.APPLICATION)
 				.raw_bytes(tbs_bits)
 				.encode(concat_sig, ASN1_Tag.OCTET_STRING, ASN1_Tag(55), ASN1_Tag.APPLICATION)
 				.end_cons()
@@ -126,12 +126,12 @@ protected:
 	bool self_signed;
 
 	static void decode_info(DataSource source,
-									Vector!ubyte res_tbs_bits,
-									ECDSA_Signature res_sig)
+							Vector!ubyte res_tbs_bits,
+							ECDSA_Signature res_sig)
 	{
 		Vector!ubyte concat_sig;
 		BER_Decoder(source)
-			.start_cons(ASN1_Tag(33))
+				.start_cons(ASN1_Tag(33))
 				.start_cons(ASN1_Tag(78))
 				.raw_bytes(res_tbs_bits)
 				.end_cons()

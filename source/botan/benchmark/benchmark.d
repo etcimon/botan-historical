@@ -42,7 +42,7 @@ HashMap!(string, double)
 	const size_t Mebibyte = 1024*1024;
 	
 	Secure_Vector!ubyte buffer = Secure_Vector!ubyte(buf_size * 1024);
-	rng.randomize(&buffer[0], buffer.length);
+	rng.randomize(buffer.ptr, buffer.length);
 	
 	const double mb_mult = buffer.length / cast(double)(Mebibyte);
 	
@@ -155,7 +155,7 @@ double time_op(Duration runtime, void delegate() op)
 	StopWatch sw;
 	sw.start();
 	int reps = 0;
-	while(sw.peek().to!Duration < runtime)
+	while (sw.peek().to!Duration < runtime)
 	{
 		op();
 		++reps;
@@ -164,14 +164,14 @@ double time_op(Duration runtime, void delegate() op)
 	return reps.to!double / sw.peek().seconds.to!double; // ie, return ops per second
 }
 
-package	double find_first_in(in HashMap!(string, double) m,
-	                     		const ref Vector!string keys)
+package	double find_first_in(in HashMap!(string, double) m, 
+                             in Vector!string keys)
 {
-	foreach (key; keys)
+	foreach (key; keys[])
 	{
-		auto i = m.find(key);
-		if (i != m.end())
-			return i.second;
+		auto val = m.get(key, double.nan);
+		if (val != double.nan)
+			return val;
 	}
 	
 	throw new Exception("algorithm_factory no usable keys found in result");

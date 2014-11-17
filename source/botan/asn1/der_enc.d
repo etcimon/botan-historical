@@ -19,7 +19,6 @@ import botan.utils.types;
 
 alias DER_Encoder = FreeListRef!BER_Decoder_Impl;
 
-
 /**
 * General DER Encoding Object
 */
@@ -93,12 +92,12 @@ public:
 	*/
 	DER_Encoder raw_bytes(in Secure_Vector!ubyte val)
 	{
-		return raw_bytes(&val[0], val.length);
+		return raw_bytes(val.ptr, val.length);
 	}
 	
 	DER_Encoder raw_bytes(in Vector!ubyte val)
 	{
-		return raw_bytes(&val[0], val.length);
+		return raw_bytes(val.ptr, val.length);
 	}
 	
 	/*
@@ -152,7 +151,7 @@ public:
 	DER_Encoder encode(in Secure_Vector!ubyte bytes,
 	                   ASN1_Tag real_type)
 	{
-		return encode(&bytes[0], bytes.length, real_type, real_type, ASN1_Tag.UNIVERSAL);
+		return encode(bytes.ptr, bytes.length, real_type, real_type, ASN1_Tag.UNIVERSAL);
 	}
 	
 	/*
@@ -161,7 +160,7 @@ public:
 	DER_Encoder encode(in Vector!ubyte bytes,
 	                   ASN1_Tag real_type)
 	{
-		return encode(&bytes[0], bytes.length,
+		return encode(bytes.ptr, bytes.length,
 		real_type, real_type, ASN1_Tag.UNIVERSAL);
 	}
 	
@@ -224,7 +223,7 @@ public:
 	                   ASN1_Tag real_type,
 	                   ASN1_Tag m_type_tag, ASN1_Tag m_class_tag = ASN1_Tag.CONTEXT_SPECIFIC)
 	{
-		return encode(&bytes[0], bytes.length, real_type, m_type_tag, m_class_tag);
+		return encode(bytes.ptr, bytes.length, real_type, m_type_tag, m_class_tag);
 	}
 	
 	/*
@@ -234,7 +233,7 @@ public:
 	                   ASN1_Tag real_type,
 	                   ASN1_Tag m_type_tag, ASN1_Tag m_class_tag = ASN1_Tag.CONTEXT_SPECIFIC)
 	{
-		return encode(&bytes[0], bytes.length, real_type, m_type_tag, m_class_tag);
+		return encode(bytes.ptr, bytes.length, real_type, m_type_tag, m_class_tag);
 	}
 	
 	/*
@@ -277,14 +276,14 @@ public:
 		return this;
 	}
 	
-	DER_Encoder encode_if (bool cond, const ref ASN1_Object obj)
+	DER_Encoder encode_if (bool cond, in ASN1_Object obj)
 	{
 		if (cond)
 			encode(obj);
 		return this;
 	}
 
-	DER_Encoder encode_optional(T)(in T value, const ref T default_value = T.init)
+	DER_Encoder encode_optional(T)(in T value, in T default_value = T.init)
 	{
 		if (value != default_value)
 			encode(value);
@@ -332,12 +331,12 @@ public:
 
 	DER_Encoder add_object(ASN1_Tag m_type_tag, ASN1_Tag m_class_tag, in Vector!ubyte rep)
 	{
-		return add_object(m_type_tag, m_class_tag, &rep[0], rep.length);
+		return add_object(m_type_tag, m_class_tag, rep.ptr, rep.length);
 	}
 
 	DER_Encoder add_object(ASN1_Tag m_type_tag, ASN1_Tag m_class_tag, in Secure_Vector!ubyte rep)
 	{
-		return add_object(m_type_tag, m_class_tag, &rep[0], rep.length);
+		return add_object(m_type_tag, m_class_tag, rep.ptr, rep.length);
 	}
 private:
 	class DER_Sequence

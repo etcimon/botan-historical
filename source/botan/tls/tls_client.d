@@ -195,8 +195,8 @@ private:
 			state.set_expected_next(SERVER_HELLO);
 			state.set_expected_next(HELLO_VERIFY_REQUEST); // might get it again
 			
-			Hello_Verify_Request hello_verify_request(contents);
-			
+			Hello_Verify_Request hello_verify_request = scoped!Hello_Verify_Request(contents);
+
 			state.hello_verify_request(hello_verify_request);
 		}
 		else if (type == SERVER_HELLO)
@@ -220,12 +220,12 @@ private:
 			auto server_extn = state.server_hello().extension_types();
 			
 			import std.algorithm : setDifference;
-			import std.range : empty;
+			import std.range : empty, array;
 			auto diff = setDifference(server_extn, client_extn);
 			if (!diff.empty)
 			{
 				throw new TLS_Exception(Alert.HANDSHAKE_FAILURE,
-										"Server sent extension " ~ to!string(i[0]) ~ " but we did not request it");
+										"Server sent extension(s) " ~ diff.array.to!(string[]) ~ " but we did not request it");
 			}
 			
 			state.set_version(state.server_hello()._version());
@@ -244,8 +244,7 @@ private:
 				* session, and the server must resume with the same version.
 				*/
 				if (state.server_hello()._version() != state.client_hello()._version())
-					throw new TLS_Exception(Alert.HANDSHAKE_FAILURE,
-					                        "Server resumed session but with wrong version");
+					throw new TLS_Exception(Alert.HANDSHAKE_FAILURE, "Server resumed session but with wrong version");
 				
 				state.compute_session_keys(state.resume_master_secret);
 				
@@ -316,8 +315,7 @@ private:
 			
 			state.server_certs(new Certificate(contents));
 			
-			const Vector!X509_Certificate server_certs =
-				state.server_certs().cert_chain();
+			const Vector!X509_Certificate server_certs = state.server_certs().cert_chain();
 			
 			if (server_certs.empty)
 				throw new TLS_Exception(Alert.HANDSHAKE_FAILURE, "Client: No certificates sent by server");
@@ -445,8 +443,7 @@ private:
 				
 				if (state.server_hello().next_protocol_notification())
 				{
-					const string protocol = state.client_npn_cb(
-						state.server_hello().next_protocols());
+					const string protocol = state.client_npn_cb(state.server_hello().next_protocols());
 					
 					state.next_protocol(new Next_Protocol(state.handshake_io(), state.hash(), protocol));
 				}
@@ -488,11 +485,6 @@ private:
 		else
 			throw new Unexpected_Message("Unknown handshake message received");
 	}
-
-	override void process_handshake_msg(const Handshake_State active_state,
-										Handshake_State pending_state,
-										Handshake_Type type,
-										in Vector!ubyte contents);
 
 	override Handshake_State new_handshake_state(Handshake_IO io)
 	{

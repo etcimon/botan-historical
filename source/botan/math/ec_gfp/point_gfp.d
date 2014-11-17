@@ -42,9 +42,9 @@ struct PointGFp
 public:
 	typedef ubyte Compression_Type;
 	enum : Compression_Type {
-		UNCOMPRESSED = 0,
-		COMPRESSED	= 1,
-		HYBRID		 = 2
+		UNCOMPRESSED	= 0,
+		COMPRESSED		= 1,
+		HYBRID		 	= 2
 	}
 
 	/**
@@ -99,7 +99,7 @@ public:
 	* @param x affine x coordinate
 	* @param y affine y coordinate
 	*/
-	this(in CurveGFp _curve, const ref BigInt x, const ref BigInt y)
+	this(in CurveGFp _curve, in BigInt x, in BigInt y)
 	{ 
 		curve = _curve;
 		ws = 2 * (curve.get_p_words() + 2);
@@ -192,7 +192,7 @@ public:
 			size_t bits_left = scalar_bits;
 			
 			// Montgomery Ladder
-			while(bits_left)
+			while (bits_left)
 			{
 				const bool bit_set = scalar.get_bit(bits_left - 1);
 				
@@ -231,7 +231,7 @@ public:
 			PointGFp H(curve); // create as zero
 			size_t bits_left = scalar_bits;
 			
-			while(bits_left >= window_size)
+			while (bits_left >= window_size)
 			{
 				foreach (size_t i; 0 .. window_size)
 					H.mult2(ws);
@@ -244,7 +244,7 @@ public:
 				bits_left -= window_size;
 			}
 			
-			while(bits_left)
+			while (bits_left)
 			{
 				H.mult2(ws);
 				if (scalar.get_bit(bits_left-1))
@@ -268,8 +268,8 @@ public:
 	* @param z2 a scalar
 	* @result (p1 * z1 + p2 * z2)
 	*/
-	PointGFp multi_exponentiate(in PointGFp p1, const ref BigInt z1,
-	                            const ref PointGFp p2, const ref BigInt z2)
+	PointGFp multi_exponentiate(in PointGFp p1, in BigInt z1,
+	                            in PointGFp p2, in BigInt z2)
 	{
 		const PointGFp p3 = p1 + p2;
 		
@@ -278,7 +278,7 @@ public:
 		
 		Vector!BigInt ws = Vector!BigInt(9);
 		
-		while(bits_left)
+		while (bits_left)
 		{
 			H.mult2(ws);
 			
@@ -457,7 +457,7 @@ private:
 	* @param y second multiplicand
 	*/
 	// Montgomery multiplication
-	void monty_mult(ref BigInt z, const ref BigInt x, const ref BigInt y) const
+	void monty_mult(ref BigInt z, in BigInt x, in BigInt y) const
 	{
 		//assert(&z != &x && &z != &y);
 		
@@ -480,7 +480,7 @@ private:
 		                 x.data(), x.length, x.sig_words(),
 		                 y.data(), y.length, y.sig_words(),
 		                 p.data(), p_size, p_dash,
-		                 &ws[0]);
+		                 ws.ptr);
 	}
 	
 	/**
@@ -500,7 +500,7 @@ private:
 	* @param z output
 	* @param x multiplicand
 	*/
-	void monty_sqr(ref BigInt z, const ref BigInt x) const
+	void monty_sqr(ref BigInt z, in BigInt x) const
 	{
 		//assert(&z != &x);
 		
@@ -522,7 +522,7 @@ private:
 		bigint_monty_sqr(z.mutable_data(), output_size,
 		                 x.data(), x.length, x.sig_words(),
 		                 p.data(), p_size, p_dash,
-		                 &ws[0]);
+		                 ws.ptr);
 	}
 
 	/**
@@ -593,7 +593,7 @@ private:
 		monty_sqr(coord_x, r);
 		coord_x -= S2;
 		coord_x -= (U2 << 1);
-		while(coord_x.is_negative())
+		while (coord_x.is_negative())
 			coord_x += p;
 		
 		U2 -= coord_x;
@@ -639,7 +639,7 @@ private:
 		
 		monty_mult(S, coord_x, y_2);
 		S <<= 2; // * 4
-		while(S >= p)
+		while (S >= p)
 			S -= p;
 		
 		monty_sqr(z4, monty_sqr(coord_z));
@@ -648,21 +648,21 @@ private:
 		M = monty_sqr(coord_x);
 		M *= 3;
 		M += a_z4;
-		while(M >= p)
+		while (M >= p)
 			M -= p;
 		
 		monty_sqr(x, M);
 		x -= (S << 1);
-		while(x.is_negative())
+		while (x.is_negative())
 			x += p;
 		
 		monty_sqr(U, y_2);
 		U <<= 3;
-		while(U >= p)
+		while (U >= p)
 			U -= p;
 		
 		S -= x;
-		while(S.is_negative())
+		while (S.is_negative())
 			S += p;
 		
 		monty_mult(y, M, S);
@@ -739,8 +739,8 @@ Secure_Vector!ubyte EC2OSP(in PointGFp point, ubyte format)
 		Secure_Vector!ubyte result;
 		result.push_back(0x04);
 		
-		result += bX;
-		result += bY;
+		result ~= bX;
+		result ~= bY;
 		
 		return result;
 	}
@@ -749,7 +749,7 @@ Secure_Vector!ubyte EC2OSP(in PointGFp point, ubyte format)
 		Secure_Vector!ubyte result;
 		result.push_back(0x02 | cast(ubyte)(y.get_bit(0)));
 		
-		result += bX;
+		result ~= bX;
 		
 		return result;
 	}
@@ -758,8 +758,8 @@ Secure_Vector!ubyte EC2OSP(in PointGFp point, ubyte format)
 		Secure_Vector!ubyte result;
 		result.push_back(0x06 | cast(ubyte)(y.get_bit(0)));
 		
-		result += bX;
-		result += bY;
+		result ~= bX;
+		result ~= bY;
 		
 		return result;
 	}
@@ -768,8 +768,7 @@ Secure_Vector!ubyte EC2OSP(in PointGFp point, ubyte format)
 }
 
 
-PointGFp OS2ECP(in ubyte* data, size_t data_len,
-                const ref CurveGFp curve)
+PointGFp OS2ECP(in ubyte* data, size_t data_len, const ref CurveGFp curve)
 {
 	if (data_len <= 1)
 		return PointGFp(curve); // return zero
@@ -819,7 +818,7 @@ PointGFp OS2ECP(in ubyte* data, size_t data_len,
 }
 
 PointGFp OS2ECP(Alloc)(in Vector!( ubyte, Alloc ) data, const ref CurveGFp curve)
-{ return OS2ECP(&data[0], data.length, curve); }
+{ return OS2ECP(data.ptr, data.length, curve); }
 
 void swap(ref PointGFp x, ref PointGFp y)
 { import std.algorithm : swap; x.swap(y); }
@@ -827,7 +826,7 @@ void swap(ref PointGFp x, ref PointGFp y)
 private:
 
 BigInt decompress_point(bool yMod2,
-                        const ref BigInt x,
+                        in BigInt x,
                         const ref CurveGFp curve)
 {
 	BigInt xpow3 = x * x * x;

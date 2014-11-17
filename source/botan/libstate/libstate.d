@@ -6,9 +6,10 @@
 */
 module botan.libstate.libstate;
 
-import botan.libstate.global_state;
-import botan.algo_factory.algo_factory;
+public import botan.utils.types;
+public import botan.algo_factory.algo_factory;
 import botan.rng.rng;
+import botan.libstate.global_state;
 import botan.utils.charset;
 import botan.engine.engine;
 import botan.utils.cpuid;
@@ -18,7 +19,6 @@ import botan.utils.multimap;
 import std.algorithm;
 import core.sync.mutex;
 import std.typecons;
-import botan.utils.types;
 import botan.utils.hashmap;
 
 static if (BOTAN_HAS_SELFTESTS)
@@ -140,7 +140,7 @@ public:
 			
 			size_t poll_attempt = 0;
 			
-			while(!accum.polling_goal_achieved() && poll_attempt < 16)
+			while (!accum.polling_goal_achieved() && poll_attempt < 16)
 			{
 				const size_t src_idx = poll_attempt % m_sources.length;
 				m_sources[src_idx].poll(accum);

@@ -14,6 +14,7 @@ import botan.hash.sha2_32;
 import botan.mac.mac;
 import botan.utils.exceptn;
 import botan.utils.types;
+import std.algorithm : swap;
 import std.exception;
 
 struct FPE {
@@ -29,11 +30,11 @@ struct FPE {
 	* @param key a random key
 	* @param tweak will modify the ciphertext (think of as an IV)
 	*/
-	static BigInt fe1_encrypt(in BigInt n, const ref BigInt X0,
-	                          const ref SymmetricKey key,
+	static BigInt fe1_encrypt(in BigInt n, in BigInt X0,
+	                          in SymmetricKey key,
 	                          in Vector!ubyte tweak)
 	{
-		FPE_Encryptor F = FPE_Encryptor(key, n, tweak);
+		FPE_Encryptor F = scoped!FPE_Encryptor(key, n, tweak);
 		
 		BigInt a, b;
 		factor(n, a, b);
@@ -62,11 +63,9 @@ struct FPE {
 	* @param key is the key used for encryption
 	* @param tweak the same tweak used for encryption
 	*/
-	static BigInt fe1_decrypt(in BigInt n, const ref BigInt X0,
-	                          const ref SymmetricKey key,
-	                          in Vector!ubyte tweak)
+	static BigInt fe1_decrypt(in BigInt n, in BigInt X0, in SymmetricKey key, in Vector!ubyte tweak)
 	{
-		FPE_Encryptor F = FPE_Encryptor(key, n, tweak);
+		auto F = scoped!FPE_Encryptor(key, n, tweak);
 		
 		BigInt a, b;
 		factor(n, a, b);
@@ -116,7 +115,7 @@ void factor(BigInt n, ref BigInt a, ref BigInt b)
 	
 	foreach (size_t i; 0 .. PRIME_TABLE_SIZE)
 	{
-		while(n % PRIMES[i] == 0)
+		while (n % PRIMES[i] == 0)
 		{
 			a *= PRIMES[i];
 			if (a > b)
@@ -141,7 +140,7 @@ void factor(BigInt n, ref BigInt a, ref BigInt b)
 * so 3 rounds is safe. The FPE factorization routine should always
 * return a >= b, so just confirm that and return 3.
 */
-size_t rounds(in BigInt a, const ref BigInt b)
+size_t rounds(in BigInt a, in BigInt b)
 {
 	if (a < b)
 		throw new Logic_Error("FPE rounds: a < b");
@@ -154,9 +153,7 @@ size_t rounds(in BigInt a, const ref BigInt b)
 final class FPE_Encryptor
 {
 public:
-	this(in SymmetricKey key,
-	     const ref BigInt n,
-	     in Vector!ubyte tweak)
+	this(in SymmetricKey key, in BigInt n, in Vector!ubyte tweak)
 	{
 		m_mac = new HMAC(new SHA_256);
 		m_mac.set_key(key);
@@ -167,27 +164,27 @@ public:
 			throw new Exception("N is too large for FPE encryption");
 		
 		m_mac.update_be(cast(uint)(n_bin.length));
-		m_mac.update(&n_binput[0], n_bin.length);
+		m_mac.update(n_binput.ptr, n_bin.length);
 		
 		m_mac.update_be(cast(uint)(tweak.length));
-		m_mac.update(&tweak[0], tweak.length);
+		m_mac.update(tweak.ptr, tweak.length);
 		
 		m_mac_n_t = unlock(m_mac.flush());
 	}
 
 	
-	BigInt opCall(size_t round_no, const ref BigInt R)
+	BigInt opCall(size_t round_no, in BigInt R)
 	{
 		Secure_Vector!ubyte r_bin = BigInt.encode_locked(R);
-		
+
 		m_mac.update(m_mac_n_t);
 		m_mac.update_be(cast(uint)(round_no));
 		
 		m_mac.update_be(cast(uint)(r_bin.length));
-		m_mac.update(&r_binput[0], r_bin.length);
+		m_mac.update(r_binput.ptr, r_bin.length);
 		
 		Secure_Vector!ubyte X = m_mac.flush();
-		return BigInt(&X[0], X.length);
+		return BigInt(X.ptr, X.length);
 	}
 	
 private:

@@ -6,7 +6,7 @@
 */
 module botan.constructs.tss;
 
-import botan.alloc.zeroize;
+import botan.utils.memory.zeroize;
 import botan.hash.hash;
 import botan.rng.rng;
 import botan.utils.loadstor;
@@ -31,10 +31,10 @@ public:
 	* @param identifier the 16 ubyte share identifier
 	* @param rng the random number generator to use
 	*/
-	static Vector!RTSS_Share split(	ubyte M, ubyte N,
-										in ubyte* S, ushort S_len,
-										const ubyte[16]* identifier,
-										RandomNumberGenerator rng)
+	static Vector!RTSS_Share split(ubyte M, ubyte N,
+	                               in ubyte* S, ushort S_len,
+	                               in ubyte[16]* identifier,
+								   RandomNumberGenerator rng)
 	{
 		if (M == 0 || N == 0 || M > N)
 			throw new Encoding_Error("split: M == 0 or N == 0 or M > N");
@@ -64,7 +64,7 @@ public:
 		foreach (ubyte s; secret[])
 		{
 			Vector!ubyte coefficients = Vector!ubyte(M-1);
-			rng.randomize(&coefficients[0], coefficients.length);
+			rng.randomize(coefficients.ptr, coefficients.length);
 			
 			foreach (ubyte j; 0 .. N)
 			{
@@ -104,19 +104,17 @@ public:
 			if (share.length < RTSS_HEADER_SIZE)
 				throw new Decoding_Error("Missing or malformed RTSS header");
 			
-			if (!same_mem(&shares[0].m_contents[0],
-			&share.m_contents[0], RTSS_HEADER_SIZE))
+			if (!same_mem(&shares[0].m_contents[0], &share.m_contents[0], RTSS_HEADER_SIZE))
 				throw new Decoding_Error("Different RTSS headers detected");
 		}
 		
 		if (shares.length < shares[0].contents[17])
 			throw new Decoding_Error("Insufficient shares to do TSS reconstruction");
 		
-		ushort secret_len = make_ushort(shares[0].m_contents[18],
-		shares[0].m_contents[19]);
+		ushort secret_len = make_ushort(shares[0].m_contents[18], shares[0].m_contents[19]);
 		
 		ubyte hash_id = shares[0].m_contents[16];
-		
+
 		Unique!HashFunction hash = get_rtss_hash_by_id(hash_id);
 		
 		if (shares[0].length != secret_len + hash.output_length + RTSS_HEADER_SIZE + 1)
@@ -159,13 +157,13 @@ public:
 		if (secret.length != secret_len + hash.output_length)
 			throw new Decoding_Error("Bad length in RTSS output");
 		
-		hash.update(&secret[0], secret_len);
+		hash.update(secret.ptr, secret_len);
 		Secure_Vector!ubyte hash_check = hash.flush();
 		
-		if (!same_mem(&hash_check[0], &secret[secret_len], hash.output_length))
+		if (!same_mem(hash_check.ptr, &secret[secret_len], hash.output_length))
 			throw new Decoding_Error("RTSS hash check failed");
 		
-		return Secure_Vector!ubyte(&secret[0], &secret[secret_len]);
+		return Secure_Vector!ubyte(secret.ptr[0 .. secret_len]);
 	}
 
 
@@ -184,7 +182,7 @@ public:
 	*/
 	string toString() const
 	{
-		return hex_encode(&m_contents[0], m_contents.length);
+		return hex_encode(m_contents.ptr, m_contents.length);
 	}
 
 	/**

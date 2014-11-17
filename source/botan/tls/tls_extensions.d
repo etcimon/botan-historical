@@ -6,7 +6,7 @@
 */
 module botan.tls.tls_extensions;
 
-import botan.alloc.zeroize;
+import botan.utils.memory.zeroize;
 import botan.tls.tls_magic;
 import botan.utils.types;
 // import string;
@@ -91,7 +91,7 @@ public:
 		if (name_bytes + 2 != extension_size)
 			throw new Decoding_Error("Bad encoding of SNI extension");
 		
-		while(name_bytes)
+		while (name_bytes)
 		{
 			ubyte name_type = reader.get_byte();
 			name_bytes--;
@@ -289,7 +289,7 @@ public:
 
 	Handshake_Extension_Type type() const { return static_type(); }
 
-	ref const Vector!string protocols() const { return m_protocols; }
+	const Vector!string protocols() const { return m_protocols; }
 
 	/**
 	* Empty extension, used by client
@@ -311,7 +311,7 @@ public:
 		
 		size_t bytes_remaining = extension_size;
 		
-		while(bytes_remaining)
+		while (bytes_remaining)
 		{
 			const string p = reader.get_string(1, 0, 255);
 			
@@ -468,7 +468,7 @@ public:
 		throw new Invalid_Argument("name_to_curve_id unknown name " ~ name);
 	}
 
-	const ref Vector!string curves() const { return m_curves; }
+	const Vector!string curves() const { return m_curves; }
 
 	Vector!ubyte serialize() const
 	{
@@ -635,8 +635,7 @@ public:
 
 	@property bool empty() const { return false; }
 
-	this(in Vector!string hashes,
-	     const ref Vector!string sigs)
+	this(in Vector!string hashes, in Vector!string sigs)
 	{
 		for (size_t i = 0; i != hashes.length; ++i)
 			for (size_t j = 0; j != sigs.length; ++j)
@@ -651,7 +650,7 @@ public:
 		if (len + 2 != extension_size)
 			throw new Decoding_Error("Bad encoding on signature algorithms extension");
 		
-		while(len)
+		while (len)
 		{
 			const string hash_code = hash_algo_name(reader.get_byte());
 			const string sig_code = sig_algo_name(reader.get_byte());
@@ -791,14 +790,12 @@ public:
 			if (reader.remaining_bytes() != all_extn_size)
 				throw new Decoding_Error("Bad extension size");
 			
-			while(reader.has_remaining())
+			while (reader.has_remaining())
 			{
 				const ushort extension_code = reader.get_ushort();
 				const ushort extension_size = reader.get_ushort();
 				
-				Extension extn = make_extension(reader,
-				                                extension_code,
-				                                extension_size);
+				Extension extn = make_extension(reader, extension_code, extension_size);
 				
 				if (extn)
 					this.add(extn);
@@ -822,9 +819,7 @@ private:
 
 private:
 
-Extension make_extension(ref TLS_Data_Reader reader,
-                         ushort code,
-                         ushort size)
+Extension make_extension(ref TLS_Data_Reader reader, ushort code, ushort size)
 {
 	switch(code)
 	{

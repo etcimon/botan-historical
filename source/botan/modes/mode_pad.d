@@ -6,7 +6,7 @@
 */
 module botan.modes.mode_pad;
 
-import botan.alloc.zeroize;
+import botan.utils.memory.zeroize;
 import botan.utils.exceptn;
 // import string;
 
@@ -154,7 +154,7 @@ public:
 	*/
 	size_t unpad(in ubyte* block, size_t size) const
 	{
-		while(size)
+		while (size)
 		{
 			if (block[size-1] == 0x80)
 				break;

@@ -21,7 +21,7 @@ final class OFB : StreamCipher
 public:
 	void cipher(in ubyte* input, ubyte* output)
 	{
-		while(length >= m_buffer.length - m_buf_pos)
+		while (length >= m_buffer.length - m_buf_pos)
 		{
 			xor_buf(output, input, &m_buffer[m_buf_pos], m_buffer.length - m_buf_pos);
 			length -= (m_buffer.length - m_buf_pos);

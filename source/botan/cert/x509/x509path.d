@@ -22,7 +22,6 @@ version(Have_vibe_d) {
 else {
 	import std.concurrency;
 }
-import iostream;
 import botan.cert.x509.cert_status;
 import botan.cert.x509.x509cert;
 import botan.cert.x509.certstor;
@@ -66,10 +65,11 @@ public:
 	*		  created using a hash other than one of these will be
 	*		  rejected.
 	*/
-	this(bool require_rev,
-		  size_t minimum_key_strength,
-		  bool ocsp_all_intermediates,
-		  const ref RedBlackTree!string trusted_hashes) {
+	this(bool require_rev, 
+	     size_t minimum_key_strength, 
+	     bool ocsp_all_intermediates, 
+	     in RedBlackTree!string trusted_hashes) 
+	{
 		m_require_revocation_information = require_rev;
 		m_ocsp_all_intermediates = ocsp_all_intermediates;
 		m_trusted_hashes = trusted_hashes;
@@ -82,7 +82,7 @@ public:
 	bool ocsp_all_intermediates() const
 	{ return m_ocsp_all_intermediates; }
 
-	const ref RedBlackTree!string trusted_hashes() const
+	const RedBlackTree!string trusted_hashes() const
 	{ return m_trusted_hashes; }
 
 	size_t minimum_key_strength() const
@@ -107,10 +107,10 @@ public:
 	* @return the set of hash functions you are implicitly
 	* trusting by trusting this result.
 	*/
-	 RedBlackTree!string trusted_hashes() const
+	RedBlackTree!string trusted_hashes() const
 	{
-		 RedBlackTree!string hashes;
-		foreach (cert_path; m_cert_path)
+		RedBlackTree!string hashes;
+		foreach (cert_path; m_cert_path[])
 			hashes.insert(cert_path.hash_used_for_signature());
 		return hashes;
 	}
@@ -127,7 +127,7 @@ public:
 	/**
 	* @return the full path from subject to trust root
 	*/
-	const ref Vector!X509_Certificate cert_path() const { return m_cert_path; }
+	const Vector!X509_Certificate cert_path() const { return m_cert_path; }
 
 	/**
 	* @return true iff the validation was succesful
@@ -250,10 +250,10 @@ private:
 /**
 * PKIX Path Validation
 */
-Path_Validation_Result x509_path_validate(
-	const ref Vector!X509_Certificate end_certs,
-	const ref Path_Validation_Restrictions restrictions,
-	const ref Vector!Certificate_Store certstores)
+Path_Validation_Result 
+	x509_path_validate(in Vector!X509_Certificate end_certs,
+	                   in Path_Validation_Restrictions restrictions,
+	                   in Vector!Certificate_Store certstores)
 {
 	if (end_certs.empty)
 		throw new Invalid_Argument("x509_path_validate called with no subjects");
@@ -264,7 +264,7 @@ Path_Validation_Result x509_path_validate(
 	auto extra = scoped!Certificate_Store_Overlay(end_certs);
 	
 	// iterate until we reach a root or cannot find the issuer
-	while(!cert_path.back().is_self_signed())
+	while (!cert_path.back().is_self_signed())
 	{
 		const X509_Certificate cert = find_issuing_cert(cert_path.back(), extra, certstores);
 		if (!cert)
@@ -281,10 +281,9 @@ Path_Validation_Result x509_path_validate(
 /**
 * PKIX Path Validation
 */
-Path_Validation_Result x509_path_validate(
-	const X509_Certificate end_cert,
-	const ref Path_Validation_Restrictions restrictions,
-	const ref Vector!Certificate_Store certstores)
+Path_Validation_Result x509_path_validate(in X509_Certificate end_cert,
+                                          in Path_Validation_Restrictions restrictions,
+                                          in Vector!Certificate_Store certstores)
 {
 	Vector!X509_Certificate certs;
 	certs.push_back(end_cert);
@@ -295,10 +294,9 @@ Path_Validation_Result x509_path_validate(
 * PKIX Path Validation
 */
 
-Path_Validation_Result x509_path_validate(
-	const X509_Certificate end_cert,
-	const ref Path_Validation_Restrictions restrictions,
-	const ref Certificate_Store store)
+Path_Validation_Result x509_path_validate(in X509_Certificate end_cert,
+                                          in Path_Validation_Restrictions restrictions,
+                                          in Certificate_Store store)
 {
 	Vector!X509_Certificate certs;
 	certs.push_back(end_cert);
@@ -311,10 +309,9 @@ Path_Validation_Result x509_path_validate(
 /**
 * PKIX Path Validation
 */
-Path_Validation_Result x509_path_validate(
-	const ref Vector!X509_Certificate end_certs,
-	const ref Path_Validation_Restrictions restrictions,
-	const ref Certificate_Store store)
+Path_Validation_Result x509_path_validate(in Vector!X509_Certificate end_certs,
+                                          in Path_Validation_Restrictions restrictions,
+                                          in Certificate_Store store)
 {
 	Vector!Certificate_Store certstores;
 	certstores.push_back(&store);
@@ -322,10 +319,9 @@ Path_Validation_Result x509_path_validate(
 	return x509_path_validate(end_certs, restrictions, certstores);
 }
 
-const X509_Certificate
-	find_issuing_cert(in X509_Certificate cert,
-	                  ref Certificate_Store end_certs,
-	                  const ref Vector!Certificate_Store certstores)
+const X509_Certificate find_issuing_cert(in X509_Certificate cert,
+                                         ref Certificate_Store end_certs, 
+                                         in Vector!Certificate_Store certstores)
 {
 	const X509_DN issuer_dn = cert.issuer_dn();
 	const Vector!ubyte auth_key_id = cert.authority_key_id();
@@ -374,12 +370,12 @@ const X509_CRL find_crls_for(in X509_Certificate cert,
 	return null;
 }
 
-Vector!(  RedBlackTree!Certificate_Status_Code )
+Vector!( RedBlackTree!Certificate_Status_Code )
 	check_chain(in Vector!X509_Certificate cert_path,
-	            const ref Path_Validation_Restrictions restrictions,
-	            const ref Vector!Certificate_Store certstores)
+	            in Path_Validation_Restrictions restrictions,
+	            in Vector!Certificate_Store certstores)
 {
-	const  RedBlackTree!string trusted_hashes = restrictions.trusted_hashes();
+	const RedBlackTree!string trusted_hashes = restrictions.trusted_hashes();
 	
 	const bool self_signed_ee_cert = (cert_path.length == 1);
 	
@@ -504,4 +500,3 @@ Vector!(  RedBlackTree!Certificate_Status_Code )
 	
 	return cert_status;
 }
-

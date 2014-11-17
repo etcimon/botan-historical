@@ -238,10 +238,10 @@ HashMap!(string, string)
 			{
 				if (AEAD_Filter enc_aead = cast(AEAD_Filter)(enc))
 				{
-					enc_aead.set_associated_data(&ad[0], ad.length);
+					enc_aead.set_associated_data(ad.ptr, ad.length);
 					
 					if (AEAD_Filter dec_aead = cast(AEAD_Filter)(dec))
-						dec_aead.set_associated_data(&ad[0], ad.length);
+						dec_aead.set_associated_data(ad.ptr, ad.length);
 				}
 			}
 			

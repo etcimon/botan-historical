@@ -35,7 +35,7 @@ Pair!(BigInt, SymmetricKey)
 	                  in string group_id,
 	                  in string hash_id,
 	                  in Vector!ubyte salt,
-	                  const ref BigInt B,
+	                  in BigInt B,
 	                  RandomNumberGenerator rng)
 {
 	DL_Group group = DL_Group(group_id);
@@ -81,7 +81,7 @@ BigInt generate_srp6_verifier(in string identifier,
 {
 	const BigInt x = compute_x(hash_id, identifier, password, salt);
 	
-	DL_Group group(group_id);
+	DL_Group group = DL_Group(group_id);
 	return power_mod(group.get_g(), x, group.get_p());
 }
 
@@ -93,7 +93,7 @@ BigInt generate_srp6_verifier(in string identifier,
 * @param g the group generator
 * @return group identifier
 */
-string srp6_group_identifier(in BigInt N, const ref BigInt g)
+string srp6_group_identifier(in BigInt N, in BigInt g)
 {
 	/*
 	This function assumes that only one 'standard' SRP parameter set has
@@ -182,8 +182,8 @@ private:
 	
 BigInt hash_seq(in string hash_id,
                 size_t pad_to,
-                const ref BigInt in1,
-                const ref BigInt in2)
+                in BigInt in1,
+                in BigInt in2)
 {
 	Unique!HashFunction hash_fn = global_state().algorithm_factory().make_hash_function(hash_id);
 	

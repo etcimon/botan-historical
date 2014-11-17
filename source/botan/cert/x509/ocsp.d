@@ -179,7 +179,7 @@ void decode_optional_list(BER_Decoder ber,
 	
 	BER_Decoder list = BER_Decoder(obj.value);
 	
-	while(list.more_items())
+	while (list.more_items())
 	{
 		BER_Object certbits = list.get_next_object();
 		X509_Certificate cert = X509_Certificate(unlock(certbits.value));

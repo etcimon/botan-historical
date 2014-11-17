@@ -10,15 +10,13 @@ import botan.filters.filters;
 import botan.utils.parsing;
 import botan.filters.data_src;
 import botan.utils.types;
+import std.array : Appender;
 
 struct PEM
 {
 
 	/**
 	* Encode some binary data in PEM format
-	*/
-	/*
-	* PEM encode BER/DER-encoded objects
 	*/
 	static string encode(in ubyte* der, size_t length, in string label, size_t width = 64)
 	{
@@ -35,7 +33,7 @@ struct PEM
 	*/
 	static string encode(in Vector!ubyte data, in string label, size_t line_width = 64)
 	{
-		return encode(&data[0], data.length, label, line_width);
+		return encode(data.ptr, data.length, label, line_width);
 	}
 
 	/**
@@ -43,7 +41,7 @@ struct PEM
 	*/
 	static string encode(in Secure_Vector!ubyte data, in string label, size_t line_width = 64)
 	{
-		return encode(&data[0], data.length, label, line_width);
+		return encode(data.ptr, data.length, label, line_width);
 	}
 
 	/**
@@ -63,7 +61,7 @@ struct PEM
 		const string PEM_HEADER2 = "-----";
 		size_t position = 0;
 		
-		while(position != PEM_HEADER1.length)
+		while (position != PEM_HEADER1.length)
 		{
 			ubyte b;
 			if (!source.read_byte(b))
@@ -76,7 +74,7 @@ struct PEM
 				position = 0;
 		}
 		position = 0;
-		while(position != PEM_HEADER2.length)
+		while (position != PEM_HEADER2.length)
 		{
 			ubyte b;
 			if (!source.read_byte(b))
@@ -95,7 +93,7 @@ struct PEM
 		base64.start_msg();
 		const string PEM_TRAILER = "-----END " ~ label ~ "-----";
 		position = 0;
-		while(position != PEM_TRAILER.length)
+		while (position != PEM_TRAILER.length)
 		{
 			ubyte b;
 			if (!source.read_byte(b))
@@ -157,7 +155,7 @@ struct PEM
 		const string PEM_HEADER = "-----BEGIN " ~ extra;
 		
 		Secure_Vector!ubyte search_buf = Secure_Vector!ubyte(search_range);
-		size_t got = source.peek(&search_buf[0], search_buf.length, 0);
+		size_t got = source.peek(search_buf.ptr, search_buf.length, 0);
 		
 		if (got < PEM_HEADER.length)
 			return false;

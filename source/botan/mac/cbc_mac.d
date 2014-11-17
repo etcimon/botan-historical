@@ -79,7 +79,7 @@ private:
 		m_cipher.encrypt(m_state);
 		input += xored;
 		length -= xored;
-		while(length >= output_length())
+		while (length >= output_length())
 		{
 			xor_buf(m_state, input, output_length());
 			m_cipher.encrypt(m_state);
@@ -99,7 +99,7 @@ private:
 		if (m_position)
 			m_cipher.encrypt(m_state);
 		
-		copy_mem(mac, &m_state[0], m_state.length);
+		copy_mem(mac, m_state.ptr, m_state.length);
 		zeroise(m_state);
 		m_position = 0;
 	}

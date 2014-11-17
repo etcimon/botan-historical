@@ -34,7 +34,7 @@ public:
 		SIMD_32 K2 = SIMD_32(EK[2]);
 		SIMD_32 K3 = SIMD_32(EK[3]);
 		
-		while(blocks >= 4)
+		while (blocks >= 4)
 		{
 			SIMD_32 A0 = SIMD_32.load_be(input	  );
 			SIMD_32 A1 = SIMD_32.load_be(input + 16);
@@ -91,7 +91,7 @@ public:
 		SIMD_32 K2 = SIMD_32(DK[2]);
 		SIMD_32 K3 = SIMD_32(DK[3]);
 		
-		while(blocks >= 4)
+		while (blocks >= 4)
 		{
 			SIMD_32 A0 = SIMD_32.load_be(input	  );
 			SIMD_32 A1 = SIMD_32.load_be(input + 16);

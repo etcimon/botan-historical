@@ -6,21 +6,18 @@
 */
 module botan.pubkey.algo.rfc6979;
 
-import botan.math.bigint.bigint;
-// import string;
-import botan.rng.hmac_drbg;
 import botan.libstate.libstate;
+import botan.math.bigint.bigint;
+import botan.rng.hmac_drbg;
 import botan.utils.types;
+
 /**
 * @param x the secret (EC)DSA key
 * @param q the group order
 * @param h the message hash already reduced mod q
 * @param hash the hash function used to generate h
 */
-BigInt generate_rfc6979_nonce(in BigInt x,
-                              const ref BigInt q,
-                              const ref BigInt h,
-                              in string hash)
+BigInt generate_rfc6979_nonce(in BigInt x, in BigInt q, in BigInt h, in string hash)
 {
 	Algorithm_Factory af = global_state().algorithm_factory();
 	
@@ -33,15 +30,15 @@ BigInt generate_rfc6979_nonce(in BigInt x,
 	
 	input ~= BigInt.encode_1363(h, rlen);
 	
-	rng.add_entropy(&input[0], input.length);
+	rng.add_entropy(input.ptr, input.length);
 	
 	BigInt k;
 	
 	Secure_Vector!ubyte kbits = Secure_Vector!ubyte(rlen);
 	
-	while(k == 0 || k >= q)
+	while (k == 0 || k >= q)
 	{
-		rng.randomize(&kbits[0], kbits.length);
+		rng.randomize(kbits.ptr, kbits.length);
 		k = BigInt.decode(kbits) >> (8*rlen - qlen);
 	}
 	

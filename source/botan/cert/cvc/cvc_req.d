@@ -10,11 +10,13 @@ module botan.cert.cvc.cvc_req;
 import botan.cert.cvc.cvc_gen_cert;
 import botan.asn1.oid_lookup.oids;
 import botan.asn1.ber_dec;
+import botan.utils.types;
 
+alias EAC1_1_Req = FreeListRef!EAC1_1_Req_Impl;
 /**
 * This class represents TR03110 v1.1 EAC CV Certificate Requests.
 */
-final class EAC1_1_Req : EAC1_1_gen_CVC!EAC1_1_Req
+final class EAC1_1_Req_Impl : EAC1_1_gen_CVC!EAC1_1_Req_Impl
 {
 public:
 
@@ -28,7 +30,7 @@ public:
 		        this.get_concat_sig() == rhs.get_concat_sig());
 	}
 
-	bool opCmp(string op)(in EAC1_1_Req rhs)
+	bool opCmp(string op)(in EAC1_1_Req_Impl rhs)
 		if (op == "!=")
 	{
 		return !(this == rhs);

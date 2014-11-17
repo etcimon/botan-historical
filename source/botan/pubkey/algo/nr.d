@@ -15,7 +15,7 @@ import botan.math.numbertheory.numthry;
 import botan.math.numbertheory.reducer;
 import botan.math.numbertheory.numthry;
 import botan.pubkey.algo.keypair;
-import future;
+import botan.rng.rng;
 
 /**
 * Nyberg-Rueppel Public Key
@@ -41,7 +41,7 @@ public:
 	/*
 	* NR_PublicKey Constructor
 	*/
-	this(in DL_Group grp, const ref BigInt y1)
+	this(in DL_Group grp, in BigInt y1)
 	{
 		m_group = grp;
 		m_y = y1;
@@ -55,7 +55,7 @@ protected:
 * Nyberg-Rueppel Private Key
 */
 final class NR_PrivateKey : NR_PublicKey,
-					 DL_Scheme_PrivateKey
+					 		DL_Scheme_PrivateKey
 {
 public:
 	/*
@@ -76,9 +76,7 @@ public:
 	/*
 	* Create a NR private key
 	*/
-	this(RandomNumberGenerator rng,
-	     const ref DL_Group grp,
-	     const ref BigInt x_arg)
+	this(RandomNumberGenerator rng, const ref DL_Group grp, in BigInt x_arg)
 	{
 		m_group = grp;
 		m_x = x_arg;
@@ -94,9 +92,7 @@ public:
 			load_check(rng);
 	}
 
-	this(in Algorithm_Identifier alg_id,
-	     in Secure_Vector!ubyte key_bits,
-	     RandomNumberGenerator rng)
+	this(in Algorithm_Identifier alg_id, in Secure_Vector!ubyte key_bits, RandomNumberGenerator rng)
 	{ 
 		super(alg_id, key_bits, DL_Group.ANSI_X9_57);
 		m_y = power_mod(group_g(), m_x, group_p());
@@ -124,8 +120,7 @@ public:
 		m_mod_q = Modular_Reducer(nr.group_q());
 	}
 
-	Secure_Vector!ubyte sign(in ubyte* msg, size_t msg_len,
-	                      RandomNumberGenerator rng)
+	Secure_Vector!ubyte sign(in ubyte* msg, size_t msg_len, RandomNumberGenerator rng)
 	{
 		rng.add_entropy(msg, msg_len);
 		
@@ -136,12 +131,12 @@ public:
 		
 		BigInt c, d;
 		
-		while(c == 0)
+		while (c == 0)
 		{
 			BigInt k;
 			do
 				k.randomize(rng, m_q.bits());
-			while(k >= m_q);
+			while (k >= m_q);
 			
 			c = m_mod_q.reduce(m_powermod_g_p(k) + f);
 			d = m_mod_q.reduce(k - x * c);

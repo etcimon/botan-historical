@@ -6,7 +6,7 @@
 */
 module botan.pk_pad.eme;
 
-import botan.alloc.zeroize;
+import botan.utils.memory.zeroize;
 import botan.rng.rng;
 /**
 * Encoding Method for Encryption
@@ -43,11 +43,9 @@ public:
 	* @param rng a random number generator
 	* @return encoded plaintext
 	*/
-	final Secure_Vector!ubyte encode(in Secure_Vector!ubyte msg,
-	                        size_t key_bits,
-	                        RandomNumberGenerator rng) const
+	final Secure_Vector!ubyte encode(in Secure_Vector!ubyte msg, size_t key_bits, RandomNumberGenerator rng) const
 	{
-		return pad(&msg[0], msg.length, key_bits, rng);
+		return pad(msg.ptr, msg.length, key_bits, rng);
 	}
 
 	/**
@@ -57,8 +55,7 @@ public:
 	* @param key_bits length of the key in bits
 	* @return plaintext
 	*/
-	final Secure_Vector!ubyte decode(in ubyte* msg, size_t msg_len,
-	                        size_t key_bits) const
+	final Secure_Vector!ubyte decode(in ubyte* msg, size_t msg_len, size_t key_bits) const
 	{
 		return unpad(msg, msg_len, key_bits);
 	}
@@ -70,10 +67,9 @@ public:
 	* @param key_bits length of the key in bits
 	* @return plaintext
 	*/
-	final Secure_Vector!ubyte decode(in Secure_Vector!ubyte msg,
-	                        size_t key_bits) const
+	final Secure_Vector!ubyte decode(in Secure_Vector!ubyte msg, size_t key_bits) const
 	{
-		return unpad(&msg[0], msg.length, key_bits);
+		return unpad(msg.ptr, msg.length, key_bits);
 	}
 
 	~this() {}
@@ -87,9 +83,9 @@ private:
 	* @return encoded plaintext
 	*/
 	abstract Secure_Vector!ubyte pad(in ubyte* input,
-											 size_t in_length,
-											 size_t key_length,
-											 RandomNumberGenerator rng) const;
+									 size_t in_length,
+									 size_t key_length,
+									 RandomNumberGenerator rng) const;
 
 	/**
 	* Decode an input
@@ -98,7 +94,5 @@ private:
 	* @param key_length length of the key in bits
 	* @return plaintext
 	*/
-	abstract Secure_Vector!ubyte unpad(in ubyte* input,
-												size_t in_length,
-												size_t key_length) const;
+	abstract Secure_Vector!ubyte unpad(in ubyte* input, size_t in_length, size_t key_length) const;
 }

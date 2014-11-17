@@ -14,10 +14,11 @@ public import botan.math.ec_gfp.curve_gfp;
 public import botan.math.ec_gfp.point_gfp;
 public import botan.pubkey.pk_keys;
 public import botan.pubkey.x509_key;
+import botan.rng.rng;
 import botan.pubkey.pkcs8;
 import botan.asn1.der_enc;
 import botan.asn1.ber_dec;
-import botan.alloc.zeroize;
+import botan.utils.memory.zeroize;
 import botan.utils.exceptn;
 
 /**
@@ -33,8 +34,7 @@ import botan.utils.exceptn;
 class EC_PublicKey : Public_Key
 {
 public:
-	this(in EC_Group dom_par,
-	     const ref PointGFp pub_point) 
+	this(in EC_Group dom_par, const ref PointGFp pub_point) 
 	{
 		m_domain_params = dom_par;
 		m_public_key = pub_point;
@@ -43,8 +43,7 @@ public:
 			throw new Invalid_Argument("EC_PublicKey: curve mismatch in constructor");
 	}
 
-	this(in Algorithm_Identifier alg_id,
-	     in Secure_Vector!ubyte key_bits)
+	this(in Algorithm_Identifier alg_id, in Secure_Vector!ubyte key_bits)
 	{
 		m_domain_params = EC_Group(alg_id.parameters);
 		m_domain_encoding = EC_DOMPAR_ENC_EXPLICIT;
@@ -70,8 +69,7 @@ public:
 		return unlock(EC2OSP(public_point(), PointGFp.COMPRESSED));
 	}
 
-	bool check_key(RandomNumberGenerator,
-	               bool) const
+	bool check_key(RandomNumberGenerator, bool) const
 	{
 		return public_point().on_the_curve();
 	}
@@ -90,9 +88,7 @@ public:
 	*/
 	void set_parameter_encoding(EC_Group_Encoding form)
 	{
-		if (form != EC_DOMPAR_ENC_EXPLICIT &&
-		    form != EC_DOMPAR_ENC_IMPLICITCA &&
-		    form != EC_DOMPAR_ENC_OID)
+		if (form != EC_DOMPAR_ENC_EXPLICIT && form != EC_DOMPAR_ENC_IMPLICITCA && form != EC_DOMPAR_ENC_OID)
 			throw new Invalid_Argument("Invalid encoding form for EC-key object specified");
 		
 		if ((form == EC_DOMPAR_ENC_OID) && (m_domain_params.get_oid() == ""))
@@ -126,7 +122,7 @@ public:
 protected:
 	this() 
 	{
-		domain_encoding = EC_DOMPAR_ENC_EXPLICIT;
+		m_domain_encoding = EC_DOMPAR_ENC_EXPLICIT;
 	}
 
 	EC_Group m_domain_params;
@@ -144,9 +140,7 @@ public:
 	/**
 	* EC_PrivateKey constructor
 	*/
-	this(RandomNumberGenerator rng,
-	     const ref EC_Group ec_group,
-	     const ref BigInt private_key)
+	this(RandomNumberGenerator rng, const ref EC_Group ec_group, in BigInt private_key)
 	{
 		m_domain_params = ec_group;
 		m_domain_encoding = EC_DOMPAR_ENC_EXPLICIT;
@@ -158,12 +152,10 @@ public:
 		
 		m_public_key = domain().get_base_point() * m_private_key;
 		
-		assert(m_public_key.on_the_curve(),
-		             "Generated public key point was on the curve");
+		assert(m_public_key.on_the_curve(), "Generated public key point was on the curve");
 	}
 
-	this(in Algorithm_Identifier alg_id,
-	     in Secure_Vector!ubyte key_bits)
+	this(in Algorithm_Identifier alg_id, in Secure_Vector!ubyte key_bits)
 	{
 		m_domain_params = EC_Group(alg_id.parameters);
 		m_domain_encoding = EC_DOMPAR_ENC_EXPLICIT;
@@ -172,7 +164,7 @@ public:
 		Secure_Vector!ubyte public_key_bits;
 		
 		BER_Decoder(key_bits)
-			.start_cons(ASN1_Tag.SEQUENCE)
+				.start_cons(ASN1_Tag.SEQUENCE)
 				.decode_and_check!size_t(1, "Unknown version code for ECC key")
 				.decode_octet_string_bigint(m_private_key)
 				.decode_optional(key_parameters, ASN1_Tag(0), ASN1_Tag.PRIVATE)
@@ -186,8 +178,7 @@ public:
 		{
 			m_public_key = domain().get_base_point() * m_private_key;
 			
-			assert(m_public_key.on_the_curve(),
-			             "Public point derived from loaded key was on the curve");
+			assert(m_public_key.on_the_curve(), "Public point derived from loaded key was on the curve");
 		}
 		else
 		{
@@ -199,7 +190,7 @@ public:
 	Secure_Vector!ubyte pkcs8_private_key() const
 	{
 		return DER_Encoder()
-			.start_cons(ASN1_Tag.SEQUENCE)
+				.start_cons(ASN1_Tag.SEQUENCE)
 				.encode(cast(size_t)(1))
 				.encode(BigInt.encode_1363(m_private_key, m_private_key.bytes()),
 				        ASN1_Tag.OCTET_STRING)
@@ -211,7 +202,7 @@ public:
 	* Get the private key value of this key object.
 	* @result the private key value of this key object
 	*/
-	const ref BigInt private_value() const
+	const BigInt private_value() const
 	{
 		if (m_private_key == 0)
 			throw new Invalid_State("EC_PrivateKey::private_value - uninitialized");

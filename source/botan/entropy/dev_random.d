@@ -63,9 +63,9 @@ public:
 		{
 			if (FD_ISSET(device, &read_set))
 			{
-				const ssize_t got = read(device, &io_buffer[0], io_buffer.length);
+				const ssize_t got = read(device, io_buffer.ptr, io_buffer.length);
 				if (got > 0)
-					accum.add(&io_buffer[0], got, ENTROPY_BITS_PER_BYTE);
+					accum.add(io_buffer.ptr, got, ENTROPY_BITS_PER_BYTE);
 			}
 		}
 	}

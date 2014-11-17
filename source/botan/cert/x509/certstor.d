@@ -22,8 +22,7 @@ public:
 	/**
 	* Subject DN and (optionally) key identifier
 	*/
-	abstract const X509_Certificate
-		find_cert(in X509_DN subject_dn, in Vector!ubyte key_id) const;
+	abstract const X509_Certificate find_cert(in X509_DN subject_dn, in Vector!ubyte key_id) const;
 
 	abstract const X509_CRL find_crl_for(in X509_Certificate subject) const
 	{
@@ -64,7 +63,7 @@ public:
 
 	void add_certificate(in X509_Certificate cert)
 	{
-		foreach (const ref cert_stored; m_certs)
+		foreach (const cert_stored; m_certs[])
 		{
 			if (cert_stored == cert)
 				return;
@@ -72,8 +71,6 @@ public:
 		
 		m_certs.push_back(cert);
 	}
-
-	void add_crl(in X509_CRL crl);
 
 	Vector!X509_DN all_subjects() const
 	{
@@ -83,9 +80,7 @@ public:
 		return subjects;
 	}
 
-	const X509_Certificate
-		find_cert(in X509_DN subject_dn,
-		          in Vector!ubyte key_id) const
+	const X509_Certificate find_cert(in X509_DN subject_dn, in Vector!ubyte key_id) const
 	{
 		return cert_search(subject_dn, key_id, m_certs);
 	}
@@ -94,7 +89,7 @@ public:
 	{
 		X509_DN crl_issuer = crl.issuer_dn();
 		
-		foreach (crl_stored; m_crls)
+		foreach (crl_stored; m_crls[])
 		{
 			// Found an update of a previously existing one; replace it
 			if (crl_stored.issuer_dn() == crl_issuer)
@@ -153,9 +148,7 @@ public:
 		return subjects;
 	}
 
-	const X509_Certificate
-		find_cert(in X509_DN subject_dn,
-		          in Vector!ubyte key_id) const
+	const X509_Certificate find_cert(in X509_DN subject_dn, in Vector!ubyte key_id) const
 	{
 		return cert_search(subject_dn, key_id, m_certs);
 	}
@@ -163,9 +156,9 @@ private:
 	const Vector!X509_Certificate m_certs;
 }
 
-const X509_Certificate
-	cert_search(in X509_DN subject_dn, in Vector!ubyte key_id,
-	            const ref Vector!X509_Certificate certs)
+const X509_Certificate cert_search(in X509_DN subject_dn, 
+                                   in Vector!ubyte key_id, 
+                                   in Vector!X509_Certificate certs)
 {
 	foreach (const cert; certs[])
 	{

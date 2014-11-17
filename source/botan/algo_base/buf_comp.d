@@ -41,7 +41,7 @@ public:
 	*/
 	final void update(in Secure_Vector!ubyte input)
 	{
-		add_data(&input[0], input.length);
+		add_data(input.ptr, input.length);
 	}
 
 	/**
@@ -50,7 +50,7 @@ public:
 	*/
 	final void update(in Vector!ubyte input)
 	{
-		add_data(&input[0], input.length);
+		add_data(input.ptr, input.length);
 	}
 
 	/**
@@ -109,7 +109,7 @@ public:
 	final Secure_Vector!ubyte flush()
 	{
 		Secure_Vector!ubyte output = Secure_Vector!ubyte(output_length());
-		final_result(&output[0]);
+		final_result(output.ptr);
 		return output;
 	}
 

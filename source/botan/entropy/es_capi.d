@@ -34,11 +34,11 @@ public:
 		{
 			CSP_Handle csp = CSP_Handle(prov_type);
 			
-			size_t got = csp.gen_random(&io_buffer[0], io_buffer.length);
+			size_t got = csp.gen_random(io_buffer.ptr, io_buffer.length);
 			
 			if (got)
 			{
-				accum.add(&io_buffer[0], io_buffer.length, 6);
+				accum.add(io_buffer.ptr, io_buffer.length, 6);
 				break;
 			}
 		}

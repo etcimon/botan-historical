@@ -28,7 +28,7 @@ public:
 				throw new PRNG_Unseeded(name);
 		}
 		
-		while(length)
+		while (length)
 		{
 			if (m_R_pos == m_R.length)
 				update_buffer();
@@ -102,7 +102,7 @@ private:
 			
 			if (m_V.length != BLOCK_SIZE)
 				m_V.resize(BLOCK_SIZE);
-			m_prng.randomize(&m_V[0], m_V.length);
+			m_prng.randomize(m_V.ptr, m_V.length);
 			
 			update_buffer();
 		}
@@ -118,10 +118,10 @@ private:
 		Secure_Vector!ubyte DT = m_prng.random_vec(BLOCK_SIZE);
 		m_cipher.encrypt(DT);
 		
-		xor_buf(&m_R[0], &m_V[0], &DT[0], BLOCK_SIZE);
+		xor_buf(m_R.ptr, m_V.ptr, DT.ptr, BLOCK_SIZE);
 		m_cipher.encrypt(m_R);
 		
-		xor_buf(&m_V[0], &m_R[0], &DT[0], BLOCK_SIZE);
+		xor_buf(m_V.ptr, m_R.ptr, DT.ptr, BLOCK_SIZE);
 		m_cipher.encrypt(m_V);
 		
 		m_R_pos = 0;

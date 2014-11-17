@@ -111,7 +111,7 @@ protected:
 		V[8] &= 0x7F;
 		V[12] &= 0x7F;
 		
-		ctr().set_iv(&V[0], V.length);
+		ctr().set_iv(V.ptr, V.length);
 	}
 
 	final Secure_Vector!ubyte msg_buf() { return m_msg_buf; }
@@ -137,13 +137,13 @@ protected:
 		if (text_len < 16)
 		{
 			V = CMAC.poly_double(V);
-			xor_buf(&V[0], text, text_len);
+			xor_buf(V.ptr, text, text_len);
 			V[text_len] ^= 0x80;
 			return cmac().process(V);
 		}
 		
 		cmac().update(text, text_len - 16);
-		xor_buf(&V[0], &text[text_len - 16], 16);
+		xor_buf(V.ptr, &text[text_len - 16], 16);
 		cmac().update(V);
 		
 		return cmac().flush();
@@ -224,14 +224,12 @@ public:
 		const size_t sz = buffer.length - offset;
 		
 		assert(sz >= tag_size(), "We have the tag");
-		
-		Secure_Vector!ubyte V = Secure_Vector!ubyte(&buffer[offset], &buffer[offset + 16]);
+
+		Secure_Vector!ubyte V = Secure_Vector!ubyte(buffer.ptr[offset .. offset + 16]);
 		
 		set_ctr_iv(V);
 		
-		ctr().cipher(&buffer[offset + V.length],
-		&buffer[offset],
-		buffer.length - offset - V.length);
+		ctr().cipher(&buffer[offset + V.length], &buffer[offset], buffer.length - offset - V.length);
 		
 		Secure_Vector!ubyte T = S2V(&buffer[offset], buffer.length - offset - V.length);
 		

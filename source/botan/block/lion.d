@@ -35,11 +35,11 @@ public:
 		const size_t RIGHT_SIZE = right_size();
 		
 		Secure_Vector!ubyte buffer_vec = Secure_Vector!ubyte(LEFT_SIZE);
-		ubyte* buffer = &buffer_vec[0];
+		ubyte* buffer = buffer_vec.ptr;
 		
 		foreach (size_t i; 0 .. blocks)
 		{
-			xor_buf(buffer, input, &m_key1[0], LEFT_SIZE);
+			xor_buf(buffer, input, m_key1.ptr, LEFT_SIZE);
 			m_cipher.set_key(buffer, LEFT_SIZE);
 			m_cipher.cipher(input + LEFT_SIZE, output + LEFT_SIZE, RIGHT_SIZE);
 			
@@ -47,7 +47,7 @@ public:
 			m_hash.flushInto(buffer);
 			xor_buf(output, input, buffer, LEFT_SIZE);
 			
-			xor_buf(buffer, output, &m_key2[0], LEFT_SIZE);
+			xor_buf(buffer, output, m_key2.ptr, LEFT_SIZE);
 			m_cipher.set_key(buffer, LEFT_SIZE);
 			m_cipher.cipher1(output + LEFT_SIZE, RIGHT_SIZE);
 			
@@ -65,11 +65,11 @@ public:
 		const size_t RIGHT_SIZE = right_size();
 		
 		Secure_Vector!ubyte buffer_vec = Secure_Vector!ubyte(LEFT_SIZE);
-		ubyte* buffer = &buffer_vec[0];
+		ubyte* buffer = buffer_vec.ptr;
 		
 		foreach (size_t i; 0 .. blocks)
 		{
-			xor_buf(buffer, input, &m_key2[0], LEFT_SIZE);
+			xor_buf(buffer, input, m_key2.ptr, LEFT_SIZE);
 			m_cipher.set_key(buffer, LEFT_SIZE);
 			m_cipher.cipher(input + LEFT_SIZE, output + LEFT_SIZE, RIGHT_SIZE);
 			
@@ -77,7 +77,7 @@ public:
 			m_hash.flushInto(buffer);
 			xor_buf(output, input, buffer, LEFT_SIZE);
 			
-			xor_buf(buffer, output, &m_key1[0], LEFT_SIZE);
+			xor_buf(buffer, output, m_key1.ptr, LEFT_SIZE);
 			m_cipher.set_key(buffer, LEFT_SIZE);
 			m_cipher.cipher1(output + LEFT_SIZE, RIGHT_SIZE);
 			
@@ -153,8 +153,8 @@ private:
 		clear();
 		
 		const size_t half = length / 2;
-		copy_mem(&m_key1[0], key, half);
-		copy_mem(&m_key2[0], key + half, half);
+		copy_mem(m_key1.ptr, key, half);
+		copy_mem(m_key2.ptr, key + half, half);
 	}
 
 	size_t left_size() const { return m_hash.output_length; }

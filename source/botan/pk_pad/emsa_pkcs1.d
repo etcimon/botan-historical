@@ -48,7 +48,7 @@ public:
 			throw new Encoding_Error("encoding_of: Bad input length");
 		
 		return emsa3_encoding(msg, output_bits,
-		                      &m_hash_id[0], m_hash_id.length);
+		                      m_hash_id.ptr, m_hash_id.length);
 	}
 
 	bool verify(in Secure_Vector!ubyte coded,
@@ -61,7 +61,7 @@ public:
 		try
 		{
 			return (coded == emsa3_encoding(raw, key_bits,
-			                                &m_hash_id[0], m_hash_id.length));
+			                                m_hash_id.ptr, m_hash_id.length));
 		}
 		catch
 		{
@@ -136,6 +136,6 @@ Secure_Vector!ubyte emsa3_encoding(in Secure_Vector!ubyte msg,
 	set_mem(&T[1], P_LENGTH, 0xFF);
 	T[P_LENGTH+1] = 0x00;
 	buffer_insert(T, P_LENGTH+2, hash_id, hash_id_length);
-	buffer_insert(T, output_length-msg.length, &msg[0], msg.length);
+	buffer_insert(T, output_length-msg.length, msg.ptr, msg.length);
 	return T;
 }

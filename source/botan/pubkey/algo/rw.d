@@ -16,8 +16,8 @@ import botan.pubkey.blinding;
 import botan.math.numbertheory.numthry;
 import botan.pubkey.algo.keypair;
 import botan.utils.parsing;
+import botan.utils.types;
 import std.algorithm;
-import future;
 
 /**
 * Rabin-Williams Public Key
@@ -33,7 +33,7 @@ public:
 		super(alg_id, key_bits);
 	}
 
-	this(in BigInt mod, const ref BigInt exponent)
+	this(in BigInt mod, in BigInt exponent)
 	{
 		super(mod, exponent);
 	}
@@ -46,20 +46,20 @@ protected:
 * Rabin-Williams Private Key
 */
 final class RW_PrivateKey : RW_PublicKey,
-					  IF_Scheme_PrivateKey
+					  		IF_Scheme_PrivateKey
 {
 public:
 	this(in Algorithm_Identifier alg_id,
-					  in Secure_Vector!ubyte key_bits,
-					  RandomNumberGenerator rng) 
+	     in Secure_Vector!ubyte key_bits,
+	     RandomNumberGenerator rng) 
 	{
 		super(rng, alg_id, key_bits);
 	}
 
 	this(RandomNumberGenerator rng,
-					  const ref BigInt p, const ref BigInt q,
-					  const ref BigInt e, const ref BigInt d = 0,
-					  const ref BigInt n = 0)
+		 in BigInt p, in BigInt q,
+		 in BigInt e, in BigInt d = 0,
+		 in BigInt n = 0)
 	{
 		super(rng, p, q, e, d, n);
 	}
@@ -67,8 +67,7 @@ public:
 	/*
 	* Create a Rabin-Williams private key
 	*/
-	this(RandomNumberGenerator rng,
-	     size_t bits, size_t exp = 2)
+	this(RandomNumberGenerator rng, size_t bits, size_t exp = 2)
 	{
 		if (bits < 1024)
 			throw new Invalid_Argument(algo_name ~ ": Can't make a key that is only " ~
@@ -83,7 +82,7 @@ public:
 			m_p = random_prime(rng, (bits + 1) / 2, m_e / 2, 3, 4);
 			m_q = random_prime(rng, bits - m_p.bits(), m_e / 2, ((m_p % 8 == 3) ? 7 : 3), 8);
 			m_n = m_p * m_q;
-		} while(m_n.bits() != bits);
+		} while (m_n.bits() != bits);
 		
 		m_d = inverse_mod(m_e, lcm(m_p - 1, m_q - 1) >> 1);
 		m_d1 = m_d % (m_p - 1);
@@ -130,8 +129,7 @@ public:
 
 	size_t max_input_bits() const { return (m_n.bits() - 1); }
 
-	Secure_Vector!ubyte sign(in ubyte* msg, size_t msg_len,
-	                      RandomNumberGenerator rng)
+	Secure_Vector!ubyte sign(in ubyte* msg, size_t msg_len, RandomNumberGenerator rng)
 	{
 		rng.add_entropy(msg, msg_len);
 		

@@ -109,9 +109,7 @@ public:
 		m_cookie.replace(buf.ptr[3 .. buf.length]);
 	}
 
-	this(in Vector!ubyte client_hello_bits,
-	     in string client_identity,
-	     const ref SymmetricKey secret_key)
+	this(in Vector!ubyte client_hello_bits, in string client_identity, in SymmetricKey secret_key)
 	{
 		Unique!MessageAuthenticationCode hmac = get_mac("HMAC(SHA-256)");
 		hmac.set_key(secret_key);
@@ -444,7 +442,7 @@ private:
 		}
 		
 		m_random.resize(challenge_len);
-		copy_mem(&m_random[0], &buf[9+cipher_spec_len+m_session_id_len], challenge_len);
+		copy_mem(m_random.ptr, &buf[9+cipher_spec_len+m_session_id_len], challenge_len);
 		
 		if (offered_suite(cast(ushort)(TLS_EMPTY_RENEGOTIATION_INFO_SCSV)))
 			m_extensions.add(new Renegotiation_Extension());
@@ -1025,7 +1023,7 @@ final class Certificate : Handshake_Message
 {
 public:
 	override Handshake_Type type() const { return CERTIFICATE; }
-	const ref Vector!X509_Certificate cert_chain() const { return m_certs; }
+	const Vector!X509_Certificate cert_chain() const { return m_certs; }
 
 	size_t count() const { return m_certs.length; }
 	@property bool empty() const { return m_certs.empty; }
@@ -1035,7 +1033,7 @@ public:
 	*/
 	this(Handshake_IO io,
 	     Handshake_Hash hash,
-	     const ref Vector!X509_Certificate cert_list)
+	     in Vector!X509_Certificate cert_list)
 	{
 		m_certs = cert_list;
 		hash.update(io.send(this));
@@ -1050,13 +1048,13 @@ public:
 			throw new Decoding_Error("Certificate: Message malformed");
 		
 		const size_t total_size = make_uint(0, buf[0], buf[1], buf[2]);
-		
+
 		if (total_size != buf.length - 3)
 			throw new Decoding_Error("Certificate: Message malformed");
 		
 		const ubyte* certs = &buf[3];
 		
-		while(true)
+		while (true)
 		{
 			size_t remaining_bytes = &buf[buf.length] - certs;
 			if (remaining_bytes <= 0)
@@ -1125,7 +1123,7 @@ public:
 	this(Handshake_IO io,
 	     Handshake_Hash hash,
 	     const Policy policy,
-	     const ref Vector!X509_DN ca_certs,
+	     in Vector!X509_DN ca_certs,
 	     Protocol_Version _version) 
 	{
 		m_names = ca_certs;
@@ -1146,14 +1144,13 @@ public:
 	/**
 	* Deserialize a Certificate Request message
 	*/
-	this(in Vector!ubyte buf,
-	     Protocol_Version _version)
+	this(in Vector!ubyte buf, Protocol_Version _version)
 	{
 		if (buf.length < 4)
 			throw new Decoding_Error("Certificate_Req: Bad certificate request");
 		
 		TLS_Data_Reader reader = TLS_Data_Reader("CertificateRequest", buf);
-		
+
 		Vector!ubyte cert_type_codes = reader.get_range_vector!ubyte(1, 1, 255);
 		
 		for (size_t i = 0; i != cert_type_codes.length; ++i)
@@ -1186,11 +1183,11 @@ public:
 		if (reader.remaining_bytes() != purported_size)
 			throw new Decoding_Error("Inconsistent length in certificate request");
 		
-		while(reader.has_remaining())
+		while (reader.has_remaining())
 		{
 			Vector!ubyte name_bits = reader.get_range_vector!ubyte(2, 0, 65535);
 			
-			BER_Decoder decoder = BER_Decoder(&name_bits[0], name_bits.length);
+			BER_Decoder decoder = BER_Decoder(name_bits.ptr, name_bits.length);
 			X509_DN name;
 			decoder.decode(name);
 			m_names.push_back(name);
@@ -1260,11 +1257,10 @@ public:
 		PK_Verifier verifier = PK_Verifier(*key, format.first, format.second);
 		if (state._version() == Protocol_Version.SSL_V3)
 		{
-			Secure_Vector!ubyte md5_sha = state.hash().final_ssl3(
-				state.session_keys().master_secret());
+			Secure_Vector!ubyte md5_sha = state.hash().final_ssl3(state.session_keys().master_secret());
 
 			return verifier.verify_message(&md5_sha[16], md5_sha.length-16,
-			&m_signature[0], m_signature.length);
+			m_signature.ptr, m_signature.length);
 		}
 		
 		return verifier.verify_message(state.hash().get_contents(), m_signature);
@@ -1564,10 +1560,10 @@ public:
 	*/
 	this(Handshake_IO io,
 	     Handshake_State state,
-	     const Policy policy,
+	     in Policy policy,
 	     Credentials_Manager creds,
 	     RandomNumberGenerator rng,
-	     const Private_Key signing_key = null)
+	     in Private_Key signing_key = null)
 	{
 		const string hostname = state.client_hello().sni_hostname();
 		const string kex_algo = state.ciphersuite().kex_algo();
@@ -1820,8 +1816,7 @@ public:
 		m_ticket = reader.get_range!ubyte(2, 0, 65535);
 	}
 
-	this(Handshake_IO io,
-	     Handshake_Hash hash)
+	this(Handshake_IO io, Handshake_Hash hash)
 	{
 		hash.update(io.send(this));
 	}
@@ -1830,7 +1825,7 @@ private:
 	override Vector!ubyte serialize() const
 	{
 		Vector!ubyte buf = Vector!ubyte(4);
-		store_be(m_ticket_lifetime_hint.seconds, &buf[0]);
+		store_be(m_ticket_lifetime_hint.seconds, buf.ptr);
 		append_tls_length_value(buf, m_ticket, 2);
 		return buf;
 	}
@@ -1893,8 +1888,7 @@ Secure_Vector!ubyte strip_leading_zeros(in Secure_Vector!ubyte input)
 		++leading_zeros;
 	}
 	
-	Secure_Vector!ubyte output = Secure_Vector!ubyte(&input[leading_zeros],
-	&input[input.length]);
+	Secure_Vector!ubyte output = Secure_Vector!ubyte(input.ptr[leading_zeros .. input.length]);
 	return output;
 }
 
@@ -1907,8 +1901,8 @@ Vector!ubyte finished_compute_verify(in Handshake_State state,
 {
 	if (state._version() == Protocol_Version.SSL_V3)
 	{
-		const(ubyte)[] SSL_CLIENT_LABEL = [ 0x43, 0x4C, 0x4E, 0x54 ];
-		const(ubyte)[] SSL_SERVER_LABEL = [ 0x53, 0x52, 0x56, 0x52 ];
+		__gshared immutable const(ubyte)[] SSL_CLIENT_LABEL = [ 0x43, 0x4C, 0x4E, 0x54 ];
+		__gshared immutable const(ubyte)[] SSL_SERVER_LABEL = [ 0x53, 0x52, 0x56, 0x52 ];
 		
 		Handshake_Hash hash = state.hash(); // don't modify state
 		
@@ -1923,11 +1917,11 @@ Vector!ubyte finished_compute_verify(in Handshake_State state,
 	}
 	else
 	{
-		const(ubyte)[] TLS_CLIENT_LABEL = [
+		__gshared immutable const(ubyte)[] TLS_CLIENT_LABEL = [
 			0x63, 0x6C, 0x69, 0x65, 0x6E, 0x74, 0x20, 0x66, 0x69, 0x6E, 0x69,
 			0x73, 0x68, 0x65, 0x64 ];
 		
-		const(ubyte)[] TLS_SERVER_LABEL = [
+		__gshared immutable const(ubyte)[] TLS_SERVER_LABEL = [
 			0x73, 0x65, 0x72, 0x76, 0x65, 0x72, 0x20, 0x66, 0x69, 0x6E, 0x69,
 			0x73, 0x68, 0x65, 0x64 ];
 		
@@ -1935,11 +1929,11 @@ Vector!ubyte finished_compute_verify(in Handshake_State state,
 		
 		Vector!ubyte input;
 		if (side == CLIENT)
-			input += Pair(TLS_CLIENT_LABEL, (TLS_CLIENT_LABEL).sizeof);
+			input ~= TLS_CLIENT_LABEL;
 		else
-			input += Pair(TLS_SERVER_LABEL, (TLS_SERVER_LABEL).sizeof);
+			input ~= TLS_SERVER_LABEL;
 		
-		input += state.hash().flushInto(state._version(), state.ciphersuite().prf_algo());
+		input ~= state.hash().flushInto(state._version(), state.ciphersuite().prf_algo());
 		
 		return unlock(prf.derive_key(12, state.session_keys().master_secret(), input));
 	}
@@ -1951,7 +1945,7 @@ Vector!ubyte make_hello_random(RandomNumberGenerator rng)
 	
 	const uint time32 = cast(uint)(Clock.currTime().toUnixTime);
 	
-	store_be(time32, &buf[0]);
+	store_be(time32, buf.ptr);
 	rng.randomize(&buf[4], buf.length - 4);
 	return buf;
 }

@@ -9,6 +9,7 @@ module botan.pk_pad.oaep;
 import botan.pk_pad.eme;
 import botan.kdf.kdf;
 import botan.hash.hash;
+import botan.rng.rng;
 import botan.pk_pad.mgf1;
 import botan.utils.mem_ops;
 import botan.utils.types;
@@ -30,7 +31,6 @@ public:
 			return 0;
 	}
 
-
 	/**
 	* @param hash object to use for hashing (takes ownership)
 	* @param P an optional label. Normally empty.
@@ -45,9 +45,8 @@ private:
 	/*
 	* OAEP Pad Operation
 	*/
-	Secure_Vector!ubyte pad(in ubyte* input, size_t in_length,
-	                     size_t key_length,
-	                     RandomNumberGenerator rng) const
+	Secure_Vector!ubyte pad(in ubyte* input, size_t in_length, size_t key_length,
+	                     	RandomNumberGenerator rng) const
 	{
 		key_length /= 8;
 		
@@ -56,19 +55,17 @@ private:
 		
 		Secure_Vector!ubyte output = Secure_Vector!ubyte(key_length);
 		
-		rng.randomize(&output[0], m_Phash.length);
+		rng.randomize(output.ptr, m_Phash.length);
 		
-		buffer_insert(output, m_Phash.length, &m_Phash[0], m_Phash.length);
+		buffer_insert(output, m_Phash.length, m_Phash.ptr, m_Phash.length);
 		output[output.length - in_length - 1] = 0x01;
 		buffer_insert(output, output.length - in_length, input, in_length);
 		
-		mgf1_mask(*m_hash,
-		          &output[0], m_Phash.length,
+		mgf1_mask(*m_hash, output.ptr, m_Phash.length,
 		&output[m_Phash.length], output.length - m_Phash.length);
 		
-		mgf1_mask(*m_hash,
-		          &output[m_Phash.length], output.length - m_Phash.length,
-		&output[0], m_Phash.length);
+		mgf1_mask(*m_hash, &output[m_Phash.length], output.length - m_Phash.length,
+		output.ptr, m_Phash.length);
 		
 		return output;
 	}
@@ -76,8 +73,7 @@ private:
 	/*
 	* OAEP Unpad Operation
 	*/
-	Secure_Vector!ubyte unpad(in ubyte* input, size_t in_length,
-	                       size_t key_length) const
+	Secure_Vector!ubyte unpad(in ubyte* input, size_t in_length, size_t key_length) const
 	{
 		/*
 		Must be careful about error messages here; if an attacker can
@@ -102,10 +98,10 @@ private:
 		
 		mgf1_mask(*m_hash,
 		          &input[m_Phash.length], input.length - m_Phash.length,
-		&input[0], m_Phash.length);
+		input.ptr, m_Phash.length);
 		
 		mgf1_mask(*m_hash,
-		          &input[0], m_Phash.length,
+		          input.ptr, m_Phash.length,
 		&input[m_Phash.length], input.length - m_Phash.length);
 		
 		bool waiting_for_delim = true;
@@ -134,12 +130,12 @@ private:
 		// If we never saw any non-zero ubyte, then it's not valid input
 		bad_input |= waiting_for_delim;
 		
-		bad_input |= !same_mem(&input[m_Phash.length], &m_Phash[0], m_Phash.length);
+		bad_input |= !same_mem(&input[m_Phash.length], m_Phash.ptr, m_Phash.length);
 		
 		if (bad_input)
 			throw new Decoding_Error("Invalid OAEP encoding");
-		
-		return Secure_Vector!ubyte(&input[delim_idx + 1], &input[input.length]);
+
+		return Secure_Vector!ubyte(input.ptr[delim_idx + 1 .. input.length]);
 	}
 
 	Secure_Vector!ubyte m_Phash;

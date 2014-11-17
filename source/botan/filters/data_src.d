@@ -6,11 +6,12 @@
 * Distributed under the terms of the botan license.
 */
 module botan.filters.data_src;
-import botan.alloc.zeroize;
+import botan.utils.memory.zeroize;
 // import string;
 import std.stdio;
 import botan.utils.exceptn;
 import std.algorithm;
+
 /**
 * This class represents an abstract data source object.
 */
@@ -39,8 +40,7 @@ public:
 	* @return length in bytes that was actually read and put
 	* into out
 	*/
-	abstract size_t peek(ubyte* output,
-							  size_t peek_offset) const;
+	abstract size_t peek(ubyte* output, size_t peek_offset) const;
 
 	/**
 	* Test whether the source still has data that can be read.
@@ -119,8 +119,7 @@ public:
 	/*
 	* Peek into a memory buffer
 	*/
-	size_t peek(ubyte* output, size_t length,
-	            size_t peek_offset) const
+	size_t peek(ubyte* output, size_t length, size_t peek_offset) const
 	{
 		const size_t bytes_left = m_source.length - offset;
 		if (peek_offset >= bytes_left) return 0;
@@ -145,8 +144,7 @@ public:
 	*/
 	this(in string input) 
 	{
-		m_source = Secure_Vector!ubyte(cast(const ubyte*) input.ptr,
-		                          cast(const ubyte*)(input.ptr) + input.length);
+		m_source = Secure_Vector!ubyte(cast(ubyte*) input.ptr, (cast(ubyte*) input.ptr) + input.length);
 		offset = 0;
 	}
 
@@ -177,7 +175,7 @@ public:
 	* @param input the MemoryRegion to read from
 	*/
 	this(in Vector!ubyte input) {
-		m_source = Secure_Vector!ubyte(&input[0], &input[input.length]);
+		m_source = Secure_Vector!ubyte(input.ptr[0 .. input.length]);
 		offset = 0;
 	}
 

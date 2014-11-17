@@ -71,9 +71,9 @@ public:
 			0x20, 0xBA, 0x89, 0x3C, 0x92, 0xF8, 0xD3, 0x53, 0xBC ];
 		
 		if (m_name == "R3411_94_TestParam")
-			m_sboxes = &GOST_R_3411_TEST_PARAMS;
+			m_sboxes = GOST_R_3411_TEST_PARAMS.ptr;
 		else if (m_name == "R3411_CryptoPro")
-			m_sboxes = &GOST_R_3411_CRYPTOPRO_PARAMS;
+			m_sboxes = GOST_R_3411_CRYPTOPRO_PARAMS.ptr;
 		else
 			throw new Invalid_Argument("GOST_28147_89_Params: Unknown " ~ m_name);
 	}

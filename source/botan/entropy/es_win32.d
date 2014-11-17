@@ -98,13 +98,13 @@ public:
 							if (heap_objs_found++ > HEAP_OBJS_PER_LIST)
 								break;
 							accum.add(heap_entry, 1);
-						} while(Heap32Next(&heap_entry));
+						} while (Heap32Next(&heap_entry));
 					}
 					
 					if (accum.polling_goal_achieved())
 						break;
 					
-				} while(Heap32ListNext(snapshot, &heap_list));
+				} while (Heap32ListNext(snapshot, &heap_list));
 			}
 		}
 		
@@ -124,7 +124,7 @@ void TOOLHELP32_ITER(alias DATA_TYPE, alias FUNC_FIRST, alias FUNC_NEXT)(ref Ent
 			do
 			{
 				accum.add(info, 1);
-			} while(FUNC_NEXT(snapshot, &info));
+			} while (FUNC_NEXT(snapshot, &info));
 		}
 	}
 }

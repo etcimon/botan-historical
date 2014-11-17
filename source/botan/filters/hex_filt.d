@@ -11,6 +11,7 @@ import botan.codec.hex;
 import botan.utils.parsing;
 import botan.utils.charset;
 import botan.utils.exceptn;
+import botan.utils.types;
 import std.algorithm;
 
 /**
@@ -36,16 +37,16 @@ public:
 		buffer_insert(m_input, m_position, input, length);
 		if (m_position + length >= m_input.length)
 		{
-			encode_and_send(&m_input[0], m_input.length);
+			encode_and_send(m_input.ptr, m_input.length);
 			input += (m_input.length - m_position);
 			length -= (m_input.length - m_position);
-			while(length >= m_input.length)
+			while (length >= m_input.length)
 			{
 				encode_and_send(input, m_input.length);
 				input += m_input.length;
 				length -= m_input.length;
 			}
-			copy_mem(&m_input[0], input, length);
+			copy_mem(m_input.ptr, input, length);
 			m_position = 0;
 		}
 		m_position += length;
@@ -56,7 +57,7 @@ public:
 	*/
 	void end_msg()
 	{
-		encode_and_send(&m_input[0], m_position);
+		encode_and_send(m_input.ptr, m_position);
 		if (m_counter && m_line_length)
 			send('\n');
 		m_counter = m_position = 0;
@@ -83,9 +84,7 @@ public:
 	* @param line_length if newlines are used, how long are lines
 	* @param the_case the case to use in the encoded strings
 	*/
-	this(bool newlines = false,
-	     size_t m_line_length = 72,
-	     Case the_case = Uppercase)
+	this(bool newlines = false, size_t m_line_length = 72, Case the_case = Uppercase)
 	{
 		m_casing = the_case;
 		m_line_length = newlines ? length : 0;
@@ -99,16 +98,14 @@ private:
 	*/
 	void encode_and_send(in ubyte* block, size_t length)
 	{
-		hex_encode(cast(char*)(&m_output[0]),
-		           block, length,
-		           m_casing == Uppercase);
+		hex_encode(cast(char*)(m_output.ptr), block, length, m_casing == Uppercase);
 		
 		if (m_line_length == 0)
 			send(m_output, 2*length);
 		else
 		{
 			size_t remaining = 2*length, offset = 0;
-			while(remaining)
+			while (remaining)
 			{
 				size_t sent = std.algorithm.min(m_line_length - counter, remaining);
 				send(&m_output[offset], sent);
@@ -144,24 +141,24 @@ public:
 	*/
 	void write(in ubyte* input, size_t length)
 	{
-		while(length)
+		while (length)
 		{
 			size_t to_copy = std.algorithm.min(length, m_input.length - m_position);
 			copy_mem(&m_input[m_position], input, to_copy);
 			m_position += to_copy;
 			
 			size_t consumed = 0;
-			size_t written = hex_decode(&m_output[0],
-								cast(string)(m_input[0]),
-								m_position,
-								consumed,
-								m_checking != FULL_CHECK);
+			size_t written = hex_decode(m_output.ptr,
+			                            cast(const(char)*)(m_input.ptr),
+			                            m_position,
+			                            consumed,
+			                            m_checking != FULL_CHECK);
 			
 			send(m_output, written);
 			
 			if (consumed != m_position)
 			{
-				copy_mem(&m_input[0], &m_input[consumed], m_position - consumed);
+				copy_mem(m_input.ptr, &m_input[consumed], m_position - consumed);
 				m_position = m_position - consumed;
 			}
 			else
@@ -178,8 +175,8 @@ public:
 	void end_msg()
 	{
 		size_t consumed = 0;
-		size_t written = hex_decode(&m_output[0],
-									cast(string)(m_input[0]),
+		size_t written = hex_decode(m_output.ptr,
+		                            cast(const(char)*)(m_input.ptr),
 									m_position,
 									consumed,
 									m_checking != FULL_CHECK);

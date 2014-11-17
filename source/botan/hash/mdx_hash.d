@@ -50,7 +50,7 @@ protected:
 			
 			if (m_position + length >= m_buffer.length)
 			{
-				compress_n(&m_buffer[0], 1);
+				compress_n(m_buffer.ptr, 1);
 				input += (m_buffer.length - m_position);
 				length -= (m_buffer.length - m_position);
 				m_position = 0;
@@ -79,13 +79,13 @@ protected:
 		
 		if (m_position >= m_buffer.length - m_COUNT_SIZE)
 		{
-			compress_n(&m_buffer[0], 1);
+			compress_n(m_buffer.ptr, 1);
 			zeroise(m_buffer);
 		}
 		
 		write_count(&m_buffer[m_buffer.length - m_COUNT_SIZE]);
 		
-		compress_n(&m_buffer[0], 1);
+		compress_n(m_buffer.ptr, 1);
 		copy_out(output);
 		clear();
 	}

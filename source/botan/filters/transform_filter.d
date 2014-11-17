@@ -80,7 +80,7 @@ private:
 
 	final void buffered_block(in ubyte* input, size_t input_length)
 	{
-		while(input_length)
+		while (input_length)
 		{
 			const size_t take = std.algorithm.min(m_transform.update_granularity(), input_length);
 			

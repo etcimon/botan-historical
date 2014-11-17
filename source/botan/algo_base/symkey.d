@@ -11,7 +11,8 @@ import botan.rng.rng;
 import botan.filters.pipe;
 import botan.codec.hex;
 import std.algorithm;
-import botan.alloc.zeroize;
+import botan.utils.memory.zeroize;
+import botan.utils.types;
 // import string;
 
 /**
@@ -23,7 +24,7 @@ public:
 	/**
 	* @return size of this octet string in bytes
 	*/
-	size_t length() const { return m_bits.length; }
+	@property size_t length() const { return m_bits.length; }
 	
 	/**
 	* @return this object as a Secure_Vector!ubyte
@@ -33,7 +34,7 @@ public:
 	/**
 	* @return start of this string
 	*/
-	const ubyte* begin() const { return &m_bits[0]; }
+	@property const ubyte* ptr() const { return m_bits.ptr; }
 	
 	/**
 	* @return end of this string
@@ -45,19 +46,19 @@ public:
 	*/
 	string toString() const
 	{
-		return hex_encode(&m_bits[0], m_bits.length);
+		return hex_encode(m_bits.ptr, m_bits.length);
 	}
 		
 	/**
-		* XOR the contents of another octet string into this one
-		* @param other octet string
-		* @return reference to this
-		*/
-	void opOpAssign(string op)(const ref OctetString k)
+	* XOR the contents of another octet string into this one
+	* @param other octet string
+	* @return reference to this
+	*/
+	void opOpAssign(string op)(in OctetString k)
 		if (op == "^=")
 	{
-		if (&k == this) { zeroise(m_bits); return; }
-		xor_buf(&m_bits[0], k.ptr, std.algorithm.min(length(), k.length));
+		if (k.ptr is this.ptr) { zeroise(m_bits); return; }
+		xor_buf(m_bits.ptr, k.ptr, min(length(), k.length));
 		return;
 	}
 	
@@ -67,7 +68,7 @@ public:
 	void set_odd_parity()
 	{
 		__gshared immutable ubyte[256] ODD_PARITY = [
-			0x01, 0x01, 0x02, 0x02, 0x04, 0x04, 0x07, 0x07, 0x08, 0x08, 0x0B, 0x0B,
+				0x01, 0x01, 0x02, 0x02, 0x04, 0x04, 0x07, 0x07, 0x08, 0x08, 0x0B, 0x0B,
 				0x0D, 0x0D, 0x0E, 0x0E, 0x10, 0x10, 0x13, 0x13, 0x15, 0x15, 0x16, 0x16,
 				0x19, 0x19, 0x1A, 0x1A, 0x1C, 0x1C, 0x1F, 0x1F, 0x20, 0x20, 0x23, 0x23,
 				0x25, 0x25, 0x26, 0x26, 0x29, 0x29, 0x2A, 0x2A, 0x2C, 0x2C, 0x2F, 0x2F,
@@ -88,62 +89,62 @@ public:
 				0xD9, 0xD9, 0xDA, 0xDA, 0xDC, 0xDC, 0xDF, 0xDF, 0xE0, 0xE0, 0xE3, 0xE3,
 				0xE5, 0xE5, 0xE6, 0xE6, 0xE9, 0xE9, 0xEA, 0xEA, 0xEC, 0xEC, 0xEF, 0xEF,
 				0xF1, 0xF1, 0xF2, 0xF2, 0xF4, 0xF4, 0xF7, 0xF7, 0xF8, 0xF8, 0xFB, 0xFB,
-			0xFD, 0xFD, 0xFE, 0xFE ];
+				0xFD, 0xFD, 0xFE, 0xFE ];
 		
 		foreach (j; 0 .. m_bits.length)
 			m_bits[j] = ODD_PARITY[m_bits[j]];
 	}
 	
 	/**
-		* Create a new OctetString
-		* @param str is a hex encoded string
-		*/
+	* Create a new OctetString
+	* @param str is a hex encoded string
+	*/
 	this(in string hex_string)
 	{
 		m_bits.resize(1 + hex_string.length / 2);
-		m_bits.resize(hex_decode(&m_bits[0], hex_string));
+		m_bits.resize(hex_decode(m_bits.ptr, hex_string));
 	}
 
 	/**
-		* Create a new random OctetString
-		* @param rng is a random number generator
-		* @param len is the desired length in bytes
-		*/
+	* Create a new random OctetString
+	* @param rng is a random number generator
+	* @param len is the desired length in bytes
+	*/
 	this(RandomNumberGenerator rng, size_t length)
 	{
 		m_bits = rng.random_vec(length);
 	}
 	
 	/**
-		* Create a new OctetString
-		* @param input is an array
-		* @param len is the length of in in bytes
-		*/
+	* Create a new OctetString
+	* @param input is an array
+	* @param len is the length of in in bytes
+	*/
 	this(in ubyte* input, size_t len)
 	{
 		m_bits.replace(input[0 .. len]);
 	}
 	
 	/**
-		* Create a new OctetString
-		* @param input a bytestring
-		*/
+	* Create a new OctetString
+	* @param input a bytestring
+	*/
 	this(in Secure_Vector!ubyte input) { bits = input; }
 	
 	/**
-		* Create a new OctetString
-		* @param input a bytestring
-		*/
-	this(in Vector!ubyte input) {  bits = Secure_Vector!ubyte(&input[0], &input[input.length]); }
+	* Create a new OctetString
+	* @param input a bytestring
+	*/
+	this(in Vector!ubyte input) {  bits = Secure_Vector!ubyte(input.ptr[0 .. input.length]); }
 
 
-		/**
+	/**
 	* Compare two strings
 	* @param x an octet string
 	* @param y an octet string
 	* @return if x is equal to y
 	*/
-	bool opEquals(const ref OctetString other)
+	bool opEquals(in OctetString other)
 	{
 		return (bits_of() == other.bits_of());
 	}
@@ -154,7 +155,7 @@ public:
 	* @param y an octet string
 	* @return if x is not equal to y
 	*/
-	bool opCmp(const ref OctetString other)
+	bool opCmp(in OctetString other)
 	{
 		return !(this == other);
 	}
@@ -165,26 +166,28 @@ public:
 	* @param y an octet string
 	* @return x concatenated with y
 	*/
-	OctetString opBinary(op)(const ref OctetString other)
-	if (op == "+") {
+	OctetString opBinary(op)(in OctetString other)
+		if (op == "~") 
+	{
 		Secure_Vector!ubyte output;
 		output ~= bits_of();
 		output ~= other.bits_of();
 		return OctetString(output);
 	}
 	
-		/**
+	/**
 	* XOR two strings
 	* @param x an octet string
 	* @param y an octet string
 	* @return x XORed with y
 	*/
-	OctetString opBinary(op)(const ref OctetString other)
-	if (op == "^") {
-		Secure_Vector!ubyte ret = Secure_Vector!ubyte(std.algorithm.max(length(), other.length));
+	OctetString opBinary(op)(in OctetString other)
+		if (op == "^") 
+	{
+		Secure_Vector!ubyte ret = Secure_Vector!ubyte(max(length(), other.length));
 		
-		copy_mem(&ret[0], k1.ptr, k1.length);
-		xor_buf(&ret[0], k2.ptr, k2.length);
+		copy_mem(ret.ptr, k1.ptr, k1.length);
+		xor_buf(ret.ptr, k2.ptr, k2.length);
 		return OctetString(ret);
 	}
 

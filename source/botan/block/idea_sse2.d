@@ -27,7 +27,7 @@ public:
 	{
 		const ushort* KS = &super.get_EK()[0];
 		
-		while(blocks >= 8)
+		while (blocks >= 8)
 		{
 			idea_op_8(input, output, KS);
 			input += 8 * BLOCK_SIZE;
@@ -46,7 +46,7 @@ public:
 	{
 		const ushort* KS = &this.get_DK()[0];
 		
-		while(blocks >= 8)
+		while (blocks >= 8)
 		{
 			idea_op_8(input, output, KS);
 			input += 8 * BLOCK_SIZE;

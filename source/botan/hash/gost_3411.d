@@ -64,7 +64,7 @@ private:
 			ubyte[32] S;
 			
 			ulong[4] U, V;
-			load_be(U, &m_hash[0], 4);
+			load_be(U, m_hash.ptr, 4);
 			load_be(V, input + 32*i, 4);
 			
 			foreach (size_t j; 0 .. 4)
@@ -151,7 +151,7 @@ private:
 			S[30] = S2[0];
 			S[31] = S2[1];
 			
-			xor_buf(S, &m_hash[0], 32);
+			xor_buf(S, m_hash.ptr, 32);
 			
 			// 61 rounds of psi
 			S2[ 0] = S[ 2] ^ S[ 6] ^ S[14] ^ S[20] ^ S[22] ^ S[26] ^ S[28] ^ S[30];
@@ -193,7 +193,7 @@ private:
 			S2[30] = S[ 2] ^ S[ 4] ^ S[ 8] ^ S[14] ^ S[16] ^ S[18] ^ S[22] ^ S[24] ^ S[28] ^ S[30];
 			S2[31] = S[ 3] ^ S[ 5] ^ S[ 9] ^ S[15] ^ S[17] ^ S[19] ^ S[23] ^ S[25] ^ S[29] ^ S[31];
 			
-			copy_mem(&m_hash[0], &S2[0], 32);
+			copy_mem(m_hash.ptr, S2.ptr, 32);
 		}
 	}
 
@@ -210,7 +210,7 @@ private:
 			
 			if (m_position + length >= hash_block_size)
 			{
-				compress_n(&m_buffer[0], 1);
+				compress_n(m_buffer.ptr, 1);
 				input += (hash_block_size - m_position);
 				length -= (hash_block_size - m_position);
 				m_position = 0;
@@ -234,20 +234,20 @@ private:
 	{
 		if (m_position)
 		{
-			clear_mem(&m_buffer[0] + m_position, m_buffer.length - m_position);
-			compress_n(&m_buffer[0], 1);
+			clear_mem(m_buffer.ptr + m_position, m_buffer.length - m_position);
+			compress_n(m_buffer.ptr, 1);
 		}
 		
 		Secure_Vector!ubyte length_buf = Secure_Vector!ubyte(32);
 		const ulong bit_count = m_count * 8;
-		store_le(bit_count, &length_buf[0]);
+		store_le(bit_count, length_buf.ptr);
 		
 		Secure_Vector!ubyte sum_buf = m_sum;
 		
-		compress_n(&length_buf[0], 1);
-		compress_n(&sum_buf[0], 1);
+		compress_n(length_buf.ptr, 1);
+		compress_n(sum_buf.ptr, 1);
 		
-		copy_mem(output, &m_hash[0], 32);
+		copy_mem(output, m_hash.ptr, 32);
 		
 		clear();
 	}

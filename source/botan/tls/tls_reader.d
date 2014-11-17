@@ -7,7 +7,7 @@
 module botan.tls.tls_reader;
 
 import botan.utils.exceptn;
-import botan.alloc.zeroize;
+import botan.utils.memory.zeroize;
 import botan.utils.loadstor;
 // import string;
 import botan.utils.types;
@@ -112,7 +112,7 @@ public:
 	{
 		Vector!ubyte v = get_range_vector!ubyte(len_bytes, min_bytes, max_bytes);
 
-		return string(cast(char*)(&v[0]), v.length);
+		return string(cast(char*)(v.ptr), v.length);
 	}
 
 	Vector!T get_fixed(T)(size_t size)
@@ -196,19 +196,12 @@ void append_tls_length_value(T, Alloc)(ref Vector!( ubyte, Alloc ) buf,
 			buf.push_back(get_byte(j, vals[i]));
 }
 
-void append_tls_length_value(T, Alloc, Alloc2)(ref Vector!( ubyte, Alloc ) buf,
-												  const ref Vector!( T, Alloc2 ) vals,
-												  size_t tag_size)
+void append_tls_length_value(T, Alloc, Alloc2)(ref Vector!( ubyte, Alloc ) buf, in Vector!( T, Alloc2 ) vals, size_t tag_size)
 {
-	append_tls_length_value(buf, &vals[0], vals.length, tag_size);
+	append_tls_length_value(buf, vals.ptr, vals.length, tag_size);
 }
 
-void append_tls_length_value(Alloc)(ref Vector!( ubyte, Alloc ) buf,
-									  in string str,
-									  size_t tag_size)
+void append_tls_length_value(Alloc)(ref Vector!( ubyte, Alloc ) buf, in string str, size_t tag_size)
 {
-	append_tls_length_value(buf,
-							cast(const ubyte*)(&str[0]),
-							str.length,
-							tag_size);
+	append_tls_length_value(buf, cast(const ubyte*)(str.ptr), str.length, tag_size);
 }

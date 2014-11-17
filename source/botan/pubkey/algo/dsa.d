@@ -38,7 +38,7 @@ public:
 	/*
 	* DSA_PublicKey Constructor
 	*/
-	this(in DL_Group grp, const ref BigInt y1)
+	this(in DL_Group grp, in BigInt y1)
 	{
 		m_group = grp;
 		m_y = y1;
@@ -51,15 +51,13 @@ protected:
 * DSA Private Key
 */
 final class DSA_PrivateKey : DSA_PublicKey,
-								DL_Scheme_PrivateKey
+							 DL_Scheme_PrivateKey
 {
 public:
 	/*
 	* Create a DSA private key
 	*/
-	this(RandomNumberGenerator rng,
-	     const ref DL_Group dl_group,
-	     const ref BigInt private_key = 0)
+	this(RandomNumberGenerator rng, in DL_Group dl_group, in BigInt private_key = 0)
 	{
 		m_group = dl_group;
 		m_x = private_key;
@@ -75,9 +73,7 @@ public:
 			load_check(rng);
 	}
 
-	this(in Algorithm_Identifier alg_id,
-	     in Secure_Vector!ubyte key_bits,
-	     RandomNumberGenerator rng)
+	this(in Algorithm_Identifier alg_id, in Secure_Vector!ubyte key_bits, RandomNumberGenerator rng)
 	{
 		super(alg_id, key_bits, DL_Group.ANSI_X9_57);
 		m_y = power_mod(group_g(), m_x, group_p());
@@ -119,8 +115,7 @@ public:
 	size_t message_part_size() const { return m_q.bytes(); }
 	size_t max_input_bits() const { return m_q.bits(); }
 
-	Secure_Vector!ubyte sign(in ubyte* msg, size_t msg_len,
-		 					    RandomNumberGenerator rng)
+	Secure_Vector!ubyte sign(in ubyte* msg, size_t msg_len, RandomNumberGenerator rng)
 	{
 		import std.concurrency : spawn, receiveOnly, thisTid, send;
 		rng.add_entropy(msg, msg_len);
@@ -128,12 +123,12 @@ public:
 		BigInt i = BigInt(msg, msg_len);
 		BigInt r = 0, s = 0;
 		
-		while(r == 0 || s == 0)
+		while (r == 0 || s == 0)
 		{
 			BigInt k;
 			do
 				k.randomize(rng, m_q.bits());
-			while(k >= m_q);
+			while (k >= m_q);
 			
 			auto tid = spawn((Tid tid, Fixed_Base_Power_Mod powermod_g_p2, BigInt k2){ send(tid, m_mod_q.reduce(powermod_g_p2(k2))); }, thisTid, m_powermod_g_p, k);
 			
@@ -210,8 +205,8 @@ public:
 	}
 
 private:
-	const BigInt q;
-	const BigInt y;
+	const BigInt m_q;
+	const BigInt m_y;
 
 	Fixed_Base_Power_Mod m_powermod_g_p, m_powermod_y_p;
 	Modular_Reducer m_mod_p, m_mod_q;

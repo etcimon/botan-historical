@@ -54,7 +54,7 @@ private:
 			
 			v4si P0, P1, P2, P3;
 			
-			__m128i W0 = _mm_loadu_si12input8(&input[0]);
+			__m128i W0 = _mm_loadu_si12input8(input.ptr);
 			mixin(prep00_15!(P0, W0)());
 			
 			__m128i W1 = _mm_loadu_si128(&input[1]);

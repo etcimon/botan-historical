@@ -41,7 +41,7 @@ public:
 		encode_entries(der, m_alt_info, "URI", ASN1_Tag(6));
 		encode_entries(der, m_alt_info, "IP", ASN1_Tag(7));
 		
-		foreach (oid, const ref asn1_str; m_othernames)
+		foreach (oid, asn1_str; m_othernames)
 		{
 			der.start_explicit(0)
 					.encode(oid)
@@ -61,7 +61,7 @@ public:
 	{
 		BER_Decoder names = source.start_cons(ASN1_Tag.SEQUENCE);
 		
-		while(names.more_items())
+		while (names.more_items())
 		{
 			BER_Object obj = names.get_next_object();
 			if ((obj.class_tag != ASN1_Tag.CONTEXT_SPECIFIC) &&
@@ -110,7 +110,7 @@ public:
 			{
 				if (obj.value.length == 4)
 				{
-					const uint ip = load_be!uint(&obj.value[0], 0);
+					const uint ip = load_be!uint(obj.value.ptr, 0);
 					add_attribute("IP", ipv4_to_string(ip));
 				}
 			}
@@ -130,7 +130,7 @@ public:
 			names.insert(k, v);
 		}
 
-		foreach (oid, const ref asn1_str; m_othernames)
+		foreach (oid, asn1_str; m_othernames)
 			names.insert(ids.lookup(key), asn1_str.value());
 		
 		return names;

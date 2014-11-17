@@ -46,25 +46,25 @@ public:
 * car, holder_auth_templ, hash_alg, ced, cex and hash_alg
 * @result the self signed certificate
 */
-EAC1_1_CVC create_self_signed_cert(const ref Private_Key key,
-                                   const ref EAC1_1_CVC_Options opt,
+EAC1_1_CVC create_self_signed_cert(in Private_Key key,
+                                   in EAC1_1_CVC_Options opt,
                                    RandomNumberGenerator rng)
 {
 	// NOTE: we ignore the value of opt.chr
 	
-	const ECDSA_PrivateKey priv_key = cast(const ECDSA_PrivateKey)(key);
+	const ECDSA_PrivateKey priv_key = cast(const ECDSA_PrivateKey) key;
 	
 	if (priv_key == 0)
 		throw new Invalid_Argument("CVC_EAC::create_self_signed_cert(): unsupported key type");
 	
-	ASN1_Chr chr(opt.car.value());
+	ASN1_Chr chr = ASN1_Chr(opt.car.value());
 	
 	Algorithm_Identifier sig_algo;
 	string padding_and_hash = "EMSA1_BSI(" ~ opt.hash_alg ~ ")";
 	sig_algo.oid = oids.lookup(priv_key.algo_name ~ "/" ~ padding_and_hash);
 	sig_algo = Algorithm_Identifier(sig_algo.oid, Algorithm_Identifier.USE_NULL_PARAM);
 	
-	PK_Signer signer = PK_Signer(*priv_key, padding_and_hash);
+	PK_Signer signer = PK_Signer(priv_key, padding_and_hash);
 	
 	Vector!ubyte enc_public_key = eac_1_1_encoding(priv_key, sig_algo.oid);
 	
@@ -86,13 +86,13 @@ EAC1_1_CVC create_self_signed_cert(const ref Private_Key key,
 * @param rng the rng to use
 * @result the new request
 */
-EAC1_1_Req create_cvc_req(const ref Private_Key key,
-                          const ref ASN1_Chr chr,
-                          const ref string hash_alg,
+EAC1_1_Req create_cvc_req(in Private_Key key,
+                          in ASN1_Chr chr,
+                          in string hash_alg,
                           RandomNumberGenerator rng)
 {
 	
-	const ECDSA_PrivateKey priv_key = cast(const ECDSA_PrivateKey)(&key);
+	const ECDSA_PrivateKey priv_key = cast(const ECDSA_PrivateKey) key;
 	if (priv_key == 0)
 	{
 		throw new Invalid_Argument("CVC_EAC::create_self_signed_cert(): unsupported key type");
@@ -102,21 +102,22 @@ EAC1_1_Req create_cvc_req(const ref Private_Key key,
 	sig_algo.oid = oids.lookup(priv_key.algo_name ~ "/" ~ padding_and_hash);
 	sig_algo = Algorithm_Identifier(sig_algo.oid, Algorithm_Identifier.USE_NULL_PARAM);
 	
-	PK_Signer signer = PK_Signer(*priv_key, padding_and_hash);
+	PK_Signer signer = PK_Signer(priv_key, padding_and_hash);
 	
 	Vector!ubyte enc_public_key = eac_1_1_encoding(priv_key, sig_algo.oid);
 	
 	Vector!ubyte enc_cpi;
 	enc_cpi.push_back(0x00);
 	Vector!ubyte tbs = DER_Encoder()
-		.encode(enc_cpi, ASN1_Tag.OCTET_STRING, ASN1_Tag(41), ASN1_Tag.APPLICATION)
+			.encode(enc_cpi, ASN1_Tag.OCTET_STRING, ASN1_Tag(41), ASN1_Tag.APPLICATION)
 			.raw_bytes(enc_public_key)
 			.encode(chr)
 			.get_contents_unlocked();
 	
-	Vector!ubyte signed_cert = EAC1_1_gen_CVC!EAC1_1_Req.make_signed(signer,
-								                                     EAC1_1_gen_CVC!EAC1_1_Req.build_cert_body(tbs),
-	                                                                 rng);
+	Vector!ubyte signed_cert = 
+		EAC1_1_gen_CVC!EAC1_1_Req_Impl.make_signed(signer,
+		                                           EAC1_1_gen_CVC!EAC1_1_Req_Impl.build_cert_body(tbs),
+		                                           rng);
 	
 	auto source = scoped!DataSource_Memory(signed_cert);
 	return EAC1_1_Req(source);
@@ -130,20 +131,20 @@ EAC1_1_Req create_cvc_req(const ref Private_Key key,
 * CHR of the entity associated with the provided private key
 * @param rng the rng to use
 */
-EAC1_1_ADO create_ado_req(const ref Private_Key key,
+EAC1_1_ADO create_ado_req(in Private_Key key,
                           in EAC1_1_Req req,
-                          const ref ASN1_Car car,
+                          in ASN1_Car car,
                           RandomNumberGenerator rng)
 {
 	
-	const ECDSA_PrivateKey priv_key = cast(const ECDSA_PrivateKey)(&key);
+	const ECDSA_PrivateKey priv_key = cast(const ECDSA_PrivateKey) key;
 	if (priv_key == 0)
 	{
 		throw new Invalid_Argument("CVC_EAC::create_self_signed_cert(): unsupported key type");
 	}
 	
 	string padding_and_hash = padding_and_hash_from_oid(req.signature_algorithm().oid);
-	PK_Signer signer = PK_Signer(*priv_key, padding_and_hash);
+	PK_Signer signer = PK_Signer(priv_key, padding_and_hash);
 	Vector!ubyte tbs_bits = req.BER_encode();
 	tbs_bits ~= DER_Encoder().encode(car).get_contents_unlocked();
 	
@@ -169,13 +170,13 @@ EAC1_1_ADO create_ado_req(const ref Private_Key key,
 * @param rng a random number generator
 * @result the CVCA certificate created
 */
-EAC1_1_CVC create_cvca(const ref Private_Key key,
-                       const ref string hash,
-                       const ref ASN1_Car car, bool iris, bool fingerpr,
+EAC1_1_CVC create_cvca(in Private_Key key,
+                       in string hash,
+                       in ASN1_Car car, bool iris, bool fingerpr,
                        uint cvca_validity_months,
                        RandomNumberGenerator rng)
 {
-	const ECDSA_PrivateKey priv_key = cast(const ECDSA_PrivateKey)(&key);
+	const ECDSA_PrivateKey priv_key = cast(const ECDSA_PrivateKey) key;
 	if (priv_key == 0)
 	{
 		throw new Invalid_Argument("CVC_EAC::create_self_signed_cert(): unsupported key type");
@@ -188,7 +189,7 @@ EAC1_1_CVC create_cvca(const ref Private_Key key,
 	opts.cex.add_months(cvca_validity_months);
 	opts.holder_auth_templ = (CVCA | (iris * IRIS) | (fingerpr * FINGERPRINT));
 	opts.hash_alg = hash;
-	return create_self_signed_cert(*priv_key, opts, rng);
+	return create_self_signed_cert(priv_key, opts, rng);
 }
 
 
@@ -202,12 +203,12 @@ EAC1_1_CVC create_cvca(const ref Private_Key key,
 * the holder of the link certificate
 * @param rng a random number generator
 */
-EAC1_1_CVC link_cvca(const ref EAC1_1_CVC signer,
-                     const ref Private_Key key,
-                     const ref EAC1_1_CVC signee,
+EAC1_1_CVC link_cvca(in EAC1_1_CVC signer,
+                     in Private_Key key,
+                     in EAC1_1_CVC signee,
                      RandomNumberGenerator rng)
 {
-	const ECDSA_PrivateKey priv_key = cast(const ECDSA_PrivateKey)(&key);
+	const ECDSA_PrivateKey priv_key = cast(const ECDSA_PrivateKey) key;
 	
 	if (priv_key == 0)
 		throw new Invalid_Argument("link_cvca(): unsupported key type");
@@ -228,7 +229,7 @@ EAC1_1_CVC link_cvca(const ref EAC1_1_CVC signer,
 	}
 	Algorithm_Identifier sig_algo = signer.signature_algorithm();
 	string padding_and_hash = padding_and_hash_from_oid(sig_algo.oid);
-	PK_Signer pk_signer = PK_Signer(*priv_key, padding_and_hash);
+	PK_Signer pk_signer = PK_Signer(priv_key, padding_and_hash);
 	Unique!Public_Key pk = signee.subject_public_key();
 	ECDSA_PublicKey subj_pk = cast(ECDSA_PublicKey)(*pk);
 	subj_pk.set_parameter_encoding(EC_DOMPAR_ENC_EXPLICIT);
@@ -253,17 +254,15 @@ EAC1_1_CVC link_cvca(const ref EAC1_1_CVC signer,
 * @param rng a random number generator
 * @result the new request
 */
-EAC1_1_Req create_cvc_req_implicitca(const ref Private_Key prkey,
-                          const ref ASN1_Chr chr,
-                          const ref string hash_alg,
-                          RandomNumberGenerator rng)
+EAC1_1_Req create_cvc_req_implicitca(in Private_Key prkey, in ASN1_Chr chr,
+                                     in string hash_alg, RandomNumberGenerator rng)
 {
-	const ECDSA_PrivateKey priv_key = cast(const ECDSA_PrivateKey)(&prkey);
+	const ECDSA_PrivateKey priv_key = cast(const ECDSA_PrivateKey) prkey;
 	if (priv_key == 0)
 	{
 		throw new Invalid_Argument("CVC_EAC::create_self_signed_cert(): unsupported key type");
 	}
-	ECDSA_PrivateKey key = *priv_key;
+	ECDSA_PrivateKey key = priv_key;
 	key.set_parameter_encoding(EC_DOMPAR_ENC_IMPLICITCA);
 	return create_cvc_req(key, chr, hash_alg, rng);
 }
@@ -285,8 +284,8 @@ EAC1_1_Req create_cvc_req_implicitca(const ref Private_Key prkey,
 *
 **/
 
-EAC1_1_CVC sign_request(const ref EAC1_1_CVC signer_cert,
-                        const ref Private_Key key,
+EAC1_1_CVC sign_request(in EAC1_1_CVC signer_cert,
+                        in Private_Key key,
                         in EAC1_1_Req signee,
                         uint seqnr,
                         uint seqnr_len,
@@ -295,7 +294,7 @@ EAC1_1_CVC sign_request(const ref EAC1_1_CVC signer_cert,
                         uint ca_is_validity_months,
                         RandomNumberGenerator rng)
 {
-	const ECDSA_PrivateKey  priv_key = cast(const ECDSA_PrivateKey)(&key);
+	const ECDSA_PrivateKey  priv_key = cast(const ECDSA_PrivateKey) key;
 	if (priv_key == 0)
 	{
 		throw new Invalid_Argument("CVC_EAC::create_self_signed_cert(): unsupported key type");
@@ -304,15 +303,15 @@ EAC1_1_CVC sign_request(const ref EAC1_1_CVC signer_cert,
 	
 	string seqnr_string = to!string(seqnr);
 	
-	while(seqnr_string.length < seqnr_len)
+	while (seqnr_string.length < seqnr_len)
 		seqnr_string = '0' ~ seqnr_string;
 	
 	chr_str ~= seqnr_string;
 	ASN1_Chr chr = ASN1_Chr(chr_str);
 	string padding_and_hash = padding_and_hash_from_oid(signee.signature_algorithm().oid);
-	PK_Signer pk_signer = PK_Signer(*priv_key, padding_and_hash);
+	PK_Signer pk_signer = PK_Signer(priv_key, padding_and_hash);
 	Unique!Public_Key pk = signee.subject_public_key();
-	ECDSA_PublicKey  subj_pk = cast(ECDSA_PublicKey) *pk;
+	ECDSA_PublicKey  subj_pk = cast(ECDSA_PublicKey) pk;
 	// Unique!Public_Key signer_pk = signer_cert.subject_public_key();
 	
 	// for the case that the domain parameters are not set...
@@ -374,13 +373,12 @@ enum : CHAT_values {
 	FINGERPRINT = 0x01
 }
 
-void encode_eac_bigint(ref DER_Encoder der, const ref BigInt x, ASN1_Tag tag)
+void encode_eac_bigint(ref DER_Encoder der, in BigInt x, ASN1_Tag tag)
 {
 	der.encode(BigInt.encode_1363(x, x.bytes()), ASN1_Tag.OCTET_STRING, tag);
 }
 
-Vector!ubyte eac_1_1_encoding(const EC_PublicKey* key,
-                              const ref OID sig_algo)
+Vector!ubyte eac_1_1_encoding(const EC_PublicKey key, in OID sig_algo)
 {
 	if (key.domain_format() == EC_DOMPAR_ENC_OID)
 		throw new Encoding_Error("CVC encoder: cannot encode parameters by OID");
@@ -390,8 +388,7 @@ Vector!ubyte eac_1_1_encoding(const EC_PublicKey* key,
 	// This is why we can't have nice things
 	
 	DER_Encoder enc;
-	enc.start_cons(ASN1_Tag(73), ASN1_Tag.APPLICATION)
-		.encode(sig_algo);
+	enc.start_cons(ASN1_Tag(73), ASN1_Tag.APPLICATION).encode(sig_algo);
 	
 	if (key.domain_format() == EC_DOMPAR_ENC_EXPLICIT)
 	{
@@ -416,7 +413,7 @@ Vector!ubyte eac_1_1_encoding(const EC_PublicKey* key,
 	return enc.get_contents_unlocked();
 }
 
-string padding_and_hash_from_oid(const ref OID oid)
+string padding_and_hash_from_oid(in OID oid)
 {
 	string padding_and_hash = oids.lookup(oid); // use the hash
 	

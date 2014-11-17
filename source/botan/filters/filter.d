@@ -7,7 +7,7 @@
 */
 module botan.filters.filter;
 
-import botan.alloc.zeroize;
+import botan.utils.memory.zeroize;
 import botan.utils.types;
 // import string;
 import botan.filters.secqueue;
@@ -71,7 +71,7 @@ protected:
 			if (m_next[j])
 		{
 			if (m_write_queue.length)
-				m_next[j].write(&m_write_queue[0], m_write_queue.length);
+				m_next[j].write(m_write_queue.ptr, m_write_queue.length);
 			m_next[j].write(input, length);
 			nothing_attached = false;
 		}
@@ -91,12 +91,12 @@ protected:
 	/**
 	* @param input some input for the filter
 	*/
-	void send(in Secure_Vector!ubyte input) { send(&input[0], input.length); }
+	void send(in Secure_Vector!ubyte input) { send(input.ptr, input.length); }
 
 	/**
 	* @param input some input for the filter
 	*/
-	void send(in Vector!ubyte input) { send(&input[0], input.length); }
+	void send(in Vector!ubyte input) { send(input.ptr, input.length); }
 
 	/**
 	* @param input some input for the filter
@@ -104,7 +104,7 @@ protected:
 	*/
 	void send(in Secure_Vector!ubyte input)
 	{
-		send(&input[0], length);
+		send(input.ptr, length);
 	}
 
 	/**
@@ -113,7 +113,7 @@ protected:
 	*/
 	void send(in Vector!ubyte input)
 	{
-		send(&input[0], length);
+		send(input.ptr, length);
 	}
 
 	/*
@@ -184,7 +184,7 @@ private:
 		if (new_filter)
 		{
 			Filter last = this;
-			while(last.get_next())
+			while (last.get_next())
 				last = last.get_next();
 			last.m_next[last.current_port()] = new_filter;
 		}
@@ -201,7 +201,7 @@ private:
 		m_port_num = 0;
 		m_filter_owns = 0;
 		
-		while(size && filters && (filters[size-1] == null))
+		while (size && filters && (filters[size-1] == null))
 			--size;
 		
 		if (filters && size)

@@ -57,7 +57,7 @@ public:
 			m_ad_buf.push_back(get_byte!ushort(0, length));
 			m_ad_buf.push_back(get_byte!ushort(1, length));
 			m_ad_buf += Pair(ad, length);
-			while(m_ad_buf.length % BS)
+			while (m_ad_buf.length % BS)
 				m_ad_buf.push_back(0); // pad with zeros to full block size
 		}
 	}
@@ -126,7 +126,7 @@ protected:
 
 	final size_t L() const { return m_L; }
 
-	final const ref BlockCipher cipher() const { return *m_cipher; }
+	final const BlockCipher cipher() const { return *m_cipher; }
 
 	final void encode_length(size_t len, ubyte* output)
 	{
@@ -158,7 +158,7 @@ protected:
 		const ubyte b_flags = (m_ad_buf.length ? 64 : 0) + (((tag_size()/2)-1) << 3) + (L()-1);
 		
 		B0[0] = b_flags;
-		copy_mem(&B0[1], &m_nonce[0], m_nonce.length);
+		copy_mem(&B0[1], m_nonce.ptr, m_nonce.length);
 		encode_length(sz, &B0[m_nonce.length+1]);
 		
 		return B0;
@@ -171,7 +171,7 @@ protected:
 		const ubyte a_flags = L()-1;
 		
 		C[0] = a_flags;
-		copy_mem(&C[1], &m_nonce[0], m_nonce.length);
+		copy_mem(&C[1], m_nonce.ptr, m_nonce.length);
 		
 		return C;
 	}
@@ -227,7 +227,7 @@ public:
 		
 		for (size_t i = 0; i != ad.length; i += BS)
 		{
-			xor_buf(&T[0], &ad[i], BS);
+			xor_buf(T.ptr, &ad[i], BS);
 			E.encrypt(T);
 		}
 		
@@ -241,15 +241,15 @@ public:
 		
 		const ubyte* buf_end = &buf[sz - tag_size()];
 		
-		while(buf != buf_end)
+		while (buf != buf_end)
 		{
 			const size_t to_proc = std.algorithm.min(BS, buf_end - buf);
 			
 			E.encrypt(C, X);
-			xor_buf(buf, &X[0], to_proc);
+			xor_buf(buf, X.ptr, to_proc);
 			inc(C);
 			
-			xor_buf(&T[0], buf, to_proc);
+			xor_buf(T.ptr, buf, to_proc);
 			E.encrypt(T);
 			
 			buf += to_proc;
@@ -257,7 +257,7 @@ public:
 		
 		T ^= S0;
 		
-		if (!same_mem(&T[0], buf_end, tag_size()))
+		if (!same_mem(T.ptr, buf_end, tag_size()))
 			throw new Integrity_Failure("CCM tag check failed");
 		
 		buffer.resize(buffer.length - tag_size());
@@ -306,7 +306,7 @@ public:
 		
 		for (size_t i = 0; i != ad.length; i += BS)
 		{
-			xor_buf(&T[0], &ad[i], BS);
+			xor_buf(T.ptr, &ad[i], BS);
 			E.encrypt(T);
 		}
 		
@@ -319,15 +319,15 @@ public:
 		
 		const ubyte* buf_end = &buf[sz];
 		
-		while(buf != buf_end)
+		while (buf != buf_end)
 		{
 			const size_t to_proc = std.algorithm.min(BS, buf_end - buf);
 			
-			xor_buf(&T[0], buf, to_proc);
+			xor_buf(T.ptr, buf, to_proc);
 			E.encrypt(T);
 			
 			E.encrypt(C, X);
-			xor_buf(buf, &X[0], to_proc);
+			xor_buf(buf, X.ptr, to_proc);
 			inc(C);
 			
 			buf += to_proc;
@@ -335,7 +335,7 @@ public:
 		
 		T ^= S0;
 		
-		buffer += Pair(&T[0], tag_size());
+		buffer += Pair(T.ptr, tag_size());
 	}
 
 	override size_t output_length(size_t input_length) const

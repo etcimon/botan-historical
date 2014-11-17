@@ -80,27 +80,22 @@ alias Secure_Vector(T) = Vector!(T, secure_allocator!T);
 Vector!T unlock(T)(in Secure_Vector!T input)
 {
 	Vector!T output = Vector!T(input.length);
-	copy_mem(&output[0], &input[0], input.length);
+	copy_mem(output.ptr, input.ptr, input.length);
 	return output;
 }
 
 
-size_t buffer_insert(T, Alloc)(Vector!(T, Alloc) buf,
-                               size_t buf_offset,
-                               in T* input,
-                               size_t input_length)
+size_t buffer_insert(T, Alloc)(Vector!(T, Alloc) buf, size_t buf_offset, in T* input, size_t input_length)
 {
 	const size_t to_copy = std.algorithm.min(input_length, buf.length - buf_offset);
 	copy_mem(&buf[buf_offset], input, to_copy);
 	return to_copy;
 }
 
-size_t buffer_insert(T, Alloc, Alloc2)(Vector!(T, Alloc) buf,
-                                       size_t buf_offset,
-                                       const Vector!( T, Alloc2 ) input)
+size_t buffer_insert(T, Alloc, Alloc2)(Vector!(T, Alloc) buf, size_t buf_offset, in Vector!( T, Alloc2 ) input)
 {
 	const size_t to_copy = std.algorithm.min(input.length, buf.length - buf_offset);
-	copy_mem(&buf[buf_offset], &input[0], to_copy);
+	copy_mem(&buf[buf_offset], input.ptr, to_copy);
 	return to_copy;
 }
 
@@ -110,7 +105,7 @@ Vector!(T, Alloc) opOpAssign(string op, T, Alloc)(Vector!(T, Alloc) output,
 {
 	const size_t copy_offset = output.length;
 	output.resize(output.length + input.length);
-	copy_mem(&output[copy_offset], &input[0], input.length);
+	copy_mem(&output[copy_offset], input.ptr, input.length);
 	return output;
 }
 
@@ -122,9 +117,8 @@ Vector!(T, Alloc) opOpAssign(string op, T, Alloc)(Vector!(T, Alloc) output, T in
 }
 
 Vector!(T, Alloc) 
-	opOpAssign(string op, T, Alloc)(Vector!(T, Alloc) output,
-										const Pair!(const T*, L) input)
-	if (op == "+=")
+	opOpAssign(string op, T, Alloc)(Vector!(T, Alloc) output, in Pair!(const T*, L) input)
+		if (op == "+=")
 {
 	const size_t copy_offset = output.length;
 	output.resize(output.length + input.second);
@@ -132,8 +126,7 @@ Vector!(T, Alloc)
 	return output;
 }
 
-Vector!(T, Alloc) opOpAssign(string op, T, Alloc, L)(Vector!(T, Alloc) output, 
-                                                     const Pair!(T*, L) input)
+Vector!(T, Alloc) opOpAssign(string op, T, Alloc, L)(Vector!(T, Alloc) output, in Pair!(T*, L) input)
 	if (op == "+=")
 {
 	const size_t copy_offset = output.length;
@@ -148,7 +141,7 @@ Vector!(T, Alloc) opOpAssign(string op, T, Alloc, L)(Vector!(T, Alloc) output,
 */
 void zeroise(T, Alloc)(Vector!(T, Alloc) vec)
 {
-	clear_mem(&vec[0], vec.length);
+	clear_mem(vec.ptr, vec.length);
 }
 
 /**

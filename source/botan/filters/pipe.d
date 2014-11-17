@@ -79,14 +79,14 @@ public:
 	* @param input the Secure_Vector containing the data to write
 	*/
 	void write(in Secure_Vector!ubyte input)
-	{ write(&input[0], input.length); }
+	{ write(input.ptr, input.length); }
 
 	/**
 	* Write input to the pipe, i.e. to its first filter.
 	* @param input the std::vector containing the data to write
 	*/
 	void write(in Vector!ubyte input)
-	{ write(&input[0], input.length); }
+	{ write(input.ptr, input.length); }
 
 	/**
 	* Write input to the pipe, i.e. to its first filter.
@@ -113,10 +113,10 @@ public:
 	void write(DataSource source)
 	{
 		Secure_Vector!ubyte buffer = Secure_Vector!ubyte(DEFAULT_BUFFERSIZE);
-		while(!source.end_of_data())
+		while (!source.end_of_data())
 		{
-			size_t got = source.read(&buffer[0], buffer.length);
-			write(&buffer[0], got);
+			size_t got = source.read(buffer.ptr, buffer.length);
+			write(buffer.ptr, got);
 		}
 	}
 
@@ -156,7 +156,7 @@ public:
 	*/
 	void process_msg(in Secure_Vector!ubyte input)
 	{
-		process_msg(&input[0], input.length);
+		process_msg(input.ptr, input.length);
 	}
 
 	/**
@@ -165,7 +165,7 @@ public:
 	*/
 	void process_msg(in Vector!ubyte input)
 	{
-		process_msg(&input[0], input.length);
+		process_msg(input.ptr, input.length);
 	}
 
 	/**
@@ -263,7 +263,7 @@ public:
 	{
 		msg = ((msg != DEFAULT_MESSAGE) ? msg : default_msg());
 		Secure_Vector!ubyte buffer = Secure_Vector!ubyte(remaining(msg));
-		size_t got = read(&buffer[0], buffer.length, msg);
+		size_t got = read(buffer.ptr, buffer.length, msg);
 		buffer.resize(got);
 		return buffer;
 	}
@@ -278,15 +278,15 @@ public:
 	{
 		msg = ((msg != DEFAULT_MESSAGE) ? msg : default_msg());
 		Secure_Vector!ubyte buffer = Secure_Vector!ubyte(DEFAULT_BUFFERSIZE);
-		string str;
+		Appender!string str;
 		str.reserve(remaining(msg));
 		
-		while(true)
+		while (true)
 		{
-			size_t got = read(&buffer[0], buffer.length, msg);
+			size_t got = read(buffer.ptr, buffer.length, msg);
 			if (got == 0)
 				break;
-			str.append(cast(string)(buffer[0]), got);
+			str ~= buffer.ptr[0 .. got];
 		}
 		
 		return str;
@@ -300,8 +300,7 @@ public:
 	* @param offset the offset from the current position in message
 	* @return number of bytes actually peeked and written into output
 	*/
-	size_t peek(ubyte* output, size_t length,
-	            size_t offset, message_id msg = DEFAULT_MESSAGE) const
+	size_t peek(ubyte* output, size_t length, size_t offset, message_id msg = DEFAULT_MESSAGE) const
 	{
 		return m_outputs.peek(output, length, offset, get_message_no("peek", msg));
 	}
@@ -315,8 +314,7 @@ public:
 	* @param msg the number identifying the message to peek from
 	* @return number of bytes actually peeked and written into output
 	*/
-	size_t peek(ref ubyte[] output,
-	            size_t offset, message_id msg = DEFAULT_MESSAGE) const
+	size_t peek(ref ubyte[] output, size_t offset, message_id msg = DEFAULT_MESSAGE) const
 	{
 		return peek(output.ptr, output.length, offset, DEFAULT_MESSAGE);
 	}
@@ -329,8 +327,7 @@ public:
 	* @param msg the number identifying the message to peek from
 	* @return number of bytes actually peeked and written into output
 	*/
-	size_t peek(ref ubyte output, size_t offset,
-				message_id msg = DEFAULT_MESSAGE) const
+	size_t peek(ref ubyte output, size_t offset, message_id msg = DEFAULT_MESSAGE) const
 	{
 		return peek(&output, 1, offset, msg);
 	}
@@ -521,7 +518,7 @@ public:
 		m_pipe_to = m_pipe_to.next[0];
 		delete f;
 		
-		while(owns--)
+		while (owns--)
 		{
 			f = m_pipe_to;
 			m_pipe_to = m_pipe_to.next[0];
@@ -545,8 +542,7 @@ public:
 	* Construct a Pipe of up to four filters. The filters are set up
 	* in the same order as the arguments.
 	*/
-	this(Filter f1 = null, Filter f2 = null,
-		  Filter f3 = null, Filter f4 = null)
+	this(Filter f1 = null, Filter f2 = null, Filter f3 = null, Filter f4 = null)
 	{
 		init();
 		append(f1);

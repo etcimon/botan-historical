@@ -63,7 +63,7 @@ public:
 	*/
 	Vector!ubyte encrypt(Alloc)(in Vector!( ubyte, Alloc ) input, RandomNumberGenerator rng) const
 	{
-		return enc(&input[0], input.length, rng);
+		return enc(input.ptr, input.length, rng);
 	}
 
 	/**
@@ -104,7 +104,7 @@ public:
 	*/
 	Secure_Vector!ubyte decrypt(Alloc)(in Vector!( ubyte, Alloc ) input) const
 	{
-		return dec(&input[0], input.length);
+		return dec(input.ptr, input.length);
 	}
 
 	this() {}
@@ -142,10 +142,10 @@ public:
 	* @return signature
 	*/
 	Vector!ubyte sign_message(in Vector!ubyte input, RandomNumberGenerator rng)
-	{ return sign_message(&input[0], input.length, rng); }
+	{ return sign_message(input.ptr, input.length, rng); }
 
 	Vector!ubyte sign_message(in Secure_Vector!ubyte input, RandomNumberGenerator rng)
-	{ return sign_message(&input[0], input.length, rng); }
+	{ return sign_message(input.ptr, input.length, rng); }
 
 	/**
 	* Add a message part (single ubyte).
@@ -167,7 +167,7 @@ public:
 	* Add a message part.
 	* @param input the message part to add
 	*/
-	void update(in Vector!ubyte input) { update(&input[0], input.length); }
+	void update(in Vector!ubyte input) { update(input.ptr, input.length); }
 
 	/**
 	* Get the signature of the so far processed message (provided by the
@@ -181,7 +181,7 @@ public:
 		                                                 m_op.max_input_bits(),
 		                                                 rng));
 		
-		Vector!ubyte plain_sig = unlock(m_op.sign(&encoded[0], encoded.length, rng));
+		Vector!ubyte plain_sig = unlock(m_op.sign(encoded.ptr, encoded.length, rng));
 		
 		assert(self_test_signature(encoded, plain_sig), "Signature was consistent");
 		
@@ -265,7 +265,7 @@ private:
 		
 		if (m_verify_op.with_recovery())
 		{
-			Vector!ubyte recovered = unlock(m_verify_op.verify_mr(&sig[0], sig.length));
+			Vector!ubyte recovered = unlock(m_verify_op.verify_mr(sig.ptr, sig.length));
 			
 			if (msg.length > recovered.length)
 			{
@@ -275,13 +275,13 @@ private:
 					if (msg[i] != 0)
 						return false;
 				
-				return same_mem(&msg[extra_0s], &recovered[0], recovered.length);
+				return same_mem(&msg[extra_0s], recovered.ptr, recovered.length);
 			}
 			
 			return (recovered == msg);
 		}
 		else
-			return m_verify_op.verify(&msg[0], msg.length, &sig[0], sig.length);
+			return m_verify_op.verify(msg.ptr, msg.length, sig.ptr, sig.length);
 	}
 
 	Unique!Signature m_op;
@@ -322,7 +322,7 @@ public:
 	bool verify_message(Alloc, Alloc2)(in Vector!( ubyte, Alloc ) msg,
 							  const Vector!( ubyte, Alloc2 ) sig)
 	{
-		return verify_message(&msg[0], msg.length, &sig[0], sig.length);
+		return verify_message(msg.ptr, msg.length, sig.ptr, sig.length);
 	}
 
 	/**
@@ -349,7 +349,7 @@ public:
 	* @param input the new message part
 	*/
 	void update(in Vector!ubyte input)
-	{ update(&input[0], input.length); }
+	{ update(input.ptr, input.length); }
 
 	/**
 	* Check the signature of the buffered message, i.e. the one build
@@ -370,7 +370,7 @@ public:
 				
 				size_t count = 0;
 				Vector!ubyte real_sig;
-				while(ber_sig.more_items())
+				while (ber_sig.more_items())
 				{
 					BigInt sig_part;
 					ber_sig.decode(sig_part);
@@ -381,7 +381,7 @@ public:
 				if (count != m_op.message_parts())
 					throw new Decoding_Error("PK_Verifier: signature size invalid");
 				
-				return validate_signature(m_emsa.raw_data(), &real_sig[0], real_sig.length);
+				return validate_signature(m_emsa.raw_data(), real_sig.ptr, real_sig.length);
 			}
 			else
 				throw new Decoding_Error("PK_Verifier: Unknown signature format " ~ to!string(m_sig_format));
@@ -397,7 +397,7 @@ public:
 	*/
 	bool check_signature(Alloc)(in Vector!( ubyte, Alloc ) sig)
 	{
-		return check_signature(&sig[0], sig.length);
+		return check_signature(sig.ptr, sig.length);
 	}
 
 	/**
@@ -454,7 +454,7 @@ private:
 			Secure_Vector!ubyte encoded =
 				m_emsa.encoding_of(msg, m_op.max_input_bits(), rng);
 			
-			return m_op.verify(&encoded[0], encoded.length, sig, sig_len);
+			return m_op.verify(encoded.ptr, encoded.length, sig, sig_len);
 		}
 	}
 
@@ -503,7 +503,7 @@ public:
 									in ubyte* params,
 									size_t params_len) const
 	{
-		return derive_key(key_len, &input[0], input.length, params, params_len);
+		return derive_key(key_len, input.ptr, input.length, params, params_len);
 	}
 
 	/*
@@ -530,7 +530,7 @@ public:
 									in Vector!ubyte input,
 									in string params = "") const
 	{
-		return derive_key(key_len, &input[0], input.length,
+		return derive_key(key_len, input.ptr, input.length,
 								cast(const ubyte*)(params.ptr),
 								params.length);
 	}
@@ -616,14 +616,14 @@ private:
 			if (8*(encoded.length - 1) + high_bit(encoded[0]) > m_op.max_input_bits())
 				throw new Invalid_Argument("PK_Encryptor_EME: Input is too large");
 			
-			return unlock(m_op.encrypt(&encoded[0], encoded.length, rng));
+			return unlock(m_op.encrypt(encoded.ptr, encoded.length, rng));
 		}
 		else
 		{
 			if (8*(length - 1) + high_bit(input[0]) > m_op.max_input_bits())
 				throw new Invalid_Argument("PK_Encryptor_EME: Input is too large");
 			
-			return unlock(m_op.encrypt(&input[0], length, rng));
+			return unlock(m_op.encrypt(input.ptr, length, rng));
 		}
 	}
 

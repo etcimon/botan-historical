@@ -29,9 +29,9 @@ public:
 		m_bz.m_stream.next_in = cast(char*) input;
 		m_bz.m_stream.avail_in = length;
 		
-		while(m_bz.m_stream.avail_in != 0)
+		while (m_bz.m_stream.avail_in != 0)
 		{
-			m_bz.m_stream.next_out = cast(char*)(&m_buffer[0]);
+			m_bz.m_stream.next_out = cast(char*)(m_buffer.ptr);
 			m_bz.m_stream.avail_out = m_buffer.length;
 			BZ2_bzCompress(&(m_bz.m_stream), BZ_RUN);
 			send(m_buffer, m_buffer.length - m_bz.m_stream.avail_out);
@@ -57,9 +57,9 @@ public:
 		m_bz.m_stream.avail_in = 0;
 		
 		int rc = BZ_OK;
-		while(rc != BZ_STREAM_END)
+		while (rc != BZ_STREAM_END)
 		{
-			m_bz.m_stream.next_out = cast(char*)(&m_buffer[0]);
+			m_bz.m_stream.next_out = cast(char*)(m_buffer.ptr);
 			m_bz.m_stream.avail_out = m_buffer.length;
 			rc = BZ2_bzCompress(&(m_bz.m_stream), BZ_FINISH);
 			send(m_buffer, m_buffer.length - m_bz.m_stream.avail_out);
@@ -76,9 +76,9 @@ public:
 		m_bz.m_stream.avail_in = 0;
 		
 		int rc = BZ_OK;
-		while(rc != BZ_RUN_OK)
+		while (rc != BZ_RUN_OK)
 		{
-			m_bz.m_stream.next_out = cast(char*)(&m_buffer[0]);
+			m_bz.m_stream.next_out = cast(char*)(m_buffer.ptr);
 			m_bz.m_stream.avail_out = m_buffer.length;
 			rc = BZ2_bzCompress(&(m_bz.m_stream), BZ_FLUSH);
 			send(m_buffer, m_buffer.length - m_bz.m_stream.avail_out);
@@ -133,9 +133,9 @@ public:
 		m_bz.m_stream.next_in = input;
 		m_bz.m_stream.avail_in = length;
 		
-		while(m_bz.m_stream.avail_in != 0)
+		while (m_bz.m_stream.avail_in != 0)
 		{
-			m_bz.m_stream.next_out = cast(char*)(&m_buffer[0]);
+			m_bz.m_stream.next_out = cast(char*)(m_buffer.ptr);
 			m_bz.m_stream.avail_out = m_buffer.length;
 			
 			int rc = BZ2_bzDecompress(&(m_bz.m_stream));
@@ -192,9 +192,9 @@ public:
 		m_bz.m_stream.avail_in = 0;
 		
 		int rc = BZ_OK;
-		while(rc != BZ_STREAM_END)
+		while (rc != BZ_STREAM_END)
 		{
-			m_bz.m_stream.next_out = cast(char*)(&m_buffer[0]);
+			m_bz.m_stream.next_out = cast(char*)(m_buffer.ptr);
 			m_bz.m_stream.avail_out = m_buffer.length;
 			rc = BZ2_bzDecompress(&(m_bz.m_stream));
 			

@@ -165,8 +165,7 @@ private:
 		size_t _version;
 		cert_req_info.decode(_version);
 		if (_version != 0)
-			throw new Decoding_Error("Unknown version code in PKCS #10 request: " ~
-			                         to!string(_version));
+			throw new Decoding_Error("Unknown version code in PKCS #10 request: " ~ to!string(_version));
 		
 		X509_DN dn_subject;
 		cert_req_info.decode(dn_subject);
@@ -187,7 +186,7 @@ private:
 		    attr_bits.class_tag == ASN1_Tag(CONSTRUCTED | ASN1_Tag.CONTEXT_SPECIFIC))
 		{
 			auto attributes = BER_Decoder(attr_bits.value);
-			while(attributes.more_items())
+			while (attributes.more_items())
 			{
 				Attribute attr;
 				attributes.decode(attr);

@@ -10,7 +10,7 @@ import botan.constants;
 static if (BOTAN_HAS_ENTROPY_SRC_PROC_WALKER):
 
 import botan.entropy.entropy_src;
-import botan.alloc.zeroize;
+import botan.utils.memory.zeroize;
 import botan.utils.types;
 import cstring;
 import deque;
@@ -49,7 +49,7 @@ private:
 	
 	Pair!(dirent*, string) get_next_dirent()
 	{
-		while(m_cur_dir.first)
+		while (m_cur_dir.first)
 		{
 			if (dirent* dir = readdir(m_cur_dir.first))
 				return Pair(dir, m_cur_dir.second);
@@ -57,7 +57,7 @@ private:
 			closedir(m_cur_dir.first);
 			m_cur_dir = Pair!(DIR*, string)(null, "");
 			
-			while(!m_dirlist.empty && !m_cur_dir.first)
+			while (!m_dirlist.empty && !m_cur_dir.first)
 			{
 				const string next_dir_name = m_dirlist[0];
 				m_dirlist.pop_front();
@@ -80,7 +80,7 @@ final class File_Descriptor_Source
 public:
 	int next_fd()
 	{
-		while(true)
+		while (true)
 		{
 			Pair!(dirent*, string) entry = get_next_dirent();
 			
@@ -150,7 +150,7 @@ public:
 			close(fd);
 			
 			if (got > 0)
-				accum.add(&io_buffer[0], got, ENTROPY_ESTIMATE);
+				accum.add(io_buffer.ptr, got, ENTROPY_ESTIMATE);
 			
 			if (accum.polling_goal_achieved())
 				break;

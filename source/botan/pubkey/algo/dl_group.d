@@ -29,7 +29,7 @@ public:
 	* Get the prime m_p.
 	* @return prime m_p
 	*/
-	const ref BigInt get_p() const
+	const BigInt get_p() const
 	{
 		init_check();
 		return m_p;
@@ -39,7 +39,7 @@ public:
 	* Get the prime q.
 	* @return prime q
 	*/
-	const ref BigInt get_q() const
+	const BigInt get_q() const
 	{
 		init_check();
 		if (m_q == 0)
@@ -51,7 +51,7 @@ public:
 	* Get the base m_g.
 	* @return base m_g
 	*/
-	const ref BigInt get_g() const
+	const BigInt get_g() const
 	{
 		init_check();
 		return m_g;
@@ -176,7 +176,7 @@ public:
 	{
 		BigInt new_p, new_q, new_g;
 		
-		BER_Decoder decoder(data);
+		BER_Decoder decoder = BER_Decoder(data);
 		BER_Decoder ber = decoder.start_cons(ASN1_Tag.SEQUENCE);
 		
 		if (format == ANSI_X9_57)
@@ -265,8 +265,7 @@ public:
 	* @param qbits the number of bits of q. Leave it as 0 to have
 	* the value determined according to pbits.
 	*/
-	this(RandomNumberGenerator rng,
-	     PrimeType type, size_t pbits, size_t qbits = 0)
+	this(RandomNumberGenerator rng, PrimeType type, size_t pbits, size_t qbits = 0)
 	{
 		if (pbits < 512)
 			throw new Invalid_Argument("DL_Group: prime size " ~ to!string(pbits) ~ " is too small");
@@ -284,7 +283,7 @@ public:
 			
 			m_q = random_prime(rng, qbits);
 			BigInt X;
-			while(m_p.bits() != pbits || !is_prime(m_p, rng))
+			while (m_p.bits() != pbits || !is_prime(m_p, rng))
 			{
 				X.randomize(rng, pbits);
 				m_p = X - (X % (2*m_q) - 1);
@@ -314,18 +313,14 @@ public:
 	* @param pbits the desired bit size of the prime p
 	* @param qbits the desired bit size of the prime q.
 	*/
-	this(RandomNumberGenerator rng,
-	     in Vector!ubyte seed,
-	     size_t pbits = 1024, size_t qbits = 0)
+	this(RandomNumberGenerator rng, in Vector!ubyte seed, size_t pbits = 1024, size_t qbits = 0)
 	{
-		if (!generate_dsa_primes(rng,
-		                         global_state().algorithm_factory(),
-		                         m_p, m_q, pbits, qbits, seed))
+		if (!generate_dsa_primes(rng, global_state().algorithm_factory(), m_p, m_q, pbits, qbits, seed))
 			throw new Invalid_Argument("DL_Group: The seed given does not "
 			                           "generate a DSA group");
 		
 		m_g = make_dsa_generator(m_p, m_q);
-		
+
 		m_initialized = true;
 	}
 
@@ -334,7 +329,7 @@ public:
 	* @param p1 the prime p
 	* @param g1 the base m_g
 	*/
-	this(in BigInt p1, const ref BigInt g1)
+	this(in BigInt p1, in BigInt g1)
 	{
 		initialize(p1, 0, g1);
 	}
@@ -345,7 +340,7 @@ public:
 	* @param q1 the prime m_q
 	* @param g1 the base m_g
 	*/
-	this(in BigInt p1, const ref BigInt q1, const ref BigInt g1)
+	this(in BigInt p1, in BigInt q1, in BigInt g1)
 	{
 		initialize(p1, q1, g1);
 	}
@@ -356,18 +351,18 @@ private:
 	/*
 	* Create generator of the q-sized subgroup (DSA style generator)
 	*/
-	static BigInt make_dsa_generator(in BigInt m_p, const ref BigInt m_q)
+	static BigInt make_dsa_generator(in BigInt p, in BigInt q)
 	{
-		const BigInt e = (m_p - 1) / m_q;
+		const BigInt e = (p - 1) / q;
 		
-		if (e == 0 || (m_p - 1) % m_q > 0)
-			throw new Invalid_Argument("make_dsa_generator m_q does not divide m_p-1");
-		
+		if (e == 0 || (p - 1) % q > 0)
+			throw new Invalid_Argument("make_dsa_generator q does not divide p-1");
+
 		foreach (size_t i; 0 .. PRIME_TABLE_SIZE)
 		{
-			BigInt m_g = power_mod(PRIMES[i], e, m_p);
-			if (m_g > 1)
-				return m_g;
+			BigInt g = power_mod(PRIMES[i], e, p);
+			if (g > 1)
+				return g;
 		}
 		
 		throw new Internal_Error("DL_Group: Couldn't create a suitable generator");
@@ -379,7 +374,7 @@ private:
 			throw new Invalid_State("DLP group cannot be used uninitialized");
 	}
 
-	void initialize(in BigInt p1, const ref BigInt q1, const ref BigInt g1)
+	void initialize(in BigInt p1, in BigInt q1, in BigInt g1)
 	{
 		if (p1 < 3)
 			throw new Invalid_Argument("DL_Group: Prime invalid");

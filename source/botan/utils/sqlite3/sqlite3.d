@@ -97,7 +97,7 @@ public:
 
 	void bind(int column, in Vector!ubyte val)
 	{
-		int rc = sqlite3_bind_blob(m_stmt, column, &val[0], val.length, SQLITE_TRANSIENT);
+		int rc = sqlite3_bind_blob(m_stmt, column, val.ptr, val.length, SQLITE_TRANSIENT);
 		if (rc != SQLITE_OK)
 			throw new Exception("sqlite3_bind_text failed, code " ~ to!string(rc));
 	}
@@ -130,7 +130,7 @@ public:
 
 	void spin()
 	{
-		while(step()) {}
+		while (step()) {}
 	}
 
 	bool step()

@@ -9,23 +9,16 @@ module botan.math.bigint.bigint;
 
 public import botan.botan.math.mp.mp_types;
 import botan.rng.rng;
-import botan.alloc.zeroize;
-import iosfwd;
-import botan.math.bigint.bigint;
+import botan.utils.memory.zeroize;
 import botan.utils.charset;
 import botan.codec.hex;
+import botan.math.bigint.divide;
 import botan.math.mp.mp_core;
 import botan.utils.get_byte;
 import botan.utils.parsing;
 import botan.utils.rounding;
-import botan.math.mp.mp_core;
-import botan.utils.bit_ops;
 import botan.utils.parsing;
-import botan.math.bigint.bigint;
-import botan.math.mp.mp_core;
 import botan.utils.bit_ops;
-import std.algorithm;
-
 import std.algorithm;
 
 
@@ -215,7 +208,7 @@ public:
 			if (relative_size < 0)
 			{
 				Secure_Vector!word z(reg_size - 1);
-				bigint_sub3(&z[0], y.data(), reg_size - 1, data(), x_sw);
+				bigint_sub3(z.ptr, y.data(), reg_size - 1, data(), x_sw);
 				std.algorithm.swap(m_reg, z);
 				set_sign(y.sign());
 			}
@@ -304,12 +297,10 @@ public:
 		{
 			grow_to(size() + y.length);
 			
-			Secure_Vector!word z(data(), data() + x_sw);
-			Secure_Vector!word workspace(size());
+			Secure_Vector!word z = Secure_Vector!word(data(), data() + x_sw);
+			Secure_Vector!word workspace = Secure_Vector!word(size());
 			
-			bigint_mul(mutable_data(), size(), &workspace[0],
-			&z[0], z.length, x_sw,
-			y.data(), y.length, y_sw);
+			bigint_mul(mutable_data(), size(), workspace.ptr, z.ptr, z.length, x_sw, y.data(), y.length, y_sw);
 		}
 		
 		return this;
@@ -387,9 +378,9 @@ public:
 	{
 		if (shift)
 		{
-			const size_t shift_words = shift / MP_WORD_BITS,
-				shift_bits  = shift % MP_WORD_BITS,
-				words = sig_words();
+			const size_t shift_words = shift / MP_WORD_BITS;
+			const size_t shift_bits  = shift % MP_WORD_BITS;
+			const size_t words = sig_words();
 			
 			grow_to(words + shift_words + (shift_bits ? 1 : 0));
 			bigint_shl1(mutable_data(), words, shift_words, shift_bits);
@@ -407,8 +398,8 @@ public:
 	{
 		if (shift)
 		{
-			const size_t shift_words = shift / MP_WORD_BITS,
-				shift_bits  = shift % MP_WORD_BITS;
+			const size_t shift_words = shift / MP_WORD_BITS;
+			const size_t shift_bits  = shift % MP_WORD_BITS;
 			
 			bigint_shr1(mutable_data(), sig_words(), shift_words, shift_bits);
 			
@@ -470,27 +461,25 @@ public:
 				return 1;
 			
 			if (other.is_negative() && this.is_negative())
-				return (-bigint_cmp(this.data(), this.sig_words(),
-				                    other.data(), other.sig_words()));
+				return (-bigint_cmp(this.data(), this.sig_words(), other.data(), other.sig_words()));
 		}
 		
-		return bigint_cmp(this.data(), this.sig_words(),
-		                  other.data(), other.sig_words());
+		return bigint_cmp(this.data(), this.sig_words(), other.data(), other.sig_words());
 	}
 	/*
 	* Comparison Operators
 	*/
-	bool opEquals(const ref BigInt b)
+	bool opEquals(in BigInt b)
 		{ return (cmp(b) == 0); }
-	bool opCmp(string op)(const ref BigInt b) if (op == "!=")
+	bool opCmp(string op)(in BigInt b) if (op == "!=")
 		{ return (cmp(b) != 0); }
-	bool opCmp(string op)(const ref BigInt b) if (op == "<=")
+	bool opCmp(string op)(in BigInt b) if (op == "<=")
 		{ return (cmp(b) <= 0); }
-	bool opCmp(string op)(const ref BigInt b) if (op == ">=")
+	bool opCmp(string op)(in BigInt b) if (op == ">=")
 		{ return (cmp(b) >= 0); }
-	bool opCmp(string op)(const ref BigInt b) if (op == "<")
+	bool opCmp(string op)(in BigInt b) if (op == "<")
 		{ return (cmp(b) < 0); }
-	bool opCmp(string op)(const ref BigInt b) if (op == ">")
+	bool opCmp(string op)(in BigInt b) if (op == ">")
 		{ return (cmp(b) > 0); }
 
 	/**
@@ -711,10 +700,10 @@ public:
 	*/
 	size_t sig_words() const
 	{
-		const word* x = &m_reg[0];
+		const word* x = m_reg.ptr;
 		size_t sig = m_reg.length;
 
-		while(sig && (x[sig-1] == 0))
+		while (sig && (x[sig-1] == 0))
 			sig--;
 		return sig;
 	}
@@ -742,7 +731,7 @@ public:
 		size_t full_words = words - 1, top_bits = MP_WORD_BITS;
 		word top_word = word_at(full_words), mask = MP_WORD_TOP_BIT;
 		
-		while(top_bits && ((top_word & mask) == 0))
+		while (top_bits && ((top_word & mask) == 0))
 		{ mask >>= 1; top_bits--; }
 		
 		return (full_words * MP_WORD_BITS + top_bits);
@@ -752,13 +741,13 @@ public:
 	* Return a mutable pointer to the register
 	* @result a pointer to the start of the internal register
 	*/
-	word* mutable_data() { return &m_reg[0]; }
+	word* mutable_data() { return m_reg.ptr; }
 
 	/**
 	* Return a const pointer to the register
 	* @result a pointer to the start of the internal register
 	*/
-	const word* data() const { return &m_reg[0]; }
+	const word* data() const { return m_reg.ptr; }
 
 	/**
 	* Increase internal register buffer to at least n words
@@ -789,7 +778,7 @@ public:
 			if (bitsize % 8)
 				array[0] &= 0xFF >> (8 - (bitsize % 8));
 			array[0] |= 0x80 >> ((bitsize % 8) ? (8 - bitsize % 8) : 0);
-			binary_decode(&array[0], array.length);
+			binary_decode(array.ptr, array.length);
 		}
 	}
 
@@ -834,7 +823,7 @@ public:
 	*/
 	void binary_decode(in Secure_Vector!ubyte buf)
 	{
-		binary_decode(&buf[0], buf.length);
+		binary_decode(buf.ptr, buf.length);
 	}
 
 	/**
@@ -861,8 +850,7 @@ public:
 	* @param max the maximum value
 	* @return random integer in [min,max)
 	*/
-	static BigInt random_integer(RandomNumberGenerator rng,
-	                      const ref BigInt min, const ref BigInt max)
+	static BigInt random_integer(RandomNumberGenerator rng, in BigInt min, in BigInt max)
 	{
 		BigInt range = max - min;
 		
@@ -893,7 +881,7 @@ public:
 	static Vector!ubyte encode(in BigInt n, Base base = Binary)
 	{
 		Vector!ubyte output = Vector!ubyte(n.encoded_size(base));
-		encode(&output[0], n, base);
+		encode(output.ptr, n, base);
 		if (base != Binary)
 			for (size_t j = 0; j != output.length; ++j)
 				if (output[j] == 0)
@@ -910,7 +898,7 @@ public:
 	static Secure_Vector!ubyte encode_locked(in BigInt n, Base base = Binary)
 	{
 		Secure_Vector!ubyte output = Secure_Vector!ubyte(n.encoded_size(base));
-		encode(&output[0], n, base);
+		encode(output.ptr, n, base);
 		if (base != Binary)
 			for (size_t j = 0; j != output.length; ++j)
 				if (output[j] == 0)
@@ -925,7 +913,7 @@ public:
 	* @param n the BigInt to use as integer source
 	* @param base number-base of resulting ubyte array representation
 	*/
-	static void encode(ubyte* output, const ref BigInt n, Base base = Binary)
+	static void encode(ubyte* output, in BigInt n, Base base = Binary)
 	{
 		if (base == Binary)
 		{
@@ -934,10 +922,9 @@ public:
 		else if (base == Hexadecimal)
 		{
 			Secure_Vector!ubyte binary = Secure_Vector!ubyte(n.encoded_size(Binary));
-			n.binary_encode(&binary[0]);
+			n.binary_encode(binary.ptr);
 			
-			hex_encode(cast(char*)(output),
-			           &binary[0], binary.length);
+			hex_encode(cast(char*)(output), binary.ptr, binary.length);
 		}
 		else if (base == Decimal)
 		{
@@ -978,14 +965,14 @@ public:
 				// Handle lack of leading 0
 				const char buf0_with_leading_0[2] = [ '0', cast(char)(buf[0]) ];
 				
-				binary = hex_decode_locked(buf0_with_leading_0, 2);
+				binary = hex_decode_locked(buf0_with_leading_0.ptr, 2);
 				
-				binary += hex_decode_locked(cast(string) buf[1], length - 1, false);
+				binary ~= hex_decode_locked(&buf[1], length - 1, false);
 			}
 			else
-				binary = hex_decode_locked(cast(string) buf, length, false);
+				binary = hex_decode_locked(buf.ptr, length, false);
 			
-			r.binary_decode(&binary[0], binary.length);
+			r.binary_decode(binary.ptr, binary.length);
 		}
 		else if (base == Decimal)
 		{
@@ -1022,7 +1009,7 @@ public:
 	static ref BigInt decode(in Secure_Vector!ubyte buf,
 	                         Base base = Binary)
 	{
-		return BigInt.decode(&buf[0], buf.length, base);
+		return BigInt.decode(buf.ptr, buf.length, base);
 	}
 
 	/**
@@ -1034,7 +1021,7 @@ public:
 	static ref BigInt decode(in Vector!ubyte buf,
 	                         Base base = Binary)
 	{
-		return BigInt.decode(&buf[0], buf.length, base);
+		return BigInt.decode(buf.ptr, buf.length, base);
 	}
 
 	/**
@@ -1060,7 +1047,7 @@ public:
 	/*
 	* Addition Operator
 	*/
-	ref BigInt opBinary(string op)(const ref BigInt y)
+	ref BigInt opBinary(string op)(in BigInt y)
 		if (op == "+")
 	{
 		const BigInt x = this;
@@ -1091,7 +1078,7 @@ public:
 	/*
 	* Subtraction Operator
 	*/
-	BigInt opBinary(string op)(const ref BigInt y)
+	BigInt opBinary(string op)(in BigInt y)
 		if (op == "-")
 	{
 		const BigInt x = this;
@@ -1128,7 +1115,7 @@ public:
 	/*
 	* Multiplication Operator
 	*/
-	BigInt opBinary(string op)(const ref BigInt y)
+	BigInt opBinary(string op)(in BigInt y)
 		if (op == "*")
 	{
 		const BigInt x = this;
@@ -1143,7 +1130,7 @@ public:
 		else if (x_sw && y_sw)
 		{
 			Secure_Vector!word workspace(z.length);
-			bigint_mul(z.mutable_data(), z.length, &workspace[0],
+			bigint_mul(z.mutable_data(), z.length, workspace.ptr,
 			x.data(), x.length, x_sw,
 			y.data(), y.length, y_sw);
 		}
@@ -1156,7 +1143,7 @@ public:
 	/*
 	* Division Operator
 	*/
-	BigInt opBinary(string op)(const ref BigInt y)
+	BigInt opBinary(string op)(in BigInt y)
 		if (op == "/")
 	{
 		const BigInt x = this;
@@ -1168,7 +1155,7 @@ public:
 	/*
 	* Modulo Operator
 	*/
-	BigInt opBinary(string op)(const ref BigInt mod)
+	BigInt opBinary(string op)(in BigInt mod)
 		if (op == "%")
 	{
 		const BigInt n = this;

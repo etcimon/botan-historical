@@ -31,8 +31,8 @@ public:
 		if (!valid_nonce_length(nonce_len))
 			throw new Invalid_IV_Length(name, nonce_len);
 		
-		copy_mem(&m_tweak[0], nonce, nonce_len);
-		m_tweak_cipher.encrypt(&m_tweak[0]);
+		copy_mem(m_tweak.ptr, nonce, nonce_len);
+		m_tweak_cipher.encrypt(m_tweak.ptr);
 		
 		update_tweak(0);
 		
@@ -81,7 +81,7 @@ protected:
 		m_tweak.resize(update_granularity());
 	}
 
-	final const ubyte* tweak() const { return &m_tweak[0]; }
+	final const ubyte* tweak() const { return m_tweak.ptr; }
 
 	final const BlockCipher cipher() const { return *m_cipher; }
 
@@ -90,7 +90,7 @@ protected:
 		const size_t BS = m_tweak_cipher.block_size;
 		
 		if (which > 0)
-			poly_double(&m_tweak[0], &m_tweak[(which-1)*BS], BS);
+			poly_double(m_tweak.ptr, &m_tweak[(which-1)*BS], BS);
 		
 		const size_t blocks_in_tweak = update_granularity() / BS;
 		
@@ -106,7 +106,7 @@ private:
 		if (length % 2 == 1 || !m_cipher.valid_keylength(key_half))
 			throw new Invalid_Key_Length(name, length);
 		
-		m_cipher.set_key(&key[0], key_half);
+		m_cipher.set_key(key.ptr, key_half);
 		m_tweak_cipher.set_key(&key[key_half], key_half);
 	}
 
@@ -138,7 +138,7 @@ public:
 		
 		const size_t blocks_in_tweak = update_granularity() / BS;
 		
-		while(blocks)
+		while (blocks)
 		{
 			const size_t to_proc = std.algorithm.min(blocks, blocks_in_tweak);
 			const size_t to_proc_bytes = to_proc * BS;
@@ -228,7 +228,7 @@ public:
 		
 		const size_t blocks_in_tweak = update_granularity() / BS;
 		
-		while(blocks)
+		while (blocks)
 		{
 			const size_t to_proc = std.algorithm.min(blocks, blocks_in_tweak);
 			const size_t to_proc_bytes = to_proc * BS;

@@ -11,6 +11,7 @@ static if (BOTAN_HAS_IDEA):
 
 import botan.block.block_cipher;
 import botan.utils.loadstor;
+import botan.utils.types;
 
 /**
 * IDEA
@@ -23,7 +24,7 @@ public:
 	*/
 	void encrypt_n(ubyte* input, ubyte* output, size_t blocks) const
 	{
-		idea_op(input, output, blocks, &m_EK[0]);
+		idea_op(input, output, blocks, m_EK.ptr);
 	}
 
 	/*
@@ -31,7 +32,7 @@ public:
 	*/
 	void decrypt_n(ubyte* input, ubyte* output, size_t blocks) const
 	{
-		idea_op(input, output, blocks, &m_DK[0]);
+		idea_op(input, output, blocks, m_DK.ptr);
 	}
 
 	void clear()
@@ -46,12 +47,12 @@ protected:
 	/**
 	* @return const reference to encryption subkeys
 	*/
-	const ref Secure_Vector!ushort get_EK() const { return EK; }
+	const Secure_Vector!ushort get_EK() const { return EK; }
 
 	/**
 	* @return const reference to decryption subkeys
 	*/
-	const ref Secure_Vector!ushort get_DK() const { return m_DK; }
+	const Secure_Vector!ushort get_DK() const { return m_DK; }
 
 private:
 	/*

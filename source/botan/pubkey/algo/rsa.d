@@ -38,7 +38,7 @@ public:
 	* @arg n the modulus
 	* @arg e the exponent
 	*/
-	this(in BigInt n, const ref BigInt e)
+	this(in BigInt n, in BigInt e)
 	{
 		super(n, e);
 	}
@@ -51,7 +51,7 @@ protected:
 * RSA Private Key
 */
 final class RSA_PrivateKey : RSA_PublicKey,
-					   IF_Scheme_PrivateKey
+					  		 IF_Scheme_PrivateKey
 {
 public:
 	/*
@@ -71,9 +71,7 @@ public:
 		return signature_consistency_check(rng, this, "EMSA4(SHA-1)");
 	}
 
-	this(in Algorithm_Identifier alg_id,
-						in Secure_Vector!ubyte key_bits,
-						RandomNumberGenerator rng) 
+	this(in Algorithm_Identifier alg_id, in Secure_Vector!ubyte key_bits, RandomNumberGenerator rng) 
 	{
 		super(rng, alg_id, key_bits);
 	}
@@ -90,10 +88,7 @@ public:
 	* @param n if specified, this must be n = p * q. Leave it as 0
 	* if you wish to the constructor to calculate it.
 	*/
-	this(RandomNumberGenerator rng,
-						const ref BigInt p, const ref BigInt q,
-						const ref BigInt e, const ref BigInt d = 0,
-						const ref BigInt n = 0)
+	this(RandomNumberGenerator rng, in BigInt p, in BigInt q, in BigInt e, in BigInt d = 0, in BigInt n = 0)
 	{
 		super(rng, p, q, e, d, n);
 	}
@@ -104,12 +99,10 @@ public:
 	* @param bits the desired bit length of the private key
 	* @param exp the public exponent to be used
 	*/
-	this(RandomNumberGenerator rng,
-	     size_t bits, size_t exp = 65537)
+	this(RandomNumberGenerator rng, size_t bits, size_t exp = 65537)
 	{
 		if (bits < 1024)
-			throw new Invalid_Argument(algo_name ~ ": Can't make a key that is only " ~
-			                           to!string(bits) ~ " bits long");
+			throw new Invalid_Argument(algo_name ~ ": Can't make a key that is only " ~ to!string(bits) ~ " bits long");
 		if (exp < 3 || exp % 2 == 0)
 			throw new Invalid_Argument(algo_name ~ ": Invalid encryption exponent");
 		
@@ -120,7 +113,7 @@ public:
 			m_p = random_prime(rng, (bits + 1) / 2, m_e);
 			m_q = random_prime(rng, bits - m_p.bits(), m_e);
 			m_n = m_p * m_q;
-		} while(m_n.bits() != bits);
+		} while (m_n.bits() != bits);
 		
 		m_d = inverse_mod(e, lcm(m_p - 1, m_q - 1));
 		m_d1 = m_d % (m_p - 1);
@@ -138,8 +131,7 @@ final class RSA_Private_Operation : Signature,
 							  		Decryption
 {
 public:
-	this(in RSA_PrivateKey rsa,
-	     RandomNumberGenerator rng) 
+	this(in RSA_PrivateKey rsa, RandomNumberGenerator rng) 
 	{
 		m_n = rsa.get_n();
 		m_q = rsa.get_q();
@@ -155,8 +147,7 @@ public:
 	size_t max_input_bits() const { return (n.bits() - 1); }
 
 	Secure_Vector!ubyte
-		sign(in ubyte* msg, size_t msg_len,
-		     RandomNumberGenerator rng)
+		sign(in ubyte* msg, size_t msg_len, RandomNumberGenerator rng)
 	{
 		rng.add_entropy(msg, msg_len);
 		
@@ -178,8 +169,7 @@ public:
 		const BigInt m = BigInt(msg, msg_len);
 		const BigInt x = m_blinder.unblind(private_op(m_blinder.blind(m)));
 		
-		assert(m == m_powermod_e_n(x),
-		             "RSA decrypt passed consistency check");
+		assert(m == m_powermod_e_n(x), "RSA decrypt passed consistency check");
 		
 		return BigInt.encode_locked(x);
 	}
@@ -190,7 +180,8 @@ private:
 			throw new Invalid_Argument("RSA private op - input is too large");
 
 		import std.concurrency : spawn, receiveOnly, thidTid, send;
-		auto tid = spawn((Tid tid, Fixed_Exponent_Power_Mod powermod_d1_p2, BigInt m2) { send(tid, powermod_d1_p2(m2)); }, thisTid, m_powermod_d1_p, m);
+		auto tid = spawn((Tid tid, Fixed_Exponent_Power_Mod powermod_d1_p2, BigInt m2) { send(tid, powermod_d1_p2(m2)); }, 
+							thisTid, m_powermod_d1_p, m);
 		BigInt j2 = m_powermod_d2_q(m);
 		BigInt j1 = receiveOnly!BigInt();
 		
@@ -211,7 +202,7 @@ private:
 * RSA public (encrypt/verify) operation
 */
 final class RSA_Public_Operation : Verification,
-							 Encryption
+								   Encryption
 {
 public:
 	this(in RSA_PublicKey rsa)
@@ -223,8 +214,7 @@ public:
 	size_t max_input_bits() const { return (n.bits() - 1); }
 	bool with_recovery() const { return true; }
 
-	Secure_Vector!ubyte encrypt(in ubyte* msg, size_t msg_len,
-										RandomNumberGenerator)
+	Secure_Vector!ubyte encrypt(in ubyte* msg, size_t msg_len, RandomNumberGenerator)
 	{
 		BigInt m = BigInt(msg, msg_len);
 		return BigInt.encode_1363(public_op(m), m_n.bytes());

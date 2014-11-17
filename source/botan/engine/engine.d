@@ -6,7 +6,6 @@
 */
 module botan.engine.engine;
 
-import botan.engine.engine;
 public import botan.algo_base.scan_name;
 public import botan.block.block_cipher;
 public import botan.stream.stream_cipher;
@@ -20,6 +19,7 @@ public import botan.rng.rng;
 public import botan.math.bigint.bigint;
 public import botan.filters.key_filt;
 public import botan.algo_factory.algo_factory : Algorithm_Factory;
+public import botan.utils.types;
 
 /**
 * Base class for all engines. All non-pure abstract functions simply

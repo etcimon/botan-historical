@@ -6,7 +6,7 @@
 */
 module botan.tls.tls_heartbeats;
 
-import botan.alloc.zeroize;
+import botan.utils.memory.zeroize;
 import botan.tls.tls_extensions;
 import botan.tls.tls_reader;
 import botan.tls.tls_exceptn;
@@ -26,7 +26,7 @@ public:
 		send_buf[0] = m_type;
 		send_buf[1] = get_byte!ushort(0, m_payload.length);
 		send_buf[2] = get_byte!ushort(1, m_payload.length);
-		copy_mem(&send_buf[3], &m_payload[0], m_payload.length);
+		copy_mem(&send_buf[3], m_payload.ptr, m_payload.length);
 		// leave padding as all zeros
 		
 		return send_buf;

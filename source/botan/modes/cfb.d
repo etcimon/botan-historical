@@ -127,14 +127,14 @@ public:
 		Secure_Vector!ubyte state = shift_register();
 		const size_t shift = feedback();
 		
-		while(sz)
+		while (sz)
 		{
 			const size_t took = std.algorithm.min(shift, sz);
-			xor_buf(&buf[0], &keystream_buf()[0], took);
+			xor_buf(buf.ptr, &keystream_buf()[0], took);
 			
 			// Assumes feedback-sized block except for last input
-			copy_mem(&state[0], &state[shift], BS - shift);
-			copy_mem(&state[BS-shift], &buf[0], took);
+			copy_mem(state.ptr, &state[shift], BS - shift);
+			copy_mem(&state[BS-shift], buf.ptr, took);
 			cipher().encrypt(state, keystream_buf());
 			
 			buf += took;
@@ -171,16 +171,16 @@ public:
 		Secure_Vector!ubyte state = shift_register();
 		const size_t shift = feedback();
 		
-		while(sz)
+		while (sz)
 		{
 			const size_t took = std.algorithm.min(shift, sz);
 			
 			// first update shift register with ciphertext
-			copy_mem(&state[0], &state[shift], BS - shift);
-			copy_mem(&state[BS-shift], &buf[0], took);
+			copy_mem(state.ptr, &state[shift], BS - shift);
+			copy_mem(&state[BS-shift], buf.ptr, took);
 			
 			// then decrypt
-			xor_buf(&buf[0], &keystream_buf()[0], took);
+			xor_buf(buf.ptr, &keystream_buf()[0], took);
 			
 			// then update keystream
 			cipher().encrypt(state, keystream_buf());

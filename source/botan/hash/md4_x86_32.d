@@ -26,7 +26,7 @@ private:
 	{
 		foreach (size_t i; 0 .. blocks)
 		{
-			botan_md4_x86_32_compress(&m_digest[0], input, &m_M[0]);
+			botan_md4_x86_32_compress(m_digest.ptr, input, m_M.ptr);
 			input += hash_block_size;
 		}
 	}

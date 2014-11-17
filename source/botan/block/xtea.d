@@ -23,9 +23,9 @@ public:
 	*/
 	void encrypt_n(ubyte* input, ubyte* output, size_t blocks) const
 	{
-		while(blocks >= 4)
+		while (blocks >= 4)
 		{
-			xtea_encrypt_4(input, output, &(m_EK[0]));
+			xtea_encrypt_4(input, output, m_EK.ptr);
 			input += 4 * BLOCK_SIZE;
 			output += 4 * BLOCK_SIZE;
 			blocks -= 4;
@@ -54,9 +54,9 @@ public:
 	*/
 	void decrypt_n(ubyte* input, ubyte* output, size_t blocks) const
 	{
-		while(blocks >= 4)
+		while (blocks >= 4)
 		{
-			xtea_decrypt_4(input, output, &(m_EK[0]));
+			xtea_decrypt_4(input, output, m_EK.ptr);
 			input += 4 * BLOCK_SIZE;
 			output += 4 * BLOCK_SIZE;
 			blocks -= 4;
@@ -91,7 +91,7 @@ protected:
 	/**
 	* @return const reference to the key schedule
 	*/
-	const ref Secure_Vector!uint get_EK() const { return m_EK; }
+	const Secure_Vector!uint get_EK() const { return m_EK; }
 
 private:
 	/*
@@ -120,7 +120,7 @@ private:
 package:
 pure:
 
-void xtea_encrypt_4(const ubyte[32]* input, ubyte[32]* output, const uint[64]* EK)
+void xtea_encrypt_4(const ubyte[32]* input, ubyte[32]* output, in uint[64]* EK)
 {
 	uint L0, R0, L1, R1, L2, R2, L3, R3;
 	load_be(input, L0, R0, L1, R1, L2, R2, L3, R3);
@@ -141,7 +141,7 @@ void xtea_encrypt_4(const ubyte[32]* input, ubyte[32]* output, const uint[64]* E
 	store_be(output, L0, R0, L1, R1, L2, R2, L3, R3);
 }
 
-void xtea_decrypt_4(const ubyte[32]* input, ubyte[32]* output, const uint[64]* EK)
+void xtea_decrypt_4(const ubyte[32]* input, ubyte[32]* output, in uint[64]* EK)
 {
 	uint L0, R0, L1, R1, L2, R2, L3, R3;
 	load_be(input, L0, R0, L1, R1, L2, R2, L3, R3);

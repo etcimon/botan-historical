@@ -178,7 +178,7 @@ protected:
 	void send(in ubyte* input, size_t length)
 	{
 		if (m_write_queue.length)
-			thread_delegate_work(&m_write_queue[0], m_write_queue.length);
+			thread_delegate_work(m_write_queue.ptr, m_write_queue.length);
 		thread_delegate_work(input, length);
 		
 		bool nothing_attached = true;
@@ -213,7 +213,7 @@ private:
 
 	static void thread_entry(Threaded_Fork This, Filter filter)
 	{
-		while(true)
+		while (true)
 		{
 			This.m_thread_data.m_input_ready_semaphore.acquire();
 			

@@ -42,10 +42,7 @@ public:
 	* @param order the order of the base point
 	* @param cofactor the cofactor
 	*/
-	this(in CurveGFp curve,
-				const ref PointGFp base_point,
-				const ref BigInt order,
-				const ref BigInt cofactor) 
+	this(in CurveGFp curve, const ref PointGFp base_point, in BigInt order, in BigInt cofactor) 
 	{
 		m_curve = curve;
 		m_base_point = base_point;
@@ -60,7 +57,7 @@ public:
 	*/
 	this(in Vector!ubyte ber_data)
 	{
-		BER_Decoder ber(ber_data);
+		BER_Decoder ber = BER_Decoder(ber_data);
 		BER_Object obj = ber.get_next_object();
 		
 		if (obj.type_tag == ASN1_Tag.NULL_TAG)
@@ -146,7 +143,7 @@ public:
 	{
 		if (form == EC_DOMPAR_ENC_EXPLICIT)
 		{
-			const size_t ecpVers1 = 1;
+			__gshared immutable size_t ecpVers1 = 1;
 			OID curve_type = OID("1.2.840.10045.1.1");
 			
 			const size_t p_bytes = m_curve.get_p().bytes();
@@ -202,13 +199,13 @@ public:
 	* Return the order of the base point
 	* @result order of the base point
 	*/
-	const ref BigInt get_order() const { return m_order; }
+	const BigInt get_order() const { return m_order; }
 
 	/**
 	* Return the cofactor
 	* @result the cofactor
 	*/
-	const ref BigInt get_cofactor() const { return m_cofactor; }
+	const BigInt get_cofactor() const { return m_cofactor; }
 
 	bool initialized() const { return !m_base_point.is_zero(); }
 

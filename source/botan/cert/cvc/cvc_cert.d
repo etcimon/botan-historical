@@ -12,10 +12,14 @@ import botan.asn1.oid_lookup.oids;
 import botan.pubkey.algo.ecdsa;
 import botan.utils.types;
 // import string;
+
+
+alias EAC1_1_CVC = FreeListRef!EAC1_1_CVC_Impl;
+
 /**
 * This class represents TR03110 (EAC) v1.1 CV Certificates
 */
-final class EAC1_1_CVC : EAC1_1_gen_CVC!EAC1_1_CVC//Signed_Object
+final class EAC1_1_CVC_Impl : EAC1_1_gen_CVC!EAC1_1_CVC_Impl//Signed_Object
 {
 public:
 	/**
@@ -54,7 +58,7 @@ public:
 		return m_chat_val;
 	}
 
-	bool opEquals(in EAC1_1_CVC) const
+	bool opEquals(in EAC1_1_CVC rhs) const
 	{
 		return (tbs_data() == rhs.tbs_data()
 		        && get_concat_sig() == rhs.get_concat_sig());
@@ -63,7 +67,7 @@ public:
 	/*
 	* Comparison
 	*/
-	bool opCmp(string op)(const ref EAC1_1_CVC rhs)
+	bool opCmp(string op)(in EAC1_1_CVC_Impl rhs)
 		if (op == "!=")
 	{
 		return !(lhs == rhs);
@@ -103,9 +107,9 @@ private:
 		Vector!ubyte enc_pk;
 		Vector!ubyte enc_chat_val;
 		size_t cpi;
-		BER_Decoder tbs_cert(tbs_bits);
+		BER_Decoder tbs_cert = BER_Decoder(tbs_bits);
 		tbs_cert.decode(cpi, ASN1_Tag(41), ASN1_Tag.APPLICATION)
-			.decode(m_car)
+				.decode(m_car)
 				.start_cons(ASN1_Tag(73))
 				.raw_bytes(enc_pk)
 				.end_cons()
@@ -154,11 +158,10 @@ private:
 * @param cex the CEX to appear in the certificate
 * @param rng a random number generator
 */
-
 EAC1_1_CVC make_cvc_cert(PK_Signer signer,
                          in Vector!ubyte public_key,
-                         const ref ASN1_Car car,
-                         const ref ASN1_Chr chr,
+                         in ASN1_Car car,
+                         in ASN1_Chr chr,
                          ubyte holder_auth_templ,
                          ASN1_Ced ced,
                          ASN1_Cex cex,
@@ -171,7 +174,7 @@ EAC1_1_CVC make_cvc_cert(PK_Signer signer,
 	Vector!ubyte enc_cpi;
 	enc_cpi.push_back(0x00);
 	Vector!ubyte tbs = DER_Encoder()
-		.encode(enc_cpi, ASN1_Tag.OCTET_STRING, ASN1_Tag(41), ASN1_Tag.APPLICATION) // cpi
+			.encode(enc_cpi, ASN1_Tag.OCTET_STRING, ASN1_Tag(41), ASN1_Tag.APPLICATION) // cpi
 			.encode(car)
 			.raw_bytes(public_key)
 			.encode(chr)
@@ -188,8 +191,6 @@ EAC1_1_CVC make_cvc_cert(PK_Signer signer,
 	auto source = scoped!DataSource_Memory(signed_cert);
 	return EAC1_1_CVC(source);
 }
-
-
 
 /**
 * Decode an EAC encoding ECDSA key

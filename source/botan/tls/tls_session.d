@@ -11,7 +11,7 @@ import botan.tls.tls_version;
 import botan.tls.tls_ciphersuite;
 import botan.tls.tls_magic;
 import botan.tls.tls_server_info;
-import botan.alloc.zeroize;
+import botan.utils.memory.zeroize;
 import botan.algo_base.symkey;
 import botan.asn1.der_enc;
 import botan.asn1.ber_dec;
@@ -41,7 +41,7 @@ public:
 	     size_t fragment_size,
 	     in Vector!X509_Certificate certs,
 	     in Vector!ubyte ticket,
-	     const Server_Information server_info,
+	     in Server_Information server_info,
 	     in string srp_identifier)
 	{
 		m_start_time = Clock.currTime();
@@ -78,7 +78,7 @@ public:
 		size_t start_time = 0;
 		
 		BER_Decoder(ber, ber_len)
-			.start_cons(ASN1_Tag.SEQUENCE)
+				.start_cons(ASN1_Tag.SEQUENCE)
 				.decode_and_check(cast(size_t)(TLS_SESSION_PARAM_STRUCT_VERSION),
 				                  "Unknown version in session structure")
 				.decode_integer_type(start_time)
@@ -111,8 +111,8 @@ public:
 		
 		if (!peer_cert_bits.empty)
 		{
-			auto certs = scoped!DataSource_Memory(&peer_cert_bits[0], peer_cert_bits.length);
-			while(!certs.end_of_data())
+			auto certs = scoped!DataSource_Memory(peer_cert_bits.ptr, peer_cert_bits.length);
+			while (!certs.end_of_data())
 				m_peer_certs.push_back(X509_Certificate(certs));
 		}
 	}
@@ -124,7 +124,7 @@ public:
 	{
 		Secure_Vector!ubyte der = PEM.decode_check_label(pem, "SSL SESSION");
 		
-		this(&der[0], der.length);
+		this(der.ptr, der.length);
 	}
 
 	/**
@@ -136,10 +136,10 @@ public:
 	{
 		Vector!ubyte peer_cert_bits;
 		for (size_t i = 0; i != m_peer_certs.length; ++i)
-			peer_cert_bits += m_peer_certs[i].BER_encode();
+			peer_cert_bits ~= m_peer_certs[i].BER_encode();
 		
 		return DER_Encoder()
-			.start_cons(ASN1_Tag.SEQUENCE)
+				.start_cons(ASN1_Tag.SEQUENCE)
 				.encode(cast(size_t)(TLS_SESSION_PARAM_STRUCT_VERSION))
 				.encode(cast(size_t)(m_start_time.toUnixTime()))
 				.encode(cast(size_t)(m_version.major_version()))
@@ -163,12 +163,11 @@ public:
 	/**
 	* Encrypt a session (useful for serialization or session tickets)
 	*/
-	Vector!ubyte encrypt(in SymmetricKey master_key,
-		        		 RandomNumberGenerator rng) const
+	Vector!ubyte encrypt(in SymmetricKey master_key, RandomNumberGenerator rng) const
 	{
 		const auto der = this.DER_encode();
 		
-		return CryptoBox.encrypt(&der[0], der.length, master_key, rng);
+		return CryptoBox.encrypt(der.ptr, der.length, master_key, rng);
 	}
 
 	/**
@@ -177,19 +176,17 @@ public:
 	* @param ctext_size the size of ctext in bytes
 	* @param key the same key used by the encrypting side
 	*/
-	static Session decrypt(in ubyte* buf, size_t buf_len,
-	                const ref SymmetricKey master_key)
+	static Session decrypt(in ubyte* buf, size_t buf_len, in SymmetricKey master_key)
 	{
 		try
 		{
 			const auto ber = CryptoBox.decrypt(buf, buf_len, master_key);
 			
-			return Session(&ber[0], ber.length);
+			return Session(ber.ptr, ber.length);
 		}
 		catch(Exception e)
 		{
-			throw new Decoding_Error("Failed to decrypt encrypted session -" ~
-			                         string(e.msg));
+			throw new Decoding_Error("Failed to decrypt encrypted session -" ~  e.msg);
 		}
 	}
 
@@ -198,10 +195,9 @@ public:
 	* @param ctext the ciphertext returned by encrypt
 	* @param key the same key used by the encrypting side
 	*/
-	static  Session decrypt(in Vector!ubyte ctext,
-											const ref SymmetricKey key)
+	static Session decrypt(in Vector!ubyte ctext, in SymmetricKey key)
 	{
-		return Session.decrypt(&ctext[0], ctext.length, key);
+		return Session.decrypt(ctext.ptr, ctext.length, key);
 	}
 
 	/**
@@ -227,7 +223,7 @@ public:
 	/**
 	* Get the ciphersuite info of the saved session
 	*/
-	Ciphersuite ciphersuite() const { return Ciphersuite::by_id(m_ciphersuite); }
+	Ciphersuite ciphersuite() const { return Ciphersuite.by_id(m_ciphersuite); }
 
 	/**
 	* Get the compression method used in the saved session
@@ -248,14 +244,12 @@ public:
 	/**
 	* Get the saved master secret
 	*/
-	const Secure_Vector!ubyte master_secret() const
-	{ return m_master_secret; }
+	const Secure_Vector!ubyte master_secret() const { return m_master_secret; }
 
 	/**
 	* Get the session identifier
 	*/
-	const Vector!ubyte session_id() const
-	{ return m_identifier; }
+	const Vector!ubyte session_id() const { return m_identifier; }
 
 	/**
 	* Get the negotiated maximum fragment size (or 0 if default)
@@ -270,8 +264,7 @@ public:
 	/**
 	* Get the wall clock time this session began
 	*/
-	SysTime start_time() const
-	{ return m_start_time; }
+	SysTime start_time() const { return m_start_time; }
 
 	/**
 	* Return how long this session has existed (in seconds)

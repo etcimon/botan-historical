@@ -31,15 +31,14 @@ public:
 
 	size_t max_input_bits() const { return (group_p().bits() - 1); }
 
-	this(in Algorithm_Identifier alg_id,
-							in Secure_Vector!ubyte key_bits)
+	this(in Algorithm_Identifier alg_id, in Secure_Vector!ubyte key_bits)
 	{
 		super(alg_id, key_bits, DL_Group.ANSI_X9_42);
 	}
 	/*
 	* ElGamal_PublicKey Constructor
 	*/
-	this(in DL_Group grp, const ref BigInt y1)
+	this(in DL_Group grp, in BigInt y1)
 	{
 		m_group = grp;
 		m_y = y1;
@@ -52,7 +51,7 @@ protected:
 * ElGamal Private Key
 */
 final class ElGamal_PrivateKey : ElGamal_PublicKey,
-							DL_Scheme_PrivateKey
+								 DL_Scheme_PrivateKey
 {
 public:
 	/*
@@ -70,21 +69,18 @@ public:
 		return encryption_consistency_check(rng, this, "EME1(SHA-1)");
 	}
 
-
 	/*
 	* ElGamal_PrivateKey Constructor
 	*/
-	this(RandomNumberGenerator rng,
-	     const ref DL_Group grp,
-	     const ref BigInt x_arg = 0)
+	this(RandomNumberGenerator rng, const ref DL_Group grp, in BigInt x_arg = 0)
 	{
-		group = grp;
-		x = x_arg;
+		m_group = grp;
+		m_x = x_arg;
 		
 		if (x == 0)
-			x.randomize(rng, 2 * dl_work_factor(group_p().bits()));
+			m_x.randomize(rng, 2 * dl_work_factor(group_p().bits()));
 		
-		y = power_mod(group_g(), x, group_p());
+		m_y = power_mod(group_g(), m_x, group_p());
 		
 		if (x_arg == 0)
 			gen_check(rng);
@@ -97,7 +93,7 @@ public:
 	     RandomNumberGenerator rng) 
 	{
 		super(alg_id, key_bits, DL_Group.ANSI_X9_42);
-		y = power_mod(group_g(), x, group_p());
+		m_y = power_mod(group_g(), m_x, group_p());
 		load_check(rng);
 	}
 }
@@ -120,16 +116,15 @@ public:
 		m_mod_p = Modular_Reducer(p);
 	}
 
-	Secure_Vector!ubyte encrypt(in ubyte* msg, size_t msg_len,
-	                         RandomNumberGenerator rng)
+	Secure_Vector!ubyte encrypt(in ubyte* msg, size_t msg_len, RandomNumberGenerator rng)
 	{
 		const BigInt p = mod_p.get_modulus();
 		
-		BigInt m(msg, msg_len);
+		BigInt m = BigInt(msg, msg_len);
 		
 		if (m >= p)
 			throw new Invalid_Argument("ElGamal encryption: Input is too large");
-		
+
 		BigInt k = BigInt(rng, 2 * dl_work_factor(p.bits()));
 		
 		BigInt a = m_powermod_g_p(k);

@@ -52,7 +52,7 @@ public:
 		extensions.add(new x509_ext.CRL_ReasonCode(reason));
 		
 		to.start_cons(ASN1_Tag.SEQUENCE)
-			.encode(BigInt.decode(serial))
+				.encode(BigInt.decode(serial))
 				.encode(m_time)
 				.start_cons(ASN1_Tag.SEQUENCE)
 				.encode(extensions)
@@ -130,7 +130,7 @@ public:
 	/*
 	* Compare two CRL_Entrys for equality
 	*/
-	bool opEquals(const ref CRL_Entry a2)
+	bool opEquals(in CRL_Entry a2)
 	{
 		if (serial_number() != a2.serial_number())
 			return false;
@@ -140,11 +140,11 @@ public:
 			return false;
 		return true;
 	}
-	
+
 	/*
 	* Compare two CRL_Entrys for inequality
 	*/
-	bool opCmp(string op)(const ref CRL_Entry a2)
+	bool opCmp(string op)(in CRL_Entry a2)
 		if (op == "!=")
 	{
 		return !(this == a2);

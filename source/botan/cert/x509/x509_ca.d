@@ -11,9 +11,8 @@ import botan.cert.x509.x509cert;
 import botan.cert.x509.x509_crl;
 import botan.cert.x509.x509_ext;
 import botan.pubkey.pkcs8;
+import botan.pubkey.pubkey;
 import botan.cert.x509.pkcs10;
-import botan.pubkey.pubkey;
-import botan.pubkey.pubkey;
 import botan.asn1.der_enc;
 import botan.asn1.ber_dec;
 import botan.math.bigint.bigint;
@@ -24,9 +23,6 @@ import botan.cert.x509.key_constraint;
 import botan.rng.rng;
 import std.datetime;
 import std.algorithm;
-import typeinfo;
-import iterator;
-import set;
 
 /**
 * This class represents X.509 Certificate Authorities (CAs).
@@ -93,8 +89,7 @@ public:
 	* as the offset from the current time
 	* @return new CRL
 	*/
-	X509_CRL new_crl(RandomNumberGenerator rng,
-	                 Duration next_update = 0.seconds) const
+	X509_CRL new_crl(RandomNumberGenerator rng, Duration next_update = 0.seconds) const
 	{
 		Vector!CRL_Entry empty;
 		return make_crl(empty, 1, next_update, rng);
@@ -109,7 +104,7 @@ public:
 	* as the offset from the current time
 	*/
 	X509_CRL update_crl(in X509_CRL crl,
-	                    const ref Vector!CRL_Entry new_revoked,
+	                    in Vector!CRL_Entry new_revoked,
 	                    RandomNumberGenerator rng,
 	                    Duration next_update = 0.seconds) const
 	{
@@ -187,8 +182,8 @@ public:
 	* @param hash_fn name of a hash function to use for signing
 	*/
 	this(in X509_Certificate c,
-	        in Private_Key key,
-	        in string hash_fn)
+	     in Private_Key key,
+	     in string hash_fn)
 	{
 		m_cert = c;
 		if (!m_cert.is_CA_cert())
@@ -270,7 +265,8 @@ PK_Signer choose_sig_format(in Private_Key key,
                             in string hash_fn,
                             Algorithm_Identifier sig_algo)
 {
-	string padding;
+	import std.array : Appender;
+	Appender!string padding;
 	
 	const string algo_name = key.algo_name;
 	
@@ -282,20 +278,20 @@ PK_Signer choose_sig_format(in Private_Key key,
 		throw new Invalid_Argument("Key is too small for chosen hash function");
 	
 	if (algo_name == "RSA")
-		padding = "EMSA3";
+		padding ~= "EMSA3";
 	else if (algo_name == "DSA")
-		padding = "EMSA1";
+		padding ~= "EMSA1";
 	else if (algo_name == "ECDSA")
-		padding = "EMSA1_BSI";
+		padding ~= "EMSA1_BSI";
 	else
 		throw new Invalid_Argument("Unknown X.509 signing key type: " ~ algo_name);
 	
 	Signature_Format format = (key.message_parts() > 1) ? DER_SEQUENCE : IEEE_1363;
+
+	padding ~= padding.data ~ '(' ~ proto_hash.name ~ ')';
 	
-	padding = padding + '(' + proto_hash.name + ')';
-	
-	sig_algo.oid = oids.lookup(algo_name ~ "/" ~ padding);
+	sig_algo.oid = oids.lookup(algo_name ~ "/" ~ padding.data);
 	sig_algo.parameters = key.algorithm_identifier().parameters;
 	
-	return PK_Signer(key, padding, format);
+	return PK_Signer(key, padding.data, format);
 }

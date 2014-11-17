@@ -62,7 +62,7 @@ private:
 			if (our_coding.length <= coded.length) return false;
 			
 			size_t offset = 0;
-			while(offset < our_coding.length && our_coding[offset] == 0)
+			while (offset < our_coding.length && our_coding[offset] == 0)
 				++offset;
 			if (our_coding.length - offset != coded.length)
 				return false;

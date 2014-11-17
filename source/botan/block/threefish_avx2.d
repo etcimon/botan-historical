@@ -52,7 +52,7 @@ private:
 		const __m256i* in_mm = cast(const __m256i*)(input);
 		__m256i* out_mm = cast(__m256i*)(output);
 		
-		while(blocks >= 2)
+		while (blocks >= 2)
 		{
 			__m256i X0 = _mm256_loadu_si256(in_mm++);
 			__m256i X1 = _mm256_loadu_si256(in_mm++);

@@ -37,15 +37,15 @@ struct CryptoBox {
 	                      RandomNumberGenerator rng)
 	{
 		Secure_Vector!ubyte pbkdf_salt = Secure_Vector!ubyte(PBKDF_SALT_LEN);
-		rng.randomize(&pbkdf_salt[0], pbkdf_salt.length);
+		rng.randomize(pbkdf_salt.ptr, pbkdf_salt.length);
 		
 		PKCS5_PBKDF2 pbkdf = PKCS5_PBKDF2(new HMAC(new SHA_512));
 		
-		OctetString master_key = pbkdf.derive_key(PBKDF_OUTPUT_LEN, passphrase, &pbkdf_salt[0], pbkdf_salt.length, PBKDF_ITERATIONS);
+		OctetString master_key = pbkdf.derive_key(PBKDF_OUTPUT_LEN, passphrase, pbkdf_salt.ptr, pbkdf_salt.length, PBKDF_ITERATIONS);
 		
 		const ubyte* mk = master_key.ptr;
 		
-		SymmetricKey cipher_key = SymmetricKey(&mk[0], CIPHER_KEY_LEN);
+		SymmetricKey cipher_key = SymmetricKey(mk.ptr, CIPHER_KEY_LEN);
 		SymmetricKey mac_key = SymmetricKey(&mk[CIPHER_KEY_LEN], MAC_KEY_LEN);
 		InitializationVector iv = InitializationVector(&mk[CIPHER_KEY_LEN + MAC_KEY_LEN], CIPHER_IV_LEN);
 		
@@ -70,7 +70,7 @@ struct CryptoBox {
 		foreach (size_t i; 0 .. VERSION_CODE_LEN)
 			out_buf[i] = get_byte(i, CRYPTOBOX_VERSION_CODE);
 		
-		copy_mem(&out_buf[VERSION_CODE_LEN], &pbkdf_salt[0],  PBKDF_SALT_LEN);
+		copy_mem(&out_buf[VERSION_CODE_LEN], pbkdf_salt.ptr,  PBKDF_SALT_LEN);
 		
 		pipe.read(&out_buf[VERSION_CODE_LEN + PBKDF_SALT_LEN], MAC_OUTPUT_LEN, 1);
 		pipe.read(&out_buf[VERSION_CODE_LEN + PBKDF_SALT_LEN + MAC_OUTPUT_LEN],
@@ -85,8 +85,7 @@ struct CryptoBox {
 	* @param input_len the length of input in bytes
 	* @param passphrase the passphrase used to encrypt the message
 	*/
-	static string decrypt(in ubyte* input, size_t input_len,
-	                      in string passphrase)
+	static string decrypt(in ubyte* input, size_t input_len, in string passphrase)
 	{
 		DataSource_Memory input_src(input, input_len);
 		Secure_Vector!ubyte ciphertext = PEM.decode_check_label(input_src, "BOTAN CRYPTOBOX MESSAGE");
@@ -110,7 +109,7 @@ struct CryptoBox {
 		
 		const ubyte* mk = master_key.ptr;
 		
-		SymmetricKey cipher_key = SymmetricKey(&mk[0], CIPHER_KEY_LEN);
+		SymmetricKey cipher_key = SymmetricKey(mk.ptr, CIPHER_KEY_LEN);
 		SymmetricKey mac_key = SymmetricKey(&mk[CIPHER_KEY_LEN], MAC_KEY_LEN);
 		InitializationVector iv = InitializationVector(&mk[CIPHER_KEY_LEN + MAC_KEY_LEN], CIPHER_IV_LEN);
 
@@ -137,12 +136,9 @@ struct CryptoBox {
 	* @param input the input data
 	* @param passphrase the passphrase used to encrypt the message
 	*/
-	string decrypt(in string input,
-	               in string passphrase)
+	string decrypt(in string input, in string passphrase)
 	{
-		return decrypt(cast(const ubyte*)(input[0]),
-		               input.length,
-		               passphrase);
+		return decrypt(cast(const ubyte*)(input.ptr), input.length, passphrase);
 	}
 
 

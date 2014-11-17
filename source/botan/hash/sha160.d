@@ -70,7 +70,7 @@ protected:
 		
 		foreach (size_t i; 0 .. blocks)
 		{
-			load_be(&m_W[0], input, 16);
+			load_be(m_W.ptr, input, 16);
 			
 			for (size_t j = 16; j != 80; j += 8)
 			{

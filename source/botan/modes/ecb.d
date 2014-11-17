@@ -105,7 +105,7 @@ public:
 		assert(sz % BS == 0, "ECB input is full blocks");
 		const size_t blocks = sz / BS;
 		
-		cipher().encrypt_n(&buf[0], &buf[0], blocks);
+		cipher().encrypt_n(buf.ptr, buf.ptr, blocks);
 	}
 
 	override void finish(Secure_Vector!ubyte buffer, size_t offset = 0)
@@ -158,7 +158,7 @@ public:
 		assert(sz % BS == 0, "Input is full blocks");
 		size_t blocks = sz / BS;
 		
-		cipher().decrypt_n(&buf[0], &buf[0], blocks);
+		cipher().decrypt_n(buf.ptr, buf.ptr, blocks);
 	}
 
 	override void finish(Secure_Vector!ubyte buffer, size_t offset = 0)

@@ -6,7 +6,7 @@
 */
 module botan.algo_base.transform;
 
-import botan.alloc.zeroize;
+import botan.utils.memory.zeroize;
 import botan.algo_base.key_spec;
 import botan.utils.exceptn;
 import botan.algo_base.symkey;
@@ -25,7 +25,7 @@ public:
 	*/	
 	final Secure_Vector!ubyte start_vec(Alloc)(in Vector!( ubyte, Alloc ) nonce)
 	{
-		return start(&nonce[0], nonce.length);
+		return start(nonce.ptr, nonce.length);
 	}
 
 	/**
@@ -114,7 +114,7 @@ public:
 
 	final void set_key(Alloc)(in Vector!( ubyte, Alloc ) key)
 	{
-		set_key(&key[0], key.length);
+		set_key(key.ptr, key.length);
 	}
 
 	final void set_key(in SymmetricKey key)

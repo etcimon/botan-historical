@@ -37,13 +37,13 @@ public:
 	{ cipher(buf.ptr, buf.ptr, buf.length); }
 
 	final void encipher(Alloc)(ref Vector!( ubyte, Alloc ) inoutput)
-	{ cipher(&inoutput[0], &inoutput[0], inoutput.length); }
+	{ cipher(inoutput.ptr, inoutput.ptr, inoutput.length); }
 
 	final void encrypt(Alloc)(ref Vector!( ubyte, Alloc ) inoutput)
-	{ cipher(&inoutput[0], &inoutput[0], inoutput.length); }
+	{ cipher(inoutput.ptr, inoutput.ptr, inoutput.length); }
 
 	final void decrypt(Alloc)(ref Vector!( ubyte, Alloc ) inoutput)
-	{ cipher(&inoutput[0], &inoutput[0], inoutput.length); }
+	{ cipher(inoutput.ptr, inoutput.ptr, inoutput.length); }
 
 	/**
 	* Resync the cipher using the IV

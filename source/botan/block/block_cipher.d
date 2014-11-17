@@ -95,7 +95,7 @@ public:
 	*/
 	final void encrypt(Alloc)(Vector!( ubyte, Alloc ) block) const
 	{
-		return encrypt_n(&block[0], &block[0], block.length / this.block_size);
+		return encrypt_n(block.ptr, block.ptr, block.length / this.block_size);
 	}
 
 	/**
@@ -104,7 +104,7 @@ public:
 	*/
 	final void decrypt(Alloc)(ref Vector!( ubyte, Alloc ) block) const
 	{
-		return decrypt_n(&block[0], &block[0], block.length / this.block_size);
+		return decrypt_n(block.ptr, block.ptr, block.length / this.block_size);
 	}
 
 	/**
@@ -115,7 +115,7 @@ public:
 	final void encrypt(Alloc, Alloc2)(in Vector!( ubyte, Alloc ) input,
 	                                  ref Vector!( ubyte, Alloc2 ) output) const
 	{
-		return encrypt_n(&input[0], &output[0], input.length / this.block_size);
+		return encrypt_n(input.ptr, output.ptr, input.length / this.block_size);
 	}
 	
 	/**
@@ -126,7 +126,7 @@ public:
 	final void decrypt(Alloc, Alloc2)(in Vector!( ubyte, Alloc ) input,
 	                                  ref Vector!( ubyte, Alloc2 ) output) const
 	{
-		return decrypt_n(&input[0], &output[0], input.length / this.block_size);
+		return decrypt_n(input.ptr, output.ptr, input.length / this.block_size);
 	}
 	/**
 	* Encrypt one or more blocks

@@ -87,7 +87,7 @@ public:
 		
 		store_be24(&send_buf[1], buf_size);
 		
-		copy_mem(&send_buf[4], &msg[0], msg.length);
+		copy_mem(&send_buf[4], msg.ptr, msg.length);
 		
 		return send_buf;
 	}
@@ -182,7 +182,7 @@ public:
 			
 			size_t frag_offset = 0;
 			
-			while(frag_offset != msg_bits.length)
+			while (frag_offset != msg_bits.length)
 			{
 				const size_t frag_len =	std.algorithm.min(msg_bits.length - frag_offset, parts_size);
 				
@@ -227,10 +227,10 @@ public:
 		
 		__gshared immutable size_t DTLS_HANDSHAKE_HEADER_LEN = 12;
 		
-		const ubyte* record_bits = &record[0];
+		const ubyte* record_bits = record.ptr;
 		size_t record_size = record.length;
 		
-		while(record_size)
+		while (record_size)
 		{
 			if (record_size < DTLS_HANDSHAKE_HEADER_LEN)
 				return; // completely bogus? at least degenerate/weird
@@ -309,7 +309,7 @@ Vector!ubyte format_fragment(in ubyte* fragment,
 	store_be24(&send_buf[6], frag_offset);
 	store_be24(&send_buf[9], frag_len);
 	
-	copy_mem(&send_buf[12], &fragment[0], frag_len);
+	copy_mem(&send_buf[12], fragment.ptr, frag_len);
 	
 	return send_buf;
 }
@@ -318,7 +318,7 @@ Vector!ubyte format_w_seq(in Vector!ubyte msg,
 	             Handshake_Type type,
 	             ushort msg_sequence) const
 {
-	return format_fragment(&msg[0], msg.length, 0, msg.length, type, msg_sequence);
+	return format_fragment(msg.ptr, msg.length, 0, msg.length, type, msg_sequence);
 }
 
 class Handshake_Reassembly

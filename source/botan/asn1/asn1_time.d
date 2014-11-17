@@ -79,7 +79,7 @@ public:
 		
 		uint desired_size = (m_tag == ASN1_Tag.UTC_TIME) ? 13 : 15;
 		
-		while(repr.length < desired_size)
+		while (repr.length < desired_size)
 			repr = "0" ~ repr;
 		
 		return repr;
@@ -94,8 +94,7 @@ public:
 			throw new Invalid_State("readable_string: No time set");
 		import std.string : format;
 		
-		return format("%04d/%02d/%02d %02d:%02d:%02d UTC",
-							m_year, m_month, m_day, m_hour, m_minute, m_second);
+		return format("%04d/%02d/%02d %02d:%02d:%02d UTC", m_year, m_month, m_day, m_hour, m_minute, m_second);
 	}
 
 	/*
@@ -106,9 +105,7 @@ public:
 		return (m_year != 0);
 	}
 
-
 	string toString() const { return readable_string(); }
-
 
 	/*
 	* Compare this time against another
@@ -120,18 +117,18 @@ public:
 		
 		const int EARLIER = -1, LATER = 1, SAME_TIME = 0;
 		
-		if (m_year < other.m_year)	  return EARLIER;
-		if (m_year > other.m_year)	  return LATER;
+		if (m_year < other.m_year)	  	return EARLIER;
+		if (m_year > other.m_year)	  	return LATER;
 		if (m_month < other.m_month)	return EARLIER;
 		if (m_month > other.m_month)	return LATER;
-		if (m_day < other.m_day)		 return EARLIER;
-		if (m_day > other.m_day)		 return LATER;
-		if (m_hour < other.m_hour)	  return EARLIER;
-		if (m_hour > other.m_hour)	  return LATER;
-		if (m_minute < other.m_minute) return EARLIER;
-		if (m_minute > other.m_minute) return LATER;
-		if (m_second < other.m_second) return EARLIER;
-		if (m_second > other.m_second) return LATER;
+		if (m_day < other.m_day)		return EARLIER;
+		if (m_day > other.m_day)		return LATER;
+		if (m_hour < other.m_hour)	  	return EARLIER;
+		if (m_hour > other.m_hour)	  	return LATER;
+		if (m_minute < other.m_minute) 	return EARLIER;
+		if (m_minute > other.m_minute) 	return LATER;
+		if (m_second < other.m_second) 	return EARLIER;
+		if (m_second > other.m_second) 	return LATER;
 		
 		return SAME_TIME;
 	}
@@ -168,12 +165,12 @@ public:
 		if (params.length < 3 || params.length > 6)
 			throw new Invalid_Argument("Invalid time specification " ~ time_str);
 		
-		m_year	= to!uint(params[0]);
-		m_month  = to!uint(params[1]);
-		m_day	 = to!uint(params[2]);
-		m_hour	= (params.length >= 4) ? to!uint(params[3]) : 0;
-		m_minute = (params.length >= 5) ? to!uint(params[4]) : 0;
-		m_second = (params.length == 6) ? to!uint(params[5]) : 0;
+		m_year		= to!uint(params[0]);
+		m_month 	= to!uint(params[1]);
+		m_day		= to!uint(params[2]);
+		m_hour		= (params.length >= 4) ? to!uint(params[3]) : 0;
+		m_minute	= (params.length >= 5) ? to!uint(params[4]) : 0;
+		m_second	= (params.length == 6) ? to!uint(params[5]) : 0;
 		
 		m_tag = (m_year >= 2050) ? ASN1_Tag.GENERALIZED_TIME : ASN1_Tag.UTC_TIME;
 		

@@ -65,11 +65,11 @@ public:
 		
 		BER_Decoder sequence(bits);
 		
-		while(sequence.more_items())
+		while (sequence.more_items())
 		{
 			BER_Decoder rdn = sequence.start_cons(ASN1_Tag.SET);
 			
-			while(rdn.more_items())
+			while (rdn.more_items())
 			{
 				OID oid;
 				ASN1_String str;
@@ -192,7 +192,7 @@ public:
 	*/
 	this(in MultiMap!(OID, string) args)
 	{
-		foreach (oid, const ref val; args)
+		foreach (oid, val; args)
 			add_attribute(oid, val);
 	}
 	
@@ -201,7 +201,7 @@ public:
 	*/
 	this(in MultiMap!(string, string) args)
 	{
-		foreach (key, const ref val; args)
+		foreach (key, val; args)
 			add_attribute(oids.lookup(key), val);
 	}
 
@@ -216,11 +216,11 @@ public:
 		{
 			MultiMap!(OID, string) map1 = get_attributes();
 			MultiMap!(OID, string) map2 = dn2.get_attributes();
-			foreach (oid, const ref val; map1) {
+			foreach (oid, val; map1) {
 				attr1 ~= Pair(oid, val);
 			}
 
-			foreach (oid, const ref val; map2) {
+			foreach (oid, val; map2) {
 				attr2 ~= Pair(oid, val);
 			}
 		}
@@ -230,7 +230,7 @@ public:
 		auto p1 = attr1.ptr;
 		auto p2 = attr2.ptr;
 
-		while(true)
+		while (true)
 		{
 			if (p1 == attr1.end() && p2 == attr2.end())
 				break;
@@ -280,7 +280,7 @@ public:
 		Appender!string output;
 		MultiMap!(string, string) contents = dn.contents();
 
-		foreach(key, const ref val; contents)
+		foreach(key, val; contents)
 		{
 			output ~= to_short_form(key) ~ "=" ~ val ~ ' ';
 		}

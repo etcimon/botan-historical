@@ -133,14 +133,14 @@ private:
 			m_cipher.encrypt(m_state);
 			input += (output_length() - m_position);
 			length -= (output_length() - m_position);
-			while(length > output_length())
+			while (length > output_length())
 			{
 				xor_buf(m_state, input, output_length());
 				m_cipher.encrypt(m_state);
 				input += output_length();
 				length -= output_length();
 			}
-			copy_mem(&m_buffer[0], input, length);
+			copy_mem(m_buffer.ptr, input, length);
 			m_position = 0;
 		}
 		m_position += length;

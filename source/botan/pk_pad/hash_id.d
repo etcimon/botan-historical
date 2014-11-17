@@ -6,7 +6,7 @@
 */
 module botan.pk_pad.hash_id;
 
-import botan.alloc.zeroize;
+import botan.utils.memory.zeroize;
 // import string;
 import botan.utils.exceptn;
 

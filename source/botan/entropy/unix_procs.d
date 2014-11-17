@@ -63,9 +63,9 @@ public:
 		
 		Secure_Vector!ubyte io_buffer = accum.get_io_buffer(4*1024); // page
 		
-		while(!accum.polling_goal_achieved())
+		while (!accum.polling_goal_achieved())
 		{
-			while(m_procs.length < m_concurrent)
+			while (m_procs.length < m_concurrent)
 				m_procs.emplace_back(Unix_Process(next_source()));
 			
 			fd_set read_set;
@@ -101,9 +101,9 @@ public:
 				
 				if (FD_ISSET(fd, &read_set))
 				{
-					const ssize_t got = read(fd, &io_buffer[0], io_buffer.length);
+					const ssize_t got = read(fd, io_buffer.ptr, io_buffer.length);
 					if (got > 0)
-						accum.add(&io_buffer[0], got, ENTROPY_ESTIMATE);
+						accum.add(io_buffer.ptr, got, ENTROPY_ESTIMATE);
 					else
 						proc.spawn(next_source());
 				}
@@ -247,7 +247,7 @@ private:
 					kill(m_pid, SIGKILL);
 					do
 						reaped = waitpid(m_pid, null, 0);
-					while(reaped == -1);
+					while (reaped == -1);
 				}
 			}
 			

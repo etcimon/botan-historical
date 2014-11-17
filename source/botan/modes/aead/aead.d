@@ -43,7 +43,7 @@ public:
 
 	final void set_associated_data_vec(Alloc)(in Vector!( ubyte, Alloc ) ad)
 	{
-		set_associated_data(&ad[0], ad.length);
+		set_associated_data(ad.ptr, ad.length);
 	}
 
 	/**

@@ -18,12 +18,13 @@ import botan.utils.types;
 // import fstream;
 // import string;
 
+alias EAC1_1_ADO = FreeListRef!EAC1_1_ADO_Impl;
 /**
 * This class represents a TR03110 (EAC) v1.1 CVC ADO request
 */
 
  // CRTP continuation from EAC1_1_obj
-final class EAC1_1_ADO : public EAC1_1_obj!EAC1_1_ADO
+final class EAC1_1_ADO_Impl : public EAC1_1_obj!EAC1_1_ADO
 {
 public:
 	/**
@@ -53,9 +54,9 @@ public:
 	* @param tbs_bits the TBS data to sign
 	* @param rng a random number generator
 	*/
-	Vector!ubyte make_signed(PK_Signer signer,
-	                         in Vector!ubyte tbs_bits,
-	                         RandomNumberGenerator rng)
+	static Vector!ubyte make_signed(PK_Signer signer,
+			                        in Vector!ubyte tbs_bits,
+			                        RandomNumberGenerator rng)
 	{
 		const Vector!ubyte concat_sig = signer.sign_message(tbs_bits, rng);
 		
@@ -99,13 +100,13 @@ public:
 		
 		output.write(DER_Encoder()
 		             .start_cons(ASN1_Tag(7), ASN1_Tag.APPLICATION)
-		             .raw_bytes(tbs_bits)
+		             .raw_bytes(m_tbs_bits)
 		             .encode(concat_sig, ASN1_Tag.OCTET_STRING, ASN1_Tag(55), ASN1_Tag.APPLICATION)
 		             .end_cons()
 		             .get_contents());
 	}
 
-	bool opEquals(const ref EAC1_1_ADO rhs) const
+	bool opEquals(in EAC1_1_ADO rhs) const
 	{
 		return (get_concat_sig() == rhs.get_concat_sig()
 		        && tbs_data() == rhs.tbs_data()
@@ -122,7 +123,7 @@ public:
 	}
 
 
-	bool opCmp(string op)(const ref EAC1_1_ADO rhs)
+	bool opCmp(string op)(in EAC1_1_ADO_Impl rhs)
 		if (op == "!=")
 	{
 		return (!(this == rhs));
@@ -136,15 +137,15 @@ private:
 	void force_decode()
 	{
 		Vector!ubyte inner_cert;
-		BER_Decoder(tbs_bits)
-			.start_cons(ASN1_Tag(33))
+		BER_Decoder(m_tbs_bits)
+				.start_cons(ASN1_Tag(33))
 				.raw_bytes(inner_cert)
 				.end_cons()
 				.decode(m_car)
 				.verify_end();
 		
 		Vector!ubyte req_bits = DER_Encoder()
-			.start_cons(ASN1_Tag(33), ASN1_Tag.APPLICATION)
+				.start_cons(ASN1_Tag(33), ASN1_Tag.APPLICATION)
 				.raw_bytes(inner_cert)
 				.end_cons()
 				.get_contents_unlocked();
@@ -164,7 +165,7 @@ private:
 		ASN1_Car car;
 		
 		BER_Decoder(source)
-			.start_cons(ASN1_Tag(7))
+				.start_cons(ASN1_Tag(7))
 				.start_cons(ASN1_Tag(33))
 				.raw_bytes(cert_inner_bits)
 				.end_cons()
@@ -173,7 +174,7 @@ private:
 				.end_cons();
 		
 		Vector!ubyte enc_cert = DER_Encoder()
-			.start_cons(ASN1_Tag(33), ASN1_Tag.APPLICATION)
+				.start_cons(ASN1_Tag(33), ASN1_Tag.APPLICATION)
 				.raw_bytes(cert_inner_bits)
 				.end_cons()
 				.get_contents_unlocked();

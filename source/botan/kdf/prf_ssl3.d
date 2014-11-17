@@ -4,10 +4,12 @@
 *
 * Distributed under the terms of the botan license.
 */
+module botan.kdf.prf_ssl3;
 
 import botan.kdf.kdf;
 import botan.algo_base.symkey;
 import botan.utils.exceptn;
+import botan.hash.hash;
 import botan.hash.sha160;
 import botan.hash.md5;
 import botan.utils.types;
@@ -34,7 +36,7 @@ public:
 		OctetString output;
 		
 		int counter = 0;
-		while(key_len)
+		while (key_len)
 		{
 			const size_t produce = std.algorithm.min(key_len, md5.output_length);
 			
@@ -50,8 +52,6 @@ public:
 	@property string name() const { return "SSL3-PRF"; }
 	KDF clone() const { return new SSL3_PRF; }
 }
-
-	
 
 private:
 
@@ -78,5 +78,5 @@ OctetString next_hash(size_t where, size_t want,
 	md5.update(sha1_hash);
 	Secure_Vector!ubyte md5_hash = md5.flush();
 	
-	return OctetString(&md5_hash[0], want);
+	return OctetString(md5_hash.ptr, want);
 }

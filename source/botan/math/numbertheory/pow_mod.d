@@ -49,7 +49,7 @@ public:
 	static size_t window_bits(size_t exp_bits, size_t,
 	                          Power_Mod.Usage_Hints hints)
 	{
-		__gshared immutable size_t[][2] wsize = [
+		__gshared immutable size_t[2][] wsize = [
 			[ 1434, 7 ],
 			[  539, 6 ],
 			[  197, 4 ],
@@ -188,7 +188,7 @@ public:
 	* Fixed_Exponent_Power_Mod Constructor
 	*/
 	this(in BigInt e,
-         const ref BigInt n,
+         in BigInt n,
          Usage_Hints hints = NO_HINTS)
 	{ 
 		super(n, Usage_Hints(hints | EXP_IS_FIXED | choose_exp_hints(e, n)));
@@ -211,8 +211,7 @@ public:
 	/*
 	* Fixed_Base_Power_Mod Constructor
 	*/
-	this(in BigInt b, const ref BigInt n,
-    		Usage_Hints hints = NO_HINTS)
+	this(in BigInt b, in BigInt n, Usage_Hints hints = NO_HINTS)
 	{
 		super(n, Usage_Hints(hints | BASE_IS_FIXED | choose_base_hints(b, n)));
 		set_base(b);
@@ -224,7 +223,7 @@ public:
 /*
 * Choose potentially useful hints
 */
-Power_Mod.Usage_Hints choose_base_hints(in BigInt b, const ref BigInt n)
+Power_Mod.Usage_Hints choose_base_hints(in BigInt b, in BigInt n)
 {
 	if (b == 2)
 		return Power_Mod.Usage_Hints(Power_Mod.BASE_IS_2 |
@@ -232,19 +231,19 @@ Power_Mod.Usage_Hints choose_base_hints(in BigInt b, const ref BigInt n)
 	
 	const size_t b_bits = b.bits();
 	const size_t n_bits = n.bits();
-	
+
 	if (b_bits < n_bits / 32)
 		return Power_Mod.BASE_IS_SMALL;
 	if (b_bits > n_bits / 4)
 		return Power_Mod.BASE_IS_LARGE;
-	
+
 	return Power_Mod.NO_HINTS;
 }
 
 /*
 * Choose potentially useful hints
 */
-Power_Mod.Usage_Hints choose_exp_hints(in BigInt e, const ref BigInt n) pure
+Power_Mod.Usage_Hints choose_exp_hints(in BigInt e, in BigInt n) pure
 {
 	const size_t e_bits = e.bits();
 	const size_t n_bits = n.bits();

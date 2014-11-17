@@ -20,6 +20,8 @@ import botan.utils.loadstor;
 import botan.utils.simd.immintrin;
 import botan.utils.simd.wmmintrin;
 
+import botan.utils.types;
+
 
 static if (BOTAN_HAS_GCM_CLMUL) {
 	import botan.internal.clmul;
@@ -41,7 +43,7 @@ public:
 		
 		if (nonce_len == 12)
 		{
-			copy_mem(&y0[0], nonce, nonce_len);
+			copy_mem(y0.ptr, nonce, nonce_len);
 			y0[15] = 1;
 		}
 		else
@@ -49,12 +51,12 @@ public:
 			y0 = m_ghash.nonce_hash(nonce, nonce_len);
 		}
 		
-		m_ctr.set_iv(&y0[0], y0.length);
+		m_ctr.set_iv(y0.ptr, y0.length);
 		
 		Secure_Vector!ubyte m_enc_y0 = Secure_Vector!ubyte(BS);
 		m_ctr.encipher(m_enc_y0);
 		
-		m_ghash.start(&m_enc_y0[0], m_enc_y0.length);
+		m_ghash.start(m_enc_y0.ptr, m_enc_y0.length);
 		
 		return Secure_Vector!ubyte();
 	}
@@ -95,7 +97,7 @@ protected:
 		m_ctr.set_key(key, keylen);
 		
 		const Vector!ubyte zeros = Vector!ubyte(BS);
-		m_ctr.set_iv(&zeros[0], zeros.length);
+		m_ctr.set_iv(zeros.ptr, zeros.length);
 		
 		Secure_Vector!ubyte H = Secure_Vector!ubyte(BS);
 		m_ctr.encipher(H);
@@ -110,11 +112,10 @@ protected:
 		m_tag_size = tag_size;
 		m_cipher_name = cipher.name;
 		if (cipher.block_size != BS)
-			throw new Invalid_Argument("GCM requires a 128 bit cipher so cannot be used with " ~
-			                           cipher.name);
+			throw new Invalid_Argument("GCM requires a 128 bit cipher so cannot be used with " ~ cipher.name);
 		
 		m_ghash = new GHASH;
-		
+
 		m_ctr = new CTR_BE(cipher); // CTR_BE takes ownership of cipher
 		
 		if (m_tag_size != 8 && m_tag_size != 16)
@@ -164,7 +165,7 @@ public:
 	{
 		update(buffer, offset);
 		auto mac = m_ghash.flush();
-		buffer += Pair(&mac[0], tag_size());
+		buffer ~= Pair(mac.ptr, tag_size());
 	}
 }
 
@@ -222,7 +223,7 @@ public:
 		
 		const ubyte* included_tag = &buffer[remaining];
 		
-		if (!same_mem(&mac[0], included_tag, tag_size()))
+		if (!same_mem(mac.ptr, included_tag, tag_size()))
 			throw new Integrity_Failure("GCM tag check failed");
 		
 		buffer.resize(offset + remaining);
@@ -310,15 +311,12 @@ private:
 	{
 		static if (BOTAN_HAS_GCM_CLMUL) {
 			if (CPUID.has_clmul())
-				return gcm_multiply_clmul(&x[0], &m_H[0]);
+				return gcm_multiply_clmul(x.ptr, m_H.ptr);
 		}
 		
 		static const ulong R = 0xE100000000000000;
-		
-		ulong[2] H = [
-			load_be!ulong(&m_H[0], 0),
-				load_be!ulong(&m_H[0], 1)
-		];
+
+		ulong[2] H = [ load_be!ulong(m_H.ptr, 0), load_be!ulong(m_H.ptr, 1) ];
 		
 		ulong[2] Z = [ 0, 0 ];
 		
@@ -326,7 +324,7 @@ private:
 		
 		foreach (size_t i; 0 .. 2)
 		{
-			const ulong X = load_be!ulong(&x[0], i);
+			const ulong X = load_be!ulong(x.ptr, i);
 			
 			foreach (size_t j; 0 .. 64)
 			{
@@ -343,7 +341,7 @@ private:
 			}
 		}
 		
-		store_be!ulong(&x[0], Z[0], Z[1]);
+		store_be!ulong(x.ptr, Z[0], Z[1]);
 	}
 
 	void ghash_update(Secure_Vector!ubyte ghash,
@@ -355,11 +353,11 @@ private:
 		This assumes if less than block size input then we're just on the
 		final block and should pad with zeros
 		*/
-		while(length)
+		while (length)
 		{
 			const size_t to_proc = std.algorithm.min(length, BS);
 			
-			xor_buf(&ghash[0], &input[0], to_proc);
+			xor_buf(ghash.ptr, input.ptr, to_proc);
 			
 			gcm_multiply(ghash);
 			
@@ -372,8 +370,8 @@ private:
 	                     size_t ad_len, size_t text_len)
 	{
 		Secure_Vector!ubyte final_block = Secure_Vector!ubyte(16);
-		store_be!ulong(&final_block[0], 8*ad_len, 8*text_len);
-		ghash_update(hash, &final_block[0], final_block.length);
+		store_be!ulong(final_block.ptr, 8*ad_len, 8*text_len);
+		ghash_update(hash, final_block.ptr, final_block.length);
 	}
 
 	Secure_Vector!ubyte m_H;
@@ -389,9 +387,9 @@ void gcm_multiply_clmul(ubyte[16]* x, in ubyte[16]* H) pure
 	* Algorithms 1 and 5 from Intel's CLMUL guide
 	*/
 	__gshared immutable(__m128i) BSWAP_MASK = _mm_set_epi8!([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15])();
-	
-	__m128i a = _mm_loadu_si128(cast(const(__m128i)*)(x[0]));
-	__m128i b = _mm_loadu_si128(cast(const(__m128i)*)(H[0]));
+
+	__m128i a = _mm_loadu_si128(cast(const(__m128i)*) x);
+	__m128i b = _mm_loadu_si128(cast(const(__m128i)*) H);
 	
 	a = _mm_shuffle_epi8(a, BSWAP_MASK);
 	b = _mm_shuffle_epi8(b, BSWAP_MASK);
@@ -443,5 +441,5 @@ void gcm_multiply_clmul(ubyte[16]* x, in ubyte[16]* H) pure
 	
 	T3 = _mm_shuffle_epi8(T3, BSWAP_MASK);
 	
-	_mm_storeu_si128(cast(__m128i*)(&x[0]), T3);
+	_mm_storeu_si128(cast(__m128i*) x, T3);
 }

@@ -6,7 +6,7 @@
 */
 module botan.filters.buf_filt;
 
-import botan.alloc.zeroize;
+import botan.utils.memory.zeroize;
 
 import botan.utils.mem_ops;
 import botan.utils.rounding;
@@ -44,11 +44,11 @@ public:
 			                                     m_buffer_pos + input_size - m_final_minimum),
 			                                     m_main_block_mod);
 			
-			buffered_block(&m_buffer[0], total_to_consume);
+			buffered_block(m_buffer.ptr, total_to_consume);
 			
 			m_buffer_pos -= total_to_consume;
 			
-			copy_mem(&m_buffer[0], &m_buffer[0] + total_to_consume, buffer_pos);
+			copy_mem(m_buffer.ptr, m_buffer.ptr + total_to_consume, buffer_pos);
 		}
 		
 		if (input_size >= m_final_minimum)
@@ -71,7 +71,7 @@ public:
 
 	void write(Alloc)(in Vector!( ubyte, Alloc ) input)
 	{
-		write(&input[0], input.length);
+		write(input.ptr, input.length);
 	}
 
 	/**
@@ -89,12 +89,12 @@ public:
 		if (spare_blocks)
 		{
 			size_t spare_bytes = m_main_block_mod * spare_blocks;
-			buffered_block(&m_buffer[0], spare_bytes);
+			buffered_block(m_buffer.ptr, spare_bytes);
 			buffered_final(&m_buffer[spare_bytes], m_buffer_pos - spare_bytes);
 		}
 		else
 		{
-			buffered_final(&m_buffer[0], m_buffer_pos);
+			buffered_final(m_buffer.ptr, m_buffer_pos);
 		}
 		
 		m_buffer_pos = 0;

@@ -48,7 +48,7 @@ iterations and a 16 byte salt is recommend for new applications.
 
    Secure_Vector<byte> salt = rng.random_vec(16);
    OctetString aes256_key = pbkdf->derive_key(32, "password",
-                                              &salt[0], salt.length,
+                                              salt.ptr, salt.length,
                                               10000);
 
 

@@ -33,7 +33,7 @@ protected:
 	{
 		__gshared immutable size_t PROCESS_AMOUNT = 5552;
 		
-		while(length >= PROCESS_AMOUNT)
+		while (length >= PROCESS_AMOUNT)
 		{
 			adler32_update(input, PROCESS_AMOUNT, m_S1, m_S2);
 			input += PROCESS_AMOUNT;
@@ -63,7 +63,7 @@ void adler32_update(in ubyte* input, size_t length,
 	uint S1x = S1;
 	uint S2x = S2;
 	
-	while(length >= 16)
+	while (length >= 16)
 	{
 		S1x += input[ 0]; S2x += S1x;
 		S1x += input[ 1]; S2x += S1x;

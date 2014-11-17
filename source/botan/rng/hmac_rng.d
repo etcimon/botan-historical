@@ -45,13 +45,13 @@ public:
 		/*
 		 HMAC KDF as described in E-t-E, using a CTXinfo of "rng"
 		*/
-		while(length)
+		while (length)
 		{
 			hmac_prf(*m_prf, m_K, m_counter, "rng");
 			
 			const size_t copied = std.algorithm.min(length, max_per_prf_iter);
 			
-			copy_mem(output, &m_K[0], copied);
+			copy_mem(output, m_K.ptr, copied);
 			output += copied;
 			length -= copied;
 			
@@ -229,7 +229,7 @@ void hmac_prf(MessageAuthenticationCode prf,
 	prf.update(label);
 	prf.update_be(timestamp);
 	prf.update_be(counter);
-	prf.flushInto(&K[0]);
+	prf.flushInto(K.ptr);
 	
 	++counter;
 }

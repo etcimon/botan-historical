@@ -31,8 +31,7 @@ public:
 	* @param dom_par the domain parameters associated with this key
 	* @param public_point the public point defining this key
 	*/
-	this(in EC_Group dom_par,
-		 const ref PointGFp public_point) 
+	this(in EC_Group dom_par, const ref PointGFp public_point) 
 	{
 		super(dom_par, public_point); 
 	}
@@ -40,8 +39,7 @@ public:
 	/**
 	* Construct from X.509 algorithm id and subject public key bits
 	*/
-	this(in Algorithm_Identifier alg_id,
-	     in Secure_Vector!ubyte key_bits)
+	this(in Algorithm_Identifier alg_id, in Secure_Vector!ubyte key_bits)
 	{
 		OID ecc_param_id;
 		
@@ -62,7 +60,7 @@ public:
 			std.algorithm.swap(bits[part_size+i], bits[2*part_size-1-i]);
 		}
 		
-		BigInt x = BigInt(&bits[0], part_size);
+		BigInt x = BigInt(bits.ptr, part_size);
 		BigInt y = BigInt(&bits[part_size], part_size);
 		
 		m_public_key = PointGFp(domain().get_curve(), x, y);
@@ -146,9 +144,7 @@ public:
 	* @param domain parameters to used for this key
 	* @param x the private key; if zero, a new random key is generated
 	*/
-	this(RandomNumberGenerator rng,
-			const ref EC_Group domain,
-			const ref BigInt x = 0)
+	this(RandomNumberGenerator rng, const ref EC_Group domain, in BigInt x = 0)
 	{
 		super(rng, domain, x);
 	}
@@ -181,7 +177,7 @@ public:
 		BigInt k;
 		do
 			k.randomize(rng, m_order.bits()-1);
-		while(k >= m_order);
+		while (k >= m_order);
 		
 		BigInt e = decode_le(msg, msg_len);
 		
@@ -279,5 +275,5 @@ BigInt decode_le(in ubyte* msg, size_t msg_len)
 	for (size_t i = 0; i != msg_le.length / 2; ++i)
 		std.algorithm.swap(msg_le[i], msg_le[msg_le.length-1-i]);
 	
-	return BigInt(&msg_le[0], msg_le.length);
+	return BigInt(msg_le.ptr, msg_le.length);
 }

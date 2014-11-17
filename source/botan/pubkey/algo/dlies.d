@@ -20,10 +20,7 @@ public:
 	/*
 	* DLIES_Encryptor Constructor
 	*/
-	this(in PK_Key_Agreement_Key key,
-	     KDF kdf_obj,
-	     MessageAuthenticationCode mac_obj,
-	     size_t mac_keylen = 20)
+	this(in PK_Key_Agreement_Key key, KDF kdf_obj, MessageAuthenticationCode mac_obj, size_t mac_keylen = 20)
 	{ 
 		m_ka = PK_Key_Agreement(key, "Raw");
 		m_kdf = kdf_obj;
@@ -37,7 +34,7 @@ public:
 	*/
 	void set_other_key(in Vector!ubyte ok)
 	{
-		other_key = ok;
+		m_other_key = ok;
 	}
 private:
 	/*
@@ -48,7 +45,7 @@ private:
 	{
 		if (length > maximum_input_size())
 			throw new Invalid_Argument("DLIES: Plaintext too large");
-		if (other_key.empty)
+		if (m_other_key.empty)
 			throw new Invalid_State("DLIES: The other key was never set");
 		
 		Secure_Vector!ubyte output = Secure_Vector!ubyte(m_my_key.length + length + m_mac.output_length);
@@ -56,7 +53,7 @@ private:
 		buffer_insert(output, m_my_key.length, input, length);
 		
 		Secure_Vector!ubyte vz = Secure_Vector!(m_my_key.ptr, m_my_key.end());
-		vz ~= m_ka.derive_key(0, other_key).bits_of();
+		vz ~= m_ka.derive_key(0, m_other_key).bits_of();
 		
 		const size_t K_LENGTH = length + m_mac_keylen;
 		OctetString K = m_kdf.derive_key(K_LENGTH, vz);
@@ -85,7 +82,7 @@ private:
 		return 32;
 	}
 
-	Vector!ubyte other_key, m_my_key;
+	Vector!ubyte m_other_key, m_my_key;
 
 	PK_Key_Agreement m_ka;
 	Unique!KDF m_kdf;
@@ -102,10 +99,7 @@ public:
 	/*
 	* DLIES_Decryptor Constructor
 	*/
-	this(in PK_Key_Agreement_Key key,
-	     KDF kdf_obj,
-	     MessageAuthenticationCode mac_obj,
-	     size_t mac_key_len = 20)
+	this(in PK_Key_Agreement_Key key, KDF kdf_obj, MessageAuthenticationCode mac_obj, size_t mac_key_len = 20)
 	{
 		m_ka = PK_Key_Agreement(key, "Raw");
 		m_kdf = kdf_obj;

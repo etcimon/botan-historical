@@ -12,6 +12,8 @@ static if (BOTAN_HAS_SERPENT):
 import botan.block.block_cipher;
 import botan.utils.loadstor;
 import botan.utils.rotate;
+import botan.utils.types;
+
 /**
 * Serpent, an AES finalist
 */
@@ -134,14 +136,14 @@ protected:
 	* For use by subclasses using SIMD, asm, etc
 	* @return const reference to the key schedule
 	*/
-	const ref Secure_Vector!uint get_round_keys() const
+	const Secure_Vector!uint get_round_keys() const
 	{ return m_round_key; }
 
 	/**
 	* For use by subclasses that implement the key schedule
 	* @param ks is the new key schedule value to set
 	*/
-	void set_round_keys(const uint ks[132])
+	void set_round_keys(in uint ks[132])
 	{
 		m_round_key.replace(ks.ptr[0 .. 132]);
 	}

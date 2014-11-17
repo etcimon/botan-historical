@@ -321,7 +321,7 @@ private:
 /*
 * Template functions for the factory prototype/search algorithm
 */
-T engine_get_algo(T)(Engine, const ref SCAN_Name, Algorithm_Factory)
+T engine_get_algo(T)(Engine, in SCAN_Name, Algorithm_Factory)
 { static assert(false, "Invalid engine"); }
 
 BlockCipher engine_get_algo(T : BlockCipher)(Engine engine, const ref SCAN_Name request, Algorithm_Factory af)
@@ -354,7 +354,7 @@ const T factory_prototype(T)(in string algo_spec,
 	if (scan_name.cipher_mode() != "")
 		return null;
 
-	foreach(const engine; engines[])
+	foreach (const engine; engines[])
 	{
 		if (provider == "" || engine.provider_name == provider)
 		{

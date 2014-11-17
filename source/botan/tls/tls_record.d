@@ -6,24 +6,24 @@
 */
 module botan.tls.tls_record;
 
+import botan.libstate.libstate;
 import botan.tls.tls_magic;
 import botan.tls.tls_version;
-import botan.modes.aead.aead;
-import botan.block.block_cipher;
-import botan.stream.stream_cipher;
 import botan.tls.tls_seq_numbers;
 import botan.tls.tls_session_key;
-import botan.utils.rounding;
-import botan.utils.xor_buf;
 import botan.tls.tls_ciphersuite;
 import botan.tls.tls_exceptn;
-import botan.libstate.libstate;
-import botan.utils.loadstor;
+import botan.modes.aead.aead;
 import botan.mac.mac;
 import botan.algo_factory.algo_factory;
 import botan.rng.rng;
-import std.algorithm;
+import botan.block.block_cipher;
+import botan.stream.stream_cipher;
+import botan.utils.rounding;
+import botan.utils.xor_buf;
+import botan.utils.loadstor;
 import botan.utils.types;
+import std.algorithm;
 import std.datetime;
 
 alias Connection_Cipher_State = FreeListRef!Connection_Cipher_State_Impl;
@@ -37,11 +37,7 @@ public:
 	/**
 	* Initialize a new cipher state
 	*/
-	this(Protocol_Version _version,
-	     Connection_Side side,
-	     bool our_side,
-	     const Ciphersuite suite,
-	     const Session_Keys keys) 
+	this(Protocol_Version _version, Connection_Side side, bool our_side, in Ciphersuite suite, in Session_Keys keys) 
 	{
 		m_start_time = Clock.currTime();
 		m_is_ssl3 = _version == Protocol_Version.SSL_V3;
@@ -123,10 +119,7 @@ public:
 	}
 
 
-	const Secure_Vector!ubyte format_ad(ulong msg_sequence,
-	                                 ubyte msg_type,
-	                                 Protocol_Version _version,
-	                                 ushort msg_length)
+	const Secure_Vector!ubyte format_ad(ulong msg_sequence, ubyte msg_type, Protocol_Version _version, ushort msg_length)
 	{
 		m_ad.clear();
 		foreach (size_t i; 0 .. 8)
@@ -222,7 +215,7 @@ void write_record(ref Secure_Vector!ubyte output,
 		output.push_back(get_byte!ushort(0, msg_length));
 		output.push_back(get_byte!ushort(1, msg_length));
 		
-		output.insert(output.end(), &msg[0], &msg[msg_length]);
+		output.insert(output.end(), msg.ptr, &msg[msg_length]);
 		
 		return;
 	}
@@ -285,7 +278,7 @@ void write_record(ref Secure_Vector!ubyte output,
 		rng.randomize(&output[$- iv_size], iv_size);
 	}
 	
-	output.insert(output.end(), &msg[0], &msg[msg_length]);
+	output.insert(output.end(), msg.ptr, &msg[msg_length]);
 	
 	output.resize(output.length + mac_size);
 	cipherstate.mac().flushInto(&output[output.length - mac_size]);
@@ -319,8 +312,8 @@ void write_record(ref Secure_Vector!ubyte output,
 		
 		const size_t blocks = buf_size / block_size;
 		
-		xor_buf(&buf[0], &cbc_state[0], block_size);
-		bc.encrypt(&buf[0]);
+		xor_buf(buf.ptr, cbc_state.ptr, block_size);
+		bc.encrypt(buf.ptr);
 		
 		for (size_t i = 1; i < blocks; ++i)
 		{
@@ -477,10 +470,8 @@ size_t read_record(Secure_Vector!ubyte readbuf,
 
 private:
 					
-size_t fill_buffer_to(Secure_Vector!ubyte readbuf,
-                      const ref ubyte* input,
-                      ref size_t input_size,
-                      ref size_t input_consumed,
+size_t fill_buffer_to(Secure_Vector!ubyte readbuf, in ubyte* input, 
+                      ref size_t input_size, ref size_t input_consumed, 
                       size_t desired)
 {
 	if (readbuf.length >= desired)
@@ -488,7 +479,7 @@ size_t fill_buffer_to(Secure_Vector!ubyte readbuf,
 	
 	const size_t taken = std.algorithm.min(input_size, desired - readbuf.length);
 	
-	readbuf.insert(readbuf.end(), &input[0], &input[taken]);
+	readbuf.insert(readbuf.end(), input.ptr, &input[taken]);
 	input_consumed += taken;
 	input_size -= taken;
 	input += taken;
@@ -559,10 +550,10 @@ void cbc_decrypt_record(ubyte[] record_contents, Connection_Cipher_State ciphers
 	ubyte* buf = record_contents.ptr;
 	
 	Secure_Vector!ubyte last_ciphertext = Secure_Vector!ubyte(block_size);
-	copy_mem(&last_ciphertext[0], &buf[0], block_size);
+	copy_mem(last_ciphertext.ptr, buf.ptr, block_size);
 	
-	bc.decrypt(&buf[0]);
-	xor_buf(&buf[0], &cipherstate.cbc_state()[0], block_size);
+	bc.decrypt(buf.ptr);
+	xor_buf(buf.ptr, &cipherstate.cbc_state()[0], block_size);
 	
 	Secure_Vector!ubyte last_ciphertext2;
 	
@@ -570,7 +561,7 @@ void cbc_decrypt_record(ubyte[] record_contents, Connection_Cipher_State ciphers
 	{
 		last_ciphertext2.replace(buf.ptr[block_size*i .. block_size*(i+1)]);
 		bc.decrypt(&buf[block_size*i]);
-		xor_buf(&buf[block_size*i], &last_ciphertext[0], block_size);
+		xor_buf(&buf[block_size*i], last_ciphertext.ptr, block_size);
 		std.algorithm.swap(last_ciphertext, last_ciphertext2);
 	}
 	
@@ -648,11 +639,11 @@ void decrypt_record(Secure_Vector!ubyte output,
 		cipherstate.mac().update(plaintext_block, plaintext_length);
 		
 		Vector!ubyte mac_buf = Vector!ubyte(mac_size);
-		cipherstate.mac().flushInto(&mac_buf[0]);
+		cipherstate.mac().flushInto(mac_buf.ptr);
 		
 		const size_t mac_offset = record_len - (mac_size + pad_size);
 		
-		const bool mac_bad = !same_mem(&record_contents[mac_offset], &mac_buf[0], mac_size);
+		const bool mac_bad = !same_mem(&record_contents[mac_offset], mac_buf.ptr, mac_size);
 		
 		if (mac_bad || padding_bad)
 			throw new TLS_Exception(Alert.BAD_RECORD_MAC, "Message authentication failure");

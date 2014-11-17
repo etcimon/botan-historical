@@ -17,7 +17,7 @@ import botan.internal.mp_madd;
 * @param q will be set to x / y
 * @param r will be set to x % y
 */
-void divide(in BigInt x, const ref BigInt y_arg, ref BigInt q, ref BigInt r)
+void divide(in BigInt x, in BigInt y_arg, ref BigInt q, ref BigInt r)
 {
 	/*
 	* Solve x = q * y + r
@@ -45,7 +45,7 @@ void divide(in BigInt x, const ref BigInt y_arg, ref BigInt q, ref BigInt r)
 	{
 		size_t shifts = 0;
 		word y_top = y.word_at(y.sig_words()-1);
-		while(y_top < MP_WORD_TOP_BIT) { y_top <<= 1; ++shifts; }
+		while (y_top < MP_WORD_TOP_BIT) { y_top <<= 1; ++shifts; }
 		y <<= shifts;
 		r <<= shifts;
 		
@@ -60,7 +60,7 @@ void divide(in BigInt x, const ref BigInt y_arg, ref BigInt q, ref BigInt r)
 		
 		if (n <= t)
 		{
-			while(r > y) { r -= y; ++q; }
+			while (r > y) { r -= y; ++q; }
 			r >>= shifts;
 			sign_fixup(x, y_arg, q, r);
 			return;
@@ -68,7 +68,7 @@ void divide(in BigInt x, const ref BigInt y_arg, ref BigInt q, ref BigInt r)
 		
 		BigInt temp = y << (MP_WORD_BITS * (n-t));
 		
-		while(r >= temp) { r -= temp; q_words[n-t] += 1; }
+		while (r >= temp) { r -= temp; q_words[n-t] += 1; }
 		
 		for (size_t j = n; j != t; --j)
 		{
@@ -81,7 +81,7 @@ void divide(in BigInt x, const ref BigInt y_arg, ref BigInt q, ref BigInt r)
 			else
 				q_words[j-t-1] = bigint_divop(x_j0, x_j1, y_t);
 			
-			while(division_check(q_words[j-t-1],
+			while (division_check(q_words[j-t-1],
 			y_t, y.word_at(t-1),
 			x_j0, x_j1, r.word_at(j-2)))
 			{
@@ -106,7 +106,7 @@ private:
 /*
 * Handle signed operands, if necessary
 */
-void sign_fixup(in BigInt x, const ref BigInt y, ref BigInt q, ref BigInt r)
+void sign_fixup(in BigInt x, in BigInt y, ref BigInt q, ref BigInt r)
 {
 	if (x.sign() == BigInt.Negative)
 	{
@@ -117,15 +117,14 @@ void sign_fixup(in BigInt x, const ref BigInt y, ref BigInt q, ref BigInt r)
 		q.flip_sign();
 }
 
-bool division_check(word q, word y2, word y1,
-                    word x3, word x2, word x1)
+bool division_check(word q, word y2, word y1, word x3, word x2, word x1)
 {
 	// Compute (y3,y2,y1) = (y2,y1) * q
 	
 	word y3 = 0;
 	y1 = word_madd2(q, y1, &y3);
 	y2 = word_madd2(q, y2, &y3);
-	
+
 	// Return (y3,y2,y1) >? (x3,x2,x1)
 	
 	if (y3 > x3) return true;

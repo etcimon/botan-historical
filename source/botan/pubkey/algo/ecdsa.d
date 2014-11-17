@@ -17,6 +17,7 @@ import botan.pubkey.pk_ops;
 import botan.pubkey.algo.keypair;
 import botan.math.ec_gfp.point_gfp;
 import botan.rng.rng;
+import botan.utils.types;
 
 /**
 * This class represents ECDSA Public Keys.
@@ -30,14 +31,12 @@ public:
 	* @param dom_par the domain parameters associated with this key
 	* @param public_point the public point defining this key
 	*/
-	this(in EC_Group dom_par,
-		 const ref PointGFp public_point) 
+	this(in EC_Group dom_par, const ref PointGFp public_point) 
 	{
 		super(dom_par, public_point);
 	}
 
-	this(in Algorithm_Identifier alg_id,
-		 in Secure_Vector!ubyte key_bits)
+	this(in Algorithm_Identifier alg_id, in Secure_Vector!ubyte key_bits)
 	{
 		super(alg_id, key_bits);
 	}
@@ -68,7 +67,7 @@ protected:
 * This class represents ECDSA Private Keys
 */
 final class ECDSA_PrivateKey : ECDSA_PublicKey,
-						 EC_PrivateKey
+							   EC_PrivateKey
 {
 public:
 
@@ -77,8 +76,7 @@ public:
 	* @param alg_id the X.509 algorithm identifier
 	* @param key_bits PKCS #8 structure
 	*/
-	this(in Algorithm_Identifier alg_id,
-		 in Secure_Vector!ubyte key_bits)
+	this(in Algorithm_Identifier alg_id, in Secure_Vector!ubyte key_bits)
 	{
 		super(alg_id, key_bits);
 	}
@@ -89,9 +87,7 @@ public:
 	* @param domain parameters to used for this key
 	* @param x the private key (if zero, generate a ney random key)
 	*/
-	this(RandomNumberGenerator rng,
-						  const ref EC_Group domain,
-						  const ref BigInt x = 0)
+	this(RandomNumberGenerator rng, const ref EC_Group domain, in BigInt x = 0)
 	{
 		super(rng, domain, x);
 	}
@@ -123,8 +119,7 @@ public:
 		m_mod_order = order;
 	}
 
-	Secure_Vector!ubyte sign(in ubyte* msg, size_t msg_len,
-	                      RandomNumberGenerator rng)
+	Secure_Vector!ubyte sign(in ubyte* msg, size_t msg_len, RandomNumberGenerator rng)
 	{
 		rng.add_entropy(msg, msg_len);
 		
@@ -132,13 +127,13 @@ public:
 		
 		BigInt r = 0, s = 0;
 		
-		while(r == 0 || s == 0)
+		while (r == 0 || s == 0)
 		{
 			// This contortion is necessary for the tests
 			BigInt k;
 			k.randomize(rng, m_order.bits());
 			
-			while(k >= m_order)
+			while (k >= m_order)
 				k.randomize(rng, m_order.bits() - 1);
 			
 			PointGFp k_times_P = m_base_point * k;
@@ -198,8 +193,7 @@ public:
 		
 		BigInt w = inverse_mod(s, m_order);
 		
-		PointGFp R = w * multi_exponentiate(m_base_point, e,
-		                                    m_public_point, r);
+		PointGFp R = w * multi_exponentiate(m_base_point, e, m_public_point, r);
 		
 		if (R.is_zero())
 			return false;

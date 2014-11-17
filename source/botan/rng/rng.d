@@ -57,7 +57,7 @@ public:
 	abstract Secure_Vector!ubyte random_vec(size_t bytes)
 	{
 		Secure_Vector!ubyte output = Secure_Vector!ubyte(bytes);
-		randomize(&output[0], output.length);
+		randomize(output.ptr, output.length);
 		return output;
 	}
 

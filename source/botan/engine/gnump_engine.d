@@ -307,7 +307,7 @@ static if (BOTAN_HAS_DSA) {
 			BigInt k_bn;
 			do
 				k_bn.randomize(rng, m_q_bits);
-			while(k_bn >= m_q.to_bigint());
+			while (k_bn >= m_q.to_bigint());
 			
 			GMP_MPZ i = GMP_MPZ(msg, msg_len);
 			GMP_MPZ k = GMP_MPZ(k_bn);
@@ -328,7 +328,7 @@ static if (BOTAN_HAS_DSA) {
 				throw new Internal_Error("GMP_DSA_Op::sign: r or s was zero");
 			
 			Secure_Vector!ubyte output = Secure_Vector(2*q_bytes);
-			r.encode(&output[0], q_bytes);
+			r.encode(output.ptr, q_bytes);
 			s.encode(&output[q_bytes], q_bytes);
 			return output;
 		}

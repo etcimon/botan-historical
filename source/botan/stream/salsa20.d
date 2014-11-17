@@ -25,13 +25,13 @@ public:
 	*/
 	void cipher(in ubyte* input, ubyte* output)
 	{
-		while(length >= m_buffer.length - m_position)
+		while (length >= m_buffer.length - m_position)
 		{
 			xor_buf(output, input, &m_buffer[m_position], m_buffer.length - m_position);
 			length -= (m_buffer.length - m_position);
 			input += (m_buffer.length - m_position);
 			output += (m_buffer.length - m_position);
-			salsa20(&m_buffer[0], &m_state[0]);
+			salsa20(m_buffer.ptr, m_state.ptr);
 			
 			++m_state[8];
 			m_state[9] += (m_state[8] == 0);
@@ -68,7 +68,7 @@ public:
 			m_state[9] = load_le!uint(iv, 3);
 			
 			Secure_Vector!uint hsalsa(8);
-			hsalsa20(&hsalsa[0], &m_state[0]);
+			hsalsa20(hsalsa.ptr, m_state.ptr);
 			
 			m_state[ 1] = hsalsa[0];
 			m_state[ 2] = hsalsa[1];
@@ -85,7 +85,7 @@ public:
 		m_state[8] = 0;
 		m_state[9] = 0;
 		
-		salsa20(&m_buffer[0], &m_state[0]);
+		salsa20(m_buffer.ptr, m_state.ptr);
 		++m_state[8];
 		m_state[9] += (m_state[8] == 0);
 		
