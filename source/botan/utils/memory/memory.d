@@ -18,25 +18,16 @@ import std.exception : enforceEx;
 import std.traits;
 import std.algorithm;
 
-auto vulnerable_allocator()
-{
-	alias Allocator = LockAllocator!(DebugAllocator!(AutoFreeListAllocator!(MallocAllocator)));
-	static __gshared Allocator alloc;
-	if( !alloc ){
-		alloc = new Allocator;
-	}
-	return alloc;
-}
+alias Vulnerable_Allocator = LockAllocator!(DebugAllocator!(AutoFreeListAllocator!(MallocAllocator)));
 
-
-package auto R getAllocator(R)() {
+package R getAllocator(R)() {
 	static __gshared R alloc;
 	if (!alloc)
 		alloc = new R;
 	return alloc;
 }
 
-auto allocObject(T, bool MANAGED = true, ARGS...)(Allocator allocator, ARGS args)
+auto allocObject(T, ALLOCATOR = Allocator, bool MANAGED = true, ARGS...)(ARGS args)
 {
 	auto mem = allocator.alloc(AllocSize!T);
 	static if( MANAGED ){
@@ -48,8 +39,9 @@ auto allocObject(T, bool MANAGED = true, ARGS...)(Allocator allocator, ARGS args
 	else return cast(T*)mem.ptr;
 }
 
-T[] allocArray(T, bool MANAGED = true)(Allocator allocator, size_t n)
+T[] allocArray(T, ALLOCATOR = Allocator, bool MANAGED = true)(size_t n)
 {
+	auto allocator = getAllocator!ALLOCATOR();
 	auto mem = allocator.alloc(T.sizeof * n);
 	auto ret = cast(T[])mem;
 	static if ( MANAGED )
@@ -64,8 +56,9 @@ T[] allocArray(T, bool MANAGED = true)(Allocator allocator, size_t n)
 	return ret;
 }
 
-void freeArray(T, bool MANAGED = true)(Allocator allocator, ref T[] array)
+void freeArray(T, ALLOCATOR = Allocator, bool MANAGED = true)(ref T[] array)
 {
+	auto allocator = getAllocator!ALLOCATOR();
 	static if (MANAGED && hasIndirections!T)
 		GC.removeRange(array.ptr);
 	static if (hasElaborateDestructor!T) // calls destructors
@@ -82,14 +75,7 @@ interface Allocator {
 	
 	void[] alloc(size_t sz)
 	out { assert((cast(size_t)__result.ptr & alignmentMask) == 0, "alloc() returned misaligned data."); }
-	
-	void[] realloc(void[] mem, size_t new_sz)
-	in {
-		assert(mem.ptr !is null, "realloc() called with null array.");
-		assert((cast(size_t)mem.ptr & alignmentMask) == 0, "misaligned pointer passed to realloc().");
-	}
-	out { assert((cast(size_t)__result.ptr & alignmentMask) == 0, "realloc() returned misaligned data."); }
-	
+
 	void free(void[] mem)
 	in {
 		assert(mem.ptr !is null, "free() called with null array.");
@@ -106,12 +92,6 @@ final class LockAllocator(Base) : Allocator {
 	}
 	this() { m_base = getAllocator!Base(); }
 	void[] alloc(size_t sz) { synchronized(this) return m_base.alloc(sz); }
-	void[] realloc(void[] mem, size_t new_sz)
-	in {
-		assert(mem.ptr !is null, "realloc() called with null array.");
-		assert((cast(size_t)mem.ptr & alignmentMask) == 0, "misaligned pointer passed to realloc().");
-	}
-	body { synchronized(this) return m_base.realloc(mem, new_sz); }
 	void free(void[] mem)
 	in {
 		assert(mem.ptr !is null, "free() called with null array.");
@@ -132,7 +112,7 @@ final class DebugAllocator(Base) : Allocator {
 	this()
 	{
 		m_baseAlloc = getAllocator!Base();
-		m_blocks = HashMap!(void*, size_t)(vulnerable_allocator());
+		m_blocks = HashMap!(void*, size_t)(get_allocator!Vulnerable_Allocator());
 	}
 	
 	@property size_t allocatedBlockCount() const { return m_blocks.length; }
@@ -152,21 +132,7 @@ final class DebugAllocator(Base) : Allocator {
 		}
 		return ret;
 	}
-	
-	void[] realloc(void[] mem, size_t new_size)
-	{
-		auto sz = m_blocks.get(mem.ptr, size_t.max);
-		assert(sz != size_t.max, "realloc() called with non-allocated pointer.");
-		assert(sz == mem.length, "realloc() called with block of wrong size.");
-		auto ret = m_baseAlloc.realloc(mem, new_size);
-		assert(ret.length == new_size, "base.realloc() returned block with wrong size.");
-		assert(ret.ptr is mem.ptr || m_blocks.get(ret.ptr, size_t.max) == size_t.max, "base.realloc() returned block that is already allocated.");
-		m_bytes -= sz;
-		m_blocks.remove(mem.ptr);
-		m_blocks[ret.ptr] = new_size;
-		m_bytes += new_size;
-		return ret;
-	}
+
 	void free(void[] mem)
 	{
 		auto sz = m_blocks.get(mem.ptr, size_t.max);
@@ -185,32 +151,6 @@ final class MallocAllocator : Allocator {
 		auto ptr = .malloc(sz + Allocator.alignment);
 		if (ptr is null) throw err;
 		return adjustPointerAlignment(ptr)[0 .. sz];
-	}
-	
-	void[] realloc(void[] mem, size_t new_size)
-	{
-		size_t csz = min(mem.length, new_size);
-		auto p = extractUnalignedPointer(mem.ptr);
-		size_t oldmisalign = mem.ptr - p;
-		
-		auto pn = cast(ubyte*).realloc(p, new_size+Allocator.alignment);
-		if (p == pn) return pn[oldmisalign .. new_size+oldmisalign];
-		
-		auto pna = cast(ubyte*)adjustPointerAlignment(pn);
-		auto newmisalign = pna - pn;
-		
-		// account for changed alignment after realloc (move memory back to aligned position)
-		if (oldmisalign != newmisalign) {
-			if (newmisalign > oldmisalign) {
-				foreach_reverse (i; 0 .. csz)
-					pn[i + newmisalign] = pn[i + oldmisalign];
-			} else {
-				foreach (i; 0 .. csz)
-					pn[i + newmisalign] = pn[i + oldmisalign];
-			}
-		}
-		
-		return pna[0 .. new_size];
 	}
 	
 	void free(void[] mem)
@@ -245,28 +185,7 @@ final class AutoFreeListAllocator(Base) : Allocator {
 		//logTrace("AFL alloc %08X(%d)", ret.ptr, sz);
 		assert(false);
 	}
-	
-	void[] realloc(void[] data, size_t sz)
-	{
-		foreach (fl; m_freeLists) {
-			if (data.length <= fl.elementSize) {
-				// just grow the slice if it still fits into the free list slot
-				if (sz <= fl.elementSize)
-					return data.ptr[0 .. sz];
-				
-				// otherwise re-allocate
-				auto newd = alloc(sz);
-				assert(newd.ptr+sz <= data.ptr || newd.ptr >= data.ptr+data.length, "New block overlaps old one!?");
-				auto len = min(data.length, sz);
-				newd[0 .. len] = data[0 .. len];
-				free(data);
-				return newd;
-			}
-		}
-		// forward large blocks to the base allocator
-		return m_baseAlloc.realloc(data, sz);
-	}
-	
+		
 	void free(void[] data)
 	{
 		//logTrace("AFL free %08X(%s)", data.ptr, data.length);
@@ -290,12 +209,12 @@ final class AutoFreeListAllocator(Base) : Allocator {
 	}
 }
 
-final class FreeListAlloc : Allocator
+final class FreeListAlloc(Base) : Allocator
 {
 	private static struct FreeListSlot { FreeListSlot* next; }
 	private {
 		immutable size_t m_elemSize;
-		Allocator m_baseAlloc;
+		Base m_baseAlloc;
 		FreeListSlot* m_firstFree = null;
 		size_t m_nalloc = 0;
 		size_t m_nfree = 0;
@@ -334,14 +253,7 @@ final class FreeListAlloc : Allocator
 		//logInfo("Alloc %d bytes: alloc: %d, free: %d", SZ, s_nalloc, s_nfree);
 		return mem;
 	}
-	
-	void[] realloc(void[] mem, size_t sz)
-	{
-		assert(mem.length == m_elemSize);
-		assert(sz == m_elemSize);
-		return mem;
-	}
-	
+
 	void free(void[] mem)
 	{
 		assert(mem.length == m_elemSize, "Memory block passed to free has wrong size.");
@@ -366,7 +278,7 @@ template FreeListObjectAlloc(T, bool USE_GC = true, bool INIT = true)
 	TR alloc(ARGS...)(ARGS args)
 	{
 		//logInfo("alloc %s/%d", T.stringof, ElemSize);
-		auto mem = vulnerable_allocator().alloc(ElemSize);
+		auto mem = get_allocator!Vulnerable_Allocator().alloc(ElemSize);
 		static if( hasIndirections!T ) GC.addRange(mem.ptr, ElemSize);
 		static if( INIT ) return emplace!T(mem, args);
 		else return cast(TR)mem.ptr;
@@ -379,7 +291,7 @@ template FreeListObjectAlloc(T, bool USE_GC = true, bool INIT = true)
 			.destroy(objc);//typeid(T).destroy(cast(void*)obj);
 		}
 		static if( hasIndirections!T ) GC.removeRange(cast(void*)obj);
-		vulnerable_allocator().free((cast(void*)obj)[0 .. ElemSize]);
+		get_allocator!Vulnerable_Allocator().free((cast(void*)obj)[0 .. ElemSize]);
 	}
 }
 
@@ -412,7 +324,7 @@ struct FreeListRef(T, bool INIT = true)
 	{
 		//logInfo("refalloc %s/%d", T.stringof, ElemSize);
 		FreeListRef ret;
-		auto mem = vulnerable_allocator().alloc(ElemSize + int.sizeof);
+		auto mem = get_allocator!Vulnerable_Allocator().alloc(ElemSize + int.sizeof);
 		static if( hasIndirections!T ) GC.addRange(mem.ptr, ElemSize);
 		static if( INIT ) ret.m_object = cast(TR)emplace!(Unqual!T)(mem, args);
 		else ret.m_object = cast(TR)mem.ptr;
@@ -462,7 +374,7 @@ struct FreeListRef(T, bool INIT = true)
 					//logInfo("ref %s destroyed", T.stringof);
 				}
 				static if( hasIndirections!T ) GC.removeRange(cast(void*)m_object);
-				vulnerable_allocator().free((cast(void*)m_object)[0 .. ElemSize+int.sizeof]);
+				get_allocator!Vulnerable_Allocator().free((cast(void*)m_object)[0 .. ElemSize+int.sizeof]);
 			}
 		}
 		

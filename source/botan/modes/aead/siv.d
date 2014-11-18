@@ -116,7 +116,7 @@ protected:
 
 	final Secure_Vector!ubyte msg_buf() { return m_msg_buf; }
 
-	final Secure_Vector!ubyte S2V(const ubyte* text, size_t text_len)
+	final Secure_Vector!ubyte S2V(in ubyte* text, size_t text_len)
 	{
 		const ubyte[16] zero;
 		

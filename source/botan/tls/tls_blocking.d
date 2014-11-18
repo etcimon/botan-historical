@@ -115,7 +115,7 @@ private:
 		m_plaintext.insert(m_plaintext.end(), data.ptr, data.length);
 	}
 
-	final void alert_cb(const Alert alert, in ubyte[])
+	final void alert_cb(in Alert alert, in ubyte[])
 	{
 		this.alert_notification(alert);
 	}

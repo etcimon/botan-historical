@@ -22,9 +22,7 @@ import botan.utils.exceptn;
 class BlockCipherModePaddingMethod
 {
 public:
-	abstract void add_padding(Secure_Vector!ubyte buffer,
-									 size_t final_block_bytes,
-									 size_t block_size) const;
+	abstract void add_padding(Secure_Vector!ubyte buffer, size_t final_block_bytes, size_t block_size) const;
 
 	/**
 	* @param block the last block
@@ -59,9 +57,7 @@ public:
 	/*
 	* Pad with PKCS #7 Method
 	*/
-	override void add_padding(Secure_Vector!ubyte buffer,
-				                 size_t last_byte_pos,
-				                 size_t block_size) const
+	override void add_padding(Secure_Vector!ubyte buffer, size_t last_byte_pos, size_t block_size) const
 	{
 		const ubyte pad_value = block_size - last_byte_pos;
 		
@@ -139,9 +135,7 @@ public:
 	/*
 	* Pad with One and Zeros Method
 	*/
-	override void add_padding(Secure_Vector!ubyte buffer,
-				                 size_t last_byte_pos,
-				                 size_t block_size) const
+	override void add_padding(Secure_Vector!ubyte buffer, size_t last_byte_pos, size_t block_size) const
 	{
 		buffer.push_back(0x80);
 		
@@ -180,7 +174,7 @@ final class Null_Padding : BlockCipherModePaddingMethod
 public:
 	override void add_padding(Secure_Vector!ubyte, size_t, size_t) const {}
 
-	size_t unpad(const ubyte[], size_t size) const { return size; }
+	size_t unpad(in ubyte[], size_t size) const { return size; }
 
 	bool valid_blocksize(size_t) const { return true; }
 

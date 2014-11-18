@@ -61,7 +61,7 @@ public:
 	this(void delegate(in ubyte[]) socket_output_fn,
 	     void delegate(in ubyte[]) proc_cb,
 	     void delegate(Alert, in ubyte[]) alert_cb,
-	     bool delegate(const Session) handshake_cb,
+	     bool delegate(in Session) handshake_cb,
 	     Session_Manager session_manager,
 	     Credentials_Manager creds,
 	     in Policy policy,
@@ -501,8 +501,7 @@ private final class Client_Handshake_State : Handshake_State
 {
 public:
 	
-	this(Handshake_IO io,
-	     void delegate(const Handshake_Message) msg_callback) 
+	this(Handshake_IO io, void delegate(in Handshake_Message) msg_callback) 
 	{ 
 		super(io, msg_callback);
 	}

@@ -311,7 +311,7 @@ private:
 		{
 		public:
 			ubyte opCall(size_t i) { return (X[i/4] >> (8*(3 - (i%4)))); } 
-			this(const uint* x) { X = x; }
+			this(in uint* x) { X = x; }
 		private:
 			const uint* X;
 		}

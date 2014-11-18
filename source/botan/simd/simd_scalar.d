@@ -35,7 +35,7 @@ public:
 			m_v[i] = B;
 	}
 
-	static SIMD_Scalar!(T, N) load_le(const void* input)
+	static SIMD_Scalar!(T, N) load_le(in void* input)
 	{
 		SIMD_Scalar!(T, N) output;
 		const ubyte* in_b = cast(const ubyte*)(input);
@@ -46,7 +46,7 @@ public:
 		return output;
 	}
 
-	static SIMD_Scalar!(T, N) load_be(const void* input)
+	static SIMD_Scalar!(T, N) load_be(in void* input)
 	{
 		SIMD_Scalar!(T, N) output;
 		const ubyte* in_b = cast(const ubyte*)(input);

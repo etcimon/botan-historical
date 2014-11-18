@@ -33,7 +33,7 @@ public:
 		m_reg = [B, B, B, B];
 	}
 
-	static SIMD_Altivec load_le(const void* input)
+	static SIMD_Altivec load_le(in void* input)
 	{
 		const uint* in_32 = cast(const uint*)(input);
 
@@ -49,7 +49,7 @@ public:
 		return SIMD_Altivec(R0);
 	}
 
-	static SIMD_Altivec load_be(const void* input)
+	static SIMD_Altivec load_be(in void* input)
 	{
 		const uint* in_32 = cast(const uint*)(input);
 

@@ -417,12 +417,9 @@ public:
 
 private:
 
-size_t load_be24(const ubyte q[3])
+size_t load_be24(in ubyte[3] q)
 {
-	return make_uint(0,
-	                 q[0],
-					q[1],
-					q[2]);
+	return make_uint(0, q[0], q[1], q[2]);
 }
 
 void store_be24(ubyte[3] output, size_t val)

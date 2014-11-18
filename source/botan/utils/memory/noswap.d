@@ -17,28 +17,19 @@ import std.algorithm;
 import core.sys.posix.sys.mman;
 import core.sys.posix.sys.resource;
 
-struct NoSwapAllocator
+final class NoSwapAllocator
 {
 public:
-	static this() {
-
-
-	void[] alloc(size_t n)
+	synchronized void[] alloc(size_t n)
 	{
 		if (!m_pool)
 			return null;
-		
-		const size_t n = num_elems * elem_size;
-		const size_t alignment = ALIGNMENT_MULTIPLE * elem_size;
-		
-		if (n / elem_size != num_elems)
-			return null; // overflow!
+
+		__gshared immutable size_t alignment = 8;
 		
 		if (n > m_poolsize || n > BOTAN_MLOCK_ALLOCATOR_MAX_ALLOCATION)
 			return null;
-		
-		m_mutex.lock(); scope(exit) m_mutex.unlock();
-		
+				
 		auto best_fit = m_freelist.end();
 		
 		for (auto i = m_freelist.ptr; i != m_freelist.end(); ++i)
@@ -50,10 +41,9 @@ public:
 				m_freelist.erase(i);
 				clear_mem(m_pool + offset, n);
 				
-				assert((cast(size_t)(m_pool) + offset) % alignment == 0,
-				             "Returning correctly aligned pointer");
+				assert((cast(size_t)(m_pool) + offset) % alignment == 0, "Returning correctly aligned pointer");
 				
-				return m_pool + offset;
+				return (m_pool + offset)[0 .. n];
 			}
 			
 			if ((i.second >= (n + padding_for_alignment(i.first, alignment)) &&
@@ -96,25 +86,24 @@ public:
 			assert((cast(size_t)(m_pool) + offset + alignment_padding) % alignment == 0,
 			             "Returning correctly aligned pointer");
 			
-			return m_pool + offset + alignment_padding;
+			return (m_pool + offset + alignment_padding)[0 .. n];
 		}
 		
 		return null;
 	}
 
-	bool deallocate(void* p, size_t num_elems, size_t elem_size)
+	synchronized bool free(void[] p)
 	{
 		if (!m_pool)
 			return false;
 		
-		size_t n = num_elems * elem_size;
+		size_t n = p.length;
 		
 		/*
 		We return null in allocate if there was an overflow, so we
 		should never ever see an overflow in a deallocation.
 		*/
-		assert(n / elem_size == num_elems,
-		             "No overflow in deallocation");
+		assert(n / elem_size == num_elems, "No overflow in deallocation");
 		
 		if (!ptr_in_pool(m_pool, m_poolsize, p, n))
 			return false;
@@ -123,7 +112,7 @@ public:
 		
 		const size_t start = cast(ubyte*)(p) - m_pool;
 		
-			auto comp = (Pair!(size_t, size_t) x, Pair!(size_t, size_t) y){ return x.first < y.first; };
+		auto comp = (Pair!(size_t, size_t) x, Pair!(size_t, size_t) y){ return x.first < y.first; };
 		
 		auto i = std::lower_bound(m_freelist.ptr, m_freelist.end(),
 		                          Pair(start, 0), comp);
@@ -162,12 +151,7 @@ public:
 		
 		return true;
 	}
-
-	
-	@disable this(this);
-	
-	@disable ref mlock_allocator opAssign(in mlock_allocator);
-	
+		
 private:
 	this()
 	{
@@ -176,12 +160,10 @@ private:
 		
 		if (m_poolsize)
 		{
-			m_pool = cast(ubyte*)(
-				mmap(
-				null, m_poolsize,
-				PROT_READ | PROT_WRITE,
-				MAP_ANONYMOUS | MAP_SHARED | MAP_NOCORE,
-				-1, 0));
+			m_pool = cast(ubyte*)(mmap(null, m_poolsize,
+			                           PROT_READ | PROT_WRITE,
+			                           MAP_ANONYMOUS | MAP_SHARED | MAP_NOCORE,
+			                           -1, 0));
 			
 			if (m_pool == cast(ubyte*)(MAP_FAILED))
 			{
@@ -198,9 +180,7 @@ private:
 				throw new Exception("Could not mlock " ~ to!string(m_poolsize) ~ " bytes");
 			}
 			
-			static if (MADV_DONTDUMP) {
-				madvise(m_pool, m_poolsize, MADV_DONTDUMP);
-			}
+			madvise(m_pool, m_poolsize, MADV_DONTDUMP);
 			
 			m_freelist.push_back(Pair(0, m_poolsize));
 		}
@@ -218,17 +198,9 @@ private:
 	}
 		
 	const size_t m_poolsize;
-	
-	Mutex m_mutex;
 	Vector!( Pair!(size_t, size_t) ) m_freelist;
 	ubyte* m_pool;
 }
-
-/**
-* Requests for objects of T.sizeof will be aligned at
-* T.sizeof*ALIGNMENT_MULTIPLE bytes.
-*/
-__gshared immutable size_t ALIGNMENT_MULTIPLE = 2;
 
 size_t mlock_limit()
 {
@@ -241,7 +213,7 @@ size_t mlock_limit()
 	* programs), but small enough that we should not cause problems
 	* even if many processes are mlocking on the same machine.
 	*/
-		__gshared immutable size_t MLOCK_UPPER_BOUND = 512*1024;
+	__gshared immutable size_t MLOCK_UPPER_BOUND = 512*1024;
 
 	rlimit limits;
 	getrlimit(RLIMIT_MEMLOCK, &limits);
@@ -256,17 +228,12 @@ size_t mlock_limit()
 	return std.algorithm.min(limits.rlim_cur, MLOCK_UPPER_BOUND);
 }
 
-bool ptr_in_pool(const void* pool_ptr, size_t poolsize,
-					  const void* buf_ptr, size_t bufsize)
+bool ptr_in_pool(const void* pool_ptr, size_t poolsize, const void* buf_ptr, size_t bufsize)
 {
-	const uintptr_t pool = cast(uintptr_t)(pool_ptr);
-	const uintptr_t buf = cast(uintptr_t)(buf_ptr);
-
-	if (buf < pool || buf >= pool + poolsize)
+	if (buf_ptr < pool_ptr || buf_ptr >= pool_ptr + poolsize)
 		return false;
 
-	assert(buf + bufsize <= pool + poolsize,
-					 "Pointer does not partially overlap pool");
+	assert(buf_ptr + bufsize <= pool_ptr + poolsize, "Pointer does not partially overlap pool");
 
 	return true;
 }

@@ -11,71 +11,41 @@ import std.algorithm;
 import botan.utils.types;
 import botan.utils.memory.memory;
 import botan.utils.memory.noswap;
+import std.traits : ReturnType;
 
-auto secure_allocator()
+alias Secure_Allocator = ZeroizeAllocator!Vulnerable_Allocator;
+
+final class ZeroizeAllocator(Base : Allocator)
 {
-	alias Allocator = AutoFreeListAllocator!(ZeroizeAllocator);
-	static __gshared Allocator alloc;
-	if( !alloc ){
-		alloc = new Allocator;
+	private {
+		NoSwapAllocator m_primary;
+		Base m_secondary;
 	}
-	return alloc;
-}
 
-final class ZeroizeAllocator : Allocator
-{
-	this() nothrow {}
+	this() {
+		m_primary = new NoSwapAllocator;
+	}
 
-	~this() nothrow {}
-
-	T* address(ref x) const nothrow
-	{ return &x; }
-
-	const T* address(const ref x) const nothrow
-	{ return &x; }
-
-	T* allocate(size_t n, const void* = 0)
+	void[] alloc(size_t n)
 	{
-		static if (BOTAN_HAS_LOCKING_ALLOCATOR) {
-			if (pointer p = cast(pointer)(mlock_allocator.instance().allocate(n, T.sizeof)))
-				return p;
-		}
-		pointer p = new T[n];
+		if (void[] p = m_primary.alloc(n))
+			return p;
+		void[] p = m_secondary.alloc(n);
 		clear_mem(p, n);
 		return p;
 	}
 
-	void deallocate(T* p, size_t n)
+	void free(void[] mem)
 	{
-		clear_mem(p, n);
-
-		static if (BOTAN_HAS_LOCKING_ALLOCATOR) {
-			if (mlock_allocator.instance().deallocate(p, n, T.sizeof))
-				return;
-		}
-		.destroy(p);
+		clear_mem(mem.ptr, mem.length);
+		if (m_primary.free(mem))
+			return;
+		m_secondary.free(mem);
 	}
 
-	size_t max_size() const nothrow
-	{
-		return cast(size_type)(-1) / T.sizeof;
-	}
-
-	void construct(U, Args...)(ref U* p, Args args)
-	{
-		p = new U(args);
-	}
-
-	void destroy(U)(in U* p) { .destroy(p); }
-
-	bool opEquals(T)(in secure_allocator!T)
-	{ return true; }
-
-	bool opCmp(T)(in secure_allocator!T)
-	{ return false; }
 }
 
-alias Secure_Vector(T) = Vector!(T, secure_allocator!T);
+alias Secure_Vector(T) = Vector!(T, Secure_Allocator);
 
 Vector!T unlock(T)(in Secure_Vector!T input)
 {
@@ -87,52 +57,16 @@ Vector!T unlock(T)(in Secure_Vector!T input)
 
 size_t buffer_insert(T, Alloc)(Vector!(T, Alloc) buf, size_t buf_offset, in T* input, size_t input_length)
 {
-	const size_t to_copy = std.algorithm.min(input_length, buf.length - buf_offset);
+	const size_t to_copy = min(input_length, buf.length - buf_offset);
 	copy_mem(&buf[buf_offset], input, to_copy);
 	return to_copy;
 }
 
 size_t buffer_insert(T, Alloc, Alloc2)(Vector!(T, Alloc) buf, size_t buf_offset, in Vector!( T, Alloc2 ) input)
 {
-	const size_t to_copy = std.algorithm.min(input.length, buf.length - buf_offset);
+	const size_t to_copy = min(input.length, buf.length - buf_offset);
 	copy_mem(&buf[buf_offset], input.ptr, to_copy);
 	return to_copy;
-}
-
-Vector!(T, Alloc) opOpAssign(string op, T, Alloc)(Vector!(T, Alloc) output,
-	                         const Vector!( T, Alloc2 ) input)
-	if (op == "+=")
-{
-	const size_t copy_offset = output.length;
-	output.resize(output.length + input.length);
-	copy_mem(&output[copy_offset], input.ptr, input.length);
-	return output;
-}
-
-Vector!(T, Alloc) opOpAssign(string op, T, Alloc)(Vector!(T, Alloc) output, T input)
-	if (op == "+=")
-{
-	output.push_back(input);
-	return output;
-}
-
-Vector!(T, Alloc) 
-	opOpAssign(string op, T, Alloc)(Vector!(T, Alloc) output, in Pair!(const T*, L) input)
-		if (op == "+=")
-{
-	const size_t copy_offset = output.length;
-	output.resize(output.length + input.second);
-	copy_mem(&output[copy_offset], input.first, input.second);
-	return output;
-}
-
-Vector!(T, Alloc) opOpAssign(string op, T, Alloc, L)(Vector!(T, Alloc) output, in Pair!(T*, L) input)
-	if (op == "+=")
-{
-	const size_t copy_offset = output.length;
-	output.resize(output.length + input.second);
-	copy_mem(&output[copy_offset], input.first, input.second);
-	return output;
 }
 
 /**

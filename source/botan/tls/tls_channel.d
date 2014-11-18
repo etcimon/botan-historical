@@ -769,7 +769,7 @@ private:
 	const Handshake_State pending_state() const { return *m_pending_state; }
 
 	/* callbacks */
-	bool delegate(const Session) m_handshake_cb;
+	bool delegate(in Session) m_handshake_cb;
 	void delegate(in ubyte[]) m_data_cb;
 	void delegate(Alert, in ubyte[]) m_alert_cb;
 	void delegate(in ubyte[]) m_output_fn;

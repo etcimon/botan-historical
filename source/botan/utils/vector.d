@@ -18,7 +18,7 @@ bool value_exists(T)(in Vector!T vec, in T val)
 }
 
 /// An array that uses a custom allocator.
-struct Vector(T, ALLOCATOR)
+struct Vector(T, ALLOCATOR = Vulnerable_Allocator)
 {
 	// Payload cannot be copied
 	private struct Payload
@@ -27,12 +27,12 @@ struct Vector(T, ALLOCATOR)
 		T[] _payload;
 		
 		// Convenience constructor
-		this(T[] p) { _capacity = p.length; _payload = allocArray(getAllocator!ALLOCATOR(), p.length); }
+		this(T[] p) { _capacity = p.length; _payload = allocArray!(T, ALLOCATOR, true)(p.length); }
 		
 		// Destructor releases array memory
 		~this()
 		{
-			freeArray(_payload.ptr[0 .. capacity]); // calls destructors and frees memory
+			freeArray!(T, true, ALLOCATOR)(_payload.ptr[0 .. capacity]); // calls destructors and frees memory
 		}
 
 		@disable this(this);
@@ -121,7 +121,7 @@ struct Vector(T, ALLOCATOR)
              * than realloc.
              */
 			immutable oldLength = length;
-			auto newPayload = allocArray!(T, false)(getAllocator!ALLOCATOR(), elements)[0 .. oldLength];
+			auto newPayload = allocArray!(T, ALLOCATOR, false)(elements)[0 .. oldLength];
 
 			static if ( hasIndirections!T ) {
 				// Zero out unused capacity to prevent gc from seeing
@@ -132,7 +132,7 @@ struct Vector(T, ALLOCATOR)
 			// copy old data over to new array
 			memcpy(newPayload.ptr, _payload.ptr, T.sizeof * oldLength);
 
-			freeArray!(T, false)(getAllocator!ALLOCATOR(), _payload.ptr[0 .. capacity]);
+			freeArray!(T, ALLOCATOR, false)(_payload.ptr[0 .. capacity]);
 
 			static if ( hasIndirections!T )
 				GC.removeRange(_payload.ptr, T.sizeof * _capacity);

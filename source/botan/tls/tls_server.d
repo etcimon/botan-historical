@@ -29,7 +29,7 @@ public:
 	this(void delegate(ref ubyte[]) output_fn,
 	     void delegate(in ubyte[]) data_cb,
 	     void delegate(Alert, in ubyte[]) alert_cb,
-	     bool delegate(const Session) handshake_cb,
+	     bool delegate(in Session) handshake_cb,
 	     Session_Manager session_manager,
 	     Credentials_Manager creds,
 	     const Policy policy,

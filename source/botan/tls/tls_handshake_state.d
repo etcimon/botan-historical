@@ -29,8 +29,7 @@ public:
 	/*
 	* Initialize the SSL/TLS Handshake State
 	*/
-	this(Handshake_IO io,
-	     void delegate(const Handshake_Message) msg_callback = null) 
+	this(Handshake_IO io, void delegate(in Handshake_Message) msg_callback = null) 
 	{
 		m_msg_callback = msg_callback;
 		m_handshake_io = io;
@@ -102,10 +101,7 @@ public:
 	}
 
 	Pair!(string, Signature_Format)
-		understand_sig_format(const Public_Key key,
-		                      string hash_algo,
-		                      string sig_algo,
-		                      bool for_client_auth) const
+		understand_sig_format(in Public_Key key, string hash_algo, string sig_algo, bool for_client_auth) const
 	{
 		const string algo_name = key.algo_name;
 		
@@ -396,7 +392,7 @@ public:
 
 private:
 
-	void delegate(const Handshake_Message) m_msg_callback;
+	void delegate(in Handshake_Message) m_msg_callback;
 
 	Unique!Handshake_IO m_handshake_io;
 

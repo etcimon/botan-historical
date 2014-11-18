@@ -123,7 +123,7 @@ public:
 	* @param rhs a curve
 	* @return true iff lhs is not the same as rhs
 	*/
-	bool opCmp(string op)(const CurveGFp rhs)
+	bool opCmp(string op)(in CurveGFp rhs)
 		if (op == "!=")
 	{
 		return !(this == rhs);
