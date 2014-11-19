@@ -6,8 +6,8 @@
 	"targetName": "botan",
 	"targetType": "staticLibrary",
 	"targetPath": "build",
+	"sourceFolders": ["tests"],
 	"workingDirectory": "build",
-	"dependencies": { "libasync": "0.6.3" },
 	"configurations": [
 		{
 			"name": "core"
