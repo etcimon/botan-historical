@@ -6,7 +6,7 @@
 #include <iostream>
 #include <fstream>
 
-using namespace Botan;
+
 
 namespace {
 
@@ -36,7 +36,7 @@ size_t hash_test(string algo,
 			continue;
 		}
 
-		std::unique_ptr<HashFunction> hash(proto.clone());
+		Unique!HashFunction hash(proto.clone());
 
 		hash.update(hex_decode(in_hex));
 
@@ -70,7 +70,7 @@ size_t hash_test(string algo,
 
 size_t test_hash()
 {
-	auto test = [](string input)
+	auto test = (string input)
 	{
 		File vec(input);
 
@@ -81,5 +81,5 @@ size_t test_hash()
 				 });
 	};
 
-	return run_tests_in_dir(TEST_DATA_DIR "hash", test);
+	return run_tests_in_dir("test_data/hash", test);
 }

@@ -6,6 +6,8 @@
 */
 module botan.pubkey.pkcs8;
 
+alias pkcs8 = botan.pubkey.pkcs8;
+
 import botan.pubkey.x509_key;
 import functional;
 import std.datetime;

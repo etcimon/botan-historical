@@ -6,7 +6,7 @@
 #include <iostream>
 #include <fstream>
 
-using namespace Botan;
+
 
 namespace {
 
@@ -43,7 +43,7 @@ size_t stream_test(string algo,
 			continue;
 		}
 
-		std::unique_ptr<StreamCipher> cipher(proto.clone());
+		Unique!StreamCipher cipher(proto.clone());
 		cipher.set_key(key);
 
 		if(nonce.length)
@@ -67,7 +67,7 @@ size_t stream_test(string algo,
 
 size_t test_stream()
 {
-	auto test = [](string input)
+	auto test = (string input)
 	{
 		File vec(input);
 
@@ -78,5 +78,5 @@ size_t test_stream()
 				 });
 	};
 
-	return run_tests_in_dir(TEST_DATA_DIR "/stream", test);
+	return run_tests_in_dir("test_data//stream", test);
 }

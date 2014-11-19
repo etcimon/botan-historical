@@ -24,6 +24,9 @@ enum BOTAN_KARAT_SQR_THRESHOLD = 32;
 enum BOTAN_RNG_MAX_OUTPUT_BEFORE_RESEED = 512;
 enum BOTAN_RNG_RESEED_POLL_BITS = 128;
 
+version (unittest) 	enum BOTAN_TEST = true;
+else				enum BOTAN_TEST = false;
+
 version(D_InlineAsm_X86) {	enum BOTAN_USE_GCC_INLINE_ASM = true;													}
 version(D_InlineAsm_X86_64){enum BOTAN_USE_GCC_INLINE_ASM = true;													}
 else static assert("Inline ASM not implemented");

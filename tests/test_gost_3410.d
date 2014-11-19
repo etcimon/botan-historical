@@ -10,7 +10,7 @@
 #include <iostream>
 #include <fstream>
 
-using namespace Botan;
+
 
 namespace {
 
@@ -45,7 +45,7 @@ size_t test_gost_3410()
 	size_t fails = 0;
 
 #if defined(BOTAN_HAS_GOST_34_10_2001)
-	File ecdsa_sig(PK_TEST_DATA_DIR "/gost_3410.vec");
+	File ecdsa_sig("test_data/pubkey/gost_3410.vec");
 
 	fails += run_tests_bb(ecdsa_sig, "GOST-34.10 Signature", "Signature", true,
 				 (string[string] m)

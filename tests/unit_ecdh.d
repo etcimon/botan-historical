@@ -21,7 +21,7 @@
 #endif
 #include <botan/der_enc.h>
 
-using namespace Botan;
+
 
 #define CHECK_MESSAGE(expr, print) try { if(!(expr)) { ++fails; writeln(print); } } catch(Exception e) { writeln(__FUNCTION__ ~ " : " ~ e.msg); }
 #define CHECK(expr) try { if(!(expr)) { ++fails; writeln(#expr); } } catch(Exception e) { writeln(__FUNCTION__ ~ " : " ~ e.msg); }

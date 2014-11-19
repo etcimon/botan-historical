@@ -7,7 +7,7 @@
   #include <botan/cryptobox.h>
 #endif
 
-using namespace Botan;
+
 
 size_t test_cryptobox()
 {

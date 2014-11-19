@@ -12,7 +12,7 @@
 #include <iostream>
 #include <fstream>
 
-using namespace Botan;
+
 
 #if defined(BOTAN_HAS_NYBERG_RUEPPEL)
 
@@ -53,7 +53,7 @@ size_t test_nr()
 	size_t fails = 0;
 
 #if defined(BOTAN_HAS_NYBERG_RUEPPEL)
-	File nr_sig(PK_TEST_DATA_DIR "/nr.vec");
+	File nr_sig("test_data/pubkey/nr.vec");
 
 	fails += run_tests_bb(nr_sig, "NR Signature", "Signature", true,
 				 (string[string] m)

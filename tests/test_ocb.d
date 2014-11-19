@@ -8,7 +8,7 @@
 #include <botan/sha2_32.h>
 #include <botan/aes.h>
 
-using namespace Botan;
+
 
 // something like this should be in the library
 namespace {

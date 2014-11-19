@@ -67,7 +67,7 @@
 
 #include <botan/filters.h>
 #include <botan/numthry.h>
-using namespace Botan;
+
 
 namespace {
 

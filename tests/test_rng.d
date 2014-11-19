@@ -14,7 +14,7 @@
   #include <botan/x931_rng.h>
 #endif
 
-using namespace Botan;
+
 
 namespace {
   class Fixed_Output_RNG : public RandomNumberGenerator
@@ -112,7 +112,7 @@ size_t x931_test(string algo,
 					  string output,
 					  size_t L)
 {
-	std::unique_ptr<RandomNumberGenerator> rng(get_rng(algo, ikm));
+	Unique!RandomNumberGenerator rng(get_rng(algo, ikm));
 
 	if(!rng)
 		throw new Exception("Unknown RNG " + algo);
@@ -133,7 +133,7 @@ size_t hmac_drbg_test(string[string] m)
 	const string algo = m["RNG"];
 	const string ikm = m["EntropyInput"];
 
-	std::unique_ptr<RandomNumberGenerator> rng(get_rng(algo, ikm));
+	Unique!RandomNumberGenerator rng(get_rng(algo, ikm));
 	if(!rng)
 		throw new Exception("Unknown RNG " + algo);
 
@@ -164,8 +164,8 @@ size_t hmac_drbg_test(string[string] m)
 
 size_t test_rngs()
 {
-	File hmac_drbg_vec(TEST_DATA_DIR "/hmac_drbg.vec");
-	File x931_vec(TEST_DATA_DIR "/x931.vec");
+	File hmac_drbg_vec("test_data//hmac_drbg.vec");
+	File x931_vec("test_data//x931.vec");
 
 	size_t fails = 0;
 

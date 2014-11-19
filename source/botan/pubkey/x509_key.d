@@ -6,6 +6,8 @@
 */
 module botan.pubkey.x509_key;
 
+alias x509_key = botan.pubkey.x509_key;
+
 public import botan.pubkey.pk_keys;
 public import botan.asn1.alg_id;
 public import botan.filters.pipe;
@@ -31,7 +33,7 @@ enum X509_Encoding { RAW_BER, PEM }
 Vector!ubyte BER_encode(in Public_Key key)
 {
 	return DER_Encoder()
-		.start_cons(ASN1_Tag.SEQUENCE)
+			.start_cons(ASN1_Tag.SEQUENCE)
 			.encode(key.algorithm_identifier())
 			.encode(key.x509_subject_public_key(), ASN1_Tag.BIT_STRING)
 			.end_cons()
@@ -62,7 +64,7 @@ Public_Key load_key(DataSource source)
 		if (asn1_obj.maybe_BER(source) && !PEM.matches(source))
 		{
 			BER_Decoder(source)
-				.start_cons(ASN1_Tag.SEQUENCE)
+					.start_cons(ASN1_Tag.SEQUENCE)
 					.decode(alg_id)
 					.decode(key_bits, ASN1_Tag.BIT_STRING)
 					.verify_end()
@@ -70,12 +72,10 @@ Public_Key load_key(DataSource source)
 		}
 		else
 		{
-			auto ber = scoped!DataSource_Memory(
-				PEM.decode_check_label(source, "PUBLIC KEY")
-				);
+			auto ber = scoped!DataSource_Memory(PEM.decode_check_label(source, "PUBLIC KEY"));
 			
 			BER_Decoder(ber)
-				.start_cons(ASN1_Tag.SEQUENCE)
+					.start_cons(ASN1_Tag.SEQUENCE)
 					.decode(alg_id)
 					.decode(key_bits, ASN1_Tag.BIT_STRING)
 					.verify_end()

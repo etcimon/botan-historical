@@ -6,7 +6,7 @@
 #include <fstream>
 #include <memory>
 
-using namespace Botan;
+
 
 namespace {
 
@@ -21,8 +21,8 @@ size_t aead_test(string algo,
 	const auto ad = hex_decode_locked(ad_hex);
 	const auto key = hex_decode_locked(key_hex);
 
-	std::unique_ptr<Cipher_Mode> enc(get_aead(algo, ENCRYPTION));
-	std::unique_ptr<Cipher_Mode> dec(get_aead(algo, DECRYPTION));
+	Unique!Cipher_Mode enc(get_aead(algo, ENCRYPTION));
+	Unique!Cipher_Mode dec(get_aead(algo, DECRYPTION));
 
 	if(!enc || !dec)
 		throw new Exception("Unknown AEAD " + algo);
@@ -124,7 +124,7 @@ size_t aead_test(string algo,
 
 size_t test_aead()
 {
-	auto test = [](string input)
+	auto test = (string input)
 	{
 		File vec(input);
 
@@ -136,5 +136,5 @@ size_t test_aead()
 				 });
 	};
 
-	return run_tests_in_dir(TEST_DATA_DIR "aead", test);
+	return run_tests_in_dir("test_data/aead", test);
 }

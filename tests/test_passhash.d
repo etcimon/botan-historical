@@ -11,7 +11,7 @@
   #include <botan/bcrypt.h>
 #endif
 
-using namespace Botan;
+
 
 size_t test_bcrypt()
 {

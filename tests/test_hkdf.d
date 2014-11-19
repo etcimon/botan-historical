@@ -7,7 +7,7 @@
 #include <botan/libstate.h>
 #include <botan/hkdf.h>
 
-using namespace Botan;
+
 
 namespace {
 
@@ -67,7 +67,7 @@ size_t hkdf_test(string algo,
 size_t test_hkdf()
 {
 #if defined(BOTAN_HAS_HKDF)
-	File vec(TEST_DATA_DIR "/hkdf.vec");
+	File vec("test_data//hkdf.vec");
 
 	return run_tests_bb(vec, "HKDF", "OKM", true,
 				 (string[string] m)

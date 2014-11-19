@@ -8,14 +8,14 @@
 #include <fstream>
 #include <memory>
 
-using namespace Botan;
+
 
 namespace {
 
 Secure_Vector!ubyte run_mode(string algo, Cipher_Dir dir, in Secure_Vector!ubyte pt, in Secure_Vector!ubyte nonce, in Secure_Vector!ubyte key)
 {
 #if 0
-	std::unique_ptr<Cipher_Mode> cipher(get_cipher(algo, dir));
+	Unique!Cipher_Mode cipher(get_cipher(algo, dir));
 
 	cipher.set_key(key);
 	cipher.start_vec(nonce);
@@ -61,7 +61,7 @@ size_t mode_test(string algo, string pt, string ct, string key_hex, string nonce
 
 size_t test_modes()
 {
-	auto test = [](string input)
+	auto test = (string input)
 	{
 		File vec(input);
 
@@ -72,5 +72,5 @@ size_t test_modes()
 				 });
 	};
 
-	return run_tests_in_dir(TEST_DATA_DIR "modes", test);
+	return run_tests_in_dir("test_data/modes", test);
 }

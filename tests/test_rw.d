@@ -11,7 +11,7 @@
   #include <botan/rw.h>
 #endif
 
-using namespace Botan;
+
 
 #if defined(BOTAN_HAS_RW)
 namespace {
@@ -63,8 +63,8 @@ size_t test_rw()
 	size_t fails = 0;
 
 #if defined(BOTAN_HAS_RW)
-	File rw_sig(PK_TEST_DATA_DIR "/rw_sig.vec");
-	File rw_verify(PK_TEST_DATA_DIR "/rw_verify.vec");
+	File rw_sig("test_data/pubkey/rw_sig.vec");
+	File rw_verify("test_data/pubkey/rw_verify.vec");
 
 	fails += run_tests_bb(rw_sig, "RW Signature", "Signature", true,
 				 (string[string] m)

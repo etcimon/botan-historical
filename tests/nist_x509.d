@@ -26,11 +26,6 @@ extensions which are not supported.
 #include <cstdlib>
 #include <boost/filesystem.hpp>
 
-namespace fs = boost::filesystem;
-
-using namespace Botan;
-
-namespace {
 
 Vector!string dir_listing(string dir_name)
 {
@@ -49,8 +44,6 @@ Vector!string dir_listing(string dir_name)
 	return paths;
 }
 
-}
-
 std::map<size_t, Path_Validation_Result::Code> get_expected();
 
 size_t test_nist_x509()
@@ -67,79 +60,79 @@ size_t test_nist_x509()
 
 	try {
 
-	const Vector!string test_dirs = dir_listing(root_test_dir);
+		const Vector!string test_dirs = dir_listing(root_test_dir);
 
-	for(size_t i = 0; i != test_dirs.length; i++)
-	{
-		const size_t test_no = i+1;
-
-		const string test_dir = test_dirs[i];
-		const Vector!string all_files = dir_listing(test_dir);
-
-		Vector!string certs, crls;
-		string root_cert, to_verify;
-
-		for(size_t k = 0; k != all_files.length; k++)
+		for(size_t i = 0; i != test_dirs.length; i++)
 		{
-			const string current = all_files[k];
+			const size_t test_no = i+1;
 
-			if(current.canFind("int") && current.canFind(".crt"))
-				certs.push_back(current);
-			else if(current.canFind("root.crt"))
-				root_cert = current;
-			else if(current.canFind("end.crt"))
-				to_verify = current;
-			else if(current.canFind(".crl"))
-				crls.push_back(current);
-		}
+			const string test_dir = test_dirs[i];
+			const Vector!string all_files = dir_listing(test_dir);
 
-		if(expected_results.find(i+1) == expected_results.end())
-		{
-			skipped++;
-			continue;
-		}
+			Vector!string certs, crls;
+			string root_cert, to_verify;
 
-		++ran;
+			for(size_t k = 0; k != all_files.length; k++)
+			{
+				const string current = all_files[k];
 
-		Certificate_Store_In_Memory store;
+				if(current.canFind("int") && current.canFind(".crt"))
+					certs.push_back(current);
+				else if(current.canFind("root.crt"))
+					root_cert = current;
+				else if(current.canFind("end.crt"))
+					to_verify = current;
+				else if(current.canFind(".crl"))
+					crls.push_back(current);
+			}
 
-		store.add_certificate(X509_Certificate(root_cert));
+			if(expected_results.find(i+1) == expected_results.end())
+			{
+				skipped++;
+				continue;
+			}
 
-		X509_Certificate end_user(to_verify);
+			++ran;
 
-		foreach(cert; certs[])
-			store.add_certificate(X509_Certificate(cert));
+			Certificate_Store_In_Memory store;
 
-		foreach(crl; crls[])
-		{
-			DataSource_Stream input(crl);
-			X509_CRL crl(input);
-			store.add_crl(crl);
-		}
+			store.add_certificate(X509_Certificate(root_cert));
 
-		Path_Validation_Restrictions restrictions(true);
+			X509_Certificate end_user(to_verify);
 
-		Path_Validation_Result validation_result = x509_path_validate(end_user,restrictions, store);
-		auto expected = expected_results[test_no];
-		Path_Validation_Result::Code result = validation_result.result();
-		if(result != expected)
-			writeln("NIST X.509 test #" ~ test_no ~ " : ");
-		const string result_str = Path_Validation_Result::status_string(result);
-		const string exp_str = Path_Validation_Result::status_string(expected);
-		if(expected == Certificate_Status_Code::VERIFIED) {
-			writeln("unexpected failure: " ~ result_str);
-			unexp_failure++	
-		}
-		else if(result == Certificate_Status_Code::VERIFIED) {
-			writeln("unexpected success, expected " ~ exp_str);
-			unexp_success++	
-		}  
-		else {
-			writeln("wrong error, got '" ~ result_str ~ " ' expected '" ~ exp_str ~ "'");
-			wrong_error++;
+			foreach(cert; certs[])
+				store.add_certificate(X509_Certificate(cert));
+
+			foreach(crl; crls[])
+			{
+				DataSource_Stream input(crl);
+				X509_CRL crl(input);
+				store.add_crl(crl);
+			}
+
+			Path_Validation_Restrictions restrictions(true);
+
+			Path_Validation_Result validation_result = x509_path_validate(end_user,restrictions, store);
+			auto expected = expected_results[test_no];
+			Path_Validation_Result::Code result = validation_result.result();
+			if(result != expected)
+				writeln("NIST X.509 test #" ~ test_no ~ " : ");
+			const string result_str = Path_Validation_Result::status_string(result);
+			const string exp_str = Path_Validation_Result::status_string(expected);
+			if(expected == Certificate_Status_Code::VERIFIED) {
+				writeln("unexpected failure: " ~ result_str);
+				unexp_failure++	
+			}
+			else if(result == Certificate_Status_Code::VERIFIED) {
+				writeln("unexpected success, expected " ~ exp_str);
+				unexp_success++	
+			}  
+			else {
+				writeln("wrong error, got '" ~ result_str ~ " ' expected '" ~ exp_str ~ "'");
+				wrong_error++;
+			}
 		}
 	}
-}
 	catch(Exception e)
 	{
 		writeln(e.msg);

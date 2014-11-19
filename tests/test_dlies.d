@@ -13,7 +13,7 @@
  #include <botan/dh.h>
 #endif
 
-using namespace Botan;
+
 
 #if defined(BOTAN_HAS_DLIES)
 namespace {
@@ -70,7 +70,7 @@ size_t test_dlies()
 	size_t fails = 0;
 
 #if defined(BOTAN_HAS_DLIES)
-	File dlies(PK_TEST_DATA_DIR "/dlies.vec");
+	File dlies("test_data/pubkey/dlies.vec");
 
 	fails += run_tests_bb(dlies, "DLIES Encryption", "Ciphertext", true,
 				 (string[string] m)

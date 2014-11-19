@@ -8,7 +8,7 @@
 #include <iostream>
 #include <fstream>
 
-using namespace Botan;
+
 
 namespace {
 
@@ -85,9 +85,9 @@ size_t rsa_sig_verify(string e,
 
 size_t test_rsa()
 {
-	File rsa_enc(PK_TEST_DATA_DIR "/rsaes.vec");
-	File rsa_sig(PK_TEST_DATA_DIR "/rsa_sig.vec");
-	File rsa_verify(PK_TEST_DATA_DIR "/rsa_verify.vec");
+	File rsa_enc("test_data/pubkey/rsaes.vec");
+	File rsa_sig("test_data/pubkey/rsa_sig.vec");
+	File rsa_verify("test_data/pubkey/rsa_verify.vec");
 
 	size_t fails = 0;
 

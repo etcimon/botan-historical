@@ -29,9 +29,9 @@
 #include <botan/cvc_cert.h>
 #include <botan/cvc_ado.h>
 
-#define CVC_TEST_DATA_DIR TEST_DATA_DIR "/ecc"
+#define CVC_TEST_DATA_DIR "test_data//ecc"
 
-using namespace Botan;
+
 
 #define CHECK_MESSAGE(expr, print) try { if(!(expr)) writeln(print); } catch(Exception e) { writeln(__FUNCTION__ ~ " : " ~ e.msg); }
 #define CHECK(expr) try { if(!(expr)) writeln(#expr); } catch(Exception e) { writeln(__FUNCTION__ ~ " : " ~ e.msg); }
@@ -95,21 +95,21 @@ void test_enc_gen_selfsigned(RandomNumberGenerator rng)
 
 	Vector!ubyte der(cert.BER_encode());
 	std::ofstream cert_file;
-	cert_file.open(CVC_TEST_DATA_DIR "/my_cv_cert.ber", std::ios::binary);
+	cert_file.open("test_data/ecc/my_cv_cert.ber", std::ios::binary);
 	//cert_file << der; // this is bad !!!
 	cert_file.write((char*)&der[0], der.length);
 	cert_file.close();
 
-	EAC1_1_CVC cert_in(CVC_TEST_DATA_DIR "/my_cv_cert.ber");
+	EAC1_1_CVC cert_in("test_data/ecc/my_cv_cert.ber");
 	CHECK(cert == cert_in);
 	// encoding it again while it has no dp
 	Vector!ubyte der2(cert_in.BER_encode());
-	std::ofstream cert_file2(CVC_TEST_DATA_DIR "/my_cv_cert2.ber", std::ios::binary);
+	std::ofstream cert_file2("test_data/ecc/my_cv_cert2.ber", std::ios::binary);
 	cert_file2.write((char*)&der2[0], der2.length);
 	cert_file2.close();
 	// read both and compare them
-	File cert_1_in(CVC_TEST_DATA_DIR "/my_cv_cert.ber");
-	File cert_2_in(CVC_TEST_DATA_DIR "/my_cv_cert2.ber");
+	File cert_1_in("test_data/ecc/my_cv_cert.ber");
+	File cert_2_in("test_data/ecc/my_cv_cert2.ber");
 	Vector!ubyte sv1;
 	Vector!ubyte sv2;
 	if (!cert_1_in || !cert_2_in)
@@ -160,7 +160,7 @@ void test_enc_gen_selfsigned(RandomNumberGenerator rng)
 	}
 	CHECK(ill_date_exc2);
 	//cout " ~readable = '" ~ cert_in.get_ced().readable_string() " ~'");
-	std::unique_ptr<Public_Key> p_pk(cert_in.subject_public_key());
+	Unique!Public_Key p_pk(cert_in.subject_public_key());
 	ECDSA_PublicKey p_ecdsa_pk = cast(ECDSA_PublicKey)(p_pk.get());
 
 	// let´s see if encoding is truely implicitca, because this is what the key should have
@@ -179,7 +179,7 @@ void test_enc_gen_selfsigned(RandomNumberGenerator rng)
 	CHECK(exc);
 	// set them and try again
 	//cert_in -> set_domain_parameters(dom_pars);
-	std::unique_ptr<Public_Key> p_pk2(cert_in.subject_public_key());
+	Unique!Public_Key p_pk2(cert_in.subject_public_key());
 	ECDSA_PublicKey p_ecdsa_pk2 = cast(ECDSA_PublicKey)(p_pk2.get());
 	//p_ecdsa_pk2 -> set_domain_parameters(dom_pars);
 	CHECK(p_ecdsa_pk2.domain().get_order() == dom_pars.get_order());
@@ -201,14 +201,14 @@ void test_enc_gen_req(RandomNumberGenerator rng)
 	key.set_parameter_encoding(EC_DOMPAR_ENC_IMPLICITCA);
 	EAC1_1_Req req = CVC_EAC::create_cvc_req(key, opts.chr, opts.hash_alg, rng);
 	Vector!ubyte der(req.BER_encode());
-	std::ofstream req_file(CVC_TEST_DATA_DIR "/my_cv_req.ber", std::ios::binary);
+	std::ofstream req_file("test_data/ecc/my_cv_req.ber", std::ios::binary);
 	req_file.write(cast(char*)&der[0], der.length);
 	req_file.close();
 
 	// read and check signature...
-	EAC1_1_Req req_in(CVC_TEST_DATA_DIR "/my_cv_req.ber");
+	EAC1_1_Req req_in("test_data/ecc/my_cv_req.ber");
 	//req_in.set_domain_parameters(dom_pars);
-	std::unique_ptr<Public_Key> p_pk(req_in.subject_public_key());
+	Unique!Public_Key p_pk(req_in.subject_public_key());
 	ECDSA_PublicKey p_ecdsa_pk = cast(ECDSA_PublicKey)(p_pk.get());
 	//p_ecdsa_pk.set_domain_parameters(dom_pars);
 	CHECK(p_ecdsa_pk.domain().get_order() == dom_pars.get_order());
@@ -218,10 +218,10 @@ void test_enc_gen_req(RandomNumberGenerator rng)
 
 void test_cvc_req_ext(RandomNumberGenerator)
 {
-	EAC1_1_Req req_in(CVC_TEST_DATA_DIR "/DE1_flen_chars_cvcRequest_ECDSA.der");
+	EAC1_1_Req req_in("test_data/ecc/DE1_flen_chars_cvcRequest_ECDSA.der");
 	EC_Group dom_pars(OID("1.3.36.3.3.2.8.1.1.5")); // "german curve"
 	//req_in.set_domain_parameters(dom_pars);
-	std::unique_ptr<Public_Key> p_pk(req_in.subject_public_key());
+	Unique!Public_Key p_pk(req_in.subject_public_key());
 	ECDSA_PublicKey p_ecdsa_pk = cast(ECDSA_PublicKey)(p_pk.get());
 	//p_ecdsa_pk.set_domain_parameters(dom_pars);
 	CHECK(p_ecdsa_pk.domain().get_order() == dom_pars.get_order());
@@ -231,7 +231,7 @@ void test_cvc_req_ext(RandomNumberGenerator)
 
 void test_cvc_ado_ext(RandomNumberGenerator)
 {
-	EAC1_1_ADO req_in(CVC_TEST_DATA_DIR "/ado.cvcreq");
+	EAC1_1_ADO req_in("test_data/ecc/ado.cvcreq");
 	EC_Group dom_pars(OID("1.3.36.3.3.2.8.1.1.5")); // "german curve"
 	//cout " ~car = " ~ req_in.get_car().value());
 	//req_in.set_domain_parameters(dom_pars);
@@ -252,7 +252,7 @@ void test_cvc_ado_creation(RandomNumberGenerator rng)
 	//EAC1_1_Req req = CVC_EAC::create_cvc_req(req_key, opts);
 	EAC1_1_Req req = CVC_EAC::create_cvc_req(req_key, opts.chr, opts.hash_alg, rng);
 	Vector!ubyte der(req.BER_encode());
-	std::ofstream req_file(CVC_TEST_DATA_DIR "/my_cv_req.ber", std::ios::binary);
+	std::ofstream req_file("test_data/ecc/my_cv_req.ber", std::ios::binary);
 	req_file.write((char*)&der[0], der.length);
 	req_file.close();
 
@@ -266,12 +266,12 @@ void test_cvc_ado_creation(RandomNumberGenerator rng)
 	EAC1_1_ADO ado = CVC_EAC::create_ado_req(ado_key, req, ado_opts.car, rng);
 	CHECK_MESSAGE(ado.check_signature(ado_key), "failure of ado verification after creation");
 
-	std::ofstream ado_file(CVC_TEST_DATA_DIR "/ado", std::ios::binary);
+	std::ofstream ado_file("test_data/ecc/ado", std::ios::binary);
 	Vector!ubyte ado_der(ado.BER_encode());
 	ado_file.write((char*)&ado_der[0], ado_der.length);
 	ado_file.close();
 	// read it again and check the signature
-	EAC1_1_ADO ado2(CVC_TEST_DATA_DIR "/ado");
+	EAC1_1_ADO ado2("test_data/ecc/ado");
 	CHECK(ado == ado2);
 	//ECDSA_PublicKey p_ado_pk = cast(ECDSA_PublicKey)(&ado_key);
 	//bool ver = ado2.check_signature(*p_ado_pk);
@@ -320,13 +320,13 @@ void test_cvc_ado_comparison(RandomNumberGenerator rng)
 	CHECK_MESSAGE(ado2.check_signature(ado_key2), "failure of ado verification after creation");
 
 	CHECK_MESSAGE(ado != ado2, "ado's found to be equal where they are not");
-	//	  std::ofstream ado_file(CVC_TEST_DATA_DIR "/ado");
+	//	  std::ofstream ado_file("test_data/ecc/ado");
 	//	  Vector!ubyte ado_der(ado.BER_encode());
 	//	  ado_file.write((char*)&ado_der[0], ado_der.length);
 	//	  ado_file.close();
 	// read it again and check the signature
 
-	//	 EAC1_1_ADO ado2(CVC_TEST_DATA_DIR "/ado");
+	//	 EAC1_1_ADO ado2("test_data/ecc/ado");
 	//	 ECDSA_PublicKey p_ado_pk = cast(ECDSA_PublicKey)(&ado_key);
 	//	 //bool ver = ado2.check_signature(p_ado_pk);
 	//	 bool ver = ado2.check_signature(ado_key);
@@ -370,11 +370,11 @@ void test_eac_time(RandomNumberGenerator)
 
 void test_ver_cvca(RandomNumberGenerator)
 {
-	EAC1_1_CVC req_in(CVC_TEST_DATA_DIR "/cvca01.cv.crt");
+	EAC1_1_CVC req_in("test_data/ecc/cvca01.cv.crt");
 
 	bool exc = false;
 
-	std::unique_ptr<Public_Key> p_pk2(req_in.subject_public_key());
+	Unique!Public_Key p_pk2(req_in.subject_public_key());
 	ECDSA_PublicKey p_ecdsa_pk2 = cast(ECDSA_PublicKey)(p_pk2.get());
 	bool ver_ec = req_in.check_signature(*p_pk2);
 	CHECK_MESSAGE(ver_ec, "could not positively verify correct selfsigned cvca certificate");
@@ -392,20 +392,20 @@ void test_ver_cvca(RandomNumberGenerator)
 
 void test_copy_and_assignment(RandomNumberGenerator)
 {
-	EAC1_1_CVC cert_in(CVC_TEST_DATA_DIR "/cvca01.cv.crt");
+	EAC1_1_CVC cert_in("test_data/ecc/cvca01.cv.crt");
 	EAC1_1_CVC cert_cp(cert_in);
 	EAC1_1_CVC cert_ass = cert_in;
 	CHECK(cert_in == cert_cp);
 	CHECK(cert_in == cert_ass);
 
-	EAC1_1_ADO ado_in(CVC_TEST_DATA_DIR "/ado.cvcreq");
+	EAC1_1_ADO ado_in("test_data/ecc/ado.cvcreq");
 	//EC_Group dom_pars(OID("1.3.36.3.3.2.8.1.1.5")); // "german curve"
 	EAC1_1_ADO ado_cp(ado_in);
 	EAC1_1_ADO ado_ass = ado_in;
 	CHECK(ado_in == ado_cp);
 	CHECK(ado_in == ado_ass);
 
-	EAC1_1_Req req_in(CVC_TEST_DATA_DIR "/DE1_flen_chars_cvcRequest_ECDSA.der");
+	EAC1_1_Req req_in("test_data/ecc/DE1_flen_chars_cvcRequest_ECDSA.der");
 	//EC_Group dom_pars(OID("1.3.36.3.3.2.8.1.1.5")); // "german curve"
 	EAC1_1_Req req_cp(req_in);
 	EAC1_1_Req req_ass = req_in;
@@ -418,7 +418,7 @@ void test_eac_str_illegal_values(RandomNumberGenerator)
 	bool exc = false;
 	try
 	{
-		EAC1_1_CVC(CVC_TEST_DATA_DIR "/cvca_illegal_chars.cv.crt");
+		EAC1_1_CVC("test_data/ecc/cvca_illegal_chars.cv.crt");
 
 	}
 	catch (Decoding_Error)
@@ -430,7 +430,7 @@ void test_eac_str_illegal_values(RandomNumberGenerator)
 	bool exc2 = false;
 	try
 	{
-		EAC1_1_CVC(CVC_TEST_DATA_DIR "/cvca_illegal_chars2.cv.crt");
+		EAC1_1_CVC("test_data/ecc/cvca_illegal_chars2.cv.crt");
 
 	}
 	catch (Decoding_Error)
@@ -466,7 +466,7 @@ void test_cvc_chain(RandomNumberGenerator rng)
 	string hash("SHA-224");
 	ASN1_Car car("DECVCA00001");
 	EAC1_1_CVC cvca_cert = DE_EAC::create_cvca(cvca_privk, hash, car, true, true, 12, rng);
-	std::ofstream cvca_file(CVC_TEST_DATA_DIR "/cvc_chain_cvca.cer", std::ios::binary);
+	std::ofstream cvca_file("test_data/ecc/cvc_chain_cvca.cer", std::ios::binary);
 	Vector!ubyte cvca_sv = cvca_cert.BER_encode();
 	cvca_file.write((char*)&cvca_sv[0], cvca_sv.length);
 	cvca_file.close();
@@ -476,21 +476,21 @@ void test_cvc_chain(RandomNumberGenerator rng)
 	EAC1_1_CVC cvca_cert2 = DE_EAC::create_cvca(cvca_privk2, hash, car2, true, true, 12, rng);
 	EAC1_1_CVC link12 = DE_EAC::link_cvca(cvca_cert, cvca_privk, cvca_cert2, rng);
 	Vector!ubyte link12_sv = link12.BER_encode();
-	std::ofstream link12_file(CVC_TEST_DATA_DIR "/cvc_chain_link12.cer", std::ios::binary);
+	std::ofstream link12_file("test_data/ecc/cvc_chain_link12.cer", std::ios::binary);
 	link12_file.write((char*)&link12_sv[0], link12_sv.length);
 	link12_file.close();
 
 	// verify the link
 	CHECK(link12.check_signature(cvca_privk));
-	EAC1_1_CVC link12_reloaded(CVC_TEST_DATA_DIR "/cvc_chain_link12.cer");
-	EAC1_1_CVC cvca1_reloaded(CVC_TEST_DATA_DIR "/cvc_chain_cvca.cer");
-	std::unique_ptr<Public_Key> cvca1_rel_pk(cvca1_reloaded.subject_public_key());
+	EAC1_1_CVC link12_reloaded("test_data/ecc/cvc_chain_link12.cer");
+	EAC1_1_CVC cvca1_reloaded("test_data/ecc/cvc_chain_cvca.cer");
+	Unique!Public_Key cvca1_rel_pk(cvca1_reloaded.subject_public_key());
 	CHECK(link12_reloaded.check_signature(*cvca1_rel_pk));
 
 	// create first round dvca-req
 	ECDSA_PrivateKey dvca_priv_key(rng, dom_pars);
 	EAC1_1_Req dvca_req = DE_EAC::create_cvc_req(dvca_priv_key, ASN1_Chr("DEDVCAEPASS"), hash, rng);
-	std::ofstream dvca_file(CVC_TEST_DATA_DIR "/cvc_chain_dvca_req.cer", std::ios::binary);
+	std::ofstream dvca_file("test_data/ecc/cvc_chain_dvca_req.cer", std::ios::binary);
 	Vector!ubyte dvca_sv = dvca_req.BER_encode();
 	dvca_file.write((char*)&dvca_sv[0], dvca_sv.length);
 	dvca_file.close();
@@ -499,34 +499,34 @@ void test_cvc_chain(RandomNumberGenerator rng)
 	EAC1_1_CVC dvca_cert1 = DE_EAC::sign_request(cvca_cert, cvca_privk, dvca_req, 1, 5, true, 3, 1, rng);
 	CHECK(dvca_cert1.get_car().iso_8859() == "DECVCA00001");
 	CHECK(dvca_cert1.get_chr().iso_8859() == "DEDVCAEPASS00001");
-	helper_write_file(dvca_cert1, CVC_TEST_DATA_DIR "/cvc_chain_dvca_cert1.cer");
+	helper_write_file(dvca_cert1, "test_data/ecc/cvc_chain_dvca_cert1.cer");
 
 	// make a second round dvca ado request
 	ECDSA_PrivateKey dvca_priv_key2(rng, dom_pars);
 	EAC1_1_Req dvca_req2 = DE_EAC::create_cvc_req(dvca_priv_key2, ASN1_Chr("DEDVCAEPASS"), hash, rng);
-	std::ofstream dvca_file2(CVC_TEST_DATA_DIR "/cvc_chain_dvca_req2.cer", std::ios::binary);
+	std::ofstream dvca_file2("test_data/ecc/cvc_chain_dvca_req2.cer", std::ios::binary);
 	Vector!ubyte dvca_sv2 = dvca_req2.BER_encode();
 	dvca_file2.write((char*)&dvca_sv2[0], dvca_sv2.length);
 	dvca_file2.close();
 	EAC1_1_ADO dvca_ado2 = CVC_EAC::create_ado_req(dvca_priv_key, dvca_req2,
 																  ASN1_Car(dvca_cert1.get_chr().iso_8859()), rng);
-	helper_write_file(dvca_ado2, CVC_TEST_DATA_DIR "/cvc_chain_dvca_ado2.cer");
+	helper_write_file(dvca_ado2, "test_data/ecc/cvc_chain_dvca_ado2.cer");
 
 	// verify the ado and sign the request too
 
-	std::unique_ptr<Public_Key> ap_pk(dvca_cert1.subject_public_key());
+	Unique!Public_Key ap_pk(dvca_cert1.subject_public_key());
 	ECDSA_PublicKey cert_pk = cast(ECDSA_PublicKey)(ap_pk.get());
 
 	//cert_pk.set_domain_parameters(dom_pars);
 	//writeln("dvca_cert.public_point.length = " ~ ec::EC2OSP(cert_pk.get_public_point(), ec::PointGFp::COMPRESSED).length);
-	EAC1_1_CVC dvca_cert1_reread(CVC_TEST_DATA_DIR "/cvc_chain_cvca.cer");
+	EAC1_1_CVC dvca_cert1_reread("test_data/ecc/cvc_chain_cvca.cer");
 	CHECK(dvca_ado2.check_signature(cert_pk));
 
 	CHECK(dvca_ado2.check_signature(dvca_priv_key)); // must also work
 
 	EAC1_1_Req dvca_req2b = dvca_ado2.get_request();
-	helper_write_file(dvca_req2b, CVC_TEST_DATA_DIR "/cvc_chain_dvca_req2b.cer");
-	CHECK(helper_files_equal(CVC_TEST_DATA_DIR "/cvc_chain_dvca_req2b.cer", CVC_TEST_DATA_DIR "/cvc_chain_dvca_req2.cer"));
+	helper_write_file(dvca_req2b, "test_data/ecc/cvc_chain_dvca_req2b.cer");
+	CHECK(helper_files_equal("test_data/ecc/cvc_chain_dvca_req2b.cer", "test_data/ecc/cvc_chain_dvca_req2.cer"));
 	EAC1_1_CVC dvca_cert2 = DE_EAC::sign_request(cvca_cert, cvca_privk, dvca_req2b, 2, 5, true, 3, 1, rng);
 	CHECK(dvca_cert2.get_car().iso_8859() == "DECVCA00001");
 	CHECK_MESSAGE(dvca_cert2.get_chr().iso_8859() == "DEDVCAEPASS00002",
@@ -535,14 +535,14 @@ void test_cvc_chain(RandomNumberGenerator rng)
 	// make a first round IS request
 	ECDSA_PrivateKey is_priv_key(rng, dom_pars);
 	EAC1_1_Req is_req = DE_EAC::create_cvc_req(is_priv_key, ASN1_Chr("DEIS"), hash, rng);
-	helper_write_file(is_req, CVC_TEST_DATA_DIR "/cvc_chain_is_req.cer");
+	helper_write_file(is_req, "test_data/ecc/cvc_chain_is_req.cer");
 
 	// sign the IS request
 	//dvca_cert1.set_domain_parameters(dom_pars);
 	EAC1_1_CVC is_cert1 = DE_EAC::sign_request(dvca_cert1, dvca_priv_key, is_req, 1, 5, true, 3, 1, rng);
 	CHECK_MESSAGE(is_cert1.get_car().iso_8859() == "DEDVCAEPASS00001", "car = " ~ is_cert1.get_car().iso_8859());
 	CHECK(is_cert1.get_chr().iso_8859() == "DEIS00001");
-	helper_write_file(is_cert1, CVC_TEST_DATA_DIR "/cvc_chain_is_cert.cer");
+	helper_write_file(is_cert1, "test_data/ecc/cvc_chain_is_cert.cer");
 
 	// verify the signature of the certificate
 	CHECK(is_cert1.check_signature(dvca_priv_key));

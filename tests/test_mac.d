@@ -6,7 +6,7 @@
 #include <iostream>
 #include <fstream>
 
-using namespace Botan;
+
 
 namespace {
 
@@ -37,7 +37,7 @@ size_t mac_test(string algo,
 			continue;
 		}
 
-		std::unique_ptr<MessageAuthenticationCode> mac(proto.clone());
+		Unique!MessageAuthenticationCode mac(proto.clone());
 
 		mac.set_key(hex_decode(key_hex));
 		mac.update(hex_decode(in_hex));
@@ -58,7 +58,7 @@ size_t mac_test(string algo,
 
 size_t test_mac()
 {
-	auto test = [](string input)
+	auto test = (string input)
 	{
 		File vec(input);
 
@@ -69,5 +69,5 @@ size_t test_mac()
 				 });
 	};
 
-	return run_tests_in_dir(TEST_DATA_DIR "mac", test);
+	return run_tests_in_dir("test_data/mac", test);
 }

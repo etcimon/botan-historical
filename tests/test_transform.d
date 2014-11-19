@@ -5,7 +5,7 @@
 #include <iostream>
 #include <fstream>
 
-using namespace Botan;
+
 
 namespace {
 
@@ -19,7 +19,7 @@ Secure_Vector!ubyte transform_test(string algo,
 											  in Secure_Vector!ubyte /*key*/,
 											  in Secure_Vector!ubyte input)
 {
-	std::unique_ptr<Transformation> transform(get_transform(algo));
+	Unique!Transformation transform(get_transform(algo));
 
 	//transform.set_key(key);
 	transform.start_vec(nonce);
@@ -34,7 +34,7 @@ Secure_Vector!ubyte transform_test(string algo,
 
 size_t test_transform()
 {
-	File vec(TEST_DATA_DIR "/transform.vec");
+	File vec("test_data//transform.vec");
 
 	return run_tests(vec, "Transform", "Output", true,
 				 (string[string] m)

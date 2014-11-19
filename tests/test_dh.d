@@ -9,7 +9,7 @@
 #include <iostream>
 #include <fstream>
 
-using namespace Botan;
+
 
 namespace {
 
@@ -50,7 +50,7 @@ size_t test_dh()
 	size_t fails = 0;
 
 #if defined(BOTAN_HAS_DIFFIE_HELLMAN)
-	File dh_sig(PK_TEST_DATA_DIR "/dh.vec");
+	File dh_sig("test_data/pubkey/dh.vec");
 
 	fails += run_tests_bb(dh_sig, "DH Kex", "K", true,
 				 (string[string] m)

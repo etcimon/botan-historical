@@ -12,7 +12,7 @@
   #include <botan/dl_group.h>
 #endif
 
-using namespace Botan;
+
 
 #if defined(BOTAN_HAS_ELGAMAL)
 
@@ -54,7 +54,7 @@ size_t test_elgamal()
 	size_t fails = 0;
 
 #if defined(BOTAN_HAS_ELGAMAL)
-	File elgamal_enc(PK_TEST_DATA_DIR "/elgamal.vec");
+	File elgamal_enc("test_data/pubkey/elgamal.vec");
 
 	fails += run_tests_bb(elgamal_enc, "ElGamal Encryption", "Ciphertext", true,
 				 (string[string] m)

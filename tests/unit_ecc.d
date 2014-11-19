@@ -20,7 +20,7 @@
 #include <botan/reducer.h>
 #include <botan/oids.h>
 
-using namespace Botan;
+
 
 #define CHECK_MESSAGE(expr, print) try { if(!(expr)) { ++fails; writeln(print); }} catch(Exception e) { writeln(__FUNCTION__ ~ " : " ~ e.msg); }
 #define CHECK(expr) try { if(!(expr)) { ++fails; writeln(#expr); } } catch(Exception e) { writeln(__FUNCTION__ ~ " : " ~ e.msg); }
@@ -625,11 +625,11 @@ size_t test_enc_dec_uncompressed_521_prime_too_large()
 	BigInt bi_b_secp = BigInt::decode ( &sv_b_secp[0], sv_b_secp.length );
 
 	CurveGFp secp521r1 (bi_p_secp, bi_a_secp, bi_b_secp);
-	std::unique_ptr<PointGFp> p_G;
+	Unique!PointGFp p_G;
 	bool exc = false;
 	try
 	{
-		p_G = std::unique_ptr<PointGFp>(new PointGFp(OS2ECP ( sv_G_secp_uncomp, secp521r1)));
+		p_G = Unique!PointGFp(new PointGFp(OS2ECP ( sv_G_secp_uncomp, secp521r1)));
 		if(!p_G.on_the_curve())
 			throw new Internal_Error("Point not on the curve");
 	}

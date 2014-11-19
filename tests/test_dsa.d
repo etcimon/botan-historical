@@ -10,7 +10,7 @@
 #include <iostream>
 #include <fstream>
 
-using namespace Botan;
+
 
 namespace {
 
@@ -48,7 +48,7 @@ size_t test_dsa()
 	size_t fails = 0;
 
 #if defined(BOTAN_HAS_DSA)
-	File dsa_sig(PK_TEST_DATA_DIR "/dsa.vec");
+	File dsa_sig("test_data/pubkey/dsa.vec");
 
 	fails += run_tests_bb(dsa_sig, "DSA Signature", "Signature", true,
 				 (string[string] m)

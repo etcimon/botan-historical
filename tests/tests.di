@@ -31,7 +31,7 @@ Vector!string list_dir(string dir_path);
 size_t run_tests_in_dir(string dir, size_t delegate(string) fn);
 
 // Run a list of tests
-typedef std::function<size_t ()> test_fn;
+
 
 size_t run_tests(input Vector!test_fn tests);
 void test_report(string name, size_t ran, size_t failed);
@@ -39,8 +39,8 @@ void test_report(string name, size_t ran, size_t failed);
 #define TEST(expr, msg) do { if(!(expr)) { ++fails; writeln(msg; } while(0)
 
 #define LIB_SRC_DIR "lib/"
-#define TEST_DATA_DIR "src/tests/data/"
-#define PK_TEST_DATA_DIR "src/tests/data/pubkey"
+#define "test_data/src/tests/data/"
+#define PK_"test_data/src/tests/data/pubkey"
 
 int test_main(int argc, char* argv[]);
 

@@ -21,6 +21,7 @@ import botan.utils.parsing;
 import botan.libstate.libstate;
 import botan.engine.engine;
 import botan.utils.bit_ops;
+import botan.utils.exceptn;
 
 typedef bool Signature_Format;
 /**
@@ -76,8 +77,7 @@ public:
 	~this() {}
 
 private:
-	abstract Vector!ubyte enc(in ubyte*, size_t,
-											 RandomNumberGenerator) const;
+	abstract Vector!ubyte enc(in ubyte*, size_t, RandomNumberGenerator) const;
 }
 
 /**
@@ -177,9 +177,7 @@ public:
 	*/
 	Vector!ubyte signature(RandomNumberGenerator rng)
 	{
-		Vector!ubyte encoded = unlock(m_emsa.encoding_of(m_emsa.raw_data(),
-		                                                 m_op.max_input_bits(),
-		                                                 rng));
+		Vector!ubyte encoded = unlock(m_emsa.encoding_of(m_emsa.raw_data(), m_op.max_input_bits(), rng));
 		
 		Vector!ubyte plain_sig = unlock(m_op.sign(encoded.ptr, encoded.length, rng));
 		
@@ -199,7 +197,7 @@ public:
 				sig_parts[j].binary_decode(&plain_sig[SIZE_OF_PART*j], SIZE_OF_PART);
 			
 			return DER_Encoder()
-				.start_cons(ASN1_Tag.SEQUENCE)
+					.start_cons(ASN1_Tag.SEQUENCE)
 					.encode_list(sig_parts)
 					.end_cons()
 					.get_contents_unlocked();
@@ -223,8 +221,7 @@ public:
 	* @param format the signature format to use
 	* @param prot says if fault protection should be enabled
 	*/
-	this(in Private_Key key,
-	     in string emsa_name,
+	this(in Private_Key key, in string emsa_name,
 	     Signature_Format format = IEEE_1363,
 	     Fault_Protection prot = ENABLE_FAULT_PROTECTION)
 	{
@@ -257,8 +254,7 @@ private:
 	/*
 	* Check the signature we just created, to help prevent fault attacks
 	*/
-	bool self_test_signature(in Vector!ubyte msg,
-	                         in Vector!ubyte sig) const
+	bool self_test_signature(in Vector!ubyte msg, in Vector!ubyte sig) const
 	{
 		if (!m_verify_op)
 			return true; // checking disabled, assume ok
@@ -365,7 +361,7 @@ public:
 				return validate_signature(m_emsa.raw_data(), sig, length);
 			else if (m_sig_format == DER_SEQUENCE)
 			{
-				BER_Decoder decoder(sig, length);
+				BER_Decoder decoder = BER_Decoder(sig, length);
 				BER_Decoder ber_sig = decoder.start_cons(ASN1_Tag.SEQUENCE);
 				
 				size_t count = 0;
@@ -417,9 +413,7 @@ public:
 	* @param emsa the EMSA to use (eg "EMSA3(SHA-1)")
 	* @param format the signature format to use
 	*/
-	this(in Public_Key key,
-	     in string emsa_name,
-	     Signature_Format format = IEEE_1363)
+	this(in Public_Key key, in string emsa_name, Signature_Format format = IEEE_1363)
 	{
 		Algorithm_Factory af = global_state().algorithm_factory();
 
@@ -439,8 +433,7 @@ public:
 	}
 
 private:
-	bool validate_signature(in Secure_Vector!ubyte msg,
-	                        in ubyte* sig, size_t sig_len)
+	bool validate_signature(in Secure_Vector!ubyte msg, in ubyte* sig, size_t sig_len)
 	{
 		if (m_op.with_recovery())
 		{
@@ -451,8 +444,7 @@ private:
 		{
 			RandomNumberGenerator rng = global_state().global_rng();
 			
-			Secure_Vector!ubyte encoded =
-				m_emsa.encoding_of(msg, m_op.max_input_bits(), rng);
+			Secure_Vector!ubyte encoded = m_emsa.encoding_of(msg, m_op.max_input_bits(), rng);
 			
 			return m_op.verify(encoded.ptr, encoded.length, sig, sig_len);
 		}
@@ -498,10 +490,7 @@ public:
 	* @param params extra derivation params
 	* @param params_len the length of params in bytes
 	*/
-	SymmetricKey derive_key(size_t key_len,
-									in Vector!ubyte input,
-									in ubyte* params,
-									size_t params_len) const
+	SymmetricKey derive_key(size_t key_len, in Vector!ubyte input, in ubyte* params, size_t params_len) const
 	{
 		return derive_key(key_len, input.ptr, input.length, params, params_len);
 	}
@@ -513,9 +502,7 @@ public:
 	* @param in_len the length of in in bytes
 	* @param params extra derivation params
 	*/
-	SymmetricKey derive_key(size_t key_len,
-							in ubyte* input, size_t in_len,
-							in string params = "") const
+	SymmetricKey derive_key(size_t key_len, in ubyte* input, size_t in_len, in string params = "") const
 	{
 		return derive_key(key_len, input, in_len, cast(const ubyte*)(params.ptr), params.length);
 	}
@@ -584,8 +571,7 @@ public:
 	* @param key the key to use inside the decryptor
 	* @param eme the EME to use
 	*/
-	this(in Public_Key key,
-	     in string eme_name)
+	this(in Public_Key key, in string eme_name)
 	{
 		
 		Algorithm_Factory af = global_state().algorithm_factory();
@@ -604,10 +590,7 @@ public:
 	}
 
 private:
-	Vector!ubyte
-		enc(in ubyte* input,
-		    size_t length,
-		    RandomNumberGenerator rng) const
+	Vector!ubyte enc(in ubyte* input, size_t length, RandomNumberGenerator rng) const
 	{
 		if (m_eme)
 		{
@@ -642,8 +625,7 @@ public:
 	* @param key the key to use inside the encryptor
 	* @param eme the EME to use
 	*/
-	this(in Private_Key key,
-		     in string eme_name)
+	this(in Private_Key key, in string eme_name)
 	{
 		Algorithm_Factory af = global_state().algorithm_factory();
 		RandomNumberGenerator rng = global_state().global_rng();
@@ -665,8 +647,7 @@ private:
 	/*
 	* Decrypt a message
 	*/
-	Secure_Vector!ubyte dec(in ubyte* msg,
-	                     size_t length) const
+	Secure_Vector!ubyte dec(in ubyte* msg, size_t length) const
 	{
 		try {
 			Secure_Vector!ubyte decrypted = m_op.decrypt(msg, length);

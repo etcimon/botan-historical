@@ -4,7 +4,7 @@
 *
 * Distributed under the terms of the botan license.
 */
-module botan.botan;
+module botan.all;
 
 public import botan.libstate.init;
 public import botan.libstate.lookup;

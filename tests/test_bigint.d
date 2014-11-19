@@ -18,7 +18,7 @@
 #include <botan/exceptn.h>
 #include <botan/numthry.h>
 
-using namespace Botan;
+
 
 namespace {
 
@@ -284,7 +284,7 @@ size_t is_primetest(in Vector!string args,
 
 size_t test_bigint()
 {
-	const string filename = TEST_DATA_DIR "/mp_valid.dat";
+	const string filename = "test_data//mp_valid.dat";
 	File test_data(filename);
 
 	if(!test_data)

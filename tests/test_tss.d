@@ -15,7 +15,7 @@
 
 size_t test_tss()
 {
-	using namespace Botan;
+	
 
 	AutoSeeded_RNG rng;
 

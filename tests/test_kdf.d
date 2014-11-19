@@ -5,7 +5,7 @@
 #include <iostream>
 #include <fstream>
 
-using namespace Botan;
+
 
 size_t test_kdf()
 {
@@ -13,7 +13,7 @@ size_t test_kdf()
 		return run_tests(input, "KDF", "Output", true,
 				 (string[string] vec)
 				 {
-				 std::unique_ptr<KDF> kdf(get_kdf(vec["KDF"]));
+				 Unique!KDF kdf(get_kdf(vec["KDF"]));
 
 				 const size_t outlen = to!uint(vec["OutputLen"]);
 				 const auto salt = hex_decode(vec["Salt"]);
@@ -25,5 +25,5 @@ size_t test_kdf()
 				 });
 	};
 
-	return run_tests_in_dir(TEST_DATA_DIR "kdf", test);
+	return run_tests_in_dir("test_data/kdf", test);
 }

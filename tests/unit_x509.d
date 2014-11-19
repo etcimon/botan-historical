@@ -28,7 +28,7 @@
   #include <botan/pkcs10.h>
 #endif
 
-using namespace Botan;
+
 
 #include <iostream>
 #include <memory>

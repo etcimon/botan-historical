@@ -16,7 +16,7 @@ size_t rfc6979_testcase(string q_str,
 								string hash,
 								size_t testcase)
 {
-	using namespace Botan;
+	
 
 #if defined(BOTAN_HAS_RFC6979_GENERATOR)
 
@@ -42,7 +42,7 @@ size_t rfc6979_testcase(string q_str,
 
 size_t test_rfc6979()
 {
-	using namespace Botan;
+	
 
 	size_t fails = 0;
 

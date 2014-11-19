@@ -10,7 +10,7 @@
 #include <iostream>
 #include <fstream>
 
-using namespace Botan;
+
 
 namespace {
 
@@ -42,7 +42,7 @@ size_t test_ecdsa()
 	size_t fails = 0;
 
 #if defined(BOTAN_HAS_ECDSA)
-	File ecdsa_sig(PK_TEST_DATA_DIR "/ecdsa.vec");
+	File ecdsa_sig("test_data/pubkey/ecdsa.vec");
 
 	fails += run_tests_bb(ecdsa_sig, "ECDSA Signature", "Signature", true,
 				 (string[string] m)
