@@ -1,9 +1,8 @@
-﻿module botan.utils.vector;
+﻿module botan.utils.containers.vector;
 
 import core.exception, core.memory, core.stdc.stdlib, core.stdc.string,
 	std.algorithm, std.conv, std.exception, std.range,
 	std.traits, std.typecons;
-public import std.container.util;
 import botan.utils.memory.memory;
 
 /**

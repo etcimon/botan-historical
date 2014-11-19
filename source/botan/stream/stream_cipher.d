@@ -19,7 +19,7 @@ public:
 	* @param output the ubyte array to hold the output, i.e. the ciphertext
 	* @param len the length of both in and out in bytes
 	*/
-	abstract void cipher(in ubyte* input, ubyte* output);
+	abstract void cipher(in ubyte* input, ubyte* output, size_t len);
 
 	/**
 	* Encrypt or decrypt a message

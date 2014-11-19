@@ -209,11 +209,7 @@ private:
 	static bool m_altivec_capable;
 }
 
-
-
-
 package:
-
 
 private __gshared {
 	bool is_intel; // true = _probably_ an Intel processor, might be faking
@@ -230,6 +226,8 @@ private __gshared {
 	uint amdfeatures; 
 	uint l1cache;
 }
+
+// todo: LDC/GDC
 
 shared static this() {
 	

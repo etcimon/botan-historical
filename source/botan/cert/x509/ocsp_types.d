@@ -14,7 +14,7 @@ import botan.asn1.ber_dec;
 import botan.cert.x509.x509_ext;
 import botan.libstate.lookup;
 import botan.hash.hash;
-import botan.asn1.oid_lookup.oids;
+import botan.asn1.oids;
 import botan.utils.types;
 
 alias CertID = FreeListRef!CertID_Impl;
@@ -47,7 +47,7 @@ public:
 			if (BigInt.decode(subject.serial_number()) != m_subject_serial)
 				return false;
 			
-			Unique!HashFunction hash = get_hash(oids.lookup(m_hash_id.oid));
+			Unique!HashFunction hash = get_hash(OIDS.lookup(m_hash_id.oid));
 			
 			if (m_issuer_dn_hash != unlock(hash.process(subject.raw_issuer_dn())))
 				return false;

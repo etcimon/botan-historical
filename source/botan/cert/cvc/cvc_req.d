@@ -8,7 +8,7 @@
 module botan.cert.cvc.cvc_req;
 
 import botan.cert.cvc.cvc_gen_cert;
-import botan.asn1.oid_lookup.oids;
+import botan.asn1.oids;
 import botan.asn1.ber_dec;
 import botan.utils.types;
 

@@ -35,7 +35,7 @@ private:
 private:
 pure:
 
-void botan_sha160_x86_64_compress(uint* arg1, const ubyte* arg2, uint* arg3)
+void botan_sha160_x86_64_compress(uint* arg1, in ubyte* arg2, uint* arg3)
 {
 	/* defined later
 	 	enum A = "R8D";

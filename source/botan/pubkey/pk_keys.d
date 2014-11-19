@@ -11,7 +11,7 @@ import botan.asn1.asn1_oid;
 import botan.asn1.alg_id;
 import botan.rng.rng;
 import botan.asn1.der_enc;
-import botan.asn1.oid_lookup.oids;
+import botan.asn1.oids;
 
 /**
 * Public Key Base Class.
@@ -43,7 +43,7 @@ public:
 	final OID get_oid() const
 	{
 		try {
-			return oids.lookup(algo_name);
+			return OIDS.lookup(algo_name);
 		}
 		catch(Lookup_Error)
 		{

@@ -13,13 +13,13 @@ import botan.asn1.asn1_oid;
 import botan.asn1.asn1_alt_name;
 import botan.asn1.der_enc;
 import botan.asn1.ber_dec;
-import botan.asn1.oid_lookup.oids;
-import botan.utils.multimap;
+import botan.asn1.oids;
+import botan.utils.containers.multimap;
 import botan.utils.charset;
 import botan.utils.parsing;
 import botan.utils.loadstor;
 import botan.utils.types;
-import botan.utils.hashmap;
+import botan.utils.containers.hashmap;
 
 alias Alternative_Name = FreeListRef!Alternative_Name_Impl;
 

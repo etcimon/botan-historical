@@ -9,7 +9,7 @@ module botan.asn1.asn1_attribute;
 
 import botan.asn1.der_enc;
 import botan.asn1.ber_dec;
-import botan.asn1.oid_lookup.oids;
+import botan.asn1.oids;
 import botan.asn1.asn1_obj;
 import botan.asn1.asn1_oid;
 import botan.utils.types;
@@ -37,7 +37,7 @@ public:
 	this(in string attr_oid,
 	     in Vector!ubyte attr_value)
 	{
-		oid = oids.lookup(attr_oid);
+		oid = OIDS.lookup(attr_oid);
 		parameters = attr_value;
 	}
 	

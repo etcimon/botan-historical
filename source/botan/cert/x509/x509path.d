@@ -10,7 +10,7 @@ import botan.cert.x509.ocsp;
 import botan.http_util;
 import botan.utils.parsing;
 import botan.pubkey.pubkey;
-import botan.asn1.oid_lookup.oids;
+import botan.asn1.oids;
 import botan.asn1.asn1_time;
 import std.algorithm;
 import std.datetime;

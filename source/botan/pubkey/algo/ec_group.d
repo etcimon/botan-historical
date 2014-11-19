@@ -15,7 +15,7 @@ import botan.asn1.asn1_oid;
 import botan.asn1.ber_dec;
 import botan.asn1.der_enc;
 import botan.libstate.libstate;
-import botan.asn1.oid_lookup.oids;
+import botan.asn1.oids;
 import botan.codec.pem;
 
 typedef ubyte EC_Group_Encoding;
@@ -103,7 +103,7 @@ public:
 	*/
 	this(in OID domain_oid)
 	{
-		string pem = PEM_for_named_group(oids.lookup(domain_oid));
+		string pem = PEM_for_named_group(OIDS.lookup(domain_oid));
 		
 		if (!pem)
 			throw new Lookup_Error("No ECC domain data for " ~ domain_oid.toString());
@@ -130,7 +130,7 @@ public:
 		}
 		catch(Decoding_Error) // hmm, not PEM?
 		{
-			this(oids.lookup(pem_or_oid));
+			this(OIDS.lookup(pem_or_oid));
 		}
 	}
 

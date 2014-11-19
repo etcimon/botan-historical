@@ -15,7 +15,7 @@ import botan.asn1.x509_dn;
 import botan.asn1.der_enc;
 import botan.asn1.ber_dec;
 import botan.cert.x509.x509_ext;
-import botan.asn1.oid_lookup.oids;
+import botan.asn1.oids;
 import botan.codec.base64;
 import botan.pubkey.pubkey;
 import botan.cert.x509.x509path;
@@ -196,7 +196,7 @@ void check_signature(in Vector!ubyte tbs_response,
 {
 	Unique!Public_Key pub_key = cert.subject_public_key();
 	
-	const Vector!string sig_info = splitter(oids.lookup(sig_algo.oid), '/');
+	const Vector!string sig_info = splitter(OIDS.lookup(sig_algo.oid), '/');
 	
 	if (sig_info.length != 2 || sig_info[0] != pub_key.algo_name)
 		throw new Exception("Information in OCSP response does not match cert");

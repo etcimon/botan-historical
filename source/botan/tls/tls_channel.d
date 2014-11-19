@@ -19,11 +19,11 @@ import botan.tls.tls_heartbeats;
 import botan.tls.tls_record;
 import botan.tls.tls_seq_numbers;
 import botan.utils.rounding;
-import botan.utils.multimap;
+import botan.utils.containers.multimap;
 import botan.utils.loadstor;
 import botan.utils.types;
 // import string;
-import botan.utils.hashmap;
+import botan.utils.containers.hashmap;
 
 /**
 * Generic interface for TLS endpoint

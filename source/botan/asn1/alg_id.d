@@ -11,7 +11,7 @@ import botan.asn1.asn1_obj;
 import botan.asn1.asn1_oid;
 import botan.asn1.der_enc;
 import botan.asn1.ber_dec;
-import botan.asn1.oid_lookup.oids;
+import botan.asn1.oids;
 // import string;
 
 alias Algorithm_Identifier = FreeListRef!Algorithm_Identifier_Impl;
@@ -67,7 +67,7 @@ public:
 	this(in string, Encoding_Option) {
 		__gshared immutable ubyte[2] DER_NULL = [ 0x05, 0x00 ];
 		
-		m_oid = oids.lookup(alg_id);
+		m_oid = OIDS.lookup(alg_id);
 		
 		if (option == USE_NULL_PARAM)
 			m_parameters ~= DER_NULL.ptr[0 .. $];
@@ -86,7 +86,7 @@ public:
 	* Create an Algorithm_Identifier
 	*/
 	this(in string, in Vector!ubyte) {
-		m_oid = oids.lookup(alg_id);
+		m_oid = OIDS.lookup(alg_id);
 		m_parameters = param;
 	}
 

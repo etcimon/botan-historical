@@ -14,7 +14,7 @@ import botan.utils.types;
 // import string;
 import std.conv : to;
 import core.sync.mutex;
-import botan.utils.hashmap;
+import botan.utils.containers.hashmap;
 
 /**
 A class encapsulating a SCAN name (similar to JCE conventions)

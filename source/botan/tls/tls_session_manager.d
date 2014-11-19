@@ -14,7 +14,7 @@ import botan.codec.hex;
 import std.datetime;
 import core.sync.mutex;
 import std.datetime;
-import botan.utils.hashmap;
+import botan.utils.containers.hashmap;
 
 /**
 * Session_Manager is an interface to systems which can save

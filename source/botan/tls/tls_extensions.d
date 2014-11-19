@@ -10,7 +10,7 @@ import botan.utils.memory.zeroize;
 import botan.tls.tls_magic;
 import botan.utils.types;
 // import string;
-import botan.utils.hashmap;
+import botan.utils.containers.hashmap;
 import set;
 
 import botan.tls.tls_reader;

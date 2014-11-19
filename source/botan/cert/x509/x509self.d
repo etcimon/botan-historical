@@ -10,13 +10,13 @@ import botan.cert.x509.x509cert;
 import botan.pubkey.pkcs8;
 import botan.cert.x509.pkcs10;
 import botan.asn1.asn1_time;
-import botan.asn1.oid_lookup.oids;
+import botan.asn1.oids;
 import botan.utils.parsing;
 import std.datetime;
 import botan.cert.x509.x509_ext;
 import botan.cert.x509.x509_ca;
 import botan.asn1.der_enc;
-import botan.asn1.oid_lookup.oids;
+import botan.asn1.oids;
 import botan.filters.pipe;
 import botan.utils.types;
 
@@ -188,7 +188,7 @@ public:
 	*/
 	void add_ex_constraint(in string oid_str)
 	{
-		ex_constraints.push_back(oids.lookup(oid_str));
+		ex_constraints.push_back(OIDS.lookup(oid_str));
 	}
 
 	/**
@@ -350,5 +350,5 @@ private void load_info(in X509_Cert_Options opts, X509_DN subject_dn,
 	subject_dn.add_attribute("X520.OrganizationalUnit", opts.org_unit);
 	subject_dn.add_attribute("X520.SerialNumber", opts.serial_number);
 	subject_alt = Alternative_Name(opts.email, opts.uri, opts.dns, opts.ip);
-	subject_alt.add_othername(oids.lookup("PKIX.XMPPAddr"), opts.xmpp, ASN1_Tag.UTF8_STRING);
+	subject_alt.add_othername(OIDS.lookup("PKIX.XMPPAddr"), opts.xmpp, ASN1_Tag.UTF8_STRING);
 }

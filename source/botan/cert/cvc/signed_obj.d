@@ -12,7 +12,7 @@ import botan.cert.x509.key_constraint;
 import botan.pubkey.x509_key;
 import botan.filters.pipe;
 import botan.pubkey.pubkey;
-import botan.asn1.oid_lookup.oids;
+import botan.asn1.oids;
 import botan.utils.types;
 import botan.utils.exceptn;
 
@@ -62,7 +62,7 @@ public:
 	{
 		try
 		{
-			Vector!string sig_info = splitter(oids.lookup(m_sig_algo.oid), '/');
+			Vector!string sig_info = splitter(OIDS.lookup(m_sig_algo.oid), '/');
 			
 			if (sig_info.length != 2 || sig_info[0] != pub_key.algo_name)
 			{

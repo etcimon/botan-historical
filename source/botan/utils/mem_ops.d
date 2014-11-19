@@ -32,7 +32,7 @@ void clear_mem(T)(T* ptr, size_t n)
 * @param input the source array
 * @param n the number of elements of in/out
 */
-void copy_mem(T)(T* output, const T* input)
+void copy_mem(T)(T* output, in T* input, in size_t n)
 {
 	import std.c.string : memmove;
 	memmove(output, input, T.sizeof*n);
@@ -57,7 +57,7 @@ void set_mem(T)(T* ptr, size_t n, ubyte val)
 * @param n the number of Ts in p1 and p2
 * @return true iff p1[i] == p2[i] forall i in [0...n)
 */
-bool same_mem(T)(const T* p1, const T* p2, size_t n)
+bool same_mem(T)(in T* p1, in T* p2, in size_t n)
 {
 	return ((cast(ubyte*)p1)[0 .. n] is (cast(ubyte*)p2)[0 .. n]);
 }

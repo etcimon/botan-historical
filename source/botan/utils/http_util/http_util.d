@@ -7,7 +7,7 @@
 module botan.utils.http_util.http_util;
 
 import botan.utils.types;
-import botan.utils.hashmap;
+import botan.utils.containers.hashmap;
 import botan.utils.parsing;
 import botan.codec.hex;
 import std.datetime;

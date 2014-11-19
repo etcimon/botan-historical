@@ -7,7 +7,7 @@
 module botan.pubkey.pk_algs;
 
 import botan.pubkey.pk_keys;
-import botan.asn1.oid_lookup.oids;
+import botan.asn1.oids;
 
 static if (BOTAN_HAS_RSA)  				import botan.pubkey.algo.rsa;
 static if (BOTAN_HAS_DSA)  				import botan.pubkey.algo.dsa;
@@ -22,7 +22,7 @@ static if (BOTAN_HAS_ECDH) 				import botan.pubkey.algo.ecdh;
 Public_Key make_public_key(in Algorithm_Identifier alg_id,
                            in Secure_Vector!ubyte key_bits)
 {
-	const string alg_name = oids.lookup(alg_id.oid);
+	const string alg_name = OIDS.lookup(alg_id.oid);
 	if (alg_name == "")
 		throw new Decoding_Error("Unknown algorithm OID: " ~ alg_id.oid.toString());
 	
@@ -78,7 +78,7 @@ Private_Key make_private_key(in Algorithm_Identifier alg_id,
                              in Secure_Vector!ubyte key_bits,
                              RandomNumberGenerator rng)
 {
-	const string alg_name = oids.lookup(alg_id.oid);
+	const string alg_name = OIDS.lookup(alg_id.oid);
 	if (alg_name == "")
 		throw new Decoding_Error("Unknown algorithm OID: " ~ alg_id.oid.toString());
 	

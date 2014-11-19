@@ -15,11 +15,11 @@ import botan.cert.x509.key_constraint;
 import botan.cert.x509.x509_ext;
 import botan.asn1.der_enc;
 import botan.asn1.ber_dec;
-import botan.utils.multimap;
+import botan.utils.containers.multimap;
 import botan.utils.parsing;
 import botan.math.bigint.bigint;
 import botan.libstate.lookup;
-import botan.asn1.oid_lookup.oids;
+import botan.asn1.oids;
 import botan.codec.pem;
 import botan.codec.hex;
 import botan.utils.types;
@@ -27,7 +27,7 @@ import std.algorithm;
 import iterator;
 import std.array : Appender;
 
-import botan.utils.hashmap;
+import botan.utils.containers.hashmap;
 
 alias X509_Certificate = FreeListRef!X509_Certificate_Impl;
 
@@ -368,7 +368,7 @@ public:
 			output ~= "CRL " ~ crl_distribution_point();
 		
 		output ~= "Signature algorithm: " ~
-			oids.lookup(signature_algorithm().oid);
+			OIDS.lookup(signature_algorithm().oid);
 		
 		output ~= "Serial number: " ~ hex_encode(serial_number());
 		
@@ -650,7 +650,7 @@ Vector!string lookup_oids(in Vector!string input)
 	Vector!string output;
 	
 	foreach (oid_name; input)
-		output.push_back(oids.lookup(OID(oid_name)));
+		output.push_back(OIDS.lookup(OID(oid_name)));
 	return output;
 }
 

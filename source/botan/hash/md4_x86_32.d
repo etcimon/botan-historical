@@ -39,7 +39,7 @@ private:
 * @param input the input block
 * @param M the message buffer
 */
-void botan_md4_x86_32_compress(uint* digest, const ubyte* input, uint* M)
+void botan_md4_x86_32_compress(uint* digest, in ubyte* input, uint* M)
 {
 	enum PUSHED = 4;
 	mixin(`asm {` ~ 

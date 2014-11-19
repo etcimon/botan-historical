@@ -23,7 +23,7 @@ public:
 	/*
 	* Combine cipher stream with message
 	*/
-	void cipher(in ubyte* input, ubyte* output)
+	void cipher(in ubyte* input, ubyte* output, size_t length)
 	{
 		while (length >= m_buffer.length - m_position)
 		{

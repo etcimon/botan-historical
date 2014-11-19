@@ -15,7 +15,7 @@ import botan.pbe.factory;
 import botan.asn1.der_enc;
 import botan.asn1.ber_dec;
 import botan.asn1.alg_id;
-import botan.asn1.oid_lookup.oids;
+import botan.asn1.oids;
 import botan.codec.pem;
 import botan.pubkey.pk_algs;
 import botan.utils.types;
@@ -131,7 +131,7 @@ Private_Key load_key(DataSource source,
 	Algorithm_Identifier alg_id;
 	Secure_Vector!ubyte pkcs8_key = PKCS8_decode(source, get_pass, alg_id);
 	
-	const string alg_name = oids.lookup(alg_id.oid);
+	const string alg_name = OIDS.lookup(alg_id.oid);
 	if (alg_name == "" || alg_name == alg_id.oid.toString())
 		throw new PKCS8_Exception("Unknown algorithm OID: " ~
 		                          alg_id.oid.toString());

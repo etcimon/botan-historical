@@ -10,7 +10,7 @@ import botan.filters.pipe;
 import botan.rng.rng;
 import botan.pubkey.x509_key;
 import botan.pubkey.pubkey;
-import botan.asn1.oid_lookup.oids;
+import botan.asn1.oids;
 import botan.asn1.der_enc;
 import botan.asn1.ber_dec;
 import botan.utils.parsing;
@@ -57,7 +57,7 @@ public:
 	*/
 	final string hash_used_for_signature() const
 	{
-		Vector!string sig_info = splitter(oids.lookup(m_sig_algo.oid), '/');
+		Vector!string sig_info = splitter(OIDS.lookup(m_sig_algo.oid), '/');
 		
 		if (sig_info.length != 2)
 			throw new Internal_Error("Invalid name format found for " ~ m_sig_algo.oid.toString());
@@ -103,7 +103,7 @@ public:
 	final bool check_signature(in Public_Key pub_key) const
 	{
 		try {
-			Vector!string sig_info = splitter(oids.lookup(m_sig_algo.oid), '/');
+			Vector!string sig_info = splitter(OIDS.lookup(m_sig_algo.oid), '/');
 			
 			if (sig_info.length != 2 || sig_info[0] != pub_key.algo_name)
 				return false;

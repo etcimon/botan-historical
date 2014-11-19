@@ -5,7 +5,7 @@
 	License: Subject to the terms of the MIT license, as written in the included LICENSE.txt file.
 	Authors: SÃ¶nke Ludwig
 */
-module botan.utils.hashmap;
+module botan.utils.containers.hashmap;
 
 import botan.utils.memory.memory;
 import std.conv : emplace;

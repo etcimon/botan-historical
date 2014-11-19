@@ -12,7 +12,7 @@ import botan.utils.charset;
 import botan.checksum.crc24;
 import botan.filters.data_src;
 import std.array : Appender;
-import botan.utils.hashmap;
+import botan.utils.containers.hashmap;
 import botan.utils.types;
 
 /**

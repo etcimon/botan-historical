@@ -8,7 +8,7 @@ module botan.kdf.prf_x942;
 
 import botan.kdf.kdf;
 import botan.asn1.der_enc;
-import botan.asn1.oid_lookup.oids;
+import botan.asn1.oids;
 import botan.hash.sha160;
 import botan.utils.loadstor;
 import std.algorithm;
@@ -76,8 +76,8 @@ public:
 	*/
 	this(in string oid)
 	{
-		if (oids.have_oid(oid))
-			m_key_wrap_oid = oids.lookup(oid).toString();
+		if (OIDS.have_oid(oid))
+			m_key_wrap_oid = OIDS.lookup(oid).toString();
 		else
 			m_key_wrap_oid = oid;
 	}
@@ -94,5 +94,5 @@ Vector!ubyte encode_x942_int(uint n)
 {
 	ubyte[4] n_buf;
 	store_be(n, n_buf);
-	return DER_Encoder().encode(n_buf, 4, ASN1_Tag.OCTET_STRING).get_contents_unlocked();
+	return DER_Encoder().encode(n_buf.ptr, 4, ASN1_Tag.OCTET_STRING).get_contents_unlocked();
 }

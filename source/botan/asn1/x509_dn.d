@@ -14,9 +14,9 @@ import botan.asn1.der_enc;
 import botan.asn1.ber_dec;
 import botan.utils.parsing;
 import botan.utils.types;
-import botan.utils.multimap;
-import botan.asn1.oid_lookup.oids;
-import botan.utils.hashmap;
+import botan.utils.containers.multimap;
+import botan.asn1.oids;
+import botan.utils.containers.hashmap;
 import std.array : Appender;
 
 alias X509_DN = FreeListRef!X509_DN_Impl;
@@ -103,7 +103,7 @@ public:
 	*/
 	Vector!string get_attribute(in string attr) const
 	{
-		const OID oid = oids.lookup(deref_info_field(attr));
+		const OID oid = OIDS.lookup(deref_info_field(attr));
 		
 		auto range = m_dn_info.equal_range(oid);
 		
@@ -120,7 +120,7 @@ public:
 	{
 		MultiMap!(string, string) retval;
 		foreach (key, value; m_dn_info)
-			retval.insert(oids.lookup(key), value.value());
+			retval.insert(OIDS.lookup(key), value.value());
 		return retval;
 	}
 
@@ -131,7 +131,7 @@ public:
 	void add_attribute(in string type,
 	                   in string str)
 	{
-		OID oid = oids.lookup(type);
+		OID oid = OIDS.lookup(type);
 		add_attribute(oid, str);
 	}
 
@@ -202,7 +202,7 @@ public:
 	this(in MultiMap!(string, string) args)
 	{
 		foreach (key, val; args)
-			add_attribute(oids.lookup(key), val);
+			add_attribute(OIDS.lookup(key), val);
 	}
 
 	/*
@@ -300,7 +300,7 @@ void do_ava(DER_Encoder encoder = DER_Encoder(),
             ASN1_Tag string_type, in string oid_str,
             bool must_exist = false)
 {
-	const OID oid = oids.lookup(oid_str);
+	const OID oid = OIDS.lookup(oid_str);
 	const bool exists = (dn_info.get(oid) != null);
 
 	if (!exists && must_exist)

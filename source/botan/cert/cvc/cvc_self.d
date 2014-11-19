@@ -8,7 +8,7 @@
 module botan.cert.cvc.cvc_self;
 
 import botan.pubkey.pkcs8;
-import botan.asn1.oid_lookup.oids;
+import botan.asn1.oids;
 import botan.pubkey.algo.ecdsa;
 import botan.asn1.asn1_obj;
 import botan.cert.cvc.cvc_cert;
@@ -61,7 +61,7 @@ EAC1_1_CVC create_self_signed_cert(in Private_Key key,
 	
 	Algorithm_Identifier sig_algo;
 	string padding_and_hash = "EMSA1_BSI(" ~ opt.hash_alg ~ ")";
-	sig_algo.oid = oids.lookup(priv_key.algo_name ~ "/" ~ padding_and_hash);
+	sig_algo.oid = OIDS.lookup(priv_key.algo_name ~ "/" ~ padding_and_hash);
 	sig_algo = Algorithm_Identifier(sig_algo.oid, Algorithm_Identifier.USE_NULL_PARAM);
 	
 	PK_Signer signer = PK_Signer(priv_key, padding_and_hash);
@@ -99,7 +99,7 @@ EAC1_1_Req create_cvc_req(in Private_Key key,
 	}
 	Algorithm_Identifier sig_algo;
 	string padding_and_hash = "EMSA1_BSI(" ~ hash_alg ~ ")";
-	sig_algo.oid = oids.lookup(priv_key.algo_name ~ "/" ~ padding_and_hash);
+	sig_algo.oid = OIDS.lookup(priv_key.algo_name ~ "/" ~ padding_and_hash);
 	sig_algo = Algorithm_Identifier(sig_algo.oid, Algorithm_Identifier.USE_NULL_PARAM);
 	
 	PK_Signer signer = PK_Signer(priv_key, padding_and_hash);
@@ -415,7 +415,7 @@ Vector!ubyte eac_1_1_encoding(const EC_PublicKey key, in OID sig_algo)
 
 string padding_and_hash_from_oid(in OID oid)
 {
-	string padding_and_hash = oids.lookup(oid); // use the hash
+	string padding_and_hash = OIDS.lookup(oid); // use the hash
 	
 	if (padding_and_hash[0 .. 6] != "ECDSA/")
 		throw new Invalid_State("CVC: Can only use ECDSA, not " ~ padding_and_hash);

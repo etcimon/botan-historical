@@ -18,7 +18,7 @@ import botan.asn1.ber_dec;
 import botan.math.bigint.bigint;
 import botan.utils.parsing;
 import botan.libstate.lookup;
-import botan.asn1.oid_lookup.oids;
+import botan.asn1.oids;
 import botan.cert.x509.key_constraint;
 import botan.rng.rng;
 import std.datetime;
@@ -290,7 +290,7 @@ PK_Signer choose_sig_format(in Private_Key key,
 
 	padding ~= padding.data ~ '(' ~ proto_hash.name ~ ')';
 	
-	sig_algo.oid = oids.lookup(algo_name ~ "/" ~ padding.data);
+	sig_algo.oid = OIDS.lookup(algo_name ~ "/" ~ padding.data);
 	sig_algo.parameters = key.algorithm_identifier().parameters;
 	
 	return PK_Signer(key, padding.data, format);

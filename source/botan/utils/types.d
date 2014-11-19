@@ -10,7 +10,7 @@ import botan.build;
 import cstddef;
 public import botan.utils.memory.memory;
 public import botan.utils.memory.zeroize;
-public import botan.utils.vector;
+public import botan.utils.containers.vector;
 public import std.typecons : scoped;
 
 alias Scoped(T) = typeof(scoped!T());

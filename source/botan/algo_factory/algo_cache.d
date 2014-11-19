@@ -7,10 +7,10 @@
 module botan.algo_factory.algo_cache;
 
 import botan.utils.types;
-import botan.utils.multimap;
+import botan.utils.containers.multimap;
 // import string;
 import botan.utils.types;
-import botan.utils.hashmap;
+import botan.utils.containers.hashmap;
 /**
 * @param prov_name a provider name
 * @return weight for this provider

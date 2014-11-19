@@ -19,7 +19,7 @@ import botan.cert.x509.x509cert;
 import botan.asn1.der_enc;
 import botan.asn1.ber_dec;
 import botan.utils.parsing;
-import botan.asn1.oid_lookup.oids;
+import botan.asn1.oids;
 import botan.codec.pem;
 import botan.utils.types;
 import botan.utils.exceptn;
@@ -211,19 +211,19 @@ private:
 	{
 		auto value = BER_Decoder(attr.parameters);
 		
-		if (attr.oid == oids.lookup("PKCS9.EmailAddress"))
+		if (attr.oid == OIDS.lookup("PKCS9.EmailAddress"))
 		{
 			ASN1_String email;
 			value.decode(email);
 			m_info.add("RFC822", email.value());
 		}
-		else if (attr.oid == oids.lookup("PKCS9.ChallengePassword"))
+		else if (attr.oid == OIDS.lookup("PKCS9.ChallengePassword"))
 		{
 			ASN1_String challenge_password;
 			value.decode(challenge_password);
 			m_info.add("PKCS9.ChallengePassword", challenge_password.value());
 		}
-		else if (attr.oid == oids.lookup("PKCS9.ExtensionRequest"))
+		else if (attr.oid == OIDS.lookup("PKCS9.ExtensionRequest"))
 		{
 			auto extensions = scoped!Extensions;
 			value.decode(extensions).verify_end();

@@ -10,7 +10,7 @@ module botan.tls.tls_messages;
 
 import botan.tls.tls_handshake_state;
 import botan.tls.tls_session_key;
-import botan.utils.multimap;
+import botan.utils.containers.multimap;
 
 public import botan.algo_base.sym_algo;
 public import botan.tls.tls_handshake_msg;
@@ -34,7 +34,7 @@ import botan.pubkey.algo.dh;
 import botan.pubkey.algo.ecdh;
 import botan.pubkey.algo.rsa;
 import botan.cert.x509.x509cert;
-import botan.asn1.oid_lookup.oids;
+import botan.asn1.oids;
 import botan.asn1.der_enc;
 import botan.asn1.ber_dec;
 import botan.utils.loadstor;
@@ -1601,7 +1601,7 @@ public:
 			Unique!ECDH_PrivateKey ecdh = new ECDH_PrivateKey(rng, ec_group);
 			
 			const string ecdh_domain_oid = ecdh.domain().get_oid();
-			const string domain = oids.lookup(OID(ecdh_domain_oid));
+			const string domain = OIDS.lookup(OID(ecdh_domain_oid));
 			
 			if (domain == "")
 				throw new Internal_Error("Could not find name of ECDH domain " ~ ecdh_domain_oid);

@@ -5,7 +5,7 @@
 	License: Subject to the terms of the MIT license, as written in the included LICENSE.txt file.
 	Authors: Sönke Ludwig
 */
-module botan.utils.multimap;
+module botan.utils.containers.multimap;
 
 import botan.utils.memory.memory;
 import botan.utils.types;

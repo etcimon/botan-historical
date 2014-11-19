@@ -12,7 +12,7 @@ static if (BOTAN_HAS_PBE_PKCS_V20):
 import botan.asn1.der_enc;
 import botan.asn1.ber_dec;
 import botan.asn1.alg_id;
-import botan.asn1.oid_lookup.oids;
+import botan.asn1.oids;
 import botan.pbe.pbe;
 import botan.block.block_cipher;
 import botan.mac.mac;
@@ -37,7 +37,7 @@ public:
 	*/
 	OID get_oid() const
 	{
-		return oids.lookup("PBE-PKCS5v20");
+		return OIDS.lookup("PBE-PKCS5v20");
 	}
 
 	/*
@@ -131,7 +131,7 @@ public:
 		
 		Algorithm_Identifier prf_algo;
 		
-		if (kdf_algo.oid != oids.lookup("PKCS5.PBKDF2"))
+		if (kdf_algo.oid != OIDS.lookup("PKCS5.PBKDF2"))
 			throw new Decoding_Error("PBE-PKCS5 v2.0: Unknown KDF algorithm " ~ kdf_algo.oid.toString());
 		
 		BER_Decoder(kdf_algo.parameters)
@@ -147,7 +147,7 @@ public:
 		
 		Algorithm_Factory af = global_state().algorithm_factory();
 		
-		string cipher = oids.lookup(enc_algo.oid);
+		string cipher = OIDS.lookup(enc_algo.oid);
 		Vector!string cipher_spec = splitter(cipher, '/');
 		if (cipher_spec.length != 2)
 			throw new Decoding_Error("PBE-PKCS5 v2.0: Invalid cipher spec " ~ cipher);
@@ -159,7 +159,7 @@ public:
 		BER_Decoder(enc_algo.parameters).decode(iv, ASN1_Tag.OCTET_STRING).verify_end();
 		
 		block_cipher = af.make_block_cipher(cipher_spec[0]);
-		m_prf = af.make_mac(oids.lookup(prf_algo.oid));
+		m_prf = af.make_mac(OIDS.lookup(prf_algo.oid));
 		
 		if (key_length == 0)
 			key_length = block_cipher.maximum_keylength();

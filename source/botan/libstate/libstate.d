@@ -13,13 +13,13 @@ import botan.libstate.global_state;
 import botan.utils.charset;
 import botan.engine.engine;
 import botan.utils.cpuid;
-import botan.asn1.oid_lookup.oids;
+import botan.asn1.oids;
 import botan.engine.core_engine;
-import botan.utils.multimap;
+import botan.utils.containers.multimap;
 import std.algorithm;
 import core.sync.mutex;
 import std.typecons;
-import botan.utils.hashmap;
+import botan.utils.containers.hashmap;
 
 static if (BOTAN_HAS_SELFTESTS)
 	import botan.selftest.selftest;
@@ -75,7 +75,7 @@ public:
 			return false;
 
 		SCAN_Name.set_default_aliases();
-		oids.set_defaults();
+		OIDS.set_defaults();
 
 		m_algorithm_factory = Algorithm_Factory.init;
 		

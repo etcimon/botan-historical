@@ -11,7 +11,7 @@ import botan.srp6_files;
 import botan.utils.parsing;
 import botan.codec.base64;
 // import string;
-import botan.utils.hashmap;
+import botan.utils.containers.hashmap;
 import std.stdio;
 
 /**

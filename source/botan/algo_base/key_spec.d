@@ -77,8 +77,8 @@ public:
 	Key_Length_Specification multiple(size_t n) const
 	{
 		return Key_Length_Specification(n * m_min_keylen,
-												  n * m_max_keylen,
-												  n * m_keylen_mod);
+										n * m_max_keylen,
+										n * m_keylen_mod);
 	}
 
 private:

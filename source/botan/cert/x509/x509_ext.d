@@ -14,12 +14,12 @@ import botan.cert.x509.key_constraint;
 import botan.hash.sha160;
 import botan.asn1.der_enc;
 import botan.asn1.ber_dec;
-import botan.asn1.oid_lookup.oids;
+import botan.asn1.oids;
 import botan.utils.charset;
 import botan.utils.bit_ops;
 import std.algorithm;
 import botan.utils.types;
-import botan.utils.multimap;
+import botan.utils.containers.multimap;
 
 /**
 * X.509 Certificate Extension
@@ -32,7 +32,7 @@ public:
 	*/
 	final OID oid_of() const
 	{
-		return oids.lookup(oid_name());
+		return OIDS.lookup(oid_name());
 	}
 
 	/**
@@ -180,7 +180,7 @@ private:
 	Certificate_Extension get_extension(in OID oid)
 	{
 		string X509_EXTENSION(string NAME, alias T)() {
-			return "if (oid.name_of(" ~ NAME ~ ")) return new " ~ __traits(T, identifier).stringof ~ "();";
+			return `if (OIDS.name_of(oid, "` ~ NAME ~ `")) return new ` ~ __traits(T, identifier).stringof ~ `();`;
 		}
 		
 		mixin( X509_EXTENSION!("X509v3.KeyUsage", Key_Usage)() );
@@ -681,7 +681,7 @@ private:
 		return DER_Encoder()
 			.start_cons(ASN1_Tag.SEQUENCE)
 				.start_cons(ASN1_Tag.SEQUENCE)
-				.encode(oids.lookup("PKIX.OCSP"))
+				.encode(OIDS.lookup("PKIX.OCSP"))
 				.add_object(ASN1_Tag(6), ASN1_Tag.CONTEXT_SPECIFIC, url.iso_8859())
 				.end_cons()
 				.end_cons().get_contents_unlocked();
@@ -699,7 +699,7 @@ private:
 			
 			info.decode(oid);
 			
-			if (oid == oids.lookup("PKIX.OCSP"))
+			if (oid == OIDS.lookup("PKIX.OCSP"))
 			{
 				BER_Object name = info.get_next_object();
 				

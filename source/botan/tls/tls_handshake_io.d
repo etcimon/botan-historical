@@ -16,7 +16,7 @@ import botan.utils.exceptn;
 import std.algorithm : count;
 import functional;
 import botan.utils.types;
-import botan.utils.hashmap;
+import botan.utils.containers.hashmap;
 import std.typecons : Tuple;
 
 /**

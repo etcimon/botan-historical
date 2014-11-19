@@ -9,12 +9,12 @@ module botan.utils.datastor.datastor;
 public import botan.utils.exceptn;
 import botan.utils.parsing;
 import botan.codec.hex;
-import botan.utils.multimap;
+import botan.utils.containers.multimap;
 import botan.utils.memory.zeroize;
 import functional;
 // import string;
 import botan.utils.types;
-import botan.utils.hashmap;
+import botan.utils.containers.hashmap;
 
 /**
 * Data Store

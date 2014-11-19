@@ -20,7 +20,7 @@ import botan.utils.types;
 final class CTR_BE : StreamCipher
 {
 public:
-	void cipher(in ubyte* input, ubyte* output)
+	void cipher(in ubyte* input, ubyte* output, size_t length)
 	{
 		while (length >= m_pad.length - m_pad_pos)
 		{

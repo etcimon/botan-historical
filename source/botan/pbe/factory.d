@@ -10,7 +10,7 @@ import botan.pbe.pbe;
 import botan.utils.types;
 // import string;
 import std.datetime;
-import botan.asn1.oid_lookup.oids;
+import botan.asn1.oids;
 import botan.algo_base.scan_name;
 import botan.rng.rng;
 import botan.utils.parsing;
@@ -88,7 +88,7 @@ PBE get_pbe(in OID pbe_oid,
 		             in Vector!ubyte params,
 		             in string passphrase)
 {
-	SCAN_Name request = SCAN_Name(oids.lookup(pbe_oid));
+	SCAN_Name request = SCAN_Name(OIDS.lookup(pbe_oid));
 	
 	const string pbe = request.algo_name;
 	

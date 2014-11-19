@@ -13,7 +13,7 @@ import botan.utils.exceptn;
 
 import std.c.string;
 import std.c.stdlib;
-import botan.utils.hashmap;
+import botan.utils.containers.hashmap;
 
 /**
 * Lzma Compression Filter

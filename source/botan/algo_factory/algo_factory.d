@@ -7,7 +7,7 @@
 module botan.algo_factory.algo_factory;
 
 import botan.algo_factory.algo_cache;
-import botan.utils.multimap;
+import botan.utils.containers.multimap;
 import botan.engine.engine;
 import botan.utils.exceptn;
 

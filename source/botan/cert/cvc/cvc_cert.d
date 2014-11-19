@@ -8,7 +8,7 @@
 module botan.cert.cvc.cvc_cert;
 
 import botan.cert.cvc.cvc_gen_cert;
-import botan.asn1.oid_lookup.oids;
+import botan.asn1.oids;
 import botan.pubkey.algo.ecdsa;
 import botan.utils.types;
 // import string;
@@ -167,7 +167,7 @@ EAC1_1_CVC make_cvc_cert(PK_Signer signer,
                          ASN1_Cex cex,
                          RandomNumberGenerator rng)
 {
-	OID chat_oid = OID(oids.lookup("CertificateHolderAuthorizationTemplate"));
+	OID chat_oid = OID(OIDS.lookup("CertificateHolderAuthorizationTemplate"));
 	Vector!ubyte enc_chat_val;
 	enc_chat_val.push_back(holder_auth_templ);
 	

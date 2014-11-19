@@ -12,8 +12,8 @@ import botan.tls.tls_handshake_state;
 import botan.tls.tls_messages;
 import botan.tls.tls_alert;
 import botan.rng.rng;
-import botan.utils.multimap;
-import botan.utils.hashmap;
+import botan.utils.containers.multimap;
+import botan.utils.containers.hashmap;
 import botan.utils.types;
 import std.datetime;
 
