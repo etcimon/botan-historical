@@ -49,7 +49,7 @@ Vector!ubyte ocb_encrypt(in SymmetricKey key,
 	try
 	{
 		Vector!ubyte pt2 = ocb_decrypt(key, nonce, &buf[0], buf.length, ad, ad_len);
-		if(pt_len != pt2.length || !same_mem(pt, &pt2[0], pt_len))
+		if (pt_len != pt2.length || !same_mem(pt, &pt2[0], pt_len))
 			writeln("OCB failed to decrypt correctly");
 	}
 	catch(Exception e)
@@ -60,28 +60,26 @@ Vector!ubyte ocb_encrypt(in SymmetricKey key,
 	return unlock(buf);
 }
 
-template<typename Alloc, typename Alloc2>
-Vector!ubyte ocb_encrypt(const SymmetricKey key,
-										const Vector!ubyte nonce,
-										const std::vector<ubyte, Alloc>& pt,
-										const std::vector<ubyte, Alloc2>& ad)
+Vector!ubyte ocb_encrypt(Alloc, Alloc2)(in SymmetricKey key,
+										in Vector!ubyte nonce,
+										in Vector!(ubyte, Alloc) pt,
+										in Vector!(ubyte, Alloc2) ad)
 {
 	return ocb_encrypt(key, nonce, &pt[0], pt.length, &ad[0], ad.length);
 }
 
-template<typename Alloc, typename Alloc2>
-Vector!ubyte ocb_decrypt(const SymmetricKey key,
-										const Vector!ubyte nonce,
-										const std::vector<ubyte, Alloc>& pt,
-										const std::vector<ubyte, Alloc2>& ad)
+Vector!ubyte ocb_decrypt(Alloc, Alloc2)(in SymmetricKey key,
+										in Vector!ubyte nonce,
+										in Vector!(ubyte, Alloc) pt,
+										in Vector!(ubyte, Alloc2) ad)
 {
 	return ocb_decrypt(key, nonce, &pt[0], pt.length, &ad[0], ad.length);
 }
 
 Vector!ubyte ocb_encrypt(OCB_Encryption ocb,
-										const Vector!ubyte nonce,
-										const Vector!ubyte pt,
-										const Vector!ubyte ad)
+										in Vector!ubyte nonce,
+										in Vector!ubyte pt,
+										in Vector!ubyte ad)
 {
 	ocb.set_associated_data(&ad[0], ad.length);
 
@@ -93,24 +91,24 @@ Vector!ubyte ocb_encrypt(OCB_Encryption ocb,
 	return unlock(buf);
 }
 
-size_t test_ocb_long(size_t taglen, const string &expected)
+size_t test_ocb_long(size_t taglen, in string expected)
 {
-	OCB_Encryption ocb(new AES_128, taglen/8);
+	auto ocb = scoped!OCB_Encryption(new AES_128, taglen/8);
 
 	ocb.set_key(SymmetricKey("00000000000000000000000000000000"));
 
 	const Vector!ubyte empty;
-	Vector!ubyte N(12);
+	Vector!ubyte N = Vector!ubyte(12);
 	Vector!ubyte C;
 
 	for(size_t i = 0; i != 128; ++i)
 	{
-		const Vector!ubyte S(i);
+		const Vector!ubyte S = Vector!ubyte(i);
 		N[11] = i;
 
-		C += ocb_encrypt(ocb, N, S, S);
-		C += ocb_encrypt(ocb, N, S, empty);
-		C += ocb_encrypt(ocb, N, empty, S);
+		C ~= ocb_encrypt(ocb, N, S, S);
+		C ~= ocb_encrypt(ocb, N, S, empty);
+		C ~= ocb_encrypt(ocb, N, empty, S);
 	}
 
 	N[11] = 0;
@@ -118,7 +116,7 @@ size_t test_ocb_long(size_t taglen, const string &expected)
 
 	const string cipher_hex = hex_encode(cipher);
 
-	if(cipher_hex != expected)
+	if (cipher_hex != expected)
 	{
 		writeln("OCB AES-128 long test mistmatch " ~ cipher_hex ~ " != " ~ expected);
 		return 1;

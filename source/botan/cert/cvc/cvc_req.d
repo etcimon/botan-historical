@@ -7,6 +7,9 @@
 */
 module botan.cert.cvc.cvc_req;
 
+import botan.constants;
+static if (BOTAN_HAS_CVC_CERTIFICATES):
+
 import botan.cert.cvc.cvc_gen_cert;
 import botan.asn1.oids;
 import botan.asn1.ber_dec;

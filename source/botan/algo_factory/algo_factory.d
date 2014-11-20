@@ -119,8 +119,7 @@ public:
 	*/
 	const BlockCipher prototype_block_cipher(in string algo_spec, in string provider)
 	{
-		return factory_prototype!BlockCipher(algo_spec, provider, engines,
-		                                     this, m_block_cipher_cache);
+		return factory_prototype!BlockCipher(algo_spec, provider, engines, this, m_block_cipher_cache);
 	}
 	
 	/**
@@ -155,8 +154,7 @@ public:
 	*/
 	const StreamCipher prototype_stream_cipher(in string algo_spec, in string provider)
 	{
-		return factory_prototype!StreamCipher(algo_spec, provider, engines,
-		                                      this, m_stream_cipher_cache);
+		return factory_prototype!StreamCipher(algo_spec, provider, engines, this, m_stream_cipher_cache);
 	}
 
 	
@@ -193,8 +191,7 @@ public:
 	*/
 	const HashFunction prototype_hash_function(in string algo_spec, in string provider)
 	{
-		return factory_prototype!HashFunction(algo_spec, provider, engines,
-		                                      this, m_hash_cache);
+		return factory_prototype!HashFunction(algo_spec, provider, engines, this, m_hash_cache);
 	}
 
 	
@@ -229,9 +226,7 @@ public:
 	*/
 	const MessageAuthenticationCode prototype_mac(in string algo_spec, in string provider)
 	{
-		return factory_prototype!MessageAuthenticationCode(algo_spec, provider,
-		                                                   engines,
-		                                                   this, m_mac_cache);
+		return factory_prototype!MessageAuthenticationCode(algo_spec, provider, engines, this, m_mac_cache);
 	}
 	
 	/**

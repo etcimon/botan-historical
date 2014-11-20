@@ -6,6 +6,9 @@
 */
 module botan.tls.tls_magic;
 
+import botan.constants;
+static if (BOTAN_HAS_TLS):
+
 /**
 * Protocol Constants for SSL/TLS
 */

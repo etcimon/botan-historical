@@ -11,9 +11,6 @@
 #include <fstream>
 
 
-
-namespace {
-
 size_t ecdsa_sig_kat(string group_id,
 							string x,
 							string hash,
@@ -23,18 +20,17 @@ size_t ecdsa_sig_kat(string group_id,
 {
 	AutoSeeded_RNG rng;
 
-	EC_Group group(OIDS::lookup(group_id));
-	ECDSA_PrivateKey ecdsa(rng, group, BigInt(x));
+	EC_Group group = EC_Group(OIDS.lookup(group_id));
+	auto ecdsa = scoped!ECDSA_PrivateKey(rng, group, BigInt(x));
 
-	const string padding = "EMSA1(" + hash + ")";
+	const string padding = "EMSA1(" ~ hash ~ ")";
 
-	PK_Verifier verify(ecdsa, padding);
-	PK_Signer sign(ecdsa, padding);
+	PK_Verifier verify = PK_Verifier(ecdsa, padding);
+	PK_Signer sign = PK_Signer(ecdsa, padding);
 
-	return validate_signature(verify, sign, "DSA/" + hash, msg, rng, nonce, signature);
+	return validate_signature(verify, sign, "DSA/" ~ hash, msg, rng, nonce, signature);
 }
 
-}
 #endif
 
 size_t test_ecdsa()
@@ -42,13 +38,13 @@ size_t test_ecdsa()
 	size_t fails = 0;
 
 #if defined(BOTAN_HAS_ECDSA)
-	File ecdsa_sig("test_data/pubkey/ecdsa.vec");
+	File ecdsa_sig = File("test_data/pubkey/ecdsa.vec", "r");
 
 	fails += run_tests_bb(ecdsa_sig, "ECDSA Signature", "Signature", true,
-				 (string[string] m)
-				 {
-				 return ecdsa_sig_kat(m["Group"], m["X"], m["Hash"], m["Msg"], m["Nonce"], m["Signature"]);
-				 });
+						 (string[string] m)
+						 {
+						 return ecdsa_sig_kat(m["Group"], m["X"], m["Hash"], m["Msg"], m["Nonce"], m["Signature"]);
+						 });
 #endif
 
 	return fails;

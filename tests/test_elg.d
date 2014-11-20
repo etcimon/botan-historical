@@ -16,7 +16,6 @@
 
 #if defined(BOTAN_HAS_ELGAMAL)
 
-namespace {
 
 size_t elgamal_kat(string p,
 						 string g,
@@ -32,21 +31,20 @@ size_t elgamal_kat(string p,
 	const BigInt g_bn = BigInt(g);
 	const BigInt x_bn = BigInt(x);
 
-	DL_Group group(p_bn, g_bn);
-	ElGamal_PrivateKey privkey(rng, group, x_bn);
+	DL_Group group = DL_Group(p_bn, g_bn);
+	auto privkey = scoped!ElGamal_PrivateKey(rng, group, x_bn);
 
-	ElGamal_PublicKey pubkey = privkey;
+	auto pubkey = scoped!ElGamal_PublicKey(privkey);
 
-	if(padding == "")
+	if (padding == "")
 		padding = "Raw";
 
-	PK_Encryptor_EME enc(pubkey, padding);
-	PK_Decryptor_EME dec(privkey, padding);
+	auto enc = scoped!PK_Encryptor_EME(pubkey, padding);
+	auto dec = scoped!PK_Decryptor_EME(privkey, padding);
 
-	return validate_encryption(enc, dec, "ElGamal/" + padding, msg, nonce, ciphertext);
+	return validate_encryption(enc, dec, "ElGamal/" ~ padding, msg, nonce, ciphertext);
 }
 
-}
 #endif
 
 size_t test_elgamal()
@@ -54,14 +52,14 @@ size_t test_elgamal()
 	size_t fails = 0;
 
 #if defined(BOTAN_HAS_ELGAMAL)
-	File elgamal_enc("test_data/pubkey/elgamal.vec");
+	File elgamal_enc = File("test_data/pubkey/elgamal.vec", "r");
 
 	fails += run_tests_bb(elgamal_enc, "ElGamal Encryption", "Ciphertext", true,
-				 (string[string] m)
-				 {
-				 return elgamal_kat(m["P"], m["G"], m["X"], m["Msg"],
-										m["Padding"], m["Nonce"], m["Ciphertext"]);
-				 });
+							 (string[string] m)
+							 {
+							 return elgamal_kat(m["P"], m["G"], m["X"], m["Msg"],
+													m["Padding"], m["Nonce"], m["Ciphertext"]);
+							 });
 #endif
 
 	return fails;

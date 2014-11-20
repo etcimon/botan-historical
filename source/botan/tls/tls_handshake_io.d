@@ -6,6 +6,9 @@
 */
 module botan.tls.tls_handshake_io;
 
+import botan.constants;
+static if (BOTAN_HAS_TLS):
+
 import botan.tls.tls_magic;
 import botan.tls.tls_version;
 import botan.utils.loadstor;

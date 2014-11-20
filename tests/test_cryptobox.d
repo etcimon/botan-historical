@@ -17,13 +17,13 @@ size_t test_cryptobox()
 	AutoSeeded_RNG rng;
 
 	__gshared immutable ubyte[3] msg = [ 0xAA, 0xBB, 0xCC ];
-	string ciphertext = CryptoBox::encrypt(msg.ptr, msg.length, "secret password", rng);
+	string ciphertext = CryptoBox.encrypt(msg.ptr, msg.length, "secret password", rng);
 
 	try
 	{
-		string plaintext = CryptoBox::decrypt(ciphertext, "secret password");
+		string plaintext = CryptoBox.decrypt(ciphertext, "secret password");
 
-		if(plaintext.length != msg.length || !same_mem(cast(const ubyte*)(&plaintext[0]), msg.ptr, msg.length))
+		if (plaintext.length != msg.length || !same_mem(cast(const ubyte*)(&plaintext[0]), msg.ptr, msg.length))
 			++fails;
 
 	}

@@ -7,6 +7,9 @@
 */
 module botan.cert.cvc.cvc_gen_cert;
 
+import botan.constants;
+static if (BOTAN_HAS_CVC_CERTIFICATES):
+
 import botan.cert.cvc.eac_obj;
 import botan.cert.cvc.eac_asn_obj;
 import botan.pubkey.algo.ecdsa;

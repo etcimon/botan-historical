@@ -6,6 +6,9 @@
 */
 module botan.cert.x509.x509path;
 
+import botan.constants;
+static if (BOTAN_HAS_X509_CERTIFICATES):
+
 import botan.cert.x509.ocsp;
 import botan.http_util;
 import botan.utils.parsing;
@@ -29,7 +32,7 @@ import botan.cert.x509.certstor;
 /**
 * Specifies restrictions on the PKIX path validation
 */
-class Path_Validation_Restrictions
+struct Path_Validation_Restrictions
 {
 public:
 	/**
@@ -39,9 +42,7 @@ public:
 	*		  weaker than this are rejected. If more than 80, SHA-1
 	*		  signatures are also rejected.
 	*/
-	this(bool require_rev = false,
-         size_t key_strength = 80,
-         bool ocsp_all = false) 
+	this(bool require_rev = false, size_t key_strength = 80, bool ocsp_all = false) 
 	{
 		m_require_revocation_information = require_rev;
 		m_ocsp_all_intermediates = ocsp_all;
@@ -98,7 +99,7 @@ private:
 /**
 * Represents the result of a PKIX path validation
 */
-class Path_Validation_Result
+struct Path_Validation_Result
 {
 public:
 	typedef Certificate_Status_Code Code;

@@ -164,7 +164,7 @@ double time_op(Duration runtime, void delegate() op)
 	return reps.to!double / sw.peek().seconds.to!double; // ie, return ops per second
 }
 
-package	double find_first_in(in HashMap!(string, double) m, 
+private double find_first_in(in HashMap!(string, double) m, 
                              in Vector!string keys)
 {
 	foreach (key; keys[])

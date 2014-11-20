@@ -6,6 +6,9 @@
 */
 module botan.cert.x509.x509_crl;
 
+import botan.constants;
+static if (BOTAN_HAS_X509_CERTIFICATES):
+
 import botan.cert.x509.x509_obj;
 import botan.cert.x509.crl_ent;
 import botan.cert.x509.x509_ext;

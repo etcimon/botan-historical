@@ -30,7 +30,7 @@ size_t keywrap_test(const char* key_str,
 
 		Secure_Vector!ubyte enc = rfc3394_keywrap(key.bits_of(), kek, af);
 
-		if(enc != expected.bits_of())
+		if (enc != expected.bits_of())
 		{
 			writeln("NIST key wrap encryption failure: "
 						 << hex_encode(enc) ~ " != " ~ hex_encode(expected.bits_of()));
@@ -39,7 +39,7 @@ size_t keywrap_test(const char* key_str,
 
 		Secure_Vector!ubyte dec = rfc3394_keyunwrap(expected.bits_of(), kek, af);
 
-		if(dec != key.bits_of())
+		if (dec != key.bits_of())
 		{
 			writeln("NIST key wrap decryption failure: "
 						 << hex_encode(dec) ~ " != " ~ hex_encode(key.bits_of()));

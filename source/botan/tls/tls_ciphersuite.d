@@ -4,6 +4,10 @@
 *
 * Released under the terms of the botan license.
 */
+module botan.tls.tls_ciphersuite;
+
+import botan.constants;
+static if (BOTAN_HAS_TLS):
 
 import botan.utils.types;
 // import string;

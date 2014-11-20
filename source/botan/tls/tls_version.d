@@ -6,6 +6,9 @@
 */
 module botan.tls.tls_version;
 
+import botan.constants;
+static if (BOTAN_HAS_TLS):
+
 import botan.utils.get_byte;
 import botan.tls.tls_exceptn;
 import botan.utils.parsing;

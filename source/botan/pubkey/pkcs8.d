@@ -218,10 +218,7 @@ Secure_Vector!ubyte PKCS8_extract(DataSource source,
 /*
 * PEM decode and/or decrypt a private key
 */
-Secure_Vector!ubyte PKCS8_decode(
-	DataSource source,
-	Single_Shot_Passphrase get_passphrase,
-	Algorithm_Identifier pk_alg_id)
+Secure_Vector!ubyte PKCS8_decode(DataSource source,	Single_Shot_Passphrase get_passphrase,	Algorithm_Identifier pk_alg_id)
 {
 	Algorithm_Identifier pbe_alg_id;
 	Secure_Vector!ubyte key_data, key;

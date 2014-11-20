@@ -16,8 +16,6 @@
 
 #if defined(BOTAN_HAS_NYBERG_RUEPPEL)
 
-namespace {
-
 size_t nr_sig_kat(string p,
 						 string q,
 						 string g,
@@ -29,23 +27,25 @@ size_t nr_sig_kat(string p,
 {
 	AutoSeeded_RNG rng;
 
-	BigInt p_bn(p), q_bn(q), g_bn(g), x_bn(x);
+	BigInt p_bn = BigInt(p);
+	BigInt q_bn = BigInt(q);
+	BigInt g_bn = BigInt(g);
+	BigInt x_bn = BigInt(x);
 
-	DL_Group group(p_bn, q_bn, g_bn);
+	DL_Group group = DL_Group(p_bn, q_bn, g_bn);
 
-	NR_PrivateKey privkey(rng, group, x_bn);
+	auto privkey = scoped!NR_PrivateKey(rng, group, x_bn);
 
-	NR_PublicKey pubkey = privkey;
+	auto pubkey = scoped!NR_PublicKey(privkey);
 
-	const string padding = "EMSA1(" + hash + ")";
+	const string padding = "EMSA1(" ~ hash ~ ")";
 
-	PK_Verifier verify(pubkey, padding);
-	PK_Signer sign(privkey, padding);
+	PK_Verifier verify = PK_Verifier(pubkey, padding);
+	PK_Signer sign = PK_Signer(privkey, padding);
 
-	return validate_signature(verify, sign, "nr/" + hash, msg, rng, nonce, signature);
+	return validate_signature(verify, sign, "nr/" ~ hash, msg, rng, nonce, signature);
 }
 
-}
 #endif
 
 size_t test_nr()
@@ -53,13 +53,13 @@ size_t test_nr()
 	size_t fails = 0;
 
 #if defined(BOTAN_HAS_NYBERG_RUEPPEL)
-	File nr_sig("test_data/pubkey/nr.vec");
+	File nr_sig = File("test_data/pubkey/nr.vec", "r");
 
 	fails += run_tests_bb(nr_sig, "NR Signature", "Signature", true,
-				 (string[string] m)
-				 {
-				 return nr_sig_kat(m["P"], m["Q"], m["G"], m["X"], m["Hash"], m["Msg"], m["Nonce"], m["Signature"]);
-				 });
+							 (string[string] m)
+							 {
+							 	return nr_sig_kat(m["P"], m["Q"], m["G"], m["X"], m["Hash"], m["Msg"], m["Nonce"], m["Signature"]);
+							 });
 #endif
 
 	return fails;

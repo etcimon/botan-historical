@@ -6,6 +6,9 @@
 */
 module botan.cert.x509.pkcs10;
 
+import botan.constants;
+static if (BOTAN_HAS_X509_CERTIFICATES):
+
 import botan.cert.x509.x509_obj;
 import botan.asn1.x509_dn;
 import botan.pubkey.pkcs8;

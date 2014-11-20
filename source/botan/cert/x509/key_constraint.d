@@ -6,6 +6,9 @@
 */
 module botan.cert.x509.key_constraint;
 
+import botan.constants;
+static if (BOTAN_HAS_X509_CERTIFICATES):
+
 import botan.asn1.ber_dec;
 import botan.pubkey.x509_key;
 import botan.asn1.ber_dec;

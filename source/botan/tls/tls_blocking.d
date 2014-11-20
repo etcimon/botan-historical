@@ -6,11 +6,13 @@
 */
 module botan.tls.tls_blocking;
 
+import botan.constants;
+static if (BOTAN_HAS_TLS):
+
 import botan.tls.tls_client;
 import botan.tls.tls_server;
-import deque;
 
-alias secure_deque(T) = Vector!( T, secure_allocator!T);
+alias Secure_Deque(T) = Vector!( T, Secure_Allocator);
 
 /**
 * Blocking TLS Client
@@ -122,5 +124,5 @@ private:
 
 	size_t delegate(ref ubyte[]) m_read_fn;
 	Client m_channel;
-	secure_deque!ubyte m_plaintext;
+	Secure_Deque!ubyte m_plaintext;
 }

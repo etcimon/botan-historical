@@ -6,6 +6,9 @@
 */
 module botan.tls.tls_exceptn;
 
+import botan.constants;
+static if (BOTAN_HAS_TLS):
+
 import botan.utils.exceptn;
 import botan.tls.tls_alert;
 

@@ -505,15 +505,9 @@ static if (BOTAN_HAS_DSA) {
 */
 void* gmp_malloc(size_t n)
 {
-	// Maintain alignment, mlock goes for T.sizeof alignment
-	if (n % 8 == 0)
-		return secure_allocator!ulong().allocate(n / 8);
-	else if (n % 4 == 0)
-		return secure_allocator!uint().allocate(n / 4);
-	else if (n % 2 == 0)
-		return secure_allocator!ushort().allocate(n / 2);
-	
-	return secure_allocator!ubyte().allocate(n);
+	import botan.utils.memory.zeroize : Secure_Allocator;
+	import botan.utils.memory.memory : getAllocator;
+	return getAllocator!Secure_Allocator().alloc(n).ptr;
 }
 
 /*
@@ -521,7 +515,9 @@ void* gmp_malloc(size_t n)
 */
 void gmp_free(void* ptr, size_t n)
 {
-	secure_allocator!ubyte().deallocate(cast(ubyte*)(ptr), n);
+	import botan.utils.memory.zeroize : Secure_Allocator;
+	import botan.utils.memory.memory : getAllocator;
+	getAllocator!Secure_Allocator().free(ptr[0 .. n]);
 }
 
 /*

@@ -4,6 +4,10 @@
 *
 * Released under the terms of the botan license.
 */
+module botan.tls.tls_channel;
+
+import botan.constants;
+static if (BOTAN_HAS_TLS):
 
 public import botan.cert.x509.x509cert;
 public import botan.tls.tls_policy;

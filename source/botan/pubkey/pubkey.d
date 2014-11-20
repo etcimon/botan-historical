@@ -315,8 +315,8 @@ public:
 	* @param sig the signature
 	* @return true if the signature is valid
 	*/
-	bool verify_message(Alloc, Alloc2)(in Vector!( ubyte, Alloc ) msg,
-							  const Vector!( ubyte, Alloc2 ) sig)
+	bool verify_message(Alloc, Alloc2)(in Vector!( ubyte, Alloc ) msg, 
+	                                   in Vector!( ubyte, Alloc2 ) sig)
 	{
 		return verify_message(msg.ptr, msg.length, sig.ptr, sig.length);
 	}
@@ -527,7 +527,7 @@ public:
 	* @param key the key to use
 	* @param kdf_name name of the KDF to use (or 'Raw' for no KDF)
 	*/
-	this(in PK_Key_Agreement_Key key,  in string kdf_name)
+	this(in PK_Key_Agreement_Key key, in string kdf_name)
 	{
 		Algorithm_Factory af = global_state().algorithm_factory();
 		RandomNumberGenerator rng = global_state().global_rng();

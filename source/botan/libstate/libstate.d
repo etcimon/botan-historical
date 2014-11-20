@@ -8,8 +8,9 @@ module botan.libstate.libstate;
 
 public import botan.utils.types;
 public import botan.algo_factory.algo_factory;
-import botan.rng.rng;
+public import botan.libstate.lookup;
 import botan.libstate.global_state;
+import botan.rng.rng;
 import botan.utils.charset;
 import botan.engine.engine;
 import botan.utils.cpuid;

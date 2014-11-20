@@ -19,7 +19,7 @@ size_t hash_test(string algo,
 	const auto providers = af.providers_of(algo);
 	size_t fails = 0;
 
-	if(providers.empty())
+	if (providers.empty)
 	{
 		writeln("Unknown algo ~ " algo);
 		++fails;
@@ -29,7 +29,7 @@ size_t hash_test(string algo,
 	{
 		auto proto = af.prototype_hash_function(algo, provider);
 
-		if(!proto)
+		if (!proto)
 		{
 			writeln("Unable to get " ~ algo ~ " from " ~ provider);
 			++fails;
@@ -40,9 +40,9 @@ size_t hash_test(string algo,
 
 		hash.update(hex_decode(in_hex));
 
-		auto h = hash.final();
+		auto h = hash.flush();
 
-		if(h != hex_decode_locked(out_hex))
+		if (h != hex_decode_locked(out_hex))
 		{
 			writeln(algo ~ " " ~ provider ~ " got " ~ hex_encode(h) ~ " != " ~ out_hex);
 			++fails;
@@ -54,9 +54,9 @@ size_t hash_test(string algo,
 
 		hash.update(hex_decode(in_hex));
 
-		h = hash.final();
+		h = hash.flush();
 
-		if(h != hex_decode_locked(out_hex))
+		if (h != hex_decode_locked(out_hex))
 		{
 			writeln(algo ~ " " ~ provider ~ " got " ~ hex_encode(h) ~ " != " ~ out_hex);
 			++fails;
@@ -72,7 +72,7 @@ size_t test_hash()
 {
 	auto test = (string input)
 	{
-		File vec(input);
+		File vec = File(input, "r");
 
 		return run_tests_bb(vec, "Hash", "Out", true,
 				 (string[string] m)

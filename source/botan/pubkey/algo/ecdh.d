@@ -120,3 +120,112 @@ private:
 	const BigInt m_cofactor;
 	BigInt m_l_times_priv;
 }
+
+static if (BOTAN_TEST):
+
+import botan.test;
+import botan.pubkey.pubkey;
+import botan.cert.x509.x509self;
+import botan.asn1.der_enc;
+
+size_t test_ecdh_normal_derivation(RandomNumberGenerator rng)
+{
+	size_t fails = 0;
+	
+	EC_Group dom_pars = EC_Group(OID("1.3.132.0.8"));
+	
+	ECDH_PrivateKey private_a = scoped!ECDH_PrivateKey(rng, dom_pars);
+	
+	ECDH_PrivateKey private_b = scoped!ECDH_PrivateKey(rng, dom_pars); //public_a.getCurve()
+	
+	PK_Key_Agreement ka = scoped!PK_Key_Agreement(private_a, "KDF2(SHA-1)");
+	PK_Key_Agreement kb = scoped!PK_Key_Agreement(private_b, "KDF2(SHA-1)");
+	
+	SymmetricKey alice_key = ka.derive_key(32, private_b.public_value());
+	SymmetricKey bob_key = kb.derive_key(32, private_a.public_value());
+	
+	if (alice_key != bob_key)
+	{
+		writeln("The two keys didn't match!");
+		writeln("Alice's key was: " ~ alice_key.as_string());
+		writeln("Bob's key was: " ~ bob_key.as_string());
+		++fails;
+	}
+	
+	return fails;
+}
+
+size_t test_ecdh_some_dp(RandomNumberGenerator rng)
+{
+	size_t fails = 0;
+	
+	Vector!string oids;
+	oids.push_back("1.2.840.10045.3.1.7");
+	oids.push_back("1.3.132.0.8");
+	oids.push_back("1.2.840.10045.3.1.1");
+	
+	foreach (oid_str; oids)
+	{
+		OID oid = OID(oids_str);
+		EC_Group dom_pars = EC_Group(oid);
+		
+		ECDH_PrivateKey private_a = scoped!ECDH_PrivateKey(rng, dom_pars);
+		ECDH_PrivateKey private_b = scoped!ECDH_PrivateKey(rng, dom_pars);
+		
+		PK_Key_Agreement ka = scoped!PK_Key_Agreement(private_a, "KDF2(SHA-1)");
+		PK_Key_Agreement kb = scoped!PK_Key_Agreement(private_b, "KDF2(SHA-1)");
+		
+		SymmetricKey alice_key = ka.derive_key(32, private_b.public_value());
+		SymmetricKey bob_key = kb.derive_key(32, private_a.public_value());
+		
+		mixin( CHECK_MESSAGE( alice_key == bob_key, "different keys - " ~ "Alice's key was: " ~ alice_key.as_string() ~ ", Bob's key was: " ~ bob_key.as_string() ) );
+	}
+	
+	return fails;
+}
+
+size_t test_ecdh_der_derivation(RandomNumberGenerator rng)
+{
+	size_t fails = 0;
+	
+	Vector!string oids;
+	oids.push_back("1.2.840.10045.3.1.7");
+	oids.push_back("1.3.132.0.8");
+	oids.push_back("1.2.840.10045.3.1.1");
+	
+	foreach (oid_str; oids)
+	{
+		OID oid = OID(oid_str);
+		EC_Group dom_pars = EC_Group(oid);
+		
+		ECDH_PrivateKey private_a(rng, dom_pars);
+		ECDH_PrivateKey private_b(rng, dom_pars);
+		
+		Vector!ubyte key_a = private_a.public_value();
+		Vector!ubyte key_b = private_b.public_value();
+		
+		PK_Key_Agreement ka = scoped!PK_Key_Agreement(private_a, "KDF2(SHA-1)");
+		PK_Key_Agreement kb = scoped!PK_Key_Agreement(private_b, "KDF2(SHA-1)");
+		
+		SymmetricKey alice_key = ka.derive_key(32, key_b);
+		SymmetricKey bob_key = kb.derive_key(32, key_a);
+		
+		mixin( CHECK_MESSAGE( alice_key == bob_key, "different keys - " ~ "Alice's key was: " ~ alice_key.as_string() ~ ", Bob's key was: " ~ bob_key.as_string() ) );
+		
+	}
+	
+	return fails;
+}
+
+unittest
+{
+	size_t fails = 0;
+	
+	AutoSeeded_RNG rng;
+	
+	fails += test_ecdh_normal_derivation(rng);
+	fails += test_ecdh_some_dp(rng);
+	fails += test_ecdh_der_derivation(rng);
+	
+	test_report("ECDH", 3, fails);
+}

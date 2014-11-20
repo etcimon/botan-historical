@@ -6,6 +6,10 @@
 * Distributed under the terms of the botan license.
 */
 module botan.cert.cvc.ecdsa_sig;
+
+import botan.constants;
+static if (BOTAN_HAS_CVC_CERTIFICATES):
+
 import botan.math.bigint.bigint;
 import botan.asn1.der_enc;
 import botan.asn1.ber_dec;

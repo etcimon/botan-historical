@@ -27,12 +27,11 @@ size_t test_tss()
 
 	const Secure_Vector!ubyte S = hex_decode_locked("7465737400");
 
-	std::vector<RTSS_Share> shares =
-		RTSS_Share::split(2, 4, &S[0], S.length, id, rng);
+	Vector!RTSS_Share shares = RTSS_Share.split(2, 4, &S[0], S.length, id, rng);
 
-	auto back = RTSS_Share::reconstruct(shares);
+	auto back = RTSS_Share.reconstruct(shares);
 
-	if(S != back)
+	if (S != back)
 	{
 		writeln("TSS-0: " ~ hex_encode(S) ~ " != " ~ hex_encode(back));
 		++fails;
@@ -40,9 +39,9 @@ size_t test_tss()
 
 	shares.resize(shares.length-1);
 
-	back = RTSS_Share::reconstruct(shares);
+	back = RTSS_Share.reconstruct(shares);
 
-	if(S != back)
+	if (S != back)
 	{
 		writeln("TSS-1: " ~ hex_encode(S) ~ " != " ~ hex_encode(back));
 		++fails;

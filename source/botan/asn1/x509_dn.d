@@ -75,7 +75,7 @@ public:
 				ASN1_String str;
 				
 				rdn.start_cons(ASN1_Tag.SEQUENCE)
-					.decode(oid)
+						.decode(oid)
 						.decode(str)
 						.verify_end()
 						.end_cons();

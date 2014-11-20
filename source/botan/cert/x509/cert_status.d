@@ -6,6 +6,9 @@
 */
 module botan.cert.x509.cert_status;
 
+import botan.constants;
+static if (BOTAN_HAS_X509_CERTIFICATES):
+
 enum Certificate_Status_Code {
 	VERIFIED = 0x00000000,
 	OCSP_RESPONSE_GOOD,

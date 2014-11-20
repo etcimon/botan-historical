@@ -6,6 +6,9 @@
 */
 module botan.tls.tls_record;
 
+import botan.constants;
+static if (BOTAN_HAS_TLS):
+
 import botan.libstate.libstate;
 import botan.tls.tls_magic;
 import botan.tls.tls_version;

@@ -6,7 +6,8 @@
 */
 module botan.tls.tls_messages;
 
-
+import botan.constants;
+static if (BOTAN_HAS_TLS):
 
 import botan.tls.tls_handshake_state;
 import botan.tls.tls_session_key;

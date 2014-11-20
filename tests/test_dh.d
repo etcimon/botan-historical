@@ -10,9 +10,6 @@
 #include <fstream>
 
 
-
-namespace {
-
 size_t dh_sig_kat(string p,
 						string g,
 						string x,
@@ -23,25 +20,26 @@ size_t dh_sig_kat(string p,
 {
 	AutoSeeded_RNG rng;
 
-	BigInt p_bn(p), g_bn(g), x_bn(x), y_bn(y);
+	BigInt p_bn = BigInt(p);
+	BigInt g_bn = BigInt(g);
+	BigInt x_bn = BigInt(x);
+	BigInt y_bn = BigInt(y);
 
-	DL_Group domain(p_bn, g_bn);
+	DL_Group domain = DL_Group(p_bn, g_bn);
 
-	DH_PrivateKey mykey(rng, domain, x_bn);
-	DH_PublicKey otherkey(domain, y_bn);
+	auto mykey = scoped!DH_PrivateKey(rng, domain, x_bn);
+	auto otherkey = scoped!DH_PublicKey(domain, y_bn);
 
-	if(kdf == "")
+	if (kdf == "")
 		kdf = "Raw";
 
 	size_t keylen = 0;
-	if(outlen != "")
+	if (outlen != "")
 		keylen = to!uint(outlen);
 
-	PK_Key_Agreement kas(mykey, kdf);
+	auto kas = scoped!PK_Key_Agreement(mykey, kdf);
 
 	return validate_kas(kas, "DH/" ~ kdf, otherkey.public_value(), key, keylen);
-}
-
 }
 #endif
 
@@ -50,7 +48,7 @@ size_t test_dh()
 	size_t fails = 0;
 
 #if defined(BOTAN_HAS_DIFFIE_HELLMAN)
-	File dh_sig("test_data/pubkey/dh.vec");
+	File dh_sig = File("test_data/pubkey/dh.vec", "r");
 
 	fails += run_tests_bb(dh_sig, "DH Kex", "K", true,
 				 (string[string] m)

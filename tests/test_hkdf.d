@@ -8,9 +8,6 @@
 #include <botan/hkdf.h>
 
 
-
-namespace {
-
 Secure_Vector!ubyte hkdf(string hkdf_algo,
 								 in Secure_Vector!ubyte ikm,
 								 in Secure_Vector!ubyte salt,
@@ -21,18 +18,18 @@ Secure_Vector!ubyte hkdf(string hkdf_algo,
 
 	const string algo = hkdf_algo[5 .. hkdf_algo.length-6+5];
 
-	const MessageAuthenticationCode* mac_proto = af.prototype_mac("HMAC(" + algo + ")");
+	const MessageAuthenticationCode mac_proto = af.prototype_mac("HMAC(" ~ algo ~ ")");
 
-	if(!mac_proto)
-		throw new Invalid_Argument("Bad HKDF hash '" + algo + "'");
+	if (!mac_proto)
+		throw new Invalid_Argument("Bad HKDF hash '" ~ algo ~ "'");
 
-	HKDF hkdf(mac_proto.clone(), mac_proto.clone());
+	HKDF hkdf = scoped!HKDF(mac_proto.clone(), mac_proto.clone());
 
 	hkdf.start_extract(&salt[0], salt.length);
 	hkdf.extract(&ikm[0], ikm.length);
 	hkdf.finish_extract();
 
-	Secure_Vector!ubyte key(L);
+	Secure_Vector!ubyte key = Secure_Vector!ubyte(L);
 	hkdf.expand(&key[0], key.length, &info[0], info.length);
 	return key;
 }
@@ -44,15 +41,13 @@ size_t hkdf_test(string algo,
 					string okm,
 					size_t L)
 {
-	const string got = hex_encode(
-		hkdf(algo,
-			  hex_decode_locked(ikm),
-			  hex_decode_locked(salt),
-			  hex_decode_locked(info),
-			  L)
-		);
+	const string got = hex_encode(hkdf(algo, 
+		                               hex_decode_locked(ikm), 
+		                               hex_decode_locked(salt), 
+		                               hex_decode_locked(info),
+		                               L));
 
-	if(got != okm)
+	if (got != okm)
 	{
 		writeln("HKDF got " ~ got ~ " expected " ~ okm);
 		return 1;
@@ -60,21 +55,18 @@ size_t hkdf_test(string algo,
 
 	return 0;
 }
-
-}
 #endif
 
 size_t test_hkdf()
 {
 #if defined(BOTAN_HAS_HKDF)
-	File vec("test_data//hkdf.vec");
+	File vec = File("test_data/hkdf.vec", "r");
 
 	return run_tests_bb(vec, "HKDF", "OKM", true,
-				 (string[string] m)
-				 {
-				 return hkdf_test(m["HKDF"], m["IKM"], m["salt"], m["info"],
-										m["OKM"], to!uint(m["L"]));
-				 });
+						 (string[string] m)
+						 {
+						 	return hkdf_test(m["HKDF"], m["IKM"], m["salt"], m["info"], m["OKM"], to!uint(m["L"]));
+						 });
 #else
 	return 0;
 #endif

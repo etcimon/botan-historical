@@ -7,6 +7,9 @@
 */
 module botan.cert.cvc.eac_asn_obj;
 
+import botan.constants;
+static if (BOTAN_HAS_CVC_CERTIFICATES):
+
 import botan.asn1.asn1_obj;
 import botan.asn1.der_enc;
 import botan.asn1.ber_dec;

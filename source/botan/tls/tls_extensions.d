@@ -6,6 +6,9 @@
 */
 module botan.tls.tls_extensions;
 
+import botan.constants;
+static if (BOTAN_HAS_TLS):
+
 import botan.utils.memory.zeroize;
 import botan.tls.tls_magic;
 import botan.utils.types;

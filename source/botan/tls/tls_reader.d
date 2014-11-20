@@ -6,6 +6,9 @@
 */
 module botan.tls.tls_reader;
 
+import botan.constants;
+static if (BOTAN_HAS_TLS):
+
 import botan.utils.exceptn;
 import botan.utils.memory.zeroize;
 import botan.utils.loadstor;

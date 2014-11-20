@@ -9,7 +9,6 @@ module botan.filters.out_buf;
 
 import botan.utils.types;
 import botan.filters.pipe;
-import deque;
 import botan.filters.secqueue;
 /**
 * Container of output buffers for Pipe
@@ -124,6 +123,6 @@ private:
 		return m_buffers[msg - m_offset];
 	}
 
-	Deque!(Secure_Queue) m_buffers;
+	Vector!Secure_Queue m_buffers;
 	Pipe.message_id m_offset;
 }

@@ -129,3 +129,25 @@ public:
 							size_t iterations,
 		               Duration loop_for) const;
 }
+
+unittest {
+	import botan.tests;
+	import botan.codec.hex;
+
+	auto test = (string input) {
+		return run_tests(input, "PBKDF", "Output", true,
+		                 (string[string] vec) {
+							Unique!PBKDF pbkdf = get_pbkdf(vec["PBKDF"]);
+							
+							const size_t iterations = to!size_t(vec["Iterations"]);
+							const size_t outlen = to!size_t(vec["OutputLen"]);
+							const auto salt = hex_decode(vec["Salt"]);
+							const string pass = vec["Passphrase"];
+							
+							const auto key = pbkdf.derive_key(outlen, pass, &salt[0], salt.length, iterations).bits_of();
+							return hex_encode(key);
+						});
+	};
+	
+	return run_tests_in_dir("test_data/pbkdf", test);
+}

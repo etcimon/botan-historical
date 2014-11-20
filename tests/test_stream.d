@@ -26,7 +26,7 @@ size_t stream_test(string algo,
 	const auto providers = af.providers_of(algo);
 	size_t fails = 0;
 
-	if(providers.empty())
+	if (providers.empty)
 	{
 		writeln("Unknown algo ~ " algo);
 		++fails;
@@ -36,7 +36,7 @@ size_t stream_test(string algo,
 	{
 		const StreamCipher* proto = af.prototype_stream_cipher(algo, provider);
 
-		if(!proto)
+		if (!proto)
 		{
 			writeln("Unable to get " ~ algo ~ " from provider '" ~ provider ~ "'");
 			++fails;
@@ -46,14 +46,14 @@ size_t stream_test(string algo,
 		Unique!StreamCipher cipher(proto.clone());
 		cipher.set_key(key);
 
-		if(nonce.length)
+		if (nonce.length)
 			cipher.set_iv(&nonce[0], nonce.length);
 
 		Secure_Vector!ubyte buf = pt;
 
 		cipher.encrypt(buf);
 
-		if(buf != ct)
+		if (buf != ct)
 		{
 			writeln(algo ~ " " ~ provider ~ " enc " ~ hex_encode(buf) ~ " != " ~ out_hex);
 			++fails;
@@ -69,7 +69,7 @@ size_t test_stream()
 {
 	auto test = (string input)
 	{
-		File vec(input);
+		File vec = File(input, "r");
 
 		return run_tests_bb(vec, "StreamCipher", "Out", true,
 				 (string[string] m)
@@ -78,5 +78,5 @@ size_t test_stream()
 				 });
 	};
 
-	return run_tests_in_dir("test_data//stream", test);
+	return run_tests_in_dir("test_data/stream", test);
 }

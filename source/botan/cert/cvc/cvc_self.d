@@ -7,6 +7,11 @@
 */
 module botan.cert.cvc.cvc_self;
 
+import botan.constants;
+static if (BOTAN_HAS_CVC_CERTIFICATES):
+
+alias cvc_self = botan.cert.cvc.cvc_self;
+
 import botan.pubkey.pkcs8;
 import botan.asn1.oids;
 import botan.pubkey.algo.ecdsa;

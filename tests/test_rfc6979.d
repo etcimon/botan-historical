@@ -20,14 +20,14 @@ size_t rfc6979_testcase(string q_str,
 
 #if defined(BOTAN_HAS_RFC6979_GENERATOR)
 
-	const BigInt q(q_str);
-	const BigInt x(x_str);
-	const BigInt h(h_str);
-	const BigInt exp_k(exp_k_str);
+	const BigInt q = BigInt(q_str);
+	const BigInt x = BigInt(x_str);
+	const BigInt h = BigInt(h_str);
+	const BigInt exp_k = BigInt(exp_k_str);
 
 	const BigInt gen_k = generate_rfc6979_nonce(x, q, h, hash);
 
-	if(gen_k != exp_k)
+	if (gen_k != exp_k)
 	{
 		writeln("RFC 6979 test #", testcase, " failed; generated k=", gen_k);
 		return 1;

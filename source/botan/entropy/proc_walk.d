@@ -12,8 +12,7 @@ static if (BOTAN_HAS_ENTROPY_SRC_PROC_WALKER):
 import botan.entropy.entropy_src;
 import botan.utils.memory.zeroize;
 import botan.utils.types;
-import cstring;
-import deque;
+import core.stdc.string;
 
 enum _POSIX_C_SOURCE = 199309;
 

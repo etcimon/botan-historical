@@ -7,6 +7,9 @@
 */
 module botan.cert.cvc.signed_obj;
 
+import botan.constants;
+static if (BOTAN_HAS_CVC_CERTIFICATES):
+
 import botan.asn1.asn1_obj;
 import botan.cert.x509.key_constraint;
 import botan.pubkey.x509_key;
@@ -57,8 +60,7 @@ public:
 	* @return true if the signature was created by the private key
 	* associated with this public key
 	*/
-	bool check_signature(ref Public_Key pub_key,
-	                     in Vector!ubyte sig) const
+	bool check_signature(ref Public_Key pub_key, in Vector!ubyte sig) const
 	{
 		try
 		{

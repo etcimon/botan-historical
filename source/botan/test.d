@@ -5,14 +5,46 @@ import botan.constants;
 // static if (BOTAN_TEST):
 
 public import std.stdio : File, writeln, dirEntries;
-import std.file;
-import std.algorithm : sort;
-import std.exception;
-import std.string : indexOf, lastIndexOf;
-
+public import std.algorithm : sort, canFind;
+public import std.string : indexOf, lastIndexOf;
 public import botan.utils.types;
+public import botan.libstate.libstate;
+import std.file;
+import std.exception;
 
-typedef size_t delegate() test_fn;
+string CHECK_MESSAGE (bool expr, string print) {
+	return `
+	{
+		try { 
+			if (!(expr)) { 
+				++fails; 
+				writeln( q{ ` ~ print ~ ` } ); 
+			} 
+		} 
+		catch(Exception e) 
+		{ 
+			writeln(__FUNCTION__, " : " ~ e.msg); 
+		}
+	}`;
+}
+
+string CHECK (string expr) {
+	return `
+	{
+		mixin( q{
+			bool sucess = ` ~ expr ~ `;
+		} );
+		try { 
+			if (!success)
+			{ ++fails; writeln( q { ` ~ expr ~ ` } ); } 
+		} 
+		catch(Exception e) 
+		{ 
+			writeln(__FUNCTION__ ~ " : " ~ e.msg); 
+		}
+	}`;
+}
+
 
 Vector!string list_dir(string dir_path)
 {
@@ -38,33 +70,6 @@ size_t run_tests_in_dir(string dir, size_t delegate(string) fn)
 	}
 	
 	return shared_fails;
-}
-
-size_t run_tests(in Vector!test_fn tests)
-{
-	size_t fails = 0;
-	
-	foreach (test; tests)
-	{
-		try
-		{
-			fails += test();
-		}
-		catch(Exception e)
-		{
-			writeln("Exception escaped test: " ~ e.msg);
-			++fails;
-		}
-		catch(Throwable)
-		{
-			writeln("Exception escaped test");
-			++fails;
-		}
-	}
-	
-	test_report("Tests", 0, fails);
-	
-	return fails;
 }
 
 void test_report(string name, size_t ran, size_t failed)

@@ -6,6 +6,9 @@
 */
 module botan.cert.x509.ocsp;
 
+import botan.constants;
+static if (BOTAN_HAS_X509_CERTIFICATES):
+
 import botan.cert.x509.cert_status;
 import botan.cert.x509.ocsp_types;
 import botan.cert.x509.certstor;

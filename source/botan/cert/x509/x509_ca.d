@@ -6,6 +6,9 @@
 */
 module botan.cert.x509.x509_ca;
 
+import botan.constants;
+static if (BOTAN_HAS_X509_CERTIFICATES):
+
 import botan.asn1.asn1_time;
 import botan.cert.x509.x509cert;
 import botan.cert.x509.x509_crl;

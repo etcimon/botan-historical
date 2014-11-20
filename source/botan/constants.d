@@ -24,6 +24,10 @@ enum BOTAN_KARAT_SQR_THRESHOLD = 32;
 enum BOTAN_RNG_MAX_OUTPUT_BEFORE_RESEED = 512;
 enum BOTAN_RNG_RESEED_POLL_BITS = 128;
 
+enum BOTAN_HAS_TLS = true;
+enum BOTAN_HAS_X509_CERTIFICATES = true;
+enum BOTAN_HAS_CVC_CERTIFICATES = true;
+
 version (unittest) 	enum BOTAN_TEST = true;
 else				enum BOTAN_TEST = false;
 
@@ -131,7 +135,7 @@ else						enum BOTAN_HAS_CASCADE = false;
 version(DES)			{	enum BOTAN_HAS_DES = true;																}
 else						enum BOTAN_HAS_DES = false;
 version(GOST_28147)		{	enum BOTAN_HAS_GOST_28147_89 = true;													}
-else						enum BOTAN_HAS_GOST_28147_89 = false;OPENSS
+else						enum BOTAN_HAS_GOST_28147_89 = false;
 version(IDEA)			{	enum BOTAN_HAS_IDEA = true;																}
 else						enum BOTAN_HAS_IDEA = false;
 version(KASUMI)			{	enum BOTAN_HAS_KASUMI = true;															}

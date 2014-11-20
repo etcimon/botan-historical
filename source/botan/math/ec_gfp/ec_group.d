@@ -6,7 +6,7 @@
 *
 * Distributed under the terms of the botan license.
 */
-module botan.pubkey.algo.ec_group;
+module botan.math.ec_gfp.ec_group;
 
 import botan.math.ec_gfp.curve_gfp;
 import botan.math.ec_gfp.point_gfp;
@@ -535,3 +535,4 @@ public:
 	}
 
 }
+

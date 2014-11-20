@@ -6,6 +6,9 @@
 */
 module botan.tls.sessions_sqlite.tls_session_manager_sqlite;
 
+import botan.constants;
+static if (BOTAN_HAS_TLS):
+
 import botan.tls.tls_session_manager;
 import botan.utils.sqlite3.sqlite3;
 import botan.libstate.lookup;

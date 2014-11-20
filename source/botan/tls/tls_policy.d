@@ -6,6 +6,9 @@
 */
 module botan.tls.tls_policy;
 
+import botan.constants;
+static if (BOTAN_HAS_TLS):
+
 import botan.tls.tls_version;
 import botan.tls.tls_ciphersuite;
 import botan.cert.x509.x509cert;

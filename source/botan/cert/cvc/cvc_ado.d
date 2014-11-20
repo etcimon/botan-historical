@@ -5,6 +5,10 @@
 * Distributed under the terms of the botan license.
 */
 module botan.cert.cvc.cvc_ado;
+
+import botan.constants;
+static if (BOTAN_HAS_CVC_CERTIFICATES):
+
 import botan.cert.cvc.eac_obj;
 import botan.cert.cvc.eac_asn_obj;
 import botan.cert.cvc.cvc_req;

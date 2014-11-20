@@ -6,6 +6,9 @@
 */
 module botan.tls.tls_server;
 
+import botan.constants;
+static if (BOTAN_HAS_TLS):
+
 import botan.tls.tls_channel;
 import botan.credentials.credentials_manager;
 import botan.tls.tls_handshake_state;
