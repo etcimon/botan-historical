@@ -278,7 +278,10 @@ struct Vector(T, ALLOCATOR = Vulnerable_Allocator)
 			version (assert) if (empty) throw new RangeError();
 			return _outer[_b - 1];
 		}
-		
+
+		alias pop_front = popFront;
+		alias pop_back = popBack;
+
 		void popFront() @safe pure nothrow
 		{
 			version (assert) if (empty) throw new RangeError();

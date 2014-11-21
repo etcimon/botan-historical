@@ -824,6 +824,6 @@ unittest
 	fails += test_mult_sec_mass();
 	fails += test_curve_cp_ctor();
 	
-	test_report("ECC", 24, fails);
+	test_report("ECC", 61, fails);
 
 }

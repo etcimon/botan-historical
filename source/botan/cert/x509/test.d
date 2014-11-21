@@ -12,7 +12,7 @@ Tests #75 and #76 are skipped as they make use of relatively obscure CRL
 extensions which are not supported.
 */
 import botan.constants;
-static if (BOTAN_HAS_X509_CERTIFICATES):
+static if (BOTAN_TEST && BOTAN_HAS_X509_CERTIFICATES):
 
 import botan.test;
 import botan.cert.x509.x509path;

@@ -32,7 +32,7 @@ public:
 	* @param dom_par the domain parameters associated with this key
 	* @param public_point the public point defining this key
 	*/
-	this(in EC_Group dom_par, const ref PointGFp public_point) 
+	this(in EC_Group dom_par, in PointGFp public_point) 
 	{
 		super(dom_par, public_point);
 	}
@@ -88,7 +88,7 @@ public:
 	* @param domain parameters to used for this key
 	* @param x the private key (if zero, generate a ney random key)
 	*/
-	this(RandomNumberGenerator rng, const ref EC_Group domain, in BigInt x = 0)
+	this(RandomNumberGenerator rng, in EC_Group domain, in BigInt x = 0)
 	{
 		super(rng, domain, x);
 	}
@@ -218,6 +218,7 @@ static if (BOTAN_TEST):
 ******************************************************/
 
 import botan.test;
+import botan.pubkey.test;
 import botan.rng.auto_rng;
 import botan.pubkey.pubkey;
 static if (BOTAN_HAS_RSA) import botan.pubkey.algo.rsa;
@@ -225,6 +226,8 @@ import botan.cert.x509.x509cert;
 import botan.asn1.oids;
 import botan.utils.memory.memory;
 import botan.codec.hex;
+import core.atomic;
+private __gshared size_t total_tests;
 
 string to_hex(const Vector!ubyte bin)
 {
@@ -240,6 +243,7 @@ string to_hex(const Vector!ubyte bin)
 
 size_t test_hash_larger_than_n(RandomNumberGenerator rng)
 {
+	atomicOp!"+="(total_tests, 1);
 	EC_Group dom_pars = EC_Group(OID("1.3.132.0.8")); // secp160r1
 	// n = 0x0100000000000000000001f4c8f927aed3ca752257 (21 bytes)
 	// . shouldn't work with SHA224 which outputs 28 bytes
@@ -294,6 +298,7 @@ size_t test_hash_larger_than_n(RandomNumberGenerator rng)
 static if (BOTAN_HAS_X509_CERTIFICATES)
 size_t test_decode_ecdsa_X509()
 {
+	atomicOp!"+="(total_tests, 5);
 	X509_Certificate cert = X509_Certificate("test_data/ecc/CSCA.CSCA.csca-germany.1.crt");
 	size_t fails = 0;
 	
@@ -313,6 +318,7 @@ size_t test_decode_ecdsa_X509()
 static if (BOTAN_HAS_X509_CERTIFICATES)
 size_t test_decode_ver_link_SHA256()
 {
+	atomicOp!"+="(total_tests, 1);
 	X509_Certificate root_cert = X509_Certificate("test_data/ecc/root2_SHA256.cer");
 	X509_Certificate link_cert = X509_Certificate("test_data/ecc/link_SHA256.cer");
 	
@@ -326,6 +332,7 @@ size_t test_decode_ver_link_SHA256()
 static if (BOTAN_HAS_X509_CERTIFICATES)
 size_t test_decode_ver_link_SHA1()
 {
+	atomicOp!"+="(total_tests, 1);
 	X509_Certificate root_cert = X509_Certificate("test_data/ecc/root_SHA1.163.crt");
 	X509_Certificate link_cert = X509_Certificate("test_data/ecc/link_SHA1.166.crt");
 	
@@ -338,6 +345,7 @@ size_t test_decode_ver_link_SHA1()
 
 size_t test_sign_then_ver(RandomNumberGenerator rng)
 {
+	atomicOp!"+="(total_tests, 2);
 	EC_Group dom_pars = EC_Group(OID("1.3.132.0.8"));
 	auto ecdsa = scoped!ECDSA_PrivateKey(rng, dom_pars);
 	
@@ -371,6 +379,7 @@ size_t test_sign_then_ver(RandomNumberGenerator rng)
 
 size_t test_ec_sign(RandomNumberGenerator rng)
 {
+	atomicOp!"+="(total_tests, 3);
 	size_t fails = 0;
 	
 	try
@@ -426,6 +435,7 @@ size_t test_ec_sign(RandomNumberGenerator rng)
 static if (BOTAN_HAS_RSA) 
 size_t test_create_pkcs8(RandomNumberGenerator rng)
 {
+	atomicOp!"+="(total_tests, 1);
 	size_t fails = 0;
 
 	try
@@ -458,6 +468,7 @@ size_t test_create_pkcs8(RandomNumberGenerator rng)
 static if (BOTAN_HAS_RSA) 
 size_t test_create_and_verify(RandomNumberGenerator rng)
 {
+	atomicOp!"+="(total_tests, 1);
 	size_t fails = 0;
 	
 	EC_Group dom_pars = EC_Group(OID("1.3.132.0.8"));
@@ -551,6 +562,7 @@ size_t test_curve_registry(RandomNumberGenerator rng)
 	uint i;
 	foreach (oid_str; oids[])
 	{
+		atomicOp!"+="(total_tests, 1);
 		try
 		{
 			OID oid = OID(oid_str);
@@ -580,6 +592,7 @@ size_t test_curve_registry(RandomNumberGenerator rng)
 
 size_t test_read_pkcs8(RandomNumberGenerator rng)
 {
+	atomicOp!"+="(total_tests, 2);
 	auto msg = hex_decode("12345678901234567890abcdef12");
 	size_t fails = 0;
 	
@@ -638,6 +651,7 @@ size_t test_read_pkcs8(RandomNumberGenerator rng)
 
 size_t test_ecc_key_with_rfc5915_extensions(RandomNumberGenerator rng)
 {
+	atomicOp!"+="(total_tests, 1);
 	size_t fails = 0;
 	
 	try
@@ -657,6 +671,44 @@ size_t test_ecc_key_with_rfc5915_extensions(RandomNumberGenerator rng)
 	}
 	
 	return fails;
+}
+
+size_t test_pk_keygen(RandomNumberGenerator rng) {
+	size_t fails = 0;
+
+	string[] ecdsa_list = ["secp112r1", "secp128r1", "secp160r1", "secp192r1",
+		"secp224r1", "secp256r1", "secp384r1", "secp521r1"];
+	
+	foreach (ecdsa; ecdsa_list) {
+		atomicOp!"+="(total_tests, 1);
+		auto key = scoped!ECDSA_PrivateKey(rng, EC_Group(OIDS.lookup(ecdsa)));
+		key.check_key(rng, true);
+		fails += validate_save_and_load(&key, rng);
+	}
+
+	return fails;
+}
+
+
+size_t ecdsa_sig_kat(string group_id,
+                     string x,
+                     string hash,
+                     string msg,
+                     string nonce,
+                     string signature)
+{
+	atomicOp!"+="(total_tests, 1);
+	AutoSeeded_RNG rng;
+	
+	EC_Group group = EC_Group(OIDS.lookup(group_id));
+	auto ecdsa = scoped!ECDSA_PrivateKey(rng, group, BigInt(x));
+	
+	const string padding = "EMSA1(" ~ hash ~ ")";
+	
+	PK_Verifier verify = PK_Verifier(ecdsa, padding);
+	PK_Signer sign = PK_Signer(ecdsa, padding);
+	
+	return validate_signature(verify, sign, "DSA/" ~ hash, msg, rng, nonce, signature);
 }
 
 unittest
@@ -682,7 +734,18 @@ unittest
 	fails += test_curve_registry(rng);
 	fails += test_read_pkcs8(rng);
 	fails += test_ecc_key_with_rfc5915_extensions(rng);
-	
-	test_report("ECDSA", 11, fails);
+	fails += test_pk_keygen(rng);
+
+
+
+	File ecdsa_sig = File("test_data/pubkey/ecdsa.vec", "r");
+
+	fails += run_tests_bb(ecdsa_sig, "ECDSA Signature", "Signature", true,
+                      		(string[string] m) {
+								return ecdsa_sig_kat(m["Group"], m["X"], m["Hash"], m["Msg"], m["Nonce"], m["Signature"]);
+							});
+
+
+	test_report("ECDSA", total_tests, fails);
 
 }

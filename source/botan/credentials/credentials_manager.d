@@ -97,11 +97,17 @@ public:
 	*
 	* @param context specifies a context relative to type.
 	*/
-	abstract Vector!X509_Certificate cert_chain( const ref Vector!string cert_key_types,
+	abstract Vector!X509_Certificate cert_chain(in Vector!string cert_key_types,
 													in string type,
 													in string context)
 	{
 		return Vector!X509_Certificate();
+	}
+
+	/// ditto
+	final Vector!X509_Certificate cert_chain(T : string[])(auto ref T cert_key_types, in string type, in string context)
+	{
+		return cert_chain(Vector!string(cert_key_types), type, context);
 	}
 
 	/**

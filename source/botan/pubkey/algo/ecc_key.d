@@ -8,7 +8,10 @@
 */
 module botan.pubkey.algo.ecc_key;
 
-public import botan.pubkey.algo.ec_group;
+import botan.constants;
+static if (BOTAN_HAS_ECDH || BOTAN_HAS_ECDSA || BOTAN_HAS_GOST_34_10_2001):
+
+public import botan.math.ec_gfp.ec_group;
 public import botan.math.numbertheory.numthry;
 public import botan.math.ec_gfp.curve_gfp;
 public import botan.math.ec_gfp.point_gfp;
@@ -34,7 +37,7 @@ import botan.utils.exceptn;
 class EC_PublicKey : Public_Key
 {
 public:
-	this(in EC_Group dom_par, const ref PointGFp pub_point) 
+	this(in EC_Group dom_par, in PointGFp pub_point) 
 	{
 		m_domain_params = dom_par;
 		m_public_key = pub_point;
@@ -121,7 +124,8 @@ public:
 
 protected:
 	this() 
-	{
+	{		m_public_key = pub_point;
+		
 		m_domain_encoding = EC_DOMPAR_ENC_EXPLICIT;
 	}
 
@@ -140,7 +144,7 @@ public:
 	/**
 	* EC_PrivateKey constructor
 	*/
-	this(RandomNumberGenerator rng, const ref EC_Group ec_group, in BigInt private_key)
+	this(RandomNumberGenerator rng, in EC_Group ec_group, in BigInt private_key)
 	{
 		m_domain_params = ec_group;
 		m_domain_encoding = EC_DOMPAR_ENC_EXPLICIT;

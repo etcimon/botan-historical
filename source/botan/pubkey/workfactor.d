@@ -6,6 +6,9 @@
 */
 module botan.pubkey.workfactor;
 import botan.utils.types;
+import std.algorithm : max;
+import std.math : pow, log;
+
 /**
 * Estimate work factor for discrete logarithm
 * @param prime_group_size size of the group in bits
@@ -13,8 +16,6 @@ import botan.utils.types;
 */
 size_t dl_work_factor(size_t prime_group_size)
 {
-	import std.algorithm : max;
-	import std.math : pow, log;
 	/*
 	Based on GNFS work factors. Constant is 1.43 times the asymptotic
 	value; I'm not sure but I believe that came from a paper on 'real

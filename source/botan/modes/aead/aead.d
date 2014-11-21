@@ -155,11 +155,11 @@ static if (BOTAN_TEST):
 import botan.test;
 import botan.codec.hex;
 import core.atomic;
-size_t g_tests_ran;
+size_t total_tests;
 
 size_t aead_test(string algo, string input, string expected, string nonce_hex, string ad_hex, string key_hex)
 {
-	atomicOp!"+="(g_tests_ran, 1);
+	atomicOp!"+="(total_tests, 5);
 	const auto nonce = hex_decode_locked(nonce_hex);
 	const auto ad = hex_decode_locked(ad_hex);
 	const auto key = hex_decode_locked(key_hex);
@@ -279,5 +279,5 @@ unittest
 	
 	size_t fails = run_tests_in_dir("test_data/aead", test);
 
-	test_report("aead", g_tests_ran, fails);
+	test_report("aead", total_tests, fails);
 }

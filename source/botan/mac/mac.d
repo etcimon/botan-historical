@@ -51,13 +51,16 @@ import botan.test;
 import botan.libstate.libstate;
 import botan.codec.hex;
 
+private __gshared size_t total_tests;
+
 size_t mac_test(string algo, string key_hex, string in_hex, string out_hex)
 {
 	Algorithm_Factory af = global_state().algorithm_factory();
 	
 	const auto providers = af.providers_of(algo);
 	size_t fails = 0;
-	
+
+	atomicOp!"+="(total_tests, 1);
 	if(providers.empty)
 	{
 		writeln("Unknown algo " ~ algo);
@@ -66,6 +69,7 @@ size_t mac_test(string algo, string key_hex, string in_hex, string out_hex)
 	
 	foreach (provider; providers)
 	{
+		atomicOp!"+="(total_tests, 1);
 		auto proto = af.prototype_mac(algo, provider);
 		
 		if(!proto)
@@ -81,7 +85,8 @@ size_t mac_test(string algo, string key_hex, string in_hex, string out_hex)
 		mac.update(hex_decode(in_hex));
 		
 		auto h = mac.flush();
-		
+
+		atomicOp!"+="(total_tests, 1);
 		if(h != hex_decode_locked(out_hex))
 		{
 			writeln(algo ~ " " ~ provider ~ " got " ~ hex_encode(h) ~ " != " ~ out_hex);
@@ -102,5 +107,7 @@ unittest {
 							});
 	};
 	
-	return run_tests_in_dir("test_data/mac", test);
+	size_t fails = run_tests_in_dir("test_data/mac", test);
+
+	test_report("mac", total_tests, fails);
 }

@@ -6,6 +6,9 @@
 */
 module botan.passhash.passhash9;
 
+import botan.constants;
+static if (BOTAN_HAS_PASSHASH9):
+
 import botan.rng.rng;
 import botan.utils.loadstor;
 import botan.libstate.libstate;
@@ -145,4 +148,41 @@ MessageAuthenticationCode get_pbkdf_prf(ubyte alg_id)
 	catch(Algorithm_Not_Found) {}
 	
 	return null;
+}
+
+static if (BOTAN_TEST):
+import botan.test;
+import botan.rng.auto_rng;
+
+unittest
+{
+	size_t fails = 0;
+	
+	const string input = "secret";
+	const string fixed_hash = "$9$AAAKhiHXTIUhNhbegwBXJvk03XXJdzFMy+i3GFMIBYKtthTTmXZA";
+	
+	size_t ran = 0;
+	
+	++ran;
+	if (!check_passhash9(input, fixed_hash))
+	{
+		writeln("Passhash9 fixed input test failed");
+		fails++;
+	}
+	
+	AutoSeeded_RNG rng;
+	
+	for(ubyte alg_id = 0; alg_id <= 4; ++alg_id)
+	{
+		string gen_hash = generate_passhash9(input, rng, 2, alg_id);
+		
+		++ran;
+		if (!check_passhash9(input, gen_hash))
+		{
+			writeln("Passhash9 gen and check " ~ alg_id.to!string ~ " failed");
+			++fails;
+		}
+	}
+	
+	test_report("Passhash9", ran, fails);
 }

@@ -162,3 +162,31 @@ KDF get_kdf(in string algo_spec)
 	
 	throw new Algorithm_Not_Found(algo_spec);
 }
+
+static if (BOTAN_TEST):
+
+import botan.libstate.lookup;
+import botan.codec.hex;
+
+unittest
+{
+	auto test = (string input) {
+		return run_tests(input, "KDF", "Output", true,
+		                 (string[string] vec)
+		                 {
+			Unique!KDF kdf = get_kdf(vec["KDF"]);
+			
+			const size_t outlen = to!uint(vec["OutputLen"]);
+			const auto salt = hex_decode(vec["Salt"]);
+			const auto secret = hex_decode(vec["Secret"]);
+			
+			const auto key = kdf.derive_key(outlen, secret, salt);
+			
+			return hex_encode(key);
+		});
+	};
+	
+	size_t fails = run_tests_in_dir("test_data/kdf", test);
+	
+	test_report("kdf", 1, fails);
+}

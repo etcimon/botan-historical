@@ -6,6 +6,9 @@
 */
 module botan.rng.hmac_drbg;
 
+import botan.constants;
+static if (BOTAN_HAS_HMAC_DRBG):
+
 import botan.rng.rng;
 import botan.mac.mac;
 import botan.utils.types;

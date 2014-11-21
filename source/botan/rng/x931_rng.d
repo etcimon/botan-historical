@@ -6,6 +6,9 @@
 */
 module botan.rng.x931_rng;
 
+import botan.constants;
+static if (BOTAN_HAS_X931_RNG):
+
 import botan.rng.rng;
 import botan.block.block_cipher;
 import botan.utils.xor_buf;

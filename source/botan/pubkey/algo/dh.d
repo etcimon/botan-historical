@@ -151,3 +151,79 @@ private:
 	Fixed_Exponent_Power_Mod m_powermod_x_p;
 	Blinder m_blinder;
 }
+
+
+static if (BOTAN_TEST):
+
+import botan.test;
+import botan.pubkey.test;
+import botan.rng.auto_rng;
+import botan.pubkey.pubkey;
+import botan.pubkey.algo.dh;
+import botan.codec.hex;
+import core.atomic;
+
+private __gshared size_t total_tests;
+
+size_t test_pk_keygen(RandomNumberGenerator rng)
+{
+	size_t fails;
+
+	string[] dh_list = ["modp/ietf/1024", "modp/ietf/2048", "modp/ietf/4096", "dsa/jce/1024"];
+
+	foreach (dh; dh_list) {
+		atomicOp!"+="(total_tests, 1);
+		auto key = scoped!DH_PrivateKey(rng, EC_Group(OIDS.lookup(dh)));
+		key.check_key(rng, true);
+		fails += validate_save_and_load(&key, rng);
+	}
+	
+	return fails;
+}
+
+size_t dh_sig_kat(string p, string g, string x, string y, string kdf, string outlen, string key)
+{
+	atomicOp!"+="(total_tests, 1);
+	AutoSeeded_RNG rng;
+	
+	BigInt p_bn = BigInt(p);
+	BigInt g_bn = BigInt(g);
+	BigInt x_bn = BigInt(x);
+	BigInt y_bn = BigInt(y);
+	
+	DL_Group domain = DL_Group(p_bn, g_bn);
+	
+	auto mykey = scoped!DH_PrivateKey(rng, domain, x_bn);
+	auto otherkey = scoped!DH_PublicKey(domain, y_bn);
+	
+	if (kdf == "")
+		kdf = "Raw";
+	
+	size_t keylen = 0;
+	if (outlen != "")
+		keylen = to!uint(outlen);
+	
+	auto kas = scoped!PK_Key_Agreement(mykey, kdf);
+	
+	return validate_kas(kas, "DH/" ~ kdf, otherkey.public_value(), key, keylen);
+}
+
+unittest
+{
+	size_t fails = 0;
+
+	AutoSeeded_RNG rng;
+
+	fails += test_pk_keygen(rng);
+
+	File dh_sig = File("test_data/pubkey/dh.vec", "r");
+	
+	fails += run_tests_bb(dh_sig, "DH Kex", "K", true,
+	                      (string[string] m) {
+								return dh_sig_kat(m["P"], m["G"], m["X"], m["Y"], m["KDF"], m["OutLen"], m["K"]);
+							});
+
+
+	test_report("DH", total_tests, fails);
+
+}

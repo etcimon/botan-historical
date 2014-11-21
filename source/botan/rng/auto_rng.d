@@ -6,7 +6,7 @@
 */
 module botan.rng.auto_rng;
 
-import botan.rng.rng;
+public import botan.rng.rng;
 import botan.utils.types;
 // import string;
 

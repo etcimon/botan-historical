@@ -269,7 +269,7 @@ unittest
 	import std.array;
 	import std.string : strip;
 	const string filename = "test_data/mp_valid.dat";
-	File test_data = File(filename);
+	File test_data = File(filename, "r");
 	
 	if (test_data.error || test_data.eof)
 		throw new Stream_IO_Error("Couldn't open test file " ~ filename);
@@ -353,5 +353,5 @@ unittest
 	}
 
 	
-	test_report("BigInt", 0, total_errors);
+	test_report("BigInt", alg_count, total_errors);
 }

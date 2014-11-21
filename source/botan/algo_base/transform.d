@@ -137,3 +137,48 @@ public:
 private:
 	abstract void key_schedule(in ubyte* key, size_t length);
 }
+
+static if (BOTAN_TEST):
+
+import botan.test;
+import botan.codec.hex;
+import core.atomic;
+
+__gshared size_t total_tests;
+
+Transformation get_transform(string algo)
+{
+	throw new Exception("Unknown transform " ~ algo);
+}
+
+Secure_Vector!ubyte transform_test(string algo,
+                                   in Secure_Vector!ubyte nonce,
+                                   in Secure_Vector!ubyte /*key*/,
+                                   in Secure_Vector!ubyte input)
+{
+	Unique!Transformation transform = get_transform(algo);
+	
+	//transform.set_key(key);
+	transform.start_vec(nonce);
+	
+	Secure_Vector!ubyte output = input;
+	transform.update(output, 0);
+	
+	return output;
+}
+
+unittest
+{
+	File vec = File("test_data/transform.vec", "r");
+	
+	size_t fails = run_tests(vec, "Transform", "Output", true,
+	                 (string[string] m) {
+						atomicOp!"+="(total_tests, 1);
+						return hex_encode(transform_test(m["Transform"],
+											hex_decode_locked(m["Nonce"]),
+											hex_decode_locked(m["Key"]),
+											hex_decode_locked(m["Input"])));
+					});
+		
+	test_report("transform", total_tests, fails);
+}

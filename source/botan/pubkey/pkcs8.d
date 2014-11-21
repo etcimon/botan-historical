@@ -6,6 +6,9 @@
 */
 module botan.pubkey.pkcs8;
 
+import botan.constants;
+static if (BOTAN_HAS_PUBLIC_KEY_CRYPTO):
+
 alias pkcs8 = botan.pubkey.pkcs8;
 
 import botan.pubkey.x509_key;

@@ -28,6 +28,7 @@ import botan.codec.hex;
 import botan.libstate.lookup;
 import botan.filters.filters;
 
+private __gshared size_t total_tests;
 Secure_Vector!ubyte run_mode(string algo, Cipher_Dir dir, in Secure_Vector!ubyte pt, in Secure_Vector!ubyte nonce, in Secure_Vector!ubyte key)
 {
 	/*
@@ -55,7 +56,7 @@ size_t mode_test(string algo, string pt, string ct, string key_hex, string nonce
 	size_t fails = 0;
 	
 	const string ct2 = hex_encode(run_mode(algo, ENCRYPTION, hex_decode_locked(pt), nonce, key));
-	
+	atomicOp!"+="(total_tests, 1);
 	if (ct != ct2)
 	{
 		writeln(algo ~ " got ct " ~ ct2 ~ " expected " ~ ct);
@@ -63,7 +64,7 @@ size_t mode_test(string algo, string pt, string ct, string key_hex, string nonce
 	}
 	
 	const string pt2 = hex_encode(run_mode(algo, DECRYPTION, hex_decode_locked(ct), nonce, key));
-	
+	atomicOp!"+="(total_tests, 1);
 	if (pt != pt2)
 	{
 		writeln(algo ~ " got pt " ~ pt2 ~ " expected " ~ pt);
@@ -84,5 +85,7 @@ unittest {
 							});
 	};
 	
-	return run_tests_in_dir("test_data/modes", test);
+	size_t fails = run_tests_in_dir("test_data/modes", test);
+
+	test_report("cipher_mode", total_tests, fails);
 }

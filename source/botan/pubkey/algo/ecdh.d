@@ -32,7 +32,7 @@ public:
 	* @param dom_par the domain parameters associated with this key
 	* @param public_point the public point defining this key
 	*/
-	this(in EC_Group dom_par, const ref PointGFp public_point) 
+	this(in EC_Group dom_par, in PointGFp public_point) 
 	{
 		super(dom_par, public_point);
 	}
@@ -81,7 +81,7 @@ public:
 	* @param domain parameters to used for this key
 	* @param x the private key; if zero, a new random key is generated
 	*/
-	this(RandomNumberGenerator rng, const ref EC_Group domain,
+	this(RandomNumberGenerator rng, in EC_Group domain,
 		in BigInt x = 0) 
 	{
 		super(rng, domain, x);
@@ -143,7 +143,7 @@ size_t test_ecdh_normal_derivation(RandomNumberGenerator rng)
 	
 	SymmetricKey alice_key = ka.derive_key(32, private_b.public_value());
 	SymmetricKey bob_key = kb.derive_key(32, private_a.public_value());
-	
+	// 1 test
 	if (alice_key != bob_key)
 	{
 		writeln("The two keys didn't match!");
@@ -163,7 +163,7 @@ size_t test_ecdh_some_dp(RandomNumberGenerator rng)
 	oids.push_back("1.2.840.10045.3.1.7");
 	oids.push_back("1.3.132.0.8");
 	oids.push_back("1.2.840.10045.3.1.1");
-	
+	// 3 tests
 	foreach (oid_str; oids)
 	{
 		OID oid = OID(oids_str);
@@ -192,14 +192,14 @@ size_t test_ecdh_der_derivation(RandomNumberGenerator rng)
 	oids.push_back("1.2.840.10045.3.1.7");
 	oids.push_back("1.3.132.0.8");
 	oids.push_back("1.2.840.10045.3.1.1");
-	
+	// 3 tests
 	foreach (oid_str; oids)
 	{
 		OID oid = OID(oid_str);
 		EC_Group dom_pars = EC_Group(oid);
 		
-		ECDH_PrivateKey private_a(rng, dom_pars);
-		ECDH_PrivateKey private_b(rng, dom_pars);
+		auto private_a = scoped!ECDH_PrivateKey(rng, dom_pars);
+		auto private_b = scoped!ECDH_PrivateKey(rng, dom_pars);
 		
 		Vector!ubyte key_a = private_a.public_value();
 		Vector!ubyte key_b = private_b.public_value();
@@ -227,5 +227,5 @@ unittest
 	fails += test_ecdh_some_dp(rng);
 	fails += test_ecdh_der_derivation(rng);
 	
-	test_report("ECDH", 3, fails);
+	test_report("ECDH", 7, fails);
 }

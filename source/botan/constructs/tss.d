@@ -6,6 +6,9 @@
 */
 module botan.constructs.tss;
 
+import botan.constants;
+static if (BOTAN_HAS_THRESHOLD_SECRET_SHARING):
+
 import botan.utils.memory.zeroize;
 import botan.hash.hash;
 import botan.rng.rng;
@@ -295,4 +298,44 @@ HashFunction get_rtss_hash_by_id(ubyte id)
 		return new SHA_256;
 	else
 		throw new Decoding_Error("Bad RTSS hash identifier");
+}
+
+static if (BOTAN_TEST):
+import botan.test;
+import botan.rng.auto_rng;
+import botan.codec.hex;
+
+unittest
+{	
+	AutoSeeded_RNG rng;
+	
+	size_t fails = 0;
+	
+	ubyte[16] id;
+	for(int i = 0; i != 16; ++i)
+		id[i] = i;
+	
+	const Secure_Vector!ubyte S = hex_decode_locked("7465737400");
+	
+	Vector!RTSS_Share shares = RTSS_Share.split(2, 4, &S[0], S.length, id, rng);
+	
+	auto back = RTSS_Share.reconstruct(shares);
+	
+	if (S != back)
+	{
+		writeln("TSS-0: " ~ hex_encode(S) ~ " != " ~ hex_encode(back));
+		++fails;
+	}
+	
+	shares.resize(shares.length-1);
+	
+	back = RTSS_Share.reconstruct(shares);
+	
+	if (S != back)
+	{
+		writeln("TSS-1: " ~ hex_encode(S) ~ " != " ~ hex_encode(back));
+		++fails;
+	}
+	
+	test_report("tss", 2, fails);
 }

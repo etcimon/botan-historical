@@ -6,10 +6,14 @@
 */
 module botan.pubkey.pubkey;
 
+import botan.constants;
+static if (BOTAN_HAS_PUBLIC_KEY_CRYPTO):
+
 import botan.utils.types;
 public import botan.pubkey.pk_keys;
 public import botan.pubkey.pk_ops;
 public import botan.algo_base.symkey;
+public import botan.utils.types;
 import botan.rng.rng;
 import botan.pk_pad.eme;
 import botan.pk_pad.emsa;

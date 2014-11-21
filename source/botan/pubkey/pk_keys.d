@@ -6,6 +6,9 @@
 */
 module botan.pubkey.pk_keys;
 
+import botan.constants;
+static if (BOTAN_HAS_PUBLIC_KEY_CRYPTO):
+
 import botan.utils.memory.zeroize;
 import botan.asn1.asn1_oid;
 import botan.asn1.alg_id;

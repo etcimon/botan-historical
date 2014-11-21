@@ -10,23 +10,24 @@ module botan.cert.cvc.cvc_self;
 import botan.constants;
 static if (BOTAN_HAS_CVC_CERTIFICATES):
 
+static assert(BOTAN_HAS_ECDSA, "CVC requires ECDSA");
+
 alias cvc_self = botan.cert.cvc.cvc_self;
 
 import botan.pubkey.pkcs8;
 import botan.asn1.oids;
-import botan.pubkey.algo.ecdsa;
 import botan.asn1.asn1_obj;
 import botan.cert.cvc.cvc_cert;
 import botan.cert.cvc.cvc_req;
 import botan.cert.cvc.cvc_ado;
 import botan.pubkey.pubkey;
 import botan.pubkey.algo.ecc_key;
+import botan.pubkey.algo.ecdsa;
 import botan.math.ec_gfp.curve_gfp;
 import botan.cert.cvc.eac_asn_obj;
 import botan.rng.rng;
 import botan.utils.types;
 import std.array : Appender;
-
 
 /**
 * This class represents a set of options used for the creation of CVC certificates

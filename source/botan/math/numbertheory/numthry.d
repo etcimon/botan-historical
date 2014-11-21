@@ -732,8 +732,8 @@ BigInt inverse_mod_odd_modulus(in BigInt n, in BigInt mod)
 	return D;
 }
 
-bool mr_witness(ref BigInt y,
-                const ref Modular_Reducer reducer_n,
+bool mr_witness(T : Modular_Reducer)(ref BigInt y,
+                auto ref T reducer_n,
                 in BigInt n_minus_1, size_t s)
 {
 	if (y == 1 || y == n_minus_1)

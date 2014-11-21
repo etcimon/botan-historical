@@ -76,7 +76,7 @@ public:
 	/*
 	* Create a NR private key
 	*/
-	this(RandomNumberGenerator rng, const ref DL_Group grp, in BigInt x_arg)
+	this(RandomNumberGenerator rng, in DL_Group grp, in BigInt x_arg)
 	{
 		m_group = grp;
 		m_x = x_arg;
@@ -202,4 +202,74 @@ private:
 
 	Fixed_Base_Power_Mod m_powermod_g_p, m_powermod_y_p;
 	Modular_Reducer m_mod_p, m_mod_q;
+}
+
+
+static if (BOTAN_TEST):
+
+import botan.test;
+import botan.pubkey.test;
+import botan.pubkey.pubkey;
+import botan.codec.hex;
+import botan.rng.auto_rng;
+import core.atomic;
+
+private __gshared size_t total_tests;
+
+size_t test_pk_keygen(RandomNumberGenerator rng)
+{	
+	size_t fails;
+	string[] nr_list = ["dsa/jce/1024", "dsa/botan/2048", "dsa/botan/3072"];
+	
+	foreach (nr; nr_list) {
+		atomicOp!"+="(total_tests, 1);
+		auto key = scoped!ElGamal_PrivateKey(rng, EC_Group(OIDS.lookup(nr)));
+		key.check_key(rng, true);
+		fails += validate_save_and_load(&key, rng);
+	}
+	
+	return fails;
+}
+
+size_t nr_sig_kat(string p, string q, string g, string x, 
+                  string hash, string msg, string nonce, string signature)
+{
+	atomicOp!"+="(total_tests, 1);
+	AutoSeeded_RNG rng;
+	
+	BigInt p_bn = BigInt(p);
+	BigInt q_bn = BigInt(q);
+	BigInt g_bn = BigInt(g);
+	BigInt x_bn = BigInt(x);
+	
+	DL_Group group = DL_Group(p_bn, q_bn, g_bn);
+	
+	auto privkey = scoped!NR_PrivateKey(rng, group, x_bn);
+	
+	auto pubkey = scoped!NR_PublicKey(privkey);
+	
+	const string padding = "EMSA1(" ~ hash ~ ")";
+	
+	PK_Verifier verify = PK_Verifier(pubkey, padding);
+	PK_Signer sign = PK_Signer(privkey, padding);
+	
+	return validate_signature(verify, sign, "nr/" ~ hash, msg, rng, nonce, signature);
+}
+
+unittest
+{
+	size_t fails = 0;
+	
+	AutoSeeded_RNG rng;
+	
+	fails += test_pk_keygen(rng);
+	
+	File nr_sig = File("test_data/pubkey/nr.vec", "r");
+	
+	fails += run_tests_bb(nr_sig, "NR Signature", "Signature", true,
+	                      (string[string] m) {
+		return nr_sig_kat(m["P"], m["Q"], m["G"], m["X"], m["Hash"], m["Msg"], m["Nonce"], m["Signature"]);
+	});
+	
+	test_report("nr", total_tests, fails);
 }

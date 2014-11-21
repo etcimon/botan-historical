@@ -31,7 +31,7 @@ public:
 	* @param dom_par the domain parameters associated with this key
 	* @param public_point the public point defining this key
 	*/
-	this(in EC_Group dom_par, const ref PointGFp public_point) 
+	this(in EC_Group dom_par, in PointGFp public_point) 
 	{
 		super(dom_par, public_point); 
 	}
@@ -144,7 +144,7 @@ public:
 	* @param domain parameters to used for this key
 	* @param x the private key; if zero, a new random key is generated
 	*/
-	this(RandomNumberGenerator rng, const ref EC_Group domain, in BigInt x = 0)
+	this(RandomNumberGenerator rng, in EC_Group domain, in BigInt x = 0)
 	{
 		super(rng, domain, x);
 	}
@@ -277,3 +277,75 @@ BigInt decode_le(in ubyte* msg, size_t msg_len)
 	
 	return BigInt(msg_le.ptr, msg_le.length);
 }
+
+
+static if (BOTAN_TEST):
+
+import botan.test;
+import botan.pubkey.test;
+import botan.rng.auto_rng;
+import botan.pubkey.pubkey;
+import botan.asn1.oids;
+import botan.codec.hex;
+import core.atomic;
+
+private __gshared size_t total_tests;
+
+size_t test_pk_keygen(RandomNumberGenerator rng)
+{
+	size_t fails;
+	string[] gost_list = ["gost_256A", "secp112r1", "secp128r1", "secp160r1",
+		"secp192r1", "secp224r1", "secp256r1", "secp384r1", "secp521r1"];
+	
+	foreach (gost; gost_list) {
+		atomicOp!"+="(total_tests, 1);
+		auto key = scoped!GOST_3410_PrivateKey(rng, EC_Group(OIDS.lookup(gost)));
+		key.check_key(rng, true);
+		fails += validate_save_and_load(&key, rng);
+	}
+	
+	return fails;
+}
+
+size_t gost_verify(string group_id,
+                   string x,
+                   string hash,
+                   string msg,
+                   string signature)
+{
+	atomicOp!"+="(total_tests, 1);
+	AutoSeeded_RNG rng;
+	
+	EC_Group group = EC_Group(OIDS.lookup(group_id));
+	PointGFp public_point = OS2ECP(hex_decode(x), group.get_curve());
+	
+	auto gost = scoped!GOST_3410_PublicKey(group, public_point);
+	
+	const string padding = "EMSA1(" ~ hash ~ ")";
+	
+	PK_Verifier v = PK_Verifier(gost, padding);
+	
+	if (!v.verify_message(hex_decode(msg), hex_decode(signature)))
+		return 1;
+	
+	return 0;
+}
+
+unittest
+{
+	size_t fails = 0;
+
+	AutoSeeded_RNG rng;
+
+	fails += test_pk_keygen(rng);
+
+	File ecdsa_sig = File("test_data/pubkey/gost_3410.vec", "r");
+	
+	fails += run_tests_bb(ecdsa_sig, "GOST-34.10 Signature", "Signature", true,
+	                      (string[string] m) {
+								return gost_verify(m["Group"], m["Pubkey"], m["Hash"], m["Msg"], m["Signature"]);
+							});
+	
+	test_report("gost_3410", total_tests, fails);
+}
+

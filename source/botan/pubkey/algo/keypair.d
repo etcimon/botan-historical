@@ -6,6 +6,9 @@
 */
 module botan.pubkey.algo.keypair;
 
+import botan.constants;
+static if (BOTAN_HAS_PUBLIC_KEY_CRYPTO):
+
 import botan.pubkey.pk_keys;
 import botan.pubkey.pubkey;
 import botan.utils.types;

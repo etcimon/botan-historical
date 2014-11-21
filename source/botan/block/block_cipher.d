@@ -193,9 +193,12 @@ class Block_Cipher_Fixed_Params(size_t BS, size_t KMIN, size_t KMAX = 0, size_t 
 
 static if (BOTAN_TEST):
 
-import botan.libstate.libstate;
-import botan.codec.hex;
 import botan.test;
+import botan.libstate.libstate;
+import botan.algo_factory.algo_factory;
+import botan.codec.hex;
+
+__gshared size_t total_tests;
 
 size_t block_test(string algo, string key_hex, string in_hex, string out_hex)
 {
@@ -213,6 +216,8 @@ size_t block_test(string algo, string key_hex, string in_hex, string out_hex)
 	
 	foreach (provider; providers)
 	{
+
+		atomicOp!"+="(total_tests, 1);
 		const BlockCipher proto = af.prototype_block_cipher(algo, provider);
 		
 		if (!proto)
@@ -227,7 +232,8 @@ size_t block_test(string algo, string key_hex, string in_hex, string out_hex)
 		Secure_Vector!ubyte buf = pt;
 		
 		cipher.encrypt(buf);
-		
+
+		atomicOp!"+="(total_tests, 1);
 		if (buf != ct)
 		{
 			writeln(algo ~ " " ~ provider ~ " enc " ~ hex_encode(buf) ~ " != " ~ out_hex);
@@ -236,7 +242,8 @@ size_t block_test(string algo, string key_hex, string in_hex, string out_hex)
 		}
 		
 		cipher.decrypt(buf);
-		
+
+		atomicOp!"+="(total_tests, 1);
 		if (buf != pt)
 		{
 			writeln(algo ~ " " ~ provider ~ " dec " ~ hex_encode(buf) ~ " != " ~ out_hex);
@@ -253,11 +260,13 @@ unittest {
 		File vec = File(input, "r");
 		
 		return run_tests_bb(vec, "BlockCipher", "Out", true,
-		                    (string[string] m)
-		                    {
-			return block_test(m["BlockCipher"], m["Key"], m["In"], m["Out"]);
-		});
+		                    (string[string] m) {
+								return block_test(m["BlockCipher"], m["Key"], m["In"], m["Out"]);
+							});
 	};
 	
-	return run_tests_in_dir("test_data/block", test_bc);
+	size_t fails = run_tests_in_dir("test_data/block", test_bc);
+
+
+	test_report("block_cipher", total_tests, fails);
 }

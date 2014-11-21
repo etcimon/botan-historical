@@ -149,5 +149,7 @@ unittest {
 						});
 	};
 	
-	return run_tests_in_dir("test_data/pbkdf", test);
+	size_t fails = run_tests_in_dir("test_data/pbkdf", test);
+
+	test_report("pbkdf", 1, fails);
 }

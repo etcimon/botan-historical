@@ -5,6 +5,10 @@
 * Distributed under the terms of the botan license.
 */
 module botan.benchmark.benchmark;
+
+import botan.constants;
+static if (BOTAN_HAS_BENCHMARK):
+
 import botan.algo_factory.algo_factory;
 import botan.algo_base.buf_comp;
 import botan.block.block_cipher;

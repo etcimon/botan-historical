@@ -160,3 +160,35 @@ __gshared immutable size_t PBKDF_SALT_LEN = 10;
 __gshared immutable size_t PBKDF_ITERATIONS = 8 * 1024;
 
 __gshared immutable size_t PBKDF_OUTPUT_LEN = CIPHER_KEY_LEN + CIPHER_IV_LEN + MAC_KEY_LEN;
+
+
+static if (BOTAN_TEST):
+
+import botan.test;
+import botan.rng.auto_rng;
+
+unittest
+{
+	size_t fails = 0;
+	
+	AutoSeeded_RNG rng;
+	
+	__gshared immutable ubyte[3] msg = [ 0xAA, 0xBB, 0xCC ];
+	string ciphertext = CryptoBox.encrypt(msg.ptr, msg.length, "secret password", rng);
+	
+	try
+	{
+		string plaintext = CryptoBox.decrypt(ciphertext, "secret password");
+		
+		if (plaintext.length != msg.length || !same_mem(cast(const ubyte*)(&plaintext[0]), msg.ptr, msg.length))
+			++fails;
+		
+	}
+	catch(Exception e)
+	{
+		writeln("Error during Cryptobox test " ~ e.msg);
+		++fails;
+	}
+	
+	test_report("Cryptobox", 2, fails);
+}

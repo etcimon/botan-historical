@@ -157,9 +157,10 @@ public:
 	* @param point the point value
 	* @return scalar*point on the curve
 	*/
-	ref PointGFp opBinary(string op)(in BigInt scalar, const ref PointGFp point)
+	ref PointGFp opBinary(string op)(in BigInt scalar)
 		if (op == "*")
 	{
+		auto point = this;
 		const CurveGFp curve = point.get_curve();
 		
 		if (scalar.is_zero())
@@ -228,7 +229,7 @@ public:
 				Ps[i].add(point, ws);
 			}
 			
-			PointGFp H(curve); // create as zero
+			PointGFp H = PointGFp(curve); // create as zero
 			size_t bits_left = scalar_bits;
 			
 			while (bits_left >= window_size)
@@ -767,8 +768,7 @@ Secure_Vector!ubyte EC2OSP(in PointGFp point, ubyte format)
 		throw new Invalid_Argument("illegal point encoding format specification");
 }
 
-
-PointGFp OS2ECP(in ubyte* data, size_t data_len, const ref CurveGFp curve)
+PointGFp OS2ECP(T : CurveGFp)(in ubyte* data, size_t data_len, auto ref T curve)
 {
 	if (data_len <= 1)
 		return PointGFp(curve); // return zero
@@ -817,7 +817,7 @@ PointGFp OS2ECP(in ubyte* data, size_t data_len, const ref CurveGFp curve)
 	return result;
 }
 
-PointGFp OS2ECP(Alloc)(in Vector!( ubyte, Alloc ) data, const ref CurveGFp curve)
+PointGFp OS2ECP(Alloc, T : CurveGFp)(in Vector!( ubyte, Alloc ) data, auto ref T curve)
 { return OS2ECP(data.ptr, data.length, curve); }
 
 void swap(ref PointGFp x, ref PointGFp y)
@@ -825,9 +825,9 @@ void swap(ref PointGFp x, ref PointGFp y)
 
 private:
 
-BigInt decompress_point(bool yMod2,
+BigInt decompress_point(T : CurveGFp)(bool yMod2,
                         in BigInt x,
-                        const ref CurveGFp curve)
+                        auto ref T curve)
 {
 	BigInt xpow3 = x * x * x;
 	

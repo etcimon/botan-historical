@@ -42,7 +42,7 @@ public:
 	* @param order the order of the base point
 	* @param cofactor the cofactor
 	*/
-	this(in CurveGFp curve, const ref PointGFp base_point, in BigInt order, in BigInt cofactor) 
+	this(in CurveGFp curve, in PointGFp base_point, in BigInt order, in BigInt cofactor) 
 	{
 		m_curve = curve;
 		m_base_point = base_point;
@@ -214,13 +214,14 @@ public:
 	* @result the OID
 	*/
 	string get_oid() const { return m_oid; }
-	bool opCmp(string op)(const ref EC_Group rhs)
+
+	bool opCmp(string op, U : EC_Group)(auto ref U rhs)
 		if (op == "!=")
 	{
 		return !(lhs == rhs);
 	}
 
-	bool opEquals(in EC_Group other) const
+	bool opEquals(U : EC_Group)(auto ref U other) const
 	{
 		return ((get_curve() == other.get_curve()) &&
 				  (get_base_point() == other.get_base_point()) &&

@@ -237,3 +237,138 @@ private:
 	const BigInt n;
 	Fixed_Exponent_Power_Mod m_powermod_e_n;
 }
+
+static if (BOTAN_TEST):
+
+import botan.test;
+import botan.pubkey.test;
+import botan.rng.auto_rng;
+import botan.pubkey.pubkey;
+import botan.codec.hex;
+import core.atomic;
+
+__gshared size_t total_tests;
+
+
+size_t rsaes_kat(string e,
+                 string p,
+                 string q,
+                 string msg,
+                 string padding,
+                 string nonce,
+                 string output)
+{
+	atomicOp!"+="(total_tests, 1);
+	AutoSeeded_RNG rng;
+	
+	auto privkey = scoped!RSA_PrivateKey(rng, BigInt(p), BigInt(q), BigInt(e));
+	
+	auto pubkey = scoped!RSA_PublicKey(privkey);
+	
+	if (padding == "")
+		padding = "Raw";
+	
+	auto enc = scoped!PK_Encryptor_EME(pubkey, padding);
+	auto dec = scoped!PK_Decryptor_EME(privkey, padding);
+	
+	return validate_encryption(enc, dec, "RSAES/" ~ padding, msg, nonce, output);
+}
+
+size_t rsa_sig_kat(string e,
+                   string p,
+                   string q,
+                   string msg,
+                   string padding,
+                   string nonce,
+                   string output)
+{
+	atomicOp!"+="(total_tests, 1);
+	AutoSeeded_RNG rng;
+	
+	auto privkey = scoped!RSA_PrivateKey(rng, BigInt(p), BigInt(q), BigInt(e));
+	
+	auto pubkey = scoped!RSA_PublicKey(privkey);
+	
+	if (padding == "")
+		padding = "Raw";
+	
+	PK_Verifier verify = PK_Verifier(pubkey, padding);
+	PK_Signer sign = PK_Signer(privkey, padding);
+	
+	return validate_signature(verify, sign, "RSA/" ~ padding, msg, rng, nonce, output);
+}
+
+size_t rsa_sig_verify(string e,
+                      string n,
+                      string msg,
+                      string padding,
+                      string signature)
+{
+	atomicOp!"+="(total_tests, 1);
+	AutoSeeded_RNG rng;
+	
+	BigInt e_bn = BigInt(e);
+	BigInt n_bn = BigInt(n);
+	
+	auto key = scoped!RSA_PublicKey(n_bn, e_bn);
+	
+	if (padding == "")
+		padding = "Raw";
+	
+	PK_Verifier verify = PK_Verifier(key, padding);
+	
+	if (!verify.verify_message(hex_decode(msg), hex_decode(signature)))
+		return 1;
+	return 0;
+}
+
+size_t test_pk_keygen(RandomNumberGenerator rng)
+{
+
+	auto rsa1024 = scoped!RSA_PrivateKey(rng, 1024);
+	rsa1024.check_key(rng, true);
+	atomicOp!"+="(total_tests, 1);
+	fails += validate_save_and_load(&rsa1024, rng);
+	
+	auto rsa2048 = scoped!RSA_PrivateKey(rng, 2048);
+	rsa2048.check_key(rng, true);
+	atomicOp!"+="(total_tests, 1);
+	fails += validate_save_and_load(&rsa2048, rng);
+
+}
+
+unittest
+{
+	size_t fails = 0;
+	
+	AutoSeeded_RNG rng;
+
+	
+	File rsa_enc = File("test_data/pubkey/rsaes.vec", "r");
+	File rsa_sig = File("test_data/pubkey/rsa_sig.vec", "r");
+	File rsa_verify = File("test_data/pubkey/rsa_verify.vec", "r");
+	
+	
+	fails += run_tests_bb(rsa_enc, "RSA Encryption", "Ciphertext", true,
+	                      (string[string] m)
+	                      {
+		return rsaes_kat(m["E"], m["P"], m["Q"], m["Msg"],
+		m["Padding"], m["Nonce"], m["Ciphertext"]);
+	});
+	
+	fails += run_tests_bb(rsa_sig, "RSA Signature", "Signature", true,
+	                      (string[string] m)
+	                      {
+		return rsa_sig_kat(m["E"], m["P"], m["Q"], m["Msg"],
+		m["Padding"], m["Nonce"], m["Signature"]);
+	});
+	
+	fails += run_tests_bb(rsa_verify, "RSA Verify", "Signature", true,
+	                      (string[string] m)
+	                      {
+		return rsa_sig_verify(m["E"], m["N"], m["Msg"],
+		m["Padding"], m["Signature"]);
+	});
+	
+	test_report("rsa", total_tests, fails);
+}

@@ -1,10 +1,14 @@
 /*
-* DLIES
+* DLIES (Discrete Logarithm/Elliptic Curve Integrated Encryption Scheme): 
+* Essentially the "DHAES" variant of ElGamal encryption.
 * (C) 1999-2007 Jack Lloyd
 *
 * Distributed under the terms of the botan license.
 */
 module botan.pubkey.algo.dlies;
+
+import botan.constants;
+static if (BOTAN_HAS_DLIES):
 
 import botan.pubkey.pubkey;
 import botan.mac.mac;
@@ -153,4 +157,69 @@ private:
 	Unique!KDF m_kdf;
 	Unique!MessageAuthenticationCode m_mac;
 	size_t m_mac_keylen;
+}
+
+
+static if (BOTAN_TEST):
+import botan.test;
+import botan.pubkey.test;
+import botan.codec.hex;
+import botan.rng.auto_rng;
+import botan.pubkey.pubkey;
+import botan.libstate.lookup;
+import botan.pubkey.algo.dh;
+import core.atomic;
+
+__gshared size_t total_tests;
+
+size_t dlies_kat(string p,
+                 string g,
+                 string x1,
+                 string x2,
+                 string msg,
+                 string ciphertext)
+{
+	atomicOp!"+="(total_tests, 1);
+	AutoSeeded_RNG rng;
+	
+	BigInt p_bn = BigInt(p);
+	BigInt g_bn = BigInt(g);
+	BigInt x1_bn = BigInt(x1);
+	BigInt x2_bn = BigInt(x2);
+	
+	DL_Group domain = DL_Group(p_bn, g_bn);
+	
+	auto from = scoped!DH_PrivateKey(rng, domain, x1_bn);
+	auto to = scoped!DH_PrivateKey(rng, domain, x2_bn);
+	
+	const string opt_str = "KDF2(SHA-1)/HMAC(SHA-1)/16";
+	
+	Vector!string options = split_on(opt_str, '/');
+	
+	if (options.length != 3)
+		throw new Exception("DLIES needs three options: " ~ opt_str);
+	
+	const size_t mac_key_len = to!uint(options[2]);
+	
+	auto e = scoped!DLIES_Encryptor(from, get_kdf(options[0]), get_mac(options[1]), mac_key_len);
+	
+	auto d = scoped!DLIES_Decryptor(to, get_kdf(options[0]), get_mac(options[1]), mac_key_len);
+	
+	e.set_other_key(to.public_value());
+	
+	return validate_encryption(e, d, "DLIES", msg, "", ciphertext);
+}
+
+unittest
+{
+	size_t fails = 0;
+	
+	File dlies = File("test_data/pubkey/dlies.vec", "r");
+	
+	fails += run_tests_bb(dlies, "DLIES Encryption", "Ciphertext", true,
+	                      (string[string] m) {
+								return dlies_kat(m["P"], m["G"], m["X1"], m["X2"], m["Msg"], m["Ciphertext"]);
+							});
+	
+	test_report("dlies", total_tests, fails);
 }

@@ -6,6 +6,9 @@
 */
 module botan.pubkey.algo.if_algo;
 
+import botan.constants;
+static if (BOTAN_HAS_PUBLIC_KEY_CRYPTO):
+
 import botan.math.bigint.bigint;
 import botan.pubkey.x509_key;
 import botan.pubkey.pkcs8;
@@ -21,8 +24,7 @@ class IF_Scheme_PublicKey : Public_Key
 {
 public:
 
-	this(in Algorithm_Identifier,
-	     in Secure_Vector!ubyte key_bits)
+	this(in Algorithm_Identifier, in Secure_Vector!ubyte key_bits)
 	{
 		BER_Decoder(key_bits)
 				.start_cons(ASN1_Tag.SEQUENCE)
@@ -32,7 +34,7 @@ public:
 				.end_cons();
 	}
 
-	this(in BigInt n, const ref BigInt e)
+	this(in BigInt n, in BigInt e)
 	{
 		m_n = n;
 		m_e = e; 
@@ -109,7 +111,7 @@ public:
 				.decode(m_d1)
 				.decode(m_d2)
 				.decode(m_c)
-				.end_cons();
+				.end_cons();BOTAN_HAS_PUBKEY_CRYPTO
 		
 		load_check(rng);
 	}
