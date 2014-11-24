@@ -19,21 +19,21 @@ import core.sys.posix.unistd;
 */
 /*int operator<<(int fd, Pipe& pipe)
 {
-	Secure_Vector!ubyte buffer = Secure_Vector!ubyte(DEFAULT_BUFFERSIZE);
-	while (pipe.remaining())
-	{
-		size_t got = pipe.read(buffer.ptr, buffer.length);
-		size_t position = 0;
-		while (got)
-		{
-			ssize_t ret = write(fd, &buffer[position], got);
-			if (ret == -1)
-				throw new Stream_IO_Error("Pipe output operator (unixfd) has failed");
-			position += ret;
-			got -= ret;
-		}
-	}
-	return fd;
+    Secure_Vector!ubyte buffer = Secure_Vector!ubyte(DEFAULT_BUFFERSIZE);
+    while (pipe.remaining())
+    {
+        size_t got = pipe.read(buffer.ptr, buffer.length);
+        size_t position = 0;
+        while (got)
+        {
+            ssize_t ret = write(fd, &buffer[position], got);
+            if (ret == -1)
+                throw new Stream_IO_Error("Pipe output operator (unixfd) has failed");
+            position += ret;
+            got -= ret;
+        }
+    }
+    return fd;
 }*/
 
 /**
@@ -44,15 +44,15 @@ import core.sys.posix.unistd;
 */
 /*int opBinary(string op)(int fd, ref Pipe pipe)
 {
-	Secure_Vector!ubyte buffer = Secure_Vector!ubyte(DEFAULT_BUFFERSIZE);
-	while (true)
-	{
-		ssize_t ret = read(fd, buffer.ptr, buffer.length);
-		if (ret == 0) break;
-		if (ret == -1)
-			throw new Stream_IO_Error("Pipe input operator (unixfd) has failed");
-		pipe.write(buffer.ptr, ret);
-	}
-	return fd;
+    Secure_Vector!ubyte buffer = Secure_Vector!ubyte(DEFAULT_BUFFERSIZE);
+    while (true)
+    {
+        ssize_t ret = read(fd, buffer.ptr, buffer.length);
+        if (ret == 0) break;
+        if (ret == -1)
+            throw new Stream_IO_Error("Pipe input operator (unixfd) has failed");
+        pipe.write(buffer.ptr, ret);
+    }
+    return fd;
 }
 */

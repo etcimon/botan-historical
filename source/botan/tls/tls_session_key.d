@@ -19,85 +19,85 @@ import botan.tls.tls_messages;
 struct Session_Keys
 {
 public:
-	SymmetricKey client_cipher_key() const { return m_c_cipher; }
-	SymmetricKey server_cipher_key() const { return s_cipher; }
+    SymmetricKey client_cipher_key() const { return m_c_cipher; }
+    SymmetricKey server_cipher_key() const { return s_cipher; }
 
-	SymmetricKey client_mac_key() const { return m_c_mac; }
-	SymmetricKey server_mac_key() const { return m_s_mac; }
+    SymmetricKey client_mac_key() const { return m_c_mac; }
+    SymmetricKey server_mac_key() const { return m_s_mac; }
 
-	InitializationVector client_iv() const { return m_c_iv; }
-	InitializationVector server_iv() const { return m_s_iv; }
+    InitializationVector client_iv() const { return m_c_iv; }
+    InitializationVector server_iv() const { return m_s_iv; }
 
-	const Secure_Vector!ubyte master_secret() const { return m_master_sec; }
+    const Secure_Vector!ubyte master_secret() const { return m_master_sec; }
 
-	@disable this();
+    @disable this();
 
-	/**
-	* Session_Keys Constructor
-	*/
-	this(in Handshake_State state, in Secure_Vector!ubyte pre_master_secret, bool resuming)
-	{
-		const size_t cipher_keylen = state.ciphersuite().cipher_keylen();
-		const size_t mac_keylen = state.ciphersuite().mac_keylen();
-		const size_t cipher_ivlen = state.ciphersuite().cipher_ivlen();
-		
-		const size_t prf_gen = 2 * (mac_keylen + cipher_keylen + cipher_ivlen);
-		
-		__gshared immutable immutable(ubyte)[] MASTER_SECRET_MAGIC = [
-			0x6D, 0x61, 0x73, 0x74, 0x65, 0x72, 0x20, 0x73, 0x65, 0x63, 0x72, 0x65, 0x74 ];
-		
-		__gshared immutable immutable(ubyte)[] KEY_GEN_MAGIC = [
-			0x6B, 0x65, 0x79, 0x20, 0x65, 0x78, 0x70, 0x61, 0x6E, 0x73, 0x69, 0x6F, 0x6E ];
-		
-		Unique!KDF prf = state.protocol_specific_prf();
-		
-		if (resuming)
-		{
-			m_master_sec = pre_master_secret;
-		}
-		else
-		{
-			Secure_Vector!ubyte salt;
-			
-			if (state._version() != Protocol_Version.SSL_V3)
-				salt ~= MASTER_SECRET_MAGIC;
-			
-			salt ~= state.client_hello().random();
-			salt ~= state.server_hello().random();
-			
-			m_master_sec = prf.derive_key(48, pre_master_secret, salt);
-		}
-		
-		Secure_Vector!ubyte salt;
-		if (state._version() != Protocol_Version.SSL_V3)
-			salt ~= KEY_GEN_MAGIC;
-		salt ~= state.server_hello().random();
-		salt ~= state.client_hello().random();
-		
-		SymmetricKey keyblock = prf.derive_key(prf_gen, m_master_sec, salt);
-		
-		const ubyte* key_data = keyblock.ptr;
-		
-		m_c_mac = SymmetricKey(key_data, mac_keylen);
-		key_data += mac_keylen;
-		
-		m_s_mac = SymmetricKey(key_data, mac_keylen);
-		key_data += mac_keylen;
-		
-		m_c_cipher = SymmetricKey(key_data, cipher_keylen);
-		key_data += cipher_keylen;
-		
-		m_s_cipher = SymmetricKey(key_data, cipher_keylen);
-		key_data += cipher_keylen;
-		
-		m_c_iv = InitializationVector(key_data, cipher_ivlen);
-		key_data += cipher_ivlen;
-		
-		m_s_iv = InitializationVector(key_data, cipher_ivlen);
-	}
+    /**
+    * Session_Keys Constructor
+    */
+    this(in Handshake_State state, in Secure_Vector!ubyte pre_master_secret, bool resuming)
+    {
+        const size_t cipher_keylen = state.ciphersuite().cipher_keylen();
+        const size_t mac_keylen = state.ciphersuite().mac_keylen();
+        const size_t cipher_ivlen = state.ciphersuite().cipher_ivlen();
+        
+        const size_t prf_gen = 2 * (mac_keylen + cipher_keylen + cipher_ivlen);
+        
+        __gshared immutable immutable(ubyte)[] MASTER_SECRET_MAGIC = [
+            0x6D, 0x61, 0x73, 0x74, 0x65, 0x72, 0x20, 0x73, 0x65, 0x63, 0x72, 0x65, 0x74 ];
+        
+        __gshared immutable immutable(ubyte)[] KEY_GEN_MAGIC = [
+            0x6B, 0x65, 0x79, 0x20, 0x65, 0x78, 0x70, 0x61, 0x6E, 0x73, 0x69, 0x6F, 0x6E ];
+        
+        Unique!KDF prf = state.protocol_specific_prf();
+        
+        if (resuming)
+        {
+            m_master_sec = pre_master_secret;
+        }
+        else
+        {
+            Secure_Vector!ubyte salt;
+            
+            if (state._version() != Protocol_Version.SSL_V3)
+                salt ~= MASTER_SECRET_MAGIC;
+            
+            salt ~= state.client_hello().random();
+            salt ~= state.server_hello().random();
+            
+            m_master_sec = prf.derive_key(48, pre_master_secret, salt);
+        }
+        
+        Secure_Vector!ubyte salt;
+        if (state._version() != Protocol_Version.SSL_V3)
+            salt ~= KEY_GEN_MAGIC;
+        salt ~= state.server_hello().random();
+        salt ~= state.client_hello().random();
+        
+        SymmetricKey keyblock = prf.derive_key(prf_gen, m_master_sec, salt);
+        
+        const ubyte* key_data = keyblock.ptr;
+        
+        m_c_mac = SymmetricKey(key_data, mac_keylen);
+        key_data += mac_keylen;
+        
+        m_s_mac = SymmetricKey(key_data, mac_keylen);
+        key_data += mac_keylen;
+        
+        m_c_cipher = SymmetricKey(key_data, cipher_keylen);
+        key_data += cipher_keylen;
+        
+        m_s_cipher = SymmetricKey(key_data, cipher_keylen);
+        key_data += cipher_keylen;
+        
+        m_c_iv = InitializationVector(key_data, cipher_ivlen);
+        key_data += cipher_ivlen;
+        
+        m_s_iv = InitializationVector(key_data, cipher_ivlen);
+    }
 
 private:
-	Secure_Vector!ubyte m_master_sec;
-	SymmetricKey m_c_cipher, m_s_cipher, m_c_mac, m_s_mac;
-	InitializationVector m_c_iv, m_s_iv;
+    Secure_Vector!ubyte m_master_sec;
+    SymmetricKey m_c_cipher, m_s_cipher, m_c_mac, m_s_mac;
+    InitializationVector m_c_iv, m_s_iv;
 }

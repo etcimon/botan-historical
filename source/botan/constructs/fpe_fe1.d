@@ -19,72 +19,72 @@ import std.exception;
 
 struct FPE {
 
-	/**
-	* Format Preserving Encryption using the scheme FE1 from the paper
-	* "Format-Preserving Encryption" by Bellare, Rogaway, et al
-	* (http://eprint.iacr.org/2009/251)
-	*
-	* Encrypt X from and onto the group Z_n using key and tweak
-	* @param n the modulus
-	* @param X the plaintext as a BigInt
-	* @param key a random key
-	* @param tweak will modify the ciphertext (think of as an IV)
-	*/
-	static BigInt fe1_encrypt(in BigInt n, in BigInt X0,
-	                          in SymmetricKey key,
-	                          in Vector!ubyte tweak)
-	{
-		FPE_Encryptor F = scoped!FPE_Encryptor(key, n, tweak);
-		
-		BigInt a, b;
-		factor(n, a, b);
-		
-		const size_t r = rounds(a, b);
-		
-		BigInt X = X0;
-		
-		foreach (size_t i; 0 .. r)
-		{
-			BigInt L = X / b;
-			BigInt R = X % b;
-			
-			BigInt W = (L + F(i, R)) % a;
-			X = a * R + W;
-		}
-		
-		return X;
-	}
+    /**
+    * Format Preserving Encryption using the scheme FE1 from the paper
+    * "Format-Preserving Encryption" by Bellare, Rogaway, et al
+    * (http://eprint.iacr.org/2009/251)
+    *
+    * Encrypt X from and onto the group Z_n using key and tweak
+    * @param n the modulus
+    * @param X the plaintext as a BigInt
+    * @param key a random key
+    * @param tweak will modify the ciphertext (think of as an IV)
+    */
+    static BigInt fe1_encrypt(in BigInt n, in BigInt X0,
+                              in SymmetricKey key,
+                              in Vector!ubyte tweak)
+    {
+        FPE_Encryptor F = scoped!FPE_Encryptor(key, n, tweak);
+        
+        BigInt a, b;
+        factor(n, a, b);
+        
+        const size_t r = rounds(a, b);
+        
+        BigInt X = X0;
+        
+        foreach (size_t i; 0 .. r)
+        {
+            BigInt L = X / b;
+            BigInt R = X % b;
+            
+            BigInt W = (L + F(i, R)) % a;
+            X = a * R + W;
+        }
+        
+        return X;
+    }
 
 
-	/**
-	* Decrypt X from and onto the group Z_n using key and tweak
-	* @param n the modulus
-	* @param X the ciphertext as a BigInt
-	* @param key is the key used for encryption
-	* @param tweak the same tweak used for encryption
-	*/
-	static BigInt fe1_decrypt(in BigInt n, in BigInt X0, in SymmetricKey key, in Vector!ubyte tweak)
-	{
-		auto F = scoped!FPE_Encryptor(key, n, tweak);
-		
-		BigInt a, b;
-		factor(n, a, b);
-		
-		const size_t r = rounds(a, b);
-		
-		BigInt X = X0;
-		
-		foreach (size_t i; 0 .. r)
-		{
-			BigInt W = X % a;
-			BigInt R = X / a;
-			
-			BigInt L = (W - F(r-i-1, R)) % a;
-			X = b * L + R;
-		}
-		
-		return X;
-	}
+    /**
+    * Decrypt X from and onto the group Z_n using key and tweak
+    * @param n the modulus
+    * @param X the ciphertext as a BigInt
+    * @param key is the key used for encryption
+    * @param tweak the same tweak used for encryption
+    */
+    static BigInt fe1_decrypt(in BigInt n, in BigInt X0, in SymmetricKey key, in Vector!ubyte tweak)
+    {
+        auto F = scoped!FPE_Encryptor(key, n, tweak);
+        
+        BigInt a, b;
+        factor(n, a, b);
+        
+        const size_t r = rounds(a, b);
+        
+        BigInt X = X0;
+        
+        foreach (size_t i; 0 .. r)
+        {
+            BigInt W = X % a;
+            BigInt R = X / a;
+            
+            BigInt L = (W - F(r-i-1, R)) % a;
+            X = b * L + R;
+        }
+        
+        return X;
+    }
 
 
 }
@@ -104,34 +104,34 @@ __gshared immutable size_t MAX_N_BYTES = 128/8;
 */
 void factor(BigInt n, ref BigInt a, ref BigInt b)
 {
-	a = 1;
-	b = 1;
-	
-	size_t n_low_zero = low_zero_bits(n);
-	
-	a <<= (n_low_zero / 2);
-	b <<= n_low_zero - (n_low_zero / 2);
-	n >>= n_low_zero;
-	
-	foreach (size_t i; 0 .. PRIME_TABLE_SIZE)
-	{
-		while (n % PRIMES[i] == 0)
-		{
-			a *= PRIMES[i];
-			if (a > b)
-				std.algorithm.swap(a, b);
-			n /= PRIMES[i];
-		}
-	}
-	
-	if (a > b)
-		std.algorithm.swap(a, b);
-	a *= n;
-	if (a < b)
-		std.algorithm.swap(a, b);
-	
-	if (a <= 1 || b <= 1)
-		throw new Exception("Could not factor n for use in FPE");
+    a = 1;
+    b = 1;
+    
+    size_t n_low_zero = low_zero_bits(n);
+    
+    a <<= (n_low_zero / 2);
+    b <<= n_low_zero - (n_low_zero / 2);
+    n >>= n_low_zero;
+    
+    foreach (size_t i; 0 .. PRIME_TABLE_SIZE)
+    {
+        while (n % PRIMES[i] == 0)
+        {
+            a *= PRIMES[i];
+            if (a > b)
+                std.algorithm.swap(a, b);
+            n /= PRIMES[i];
+        }
+    }
+    
+    if (a > b)
+        std.algorithm.swap(a, b);
+    a *= n;
+    if (a < b)
+        std.algorithm.swap(a, b);
+    
+    if (a <= 1 || b <= 1)
+        throw new Exception("Could not factor n for use in FPE");
 }
 
 /*
@@ -142,9 +142,9 @@ void factor(BigInt n, ref BigInt a, ref BigInt b)
 */
 size_t rounds(in BigInt a, in BigInt b)
 {
-	if (a < b)
-		throw new Logic_Error("FPE rounds: a < b");
-	return 3;
+    if (a < b)
+        throw new Logic_Error("FPE rounds: a < b");
+    return 3;
 }
 
 /*
@@ -153,41 +153,41 @@ size_t rounds(in BigInt a, in BigInt b)
 final class FPE_Encryptor
 {
 public:
-	this(in SymmetricKey key, in BigInt n, in Vector!ubyte tweak)
-	{
-		m_mac = new HMAC(new SHA_256);
-		m_mac.set_key(key);
-		
-		Vector!ubyte n_bin = BigInt.encode(n);
-		
-		if (n_bin.length > MAX_N_BYTES)
-			throw new Exception("N is too large for FPE encryption");
-		
-		m_mac.update_be(cast(uint)(n_bin.length));
-		m_mac.update(n_binput.ptr, n_bin.length);
-		
-		m_mac.update_be(cast(uint)(tweak.length));
-		m_mac.update(tweak.ptr, tweak.length);
-		
-		m_mac_n_t = unlock(m_mac.flush());
-	}
+    this(in SymmetricKey key, in BigInt n, in Vector!ubyte tweak)
+    {
+        m_mac = new HMAC(new SHA_256);
+        m_mac.set_key(key);
+        
+        Vector!ubyte n_bin = BigInt.encode(n);
+        
+        if (n_bin.length > MAX_N_BYTES)
+            throw new Exception("N is too large for FPE encryption");
+        
+        m_mac.update_be(cast(uint)(n_bin.length));
+        m_mac.update(n_binput.ptr, n_bin.length);
+        
+        m_mac.update_be(cast(uint)(tweak.length));
+        m_mac.update(tweak.ptr, tweak.length);
+        
+        m_mac_n_t = unlock(m_mac.flush());
+    }
 
-	
-	BigInt opCall(size_t round_no, in BigInt R)
-	{
-		Secure_Vector!ubyte r_bin = BigInt.encode_locked(R);
+    
+    BigInt opCall(size_t round_no, in BigInt R)
+    {
+        Secure_Vector!ubyte r_bin = BigInt.encode_locked(R);
 
-		m_mac.update(m_mac_n_t);
-		m_mac.update_be(cast(uint)(round_no));
-		
-		m_mac.update_be(cast(uint)(r_bin.length));
-		m_mac.update(r_binput.ptr, r_bin.length);
-		
-		Secure_Vector!ubyte X = m_mac.flush();
-		return BigInt(X.ptr, X.length);
-	}
-	
+        m_mac.update(m_mac_n_t);
+        m_mac.update_be(cast(uint)(round_no));
+        
+        m_mac.update_be(cast(uint)(r_bin.length));
+        m_mac.update(r_binput.ptr, r_bin.length);
+        
+        Secure_Vector!ubyte X = m_mac.flush();
+        return BigInt(X.ptr, X.length);
+    }
+    
 private:
-	Unique!MessageAuthenticationCode m_mac;
-	Vector!ubyte m_mac_n_t;
+    Unique!MessageAuthenticationCode m_mac;
+    Vector!ubyte m_mac_n_t;
 }

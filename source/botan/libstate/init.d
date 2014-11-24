@@ -19,45 +19,45 @@ import botan.libstate.global_state;
 class LibraryInitializer
 {
 public:
-	/**
-	* Initialize the library
-	* @param options a string listing initialization options
-	*/
-	static void initialize(in string options = "")
-	{
-		
-		try
-		{
-			/*
-			This two stage initialization process is because LibraryState's
-			constructor will implicitly refer to global state through the
-			allocators and so forth, so global_state() has to be a valid
-			reference before initialize() can be called. Yeah, gross.
-			*/
-			Global_State_Management.set_global_state(new LibraryState);
-			
-			global_state().initialize();
-		}
-		catch
-		{
-			deinitialize();
-			throw new Exception("Library initialization failed");
-		}
-	}
+    /**
+    * Initialize the library
+    * @param options a string listing initialization options
+    */
+    static void initialize(in string options = "")
+    {
+        
+        try
+        {
+            /*
+            This two stage initialization process is because LibraryState's
+            constructor will implicitly refer to global state through the
+            allocators and so forth, so global_state() has to be a valid
+            reference before initialize() can be called. Yeah, gross.
+            */
+            Global_State_Management.set_global_state(new LibraryState);
+            
+            global_state().initialize();
+        }
+        catch
+        {
+            deinitialize();
+            throw new Exception("Library initialization failed");
+        }
+    }
 
-	/**
-	* Shutdown the library
-	*/
-	static void deinitialize() {
-		Global_State_Management.set_global_state(null);
-	}
+    /**
+    * Shutdown the library
+    */
+    static void deinitialize() {
+        Global_State_Management.set_global_state(null);
+    }
 
-	/**
-	* Initialize the library
-	* @param options a string listing initialization options
-	*/
-	this(in string options = "")
-	{ LibraryInitializer.initialize(options); }
+    /**
+    * Initialize the library
+    * @param options a string listing initialization options
+    */
+    this(in string options = "")
+    { LibraryInitializer.initialize(options); }
 
-	~this() { LibraryInitializer.deinitialize(); }
+    ~this() { LibraryInitializer.deinitialize(); }
 }

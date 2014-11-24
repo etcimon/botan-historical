@@ -22,55 +22,55 @@ alias Attribute = FreeListRef!Attribute_Impl;
 final class Attribute_Impl : ASN1_Object
 {
 public:
-	/*
-	* Create an Attribute
-	*/
-	this(in OID attr_oid, in Vector!ubyte attr_value)
-	{
-		oid = attr_oid;
-		parameters = attr_value;
-	}
-	
-	/*
-	* Create an Attribute
-	*/
-	this(in string attr_oid,
-	     in Vector!ubyte attr_value)
-	{
-		oid = OIDS.lookup(attr_oid);
-		parameters = attr_value;
-	}
-	
-	/*
-	* DER encode a Attribute
-	*/
-	void encode_into(DER_Encoder codec) const
-	{
-		codec.start_cons(ASN1_Tag.SEQUENCE)
-			.encode(oid)
-				.start_cons(ASN1_Tag.SET)
-				.raw_bytes(parameters)
-				.end_cons()
-				.end_cons();
-	}
-	
-	/*
-	* Decode a BER encoded Attribute
-	*/
-	void decode_from(BER_Decoder codec)
-	{
-		codec.start_cons(ASN1_Tag.SEQUENCE)
-			.decode(oid)
-				.start_cons(ASN1_Tag.SET)
-				.raw_bytes(parameters)
-				.end_cons()
-				.end_cons();
-	}
+    /*
+    * Create an Attribute
+    */
+    this(in OID attr_oid, in Vector!ubyte attr_value)
+    {
+        oid = attr_oid;
+        parameters = attr_value;
+    }
+    
+    /*
+    * Create an Attribute
+    */
+    this(in string attr_oid,
+         in Vector!ubyte attr_value)
+    {
+        oid = OIDS.lookup(attr_oid);
+        parameters = attr_value;
+    }
+    
+    /*
+    * DER encode a Attribute
+    */
+    void encode_into(DER_Encoder codec) const
+    {
+        codec.start_cons(ASN1_Tag.SEQUENCE)
+            .encode(oid)
+                .start_cons(ASN1_Tag.SET)
+                .raw_bytes(parameters)
+                .end_cons()
+                .end_cons();
+    }
+    
+    /*
+    * Decode a BER encoded Attribute
+    */
+    void decode_from(BER_Decoder codec)
+    {
+        codec.start_cons(ASN1_Tag.SEQUENCE)
+            .decode(oid)
+                .start_cons(ASN1_Tag.SET)
+                .raw_bytes(parameters)
+                .end_cons()
+                .end_cons();
+    }
 
-	OID oid;
-	Vector!ubyte parameters;
+    OID oid;
+    Vector!ubyte parameters;
 
-	this() {}
+    this() {}
 }
 
 

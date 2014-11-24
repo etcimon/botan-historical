@@ -19,19 +19,19 @@ void mgf1_mask(HashFunction hash,
                in ubyte* input, size_t in_len,
                ubyte* output, size_t out_len)
 {
-	uint counter = 0;
-	
-	while (out_len)
-	{
-		hash.update(input, in_len);
-		hash.update_be(counter);
-		Secure_Vector!ubyte buffer = hash.flush();
-		
-		size_t xored = std.algorithm.min(buffer.length, out_len);
-		xor_buf(output, buffer.ptr, xored);
-		output += xored;
-		out_len -= xored;
-		
-		++counter;
-	}
+    uint counter = 0;
+    
+    while (out_len)
+    {
+        hash.update(input, in_len);
+        hash.update_be(counter);
+        Secure_Vector!ubyte buffer = hash.flush();
+        
+        size_t xored = std.algorithm.min(buffer.length, out_len);
+        xor_buf(output, buffer.ptr, xored);
+        output += xored;
+        out_len -= xored;
+        
+        ++counter;
+    }
 }

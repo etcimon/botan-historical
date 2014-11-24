@@ -10,32 +10,32 @@ import botan.utils.mul128;
 import botan.constants;
 
 static if (BOTAN_MP_WORD_BITS == 8) {
-	typedef ubyte word;
-	typedef ushort dword;
-	enum BOTAN_HAS_MP_DWORD = 1;
+    typedef ubyte word;
+    typedef ushort dword;
+    enum BOTAN_HAS_MP_DWORD = 1;
 }
 else static if (BOTAN_MP_WORD_BITS == 16) {
-	typedef ushort word;
-	typedef uint dword;
-	enum BOTAN_HAS_MP_DWORD = 1;
+    typedef ushort word;
+    typedef uint dword;
+    enum BOTAN_HAS_MP_DWORD = 1;
 }
 else static if (BOTAN_MP_WORD_BITS == 32) {
-	typedef uint word;
-	typedef ulong dword;
-	enum BOTAN_HAS_MP_DWORD = 1;
+    typedef uint word;
+    typedef ulong dword;
+    enum BOTAN_HAS_MP_DWORD = 1;
 }
 else static if (BOTAN_MP_WORD_BITS == 64) {
-	typedef ulong word;
+    typedef ulong word;
 
-	static if (BOTAN_TARGET_HAS_NATIVE_UINT128) {
-		static assert(false);
-		//typedef uint128_t dword;
-		//enum BOTAN_HAS_MP_DWORD = 1;
-	}
-	else enum BOTAN_HAS_MP_DWORD = 0;
+    static if (BOTAN_TARGET_HAS_NATIVE_UINT128) {
+        static assert(false);
+        //typedef uint128_t dword;
+        //enum BOTAN_HAS_MP_DWORD = 1;
+    }
+    else enum BOTAN_HAS_MP_DWORD = 0;
 
 } else
-	static assert(false, "BOTAN_MP_WORD_BITS must be 8, 16, 32, or 64");
+    static assert(false, "BOTAN_MP_WORD_BITS must be 8, 16, 32, or 64");
 
 
 __gshared immutable word MP_WORD_MASK = ~cast(word)(0);

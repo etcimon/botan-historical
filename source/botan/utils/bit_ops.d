@@ -14,7 +14,7 @@ import botan.utils.types;
 */
 bool is_power_of_2(T)(T arg)
 {
-	return ((arg != 0 && arg != 1) && ((arg & (arg-1)) == 0));
+    return ((arg != 0 && arg != 1) && ((arg & (arg-1)) == 0));
 }
 
 /**
@@ -25,10 +25,10 @@ bool is_power_of_2(T)(T arg)
 */
 size_t high_bit(T)(T n)
 {
-	for (size_t i = 8*T.sizeof; i > 0; --i)
-		if ((n >> (i - 1)) & 0x01)
-			return i;
-	return 0;
+    for (size_t i = 8*T.sizeof; i > 0; --i)
+        if ((n >> (i - 1)) & 0x01)
+            return i;
+    return 0;
 }
 
 /**
@@ -39,10 +39,10 @@ size_t high_bit(T)(T n)
 */
 size_t low_bit(T)(T n)
 {
-	for (size_t i = 0; i != 8*T.sizeof; ++i)
-		if ((n >> i) & 0x01)
-			return (i + 1);
-	return 0;
+    for (size_t i = 0; i != 8*T.sizeof; ++i)
+        if ((n >> i) & 0x01)
+            return (i + 1);
+    return 0;
 }
 
 /**
@@ -52,10 +52,10 @@ size_t low_bit(T)(T n)
 */
 size_t significant_bytes(T)(T n)
 {
-	for (size_t i = 0; i != T.sizeof; ++i)
-		if (get_byte(i, n))
-			return T.sizeof-i;
-	return 0;
+    for (size_t i = 0; i != T.sizeof; ++i)
+        if (get_byte(i, n))
+            return T.sizeof-i;
+    return 0;
 }
 
 /**
@@ -65,13 +65,13 @@ size_t significant_bytes(T)(T n)
 */
 size_t hamming_weight(T)(T n)
 {
-	__gshared immutable ubyte[] NIBBLE_WEIGHTS = [
-		0, 1, 1, 2, 1, 2, 2, 3, 1, 2, 2, 3, 2, 3, 3, 4 ];
+    __gshared immutable ubyte[] NIBBLE_WEIGHTS = [
+        0, 1, 1, 2, 1, 2, 2, 3, 1, 2, 2, 3, 2, 3, 3, 4 ];
 
-	size_t weight = 0;
-	for (size_t i = 0; i != 2*T.sizeof; ++i)
-		weight += NIBBLE_WEIGHTS[(n >> (4*i)) & 0x0F];
-	return weight;
+    size_t weight = 0;
+    for (size_t i = 0; i != 2*T.sizeof; ++i)
+        weight += NIBBLE_WEIGHTS[(n >> (4*i)) & 0x0F];
+    return weight;
 }
 
 /**
@@ -81,8 +81,8 @@ size_t hamming_weight(T)(T n)
 */
 size_t ctz(T)(T n)
 {
-	for (size_t i = 0; i != 8*T.sizeof; ++i)
-		if ((n >> i) & 0x01)
-			return i;
-	return 8*T.sizeof;
+    for (size_t i = 0; i != 8*T.sizeof; ++i)
+        if ((n >> i) & 0x01)
+            return i;
+    return 8*T.sizeof;
 }

@@ -14,43 +14,43 @@ import botan.algo_base.sym_algo;
 final class Keyed_Filter : Filter
 {
 public:
-	/**
-	* Set the key of this filter
-	* @param key the key to use
-	*/
-	abstract void set_key(in SymmetricKey key);
+    /**
+    * Set the key of this filter
+    * @param key the key to use
+    */
+    abstract void set_key(in SymmetricKey key);
 
-	/**
-	* Set the initialization vector of this filter. Note: you should
-	* call set_iv() only after you have called set_key()
-	* @param iv the initialization vector to use
-	*/
-	void set_iv(in InitializationVector iv)
-	{
-		if (iv.length != 0)
-			throw new Invalid_IV_Length(name(), iv.length);
-	}
+    /**
+    * Set the initialization vector of this filter. Note: you should
+    * call set_iv() only after you have called set_key()
+    * @param iv the initialization vector to use
+    */
+    void set_iv(in InitializationVector iv)
+    {
+        if (iv.length != 0)
+            throw new Invalid_IV_Length(name(), iv.length);
+    }
 
-	/**
-	* Check whether a key length is valid for this filter
-	* @param length the key length to be checked for validity
-	* @return true if the key length is valid, false otherwise
-	*/
-	bool valid_keylength(size_t length) const
-	{
-		return key_spec().valid_keylength(length);
-	}
+    /**
+    * Check whether a key length is valid for this filter
+    * @param length the key length to be checked for validity
+    * @return true if the key length is valid, false otherwise
+    */
+    bool valid_keylength(size_t length) const
+    {
+        return key_spec().valid_keylength(length);
+    }
 
-	/**
-	* @return object describing limits on key size
-	*/
-	abstract Key_Length_Specification key_spec() const;
+    /**
+    * @return object describing limits on key size
+    */
+    abstract Key_Length_Specification key_spec() const;
 
-	/**
-	* Check whether an IV length is valid for this filter
-	* @param length the IV length to be checked for validity
-	* @return true if the IV length is valid, false otherwise
-	*/
-	abstract bool valid_iv_length(size_t length) const
-	{ return (length == 0); }
+    /**
+    * Check whether an IV length is valid for this filter
+    * @param length the IV length to be checked for validity
+    * @return true if the IV length is valid, false otherwise
+    */
+    abstract bool valid_iv_length(size_t length) const
+    { return (length == 0); }
 }

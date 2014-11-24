@@ -17,15 +17,15 @@ import botan.rng.rng;
 class PBE : Filter
 {
 public:
-	/**
-	* DER encode the params (the number of iterations and the salt value)
-	* @return encoded params
-	*/
-	abstract Vector!ubyte encode_params() const;
+    /**
+    * DER encode the params (the number of iterations and the salt value)
+    * @return encoded params
+    */
+    abstract Vector!ubyte encode_params() const;
 
-	/**
-	* Get this PBE's OID.
-	* @return object identifier
-	*/
-	abstract OID get_oid() const;
+    /**
+    * Get this PBE's OID.
+    * @return object identifier
+    */
+    abstract OID get_oid() const;
 }

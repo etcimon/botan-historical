@@ -22,18 +22,18 @@ import botan.utils.parsing;
 */
 string version_string()
 {
-		
-	/*
-	It is intentional that this string is a compile-time constant;
-	it makes it much easier to find in binaries.
-	*/
-	return "Botan " ~ BOTAN_VERSION_MAJOR ~ "."
-			~ BOTAN_VERSION_MINOR ~ "." 
-			~ BOTAN_VERSION_PATCH ~ " ("
-			~ BOTAN_VERSION_RELEASE_TYPE
-			~ ", dated " ~ BOTAN_VERSION_DATESTAMP
-			~ ", revision " ~ BOTAN_VERSION_VC_REVISION
-			~ ", distribution " ~ BOTAN_DISTRIBUTION_INFO ~ ")";
+        
+    /*
+    It is intentional that this string is a compile-time constant;
+    it makes it much easier to find in binaries.
+    */
+    return "Botan " ~ BOTAN_VERSION_MAJOR ~ "."
+            ~ BOTAN_VERSION_MINOR ~ "." 
+            ~ BOTAN_VERSION_PATCH ~ " ("
+            ~ BOTAN_VERSION_RELEASE_TYPE
+            ~ ", dated " ~ BOTAN_VERSION_DATESTAMP
+            ~ ", revision " ~ BOTAN_VERSION_VC_REVISION
+            ~ ", distribution " ~ BOTAN_DISTRIBUTION_INFO ~ ")";
 }
 
 /**
@@ -68,7 +68,7 @@ uint version_patch() { return BOTAN_VERSION_PATCH; }
 * Allows compile-time version checks
 */
 long BOTAN_VERSION_CODE_FOR(ubyte a, ubyte b, ubyte c) {
-	return ((a << 16) | (b << 8) | (c));
+    return ((a << 16) | (b << 8) | (c));
 }
 
 /**

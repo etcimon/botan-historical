@@ -16,14 +16,14 @@ pure:
 */
 void xor_buf(T)(T* output, in T* input, size_t length)
 {
-	while (length >= 8)
-	{
-		output[0 .. 8] ^= input[0 .. 8];
+    while (length >= 8)
+    {
+        output[0 .. 8] ^= input[0 .. 8];
 
-		output += 8; input += 8; length -= 8;
-	}
+        output += 8; input += 8; length -= 8;
+    }
 
-	output[0 .. length] ^= input[0 .. length];
+    output[0 .. length] ^= input[0 .. length];
 }
 
 /**
@@ -34,47 +34,47 @@ void xor_buf(T)(T* output, in T* input, size_t length)
 * @param length the length of the three buffers
 */
 void xor_buf(T)(T* output,
-				in T* input,
-				in T* input2,
-				size_t length)
+                in T* input,
+                in T* input2,
+                size_t length)
 {
-	while (length >= 8)
-	{
-		output[0 .. 8] = input[0 .. 8] ^ input2[0 .. 8];
+    while (length >= 8)
+    {
+        output[0 .. 8] = input[0 .. 8] ^ input2[0 .. 8];
 
-		input += 8; input2 += 8; output += 8; length -= 8;
-	}
+        input += 8; input2 += 8; output += 8; length -= 8;
+    }
 
-	output[0 .. length] = input[0 .. length] ^ input2[0 .. length];
+    output[0 .. length] = input[0 .. length] ^ input2[0 .. length];
 }
 
 static if (BOTAN_TARGET_UNALIGNED_MEMORY_ACCESS_OK) {
 
-	void xor_buf(ubyte* output, in ubyte* input, size_t length)
-	{
-		while (length >= 8)
-		{
-			*cast(ulong*)(output) ^= *cast(const ulong*)(input);
-			output += 8; input += 8; length -= 8;
-		}
+    void xor_buf(ubyte* output, in ubyte* input, size_t length)
+    {
+        while (length >= 8)
+        {
+            *cast(ulong*)(output) ^= *cast(const ulong*)(input);
+            output += 8; input += 8; length -= 8;
+        }
 
-		output[0 .. length] ^= input[0 .. length];
-	}
+        output[0 .. length] ^= input[0 .. length];
+    }
 
-	void xor_buf(ubyte* output,
-				 in ubyte* input,
-				 in ubyte* input2,
-				 size_t length)
-	{
-		while (length >= 8)
-		{
-			*cast(ulong*)(output) = (*cast(const ulong*) input) ^ (*cast(const ulong*)input2);
+    void xor_buf(ubyte* output,
+                 in ubyte* input,
+                 in ubyte* input2,
+                 size_t length)
+    {
+        while (length >= 8)
+        {
+            *cast(ulong*)(output) = (*cast(const ulong*) input) ^ (*cast(const ulong*)input2);
 
-			input += 8; input2 += 8; output += 8; length -= 8;
-		}
+            input += 8; input2 += 8; output += 8; length -= 8;
+        }
 
-		output[0 .. length] = input[0 .. length] ^ input2[0 .. length];
-	}
+        output[0 .. length] = input[0 .. length] ^ input2[0 .. length];
+    }
 
 }
 
@@ -82,32 +82,32 @@ void xor_buf(Alloc, Alloc2)(Vector!( ubyte, Alloc ) output,
                             in Vector!( ubyte, Alloc2 ) input,
                             size_t n)
 {
-	xor_buf(output.ptr, input.ptr, n);
+    xor_buf(output.ptr, input.ptr, n);
 }
 
 void xor_buf(Alloc)(ref Vector!( ubyte, Alloc ) output,
-					in ubyte* input,
-					size_t n)
+                    in ubyte* input,
+                    size_t n)
 {
-	xor_buf(output.ptr, input, n);
+    xor_buf(output.ptr, input, n);
 }
 
 void xor_buf(Alloc, Alloc2)(Vector!( ubyte, Alloc ) output,
-							in ubyte* input,
-							in Vector!( ubyte, Alloc2 ) input2,
-							size_t n)
+                            in ubyte* input,
+                            in Vector!( ubyte, Alloc2 ) input2,
+                            size_t n)
 {
-	xor_buf(output.ptr, input.ptr, input2.ptr, n);
+    xor_buf(output.ptr, input.ptr, input2.ptr, n);
 }
 
 // fixme: Move into Vector type
 Vector!(T, Alloc) opOpAssign(string op, T, Alloc, Alloc2)(Vector!(T, Alloc) output,
                                                           in Vector!( T, Alloc2 ) input)
-		if (op == "^=")
+        if (op == "^=")
 {
-	if (output.length < input.length)
-		output.resize(input.length);
+    if (output.length < input.length)
+        output.resize(input.length);
 
-	xor_buf(output.ptr, input.ptr, input.length);
-	return output;
+    xor_buf(output.ptr, input.ptr, input.length);
+    return output;
 }

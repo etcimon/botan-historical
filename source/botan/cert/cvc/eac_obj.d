@@ -24,32 +24,32 @@ import botan.utils.exceptn;
 class EAC1_1_obj(Derived) : EAC_Signed_Object!Derived
 {
 public:
-	/**
-	* Return the signature as a concatenation of the encoded parts.
-	* @result the concatenated signature
-	*/
-	Vector!ubyte get_concat_sig() const
-	{ return m_sig.get_concatenation(); }
+    /**
+    * Return the signature as a concatenation of the encoded parts.
+    * @result the concatenated signature
+    */
+    Vector!ubyte get_concat_sig() const
+    { return m_sig.get_concatenation(); }
 
-	bool check_signature(ref Public_Key key) const
-	{
-		return check_signature(key, m_sig.DER_encode());
-	}
+    bool check_signature(ref Public_Key key) const
+    {
+        return check_signature(key, m_sig.DER_encode());
+    }
 
 protected:
-	ECDSA_Signature m_sig;
+    ECDSA_Signature m_sig;
 
-	void init(DataSource input)
-	{
-		try
-		{
-			decode_info(input, m_tbs_bits, m_sig);
-		}
-		catch(Decoding_Error)
-		{
-			throw new Decoding_Error(m_PEM_label_pref ~ " decoding failed");
-		}
-	}
+    void init(DataSource input)
+    {
+        try
+        {
+            decode_info(input, m_tbs_bits, m_sig);
+        }
+        catch(Decoding_Error)
+        {
+            throw new Decoding_Error(m_PEM_label_pref ~ " decoding failed");
+        }
+    }
 
-	~this(){}
+    ~this(){}
 }

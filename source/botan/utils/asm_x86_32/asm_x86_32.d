@@ -15,31 +15,31 @@ enum ALIGN = "align 16";
 * Loop Control
 */
 string START_LOOP(string LABEL) {
-	return ALIGN ~ `;
-			` ~ LABEL  ~ `_LOOP:`;
+    return ALIGN ~ `;
+            ` ~ LABEL  ~ `_LOOP:`;
 }
 
 string LOOP_UNTIL_EQ(string REG, int NUM, string LABEL) {
-	return `cmp  ` ~ REG ~ `, ` ~ IMM(NUM) ~ `;
-			jne ` ~ LABEL ~ `_LOOP;`;
+    return `cmp  ` ~ REG ~ `, ` ~ IMM(NUM) ~ `;
+            jne ` ~ LABEL ~ `_LOOP;`;
 }
 
 string LOOP_UNTIL_LT(REG, NUM, LABEL)() {
-	return `cmp ` ~ REG ~ `, ` ~ IMM(NUM) ~ `;	
-			jge ` ~ LABEL ~ `_LOOP;`;
+    return `cmp ` ~ REG ~ `, ` ~ IMM(NUM) ~ `;    
+            jge ` ~ LABEL ~ `_LOOP;`;
 }
 
 /*
  Conditional Jumps
 */
 string JUMP_IF_ZERO(string REG, string LABEL)() {
-	return `cmp ` ~ REG ~ `, ` ~ IMM(0) ~ `;
-			jz ` ~ LABEL ~ `;`;
+    return `cmp ` ~ REG ~ `, ` ~ IMM(0) ~ `;
+            jz ` ~ LABEL ~ `;`;
 }
 
 string JUMP_IF_LT(string REG, int NUM, string LABEL) {
-	return `cmp ` ~ IMM(NUM) ~ `, ` ~ REG ~ `;
-			jl ` ~ LABEL ~ `;`;
+    return `cmp ` ~ IMM(NUM) ~ `, ` ~ REG ~ `;
+            jl ` ~ LABEL ~ `;`;
 }
 
 /*
@@ -68,17 +68,17 @@ string PUSH(string REG) { return `push` ~ REG ~ `;`; }
 string POP(string REG) { return `pop` ~ REG ~ `;`; }
 
 string SPILL_REGS() {
-	return `PUSH(` ~ EBP ~ `)
-			PUSH(` ~ EDI ~ `)
-			PUSH(` ~ ESI ~ `)
-			PUSH(` ~ EBX ~ `)`;
+    return `PUSH(` ~ EBP ~ `)
+            PUSH(` ~ EDI ~ `)
+            PUSH(` ~ ESI ~ `)
+            PUSH(` ~ EBX ~ `)`;
 }
 
 string RESTORE_REGS() {
-	return `POP(` ~ EBX ~ `)
-			POP(` ~ ESI ~ `)
-			POP(` ~ EDI ~ `)
-			POP(` ~ EBP ~ `)`;
+    return `POP(` ~ EBX ~ `)
+            POP(` ~ ESI ~ `)
+            POP(` ~ EDI ~ `)
+            POP(` ~ EBP ~ `)`;
 }
 
 /*

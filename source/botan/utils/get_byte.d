@@ -15,5 +15,5 @@ import botan.utils.types;
 */
 ubyte get_byte(T)(size_t byte_num, T input)
 {
-	return cast(ubyte)(input >> ( ( T.sizeof - 1 - (byte_num & (T.sizeof - 1) ) ) << 3) );
+    return cast(ubyte)(input >> ( ( T.sizeof - 1 - (byte_num & (T.sizeof - 1) ) ) << 3) );
 }

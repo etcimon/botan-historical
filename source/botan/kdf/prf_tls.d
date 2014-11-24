@@ -18,41 +18,41 @@ import botan.hash.sha160;
 class TLS_PRF : KDF
 {
 public:
-	/*
-	* TLS PRF
-	*/
-	Secure_Vector!ubyte derive(size_t key_len,
-	                        in ubyte* secret, size_t secret_len,
-	                        in ubyte* seed, size_t seed_len) const
-	{
-		Secure_Vector!ubyte output = Secure_Vector!ubyte(key_len);
-		
-		size_t S1_len = (secret_len + 1) / 2;
-		size_t S2_len = (secret_len + 1) / 2;
-		const ubyte* S1 = secret;
-		const ubyte* S2 = secret + (secret_len - S2_len);
-		
-		P_hash(output, *m_hmac_md5,  S1, S1_len, seed, seed_len);
-		P_hash(output, *m_hmac_sha1, S2, S2_len, seed, seed_len);
-		
-		return output;
-	}
+    /*
+    * TLS PRF
+    */
+    Secure_Vector!ubyte derive(size_t key_len,
+                            in ubyte* secret, size_t secret_len,
+                            in ubyte* seed, size_t seed_len) const
+    {
+        Secure_Vector!ubyte output = Secure_Vector!ubyte(key_len);
+        
+        size_t S1_len = (secret_len + 1) / 2;
+        size_t S2_len = (secret_len + 1) / 2;
+        const ubyte* S1 = secret;
+        const ubyte* S2 = secret + (secret_len - S2_len);
+        
+        P_hash(output, *m_hmac_md5,  S1, S1_len, seed, seed_len);
+        P_hash(output, *m_hmac_sha1, S2, S2_len, seed, seed_len);
+        
+        return output;
+    }
 
-	@property string name() const { return "TLS-PRF"; }
-	KDF clone() const { return new TLS_PRF; }
+    @property string name() const { return "TLS-PRF"; }
+    KDF clone() const { return new TLS_PRF; }
 
-	/*
-	* TLS PRF Constructor and Destructor
-	*/
-	this()
-	{
-		m_hmac_md5 = new HMAC(new MD5);
-		m_hmac_sha1= new HMAC(new SHA_160);
-	}
+    /*
+    * TLS PRF Constructor and Destructor
+    */
+    this()
+    {
+        m_hmac_md5 = new HMAC(new MD5);
+        m_hmac_sha1= new HMAC(new SHA_160);
+    }
 
 private:
-	Unique!MessageAuthenticationCode m_hmac_md5;
-	Unique!MessageAuthenticationCode m_hmac_sha1;
+    Unique!MessageAuthenticationCode m_hmac_md5;
+    Unique!MessageAuthenticationCode m_hmac_sha1;
 }
 
 /**
@@ -61,29 +61,29 @@ private:
 class TLS_12_PRF : KDF
 {
 public:
-	Secure_Vector!ubyte derive(size_t key_len,
-	                               in ubyte* secret, size_t secret_len,
-	                               in ubyte* seed, size_t seed_len) const
-	{
-		Secure_Vector!ubyte output = Secure_Vector!ubyte(key_len);
-		
-		P_hash(output, *m_hmac, secret, secret_len, seed, seed_len);
-		
-		return output;
-	}
+    Secure_Vector!ubyte derive(size_t key_len,
+                                   in ubyte* secret, size_t secret_len,
+                                   in ubyte* seed, size_t seed_len) const
+    {
+        Secure_Vector!ubyte output = Secure_Vector!ubyte(key_len);
+        
+        P_hash(output, *m_hmac, secret, secret_len, seed, seed_len);
+        
+        return output;
+    }
 
-	@property string name() const { return "TLSv12-PRF(" ~ m_hmac.name ~ ")"; }
-	KDF clone() const { return new TLS_12_PRF(m_hmac.clone()); }
+    @property string name() const { return "TLSv12-PRF(" ~ m_hmac.name ~ ")"; }
+    KDF clone() const { return new TLS_12_PRF(m_hmac.clone()); }
 
-	/*
-	* TLS v1.2 PRF Constructor and Destructor
-	*/
-	this(MessageAuthenticationCode mac)
-	{
-		m_hmac = mac;
-	}
+    /*
+    * TLS v1.2 PRF Constructor and Destructor
+    */
+    this(MessageAuthenticationCode mac)
+    {
+        m_hmac = mac;
+    }
 private:
-	Unique!MessageAuthenticationCode m_hmac;
+    Unique!MessageAuthenticationCode m_hmac;
 }
 
 
@@ -96,30 +96,30 @@ void P_hash(Secure_Vector!ubyte output,
             in ubyte* secret, size_t secret_len,
             in ubyte* seed, size_t seed_len) pure
 {
-	try
-	{
-		mac.set_key(secret, secret_len);
-	}
-	catch(Invalid_Key_Length)
-	{
-		throw new Internal_Error("The premaster secret of " ~ to!string(secret_len) ~ " bytes is too long for the PRF");
-	}
-	
-	Secure_Vector!ubyte A = Secure_Vector!ubyte(seed, seed + seed_len);
-	
-	size_t offset = 0;
-	
-	while (offset != output.length)
-	{
-		const size_t this_block_len = std.algorithm.min(mac.output_length, output.length - offset);
-		
-		A = mac.process(A);
-		
-		mac.update(A);
-		mac.update(seed, seed_len);
-		Secure_Vector!ubyte block = mac.flush();
-		
-		xor_buf(&output[offset], block.ptr, this_block_len);
-		offset += this_block_len;
-	}
+    try
+    {
+        mac.set_key(secret, secret_len);
+    }
+    catch(Invalid_Key_Length)
+    {
+        throw new Internal_Error("The premaster secret of " ~ to!string(secret_len) ~ " bytes is too long for the PRF");
+    }
+    
+    Secure_Vector!ubyte A = Secure_Vector!ubyte(seed, seed + seed_len);
+    
+    size_t offset = 0;
+    
+    while (offset != output.length)
+    {
+        const size_t this_block_len = std.algorithm.min(mac.output_length, output.length - offset);
+        
+        A = mac.process(A);
+        
+        mac.update(A);
+        mac.update(seed, seed_len);
+        Secure_Vector!ubyte block = mac.flush();
+        
+        xor_buf(&output[offset], block.ptr, this_block_len);
+        offset += this_block_len;
+    }
 }

@@ -19,48 +19,48 @@ import botan.libstate.libstate;
 * Retrieve an object prototype from the global factory
 * @param algo_spec an algorithm name
 * @return constant prototype object (use clone to create usable object),
-			 library retains ownership
+             library retains ownership
 */
 const BlockCipher retrieve_block_cipher(in string algo_spec)
 {
-	Algorithm_Factory af = global_state().algorithm_factory();
-	return af.prototype_block_cipher(algo_spec);
+    Algorithm_Factory af = global_state().algorithm_factory();
+    return af.prototype_block_cipher(algo_spec);
 }
 
 /**
 * Retrieve an object prototype from the global factory
 * @param algo_spec an algorithm name
 * @return constant prototype object (use clone to create usable object),
-			 library retains ownership
+             library retains ownership
 */
 const StreamCipher retrieve_stream_cipher(in string algo_spec)
 {
-	Algorithm_Factory af = global_state().algorithm_factory();
-	return af.prototype_stream_cipher(algo_spec);
+    Algorithm_Factory af = global_state().algorithm_factory();
+    return af.prototype_stream_cipher(algo_spec);
 }
 
 /**
 * Retrieve an object prototype from the global factory
 * @param algo_spec an algorithm name
 * @return constant prototype object (use clone to create usable object),
-			 library retains ownership
+             library retains ownership
 */
 const HashFunction retrieve_hash(in string algo_spec)
 {
-	Algorithm_Factory af = global_state().algorithm_factory();
-	return af.prototype_hash_function(algo_spec);
+    Algorithm_Factory af = global_state().algorithm_factory();
+    return af.prototype_hash_function(algo_spec);
 }
 
 /**
 * Retrieve an object prototype from the global factory
 * @param algo_spec an algorithm name
 * @return constant prototype object (use clone to create usable object),
-			 library retains ownership
+             library retains ownership
 */
 const MessageAuthenticationCode retrieve_mac(in string algo_spec)
 {
-	Algorithm_Factory af = global_state().algorithm_factory();
-	return af.prototype_mac(algo_spec);
+    Algorithm_Factory af = global_state().algorithm_factory();
+    return af.prototype_mac(algo_spec);
 }
 
 /**
@@ -70,12 +70,12 @@ const MessageAuthenticationCode retrieve_mac(in string algo_spec)
 */
 PBKDF get_pbkdf(in string algo_spec)
 {
-	Algorithm_Factory af = global_state().algorithm_factory();
-	
-	if (PBKDF pbkdf = af.make_pbkdf(algo_spec))
-		return pbkdf;
-	
-	throw new Algorithm_Not_Found(algo_spec);
+    Algorithm_Factory af = global_state().algorithm_factory();
+    
+    if (PBKDF pbkdf = af.make_pbkdf(algo_spec))
+        return pbkdf;
+    
+    throw new Algorithm_Not_Found(algo_spec);
 }
 
 /**
@@ -91,13 +91,13 @@ PBKDF get_pbkdf(in string algo_spec)
 */
 Keyed_Filter get_cipher(in string algo_spec, in SymmetricKey key, in InitializationVector iv, Cipher_Dir direction)
 {
-	Keyed_Filter cipher = get_cipher(algo_spec, direction);
-	cipher.set_key(key);
-	
-	if (iv.length)
-		cipher.set_iv(iv);
-	
-	return cipher;
+    Keyed_Filter cipher = get_cipher(algo_spec, direction);
+    cipher.set_key(key);
+    
+    if (iv.length)
+        cipher.set_iv(iv);
+    
+    return cipher;
 }
 
 /**
@@ -111,7 +111,7 @@ Keyed_Filter get_cipher(in string algo_spec, in SymmetricKey key, in Initializat
 */
 Keyed_Filter get_cipher(in string algo_spec, in SymmetricKey key, Cipher_Dir direction)
 {
-	return get_cipher(algo_spec, key, InitializationVector(), direction);
+    return get_cipher(algo_spec, key, InitializationVector(), direction);
 }
 
 
@@ -126,14 +126,14 @@ Keyed_Filter get_cipher(in string algo_spec, in SymmetricKey key, Cipher_Dir dir
 */
 Keyed_Filter get_cipher(in string algo_spec, Cipher_Dir direction)
 {
-	Algorithm_Factory af = global_state().algorithm_factory();
+    Algorithm_Factory af = global_state().algorithm_factory();
 
-	foreach (Engine engine; af.engines) {
-		if (Keyed_Filter algo = engine.get_cipher(algo_spec, direction, af))
-			return algo;
-	}
-	
-	throw new Algorithm_Not_Found(algo_spec);
+    foreach (Engine engine; af.engines) {
+        if (Keyed_Filter algo = engine.get_cipher(algo_spec, direction, af))
+            return algo;
+    }
+    
+    throw new Algorithm_Not_Found(algo_spec);
 }
 
 /**
@@ -143,15 +143,15 @@ Keyed_Filter get_cipher(in string algo_spec, Cipher_Dir direction)
 */
 bool have_algorithm(in string name)
 {
-	Algorithm_Factory af = global_state().algorithm_factory();
-	
-	if (af.prototype_block_cipher(name))
-		return true;
-	if (af.prototype_stream_cipher(name))
-		return true;
-	if (af.prototype_hash_function(name))
-		return true;
-	if (af.prototype_mac(name))
-		return true;
-	return false;
+    Algorithm_Factory af = global_state().algorithm_factory();
+    
+    if (af.prototype_block_cipher(name))
+        return true;
+    if (af.prototype_stream_cipher(name))
+        return true;
+    if (af.prototype_hash_function(name))
+        return true;
+    if (af.prototype_mac(name))
+        return true;
+    return false;
 }

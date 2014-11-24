@@ -18,8 +18,8 @@ import botan.libstate.libstate;
 import std.datetime;
 
 static if (BOTAN_HAS_PBE_PKCS_V20) {
-	import botan.pbe.pbes2;
-	import botan.mac.hmac;
+    import botan.pbe.pbes2;
+    import botan.mac.hmac;
 }
 
 /**
@@ -35,45 +35,45 @@ PBE get_pbe(in string algo_spec,
              Duration msec,
              RandomNumberGenerator rng)
 {
-	SCAN_Name request(algo_spec);
-	
-	const string pbe = request.algo_name;
-	string digest_name = request.arg(0);
-	const string cipher = request.arg(1);
-	
-	Vector!string cipher_spec = splitter(cipher, '/');
-	if (cipher_spec.length != 2)
-		throw new Invalid_Argument("PBE: Invalid cipher spec " ~ cipher);
-	
-	const string cipher_algo = SCAN_Name::deref_alias(cipher_spec[0]);
-	const string cipher_mode = cipher_spec[1];
-	
-	if (cipher_mode != "CBC")
-		throw new Invalid_Argument("PBE: Invalid cipher mode " ~ cipher);
-	
-	Algorithm_Factory af = global_state().algorithm_factory();
-	
-	const BlockCipher block_cipher = af.prototype_block_cipher(cipher_algo);
-	if (!block_cipher)
-		throw new Algorithm_Not_Found(cipher_algo);
-	
-	const HashFunction hash_function = af.prototype_hash_function(digest_name);
-	if (!hash_function)
-		throw new Algorithm_Not_Found(digest_name);
-	
-	if (request.arg_count() != 2)
-		throw new Invalid_Algorithm_Name(algo_spec);
-	
-	static if (BOTAN_HAS_PBE_PKCS_V20) {
-		if (pbe == "PBE-PKCS5v20")
-			return new PBE_PKCS5v20(block_cipher.clone(),
-			                        new HMAC(hash_function.clone()),
-			                        passphrase,
-			                        msec,
-			                        rng);
-	}
-	
-	throw new Algorithm_Not_Found(algo_spec);
+    SCAN_Name request(algo_spec);
+    
+    const string pbe = request.algo_name;
+    string digest_name = request.arg(0);
+    const string cipher = request.arg(1);
+    
+    Vector!string cipher_spec = splitter(cipher, '/');
+    if (cipher_spec.length != 2)
+        throw new Invalid_Argument("PBE: Invalid cipher spec " ~ cipher);
+    
+    const string cipher_algo = SCAN_Name::deref_alias(cipher_spec[0]);
+    const string cipher_mode = cipher_spec[1];
+    
+    if (cipher_mode != "CBC")
+        throw new Invalid_Argument("PBE: Invalid cipher mode " ~ cipher);
+    
+    Algorithm_Factory af = global_state().algorithm_factory();
+    
+    const BlockCipher block_cipher = af.prototype_block_cipher(cipher_algo);
+    if (!block_cipher)
+        throw new Algorithm_Not_Found(cipher_algo);
+    
+    const HashFunction hash_function = af.prototype_hash_function(digest_name);
+    if (!hash_function)
+        throw new Algorithm_Not_Found(digest_name);
+    
+    if (request.arg_count() != 2)
+        throw new Invalid_Algorithm_Name(algo_spec);
+    
+    static if (BOTAN_HAS_PBE_PKCS_V20) {
+        if (pbe == "PBE-PKCS5v20")
+            return new PBE_PKCS5v20(block_cipher.clone(),
+                                    new HMAC(hash_function.clone()),
+                                    passphrase,
+                                    msec,
+                                    rng);
+    }
+    
+    throw new Algorithm_Not_Found(algo_spec);
 }
 
 
@@ -85,17 +85,17 @@ PBE get_pbe(in string algo_spec,
 * @return pointer to the PBE with the specified parameters
 */
 PBE get_pbe(in OID pbe_oid,
-		             in Vector!ubyte params,
-		             in string passphrase)
+                     in Vector!ubyte params,
+                     in string passphrase)
 {
-	SCAN_Name request = SCAN_Name(OIDS.lookup(pbe_oid));
-	
-	const string pbe = request.algo_name;
-	
-	static if (BOTAN_HAS_PBE_PKCS_V20) {
-		if (pbe == "PBE-PKCS5v20")
-			return new PBE_PKCS5v20(params, passphrase);
-	}
-	
-	throw new Algorithm_Not_Found(pbe_oid.toString());
+    SCAN_Name request = SCAN_Name(OIDS.lookup(pbe_oid));
+    
+    const string pbe = request.algo_name;
+    
+    static if (BOTAN_HAS_PBE_PKCS_V20) {
+        if (pbe == "PBE-PKCS5v20")
+            return new PBE_PKCS5v20(params, passphrase);
+    }
+    
+    throw new Algorithm_Not_Found(pbe_oid.toString());
 }

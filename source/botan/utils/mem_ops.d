@@ -13,7 +13,7 @@ import botan.utils.types;
 */
 void zero_mem(void* ptr, size_t n)
 {
-	ptr[0 .. n] = 0;
+    ptr[0 .. n] = 0;
 }
 
 /**
@@ -23,7 +23,7 @@ void zero_mem(void* ptr, size_t n)
 */
 void clear_mem(T)(T* ptr, size_t n)
 {
-	ptr[0 .. T.sizeof*n] = 0;
+    ptr[0 .. T.sizeof*n] = 0;
 }
 
 /**
@@ -34,8 +34,8 @@ void clear_mem(T)(T* ptr, size_t n)
 */
 void copy_mem(T)(T* output, in T* input, in size_t n)
 {
-	import std.c.string : memmove;
-	memmove(output, input, T.sizeof*n);
+    import std.c.string : memmove;
+    memmove(output, input, T.sizeof*n);
 }
 
 /**
@@ -46,8 +46,8 @@ void copy_mem(T)(T* output, in T* input, in size_t n)
 */
 void set_mem(T)(T* ptr, size_t n, ubyte val)
 {
-	import std.c.string : memset;
-	memset(ptr, val, T.sizeof*n);
+    import std.c.string : memset;
+    memset(ptr, val, T.sizeof*n);
 }
 
 /**
@@ -59,5 +59,5 @@ void set_mem(T)(T* ptr, size_t n, ubyte val)
 */
 bool same_mem(T)(in T* p1, in T* p2, in size_t n)
 {
-	return ((cast(ubyte*)p1)[0 .. n] is (cast(ubyte*)p2)[0 .. n]);
+    return ((cast(ubyte*)p1)[0 .. n] is (cast(ubyte*)p2)[0 .. n]);
 }

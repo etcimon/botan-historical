@@ -26,80 +26,80 @@ import botan.utils.rounding;
 final class Device_EntropySource : EntropySource
 {
 public:
-	@property string name() const { return "RNG Device Reader"; }
+    @property string name() const { return "RNG Device Reader"; }
 
-	/**
-	* Gather entropy from a RNG device
-	*/
-	void poll(ref Entropy_Accumulator accum)
-	{
-		if (m_devices.empty)
-			return;
-		
-		__gshared immutable size_t ENTROPY_BITS_PER_BYTE = 8;
-		__gshared immutable size_t MS_WAIT_TIME = 32;
-		__gshared immutable size_t READ_ATTEMPT = 32;
-		
-		int max_fd = m_devices[0];
-		fd_set read_set;
-		FD_ZERO(&read_set);
-		foreach (device; m_devices[])
-		{
-			FD_SET(device, &read_set);
-			max_fd = std.algorithm.max(device, max_fd);
-		}
-		
-		timeval timeout;
-		
-		timeout.tv_sec = (MS_WAIT_TIME / 1000);
-		timeout.tv_usec = (MS_WAIT_TIME % 1000) * 1000;
-		
-		if (select(max_fd + 1, &read_set, null, null, &timeout) < 0)
-			return;
-		
-		Secure_Vector!ubyte io_buffer = accum.get_io_buffer(READ_ATTEMPT);
+    /**
+    * Gather entropy from a RNG device
+    */
+    void poll(ref Entropy_Accumulator accum)
+    {
+        if (m_devices.empty)
+            return;
+        
+        __gshared immutable size_t ENTROPY_BITS_PER_BYTE = 8;
+        __gshared immutable size_t MS_WAIT_TIME = 32;
+        __gshared immutable size_t READ_ATTEMPT = 32;
+        
+        int max_fd = m_devices[0];
+        fd_set read_set;
+        FD_ZERO(&read_set);
+        foreach (device; m_devices[])
+        {
+            FD_SET(device, &read_set);
+            max_fd = std.algorithm.max(device, max_fd);
+        }
+        
+        timeval timeout;
+        
+        timeout.tv_sec = (MS_WAIT_TIME / 1000);
+        timeout.tv_usec = (MS_WAIT_TIME % 1000) * 1000;
+        
+        if (select(max_fd + 1, &read_set, null, null, &timeout) < 0)
+            return;
+        
+        Secure_Vector!ubyte io_buffer = accum.get_io_buffer(READ_ATTEMPT);
 
-		foreach (device; m_devices[])
-		{
-			if (FD_ISSET(device, &read_set))
-			{
-				const ssize_t got = read(device, io_buffer.ptr, io_buffer.length);
-				if (got > 0)
-					accum.add(io_buffer.ptr, got, ENTROPY_BITS_PER_BYTE);
-			}
-		}
-	}
+        foreach (device; m_devices[])
+        {
+            if (FD_ISSET(device, &read_set))
+            {
+                const ssize_t got = read(device, io_buffer.ptr, io_buffer.length);
+                if (got > 0)
+                    accum.add(io_buffer.ptr, got, ENTROPY_BITS_PER_BYTE);
+            }
+        }
+    }
 
 
-	/**
-	Device_EntropySource constructor
-	Open a file descriptor to each (available) device in fsnames
-	*/
-	this(in Vector!string fsnames)
-	{
-		enum O_NONBLOCK = 0;
-		enum O_NOCTTY = 0;
-		
-		const int flags = O_RDONLY | O_NONBLOCK | O_NOCTTY;
-		
-		foreach (fsname; fsnames[])
-		{
-			fd_type fd = open(fsname.toStringz, flags);
-			
-			if (fd >= 0 && fd < FD_SETSIZE)
-				m_devices.push_back(fd);
-			else if (fd >= 0)
-				close(fd);
-		}
-	}
+    /**
+    Device_EntropySource constructor
+    Open a file descriptor to each (available) device in fsnames
+    */
+    this(in Vector!string fsnames)
+    {
+        enum O_NONBLOCK = 0;
+        enum O_NOCTTY = 0;
+        
+        const int flags = O_RDONLY | O_NONBLOCK | O_NOCTTY;
+        
+        foreach (fsname; fsnames[])
+        {
+            fd_type fd = open(fsname.toStringz, flags);
+            
+            if (fd >= 0 && fd < FD_SETSIZE)
+                m_devices.push_back(fd);
+            else if (fd >= 0)
+                close(fd);
+        }
+    }
 
-	~this()
-	{
-		foreach (device; m_devices[])
-			close(device);
-	}
+    ~this()
+    {
+        foreach (device; m_devices[])
+            close(device);
+    }
 private:
-	typedef int fd_type;
+    typedef int fd_type;
 
-	Vector!fd_type m_devices;
+    Vector!fd_type m_devices;
 }

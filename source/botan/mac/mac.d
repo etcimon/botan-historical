@@ -17,32 +17,32 @@ import botan.utils.mem_ops;
 class MessageAuthenticationCode : Buffered_Computation, SymmetricAlgorithm
 {
 public:
-	/**
-	* Verify a MAC.
-	* @param input the MAC to verify as a ubyte array
-	* @param length the length of param in
-	* @return true if the MAC is valid, false otherwise
-	*/
-	final bool verify_mac(in ubyte* mac, size_t length)
-	{
-		Secure_Vector!ubyte our_mac = flush();
-		
-		if (our_mac.length != length)
-			return false;
-		
-		return same_mem(our_mac.ptr, mac.ptr, length);
-	}
+    /**
+    * Verify a MAC.
+    * @param input the MAC to verify as a ubyte array
+    * @param length the length of param in
+    * @return true if the MAC is valid, false otherwise
+    */
+    final bool verify_mac(in ubyte* mac, size_t length)
+    {
+        Secure_Vector!ubyte our_mac = flush();
+        
+        if (our_mac.length != length)
+            return false;
+        
+        return same_mem(our_mac.ptr, mac.ptr, length);
+    }
 
-	/**
-	* Get a new object representing the same algorithm as this
-	*/
-	abstract MessageAuthenticationCode clone() const;
+    /**
+    * Get a new object representing the same algorithm as this
+    */
+    abstract MessageAuthenticationCode clone() const;
 
-	/**
-	* Get the name of this algorithm.
-	* @return name of this algorithm
-	*/
-	abstract @property string name() const;
+    /**
+    * Get the name of this algorithm.
+    * @return name of this algorithm
+    */
+    abstract @property string name() const;
 }
 
 static if (BOTAN_TEST):
@@ -55,59 +55,59 @@ private __gshared size_t total_tests;
 
 size_t mac_test(string algo, string key_hex, string in_hex, string out_hex)
 {
-	Algorithm_Factory af = global_state().algorithm_factory();
-	
-	const auto providers = af.providers_of(algo);
-	size_t fails = 0;
+    Algorithm_Factory af = global_state().algorithm_factory();
+    
+    const auto providers = af.providers_of(algo);
+    size_t fails = 0;
 
-	atomicOp!"+="(total_tests, 1);
-	if(providers.empty)
-	{
-		writeln("Unknown algo " ~ algo);
-		++fails;
-	}
-	
-	foreach (provider; providers)
-	{
-		atomicOp!"+="(total_tests, 1);
-		auto proto = af.prototype_mac(algo, provider);
-		
-		if(!proto)
-		{
-			writeln("Unable to get " ~ algo ~ " from " ~ provider);
-			++fails;
-			continue;
-		}
-		
-		Unique!MessageAuthenticationCode mac = proto.clone();
-		
-		mac.set_key(hex_decode(key_hex));
-		mac.update(hex_decode(in_hex));
-		
-		auto h = mac.flush();
+    atomicOp!"+="(total_tests, 1);
+    if(providers.empty)
+    {
+        writeln("Unknown algo " ~ algo);
+        ++fails;
+    }
+    
+    foreach (provider; providers)
+    {
+        atomicOp!"+="(total_tests, 1);
+        auto proto = af.prototype_mac(algo, provider);
+        
+        if(!proto)
+        {
+            writeln("Unable to get " ~ algo ~ " from " ~ provider);
+            ++fails;
+            continue;
+        }
+        
+        Unique!MessageAuthenticationCode mac = proto.clone();
+        
+        mac.set_key(hex_decode(key_hex));
+        mac.update(hex_decode(in_hex));
+        
+        auto h = mac.flush();
 
-		atomicOp!"+="(total_tests, 1);
-		if(h != hex_decode_locked(out_hex))
-		{
-			writeln(algo ~ " " ~ provider ~ " got " ~ hex_encode(h) ~ " != " ~ out_hex);
-			++fails;
-		}
-	}
-	
-	return fails;
+        atomicOp!"+="(total_tests, 1);
+        if(h != hex_decode_locked(out_hex))
+        {
+            writeln(algo ~ " " ~ provider ~ " got " ~ hex_encode(h) ~ " != " ~ out_hex);
+            ++fails;
+        }
+    }
+    
+    return fails;
 }
 
-unittest {	
-	auto test = (string input) {
-		File vec = File(input, "r");
-		
-		return run_tests_bb(vec, "Mac", "Out", true,
-		                    (string[string] m) {
-								return mac_test(m["Mac"], m["Key"], m["In"], m["Out"]);
-							});
-	};
-	
-	size_t fails = run_tests_in_dir("test_data/mac", test);
+unittest {    
+    auto test = (string input) {
+        File vec = File(input, "r");
+        
+        return run_tests_bb(vec, "Mac", "Out", true,
+                            (string[string] m) {
+                                return mac_test(m["Mac"], m["Key"], m["In"], m["Out"]);
+                            });
+    };
+    
+    size_t fails = run_tests_in_dir("test_data/mac", test);
 
-	test_report("mac", total_tests, fails);
+    test_report("mac", total_tests, fails);
 }

@@ -15,13 +15,13 @@ enum ALIGN = "align 16";
 * Conditional Jumps
 */
 string JUMP_IF_ZERO(string REG, string LABEL)() {
-	return `cmp ` ~ REG ~ `, ` ~ IMM(0) ~ `;
-			jz ` ~ LABEL ~ `;`;
+    return `cmp ` ~ REG ~ `, ` ~ IMM(0) ~ `;
+            jz ` ~ LABEL ~ `;`;
 }
 
 string JUMP_IF_LT(string REG, int NUM, string LABEL) {
-	return `cmp ` ~ IMM(NUM) ~ `, ` ~ REG ~ `;
-			jl ` ~ LABEL ~ `;`;
+    return `cmp ` ~ IMM(NUM) ~ `, ` ~ REG ~ `;
+            jl ` ~ LABEL ~ `;`;
 }
 
 /*
@@ -88,7 +88,7 @@ string ADD(string TO, string FROM) { return `add ` ~ TO ~ `, ` ~ FROM ~ `;`; }
 string ADD_IMM(string TO, int NUM) { return ADD(TO, IMM(NUM)); }
 string ADD_LAST_CARRY(string REG) { return `adc ` ~ REG ~ `, ` ~ IMM(0) ~ `;`; }
 string ADD_W_CARRY(string TO1, string TO2, string FROM) { return `add ` ~ TO1 ~ `, ` ~ FROM ~ `;
-																	adc ` ~ TO2 ~ `, ` ~ IMM(0) ~ `;`; }
+                                                                    adc ` ~ TO2 ~ `, ` ~ IMM(0) ~ `;`; }
 string SUB_IMM(string TO, int NUM) { return `sub ` ~ TO ~ `, ` ~ IMM(NUM) ~ `;`; }
 string MUL(string REG) { return `mul ` ~ REG ~ `;`; }
 

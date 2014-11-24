@@ -24,20 +24,20 @@ alias CRL_Entry = FreeListRef!CRL_Entry_Impl;
 * X.509v2 CRL Reason Code.
 */
 enum CRL_Code {
-	UNSPECIFIED				= 0,
-	KEY_COMPROMISE			= 1,
-	CA_COMPROMISE			= 2,
-	AFFILIATION_CHANGED	 	= 3,
-	SUPERSEDED				= 4,
-	CESSATION_OF_OPERATION 	= 5,
-	CERTIFICATE_HOLD		= 6,
-	REMOVE_FROM_CRL		  	= 8,
-	PRIVLEDGE_WITHDRAWN	 	= 9,
-	AA_COMPROMISE			= 10,
+    UNSPECIFIED                = 0,
+    KEY_COMPROMISE            = 1,
+    CA_COMPROMISE            = 2,
+    AFFILIATION_CHANGED         = 3,
+    SUPERSEDED                = 4,
+    CESSATION_OF_OPERATION     = 5,
+    CERTIFICATE_HOLD        = 6,
+    REMOVE_FROM_CRL              = 8,
+    PRIVLEDGE_WITHDRAWN         = 9,
+    AA_COMPROMISE            = 10,
 
-	DELETE_CRL_ENTRY		= 0xFF00,
-	OCSP_GOOD				= 0xFF01,
-	OCSP_UNKNOWN			= 0xFF02
+    DELETE_CRL_ENTRY        = 0xFF00,
+    OCSP_GOOD                = 0xFF01,
+    OCSP_UNKNOWN            = 0xFF02
 }
 
 /**
@@ -46,118 +46,118 @@ enum CRL_Code {
 final class CRL_Entry_Impl : ASN1_Object
 {
 public:
-	/*
-	* DER encode a CRL_Entry
-	*/
-	void encode_into(DER_Encoder to_) const
-	{
-		Extensions extensions;
-		
-		extensions.add(new x509_ext.CRL_ReasonCode(reason));
-		
-		to_.start_cons(ASN1_Tag.SEQUENCE)
-				.encode(BigInt.decode(serial))
-				.encode(m_time)
-				.start_cons(ASN1_Tag.SEQUENCE)
-				.encode(extensions)
-				.end_cons()
-				.end_cons();
-	}
-	
+    /*
+    * DER encode a CRL_Entry
+    */
+    void encode_into(DER_Encoder to_) const
+    {
+        Extensions extensions;
+        
+        extensions.add(new x509_ext.CRL_ReasonCode(reason));
+        
+        to_.start_cons(ASN1_Tag.SEQUENCE)
+                .encode(BigInt.decode(serial))
+                .encode(m_time)
+                .start_cons(ASN1_Tag.SEQUENCE)
+                .encode(extensions)
+                .end_cons()
+                .end_cons();
+    }
+    
 
-	/*
-	* Decode a BER encoded CRL_Entry
-	*/
-	void decode_from(BER_Decoder source)
-	{
-		BigInt serial_number_bn;
-		m_reason = CRL_Code.UNSPECIFIED;
-		
-		BER_Decoder entry = source.start_cons(ASN1_Tag.SEQUENCE);
-		
-		entry.decode(serial_number_bn).decode(m_time);
-		
-		if (entry.more_items())
-		{
-			Extensions extensions = Extensions(m_throw_on_unknown_critical);
-			entry.decode(extensions);
-			Data_Store info;
-			extensions.contents_to(info, info);
-			m_reason = CRL_Code(info.get1_uint("X509v3.CRLReasonCode"));
-		}
-		
-		entry.end_cons();
-		
-		serial = BigInt.encode(serial_number_bn);
-	}
+    /*
+    * Decode a BER encoded CRL_Entry
+    */
+    void decode_from(BER_Decoder source)
+    {
+        BigInt serial_number_bn;
+        m_reason = CRL_Code.UNSPECIFIED;
+        
+        BER_Decoder entry = source.start_cons(ASN1_Tag.SEQUENCE);
+        
+        entry.decode(serial_number_bn).decode(m_time);
+        
+        if (entry.more_items())
+        {
+            Extensions extensions = Extensions(m_throw_on_unknown_critical);
+            entry.decode(extensions);
+            Data_Store info;
+            extensions.contents_to(info, info);
+            m_reason = CRL_Code(info.get1_uint("X509v3.CRLReasonCode"));
+        }
+        
+        entry.end_cons();
+        
+        serial = BigInt.encode(serial_number_bn);
+    }
 
-	/**
-	* Get the serial number of the certificate associated with this entry.
-	* @return certificate's serial number
-	*/
-	Vector!ubyte serial_number() const { return m_serial; }
+    /**
+    * Get the serial number of the certificate associated with this entry.
+    * @return certificate's serial number
+    */
+    Vector!ubyte serial_number() const { return m_serial; }
 
-	/**
-	* Get the revocation date of the certificate associated with this entry
-	* @return certificate's revocation date
-	*/
-	X509_Time expire_time() const { return m_time; }
+    /**
+    * Get the revocation date of the certificate associated with this entry
+    * @return certificate's revocation date
+    */
+    X509_Time expire_time() const { return m_time; }
 
-	/**
-	* Get the entries reason code
-	* @return reason code
-	*/
-	CRL_Code reason_code() const { return m_reason; }
+    /**
+    * Get the entries reason code
+    * @return reason code
+    */
+    CRL_Code reason_code() const { return m_reason; }
 
-	/**
-	* Construct an empty CRL entry.
-	*/
-	this(bool throw_on_unknown_critical_extension)
-	{
-		m_throw_on_unknown_critical = throw_on_unknown_critical_extension;
-		m_reason = CRL_Code.UNSPECIFIED;
-	}
+    /**
+    * Construct an empty CRL entry.
+    */
+    this(bool throw_on_unknown_critical_extension)
+    {
+        m_throw_on_unknown_critical = throw_on_unknown_critical_extension;
+        m_reason = CRL_Code.UNSPECIFIED;
+    }
 
-	/**
-	* Construct an CRL entry.
-	* @param cert the certificate to revoke
-	* @param reason the reason code to set in the entry
-	*/
-	this(in X509_Certificate cert, CRL_Code why = CRL_Code.UNSPECIFIED)
-	{
-		m_throw_on_unknown_critical = false;
-		m_serial = cert.serial_number();
-		m_time = X509_Time(Clock.currTime());
-		m_reason = why;
-	}
+    /**
+    * Construct an CRL entry.
+    * @param cert the certificate to revoke
+    * @param reason the reason code to set in the entry
+    */
+    this(in X509_Certificate cert, CRL_Code why = CRL_Code.UNSPECIFIED)
+    {
+        m_throw_on_unknown_critical = false;
+        m_serial = cert.serial_number();
+        m_time = X509_Time(Clock.currTime());
+        m_reason = why;
+    }
 
-	/*
-	* Compare two CRL_Entrys for equality
-	*/
-	bool opEquals(in CRL_Entry a2)
-	{
-		if (serial_number() != a2.serial_number())
-			return false;
-		if (expire_time() != a2.expire_time())
-			return false;
-		if (reason_code() != a2.reason_code())
-			return false;
-		return true;
-	}
+    /*
+    * Compare two CRL_Entrys for equality
+    */
+    bool opEquals(in CRL_Entry a2)
+    {
+        if (serial_number() != a2.serial_number())
+            return false;
+        if (expire_time() != a2.expire_time())
+            return false;
+        if (reason_code() != a2.reason_code())
+            return false;
+        return true;
+    }
 
-	/*
-	* Compare two CRL_Entrys for inequality
-	*/
-	bool opCmp(string op)(in CRL_Entry a2)
-		if (op == "!=")
-	{
-		return !(this == a2);
-	}
+    /*
+    * Compare two CRL_Entrys for inequality
+    */
+    bool opCmp(string op)(in CRL_Entry a2)
+        if (op == "!=")
+    {
+        return !(this == a2);
+    }
 
 
 private:
-	bool m_throw_on_unknown_critical;
-	Vector!ubyte m_serial;
-	X509_Time m_time;
-	CRL_Code m_reason;
+    bool m_throw_on_unknown_critical;
+    Vector!ubyte m_serial;
+    X509_Time m_time;
+    CRL_Code m_reason;
 }

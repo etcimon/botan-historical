@@ -1,7 +1,7 @@
 /*
 * Load/Store Operators
 * (C) 1999-2007 Jack Lloyd
-*	  2007 Yves Jerschow
+*      2007 Yves Jerschow
 *
 * Distributed under the terms of the botan license.
 */
@@ -24,7 +24,7 @@ pure:
 */
 ushort make_ushort(ubyte i0, ubyte i1)
 {
-	return ((cast(ushort)(i0) << 8) | i1);
+    return ((cast(ushort)(i0) << 8) | i1);
 }
 
 /**
@@ -37,10 +37,10 @@ ushort make_ushort(ubyte i0, ubyte i1)
 */
 uint make_uint(ubyte i0, ubyte i1, ubyte i2, ubyte i3)
 {
-	return ((cast(uint)(i0) << 24) |
-			(cast(uint)(i1) << 16) |
-			(cast(uint)(i2) <<  8) |
-			(cast(uint)(i3)));
+    return ((cast(uint)(i0) << 24) |
+            (cast(uint)(i1) << 16) |
+            (cast(uint)(i2) <<  8) |
+            (cast(uint)(i3)));
 }
 
 /**
@@ -56,16 +56,16 @@ uint make_uint(ubyte i0, ubyte i1, ubyte i2, ubyte i3)
 * @return i0 || i1 || i2 || i3 || i4 || i5 || i6 || i7
 */
 ulong make_ulong(ubyte i0, ubyte i1, ubyte i2, ubyte i3,
-				  ubyte i4, ubyte i5, ubyte i6, ubyte i7)
+                  ubyte i4, ubyte i5, ubyte i6, ubyte i7)
 {
-	return 	((cast(ulong)(i0) << 56) |
-			 (cast(ulong)(i1) << 48) |
-			 (cast(ulong)(i2) << 40) |
-			 (cast(ulong)(i3) << 32) |
-			 (cast(ulong)(i4) << 24) |
-			 (cast(ulong)(i5) << 16) |
-			 (cast(ulong)(i6) <<  8) |
-			 (cast(ulong)(i7)));
+    return     ((cast(ulong)(i0) << 56) |
+             (cast(ulong)(i1) << 48) |
+             (cast(ulong)(i2) << 40) |
+             (cast(ulong)(i3) << 32) |
+             (cast(ulong)(i4) << 24) |
+             (cast(ulong)(i5) << 16) |
+             (cast(ulong)(i6) <<  8) |
+             (cast(ulong)(i7)));
 }
 
 /**
@@ -76,11 +76,11 @@ ulong make_ulong(ubyte i0, ubyte i1, ubyte i2, ubyte i3,
 */
 T load_be(T)(in ubyte* input, size_t off)
 {
-	input += off * T.sizeof;
-	T output = 0;
-	for (size_t i = 0; i != T.sizeof; ++i)
-		output = (output << 8) | input[i];
-	return output;
+    input += off * T.sizeof;
+    T output = 0;
+    for (size_t i = 0; i != T.sizeof; ++i)
+        output = (output << 8) | input[i];
+    return output;
 }
 
 /**
@@ -91,11 +91,11 @@ T load_be(T)(in ubyte* input, size_t off)
 */
 T load_le(T)(in ubyte* input, size_t off)
 {
-	input += off * T.sizeof;
-	T output = 0;
-	for (size_t i = 0; i != T.sizeof; ++i)
-		output = (output << 8) | input[T.sizeof-1-i];
-	return output;
+    input += off * T.sizeof;
+    T output = 0;
+    for (size_t i = 0; i != T.sizeof; ++i)
+        output = (output << 8) | input[T.sizeof-1-i];
+    return output;
 }
 
 /**
@@ -106,7 +106,7 @@ T load_le(T)(in ubyte* input, size_t off)
 */
 ushort load_be(T : ushort)(in ubyte* input, size_t off)
 {
-	return nativeToBigEndian!ushort(*cast(ubyte[2]*)( (cast(const ushort*) input) + off));
+    return nativeToBigEndian!ushort(*cast(ubyte[2]*)( (cast(const ushort*) input) + off));
 }
 
 /**
@@ -117,7 +117,7 @@ ushort load_be(T : ushort)(in ubyte* input, size_t off)
 */
 ushort load_le(T : ushort)(in ubyte* input, size_t off)
 {
-	return nativeToLittleEndian!ushort(*cast(ubyte[2]*)( (cast(const ushort*) input) + off));
+    return nativeToLittleEndian!ushort(*cast(ubyte[2]*)( (cast(const ushort*) input) + off));
 }
 
 /**
@@ -128,7 +128,7 @@ ushort load_le(T : ushort)(in ubyte* input, size_t off)
 */
 uint load_be(T : uint)(in ubyte* input, size_t off)
 {
-	return nativeToBigEndian!uint(*cast(ubyte[4]*)( (cast(const uint*) input) + off));
+    return nativeToBigEndian!uint(*cast(ubyte[4]*)( (cast(const uint*) input) + off));
 }
 
 /**
@@ -140,7 +140,7 @@ uint load_be(T : uint)(in ubyte* input, size_t off)
 
 uint load_le(T : uint)(in ubyte* input, size_t off)
 {
-	return nativeToLittleEndian!uint(*cast(ubyte[4]*)( (cast(const uint*) input) + off));
+    return nativeToLittleEndian!uint(*cast(ubyte[4]*)( (cast(const uint*) input) + off));
 }
 
 /**
@@ -151,8 +151,8 @@ uint load_le(T : uint)(in ubyte* input, size_t off)
 */
 ulong load_be(T : ulong)(in ubyte* input, size_t off)
 {
-	return nativeToBigEndian!ulong(*cast(ubyte[8]*)( (cast(const ulong*) input) + off));
-	
+    return nativeToBigEndian!ulong(*cast(ubyte[8]*)( (cast(const ulong*) input) + off));
+    
 }
 
 /**
@@ -163,7 +163,7 @@ ulong load_be(T : ulong)(in ubyte* input, size_t off)
 */
 ulong load_le(T : ulong)(in ubyte* input, size_t off)
 {
-	return nativeToLittleEndian!ulong(*cast(ubyte[8]*)( (cast(const ulong*) input) + off));
+    return nativeToLittleEndian!ulong(*cast(ubyte[8]*)( (cast(const ulong*) input) + off));
 }
 
 /**
@@ -174,8 +174,8 @@ ulong load_le(T : ulong)(in ubyte* input, size_t off)
 */
 void load_le(T)(in ubyte* input, ref T x0, ref T x1)
 {
-	x0 = load_le!T(input, 0);
-	x1 = load_le!T(input, 1);
+    x0 = load_le!T(input, 0);
+    x1 = load_le!T(input, 1);
 }
 
 /**
@@ -187,12 +187,12 @@ void load_le(T)(in ubyte* input, ref T x0, ref T x1)
 * @param x3 where the fourth word will be written
 */
 void load_le(T)(in ubyte* input,
-				ref T x0, ref T x1, ref T x2, ref T x3)
+                ref T x0, ref T x1, ref T x2, ref T x3)
 {
-	x0 = load_le!T(input, 0);
-	x1 = load_le!T(input, 1);
-	x2 = load_le!T(input, 2);
-	x3 = load_le!T(input, 3);
+    x0 = load_le!T(input, 0);
+    x1 = load_le!T(input, 1);
+    x2 = load_le!T(input, 2);
+    x3 = load_le!T(input, 3);
 }
 
 /**
@@ -208,17 +208,17 @@ void load_le(T)(in ubyte* input,
 * @param x7 where the eighth word will be written
 */
 void load_le(T)(in ubyte* input,
-				  ref T x0, ref T x1, ref T x2, ref T x3,
-				  ref T x4, ref T x5, ref T x6, ref T x7)
+                  ref T x0, ref T x1, ref T x2, ref T x3,
+                  ref T x4, ref T x5, ref T x6, ref T x7)
 {
-	x0 = load_le!T(input, 0);
-	x1 = load_le!T(input, 1);
-	x2 = load_le!T(input, 2);
-	x3 = load_le!T(input, 3);
-	x4 = load_le!T(input, 4);
-	x5 = load_le!T(input, 5);
-	x6 = load_le!T(input, 6);
-	x7 = load_le!T(input, 7);
+    x0 = load_le!T(input, 0);
+    x1 = load_le!T(input, 1);
+    x2 = load_le!T(input, 2);
+    x3 = load_le!T(input, 3);
+    x4 = load_le!T(input, 4);
+    x5 = load_le!T(input, 5);
+    x6 = load_le!T(input, 6);
+    x7 = load_le!T(input, 7);
 }
 
 /**
@@ -229,25 +229,25 @@ void load_le(T)(in ubyte* input,
 */
 void load_le(T)(T* output, in ubyte* input, size_t count)
 {
-	static if (BOTAN_TARGET_CPU_HAS_KNOWN_ENDIANNESS) {
-		import std.c.string : memcpy;
-		memcpy(output, input, T.sizeof*count);
+    static if (BOTAN_TARGET_CPU_HAS_KNOWN_ENDIANNESS) {
+        import std.c.string : memcpy;
+        memcpy(output, input, T.sizeof*count);
 
-		version(BigEndian) {
-			
-			const size_t blocks = count - (count % 4);
-			const size_t left = count - blocks;
+        version(BigEndian) {
+            
+            const size_t blocks = count - (count % 4);
+            const size_t left = count - blocks;
 
-			for (size_t i = 0; i != blocks; i += 4)
-				bswap_4(*cast(T[4]*) (output + i));
+            for (size_t i = 0; i != blocks; i += 4)
+                bswap_4(*cast(T[4]*) (output + i));
 
-			foreach (size_t i; 0 .. left)
-				output[blocks+i] = reverse_bytes(output[blocks+i]);
-		}
-	} else {
-		foreach (size_t i; 0 .. count)
-			output[i] = load_le!T(input, i);
-	}
+            foreach (size_t i; 0 .. left)
+                output[blocks+i] = reverse_bytes(output[blocks+i]);
+        }
+    } else {
+        foreach (size_t i; 0 .. count)
+            output[i] = load_le!T(input, i);
+    }
 }
 
 /**
@@ -258,8 +258,8 @@ void load_le(T)(T* output, in ubyte* input, size_t count)
 */
 void load_be(T)(in ubyte* input, ref T x0, ref T x1)
 {
-	x0 = load_be!T(input, 0);
-	x1 = load_be!T(input, 1);
+    x0 = load_be!T(input, 0);
+    x1 = load_be!T(input, 1);
 }
 
 /**
@@ -272,10 +272,10 @@ void load_be(T)(in ubyte* input, ref T x0, ref T x1)
 */
 void load_be(T)(in ubyte* input, ref T x0, ref T x1, ref T x2, ref T x3)
 {
-	x0 = load_be!T(input, 0);
-	x1 = load_be!T(input, 1);
-	x2 = load_be!T(input, 2);
-	x3 = load_be!T(input, 3);
+    x0 = load_be!T(input, 0);
+    x1 = load_be!T(input, 1);
+    x2 = load_be!T(input, 2);
+    x3 = load_be!T(input, 3);
 }
 
 /**
@@ -291,17 +291,17 @@ void load_be(T)(in ubyte* input, ref T x0, ref T x1, ref T x2, ref T x3)
 * @param x7 where the eighth word will be written
 */
 void load_be(T)(in ubyte* input,
-				ref T x0, ref T x1, ref T x2, ref T x3,
-				ref T x4, ref T x5, ref T x6, ref T x7)
+                ref T x0, ref T x1, ref T x2, ref T x3,
+                ref T x4, ref T x5, ref T x6, ref T x7)
 {
-	x0 = load_be!T(input, 0);
-	x1 = load_be!T(input, 1);
-	x2 = load_be!T(input, 2);
-	x3 = load_be!T(input, 3);
-	x4 = load_be!T(input, 4);
-	x5 = load_be!T(input, 5);
-	x6 = load_be!T(input, 6);
-	x7 = load_be!T(input, 7);
+    x0 = load_be!T(input, 0);
+    x1 = load_be!T(input, 1);
+    x2 = load_be!T(input, 2);
+    x3 = load_be!T(input, 3);
+    x4 = load_be!T(input, 4);
+    x5 = load_be!T(input, 5);
+    x6 = load_be!T(input, 6);
+    x7 = load_be!T(input, 7);
 }
 
 /**
@@ -312,26 +312,26 @@ void load_be(T)(in ubyte* input,
 */
 void load_be(T)(T* output, in ubyte* input, size_t count)
 {
-	static if (BOTAN_TARGET_CPU_HAS_KNOWN_ENDIANNESS) {
-		import std.c.string : memcpy;
-		memcpy(output, input, T.sizeof*count);
+    static if (BOTAN_TARGET_CPU_HAS_KNOWN_ENDIANNESS) {
+        import std.c.string : memcpy;
+        memcpy(output, input, T.sizeof*count);
 
-		version(LittleEndian) {
-			
-			const size_t blocks = count - (count % 4);
-			const size_t left = count - blocks;
+        version(LittleEndian) {
+            
+            const size_t blocks = count - (count % 4);
+            const size_t left = count - blocks;
 
-			for (size_t i = 0; i != blocks; i += 4)
-				bswap_4(*cast(T[4]*) (output + i));
+            for (size_t i = 0; i != blocks; i += 4)
+                bswap_4(*cast(T[4]*) (output + i));
 
-			foreach (size_t i; 0 .. left)
-				output[blocks+i] = reverse_bytes(output[blocks+i]);
-		}
+            foreach (size_t i; 0 .. left)
+                output[blocks+i] = reverse_bytes(output[blocks+i]);
+        }
 
-	} else {
-		foreach (size_t i; 0 .. count)
-			output[i] = load_be!T(input, i);
-	}
+    } else {
+        foreach (size_t i; 0 .. count)
+            output[i] = load_be!T(input, i);
+    }
 }
 
 /**
@@ -341,8 +341,8 @@ void load_be(T)(T* output, in ubyte* input, size_t count)
 */
 void store_be(ushort input, ref ubyte[2] output)
 {
-	*cast(ushort*) output = bigEndianToNative!ushort(*cast(ubyte[2]*) input);
-	
+    *cast(ushort*) output = bigEndianToNative!ushort(*cast(ubyte[2]*) input);
+    
 }
 
 /**
@@ -352,8 +352,8 @@ void store_be(ushort input, ref ubyte[2] output)
 */
 void store_le(ushort input, ref ubyte[2] output)
 {
-	*cast(ushort*) output = littleEndianToNative!ushort(*cast(ubyte[2]*) input);
-	
+    *cast(ushort*) output = littleEndianToNative!ushort(*cast(ubyte[2]*) input);
+    
 }
 
 /**
@@ -363,8 +363,8 @@ void store_le(ushort input, ref ubyte[2] output)
 */
 void store_be(uint input, ref ubyte[4] output)
 {
-	*cast(uint*) output = bigEndianToNative!uint(*cast(ubyte[4]*) input);
-	
+    *cast(uint*) output = bigEndianToNative!uint(*cast(ubyte[4]*) input);
+    
 }
 
 /**
@@ -374,7 +374,7 @@ void store_be(uint input, ref ubyte[4] output)
 */
 void store_le(uint input, ref ubyte[4] output)
 {
-	*cast(uint*) output = littleEndianToNative!uint(*cast(ubyte[4]*) input);
+    *cast(uint*) output = littleEndianToNative!uint(*cast(ubyte[4]*) input);
 
 }
 
@@ -385,7 +385,7 @@ void store_le(uint input, ref ubyte[4] output)
 */
 void store_be(ulong input, ref ubyte[8] output)
 {
-	*cast(ulong*) output = bigEndianToNative!ulong(*cast(ubyte[8]*) input);
+    *cast(ulong*) output = bigEndianToNative!ulong(*cast(ubyte[8]*) input);
 }
 
 /**
@@ -395,7 +395,7 @@ void store_be(ulong input, ref ubyte[8] output)
 */
 void store_le(ulong input, ref ubyte[8] output)
 {
-	*cast(ulong*) output = littleEndianToNative!ulong(*cast(ubyte[8]*) input);
+    *cast(ulong*) output = littleEndianToNative!ulong(*cast(ubyte[8]*) input);
 }
 
 /**
@@ -405,7 +405,7 @@ void store_le(ulong input, ref ubyte[8] output)
 */
 void store_le(T)(T input, ubyte* output)
 {
-	store_le(input, *cast(ubyte[T.sizeof]*) output);
+    store_le(input, *cast(ubyte[T.sizeof]*) output);
 }
 
 /**
@@ -415,7 +415,7 @@ void store_le(T)(T input, ubyte* output)
 */
 void store_be(T)(T input, ubyte* output)
 {
-	store_be(input, *cast(ubyte[T.sizeof]*) output);
+    store_be(input, *cast(ubyte[T.sizeof]*) output);
 }
 
 /**
@@ -426,8 +426,8 @@ void store_be(T)(T input, ubyte* output)
 */
 void store_le(T)(ubyte* output, T x0, T x1)
 {
-	store_le(x0, output + (0 * T.sizeof));
-	store_le(x1, output + (1 * T.sizeof));
+    store_le(x0, output + (0 * T.sizeof));
+    store_le(x1, output + (1 * T.sizeof));
 }
 
 /**
@@ -438,8 +438,8 @@ void store_le(T)(ubyte* output, T x0, T x1)
 */
 void store_be(T)(ref ubyte* output, T x0, T x1)
 {
-	store_be(x0, output + (0 * T.sizeof));
-	store_be(x1, output + (1 * T.sizeof));
+    store_be(x0, output + (0 * T.sizeof));
+    store_be(x1, output + (1 * T.sizeof));
 }
 
 /**
@@ -452,10 +452,10 @@ void store_be(T)(ref ubyte* output, T x0, T x1)
 */
 void store_le(T)(ubyte* output, T x0, T x1, T x2, T x3)
 {
-	store_le(x0, output + (0 * T.sizeof));
-	store_le(x1, output + (1 * T.sizeof));
-	store_le(x2, output + (2 * T.sizeof));
-	store_le(x3, output + (3 * T.sizeof));
+    store_le(x0, output + (0 * T.sizeof));
+    store_le(x1, output + (1 * T.sizeof));
+    store_le(x2, output + (2 * T.sizeof));
+    store_le(x3, output + (3 * T.sizeof));
 }
 
 /**
@@ -468,10 +468,10 @@ void store_le(T)(ubyte* output, T x0, T x1, T x2, T x3)
 */
 void store_be(T)(ref ubyte* output, T x0, T x1, T x2, T x3)
 {
-	store_be(x0, output + (0 * T.sizeof));
-	store_be(x1, output + (1 * T.sizeof));
-	store_be(x2, output + (2 * T.sizeof));
-	store_be(x3, output + (3 * T.sizeof));
+    store_be(x0, output + (0 * T.sizeof));
+    store_be(x1, output + (1 * T.sizeof));
+    store_be(x2, output + (2 * T.sizeof));
+    store_be(x3, output + (3 * T.sizeof));
 }
 
 /**
@@ -487,16 +487,16 @@ void store_be(T)(ref ubyte* output, T x0, T x1, T x2, T x3)
 * @param x7 the eighth word
 */
 void store_le(T)(ubyte* output, T x0, T x1, T x2, T x3,
-								T x4, T x5, T x6, T x7)
+                                T x4, T x5, T x6, T x7)
 {
-	store_le(x0, output + (0 * T.sizeof));
-	store_le(x1, output + (1 * T.sizeof));
-	store_le(x2, output + (2 * T.sizeof));
-	store_le(x3, output + (3 * T.sizeof));
-	store_le(x4, output + (4 * T.sizeof));
-	store_le(x5, output + (5 * T.sizeof));
-	store_le(x6, output + (6 * T.sizeof));
-	store_le(x7, output + (7 * T.sizeof));
+    store_le(x0, output + (0 * T.sizeof));
+    store_le(x1, output + (1 * T.sizeof));
+    store_le(x2, output + (2 * T.sizeof));
+    store_le(x3, output + (3 * T.sizeof));
+    store_le(x4, output + (4 * T.sizeof));
+    store_le(x5, output + (5 * T.sizeof));
+    store_le(x6, output + (6 * T.sizeof));
+    store_le(x7, output + (7 * T.sizeof));
 }
 
 /**
@@ -512,14 +512,14 @@ void store_le(T)(ubyte* output, T x0, T x1, T x2, T x3,
 * @param x7 the eighth word
 */
 void store_be(T)(ubyte* output, T x0, T x1, T x2, T x3,
-								T x4, T x5, T x6, T x7)
+                                T x4, T x5, T x6, T x7)
 {
-	store_be(x0, output + (0 * T.sizeof));
-	store_be(x1, output + (1 * T.sizeof));
-	store_be(x2, output + (2 * T.sizeof));
-	store_be(x3, output + (3 * T.sizeof));
-	store_be(x4, output + (4 * T.sizeof));
-	store_be(x5, output + (5 * T.sizeof));
-	store_be(x6, output + (6 * T.sizeof));
-	store_be(x7, output + (7 * T.sizeof));
+    store_be(x0, output + (0 * T.sizeof));
+    store_be(x1, output + (1 * T.sizeof));
+    store_be(x2, output + (2 * T.sizeof));
+    store_be(x3, output + (3 * T.sizeof));
+    store_be(x4, output + (4 * T.sizeof));
+    store_be(x5, output + (5 * T.sizeof));
+    store_be(x6, output + (6 * T.sizeof));
+    store_be(x7, output + (7 * T.sizeof));
 }

@@ -15,27 +15,27 @@ import botan.hash.hash;
 class KDF1 : KDF
 {
 public:
-	/*
-	* KDF1 Key Derivation Mechanism
-	*/
-	Secure_Vector!ubyte derive(size_t,
-	                        in ubyte* secret, size_t secret_len,
-	                        in ubyte* P, size_t P_len) const
-	{
-		m_hash.update(secret, secret_len);
-		m_hash.update(P, P_len);
-		return m_hash.flush();
-	}
+    /*
+    * KDF1 Key Derivation Mechanism
+    */
+    Secure_Vector!ubyte derive(size_t,
+                            in ubyte* secret, size_t secret_len,
+                            in ubyte* P, size_t P_len) const
+    {
+        m_hash.update(secret, secret_len);
+        m_hash.update(P, P_len);
+        return m_hash.flush();
+    }
 
 
-	@property string name() const { return "KDF1(" ~ m_hash.name ~ ")"; }
-	KDF clone() const { return new KDF1(m_hash.clone()); }
+    @property string name() const { return "KDF1(" ~ m_hash.name ~ ")"; }
+    KDF clone() const { return new KDF1(m_hash.clone()); }
 
-	this(HashFunction h) 
-	{
-		m_hash = h;
-	}
+    this(HashFunction h) 
+    {
+        m_hash = h;
+    }
 private:
-	Unique!HashFunction m_hash;
+    Unique!HashFunction m_hash;
 }
 

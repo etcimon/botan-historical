@@ -28,72 +28,72 @@ else version(Posix) import core.sys.posix.time;
 final class High_Resolution_Timestamp : EntropySource
 {
 public:
-	@property string name() const { return "High Resolution Timestamp"; }
-	/*
+    @property string name() const { return "High Resolution Timestamp"; }
+    /*
 * Get the timestamp
 */
-	void poll(ref Entropy_Accumulator accum)
-	{
-		// Don't count any timestamps as contributing any entropy
-		const double ESTIMATED_ENTROPY_PER_BYTE = 0.0;
+    void poll(ref Entropy_Accumulator accum)
+    {
+        // Don't count any timestamps as contributing any entropy
+        const double ESTIMATED_ENTROPY_PER_BYTE = 0.0;
 
-		{
-			auto timestamp = Clock.currStdTime();
-			accum.add(timestamp, ESTIMATED_ENTROPY_PER_BYTE);
-		}
+        {
+            auto timestamp = Clock.currStdTime();
+            accum.add(timestamp, ESTIMATED_ENTROPY_PER_BYTE);
+        }
 
-		static if (is(typeof(QueryPerformanceCounter)))
-		{
-			long tv;
-			QueryPerformanceCounter(&tv);
-			accum.add(tv, ESTIMATED_ENTROPY_PER_BYTE);
-		}
+        static if (is(typeof(QueryPerformanceCounter)))
+        {
+            long tv;
+            QueryPerformanceCounter(&tv);
+            accum.add(tv, ESTIMATED_ENTROPY_PER_BYTE);
+        }
 
-		
-		static if (is(typeof(clock_gettime))) {
+        
+        static if (is(typeof(clock_gettime))) {
 
-			void CLOCK_GETTIME_POLL(clockid_t src)()
-			{
-				timespec ts;
-				clock_gettime(src, &ts);
-				accum.add(&ts, (ts).sizeof, ESTIMATED_ENTROPY_PER_BYTE);
-			}
-			
-			static if (is(typeof(CLOCK_REALTIME))) {
-				CLOCK_GETTIME_POLL(CLOCK_REALTIME);
-			}
-			
-			static if (is(typeof(CLOCK_REALTIME_COARSE))) {
-				CLOCK_GETTIME_POLL(CLOCK_REALTIME_COARSE);
-			}
-			
-			static if (is(typeof(CLOCK_MONOTONIC))) {
-				CLOCK_GETTIME_POLL(CLOCK_MONOTONIC);
-			}
-			
-			static if (is(typeof(CLOCK_MONOTONIC_COARSE))) {
-				CLOCK_GETTIME_POLL(CLOCK_MONOTONIC_COARSE);
-			}
-			
-			static if (is(typeof(CLOCK_MONOTONIC_RAW))) {
-				CLOCK_GETTIME_POLL(CLOCK_MONOTONIC_RAW);
-			}
-			
-			static if (is(typeof(CLOCK_BOOTTIME))) {
-				CLOCK_GETTIME_POLL(CLOCK_BOOTTIME);
-			}
-			
-			static if (is(typeof(CLOCK_PROCESS_CPUTIME_ID))) {
-				CLOCK_GETTIME_POLL(CLOCK_PROCESS_CPUTIME_ID);
-			}
-			
-			static if (is(typeof(CLOCK_THREAD_CPUTIME_ID))) {
-				CLOCK_GETTIME_POLL(CLOCK_THREAD_CPUTIME_ID);
-			}
-			
-		}
-			
-	}
+            void CLOCK_GETTIME_POLL(clockid_t src)()
+            {
+                timespec ts;
+                clock_gettime(src, &ts);
+                accum.add(&ts, (ts).sizeof, ESTIMATED_ENTROPY_PER_BYTE);
+            }
+            
+            static if (is(typeof(CLOCK_REALTIME))) {
+                CLOCK_GETTIME_POLL(CLOCK_REALTIME);
+            }
+            
+            static if (is(typeof(CLOCK_REALTIME_COARSE))) {
+                CLOCK_GETTIME_POLL(CLOCK_REALTIME_COARSE);
+            }
+            
+            static if (is(typeof(CLOCK_MONOTONIC))) {
+                CLOCK_GETTIME_POLL(CLOCK_MONOTONIC);
+            }
+            
+            static if (is(typeof(CLOCK_MONOTONIC_COARSE))) {
+                CLOCK_GETTIME_POLL(CLOCK_MONOTONIC_COARSE);
+            }
+            
+            static if (is(typeof(CLOCK_MONOTONIC_RAW))) {
+                CLOCK_GETTIME_POLL(CLOCK_MONOTONIC_RAW);
+            }
+            
+            static if (is(typeof(CLOCK_BOOTTIME))) {
+                CLOCK_GETTIME_POLL(CLOCK_BOOTTIME);
+            }
+            
+            static if (is(typeof(CLOCK_PROCESS_CPUTIME_ID))) {
+                CLOCK_GETTIME_POLL(CLOCK_PROCESS_CPUTIME_ID);
+            }
+            
+            static if (is(typeof(CLOCK_THREAD_CPUTIME_ID))) {
+                CLOCK_GETTIME_POLL(CLOCK_THREAD_CPUTIME_ID);
+            }
+            
+        }
+            
+    }
 
 }
 
@@ -101,47 +101,47 @@ public:
 
 version (Windows)
 {
-	extern (Windows)
-	{
-		export int QueryPerformanceCounter(long *);
-	}
+    extern (Windows)
+    {
+        export int QueryPerformanceCounter(long *);
+    }
 }
 else version (D_InlineAsm_X86)
 {
-	extern (D)
-	{
-		void QueryPerformanceCounter(long* ctr)
-		{
-			asm
-			{
-				naked                   ;
-				mov       ECX,EAX       ;
-				rdtsc                   ;
-				mov   [ECX],EAX         ;
-				mov   4[ECX],EDX        ;
-				ret                     ;
-			}
-		}
-	}
+    extern (D)
+    {
+        void QueryPerformanceCounter(long* ctr)
+        {
+            asm
+            {
+                naked                   ;
+                mov       ECX,EAX       ;
+                rdtsc                   ;
+                mov   [ECX],EAX         ;
+                mov   4[ECX],EDX        ;
+                ret                     ;
+            }
+        }
+    }
 }
 else version (D_InlineAsm_X86_64)
 {
-	extern (D)
-	{
-		void QueryPerformanceCounter(long* ctr)
-		{
-			asm
-			{
-				naked                   ;
-				rdtsc                   ;
-				mov   [RDI],EAX         ;
-				mov   4[RDI],EDX        ;
-				ret                     ;
-			}
-		}
-	}
+    extern (D)
+    {
+        void QueryPerformanceCounter(long* ctr)
+        {
+            asm
+            {
+                naked                   ;
+                rdtsc                   ;
+                mov   [RDI],EAX         ;
+                mov   4[RDI],EDX        ;
+                ret                     ;
+            }
+        }
+    }
 }
 else
 {
-	static assert(0);
+    static assert(0);
 }

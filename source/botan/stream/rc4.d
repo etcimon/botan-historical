@@ -20,116 +20,116 @@ import botan.utils.rounding;
 final class RC4 : StreamCipher
 {
 public:
-	/*
-	* Combine cipher stream with message
-	*/
-	void cipher(in ubyte* input, ubyte* output, size_t length)
-	{
-		while (length >= m_buffer.length - m_position)
-		{
-			xor_buf(output, input, &m_buffer[m_position], m_buffer.length - m_position);
-			length -= (m_buffer.length - m_position);
-			input += (m_buffer.length - m_position);
-			output += (m_buffer.length - m_position);
-			generate();
-		}
-		xor_buf(output, input, &m_buffer[m_position], length);
-		m_position += length;
-	}
+    /*
+    * Combine cipher stream with message
+    */
+    void cipher(in ubyte* input, ubyte* output, size_t length)
+    {
+        while (length >= m_buffer.length - m_position)
+        {
+            xor_buf(output, input, &m_buffer[m_position], m_buffer.length - m_position);
+            length -= (m_buffer.length - m_position);
+            input += (m_buffer.length - m_position);
+            output += (m_buffer.length - m_position);
+            generate();
+        }
+        xor_buf(output, input, &m_buffer[m_position], length);
+        m_position += length;
+    }
 
-	/*
-	* Clear memory of sensitive data
-	*/
-	void clear()
-	{
-		zap(m_state);
-		zap(m_buffer);
-		m_position = m_X = m_Y = 0;
-	}
+    /*
+    * Clear memory of sensitive data
+    */
+    void clear()
+    {
+        zap(m_state);
+        zap(m_buffer);
+        m_position = m_X = m_Y = 0;
+    }
 
-	/*
-	* Return the name of this type
-	*/
-	@property string name() const
-	{
-		if (m_SKIP == 0)	return "RC4";
-		if (m_SKIP == 256) return "MARK-4";
-		else				return "RC4_skip(" ~ to!string(m_SKIP) ~ ")";
-	}
+    /*
+    * Return the name of this type
+    */
+    @property string name() const
+    {
+        if (m_SKIP == 0)    return "RC4";
+        if (m_SKIP == 256) return "MARK-4";
+        else                return "RC4_skip(" ~ to!string(m_SKIP) ~ ")";
+    }
 
-	RC4 clone() const { return new RC4(m_SKIP); }
+    RC4 clone() const { return new RC4(m_SKIP); }
 
-	Key_Length_Specification key_spec() const
-	{
-		return Key_Length_Specification(1, 256);
-	}
+    Key_Length_Specification key_spec() const
+    {
+        return Key_Length_Specification(1, 256);
+    }
 
-	/**
-	* @param skip skip this many initial bytes in the keystream
-	*/
-	this(size_t s = 0) { m_SKIP = s; }
+    /**
+    * @param skip skip this many initial bytes in the keystream
+    */
+    this(size_t s = 0) { m_SKIP = s; }
 
-	~this() { clear(); }
+    ~this() { clear(); }
 private:
-	/*
-	* RC4 Key Schedule
-	*/
-	void key_schedule(in ubyte* key, size_t length)
-	{
-		m_state.resize(256);
-		m_buffer.resize(round_up!size_t(DEFAULT_BUFFERSIZE, 4));
-		
-		m_position = m_X = m_Y = 0;
-		
-		foreach (size_t i; 0 .. 256)
-			m_state[i] = cast(ubyte)(i);
-		
-		for (size_t i = 0, state_index = 0; i != 256; ++i)
-		{
-			state_index = (state_index + key[i % length] + m_state[i]) % 256;
-			std.algorithm.swap(m_state[i], m_state[state_index]);
-		}
-		
-		for (size_t i = 0; i <= m_SKIP; i += m_buffer.length)
-			generate();
-		
-		m_position += (m_SKIP % m_buffer.length);
-	}
+    /*
+    * RC4 Key Schedule
+    */
+    void key_schedule(in ubyte* key, size_t length)
+    {
+        m_state.resize(256);
+        m_buffer.resize(round_up!size_t(DEFAULT_BUFFERSIZE, 4));
+        
+        m_position = m_X = m_Y = 0;
+        
+        foreach (size_t i; 0 .. 256)
+            m_state[i] = cast(ubyte)(i);
+        
+        for (size_t i = 0, state_index = 0; i != 256; ++i)
+        {
+            state_index = (state_index + key[i % length] + m_state[i]) % 256;
+            std.algorithm.swap(m_state[i], m_state[state_index]);
+        }
+        
+        for (size_t i = 0; i <= m_SKIP; i += m_buffer.length)
+            generate();
+        
+        m_position += (m_SKIP % m_buffer.length);
+    }
 
 
-	/*
-	* Generate cipher stream
-	*/
-	void generate()
-	{
-		ubyte SX, SY;
-		for (size_t i = 0; i != m_buffer.length; i += 4)
-		{
-			SX = m_state[m_X+1]; m_Y = (m_Y + SX) % 256; SY = m_state[m_Y];
-			m_state[m_X+1] = SY; m_state[m_Y] = SX;
-			m_buffer[i] = m_state[(SX + SY) % 256];
-			
-			SX = m_state[m_X+2]; m_Y = (m_Y + SX) % 256; SY = m_state[m_Y];
-			m_state[m_X+2] = SY; m_state[m_Y] = SX;
-			m_buffer[i+1] = m_state[(SX + SY) % 256];
-			
-			SX = m_state[m_X+3]; m_Y = (m_Y + SX) % 256; SY = m_state[m_Y];
-			m_state[m_X+3] = SY; m_state[m_Y] = SX;
-			m_buffer[i+2] = m_state[(SX + SY) % 256];
-			
-			m_X = (m_X + 4) % 256;
-			SX = m_state[m_X]; m_Y = (m_Y + SX) % 256; SY = m_state[m_Y];
-			m_state[m_X] = SY; m_state[m_Y] = SX;
-			m_buffer[i+3] = m_state[(SX + SY) % 256];
-		}
-		m_position = 0;
-	}
+    /*
+    * Generate cipher stream
+    */
+    void generate()
+    {
+        ubyte SX, SY;
+        for (size_t i = 0; i != m_buffer.length; i += 4)
+        {
+            SX = m_state[m_X+1]; m_Y = (m_Y + SX) % 256; SY = m_state[m_Y];
+            m_state[m_X+1] = SY; m_state[m_Y] = SX;
+            m_buffer[i] = m_state[(SX + SY) % 256];
+            
+            SX = m_state[m_X+2]; m_Y = (m_Y + SX) % 256; SY = m_state[m_Y];
+            m_state[m_X+2] = SY; m_state[m_Y] = SX;
+            m_buffer[i+1] = m_state[(SX + SY) % 256];
+            
+            SX = m_state[m_X+3]; m_Y = (m_Y + SX) % 256; SY = m_state[m_Y];
+            m_state[m_X+3] = SY; m_state[m_Y] = SX;
+            m_buffer[i+2] = m_state[(SX + SY) % 256];
+            
+            m_X = (m_X + 4) % 256;
+            SX = m_state[m_X]; m_Y = (m_Y + SX) % 256; SY = m_state[m_Y];
+            m_state[m_X] = SY; m_state[m_Y] = SX;
+            m_buffer[i+3] = m_state[(SX + SY) % 256];
+        }
+        m_position = 0;
+    }
 
-	const size_t m_SKIP;
+    const size_t m_SKIP;
 
-	ubyte m_X, m_Y;
-	Secure_Vector!ubyte m_state;
+    ubyte m_X, m_Y;
+    Secure_Vector!ubyte m_state;
 
-	Secure_Vector!ubyte m_buffer;
-	size_t m_position;
+    Secure_Vector!ubyte m_buffer;
+    size_t m_position;
 }

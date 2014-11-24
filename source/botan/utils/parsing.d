@@ -25,56 +25,56 @@ import botan.utils.containers.hashmap;
 */
 Vector!string parse_algorithm_name(in string scan_name)
 {
-	import std.array : Appender;
-	if (scan_name.find('(') == -1 &&
-	    scan_name.find(')') == -1)
-		return Vector!string(1, scan_name);
-	
-	string name = scan_name;
-	Appender!string substring;
-	Vector!string elems;
-	size_t level = 0;
-	
-	elems.push_back(name[0 .. name.find('(')]);
-	name = name[name.find('(') .. $];
-	
-	foreach(size_t pos, const char c; name)
-	{
-		
-		if (c == '(')
-			++level;
-		if (c == ')')
-		{
-			if (level == 1 && pos == (name.length - 1))
-			{
-				if (elems.length == 1)
-					elems.push_back(substring.data[1 .. $]);
-				else
-					elems.push_back(substring.data);
-				return elems;
-			}
-			
-			if (level == 0 || (level == 1 && pos != (name.length - 1)))
-				throw new Invalid_Algorithm_Name(scan_name);
-			--level;
-		}
-		
-		if (c == ',' && level == 1)
-		{
-			if (elems.length == 1)
-				elems.push_back(substring.data[1 .. $]);
-			else
-				elems.push_back(substring.data);
-			substring.clear();
-		}
-		else
-			substring ~= c;
-	}
-	
-	if (substring.length > 0)
-		throw new Invalid_Algorithm_Name(scan_name);
-	
-	return elems;
+    import std.array : Appender;
+    if (scan_name.find('(') == -1 &&
+        scan_name.find(')') == -1)
+        return Vector!string(1, scan_name);
+    
+    string name = scan_name;
+    Appender!string substring;
+    Vector!string elems;
+    size_t level = 0;
+    
+    elems.push_back(name[0 .. name.find('(')]);
+    name = name[name.find('(') .. $];
+    
+    foreach(size_t pos, const char c; name)
+    {
+        
+        if (c == '(')
+            ++level;
+        if (c == ')')
+        {
+            if (level == 1 && pos == (name.length - 1))
+            {
+                if (elems.length == 1)
+                    elems.push_back(substring.data[1 .. $]);
+                else
+                    elems.push_back(substring.data);
+                return elems;
+            }
+            
+            if (level == 0 || (level == 1 && pos != (name.length - 1)))
+                throw new Invalid_Algorithm_Name(scan_name);
+            --level;
+        }
+        
+        if (c == ',' && level == 1)
+        {
+            if (elems.length == 1)
+                elems.push_back(substring.data[1 .. $]);
+            else
+                elems.push_back(substring.data);
+            substring.clear();
+        }
+        else
+            substring ~= c;
+    }
+    
+    if (substring.length > 0)
+        throw new Invalid_Algorithm_Name(scan_name);
+    
+    return elems;
 }
 
 /**
@@ -85,7 +85,7 @@ Vector!string parse_algorithm_name(in string scan_name)
 */
 Vector!string splitter(in string str, char delim)
 {
-	return split_on_pred(str, (char c) { return c == delim; });
+    return split_on_pred(str, (char c) { return c == delim; });
 }
 
 /**
@@ -95,27 +95,27 @@ Vector!string splitter(in string str, char delim)
 Vector!string split_on_pred(in string str,
                             bool delegate(char) pred)
 {
-	Vector!string elems;
-	if (str == "") return elems;
-	import std.array : Appender;
-	string substr;
-	foreach(const char c; str)
-	{
-		if (pred(c))
-		{
-			if (substr.length > 0)
-				elems.push_back(substr.data);
-			substr.clear();
-		}
-		else
-			substr ~= c;
-	}
-	
-	if (substr.length > 0)
-		throw new Invalid_Argument("Unable to split string: " ~ str);
-	elems.push_back(substr.data);
-	
-	return elems;
+    Vector!string elems;
+    if (str == "") return elems;
+    import std.array : Appender;
+    string substr;
+    foreach(const char c; str)
+    {
+        if (pred(c))
+        {
+            if (substr.length > 0)
+                elems.push_back(substr.data);
+            substr.clear();
+        }
+        else
+            substr ~= c;
+    }
+    
+    if (substr.length > 0)
+        throw new Invalid_Argument("Unable to split string: " ~ str);
+    elems.push_back(substr.data);
+    
+    return elems;
 }
 
 /**
@@ -123,15 +123,15 @@ Vector!string split_on_pred(in string str,
 */
 string erase_chars(in string str, in char[] chars)
 {
-	import std.algorithm : canFind;
-	import std.array : Appender;
-	Appender!string output;
-	
-	foreach(const char c; str)
-		if (!chars.canFind(c))
-			output ~= c;
-	
-	return output.data;
+    import std.algorithm : canFind;
+    import std.array : Appender;
+    Appender!string output;
+    
+    foreach(const char c; str)
+        if (!chars.canFind(c))
+            output ~= c;
+    
+    return output.data;
 }
 
 /**
@@ -143,13 +143,13 @@ string erase_chars(in string str, in char[] chars)
 */
 string replace_char(in string str, in char from_char, in char to_char)
 {
-	string output = str.dup;
-	
-	foreach (ref char c; output)
-		if (c == from_char)
-			c = to_char;
-	
-	return output;
+    string output = str.dup;
+    
+    foreach (ref char c; output)
+        if (c == from_char)
+            c = to_char;
+    
+    return output;
 }
 
 /**
@@ -162,16 +162,16 @@ string replace_char(in string str, in char from_char, in char to_char)
 
 string replace_chars(in string str,
                      in char[] chars,
-					 in char to_char)
+                     in char to_char)
 {
-	import std.algorithm : canFind;
-	string output = str.dup;
-	
-	foreach (ref char c; output)
-		if (chars.canFind(c))
-			c = to_char;
-	
-	return output;
+    import std.algorithm : canFind;
+    string output = str.dup;
+    
+    foreach (ref char c; output)
+        if (chars.canFind(c))
+            c = to_char;
+    
+    return output;
 }
 
 /**
@@ -182,18 +182,18 @@ string replace_chars(in string str,
 */
 string string_join(in Vector!string strs, char delim)
 {
-	import std.array : Appender;
-	Appender!string output;
-	bool first = true;
-	foreach (str; strs)
-	{
-		if (!first)
-			output ~= delim;
-		else first = false;
-		output ~= str;
-	}
-	
-	return output.data;
+    import std.array : Appender;
+    Appender!string output;
+    bool first = true;
+    foreach (str; strs)
+    {
+        if (!first)
+            output ~= delim;
+        else first = false;
+        output ~= str;
+    }
+    
+    return output.data;
 }
 
 /**
@@ -203,32 +203,32 @@ string string_join(in Vector!string strs, char delim)
 */
 Vector!uint parse_asn1_oid(in string oid)
 {
-	import std.array : Appender;
-	Appender!string substring;
-	Vector!uint oid_elems;
-	
-	foreach (char c; oid)
-	{
-		
-		if (c == '.')
-		{
-			if (substring.length == 0)
-				throw new Invalid_OID(oid);
-			oid_elems.push_back(to!uint(substring.data));
-			substring.clear();
-		}
-		else
-			substring ~= c;
-	}
-	
-	if (substring.length == 0)
-		throw new Invalid_OID(oid);
-	oid_elems.push_back(to!uint(substring.data));
-	
-	if (oid_elems.length < 2)
-		throw new Invalid_OID(oid);
-	
-	return oid_elems;
+    import std.array : Appender;
+    Appender!string substring;
+    Vector!uint oid_elems;
+    
+    foreach (char c; oid)
+    {
+        
+        if (c == '.')
+        {
+            if (substring.length == 0)
+                throw new Invalid_OID(oid);
+            oid_elems.push_back(to!uint(substring.data));
+            substring.clear();
+        }
+        else
+            substring ~= c;
+    }
+    
+    if (substring.length == 0)
+        throw new Invalid_OID(oid);
+    oid_elems.push_back(to!uint(substring.data));
+    
+    if (oid_elems.length < 2)
+        throw new Invalid_OID(oid);
+    
+    return oid_elems;
 }
 
 /**
@@ -239,38 +239,38 @@ Vector!uint parse_asn1_oid(in string oid)
 */
 bool x500_name_cmp(in string name1, in string name2)
 {
-	auto p1 = name1.ptr;
-	auto p2 = name2.ptr;
-	
-	while ((p1 != name1.length) && is_space(*p1)) ++p1;
-	while ((p2 != name2.length) && is_space(*p2)) ++p2;
-	
-	while (p1 != name1.length && p2 != name2.length)
-	{
-		if (is_space(*p1))
-		{
-			if (!is_space(*p2))
-				return false;
-			
-			while ((p1 != name1.length) && is_space(*p1)) ++p1;
-			while ((p2 != name2.length) && is_space(*p2)) ++p2;
-			
-			if (p1 == name1.length && p2 == name2.length)
-				return true;
-		}
-		
-		if (!caseless_cmp(*p1, *p2))
-			return false;
-		++p1;
-		++p2;
-	}
-	
-	while ((p1 != name1.length) && is_space(*p1)) ++p1;
-	while ((p2 != name2.length) && is_space(*p2)) ++p2;
-	
-	if ((p1 != name1.length) || (p2 != name2.length))
-		return false;
-	return true;
+    auto p1 = name1.ptr;
+    auto p2 = name2.ptr;
+    
+    while ((p1 != name1.length) && is_space(*p1)) ++p1;
+    while ((p2 != name2.length) && is_space(*p2)) ++p2;
+    
+    while (p1 != name1.length && p2 != name2.length)
+    {
+        if (is_space(*p1))
+        {
+            if (!is_space(*p2))
+                return false;
+            
+            while ((p1 != name1.length) && is_space(*p1)) ++p1;
+            while ((p2 != name2.length) && is_space(*p2)) ++p2;
+            
+            if (p1 == name1.length && p2 == name2.length)
+                return true;
+        }
+        
+        if (!caseless_cmp(*p1, *p2))
+            return false;
+        ++p1;
+        ++p2;
+    }
+    
+    while ((p1 != name1.length) && is_space(*p1)) ++p1;
+    while ((p2 != name2.length) && is_space(*p2)) ++p2;
+    
+    if ((p1 != name1.length) || (p2 != name2.length))
+        return false;
+    return true;
 }
 
 /**
@@ -280,24 +280,24 @@ bool x500_name_cmp(in string name1, in string name2)
 */
 uint string_to_ipv4(in string str)
 {
-	Vector!string parts = splitter(str, '.');
-	
-	if (parts.length != 4)
-		throw new Decoding_Error("Invalid IP string " ~ str);
-	
-	uint ip = 0;
-	
-	foreach (const string part; parts)
-	{
-		uint octet = to!uint(part);
-		
-		if (octet > 255)
-			throw new Decoding_Error("Invalid IP string " ~ str);
-		
-		ip = (ip << 8) | (octet & 0xFF);
-	}
-	
-	return ip;
+    Vector!string parts = splitter(str, '.');
+    
+    if (parts.length != 4)
+        throw new Decoding_Error("Invalid IP string " ~ str);
+    
+    uint ip = 0;
+    
+    foreach (const string part; parts)
+    {
+        uint octet = to!uint(part);
+        
+        if (octet > 255)
+            throw new Decoding_Error("Invalid IP string " ~ str);
+        
+        ip = (ip << 8) | (octet & 0xFF);
+    }
+    
+    return ip;
 }
 
 /**
@@ -307,25 +307,25 @@ uint string_to_ipv4(in string str)
 */
 string ipv4_to_string(uint ip)
 {
-	import std.array : Appender;
-	Appender!string str;
-	for (size_t i = 0; i != (ip).sizeof; ++i)
-	{
-		if (i)
-			str ~= ".";
-		str ~= to!string(get_byte(i, ip));
-	}
-	
-	return str.data;
+    import std.array : Appender;
+    Appender!string str;
+    for (size_t i = 0; i != (ip).sizeof; ++i)
+    {
+        if (i)
+            str ~= ".";
+        str ~= to!string(get_byte(i, ip));
+    }
+    
+    return str.data;
 }
 
 private:
 
 ptrdiff_t find(string str, char c) {
-	import std.algorithm : countUntil;
-	return countUntil(str, c);
+    import std.algorithm : countUntil;
+    return countUntil(str, c);
 }
 
 auto end(string str) {
-	return str.ptr + str.length;
+    return str.ptr + str.length;
 }

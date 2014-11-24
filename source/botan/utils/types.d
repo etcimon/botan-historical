@@ -25,34 +25,34 @@ typedef Cipher_Dir = bool;
 enum : Cipher_Dir { ENCRYPTION, DECRYPTION }
 
 struct Pair(T, U) {
-	import std.typecons : Tuple;
-	private Tuple!(T,U) m_obj;
+    import std.typecons : Tuple;
+    private Tuple!(T,U) m_obj;
 
-	@property T first() {
-		return m_obj[0];
-	}
+    @property T first() {
+        return m_obj[0];
+    }
 
-	@property U second() {
-		return m_obj[1];
-	}
+    @property U second() {
+        return m_obj[1];
+    }
 
-	this(T a, U b) {
-		m_obj = Tuple!(T,U)(a,b);
-	}
+    this(T a, U b) {
+        m_obj = Tuple!(T,U)(a,b);
+    }
 
-	alias m_obj this;
+    alias m_obj this;
 }
 
 struct Unique(T)
 {
-	/** Represents a reference to $(D T). Resolves to $(D T*) if $(D T) is a value type. */
-	static if (is(T:Object))
-		alias RefT = T;
-	else
-		alias RefT = T*;
-	
+    /** Represents a reference to $(D T). Resolves to $(D T*) if $(D T) is a value type. */
+    static if (is(T:Object))
+        alias RefT = T;
+    else
+        alias RefT = T*;
+    
 public:
-	/**
+    /**
     Constructor that takes an rvalue.
     It will ensure uniqueness, as long as the rvalue
     isn't just a view on an lvalue (e.g., a cast).
@@ -61,24 +61,24 @@ public:
     Unique!Foo f = new Foo;
     ----
     */
-	this(RefT p)
-	{
-		debug(Unique) writeln("Unique constructor with rvalue");
-		_p = p;
-	}
-	/**
+    this(RefT p)
+    {
+        debug(Unique) writeln("Unique constructor with rvalue");
+        _p = p;
+    }
+    /**
     Constructor that takes an lvalue. It nulls its source.
     The nulling will ensure uniqueness as long as there
     are no previous aliases to the source.
     */
-	this(ref RefT p)
-	{
-		_p = p;
-		debug(Unique) writeln("Unique constructor nulling source");
-		p = null;
-		assert(p is null);
-	}
-	/**
+    this(ref RefT p)
+    {
+        _p = p;
+        debug(Unique) writeln("Unique constructor nulling source");
+        p = null;
+        assert(p is null);
+    }
+    /**
     Constructor that takes a $(D Unique) of a type that is convertible to our type.
 
     Typically used to transfer a $(D Unique) rvalue of derived type to
@@ -91,83 +91,83 @@ public:
     Unique!Object uo = uc.release;
     ---
     */
-	this(U)(Unique!U u)
-		if (is(u.RefT:RefT))
-	{
-		debug(Unique) writeln("Unique constructor converting from ", U.stringof);
-		_p = u._p;
-		u._p = null;
-	}
+    this(U)(Unique!U u)
+        if (is(u.RefT:RefT))
+    {
+        debug(Unique) writeln("Unique constructor converting from ", U.stringof);
+        _p = u._p;
+        u._p = null;
+    }
 
-	void clear()
-	{
-		RefT p = null;
-		opAssign(p);
-	}
-	
-	void opAssign(ref RefT p)
-	{
-		destroy(this);
-		_p = p;
-		p = null;
-		assert(p is null);
-	}
+    void clear()
+    {
+        RefT p = null;
+        opAssign(p);
+    }
+    
+    void opAssign(ref RefT p)
+    {
+        destroy(this);
+        _p = p;
+        p = null;
+        assert(p is null);
+    }
 
-	/// Transfer ownership from a $(D Unique) of a type that is convertible to our type.
-	void opAssign(U)(Unique!U u)
-		if (is(u.RefT:RefT))
-	{
-		debug(Unique) writeln("Unique opAssign converting from ", U.stringof);
-		// first delete any resource we own
-		destroy(this);
-		_p = u._p;
-		u._p = null;
-	}
-	
-	~this()
-	{
-		debug(Unique) writeln("Unique destructor of ", (_p is null)? null: _p);
-		if (_p !is null) delete _p;
-		_p = null;
-	}
-	/** Returns whether the resource exists. */
-	@property bool isEmpty() const
-	{
-		return _p is null;
-	}
+    /// Transfer ownership from a $(D Unique) of a type that is convertible to our type.
+    void opAssign(U)(Unique!U u)
+        if (is(u.RefT:RefT))
+    {
+        debug(Unique) writeln("Unique opAssign converting from ", U.stringof);
+        // first delete any resource we own
+        destroy(this);
+        _p = u._p;
+        u._p = null;
+    }
+    
+    ~this()
+    {
+        debug(Unique) writeln("Unique destructor of ", (_p is null)? null: _p);
+        if (_p !is null) delete _p;
+        _p = null;
+    }
+    /** Returns whether the resource exists. */
+    @property bool isEmpty() const
+    {
+        return _p is null;
+    }
 
-	/** Transfer ownership to a $(D Unique) rvalue. Nullifies the current contents. */
-	Unique release()
-	{
-		debug(Unique) writeln("Release");
-		auto u = Unique(_p);
-		assert(_p is null);
-		debug(Unique) writeln("return from Release");
-		return u;
-	}
+    /** Transfer ownership to a $(D Unique) rvalue. Nullifies the current contents. */
+    Unique release()
+    {
+        debug(Unique) writeln("Release");
+        auto u = Unique(_p);
+        assert(_p is null);
+        debug(Unique) writeln("return from Release");
+        return u;
+    }
 
-	void drop()
-	{
-		_p = null;
-	}
+    void drop()
+    {
+        _p = null;
+    }
 
-	/** Forwards member access to contents. */
-	RefT opDot() { return _p; }
+    /** Forwards member access to contents. */
+    RefT opDot() { return _p; }
 
-	RefT opUnary(string op)() if (op == "*") { return _p; }
+    RefT opUnary(string op)() if (op == "*") { return _p; }
 
-	RefT get() { return _p; }
+    RefT get() { return _p; }
 
-	bool opCast(T : bool)() {
-		return !isEmpty;
-	}
+    bool opCast(T : bool)() {
+        return !isEmpty;
+    }
 
 
-	/**
+    /**
     Postblit operator is undefined to prevent the cloning of $(D Unique) objects.
     */
-	@disable this(this);
-	
+    @disable this(this);
+    
 private:
-	RefT _p;
+    RefT _p;
 }

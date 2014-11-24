@@ -1,7 +1,7 @@
 /*
 * EMSA1 BSI Variant
 * (C) 1999-2008 Jack Lloyd
-*	  2007 FlexSecure GmbH
+*      2007 FlexSecure GmbH
 *
 * Distributed under the terms of the botan license.
 */
@@ -20,28 +20,28 @@ import botan.utils.types;
 final class EMSA1_BSI : EMSA1
 {
 public:
-	/**
-	* @param hash the hash object to use
-	*/
-	this(HashFunction hash)
-	{
-		super(hash);
-	}
+    /**
+    * @param hash the hash object to use
+    */
+    this(HashFunction hash)
+    {
+        super(hash);
+    }
 private:
-	/*
-	* EMSA1 BSI Encode Operation
-	*/
-	Secure_Vector!ubyte encoding_of(in Secure_Vector!ubyte msg,
-	                             size_t output_bits,
-	                             RandomNumberGenerator)
-	{
-		if (msg.length != hash_output_length())
-			throw new Encoding_Error("EMSA1_BSI::encoding_of: Invalid size for input");
-		
-		if (8*msg.length <= output_bits)
-			return msg;
-		
-		throw new Encoding_Error("EMSA1_BSI::encoding_of: max key input size exceeded");
-	}
+    /*
+    * EMSA1 BSI Encode Operation
+    */
+    Secure_Vector!ubyte encoding_of(in Secure_Vector!ubyte msg,
+                                 size_t output_bits,
+                                 RandomNumberGenerator)
+    {
+        if (msg.length != hash_output_length())
+            throw new Encoding_Error("EMSA1_BSI::encoding_of: Invalid size for input");
+        
+        if (8*msg.length <= output_bits)
+            return msg;
+        
+        throw new Encoding_Error("EMSA1_BSI::encoding_of: max key input size exceeded");
+    }
 }
 

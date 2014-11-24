@@ -15,4 +15,4 @@ public import botan.utils.parsing;
 public import botan.rng.rng;
 
 static if (BOTAN_HAS_AUTO_SEEDING_RNG)
-	public import botan.rng.auto_rng;
+    public import botan.rng.auto_rng;

@@ -17,11 +17,11 @@ private LibraryState g_lib_state;
 */
 LibraryState global_state()
 {
-	/* Lazy initialization. Botan still needs to be deinitialized later
-		on or memory might leak.
-	*/
-	g_lib_state.initialize();
-	return g_lib_state;
+    /* Lazy initialization. Botan still needs to be deinitialized later
+        on or memory might leak.
+    */
+    g_lib_state.initialize();
+    return g_lib_state;
 }
 
 /**
@@ -30,7 +30,7 @@ LibraryState global_state()
 */
 void set_global_state(LibraryState new_state)
 {
-	g_lib_state = new_state;
+    g_lib_state = new_state;
 }
 
 
@@ -38,20 +38,20 @@ void set_global_state(LibraryState new_state)
 * Set the global state object unless it is already set
 * @param state the new global state to use
 * @return true if the state parameter is now being used as the global
-*			state, or false if one was already set, in which case the
-*			parameter was deleted immediately
+*            state, or false if one was already set, in which case the
+*            parameter was deleted immediately
 */
 bool set_global_state_unless_set(LibraryState new_state)
 {
-	if (g_lib_state)
-	{
-		return false;
-	}
-	else
-	{
-		g_lib_state = new_state;
-		return true;
-	}
+    if (g_lib_state)
+    {
+        return false;
+    }
+    else
+    {
+        g_lib_state = new_state;
+        return true;
+    }
 }
 
 /**
@@ -60,6 +60,6 @@ bool set_global_state_unless_set(LibraryState new_state)
 */
 bool global_state_exists()
 {
-	return (g_lib_state !is LibraryState.init);
+    return (g_lib_state !is LibraryState.init);
 }
 
