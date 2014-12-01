@@ -1,7 +1,3 @@
-
-.. _license:
-.. highlight:: none
-
 License
 ========================================
 
@@ -26,6 +22,7 @@ Botan (http://botan.randombit.net/) is distributed under these terms::
                 2012 Vojtech Kral
                 2012-2014 Markus Wanner
                 2013 Joel Low
+				2014 Etienne Cimon
   All rights reserved.
 
   Redistribution and use in source and binary forms, with or without

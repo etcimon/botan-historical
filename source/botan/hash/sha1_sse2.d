@@ -224,10 +224,10 @@ string prep00_15(alias P, alias _W)()
 {
     enum W = __traits(identifier, _W).stringof;
     return W ~ ` = _mm_shufflehi_epi16(` ~ W ~ `, _MM_SHUFFLE(2, 3, 0, 1));` ~
-        W ~ ` = _mm_shufflelo_epi16(` ~ W ~ `, _MM_SHUFFLE(2, 3, 0, 1));` ~
-            W ~ ` = _mm_or_si128(_mm_slli_epi16(` ~ W ~ `, 8),
-                                     _mm_srli_epi16(` ~ W ~ `, 8));
-            ` ~ __traits(identifier, P).stringof ~ `.u128 = _mm_add_epi32(` ~ W ~ `, K00_19);`;
+           W ~ ` = _mm_shufflelo_epi16(` ~ W ~ `, _MM_SHUFFLE(2, 3, 0, 1));` ~
+           W ~ ` = _mm_or_si128(_mm_slli_epi16(` ~ W ~ `, 8),
+                                 _mm_srli_epi16(` ~ W ~ `, 8));
+               ` ~ __traits(identifier, P).stringof ~ `.u128 = _mm_add_epi32(` ~ W ~ `, K00_19);`;
 }
 
 /*

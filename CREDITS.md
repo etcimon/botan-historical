@@ -84,3 +84,9 @@ snail-mail address (S), and Bitcoin address (B).
   W: http://www.flexsecure.de/
   D: GF(p) arithmetic, CVC, Shanks-Tonelli algorithm
   S: Darmstadt, Germany
+
+  N: Etienne Cimon
+  E: etcimon@globecsys.com
+  W: https://www.github.com/etcimon
+  D: Library rewrite in D, inline ASM, intrinsics, containers, allocators, sockets
+  S: Québec, Qc

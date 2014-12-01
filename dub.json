@@ -2,7 +2,7 @@
     "name": "botan",
     "description": "A D library for crypto and TLS",
     "license": "2-BSD",
-    "authors": ["Jack Lloyd", "Etienne Cimon", "See readme for more.."],
+    "authors": ["Jack Lloyd", "Etienne Cimon", "See CREDITS.md for more."],
     "targetName": "botan",
     "targetType": "staticLibrary",
     "targetPath": "build",

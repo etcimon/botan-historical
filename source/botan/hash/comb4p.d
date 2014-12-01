@@ -97,7 +97,7 @@ private:
         // Third round
         comb4p_round(h1, h2, 2, *m_hash1, *m_hash2);
         
-        copy_mem(output                , h1.ptr, h1.length);
+        copy_mem(output            , h1.ptr, h1.length);
         copy_mem(output + h1.length, h2.ptr, h2.length);
         
         // Prep for processing next message, if any
