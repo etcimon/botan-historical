@@ -7,6 +7,11 @@ C++ to D for any part that has not been rewritten.
 
 *This library does not currently compile. It is due for compilation testing on 14/dec/2014.*
 
+Usage
+-----
+
+Please consult the [wiki](https://github.com/etcimon/botan/wiki) for information on how to use this library.
+
 Supported Algorithms
 --------------------
 
