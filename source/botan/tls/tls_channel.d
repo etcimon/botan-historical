@@ -111,7 +111,7 @@ public:
                 else if (record_type == HEARTBEAT && peer_supports_heartbeats())
                 {
                     if (!active_state())
-                        throw new Unexpected_Message("Heartbeat sent before handshake done");
+                        throw new TLS_Unexpected_Message("Heartbeat sent before handshake done");
                     
                     Heartbeat_Message heartbeat = Heartbeat_Message(unlock(record));
                     
@@ -135,7 +135,7 @@ public:
                 else if (record_type == APPLICATION_DATA)
                 {
                     if (!active_state())
-                        throw new Unexpected_Message("Application data before handshake done");
+                        throw new TLS_Unexpected_Message("Application data before handshake done");
                             
                     /*
                     * OpenSSL among others sends empty records in versions
@@ -170,7 +170,7 @@ public:
                 }
             }
             else
-                throw new Unexpected_Message("Unexpected record type " ~ to!string(record_type) ~ " from counterparty");
+                throw new TLS_Unexpected_Message("Unexpected record type " ~ to!string(record_type) ~ " from counterparty");
             }
                     
             return 0; // on a record boundary
@@ -576,7 +576,7 @@ protected:
             const bool active_sr = active.client_hello().secure_renegotiation();
             
             if (active_sr != secure_renegotiation)
-                throw new TLS_Exception(TLS_Alert.HANDSHAKE_FAILURE, "Client changed its mind about secure renegotiation");
+                throw new TLS_Exception(TLS_Alert.HANDSHAKE_FAILURE, "TLS_Client changed its mind about secure renegotiation");
         }
         
         if (secure_renegotiation)
@@ -584,7 +584,7 @@ protected:
             const Vector!ubyte data = client_hello.renegotiation_info();
             
             if (data != secure_renegotiation_data_for_client_hello())
-                throw new TLS_Exception(TLS_Alert.HANDSHAKE_FAILURE, "Client sent bad values for secure renegotiation");
+                throw new TLS_Exception(TLS_Alert.HANDSHAKE_FAILURE, "TLS_Client sent bad values for secure renegotiation");
         }
     }
 
@@ -597,7 +597,7 @@ protected:
             const bool active_sr = active.client_hello().secure_renegotiation();
             
             if (active_sr != secure_renegotiation)
-                throw new TLS_Exception(TLS_Alert.HANDSHAKE_FAILURE, "Server changed its mind about secure renegotiation");
+                throw new TLS_Exception(TLS_Alert.HANDSHAKE_FAILURE, "TLS_Server changed its mind about secure renegotiation");
         }
         
         if (secure_renegotiation)
@@ -605,7 +605,7 @@ protected:
             const Vector!ubyte data = server_hello.renegotiation_info();
             
             if (data != secure_renegotiation_data_for_server_hello())
-                throw new TLS_Exception(TLS_Alert.HANDSHAKE_FAILURE, "Server sent bad values for secure renegotiation");
+                throw new TLS_Exception(TLS_Alert.HANDSHAKE_FAILURE, "TLS_Server sent bad values for secure renegotiation");
         }
     }
 

@@ -105,9 +105,9 @@ TLS_Credentials_Manager create_creds(RandomNumberGenerator rng)
 }
 
 size_t basic_test_handshake(RandomNumberGenerator rng,
-                            Protocol_Version offer_version,
+                            TLS_Protocol_Version offer_version,
                             TLS_Credentials_Manager creds,
-                            Policy policy)
+                            TLS_Policy policy)
 {
     auto server_sessions = scoped!TLS_Session_Manager_In_Memory(rng);
     auto client_sessions = scoped!TLS_Session_Manager_In_Memory(rng);
@@ -120,10 +120,10 @@ size_t basic_test_handshake(RandomNumberGenerator rng,
         return true;
     };
     
-    auto print_alert = (Alert alert, in ubyte[])
+    auto print_alert = (TLS_Alert alert, in ubyte[])
     {
         if (alert.is_valid())
-            writeln("Server recvd alert " ~ alert.type_string());
+            writeln("TLS_Server recvd alert " ~ alert.type_string());
     };
     
     auto save_server_data = (in ubyte[] buf) {
@@ -134,7 +134,7 @@ size_t basic_test_handshake(RandomNumberGenerator rng,
         s2c_data.insert(buf);
     };
     
-    auto server = scoped!Server((in ubyte[] buf) { s2c_q.insert(buf); },
+    auto server = scoped!TLS_Server((in ubyte[] buf) { s2c_q.insert(buf); },
 							    save_server_data,
 							    print_alert,
 							    handshake_complete,
@@ -152,7 +152,7 @@ size_t basic_test_handshake(RandomNumberGenerator rng,
         return "test/3";
     };
     
-    auto client = scoped!Client((in ubyte[] buf) { c2s_q.insert(buf); },
+    auto client = scoped!TLS_Client((in ubyte[] buf) { c2s_q.insert(buf); },
     save_client_data,
     print_alert,
     handshake_complete,
@@ -160,7 +160,7 @@ size_t basic_test_handshake(RandomNumberGenerator rng,
     creds,
     policy,
     rng,
-    Server_Information(),
+    TLS_Server_Information(),
     offer_version,
     next_protocol_chooser);
     
@@ -189,7 +189,7 @@ size_t basic_test_handshake(RandomNumberGenerator rng,
         }
         catch(Exception e)
         {
-            writeln("Server error - " ~ e.msg);
+            writeln("TLS_Server error - " ~ e.msg);
             break;
         }
         
@@ -202,7 +202,7 @@ size_t basic_test_handshake(RandomNumberGenerator rng,
         }
         catch(Exception e)
         {
-            writeln("Client error - " ~ e.msg);
+            writeln("TLS_Client error - " ~ e.msg);
             break;
         }
         
@@ -231,10 +231,10 @@ size_t basic_test_handshake(RandomNumberGenerator rng,
     return 0;
 }
 
-class Test_Policy : Policy
+class Test_Policy : TLS_Policy
 {
 public:
-    bool acceptable_protocol_version(Protocol_Version) const { return true; }
+    bool acceptable_protocol_version(TLS_Protocol_Version) const { return true; }
 }
 
 unittest
@@ -245,10 +245,10 @@ unittest
     AutoSeeded_RNG rng;
     TLS_Credentials_Manager basic_creds = create_creds(rng);
     
-    errors += basic_test_handshake(rng, Protocol_Version.SSL_V3, basic_creds, default_policy);
-    errors += basic_test_handshake(rng, Protocol_Version.TLS_V10, basic_creds, default_policy);
-    errors += basic_test_handshake(rng, Protocol_Version.TLS_V11, basic_creds, default_policy);
-    errors += basic_test_handshake(rng, Protocol_Version.TLS_V12, basic_creds, default_policy);
+    errors += basic_test_handshake(rng, TLS_Protocol_Version.SSL_V3, basic_creds, default_policy);
+    errors += basic_test_handshake(rng, TLS_Protocol_Version.TLS_V10, basic_creds, default_policy);
+    errors += basic_test_handshake(rng, TLS_Protocol_Version.TLS_V11, basic_creds, default_policy);
+    errors += basic_test_handshake(rng, TLS_Protocol_Version.TLS_V12, basic_creds, default_policy);
     
     test_report("TLS", 4, errors);
 

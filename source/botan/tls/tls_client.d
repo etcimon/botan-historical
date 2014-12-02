@@ -209,14 +209,14 @@ private:
             if (!state.client_hello().offered_suite(state.server_hello().ciphersuite()))
             {
                 throw new TLS_Exception(TLS_Alert.HANDSHAKE_FAILURE,
-                                        "Server replied with ciphersuite we didn't send");
+                                        "TLS_Server replied with ciphersuite we didn't send");
             }
             
             if (!value_exists(state.client_hello().compression_methods(),
                               state.server_hello().compression_method()))
             {
                 throw new TLS_Exception(TLS_Alert.HANDSHAKE_FAILURE,
-                                        "Server replied with compression method we didn't send");
+                                        "TLS_Server replied with compression method we didn't send");
             }
             
             auto client_extn = state.client_hello().extension_types();
@@ -228,7 +228,7 @@ private:
             if (!diff.empty)
             {
                 throw new TLS_Exception(TLS_Alert.HANDSHAKE_FAILURE,
-                                        "Server sent extension(s) " ~ diff.array.to!(string[]) ~ " but we did not request it");
+                                        "TLS_Server sent extension(s) " ~ diff.array.to!(string[]) ~ " but we did not request it");
             }
             
             state.set_version(state.server_hello()._version());
@@ -247,7 +247,7 @@ private:
                 * session, and the server must resume with the same version.
                 */
                 if (state.server_hello()._version() != state.client_hello()._version())
-                    throw new TLS_Exception(TLS_Alert.HANDSHAKE_FAILURE, "Server resumed session but with wrong version");
+                    throw new TLS_Exception(TLS_Alert.HANDSHAKE_FAILURE, "TLS_Server resumed session but with wrong version");
                 
                 state.compute_session_keys(state.resume_master_secret);
                 
@@ -263,17 +263,17 @@ private:
                 if (state.client_hello()._version().is_datagram_protocol() !=
                     state.server_hello()._version().is_datagram_protocol())
                 {
-                    throw new TLS_Exception(TLS_Alert.PROTOCOL_VERSION, "Server replied with different protocol type than we offered");
+                    throw new TLS_Exception(TLS_Alert.PROTOCOL_VERSION, "TLS_Server replied with different protocol type than we offered");
                 }
                 
                 if (state._version() > state.client_hello()._version())
                 {
-                    throw new TLS_Exception(TLS_Alert.HANDSHAKE_FAILURE, "Server replied with later version than in hello");
+                    throw new TLS_Exception(TLS_Alert.HANDSHAKE_FAILURE, "TLS_Server replied with later version than in hello");
                 }
                 
                 if (!m_policy.acceptable_protocol_version(state._version()))
                 {
-                    throw new TLS_Exception(TLS_Alert.PROTOCOL_VERSION, "Server version is unacceptable by policy");
+                    throw new TLS_Exception(TLS_Alert.PROTOCOL_VERSION, "TLS_Server version is unacceptable by policy");
                 }
                 
                 if (state.ciphersuite().sig_algo() != "")
@@ -486,7 +486,7 @@ private:
             activate_session();
         }
         else
-            throw new Unexpected_Message("Unknown handshake message received");
+            throw new TLS_Unexpected_Message("Unknown handshake message received");
     }
 
     override Handshake_State new_handshake_state(Handshake_IO io)
@@ -511,7 +511,7 @@ public:
     
     const Public_Key get_server_public_Key() const
     {
-        assert(server_public_key, "Server sent us a certificate");
+        assert(server_public_key, "TLS_Server sent us a certificate");
         return *server_public_key;
     }
     

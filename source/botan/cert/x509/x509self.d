@@ -260,15 +260,15 @@ X509_Certificate create_self_signed_cert(in X509_Cert_Options opts,
     
 	X509_Extensions extensions;
     
-    extensions.add(new x509_ext.Basic_Constraints(opts.is_CA, opts.path_limit), true);
+    extensions.add(new Basic_Constraints(opts.is_CA, opts.path_limit), true);
     
-    extensions.add(new x509_ext.Key_Usage(constraints), true);
+    extensions.add(new Key_Usage(constraints), true);
     
-    extensions.add(new x509_ext.Subject_Key_ID(pub_key));
+    extensions.add(new Subject_Key_ID(pub_key));
     
-    extensions.add(new x509_ext.Subject_Alternative_Name(subject_alt));
+    extensions.add(new Subject_Alternative_Name(subject_alt));
     
-    extensions.add(new x509_ext.Extended_Key_Usage(opts.ex_constraints));
+    extensions.add(new Extended_Key_Usage(opts.ex_constraints));
     
     return X509_CA.make_cert(*signer, rng, sig_algo, pub_key,
                               opts.start, opts.end,
@@ -303,12 +303,12 @@ PKCS10_Request create_cert_req(in X509_Cert_Options opts,
     
 	X509_Extensions extensions;
     
-    extensions.add(new x509_ext.Basic_Constraints(opts.is_CA, opts.path_limit));
-    extensions.add(new x509_ext.Key_Usage(opts.is_CA ? 
+    extensions.add(new Basic_Constraints(opts.is_CA, opts.path_limit));
+    extensions.add(new Key_Usage(opts.is_CA ? 
                                           Key_Constraints(KEY_CERT_SIGN | CRL_SIGN) : 
                                           find_constraints(key, opts.constraints)));
-    extensions.add(new x509_ext.Extended_Key_Usage(opts.ex_constraints));
-    extensions.add(new x509_ext.Subject_Alternative_Name(subject_alt));
+    extensions.add(new Extended_Key_Usage(opts.ex_constraints));
+    extensions.add(new Subject_Alternative_Name(subject_alt));
     
     DER_Encoder tbs_req;
     

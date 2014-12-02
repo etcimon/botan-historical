@@ -37,7 +37,7 @@ public:
     */
     final Vector!ubyte tbs_data() const
     {
-        return asn1_obj.put_in_sequence(m_tbs_bits);
+        return put_in_sequence(m_tbs_bits);
     }
 
     /**
@@ -234,7 +234,7 @@ private:
         std.algorithm.sort(m_PEM_labels_allowed);
         
         try {
-            if (asn1_obj.maybe_BER(input) && !PEM.matches(input))
+            if (maybe_BER(input) && !PEM.matches(input))
             {
                 auto dec = BER_Decoder(input);
                 decode_from(dec);

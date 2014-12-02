@@ -181,7 +181,7 @@ private:
                                   public_key.type_tag, public_key.class_tag);
         
         m_info.add("X509.Certificate.public_key", 
-                   PEM.encode(asn1_obj.put_in_sequence(unlock(public_key.value)), "PUBLIC KEY"));
+                   PEM.encode(put_in_sequence(unlock(public_key.value)), "PUBLIC KEY"));
         
         BER_Object attr_bits = cert_req_info.get_next_object();
         

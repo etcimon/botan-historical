@@ -58,16 +58,16 @@ public:
 
 		X509_Extensions extensions;
         
-        extensions.add(new x509_ext.Basic_Constraints(req.is_CA(), req.path_limit()), true);
+        extensions.add(new Basic_Constraints(req.is_CA(), req.path_limit()), true);
         
-        extensions.add(new x509_ext.Key_Usage(constraints), true);
+        extensions.add(new Key_Usage(constraints), true);
         
-        extensions.add(new x509_ext.Authority_Key_ID(m_cert.subject_key_id()));
-        extensions.add(new x509_ext.Subject_Key_ID(req.raw_public_key()));
+        extensions.add(new Authority_Key_ID(m_cert.subject_key_id()));
+        extensions.add(new Subject_Key_ID(req.raw_public_key()));
         
-        extensions.add(new x509_ext.Subject_Alternative_Name(req.subject_alt_name()));
+        extensions.add(new Subject_Alternative_Name(req.subject_alt_name()));
         
-        extensions.add(new x509_ext.Extended_Key_Usage(req.ex_constraints()));
+        extensions.add(new Extended_Key_Usage(req.ex_constraints()));
         
         return make_cert(m_signer, rng, m_ca_sig_algo,
                          req.raw_public_key(),
@@ -219,8 +219,8 @@ private:
         auto expire_time = current_time + next_update;
         
 		X509_Extensions extensions;
-        extensions.add(new x509_ext.Authority_Key_ID(m_cert.subject_key_id()));
-        extensions.add(new x509_ext.CRL_Number(crl_number));
+        extensions.add(new Authority_Key_ID(m_cert.subject_key_id()));
+        extensions.add(new CRL_Number(crl_number));
         
         const Vector!ubyte crl = x509_obj.make_signed(
             m_signer, rng, m_ca_sig_algo,

@@ -57,7 +57,7 @@ public:
     * Add an integer in big-endian order
     * @param input the value
     */
-    final void update_be(T)(in T input)
+    final void update_bigEndian(T)(in T input)
     {
         foreach (size_t i; 0 .. T.sizeof)
         {
@@ -106,7 +106,7 @@ public:
     * final result.
     * @return Secure_Vector holding the result
     */
-    final Secure_Vector!ubyte flush()
+    final Secure_Vector!ubyte finished()
     {
         Secure_Vector!ubyte output = Secure_Vector!ubyte(output_length());
         final_result(output.ptr);
@@ -115,64 +115,64 @@ public:
 
     /**
     * Update and finalize computation. Does the same as calling update()
-    * and flush() consecutively.
+    * and finished() consecutively.
     * @param input the input to process as a ubyte array
     * @param length the length of the ubyte array
-    * @result the result of the call to flush()
+    * @result the result of the call to finished()
     */
     final Secure_Vector!ubyte process(in ubyte[] input)
     {
         add_data(input);
-        return flush();
+        return finished();
     }
 
     /**
     * Update and finalize computation. Does the same as calling update()
-    * and flush() consecutively.
+    * and finished() consecutively.
     * @param input the input to process as a ubyte array
     * @param length the length of the ubyte array
-    * @result the result of the call to flush()
+    * @result the result of the call to finished()
     */
     final Secure_Vector!ubyte process(in ubyte* input, size_t length)
     {
         add_data(input, length);
-        return flush();
+        return finished();
     }
 
     /**
     * Update and finalize computation. Does the same as calling update()
-    * and flush() consecutively.
+    * and finished() consecutively.
     * @param input the input to process
-    * @result the result of the call to flush()
+    * @result the result of the call to finished()
     */
     final Secure_Vector!ubyte process(in Secure_Vector!ubyte input)
     {
         add_data(input[]);
-        return flush();
+        return finished();
     }
 
     /**
     * Update and finalize computation. Does the same as calling update()
-    * and flush() consecutively.
+    * and finished() consecutively.
     * @param input the input to process
-    * @result the result of the call to flush()
+    * @result the result of the call to finished()
     */
     final Secure_Vector!ubyte process(in Vector!ubyte input)
     {
         add_data(input[]);
-        return flush();
+        return finished();
     }
 
     /**
     * Update and finalize computation. Does the same as calling update()
-    * and flush() consecutively.
+    * and finished() consecutively.
     * @param input the input to process as a string
-    * @result the result of the call to flush()
+    * @result the result of the call to finished()
     */
     final Secure_Vector!ubyte process(in string input)
     {
         update(input);
-        return flush();
+        return finished();
     }
 
     ~this() {}

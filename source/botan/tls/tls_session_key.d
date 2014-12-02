@@ -16,7 +16,7 @@ import botan.tls.tls_messages;
 /**
 * TLS TLS_Session Keys
 */
-struct Session_Keys
+struct TLS_Session_Keys
 {
 public:
     SymmetricKey client_cipher_key() const { return m_c_cipher; }
@@ -33,7 +33,7 @@ public:
     @disable this();
 
     /**
-    * Session_Keys Constructor
+    * TLS_Session_Keys Constructor
     */
     this(in Handshake_State state, in Secure_Vector!ubyte pre_master_secret, bool resuming)
     {

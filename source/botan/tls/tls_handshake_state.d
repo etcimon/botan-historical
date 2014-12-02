@@ -67,7 +67,7 @@ public:
         const bool ok = (m_hand_expecting_mask & mask); // overlap?
         
         if (!ok)
-            throw new Unexpected_Message("Unexpected state transition in handshake, got " ~
+            throw new TLS_Unexpected_Message("Unexpected state transition in handshake, got " ~
                                          to!string(handshake_msg) ~
                                          " expected " ~ to!string(m_hand_expecting_mask) ~
                                          " received " ~ to!string(m_hand_received_mask));

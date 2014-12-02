@@ -47,7 +47,7 @@ public:
     Public_Key subject_public_key() const
     {
         return x509_key.load_key(
-            asn1_obj.put_in_sequence(subject_public_key_bits()));
+            put_in_sequence(subject_public_key_bits()));
     }
 
     /**
@@ -540,8 +540,8 @@ private:
         m_subject.add(dn_subject.contents());
         m_issuer.add(dn_issuer.contents());
         
-        m_subject.add("X509.Certificate.dn_bits", asn1_obj.put_in_sequence(dn_subject.get_bits()));
-        m_issuer.add("X509.Certificate.dn_bits", asn1_obj.put_in_sequence(dn_issuer.get_bits()));
+        m_subject.add("X509.Certificate.dn_bits", put_in_sequence(dn_subject.get_bits()));
+        m_issuer.add("X509.Certificate.dn_bits", put_in_sequence(dn_issuer.get_bits()));
         
         BER_Object public_key = tbs_cert.get_next_object();
         if (public_key.type_tag != ASN1_Tag.SEQUENCE || public_key.class_tag != ASN1_Tag.CONSTRUCTED)

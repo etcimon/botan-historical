@@ -512,7 +512,7 @@ private:
             activate_session();
         }
         else
-            throw new Unexpected_Message("Unknown handshake message received");
+            throw new TLS_Unexpected_Message("Unknown handshake message received");
     }
 
     override Handshake_State new_handshake_state(Handshake_IO io)
