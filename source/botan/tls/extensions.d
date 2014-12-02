@@ -4,43 +4,43 @@
 *
 * Released under the terms of the botan license.
 */
-module botan.tls.tls_extensions;
+module botan.tls.extensions;
 
 import botan.constants;
 static if (BOTAN_HAS_TLS):
 package:
 
 import botan.utils.memory.zeroize;
-import botan.tls.tls_magic;
+import botan.tls.magic;
 import botan.utils.types;
 // import string;
 import botan.utils.containers.hashmap;
 import set;
 
-import botan.tls.tls_reader;
-import botan.tls.tls_exceptn;
+import botan.tls.reader;
+import botan.tls.exceptn;
 import botan.utils.types : Unique;
 
 typedef ushort Handshake_Extension_Type;
 enum : Handshake_Extension_Type {
-    TLSEXT_SERVER_NAME_INDICATION     = 0,
-    TLSEXT_MAX_FRAGMENT_LENGTH        = 1,
-    TLSEXT_CLIENT_CERT_URL             = 2,
-    TLSEXT_TRUSTED_CA_KEYS             = 3,
+    TLSEXT_SERVER_NAME_INDICATION    = 0,
+    TLSEXT_MAX_FRAGMENT_LENGTH       = 1,
+    TLSEXT_CLIENT_CERT_URL           = 2,
+    TLSEXT_TRUSTED_CA_KEYS           = 3,
     TLSEXT_TRUNCATED_HMAC            = 4,
 
-    TLSEXT_CERTIFICATE_TYPES        = 9,
+    TLSEXT_CERTIFICATE_TYPES         = 9,
     TLSEXT_USABLE_ELLIPTIC_CURVES    = 10,
-    TLSEXT_EC_POINT_FORMATS            = 11,
+    TLSEXT_EC_POINT_FORMATS          = 11,
     TLSEXT_SRP_IDENTIFIER            = 12,
-    TLSEXT_SIGNATURE_ALGORITHMS        = 13,
-    TLSEXT_HEARTBEAT_SUPPORT        = 15,
+    TLSEXT_SIGNATURE_ALGORITHMS      = 13,
+    TLSEXT_HEARTBEAT_SUPPORT         = 15,
 
     TLSEXT_SESSION_TICKET            = 35,
 
-    TLSEXT_NEXT_PROTOCOL            = 13172,
+    TLSEXT_NEXT_PROTOCOL             = 13172,
 
-    TLSEXT_SAFE_RENEGOTIATION          = 65281,
+    TLSEXT_SAFE_RENEGOTIATION        = 65281,
 }
 
 /**

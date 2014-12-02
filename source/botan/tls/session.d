@@ -4,16 +4,16 @@
 *
 * Released under the terms of the botan license.
 */
-module botan.tls.tls_session;
+module botan.tls.session;
 
 import botan.constants;
 static if (BOTAN_HAS_TLS):
 
 import botan.cert.x509.x509cert;
-import botan.tls.tls_version;
-import botan.tls.tls_ciphersuite;
-import botan.tls.tls_magic;
-import botan.tls.tls_server_info;
+import botan.tls.version_;
+import botan.tls.ciphersuite;
+import botan.tls.magic;
+import botan.tls.server_info;
 import botan.utils.memory.zeroize;
 import botan.algo_base.symkey;
 import botan.asn1.der_enc;

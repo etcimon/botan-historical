@@ -4,19 +4,19 @@
 *
 * Released under the terms of the botan license.
 */
-module botan.tls.tls_record;
+module botan.tls.record;
 
 import botan.constants;
 static if (BOTAN_HAS_TLS):
 package:
 
 import botan.libstate.libstate;
-import botan.tls.tls_magic;
-import botan.tls.tls_version;
-import botan.tls.tls_seq_numbers;
-import botan.tls.tls_session_key;
-import botan.tls.tls_ciphersuite;
-import botan.tls.tls_exceptn;
+import botan.tls.magic;
+import botan.tls.version_;
+import botan.tls.seq_numbers;
+import botan.tls.session_key;
+import botan.tls.ciphersuite;
+import botan.tls.exceptn;
 import botan.modes.aead.aead;
 import botan.mac.mac;
 import botan.algo_factory.algo_factory;

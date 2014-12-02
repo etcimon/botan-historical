@@ -4,19 +4,19 @@
 *
 * Released under the terms of the botan license.
 */
-module botan.tls.tls_handshake_hash;
+module botan.tls.handshake_hash;
 
 import botan.constants;
 static if (BOTAN_HAS_TLS):
 package:
 
 import botan.utils.memory.zeroize;
-import botan.tls.tls_version;
-import botan.tls.tls_magic;
-import botan.tls.tls_exceptn;
+import botan.tls.version_;
+import botan.tls.magic;
+import botan.tls.exceptn;
 import botan.hash.hash;
 import botan.libstate.libstate;
-import botan.tls.tls_exceptn;
+import botan.tls.exceptn;
 import botan.libstate.libstate;
 import botan.hash.hash;
 import botan.utils.types;

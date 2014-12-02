@@ -4,7 +4,7 @@
 *
 * Distributed under the terms of the botan license.
 */
-module botan.credentials.credentials_manager;
+module botan.tls.credentials_manager;
 
 import botan.cert.x509.x509cert;
 import botan.cert.x509.certstor;

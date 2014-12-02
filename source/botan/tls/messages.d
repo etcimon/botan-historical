@@ -4,27 +4,27 @@
 *
 * Released under the terms of the botan license.
 */
-module botan.tls.tls_messages;
+module botan.tls.messages;
 
 import botan.constants;
 static if (BOTAN_HAS_TLS):
 package:
 
-import botan.tls.tls_handshake_state;
-import botan.tls.tls_session_key;
+import botan.tls.handshake_state;
+import botan.tls.session_key;
 import botan.utils.containers.multimap;
 
 public import botan.algo_base.sym_algo;
 public import botan.tls.tls_handshake_msg;
-public import botan.tls.tls_session;
-public import botan.tls.tls_policy;
-public import botan.tls.tls_ciphersuite;
-public import botan.tls.tls_reader;
-public import botan.tls.tls_extensions;
-public import botan.tls.tls_handshake_io;
-public import botan.tls.tls_version;
-public import botan.tls.tls_handshake_hash;
-public import botan.tls.tls_magic;
+public import botan.tls.session;
+public import botan.tls.policy;
+public import botan.tls.ciphersuite;
+public import botan.tls.reader;
+public import botan.tls.extensions;
+public import botan.tls.handshake_io;
+public import botan.tls.version_;
+public import botan.tls.handshake_hash;
+public import botan.tls.magic;
 public import botan.credentials.credentials_manager;
 import botan.constructs.srp6;
 import botan.utils.loadstor;

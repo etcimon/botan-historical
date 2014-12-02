@@ -4,25 +4,25 @@
 *
 * Released under the terms of the botan license.
 */
-module botan.tls.tls_channel;
+module botan.tls.channel;
 
 import botan.constants;
 static if (BOTAN_HAS_TLS):
 package:
 
 public import botan.cert.x509.x509cert;
-public import botan.tls.tls_policy;
-public import botan.tls.tls_session;
-public import botan.tls.tls_alert;
-public import botan.tls.tls_session_manager;
-public import botan.tls.tls_version;
-public import botan.tls.tls_exceptn;
+public import botan.tls.policy;
+public import botan.tls.session;
+public import botan.tls.alert;
+public import botan.tls.session_manager;
+public import botan.tls.version_;
+public import botan.tls.exceptn;
 public import botan.rng.rng;
-import botan.tls.tls_handshake_state;
-import botan.tls.tls_messages;
-import botan.tls.tls_heartbeats;
-import botan.tls.tls_record;
-import botan.tls.tls_seq_numbers;
+import botan.tls.handshake_state;
+import botan.tls.messages;
+import botan.tls.heartbeats;
+import botan.tls.record;
+import botan.tls.seq_numbers;
 import botan.utils.rounding;
 import botan.utils.containers.multimap;
 import botan.utils.loadstor;

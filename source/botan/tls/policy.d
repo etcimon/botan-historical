@@ -4,18 +4,18 @@
 *
 * Released under the terms of the botan license.
 */
-module botan.tls.tls_policy;
+module botan.tls.policy;
 
 import botan.constants;
 static if (BOTAN_HAS_TLS):
 
-import botan.tls.tls_version;
-import botan.tls.tls_ciphersuite;
+import botan.tls.version_;
+import botan.tls.ciphersuite;
 import botan.cert.x509.x509cert;
 import botan.pubkey.algo.dl_group;
-import botan.tls.tls_ciphersuite;
-import botan.tls.tls_magic;
-import botan.tls.tls_exceptn;
+import botan.tls.ciphersuite;
+import botan.tls.magic;
+import botan.tls.exceptn;
 import botan.utils.containers.multimap;
 import std.datetime;
 import std.algorithm : uniq, sort;

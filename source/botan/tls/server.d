@@ -4,16 +4,16 @@
 *
 * Released under the terms of the botan license.
 */
-module botan.tls.tls_server;
+module botan.tls.server;
 
 import botan.constants;
 static if (BOTAN_HAS_TLS):
 
-import botan.tls.tls_channel;
+import botan.tls.channel;
 import botan.credentials.credentials_manager;
-import botan.tls.tls_handshake_state;
-import botan.tls.tls_messages;
-import botan.tls.tls_alert;
+import botan.tls.handshake_state;
+import botan.tls.messages;
+import botan.tls.alert;
 import botan.rng.rng;
 import botan.utils.containers.multimap;
 import botan.utils.containers.hashmap;

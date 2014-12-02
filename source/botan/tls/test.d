@@ -3,8 +3,8 @@ import botan.constants;
 static if (BOTAN_TEST && BOTAN_HAS_TLS):
 
 import botan.rng.auto_rng;
-import botan.tls.tls_server;
-import botan.tls.tls_client;
+import botan.tls.server;
+import botan.tls.client;
 import botan.cert.x509.pkcs10;
 import botan.cert.x509.x509self;
 import botan.cert.x509.x509_ca;

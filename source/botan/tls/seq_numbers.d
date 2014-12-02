@@ -4,7 +4,7 @@
 *
 * Released under the terms of the botan license.
 */
-module botan.tls.tls_seq_numbers;
+module botan.tls.seq_numbers;
 
 import botan.constants;
 static if (BOTAN_HAS_TLS):

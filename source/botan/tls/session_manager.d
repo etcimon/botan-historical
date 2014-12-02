@@ -4,13 +4,13 @@
 *
 * Released under the terms of the botan license.
 */
-module botan.tls.tls_session_manager;
+module botan.tls.session_manager;
 
 import botan.constants;
 static if (BOTAN_HAS_TLS):
 
-public import botan.tls.tls_session;
-public import botan.tls.tls_server_info;
+public import botan.tls.session;
+public import botan.tls.server_info;
 public import botan.algo_base.sym_algo;
 public import botan.rng.rng;
 import botan.codec.hex;

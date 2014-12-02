@@ -4,15 +4,15 @@
 *
 * Released under the terms of the botan license.
 */
-module botan.tls.tls_session_key;
+module botan.tls.session_key;
 
 import botan.constants;
 static if (BOTAN_HAS_TLS):
 package:
 
 import botan.algo_base.symkey;
-import botan.tls.tls_handshake_state;
-import botan.tls.tls_messages;
+import botan.tls.handshake_state;
+import botan.tls.messages;
 
 /**
 * TLS TLS_Session Keys

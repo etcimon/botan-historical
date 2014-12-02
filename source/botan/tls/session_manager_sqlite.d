@@ -4,12 +4,12 @@
 *
 * Released under the terms of the botan license.
 */
-module botan.tls.sessions_sqlite.tls_session_manager_sqlite;
+module botan.tls.session_manager_sqlite;
 
 import botan.constants;
 static if (BOTAN_HAS_TLS):
 
-import botan.tls.tls_session_manager;
+import botan.tls.session_manager;
 import botan.utils.sqlite3.sqlite3;
 import botan.libstate.lookup;
 import botan.codec.hex;

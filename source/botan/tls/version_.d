@@ -4,13 +4,13 @@
 *
 * Released under the terms of the botan license.
 */
-module botan.tls.tls_version;
+module botan.tls.version_;
 
 import botan.constants;
 static if (BOTAN_HAS_TLS):
 
 import botan.utils.get_byte;
-import botan.tls.tls_exceptn;
+import botan.tls.exceptn;
 import botan.utils.parsing;
 import botan.utils.types;
 // import string;

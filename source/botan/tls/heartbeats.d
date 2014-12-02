@@ -4,16 +4,16 @@
 *
 * Released under the terms of the botan license.
 */
-module botan.tls.tls_heartbeats;
+module botan.tls.heartbeats;
 
 import botan.constants;
 static if (BOTAN_HAS_TLS):
 package:
 
 import botan.utils.memory.zeroize;
-import botan.tls.tls_extensions;
-import botan.tls.tls_reader;
-import botan.tls.tls_exceptn;
+import botan.tls.extensions;
+import botan.tls.reader;
+import botan.tls.exceptn;
 import botan.utils.types;
 
 /**

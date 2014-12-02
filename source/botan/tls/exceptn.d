@@ -4,13 +4,13 @@
 *
 * Released under the terms of the botan license.
 */
-module botan.tls.tls_exceptn;
+module botan.tls.exceptn;
 
 import botan.constants;
 static if (BOTAN_HAS_TLS):
 
 import botan.utils.exceptn;
-import botan.tls.tls_alert;
+import botan.tls.alert;
 
 /**
 * Exception Base Class

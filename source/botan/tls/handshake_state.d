@@ -4,23 +4,23 @@
 *
 * Released under the terms of the botan license.
 */
-module botan.tls.tls_handshake_state;
+module botan.tls.handshake_state;
 
 import botan.constants;
 static if (BOTAN_HAS_TLS):
 package:
 
-import botan.tls.tls_handshake_hash;
-import botan.tls.tls_handshake_io;
-import botan.tls.tls_session_key;
-import botan.tls.tls_ciphersuite;
-import botan.tls.tls_exceptn;
+import botan.tls.handshake_hash;
+import botan.tls.handshake_io;
+import botan.tls.session_key;
+import botan.tls.ciphersuite;
+import botan.tls.exceptn;
 import botan.tls.tls_handshake_msg;
 import botan.pubkey.pk_keys;
 import botan.pubkey.pubkey;
 import botan.kdf.kdf;
-import botan.tls.tls_messages;
-import botan.tls.tls_record;
+import botan.tls.messages;
+import botan.tls.record;
 import functional;
 
 package:

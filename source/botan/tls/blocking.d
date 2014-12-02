@@ -4,17 +4,17 @@
 *
 * Released under the terms of the botan license.
 */
-module botan.tls.tls_blocking;
+module botan.tls.blocking;
 
 import botan.constants;
 static if (BOTAN_HAS_TLS):
 
-import botan.tls.tls_client;
-import botan.tls.tls_server;
+import botan.tls.client;
+import botan.tls.server;
 import botan.rng.rng;
-import botan.tls.tls_channel;
-import botan.tls.tls_session_manager;
-import botan.tls.tls_version;
+import botan.tls.channel;
+import botan.tls.session_manager;
+import botan.tls.version_;
 
 alias Secure_Deque(T) = Vector!( T, Secure_Allocator);
 
