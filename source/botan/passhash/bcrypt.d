@@ -188,7 +188,7 @@ unittest
         
         if (!check_bcrypt(input, gen_hash))
         {
-            writeln("Gen and check for bcrypt failed: " ~ gen_hash " ~ not valid");
+            writeln("Gen and check for bcrypt failed: " ~ gen_hash ~ " not valid");
             ++fails;
         }
     }

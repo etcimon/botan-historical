@@ -144,7 +144,7 @@ class BER_Bad_Tag : BER_Decoding_Error
 Vector!ubyte put_in_sequence(in Vector!ubyte contents)
 {
     return DER_Encoder()
-        	.start_cons(ASN1_Tag.SEQUENCE)
+            .start_cons(ASN1_Tag.SEQUENCE)
             .raw_bytes(contents)
             .end_cons()
             .get_contents_unlocked();

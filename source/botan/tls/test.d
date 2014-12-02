@@ -135,14 +135,14 @@ size_t basic_test_handshake(RandomNumberGenerator rng,
     };
     
     auto server = scoped!TLS_Server((in ubyte[] buf) { s2c_q.insert(buf); },
-							    save_server_data,
-							    print_alert,
-							    handshake_complete,
-							    server_sessions,
-							    creds,
-							    policy,
-							    rng,
-							    ["test/1", "test/2"]);
+                                save_server_data,
+                                print_alert,
+                                handshake_complete,
+                                server_sessions,
+                                creds,
+                                policy,
+                                rng,
+                                ["test/1", "test/2"]);
     
     auto next_protocol_chooser = (Vector!string protos) {
         if (protos.length != 2)
@@ -153,16 +153,16 @@ size_t basic_test_handshake(RandomNumberGenerator rng,
     };
     
     auto client = scoped!TLS_Client((in ubyte[] buf) { c2s_q.insert(buf); },
-								    save_client_data,
-								    print_alert,
-								    handshake_complete,
-								    client_sessions,
-								    creds,
-								    policy,
-								    rng,
-								    TLS_Server_Information(),
-								    offer_version,
-								    next_protocol_chooser);
+                                    save_client_data,
+                                    print_alert,
+                                    handshake_complete,
+                                    client_sessions,
+                                    creds,
+                                    policy,
+                                    rng,
+                                    TLS_Server_Information(),
+                                    offer_version,
+                                    next_protocol_chooser);
     
     while(true)
     {

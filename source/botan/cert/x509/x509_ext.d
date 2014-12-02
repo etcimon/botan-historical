@@ -86,7 +86,7 @@ public:
             if (should_encode)
             {
                 to_object.start_cons(ASN1_Tag.SEQUENCE)
-                   		.encode(ext.oid_of())
+                           .encode(ext.oid_of())
                         .encode_optional(is_critical, false)
                         .encode(ext.encode_inner(), ASN1_Tag.OCTET_STRING)
                         .end_cons();
@@ -152,7 +152,7 @@ public:
         m_extensions.push_back(Pair(extn, critical));
     }
 
-	X509_Extensions opAssign(in X509_Extensions other)
+    X509_Extensions opAssign(in X509_Extensions other)
     {
         foreach (extension; m_extensions)
             delete extension.first;
@@ -164,7 +164,7 @@ public:
         return this;
     }
 
-	this(in X509_Extensions ext) {
+    this(in X509_Extensions ext) {
         this = ext;
     }
 

@@ -36,7 +36,7 @@ public:
     {
         m_read_fn = read_fn;
         m_channel = new TLS_Channel(write_fn, &data_cb, &alert_cb, &handshake_cb, session_manager, creds,
-                                	policy, rng, server_info, offer_version, next_protocol);
+                                    policy, rng, server_info, offer_version, next_protocol);
     }
 
     /**

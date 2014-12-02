@@ -143,15 +143,15 @@ private:
         if (!state.client_hello()) // not resuming
         {
             state.client_hello(new Client_Hello(
-				               state.handshake_io(),
-				               state.hash(),
-				               _version,
-				               m_policy,
-				               rng(),
-				               secure_renegotiation_data_for_client_hello(),
-				               send_npn_request,
-				               m_info.hostname(),
-				               srp_identifier));
+                               state.handshake_io(),
+                               state.hash(),
+                               _version,
+                               m_policy,
+                               rng(),
+                               secure_renegotiation_data_for_client_hello(),
+                               send_npn_request,
+                               m_info.hostname(),
+                               srp_identifier));
         }
         
         secure_renegotiation_check(state.client_hello());

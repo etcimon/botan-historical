@@ -8,7 +8,7 @@
 */
  
 import botan.constants;
-static if (BOTAN_HAS_SIMD_SSE2):
+static if (BOTAN_HAS_SIMD_ALTIVEC):
 
 
 import core.simd;
@@ -17,5 +17,5 @@ pure:
 nothrow:
 @trusted:
 
-alias __m128i = byte16;
-alias __m64 = byte8;
+alias vector = byte16;
+

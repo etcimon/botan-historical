@@ -457,7 +457,7 @@ private:
     Vector!ubyte m_comp_methods;
     Vector!ubyte m_hello_cookie; // DTLS only
 
-	TLS_Extensions m_extensions;
+    TLS_Extensions m_extensions;
 }
 
 /**
@@ -630,7 +630,7 @@ private:
     ushort m_ciphersuite;
     ubyte m_comp_method;
 
-	TLS_Extensions m_extensions;
+    TLS_Extensions m_extensions;
 }
 
 /**

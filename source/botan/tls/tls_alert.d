@@ -74,7 +74,7 @@ public:
     /**
     * @return type of alert
     */
-	TLS_Alert_Type type() const { return m_type_code; }
+    TLS_Alert_Type type() const { return m_type_code; }
 
     /**
     * @return type of alert
@@ -196,7 +196,7 @@ public:
     * @param type_code the type of alert
     * @param fatal specifies if this is a fatal alert
     */
-	this(TLS_Alert_Type type_code = NULL_ALERT, bool fatal = false)
+    this(TLS_Alert_Type type_code = NULL_ALERT, bool fatal = false)
     {
         m_fatal = fatal;
         m_type_code = type_code;
@@ -204,5 +204,5 @@ public:
 
 private:
     bool m_fatal;
-	TLS_Alert_Type m_type_code;
+    TLS_Alert_Type m_type_code;
 }

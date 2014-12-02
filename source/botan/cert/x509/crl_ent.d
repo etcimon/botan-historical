@@ -51,7 +51,7 @@ public:
     */
     void encode_into(DER_Encoder to_) const
     {
-		X509_Extensions extensions;
+        X509_Extensions extensions;
         
         extensions.add(new CRL_ReasonCode(reason));
         
@@ -79,7 +79,7 @@ public:
         
         if (entry.more_items())
         {
-			X509_Extensions extensions = X509_Extensions(m_throw_on_unknown_critical);
+            X509_Extensions extensions = X509_Extensions(m_throw_on_unknown_critical);
             entry.decode(extensions);
             Data_Store info;
             extensions.contents_to(info, info);

@@ -258,7 +258,7 @@ X509_Certificate create_self_signed_cert(in X509_Cert_Options opts,
     else
         constraints = find_constraints(key, opts.constraints);
     
-	X509_Extensions extensions;
+    X509_Extensions extensions;
     
     extensions.add(new Basic_Constraints(opts.is_CA, opts.path_limit), true);
     
@@ -301,7 +301,7 @@ PKCS10_Request create_cert_req(in X509_Cert_Options opts,
     
     __gshared immutable size_t PKCS10_VERSION = 0;
     
-	X509_Extensions extensions;
+    X509_Extensions extensions;
     
     extensions.add(new Basic_Constraints(opts.is_CA, opts.path_limit));
     extensions.add(new Key_Usage(opts.is_CA ? 

@@ -111,7 +111,7 @@ public:
             X509_DN name;
             Vector!ubyte key_hash;
             X509_Time produced_at;
-			X509_Extensions extensions;
+            X509_Extensions extensions;
             
             BER_Decoder(tbs_bits)
                     .decode_optional(responsedata_version, ASN1_Tag(0), ASN1_Tag(ASN1_Tag.CONSTRUCTED | ASN1_Tag.CONTEXT_SPECIFIC))                    

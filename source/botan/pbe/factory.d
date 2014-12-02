@@ -31,9 +31,9 @@ static if (BOTAN_HAS_PBE_PKCS_V20) {
 * @return pointer to a PBE with randomly created parameters
 */
 PBE get_pbe(in string algo_spec,
-             in string passphrase,
-             Duration msec,
-             RandomNumberGenerator rng)
+            in string passphrase,
+            Duration dur,
+            RandomNumberGenerator rng)
 {
     SCAN_Name request(algo_spec);
     
@@ -69,7 +69,7 @@ PBE get_pbe(in string algo_spec,
             return new PBE_PKCS5v20(block_cipher.clone(),
                                     new HMAC(hash_function.clone()),
                                     passphrase,
-                                    msec,
+                                    dur,
                                     rng);
     }
     
@@ -84,9 +84,7 @@ PBE get_pbe(in string algo_spec,
 * @param passphrase the passphrase to use for decryption
 * @return pointer to the PBE with the specified parameters
 */
-PBE get_pbe(in OID pbe_oid,
-                     in Vector!ubyte params,
-                     in string passphrase)
+PBE get_pbe(in OID pbe_oid, in Vector!ubyte params, in string passphrase)
 {
     SCAN_Name request = SCAN_Name(OIDS.lookup(pbe_oid));
     

@@ -23,7 +23,7 @@ struct Heartbeat_Message
 {
 public:
     typedef ubyte Message_Type;
-	enum Message_Type { REQUEST = 1, RESPONSE = 2 }
+    enum Message_Type { REQUEST = 1, RESPONSE = 2 }
 
     Vector!ubyte contents() const
     {
@@ -51,14 +51,14 @@ public:
             throw new TLS_Exception(TLS_Alert.ILLEGAL_PARAMETER,
                                     "Unknown heartbeat message type");
         
-		m_type = cast(Message_Type)(type);
+        m_type = cast(Message_Type)(type);
         
         m_payload = reader.get_range!ubyte(2, 0, 16*1024);
         
         // padding follows and is ignored
     }
 
-	this(Message_Type type,
+    this(Message_Type type,
          in ubyte* payload,
          size_t payload_len) 
     {
@@ -66,6 +66,6 @@ public:
         m_payload = Vector!ubyte(payload, payload + payload_len);
     }
 private:
-	Message_Type m_type;
+    Message_Type m_type;
     Vector!ubyte m_payload;
 }

@@ -220,11 +220,11 @@ private:
         }
         
         if (next.type_tag == 0 &&
-		    next.class_tag == ASN1_Tag(ASN1_Tag.CONSTRUCTED | ASN1_Tag.CONTEXT_SPECIFIC))
+            next.class_tag == ASN1_Tag(ASN1_Tag.CONSTRUCTED | ASN1_Tag.CONTEXT_SPECIFIC))
         {
             BER_Decoder crl_options = BER_Decoder(next.value);
             
-			X509_Extensions extensions = X509_Extensions(m_throw_on_unknown_critical);
+            X509_Extensions extensions = X509_Extensions(m_throw_on_unknown_critical);
             
             crl_options.decode(extensions).verify_end();
             
