@@ -36,7 +36,7 @@ private:
 
     Secure_Vector!ubyte raw_data()
     {
-        return m_hash.flush();
+        return m_hash.finished();
     }
 
     Secure_Vector!ubyte encoding_of(in Secure_Vector!ubyte msg,

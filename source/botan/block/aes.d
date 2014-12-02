@@ -537,10 +537,10 @@ void aes_encrypt_n(ubyte* input, ubyte* output,
     
     foreach (size_t i; 0 .. blocks)
     {
-        uint T0 = load_be!uint(input, 0) ^ EK[0];
-        uint T1 = load_be!uint(input, 1) ^ EK[1];
-        uint T2 = load_be!uint(input, 2) ^ EK[2];
-        uint T3 = load_be!uint(input, 3) ^ EK[3];
+        uint T0 = load_bigEndian!uint(input, 0) ^ EK[0];
+        uint T1 = load_bigEndian!uint(input, 1) ^ EK[1];
+        uint T2 = load_bigEndian!uint(input, 2) ^ EK[2];
+        uint T3 = load_bigEndian!uint(input, 3) ^ EK[3];
         
         /* Use only the first 256 entries of the TE table and do the
         * rotations directly in the code. This reduces the number of
@@ -650,10 +650,10 @@ void aes_decrypt_n(ubyte* input, ubyte* output, size_t blocks,
     
     foreach (size_t i; 0 .. blocks)
     {
-        uint T0 = load_be!uint(input, 0) ^ DK[0];
-        uint T1 = load_be!uint(input, 1) ^ DK[1];
-        uint T2 = load_be!uint(input, 2) ^ DK[2];
-        uint T3 = load_be!uint(input, 3) ^ DK[3];
+        uint T0 = load_bigEndian!uint(input, 0) ^ DK[0];
+        uint T1 = load_bigEndian!uint(input, 1) ^ DK[1];
+        uint T2 = load_bigEndian!uint(input, 2) ^ DK[2];
+        uint T3 = load_bigEndian!uint(input, 3) ^ DK[3];
         
         uint B0 = TD[get_byte(0, T0)] ^
                 rotate_right(TD[get_byte(1, T3)],  8) ^
@@ -735,7 +735,7 @@ void aes_key_schedule(in ubyte* key, size_t length,
     
     const size_t X = length / 4;
     foreach (size_t i; 0 .. X)
-        XEK[i] = load_be!uint(key, i);
+        XEK[i] = load_bigEndian!uint(key, i);
     
     for (size_t i = X; i < 4*(rounds+1); i += X)
     {
@@ -778,8 +778,8 @@ void aes_key_schedule(in ubyte* key, size_t length,
     
     foreach (size_t i; 0 .. 4)
     {
-        store_be(XEK[i+4*rounds], &ME[4*i]);
-        store_be(XEK[i], &MD[4*i]);
+        store_bigEndian(XEK[i+4*rounds], &ME[4*i]);
+        store_bigEndian(XEK[i], &MD[4*i]);
     }
     
     EK.resize(length + 24);

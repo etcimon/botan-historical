@@ -26,10 +26,10 @@ public:
     {
         foreach (size_t i; 0 .. blocks)
         {
-            ushort R0 = load_le!ushort(input, 0);
-            ushort R1 = load_le!ushort(input, 1);
-            ushort R2 = load_le!ushort(input, 2);
-            ushort R3 = load_le!ushort(input, 3);
+            ushort R0 = load_littleEndian!ushort(input, 0);
+            ushort R1 = load_littleEndian!ushort(input, 1);
+            ushort R2 = load_littleEndian!ushort(input, 2);
+            ushort R3 = load_littleEndian!ushort(input, 3);
             
             foreach (size_t j; 0 .. 16)
             {
@@ -54,7 +54,7 @@ public:
                 }
             }
             
-            store_le(output, R0, R1, R2, R3);
+            store_littleEndian(output, R0, R1, R2, R3);
             
             input += BLOCK_SIZE;
             output += BLOCK_SIZE;
@@ -68,10 +68,10 @@ public:
     {
         foreach (size_t i; 0 .. blocks)
         {
-            ushort R0 = load_le!ushort(input, 0);
-            ushort R1 = load_le!ushort(input, 1);
-            ushort R2 = load_le!ushort(input, 2);
-            ushort R3 = load_le!ushort(input, 3);
+            ushort R0 = load_littleEndian!ushort(input, 0);
+            ushort R1 = load_littleEndian!ushort(input, 1);
+            ushort R2 = load_littleEndian!ushort(input, 2);
+            ushort R3 = load_littleEndian!ushort(input, 3);
             
             foreach (size_t j; 0 .. 16)
             {
@@ -96,7 +96,7 @@ public:
                 }
             }
             
-            store_le(output, R0, R1, R2, R3);
+            store_littleEndian(output, R0, R1, R2, R3);
             
             input += BLOCK_SIZE;
             output += BLOCK_SIZE;
@@ -189,7 +189,7 @@ private:
             L[i] = TABLE[L[i+1] ^ L[i+length]];
         
         m_K.resize(64);
-        load_le!ushort(m_K.ptr, L.ptr, 64);
+        load_littleEndian!ushort(m_K.ptr, L.ptr, 64);
     }
 
     Secure_Vector!ushort m_K;

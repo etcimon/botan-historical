@@ -48,7 +48,7 @@ protected:
     */
     void final_result(ubyte* output)
     {
-        store_be(output, m_S2, m_S1);
+        store_bigEndian(output, m_S2, m_S1);
         clear();
     }
 

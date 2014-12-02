@@ -53,7 +53,7 @@ private:
         
         foreach (size_t i; 0 .. blocks)
         {
-            load_be(m_M.ptr, input, m_M.length);
+            load_bigEndian(m_M.ptr, input, m_M.length);
             
             ulong K0, K1, K2, K3, K4, K5, K6, K7;
             K0 = m_digest[0]; K1 = m_digest[1]; K2 = m_digest[2]; K3 = m_digest[3];
@@ -158,7 +158,7 @@ private:
     void copy_out(ubyte* output)
     {
         for (size_t i = 0; i != output_length(); i += 8)
-            store_be(m_digest[i/8], output + i);
+            store_bigEndian(m_digest[i/8], output + i);
     }
     
 

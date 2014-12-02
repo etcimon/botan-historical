@@ -33,7 +33,7 @@ public:
         m_reg = [B, B, B, B];
     }
 
-    static SIMD_Altivec load_le(in void* input)
+    static SIMD_Altivec load_littleEndian(in void* input)
     {
         const uint* in_32 = cast(const uint*)(input);
 
@@ -49,7 +49,7 @@ public:
         return SIMD_Altivec(R0);
     }
 
-    static SIMD_Altivec load_be(in void* input)
+    static SIMD_Altivec load_bigEndian(in void* input)
     {
         const uint* in_32 = cast(const uint*)(input);
 
@@ -63,7 +63,7 @@ public:
         return SIMD_Altivec(R0);
     }
 
-    void store_le(ubyte* output) const
+    void store_littleEndian(ubyte* output) const
     {
         Vector!char perm = vec_lvsl(0, null);
 
@@ -76,10 +76,10 @@ public:
 
         vec.V = vec_perm(m_reg, m_reg, perm);
 
-        store_be(output, vec.R[0], vec.R[1], vec.R[2], vec.R[3]);
+        store_bigEndian(output, vec.R[0], vec.R[1], vec.R[2], vec.R[3]);
     }
 
-    void store_be(ubyte* output) const
+    void store_bigEndian(ubyte* output) const
     {
         union {
             Vector!uint V;
@@ -88,7 +88,7 @@ public:
 
         vec.V = m_reg;
 
-        store_be(output, vec.R[0], vec.R[1], vec.R[2], vec.R[3]);
+        store_bigEndian(output, vec.R[0], vec.R[1], vec.R[2], vec.R[3]);
     }
 
     void rotate_left(size_t rot)

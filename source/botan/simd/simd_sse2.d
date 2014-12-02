@@ -30,24 +30,24 @@ public:
         m_reg = _mm_set1_epi32!(B)();
     }
 
-    static SIMD_SSE2 load_le(const void* input)
+    static SIMD_SSE2 load_littleEndian(const void* input)
     {
         return _mm_loadu_si128(cast(const(__m128i)*)(input));
     }
 
-    static SIMD_SSE2 load_be(in void* input)
+    static SIMD_SSE2 load_bigEndian(in void* input)
     {
-        return load_le(input).bswap();
+        return load_littleEndian(input).bswap();
     }
 
-    void store_le(ubyte* output) const
+    void store_littleEndian(ubyte* output) const
     {
         _mm_storeu_si128(cast(__m128i*)(output), m_reg);
     }
 
-    void store_be(ubyte* output) const
+    void store_bigEndian(ubyte* output) const
     {
-        bswap().store_le(output);
+        bswap().store_littleEndian(output);
     }
 
     void rotate_left(size_t rot)

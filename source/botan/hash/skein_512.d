@@ -144,7 +144,7 @@ private:
             const size_t to_proc = std.algorithm.min(msg_len, 64);
             m_T[0] += to_proc;
             
-            load_le(M.ptr, msg, to_proc / 8);
+            load_littleEndian(M.ptr, msg, to_proc / 8);
             
             if (to_proc % 8)
             {
@@ -171,7 +171,7 @@ private:
         
         // ASCII("SHA3") followed by version (0x0001) code
         ubyte[32] config_str = [0x53, 0x48, 0x41, 0x33, 0x01, 0x00, 0 ];
-        store_le(uint(m_output_bits), config_str + 8);
+        store_littleEndian(uint(m_output_bits), config_str + 8);
         
         reset_tweak(type_code.SKEIN_CONFIG, true);
         ubi_512(config_str.ptr, config_str.length);

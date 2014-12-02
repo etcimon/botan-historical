@@ -243,14 +243,14 @@ string http_transact(in string hostname, in string message)
         TCPConnection stream = connectTCP(hostname, 80);
         scope(exit) stream.close();
         stream.write(message);
-        stream.flush();
+        stream.finished();
         return stream.readAll();
     } else {
         Socket socket = new TcpSocket(new InternetAddress(hostname, 80));
         scope(exit) socket.close();
         SocketStream stream = new SocketStream(socket);
         stream.writeString(message);
-        stream.flush();
+        stream.finished();
 
         Appender!string in_buf;
         // Skip HTTP header.

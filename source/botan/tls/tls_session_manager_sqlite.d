@@ -1,5 +1,5 @@
 /*
-* SQLite3 TLS Session Manager
+* SQLite3 TLS TLS_Session Manager
 * (C) 2012 Jack Lloyd
 *
 * Released under the terms of the botan license.
@@ -18,14 +18,14 @@ import std.datetime;
 
 
 /**
-* An implementation of Session_Manager that saves values in a SQLite3
+* An implementation of TLS_Session_Manager that saves values in a SQLite3
 * database file, with the session data encrypted using a passphrase.
 *
 * @warning For clients, the hostnames associated with the saved
 * sessions are stored in the database in plaintext. This may be a
 * serious privacy risk in some situations.
 */
-final class Session_Manager_SQLite : Session_Manager
+final class TLS_Session_Manager_SQLite : TLS_Session_Manager
 {
 public:
     /**
@@ -89,7 +89,7 @@ public:
                                            check_val_created);
                 
                 if (check_val_created != check_val_db)
-                    throw new Exception("Session database password not valid");
+                    throw new Exception("TLS_Session database password not valid");
             }
         }
         else
@@ -123,7 +123,7 @@ public:
         delete m_db;
     }
 
-    override bool load_from_session_id(in Vector!ubyte session_id, ref Session session)
+    override bool load_from_session_id(in Vector!ubyte session_id, ref TLS_Session session)
     {
         sqlite3_statement stmt = sqlite3_statement(m_db, "select session from tls_sessions where session_id = ?1");
         
@@ -135,7 +135,7 @@ public:
             
             try
             {
-                session = Session.decrypt(blob.first, blob.second, m_session_key);
+                session = TLS_Session.decrypt(blob.first, blob.second, m_session_key);
                 return true;
             }
             catch
@@ -146,8 +146,8 @@ public:
         return false;
     }
 
-    override bool load_from_server_info(in Server_Information server,
-                                        ref Session session)
+    override bool load_from_server_info(in TLS_Server_Information server,
+                                        ref TLS_Session session)
     {
         sqlite3_statement stmt = sqlite3_statement(m_db, "select session from tls_sessions"
                                                    " where hostname = ?1 and hostport = ?2"
@@ -162,7 +162,7 @@ public:
             
             try
             {
-                session = Session.decrypt(blob.first, blob.second, m_session_key);
+                session = TLS_Session.decrypt(blob.first, blob.second, m_session_key);
                 return true;
             }
             catch
@@ -182,7 +182,7 @@ public:
         stmt.spin();
     }
 
-    override void save(in Session session)
+    override void save(in TLS_Session session)
     {
         sqlite3_statement stmt = sqlite3_statement(m_db, "insert or replace into tls_sessions"
                                " values(?1, ?2, ?3, ?4, ?5)");
@@ -202,8 +202,8 @@ public:
     { return m_session_lifetime; }
 
 private:
-    @disable this(in Session_Manager_SQLite);
-    Session_Manager_SQLite opAssign(in Session_Manager_SQLite);
+    @disable this(in TLS_Session_Manager_SQLite);
+    TLS_Session_Manager_SQLite opAssign(in TLS_Session_Manager_SQLite);
 
     void prune_session_cache()
     {

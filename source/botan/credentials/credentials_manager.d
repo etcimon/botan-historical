@@ -23,7 +23,7 @@ import botan.utils.types;
 * and "tls-server". Context represents a hostname, email address,
 * username, or other identifier.
 */
-class Credentials_Manager
+class TLS_Credentials_Manager
 {
 public:
     ~this() {}

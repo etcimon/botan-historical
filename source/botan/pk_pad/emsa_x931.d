@@ -24,7 +24,7 @@ public:
     this(HashFunction hash)
     {
         m_hash = hash;
-        m_empty_hash = m_hash.flush();
+        m_empty_hash = m_hash.finished();
         
         m_hash_id = ieee1363_hash_id(hash.name);
         
@@ -39,7 +39,7 @@ private:
 
     Secure_Vector!ubyte raw_data()
     {
-        return m_hash.flush();
+        return m_hash.finished();
     }
 
     /*

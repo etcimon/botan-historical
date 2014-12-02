@@ -56,8 +56,8 @@ public:
         m_state[12] = 0;
         m_state[13] = 0;
         
-        m_state[14] = load_le!uint(iv, 0);
-        m_state[15] = load_le!uint(iv, 1);
+        m_state[14] = load_littleEndian!uint(iv, 0);
+        m_state[15] = load_littleEndian!uint(iv, 1);
         
         chacha(*cast(ubyte[64]*) m_buffer.ptr, *cast(ubyte[64]*) m_state.ptr);
         ++m_state[12];
@@ -117,22 +117,22 @@ protected:
                   );
         }
         
-        store_le(x00 + input[ 0], output.ptr + 4 *  0);
-        store_le(x01 + input[ 1], output.ptr + 4 *  1);
-        store_le(x02 + input[ 2], output.ptr + 4 *  2);
-        store_le(x03 + input[ 3], output.ptr + 4 *  3);
-        store_le(x04 + input[ 4], output.ptr + 4 *  4);
-        store_le(x05 + input[ 5], output.ptr + 4 *  5);
-        store_le(x06 + input[ 6], output.ptr + 4 *  6);
-        store_le(x07 + input[ 7], output.ptr + 4 *  7);
-        store_le(x08 + input[ 8], output.ptr + 4 *  8);
-        store_le(x09 + input[ 9], output.ptr + 4 *  9);
-        store_le(x10 + input[10], output.ptr + 4 * 10);
-        store_le(x11 + input[11], output.ptr + 4 * 11);
-        store_le(x12 + input[12], output.ptr + 4 * 12);
-        store_le(x13 + input[13], output.ptr + 4 * 13);
-        store_le(x14 + input[14], output.ptr + 4 * 14);
-        store_le(x15 + input[15], output.ptr + 4 * 15);
+        store_littleEndian(x00 + input[ 0], output.ptr + 4 *  0);
+        store_littleEndian(x01 + input[ 1], output.ptr + 4 *  1);
+        store_littleEndian(x02 + input[ 2], output.ptr + 4 *  2);
+        store_littleEndian(x03 + input[ 3], output.ptr + 4 *  3);
+        store_littleEndian(x04 + input[ 4], output.ptr + 4 *  4);
+        store_littleEndian(x05 + input[ 5], output.ptr + 4 *  5);
+        store_littleEndian(x06 + input[ 6], output.ptr + 4 *  6);
+        store_littleEndian(x07 + input[ 7], output.ptr + 4 *  7);
+        store_littleEndian(x08 + input[ 8], output.ptr + 4 *  8);
+        store_littleEndian(x09 + input[ 9], output.ptr + 4 *  9);
+        store_littleEndian(x10 + input[10], output.ptr + 4 * 10);
+        store_littleEndian(x11 + input[11], output.ptr + 4 * 11);
+        store_littleEndian(x12 + input[12], output.ptr + 4 * 12);
+        store_littleEndian(x13 + input[13], output.ptr + 4 * 13);
+        store_littleEndian(x14 + input[14], output.ptr + 4 * 14);
+        store_littleEndian(x15 + input[15], output.ptr + 4 * 15);
     }
 
 private:
@@ -155,18 +155,18 @@ private:
         m_state[2] = CONSTANTS[2];
         m_state[3] = CONSTANTS[3];
         
-        m_state[4] = load_le!uint(key, 0);
-        m_state[5] = load_le!uint(key, 1);
-        m_state[6] = load_le!uint(key, 2);
-        m_state[7] = load_le!uint(key, 3);
+        m_state[4] = load_littleEndian!uint(key, 0);
+        m_state[5] = load_littleEndian!uint(key, 1);
+        m_state[6] = load_littleEndian!uint(key, 2);
+        m_state[7] = load_littleEndian!uint(key, 3);
         
         if (length == 32)
             key += 16;
         
-        m_state[8] = load_le!uint(key, 0);
-        m_state[9] = load_le!uint(key, 1);
-        m_state[10] = load_le!uint(key, 2);
-        m_state[11] = load_le!uint(key, 3);
+        m_state[8] = load_littleEndian!uint(key, 0);
+        m_state[9] = load_littleEndian!uint(key, 1);
+        m_state[10] = load_littleEndian!uint(key, 2);
+        m_state[11] = load_littleEndian!uint(key, 3);
         
         m_position = 0;
         

@@ -24,7 +24,7 @@ public:
     {
         m_hash.update(secret, secret_len);
         m_hash.update(P, P_len);
-        return m_hash.flush();
+        return m_hash.finished();
     }
 
 

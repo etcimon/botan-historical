@@ -17,6 +17,7 @@ import botan.asn1.asn1_time;
 import botan.asn1.x509_dn;
 import botan.asn1.der_enc;
 import botan.asn1.ber_dec;
+import botan.asn1.asn1_obj;
 import botan.cert.x509.x509_ext;
 import botan.asn1.oids;
 import botan.codec.base64;
@@ -58,7 +59,7 @@ public:
 
     string base64_encode() const
     {
-        return Botan.base64_encode(BER_encode());
+        return base64_encode(BER_encode());
     }
 
     const X509_Certificate issuer() const { return m_issuer; }
@@ -110,7 +111,7 @@ public:
             X509_DN name;
             Vector!ubyte key_hash;
             X509_Time produced_at;
-            Extensions extensions;
+			X509_Extensions extensions;
             
             BER_Decoder(tbs_bits)
                     .decode_optional(responsedata_version, ASN1_Tag(0), ASN1_Tag(ASN1_Tag.CONSTRUCTED | ASN1_Tag.CONTEXT_SPECIFIC))                    
@@ -208,7 +209,7 @@ void check_signature(in Vector!ubyte tbs_response,
     Signature_Format format = (pub_key.message_parts() >= 2) ? DER_SEQUENCE : IEEE_1363;
     
     PK_Verifier verifier = PK_Verifier(*pub_key, padding, format);
-    if (!verifier.verify_message(asn1_obj.put_in_sequence(tbs_response), signature))
+    if (!verifier.verify_message(put_in_sequence(tbs_response), signature))
         throw new Exception("Signature on OCSP response does not verify");
 }
 

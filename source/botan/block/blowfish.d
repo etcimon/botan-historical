@@ -33,8 +33,8 @@ public:
         
         foreach (size_t i; 0 .. blocks)
         {
-            uint L = load_be!uint(input, 0);
-            uint R = load_be!uint(input, 1);
+            uint L = load_bigEndian!uint(input, 0);
+            uint R = load_bigEndian!uint(input, 1);
             
             for (size_t j = 0; j != 16; j += 2)
             {
@@ -49,7 +49,7 @@ public:
             
             L ^= m_P[16]; R ^= m_P[17];
             
-            store_be(output, R, L);
+            store_bigEndian(output, R, L);
             
             input += BLOCK_SIZE;
             output += BLOCK_SIZE;
@@ -69,8 +69,8 @@ public:
         
         foreach (size_t i; 0 .. blocks)
         {
-            uint L = load_be!uint(input, 0);
-            uint R = load_be!uint(input, 1);
+            uint L = load_bigEndian!uint(input, 0);
+            uint R = load_bigEndian!uint(input, 1);
             
             for (size_t j = 17; j != 1; j -= 2)
             {
@@ -85,7 +85,7 @@ public:
             
             L ^= m_P[1]; R ^= m_P[0];
             
-            store_be(output, R, L);
+            store_bigEndian(output, R, L);
             
             input += BLOCK_SIZE;
             output += BLOCK_SIZE;
@@ -190,8 +190,8 @@ private:
         
         for (size_t i = 0; i != box.length; i += 2)
         {
-            L ^= load_be!uint(salt, (i + salt_off) % 4);
-            R ^= load_be!uint(salt, (i + salt_off + 1) % 4);
+            L ^= load_bigEndian!uint(salt, (i + salt_off) % 4);
+            R ^= load_bigEndian!uint(salt, (i + salt_off + 1) % 4);
             
             foreach (size_t j; iota(0, 16, 2))
             {

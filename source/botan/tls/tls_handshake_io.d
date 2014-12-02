@@ -28,7 +28,7 @@ import std.typecons : Tuple;
 class Handshake_IO
 {
 public:
-    abstract Protocol_Version initial_record_version() const;
+    abstract TLS_Protocol_Version initial_record_version() const;
 
     abstract Vector!ubyte send(in Handshake_Message msg);
 
@@ -60,9 +60,9 @@ public:
         m_send_hs = writer;
     }
 
-    override Protocol_Version initial_record_version() const
+    override TLS_Protocol_Version initial_record_version() const
     {
-        return Protocol_Version.TLS_V10;
+        return TLS_Protocol_Version.TLS_V10;
     }
 
     override Vector!ubyte send(in Handshake_Message msg)
@@ -153,9 +153,9 @@ public:
         m_send_hs = writer; 
     }
 
-    override Protocol_Version initial_record_version() const
+    override TLS_Protocol_Version initial_record_version() const
     {
-        return Protocol_Version.DTLS_V10;
+        return TLS_Protocol_Version.DTLS_V10;
     }
 
     override Vector!ubyte send(in Handshake_Message msg)
@@ -239,7 +239,7 @@ public:
             
             const ubyte msg_type = record_bits[0];
             const size_t msg_len = load_be24(&record_bits[1]);
-            const ushort message_seq = load_be!ushort(&record_bits[4], 0);
+            const ushort message_seq = load_bigEndian!ushort(&record_bits[4], 0);
             const size_t fragment_offset = load_be24(&record_bits[6]);
             const size_t fragment_length = load_be24(&record_bits[9]);
             
@@ -306,7 +306,7 @@ Vector!ubyte format_fragment(in ubyte* fragment,
     
     store_be24(&send_buf[1], msg_len);
     
-    store_be(msg_sequence, &send_buf[4]);
+    store_bigEndian(msg_sequence, &send_buf[4]);
     
     store_be24(&send_buf[6], frag_offset);
     store_be24(&send_buf[9], frag_len);

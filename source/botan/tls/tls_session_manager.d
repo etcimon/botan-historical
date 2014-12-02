@@ -1,5 +1,5 @@
 /*
-* TLS Session Manager
+* TLS TLS_Session Manager
 * (C) 2011 Jack Lloyd
 *
 * Released under the terms of the botan license.
@@ -20,7 +20,7 @@ import std.datetime;
 import botan.utils.containers.hashmap;
 
 /**
-* Session_Manager is an interface to systems which can save
+* TLS_Session_Manager is an interface to systems which can save
 * session parameters for supporting session resumption.
 *
 * Saving sessions is done on a best-effort basis; an implementation is
@@ -28,7 +28,7 @@ import botan.utils.containers.hashmap;
 *
 * Implementations should strive to be thread safe
 */
-class Session_Manager
+class TLS_Session_Manager
 {
 public:
     /**
@@ -39,7 +39,7 @@ public:
     * @return true if session was modified
     */
     abstract bool load_from_session_id(in Vector!ubyte session_id,
-                                                 Session session);
+                                                 TLS_Session session);
 
     /**
     * Try to load a saved session (using info about server)
@@ -48,8 +48,8 @@ public:
                 or not modified if not found
     * @return true if session was modified
     */
-    abstract bool load_from_server_info(in Server_Information info,
-                                                  Session session);
+    abstract bool load_from_server_info(in TLS_Server_Information info,
+                                                  TLS_Session session);
 
     /**
     * Remove this session id from the cache, if it exists
@@ -64,7 +64,7 @@ public:
     *
     * @param session to save
     */
-    abstract void save(in Session session);
+    abstract void save(in TLS_Session session);
 
     /**
     * Return the allowed lifetime of a session; beyond this time,
@@ -77,30 +77,30 @@ public:
 }
 
 /**
-* An implementation of Session_Manager that does not save sessions at
+* An implementation of TLS_Session_Manager that does not save sessions at
 * all, preventing session resumption.
 */
-final class Session_Manager_Noop : Session_Manager
+final class TLS_Session_Manager_Noop : TLS_Session_Manager
 {
 public:
-    override bool load_from_session_id(in Vector!ubyte, Session)
+    override bool load_from_session_id(in Vector!ubyte, TLS_Session)
     { return false; }
 
-    override bool load_from_server_info(in Server_Information, Session)
+    override bool load_from_server_info(in TLS_Server_Information, TLS_Session)
     { return false; }
 
     override void remove_entry(in Vector!ubyte) {}
 
-    override void save(in Session) {}
+    override void save(in TLS_Session) {}
 
     override Duration session_lifetime() const
     { return Duration.init; }
 }
 
 /**
-* An implementation of Session_Manager that saves values in memory.
+* An implementation of TLS_Session_Manager that saves values in memory.
 */
-final class Session_Manager_In_Memory : Session_Manager
+final class TLS_Session_Manager_In_Memory : TLS_Session_Manager
 {
 public:
     /**
@@ -119,14 +119,14 @@ public:
     }
 
     override bool load_from_session_id(
-        in Vector!ubyte session_id, Session session)
+        in Vector!ubyte session_id, TLS_Session session)
     {
         
         return load_from_session_str(hex_encode(session_id), session);
     }
 
     override bool load_from_server_info(
-        const Server_Information info, Session session)
+        const TLS_Server_Information info, TLS_Session session)
     {
         
         auto i = m_info_sessions.find(info);
@@ -154,7 +154,7 @@ public:
             m_sessions.erase(i);
     }
 
-    override void save(in Session session)
+    override void save(in TLS_Session session)
     {
         
         if (m_max_sessions != 0)
@@ -179,7 +179,7 @@ public:
     { return m_session_lifetime; }
 
 private:
-    bool load_from_session_str(in string session_str, Session session)
+    bool load_from_session_str(in string session_str, TLS_Session session)
     {
         // assert(lock is held)
         
@@ -190,7 +190,7 @@ private:
         
         try
         {
-            session = Session.decrypt(i.second, m_session_key);
+            session = TLS_Session.decrypt(i.second, m_session_key);
         }
         catch
         {
@@ -217,5 +217,5 @@ private:
     SymmetricKey m_session_key;
 
     HashMap!(string, Vector!ubyte) m_sessions; // hex(session_id) . session
-    HashMap!(Server_Information, string) m_info_sessions;
+    HashMap!(TLS_Server_Information, string) m_info_sessions;
 }

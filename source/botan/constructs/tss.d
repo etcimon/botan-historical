@@ -161,7 +161,7 @@ public:
             throw new Decoding_Error("Bad length in RTSS output");
         
         hash.update(secret.ptr, secret_len);
-        Secure_Vector!ubyte hash_check = hash.flush();
+        Secure_Vector!ubyte hash_check = hash.finished();
         
         if (!same_mem(hash_check.ptr, &secret[secret_len], hash.output_length))
             throw new Decoding_Error("RTSS hash check failed");

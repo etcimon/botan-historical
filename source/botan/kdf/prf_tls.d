@@ -117,7 +117,7 @@ void P_hash(Secure_Vector!ubyte output,
         
         mac.update(A);
         mac.update(seed, seed_len);
-        Secure_Vector!ubyte block = mac.flush();
+        Secure_Vector!ubyte block = mac.finished();
         
         xor_buf(&output[offset], block.ptr, this_block_len);
         offset += this_block_len;

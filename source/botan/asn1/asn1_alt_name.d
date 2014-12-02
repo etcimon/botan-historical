@@ -110,7 +110,7 @@ public:
             {
                 if (obj.value.length == 4)
                 {
-                    const uint ip = load_be!uint(obj.value.ptr, 0);
+                    const uint ip = load_bigEndian!uint(obj.value.ptr, 0);
                     add_attribute("IP", ipv4_to_string(ip));
                 }
             }
@@ -243,7 +243,7 @@ void encode_entries(DER_Encoder encoder = DER_Encoder(),
         {
             const uint ip = string_to_ipv4(alt_name);
             ubyte[4] ip_buf;
-            store_be(ip, ip_buf);
+            store_bigEndian(ip, ip_buf);
             encoder.add_object(tagging, ASN1_Tag.CONTEXT_SPECIFIC, ip_buf.ptr, 4);
         }
     });

@@ -33,8 +33,8 @@ public:
         
         foreach (size_t i; 0 .. blocks)
         {
-            uint L = load_be!uint(input, 0);
-            uint R = load_be!uint(input, 1);
+            uint L = load_bigEndian!uint(input, 0);
+            uint R = load_bigEndian!uint(input, 1);
             
             foreach (size_t j; 0 .. 32)
             {
@@ -42,7 +42,7 @@ public:
                 R += (((L << 4) ^ (L >> 5)) + L) ^ m_EK[2*j+1];
             }
             
-            store_be(output, L, R);
+            store_bigEndian(output, L, R);
             
             input += BLOCK_SIZE;
             output += BLOCK_SIZE;
@@ -64,8 +64,8 @@ public:
         
         foreach (size_t i; 0 .. blocks)
         {
-            uint L = load_be!uint(input, 0);
-            uint R = load_be!uint(input, 1);
+            uint L = load_bigEndian!uint(input, 0);
+            uint R = load_bigEndian!uint(input, 1);
             
             foreach (size_t j; 0 .. 32)
             {
@@ -73,7 +73,7 @@ public:
                 L -= (((R << 4) ^ (R >> 5)) + R) ^ m_EK[62 - 2*j];
             }
             
-            store_be(output, L, R);
+            store_bigEndian(output, L, R);
             
             input += BLOCK_SIZE;
             output += BLOCK_SIZE;
@@ -103,7 +103,7 @@ private:
         
         Secure_Vector!uint UK = Secure_Vector!uint(4);
         foreach (size_t i; 0 .. 4)
-            UK[i] = load_be!uint(key, i);
+            UK[i] = load_bigEndian!uint(key, i);
         
         uint D = 0;
         foreach (size_t i; iota(0, 64, 2))
@@ -123,7 +123,7 @@ pure:
 void xtea_encrypt_4(in ubyte[32] input, ref ubyte[32] output, in uint[64] EK)
 {
     uint L0, R0, L1, R1, L2, R2, L3, R3;
-    load_be(input, L0, R0, L1, R1, L2, R2, L3, R3);
+    load_bigEndian(input, L0, R0, L1, R1, L2, R2, L3, R3);
     
     foreach (size_t i; 0 .. 32)
     {
@@ -138,13 +138,13 @@ void xtea_encrypt_4(in ubyte[32] input, ref ubyte[32] output, in uint[64] EK)
         R3 += (((L3 << 4) ^ (L3 >> 5)) + L3) ^ EK[2*i+1];
     }
     
-    store_be(output, L0, R0, L1, R1, L2, R2, L3, R3);
+    store_bigEndian(output, L0, R0, L1, R1, L2, R2, L3, R3);
 }
 
 void xtea_decrypt_4(in ubyte[32] input, ref ubyte[32] output, in uint[64] EK)
 {
     uint L0, R0, L1, R1, L2, R2, L3, R3;
-    load_be(input, L0, R0, L1, R1, L2, R2, L3, R3);
+    load_bigEndian(input, L0, R0, L1, R1, L2, R2, L3, R3);
     
     foreach (size_t i; 0 .. 32)
     {
@@ -159,5 +159,5 @@ void xtea_decrypt_4(in ubyte[32] input, ref ubyte[32] output, in uint[64] EK)
         L3 -= (((R3 << 4) ^ (R3 >> 5)) + R3) ^ EK[62 - 2*i];
     }
     
-    store_be(output, L0, R0, L1, R1, L2, R2, L3, R3);
+    store_bigEndian(output, L0, R0, L1, R1, L2, R2, L3, R3);
 }

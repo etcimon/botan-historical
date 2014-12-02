@@ -25,7 +25,7 @@ public:
     */
     final bool verify_mac(in ubyte* mac, size_t length)
     {
-        Secure_Vector!ubyte our_mac = flush();
+        Secure_Vector!ubyte our_mac = finished();
         
         if (our_mac.length != length)
             return false;
@@ -84,7 +84,7 @@ size_t mac_test(string algo, string key_hex, string in_hex, string out_hex)
         mac.set_key(hex_decode(key_hex));
         mac.update(hex_decode(in_hex));
         
-        auto h = mac.flush();
+        auto h = mac.finished();
 
         atomicOp!"+="(total_tests, 1);
         if(h != hex_decode_locked(out_hex))

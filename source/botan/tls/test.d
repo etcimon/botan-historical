@@ -13,7 +13,7 @@ import botan.codec.hex;
 import botan.utils.memory.memory;
 import botan.utils.types;
 
-class Credentials_Manager_Test : public Credentials_Manager
+class TLS_Credentials_Manager_Test : public TLS_Credentials_Manager
 {
 public:
     this(in X509_Certificate server_cert, in X509_Certificate ca_cert, Private_Key server_key) 
@@ -74,7 +74,7 @@ public:
     Vector!Certificate_Store m_stores;
 };
 
-Credentials_Manager create_creds(RandomNumberGenerator rng)
+TLS_Credentials_Manager create_creds(RandomNumberGenerator rng)
 {
     Private_Key ca_key = new RSA_PrivateKey(rng, 1024);
     
@@ -101,20 +101,20 @@ Credentials_Manager create_creds(RandomNumberGenerator rng)
     
     X509_Certificate server_cert = ca.sign_request(req, rng, start_time, end_time);
     
-    return new Credentials_Manager_Test(server_cert, ca_cert, server_key);
+    return new TLS_Credentials_Manager_Test(server_cert, ca_cert, server_key);
 }
 
 size_t basic_test_handshake(RandomNumberGenerator rng,
                             Protocol_Version offer_version,
-                            Credentials_Manager creds,
+                            TLS_Credentials_Manager creds,
                             Policy policy)
 {
-    auto server_sessions = scoped!Session_Manager_In_Memory(rng);
-    auto client_sessions = scoped!Session_Manager_In_Memory(rng);
+    auto server_sessions = scoped!TLS_Session_Manager_In_Memory(rng);
+    auto client_sessions = scoped!TLS_Session_Manager_In_Memory(rng);
     
     Vector!ubyte c2s_q, s2c_q, c2s_data, s2c_data;
     
-    auto handshake_complete = (in Session session) {
+    auto handshake_complete = (in TLS_Session session) {
         if (session._version() != offer_version)
             writeln("Wrong version negotiated");
         return true;
@@ -135,14 +135,14 @@ size_t basic_test_handshake(RandomNumberGenerator rng,
     };
     
     auto server = scoped!Server((in ubyte[] buf) { s2c_q.insert(buf); },
-    save_server_data,
-    print_alert,
-    handshake_complete,
-    server_sessions,
-    creds,
-    policy,
-    rng,
-    ["test/1", "test/2"]);
+							    save_server_data,
+							    print_alert,
+							    handshake_complete,
+							    server_sessions,
+							    creds,
+							    policy,
+							    rng,
+							    ["test/1", "test/2"]);
     
     auto next_protocol_chooser = (Vector!string protos) {
         if (protos.length != 2)
@@ -243,7 +243,7 @@ unittest
     
     Test_Policy default_policy;
     AutoSeeded_RNG rng;
-    Credentials_Manager basic_creds = create_creds(rng);
+    TLS_Credentials_Manager basic_creds = create_creds(rng);
     
     errors += basic_test_handshake(rng, Protocol_Version.SSL_V3, basic_creds, default_policy);
     errors += basic_test_handshake(rng, Protocol_Version.TLS_V10, basic_creds, default_policy);

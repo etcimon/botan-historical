@@ -68,10 +68,10 @@ package:
 */
 void serpent_encrypt_4(in ubyte[64] input, ref ubyte[64] output, in uint[132] keys) pure
 {
-    SIMD_32 B0 = SIMD_32.load_le(input.ptr);
-    SIMD_32 B1 = SIMD_32.load_le(input.ptr + 16);
-    SIMD_32 B2 = SIMD_32.load_le(input.ptr + 32);
-    SIMD_32 B3 = SIMD_32.load_le(input.ptr + 48);
+    SIMD_32 B0 = SIMD_32.load_littleEndian(input.ptr);
+    SIMD_32 B1 = SIMD_32.load_littleEndian(input.ptr + 16);
+    SIMD_32 B2 = SIMD_32.load_littleEndian(input.ptr + 32);
+    SIMD_32 B3 = SIMD_32.load_littleEndian(input.ptr + 48);
     
     SIMD_32.transpose(B0, B1, B2, B3);
     
@@ -113,10 +113,10 @@ void serpent_encrypt_4(in ubyte[64] input, ref ubyte[64] output, in uint[132] ke
     
     SIMD_32.transpose(B0, B1, B2, B3);
     
-    B0.store_le(output.ptr);
-    B1.store_le(output.ptr + 16);
-    B2.store_le(output.ptr + 32);
-    B3.store_le(output.ptr + 48);
+    B0.store_littleEndian(output.ptr);
+    B1.store_littleEndian(output.ptr + 16);
+    B2.store_littleEndian(output.ptr + 32);
+    B3.store_littleEndian(output.ptr + 48);
 }
 
 /*
@@ -124,10 +124,10 @@ void serpent_encrypt_4(in ubyte[64] input, ref ubyte[64] output, in uint[132] ke
 */
 void serpent_decrypt_4(in ubyte[64] input, ref ubyte[64] output, in uint[132] keys) pure 
 {
-    SIMD_32 B0 = SIMD_32.load_le(input.ptr);
-    SIMD_32 B1 = SIMD_32.load_le(input.ptr + 16);
-    SIMD_32 B2 = SIMD_32.load_le(input.ptr + 32);
-    SIMD_32 B3 = SIMD_32.load_le(input.ptr + 48);
+    SIMD_32 B0 = SIMD_32.load_littleEndian(input.ptr);
+    SIMD_32 B1 = SIMD_32.load_littleEndian(input.ptr + 16);
+    SIMD_32 B2 = SIMD_32.load_littleEndian(input.ptr + 32);
+    SIMD_32 B3 = SIMD_32.load_littleEndian(input.ptr + 48);
     
     SIMD_32.transpose(B0, B1, B2, B3);
     
@@ -169,10 +169,10 @@ void serpent_decrypt_4(in ubyte[64] input, ref ubyte[64] output, in uint[132] ke
     
     SIMD_32.transpose(B0, B1, B2, B3);
     
-    B0.store_le(output.ptr);
-    B1.store_le(output.ptr + 16);
-    B2.store_le(output.ptr + 32);
-    B3.store_le(output.ptr + 48);
+    B0.store_littleEndian(output.ptr);
+    B1.store_littleEndian(output.ptr + 16);
+    B2.store_littleEndian(output.ptr + 32);
+    B3.store_littleEndian(output.ptr + 48);
 }
 
 private:

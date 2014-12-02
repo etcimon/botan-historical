@@ -395,7 +395,7 @@ public:
     {
         Unique!HashFunction hash = get_hash(hash_name);
         hash.update(BER_encode());
-        const auto hex_print = hex_encode(hash.flush());
+        const auto hex_print = hex_encode(hash.finished());
         
         string formatted_print;
         
@@ -519,7 +519,7 @@ private:
         BER_Decoder tbs_cert(tbs_bits);
         
         tbs_cert.decode_optional(_version, ASN1_Tag(0),
-                                 ASN1_Tag(CONSTRUCTED | ASN1_Tag.CONTEXT_SPECIFIC))
+		                         ASN1_Tag(ASN1_Tag.CONSTRUCTED | ASN1_Tag.CONTEXT_SPECIFIC))
             .decode(serial_bn)
                 .decode(sig_algo_inner)
                 .decode(dn_issuer)
@@ -555,9 +555,9 @@ private:
         
         BER_Object v3_exts_data = tbs_cert.get_next_object();
         if (v3_exts_data.type_tag == 3 &&
-            v3_exts_data.class_tag == ASN1_Tag(CONSTRUCTED | ASN1_Tag.CONTEXT_SPECIFIC))
+		    v3_exts_data.class_tag == ASN1_Tag(ASN1_Tag.CONSTRUCTED | ASN1_Tag.CONTEXT_SPECIFIC))
         {
-            Extensions extensions;
+			X509_Extensions extensions;
             
             BER_Decoder(v3_exts_data.value).decode(extensions).verify_end();
             
@@ -584,14 +584,13 @@ private:
         if (m_self_signed && _version == 0)
         {
             m_subject.add("X509v3.BasicConstraints.is_ca", 1);
-            m_subject.add("X509v3.BasicConstraints.path_constraint", x509_ext.NO_CERT_PATH_LIMIT);
+            m_subject.add("X509v3.BasicConstraints.path_constraint", NO_CERT_PATH_LIMIT);
         }
         
         if (is_CA_cert() &&
             !m_subject.has_value("X509v3.BasicConstraints.path_constraint"))
         {
-            const size_t limit = (x509_version() < 3) ?
-                x509_ext.NO_CERT_PATH_LIMIT : 0;
+            const size_t limit = (x509_version() < 3) ? NO_CERT_PATH_LIMIT : 0;
             
             m_subject.add("X509v3.BasicConstraints.path_constraint", limit);
         }

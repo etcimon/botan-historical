@@ -132,7 +132,7 @@ public:
         
         /* Now derive the new PRK using everything that has been fed into
         the extractor, and set the PRF key to that */
-        m_prf.set_key(m_extractor.flush());
+        m_prf.set_key(m_extractor.finished());
         
         // Now generate a new PRF output to use as the XTS extractor salt
         hmac_prf(*m_prf, m_K, m_counter, "xts");
@@ -227,8 +227,8 @@ void hmac_prf(MessageAuthenticationCode prf,
     
     prf.update(K);
     prf.update(label);
-    prf.update_be(timestamp);
-    prf.update_be(counter);
+    prf.update_bigEndian(timestamp);
+    prf.update_bigEndian(counter);
     prf.flushInto(K.ptr);
     
     ++counter;

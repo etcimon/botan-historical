@@ -44,7 +44,7 @@ public:
                     (DES_FPTAB1[get_byte(2, R)]      )   | (DES_FPTAB2[get_byte(3, R)]      );
             T = rotate_left(T, 32);
             
-            store_be(T, output);
+            store_bigEndian(T, output);
             
             input += BLOCK_SIZE;
             output += BLOCK_SIZE;
@@ -76,7 +76,7 @@ public:
             
             T = rotate_left(T, 32);
             
-            store_be(T, output);
+            store_bigEndian(T, output);
             
             input += BLOCK_SIZE;
             output += BLOCK_SIZE;
@@ -135,7 +135,7 @@ public:
             
             T = rotate_left(T, 32);
             
-            store_be(T, output);
+            store_bigEndian(T, output);
             
             input += BLOCK_SIZE;
             output += BLOCK_SIZE;
@@ -167,7 +167,7 @@ public:
             
             T = rotate_left(T, 32);
             
-            store_be(T, output);
+            store_bigEndian(T, output);
             
             input += BLOCK_SIZE;
             output += BLOCK_SIZE;

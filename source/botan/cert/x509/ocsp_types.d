@@ -130,7 +130,7 @@ public:
     override void decode_from(BER_Decoder from)
     {
         BER_Object cert_status;
-        Extensions extensions;
+		X509_Extensions extensions;
         
         from.start_cons(ASN1_Tag.SEQUENCE)
                 .decode(m_certid)

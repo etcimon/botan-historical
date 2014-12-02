@@ -18,24 +18,24 @@ import botan.tls.tls_alert;
 class TLS_Exception : Exception
 {
 public:
-    Alert.Type type() const nothrow { return m_alert_type; }
+    TLS_Alert.Type type() const nothrow { return m_alert_type; }
 
-    this(Alert.Type type, in string err_msg = "Unknown error") {
+    this(TLS_Alert.Type type, in string err_msg = "Unknown error") {
         m_alert_type = type;
         super(err_msg);
     }
 
 private:
-    Alert.Type m_alert_type;
+    TLS_Alert.Type m_alert_type;
 }
 
 /**
-* Unexpected_Message Exception
+* TLS_Unexpected_Message Exception
 */
-class Unexpected_Message : TLS_Exception
+class TLS_Unexpected_Message : TLS_Exception
 {
     this(in string err) 
     {
-        super(Alert.UNEXPECTED_MESSAGE, err);
+        super(TLS_Alert.UNEXPECTED_MESSAGE, err);
     }
 }

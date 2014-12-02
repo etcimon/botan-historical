@@ -46,7 +46,7 @@ public:
         const ubyte type = reader.get_byte();
         
         if (type != 1 && type != 2)
-            throw new TLS_Exception(Alert.ILLEGAL_PARAMETER,
+            throw new TLS_Exception(TLS_Alert.ILLEGAL_PARAMETER,
                                     "Unknown heartbeat message type");
         
         m_type = cast(Type)(type);

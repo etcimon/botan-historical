@@ -1,5 +1,5 @@
 /*
-* TLS Session
+* TLS TLS_Session
 * (C) 2011-2012 Jack Lloyd
 *
 * Released under the terms of the botan license.
@@ -29,7 +29,7 @@ import std.datetime;
 /**
 * Class representing a TLS session state
 */
-struct Session
+struct TLS_Session
 {
 public:
     /**
@@ -37,14 +37,14 @@ public:
     */
     this(in Vector!ubyte session_identifier,
          in Secure_Vector!ubyte master_secret,
-         Protocol_Version _version,
+         TLS_Protocol_Version _version,
          ushort ciphersuite,
          ubyte compression_method,
          Connection_Side side,
          size_t fragment_size,
          in Vector!X509_Certificate certs,
          in Vector!ubyte ticket,
-         in Server_Information server_info,
+         in TLS_Server_Information server_info,
          in string srp_identifier)
     {
         m_start_time = Clock.currTime();
@@ -102,11 +102,11 @@ public:
                 .end_cons()
                 .verify_end();
         
-        m_version = Protocol_Version(major_version, minor_version);
+        m_version = TLS_Protocol_Version(major_version, minor_version);
         m_start_time = SysTime(unixTimeToStdTime(cast(time_t)start_time));
         m_connection_side = cast(Connection_Side)(side_code);
         
-        m_server_info = Server_Information(server_hostname.value(),
+        m_server_info = TLS_Server_Information(server_hostname.value(),
                                            server_service.value(),
                                            server_port);
         
@@ -179,13 +179,13 @@ public:
     * @param ctext_size the size of ctext in bytes
     * @param key the same key used by the encrypting side
     */
-    static Session decrypt(in ubyte* buf, size_t buf_len, in SymmetricKey master_key)
+    static TLS_Session decrypt(in ubyte* buf, size_t buf_len, in SymmetricKey master_key)
     {
         try
         {
             const auto ber = CryptoBox.decrypt(buf, buf_len, master_key);
             
-            return Session(ber.ptr, ber.length);
+            return TLS_Session(ber.ptr, ber.length);
         }
         catch(Exception e)
         {
@@ -198,9 +198,9 @@ public:
     * @param ctext the ciphertext returned by encrypt
     * @param key the same key used by the encrypting side
     */
-    static Session decrypt(in Vector!ubyte ctext, in SymmetricKey key)
+    static TLS_Session decrypt(in Vector!ubyte ctext, in SymmetricKey key)
     {
-        return Session.decrypt(ctext.ptr, ctext.length, key);
+        return TLS_Session.decrypt(ctext.ptr, ctext.length, key);
     }
 
     /**
@@ -216,7 +216,7 @@ public:
     /**
     * Get the version of the saved session
     */
-    Protocol_Version _version() const { return m_version; }
+    TLS_Protocol_Version _version() const { return m_version; }
 
     /**
     * Get the ciphersuite code of the saved session
@@ -282,7 +282,7 @@ public:
     */
     const Vector!ubyte session_ticket() const { return m_session_ticket; }
 
-    Server_Information server_info() const { return m_server_info; }
+    TLS_Server_Information server_info() const { return m_server_info; }
 
 private:
     enum { TLS_SESSION_PARAM_STRUCT_VERSION = 0x2994e301 }
@@ -293,7 +293,7 @@ private:
     Vector!ubyte m_session_ticket; // only used by client side
     Secure_Vector!ubyte m_master_secret;
 
-    Protocol_Version m_version;
+    TLS_Protocol_Version m_version;
     ushort m_ciphersuite;
     ubyte m_compression_method;
     Connection_Side m_connection_side;
@@ -301,6 +301,6 @@ private:
     size_t m_fragment_size;
 
     Vector!X509_Certificate m_peer_certs;
-    Server_Information m_server_info; // optional
+    TLS_Server_Information m_server_info; // optional
     string m_srp_identifier; // optional
 }

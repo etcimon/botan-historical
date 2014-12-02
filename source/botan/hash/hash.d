@@ -67,7 +67,7 @@ size_t hash_test(string algo, string in_hex, string out_hex)
         
         hash.update(hex_decode(in_hex));
         
-        auto h = hash.flush();
+        auto h = hash.finished();
 
         atomicOp!"+="(total_tests, 1);
 
@@ -83,7 +83,7 @@ size_t hash_test(string algo, string in_hex, string out_hex)
         
         hash.update(hex_decode(in_hex));
         
-        h = hash.flush();
+        h = hash.finished();
 
         atomicOp!"+="(total_tests, 1);
 

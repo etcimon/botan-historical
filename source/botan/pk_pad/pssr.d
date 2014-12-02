@@ -54,7 +54,7 @@ private:
     */
     Secure_Vector!ubyte raw_data()
     {
-        return m_hash.flush();
+        return m_hash.finished();
     }
 
     /*
@@ -79,7 +79,7 @@ private:
             m_hash.update(0);
         m_hash.update(msg);
         m_hash.update(salt);
-        Secure_Vector!ubyte H = m_hash.flush();
+        Secure_Vector!ubyte H = m_hash.finished();
         
         Secure_Vector!ubyte EM = Secure_Vector!ubyte(output_length);
         
@@ -150,7 +150,7 @@ private:
             m_hash.update(0);
         m_hash.update(raw);
         m_hash.update(&DB[salt_offset], DB_size - salt_offset);
-        Secure_Vector!ubyte H2 = m_hash.flush();
+        Secure_Vector!ubyte H2 = m_hash.finished();
         
         return same_mem(H.ptr, H2.ptr, HASH_SIZE);
     }

@@ -58,7 +58,7 @@ private:
         
         foreach (size_t i; 0 .. blocks)
         {
-            load_le(m_M.ptr, input, m_M.length);
+            load_littleEndian(m_M.ptr, input, m_M.length);
             
             uint A1 = m_digest[0], A2 = A1, B1 = m_digest[1], B2 = B1,
                 C1 = m_digest[2], C2 = C1, D1 = m_digest[3], D2 = D1,
@@ -166,7 +166,7 @@ private:
     void copy_out(ubyte* output)
     {
         for (size_t i = 0; i != output_length(); i += 4)
-            store_le(m_digest[i/4], output + i);
+            store_littleEndian(m_digest[i/4], output + i);
     }
 
     Secure_Vector!uint m_M, m_digest;

@@ -179,7 +179,7 @@ public:
             k.randomize(rng, m_order.bits()-1);
         while (k >= m_order);
         
-        BigInt e = decode_le(msg, msg_len);
+        BigInt e = decode_littleEndian(msg, msg_len);
         
         e %= m_order;
         if (e == 0)
@@ -234,7 +234,7 @@ public:
         if (sig_len != m_order.bytes()*2)
             return false;
         
-        BigInt e = decode_le(msg, msg_len);
+        BigInt e = decode_littleEndian(msg, msg_len);
         
         BigInt s = BigInt(sig, sig_len / 2);
         BigInt r = BigInt(sig + sig_len / 2, sig_len / 2);
@@ -268,7 +268,7 @@ private:
 
 private:
 
-BigInt decode_le(in ubyte* msg, size_t msg_len)
+BigInt decode_littleEndian(in ubyte* msg, size_t msg_len)
 {
     Secure_Vector!ubyte msg_le = Secure_Vector!ubyte(msg, msg + msg_len);
     

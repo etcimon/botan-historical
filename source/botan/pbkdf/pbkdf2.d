@@ -71,7 +71,7 @@ public:
             size_t T_size = std.algorithm.min(mac.output_length, key_len);
             
             m_mac.update(salt, salt_len);
-            m_mac.update_be(counter);
+            m_mac.update_bigEndian(counter);
             m_mac.flushInto(U.ptr);
             
             xor_buf(T, U.ptr, T_size);

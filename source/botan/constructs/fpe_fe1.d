@@ -163,13 +163,13 @@ public:
         if (n_bin.length > MAX_N_BYTES)
             throw new Exception("N is too large for FPE encryption");
         
-        m_mac.update_be(cast(uint)(n_bin.length));
+        m_mac.update_bigEndian(cast(uint)(n_bin.length));
         m_mac.update(n_binput.ptr, n_bin.length);
         
-        m_mac.update_be(cast(uint)(tweak.length));
+        m_mac.update_bigEndian(cast(uint)(tweak.length));
         m_mac.update(tweak.ptr, tweak.length);
         
-        m_mac_n_t = unlock(m_mac.flush());
+        m_mac_n_t = unlock(m_mac.finished());
     }
 
     
@@ -178,12 +178,12 @@ public:
         Secure_Vector!ubyte r_bin = BigInt.encode_locked(R);
 
         m_mac.update(m_mac_n_t);
-        m_mac.update_be(cast(uint)(round_no));
+        m_mac.update_bigEndian(cast(uint)(round_no));
         
-        m_mac.update_be(cast(uint)(r_bin.length));
+        m_mac.update_bigEndian(cast(uint)(r_bin.length));
         m_mac.update(r_binput.ptr, r_bin.length);
         
-        Secure_Vector!ubyte X = m_mac.flush();
+        Secure_Vector!ubyte X = m_mac.finished();
         return BigInt(X.ptr, X.length);
     }
     

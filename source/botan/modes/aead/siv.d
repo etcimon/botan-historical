@@ -146,7 +146,7 @@ protected:
         xor_buf(V.ptr, &text[text_len - 16], 16);
         cmac().update(V);
         
-        return cmac().flush();
+        return cmac().finished();
     }
 private:
     final MessageAuthenticationCode cmac() { return *m_cmac; }

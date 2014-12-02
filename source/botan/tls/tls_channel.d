@@ -32,7 +32,7 @@ import botan.utils.containers.hashmap;
 /**
 * Generic interface for TLS endpoint
 */
-class Channel
+class TLS_Channel
 {
 public:
     /**
@@ -54,7 +54,7 @@ public:
                 Secure_Vector!ubyte record;
                 ulong record_sequence = 0;
                 Record_Type record_type = NO_RECORD;
-                Protocol_Version record_version;
+                TLS_Protocol_Version record_version;
                 
                 size_t consumed = 0;
                 
@@ -80,7 +80,7 @@ public:
                     return needed; // need more data to complete record
                 
                 if (record.length > max_fragment_size)
-                    throw new TLS_Exception(Alert.RECORD_OVERFLOW, "Plaintext record is too large");
+                    throw new TLS_Exception(TLS_Alert.RECORD_OVERFLOW, "Plaintext record is too large");
                 
                 if (record_type == HANDSHAKE || record_type == CHANGE_CIPHER_SPEC)
                 {
@@ -129,7 +129,7 @@ public:
                     }
                     else
                     {
-                        m_alert_cb(Alert(Alert.HEARTBEAT_PAYLOAD), payload[]);
+                        m_alert_cb(TLS_Alert(TLS_Alert.HEARTBEAT_PAYLOAD), payload[]);
                     }
                 }
                 else if (record_type == APPLICATION_DATA)
@@ -147,9 +147,9 @@ public:
                 }
                 else if (record_type == ALERT)
                 {
-                    Alert alert_msg = Alert(record);
+                    TLS_Alert alert_msg = TLS_Alert(record);
                     
-                    if (alert_msg.type() == Alert.NO_RENEGOTIATION)
+                    if (alert_msg.type() == TLS_Alert.NO_RENEGOTIATION)
                     m_pending_state.clear();
                 
                 m_alert_cb(alert_msg, null);
@@ -160,10 +160,10 @@ public:
                         m_session_manager.remove_entry(active.server_hello().session_id());
                 }
                         
-                if (alert_msg.type() == Alert.CLOSE_NOTIFY)
-                    send_warning_alert(Alert.CLOSE_NOTIFY); // reply in kind
+                if (alert_msg.type() == TLS_Alert.CLOSE_NOTIFY)
+                    send_warning_alert(TLS_Alert.CLOSE_NOTIFY); // reply in kind
                             
-                if (alert_msg.type() == Alert.CLOSE_NOTIFY || alert_msg.is_fatal())
+                if (alert_msg.type() == TLS_Alert.CLOSE_NOTIFY || alert_msg.is_fatal())
                 {
                     reset_state();
                     return 0;
@@ -182,17 +182,17 @@ public:
         }
         catch(Integrity_Failure e)
         {
-            send_fatal_alert(Alert.BAD_RECORD_MAC);
+            send_fatal_alert(TLS_Alert.BAD_RECORD_MAC);
             throw e;
         }
         catch(Decoding_Error e)
         {
-            send_fatal_alert(Alert.DECODE_ERROR);
+            send_fatal_alert(TLS_Alert.DECODE_ERROR);
             throw e;
         }
         catch(Throwable e)
         {
-            send_fatal_alert(Alert.INTERNAL_ERROR);
+            send_fatal_alert(TLS_Alert.INTERNAL_ERROR);
             throw e;
         }
     }
@@ -239,9 +239,9 @@ public:
     /**
     * Send a TLS alert message. If the alert is fatal, the internal
     * state (keys, etc) will be reset.
-    * @param alert the Alert to send
+    * @param alert the TLS_Alert to send
     */
-    void send_alert(in Alert alert)
+    void send_alert(in TLS_Alert alert)
     {
         if (alert.is_valid() && !is_closed())
         {
@@ -252,31 +252,31 @@ public:
             catch { /* swallow it */ }
         }
         
-        if (alert.type() == Alert.NO_RENEGOTIATION)
+        if (alert.type() == TLS_Alert.NO_RENEGOTIATION)
             m_pending_state.clear();
         
         if (alert.is_fatal())
             if (auto active = active_state())
                 m_session_manager.remove_entry(active.server_hello().session_id());
         
-        if (alert.type() == Alert.CLOSE_NOTIFY || alert.is_fatal())
+        if (alert.type() == TLS_Alert.CLOSE_NOTIFY || alert.is_fatal())
             reset_state();
     }
 
     /**
     * Send a warning alert
     */
-    void send_warning_alert(Alert.Type type) { send_alert(Alert(type, false)); }
+    void send_warning_alert(TLS_Alert.Type type) { send_alert(TLS_Alert(type, false)); }
 
     /**
     * Send a fatal alert
     */
-    void send_fatal_alert(Alert.Type type) { send_alert(Alert(type, true)); }
+    void send_fatal_alert(TLS_Alert.Type type) { send_alert(TLS_Alert(type, true)); }
 
     /**
     * Send a close notification alert
     */
-    void close() { send_warning_alert(Alert.CLOSE_NOTIFY); }
+    void close() { send_warning_alert(TLS_Alert.CLOSE_NOTIFY); }
 
     /**
     * @return true iff the connection is active for sending application data
@@ -417,9 +417,9 @@ public:
 
     this(void delegate(in ubyte[]) output_fn,
          void delegate(in ubyte[]) data_cb,
-         void delegate(Alert, in ubyte[]) alert_cb,
-         bool delegate(in Session) handshake_cb,
-         Session_Manager session_manager,
+         void delegate(TLS_Alert, in ubyte[]) alert_cb,
+         bool delegate(in TLS_Session) handshake_cb,
+         TLS_Session_Manager session_manager,
          RandomNumberGenerator rng,
          size_t reserved_io_buffer_size)
     {
@@ -456,14 +456,14 @@ protected:
 
     abstract Handshake_State new_handshake_state(Handshake_IO io);
 
-    Handshake_State create_handshake_state(Protocol_Version _version)
+    Handshake_State create_handshake_state(TLS_Protocol_Version _version)
     {
         if (pending_state())
             throw new Internal_Error("create_handshake_state called during handshake");
         
         if (Handshake_State active = active_state())
         {
-            Protocol_Version active_version = active._version();
+            TLS_Protocol_Version active_version = active._version();
             
             if (active_version.is_datagram_protocol() != _version.is_datagram_protocol())
                 throw new Exception("Active state using version " ~ active_version.toString() ~
@@ -576,7 +576,7 @@ protected:
             const bool active_sr = active.client_hello().secure_renegotiation();
             
             if (active_sr != secure_renegotiation)
-                throw new TLS_Exception(Alert.HANDSHAKE_FAILURE, "Client changed its mind about secure renegotiation");
+                throw new TLS_Exception(TLS_Alert.HANDSHAKE_FAILURE, "Client changed its mind about secure renegotiation");
         }
         
         if (secure_renegotiation)
@@ -584,7 +584,7 @@ protected:
             const Vector!ubyte data = client_hello.renegotiation_info();
             
             if (data != secure_renegotiation_data_for_client_hello())
-                throw new TLS_Exception(Alert.HANDSHAKE_FAILURE, "Client sent bad values for secure renegotiation");
+                throw new TLS_Exception(TLS_Alert.HANDSHAKE_FAILURE, "Client sent bad values for secure renegotiation");
         }
     }
 
@@ -597,7 +597,7 @@ protected:
             const bool active_sr = active.client_hello().secure_renegotiation();
             
             if (active_sr != secure_renegotiation)
-                throw new TLS_Exception(Alert.HANDSHAKE_FAILURE, "Server changed its mind about secure renegotiation");
+                throw new TLS_Exception(TLS_Alert.HANDSHAKE_FAILURE, "Server changed its mind about secure renegotiation");
         }
         
         if (secure_renegotiation)
@@ -605,7 +605,7 @@ protected:
             const Vector!ubyte data = server_hello.renegotiation_info();
             
             if (data != secure_renegotiation_data_for_server_hello())
-                throw new TLS_Exception(Alert.HANDSHAKE_FAILURE, "Server sent bad values for secure renegotiation");
+                throw new TLS_Exception(TLS_Alert.HANDSHAKE_FAILURE, "Server sent bad values for secure renegotiation");
         }
     }
 
@@ -642,9 +642,9 @@ protected:
 
     RandomNumberGenerator rng() { return m_rng; }
 
-    Session_Manager session_manager() { return m_session_manager; }
+    TLS_Session_Manager session_manager() { return m_session_manager; }
 
-    bool save_session(in Session session) const { return m_handshake_cb(session); }
+    bool save_session(in TLS_Session session) const { return m_handshake_cb(session); }
 
 private:
 
@@ -720,7 +720,7 @@ private:
         assert(m_pending_state || m_active_state,
                "Some connection state exists");
         
-        Protocol_Version record_version =
+        TLS_Protocol_Version record_version =
             (m_pending_state) ? (m_pending_state._version()) : (m_active_state._version());
         
         write_record(m_writebuf,
@@ -773,14 +773,14 @@ private:
     const Handshake_State pending_state() const { return *m_pending_state; }
 
     /* callbacks */
-    bool delegate(in Session) m_handshake_cb;
+    bool delegate(in TLS_Session) m_handshake_cb;
     void delegate(in ubyte[]) m_data_cb;
-    void delegate(Alert, in ubyte[]) m_alert_cb;
+    void delegate(TLS_Alert, in ubyte[]) m_alert_cb;
     void delegate(in ubyte[]) m_output_fn;
 
     /* external state */
     RandomNumberGenerator m_rng;
-    Session_Manager m_session_manager;
+    TLS_Session_Manager m_session_manager;
 
     /* sequence number state */
     Unique!Connection_Sequence_Numbers m_sequence_numbers;

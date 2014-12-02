@@ -9,6 +9,8 @@ module botan.tls.tls_extensions;
 import botan.constants;
 static if (BOTAN_HAS_TLS):
 
+package:
+
 import botan.utils.memory.zeroize;
 import botan.tls.tls_magic;
 import botan.utils.types;
@@ -67,7 +69,7 @@ public:
 }
 
 /**
-* Server Name Indicator extension (RFC 3546)
+* TLS Server Name Indicator extension (RFC 3546)
 */
 class Server_Name_Indicator : Extension
 {
@@ -268,7 +270,7 @@ public:
         auto i = code_to_fragment.get(cast(size_t) val, 0);
 
         if (i == 0)
-            throw new TLS_Exception(Alert.ILLEGAL_PARAMETER, "Bad value in maximum fragment extension");
+            throw new TLS_Exception(TLS_Alert.ILLEGAL_PARAMETER, "Bad value in maximum fragment extension");
         
         m_max_fragment = i;
     }
@@ -348,7 +350,7 @@ private:
 }
 
 /**
-* Session Ticket Extension (RFC 5077)
+* TLS_Session Ticket Extension (RFC 5077)
 */
 class Session_Ticket : Extension
 {
@@ -711,7 +713,7 @@ public:
         const ubyte code = reader.get_byte();
         
         if (code != 1 && code != 2)
-            throw new TLS_Exception(Alert.ILLEGAL_PARAMETER, "Unknown heartbeat code " ~ to!string(code));
+            throw new TLS_Exception(TLS_Alert.ILLEGAL_PARAMETER, "Unknown heartbeat code " ~ to!string(code));
         
         m_peer_allowed_to_send = (code == 1);
     }
@@ -723,7 +725,7 @@ private:
 /**
 * Represents a block of extensions in a hello message
 */
-class Extensions
+struct TLS_Extensions
 {
 public:
     Handshake_Extension_Type[] extension_types() const
@@ -808,14 +810,9 @@ public:
         }
     }
 
-    this() {}
-
     this(ref TLS_Data_Reader reader) { deserialize(reader); }
 
 private:
-    this(in Extensions) {}
-    Extensions opAssign(in Extensions) { return this; }
-
     HashMap!(Handshake_Extension_Type, Extension) extensions;
 }
 

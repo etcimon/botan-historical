@@ -36,10 +36,10 @@ public:
         
         while (blocks >= 4)
         {
-            SIMD_32 A0 = SIMD_32.load_be(input      );
-            SIMD_32 A1 = SIMD_32.load_be(input + 16);
-            SIMD_32 A2 = SIMD_32.load_be(input + 32);
-            SIMD_32 A3 = SIMD_32.load_be(input + 48);
+            SIMD_32 A0 = SIMD_32.load_bigEndian(input      );
+            SIMD_32 A1 = SIMD_32.load_bigEndian(input + 16);
+            SIMD_32 A2 = SIMD_32.load_bigEndian(input + 32);
+            SIMD_32 A3 = SIMD_32.load_bigEndian(input + 48);
             
             SIMD_32.transpose(A0, A1, A2, A3);
             
@@ -65,10 +65,10 @@ public:
             
             SIMD_32.transpose(A0, A1, A2, A3);
             
-            A0.store_be(output);
-            A1.store_be(output + 16);
-            A2.store_be(output + 32);
-            A3.store_be(output + 48);
+            A0.store_bigEndian(output);
+            A1.store_bigEndian(output + 16);
+            A2.store_bigEndian(output + 32);
+            A3.store_bigEndian(output + 48);
             
             input += 64;
             output += 64;
@@ -93,10 +93,10 @@ public:
         
         while (blocks >= 4)
         {
-            SIMD_32 A0 = SIMD_32.load_be(input      );
-            SIMD_32 A1 = SIMD_32.load_be(input + 16);
-            SIMD_32 A2 = SIMD_32.load_be(input + 32);
-            SIMD_32 A3 = SIMD_32.load_be(input + 48);
+            SIMD_32 A0 = SIMD_32.load_bigEndian(input      );
+            SIMD_32 A1 = SIMD_32.load_bigEndian(input + 16);
+            SIMD_32 A2 = SIMD_32.load_bigEndian(input + 32);
+            SIMD_32 A3 = SIMD_32.load_bigEndian(input + 48);
             
             SIMD_32.transpose(A0, A1, A2, A3);
             
@@ -122,10 +122,10 @@ public:
             
             SIMD_32.transpose(A0, A1, A2, A3);
             
-            A0.store_be(output);
-            A1.store_be(output + 16);
-            A2.store_be(output + 32);
-            A3.store_be(output + 48);
+            A0.store_bigEndian(output);
+            A1.store_bigEndian(output + 16);
+            A2.store_bigEndian(output + 32);
+            A3.store_bigEndian(output + 48);
             
             input += 64;
             output += 64;

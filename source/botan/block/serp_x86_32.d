@@ -57,7 +57,7 @@ private:
     {
         Secure_Vector!uint W = Secure_Vector!uint(140);
         foreach (size_t i; 0 .. (length / 4))
-            W[i] = load_le!uint(key, i);
+            W[i] = load_littleEndian!uint(key, i);
         W[length / 4] |= uint(1) << ((length%4)*8);
         
         botan_serpent_x86_32_key_schedule(W.ptr);

@@ -27,10 +27,10 @@ public:
     {
         foreach (size_t i; 0 .. blocks)
         {
-            uint A = load_le!uint(input, 0) + m_EK[0];
-            uint B = load_le!uint(input, 1) + m_EK[1];
-            uint C = load_le!uint(input, 2) + m_EK[2];
-            uint D = load_le!uint(input, 3) + m_EK[3];
+            uint A = load_littleEndian!uint(input, 0) + m_EK[0];
+            uint B = load_littleEndian!uint(input, 1) + m_EK[1];
+            uint C = load_littleEndian!uint(input, 2) + m_EK[2];
+            uint D = load_littleEndian!uint(input, 3) + m_EK[3];
             
             forward_mix(A, B, C, D);
             
@@ -56,7 +56,7 @@ public:
             
             A -= m_EK[36]; B -= m_EK[37]; C -= m_EK[38]; D -= m_EK[39];
             
-            store_le(output, A, B, C, D);
+            store_littleEndian(output, A, B, C, D);
             
             input += BLOCK_SIZE;
             output += BLOCK_SIZE;
@@ -70,10 +70,10 @@ public:
     {
         foreach (size_t i; 0 .. blocks)
         {
-            uint A = load_le!uint(input, 3) + m_EK[39];
-            uint B = load_le!uint(input, 2) + m_EK[38];
-            uint C = load_le!uint(input, 1) + m_EK[37];
-            uint D = load_le!uint(input, 0) + m_EK[36];
+            uint A = load_littleEndian!uint(input, 3) + m_EK[39];
+            uint B = load_littleEndian!uint(input, 2) + m_EK[38];
+            uint C = load_littleEndian!uint(input, 1) + m_EK[37];
+            uint D = load_littleEndian!uint(input, 0) + m_EK[36];
             
             forward_mix(A, B, C, D);
             
@@ -99,7 +99,7 @@ public:
             
             A -= m_EK[3]; B -= m_EK[2]; C -= m_EK[1]; D -= m_EK[0];
             
-            store_le(output, D, C, B, A);
+            store_littleEndian(output, D, C, B, A);
             
             input += BLOCK_SIZE;
             output += BLOCK_SIZE;
@@ -121,7 +121,7 @@ private:
     {
         Secure_Vector!uint T = Secure_Vector!uint(15);
         foreach (size_t i; 0 .. (length / 4))
-            T[i] = load_le!uint(key, i);
+            T[i] = load_littleEndian!uint(key, i);
         
         T[length / 4] = cast(uint)(length) / 4;
         

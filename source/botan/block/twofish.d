@@ -25,10 +25,10 @@ public:
     {
         foreach (size_t i; 0 .. blocks)
         {
-            uint A = load_le!uint(input, 0) ^ m_RK[0];
-            uint B = load_le!uint(input, 1) ^ m_RK[1];
-            uint C = load_le!uint(input, 2) ^ m_RK[2];
-            uint D = load_le!uint(input, 3) ^ m_RK[3];
+            uint A = load_littleEndian!uint(input, 0) ^ m_RK[0];
+            uint B = load_littleEndian!uint(input, 1) ^ m_RK[1];
+            uint C = load_littleEndian!uint(input, 2) ^ m_RK[2];
+            uint D = load_littleEndian!uint(input, 3) ^ m_RK[3];
             
             for (size_t j = 0; j != 16; j += 2)
             {
@@ -62,7 +62,7 @@ public:
             A ^= m_RK[6];
             B ^= m_RK[7];
             
-            store_le(output, C, D, A, B);
+            store_littleEndian(output, C, D, A, B);
             
             input += BLOCK_SIZE;
             output += BLOCK_SIZE;
@@ -76,10 +76,10 @@ public:
     {
         foreach (size_t i; 0 .. blocks)
         {
-            uint A = load_le!uint(input, 0) ^ m_RK[4];
-            uint B = load_le!uint(input, 1) ^ m_RK[5];
-            uint C = load_le!uint(input, 2) ^ m_RK[6];
-            uint D = load_le!uint(input, 3) ^ m_RK[7];
+            uint A = load_littleEndian!uint(input, 0) ^ m_RK[4];
+            uint B = load_littleEndian!uint(input, 1) ^ m_RK[5];
+            uint C = load_littleEndian!uint(input, 2) ^ m_RK[6];
+            uint D = load_littleEndian!uint(input, 3) ^ m_RK[7];
             
             for (size_t j = 0; j != 16; j += 2)
             {
@@ -113,7 +113,7 @@ public:
             A ^= m_RK[2];
             B ^= m_RK[3];
             
-            store_le(output, C, D, A, B);
+            store_littleEndian(output, C, D, A, B);
             
             input += BLOCK_SIZE;
             output += BLOCK_SIZE;

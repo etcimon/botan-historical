@@ -6,7 +6,7 @@
 
 Known Failures/Problems
 
-Policy extensions are not implemented, so we skip tests #34-#53.
+TLS_Policy extensions are not implemented, so we skip tests #34-#53.
 
 Tests #75 and #76 are skipped as they make use of relatively obscure CRL
 extensions which are not supported.
@@ -85,7 +85,7 @@ Certificate_Status_Code[size_t] get_expected()
     expected_results[33] = Certificate_Status_Code.VERIFIED;
     
     /*
-     Policy tests: a little trickier because there are other inputs
+     TLS_Policy tests: a little trickier because there are other inputs
      which affect the result.
 
      In the case of the tests currently in the suite, the default

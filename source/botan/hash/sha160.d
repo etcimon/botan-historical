@@ -71,7 +71,7 @@ protected:
         
         foreach (size_t i; 0 .. blocks)
         {
-            load_be(m_W.ptr, input, 16);
+            load_bigEndian(m_W.ptr, input, 16);
             
             for (size_t j = 16; j != 80; j += 8)
             {
@@ -145,7 +145,7 @@ protected:
     final void copy_out(ubyte* output)
     {
         for (size_t i = 0; i != output_length(); i += 4)
-            store_be(m_digest[i/4], output + i);
+            store_bigEndian(m_digest[i/4], output + i);
     }
 
     /**

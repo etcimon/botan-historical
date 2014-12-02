@@ -30,10 +30,10 @@ public:
         while (out_len && counter)
         {
             m_hash.update(secret, secret_len);
-            m_hash.update_be(counter);
+            m_hash.update_bigEndian(counter);
             m_hash.update(P, P_len);
             
-            Secure_Vector!ubyte hash_result = m_hash.flush();
+            Secure_Vector!ubyte hash_result = m_hash.finished();
             
             size_t added = std.algorithm.min(hash_result.length, out_len);
             output ~= hash_result.ptr[0 .. added];

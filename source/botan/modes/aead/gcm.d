@@ -164,7 +164,7 @@ public:
     override void finish(Secure_Vector!ubyte buffer, size_t offset = 0)
     {
         update(buffer, offset);
-        auto mac = m_ghash.flush();
+        auto mac = m_ghash.finished();
         buffer ~= Pair(mac.ptr, tag_size());
     }
 }
@@ -219,7 +219,7 @@ public:
             m_ctr.cipher(buf, buf, remaining);
         }
         
-        auto mac = m_ghash.flush();
+        auto mac = m_ghash.finished();
         
         const ubyte* included_tag = &buffer[remaining];
         
@@ -274,7 +274,7 @@ public:
         ghash_update(m_ghash, input, length);
     }
 
-    Secure_Vector!ubyte flush()
+    Secure_Vector!ubyte finished()
     {
         add_final_block(m_ghash, m_ad_len, m_text_len);
         
@@ -316,7 +316,7 @@ private:
         
         __gshared immutable ulong R = 0xE100000000000000;
 
-        ulong[2] H = [ load_be!ulong(m_H.ptr, 0), load_be!ulong(m_H.ptr, 1) ];
+        ulong[2] H = [ load_bigEndian!ulong(m_H.ptr, 0), load_bigEndian!ulong(m_H.ptr, 1) ];
         
         ulong[2] Z = [ 0, 0 ];
         
@@ -324,7 +324,7 @@ private:
         
         foreach (size_t i; 0 .. 2)
         {
-            const ulong X = load_be!ulong(x.ptr, i);
+            const ulong X = load_bigEndian!ulong(x.ptr, i);
             
             foreach (size_t j; 0 .. 64)
             {
@@ -341,7 +341,7 @@ private:
             }
         }
         
-        store_be!ulong(x.ptr, Z[0], Z[1]);
+        store_bigEndian!ulong(x.ptr, Z[0], Z[1]);
     }
 
     void ghash_update(Secure_Vector!ubyte ghash, in ubyte* input, size_t length)
@@ -369,7 +369,7 @@ private:
                          size_t ad_len, size_t text_len)
     {
         Secure_Vector!ubyte final_block = Secure_Vector!ubyte(16);
-        store_be!ulong(final_block.ptr, 8*ad_len, 8*text_len);
+        store_bigEndian!ulong(final_block.ptr, 8*ad_len, 8*text_len);
         ghash_update(hash, final_block.ptr, final_block.length);
     }
 

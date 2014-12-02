@@ -85,7 +85,7 @@ private:
             
             while (to_take && to_take % 8 == 0)
             {
-                m_S[m_S_pos / 8] ^= load_le!ulong(input, 0);
+                m_S[m_S_pos / 8] ^= load_littleEndian!ulong(input, 0);
                 m_S_pos += 8;
                 input += 8;
                 to_take -= 8;

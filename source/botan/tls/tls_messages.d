@@ -8,6 +8,7 @@ module botan.tls.tls_messages;
 
 import botan.constants;
 static if (BOTAN_HAS_TLS):
+package:
 
 import botan.tls.tls_handshake_state;
 import botan.tls.tls_session_key;
@@ -24,8 +25,8 @@ public import botan.tls.tls_handshake_io;
 public import botan.tls.tls_version;
 public import botan.tls.tls_handshake_hash;
 public import botan.tls.tls_magic;
-import botan.constructs.srp6;
 public import botan.credentials.credentials_manager;
+import botan.constructs.srp6;
 import botan.utils.loadstor;
 import botan.constructs.srp6;
 import botan.math.bigint.bigint;
@@ -77,7 +78,7 @@ public:
             negotiated (RFC 6347, section 4.2.1)
         */
             
-        Protocol_Version format_version(Protocol_Version.DTLS_V10);
+        TLS_Protocol_Version format_version(TLS_Protocol_Version.DTLS_V10);
         
         Vector!ubyte bits;
         bits.push_back(format_version.major_version());
@@ -96,10 +97,10 @@ public:
         if (buf.length < 3)
             throw new Decoding_Error("Hello verify request too small");
         
-        Protocol_Version version_ = Protocol_Version(buf[0], buf[1]);
+        TLS_Protocol_Version version_ = TLS_Protocol_Version(buf[0], buf[1]);
         
-        if (version_ != Protocol_Version.DTLS_V10 &&
-            version_ != Protocol_Version.DTLS_V12)
+        if (version_ != TLS_Protocol_Version.DTLS_V10 &&
+            version_ != TLS_Protocol_Version.DTLS_V12)
         {
             throw new Decoding_Error("Unknown version from server in hello verify request");
         }
@@ -115,26 +116,26 @@ public:
         Unique!MessageAuthenticationCode hmac = get_mac("HMAC(SHA-256)");
         hmac.set_key(secret_key);
         
-        hmac.update_be(client_hello_bits.length);
+        hmac.update_bigEndian(client_hello_bits.length);
         hmac.update(client_hello_bits);
-        hmac.update_be(client_identity.length);
+        hmac.update_bigEndian(client_identity.length);
         hmac.update(client_identity);
         
-        m_cookie = unlock(hmac.flush());
+        m_cookie = unlock(hmac.finished());
     }
 private:
     Vector!ubyte m_cookie;
 }
 
 /**
-* Client Hello Message
+* TLS_Client Hello Message
 */
 final class Client_Hello : Handshake_Message
 {
 public:
     override Handshake_Type type() const { return CLIENT_HELLO; }
 
-    Protocol_Version _version() const { return m_version; }
+    TLS_Protocol_Version _version() const { return m_version; }
 
     const Vector!ubyte random() const { return m_random; }
 
@@ -243,12 +244,12 @@ public:
     { return m_extensions.extension_types(); }
 
     /*
-    * Create a new Client Hello message
+    * Create a new TLS_Client Hello message
     */
     this(Handshake_IO io,
          Handshake_Hash hash,
-         Protocol_Version _version,
-         const Policy policy,
+         TLS_Protocol_Version _version,
+         const TLS_Policy policy,
          RandomNumberGenerator rng,
          in Vector!ubyte reneg_info,
          bool next_protocol,
@@ -280,14 +281,14 @@ public:
 
 
     /*
-    * Create a new Client Hello message (session resumption case)
+    * Create a new TLS_Client Hello message (session resumption case)
     */
     this(Handshake_IO io,
          Handshake_Hash hash,
-         const Policy policy,
+         const TLS_Policy policy,
          RandomNumberGenerator rng,
          in Vector!ubyte reneg_info,
-         const Session session,
+         const TLS_Session session,
          bool next_protocol = false)
     { 
         m_version = session._version();
@@ -336,7 +337,7 @@ public:
 
 private:
     /*
-    * Serialize a Client Hello message
+    * Serialize a TLS_Client Hello message
     */
     override Vector!ubyte serialize() const
     {
@@ -366,7 +367,7 @@ private:
     }
 
     /*
-    * Deserialize a Client Hello message
+    * Deserialize a TLS_Client Hello message
     */
     void deserialize(in Vector!ubyte buf)
     {
@@ -381,7 +382,7 @@ private:
         const ubyte major_version = reader.get_byte();
         const ubyte minor_version = reader.get_byte();
         
-        m_version = Protocol_Version(major_version, minor_version);
+        m_version = TLS_Protocol_Version(major_version, minor_version);
         
         m_random = reader.get_fixed!ubyte(32);
         
@@ -401,8 +402,8 @@ private:
             if (Renegotiation_Extension reneg = m_extensions.get!Renegotiation_Extension())
             {
                 if (!reneg.renegotiation_info().empty)
-                    throw new TLS_Exception(Alert.HANDSHAKE_FAILURE,
-                                            "Client send renegotiation SCSV and non-empty extension");
+                    throw new TLS_Exception(TLS_Alert.HANDSHAKE_FAILURE,
+                                            "TLS_Client send renegotiation SCSV and non-empty extension");
             }
             else
             {
@@ -432,7 +433,7 @@ private:
             throw new Decoding_Error("Client_Hello: SSLv2 hello corrupted");
         }
         
-        m_version = Protocol_Version(buf[1], buf[2]);
+        m_version = TLS_Protocol_Version(buf[1], buf[2]);
         
         for (size_t i = 9; i != 9 + cipher_spec_len; i += 3)
         {
@@ -449,25 +450,25 @@ private:
             m_extensions.add(new Renegotiation_Extension());
     }
 
-    Protocol_Version m_version;
+    TLS_Protocol_Version m_version;
     Vector!ubyte m_session_id;
     Vector!ubyte m_random;
     Vector!ushort m_suites;
     Vector!ubyte m_comp_methods;
     Vector!ubyte m_hello_cookie; // DTLS only
 
-    Extensions m_extensions;
+	TLS_Extensions m_extensions;
 }
 
 /**
-* Server Hello Message
+* TLS_Server Hello Message
 */
 final class Server_Hello : Handshake_Message
 {
 public:
     override Handshake_Type type() const { return SERVER_HELLO; }
 
-    Protocol_Version _version() const { return m_version; }
+    TLS_Protocol_Version _version() const { return m_version; }
 
     const Vector!ubyte random() const { return m_random; }
 
@@ -529,13 +530,13 @@ public:
     { return m_extensions.extension_types(); }
 
     /*
-    * Create a new Server Hello message
+    * Create a new TLS_Server Hello message
     */
     this(Handshake_IO io,
          Handshake_Hash hash,
-         const Policy policy,
+         const TLS_Policy policy,
          in Vector!ubyte session_id,
-         Protocol_Version ver,
+         TLS_Protocol_Version ver,
          ushort ciphersuite,
          ubyte compression,
          size_t max_fragment_size,
@@ -576,7 +577,7 @@ public:
     }
 
     /*
-    * Deserialize a Server Hello message
+    * Deserialize a TLS_Server Hello message
     */
     this(in Vector!ubyte buf)
     {
@@ -588,7 +589,7 @@ public:
         const ubyte major_version = reader.get_byte();
         const ubyte minor_version = reader.get_byte();
         
-        m_version = Protocol_Version(major_version, minor_version);
+        m_version = TLS_Protocol_Version(major_version, minor_version);
         
         m_random = reader.get_fixed!ubyte(32);
         
@@ -602,7 +603,7 @@ public:
     }
 private:
     /*
-    * Serialize a Server Hello message
+    * Serialize a TLS_Server Hello message
     */
     override Vector!ubyte serialize() const
     {
@@ -624,16 +625,16 @@ private:
         return buf;
     }
 
-    Protocol_Version m_version;
+    TLS_Protocol_Version m_version;
     Vector!ubyte m_session_id, m_random;
     ushort m_ciphersuite;
     ubyte m_comp_method;
 
-    Extensions m_extensions;
+	TLS_Extensions m_extensions;
 }
 
 /**
-* Client Key Exchange Message
+* TLS_Client Key Exchange Message
 */
 final class Client_Key_Exchange : Handshake_Message
 {
@@ -644,13 +645,13 @@ public:
     { return m_pre_master; }
 
     /*
-    * Read a Client Key Exchange message
+    * Read a TLS_Client Key Exchange message
     */
     this(in Vector!ubyte contents,
          const Handshake_State state,
          const Private_Key server_rsa_kex_key,
-         Credentials_Manager creds,
-         const Policy policy,
+         TLS_Credentials_Manager creds,
+         const TLS_Policy policy,
          RandomNumberGenerator rng)
     {
         const string kex_algo = state.ciphersuite().kex_algo();
@@ -668,7 +669,7 @@ public:
             
             auto decryptor = scoped!PK_Decryptor_EME(*server_rsa_kex_key, "PKCS1v15");
             
-            Protocol_Version client_version = state.client_hello()._version();
+            TLS_Protocol_Version client_version = state.client_hello()._version();
             
             /*
             * This is used as the pre-master if RSA decryption fails.
@@ -687,7 +688,7 @@ public:
             
             try
             {
-                if (state._version() == Protocol_Version.SSL_V3)
+                if (state._version() == TLS_Protocol_Version.SSL_V3)
                 {
                     m_pre_master = decryptor.decrypt(contents);
                 }
@@ -728,7 +729,7 @@ public:
                     if (policy.hide_unknown_users())
                         psk = SymmetricKey(rng, 16);
                     else
-                        throw new TLS_Exception(Alert.UNKNOWN_PSK_IDENTITY,
+                        throw new TLS_Exception(TLS_Alert.UNKNOWN_PSK_IDENTITY,
                                                 "No PSK for identifier " ~ psk_identity);
                 }
             }
@@ -797,12 +798,12 @@ public:
     }
 
     /*
-    * Create a new Client Key Exchange message
+    * Create a new TLS_Client Key Exchange message
     */
     this(Handshake_IO io,
          Handshake_State state,
-         const Policy policy,
-         Credentials_Manager creds,
+         const TLS_Policy policy,
+         TLS_Credentials_Manager creds,
          const Public_Key server_public_key,
          in string hostname,
          RandomNumberGenerator rng)
@@ -865,8 +866,8 @@ public:
                     throw new Decoding_Error("Bad params size for DH key exchange");
                 
                 if (p.bits() < policy.minimum_dh_group_size())
-                    throw new TLS_Exception(Alert.INSUFFICIENT_SECURITY,
-                                            "Server sent DH group of " ~
+                    throw new TLS_Exception(TLS_Alert.INSUFFICIENT_SECURITY,
+                                            "TLS_Server sent DH group of " ~
                                             to!string(p.bits()) ~
                                             " bits, policy requires at least " ~
                                             to!string(policy.minimum_dh_group_size()));
@@ -878,8 +879,8 @@ public:
                 * advantage to bogus keys anyway.
                 */
                 if (Y <= 1 || Y >= p - 1)
-                    throw new TLS_Exception(Alert.INSUFFICIENT_SECURITY,
-                                            "Server sent bad DH key for DHE exchange");
+                    throw new TLS_Exception(TLS_Alert.INSUFFICIENT_SECURITY,
+                                            "TLS_Server sent bad DH key for DHE exchange");
                 
                 DL_Group group = DL_Group(p, g);
                 
@@ -909,14 +910,14 @@ public:
                 const ubyte curve_type = reader.get_byte();
                 
                 if (curve_type != 3)
-                    throw new Decoding_Error("Server sent non-named ECC curve");
+                    throw new Decoding_Error("TLS_Server sent non-named ECC curve");
                 
                 const ushort curve_id = reader.get_ushort();
                 
                 const string name = Supported_Elliptic_Curves.curve_id_to_name(curve_id);
                 
                 if (name == "")
-                    throw new Decoding_Error("Server sent unknown named curve " ~ to!string(curve_id));
+                    throw new Decoding_Error("TLS_Server sent unknown named curve " ~ to!string(curve_id));
                 
                 EC_Group group = EC_Group(name);
                 
@@ -978,14 +979,14 @@ public:
             // No server key exchange msg better mean RSA kex + RSA key in cert
             
             if (kex_algo != "RSA")
-                throw new Unexpected_Message("No server kex but negotiated kex " ~ kex_algo);
+                throw new TLS_Unexpected_Message("No server kex but negotiated kex " ~ kex_algo);
             
             if (!server_public_key)
                 throw new Internal_Error("No server public key for RSA exchange");
             
             if (auto rsa_pub = cast(const RSA_PublicKey)(server_public_key))
             {
-                const Protocol_Version offered_version = state.client_hello()._version();
+                const TLS_Protocol_Version offered_version = state.client_hello()._version();
                 
                 m_pre_master = rng.random_vec(48);
                 m_pre_master[0] = offered_version.major_version();
@@ -995,13 +996,13 @@ public:
                 
                 Vector!ubyte encrypted_key = encryptor.encrypt(m_pre_master, rng);
                 
-                if (state._version() == Protocol_Version.SSL_V3)
+                if (state._version() == TLS_Protocol_Version.SSL_V3)
                     m_key_material = encrypted_key; // no length field
                 else
                     append_tls_length_value(m_key_material, encrypted_key, 2);
             }
             else
-                throw new TLS_Exception(Alert.HANDSHAKE_FAILURE,
+                throw new TLS_Exception(TLS_Alert.HANDSHAKE_FAILURE,
                                         "Expected a RSA key in server cert but got " ~
                                         server_public_key.algo_name);
         }
@@ -1123,9 +1124,9 @@ public:
     */
     this(Handshake_IO io,
          Handshake_Hash hash,
-         const Policy policy,
+         const TLS_Policy policy,
          in Vector!X509_DN ca_certs,
-         Protocol_Version _version) 
+         TLS_Protocol_Version _version) 
     {
         m_names = ca_certs;
         m_cert_key_types = [ "RSA", "DSA", "ECDSA" ];
@@ -1145,7 +1146,7 @@ public:
     /**
     * Deserialize a Certificate Request message
     */
-    this(in Vector!ubyte buf, Protocol_Version _version)
+    this(in Vector!ubyte buf, TLS_Protocol_Version _version)
     {
         if (buf.length < 4)
             throw new Decoding_Error("Certificate_Req: Bad certificate request");
@@ -1256,7 +1257,7 @@ public:
         Pair!(string, Signature_Format) format = state.understand_sig_format(*key, m_hash_algo, m_sig_algo, true);
         
         PK_Verifier verifier = PK_Verifier(*key, format.first, format.second);
-        if (state._version() == Protocol_Version.SSL_V3)
+        if (state._version() == TLS_Protocol_Version.SSL_V3)
         {
             Secure_Vector!ubyte md5_sha = state.hash().final_ssl3(state.session_keys().master_secret());
 
@@ -1272,7 +1273,7 @@ public:
     */
     this(Handshake_IO io,
          Handshake_State state,
-         const Policy policy,
+         const TLS_Policy policy,
          RandomNumberGenerator rng,
          const Private_Key priv_key)
     {
@@ -1282,7 +1283,7 @@ public:
         
         PK_Signer signer = PK_Signer(priv_key, format.first, format.second);
         
-        if (state._version() == Protocol_Version.SSL_V3)
+        if (state._version() == TLS_Protocol_Version.SSL_V3)
         {
             Secure_Vector!ubyte md5_sha = state.hash().final_ssl3(state.session_keys().master_secret());
             
@@ -1303,7 +1304,7 @@ public:
     * Deserialize a Certificate Verify message
     */
     this(in Vector!ubyte buf,
-         Protocol_Version _version)
+         TLS_Protocol_Version _version)
     {
         TLS_Data_Reader reader = TLS_Data_Reader("CertificateVerify", buf);
         
@@ -1427,7 +1428,7 @@ private:
 }
 
 /**
-* Server Key Exchange Message
+* TLS_Server Key Exchange Message
 */
 final class Server_Key_Exchange : Handshake_Message
 {
@@ -1437,7 +1438,7 @@ public:
     const Vector!ubyte params() const { return m_params; }
 
     /**
-    * Verify a Server Key Exchange message
+    * Verify a TLS_Server Key Exchange message
     */
     bool verify(in Public_Key server_key,
                 const Handshake_State state) const
@@ -1467,12 +1468,12 @@ public:
     }
 
     /**
-    * Deserialize a Server Key Exchange message
+    * Deserialize a TLS_Server Key Exchange message
     */
     this(in Vector!ubyte buf,
          in string kex_algo,
          in string sig_algo,
-         Protocol_Version _version) 
+         TLS_Protocol_Version _version) 
     {
         m_kex_key.clear();
         m_srp_params.clear();
@@ -1508,7 +1509,7 @@ public:
             const ubyte curve_type = reader.get_byte();
             
             if (curve_type != 3)
-                throw new Decoding_Error("Server_Key_Exchange: Server sent non-named ECC curve");
+                throw new Decoding_Error("Server_Key_Exchange: TLS_Server sent non-named ECC curve");
             
             const ushort curve_id = reader.get_ushort();
             
@@ -1517,7 +1518,7 @@ public:
             Vector!ubyte ecdh_key = reader.get_range!ubyte(1, 1, 255);
             
             if (name == "")
-                throw new Decoding_Error("Server_Key_Exchange: Server sent unknown named curve " ~
+                throw new Decoding_Error("Server_Key_Exchange: TLS_Server sent unknown named curve " ~
                                          to!string(curve_id));
             
             m_params.push_back(curve_type);
@@ -1557,12 +1558,12 @@ public:
     }
 
     /**
-    * Create a new Server Key Exchange message
+    * Create a new TLS_Server Key Exchange message
     */
     this(Handshake_IO io,
          Handshake_State state,
-         in Policy policy,
-         Credentials_Manager creds,
+         in TLS_Policy policy,
+         TLS_Credentials_Manager creds,
          RandomNumberGenerator rng,
          in Private_Key signing_key = null)
     {
@@ -1590,12 +1591,12 @@ public:
             const Vector!string curves = state.client_hello().supported_ecc_curves();
             
             if (curves.empty)
-                throw new Internal_Error("Client sent no ECC extension but we negotiated ECDH");
+                throw new Internal_Error("TLS_Client sent no ECC extension but we negotiated ECDH");
             
             const string curve_name = policy.choose_curve(curves);
             
             if (curve_name == "")
-                throw new TLS_Exception(Alert.HANDSHAKE_FAILURE, "Could not agree on an ECC curve with the client");
+                throw new TLS_Exception(TLS_Alert.HANDSHAKE_FAILURE, "Could not agree on an ECC curve with the client");
 
             EC_Group ec_group = EC_Group(curve_name);
             
@@ -1631,7 +1632,7 @@ public:
                                                   policy.hide_unknown_users());
             
             if (!found)
-                throw new TLS_Exception(Alert.UNKNOWN_PSK_IDENTITY, "Unknown SRP user " ~ srp_identifier);
+                throw new TLS_Exception(TLS_Alert.UNKNOWN_PSK_IDENTITY, "Unknown SRP user " ~ srp_identifier);
             
             m_srp_params = new SRP6_Server_Session;
             
@@ -1668,7 +1669,7 @@ public:
     ~this() {}
 private:
     /**
-    * Serialize a Server Key Exchange message
+    * Serialize a TLS_Server Key Exchange message
     */
     override Vector!ubyte serialize() const
     {
@@ -1700,7 +1701,7 @@ private:
 }
 
 /**
-* Server Hello Done Message
+* TLS_Server Hello Done Message
 */
 final class Server_Hello_Done : Handshake_Message
 {
@@ -1708,7 +1709,7 @@ public:
     override Handshake_Type type() const { return SERVER_HELLO_DONE; }
 
     /*
-    * Create a new Server Hello Done message
+    * Create a new TLS_Server Hello Done message
     */
     this(Handshake_IO io,
          Handshake_Hash hash)
@@ -1717,7 +1718,7 @@ public:
     }
 
     /*
-    * Deserialize a Server Hello Done message
+    * Deserialize a TLS_Server Hello Done message
     */
     this(in Vector!ubyte buf)
     {
@@ -1726,7 +1727,7 @@ public:
     }
 private:
     /*
-    * Serialize a Server Hello Done message
+    * Serialize a TLS_Server Hello Done message
     */
     override Vector!ubyte serialize() const
     {
@@ -1786,7 +1787,7 @@ private:
 }
 
 /**
-* New Session Ticket Message
+* New TLS_Session Ticket Message
 */
 final class New_Session_Ticket : Handshake_Message
 {
@@ -1809,7 +1810,7 @@ public:
     this(in Vector!ubyte buf)
     {
         if (buf.length < 6)
-            throw new Decoding_Error("Session ticket message too short to be valid");
+            throw new Decoding_Error("TLS_Session ticket message too short to be valid");
         
         TLS_Data_Reader reader = TLS_Data_Reader("SessionTicket", buf);
         
@@ -1826,7 +1827,7 @@ private:
     override Vector!ubyte serialize() const
     {
         Vector!ubyte buf = Vector!ubyte(4);
-        store_be(m_ticket_lifetime_hint.seconds, buf.ptr);
+        store_bigEndian(m_ticket_lifetime_hint.seconds, buf.ptr);
         append_tls_length_value(buf, m_ticket, 2);
         return buf;
     }
@@ -1900,7 +1901,7 @@ Secure_Vector!ubyte strip_leading_zeros(in Secure_Vector!ubyte input)
 Vector!ubyte finished_compute_verify(in Handshake_State state,
                                      Connection_Side side)
 {
-    if (state._version() == Protocol_Version.SSL_V3)
+    if (state._version() == TLS_Protocol_Version.SSL_V3)
     {
         __gshared immutable const(ubyte)[] SSL_CLIENT_LABEL = [ 0x43, 0x4C, 0x4E, 0x54 ];
         __gshared immutable const(ubyte)[] SSL_SERVER_LABEL = [ 0x53, 0x52, 0x56, 0x52 ];
@@ -1946,7 +1947,7 @@ Vector!ubyte make_hello_random(RandomNumberGenerator rng)
     
     const uint time32 = cast(uint)(Clock.currTime().toUnixTime);
     
-    store_be(time32, buf.ptr);
+    store_bigEndian(time32, buf.ptr);
     rng.randomize(&buf[4], buf.length - 4);
     return buf;
 }

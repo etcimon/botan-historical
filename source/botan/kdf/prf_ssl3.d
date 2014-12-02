@@ -72,11 +72,11 @@ OctetString next_hash(size_t where, size_t want,
         sha1.update(cast(ubyte)(ASCII_A_CHAR + where));
     sha1.update(secret, secret_len);
     sha1.update(seed, seed_len);
-    Secure_Vector!ubyte sha1_hash = sha1.flush();
+    Secure_Vector!ubyte sha1_hash = sha1.finished();
     
     md5.update(secret, secret_len);
     md5.update(sha1_hash);
-    Secure_Vector!ubyte md5_hash = md5.flush();
+    Secure_Vector!ubyte md5_hash = md5.finished();
     
     return OctetString(md5_hash.ptr, want);
 }

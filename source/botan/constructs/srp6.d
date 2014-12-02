@@ -190,7 +190,7 @@ BigInt hash_seq(in string hash_id,
     hash_fn.update(BigInt.encode_1363(in1, pad_to));
     hash_fn.update(BigInt.encode_1363(in2, pad_to));
     
-    return BigInt.decode(hash_fn.flush());
+    return BigInt.decode(hash_fn.finished());
 }
 
 BigInt compute_x(in string hash_id,
@@ -204,12 +204,12 @@ BigInt compute_x(in string hash_id,
     hash_fn.update(":");
     hash_fn.update(password);
     
-    Secure_Vector!ubyte inner_h = hash_fn.flush();
+    Secure_Vector!ubyte inner_h = hash_fn.finished();
     
     hash_fn.update(salt);
     hash_fn.update(inner_h);
     
-    Secure_Vector!ubyte outer_h = hash_fn.flush();
+    Secure_Vector!ubyte outer_h = hash_fn.finished();
     
     return BigInt.decode(outer_h);
 }

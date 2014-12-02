@@ -96,8 +96,8 @@ public:
     {
         foreach (size_t i; 0 .. blocks)
         {
-            uint N1 = load_le!uint(input, 0);
-            uint N2 = load_le!uint(input, 1);
+            uint N1 = load_littleEndian!uint(input, 0);
+            uint N2 = load_littleEndian!uint(input, 1);
             
             foreach (size_t j; 0 .. 3)
             {
@@ -112,7 +112,7 @@ public:
             mixin(GOST_2ROUND!(N1, N2, 3, 2)());
             mixin(GOST_2ROUND!(N1, N2, 1, 0)());
             
-            store_le(output, N2, N1);
+            store_littleEndian(output, N2, N1);
             
             input += BLOCK_SIZE;
             output += BLOCK_SIZE;
@@ -126,8 +126,8 @@ public:
     {
         foreach (size_t i; 0 .. blocks)
         {
-            uint N1 = load_le!uint(input, 0);
-            uint N2 = load_le!uint(input, 1);
+            uint N1 = load_littleEndian!uint(input, 0);
+            uint N2 = load_littleEndian!uint(input, 1);
             
             mixin(GOST_2ROUND!(N1, N2, 0, 1)());
             mixin(GOST_2ROUND!(N1, N2, 2, 3)());
@@ -142,7 +142,7 @@ public:
                 mixin(GOST_2ROUND!(N1, N2, 1, 0)());
             }
             
-            store_le(output, N2, N1);
+            store_littleEndian(output, N2, N1);
             input += BLOCK_SIZE;
             output += BLOCK_SIZE;
         }
@@ -202,7 +202,7 @@ private:
     {
         m_EK.resize(8);
         foreach (size_t i; 0 .. 8)
-            m_EK[i] = load_le!uint(key, i);
+            m_EK[i] = load_littleEndian!uint(key, i);
     }
 
     /*

@@ -70,7 +70,7 @@ public:
     /*
     * Flush the Bzip Compressor
     */
-    void flush()
+    void finished()
     {
         m_bz.m_stream.next_in = 0;
         m_bz.m_stream.avail_in = 0;

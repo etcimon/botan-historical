@@ -27,10 +27,10 @@ public:
     {
         foreach (size_t i; 0 .. blocks)
         {
-            uint A = load_le!uint(input, 0);
-            uint B = load_le!uint(input, 1);
-            uint C = load_le!uint(input, 2);
-            uint D = load_le!uint(input, 3);
+            uint A = load_littleEndian!uint(input, 0);
+            uint B = load_littleEndian!uint(input, 1);
+            uint C = load_littleEndian!uint(input, 2);
+            uint D = load_littleEndian!uint(input, 3);
             
             B += m_S[0]; D += m_S[1];
             
@@ -61,7 +61,7 @@ public:
             
             A += m_S[42]; C += m_S[43];
             
-            store_le(output, A, B, C, D);
+            store_littleEndian(output, A, B, C, D);
             
             input += BLOCK_SIZE;
             output += BLOCK_SIZE;
@@ -74,10 +74,10 @@ public:
     {
         foreach (size_t i; 0 .. blocks)
         {
-            uint A = load_le!uint(input, 0);
-            uint B = load_le!uint(input, 1);
-            uint C = load_le!uint(input, 2);
-            uint D = load_le!uint(input, 3);
+            uint A = load_littleEndian!uint(input, 0);
+            uint B = load_littleEndian!uint(input, 1);
+            uint C = load_littleEndian!uint(input, 2);
+            uint D = load_littleEndian!uint(input, 3);
             
             C -= m_S[43]; A -= m_S[42];
             
@@ -108,7 +108,7 @@ public:
             
             D -= m_S[1]; B -= m_S[0];
             
-            store_le(output, A, B, C, D);
+            store_littleEndian(output, A, B, C, D);
             
             input += BLOCK_SIZE;
             output += BLOCK_SIZE;

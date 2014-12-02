@@ -227,7 +227,7 @@ private:
     final void init(DataSource input, in string labels)
     {
         m_PEM_labels_allowed = splitter(labels, '/').array!(string[]);
-        if (PEM_labels_allowed.length < 1)
+        if (m_PEM_labels_allowed.length < 1)
             throw new Invalid_Argument("Bad labels argument to X509_Object");
         
         m_PEM_label_pref = m_PEM_labels_allowed;

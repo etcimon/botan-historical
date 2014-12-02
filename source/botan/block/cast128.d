@@ -28,8 +28,8 @@ public:
     {
         foreach (size_t i; 0 .. blocks)
         {
-            uint L = load_be!uint(input, 0);
-            uint R = load_be!uint(input, 1);
+            uint L = load_bigEndian!uint(input, 0);
+            uint R = load_bigEndian!uint(input, 1);
             
             R1(L, R, m_MK[ 0], m_RK[ 0]);
             R2(R, L, m_MK[ 1], m_RK[ 1]);
@@ -48,7 +48,7 @@ public:
             R3(L, R, m_MK[14], m_RK[14]);
             R1(R, L, m_MK[15], m_RK[15]);
             
-            store_be(output, R, L);
+            store_bigEndian(output, R, L);
             
             input += BLOCK_SIZE;
             output += BLOCK_SIZE;
@@ -62,8 +62,8 @@ public:
     {
         foreach (size_t i; 0 .. blocks)
         {
-            uint L = load_be!uint(input, 0);
-            uint R = load_be!uint(input, 1);
+            uint L = load_bigEndian!uint(input, 0);
+            uint R = load_bigEndian!uint(input, 1);
             
             R1(L, R, m_MK[15], m_RK[15]);
             R3(R, L, m_MK[14], m_RK[14]);
@@ -82,7 +82,7 @@ public:
             R2(L, R, m_MK[ 1], m_RK[ 1]);
             R1(R, L, m_MK[ 0], m_RK[ 0]);
             
-            store_be(output, R, L);
+            store_bigEndian(output, R, L);
             
             input += BLOCK_SIZE;
             output += BLOCK_SIZE;

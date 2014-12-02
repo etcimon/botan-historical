@@ -21,37 +21,37 @@ import std.conv : to;
 */
 enum ASN1_Tag {
     UNIVERSAL            = 0x00,
-    APPLICATION            = 0x40,
-    CONTEXT_SPECIFIC    = 0x80,
+    APPLICATION          = 0x40,
+    CONTEXT_SPECIFIC     = 0x80,
     
-    CONSTRUCTED            = 0x20,
+    CONSTRUCTED          = 0x20,
 
-    PRIVATE                = ASN1_Tag.CONSTRUCTED | ASN1_Tag.CONTEXT_SPECIFIC,
+    PRIVATE              = ASN1_Tag.CONSTRUCTED | ASN1_Tag.CONTEXT_SPECIFIC,
 
-    EOC                    = 0x00,
-    BOOLEAN                = 0x01,
-    INTEGER                = 0x02,
-    BIT_STRING            = 0x03,
-    OCTET_STRING        = 0x04,
-    NULL_TAG            = 0x05,
+    EOC                  = 0x00,
+    BOOLEAN              = 0x01,
+    INTEGER              = 0x02,
+    BIT_STRING           = 0x03,
+    OCTET_STRING         = 0x04,
+    NULL_TAG             = 0x05,
     OBJECT_ID            = 0x06,
-    ENUMERATED            = 0x0A,
-    SEQUENCE            = 0x10,
-    SET                    = 0x11,
+    ENUMERATED           = 0x0A,
+    SEQUENCE             = 0x10,
+    SET                  = 0x11,
 
-    UTF8_STRING            = 0x0C,
-    NUMERIC_STRING        = 0x12,
-    PRINTABLE_STRING    = 0x13,
-    T61_STRING            = 0x14,
-    IA5_STRING            = 0x16,
-    VISIBLE_STRING        = 0x1A,
-    BMP_STRING            = 0x1E,
+    UTF8_STRING          = 0x0C,
+    NUMERIC_STRING       = 0x12,
+    PRINTABLE_STRING     = 0x13,
+    T61_STRING           = 0x14,
+    IA5_STRING           = 0x16,
+    VISIBLE_STRING       = 0x1A,
+    BMP_STRING           = 0x1E,
 
-    UTC_TIME            = 0x17,
-    GENERALIZED_TIME    = 0x18,
+    UTC_TIME             = 0x17,
+    GENERALIZED_TIME     = 0x18,
 
     NO_OBJECT            = 0xFF00,
-    DIRECTORY_STRING    = 0xFF01
+    DIRECTORY_STRING     = 0xFF01
 }
 
 /**
@@ -144,7 +144,7 @@ class BER_Bad_Tag : BER_Decoding_Error
 Vector!ubyte put_in_sequence(in Vector!ubyte contents)
 {
     return DER_Encoder()
-        .start_cons(ASN1_Tag.SEQUENCE)
+        	.start_cons(ASN1_Tag.SEQUENCE)
             .raw_bytes(contents)
             .end_cons()
             .get_contents_unlocked();
@@ -158,7 +158,7 @@ bool maybe_BER(DataSource source)
 {
     ubyte first_byte;
     if (!source.peek_byte(first_byte))
-        throw new Stream_IO_Error("asn1_obj.maybe_BER: Source was empty");
+        throw new Stream_IO_Error("maybe_BER: Source was empty");
     
     if (first_byte == (ASN1_Tag.SEQUENCE | ASN1_Tag.CONSTRUCTED))
         return true;

@@ -35,38 +35,38 @@ public:
             m_v[i] = B;
     }
 
-    static SIMD_Scalar!(T, N) load_le(in void* input)
+    static SIMD_Scalar!(T, N) load_littleEndian(in void* input)
     {
         SIMD_Scalar!(T, N) output;
         const ubyte* in_b = cast(const ubyte*)(input);
 
         for (size_t i = 0; i != size(); ++i)
-            output.m_v[i] = load_le!T(in_b, i);
+            output.m_v[i] = load_littleEndian!T(in_b, i);
 
         return output;
     }
 
-    static SIMD_Scalar!(T, N) load_be(in void* input)
+    static SIMD_Scalar!(T, N) load_bigEndian(in void* input)
     {
         SIMD_Scalar!(T, N) output;
         const ubyte* in_b = cast(const ubyte*)(input);
 
         for (size_t i = 0; i != size(); ++i)
-            output.m_v[i] = load_be!T(in_b, i);
+            output.m_v[i] = load_bigEndian!T(in_b, i);
 
         return output;
     }
 
-    void store_le(ubyte* output) const
+    void store_littleEndian(ubyte* output) const
     {
         for (size_t i = 0; i != size(); ++i)
-            store_le(m_v[i], output + i*T.sizeof);
+            store_littleEndian(m_v[i], output + i*T.sizeof);
     }
 
-    void store_be(ubyte* output) const
+    void store_bigEndian(ubyte* output) const
     {
         for (size_t i = 0; i != size(); ++i)
-            store_be(m_v[i], output + i*T.sizeof);
+            store_bigEndian(m_v[i], output + i*T.sizeof);
     }
 
     void rotate_left(size_t rot)

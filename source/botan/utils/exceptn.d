@@ -99,7 +99,7 @@ final class PRNG_Unseeded : Invalid_State
 final class Policy_Violation : Invalid_State
 {
     this(in string err) {
-        super("Policy violation: " ~ err);
+        super("TLS_Policy violation: " ~ err);
     }
 }
 

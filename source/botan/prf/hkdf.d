@@ -44,7 +44,7 @@ public:
 
     void finish_extract()
     {
-        m_prf.set_key(m_extractor.flush());
+        m_prf.set_key(m_extractor.finished());
     }
 
 
@@ -67,7 +67,7 @@ public:
             m_prf.update(T);
             m_prf.update(info, info_len);
             m_prf.update(counter++);
-            T = m_prf.flush();
+            T = m_prf.finished();
             
             const size_t to_write = std.algorithm.min(T.length, output_len);
             copy_mem(output.ptr, T.ptr, to_write);

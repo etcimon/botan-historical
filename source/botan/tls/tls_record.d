@@ -40,10 +40,10 @@ public:
     /**
     * Initialize a new cipher state
     */
-    this(Protocol_Version _version, Connection_Side side, bool our_side, in Ciphersuite suite, in Session_Keys keys) 
+    this(TLS_Protocol_Version _version, Connection_Side side, bool our_side, in Ciphersuite suite, in TLS_Session_Keys keys) 
     {
         m_start_time = Clock.currTime();
-        m_is_ssl3 = _version == Protocol_Version.SSL_V3;
+        m_is_ssl3 = _version == TLS_Protocol_Version.SSL_V3;
         SymmetricKey mac_key, cipher_key;
         InitializationVector iv;
         
@@ -94,7 +94,7 @@ public:
         else
             throw new Invalid_Argument("Unknown TLS cipher " ~ cipher_algo);
         
-        if (_version == Protocol_Version.SSL_V3)
+        if (_version == TLS_Protocol_Version.SSL_V3)
             m_mac = af.make_mac("SSL3-MAC(" ~ mac_algo ~ ")");
         else
             m_mac = af.make_mac("HMAC(" ~ mac_algo ~ ")");
@@ -108,7 +108,7 @@ public:
     {
         assert(m_aead, "Using AEAD mode");
         assert(m_nonce.length == 12, "Expected nonce size");
-        store_be(seq, &m_nonce[4]);
+        store_bigEndian(seq, &m_nonce[4]);
         return m_nonce;
     }
 
@@ -122,14 +122,14 @@ public:
     }
 
 
-    const Secure_Vector!ubyte format_ad(ulong msg_sequence, ubyte msg_type, Protocol_Version _version, ushort msg_length)
+    const Secure_Vector!ubyte format_ad(ulong msg_sequence, ubyte msg_type, TLS_Protocol_Version _version, ushort msg_length)
     {
         m_ad.clear();
         foreach (size_t i; 0 .. 8)
             m_ad.push_back(get_byte(i, msg_sequence));
         m_ad.push_back(msg_type);
         
-        if (_version != Protocol_Version.SSL_V3)
+        if (_version != TLS_Protocol_Version.SSL_V3)
         {
             m_ad.push_back(_version.major_version());
             m_ad.push_back(_version.minor_version());
@@ -196,7 +196,7 @@ private:
 */
 void write_record(ref Secure_Vector!ubyte output,
                   ubyte msg_type, in ubyte* msg, size_t msg_length,
-                  Protocol_Version _version,
+                  TLS_Protocol_Version _version,
                   ulong msg_sequence,
                   Connection_Cipher_State cipherstate,
                   RandomNumberGenerator rng)
@@ -339,7 +339,7 @@ size_t read_record(Secure_Vector!ubyte readbuf,
                    ref size_t consumed,
                    Secure_Vector!ubyte record,
                    ref ulong record_sequence,
-                   Protocol_Version record_version,
+                   TLS_Protocol_Version record_version,
                    Record_Type record_type,
                    Connection_Sequence_Numbers sequence_numbers,
                    Connection_Cipher_State delegate(ushort) get_cipherstate)
@@ -358,7 +358,7 @@ size_t read_record(Secure_Vector!ubyte readbuf,
     if (!sequence_numbers && (readbuf[0] & 0x80) && (readbuf[2] == 1))
     {
         if (readbuf[3] == 0 && readbuf[4] == 2)
-            throw new TLS_Exception(Alert.PROTOCOL_VERSION, "Client claims to only support SSLv2, rejecting");
+            throw new TLS_Exception(TLS_Alert.PROTOCOL_VERSION, "TLS_Client claims to only support SSLv2, rejecting");
         
         if (readbuf[3] >= 3) // SSLv2 mapped TLS hello, then?
         {
@@ -372,7 +372,7 @@ size_t read_record(Secure_Vector!ubyte readbuf,
             assert(readbuf.length == (record_len + 2), "Have the entire SSLv2 hello");
             
             // Fake v3-style handshake message wrapper
-            record_version = Protocol_Version.TLS_V10;
+            record_version = TLS_Protocol_Version.TLS_V10;
             record_sequence = 0;
             record_type = HANDSHAKE;
             
@@ -389,7 +389,7 @@ size_t read_record(Secure_Vector!ubyte readbuf,
         }
     }
 
-    record_version = Protocol_Version(readbuf[1], readbuf[2]);
+    record_version = TLS_Protocol_Version(readbuf[1], readbuf[2]);
     
     const bool is_dtls = record_version.is_datagram_protocol();
     
@@ -408,7 +408,7 @@ size_t read_record(Secure_Vector!ubyte readbuf,
     readbuf[header_size-1]);
     
     if (record_len > MAX_CIPHERTEXT_SIZE)
-        throw new TLS_Exception(Alert.RECORD_OVERFLOW, "Got message that exceeds maximum size");
+        throw new TLS_Exception(TLS_Alert.RECORD_OVERFLOW, "Got message that exceeds maximum size");
     
     if (size_t needed = fill_buffer_to(readbuf, input, input_sz, consumed, header_size + record_len))
         return needed; // wrong for DTLS?
@@ -421,7 +421,7 @@ size_t read_record(Secure_Vector!ubyte readbuf,
     
     if (is_dtls)
     {
-        record_sequence = load_be!ulong(&readbuf[3], 0);
+        record_sequence = load_bigEndian!ulong(&readbuf[3], 0);
         epoch = (record_sequence >> 48);
     }
     else if (sequence_numbers)
@@ -574,7 +574,7 @@ void cbc_decrypt_record(ubyte[] record_contents, Connection_Cipher_State ciphers
 void decrypt_record(Secure_Vector!ubyte output,
                     in ubyte* record_contents, in size_t record_len,
                     ulong record_sequence,
-                    Protocol_Version record_version,
+                    TLS_Protocol_Version record_version,
                     Record_Type record_type,
                     Connection_Cipher_State cipherstate)
 {
@@ -649,7 +649,7 @@ void decrypt_record(Secure_Vector!ubyte output,
         const bool mac_bad = !same_mem(&record_contents[mac_offset], mac_buf.ptr, mac_size);
         
         if (mac_bad || padding_bad)
-            throw new TLS_Exception(Alert.BAD_RECORD_MAC, "Message authentication failure");
+            throw new TLS_Exception(TLS_Alert.BAD_RECORD_MAC, "Message authentication failure");
         
         output.replace(plaintext_block[0 .. plaintext_block + plaintext_length]);
     }

@@ -140,7 +140,7 @@ public:
     */
     void end_msg()
     {
-        Secure_Vector!ubyte output = m_hash.flush();
+        Secure_Vector!ubyte output = m_hash.finished();
         if (m_OUTPUT_LENGTH)
             send(output, std.algorithm.min(m_OUTPUT_LENGTH, output.length));
         else
@@ -197,7 +197,7 @@ public:
     */
     void end_msg()
     {
-        Secure_Vector!ubyte output = m_mac.flush();
+        Secure_Vector!ubyte output = m_mac.finished();
         if (m_OUTPUT_LENGTH)
             send(output, std.algorithm.min(m_OUTPUT_LENGTH, output.length));
         else

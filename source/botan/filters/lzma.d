@@ -87,7 +87,7 @@ public:
     /**
     * Flush the compressor
     */
-    void flush()
+    void finished()
     {
         m_lzma.m_stream.next_in = 0;
         m_lzma.m_stream.avail_in = 0;

@@ -186,7 +186,7 @@ private:
         BER_Object attr_bits = cert_req_info.get_next_object();
         
         if (attr_bits.type_tag == 0 &&
-            attr_bits.class_tag == ASN1_Tag(CONSTRUCTED | ASN1_Tag.CONTEXT_SPECIFIC))
+		    attr_bits.class_tag == ASN1_Tag(ASN1_Tag.CONSTRUCTED | ASN1_Tag.CONTEXT_SPECIFIC))
         {
             auto attributes = BER_Decoder(attr_bits.value);
             while (attributes.more_items())
@@ -228,7 +228,7 @@ private:
         }
         else if (attr.oid == OIDS.lookup("PKCS9.ExtensionRequest"))
         {
-            auto extensions = scoped!Extensions;
+			auto extensions = scoped!X509_Extensions;
             value.decode(extensions).verify_end();
             
             Data_Store issuer_info;

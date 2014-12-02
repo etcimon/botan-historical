@@ -64,8 +64,8 @@ private:
             ubyte[32] S;
             
             ulong[4] U, V;
-            load_be(U, m_hash.ptr, 4);
-            load_be(V, input + 32*i, 4);
+            load_bigEndian(U, m_hash.ptr, 4);
+            load_bigEndian(V, input + 32*i, 4);
             
             foreach (size_t j; 0 .. 4)
             {
@@ -240,7 +240,7 @@ private:
         
         Secure_Vector!ubyte length_buf = Secure_Vector!ubyte(32);
         const ulong bit_count = m_count * 8;
-        store_le(bit_count, length_buf.ptr);
+        store_littleEndian(bit_count, length_buf.ptr);
         
         Secure_Vector!ubyte sum_buf = m_sum;
         

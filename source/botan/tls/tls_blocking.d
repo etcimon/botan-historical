@@ -17,21 +17,21 @@ alias Secure_Deque(T) = Vector!( T, Secure_Allocator);
 /**
 * Blocking TLS Client
 */
-class Blocking_Client
+class TLS_Blocking_Client
 {
 public:
     this(size_t delegate(ref ubyte[]) read_fn,
          void delegate(in ubyte[]) write_fn,
-         Session_Manager session_manager,
-         Credentials_Manager creds,
-         in Policy policy,
+         TLS_Session_Manager session_manager,
+         TLS_Credentials_Manager creds,
+         in TLS_Policy policy,
          RandomNumberGenerator rng,
-         in Server_Information server_info = Server_Information(),
-         in Protocol_Version offer_version = Protocol_Version.latest_tls_version(),
+         in TLS_Server_Information server_info = TLS_Server_Information(),
+         in TLS_Protocol_Version offer_version = TLS_Protocol_Version.latest_tls_version(),
          string delegate(string[]) next_protocol = null)
     {
         m_read_fn = read_fn;
-        m_channel = new Channel(write_fn, &data_cb, &alert_cb, &handshake_cb, session_manager, creds,
+        m_channel = new TLS_Channel(write_fn, &data_cb, &alert_cb, &handshake_cb, session_manager, creds,
                                 policy, rng, server_info, offer_version, next_protocol);
     }
 
@@ -82,8 +82,8 @@ public:
 
     final void write(in ubyte* buf, size_t len) { m_channel.send(buf, len); }
 
-    final Channel underlying_channel() const { return m_channel; }
-    final Channel underlying_channel() { return m_channel; }
+    final TLS_Channel underlying_channel() const { return m_channel; }
+    final TLS_Channel underlying_channel() { return m_channel; }
 
     final void close() { m_channel.close(); }
 
@@ -98,16 +98,16 @@ protected:
     /**
      * Can to get the handshake complete notification override
     */
-    abstract bool handshake_complete(in Session) { return true; }
+    abstract bool handshake_complete(in TLS_Session) { return true; }
 
     /**
     * Can to get notification of alerts override
     */
-    abstract void alert_notification(in Alert) {}
+    abstract void alert_notification(in TLS_Alert) {}
 
 private:
 
-    final bool handshake_cb(in Session session)
+    final bool handshake_cb(in TLS_Session session)
     {
         return this.handshake_complete(session);
     }
@@ -117,12 +117,12 @@ private:
         m_plaintext.insert(m_plaintext.end(), data.ptr, data.length);
     }
 
-    final void alert_cb(in Alert alert, in ubyte[])
+    final void alert_cb(in TLS_Alert alert, in ubyte[])
     {
         this.alert_notification(alert);
     }
 
     size_t delegate(ref ubyte[]) m_read_fn;
-    Client m_channel;
+    TLS_Client m_channel;
     Secure_Deque!ubyte m_plaintext;
 }

@@ -26,10 +26,10 @@ public:
     {
         foreach (size_t i; 0 .. blocks)
         {
-            uint A0 = load_be!uint(input, 0);
-            uint A1 = load_be!uint(input, 1);
-            uint A2 = load_be!uint(input, 2);
-            uint A3 = load_be!uint(input, 3);
+            uint A0 = load_bigEndian!uint(input, 0);
+            uint A1 = load_bigEndian!uint(input, 1);
+            uint A2 = load_bigEndian!uint(input, 2);
+            uint A3 = load_bigEndian!uint(input, 3);
             
             foreach (size_t j; 0 .. 16)
             {
@@ -50,7 +50,7 @@ public:
             A0 ^= m_RC[16];
             theta(A0, A1, A2, A3, m_EK.ptr);
             
-            store_be(output, A0, A1, A2, A3);
+            store_bigEndian(output, A0, A1, A2, A3);
             
             input += BLOCK_SIZE;
             output += BLOCK_SIZE;
@@ -64,10 +64,10 @@ public:
     {
         foreach (size_t i; 0 .. blocks)
         {
-            uint A0 = load_be!uint(input, 0);
-            uint A1 = load_be!uint(input, 1);
-            uint A2 = load_be!uint(input, 2);
-            uint A3 = load_be!uint(input, 3);
+            uint A0 = load_bigEndian!uint(input, 0);
+            uint A1 = load_bigEndian!uint(input, 1);
+            uint A2 = load_bigEndian!uint(input, 2);
+            uint A3 = load_bigEndian!uint(input, 3);
             
             for (size_t j = 16; j != 0; --j)
             {
@@ -88,7 +88,7 @@ public:
             theta(A0, A1, A2, A3, m_DK.ptr);
             A0 ^= m_RC[0];
             
-            store_be(output, A0, A1, A2, A3);
+            store_bigEndian(output, A0, A1, A2, A3);
             
             input += BLOCK_SIZE;
             output += BLOCK_SIZE;
@@ -134,10 +134,10 @@ private:
     */
     void key_schedule(in ubyte* key, size_t)
     {
-        uint A0 = load_be!uint(key, 0);
-        uint A1 = load_be!uint(key, 1);
-        uint A2 = load_be!uint(key, 2);
-        uint A3 = load_be!uint(key, 3);
+        uint A0 = load_bigEndian!uint(key, 0);
+        uint A1 = load_bigEndian!uint(key, 1);
+        uint A2 = load_bigEndian!uint(key, 2);
+        uint A3 = load_bigEndian!uint(key, 3);
         
         foreach (size_t i; 0 .. 16)
         {

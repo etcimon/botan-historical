@@ -27,14 +27,14 @@ public:
         
         foreach (size_t i; 0 .. blocks)
         {
-            ulong X0 = load_le!ulong(input, 0);
-            ulong X1 = load_le!ulong(input, 1);
-            ulong X2 = load_le!ulong(input, 2);
-            ulong X3 = load_le!ulong(input, 3);
-            ulong X4 = load_le!ulong(input, 4);
-            ulong X5 = load_le!ulong(input, 5);
-            ulong X6 = load_le!ulong(input, 6);
-            ulong X7 = load_le!ulong(input, 7);
+            ulong X0 = load_littleEndian!ulong(input, 0);
+            ulong X1 = load_littleEndian!ulong(input, 1);
+            ulong X2 = load_littleEndian!ulong(input, 2);
+            ulong X3 = load_littleEndian!ulong(input, 3);
+            ulong X4 = load_littleEndian!ulong(input, 4);
+            ulong X5 = load_littleEndian!ulong(input, 5);
+            ulong X6 = load_littleEndian!ulong(input, 6);
+            ulong X7 = load_littleEndian!ulong(input, 7);
             
             mixin(THREEFISH_ENC_INJECT_KEY!(0)());
 
@@ -48,7 +48,7 @@ public:
             mixin(THREEFISH_ENC_8_ROUNDS!(15,16)());
             mixin(THREEFISH_ENC_8_ROUNDS!(17,18)());
             
-            store_le(output, X0, X1, X2, X3, X4, X5, X6, X7);
+            store_littleEndian(output, X0, X1, X2, X3, X4, X5, X6, X7);
             
             input += 64;
             output += 64;
@@ -62,14 +62,14 @@ public:
         
         foreach (size_t i; 0 .. blocks)
         {
-            ulong X0 = load_le!ulong(input, 0);
-            ulong X1 = load_le!ulong(input, 1);
-            ulong X2 = load_le!ulong(input, 2);
-            ulong X3 = load_le!ulong(input, 3);
-            ulong X4 = load_le!ulong(input, 4);
-            ulong X5 = load_le!ulong(input, 5);
-            ulong X6 = load_le!ulong(input, 6);
-            ulong X7 = load_le!ulong(input, 7);
+            ulong X0 = load_littleEndian!ulong(input, 0);
+            ulong X1 = load_littleEndian!ulong(input, 1);
+            ulong X2 = load_littleEndian!ulong(input, 2);
+            ulong X3 = load_littleEndian!ulong(input, 3);
+            ulong X4 = load_littleEndian!ulong(input, 4);
+            ulong X5 = load_littleEndian!ulong(input, 5);
+            ulong X6 = load_littleEndian!ulong(input, 6);
+            ulong X7 = load_littleEndian!ulong(input, 7);
             
             mixin(THREEFISH_DEC_INJECT_KEY!(18)());
 
@@ -83,7 +83,7 @@ public:
             mixin(THREEFISH_DEC_8_ROUNDS!(3,2)());
             mixin(THREEFISH_DEC_8_ROUNDS!(1,0)());
             
-            store_le(output, X0, X1, X2, X3, X4, X5, X6, X7);
+            store_littleEndian(output, X0, X1, X2, X3, X4, X5, X6, X7);
             
             input += 64;
             output += 64;
@@ -94,8 +94,8 @@ public:
     {
         if (len != 16)
             throw new Exception("Unsupported twofish tweak length");
-        m_T[0] = load_le!ulong(tweak, 0);
-        m_T[1] = load_le!ulong(tweak, 1);
+        m_T[0] = load_littleEndian!ulong(tweak, 0);
+        m_T[1] = load_littleEndian!ulong(tweak, 1);
         m_T[2] = m_T[0] ^ m_T[1];
     }
 
@@ -122,7 +122,7 @@ private:
         m_K.resize(9);
         
         foreach (size_t i; 0 .. 8)
-            m_K[i] = load_le!ulong(key, i);
+            m_K[i] = load_littleEndian!ulong(key, i);
         
         m_K[8] = m_K[0] ^ m_K[1] ^ m_K[2] ^ m_K[3] ^
                  m_K[4] ^ m_K[5] ^ m_K[6] ^ m_K[7] ^ 0x1BD11BDAA9FC1A22;

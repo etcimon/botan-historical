@@ -123,9 +123,9 @@ protected:
         const ulong bit_count = m_count * 8;
         
         if (m_BIG_BYTE_ENDIAN)
-            store_be(bit_count, output + m_COUNT_SIZE - 8);
+            store_bigEndian(bit_count, output + m_COUNT_SIZE - 8);
         else
-            store_le(bit_count, output + m_COUNT_SIZE - 8);
+            store_littleEndian(bit_count, output + m_COUNT_SIZE - 8);
     }
 private:
     Secure_Vector!ubyte m_buffer;

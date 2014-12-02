@@ -50,7 +50,7 @@ struct CryptoBox {
         Secure_Vector!ubyte ctext = pipe.read_all(0);
         
         Secure_Vector!ubyte output = Secure_Vector!ubyte(MAGIC_LENGTH);
-        store_be(CRYPTOBOX_MAGIC, output.ptr);
+        store_bigEndian(CRYPTOBOX_MAGIC, output.ptr);
         output ~= cipher_key_salt;
         output ~= mac_key_salt;
         output ~= cipher_iv.bits_of();
@@ -58,7 +58,7 @@ struct CryptoBox {
 
         mac.update(output);
         
-        output ~= mac.flush();
+        output ~= mac.finished();
         return output.unlock();
     }
 
@@ -79,7 +79,7 @@ struct CryptoBox {
         if (input_len < MIN_POSSIBLE_LENGTH)
             throw new Decoding_Error("Encrypted input too short to be valid");
         
-        if (load_be!uint(input, 0) != CRYPTOBOX_MAGIC)
+        if (load_bigEndian!uint(input, 0) != CRYPTOBOX_MAGIC)
             throw new Decoding_Error("Unknown header value in cryptobox");
         
         Unique!KDF kdf = get_kdf(CRYPTOBOX_KDF);
@@ -97,7 +97,7 @@ struct CryptoBox {
         mac.set_key(mac_key);
         
         mac.update(input.ptr, input_len - MAC_OUTPUT_LENGTH);
-        Secure_Vector!ubyte computed_mac = mac.flush();
+        Secure_Vector!ubyte computed_mac = mac.finished();
         
         if (!same_mem(&input[input_len - MAC_OUTPUT_LENGTH], computed_mac.ptr, computed_mac.length))
             throw new Decoding_Error("MAC verification failed");

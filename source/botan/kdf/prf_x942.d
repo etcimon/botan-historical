@@ -58,7 +58,7 @@ public:
                 .end_cons().get_contents()
                 );
             
-            Secure_Vector!ubyte digest = hash.flush();
+            Secure_Vector!ubyte digest = hash.finished();
             const size_t needed = std.algorithm.min(digest.length, key_len - key.length);
             key += Pair(digest.ptr, needed);
             
@@ -93,6 +93,6 @@ private:
 Vector!ubyte encode_x942_int(uint n)
 {
     ubyte[4] n_buf;
-    store_be(n, n_buf);
+    store_bigEndian(n, n_buf);
     return DER_Encoder().encode(n_buf.ptr, 4, ASN1_Tag.OCTET_STRING).get_contents_unlocked();
 }

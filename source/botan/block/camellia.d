@@ -215,8 +215,8 @@ void encrypt(ubyte* input, ubyte* output, size_t blocks,
     size_t blocks = input.length;
     foreach (size_t i; 0 .. blocks)
     {
-        ulong D1 = load_be!ulong(input, 0);
-        ulong D2 = load_be!ulong(input, 1);
+        ulong D1 = load_bigEndian!ulong(input, 0);
+        ulong D2 = load_bigEndian!ulong(input, 1);
         
         const ulong* K = SK.ptr;
         
@@ -244,7 +244,7 @@ void encrypt(ubyte* input, ubyte* output, size_t blocks,
         D2 ^= *K++;
         D1 ^= *K++;
         
-        store_be(output, D2, D1);
+        store_bigEndian(output, D2, D1);
         
         input += 16;
         output += 16;
@@ -260,8 +260,8 @@ void decrypt(ubyte* input, ubyte* output, size_t blocks,
     size_t blocks = input.length;
     foreach (size_t i; 0 .. blocks)
     {
-        ulong D1 = load_be!ulong(input, 0);
-        ulong D2 = load_be!ulong(input, 1);
+        ulong D1 = load_bigEndian!ulong(input, 0);
+        ulong D2 = load_bigEndian!ulong(input, 1);
         
         const ulong* K = &SK[SK.length-1];
         
@@ -289,7 +289,7 @@ void decrypt(ubyte* input, ubyte* output, size_t blocks,
         D1 ^= *K--;
         D2 ^= *K;
         
-        store_be(output, D2, D1);
+        store_bigEndian(output, D2, D1);
         
         input += 16;
         output += 16;
@@ -318,11 +318,11 @@ void key_schedule(ref Secure_Vector!ulong SK, in ubyte* key)
     const ulong Sigma5 = 0x10E527FADE682D1D;
     const ulong Sigma6 = 0xB05688C2B3E6C1FD;
     
-    const ulong KL_H = load_be!ulong(key, 0);
-    const ulong KL_L = load_be!ulong(key, 1);
+    const ulong KL_H = load_bigEndian!ulong(key, 0);
+    const ulong KL_L = load_bigEndian!ulong(key, 1);
     
-    const ulong KR_H = (length >= 24) ? load_be!ulong(key, 2) : 0;
-    const ulong KR_L = (length == 32) ? load_be!ulong(key, 3) : ((length == 24) ? ~KR_H : 0);
+    const ulong KR_H = (length >= 24) ? load_bigEndian!ulong(key, 2) : 0;
+    const ulong KR_L = (length == 32) ? load_bigEndian!ulong(key, 3) : ((length == 24) ? ~KR_H : 0);
     
     ulong D1 = KL_H ^ KR_H;
     ulong D2 = KL_L ^ KR_L;

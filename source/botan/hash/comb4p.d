@@ -85,8 +85,8 @@ private:
 
     void final_result(ubyte* output)
     {
-        Secure_Vector!ubyte h1 = m_hash1.flush();
-        Secure_Vector!ubyte h2 = m_hash2.flush();
+        Secure_Vector!ubyte h1 = m_hash1.finished();
+        Secure_Vector!ubyte h2 = m_hash2.finished();
         
         // First round
         xor_buf(h1.ptr, h2.ptr, std.algorithm.min(h1.length, h2.length));
@@ -122,9 +122,9 @@ void comb4p_round(Secure_Vector!ubyte output,
     h1.update(input.ptr, input.length);
     h2.update(input.ptr, input.length);
     
-    Secure_Vector!ubyte h_buf = h1.flush();
+    Secure_Vector!ubyte h_buf = h1.finished();
     xor_buf(output.ptr, h_buf.ptr, std.algorithm.min(output.length, h_buf.length));
     
-    h_buf = h2.flush();
+    h_buf = h2.finished();
     xor_buf(output.ptr, h_buf.ptr, std.algorithm.min(output.length, h_buf.length));
 }

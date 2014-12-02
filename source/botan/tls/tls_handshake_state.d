@@ -132,7 +132,7 @@ public:
         
         if (algo_name == "RSA")
         {
-            if (for_client_auth && this._version() == Protocol_Version.SSL_V3)
+            if (for_client_auth && this._version() == TLS_Protocol_Version.SSL_V3)
             {
                 hash_algo = "Raw";
             }
@@ -146,7 +146,7 @@ public:
         }
         else if (algo_name == "DSA" || algo_name == "ECDSA")
         {
-            if (algo_name == "DSA" && for_client_auth && this._version() == Protocol_Version.SSL_V3)
+            if (algo_name == "DSA" && for_client_auth && this._version() == TLS_Protocol_Version.SSL_V3)
             {
                 hash_algo = "Raw";
             }
@@ -168,7 +168,7 @@ public:
                           ref string hash_algo_out,
                           ref string sig_algo_out,
                           bool for_client_auth,
-                          const Policy policy) const
+                          const TLS_Policy policy) const
     {
         const string sig_algo = key.algo_name;
         
@@ -211,7 +211,7 @@ public:
 
     KDF protocol_specific_prf() const
     {
-        if (_version() == Protocol_Version.SSL_V3)
+        if (_version() == TLS_Protocol_Version.SSL_V3)
         {
             return get_kdf("SSL3-PRF");
         }
@@ -233,9 +233,9 @@ public:
         throw new Internal_Error("Unknown version code " ~ _version().toString());
     }
 
-    Protocol_Version _version() const { return m_version; }
+    TLS_Protocol_Version _version() const { return m_version; }
 
-    void set_version(in Protocol_Version _version)
+    void set_version(in TLS_Protocol_Version _version)
     {
         m_version = _version;
     }
@@ -371,16 +371,16 @@ public:
 
     const Ciphersuite ciphersuite() const { return m_ciphersuite; }
 
-    const Session_Keys session_keys() const { return m_session_keys; }
+    const TLS_Session_Keys session_keys() const { return m_session_keys; }
 
     void compute_session_keys()
     {
-        m_session_keys = Session_Keys(this, client_kex().pre_master_secret(), false);
+        m_session_keys = TLS_Session_Keys(this, client_kex().pre_master_secret(), false);
     }
 
     void compute_session_keys(in Secure_Vector!ubyte resume_master_secret)
     {
-        m_session_keys = Session_Keys(this, resume_master_secret, true);
+        m_session_keys = TLS_Session_Keys(this, resume_master_secret, true);
     }
 
     Handshake_Hash hash() { return m_handshake_hash; }
@@ -401,9 +401,9 @@ private:
 
     uint m_hand_expecting_mask = 0;
     uint m_hand_received_mask = 0;
-    Protocol_Version m_version;
+    TLS_Protocol_Version m_version;
     Ciphersuite m_ciphersuite;
-    Session_Keys m_session_keys;
+    TLS_Session_Keys m_session_keys;
     Handshake_Hash m_handshake_hash;
 
     Unique!Client_Hello m_client_hello;
@@ -491,15 +491,15 @@ uint bitmask_for_handshake_type(Handshake_Type type)
 
 
 string choose_hash(in string sig_algo,
-                   Protocol_Version negotiated_version,
-                   in Policy policy,
+                   TLS_Protocol_Version negotiated_version,
+                   in TLS_Policy policy,
                    bool for_client_auth,
                    in Client_Hello client_hello,
                    in Certificate_Req cert_req)
 {
     if (!negotiated_version.supports_negotiable_signature_algorithms())
     {
-        if (for_client_auth && negotiated_version == Protocol_Version.SSL_V3)
+        if (for_client_auth && negotiated_version == TLS_Protocol_Version.SSL_V3)
             return "Raw";
         
         if (sig_algo == "RSA")

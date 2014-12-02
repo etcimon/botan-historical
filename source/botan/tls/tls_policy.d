@@ -24,10 +24,10 @@ import std.conv : to;
 import botan.utils.types;
 
 /**
-* TLS Policy Base Class
+* TLS TLS_Policy Base Class
 * Inherit and overload as desired to suit local policy concerns
 */
-class Policy
+class TLS_Policy
 {
 public:
 
@@ -235,13 +235,13 @@ public:
     * Default accepts only TLS, so if you want to enable DTLS override
     * in your application.
     */
-    bool acceptable_protocol_version(Protocol_Version _version) const
+    bool acceptable_protocol_version(TLS_Protocol_Version _version) const
     {
         // By default require TLS to minimize surprise
         if (_version.is_datagram_protocol())
             return false;
         
-        return (_version > Protocol_Version.SSL_V3);
+        return (_version > TLS_Protocol_Version.SSL_V3);
     }
 
     bool acceptable_ciphersuite(in Ciphersuite) const
@@ -259,7 +259,7 @@ public:
     /**
     * Return allowed ciphersuites, in order of preference
     */
-    Vector!ushort ciphersuite_list(Protocol_Version _version,
+    Vector!ushort ciphersuite_list(TLS_Protocol_Version _version,
                                        bool have_srp) const
     {
         const Vector!string ciphers = allowed_ciphers();
@@ -306,7 +306,7 @@ public:
         }
         
         if (ciphersuites.data.empty)
-            throw new Logic_Error("Policy does not allow any available cipher suite");
+            throw new Logic_Error("TLS_Policy does not allow any available cipher suite");
         Vector!ushort ciphersuite_codes;
         foreach (Ciphersuite i; ciphersuites.data.uniq.sort!((a,b){ return order.compare(a, b); }).array.to!(Ciphersuite[]))
             ciphersuite_codes.push_back(i.ciphersuite_code());
@@ -319,7 +319,7 @@ public:
 /**
 * NSA Suite B 128-bit security level (see @rfc 6460)
 */
-class NSA_Suite_B_128 : Policy
+class NSA_Suite_B_128 : TLS_Policy
 {
 public:
     override Vector!string allowed_ciphers() const
@@ -340,21 +340,21 @@ public:
     override Vector!string allowed_ecc_curves() const
     { return Vector!string(["secp256r1"]); }
 
-    override bool acceptable_protocol_version(Protocol_Version _version) const
-    { return _version == Protocol_Version.TLS_V12; }
+    override bool acceptable_protocol_version(TLS_Protocol_Version _version) const
+    { return _version == TLS_Protocol_Version.TLS_V12; }
 }
 
 /**
-* Policy for DTLS. We require DTLS v1.2 and an AEAD mode
+* TLS_Policy for DTLS. We require DTLS v1.2 and an AEAD mode
 */
-class Datagram_Policy : Policy
+class Datagram_Policy : TLS_Policy
 {
 public:
     override Vector!string allowed_macs() const
     { return Vector!string(["AEAD"]); }
 
-    override bool acceptable_protocol_version(Protocol_Version _version) const
-    { return _version == Protocol_Version.DTLS_V12; }
+    override bool acceptable_protocol_version(TLS_Protocol_Version _version) const
+    { return _version == TLS_Protocol_Version.DTLS_V12; }
 }
 
 

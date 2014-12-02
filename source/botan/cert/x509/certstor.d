@@ -38,7 +38,7 @@ public:
         return find_cert(cert.subject_dn(), cert.subject_key_id());
     }
 
-    // remove this (used by TLS::Server)
+    // remove this (used by TLS_Server)
     abstract Vector!X509_DN all_subjects() const;
 }
 

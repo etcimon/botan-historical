@@ -23,19 +23,19 @@ import std.datetime;
 /**
 * TLS Server
 */
-final class Server : Channel
+final class TLS_Server : TLS_Channel
 {
 public:
     /**
-    * Server initialization
+    * TLS_Server initialization
     */
     this(void delegate(ref ubyte[]) output_fn,
          void delegate(in ubyte[]) data_cb,
-         void delegate(Alert, in ubyte[]) alert_cb,
-         bool delegate(in Session) handshake_cb,
-         Session_Manager session_manager,
-         Credentials_Manager creds,
-         const Policy policy,
+         void delegate(TLS_Alert, in ubyte[]) alert_cb,
+         bool delegate(in TLS_Session) handshake_cb,
+         TLS_Session_Manager session_manager,
+         TLS_Credentials_Manager creds,
+         const TLS_Policy policy,
          RandomNumberGenerator rng,
          in Vector!string next_protocols = Vector!string(),
          size_t io_buf_sz = 16*1024) 
@@ -105,15 +105,15 @@ private:
             if (!m_policy.allow_insecure_renegotiation() &&
                 !(initial_handshake || secure_renegotiation_supported()))
             {
-                send_warning_alert(Alert.NO_RENEGOTIATION);
+                send_warning_alert(TLS_Alert.NO_RENEGOTIATION);
                 return;
             }
             
             state.client_hello(new Client_Hello(contents, type));
             
-            Protocol_Version client_version = state.client_hello()._version();
+            TLS_Protocol_Version client_version = state.client_hello()._version();
             
-            Protocol_Version negotiated_version;
+            TLS_Protocol_Version negotiated_version;
             
             if ((initial_handshake && client_version.known_version()) ||
                 (!initial_handshake && client_version == active_state._version()))
@@ -137,8 +137,8 @@ private:
                 */
                 if (active_state._version() > client_version)
                 {
-                    throw new TLS_Exception(Alert.PROTOCOL_VERSION,
-                                            "Client negotiated " ~
+                    throw new TLS_Exception(TLS_Alert.PROTOCOL_VERSION,
+                                            "TLS_Client negotiated " ~
                                             active_state._version().toString() ~
                                             " then renegotiated with " ~
                                             client_version.toString());
@@ -157,19 +157,19 @@ private:
             
             if (!m_policy.acceptable_protocol_version(negotiated_version))
             {
-                throw new TLS_Exception(Alert.PROTOCOL_VERSION,
-                                        "Client version is unacceptable by policy");
+                throw new TLS_Exception(TLS_Alert.PROTOCOL_VERSION,
+                                        "TLS_Client version is unacceptable by policy");
             }
             
             if (!initial_handshake && state.client_hello().next_protocol_notification())
-                throw new TLS_Exception(Alert.HANDSHAKE_FAILURE,
-                                        "Client included NPN extension for renegotiation");
+                throw new TLS_Exception(TLS_Alert.HANDSHAKE_FAILURE,
+                                        "TLS_Client included NPN extension for renegotiation");
             
             secure_renegotiation_check(state.client_hello());
             
             state.set_version(negotiated_version);
 
-            Session session_info;
+            TLS_Session session_info;
             const bool resuming = state.allow_session_resumption &&
                                     check_for_resume(session_info,
                                                      session_manager(),
@@ -197,7 +197,7 @@ private:
                                                     state.hash(),
                                                     m_policy,
                                                     state.client_hello().session_id(),
-                                                    Protocol_Version(session_info._version()),
+                                                    TLS_Protocol_Version(session_info._version()),
                                                     session_info.ciphersuite_code(),
                                                     session_info.compression_method(),
                                                     session_info.fragment_size(),
@@ -270,7 +270,7 @@ private:
                     * anonymous operation.
                     */
                     if (!cert_chains.empty)
-                        send_alert(Alert(Alert.UNRECOGNIZED_NAME));
+                        send_alert(TLS_Alert(TLS_Alert.UNRECOGNIZED_NAME));
                 }
                                 
                 state.server_hello(
@@ -412,7 +412,7 @@ private:
             * unable to correctly verify a signature, ..."
             */
             if (!sig_valid)
-                throw new TLS_Exception(Alert.DECRYPT_ERROR, "Client cert verify failed");
+                throw new TLS_Exception(TLS_Alert.DECRYPT_ERROR, "TLS_Client cert verify failed");
             
             try
             {
@@ -420,7 +420,7 @@ private:
             }
             catch(Exception e)
             {
-                throw new TLS_Exception(Alert.BAD_CERTIFICATE, e.msg);
+                throw new TLS_Exception(TLS_Alert.BAD_CERTIFICATE, e.msg);
             }
             
             state.set_expected_next(HANDSHAKE_CCS);
@@ -450,7 +450,7 @@ private:
             state.client_finished(new Finished(contents));
             
             if (!state.client_finished().verify(state, CLIENT))
-                throw new TLS_Exception(Alert.DECRYPT_ERROR, "Finished message didn't verify");
+                throw new TLS_Exception(TLS_Alert.DECRYPT_ERROR, "Finished message didn't verify");
             
             if (!state.server_finished())
             {
@@ -458,7 +458,7 @@ private:
                 
                 state.hash().update(state.handshake_io().format(contents, type));
                 
-                Session session_info = Session(
+                TLS_Session session_info = TLS_Session(
                         state.server_hello().session_id(),
                         state.session_keys().master_secret(),
                         state.server_hello()._version(),
@@ -468,7 +468,7 @@ private:
                         state.server_hello().fragment_size(),
                         get_peer_cert_chain(state),
                         Vector!ubyte(),
-                        Server_Information(state.client_hello().sni_hostname()),
+                        TLS_Server_Information(state.client_hello().sni_hostname()),
                         state.srp_identifier()
                     );
                 
@@ -522,8 +522,8 @@ private:
         return state;
     }
 
-    const Policy m_policy;
-    Credentials_Manager m_creds;
+    const TLS_Policy m_policy;
+    TLS_Credentials_Manager m_creds;
 
     Vector!string m_possible_protocols;
     string m_next_protocol;
@@ -531,9 +531,9 @@ private:
 
 private:
 
-bool check_for_resume(Session session_info,
-                      Session_Manager session_manager,
-                      Credentials_Manager credentials,
+bool check_for_resume(TLS_Session session_info,
+                      TLS_Session_Manager session_manager,
+                      TLS_Credentials_Manager credentials,
                       in Client_Hello client_hello,
                       Duration session_ticket_lifetime)
 {
@@ -554,7 +554,7 @@ bool check_for_resume(Session session_info,
         // If a session ticket was sent, ignore client session ID
         try
         {
-            session_info = Session.decrypt(
+            session_info = TLS_Session.decrypt(
                 session_ticket,
                 credentials.psk("tls-server", "session-ticket", ""));
             
@@ -602,9 +602,9 @@ bool check_for_resume(Session session_info,
 /*
 * Choose which ciphersuite to use
 */
-ushort choose_ciphersuite(in Policy policy,
-                          Protocol_Version _version,
-                          Credentials_Manager creds,
+ushort choose_ciphersuite(in TLS_Policy policy,
+                          TLS_Protocol_Version _version,
+                          TLS_Credentials_Manager creds,
                           in HashMap!(string, Vector!X509_Certificate) cert_chains,
                           in Client_Hello client_hello)
 {
@@ -617,7 +617,7 @@ ushort choose_ciphersuite(in Policy policy,
     const Vector!ushort server_suites = policy.ciphersuite_list(_version, have_srp);
     
     if (server_suites.empty)
-        throw new TLS_Exception(Alert.HANDSHAKE_FAILURE, "Policy forbids us from negotiating any ciphersuite");
+        throw new TLS_Exception(TLS_Alert.HANDSHAKE_FAILURE, "TLS_Policy forbids us from negotiating any ciphersuite");
     
     const bool have_shared_ecc_curve = (policy.choose_curve(client_hello.supported_ecc_curves()) != "");
     
@@ -649,19 +649,19 @@ ushort choose_ciphersuite(in Policy policy,
          - RFC 5054 section 2.5.1.2
         */
         if (suite.kex_algo() == "SRP_SHA" && client_hello.srp_identifier() == "")
-            throw new TLS_Exception(Alert.UNKNOWN_PSK_IDENTITY,
-                                    "Client wanted SRP but did not send username");
+            throw new TLS_Exception(TLS_Alert.UNKNOWN_PSK_IDENTITY,
+                                    "TLS_Client wanted SRP but did not send username");
         
         return suite_id;
     }
     
-    throw new TLS_Exception(Alert.HANDSHAKE_FAILURE, "Can't agree on a ciphersuite with client");
+    throw new TLS_Exception(TLS_Alert.HANDSHAKE_FAILURE, "Can't agree on a ciphersuite with client");
 }
 
 /*
 * Choose which compression algorithm to use
 */
-ubyte choose_compression(in Policy policy, in Vector!ubyte c_comp)
+ubyte choose_compression(in TLS_Policy policy, in Vector!ubyte c_comp)
 {
     Vector!ubyte s_comp = policy.compression();
     
@@ -674,7 +674,7 @@ ubyte choose_compression(in Policy policy, in Vector!ubyte c_comp)
 }
 
 HashMap!(string, Vector!X509_Certificate) 
-    get_server_certs(in string hostname, Credentials_Manager creds)
+    get_server_certs(in string hostname, TLS_Credentials_Manager creds)
 {
     string[] cert_types = [ "RSA", "DSA", "ECDSA", null ];
     

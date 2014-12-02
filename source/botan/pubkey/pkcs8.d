@@ -228,7 +228,7 @@ Secure_Vector!ubyte PKCS8_decode(DataSource source,    Single_Shot_Passphrase ge
     bool is_encrypted = true;
     
     try {
-        if (asn1_obj.maybe_BER(source) && !PEM.matches(source))
+        if (maybe_BER(source) && !PEM.matches(source))
             key_data = PKCS8_extract(source, pbe_alg_id);
         else
         {

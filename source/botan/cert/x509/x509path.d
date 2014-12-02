@@ -195,7 +195,7 @@ public:
                 return "Cannot establish trust";
                 
             case Certificate_Status_Code.POLICY_ERROR:
-                return "Policy error";
+                return "TLS_Policy error";
             case Certificate_Status_Code.INVALID_USAGE:
                 return "Invalid usage";
             case Certificate_Status_Code.CERT_CHAIN_TOO_LONG:

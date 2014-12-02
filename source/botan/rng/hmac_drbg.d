@@ -107,7 +107,7 @@ private:
         m_mac.update(m_V);
         m_mac.update(0x00);
         m_mac.update(input, input_len);
-        m_mac.set_key(m_mac.flush());
+        m_mac.set_key(m_mac.finished());
         
         m_V = m_mac.process(m_V);
         
@@ -116,7 +116,7 @@ private:
             m_mac.update(m_V);
             m_mac.update(0x01);
             m_mac.update(input, input_len);
-            m_mac.set_key(m_mac.flush());
+            m_mac.set_key(m_mac.finished());
             
             m_V = m_mac.process(m_V);
         }

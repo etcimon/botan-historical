@@ -78,7 +78,7 @@ private:
         
         foreach (size_t i; 0 .. blocks)
         {
-            load_le(m_X.ptr, input, m_X.length);
+            load_littleEndian(m_X.ptr, input, m_X.length);
             
             pass(A, B, C, m_X, 5); mix(m_X);
             pass(C, A, B, m_X, 7); mix(m_X);

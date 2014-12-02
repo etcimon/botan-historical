@@ -27,10 +27,10 @@ public:
     {
         foreach (size_t i; 0 .. blocks)
         {
-            ushort B0 = load_be!ushort(input, 0);
-            ushort B1 = load_be!ushort(input, 1);
-            ushort B2 = load_be!ushort(input, 2);
-            ushort B3 = load_be!ushort(input, 3);
+            ushort B0 = load_bigEndian!ushort(input, 0);
+            ushort B1 = load_bigEndian!ushort(input, 1);
+            ushort B2 = load_bigEndian!ushort(input, 2);
+            ushort B3 = load_bigEndian!ushort(input, 3);
             
             for (size_t j = 0; j != 8; j += 2)
             {
@@ -57,7 +57,7 @@ public:
                 B1 ^= R;
             }
             
-            store_be(output, B0, B1, B2, B3);
+            store_bigEndian(output, B0, B1, B2, B3);
             
             input += BLOCK_SIZE;
             output += BLOCK_SIZE;
@@ -72,10 +72,10 @@ public:
     {
         foreach (size_t i; 0 .. blocks)
         {
-            ushort B0 = load_be!ushort(input, 0);
-            ushort B1 = load_be!ushort(input, 1);
-            ushort B2 = load_be!ushort(input, 2);
-            ushort B3 = load_be!ushort(input, 3);
+            ushort B0 = load_bigEndian!ushort(input, 0);
+            ushort B1 = load_bigEndian!ushort(input, 1);
+            ushort B2 = load_bigEndian!ushort(input, 2);
+            ushort B3 = load_bigEndian!ushort(input, 3);
             
             for (size_t j = 0; j != 8; j += 2)
             {
@@ -104,7 +104,7 @@ public:
                 B3 ^= R;
             }
             
-            store_be(output, B0, B1, B2, B3);
+            store_bigEndian(output, B0, B1, B2, B3);
             
             input += BLOCK_SIZE;
             output += BLOCK_SIZE;
@@ -130,7 +130,7 @@ private:
         Secure_Vector!ushort K = Secure_Vector!ushort(16);
         foreach (size_t i; 0 .. 8)
         {
-            K[i] = load_be!ushort(key, i);
+            K[i] = load_bigEndian!ushort(key, i);
             K[i+8] = K[i] ^ RC[i];
         }
         

@@ -150,7 +150,7 @@ public:
     {
         update(buffer, offset);
         
-        Secure_Vector!ubyte data_mac = m_cmac.flush();
+        Secure_Vector!ubyte data_mac = m_cmac.finished();
         xor_buf(data_mac, m_nonce_mac, data_mac.length);
         xor_buf(data_mac, m_ad_mac, data_mac.length);
         
@@ -209,7 +209,7 @@ public:
         
         const ubyte* included_tag = &buf[remaining];
         
-        Secure_Vector!ubyte mac = m_cmac.flush();
+        Secure_Vector!ubyte mac = m_cmac.finished();
         mac ^= m_nonce_mac;
         mac ^= m_ad_mac;
         
@@ -233,5 +233,5 @@ Secure_Vector!ubyte eax_prf(ubyte tag, size_t block_size,
         mac.update(0);
     mac.update(tag);
     mac.update(input, length);
-    return mac.flush();
+    return mac.finished();
 }

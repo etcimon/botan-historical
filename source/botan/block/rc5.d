@@ -28,8 +28,8 @@ public:
     {
         foreach (size_t i; 0 .. blocks)
         {
-            uint A = load_le!uint(input, 0);
-            uint B = load_le!uint(input, 1);
+            uint A = load_littleEndian!uint(input, 0);
+            uint B = load_littleEndian!uint(input, 1);
             
             A += m_S[0]; B += m_S[1];
             for (size_t j = 0; j != m_rounds; j += 4)
@@ -47,7 +47,7 @@ public:
                 B = rotate_left(B ^ A, A % 32) + m_S[2*j+9];
             }
             
-            store_le(output, A, B);
+            store_littleEndian(output, A, B);
             
             input += BLOCK_SIZE;
             output += BLOCK_SIZE;
@@ -61,8 +61,8 @@ public:
     {
         foreach (size_t i; 0 .. blocks)
         {
-            uint A = load_le!uint(input, 0);
-            uint B = load_le!uint(input, 1);
+            uint A = load_littleEndian!uint(input, 0);
+            uint B = load_littleEndian!uint(input, 1);
             
             for (size_t j = m_rounds; j != 0; j -= 4)
             {
@@ -80,7 +80,7 @@ public:
             }
             B -= m_S[1]; A -= m_S[0];
             
-            store_le(output, A, B);
+            store_littleEndian(output, A, B);
             
             input += BLOCK_SIZE;
             output += BLOCK_SIZE;

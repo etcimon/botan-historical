@@ -65,7 +65,7 @@ private:
     void copy_out(ubyte* output)
     {
         for (size_t i = 0; i != output_length(); i += 4)
-            store_be(m_digest[i/4], output + i);
+            store_bigEndian(m_digest[i/4], output + i);
     }
 
     Secure_Vector!uint m_digest;
@@ -119,7 +119,7 @@ private:
     void copy_out(ubyte* output)
     {
         for (size_t i = 0; i != output_length(); i += 4)
-            store_be(m_digest[i/4], output + i);
+            store_bigEndian(m_digest[i/4], output + i);
     }
 
 
@@ -184,22 +184,22 @@ void compress(ref Secure_Vector!uint digest,
     
     foreach (size_t i; 0 .. blocks)
     {
-        uint W00 = load_be!uint(input,  0);
-        uint W01 = load_be!uint(input,  1);
-        uint W02 = load_be!uint(input,  2);
-        uint W03 = load_be!uint(input,  3);
-        uint W04 = load_be!uint(input,  4);
-        uint W05 = load_be!uint(input,  5);
-        uint W06 = load_be!uint(input,  6);
-        uint W07 = load_be!uint(input,  7);
-        uint W08 = load_be!uint(input,  8);
-        uint W09 = load_be!uint(input,  9);
-        uint W10 = load_be!uint(input, 10);
-        uint W11 = load_be!uint(input, 11);
-        uint W12 = load_be!uint(input, 12);
-        uint W13 = load_be!uint(input, 13);
-        uint W14 = load_be!uint(input, 14);
-        uint W15 = load_be!uint(input, 15);
+        uint W00 = load_bigEndian!uint(input,  0);
+        uint W01 = load_bigEndian!uint(input,  1);
+        uint W02 = load_bigEndian!uint(input,  2);
+        uint W03 = load_bigEndian!uint(input,  3);
+        uint W04 = load_bigEndian!uint(input,  4);
+        uint W05 = load_bigEndian!uint(input,  5);
+        uint W06 = load_bigEndian!uint(input,  6);
+        uint W07 = load_bigEndian!uint(input,  7);
+        uint W08 = load_bigEndian!uint(input,  8);
+        uint W09 = load_bigEndian!uint(input,  9);
+        uint W10 = load_bigEndian!uint(input, 10);
+        uint W11 = load_bigEndian!uint(input, 11);
+        uint W12 = load_bigEndian!uint(input, 12);
+        uint W13 = load_bigEndian!uint(input, 13);
+        uint W14 = load_bigEndian!uint(input, 14);
+        uint W15 = load_bigEndian!uint(input, 15);
         
         mixin(
             SHA2_32_F!(A, B, C, D, E, F, G, H, W00, W14, W09, W01, 0x428A2F98)() ~ 

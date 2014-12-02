@@ -29,10 +29,10 @@ public:
     {
         foreach (size_t i; 0 .. blocks)
         {
-            uint A = load_be!uint(input, 0);
-            uint B = load_be!uint(input, 1);
-            uint C = load_be!uint(input, 2);
-            uint D = load_be!uint(input, 3);
+            uint A = load_bigEndian!uint(input, 0);
+            uint B = load_bigEndian!uint(input, 1);
+            uint C = load_bigEndian!uint(input, 2);
+            uint D = load_bigEndian!uint(input, 3);
             
             round1(C, D, m_MK[ 0], m_RK[ 0]); round2(B, C, m_MK[ 1], m_RK[ 1]);
             round3(A, B, m_MK[ 2], m_RK[ 2]); round1(D, A, m_MK[ 3], m_RK[ 3]);
@@ -59,7 +59,7 @@ public:
             round1(D, A, m_MK[47], m_RK[47]); round3(A, B, m_MK[46], m_RK[46]);
             round2(B, C, m_MK[45], m_RK[45]); round1(C, D, m_MK[44], m_RK[44]);
             
-            store_be(output, A, B, C, D);
+            store_bigEndian(output, A, B, C, D);
             
             input += BLOCK_SIZE;
             output += BLOCK_SIZE;
@@ -73,10 +73,10 @@ public:
     {
         foreach (size_t i; 0 .. blocks)
         {
-            uint A = load_be!uint(input, 0);
-            uint B = load_be!uint(input, 1);
-            uint C = load_be!uint(input, 2);
-            uint D = load_be!uint(input, 3);
+            uint A = load_bigEndian!uint(input, 0);
+            uint B = load_bigEndian!uint(input, 1);
+            uint C = load_bigEndian!uint(input, 2);
+            uint D = load_bigEndian!uint(input, 3);
             
             round1(C, D, m_MK[44], m_RK[44]); round2(B, C, m_MK[45], m_RK[45]);
             round3(A, B, m_MK[46], m_RK[46]); round1(D, A, m_MK[47], m_RK[47]);
@@ -103,7 +103,7 @@ public:
             round1(D, A, m_MK[ 3], m_RK[ 3]); round3(A, B, m_MK[ 2], m_RK[ 2]);
             round2(B, C, m_MK[ 1], m_RK[ 1]); round1(C, D, m_MK[ 0], m_RK[ 0]);
             
-            store_be(output, A, B, C, D);
+            store_bigEndian(output, A, B, C, D);
             
             input += BLOCK_SIZE;
             output += BLOCK_SIZE;

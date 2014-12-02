@@ -68,10 +68,10 @@ package:
 
 void xtea_encrypt_8(in ubyte[64] input, ref ubyte[64] output, in uint[64] EK) pure
 {
-    SIMD_32 L0 = SIMD_32.load_be(input.ptr      );
-    SIMD_32 R0 = SIMD_32.load_be(input.ptr + 16);
-    SIMD_32 L1 = SIMD_32.load_be(input.ptr + 32);
-    SIMD_32 R1 = SIMD_32.load_be(input.ptr + 48);
+    SIMD_32 L0 = SIMD_32.load_bigEndian(input.ptr      );
+    SIMD_32 R0 = SIMD_32.load_bigEndian(input.ptr + 16);
+    SIMD_32 L1 = SIMD_32.load_bigEndian(input.ptr + 32);
+    SIMD_32 R1 = SIMD_32.load_bigEndian(input.ptr + 48);
 
     SIMD_32.transpose(L0, R0, L1, R1);
     
@@ -97,18 +97,18 @@ void xtea_encrypt_8(in ubyte[64] input, ref ubyte[64] output, in uint[64] EK) pu
     
     SIMD_32.transpose(L0, R0, L1, R1);
     
-    L0.store_be(output.ptr);
-    R0.store_be(output.ptr + 16);
-    L1.store_be(output.ptr + 32);
-    R1.store_be(output.ptr + 48);
+    L0.store_bigEndian(output.ptr);
+    R0.store_bigEndian(output.ptr + 16);
+    L1.store_bigEndian(output.ptr + 32);
+    R1.store_bigEndian(output.ptr + 48);
 }
 
 void xtea_decrypt_8(in ubyte[64] input, ref ubyte[64] output, in uint[64] EK)
 {
-    SIMD_32 L0 = SIMD_32.load_be(input.ptr      );
-    SIMD_32 R0 = SIMD_32.load_be(input.ptr + 16);
-    SIMD_32 L1 = SIMD_32.load_be(input.ptr + 32);
-    SIMD_32 R1 = SIMD_32.load_be(input.ptr + 48);
+    SIMD_32 L0 = SIMD_32.load_bigEndian(input.ptr      );
+    SIMD_32 R0 = SIMD_32.load_bigEndian(input.ptr + 16);
+    SIMD_32 L1 = SIMD_32.load_bigEndian(input.ptr + 32);
+    SIMD_32 R1 = SIMD_32.load_bigEndian(input.ptr + 48);
 
     SIMD_32.transpose(L0, R0, L1, R1);
     
@@ -134,8 +134,8 @@ void xtea_decrypt_8(in ubyte[64] input, ref ubyte[64] output, in uint[64] EK)
     
     SIMD_32.transpose(L0, R0, L1, R1);
     
-    L0.store_be(output.ptr);
-    R0.store_be(output.ptr + 16);
-    L1.store_be(output.ptr + 32);
-    R1.store_be(output.ptr + 48);
+    L0.store_bigEndian(output.ptr);
+    R0.store_bigEndian(output.ptr + 16);
+    L1.store_bigEndian(output.ptr + 32);
+    R1.store_bigEndian(output.ptr + 48);
 }

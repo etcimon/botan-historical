@@ -300,8 +300,8 @@ private:
 
 void poly_double_128(ubyte* output, in ubyte* input) pure
 {
-    ulong X0 = load_le!ulong(input, 0);
-    ulong X1 = load_le!ulong(input, 1);
+    ulong X0 = load_littleEndian!ulong(input, 0);
+    ulong X1 = load_littleEndian!ulong(input, 1);
     
     const bool carry = (X1 >> 63);
     
@@ -311,17 +311,17 @@ void poly_double_128(ubyte* output, in ubyte* input) pure
     if (carry)
         X0 ^= 0x87;
     
-    store_le(output, X0, X1);
+    store_littleEndian(output, X0, X1);
 }
 
 void poly_double_64(ubyte* output, in ubyte* input) pure
 {
-    ulong X = load_le!ulong(input, 0);
+    ulong X = load_littleEndian!ulong(input, 0);
     const bool carry = (X >> 63);
     X <<= 1;
     if (carry)
         X ^= 0x1B;
-    store_le(X, output);
+    store_littleEndian(X, output);
 }
 
 void poly_double(ubyte* output, in ubyte* input) pure

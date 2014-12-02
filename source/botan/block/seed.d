@@ -26,10 +26,10 @@ public:
     {
         foreach (size_t i; 0 .. blocks)
         {
-            uint B0 = load_be!uint(input, 0);
-            uint B1 = load_be!uint(input, 1);
-            uint B2 = load_be!uint(input, 2);
-            uint B3 = load_be!uint(input, 3);
+            uint B0 = load_bigEndian!uint(input, 0);
+            uint B1 = load_bigEndian!uint(input, 1);
+            uint B2 = load_bigEndian!uint(input, 2);
+            uint B3 = load_bigEndian!uint(input, 3);
             
             G_FUNC G;
             
@@ -52,7 +52,7 @@ public:
                 B2 ^= T0 + T1;
             }
             
-            store_be(output, B2, B3, B0, B1);
+            store_bigEndian(output, B2, B3, B0, B1);
             
             input += BLOCK_SIZE;
             output += BLOCK_SIZE;
@@ -65,10 +65,10 @@ public:
     {
         foreach (size_t i; 0 .. blocks)
         {
-            uint B0 = load_be!uint(input, 0);
-            uint B1 = load_be!uint(input, 1);
-            uint B2 = load_be!uint(input, 2);
-            uint B3 = load_be!uint(input, 3);
+            uint B0 = load_bigEndian!uint(input, 0);
+            uint B1 = load_bigEndian!uint(input, 1);
+            uint B2 = load_bigEndian!uint(input, 2);
+            uint B3 = load_bigEndian!uint(input, 3);
             
             G_FUNC G;
             
@@ -91,7 +91,7 @@ public:
                 B2 ^= T0 + T1;
             }
             
-            store_be(output, B2, B3, B0, B1);
+            store_bigEndian(output, B2, B3, B0, B1);
             
             input += BLOCK_SIZE;
             output += BLOCK_SIZE;
@@ -122,7 +122,7 @@ private:
         Secure_Vector!uint WK = Secure_Vector!uint(4);
         
         foreach (size_t i; 0 .. 4)
-            WK[i] = load_be!uint(key, i);
+            WK[i] = load_bigEndian!uint(key, i);
         
         G_FUNC G;
         

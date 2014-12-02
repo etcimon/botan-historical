@@ -142,7 +142,7 @@ private:
         m_mac.update(C);
         foreach (size_t j; 0 .. 8)
             m_mac.update(0);
-        Secure_Vector!ubyte T2 = m_mac.flush();
+        Secure_Vector!ubyte T2 = m_mac.finished();
         if (T != T2)
             throw new Decoding_Error("DLIES: message authentication failed");
         

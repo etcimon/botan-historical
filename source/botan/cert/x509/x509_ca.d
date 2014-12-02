@@ -56,7 +56,7 @@ public:
             constraints = find_constraints(*key, req.constraints());
         }
 
-        Extensions extensions;
+		X509_Extensions extensions;
         
         extensions.add(new x509_ext.Basic_Constraints(req.is_CA(), req.path_limit()), true);
         
@@ -140,7 +140,7 @@ public:
                                       in X509_Time not_after,
                                       in X509_DN issuer_dn,
                                       in X509_DN subject_dn,
-                                      in Extensions extensions)
+	                                  in X509_Extensions extensions)
     {
         __gshared immutable size_t X509_CERT_VERSION = 3;
         __gshared immutable size_t SERIAL_BITS = 128;
@@ -218,7 +218,7 @@ private:
         auto current_time = Clock.currTime();
         auto expire_time = current_time + next_update;
         
-        Extensions extensions;
+		X509_Extensions extensions;
         extensions.add(new x509_ext.Authority_Key_ID(m_cert.subject_key_id()));
         extensions.add(new x509_ext.CRL_Number(crl_number));
         

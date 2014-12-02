@@ -433,7 +433,7 @@ private:
         __m128i K1 = _mm_loadu_si128(cast(const(__m128i)*)(key + 8));
         K1 = _mm_srli_si128(K1, 8);
         
-        load_le(m_EK.ptr, key, 6);
+        load_littleEndian(m_EK.ptr, key, 6);
         
         mixin(AES_192_key_exp!(0x01, 6)());
         mixin(AES_192_key_exp!(0x02, 12)());

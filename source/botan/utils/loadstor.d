@@ -74,7 +74,7 @@ ulong make_ulong(ubyte i0, ubyte i1, ubyte i2, ubyte i3,
 * @param off an offset into the array
 * @return off'th T of in, as a big-endian value
 */
-T load_be(T)(in ubyte* input, size_t off)
+T load_bigEndian(T)(in ubyte* input, size_t off)
 {
     input += off * T.sizeof;
     T output = 0;
@@ -89,7 +89,7 @@ T load_be(T)(in ubyte* input, size_t off)
 * @param off an offset into the array
 * @return off'th T of in, as a litte-endian value
 */
-T load_le(T)(in ubyte* input, size_t off)
+T load_littleEndian(T)(in ubyte* input, size_t off)
 {
     input += off * T.sizeof;
     T output = 0;
@@ -104,7 +104,7 @@ T load_le(T)(in ubyte* input, size_t off)
 * @param off an offset into the array
 * @return off'th ushort of in, as a big-endian value
 */
-ushort load_be(T : ushort)(in ubyte* input, size_t off)
+ushort load_bigEndian(T : ushort)(in ubyte* input, size_t off)
 {
     return nativeToBigEndian!ushort(*cast(ubyte[2]*)( (cast(const ushort*) input) + off));
 }
@@ -115,7 +115,7 @@ ushort load_be(T : ushort)(in ubyte* input, size_t off)
 * @param off an offset into the array
 * @return off'th ushort of in, as a little-endian value
 */
-ushort load_le(T : ushort)(in ubyte* input, size_t off)
+ushort load_littleEndian(T : ushort)(in ubyte* input, size_t off)
 {
     return nativeToLittleEndian!ushort(*cast(ubyte[2]*)( (cast(const ushort*) input) + off));
 }
@@ -126,7 +126,7 @@ ushort load_le(T : ushort)(in ubyte* input, size_t off)
 * @param off an offset into the array
 * @return off'th uint of in, as a big-endian value
 */
-uint load_be(T : uint)(in ubyte* input, size_t off)
+uint load_bigEndian(T : uint)(in ubyte* input, size_t off)
 {
     return nativeToBigEndian!uint(*cast(ubyte[4]*)( (cast(const uint*) input) + off));
 }
@@ -138,7 +138,7 @@ uint load_be(T : uint)(in ubyte* input, size_t off)
 * @return off'th uint of in, as a little-endian value
 */
 
-uint load_le(T : uint)(in ubyte* input, size_t off)
+uint load_littleEndian(T : uint)(in ubyte* input, size_t off)
 {
     return nativeToLittleEndian!uint(*cast(ubyte[4]*)( (cast(const uint*) input) + off));
 }
@@ -149,7 +149,7 @@ uint load_le(T : uint)(in ubyte* input, size_t off)
 * @param off an offset into the array
 * @return off'th ulong of in, as a big-endian value
 */
-ulong load_be(T : ulong)(in ubyte* input, size_t off)
+ulong load_bigEndian(T : ulong)(in ubyte* input, size_t off)
 {
     return nativeToBigEndian!ulong(*cast(ubyte[8]*)( (cast(const ulong*) input) + off));
     
@@ -161,7 +161,7 @@ ulong load_be(T : ulong)(in ubyte* input, size_t off)
 * @param off an offset into the array
 * @return off'th ulong of in, as a little-endian value
 */
-ulong load_le(T : ulong)(in ubyte* input, size_t off)
+ulong load_littleEndian(T : ulong)(in ubyte* input, size_t off)
 {
     return nativeToLittleEndian!ulong(*cast(ubyte[8]*)( (cast(const ulong*) input) + off));
 }
@@ -172,10 +172,10 @@ ulong load_le(T : ulong)(in ubyte* input, size_t off)
 * @param x0 where the first word will be written
 * @param x1 where the second word will be written
 */
-void load_le(T)(in ubyte* input, ref T x0, ref T x1)
+void load_littleEndian(T)(in ubyte* input, ref T x0, ref T x1)
 {
-    x0 = load_le!T(input, 0);
-    x1 = load_le!T(input, 1);
+    x0 = load_littleEndian!T(input, 0);
+    x1 = load_littleEndian!T(input, 1);
 }
 
 /**
@@ -186,13 +186,13 @@ void load_le(T)(in ubyte* input, ref T x0, ref T x1)
 * @param x2 where the third word will be written
 * @param x3 where the fourth word will be written
 */
-void load_le(T)(in ubyte* input,
+void load_littleEndian(T)(in ubyte* input,
                 ref T x0, ref T x1, ref T x2, ref T x3)
 {
-    x0 = load_le!T(input, 0);
-    x1 = load_le!T(input, 1);
-    x2 = load_le!T(input, 2);
-    x3 = load_le!T(input, 3);
+    x0 = load_littleEndian!T(input, 0);
+    x1 = load_littleEndian!T(input, 1);
+    x2 = load_littleEndian!T(input, 2);
+    x3 = load_littleEndian!T(input, 3);
 }
 
 /**
@@ -207,18 +207,18 @@ void load_le(T)(in ubyte* input,
 * @param x6 where the seventh word will be written
 * @param x7 where the eighth word will be written
 */
-void load_le(T)(in ubyte* input,
+void load_littleEndian(T)(in ubyte* input,
                   ref T x0, ref T x1, ref T x2, ref T x3,
                   ref T x4, ref T x5, ref T x6, ref T x7)
 {
-    x0 = load_le!T(input, 0);
-    x1 = load_le!T(input, 1);
-    x2 = load_le!T(input, 2);
-    x3 = load_le!T(input, 3);
-    x4 = load_le!T(input, 4);
-    x5 = load_le!T(input, 5);
-    x6 = load_le!T(input, 6);
-    x7 = load_le!T(input, 7);
+    x0 = load_littleEndian!T(input, 0);
+    x1 = load_littleEndian!T(input, 1);
+    x2 = load_littleEndian!T(input, 2);
+    x3 = load_littleEndian!T(input, 3);
+    x4 = load_littleEndian!T(input, 4);
+    x5 = load_littleEndian!T(input, 5);
+    x6 = load_littleEndian!T(input, 6);
+    x7 = load_littleEndian!T(input, 7);
 }
 
 /**
@@ -227,7 +227,7 @@ void load_le(T)(in ubyte* input,
 * @param input the input array of bytes
 * @param count how many words are in in
 */
-void load_le(T)(T* output, in ubyte* input, size_t count)
+void load_littleEndian(T)(T* output, in ubyte* input, size_t count)
 {
     static if (BOTAN_TARGET_CPU_HAS_KNOWN_ENDIANNESS) {
         import std.c.string : memcpy;
@@ -246,7 +246,7 @@ void load_le(T)(T* output, in ubyte* input, size_t count)
         }
     } else {
         foreach (size_t i; 0 .. count)
-            output[i] = load_le!T(input, i);
+            output[i] = load_littleEndian!T(input, i);
     }
 }
 
@@ -256,10 +256,10 @@ void load_le(T)(T* output, in ubyte* input, size_t count)
 * @param x0 where the first word will be written
 * @param x1 where the second word will be written
 */
-void load_be(T)(in ubyte* input, ref T x0, ref T x1)
+void load_bigEndian(T)(in ubyte* input, ref T x0, ref T x1)
 {
-    x0 = load_be!T(input, 0);
-    x1 = load_be!T(input, 1);
+    x0 = load_bigEndian!T(input, 0);
+    x1 = load_bigEndian!T(input, 1);
 }
 
 /**
@@ -270,12 +270,12 @@ void load_be(T)(in ubyte* input, ref T x0, ref T x1)
 * @param x2 where the third word will be written
 * @param x3 where the fourth word will be written
 */
-void load_be(T)(in ubyte* input, ref T x0, ref T x1, ref T x2, ref T x3)
+void load_bigEndian(T)(in ubyte* input, ref T x0, ref T x1, ref T x2, ref T x3)
 {
-    x0 = load_be!T(input, 0);
-    x1 = load_be!T(input, 1);
-    x2 = load_be!T(input, 2);
-    x3 = load_be!T(input, 3);
+    x0 = load_bigEndian!T(input, 0);
+    x1 = load_bigEndian!T(input, 1);
+    x2 = load_bigEndian!T(input, 2);
+    x3 = load_bigEndian!T(input, 3);
 }
 
 /**
@@ -290,18 +290,18 @@ void load_be(T)(in ubyte* input, ref T x0, ref T x1, ref T x2, ref T x3)
 * @param x6 where the seventh word will be written
 * @param x7 where the eighth word will be written
 */
-void load_be(T)(in ubyte* input,
+void load_bigEndian(T)(in ubyte* input,
                 ref T x0, ref T x1, ref T x2, ref T x3,
                 ref T x4, ref T x5, ref T x6, ref T x7)
 {
-    x0 = load_be!T(input, 0);
-    x1 = load_be!T(input, 1);
-    x2 = load_be!T(input, 2);
-    x3 = load_be!T(input, 3);
-    x4 = load_be!T(input, 4);
-    x5 = load_be!T(input, 5);
-    x6 = load_be!T(input, 6);
-    x7 = load_be!T(input, 7);
+    x0 = load_bigEndian!T(input, 0);
+    x1 = load_bigEndian!T(input, 1);
+    x2 = load_bigEndian!T(input, 2);
+    x3 = load_bigEndian!T(input, 3);
+    x4 = load_bigEndian!T(input, 4);
+    x5 = load_bigEndian!T(input, 5);
+    x6 = load_bigEndian!T(input, 6);
+    x7 = load_bigEndian!T(input, 7);
 }
 
 /**
@@ -310,7 +310,7 @@ void load_be(T)(in ubyte* input,
 * @param input the input array of bytes
 * @param count how many words are in in
 */
-void load_be(T)(T* output, in ubyte* input, size_t count)
+void load_bigEndian(T)(T* output, in ubyte* input, size_t count)
 {
     static if (BOTAN_TARGET_CPU_HAS_KNOWN_ENDIANNESS) {
         import std.c.string : memcpy;
@@ -330,7 +330,7 @@ void load_be(T)(T* output, in ubyte* input, size_t count)
 
     } else {
         foreach (size_t i; 0 .. count)
-            output[i] = load_be!T(input, i);
+            output[i] = load_bigEndian!T(input, i);
     }
 }
 
@@ -339,7 +339,7 @@ void load_be(T)(T* output, in ubyte* input, size_t count)
 * @param input the input ushort
 * @param output the ubyte array to write to
 */
-void store_be(ushort input, ref ubyte[2] output)
+void store_bigEndian(ushort input, ref ubyte[2] output)
 {
     *cast(ushort*) output = bigEndianToNative!ushort(*cast(ubyte[2]*) input);
     
@@ -350,7 +350,7 @@ void store_be(ushort input, ref ubyte[2] output)
 * @param input the input ushort
 * @param output the ubyte array to write to
 */
-void store_le(ushort input, ref ubyte[2] output)
+void store_littleEndian(ushort input, ref ubyte[2] output)
 {
     *cast(ushort*) output = littleEndianToNative!ushort(*cast(ubyte[2]*) input);
     
@@ -361,7 +361,7 @@ void store_le(ushort input, ref ubyte[2] output)
 * @param input the input uint
 * @param output the ubyte array to write to
 */
-void store_be(uint input, ref ubyte[4] output)
+void store_bigEndian(uint input, ref ubyte[4] output)
 {
     *cast(uint*) output = bigEndianToNative!uint(*cast(ubyte[4]*) input);
     
@@ -372,7 +372,7 @@ void store_be(uint input, ref ubyte[4] output)
 * @param input the input uint
 * @param output the ubyte array to write to
 */
-void store_le(uint input, ref ubyte[4] output)
+void store_littleEndian(uint input, ref ubyte[4] output)
 {
     *cast(uint*) output = littleEndianToNative!uint(*cast(ubyte[4]*) input);
 
@@ -383,7 +383,7 @@ void store_le(uint input, ref ubyte[4] output)
 * @param input the input ulong
 * @param output the ubyte array to write to
 */
-void store_be(ulong input, ref ubyte[8] output)
+void store_bigEndian(ulong input, ref ubyte[8] output)
 {
     *cast(ulong*) output = bigEndianToNative!ulong(*cast(ubyte[8]*) input);
 }
@@ -393,7 +393,7 @@ void store_be(ulong input, ref ubyte[8] output)
 * @param input the input ulong
 * @param output the ubyte array to write to
 */
-void store_le(ulong input, ref ubyte[8] output)
+void store_littleEndian(ulong input, ref ubyte[8] output)
 {
     *cast(ulong*) output = littleEndianToNative!ulong(*cast(ubyte[8]*) input);
 }
@@ -403,9 +403,9 @@ void store_le(ulong input, ref ubyte[8] output)
 * @param input the input ulong
 * @param output the ubyte array to write to
 */
-void store_le(T)(T input, ubyte* output)
+void store_littleEndian(T)(T input, ubyte* output)
 {
-    store_le(input, *cast(ubyte[T.sizeof]*) output);
+    store_littleEndian(input, *cast(ubyte[T.sizeof]*) output);
 }
 
 /**
@@ -413,9 +413,9 @@ void store_le(T)(T input, ubyte* output)
 * @param input the input ulong
 * @param output the ubyte array to write to
 */
-void store_be(T)(T input, ubyte* output)
+void store_bigEndian(T)(T input, ubyte* output)
 {
-    store_be(input, *cast(ubyte[T.sizeof]*) output);
+    store_bigEndian(input, *cast(ubyte[T.sizeof]*) output);
 }
 
 /**
@@ -424,10 +424,10 @@ void store_be(T)(T input, ubyte* output)
 * @param x0 the first word
 * @param x1 the second word
 */
-void store_le(T)(ubyte* output, T x0, T x1)
+void store_littleEndian(T)(ubyte* output, T x0, T x1)
 {
-    store_le(x0, output + (0 * T.sizeof));
-    store_le(x1, output + (1 * T.sizeof));
+    store_littleEndian(x0, output + (0 * T.sizeof));
+    store_littleEndian(x1, output + (1 * T.sizeof));
 }
 
 /**
@@ -436,10 +436,10 @@ void store_le(T)(ubyte* output, T x0, T x1)
 * @param x0 the first word
 * @param x1 the second word
 */
-void store_be(T)(ref ubyte* output, T x0, T x1)
+void store_bigEndian(T)(ref ubyte* output, T x0, T x1)
 {
-    store_be(x0, output + (0 * T.sizeof));
-    store_be(x1, output + (1 * T.sizeof));
+    store_bigEndian(x0, output + (0 * T.sizeof));
+    store_bigEndian(x1, output + (1 * T.sizeof));
 }
 
 /**
@@ -450,12 +450,12 @@ void store_be(T)(ref ubyte* output, T x0, T x1)
 * @param x2 the third word
 * @param x3 the fourth word
 */
-void store_le(T)(ubyte* output, T x0, T x1, T x2, T x3)
+void store_littleEndian(T)(ubyte* output, T x0, T x1, T x2, T x3)
 {
-    store_le(x0, output + (0 * T.sizeof));
-    store_le(x1, output + (1 * T.sizeof));
-    store_le(x2, output + (2 * T.sizeof));
-    store_le(x3, output + (3 * T.sizeof));
+    store_littleEndian(x0, output + (0 * T.sizeof));
+    store_littleEndian(x1, output + (1 * T.sizeof));
+    store_littleEndian(x2, output + (2 * T.sizeof));
+    store_littleEndian(x3, output + (3 * T.sizeof));
 }
 
 /**
@@ -466,12 +466,12 @@ void store_le(T)(ubyte* output, T x0, T x1, T x2, T x3)
 * @param x2 the third word
 * @param x3 the fourth word
 */
-void store_be(T)(ref ubyte* output, T x0, T x1, T x2, T x3)
+void store_bigEndian(T)(ref ubyte* output, T x0, T x1, T x2, T x3)
 {
-    store_be(x0, output + (0 * T.sizeof));
-    store_be(x1, output + (1 * T.sizeof));
-    store_be(x2, output + (2 * T.sizeof));
-    store_be(x3, output + (3 * T.sizeof));
+    store_bigEndian(x0, output + (0 * T.sizeof));
+    store_bigEndian(x1, output + (1 * T.sizeof));
+    store_bigEndian(x2, output + (2 * T.sizeof));
+    store_bigEndian(x3, output + (3 * T.sizeof));
 }
 
 /**
@@ -486,17 +486,17 @@ void store_be(T)(ref ubyte* output, T x0, T x1, T x2, T x3)
 * @param x6 the seventh word
 * @param x7 the eighth word
 */
-void store_le(T)(ubyte* output, T x0, T x1, T x2, T x3,
+void store_littleEndian(T)(ubyte* output, T x0, T x1, T x2, T x3,
                                 T x4, T x5, T x6, T x7)
 {
-    store_le(x0, output + (0 * T.sizeof));
-    store_le(x1, output + (1 * T.sizeof));
-    store_le(x2, output + (2 * T.sizeof));
-    store_le(x3, output + (3 * T.sizeof));
-    store_le(x4, output + (4 * T.sizeof));
-    store_le(x5, output + (5 * T.sizeof));
-    store_le(x6, output + (6 * T.sizeof));
-    store_le(x7, output + (7 * T.sizeof));
+    store_littleEndian(x0, output + (0 * T.sizeof));
+    store_littleEndian(x1, output + (1 * T.sizeof));
+    store_littleEndian(x2, output + (2 * T.sizeof));
+    store_littleEndian(x3, output + (3 * T.sizeof));
+    store_littleEndian(x4, output + (4 * T.sizeof));
+    store_littleEndian(x5, output + (5 * T.sizeof));
+    store_littleEndian(x6, output + (6 * T.sizeof));
+    store_littleEndian(x7, output + (7 * T.sizeof));
 }
 
 /**
@@ -511,15 +511,15 @@ void store_le(T)(ubyte* output, T x0, T x1, T x2, T x3,
 * @param x6 the seventh word
 * @param x7 the eighth word
 */
-void store_be(T)(ubyte* output, T x0, T x1, T x2, T x3,
+void store_bigEndian(T)(ubyte* output, T x0, T x1, T x2, T x3,
                                 T x4, T x5, T x6, T x7)
 {
-    store_be(x0, output + (0 * T.sizeof));
-    store_be(x1, output + (1 * T.sizeof));
-    store_be(x2, output + (2 * T.sizeof));
-    store_be(x3, output + (3 * T.sizeof));
-    store_be(x4, output + (4 * T.sizeof));
-    store_be(x5, output + (5 * T.sizeof));
-    store_be(x6, output + (6 * T.sizeof));
-    store_be(x7, output + (7 * T.sizeof));
+    store_bigEndian(x0, output + (0 * T.sizeof));
+    store_bigEndian(x1, output + (1 * T.sizeof));
+    store_bigEndian(x2, output + (2 * T.sizeof));
+    store_bigEndian(x3, output + (3 * T.sizeof));
+    store_bigEndian(x4, output + (4 * T.sizeof));
+    store_bigEndian(x5, output + (5 * T.sizeof));
+    store_bigEndian(x6, output + (6 * T.sizeof));
+    store_bigEndian(x7, output + (7 * T.sizeof));
 }

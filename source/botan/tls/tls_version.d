@@ -18,7 +18,7 @@ import botan.utils.types;
 /**
 * TLS Protocol Version
 */
-struct Protocol_Version
+struct TLS_Protocol_Version
 {
 public:
     typedef ushort Version_Code;
@@ -32,14 +32,14 @@ public:
         DTLS_V12            = 0xFEFD
     }
 
-    static Protocol_Version latest_tls_version()
+    static TLS_Protocol_Version latest_tls_version()
     {
-        return Protocol_Version(TLS_V12);
+        return TLS_Protocol_Version(TLS_V12);
     }
 
-    static Protocol_Version latest_dtls_version()
+    static TLS_Protocol_Version latest_dtls_version()
     {
-        return Protocol_Version(DTLS_V12);
+        return TLS_Protocol_Version(DTLS_V12);
     }
 
     /**
@@ -69,12 +69,12 @@ public:
     */
     bool known_version() const
     {
-        return (m_version == Protocol_Version.SSL_V3 ||
-                m_version == Protocol_Version.TLS_V10 ||
-                m_version == Protocol_Version.TLS_V11 ||
-                m_version == Protocol_Version.TLS_V12 ||
-                m_version == Protocol_Version.DTLS_V10 ||
-                m_version == Protocol_Version.DTLS_V12);
+        return (m_version == TLS_Protocol_Version.SSL_V3 ||
+                m_version == TLS_Protocol_Version.TLS_V10 ||
+                m_version == TLS_Protocol_Version.TLS_V11 ||
+                m_version == TLS_Protocol_Version.TLS_V12 ||
+                m_version == TLS_Protocol_Version.DTLS_V10 ||
+                m_version == TLS_Protocol_Version.DTLS_V12);
     }
 
     /**
@@ -113,15 +113,15 @@ public:
     * best (most recent) version we know of.
     * @return best matching protocol version
     */
-    Protocol_Version best_known_match() const
+    TLS_Protocol_Version best_known_match() const
     {
         if (known_version())
             return this; // known version is its own best match
         
         if (is_datagram_protocol())
-            return Protocol_Version.DTLS_V12;
+            return TLS_Protocol_Version.DTLS_V12;
         else
-            return Protocol_Version.TLS_V12;
+            return TLS_Protocol_Version.TLS_V12;
     }
 
     /**
@@ -137,8 +137,8 @@ public:
     */
     bool supports_negotiable_signature_algorithms() const
     {
-        return (m_version == Protocol_Version.TLS_V12 ||
-                m_version == Protocol_Version.DTLS_V12);
+        return (m_version == TLS_Protocol_Version.TLS_V12 ||
+                m_version == TLS_Protocol_Version.DTLS_V12);
     }
 
     /**
@@ -146,10 +146,10 @@ public:
     */
     bool supports_explicit_cbc_ivs() const
     {
-        return (m_version == Protocol_Version.TLS_V11 ||
-                m_version == Protocol_Version.TLS_V12 ||
-                m_version == Protocol_Version.DTLS_V10 ||
-                m_version == Protocol_Version.DTLS_V12);
+        return (m_version == TLS_Protocol_Version.TLS_V11 ||
+                m_version == TLS_Protocol_Version.TLS_V12 ||
+                m_version == TLS_Protocol_Version.DTLS_V10 ||
+                m_version == TLS_Protocol_Version.DTLS_V12);
     }
 
     /**
@@ -157,20 +157,20 @@ public:
     */
     bool supports_ciphersuite_specific_prf() const
     {
-        return (m_version == Protocol_Version.TLS_V12 ||
-                m_version == Protocol_Version.DTLS_V12);
+        return (m_version == TLS_Protocol_Version.TLS_V12 ||
+                m_version == TLS_Protocol_Version.DTLS_V12);
     }
 
     bool supports_aead_modes() const
     {
-        return (m_version == Protocol_Version.TLS_V12 ||
-                m_version == Protocol_Version.DTLS_V12);
+        return (m_version == TLS_Protocol_Version.TLS_V12 ||
+                m_version == TLS_Protocol_Version.DTLS_V12);
     }
 
     /**
     * @return if this version is equal to other
     */
-    bool opEquals(in Protocol_Version other) const
+    bool opEquals(in TLS_Protocol_Version other) const
     {
         return (m_version == other.m_version);
     }
@@ -178,7 +178,7 @@ public:
     /**
     * @return if this version is not equal to other
     */
-    bool opCmp(string op)(in Protocol_Version other) const
+    bool opCmp(string op)(in TLS_Protocol_Version other) const
         if (op == "!=")
     {
         return (m_version != other.m_version);
@@ -187,11 +187,11 @@ public:
     /**
     * @return if this version is later than other
     */
-    bool opCmp(string op)(in Protocol_Version other) const
+    bool opCmp(string op)(in TLS_Protocol_Version other) const
         if (op == ">")
     {
         if (this.is_datagram_protocol() != other.is_datagram_protocol())
-            throw new TLS_Exception(Alert.PROTOCOL_VERSION,
+            throw new TLS_Exception(TLS_Alert.PROTOCOL_VERSION,
                                     "Version comparing " ~ toString() ~ " with " ~ other.toString());
         
         if (this.is_datagram_protocol())
@@ -204,7 +204,7 @@ public:
     /**
     * @return if this version is later than or equal to other
     */
-    bool opCmp(string op)(in Protocol_Version other) const
+    bool opCmp(string op)(in TLS_Protocol_Version other) const
         if (op == ">=")
     {
         return (this == other || this > other);

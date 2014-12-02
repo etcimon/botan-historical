@@ -10,7 +10,6 @@ import botan.utils.types;
 import botan.utils.exceptn;
 import std.conv : to;
 
-// import string;
 /**
 * The different charsets (nominally) supported by Botan.
 */

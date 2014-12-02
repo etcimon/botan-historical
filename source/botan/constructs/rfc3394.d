@@ -59,7 +59,7 @@ Secure_Vector!ubyte rfc3394_keywrap(in Secure_Vector!ubyte key,
             copy_mem(&R[8*i], &A[8], 8);
             
             ubyte[4] t_buf;
-            store_be(t, t_buf.ptr);
+            store_bigEndian(t, t_buf.ptr);
             xor_buf(&A[4], t_buf.ptr, 4);
         }
     }
@@ -105,7 +105,7 @@ Secure_Vector!ubyte rfc3394_keyunwrap(in Secure_Vector!ubyte key,
             const uint t = (5 - j) * n + i;
             
             ubyte[4] t_buf;
-            store_be(t, t_buf);
+            store_bigEndian(t, t_buf);
             
             xor_buf(&A[4], t_buf.ptr, 4);
             
@@ -117,7 +117,7 @@ Secure_Vector!ubyte rfc3394_keyunwrap(in Secure_Vector!ubyte key,
         }
     }
     
-    if (load_be!ulong(A.ptr, 0) != 0xA6A6A6A6A6A6A6A6)
+    if (load_bigEndian!ulong(A.ptr, 0) != 0xA6A6A6A6A6A6A6A6)
         throw new Integrity_Failure("NIST key unwrap failed");
     
     return R;

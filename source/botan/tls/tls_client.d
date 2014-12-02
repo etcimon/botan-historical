@@ -21,7 +21,7 @@ import botan.utils.types;
 /**
 * SSL/TLS Client
 */
-final class Client : Channel
+final class TLS_Client : TLS_Channel
 {
 public:
     /**
@@ -63,14 +63,14 @@ public:
     */
     this(void delegate(in ubyte[]) socket_output_fn,
          void delegate(in ubyte[]) proc_cb,
-         void delegate(Alert, in ubyte[]) alert_cb,
-         bool delegate(in Session) handshake_cb,
-         Session_Manager session_manager,
-         Credentials_Manager creds,
-         in Policy policy,
+         void delegate(TLS_Alert, in ubyte[]) alert_cb,
+         bool delegate(in TLS_Session) handshake_cb,
+         TLS_Session_Manager session_manager,
+         TLS_Credentials_Manager creds,
+         in TLS_Policy policy,
          RandomNumberGenerator rng,
-         in Server_Information server_info = Server_Information(),
-         in Protocol_Version offer_version = Protocol_Version.latest_tls_version(),
+         in TLS_Server_Information server_info = TLS_Server_Information(),
+         in TLS_Protocol_Version offer_version = TLS_Protocol_Version.latest_tls_version(),
          string delegate(string[]) next_protocol = null,
          size_t reserved_io_buffer_size = 16*1024)
     { 
@@ -105,7 +105,7 @@ private:
 
     void send_client_hello(Handshake_State state_base,
                            bool force_full_renegotiation,
-                           Protocol_Version _version,
+                           TLS_Protocol_Version _version,
                            in string srp_identifier = "",
                            string delegate(string[]) next_protocol = null)
     {
@@ -121,7 +121,7 @@ private:
         
         if (!force_full_renegotiation && !m_info.empty)
         {
-            Session session_info;
+            TLS_Session session_info;
             if (session_manager().load_from_server_info(m_info, session_info))
             {
                 if (srp_identifier == "" || session_info.srp_identifier() == srp_identifier)
@@ -179,7 +179,7 @@ private:
                 (!m_policy.allow_insecure_renegotiation() && !secure_renegotiation_supported()))
             {
                 // RFC 5746 section 4.2
-                send_warning_alert(Alert.NO_RENEGOTIATION);
+                send_warning_alert(TLS_Alert.NO_RENEGOTIATION);
                 return;
             }
             
@@ -208,14 +208,14 @@ private:
             
             if (!state.client_hello().offered_suite(state.server_hello().ciphersuite()))
             {
-                throw new TLS_Exception(Alert.HANDSHAKE_FAILURE,
+                throw new TLS_Exception(TLS_Alert.HANDSHAKE_FAILURE,
                                         "Server replied with ciphersuite we didn't send");
             }
             
             if (!value_exists(state.client_hello().compression_methods(),
                               state.server_hello().compression_method()))
             {
-                throw new TLS_Exception(Alert.HANDSHAKE_FAILURE,
+                throw new TLS_Exception(TLS_Alert.HANDSHAKE_FAILURE,
                                         "Server replied with compression method we didn't send");
             }
             
@@ -227,7 +227,7 @@ private:
             auto diff = setDifference(server_extn, client_extn);
             if (!diff.empty)
             {
-                throw new TLS_Exception(Alert.HANDSHAKE_FAILURE,
+                throw new TLS_Exception(TLS_Alert.HANDSHAKE_FAILURE,
                                         "Server sent extension(s) " ~ diff.array.to!(string[]) ~ " but we did not request it");
             }
             
@@ -247,7 +247,7 @@ private:
                 * session, and the server must resume with the same version.
                 */
                 if (state.server_hello()._version() != state.client_hello()._version())
-                    throw new TLS_Exception(Alert.HANDSHAKE_FAILURE, "Server resumed session but with wrong version");
+                    throw new TLS_Exception(TLS_Alert.HANDSHAKE_FAILURE, "Server resumed session but with wrong version");
                 
                 state.compute_session_keys(state.resume_master_secret);
                 
@@ -263,17 +263,17 @@ private:
                 if (state.client_hello()._version().is_datagram_protocol() !=
                     state.server_hello()._version().is_datagram_protocol())
                 {
-                    throw new TLS_Exception(Alert.PROTOCOL_VERSION, "Server replied with different protocol type than we offered");
+                    throw new TLS_Exception(TLS_Alert.PROTOCOL_VERSION, "Server replied with different protocol type than we offered");
                 }
                 
                 if (state._version() > state.client_hello()._version())
                 {
-                    throw new TLS_Exception(Alert.HANDSHAKE_FAILURE, "Server replied with later version than in hello");
+                    throw new TLS_Exception(TLS_Alert.HANDSHAKE_FAILURE, "Server replied with later version than in hello");
                 }
                 
                 if (!m_policy.acceptable_protocol_version(state._version()))
                 {
-                    throw new TLS_Exception(Alert.PROTOCOL_VERSION, "Server version is unacceptable by policy");
+                    throw new TLS_Exception(TLS_Alert.PROTOCOL_VERSION, "Server version is unacceptable by policy");
                 }
                 
                 if (state.ciphersuite().sig_algo() != "")
@@ -321,7 +321,7 @@ private:
             const Vector!X509_Certificate server_certs = state.server_certs().cert_chain();
             
             if (server_certs.empty)
-                throw new TLS_Exception(Alert.HANDSHAKE_FAILURE, "Client: No certificates sent by server");
+                throw new TLS_Exception(TLS_Alert.HANDSHAKE_FAILURE, "TLS_Client: No certificates sent by server");
             
             try
             {
@@ -329,13 +329,13 @@ private:
             }
             catch(Exception e)
             {
-                throw new TLS_Exception(Alert.BAD_CERTIFICATE, e.msg);
+                throw new TLS_Exception(TLS_Alert.BAD_CERTIFICATE, e.msg);
             }
             
             Unique!Public_Key peer_key = server_certs[0].subject_public_key();
             
             if (peer_key.algo_name != state.ciphersuite().sig_algo())
-                throw new TLS_Exception(Alert.ILLEGAL_PARAMETER, "Certificate key type did not match ciphersuite");
+                throw new TLS_Exception(TLS_Alert.ILLEGAL_PARAMETER, "Certificate key type did not match ciphersuite");
             
             state.server_public_key = peer_key;
         }
@@ -355,7 +355,7 @@ private:
                 
                 if (!state.server_kex().verify(server_key, state))
                 {
-                    throw new TLS_Exception(Alert.DECRYPT_ERROR, "Bad signature on server key exchange");
+                    throw new TLS_Exception(TLS_Alert.DECRYPT_ERROR, "Bad signature on server key exchange");
                 }
             }
         }
@@ -434,7 +434,7 @@ private:
             state.server_finished(new Finished(contents));
             
             if (!state.server_finished().verify(state, SERVER))
-                throw new TLS_Exception(Alert.DECRYPT_ERROR, "Finished message didn't verify");
+                throw new TLS_Exception(TLS_Alert.DECRYPT_ERROR, "Finished message didn't verify");
             
             state.hash().update(state.handshake_io().format(contents, type));
             
@@ -461,7 +461,7 @@ private:
             if (session_id.empty && !session_ticket.empty)
                 session_id = make_hello_random(rng());
             
-            Session session_info = Session(session_id,
+            TLS_Session session_info = TLS_Session(session_id,
                                             state.session_keys().master_secret(),
                                             state.server_hello()._version(),
                                             state.server_hello().ciphersuite(),
@@ -494,9 +494,9 @@ private:
         return new Client_Handshake_State(io);
     }
 
-    const Policy m_policy;
-    Credentials_Manager m_creds;
-    const Server_Information m_info;
+    const TLS_Policy m_policy;
+    TLS_Credentials_Manager m_creds;
+    const TLS_Server_Information m_info;
 }
 
 

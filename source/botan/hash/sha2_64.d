@@ -60,7 +60,7 @@ private:
     void copy_out(ubyte* output)
     {
         for (size_t i = 0; i != output_length(); i += 8)
-            store_be(m_digest[i/8], output + i);
+            store_bigEndian(m_digest[i/8], output + i);
     }
 
     Secure_Vector!ulong m_digest;
@@ -113,7 +113,7 @@ private:
     void copy_out(ubyte* output)
     {
         for (size_t i = 0; i != output_length(); i += 8)
-            store_be(m_digest[i/8], output + i);
+            store_bigEndian(m_digest[i/8], output + i);
     }
 
     Secure_Vector!ulong m_digest;
@@ -178,22 +178,22 @@ void compress(ref Secure_Vector!ulong digest,
     
     foreach (size_t i; 0 .. blocks)
     {
-        ulong W00 = load_be!ulong(input,  0);
-        ulong W01 = load_be!ulong(input,  1);
-        ulong W02 = load_be!ulong(input,  2);
-        ulong W03 = load_be!ulong(input,  3);
-        ulong W04 = load_be!ulong(input,  4);
-        ulong W05 = load_be!ulong(input,  5);
-        ulong W06 = load_be!ulong(input,  6);
-        ulong W07 = load_be!ulong(input,  7);
-        ulong W08 = load_be!ulong(input,  8);
-        ulong W09 = load_be!ulong(input,  9);
-        ulong W10 = load_be!ulong(input, 10);
-        ulong W11 = load_be!ulong(input, 11);
-        ulong W12 = load_be!ulong(input, 12);
-        ulong W13 = load_be!ulong(input, 13);
-        ulong W14 = load_be!ulong(input, 14);
-        ulong W15 = load_be!ulong(input, 15);
+        ulong W00 = load_bigEndian!ulong(input,  0);
+        ulong W01 = load_bigEndian!ulong(input,  1);
+        ulong W02 = load_bigEndian!ulong(input,  2);
+        ulong W03 = load_bigEndian!ulong(input,  3);
+        ulong W04 = load_bigEndian!ulong(input,  4);
+        ulong W05 = load_bigEndian!ulong(input,  5);
+        ulong W06 = load_bigEndian!ulong(input,  6);
+        ulong W07 = load_bigEndian!ulong(input,  7);
+        ulong W08 = load_bigEndian!ulong(input,  8);
+        ulong W09 = load_bigEndian!ulong(input,  9);
+        ulong W10 = load_bigEndian!ulong(input, 10);
+        ulong W11 = load_bigEndian!ulong(input, 11);
+        ulong W12 = load_bigEndian!ulong(input, 12);
+        ulong W13 = load_bigEndian!ulong(input, 13);
+        ulong W14 = load_bigEndian!ulong(input, 14);
+        ulong W15 = load_bigEndian!ulong(input, 15);
         
         mixin(
             SHA2_64_F!(A, B, C, D, E, F, G, H, W00, W14, W09, W01, 0x428A2F98D728AE22)() ~

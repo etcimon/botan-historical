@@ -35,7 +35,7 @@ public:
     /**
     * Return a TLS Handshake Hash
     */
-    Secure_Vector!ubyte flushInto(Protocol_Version _version, in string mac_algo) const
+    Secure_Vector!ubyte flushInto(TLS_Protocol_Version _version, in string mac_algo) const
     {
         Algorithm_Factory af = global_state().algorithm_factory();
         
@@ -52,7 +52,7 @@ public:
             hash = af.make_hash_function("Parallel(MD5,SHA-160)");
         
         hash.update(m_data);
-        return hash.flush();
+        return hash.finished();
     }
 
     /**
@@ -78,7 +78,7 @@ public:
         foreach (size_t i; 0 .. 40)
             sha1.update(PAD_INNER);
         
-        Secure_Vector!ubyte inner_md5 = md5.flush(), inner_sha1 = sha1.flush();
+        Secure_Vector!ubyte inner_md5 = md5.finished(), inner_sha1 = sha1.finished();
         
         md5.update(secret);
         sha1.update(secret);
@@ -92,8 +92,8 @@ public:
         sha1.update(inner_sha1);
         
         Secure_Vector!ubyte output;
-        output ~= md5.flush();
-        output ~= sha1.flush();
+        output ~= md5.finished();
+        output ~= sha1.finished();
         return output;
     }
 

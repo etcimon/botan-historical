@@ -24,8 +24,8 @@ public:
     {
         foreach (size_t i; 0 .. blocks)
         {
-            uint L = load_be!uint(input, 0);
-            uint R = load_be!uint(input, 1);
+            uint L = load_bigEndian!uint(input, 0);
+            uint R = load_bigEndian!uint(input, 1);
             
             uint S = 0;
             foreach (size_t j; 0 .. 32)
@@ -35,7 +35,7 @@ public:
                 R += ((L << 4) + m_K[2]) ^ (L + S) ^ ((L >> 5) + m_K[3]);
             }
             
-            store_be(output, L, R);
+            store_bigEndian(output, L, R);
             
             input += BLOCK_SIZE;
             output += BLOCK_SIZE;
@@ -48,8 +48,8 @@ public:
     {
         foreach (size_t i; 0 .. blocks)
         {
-            uint L = load_be!uint(input, 0);
-            uint R = load_be!uint(input, 1);
+            uint L = load_bigEndian!uint(input, 0);
+            uint R = load_bigEndian!uint(input, 1);
             
             uint S = 0xC6EF3720;
             foreach (size_t j; 0 .. 32)
@@ -59,7 +59,7 @@ public:
                 S -= 0x9E3779B9;
             }
             
-            store_be(output, L, R);
+            store_bigEndian(output, L, R);
             
             input += BLOCK_SIZE;
             output += BLOCK_SIZE;
@@ -81,7 +81,7 @@ private:
     {
         m_K.resize(4);
         foreach (size_t i; 0 .. 4)
-            m_K[i] = load_be!uint(key, i);
+            m_K[i] = load_bigEndian!uint(key, i);
     }
     Secure_Vector!uint m_K;
 }

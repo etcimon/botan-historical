@@ -55,7 +55,7 @@ public:
         
         m_hash.update(passphrase);
         m_hash.update(salt, salt_len);
-        Secure_Vector!ubyte key = m_hash.flush();
+        Secure_Vector!ubyte key = m_hash.finished();
         
         const start = Clock.currTime();
         size_t iterations_performed = 1;

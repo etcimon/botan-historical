@@ -1,5 +1,5 @@
 /*
-* Alert Message
+* TLS Alert Message
 * (C) 2004-2006,2011,2012 Jack Lloyd
 *
 * Released under the terms of the botan license.
@@ -10,56 +10,55 @@ import botan.constants;
 static if (BOTAN_HAS_TLS):
 
 import botan.utils.memory.zeroize;
-// import string;
 import botan.utils.exceptn;
 import botan.utils.types;
 import std.conv : to;
 
 /**
-* SSL/TLS Alert Message
+* SSL/TLS TLS_Alert Message
 */
-struct Alert
+struct TLS_Alert
 {
 public:
-    typedef ushort Type;
+	typedef ushort Alert_Type;
     /**
     * Type codes for TLS alerts
     */
-    enum : Type {
+    enum : Alert_Type {
         CLOSE_NOTIFY                        = 0,
-        UNEXPECTED_MESSAGE                     = 10,
-        BAD_RECORD_MAC                        = 20,
-        DECRYPTION_FAILED                    = 21,
-        RECORD_OVERFLOW                          = 22,
-        DECOMPRESSION_FAILURE                  = 30,
-        HANDSHAKE_FAILURE                    = 40,
-        NO_CERTIFICATE                        = 41, // SSLv3 only
-        BAD_CERTIFICATE                          = 42,
-        UNSUPPORTED_CERTIFICATE                = 43,
-        CERTIFICATE_REVOKED                     = 44,
-        CERTIFICATE_EXPIRED                     = 45,
-        CERTIFICATE_UNKNOWN                     = 46,
-        ILLEGAL_PARAMETER                    = 47,
-        UNKNOWN_CA                            = 48,
-        ACCESS_DENIED                        = 49,
+        UNEXPECTED_MESSAGE                  = 10,
+        BAD_RECORD_MAC                      = 20,
+        DECRYPTION_FAILED                   = 21,
+        RECORD_OVERFLOW                     = 22,
+        DECOMPRESSION_FAILURE               = 30,
+        HANDSHAKE_FAILURE                   = 40,
+        NO_CERTIFICATE                      = 41, // SSLv3 only
+        BAD_CERTIFICATE                     = 42,
+        UNSUPPORTED_CERTIFICATE             = 43,
+        CERTIFICATE_REVOKED                 = 44,
+        CERTIFICATE_EXPIRED                 = 45,
+        CERTIFICATE_UNKNOWN                 = 46,
+        ILLEGAL_PARAMETER                   = 47,
+        UNKNOWN_CA                          = 48,
+        ACCESS_DENIED                       = 49,
         DECODE_ERROR                        = 50,
-        DECRYPT_ERROR                        = 51,
-        EXPORT_RESTRICTION                      = 60,
+        DECRYPT_ERROR                       = 51,
+        EXPORT_RESTRICTION                  = 60,
         PROTOCOL_VERSION                    = 70,
-        INSUFFICIENT_SECURITY                  = 71,
-        INTERNAL_ERROR                        = 80,
-        USER_CANCELED                        = 90,
+        INSUFFICIENT_SECURITY               = 71,
+        INTERNAL_ERROR                      = 80,
+        USER_CANCELED                       = 90,
         NO_RENEGOTIATION                    = 100,
-        UNSUPPORTED_EXTENSION                  = 110,
-        CERTIFICATE_UNOBTAINABLE              = 111,
-        UNRECOGNIZED_NAME                    = 112,
+        UNSUPPORTED_EXTENSION               = 110,
+        CERTIFICATE_UNOBTAINABLE            = 111,
+        UNRECOGNIZED_NAME                   = 112,
         BAD_CERTIFICATE_STATUS_RESPONSE     = 113,
-        BAD_CERTIFICATE_HASH_VALUE            = 114,
+        BAD_CERTIFICATE_HASH_VALUE          = 114,
         UNKNOWN_PSK_IDENTITY                = 115,
 
         // pseudo alert values
-        NULL_ALERT                            = 256,
-        HEARTBEAT_PAYLOAD                    = 257
+        NULL_ALERT                          = 256,
+        HEARTBEAT_PAYLOAD                   = 257
     }
 
     /**
@@ -75,7 +74,7 @@ public:
     /**
     * @return type of alert
     */
-    Type type() const { return m_type_code; }
+	Alert_Type type() const { return m_type_code; }
 
     /**
     * @return type of alert
@@ -174,18 +173,18 @@ public:
     }
 
     /**
-    * Deserialize an Alert message
+    * Deserialize an TLS_Alert message
     * @param buf the serialized alert
     */
     this(in Secure_Vector!ubyte buf)
     {
         if (buf.length != 2)
-            throw new Decoding_Error("Alert: Bad size " ~ to!string(buf.length) ~ " for alert message");
+            throw new Decoding_Error("TLS_Alert: Bad size " ~ to!string(buf.length) ~ " for alert message");
         
         if (buf[0] == 1)        m_fatal = false;
         else if (buf[0] == 2)     m_fatal = true;
         else
-            throw new Decoding_Error("Alert: Bad code for alert level");
+            throw new Decoding_Error("TLS_Alert: Bad code for alert level");
         
         const ubyte dc = buf[1];
         
@@ -193,11 +192,11 @@ public:
     }
 
     /**
-    * Create a new Alert
+    * Create a new TLS_Alert
     * @param type_code the type of alert
     * @param fatal specifies if this is a fatal alert
     */
-    this(Type type_code = NULL_ALERT, bool fatal = false)
+	this(Alert_Type type_code = NULL_ALERT, bool fatal = false)
     {
         m_fatal = fatal;
         m_type_code = type_code;
@@ -205,5 +204,5 @@ public:
 
 private:
     bool m_fatal;
-    Type m_type_code;
+	Alert_Type m_type_code;
 }

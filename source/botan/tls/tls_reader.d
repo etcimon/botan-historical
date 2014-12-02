@@ -84,7 +84,7 @@ public:
         Container result(num_elems);
 
         foreach (size_t i; 0 .. num_elems)
-            result[i] = load_be!T(&m_buf[m_offset], i);
+            result[i] = load_bigEndian!T(&m_buf[m_offset], i);
 
         m_offset += num_elems * T.sizeof;
 

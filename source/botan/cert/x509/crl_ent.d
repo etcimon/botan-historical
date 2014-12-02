@@ -51,9 +51,9 @@ public:
     */
     void encode_into(DER_Encoder to_) const
     {
-        Extensions extensions;
+		X509_Extensions extensions;
         
-        extensions.add(new x509_ext.CRL_ReasonCode(reason));
+        extensions.add(new CRL_ReasonCode(reason));
         
         to_.start_cons(ASN1_Tag.SEQUENCE)
                 .encode(BigInt.decode(serial))
@@ -79,7 +79,7 @@ public:
         
         if (entry.more_items())
         {
-            Extensions extensions = Extensions(m_throw_on_unknown_critical);
+			X509_Extensions extensions = X509_Extensions(m_throw_on_unknown_critical);
             entry.decode(extensions);
             Data_Store info;
             extensions.contents_to(info, info);

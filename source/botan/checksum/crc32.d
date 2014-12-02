@@ -112,7 +112,7 @@ private:
     void final_result(ubyte* output)
     {
         m_crc ^= 0xFFFFFFFF;
-        store_be(m_crc, output);
+        store_bigEndian(m_crc, output);
         clear();
     }
 

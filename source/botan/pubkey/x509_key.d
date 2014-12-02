@@ -63,7 +63,7 @@ Public_Key load_key(DataSource source)
         Algorithm_Identifier alg_id;
         Secure_Vector!ubyte key_bits;
         
-        if (asn1_obj.maybe_BER(source) && !PEM.matches(source))
+        if (maybe_BER(source) && !PEM.matches(source))
         {
             BER_Decoder(source)
                     .start_cons(ASN1_Tag.SEQUENCE)

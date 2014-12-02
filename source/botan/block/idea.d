@@ -64,7 +64,7 @@ private:
         m_DK.resize(52);
         
         foreach (size_t i; 0 .. 8)
-            m_EK[i] = load_be!ushort(key, i);
+            m_EK[i] = load_bigEndian!ushort(key, i);
         
         for (size_t i = 1, j = 8, offset = 0; j != 52; i %= 8, ++i, ++j)
         {
@@ -153,10 +153,10 @@ void idea_op(ubyte* input, ubyte* output, size_t blocks) pure
     
     foreach (size_t i; 0 .. blocks)
     {
-        ushort X1 = load_be!ushort(input, 0);
-        ushort X2 = load_be!ushort(input, 1);
-        ushort X3 = load_be!ushort(input, 2);
-        ushort X4 = load_be!ushort(input, 3);
+        ushort X1 = load_bigEndian!ushort(input, 0);
+        ushort X2 = load_bigEndian!ushort(input, 1);
+        ushort X3 = load_bigEndian!ushort(input, 2);
+        ushort X4 = load_bigEndian!ushort(input, 3);
         
         foreach (size_t j; 0 .. 8)
         {
@@ -183,7 +183,7 @@ void idea_op(ubyte* input, ubyte* output, size_t blocks) pure
         X3 += K[49];
         X4  = mul(X4, K[51]);
         
-        store_be(output, X1, X3, X2, X4);
+        store_bigEndian(output, X1, X3, X2, X4);
         
         input += BLOCK_SIZE;
         output += BLOCK_SIZE;

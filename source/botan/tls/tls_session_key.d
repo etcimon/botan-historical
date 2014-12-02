@@ -1,5 +1,5 @@
 /*
-* TLS Session Key
+* TLS TLS_Session Key
 * (C) 2004-2006,2011 Jack Lloyd
 *
 * Released under the terms of the botan license.
@@ -14,7 +14,7 @@ import botan.tls.tls_handshake_state;
 import botan.tls.tls_messages;
 
 /**
-* TLS Session Keys
+* TLS TLS_Session Keys
 */
 struct Session_Keys
 {
@@ -59,7 +59,7 @@ public:
         {
             Secure_Vector!ubyte salt;
             
-            if (state._version() != Protocol_Version.SSL_V3)
+            if (state._version() != TLS_Protocol_Version.SSL_V3)
                 salt ~= MASTER_SECRET_MAGIC;
             
             salt ~= state.client_hello().random();
@@ -69,7 +69,7 @@ public:
         }
         
         Secure_Vector!ubyte salt;
-        if (state._version() != Protocol_Version.SSL_V3)
+        if (state._version() != TLS_Protocol_Version.SSL_V3)
             salt ~= KEY_GEN_MAGIC;
         salt ~= state.server_hello().random();
         salt ~= state.client_hello().random();

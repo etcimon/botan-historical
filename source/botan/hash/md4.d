@@ -53,7 +53,7 @@ protected:
         
         foreach (size_t i; 0 .. blocks)
         {
-            load_le(m_M.ptr, input, m_M.length);
+            load_littleEndian(m_M.ptr, input, m_M.length);
             
             FF(A,B,C,D,m_M[ 0], 3);    FF(D,A,B,C,m_M[ 1], 7);
             FF(C,D,A,B,m_M[ 2],11);    FF(B,C,D,A,m_M[ 3],19);
@@ -97,7 +97,7 @@ protected:
     void copy_out(ubyte* output)
     {
         for (size_t i = 0; i != output_length; i += 4)
-            store_le(m_digest[i/4], output + i);
+            store_littleEndian(m_digest[i/4], output + i);
     }
 
     /**

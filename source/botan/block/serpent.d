@@ -27,10 +27,10 @@ public:
     {
         foreach (size_t i; 0 .. blocks)
         {
-            uint B0 = load_le!uint(input, 0);
-            uint B1 = load_le!uint(input, 1);
-            uint B2 = load_le!uint(input, 2);
-            uint B3 = load_le!uint(input, 3);
+            uint B0 = load_littleEndian!uint(input, 0);
+            uint B1 = load_littleEndian!uint(input, 1);
+            uint B2 = load_littleEndian!uint(input, 2);
+            uint B3 = load_littleEndian!uint(input, 3);
             
             mixin(key_xor!( 0)()); mixin(SBoxE1!(B0,B1,B2,B3)()); transform(B0,B1,B2,B3);
             mixin(key_xor!( 1)()); mixin(SBoxE2!(B0,B1,B2,B3)()); transform(B0,B1,B2,B3);
@@ -65,7 +65,7 @@ public:
             mixin(key_xor!(30)()); mixin(SBoxE7!(B0,B1,B2,B3)()); transform(B0,B1,B2,B3);
             mixin(key_xor!(31)()); mixin(SBoxE8!(B0,B1,B2,B3)()); mixin(key_xor!(32)());
             
-            store_le(output, B0, B1, B2, B3);
+            store_littleEndian(output, B0, B1, B2, B3);
             
             input += BLOCK_SIZE;
             output += BLOCK_SIZE;
@@ -79,10 +79,10 @@ public:
     {
         foreach (size_t i; 0 .. blocks)
         {
-            uint B0 = load_le!uint(input, 0);
-            uint B1 = load_le!uint(input, 1);
-            uint B2 = load_le!uint(input, 2);
-            uint B3 = load_le!uint(input, 3);
+            uint B0 = load_littleEndian!uint(input, 0);
+            uint B1 = load_littleEndian!uint(input, 1);
+            uint B2 = load_littleEndian!uint(input, 2);
+            uint B3 = load_littleEndian!uint(input, 3);
             
             mixin(key_xor!(32)());  mixin(SBoxD8()); mixin(key_xor!(31)());
             i_transform(B0,B1,B2,B3); mixin(SBoxD7()); mixin(key_xor!(30)());
@@ -117,7 +117,7 @@ public:
             i_transform(B0,B1,B2,B3); mixin(SBoxD2()); mixin(key_xor!( 1)());
             i_transform(B0,B1,B2,B3); mixin(SBoxD1()); mixin(key_xor!( 0)());
             
-            store_le(output, B0, B1, B2, B3);
+            store_littleEndian(output, B0, B1, B2, B3);
             
             input += BLOCK_SIZE;
             output += BLOCK_SIZE;
@@ -158,7 +158,7 @@ private:
         
         Secure_Vector!uint W = Secure_Vector!uint(140);
         foreach (size_t i; 0 .. (length / 4))
-            W[i] = load_le!uint(key, i);
+            W[i] = load_littleEndian!uint(key, i);
         
         W[length / 4] |= uint(1) << ((length%4)*8);
         
