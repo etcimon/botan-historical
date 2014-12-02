@@ -1,8 +1,9 @@
 License
 ========================================
 
-Botan (http://botan.randombit.net/) is distributed under these terms::
+Botan (http://botan.randombit.net/) is distributed under these terms:
 
+```
   Copyright (C) 1999-2013,2014 Jack Lloyd
                 2001 Peter J Jones
                 2004-2007 Justin Karneges
@@ -46,3 +47,4 @@ Botan (http://botan.randombit.net/) is distributed under these terms::
   CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
   ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
   POSSIBILITY OF SUCH DAMAGE.
+```
