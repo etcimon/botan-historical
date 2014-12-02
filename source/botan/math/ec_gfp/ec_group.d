@@ -187,13 +187,13 @@ public:
     * Return domain parameter curve
     * @result domain parameter curve
     */
-    const ref CurveGFp get_curve() const { return m_curve; }
+    ref CurveGFp get_curve() const { return m_curve; }
 
     /**
     * Return domain parameter curve
     * @result domain parameter curve
     */
-    const ref PointGFp get_base_point() const { return m_base_point; }
+    ref PointGFp get_base_point() const { return m_base_point; }
 
     /**
     * Return the order of the base point

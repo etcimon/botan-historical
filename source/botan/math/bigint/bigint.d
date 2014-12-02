@@ -747,7 +747,7 @@ public:
     * Return a const pointer to the register
     * @result a pointer to the start of the internal register
     */
-    const word* data() const { return m_reg.ptr; }
+    word* data() const { return m_reg.ptr; }
 
     /**
     * Increase internal register buffer to at least n words
@@ -963,7 +963,7 @@ public:
             if (length % 2)
             {
                 // Handle lack of leading 0
-                const char buf0_with_leading_0[2] = [ '0', cast(char)(buf[0]) ];
+                const char[2] buf0_with_leading_0 = [ '0', cast(char)(buf[0]) ];
                 
                 binary = hex_decode_locked(buf0_with_leading_0.ptr, 2);
                 
@@ -983,7 +983,7 @@ public:
                 
                 if (!is_digit(buf[i]))
                     throw new Invalid_Argument("BigInt.decode: "
-                                               "Invalid character in decimal input");
+                                               ~ "Invalid character in decimal input");
                 
                 const ubyte x = char2digit(buf[i]);
                 

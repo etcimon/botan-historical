@@ -1,4 +1,4 @@
-﻿/**
+/**
     Utility functions for memory management
 
     Note that this module currently is a big sand box for testing allocation related stuff.
@@ -270,9 +270,9 @@ template FreeListObjectAlloc(T, bool USE_GC = true, bool INIT = true)
     enum ElemSize = AllocSize!T;
     
     static if( is(T == class) ){
-        alias T TR;
+        alias TR = T;
     } else {
-        alias T* TR;
+        alias TR = T*;
     }
     
     TR alloc(ARGS...)(ARGS args)
@@ -312,9 +312,9 @@ struct FreeListRef(T, bool INIT = true)
     enum ElemSize = AllocSize!T;
     
     static if( is(T == class) ){
-        alias T TR;
+        alias TR = T;
     } else {
-        alias T* TR;
+        alias TR = T*;
     }
     
     private TR m_object;

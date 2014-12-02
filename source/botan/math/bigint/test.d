@@ -1,4 +1,4 @@
-﻿module botan.math.bigint.test;
+module botan.math.bigint.test;
 
 static if (BOTAN_TEST):
 

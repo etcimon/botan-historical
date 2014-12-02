@@ -83,7 +83,7 @@ public:
     bool ocsp_all_intermediates() const
     { return m_ocsp_all_intermediates; }
 
-    const RedBlackTree!string trusted_hashes() const
+    RedBlackTree!string trusted_hashes() const
     { return m_trusted_hashes; }
 
     size_t minimum_key_strength() const
@@ -119,7 +119,7 @@ public:
     /**
     * @return the trust root of the validation
     */
-    const X509_Certificate trust_root() const
+    X509_Certificate trust_root() const
     {
         import std.range : back;
         return m_cert_path[].back;
@@ -128,7 +128,7 @@ public:
     /**
     * @return the full path from subject to trust root
     */
-    const Vector!X509_Certificate cert_path() const { return m_cert_path; }
+    Vector!X509_Certificate cert_path() const { return m_cert_path; }
 
     /**
     * @return true iff the validation was succesful
@@ -149,7 +149,7 @@ public:
     /**
     * Return a set of status codes for each certificate in the chain
     */
-    const Vector!(  RedBlackTree!Certificate_Status_Code ) all_statuses() const
+    Vector!(  RedBlackTree!Certificate_Status_Code ) all_statuses() const
     { return m_all_status; }
 
     /**
@@ -320,9 +320,9 @@ Path_Validation_Result x509_path_validate(in Vector!X509_Certificate end_certs,
     return x509_path_validate(end_certs, restrictions, certstores);
 }
 
-const X509_Certificate find_issuing_cert(in X509_Certificate cert,
+X509_Certificate find_issuing_cert(in X509_Certificate cert,
                                          ref Certificate_Store end_certs, 
-                                         in Vector!Certificate_Store certstores)
+                                         in Vector!Certificate_Store certstores) const
 {
     const X509_DN issuer_dn = cert.issuer_dn();
     const Vector!ubyte auth_key_id = cert.authority_key_id();
@@ -339,8 +339,8 @@ const X509_Certificate find_issuing_cert(in X509_Certificate cert,
     return null;
 }
 
-const X509_CRL find_crls_for(in X509_Certificate cert,
-                              const ref Vector!Certificate_Store certstores)
+X509_CRL find_crls_for(in X509_Certificate cert,
+                              const ref Vector!Certificate_Store certstores) const
 {
     foreach (certstore; certstores)
     {

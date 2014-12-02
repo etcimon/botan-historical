@@ -113,8 +113,8 @@ public:
     }
 
 protected:
-    final const Secure_Vector!ulong get_T() const { return m_T; }
-    final const Secure_Vector!ulong get_K() const { return m_K; }
+    final Secure_Vector!ulong get_T() const { return m_T; }
+    final Secure_Vector!ulong get_K() const { return m_K; }
 private:
     override void key_schedule(in ubyte* key, size_t)
     {

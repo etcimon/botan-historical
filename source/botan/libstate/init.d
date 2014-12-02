@@ -38,7 +38,7 @@ public:
             
             global_state().initialize();
         }
-        catch
+        catch (Throwable)
         {
             deinitialize();
             throw new Exception("Library initialization failed");

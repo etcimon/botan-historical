@@ -1,4 +1,4 @@
-﻿module botan.utils.containers.rbtree;
+module botan.utils.containers.rbtree;
 import botan.utils.memory.memory;
 // FIXME
 import std.functional; // : binaryFun;

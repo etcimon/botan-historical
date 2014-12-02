@@ -19,7 +19,7 @@ import std.c.stdlib;
 import std.c.stdio;
 
 /* GnuMP 5.0 and later have a side-channel resistent powm */
-version(HAVE_MPZ_POWM_SEC)    alias mpz_powm_sec mpz_powm;
+version(HAVE_MPZ_POWM_SEC)    alias mpz_powm = mpz_powm_sec;
 static if (BOTAN_HAS_RSA)    import botan.pubkey.algo.rsa;
 static if (BOTAN_HAS_DSA)    import botan.pubkey.algo.dsa;
 static if (BOTAN_HAS_DIFFIE_HELLMAN)    import botan.pubkey.algo.dh;
@@ -554,13 +554,13 @@ extern(C) nothrow @nogc
         GMP_RAND_ALG_LC = GMP_RAND_ALG_DEFAULT /* Linear congruential.  */
     } ;
     extern  int __gmp_bits_per_limb;
-    alias __gmp_bits_per_limb mp_bits_per_limb;
+    alias mp_bits_per_limb = __gmp_bits_per_limb;
     
     extern int __gmp_errno;
-    alias __gmp_errno gmp_errno;
+    alias gmp_errno = __gmp_errno;
     extern  char *  __gmp_version;
     
-    alias __gmp_version gmp_version;
+    alias gmp_version = __gmp_version;
     
     const __GMP_BITS_PER_MP_LIMB=32;
     const __GMP_HAVE_HOST_CPU_FAMILY_power=0;
@@ -571,8 +571,8 @@ extern(C) nothrow @nogc
     const GMP_NUMB_MASK=((~ cast(mp_limb_t)( 0)) >> GMP_NAIL_BITS);
     const GMP_NUMB_MAX=GMP_NUMB_MASK;
     const GMP_NAIL_MASK=(~ GMP_NUMB_MASK);
-    alias uint mp_limb_t;
-    alias int mp_limb_signed_t;
+    alias mp_limb_t = uint;
+    alias mp_limb_signed_t = int;
     struct  __mpz_struct{
         int _mp_alloc;        /* Number of *limbs* allocated and pointed
                    to by the _mp_d field.  */
@@ -581,19 +581,19 @@ extern(C) nothrow @nogc
                    negative this is a negative number.  */
         mp_limb_t *_mp_d;        /* Pointer to the limbs.  */
     }
-    alias __mpz_struct MP_INT;
-    alias __mpz_struct mpz_t[1];
-    alias mp_limb_t * mp_ptr;
-    alias mp_limb_t * mp_srcptr;
+    alias MP_INT = __mpz_struct;
+    alias mpz_t = __mpz_struct[1];
+    alias mp_ptr = mp_limb_t *;
+    alias mp_srcptr = mp_limb_t *;
     const __GMP_MP_SIZE_T_INT=0;
-    alias int mp_size_t;
-    alias int mp_exp_t;
+    alias mp_size_t = int;
+    alias mp_exp_t = int;
     struct  __mpq_struct{
         __mpz_struct _mp_num;
         __mpz_struct _mp_den;
     }
-    alias __mpq_struct MP_RAT;
-    alias __mpq_struct mpq_t[1];
+    alias MP_RAT = __mpq_struct;
+    alias mpq_t = __mpq_struct[1];
     struct  __mpf_struct{
         int _mp_prec;            /* Max precision, in number of `mp_limb_t's.
                    Set by mpf_init and modified by
@@ -605,8 +605,8 @@ extern(C) nothrow @nogc
         mp_exp_t _mp_exp;        /* Exponent, in the base of `mp_limb_t'.  */
         mp_limb_t *_mp_d;        /* Pointer to the limbs.  */
     }
-    alias __mpf_struct MP_FLOAT;
-    alias __mpf_struct mpf_t;
+    alias MP_FLOAT = __mpf_struct;
+    alias mpf_t = __mpf_struct;
     struct  __gmp_randstate_struct{
         mpz_t _mp_seed;      /* _mp_d member points to state of the generator. */
         gmp_randalg_t _mp_alg;  /* Currently unused. */
@@ -614,872 +614,872 @@ extern(C) nothrow @nogc
             void *_mp_lc;         /* Pointer to function pointers structure.  */
         }
     }
-    alias __gmp_randstate_struct gmp_randstate_t[1];
-    alias __mpz_struct *mpz_srcptr;
-    alias __mpz_struct *mpz_ptr;
-    alias __mpf_struct *mpf_srcptr;
-    alias __mpf_struct *mpf_ptr;
-    alias __mpq_struct *mpq_srcptr;
-    alias __mpq_struct *mpq_ptr;
+    alias gmp_randstate_t = __gmp_randstate_struct[1];
+    alias mpz_srcptr = __mpz_struct *;
+    alias mpz_ptr = __mpz_struct *;
+    alias mpf_srcptr = __mpf_struct *;
+    alias mpf_ptr = __mpf_struct *;
+    alias mpq_srcptr = __mpq_struct *;
+    alias mpq_ptr = __mpq_struct *;
     const __GMP_UINT_MAX=(~ cast(uint) 0);
     const __GMP_ULONG_MAX=(~ cast(uint) 0);
     const __GMP_USHRT_MAX=(cast(ushort) ~0);
     /**************** Random number routines.  ****************/
     
     /* obsolete */
-    alias __gmp_randinit gmp_randinit;
+    alias gmp_randinit = __gmp_randinit;
     void __gmp_randinit (gmp_randstate_t, gmp_randalg_t, ...);
     
-    alias __gmp_randinit_default gmp_randinit_default;
+    alias gmp_randinit_default = __gmp_randinit_default;
     void __gmp_randinit_default (gmp_randstate_t);
     
-    alias __gmp_randinit_lc_2exp gmp_randinit_lc_2exp;
+    alias gmp_randinit_lc_2exp = __gmp_randinit_lc_2exp;
     void __gmp_randinit_lc_2exp (gmp_randstate_t,
                                  mpz_srcptr, uint,
                                  uint);
     
-    alias __gmp_randinit_lc_2exp_size gmp_randinit_lc_2exp_size;
+    alias gmp_randinit_lc_2exp_size = __gmp_randinit_lc_2exp_size;
     int __gmp_randinit_lc_2exp_size (gmp_randstate_t, uint);
     
-    alias __gmp_randinit_mt gmp_randinit_mt;
+    alias gmp_randinit_mt = __gmp_randinit_mt;
     void __gmp_randinit_mt (gmp_randstate_t);
     
-    alias __gmp_randinit_set gmp_randinit_set;
+    alias gmp_randinit_set = __gmp_randinit_set;
     void __gmp_randinit_set (gmp_randstate_t,  __gmp_randstate_struct *);
     
-    alias __gmp_randseed gmp_randseed;
+    alias gmp_randseed = __gmp_randseed;
     void __gmp_randseed (gmp_randstate_t, mpz_srcptr);
     
-    alias __gmp_randseed_ui gmp_randseed_ui;
+    alias gmp_randseed_ui = __gmp_randseed_ui;
     void __gmp_randseed_ui (gmp_randstate_t, uint);
     
-    alias __gmp_randclear gmp_randclear;
+    alias gmp_randclear = __gmp_randclear;
     void __gmp_randclear (gmp_randstate_t);
     
-    alias __gmp_urandomb_ui gmp_urandomb_ui;
+    alias gmp_urandomb_ui = __gmp_urandomb_ui;
     uint __gmp_urandomb_ui (gmp_randstate_t, uint);
     
-    alias __gmp_urandomm_ui gmp_urandomm_ui;
+    alias gmp_urandomm_ui = __gmp_urandomm_ui;
     uint __gmp_urandomm_ui (gmp_randstate_t, uint);
     
     
     /**************** Formatted output routines.  ****************/
     
-    alias __gmp_asprintf gmp_asprintf;
+    alias gmp_asprintf = __gmp_asprintf;
     int __gmp_asprintf (char **,  char *, ...);
     
-    alias __gmp_fprintf gmp_fprintf;
+    alias gmp_fprintf = __gmp_fprintf;
     
     int __gmp_fprintf (FILE *,  char *, ...);
     
     
-    alias __gmp_printf gmp_printf;
+    alias gmp_printf = __gmp_printf;
     int __gmp_printf ( char *, ...);
     
-    alias __gmp_snprintf gmp_snprintf;
+    alias gmp_snprintf = __gmp_snprintf;
     int __gmp_snprintf (char *, size_t,  char *, ...);
     
-    alias __gmp_sprintf gmp_sprintf;
+    alias gmp_sprintf = __gmp_sprintf;
     int __gmp_sprintf (char *,  char *, ...);
     
     /**************** Formatted input routines.  ****************/
     
-    alias __gmp_fscanf gmp_fscanf;
+    alias gmp_fscanf = __gmp_fscanf;
     
     int __gmp_fscanf (FILE *,  char *, ...);
     
     
-    alias __gmp_scanf gmp_scanf;
+    alias gmp_scanf = __gmp_scanf;
     int __gmp_scanf ( char *, ...);
     
-    alias __gmp_sscanf gmp_sscanf;
+    alias gmp_sscanf = __gmp_sscanf;
     int __gmp_sscanf ( char *,  char *, ...);
     
     /**************** Integer (i.e. Z) routines.  ****************/
     
     void *_mpz_realloc (mpz_ptr, mp_size_t);
     
-    alias __gmpz_abs mpz_abs;
+    alias mpz_abs = __gmpz_abs;
     
     void __gmpz_abs (mpz_ptr, mpz_srcptr);
     
     
-    alias __gmpz_add mpz_add;
+    alias mpz_add = __gmpz_add;
     void __gmpz_add (mpz_ptr, mpz_srcptr, mpz_srcptr);
     
-    alias __gmpz_add_ui mpz_add_ui;
+    alias mpz_add_ui = __gmpz_add_ui;
     void __gmpz_add_ui (mpz_ptr, mpz_srcptr, uint);
     
-    alias __gmpz_addmul mpz_addmul;
+    alias mpz_addmul = __gmpz_addmul;
     void __gmpz_addmul (mpz_ptr, mpz_srcptr, mpz_srcptr);
     
-    alias __gmpz_addmul_ui mpz_addmul_ui;
+    alias mpz_addmul_ui = __gmpz_addmul_ui;
     void __gmpz_addmul_ui (mpz_ptr, mpz_srcptr, uint);
     
-    alias __gmpz_and mpz_and;
+    alias mpz_and = __gmpz_and;
     void __gmpz_and (mpz_ptr, mpz_srcptr, mpz_srcptr);
     
-    alias __gmpz_array_init mpz_array_init;
+    alias mpz_array_init = __gmpz_array_init;
     void __gmpz_array_init (mpz_ptr, mp_size_t, mp_size_t);
     
-    alias __gmpz_bin_ui mpz_bin_ui;
+    alias mpz_bin_ui = __gmpz_bin_ui;
     void __gmpz_bin_ui (mpz_ptr, mpz_srcptr, uint);
     
-    alias __gmpz_bin_uiui mpz_bin_uiui;
+    alias mpz_bin_uiui = __gmpz_bin_uiui;
     void __gmpz_bin_uiui (mpz_ptr, uint, uint);
     
-    alias __gmpz_cdiv_q mpz_cdiv_q;
+    alias mpz_cdiv_q = __gmpz_cdiv_q;
     void __gmpz_cdiv_q (mpz_ptr, mpz_srcptr, mpz_srcptr);
     
-    alias __gmpz_cdiv_q_2exp mpz_cdiv_q_2exp;
+    alias mpz_cdiv_q_2exp = __gmpz_cdiv_q_2exp;
     void __gmpz_cdiv_q_2exp (mpz_ptr, mpz_srcptr, uint);
     
-    alias __gmpz_cdiv_q_ui mpz_cdiv_q_ui;
+    alias mpz_cdiv_q_ui = __gmpz_cdiv_q_ui;
     uint __gmpz_cdiv_q_ui (mpz_ptr, mpz_srcptr, uint);
     
-    alias __gmpz_cdiv_qr mpz_cdiv_qr;
+    alias mpz_cdiv_qr = __gmpz_cdiv_qr;
     void __gmpz_cdiv_qr (mpz_ptr, mpz_ptr, mpz_srcptr, mpz_srcptr);
     
-    alias __gmpz_cdiv_qr_ui mpz_cdiv_qr_ui;
+    alias mpz_cdiv_qr_ui = __gmpz_cdiv_qr_ui;
     uint __gmpz_cdiv_qr_ui (mpz_ptr, mpz_ptr, mpz_srcptr, uint);
     
-    alias __gmpz_cdiv_r mpz_cdiv_r;
+    alias mpz_cdiv_r = __gmpz_cdiv_r;
     void __gmpz_cdiv_r (mpz_ptr, mpz_srcptr, mpz_srcptr);
     
-    alias __gmpz_cdiv_r_2exp mpz_cdiv_r_2exp;
+    alias mpz_cdiv_r_2exp = __gmpz_cdiv_r_2exp;
     void __gmpz_cdiv_r_2exp (mpz_ptr, mpz_srcptr, uint);
     
-    alias __gmpz_cdiv_r_ui mpz_cdiv_r_ui;
+    alias mpz_cdiv_r_ui = __gmpz_cdiv_r_ui;
     uint __gmpz_cdiv_r_ui (mpz_ptr, mpz_srcptr, uint);
     
-    alias __gmpz_cdiv_ui mpz_cdiv_ui;
+    alias mpz_cdiv_ui = __gmpz_cdiv_ui;
     uint __gmpz_cdiv_ui (mpz_srcptr, uint);
     
-    alias __gmpz_clear mpz_clear;
+    alias mpz_clear = __gmpz_clear;
     void __gmpz_clear (mpz_ptr);
     
-    alias __gmpz_clrbit mpz_clrbit;
+    alias mpz_clrbit = __gmpz_clrbit;
     void __gmpz_clrbit (mpz_ptr, uint);
     
-    alias __gmpz_cmp mpz_cmp;
+    alias mpz_cmp = __gmpz_cmp;
     int __gmpz_cmp (mpz_srcptr, mpz_srcptr);
     
-    alias __gmpz_cmp_d mpz_cmp_d;
+    alias mpz_cmp_d = __gmpz_cmp_d;
     int __gmpz_cmp_d (mpz_srcptr, double);
     
-    alias __gmpz_cmp_si _mpz_cmp_si;
+    alias _mpz_cmp_si = __gmpz_cmp_si;
     int __gmpz_cmp_si (mpz_srcptr, int);
     
-    alias __gmpz_cmp_ui _mpz_cmp_ui;
+    alias _mpz_cmp_ui = __gmpz_cmp_ui;
     int __gmpz_cmp_ui (mpz_srcptr, uint);
     
-    alias __gmpz_cmpabs mpz_cmpabs;
+    alias mpz_cmpabs = __gmpz_cmpabs;
     int __gmpz_cmpabs (mpz_srcptr, mpz_srcptr);
     
-    alias __gmpz_cmpabs_d mpz_cmpabs_d;
+    alias mpz_cmpabs_d = __gmpz_cmpabs_d;
     int __gmpz_cmpabs_d (mpz_srcptr, double);
     
-    alias __gmpz_cmpabs_ui mpz_cmpabs_ui;
+    alias mpz_cmpabs_ui = __gmpz_cmpabs_ui;
     int __gmpz_cmpabs_ui (mpz_srcptr, uint);
     
-    alias __gmpz_com mpz_com;
+    alias mpz_com = __gmpz_com;
     void __gmpz_com (mpz_ptr, mpz_srcptr);
     
-    alias __gmpz_combit mpz_combit;
+    alias mpz_combit = __gmpz_combit;
     void __gmpz_combit (mpz_ptr, uint);
     
-    alias __gmpz_congruent_p mpz_congruent_p;
+    alias mpz_congruent_p = __gmpz_congruent_p;
     int __gmpz_congruent_p (mpz_srcptr, mpz_srcptr, mpz_srcptr);
     
-    alias __gmpz_congruent_2exp_p mpz_congruent_2exp_p;
+    alias mpz_congruent_2exp_p = __gmpz_congruent_2exp_p;
     int __gmpz_congruent_2exp_p (mpz_srcptr, mpz_srcptr, uint);
     
-    alias __gmpz_congruent_ui_p mpz_congruent_ui_p;
+    alias mpz_congruent_ui_p = __gmpz_congruent_ui_p;
     int __gmpz_congruent_ui_p (mpz_srcptr, uint, uint);
     
-    alias __gmpz_divexact mpz_divexact;
+    alias mpz_divexact = __gmpz_divexact;
     void __gmpz_divexact (mpz_ptr, mpz_srcptr, mpz_srcptr);
     
-    alias __gmpz_divexact_ui mpz_divexact_ui;
+    alias mpz_divexact_ui = __gmpz_divexact_ui;
     void __gmpz_divexact_ui (mpz_ptr, mpz_srcptr, uint);
     
-    alias __gmpz_divisible_p mpz_divisible_p;
+    alias mpz_divisible_p = __gmpz_divisible_p;
     int __gmpz_divisible_p (mpz_srcptr, mpz_srcptr);
     
-    alias __gmpz_divisible_ui_p mpz_divisible_ui_p;
+    alias mpz_divisible_ui_p = __gmpz_divisible_ui_p;
     int __gmpz_divisible_ui_p (mpz_srcptr, uint);
     
-    alias __gmpz_divisible_2exp_p mpz_divisible_2exp_p;
+    alias mpz_divisible_2exp_p = __gmpz_divisible_2exp_p;
     int __gmpz_divisible_2exp_p (mpz_srcptr, uint);
     
-    alias __gmpz_dump mpz_dump;
+    alias mpz_dump = __gmpz_dump;
     void __gmpz_dump (mpz_srcptr);
     
-    alias __gmpz_export mpz_export;
+    alias mpz_export = __gmpz_export;
     void *__gmpz_export (void *, size_t *, int, size_t, int, size_t, mpz_srcptr);
     
-    alias __gmpz_fac_ui mpz_fac_ui;
+    alias mpz_fac_ui = __gmpz_fac_ui;
     void __gmpz_fac_ui (mpz_ptr, uint);
     
-    alias __gmpz_fdiv_q mpz_fdiv_q;
+    alias mpz_fdiv_q = __gmpz_fdiv_q;
     void __gmpz_fdiv_q (mpz_ptr, mpz_srcptr, mpz_srcptr);
     
-    alias __gmpz_fdiv_q_2exp mpz_fdiv_q_2exp;
+    alias mpz_fdiv_q_2exp = __gmpz_fdiv_q_2exp;
     void __gmpz_fdiv_q_2exp (mpz_ptr, mpz_srcptr, uint);
     
-    alias __gmpz_fdiv_q_ui mpz_fdiv_q_ui;
+    alias mpz_fdiv_q_ui = __gmpz_fdiv_q_ui;
     uint __gmpz_fdiv_q_ui (mpz_ptr, mpz_srcptr, uint);
     
-    alias __gmpz_fdiv_qr mpz_fdiv_qr;
+    alias mpz_fdiv_qr = __gmpz_fdiv_qr;
     void __gmpz_fdiv_qr (mpz_ptr, mpz_ptr, mpz_srcptr, mpz_srcptr);
     
-    alias __gmpz_fdiv_qr_ui mpz_fdiv_qr_ui;
+    alias mpz_fdiv_qr_ui = __gmpz_fdiv_qr_ui;
     uint __gmpz_fdiv_qr_ui (mpz_ptr, mpz_ptr, mpz_srcptr, uint);
     
-    alias __gmpz_fdiv_r mpz_fdiv_r;
+    alias mpz_fdiv_r = __gmpz_fdiv_r;
     void __gmpz_fdiv_r (mpz_ptr, mpz_srcptr, mpz_srcptr);
     
-    alias __gmpz_fdiv_r_2exp mpz_fdiv_r_2exp;
+    alias mpz_fdiv_r_2exp = __gmpz_fdiv_r_2exp;
     void __gmpz_fdiv_r_2exp (mpz_ptr, mpz_srcptr, uint);
     
-    alias __gmpz_fdiv_r_ui mpz_fdiv_r_ui;
+    alias mpz_fdiv_r_ui = __gmpz_fdiv_r_ui;
     uint __gmpz_fdiv_r_ui (mpz_ptr, mpz_srcptr, uint);
     
-    alias __gmpz_fdiv_ui mpz_fdiv_ui;
+    alias mpz_fdiv_ui = __gmpz_fdiv_ui;
     uint __gmpz_fdiv_ui (mpz_srcptr, uint);
     
-    alias __gmpz_fib_ui mpz_fib_ui;
+    alias mpz_fib_ui = __gmpz_fib_ui;
     void __gmpz_fib_ui (mpz_ptr, uint);
     
-    alias __gmpz_fib2_ui mpz_fib2_ui;
+    alias mpz_fib2_ui = __gmpz_fib2_ui;
     void __gmpz_fib2_ui (mpz_ptr, mpz_ptr, uint);
     
-    alias __gmpz_fits_sint_p mpz_fits_sint_p;
+    alias mpz_fits_sint_p = __gmpz_fits_sint_p;
     int __gmpz_fits_sint_p (mpz_srcptr);
     
-    alias __gmpz_fits_slong_p mpz_fits_slong_p;
+    alias mpz_fits_slong_p = __gmpz_fits_slong_p;
     int __gmpz_fits_slong_p (mpz_srcptr);
     
-    alias __gmpz_fits_sshort_p mpz_fits_sshort_p;
+    alias mpz_fits_sshort_p = __gmpz_fits_sshort_p;
     int __gmpz_fits_sshort_p (mpz_srcptr);
     
-    alias __gmpz_fits_uint_p mpz_fits_uint_p;
+    alias mpz_fits_uint_p = __gmpz_fits_uint_p;
     
     int __gmpz_fits_uint_p (mpz_srcptr);
     
     
-    alias __gmpz_fits_ulong_p mpz_fits_ulong_p;
+    alias mpz_fits_ulong_p = __gmpz_fits_ulong_p;
     
     int __gmpz_fits_ulong_p (mpz_srcptr);
     
     
-    alias __gmpz_fits_ushort_p mpz_fits_ushort_p;
+    alias mpz_fits_ushort_p = __gmpz_fits_ushort_p;
     
     int __gmpz_fits_ushort_p (mpz_srcptr);
     
     
-    alias __gmpz_gcd mpz_gcd;
+    alias mpz_gcd = __gmpz_gcd;
     void __gmpz_gcd (mpz_ptr, mpz_srcptr, mpz_srcptr);
     
-    alias __gmpz_gcd_ui mpz_gcd_ui;
+    alias mpz_gcd_ui = __gmpz_gcd_ui;
     uint __gmpz_gcd_ui (mpz_ptr, mpz_srcptr, uint);
     
-    alias __gmpz_gcdext mpz_gcdext;
+    alias mpz_gcdext = __gmpz_gcdext;
     void __gmpz_gcdext (mpz_ptr, mpz_ptr, mpz_ptr, mpz_srcptr, mpz_srcptr);
     
-    alias __gmpz_get_d mpz_get_d;
+    alias mpz_get_d = __gmpz_get_d;
     double __gmpz_get_d (mpz_srcptr);
     
-    alias __gmpz_get_d_2exp mpz_get_d_2exp;
+    alias mpz_get_d_2exp = __gmpz_get_d_2exp;
     double __gmpz_get_d_2exp (int *, mpz_srcptr);
     
-    alias __gmpz_get_si mpz_get_si;
+    alias mpz_get_si = __gmpz_get_si;
     /* signed */ int __gmpz_get_si (mpz_srcptr);
     
-    alias __gmpz_get_str mpz_get_str;
+    alias mpz_get_str = __gmpz_get_str;
     char *__gmpz_get_str (char *, int, mpz_srcptr);
     
-    alias __gmpz_get_ui mpz_get_ui;
+    alias mpz_get_ui = __gmpz_get_ui;
     
     uint __gmpz_get_ui (mpz_srcptr);
     
     
-    alias __gmpz_getlimbn mpz_getlimbn;
+    alias mpz_getlimbn = __gmpz_getlimbn;
     
     mp_limb_t __gmpz_getlimbn (mpz_srcptr, mp_size_t);
     
     
-    alias __gmpz_hamdist mpz_hamdist;
+    alias mpz_hamdist = __gmpz_hamdist;
     uint __gmpz_hamdist (mpz_srcptr, mpz_srcptr);
     
-    alias __gmpz_import mpz_import;
+    alias mpz_import = __gmpz_import;
     void __gmpz_import (mpz_ptr, size_t, int, size_t, int, size_t,  void *);
     
-    alias __gmpz_init mpz_init;
+    alias mpz_init = __gmpz_init;
     void __gmpz_init (mpz_ptr);
     
-    alias __gmpz_init2 mpz_init2;
+    alias mpz_init2 = __gmpz_init2;
     void __gmpz_init2 (mpz_ptr, uint);
     
-    alias __gmpz_init_set mpz_init_set;
+    alias mpz_init_set = __gmpz_init_set;
     void __gmpz_init_set (mpz_ptr, mpz_srcptr);
     
-    alias __gmpz_init_set_d mpz_init_set_d;
+    alias mpz_init_set_d = __gmpz_init_set_d;
     void __gmpz_init_set_d (mpz_ptr, double);
     
-    alias __gmpz_init_set_si mpz_init_set_si;
+    alias mpz_init_set_si = __gmpz_init_set_si;
     void __gmpz_init_set_si (mpz_ptr, int);
     
-    alias __gmpz_init_set_str mpz_init_set_str;
+    alias mpz_init_set_str = __gmpz_init_set_str;
     int __gmpz_init_set_str (mpz_ptr,  char *, int);
     
-    alias __gmpz_init_set_ui mpz_init_set_ui;
+    alias mpz_init_set_ui = __gmpz_init_set_ui;
     void __gmpz_init_set_ui (mpz_ptr, uint);
     
-    alias __gmpz_inp_raw mpz_inp_raw;
+    alias mpz_inp_raw = __gmpz_inp_raw;
     
     size_t __gmpz_inp_raw (mpz_ptr, FILE *);
     
     
-    alias __gmpz_inp_str mpz_inp_str;
+    alias mpz_inp_str = __gmpz_inp_str;
     
     size_t __gmpz_inp_str (mpz_ptr, FILE *, int);
     
     
-    alias __gmpz_invert mpz_invert;
+    alias mpz_invert = __gmpz_invert;
     int __gmpz_invert (mpz_ptr, mpz_srcptr, mpz_srcptr);
     
-    alias __gmpz_ior mpz_ior;
+    alias mpz_ior = __gmpz_ior;
     void __gmpz_ior (mpz_ptr, mpz_srcptr, mpz_srcptr);
     
-    alias __gmpz_jacobi mpz_jacobi;
+    alias mpz_jacobi = __gmpz_jacobi;
     int __gmpz_jacobi (mpz_srcptr, mpz_srcptr);
     
-    alias mpz_jacobi mpz_kronecker;
+    alias mpz_kronecker = mpz_jacobi;
     
-    alias __gmpz_kronecker_si mpz_kronecker_si;
+    alias mpz_kronecker_si = __gmpz_kronecker_si;
     int __gmpz_kronecker_si (mpz_srcptr, long);
     
-    alias __gmpz_kronecker_ui mpz_kronecker_ui;
+    alias mpz_kronecker_ui = __gmpz_kronecker_ui;
     int __gmpz_kronecker_ui (mpz_srcptr, uint);
     
-    alias __gmpz_si_kronecker mpz_si_kronecker;
+    alias mpz_si_kronecker = __gmpz_si_kronecker;
     int __gmpz_si_kronecker (long, mpz_srcptr);
     
-    alias __gmpz_ui_kronecker mpz_ui_kronecker;
+    alias mpz_ui_kronecker = __gmpz_ui_kronecker;
     int __gmpz_ui_kronecker (uint, mpz_srcptr);
     
-    alias __gmpz_lcm mpz_lcm;
+    alias mpz_lcm = __gmpz_lcm;
     void __gmpz_lcm (mpz_ptr, mpz_srcptr, mpz_srcptr);
     
-    alias __gmpz_lcm_ui mpz_lcm_ui;
+    alias mpz_lcm_ui = __gmpz_lcm_ui;
     void __gmpz_lcm_ui (mpz_ptr, mpz_srcptr, uint);
     
-    alias mpz_jacobi mpz_legendre;
+    alias mpz_legendre = mpz_jacobi;
     
-    alias __gmpz_lucnum_ui mpz_lucnum_ui;
+    alias mpz_lucnum_ui = __gmpz_lucnum_ui;
     void __gmpz_lucnum_ui (mpz_ptr, uint);
     
-    alias __gmpz_lucnum2_ui mpz_lucnum2_ui;
+    alias mpz_lucnum2_ui = __gmpz_lucnum2_ui;
     void __gmpz_lucnum2_ui (mpz_ptr, mpz_ptr, uint);
     
-    alias __gmpz_millerrabin mpz_millerrabin;
+    alias mpz_millerrabin = __gmpz_millerrabin;
     int __gmpz_millerrabin (mpz_srcptr, int);
     
-    alias __gmpz_mod mpz_mod;
+    alias mpz_mod = __gmpz_mod;
     void __gmpz_mod (mpz_ptr, mpz_srcptr, mpz_srcptr);
     
-    alias mpz_fdiv_r_ui mpz_mod_ui;
+    alias mpz_mod_ui = mpz_fdiv_r_ui;
     
-    alias __gmpz_mul mpz_mul;
+    alias mpz_mul = __gmpz_mul;
     void __gmpz_mul (mpz_ptr, mpz_srcptr, mpz_srcptr);
     
-    alias __gmpz_mul_2exp mpz_mul_2exp;
+    alias mpz_mul_2exp = __gmpz_mul_2exp;
     void __gmpz_mul_2exp (mpz_ptr, mpz_srcptr, uint);
     
-    alias __gmpz_mul_si mpz_mul_si;
+    alias mpz_mul_si = __gmpz_mul_si;
     void __gmpz_mul_si (mpz_ptr, mpz_srcptr, int);
     
-    alias __gmpz_mul_ui mpz_mul_ui;
+    alias mpz_mul_ui = __gmpz_mul_ui;
     void __gmpz_mul_ui (mpz_ptr, mpz_srcptr, uint);
     
-    alias __gmpz_neg mpz_neg;
+    alias mpz_neg = __gmpz_neg;
     
     void __gmpz_neg (mpz_ptr, mpz_srcptr);
     
     
-    alias __gmpz_nextprime mpz_nextprime;
+    alias mpz_nextprime = __gmpz_nextprime;
     void __gmpz_nextprime (mpz_ptr, mpz_srcptr);
     
-    alias __gmpz_out_raw mpz_out_raw;
+    alias mpz_out_raw = __gmpz_out_raw;
     
     size_t __gmpz_out_raw (FILE *, mpz_srcptr);
     
     
-    alias __gmpz_out_str mpz_out_str;
+    alias mpz_out_str = __gmpz_out_str;
     
     size_t __gmpz_out_str (FILE *, int, mpz_srcptr);
     
     
-    alias __gmpz_perfect_power_p mpz_perfect_power_p;
+    alias mpz_perfect_power_p = __gmpz_perfect_power_p;
     int __gmpz_perfect_power_p (mpz_srcptr);
     
-    alias __gmpz_perfect_square_p mpz_perfect_square_p;
+    alias mpz_perfect_square_p = __gmpz_perfect_square_p;
     
     int __gmpz_perfect_square_p (mpz_srcptr);
     
     
-    alias __gmpz_popcount mpz_popcount;
+    alias mpz_popcount = __gmpz_popcount;
     
     uint __gmpz_popcount (mpz_srcptr);
     
     
-    alias __gmpz_pow_ui mpz_pow_ui;
+    alias mpz_pow_ui = __gmpz_pow_ui;
     void __gmpz_pow_ui (mpz_ptr, mpz_srcptr, uint);
     
-    alias __gmpz_powm mpz_powm;
+    alias mpz_powm = __gmpz_powm;
     void __gmpz_powm (mpz_ptr, mpz_srcptr, mpz_srcptr, mpz_srcptr);
     
-    alias __gmpz_powm_ui mpz_powm_ui;
+    alias mpz_powm_ui = __gmpz_powm_ui;
     void __gmpz_powm_ui (mpz_ptr, mpz_srcptr, uint, mpz_srcptr);
     
-    alias __gmpz_probab_prime_p mpz_probab_prime_p;
+    alias mpz_probab_prime_p = __gmpz_probab_prime_p;
     int __gmpz_probab_prime_p (mpz_srcptr, int);
     
-    alias __gmpz_random mpz_random;
+    alias mpz_random = __gmpz_random;
     void __gmpz_random (mpz_ptr, mp_size_t);
     
-    alias __gmpz_random2 mpz_random2;
+    alias mpz_random2 = __gmpz_random2;
     void __gmpz_random2 (mpz_ptr, mp_size_t);
     
-    alias __gmpz_realloc2 mpz_realloc2;
+    alias mpz_realloc2 = __gmpz_realloc2;
     void __gmpz_realloc2 (mpz_ptr, uint);
     
-    alias __gmpz_remove mpz_remove;
+    alias mpz_remove = __gmpz_remove;
     uint __gmpz_remove (mpz_ptr, mpz_srcptr, mpz_srcptr);
     
-    alias __gmpz_root mpz_root;
+    alias mpz_root = __gmpz_root;
     int __gmpz_root (mpz_ptr, mpz_srcptr, uint);
     
-    alias __gmpz_rootrem mpz_rootrem;
+    alias mpz_rootrem = __gmpz_rootrem;
     void __gmpz_rootrem (mpz_ptr,mpz_ptr, mpz_srcptr, uint);
     
-    alias __gmpz_rrandomb mpz_rrandomb;
+    alias mpz_rrandomb = __gmpz_rrandomb;
     void __gmpz_rrandomb (mpz_ptr, gmp_randstate_t, uint);
     
-    alias __gmpz_scan0 mpz_scan0;
+    alias mpz_scan0 = __gmpz_scan0;
     uint __gmpz_scan0 (mpz_srcptr, uint);
     
-    alias __gmpz_scan1 mpz_scan1;
+    alias mpz_scan1 = __gmpz_scan1;
     uint __gmpz_scan1 (mpz_srcptr, uint);
     
-    alias __gmpz_set mpz_set;
+    alias mpz_set = __gmpz_set;
     void __gmpz_set (mpz_ptr, mpz_srcptr);
     
-    alias __gmpz_set_d mpz_set_d;
+    alias mpz_set_d = __gmpz_set_d;
     void __gmpz_set_d (mpz_ptr, double);
     
-    alias __gmpz_set_f mpz_set_f;
+    alias mpz_set_f = __gmpz_set_f;
     void __gmpz_set_f (mpz_ptr, mpf_srcptr);
     
-    alias __gmpz_set_q mpz_set_q;
+    alias mpz_set_q = __gmpz_set_q;
     
     void __gmpz_set_q (mpz_ptr, mpq_srcptr);
     
     
-    alias __gmpz_set_si mpz_set_si;
+    alias mpz_set_si = __gmpz_set_si;
     void __gmpz_set_si (mpz_ptr, int);
     
-    alias __gmpz_set_str mpz_set_str;
+    alias mpz_set_str = __gmpz_set_str;
     int __gmpz_set_str (mpz_ptr,  char *, int);
     
-    alias __gmpz_set_ui mpz_set_ui;
+    alias mpz_set_ui = __gmpz_set_ui;
     void __gmpz_set_ui (mpz_ptr, uint);
     
-    alias __gmpz_setbit mpz_setbit;
+    alias mpz_setbit = __gmpz_setbit;
     void __gmpz_setbit (mpz_ptr, uint);
     
-    alias __gmpz_size mpz_size;
+    alias mpz_size = __gmpz_size;
     
     size_t __gmpz_size (mpz_srcptr);
     
     
-    alias __gmpz_sizeinbase mpz_sizeinbase;
+    alias mpz_sizeinbase = __gmpz_sizeinbase;
     size_t __gmpz_sizeinbase (mpz_srcptr, int);
     
-    alias __gmpz_sqrt mpz_sqrt;
+    alias mpz_sqrt = __gmpz_sqrt;
     void __gmpz_sqrt (mpz_ptr, mpz_srcptr);
     
-    alias __gmpz_sqrtrem mpz_sqrtrem;
+    alias mpz_sqrtrem = __gmpz_sqrtrem;
     void __gmpz_sqrtrem (mpz_ptr, mpz_ptr, mpz_srcptr);
     
-    alias __gmpz_sub mpz_sub;
+    alias mpz_sub = __gmpz_sub;
     void __gmpz_sub (mpz_ptr, mpz_srcptr, mpz_srcptr);
     
-    alias __gmpz_sub_ui mpz_sub_ui;
+    alias mpz_sub_ui = __gmpz_sub_ui;
     void __gmpz_sub_ui (mpz_ptr, mpz_srcptr, uint);
     
-    alias __gmpz_ui_sub mpz_ui_sub;
+    alias mpz_ui_sub = __gmpz_ui_sub;
     void __gmpz_ui_sub (mpz_ptr, uint, mpz_srcptr);
     
-    alias __gmpz_submul mpz_submul;
+    alias mpz_submul = __gmpz_submul;
     void __gmpz_submul (mpz_ptr, mpz_srcptr, mpz_srcptr);
     
-    alias __gmpz_submul_ui mpz_submul_ui;
+    alias mpz_submul_ui = __gmpz_submul_ui;
     void __gmpz_submul_ui (mpz_ptr, mpz_srcptr, uint);
     
-    alias __gmpz_swap mpz_swap;
+    alias mpz_swap = __gmpz_swap;
     void __gmpz_swap (mpz_ptr, mpz_ptr);
     
-    alias __gmpz_tdiv_ui mpz_tdiv_ui;
+    alias mpz_tdiv_ui = __gmpz_tdiv_ui;
     uint __gmpz_tdiv_ui (mpz_srcptr, uint);
     
-    alias __gmpz_tdiv_q mpz_tdiv_q;
+    alias mpz_tdiv_q = __gmpz_tdiv_q;
     void __gmpz_tdiv_q (mpz_ptr, mpz_srcptr, mpz_srcptr);
     
-    alias __gmpz_tdiv_q_2exp mpz_tdiv_q_2exp;
+    alias mpz_tdiv_q_2exp = __gmpz_tdiv_q_2exp;
     void __gmpz_tdiv_q_2exp (mpz_ptr, mpz_srcptr, uint);
     
-    alias __gmpz_tdiv_q_ui mpz_tdiv_q_ui;
+    alias mpz_tdiv_q_ui = __gmpz_tdiv_q_ui;
     uint __gmpz_tdiv_q_ui (mpz_ptr, mpz_srcptr, uint);
     
-    alias __gmpz_tdiv_qr mpz_tdiv_qr;
+    alias mpz_tdiv_qr = __gmpz_tdiv_qr;
     void __gmpz_tdiv_qr (mpz_ptr, mpz_ptr, mpz_srcptr, mpz_srcptr);
     
-    alias __gmpz_tdiv_qr_ui mpz_tdiv_qr_ui;
+    alias mpz_tdiv_qr_ui = __gmpz_tdiv_qr_ui;
     uint __gmpz_tdiv_qr_ui (mpz_ptr, mpz_ptr, mpz_srcptr, uint);
     
-    alias __gmpz_tdiv_r mpz_tdiv_r;
+    alias mpz_tdiv_r = __gmpz_tdiv_r;
     void __gmpz_tdiv_r (mpz_ptr, mpz_srcptr, mpz_srcptr);
     
-    alias __gmpz_tdiv_r_2exp mpz_tdiv_r_2exp;
+    alias mpz_tdiv_r_2exp = __gmpz_tdiv_r_2exp;
     void __gmpz_tdiv_r_2exp (mpz_ptr, mpz_srcptr, uint);
     
-    alias __gmpz_tdiv_r_ui mpz_tdiv_r_ui;
+    alias mpz_tdiv_r_ui = __gmpz_tdiv_r_ui;
     uint __gmpz_tdiv_r_ui (mpz_ptr, mpz_srcptr, uint);
     
-    alias __gmpz_tstbit mpz_tstbit;
+    alias mpz_tstbit = __gmpz_tstbit;
     int __gmpz_tstbit (mpz_srcptr, uint);
     
-    alias __gmpz_ui_pow_ui mpz_ui_pow_ui;
+    alias mpz_ui_pow_ui = __gmpz_ui_pow_ui;
     void __gmpz_ui_pow_ui (mpz_ptr, uint, uint);
     
-    alias __gmpz_urandomb mpz_urandomb;
+    alias mpz_urandomb = __gmpz_urandomb;
     void __gmpz_urandomb (mpz_ptr, gmp_randstate_t, uint);
     
-    alias __gmpz_urandomm mpz_urandomm;
+    alias mpz_urandomm = __gmpz_urandomm;
     void __gmpz_urandomm (mpz_ptr, gmp_randstate_t, mpz_srcptr);
     
-    alias __gmpz_xor mpz_xor;
-    alias __gmpz_xor mpz_eor;
+    alias mpz_xor = __gmpz_xor;
+    alias mpz_eor = __gmpz_xor;
     void __gmpz_xor (mpz_ptr, mpz_srcptr, mpz_srcptr);
     
     
     /**************** Rational (i.e. Q) routines.  ****************/
     
-    alias __gmpq_abs mpq_abs;
+    alias mpq_abs = __gmpq_abs;
     
     void __gmpq_abs (mpq_ptr, mpq_srcptr);
     
     
-    alias __gmpq_add mpq_add;
+    alias mpq_add = __gmpq_add;
     void __gmpq_add (mpq_ptr, mpq_srcptr, mpq_srcptr);
     
-    alias __gmpq_canonicalize mpq_canonicalize;
+    alias mpq_canonicalize = __gmpq_canonicalize;
     void __gmpq_canonicalize (mpq_ptr);
     
-    alias __gmpq_clear mpq_clear;
+    alias mpq_clear = __gmpq_clear;
     void __gmpq_clear (mpq_ptr);
     
-    alias __gmpq_cmp mpq_cmp;
+    alias mpq_cmp = __gmpq_cmp;
     int __gmpq_cmp (mpq_srcptr, mpq_srcptr);
     
-    alias __gmpq_cmp_si _mpq_cmp_si;
+    alias _mpq_cmp_si = __gmpq_cmp_si;
     int __gmpq_cmp_si (mpq_srcptr, long, uint);
     
-    alias __gmpq_cmp_ui _mpq_cmp_ui;
+    alias _mpq_cmp_ui = __gmpq_cmp_ui;
     int __gmpq_cmp_ui (mpq_srcptr, uint, uint);
     
-    alias __gmpq_div mpq_div;
+    alias mpq_div = __gmpq_div;
     void __gmpq_div (mpq_ptr, mpq_srcptr, mpq_srcptr);
     
-    alias __gmpq_div_2exp mpq_div_2exp;
+    alias mpq_div_2exp = __gmpq_div_2exp;
     void __gmpq_div_2exp (mpq_ptr, mpq_srcptr, uint);
     
-    alias __gmpq_equal mpq_equal;
+    alias mpq_equal = __gmpq_equal;
     int __gmpq_equal (mpq_srcptr, mpq_srcptr);
     
-    alias __gmpq_get_num mpq_get_num;
+    alias mpq_get_num = __gmpq_get_num;
     void __gmpq_get_num (mpz_ptr, mpq_srcptr);
     
-    alias __gmpq_get_den mpq_get_den;
+    alias mpq_get_den = __gmpq_get_den;
     void __gmpq_get_den (mpz_ptr, mpq_srcptr);
     
-    alias __gmpq_get_d mpq_get_d;
+    alias mpq_get_d = __gmpq_get_d;
     double __gmpq_get_d (mpq_srcptr);
     
-    alias __gmpq_get_str mpq_get_str;
+    alias mpq_get_str = __gmpq_get_str;
     char *__gmpq_get_str (char *, int, mpq_srcptr);
     
-    alias __gmpq_init mpq_init;
+    alias mpq_init = __gmpq_init;
     void __gmpq_init (mpq_ptr);
     
-    alias __gmpq_inp_str mpq_inp_str;
+    alias mpq_inp_str = __gmpq_inp_str;
     
     size_t __gmpq_inp_str (mpq_ptr, FILE *, int);
     
     
-    alias __gmpq_inv mpq_inv;
+    alias mpq_inv = __gmpq_inv;
     void __gmpq_inv (mpq_ptr, mpq_srcptr);
     
-    alias __gmpq_mul mpq_mul;
+    alias mpq_mul = __gmpq_mul;
     void __gmpq_mul (mpq_ptr, mpq_srcptr, mpq_srcptr);
     
-    alias __gmpq_mul_2exp mpq_mul_2exp;
+    alias mpq_mul_2exp = __gmpq_mul_2exp;
     void __gmpq_mul_2exp (mpq_ptr, mpq_srcptr, uint);
     
-    alias __gmpq_neg mpq_neg;
+    alias mpq_neg = __gmpq_neg;
     
     void __gmpq_neg (mpq_ptr, mpq_srcptr);
     
     
-    alias __gmpq_out_str mpq_out_str;
+    alias mpq_out_str = __gmpq_out_str;
     
     size_t __gmpq_out_str (FILE *, int, mpq_srcptr);
     
     
-    alias __gmpq_set mpq_set;
+    alias mpq_set = __gmpq_set;
     void __gmpq_set (mpq_ptr, mpq_srcptr);
     
-    alias __gmpq_set_d mpq_set_d;
+    alias mpq_set_d = __gmpq_set_d;
     void __gmpq_set_d (mpq_ptr, double);
     
-    alias __gmpq_set_den mpq_set_den;
+    alias mpq_set_den = __gmpq_set_den;
     void __gmpq_set_den (mpq_ptr, mpz_srcptr);
     
-    alias __gmpq_set_f mpq_set_f;
+    alias mpq_set_f = __gmpq_set_f;
     void __gmpq_set_f (mpq_ptr, mpf_srcptr);
     
-    alias __gmpq_set_num mpq_set_num;
+    alias mpq_set_num = __gmpq_set_num;
     void __gmpq_set_num (mpq_ptr, mpz_srcptr);
     
-    alias __gmpq_set_si mpq_set_si;
+    alias mpq_set_si = __gmpq_set_si;
     void __gmpq_set_si (mpq_ptr, int, uint);
     
-    alias __gmpq_set_str mpq_set_str;
+    alias mpq_set_str = __gmpq_set_str;
     int __gmpq_set_str (mpq_ptr,  char *, int);
     
-    alias __gmpq_set_ui mpq_set_ui;
+    alias mpq_set_ui = __gmpq_set_ui;
     void __gmpq_set_ui (mpq_ptr, uint, uint);
     
-    alias __gmpq_set_z mpq_set_z;
+    alias mpq_set_z = __gmpq_set_z;
     void __gmpq_set_z (mpq_ptr, mpz_srcptr);
     
-    alias __gmpq_sub mpq_sub;
+    alias mpq_sub = __gmpq_sub;
     void __gmpq_sub (mpq_ptr, mpq_srcptr, mpq_srcptr);
     
-    alias __gmpq_swap mpq_swap;
+    alias mpq_swap = __gmpq_swap;
     void __gmpq_swap (mpq_ptr, mpq_ptr);
     
     
     /**************** Float (i.e. F) routines.  ****************/
     
-    alias __gmpf_abs mpf_abs;
+    alias mpf_abs = __gmpf_abs;
     void __gmpf_abs (mpf_ptr, mpf_srcptr);
     
-    alias __gmpf_add mpf_add;
+    alias mpf_add = __gmpf_add;
     void __gmpf_add (mpf_ptr, mpf_srcptr, mpf_srcptr);
     
-    alias __gmpf_add_ui mpf_add_ui;
+    alias mpf_add_ui = __gmpf_add_ui;
     void __gmpf_add_ui (mpf_ptr, mpf_srcptr, uint);
-    alias __gmpf_ceil mpf_ceil;
+    alias mpf_ceil = __gmpf_ceil;
     void __gmpf_ceil (mpf_ptr, mpf_srcptr);
     
-    alias __gmpf_clear mpf_clear;
+    alias mpf_clear = __gmpf_clear;
     void __gmpf_clear (mpf_ptr);
     
-    alias __gmpf_cmp mpf_cmp;
+    alias mpf_cmp = __gmpf_cmp;
     int __gmpf_cmp (mpf_srcptr, mpf_srcptr);
     
-    alias __gmpf_cmp_d mpf_cmp_d;
+    alias mpf_cmp_d = __gmpf_cmp_d;
     int __gmpf_cmp_d (mpf_srcptr, double);
     
-    alias __gmpf_cmp_si mpf_cmp_si;
+    alias mpf_cmp_si = __gmpf_cmp_si;
     int __gmpf_cmp_si (mpf_srcptr, int);
     
-    alias __gmpf_cmp_ui mpf_cmp_ui;
+    alias mpf_cmp_ui = __gmpf_cmp_ui;
     int __gmpf_cmp_ui (mpf_srcptr, uint);
     
-    alias __gmpf_div mpf_div;
+    alias mpf_div = __gmpf_div;
     void __gmpf_div (mpf_ptr, mpf_srcptr, mpf_srcptr);
     
-    alias __gmpf_div_2exp mpf_div_2exp;
+    alias mpf_div_2exp = __gmpf_div_2exp;
     void __gmpf_div_2exp (mpf_ptr, mpf_srcptr, uint);
     
-    alias __gmpf_div_ui mpf_div_ui;
+    alias mpf_div_ui = __gmpf_div_ui;
     void __gmpf_div_ui (mpf_ptr, mpf_srcptr, uint);
     
-    alias __gmpf_dump mpf_dump;
+    alias mpf_dump = __gmpf_dump;
     void __gmpf_dump (mpf_srcptr);
     
-    alias __gmpf_eq mpf_eq;
+    alias mpf_eq = __gmpf_eq;
     int __gmpf_eq (mpf_srcptr, mpf_srcptr, uint);
     
-    alias __gmpf_fits_sint_p mpf_fits_sint_p;
+    alias mpf_fits_sint_p = __gmpf_fits_sint_p;
     int __gmpf_fits_sint_p (mpf_srcptr);
     
-    alias __gmpf_fits_slong_p mpf_fits_slong_p;
+    alias mpf_fits_slong_p = __gmpf_fits_slong_p;
     int __gmpf_fits_slong_p (mpf_srcptr);
     
-    alias __gmpf_fits_sshort_p mpf_fits_sshort_p;
+    alias mpf_fits_sshort_p = __gmpf_fits_sshort_p;
     int __gmpf_fits_sshort_p (mpf_srcptr);
     
-    alias __gmpf_fits_uint_p mpf_fits_uint_p;
+    alias mpf_fits_uint_p = __gmpf_fits_uint_p;
     int __gmpf_fits_uint_p (mpf_srcptr);
     
-    alias __gmpf_fits_ulong_p mpf_fits_ulong_p;
+    alias mpf_fits_ulong_p = __gmpf_fits_ulong_p;
     int __gmpf_fits_ulong_p (mpf_srcptr);
     
-    alias __gmpf_fits_ushort_p mpf_fits_ushort_p;
+    alias mpf_fits_ushort_p = __gmpf_fits_ushort_p;
     int __gmpf_fits_ushort_p (mpf_srcptr);
     
-    alias __gmpf_floor mpf_floor;
+    alias mpf_floor = __gmpf_floor;
     void __gmpf_floor (mpf_ptr, mpf_srcptr);
     
-    alias __gmpf_get_d mpf_get_d;
+    alias mpf_get_d = __gmpf_get_d;
     double __gmpf_get_d (mpf_srcptr);
     
-    alias __gmpf_get_d_2exp mpf_get_d_2exp;
+    alias mpf_get_d_2exp = __gmpf_get_d_2exp;
     double __gmpf_get_d_2exp (int *, mpf_srcptr);
     
-    alias __gmpf_get_default_prec mpf_get_default_prec;
+    alias mpf_get_default_prec = __gmpf_get_default_prec;
     uint __gmpf_get_default_prec ();
     
-    alias __gmpf_get_prec mpf_get_prec;
+    alias mpf_get_prec = __gmpf_get_prec;
     uint __gmpf_get_prec (mpf_srcptr);
     
-    alias __gmpf_get_si mpf_get_si;
+    alias mpf_get_si = __gmpf_get_si;
     long __gmpf_get_si (mpf_srcptr);
     
-    alias __gmpf_get_str mpf_get_str;
+    alias mpf_get_str = __gmpf_get_str;
     char *__gmpf_get_str (char *, mp_exp_t *, int, size_t, mpf_srcptr);
     
-    alias __gmpf_get_ui mpf_get_ui;
+    alias mpf_get_ui = __gmpf_get_ui;
     uint __gmpf_get_ui (mpf_srcptr);
     
-    alias __gmpf_init mpf_init;
+    alias mpf_init = __gmpf_init;
     void __gmpf_init (mpf_ptr);
     
-    alias __gmpf_init2 mpf_init2;
+    alias mpf_init2 = __gmpf_init2;
     void __gmpf_init2 (mpf_ptr, uint);
     
-    alias __gmpf_init_set mpf_init_set;
+    alias mpf_init_set = __gmpf_init_set;
     void __gmpf_init_set (mpf_ptr, mpf_srcptr);
     
-    alias __gmpf_init_set_d mpf_init_set_d;
+    alias mpf_init_set_d = __gmpf_init_set_d;
     void __gmpf_init_set_d (mpf_ptr, double);
     
-    alias __gmpf_init_set_si mpf_init_set_si;
+    alias mpf_init_set_si = __gmpf_init_set_si;
     void __gmpf_init_set_si (mpf_ptr, int);
     
-    alias __gmpf_init_set_str mpf_init_set_str;
+    alias mpf_init_set_str = __gmpf_init_set_str;
     int __gmpf_init_set_str (mpf_ptr,  char *, int);
     
-    alias __gmpf_init_set_ui mpf_init_set_ui;
+    alias mpf_init_set_ui = __gmpf_init_set_ui;
     void __gmpf_init_set_ui (mpf_ptr, uint);
     
-    alias __gmpf_inp_str mpf_inp_str;
+    alias mpf_inp_str = __gmpf_inp_str;
     
     size_t __gmpf_inp_str (mpf_ptr, FILE *, int);
     
     
-    alias __gmpf_integer_p mpf_integer_p;
+    alias mpf_integer_p = __gmpf_integer_p;
     int __gmpf_integer_p (mpf_srcptr);
     
-    alias __gmpf_mul mpf_mul;
+    alias mpf_mul = __gmpf_mul;
     void __gmpf_mul (mpf_ptr, mpf_srcptr, mpf_srcptr);
     
-    alias __gmpf_mul_2exp mpf_mul_2exp;
+    alias mpf_mul_2exp = __gmpf_mul_2exp;
     void __gmpf_mul_2exp (mpf_ptr, mpf_srcptr, uint);
     
-    alias __gmpf_mul_ui mpf_mul_ui;
+    alias mpf_mul_ui = __gmpf_mul_ui;
     void __gmpf_mul_ui (mpf_ptr, mpf_srcptr, uint);
     
-    alias __gmpf_neg mpf_neg;
+    alias mpf_neg = __gmpf_neg;
     void __gmpf_neg (mpf_ptr, mpf_srcptr);
     
-    alias __gmpf_out_str mpf_out_str;
+    alias mpf_out_str = __gmpf_out_str;
     
     size_t __gmpf_out_str (FILE *, int, size_t, mpf_srcptr);
     
     
-    alias __gmpf_pow_ui mpf_pow_ui;
+    alias mpf_pow_ui = __gmpf_pow_ui;
     void __gmpf_pow_ui (mpf_ptr, mpf_srcptr, uint);
     
-    alias __gmpf_random2 mpf_random2;
+    alias mpf_random2 = __gmpf_random2;
     void __gmpf_random2 (mpf_ptr, mp_size_t, mp_exp_t);
     
-    alias __gmpf_reldiff mpf_reldiff;
+    alias mpf_reldiff = __gmpf_reldiff;
     void __gmpf_reldiff (mpf_ptr, mpf_srcptr, mpf_srcptr);
     
-    alias __gmpf_set mpf_set;
+    alias mpf_set = __gmpf_set;
     void __gmpf_set (mpf_ptr, mpf_srcptr);
     
-    alias __gmpf_set_d mpf_set_d;
+    alias mpf_set_d = __gmpf_set_d;
     void __gmpf_set_d (mpf_ptr, double);
     
-    alias __gmpf_set_default_prec mpf_set_default_prec;
+    alias mpf_set_default_prec = __gmpf_set_default_prec;
     void __gmpf_set_default_prec (uint);
     
-    alias __gmpf_set_prec mpf_set_prec;
+    alias mpf_set_prec = __gmpf_set_prec;
     void __gmpf_set_prec (mpf_ptr, uint);
     
-    alias __gmpf_set_prec_raw mpf_set_prec_raw;
+    alias mpf_set_prec_raw = __gmpf_set_prec_raw;
     void __gmpf_set_prec_raw (mpf_ptr, uint);
     
-    alias __gmpf_set_q mpf_set_q;
+    alias mpf_set_q = __gmpf_set_q;
     void __gmpf_set_q (mpf_ptr, mpq_srcptr);
     
-    alias __gmpf_set_si mpf_set_si;
+    alias mpf_set_si = __gmpf_set_si;
     void __gmpf_set_si (mpf_ptr, int);
     
-    alias __gmpf_set_str mpf_set_str;
+    alias mpf_set_str = __gmpf_set_str;
     int __gmpf_set_str (mpf_ptr,  char *, int);
     
-    alias __gmpf_set_ui mpf_set_ui;
+    alias mpf_set_ui = __gmpf_set_ui;
     void __gmpf_set_ui (mpf_ptr, uint);
     
-    alias __gmpf_set_z mpf_set_z;
+    alias mpf_set_z = __gmpf_set_z;
     void __gmpf_set_z (mpf_ptr, mpz_srcptr);
     
-    alias __gmpf_size mpf_size;
+    alias mpf_size = __gmpf_size;
     size_t __gmpf_size (mpf_srcptr);
     
-    alias __gmpf_sqrt mpf_sqrt;
+    alias mpf_sqrt = __gmpf_sqrt;
     void __gmpf_sqrt (mpf_ptr, mpf_srcptr);
     
-    alias __gmpf_sqrt_ui mpf_sqrt_ui;
+    alias mpf_sqrt_ui = __gmpf_sqrt_ui;
     void __gmpf_sqrt_ui (mpf_ptr, uint);
     
-    alias __gmpf_sub mpf_sub;
+    alias mpf_sub = __gmpf_sub;
     void __gmpf_sub (mpf_ptr, mpf_srcptr, mpf_srcptr);
     
-    alias __gmpf_sub_ui mpf_sub_ui;
+    alias mpf_sub_ui = __gmpf_sub_ui;
     void __gmpf_sub_ui (mpf_ptr, mpf_srcptr, uint);
     
-    alias __gmpf_swap mpf_swap;
+    alias mpf_swap = __gmpf_swap;
     void __gmpf_swap (mpf_ptr, mpf_ptr);
     
-    alias __gmpf_trunc mpf_trunc;
+    alias mpf_trunc = __gmpf_trunc;
     void __gmpf_trunc (mpf_ptr, mpf_srcptr);
     
-    alias __gmpf_ui_div mpf_ui_div;
+    alias mpf_ui_div = __gmpf_ui_div;
     void __gmpf_ui_div (mpf_ptr, uint, mpf_srcptr);
     
-    alias __gmpf_ui_sub mpf_ui_sub;
+    alias mpf_ui_sub = __gmpf_ui_sub;
     void __gmpf_ui_sub (mpf_ptr, uint, mpf_srcptr);
     
-    alias __gmpf_urandomb mpf_urandomb;
+    alias mpf_urandomb = __gmpf_urandomb;
     void __gmpf_urandomb (mpf_t, gmp_randstate_t, uint);
     
     

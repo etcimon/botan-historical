@@ -1,4 +1,4 @@
-﻿/**
+/**
     Internal hash map implementation.
 
     Copyright: Â© 2013 RejectedSoftware e.K.

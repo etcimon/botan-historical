@@ -47,33 +47,33 @@ public:
     /**
     * @return curve coefficient a
     */
-    const BigInt get_a() const { return m_a; }
+    BigInt get_a() const { return m_a; }
 
     /**
     * @return curve coefficient b
     */
-    const BigInt get_b() const { return m_b; }
+    BigInt get_b() const { return m_b; }
 
     /**
     * Get prime modulus of the field of the curve
     * @return prime modulus of the field of the curve
     */
-    const BigInt get_p() const { return m_p; }
+    BigInt get_p() const { return m_p; }
 
     /**
     * @return Montgomery parameter r^2 % p
     */
-    const BigInt get_r2() const { return m_r2; }
+    BigInt get_r2() const { return m_r2; }
 
     /**
     * @return a * r mod p
     */
-    const BigInt get_a_r() const { return m_a_r; }
+    BigInt get_a_r() const { return m_a_r; }
 
     /**
     * @return b * r mod p
     */
-    const BigInt get_b_r() const { return m_b_r; }
+    BigInt get_b_r() const { return m_b_r; }
 
     /**
     * @return Montgomery parameter p-dash

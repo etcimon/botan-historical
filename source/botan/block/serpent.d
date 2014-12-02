@@ -136,7 +136,7 @@ protected:
     * For use by subclasses using SIMD, asm, etc
     * @return const reference to the key schedule
     */
-    const Secure_Vector!uint get_round_keys() const
+    Secure_Vector!uint get_round_keys() const
     { return m_round_key; }
 
     /**

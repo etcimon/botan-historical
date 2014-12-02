@@ -117,7 +117,7 @@ public:
     * @param provider the provider we would like to use
     * @returns pointer to const prototype object, ready to clone(), or NULL
     */
-    const BlockCipher prototype_block_cipher(in string algo_spec, in string provider)
+    BlockCipher prototype_block_cipher(in string algo_spec, in string provider) const
     {
         return factory_prototype!BlockCipher(algo_spec, provider, engines, this, m_block_cipher_cache);
     }
@@ -152,7 +152,7 @@ public:
     * @param provider the provider we would like to use
     * @returns pointer to const prototype object, ready to clone(), or NULL
     */
-    const StreamCipher prototype_stream_cipher(in string algo_spec, in string provider)
+    StreamCipher prototype_stream_cipher(in string algo_spec, in string provider) const
     {
         return factory_prototype!StreamCipher(algo_spec, provider, engines, this, m_stream_cipher_cache);
     }
@@ -189,7 +189,7 @@ public:
     * @param provider the provider we would like to use
     * @returns pointer to const prototype object, ready to clone(), or NULL
     */
-    const HashFunction prototype_hash_function(in string algo_spec, in string provider)
+    HashFunction prototype_hash_function(in string algo_spec, in string provider) const
     {
         return factory_prototype!HashFunction(algo_spec, provider, engines, this, m_hash_cache);
     }
@@ -224,7 +224,7 @@ public:
     * @param provider the provider we would like to use
     * @returns pointer to const prototype object, ready to clone(), or NULL
     */
-    const MessageAuthenticationCode prototype_mac(in string algo_spec, in string provider)
+    MessageAuthenticationCode prototype_mac(in string algo_spec, in string provider) const
     {
         return factory_prototype!MessageAuthenticationCode(algo_spec, provider, engines, this, m_mac_cache);
     }
@@ -259,7 +259,7 @@ public:
     * @param provider the provider we would like to use
     * @returns pointer to const prototype object, ready to clone(), or NULL
     */
-    const PBKDF prototype_pbkdf(in string algo_spec, in string provider)
+    PBKDF prototype_pbkdf(in string algo_spec, in string provider) const
     {
         return factory_prototype!PBKDF(algo_spec, provider, engines, this, m_pbkdf_cache);
     }
@@ -344,12 +344,11 @@ PBKDF engine_get_algo(T : PBKDF, U : SCAN_Name)(Engine engine,
                                                 Algorithm_Factory af)
 { return engine.find_pbkdf(request, af); }
 
-const T factory_prototype(T)(in string algo_spec,
+T factory_prototype(T)(in string algo_spec,
                              in string provider,
                              in Vector!( Engine ) engines,
                              Algorithm_Factory af,
-                             Algorithm_Cache!T cache)
-{
+                             Algorithm_Cache!T cache) const {
     if (const T cache_hit = cache.get(algo_spec, provider))
         return cache_hit;
 

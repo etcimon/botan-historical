@@ -69,9 +69,9 @@ protected:
             throw new Invalid_Argument("Padding " ~ m_padding.name ~ " cannot be used with " ~ cipher.name ~ "/ECB");
     }
 
-    final const BlockCipher cipher() const { return *m_cipher; }
+    final BlockCipher cipher() const { return *m_cipher; }
 
-    final const BlockCipherModePaddingMethod padding() const { return *m_padding; }
+    final BlockCipherModePaddingMethod padding() const { return *m_padding; }
 
 private:
     final override void key_schedule(in ubyte* key, size_t length)

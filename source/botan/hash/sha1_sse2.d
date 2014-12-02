@@ -48,7 +48,7 @@ private:
         foreach (size_t i; 0 .. blocks)
         {
             union v4si {
-                uint u32[4];
+                uint[4] u32;
                 __m128i u128;
             }
             

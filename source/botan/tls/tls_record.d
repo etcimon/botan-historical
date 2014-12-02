@@ -105,7 +105,7 @@ public:
 
     AEAD_Mode aead() { return *m_aead; }
 
-    const Secure_Vector!ubyte aead_nonce(ulong seq)
+    Secure_Vector!ubyte aead_nonce(ulong seq) const
     {
         assert(m_aead, "Using AEAD mode");
         assert(m_nonce.length == 12, "Expected nonce size");
@@ -113,7 +113,7 @@ public:
         return m_nonce;
     }
 
-    const Secure_Vector!ubyte aead_nonce(in ubyte* record, size_t record_len)
+    Secure_Vector!ubyte aead_nonce(in ubyte* record, size_t record_len) const
     {
         assert(m_aead, "Using AEAD mode");
         assert(m_nonce.length == 12, "Expected nonce size");
@@ -123,7 +123,7 @@ public:
     }
 
 
-    const Secure_Vector!ubyte format_ad(ulong msg_sequence, ubyte msg_type, TLS_Protocol_Version _version, ushort msg_length)
+    Secure_Vector!ubyte format_ad(ulong msg_sequence, ubyte msg_type, TLS_Protocol_Version _version, ushort msg_length) const
     {
         m_ad.clear();
         foreach (size_t i; 0 .. 8)

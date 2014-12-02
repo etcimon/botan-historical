@@ -58,7 +58,7 @@ public:
     }
 
 protected:
-    final const Transformation get_transform() const { return *m_transform; }
+    final Transformation get_transform() const { return *m_transform; }
 
     final Transformation get_transform() { return *m_transform; }
 

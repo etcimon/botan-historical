@@ -1,4 +1,4 @@
-﻿module botan.utils.simd.xmmintrin;
+module botan.utils.simd.xmmintrin;
 
 /*
 * LDC, GDC, DMD Intrinsics for SSSE 3

@@ -192,7 +192,7 @@ private:
         {
             session = TLS_Session.decrypt(i.second, m_session_key);
         }
-        catch
+        catch (Throwable)
         {
             return false;
         }

@@ -331,48 +331,48 @@ public:
         note_message(*m_client_finished);
     }
 
-    const Client_Hello client_hello() const
+    Client_Hello client_hello() const
     { return *m_client_hello; }
 
-    const Server_Hello server_hello() const
+    Server_Hello server_hello() const
     { return *m_server_hello; }
 
-    const Certificate server_certs() const
+    Certificate server_certs() const
     { return *m_server_certs; }
 
-    const Server_Key_Exchange server_kex() const
+    Server_Key_Exchange server_kex() const
     { return *m_server_kex; }
 
-    const Certificate_Req cert_req() const
+    Certificate_Req cert_req() const
     { return *m_cert_req; }
 
-    const Server_Hello_Done server_hello_done() const
+    Server_Hello_Done server_hello_done() const
     { return *m_server_hello_done; }
 
-    const Certificate client_certs() const
+    Certificate client_certs() const
     { return *m_client_certs; }
 
-    const Client_Key_Exchange client_kex() const
+    Client_Key_Exchange client_kex() const
     { return *m_client_kex; }
 
-    const Certificate_Verify client_verify() const
+    Certificate_Verify client_verify() const
     { return *m_client_verify; }
 
-    const Next_Protocol next_protocol() const
+    Next_Protocol next_protocol() const
     { return *m_next_protocol; }
 
-    const New_Session_Ticket new_session_ticket() const
+    New_Session_Ticket new_session_ticket() const
     { return *m_new_session_ticket; }
 
-    const Finished server_finished() const
+    Finished server_finished() const
     { return *m_server_finished; }
 
-    const Finished client_finished() const
+    Finished client_finished() const
     { return *m_client_finished; }
 
-    const TLS_Ciphersuite ciphersuite() const { return m_ciphersuite; }
+    TLS_Ciphersuite ciphersuite() const { return m_ciphersuite; }
 
-    const TLS_Session_Keys session_keys() const { return m_session_keys; }
+    TLS_Session_Keys session_keys() const { return m_session_keys; }
 
     void compute_session_keys()
     {
@@ -386,7 +386,7 @@ public:
 
     Handshake_Hash hash() { return m_handshake_hash; }
 
-    const Handshake_Hash hash() const { return m_handshake_hash; }
+    Handshake_Hash hash() const { return m_handshake_hash; }
 
     void note_message(in Handshake_Message msg)
     {

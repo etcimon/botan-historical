@@ -1,4 +1,4 @@
-﻿module botan.constants;
+module botan.constants;
 
 enum BOTAN_VERSION_MAJOR = 2;
 enum BOTAN_VERSION_MINOR = 0;

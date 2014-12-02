@@ -34,12 +34,12 @@ public:
     /**
     * @return start of this string
     */
-    @property const ubyte* ptr() const { return m_bits.ptr; }
+    @property ubyte* ptr() const { return m_bits.ptr; }
     
     /**
     * @return end of this string
     */
-    const ubyte* end() const{ return begin() + m_bits.length; }
+    ubyte* end() const{ return begin() + m_bits.length; }
     
     /**
     * @return this encoded as hex
@@ -166,7 +166,7 @@ public:
     * @param y an octet string
     * @return x concatenated with y
     */
-    OctetString opBinary(op)(in OctetString other)
+    OctetString opBinary(string op)(in OctetString other)
         if (op == "~") 
     {
         Secure_Vector!ubyte output;
@@ -181,7 +181,7 @@ public:
     * @param y an octet string
     * @return x XORed with y
     */
-    OctetString opBinary(op)(in OctetString other)
+    OctetString opBinary(string op)(in OctetString other)
         if (op == "^") 
     {
         Secure_Vector!ubyte ret = Secure_Vector!ubyte(max(length(), other.length));

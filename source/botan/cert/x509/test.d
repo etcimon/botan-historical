@@ -1,4 +1,4 @@
-﻿module botan.cert.x509.test;
+module botan.cert.x509.test;
 /*
   Code to run the X.509v3 processing tests described in "Conformance
   Testing of Relying Party Client Certificate Path Proccessing Logic",

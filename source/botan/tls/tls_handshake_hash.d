@@ -98,7 +98,7 @@ public:
         return output;
     }
 
-    const Vector!ubyte get_contents() const
+    Vector!ubyte get_contents() const
     { return m_data; }
 
     void reset() { m_data.clear(); }

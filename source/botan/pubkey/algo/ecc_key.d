@@ -60,7 +60,7 @@ public:
     * domain parameters of this point are not set
     * @result the public point of this key
     */
-    const ref PointGFp public_point() const { return m_public_key; }
+    ref PointGFp public_point() const { return m_public_key; }
 
     Algorithm_Identifier algorithm_identifier() const
     {
@@ -83,7 +83,7 @@ public:
     * domain parameters of this point are not set
     * @result the domain parameters of this key
     */
-    const EC_Group domain() const { return m_domain_params; }
+    EC_Group domain() const { return m_domain_params; }
 
     /**
     * Set the domain parameter encoding to be used when encoding this key.
@@ -96,8 +96,8 @@ public:
         
         if ((form == EC_DOMPAR_ENC_OID) && (m_domain_params.get_oid() == ""))
             throw new Invalid_Argument("Invalid encoding form OID specified for "
-                                       "EC-key object whose corresponding domain "
-                                       "parameters are without oid");
+                                       ~ "EC-key object whose corresponding domain "
+                                       ~ "parameters are without oid");
         
         m_domain_encoding = form;
     }
@@ -206,7 +206,7 @@ public:
     * Get the private key value of this key object.
     * @result the private key value of this key object
     */
-    const BigInt private_value() const
+    BigInt private_value() const
     {
         if (m_private_key == 0)
             throw new Invalid_State("EC_PrivateKey::private_value - uninitialized");

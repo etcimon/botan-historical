@@ -1,4 +1,4 @@
-﻿module botan.utils.semaphore;
+module botan.utils.semaphore;
 
 import core.sync.mutex;
 import core.sync.condition;

@@ -1,4 +1,4 @@
-﻿module botan.rng.test;
+module botan.rng.test;
 
 import botan.constants;
 static if (BOTAN_TEST):
@@ -55,7 +55,7 @@ protected:
     size_t remaining() const { return m_buf.length; }
 private:
     Vector!ubyte m_buf;
-};
+}
 
 RandomNumberGenerator get_rng(string algo_str, string ikm_hex)
 {

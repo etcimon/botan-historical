@@ -99,7 +99,7 @@ public:
     * Get this OID as list (vector) of its components.
     * @return vector representing this OID
     */
-    const Vector!uint get_id() const { return m_id; }
+    Vector!uint get_id() const { return m_id; }
 
     /**
     * Get this OID as a string
@@ -215,7 +215,7 @@ public:
         {
             m_id = parse_asn1_oid(oid_str);
         }
-        catch
+        catch (Throwable)
         {
             throw new Invalid_OID(oid_str);
         }

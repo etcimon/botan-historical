@@ -21,7 +21,7 @@ import botan.libstate.libstate;
 * @return constant prototype object (use clone to create usable object),
              library retains ownership
 */
-const BlockCipher retrieve_block_cipher(in string algo_spec)
+BlockCipher retrieve_block_cipher(in string algo_spec) const
 {
     Algorithm_Factory af = global_state().algorithm_factory();
     return af.prototype_block_cipher(algo_spec);
@@ -33,7 +33,7 @@ const BlockCipher retrieve_block_cipher(in string algo_spec)
 * @return constant prototype object (use clone to create usable object),
              library retains ownership
 */
-const StreamCipher retrieve_stream_cipher(in string algo_spec)
+StreamCipher retrieve_stream_cipher(in string algo_spec) const
 {
     Algorithm_Factory af = global_state().algorithm_factory();
     return af.prototype_stream_cipher(algo_spec);
@@ -45,7 +45,7 @@ const StreamCipher retrieve_stream_cipher(in string algo_spec)
 * @return constant prototype object (use clone to create usable object),
              library retains ownership
 */
-const HashFunction retrieve_hash(in string algo_spec)
+HashFunction retrieve_hash(in string algo_spec) const
 {
     Algorithm_Factory af = global_state().algorithm_factory();
     return af.prototype_hash_function(algo_spec);
@@ -57,7 +57,7 @@ const HashFunction retrieve_hash(in string algo_spec)
 * @return constant prototype object (use clone to create usable object),
              library retains ownership
 */
-const MessageAuthenticationCode retrieve_mac(in string algo_spec)
+MessageAuthenticationCode retrieve_mac(in string algo_spec) const
 {
     Algorithm_Factory af = global_state().algorithm_factory();
     return af.prototype_mac(algo_spec);

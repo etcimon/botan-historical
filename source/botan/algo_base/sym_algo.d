@@ -1,4 +1,4 @@
-﻿module botan.algo_base.sym_algo;
+module botan.algo_base.sym_algo;
 
 import botan.utils.exceptn;
 public import botan.algo_base.key_spec;

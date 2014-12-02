@@ -70,12 +70,12 @@ public:
     /**
     * @return public modulus
     */
-    const BigInt get_n() const { return m_n; }
+    BigInt get_n() const { return m_n; }
 
     /**
     * @return public exponent
     */
-    const BigInt get_e() const { return m_e; }
+    BigInt get_e() const { return m_e; }
 
     size_t max_input_bits() const { return (m_n.bits() - 1); }
 
@@ -168,23 +168,23 @@ public:
     * Get the first prime p.
     * @return prime p
     */
-    const BigInt get_p() const { return m_p; }
+    BigInt get_p() const { return m_p; }
 
     /**
     * Get the second prime q.
     * @return prime q
     */
-    const BigInt get_q() const { return m_q; }
+    BigInt get_q() const { return m_q; }
 
     /**
     * Get d with exp * d = 1 mod (p - 1, q - 1).
     * @return d
     */
-    const BigInt get_d() const { return m_d; }
+    BigInt get_d() const { return m_d; }
 
-    const BigInt get_c() const { return m_c; }
-    const BigInt get_d1() const { return m_d1; }
-    const BigInt get_d2() const { return m_d2; }
+    BigInt get_c() const { return m_c; }
+    BigInt get_d1() const { return m_d1; }
+    BigInt get_d2() const { return m_d2; }
 
     Secure_Vector!ubyte  pkcs8_private_key() const
     {

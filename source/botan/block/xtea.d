@@ -91,7 +91,7 @@ protected:
     /**
     * @return const reference to the key schedule
     */
-    const Secure_Vector!uint get_EK() const { return m_EK; }
+    Secure_Vector!uint get_EK() const { return m_EK; }
 
 private:
     /*

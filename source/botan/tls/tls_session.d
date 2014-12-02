@@ -247,12 +247,12 @@ public:
     /**
     * Get the saved master secret
     */
-    const Secure_Vector!ubyte master_secret() const { return m_master_secret; }
+    Secure_Vector!ubyte master_secret() const { return m_master_secret; }
 
     /**
     * Get the session identifier
     */
-    const Vector!ubyte session_id() const { return m_identifier; }
+    Vector!ubyte session_id() const { return m_identifier; }
 
     /**
     * Get the negotiated maximum fragment size (or 0 if default)
@@ -280,7 +280,7 @@ public:
     /**
     * Return the session ticket the server gave us
     */
-    const Vector!ubyte session_ticket() const { return m_session_ticket; }
+    Vector!ubyte session_ticket() const { return m_session_ticket; }
 
     TLS_Server_Information server_info() const { return m_server_info; }
 

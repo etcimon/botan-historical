@@ -1,4 +1,4 @@
-﻿/**
+/**
     Defines a string based multi-map with conserved insertion order.
 
     Copyright: © 2012-2014 RejectedSoftware e.K.

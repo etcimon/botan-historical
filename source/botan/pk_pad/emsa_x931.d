@@ -64,7 +64,7 @@ private:
             return (coded == emsa2_encoding(raw, key_bits,
                                             m_empty_hash, m_hash_id));
         }
-        catch
+        catch (Throwable)
         {
             return false;
         }

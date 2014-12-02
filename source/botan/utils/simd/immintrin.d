@@ -1,4 +1,4 @@
-﻿module botan.utils.simd.immintrin;
+module botan.utils.simd.immintrin;
 
 /*
 * LDC, GDC, DMD Intrinsics for Intel AVX 2

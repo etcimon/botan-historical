@@ -137,9 +137,9 @@ public:
 
     TLS_Protocol_Version _version() const { return m_version; }
 
-    const Vector!ubyte random() const { return m_random; }
+    Vector!ubyte random() const { return m_random; }
 
-    const Vector!ubyte session_id() const { return m_session_id; }
+    Vector!ubyte session_id() const { return m_session_id; }
 
     Vector!ushort ciphersuites() const { return m_suites; }
 
@@ -470,9 +470,9 @@ public:
 
     TLS_Protocol_Version _version() const { return m_version; }
 
-    const Vector!ubyte random() const { return m_random; }
+    Vector!ubyte random() const { return m_random; }
 
-    const Vector!ubyte session_id() const { return m_session_id; }
+    Vector!ubyte session_id() const { return m_session_id; }
 
     ushort ciphersuite() const { return m_ciphersuite; }
 
@@ -641,7 +641,7 @@ final class Client_Key_Exchange : Handshake_Message
 public:
     override Handshake_Type type() const { return CLIENT_KEX; }
 
-    const Secure_Vector!ubyte pre_master_secret() const
+    Secure_Vector!ubyte pre_master_secret() const
     { return m_pre_master; }
 
     /*
@@ -705,7 +705,7 @@ public:
                     throw new Decoding_Error("Client_Key_Exchange: Secret corrupted");
                 }
             }
-            catch
+            catch (Throwable)
             {
                 m_pre_master = fake_pre_master;
             }
@@ -1025,7 +1025,7 @@ final class Certificate : Handshake_Message
 {
 public:
     override Handshake_Type type() const { return CERTIFICATE; }
-    const Vector!X509_Certificate cert_chain() const { return m_certs; }
+    Vector!X509_Certificate cert_chain() const { return m_certs; }
 
     size_t count() const { return m_certs.length; }
     @property bool empty() const { return m_certs.empty; }
@@ -1111,7 +1111,7 @@ final class Certificate_Req : Handshake_Message
 public:
     override Handshake_Type type() const { return CERTIFICATE_REQUEST; }
 
-    const Vector!string acceptable_cert_types() const
+    Vector!string acceptable_cert_types() const
     { return m_cert_key_types; }
 
     Vector!X509_DN acceptable_CAs() const { return m_names; }
@@ -1435,7 +1435,7 @@ final class Server_Key_Exchange : Handshake_Message
 public:
     override Handshake_Type type() const { return SERVER_KEX; }
 
-    const Vector!ubyte params() const { return m_params; }
+    Vector!ubyte params() const { return m_params; }
 
     /**
     * Verify a TLS_Server Key Exchange message
@@ -1454,7 +1454,7 @@ public:
     }
 
     // Only valid for certain kex types
-    const Private_Key server_kex_key() const
+    Private_Key server_kex_key() const
     {
         assert(m_kex_key, "Private_Key cannot be null");
         return *m_kex_key;
@@ -1795,7 +1795,7 @@ public:
     override Handshake_Type type() const { return NEW_SESSION_TICKET; }
 
     uint ticket_lifetime_hint() const { return m_ticket_lifetime_hint; }
-    const Vector!ubyte ticket() const { return m_ticket; }
+    Vector!ubyte ticket() const { return m_ticket; }
 
     this(Handshake_IO io,
          Handshake_Hash hash,

@@ -317,7 +317,7 @@ public:
     * Return base curve of this point
     * @result the curve over GF(p) of this point
     */
-    const ref CurveGFp get_curve() const { return curve; }
+    ref CurveGFp get_curve() const { return curve; }
 
     /**
     * get affine x coordinate

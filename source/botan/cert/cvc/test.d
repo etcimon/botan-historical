@@ -1,4 +1,4 @@
-﻿/*
+/*
 * CVC EAC1.1 tests
 *
 * (C) 2008 Falko Strenzke (strenzke@flexsecure.de)
@@ -127,7 +127,7 @@ void test_enc_gen_selfsigned(RandomNumberGenerator rng)
     {
         ASN1_Ced("1999 01 01");
     }
-    catch
+    catch (Throwable)
     {
         ill_date_exc = true;
     }
@@ -138,7 +138,7 @@ void test_enc_gen_selfsigned(RandomNumberGenerator rng)
     {
         ASN1_Ced("2100 01 01");
     }
-    catch
+    catch (Throwable)
     {
         ill_date_exc2 = true;
     }

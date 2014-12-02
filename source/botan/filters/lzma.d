@@ -424,7 +424,7 @@ struct lzma_options_bcj
 }
 
 
-alias bool lzma_bool;
+alias lzma_bool = bool;
 enum lzma_reserved_enum
 {
     LZMA_RESERVED_ENUM      = 0
@@ -679,7 +679,7 @@ struct lzma_index_iter
         size_t s;
         lzma_vli v;
     }
-    InternalData internal[6];
+    InternalData[6] internal;
 }
 enum lzma_index_iter_mode
 {
@@ -806,7 +806,7 @@ enum LZMA_VLI_MAX = (ulong.max / 2);
 enum LZMA_VLI_UNKNOWN = ulong.max;
 enum LZMA_VLI_BYTES_MAX = 9;
 //#define LZMA_VLI_C(n) UINT64_C(n)
-alias ulong lzma_vli;
+alias lzma_vli = ulong;
 bool lzma_vli_is_valid(lzma_vli vli)
 {
     return vli <= LZMA_VLI_MAX || (vli) == LZMA_VLI_UNKNOWN;

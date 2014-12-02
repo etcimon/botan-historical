@@ -25,9 +25,9 @@ public:
     /**
     * Subject DN and (optionally) key identifier
     */
-    abstract const X509_Certificate find_cert(in X509_DN subject_dn, in Vector!ubyte key_id) const;
+    abstract X509_Certificate find_cert(in X509_DN subject_dn, in Vector!ubyte key_id) const;
 
-    abstract const X509_CRL find_crl_for(in X509_Certificate subject) const
+    abstract X509_CRL find_crl_for(in X509_Certificate subject) const
     {
         return null;
     }
@@ -83,7 +83,7 @@ public:
         return subjects;
     }
 
-    const X509_Certificate find_cert(in X509_DN subject_dn, in Vector!ubyte key_id) const
+    X509_Certificate find_cert(in X509_DN subject_dn, in Vector!ubyte key_id) const
     {
         return cert_search(subject_dn, key_id, m_certs);
     }
@@ -107,7 +107,7 @@ public:
         m_crls.push_back(crl);
     }
 
-    const X509_CRL find_crl_for(in X509_Certificate subject) const
+    X509_CRL find_crl_for(in X509_Certificate subject) const
     {
         const Vector!ubyte key_id = subject.authority_key_id();
         
@@ -151,7 +151,7 @@ public:
         return subjects;
     }
 
-    const X509_Certificate find_cert(in X509_DN subject_dn, in Vector!ubyte key_id) const
+    X509_Certificate find_cert(in X509_DN subject_dn, in Vector!ubyte key_id) const
     {
         return cert_search(subject_dn, key_id, m_certs);
     }
@@ -159,9 +159,9 @@ private:
     const Vector!X509_Certificate m_certs;
 }
 
-const X509_Certificate cert_search(in X509_DN subject_dn, 
+X509_Certificate cert_search(in X509_DN subject_dn, 
                                    in Vector!ubyte key_id, 
-                                   in Vector!X509_Certificate certs)
+                                   in Vector!X509_Certificate certs) const
 {
     foreach (const cert; certs[])
     {

@@ -509,7 +509,7 @@ public:
         super(io, msg_callback);
     }
     
-    const Public_Key get_server_public_Key() const
+    Public_Key get_server_public_Key() const
     {
         assert(server_public_key, "TLS_Server sent us a certificate");
         return *server_public_key;

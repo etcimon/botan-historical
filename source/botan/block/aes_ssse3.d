@@ -386,7 +386,7 @@ return _mm_xor_si128(y,_mm_xor_si128(
 
 __m128i aes_schedule_mangle_dec(__m128i k, ubyte round_no)
 {
-    __gshared immutable(__m128i) dsk[8] = [
+    __gshared immutable(__m128i)[8] dsk = [
             _mm_set_epi32!(0x4AED9334, 0x82255BFC, 0xB6116FC8, 0x7ED9A700)(),
             _mm_set_epi32!(0x8BB89FAC, 0xE9DAFDCE, 0x45765162, 0x27143300)(),
             _mm_set_epi32!(0x4622EE8A, 0xADC90561, 0x27438FEB, 0xCCA86400)(),

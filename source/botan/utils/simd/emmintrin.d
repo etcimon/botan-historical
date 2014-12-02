@@ -1,4 +1,4 @@
-﻿module botan.utils.simd.emmintrin;
+module botan.utils.simd.emmintrin;
 
 /*
 * LDC, GDC, DMD Intrinsics for SSE 2
@@ -238,7 +238,7 @@ version(LDC) {
 		__m128i* _b = &b;
 		__asm {
 			"movdqu (%0), %xmm0\n"
-			"movdqu %xmm0, (%1)\n"
+			~ "movdqu %xmm0, (%1)\n"
 			: : "0" (_a), "1" (_b) : "xmm0"
 		}
 		return b;

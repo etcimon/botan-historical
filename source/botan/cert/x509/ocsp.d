@@ -62,9 +62,9 @@ public:
         return base64_encode(BER_encode());
     }
 
-    const X509_Certificate issuer() const { return m_issuer; }
+    X509_Certificate issuer() const { return m_issuer; }
 
-    const X509_Certificate subject() const { return m_subject; }
+    X509_Certificate subject() const { return m_subject; }
 private:
     X509_Certificate m_issuer, m_subject;
 }

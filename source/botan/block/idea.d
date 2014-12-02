@@ -47,12 +47,12 @@ protected:
     /**
     * @return const reference to encryption subkeys
     */
-    const Secure_Vector!ushort get_EK() const { return m_EK; }
+    Secure_Vector!ushort get_EK() const { return m_EK; }
 
     /**
     * @return const reference to decryption subkeys
     */
-    const Secure_Vector!ushort get_DK() const { return m_DK; }
+    Secure_Vector!ushort get_DK() const { return m_DK; }
 
 private:
     /*

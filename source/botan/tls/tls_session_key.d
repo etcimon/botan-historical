@@ -29,7 +29,7 @@ public:
     InitializationVector client_iv() const { return m_c_iv; }
     InitializationVector server_iv() const { return m_s_iv; }
 
-    const Secure_Vector!ubyte master_secret() const { return m_master_sec; }
+    Secure_Vector!ubyte master_secret() const { return m_master_sec; }
 
     @disable this();
 

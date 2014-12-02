@@ -121,12 +121,12 @@ protected:
     /**
     * @return const reference to encryption subkeys
     */
-    const Secure_Vector!uint get_EK() const { return m_EK; }
+    Secure_Vector!uint get_EK() const { return m_EK; }
 
     /**
     * @return const reference to decryption subkeys
     */
-    const Secure_Vector!uint get_DK() const { return m_DK; }
+    Secure_Vector!uint get_DK() const { return m_DK; }
 
 private:
     /*
@@ -182,7 +182,7 @@ package:
 */
 void theta(ref uint A0, ref uint A1,
            ref uint A2, ref uint A3,
-           in uint EK[4]) pure
+           in uint[4] EK) pure
 {
     uint T = A0 ^ A2;
     T ^= rotate_left(T, 8) ^ rotate_right(T, 8);

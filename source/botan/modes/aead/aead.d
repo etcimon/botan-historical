@@ -217,7 +217,7 @@ size_t aead_test(string algo, string input, string expected, string nonce_hex, s
             writeln(algo ~ " accepted message with modified message");
             ++fail;
         }
-        catch {}
+        catch (Throwable) {}
         
         if (nonce.length)
         {
@@ -233,7 +233,7 @@ size_t aead_test(string algo, string input, string expected, string nonce_hex, s
                 writeln(algo ~ " accepted message with modified nonce");
                 ++fail;
             }
-            catch {}
+            catch (Throwable) {}
         }
         
         if (auto aead_dec = cast(AEAD_Mode)(*dec))
@@ -256,7 +256,7 @@ size_t aead_test(string algo, string input, string expected, string nonce_hex, s
                 writeln(algo ~ " accepted message with modified AD");
                 ++fail;
             }
-            catch {}
+            catch (Throwable) {}
         }
     }
     

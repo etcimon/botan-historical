@@ -353,7 +353,7 @@ public:
         {
             return OID(str);
         }
-        catch {}
+        catch (Throwable) {}
         
         throw new Lookup_Error("No object identifier found for " ~ str);
     }

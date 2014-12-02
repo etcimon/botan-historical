@@ -1,4 +1,4 @@
-﻿module botan.test;
+module botan.test;
 
 import botan.constants;
 

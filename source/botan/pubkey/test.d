@@ -1,4 +1,4 @@
-﻿/*
+/*
 * (C) 2009 Jack Lloyd
 *
 * Distributed under the terms of the Botan license
@@ -156,7 +156,7 @@ size_t validate_encryption(PK_Encryptor e, PK_Decryptor d,
                 writeln(hex_encode(ctext) ~ " . " ~ hex_encode(decrypted));
                 ++fails;
             }
-            catch {}
+            catch (Throwable) {}
         }
     }
     

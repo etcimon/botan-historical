@@ -43,30 +43,30 @@ public:
     * Get the DL domain parameters of this key.
     * @return DL domain parameters of this key
     */
-    const ref DL_Group get_domain() const { return m_group; }
+    ref DL_Group get_domain() const { return m_group; }
 
     /**
     * Get the public value m_y with m_y = g^m_x mod p where m_x is the secret key.
     */
-    const BigInt get_y() const { return m_y; }
+    BigInt get_y() const { return m_y; }
 
     /**
     * Get the prime p of the underlying DL m_group.
     * @return prime p
     */
-    const BigInt group_p() const { return m_group.get_p(); }
+    BigInt group_p() const { return m_group.get_p(); }
 
     /**
     * Get the prime q of the underlying DL m_group.
     * @return prime q
     */
-    const BigInt group_q() const { return m_group.get_q(); }
+    BigInt group_q() const { return m_group.get_q(); }
 
     /**
     * Get the generator g of the underlying DL m_group.
     * @return generator g
     */
-    const BigInt group_g() const { return m_group.get_g(); }
+    BigInt group_g() const { return m_group.get_g(); }
 
     /**
     * Get the underlying groups encoding format.
@@ -134,7 +134,7 @@ public:
     * Get the secret key m_x.
     * @return secret key
     */
-    const BigInt get_x() const { return m_x; }
+    BigInt get_x() const { return m_x; }
 
     Secure_Vector!ubyte pkcs8_private_key() const
     {

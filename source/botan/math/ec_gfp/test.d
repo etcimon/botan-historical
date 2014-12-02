@@ -1,4 +1,4 @@
-﻿module botan.math.ec_gfp.test;
+module botan.math.ec_gfp.test;
 
 static if (BOTAN_TEST):
 
@@ -786,7 +786,7 @@ size_t test_curve_cp_ctor()
         EC_Group dom_pars = EC_Group(OID("1.3.132.0.8"));
         CurveGFp curve = CurveGFp(dom_pars.get_curve());
     }
-    catch
+    catch (Throwable)
     {
         return 1;
         

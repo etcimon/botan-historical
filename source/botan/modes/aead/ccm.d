@@ -126,7 +126,7 @@ protected:
 
     final size_t L() const { return m_L; }
 
-    final const BlockCipher cipher() const { return *m_cipher; }
+    final BlockCipher cipher() const { return *m_cipher; }
 
     final void encode_length(size_t len, ubyte* output)
     {
@@ -147,7 +147,7 @@ protected:
                 break;
     }
 
-    final const Secure_Vector!ubyte ad_buf() const { return m_ad_buf; }
+    final Secure_Vector!ubyte ad_buf() const { return m_ad_buf; }
 
     final Secure_Vector!ubyte msg_buf() { return m_msg_buf; }
 

@@ -46,9 +46,9 @@ public:
 
     uint status_code() const { return m_status_code; }
 
-    const string _body() const { return m_body; }
+    string _body() const { return m_body; }
 
-    const HashMap!(string, string) headers() const { return m_headers; }
+    HashMap!(string, string) headers() const { return m_headers; }
 
     string status_message() const { return m_status_message; }
 

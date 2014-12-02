@@ -52,21 +52,21 @@ public:
 
         m_db.create_table(
             "create table if not exists tls_sessions "
-            "("
-            "session_id TEXT PRIMARY KEY, "
-            "session_start INTEGER, "
-            "hostname TEXT, "
-            "hostport INTEGER, "
-            "session BLOB"
-            ")");
+            ~ "("
+            ~ "session_id TEXT PRIMARY KEY, "
+            ~ "session_start INTEGER, "
+            ~ "hostname TEXT, "
+            ~ "hostport INTEGER, "
+            ~ "session BLOB"
+            ~ ")");
         
         m_db.create_table(
             "create table if not exists tls_sessions_metadata "
-            "("
-            "passphrase_salt BLOB, "
-            "passphrase_iterations INTEGER, "
-            "passphrase_check INTEGER "
-            ")");
+            ~ "("
+            ~ "passphrase_salt BLOB, "
+            ~ "passphrase_iterations INTEGER, "
+            ~ "passphrase_check INTEGER "
+            ~ ")");
         
         const size_t salts = m_db.row_count("tls_sessions_metadata");
         
@@ -108,7 +108,7 @@ public:
             iterations, check_val);
             
             sqlite3_statement stmt = sqlite3_statement(m_db, "insert into tls_sessions_metadata"
-                                   " values(?1, ?2, ?3)");
+                                   ~ " values(?1, ?2, ?3)");
             
             stmt.bind(1, salt);
             stmt.bind(2, iterations);
@@ -138,7 +138,7 @@ public:
                 session = TLS_Session.decrypt(blob.first, blob.second, m_session_key);
                 return true;
             }
-            catch
+            catch (Throwable)
             {
             }
         }
@@ -150,8 +150,8 @@ public:
                                         ref TLS_Session session)
     {
         sqlite3_statement stmt = sqlite3_statement(m_db, "select session from tls_sessions"
-                                                   " where hostname = ?1 and hostport = ?2"
-                                                   " order by session_start desc");
+                                                   ~ " where hostname = ?1 and hostport = ?2"
+                                                   ~ " order by session_start desc");
         
         stmt.bind(1, server.hostname());
         stmt.bind(2, server.port());
@@ -165,7 +165,7 @@ public:
                 session = TLS_Session.decrypt(blob.first, blob.second, m_session_key);
                 return true;
             }
-            catch
+            catch (Throwable)
             {
             }
         }
@@ -185,7 +185,7 @@ public:
     override void save(in TLS_Session session)
     {
         sqlite3_statement stmt = sqlite3_statement(m_db, "insert or replace into tls_sessions"
-                               " values(?1, ?2, ?3, ?4, ?5)");
+                               ~ " values(?1, ?2, ?3, ?4, ?5)");
         
         stmt.bind(1, hex_encode(session.session_id()));
         stmt.bind(2, session.start_time());
@@ -218,7 +218,7 @@ private:
         if (sessions > m_max_sessions)
         {
             sqlite3_statement remove_some = sqlite3_statement(m_db, "delete from tls_sessions where session_id in "
-                                          "(select session_id from tls_sessions limit ?1)");
+                                          ~ "(select session_id from tls_sessions limit ?1)");
             
             remove_some.bind(1, sessions - m_max_sessions);
             remove_some.spin();

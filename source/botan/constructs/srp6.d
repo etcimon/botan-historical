@@ -110,7 +110,7 @@ string srp6_group_identifier(in BigInt N, in BigInt g)
         
         throw new Exception("Unknown SRP params");
     }
-    catch
+    catch (Throwable)
     {
         throw new Invalid_Argument("Bad SRP group parameters");
     }

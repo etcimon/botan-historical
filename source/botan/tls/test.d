@@ -1,4 +1,4 @@
-﻿module botan.tls.test;
+module botan.tls.test;
 import botan.constants;
 static if (BOTAN_TEST && BOTAN_HAS_TLS):
 
@@ -72,7 +72,7 @@ public:
     X509_Certificate m_server_cert, m_ca_cert;
     Private_Key m_key;
     Vector!Certificate_Store m_stores;
-};
+}
 
 TLS_Credentials_Manager create_creds(RandomNumberGenerator rng)
 {

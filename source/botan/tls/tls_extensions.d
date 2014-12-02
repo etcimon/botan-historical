@@ -207,7 +207,7 @@ public:
             throw new Decoding_Error("Bad encoding for secure renegotiation extn");
     }
 
-    const Vector!ubyte renegotiation_info() const { return m_reneg_data; }
+    Vector!ubyte renegotiation_info() const { return m_reneg_data; }
 
     Vector!ubyte serialize() const
     {
@@ -293,7 +293,7 @@ public:
 
     Handshake_Extension_Type type() const { return static_type(); }
 
-    const Vector!string protocols() const { return m_protocols; }
+    Vector!string protocols() const { return m_protocols; }
 
     /**
     * Empty extension, used by client
@@ -361,7 +361,7 @@ public:
     /**
     * @return contents of the session ticket
     */
-    const Vector!ubyte contents() const { return m_ticket; }
+    Vector!ubyte contents() const { return m_ticket; }
 
     /**
     * Create empty extension, used by both client and server
@@ -472,7 +472,7 @@ public:
         throw new Invalid_Argument("name_to_curve_id unknown name " ~ name);
     }
 
-    const Vector!string curves() const { return m_curves; }
+    Vector!string curves() const { return m_curves; }
 
     Vector!ubyte serialize() const
     {
@@ -627,7 +627,7 @@ public:
                 buf.push_back(hash_code);
                 buf.push_back(sig_code);
             }
-            catch
+            catch (Throwable)
             {}
         }
         

@@ -40,7 +40,7 @@ public:
             if (!m_engine)
                 throw new Exception("Creator function in " ~ library_path ~ " failed");
         }
-        catch
+        catch (Throwable)
         {
             delete lib;
             lib = null;

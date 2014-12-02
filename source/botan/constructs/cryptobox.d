@@ -121,7 +121,7 @@ struct CryptoBox {
         pipe.process_msg(&ciphertext[ciphertext_offset],
         ciphertext.length - ciphertext_offset);
 
-        ubyte computed_mac[MAC_OUTPUT_LEN];
+        ubyte[MAC_OUTPUT_LEN] computed_mac;
         pipe.read(computed_mac, MAC_OUTPUT_LEN, 1);
         
         if (!same_mem(computed_mac, &ciphertext[VERSION_CODE_LEN + PBKDF_SALT_LEN], MAC_OUTPUT_LEN))

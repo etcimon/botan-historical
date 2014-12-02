@@ -1,4 +1,4 @@
-﻿module botan.utils.simd.altivec;
+module botan.utils.simd.altivec;
 
 /*
 * LDC, GDC, DMD Intrinsics for SSE 2

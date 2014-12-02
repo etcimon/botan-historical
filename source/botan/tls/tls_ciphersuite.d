@@ -505,7 +505,7 @@ public:
     *
     * @return list of all known ciphersuites
     */
-    static const Vector!TLS_Ciphersuite all_known_ciphersuites()
+    static Vector!TLS_Ciphersuite all_known_ciphersuites() const
     {
         static Vector!TLS_Ciphersuite all_ciphersuites = Vector!CipherSuite(gather_known_ciphersuites());
         return all_ciphersuites;

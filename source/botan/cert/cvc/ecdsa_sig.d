@@ -35,8 +35,8 @@ public:
                 .verify_end();
     }
 
-    const BigInt get_r() const { return m_r; }
-    const BigInt get_s() const { return m_s; }
+    BigInt get_r() const { return m_r; }
+    BigInt get_s() const { return m_s; }
 
     /**
     * return the r||s

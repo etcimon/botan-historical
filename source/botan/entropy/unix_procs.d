@@ -186,7 +186,7 @@ private:
         {
             shutdown();
             
-            int pipe[2];
+            int[2] pipe;
             if (pipe(pipe) != 0)
                 return;
             
@@ -268,7 +268,7 @@ private:
         pid_t m_pid = -1;
     }
 
-    const string[] next_source()
+    string[] next_source()
     {
         const src = m_sources[m_sources_idx];
         m_sources_idx = (m_sources_idx + 1) % m_sources.length;

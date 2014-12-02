@@ -183,7 +183,7 @@ private:
             {
                 have_session_ticket_key = m_creds.psk("tls-server", "session-ticket", "").length > 0;
             }
-            catch {}
+            catch (Throwable) {}
 
             if (resuming)
             {
@@ -234,7 +234,7 @@ private:
                                                                         session_info.encrypt(ticket_key, rng()),
                                                                         m_policy.session_ticket_lifetime()));
                     }
-                    catch {}
+                    catch (Throwable) {}
                     
                     if (!state.new_session_ticket())
                     {
@@ -487,7 +487,7 @@ private:
                                                    m_policy.session_ticket_lifetime())
                                 );
                         }
-                        catch {}
+                        catch (Throwable) {}
                     }
                     else
                         session_manager().save(session_info);
@@ -562,7 +562,7 @@ bool check_for_resume(TLS_Session session_info,
                 session_info.session_age() > session_ticket_lifetime)
                 return false; // ticket has expired
         }
-        catch
+        catch (Throwable)
         {
             return false;
         }

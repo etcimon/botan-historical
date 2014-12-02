@@ -58,7 +58,7 @@ public:
             if (m_issuer_key_hash != unlock(hash.process(extract_key_bitstr(issuer))))
                 return false;
         }
-        catch
+        catch (Throwable)
         {
             return false;
         }
@@ -114,7 +114,7 @@ alias SingleResponse = FreeListRef!SingleResponse_Impl;
 final class SingleResponse_Impl : ASN1_Object
 {
 public:
-    const CertID certid() const { return m_certid; }
+    CertID certid() const { return m_certid; }
 
     size_t cert_status() const { return m_cert_status; }
 

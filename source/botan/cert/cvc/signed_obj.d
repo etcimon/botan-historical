@@ -79,7 +79,7 @@ public:
             PK_Verifier verifier = PK_Verifier(pub_key, padding, format);
             return verifier.verify_message(to_sign, sig);
         }
-        catch
+        catch (Throwable)
         {
             return false;
         }

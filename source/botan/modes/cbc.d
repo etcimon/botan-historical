@@ -81,9 +81,9 @@ protected:
             throw new Invalid_Argument("Padding " ~ m_padding.name ~ " cannot be used with " ~ cipher.name ~ "/CBC");
     }
 
-    final const BlockCipher cipher() const { return *m_cipher; }
+    final BlockCipher cipher() const { return *m_cipher; }
 
-    final const BlockCipherModePaddingMethod padding() const
+    final BlockCipherModePaddingMethod padding() const
     {
         assert(m_padding, "No padding defined");
         return *m_padding;

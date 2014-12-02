@@ -421,15 +421,15 @@ public:
         m_L.push_back(poly_double(dollar()));
     }
     
-    const Secure_Vector!ubyte star() const { return m_L_star; }
+    Secure_Vector!ubyte star() const { return m_L_star; }
     
-    const Secure_Vector!ubyte dollar() const { return m_L_dollar; }
+    Secure_Vector!ubyte dollar() const { return m_L_dollar; }
     
-    const Secure_Vector!ubyte opCall(size_t i) { return get(i); }
+    Secure_Vector!ubyte opCall(size_t i) const { return get(i); }
     
-    const Secure_Vector!ubyte compute_offsets(Secure_Vector!ubyte offset,
+    Secure_Vector!ubyte compute_offsets(Secure_Vector!ubyte offset,
                                         size_t block_index,
-                                        size_t blocks)
+                                        size_t blocks) const
     {
         m_offset_buf.resize(blocks*BS);
         
@@ -443,7 +443,7 @@ public:
     }
     
 private:
-    const Secure_Vector!ubyte get(size_t i)
+    Secure_Vector!ubyte get(size_t i) const
     {
         while (m_L.length <= i)
             m_L.push_back(poly_double(m_L.back()));

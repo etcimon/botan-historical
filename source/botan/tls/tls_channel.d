@@ -250,7 +250,7 @@ public:
             {
                 send_record(ALERT, alert.serialize());
             }
-            catch { /* swallow it */ }
+            catch (Throwable) { /* swallow it */ }
         }
         
         if (alert.type() == TLS_Alert.NO_RENEGOTIATION)
@@ -769,9 +769,9 @@ private:
         m_read_cipher_states.clear();
     }
 
-    const Handshake_State active_state() const { return *m_active_state; }
+    Handshake_State active_state() const { return *m_active_state; }
 
-    const Handshake_State pending_state() const { return *m_pending_state; }
+    Handshake_State pending_state() const { return *m_pending_state; }
 
     /* callbacks */
     bool delegate(in TLS_Session) m_handshake_cb;

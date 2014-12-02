@@ -15,7 +15,7 @@ import botan.math.mp.mp_core;
 struct Modular_Reducer
 {
 public:
-    const BigInt get_modulus() const { return m_modulus; }
+    BigInt get_modulus() const { return m_modulus; }
 
     /*
     * Barrett Reduction

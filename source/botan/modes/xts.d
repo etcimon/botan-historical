@@ -81,9 +81,9 @@ protected:
         m_tweak.resize(update_granularity());
     }
 
-    final const ubyte* tweak() const { return m_tweak.ptr; }
+    final ubyte* tweak() const { return m_tweak.ptr; }
 
-    final const BlockCipher cipher() const { return *m_cipher; }
+    final BlockCipher cipher() const { return *m_cipher; }
 
     final void update_tweak(size_t which)
     {

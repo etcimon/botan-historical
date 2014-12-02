@@ -47,7 +47,7 @@ public:
     * @param pref_provider suggests a preferred provider
     * @return prototype object, or NULL
     */
-    const T get(in string algo_spec, in string requested_provider)
+    T get(in string algo_spec, in string requested_provider) const
     {
         auto algo = find_algorithm(algo_spec);
         if (algo.length == 0) // algo not found at all (no providers)

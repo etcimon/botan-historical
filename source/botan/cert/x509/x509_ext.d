@@ -119,7 +119,7 @@ public:
             
             if (!ext && critical && m_throw_on_unknown_critical)
                 throw new Decoding_Error("Encountered unknown X.509 extension marked "
-                                         "as critical; OID = " ~ oid.toString());
+                                         ~ "as critical; OID = " ~ oid.toString());
             
             if (ext)
             {
@@ -864,7 +864,7 @@ public:
         }
 
 
-        const Alternative_Name point() const { return m_point; }
+        Alternative_Name point() const { return m_point; }
     private:
         Alternative_Name m_point;
     }
