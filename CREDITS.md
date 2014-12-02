@@ -8,8 +8,7 @@ and beautification by scripts. The fields are name (N), email (E),
 web-address (W), PGP key ID and fingerprint (P), description (D),
 snail-mail address (S), and Bitcoin address (B).
 
-::
-
+```
   N: Charles Brockman
   W: http://www.securitygenetics.com/
   D: documentation editing
@@ -90,3 +89,4 @@ snail-mail address (S), and Bitcoin address (B).
   W: https://www.github.com/etcimon
   D: Library rewrite in D, inline ASM, intrinsics, containers, allocators, sockets
   S: Québec, Qc
+```
