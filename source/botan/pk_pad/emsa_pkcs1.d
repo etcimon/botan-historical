@@ -21,7 +21,7 @@ final class EMSA_PKCS1v15 : EMSA
 {
 public:
     /**
-    * @param hash the hash object to use
+    * @param hash = the hash object to use
     */
     this(HashFunction hash)
     {

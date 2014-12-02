@@ -27,10 +27,10 @@ struct CryptoBox {
 
     /**
     * Encrypt a message using a passphrase
-    * @param input the input data
-    * @param input_len the length of input in bytes
-    * @param passphrase the passphrase used to encrypt the message
-    * @param rng a ref to a random number generator, such as AutoSeeded_RNG
+    * @param input = the input data
+    * @param input_len = the length of input in bytes
+    * @param passphrase = the passphrase used to encrypt the message
+    * @param rng = a ref to a random number generator, such as AutoSeeded_RNG
     */
     static string encrypt(in ubyte* input, size_t input_len,
                           in string passphrase,
@@ -81,9 +81,9 @@ struct CryptoBox {
 
     /**
     * Decrypt a message encrypted with CryptoBox::encrypt
-    * @param input the input data
-    * @param input_len the length of input in bytes
-    * @param passphrase the passphrase used to encrypt the message
+    * @param input = the input data
+    * @param input_len = the length of input in bytes
+    * @param passphrase = the passphrase used to encrypt the message
     */
     static string decrypt(in ubyte* input, size_t input_len, in string passphrase)
     {
@@ -133,8 +133,8 @@ struct CryptoBox {
 
     /**
     * Decrypt a message encrypted with CryptoBox::encrypt
-    * @param input the input data
-    * @param passphrase the passphrase used to encrypt the message
+    * @param input = the input data
+    * @param passphrase = the passphrase used to encrypt the message
     */
     string decrypt(in string input, in string passphrase)
     {

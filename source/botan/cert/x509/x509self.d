@@ -141,7 +141,7 @@ public:
 
     /**
     * Mark the certificate as a CA certificate and set the path limit.
-    * @param limit the path limit to be set in the BasicConstraints extension.
+    * @param limit = the path limit to be set in the BasicConstraints extension.
     */
     void CA_key(size_t limit = 1)
     {
@@ -152,7 +152,7 @@ public:
 
     /**
     * Set when the certificate should become valid
-    * @param time the notBefore value of the certificate
+    * @param time = the notBefore value of the certificate
     */
     void not_before(in string time_string)
     {
@@ -161,7 +161,7 @@ public:
 
     /**
     * Set the notAfter of the certificate.
-    * @param time the notAfter value of the certificate
+    * @param time = the notAfter value of the certificate
     */
     void not_after(in string time_string)
     {
@@ -170,7 +170,7 @@ public:
 
     /**
     * Add the key constraints of the KeyUsage extension.
-    * @param constr the constraints to set
+    * @param constr = the constraints to set
     */
     void add_constraints(Key_Constraints usage)
     {
@@ -179,7 +179,7 @@ public:
 
     /**
     * Add constraints to the ExtendedKeyUsage extension.
-    * @param oid the oid to add
+    * @param oid = the oid to add
     */
     void add_ex_constraint(in OID oid)
     {
@@ -188,7 +188,7 @@ public:
 
     /**
     * Add constraints to the ExtendedKeyUsage extension.
-    * @param name the name to look up the oid to add
+    * @param name = the name to look up the oid to add
     */
     void add_ex_constraint(in string oid_str)
     {
@@ -197,9 +197,9 @@ public:
 
     /**
     * Construct a new options object
-    * @param opts define the common name of this object. An example for this
+    * @param opts = define the common name of this object. An example for this
     * parameter would be "common_name/country/organization/organizational_unit".
-    * @param expire_time the expiration time (default 1 year)
+    * @param expire_time = the expiration time (default 1 year)
     */
     this(in string initial_opts = "",
                       Duration expiration_time = 365.days)
@@ -230,11 +230,11 @@ public:
 
 /**
 * Create a self-signed X.509 certificate.
-* @param opts the options defining the certificate to create
-* @param key the private key used for signing, i.e. the key
+* @param opts = the options defining the certificate to create
+* @param key = the private key used for signing, i.e. the key
 * associated with this self-signed certificate
-* @param hash_fn the hash function to use
-* @param rng the rng to use
+* @param hash_fn = the hash function to use
+* @param rng = the rng to use
 * @return newly created self-signed certificate
 */
 X509_Certificate create_self_signed_cert(in X509_Cert_Options opts,
@@ -278,10 +278,10 @@ X509_Certificate create_self_signed_cert(in X509_Cert_Options opts,
 
 /**
 * Create a PKCS#10 certificate request.
-* @param opts the options defining the request to create
-* @param key the key used to sign this request
-* @param rng the rng to use
-* @param hash_fn the hash function to use
+* @param opts = the options defining the request to create
+* @param key = the key used to sign this request
+* @param rng = the rng to use
+* @param hash_fn = the hash function to use
 * @return newly created PKCS#10 request
 */
 PKCS10_Request create_cert_req(in X509_Cert_Options opts,

@@ -53,8 +53,8 @@ public:
     /**
     * Put the DER encoded version of this object into a pipe. PEM
     * is not supported.
-    * @param output the pipe to push the DER encoded version into
-    * @param encoding the encoding to use. Must be DER.
+    * @param output = the pipe to push the DER encoded version into
+    * @param encoding = the encoding to use. Must be DER.
     */
     final void encode(Pipe output, X509_Encoding encoding) const
     {
@@ -86,7 +86,7 @@ public:
 
     /**
     * Build the DER encoded certifcate body of an object
-    * @param tbs the data to be signed
+    * @param tbs = the data to be signed
     * @result the correctly encoded body of the object
     */
     static Vector!ubyte build_cert_body(in Vector!ubyte tbs)
@@ -99,9 +99,9 @@ public:
 
     /**
     * Create a signed generalized CVC object.
-    * @param signer the signer used to sign this object
-    * @param tbs_bits the body the generalized CVC object to be signed
-    * @param rng a random number generator
+    * @param signer = the signer used to sign this object
+    * @param tbs_bits = the body the generalized CVC object to be signed
+    * @param rng = a random number generator
     * @result the DER encoded signed generalized CVC object
     */
     static Vector!ubyte make_signed(PK_Signer signer,

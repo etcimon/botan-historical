@@ -129,7 +129,7 @@ public:
     BlockCipher clone() const { return new MISTY1; }
 
     /**
-    * @param rounds the number of rounds. Must be 8 with the current
+    * @param rounds = the number of rounds. Must be 8 with the current
     * implementation
     */
     this(size_t rounds = 8)

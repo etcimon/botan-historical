@@ -51,7 +51,7 @@ public:
         
     /**
     * XOR the contents of another octet string into this one
-    * @param other octet string
+    * @param other = octet string
     * @return reference to this
     */
     void opOpAssign(string op)(in OctetString k)
@@ -97,7 +97,7 @@ public:
     
     /**
     * Create a new OctetString
-    * @param str is a hex encoded string
+    * @param str = is a hex encoded string
     */
     this(in string hex_string)
     {
@@ -107,8 +107,8 @@ public:
 
     /**
     * Create a new random OctetString
-    * @param rng is a random number generator
-    * @param len is the desired length in bytes
+    * @param rng = is a random number generator
+    * @param len = is the desired length in bytes
     */
     this(RandomNumberGenerator rng, size_t length)
     {
@@ -117,8 +117,8 @@ public:
     
     /**
     * Create a new OctetString
-    * @param input is an array
-    * @param len is the length of in in bytes
+    * @param input = is an array
+    * @param len = is the length of in in bytes
     */
     this(in ubyte* input, size_t len)
     {
@@ -127,21 +127,21 @@ public:
     
     /**
     * Create a new OctetString
-    * @param input a bytestring
+    * @param input = a bytestring
     */
     this(in Secure_Vector!ubyte input) { bits = input; }
     
     /**
     * Create a new OctetString
-    * @param input a bytestring
+    * @param input = a bytestring
     */
     this(in Vector!ubyte input) {  bits = Secure_Vector!ubyte(input.ptr[0 .. input.length]); }
 
 
     /**
     * Compare two strings
-    * @param x an octet string
-    * @param y an octet string
+    * @param x = an octet string
+    * @param y = an octet string
     * @return if x is equal to y
     */
     bool opEquals(in OctetString other)
@@ -151,8 +151,8 @@ public:
 
     /**
     * Compare two strings
-    * @param x an octet string
-    * @param y an octet string
+    * @param x = an octet string
+    * @param y = an octet string
     * @return if x is not equal to y
     */
     bool opCmp(in OctetString other)
@@ -162,8 +162,8 @@ public:
 
     /**
     * Concatenate two strings
-    * @param x an octet string
-    * @param y an octet string
+    * @param x = an octet string
+    * @param y = an octet string
     * @return x concatenated with y
     */
     OctetString opBinary(string op)(in OctetString other)
@@ -177,8 +177,8 @@ public:
     
     /**
     * XOR two strings
-    * @param x an octet string
-    * @param y an octet string
+    * @param x = an octet string
+    * @param y = an octet string
     * @return x XORed with y
     */
     OctetString opBinary(string op)(in OctetString other)

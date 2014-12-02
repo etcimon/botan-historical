@@ -124,9 +124,9 @@ public:
 
 
     /**
-    * @param hash the hash to use internally
-    * @param cipher the stream cipher to use internally
-    * @param block_size the size of the block to use
+    * @param hash = the hash to use internally
+    * @param cipher = the stream cipher to use internally
+    * @param block_size = the size of the block to use
     */
     this(HashFunction hash, StreamCipher cipher, size_t block_size) 
     {

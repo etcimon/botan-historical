@@ -43,8 +43,8 @@ public:
     class Invalid_Message_Number : Invalid_Argument
     {
         /**
-        * @param where the error occured
-        * @param msg the invalid message id that was used
+        * @param where = the error occured
+        * @param msg = the invalid message id that was used
         */
         this(in string where, message_id msg) {
             super("Pipe::" ~ where ~ ": Invalid message number " ~
@@ -64,8 +64,8 @@ public:
 
     /**
     * Write input to the pipe, i.e. to its first filter.
-    * @param input the ubyte array to write
-    * @param length the length of the ubyte array in
+    * @param input = the ubyte array to write
+    * @param length = the length of the ubyte array in
     */
     void write(in ubyte* input, size_t length)
     {
@@ -76,21 +76,21 @@ public:
 
     /**
     * Write input to the pipe, i.e. to its first filter.
-    * @param input the Secure_Vector containing the data to write
+    * @param input = the Secure_Vector containing the data to write
     */
     void write(in Secure_Vector!ubyte input)
     { write(input.ptr, input.length); }
 
     /**
     * Write input to the pipe, i.e. to its first filter.
-    * @param input the std::vector containing the data to write
+    * @param input = the std::vector containing the data to write
     */
     void write(in Vector!ubyte input)
     { write(input.ptr, input.length); }
 
     /**
     * Write input to the pipe, i.e. to its first filter.
-    * @param input the string containing the data to write
+    * @param input = the string containing the data to write
     */
     void write(in string input)
     {
@@ -99,7 +99,7 @@ public:
 
     /**
     * Write input to the pipe, i.e. to its first filter.
-    * @param input the ubyte array containing the data to write
+    * @param input = the ubyte array containing the data to write
     */
     void write(in ubyte[] input)
     {
@@ -108,7 +108,7 @@ public:
 
     /**
     * Write input to the pipe, i.e. to its first filter.
-    * @param input the DataSource to read the data from
+    * @param input = the DataSource to read the data from
     */
     void write(DataSource source)
     {
@@ -122,7 +122,7 @@ public:
 
     /**
     * Write input to the pipe, i.e. to its first filter.
-    * @param input a single ubyte to be written
+    * @param input = a single ubyte to be written
     */
     void write(ubyte input)
     {
@@ -131,7 +131,7 @@ public:
 
     /**
     * Write input to the pipe, i.e. to its first filter.
-    * @param input a ubyte array to be written
+    * @param input = a ubyte array to be written
     */
     void write(in ubyte[] input)
     {
@@ -140,8 +140,8 @@ public:
 
     /**
     * Perform start_msg(), write() and end_msg() sequentially.
-    * @param input the ubyte array containing the data to write
-    * @param length the length of the ubyte array to write
+    * @param input = the ubyte array containing the data to write
+    * @param length = the length of the ubyte array to write
     */
     void process_msg(in ubyte* input, size_t length)
     {
@@ -152,7 +152,7 @@ public:
 
     /**
     * Perform start_msg(), write() and end_msg() sequentially.
-    * @param input the Secure_Vector containing the data to write
+    * @param input = the Secure_Vector containing the data to write
     */
     void process_msg(in Secure_Vector!ubyte input)
     {
@@ -161,7 +161,7 @@ public:
 
     /**
     * Perform start_msg(), write() and end_msg() sequentially.
-    * @param input the Secure_Vector containing the data to write
+    * @param input = the Secure_Vector containing the data to write
     */
     void process_msg(in Vector!ubyte input)
     {
@@ -170,7 +170,7 @@ public:
 
     /**
     * Perform start_msg(), write() and end_msg() sequentially.
-    * @param input the string containing the data to write
+    * @param input = the string containing the data to write
     */
     void process_msg(in string input)
     {
@@ -179,7 +179,7 @@ public:
 
     /**
     * Perform start_msg(), write() and end_msg() sequentially.
-    * @param input the DataSource providing the data to write
+    * @param input = the DataSource providing the data to write
     */
     void process_msg(DataSource input)
     {
@@ -190,7 +190,7 @@ public:
 
     /**
     * Find out how many bytes are ready to read.
-    * @param msg the number identifying the message
+    * @param msg = the number identifying the message
     * for which the information is desired
     * @return number of bytes that can still be read
     */
@@ -204,8 +204,8 @@ public:
     * offset so that every call to read will return a new portion of
     * the message.
     *
-    * @param output the ubyte array to write the read bytes to
-    * @param length the length of the ubyte array output
+    * @param output = the ubyte array to write the read bytes to
+    * @param length = the length of the ubyte array output
     * @return number of bytes actually read into output
     */
     size_t read(ubyte* output, size_t length)
@@ -217,9 +217,9 @@ public:
     * Read a specified message from the pipe. Moves the internal
     * offset so that every call to read will return a new portion of
     * the message.
-    * @param output the ubyte array to write the read bytes to
-    * @param length the length of the ubyte array output
-    * @param msg the number identifying the message to read from
+    * @param output = the ubyte array to write the read bytes to
+    * @param length = the length of the ubyte array output
+    * @param msg = the number identifying the message to read from
     * @return number of bytes actually read into output
     */
     size_t read(ubyte* output, size_t length, message_id msg)
@@ -231,8 +231,8 @@ public:
     * Read a specified message from the pipe. Moves the internal
     * offset so that every call to read will return a new portion of
     * the message.
-    * @param output the ubyte array to write the read bytes to
-    * @param msg the number identifying the message to read from
+    * @param output = the ubyte array to write the read bytes to
+    * @param msg = the number identifying the message to read from
     * @return number of bytes actually read into output
     */
     size_t read(ref ubyte[] output, message_id msg = DEFAULT_MESSAGE)
@@ -245,8 +245,8 @@ public:
     * that every call to read will return a new portion of the
     * message.
     *
-    * @param output the ubyte to write the result to
-    * @param msg the message to read from
+    * @param output = the ubyte to write the result to
+    * @param msg = the message to read from
     * @return number of bytes actually read into output
     */
     size_t read(ref ubyte output, message_id msg = DEFAULT_MESSAGE)
@@ -256,7 +256,7 @@ public:
 
     /**
     * Read the full contents of the pipe.
-    * @param msg the number identifying the message to read from
+    * @param msg = the number identifying the message to read from
     * @return Secure_Vector holding the contents of the pipe
     */
     Secure_Vector!ubyte read_all(message_id msg = DEFAULT_MESSAGE)
@@ -271,7 +271,7 @@ public:
 
     /**
     * Read the full contents of the pipe.
-    * @param msg the number identifying the message to read from
+    * @param msg = the number identifying the message to read from
     * @return string holding the contents of the pipe
     */
     string toString(message_id msg = DEFAULT_MESSAGE)
@@ -295,9 +295,9 @@ public:
     /** Read from the default message but do not modify the internal
     * offset. Consecutive calls to peek() will return portions of
     * the message starting at the same position.
-    * @param output the ubyte array to write the peeked message part to
-    * @param length the length of the ubyte array output
-    * @param offset the offset from the current position in message
+    * @param output = the ubyte array to write the peeked message part to
+    * @param length = the length of the ubyte array output
+    * @param offset = the offset from the current position in message
     * @return number of bytes actually peeked and written into output
     */
     size_t peek(ubyte* output, size_t length, size_t offset, message_id msg = DEFAULT_MESSAGE) const
@@ -308,10 +308,10 @@ public:
     /** Read from the specified message but do not modify the
     * internal offset. Consecutive calls to peek() will return
     * portions of the message starting at the same position.
-    * @param output the ubyte array to write the peeked message part to
-    * @param length the length of the ubyte array output
-    * @param offset the offset from the current position in message
-    * @param msg the number identifying the message to peek from
+    * @param output = the ubyte array to write the peeked message part to
+    * @param length = the length of the ubyte array output
+    * @param offset = the offset from the current position in message
+    * @param msg = the number identifying the message to peek from
     * @return number of bytes actually peeked and written into output
     */
     size_t peek(ref ubyte[] output, size_t offset, message_id msg = DEFAULT_MESSAGE) const
@@ -322,9 +322,9 @@ public:
     /** Read a single ubyte from the specified message but do not
     * modify the internal offset. Consecutive calls to peek() will
     * return portions of the message starting at the same position.
-    * @param output the ubyte to write the peeked message ubyte to
-    * @param offset the offset from the current position in message
-    * @param msg the number identifying the message to peek from
+    * @param output = the ubyte to write the peeked message ubyte to
+    * @param offset = the offset from the current position in message
+    * @param msg = the number identifying the message to peek from
     * @return number of bytes actually peeked and written into output
     */
     size_t peek(ref ubyte output, size_t offset, message_id msg = DEFAULT_MESSAGE) const
@@ -334,7 +334,7 @@ public:
 
     /**
     * Read one ubyte.
-    * @param output the ubyte to read to
+    * @param output = the ubyte to read to
     * @return length in bytes that was actually read and put
     * into out
     */
@@ -346,7 +346,7 @@ public:
     
     /**
     * Peek at one ubyte.
-    * @param output an output ubyte
+    * @param output = an output ubyte
     * @return length in bytes that was actually read and put
     * into out
     */
@@ -358,7 +358,7 @@ public:
     
     /**
     * Discard the next N bytes of the data
-    * @param N the number of bytes to discard
+    * @param N = the number of bytes to discard
     * @return number of bytes actually discarded
     */
     size_t discard_next(size_t n)
@@ -393,7 +393,7 @@ public:
 
     /**
     * Set the default message
-    * @param msg the number identifying the message which is going to
+    * @param msg = the number identifying the message which is going to
     * be the new default message
     */
     void set_default_msg(message_id msg)
@@ -458,7 +458,7 @@ public:
 
     /**
     * Insert a new filter at the front of the pipe
-    * @param filt the new filter to insert
+    * @param filt = the new filter to insert
     */
     void prepend(Filter filter)
     {
@@ -479,7 +479,7 @@ public:
 
     /**
     * Insert a new filter at the back of the pipe
-    * @param filt the new filter to insert
+    * @param filt = the new filter to insert
     */
     void append(Filter filter)
     {
@@ -553,7 +553,7 @@ public:
 
     /**
     * Construct a Pipe from a list of filters
-    * @param filters the set of filters to use
+    * @param filters = the set of filters to use
     */
     this(Filter[] filters)
     {

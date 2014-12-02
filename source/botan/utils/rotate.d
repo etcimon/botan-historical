@@ -11,8 +11,8 @@ pure:
 
 /**
 * Bit rotation left
-* @param input the input word
-* @param rot the number of bits to rotate
+* @param input = the input word
+* @param rot = the number of bits to rotate
 * @return input rotated left by rot bits
 */
 T rotate_left(T)(T input, size_t rot)
@@ -24,8 +24,8 @@ T rotate_left(T)(T input, size_t rot)
 
 /**
 * Bit rotation right
-* @param input the input word
-* @param rot the number of bits to rotate
+* @param input = the input word
+* @param rot = the number of bits to rotate
 * @return input rotated right by rot bits
 */
 T rotate_right(T)(T input, size_t rot)

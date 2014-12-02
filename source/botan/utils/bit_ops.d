@@ -9,7 +9,7 @@ module botan.utils.bit_ops;
 import botan.utils.types;
 /**
 * Power of 2 test. T should be an uinteger type
-* @param arg an integer value
+* @param arg = an integer value
 * @return true iff arg is 2^n for some n > 0
 */
 bool is_power_of_2(T)(T arg)
@@ -20,7 +20,7 @@ bool is_power_of_2(T)(T arg)
 /**
 * Return the index of the highest set bit
 * T is an uinteger type
-* @param n an integer value
+* @param n = an integer value
 * @return index of the highest set bit in n
 */
 size_t high_bit(T)(T n)
@@ -34,7 +34,7 @@ size_t high_bit(T)(T n)
 /**
 * Return the index of the lowest set bit
 * T is an uinteger type
-* @param n an integer value
+* @param n = an integer value
 * @return index of the lowest set bit in n
 */
 size_t low_bit(T)(T n)
@@ -47,7 +47,7 @@ size_t low_bit(T)(T n)
 
 /**
 * Return the number of significant bytes in n
-* @param n an integer value
+* @param n = an integer value
 * @return number of significant bytes in n
 */
 size_t significant_bytes(T)(T n)
@@ -60,7 +60,7 @@ size_t significant_bytes(T)(T n)
 
 /**
 * Compute Hamming weights
-* @param n an integer value
+* @param n = an integer value
 * @return number of bits in n set to 1
 */
 size_t hamming_weight(T)(T n)
@@ -76,7 +76,7 @@ size_t hamming_weight(T)(T n)
 
 /**
 * Count the trailing zero bits in n
-* @param n an integer value
+* @param n = an integer value
 * @return maximum x st 2^x divides n
 */
 size_t ctz(T)(T n)

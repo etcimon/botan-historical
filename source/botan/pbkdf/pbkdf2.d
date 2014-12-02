@@ -127,7 +127,7 @@ public:
 
     /**
     * Create a PKCS #5 instance using the specified message auth code
-    * @param mac_fn the MAC object to use as PRF
+    * @param mac_fn = the MAC object to use as PRF
     */
     this(MessageAuthenticationCode mac_fn) 
     {

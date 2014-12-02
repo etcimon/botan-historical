@@ -22,8 +22,8 @@ public:
     /**
     * Write bytes into the buffered filter, which will them emit them
     * in calls to buffered_block in the subclass
-    * @param input the input bytes
-    * @param input_size of input in bytes
+    * @param input = the input bytes
+    * @param input_size = of input in bytes
     */
     void write(in ubyte* input, size_t input_size)
     {
@@ -102,9 +102,9 @@ public:
 
     /**
     * Initialize a Buffered_Filter
-    * @param block_size the function buffered_block will be called
+    * @param block_size = the function buffered_block will be called
     *          with inputs which are a multiple of this size
-    * @param final_minimum the function buffered_final will be called
+    * @param final_minimum = the function buffered_final will be called
     *          with at least this many bytes.
     */
     this(size_t block_size, size_t final_minimum)
@@ -126,16 +126,16 @@ public:
 protected:
     /**
     * The block processor, implemented by subclasses
-    * @param input some input bytes
-    * @param length the size of input, guaranteed to be a multiple
+    * @param input = some input bytes
+    * @param length = the size of input, guaranteed to be a multiple
     *          of block_size
     */
     abstract void buffered_block(in ubyte* input, size_t length);
 
     /**
     * The final block, implemented by subclasses
-    * @param input some input bytes
-    * @param length the size of input, guaranteed to be at least
+    * @param input = some input bytes
+    * @param length = the size of input, guaranteed to be at least
     *          final_minimum bytes
     */
     abstract void buffered_final(in ubyte* input, size_t length);

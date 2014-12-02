@@ -36,8 +36,8 @@ public:
     * between messages. Thus, if the AD does not change, calling
     * once (after set_key) is the optimum.
     *
-    * @param ad the associated data
-    * @param ad_len length of add in bytes
+    * @param ad = the associated data
+    * @param ad_len = length of add in bytes
     */
     abstract void set_associated_data(in ubyte* ad, size_t ad_len);
 

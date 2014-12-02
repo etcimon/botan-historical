@@ -21,7 +21,7 @@ class LibraryInitializer
 public:
     /**
     * Initialize the library
-    * @param options a string listing initialization options
+    * @param options = a string listing initialization options
     */
     static void initialize(in string options = "")
     {
@@ -54,7 +54,7 @@ public:
 
     /**
     * Initialize the library
-    * @param options a string listing initialization options
+    * @param options = a string listing initialization options
     */
     this(in string options = "")
     { LibraryInitializer.initialize(options); }

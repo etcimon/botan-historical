@@ -85,8 +85,8 @@ public:
     }
 
     /**
-    * @param mac the underlying mac function (eg HMAC(SHA-512))
-    * @param underlying_rng RNG used generating inputs (eg HMAC_RNG)
+    * @param mac = the underlying mac function (eg HMAC(SHA-512))
+    * @param underlying_rng = RNG used generating inputs (eg HMAC_RNG)
     */
     this(MessageAuthenticationCode mac,
          RandomNumberGenerator prng)

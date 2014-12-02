@@ -18,7 +18,7 @@ class EMSA1 : EMSA
 {
 public:
     /**
-    * @param hash the hash function to use
+    * @param hash = the hash function to use
     */
     this(HashFunction hash) 
     {

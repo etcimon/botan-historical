@@ -15,10 +15,10 @@ import botan.rng.hmac_drbg;
 import botan.utils.types;
 
 /**
-* @param x the secret (EC)DSA key
-* @param q the group order
-* @param h the message hash already reduced mod q
-* @param hash the hash function used to generate h
+* @param x = the secret (EC)DSA key
+* @param q = the group order
+* @param h = the message hash already reduced mod q
+* @param hash = the hash function used to generate h
 */
 BigInt generate_rfc6979_nonce(in BigInt x, in BigInt q, in BigInt h, in string hash)
 {

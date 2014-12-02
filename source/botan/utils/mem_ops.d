@@ -8,8 +8,8 @@ module botan.utils.mem_ops;
 import botan.utils.types;
 /**
 * Zeroize memory
-* @param ptr a pointer to memory to zero out
-* @param n the number of bytes pointed to by ptr
+* @param ptr = a pointer to memory to zero out
+* @param n = the number of bytes pointed to by ptr
 */
 void zero_mem(void* ptr, size_t n)
 {
@@ -18,8 +18,8 @@ void zero_mem(void* ptr, size_t n)
 
 /**
 * Zeroize memory
-* @param ptr a pointer to an array
-* @param n the number of Ts pointed to by ptr
+* @param ptr = a pointer to an array
+* @param n = the number of Ts pointed to by ptr
 */
 void clear_mem(T)(T* ptr, size_t n)
 {
@@ -28,9 +28,9 @@ void clear_mem(T)(T* ptr, size_t n)
 
 /**
 * Copy memory
-* @param output the destination array
-* @param input the source array
-* @param n the number of elements of in/out
+* @param output = the destination array
+* @param input = the source array
+* @param n = the number of elements of in/out
 */
 void copy_mem(T)(T* output, in T* input, in size_t n)
 {
@@ -40,9 +40,9 @@ void copy_mem(T)(T* output, in T* input, in size_t n)
 
 /**
 * Set memory to a fixed value
-* @param ptr a pointer to an array
-* @param n the number of Ts pointed to by ptr
-* @param val the value to set each ubyte to
+* @param ptr = a pointer to an array
+* @param n = the number of Ts pointed to by ptr
+* @param val = the value to set each ubyte to
 */
 void set_mem(T)(T* ptr, size_t n, ubyte val)
 {
@@ -52,9 +52,9 @@ void set_mem(T)(T* ptr, size_t n, ubyte val)
 
 /**
 * Memory comparison, input insensitive
-* @param p1 a pointer to an array
-* @param p2 a pointer to another array
-* @param n the number of Ts in p1 and p2
+* @param p1 = a pointer to an array
+* @param p2 = a pointer to another array
+* @param n = the number of Ts in p1 and p2
 * @return true iff p1[i] == p2[i] forall i in [0...n)
 */
 bool same_mem(T)(in T* p1, in T* p2, in size_t n)

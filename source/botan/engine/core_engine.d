@@ -669,10 +669,10 @@ public:
 
 /**
 * Create a cipher mode filter object
-* @param block_cipher a block cipher object
-* @param direction are we encrypting or decrypting?
-* @param mode the name of the cipher mode to use
-* @param padding the mode padding to use (only used for ECB, CBC)
+* @param block_cipher = a block cipher object
+* @param direction = are we encrypting or decrypting?
+* @param mode = the name of the cipher mode to use
+* @param padding = the mode padding to use (only used for ECB, CBC)
 */
 Keyed_Filter get_cipher_mode(const BlockCipher block_cipher,
                              Cipher_Dir direction,

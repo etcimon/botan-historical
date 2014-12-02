@@ -52,7 +52,7 @@ public:
     }
 
     /**
-    * @param hash the underlying hash to use
+    * @param hash = the underlying hash to use
     */
     this(HashFunction hash)
     {

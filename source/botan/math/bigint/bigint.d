@@ -65,7 +65,7 @@ public:
 
     /**
     * Create BigInt from 64 bit integer
-    * @param n initial value of this BigInt
+    * @param n = initial value of this BigInt
     */
     this(ulong n)
     {
@@ -81,7 +81,7 @@ public:
 
     /**
     * Copy Constructor
-    * @param other the BigInt to copy
+    * @param other = the BigInt to copy
     */
     this(in BigInt other)
     {
@@ -94,7 +94,7 @@ public:
     * rest of the string will be interpreted as hexadecimal digits.
     * Otherwise, it will be interpreted as a decimal number.
     *
-    * @param str the string to parse for an integer value
+    * @param str = the string to parse for an integer value
     */
     this(in string str)
     {
@@ -124,9 +124,9 @@ public:
 
     /**
     * Create a BigInt from an integer in a ubyte array
-    * @param input the ubyte array holding the value
-    * @param length size of buf
-    * @param base is the number base of the integer in buf
+    * @param input = the ubyte array holding the value
+    * @param length = size of buf
+    * @param base = is the number base of the integer in buf
     */
     this(in ubyte* input, size_t length, Base base)
     {
@@ -135,8 +135,8 @@ public:
 
     /**
     * Create a random BigInt of the specified size
-    * @param rng random number generator
-    * @param bits size in bits
+    * @param rng = random number generator
+    * @param bits = size in bits
     */
     this(RandomNumberGenerator rng, size_t bits)
     {
@@ -144,8 +144,8 @@ public:
     }
     /**
     * Create BigInt of specified size, all zeros
-    * @param sign the sign
-    * @param size of the internal register in words
+    * @param sign = the sign
+    * @param size = of the internal register in words
     */
     this(Sign s, size_t size)
     {
@@ -179,7 +179,7 @@ public:
 
     /**
     * Swap this value with another
-    * @param other BigInt to swap values with
+    * @param other = BigInt to swap values with
     */
     void swap(BigInt other)
     {
@@ -189,7 +189,7 @@ public:
 
     /**
     * += operator
-    * @param y the BigInt to add to this
+    * @param y = the BigInt to add to this
     */
     ref BigInt opOpAssign(string op)(in BigInt y)
         if (op == "+=")
@@ -226,7 +226,7 @@ public:
 
     /**
     * -= operator
-    * @param y the BigInt to subtract from this
+    * @param y = the BigInt to subtract from this
     */
     ref BigInt opOpAssign(string op)(in BigInt y)
         if (op == "-=")
@@ -270,7 +270,7 @@ public:
 
     /**
     * *= operator
-    * @param y the BigInt to multiply with this
+    * @param y = the BigInt to multiply with this
     */
     ref BigInt opOpAssign(string op)(in BigInt y)
         if (op == "*=")
@@ -309,7 +309,7 @@ public:
 
     /**
     * /= operator
-    * @param y the BigInt to divide this by
+    * @param y = the BigInt to divide this by
     */
     ref BigInt opOpAssign(string op)(in BigInt y)
         if (op == "/=")
@@ -324,7 +324,7 @@ public:
 
     /**
     * Modulo operator
-    * @param y the modulus to reduce this by
+    * @param y = the modulus to reduce this by
     */
     ref BigInt opOpAssign(string op)(in BigInt mod)
         if (op == "%=")
@@ -334,7 +334,7 @@ public:
 
     /**
     * Modulo operator
-    * @param y the modulus (word) to reduce this by
+    * @param y = the modulus (word) to reduce this by
     */
     word opOpAssign(string op)(word mod)
         if (op == "%=")
@@ -371,7 +371,7 @@ public:
 
     /**
     * Left shift operator
-    * @param shift the number of bits to shift this left by
+    * @param shift = the number of bits to shift this left by
     */
     ref BigInt opOpAssign(string op)(size_t shift)
         if (op == "<<=")
@@ -391,7 +391,7 @@ public:
 
     /**
     * Right shift operator
-    * @param shift the number of bits to shift this right by
+    * @param shift = the number of bits to shift this right by
     */
     ref BigInt opOpAssign(string op)(size_t shift)
         if (op == ">>=")
@@ -445,8 +445,8 @@ public:
 
     /**
     * Compare this to another BigInt
-    * @param other the BigInt value to compare with
-    * @param check_signs include sign in comparison?
+    * @param other = the BigInt value to compare with
+    * @param check_signs = include sign in comparison?
     * @result if (this<n) return -1, if (this>n) return 1, if both
     * values are identical return 0 [like Perl's <=> operator]
     */
@@ -516,7 +516,7 @@ public:
 
     /**
     * Set bit at specified position
-    * @param n bit position to set
+    * @param n = bit position to set
     */
     void set_bit(size_t n)
     {
@@ -528,7 +528,7 @@ public:
 
     /**
     * Clear bit at specified position
-    * @param n bit position to clear
+    * @param n = bit position to clear
     */
     void clear_bit(size_t n)
     {
@@ -540,7 +540,7 @@ public:
 
     /**
     * Clear all but the lowest n bits
-    * @param n amount of bits to keep
+    * @param n = amount of bits to keep
     */
     void mask_bits(size_t n)
     {
@@ -558,7 +558,7 @@ public:
 
     /**
     * Return bit value at specified position
-    * @param n the bit offset to test
+    * @param n = the bit offset to test
     * @result true, if the bit at position n is set, false otherwise
     */
     bool get_bit(size_t n) const
@@ -568,8 +568,8 @@ public:
 
     /**
     * Return (a maximum of) 32 bits of the complete value
-    * @param offset the offset to start extracting
-    * @param length amount of bits to extract (starting at offset)
+    * @param offset = the offset to start extracting
+    * @param length = amount of bits to extract (starting at offset)
     * @result the integer extracted from the register starting at
     * offset with specified length
     */
@@ -610,7 +610,7 @@ public:
     }
 
     /**
-    * @param n the offset to get a ubyte from
+    * @param n = the offset to get a ubyte from
     * @result ubyte at offset n
     */
     ubyte byte_at(size_t n) const
@@ -625,7 +625,7 @@ public:
 
     /**
     * Return the word at a specified position of the internal register
-    * @param n position in the register
+    * @param n = position in the register
     * @return value at position n
     */
     word word_at(size_t n) const
@@ -669,7 +669,7 @@ public:
 
     /**
     * Set sign of the integer
-    * @param sign new Sign to set
+    * @param sign = new Sign to set
     */
     void set_sign(Sign s)
     {
@@ -751,7 +751,7 @@ public:
 
     /**
     * Increase internal register buffer to at least n words
-    * @param n new size of register
+    * @param n = new size of register
     */
     void grow_to(size_t n)
     {
@@ -761,8 +761,8 @@ public:
 
     /**
     * Fill BigInt with a random number with size of bitsize
-    * @param rng the random number generator to use
-    * @param bitsize number of bits the created random value should have
+    * @param rng = the random number generator to use
+    * @param bitsize = number of bits the created random value should have
     */
     void randomize(RandomNumberGenerator rng,
                    size_t bitsize = 0)
@@ -784,7 +784,7 @@ public:
 
     /**
     * Store BigInt-value in a given ubyte array
-    * @param buf destination ubyte array for the integer value
+    * @param buf = destination ubyte array for the integer value
     */
     void binary_encode(ubyte* output) const
     {
@@ -795,8 +795,8 @@ public:
 
     /**
     * Read integer value from a ubyte array with given size
-    * @param buf ubyte array buffer containing the integer
-    * @param length size of buf
+    * @param buf = ubyte array buffer containing the integer
+    * @param length = size of buf
     */
     void binary_decode(in ubyte* buf, size_t length)
     {
@@ -819,7 +819,7 @@ public:
 
     /**
     * Read integer value from a ubyte array (Secure_Vector!ubyte)
-    * @param buf the array to load from
+    * @param buf = the array to load from
     */
     void binary_decode(in Secure_Vector!ubyte buf)
     {
@@ -827,7 +827,7 @@ public:
     }
 
     /**
-    * @param base the base to measure the size for
+    * @param base = the base to measure the size for
     * @return size of this integer in base base
     */
     size_t encoded_size(Base base = Binary) const
@@ -845,9 +845,9 @@ public:
     }
 
     /**
-    * @param rng a random number generator
-    * @param min the minimum value
-    * @param max the maximum value
+    * @param rng = a random number generator
+    * @param min = the minimum value
+    * @param max = the maximum value
     * @return random integer in [min,max)
     */
     static BigInt random_integer(RandomNumberGenerator rng, in BigInt min, in BigInt max)
@@ -862,7 +862,7 @@ public:
 
     /**
     * Create a power of two
-    * @param n the power of two to create
+    * @param n = the power of two to create
     * @return bigint representing 2^n
     */
     static ref BigInt power_of_2(size_t n)
@@ -874,8 +874,8 @@ public:
 
     /**
     * Encode the integer value from a BigInt to a std::vector of bytes
-    * @param n the BigInt to use as integer source
-    * @param base number-base of resulting ubyte array representation
+    * @param n = the BigInt to use as integer source
+    * @param base = number-base of resulting ubyte array representation
     * @result Secure_Vector of bytes containing the integer with given base
     */
     static Vector!ubyte encode(in BigInt n, Base base = Binary)
@@ -891,8 +891,8 @@ public:
 
     /**
     * Encode the integer value from a BigInt to a Secure_Vector of bytes
-    * @param n the BigInt to use as integer source
-    * @param base number-base of resulting ubyte array representation
+    * @param n = the BigInt to use as integer source
+    * @param base = number-base of resulting ubyte array representation
     * @result Secure_Vector of bytes containing the integer with given base
     */
     static Secure_Vector!ubyte encode_locked(in BigInt n, Base base = Binary)
@@ -908,10 +908,10 @@ public:
 
     /**
     * Encode the integer value from a BigInt to a ubyte array
-    * @param output destination ubyte array for the encoded integer
+    * @param output = destination ubyte array for the encoded integer
     * value with given base
-    * @param n the BigInt to use as integer source
-    * @param base number-base of resulting ubyte array representation
+    * @param n = the BigInt to use as integer source
+    * @param base = number-base of resulting ubyte array representation
     */
     static void encode(ubyte* output, in BigInt n, Base base = Binary)
     {
@@ -946,9 +946,9 @@ public:
 
     /**
     * Create a BigInt from an integer in a ubyte array
-    * @param buf the binary value to load
-    * @param length size of buf
-    * @param base number-base of the integer in buf
+    * @param buf = the binary value to load
+    * @param length = size of buf
+    * @param base = number-base of the integer in buf
     * @result BigInt representing the integer in the ubyte array
     */
     static ref BigInt decode(in ubyte* buf, size_t length, Base base)
@@ -1002,8 +1002,8 @@ public:
 
     /**
     * Create a BigInt from an integer in a ubyte array
-    * @param buf the binary value to load
-    * @param base number-base of the integer in buf
+    * @param buf = the binary value to load
+    * @param base = number-base of the integer in buf
     * @result BigInt representing the integer in the ubyte array
     */
     static ref BigInt decode(in Secure_Vector!ubyte buf,
@@ -1014,8 +1014,8 @@ public:
 
     /**
     * Create a BigInt from an integer in a ubyte array
-    * @param buf the binary value to load
-    * @param base number-base of the integer in buf
+    * @param buf = the binary value to load
+    * @param base = number-base of the integer in buf
     * @result BigInt representing the integer in the ubyte array
     */
     static ref BigInt decode(in Vector!ubyte buf,
@@ -1026,8 +1026,8 @@ public:
 
     /**
     * Encode a BigInt to a ubyte array according to IEEE 1363
-    * @param n the BigInt to encode
-    * @param bytes the length of the resulting Secure_Vector!ubyte
+    * @param n = the BigInt to encode
+    * @param bytes = the length of the resulting Secure_Vector!ubyte
     * @result a Secure_Vector!ubyte containing the encoded BigInt
     */
     static Secure_Vector!ubyte encode_1363(in BigInt n,

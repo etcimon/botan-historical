@@ -37,10 +37,10 @@ public:
 
     /**
     * Construct Domain paramers from specified parameters
-    * @param curve elliptic curve
-    * @param base_point a base point
-    * @param order the order of the base point
-    * @param cofactor the cofactor
+    * @param curve = elliptic curve
+    * @param base_point = a base point
+    * @param order = the order of the base point
+    * @param cofactor = the cofactor
     */
     this(in CurveGFp curve, in PointGFp base_point, in BigInt order, in BigInt cofactor) 
     {
@@ -53,7 +53,7 @@ public:
 
     /**
     * Decode a BER encoded ECC domain parameter set
-    * @param ber_data the bytes of the BER encoding
+    * @param ber_data = the bytes of the BER encoding
     */
     this(in Vector!ubyte ber_data)
     {
@@ -99,7 +99,7 @@ public:
 
     /**
     * Create an EC domain by OID (or throw new if unknown)
-    * @param oid the OID of the EC domain to create
+    * @param oid = the OID of the EC domain to create
     */
     this(in OID domain_oid)
     {
@@ -115,7 +115,7 @@ public:
     /**
     * Create an EC domain from PEM encoding (as from PEM_encode), or
     * from an OID name (eg "secp256r1", or "1.2.840.10045.3.1.7")
-    * @param pem_or_oid PEM-encoded data, or an OID
+    * @param pem_or_oid = PEM-encoded data, or an OID
     */
     this(in string pem_or_oid = "")
     {
@@ -136,7 +136,7 @@ public:
 
     /**
     * Create the DER encoding of this domain
-    * @param form of encoding to use
+    * @param form = of encoding to use
     * @returns bytes encododed as DER
     */
     Vector!ubyte DER_encode(EC_Group_Encoding form) const

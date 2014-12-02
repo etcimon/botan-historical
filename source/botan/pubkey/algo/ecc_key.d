@@ -87,7 +87,7 @@ public:
 
     /**
     * Set the domain parameter encoding to be used when encoding this key.
-    * @param enc the encoding to use
+    * @param enc = the encoding to use
     */
     void set_parameter_encoding(EC_Group_Encoding form)
     {

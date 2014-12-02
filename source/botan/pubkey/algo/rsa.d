@@ -78,14 +78,14 @@ public:
 
     /**
     * Construct a private key from the specified parameters.
-    * @param rng a random number generator
-    * @param p the first prime
-    * @param q the second prime
-    * @param e the exponent
-    * @param d if specified, this has to be d with
+    * @param rng = a random number generator
+    * @param p = the first prime
+    * @param q = the second prime
+    * @param e = the exponent
+    * @param d = if specified, this has to be d with
     * exp * d = 1 mod (p - 1, q - 1). Leave it as 0 if you wish to
     * the constructor to calculate it.
-    * @param n if specified, this must be n = p * q. Leave it as 0
+    * @param n = if specified, this must be n = p * q. Leave it as 0
     * if you wish to the constructor to calculate it.
     */
     this(RandomNumberGenerator rng, in BigInt p, in BigInt q, in BigInt e, in BigInt d = 0, in BigInt n = 0)
@@ -95,9 +95,9 @@ public:
 
     /**
     * Create a new private key with the specified bit length
-    * @param rng the random number generator to use
-    * @param bits the desired bit length of the private key
-    * @param exp the public exponent to be used
+    * @param rng = the random number generator to use
+    * @param bits = the desired bit length of the private key
+    * @param exp = the public exponent to be used
     */
     this(RandomNumberGenerator rng, size_t bits, size_t exp = 65537)
     {

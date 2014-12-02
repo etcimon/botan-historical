@@ -55,8 +55,8 @@ public:
 
     /**
     * Check the signature of this object.
-    * @param key the public key associated with this signed object
-    * @param sig the signature we are checking
+    * @param key = the public key associated with this signed object
+    * @param sig = the signature we are checking
     * @return true if the signature was created by the private key
     * associated with this public key
     */
@@ -88,8 +88,8 @@ public:
 
     /**
     * Write this object DER encoded into a specified pipe.
-    * @param pipe the pipe to write the encoded object to
-    * @param encoding the encoding type to use
+    * @param pipe = the pipe to write the encoded object to
+    * @param encoding = the encoding type to use
     */
     abstract void encode(Pipe pipe, X509_Encoding encoding = PEM) const;
 

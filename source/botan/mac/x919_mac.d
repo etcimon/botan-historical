@@ -50,7 +50,7 @@ public:
     }
 
     /**
-    * @param cipher the underlying block cipher to use
+    * @param cipher = the underlying block cipher to use
     */
     this(BlockCipher cipher) 
     {

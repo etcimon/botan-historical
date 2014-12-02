@@ -21,9 +21,9 @@ import botan.algo_factory.algo_factory : Algorithm_Factory;
 
 /**
 * Fused multiply-add
-* @param a an integer
-* @param b an integer
-* @param c an integer
+* @param a = an integer
+* @param b = an integer
+* @param c = an integer
 * @return (a*b)+c
 */
 /*
@@ -55,9 +55,9 @@ BigInt mul_add(in BigInt a, in BigInt b, in BigInt c)
 
 /**
 * Fused subtract-multiply
-* @param a an integer
-* @param b an integer
-* @param c an integer
+* @param a = an integer
+* @param b = an integer
+* @param c = an integer
 * @return (a-b)*c
 */
 BigInt sub_mul(in BigInt a, in BigInt b, in BigInt c)
@@ -73,15 +73,15 @@ BigInt sub_mul(in BigInt a, in BigInt b, in BigInt c)
 
 /**
 * Return the absolute value
-* @param n an integer
+* @param n = an integer
 * @return absolute value of n
 */
  BigInt abs(in BigInt n) { return n.abs(); }
 
 /**
 * Compute the greatest common divisor
-* @param x a positive integer
-* @param y a positive integer
+* @param x = a positive integer
+* @param y = a positive integer
 * @return gcd(x,y)
 */
 BigInt gcd(in BigInt a, in BigInt b)
@@ -110,8 +110,8 @@ BigInt gcd(in BigInt a, in BigInt b)
 
 /**
 * Least common multiple
-* @param x a positive integer
-* @param y a positive integer
+* @param x = a positive integer
+* @param y = a positive integer
 * @return z, smallest integer such that z % x == 0 and z % y == 0
 */
 BigInt lcm(in BigInt a, in BigInt b)
@@ -121,7 +121,7 @@ BigInt lcm(in BigInt a, in BigInt b)
 
 
 /**
-* @param x an integer
+* @param x = an integer
 * @return (x*x)
 */
 BigInt square(in BigInt x)
@@ -137,8 +137,8 @@ BigInt square(in BigInt x)
 
 /**
 * Modular inversion
-* @param x a positive integer
-* @param modulus a positive integer
+* @param x = a positive integer
+* @param modulus = a positive integer
 * @return y st (x*y) % modulus == 1
 */
 BigInt inverse_mod(in BigInt n, in BigInt mod)
@@ -196,8 +196,8 @@ BigInt inverse_mod(in BigInt n, in BigInt mod)
 * to the Legendre symbol.
 * @see http://mathworld.wolfram.com/JacobiSymbol.html
 *
-* @param a is a non-negative integer
-* @param n is an odd integer > 1
+* @param a = is a non-negative integer
+* @param n = is an odd integer > 1
 * @return (n / m)
 */
 int jacobi(in BigInt a, in BigInt n)
@@ -240,9 +240,9 @@ int jacobi(in BigInt a, in BigInt n)
 
 /**
 * Modular exponentation
-* @param b an integer base
-* @param x a positive exponent
-* @param m a positive modulus
+* @param b = an integer base
+* @param x = a positive exponent
+* @param m = a positive modulus
 * @return (b^x) % m
 */
 BigInt power_mod(in BigInt base, in BigInt exp, in BigInt mod)
@@ -264,8 +264,8 @@ BigInt power_mod(in BigInt base, in BigInt exp, in BigInt mod)
 * Compute the square root of x modulo a prime using the
 * Shanks-Tonnelli algorithm
 *
-* @param x the input
-* @param p the prime
+* @param x = the input
+* @param p = the prime
 * @return y such that (y*y)%p == x, or -1 if no such integer
 */
 
@@ -381,7 +381,7 @@ word monty_inverse(word input)
 }
 
 /**
-* @param x a positive integer
+* @param x = a positive integer
 * @return count of the zero bits in x, or, equivalently, the largest
 *            value of n such that 2^n divides x evenly. Returns zero if
 *            n is less than or equal to zero.
@@ -411,10 +411,10 @@ size_t low_zero_bits(in BigInt n)
 
 /**
 * Check for primality using Miller-Rabin
-* @param n a positive integer to test for primality
-* @param rng a random number generator
-* @param prob chance of false positive is bounded by 1/2**prob
-* @param is_random true if n was randomly chosen by us
+* @param n = a positive integer to test for primality
+* @param rng = a random number generator
+* @param prob = chance of false positive is bounded by 1/2**prob
+* @param is_random = true if n was randomly chosen by us
 * @return true if all primality tests passed, otherwise false
 */
 bool is_prime(in BigInt n, RandomNumberGenerator rng,
@@ -466,12 +466,12 @@ bool verify_prime(in BigInt n, RandomNumberGenerator rng)
 
 /**
 * Randomly generate a prime
-* @param rng a random number generator
-* @param bits how large the resulting prime should be in bits
-* @param coprime a positive integer the result should be coprime to
-* @param equiv a non-negative number that the result should be
+* @param rng = a random number generator
+* @param bits = how large the resulting prime should be in bits
+* @param coprime = a positive integer the result should be coprime to
+* @param equiv = a non-negative number that the result should be
                     equivalent to modulo equiv_mod
-* @param equiv_mod the modulus equiv should be checked against
+* @param equiv_mod = the modulus equiv should be checked against
 * @return random prime with the specified criteria
 */
 BigInt random_prime(RandomNumberGenerator rng,
@@ -543,8 +543,8 @@ BigInt random_prime(RandomNumberGenerator rng,
 
 /**
 * Return a random 'safe' prime, of the form p=2*q+1 with q prime
-* @param rng a random number generator
-* @param bits is how long the resulting prime should be
+* @param rng = a random number generator
+* @param bits = is how long the resulting prime should be
 * @return prime randomly chosen from safe primes of length bits
 */
 BigInt random_safe_prime(RandomNumberGenerator rng, size_t bits)
@@ -561,12 +561,12 @@ BigInt random_safe_prime(RandomNumberGenerator rng, size_t bits)
 
 /**
 * Generate DSA parameters using the FIPS 186 kosherizer
-* @param rng a random number generator
-* @param af an algorithm factory
-* @param p_out where the prime p will be stored
-* @param q_out where the prime q will be stored
-* @param pbits how long p will be in bits
-* @param qbits how long q will be in bits
+* @param rng = a random number generator
+* @param af = an algorithm factory
+* @param p_out = where the prime p will be stored
+* @param q_out = where the prime q will be stored
+* @param pbits = how long p will be in bits
+* @param qbits = how long q will be in bits
 * @return random seed used to generate this parameter set
 */
 Vector!ubyte generate_dsa_primes(RandomNumberGenerator rng,
@@ -587,13 +587,13 @@ Vector!ubyte generate_dsa_primes(RandomNumberGenerator rng,
 
 /**
 * Generate DSA parameters using the FIPS 186 kosherizer
-* @param rng a random number generator
-* @param af an algorithm factory
-* @param p_out where the prime p will be stored
-* @param q_out where the prime q will be stored
-* @param pbits how long p will be in bits
-* @param qbits how long q will be in bits
-* @param seed_c the seed used to generate the parameters
+* @param rng = a random number generator
+* @param af = an algorithm factory
+* @param p_out = where the prime p will be stored
+* @param q_out = where the prime q will be stored
+* @param pbits = how long p will be in bits
+* @param qbits = how long q will be in bits
+* @param seed_c = the seed used to generate the parameters
 * @return true if seed generated a valid DSA parameter set, otherwise
              false. p_out and q_out are only valid if true was returned.
 */

@@ -37,7 +37,7 @@ final class PKCS8_Exception : Decoding_Error
 
 /**
 * BER encode a private key
-* @param key the private key to encode
+* @param key = the private key to encode
 * @return BER encoded key
 */
 Secure_Vector!ubyte BER_encode(in Private_Key key)
@@ -55,7 +55,7 @@ Secure_Vector!ubyte BER_encode(in Private_Key key)
 
 /**
 * Get a string containing a PEM encoded private key.
-* @param key the key to encode
+* @param key = the key to encode
 * @return encoded key
 */
 string PEM_encode(in Private_Key key)
@@ -65,11 +65,11 @@ string PEM_encode(in Private_Key key)
 
 /**
 * Encrypt a key using PKCS #8 encryption
-* @param key the key to encode
-* @param rng the rng to use
-* @param pass the password to use for encryption
-* @param dur number of time to run the password derivation
-* @param pbe_algo the name of the desired password-based encryption
+* @param key = the key to encode
+* @param rng = the rng to use
+* @param pass = the password to use for encryption
+* @param dur = number of time to run the password derivation
+* @param pbe_algo = the name of the desired password-based encryption
             algorithm; if empty ("") a reasonable (portable/secure)
             default will be chosen.
 * @return encrypted key in binary BER form
@@ -100,11 +100,11 @@ Vector!ubyte BER_encode(in Private_Key key,
 /**
 * Get a string containing a PEM encoded private key, encrypting it with a
 * password.
-* @param key the key to encode
-* @param rng the rng to use
-* @param pass the password to use for encryption
-* @param msec number of milliseconds to run the password derivation
-* @param pbe_algo the name of the desired password-based encryption
+* @param key = the key to encode
+* @param rng = the rng to use
+* @param pass = the password to use for encryption
+* @param msec = number of milliseconds to run the password derivation
+* @param pbe_algo = the name of the desired password-based encryption
             algorithm; if empty ("") a reasonable (portable/secure)
             default will be chosen.
 * @return encrypted key in PEM form
@@ -123,9 +123,9 @@ string PEM_encode(in Private_Key key,
 
 /**
 * Load a key from a data source.
-* @param source the data source providing the encoded key
-* @param rng the rng to use
-* @param get_passphrase a function that returns passphrases
+* @param source = the data source providing the encoded key
+* @param rng = the rng to use
+* @param get_passphrase = a function that returns passphrases
 * @return loaded private key object
 */
 Private_Key load_key(DataSource source,
@@ -144,9 +144,9 @@ Private_Key load_key(DataSource source,
 }
 
 /** Load a key from a data source.
-* @param source the data source providing the encoded key
-* @param rng the rng to use
-* @param pass the passphrase to decrypt the key. Provide an empty
+* @param source = the data source providing the encoded key
+* @param rng = the rng to use
+* @param pass = the passphrase to decrypt the key. Provide an empty
 * string if the key is not encrypted
 * @return loaded private key object
 */
@@ -159,9 +159,9 @@ Private_Key load_key(DataSource source,
 
 /**
 * Load a key from a file.
-* @param filename the path to the file containing the encoded key
-* @param rng the rng to use
-* @param get_passphrase a function that returns passphrases
+* @param filename = the path to the file containing the encoded key
+* @param rng = the rng to use
+* @param get_passphrase = a function that returns passphrases
 * @return loaded private key object
 */
 Private_Key load_key(in string filename,
@@ -173,9 +173,9 @@ Private_Key load_key(in string filename,
 }
 
 /** Load a key from a file.
-* @param filename the path to the file containing the encoded key
-* @param rng the rng to use
-* @param pass the passphrase to decrypt the key. Provide an empty
+* @param filename = the path to the file containing the encoded key
+* @param rng = the rng to use
+* @param pass = the passphrase to decrypt the key. Provide an empty
 * string if the key is not encrypted
 * @return loaded private key object
 */
@@ -189,8 +189,8 @@ Private_Key load_key(in string filename,
 
 /**
 * Copy an existing encoded key object.
-* @param key the key to copy
-* @param rng the rng to use
+* @param key = the key to copy
+* @param rng = the rng to use
 * @return new copy of the key
 */
 Private_Key copy_key(in Private_Key key,

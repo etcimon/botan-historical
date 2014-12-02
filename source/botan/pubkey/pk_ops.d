@@ -65,9 +65,9 @@ public:
 
     /*
     * Perform a signature operation
-    * @param msg the message
-    * @param msg_len the length of msg in bytes
-    * @param rng a random number generator
+    * @param msg = the message
+    * @param msg_len = the length of msg in bytes
+    * @param rng = a random number generator
     */
     abstract Secure_Vector!ubyte sign(in ubyte* msg, size_t msg_len, RandomNumberGenerator rng);
 
@@ -106,10 +106,10 @@ public:
 
     /*
     * Perform a signature check operation
-    * @param msg the message
-    * @param msg_len the length of msg in bytes
-    * @param sig the signature
-    * @param sig_len the length of sig in bytes
+    * @param msg = the message
+    * @param msg_len = the length of msg in bytes
+    * @param sig = the signature
+    * @param sig_len = the length of sig in bytes
     * @returns if signature is a valid one for message
     */
     abstract bool verify(const ubyte*, size_t,
@@ -121,8 +121,8 @@ public:
     /*
     * Perform a signature operation (with message recovery)
     * Only call this if with_recovery() returns true
-    * @param msg the message
-    * @param msg_len the length of msg in bytes
+    * @param msg = the message
+    * @param msg_len = the length of msg in bytes
     * @returns recovered message
     */
     abstract Secure_Vector!ubyte verify_mr(const ubyte*, size_t)
@@ -141,8 +141,8 @@ class Key_Agreement
 public:
     /*
     * Perform a key agreement operation
-    * @param w the other key value
-    * @param w_len the length of w in bytes
+    * @param w = the other key value
+    * @param w_len = the length of w in bytes
     * @returns the agreed key
     */
     abstract Secure_Vector!ubyte agree(in ubyte* w, size_t w_len);

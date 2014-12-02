@@ -22,9 +22,9 @@ public:
 
     /**
     * Construct the elliptic curve E: y^2 = x^3 + ax + b over GF(p)
-    * @param p prime number of the field
-    * @param a first coefficient
-    * @param b second coefficient
+    * @param p = prime number of the field
+    * @param a = first coefficient
+    * @param b = second coefficient
     */
     this(in BigInt p, in BigInt a, in BigInt b)
     {        
@@ -87,7 +87,7 @@ public:
 
     /**
     * swaps the states of this and other, does not throw
-    * @param other curve to swap values with
+    * @param other = curve to swap values with
     */
     void swap(CurveGFp other)
     {
@@ -107,7 +107,7 @@ public:
 
     /**
     * Equality operator
-    * @param other curve to compare with
+    * @param other = curve to compare with
     * @return true iff this is the same curve as other
     */
     bool opEquals(in CurveGFp other) const
@@ -119,8 +119,8 @@ public:
 
     /**
     * Equality operator
-    * @param lhs a curve
-    * @param rhs a curve
+    * @param lhs = a curve
+    * @param rhs = a curve
     * @return true iff lhs is not the same as rhs
     */
     bool opCmp(string op)(in CurveGFp rhs)

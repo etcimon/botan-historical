@@ -112,7 +112,7 @@ public:
     }
 
     /**
-    * @param level how much effort to use on compressing (0 to 9);
+    * @param level = how much effort to use on compressing (0 to 9);
     *          higher levels are slower but tend to give better
     *          compression
     */

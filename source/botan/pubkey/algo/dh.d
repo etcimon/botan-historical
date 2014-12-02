@@ -45,8 +45,8 @@ public:
 
     /**
     * Construct a public key with the specified parameters.
-    * @param grp the DL group to use in the key
-    * @param y the public value y
+    * @param grp = the DL group to use in the key
+    * @param y = the public value y
     */
     this(in DL_Group grp, in BigInt y1)
     {
@@ -75,9 +75,9 @@ public:
 
     /**
     * Load a DH private key
-    * @param alg_id the algorithm id
-    * @param key_bits the subject public key
-    * @param rng a random number generator
+    * @param alg_id = the algorithm id
+    * @param key_bits = the subject public key
+    * @param rng = a random number generator
     */
     this(in Algorithm_Identifier alg_id,
          in Secure_Vector!ubyte key_bits,
@@ -92,9 +92,9 @@ public:
 
     /**
     * Construct a private key with predetermined value.
-    * @param rng random number generator to use
-    * @param grp the group to be used in the key
-    * @param x_args the key's secret value (or if zero, generate a new key)
+    * @param rng = random number generator to use
+    * @param grp = the group to be used in the key
+    * @param x_args = the key's secret value (or if zero, generate a new key)
     */
     this(RandomNumberGenerator rng,
          in DL_Group grp,

@@ -105,7 +105,7 @@ public:
 
     /**
     * Return the code of the effective key bits
-    * @param bits key length
+    * @param bits = key length
     * @return EKB code
     */
     static ubyte EKB_code(size_t ekb)

@@ -58,8 +58,8 @@ public:
 
     /**
     * CMAC's polynomial doubling operation
-    * @param input the input
-    * @param polynomial the ubyte value of the polynomial
+    * @param input = the input
+    * @param polynomial = the ubyte value of the polynomial
     */
     Secure_Vector!ubyte poly_double(in Secure_Vector!ubyte input)
     {
@@ -100,7 +100,7 @@ public:
     }
 
     /**
-    * @param cipher the underlying block cipher to use
+    * @param cipher = the underlying block cipher to use
     */
     this(BlockCipher cipher)
     {

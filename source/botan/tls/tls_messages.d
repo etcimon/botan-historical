@@ -1246,8 +1246,8 @@ public:
 
     /**
     * Check the signature on a certificate verify message
-    * @param cert the purported certificate
-    * @param state the handshake state
+    * @param cert = the purported certificate
+    * @param state = the handshake state
     */
     bool verify(const X509_Certificate cert,
                 const Handshake_State state) const

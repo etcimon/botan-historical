@@ -88,8 +88,8 @@ public:
     ~this() { /* for unique_ptr destructor */ }
 protected:
     /**
-    * @param cipher the 128-bit block cipher to use
-    * @param tag_size is how big the auth tag will be
+    * @param cipher = the 128-bit block cipher to use
+    * @param tag_size = is how big the auth tag will be
     */
     this(BlockCipher cipher, size_t tag_size)
     {     m_cipher = cipher;
@@ -174,8 +174,8 @@ final class OCB_Encryption : OCB_Mode
 {
 public:
     /**
-    * @param cipher the 128-bit block cipher to use
-    * @param tag_size is how big the auth tag will be
+    * @param cipher = the 128-bit block cipher to use
+    * @param tag_size = is how big the auth tag will be
     */
     this(BlockCipher cipher, size_t tag_size = 16)
     {
@@ -281,8 +281,8 @@ final class OCB_Decryption : OCB_Mode
 {
 public:
     /**
-    * @param cipher the 128-bit block cipher to use
-    * @param tag_size is how big the auth tag will be
+    * @param cipher = the 128-bit block cipher to use
+    * @param tag_size = is how big the auth tag will be
     */
     this(BlockCipher cipher, size_t tag_size = 16)
     {

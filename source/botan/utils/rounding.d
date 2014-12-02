@@ -9,8 +9,8 @@ module botan.utils.rounding;
 import botan.utils.types;
 /**
 * Round up
-* @param n an integer
-* @param align_to the alignment boundary
+* @param n = an integer
+* @param align_to = the alignment boundary
 * @return n rounded up to a multiple of align_to
 */
 T round_up(T)(T n, T align_to)
@@ -25,8 +25,8 @@ T round_up(T)(T n, T align_to)
 
 /**
 * Round down
-* @param n an integer
-* @param align_to the alignment boundary
+* @param n = an integer
+* @param align_to = the alignment boundary
 * @return n rounded down to a multiple of align_to
 */
 T round_down(T)(T n, T align_to)

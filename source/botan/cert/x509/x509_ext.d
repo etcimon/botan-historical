@@ -47,8 +47,8 @@ public:
     /*
     * Add the contents of this extension into the information
     * for the subject and/or issuer, as necessary.
-    * @param subject the subject info
-    * @param issuer the issuer info
+    * @param subject = the subject info
+    * @param issuer = the issuer info
     */
     abstract void contents_to(ref Data_Store subject,
                               ref Data_Store issuer) const;

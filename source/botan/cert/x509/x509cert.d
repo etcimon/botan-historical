@@ -79,7 +79,7 @@ public:
 
     /**
     * Get a value for a specific subject_info parameter name.
-    * @param name the name of the paramter to look up. Possible names are
+    * @param name = the name of the paramter to look up. Possible names are
     * "X509.Certificate.version", "X509.Certificate.serial",
     * "X509.Certificate.start", "X509.Certificate.end",
     * "X509.Certificate.v2.key_id", "X509.Certificate.public_key",
@@ -97,7 +97,7 @@ public:
 
     /**
     * Get a value for a specific subject_info parameter name.
-    * @param name the name of the paramter to look up. Possible names are
+    * @param name = the name of the paramter to look up. Possible names are
     * "X509.Certificate.v2.key_id" or "X509v3.AuthorityKeyIdentifier".
     * @return value(s) of the specified parameter
     */
@@ -476,7 +476,7 @@ public:
     /**
     * Create a certificate from a data source providing the DER or
     * PEM encoded certificate.
-    * @param source the data source
+    * @param source = the data source
     */
     this(DataSource input)
     {
@@ -488,7 +488,7 @@ public:
     /**
     * Create a certificate from a file containing the DER or PEM
     * encoded certificate.
-    * @param filename the name of the certificate file
+    * @param filename = the name of the certificate file
     */
     this(in string filename)
     {

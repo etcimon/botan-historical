@@ -24,20 +24,20 @@ public:
 
     /**
     * Add new input to process.
-    * @param input the input to process as a ubyte array
+    * @param input = the input to process as a ubyte array
     */
     final void update(in ubyte[] input) { add_data(input.ptr, input.length); }
 
     /**
     * Add new input to process.
-    * @param input the input to process as a ubyte array
-    * @param length of param in in bytes
+    * @param input = the input to process as a ubyte array
+    * @param length = of param in in bytes
     */
     final void update(in ubyte* input, size_t length) { add_data(input, length); }
 
     /**
     * Add new input to process.
-    * @param input the input to process as a Secure_Vector
+    * @param input = the input to process as a Secure_Vector
     */
     final void update(in Secure_Vector!ubyte input)
     {
@@ -46,7 +46,7 @@ public:
 
     /**
     * Add new input to process.
-    * @param input the input to process as a Vector
+    * @param input = the input to process as a Vector
     */
     final void update(in Vector!ubyte input)
     {
@@ -55,7 +55,7 @@ public:
 
     /**
     * Add an integer in big-endian order
-    * @param input the value
+    * @param input = the value
     */
     final void update_bigEndian(T)(in T input)
     {
@@ -68,7 +68,7 @@ public:
 
     /**
     * Add new input to process.
-    * @param str the input to process as a string. Will be interpreted
+    * @param str = the input to process as a string. Will be interpreted
     * as a ubyte array based on
     * the strings encoding.
     */
@@ -79,14 +79,14 @@ public:
 
     /**
     * Process a single ubyte.
-    * @param input the ubyte to process
+    * @param input = the ubyte to process
     */
     final void update(ubyte input) { add_data(&input, 1); }
 
     /**
     * Complete the computation and retrieve the
     * final result.
-    * @param output The ubyte array to be filled with the result.
+    * @param output = The ubyte array to be filled with the result.
     * Must be of length output_length()
     */
     final void flushInto(ref ubyte[] output) 
@@ -96,7 +96,7 @@ public:
     /**
     * Complete the computation and retrieve the
     * final result.
-    * @param output The ubyte array to be filled with the result.
+    * @param output = The ubyte array to be filled with the result.
     * Must be of length output_length()
     */
     final void flushInto(ubyte* output) { final_result(output); }
@@ -116,8 +116,8 @@ public:
     /**
     * Update and finalize computation. Does the same as calling update()
     * and finished() consecutively.
-    * @param input the input to process as a ubyte array
-    * @param length the length of the ubyte array
+    * @param input = the input to process as a ubyte array
+    * @param length = the length of the ubyte array
     * @result the result of the call to finished()
     */
     final Secure_Vector!ubyte process(in ubyte[] input)
@@ -129,8 +129,8 @@ public:
     /**
     * Update and finalize computation. Does the same as calling update()
     * and finished() consecutively.
-    * @param input the input to process as a ubyte array
-    * @param length the length of the ubyte array
+    * @param input = the input to process as a ubyte array
+    * @param length = the length of the ubyte array
     * @result the result of the call to finished()
     */
     final Secure_Vector!ubyte process(in ubyte* input, size_t length)
@@ -142,7 +142,7 @@ public:
     /**
     * Update and finalize computation. Does the same as calling update()
     * and finished() consecutively.
-    * @param input the input to process
+    * @param input = the input to process
     * @result the result of the call to finished()
     */
     final Secure_Vector!ubyte process(in Secure_Vector!ubyte input)
@@ -154,7 +154,7 @@ public:
     /**
     * Update and finalize computation. Does the same as calling update()
     * and finished() consecutively.
-    * @param input the input to process
+    * @param input = the input to process
     * @result the result of the call to finished()
     */
     final Secure_Vector!ubyte process(in Vector!ubyte input)
@@ -166,7 +166,7 @@ public:
     /**
     * Update and finalize computation. Does the same as calling update()
     * and finished() consecutively.
-    * @param input the input to process as a string
+    * @param input = the input to process as a string
     * @result the result of the call to finished()
     */
     final Secure_Vector!ubyte process(in string input)
@@ -179,14 +179,14 @@ public:
 private:
     /**
     * Add more data to the computation
-    * @param input is an input buffer
-    * @param length is the length of input in bytes
+    * @param input = is an input buffer
+    * @param length = is the length of input in bytes
     */
     abstract void add_data(in ubyte* input, size_t length);
 
     /**
     * Write the final output to out
-    * @param output is an output buffer of output_length()
+    * @param output = is an output buffer of output_length()
     */
     abstract void final_result(ubyte* output);
 }

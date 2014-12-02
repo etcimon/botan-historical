@@ -27,12 +27,12 @@ struct RTSS_Share
 {
 public:
     /**
-    * @param M the number of shares needed to reconstruct
-    * @param N the number of shares generated
-    * @param secret the secret to split
-    * @param secret_len the length of the secret
-    * @param identifier the 16 ubyte share identifier
-    * @param rng the random number generator to use
+    * @param M = the number of shares needed to reconstruct
+    * @param N = the number of shares generated
+    * @param secret = the secret to split
+    * @param secret_len = the length of the secret
+    * @param identifier = the 16 ubyte share identifier
+    * @param rng = the random number generator to use
     */
     static Vector!RTSS_Share split(ubyte M, ubyte N,
                                    in ubyte* S, ushort S_len,
@@ -91,7 +91,7 @@ public:
 
 
     /**
-    * @param shares the list of shares
+    * @param shares = the list of shares
     */
 
     static Secure_Vector!ubyte reconstruct(in Vector!RTSS_Share shares)
@@ -172,7 +172,7 @@ public:
 
 
     /**
-    * @param hex_input the share encoded in hexadecimal
+    * @param hex_input = the share encoded in hexadecimal
     */
     this(in string hex_input)
     {

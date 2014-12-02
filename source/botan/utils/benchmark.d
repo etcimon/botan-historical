@@ -27,12 +27,12 @@ import std.datetime;
 
 /**
 * Time aspects of an algorithm/provider
-* @param name the name of the algorithm to test
-* @param af the algorithm factory used to create objects
-* @param provider the provider to use
-* @param rng the rng to use to generate random inputs
-* @param runtime total time for the benchmark to run
-* @param buf_size size of buffer to benchmark against, in KiB
+* @param name = the name of the algorithm to test
+* @param af = the algorithm factory used to create objects
+* @param provider = the provider to use
+* @param rng = the rng to use to generate random inputs
+* @param runtime = total time for the benchmark to run
+* @param buf_size = size of buffer to benchmark against, in KiB
 * @return results a map from op type to operations per second
 */
 HashMap!(string, double)
@@ -121,11 +121,11 @@ HashMap!(string, double)
 
 /**
 * Algorithm benchmark
-* @param name the name of the algorithm to test (cipher, hash, or MAC)
-* @param af the algorithm factory used to create objects
-* @param rng the rng to use to generate random inputs
-* @param milliseconds total time for the benchmark to run
-* @param buf_size size of buffer to benchmark against, in KiB
+* @param name = the name of the algorithm to test (cipher, hash, or MAC)
+* @param af = the algorithm factory used to create objects
+* @param rng = the rng to use to generate random inputs
+* @param milliseconds = total time for the benchmark to run
+* @param buf_size = size of buffer to benchmark against, in KiB
 * @return results a map from provider to speed in mebibytes per second
 */
 HashMap!(string, double)

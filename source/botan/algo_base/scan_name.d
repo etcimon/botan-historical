@@ -24,7 +24,7 @@ struct SCAN_Name
 {
 public:
     /**
-    * @param algo_spec A SCAN-format name
+    * @param algo_spec = A SCAN-format name
     */
     this(string algo_spec)
     {
@@ -135,15 +135,15 @@ public:
     size_t arg_count() const { return m_args.length; }
     
     /**
-    * @param lower is the lower bound
-    * @param upper is the upper bound
+    * @param lower = is the lower bound
+    * @param upper = is the upper bound
     * @return if the number of arguments is between lower and upper
     */
     bool arg_count_between(size_t lower, size_t upper) const
     { return ((arg_count() >= lower) && (arg_count() <= upper)); }
     
     /**
-    * @param i which argument
+    * @param i = which argument
     * @return ith argument
     */
     string arg(size_t i) const
@@ -154,8 +154,8 @@ public:
     }
     
     /**
-    * @param i which argument
-    * @param def_value the default value
+    * @param i = which argument
+    * @param def_value = the default value
     * @return ith argument or the default value
     */
     string arg(size_t i, in string def_value) const
@@ -166,8 +166,8 @@ public:
     }
     
     /**
-    * @param i which argument
-    * @param def_value the default value
+    * @param i = which argument
+    * @param def_value = the default value
     * @return ith argument as an integer, or the default value
     */
     size_t arg_as_integer(size_t i, size_t def_value) const

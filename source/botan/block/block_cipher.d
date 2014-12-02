@@ -35,9 +35,9 @@ public:
 
     /**
     * Encrypt a block.
-    * @param input The plaintext block to be encrypted as a ubyte array.
+    * @param input = The plaintext block to be encrypted as a ubyte array.
     * Must be of length block_size().
-    * @param output The ubyte array designated to hold the encrypted block.
+    * @param output = The ubyte array designated to hold the encrypted block.
     * Must be of length block_size().
     */
     final void encrypt(ubyte* input, ubyte* output) const
@@ -45,9 +45,9 @@ public:
 
     /**
     * Decrypt a block.
-    * @param input The ciphertext block to be decypted as a ubyte array.
+    * @param input = The ciphertext block to be decypted as a ubyte array.
     * Must be of length block_size().
-    * @param output The ubyte array designated to hold the decrypted block.
+    * @param output = The ubyte array designated to hold the decrypted block.
     * Must be of length block_size().
     */
     final void decrypt(ubyte* input, ubyte* output) const
@@ -55,7 +55,7 @@ public:
 
     /**
     * Encrypt a block.
-    * @param block the plaintext block to be encrypted
+    * @param block = the plaintext block to be encrypted
     * Must be of length block_size(). Will hold the result when the function
     * has finished.
     */
@@ -63,7 +63,7 @@ public:
     
     /**
     * Decrypt a block.
-    * @param block the ciphertext block to be decrypted
+    * @param block = the ciphertext block to be decrypted
     * Must be of length block_size(). Will hold the result when the function
     * has finished.
     */
@@ -71,7 +71,7 @@ public:
 
     /**
     * Encrypt a block.
-    * @param block the plaintext block to be encrypted
+    * @param block = the plaintext block to be encrypted
     * Must be of length block_size(). Will hold the result when the function
     * has finished.
     */
@@ -81,7 +81,7 @@ public:
     
     /**
     * Decrypt a block.
-    * @param block the ciphertext block to be decrypted
+    * @param block = the ciphertext block to be decrypted
     * Must be of length block_size(). Will hold the result when the function
     * has finished.
     */
@@ -91,7 +91,7 @@ public:
 
     /**
     * Encrypt one or more blocks
-    * @param block the input/output buffer (multiple of block_size())
+    * @param block = the input/output buffer (multiple of block_size())
     */
     final void encrypt(Alloc)(Vector!( ubyte, Alloc ) block) const
     {
@@ -100,7 +100,7 @@ public:
 
     /**
     * Decrypt one or more blocks
-    * @param block the input/output buffer (multiple of block_size())
+    * @param block = the input/output buffer (multiple of block_size())
     */
     final void decrypt(Alloc)(ref Vector!( ubyte, Alloc ) block) const
     {
@@ -109,8 +109,8 @@ public:
 
     /**
     * Encrypt one or more blocks
-    * @param input the input buffer (multiple of block_size())
-    * @param output the output buffer (same size as input)
+    * @param input = the input buffer (multiple of block_size())
+    * @param output = the output buffer (same size as input)
     */
     final void encrypt(Alloc, Alloc2)(in Vector!( ubyte, Alloc ) input,
                                       ref Vector!( ubyte, Alloc2 ) output) const
@@ -120,8 +120,8 @@ public:
     
     /**
     * Decrypt one or more blocks
-    * @param input the input buffer (multiple of block_size())
-    * @param output the output buffer (same size as input)
+    * @param input = the input buffer (multiple of block_size())
+    * @param output = the output buffer (same size as input)
     */
     final void decrypt(Alloc, Alloc2)(in Vector!( ubyte, Alloc ) input,
                                       ref Vector!( ubyte, Alloc2 ) output) const
@@ -130,8 +130,8 @@ public:
     }
     /**
     * Encrypt one or more blocks
-    * @param input the input buffer (multiple of block_size())
-    * @param output the output buffer (same size as input)
+    * @param input = the input buffer (multiple of block_size())
+    * @param output = the output buffer (same size as input)
     */
     final void encrypt(in ubyte[] input,
                        ref ubyte[] output) const
@@ -142,8 +142,8 @@ public:
     
     /**
     * Decrypt one or more blocks
-    * @param input the input buffer (multiple of block_size())
-    * @param output the output buffer (same size as input)
+    * @param input = the input buffer (multiple of block_size())
+    * @param output = the output buffer (same size as input)
     */
     final void decrypt(in ubyte[] input,
                        ref ubyte[] output) const
@@ -154,18 +154,18 @@ public:
 
     /**
     * Encrypt one or more blocks
-    * @param input the input buffer (multiple of block_size())
-    * @param output the output buffer (same size as input)
-    * @param blocks the number of blocks to process
+    * @param input = the input buffer (multiple of block_size())
+    * @param output = the output buffer (same size as input)
+    * @param blocks = the number of blocks to process
     */
     abstract void encrypt_n(ubyte* input, ubyte* output,
                             size_t blocks) const;
 
     /**
     * Decrypt one or more blocks
-    * @param input the input buffer (multiple of block_size())
-    * @param output the output buffer (same size as input)
-    * @param blocks the number of blocks to process
+    * @param input = the input buffer (multiple of block_size())
+    * @param output = the output buffer (same size as input)
+    * @param blocks = the number of blocks to process
     */
     abstract void decrypt_n(ubyte* input, ubyte* output,
                             size_t blocks) const;

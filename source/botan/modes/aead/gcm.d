@@ -138,8 +138,8 @@ final class GCM_Encryption : GCM_Mode
 {
 public:
     /**
-    * @param cipher the 128 bit block cipher to use
-    * @param tag_size is how big the auth tag will be
+    * @param cipher = the 128 bit block cipher to use
+    * @param tag_size = is how big the auth tag will be
     */
     this(BlockCipher cipher, size_t tag_size = 16) 
     {
@@ -176,8 +176,8 @@ final class GCM_Decryption : GCM_Mode
 {
 public:
     /**
-    * @param cipher the 128 bit block cipher to use
-    * @param tag_size is how big the auth tag will be
+    * @param cipher = the 128 bit block cipher to use
+    * @param tag_size = is how big the auth tag will be
     */
     this(BlockCipher cipher, size_t tag_size = 16)
     {

@@ -120,8 +120,8 @@ public:
 
     /**
     * Construct an CRL entry.
-    * @param cert the certificate to revoke
-    * @param reason the reason code to set in the entry
+    * @param cert = the certificate to revoke
+    * @param reason = the reason code to set in the entry
     */
     this(in X509_Certificate cert, CRL_Code why = CRL_Code.UNSPECIFIED)
     {

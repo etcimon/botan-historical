@@ -185,14 +185,14 @@ private:
 
 /**
 * Create a TLS record
-* @param output the output record is placed here
-* @param msg_type is the type of the message (handshake, alert, ...)
-* @param msg is the plaintext message
-* @param msg_length is the length of msg
-* @param _version is the protocol version
-* @param msg_sequence is the sequence number
-* @param cipherstate is the writing cipher state
-* @param rng is a random number generator
+* @param output = the output record is placed here
+* @param msg_type = is the type of the message (handshake, alert, ...)
+* @param msg = is the plaintext message
+* @param msg_length = is the length of msg
+* @param _version = is the protocol version
+* @param msg_sequence = is the sequence number
+* @param cipherstate = is the writing cipher state
+* @param rng = is a random number generator
 * @return number of bytes written to write_buffer
 */
 void write_record(ref Secure_Vector!ubyte output,

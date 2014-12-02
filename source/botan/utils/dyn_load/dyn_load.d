@@ -30,7 +30,7 @@ class Dynamically_Loaded_Library
 public:
     /**
     * Load a DLL (or fail with an exception)
-    * @param lib_name name or path to a library
+    * @param lib_name = name or path to a library
     *
     * If you don't use a full path, the search order will be defined
     * by whatever the system linker does by default. Always using fully
@@ -75,7 +75,7 @@ public:
 
     /**
     * Load a symbol (or fail with an exception)
-    * @param symbol names the symbol to load
+    * @param symbol = names the symbol to load
     * @return address of the loaded symbol
     */
     void* resolve_symbol(in string symbol)
@@ -94,7 +94,7 @@ public:
 
     /**
     * Convenience function for casting symbol to the right type
-    * @param symbol names the symbol to load
+    * @param symbol = names the symbol to load
     * @return address of the loaded symbol
     */
     T resolve(T)(in string symbol)

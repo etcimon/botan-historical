@@ -136,7 +136,7 @@ public:
 
     /**
     * Set this' value by a human readable string
-    * @param str a string in the format "yyyy mm dd",
+    * @param str = a string in the format "yyyy mm dd",
     * e.g. "2007 08 01"
     */
     void set_to(in string time_str)
@@ -178,7 +178,7 @@ public:
 
     /**
     * Add the specified number of years to this.
-    * @param years the number of years to add
+    * @param years = the number of years to add
     */
     void add_years(uint years)
     {
@@ -188,7 +188,7 @@ public:
 
     /**
     * Add the specified number of months to this.
-    * @param months the number of months to add
+    * @param months = the number of months to add
     */
     void add_months(uint months)
     {
@@ -331,7 +331,7 @@ final class ASN1_Ced_Impl : EAC_Time
 public:
     /**
     * Construct a CED from a string value.
-    * @param str a string in the format "yyyy mm dd",
+    * @param str = a string in the format "yyyy mm dd",
     * e.g. "2007 08 01"
     */
     this(in string str = "") {
@@ -347,7 +347,7 @@ public:
 
     /**
     * Copy constructor (for general EAC_Time objects).
-    * @param other the object to copy from
+    * @param other = the object to copy from
     */
     this(in EAC_Time other)
     {
@@ -364,7 +364,7 @@ final class ASN1_Cex_Impl : EAC_Time
 public:
     /**
     * Construct a CEX from a string value.
-    * @param str a string in the format "yyyy mm dd",
+    * @param str = a string in the format "yyyy mm dd",
     * e.g. "2007 08 01"
     */
     this(in string str = "") 
@@ -515,7 +515,7 @@ final class ASN1_Car_Impl : ASN1_EAC_String
 public:
     /**
     * Create a CAR with the specified content.
-    * @param str the CAR value
+    * @param str = the CAR value
     */
     this(in string str)
     {
@@ -533,7 +533,7 @@ final class ASN1_Chr_Impl : ASN1_EAC_String
 public:
     /**
     * Create a CHR with the specified content.
-    * @param str the CHR value
+    * @param str = the CHR value
     */
     this(in string str)
     {

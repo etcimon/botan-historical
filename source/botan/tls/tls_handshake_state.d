@@ -46,7 +46,7 @@ public:
 
     /**
     * Return true iff we have received a particular message already
-    * @param msg_type the message type
+    * @param msg_type = the message type
     */
     bool received_handshake_msg(Handshake_Type handshake_msg) const
     {
@@ -57,7 +57,7 @@ public:
 
     /**
     * Confirm that we were expecting this message type
-    * @param msg_type the message type
+    * @param msg_type = the message type
     */
     void confirm_transition_to(Handshake_Type handshake_msg)
     {
@@ -82,7 +82,7 @@ public:
 
     /**
     * Record that we are expecting a particular message type next
-    * @param msg_type the message type
+    * @param msg_type = the message type
     */
     void set_expected_next(Handshake_Type handshake_msg)
     {

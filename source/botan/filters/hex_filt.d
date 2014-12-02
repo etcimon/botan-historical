@@ -66,7 +66,7 @@ public:
 
     /**
     * Create a hex encoder.
-    * @param the_case the case to use in the encoded strings.
+    * @param the_case = the case to use in the encoded strings.
     */
     this(Case the_case)
     { 
@@ -80,9 +80,9 @@ public:
 
     /**
     * Create a hex encoder.
-    * @param newlines should newlines be used
-    * @param line_length if newlines are used, how long are lines
-    * @param the_case the case to use in the encoded strings
+    * @param newlines = should newlines be used
+    * @param line_length = if newlines are used, how long are lines
+    * @param the_case = the case to use in the encoded strings
     */
     this(bool newlines = false, size_t m_line_length = 72, Case the_case = Uppercase)
     {
@@ -195,7 +195,7 @@ public:
     /**
     * Construct a Hex Decoder using the specified
     * character checking.
-    * @param checking the checking to use during decoding.
+    * @param checking = the checking to use during decoding.
     */
     this(Decoder_Checking c = NONE)
     {

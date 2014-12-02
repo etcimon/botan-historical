@@ -175,9 +175,9 @@ public:
 
     /**
     * Decrypt a session created by encrypt
-    * @param ctext the ciphertext returned by encrypt
-    * @param ctext_size the size of ctext in bytes
-    * @param key the same key used by the encrypting side
+    * @param ctext = the ciphertext returned by encrypt
+    * @param ctext_size = the size of ctext in bytes
+    * @param key = the same key used by the encrypting side
     */
     static TLS_Session decrypt(in ubyte* buf, size_t buf_len, in SymmetricKey master_key)
     {
@@ -195,8 +195,8 @@ public:
 
     /**
     * Decrypt a session created by encrypt
-    * @param ctext the ciphertext returned by encrypt
-    * @param key the same key used by the encrypting side
+    * @param ctext = the ciphertext returned by encrypt
+    * @param key = the same key used by the encrypting side
     */
     static TLS_Session decrypt(in Vector!ubyte ctext, in SymmetricKey key)
     {

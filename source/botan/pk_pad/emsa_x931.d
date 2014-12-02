@@ -19,7 +19,7 @@ final class EMSA_X931 : EMSA
 {
 public:
     /**
-    * @param hash the hash object to use
+    * @param hash = the hash object to use
     */
     this(HashFunction hash)
     {

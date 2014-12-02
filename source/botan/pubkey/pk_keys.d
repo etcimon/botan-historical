@@ -57,8 +57,8 @@ public:
 
     /**
     * Test the key values for consistency.
-    * @param rng rng to use
-    * @param strong whether to perform strong and lengthy version
+    * @param rng = rng to use
+    * @param strong = whether to perform strong and lengthy version
     * of the test
     * @return true if the test is passed
     */
@@ -97,7 +97,7 @@ public:
 protected:
     /**
     * Self-test after loading a key
-    * @param rng a random number generator
+    * @param rng = a random number generator
     */
     abstract void load_check(RandomNumberGenerator rng) const
     {
@@ -127,7 +127,7 @@ public:
 protected:
     /**
     * Self-test after loading a key
-    * @param rng a random number generator
+    * @param rng = a random number generator
     */
     final override void load_check(RandomNumberGenerator rng) const
     {
@@ -137,7 +137,7 @@ protected:
 
     /**
     * Self-test after generating a key
-    * @param rng a random number generator
+    * @param rng = a random number generator
     */
     final void gen_check(RandomNumberGenerator rng) const
     {

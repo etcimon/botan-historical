@@ -18,8 +18,8 @@ struct TLS_Server_Information
 {
 public:
     /**
-    * @param hostname the host's DNS name, if known
-    * @param port specifies the protocol port of the server (eg for
+    * @param hostname = the host's DNS name, if known
+    * @param port = specifies the protocol port of the server (eg for
     *          TCP/UDP). Zero represents unknown.
     */
     this(in string hostname, ushort port = 0)
@@ -29,10 +29,10 @@ public:
     }
 
     /**
-    * @param hostname the host's DNS name, if known
-    * @param service is a text string of the service type
+    * @param hostname = the host's DNS name, if known
+    * @param service = is a text string of the service type
     *          (eg "https", "tor", or "git")
-    * @param port specifies the protocol port of the server (eg for
+    * @param port = specifies the protocol port of the server (eg for
     *          TCP/UDP). Zero represents unknown.
     */
     this(in string hostname,

@@ -45,9 +45,9 @@ public:
 
     /**
     * Construct a blinder
-    * @param e the forward (blinding) mask
-    * @param d the inverse of mask (depends on algo)
-    * @param n modulus of the group operations are performed in
+    * @param e = the forward (blinding) mask
+    * @param d = the inverse of mask (depends on algo)
+    * @param n = modulus of the group operations are performed in
     */
     this(in BigInt e, in BigInt d, in BigInt n)
     {

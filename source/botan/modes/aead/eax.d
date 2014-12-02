@@ -90,8 +90,8 @@ protected:
     }
 
     /**
-    * @param cipher the cipher to use
-    * @param tag_size is how big the auth tag will be
+    * @param cipher = the cipher to use
+    * @param tag_size = is how big the auth tag will be
     */
     this(BlockCipher cipher, size_t tag_size) 
     {
@@ -123,8 +123,8 @@ final class EAX_Encryption : EAX_Mode
 {
 public:
     /**
-    * @param cipher a 128-bit block cipher
-    * @param tag_size is how big the auth tag will be
+    * @param cipher = a 128-bit block cipher
+    * @param tag_size = is how big the auth tag will be
     */
     this(BlockCipher cipher, size_t tag_size = 0) 
     {
@@ -165,8 +165,8 @@ final class EAX_Decryption : EAX_Mode
 {
 public:
     /**
-    * @param cipher a 128-bit block cipher
-    * @param tag_size is how big the auth tag will be
+    * @param cipher = a 128-bit block cipher
+    * @param tag_size = is how big the auth tag will be
     */
     this(BlockCipher cipher, size_t tag_size = 0) 
     {

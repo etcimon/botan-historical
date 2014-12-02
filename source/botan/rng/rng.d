@@ -44,14 +44,14 @@ public:
     }
     /**
     * Randomize a ubyte array.
-    * @param output the ubyte array to hold the random output.
-    * @param length the length of the ubyte array output.
+    * @param output = the ubyte array to hold the random output.
+    * @param length = the length of the ubyte array output.
     */
     abstract void randomize(ubyte* output, size_t length);
 
     /**
     * Return a random vector
-    * @param bytes number of bytes in the result
+    * @param bytes = number of bytes in the result
     * @return randomized vector of length bytes
     */
     abstract Secure_Vector!ubyte random_vec(size_t bytes)
@@ -90,15 +90,15 @@ public:
 
     /**
     * Seed this RNG using the entropy sources it contains.
-    * @param bits_to_collect is the number of bits of entropy to
+    * @param bits_to_collect = is the number of bits of entropy to
                 attempt to gather from the entropy sources
     */
     abstract void reseed(size_t bits_to_collect);
 
     /**
     * Add entropy to this RNG.
-    * @param input a ubyte array containg the entropy to be added
-    * @param length the length of the ubyte array in
+    * @param input = a ubyte array containg the entropy to be added
+    * @param length = the length of the ubyte array in
     */
     abstract void add_entropy(in ubyte* input, size_t length);
 

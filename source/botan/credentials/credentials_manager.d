@@ -32,9 +32,9 @@ public:
     * Return a list of the certificates of CAs that we trust in this
     * type/context.
     *
-    * @param type specifies the type of operation occuring
+    * @param type = specifies the type of operation occuring
     *
-    * @param context specifies a context relative to type. For instance
+    * @param context = specifies a context relative to type. For instance
     *          for type "tls-client", context specifies the servers name.
     */
     abstract Vector!Certificate_Store 
@@ -52,9 +52,9 @@ public:
     * std::exception with an informative what() result if the
     * certificate chain cannot be verified.
 
-    * @param type specifies the type of operation occuring
-    * @param hostname specifies the purported hostname
-    * @param cert_chain specifies a certificate chain leading to a
+    * @param type = specifies the type of operation occuring
+    * @param hostname = specifies the purported hostname
+    * @param cert_chain = specifies a certificate chain leading to a
     *          trusted root CA certificate.
     */
     abstract void verify_certificate_chain(in string type,
@@ -89,13 +89,13 @@ public:
     * It is assumed that the caller can get the private key of the
     * leaf with Private_Key_for
     *
-    * @param cert_key_types specifies the key types desired ("RSA",
+    * @param cert_key_types = specifies the key types desired ("RSA",
     *                              "DSA", "ECDSA", etc), or empty if there
     *                              is no preference by the caller.
     *
-    * @param type specifies the type of operation occuring
+    * @param type = specifies the type of operation occuring
     *
-    * @param context specifies a context relative to type.
+    * @param context = specifies a context relative to type.
     */
     abstract Vector!X509_Certificate cert_chain(in Vector!string cert_key_types,
                                                     in string type,
@@ -117,12 +117,12 @@ public:
     * It is assumed that the caller can get the private key of the
     * leaf with Private_Key_for
     *
-    * @param cert_key_type specifies the type of key requested
+    * @param cert_key_type = specifies the type of key requested
     *                             ("RSA", "DSA", "ECDSA", etc)
     *
-    * @param type specifies the type of operation occuring
+    * @param type = specifies the type of operation occuring
     *
-    * @param context specifies a context relative to type.
+    * @param context = specifies a context relative to type.
     */
     abstract Vector!X509_Certificate cert_chain_single_type( in string cert_key_type,
                                                                 in string type,
@@ -145,8 +145,8 @@ public:
     }
 
     /**
-    * @param type specifies the type of operation occuring
-    * @param context specifies a context relative to type.
+    * @param type = specifies the type of operation occuring
+    * @param context = specifies a context relative to type.
     * @return true if we should attempt SRP authentication
     */
     abstract bool attempt_srp(in string, in string)
@@ -155,8 +155,8 @@ public:
     }
 
     /**
-    * @param type specifies the type of operation occuring
-    * @param context specifies a context relative to type.
+    * @param type = specifies the type of operation occuring
+    * @param context = specifies a context relative to type.
     * @return identifier for client-side SRP auth, if available
                  for this type/context. Should return empty string
                  if password auth not desired/available.
@@ -167,9 +167,9 @@ public:
     }
 
     /**
-    * @param type specifies the type of operation occuring
-    * @param context specifies a context relative to type.
-    * @param identifier specifies what identifier we want the
+    * @param type = specifies the type of operation occuring
+    * @param context = specifies a context relative to type.
+    * @param identifier = specifies what identifier we want the
     *          password for. This will be a value previously returned
     *          by srp_identifier.
     * @return password for client-side SRP auth, if available
@@ -197,8 +197,8 @@ public:
     }
 
     /**
-    * @param type specifies the type of operation occuring
-    * @param context specifies a context relative to type.
+    * @param type = specifies the type of operation occuring
+    * @param context = specifies a context relative to type.
     * @return the PSK identity hint for this type/context
     */
     abstract string psk_identity_hint(in string type, in string context)
@@ -207,9 +207,9 @@ public:
     }
 
     /**
-    * @param type specifies the type of operation occuring
-    * @param context specifies a context relative to type.
-    * @param identity_hint was passed by the server (but may be empty)
+    * @param type = specifies the type of operation occuring
+    * @param context = specifies a context relative to type.
+    * @param identity_hint = was passed by the server (but may be empty)
     * @return the PSK identity we want to use
     */
     abstract string psk_identity(in string type, in string context, in string identity_hint)
@@ -218,9 +218,9 @@ public:
     }
 
     /**
-    * @param type specifies the type of operation occuring
-    * @param context specifies a context relative to type.
-    * @param identity is a PSK identity previously returned by
+    * @param type = specifies the type of operation occuring
+    * @param context = specifies a context relative to type.
+    * @param identity = is a PSK identity previously returned by
                 psk_identity for the same type and context.
     * @return the PSK used for identity, or throw new an exception if no
     * key exists

@@ -36,10 +36,10 @@ public:
 
     /**
     * Sign a PKCS#10 Request.
-    * @param req the request to sign
-    * @param rng the rng to use
-    * @param not_before the starting time for the certificate
-    * @param not_after the expiration time for the certificate
+    * @param req = the request to sign
+    * @param rng = the rng to use
+    * @param not_before = the starting time for the certificate
+    * @param not_after = the expiration time for the certificate
     * @return resulting certificate
     */
     X509_Certificate sign_request(in PKCS10_Request req,
@@ -87,8 +87,8 @@ public:
 
     /**
     * Create a new and empty CRL for this CA.
-    * @param rng the random number generator to use
-    * @param next_update the time to set in next update in seconds
+    * @param rng = the random number generator to use
+    * @param next_update = the time to set in next update in seconds
     * as the offset from the current time
     * @return new CRL
     */
@@ -100,10 +100,10 @@ public:
 
     /**
     * Create a new CRL by with additional entries.
-    * @param last_crl the last CRL of this CA to add the new entries to
-    * @param new_entries contains the new CRL entries to be added to the CRL
-    * @param rng the random number generator to use
-    * @param next_update the time to set in next update in seconds
+    * @param last_crl = the last CRL of this CA to add the new entries to
+    * @param new_entries = contains the new CRL entries to be added to the CRL
+    * @param rng = the random number generator to use
+    * @param next_update = the time to set in next update in seconds
     * as the offset from the current time
     */
     X509_CRL update_crl(in X509_CRL crl,
@@ -121,15 +121,15 @@ public:
 
     /**
     * Interface for creating new certificates
-    * @param signer a signing object
-    * @param rng a random number generator
-    * @param sig_algo the signature algorithm identifier
-    * @param pub_key the serialized public key
-    * @param not_before the start time of the certificate
-    * @param not_after the end time of the certificate
-    * @param issuer_dn the DN of the issuer
-    * @param subject_dn the DN of the subject
-    * @param extensions an optional list of certificate extensions
+    * @param signer = a signing object
+    * @param rng = a random number generator
+    * @param sig_algo = the signature algorithm identifier
+    * @param pub_key = the serialized public key
+    * @param not_before = the start time of the certificate
+    * @param not_after = the end time of the certificate
+    * @param issuer_dn = the DN of the issuer
+    * @param subject_dn = the DN of the subject
+    * @param extensions = an optional list of certificate extensions
     * @returns newly minted certificate
     */
     static X509_Certificate make_cert(ref PK_Signer signer,
@@ -180,9 +180,9 @@ public:
 
     /**
     * Create a new CA object. Load the certificate and private key
-    * @param ca_certificate the certificate of the CA
-    * @param key the private key of the CA
-    * @param hash_fn name of a hash function to use for signing
+    * @param ca_certificate = the certificate of the CA
+    * @param key = the private key of the CA
+    * @param hash_fn = name of a hash function to use for signing
     */
     this(in X509_Certificate c,
          in Private_Key key,
@@ -256,9 +256,9 @@ private:
 /**
 * Choose the default signature format for a certain public key signature
 * scheme.
-* @param key will be the key to choose a padding scheme for
-* @param hash_fn is the desired hash function
-* @param alg_id will be set to the chosen scheme
+* @param key = will be the key to choose a padding scheme for
+* @param hash_fn = is the desired hash function
+* @param alg_id = will be set to the chosen scheme
 * @return A PK_Signer object for generating signatures
 */
 /*

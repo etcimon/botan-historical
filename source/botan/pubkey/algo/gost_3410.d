@@ -28,8 +28,8 @@ public:
 
     /**
     * Construct a public key from a given public point.
-    * @param dom_par the domain parameters associated with this key
-    * @param public_point the public point defining this key
+    * @param dom_par = the domain parameters associated with this key
+    * @param public_point = the public point defining this key
     */
     this(in EC_Group dom_par, in PointGFp public_point) 
     {
@@ -140,9 +140,9 @@ public:
 
     /**
     * Generate a new private key
-    * @param rng a random number generator
-    * @param domain parameters to used for this key
-    * @param x the private key; if zero, a new random key is generated
+    * @param rng = a random number generator
+    * @param domain = parameters to used for this key
+    * @param x = the private key; if zero, a new random key is generated
     */
     this(RandomNumberGenerator rng, in EC_Group domain, in BigInt x = 0)
     {

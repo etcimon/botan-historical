@@ -240,7 +240,7 @@ public:
     /**
     * Send a TLS alert message. If the alert is fatal, the internal
     * state (keys, etc) will be reset.
-    * @param alert the TLS_Alert to send
+    * @param alert = the TLS_Alert to send
     */
     void send_alert(in TLS_Alert alert)
     {
@@ -306,7 +306,7 @@ public:
 
     /**
     * Attempt to renegotiate the session
-    * @param force_full_renegotiation if true, require a full renegotiation,
+    * @param force_full_renegotiation = if true, require a full renegotiation,
     *                                            otherwise allow session resumption
     */
     void renegotiate(bool force_full_renegotiation = false)
@@ -349,8 +349,8 @@ public:
 
     /**
     * Attempt to send a heartbeat message (if negotiated with counterparty)
-    * @param payload will be echoed back
-    * @param payload_size size of payload in bytes
+    * @param payload = will be echoed back
+    * @param payload_size = size of payload in bytes
     */
     void heartbeat(in ubyte* payload, size_t payload_size)
     {
@@ -380,9 +380,9 @@ public:
 
     /**
     * Key material export (RFC 5705)
-    * @param label a disambiguating label string
-    * @param context a per-association context value
-    * @param length the length of the desired key in bytes
+    * @param label = a disambiguating label string
+    * @param context = a per-association context value
+    * @param length = the length of the desired key in bytes
     * @return key of length bytes
     */
     SymmetricKey key_material_export(in string label,

@@ -174,7 +174,7 @@ public:
 
     /**
     * Deserialize an TLS_Alert message
-    * @param buf the serialized alert
+    * @param buf = the serialized alert
     */
     this(in Secure_Vector!ubyte buf)
     {
@@ -193,8 +193,8 @@ public:
 
     /**
     * Create a new TLS_Alert
-    * @param type_code the type of alert
-    * @param fatal specifies if this is a fatal alert
+    * @param type_code = the type of alert
+    * @param fatal = specifies if this is a fatal alert
     */
     this(TLS_Alert_Type type_code = NULL_ALERT, bool fatal = false)
     {

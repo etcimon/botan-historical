@@ -38,7 +38,7 @@ public:
     
     /**
     * Check whether a given key length is valid for this algorithm.
-    * @param length the key length to be checked.
+    * @param length = the key length to be checked.
     * @return true if the key length is valid.
     */
     final bool valid_keylength(size_t length) const
@@ -48,7 +48,7 @@ public:
     
     /**
     * Set the symmetric key of this object.
-    * @param key the SymmetricKey to be set.
+    * @param key = the SymmetricKey to be set.
     */
     final void set_key(in SymmetricKey key)
     {
@@ -62,8 +62,8 @@ public:
     
     /**
     * Set the symmetric key of this object.
-    * @param key the to be set as a ubyte array.
-    * @param length in bytes of key param
+    * @param key = the to be set as a ubyte array.
+    * @param length = in bytes of key param
     */
     final void set_key(in ubyte* key, size_t length)
     {
@@ -77,8 +77,8 @@ public:
 private:
     /**
     * Run the key schedule
-    * @param key the key
-    * @param length of key
+    * @param key = the key
+    * @param length = of key
     */
     abstract void key_schedule(in ubyte* key, size_t length);
 }

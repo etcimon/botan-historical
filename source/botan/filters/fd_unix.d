@@ -14,8 +14,8 @@ import core.sys.posix.unistd;
 /**
 * Stream output operator; dumps the results from pipe's default
 * message to the output stream.
-* @param output file descriptor for an open output stream
-* @param pipe the pipe
+* @param output = file descriptor for an open output stream
+* @param pipe = the pipe
 */
 /*int operator<<(int fd, Pipe& pipe)
 {
@@ -39,8 +39,8 @@ import core.sys.posix.unistd;
 /**
 * File descriptor input operator; dumps the remaining bytes of input
 * to the (assumed open) pipe message.
-* @param input file descriptor for an open input stream
-* @param pipe the pipe
+* @param input = file descriptor for an open input stream
+* @param pipe = the pipe
 */
 /*int opBinary(string op)(int fd, ref Pipe pipe)
 {

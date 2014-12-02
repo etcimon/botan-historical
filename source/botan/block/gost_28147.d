@@ -24,8 +24,8 @@ final class GOST_28147_89_Params
 {
 public:
     /**
-    * @param row the row
-    * @param col the column
+    * @param row = the row
+    * @param col = the column
     * @return sbox entry at this row/column
     */
     ubyte sbox_entry(size_t row, size_t col) const
@@ -45,7 +45,7 @@ public:
     * testing purposes; these sboxes are also used by Crypto++, and,
     * at least according to Wikipedia, the Central Bank of Russian
     * Federation
-    * @param name of the parameter set
+    * @param name = of the parameter set
     */
     this(in string name = "R3411_94_TestParam") 
     {
@@ -175,7 +175,7 @@ public:
     BlockCipher clone() const { return new GOST_28147_89(m_SBOX); }
 
     /**
-    * @param params the sbox parameters to use
+    * @param params = the sbox parameters to use
     */
     this(in GOST_28147_89_Params param)
     {

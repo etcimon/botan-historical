@@ -77,10 +77,10 @@ public:
 
     /**
     * Create a signed X509 object.
-    * @param signer the signer used to sign the object
-    * @param rng the random number generator to use
-    * @param alg_id the algorithm identifier of the signature scheme
-    * @param tbs the tbs bits to be signed
+    * @param signer = the signer used to sign the object
+    * @param rng = the random number generator to use
+    * @param alg_id = the algorithm identifier of the signature scheme
+    * @param tbs = the tbs bits to be signed
     * @return signed X509 object
     */
     static Vector!ubyte make_signed(ref PK_Signer signer,
@@ -101,7 +101,7 @@ public:
 
     /**
     * Check the signature on this data
-    * @param key the public key purportedly used to sign this data
+    * @param key = the public key purportedly used to sign this data
     * @return true if the signature is valid, otherwise false
     */
     final bool check_signature(in Public_Key pub_key) const

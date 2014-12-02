@@ -27,8 +27,8 @@ public:
     * that should be authenticated. Must be called after set_key
     * and before end_msg.
     *
-    * @param ad the associated data
-    * @param ad_len length of add in bytes
+    * @param ad = the associated data
+    * @param ad_len = length of add in bytes
     */
     void set_associated_data(in ubyte* ad, size_t ad_len)
     {

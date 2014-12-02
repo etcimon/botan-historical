@@ -35,9 +35,9 @@ private:
 private:
 /**
 * MD4 compression function in x86-32 asm
-* @param digest the current digest
-* @param input the input block
-* @param M the message buffer
+* @param digest = the current digest
+* @param input = the input block
+* @param M = the message buffer
 */
 void botan_md4_x86_32_compress(uint* digest, in ubyte* input, uint* M)
 {

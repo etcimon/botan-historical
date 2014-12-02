@@ -21,10 +21,10 @@ struct CryptoBox {
 
     /**
     * Encrypt a message using a shared secret key
-    * @param input the input data
-    * @param input_len the length of input in bytes
-    * @param key the key used to encrypt the message
-    * @param rng a ref to a random number generator, such as AutoSeeded_RNG
+    * @param input = the input data
+    * @param input_len = the length of input in bytes
+    * @param key = the key used to encrypt the message
+    * @param rng = a ref to a random number generator, such as AutoSeeded_RNG
     */
     static Vector!ubyte encrypt(in ubyte* input, size_t input_len,
                                 in SymmetricKey master_key,
@@ -64,10 +64,10 @@ struct CryptoBox {
 
     /**
     * Encrypt a message using a shared secret key
-    * @param input the input data
-    * @param input_len the length of input in bytes
-    * @param key the key used to encrypt the message
-    * @param rng a ref to a random number generator, such as AutoSeeded_RNG
+    * @param input = the input data
+    * @param input_len = the length of input in bytes
+    * @param key = the key used to encrypt the message
+    * @param rng = a ref to a random number generator, such as AutoSeeded_RNG
     */
     static Secure_Vector!ubyte decrypt(in ubyte* input, size_t input_len, in SymmetricKey master_key)
     {

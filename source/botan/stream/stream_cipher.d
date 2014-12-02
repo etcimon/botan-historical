@@ -15,23 +15,23 @@ class StreamCipher : SymmetricAlgorithm
 public:
     /**
     * Encrypt or decrypt a message
-    * @param input the plaintext
-    * @param output the ubyte array to hold the output, i.e. the ciphertext
-    * @param len the length of both in and out in bytes
+    * @param input = the plaintext
+    * @param output = the ubyte array to hold the output, i.e. the ciphertext
+    * @param len = the length of both in and out in bytes
     */
     abstract void cipher(in ubyte* input, ubyte* output, size_t len);
 
     /**
     * Encrypt or decrypt a message
-    * @param buf the plaintext / ciphertext
-    * @param len the length of buf in bytes
+    * @param buf = the plaintext / ciphertext
+    * @param len = the length of buf in bytes
     */
     final void cipher1(ubyte* buf, size_t len)
     { cipher(buf, buf, len); }
 
     /**
     * Encrypt or decrypt a message
-    * @param buf the plaintext / ciphertext
+    * @param buf = the plaintext / ciphertext
     */
     final void cipher1(ref ubyte[] buf)
     { cipher(buf.ptr, buf.ptr, buf.length); }
@@ -47,8 +47,8 @@ public:
 
     /**
     * Resync the cipher using the IV
-    * @param iv the initialization vector
-    * @param iv_len the length of the IV in bytes
+    * @param iv = the initialization vector
+    * @param iv_len = the length of the IV in bytes
     */
     abstract void set_iv(const ubyte*, size_t iv_len)
     {
@@ -58,7 +58,7 @@ public:
     }
 
     /**
-    * @param iv_len the length of the IV in bytes
+    * @param iv_len = the length of the IV in bytes
     * @return if the length is valid for this algorithm
     */
     abstract bool valid_iv_length(size_t iv_len) const

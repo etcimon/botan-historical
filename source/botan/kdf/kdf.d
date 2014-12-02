@@ -28,9 +28,9 @@ public:
 
     /**
     * Derive a key
-    * @param key_len the desired output length in bytes
-    * @param secret the secret input
-    * @param salt a diversifier
+    * @param key_len = the desired output length in bytes
+    * @param secret = the secret input
+    * @param salt = a diversifier
     */
     Secure_Vector!ubyte derive_key(size_t key_len,
                                 in Secure_Vector!ubyte secret,
@@ -43,9 +43,9 @@ public:
 
     /**
     * Derive a key
-    * @param key_len the desired output length in bytes
-    * @param secret the secret input
-    * @param salt a diversifier
+    * @param key_len = the desired output length in bytes
+    * @param secret = the secret input
+    * @param salt = a diversifier
     */
     
     Secure_Vector!ubyte derive_key(Alloc, Alloc2)(size_t key_len,
@@ -59,10 +59,10 @@ public:
 
     /**
     * Derive a key
-    * @param key_len the desired output length in bytes
-    * @param secret the secret input
-    * @param salt a diversifier
-    * @param salt_len size of salt in bytes
+    * @param key_len = the desired output length in bytes
+    * @param secret = the secret input
+    * @param salt = a diversifier
+    * @param salt_len = size of salt in bytes
     */
     Secure_Vector!ubyte derive_key(size_t key_len,
                                 in Secure_Vector!ubyte secret,
@@ -76,10 +76,10 @@ public:
 
     /**
     * Derive a key
-    * @param key_len the desired output length in bytes
-    * @param secret the secret input
-    * @param secret_len size of secret in bytes
-    * @param salt a diversifier
+    * @param key_len = the desired output length in bytes
+    * @param secret = the secret input
+    * @param secret_len = size of secret in bytes
+    * @param salt = a diversifier
     */
     Secure_Vector!ubyte derive_key(size_t key_len,
                                 in ubyte* secret,
@@ -93,11 +93,11 @@ public:
 
     /**
     * Derive a key
-    * @param key_len the desired output length in bytes
-    * @param secret the secret input
-    * @param secret_len size of secret in bytes
-    * @param salt a diversifier
-    * @param salt_len size of salt in bytes
+    * @param key_len = the desired output length in bytes
+    * @param secret = the secret input
+    * @param secret_len = size of secret in bytes
+    * @param salt = a diversifier
+    * @param salt_len = size of salt in bytes
     */
     Secure_Vector!ubyte derive_key(size_t key_len,
                                 in ubyte* secret,
@@ -118,7 +118,7 @@ private:
 
 /**
 * Factory method for KDF (key derivation function)
-* @param algo_spec the name of the KDF to create
+* @param algo_spec = the name of the KDF to create
 * @return pointer to newly allocated object of that type
 */
 KDF get_kdf(in string algo_spec)

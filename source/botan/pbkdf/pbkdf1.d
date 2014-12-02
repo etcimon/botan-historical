@@ -24,7 +24,7 @@ final class PKCS5_PBKDF1 : PBKDF
 public:
     /**
     * Create a PKCS #5 instance using the specified hash function.
-    * @param hash_in pointer to a hash function object to use
+    * @param hash_in = pointer to a hash function object to use
     */
     this(HashFunction hash_input)
     {

@@ -21,7 +21,7 @@ class Transformation
 public:
     /**
     * Begin processing a message.
-    * @param nonce the per message nonce
+    * @param nonce = the per message nonce
     */    
     final Secure_Vector!ubyte start_vec(Alloc)(in Vector!( ubyte, Alloc ) nonce)
     {
@@ -30,24 +30,24 @@ public:
 
     /**
     * Begin processing a message.
-    * @param nonce the per message nonce
-    * @param nonce_len length of nonce
+    * @param nonce = the per message nonce
+    * @param nonce_len = length of nonce
     */
     abstract Secure_Vector!ubyte start(in ubyte* nonce, size_t nonce_len);
 
     /**
     * Process some data. Input must be in size update_granularity() ubyte blocks.
-    * @param blocks in/out paramter which will possibly be resized
-    * @param offset an offset into blocks to begin processing
+    * @param blocks = in/out paramter which will possibly be resized
+    * @param offset = an offset into blocks to begin processing
     */
     abstract void update(Secure_Vector!ubyte blocks, size_t offset = 0);
 
     /**
     * Complete processing of a message.
     *
-    * @param final_block in/out parameter which must be at least
+    * @param final_block = in/out parameter which must be at least
     *          minimum_final_size() bytes, and will be set to any final output
-    * @param offset an offset into final_block to begin processing
+    * @param offset = an offset into final_block to begin processing
     */
     abstract void finish(Secure_Vector!ubyte final_block, size_t offset = 0);
 
@@ -104,7 +104,7 @@ public:
 
     /**
     * Check whether a given key length is valid for this algorithm.
-    * @param length the key length to be checked.
+    * @param length = the key length to be checked.
     * @return true if the key length is valid.
     */
     final bool valid_keylength(size_t length) const
@@ -124,8 +124,8 @@ public:
 
     /**
     * Set the symmetric key of this transform
-    * @param key contains the key material
-    * @param length in bytes of key param
+    * @param key = contains the key material
+    * @param length = in bytes of key param
     */
     final void set_key(in ubyte* key, size_t length)
     {

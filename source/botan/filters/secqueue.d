@@ -135,7 +135,7 @@ public:
 
     /**
     * Secure_Queue assignment
-    * @param other the queue to copy
+    * @param other = the queue to copy
     */
     Secure_Queue opAssign(in Secure_Queue input)
     {
@@ -163,7 +163,7 @@ public:
 
     /**
     * Secure_Queue copy constructor
-    * @param other the queue to copy
+    * @param other = the queue to copy
     */
     this(in Secure_Queue input)
     {

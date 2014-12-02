@@ -30,11 +30,11 @@ public:
 
     /**
     * Derive a key from a passphrase
-    * @param output_len the desired length of the key to produce
-    * @param passphrase the password to derive the key from
-    * @param salt a randomly chosen salt
-    * @param salt_len length of salt in bytes
-    * @param iterations the number of iterations to use (use 10K or more)
+    * @param output_len = the desired length of the key to produce
+    * @param passphrase = the password to derive the key from
+    * @param salt = a randomly chosen salt
+    * @param salt_len = length of salt in bytes
+    * @param iterations = the number of iterations to use (use 10K or more)
     */
     final OctetString derive_key(size_t output_len,
                            in string passphrase,
@@ -56,10 +56,10 @@ public:
 
     /**
     * Derive a key from a passphrase
-    * @param output_len the desired length of the key to produce
-    * @param passphrase the password to derive the key from
-    * @param salt a randomly chosen salt
-    * @param iterations the number of iterations to use (use 10K or more)
+    * @param output_len = the desired length of the key to produce
+    * @param passphrase = the password to derive the key from
+    * @param salt = a randomly chosen salt
+    * @param iterations = the number of iterations to use (use 10K or more)
     */
     final OctetString derive_key(Alloc)(size_t output_len,
                                   in string passphrase,
@@ -71,12 +71,12 @@ public:
 
     /**
     * Derive a key from a passphrase
-    * @param output_len the desired length of the key to produce
-    * @param passphrase the password to derive the key from
-    * @param salt a randomly chosen salt
-    * @param salt_len length of salt in bytes
-    * @param loop_for is how long to run the PBKDF
-    * @param iterations is set to the number of iterations used
+    * @param output_len = the desired length of the key to produce
+    * @param passphrase = the password to derive the key from
+    * @param salt = a randomly chosen salt
+    * @param salt_len = length of salt in bytes
+    * @param loop_for = is how long to run the PBKDF
+    * @param iterations = is set to the number of iterations used
     */
     final OctetString derive_key(size_t output_len,
                            in string passphrase,
@@ -93,11 +93,11 @@ public:
 
     /**
     * Derive a key from a passphrase using a certain amount of time
-    * @param output_len the desired length of the key to produce
-    * @param passphrase the password to derive the key from
-    * @param salt a randomly chosen salt
-    * @param loop_for is how long to run the PBKDF
-    * @param iterations is set to the number of iterations used
+    * @param output_len = the desired length of the key to produce
+    * @param passphrase = the password to derive the key from
+    * @param salt = a randomly chosen salt
+    * @param loop_for = is how long to run the PBKDF
+    * @param iterations = is set to the number of iterations used
     */
     final OctetString derive_key(Alloc)(size_t output_len,
                                   in string passphrase,
@@ -113,12 +113,12 @@ public:
     * specified by either iterations or if iterations == 0 then
     * running until seconds time has elapsed.
     *
-    * @param output_len the desired length of the key to produce
-    * @param passphrase the password to derive the key from
-    * @param salt a randomly chosen salt
-    * @param salt_len length of salt in bytes
-    * @param iterations the number of iterations to use (use 10K or more)
-    * @param loop_for if iterations is zero, then instead the PBKDF is
+    * @param output_len = the desired length of the key to produce
+    * @param passphrase = the password to derive the key from
+    * @param salt = a randomly chosen salt
+    * @param salt_len = length of salt in bytes
+    * @param iterations = the number of iterations to use (use 10K or more)
+    * @param loop_for = if iterations is zero, then instead the PBKDF is
     *          run until duration has passed.
     * @return the number of iterations performed and the derived key
     */

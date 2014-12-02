@@ -12,7 +12,7 @@ import botan.utils.containers.multimap;
 import botan.utils.types;
 import botan.utils.containers.hashmap;
 /**
-* @param prov_name a provider name
+* @param prov_name = a provider name
 * @return weight for this provider
 */
 ubyte static_provider_weight(in string prov_name)
@@ -43,8 +43,8 @@ struct Algorithm_Cache(T)
 public:
     /**
     * Look for an algorithm implementation by a particular provider
-    * @param algo_spec names the requested algorithm
-    * @param pref_provider suggests a preferred provider
+    * @param algo_spec = names the requested algorithm
+    * @param pref_provider = suggests a preferred provider
     * @return prototype object, or NULL
     */
     T get(in string algo_spec, in string requested_provider) const
@@ -85,9 +85,9 @@ public:
 
     /**
     * Add a new algorithm implementation to the cache
-    * @param algo the algorithm prototype object
-    * @param requested_name how this name will be requested
-    * @param provider_name is the name of the provider of this prototype
+    * @param algo = the algorithm prototype object
+    * @param requested_name = how this name will be requested
+    * @param provider_name = is the name of the provider of this prototype
     */
     void add(T algo,
              in string requested_name,
@@ -109,8 +109,8 @@ public:
 
     /**
     * Set the preferred provider for an algorithm
-    * @param algo_spec names the algorithm
-    * @param provider names the preferred provider
+    * @param algo_spec = names the algorithm
+    * @param provider = names the preferred provider
     */
     void set_preferred_provider(in string algo_spec,
                                 in string provider)
@@ -121,7 +121,7 @@ public:
     /**
     * Find the providers of this algo (if any)
     * Return the list of providers of this algorithm
-    * @param algo_name names the algorithm
+    * @param algo_name = names the algorithm
     * @return list of providers of this algorithm
     */
     Vector!string providers_of(in string algo_name)

@@ -141,8 +141,8 @@ public:
 
     /**
     * Append another component onto the OID.
-    * @param oid the OID to add the new component to
-    * @param new_comp the new component to add
+    * @param oid = the OID to add the new component to
+    * @param new_comp = the new component to add
     */
     OID opBinary(string op)(in OID oid, uint component)
         if (op == "+")
@@ -154,8 +154,8 @@ public:
     
     /**
     * Compare two OIDs.
-    * @param a the first OID
-    * @param b the second OID
+    * @param a = the first OID
+    * @param b = the second OID
     * @return true if a is not equal to b
     */
     bool opCmp(in OID b)
@@ -165,8 +165,8 @@ public:
     
     /**
     * Compare two OIDs.
-    * @param a the first OID
-    * @param b the second OID
+    * @param a = the first OID
+    * @param b = the second OID
     * @return true if a is lexicographically smaller than b
     */
     bool opBinary(string op)(in OID b)
@@ -192,7 +192,7 @@ public:
 
     /**
     * Add a component to this OID.
-    * @param new_comp the new component to add to the end of this OID
+    * @param new_comp = the new component to add to the end of this OID
     * @return reference to this
     */
     ref OID opOpAssign(string op)(uint new_comp)
@@ -204,7 +204,7 @@ public:
 
     /**
     * Construct an OID from a string.
-    * @param str a string in the form "a.b.c" etc., where a,b,c are numbers
+    * @param str = a string in the form "a.b.c" etc., where a,b,c are numbers
     */
     this(in string str = "")
     {

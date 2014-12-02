@@ -195,10 +195,10 @@ final class CCM_Encryption : CCM_Mode
 {
 public:
     /**
-    * @param cipher a 128-bit block cipher
-    * @param tag_size is how big the auth tag will be (even values
+    * @param cipher = a 128-bit block cipher
+    * @param tag_size = is how big the auth tag will be (even values
     *                      between 4 and 16 are accepted)
-    * @param L length of L parameter. The total message length
+    * @param L = length of L parameter. The total message length
     *              must be less than 2**L bytes, and the nonce is 15-L bytes.
     */
     this(BlockCipher cipher, size_t tag_size = 16, size_t L = 3) 
@@ -276,10 +276,10 @@ final class CCM_Decryption : CCM_Mode
 {
 public:
     /**
-    * @param cipher a 128-bit block cipher
-    * @param tag_size is how big the auth tag will be (even values
+    * @param cipher = a 128-bit block cipher
+    * @param tag_size = is how big the auth tag will be (even values
     *                      between 4 and 16 are accepted)
-    * @param L length of L parameter. The total message length
+    * @param L = length of L parameter. The total message length
     *              must be less than 2**L bytes, and the nonce is 15-L bytes.
     */
     this(BlockCipher cipher, size_t tag_size = 16, size_t L = 3) 

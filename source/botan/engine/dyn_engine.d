@@ -17,7 +17,7 @@ final class Dynamically_Loaded_Engine : Engine
 {
 public:
     /**
-    * @param lib_path full pathname to DLL to load
+    * @param lib_path = full pathname to DLL to load
     */
     this(in string library_path) 
     {

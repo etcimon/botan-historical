@@ -46,9 +46,9 @@ public:
 
 /**
 * Create a selfsigned CVCA
-* @param rng the rng to use
-* @param key the ECDSA private key to be used to sign the certificate
-* @param opts used to set several parameters. Necessary are:
+* @param rng = the rng to use
+* @param key = the ECDSA private key to be used to sign the certificate
+* @param opts = used to set several parameters. Necessary are:
 * car, holder_auth_templ, hash_alg, ced, cex and hash_alg
 * @result the self signed certificate
 */
@@ -84,12 +84,12 @@ EAC1_1_CVC create_self_signed_cert(in Private_Key key,
 
 /**
 * Create a CVC request. The key encoding will be according to the provided private key.
-* @param priv_key the private key associated with the requesting entity
-* @param chr the chr to appear in the certificate (to be provided without
+* @param priv_key = the private key associated with the requesting entity
+* @param chr = the chr to appear in the certificate (to be provided without
 * sequence number)
-* @param hash_alg the string defining the hash algorithm to be used for the creation
+* @param hash_alg = the string defining the hash algorithm to be used for the creation
 * of the signature
-* @param rng the rng to use
+* @param rng = the rng to use
 * @result the new request
 */
 EAC1_1_Req create_cvc_req(in Private_Key key,
@@ -131,11 +131,11 @@ EAC1_1_Req create_cvc_req(in Private_Key key,
 
 /**
 * Create an ADO from a request object.
-* @param priv_key the private key used to sign the ADO
-* @param req the request forming the body of the ADO
-* @param car the CAR forming the body of the ADO, i.e. the
+* @param priv_key = the private key used to sign the ADO
+* @param req = the request forming the body of the ADO
+* @param car = the CAR forming the body of the ADO, i.e. the
 * CHR of the entity associated with the provided private key
-* @param rng the rng to use
+* @param rng = the rng to use
 */
 EAC1_1_ADO create_ado_req(in Private_Key key,
                           in EAC1_1_Req req,
@@ -163,17 +163,17 @@ EAC1_1_ADO create_ado_req(in Private_Key key,
 
 /**
 * Create a CVCA certificate.
-* @param priv_key the private key associated with the CVCA certificate
+* @param priv_key = the private key associated with the CVCA certificate
 * to be created
-* @param hash the string identifying the hash algorithm to be used
+* @param hash = the string identifying the hash algorithm to be used
 * for signing the certificate to be created
-* @param car the CAR of the certificate to be created
-* @param iris indicates whether the entity associated with the certificate
+* @param car = the CAR of the certificate to be created
+* @param iris = indicates whether the entity associated with the certificate
 * shall be entitled to read the biometrical iris image
-* @param fingerpr indicates whether the entity associated with the certificate
+* @param fingerpr = indicates whether the entity associated with the certificate
 * shall be entitled to read the biometrical fingerprint image
-* @param cvca_validity_months length of time in months this will be valid
-* @param rng a random number generator
+* @param cvca_validity_months = length of time in months this will be valid
+* @param rng = a random number generator
 * @result the CVCA certificate created
 */
 EAC1_1_CVC create_cvca(in Private_Key key,
@@ -202,12 +202,12 @@ EAC1_1_CVC create_cvca(in Private_Key key,
 /**
 * Create a link certificate between two CVCA certificates. The key
 * encoding will be implicitCA.
-* @param signer the cvca certificate associated with the signing
+* @param signer = the cvca certificate associated with the signing
 * entity
-* @param priv_key the private key associated with the signer
-* @param to_be_signed the certificate which whose CAR/CHR will be
+* @param priv_key = the private key associated with the signer
+* @param to_be_signed = the certificate which whose CAR/CHR will be
 * the holder of the link certificate
-* @param rng a random number generator
+* @param rng = a random number generator
 */
 EAC1_1_CVC link_cvca(in EAC1_1_CVC signer,
                      in Private_Key key,
@@ -252,12 +252,12 @@ EAC1_1_CVC link_cvca(in EAC1_1_CVC signer,
 
 /**
 * Create a CVC request. The key encoding will be implicitCA.
-* @param priv_key the private key associated with the requesting entity
-* @param chr the chr to appear in the certificate (to be provided without
+* @param priv_key = the private key associated with the requesting entity
+* @param chr = the chr to appear in the certificate (to be provided without
 * sequence number)
-* @param hash_alg the string defining the hash algorithm to be used for the creation
+* @param hash_alg = the string defining the hash algorithm to be used for the creation
 * of the signature
-* @param rng a random number generator
+* @param rng = a random number generator
 * @result the new request
 */
 EAC1_1_Req create_cvc_req_implicitca(in Private_Key prkey, in ASN1_Chr chr,
@@ -275,17 +275,17 @@ EAC1_1_Req create_cvc_req_implicitca(in Private_Key prkey, in ASN1_Chr chr,
 
 /**
 * Sign a CVC request.
-* @param signer_cert the certificate of the signing entity
-* @param priv_key the private key of the signing entity
-* @param req the request to be signed
-* @param seqnr the sequence number of the certificate to be created
-* @param seqnr_len the number of digits the sequence number will be
+* @param signer_cert = the certificate of the signing entity
+* @param priv_key = the private key of the signing entity
+* @param req = the request to be signed
+* @param seqnr = the sequence number of the certificate to be created
+* @param seqnr_len = the number of digits the sequence number will be
 * encoded in
-* @param domestic indicates whether to sign a domestic or a foreign
+* @param domestic = indicates whether to sign a domestic or a foreign
 * certificate: set to true for domestic
-* @param dvca_validity_months validity period in months
-* @param ca_is_validity_months validity period in months
-* @param rng a random number generator
+* @param dvca_validity_months = validity period in months
+* @param ca_is_validity_months = validity period in months
+* @param rng = a random number generator
 * @result the new certificate
 *
 **/

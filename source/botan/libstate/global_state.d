@@ -26,7 +26,7 @@ LibraryState global_state()
 
 /**
 * Set the global state object
-* @param state the new global state to use
+* @param state = the new global state to use
 */
 void set_global_state(LibraryState new_state)
 {
@@ -36,7 +36,7 @@ void set_global_state(LibraryState new_state)
 
 /**
 * Set the global state object unless it is already set
-* @param state the new global state to use
+* @param state = the new global state to use
 * @return true if the state parameter is now being used as the global
 *            state, or false if one was already set, in which case the
 *            parameter was deleted immediately

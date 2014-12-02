@@ -68,9 +68,9 @@ private:
 
 /**
 * Entry point for Serpent encryption in x86 asm
-* @param input the input block
-* @param output the output block
-* @param ks the key schedule
+* @param input = the input block
+* @param output = the output block
+* @param ks = the key schedule
 */
 void botan_serpent_x86_32_encrypt(in ubyte* input, ubyte* output, in uint* ks ) pure
 {
@@ -138,9 +138,9 @@ void botan_serpent_x86_32_encrypt(in ubyte* input, ubyte* output, in uint* ks ) 
 
 /**
 * Entry point for Serpent decryption in x86 asm
-* @param input the input block
-* @param output the output block
-* @param ks the key schedule
+* @param input = the input block
+* @param output = the output block
+* @param ks = the key schedule
 */
 
 void botan_serpent_x86_32_decrypt(in ubyte* input, ubyte* output, in uint* ks) pure
@@ -210,7 +210,7 @@ void botan_serpent_x86_32_decrypt(in ubyte* input, ubyte* output, in uint* ks) p
 
 /**
 * Entry point for Serpent key schedule in x86 asm
-* @param ks holds the initial working key (padded), and is set to the
+* @param ks = holds the initial working key (padded), and is set to the
             final key schedule
 */
 

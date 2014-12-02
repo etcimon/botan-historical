@@ -158,8 +158,8 @@ public:
     }
 
     /**
-    * @param extractor a MAC used for extracting the entropy
-    * @param prf a MAC used as a PRF using HKDF construction
+    * @param extractor = a MAC used for extracting the entropy
+    * @param prf = a MAC used as a PRF using HKDF construction
     */
     this(MessageAuthenticationCode extractor,
          MessageAuthenticationCode prf)

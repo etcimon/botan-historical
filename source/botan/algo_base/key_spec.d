@@ -15,7 +15,7 @@ struct Key_Length_Specification
 public:
     /**
     * Constructor for fixed length keys
-    * @param keylen the supported key length
+    * @param keylen = the supported key length
     */
     this(size_t keylen)
     {
@@ -26,9 +26,9 @@ public:
 
     /**
     * Constructor for variable length keys
-    * @param min_k the smallest supported key length
-    * @param max_k the largest supported key length
-    * @param k_mod the number of bytes the key must be a multiple of
+    * @param min_k = the smallest supported key length
+    * @param max_k = the largest supported key length
+    * @param k_mod = the number of bytes the key must be a multiple of
     */
     this(size_t min_k,
          size_t max_k,
@@ -40,7 +40,7 @@ public:
     }
 
     /**
-    * @param length is a key length in bytes
+    * @param length = is a key length in bytes
     * @return true iff this length is a valid length for this algo
     */
     bool valid_keylength(size_t length) const

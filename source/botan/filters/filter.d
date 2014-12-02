@@ -26,14 +26,14 @@ public:
 
     /**
     * Write a portion of a message to this filter.
-    * @param input the input as a ubyte array
+    * @param input = the input as a ubyte array
     */
     final void write(in ubyte[] input) { write(input.ptr, input.length); }
 
     /**
     * Write a portion of a message to this filter.
-    * @param input the input as a ubyte array
-    * @param length the length of the ubyte array input
+    * @param input = the input as a ubyte array
+    * @param length = the length of the ubyte array input
     */
     abstract void write(in ubyte* input, size_t length);
 
@@ -58,8 +58,8 @@ public:
     ~this() {}
 protected:
     /**
-    * @param input some input for the filter
-    * @param length the length of in
+    * @param input = some input for the filter
+    * @param length = the length of in
     */
     void send(in ubyte* input, size_t length)
     {
@@ -84,23 +84,23 @@ protected:
 
 
     /**
-    * @param input some input for the filter
+    * @param input = some input for the filter
     */
     void send(ubyte input) { send(&input, 1); }
 
     /**
-    * @param input some input for the filter
+    * @param input = some input for the filter
     */
     void send(in Secure_Vector!ubyte input) { send(input.ptr, input.length); }
 
     /**
-    * @param input some input for the filter
+    * @param input = some input for the filter
     */
     void send(in Vector!ubyte input) { send(input.ptr, input.length); }
 
     /**
-    * @param input some input for the filter
-    * @param length the number of bytes of in to send
+    * @param input = some input for the filter
+    * @param length = the number of bytes of in to send
     */
     void send(in Secure_Vector!ubyte input)
     {
@@ -108,8 +108,8 @@ protected:
     }
 
     /**
-    * @param input some input for the filter
-    * @param length the number of bytes of in to send
+    * @param input = some input for the filter
+    * @param length = the number of bytes of in to send
     */
     void send(in Vector!ubyte input)
     {
@@ -164,7 +164,7 @@ private:
 
     /**
     * Set the active port
-    * @param new_port the new value
+    * @param new_port = the new value
     */
     void set_port(size_t new_port)
     {
@@ -177,7 +177,7 @@ private:
 
     /**
     * Attach another filter to this one
-    * @param f filter to attach
+    * @param f = filter to attach
     */
     void attach(Filter new_filter)
     {
@@ -191,8 +191,8 @@ private:
     }
 
     /**
-    * @param filters the filters to set
-    * @param count number of items in filters
+    * @param filters = the filters to set
+    * @param count = number of items in filters
     */
     void set_next(Filter* filters, size_t size)
     {

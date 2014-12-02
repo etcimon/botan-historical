@@ -54,7 +54,7 @@ public:
     }
 
     /**
-    * @param hash the hash to use for HMACing
+    * @param hash = the hash to use for HMACing
     */
     this(HashFunction hash) 
     {

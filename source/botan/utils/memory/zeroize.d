@@ -71,7 +71,7 @@ size_t buffer_insert(T, Alloc, Alloc2)(Vector!(T, Alloc) buf, size_t buf_offset,
 
 /**
 * Zeroise the values; length remains unchanged
-* @param vec the vector to zeroise
+* @param vec = the vector to zeroise
 */
 void zeroise(T, Alloc)(Vector!(T, Alloc) vec)
 {
@@ -80,7 +80,7 @@ void zeroise(T, Alloc)(Vector!(T, Alloc) vec)
 
 /**
 * Zeroise the values then free the memory
-* @param vec the vector to zeroise and free
+* @param vec = the vector to zeroise and free
 */
 void zap(T, Alloc)(Vector!(T, Alloc) vec)
 {

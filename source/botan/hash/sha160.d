@@ -51,7 +51,7 @@ protected:
     * Set a custom size for the W array. Normally 80, but some
     * subclasses need slightly more for best performance/internal
     * constraints
-    * @param W_size how big to make W
+    * @param W_size = how big to make W
     */
     this(size_t W_size) 
     {

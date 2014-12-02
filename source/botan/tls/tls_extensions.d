@@ -249,7 +249,7 @@ public:
     }
 
     /**
-    * @param max_fragment specifies what maximum fragment size to
+    * @param max_fragment = specifies what maximum fragment size to
     *          advertise. Currently must be one of 512, 1024, 2048, or
     *          4096.
     */

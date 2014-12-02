@@ -26,7 +26,7 @@ final class Keccak_1600 : HashFunction
 public:
 
     /**
-    * @param output_bits the size of the hash output; must be one of
+    * @param output_bits = the size of the hash output; must be one of
     *                          224, 256, 384, or 512
     */
     this(size_t output_bits = 512) 

@@ -51,8 +51,8 @@ public:
     }
 
     /**
-    * @param hash_len specifies the output length; can be 16, 20, or 24
-    * @param passes to make in the algorithm
+    * @param hash_len = specifies the output length; can be 16, 20, or 24
+    * @param passes = to make in the algorithm
     */
     this(size_t hash_len = 24, size_t passes = 3)
     {

@@ -25,7 +25,7 @@ public:
 
     /**
     * Compare for equality with other
-    * @param other compare for equality with this object
+    * @param other = compare for equality with this object
     */
     bool opEquals(in EAC1_1_Req rhs) const
     {
@@ -41,7 +41,7 @@ public:
     }
     /**
     * Construct a CVC request from a data source.
-    * @param source the data source
+    * @param source = the data source
     */
     this(DataSource source)
     {
@@ -52,7 +52,7 @@ public:
 
     /**
     * Construct a CVC request from a DER encoded CVC request file.
-    * @param str the path to the DER encoded file
+    * @param str = the path to the DER encoded file
     */
     this(in string str)
     {

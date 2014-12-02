@@ -134,8 +134,8 @@ public:
 
     /**
     * Construct a CRL from a data source.
-    * @param source the data source providing the DER or PEM encoded CRL.
-    * @param throw_on_unknown_critical_ should we throw new an exception
+    * @param source = the data source providing the DER or PEM encoded CRL.
+    * @param throw_on_unknown_critical_ = should we throw new an exception
     * if an unknown CRL extension marked as critical is encountered.
     */
     this(DataSource input, bool throw_on_unknown_critical_ = false)
@@ -147,8 +147,8 @@ public:
 
     /**
     * Construct a CRL from a file containing the DER or PEM encoded CRL.
-    * @param filename the name of the CRL file
-    * @param throw_on_unknown_critical_ should we throw new an exception
+    * @param filename = the name of the CRL file
+    * @param throw_on_unknown_critical_ = should we throw new an exception
     * if an unknown CRL extension marked as critical is encountered.
     */
     this(in string filename,
@@ -161,8 +161,8 @@ public:
 
     /**
     * Construct a CRL from a binary vector
-    * @param vec the binary (DER) representation of the CRL
-    * @param throw_on_unknown_critical_ should we throw new an exception
+    * @param vec = the binary (DER) representation of the CRL
+    * @param throw_on_unknown_critical_ = should we throw new an exception
     * if an unknown CRL extension marked as critical is encountered.
     */
     this(in Vector!ubyte vec,

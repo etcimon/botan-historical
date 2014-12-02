@@ -107,8 +107,8 @@ public:
 
     /**
     * Load a PKCS #5 v2.0 encrypted stream
-    * @param params the PBES2 parameters
-    * @param passphrase the passphrase to use for decryption
+    * @param params = the PBES2 parameters
+    * @param passphrase = the passphrase to use for decryption
     */
     this(in Vector!ubyte params, in string passphrase) 
     {
@@ -169,11 +169,11 @@ public:
     }
 
     /**
-    * @param cipher the block cipher to use
-    * @param mac the MAC to use
-    * @param passphrase the passphrase to use for encryption
-    * @param msec how many milliseconds to run the PBKDF
-    * @param rng a random number generator
+    * @param cipher = the block cipher to use
+    * @param mac = the MAC to use
+    * @param passphrase = the passphrase to use for encryption
+    * @param msec = how many milliseconds to run the PBKDF
+    * @param rng = a random number generator
     */
     this(BlockCipher cipher,
          MessageAuthenticationCode mac,

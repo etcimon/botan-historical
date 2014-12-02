@@ -18,10 +18,10 @@ class MDx_HashFunction : HashFunction
 {
 public:
     /**
-    * @param block_len is the number of bytes per block
-    * @param byte_end specifies if the hash uses big-endian bytes
-    * @param bit_end specifies if the hash uses big-endian bits
-    * @param cnt_size specifies the size of the counter var in bytes
+    * @param block_len = is the number of bytes per block
+    * @param byte_end = specifies if the hash uses big-endian bytes
+    * @param bit_end = specifies if the hash uses big-endian bits
+    * @param cnt_size = specifies the size of the counter var in bytes
     */
     this(size_t block_len, bool byte_end, bool bit_end, size_t cnt_size = 0)
     {
@@ -89,8 +89,8 @@ protected:
 
     /**
     * Run the hash's compression function over a set of blocks
-    * @param blocks the input
-    * @param block_n the number of blocks
+    * @param blocks = the input
+    * @param block_n = the number of blocks
     */
     abstract void compress_n(in ubyte* blocks, size_t block_n);
 
@@ -105,13 +105,13 @@ protected:
 
     /**
     * Copy the output to the buffer
-    * @param buffer to put the output into
+    * @param buffer = to put the output into
     */
     abstract void copy_out(ubyte* buffer);
 
     /**
     * Write the count, if used, to this spot
-    * @param output where to write the counter to
+    * @param output = where to write the counter to
     */
     final void write_count(ubyte* output)
     {

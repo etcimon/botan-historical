@@ -63,13 +63,13 @@ class ASN1_Object
 public:
     /**
     * Encode whatever this object is into to
-    * @param to the DER_Encoder that will be written to
+    * @param to = the DER_Encoder that will be written to
     */
     abstract void encode_into(DER_Encoder to) const;
 
     /**
     * Decode whatever this object is from from
-    * @param from the BER_Decoder that will be read from
+    * @param from = the BER_Decoder that will be read from
     */
     abstract void decode_from(BER_Decoder from);
 
@@ -152,7 +152,7 @@ Vector!ubyte put_in_sequence(in Vector!ubyte contents)
 
 /**
 * Heuristics tests; is this object possibly BER?
-* @param src a data source that will be peeked at but not modified
+* @param src = a data source that will be peeked at but not modified
 */
 bool maybe_BER(DataSource source)
 {

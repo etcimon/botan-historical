@@ -27,8 +27,8 @@ final class Skein_512 : HashFunction
 {
 public:
     /**
-    * @param m_output_bits the output size of Skein in bits
-    * @param arg_personalization is a string that will paramaterize the
+    * @param m_output_bits = the output size of Skein in bits
+    * @param arg_personalization = is a string that will paramaterize the
     * hash output
     */
     this(size_t m_output_bits = 512,

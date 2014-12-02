@@ -68,7 +68,7 @@ public:
 
     /**
     * Constructor
-    * @param hash_input a set of hashes to compute in parallel
+    * @param hash_input = a set of hashes to compute in parallel
     */
     this(in Vector!HashFunction hash_input)
     {

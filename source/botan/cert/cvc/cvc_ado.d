@@ -33,7 +33,7 @@ final class EAC1_1_ADO_Impl : public EAC1_1_obj!EAC1_1_ADO
 public:
     /**
     * Construct a CVC ADO request from a DER encoded CVC ADO request file.
-    * @param str the path to the DER encoded file
+    * @param str = the path to the DER encoded file
     */
     this(in string input)
     {
@@ -44,7 +44,7 @@ public:
 
     /**
     * Construct a CVC ADO request from a data source
-    * @param source the data source
+    * @param source = the data source
     */
     this(DataSource input)
     {
@@ -54,9 +54,9 @@ public:
 
     /**
     * Create a signed CVC ADO request from to be signed (TBS) data
-    * @param signer the signer used to sign the CVC ADO request
-    * @param tbs_bits the TBS data to sign
-    * @param rng a random number generator
+    * @param signer = the signer used to sign the CVC ADO request
+    * @param tbs_bits = the TBS data to sign
+    * @param rng = a random number generator
     */
     static Vector!ubyte make_signed(PK_Signer signer,
                                     in Vector!ubyte tbs_bits,
@@ -92,8 +92,8 @@ public:
 
     /**
     * Encode this object into a pipe. Only DER is supported.
-    * @param output the pipe to encode this object into
-    * @param encoding the encoding type to use, must be DER
+    * @param output = the pipe to encode this object into
+    * @param encoding = the encoding type to use, must be DER
     */
     void encode(Pipe output, X509_Encoding encoding) const
     {

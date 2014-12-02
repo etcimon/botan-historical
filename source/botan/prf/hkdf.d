@@ -50,7 +50,7 @@ public:
 
     /**
     * Only call after extract
-    * @param output_len must be less than 256*hashlen
+    * @param output_len = must be less than 256*hashlen
     */
     void expand(ubyte* output, size_t output_len,
                 in ubyte* info, size_t info_len)

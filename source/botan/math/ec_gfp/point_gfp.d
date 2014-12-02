@@ -54,7 +54,7 @@ public:
 
     /**
     * Construct the zero point
-    * @param curve The base curve
+    * @param curve = The base curve
     */
     this(in CurveGFp _curve) 
     {
@@ -95,9 +95,9 @@ public:
 
     /**
     * Construct a point from its affine coordinates
-    * @param curve the base curve
-    * @param x affine x coordinate
-    * @param y affine y coordinate
+    * @param curve = the base curve
+    * @param x = affine x coordinate
+    * @param y = affine y coordinate
     */
     this(in CurveGFp _curve, in BigInt x, in BigInt y)
     { 
@@ -110,7 +110,7 @@ public:
 
     /**
     * += Operator
-    * @param rhs the PointGFp to add to the local value
+    * @param rhs = the PointGFp to add to the local value
     * @result resulting PointGFp
     */
     ref PointGFp opOpAssign(string op)(in PointGFp rhs)
@@ -123,7 +123,7 @@ public:
 
     /**
     * -= Operator
-    * @param rhs the PointGFp to subtract from the local value
+    * @param rhs = the PointGFp to subtract from the local value
     * @result resulting PointGFp
     */
     ref PointGFp opOpAssign(string op)(in PointGFp rhs)
@@ -141,7 +141,7 @@ public:
 
     /**
     * *= Operator
-    * @param scalar the PointGFp to multiply with this
+    * @param scalar = the PointGFp to multiply with this
     * @result resulting PointGFp
     */
     ref PointGFp opOpAssign(string op)(in BigInt scalar)
@@ -153,8 +153,8 @@ public:
 
     /**
     * Multiplication Operator
-    * @param scalar the scalar value
-    * @param point the point value
+    * @param scalar = the scalar value
+    * @param point = the point value
     * @return scalar*point on the curve
     */
     ref PointGFp opBinary(string op)(in BigInt scalar)
@@ -263,10 +263,10 @@ public:
 
     /**
     * Multiexponentiation
-    * @param p1 a point
-    * @param z1 a scalar
-    * @param p2 a point
-    * @param z2 a scalar
+    * @param p1 = a point
+    * @param z1 = a scalar
+    * @param p2 = a point
+    * @param z2 = a scalar
     * @result (p1 * z1 + p2 * z2)
     */
     PointGFp multi_exponentiate(in PointGFp p1, in BigInt z1,
@@ -408,7 +408,7 @@ public:
 
     /**
     * swaps the states of this and other, does not throw!
-    * @param other the object to swap values with
+    * @param other = the object to swap values with
     */
     void swap(ref PointGFp other)
     {
@@ -439,9 +439,9 @@ private:
 
     /**
     * Montgomery multiplication/reduction
-    * @param x first multiplicand
-    * @param y second multiplicand
-    * @param workspace temp space
+    * @param x = first multiplicand
+    * @param y = second multiplicand
+    * @param workspace = temp space
     */
     BigInt monty_mult(in BigInt x, in BigInt y) const
     {
@@ -453,9 +453,9 @@ private:
     /**
     * Montgomery multiplication/reduction
     * @warning z cannot alias x or y
-    * @param z output
-    * @param x first multiplicand
-    * @param y second multiplicand
+    * @param z = output
+    * @param x = first multiplicand
+    * @param y = second multiplicand
     */
     // Montgomery multiplication
     void monty_mult(ref BigInt z, in BigInt x, in BigInt y) const
@@ -486,7 +486,7 @@ private:
     
     /**
     * Montgomery squaring/reduction
-    * @param x multiplicand
+    * @param x = multiplicand
     */
     BigInt monty_sqr(in BigInt x) const
     {
@@ -498,8 +498,8 @@ private:
     /**
     * Montgomery squaring/reduction
     * @warning z cannot alias x
-    * @param z output
-    * @param x multiplicand
+    * @param z = output
+    * @param x = multiplicand
     */
     void monty_sqr(ref BigInt z, in BigInt x) const
     {
@@ -528,7 +528,7 @@ private:
 
     /**
     * Point addition
-    * @param workspace temp space, at least 11 elements
+    * @param workspace = temp space, at least 11 elements
     */
     void add(in PointGFp rhs, ref Vector!BigInt ws_bn)
     {
@@ -612,7 +612,7 @@ private:
 
     /**
     * Point doubling
-    * @param workspace temp space, at least 9 elements
+    * @param workspace = temp space, at least 9 elements
     */
     void mult2(ref Vector!BigInt ws_bn)
     {

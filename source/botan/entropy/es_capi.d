@@ -46,7 +46,7 @@ public:
 
     /**
     * Win32_Capi_Entropysource Constructor
-    * @param provs list of providers, separated by ':'
+    * @param provs = list of providers, separated by ':'
     */
     this(in string provs = "")
     {

@@ -78,7 +78,7 @@ public:
 
     /**
     * Construct a CVC from a data source
-    * @param source the data source
+    * @param source = the data source
     */
     this(DataSource input)
     {
@@ -89,7 +89,7 @@ public:
 
     /**
     * Construct a CVC from a file
-    * @param str the path to the certificate file
+    * @param str = the path to the certificate file
     */
     this(in string input)
     {
@@ -150,16 +150,16 @@ private:
 /**
 * Create an arbitrary EAC 1.1 CVC.
 * The desired key encoding must be set within the key (if applicable).
-* @param signer the signer used to sign the certificate
-* @param public_key the DER encoded public key to appear in
+* @param signer = the signer used to sign the certificate
+* @param public_key = the DER encoded public key to appear in
 * the certificate
-* @param car the CAR of the certificate
-* @param chr the CHR of the certificate
-* @param holder_auth_templ the holder authorization value ubyte to
+* @param car = the CAR of the certificate
+* @param chr = the CHR of the certificate
+* @param holder_auth_templ = the holder authorization value ubyte to
 * appear in the CHAT of the certificate
-* @param ced the CED to appear in the certificate
-* @param cex the CEX to appear in the certificate
-* @param rng a random number generator
+* @param ced = the CED to appear in the certificate
+* @param cex = the CEX to appear in the certificate
+* @param rng = a random number generator
 */
 EAC1_1_CVC make_cvc_cert(PK_Signer signer,
                          in Vector!ubyte public_key,

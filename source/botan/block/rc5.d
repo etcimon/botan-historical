@@ -104,7 +104,7 @@ public:
 
     /**
     * RC5 Constructor
-    * @param rounds the number of RC5 rounds to run. Must be between
+    * @param rounds = the number of RC5 rounds to run. Must be between
     * 8 and 32 and a multiple of 4.
     */
     this(size_t r)

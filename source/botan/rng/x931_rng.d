@@ -78,8 +78,8 @@ public:
     }
 
     /**
-    * @param cipher the block cipher to use in this PRNG
-    * @param rng the underlying PRNG for generating inputs
+    * @param cipher = the block cipher to use in this PRNG
+    * @param rng = the underlying PRNG for generating inputs
     * (eg, an HMAC_RNG)
     */
     this(BlockCipher cipher,

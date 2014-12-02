@@ -17,7 +17,7 @@ import botan.libstate.libstate;
 
 /**
 * Retrieve an object prototype from the global factory
-* @param algo_spec an algorithm name
+* @param algo_spec = an algorithm name
 * @return constant prototype object (use clone to create usable object),
              library retains ownership
 */
@@ -29,7 +29,7 @@ BlockCipher retrieve_block_cipher(in string algo_spec) const
 
 /**
 * Retrieve an object prototype from the global factory
-* @param algo_spec an algorithm name
+* @param algo_spec = an algorithm name
 * @return constant prototype object (use clone to create usable object),
              library retains ownership
 */
@@ -41,7 +41,7 @@ StreamCipher retrieve_stream_cipher(in string algo_spec) const
 
 /**
 * Retrieve an object prototype from the global factory
-* @param algo_spec an algorithm name
+* @param algo_spec = an algorithm name
 * @return constant prototype object (use clone to create usable object),
              library retains ownership
 */
@@ -53,7 +53,7 @@ HashFunction retrieve_hash(in string algo_spec) const
 
 /**
 * Retrieve an object prototype from the global factory
-* @param algo_spec an algorithm name
+* @param algo_spec = an algorithm name
 * @return constant prototype object (use clone to create usable object),
              library retains ownership
 */
@@ -65,7 +65,7 @@ MessageAuthenticationCode retrieve_mac(in string algo_spec) const
 
 /**
 * Password based key derivation function factory method
-* @param algo_spec the name of the desired PBKDF algorithm
+* @param algo_spec = the name of the desired PBKDF algorithm
 * @return pointer to newly allocated object of that type
 */
 PBKDF get_pbkdf(in string algo_spec)
@@ -81,11 +81,11 @@ PBKDF get_pbkdf(in string algo_spec)
 /**
 * Get a cipher object.
 * Factory method for general symmetric cipher filters.
-* @param algo_spec the name of the desired cipher
-* @param key the key to be used for encryption/decryption performed by
+* @param algo_spec = the name of the desired cipher
+* @param key = the key to be used for encryption/decryption performed by
 * the filter
-* @param iv the initialization vector to be used
-* @param direction determines whether the filter will be an encrypting
+* @param iv = the initialization vector to be used
+* @param direction = determines whether the filter will be an encrypting
 * or decrypting filter
 * @return pointer to newly allocated encryption or decryption filter
 */
@@ -102,10 +102,10 @@ Keyed_Filter get_cipher(in string algo_spec, in SymmetricKey key, in Initializat
 
 /**
 * Factory method for general symmetric cipher filters.
-* @param algo_spec the name of the desired cipher
-* @param key the key to be used for encryption/decryption performed by
+* @param algo_spec = the name of the desired cipher
+* @param key = the key to be used for encryption/decryption performed by
 * the filter
-* @param direction determines whether the filter will be an encrypting
+* @param direction = determines whether the filter will be an encrypting
 * or decrypting filter
 * @return pointer to the encryption or decryption filter
 */
@@ -119,8 +119,8 @@ Keyed_Filter get_cipher(in string algo_spec, in SymmetricKey key, Cipher_Dir dir
 * Factory method for general symmetric cipher filters. No key will be
 * set in the filter.
 *
-* @param algo_spec the name of the desired cipher
-* @param direction determines whether the filter will be an encrypting or
+* @param algo_spec = the name of the desired cipher
+* @param direction = determines whether the filter will be an encrypting or
 * decrypting filter
 * @return pointer to the encryption or decryption filter
 */
@@ -138,7 +138,7 @@ Keyed_Filter get_cipher(in string algo_spec, Cipher_Dir direction)
 
 /**
 * Check if an algorithm exists.
-* @param algo_spec the name of the algorithm to check for
+* @param algo_spec = the name of the algorithm to check for
 * @return true if the algorithm exists, false otherwise
 */
 bool have_algorithm(in string name)

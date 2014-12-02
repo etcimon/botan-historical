@@ -21,7 +21,7 @@ final class EMSA1_BSI : EMSA1
 {
 public:
     /**
-    * @param hash the hash object to use
+    * @param hash = the hash object to use
     */
     this(HashFunction hash)
     {

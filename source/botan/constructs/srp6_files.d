@@ -21,7 +21,7 @@ final class SRP6_Authenticator_File
 {
 public:
     /**
-    * @param filename will be opened and processed as a SRP
+    * @param filename = will be opened and processed as a SRP
     * authenticator file
     */
     this(in string filename)

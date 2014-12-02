@@ -23,8 +23,8 @@ public:
 
     /**
     * Input a part of a message to the encoder.
-    * @param input the message to input as a ubyte array
-    * @param length the length of the ubyte array input
+    * @param input = the message to input as a ubyte array
+    * @param length = the length of the ubyte array input
     */
     void write(in ubyte* input, size_t length)
     {
@@ -62,9 +62,9 @@ public:
 
     /**
     * Create a base64 encoder.
-    * @param breaks whether to use line breaks in the output
-    * @param length the length of the lines of the output
-    * @param t_n whether to use a trailing newline
+    * @param breaks = whether to use line breaks in the output
+    * @param length = the length of the lines of the output
+    * @param t_n = whether to use a trailing newline
     */
     this(bool breaks = false, size_t length = 72, bool t_n = false) 
     {
@@ -142,8 +142,8 @@ public:
 
     /**
     * Input a part of a message to the decoder.
-    * @param input the message to input as a ubyte array
-    * @param length the length of the ubyte array input
+    * @param input = the message to input as a ubyte array
+    * @param length = the length of the ubyte array input
     */
     void write(in ubyte* input, size_t length)
     {
@@ -201,7 +201,7 @@ public:
 
     /**
     * Create a base64 decoder.
-    * @param checking the type of checking that shall be performed by
+    * @param checking = the type of checking that shall be performed by
     * the decoder
     */
     this(Decoder_Checking c = NONE)

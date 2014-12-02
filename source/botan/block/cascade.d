@@ -64,8 +64,8 @@ public:
 
     /**
     * Create a cascade of two block ciphers
-    * @param cipher1 the first cipher
-    * @param cipher2 the second cipher
+    * @param cipher1 = the first cipher
+    * @param cipher2 = the second cipher
     */
     this(BlockCipher c1, BlockCipher c2) 
     {

@@ -174,7 +174,7 @@ final class SIV_Encryption : SIV_Mode
 {
 public:
     /**
-    * @param cipher a block cipher
+    * @param cipher = a block cipher
     */
     this(BlockCipher cipher)
     {
@@ -208,7 +208,7 @@ final class SIV_Decryption : SIV_Mode
 {
 public:
     /**
-    * @param cipher a 128-bit block cipher
+    * @param cipher = a 128-bit block cipher
     */
     this(BlockCipher cipher)
     {

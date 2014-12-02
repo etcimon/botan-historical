@@ -129,7 +129,7 @@ public:
 
     /**
     * Create a PKCS#10 Request from a data source.
-    * @param source the data source providing the DER encoded request
+    * @param source = the data source providing the DER encoded request
     */
     this(DataSource source)
     {
@@ -139,7 +139,7 @@ public:
 
     /**
     * Create a PKCS#10 Request from a file.
-    * @param filename the name of the file containing the DER or PEM
+    * @param filename = the name of the file containing the DER or PEM
     * encoded request file
     */
     this(in string input)
@@ -150,7 +150,7 @@ public:
 
     /**
     * Create a PKCS#10 Request from binary data.
-    * @param vec a std::vector containing the DER value
+    * @param vec = a std::vector containing the DER value
     */
     this(in Vector!ubyte input)
     {

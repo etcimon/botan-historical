@@ -25,14 +25,14 @@ public:
     abstract void add_padding(Secure_Vector!ubyte buffer, size_t final_block_bytes, size_t block_size) const;
 
     /**
-    * @param block the last block
-    * @param size the of the block
+    * @param block = the last block
+    * @param size = the of the block
     */
     abstract size_t unpad(in ubyte* block,
                                 size_t size) const;
 
     /**
-    * @param block_size of the cipher
+    * @param block_size = of the cipher
     * @return valid block size for this padding mode
     */
     abstract bool valid_blocksize(size_t block_size) const;

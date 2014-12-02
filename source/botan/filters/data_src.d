@@ -22,8 +22,8 @@ public:
     * Read from the source. Moves the internal offset so that every
     * call to read will return a new portion of the source.
     *
-    * @param output the ubyte array to write the result to
-    * @param length the length of the ubyte array out
+    * @param output = the ubyte array to write the result to
+    * @param length = the length of the ubyte array out
     * @return length in bytes that was actually read and put
     * into out
     */
@@ -34,9 +34,9 @@ public:
     * offset. Consecutive calls to peek() will return portions of
     * the source starting at the same position.
     *
-    * @param output the ubyte array to write the output to
-    * @param length the length of the ubyte array out
-    * @param peek_offset the offset into the stream to read at
+    * @param output = the ubyte array to write the output to
+    * @param length = the length of the ubyte array out
+    * @param peek_offset = the offset into the stream to read at
     * @return length in bytes that was actually read and put
     * into out
     */
@@ -55,7 +55,7 @@ public:
 
     /**
     * Read one ubyte.
-    * @param output the ubyte to read to
+    * @param output = the ubyte to read to
     * @return length in bytes that was actually read and put
     * into out
     */
@@ -67,7 +67,7 @@ public:
 
     /**
     * Peek at one ubyte.
-    * @param output an output ubyte
+    * @param output = an output ubyte
     * @return length in bytes that was actually read and put
     * into out
     */
@@ -79,7 +79,7 @@ public:
 
     /**
     * Discard the next N bytes of the data
-    * @param N the number of bytes to discard
+    * @param N = the number of bytes to discard
     * @return number of bytes actually discarded
     */
     final size_t discard_next(size_t n)
@@ -140,7 +140,7 @@ public:
 
     /**
     * Construct a memory source that reads from a string
-    * @param input the string to read from
+    * @param input = the string to read from
     */
     this(in string input) 
     {
@@ -151,8 +151,8 @@ public:
 
     /**
     * Construct a memory source that reads from a ubyte array
-    * @param input the ubyte array to read from
-    * @param length the length of the ubyte array
+    * @param input = the ubyte array to read from
+    * @param length = the length of the ubyte array
     */
     this(in ubyte* input, size_t length)
     {
@@ -162,7 +162,7 @@ public:
 
     /**
     * Construct a memory source that reads from a Secure_Vector
-    * @param input the MemoryRegion to read from
+    * @param input = the MemoryRegion to read from
     */
     this(in Secure_Vector!ubyte input)
     {
@@ -172,7 +172,7 @@ public:
 
     /**
     * Construct a memory source that reads from a std::vector
-    * @param input the MemoryRegion to read from
+    * @param input = the MemoryRegion to read from
     */
     this(in Vector!ubyte input) {
         m_source = Secure_Vector!ubyte(input.ptr[0 .. input.length]);
@@ -274,8 +274,8 @@ public:
 
     /**
     * Construct a Stream-Based DataSource from file
-    * @param file the name of the file
-    * @param use_binary whether to treat the file as binary or not
+    * @param file = the name of the file
+    * @param use_binary = whether to treat the file as binary or not
     */
     this(in string path, bool use_binary = false)
     {

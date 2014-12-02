@@ -50,9 +50,9 @@ public:
 
     /**
     * Encrypt a message.
-    * @param input the message as a ubyte array
-    * @param length the length of the above ubyte array
-    * @param rng the random number source to use
+    * @param input = the message as a ubyte array
+    * @param length = the length of the above ubyte array
+    * @param rng = the random number source to use
     * @return encrypted message
     */
     Vector!ubyte encrypt(in ubyte* input, size_t length, RandomNumberGenerator rng) const
@@ -62,8 +62,8 @@ public:
 
     /**
     * Encrypt a message.
-    * @param input the message
-    * @param rng the random number source to use
+    * @param input = the message
+    * @param rng = the random number source to use
     * @return encrypted message
     */
     Vector!ubyte encrypt(Alloc)(in Vector!( ubyte, Alloc ) input, RandomNumberGenerator rng) const
@@ -92,8 +92,8 @@ class PK_Decryptor
 public:
     /**
     * Decrypt a ciphertext.
-    * @param input the ciphertext as a ubyte array
-    * @param length the length of the above ubyte array
+    * @param input = the ciphertext as a ubyte array
+    * @param length = the length of the above ubyte array
     * @return decrypted message
     */
     Secure_Vector!ubyte decrypt(in ubyte* input, size_t length) const
@@ -103,7 +103,7 @@ public:
 
     /**
     * Decrypt a ciphertext.
-    * @param input the ciphertext
+    * @param input = the ciphertext
     * @return decrypted message
     */
     Secure_Vector!ubyte decrypt(Alloc)(in Vector!( ubyte, Alloc ) input) const
@@ -128,9 +128,9 @@ struct PK_Signer
 public:
     /**
     * Sign a message.
-    * @param msg the message to sign as a ubyte array
-    * @param length the length of the above ubyte array
-    * @param rng the rng to use
+    * @param msg = the message to sign as a ubyte array
+    * @param length = the length of the above ubyte array
+    * @param rng = the rng to use
     * @return signature
     */
     Vector!ubyte sign_message(in ubyte* msg, size_t length, RandomNumberGenerator rng)
@@ -141,8 +141,8 @@ public:
 
     /**
     * Sign a message.
-    * @param input the message to sign
-    * @param rng the rng to use
+    * @param input = the message to sign
+    * @param rng = the rng to use
     * @return signature
     */
     Vector!ubyte sign_message(in Vector!ubyte input, RandomNumberGenerator rng)
@@ -153,14 +153,14 @@ public:
 
     /**
     * Add a message part (single ubyte).
-    * @param input the ubyte to add
+    * @param input = the ubyte to add
     */
     void update(ubyte input) { update(&input, 1); }
 
     /**
     * Add a message part.
-    * @param input the message part to add as a ubyte array
-    * @param length the length of the above ubyte array
+    * @param input = the message part to add as a ubyte array
+    * @param length = the length of the above ubyte array
     */
     void update(in ubyte* input, size_t length)
     {
@@ -169,14 +169,14 @@ public:
 
     /**
     * Add a message part.
-    * @param input the message part to add
+    * @param input = the message part to add
     */
     void update(in Vector!ubyte input) { update(input.ptr, input.length); }
 
     /**
     * Get the signature of the so far processed message (provided by the
     * calls to update()).
-    * @param rng the rng to use
+    * @param rng = the rng to use
     * @return signature of the total message
     */
     Vector!ubyte signature(RandomNumberGenerator rng)
@@ -213,17 +213,17 @@ public:
 
     /**
     * Set the output format of the signature.
-    * @param format the signature format to use
+    * @param format = the signature format to use
     */
     void set_output_format(Signature_Format format) { m_sig_format = format; }
 
     /**
     * Construct a PK Signer.
-    * @param key the key to use inside this signer
-    * @param emsa the EMSA to use
+    * @param key = the key to use inside this signer
+    * @param emsa = the EMSA to use
     * An example would be "EMSA1(SHA-224)".
-    * @param format the signature format to use
-    * @param prot says if fault protection should be enabled
+    * @param format = the signature format to use
+    * @param prot = says if fault protection should be enabled
     */
     this(in Private_Key key, in string emsa_name,
          Signature_Format format = IEEE_1363,
@@ -300,10 +300,10 @@ struct PK_Verifier
 public:
     /**
     * Verify a signature.
-    * @param msg the message that the signature belongs to, as a ubyte array
-    * @param msg_length the length of the above ubyte array msg
-    * @param sig the signature as a ubyte array
-    * @param sig_length the length of the above ubyte array sig
+    * @param msg = the message that the signature belongs to, as a ubyte array
+    * @param msg_length = the length of the above ubyte array msg
+    * @param sig = the signature as a ubyte array
+    * @param sig_length = the length of the above ubyte array sig
     * @return true if the signature is valid
     */
     bool verify_message(in ubyte* msg, size_t msg_length,
@@ -315,8 +315,8 @@ public:
 
     /**
     * Verify a signature.
-    * @param msg the message that the signature belongs to
-    * @param sig the signature
+    * @param msg = the message that the signature belongs to
+    * @param sig = the signature
     * @return true if the signature is valid
     */
     bool verify_message(Alloc, Alloc2)(in Vector!( ubyte, Alloc ) msg, 
@@ -328,15 +328,15 @@ public:
     /**
     * Add a message part (single ubyte) of the message corresponding to the
     * signature to be verified.
-    * @param input the ubyte to add
+    * @param input = the ubyte to add
     */
     void update(ubyte input) { update(&input, 1); }
 
     /**
     * Add a message part of the message corresponding to the
     * signature to be verified.
-    * @param msg_part the new message part as a ubyte array
-    * @param length the length of the above ubyte array
+    * @param msg_part = the new message part as a ubyte array
+    * @param length = the length of the above ubyte array
     */
     void update(in ubyte* input, size_t length)
     {
@@ -346,7 +346,7 @@ public:
     /**
     * Add a message part of the message corresponding to the
     * signature to be verified.
-    * @param input the new message part
+    * @param input = the new message part
     */
     void update(in Vector!ubyte input)
     { update(input.ptr, input.length); }
@@ -354,8 +354,8 @@ public:
     /**
     * Check the signature of the buffered message, i.e. the one build
     * by successive calls to update.
-    * @param sig the signature to be verified as a ubyte array
-    * @param length the length of the above ubyte array
+    * @param sig = the signature to be verified as a ubyte array
+    * @param length = the length of the above ubyte array
     * @return true if the signature is valid, false otherwise
     */
     bool check_signature(in ubyte* sig, size_t length)
@@ -392,7 +392,7 @@ public:
     /**
     * Check the signature of the buffered message, i.e. the one build
     * by successive calls to update.
-    * @param sig the signature to be verified
+    * @param sig = the signature to be verified
     * @return true if the signature is valid, false otherwise
     */
     bool check_signature(Alloc)(in Vector!( ubyte, Alloc ) sig)
@@ -402,7 +402,7 @@ public:
 
     /**
     * Set the format of the signatures fed to this verifier.
-    * @param format the signature format to use
+    * @param format = the signature format to use
     */
     void set_input_format(Signature_Format format)
     {
@@ -413,9 +413,9 @@ public:
 
     /**
     * Construct a PK Verifier.
-    * @param pub_key the public key to verify against
-    * @param emsa the EMSA to use (eg "EMSA3(SHA-1)")
-    * @param format the signature format to use
+    * @param pub_key = the public key to verify against
+    * @param emsa = the EMSA to use (eg "EMSA3(SHA-1)")
+    * @param format = the signature format to use
     */
     this(in Public_Key key, in string emsa_name, Signature_Format format = IEEE_1363)
     {
@@ -468,11 +468,11 @@ public:
 
     /*
     * Perform Key Agreement Operation
-    * @param key_len the desired key output size
-    * @param input the other parties key
-    * @param in_len the length of in in bytes
-    * @param params extra derivation params
-    * @param params_len the length of params in bytes
+    * @param key_len = the desired key output size
+    * @param input = the other parties key
+    * @param in_len = the length of in in bytes
+    * @param params = extra derivation params
+    * @param params_len = the length of params in bytes
     */
     SymmetricKey derive_key(size_t key_len, in ubyte* input,
                             size_t in_len, in ubyte* params,
@@ -488,11 +488,11 @@ public:
 
     /*
     * Perform Key Agreement Operation
-    * @param key_len the desired key output size
-    * @param input the other parties key
-    * @param in_len the length of in in bytes
-    * @param params extra derivation params
-    * @param params_len the length of params in bytes
+    * @param key_len = the desired key output size
+    * @param input = the other parties key
+    * @param in_len = the length of in in bytes
+    * @param params = extra derivation params
+    * @param params_len = the length of params in bytes
     */
     SymmetricKey derive_key(size_t key_len, in Vector!ubyte input, in ubyte* params, size_t params_len) const
     {
@@ -501,10 +501,10 @@ public:
 
     /*
     * Perform Key Agreement Operation
-    * @param key_len the desired key output size
-    * @param input the other parties key
-    * @param in_len the length of in in bytes
-    * @param params extra derivation params
+    * @param key_len = the desired key output size
+    * @param input = the other parties key
+    * @param in_len = the length of in in bytes
+    * @param params = extra derivation params
     */
     SymmetricKey derive_key(size_t key_len, in ubyte* input, size_t in_len, in string params = "") const
     {
@@ -513,9 +513,9 @@ public:
 
     /*
     * Perform Key Agreement Operation
-    * @param key_len the desired key output size
-    * @param input the other parties key
-    * @param params extra derivation params
+    * @param key_len = the desired key output size
+    * @param input = the other parties key
+    * @param params = extra derivation params
     */
     SymmetricKey derive_key(size_t key_len,
                                     in Vector!ubyte input,
@@ -528,8 +528,8 @@ public:
 
     /**
     * Construct a PK Key Agreement.
-    * @param key the key to use
-    * @param kdf_name name of the KDF to use (or 'Raw' for no KDF)
+    * @param key = the key to use
+    * @param kdf_name = name of the KDF to use (or 'Raw' for no KDF)
     */
     this(in PK_Key_Agreement_Key key, in string kdf_name)
     {
@@ -572,8 +572,8 @@ public:
 
     /**
     * Construct an instance.
-    * @param key the key to use inside the decryptor
-    * @param eme the EME to use
+    * @param key = the key to use inside the decryptor
+    * @param eme = the EME to use
     */
     this(in Public_Key key, in string eme_name)
     {
@@ -626,8 +626,8 @@ class PK_Decryptor_EME : PK_Decryptor
 public:
   /**
     * Construct an instance.
-    * @param key the key to use inside the encryptor
-    * @param eme the EME to use
+    * @param key = the key to use inside the encryptor
+    * @param eme = the EME to use
     */
     this(in Private_Key key, in string eme_name)
     {

@@ -23,7 +23,7 @@ class PSSR : EMSA
 public:
 
     /**
-    * @param hash the hash object to use
+    * @param hash = the hash object to use
     */
     this(HashFunction hash)
     {
@@ -32,8 +32,8 @@ public:
     }
 
     /**
-    * @param hash the hash object to use
-    * @param salt_size the size of the salt to use in bytes
+    * @param hash = the hash object to use
+    * @param salt_size = the size of the salt to use in bytes
     */
     this(HashFunction hash, size_t salt_size)
     {

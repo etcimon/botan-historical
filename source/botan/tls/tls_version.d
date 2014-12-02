@@ -43,7 +43,7 @@ public:
     }
 
     /**
-    * @param named_version a specific named version of the protocol
+    * @param named_version = a specific named version of the protocol
     */
     this(Version_Code named_version = 0)
     {
@@ -51,8 +51,8 @@ public:
     }
 
     /**
-    * @param major the major version
-    * @param minor the minor version
+    * @param major = the major version
+    * @param minor = the minor version
     */
     this(ubyte major, ubyte minor)
     {

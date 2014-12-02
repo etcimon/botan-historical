@@ -25,10 +25,10 @@ struct FPE {
     * (http://eprint.iacr.org/2009/251)
     *
     * Encrypt X from and onto the group Z_n using key and tweak
-    * @param n the modulus
-    * @param X the plaintext as a BigInt
-    * @param key a random key
-    * @param tweak will modify the ciphertext (think of as an IV)
+    * @param n = the modulus
+    * @param X = the plaintext as a BigInt
+    * @param key = a random key
+    * @param tweak = will modify the ciphertext (think of as an IV)
     */
     static BigInt fe1_encrypt(in BigInt n, in BigInt X0,
                               in SymmetricKey key,
@@ -58,10 +58,10 @@ struct FPE {
 
     /**
     * Decrypt X from and onto the group Z_n using key and tweak
-    * @param n the modulus
-    * @param X the ciphertext as a BigInt
-    * @param key is the key used for encryption
-    * @param tweak the same tweak used for encryption
+    * @param n = the modulus
+    * @param X = the ciphertext as a BigInt
+    * @param key = is the key used for encryption
+    * @param tweak = the same tweak used for encryption
     */
     static BigInt fe1_decrypt(in BigInt n, in BigInt X0, in SymmetricKey key, in Vector!ubyte tweak)
     {

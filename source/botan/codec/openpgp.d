@@ -16,10 +16,10 @@ import botan.utils.containers.hashmap;
 import botan.utils.types;
 
 /**
-* @param input the input data
-* @param length length of input in bytes
-* @param label the human-readable label
-* @param headers a set of key/value pairs included in the header
+* @param input = the input data
+* @param length = length of input in bytes
+* @param label = the human-readable label
+* @param headers = a set of key/value pairs included in the header
 */
 string PGP_encode(in ubyte* input, size_t length, in string label,
                   in HashMap!(string, string) headers)
@@ -57,9 +57,9 @@ string PGP_encode(in ubyte* input, size_t length, in string label,
 }
 
 /**
-* @param input the input data
-* @param length length of input in bytes
-* @param type the human-readable label
+* @param input = the input data
+* @param length = length of input in bytes
+* @param type = the human-readable label
 */
 string PGP_encode(in ubyte* input, size_t length, in string type)
 {
@@ -68,9 +68,9 @@ string PGP_encode(in ubyte* input, size_t length, in string type)
 }
 
 /**
-* @param source the input source
-* @param label is set to the human-readable label
-* @param headers is set to any headers
+* @param source = the input source
+* @param label = is set to the human-readable label
+* @param headers = is set to any headers
 * @return decoded output as raw binary
 */
 Secure_Vector!ubyte PGP_decode(DataSource source,
@@ -193,8 +193,8 @@ Secure_Vector!ubyte PGP_decode(DataSource source,
 }
 
 /**
-* @param source the input source
-* @param label is set to the human-readable label
+* @param source = the input source
+* @param label = is set to the human-readable label
 * @return decoded output as raw binary
 */
 Secure_Vector!ubyte PGP_decode(DataSource source, ref string label)

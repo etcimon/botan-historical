@@ -19,8 +19,8 @@ class MessageAuthenticationCode : Buffered_Computation, SymmetricAlgorithm
 public:
     /**
     * Verify a MAC.
-    * @param input the MAC to verify as a ubyte array
-    * @param length the length of param in
+    * @param input = the MAC to verify as a ubyte array
+    * @param length = the length of param in
     * @return true if the MAC is valid, false otherwise
     */
     final bool verify_mac(in ubyte* mac, size_t length)

@@ -104,10 +104,10 @@ public:
     }
 
     /**
-    * @param level how much effort to use on compressing (0 to 9);
+    * @param level = how much effort to use on compressing (0 to 9);
     *          higher levels are slower but tend to give better
     *          compression
-    * @param raw_deflate if true no m_zlib header/trailer will be used
+    * @param raw_deflate = if true no m_zlib header/trailer will be used
     */
     this(size_t level = 6, bool raw_deflate = false)
     {

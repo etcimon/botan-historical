@@ -12,10 +12,10 @@ import botan.internal.mp_madd;
 
 /**
 * BigInt Division
-* @param x an integer
-* @param y a non-zero integer
-* @param q will be set to x / y
-* @param r will be set to x % y
+* @param x = an integer
+* @param y = a non-zero integer
+* @param q = will be set to x / y
+* @param r = will be set to x % y
 */
 void divide(in BigInt x, in BigInt y_arg, ref BigInt q, ref BigInt r)
 {

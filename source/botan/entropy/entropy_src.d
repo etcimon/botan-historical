@@ -17,7 +17,7 @@ struct Entropy_Accumulator
 public:
     /**
     * Initialize an Entropy_Accumulator
-    * @param goal is how many bits we would like to collect
+    * @param goal = is how many bits we would like to collect
     */
     this(bool delegate(in ubyte*, size_t len, double) accum)
     {
@@ -31,7 +31,7 @@ public:
     * Get a cached I/O buffer (purely for minimizing allocation
     * overhead to polls)
     *
-    * @param size requested size for the I/O buffer
+    * @param size = requested size for the I/O buffer
     * @return cached I/O buffer for repeated polls
     */
     Secure_Vector!ubyte get_io_buffer(size_t size)
@@ -48,9 +48,9 @@ public:
 
     /**
     * Add entropy to the accumulator
-    * @param bytes the input bytes
-    * @param length specifies how many bytes the input is
-    * @param entropy_bits_per_byte is a best guess at how much
+    * @param bytes = the input bytes
+    * @param length = specifies how many bytes the input is
+    * @param entropy_bits_per_byte = is a best guess at how much
     * entropy per ubyte is in this input
     */
     void add(const void* bytes, size_t length, double entropy_bits_per_byte)
@@ -61,8 +61,8 @@ public:
 
     /**
     * Add entropy to the accumulator
-    * @param v is some value
-    * @param entropy_bits_per_byte is a best guess at how much
+    * @param v = is some value
+    * @param entropy_bits_per_byte = is a best guess at how much
     * entropy per ubyte is in this input
     */
     void add(T)(in T v, double entropy_bits_per_byte)
@@ -88,7 +88,7 @@ public:
 
     /**
     * Perform an entropy gathering poll
-    * @param accum is an accumulator object that will be given entropy
+    * @param accum = is an accumulator object that will be given entropy
     */
     void poll(ref Entropy_Accumulator accum);
 }

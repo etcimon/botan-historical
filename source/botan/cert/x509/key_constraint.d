@@ -31,9 +31,9 @@ enum Key_Constraints {
 
 /**
 * Create the key constraints for a specific public key.
-* @param pub_key the public key from which the basic set of
+* @param pub_key = the public key from which the basic set of
 * constraints to be placed in the return value is derived
-* @param limits additional limits that will be incorporated into the
+* @param limits = additional limits that will be incorporated into the
 * return value
 * @return combination of key type specific constraints and
 * additional limits

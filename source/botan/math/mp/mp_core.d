@@ -117,10 +117,10 @@ void bigint_sqr(word* z, size_t z_size, word* workspace,
 
 /**
 * Two operand addition
-* @param x the first operand (and output)
-* @param x_size size of x
-* @param y the second operand
-* @param y_size size of y (must be >= x_size)
+* @param x = the first operand (and output)
+* @param x_size = size of x
+* @param y = the second operand
+* @param y_size = size of y (must be >= x_size)
 */
 void bigint_add2(word* x, size_t x_size, in word* y, size_t y_size)
 {
@@ -466,13 +466,13 @@ void bigint_linmul3(word* z, in word* x, size_t x_size, word y)
 
 /**
 * Montgomery Reduction
-* @param z integer to reduce, of size exactly 2*(p_size+1).
+* @param z = integer to reduce, of size exactly 2*(p_size+1).
               Output is in the first p_size+1 words, higher
               words are set to zero.
-* @param p modulus
-* @param p_size size of p
-* @param p_dash Montgomery value
-* @param workspace array of at least 2*(p_size+1) words
+* @param p = modulus
+* @param p_size = size of p
+* @param p_dash = Montgomery value
+* @param workspace = array of at least 2*(p_size+1) words
 */
 void bigint_monty_redc(word* z, in word* p, size_t p_size, word p_dash, word* ws)
 {

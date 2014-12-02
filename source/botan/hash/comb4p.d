@@ -21,8 +21,8 @@ class Comb4P : HashFunction
 {
 public:
     /**
-    * @param h1 the first hash
-    * @param h2 the second hash
+    * @param h1 = the first hash
+    * @param h2 = the second hash
     */
     this(HashFunction h1, HashFunction h2)
     {

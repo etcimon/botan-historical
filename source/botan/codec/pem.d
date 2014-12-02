@@ -46,8 +46,8 @@ struct PEM
 
     /**
     * Decode PEM data
-    * @param pem a datasource containing PEM encoded data
-    * @param label is set to the PEM label found for later inspection
+    * @param pem = a datasource containing PEM encoded data
+    * @param label = is set to the PEM label found for later inspection
     */
     /*
     * Decode PEM down to raw BER/DER
@@ -112,8 +112,8 @@ struct PEM
 
     /**
     * Decode PEM data
-    * @param pem a string containing PEM encoded data
-    * @param label is set to the PEM label found for later inspection
+    * @param pem = a string containing PEM encoded data
+    * @param label = is set to the PEM label found for later inspection
     */
     static Secure_Vector!ubyte decode(in string pem, ref string label)
     {
@@ -122,8 +122,8 @@ struct PEM
     }
     /**
     * Decode PEM data
-    * @param pem a datasource containing PEM encoded data
-    * @param label is what we expect the label to be
+    * @param pem = a datasource containing PEM encoded data
+    * @param label = is what we expect the label to be
     */
     static Secure_Vector!ubyte decode_check_label(DataSource source, in string label_want)
     {
@@ -136,8 +136,8 @@ struct PEM
 
     /**
     * Decode PEM data
-    * @param pem a string containing PEM encoded data
-    * @param label is what we expect the label to be
+    * @param pem = a string containing PEM encoded data
+    * @param label = is what we expect the label to be
     */
     static Secure_Vector!ubyte decode_check_label(in string pem,
                                         in string label_want)

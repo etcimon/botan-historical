@@ -55,8 +55,8 @@ public:
 
     /**
     * Construct a chain from range of filters
-    * @param filter_arr the list of filters
-    * @param length how many filters
+    * @param filter_arr = the list of filters
+    * @param length = how many filters
     */
     this(Filter* filter_arr, size_t length) {
         foreach (size_t j; 0 .. length) {
@@ -98,8 +98,8 @@ public:
 
     /**
     * Construct a Fork from range of filters
-    * @param filter_arr the list of filters
-    * @param length how many filters
+    * @param filter_arr = the list of filters
+    * @param length = how many filters
     */    
     this(Filter* filter_arr, size_t length)
     {
@@ -133,8 +133,8 @@ public:
 
     /**
     * Construct a Threaded_Fork from range of filters
-    * @param filter_arr the list of filters
-    * @param length how many filters
+    * @param filter_arr = the list of filters
+    * @param length = how many filters
     */
     this(Filter* filter_arr, size_t length)
     {

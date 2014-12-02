@@ -24,7 +24,7 @@ static if (BOTAN_HAS_EME_PKCS1v15)  import botan.pk_pad.eme_pkcs;
 /**
 * Factory method for EMSA (message-encoding methods for signatures
 * with appendix) objects
-* @param algo_spec the name of the EME to create
+* @param algo_spec = the name of the EME to create
 * @return pointer to newly allocated object of that type
 */
 EMSA get_emsa(in string algo_spec)
@@ -90,7 +90,7 @@ EMSA get_emsa(in string algo_spec)
 
 /**
 * Factory method for EME (message-encoding methods for encryption) objects
-* @param algo_spec the name of the EME to create
+* @param algo_spec = the name of the EME to create
 * @return pointer to newly allocated object of that type
 */
 EME get_eme(in string algo_spec)

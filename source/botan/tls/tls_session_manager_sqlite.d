@@ -29,14 +29,14 @@ final class TLS_Session_Manager_SQLite : TLS_Session_Manager
 {
 public:
     /**
-    * @param passphrase used to encrypt the session data
-    * @param rng a random number generator
-    * @param db_filename filename of the SQLite database file.
+    * @param passphrase = used to encrypt the session data
+    * @param rng = a random number generator
+    * @param db_filename = filename of the SQLite database file.
                 The table names tls_sessions and tls_sessions_metadata
                 will be used
-    * @param max_sessions a hint on the maximum number of sessions
+    * @param max_sessions = a hint on the maximum number of sessions
     *          to keep in memory at any one time. (If zero, don't cap)
-    * @param session_lifetime sessions are expired after this many
+    * @param session_lifetime = sessions are expired after this many
     *          seconds have elapsed from initial handshake.
     */
     this(in string passphrase,

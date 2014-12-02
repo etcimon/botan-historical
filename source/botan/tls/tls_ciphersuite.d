@@ -25,7 +25,7 @@ struct TLS_Ciphersuite
 public:
     /**
     * Convert an SSL/TLS ciphersuite to algorithm fields
-    * @param suite the ciphersuite code number
+    * @param suite = the ciphersuite code number
     * @return ciphersuite object
     */
     static TLS_Ciphersuite by_id(ushort suite)
@@ -486,7 +486,7 @@ public:
 
     /**
     * Lookup a ciphersuite by name
-    * @param name the name (eg TLS_RSA_WITH_RC4_128_SHA)
+    * @param name = the name (eg TLS_RSA_WITH_RC4_128_SHA)
     * @return ciphersuite object
     */
     static TLS_Ciphersuite by_name(in string name)

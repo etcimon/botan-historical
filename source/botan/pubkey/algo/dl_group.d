@@ -79,8 +79,8 @@ public:
 
     /**
     * Perform validity checks on the group.
-    * @param rng the rng to use
-    * @param strong whether to perform stronger by lengthier tests
+    * @param rng = the rng to use
+    * @param strong = whether to perform stronger by lengthier tests
     * @return true if the object is consistent, false otherwise
     */
     bool verify_group(RandomNumberGenerator rng,
@@ -104,7 +104,7 @@ public:
 
     /**
     * Encode this group into a string using PEM encoding.
-    * @param format the encoding format
+    * @param format = the encoding format
     * @return string holding the PEM encoded group
     */
     string PEM_encode(Format format) const
@@ -123,7 +123,7 @@ public:
 
     /**
     * Encode this group into a string using DER encoding.
-    * @param format the encoding format
+    * @param format = the encoding format
     * @return string holding the DER encoded group
     */
     Vector!ubyte DER_encode(Format format) const
@@ -168,8 +168,8 @@ public:
 
     /**
     * Decode a DER/BER encoded group into this instance.
-    * @param ber a vector containing the DER/BER encoded group
-    * @param format the format of the encoded group
+    * @param ber = a vector containing the DER/BER encoded group
+    * @param format = the format of the encoded group
     */
     void BER_decode(in Vector!ubyte data,
                     Format format)
@@ -207,7 +207,7 @@ public:
 
     /**
     * Decode a PEM encoded group into this instance.
-    * @param pem the PEM encoding of the group
+    * @param pem = the PEM encoding of the group
     */
     void PEM_decode(in string pem)
     {
@@ -237,7 +237,7 @@ public:
 
     /**
     * Construct a DL group that is registered in the configuration.
-    * @param name the name that is configured in the global configuration
+    * @param name = the name that is configured in the global configuration
     * for the desired group. If no configuration file is specified,
     * the default values from the file policy.cpp will be used. For instance,
     * use "modp/ietf/768" as name.
@@ -254,15 +254,15 @@ public:
 
     /**
     * Create a new group randomly.
-    * @param rng the random number generator to use
-    * @param type specifies how the creation of primes p and q shall
+    * @param rng = the random number generator to use
+    * @param type = specifies how the creation of primes p and q shall
     * be performed. If type=Strong, then p will be determined as a
     * safe prime, and q will be chosen as (p-1)/2. If
     * type=Prime_Subgroup and qbits = 0, then the size of q will be
     * determined according to the estimated difficulty of the DL
     * problem. If type=DSA_Kosherizer, DSA primes will be created.
-    * @param pbits the number of bits of p
-    * @param qbits the number of bits of q. Leave it as 0 to have
+    * @param pbits = the number of bits of p
+    * @param qbits = the number of bits of q. Leave it as 0 to have
     * the value determined according to pbits.
     */
     this(RandomNumberGenerator rng, PrimeType type, size_t pbits, size_t qbits = 0)
@@ -308,10 +308,10 @@ public:
 
     /**
     * Create a DSA group with a given seed.
-    * @param rng the random number generator to use
-    * @param seed the seed to use to create the random primes
-    * @param pbits the desired bit size of the prime p
-    * @param qbits the desired bit size of the prime q.
+    * @param rng = the random number generator to use
+    * @param seed = the seed to use to create the random primes
+    * @param pbits = the desired bit size of the prime p
+    * @param qbits = the desired bit size of the prime q.
     */
     this(RandomNumberGenerator rng, in Vector!ubyte seed, size_t pbits = 1024, size_t qbits = 0)
     {
@@ -326,8 +326,8 @@ public:
 
     /**
     * Create a DL group. The prime q will be determined according to p.
-    * @param p1 the prime p
-    * @param g1 the base m_g
+    * @param p1 = the prime p
+    * @param g1 = the base m_g
     */
     this(in BigInt p1, in BigInt g1)
     {
@@ -336,9 +336,9 @@ public:
 
     /**
     * Create a DL group.
-    * @param p1 the prime m_p
-    * @param q1 the prime m_q
-    * @param g1 the base m_g
+    * @param p1 = the prime m_p
+    * @param q1 = the prime m_q
+    * @param g1 = the base m_g
     */
     this(in BigInt p1, in BigInt q1, in BigInt g1)
     {

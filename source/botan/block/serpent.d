@@ -141,7 +141,7 @@ protected:
 
     /**
     * For use by subclasses that implement the key schedule
-    * @param ks is the new key schedule value to set
+    * @param ks = is the new key schedule value to set
     */
     void set_round_keys(in uint[132] ks)
     {

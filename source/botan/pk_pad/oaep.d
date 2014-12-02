@@ -32,8 +32,8 @@ public:
     }
 
     /**
-    * @param hash object to use for hashing (takes ownership)
-    * @param P an optional label. Normally empty.
+    * @param hash = object to use for hashing (takes ownership)
+    * @param P = an optional label. Normally empty.
     */
     this(HashFunction hash, in string P = "")
     {

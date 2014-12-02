@@ -27,28 +27,28 @@ public:
     /**
     * Set up a new TLS client session
     *
-    * @param socket_output_fn is called with data for the outbound socket
+    * @param socket_output_fn = is called with data for the outbound socket
     *
-    * @param proc_cb is called when new application data is received
+    * @param proc_cb = is called when new application data is received
     *
-    * @param alert_cb is called when a TLS alert is received
+    * @param alert_cb = is called when a TLS alert is received
     *
-    * @param handshake_cb is called when a handshake is completed
+    * @param handshake_cb = is called when a handshake is completed
     *
-    * @param session_manager manages session state
+    * @param session_manager = manages session state
     *
-    * @param creds manages application/user credentials
+    * @param creds = manages application/user credentials
     *
-    * @param policy specifies other connection policy information
+    * @param policy = specifies other connection policy information
     *
-    * @param rng a random number generator
+    * @param rng = a random number generator
     *
-    * @param server_info is identifying information about the TLS server
+    * @param server_info = is identifying information about the TLS server
     *
-    * @param offer_version specifies which version we will offer
+    * @param offer_version = specifies which version we will offer
     *          to the TLS server.
     *
-    * @param next_protocol allows the client to specify what the next
+    * @param next_protocol = allows the client to specify what the next
     *          protocol will be. For more information read
     *          http://technotes.googlecode.com/git/nextprotoneg.html.
     *
@@ -57,7 +57,7 @@ public:
     *          called with the list of protocols the server advertised;
     *          the client should return the protocol it would like to use.
     *
-    * @param reserved_io_buffer_size This many bytes of memory will
+    * @param reserved_io_buffer_size = This many bytes of memory will
     *          be preallocated for the read and write buffers. Smaller
     *          values just mean reallocations and copies are more likely.
     */
