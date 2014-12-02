@@ -8,6 +8,7 @@ module botan.tls.tls_session_key;
 
 import botan.constants;
 static if (BOTAN_HAS_TLS):
+package:
 
 import botan.algo_base.symkey;
 import botan.tls.tls_handshake_state;

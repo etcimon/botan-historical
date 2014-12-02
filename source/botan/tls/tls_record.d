@@ -8,6 +8,7 @@ module botan.tls.tls_record;
 
 import botan.constants;
 static if (BOTAN_HAS_TLS):
+package:
 
 import botan.libstate.libstate;
 import botan.tls.tls_magic;
@@ -40,7 +41,7 @@ public:
     /**
     * Initialize a new cipher state
     */
-    this(TLS_Protocol_Version _version, Connection_Side side, bool our_side, in Ciphersuite suite, in TLS_Session_Keys keys) 
+    this(TLS_Protocol_Version _version, Connection_Side side, bool our_side, in TLS_Ciphersuite suite, in TLS_Session_Keys keys) 
     {
         m_start_time = Clock.currTime();
         m_is_ssl3 = _version == TLS_Protocol_Version.SSL_V3;
@@ -177,9 +178,9 @@ private:
     Unique!AEAD_Mode m_aead;
     Secure_Vector!ubyte m_nonce, m_ad;
 
-    size_t m_block_size = 0;
-    size_t m_iv_size = 0;
-    bool m_is_ssl3 = false;
+    size_t m_block_size;
+    size_t m_iv_size;
+    bool m_is_ssl3;
 }
 
 /**

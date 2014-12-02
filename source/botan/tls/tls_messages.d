@@ -249,7 +249,7 @@ public:
     this(Handshake_IO io,
          Handshake_Hash hash,
          TLS_Protocol_Version _version,
-         const TLS_Policy policy,
+         in TLS_Policy policy,
          RandomNumberGenerator rng,
          in Vector!ubyte reneg_info,
          bool next_protocol,
@@ -285,7 +285,7 @@ public:
     */
     this(Handshake_IO io,
          Handshake_Hash hash,
-         const TLS_Policy policy,
+         in TLS_Policy policy,
          RandomNumberGenerator rng,
          in Vector!ubyte reneg_info,
          const TLS_Session session,
@@ -534,7 +534,7 @@ public:
     */
     this(Handshake_IO io,
          Handshake_Hash hash,
-         const TLS_Policy policy,
+         in TLS_Policy policy,
          in Vector!ubyte session_id,
          TLS_Protocol_Version ver,
          ushort ciphersuite,
@@ -651,7 +651,7 @@ public:
          const Handshake_State state,
          const Private_Key server_rsa_kex_key,
          TLS_Credentials_Manager creds,
-         const TLS_Policy policy,
+         in TLS_Policy policy,
          RandomNumberGenerator rng)
     {
         const string kex_algo = state.ciphersuite().kex_algo();
@@ -802,7 +802,7 @@ public:
     */
     this(Handshake_IO io,
          Handshake_State state,
-         const TLS_Policy policy,
+         in TLS_Policy policy,
          TLS_Credentials_Manager creds,
          const Public_Key server_public_key,
          in string hostname,
@@ -1124,7 +1124,7 @@ public:
     */
     this(Handshake_IO io,
          Handshake_Hash hash,
-         const TLS_Policy policy,
+         in TLS_Policy policy,
          in Vector!X509_DN ca_certs,
          TLS_Protocol_Version _version) 
     {
@@ -1273,7 +1273,7 @@ public:
     */
     this(Handshake_IO io,
          Handshake_State state,
-         const TLS_Policy policy,
+         in TLS_Policy policy,
          RandomNumberGenerator rng,
          const Private_Key priv_key)
     {

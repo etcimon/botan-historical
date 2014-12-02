@@ -244,7 +244,7 @@ public:
         return (_version > TLS_Protocol_Version.SSL_V3);
     }
 
-    bool acceptable_ciphersuite(in Ciphersuite) const
+    bool acceptable_ciphersuite(in TLS_Ciphersuite) const
     {
         return true;
     }
@@ -269,9 +269,9 @@ public:
         
         Ciphersuite_Preference_Ordering order = Ciphersuite_Preference_Ordering(ciphers, macs, kex, sigs);
         
-        Appender!(Ciphersuite[]) ciphersuites;
+        Appender!(TLS_Ciphersuite[]) ciphersuites;
         
-        foreach (suite; Ciphersuite.all_known_ciphersuites())
+        foreach (suite; TLS_Ciphersuite.all_known_ciphersuites())
         {
             if (!acceptable_ciphersuite(suite))
                 continue;
@@ -308,7 +308,7 @@ public:
         if (ciphersuites.data.empty)
             throw new Logic_Error("TLS_Policy does not allow any available cipher suite");
         Vector!ushort ciphersuite_codes;
-        foreach (Ciphersuite i; ciphersuites.data.uniq.sort!((a,b){ return order.compare(a, b); }).array.to!(Ciphersuite[]))
+        foreach (TLS_Ciphersuite i; ciphersuites.data.uniq.sort!((a,b){ return order.compare(a, b); }).array.to!(TLS_Ciphersuite[]))
             ciphersuite_codes.push_back(i.ciphersuite_code());
         return ciphersuite_codes;
     }
@@ -360,7 +360,7 @@ public:
 
 private:
 
-class Ciphersuite_Preference_Ordering
+struct Ciphersuite_Preference_Ordering
 {
 public:
     this(in Vector!string ciphers, in Vector!string macs, in Vector!string kex, in Vector!string sigs)
@@ -371,7 +371,7 @@ public:
         m_sigs = sigs;
     }
     
-    bool compare(U : CipherSuite)(in Ciphersuite a, auto ref U b) const
+    bool compare(U : CipherSuite)(in TLS_Ciphersuite a, auto ref U b) const
     {
         if (a.kex_algo() != b.kex_algo())
         {

@@ -8,6 +8,7 @@ module botan.tls.tls_handshake_hash;
 
 import botan.constants;
 static if (BOTAN_HAS_TLS):
+package:
 
 import botan.utils.memory.zeroize;
 import botan.tls.tls_version;

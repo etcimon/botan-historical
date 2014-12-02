@@ -14,17 +14,17 @@ import botan.utils.exceptn;
 import botan.utils.types;
 import std.conv : to;
 
+typedef ushort TLS_Alert_Type;
 /**
 * SSL/TLS TLS_Alert Message
 */
 struct TLS_Alert
 {
 public:
-	typedef ushort Alert_Type;
     /**
     * Type codes for TLS alerts
     */
-    enum : Alert_Type {
+    enum : TLS_Alert_Type {
         CLOSE_NOTIFY                        = 0,
         UNEXPECTED_MESSAGE                  = 10,
         BAD_RECORD_MAC                      = 20,
@@ -74,7 +74,7 @@ public:
     /**
     * @return type of alert
     */
-	Alert_Type type() const { return m_type_code; }
+	TLS_Alert_Type type() const { return m_type_code; }
 
     /**
     * @return type of alert
@@ -196,7 +196,7 @@ public:
     * @param type_code the type of alert
     * @param fatal specifies if this is a fatal alert
     */
-	this(Alert_Type type_code = NULL_ALERT, bool fatal = false)
+	this(TLS_Alert_Type type_code = NULL_ALERT, bool fatal = false)
     {
         m_fatal = fatal;
         m_type_code = type_code;
@@ -204,5 +204,5 @@ public:
 
 private:
     bool m_fatal;
-	Alert_Type m_type_code;
+	TLS_Alert_Type m_type_code;
 }

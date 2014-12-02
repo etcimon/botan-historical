@@ -8,6 +8,7 @@ module botan.tls.tls_channel;
 
 import botan.constants;
 static if (BOTAN_HAS_TLS):
+package:
 
 public import botan.cert.x509.x509cert;
 public import botan.tls.tls_policy;
@@ -266,12 +267,12 @@ public:
     /**
     * Send a warning alert
     */
-    void send_warning_alert(TLS_Alert.Type type) { send_alert(TLS_Alert(type, false)); }
+    void send_warning_alert(TLS_Alert_Type type) { send_alert(TLS_Alert(type, false)); }
 
     /**
     * Send a fatal alert
     */
-    void send_fatal_alert(TLS_Alert.Type type) { send_alert(TLS_Alert(type, true)); }
+    void send_fatal_alert(TLS_Alert_Type type) { send_alert(TLS_Alert(type, true)); }
 
     /**
     * Send a close notification alert
@@ -417,7 +418,7 @@ public:
 
     this(void delegate(in ubyte[]) output_fn,
          void delegate(in ubyte[]) data_cb,
-         void delegate(TLS_Alert, in ubyte[]) alert_cb,
+         void delegate(in TLS_Alert, in ubyte[]) alert_cb,
          bool delegate(in TLS_Session) handshake_cb,
          TLS_Session_Manager session_manager,
          RandomNumberGenerator rng,
@@ -443,7 +444,7 @@ public:
     }
 protected:
 
-    abstract void process_handshake_msg(const Handshake_State active_state,
+    abstract void process_handshake_msg(in Handshake_State active_state,
                                                   Handshake_State pending_state,
                                                   Handshake_Type type,
                                                   in Vector!ubyte contents);
@@ -775,7 +776,7 @@ private:
     /* callbacks */
     bool delegate(in TLS_Session) m_handshake_cb;
     void delegate(in ubyte[]) m_data_cb;
-    void delegate(TLS_Alert, in ubyte[]) m_alert_cb;
+    void delegate(in TLS_Alert, in ubyte[]) m_alert_cb;
     void delegate(in ubyte[]) m_output_fn;
 
     /* external state */

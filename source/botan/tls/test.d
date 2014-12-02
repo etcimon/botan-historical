@@ -153,16 +153,16 @@ size_t basic_test_handshake(RandomNumberGenerator rng,
     };
     
     auto client = scoped!TLS_Client((in ubyte[] buf) { c2s_q.insert(buf); },
-    save_client_data,
-    print_alert,
-    handshake_complete,
-    client_sessions,
-    creds,
-    policy,
-    rng,
-    TLS_Server_Information(),
-    offer_version,
-    next_protocol_chooser);
+								    save_client_data,
+								    print_alert,
+								    handshake_complete,
+								    client_sessions,
+								    creds,
+								    policy,
+								    rng,
+								    TLS_Server_Information(),
+								    offer_version,
+								    next_protocol_chooser);
     
     while(true)
     {

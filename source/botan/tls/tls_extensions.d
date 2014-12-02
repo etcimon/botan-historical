@@ -8,7 +8,6 @@ module botan.tls.tls_extensions;
 
 import botan.constants;
 static if (BOTAN_HAS_TLS):
-
 package:
 
 import botan.utils.memory.zeroize;

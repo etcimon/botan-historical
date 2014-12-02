@@ -8,6 +8,7 @@ module botan.tls.tls_seq_numbers;
 
 import botan.constants;
 static if (BOTAN_HAS_TLS):
+package:
 
 import botan.utils.types;
 import std.exception;

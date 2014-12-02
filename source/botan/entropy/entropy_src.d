@@ -7,8 +7,7 @@
 module botan.entropy.entropy_src;
 
 import botan.utils.memory.zeroize;
-// import string;
-import functional;
+import botan.utils.types;
 
 /**
 * Class used to accumulate the poll results of EntropySources

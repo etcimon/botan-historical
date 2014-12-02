@@ -8,6 +8,7 @@ module botan.tls.tls_handshake_io;
 
 import botan.constants;
 static if (BOTAN_HAS_TLS):
+package:
 
 import botan.tls.tls_magic;
 import botan.tls.tls_version;
@@ -17,7 +18,6 @@ import botan.tls.tls_record;
 import botan.tls.tls_seq_numbers;
 import botan.utils.exceptn;
 import std.algorithm : count;
-import functional;
 import botan.utils.types;
 import botan.utils.containers.hashmap;
 import std.typecons : Tuple;

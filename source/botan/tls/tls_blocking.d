@@ -11,6 +11,10 @@ static if (BOTAN_HAS_TLS):
 
 import botan.tls.tls_client;
 import botan.tls.tls_server;
+import botan.rng.rng;
+import botan.tls.tls_channel;
+import botan.tls.tls_session_manager;
+import botan.tls.tls_version;
 
 alias Secure_Deque(T) = Vector!( T, Secure_Allocator);
 
@@ -32,7 +36,7 @@ public:
     {
         m_read_fn = read_fn;
         m_channel = new TLS_Channel(write_fn, &data_cb, &alert_cb, &handshake_cb, session_manager, creds,
-                                policy, rng, server_info, offer_version, next_protocol);
+                                	policy, rng, server_info, offer_version, next_protocol);
     }
 
     /**

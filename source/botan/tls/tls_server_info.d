@@ -10,8 +10,6 @@ import botan.constants;
 static if (BOTAN_HAS_TLS):
 
 import botan.utils.types;
-// import string;
-
 
 /**
 * Represents information known about a TLS server.

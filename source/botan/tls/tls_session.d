@@ -226,7 +226,7 @@ public:
     /**
     * Get the ciphersuite info of the saved session
     */
-    Ciphersuite ciphersuite() const { return Ciphersuite.by_id(m_ciphersuite); }
+    TLS_Ciphersuite ciphersuite() const { return TLS_Ciphersuite.by_id(m_ciphersuite); }
 
     /**
     * Get the compression method used in the saved session

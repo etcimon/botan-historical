@@ -8,6 +8,7 @@ module botan.tls.tls_handshake_state;
 
 import botan.constants;
 static if (BOTAN_HAS_TLS):
+package:
 
 import botan.tls.tls_handshake_hash;
 import botan.tls.tls_handshake_io;
@@ -168,7 +169,7 @@ public:
                           ref string hash_algo_out,
                           ref string sig_algo_out,
                           bool for_client_auth,
-                          const TLS_Policy policy) const
+                          in TLS_Policy policy) const
     {
         const string sig_algo = key.algo_name;
         
@@ -260,7 +261,7 @@ public:
     void server_hello(Server_Hello server_hello)
     {
         m_server_hello = server_hello;
-        m_ciphersuite = Ciphersuite.by_id(m_server_hello.ciphersuite());
+        m_ciphersuite = TLS_Ciphersuite.by_id(m_server_hello.ciphersuite());
         note_message(*m_server_hello);
     }
     
@@ -369,7 +370,7 @@ public:
     const Finished client_finished() const
     { return *m_client_finished; }
 
-    const Ciphersuite ciphersuite() const { return m_ciphersuite; }
+    const TLS_Ciphersuite ciphersuite() const { return m_ciphersuite; }
 
     const TLS_Session_Keys session_keys() const { return m_session_keys; }
 
@@ -402,7 +403,7 @@ private:
     uint m_hand_expecting_mask = 0;
     uint m_hand_received_mask = 0;
     TLS_Protocol_Version m_version;
-    Ciphersuite m_ciphersuite;
+    TLS_Ciphersuite m_ciphersuite;
     TLS_Session_Keys m_session_keys;
     Handshake_Hash m_handshake_hash;
 

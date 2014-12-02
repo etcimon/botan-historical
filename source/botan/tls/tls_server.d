@@ -31,11 +31,11 @@ public:
     */
     this(void delegate(ref ubyte[]) output_fn,
          void delegate(in ubyte[]) data_cb,
-         void delegate(TLS_Alert, in ubyte[]) alert_cb,
+         void delegate(in TLS_Alert, in ubyte[]) alert_cb,
          bool delegate(in TLS_Session) handshake_cb,
          TLS_Session_Manager session_manager,
          TLS_Credentials_Manager creds,
-         const TLS_Policy policy,
+         in TLS_Policy policy,
          RandomNumberGenerator rng,
          in Vector!string next_protocols = Vector!string(),
          size_t io_buf_sz = 16*1024) 
@@ -74,7 +74,7 @@ private:
     /*
     * Process a handshake message
     */
-    override void process_handshake_msg(const Handshake_State active_state,
+    override void process_handshake_msg(in Handshake_State active_state,
                                         Handshake_State state_base,
                                         Handshake_Type type,
                                         in Vector!ubyte contents)
@@ -632,7 +632,7 @@ ushort choose_ciphersuite(in TLS_Policy policy,
         if (!value_exists(other_list, suite_id))
             continue;
         
-        Ciphersuite suite = Ciphersuite.by_id(suite_id);
+        TLS_Ciphersuite suite = TLS_Ciphersuite.by_id(suite_id);
         
         if (!have_shared_ecc_curve && suite.ecc_ciphersuite())
             continue;

@@ -12,7 +12,6 @@ static if (BOTAN_HAS_TLS):
 import botan.utils.exceptn;
 import botan.utils.memory.zeroize;
 import botan.utils.loadstor;
-// import string;
 import botan.utils.types;
 import std.exception;
 

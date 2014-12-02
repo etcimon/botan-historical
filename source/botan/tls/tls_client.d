@@ -63,7 +63,7 @@ public:
     */
     this(void delegate(in ubyte[]) socket_output_fn,
          void delegate(in ubyte[]) proc_cb,
-         void delegate(TLS_Alert, in ubyte[]) alert_cb,
+         void delegate(in TLS_Alert, in ubyte[]) alert_cb,
          bool delegate(in TLS_Session) handshake_cb,
          TLS_Session_Manager session_manager,
          TLS_Credentials_Manager creds,
@@ -143,15 +143,15 @@ private:
         if (!state.client_hello()) // not resuming
         {
             state.client_hello(new Client_Hello(
-                state.handshake_io(),
-                state.hash(),
-                _version,
-                m_policy,
-                rng(),
-                secure_renegotiation_data_for_client_hello(),
-                send_npn_request,
-                m_info.hostname(),
-                srp_identifier));
+				               state.handshake_io(),
+				               state.hash(),
+				               _version,
+				               m_policy,
+				               rng(),
+				               secure_renegotiation_data_for_client_hello(),
+				               send_npn_request,
+				               m_info.hostname(),
+				               srp_identifier));
         }
         
         secure_renegotiation_check(state.client_hello());
@@ -160,7 +160,7 @@ private:
     /*
     * Process a handshake message
     */
-    override void process_handshake_msg(const Handshake_State active_state,
+    override void process_handshake_msg(in Handshake_State active_state,
                                Handshake_State state_base,
                                Handshake_Type type,
                                in Vector!ubyte contents)
