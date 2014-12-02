@@ -35,7 +35,7 @@ private:
 void botan_md5_x86_32_compress(uint* digest, in ubyte* input, uint* M) pure
 {
     enum PUSHED = 4;
-    mixin(`asm { ` ~ 
+    mixin(START_ASM ~ 
         SPILL_REGS() ~ 
         ASSIGN(EBP, ARG(PUSHED, 2)) ~ /* input block */
         ASSIGN(EDI, ARG(PUSHED, 3)) ~ /* expanded words */
@@ -141,7 +141,7 @@ void botan_md5_x86_32_compress(uint* digest, in ubyte* input, uint* M) pure
         ADD(ARRAY4(EBP, 3), EDX) ~
 
         RESTORE_REGS() ~ 
-        `}`);
+        END_ASM);
         
 }
 
@@ -150,7 +150,7 @@ enum T1 = ESI;
 enum T2 = EBP;
 
 string FF(string A, string B, string C, string D, ubyte N, ubyte S, int MAGIC) {
-    return ASSIGN(T1, ARRAY4(MSG, N)) ~
+    return  ASSIGN(T1, ARRAY4(MSG, N)) ~
             ASSIGN(T2, C) ~
             XOR(T2, D)     ~
             AND(T2, B)     ~
@@ -162,7 +162,7 @@ string FF(string A, string B, string C, string D, ubyte N, ubyte S, int MAGIC) {
 
 string GG(string A, string B, string C, string D, ubyte N, ubyte S, int MAGIC)
 {
-    return ASSIGN(T1, ARRAY4(MSG, N)) ~
+    return  ASSIGN(T1, ARRAY4(MSG, N)) ~
             ASSIGN(T2, B) ~
             XOR(T2, C)     ~
             AND(T2, D)     ~
@@ -174,7 +174,7 @@ string GG(string A, string B, string C, string D, ubyte N, ubyte S, int MAGIC)
 
 string HH(string A, string B, string C, string D, ubyte N, ubyte S, int MAGIC)
 {
-    return ASSIGN(T1, ARRAY4(MSG, N)) ~
+    return  ASSIGN(T1, ARRAY4(MSG, N)) ~
             ASSIGN(T2, B) ~
             XOR(T2, C)     ~
             XOR(T2, D)     ~
@@ -185,7 +185,7 @@ string HH(string A, string B, string C, string D, ubyte N, ubyte S, int MAGIC)
 
 string II(string A, string B, string C, string D, ubyte N, ubyte S, int MAGIC) 
 {
-    return ASSIGN(T1, ARRAY4(MSG, N)) ~
+    return  ASSIGN(T1, ARRAY4(MSG, N)) ~
             ASSIGN(T2, D) ~
             NOT(T2) ~
             OR(T2, B)         ~

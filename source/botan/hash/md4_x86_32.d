@@ -42,8 +42,8 @@ private:
 void botan_md4_x86_32_compress(uint* digest, in ubyte* input, uint* M)
 {
     enum PUSHED = 4;
-    mixin(`asm {` ~ 
-              SPILL_REGS() ~ 
+    mixin(START_ASM ~ 
+            SPILL_REGS() ~ 
             ASSIGN(EBP, ARG(PUSHED, 2)) ~/* input block */
             ASSIGN(EDI, ARG(PUSHED, 3)) ~ /* expanded words */
 
@@ -127,8 +127,8 @@ void botan_md4_x86_32_compress(uint* digest, in ubyte* input, uint* M)
             ADD(ARRAY4(EBP, 1), EBX) ~
             ADD(ARRAY4(EBP, 2), ECX) ~
             ADD(ARRAY4(EBP, 3), EDX) ~
-             RESTORE_REGS() ~
-          `}`);
+            RESTORE_REGS() ~
+            END_ASM);
 }
 
 
@@ -137,7 +137,7 @@ enum T1 = ESI;
 enum T2 = EBP;
         
 string FF(string A, string B, string C, string D, ubyte N, ubyte S) {
-    return ASSIGN(T1, ARRAY4(MSG, N))~
+    return  ASSIGN(T1, ARRAY4(MSG, N))~
             ASSIGN(T2, C)~
             XOR(T2, D)    ~
             AND(T2, B)    ~
@@ -148,7 +148,7 @@ string FF(string A, string B, string C, string D, ubyte N, ubyte S) {
 }
 
 string GG(string A, string B, string C, string D, ubyte N, ubyte S) {
-    return ASSIGN(T1, ARRAY4(MSG, N)) ~
+    return  ASSIGN(T1, ARRAY4(MSG, N)) ~
             ASSIGN(T2, B) ~
             OR(T2, C)         ~
             AND(T2, D)     ~
@@ -160,7 +160,7 @@ string GG(string A, string B, string C, string D, ubyte N, ubyte S) {
             ROTL_IMM(A, S);
 }
 string HH(string A, string B, string C, string D, ubyte N, ubyte S) {
-    return ASSIGN(T1, ARRAY4(MSG, N)) ~
+    return  ASSIGN(T1, ARRAY4(MSG, N)) ~
             ASSIGN(T2, B) ~
             XOR(T2, C)     ~
             XOR(T2, D)     ~

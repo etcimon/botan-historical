@@ -226,48 +226,116 @@ private __gshared {
     uint amdfeatures; 
     uint l1cache;
 }
-
+// EBX is used to store GOT's address in PIC on x86, so we must preserve its value
+version(D_PIC)
+    version(X86)
+        version = PreserveEBX;
+        
 // todo: LDC/GDC
+version(GNU)
+{
+    private void rawCpuid(uint ain, uint cin, ref uint a, ref uint b, ref uint c, ref uint d)
+    {
+        version(PreserveEBX)
+        {
+            asm { 
+                "xchg %1, %%ebx
+                cpuid 
+                xchg %1, %%ebx"
+                    : "=a" a, "=r" b, "=c" c, "=d" d 
+                        : "0" ain, "2" cin; 
+            }
+        }
+        else
+        {
+            asm { 
+                "cpuid"
+                    : "=a" a, "=b" b, "=c" c, "=d" d 
+                        : "0" ain, "2" cin; 
+            }
+        }
+    }
+}
+
+version(LDC) {
+    private void rawCpuid(uint ain, uint cin, ref uint a, ref uint b, ref uint c, ref uint d)
+    {
+        version(PreserveEBX)
+        {
+            __asm { 
+                "xchg %1, %%ebx
+                cpuid 
+                xchg %1, %%ebx"
+                    : "=a" a, "=r" b, "=c" c, "=d" d 
+                        : "0" ain, "2" cin; 
+            }
+        }
+        else
+        {
+            __asm { 
+                "cpuid"
+                    : "=a" a, "=b" b, "=c" c, "=d" d 
+                        : "0" ain, "2" cin; 
+            }
+
+        }
+    }
+}
 
 shared static this() {
     
     string processorName;
     char[12] vendorID;
-
+    uint unused;
     {
         uint a, b, c, d, a2;
         char * venptr = vendorID.ptr;
-        version(D_InlineAsm_X86)
+
+        version(GNU)
         {
-            asm {
-                mov EAX, 0;
-                cpuid;
-                mov a, EAX;
-                mov EAX, venptr;
-                mov [EAX], EBX;
-                mov [EAX + 4], EDX;
-                mov [EAX + 8], ECX;
-            }
+            rawCpuid(0, 0, a, venptr[0], venptr[2], venptr[1]);     
         }
-        else version(D_InlineAsm_X86_64)
-        {
-            asm {
-                mov EAX, 0;
-                cpuid;
-                mov a, EAX;
-                mov RAX, venptr;
-                mov [RAX], EBX;
-                mov [RAX + 4], EDX;
-                mov [RAX + 8], ECX;
+        else version(LDC) rawCpuid(0, 0, a, venptr[0], venptr[2], venptr[1]);
+        else {
+            version(D_InlineAsm_X86)
+            {
+                asm {
+                    mov EAX, 0;
+                    cpuid;
+                    mov a, EAX;
+                    mov EAX, venptr;
+                    mov [EAX], EBX;
+                    mov [EAX + 4], EDX;
+                    mov [EAX + 8], ECX;
+                }
+            }
+            else version(D_InlineAsm_X86_64)
+            {
+                asm {
+                    mov EAX, 0;
+                    cpuid;
+                    mov a, EAX;
+                    mov RAX, venptr;
+                    mov [RAX], EBX;
+                    mov [RAX + 4], EDX;
+                    mov [RAX + 8], ECX;
+                }
             }
         }
 
-        asm {
-            mov EAX, 0x8000_0000;
-            cpuid;
-            mov a2, EAX;
+        
+        version(GNU)
+        {
+            rawCpuid(0x8000_0000, 0, a2, unused, unused, unused);
         }
-
+        else version(LDC) rawCpuid(0x8000_0000, 0, a2, unused, unused, unused);
+        else {
+            asm {
+                mov EAX, 0x8000_0000;
+                cpuid;
+                mov a2, EAX;
+            }
+        }
         max_cpuid = a;
         max_extended_cpuid = a2;
     
@@ -278,14 +346,20 @@ shared static this() {
 
     {
         uint a, b, c, d;
-
-        asm {
-            mov EAX, 1; // model, stepping
-            cpuid;
-            mov a, EAX;
-            mov b, EBX;
-            mov c, ECX;
-            mov d, EDX;
+        version(GNU)
+        {
+            rawCpuid(1, 0, a, apic, c, d);
+        } else version(LDC) rawCpuid(1, 0, a, apic, c, d);
+        else
+        {
+            asm {
+                mov EAX, 1; // model, stepping
+                cpuid;
+                mov a, EAX;
+                mov b, EBX;
+                mov c, ECX;
+                mov d, EDX;
+            }
         }
         /// EAX(a) contains stepping, model, family, processor type, extended model,
         /// extended family
@@ -298,13 +372,19 @@ shared static this() {
     if (max_cpuid >= 7)
     {
         uint ext, reserved;
-        asm
+
+        version(GNU) rawCpuid(7, 0, unused, ext, reserved, unused);
+        else version (LDC) rawCpuid(7, 0, unused, ext, reserved, unused);
+        else
         {
-            mov EAX, 7; // Structured extended feature leaf.
-            mov ECX, 0; // Main leaf.
-            cpuid;
-            mov ext, EBX; // HLE, AVX2, RTM, etc.
-            mov reserved, ECX;
+            asm
+            {
+                mov EAX, 7; // Structured extended feature leaf.
+                mov ECX, 0; // Main leaf.
+                cpuid;
+                mov ext, EBX; // HLE, AVX2, RTM, etc.
+                mov reserved, ECX;
+            }
         }
         extreserved = reserved;
         extfeatures = ext;
@@ -313,41 +393,65 @@ shared static this() {
     /*if (miscfeatures & OSXSAVE_BIT)
     {
         uint a, d;
-
-        asm {
-            mov ECX, 0;
-            xgetbv;
-            mov d, EDX;
-            mov a, EAX;
+        version(GNU)
+        {
+            // xgetbv does not affect ebx
+            asm {
+                "mov $0, %%ecx
+                xgetbv"
+              : "=a" a, "=d" d
+              :
+              : "ecx";
+            }    
+        }
+        else {
+            asm {
+                mov ECX, 0;
+                xgetbv;
+                mov d, EDX;
+                mov a, EAX;
+            }
         }
         xfeatures = cast(ulong)d << 32 | a;
     }*/
 
     if (max_extended_cpuid >= 0x8000_0001) {
         uint c, d;
-
-        asm {
-            mov EAX, 0x8000_0001;
-            cpuid;
-            mov c, ECX;
-            mov d, EDX;
+        version(GNU)
+        {
+            rawCpuid(0x8000_0001, 0, unused, unused, c, d);
+        } else version(LDC) rawCpuid(0x8000_0001, 0, unused, unused, c, d);
+        else
+        {
+            asm {
+                mov EAX, 0x8000_0001;
+                cpuid;
+                mov c, ECX;
+                mov d, EDX;
+            }
         }
-
         amdmiscfeatures = c;
         amdfeatures = d;
 
     }
     if (max_extended_cpuid >= 0x8000_0005) {
         uint c;
-        asm {
-            mov EAX, 0x8000_0005; // L1 cache
-            cpuid;
-            // EAX has L1_TLB_4M.
-            // EBX has L1_TLB_4K
-            // EDX has L1 instruction cache
-            mov c, ECX;
+        version(GNU)
+        {
+            rawCpuid(0x8000_0005, 0, unused, unused, c, unused);
         }
-
+        else version(LDC) rawCpuid(0x8000_0005, 0, unused, unused, c, unused);
+        else
+        {
+            asm {
+                mov EAX, 0x8000_0005; // L1 cache
+                cpuid;
+                // EAX has L1_TLB_4M.
+                // EBX has L1_TLB_4K
+                // EDX has L1 instruction cache
+                mov c, ECX;
+            }
+        }
         l1cache = c;
 
     }

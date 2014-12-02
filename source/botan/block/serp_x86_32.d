@@ -76,7 +76,7 @@ void botan_serpent_x86_32_encrypt(in ubyte* input, ubyte* output, in uint* ks ) 
 {
 
     enum PUSHED = 4;
-    mixin(`asm {` ~
+    mixin(START_ASM ~
           SPILL_REGS() ~
           ASSIGN(EBP, ARG(PUSHED, 1)) /* input block */ ~
           ASSIGN(EAX, ARRAY4(EBP, 0)) ~
@@ -132,7 +132,7 @@ void botan_serpent_x86_32_encrypt(in ubyte* input, ubyte* output, in uint* ks ) 
           ASSIGN(ARRAY4(EBP, 2), ECX) ~
           ASSIGN(ARRAY4(EBP, 3), EDX) ~
           RESTORE_REGS() ~
-          ` } `
+          END_ASM
           );
 }
 
@@ -148,7 +148,7 @@ void botan_serpent_x86_32_decrypt(in ubyte* input, ubyte* output, in uint* ks) p
 
     enum PUSHED = 4;
     
-    mixin( `asm {` ~
+    mixin(START_ASM ~
           SPILL_REGS() ~ 
           ASSIGN(EBP, ARG(PUSHED, 1)) ~ /* input block */
           ASSIGN(EAX, ARRAY4(EBP, 0)) ~
@@ -205,7 +205,7 @@ void botan_serpent_x86_32_decrypt(in ubyte* input, ubyte* output, in uint* ks) p
           ASSIGN(ARRAY4(EBP, 2), ECX) ~
           ASSIGN(ARRAY4(EBP, 3), EDX) ~
           RESTORE_REGS() ~ 
-          `}`);
+          END_ASM);
 }
 
 /**
@@ -217,7 +217,7 @@ void botan_serpent_x86_32_decrypt(in ubyte* input, ubyte* output, in uint* ks) p
 void botan_serpent_x86_32_key_schedule(uint* ks) pure
 {
     string LOAD_AND_SBOX(alias SBOX)(ubyte MSG) {
-        return     ASSIGN(EAX, ARRAY4(EDI, (4*MSG+ 8))) ~
+        return  ASSIGN(EAX, ARRAY4(EDI, (4*MSG+ 8))) ~
                 ASSIGN(EBX, ARRAY4(EDI, (4*MSG+ 9))) ~
                 ASSIGN(ECX, ARRAY4(EDI, (4*MSG+10))) ~
                 ASSIGN(EDX, ARRAY4(EDI, (4*MSG+11))) ~
@@ -228,7 +228,7 @@ void botan_serpent_x86_32_key_schedule(uint* ks) pure
                 ASSIGN(ARRAY4(EDI, (4*MSG+11)), EDX);
     }
     enum PUSHED = 4;
-    mixin(    `asm { ` ~
+    mixin(START_ASM ~
           SPILL_REGS() ~
           ASSIGN(EDI, ARG(PUSHED, 1)) ~ /* round keys */
           ASSIGN(ESI, IMM(8)) ~
@@ -297,33 +297,32 @@ void botan_serpent_x86_32_key_schedule(uint* ks) pure
           LOAD_AND_SBOX!SBOX_E4(32 ) ~
 
           RESTORE_REGS() ~
-
-          `}`);
+          END_ASM);
 }
 
 string E_ROUND(alias SBOX)(string A, string B, string C, string D, string T, ubyte N) 
 {
-    return     KEY_XOR(A, B, C, D, N) ~
+    return  KEY_XOR(A, B, C, D, N) ~
             SBOX(A, B, C, D, T)     ~
             TRANSFORM(A, B, C, D, T);
 }
 
 string D_ROUND(alias SBOX)(string A, string B, string C, string D, string T, ubyte N)
 {
-    return    I_TRANSFORM(A, B, C, D, T) ~
+    return  I_TRANSFORM(A, B, C, D, T) ~
             SBOX(A, B, C, D, T) ~
             KEY_XOR(A, B, C, D, N);
 }
 
 string KEY_XOR(string A, string B, string C, string D, ubyte N) {
-    return     XOR(A, ARRAY4(EDI, (4*N  )))  ~
+    return  XOR(A, ARRAY4(EDI, (4*N  )))  ~
             XOR(B, ARRAY4(EDI, (4*N+1)))  ~
             XOR(C, ARRAY4(EDI, (4*N+2)))  ~
             XOR(D, ARRAY4(EDI, (4*N+3)));
 }
 
 string TRANSFORM(string A, string B, string C, string D, string T) {
-    return     ROTL_IMM(A, 13)  ~
+    return  ROTL_IMM(A, 13)  ~
             ROTL_IMM(C, 3)   ~
             SHL2_3(T, A) ~
             XOR(B, A)    ~
@@ -343,7 +342,7 @@ string TRANSFORM(string A, string B, string C, string D, string T) {
 }
 
 string I_TRANSFORM(string A, string B, string C, string D, string T) {
-    return     ROTR_IMM(C, 22)  ~
+    return  ROTR_IMM(C, 22)  ~
             ROTR_IMM(A, 5)   ~
             ASSIGN(T, B) ~
             SHL_IMM(T, 7)~
@@ -363,7 +362,7 @@ string I_TRANSFORM(string A, string B, string C, string D, string T) {
 }
 string SBOX_E1(string A, string B, string C, string D, string T)
 {
-    return     XOR(D, A)    ~
+    return  XOR(D, A)    ~
             ASSIGN(T, B) ~
             AND(B, D)    ~
             XOR(T, C)    ~
@@ -387,7 +386,7 @@ string SBOX_E1(string A, string B, string C, string D, string T)
 }
 string SBOX_E2(string A, string B, string C, string D, string T) 
 {
-    return     NOT(A)       ~
+    return  NOT(A)       ~
             NOT(C)       ~
             ASSIGN(T, A) ~
             AND(A, B)    ~
@@ -408,11 +407,11 @@ string SBOX_E2(string A, string B, string C, string D, string T)
             ASSIGN(A, C) ~
             ASSIGN(C, D) ~
             ASSIGN(D, B) ~
-              ASSIGN(B, T);
+            ASSIGN(B, T);
 }
 
 string SBOX_E3(string A, string B, string C, string D, string T) {
-    return     ASSIGN(T, A) ~
+    return  ASSIGN(T, A) ~
             AND(A, C)    ~
             XOR(A, D)    ~
             XOR(C, B)    ~
@@ -436,7 +435,7 @@ string SBOX_E3(string A, string B, string C, string D, string T) {
 }
 
 string SBOX_E4(string A, string B, string C, string D, string T) {
-    return     ASSIGN(T, A) ~
+    return  ASSIGN(T, A) ~
             OR(A, D)     ~
             XOR(D, B)    ~
             AND(B, T)    ~
@@ -462,7 +461,7 @@ string SBOX_E4(string A, string B, string C, string D, string T) {
 }
 
 string SBOX_E5(string A, string B, string C, string D, string T) {
-    return     XOR(B, D)    ~
+    return  XOR(B, D)    ~
             NOT(D)       ~
             XOR(C, D)    ~
             XOR(D, A)    ~
@@ -488,7 +487,7 @@ string SBOX_E5(string A, string B, string C, string D, string T) {
 }
 
 string SBOX_E6(string A, string B, string C, string D, string T) {
-    return     XOR(A, B)    ~
+    return  XOR(A, B)    ~
             XOR(B, D)    ~
             NOT(D)       ~
             ASSIGN(T, B) ~
@@ -514,7 +513,7 @@ string SBOX_E6(string A, string B, string C, string D, string T) {
 }
 
 string SBOX_E7(string A, string B, string C, string D, string T) {
-    return     NOT(C)       ~
+    return  NOT(C)       ~
             ASSIGN(T, D) ~
             AND(D, A)    ~
             XOR(A, T)    ~
@@ -537,7 +536,7 @@ string SBOX_E7(string A, string B, string C, string D, string T) {
 }
     
 string SBOX_E8(string A, string B, string C, string D, string T) {
-    return     ASSIGN(T, B) ~
+    return  ASSIGN(T, B) ~
             OR(B, C)     ~
             XOR(B, D)    ~
             XOR(T, C)    ~
@@ -588,7 +587,7 @@ string SBOX_D1(string A, string B, string C, string D, string T) {
 }
 
 string SBOX_D2(string A, string B, string C, string D, string T) {
-    return     ASSIGN(T, B) ~
+    return  ASSIGN(T, B) ~
             XOR(B, D)    ~
             AND(D, B)    ~
             XOR(T, C)    ~
@@ -615,7 +614,7 @@ string SBOX_D2(string A, string B, string C, string D, string T) {
 }
 
 string SBOX_D3(string A, string B, string C, string D, string T) {
-    return     XOR(C, D)    ~
+    return  XOR(C, D)    ~
             XOR(D, A)    ~
             ASSIGN(T, D) ~
             AND(D, C)    ~
@@ -639,7 +638,7 @@ string SBOX_D3(string A, string B, string C, string D, string T) {
 }
 
 string SBOX_D4(string A, string B, string C, string D, string T) {
-    return     ASSIGN(T, C) ~
+    return  ASSIGN(T, C) ~
             XOR(C, B)    ~
             XOR(A, C)    ~
             AND(T, C)    ~
@@ -665,7 +664,7 @@ string SBOX_D4(string A, string B, string C, string D, string T) {
 }
 
 string SBOX_D5(string A, string B, string C, string D, string T) {
-    return     ASSIGN(T, C) ~
+    return  ASSIGN(T, C) ~
             AND(C, D)    ~
             XOR(C, B)    ~
             OR(B, D)     ~
@@ -690,7 +689,7 @@ string SBOX_D5(string A, string B, string C, string D, string T) {
     }
 
 string SBOX_D6(string A, string B, string C, string D, string T) {
-    return     NOT(B)       ~
+    return  NOT(B)       ~
             ASSIGN(T, D) ~
             XOR(C, B)    ~
             OR(D, A)     ~
@@ -717,7 +716,7 @@ string SBOX_D6(string A, string B, string C, string D, string T) {
     }
 
 string SBOX_D7(string A, string B, string C, string D, string T) {
-    return     XOR(A, C)    ~
+    return  XOR(A, C)    ~
             ASSIGN(T, C) ~
             AND(C, A)    ~
             XOR(T, D)    ~
@@ -740,7 +739,7 @@ string SBOX_D7(string A, string B, string C, string D, string T) {
 }
 
 string SBOX_D8(string A, string B, string C, string D, string T) {
-    return     ASSIGN(T, C) ~
+    return  ASSIGN(T, C) ~
             XOR(C, A)    ~
             AND(A, D)    ~
             OR(T, D)     ~

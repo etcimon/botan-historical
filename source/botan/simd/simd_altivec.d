@@ -37,10 +37,10 @@ public:
     {
         const uint* in_32 = cast(const uint*)(input);
 
-        Vector!uint R0 = vec_ld(0, in_32);
-        Vector!uint R1 = vec_ld(12, in_32);
+        vector_uint R0 = vec_ld(0, in_32);
+        vector_uint R1 = vec_ld(12, in_32);
 
-        Vector!char perm = vec_lvsl(0, in_32);
+        vector_byte perm = vec_lvsl(0, in_32);
 
         perm = vec_xor(perm, vec_splat_u8(3));
 
@@ -53,10 +53,10 @@ public:
     {
         const uint* in_32 = cast(const uint*)(input);
 
-        Vector!uint R0 = vec_ld(0, in_32);
-        Vector!uint R1 = vec_ld(12, in_32);
+        vector_uint R0 = vec_ld(0, in_32);
+        vector_uint R1 = vec_ld(12, in_32);
 
-        Vector!char perm = vec_lvsl(0, in_32);
+        vector_byte perm = vec_lvsl(0, in_32);
 
         R0 = vec_perm(R0, R1, perm);
 
@@ -65,12 +65,12 @@ public:
 
     void store_littleEndian(ubyte* output) const
     {
-        Vector!char perm = vec_lvsl(0, null);
+        vector_byte perm = vec_lvsl(0, null);
 
         perm = vec_xor(perm, vec_splat_u8(3));
 
         union {
-            Vector!uint V;
+            vector_uint V;
             uint[4] R;
         } vec;
 
@@ -82,8 +82,8 @@ public:
     void store_bigEndian(ubyte* output) const
     {
         union {
-            Vector!uint V;
-            uint R[4];
+            vector_uint V;
+            uint[4] R;
         } vec;
 
         vec.V = m_reg;
@@ -93,7 +93,7 @@ public:
 
     void rotate_left(size_t rot)
     {
-        Vector!uint rot_vec = Vector!uint([rot, rot, rot, rot]);
+        vector_uint rot_vec = vector_uint([rot, rot, rot, rot]);
 
         m_reg = vec_rl(m_reg, rot_vec);
     }
@@ -157,20 +157,20 @@ public:
         m_reg = vec_and(m_reg, other.m_reg);
     }
 
-    SIMD_Altivec opBinary(string op)(size_t shift) const
+    SIMD_Altivec opBinary(string op)(size_t shift_) const
         if (op == "<<")
     {
-        Vector!uint shift_vec =
-            Vector!uint([shift, shift, shift, shift]);
+        uint shift = cast(uint) shift_;
+        vector_uint shift_vec = vector_uint([shift, shift, shift, shift]);
 
         return vec_sl(m_reg, shift_vec);
     }
 
-    SIMD_Altivec opBinary(string op)(size_t shift) const
+    SIMD_Altivec opBinary(string op)(size_t shift_) const
         if (op == ">>")
     {
-        Vector!uint shift_vec =
-            Vector!uint([shift, shift, shift, shift]);
+        uint shift = cast(uint) shift_;
+        vector_uint shift_vec = vector_uint([shift, shift, shift, shift]);
 
         return vec_sr(m_reg, shift_vec);
     }
@@ -189,20 +189,20 @@ public:
 
     SIMD_Altivec bswap() const
     {
-        Vector!char perm = vec_lvsl(0, null);
+        vector_byte perm = vec_lvsl(0, null);
 
         perm = vec_xor(perm, vec_splat_u8(3));
 
         return SIMD_Altivec(vec_perm(m_reg, m_reg, perm));
     }
 
-    static void transpose(ref SIMD_Altivec B0, refSIMD_Altivec B1,
-                                 ref SIMD_Altivec B2, ref SIMD_Altivec B3)
+    static void transpose(ref SIMD_Altivec B0, ref SIMD_Altivec B1,
+                          ref SIMD_Altivec B2, ref SIMD_Altivec B3)
     {
-        Vector!uint T0 = vec_mergeh(B0.m_reg, B2.m_reg);
-        Vector!uint T1 = vec_mergel(B0.m_reg, B2.m_reg);
-        Vector!uint T2 = vec_mergeh(B1.m_reg, B3.m_reg);
-        Vector!uint T3 = vec_mergel(B1.m_reg, B3.m_reg);
+        vector_uint T0 = vec_mergeh(B0.m_reg, B2.m_reg);
+        vector_uint T1 = vec_mergel(B0.m_reg, B2.m_reg);
+        vector_uint T2 = vec_mergeh(B1.m_reg, B3.m_reg);
+        vector_uint T3 = vec_mergel(B1.m_reg, B3.m_reg);
 
         B0.m_reg = vec_mergeh(T0, T2);
         B1.m_reg = vec_mergel(T0, T2);
@@ -211,7 +211,7 @@ public:
     }
 
 private:
-    this(Vector!uint input) { m_reg = input; }
+    this(vector_uint input) { m_reg = input; }
 
-    Vector!uint m_reg;
+    vector_uint m_reg;
 }

@@ -44,7 +44,7 @@ private:
 void botan_sha160_x86_32_compress(uint* arg1, in ubyte* arg2, uint* arg2) pure
 {
     enum PUSHED = 4;
-    mixin(`asm {` ~
+    mixin(START_ASM ~
           SPILL_REGS() ~ 
           ASSIGN(EDI, ARG(PUSHED, 2)) ~
           ASSIGN(EBP, ARG(PUSHED, 3)) ~
@@ -219,7 +219,7 @@ void botan_sha160_x86_32_compress(uint* arg1, in ubyte* arg2, uint* arg2) pure
           ADD(ARRAY4(EBP, 4), ECX) ~
 
           RESTORE_REGS() ~
-          `}`);
+          END_ASM);
     
 }
 
@@ -233,7 +233,7 @@ enum T2 = EBP;
 
 string F1(string A, string B, string C, string D, string E, string F, ubyte N) 
 {
-    return ASSIGN(T2, ARRAY4(MSG, N)) ~
+    return  ASSIGN(T2, ARRAY4(MSG, N)) ~
             ASSIGN(A, F) ~
             ROTL_IMM(F, 5) ~
             ADD(F, E) ~
@@ -248,7 +248,7 @@ string F1(string A, string B, string C, string D, string E, string F, ubyte N)
 
 string F2_4(string A, string B, string C, string D, string E, string F, ubyte N, int MAGIC)
 {
-    return ASSIGN(T2, ARRAY4(MSG, N)) ~
+    return  ASSIGN(T2, ARRAY4(MSG, N)) ~
             ASSIGN(A, F)     ~
             ROTL_IMM(F, 5) ~
             ADD(F, E) ~
@@ -262,7 +262,7 @@ string F2_4(string A, string B, string C, string D, string E, string F, ubyte N,
 
 string F3(string A, string B, string C, string D, string E, string F, ubyte N)
 {
-    return ASSIGN(T2, ARRAY4(MSG, N)) ~
+    return  ASSIGN(T2, ARRAY4(MSG, N)) ~
             ASSIGN(A, F)     ~
             ROTL_IMM(F, 5) ~
             ADD(F, E) ~

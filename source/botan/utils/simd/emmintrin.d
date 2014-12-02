@@ -61,12 +61,11 @@ version(GDC) {
         short[8] a = [w,w,w,w,w,w,w,w];
         __m128i b;
         short[8]* _a = &a;
-        __m128i* b = &b;
+        __m128i* _b = &b;
         asm {
-            mov RAX, _a;
-            mov RBX, _b;
-            movdqu XMM0, [RAX];
-            movdqu [RBX], XMM0;
+            "movdqu (%0), %xmm0\n"
+            "movdqu %xmm0, (%1)\n"
+            : : "0" (_a), "1" (_b) : "xmm0"
         }
         return b;
     }
@@ -232,21 +231,18 @@ version(LDC) {
     pragma(LDC_intrinsic, "llvm.bswap.i64")
         ulong bswap64(ulong i);
 
-    // _mm_set1_epi16
-    __m128i _mm_set1_epi16(short w) {
-        pragma(LDC_allow_inline);
-        short[8] a = [w,w,w,w,w,w,w,w];
-        __m128i b;
-        short[8]* _a = &a;
-        __m128i* b = &b;
-        asm {
-            mov RAX, _a;
-            mov RBX, _b;
-            movdqu XMM0, [RAX];
-            movdqu [RBX], XMM0;
-        }
-        return b;
-    }
+	__m128i _mm_set1_epi16(short w) {
+		short[8] a = [w,w,w,w,w,w,w,w];
+		__m128i b;
+		short[8]* _a = &a;
+		__m128i* _b = &b;
+		__asm {
+			"movdqu (%0), %xmm0\n"
+			"movdqu %xmm0, (%1)\n"
+			: : "0" (_a), "1" (_b) : "xmm0"
+		}
+		return b;
+	}
 
     __m128i _mm_cvtsi128_si32(__m128i a) {
         return cast(int) __builtin_ia32_vec_ext_v4si(cast(int4) a, 0);
@@ -417,7 +413,7 @@ version(D_InlineAsm_X86_64) {
         short[8] a = [w,w,w,w,w,w,w,w];
         __m128i b;
         short[8]* _a = &a;
-        __m128i* b = &b;
+        __m128i* _b = &b;
         asm {
             mov RAX, _a;
             mov RBX, _b;
